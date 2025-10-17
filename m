@@ -1,403 +1,202 @@
-Received: from mx15lb.world4you.com (mx15lb.world4you.com [81.19.149.125])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D92332E147
-	for <linux-serial@vger.kernel.org>; Fri, 17 Oct 2025 14:42:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=81.19.149.125
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46ACD2F6926
+	for <linux-serial@vger.kernel.org>; Fri, 17 Oct 2025 15:01:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760712150; cv=none; b=m0yNBKOsz/ediNDZoHgQr07xzIWZpvasFy0zj6BTTemHjY5AzIo73tzWjzv/d2c0YY1rmwZcHLgePdE025GzMb/0o3VHf3z3RIPEE/QEHc0HKQ8NmTtRSRttKSh8at6LiwI/YiVJE/opO/vBkPJ4aSJlW9/9TtLI0LkL8pn9VHw=
+	t=1760713269; cv=none; b=hxMXXMrBRRuiuHj2qRnGI1IYDg8Ne/7Luf4YSL/76Hv5sc3+oF+4La7mBUUIocMdxHD8QGnrMMu+oTy53rDLBA5OOWSrhx2QZB2InseLkUMU526PJ5z7CHwlGn3inAentt+HmdQrBe4RFYb6M6xTxJLSGbCABBmYvavECxeZ86M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760712150; c=relaxed/simple;
-	bh=P7/qrpyRqah5nzNa7lNoZSIDcV00nBKsaLXs08kLe6A=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=SgInsAPoRPVlawM73pzZwS291+EM7pO7ydjd2C/hJXUHGN7gGPl76CjP6VGmAk5aPG/ASjpGjBwr/EhmnKs0017XFYEK61+pIHDkht0ubETkcxSuO5D85uce6wXcUFq9O1sSHFTH5v1aTt9+a0Z7DNswzRbc+jjPEmfbSTln4R4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=engleder-embedded.com; spf=pass smtp.mailfrom=engleder-embedded.com; dkim=pass (1024-bit key) header.d=engleder-embedded.com header.i=@engleder-embedded.com header.b=I7Xc5vpL; arc=none smtp.client-ip=81.19.149.125
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=engleder-embedded.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=engleder-embedded.com
+	s=arc-20240116; t=1760713269; c=relaxed/simple;
+	bh=4R5c1bGrsnGkOOUnK1CszpzLqwKaTx6S7E1UKViMgWo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=f2BqEdGxSjMu65MrXaK4WOxQCRe/H9IMXBAp2NFhnOPB4Yrl04UZG5cdAQj2lhVefl6Vtt5NbNK+N9fuPwmXnLQWYIqak2mBhwpq7CnpROEKp+eKW7EFNtAuIkkI5JB4mLjIFCN5OPcf9Qo2fItYxyl90lfYMjW4xD6yDRMrCMY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=mrLew0Rv; arc=none smtp.client-ip=209.85.208.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=engleder-embedded.com header.i=@engleder-embedded.com header.b="I7Xc5vpL"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:MIME-Version:
-	References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-	Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=s8SSZrAVvO5Vf5WDwakeU7gMADycezhfoAdfXGVfR7o=; b=I7Xc5vpLiCwtSf5Soe74M0yKiJ
-	t7fvDLvd7PiEQjMK6DD2wt4qnmYDaav8ddMBmzqBtfiAZnc1IsDQI3XJ4QI14EsB1NBo+QrSz8Dz1
-	dpmF/gXq7Pb8A0ecK6/Oh0tpwzMl6SCJ/qP6/UYJzJQKcw7VWdoUzfkRpe8RzpiVKb1s=;
-Received: from 93-82-65-102.adsl.highway.telekom.at ([93.82.65.102] helo=hornet.engleder.at)
-	by mx15lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.97.1)
-	(envelope-from <gerhard@engleder-embedded.com>)
-	id 1v9lex-000000000dl-0BdA;
-	Fri, 17 Oct 2025 16:42:24 +0200
-From: Gerhard Engleder <gerhard@engleder-embedded.com>
-To: linux-serial@vger.kernel.org
-Cc: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	Gerhard Engleder <gerhard@engleder-embedded.com>,
-	Gerhard Engleder <eg@keba.com>,
-	Daniel Gierlinger <gida@keba.com>
-Subject: [PATCH v2 2/2] serial: 8250: add driver for KEBA UART
-Date: Fri, 17 Oct 2025 16:42:09 +0200
-Message-Id: <20251017144209.2662-3-gerhard@engleder-embedded.com>
-X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20251017144209.2662-1-gerhard@engleder-embedded.com>
-References: <20251017144209.2662-1-gerhard@engleder-embedded.com>
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="mrLew0Rv"
+Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-63c2d72581fso1110027a12.0
+        for <linux-serial@vger.kernel.org>; Fri, 17 Oct 2025 08:01:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1760713265; x=1761318065; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=pSuJ0ACXse9H5YfB3aq/7dIEkglg7Np8q6vNe0vp/Qg=;
+        b=mrLew0Rv/a/Zs3SCFa9bmYQCKUBWcjzDoaLXzESw26n/Ve4YTblivYvSSOK9q1xTUh
+         oHpv1Ab6h1ETqLmkxauM+3d3M04Rb+FdXZZ7HNt8WGRTjYgfsreOTT5hVV4TvysBM2fH
+         GNVhJuzh8mjbfo8b8BnDl7laltd5hz9o1ocCFoT0qR1dIqgoGFP8YZigGmlXRh8JXpc7
+         knL/WC6UStYixntWiWcDyE4YOgUGMsVRmBQ6JYCxkmokaBaebNQngljll0sNSD6WtxeG
+         /gtzNM/fh5+OG4atHPixfjTA7xSbhMCROvoXk66oQBRvaGw/IVySssQFA58R2Q9xa+er
+         G65Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1760713265; x=1761318065;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=pSuJ0ACXse9H5YfB3aq/7dIEkglg7Np8q6vNe0vp/Qg=;
+        b=ZrBDjEw57+tpbgwAzBqTAkWdYNAFtcuZAXGYC/7RAfnAmam7YUp4u/jnsRTZfrZ+u5
+         JDf/U1SJmjMgcl116fH4XK4SXozszq43kD2QqD1o9OfQK1JgVVsQOM5h2NIBE1TA8HKj
+         AbH4R50DbK/GD7/fjZLwVXcqCqhBlJrjYItXKhfPRE3i2Zghuyzbtm5v/qj2ulGtLbv9
+         2u/RjZKuA0yag6PoYQK2FRMoTUycK+ohzefyGc8qraeutUTiH1w0Y4mFH2rUTBwMleq4
+         WSXKM2Bnv4UNzrBIK7ccE4fk12Er5Bj5MRvs41iGJNTFPNDMVP+WldIUVhkCTdbxSVj4
+         yJRg==
+X-Forwarded-Encrypted: i=1; AJvYcCWSG6M5HED6ZwfSghL3eKMkoarsznNF2cmqjhjGsLi1Oxy5fbWI+zE2cwLinI6SZI2X4/HhqFfMC+SK04A=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyY60GJ0zwFCGA88GUDLwZ6fkW6tS8zF3IOdBohoIyFbOpS8K6o
+	SVyyerg7YDkE1SCnCf0yzg0Aot8TqVNHFT7BSTN4XZRRyfOLH+IOQjZhtuddOP5sE/M=
+X-Gm-Gg: ASbGncsZYzBiLJlOl3eEFlgY7Zikno3UiWycg21dqD6ZFyPPh3SdNWLsT/kq4KWvJEH
+	bHaQuMp0hEBE4JAtsdmdxCwp5c28e5oRVfWX7idLr0LBGivTlmqNgVC5FkN6mU89LTuua9yMUbK
+	zU6HyODLZzfc8w3USao/HBVmYf/BP4j/g3JGnDuDOqVzeQPAfFwf1OnQu6xcteMOM8FTjtmfQSl
+	zrwbfs2UiJH5Vom1oTjyoOrvUDkE1jcG1GnT4YqIyD+/P/6e8Rfz67dKm2GfgyV8Tjej8UVtcAx
+	tOeqVU/ty2GuevaPUT5VyFCdMZeKLYXL/zAAsvhnGd2n2gGPdj6w1FDLLgEYbfBYnAHQFykD1QW
+	i+qLp+M6G0xZABa/PFnLlflqnzhI3Z7SBBo3c1NimztGKN6Lh1iI+qlI7I4yJWltJildbBc/mYu
+	FAk/eaHCyGfNMnZDA=
+X-Google-Smtp-Source: AGHT+IFDFe/2+iyA5FeI+RGuDLZ1H4kJaebU9REAfIID6sqcvriuQNr4F8M74Wd8OLwWVRFHd3xISQ==
+X-Received: by 2002:a05:6402:84d:b0:63c:4537:75c0 with SMTP id 4fb4d7f45d1cf-63c45377875mr654360a12.38.1760713264992;
+        Fri, 17 Oct 2025 08:01:04 -0700 (PDT)
+Received: from localhost ([2a02:8071:b783:6940:36f3:9aff:fec2:7e46])
+        by smtp.gmail.com with UTF8SMTPSA id 4fb4d7f45d1cf-63c0e77b34csm4048961a12.16.2025.10.17.08.01.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Oct 2025 08:01:03 -0700 (PDT)
+Date: Fri, 17 Oct 2025 17:01:00 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
+To: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Shawn Guo <shawnguo@kernel.org>, 
+	Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, 
+	Fabio Estevam <festevam@gmail.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org, linux@ew.tq-group.com
+Subject: Re: [PATCH] serial: imx: allow CRTSCTS with RTS/CTS GPIOs
+Message-ID: <cdkpp74ra2ltr7h46psutkwnzyvl4iegcicnhqqj7svm5trltm@w2egfj5nryjm>
+References: <20251016113730.245341-1-matthias.schiffer@ew.tq-group.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-AV-Do-Run: Yes
-X-ACL-Warn: X-W4Y-Internal
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="nxlujyqvbxqnez6y"
+Content-Disposition: inline
+In-Reply-To: <20251016113730.245341-1-matthias.schiffer@ew.tq-group.com>
 
-From: Gerhard Engleder <eg@keba.com>
 
-The KEBA UART is found in the system FPGA of KEBA PLC devices. It is
-mostly 8250 compatible with extension for some UART modes.
+--nxlujyqvbxqnez6y
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH] serial: imx: allow CRTSCTS with RTS/CTS GPIOs
+MIME-Version: 1.0
 
-3 different variants exist. The simpliest variant supports only RS-232
-and is used for debug interfaces. The next variant supports only RS-485
-and is used mostly for communication with KEBA panel devices. The third
-variant is able to support RS-232, RS-485 and RS-422. For this variant
-not only the mode of the UART is configured, also the physics and
-transceivers are switched according to the mode.
+On Thu, Oct 16, 2025 at 01:37:30PM +0200, Matthias Schiffer wrote:
+> The CTS GPIO is only evaluated when the CRTSCTS termios flag is enabled;
+> it should be possible to enable the flag when only GPIO and no hardware-
+> controlled RTS/CTS are available. UCR2_IRTS is kept enabled in this case,
+> so the hardware CTS is ignored.
+>=20
+> Fixes: 58362d5be352 ("serial: imx: implement handshaking using gpios with=
+ the mctrl_gpio helper")
+> Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+> ---
+>  drivers/tty/serial/imx.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
+>=20
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 500dfc009d03e..4a54a689a0603 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -1117,8 +1117,8 @@ static void imx_uart_set_mctrl(struct uart_port *po=
+rt, unsigned int mctrl)
+>  			ucr2 |=3D UCR2_CTS;
+>  			/*
+>  			 * UCR2_IRTS is unset if and only if the port is
+> -			 * configured for CRTSCTS, so we use inverted UCR2_IRTS
+> -			 * to get the state to restore to.
+> +			 * configured for hardware-controlled CRTSCTS, so we use
+> +			 * inverted UCR2_IRTS to get the state to restore to.
+>  			 */
+>  			if (!(ucr2 & UCR2_IRTS))
+>  				ucr2 |=3D UCR2_CTSC;
+> @@ -1780,7 +1780,7 @@ imx_uart_set_termios(struct uart_port *port, struct=
+ ktermios *termios,
+>  	if ((termios->c_cflag & CSIZE) =3D=3D CS8)
+>  		ucr2 |=3D UCR2_WS;
+> =20
+> -	if (!sport->have_rtscts)
+> +	if (!sport->have_rtscts && !sport->have_rtsgpio)
+>  		termios->c_cflag &=3D ~CRTSCTS;
+> =20
+>  	if (port->rs485.flags & SER_RS485_ENABLED) {
 
-Signed-off-by: Gerhard Engleder <eg@keba.com>
-Tested-by: Daniel Gierlinger <gida@keba.com>
----
- drivers/tty/serial/8250/8250_keba.c | 281 ++++++++++++++++++++++++++++
- drivers/tty/serial/8250/Kconfig     |  13 ++
- drivers/tty/serial/8250/Makefile    |   1 +
- 3 files changed, 295 insertions(+)
- create mode 100644 drivers/tty/serial/8250/8250_keba.c
+This hunk makes sense.
 
-diff --git a/drivers/tty/serial/8250/8250_keba.c b/drivers/tty/serial/8250/8250_keba.c
-new file mode 100644
-index 000000000000..b923556139ee
---- /dev/null
-+++ b/drivers/tty/serial/8250/8250_keba.c
-@@ -0,0 +1,281 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2025 KEBA Industrial Automation GmbH
-+ *
-+ * Driver for KEBA UART FPGA IP core
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/io.h>
-+#include <linux/module.h>
-+#include <linux/device.h>
-+#include <linux/auxiliary_bus.h>
-+#include <linux/misc/keba.h>
-+
-+#include "8250.h"
-+
-+#define KUART "kuart"
-+
-+/* flags */
-+#define KUART_RS485		BIT(0)
-+#define KUART_USE_CAPABILITY	BIT(1)
-+
-+/* registers */
-+#define KUART_VERSION		0x0000
-+#define KUART_REVISION		0x0001
-+#define KUART_CAPABILITY	0x0002
-+#define KUART_CONTROL		0x0004
-+#define KUART_BASE		0x000C
-+#define KUART_REGSHIFT		2
-+#define KUART_CLK		1843200
-+
-+/* mode flags */
-+enum kuart_mode {
-+	KUART_MODE_NONE = 0,
-+	KUART_MODE_RS485,
-+	KUART_MODE_RS422,
-+	KUART_MODE_RS232
-+};
-+
-+/* capability flags */
-+#define KUART_CAPABILITY_NONE	BIT(KUART_MODE_NONE)
-+#define KUART_CAPABILITY_RS485	BIT(KUART_MODE_RS485)
-+#define KUART_CAPABILITY_RS422	BIT(KUART_MODE_RS422)
-+#define KUART_CAPABILITY_RS232	BIT(KUART_MODE_RS232)
-+#define KUART_CAPABILITY_MASK	GENMASK(3, 0)
-+
-+/* Additional Control Register DTR line configuration */
-+#define UART_ACR_DTRLC_MASK		0x18
-+#define UART_ACR_DTRLC_COMPAT		0x00
-+#define UART_ACR_DTRLC_ENABLE_LOW	0x10
-+
-+struct kuart {
-+	struct keba_uart_auxdev *auxdev;
-+	void __iomem *base;
-+	unsigned int line;
-+
-+	unsigned int flags;
-+	u8 capability;
-+	enum kuart_mode mode;
-+};
-+
-+static void kuart_set_phy_mode(struct kuart *kuart, enum kuart_mode mode)
-+{
-+	iowrite8(mode, kuart->base + KUART_CONTROL);
-+}
-+
-+static void kuart_enhanced_mode(struct uart_8250_port *up, bool enable)
-+{
-+	u8 lcr, efr;
-+
-+	/* backup LCR register */
-+	lcr = serial_in(up, UART_LCR);
-+
-+	/* enable 650 compatible register set (EFR, ...) */
-+	serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
-+
-+	/* enable/disable enhanced mode with indexed control registers */
-+	efr = serial_in(up, UART_EFR);
-+	if (enable)
-+		efr |= UART_EFR_ECB;
-+	else
-+		efr &= ~UART_EFR_ECB;
-+	serial_out(up, UART_EFR, efr);
-+
-+	/* disable 650 compatible register set, restore LCR */
-+	serial_out(up, UART_LCR, lcr);
-+}
-+
-+static void kuart_dtr_line_config(struct uart_8250_port *up, u8 dtrlc)
-+{
-+	u8 acr;
-+
-+	/* set index register to 0 to access ACR register */
-+	serial_out(up, UART_SCR, UART_ACR);
-+
-+	/* set value register to 0x10 writing DTR mode (1,0) */
-+	acr = serial_in(up, UART_LSR);
-+	acr &= ~UART_ACR_DTRLC_MASK;
-+	acr |= dtrlc;
-+	serial_out(up, UART_LSR, acr);
-+}
-+
-+static int kuart_rs485_config(struct uart_port *port, struct ktermios *termios,
-+			      struct serial_rs485 *rs485)
-+{
-+	struct uart_8250_port *up = up_to_u8250p(port);
-+	struct kuart *kuart = port->private_data;
-+	enum kuart_mode mode;
-+	u8 dtrlc;
-+
-+	if (rs485->flags & SER_RS485_ENABLED) {
-+		if (rs485->flags & SER_RS485_MODE_RS422)
-+			mode = KUART_MODE_RS422;
-+		else
-+			mode = KUART_MODE_RS485;
-+	} else {
-+		mode = KUART_MODE_RS232;
-+	}
-+
-+	if (mode == kuart->mode)
-+		return 0;
-+
-+	if (kuart->flags & KUART_USE_CAPABILITY) {
-+		/* deactivate physical interface, break before make */
-+		kuart_set_phy_mode(kuart, KUART_MODE_NONE);
-+	}
-+
-+	if (mode == KUART_MODE_RS485) {
-+		/*
-+		 * Set DTR line configuration of 95x UART to DTR mode (1,0).
-+		 * In this mode the DTR pin drives the active-low enable pin of
-+		 * an external RS485 buffer. The DTR pin will be forced low
-+		 * whenever the transmitter is not empty, otherwise DTR pin is
-+		 * high.
-+		 */
-+		dtrlc = UART_ACR_DTRLC_ENABLE_LOW;
-+	} else {
-+		/*
-+		 * Set DTR line configuration of 95x UART to DTR mode (0,0).
-+		 * In this mode the DTR pin is compatible with 16C450, 16C550,
-+		 * 16C650 and 16c670 (i.e. normal).
-+		 */
-+		dtrlc = UART_ACR_DTRLC_COMPAT;
-+	}
-+
-+	kuart_enhanced_mode(up, true);
-+	kuart_dtr_line_config(up, dtrlc);
-+	kuart_enhanced_mode(up, false);
-+
-+	if (kuart->flags & KUART_USE_CAPABILITY) {
-+		/* activate selected physical interface */
-+		kuart_set_phy_mode(kuart, mode);
-+	}
-+
-+	kuart->mode = mode;
-+
-+	return 0;
-+}
-+
-+static int kuart_probe(struct auxiliary_device *auxdev,
-+		       const struct auxiliary_device_id *id)
-+{
-+	struct device *dev = &auxdev->dev;
-+	struct uart_8250_port uart = {};
-+	struct resource res;
-+	struct kuart *kuart;
-+	int retval;
-+
-+	kuart = devm_kzalloc(dev, sizeof(*kuart), GFP_KERNEL);
-+	if (!kuart)
-+		return -ENOMEM;
-+	kuart->auxdev = container_of(auxdev, struct keba_uart_auxdev, auxdev);
-+	kuart->flags = id->driver_data;
-+	auxiliary_set_drvdata(auxdev, kuart);
-+
-+	/*
-+	 * map only memory in front of UART registers, UART registers will be
-+	 * mapped by serial port
-+	 */
-+	res = kuart->auxdev->io;
-+	res.end = res.start + KUART_BASE - 1;
-+	kuart->base = devm_ioremap_resource(dev, &res);
-+	if (IS_ERR(kuart->base))
-+		return PTR_ERR(kuart->base);
-+
-+	if (kuart->flags & KUART_USE_CAPABILITY) {
-+		/*
-+		 * supported modes are read from capability register, at least
-+		 * one mode other than none must be supported
-+		 */
-+		kuart->capability = ioread8(kuart->base + KUART_CAPABILITY) &
-+				    KUART_CAPABILITY_MASK;
-+		if ((kuart->capability & ~KUART_CAPABILITY_NONE) == 0)
-+			return -EIO;
-+	}
-+
-+	spin_lock_init(&uart.port.lock);
-+	uart.port.dev = dev;
-+	uart.port.mapbase = kuart->auxdev->io.start + KUART_BASE;
-+	uart.port.irq = kuart->auxdev->irq;
-+	uart.port.uartclk = KUART_CLK;
-+	uart.port.private_data = kuart;
-+
-+	/* 8 bit registers are 32 bit aligned => shift register offset */
-+	uart.port.iotype = UPIO_MEM32;
-+	uart.port.regshift = KUART_REGSHIFT;
-+
-+	/*
-+	 * UART mixes 16550, 16750 and 16C950 (for RS485) standard => auto
-+	 * configuration works best
-+	 */
-+	uart.port.flags = UPF_SKIP_TEST | UPF_BOOT_AUTOCONF | UPF_IOREMAP;
-+
-+	/*
-+	 * UART supports RS485, RS422 and RS232 with switching of physical
-+	 * interface
-+	 */
-+	uart.port.rs485_config = kuart_rs485_config;
-+	if (kuart->flags & KUART_RS485) {
-+		uart.port.rs485_supported.flags = SER_RS485_ENABLED |
-+						  SER_RS485_RTS_ON_SEND;
-+		uart.port.rs485.flags = SER_RS485_ENABLED |
-+					SER_RS485_RTS_ON_SEND;
-+	}
-+	if (kuart->flags & KUART_USE_CAPABILITY) {
-+		/* default mode priority is RS485 > RS422 > RS232 */
-+		if (kuart->capability & KUART_CAPABILITY_RS422) {
-+			uart.port.rs485_supported.flags |= SER_RS485_ENABLED |
-+							   SER_RS485_RTS_ON_SEND |
-+							   SER_RS485_MODE_RS422;
-+			uart.port.rs485.flags = SER_RS485_ENABLED |
-+						SER_RS485_RTS_ON_SEND |
-+						SER_RS485_MODE_RS422;
-+		}
-+		if (kuart->capability & KUART_CAPABILITY_RS485) {
-+			uart.port.rs485_supported.flags |= SER_RS485_ENABLED |
-+							   SER_RS485_RTS_ON_SEND;
-+			uart.port.rs485.flags = SER_RS485_ENABLED |
-+						SER_RS485_RTS_ON_SEND;
-+		}
-+	}
-+
-+	retval = serial8250_register_8250_port(&uart);
-+	if (retval < 0) {
-+		dev_err(&auxdev->dev, "UART registration failed!\n");
-+		return retval;
-+	}
-+	kuart->line = retval;
-+
-+	return 0;
-+}
-+
-+static void kuart_remove(struct auxiliary_device *auxdev)
-+{
-+	struct kuart *kuart = auxiliary_get_drvdata(auxdev);
-+
-+	if (kuart->flags & KUART_USE_CAPABILITY)
-+		kuart_set_phy_mode(kuart, KUART_MODE_NONE);
-+
-+	serial8250_unregister_port(kuart->line);
-+}
-+
-+static const struct auxiliary_device_id kuart_devtype_aux[] = {
-+	{ .name = "keba.rs485-uart", .driver_data = KUART_RS485 },
-+	{ .name = "keba.rs232-uart", .driver_data = 0 },
-+	{ .name = "keba.uart", .driver_data = KUART_USE_CAPABILITY },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(auxiliary, kuart_devtype_aux);
-+
-+static struct auxiliary_driver kuart_driver_aux = {
-+	.name = KUART,
-+	.id_table = kuart_devtype_aux,
-+	.probe  = kuart_probe,
-+	.remove = kuart_remove,
-+};
-+module_auxiliary_driver(kuart_driver_aux);
-+
-+MODULE_AUTHOR("Gerhard Engleder <eg@keba.com>");
-+MODULE_DESCRIPTION("KEBA 8250 serial port driver");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-index f64ef0819cd4..5c3e4bcb3b93 100644
---- a/drivers/tty/serial/8250/Kconfig
-+++ b/drivers/tty/serial/8250/Kconfig
-@@ -430,6 +430,19 @@ config SERIAL_8250_IOC3
- 	  behind the IOC3 device on those systems.  Maximum baud speed is
- 	  38400bps using this driver.
- 
-+config SERIAL_8250_KEBA
-+	tristate "Support for KEBA 8250 UART"
-+	depends on SERIAL_8250
-+	depends on KEBA_CP500
-+	help
-+	  Selecting this option will add support for KEBA UARTs. These UARTs
-+	  are used for the serial interfaces of KEBA PLCs.
-+
-+	  This driver can also be built as a module. If so, the module will
-+	  be called 8250_keba.
-+
-+	  If unsure, say N.
-+
- config SERIAL_8250_RT288X
- 	bool "Ralink RT288x/RT305x/RT3662/RT3883 serial port support"
- 	depends on SERIAL_8250
-diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
-index 513a0941c284..f7a463c9860a 100644
---- a/drivers/tty/serial/8250/Makefile
-+++ b/drivers/tty/serial/8250/Makefile
-@@ -38,6 +38,7 @@ obj-$(CONFIG_SERIAL_8250_HP300)		+= 8250_hp300.o
- obj-$(CONFIG_SERIAL_8250_HUB6)		+= 8250_hub6.o
- obj-$(CONFIG_SERIAL_8250_INGENIC)	+= 8250_ingenic.o
- obj-$(CONFIG_SERIAL_8250_IOC3)		+= 8250_ioc3.o
-+obj-$(CONFIG_SERIAL_8250_KEBA)		+= 8250_keba.o
- obj-$(CONFIG_SERIAL_8250_LPC18XX)	+= 8250_lpc18xx.o
- obj-$(CONFIG_SERIAL_8250_LPSS)		+= 8250_lpss.o
- obj-$(CONFIG_SERIAL_8250_MEN_MCB)	+= 8250_men_mcb.o
--- 
-2.39.5
+> @@ -1794,7 +1794,7 @@ imx_uart_set_termios(struct uart_port *port, struct=
+ ktermios *termios,
+>  		else
+>  			imx_uart_rts_inactive(sport, &ucr2);
+> =20
+> -	} else if (termios->c_cflag & CRTSCTS) {
+> +	} else if ((termios->c_cflag & CRTSCTS) && sport->have_rtscts) {
 
+I agree to add the parens here and consider this more readable than the
+alternative
+
+	} else if (termios->c_cflag & CRTSCTS && sport->have_rtscts) {
+
+=2E Note there is no real win here. If the port doesn't have RTS/CTS it
+doesn't matter if it tries to control the RTS line. While you could
+argue it shouldn't set the line, it only makes an externally observable
+difference if one of the SoC's pads is muxed to its RTS function.
+I claim it's more robust in this case (i.e. no uart-has-rtscts property
+but a pinmux for the RTS line) to control the line according to the RTS
+setting. This is (at least IMO) better and more expected than driving
+this line to a constant level. So I oppose to this hunk.
+
+>  		/*
+>  		 * Only let receiver control RTS output if we were not requested
+>  		 * to have RTS inactive (which then should take precedence).
+> @@ -1803,7 +1803,7 @@ imx_uart_set_termios(struct uart_port *port, struct=
+ ktermios *termios,
+>  			ucr2 |=3D UCR2_CTSC;
+>  	}
+> =20
+> -	if (termios->c_cflag & CRTSCTS)
+> +	if ((termios->c_cflag & CRTSCTS) && sport->have_rtscts)
+>  		ucr2 &=3D ~UCR2_IRTS;
+>  	if (termios->c_cflag & CSTOPB)
+>  		ucr2 |=3D UCR2_STPB;
+
+Hmm, not sure. On one hand the same argument applies as above, but on
+the other if there are pins that are not explicitly configured but still
+in their CTS function this might affect operation in a bad way.
+Also this affects the (very usual) configuration where only RX, TX and
+RTS are used and CTS is not. In this case have_rtscts is true (right?)
+and then if there is an accidental CTS pin this is bad and not fixed by
+your change. Hmmm...
+
+So in sum the 2nd and 3rd code change is controversial. If the first one
+already fixes the problem you're facing, I suggest to go for only that.
+If you still think that the 3rd (and maybe even the 2nd) change is a
+good idea, I'd request to do that in a separate commit as this is a
+separate problem. Also the commit log only describes the first change,
+doesn't it?
+
+Best regards
+Uwe
+
+--nxlujyqvbxqnez6y
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmjyWikACgkQj4D7WH0S
+/k6wWAf/UxQyG6kZ2TILhgdrnIpfu84pODWejTX1lzvAjT7/3H/Qe8pJrRoNWf8e
+/iwaPdvVerhKNiekWTz4KPUE1rm7ITBLj3fwndHy/K2BNnZngBzXt+2s+WQ+fd6f
+hDZA/hvU5mimICspF0a1ZR3zFWD4VbcMqTrjs2nwFjikC77fJQHXhFAQDDt6vz1w
+nOWQ4ls8DPTKU6X3ELQRiExg1Vts1gmcP4IVr9NMGtwbAmchL0brLh+mgyYRv063
+enP5ezJ8VX2IV9/vb1yeSRMxN38bdLvRhmvImYwgALWjR93kiH5kbJkoy9r13fDR
+oquet7e0kA4duMdCrk/t/iT8vcR4hg==
+=8RNA
+-----END PGP SIGNATURE-----
+
+--nxlujyqvbxqnez6y--
