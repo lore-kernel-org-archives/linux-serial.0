@@ -1,67 +1,82 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from cdmsr1.hinet.net (210-65-1-144.hinet-ip.hinet.net [210.65.1.144])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 375B033507C;
-	Fri, 17 Oct 2025 15:35:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16426199FAC
+	for <linux-serial@vger.kernel.org>; Sat, 18 Oct 2025 11:04:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.65.1.144
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760715346; cv=none; b=B2aN3mQpu3On00n1zqkxBssJUCiJfxTTK7MKGK8OEShpMnp9NsTjL2VazxD7xwdsyu+cZoQLlDA8UyI+4dDDRWLwbQ2TI33tum1JeCwudNAgC9Pe27py9G2tBzues5xyslK6gBoRPCjOwV2k2pfEI/5tFRCd7kt8um62aJRWi0c=
+	t=1760785480; cv=none; b=tJTCFd41TFWCyuhPzgfI65XTL6n735HUM6c/prUScXKtJInezmn2XKC4YggQ0O9wbiFccllzatp4LTlTZ04N7GP2ttRcpQNv8kYj4OMw89ztfVtvWnFk6oSmAdvvx3+OgCFx+CAL4il6OA9ZC0CcxYEdiRIARflTbJtdsduUsu0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760715346; c=relaxed/simple;
-	bh=B8BTlhYmiDg4r1CkU5a1BLPIjrF7uRIotem9pyl0iXc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=vF32NgpxGs4XOGHAZWbZZDjTA3snfqVnxrCVy3Wo1PELgrXhu80ddQyI+MngheG32nwGQXG3Pzrv+K0hN9hgnoygeDW5IZ4E5C3hxeJiJlY+4/NYT46muQ5jU2YRG3e2tDityGx4Ai2VVhdlmrMk4lEFXeL2FlG0G7sUDP6EWxk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SCjVnOr2; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1760785480; c=relaxed/simple;
+	bh=7c6NUalPWOEIvEIjiWEwBssfaoajm0E9hgeHMSdNUhg=;
+	h=From:To:Subject:Message-ID:Date:MIME-Version:Content-Type; b=YTn3YMEanbnv6FUOlKtcIjnrlAAVHScfjq5pvjbq0oo3gj94jRiyOBN5tLD5OdVFBcIBmrCSpIRulHK9IhJjl31ARH+GFwoWsc56PHgIL5Fl/TqHcRdOih4FkHPX+yKGhjLAOJmJ7TBbmLwUO7Z1Drk2ovTsC++T2eaAqyg3xx8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ms29.hinet.net; spf=pass smtp.mailfrom=ms29.hinet.net; dkim=pass (1024-bit key) header.d=ms29.hinet.net header.i=@ms29.hinet.net header.b=Dco/M6OO; arc=none smtp.client-ip=210.65.1.144
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ms29.hinet.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ms29.hinet.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SCjVnOr2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB7F4C4CEFE;
-	Fri, 17 Oct 2025 15:35:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1760715346;
-	bh=B8BTlhYmiDg4r1CkU5a1BLPIjrF7uRIotem9pyl0iXc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=SCjVnOr2a/M2q6/nxIcSPZjHVKROLteqa5b5R+I3ESkbUdY6AkL9LxmDoPJOQrUSj
-	 M8/ICWYZ4ysgv5+croZsJaF5D20+Xvz20c6e9gXK/vc/kD/+a+9toONZHu79BHO1gC
-	 Pi6zZNXfXDjGTzBdaEpSv0g63ziTmEHUpYMy+YPGN3RxRG4Vq+IsJw75M+kicBJDDE
-	 U8k+1JytgWD40wU/2dusGw5rxHsUsgwA3zOjLsRfb8XjYQQvqaLuPoQVqqIbxcSWKR
-	 3VxYZPrrx31PJAYKFoIXn8owqnX83oTcqLsSBrXEB0R1vMwsu1l0Vwo8Mw8IkTFpNW
-	 NG4bpo84m5daQ==
-Date: Fri, 17 Oct 2025 05:35:45 -1000
-From: Tejun Heo <tj@kernel.org>
-To: Yu Peng <pengyu@kylinos.cn>
-Cc: changlianzhi@uniontech.com, dmitry.torokhov@gmail.com,
-	gregkh@linuxfoundation.org, jiangshanlai@gmail.com,
-	jirislaby@kernel.org, legion@kernel.org,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	lkp@intel.com, mingo@kernel.org, myrrhperiwinkle@qtmlabs.xyz,
-	oe-lkp@lists.linux.dev, oliver.sang@intel.com,
-	syzbot+79c403850e6816dc39cf@syzkaller.appspotmail.com,
-	tglx@linutronix.de
-Subject: Re: [PATCH v3 1/2] workqueue: Add initialization macro for work
- items that disabled by default
-Message-ID: <aPJiUXSVepUgB3OL@slm.duckdns.org>
-References: <aOVnoCnHa2vzB54g@slm.duckdns.org>
- <20251017075655.3781522-1-pengyu@kylinos.cn>
+	dkim=pass (1024-bit key) header.d=ms29.hinet.net header.i=@ms29.hinet.net header.b="Dco/M6OO"
+Received: from cmsr6.hinet.net ([10.199.216.85])
+	by cdmsr1.hinet.net (8.15.2/8.15.2) with ESMTPS id 59IAFFv5865149
+	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO)
+	for <linux-serial@vger.kernel.org>; Sat, 18 Oct 2025 18:15:17 +0800
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed; d=ms29.hinet.net;
+	s=default; t=1760782517; bh=ZLea4U2yjT7xgzjOa735GQR+jNc=;
+	h=From:To:Subject:Date;
+	b=Dco/M6OOwD+TmHJoHVegKpuXOk9bZEl+fDkYwVylHcI0R/XsM1J4bSCAkLQRSskQR
+	 fS6t/CGCD6Xa4NR4XGG/KJBbhpp1oiPJFvsITTFYUtvw2b+rJOCjYU3VItNMdq6rNW
+	 /fC3B5TqVv0Ku5SKqcmGrD0+3NOnCw9Bkwqf5AKE=
+Received: from [127.0.0.1] (118-168-45-227.dynamic-ip.hinet.net [118.168.45.227])
+	by cmsr6.hinet.net (8.15.2/8.15.2) with ESMTPS id 59IAAeSH206796
+	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO)
+	for <linux-serial@vger.kernel.org>; Sat, 18 Oct 2025 18:13:42 +0800
+From: "Sales - iGTI 395" <Linux-serial@ms29.hinet.net>
+To: linux-serial@vger.kernel.org
+Reply-To: "Sales - iGTI." <sales@igti.space>
+Subject: =?UTF-8?B?Rmlyc3QgT3JkZXIgQ29uZmlybWF0aW9uICYgTmV4dCBTdGVwcw==?=
+Message-ID: <58532159-8cdb-bafc-5de0-ac0627790204@ms29.hinet.net>
+Content-Transfer-Encoding: quoted-printable
+Date: Sat, 18 Oct 2025 10:13:41 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251017075655.3781522-1-pengyu@kylinos.cn>
+Content-Type: text/plain; charset=utf-8
+X-HiNet-Brightmail: Spam
+X-CMAE-Score: 100
+X-CMAE-Analysis: v=2.4 cv=cYdxrWDM c=0 sm=1 tr=0 ts=68f36857
+	p=ggywIp0tIZrEgnU2bSAA:9 a=avzCmnXzaMFgKpOopv6J1Q==:117 a=IkcTkHD0fZMA:10
+	a=5KLPUuaC_9wA:10
 
-On Fri, Oct 17, 2025 at 03:56:54PM +0800, Yu Peng wrote:
-> In certain scenarios, workqueue tasks that are disabled by default are
-> required. Similar to DECLARE_TASKLET_DISABLED, the DECLARE_WORK_DISABLED
-> macro is added to achieve this functionality.
-> 
-> Signed-off-by: Yu Peng <pengyu@kylinos.cn>
+Hi Linux-serial,
 
-Applied to wq/for-6.19.
+I hope this message finds you well.
 
-Thanks.
+We are a diversified general trading company with multiple business streams=
+ and affiliated sister companies. While our operations span various sectors=
+, we currently have a strong focus on the resale of general machandise and =
+services on several products to our partners and associates in the UAE and =
+UK.
 
--- 
-tejun
+Having reviewed your website and product offerings, we are pleased to move =
+forward with our first order. To proceed, we would like to align on the =
+following key details:
+
+-Minimum Order Quantity (MOQ)
+-Delivery timelines
+-Payment terms
+-Potential for a long-term partnership
+
+To facilitate this discussion and finalize next steps, we will be sharing a=
+ Zoom meeting invitation shortly.
+
+We look forward to your confirmation and the opportunity to build a =
+mutually beneficial relationship.
+
+Best regards,
+Leo Viera
+Purchasing Director
+sales@igti.space
+iGeneral Trading Co Ltd
+igt.ae - igti.space
