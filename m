@@ -1,103 +1,119 @@
-Received: from bmailout1.hostsharing.net (bmailout1.hostsharing.net [83.223.95.100])
+Received: from mx12lb.world4you.com (mx12lb.world4you.com [81.19.149.122])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FD9B16A956
-	for <linux-serial@vger.kernel.org>; Sun, 19 Oct 2025 14:42:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=83.223.95.100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 365A42E03E0
+	for <linux-serial@vger.kernel.org>; Sun, 19 Oct 2025 14:57:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=81.19.149.122
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760884966; cv=none; b=KMhhXBW+/TbZ64y3LuQQ+35Hl9pFFBa1MCU95sIhPjQBG/dWqHtW9SDneJLEVEitvmWTbVO9MKk12WaY7m2Ui8SJt+loasWB49CDma/EnhI8BZt3V5wCeuzILx/RDt7Rsx7pQtBNAhDObm/wIW+KFf1ndz5zrJ8RXbdvMkf7qhs=
+	t=1760885854; cv=none; b=j0CzpedloBnqEIHJhCKvneAmMtBzQ3N+kp11trXUE1mW/Hd2cbyEgV4FwUhujVxD9cVdcpZIpvfNRLHhZtMOX/9DzSwy02pBR0EtnyQv8GdMJec9hVk4dln7m76gnjKuCm7EbKSJA7dolD94arpnJO9w3XqMJEsuYx1HKLwcO0I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760884966; c=relaxed/simple;
-	bh=uMH8Vxo/A1cnJjSRjZZHhtHahhWzuqUzIj5T1Ui4KwI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rMVRV1x63UA5UIm9dPCOWBSZwbFenMx+CjQbEDQo+vm3Bnx57ZSYsUuJnUwu7ctu3f6hZy+RT98sOmAX9304dmht1VYOFSfQla81getnGUpe3DfuKSR+94GtexSwoYiMVpno2Lhb5+PnQrKKchoSLPuQPzLWViakfHv0q7lBzqI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wunner.de; spf=none smtp.mailfrom=h08.hostsharing.net; arc=none smtp.client-ip=83.223.95.100
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wunner.de
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=h08.hostsharing.net
-Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-	 client-signature RSA-PSS (4096 bits) client-digest SHA256)
-	(Client CN "*.hostsharing.net", Issuer "RapidSSL TLS RSA CA G1" (verified OK))
-	by bmailout1.hostsharing.net (Postfix) with ESMTPS id 8241F2C0608A;
-	Sun, 19 Oct 2025 16:42:35 +0200 (CEST)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-	id 7C52C4A12; Sun, 19 Oct 2025 16:42:35 +0200 (CEST)
-Date: Sun, 19 Oct 2025 16:42:35 +0200
-From: Lukas Wunner <lukas@wunner.de>
-To: Gerhard Engleder <gerhard@engleder-embedded.com>
-Cc: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-	jirislaby@kernel.org, Gerhard Engleder <eg@keba.com>
-Subject: Re: [PATCH v2 1/2] serial: Keep rs485 settings for devices without
- firmware node
-Message-ID: <aPT42ykVKxouqUHK@wunner.de>
-References: <20251017144209.2662-1-gerhard@engleder-embedded.com>
- <20251017144209.2662-2-gerhard@engleder-embedded.com>
- <aPSmOcbprjf0EoAq@wunner.de>
- <81b924dc-4e95-40af-a52a-48a75e01d7f5@engleder-embedded.com>
+	s=arc-20240116; t=1760885854; c=relaxed/simple;
+	bh=ThR3ToeaTaHJXTXxcYzdZAUMkp+JXh6Tu1JSCLvZum8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ZVPZHLeMVMpyTtfToNBw1imedoCcLXFfDO/iYbv5wDfD0D4VxbPJm6qAqOlSZ8NkVMGmepwawWLkwBBy2pYIqHaWraHTyLsSHdkaHiqnjSaxtti461GaFNC8d+s24BjBStcg93TuteeoWT1X44MsIjfaTARb+RE9OZAJqsXvovQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=engleder-embedded.com; spf=pass smtp.mailfrom=engleder-embedded.com; dkim=pass (1024-bit key) header.d=engleder-embedded.com header.i=@engleder-embedded.com header.b=JL/8hj8F; arc=none smtp.client-ip=81.19.149.122
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=engleder-embedded.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=engleder-embedded.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=engleder-embedded.com header.i=@engleder-embedded.com header.b="JL/8hj8F"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:Content-Type:
+	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=ERDtGQsapMzzCWZZswqGfqL1hV2oy0wqWNvcGOGZPF4=; b=JL/8hj8F5lkGzggjqMbfajbTCf
+	raaa8cNiSRcGG+Qvaa5Q+ckqUbqK+gXq/WqtKO4GFwFXnG+C3FWP3esfn+PFSGK8RcM9eEcpfoZur
+	ImPr6Obek+tlYUYxuB5GjsuL26y/9DqcHRKx+Dtt8X460n45sPaDQf5Zkw8tFhASYo7E=;
+Received: from [178.191.104.35] (helo=[10.0.0.160])
+	by mx12lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.97.1)
+	(envelope-from <gerhard@engleder-embedded.com>)
+	id 1vAU79-000000008U1-3FAE;
+	Sun, 19 Oct 2025 16:10:28 +0200
+Message-ID: <81b924dc-4e95-40af-a52a-48a75e01d7f5@engleder-embedded.com>
+Date: Sun, 19 Oct 2025 16:10:26 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <81b924dc-4e95-40af-a52a-48a75e01d7f5@engleder-embedded.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/2] serial: Keep rs485 settings for devices without
+ firmware node
+To: Lukas Wunner <lukas@wunner.de>
+Cc: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+ jirislaby@kernel.org, Gerhard Engleder <eg@keba.com>
+References: <20251017144209.2662-1-gerhard@engleder-embedded.com>
+ <20251017144209.2662-2-gerhard@engleder-embedded.com>
+ <aPSmOcbprjf0EoAq@wunner.de>
+Content-Language: en-US
+From: Gerhard Engleder <gerhard@engleder-embedded.com>
+In-Reply-To: <aPSmOcbprjf0EoAq@wunner.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AV-Do-Run: Yes
 
-On Sun, Oct 19, 2025 at 04:10:26PM +0200, Gerhard Engleder wrote:
-> On 19.10.25 10:50, Lukas Wunner wrote:
-> > On Fri, Oct 17, 2025 at 04:42:08PM +0200, Gerhard Engleder wrote:
-> > > +++ b/drivers/tty/serial/serial_core.c
-> > > @@ -3533,7 +3533,13 @@ int uart_get_rs485_mode(struct uart_port *port)
-> > >   	u32 rs485_delay[2];
-> > >   	int ret;
-> > > -	if (!(port->rs485_supported.flags & SER_RS485_ENABLED))
-> > > +	/*
-> > > +	 * Retrieve properties only if rs485 is supported and if a firmware node
-> > > +	 * exist. If no firmware node exist, then don't touch rs485 config and
-> > > +	 * keep initial rs485 properties set by driver.
-> > > +	 */
-> > > +	if (!(port->rs485_supported.flags & SER_RS485_ENABLED) ||
-> > > +	    !dev_fwnode(dev))
-> > >   		return 0;
-> > >   	ret = device_property_read_u32_array(dev, "rs485-rts-delay",
-> > 
-> > Hm, this will also skip the call to uart_sanitize_serial_rs485_delays().
-> > 
-> > I'm wondering if a better approach might be to move the check for
-> > !dev_fwnode(dev) further down, after the invocation of
-> > uart_sanitize_serial_rs485_delays()?
+On 19.10.25 10:50, Lukas Wunner wrote:
+> On Fri, Oct 17, 2025 at 04:42:08PM +0200, Gerhard Engleder wrote:
+>> Commit fe7f0fa43cef ("serial: 8250: Support rs485 devicetree properties")
+>> retrieves rs485 properties for 8250 drivers. These properties are read
+>> from the firmware node of the device. If the firmware node does not
+>> exist, then the rs485 flags are still reset. Thus, 8250 driver cannot
+>> set rs485 flags to enable a defined rs485 mode during driver loading.
+>> This is no problem so far, as no 8250 driver sets the rs485 flags.
+>>
+>> If no firmware node exist, then it should be possible for the driver to
+>> set a reasonable default rs485 mode. Therefore, reset rs485 flags only
+>> if a firmware node exists.
+> [...]
+>> +++ b/drivers/tty/serial/serial_core.c
+>> @@ -3533,7 +3533,13 @@ int uart_get_rs485_mode(struct uart_port *port)
+>>   	u32 rs485_delay[2];
+>>   	int ret;
+>>   
+>> -	if (!(port->rs485_supported.flags & SER_RS485_ENABLED))
+>> +	/*
+>> +	 * Retrieve properties only if rs485 is supported and if a firmware node
+>> +	 * exist. If no firmware node exist, then don't touch rs485 config and
+>> +	 * keep initial rs485 properties set by driver.
+>> +	 */
+>> +	if (!(port->rs485_supported.flags & SER_RS485_ENABLED) ||
+>> +	    !dev_fwnode(dev))
+>>   		return 0;
+>>   
+>>   	ret = device_property_read_u32_array(dev, "rs485-rts-delay",
 > 
-> Calling uart_sanitize_serial_rs485_delays() would make sense as it helps
-> to prevent driver bugs. But on the other hand this check is done within
-> a function, which implements a device tree binding. So it is confusing
-> that device tree binding code issue warnings for none device tree
-> configurations.
-
-This isn't just for devicetree.  E.g. ACPI systems may have these
-properties specified in a _DSD object.  It's meant to be a generic
-function to retrieve and sanitize rs485 settings.
-
-BTW is there a good reason that you don't have a fwnode for your UART?
-It seems odd to have a UART but not describe it in the devicetree.
-Maybe that's the real problem and fixing it obviates the need for this
-patch?
-
-> > It may be necessary then to change the else-branch for the delays to
-> > "else if (ret != -EINVAL)" because -EINVAL is returned from
-> > device_property_read_u32_array() if there's no fw_node.
+> Hm, this will also skip the call to uart_sanitize_serial_rs485_delays().
 > 
-> Yes, that could be done. But is relying on return values future proof?
+> I'm wondering if a better approach might be to move the check for
+> !dev_fwnode(dev) further down, after the invocation of
+> uart_sanitize_serial_rs485_delays()?
 
-In general, yes.
+Calling uart_sanitize_serial_rs485_delays() would make sense as it helps
+to prevent driver bugs. But on the other hand this check is done within
+a function, which implements a device tree binding. So it is confusing
+that device tree binding code issue warnings for none device tree
+configurations.
 
-> EINVAL for a missing fw_node is not a good fit in my opinion. So this
-> may break in the future silently?
+> It may be necessary then to change the else-branch for the delays to
+> "else if (ret != -EINVAL)" because -EINVAL is returned from
+> device_property_read_u32_array() if there's no fw_node.
 
-I agree it's a poor choice and something like -ENODEV may have been
-more appropriate.
+Yes, that could be done. But is relying on return values future proof?
+EINVAL for a missing fw_node is not a good fit in my opinion. So this
+may break in the future silently?
 
-Thanks,
+> If you decide to keep the check at the top of the function, then
+> style-wise it would seem cleaner to not insert it into the existing
+> if-condition, but add a separate if-condition.  It doesn't matter
+> IMO that they both return 0.  The way the patch is now, it creates
+> a little confusion to which of the two if-conditions the code
+> comment pertains.
 
-Lukas
+I will add a separate if-condition for better readability.
+
+Thank you for your review!
+
+Gerhard
