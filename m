@@ -1,94 +1,136 @@
-Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [176.9.242.62])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com [209.85.208.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4AA7271A7C
-	for <linux-serial@vger.kernel.org>; Sun, 19 Oct 2025 08:50:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=176.9.242.62
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D26ED11713
+	for <linux-serial@vger.kernel.org>; Sun, 19 Oct 2025 08:53:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760863812; cv=none; b=lHyaybLeIe7R29/gGssw68jxuM9W52ttII+8PAqY98ko4RnjD/XRcWYt4TddEyIugW5prXilRg+g5OkZLz7f1VL8RJhwByVP3Fa98Gi7QxTUG1kr/rZ2vOnvWLEFZS9zH/dgIwys0ZJF4mWxpIK/0VxFjqakDGQudgOHESY+nYk=
+	t=1760864038; cv=none; b=ah32apu12+lhQp4Ryuc7l2VaNci2fVoHl7p6QcIMMwfqqGNoevYaF563AXVyRCytnJl/dhYTVsccwTpToAQYToS089RmrxlvT2b/SJcV6qFDdkAbNrO9RtglhC8moKf6BzVRbdDQtOjY0HBxMGsTVN6udoQ09e8xMfgD2MGWmOM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760863812; c=relaxed/simple;
-	bh=RNZaox5u4PRgHkG5zMT/DQgAH60j1yRFkmyQp/GI3gE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Wl6FPuPuGc4E3W3Eq5TUOf+V+A3D66Ky1FVjG8Qtryca6f3xbT9jn06RuQowhN4a+5myJEjpkjCeGxYeBzv0C78umb+6bCR0f1bib7VsMacu3AOJWu1s6zw9Of30eMCGU3bWs3uZZVBuFuuVrobnNFVauvEKn2f6lCkWctMg6+Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wunner.de; spf=none smtp.mailfrom=h08.hostsharing.net; arc=none smtp.client-ip=176.9.242.62
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wunner.de
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=h08.hostsharing.net
-Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-	 client-signature RSA-PSS (4096 bits) client-digest SHA256)
-	(Client CN "*.hostsharing.net", Issuer "RapidSSL TLS RSA CA G1" (verified OK))
-	by bmailout3.hostsharing.net (Postfix) with ESMTPS id DDD492C051D6;
-	Sun, 19 Oct 2025 10:50:01 +0200 (CEST)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-	id BAE074A12; Sun, 19 Oct 2025 10:50:01 +0200 (CEST)
-Date: Sun, 19 Oct 2025 10:50:01 +0200
-From: Lukas Wunner <lukas@wunner.de>
-To: Gerhard Engleder <gerhard@engleder-embedded.com>
-Cc: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-	jirislaby@kernel.org, Gerhard Engleder <eg@keba.com>
-Subject: Re: [PATCH v2 1/2] serial: Keep rs485 settings for devices without
- firmware node
-Message-ID: <aPSmOcbprjf0EoAq@wunner.de>
-References: <20251017144209.2662-1-gerhard@engleder-embedded.com>
- <20251017144209.2662-2-gerhard@engleder-embedded.com>
+	s=arc-20240116; t=1760864038; c=relaxed/simple;
+	bh=B7lK6WdEPVIV/jVwlFcbiH2rLakLIWiHaQY1KV2oU60=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=CDRf0yrANP6iMNMeTStO1UGuclnk+SRpZkqJnYfnc1cx4mxVADV+OLpf6pvyzPT54ib4I6DOExn5VkpwSSGrUzgE6SB4goFbXJ4zR+l4pcv1mz/fGpSbus6jzaXjuq+rOobBEAWEoej0pkTuRtHR2UQRq+Qv0uTnA1CSJSvsUcg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZcW4LW6Y; arc=none smtp.client-ip=209.85.208.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZcW4LW6Y"
+Received: by mail-lj1-f172.google.com with SMTP id 38308e7fff4ca-367444a3e2aso40360501fa.2
+        for <linux-serial@vger.kernel.org>; Sun, 19 Oct 2025 01:53:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1760864034; x=1761468834; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=savhjec6/koJGGQDuCRH0JcAzleQmiExHQobZiRYHTc=;
+        b=ZcW4LW6YTWfiE10kDNbKgjmLfLS5XWieZFbcS8awJAi2QbkXSIgKij97na4yMd8l0x
+         9yLEgSgiM/horbJBnQFPtd+zwEFzNXqUbQyRbVpk0kvd8ezOVu0Tt04RoAh1pIpMIxrL
+         1LKRynENy0F5z4mWxe8WwA1GocotxDh1ZlhVg5WGjeav85BJCa4B0/x51K+lD6vb7hsA
+         IBGzjQMgLMPxnbdAyooWy3zAXnMIWcr2AXiAdGkkkZiT7G9nPVZElas2RiEm8FxnN0b1
+         TcyUTd8wJxzcEPDMfOt9Q+P4c1MY9rHAGJ50hV3MWM9nhgzgEJeXAS6M0D7odHQWGiAq
+         KVVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1760864034; x=1761468834;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=savhjec6/koJGGQDuCRH0JcAzleQmiExHQobZiRYHTc=;
+        b=ciyyWH8KniHsKDLhgMzamZjQQgjI5bQ4GstwdKsDISncMe0wNGgZYePRSY2+2dImSs
+         1kv9xF+M3hBbIlKbnCEwjmBWxnvl5iPXwke1qCVtrOiarhYPZUPXcAaCx260x/sstRWg
+         HT09zTecgvmnWkUeBVBoumLinIvdGLpHsICaK8e1+a7xK5iNgMbOsid67eeoy+BA3QVP
+         txcZ8a2j1t2Nt4IllEE4SrXPAM6mwdXYZyY/iVPhUNATY0xKoy+yIcoDJEhX8EsfFX1o
+         m4G2yG0B3atY17e3wPzAjgbAdfq2e3xsMWZC4ut3xmxhhZ3bvuD3p470nHf7CmHkEzCG
+         FDEw==
+X-Forwarded-Encrypted: i=1; AJvYcCUOFUlBTN0hkngbhVRcTbPJ7vUMbyokXrDiQH9Idu75BOSgLC89kdT85H8AQoDZ3cy/NhWbpMqtndsjRaE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyipBd6Nk5SA04peulegbSgxWX/6RA+Bm+wKBCGgMRHK3+Kifda
+	V3U6HoxL5S23gmiwppCQ9856q0omdeSxowAkf6y7shEOjcgIqrNpCCQ/YdEYOg==
+X-Gm-Gg: ASbGnct2lpiO3P1Yqt1KMLQ7xJcXeCw2YNWgEfKd0Moaxw8pth/GhUGfaTZPuqF5Fy4
+	bkOnmKLnpojGpikv9fM6mIyrZbbN0AIH8nShgc2lVG61YLcOyWbrI1XLTSBRhCStu0QjF2dCGw2
+	L3WI9YjL0oTKAqxMTpJHRQ4Y7ZlD6HB8XqjOlk3cjTH8oZPW4hVC1/KKgy4Ct2bbGAmO7gplyHT
+	NJuu2QfPDur51d+zDc41h8jQhZQDdzw9HT+xxHIJmTqq/yHYOKIofMpTWUwMR6gIPitLYXEjCSZ
+	M3B8wde5+mU4q+5JzaoIQKcon4UvUFtwueKg8ZgC0xx0xzsPg8CSI4vThVF4Pq7iMBDjGFyGphk
+	4ihpXW3uKGdmOLlMInyRJVDm9vHs9dM8iTlRPkO9f9yULhEWryh0wkGTkT+vG8Bqe27tIPBv9YK
+	DMzXEpE1a06/Y=
+X-Google-Smtp-Source: AGHT+IEKPQuqSJ3g4pw+2iojsl9js/Y4J6ZPVEtChS4rkkTO+szOKn9vOGeS6hNXhnWp5Cbr/ZstzQ==
+X-Received: by 2002:a05:651c:892:b0:371:fb14:39bb with SMTP id 38308e7fff4ca-37797912769mr28170581fa.16.1760864033626;
+        Sun, 19 Oct 2025 01:53:53 -0700 (PDT)
+Received: from NB-6746.. ([188.243.183.84])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-377a91f49basm11972401fa.16.2025.10.19.01.53.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 19 Oct 2025 01:53:53 -0700 (PDT)
+From: Artem Shimko <a.shimko.dev@gmail.com>
+To: andriy.shevchenko@linux.intel.com
+Cc: a.shimko.dev@gmail.com,
+	gregkh@linuxfoundation.org,
+	ilpo.jarvinen@linux.intel.com,
+	jirislaby@kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	p.zabel@pengutronix.de
+Subject: [PATCH v2] serial: 8250_dw: handle reset control deassert error
+Date: Sun, 19 Oct 2025 11:53:25 +0300
+Message-ID: <20251019085325.250657-1-a.shimko.dev@gmail.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <aO_NYGFCKb0J2uqK@smile.fi.intel.com>
+References: <aO_NYGFCKb0J2uqK@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251017144209.2662-2-gerhard@engleder-embedded.com>
+Content-Transfer-Encoding: 8bit
 
-On Fri, Oct 17, 2025 at 04:42:08PM +0200, Gerhard Engleder wrote:
-> Commit fe7f0fa43cef ("serial: 8250: Support rs485 devicetree properties")
-> retrieves rs485 properties for 8250 drivers. These properties are read
-> from the firmware node of the device. If the firmware node does not
-> exist, then the rs485 flags are still reset. Thus, 8250 driver cannot
-> set rs485 flags to enable a defined rs485 mode during driver loading.
-> This is no problem so far, as no 8250 driver sets the rs485 flags.
-> 
-> If no firmware node exist, then it should be possible for the driver to
-> set a reasonable default rs485 mode. Therefore, reset rs485 flags only
-> if a firmware node exists.
-[...]
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -3533,7 +3533,13 @@ int uart_get_rs485_mode(struct uart_port *port)
->  	u32 rs485_delay[2];
->  	int ret;
->  
-> -	if (!(port->rs485_supported.flags & SER_RS485_ENABLED))
-> +	/*
-> +	 * Retrieve properties only if rs485 is supported and if a firmware node
-> +	 * exist. If no firmware node exist, then don't touch rs485 config and
-> +	 * keep initial rs485 properties set by driver.
-> +	 */
-> +	if (!(port->rs485_supported.flags & SER_RS485_ENABLED) ||
-> +	    !dev_fwnode(dev))
->  		return 0;
->  
->  	ret = device_property_read_u32_array(dev, "rs485-rts-delay",
+Check the return value of reset_control_deassert() in the probe
+function to prevent continuing probe when reset deassertion fails.
 
-Hm, this will also skip the call to uart_sanitize_serial_rs485_delays().
+Previously, reset_control_deassert() was called without checking its
+return value, which could lead to probe continuing even when the
+device reset wasn't properly deasserted.
 
-I'm wondering if a better approach might be to move the check for
-!dev_fwnode(dev) further down, after the invocation of
-uart_sanitize_serial_rs485_delays()?
+The fix checks the return value and returns an error with dev_err_probe()
+if reset deassertion fails, providing better error handling and
+diagnostics.
 
-It may be necessary then to change the else-branch for the delays to
-"else if (ret != -EINVAL)" because -EINVAL is returned from
-device_property_read_u32_array() if there's no fw_node.
+Fixes: acbdad8dd1ab ("serial: 8250_dw: simplify optional reset handling")
+Signed-off-by: Artem Shimko <a.shimko.dev@gmail.com>
+---
+Hi Andy,
 
-If you decide to keep the check at the top of the function, then
-style-wise it would seem cleaner to not insert it into the existing
-if-condition, but add a separate if-condition.  It doesn't matter
-IMO that they both return 0.  The way the patch is now, it creates
-a little confusion to which of the two if-conditions the code
-comment pertains.
+Thank you for your review.
 
-Thanks,
+The v1 patch hasn't been applied.
 
-Lukas
+I've addressed your comments in v2 - could you please take a look when you have time?
+
+Best regards,
+Artem Shimko
+
+ChangeLog:
+  v1:
+    * https://lore.kernel.org/all/20251009081309.2021600-1-a.shimko.dev@gmail.com/T/#u
+  v2:
+    * Add fix tag to commit description
+
+ drivers/tty/serial/8250/8250_dw.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index a53ba04d9770..710ae4d40aec 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -635,7 +635,9 @@ static int dw8250_probe(struct platform_device *pdev)
+ 	if (IS_ERR(data->rst))
+ 		return PTR_ERR(data->rst);
+ 
+-	reset_control_deassert(data->rst);
++	err = reset_control_deassert(data->rst);
++	if (err)
++		return dev_err_probe(dev, err, "failed to deassert resets\n");
+ 
+ 	err = devm_add_action_or_reset(dev, dw8250_reset_control_assert, data->rst);
+ 	if (err)
+-- 
+2.43.0
+
