@@ -1,45 +1,38 @@
-Received: from pidgin.makrotopia.org (pidgin.makrotopia.org [185.142.180.65])
+Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [176.9.242.62])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E23A137750;
-	Sun, 19 Oct 2025 02:02:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.142.180.65
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4AA7271A7C
+	for <linux-serial@vger.kernel.org>; Sun, 19 Oct 2025 08:50:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=176.9.242.62
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760839369; cv=none; b=fnEhiMcFjo7F03d7dXYzlWx36k6r39e1PwVGu7q4Pc7M62FwnHB36ewiVVu4rLWykY1/o4AXTUVZFTf0yzmjFKGxKGKo8YnObzf661LusamCYf4UF8f+1SoX3Ht9hpE9x7JlOfsckupTxxrr8z8gf1MTLBNbBUHo8sTQnjeNcDM=
+	t=1760863812; cv=none; b=lHyaybLeIe7R29/gGssw68jxuM9W52ttII+8PAqY98ko4RnjD/XRcWYt4TddEyIugW5prXilRg+g5OkZLz7f1VL8RJhwByVP3Fa98Gi7QxTUG1kr/rZ2vOnvWLEFZS9zH/dgIwys0ZJF4mWxpIK/0VxFjqakDGQudgOHESY+nYk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760839369; c=relaxed/simple;
-	bh=x2EO3W9+QwWgfWMo+S/1DHswU5yldySvuI6dvcu1C4U=;
+	s=arc-20240116; t=1760863812; c=relaxed/simple;
+	bh=RNZaox5u4PRgHkG5zMT/DQgAH60j1yRFkmyQp/GI3gE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MSKEkBJy4ht8SR3DYJD6bcux/9OlfePYrZGF4p32nJvG+EAJlSI8BuhPGQrxn8itZkFRQIfrUQ1ifGdHgXm3Neq/otH+QHgC9/HqpWdkaNlxsW8RSutOkDXYkf1mxhzIqi1zasgxz4Z2adcqyPOxfKq8EPMITewAFnlpMPpHARI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=makrotopia.org; spf=pass smtp.mailfrom=makrotopia.org; arc=none smtp.client-ip=185.142.180.65
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=makrotopia.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=makrotopia.org
-Received: from local
-	by pidgin.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
-	 (Exim 4.98.2)
-	(envelope-from <daniel@makrotopia.org>)
-	id 1vAIke-000000005VK-0PXI;
-	Sun, 19 Oct 2025 02:02:28 +0000
-Date: Sun, 19 Oct 2025 03:02:24 +0100
-From: Daniel Golle <daniel@makrotopia.org>
-To: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Yu Jiaoliang <yujiaoliang@vivo.com>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@baylibre.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Changqi Hu <changqi.hu@mediatek.com>,
-	Sam Shih <sam.shih@mediatek.com>,
-	Steven Liu <steven.liu@mediatek.com>,
-	John Crispin <john@phrozen.org>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH v3] serial: 8250_mtk: Enable baud clock and manage in
- runtime PM
-Message-ID: <aPRGsKGDrYlyoTje@makrotopia.org>
-References: <de5197ccc31e1dab0965cabcc11ca92e67246cf6.1758058441.git.daniel@makrotopia.org>
- <939cea9e-d7bd-4a13-b462-17e483f61e4c@gmail.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=Wl6FPuPuGc4E3W3Eq5TUOf+V+A3D66Ky1FVjG8Qtryca6f3xbT9jn06RuQowhN4a+5myJEjpkjCeGxYeBzv0C78umb+6bCR0f1bib7VsMacu3AOJWu1s6zw9Of30eMCGU3bWs3uZZVBuFuuVrobnNFVauvEKn2f6lCkWctMg6+Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wunner.de; spf=none smtp.mailfrom=h08.hostsharing.net; arc=none smtp.client-ip=176.9.242.62
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wunner.de
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=h08.hostsharing.net
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
+	 client-signature RSA-PSS (4096 bits) client-digest SHA256)
+	(Client CN "*.hostsharing.net", Issuer "RapidSSL TLS RSA CA G1" (verified OK))
+	by bmailout3.hostsharing.net (Postfix) with ESMTPS id DDD492C051D6;
+	Sun, 19 Oct 2025 10:50:01 +0200 (CEST)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+	id BAE074A12; Sun, 19 Oct 2025 10:50:01 +0200 (CEST)
+Date: Sun, 19 Oct 2025 10:50:01 +0200
+From: Lukas Wunner <lukas@wunner.de>
+To: Gerhard Engleder <gerhard@engleder-embedded.com>
+Cc: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+	jirislaby@kernel.org, Gerhard Engleder <eg@keba.com>
+Subject: Re: [PATCH v2 1/2] serial: Keep rs485 settings for devices without
+ firmware node
+Message-ID: <aPSmOcbprjf0EoAq@wunner.de>
+References: <20251017144209.2662-1-gerhard@engleder-embedded.com>
+ <20251017144209.2662-2-gerhard@engleder-embedded.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -48,80 +41,54 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <939cea9e-d7bd-4a13-b462-17e483f61e4c@gmail.com>
+In-Reply-To: <20251017144209.2662-2-gerhard@engleder-embedded.com>
 
+On Fri, Oct 17, 2025 at 04:42:08PM +0200, Gerhard Engleder wrote:
+> Commit fe7f0fa43cef ("serial: 8250: Support rs485 devicetree properties")
+> retrieves rs485 properties for 8250 drivers. These properties are read
+> from the firmware node of the device. If the firmware node does not
+> exist, then the rs485 flags are still reset. Thus, 8250 driver cannot
+> set rs485 flags to enable a defined rs485 mode during driver loading.
+> This is no problem so far, as no 8250 driver sets the rs485 flags.
+> 
+> If no firmware node exist, then it should be possible for the driver to
+> set a reasonable default rs485 mode. Therefore, reset rs485 flags only
+> if a firmware node exists.
+[...]
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -3533,7 +3533,13 @@ int uart_get_rs485_mode(struct uart_port *port)
+>  	u32 rs485_delay[2];
+>  	int ret;
+>  
+> -	if (!(port->rs485_supported.flags & SER_RS485_ENABLED))
+> +	/*
+> +	 * Retrieve properties only if rs485 is supported and if a firmware node
+> +	 * exist. If no firmware node exist, then don't touch rs485 config and
+> +	 * keep initial rs485 properties set by driver.
+> +	 */
+> +	if (!(port->rs485_supported.flags & SER_RS485_ENABLED) ||
+> +	    !dev_fwnode(dev))
+>  		return 0;
+>  
+>  	ret = device_property_read_u32_array(dev, "rs485-rts-delay",
 
-On Wed, Sep 17, 2025 at 12:00:57PM +0200, Matthias Brugger wrote:
-> On 16/09/2025 23:37, Daniel Golle wrote:
-> > Some MediaTek SoCs got a gated UART baud clock, which currently gets
-> > disabled as the clk subsystem believes it would be unused. This results in
-> > the uart freezing right after "clk: Disabling unused clocks" on those
-> > platforms.
-> > 
-> > Request the baud clock to be prepared and enabled during probe, and to
-> > restore run-time power management capabilities to what it was before commit
-> > e32a83c70cf9 ("serial: 8250-mtk: modify mtk uart power and clock
-> > management") disable and unprepare the baud clock when suspending the UART,
-> > prepare and enable it again when resuming it.
-> > 
-> > Fixes: e32a83c70cf9 ("serial: 8250-mtk: modify mtk uart power and clock management")
-> 
-> Most of the issues from this commit are already fixed in
-> b6c7ff2693ddc ("serial: 8250_mtk: Simplify clock sequencing and runtime PM")
-> which is more or less a revert of e32a83c70cf9.
-> 
-> I think we should add
-> Fixes: b6c7ff2693ddc ("serial: 8250_mtk: Simplify clock sequencing and runtime PM")
-> here as well. It's a fix of a fix :)
+Hm, this will also skip the call to uart_sanitize_serial_rs485_delays().
 
-Just a friendly ping about this patch :)
-Should I resend the patch with the added Fixes:-tag? Or can it be merged
-including the tag added my Matthias without a resend?
+I'm wondering if a better approach might be to move the check for
+!dev_fwnode(dev) further down, after the invocation of
+uart_sanitize_serial_rs485_delays()?
 
+It may be necessary then to change the else-branch for the delays to
+"else if (ret != -EINVAL)" because -EINVAL is returned from
+device_property_read_u32_array() if there's no fw_node.
 
-> 
-> Regards,
-> Matthias
-> 
-> 
-> > Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> > Signed-off-by: Daniel Golle <daniel@makrotopia.org>
-> > ---
-> > v3: squash into single patch
-> > v2: add managing run-time PM in dedicated patch
-> > 
-> >   drivers/tty/serial/8250/8250_mtk.c | 6 ++++--
-> >   1 file changed, 4 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-> > index b44de2ed7413..5875a7b9b4b1 100644
-> > --- a/drivers/tty/serial/8250/8250_mtk.c
-> > +++ b/drivers/tty/serial/8250/8250_mtk.c
-> > @@ -435,6 +435,7 @@ static int __maybe_unused mtk8250_runtime_suspend(struct device *dev)
-> >   	while
-> >   		(serial_in(up, MTK_UART_DEBUG0));
-> > +	clk_disable_unprepare(data->uart_clk);
-> >   	clk_disable_unprepare(data->bus_clk);
-> >   	return 0;
-> > @@ -445,6 +446,7 @@ static int __maybe_unused mtk8250_runtime_resume(struct device *dev)
-> >   	struct mtk8250_data *data = dev_get_drvdata(dev);
-> >   	clk_prepare_enable(data->bus_clk);
-> > +	clk_prepare_enable(data->uart_clk);
-> >   	return 0;
-> >   }
-> > @@ -475,13 +477,13 @@ static int mtk8250_probe_of(struct platform_device *pdev, struct uart_port *p,
-> >   	int dmacnt;
-> >   #endif
-> > -	data->uart_clk = devm_clk_get(&pdev->dev, "baud");
-> > +	data->uart_clk = devm_clk_get_enabled(&pdev->dev, "baud");
-> >   	if (IS_ERR(data->uart_clk)) {
-> >   		/*
-> >   		 * For compatibility with older device trees try unnamed
-> >   		 * clk when no baud clk can be found.
-> >   		 */
-> > -		data->uart_clk = devm_clk_get(&pdev->dev, NULL);
-> > +		data->uart_clk = devm_clk_get_enabled(&pdev->dev, NULL);
-> >   		if (IS_ERR(data->uart_clk)) {
-> >   			dev_warn(&pdev->dev, "Can't get uart clock\n");
-> >   			return PTR_ERR(data->uart_clk);
-> 
+If you decide to keep the check at the top of the function, then
+style-wise it would seem cleaner to not insert it into the existing
+if-condition, but add a separate if-condition.  It doesn't matter
+IMO that they both return 0.  The way the patch is now, it creates
+a little confusion to which of the two if-conditions the code
+comment pertains.
+
+Thanks,
+
+Lukas
