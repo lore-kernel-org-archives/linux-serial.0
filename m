@@ -1,113 +1,86 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 448802DCF7C;
-	Mon, 20 Oct 2025 08:42:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C81EF248891
+	for <linux-serial@vger.kernel.org>; Mon, 20 Oct 2025 11:50:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760949744; cv=none; b=R+tZL3CQVfYbJC8mAibOlVnz4bGFU23mIscD0iE3JfYCNin7slrgvOOelXFoMEe6VWhKIfhk8nf4mFCs0CVbJVoWIiTqBphSFGaQZb8GDoDa3Vkk4ECxOPVUztVEcFpZQ0kC1ksTZQJ5J73ZrrecOhWrYd4bHs/oD5w8o7cCYMc=
+	t=1760961029; cv=none; b=rNlimWiIwjoHSB820TkhTNRPe+BUDT/N+6vS0mIDA1au0eDrU4NpvnqAwlSZh7bJbBtWWP8V/NuBnoqWDGbGDfRanR5gzdwecm5lLj7JcxmB4I+1dmO3h5LEjfgMuaB91CiE2Duiz4R7INaGNru0zu28sraCSruquBqB8Ol3jpw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760949744; c=relaxed/simple;
-	bh=a1hSQoJK8FFb701sH+cRC95PH2MlR9RQOekSrOxAiB4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HIYpNc0L+GbloFlnqexobB/Ww3LMVYeL4fEdUuQhX86os9HxvA9M84o0Tx+lz5Xadx4V6p5aXsKUoAK8jzQGWeQ3UvfghoA1f4CPEYtAenMMw9IByygw7a1e5dgRv0LB2OciMagm8RItWfIwQ7vfS4W82LzvZcMJNQUhda09348=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kejyempy; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1760961029; c=relaxed/simple;
+	bh=3Ib3zrr/tPmm6C+NhCIYGI9GLz3/YlX3IpNvy/WsbBw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=EvR0DkYNOLwrXQZIKRemk+sBElGI1cVjPw4Z4UkJaGx3h/Iyxr4Ciknm8bSiq2jy0Dylu8Se7xVD/+fCPnV4Wpubr8Wm6ITULY573xF2AVaCDWJ5vaWHO0RSYvK9GUsECQmYQdRilHgKNkHylUpyQa3AqCHluJiQCTxWLVr5awI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=D3Q8Fmiw; arc=none smtp.client-ip=209.85.218.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kejyempy"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1760949742; x=1792485742;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=a1hSQoJK8FFb701sH+cRC95PH2MlR9RQOekSrOxAiB4=;
-  b=kejyempyYZjzl/uh5OIq11NszFQv2gAxtfEPsnJVWBR7jCKXbg0s5g87
-   m0+u7cQ3KMP/g0UDUZVnt/Er6aV8qyq5wVdQCydbRHVDZyN0V/CStWw7a
-   way1546VXW6wQdLdZiaIf4Q3r9fQJl5ZzIyBmmez4ngaYC0VfJKfQkG8i
-   bz5EPTfM/VeDGRXdUDpJnGpCXZrkPCIfdWjnipHAnlFmWw70JG96M1RnU
-   xIl2H24dmOTQYButX6cyhQNU5WZmWU9+sEw4AXEB58oFQGOBc4gjdybYj
-   DhU4ahB2ZqZfuvFuztxxrSQRDvPYNEVTlYfejBPUCENDr5/1mIzcEXs3M
-   w==;
-X-CSE-ConnectionGUID: UfSKHEziTLGQFZClk2D4mA==
-X-CSE-MsgGUID: 9nmHy5bpRl6QkbkH1+dlBw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11587"; a="62271171"
-X-IronPort-AV: E=Sophos;i="6.19,242,1754982000"; 
-   d="scan'208";a="62271171"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2025 01:42:21 -0700
-X-CSE-ConnectionGUID: f85Sgmj+RLyIXFj6Co8rLw==
-X-CSE-MsgGUID: OiSoDDugTOOCK7QiyF2EaQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.19,242,1754982000"; 
-   d="scan'208";a="183690797"
-Received: from bergbenj-mobl1.ger.corp.intel.com (HELO ashevche-desk.local) ([10.245.245.6])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2025 01:42:17 -0700
-Received: from andy by ashevche-desk.local with local (Exim 4.98.2)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1vAlT4-00000001EYy-0oIq;
-	Mon, 20 Oct 2025 11:42:14 +0300
-Date: Mon, 20 Oct 2025 11:42:13 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Florian Eckert <fe@dev.tdt.de>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
-	kumaravel.thiagarajan@microchip.com, pnewman@connecttech.com,
-	angelogioacchino.delregno@collabora.com, peterz@infradead.org,
-	yujiaoliang@vivo.com, arnd@kernel.org, cang1@live.co.uk,
-	macro@orcam.me.uk, schnelle@linux.ibm.com,
-	Eckert.Florian@googlemail.com, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH v2] serial: 8250_pcilib: Replace deprecated PCI functions
-Message-ID: <aPX15a2Zv9b_wM3u@smile.fi.intel.com>
-References: <aPPreT00iiTDzJwG@ashevche-desk.local>
- <84ad1b3070a8374ec20f06588fab9f86@dev.tdt.de>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="D3Q8Fmiw"
+Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-b6bbfc57b75so75292666b.0
+        for <linux-serial@vger.kernel.org>; Mon, 20 Oct 2025 04:50:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1760961026; x=1761565826; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=3Ib3zrr/tPmm6C+NhCIYGI9GLz3/YlX3IpNvy/WsbBw=;
+        b=D3Q8FmiwZInTYZCNZ1U12ur50ed8ev7+xzgz0oSlfPRYDYt+iqQpVAcelpSnWzKXhY
+         mc84dPtZSk5q4YPHvst/8GYW1R1Fqz++FYc81xOs3+4o6XZRgdrHKqBc38hcperdMOhM
+         BNi2OmHzGRQ/CvywgZWFgnsmWPJ1zco+44sS4w6YYkVxw6P6XJlwSFAIcHj6jZsz3ku4
+         QxWRbDL6dYs65cfl2du8Brrd8nBagE8+IonYB8qpYmAh2ZcMjZutr+3CumMTv+eNKs+a
+         +zzm7BaRVeaf+rC/WSedHAO2QskhIHw1rKQm4ET4jXBhOUNrGEe+AA/u97YqAoE69vqh
+         XCSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1760961026; x=1761565826;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=3Ib3zrr/tPmm6C+NhCIYGI9GLz3/YlX3IpNvy/WsbBw=;
+        b=XkZcO+BZz4ArZjdvuApIwCWzVcRiAWuccZ0cYQTJFmDA3p1/7f8z6gzZSvdKI1DVKb
+         A5C+GdWdlObjkBkqazb0/cCTSACcvtnUaec5aclpj09/HCK5irD9SJmViLquOTKuJzbi
+         xUVsCP12nMBKVUJyZFGcPVwJ9RIXK/2xl3YfIzgJPMr5l4r94WCsOKSvL9YITC5uGi5D
+         CrzYCFwqvs5PSteTQVG9nEvQUZM5cFx4WfyRUGLrf147H0xARqSuKXZdgTWpOfok6QHT
+         mlcSrH4vMP0RO3r8s5zNlYd7l3lhyuVdYr1FUm5PSfwu+F31Lu6kzLKYEgjnE1i+0NK5
+         75PQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVbNaBNVDGS0TyEKXOWarmqvPoWl8Ys+hSAQstNVznO6vwaMX2ki7tF4TBPRUukAZYflfAMUSuuiJwGXak=@vger.kernel.org
+X-Gm-Message-State: AOJu0YztKlkqpGJP9oqFb1pq2MrvZiV9ydoas+p9ylUD3pmjp6djaHZy
+	0zKRLpcl5KgvnlkZVUdJuRqu5pICYj1Spetv1lWU5bdLCoYjJVTUKJ21vOKCHlzdZhpfG0iEznZ
+	9eM5n8Ln5o3W0tVVbEGzml7Wt4hS7oQ==
+X-Gm-Gg: ASbGncuAwV3ypdhjcTrqpDyYWgtkuGrwJ3In+1y+CqupVSxKWdq5UfpoDgQe0NIfjV4
+	Z57Gfoh4oD1uWwT+8VLOMRFzgnxJNpqZYwRLsaZ8xQ4toMieMomic3bhRf6kpOhjxRCPmwoQVD1
+	IDlBBF1EblmMfDlE4nA0aqBWzr2Gsl5Qp9vhB1OrqhbPtMAZwuURmsBMDKvXyNGzWnJ33MgoHm1
+	fZ5dVvqdEGSZJBHMYjdSUXaAQf+kvQ/U65zyfzogXWrxyOdXT2NFV94AQ6Jj/p6WG+/
+X-Google-Smtp-Source: AGHT+IHpqrZ2dPIwhNgY2sr456DoKSrudoQCSOVCHp2/+Yamq4lGHHP853dkoUAlwu2plIGKzBU9GigR01lDOFEXyUk=
+X-Received: by 2002:a17:907:c00d:b0:b2e:7614:d92d with SMTP id
+ a640c23a62f3a-b604e6d11acmr1848895866b.0.1760961025902; Mon, 20 Oct 2025
+ 04:50:25 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <84ad1b3070a8374ec20f06588fab9f86@dev.tdt.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20251016103609.33897-2-bagasdotme@gmail.com> <aa388d29-b83b-454e-a686-638c80c6a7bf@infradead.org>
+In-Reply-To: <aa388d29-b83b-454e-a686-638c80c6a7bf@infradead.org>
+From: =?UTF-8?B?VG9tw6HFoSBNdWRydcWIa2E=?= <tomas.mudrunka@gmail.com>
+Date: Mon, 20 Oct 2025 13:50:14 +0200
+X-Gm-Features: AS18NWA3E0Ss9-ztf94LkzgiKtO5TbAFbLXh7zu0w6jJDo6kFqwu4lbvMiqUEHM
+Message-ID: <CAH2-hc+XQR7v9Z28yH_CTWZ4ieaF5eQFKBVut1idULP=4w03fQ@mail.gmail.com>
+Subject: Re: [PATCH v2] Documentation: sysrq: Rewrite /proc/sysrq-trigger usage
+To: Randy Dunlap <rdunlap@infradead.org>
+Cc: Bagas Sanjaya <bagasdotme@gmail.com>, 
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, 
+	Linux Documentation <linux-doc@vger.kernel.org>, Linux Serial <linux-serial@vger.kernel.org>, 
+	Jonathan Corbet <corbet@lwn.net>, Cengiz Can <cengiz@kernel.wtf>, Jiri Slaby <jirislaby@kernel.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, =?UTF-8?Q?Anselm_Sch=C3=BCler?= <mail@anselmschueler.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Mon, Oct 20, 2025 at 08:47:16AM +0200, Florian Eckert wrote:
-> On 2025-10-18 21:33, Andy Shevchenko wrote:
-> > On Tue, Sep 30, 2025 at 09:27:43AM +0200, Florian Eckert wrote:
+> I am still OK with removing the 2 "However" lines. We don't typically
+> document or provide warnings for how the code might be changed in the
+> future. If someone modifies this code and the documentation needs to be
+> updated, it should be updated at that time.
+>
+> --
+> ~Randy
 
-...
-
-> > > +	if (pci_resource_flags(priv->dev, bar) & IORESOURCE_MEM) {
-> > 
-> > Dunno if this is included already in Linux Next, but here is room for
-> > improvement.
-> 
-> I followed the code in the 'serial8250_pci_setup_port()' [1] function.
-> The same pattern is used there [2].
-
-I see. So if we want to amend that, it should be done separately.
-
-> > The problem with the above code is it (wrongly?) checks for bit and not
-> > for the resource type. OTOH I don't remember if 64-bit version requires
-> > the IORESOURCE_MEM to be set along with that.
-> 
-> Do you mean the function 'platform_get_resource()' [3]? This is a platform
-> device function?
-
-I mean that the IORESOURCE_MEM and IORESOURCE_MEM_64 are separate bit flags in
-struct resource::flags. Checking on one might not imply the other be set,
-however brief look at the sources shows that _MEM_64 is supposed to be set on
-top of _MEM.
-
-> [1] https://elixir.bootlin.com/linux/v6.18-rc1/source/drivers/tty/serial/8250/8250_pcilib.c#L24
-> [2] https://elixir.bootlin.com/linux/v6.18-rc1/source/drivers/tty/serial/8250/8250_pcilib.c#L30
-> [3]
-> https://elixir.bootlin.com/linux/v6.17.3/source/drivers/base/platform.c#L55
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Problem here is, that you cannot really modify the code without warning
+users in advance. This is the warning.
