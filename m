@@ -1,120 +1,82 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34BE91A76DE;
-	Mon, 20 Oct 2025 17:32:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 249CEA926;
+	Mon, 20 Oct 2025 19:12:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760981547; cv=none; b=AXY9fCs6EiU5dLll9VzFHVP3+JdfaikLA/fRwtt3eCMFBgMbHTQjkFqcya3nNcw5HnO6Gg+qaKvj7tLaFTP/U4h8s+We6E8XmoKhZhP5ZRgm4kZ0QxoKxGFPaIRIZYSK3c544oSLuMPbFH6I8iPcyBnyjRB62Qvbpy9Mg6l9szU=
+	t=1760987530; cv=none; b=fMNTz/31a+xfIpjWZbZQdVEQMnvMkVx21ZCR/TVfMIcV+wwbmxH7WsT/bS6QH28Wy5+ORSyX/m9bBcJSaL825Ss08MfSywnWJt9p58OS5W/c6xaqqXu1ygxk5Rzg7O2GB3i4oAhl9BmFAeQtUA5xVwbjXqXGQ22c5eCZSzM57mE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760981547; c=relaxed/simple;
-	bh=yD9NeC1DIeHj+exe4HoGBSo1jJ9DLS0E5wIp8nXAE94=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=F7PyxmXjOEkT/Ps4nOgzfTWXuLC9TbJwqnJSLjXDvk5TUo1UNHvg2DRmxBwRIbLS84NiGK8k2ijnlzN6FJPBegtLIvxXKZHccX8Xmdtc0m6EJEvnV91+oAO0ULuyt2iHpkiDKaUikRlIVbf60km19fnxG7Pov1CqgcD7P/EaEyA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SMDDws0d; arc=none smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1760987530; c=relaxed/simple;
+	bh=nGxwJURU/oilInwTQUZZ6gbdSgb0KGfYK9QccT8jcwQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=T3wlGzevZJcR3tHuw/cPDNkUwdhIv9H9X1/gZAo5Z4jpUWsRAnV3ZUn+m3hLLG/8uR3IRiqp7/XtMjzVFTj3uj1f7J2SHXW16z5FigvrozsV53Ic4A0hVMjO9uy6HbPFQFRcsoAxGSGeb+LMtn1YpFI3Dw6Zj2NbOCDA3aYczcE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=AhOHkMnn; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SMDDws0d"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1760981545; x=1792517545;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=yD9NeC1DIeHj+exe4HoGBSo1jJ9DLS0E5wIp8nXAE94=;
-  b=SMDDws0dPoUYup8m2EP0IQ+XodEr1MrCsCN4i93E+RrcRE1cgkVGBorb
-   S94VwWwYsLa7FGCvBi0FpUW+MuQ3tLQL8Ef1TNsBPv8K4tGN9XDZNRJj+
-   tS64ec5NMYPoigjREj/rmguSHc910nXnUThEd6y9rmpyf6cpvQZj2HWU1
-   HOML9K83gv6AVmFhbsxPecGAPtv25o01fO78qGAM67UZoWnMXrJl5wlnF
-   sUL8J5LZPbNIzRWhSLwzC+ZhDC93dLsvPq9NqGwZE66HE8msnB+smJ8nw
-   BJXfbjo8vnq+RZ9O3xaAnlW/fA0GCyPl/BqO3NhwIiLOm/UCifBKz/1rH
-   w==;
-X-CSE-ConnectionGUID: p5MPvmQOSUSzYVNcFBmNvg==
-X-CSE-MsgGUID: HssXx9BFTACPLS8t7L+Dng==
-X-IronPort-AV: E=McAfee;i="6800,10657,11586"; a="85723342"
-X-IronPort-AV: E=Sophos;i="6.19,243,1754982000"; 
-   d="scan'208";a="85723342"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2025 10:32:24 -0700
-X-CSE-ConnectionGUID: ny+37O3HQHmtPj7Zpf12aQ==
-X-CSE-MsgGUID: GMVSiQ5XR8KgKGPFlq1v6w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.19,243,1754982000"; 
-   d="scan'208";a="214348038"
-Received: from smoticic-mobl1.ger.corp.intel.com (HELO ashevche-desk.local) ([10.245.245.62])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2025 10:32:21 -0700
-Received: from andy by ashevche-desk.local with local (Exim 4.98.2)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1vAtk1-00000001LYb-1aez;
-	Mon, 20 Oct 2025 20:32:17 +0300
-Date: Mon, 20 Oct 2025 20:32:17 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Florian Eckert <fe@dev.tdt.de>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
-	kumaravel.thiagarajan@microchip.com, pnewman@connecttech.com,
-	angelogioacchino.delregno@collabora.com, peterz@infradead.org,
-	yujiaoliang@vivo.com, arnd@kernel.org, cang1@live.co.uk,
-	macro@orcam.me.uk, schnelle@linux.ibm.com,
-	Eckert.Florian@googlemail.com, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH v2] serial: 8250_pcilib: Replace deprecated PCI functions
-Message-ID: <aPZyIdnDVNezI185@smile.fi.intel.com>
-References: <aPPreT00iiTDzJwG@ashevche-desk.local>
- <84ad1b3070a8374ec20f06588fab9f86@dev.tdt.de>
- <aPX15a2Zv9b_wM3u@smile.fi.intel.com>
- <e018879d65948462984da19e53cb610a@dev.tdt.de>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="AhOHkMnn"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+	bh=q+A06mrhqjgyB7WoXYxFIbVy9xqSyLZ7F6r9ARP4k/M=; b=AhOHkMnnfNzl8Lw+FQh1X92eIy
+	EzjfYAk2NjifHZJlB/LMYlWVKgfA926vtS7TbiOk0fw09mZGiwJRw2I3+UQ28Li/eP5OKHw6TXT01
+	ujcTWyKeMJBxU9uCx0q+M/hHxuTh7PR/qFi3/E9w5E/W/uOKXL9fGJ3RByO0amiVvJDOMIN5uaUBH
+	jc+fQ/RZHdhekYGHE8EG5SRnyWqwvV3UvaBJ0Fsbw1BfPDM/s8lFdjm0UdcGXoge3R9FmAH+q1nPK
+	uaWn3nj86pSdRtQMW31RN0Dlyh6aE0HDLHNspaz4fWUofJeasdFL+ZO23zQNDkEObH0vXCCxJQdKL
+	2O58DwxQ==;
+Received: from [50.53.43.113] (helo=[192.168.254.34])
+	by bombadil.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1vAvId-0000000EjgW-1UUc;
+	Mon, 20 Oct 2025 19:12:07 +0000
+Message-ID: <6b8e7935-6b80-4f00-9a44-7003071d1a21@infradead.org>
+Date: Mon, 20 Oct 2025 12:12:06 -0700
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e018879d65948462984da19e53cb610a@dev.tdt.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] Documentation: sysrq: Rewrite /proc/sysrq-trigger
+ usage
+To: =?UTF-8?B?VG9tw6HFoSBNdWRydcWIa2E=?= <tomas.mudrunka@gmail.com>
+Cc: Bagas Sanjaya <bagasdotme@gmail.com>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Linux Documentation <linux-doc@vger.kernel.org>,
+ Linux Serial <linux-serial@vger.kernel.org>, Jonathan Corbet
+ <corbet@lwn.net>, Cengiz Can <cengiz@kernel.wtf>,
+ Jiri Slaby <jirislaby@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ =?UTF-8?Q?Anselm_Sch=C3=BCler?= <mail@anselmschueler.com>
+References: <20251016103609.33897-2-bagasdotme@gmail.com>
+ <aa388d29-b83b-454e-a686-638c80c6a7bf@infradead.org>
+ <CAH2-hc+XQR7v9Z28yH_CTWZ4ieaF5eQFKBVut1idULP=4w03fQ@mail.gmail.com>
+Content-Language: en-US
+From: Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <CAH2-hc+XQR7v9Z28yH_CTWZ4ieaF5eQFKBVut1idULP=4w03fQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Mon, Oct 20, 2025 at 06:18:42PM +0200, Florian Eckert wrote:
-> On 2025-10-20 10:42, Andy Shevchenko wrote:
-> > On Mon, Oct 20, 2025 at 08:47:16AM +0200, Florian Eckert wrote:
-> > > On 2025-10-18 21:33, Andy Shevchenko wrote:
-> > > > On Tue, Sep 30, 2025 at 09:27:43AM +0200, Florian Eckert wrote:
 
-...
 
-> > > > > +	if (pci_resource_flags(priv->dev, bar) & IORESOURCE_MEM) {
-> > > >
-> > > > Dunno if this is included already in Linux Next, but here is room for
-> > > > improvement.
-> > > 
-> > > I followed the code in the 'serial8250_pci_setup_port()' [1] function.
-> > > The same pattern is used there [2].
-> > 
-> > I see. So if we want to amend that, it should be done separately.
+On 10/20/25 4:50 AM, Tomáš Mudruňka wrote:
+>> I am still OK with removing the 2 "However" lines. We don't typically
+>> document or provide warnings for how the code might be changed in the
+>> future. If someone modifies this code and the documentation needs to be
+>> updated, it should be updated at that time.
+>>
+>> --
+>> ~Randy
 > 
-> If that's the case, then I'm done with this patchset, right?
-> I do not have to send a v3?
+> Problem here is, that you cannot really modify the code without warning
+> users in advance. This is the warning.
 
-Yeah, that proposal is not directly related to this change anyway.
-
-> > > > The problem with the above code is it (wrongly?) checks for bit and not
-> > > > for the resource type. OTOH I don't remember if 64-bit version requires
-> > > > the IORESOURCE_MEM to be set along with that.
-> > > 
-> > > Do you mean the function 'platform_get_resource()' [3]? This is a
-> > > platform
-> > > device function?
-> > 
-> > I mean that the IORESOURCE_MEM and IORESOURCE_MEM_64 are separate bit flags
-> > in struct resource::flags. Checking on one might not imply the other be
-> > set, however brief look at the sources shows that _MEM_64 is supposed to be
-> > set on top of _MEM.
-> 
-> Okay, I understand.
+All code in the kernel is subject to change in the future (anything
+that breaks userspace less so than other code).
+I don't see thousands of warnings about such future changes.
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+~Randy
 
