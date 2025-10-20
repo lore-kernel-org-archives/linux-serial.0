@@ -1,45 +1,49 @@
 Received: from mx02lb.world4you.com (mx02lb.world4you.com [81.19.149.112])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 319D42C08CC
-	for <linux-serial@vger.kernel.org>; Mon, 20 Oct 2025 19:18:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C1192D9482
+	for <linux-serial@vger.kernel.org>; Mon, 20 Oct 2025 20:12:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=81.19.149.112
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760987903; cv=none; b=YkuENZdhf+P5nGvxDtaxiqPLZRIWe8L6vcMtKVNTNqC+6GeliFDaLqBmbDcrs6VjqXZicOpQ4hAhOYi8kibj3iUcVaCu2z7TfVuNHxqX+Y4mUluDjnvaO1h+S3u3ndGGPGQ5Z5fCxOjTfptxCjgqb6jhVEf1qrJvV3he4Jms/rg=
+	t=1760991135; cv=none; b=SpuNvy/jCLAW5Lx98QxPg4DxnK0u7qNrHgNkWddIrYmCq0KFRKqp4eSqC+crBzzQVG7O8UqoswYInpoDmy56Qy+hTsU14P92yT9MUJ83ZvP9Quq9WzSaOYJ6l9v6aEOQGdNM7dHu9TM/R6dTeMjHVhkhgAGpSNKD2Wqzfz0RsJI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760987903; c=relaxed/simple;
-	bh=bULOnpnU9odajzT/pTskQvD7WnIz/T8c/HBAUhEq77k=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=qdInO6hz1o2+MUNW+Q5/gOgteDhUhOi6mWNNz+k4l3rf7ZkdQfKBlBFwTuD0Z40VjBQ9R84xp8oBNE1ax2u7Ib+7VJYHPaBSvtumNkl4LxRYIqXNGtTlGSvXGb07CasJesL4/+OHD7/TgamPlXAiEl9RDTI9qj0ojeveqv9IUbE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=engleder-embedded.com; spf=pass smtp.mailfrom=engleder-embedded.com; dkim=pass (1024-bit key) header.d=engleder-embedded.com header.i=@engleder-embedded.com header.b=uXynDYIu; arc=none smtp.client-ip=81.19.149.112
+	s=arc-20240116; t=1760991135; c=relaxed/simple;
+	bh=HbsPIzjkiTIf8/piF5FfzuVL5dqe3mkR9Bw5DhgVHFA=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=Vx27mcRILswy2go3EgR73BxBKSq2pdaSZvgXe9WcqAoun5kLbLHg2gWWsTysxaXqF1wp43PK/fc6DMdNxjj7sBCw78hypZ+VXD96xqlrWMsPO/Vjtsfuz2ykqv2OCQyOur2HHAGLp+JE9baEUYzUaoCyreolQIusCA8VHafs/Vo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=engleder-embedded.com; spf=pass smtp.mailfrom=engleder-embedded.com; dkim=pass (1024-bit key) header.d=engleder-embedded.com header.i=@engleder-embedded.com header.b=HLOdqmeH; arc=none smtp.client-ip=81.19.149.112
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=engleder-embedded.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=engleder-embedded.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=engleder-embedded.com header.i=@engleder-embedded.com header.b="uXynDYIu"
+	dkim=pass (1024-bit key) header.d=engleder-embedded.com header.i=@engleder-embedded.com header.b="HLOdqmeH"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:MIME-Version:
-	Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-	List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=1qBeGVtBWioXE0VeFA5W70CeGXqnameAAlmPKJ0VKJg=; b=uXynDYIuX8xrOahQZOXDcU8P2V
-	B77KTlFmiWsUt3KzfFCMxqnL/QpMBak/ElvkKmtkp7GeuX0SgNfypl7ZIFpmfyuRm2ewAEY6VuVVt
-	fsGgukAJUZwtzB9bSxwm+RQ5/VNUZFgvgMIM5HrvOlcqPiaU+DUza4XW8kqlFl+1aVig=;
-Received: from [178.191.104.35] (helo=hornet.engleder.at)
+	References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
+	Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=/yv+3NzNHvHLB+0mhrexYu7JAXxkGMkteRLzDBkkLqo=; b=HLOdqmeHQZ21/v+CFGg9k0EEkT
+	Ms0Lvw5RK/vZmFcod6IcsPj5A6B+ZHcrVif0EV3A0G7K49UtrC7D9DzA+UNpMo4FNMEqw32N5mKeJ
+	FmFAfIFTZFppkIhlp+pyUWWEk5Vb3xvO+zbFLIXX+D5vby63/EJi0EHXVQDbqtavTODY=;
+Received: from 178-191-104-35.adsl.highway.telekom.at ([178.191.104.35] helo=hornet.engleder.at)
 	by mx02lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.97.1)
 	(envelope-from <gerhard@engleder-embedded.com>)
-	id 1vAvDj-000000004Ir-2R9d;
-	Mon, 20 Oct 2025 21:07:03 +0200
+	id 1vAvDl-000000004Ir-35Vv;
+	Mon, 20 Oct 2025 21:07:05 +0200
 From: Gerhard Engleder <gerhard@engleder-embedded.com>
 To: linux-serial@vger.kernel.org
 Cc: gregkh@linuxfoundation.org,
 	jirislaby@kernel.org,
 	lukas@wunner.de,
-	Gerhard Engleder <gerhard@engleder-embedded.com>
-Subject: [PATCH v3 0/2] serial: add KEBA UART driver
-Date: Mon, 20 Oct 2025 21:06:56 +0200
-Message-Id: <20251020190658.30655-1-gerhard@engleder-embedded.com>
+	Gerhard Engleder <gerhard@engleder-embedded.com>,
+	Gerhard Engleder <eg@keba.com>
+Subject: [PATCH v3 1/2] serial: Keep rs485 settings for devices without firmware node
+Date: Mon, 20 Oct 2025 21:06:57 +0200
+Message-Id: <20251020190658.30655-2-gerhard@engleder-embedded.com>
 X-Mailer: git-send-email 2.39.5
+In-Reply-To: <20251020190658.30655-1-gerhard@engleder-embedded.com>
+References: <20251020190658.30655-1-gerhard@engleder-embedded.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -50,38 +54,52 @@ Content-Transfer-Encoding: 8bit
 X-AV-Do-Run: Yes
 X-ACL-Warn: X-W4Y-Internal
 
-First the serial subsystem is prepared to keep rs485 settings from the
-driver if no firmware node exists. This enables drivers to configure a
-default rs485 mode, which is set by the serial subsystem.
+From: Gerhard Engleder <eg@keba.com>
 
-Second the driver for the KEBA UART is added. This driver supports
-multiple rs485 modes and selects RS485 as default mode. This UART is
-found in KEBA PLC devices. The auxiliary devices for this driver are
-created by the cp500 driver.
+Commit fe7f0fa43cef ("serial: 8250: Support rs485 devicetree properties")
+retrieves rs485 properties for 8250 drivers. These properties are read
+from the firmware node of the device within uart_get_rs485_mode(). If the
+firmware node does not exist, then the rs485 flags are still reset. Thus,
+8250 driver cannot set rs485 flags to enable a defined rs485 mode during
+driver loading. This is no problem so far, as no 8250 driver sets the
+rs485 flags.
 
-v3:
-- add info to commit why device tree / ACPI is not possible (Lukas Wunner)
-- separate if and comment for change in uart_get_rs485_mode() (Lukas Wunner)
+The default rs485 mode can also be set by firmware nodes. But for some
+devices a firmware node does not exist. E.g., for a PCIe based serial
+interface on x86 no device tree is available and the ACPI information of
+the BIOS often cannot by modified. In this case it shall be possible,
+that a driver works out of the box by setting a reasonable default rs485
+mode.
 
-v2:
-- use BIT() for flag definition (Jiri Slaby)
-- use enum for UART mode definition (Jiri Slaby)
-- use BIT() for capability flag definition (Jiri Slaby)
-- use GENMASK() for capability mask (Jiri Slaby)
-- use unsigned int for serial line number (Jiri Slaby)
-- use unsigned int for flags (Jiri Slaby)
+If no firmware node exist, then it should be possible for the driver to
+set a reasonable default rs485 mode. Therefore, reset rs485 flags only
+if a firmware node exists.
 
-Gerhard Engleder (2):
-  serial: Keep rs485 settings for devices without firmware node
-  serial: 8250: add driver for KEBA UART
+Signed-off-by: Gerhard Engleder <eg@keba.com>
+Cc: Lukas Wunner <lukas@wunner.de>
+---
+ drivers/tty/serial/serial_core.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
- drivers/tty/serial/8250/8250_keba.c | 281 ++++++++++++++++++++++++++++
- drivers/tty/serial/8250/Kconfig     |  13 ++
- drivers/tty/serial/8250/Makefile    |   1 +
- drivers/tty/serial/serial_core.c    |   8 +
- 4 files changed, 303 insertions(+)
- create mode 100644 drivers/tty/serial/8250/8250_keba.c
-
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 4757293ece8c..9c476d9667a3 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -3536,6 +3536,14 @@ int uart_get_rs485_mode(struct uart_port *port)
+ 	if (!(port->rs485_supported.flags & SER_RS485_ENABLED))
+ 		return 0;
+ 
++	/*
++	 * Retrieve properties only if a firmware node exist. If no firmware
++	 * node exist, then don't touch rs485 config and keep initial rs485
++	 * properties set by driver.
++	 */
++	if (!dev_fwnode(dev))
++		return 0;
++
+ 	ret = device_property_read_u32_array(dev, "rs485-rts-delay",
+ 					     rs485_delay, 2);
+ 	if (!ret) {
 -- 
 2.39.5
 
