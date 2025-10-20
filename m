@@ -1,86 +1,117 @@
-Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C81EF248891
-	for <linux-serial@vger.kernel.org>; Mon, 20 Oct 2025 11:50:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C53C94CB5B;
+	Mon, 20 Oct 2025 14:31:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760961029; cv=none; b=rNlimWiIwjoHSB820TkhTNRPe+BUDT/N+6vS0mIDA1au0eDrU4NpvnqAwlSZh7bJbBtWWP8V/NuBnoqWDGbGDfRanR5gzdwecm5lLj7JcxmB4I+1dmO3h5LEjfgMuaB91CiE2Duiz4R7INaGNru0zu28sraCSruquBqB8Ol3jpw=
+	t=1760970663; cv=none; b=dyGBsDKcdtgod5nhBAr04Ar0WpYmJkU9V0mBafr9LR+IZJnWXa3ZzKeyI8Fmk2N04BERjfEAVHDAsqATlLprztC8No0j7NoGhU5vE5AKhJnPKGxYwtrNaUn5M0GYg0+uGPBPSzZLOH5x0WWKt47gLQQdXJnyxT9c7KyaUcpUC/0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760961029; c=relaxed/simple;
-	bh=3Ib3zrr/tPmm6C+NhCIYGI9GLz3/YlX3IpNvy/WsbBw=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=EvR0DkYNOLwrXQZIKRemk+sBElGI1cVjPw4Z4UkJaGx3h/Iyxr4Ciknm8bSiq2jy0Dylu8Se7xVD/+fCPnV4Wpubr8Wm6ITULY573xF2AVaCDWJ5vaWHO0RSYvK9GUsECQmYQdRilHgKNkHylUpyQa3AqCHluJiQCTxWLVr5awI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=D3Q8Fmiw; arc=none smtp.client-ip=209.85.218.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1760970663; c=relaxed/simple;
+	bh=Zgh/z5OAav7Q4sWyHwtd8KQU+ZJ/UY2frwfkFs/0zg0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=TjpAkenHPTMGAhOVu3l2U3O++0ZW2Kz3Q5pq7OpLtoupdoiK1FD5VWQfKwf/WgpRGxMWeNqpNxq4t5ntKaZanQcsgq2M85NopYAGqpOOEZpg2JF1NouQOza/BazGgulynAdTERFzF56tkDygab0JRv3+JzZH9joPxzBuTHENuGs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=k7+ZDnsB; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="D3Q8Fmiw"
-Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-b6bbfc57b75so75292666b.0
-        for <linux-serial@vger.kernel.org>; Mon, 20 Oct 2025 04:50:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1760961026; x=1761565826; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=3Ib3zrr/tPmm6C+NhCIYGI9GLz3/YlX3IpNvy/WsbBw=;
-        b=D3Q8FmiwZInTYZCNZ1U12ur50ed8ev7+xzgz0oSlfPRYDYt+iqQpVAcelpSnWzKXhY
-         mc84dPtZSk5q4YPHvst/8GYW1R1Fqz++FYc81xOs3+4o6XZRgdrHKqBc38hcperdMOhM
-         BNi2OmHzGRQ/CvywgZWFgnsmWPJ1zco+44sS4w6YYkVxw6P6XJlwSFAIcHj6jZsz3ku4
-         QxWRbDL6dYs65cfl2du8Brrd8nBagE8+IonYB8qpYmAh2ZcMjZutr+3CumMTv+eNKs+a
-         +zzm7BaRVeaf+rC/WSedHAO2QskhIHw1rKQm4ET4jXBhOUNrGEe+AA/u97YqAoE69vqh
-         XCSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760961026; x=1761565826;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=3Ib3zrr/tPmm6C+NhCIYGI9GLz3/YlX3IpNvy/WsbBw=;
-        b=XkZcO+BZz4ArZjdvuApIwCWzVcRiAWuccZ0cYQTJFmDA3p1/7f8z6gzZSvdKI1DVKb
-         A5C+GdWdlObjkBkqazb0/cCTSACcvtnUaec5aclpj09/HCK5irD9SJmViLquOTKuJzbi
-         xUVsCP12nMBKVUJyZFGcPVwJ9RIXK/2xl3YfIzgJPMr5l4r94WCsOKSvL9YITC5uGi5D
-         CrzYCFwqvs5PSteTQVG9nEvQUZM5cFx4WfyRUGLrf147H0xARqSuKXZdgTWpOfok6QHT
-         mlcSrH4vMP0RO3r8s5zNlYd7l3lhyuVdYr1FUm5PSfwu+F31Lu6kzLKYEgjnE1i+0NK5
-         75PQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVbNaBNVDGS0TyEKXOWarmqvPoWl8Ys+hSAQstNVznO6vwaMX2ki7tF4TBPRUukAZYflfAMUSuuiJwGXak=@vger.kernel.org
-X-Gm-Message-State: AOJu0YztKlkqpGJP9oqFb1pq2MrvZiV9ydoas+p9ylUD3pmjp6djaHZy
-	0zKRLpcl5KgvnlkZVUdJuRqu5pICYj1Spetv1lWU5bdLCoYjJVTUKJ21vOKCHlzdZhpfG0iEznZ
-	9eM5n8Ln5o3W0tVVbEGzml7Wt4hS7oQ==
-X-Gm-Gg: ASbGncuAwV3ypdhjcTrqpDyYWgtkuGrwJ3In+1y+CqupVSxKWdq5UfpoDgQe0NIfjV4
-	Z57Gfoh4oD1uWwT+8VLOMRFzgnxJNpqZYwRLsaZ8xQ4toMieMomic3bhRf6kpOhjxRCPmwoQVD1
-	IDlBBF1EblmMfDlE4nA0aqBWzr2Gsl5Qp9vhB1OrqhbPtMAZwuURmsBMDKvXyNGzWnJ33MgoHm1
-	fZ5dVvqdEGSZJBHMYjdSUXaAQf+kvQ/U65zyfzogXWrxyOdXT2NFV94AQ6Jj/p6WG+/
-X-Google-Smtp-Source: AGHT+IHpqrZ2dPIwhNgY2sr456DoKSrudoQCSOVCHp2/+Yamq4lGHHP853dkoUAlwu2plIGKzBU9GigR01lDOFEXyUk=
-X-Received: by 2002:a17:907:c00d:b0:b2e:7614:d92d with SMTP id
- a640c23a62f3a-b604e6d11acmr1848895866b.0.1760961025902; Mon, 20 Oct 2025
- 04:50:25 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="k7+ZDnsB"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAA76C116B1;
+	Mon, 20 Oct 2025 14:30:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1760970663;
+	bh=Zgh/z5OAav7Q4sWyHwtd8KQU+ZJ/UY2frwfkFs/0zg0=;
+	h=From:To:Cc:Subject:Date:From;
+	b=k7+ZDnsBo6sHFfM7V3XjA540jxwzbjD7wpXcvDjXgBZHceYe7SmphByUgNxyioXn6
+	 /B1Kqi83dvd9U37KNqP4f0HRQne1lyscHCkndUZFgy1BnAVUSjezJEsGhrdzko8TRv
+	 h+ObONN54XTBZsJrK7hx+95DhdoOV9eIKkGfbC1bW6wga4Ej96JLoSOi8I+XWbOpGV
+	 QCxeSUxmBXxZxZNduGonaSKD1vmACPpz+T2+/Nx+7okTyUcWO9A3AMvy33UsmYqTN1
+	 d8jAgOo9CjZrSA5ZzeH8d/Tf0j0E6kdVKlwBXMBkBsxC9EBgwnxOu4uafllhn/ILPI
+	 0D1gykG+4O5yg==
+From: Mike Rapoport <rppt@kernel.org>
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Brendan Jackman <jackmanb@google.com>,
+	David Hildenbrand <david@redhat.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Johannes Weiner <hannes@cmpxchg.org>,
+	"Liam R. Howlett" <Liam.Howlett@oracle.com>,
+	Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
+	Michal Hocko <mhocko@suse.com>,
+	Mike Rapoport <rppt@kernel.org>,
+	Suren Baghdasaryan <surenb@google.com>,
+	Vlastimil Babka <vbabka@suse.cz>,
+	Zi Yan <ziy@nvidia.com>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-mm@kvack.org
+Subject: [PATCH] mm, vc_screen: move __free() handler that frees a page to a common header
+Date: Mon, 20 Oct 2025 17:30:55 +0300
+Message-ID: <20251020143055.407696-1-rppt@kernel.org>
+X-Mailer: git-send-email 2.50.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20251016103609.33897-2-bagasdotme@gmail.com> <aa388d29-b83b-454e-a686-638c80c6a7bf@infradead.org>
-In-Reply-To: <aa388d29-b83b-454e-a686-638c80c6a7bf@infradead.org>
-From: =?UTF-8?B?VG9tw6HFoSBNdWRydcWIa2E=?= <tomas.mudrunka@gmail.com>
-Date: Mon, 20 Oct 2025 13:50:14 +0200
-X-Gm-Features: AS18NWA3E0Ss9-ztf94LkzgiKtO5TbAFbLXh7zu0w6jJDo6kFqwu4lbvMiqUEHM
-Message-ID: <CAH2-hc+XQR7v9Z28yH_CTWZ4ieaF5eQFKBVut1idULP=4w03fQ@mail.gmail.com>
-Subject: Re: [PATCH v2] Documentation: sysrq: Rewrite /proc/sysrq-trigger usage
-To: Randy Dunlap <rdunlap@infradead.org>
-Cc: Bagas Sanjaya <bagasdotme@gmail.com>, 
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, 
-	Linux Documentation <linux-doc@vger.kernel.org>, Linux Serial <linux-serial@vger.kernel.org>, 
-	Jonathan Corbet <corbet@lwn.net>, Cengiz Can <cengiz@kernel.wtf>, Jiri Slaby <jirislaby@kernel.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, =?UTF-8?Q?Anselm_Sch=C3=BCler?= <mail@anselmschueler.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-> I am still OK with removing the 2 "However" lines. We don't typically
-> document or provide warnings for how the code might be changed in the
-> future. If someone modifies this code and the documentation needs to be
-> updated, it should be updated at that time.
->
-> --
-> ~Randy
+From: "Mike Rapoport (Microsoft)" <rppt@kernel.org>
 
-Problem here is, that you cannot really modify the code without warning
-users in advance. This is the warning.
+vc_screen defines __free() handler that frees a page using free_page().
+Move that definition to include/linux/gfp.h next to free_page() and
+rename it from free_page_ptr to free_page.
+
+Signed-off-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
+---
+ drivers/tty/vt/vc_screen.c | 6 ++----
+ include/linux/gfp.h        | 2 ++
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/vt/vc_screen.c b/drivers/tty/vt/vc_screen.c
+index c814644ef4ee..d2029f029de6 100644
+--- a/drivers/tty/vt/vc_screen.c
++++ b/drivers/tty/vt/vc_screen.c
+@@ -53,8 +53,6 @@
+ #define HEADER_SIZE	4u
+ #define CON_BUF_SIZE (IS_ENABLED(CONFIG_BASE_SMALL) ? 256 : PAGE_SIZE)
+ 
+-DEFINE_FREE(free_page_ptr, void *, if (_T) free_page((unsigned long)_T));
+-
+ /*
+  * Our minor space:
+  *
+@@ -371,7 +369,7 @@ vcs_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
+ 	loff_t pos;
+ 	bool viewed, attr, uni_mode;
+ 
+-	char *con_buf __free(free_page_ptr) = (char *)__get_free_page(GFP_KERNEL);
++	char *con_buf __free(free_page) = (char *)__get_free_page(GFP_KERNEL);
+ 	if (!con_buf)
+ 		return -ENOMEM;
+ 
+@@ -596,7 +594,7 @@ vcs_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
+ 	if (use_unicode(inode))
+ 		return -EOPNOTSUPP;
+ 
+-	char *con_buf __free(free_page_ptr) = (char *)__get_free_page(GFP_KERNEL);
++	char *con_buf __free(free_page) = (char *)__get_free_page(GFP_KERNEL);
+ 	if (!con_buf)
+ 		return -ENOMEM;
+ 
+diff --git a/include/linux/gfp.h b/include/linux/gfp.h
+index 0ceb4e09306c..93a6a532f10d 100644
+--- a/include/linux/gfp.h
++++ b/include/linux/gfp.h
+@@ -385,6 +385,8 @@ extern void free_pages(unsigned long addr, unsigned int order);
+ #define __free_page(page) __free_pages((page), 0)
+ #define free_page(addr) free_pages((addr), 0)
+ 
++DEFINE_FREE(free_page, unsigned long, if (_T) free_page(_T));
++
+ void page_alloc_init_cpuhp(void);
+ int decay_pcp_high(struct zone *zone, struct per_cpu_pages *pcp);
+ void drain_zone_pages(struct zone *zone, struct per_cpu_pages *pcp);
+
+base-commit: 211ddde0823f1442e4ad052a2f30f050145ccada
+-- 
+2.50.1
+
