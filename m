@@ -1,92 +1,129 @@
-Received: from mx07lb.world4you.com (mx07lb.world4you.com [81.19.149.117])
+Received: from mxout70.expurgate.net (mxout70.expurgate.net [194.37.255.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69BE11514F7
-	for <linux-serial@vger.kernel.org>; Sun, 19 Oct 2025 19:52:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=81.19.149.117
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A28F2BF3DB;
+	Mon, 20 Oct 2025 07:06:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.37.255.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760903560; cv=none; b=Z+eDLYncGLuFkzkCYQ7pILuP3sTmIiYij7RCBBaI/MVWhSrQOmcj3d6EHsu8JhHkmm6fDXwECpUEyKc02s8PsFdc5zF/vsL4PcW+7P35ch9SJdxkduNY5BuP6r0UYw0jJ0ghk3bSBmnIS7JVaL9Ob/qvznOfVY7sf1vIyuQ+4+4=
+	t=1760944000; cv=none; b=G0paXzJiggaU/L/6uGcNw2wLNHGfv1AsJazEafF3ATGP4VRNkU0DzF6VqlkwkO6axhtN4Ibs4HUEVd2/n1jUGdvuai2A6occHfbVCnqzjxI4guh6za6K4VORUQUiw6CQ4PUEn8do8YD8kqSkRXRX58nXt5SFmf1zn/2s9yttlzQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760903560; c=relaxed/simple;
-	bh=iBoiCG2ZeuphCxAMyQU4wwLLUzviP4SR/cBRCibg8ts=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=jdpjASfAL2vvzM7UdoaaXfiMXlhAm/JNbxXMN5VedR/zfTAIEiIIr9Ivnke+BGw3zTfI1G/UaTh8xxhQ1l1cMtaG4VrgzufrMLzElMocttJTZisUa7YISjot05/hM2hHlDaI8Xr3LKczlrVKfHIOQ6JkWV8oMCDRDDp7fZ91XiU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=engleder-embedded.com; spf=pass smtp.mailfrom=engleder-embedded.com; dkim=pass (1024-bit key) header.d=engleder-embedded.com header.i=@engleder-embedded.com header.b=BenKnlWU; arc=none smtp.client-ip=81.19.149.117
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=engleder-embedded.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=engleder-embedded.com
+	s=arc-20240116; t=1760944000; c=relaxed/simple;
+	bh=yulyTBRll1Rhc1IP4GeW63xjPywR7HDYSb8jX4qUL1A=;
+	h=MIME-Version:Content-Type:Date:From:To:Cc:Subject:In-Reply-To:
+	 References:Message-ID; b=FIvNJeCRgCaltWyctg6eG2UckCWVMxhHaHzCHXYA/f9hMBBA+VZd6XKyOZh7jHl/pMuWdWIKIOKWPxle6g47DLAuWJey6w2BygkLqrygwansl3S1qk3e3CQDXCJOWmUO7djM5jh9Pt5ynYO2/2rAnkmaUEKjGM4JiGD8Nv59Ip8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=dev.tdt.de; spf=pass smtp.mailfrom=dev.tdt.de; dkim=temperror (0-bit key) header.d=dev.tdt.de header.i=@dev.tdt.de header.b=kldGsZ3k; arc=none smtp.client-ip=194.37.255.70
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=dev.tdt.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dev.tdt.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=engleder-embedded.com header.i=@engleder-embedded.com header.b="BenKnlWU"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:Content-Type:
-	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=aCIqWz0AJ2LVYkwosB/VImcZuSxliRn0JRLCRTOGWJQ=; b=BenKnlWUNUixcAsEvZtA3UcZqd
-	px3oL6WJvoU6PeR/NUGC9Mdza8wxrDhTJ+gyAe0xl9iMtNHp7wjvTtfd/Sg5twn4OlReEu1exkKLq
-	giZQppDtm4JVSg2SJ1Oecdf3+BmXfbeg3v3RmOPb4VXfYV7MttWWAnsp06ZzP3tN9+yo=;
-Received: from [178.191.104.35] (helo=[10.0.0.160])
-	by mx07lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.97.1)
-	(envelope-from <gerhard@engleder-embedded.com>)
-	id 1vAYw2-000000000Uf-1aHJ;
-	Sun, 19 Oct 2025 21:19:19 +0200
-Message-ID: <d4dadfa2-38ae-414d-a6a0-4a436678c3b0@engleder-embedded.com>
-Date: Sun, 19 Oct 2025 21:19:18 +0200
+	dkim=temperror (0-bit key) header.d=dev.tdt.de header.i=@dev.tdt.de header.b="kldGsZ3k"
+Received: from [194.37.255.9] (helo=mxout.expurgate.net)
+	by relay.expurgate.net with smtp (Exim 4.92)
+	(envelope-from <prvs=9402dab0bf=fe@dev.tdt.de>)
+	id 1vAjfr-009p04-7I; Mon, 20 Oct 2025 08:47:19 +0200
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+	by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <fe@dev.tdt.de>)
+	id 1vAjfq-008UnS-4V; Mon, 20 Oct 2025 08:47:18 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dev.tdt.de;
+	s=z1-selector1; t=1760942837;
+	bh=cTJ0KEEGjos3fAl/V3PjF8MxGplnUpGNaRu/eWstcM0=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=kldGsZ3kkkylkIk0sXWnwIVf5/s+ePuKCxHitxyoCnKk9OcZRgkU3ZoVetxLPryh8
+	 jBp4jk+HvENp0VypJHKKoPKLtn3AIb2r/wnsJjFWpaSuE2xlUv0aT/zaHUqu+NAPUR
+	 Ykq7NaDm5UG78UAOUds8bmuH/fmVZSNMGtHFfpp9vCx71dvLJn/i8MI7CoynhOgSwU
+	 jYMAENjxc9mbzad/1IDqcBbY6HqrBEbntt9fIcEok41772GWHZeCiedhl9/MX7dQ5r
+	 gnEbOooSiFLYD0B0e87UpQu7tX7ab/XULW08EzA4TJLYXHucuUgcyoZmFKDa0ip80n
+	 BQgp2ebxqMHxQ==
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+	by securemail.tdt.de (Postfix) with ESMTP id A3C84240045;
+	Mon, 20 Oct 2025 08:47:17 +0200 (CEST)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+	by securemail.tdt.de (Postfix) with ESMTP id 922B1240040;
+	Mon, 20 Oct 2025 08:47:17 +0200 (CEST)
+Received: from mail.dev.tdt.de (localhost [IPv6:::1])
+	by mail.dev.tdt.de (Postfix) with ESMTP id F298B229EE;
+	Mon, 20 Oct 2025 08:47:16 +0200 (CEST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/2] serial: Keep rs485 settings for devices without
- firmware node
-To: Lukas Wunner <lukas@wunner.de>
-Cc: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
- jirislaby@kernel.org, Gerhard Engleder <eg@keba.com>
-References: <20251017144209.2662-1-gerhard@engleder-embedded.com>
- <20251017144209.2662-2-gerhard@engleder-embedded.com>
- <aPSmOcbprjf0EoAq@wunner.de>
- <81b924dc-4e95-40af-a52a-48a75e01d7f5@engleder-embedded.com>
- <aPT42ykVKxouqUHK@wunner.de>
- <4e3da3b9-693e-4d21-901e-14ac4663d340@engleder-embedded.com>
- <aPUd5NXmmow77WF7@wunner.de>
-Content-Language: en-US
-From: Gerhard Engleder <gerhard@engleder-embedded.com>
-In-Reply-To: <aPUd5NXmmow77WF7@wunner.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
-X-AV-Do-Run: Yes
+Date: Mon, 20 Oct 2025 08:47:16 +0200
+From: Florian Eckert <fe@dev.tdt.de>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
+	kumaravel.thiagarajan@microchip.com, pnewman@connecttech.com,
+	angelogioacchino.delregno@collabora.com, peterz@infradead.org,
+	yujiaoliang@vivo.com, arnd@kernel.org, cang1@live.co.uk,
+	macro@orcam.me.uk, schnelle@linux.ibm.com,
+	Eckert.Florian@googlemail.com, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH v2] serial: 8250_pcilib: Replace deprecated PCI functions
+In-Reply-To: <aPPreT00iiTDzJwG@ashevche-desk.local>
+References: <aPPreT00iiTDzJwG@ashevche-desk.local>
+Message-ID: <84ad1b3070a8374ec20f06588fab9f86@dev.tdt.de>
+X-Sender: fe@dev.tdt.de
+User-Agent: Roundcube Webmail/1.3.17
+X-purgate-type: clean
+X-purgate-ID: 151534::1760942838-436F738A-F9DB84AD/0/0
+X-purgate: clean
 
-On 19.10.25 19:20, Lukas Wunner wrote:
-> On Sun, Oct 19, 2025 at 05:21:30PM +0200, Gerhard Engleder wrote:
->> On 19.10.25 16:42, Lukas Wunner wrote:
->>> BTW is there a good reason that you don't have a fwnode for your UART?
->>> It seems odd to have a UART but not describe it in the devicetree.
->>> Maybe that's the real problem and fixing it obviates the need for this
->>> patch?
->>
->> This auxiliary device is part of a FPGA based PCIe device. It is mostly
->> used on x86 but arm64 is also possible in the future. There is no device
->> tree or ACPI information available for this device. Think about an x86
->> CPU module where you cannot influence the BIOS implementation and device
->> tree is not available. IMO having a self describing PCIe device which
->> works out of the box is best in this case.
+On 2025-10-18 21:33, Andy Shevchenko wrote:
+> On Tue, Sep 30, 2025 at 09:27:43AM +0200, Florian Eckert wrote:
+>> When the '8250_exar' module is loaded into the kernel, a kernel trace
+>> with 'WARN_ON(legacy_iomap_table[bar])' is dumped to the console,
+>> because the old pci table mapping is still used in '8250_pcilib'.
+>> 
+>> The old function have been deprecated in commit e354bb84a4c1 ("PCI:
+>> Deprecate pcim_iomap_table(), pcim_iomap_regions_request_all()").
+>> 
+>> The remapping already takes or must take place in the driver that 
+>> calls
+>> the function 'serial8250_pci_setup_port()'. The remapping should only 
+>> be
+>> called once via 'pcim_iomap()'. Therefore the remapping moved to the
+>> caller of 'serial8250_pci_setup_port()'.
+>> 
+>> To replace the outdated/legacy iomap_table processing in '8250_pcilib' 
+>> the
+>> function signature of 'serial8250_pci_setup_port()' has been extended 
+>> with
+>> an already iomapped address value. So this can be used directly 
+>> without
+>> io mapping again.
 > 
-> In case you're not aware of it, it's possible to assign a software
-> fwnode to devices through device_add_software_node().  There is
-> precedent for its usage among 8250 drivers, see 8250_bcm2835aux.c
-> and 8250_exar.c.
+> ...
 > 
-> So that would be an alternative to this patch.  Conceivably, your
-> FPGA might support different UART types and each might default to
-> different rs485 settings.  A software node as used by 8250_bcm2835aux.c
-> would allow you to define those settings through the driver_data.
+>> +	if (pci_resource_flags(priv->dev, bar) & IORESOURCE_MEM) {
+> 
+> Dunno if this is included already in Linux Next, but here is room for
+> improvement.
+> 
 
-I was not aware of device_add_software_node(). Thank you for the hint!
+I followed the code in the 'serial8250_pci_setup_port()' [1] function.
+The same pattern is used there [2].
 
-IMO keeping driver defaults if no fwnode exist is more straight forward
-than adding a software_node. So I would keep this patch.
+> 
+> The problem with the above code is it (wrongly?) checks for bit and not
+> for the resource type. OTOH I don't remember if 64-bit version requires
+> the IORESOURCE_MEM to be set along with that.
+> 
 
-Gerhard
+Do you mean the function 'platform_get_resource()' [3]? This is a 
+platform
+device function?
+
+[1] 
+https://elixir.bootlin.com/linux/v6.18-rc1/source/drivers/tty/serial/8250/8250_pcilib.c#L24
+[2] 
+https://elixir.bootlin.com/linux/v6.18-rc1/source/drivers/tty/serial/8250/8250_pcilib.c#L30
+[3] 
+https://elixir.bootlin.com/linux/v6.17.3/source/drivers/base/platform.c#L55
+
+---
+Florian
