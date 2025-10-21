@@ -1,83 +1,93 @@
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.2])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9878B288C20
-	for <linux-serial@vger.kernel.org>; Tue, 21 Oct 2025 08:37:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91F6F288C20;
+	Tue, 21 Oct 2025 08:37:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.2
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761035866; cv=none; b=aPIuxcsKvO2fplxB/jC0CCnoJu6K+qtlu57qqLP1FYEfF66ztyiVvOZlepsQSrW9hD5lPASWhmYS/uY9RcgtzFXb32ADLHPfD3mliAaOzBC+2GXDAcFDYxF8lORjs7/HFWRjaWFg3Uq/duAVEd9I8hJT0tdSUtWz6bxRCuP2uao=
+	t=1761035873; cv=none; b=O5N+SS5K0MJMNjwFNLzaZt7amtMPH9vGQpon2Rqjoyw48Ct+BdUAjMcIb2J6/Evz0ezWZhUNL5QYwMewpV9jp1lc7wj2YyYqxf3wCgHourdFmwMbCij6CxBcoo/HdjMI6sDRSShxUDsGg9v+33QlQeWC6u8xqXJr1ciYzp65hys=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761035866; c=relaxed/simple;
-	bh=QjyCWM2eaOA0G4njqmL1QXzj7R90sfd0dteSirTsca4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ExEqzVYp5QUknQvsmHqXfcZKwPQw8zJlOKfJDLCdntEL8w2cYdc9e4PIdKr6GEnpC64Is14bOlWWgZXQ8YKil8dTzGZbIq96CEGMzS1gjauuDFWGckRIwTRb37sxp1XFY7f5UM9Dp7y+0/xCa53Sm0tzdNPske8VTvz2HXyUUM8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Gx36LVtm; arc=none smtp.client-ip=209.85.218.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1761035873; c=relaxed/simple;
+	bh=AwhKynatZJnwvCNrCmD2R56vAgaFxbJKyVleLUecf0o=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Myeb7lVuvm2YykmhBBw5M0ZkzDkaPvgwiGQG3/OdGGmg5BUG71EmnQIPgXKy8YT0XHy/B3FoyKcMq6l07c1y2EXcQcEKszLZwaFgiLVZENFZ5TrSLQn/OSG/eaMV0ulQGU3Q8QdbYEVSAy9Y+1rkIjWdd/DKxTbAvkv7cVobTCE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=aDydv/F0; arc=none smtp.client-ip=117.135.210.2
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Gx36LVtm"
-Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-b4736e043f9so897218166b.0
-        for <linux-serial@vger.kernel.org>; Tue, 21 Oct 2025 01:37:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1761035863; x=1761640663; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=QjyCWM2eaOA0G4njqmL1QXzj7R90sfd0dteSirTsca4=;
-        b=Gx36LVtmNIzqM8hPLu5g2RBt9sKc3Xr8z4YXyajQafsm8z+85hYTIcZUHC4o0qHgzw
-         Kmj4C2v6qaauSPZnF1wYOt78WB9dJvsiwmXjHEkLP76V45M/cpZdTyu4wAXkPHR6YJGB
-         KQ1Ab2eZp5Pl1oUxuF5xZdR64/uQNax2P4tEs0gM9s9m4wGfUAX9ZQnWzf8G9kIARh/3
-         Jmd7yHDN5Ipy5P1irI+lgmGQYYyYwUfZYj2+Vjg9JcD4lBIVMoGlQtYWC4JBfgiu7fUU
-         w+hY+fNdmrx3FAr54JWk/0CPr52x3/qktPr6h6nbJf4R2wP+R1pBQrU8wxnuS/1lz28L
-         UeTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1761035863; x=1761640663;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=QjyCWM2eaOA0G4njqmL1QXzj7R90sfd0dteSirTsca4=;
-        b=YKGVwGV2kTwV7i09BNcgSsmXbxZtVizR1TjLX7B/d+MIaSxC2cm7wtJe0qqE/jZF4D
-         JJtIBQZLi3or9M8GZc4315iSuSLteElEc/fgFY0u4UKarYUaBpdWPvUOY+ifTgboxiGc
-         x7in+RNnuj/Er6luqgohDw+1edinZA1oKZ+KOu2MJVUG0m5oQa9o1hfICmT1sce697Vw
-         tc+iwUw4kh47A1jy6gaJl7qPLBlejzuErovi1LMKGOV5xXjLb8/mwOuJDLPQA2MN+w7K
-         S5Eg3RW2bev9VxQ87WcpgEvgTWxJQoRWWEmMUodOeu9Sxq0ciPWAxJdQLug3FFZuyZJc
-         tgMw==
-X-Forwarded-Encrypted: i=1; AJvYcCU9S1B9dloKPyJnu3+qnpP99TVQWVEFQwzfKsTMfWgoBSSJbO41BxkTjLPGkMG3VogZ9LWeDKdaKGcOEmU=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy3PhF8mp4BGyNiE5dSbK7IHR7hi/FsQg1MdwjCXJJfzSOQH10x
-	y2Vq4Atk/GsvoN7v4tEOfx9jYdS7U/Npl4yfWBITQkxeXBbbAYvHgPJ3lMtvIS+NfZeOojsSXW9
-	PGkwIqKdoCFbMPyXOyaHKquXqOp/P5Q==
-X-Gm-Gg: ASbGncubZk7y61QWwmzH+VL+5l9SdyW9Q+3dXufy5D5qQtUttcfEF0FlJsRQZ6jY3jt
-	KDtnb9HVpGsNvlRpEMcoghSGg3fSCWfswgXeO5SWxPy0U+L0vwmJ10IOJQBe+nKYiifiAFBbNzY
-	dDgDTUwUQS+uBdQ1uwNjzdCjzMXAimKHVX/d3TDovsjkxZJMCKJK+8fc8Pc3hjk0NnLnEbai/5N
-	WmbHdLcOoFD6TetfaXYqB65nQ6SpjXusJEf9izgzeL29LzgMeNMQrrQzw==
-X-Google-Smtp-Source: AGHT+IEtZxUVPjSc2WqOyAjA7Fte4RrVXHEh4i2Gbt2zB79A/SDrGDESaIChW2EoFUntYRwCfCiMlt+Yi0KqlqbopSU=
-X-Received: by 2002:a17:907:3dac:b0:b45:8370:ef10 with SMTP id
- a640c23a62f3a-b647245845bmr1951550566b.22.1761035862848; Tue, 21 Oct 2025
- 01:37:42 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="aDydv/F0"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=+n
+	7gpRkJkpFlvpmW7QTLjlpV/KtTb0XyIcRlXOub05Q=; b=aDydv/F0y7VJnRQwgi
+	7UeoKDbzLUwPM6i3jf0rUpBe6YTqkhbzya99bxjh29+Sf9d84e1qRgYLb6D7JnOM
+	mWjYeZnsSrRmWpAfvLEkz5MKPwByZ++JQ+wbRGher07l2/Y7GPEGiH+m6banrDW5
+	tvPUP4NGz457g77+jYMpPKeHo=
+Received: from zhaoxin-MS-7E12.. (unknown [])
+	by gzsmtp4 (Coremail) with SMTP id PygvCgDXh59ERvdosEfBAw--.12994S2;
+	Tue, 21 Oct 2025 16:37:25 +0800 (CST)
+From: Xin Zhao <jackzxcui1989@163.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	tj@kernel.org,
+	hch@infradead.org,
+	Xin Zhao <jackzxcui1989@163.com>
+Subject: [PATCH v1 0/2] serial: 8250_dma: dma rx work optimize
+Date: Tue, 21 Oct 2025 16:37:21 +0800
+Message-Id: <20251021083721.703242-1-jackzxcui1989@163.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20251016103609.33897-2-bagasdotme@gmail.com> <aa388d29-b83b-454e-a686-638c80c6a7bf@infradead.org>
- <CAH2-hc+XQR7v9Z28yH_CTWZ4ieaF5eQFKBVut1idULP=4w03fQ@mail.gmail.com> <6b8e7935-6b80-4f00-9a44-7003071d1a21@infradead.org>
-In-Reply-To: <6b8e7935-6b80-4f00-9a44-7003071d1a21@infradead.org>
-From: =?UTF-8?B?VG9tw6HFoSBNdWRydcWIa2E=?= <tomas.mudrunka@gmail.com>
-Date: Tue, 21 Oct 2025 10:37:30 +0200
-X-Gm-Features: AS18NWAkzMEdIZQ7IEi0fFSxQKz8uPinwHCWF-5cnXsFVeY8YpgVfIMAZOdWQSE
-Message-ID: <CAH2-hc+M-CyXL1HtHkD9o_Q_8PP_OkYLvjqhdBiCnHVBQspedQ@mail.gmail.com>
-Subject: Re: [PATCH v2] Documentation: sysrq: Rewrite /proc/sysrq-trigger usage
-To: Randy Dunlap <rdunlap@infradead.org>
-Cc: Bagas Sanjaya <bagasdotme@gmail.com>, 
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, 
-	Linux Documentation <linux-doc@vger.kernel.org>, Linux Serial <linux-serial@vger.kernel.org>, 
-	Jonathan Corbet <corbet@lwn.net>, Cengiz Can <cengiz@kernel.wtf>, Jiri Slaby <jirislaby@kernel.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, =?UTF-8?Q?Anselm_Sch=C3=BCler?= <mail@anselmschueler.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:PygvCgDXh59ERvdosEfBAw--.12994S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7CrWkGrW5WF18Gw13CF1fXrb_yoW8tryfpF
+	4rCrn0qF1DJ3ZIywnxXryxJw1fuFn3JFW7urWIgrW5K3Z8CFyq9F4a9FyY9rWkCr93Xw15
+	AFWYv3s8CasFvFJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zimsjUUUUUU=
+X-CM-SenderInfo: pmdfy650fxxiqzyzqiywtou0bp/xtbCwAW6xGj3RkXCgAAA3l
 
-In that case, can we use some short form? Something like
-"extra characters are ignored for now, which might change in future".
+On the embedded platform, certain critical data, such as IMU data, is
+transmitted through UART. The tty_flip_buffer_push interface in the TTY
+layer uses system_unbound_wq to handle the flipping of the TTY buffer.
+Although the unbound workqueue can create new threads on demand and wake
+up the kworker thread on an idle CPU, the priority of the kworker thread
+itself is not high. Even if the CPU running this work was idle just a
+moment ago, it may be preempted by real-time tasks or other high-priority
+tasks.
+In our system, the processing interval for each frame of IMU data
+transmitted via UART can experience significant jitter due to this issue.
+Instead of the expected 10 to 15 ms frame processing interval, we see
+spikes up to 30 to 35 ms. Moreover, in just one or two hours, there can
+be 2 to 3 occurrences of such high jitter, which is quite frequent. This
+jitter exceeds the software's tolerable limit of 20 ms.
+Add tty_flip_buffer_push_wq interface to queue work on specific workqueue
+and specific cpu. Add module param tty_flip_cpu to queue rx complete work
+on the specific cpu by tty_flip_buffer_push_wq. The default value of
+tty_flip_cpu is WORK_CPU_UNBOUND which means using the default
+system_unbound_wq called by tty_flip_buffer_push, otherwise we use the
+newly added workqueue wq_tty_flip which is set to WQ_HIGHPRI to promote
+performance.
+We set tty_flip_cpu to a specific CPU core that has relatively few
+real-time tasks running continuously for long periods. Additionally,
+tasks on this core have some correlation with the UART data related to
+the 8250 DMA operation. After queuing work to this designated CPU and
+set workqueue to WQ_HIGHPRI, we can stably eliminate the jitter and
+ensure that the frame processing interval remains between 10 and 15 ms.
 
-Thing is that i wanted to add handling of extra characters, but
-maintainer said it cannot be done because people might currently rely
-on characters being ignored as written in documentation.
+Xin Zhao (2):
+  tty: tty_buffer: add interface to queue work on specific wq and cpu
+  serial: 8250_dma: add parameter to queue work on specific cpu
+
+ drivers/tty/serial/8250/8250.h     |  2 ++
+ drivers/tty/serial/8250/8250_dma.c | 46 ++++++++++++++++++++++++++++--
+ drivers/tty/tty_buffer.c           | 23 +++++++++++++++
+ include/linux/tty_flip.h           |  3 ++
+ 4 files changed, 72 insertions(+), 2 deletions(-)
+
+-- 
+2.34.1
+
