@@ -1,151 +1,288 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+Received: from mx-relay102-hz1.antispameurope.com (mx-relay102-hz1.antispameurope.com [94.100.133.89])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A36A3491FB
-	for <linux-serial@vger.kernel.org>; Wed, 22 Oct 2025 13:08:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761138490; cv=none; b=umMAnPkZGzbkhr6imlFswKm13eXDsM1neNbrFu9uIv3JltQzO7ljAi1yeBaezB3IPP9t6b+lqsEtYbS47yTjEtJ8xOEf9dHvfA03qobrMg8JB5f51+Ew7qToLaQf6mGiaUEwJR4hv2fmK27aCPtbJEI/QRDtTnmla0FcpcR255o=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761138490; c=relaxed/simple;
-	bh=ZoTPenGJmIvPF1ZauSj9UEAqI9olcyZxwqnCJExCdYU=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=bA8KrYk2Q5nXrcfAgBvQTZn7OwXoqFuCEy5o6JW87dGOoCuJN+JTRtVos/l9sSuV9d1hX5VzMWEoGI0kT8uoowAyppDS8cxN/j/j68ACQs0NKhY/DDa9VJP6A77vWpXPOg9WptrXESDXCKbrT4gCjGZw56sys56dUGTvfRNjsZ0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=D5GepoUd; arc=none smtp.client-ip=198.175.65.20
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F40CA347BDF
+	for <linux-serial@vger.kernel.org>; Wed, 22 Oct 2025 13:38:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=94.100.133.89
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1761140287; cv=pass; b=a9ua2xT6syl52DZjgz/eYnp9YHnbiTLlmCTBVZEAevb+XbqH1N/d55j+cvU3P7liErxuBn6+3F6liEBbLu9rsnb9kBqco03200gpZYgBfj6SvXiICZ4Zjz4l3j8Lr6jPRAbcF2Y2z63v9Qcu3wFFWFmZWB6s7OduLBPnMEqUUlI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1761140287; c=relaxed/simple;
+	bh=jfmq/xxFUjoorgJj8DOsAfY/DMuLUG+cxIPyCkVDlLc=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=GSX3poFzG8FF0zmEgzjvW/MnVEnYM4J5QH0CecI5y264W8XlwmXXV47wM0JFPL0XEkQ925oIPG87FS0oTX+aKdj/N/a2/Pik2zs1nAuCRqICw8rhstgIEWQgvcYMjd8qkdlDfwlQG9pvKQUdlOdNUpJBYTgx4EoaYeilPfXMR7U=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ew.tq-group.com; spf=pass smtp.mailfrom=ew.tq-group.com; dkim=pass (2048-bit key) header.d=ew.tq-group.com header.i=@ew.tq-group.com header.b=dKI9cjF8; arc=pass smtp.client-ip=94.100.133.89
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ew.tq-group.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ew.tq-group.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="D5GepoUd"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1761138488; x=1792674488;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=ZoTPenGJmIvPF1ZauSj9UEAqI9olcyZxwqnCJExCdYU=;
-  b=D5GepoUdKT5pTP9n6PYlCxl0hk2KA7Ihxb+OximWQ+St+9YoKo5xwx7w
-   eAbZ0tCY6pB9a1/p4RxL8De9cCOE3X9e9H3WahHeT+rZoPUp2hMzsML5M
-   J7FcBiwxaMFn5cn1wx8MFgaQ2fhvtX0BoOH4YR3nKHo+hTIdC/3frY605
-   4LksykEx3a7jkoBvawM3MzTGZnetXME7ZLyKR1YoovhXKMeKCICinnVMD
-   3ZqQjspCtk1stE8cOPl0LAvsDQzVkyfge9wiGa5fRA5c2smZLyIrQEmkR
-   ssVXgV/h93ADqsqJD1XPF+UY2WD6Hz69grf5SfuBjg6CPU3fBI8yhYpxE
-   Q==;
-X-CSE-ConnectionGUID: DUnppk3hTWq948Zk/4B46w==
-X-CSE-MsgGUID: DwYi5SRRQNSAelG98CL1YQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11586"; a="62988481"
-X-IronPort-AV: E=Sophos;i="6.19,247,1754982000"; 
-   d="scan'208";a="62988481"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2025 06:08:07 -0700
-X-CSE-ConnectionGUID: 1LWgONJ8Q6O1LTgbgm1x0A==
-X-CSE-MsgGUID: a06OhsB4RVqT+mu6nKmIFg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.19,247,1754982000"; 
-   d="scan'208";a="188274892"
-Received: from lkp-server02.sh.intel.com (HELO 66d7546c76b2) ([10.239.97.151])
-  by fmviesa005.fm.intel.com with ESMTP; 22 Oct 2025 06:08:06 -0700
-Received: from kbuild by 66d7546c76b2 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1vBYZP-000CNi-2C;
-	Wed, 22 Oct 2025 13:08:03 +0000
-Date: Wed, 22 Oct 2025 21:07:24 +0800
-From: kernel test robot <lkp@intel.com>
-To: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Cc: oe-kbuild-all@lists.linux.dev, linux-serial@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [tty:tty-testing 11/22] drivers/tty/serial/sc16is7xx.c:596:9: error:
- implicit declaration of function 'sc16is7xx_efr_lock'; did you mean
- 'sc16is7xx_regs_lock'?
-Message-ID: <202510222048.fnK8S60G-lkp@intel.com>
+	dkim=pass (2048-bit key) header.d=ew.tq-group.com header.i=@ew.tq-group.com header.b="dKI9cjF8"
+ARC-Authentication-Results: i=1; mx-gate102-hz1.hornetsecurity.com 1;
+ spf=pass reason=mailfrom (ip=94.100.132.6, headerfrom=ew.tq-group.com)
+ smtp.mailfrom=ew.tq-group.com
+ smtp.helo=hmail-p-smtp01-out04-hz1.hornetsecurity.com; dmarc=pass
+ header.from=ew.tq-group.com orig.disposition=pass
+ARC-Message-Signature: a=rsa-sha256;
+ bh=1DebWUerm1P3b92vVeQv2ZKMa4RczUkTUoAChT1TsvQ=; c=relaxed/relaxed;
+ d=hornetsecurity.com; h=from:to:date:subject:mime-version:; i=1; s=hse1;
+ t=1761140228;
+ b=J8d4aulVAGrmNGIUYsjae47dsVnEmOnfSqIoavZ2rOd21FwwhZKWFZMcNtdpWwZBPzJqwtVB
+ G1M3GB+dsDazMlgELCLqByIMPEA66x+h36YRgZrTPeU0wflzOjH+V1ptHfgxlvEa02UMhot6UUk
+ PC4GYey8DvGk0E8x9REIVRxaSO38Ld6UwWCeYxS89QldrqiZHcn/xayyHq//dDYXZJjZNbKBFJU
+ qEgAgdHPZcYiGkARde8MBF4pXVNvdLWf4k6wXCu5NH853aFtzkRqJo+vxptPmIt6Rfwr4NTMLpL
+ t2y49FYqsok+1Dr9NO4K2RlcoEjkcicznEJj814TR8TdA==
+ARC-Seal: a=rsa-sha256; cv=none; d=hornetsecurity.com; i=1; s=hse1;
+ t=1761140228;
+ b=Vpp7CuYCURZzeX7HM6owwviDxjlSlMOnosGSgZ4Iadg+086hpz969mvtoGIkItXxZsxuvJj2
+ hfxzAgF+PC2vLG02oIDUMJ4dVvOSYNtNj9ghI9/nOGAtp5g3GvtScIg6qo8RdMBjS1HeIFms4C4
+ knapBGf7+O5tQPS4TQzu6juZjNnkYJMSTruWpX3LUg7yUrQ/XYEOC1mGDHNgfwodwlSLiwbeoZv
+ OWYssFoLwkeBkNus3cTdVjnmw7QEEiW/MEY/ddxALcDgGbzZPP2M+3RkZwNaxEklOCDoD4wcoBo
+ xhCiOxvELAmgU3iSafmgDTBOzYWYZMIOMPKqaJetmkn1g==
+Received: from he-nlb01-hz1.hornetsecurity.com ([94.100.132.6]) by mx-relay102-hz1.antispameurope.com;
+ Wed, 22 Oct 2025 15:37:07 +0200
+Received: from [192.168.153.128] (host-82-135-125-110.customer.m-online.net [82.135.125.110])
+	(Authenticated sender: matthias.schiffer@ew.tq-group.com)
+	by hmail-p-smtp01-out04-hz1.hornetsecurity.com (Postfix) with ESMTPSA id 14121220C57;
+	Wed, 22 Oct 2025 15:36:52 +0200 (CEST)
+Message-ID: <d46d07858a3b5cc9134e17509617901e2215122f.camel@ew.tq-group.com>
+Subject: Re: [PATCH] serial: imx: allow CRTSCTS with RTS/CTS GPIOs
+From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+To: Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@baylibre.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer
+ <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, 
+ Fabio Estevam <festevam@gmail.com>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org,  imx@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, linux@ew.tq-group.com
+Date: Wed, 22 Oct 2025 15:36:51 +0200
+In-Reply-To: <1963351b2e50c537418293e6ab9293576a239c98.camel@ew.tq-group.com>
+References: <20251016113730.245341-1-matthias.schiffer@ew.tq-group.com>
+	 <cdkpp74ra2ltr7h46psutkwnzyvl4iegcicnhqqj7svm5trltm@w2egfj5nryjm>
+	 <7d3df04c482e71760ccc941469c99412b608c92b.camel@ew.tq-group.com>
+	 <lgse44as4k6fpzarztfnfl7wbxq2bfg5k7m7l6xlsyx23pmem4@khal3tytgwjn>
+	 <1963351b2e50c537418293e6ab9293576a239c98.camel@ew.tq-group.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.52.3-0ubuntu1 
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-cloud-security-sender:matthias.schiffer@ew.tq-group.com
+X-cloud-security-recipient:linux-serial@vger.kernel.org
+X-cloud-security-crypt: load encryption module
+X-cloud-security-Mailarchiv: E-Mail archived for: matthias.schiffer@ew.tq-group.com
+X-cloud-security-Mailarchivtype:outbound
+X-cloud-security-Virusscan:CLEAN
+X-cloud-security-disclaimer: This E-Mail was scanned by E-Mailservice on mx-relay102-hz1.antispameurope.com with 4cs9F04rnBz1H2R
+X-cloud-security-connect: he-nlb01-hz1.hornetsecurity.com[94.100.132.6], TLS=1, IP=94.100.132.6
+X-cloud-security-Digest:2922bd59ae7bb4f5e6d1e8192f878683
+X-cloud-security:scantime:1.834
+DKIM-Signature: a=rsa-sha256;
+ bh=1DebWUerm1P3b92vVeQv2ZKMa4RczUkTUoAChT1TsvQ=; c=relaxed/relaxed;
+ d=ew.tq-group.com;
+ h=content-type:mime-version:subject:from:to:message-id:date; s=hse1;
+ t=1761140227; v=1;
+ b=dKI9cjF8OEVF+8/i3qL7vSmiuiFNuLJYhLquBNO79sfW/RxuetwgSDMqnaCAW+wLXNpeHLMl
+ govxjOZ+FSaXXIkISk6y0cR1C765pEr5ZeGN49iheCFxPnQqbw71e7usHLjBZKgKo7NOo73LmaX
+ vIIBYbyLVtLptQRaEQ5iJbccyE4dYok5MS2c2L/EpLF+nUolJAP1FhAB6Lvo0BOsVHLfZi+r2EV
+ nQN4XdgkLt8CAOvzF2iEjDMbNX0qpeeIcrK3DZBeviDp0TDCv/JwuZntI62XsQjSRV/oi50BoM4
+ KapchW1z0FCrGuexFKJep/Oxippd0ZwbXAlPNXP7EkHWA==
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-head:   cdca3a77b423691b0e3780653642cd5b31de8bd8
-commit: 5a91e16ba44d9850088278ebe209b5c533f87cb8 [11/22] serial: sc16is7xx: define common register access function
-config: x86_64-buildonly-randconfig-003-20251022 (https://download.01.org/0day-ci/archive/20251022/202510222048.fnK8S60G-lkp@intel.com/config)
-compiler: gcc-14 (Debian 14.2.0-19) 14.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20251022/202510222048.fnK8S60G-lkp@intel.com/reproduce)
+On Tue, 2025-10-21 at 11:37 +0200, Matthias Schiffer wrote:
+> On Tue, 2025-10-21 at 10:59 +0200, Uwe Kleine-K=C3=B6nig wrote:
+> > Hello Matthias,
+> >=20
+> > On Mon, Oct 20, 2025 at 10:09:29AM +0200, Matthias Schiffer wrote:
+> > > On Fri, 2025-10-17 at 17:01 +0200, Uwe Kleine-K=C3=B6nig wrote:
+> > > > On Thu, Oct 16, 2025 at 01:37:30PM +0200, Matthias Schiffer wrote:
+> > > > > The CTS GPIO is only evaluated when the CRTSCTS termios flag is e=
+nabled;
+> > > > > it should be possible to enable the flag when only GPIO and no ha=
+rdware-
+> > > > > controlled RTS/CTS are available. UCR2_IRTS is kept enabled in th=
+is case,
+> > > > > so the hardware CTS is ignored.
+> > > > >=20
+> > > > > Fixes: 58362d5be352 ("serial: imx: implement handshaking using gp=
+ios with the mctrl_gpio helper")
+> > > > > Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.c=
+om>
+> > > > > ---
+> > > > >  drivers/tty/serial/imx.c | 10 +++++-----
+> > > > >  1 file changed, 5 insertions(+), 5 deletions(-)
+> > > > >=20
+> > > > > diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> > > > > index 500dfc009d03e..4a54a689a0603 100644
+> > > > > --- a/drivers/tty/serial/imx.c
+> > > > > +++ b/drivers/tty/serial/imx.c
+> > > > > @@ -1117,8 +1117,8 @@ static void imx_uart_set_mctrl(struct uart_=
+port *port, unsigned int mctrl)
+> > > > >  			ucr2 |=3D UCR2_CTS;
+> > > > >  			/*
+> > > > >  			 * UCR2_IRTS is unset if and only if the port is
+> > > > > -			 * configured for CRTSCTS, so we use inverted UCR2_IRTS
+> > > > > -			 * to get the state to restore to.
+> > > > > +			 * configured for hardware-controlled CRTSCTS, so we use
+> > > > > +			 * inverted UCR2_IRTS to get the state to restore to.
+> > > > >  			 */
+> > > > >  			if (!(ucr2 & UCR2_IRTS))
+> > > > >  				ucr2 |=3D UCR2_CTSC;
+> > > > > @@ -1780,7 +1780,7 @@ imx_uart_set_termios(struct uart_port *port=
+, struct ktermios *termios,
+> > > > >  	if ((termios->c_cflag & CSIZE) =3D=3D CS8)
+> > > > >  		ucr2 |=3D UCR2_WS;
+> > > > > =20
+> > > > > -	if (!sport->have_rtscts)
+> > > > > +	if (!sport->have_rtscts && !sport->have_rtsgpio)
+> > > > >  		termios->c_cflag &=3D ~CRTSCTS;
+> > > > > =20
+> > > > >  	if (port->rs485.flags & SER_RS485_ENABLED) {
+> > > >=20
+> > > > This hunk makes sense.
+> > > >=20
+> > > > > @@ -1794,7 +1794,7 @@ imx_uart_set_termios(struct uart_port *port=
+, struct ktermios *termios,
+> > > > >  		else
+> > > > >  			imx_uart_rts_inactive(sport, &ucr2);
+> > > > > =20
+> > > > > -	} else if (termios->c_cflag & CRTSCTS) {
+> > > > > +	} else if ((termios->c_cflag & CRTSCTS) && sport->have_rtscts) =
+{
+> > > >=20
+> > > > I agree to add the parens here and consider this more readable than=
+ the
+> > > > alternative
+> > > >=20
+> > > > 	} else if (termios->c_cflag & CRTSCTS && sport->have_rtscts) {
+> > > >=20
+> > > > . Note there is no real win here. If the port doesn't have RTS/CTS =
+it
+> > > > doesn't matter if it tries to control the RTS line. While you could
+> > > > argue it shouldn't set the line, it only makes an externally observ=
+able
+> > > > difference if one of the SoC's pads is muxed to its RTS function.
+> > > > I claim it's more robust in this case (i.e. no uart-has-rtscts prop=
+erty
+> > > > but a pinmux for the RTS line) to control the line according to the=
+ RTS
+> > > > setting. This is (at least IMO) better and more expected than drivi=
+ng
+> > > > this line to a constant level. So I oppose to this hunk.
+> > > >=20
+> > > > >  		/*
+> > > > >  		 * Only let receiver control RTS output if we were not request=
+ed
+> > > > >  		 * to have RTS inactive (which then should take precedence).
+> > > > > @@ -1803,7 +1803,7 @@ imx_uart_set_termios(struct uart_port *port=
+, struct ktermios *termios,
+> > > > >  			ucr2 |=3D UCR2_CTSC;
+> > > > >  	}
+> > > > > =20
+> > > > > -	if (termios->c_cflag & CRTSCTS)
+> > > > > +	if ((termios->c_cflag & CRTSCTS) && sport->have_rtscts)
+> > > > >  		ucr2 &=3D ~UCR2_IRTS;
+> > > > >  	if (termios->c_cflag & CSTOPB)
+> > > > >  		ucr2 |=3D UCR2_STPB;
+> > > >=20
+> > > > Hmm, not sure. On one hand the same argument applies as above, but =
+on
+> > > > the other if there are pins that are not explicitly configured but =
+still
+> > > > in their CTS function this might affect operation in a bad way.
+> > > > Also this affects the (very usual) configuration where only RX, TX =
+and
+> > > > RTS are used and CTS is not. In this case have_rtscts is true (righ=
+t?)
+> > > > and then if there is an accidental CTS pin this is bad and not fixe=
+d by
+> > > > your change. Hmmm...
+> > >=20
+> > > I think it makes sense to always keep UCR2_IRTS set when have_rtscts =
+is unset,
+> > > as otherwise there might be two separate CTS signals in the accidenta=
+l CTS pin
+> > > case - the hardware + the GPIO one, both affecting the UART operation=
+.
+> >=20
+> > With that change you break setups that have an RTS-GPIO but rely on the
+> > HW pin for the CTS function. Not sure how common that is, but in this
+> > case you only want the first code change. You could argue that in that
+> > case have_rtscts should be set, but that's somewhat fuzzy.
+>=20
+> Such a setup should set have_rtscts IMO. In any case, my patch would not =
+break
+> existing setups, as the CRTSCTS flag simply cannot be set for !have_rtsct=
+s
+> without these changes.
+>=20
+> >=20
+> > > If we keep this change (the 3rd), the 2nd should also be included for
+> > > consistency in the code path where I just changed a comment - there, =
+UCR2_CTSC
+> > > is set only when UCR2_IRTS is unset. The 2nd and 3rd change together =
+keep
+> > > imx_uart_set_mctrl and imx_uart_set_termios aligned.
+> > >=20
+> > > >=20
+> > > > So in sum the 2nd and 3rd code change is controversial. If the firs=
+t one
+> > > > already fixes the problem you're facing, I suggest to go for only t=
+hat.
+> > > > If you still think that the 3rd (and maybe even the 2nd) change is =
+a
+> > > > good idea, I'd request to do that in a separate commit as this is a
+> > > > separate problem. Also the commit log only describes the first chan=
+ge,
+> > > > doesn't it?
+> > >=20
+> > > The commit message describes the first and third change; the second i=
+s included
+> > > to keep the setup consistent. I don't think these changes can be sepa=
+rated well
+> > > - the second and third change only affect a case that couldn't occur =
+without the
+> > > first (as (termios->c_cflag & CRTSCTS) && !sport->have_rtscts would n=
+ever have
+> > > been true). My suggestion would be that I extend the commit message t=
+o explain
+> > > each change in detail.
+> >=20
+> > I'd still request to split the patch in at least two patches. The first
+> > code change is to allow rts-gpios to work at all. The two later patches
+> > change details about how HW pins are controlled in the presence of
+> > rts-gpios
+>=20
+> Okay, will do.
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202510222048.fnK8S60G-lkp@intel.com/
+Hmm, thinking about this again, I'm not sure how to assign Fixes tags if we=
+ do
+it like this. Depending on our decision on the correct handling of hardware=
+-
+controlled RTS/CTS in the presence of the GPIOs, the first patch might intr=
+oduce
+"wrong" code which is then fixed by the second (but the second patch could =
+not
+have a Fixes tag for the first patch of the same series).
 
-All errors (new ones prefixed by >>):
+As it seems preferable not to introduce the wrong code in the first place, =
+I
+would propose to change the order of patches: The first one would update th=
+e
+handling of CTSC and IRTS with CRTSCTS in the absence of have_rtscts (witho=
+ut
+functional change, as CRTSCTS can't be set without have_rtscts), with the f=
+inal
+patch of the series allowing CRTSCTS with just have_rtsgpio.
 
-   drivers/tty/serial/sc16is7xx.c: In function 'sc16is7xx_set_baud':
->> drivers/tty/serial/sc16is7xx.c:596:9: error: implicit declaration of function 'sc16is7xx_efr_lock'; did you mean 'sc16is7xx_regs_lock'? [-Wimplicit-function-declaration]
-     596 |         sc16is7xx_efr_lock(port);
-         |         ^~~~~~~~~~~~~~~~~~
-         |         sc16is7xx_regs_lock
->> drivers/tty/serial/sc16is7xx.c:600:9: error: implicit declaration of function 'sc16is7xx_efr_unlock'; did you mean 'sc16is7xx_regs_unlock'? [-Wimplicit-function-declaration]
-     600 |         sc16is7xx_efr_unlock(port);
-         |         ^~~~~~~~~~~~~~~~~~~~
-         |         sc16is7xx_regs_unlock
+Best,
+Matthias
 
-
-vim +596 drivers/tty/serial/sc16is7xx.c
-
-dbf4ab821804df0 Hugo Villeneuve 2023-12-11  572  
-8492bd91aa05590 Hugo Villeneuve 2024-04-30  573  /*
-8492bd91aa05590 Hugo Villeneuve 2024-04-30  574   * Configure programmable baud rate generator (divisor) according to the
-8492bd91aa05590 Hugo Villeneuve 2024-04-30  575   * desired baud rate.
-8492bd91aa05590 Hugo Villeneuve 2024-04-30  576   *
-8492bd91aa05590 Hugo Villeneuve 2024-04-30  577   * From the datasheet, the divisor is computed according to:
-8492bd91aa05590 Hugo Villeneuve 2024-04-30  578   *
-8492bd91aa05590 Hugo Villeneuve 2024-04-30  579   *              XTAL1 input frequency
-8492bd91aa05590 Hugo Villeneuve 2024-04-30  580   *             -----------------------
-8492bd91aa05590 Hugo Villeneuve 2024-04-30  581   *                    prescaler
-8492bd91aa05590 Hugo Villeneuve 2024-04-30  582   * divisor = ---------------------------
-8492bd91aa05590 Hugo Villeneuve 2024-04-30  583   *            baud-rate x sampling-rate
-8492bd91aa05590 Hugo Villeneuve 2024-04-30  584   */
-dfeae619d781dee Jon Ringle      2014-04-24  585  static int sc16is7xx_set_baud(struct uart_port *port, int baud)
-dfeae619d781dee Jon Ringle      2014-04-24  586  {
-8492bd91aa05590 Hugo Villeneuve 2024-04-30  587  	unsigned int prescaler = 1;
-dfeae619d781dee Jon Ringle      2014-04-24  588  	unsigned long clk = port->uartclk, div = clk / 16 / baud;
-dfeae619d781dee Jon Ringle      2014-04-24  589  
-2e57cefc4477659 Hugo Villeneuve 2023-12-21  590  	if (div >= BIT(16)) {
-8492bd91aa05590 Hugo Villeneuve 2024-04-30  591  		prescaler = 4;
-8492bd91aa05590 Hugo Villeneuve 2024-04-30  592  		div /= prescaler;
-dfeae619d781dee Jon Ringle      2014-04-24  593  	}
-dfeae619d781dee Jon Ringle      2014-04-24  594  
-dfeae619d781dee Jon Ringle      2014-04-24  595  	/* Enable enhanced features */
-0c84bea0cabc4e2 Hugo Villeneuve 2023-12-21 @596  	sc16is7xx_efr_lock(port);
-c112653b89e0cea Lech Perczak    2022-02-21  597  	sc16is7xx_port_update(port, SC16IS7XX_EFR_REG,
-c112653b89e0cea Lech Perczak    2022-02-21  598  			      SC16IS7XX_EFR_ENABLE_BIT,
-dfeae619d781dee Jon Ringle      2014-04-24  599  			      SC16IS7XX_EFR_ENABLE_BIT);
-0c84bea0cabc4e2 Hugo Villeneuve 2023-12-21 @600  	sc16is7xx_efr_unlock(port);
-30ec514d440cf2c Phil Elwell     2018-09-12  601  
-8492bd91aa05590 Hugo Villeneuve 2024-04-30  602  	/* If bit MCR_CLKSEL is set, the divide by 4 prescaler is activated. */
-dfeae619d781dee Jon Ringle      2014-04-24  603  	sc16is7xx_port_update(port, SC16IS7XX_MCR_REG,
-dfeae619d781dee Jon Ringle      2014-04-24  604  			      SC16IS7XX_MCR_CLKSEL_BIT,
-8492bd91aa05590 Hugo Villeneuve 2024-04-30  605  			      prescaler == 1 ? 0 : SC16IS7XX_MCR_CLKSEL_BIT);
-dfeae619d781dee Jon Ringle      2014-04-24  606  
-5a91e16ba44d985 Hugo Villeneuve 2025-10-02  607  	/* Access special register set (DLL/DLH) */
-5a91e16ba44d985 Hugo Villeneuve 2025-10-02  608  	sc16is7xx_regs_lock(port, SC16IS7XX_LCR_REG_SET_SPECIAL);
-dfeae619d781dee Jon Ringle      2014-04-24  609  
-dfeae619d781dee Jon Ringle      2014-04-24  610  	/* Write the new divisor */
-dfeae619d781dee Jon Ringle      2014-04-24  611  	sc16is7xx_port_write(port, SC16IS7XX_DLH_REG, div / 256);
-dfeae619d781dee Jon Ringle      2014-04-24  612  	sc16is7xx_port_write(port, SC16IS7XX_DLL_REG, div % 256);
-dfeae619d781dee Jon Ringle      2014-04-24  613  
-5a91e16ba44d985 Hugo Villeneuve 2025-10-02  614  	/* Restore access to general register set */
-5a91e16ba44d985 Hugo Villeneuve 2025-10-02  615  	sc16is7xx_regs_unlock(port);
-7d3b793faaab130 Hugo Villeneuve 2024-07-23  616  
-8492bd91aa05590 Hugo Villeneuve 2024-04-30  617  	return DIV_ROUND_CLOSEST((clk / prescaler) / 16, div);
-dfeae619d781dee Jon Ringle      2014-04-24  618  }
-dfeae619d781dee Jon Ringle      2014-04-24  619  
-
-:::::: The code at line 596 was first introduced by commit
-:::::: 0c84bea0cabc4e2b98a3de88eeb4ff798931f056 serial: sc16is7xx: refactor EFR lock
-
-:::::: TO: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-:::::: CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+--=20
+TQ-Systems GmbH | M=C3=BChlstra=C3=9Fe 2, Gut Delling | 82229 Seefeld, Germ=
+any
+Amtsgericht M=C3=BCnchen, HRB 105018
+Gesch=C3=A4ftsf=C3=BChrer: Detlef Schneider, R=C3=BCdiger Stahl, Stefan Sch=
+neider
+https://www.tq-group.com/
