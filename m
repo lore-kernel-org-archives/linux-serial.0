@@ -1,71 +1,71 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE15A35B120;
-	Wed, 22 Oct 2025 16:59:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 208CB1E832A;
+	Wed, 22 Oct 2025 17:16:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761152351; cv=none; b=KaYcKs8XJ8g0c9PUe+z2hZfsjn2AkMNzZd4LRoVyG1rCHXQaymdH9uE3j0e149NDEdegJJcLT6VQRaSk55I/Bh0Ngc6i8I5rVjY9m82uf/AYdOT9QMndFvLgimeWdZ9vRun7pqZ9JxFqhwIe55kBOz7+F0oLfNRaQ7aegZrYKS8=
+	t=1761153364; cv=none; b=LIbtjJ/LePNzQUMP7H/Dpn3/NfUoUdtig9qFfcsghIfVZZccW8FyLBefJS+AKXpk1piUj4WGKlMzDD7T8W+Yg99wCtcWqUIOQ+ExvX7v3nS0sxFarer/GKP/QrGpYef7+1di/r++rFxZNB9yDFmcxIQeQuSAZWzzfLOXjIBOqug=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761152351; c=relaxed/simple;
-	bh=DSC879bFyWmLTMOWd8I8iBVgQPU4kWfn8MtaUuS15aM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uJJVU+suJSor5w+nozqo8WWkgSVEPawHyeD7CUWPyI+U//F+a8qD9qqo5aMuLTwuy1CFMgVNVinnBkNW9O6mn3YvwBkkvZthGb9A8+zXl40tDroyeQk1QI2F3LG8k7v9zbLKV/mJZ/AuLAEj8piSMdAX6WGmh196Re01AnWBZVE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=BdVWqzMY; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1761153364; c=relaxed/simple;
+	bh=JqfWxnVTT1ypdicUI7AC8IhNRcbcomoW0OwiZ35tAoU=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=g108N2zcdrRgMuAq2bcPn7rDcwBa3T2A7OgxCb6qzbMHIgNqc05GTEGNQhoQlkGl8/BrAChP8Ujceq0V4qyQYccEI53MoEfswf2Rts4BT+GGBNpK4Cg8qt3FWAKS3FKVow8CNReAbew/rm6g8Ji6u3+tRNu4sxs4tHADwlV30RU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=TuvZrrCt; arc=none smtp.client-ip=220.197.31.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="BdVWqzMY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B08FC4CEE7;
-	Wed, 22 Oct 2025 16:59:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1761152351;
-	bh=DSC879bFyWmLTMOWd8I8iBVgQPU4kWfn8MtaUuS15aM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=BdVWqzMYLcVVHi8iTcrdbYWRapBG++IhnnZCtVTks1iC1U/rqDNeQiDf5CvSzjW3v
-	 dCpNqgyaKSa/EuuFJIpCMHAkPr+++SK3cS7qEDjFyVcRxJUfv8VmUXTAWp00u/StAC
-	 M5g/nsIrLJIUSoP2HLu/gbkFtAHN2Ewu5skxCeQ4=
-Date: Wed, 22 Oct 2025 18:59:05 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Xin Zhao <jackzxcui1989@163.com>
-Cc: hch@infradead.org, jirislaby@kernel.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, tj@kernel.org
-Subject: Re: [PATCH v1 2/2] serial: 8250_dma: add parameter to queue work on
- specific cpu
-Message-ID: <2025102206-gainfully-chariot-407d@gregkh>
-References: <2025102107-player-baggie-37fc@gregkh>
- <20251022144707.160181-1-jackzxcui1989@163.com>
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="TuvZrrCt"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=rZ
+	/lg3z1zDkgxuJypIf/Zk3oeyOe4TGBOeOsZlGv18g=; b=TuvZrrCtu/Rck3SJJ5
+	zlV8vYHooWcpkklayYhqpJwO1st37YBHgLFiU/4oXmJATYf2kkq3Y/EF+IMiMiof
+	3JSLheAYnh+Vu2/dGCA9OGnZ0+twexXS+8E3UZnWTO9zWogX1jVDkEg6XZS+/37y
+	6g69R4V99VpmtPj0SqDYHh3IQ=
+Received: from zhaoxin-MS-7E12.. (unknown [])
+	by gzga-smtp-mtada-g0-4 (Coremail) with SMTP id _____wAHtBIxEflovIDnBg--.5272S2;
+	Thu, 23 Oct 2025 01:15:31 +0800 (CST)
+From: Xin Zhao <jackzxcui1989@163.com>
+To: tj@kernel.org
+Cc: gregkh@linuxfoundation.org,
+	hch@infradead.org,
+	jackzxcui1989@163.com,
+	jirislaby@kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH v1 2/2] serial: 8250_dma: add parameter to queue work on specific cpu
+Date: Thu, 23 Oct 2025 01:15:29 +0800
+Message-Id: <20251022171529.259131-1-jackzxcui1989@163.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <aPkIUa73Xfr8NA-q@slm.duckdns.org>
+References: <aPkIUa73Xfr8NA-q@slm.duckdns.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251022144707.160181-1-jackzxcui1989@163.com>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:_____wAHtBIxEflovIDnBg--.5272S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWruw1DZF1UZFWkCrW7WrWDCFg_yoWxAwcEgr
+	ZFgr4kKF4UGr9F93W0gr4fArnYqryDGF18tFW8trnrJry3Aa93ArZ8urn5Wr43X34rXr9x
+	Zw43Ww4UCrn7WjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+	9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRtl1v7UUUUU==
+X-CM-SenderInfo: pmdfy650fxxiqzyzqiywtou0bp/1tbibgvuCmj4-VC6xAACsA
 
-On Wed, Oct 22, 2025 at 10:47:07PM +0800, Xin Zhao wrote:
-> > This should come from a hardware definition somewhere in your DT, not as
-> > a user-selectable option.  And again, why not just tie it to the cpu
-> > where the irq came from automatically?
+On Wed, 22 Oct 2025 06:37:37 -1000 Tejun Heo <tj@kernel.org> wrote:
+
+> > Considering the current situation is still limited to the RT-Linux scenario, if
+> > possible, I will add the logic to create this workqueue only when CONFIG_PREEMPT_RT
+> > is enabled in the next patch. By setting WQ_SYS, it will allow user space to dynamically
+> > modify it. Additionally, in tty_flip_buffer_push, I will check if a private workqueue
+> > has been created; if so, I will use the private workqueue to queue the work task.
 > 
-> I don't think binding the work task to the CPU that handles the interrupt is feasible,
-> because, in practice, this hardware interrupt is evenly distributed across all cores
-> in our system.
+> Creating a workqueue isn't that expensive. Might as well just always create
+> a dedicated workqueue.
 
-I suggest fixing that, that's ripe for lots of latency as cores hit
-cache misses and the like.  Learn from the networking people, you want
-the cpu that handled the irq to handle the data processing too.  They
-learned that years ago.
+OK, I'll just always create one. Thanks.
 
-> Moreover, from the ftrace data we captured, the IRQ handler thread that
-> wakes up the kworker threads in RT-Linux is also distributed across various CPUs by
-> default.
+--
+Xin Zhao
 
-Again, don't do that, bind things to cpus that previously handled the
-data if at all possible to avoid these latencies.  That's what you are
-trying to do here anyway, so you kind of have proof of that being a
-viable solution :)
-
-good luck!
-
-greg k-h
