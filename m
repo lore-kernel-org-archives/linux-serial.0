@@ -1,116 +1,153 @@
-Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.2])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6257432A3E5;
-	Wed, 22 Oct 2025 14:00:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DE1134B664;
+	Wed, 22 Oct 2025 14:08:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761141640; cv=none; b=CWJluwCYh8+cjw/X3SghN/AGV9AaRCCJCY5PP9k8eFmycyr6cio0ivSoWiUn8g9u6ZHc5kIvg1Me9u3wybBhaDG9mCYCQx9jp3buR+jKZvMkLTfdNXrG4qKyi3QjHarZzH0iNymW+WNgvcQnIVVtylhM3dtPqDe8N/nsSQt0vkI=
+	t=1761142105; cv=none; b=re7c0J7YJiTQ5IkjlPD/NuqjKUVKQmFQWqinJ4eLsJeRLofVfSIOu1AEFqQ9IfrQjSjDrgX7TxWeYCF8Q5KuwTTkS5SIljahEpC7FJQ2s3RWnfrqJiHg6FXn55Ge21Dya+cK8vgippYkZ+rEjitOTUkFD0VhNay2IRh+1mgm+aw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761141640; c=relaxed/simple;
-	bh=zIIiNf2cHEfC9zcHd0O6OLmQhc1t9tun7LtoZJYeZag=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=dEvXQqqblx4lib/Pf4+kxjwqFD7AZZGKzlsPZWqMuA5iPD2remif/3IIg87Q6LXykVLBjEnGe+6ONX2+sLQby2jnooSwOqJFFj9hcBU/BwlVATDxBCxFif4C1kGThL1Z0lFWvSK08P0Rpc7ady3+LowiPppXRjysIvbXZ0pb2II=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=g+UZKXX8; arc=none smtp.client-ip=117.135.210.2
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1761142105; c=relaxed/simple;
+	bh=0cntgMCkpELX2mMus6h4KC/81rRj41w66TUYtJFxMb8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=tfGTneoRiYDQ5JMCiCwMZ1adNLiIoLdFit1GfeJEGKYwRrzqRagTHxkNq+Sxu58Inioq2T+7zQ39cVldeeGRkiuBS8hqsvlMcmUc0PTlIPxtisHTkLV6+bWLqaZxE1yCf1mkDdQ1XmA3JjRCKcQhjOPx8elSDTLBfechvQ081a8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=kIDhETLY; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="g+UZKXX8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=tP
-	Xou8UozitAgzTiw07XxRNgqZCXX5BLf3Rz2g1evkQ=; b=g+UZKXX8RkjGACabyr
-	sOxVO1kWnaY5BR3PLC7k/y1Xo9eJYx/8EH7IsgS9hP8IXLtJHMjfM/j/wyXL2R9q
-	+6mjOdX1gpDvbzF05VKqNhpV2YXFlBz1RSga+bcHiznOmcx0j4gkNwM7v/ZP7fxG
-	379OokX3y6jzDG+N5o9qqWwjg=
-Received: from zhaoxin-MS-7E12.. (unknown [])
-	by gzga-smtp-mtada-g1-2 (Coremail) with SMTP id _____wAHjfRg4_ho4VIZCA--.7951S2;
-	Wed, 22 Oct 2025 22:00:01 +0800 (CST)
-From: Xin Zhao <jackzxcui1989@163.com>
-To: tj@kernel.org
-Cc: gregkh@linuxfoundation.org,
-	hch@infradead.org,
-	jackzxcui1989@163.com,
-	jirislaby@kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH v1 2/2] serial: 8250_dma: add parameter to queue work on specific cpu
-Date: Wed, 22 Oct 2025 21:59:59 +0800
-Message-Id: <20251022135959.127893-1-jackzxcui1989@163.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <aPfV6IXPk-j59AhQ@slm.duckdns.org>
-References: <aPfV6IXPk-j59AhQ@slm.duckdns.org>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="kIDhETLY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BABBC4CEFF;
+	Wed, 22 Oct 2025 14:08:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1761142104;
+	bh=0cntgMCkpELX2mMus6h4KC/81rRj41w66TUYtJFxMb8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=kIDhETLYYAF4HvxrNI0FiscUxcSx03WFX1jz1dYQ/QMYO7UXFNE0LPoKemAQaDm9P
+	 TW/vN3VwWSjxd42cAe/Whnox9FNHwqiYLzuUAgw0F/W818dmODW9JOd6AjxXZTx7hI
+	 ucwGhxrjzKAbQZxcE2JeS+EOUZDNl7QYI9FJucvg=
+Date: Wed, 22 Oct 2025 16:08:21 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Hugo Villeneuve <hugo@hugovil.com>
+Cc: kernel test robot <lkp@intel.com>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	oe-kbuild-all@lists.linux.dev, linux-serial@vger.kernel.org
+Subject: Re: [tty:tty-testing 11/22] drivers/tty/serial/sc16is7xx.c:596:9:
+ error: implicit declaration of function 'sc16is7xx_efr_lock'; did you mean
+ 'sc16is7xx_regs_lock'?
+Message-ID: <2025102247-siesta-straw-5006@gregkh>
+References: <202510222048.fnK8S60G-lkp@intel.com>
+ <20251022095524.76e0377f7efcbce531ba52be@hugovil.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wAHjfRg4_ho4VIZCA--.7951S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxWFyDJr1fArWfCrWDWF1fCrg_yoW5Kw48pF
-	WY9FW5ta1kJa4xArZrCw4xXFyrG3y8Xr47GryfG3WUAwsIg398ZryfKFy5Xas7Crn2q34j
-	vryqk3yqya4qvaDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pRnSdDUUUUU=
-X-CM-SenderInfo: pmdfy650fxxiqzyzqiywtou0bp/xtbCwAFpc2j442FsLgAA3L
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251022095524.76e0377f7efcbce531ba52be@hugovil.com>
 
-On Tue, 21 Oct 2025 08:50:16 -1000 Tejun Heo <tj@kernel.org> wrote:
-
-> > I also agree that tasks requiring continuous real-time execution should be
-> > handled by kthread workers. However, while the ideal situation is appealing,
-> > the reality is challenging. A large amount of driver code in the system uses
-> > the system's pwq and worker_pool management, as this API is very convenient.
-> > Refactoring the code carries significant change risks, and even with a team
-> > effort, it's hard to bear such risks.
+On Wed, Oct 22, 2025 at 09:55:24AM -0400, Hugo Villeneuve wrote:
+> On Wed, 22 Oct 2025 21:07:24 +0800
+> kernel test robot <lkp@intel.com> wrote:
 > 
-> kthread_work's API is really similar to workqueue to make it easy to switch
-> between the two. We probably didn't go far enough tho and it may make sense
-> to allow workqueue to always use dedicated fixed set of workers (e.g. by
-> allowing a workqueue to create a private pool of workers) when configured
-> from userspace so that this becomes a configuration problem which doesn't
-> require code changes.
-
-kthread_work's API is greate for system which do not care about throughput but
-concern with real-time performance. It is suitable for scenarios where a single
-work instance corresponds to a single workqueue. In situations where a
-workqueue corresponds to multiple different works, using kthread_work does not
-create threads as needed. To address this, we might consider adding a new
-interface, perhaps called kthread_run_workqueue. Unlike kthread_run_worker,
-this new interface would determine whether to create a new thread based on the
-pointer to the work instance passed in, ensuring that each work uniquely
-corresponds to a thread. This approach has several advantages: it allows for
-seamless switching between the existing workqueue's queue work logic and
-kthread_work, and it can help avoid missing any work associated with a particular
-workqueue, especially in large corebase containing multiple layers.
-If the kthread_work API does not provide the functionality to create different
-threads for different works, then I think a private worker pool is meaningful.
-However, it may still lead to potential blocking for subsequent works if multiple
-different works arrive concurrently while there is only one active kworker thread.
-
-> > Adding flags like WQ_HIGHPRI or even introducing WQ_RT from a functional
-> > development perspective doesn't pose too much concern; we just need to focus
+> > tree:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+> > head:   cdca3a77b423691b0e3780653642cd5b31de8bd8
+> > commit: 5a91e16ba44d9850088278ebe209b5c533f87cb8 [11/22] serial: sc16is7xx: define common register access function
+> > config: x86_64-buildonly-randconfig-003-20251022 (https://download.01.org/0day-ci/archive/20251022/202510222048.fnK8S60G-lkp@intel.com/config)
+> > compiler: gcc-14 (Debian 14.2.0-19) 14.2.0
+> > reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20251022/202510222048.fnK8S60G-lkp@intel.com/reproduce)
+> > 
+> > If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> > the same patch/commit), kindly add following tags
+> > | Reported-by: kernel test robot <lkp@intel.com>
+> > | Closes: https://lore.kernel.org/oe-kbuild-all/202510222048.fnK8S60G-lkp@intel.com/
+> > 
+> > All errors (new ones prefixed by >>):
+> > 
+> >    drivers/tty/serial/sc16is7xx.c: In function 'sc16is7xx_set_baud':
+> > >> drivers/tty/serial/sc16is7xx.c:596:9: error: implicit declaration of function 'sc16is7xx_efr_lock'; did you mean 'sc16is7xx_regs_lock'? [-Wimplicit-function-declaration]
+> >      596 |         sc16is7xx_efr_lock(port);
+> >          |         ^~~~~~~~~~~~~~~~~~
+> >          |         sc16is7xx_regs_lock
+> > >> drivers/tty/serial/sc16is7xx.c:600:9: error: implicit declaration of function 'sc16is7xx_efr_unlock'; did you mean 'sc16is7xx_regs_unlock'? [-Wimplicit-function-declaration]
+> >      600 |         sc16is7xx_efr_unlock(port);
+> >          |         ^~~~~~~~~~~~~~~~~~~~
+> >          |         sc16is7xx_regs_unlock
+> > 
+> > 
+> > vim +596 drivers/tty/serial/sc16is7xx.c
+> > 
+> > dbf4ab821804df0 Hugo Villeneuve 2023-12-11  572  
+> > 8492bd91aa05590 Hugo Villeneuve 2024-04-30  573  /*
+> > 8492bd91aa05590 Hugo Villeneuve 2024-04-30  574   * Configure programmable baud rate generator (divisor) according to the
+> > 8492bd91aa05590 Hugo Villeneuve 2024-04-30  575   * desired baud rate.
+> > 8492bd91aa05590 Hugo Villeneuve 2024-04-30  576   *
+> > 8492bd91aa05590 Hugo Villeneuve 2024-04-30  577   * From the datasheet, the divisor is computed according to:
+> > 8492bd91aa05590 Hugo Villeneuve 2024-04-30  578   *
+> > 8492bd91aa05590 Hugo Villeneuve 2024-04-30  579   *              XTAL1 input frequency
+> > 8492bd91aa05590 Hugo Villeneuve 2024-04-30  580   *             -----------------------
+> > 8492bd91aa05590 Hugo Villeneuve 2024-04-30  581   *                    prescaler
+> > 8492bd91aa05590 Hugo Villeneuve 2024-04-30  582   * divisor = ---------------------------
+> > 8492bd91aa05590 Hugo Villeneuve 2024-04-30  583   *            baud-rate x sampling-rate
+> > 8492bd91aa05590 Hugo Villeneuve 2024-04-30  584   */
+> > dfeae619d781dee Jon Ringle      2014-04-24  585  static int sc16is7xx_set_baud(struct uart_port *port, int baud)
+> > dfeae619d781dee Jon Ringle      2014-04-24  586  {
+> > 8492bd91aa05590 Hugo Villeneuve 2024-04-30  587  	unsigned int prescaler = 1;
+> > dfeae619d781dee Jon Ringle      2014-04-24  588  	unsigned long clk = port->uartclk, div = clk / 16 / baud;
+> > dfeae619d781dee Jon Ringle      2014-04-24  589  
+> > 2e57cefc4477659 Hugo Villeneuve 2023-12-21  590  	if (div >= BIT(16)) {
+> > 8492bd91aa05590 Hugo Villeneuve 2024-04-30  591  		prescaler = 4;
+> > 8492bd91aa05590 Hugo Villeneuve 2024-04-30  592  		div /= prescaler;
+> > dfeae619d781dee Jon Ringle      2014-04-24  593  	}
+> > dfeae619d781dee Jon Ringle      2014-04-24  594  
+> > dfeae619d781dee Jon Ringle      2014-04-24  595  	/* Enable enhanced features */
+> > 0c84bea0cabc4e2 Hugo Villeneuve 2023-12-21 @596  	sc16is7xx_efr_lock(port);
+> > c112653b89e0cea Lech Perczak    2022-02-21  597  	sc16is7xx_port_update(port, SC16IS7XX_EFR_REG,
+> > c112653b89e0cea Lech Perczak    2022-02-21  598  			      SC16IS7XX_EFR_ENABLE_BIT,
+> > dfeae619d781dee Jon Ringle      2014-04-24  599  			      SC16IS7XX_EFR_ENABLE_BIT);
+> > 0c84bea0cabc4e2 Hugo Villeneuve 2023-12-21 @600  	sc16is7xx_efr_unlock(port);
+> > 30ec514d440cf2c Phil Elwell     2018-09-12  601  
+> > 8492bd91aa05590 Hugo Villeneuve 2024-04-30  602  	/* If bit MCR_CLKSEL is set, the divide by 4 prescaler is activated. */
+> > dfeae619d781dee Jon Ringle      2014-04-24  603  	sc16is7xx_port_update(port, SC16IS7XX_MCR_REG,
+> > dfeae619d781dee Jon Ringle      2014-04-24  604  			      SC16IS7XX_MCR_CLKSEL_BIT,
+> > 8492bd91aa05590 Hugo Villeneuve 2024-04-30  605  			      prescaler == 1 ? 0 : SC16IS7XX_MCR_CLKSEL_BIT);
+> > dfeae619d781dee Jon Ringle      2014-04-24  606  
+> > 5a91e16ba44d985 Hugo Villeneuve 2025-10-02  607  	/* Access special register set (DLL/DLH) */
+> > 5a91e16ba44d985 Hugo Villeneuve 2025-10-02  608  	sc16is7xx_regs_lock(port, SC16IS7XX_LCR_REG_SET_SPECIAL);
+> > dfeae619d781dee Jon Ringle      2014-04-24  609  
+> > dfeae619d781dee Jon Ringle      2014-04-24  610  	/* Write the new divisor */
+> > dfeae619d781dee Jon Ringle      2014-04-24  611  	sc16is7xx_port_write(port, SC16IS7XX_DLH_REG, div / 256);
+> > dfeae619d781dee Jon Ringle      2014-04-24  612  	sc16is7xx_port_write(port, SC16IS7XX_DLL_REG, div % 256);
+> > dfeae619d781dee Jon Ringle      2014-04-24  613  
+> > 5a91e16ba44d985 Hugo Villeneuve 2025-10-02  614  	/* Restore access to general register set */
+> > 5a91e16ba44d985 Hugo Villeneuve 2025-10-02  615  	sc16is7xx_regs_unlock(port);
+> > 7d3b793faaab130 Hugo Villeneuve 2024-07-23  616  
+> > 8492bd91aa05590 Hugo Villeneuve 2024-04-30  617  	return DIV_ROUND_CLOSEST((clk / prescaler) / 16, div);
+> > dfeae619d781dee Jon Ringle      2014-04-24  618  }
+> > dfeae619d781dee Jon Ringle      2014-04-24  619  
+> > 
+> > :::::: The code at line 596 was first introduced by commit
+> > :::::: 0c84bea0cabc4e2b98a3de88eeb4ff798931f056 serial: sc16is7xx: refactor EFR lock
+> > 
+> > :::::: TO: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > :::::: CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > 
+> > -- 
+> > 0-DAY CI Kernel Test Service
+> > https://github.com/intel/lkp-tests/wiki
 > 
-> WQ_RT really doesn't make sense given that you can't even tell whether any
-> given work item would have a worker ready for it. What does RT priority do
-> when you need to go and create a new kworker?
+> Hi Greg,
+> this patch, and other patches in this series, depends on the patch
+> "serial: sc16is7xx: remove useless enable of enhanced features"
+> that you just added to your tty-linus tree.
+> 
+> If you first add this patch to tty-testing, then the error
+> disappear.
 
-Indeed, WQ_RT cannot address the issue of multiple different works arriving
-concurrently in the same worker pool leading to delays, as just mentioned.
-The creation of new threads on demand in a work queue, from the perspective
-of the current code implementation, is inherently non-real-time.
-It seems that only the kthread_work mechanism can ensure that work tasks are
-executed in real-time. I will use it to solve another GPU-related kworker
-issue that I encounter in our system.
+Ugh, that was not obvious at all :(
 
-> Note that workqueue property changes don't need to be hard coded. If you
-> make the code use its own workqueue and set WQ_SYSFS, you can change its
-> properties from userspace through sysfs interface.
+I'll go drop all of these from my tty-next branch, can you resend them
+when I merge -rc3 into that branch so that things do not break?
 
-Regarding the current kworker preemption issue with 8250_dma, based on our
-current measurements, using the kworker API is sufficient. Additionally, if
-we switch to kthread_work, the tty driver layer would require significant
-modifications. Therefore, I will adopt the WQ_SYSFS approach you mentioned,
-as it is quite convenient for dynamic control from user space.
+thanks,
 
---
-Xin Zhao
-
+greg k-h
