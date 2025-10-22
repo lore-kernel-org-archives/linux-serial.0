@@ -1,134 +1,115 @@
-Received: from mail-oa1-f41.google.com (mail-oa1-f41.google.com [209.85.160.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB1CE2F28F9
-	for <linux-serial@vger.kernel.org>; Wed, 22 Oct 2025 06:55:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75CDA315D42;
+	Wed, 22 Oct 2025 09:57:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761116158; cv=none; b=jIh/iIMkzqWcFA4CCD59r1D8O3dzrNf3EfgAkJT7R1KY8wgZ2vSd5PvC4pyz2xCxm3/flzEzcNbzIQtkg1F9tKvt5K3TgnX2zoGoo/ZRQCSmx5ORUOuwhQmbIopz5hrC1cs0J8UdHpBx/JcbVFZpKEZ8mXorE42vd13fBogDEjg=
+	t=1761127067; cv=none; b=BYwi8iK4LqoeUgWcmxwwcSEdXmclcuAj0+YHd2LY5srezEq73pxm8YfO5QthaBMxDlUuLU9tHQ0BUb9AOm3VmtZTvzUcRIp2Dj7qVL4kiDDfpzfnME4lSwpdRLvfUyEyW62benlbW7xFaaRBU38IT8S08ALFHq8kdGTQup+pyJU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761116158; c=relaxed/simple;
-	bh=WkDEzB5N4V8tlJFRXR5ysA8N/DAcuP7R5T1XoyuKbJE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Wa17iMccoFNPX6YtgVtBP2BcstZFUcEZC+p7BkNEozArKQRLXWA9KY2mLGl/IUHCVbQrNkip+Alx0oKFRwIio1ARPkEygWmlJr+A1ZwNhqF3HBeW/gX3tny7yjGX7tSWnI8IMhl6L/7vrUJXhpY+bbDUlPGvkqoRRbK/9m3C5os=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KRm6jnI7; arc=none smtp.client-ip=209.85.160.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1761127067; c=relaxed/simple;
+	bh=7A1KpfR0RlRnCRdnu9t09fhdInNhsVZdUl5tQbeore4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DURIyVocZ0kOhPAgIDqGUNXuh3jpGR3PMSQk0AYZr+BAONpyUUt3ttoMiFPNbfnhCnKcCMr5MoCRGDLMy+zjlI+40wBhffLdm6zed7q2CAVdCK29P6uUM3Elymm0WkQStx57fy3YcdKtOUaNIXJhiL4t34vXi79EASX2/W5M5l8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=pNqJ5pC8; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KRm6jnI7"
-Received: by mail-oa1-f41.google.com with SMTP id 586e51a60fabf-3c9975a3d6eso1333442fac.2
-        for <linux-serial@vger.kernel.org>; Tue, 21 Oct 2025 23:55:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1761116155; x=1761720955; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=T+geXNLPoYT+g7n3ssTeMIPZBREGJuzg2Y1yRpcxjwI=;
-        b=KRm6jnI7vvLFmAuj/rRP4uicZRWQYt7BKFYx3TAzNT7bHcAmJCzw2WZrJwd4dOHRC0
-         9hIu7/hC9pgFhulagq6z/8pzMABp8a8zW63aHg9Yd3HLoc0j/A1Fo9YVAAwbvqGZhXFg
-         vFZCT0K0wu+2pNukzBDIS7WpPdw7BUFo6Qfu5GLrH4uoqGIvWD5qCb9UdzbsHAaOsbjT
-         paCdtDTWYa0gcEla2FBKD0NU9a5BCE4b/A6SfTlMW5vmKgcK33WzWhgIO2HA/4WwEypA
-         GIyFmOhX7XP639gNKAKgMhxXDgFOg8F0Kjv70wM9zsarIacYm8pfE4hAqEE1tx4suaww
-         oxgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1761116155; x=1761720955;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=T+geXNLPoYT+g7n3ssTeMIPZBREGJuzg2Y1yRpcxjwI=;
-        b=eI+Ven0Wfb/6SCz6mxc5GNlaSoTsIAWZ+nihEOxnnfs+DmCMecjDyaLjS8ffZnoGo8
-         tEI/qqxlQOzGLQehAOpDQrXhlj8iMkJdGt3bg2XnQAp9qVrnzdmD5VLEGjh6Ip1BRaH5
-         V6crOawnn9JteU7swGiQo+cKwLnenwRxEjyW2ye5ASQ2QZ6AzebZLnpvatsyLslAsWqf
-         iFpFG/P+0glTPfbkPdPrUlqaFPaFkiwdVxrt5LVeeNaamXMkaytQS/zGuBgCgLtaQybV
-         L12f6G8hr0U6PbaUuWdpZgP4Ttbebhy7Os/Ut29uoP1vOvlYW5HLzM6AoV9TP7sheXH+
-         IRDQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUR2pVb3A3CGZ/GJr4yK54FFD+gyQ2AALseKbdnI0WVNbw+VClwSRYTEjxC4sInET/BxkTNkoRuZEKCo2A=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzsfLw6kIrWKmztD/MD2Ri2YUrNJpNPJT2RZuiUYx5T2T8jliFB
-	lODOgpAnd7aBMGTzZ65ygCILeN6wsutsMuZi2osjdoyQzGBR6RmO4ExABnX3Zg73mO+tXvl8uSn
-	nH3S+yGs0I/Ehcl52ok0QhwU66SzCl3hVj9O3
-X-Gm-Gg: ASbGnctGwAwiy7UhxLwG4YKEKJsKohSnMlINkbiEizDxMmYuDBtsg/kmxh2x33WIVXE
-	KgHrj137HXnx0nJl76fAWAl8yI1zjrGoPVhcvzJi4iwZ2/KYGeQtf4JBmrB9H3oNqFQnyo7ytOF
-	IvUo+b3C3Dnr73r2HJouqx6mEOdYxLaB9N3bQ9wz3mqA13TtF2QGzae7CqzqaZTlGohO8DRWuYm
-	XPOlmHqiBnnF3I1UAFp6T8OMQW/AWGNhnCNeHi5nM+Mpiy6lEerJiDZLfTuzJfQ/Is4Uw==
-X-Google-Smtp-Source: AGHT+IGwWUfJwaZxrSmSqwuOc1uIOsgsZY0s0HRs122BLbIZBBj56tnMVXEMMc5Eyr21rdDe3zOExr3hezrVk3Px2gw=
-X-Received: by 2002:a05:6870:4e8c:b0:30b:cd02:297c with SMTP id
- 586e51a60fabf-3c98d17dc37mr8955692fac.35.1761116155546; Tue, 21 Oct 2025
- 23:55:55 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="pNqJ5pC8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A439CC4CEE7;
+	Wed, 22 Oct 2025 09:57:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1761127067;
+	bh=7A1KpfR0RlRnCRdnu9t09fhdInNhsVZdUl5tQbeore4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=pNqJ5pC8uPR3bKmyL5D+Cnsj3weyAt9W5wzH2U2cZSVdz4LX6KZlTeTGZy6+D8gnI
+	 J4+ebKDXyoNd/ohCcjVlTldhy4ZKSCGFZ1+GjZOLM1H7yXCOva1HGOrgRvBdcAKyiJ
+	 2uT9CRW8lCLJON92XOhx84HYrhbio+SqouzQB5aw=
+Date: Wed, 22 Oct 2025 11:57:44 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Peng Zhang <zhangpeng.00@bytedance.com>
+Cc: jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	songmuchun@bytedance.com, stable@vger.kernel.org
+Subject: Re: [PATCH v2] serial: 8250: always disable IRQ during THRE test
+Message-ID: <2025102231-fender-bovine-ecd9@gregkh>
+References: <20251016070516.37549-1-zhangpeng.00@bytedance.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20251022030840.956589-1-Wenhua.Lin@unisoc.com>
-In-Reply-To: <20251022030840.956589-1-Wenhua.Lin@unisoc.com>
-From: Chunyan Zhang <zhang.lyra@gmail.com>
-Date: Wed, 22 Oct 2025 14:55:17 +0800
-X-Gm-Features: AS18NWBdi_EIGFjDegtPbIDhcO6RDB-JPNHUp1fKzjacRS6sWcnJcGCwsuuLi3E
-Message-ID: <CAAfSe-uq6GszSLgtM+UBuwJ6V1Bt0_1Ard8cb6e9MMCsdpJPqw@mail.gmail.com>
-Subject: Re: [PATCH] serial: sprd: Return -EPROBE_DEFER when uart clock is not ready
-To: Wenhua Lin <Wenhua.Lin@unisoc.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Orson Zhai <orsonzhai@gmail.com>, Baolin Wang <baolin.wang@linux.alibaba.com>, 
-	Cixi Geng <cixi.geng@linux.dev>, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, wenhua lin <wenhua.lin1994@gmail.com>, 
-	Xiongpeng Wu <xiongpeng.wu@unisoc.com>, Zhaochen Su <Zhaochen.Su@unisoc.com>, 
-	Zhirong Qiu <Zhirong.Qiu@unisoc.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251016070516.37549-1-zhangpeng.00@bytedance.com>
 
-On Wed, 22 Oct 2025 at 11:09, Wenhua Lin <Wenhua.Lin@unisoc.com> wrote:
->
-> In sprd_clk_init(), when devm_clk_get() returns -EPROBE_DEFER
-> for either uart or source clock, we should propagate the
-> error instead of just warning and continuing with NULL clocks.
->
-> Currently the driver only emits a warning when clock acquisition
-> fails and proceeds with NULL clock pointers. This can lead to
-> issues later when the clocks are actually needed. More importantly,
-> when the clock provider is not ready yet and returns -EPROBE_DEFER,
-> we should return this error to allow deferred probing.
->
-> This change adds explicit checks for -EPROBE_DEFER after both:
-> 1. devm_clk_get(uport->dev, uart)
-> 2. devm_clk_get(uport->dev, source)
->
-> When -EPROBE_DEFER is encountered, the function now returns
-> -EPROBE_DEFER to let the driver framework retry probing
-> later when the clock dependencies are resolved.
->
-> Signed-off-by: Wenhua Lin <Wenhua.Lin@unisoc.com>
+On Thu, Oct 16, 2025 at 03:05:16PM +0800, Peng Zhang wrote:
+> commit 039d4926379b ("serial: 8250: Toggle IER bits on only after irq
+> has been set up") moved IRQ setup before the THRE test, so the interrupt
+> handler can run during the test and race with its IIR reads. This can
+> produce wrong THRE test results and cause spurious registration of the
+> serial8250_backup_timeout timer. Unconditionally disable the IRQ for the
+> short duration of the test and re-enable it afterwards to avoid the race.
+> 
+> Cc: stable@vger.kernel.org
+> Fixes: 039d4926379b ("serial: 8250: Toggle IER bits on only after irq has been set up")
+> Signed-off-by: Peng Zhang <zhangpeng.00@bytedance.com>
 > ---
->  drivers/tty/serial/sprd_serial.c | 6 ++++++
->  1 file changed, 6 insertions(+)
->
-> diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
-> index 8c9366321f8e..092755f35683 100644
-> --- a/drivers/tty/serial/sprd_serial.c
-> +++ b/drivers/tty/serial/sprd_serial.c
-> @@ -1133,6 +1133,9 @@ static int sprd_clk_init(struct uart_port *uport)
->
->         clk_uart = devm_clk_get(uport->dev, "uart");
->         if (IS_ERR(clk_uart)) {
-> +               if (PTR_ERR(clk_uart) == -EPROBE_DEFER)
-> +                       return -EPROBE_DEFER;
-> +
+>  drivers/tty/serial/8250/8250_port.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> index 719faf92aa8a..f1740cc91143 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -2147,8 +2147,7 @@ static void serial8250_THRE_test(struct uart_port *port)
+>  	if (up->port.flags & UPF_NO_THRE_TEST)
+>  		return;
+>  
+> -	if (port->irqflags & IRQF_SHARED)
+> -		disable_irq_nosync(port->irq);
+> +	disable_irq(port->irq);
+>  
+>  	/*
+>  	 * Test for UARTs that do not reassert THRE when the transmitter is idle and the interrupt
+> @@ -2170,8 +2169,7 @@ static void serial8250_THRE_test(struct uart_port *port)
+>  		serial_port_out(port, UART_IER, 0);
+>  	}
+>  
+> -	if (port->irqflags & IRQF_SHARED)
+> -		enable_irq(port->irq);
+> +	enable_irq(port->irq);
+>  
+>  	/*
+>  	 * If the interrupt is not reasserted, or we otherwise don't trust the iir, setup a timer to
+> -- 
+> 2.20.1
+> 
+> 
 
-You are making this clock mandatory, sprd_serial driver could work as
-serial ports for logs output without this "uart" clock.
+Hi,
 
->                 dev_warn(uport->dev, "uart%d can't get uart clock\n",
->                          uport->line);
->                 clk_uart = NULL;
-> @@ -1140,6 +1143,9 @@ static int sprd_clk_init(struct uart_port *uport)
->
->         clk_parent = devm_clk_get(uport->dev, "source");
->         if (IS_ERR(clk_parent)) {
-> +               if (PTR_ERR(clk_parent) == -EPROBE_DEFER)
-> +                       return -EPROBE_DEFER;
-> +
->                 dev_warn(uport->dev, "uart%d can't get source clock\n",
->                          uport->line);
->                 clk_parent = NULL;
-> --
-> 2.34.1
->
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
+
+You are receiving this message because of the following common error(s)
+as indicated below:
+
+- This looks like a new version of a previously submitted patch, but you
+  did not list below the --- line any changes from the previous version.
+  Please read the section entitled "The canonical patch format" in the
+  kernel file, Documentation/process/submitting-patches.rst for what
+  needs to be done here to properly describe this.
+
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
+
+thanks,
+
+greg k-h's patch email bot
