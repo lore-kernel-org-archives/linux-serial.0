@@ -1,36 +1,53 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BD9E2566F5;
-	Fri, 24 Oct 2025 11:21:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9079B3191C4
+	for <linux-serial@vger.kernel.org>; Fri, 24 Oct 2025 12:40:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761304909; cv=none; b=PDNo31iYfRL6hyYgizoIzr7RMvV8xXlWOQSidssMAj/kFRZMU8BO4I9oTjNTP46rbiv6ViKxE64JYJ2vHR1/y7hgc87sM+cHFFXNQ05JqkAalSVplAyK9FOYZ+iadIGZkonCHjjiiKUTNlmlglQNWDnPOazI3CKLUSwwPENrKaQ=
+	t=1761309655; cv=none; b=iEW7Xu8P4ZqmAmIdpE7aRZQueCnur72lyMqZX+tTyGPpvkeMy+k4ASC6Vgss0E292SdiD2Y2wt+uqyh5K28n51uy11xEIDzynvzy2rkK1uJJLmvY3DgoxiLHRYKp+2cehTiDWiC/Hhi7pePhvx0hQcw//oVI4O9eYoZm/pvW9yU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761304909; c=relaxed/simple;
-	bh=WVlWBgMcAuxyFhK1LJ4LllnwyQPDiIhUoSnMvvmVLoE=;
+	s=arc-20240116; t=1761309655; c=relaxed/simple;
+	bh=PLRVLvdl7dWr/qhCmjftgM+DDHOnmWt5ZRoZQkGlpss=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Syyg2+tLWjVq/YXoORnR7QKTLfIJLnJzGYz4xAhj9NtFMgEjJ6ZmobIHSZ5nDon4QHdlhKv/3/FM6l+CurYX0lwLL3Aj2f9A7LdX6n9kxy+KqEChJt6WWirGsUKxvlyY+5fIecLCi+IYj5CYiGMr3JA9n140q8VD2UwRrYcV4/M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=iBqwV0Co; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="iBqwV0Co"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA3E6C4CEF1;
-	Fri, 24 Oct 2025 11:21:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1761304909;
-	bh=WVlWBgMcAuxyFhK1LJ4LllnwyQPDiIhUoSnMvvmVLoE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=iBqwV0CoOIwOaTVQ7S++bqnqxORg7Bkm4+I5uPKo9tLfuWEsV9i2lKHFq4BNmcxH8
-	 i4jMPzALf48oxLKYOSwBqHdtQNXWgFMhf+kd0dezZB3i1euBm7SKpDdbQNAns96PBP
-	 3SGRYWsMKKU7zwzH+gsDCiV7z+7C5BFzf40x2iSw=
-Date: Fri, 24 Oct 2025 13:21:45 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Xin Zhao <jackzxcui1989@163.com>
-Cc: jirislaby@kernel.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, tj@kernel.org, hch@infradead.org
-Subject: Re: [PATCH] serial: 8250_dma: add workqueue to flip tty buffer
-Message-ID: <2025102434-stoppage-stagnate-5f0e@gregkh>
-References: <20251024065120.1951924-1-jackzxcui1989@163.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=l1RID1r/H1PEBz3FL3nH7oQc0swSEi60El9vk0a1WxepextoVRIkocaXgVxIkrIPhV/EBL2gLYN8bG8Oe87ENUvp12/SSia9ICPz1YHPNzYMxxDrBGT5eglO2Oj0vxFV+Nu3G6ik7wIk1vjHsAyO4hcQKSW+nGcpV33RU4yEBdg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <mfe@pengutronix.de>)
+	id 1vCH67-0004IA-SS; Fri, 24 Oct 2025 14:40:47 +0200
+Received: from pty.whiteo.stw.pengutronix.de ([2a0a:edc0:2:b01:1d::c5])
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.96)
+	(envelope-from <mfe@pengutronix.de>)
+	id 1vCH67-005E8E-1D;
+	Fri, 24 Oct 2025 14:40:47 +0200
+Received: from mfe by pty.whiteo.stw.pengutronix.de with local (Exim 4.96)
+	(envelope-from <mfe@pengutronix.de>)
+	id 1vCH67-00FAGC-0p;
+	Fri, 24 Oct 2025 14:40:47 +0200
+Date: Fri, 24 Oct 2025 14:40:47 +0200
+From: Marco Felsch <m.felsch@pengutronix.de>
+To: Johan Hovold <johan@kernel.org>
+Cc: Rob Herring <robh@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
+Subject: Re: [PATCH 0/3] USB-Serial serdev support
+Message-ID: <20251024124047.gnhxvjxjv7ie6ryy@pengutronix.de>
+References: <20240807-v6-10-topic-usb-serial-serdev-v1-0-ed2cc5da591f@pengutronix.de>
+ <Zt7kCxawoszunWq3@hovoldconsulting.com>
+ <20240917044948.i2eog4ondf7vna7q@pengutronix.de>
+ <Z8_wcASfJ8SeAQ8l@hovoldconsulting.com>
+ <20250313194044.t2t3c7j6ktvshjhs@pengutronix.de>
+ <aPogbAozezmqSMuU@hovoldconsulting.com>
+ <20251023134828.2dzq2rhtjplqyyaj@pengutronix.de>
+ <aPs3BX9-og6wJIWR@hovoldconsulting.com>
+ <20251024092738.zao47ehvzckkrsf3@pengutronix.de>
+ <aPtV1qNu3aVrS4LS@hovoldconsulting.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -39,140 +56,116 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20251024065120.1951924-1-jackzxcui1989@163.com>
+In-Reply-To: <aPtV1qNu3aVrS4LS@hovoldconsulting.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: mfe@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 
-On Fri, Oct 24, 2025 at 02:51:20PM +0800, Xin Zhao wrote:
-> On the embedded platform, certain critical data, such as IMU data, is
-> transmitted through UART. The tty_flip_buffer_push interface in the TTY
-> layer uses system_unbound_wq to handle the flipping of the TTY buffer.
-> Although the unbound workqueue can create new threads on demand and wake
-> up the kworker thread on an idle CPU, it may be preeempted by real-time
-> tasks or other high-prio tasks. dma_rx_complete calls spin_lock_irqsave
-> which do not disable preempt but disable migrate in rt-linux, leading to
-> the kworker thread running the dma_rx_complete work cannot be pulled by
-> other cpu when idle_balance, causing long delays.
-> In our system, the processing interval for each frame of IMU data
-> transmitted via UART can experience significant jitter due to this issue.
-> Instead of the expected 10 to 15 ms frame processing interval, we see
-> spikes up to 30 to 35 ms. Moreover, in just one or two hours, there can
-> be 2 to 3 occurrences of such high jitter, which is quite frequent. This
-> jitter exceeds the software's tolerable limit of 20 ms.
-> Introduce wq_tty_flip in tty_port, allocating a workqueue using WQ_SYSFS,
-> so that we can set cpumask and nice dynamically.
-> We set the cpumask to the same cpu where the IMU data is handled and has
-> less long-time high-prio jobs, and then set nice to -20, the frame
-> processing interval remains between 10 and 15ms, no jitter occurs.
+On 25-10-24, Johan Hovold wrote:
+> On Fri, Oct 24, 2025 at 11:27:38AM +0200, Marco Felsch wrote:
+> > On 25-10-24, Johan Hovold wrote:
+> > > On Thu, Oct 23, 2025 at 03:48:28PM +0200, Marco Felsch wrote:
+> > > > On 25-10-23, Johan Hovold wrote:
+> > > > > On Thu, Mar 13, 2025 at 08:40:44PM +0100, Marco Felsch wrote:
+> > > > > > On 25-03-11, Johan Hovold wrote:
+> > > > > > > On Tue, Sep 17, 2024 at 06:49:48AM +0200, Marco Felsch wrote:
+> > > > > > > > On 24-09-09, Johan Hovold wrote:
 > 
-> ---
-> Change in v2:
-> - Do not add new module parameters
->   as suggested by Greg KH
-> - Set WQ_SYSFS to allow properties changes from userspace
->   as suggested by Tejun Heo
+> > > It's still one of the issues that need to addressed.
+> > 
+> > Yes but this shouldn't be an issue with this patchset. So far the
+> > smallest DT-describale USB entities are the interfaces.
 > 
-> Signed-off-by: Xin Zhao <jackzxcui1989@163.com>
-> ---
->  drivers/tty/serial/8250/8250_dma.c | 19 ++++++++++++++++++-
->  drivers/tty/tty_buffer.c           |  2 +-
->  include/linux/tty_port.h           |  1 +
->  3 files changed, 20 insertions(+), 2 deletions(-)
+> It is an issue with this patchset since any binding for USB serdev will
+> need to take both kind of devices into account. Period.
+
+Sorry but I really don't see the issue. As of now DT abstractions
+supports all my use-cases. If $another_developer has an USB device which
+actually exposes multiple serial ports behind a single usb-interface,
+fine. But in that case $another_developer needs to add the
+support/extend the support for it if he wants to use it in combination
+with serdev.
+
+I actually have no such USB device and also my customer doesn't use such
+a device. Therefore I'm afraid that I can't add support for something I
+can't actually test.
+
+What is your suggestion how the DT abstraction should look like in 2025,
+e.g. given the current DT abstraction?
+
+> > > > > > > > > Second, and more importantly, you do not address the main obstacle for
+> > > > > > > > > enabling serdev for USB serial which is that the serdev cannot handle
+> > > > > > > > > hotplugging.
+> > > 
+> > > > > You will also see the following kind of warnings in the logs:
+> > > > > 
+> > > > > ttyUSB ttyUSB0: tty_hangup: tty->count(1) != (#fd's(0) + #kopen's(0))
+> > > > > ttyUSB ttyUSB0: tty_port_close_start: tty->count = 1 port count = 0
+> > > > > 
+> > > > > which are due to the fact that serdev does not support hangups which are
+> > > > > used during teardown of USB serial ports.
+> > > > 
+> > > > IIRC I added the following patch to solve this:
+> > > > 
+> > > >  - [PATCH 1/3] serdev: ttyport: make use of tty_kopen_exclusive
+> > > > 
+> > > > Sorry for not remembering the details since this conversation/patchset
+> > > > is quite old but still one of our top prios.
+> > > 
+> > > That suppresses the first warning but doesn't address the underlying
+> > > issue (that hangups are built around file handles which serdev does not
+> > > use). And you will still see the second one when the serdev driver tries
+> > > to close the already hung up port during deregistration.
+> > 
+> > Can you please elaborate how I can check this? I'm not aware of any
+> > warning yet, but I only tested the hot-(un)plug. If I got your right, I
+> > should see the issue once I unload the serdev driver, right?
 > 
-> diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
-> index bdd26c9f3..7ff705a78 100644
-> --- a/drivers/tty/serial/8250/8250_dma.c
-> +++ b/drivers/tty/serial/8250/8250_dma.c
-> @@ -207,6 +207,7 @@ EXPORT_SYMBOL_GPL(serial8250_rx_dma_flush);
->  int serial8250_request_dma(struct uart_8250_port *p)
->  {
->  	struct uart_8250_dma	*dma = p->dma;
-> +	struct tty_port		*tport = &p->port.state->port;
->  	phys_addr_t rx_dma_addr = dma->rx_dma_addr ?
->  				  dma->rx_dma_addr : p->port.mapbase;
->  	phys_addr_t tx_dma_addr = dma->tx_dma_addr ?
-> @@ -244,6 +245,11 @@ int serial8250_request_dma(struct uart_8250_port *p)
->  		goto release_rx;
->  	}
->  
-> +	/* Use the default workqueue then if alloc_workqueue failed */
-> +	tport->wq_tty_flip = alloc_workqueue("ttyS%d-flip-wq",
-> +					     WQ_UNBOUND | WQ_SYSFS,
-> +					     0, p->port.line);
-> +
->  	dmaengine_slave_config(dma->rxchan, &dma->rxconf);
->  
->  	/* Get a channel for TX */
-> @@ -252,7 +258,7 @@ int serial8250_request_dma(struct uart_8250_port *p)
->  						       p->port.dev, "tx");
->  	if (!dma->txchan) {
->  		ret = -ENODEV;
-> -		goto release_rx;
-> +		goto release_rx_wq;
->  	}
->  
->  	/* 8250 tx dma requires dmaengine driver to support terminate */
-> @@ -294,6 +300,11 @@ int serial8250_request_dma(struct uart_8250_port *p)
->  	return 0;
->  err:
->  	dma_release_channel(dma->txchan);
-> +release_rx_wq:
-> +	if (tport->wq_tty_flip) {
-> +		destroy_workqueue(tport->wq_tty_flip);
-> +		tport->wq_tty_flip = NULL;
-> +	}
->  release_rx:
->  	dma_release_channel(dma->rxchan);
->  	return ret;
-> @@ -303,6 +314,7 @@ EXPORT_SYMBOL_GPL(serial8250_request_dma);
->  void serial8250_release_dma(struct uart_8250_port *p)
->  {
->  	struct uart_8250_dma *dma = p->dma;
-> +	struct tty_port *tport = &p->port.state->port;
->  
->  	if (!dma)
->  		return;
-> @@ -322,6 +334,11 @@ void serial8250_release_dma(struct uart_8250_port *p)
->  	dma->txchan = NULL;
->  	dma->tx_running = 0;
->  
-> +	if (tport->wq_tty_flip) {
-> +		destroy_workqueue(tport->wq_tty_flip);
-> +		tport->wq_tty_flip = NULL;
-> +	}
-> +
->  	dev_dbg_ratelimited(p->port.dev, "dma channels released\n");
->  }
->  EXPORT_SYMBOL_GPL(serial8250_release_dma);
-> diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-> index 67271fc0b..7f83f377f 100644
-> --- a/drivers/tty/tty_buffer.c
-> +++ b/drivers/tty/tty_buffer.c
-> @@ -530,7 +530,7 @@ void tty_flip_buffer_push(struct tty_port *port)
->  	struct tty_bufhead *buf = &port->buf;
->  
->  	tty_flip_buffer_commit(buf->tail);
-> -	queue_work(system_unbound_wq, &buf->work);
-> +	queue_work(port->wq_tty_flip ?: system_unbound_wq, &buf->work);
+> You should see it in your test setup as well. Unless the bluetooth
+> driver you use is doing something funky (e.g. not closing the port).
+> 
+> I'm testing with a mock gnss device here.
 
-Why not just do this for all tty ports?  What is the benifit of keeping
-this on the system_unbound_wq for all other tty devices?
+Okay, let me test this. Just that we're on the same page: The test is to
+remove the serdev (bluetooth, gnss, ...) driver, right?
 
->  }
->  EXPORT_SYMBOL(tty_flip_buffer_push);
->  
-> diff --git a/include/linux/tty_port.h b/include/linux/tty_port.h
-> index 332ddb936..f5a5e50ff 100644
-> --- a/include/linux/tty_port.h
-> +++ b/include/linux/tty_port.h
-> @@ -121,6 +121,7 @@ struct tty_port {
->  	int			drain_delay;
->  	struct kref		kref;
->  	void			*client_data;
-> +	struct workqueue_struct *wq_tty_flip;
->  };
+> > > Also, that commit message needs to more work since you don't really
+> > > motivate why you think it's needed (e.g. as serdev ports can't be shared
+> > > with user space).
+> > 
+> > Maybe it needs some adaptions but:
+> > 
+> > | The purpose of serdev is to provide kernel drivers for particular serial
+> > | device, serdev-ttyport is no exception here. Make use of the
+> > | tty_kopen_exclusive() funciton to mark this tty device as kernel
+> > | internal device.
+> > 
+> > the last sentence should address your point that serdev ports can't be
+> > shared with user-space.A
+> 
+> No, my point was that serdev devices *are* not shared with user space,
+> you don't need to use that new kopen helper for that.
+> 
+> > > If it's just about suppressing the warning you could possibly just have
+> > > set that new flag.
+> > 
+> > Which new flag? As I have written in my commit message: "Make use of ...
+> > to mark this tty device as kernel internal device". I thought this was
+> > the purpose of tty_kopen_exclusive().
+> 
+> That helper sets the new TTY_PORT_KOPENED flag which suppresses the
+> warning on hangups.
 
-You forgot to document this new member, and so the documentation build
-will throw a warning.
+Okay, so you meant the TTY_PORT_KOPENED flag. According the
+documentation of tty_kopen_exclusive():
 
-thanks,
+| tty_kopen_exclusive - open a tty device for kernel
 
-greg k-h
+isn't that exactly what serdev-ttyport should do to "not share it with
+user space"? IMHO it's an implementation detail if the logic behind
+"open a tty device for kernel" is only built around a flag to suppress
+the warning.
+
+Regards,
+  Marco
