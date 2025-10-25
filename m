@@ -1,106 +1,183 @@
-Received: from mail-pf1-f171.google.com (mail-pf1-f171.google.com [209.85.210.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B132304BCA
-	for <linux-serial@vger.kernel.org>; Sat, 25 Oct 2025 16:12:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2769D26E6F6;
+	Sat, 25 Oct 2025 16:15:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761408747; cv=none; b=nKM5qqbM6l3Ne6HA7iNEJZbHT+8GrZJGpMPQvDF0v1tWfFZBlggOCzMyyXG5xyV4SMa997aES2VPb2kysh7IvG1MNZ7PdaclztZ+zSQlVyZ0/9LHf6jDmx1m+kQGsB0YALyfkPZV96dFJ1EWpDcXogucwR+SJ/QoO1cw2E9VV7s=
+	t=1761408920; cv=none; b=ukI7DdCTNatRGAudNf+gPrcjTegXYbtK7sIAY2CiR2NL+8J1TXFA/XUAEPyoGMofwMRYMh4C9xefX+3BMHwrWX1zF/sZ+Kv7CGVdQbNQjhnMgtBLLi9L+x0dyWNo+k2XB3x3sv/Ynp3/j9lxdNHoNgQN41fEO9pI/3BXigHNBig=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761408747; c=relaxed/simple;
-	bh=yu/Dh+IfCLtGqdkzWYmGphnHwzjdW7LS4ezBwM2rJ4g=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=gi6zOy5eOZ1rV54qjyE/Jf86SgDVnP4jj97jlQ0juR4kaDl8h6c0qha27sioqaWK11hVYyM72avS3J8YEKsa46vg5kxP9+SoCWe0eJOPLEJusXkQnMVnWqexz4aa+3yHFimtvz6OXB6BTbTugCR7WPXO+YAI1FBTIgH3N27TlYI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RsF9pIbf; arc=none smtp.client-ip=209.85.210.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1761408920; c=relaxed/simple;
+	bh=X2WA58Bzf5AHWeoYLMgaK1A19yba3RlyVYXlxKbZ/t4=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=u9BOuAFc4mHQIPYZ35faw9f5BbroMb6FKXBoMYxbsFg0M/EMV0sLzhq+L/21TlEpobWAMAtbGNMWwzRsfTyr/lcZo73Vhn73soo+2uSFKAirskYm9EBEnu03/PZkOW1EMYQtfzO9VoYa5EFb6kBDicFyqnWU7SHmFH3y8/5UtIQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fQYd8PfA; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RsF9pIbf"
-Received: by mail-pf1-f171.google.com with SMTP id d2e1a72fcca58-79ef9d1805fso3478399b3a.1
-        for <linux-serial@vger.kernel.org>; Sat, 25 Oct 2025 09:12:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1761408745; x=1762013545; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=1XFTdA7k8wwzMFaWlCyo1JPNHO/S9MJnKXZUm98Yf0w=;
-        b=RsF9pIbfUsxTwz4xvwVpDGuieJ8HNVLvzfwcioixeM1hDDJxOM6I9Jj3df2e5y5MXi
-         9SdnIO2kjLY20ZRbkMbxb1H2JZfrCYmPjA2oxmdfI27HtzLQ7YUQY/Nz9SEplSG6U/9T
-         UdAqzCJZYxmraFl9MlZi/sd8mf7Td5y4CDOuKdOo9I4NOBtjeSbi+VzvGbwdHXE7tcy4
-         lrODzMWvVgeTDVj6fVT3jUdsHnCW1qctahX9Da3XRyN+bHBsriSEs/DSLqGXyXY4LkGr
-         Ve433qHjC6RCQJygzLKtYI5HPdN4vc512Gk8PH7a96gjEFogkLrEwJ3ZK5FecsxxIhSd
-         OMeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1761408745; x=1762013545;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=1XFTdA7k8wwzMFaWlCyo1JPNHO/S9MJnKXZUm98Yf0w=;
-        b=dyE2qwjFIuQPHJ6yhMO4SYr7yPcQFx5LjvXD0QXaB8d9cSUo++1tlHE49Kl4CD88O5
-         pWkKvM6lpwoobl9bAn23WAhqYzFg+VKBu2NiQhycFiL44lyoKjMzDaXmFeOLKqZGtCs5
-         TmhIeIHvnFtvxfK+YjPGhokZLCmFpuky9U1oxoWgo1s5BOvEAtOZQ09352iNJL8Z1FqR
-         LjO0Zp06HQGz45t3onycN/UUXeA6UayoKqWDx13VUKPh5L2g2Fkd4gsRdCe8o7J5QZEv
-         poqPy8PhkvUA4KEk68m3MOckK68aA6zI25bFdzSGpOJxvXUbnpisyx5vcUO2wDCmFuc4
-         CeFw==
-X-Forwarded-Encrypted: i=1; AJvYcCXuOh/12FgTcptaGY0Ibt06zGaRx7xlqTFebqOOt8LV4Yu+9t7CgCBEX3FFjlUymrwLdjfj/hcIk7O2zoM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyYJBxXvSZYsCle7XBJmQ/lK6fVdGupZ9YmTGmY/10HjntQ80jW
-	AqCeAHFZs03tsfqefES9CutTI4oVoMlDydKcbBy9zgeq/ZOg6Z+8f6kqkaMjPk/E
-X-Gm-Gg: ASbGncvKkZ55LWimBL1OJABaCp71YfQbJfLwTDdoIGDMmSCm3bSixqpDWoUc4yBMR35
-	joAI8XbhnLHhoUO5MyHF8etoAFqGN9BuNfSzFe9BB5Ffn2inxNY4CjG5LUDb86fMHZ962xKrd50
-	9BG3psLVgHuXU/wcttTnvcX4U+kXjTpmXEkIaIf+TQYKUG351vUVoRYQcMdAAWZYANoj30GZBn6
-	xlJocbU+F5zagEKcuFHxpgUCJBtedC0tDSZVCwqfk4Rwasv1aH7QdOIoOguyU0Xauxpj3ghPSfe
-	zhML1xIf4in53IjqTAHtTr4ovZg/4jB7L5eQ+bO+VMTvIdpELEkEs+xFSSsC/1eU4X97REZcgC/
-	yhYRggWaMAAARu2EbbIinltL7kL8s7u6MSbDc4BCBE4ExY+uMY2a6jT7x1tPt9IfALI1Frs3qE2
-	+5whcENOgbaI/P6iJo
-X-Google-Smtp-Source: AGHT+IE8vlEVwjfaCK6fWdzSeAWUbPUodgqwlEaURtg/eP8og+MlqNHWouRBq41EznCRbBnlLq053A==
-X-Received: by 2002:a17:903:2445:b0:246:80b1:8c87 with SMTP id d9443c01a7336-2946e220396mr116623225ad.43.1761408745210;
-        Sat, 25 Oct 2025 09:12:25 -0700 (PDT)
-Received: from crl-3.node2.local ([125.63.65.162])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-29498d40b50sm27823415ad.75.2025.10.25.09.12.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 25 Oct 2025 09:12:24 -0700 (PDT)
-From: kriish.sharma2006@gmail.com
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Kriish Sharma <kriish.sharma2006@gmail.com>
-Subject: [PATCH] tty: document @dlci parameter in gsm_modem_send_initial_msc
-Date: Sat, 25 Oct 2025 16:12:06 +0000
-Message-Id: <20251025161206.795784-1-kriish.sharma2006@gmail.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fQYd8PfA"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C651C4CEFB;
+	Sat, 25 Oct 2025 16:15:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1761408920;
+	bh=X2WA58Bzf5AHWeoYLMgaK1A19yba3RlyVYXlxKbZ/t4=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=fQYd8PfAT9FEx2UkxNaqdBZ2UY0r0rK81oHrxJ2GeSF3SXEiPyPct/BAm2ti0KpGs
+	 m476O/13z3/UiUSG07JHCmvT/GHvvHc09V1GOD0VqEVmehrwqMCL9BmuEY5upQabxp
+	 HAxcOun3cMwB487zA5UoPWtValXx/5psVPYq8/yjmt/3J/ntbZXz1noHnIKF+qVGyC
+	 kCsf9dedkA6kMX+VB4k8GrVT63k6IpLVokPn/TVxFuM8aVj04OhtI72cmC8MSYLGE6
+	 6Hc/9xIRqvoz1KWMys1EA5yWVOy4KeEAfBEKhrCi9UNC9rb1gN3sf0xClzn2ds1nzj
+	 I6O9xqEL1WjRQ==
+From: Sasha Levin <sashal@kernel.org>
+To: patches@lists.linux.dev,
+	stable@vger.kernel.org
+Cc: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>,
+	Ulf Hansson <ulf.hansson@linaro.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Sasha Levin <sashal@kernel.org>,
+	robh@kernel.org,
+	linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 6.17] serdev: Drop dev_pm_domain_detach() call
+Date: Sat, 25 Oct 2025 11:56:03 -0400
+Message-ID: <20251025160905.3857885-132-sashal@kernel.org>
+X-Mailer: git-send-email 2.51.0
+In-Reply-To: <20251025160905.3857885-1-sashal@kernel.org>
+References: <20251025160905.3857885-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
+X-stable-base: Linux 6.17.5
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-From: Kriish Sharma <kriish.sharma2006@gmail.com>
+From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 
-Add missing kernel-doc entry for the @dlci parameter in
-gsm_modem_send_initial_msc(), which fixes the following warning
-reported by kernel-doc:
+[ Upstream commit e3fa89f3a768a9c61cf1bfe86b939ab5f36a9744 ]
 
-Warning: drivers/tty/n_gsm.c:4175 function parameter 'dlci' not described in 'gsm_modem_send_initial_msc'
+Starting with commit f99508074e78 ("PM: domains: Detach on
+device_unbind_cleanup()"), there is no longer a need to call
+dev_pm_domain_detach() in the bus remove function. The
+device_unbind_cleanup() function now handles this to avoid
+invoking devres cleanup handlers while the PM domain is
+powered off, which could otherwise lead to failures as
+described in the above-mentioned commit.
 
-Signed-off-by: Kriish Sharma <kriish.sharma2006@gmail.com>
+Drop the explicit dev_pm_domain_detach() call and rely instead
+on the flags passed to dev_pm_domain_attach() to power off the
+domain.
+
+Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
+Link: https://lore.kernel.org/r/20250827101747.928265-1-claudiu.beznea.uj@bp.renesas.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_gsm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 553d8c70352b..214abeb89aaa 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -4165,7 +4165,7 @@ static int gsm_modem_upd_via_msc(struct gsm_dlci *dlci, u8 brk)
- /**
-  * gsm_modem_send_initial_msc - Send initial modem status message
-  *
-- * @dlci channel
-+ * @dlci: channel
-  *
-  * Send an initial MSC message after DLCI open to set the initial
-  * modem status lines. This is only done for basic mode.
+LLM Generated explanations, may be completely bogus:
+
+YES
+
+**Why This Fix Matters**
+- Prevents wrong unbind ordering after PM core change: The PM core now
+  detaches PM domains in `device_unbind_cleanup()` after devres cleanup
+  to avoid running devres handlers while the PM domain is powered off.
+  See `drivers/base/dd.c:548-561` where `device_unbind_cleanup()` calls
+  `dev_pm_domain_detach(dev, dev->power.detach_power_off)` only after
+  `devres_release_all(dev)`.
+- If serdev keeps explicitly detaching in its bus `remove` path, the PM
+  domain may be powered off before devres cleanup runs, reintroducing
+  the failure scenario described in the PM core change.
+
+**What The Patch Changes**
+- Adds `PD_FLAG_DETACH_POWER_OFF` to `dev_pm_domain_attach()`:
+  - `drivers/tty/serdev/core.c:402-407` changes to:
+    - `ret = dev_pm_domain_attach(dev, PD_FLAG_ATTACH_POWER_ON |
+      PD_FLAG_DETACH_POWER_OFF);`
+    - On success, it directly returns `sdrv->probe(...)` without local
+      detach on probe failure. The unbind path handles detach (see
+      below).
+  - This flag sets `dev->power.detach_power_off` so the core knows to
+    power off the domain on detach; see
+    `drivers/base/power/common.c:103-119`.
+- Removes the explicit `dev_pm_domain_detach()` calls:
+  - `drivers/tty/serdev/core.c:410-415` no longer detaches in
+    `serdev_drv_remove()`.
+  - On probe failure or driver removal, the device core’s
+    `really_probe()` calls `device_unbind_cleanup(dev);` which detaches
+    at the right time:
+    - Probe error and cleanup path: `drivers/base/dd.c:714-727` (note
+      `device_unbind_cleanup(dev)` at `drivers/base/dd.c:725`).
+    - Test-remove path: `drivers/base/dd.c:692-701` (note
+      `device_unbind_cleanup(dev)` at `drivers/base/dd.c:699`).
+
+**Dependencies That Gate Safe Backporting**
+- Requires the PM core change that introduced detach in
+  `device_unbind_cleanup()` and the `PD_FLAG_DETACH_POWER_OFF` flag:
+  - `device_unbind_cleanup()` performs `dev_pm_domain_detach()` late:
+    `drivers/base/dd.c:548-561`.
+  - `dev_pm_domain_attach()` sets `dev->power.detach_power_off` from
+    flags: `drivers/base/power/common.c:103-119`.
+  - `PD_FLAG_DETACH_POWER_OFF` is defined in
+    `include/linux/pm_domain.h:48`.
+- The commit message cites the dependency commit “PM: domains: Detach on
+  device_unbind_cleanup()” (f99508074e78). This serdev change is a
+  follow-on fix to align bus behavior with the new core semantics.
+
+**Risk and Stable Criteria**
+- Small, localized change confined to serdev bus init/unbind.
+- No new features or API changes; aligns with existing patterns already
+  used by other buses (e.g., platform and auxiliary use
+  `PD_FLAG_DETACH_POWER_OFF`).
+- Fixes real failure potential when the PM core change is present
+  (avoids devres running with the PM domain powered off).
+- Regression risk is low provided the PM core dependency (detach in
+  `device_unbind_cleanup()` and `PD_FLAG_DETACH_POWER_OFF`) is present;
+  without that dependency, removing explicit detach would be incorrect.
+
+In summary: This is a targeted follow-on fix that should be backported
+to any stable tree that already contains the PM core change
+(device_unbind_cleanup() performing detach and
+`PD_FLAG_DETACH_POWER_OFF`). It prevents ordering-related failures with
+minimal risk and scope.
+
+ drivers/tty/serdev/core.c | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+index d16c207a1a9b2..b33e708cb2455 100644
+--- a/drivers/tty/serdev/core.c
++++ b/drivers/tty/serdev/core.c
+@@ -399,15 +399,12 @@ static int serdev_drv_probe(struct device *dev)
+ 	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
+ 	int ret;
+ 
+-	ret = dev_pm_domain_attach(dev, PD_FLAG_ATTACH_POWER_ON);
++	ret = dev_pm_domain_attach(dev, PD_FLAG_ATTACH_POWER_ON |
++					PD_FLAG_DETACH_POWER_OFF);
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = sdrv->probe(to_serdev_device(dev));
+-	if (ret)
+-		dev_pm_domain_detach(dev, true);
+-
+-	return ret;
++	return sdrv->probe(to_serdev_device(dev));
+ }
+ 
+ static void serdev_drv_remove(struct device *dev)
+@@ -415,8 +412,6 @@ static void serdev_drv_remove(struct device *dev)
+ 	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
+ 	if (sdrv->remove)
+ 		sdrv->remove(to_serdev_device(dev));
+-
+-	dev_pm_domain_detach(dev, true);
+ }
+ 
+ static const struct bus_type serdev_bus_type = {
 -- 
-2.34.1
+2.51.0
 
