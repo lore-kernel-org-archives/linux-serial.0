@@ -1,38 +1,40 @@
-Received: from bmailout2.hostsharing.net (bmailout2.hostsharing.net [83.223.78.240])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A948D33F9
-	for <linux-serial@vger.kernel.org>; Sun, 26 Oct 2025 09:30:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=83.223.78.240
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAF5D1DA0E1;
+	Sun, 26 Oct 2025 09:35:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761471039; cv=none; b=Rwhw3ESzZDUXj3zsZ6qAocYZTkNPFKHxRenA0sFPwV11lhtHo2qDkC0qWT1ggkPhFs42hc0aN/8nuHQf/HH8sKw23EM8ba+3b7e8t7fVV4F9BaRW18r0eTG1nWZPd9GuguHjFRImAJFsypbfDUAvO52IyZ4Sz9Wkd5ir+PFf6iY=
+	t=1761471351; cv=none; b=unaFpUgKwr5EpTuqaMm6qchNhKqq1uNvg5aZb/34V221wNQ6MMJK7pqehXrH1aw6hROSBb+B2yylj2IrwUTGRsKzZ8rGKEMHeDu/6zXLdOziPCctPlZV56ss8g6s2KGLDA6MZehTXOFeBcFYwneAK1ML5Z9cam6DRxapEOtiv1s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761471039; c=relaxed/simple;
-	bh=C4EB1KK67bmcOsaxymIluDeLn4phribqLiwOqunO1EA=;
+	s=arc-20240116; t=1761471351; c=relaxed/simple;
+	bh=9fLzqCKLRVH1pdiWjq3bK9QYrYxlC+mhmnkEd7WZtwE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cY9LadPhcoPNBAyialhshVxM6FmYmTVCEkXmqPm8z8LP65pfjqcUxp6hVSldODj9dngB6Wf/D+xFJYhlo6tpDV6p+sDZmkj344898xszqXxF4TYx9rM3+3ngf3Vy8LyJy/3H2gyyyhI0d5k/zO6rPDl6y9kpSLSaaSBrvWSAJOU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wunner.de; spf=none smtp.mailfrom=h08.hostsharing.net; arc=none smtp.client-ip=83.223.78.240
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wunner.de
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=h08.hostsharing.net
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-	 client-signature RSA-PSS (4096 bits) client-digest SHA256)
-	(Client CN "*.hostsharing.net", Issuer "RapidSSL TLS RSA CA G1" (verified OK))
-	by bmailout2.hostsharing.net (Postfix) with ESMTPS id 2BA5220083DF;
-	Sun, 26 Oct 2025 10:30:30 +0100 (CET)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-	id 251214A12; Sun, 26 Oct 2025 10:30:30 +0100 (CET)
-Date: Sun, 26 Oct 2025 10:30:30 +0100
-From: Lukas Wunner <lukas@wunner.de>
-To: Gerhard Engleder <gerhard@engleder-embedded.com>
-Cc: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-	jirislaby@kernel.org, Gerhard Engleder <eg@keba.com>,
-	Daniel Gierlinger <gida@keba.com>
-Subject: Re: [PATCH v4 2/2] serial: 8250: add driver for KEBA UART
-Message-ID: <aP3qNsNDz7p2WSPm@wunner.de>
-References: <20251023151229.11774-1-gerhard@engleder-embedded.com>
- <20251023151229.11774-3-gerhard@engleder-embedded.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=UdbngCNfW7ATykBBlgZNuLAnWRLg2YDBv9Bpr+Shzl0x4G3ewYabh6kYkoLGk5s4LLFq+PTFSemsuJ8Y+qZ8zNoTRTTX3BfgYsPIn2IWcGg8EldIS8wVQqlbG4BlP8bKDg9wVtx+r0WSvw0Oy60DopbFrgw96Ppr+ca0lViAUi8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=0esH9B9h; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="0esH9B9h"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3468C4CEE7;
+	Sun, 26 Oct 2025 09:35:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1761471349;
+	bh=9fLzqCKLRVH1pdiWjq3bK9QYrYxlC+mhmnkEd7WZtwE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=0esH9B9h9lJaovKBUwc5QHyos7flgYnt4H1y4M1zSK1rssLNFrj1k2aLiBIHBEQA4
+	 3DlzH9wV4XB2eVkdCF0jha/W+579ejFdTk6tw9HTS0KHlZN9TIWUM6OaJ/OwFyyww8
+	 B+TNrznpxD166ne0Y4bM8CoCV7zF7zVe+w7RGEhs=
+Date: Sun, 26 Oct 2025 10:35:46 +0100
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Gopi Krishna Menon <krishnagopi487@gmail.com>
+Cc: jirislaby@kernel.org, linux-kselftest@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	david.hunter.linux@gmail.com, xandfury@gmail.com,
+	skhan@linuxfoundation.org, linux-kernel-mentees@lists.linux.dev,
+	khalid@kernel.org
+Subject: Re: [PATCH v2] selftests: tty: add tty_tiocsti_test to .gitignore
+Message-ID: <2025102634-relive-glutinous-df0c@gregkh>
+References: <2025102633-dandruff-clang-e91d@gregkh>
+ <20251026092341.2896-1-krishnagopi487@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -41,20 +43,28 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20251023151229.11774-3-gerhard@engleder-embedded.com>
+In-Reply-To: <20251026092341.2896-1-krishnagopi487@gmail.com>
 
-On Thu, Oct 23, 2025 at 05:12:29PM +0200, Gerhard Engleder wrote:
-> The KEBA UART is found in the system FPGA of KEBA PLC devices. It is
-> mostly 8250 compatible with extension for some UART modes.
+On Sun, Oct 26, 2025 at 02:52:32PM +0530, Gopi Krishna Menon wrote:
+> Building the tty selftests generates the tty_tiocsti_test binary, which
+> appears as untracked file in git. As mentioned in the kselftest
+> documentation, all the generated objects must be placed inside
+> .gitignore. This prevents the generated objects from accidentally
+> getting staged and keeps the working tree clean.
 > 
-> 3 different variants exist. The simpliest variant supports only RS-232
-> and is used for debug interfaces. The next variant supports only RS-485
-> and is used mostly for communication with KEBA panel devices. The third
-> variant is able to support RS-232, RS-485 and RS-422. For this variant
-> not only the mode of the UART is configured, also the physics and
-> transceivers are switched according to the mode.
+> Add the tty_tiocsti_test binary to .gitignore to avoid accidentally
+> staging the build artifact and maintain a clean working tree.
 > 
-> Signed-off-by: Gerhard Engleder <eg@keba.com>
-> Tested-by: Daniel Gierlinger <gida@keba.com>
+> Link: https://docs.kernel.org/dev-tools/kselftest.html#contributing-new-tests-details
+> 
+> Suggested-by: David Hunter <david.hunter.linux@gmail.com>
+> Signed-off-by: Gopi Krishna Menon <krishnagopi487@gmail.com>
+> ---
+> Changelog:
+> - Improve the commit wording and explain clearly why this change is needed.
 
-Reviewed-by: Lukas Wunner <lukas@wunner.de>
+What commit id does this fix?
+
+thanks,
+
+greg k-h
