@@ -1,24 +1,24 @@
 Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3A89231618B;
-	Mon, 27 Oct 2025 15:46:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 23015312829;
+	Mon, 27 Oct 2025 15:46:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.160.252.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761580005; cv=none; b=cVRdMRbYOo6QrheZEURQyZzuyvd5dLCfv8LB9YEDKQ4VqEI/pg8U2hTCv4pJsOc66EbhBiegxT3/eG0R8j4nGhvtPRiNT1dH/FMKd6lTIwvoX3nztiC3QqVoBqySqZMS/x7Ez2HECTAPo5tT6NNkLkoMp5T6I1K6U2ozDQr9vFs=
+	t=1761580009; cv=none; b=QCqKw5/qSFD519zndcjoa8dUzf4/J3i/ecGZJqnCl994Q3x6iv2OGqPGSmYIs0AlZO5cyUKo5H8XNQ1XBMr86XfysLrnahUwPzIRUsccuN/K0NxVFTKGrFwACemZCK4Zd4suJe4Rkf/BqTdsydL0O0ldD5fup+dniU7THl+NEhY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761580005; c=relaxed/simple;
-	bh=ualHeG+rP981M5bcFFLj4A2fm5SUEK/y45ZGWLg7SMc=;
+	s=arc-20240116; t=1761580009; c=relaxed/simple;
+	bh=Mb0beqBWwofz7EjCS0ciVZMnoF6wn1jJyWkpuqQHNl4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=nrw4kZoC4DDsicIOkFY4MJnLcKuWPM20fvSRmha1fMLMIq92vSSPfY1l0KO0zu+0c7X8dY+MP7unJPuVE2YVP7FC+FqIiXijXYq8hr1pY5+DkUX9goZ2+uT6rwGHx2RvUiVo5bgXVDxOi/9ob8roY3ZhRlMd8qC+vF7CIMYzbmA=
+	 MIME-Version; b=RIv0LqilHhj6uF2lC4HE+DWJA9sAsEPn/ggdW1kw+/yAATYGZCDwXon2lAwVmLXp87ONakJwZCm+eB8kiOBupnMHdWjodTv0cHv9aFCHehrsDUt6oDdDb1GXBuNjnFKO2i+MBbGpp4nH6cCshbKIkKCQ3/xXKKIjGAAnNl7mflA=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com; spf=pass smtp.mailfrom=bp.renesas.com; arc=none smtp.client-ip=210.160.252.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bp.renesas.com
-X-CSE-ConnectionGUID: RJ+gNjPDSJ+K7fgg2cXk+w==
-X-CSE-MsgGUID: +K1/hVovQ0W4nQUoML4HXQ==
+X-CSE-ConnectionGUID: qYx5Cj89Qt+TvQ/uthERcA==
+X-CSE-MsgGUID: xTOXHDb6QOimFht9Uv55IA==
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 28 Oct 2025 00:46:42 +0900
+  by relmlie6.idc.renesas.com with ESMTP; 28 Oct 2025 00:46:46 +0900
 Received: from localhost.localdomain (unknown [10.226.93.103])
-	by relmlir5.idc.renesas.com (Postfix) with ESMTP id 7129B4003EA1;
-	Tue, 28 Oct 2025 00:46:39 +0900 (JST)
+	by relmlir5.idc.renesas.com (Postfix) with ESMTP id 6AE564003EA1;
+	Tue, 28 Oct 2025 00:46:43 +0900 (JST)
 From: Biju Das <biju.das.jz@bp.renesas.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>
@@ -32,9 +32,9 @@ Cc: Biju Das <biju.das.jz@bp.renesas.com>,
 	linux-serial@vger.kernel.org,
 	Biju Das <biju.das.au@gmail.com>,
 	linux-renesas-soc@vger.kernel.org
-Subject: [PATCH 05/19] serial: rsci: Drop rsci_clear_CFC()
-Date: Mon, 27 Oct 2025 15:45:52 +0000
-Message-ID: <20251027154615.115759-6-biju.das.jz@bp.renesas.com>
+Subject: [PATCH 06/19] serial: sh-sci: Drop extra line
+Date: Mon, 27 Oct 2025 15:45:53 +0000
+Message-ID: <20251027154615.115759-7-biju.das.jz@bp.renesas.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20251027154615.115759-1-biju.das.jz@bp.renesas.com>
 References: <20251027154615.115759-1-biju.das.jz@bp.renesas.com>
@@ -46,39 +46,28 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Drop rsci_clear_CFC() by reusing rsci_clear_SCxSR() as the contents of
-both functions are the same.
+Shorten the number lines in sci_init_clocks() by fitting the error
+message within an 80-character length limit.
 
 Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 ---
- drivers/tty/serial/rsci.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ drivers/tty/serial/sh-sci.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/rsci.c b/drivers/tty/serial/rsci.c
-index 3e1f4b3c4e59..504361ed5ecc 100644
---- a/drivers/tty/serial/rsci.c
-+++ b/drivers/tty/serial/rsci.c
-@@ -199,11 +199,6 @@ static unsigned int rsci_get_mctrl(struct uart_port *port)
- 	return 0;
- }
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index b33894d0273b..699c39b81c4b 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -3009,8 +3009,7 @@ static int sci_init_clocks(struct sci_port *sci_port, struct device *dev)
  
--static void rsci_clear_CFC(struct uart_port *port, unsigned int mask)
--{
--	rsci_serial_out(port, CFCLR, mask);
--}
--
- static void rsci_start_tx(struct uart_port *port)
- {
- 	struct sci_port *sp = to_sci_port(port);
-@@ -275,7 +270,7 @@ static void rsci_transmit_chars(struct uart_port *port)
- 			break;
+ 		if (!clk && sci_port->type == SCI_PORT_RSCI &&
+ 		    (i == SCI_FCK || i == SCI_BRG_INT)) {
+-			return dev_err_probe(dev, -ENODEV,
+-					     "failed to get %s\n",
++			return dev_err_probe(dev, -ENODEV, "failed to get %s\n",
+ 					     name);
  		}
  
--		rsci_clear_CFC(port, CFCLR_TDREC);
-+		rsci_clear_SCxSR(port, CFCLR_TDREC);
- 		rsci_serial_out(port, TDR, c);
- 
- 		port->icount.tx++;
 -- 
 2.43.0
 
