@@ -1,113 +1,88 @@
-Received: from smtpout-02.galae.net (smtpout-02.galae.net [185.246.84.56])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FEE64A3E;
-	Mon, 27 Oct 2025 15:04:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.246.84.56
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6064F2620E4;
+	Mon, 27 Oct 2025 15:46:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.160.252.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761577471; cv=none; b=faIiRoA9sw2+XCwCea3VfZLpt2WQBYT1ltwzRS8QTZWpIpl7MZKPe7qxgcsinKG3h8dmqbASIichuP3UbvrIC0uDdYCtROadS6d4pj7itIUVyz393jtEarZvJhAunwJDYx4XcvaZqdvlAUV/eHeY8a285yZMqT1sGFTGpSPf0nA=
+	t=1761579991; cv=none; b=KjSmKgvu9k6PF2Zb9AZcTHA99PGGR2ACJ2OP5P1/WZ9EtJb5n0/LwKVMIhQJVPJXSeJa2MOB4mWQMurj8DxE8ecBKDPEn9QY3fPiLqbvTIRDGAgddzJjciF0pIR3IShDvenq+y66F3u9D077vk1km233TngO3steNAQOCId/5nE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761577471; c=relaxed/simple;
-	bh=TmqNnd/b7ZzA9B8s9Hq0HIEIEmiflsvLoR5faerHGNc=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=KWH/kF7WJNKr0MQIK2Vkh5zTF+U+JrVAKbyGki6u3SS72lSnVeqL4YKkctyxgr9SqjHBp7/lnJv0IkUM9bRMMCtXVWVuxMWQFFlQ8dYl2Ql2JzYn5swljIP7f6GxYmjtEudBVi3ZyVt1U4f7lDwTyLvg5QK7h9MG/DZDuHS6K6c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=AE64DYqH; arc=none smtp.client-ip=185.246.84.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="AE64DYqH"
-Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
-	by smtpout-02.galae.net (Postfix) with ESMTPS id 977B51A16DA;
-	Mon, 27 Oct 2025 15:04:27 +0000 (UTC)
-Received: from mail.galae.net (mail.galae.net [212.83.136.155])
-	by smtpout-01.galae.net (Postfix) with ESMTPS id 6B2876062C;
-	Mon, 27 Oct 2025 15:04:27 +0000 (UTC)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id D3C40102F24D3;
-	Mon, 27 Oct 2025 16:04:19 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
-	t=1761577466; h=from:subject:date:message-id:to:cc:mime-version:content-type:
-	 content-transfer-encoding:in-reply-to:references;
-	bh=oR3xHK66IvxkAJonlfP0A+qAw3zMjh3EBogsOU6SzqE=;
-	b=AE64DYqH6b4guLExjNXBUXYsgzTMtTCFa58jfRvwsdeKCFjk3QzlG9+09/zKttszVggnj+
-	VUUxC1WKGoB4zJwbVUQM3lfMzx07d0/sgiuMKUZwiWofWiEpeVJCnuv1kVw6q0NWlhfMUt
-	iY3kAVzu42zV/Ao0dg0InWN2GTvJkZLWNSccR7/sApfZe4ZZDACGUMEmRKnrZ7NReKwNNa
-	vojJeVVUKdUvWqf5hpEU9YorjebFz5ixx4E8BbZX+7hxHoZxVXp54Un/LiT3ca1noDfxrX
-	LivJaWz0Bq+UH8MIYeJjDdT3dwvHEAPzbg/U0hgc5yzDG7JXhp89hYU3YoYFxQ==
-From: Gregory CLEMENT <gregory.clement@bootlin.com>
-To: Miaoqian Lin <linmq006@gmail.com>, Russell King <linux@armlinux.org.uk>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar
- <mingo@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Nam Cao
- <namcao@linutronix.de>, Toshiyuki Sato <fj6611ie@aa.jp.fujitsu.com>,
- Miroslav Ondra <ondra@faster.cz>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org
-Cc: linmq006@gmail.com, stable@vger.kernel.org
-Subject: Re: [PATCH] serial: amba-pl011: prefer dma_mapping_error() over
- explicit address checking
-In-Reply-To: <20251027092053.87937-1-linmq006@gmail.com>
-References: <20251027092053.87937-1-linmq006@gmail.com>
-Date: Mon, 27 Oct 2025 16:04:19 +0100
-Message-ID: <87a51ce68c.fsf@BLaptop.bootlin.com>
+	s=arc-20240116; t=1761579991; c=relaxed/simple;
+	bh=+R8Fsz9b7HwEmtTFzrmf82rkmoqpGC3iY/+mfGTaS6I=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=VN9nktlLmVfgstzgkSGq4I49HZKn8YwZLSfR1LLUyqBP6f+6dD2vf5nReBMmPak4Q9ItQK9rBt6aGWnU/0OpUwIN5rmNkaSCfKDA8uzuId+4gVsaQLT5hSSSxc1PfyvS+BsbcEML3z8F3YhBlRaHPVhmEhdfxQwRTE2+6OiM7cQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com; spf=pass smtp.mailfrom=bp.renesas.com; arc=none smtp.client-ip=210.160.252.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bp.renesas.com
+X-CSE-ConnectionGUID: hSyxVqzPRR+ycZ0we476xA==
+X-CSE-MsgGUID: G0eqT3DaTD2btkYnuvHU4Q==
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie5.idc.renesas.com with ESMTP; 28 Oct 2025 00:46:22 +0900
+Received: from localhost.localdomain (unknown [10.226.93.103])
+	by relmlir5.idc.renesas.com (Postfix) with ESMTP id 4184E4003EA1;
+	Tue, 28 Oct 2025 00:46:18 +0900 (JST)
+From: Biju Das <biju.das.jz@bp.renesas.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>
+Cc: Biju Das <biju.das.jz@bp.renesas.com>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+	Wolfram Sang <wsa+renesas@sang-engineering.com>,
+	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>,
+	Nam Cao <namcao@linutronix.de>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Biju Das <biju.das.au@gmail.com>,
+	linux-renesas-soc@vger.kernel.org
+Subject: [PATCH 00/19] Add RZ/G3E RSCI support
+Date: Mon, 27 Oct 2025 15:45:47 +0000
+Message-ID: <20251027154615.115759-1-biju.das.jz@bp.renesas.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Last-TLS-Session-Version: TLSv1.3
+Content-Transfer-Encoding: 8bit
 
-Miaoqian Lin <linmq006@gmail.com> writes:
+Add RZ/G3E RSCI support for FIFO and non-FIFO mode. RSCI IP found on
+RZ/G3E SoC is similar to one on RZ/T2H, but has 32-stage fifo. RZ/G3E has
+5 module clocks compared to 2 on RZ/T2H, and it has multiple resets.
+Add support for hardware flow control.
 
-> Check for returned DMA addresses using specialized dma_mapping_error()
-> helper which is generally recommended for this purpose by
-> Documentation/core-api/dma-api.rst:
->
->   "In some circumstances dma_map_single(), ...
-> will fail to create a mapping. A driver can check for these errors
-> by testing the returned DMA address with dma_mapping_error()."
->
-> Found via static analysis and this is similar to commit fa0308134d26
-> ("ALSA: memalloc: prefer dma_mapping_error() over explicit address checki=
-ng")
->
-> Fixes: 58ac1b379979 ("ARM: PL011: Fix DMA support")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Biju Das (19):
+  clk: renesas: r9a09g047: Add RSCI clocks/resets
+  dt-bindings: serial: rsci: Drop "uart-has-rtscts: false"
+  dt-bindings: serial: renesas,rsci: Document RZ/G3E support
+  serial: sh-sci: Fix deadlock during RSCI FIFO overrun error
+  serial: rsci: Drop rsci_clear_CFC()
+  serial: sh-sci: Drop extra line
+  serial: rsci: Drop unused macro DCR
+  serial: rsci: Drop unused TDR register
+  serial: sh-sci: Use devm_reset_control_array_get_exclusive()
+  serial: sh-sci: Add RSCI_PORT_{SCI,SCIF} port IDs
+  serial: sh-sci: Add sci_is_rsci_type()
+  serial: sh-sci: Add support for RZ/G3E RSCI clks
+  serial: sh-sci: Make sci_scbrr_calc() public
+  serial: sh-sci: Add finish_console_write() callback
+  serial: sh-sci: Add support for RZ/G3E RSCI SCIF
+  serial: sh-sci: Add support for RZ/G3E RSCI SCI
+  arm64: dts: renesas: r9a09g047: Add RSCI nodes
+  arm64: dts: renesas: renesas-smarc2: Move aliases to board DTS
+  arm64: dts: renesas: renesas-smarc2: Enable rsci{2,4,9} nodes
 
+ .../bindings/serial/renesas,rsci.yaml         |  84 +++-
+ arch/arm64/boot/dts/renesas/r9a09g047.dtsi    | 190 ++++++++
+ .../boot/dts/renesas/r9a09g047e57-smarc.dts   |  46 ++
+ .../boot/dts/renesas/renesas-smarc2.dtsi      |  18 +-
+ drivers/clk/renesas/r9a09g047-cpg.c           | 126 ++++++
+ drivers/tty/serial/rsci.c                     | 413 +++++++++++++++---
+ drivers/tty/serial/rsci.h                     |   2 +
+ drivers/tty/serial/sh-sci-common.h            |  10 +
+ drivers/tty/serial/sh-sci.c                   |  65 ++-
+ 9 files changed, 869 insertions(+), 85 deletions(-)
 
-Reviewed-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+-- 
+2.43.0
 
-Thanks,
-
-Gregory
-
-
-> ---
->  drivers/tty/serial/amba-pl011.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl=
-011.c
-> index 22939841b1de..7f17d288c807 100644
-> --- a/drivers/tty/serial/amba-pl011.c
-> +++ b/drivers/tty/serial/amba-pl011.c
-> @@ -628,7 +628,7 @@ static int pl011_dma_tx_refill(struct uart_amba_port =
-*uap)
->  	dmatx->len =3D count;
->  	dmatx->dma =3D dma_map_single(dma_dev->dev, dmatx->buf, count,
->  				    DMA_TO_DEVICE);
-> -	if (dmatx->dma =3D=3D DMA_MAPPING_ERROR) {
-> +	if (dma_mapping_error(dma_dev->dev, dmatx->dma)) {
->  		uap->dmatx.queued =3D false;
->  		dev_dbg(uap->port.dev, "unable to map TX DMA\n");
->  		return -EBUSY;
-> --=20
-> 2.39.5 (Apple Git-154)
->
-
---=20
-Gr=C3=A9gory CLEMENT, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
