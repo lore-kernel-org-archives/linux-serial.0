@@ -1,338 +1,191 @@
-Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 69B5730C37A;
-	Mon, 27 Oct 2025 15:47:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.160.252.171
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DACE2DCF51
+	for <linux-serial@vger.kernel.org>; Mon, 27 Oct 2025 19:52:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761580050; cv=none; b=pBMb3SKs7R/OGDQcsfGvMQmzjUwgStDCwzSxHAWmdTIYQGhjKye6HJ3QWrPXtmSvFqylo8hiceFnAow6tAJoJoFSXoxMHlYqYhUwDmOTPDJoqJZywh/Yh8bOb8Cgl5WttHM9jXTP1tNSNe5zNsbWGFKtsI6FBdBrqGhQz3tFqmc=
+	t=1761594750; cv=none; b=eTbsuPzwE1Tn/UjtSUMtHb1Mn+bXD4/wNrh26JNJxTqqVkdBIzkQ8/RAql1+tw5KnbDcYUqmRi7ozo2fMfNFgtVb6wzXImfaKeAtK26LZJglsPna5qHACQ50o2+jqAPGfiYkYq483D6ffWL+JZfYSjPvJK6A0QVkGLq/QDMjFi0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761580050; c=relaxed/simple;
-	bh=5pHyCSqH4mgpQhZKsXfqM1If5CZauwXs91qgf1xuue4=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=UvZep39nxGydd5aD6dE9eBO5NKsKe8XsZtKYhj/ZOBdwwdwMv0Uwr2k+PXOdblVB5U+d+VIUpFmqS5X0OJT/+7FvUWTpMTcYAN0ai0xlGb5R4UPNGnqYVy2LlEabKGq20VsW0MIvJgrL/kQGnRvoRGtRk9NNf8VtimExm7R4EEM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com; spf=pass smtp.mailfrom=bp.renesas.com; arc=none smtp.client-ip=210.160.252.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bp.renesas.com
-X-CSE-ConnectionGUID: EmpU9aI7SwWh1B9YdJybOQ==
-X-CSE-MsgGUID: +xwfL/HqSoynUP6xyLj2dQ==
-Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie5.idc.renesas.com with ESMTP; 28 Oct 2025 00:47:26 +0900
-Received: from localhost.localdomain (unknown [10.226.93.103])
-	by relmlir5.idc.renesas.com (Postfix) with ESMTP id 4E989400A67C;
-	Tue, 28 Oct 2025 00:47:23 +0900 (JST)
-From: Biju Das <biju.das.jz@bp.renesas.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: Biju Das <biju.das.jz@bp.renesas.com>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-	Wolfram Sang <wsa+renesas@sang-engineering.com>,
-	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>,
-	Nam Cao <namcao@linutronix.de>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Biju Das <biju.das.au@gmail.com>,
-	linux-renesas-soc@vger.kernel.org
-Subject: [PATCH 16/19] serial: sh-sci: Add support for RZ/G3E RSCI SCI
-Date: Mon, 27 Oct 2025 15:46:03 +0000
-Message-ID: <20251027154615.115759-17-biju.das.jz@bp.renesas.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20251027154615.115759-1-biju.das.jz@bp.renesas.com>
-References: <20251027154615.115759-1-biju.das.jz@bp.renesas.com>
+	s=arc-20240116; t=1761594750; c=relaxed/simple;
+	bh=RloLpcLPZNDJ2ao31PlLnAcnpfkAjUiz3YusmZYy6Lw=;
+	h=Date:From:To:Cc:Subject:Message-ID; b=FzoE9wypzCwn8QTGPRjDwh5P2vNpkjBEIzJwZ0evYULc0ajk4C0TMfT3rEkeTOxU/uZhTIacLmO3+eAAQG5k+tImsa6VYRVZPou8F+fMYPfxQLSx0mdHkkuPdI75fcjVWCKjnyzXxAh0EMMvqplRHsfIw0oM52fOpwz1jDLrt74=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=i0us3bRL; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="i0us3bRL"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1761594747; x=1793130747;
+  h=date:from:to:cc:subject:message-id;
+  bh=RloLpcLPZNDJ2ao31PlLnAcnpfkAjUiz3YusmZYy6Lw=;
+  b=i0us3bRLxm8fWiDZc8yEdvb0YTWuFw5JTggBq3KXE4ZS6WMGAeQmx2nj
+   OpIvsl4QPgxWtTGWlUJ667mHCBRmwWeaPasy5VAgYq1/CfuIwu6cMdt7l
+   Cem1L6kx75L+Pq9wsumNmZyVJlepFWsg2UA8Avujl6R6Xfb2MjmZeVEtf
+   P+F/qowyzPGce7FEhC8lG+PxT9if7dCH+u1jfVie7DElkCyoq+KMeEuiR
+   iwil0ui7evjbIPY4Q4uWnbYmmxC+c6596CFSNdyPsxEEsPMV39f5KGfg0
+   DFzDsidZ6qBQrWYHRBIALI2q7qoDlg3VSVWHBjQWitevLzR11tTUSVP87
+   w==;
+X-CSE-ConnectionGUID: sV583zQAS6yA3bF95uM8zA==
+X-CSE-MsgGUID: sxJmnmquQrajIZZdpLP/tw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11586"; a="51261555"
+X-IronPort-AV: E=Sophos;i="6.19,259,1754982000"; 
+   d="scan'208";a="51261555"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2025 12:52:27 -0700
+X-CSE-ConnectionGUID: cwSz6uuGRea7RoSWBR75NQ==
+X-CSE-MsgGUID: 94FpRdFbTH+jRlRIYNQ22g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.19,259,1754982000"; 
+   d="scan'208";a="184367826"
+Received: from lkp-server02.sh.intel.com (HELO 66d7546c76b2) ([10.239.97.151])
+  by orviesa010.jf.intel.com with ESMTP; 27 Oct 2025 12:52:26 -0700
+Received: from kbuild by 66d7546c76b2 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1vDTGR-000IQ0-0D;
+	Mon, 27 Oct 2025 19:52:23 +0000
+Date: Tue, 28 Oct 2025 03:48:30 +0800
+From: kernel test robot <lkp@intel.com>
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ 4e68ae36422e85ec1a86aded26a211319649426d
+Message-ID: <202510280324.bYmc5zQ8-lkp@intel.com>
+User-Agent: s-nail v14.9.25
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-Add support for RZ/G3E RSCI SCI(a.k.a non FIFO mode).
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: 4e68ae36422e85ec1a86aded26a211319649426d  Merge 6.18-rc3 into tty-next
 
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
----
- drivers/tty/serial/rsci.c   | 137 ++++++++++++++++++++++++++----------
- drivers/tty/serial/rsci.h   |   1 +
- drivers/tty/serial/sh-sci.c |   4 ++
- 3 files changed, 103 insertions(+), 39 deletions(-)
+elapsed time: 727m
 
-diff --git a/drivers/tty/serial/rsci.c b/drivers/tty/serial/rsci.c
-index 4c74251dc171..5901f9e55101 100644
---- a/drivers/tty/serial/rsci.c
-+++ b/drivers/tty/serial/rsci.c
-@@ -161,8 +161,12 @@ static void rsci_serial_out(struct uart_port *p, int offset, int value)
- 
- static void rsci_clear_DRxC(struct uart_port *port)
- {
-+	struct sci_port *s = to_sci_port(port);
-+
- 	rsci_serial_out(port, CFCLR, CFCLR_RDRFC);
--	rsci_serial_out(port, FFCLR, FFCLR_DRC);
-+
-+	if (s->type != RSCI_PORT_SCI)
-+		rsci_serial_out(port, FFCLR, FFCLR_DRC);
- }
- 
- static void rsci_clear_SCxSR(struct uart_port *port, unsigned int mask)
-@@ -231,7 +235,6 @@ static void rsci_set_termios(struct uart_port *port, struct ktermios *termios,
- 	unsigned long max_freq = 0;
- 	unsigned int baud, i;
- 	unsigned long flags;
--	unsigned int ctrl;
- 	int best_clk = -1;
- 
- 	if ((termios->c_cflag & CSIZE) == CS7) {
-@@ -292,7 +295,10 @@ static void rsci_set_termios(struct uart_port *port, struct ktermios *termios,
- 
- 	rsci_serial_out(port, CCR0, ccr0_val);
- 
--	ccr3_val |= CCR3_FM;
-+	if (s->type == RSCI_PORT_SCI)
-+		ccr3_val |= CCR3_RXDESEL;
-+	else
-+		ccr3_val |= CCR3_FM;
- 
- 	rsci_serial_out(port, CCR3, ccr3_val);
- 
-@@ -303,13 +309,15 @@ static void rsci_set_termios(struct uart_port *port, struct ktermios *termios,
- 
- 	rsci_serial_out(port, CCR4, ccr4_val);
- 
--	ctrl = rsci_serial_in(port, FCR);
-+	if (s->type != RSCI_PORT_SCI) {
-+		unsigned int ctrl = rsci_serial_in(port, FCR);
- 
--	ctrl |= (FCR_RFRST | FCR_TFRST);
--	rsci_serial_out(port, FCR, ctrl);
-+		ctrl |= (FCR_RFRST | FCR_TFRST);
-+		rsci_serial_out(port, FCR, ctrl);
- 
--	if (s->rx_trigger > 1)
--		rsci_scif_set_rtrg(port, s->rx_trigger);
-+		if (s->rx_trigger > 1)
-+			rsci_scif_set_rtrg(port, s->rx_trigger);
-+	}
- 
- 	port->status &= ~UPSTAT_AUTOCTS;
- 	s->autorts = false;
-@@ -322,7 +330,8 @@ static void rsci_set_termios(struct uart_port *port, struct ktermios *termios,
- 	rsci_init_pins(port, termios->c_cflag);
- 	rsci_serial_out(port, CFCLR, CFCLR_CLRFLAG);
- 
--	rsci_serial_out(port, FFCLR, FFCLR_DRC);
-+	if (s->type != RSCI_PORT_SCI)
-+		rsci_serial_out(port, FFCLR, FFCLR_DRC);
- 
- 	ccr0_val |= CCR0_RE;
- 	rsci_serial_out(port, CCR0, ccr0_val);
-@@ -339,12 +348,23 @@ static void rsci_set_termios(struct uart_port *port, struct ktermios *termios,
- 
- static int rsci_txfill(struct uart_port *port)
- {
--	return rsci_serial_in(port, FTSR);
-+	struct sci_port *s = to_sci_port(port);
-+
-+	if (s->type == RSCI_PORT_SCI)
-+		return !(rsci_serial_in(port, CSR) & CSR_TDRE);
-+	else
-+		return rsci_serial_in(port, FTSR);
- }
- 
- static int rsci_rxfill(struct uart_port *port)
- {
--	u32 val = rsci_serial_in(port, FRSR);
-+	struct sci_port *s = to_sci_port(port);
-+	u32 val;
-+
-+	if (s->type == RSCI_PORT_SCI)
-+		return (rsci_serial_in(port, CSR) & CSR_RDRF) != 0;
-+
-+	val = rsci_serial_in(port, FRSR);
- 
- 	return FIELD_GET(FRSR_R5_0, val);
- }
-@@ -359,7 +379,9 @@ static unsigned int rsci_tx_empty(struct uart_port *port)
- 
- static void rsci_set_mctrl(struct uart_port *port, unsigned int mctrl)
- {
--	if (mctrl & TIOCM_LOOP) {
-+	struct sci_port *s = to_sci_port(port);
-+
-+	if ((mctrl & TIOCM_LOOP) && s->type != RSCI_PORT_SCI) {
- 		/* Standard loopback mode */
- 		rsci_serial_out(port, CCR1, rsci_serial_in(port, CCR1) | CCR1_SPLP);
- 	}
-@@ -478,12 +500,13 @@ static void rsci_transmit_chars(struct uart_port *port)
- static void rsci_receive_chars(struct uart_port *port)
- {
- 	struct tty_port *tport = &port->state->port;
-+	struct sci_port *s = to_sci_port(port);
- 	u32 rdat, status, frsr_status = 0;
- 	int i, count, copied = 0;
- 	unsigned char flag;
- 
- 	status = rsci_serial_in(port, CSR);
--	frsr_status = rsci_serial_in(port, FRSR);
-+	frsr_status = (s->type == RSCI_PORT_SCI) ? 0 : rsci_serial_in(port, FRSR);
- 
- 	if (!(status & CSR_RDRF) && !(frsr_status & FRSR_DR))
- 		return;
-@@ -496,33 +519,42 @@ static void rsci_receive_chars(struct uart_port *port)
- 		if (count == 0)
- 			break;
- 
--		for (i = 0; i < count; i++) {
--			char c;
--
--			rdat = rsci_serial_in(port, RDR);
--			/* 9-bits data is not supported yet */
--			c = rdat & RDR_RDAT_MSK;
--
--			if (uart_handle_sysrq_char(port, c)) {
--				count--;
--				i--;
--				continue;
--			}
--
--			/* Store data and status.
--			 * Non FIFO mode is not supported
--			 */
--			if (rdat & RDR_FFER) {
--				flag = TTY_FRAME;
--				port->icount.frame++;
--			} else if (rdat & RDR_FPER) {
--				flag = TTY_PARITY;
--				port->icount.parity++;
--			} else {
--				flag = TTY_NORMAL;
-+		if (s->type == RSCI_PORT_SCI) {
-+			char c = rsci_serial_in(port, RDR) & RDR_RDAT_MSK;
-+
-+			if (uart_handle_sysrq_char(port, c))
-+				count = 0;
-+			else
-+				tty_insert_flip_char(tport, c, TTY_NORMAL);
-+		} else {
-+			for (i = 0; i < count; i++) {
-+				char c;
-+
-+				rdat = rsci_serial_in(port, RDR);
-+				/* 9-bits data is not supported yet */
-+				c = rdat & RDR_RDAT_MSK;
-+
-+				if (uart_handle_sysrq_char(port, c)) {
-+					count--;
-+					i--;
-+					continue;
-+				}
-+
-+				/* Store data and status.
-+				 * Non FIFO mode is not supported
-+				 */
-+				if (rdat & RDR_FFER) {
-+					flag = TTY_FRAME;
-+					port->icount.frame++;
-+				} else if (rdat & RDR_FPER) {
-+					flag = TTY_PARITY;
-+					port->icount.parity++;
-+				} else {
-+					flag = TTY_NORMAL;
-+				}
-+
-+				tty_insert_flip_char(tport, c, flag);
- 			}
--
--			tty_insert_flip_char(tport, c, flag);
- 		}
- 
- 		rsci_serial_in(port, CSR); /* dummy read */
-@@ -606,6 +638,8 @@ static const char *rsci_type(struct uart_port *port)
- 	struct sci_port *s = to_sci_port(port);
- 
- 	switch (s->type) {
-+	case RSCI_PORT_SCI:
-+		return "sci";
- 	case RSCI_PORT_SCIF:
- 		return "scif";
- 	}
-@@ -649,6 +683,17 @@ static const struct sci_port_params rsci_port_params = {
- 	.common_regs = &rsci_common_regs,
- };
- 
-+static const struct sci_port_params rsci_rzg3e_sci_port_params = {
-+	.fifosize = 1,
-+	.overrun_reg = CSR,
-+	.overrun_mask = CSR_ORER,
-+	.sampling_rate_mask = SCI_SR(32),
-+	.error_mask = RSCI_DEFAULT_ERROR_MASK,
-+	.error_clear = RSCI_ERROR_CLEAR,
-+	.param_bits = &rsci_port_param_bits,
-+	.common_regs = &rsci_common_regs,
-+};
-+
- static const struct sci_port_params rsci_rzg3e_scif_port_params = {
- 	.fifosize = 32,
- 	.overrun_reg = CSR,
-@@ -700,6 +745,13 @@ struct sci_of_data of_sci_rsci_data = {
- 	.params = &rsci_port_params,
- };
- 
-+struct sci_of_data of_rsci_sci_data = {
-+	.type = RSCI_PORT_SCI,
-+	.ops = &rsci_port_ops,
-+	.uart_ops = &rsci_uart_ops,
-+	.params = &rsci_rzg3e_sci_port_params,
-+};
-+
- struct sci_of_data of_rsci_scif_data = {
- 	.type = RSCI_PORT_SCIF,
- 	.ops = &rsci_port_ops,
-@@ -715,12 +767,19 @@ static int __init rsci_early_console_setup(struct earlycon_device *device,
- 	return scix_early_console_setup(device, &of_sci_rsci_data);
- }
- 
-+static int __init rsci_rzg3e_sci_early_console_setup(struct earlycon_device *device,
-+						     const char *opt)
-+{
-+	return scix_early_console_setup(device, &of_rsci_sci_data);
-+}
-+
- static int __init rsci_rzg3e_scif_early_console_setup(struct earlycon_device *device,
- 						      const char *opt)
- {
- 	return scix_early_console_setup(device, &of_rsci_scif_data);
- }
- 
-+OF_EARLYCON_DECLARE(rsci, "renesas,r9a09g047-rsci", rsci_rzg3e_sci_early_console_setup);
- OF_EARLYCON_DECLARE(rsci, "renesas,r9a09g047-rscif", rsci_rzg3e_scif_early_console_setup);
- OF_EARLYCON_DECLARE(rsci, "renesas,r9a09g077-rsci", rsci_early_console_setup);
- 
-diff --git a/drivers/tty/serial/rsci.h b/drivers/tty/serial/rsci.h
-index ba255f58c088..df7a7edad7d4 100644
---- a/drivers/tty/serial/rsci.h
-+++ b/drivers/tty/serial/rsci.h
-@@ -6,6 +6,7 @@
- #include "sh-sci-common.h"
- 
- extern struct sci_of_data of_sci_rsci_data;
-+extern struct sci_of_data of_rsci_sci_data;
- extern struct sci_of_data of_rsci_scif_data;
- 
- #endif /* __RSCI_H__ */
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 379528c6725a..43c3e90f0a53 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -3498,6 +3498,10 @@ static const struct of_device_id of_sci_match[] __maybe_unused = {
- 		.data = &of_sci_scif_rzv2h,
- 	},
- #ifdef CONFIG_SERIAL_RSCI
-+	{
-+		.compatible = "renesas,r9a09g047-rsci",
-+		.data = &of_rsci_sci_data,
-+	},
- 	{
- 		.compatible = "renesas,r9a09g047-rscif",
- 		.data = &of_rsci_scif_data,
--- 
-2.43.0
+configs tested: 114
+configs skipped: 4
 
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+tested configs:
+alpha                             allnoconfig    gcc-15.1.0
+alpha                            allyesconfig    gcc-15.1.0
+arc                              allmodconfig    gcc-15.1.0
+arc                               allnoconfig    gcc-15.1.0
+arc                              allyesconfig    gcc-15.1.0
+arc                   randconfig-001-20251027    gcc-8.5.0
+arc                   randconfig-002-20251027    gcc-8.5.0
+arm                              allmodconfig    gcc-15.1.0
+arm                               allnoconfig    clang-22
+arm                              allyesconfig    gcc-15.1.0
+arm                   randconfig-001-20251027    clang-22
+arm                   randconfig-002-20251027    clang-22
+arm                   randconfig-003-20251027    gcc-8.5.0
+arm                   randconfig-004-20251027    clang-22
+arm64                            allmodconfig    clang-19
+arm64                             allnoconfig    gcc-15.1.0
+arm64                 randconfig-001-20251027    clang-22
+arm64                 randconfig-002-20251027    gcc-12.5.0
+arm64                 randconfig-003-20251027    gcc-9.5.0
+arm64                 randconfig-004-20251027    clang-22
+csky                              allnoconfig    gcc-15.1.0
+csky                  randconfig-001-20251027    gcc-14.3.0
+csky                  randconfig-002-20251027    gcc-13.4.0
+hexagon                          allmodconfig    clang-17
+hexagon                           allnoconfig    clang-22
+hexagon                          allyesconfig    clang-22
+hexagon               randconfig-001-20251027    clang-22
+hexagon               randconfig-002-20251027    clang-17
+i386                             allmodconfig    gcc-14
+i386                              allnoconfig    gcc-14
+i386                             allyesconfig    gcc-14
+i386        buildonly-randconfig-001-20251027    gcc-13
+i386        buildonly-randconfig-002-20251027    clang-20
+i386        buildonly-randconfig-003-20251027    clang-20
+i386        buildonly-randconfig-004-20251027    gcc-14
+i386        buildonly-randconfig-005-20251027    clang-20
+i386        buildonly-randconfig-006-20251027    clang-20
+i386                                defconfig    clang-20
+loongarch                        allmodconfig    clang-19
+loongarch                         allnoconfig    clang-22
+loongarch             randconfig-001-20251027    gcc-15.1.0
+loongarch             randconfig-002-20251027    gcc-13.4.0
+m68k                             allmodconfig    gcc-15.1.0
+m68k                              allnoconfig    gcc-15.1.0
+m68k                             allyesconfig    gcc-15.1.0
+m68k                          hp300_defconfig    gcc-15.1.0
+m68k                            mac_defconfig    gcc-15.1.0
+microblaze                       allmodconfig    gcc-15.1.0
+microblaze                        allnoconfig    gcc-15.1.0
+microblaze                       allyesconfig    gcc-15.1.0
+microblaze                          defconfig    gcc-15.1.0
+mips                              allnoconfig    gcc-15.1.0
+mips                         db1xxx_defconfig    clang-22
+nios2                             allnoconfig    gcc-11.5.0
+nios2                               defconfig    gcc-11.5.0
+nios2                 randconfig-001-20251027    gcc-8.5.0
+nios2                 randconfig-002-20251027    gcc-8.5.0
+openrisc                         allyesconfig    gcc-15.1.0
+openrisc                            defconfig    gcc-15.1.0
+parisc                           allmodconfig    gcc-15.1.0
+parisc                           allyesconfig    gcc-15.1.0
+parisc                              defconfig    gcc-15.1.0
+parisc                randconfig-001-20251027    gcc-8.5.0
+parisc                randconfig-002-20251027    gcc-12.5.0
+parisc64                            defconfig    gcc-15.1.0
+powerpc                          allmodconfig    gcc-15.1.0
+powerpc                          allyesconfig    clang-22
+powerpc                      pcm030_defconfig    clang-22
+powerpc               randconfig-001-20251027    clang-22
+powerpc               randconfig-002-20251027    clang-22
+powerpc               randconfig-003-20251027    gcc-8.5.0
+powerpc64             randconfig-001-20251027    gcc-8.5.0
+powerpc64             randconfig-002-20251027    gcc-10.5.0
+powerpc64             randconfig-003-20251027    gcc-10.5.0
+riscv                            allmodconfig    clang-22
+riscv                            allyesconfig    clang-16
+riscv                 randconfig-001-20251027    gcc-13.4.0
+riscv                 randconfig-002-20251027    clang-22
+s390                             allmodconfig    clang-18
+s390                             allyesconfig    gcc-15.1.0
+s390                  randconfig-001-20251027    clang-22
+s390                  randconfig-002-20251027    gcc-8.5.0
+sh                               allmodconfig    gcc-15.1.0
+sh                                allnoconfig    gcc-15.1.0
+sh                               allyesconfig    gcc-15.1.0
+sh                               j2_defconfig    gcc-15.1.0
+sh                    randconfig-001-20251027    gcc-12.5.0
+sh                    randconfig-002-20251027    gcc-15.1.0
+sh                        sh7757lcr_defconfig    gcc-15.1.0
+sh                            shmin_defconfig    gcc-15.1.0
+sparc                            allmodconfig    gcc-15.1.0
+sparc                             allnoconfig    gcc-15.1.0
+sparc                               defconfig    gcc-15.1.0
+sparc                 randconfig-001-20251027    gcc-12.5.0
+sparc                 randconfig-002-20251027    gcc-8.5.0
+sparc64               randconfig-001-20251027    gcc-14.3.0
+sparc64               randconfig-002-20251027    gcc-15.1.0
+um                               allmodconfig    clang-19
+um                               allyesconfig    gcc-14
+um                    randconfig-001-20251027    clang-22
+um                    randconfig-002-20251027    clang-22
+x86_64                            allnoconfig    clang-20
+x86_64                           allyesconfig    clang-20
+x86_64      buildonly-randconfig-001-20251027    gcc-14
+x86_64      buildonly-randconfig-002-20251027    gcc-14
+x86_64      buildonly-randconfig-003-20251027    gcc-14
+x86_64      buildonly-randconfig-004-20251027    gcc-14
+x86_64      buildonly-randconfig-005-20251027    gcc-14
+x86_64      buildonly-randconfig-006-20251027    gcc-14
+x86_64                              defconfig    gcc-14
+x86_64                          rhel-9.4-rust    clang-20
+xtensa                            allnoconfig    gcc-15.1.0
+xtensa                randconfig-001-20251027    gcc-12.5.0
+xtensa                randconfig-002-20251027    gcc-10.5.0
+
+--
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
