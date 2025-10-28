@@ -1,177 +1,108 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1812345725;
-	Tue, 28 Oct 2025 15:37:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 446DD261581;
+	Tue, 28 Oct 2025 19:28:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761665876; cv=none; b=R1XliWH4ivMC5TyEPimlZYNXOtq+B8YM3XYy0s+fIDUUljrOlzJaje+1GcjxRZEW2n+Gry/iXUcTyhkyBxS8i+zaJBP7cTR8+7dROsUzUEVaQdZPyIrHHMdrwFRv2JCtKSbm3/x4W2fw5+gi2p4LPGfZyQ45KpfxKGo574xhfYE=
+	t=1761679708; cv=none; b=V/rzbUoOH47ytPukOIobQtzoY1Zi0hoWl2XOW0/ak1A8cxEuJsonQXHRaaYc+YMGOhL4bI1AIBWzeSlgyt1QliyWRK1WzUDYUKMT/JKa2hevn7tfAy4MUbYhNXqS4TzV4Pqp8n2BO0F7x0czHgFg9mjWmzD9ecn0gZ71pzPeL/A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761665876; c=relaxed/simple;
-	bh=YiDL4UsJb50r2ifBXEf7YKxbCTXY2QcCUMFAbc1//UY=;
-	h=Date:From:To:Cc:Message-Id:In-Reply-To:References:Mime-Version:
-	 Content-Type:Subject; b=Sw0VEc1IptPW0jxf1Ib4d0PCcCj6SmUki/a6idGlrMWgnAewd7gx527mPsgrWXbf8pZNcwPGPDiqB8AghM5DLQKdV+G0irACN1kYUPUsR6wfY16nksdkaBEOFgPWXNURAMNUg0zZjsPcJJlUJtb3Pi5E6UzJ2y5CBuPWOtK4MyI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=HU+eZliQ; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	s=arc-20240116; t=1761679708; c=relaxed/simple;
+	bh=TsJiVu7tfPU5QNygJ6AqlG+Y4qq+GJW0tdIrv8h5l9o=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=BlEF2jCb/R0BXl3IauzuGdo48+v/7F1hRfsGgAsmlXH83qzobhQihWSL7HzUcG1EVuBNOt6NxvbDA+YHCJtsUHndsrcu6tQdyu3pNyPIRZg6kJza0nxWfWxvP63te7yuRkcy6G9Z5/154nzvxGZjzFr9WMXKAs0in/xKX/gH4BM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sfF4SApS; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="HU+eZliQ"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
-	:Date:subject:date:message-id:reply-to;
-	bh=rQCkM+LhOLwLdgmWX34eWVh/KFSAjRx1HdzAE3MV9gU=; b=HU+eZliQ3xuK8KOK10CU7n8aZw
-	6yaRXhbdR7WAjzwEkEdjaxg87ha7cQPHyY1KDzXJXJVnwDSjjeQRCfwkFvXEAIFVw16Gbtr5+qHMM
-	xmBwCkPaJvQGikSZ2jY2SsnLVmS/d2MQo3xdCa6e0zxHGvQWxMBQ8un44D7d8XN0fC70=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:39646 helo=pettiford)
-	by mail.hugovil.com with esmtpa (Exim 4.92)
-	(envelope-from <hugo@hugovil.com>)
-	id 1vDllW-0007rJ-Lh; Tue, 28 Oct 2025 11:37:43 -0400
-Date: Tue, 28 Oct 2025 11:37:42 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sfF4SApS"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 246A1C4CEE7;
+	Tue, 28 Oct 2025 19:28:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1761679707;
+	bh=TsJiVu7tfPU5QNygJ6AqlG+Y4qq+GJW0tdIrv8h5l9o=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=sfF4SApSUDaWgAqHux/sZKL8rGKvF5aC9xIr0LZdA/DWukqRfpRXhZ5NpdGiQM/NZ
+	 hYxLcFVBbFn7lEZ34F/OFimfnnk7OG03JURHlQcVg9wmdt+ghiQaY1opjrx8RXv0V9
+	 Wws5J7hXfop8wNR3dw3ct57yR07K//BCoKuoqSeXhO7GAmnAaArYxpOneooV8JxGAD
+	 j6qTxVNgoY0SDjuQf/Eb/9mPVHw/W15LXv1uUr4RdjHIPVLzacl35NEHonun3jD/y+
+	 YVOGUk+ilcCcWEO10OjPOnuFaUa+Iv0c2ZdRw/7uKYMMVHMEek/gb/h+3R96awhXXS
+	 3QfGuik4m2Q3w==
+Date: Tue, 28 Oct 2025 19:28:22 +0000
+From: Conor Dooley <conor@kernel.org>
 To: Biju Das <biju.das.jz@bp.renesas.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, Geert Uytterhoeven <geert+renesas@glider.be>,
- Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
- wsa+renesas <wsa+renesas@sang-engineering.com>, Claudiu Beznea
- <claudiu.beznea.uj@bp.renesas.com>, Nam Cao <namcao@linutronix.de>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, biju.das.au
- <biju.das.au@gmail.com>, "linux-renesas-soc@vger.kernel.org"
- <linux-renesas-soc@vger.kernel.org>
-Message-Id: <20251028113742.7ad84146ecb9a2c7f2c6b4e9@hugovil.com>
-In-Reply-To: <TY3PR01MB113462A9E19F5AF62DB26CA5E86FDA@TY3PR01MB11346.jpnprd01.prod.outlook.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Magnus Damm <magnus.damm@gmail.com>,
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+	Biju Das <biju.das.au@gmail.com>
+Subject: Re: [PATCH 02/19] dt-bindings: serial: rsci: Drop "uart-has-rtscts:
+ false"
+Message-ID: <20251028-griminess-undocked-b6918de546fc@spud>
 References: <20251027154615.115759-1-biju.das.jz@bp.renesas.com>
-	<20251027154615.115759-13-biju.das.jz@bp.renesas.com>
-	<20251028105111.b0363ccd0eac7691191b6afe@hugovil.com>
-	<TY3PR01MB113462A9E19F5AF62DB26CA5E86FDA@TY3PR01MB11346.jpnprd01.prod.outlook.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+ <20251027154615.115759-3-biju.das.jz@bp.renesas.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-X-Spam-Level: 
-X-Spam-Report: 
-	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-	* -3.2 NICE_REPLY_A Looks like a legit reply (A)
-Subject: Re: [PATCH 12/19] serial: sh-sci: Add support for RZ/G3E RSCI clks
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
-
-Hi Biju,
-
-On Tue, 28 Oct 2025 15:08:50 +0000
-Biju Das <biju.das.jz@bp.renesas.com> wrote:
-
-> Hi Hugo,
-> 
-> Thanks for the feedback.
-> 
-> > -----Original Message-----
-> > From: Hugo Villeneuve <hugo@hugovil.com>
-> > Sent: 28 October 2025 14:51
-> > Subject: Re: [PATCH 12/19] serial: sh-sci: Add support for RZ/G3E RSCI clks
-> > 
-> > Hi Biju,
-> > 
-> > On Mon, 27 Oct 2025 15:45:59 +0000
-> > Biju Das <biju.das.jz@bp.renesas.com> wrote:
-> > 
-> > > RZ/G3E RSCI has 5 module clocks. Add support for these clocks.
-> > 
-> > In "[PATCH 03/19] dt-bindings: serial: renesas,rsci: Document RZ/G3E support", you mention that
-> > "...RZ/G3E has 6 clocks...", and here 5?
-> 
-> 5 module clocks + 1 external clock = 6 clocks.
-
-Ok, maybe add this precision in your cover letter (and possibly
-other commits) to remove any ambiguity...
-
-> 
-> I just omitted external clock here as it is available on both G3E and T2H.
-> 
-> Cheers,
-> Biju
-> 
-> > 
-> > 
-> > > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> > > ---
-> > >  drivers/tty/serial/sh-sci-common.h |  3 +++
-> > >  drivers/tty/serial/sh-sci.c        | 14 ++++++++++++++
-> > >  2 files changed, 17 insertions(+)
-> > >
-> > > diff --git a/drivers/tty/serial/sh-sci-common.h
-> > > b/drivers/tty/serial/sh-sci-common.h
-> > > index ef1d94ae8b5c..f730ff9add60 100644
-> > > --- a/drivers/tty/serial/sh-sci-common.h
-> > > +++ b/drivers/tty/serial/sh-sci-common.h
-> > > @@ -17,6 +17,9 @@ enum SCI_CLKS {
-> > >  	SCI_SCK,		/* Optional External Clock */
-> > >  	SCI_BRG_INT,		/* Optional BRG Internal Clock Source */
-> > >  	SCI_SCIF_CLK,		/* Optional BRG External Clock Source */
-> > > +	SCI_FCK_DIV64,		/* Optional Functional Clock frequency-divided by 64 */
-> > > +	SCI_FCK_DIV16,		/* Optional Functional Clock frequency-divided by 16 */
-> > > +	SCI_FCK_DIV4,		/* Optional Functional Clock frequency-divided by 4 */
-> > 
-> > I see 6 clocks here?
-> > 
-> > >  	SCI_NUM_CLKS
-> > >  };
-> > >
-> > > diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> > > index 5f5913410df9..d45bdda2b6c1 100644
-> > > --- a/drivers/tty/serial/sh-sci.c
-> > > +++ b/drivers/tty/serial/sh-sci.c
-> > > @@ -2994,6 +2994,9 @@ static int sci_init_clocks(struct sci_port *sci_port, struct device *dev)
-> > >  		[SCI_SCK] = "sck",
-> > >  		[SCI_BRG_INT] = "brg_int",
-> > >  		[SCI_SCIF_CLK] = "scif_clk",
-> > > +		[SCI_FCK_DIV64] = "tclk_div64",
-> > > +		[SCI_FCK_DIV16] = "tclk_div16",
-> > > +		[SCI_FCK_DIV4] = "tclk_div4",
-> > >  	};
-> > >  	struct clk *clk;
-> > >  	unsigned int i;
-> > > @@ -3003,6 +3006,9 @@ static int sci_init_clocks(struct sci_port *sci_port, struct device *dev)
-> > >  	} else if (sci_port->type == SCI_PORT_RSCI) {
-> > >  		clk_names[SCI_FCK] = "operation";
-> > >  		clk_names[SCI_BRG_INT] = "bus";
-> > > +	} else if (sci_port->type == RSCI_PORT_SCI || sci_port->type == RSCI_PORT_SCIF) {
-> > > +		clk_names[SCI_FCK] = "tclk";
-> > > +		clk_names[SCI_BRG_INT] = "bus";
-> > >  	}
-> > >
-> > >  	for (i = 0; i < SCI_NUM_CLKS; i++) { @@ -3018,6 +3024,14 @@ static
-> > > int sci_init_clocks(struct sci_port *sci_port, struct device *dev)
-> > >  					     name);
-> > >  		}
-> > >
-> > > +		if (!clk && (sci_port->type == RSCI_PORT_SCI ||
-> > > +			     sci_port->type == RSCI_PORT_SCIF) &&
-> > > +		    (i == SCI_FCK || i == SCI_BRG_INT || i == SCI_FCK_DIV64 ||
-> > > +		     i == SCI_FCK_DIV16 || i == SCI_FCK_DIV4)) {
-> > > +			return dev_err_probe(dev, -ENODEV, "failed to get %s\n",
-> > > +					     name);
-> > > +		}
-> > > +
-> > >  		if (!clk && i == SCI_FCK) {
-> > >  			/*
-> > >  			 * Not all SH platforms declare a clock lookup entry
-> > > --
-> > > 2.43.0
-> > >
-> > >
-> > 
-> > --
-> > Hugo Villeneuve
-> 
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="D1Iw+TUx8nS+nqMu"
+Content-Disposition: inline
+In-Reply-To: <20251027154615.115759-3-biju.das.jz@bp.renesas.com>
 
 
--- 
-Hugo Villeneuve
+--D1Iw+TUx8nS+nqMu
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Mon, Oct 27, 2025 at 03:45:49PM +0000, Biju Das wrote:
+> Drop "uart-has-rtscts: false" from binding as the IP support hardware
+> flow control.
+
+Why is it being removed, rather than only being required for the
+existing devices? It's not clear to me that the comment about the IP
+supporting flow control excludes the integration on these particular
+devices from somehow having flow control disabled.
+
+>=20
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> ---
+>  Documentation/devicetree/bindings/serial/renesas,rsci.yaml | 2 --
+>  1 file changed, 2 deletions(-)
+>=20
+> diff --git a/Documentation/devicetree/bindings/serial/renesas,rsci.yaml b=
+/Documentation/devicetree/bindings/serial/renesas,rsci.yaml
+> index f50d8e02f476..6b1f827a335b 100644
+> --- a/Documentation/devicetree/bindings/serial/renesas,rsci.yaml
+> +++ b/Documentation/devicetree/bindings/serial/renesas,rsci.yaml
+> @@ -54,8 +54,6 @@ properties:
+>    power-domains:
+>      maxItems: 1
+> =20
+> -  uart-has-rtscts: false
+> -
+>  required:
+>    - compatible
+>    - reg
+> --=20
+> 2.43.0
+>=20
+
+--D1Iw+TUx8nS+nqMu
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaQEZVgAKCRB4tDGHoIJi
+0g1VAQDAsorsBQUBiytjGezt5B9ODmmBWiLhV7Aikg2Eb1NlcAEAr/RZE2msMsdZ
+1ge0LJZ0bqws73j19QI4et4h4LCbpQc=
+=3GfB
+-----END PGP SIGNATURE-----
+
+--D1Iw+TUx8nS+nqMu--
