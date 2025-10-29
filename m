@@ -1,34 +1,83 @@
-Received: from cstnet.cn (smtp81.cstnet.cn [159.226.251.81])
-	(using TLSv1.2 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CCAD2BD5A1;
-	Wed, 29 Oct 2025 08:04:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.226.251.81
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 780FC26FA4E
+	for <linux-serial@vger.kernel.org>; Wed, 29 Oct 2025 08:21:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761725103; cv=none; b=N2N5q5pbP+M/pTtjICyv1v0pHwOTBVg4RfXDvYLkdObXlV9IDyFS3IqJvIdYrZvjxYcHsiNZ5lC78L1doePbLBFtuCbqNMdzmY7QmeacGR1GdCgOq0OFcCnOZG4OPTlnRWBBSwvhXUAh80XpHJLq5qIxYRq6b6xe/S8pQXokOHI=
+	t=1761726067; cv=none; b=oLBvHGUWgH3LKIPYuwojpW+R5cFHHSRbgqh8pw+WRxaycikJz3TmFkMPae8gxkfqo10ksM0l+M1Dx1NHhIboEYeA6/i90xJbMEF9bFUo2IW9yQ8N2vkJtQdjb5XN1DGAMVyyirlxBstdNxxews88TlKp8DXc10ae0x+wrXJSUpM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761725103; c=relaxed/simple;
-	bh=eRvdYNM/M5y9i4OeDJdMgwnklXbOV6DrncAoG0UcYW8=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=k9c0OPnHmBgvvPJNjJM75pplhZPH54pE2N5dKmeKI2AO9WKpyjPz5Srxdo4saVbsiFMc1CT19gzmQ3EEUTIWalKNucLkIeMDtdmp5VLh2MEP9LCWTYACwDVt77pbDT4FCJOdCBLA54LyVYQJCMCYrPDIPGLKzPNj12HuYiewW1Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn; spf=pass smtp.mailfrom=iscas.ac.cn; arc=none smtp.client-ip=159.226.251.81
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iscas.ac.cn
-Received: from DESKTOP-L0HPE2S (unknown [124.16.141.245])
-	by APP-03 (Coremail) with SMTP id rQCowAAnrGCgygFple17BQ--.24270S2;
-	Wed, 29 Oct 2025 16:04:50 +0800 (CST)
-From: Haotian Zhang <vulab@iscas.ac.cn>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org
-Cc: ychuang3@nuvoton.com,
-	schung@nuvoton.com,
-	linux-serial@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
+	s=arc-20240116; t=1761726067; c=relaxed/simple;
+	bh=qZoW7N0sN2JRmXRUOLhAa6wR0SjQGEcDLutTGWrtq4s=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=UPVMqloJpupcTSyDV1ku58BwNBcKxFbD8DJCY5puSH1IVBILl/on8k+/XX7qx+JJT2zXNs9OjhtMM1+9vWqyZMo+JOHtlUMEWSG59PDWB8tH7zIsrXprfHjyInTLvTCGjF6bDyFeon7kwyx32RQiIcEgjV9Qt3ziQ4nK3ke5ApE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XBaLoI6F; arc=none smtp.client-ip=209.85.128.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XBaLoI6F"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-475dc0ed8aeso37983955e9.2
+        for <linux-serial@vger.kernel.org>; Wed, 29 Oct 2025 01:21:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1761726064; x=1762330864; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=6pJvu/AhBQH/Vqyc2G8OkoZZLbCOtPgyePdybPKTWJk=;
+        b=XBaLoI6FmnZ4QW/331CUZpS4EexBHt/2D8+y6ePD0kETOZjf0893sAgjvBGcftQ8nb
+         QJUSzCzC6VohBkDK8fZ6WOYyIDZQWiKX3SmZcwGh1rSxgtxCGu6+V1cCrUOh1WI1cw1i
+         G/PEOzBmm+BRKbOH9uiagSmOVWmyBV499W1E5/nN/LrYZqvHUXP60ezCMVUXAghE2ZZp
+         o2aSxku9CsOxA//EwggqEx4ZVsJuaR8wJUC+CNVcX7uXechBSHdh8RtEqRfOHCVqCLgT
+         iyUHQHQvC1CKI92QBLW/fSHnTmB85rsKkfEntZrzqJ8gXiZv0yf6XNuXaA5VdHjBmxyo
+         4WPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1761726064; x=1762330864;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=6pJvu/AhBQH/Vqyc2G8OkoZZLbCOtPgyePdybPKTWJk=;
+        b=VxzIgdbsfHQRiTR0PdZhfvcOGm6c2GhDXTEHfI9VJFupl+FSiEYnC7l8DrxOQpNyFN
+         WOKb6t03R68zSm/0NTlswwnRRXE9ifgkuEvCEktWMAZXoCu4EsPBso27zkvejOpS2XmI
+         D6Wao79K90TV9lur5/KzOMM6Ev9K3vAKGCRkffZalJzH++7U59vqr9h5veI9gJHf7NiY
+         BMuFN9lwrZoU7/W+N7RKTbYY75jT2PWCZWbovQi02fsZ2HraWJ/SW4BRMoD7CnRj+rdO
+         wungnOBU2IrJmPrcWztm2pMlbzISlMDkR8sqoNVh26WjN7VJquWRvQ2ewnfj1ie3e2bS
+         9ayA==
+X-Forwarded-Encrypted: i=1; AJvYcCXPweC2ljt2Uvz7KICRw4ByrO8ws5suFrXmnRCwGBpFMpenvh1GiRde5jI+rJJ4d2U/vIWXcfBbmsf5FzY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwZBKtbzj1rjO7yUR8tQ6vvZlr98Z2tWqmN3e46laUcJU9ogvm2
+	rDGvX1ckwIgX18WQer6wKmeaydyrDnIJaYlBL7a3Rlz0hgG2Wjw46CC7
+X-Gm-Gg: ASbGncts9MzdLj7pFdgpayTwBt4fxwL6HaHERq3xeB1fbtthB3IX95Qrre3GPG9dkNi
+	bIzSF/e9yj3/bszBYqAgyE9X3qjhHl7qGmejq5XNFfIhvUdf53OPDJgqk+wF/8tP4fmJaeFXC/z
+	ucFFvJdaV7KkdEojrHKcPqhaNEf1ZbyTqkW4qv/X32oOYbhb4JVQL8Jy52iHtyJwXYvsqd8tq+r
+	M5JFq5F/liQ/SzTFpH2Gx0rguUPegADhGCp6NSNZ1bt9oED8u8dI/XSn0R1IxwyTo7De9wtpLnf
+	ViFegfLR55AvrlOhyIsgSvBGfBaseIea6i5KZhkXN7kaLRqOZnZx8XCY+gY6seglC6y5dpeAPNb
+	rimg99N1+A3WT5+uF9R03sXtJveFGkk6pls/eDhE922htZl34xc2uDdtAWbXDNyAu3MyPnLnESZ
+	W6PcvNzZN1WULsmy9bJM7yaLIXmS0cgp9yiGdw3hj9Sb2w1T8DyUqtBB/BTf1e
+X-Google-Smtp-Source: AGHT+IHuZVrK8iLdLDMqrJhiJBdDaaYTleDzT7XKu/JdrTppl/2IYxy2VXVcdkJYm65pKirVPO41JQ==
+X-Received: by 2002:a05:600c:4511:b0:46d:cfc9:1d0f with SMTP id 5b1f17b1804b1-4771e1de278mr21430785e9.19.1761726063434;
+        Wed, 29 Oct 2025 01:21:03 -0700 (PDT)
+Received: from biju.lan (host86-162-200-138.range86-162.btcentralplus.com. [86.162.200.138])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4771e196a22sm35191915e9.5.2025.10.29.01.21.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Oct 2025 01:21:03 -0700 (PDT)
+From: Biju <biju.das.au@gmail.com>
+X-Google-Original-From: Biju <biju.das.jz@bp.renesas.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Magnus Damm <magnus.damm@gmail.com>
+Cc: Biju Das <biju.das.jz@bp.renesas.com>,
+	Wolfram Sang <wsa+renesas@sang-engineering.com>,
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
 	linux-kernel@vger.kernel.org,
-	Haotian Zhang <vulab@iscas.ac.cn>
-Subject: [PATCH] serial: ma35d1: Fix resource leaks on driver removal
-Date: Wed, 29 Oct 2025 16:00:39 +0800
-Message-ID: <20251029080039.1010-1-vulab@iscas.ac.cn>
-X-Mailer: git-send-email 2.50.1.windows.1
+	linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	Biju Das <biju.das.au@gmail.com>
+Subject: [PATCH v2 0/2] Fix deadlock during RSCI FIFO overrun error
+Date: Wed, 29 Oct 2025 08:20:55 +0000
+Message-ID: <20251029082101.92156-1-biju.das.jz@bp.renesas.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -36,62 +85,33 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:rQCowAAnrGCgygFple17BQ--.24270S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7Kw4xWw4DCry8JF4rurW3KFg_yoW8WrW3pF
-	ZrKay5GaykGay0qw4vkw1UZFWkZw18tayIkry3C3WfCan0qFn3tF4fta4jvFWUZFWkXr47
-	Xw10y3WruF1DKFDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUkG14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-	1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
-	6F4UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-	Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-	I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-	4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY1x0262kKe7AKxVWU
-	AVWUtwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14
-	v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkG
-	c2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI
-	0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4U
-	MIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUBVbkUUU
-	UU=
-X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiBwkKA2kBkUXMWQAAsu
 
-The driver fails to release resources acquired during probe. It calls
-of_clk_get() to obtain the clock reference but never calls clk_put()
-in the remove path, leaking the clock reference count. Similarly, it
-calls ioremap() to map UART registers but never calls iounmap() during
-removal, leaking the I/O memory mapping.
+From: Biju Das <biju.das.jz@bp.renesas.com>
 
-Switch to devm_clk_get() for automatic clock resource management and
-add iounmap() call in ma35d1serial_remove() to properly release the
-memory mapping.
+This patch series aims to fix 2 issues
+ 1) Fix deadlock during RSCI FIFO overrun error, as wrong register used to
+    clear the status.
+ 2) Hardware flow control is supported on all SoCs. Fix the binding.
 
-Fixes: 930cbf92db01 ("tty: serial: Add Nuvoton ma35d1 serial driver support")
-Signed-off-by: Haotian Zhang <vulab@iscas.ac.cn>
----
- drivers/tty/serial/ma35d1_serial.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+v1->v2:
+ * Split the fixes patches from original series [1]
+ * Updated commit message to make it clear that hardware flow control
+   supported on all SoC for patch#1
+ * Added Ack from Conor for patch#1
+ * Added fixes tag for patch#1
 
-diff --git a/drivers/tty/serial/ma35d1_serial.c b/drivers/tty/serial/ma35d1_serial.c
-index 285b0fe41a86..37e9f6166290 100644
---- a/drivers/tty/serial/ma35d1_serial.c
-+++ b/drivers/tty/serial/ma35d1_serial.c
-@@ -711,7 +711,7 @@ static int ma35d1serial_probe(struct platform_device *pdev)
- 
- 	spin_lock_init(&up->port.lock);
- 
--	up->clk = of_clk_get(pdev->dev.of_node, 0);
-+	up->clk = devm_clk_get(&pdev->dev, NULL);
- 	if (IS_ERR(up->clk)) {
- 		ret = PTR_ERR(up->clk);
- 		dev_err(&pdev->dev, "failed to get core clk: %d\n", ret);
-@@ -762,6 +762,7 @@ static void ma35d1serial_remove(struct platform_device *dev)
- 
- 	uart_remove_one_port(&ma35d1serial_reg, port);
- 	clk_disable_unprepare(up->clk);
-+	iounmap(up->port.membase);
- }
- 
- static int ma35d1serial_suspend(struct platform_device *dev, pm_message_t state)
+[1] https://lore.kernel.org/all/20251027154615.115759-1-biju.das.jz@bp.renesas.com/
+
+Biju Das (2):
+  dt-bindings: serial: rsci: Drop "uart-has-rtscts: false"
+  serial: sh-sci: Fix deadlock during RSCI FIFO overrun error
+
+ .../devicetree/bindings/serial/renesas,rsci.yaml          | 2 --
+ drivers/tty/serial/rsci.c                                 | 1 +
+ drivers/tty/serial/sh-sci-common.h                        | 1 +
+ drivers/tty/serial/sh-sci.c                               | 8 ++++++--
+ 4 files changed, 8 insertions(+), 4 deletions(-)
+
 -- 
-2.50.1.windows.1
+2.43.0
 
