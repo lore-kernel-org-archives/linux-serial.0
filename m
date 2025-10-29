@@ -1,112 +1,90 @@
-Received: from mail-vs1-f52.google.com (mail-vs1-f52.google.com [209.85.217.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A48012E22BE
-	for <linux-serial@vger.kernel.org>; Wed, 29 Oct 2025 09:45:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B59271E766E;
+	Wed, 29 Oct 2025 10:17:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761731115; cv=none; b=o0P9GDpUg0zkbXzzzuCy4MrmDmO3I/f2vLSHdj9NUYT4IVZD/fhZhWwi9UIdr9ohhQjo58WXkU9i9tbdzze7nfhFiTcDVC41m1rie2VF1UY5NinOBFFzblh2ewDuN3W2yQm3PaDvYuYpOVw4PweiT/D5grXNB0W1RDWJltoUCY0=
+	t=1761733038; cv=none; b=fhQFubQ/Whtc6MkbdwBCKxMd8if7RJOd4eRqCqhjwuGe3lwLKDGhcH77v9PSe4EM6tmYmeb4fPgG5KziCM9ijVwQw1PQMEh64S5j4F5hlXeYvVZf9fskj6tfw709PbLHrPugkL1RwHEAG0pCxEv2kkqXDs25lzzFNIwBsB8A77M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761731115; c=relaxed/simple;
-	bh=ul7h+XS6GRSBMYFmPhQ6YeIMEuayPqL/cWHKXtbASjE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=MTHwEM1obffNJQMdQdKKqfCFICM0aD9gxBorAtB8I71RvsiydHPsIVpPgR3ZO9TM3ken9ezBmwULU3hJQI9wQ7XIn8ImAlv4Z1kGnEuaO8sCVQ+dsGteJ8sRkdfOcgML5yPxuzIfteCmDfV7+NVpQBSDBakFcihiFrFS47rZu4s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.217.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-vs1-f52.google.com with SMTP id ada2fe7eead31-5db394cf0d1so3400519137.3
-        for <linux-serial@vger.kernel.org>; Wed, 29 Oct 2025 02:45:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1761731111; x=1762335911;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=FUXGCcljy1WS6CKdaLlHjT9lGZyhiLJv69Z5NYW430U=;
-        b=XvgGM0x07JBcRtmmWQUXIduYTps16PfLOHKjv1PVrR6sTPGKloOfdmv8xo9qbWxe0y
-         kgD9HsnUjY/y2TtEhQCmQNNUihd5T9KDronQR/Fzk6BeUTzrFyf6qWZb7IMCK1NmPTkO
-         zlC2rMuCGVBfbBsQYJnVi3UqX9eJ7XDnpGoCsbUDKlOlJLlx/W0U2CmCJ90zIYIz09Ev
-         pRO4ATRTl8JCVzfuLEvZFG/K6m6nfjK+GRRgqa8mmS3Ngtbr919cY5gESW56rJX8qQ+C
-         cswUWugmWtXN0Aux381jdycc3L1kP3b82yYrD/Vh37Lbml/Cg67Woh1b4sr0dF3xszj7
-         DhDQ==
-X-Forwarded-Encrypted: i=1; AJvYcCX+wLNjhAdfDWPqOUUX6RFHO/R8zOya0S+9EYxGbs/PcvwV4jx/Wxs6+4awbG19jOcbiNZJHK+B8eIqM/8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxcpA3zB41pBXq/C6gx4B8GWhCib7OU9mdlb1nwSvJxlRHaqUg4
-	SNK4WWYSzmn8aizewWSblbOfnRESJVZj1gbrbFefB94aoaE3C69cZyzAsw1pLqx6
-X-Gm-Gg: ASbGncuEB7AMfbYQtkLxKr358ojqWeKHq5FyOiQ99qCQ05x7iNxcaHKe/SlszJZtO2d
-	6tsStlgt7KzKFoN/AIblJGnezb0cktworBkHp30kdO/jpwEyLaTFgN+T14VQr0ab+FMGTkzOXVx
-	wj7dw7LU6qRg9FyDtp/Fn8G5o8dfz4iticRWktlfCusFZaZpcuULZb6RxwsHnySsGg5VS8e+WNt
-	roxJZPmkrcip3UBMYb7BK9viCU/4kI845W7ambkk0KDYkYlZoBh8nX63X2dn8NpT05B3c2f1dnc
-	9CEh17Ok5LHeUIq+ng+LHM81PWzP8HXXp7ksP4LIvjjwrMOAxEFPtaFfM8y9uuB9zL8zc96AyTw
-	/EC03fNrKqmBIpxJ41rIthFtyUlTPskCWCoGEoU5p7U8s1b0A51lEW1fYjk9BWEEtxGWamJGcid
-	d4q1x4MwAne/rbdpwRqMxrfEJWaPY13ndfMU/hx4u5zo/1noHR
-X-Google-Smtp-Source: AGHT+IGiz7hpin072B6mNyZOcfyIEP0rHRL6o4q/rTsjz+H6S79iZTMxDU4NNHNCaaNcjGEdNhTR6w==
-X-Received: by 2002:a05:6102:149c:b0:521:57e7:3b19 with SMTP id ada2fe7eead31-5db90661052mr561992137.25.1761731111124;
-        Wed, 29 Oct 2025 02:45:11 -0700 (PDT)
-Received: from mail-ua1-f52.google.com (mail-ua1-f52.google.com. [209.85.222.52])
-        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-934ca2b8a10sm4741968241.0.2025.10.29.02.45.09
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Oct 2025 02:45:10 -0700 (PDT)
-Received: by mail-ua1-f52.google.com with SMTP id a1e0cc1a2514c-934bbe85220so2110095241.3
-        for <linux-serial@vger.kernel.org>; Wed, 29 Oct 2025 02:45:09 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCXfXUu73EpOY3AIpjOdlwtHwHYCeg3ZxJFTVdnCenV02iFPIPIOEFeIzH7KGdbRSNTjQi2RzELq4ohkW0A=@vger.kernel.org
-X-Received: by 2002:a05:6102:2910:b0:5db:3111:9330 with SMTP id
- ada2fe7eead31-5db9066385fmr535126137.27.1761731109576; Wed, 29 Oct 2025
- 02:45:09 -0700 (PDT)
+	s=arc-20240116; t=1761733038; c=relaxed/simple;
+	bh=LByAXLZ9ll/ixgdmWs87gLszdmGDNLHhwbBIKEopj/U=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=heHbfjz74qXqFyaMOw1ajkVG7i2mHOzc9seduvzrQ1YuxQd29qR6CKElzTNAWBXkYsUg2mWbgD0oHpM9cl9TkkuJ4zQsCer0s5oig8KVSvyr8rcvFjLCoksXQXVnZJD1O8X2+wU/bZkrHDK1358oPXugPItowyLWcc5ZKekz4gY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=OYPOHMqt; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="OYPOHMqt"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70A04C4CEF7;
+	Wed, 29 Oct 2025 10:17:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1761733038;
+	bh=LByAXLZ9ll/ixgdmWs87gLszdmGDNLHhwbBIKEopj/U=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=OYPOHMqt0YYSrDAC6pql5TZ/fDIPxKboiqxD8+fvq7qR8xl9H1ajp2WN75nJH+WKC
+	 bMc+naCctmVuFB9JimG8t3J/kDEBBl8EBraXFGj6UWAN5XXNe+cqurF8rCl1mFzKJ2
+	 kNQ2NQPVpklaimtMv0SdP1P0ZStyxwQtbeUnZd7E=
+Date: Wed, 29 Oct 2025 11:17:12 +0100
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Haotian Zhang <vulab@iscas.ac.cn>
+Cc: jirislaby@kernel.org, ychuang3@nuvoton.com, schung@nuvoton.com,
+	linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] serial: ma35d1: Fix resource leaks on driver removal
+Message-ID: <2025102900-rebound-semicolon-0d98@gregkh>
+References: <20251029080039.1010-1-vulab@iscas.ac.cn>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20251029082101.92156-1-biju.das.jz@bp.renesas.com> <20251029082101.92156-2-biju.das.jz@bp.renesas.com>
-In-Reply-To: <20251029082101.92156-2-biju.das.jz@bp.renesas.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Wed, 29 Oct 2025 10:44:58 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXaxk5mEDFJ3uWwdZYqkhd_jCRjVB55MJmHRZxyWGE=Pw@mail.gmail.com>
-X-Gm-Features: AWmQ_bkf4dSdvLrN2gk-FVgCqZ8SF2_j8HOolSnL2gtCu3wVMEe_dcdoAdns_ts
-Message-ID: <CAMuHMdXaxk5mEDFJ3uWwdZYqkhd_jCRjVB55MJmHRZxyWGE=Pw@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] dt-bindings: serial: rsci: Drop "uart-has-rtscts: false"
-To: Biju <biju.das.au@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Geert Uytterhoeven <geert+renesas@glider.be>, Magnus Damm <magnus.damm@gmail.com>, 
-	Biju Das <biju.das.jz@bp.renesas.com>, 
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-renesas-soc@vger.kernel.org, stable@kernel.org, 
-	Conor Dooley <conor.dooley@microchip.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251029080039.1010-1-vulab@iscas.ac.cn>
 
-On Wed, 29 Oct 2025 at 09:21, Biju <biju.das.au@gmail.com> wrote:
-> From: Biju Das <biju.das.jz@bp.renesas.com>
->
-> Drop "uart-has-rtscts: false" from binding as the IP supports hardware
-> flow control on all SoCs.
->
-> Cc: stable@kernel.org
-> Fixes: 25422e8f46c1 ("dt-bindings: serial: Add compatible for Renesas RZ/T2H SoC in sci")
-> Acked-by: Conor Dooley <conor.dooley@microchip.com>
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+On Wed, Oct 29, 2025 at 04:00:39PM +0800, Haotian Zhang wrote:
+> The driver fails to release resources acquired during probe. It calls
+> of_clk_get() to obtain the clock reference but never calls clk_put()
+> in the remove path, leaking the clock reference count. Similarly, it
+> calls ioremap() to map UART registers but never calls iounmap() during
+> removal, leaking the I/O memory mapping.
+> 
+> Switch to devm_clk_get() for automatic clock resource management and
+> add iounmap() call in ma35d1serial_remove() to properly release the
+> memory mapping.
+> 
+> Fixes: 930cbf92db01 ("tty: serial: Add Nuvoton ma35d1 serial driver support")
+> Signed-off-by: Haotian Zhang <vulab@iscas.ac.cn>
 > ---
-> v1->v2:
->  * Updated commit message to make it clear that hardware flow control
->    supported on all SoC
->  * Added Ack from Conor
->  * Added fixes tag
+>  drivers/tty/serial/ma35d1_serial.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 
-Yeah, this was introduced when renesas,rsci.yaml was split off
-incorrectly from renesas,sci.yaml in v7.
+Hi,
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
 
-Gr{oetje,eeting}s,
+You are receiving this message because of the following common error(s)
+as indicated below:
 
-                        Geert
+- You have marked a patch with a "Fixes:" tag for a commit that is in an
+  older released kernel, yet you do not have a cc: stable line in the
+  signed-off-by area at all, which means that the patch will not be
+  applied to any older kernel releases.  To properly fix this, please
+  follow the documented rules in the
+  Documentation/process/stable-kernel-rules.rst file for how to resolve
+  this.
 
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+thanks,
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+greg k-h's patch email bot
