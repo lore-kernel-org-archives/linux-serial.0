@@ -1,106 +1,76 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C5ED283FD9;
-	Thu, 30 Oct 2025 19:49:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D45AD3328F1;
+	Thu, 30 Oct 2025 20:01:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761853757; cv=none; b=hMq4fBIUOENJIOEtFceTUwXsLSB3lQs114mv140jqJ2ymXV/ZN8jNoo8prezPz4xXrsHyqLxeVz0n0g7qpi7ays6VkITJ0LAjwl94EAC+ShQDjrOKsg2h5TIcGhdx1MlU0MqHQSCjx54g4i/IKr6iuv2JMP04Opt5vNcs3FKF7I=
+	t=1761854515; cv=none; b=RkVdJALwAjrsyARdSt+jWA+MVqzySdv8pAG+kNMA0ZXfaChQvGQB0SLoUM+vRiWzEOC8/3wHTFQKGOArOM2S+obJxJf24ceXoHJ0kvNdQWnF7amqA5qpbCdNaQty+fvH8LVLTbRQzHfanegbz6B15wbWm/QO4Q//QvF7pmSA3hE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761853757; c=relaxed/simple;
-	bh=lgyDLafQE8DiQDUiJtyJ9+bt7JmcvlRaYp0Kn6urakc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GdwTESd6chY1SR85q5DDsB9Matu5aDUFh885jMMyn9HlnfF/NicyndfJ8a9QE05jjuP2E0AOJVOQw6aMACfTl0BO+iH1UJahWptylKjyKzeqE+XLhXm2x7rltNtWcGtVJAvto7I1Xlgq/j0xPvJYntVUS35E7RcVlM9HL8dz5Vw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Lu/eBFP5; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1761854515; c=relaxed/simple;
+	bh=HVg1JjuEIl2ZtyXthNVNE0xyixvCrCltCUszdJpTUrE=;
+	h=Date:From:To:Cc:Message-Id:In-Reply-To:References:Mime-Version:
+	 Content-Type:Subject; b=VSzhFZFWkFc/HrB8zBD6qVrfmKtwvvk+M8bio9KuwsYrzuH4yHWqR95hbW29HfB++xEUiGwX9PsRInrIMuOwoxutl0HyPtKb776TO77oaMP3LI+HwFFFDcmOYkL8Yr9/96VjhfebW0R4/5RfV/wrHP/7o54N2Ubo34LQKcaDagA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=SA+dwgu9; arc=none smtp.client-ip=162.243.120.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Lu/eBFP5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 084B2C4CEF8;
-	Thu, 30 Oct 2025 19:49:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1761853754;
-	bh=lgyDLafQE8DiQDUiJtyJ9+bt7JmcvlRaYp0Kn6urakc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Lu/eBFP5oLDumMFhEBp06aze9McYEFE1zeHtLyHf/sA/wPzcnlWHWr09lV/qIkPX+
-	 qxMfJ+aT4WdooF22hWKVeSJDTJV6i6+YSHaGVbFY5JHMOo6NHj+iHKqq5W/iibB16l
-	 mEoKxOuSC5iS1FlIvtkIDOHLWKl7agqhk3pGa6rzO9pHeNO7cSfhkZvtjJVd1Dr4il
-	 LPLVA/244xMmWW93aRCOtXxClp2npsrzYGq1QhADfpsS1Zy60rOiWYHkHWFHOyvZZ7
-	 dHpqz/YoHkoaGWp4aMuK6O2/ahC2M4Jtd8mifw4McZg4uUv2C44rNMKg729jbC7gNq
-	 aFKX3OVv10sew==
-Date: Thu, 30 Oct 2025 19:49:07 +0000
-From: Conor Dooley <conor@kernel.org>
-To: Jack Hsu <jh.hsu@mediatek.com>
-Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
-	jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
-	andy@kernel.org, matthias.bgg@gmail.com,
-	angelogioacchino.delregno@collabora.com, srini@kernel.org,
-	ukleinek@kernel.org, gregkh@linuxfoundation.org,
-	jirislaby@kernel.org, daniel.lezcano@linaro.org, tglx@linutronix.de,
-	chunfeng.yun@mediatek.com, wim@linux-watchdog.org,
-	linux@roeck-us.net, sean.wang@mediatek.com,
-	zhiyong.tao@mediatek.com, andrew-ct.chen@mediatek.com,
-	lala.lin@mediatek.com, jitao.shi@mediatek.com,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org, linux-pwm@vger.kernel.org,
-	linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-	linux-watchdog@vger.kernel.org,
-	Project_Global_Chrome_Upstream_Group@mediatek.com
-Subject: Re: [PATCH v6 00/11] Add mt8189 dts evaluation board and Makefile
-Message-ID: <20251030-deodorant-unglazed-190cbfb4a69b@spud>
-References: <20251030134541.784011-1-jh.hsu@mediatek.com>
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="SA+dwgu9"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+	:Date:subject:date:message-id:reply-to;
+	bh=VWspoIGJ+J2dFkXu8DhQ+OCtXbfe73pkNJPKHONBNxc=; b=SA+dwgu91w+y9okuQ+yehHmkum
+	UDMKx61Sr1Enf3DDYiRyOzfEN2xVIAbbDYmgSox9UesJh0umKDiBOZzMGmMVge6xb+autZ+Nktwdb
+	ssBtZYRdrMx5KddCbq9FydKpb3FHvHrx+iZMXD1ZXr76tClUPbUIuS0BGdq5gtI6OsV8=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:35546 helo=pettiford)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1vEYq7-0004jm-Nk; Thu, 30 Oct 2025 16:01:44 -0400
+Date: Thu, 30 Oct 2025 16:01:42 -0400
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Hugo Villeneuve
+ <hvilleneuve@dimonoff.com>
+Message-Id: <20251030160142.e1ae7b158216b8101582cd49@hugovil.com>
+In-Reply-To: <aQM_VBg_7JwyGGLG@black.igk.intel.com>
+References: <20251027142957.1032073-1-hugo@hugovil.com>
+	<20251027142957.1032073-12-hugo@hugovil.com>
+	<aQM_VBg_7JwyGGLG@black.igk.intel.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="yaNJtXhYGM5K609h"
-Content-Disposition: inline
-In-Reply-To: <20251030134541.784011-1-jh.hsu@mediatek.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+X-Spam-Report: 
+	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+	* -3.6 NICE_REPLY_A Looks like a legit reply (A)
+Subject: Re: [PATCH v3 11/14] serial: sc16is7xx: use KBUILD_MODNAME
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
+On Thu, 30 Oct 2025 11:35:00 +0100
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
---yaNJtXhYGM5K609h
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> On Mon, Oct 27, 2025 at 10:29:53AM -0400, Hugo Villeneuve wrote:
+> > 
+> > There is no need to redefine the driver name. Use KBUILD_MODNAME and get
+> > rid of DRV_NAME altogether.
+> 
+> Actually I am slightly against this change. The modname (and hence modalias)
+> are parts of an ABI (visible via sysfs). Changing the module name (file name
+> in this case) may inadvertently break this. Yes, it most likely not critical
+> in this case, but should be taken into account.
 
-On Thu, Oct 30, 2025 at 09:44:32PM +0800, Jack Hsu wrote:
-> In this patch series,=20
-> we add Mediatek MT8189 evaluation board dts, dtsi and Makefile,
-> and also related dt-binding documents.
-> Jack Hsu (11):
->   dt-bindings: arm: Add compatible for MediaTek MT8189
->   dt-bindings: iio: adc: Support MediaTek MT8189 evb board auxadc
->   dt-bindings: nvmem: Support MediaTek MT8189 evb board efuse
->   dt-bindings: pwm: Support MediaTek MT8189 evb board disp-pwm
->   dt-bindings: serial: Support MediaTek MT8189 evb board uart
->   dt-bindings: timer: Support MediaTek MT8189 evb board timer
->   dt-bindings: usb: Support MediaTek MT8189 evb board xhci
->   dt-bindings: watchdog: Support MediaTek MT8189 evb board wdt
+Hi Andy,
+thank you for pointing that out. It didn't occur to me that this could
+impact the sysfs ABI.
 
-Please drop mention of the evb from all of these commit messages. The
-compatible has nothing to do with the evb board, it's going to be common
-across all boards using an mt8189.
-
->   arm64: dts: mediatek: Add MT6319 PMIC Support
->   arm64: dts: mediatek: add properties for MT6359
-
-Wait a minute, what are these two patches even doing in this series in
-the first place, when it is otherwise about the mt8189?
-
->   arm64: dts: mediatek: Add mt8189 evaluation board dts
-
-
---yaNJtXhYGM5K609h
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaQPBMgAKCRB4tDGHoIJi
-0lPkAQCRU09Z6yjkHdytWu2mAy2u6tRSvE2qwbIcuk80eZ/k7wD/UgxmnNEGR8HM
-8eS3jGJAmBHKHjZ6iiVHXynJ+4bEdwg=
-=YIMa
------END PGP SIGNATURE-----
-
---yaNJtXhYGM5K609h--
+Hugo.
