@@ -1,154 +1,189 @@
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33E84257832
-	for <linux-serial@vger.kernel.org>; Thu, 30 Oct 2025 11:32:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37E07194A65;
+	Thu, 30 Oct 2025 13:45:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.61.82.184
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761823973; cv=none; b=Sl3jQkDFROBJAPApgJ/MqIDV/w3QbsY8Iu7HLvYFrTvblFDzNc5JO3LtG94Gk9ys4V+04CRy4AIXJrEdW17vlNyHL5nDcRqTlW1aX1UhepfCn5vjvRSSe1HQk5jHtY1oJDLkq1xCeSgKGvbwWiN3wBlVzeWOxlt4mBqwxCDUcXo=
+	t=1761831958; cv=none; b=ZX1bHdq/bCnxodtmPUBsZgvdgWxkkkIvjvIocAPtGyBveXJ9LRFtrb+2ys/IrKMMfrNn0Lo1U6JcoIwOTTlIUZTfvMDgPgRlQrr5GsfaXe9ydCanSDThkKWOM9rn5hRce924hGWXfwJd86iv2yMWDfM9dzX1nTZLq92shuuGMFU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761823973; c=relaxed/simple;
-	bh=muMlbcMqXD01OwCkofrRnGNfdFL794PWo4IySRVrrEI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DpR+TkmWwU5Qc09ihezM+YoBhJ2sR/hhnOmu7+M6o07f2IQZvnJJGJMLWPjQpclJUGbXqjOxSFc22XFA7spaVcOqLPvUEJ3T/Rd1C6ERDqvDtKwI31vtbftywJ6C1s52mPjkQ9YWDp4YnO/eRdbgIKHfhaUvlNAL4sS7PytNVOE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=LOPgvX1y; arc=none smtp.client-ip=209.85.221.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1761831958; c=relaxed/simple;
+	bh=GKFw6gcF7KqqDED2EZ270pxSZAxcOCs0QnhgIKxD0iM=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=ta9Y6ox1yzVYzGUD1ZwL1HmvnqjHHlOnDB8qoXSAvvjNg29sHQhiqinsNJzvIfs7A3fsVYDJojf0EiOfdTvZ476hBhmTgQL5KMaJL2HQWXwpxCBfadzZkWlhYxZd8Ol4sCWQ/K44ldQNBMcNAr+auy4XYphKwxnWPKSgTnZNON8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com; spf=pass smtp.mailfrom=mediatek.com; dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b=Z1fdwUFI; arc=none smtp.client-ip=210.61.82.184
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mediatek.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="LOPgvX1y"
-Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-3ece0e4c5faso945170f8f.1
-        for <linux-serial@vger.kernel.org>; Thu, 30 Oct 2025 04:32:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1761823969; x=1762428769; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=36R1/y0ppuhDia+apykCv/MJiHb/fMGU1uNXAB5g9Jo=;
-        b=LOPgvX1yY3vuEE9s0bQESLBtiMcpdcHh5vXA3Pw9ePLg8ZHR27GKGbPlslZSVpGTpy
-         SbzN6mKWw1UR+KgBI+G+pgYftVsxl6agEFIj/eGsIJATc+eepi+s88NxVy9nh1Fm5Zp7
-         kS/djzRHBKXsK6+Ku52oH132EBGO2XvEbiI6O7AzqyAExlHisNpsIU1Hn41XNXLDTGPT
-         LiNPmGCAjP91kMHOAL4cvDxQ19NNK3IGxHQsA8Fp3v8pchIWY5AdXvSZ4LgtuexMAovd
-         52tjgC8fnYcIsr+76iFzDLoUz/MlLqjNGCHZWQfs+HGbb+HWPyV4Kp6ElXEKs047jOls
-         YxsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1761823969; x=1762428769;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=36R1/y0ppuhDia+apykCv/MJiHb/fMGU1uNXAB5g9Jo=;
-        b=OfP/1tuOZhl7Sfuow1lRVqb+cyUU59NAlcAXkdL7I+0w4xMDwhZU49snMxUTRJDBNP
-         uswquKv+NeXwyKxf1sQiERbBvqyYkjRwLXoGyvBtipkVnTPDgfUQQNVY7rFQYoduRosV
-         mrmFVlbrSONWLpX63K6xwH7Fp3nQfYBQsvmIk12I3sTDTJK4NKyIf1j+UFhTuNwWnPxy
-         n3MurFongrgnBcudUyzQxW99vZ5kSpxsq5y7L6TovmiTneIKiETTth6KUSyYaqMXxXaT
-         n9GDbeIO1eCQdjixsD18CVuK7eJSsUAwTjmviNirLVm2kJxbtVXAl5+l8W0rqC2GPwEF
-         xKvg==
-X-Forwarded-Encrypted: i=1; AJvYcCWdm3M8/Sev1NAInTrOYOY+IqGNoZsrzVOkqiFCga17lIsLh7Uz2QLux+MxgNvljdr480leI9x6dY1pZL0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzYAtodn5d1Yn1r5vsbdCO57cyHgnvpaCPsuB5ri94cNtyelvdk
-	iPl8+isR85dbpZuVjhJDk1VL0oqmOdtLq/wD1Y/dxub0woRuiudp2GkMHGb2KM/L2iM=
-X-Gm-Gg: ASbGncsfKeEf6mFq2UwMsdQhDVZ1QzDBbWe4QKf4YMCtcX+ouVquSmbTc8uuHi4qfSe
-	hYxcPjsdUsoaP+etNVFgvXR/0vVDqfy6k9StlhHL0o1CsqKIxBpcxF/A2pufRXMVJ7uzY/twDKa
-	6dHZD+L0EJV1FqHFcsI7IPsHupBOHLnSjwgBi5PBruiW6mh2Gd6qkenjbrMyEBnCZZ7E5iAwA4F
-	LWgBpScamPksccYSLUwU/wtezwK4/1e0Gv/zB/+4+Hgmiz2qjfmcrwPmVRN25IEgS1vw4sq5wGu
-	jpFAX2tb7JgDd4e+OTSNf2UMy6okSkAregFlb0tHkOm46AkYFHbGveh+6QtMVcPVAFfhj7gEwnY
-	pgCmCkJzjz/nfKfkOr4xlCbiZbDqpxBCcwNMtBa83hxADhf7IpaGdwRrVH/pfw68LBYpoNkipCh
-	AMYykAx5KSRKjaNQ==
-X-Google-Smtp-Source: AGHT+IEPxvyLj9Z6RbqevRQBpTtKGGxmaydSI6etzWXlEcJqPTS8WKcLBAuSkjLnQNUWVQWk2i3Nyg==
-X-Received: by 2002:a05:6000:2006:b0:427:847:9d59 with SMTP id ffacd0b85a97d-429b4c9ee68mr2975795f8f.45.1761823969402;
-        Thu, 30 Oct 2025 04:32:49 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-429ba699642sm1857792f8f.16.2025.10.30.04.32.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Oct 2025 04:32:48 -0700 (PDT)
-Date: Thu, 30 Oct 2025 12:32:46 +0100
-From: Petr Mladek <pmladek@suse.com>
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Esben Haabendal <esben@geanix.com>, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Arnd Bergmann <arnd@arndb.de>, Tony Lindgren <tony@atomide.com>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Serge Semin <fancer.lancer@gmail.com>,
-	Andrew Murray <amurray@thegoodpenguin.co.uk>
-Subject: Re: [PATCH 0/3] printk/nbcon: Prevent hardlockup reports caused by
- atomic nbcon flush
-Message-ID: <aQNM3r6YU_4fl2Xx@pathway.suse.cz>
-References: <20250926124912.243464-1-pmladek@suse.com>
+	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="Z1fdwUFI"
+X-UUID: be4fe2a8b59611f0b33aeb1e7f16c2b6-20251030
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+	h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=rVkGPwv3C6XlbO/gf5Nflh6DXGZXVeoBCqb2ZnxWmhE=;
+	b=Z1fdwUFIEI4qxPAPp5IRK5/roTAYaNuUlTWvH6P52CTSNKiZagTWKC5kgyOF2ibqjeb4ZdjuJwtGctf+X3pdU1ZF62mOc8fwJKvkIrbJ8pd/X5gMQRiQV6KPhKe1h10NW/nfG0S91t1ZlXClxJByFJr8u5lxRwSuTR/IV/r59Vs=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.3.6,REQID:645ddbcc-937c-4e43-8e47-e15695cefa3a,IP:0,UR
+	L:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
+	release,TS:-5
+X-CID-META: VersionHash:a9d874c,CLOUDID:5ca16e26-cfd6-4a1d-a1a8-72ac3fdb69c4,B
+	ulkID:nil,BulkQuantity:0,Recheck:0,SF:102|836|888|898,TC:-5,Content:0|15|5
+	0,EDM:-3,IP:nil,URL:99|1,File:130,RT:0,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0
+	,OSA:0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
+X-CID-BVR: 2,SSN|SDN
+X-CID-BAS: 2,SSN|SDN,0,_
+X-CID-FACTOR: TF_CID_SPAM_SNR,TF_CID_SPAM_ULS
+X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
+X-UUID: be4fe2a8b59611f0b33aeb1e7f16c2b6-20251030
+Received: from mtkmbs09n1.mediatek.inc [(172.21.101.35)] by mailgw02.mediatek.com
+	(envelope-from <jh.hsu@mediatek.com>)
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+	with ESMTP id 990640684; Thu, 30 Oct 2025 21:45:49 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ MTKMBS09N1.mediatek.inc (172.21.101.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.26; Thu, 30 Oct 2025 21:45:47 +0800
+Received: from mtksitap99.mediatek.inc (10.233.130.16) by
+ mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.1748.26 via Frontend Transport; Thu, 30 Oct 2025 21:45:47 +0800
+From: Jack Hsu <jh.hsu@mediatek.com>
+To: <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
+	<jic23@kernel.org>, <dlechner@baylibre.com>, <nuno.sa@analog.com>,
+	<andy@kernel.org>, <matthias.bgg@gmail.com>,
+	<angelogioacchino.delregno@collabora.com>, <srini@kernel.org>,
+	<ukleinek@kernel.org>, <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+	<daniel.lezcano@linaro.org>, <tglx@linutronix.de>,
+	<chunfeng.yun@mediatek.com>, <wim@linux-watchdog.org>, <linux@roeck-us.net>,
+	<sean.wang@mediatek.com>, <zhiyong.tao@mediatek.com>,
+	<andrew-ct.chen@mediatek.com>, <lala.lin@mediatek.com>,
+	<jitao.shi@mediatek.com>
+CC: <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-iio@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-mediatek@lists.infradead.org>, <linux-pwm@vger.kernel.org>,
+	<linux-serial@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+	<linux-watchdog@vger.kernel.org>,
+	<Project_Global_Chrome_Upstream_Group@mediatek.com>, Jack Hsu
+	<jh.hsu@mediatek.com>
+Subject: [PATCH v6 00/11] Add mt8189 dts evaluation board and Makefile
+Date: Thu, 30 Oct 2025 21:44:32 +0800
+Message-ID: <20251030134541.784011-1-jh.hsu@mediatek.com>
+X-Mailer: git-send-email 2.45.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250926124912.243464-1-pmladek@suse.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK: N
 
-On Fri 2025-09-26 14:49:09, Petr Mladek wrote:
-> This patchset should solve problem which was being discussed
-> at https://lore.kernel.org/all/aNFR45fL2L4PavNc@pathway.suse.cz
-> 
-> __nbcon_atomic_flush_pending_con() preserves the nbcon console
-> ownership all the time when flushing pending messages. It might
-> take a long time with slow serial consoles.
-> 
-> It might trigger a hardlockup report on another CPU which is
-> busy waiting for the nbcon console ownership, for example,
-> in nbcon_reacquire_nobuf() or __uart_port_nbcon_acquire().
-> 
-> The problem is solved by the 3rd patch. It releases the console
-> context ownership after each record.
-> 
-> The 3rd patch alone would increase the risk of takeovers and repeated
-> lines. It is prevented by the 1st patch which blocks the printk kthread
-> when any CPU is in an emergency context.
-> 
-> The 2nd patch allows to block the printk kthread also in panic.
-> It is not important. It is just an obvious update of the check
-> for emergency contexts.
-> 
-> Note: The patchset applies against current Linus' tree (v6.17-rc7).
-> 
->       The 2nd patch would need an update after the consolisation of
->       the panic state API gets merged via -mm tree,
->       see https://lore.kernel.org/r/20250825022947.1596226-2-wangjinchao600@gmail.com
-> 
-> Petr Mladek (3):
->   printk/nbcon: Block printk kthreads when any CPU is in an emergency
->     context
->   printk/nbcon/panic: Allow printk kthread to sleep when the system is
->     in panic
->   printk/nbcon: Release nbcon consoles ownership in atomic flush after
->     each emitted record
-> 
->  kernel/printk/internal.h |  1 +
->  kernel/printk/nbcon.c    | 43 +++++++++++++++++++++++++++++++++++-----
->  kernel/printk/printk.c   |  2 +-
->  3 files changed, 40 insertions(+), 6 deletions(-)
+In this patch series, 
+we add Mediatek MT8189 evaluation board dts, dtsi and Makefile,
+and also related dt-binding documents.
 
-JFYI, the patchset has been comitted into printk/linux.git,
-branch rework/atomic-flush-hardlockup[1].
+based on tag: next-20251029
 
-It is queued for 6.19.
+Note:
+This patch series depends on following dt-binding headers and yamls
+1.dt-binding headers
+  1. mt8189-pinfunc.h
+       https://patchwork.kernel.org/project/linux-mediatek/patch/20250919020525.7904-1-ot_cathy.xu@mediatek.com/
+  2. mt8189_gce.h 
+       https://patchwork.kernel.org/project/linux-mediatek/patch/20250820093831.23437-3-xiandong.wang@mediatek.com/ 
+  
+2.dt-binding yamls
+  1. smi-common.yaml, smi-larb.yaml
+        https://patchwork.kernel.org/project/linux-mediatek/patch/20251027121443.16783-2-zhengnan.chen@mediatek.com/
+  2. mediatek,gce-mailbox.yaml
+        https://patchwork.kernel.org/project/linux-mediatek/patch/20250820093831.23437-2-xiandong.wang@mediatek.com/
+  3. mediatek,ufs.yaml
+        https://patchwork.kernel.org/project/linux-scsi/patch/20251016-mt8196-ufs-v2-1-c373834c4e7a@collabora.com/
+  4. mediatek,iommu.yaml  
+        https://lore.kernel.org/linux-mediatek/20251018132625.14428-2-zhengnan.chen@mediatek.com/
+  5. gce-mailbox.yaml
+        https://patchwork.kernel.org/project/linux-mediatek/patch/20250820093831.23437-2-xiandong.wang@mediatek.com/
+  6. disp_isp yamls
+        https://lore.kernel.org/linux-mediatek/20251020074211.8942-1-xiandong.wang@mediatek.com/
+  7. jpeg yaml
+        https://patchwork.kernel.org/project/linux-mediatek/patch/20250528095748.17485-2-jianhua.lin@mediatek.com/  
+        https://patchwork.kernel.org/project/linux-mediatek/patch/20250528095748.17485-3-jianhua.lin@mediatek.com/   
+  8. vcodec yaml
+        https://lore.kernel.org/linux-mediatek/20251016060747.20648-2-kyrie.wu@mediatek.com/      
+        https://lore.kernel.org/linux-mediatek/20251016060747.20648-8-kyrie.wu@mediatek.com/ 
+  9. mtk-sd.yaml
+        https://patchwork.kernel.org/project/linux-mediatek/patch/20250818114855.8637-1-mengqi.zhang@mediatek.com/   
+  10. mtk,scp.yaml
+        https://patchwork.kernel.org/project/linux-mediatek/patch/20250924084422.4604-2-huayu.zong@mediatek.com/
+  11. pwrap/spmi yaml  
+        https://patchwork.kernel.org/project/linux-mediatek/patch/20250801070913.3109-2-niklaus.liu@mediatek.com/
+  12. mt8189-nau8825.yaml
+        https://lore.kernel.org/linux-mediatek/20250905071659.25805-10-Cyril.Chao@mediatek.com/
+  13. mt8189-afe-pcm.yaml           
+        https://lore.kernel.org/linux-mediatek/20250905071659.25805-8-Cyril.Chao@mediatek.com/
+  14. mediatek,ufs.yaml
+        https://patchwork.kernel.org/project/linux-scsi/patch/20251016-mt8196-ufs-v2-1-c373834c4e7a@collabora.com/
 
-Note that I did the following modifications:
 
-  + Added changes into the 1st patch proposed by John[2], namely:
-     + initialize nbcon_cpu_emergency_cnt and make it static.
-     + call nbcon_kthreads_wake() only when printk_get_console_flush_type()
-       sets ft.nbcon_offload.
+---
+Changs in v6:
+ - add/fix dt-bindings for mt8189 dts node
+ - add pmic mt63xx dtsi for mt8189 evb board
+ - add complete device node of mt8189 evb board
+ - Fix previous version review comments
+ - Link to v5: https://patchwork.kernel.org/project/linux-mediatek/cover/20250718075630.644870-1-sirius.wang@mediatek.com/
 
-  + Rebased 2nd patch on top of 6.18-rc1 (panic_in_progress() moved to
-    linux/panic.h).
+Changs in v5:
+ - remove unused cpu-dile-state definition.
+ - change memory size in "reg" property which if filled in by bootloader.
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/printk/linux.git/log/?h=rework/atomic-flush-hardlockup
-[2] https://lore.kernel.org/all/841pnti8k2.fsf@jogness.linutronix.de/
+Changs in v4:
+ - Correct cpu-idle-states.
+ - Change the "reg" property name of the "memory" node in the
+   device tree source (DTS) to lowercase.
 
-Best Regards,
-Petr
+Changs in v3:
+ - Move ulposc and ulposc3 before cpu nodes.
+ - Refactor cpu-map to a single cluster0.
+ - Change cpu nodes name from medium core to big core.
+ - Move psci before timer nodes.
 
-PS: I thought about sending v2. But v1 already got enough Acks and
-    I added the requested changes by cut&paste.
+Changs in v2:
+ - Fix warning issues for make CHECK_DTBS=y.
+ - Add mediatek,uart.yaml document.
+
+---
+
+Jack Hsu (11):
+  dt-bindings: arm: Add compatible for MediaTek MT8189
+  dt-bindings: iio: adc: Support MediaTek MT8189 evb board auxadc
+  dt-bindings: nvmem: Support MediaTek MT8189 evb board efuse
+  dt-bindings: pwm: Support MediaTek MT8189 evb board disp-pwm
+  dt-bindings: serial: Support MediaTek MT8189 evb board uart
+  dt-bindings: timer: Support MediaTek MT8189 evb board timer
+  dt-bindings: usb: Support MediaTek MT8189 evb board xhci
+  dt-bindings: watchdog: Support MediaTek MT8189 evb board wdt
+  arm64: dts: mediatek: Add MT6319 PMIC Support
+  arm64: dts: mediatek: add properties for MT6359
+  arm64: dts: mediatek: Add mt8189 evaluation board dts
+
+ .../devicetree/bindings/arm/mediatek.yaml     |    4 +
+ .../iio/adc/mediatek,mt2701-auxadc.yaml       |    1 +
+ .../bindings/nvmem/mediatek,efuse.yaml        |    1 +
+ .../bindings/pwm/mediatek,pwm-disp.yaml       |    1 +
+ .../bindings/serial/mediatek,uart.yaml        |    1 +
+ .../bindings/timer/mediatek,timer.yaml        |    1 +
+ .../bindings/usb/mediatek,mtk-xhci.yaml       |    7 +-
+ .../bindings/watchdog/mediatek,mtk-wdt.yaml   |    1 +
+ arch/arm64/boot/dts/mediatek/Makefile         |    1 +
+ arch/arm64/boot/dts/mediatek/mt6319.dtsi      |   66 +
+ arch/arm64/boot/dts/mediatek/mt6359.dtsi      |   20 +
+ arch/arm64/boot/dts/mediatek/mt8189-evb.dts   | 1082 ++++++
+ arch/arm64/boot/dts/mediatek/mt8189.dtsi      | 3014 +++++++++++++++++
+ include/dt-bindings/iio/mt635x-auxadc.h       |   50 +
+ 14 files changed, 4249 insertions(+), 1 deletion(-)
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt6319.dtsi
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt8189-evb.dts
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt8189.dtsi
+ create mode 100644 include/dt-bindings/iio/mt635x-auxadc.h
+
+-- 
+2.45.2
+
