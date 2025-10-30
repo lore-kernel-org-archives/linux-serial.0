@@ -1,64 +1,64 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C5AA36CDE9
-	for <linux-serial@vger.kernel.org>; Thu, 30 Oct 2025 17:55:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2009436CA7D
+	for <linux-serial@vger.kernel.org>; Thu, 30 Oct 2025 17:55:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761846937; cv=none; b=rzfaENn2NZ5K6pNIGuze6vEa6tASohjgVbZpLdvGlT6F9HdwlvHOqBXHMDpcQq6yOLqGUCUHCK0hnAnS5NQHDABS1PUM1lKy00MOoTJp9hiAIqP8cc9BligDJ4A092nvWlJIgY0zuD1cVt8POZhbxmRuvBZnN+BA+mLkEU6tsxU=
+	t=1761846936; cv=none; b=ncwqUYUCFdvgLXYqW/BXkw/0YU5C7YkTxgAy6/7BGGHYtKou8HQilGDFvf1IX0QhNUJI+IfljtUbRcXtBFwc9txo2wCsjXjsb8K+vTzInDV2NO+DPCqBQqecKgD72wupTOVsgD+W87RT9Wvnc8Cc57mfPjtn/4xFv5FeS8Ycw0M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761846937; c=relaxed/simple;
-	bh=hRGcrf757tBUlPVJghD36FxXRGKWF+Ddzd5vihoN5uc=;
+	s=arc-20240116; t=1761846936; c=relaxed/simple;
+	bh=h/WB+hR/anHyT+SzoBQFwmDv8A8kpm7m3RVwaDTL2qk=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=KD4+vwdDpQpllms95k3y84rjEQozoOHqcrxmGW+XjVnmnr8EP1jdOnS7Or+BHp0Gy4vSY5TKx4feHhx89is95t0doQ7hi5RGMVzZSNrzKV1ywsbDktCbIttE/nK3EfEWI80wR1Jipmz733zurgtGvH4LTRCG7qvZiDNVwvA9jR8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JGe/LOP6; arc=none smtp.client-ip=209.85.128.42
+	 MIME-Version; b=KD5xUk8niLrfvQ3AZa8AAJx1h4zXVlNEz8nHxupsRr7sH9Fno4PiBfTqKWZt8JwR0oXpZKumlVpElQkiO2MFrO1ZiR806NxvLNLuZtHCbQVi0X7tKfuMMqsN2k1YE7xuf2np/RR0tzS5pWra7U7EtJcQTCVaneB6ZQf+pqy26xs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XR9NB8fi; arc=none smtp.client-ip=209.85.221.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JGe/LOP6"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-475e01db75aso9400935e9.1
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XR9NB8fi"
+Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-3f0ae439b56so844725f8f.3
         for <linux-serial@vger.kernel.org>; Thu, 30 Oct 2025 10:55:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20230601; t=1761846932; x=1762451732; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=7uqGmMoi1PPAQaFicRlny+AD/MJGroEdg5O4X9kuPbw=;
-        b=JGe/LOP6kP0kR3YkY8Zb3tovTrvToZP561qYcPgDTZTAhjepk14eHemg5Yf1+lX4hc
-         B6kXOVgC770FUX+5EnJhk/tYMqMh7QaN2KD1spjLFmyWj39Lm2vsbdAF1RcpeNSMm+4x
-         Xr4enHaO5Fdxcl/hh/iMjfEOI2qDUE4TGc7CqepFDBejhlPBdxoz1Qh0GdXyFAoWcVvM
-         RJrkMmGyVU2WKyyUjzb8YrKyyPbl5BS9a6+ZiEJvZh9ClX2hX1zme6GV1WYi3jo5HL4V
-         QIlaaAZp5BELY7hS9AtYQ4GBSRH1r3cn07pTn2pVkiVHhrebYnnD2oFDLaNwnPhYYWWe
-         0ODw==
+        bh=fpqM7R8t1LjT1e31UVuLTSZ7tEVjNoHsGLOYlh8Q1Lk=;
+        b=XR9NB8fi7Ziaui3V5/Wqg92z4H6KHvGsDgot4efrfCicu4b6E9JG1GunqqicPpbytQ
+         DBUDXRK58bzGbLWo+u51FfhthD7497PQP7KznEHsxfpeQZ2/iSdQAjkqQNScZpjrX6wa
+         oUcmFGGNxhQeu3w2n5Zh1wrpcDl8OR0Hz17wmo0jdxG5br8CMWU21e1CyVaxTE/RYnIb
+         b+SJnM0aO9D1LGztZ4TcBlGmagL5Z5suBfCQIOu2Jk+90Mwr4ZJ6zdH8u++q9rE18OIH
+         T73s4BmFauPBN5nf5kczm7A+DG33vS32inm9lKDZnD1jgWvKIADflChcN0NJqZL4VduA
+         nJXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20230601; t=1761846932; x=1762451732;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=7uqGmMoi1PPAQaFicRlny+AD/MJGroEdg5O4X9kuPbw=;
-        b=s71Mh4akDGyFKZvxafl9tDOtwvaqaqFMNJCUVUWk1mtTvtlW68kjWnOkRR164otXy0
-         3T1+JcyMPB16/qJ1rK8SSGR60ojLZSe8kXbeneVC+TMaY+L1R7agxXfk/Po6s/Tf9mLY
-         thvfmi0J778bIp2MlizkpDyvY/8GQzxiAzJBHsxzoAH/g5KUuQMIMIiwLWNiEuVErGaB
-         nUYC6WkWx7kgOhISlJ/i0Tx3O86hhloL7d49cpF9c0A1BW8ch3Bexe9fpe3M628MhQjg
-         HVUw+xaRyF2O6itlkhy6pu5xChQoe/jGii23a5nN2J8l7rdaYopn2dhJHz7LhrgusT3D
-         2uXw==
-X-Forwarded-Encrypted: i=1; AJvYcCVxWchvGEnA1b4KdgmxHNnxGZ31dfBKvGUyn50uJ32CFlg+yiiQIt6iNlnqfamEuc+88nr0I62EWiRKvsI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzsLMWukSLiMrgrRpvdDNkDVs1P6SW2UxOm4HIbqgcRQcvwhHWJ
-	Tc/+SRWOWTcYb2vjBiSHbQs1pQew5VIBp8Bar6dvDKN3pB2FUax8Xb1S
-X-Gm-Gg: ASbGncvGK1t16Ajn6EphqzIoluwgOZegi9wdAsd866YbCMMw+KPvT9bwbnDazQ9zH8D
-	z/cEhLz5PulbS2ogOqaofWIsVV4KMjJ3BqwkujdIOZWI7cAo2kCJNKy5WIP9hm+mBfKsM6iMXua
-	RgCOLwefh+mD7S7XdSQ2MUAI++dbqD7Yos4NN4HiiBVIhAQvu1z5BnivWCgbIH8XkKJFrmp64YW
-	1+MQoVNtD8NMf0frtkP/4X8dIIRxh7F8QG4P64KsqqqqziNNjDRWF5WYNsteNFRECoP3nzgv9vd
-	9utQC7SzrZfqM1zVYO2a3gFAS9a5xhEhBqXdecnxSmhOm5GD0tajPVStQ/5Zrn2MNWdeFXUxt8T
-	+sgexwWeZgXicr8a8lv4HQMrjz+Pa0JZbZVg+tL9dNs/mvvCHWkrsLZ5baaZYSvzcYcOl4XCnI+
-	vFohhN25G4rZURtF4omazT/qOj7E7crmfjmd3AOp2SiOtT2hpYGZys4LNfiN92
-X-Google-Smtp-Source: AGHT+IHhalSgP2kmhosVrLIAl+xUpJ8DATCni255mO2cl/2W+LygbY8oRYqgCijoqXjlLsSWAJ/x0Q==
-X-Received: by 2002:a05:600c:3e17:b0:46e:4b79:551 with SMTP id 5b1f17b1804b1-477308aec8amr6285475e9.31.1761846932213;
-        Thu, 30 Oct 2025 10:55:32 -0700 (PDT)
+        bh=fpqM7R8t1LjT1e31UVuLTSZ7tEVjNoHsGLOYlh8Q1Lk=;
+        b=aSP8r/jNdy4EWVzEBAQe4fz7GhoyqOE/1GqznNzSBF8uozHnT/jl8gAj1iDREx2Lhw
+         nJH+fPaxQ8hkAFGicTyRWFNMxmxCxvwUL8YrPwIKVyNcfKarZ+lxRdFPrSyrF17DWpa3
+         cDhYg2DMFZaDheKaw42bWvy1FJ3+++XApmP2KyAmdr1qk3LjY5RQg6yRyIZa9L2wD6Ie
+         N1J8+1A4L2ym08QgEVGoK7VMCAOSI41lU97Mq6YzwFUFZI5b3sHF0GeRPlNcLlAreS8J
+         HA00c41sShFPnW3zrgcz1qeTlQL8vvod6CJG8ueeIOS/Y1L+KUA4MsvnteLvuxyS//sk
+         SaXA==
+X-Forwarded-Encrypted: i=1; AJvYcCWfeWSQI0DMzYnvxr2knCSrXb2HD3q1yxDnogSbsJgnjNOQhzsjoIcp8WUxSOptd8etErk1+/Xm/EzWePE=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzp5MNtFDkjlpLjLwSUbySSubnxznIBuDMpeDPe4osA7p0vhjZf
+	Q/UTHsG6upP7ICVJZawsxa3QnRQG+RPydLYkkbdZu6gjrWNcGHYeVems
+X-Gm-Gg: ASbGncukWwAUDmlBuWUo6wnT1yvNWqYKi/3SfYPVq7Hm0X9hx5RKhreFdajfkKeh+hY
+	vbNHZd4kqUM+uJul/EPL44MTQjE5je0i1pT9DsYxmXIBsEtgpTORReTBuArkMvWfdEuvMVThtt8
+	CTXEtK60VbG6DItX8RhwMqW537wtP8gY7x1SZ3GqWEO0+CGALHiU7pmNqCDCTIdLM1JoaJV/8k+
+	DtIEb0HTeEeo4czunXi4m6Byo88o6JSBD4bQrLgnawTq2HabsjlR/O6yuwUGLXYdxu9Czf5xGwi
+	I7QbFkNnwQRWgA4Drify4QdJSKUjuFUmO9bhEZnq7rJkToJV/1FVKDWmFEvrDcsh3aTEvkCxxK8
+	Kx2B0baqjbVP4CvLpeZrMcbzAgCA6vOg2nNufQvEhEZcA/r7+CJ7ZaXlQV74DrTaFtZ9OX6A1PH
+	yiCacGZ/RbO1vlexaKtiEPazWsQUrAwpRwUXH70mVtGd7mRHWcgL0Ls6dAbBuquylLzzRtTTQ=
+X-Google-Smtp-Source: AGHT+IFB4CtW/QHwxBewuQQ+kfNYXHph8zhhcP0AJhTDvVbB8Po9WDTizjGc7lFwCMRyRyZ8mFCw8Q==
+X-Received: by 2002:a05:6000:24c3:b0:3e8:ee5d:f31e with SMTP id ffacd0b85a97d-429bd68376cmr479687f8f.25.1761846931811;
+        Thu, 30 Oct 2025 10:55:31 -0700 (PDT)
 Received: from biju.lan (host86-162-200-138.range86-162.btcentralplus.com. [86.162.200.138])
         by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-429952de5f9sm33384041f8f.38.2025.10.30.10.55.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Oct 2025 10:55:32 -0700 (PDT)
+        Thu, 30 Oct 2025 10:55:31 -0700 (PDT)
 From: Biju <biju.das.au@gmail.com>
 X-Google-Original-From: Biju <biju.das.jz@bp.renesas.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -71,9 +71,9 @@ Cc: Biju Das <biju.das.jz@bp.renesas.com>,
 	linux-serial@vger.kernel.org,
 	Biju Das <biju.das.au@gmail.com>,
 	linux-renesas-soc@vger.kernel.org
-Subject: [PATCH v2 07/13] serial: sh-sci: Add RSCI_PORT_{SCI,SCIF} port IDs
-Date: Thu, 30 Oct 2025 17:55:11 +0000
-Message-ID: <20251030175526.607006-8-biju.das.jz@bp.renesas.com>
+Subject: [PATCH v2 06/13] serial: sh-sci: Use devm_reset_control_array_get_exclusive()
+Date: Thu, 30 Oct 2025 17:55:10 +0000
+Message-ID: <20251030175526.607006-7-biju.das.jz@bp.renesas.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20251030175526.607006-1-biju.das.jz@bp.renesas.com>
 References: <20251030175526.607006-1-biju.das.jz@bp.renesas.com>
@@ -87,46 +87,30 @@ Content-Transfer-Encoding: 8bit
 
 From: Biju Das <biju.das.jz@bp.renesas.com>
 
-RZ/G3E RSCI tx/rx supports both FIFO and non-FIFO mode. It has 32-stage
-FIFO. Add RSCI_PORT_SCI port ID for non-FIFO mode and RSCI_PORT_SCIF port
-ID for FIFO mode. Update the rx_trigger for both these modes.
+Replace devm_*_get_exclusive()->devm_*_array_get_exclusive() to support
+existing SoCs along with RZ/G3E as RZ/G3E has 2 resets.
 
 Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 ---
 v1->v2:
  * No change.
 ---
- drivers/tty/serial/sh-sci-common.h | 2 ++
- drivers/tty/serial/sh-sci.c        | 3 +++
- 2 files changed, 5 insertions(+)
+ drivers/tty/serial/sh-sci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/sh-sci-common.h b/drivers/tty/serial/sh-sci-common.h
-index bcdb41ddc15d..ef1d94ae8b5c 100644
---- a/drivers/tty/serial/sh-sci-common.h
-+++ b/drivers/tty/serial/sh-sci-common.h
-@@ -8,6 +8,8 @@
- /* Private port IDs */
- enum SCI_PORT_TYPE {
- 	SCI_PORT_RSCI = BIT(7) | 0,
-+	RSCI_PORT_SCI = BIT(7) | 1,
-+	RSCI_PORT_SCIF = BIT(7) | 2,
- };
- 
- enum SCI_CLKS {
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index d07424caeeab..6f396e1151d8 100644
+index e9345f898224..d07424caeeab 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -3149,6 +3149,9 @@ static int sci_init_single(struct platform_device *dev,
- 	case SCI_PORT_RSCI:
- 		sci_port->rx_trigger = 15;
- 		break;
-+	case RSCI_PORT_SCIF:
-+		sci_port->rx_trigger = 32;
-+		break;
- 	default:
- 		sci_port->rx_trigger = 1;
- 		break;
+@@ -3533,7 +3533,7 @@ static struct plat_sci_port *sci_parse_dt(struct platform_device *pdev,
+ 
+ 	data = of_device_get_match_data(&pdev->dev);
+ 
+-	rstc = devm_reset_control_get_optional_exclusive(&pdev->dev, NULL);
++	rstc = devm_reset_control_array_get_optional_exclusive(&pdev->dev);
+ 	if (IS_ERR(rstc))
+ 		return ERR_PTR(dev_err_probe(&pdev->dev, PTR_ERR(rstc),
+ 					     "failed to get reset ctrl\n"));
 -- 
 2.43.0
 
