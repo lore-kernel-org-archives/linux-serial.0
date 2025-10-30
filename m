@@ -1,69 +1,67 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9086136CE0C
-	for <linux-serial@vger.kernel.org>; Thu, 30 Oct 2025 17:55:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B636825BEE8
+	for <linux-serial@vger.kernel.org>; Thu, 30 Oct 2025 17:55:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761846940; cv=none; b=OZoac6seImCEV83uAsfe79W/mJbcpHL2GhXUbIICtrwI477v3SHXL9CaGH/D3qPn3egasV7Gjml5daT/iTZSsj67MUTuePAwjmDmXHCsKEnDmYC4DeRjRin3mSAzz4Z7E04VnCYCLaI1rz/ppHiO5NvXEjYmY5bvPApVjDXmkk8=
+	t=1761846942; cv=none; b=Z83emCkBzzCkuN0+1jhZdOUY8XHekrhpb100ujXFD8aMEZQAqIizQ8F2Ra1t9cy780+1gl5CVt3RVtDziFJOVPi8dfetMs60mtNV05xrbLBuXJc4w7caiUL/txyvGwvkLlKmxNXjdUra05AlD1eoFmemeDMXFXx0usFQWZvmHPg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761846940; c=relaxed/simple;
-	bh=ZVr695PrkjlsTLaO5UZFDg6DGUr1VgaEBsWlk7XU+bM=;
+	s=arc-20240116; t=1761846942; c=relaxed/simple;
+	bh=l69I5xmyhHro4KhUO/PVpo4RcLcYevtDC9A8q7K0wyM=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=uPtjgjwRcvigL6fpN5lUE3UB8bgnISKGSUnc2uRhj/qIcqlRjHWXB7Bi35YC8aq6lyy5dxsVi98/3XVno+jy9I6+fnFRJvNu7gOxjD7ZaunXfMipNdk/G6HCnizdCYnHG2c0MtDs55FH+fBKNCARpfPGGGmOZy+BopWnTn3pynQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Swqnbqey; arc=none smtp.client-ip=209.85.128.41
+	 MIME-Version; b=YNOYyyo2+SVcWifvT5rHWafj+RVN1khYERhCTyunWEquBOcPPMN3NIFnf7jNgdgYl+rAhG1xPCtgSomZq1LCdZjNKcDm18P69GGfS4fzCt5QRGnYyiLNKVfXEUyCZhSVL8gYBmXzQ+xwq1CyeMMgqgxNKg5RhOMPH3yOfCp2DHs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=M5+BnbTK; arc=none smtp.client-ip=209.85.128.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Swqnbqey"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-471191ac79dso15183825e9.3
-        for <linux-serial@vger.kernel.org>; Thu, 30 Oct 2025 10:55:36 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="M5+BnbTK"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-475dab5a5acso7446915e9.0
+        for <linux-serial@vger.kernel.org>; Thu, 30 Oct 2025 10:55:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1761846934; x=1762451734; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1761846936; x=1762451736; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=MfbjD1RYHWgoO0jG0DLqriHMmFx1f2scKAXhmIYvONA=;
-        b=Swqnbqey01kzoa1XCsgBJ96Ik0fRiuVDcnRfuMz8alz7WDm54NY3dzBwjkElt0srJI
-         /HLCcmFPd3QN5j4M/BLm1ABFjPqtpAQcMW0LweGKjOTbsQXHgGbxEkcVmJIRN8CEp+LH
-         QELc3ux58kIV0x//taAH9Ycmll+cuMKGkuFQXaIg+QLzIvaj8JRaWF/8yIl8Ez1GWEV3
-         wO5i566uyZMpYYh4JcYUtxZ/CK8Z5G2tIyBbyaTcV/OV7JsrojxWrsFTngbgtjVspjWZ
-         1ErfRY/pSOvrcVVPbKlLIhoKK12Apf4ENW9VhxguusPVyrZxfj3+3upqYVY2hxh4rHqM
-         G4eA==
+        bh=Edvdlqy9JPFDf6Wc3Jobmq+A9++TT7Am/KBqXa8adZg=;
+        b=M5+BnbTKRPxR/DiZagiMEuXXjTRe3HqJ3hCTCxgM11nRxIo4osvlw5DnhtA5AdPGQS
+         60pzUrmdwez1+Xx8GfG++gOx1OflgfNKCj0ecqjCbyuK2LCXhmiU/SQmpL3jFwBu6bdn
+         gP3X33zuqFHFU6JOnb3TIw/V4cffGcAq/sJGknwEYAmgwYvxL3m3CwJE+FBjDLGa8lY0
+         wlyY5X1JxEJ5BnP179K4jY4CEfbkUzMPHqOdiflqiNQRGM5IEQh/d8EPN4QYpHOQNveI
+         0c+ppbUtSfL949A8nHwbonQV4UAD8Db+GrbixLLIAZTLGPZLYiJGNob4U3BLN0N4jMoz
+         kROQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1761846934; x=1762451734;
+        d=1e100.net; s=20230601; t=1761846936; x=1762451736;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=MfbjD1RYHWgoO0jG0DLqriHMmFx1f2scKAXhmIYvONA=;
-        b=XiDblyX4sp3oY/WHcY8hZGnPg5Jb9S4Suse/K6GFLFdrfDvouEiHAoXJmUngWB9BiW
-         m5MDsWpDKCotpyk60Id1YeFUE2dWXADliuQbOew1ceQu3q0t6h0WXRct76QcADXTsX08
-         S4SSz6ni4aeQtwRDRr5ZQ+i0kfifoXnpKjOY3KdZEMkS87AM+8Xdf9ts7tXE3JUAgqWN
-         oFj/atEP665TKC9yQjDD01kZiqYxVaRkyhXU1KR+MG9S/2RzsddUM1XUeT9s27baxq7u
-         VMbzKk3g8y7Cgq66bZGmd9a1ni/Qjbwu8owJwHekMeddLoJz5knkei5oH5cJoOGK9ljn
-         oQ4g==
-X-Forwarded-Encrypted: i=1; AJvYcCXWGd3dwF6f/BhbVoRODGX0kOYSr9lArLA6BOYTormDYUJPY4gqwHkXzzq2+P8LpouOKm4Rl9P5i0YioP4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxRGA0x3bI2LRsv5dIAjnBUpaghwyGOVi/gigeHunV2D/2CdLlu
-	ORUCBX+Pxofz1gsXztOPR6j/5bC0hYuY6A+J0Ipl0suAmMb9kpDCbGKx
-X-Gm-Gg: ASbGncvNT/KFFjyM1N7x2kVd9NYsUVJl2yX+PrK8UCSa4zMNamtlz8PoN3Pqz+AfQAH
-	Z1RckyV7UAV6YLrpBhQG9sx9/eTKQv15wUc0k1tdC/DqFmJTAbcibu/UCfYUlc2HfRDDOl2qrIV
-	w+mPi6QC8f5Q7vPL8HoLA3CkZQaJcbE1T1kZGF3K9YN0QhYHcAmuYixfw3iPXzGHFiHjUifrLfx
-	NjCkfd7TY2OcjQPKyylDG3EwyGedE0HDscXyFiVWOQEf1Qa6kdRnFyOsog/3JeZSB10UOwJQ98y
-	NP7S1RtlREdRbAh6/0tvSnuSPa1XEsLCuntiGvDZ7SOWixgFlsCy6UOmBubWsmKZrQO88shk5bd
-	DjT9xSKB+PEpCUWj8TnUaNp6cPmD0ZEsf+X4BkR0ilTKEknZkTTT/IKBeexZOG5jizOOpEorPJQ
-	ZYa8gz35OnaSInmHj1LiefG1YSrCquAomgHgH3Twng4g3FQSs4UO7sX3LQkzdyxXj+wZe+Y1i2X
-	uxavh84xw==
-X-Google-Smtp-Source: AGHT+IE3z5lAmhGoh5d4Yy4K8o1VX+Hl6Sh/SAktovTtRK5y2To4h3DqtSkPbGR9LE39NISIviPJxA==
-X-Received: by 2002:a05:6000:2207:b0:429:7693:884f with SMTP id ffacd0b85a97d-429bd6725bbmr488929f8f.5.1761846934316;
-        Thu, 30 Oct 2025 10:55:34 -0700 (PDT)
+        bh=Edvdlqy9JPFDf6Wc3Jobmq+A9++TT7Am/KBqXa8adZg=;
+        b=oghv7zoXwQeUQ1ezMNRTuBWSowl5T/mMkMSTAItrEGeqKrdjwdyCInewUkVo+6ozBM
+         H/N8duO8u+8QxdyLFdp75TMCP67efGdczdgPHQwJT/FFbNFCPcaAegdYQ+aWEjMLjPX9
+         79G8jdtnPpaXATP7ohUtkOKCPEch9zhn1pbZERIcQVlrO/c7tRaNLKeXQY1X1x0OjleA
+         K5VrUiSTDxDOPMWdDORwcTFp73Qb7x9pxuPXE+8+N4VWUrhR36hH0o1HadlBGTrA58uO
+         IsQ1n7MjdWpUJvsKoReEjBuGto9CqCvTEVExKLW/qsvm8Wx6FCz5PjLz9En7Xw6itU/s
+         zY6A==
+X-Forwarded-Encrypted: i=1; AJvYcCW7zJpJQEAHa8ff1E6PwqCoe13zJ+TRLUEGhtVIht+Ky1vIqQJAZRXji0UF8mHT5CtIBkoMyvRE90h/Ifs=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxs7RA5nx6XyMTtwqsKmmEGNSoXcWwZb7oFzxf1xCbCVJVp6kas
+	5E+oudJbWraielEWsFbps+MM4QRtqw/2Op5+91zJp9rqFTkn03tY+z+q
+X-Gm-Gg: ASbGnctKsu+rOaR2mCVWNa+tYv9bY5s7CfZxsnisIQZqlO7RcqtQzWVTsN2m1s2RlrS
+	wum3fDN+BNYUAzhujd4M80Y/Wg+XGNV4n7nUYgnuRCIVMogGQ2VfprLPBaGkxkqwrBSjHgHLefV
+	c8/VLXH1AVLfusYmhPGEvICw+oEO1y52i+SofWsjX3y6fDwOd9aBkNYfliNl625IuiDJbPwhTDU
+	G/sisK/l7DRDL0fEsyZJk1GbwCT846l/fjEouIxBq5rd1FVwEB8+P7w3tZFj9pL8ejkKVODqYU7
+	zROCIDv1WCqb3l1tfZw8vhtIvuHZ3tHuFy+yJBLuL6R0Xp75JqCHwRNGXfV9FowG320Jni7MCYA
+	KpN3bfboyOKZrk1k5Gzuig8+9iRv259lf5J3FTsaaO1mxE4ycpstL5WcdO9upyW/cBvLvs5IEMc
+	27/3grmSK/MkpvbARBd2oZVxOZ1zYClbzkJ9Fu0u2t2qJJccwpi2okpjJ2uuQ/
+X-Google-Smtp-Source: AGHT+IHZ4v4xyt6n2fCbsMqLzZeV3M66YmvJIYue7LBx5q08PgWSkNP33rl4YSupEamRgrRJ3iz7yg==
+X-Received: by 2002:a05:600c:3511:b0:476:d494:41d2 with SMTP id 5b1f17b1804b1-4773089021cmr6614515e9.29.1761846935276;
+        Thu, 30 Oct 2025 10:55:35 -0700 (PDT)
 Received: from biju.lan (host86-162-200-138.range86-162.btcentralplus.com. [86.162.200.138])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-429952de5f9sm33384041f8f.38.2025.10.30.10.55.33
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-429952de5f9sm33384041f8f.38.2025.10.30.10.55.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Oct 2025 10:55:34 -0700 (PDT)
+        Thu, 30 Oct 2025 10:55:35 -0700 (PDT)
 From: Biju <biju.das.au@gmail.com>
 X-Google-Original-From: Biju <biju.das.jz@bp.renesas.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
+To: 
 Cc: Biju Das <biju.das.jz@bp.renesas.com>,
 	Wolfram Sang <wsa+renesas@sang-engineering.com>,
 	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
@@ -72,9 +70,9 @@ Cc: Biju Das <biju.das.jz@bp.renesas.com>,
 	linux-serial@vger.kernel.org,
 	Biju Das <biju.das.au@gmail.com>,
 	linux-renesas-soc@vger.kernel.org
-Subject: [PATCH v2 11/13] serial: sh-sci: Add finish_console_write() callback
-Date: Thu, 30 Oct 2025 17:55:15 +0000
-Message-ID: <20251030175526.607006-12-biju.das.jz@bp.renesas.com>
+Subject: [PATCH v2 13/13] serial: sh-sci: Add support for RZ/G3E RSCI SCI Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
+Date: Thu, 30 Oct 2025 17:55:17 +0000
+Message-ID: <20251030175526.607006-14-biju.das.jz@bp.renesas.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20251030175526.607006-1-biju.das.jz@bp.renesas.com>
 References: <20251030175526.607006-1-biju.das.jz@bp.renesas.com>
@@ -88,46 +86,296 @@ Content-Transfer-Encoding: 8bit
 
 From: Biju Das <biju.das.jz@bp.renesas.com>
 
-Add finish_console_write() callback as RZ/G3E RSCI IP needs special
-handling compared to other SoCs.
+Add support for RZ/G3E RSCI SCI(a.k.a non FIFO mode).
 
 Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 ---
 v1->v2:
  * No change.
 ---
- drivers/tty/serial/sh-sci-common.h | 1 +
- drivers/tty/serial/sh-sci.c        | 5 ++++-
- 2 files changed, 5 insertions(+), 1 deletion(-)
+ drivers/tty/serial/rsci.c   | 138 +++++++++++++++++++++++++-----------
+ drivers/tty/serial/rsci.h   |   1 +
+ drivers/tty/serial/sh-sci.c |   4 ++
+ 3 files changed, 103 insertions(+), 40 deletions(-)
 
-diff --git a/drivers/tty/serial/sh-sci-common.h b/drivers/tty/serial/sh-sci-common.h
-index a3f4a76cdecb..2e97aad390d9 100644
---- a/drivers/tty/serial/sh-sci-common.h
-+++ b/drivers/tty/serial/sh-sci-common.h
-@@ -95,6 +95,7 @@ struct sci_port_ops {
- 	void (*shutdown_complete)(struct uart_port *port);
+diff --git a/drivers/tty/serial/rsci.c b/drivers/tty/serial/rsci.c
+index a3e216c05b76..43a381e5eace 100644
+--- a/drivers/tty/serial/rsci.c
++++ b/drivers/tty/serial/rsci.c
+@@ -161,8 +161,11 @@ static void rsci_serial_out(struct uart_port *p, int offset, int value)
  
- 	void (*prepare_console_write)(struct uart_port *port, u32 ctrl);
-+	void (*finish_console_write)(struct uart_port *port, u32 ctrl);
- 	void (*console_save)(struct uart_port *port);
- 	void (*console_restore)(struct uart_port *port);
- 	size_t (*suspend_regs_size)(void);
+ static void rsci_clear_DRxC(struct uart_port *port)
+ {
++	struct sci_port *s = to_sci_port(port);
++
+ 	rsci_serial_out(port, CFCLR, CFCLR_RDRFC);
+-	rsci_serial_out(port, FFCLR, FFCLR_DRC);
++	if (s->type != RSCI_PORT_SCI)
++		rsci_serial_out(port, FFCLR, FFCLR_DRC);
+ }
+ 
+ static void rsci_clear_SCxSR(struct uart_port *port, unsigned int mask)
+@@ -229,7 +232,6 @@ static void rsci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	unsigned long max_freq = 0;
+ 	unsigned int baud, i;
+ 	unsigned long flags;
+-	unsigned int ctrl;
+ 	int best_clk = -1;
+ 
+ 	if ((termios->c_cflag & CSIZE) == CS7) {
+@@ -294,7 +296,11 @@ static void rsci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 
+ 	rsci_serial_out(port, CCR0, ccr0_val);
+ 
+-	ccr3_val |= CCR3_FM;
++	if (s->type == RSCI_PORT_SCI)
++		ccr3_val |= CCR3_RXDESEL;
++	else
++		ccr3_val |= CCR3_FM;
++
+ 	rsci_serial_out(port, CCR3, ccr3_val);
+ 
+ 	ccr2_val |= (cks << 20) | (brr << 8);
+@@ -303,12 +309,16 @@ static void rsci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	rsci_serial_out(port, CCR1, ccr1_val);
+ 	rsci_serial_out(port, CCR4, ccr4_val);
+ 
+-	ctrl = rsci_serial_in(port, FCR);
+-	ctrl |= (FCR_RFRST | FCR_TFRST);
+-	rsci_serial_out(port, FCR, ctrl);
++	if (s->type != RSCI_PORT_SCI) {
++		unsigned int ctrl;
+ 
+-	if (s->rx_trigger > 1)
+-		rsci_scif_set_rtrg(port, s->rx_trigger);
++		ctrl = rsci_serial_in(port, FCR);
++		ctrl |= (FCR_RFRST | FCR_TFRST);
++		rsci_serial_out(port, FCR, ctrl);
++
++		if (s->rx_trigger > 1)
++			rsci_scif_set_rtrg(port, s->rx_trigger);
++	}
+ 
+ 	port->status &= ~UPSTAT_AUTOCTS;
+ 	s->autorts = false;
+@@ -320,7 +330,8 @@ static void rsci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 
+ 	rsci_init_pins(port, termios->c_cflag);
+ 	rsci_serial_out(port, CFCLR, CFCLR_CLRFLAG);
+-	rsci_serial_out(port, FFCLR, FFCLR_DRC);
++	if (s->type != RSCI_PORT_SCI)
++		rsci_serial_out(port, FFCLR, FFCLR_DRC);
+ 
+ 	ccr0_val |= CCR0_RE;
+ 	rsci_serial_out(port, CCR0, ccr0_val);
+@@ -337,12 +348,23 @@ static void rsci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 
+ static int rsci_txfill(struct uart_port *port)
+ {
+-	return rsci_serial_in(port, FTSR);
++	struct sci_port *s = to_sci_port(port);
++
++	if (s->type == RSCI_PORT_SCI)
++		return !(rsci_serial_in(port, CSR) & CSR_TDRE);
++	else
++		return rsci_serial_in(port, FTSR);
+ }
+ 
+ static int rsci_rxfill(struct uart_port *port)
+ {
+-	u32 val = rsci_serial_in(port, FRSR);
++	struct sci_port *s = to_sci_port(port);
++	u32 val;
++
++	if (s->type == RSCI_PORT_SCI)
++		return (rsci_serial_in(port, CSR) & CSR_RDRF) != 0;
++
++	val = rsci_serial_in(port, FRSR);
+ 
+ 	return FIELD_GET(FRSR_R5_0, val);
+ }
+@@ -357,7 +379,9 @@ static unsigned int rsci_tx_empty(struct uart_port *port)
+ 
+ static void rsci_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ {
+-	if (mctrl & TIOCM_LOOP) {
++	struct sci_port *s = to_sci_port(port);
++
++	if ((mctrl & TIOCM_LOOP) && s->type != RSCI_PORT_SCI) {
+ 		/* Standard loopback mode */
+ 		rsci_serial_out(port, CCR1, rsci_serial_in(port, CCR1) | CCR1_SPLP);
+ 	}
+@@ -478,12 +502,13 @@ static void rsci_transmit_chars(struct uart_port *port)
+ static void rsci_receive_chars(struct uart_port *port)
+ {
+ 	struct tty_port *tport = &port->state->port;
++	struct sci_port *s = to_sci_port(port);
+ 	u32 rdat, status, frsr_status = 0;
+ 	int i, count, copied = 0;
+ 	unsigned char flag;
+ 
+ 	status = rsci_serial_in(port, CSR);
+-	frsr_status = rsci_serial_in(port, FRSR);
++	frsr_status = (s->type == RSCI_PORT_SCI) ? 0 : rsci_serial_in(port, FRSR);
+ 
+ 	if (!(status & CSR_RDRF) && !(frsr_status & FRSR_DR))
+ 		return;
+@@ -496,34 +521,40 @@ static void rsci_receive_chars(struct uart_port *port)
+ 		if (count == 0)
+ 			break;
+ 
+-		for (i = 0; i < count; i++) {
+-			char c;
+-
+-			rdat = rsci_serial_in(port, RDR);
+-			/* 9-bits data is not supported yet */
+-			c = rdat & RDR_RDAT_MSK;
+-
+-			if (uart_handle_sysrq_char(port, c)) {
+-				count--;
+-				i--;
+-				continue;
+-			}
+-
+-			/*
+-			 * Store data and status.
+-			 * Non FIFO mode is not supported
+-			 */
+-			if (rdat & RDR_FFER) {
+-				flag = TTY_FRAME;
+-				port->icount.frame++;
+-			} else if (rdat & RDR_FPER) {
+-				flag = TTY_PARITY;
+-				port->icount.parity++;
+-			} else {
+-				flag = TTY_NORMAL;
++		if (s->type == RSCI_PORT_SCI) {
++			char c = rsci_serial_in(port, RDR) & RDR_RDAT_MSK;
++
++			if (uart_handle_sysrq_char(port, c))
++				count = 0;
++			else
++				tty_insert_flip_char(tport, c, TTY_NORMAL);
++		} else {
++			for (i = 0; i < count; i++) {
++				char c;
++
++				rdat = rsci_serial_in(port, RDR);
++				/* 9-bits data is not supported yet */
++				c = rdat & RDR_RDAT_MSK;
++
++				if (uart_handle_sysrq_char(port, c)) {
++					count--;
++					i--;
++					continue;
++				}
++
++				/* Store data and status */
++				if (rdat & RDR_FFER) {
++					flag = TTY_FRAME;
++					port->icount.frame++;
++				} else if (rdat & RDR_FPER) {
++					flag = TTY_PARITY;
++					port->icount.parity++;
++				} else {
++					flag = TTY_NORMAL;
++				}
++
++				tty_insert_flip_char(tport, c, flag);
+ 			}
+-
+-			tty_insert_flip_char(tport, c, flag);
+ 		}
+ 
+ 		rsci_serial_in(port, CSR); /* dummy read */
+@@ -607,6 +638,8 @@ static const char *rsci_type(struct uart_port *port)
+ 	struct sci_port *s = to_sci_port(port);
+ 
+ 	switch (s->type) {
++	case RSCI_PORT_SCI:
++		return "sci";
+ 	case RSCI_PORT_SCIF:
+ 		return "scif";
+ 	}
+@@ -650,6 +683,17 @@ static const struct sci_port_params rsci_port_params = {
+ 	.common_regs = &rsci_common_regs,
+ };
+ 
++static const struct sci_port_params rsci_rzg3e_sci_port_params = {
++	.fifosize = 1,
++	.overrun_reg = CSR,
++	.overrun_mask = CSR_ORER,
++	.sampling_rate_mask = SCI_SR(32),
++	.error_mask = RSCI_DEFAULT_ERROR_MASK,
++	.error_clear = RSCI_ERROR_CLEAR,
++	.param_bits = &rsci_port_param_bits,
++	.common_regs = &rsci_common_regs,
++};
++
+ static const struct sci_port_params rsci_rzg3e_scif_port_params = {
+ 	.fifosize = 32,
+ 	.overrun_reg = CSR,
+@@ -701,6 +745,13 @@ struct sci_of_data of_sci_rsci_data = {
+ 	.params = &rsci_port_params,
+ };
+ 
++struct sci_of_data of_rsci_sci_data = {
++	.type = RSCI_PORT_SCI,
++	.ops = &rsci_port_ops,
++	.uart_ops = &rsci_uart_ops,
++	.params = &rsci_rzg3e_sci_port_params,
++};
++
+ struct sci_of_data of_rsci_scif_data = {
+ 	.type = RSCI_PORT_SCIF,
+ 	.ops = &rsci_port_ops,
+@@ -716,12 +767,19 @@ static int __init rsci_early_console_setup(struct earlycon_device *device,
+ 	return scix_early_console_setup(device, &of_sci_rsci_data);
+ }
+ 
++static int __init rsci_rzg3e_sci_early_console_setup(struct earlycon_device *device,
++						     const char *opt)
++{
++	return scix_early_console_setup(device, &of_rsci_sci_data);
++}
++
+ static int __init rsci_rzg3e_scif_early_console_setup(struct earlycon_device *device,
+ 						      const char *opt)
+ {
+ 	return scix_early_console_setup(device, &of_rsci_scif_data);
+ }
+ 
++OF_EARLYCON_DECLARE(rsci, "renesas,r9a09g047-rsci", rsci_rzg3e_sci_early_console_setup);
+ OF_EARLYCON_DECLARE(rsci, "renesas,r9a09g047-rscif", rsci_rzg3e_scif_early_console_setup);
+ OF_EARLYCON_DECLARE(rsci, "renesas,r9a09g077-rsci", rsci_early_console_setup);
+ 
+diff --git a/drivers/tty/serial/rsci.h b/drivers/tty/serial/rsci.h
+index ba255f58c088..df7a7edad7d4 100644
+--- a/drivers/tty/serial/rsci.h
++++ b/drivers/tty/serial/rsci.h
+@@ -6,6 +6,7 @@
+ #include "sh-sci-common.h"
+ 
+ extern struct sci_of_data of_sci_rsci_data;
++extern struct sci_of_data of_rsci_sci_data;
+ extern struct sci_of_data of_rsci_scif_data;
+ 
+ #endif /* __RSCI_H__ */
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index ca4915c1e2e6..fac83dace27c 100644
+index 85b89c1ebf15..b7d9ea4091d2 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -3259,7 +3259,10 @@ static void serial_console_write(struct console *co, const char *s,
- 		cpu_relax();
- 
- 	/* restore the SCSCR */
--	sci_port->ops->write_reg(port, regs->control, ctrl);
-+	if (sci_port->ops->finish_console_write)
-+		sci_port->ops->finish_console_write(port, ctrl);
-+	else
-+		sci_port->ops->write_reg(port, regs->control, ctrl);
- 
- 	if (locked)
- 		uart_port_unlock_irqrestore(port, flags);
+@@ -3492,6 +3492,10 @@ static const struct of_device_id of_sci_match[] __maybe_unused = {
+ 		.data = &of_sci_scif_rzv2h,
+ 	},
+ #ifdef CONFIG_SERIAL_RSCI
++	{
++		.compatible = "renesas,r9a09g047-rsci",
++		.data = &of_rsci_sci_data,
++	},
+ 	{
+ 		.compatible = "renesas,r9a09g047-rscif",
+ 		.data = &of_rsci_scif_data,
 -- 
 2.43.0
 
