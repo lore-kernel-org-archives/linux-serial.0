@@ -1,136 +1,103 @@
-Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CBAB32F760
-	for <linux-serial@vger.kernel.org>; Tue,  4 Nov 2025 14:54:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 265E12DBF7C;
+	Tue,  4 Nov 2025 23:19:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762268084; cv=none; b=bZGu4BeeHZ3+mj5aR6x/7Mdha4DKvBkoG+84qglt9t15A6iYp7YVFipGrjHHGGP5Ro0cXWGLn4xYJu5vZ8ZzNiGuTWz7ozzlR7SPBpQIWQYO/fegq2T9UDQkZz9DYj6lLQbyPy5QZGr3Z9T7xEp/imeCRY3YlCI5VNFPgOl38J8=
+	t=1762298399; cv=none; b=rh4cZ5SbTMOAyF0tEjkBr67KVseCCJYcaDHXWFT+UGJvja0GZPY+YeQK49QsPP82q1TmuFibote88gb3hn6BQdw60ynBwYkFNiFfpAon5eejtdbUu0QdZVm0gKG3G8/MtBTjRyVXXjBNI3blj4+YVvDgk60iy3hRJnQZZDMT+88=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762268084; c=relaxed/simple;
-	bh=WXJgANZ+e9h8MzCDzeaAESu7lB6O6+zjBXrW56L/8IQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=HyQoS2QOBShCSgK67jseg8wjcJ9/C/ZUPDyvaiwNqzS+njUHmIMiSsrAixgbQH1RjnIV7c8hrXChIulsaJo4qQ2ymBzoxCcKhp3+tlTNuv4JqWOAP34rikajsI85AXTYUv7hwmAGu4foLAep75dVcAONWwxJye3b1bci8mHJFWA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ix74fq6U; arc=none smtp.client-ip=209.85.208.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1762298399; c=relaxed/simple;
+	bh=6hW9k9llq8m1Kkjc+boksRi0fM+t9oeMFc+qhPZB7To=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=JTH1XhkT15wtTER6tKogrCS2dFCleM4ytPZWz4pMlrsc9MY8YIuPkSqvfmYokwHGFLKZMM3DEoZPGNUkVyLB99bbaQf+IPf3nyoNFh9UkOyst8R6EsVBN6fcvnWdYuIzgLOhS0f+u6KpqYMt6dTUyBLN1/UcoCm3RlxBCv/wxXI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=Ck9/Kb0e; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=TbUwdjEF; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ix74fq6U"
-Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-640a3317b89so3742829a12.0
-        for <linux-serial@vger.kernel.org>; Tue, 04 Nov 2025 06:54:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1762268081; x=1762872881; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=1Eoyutw2xWn5tZ7X64KI/elnJZ6bDgfQd3mhxBVUbfo=;
-        b=Ix74fq6UDHhm2Gfgs0Ecv2/CMIr2PSZYO3cfVs0C/uOvECHY9K2XOI+gKjUxiPzTB9
-         o3myGmXM0bf6k9aM2TeBCxtJLH4x5YUI6HKJTtTXoNxj/U+KV9vC06Iar+KUVfGNMbhL
-         BQHJyjubllGoONnDkkJDejqZmiVv7XXKJ7xeSEoOxBwIQ7mJM4Xl+c/3wxllLxCdkenW
-         8tYJpZHNdHAH4L1xDHM5uqhWXBK4pwO9A3W2W57c5bvHpE+KXs+D6lFSvU4ZkcqakJaa
-         xde/iEhTegaan9eQ05ne2xIi7CRCUkdi2sutNFgAmSgi5RsSGCCDCsFkBKd1C9R/XDUx
-         Zcpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1762268081; x=1762872881;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=1Eoyutw2xWn5tZ7X64KI/elnJZ6bDgfQd3mhxBVUbfo=;
-        b=JMKAMSS4qOksgHxhbQJzOoAJUHWHoZOapNCcKhfApACTWjURF/+F4uEWEeSLf0UVgc
-         P8sm2YKeZu25DDSwCG7Uo2z+oWymD9MnwhgACkBRmSCxKGGgDx1o9yvcF8x5xGNgymWt
-         ELMrc5Z9LL1rSPObweT/q+ToLbVc0XVu/90UaIaIZBAt+XURRV/bNX0VYaR1HikquiOi
-         VRvR4ST1HIUY+nzZF8cdROnbi8SwXIHKwJrulyxfcRT1l/M9mdFjgAl9Hkh9ohB5lhDL
-         VNnUZX08Z10UH8ocJMLjA1o9fk07tiA1cApjdBKUa54N41i0BDiVNzazbodjo3BBhKjN
-         qq2Q==
-X-Forwarded-Encrypted: i=1; AJvYcCWkhyF61QJ1gHVCkZbCrZhez2LfDVJ3ur2gWkvfV0L9/9Z0Qbb6LaC9R2IeIAiHJJ8VBwml/i2W3lAze7A=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy4jL9FJW+5ARH5lZhHdf8R+zqoT2dtDOnue/hvuBBaS7lIAFhP
-	rOR0Uzd87OJW6XvTpfthgiEcLuLnOPFkGMkC9CMFJrZigqi2gViowlrW
-X-Gm-Gg: ASbGncv3ktIGwPl/tNrGu5GdLLhSjumiCutvXRw/kZJ/bcJfo6Rka9uDaC3pxYFla9I
-	/ecn86F+cog6W1A0BdLPHYQ1vmeOY7kag6DqFL4pY8N3WxUbNBj7c5fPbknxQjlHAlYC1OMquLH
-	UFGBIzewbq06e2XkHa+BLb4mX0FWWOPzv74V2eL/PNHKerL64MfslTX5lRklyV3eZB97jNAacWi
-	HV2bRUrSO7iOUw90bPtt7PmdsuScsSkiLr/qbvXBVtz1PpKjQumyAyDdzTJcEXsOgiuvglCm6vt
-	bx8nYDxw6VPXwe0n06o6v31lq66DpWxTgZHGDha+lLqQUg0e2CFKix0hyQq2OWQjozBb/iUPzHX
-	B3tZ2oaZPAxN2Ez8cUL9f0gCHyZLuM0Tw4O7x4hrRltMOcGaEYSDMKUMGk+t9Lk41TPIYkSqK1A
-	vXB6f1CS1VYFE=
-X-Google-Smtp-Source: AGHT+IEYcV6g8pSrWp9gJnopoqBVCsEt0pmu0JfN5263UUfCpD9RJnczJUaoNY/BYUSo+GB2s8qE/g==
-X-Received: by 2002:a05:6402:51ca:b0:640:eb29:fc7e with SMTP id 4fb4d7f45d1cf-640eb29fdc4mr2223377a12.20.1762268081332;
-        Tue, 04 Nov 2025 06:54:41 -0800 (PST)
-Received: from NB-6746.. ([188.243.183.84])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-640e6a70b50sm2235016a12.25.2025.11.04.06.54.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Nov 2025 06:54:40 -0800 (PST)
-From: Artem Shimko <a.shimko.dev@gmail.com>
-To: ilpo.jarvinen@linux.intel.com,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: Artem Shimko <a.shimko.dev@gmail.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH v2 2/2] serial: 8250_dw: fix runtime PM initialization sequence
-Date: Tue,  4 Nov 2025 17:54:26 +0300
-Message-ID: <20251104145433.2316165-3-a.shimko.dev@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20251104145433.2316165-1-a.shimko.dev@gmail.com>
-References: <20251104145433.2316165-1-a.shimko.dev@gmail.com>
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="Ck9/Kb0e";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="TbUwdjEF"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1762298396;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=6hW9k9llq8m1Kkjc+boksRi0fM+t9oeMFc+qhPZB7To=;
+	b=Ck9/Kb0eie7pz087suaUDAtbkFYyXpqXdxCHZTr5dWeJ5JqTwCy4nK9zrYog/1fIyAMm2n
+	dyJS74bDt+JVfKR5IF+H6zdNSZLJf3zemFdD3gvEtoNYdpgqzO3Vmv27+9t5VwUu5TpaQn
+	WnJB0TH4DpkXp4w00HXwtcpFV9ECl7hLLo07hWwaOgEBvaxKw9aV5EjyKbxu6raIurTRtr
+	mGlakJxJF/kvIVrs+9lpqvZRSlNMsjjrsncQc0j/KKr5JBhi3H3PMnO53flZXsfgwt7VKM
+	t0a88iXi5qjpGE+2yqs3WYjBkOR9hDgJk8jBRd88j55/GxhR3IiaSNYRHvjugw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1762298396;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=6hW9k9llq8m1Kkjc+boksRi0fM+t9oeMFc+qhPZB7To=;
+	b=TbUwdjEFjcX/Ax3oYG35NLH4DurhRtvskG1RxFeDEChnx2+zg6lkfLxuLJV5+6skNFttVO
+	70tcpXjJhCVmMEAA==
+To: Sherry Sun <sherry.sun@nxp.com>, "esben@geanix.com" <esben@geanix.com>,
+ "pmladek@suse.com" <pmladek@suse.com>, "senozhatsky@chromium.org"
+ <senozhatsky@chromium.org>, "tglx@linutronix.de" <tglx@linutronix.de>,
+ Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>,
+ Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>,
+ "ryotkkr98@gmail.com" <ryotkkr98@gmail.com>, "kkartik@nvidia.com"
+ <kkartik@nvidia.com>, "fj6611ie@aa.jp.fujitsu.com"
+ <fj6611ie@aa.jp.fujitsu.com>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial
+ <linux-serial@vger.kernel.org>, "imx@lists.linux.dev"
+ <imx@lists.linux.dev>, Pengutronix Kernel Team <kernel@pengutronix.de>,
+ "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>
+Subject: RE: [BUG] Suspend failure with nbcon + pm_debug_messages (Linux
+ 6.18-rc4)
+In-Reply-To: <DB9PR04MB8429F50811DDC648DD8A7B8792C4A@DB9PR04MB8429.eurprd04.prod.outlook.com>
+References: <DB9PR04MB8429E7DDF2D93C2695DE401D92C4A@DB9PR04MB8429.eurprd04.prod.outlook.com>
+ <87tszamcaz.fsf@jogness.linutronix.de>
+ <DB9PR04MB842977523C92FDE8AF4B714A92C4A@DB9PR04MB8429.eurprd04.prod.outlook.com>
+ <87qzuem7bo.fsf@jogness.linutronix.de>
+ <DB9PR04MB8429F50811DDC648DD8A7B8792C4A@DB9PR04MB8429.eurprd04.prod.outlook.com>
+Date: Wed, 05 Nov 2025 00:25:55 +0106
+Message-ID: <87bjlhz8pw.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
-Move pm_runtime_set_active() call earlier in probe to simplify error
-handling and add proper error checking to ensure the device is marked
-as active before any runtime PM operations can occur.
+Hi Sherry,
 
-Additionally, replace the const struct dev_pm_ops declaration with
-_DEFINE_DEV_PM_OPS macro for better consistency with modern kernel PM
-patterns.
+On 2025-11-04, Sherry Sun <sherry.sun@nxp.com> wrote:
+>> Thanks for confirming the fix. I will make an official post on LKML
+>> with the patch today. Since the i.MX nbcon-driver is already
+>> mainline, I will CC stable. I will CC you as well.
+>
+> I'll keep an eye on any fixes you send later and verify them if
+> necessary. Hope this fix can be applied to the mainline and the stable
+> tree ASAP.
 
-Signed-off-by: Artem Shimko <a.shimko.dev@gmail.com>
----
- drivers/tty/serial/8250/8250_dw.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+Even with this patch [1] I am able to reproduce the problem on one of my
+test boards. I am using the following extra boot arguments:
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 0ff500965c10..0c0a9fc97fe3 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -643,6 +643,10 @@ static int dw8250_probe(struct platform_device *pdev)
- 	if (err)
- 		return err;
- 
-+	err = pm_runtime_set_active(dev);
-+	if (err)
-+		return dev_err_probe(dev, err, "Failed to set the runtime suspend as active\n");
-+
- 	data->uart_16550_compatible = device_property_read_bool(dev, "snps,uart-16550-compatible");
- 
- 	data->pdata = device_get_match_data(p->dev);
-@@ -685,7 +689,6 @@ static int dw8250_probe(struct platform_device *pdev)
- 
- 	platform_set_drvdata(pdev, data);
- 
--	pm_runtime_set_active(dev);
- 	pm_runtime_enable(dev);
- 
- 	return 0;
-@@ -757,10 +760,9 @@ static int dw8250_runtime_resume(struct device *dev)
- 	return 0;
- }
- 
--static const struct dev_pm_ops dw8250_pm_ops = {
--	SYSTEM_SLEEP_PM_OPS(dw8250_suspend, dw8250_resume)
--	RUNTIME_PM_OPS(dw8250_runtime_suspend, dw8250_runtime_resume, NULL)
--};
-+static _DEFINE_DEV_PM_OPS(dw8250_pm_ops, dw8250_suspend, dw8250_resume,
-+			  dw8250_runtime_suspend, dw8250_runtime_resume,
-+			  NULL);
- 
- static const struct dw8250_platform_data dw8250_dw_apb = {
- 	.usr_reg = DW_UART_USR,
--- 
-2.43.0
+no_console_suspend loglevel=8 initcall_debug
 
+And then:
+
+# echo 1 > /sys/power/pm_debug_messages
+# echo mem > /sys/power/state
+
+This generates a lot of output and leads to the same suspend
+failure. This may be due to the out-of-tree nbcon-8250 driver I am
+using, which introduces extra irq_work usage within the driver. Could
+you please try the above boot arguments with your i.MX board?
+
+I am wondering if blocking the queueing of irq_work during suspend
+should be generally implemented rather than just printk avoiding it. It
+also seems to only be a problem for ARM32 so perhaps it needs to be
+addressed at the architecture level.
+
+John Ogness
+
+>> [1] https://github.com/Linutronix/linux/commit/ae173249d9028ef159fba040bdab260d80dda43f
