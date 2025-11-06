@@ -1,214 +1,146 @@
-Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38F7A34D4EE
-	for <linux-serial@vger.kernel.org>; Thu,  6 Nov 2025 17:02:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B3D133A01E;
+	Thu,  6 Nov 2025 17:10:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762448564; cv=none; b=EjD857tOXX944c6uPvvR02Ba4XOYCZr3cDov7jyyy/CXksiy1l5hOZvWyP9aVoqXOkgJoEAY32Uo1gc/6mj0W+OukHjo4ju4B1Z932B3jxkQoVt9E0mlPZIA8jNeYetrGr+a8nsHxKG9ZKYcd8GU+d/WOsBtskzJ00YGS25UyRM=
+	t=1762449046; cv=none; b=Q/S+xYoJ/AvXP5m6Z6BehdcWdmgzr03cpG/VckHnZxjlM6hHFOSR71mN3UL4lbNrJvbngCBu64INZnEPIPCnwppBsVCv4d6EMIV3rqFDe6GkMTm4ihsiF6/uQO3Hn9i+VxyGcaEtXSiED63a8YbIHTon2IxiJWIZRiME1nEjLuw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762448564; c=relaxed/simple;
-	bh=Sz5yZDvrAqDWQ73BgqCKc6pgb4Y+o2NR2xbEM89iVfg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=kqEurP4fKE9dOnZ0Oq1kIjjvNEyqZGlnAe2NiAxeWu+BLgrgztF5T7ftiRu5SeYGDrOojwpBWnCsmgxRtUF4w/WdQi5dYCWRdzh0BZuW+8uaW8c1fOPBT8hZii9PU5F9OtUX1s7eUZvJf9/HB6xYEaKQdP7GbpUgVBRgfXfzMP4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-640a3317b89so1832866a12.0
-        for <linux-serial@vger.kernel.org>; Thu, 06 Nov 2025 09:02:42 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1762448556; x=1763053356;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=0HaYqdPsMXwfHzpR9yoIkvINZrh5vn/MQcKn5Y6oG5U=;
-        b=dV7SNIOJfAQNYak90TYD6r3O55T32kLznYmsDXI8U6BOw9547flIqzOXYZgOG7refN
-         jEmJtDzyynjqqdNYgmebcAvJyEFq2cfH/PGXwGSJXFp3t//6FTaY70V1TxTFVWKCCkUT
-         pwylxPSdngBzoxRt0Gl9Fc3C3TvKZ/cBxeRoTSgJFINJJbRMdMk53gopkuciPW36ul3t
-         rQ4e3FRD9d07fibtKqXBqyFKTzn4p+qmhSct0xwEsF0Qh1cSMpMkTTfURXkYHT5kNwYC
-         7d/4/AGYBVa4eC/A2Biz2VNU6nLET8SZ27us9bWgciV73smyyQV2zPsfdFZHi72jSB6z
-         GdzA==
-X-Forwarded-Encrypted: i=1; AJvYcCVcGN6JMz8BBLjlVHI4iEcHWeP2OkaA8E+uiU4y/NTFFGR6AhcOVI2c2DRebYPA9l5VUSLpBPWpNiqeNy4=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw0REgNJRkCXxlp8Mi7zgIvc7eI1EQsydGrJPCESM8RtCvCu/cQ
-	JeDvHhyK0fUPawoihrbWoyqH9yj8p7Y9LhwOZAiQZopaJVB6p+KxwLz061uyztgHjm4=
-X-Gm-Gg: ASbGncuE36XgN064o4kkf3TMrebgh8qz88zpfk9oGQjApG4gcZxLV6rUjWHPVhUBHIS
-	+jnSqySEysKKqt0AdduZEe0GMNGgkBe+/fIb5jcnaBOUejuwOIaVXp4rijfP/TcctYleHphLtec
-	BZPdV95B103MSy0KU9jLgSlcbU29h/lIqphLuwLTGJQBc7d98HvTcNrWwzGE4LF4AwWAYKOWpqz
-	zMRmuELlAjGmNBeiBCyK6Ga7boIEiqwCzu9qh6mqIUSnX85LxmHX9AWP+gzZvDt7j0oeaElf3ZP
-	VwHa3vlZwW7ghkTOlhvw7/D7nBNfOM8e7TVRpm/2By/YciQvpd4Eoe9phAwSZcJRjdsnc33xqMg
-	Q+ed77f9lqzoJ6DkuhEx07wqpPgtRJk2VUGTqkQ6u8b1vl3SIReM4onjegqhEW8EWCbyT26hAIB
-	ncZFZ/3fQTRjs5vCu9/mAgwyF5QIzYAQI8HmEJpw==
-X-Google-Smtp-Source: AGHT+IHO1qWaSAe46cxF0KnIjNJ5s1BxSj6i3Qx5ZX4Dmamg84BOJnsTp3eohkkAQt5iqgLTupvaQQ==
-X-Received: by 2002:a17:907:3f0c:b0:b70:50f0:e6ae with SMTP id a640c23a62f3a-b72655611fbmr891740966b.46.1762448555804;
-        Thu, 06 Nov 2025 09:02:35 -0800 (PST)
-Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com. [209.85.208.45])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b72bf723172sm5566866b.32.2025.11.06.09.02.33
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 06 Nov 2025 09:02:34 -0800 (PST)
-Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-640b4a52950so1790158a12.1
-        for <linux-serial@vger.kernel.org>; Thu, 06 Nov 2025 09:02:33 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCVtBduGUg8m63y7bQSGswHRteCJaWHTO4puXfqeGlY1ow22FurFnHlnlyzzo6eD9BOWLMgkpX013PE2RuU=@vger.kernel.org
-X-Received: by 2002:a05:6402:5214:b0:637:dfb1:33a8 with SMTP id
- 4fb4d7f45d1cf-6413eec4a2cmr109416a12.3.1762448553296; Thu, 06 Nov 2025
- 09:02:33 -0800 (PST)
+	s=arc-20240116; t=1762449046; c=relaxed/simple;
+	bh=5RJd2yoe7u43AeupxdyVCQ4K/Vt3gB+8I1S4CehziNE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=F6dFYXAtman14XrNWBl41peA+qjWgOCr41GwU798ddWHkztYXN/KJOg2KOpwbbx4MoZNgjPD3aWZa8QoKvBjTRs/+aCu+2DNLXsuPUGiRx8YxLg2DRH7GPcoNxTNjGBEbcgGp1Pe6jdEOgGLdsXpoSomFBOhitqJdkpmJOCi5NA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lkBZ2i+/; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lkBZ2i+/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A649C4CEF7;
+	Thu,  6 Nov 2025 17:10:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1762449045;
+	bh=5RJd2yoe7u43AeupxdyVCQ4K/Vt3gB+8I1S4CehziNE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=lkBZ2i+/mwOOuX9GhGdECytYLR4ZoDkJl849J2hQtO1L+/oDFNXYCeNt174ancQT3
+	 xbCnN9sPThUf3r7wQHPF8iYrx9QE8ByQfGeeXHSpXSc7X1ozl146yDIHzIyhN477Zl
+	 24roSdsWpljUoU1b1XPiOx3tQ9nNpNF0qwmsuiok+l3p312VCp83G1KCMDxzYj3j4R
+	 V6CN2ulyVc4L6VZFinUoMZZKTE8+9ekl/LsZXnN1C4wR4qq87Iee247p9DqgX4zpQx
+	 Mdo/2h36rXZ5gLXNVAuKxGQMnTO8WdbmjhK4ji+z1/V5GYGE6HlP6rgt50139EhDg6
+	 7lEF3XunOSRJA==
+Date: Thu, 6 Nov 2025 17:10:38 +0000
+From: Conor Dooley <conor@kernel.org>
+To: Junhui Liu <junhui.liu@pigmoral.tech>, tglx@linutronix.de
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Samuel Holland <samuel.holland@sifive.com>,
+	Chen Wang <unicorn_wang@outlook.com>,
+	Inochi Amaoto <inochiama@gmail.com>,
+	Daniel Lezcano <daniel.lezcano@linaro.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Palmer Dabbelt <palmer@sifive.com>, linux-riscv@lists.infradead.org,
+	Inochi Amaoto <inochiama@outlook.com>, sophgo@lists.linux.dev,
+	linux-serial@vger.kernel.org,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	Conor Dooley <conor.dooley@microchip.com>
+Subject: Re: [PATCH v3 00/13] riscv: Add initial support for Anlogic DR1V90
+Message-ID: <20251106-tinfoil-primer-30ff181203f4@spud>
+References: <20251021-dr1v90-basic-dt-v3-0-5478db4f664a@pigmoral.tech>
+ <20251028-busybody-disallow-e068b221db6c@spud>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250923154707.1089900-1-cosmin-gabriel.tanislav.xa@renesas.com> <CAMuHMdWRCGYLRK_WBmbB0cRP7PHiGPSi3U1jdWSVKaTSweruUw@mail.gmail.com>
-In-Reply-To: <CAMuHMdWRCGYLRK_WBmbB0cRP7PHiGPSi3U1jdWSVKaTSweruUw@mail.gmail.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Thu, 6 Nov 2025 18:02:20 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXb0hPPR9feTVrHDvyzEbiOEG7Vy5ec_bnwdXTZ=9Cg8Q@mail.gmail.com>
-X-Gm-Features: AWmQ_blWAJjuL3S2mf-_klybP6MpuG6h9woX8spkwghV9sy5gQZ33dOTZbj4xGI
-Message-ID: <CAMuHMdXb0hPPR9feTVrHDvyzEbiOEG7Vy5ec_bnwdXTZ=9Cg8Q@mail.gmail.com>
-Subject: Re: [PATCH] tty: serial: sh-sci: fix RSCI FIFO overrun handling
-To: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>, 
-	Thierry Bultel <thierry.bultel.yh@bp.renesas.com>, 
-	Wolfram Sang <wsa+renesas@sang-engineering.com>, Nam Cao <namcao@linutronix.de>, 
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, stable@vger.kernel.org, 
-	Biju Das <biju.das.au@gmail.com>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="RxsOAUIaAk6EjGuV"
+Content-Disposition: inline
+In-Reply-To: <20251028-busybody-disallow-e068b221db6c@spud>
 
-CC Biju, linux-renesas-soc (let's hope for real)
 
-On Thu, 6 Nov 2025 at 17:54, Geert Uytterhoeven <geert@linux-m68k.org> wrote:
->
-> Hi Cosmin,
->
-> On Tue, 23 Sept 2025 at 17:47, Cosmin Tanislav
-> <cosmin-gabriel.tanislav.xa@renesas.com> wrote:
-> > The receive error handling code is shared between RSCI and all other
-> > SCIF port types, but the RSCI overrun_reg is specified as a memory
-> > offset, while for other SCIF types it is an enum value used to index
-> > into the sci_port_params->regs array, as mentioned above the
-> > sci_serial_in() function.
-> >
-> > For RSCI, the overrun_reg is CSR (0x48), causing the sci_getreg() call
-> > inside the sci_handle_fifo_overrun() function to index outside the
-> > bounds of the regs array, which currently has a size of 20, as specified
-> > by SCI_NR_REGS.
-> >
-> > Because of this, we end up accessing memory outside of RSCI's
-> > rsci_port_params structure, which, when interpreted as a plat_sci_reg,
-> > happens to have a non-zero size, causing the following WARN when
-> > sci_serial_in() is called, as the accidental size does not match the
-> > supported register sizes.
-> >
-> > The existence of the overrun_reg needs to be checked because
-> > SCIx_SH3_SCIF_REGTYPE has overrun_reg set to SCLSR, but SCLSR is not
-> > present in the regs array.
-> >
-> > Avoid calling sci_getreg() for port types which don't use standard
-> > register handling.
-> >
-> > Use the ops->read_reg() and ops->write_reg() functions to properly read
-> > and write registers for RSCI, and change the type of the status variable
-> > to accommodate the 32-bit CSR register.
-> >
-> > sci_getreg() and sci_serial_in() are also called with overrun_reg in the
-> > sci_mpxed_interrupt() interrupt handler, but that code path is not used
-> > for RSCI, as it does not have a muxed interrupt.
-> >
-> > ------------[ cut here ]------------
-> > Invalid register access
-> > WARNING: CPU: 0 PID: 0 at drivers/tty/serial/sh-sci.c:522 sci_serial_in+0x38/0xac
-> > Modules linked in: renesas_usbhs at24 rzt2h_adc industrialio_adc sha256 cfg80211 bluetooth ecdh_generic ecc rfkill fuse drm backlight ipv6
-> > CPU: 0 UID: 0 PID: 0 Comm: swapper/0 Not tainted 6.17.0-rc1+ #30 PREEMPT
-> > Hardware name: Renesas RZ/T2H EVK Board based on r9a09g077m44 (DT)
-> > pstate: 604000c5 (nZCv daIF +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-> > pc : sci_serial_in+0x38/0xac
-> > lr : sci_serial_in+0x38/0xac
-> > sp : ffff800080003e80
-> > x29: ffff800080003e80 x28: ffff800082195b80 x27: 000000000000000d
-> > x26: ffff8000821956d0 x25: 0000000000000000 x24: ffff800082195b80
-> > x23: ffff000180e0d800 x22: 0000000000000010 x21: 0000000000000000
-> > x20: 0000000000000010 x19: ffff000180e72000 x18: 000000000000000a
-> > x17: ffff8002bcee7000 x16: ffff800080000000 x15: 0720072007200720
-> > x14: 0720072007200720 x13: 0720072007200720 x12: 0720072007200720
-> > x11: 0000000000000058 x10: 0000000000000018 x9 : ffff8000821a6a48
-> > x8 : 0000000000057fa8 x7 : 0000000000000406 x6 : ffff8000821fea48
-> > x5 : ffff00033ef88408 x4 : ffff8002bcee7000 x3 : ffff800082195b80
-> > x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffff800082195b80
-> > Call trace:
-> >  sci_serial_in+0x38/0xac (P)
-> >  sci_handle_fifo_overrun.isra.0+0x70/0x134
-> >  sci_er_interrupt+0x50/0x39c
-> >  __handle_irq_event_percpu+0x48/0x140
-> >  handle_irq_event+0x44/0xb0
-> >  handle_fasteoi_irq+0xf4/0x1a0
-> >  handle_irq_desc+0x34/0x58
-> >  generic_handle_domain_irq+0x1c/0x28
-> >  gic_handle_irq+0x4c/0x140
-> >  call_on_irq_stack+0x30/0x48
-> >  do_interrupt_handler+0x80/0x84
-> >  el1_interrupt+0x34/0x68
-> >  el1h_64_irq_handler+0x18/0x24
-> >  el1h_64_irq+0x6c/0x70
-> >  default_idle_call+0x28/0x58 (P)
-> >  do_idle+0x1f8/0x250
-> >  cpu_startup_entry+0x34/0x3c
-> >  rest_init+0xd8/0xe0
-> >  console_on_rootfs+0x0/0x6c
-> >  __primary_switched+0x88/0x90
-> > ---[ end trace 0000000000000000 ]---
-> >
-> > Cc: stable@vger.kernel.org
-> > Fixes: 0666e3fe95ab ("serial: sh-sci: Add support for RZ/T2H SCI")
-> > Signed-off-by: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
->
-> Thanks for your patch, which is now commit ef8fef45c74b5a00 ("tty:
-> serial: sh-sci: fix RSCI FIFO overrun handling") in v6.18-rc3.
->
-> > --- a/drivers/tty/serial/sh-sci.c
-> > +++ b/drivers/tty/serial/sh-sci.c
-> > @@ -1014,16 +1014,18 @@ static int sci_handle_fifo_overrun(struct uart_port *port)
-> >         struct sci_port *s = to_sci_port(port);
-> >         const struct plat_sci_reg *reg;
-> >         int copied = 0;
-> > -       u16 status;
-> > +       u32 status;
-> >
-> > -       reg = sci_getreg(port, s->params->overrun_reg);
-> > -       if (!reg->size)
-> > -               return 0;
-> > +       if (s->type != SCI_PORT_RSCI) {
-> > +               reg = sci_getreg(port, s->params->overrun_reg);
-> > +               if (!reg->size)
-> > +                       return 0;
-> > +       }
-> >
-> > -       status = sci_serial_in(port, s->params->overrun_reg);
-> > +       status = s->ops->read_reg(port, s->params->overrun_reg);
-> >         if (status & s->params->overrun_mask) {
-> >                 status &= ~s->params->overrun_mask;
-> > -               sci_serial_out(port, s->params->overrun_reg, status);
-> > +               s->ops->write_reg(port, s->params->overrun_reg, status);
-> >
-> >                 port->icount.overrun++;
-> >
->
-> Ouch, this is really becoming fragile, and thus hard to maintain.
-> See also "[PATCH v2 2/2] serial: sh-sci: Fix deadlock during RSCI FIFO
-> overrun error".
-> Are you sure this is the only place where that can happen?
-> sci_getreg() and sci_serial_{in,out}() are used all over the place.
->
-> [1] https://lore.kernel.org/20251029082101.92156-3-biju.das.jz@bp.renesas.com/
+--RxsOAUIaAk6EjGuV
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Gr{oetje,eeting}s,
+Thomas,
 
-                        Geert
+On Tue, Oct 28, 2025 at 07:39:07PM +0000, Conor Dooley wrote:
+> Thomas, Junhui,
+>=20
+> On Tue, Oct 21, 2025 at 05:41:35PM +0800, Junhui Liu wrote:
+> > This introduces initial support for the Anlogic DR1V90 SoC [1] and the
+> > Milianke MLKPAI-FS01 [2] board.
+> >=20
+> > The DR1V90 is a RISC-V based FPSoC from Anlogic, featuring a Nuclei
+> > UX900 [3] core as its processing system (PS) and 94,464 LUTs in the
+> > programmable logic (PL) part. The Milianke MLKPAI-FS01 board is one of
+> > the first platforms based on this SoC, with UART1 routed to a Type-C
+> > interface for console access.
+> >=20
+> > Tested on the Milianke MLKPAI-FS01 board with both the vendor's OpenSBI
+> > and the not-yet-upstreamed mainline OpenSBI [4], as well as the vendor=
+=E2=80=99s
+> > U-Boot. Because the vendor=E2=80=99s OpenSBI is loaded at 0x1f300000, w=
+e have
+> > to additionally reserve the DRAM region 0x1fe00000=E2=80=930x1fffffff t=
+o prevent
+> > overlap if using vendor's OpenSBI.
+> >=20
+> > Link: https://www.anlogic.com/product/fpga/saldragon/dr1 [1]
+> > Link: https://www.milianke.com/product-item-104.html [2]
+> > Link: https://nucleisys.com/product/900.php [3]
+> > Link: https://github.com/pigmoral/opensbi/tree/dr1v90 [4]
+> > ---
+> > Changes in v3:
+> > - Update DT binding to use ACLINT instead of CLINT
+> > - Drop MAINTAINERS patch
+> > - Rebase on v6.18-rc1
+> > - Link to v2: https://lore.kernel.org/r/20250922-dr1v90-basic-dt-v2-0-6=
+4d28500cb37@pigmoral.tech
+> >=20
+> > Changes in v2:
+> > - Add MAINTAINERS entry for the DR1V90 platform
+> > - Remove the riscv,isa property of cpu and reorder propertyies
+> > - Fix clint base address in the dtsi
+> > - Change the memory node to cover the full 512MB RAM in board dts
+> > - Link to v1: https://lore.kernel.org/r/20250721-dr1v90-basic-dt-v1-0-5=
+740c5199c47@pigmoral.tech
+> >=20
+> > ---
+> > Junhui Liu (13):
+> >       dt-bindings: vendor-prefixes: Add Anlogic, Milianke and Nuclei
+> >       dt-bindings: riscv: Add Nuclei UX900 compatibles
+> >       dt-bindings: riscv: Add Anlogic DR1V90
+> >       dt-bindings: interrupt-controller: Add Anlogic DR1V90 PLIC
+> >       dt-bindings: interrupt-controller: Add Anlogic DR1V90 ACLINT MSWI
+> >       dt-bindings: interrupt-controller: Add Anlogic DR1V90 ACLINT SSWI
+> >       dt-bindings: timer: Add Anlogic DR1V90 ACLINT MTIMER
+> >       dt-bindings: serial: snps-dw-apb-uart: Add Anlogic DR1V90 uart
+> >       irqchip/aclint-sswi: Add Nuclei UX900 support
+>=20
+> I'm happy enough with this series to grab it, but while I don't mind
+> taking some trivial binding changes with it, I don't want to take an
+> irqchip driver patch. Would you be able to apply the irqchip stuff
+> Thomas?
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Could you pick up 4-6 and 9 here please?
+
+--RxsOAUIaAk6EjGuV
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaQzWjgAKCRB4tDGHoIJi
+0pjLAP4i3LKjrcugZ1SHa8IN8d1ahJjzKig/a42m3C3BLhx/6AD8CjGNPrqdnGjb
+X9OAq+b6bdQXfUDl2Y1epPRbb3x1AwE=
+=g1P8
+-----END PGP SIGNATURE-----
+
+--RxsOAUIaAk6EjGuV--
