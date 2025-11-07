@@ -1,189 +1,112 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 934BB32AAAC
-	for <linux-serial@vger.kernel.org>; Fri,  7 Nov 2025 14:26:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F3D2334368
+	for <linux-serial@vger.kernel.org>; Fri,  7 Nov 2025 17:37:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=18.9.28.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762525595; cv=none; b=KxmC/5d8MIGKKZutL+4s3+RfFpV2cqQUbjeRnpmG1shEFpabhfSzIRRSvnUnyhafgPBjc077uPEXWBC/cwVMUMyDmmZAVmLu0nasrCYYweVJm8s+rtQrGk7QigDY8dEzR8rnKlEaHk2/pkcI+Ih8Yvv2JgyjIo5cpwnKT0dUP0c=
+	t=1762537081; cv=none; b=tD6dK7Ys0b9BxwHLsHIBsjO6V1e+fI1mRILAQml1j/dqcasWxK/uTnXdbUvtVQ6l5U+rm7K9/RwLUM2CCjIOt65RSFoKiuVCBuWpHx3/9wYbTX2LG6xZYgswpEEDoeiopm37QkK6aZncMiYm+qb8bTv8tRUzRJmKgAxViv+5Vos=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762525595; c=relaxed/simple;
-	bh=3Wl1YRJwVAo7M46h9uqpF2pAHQVJDIm86cZu40rQD/0=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=KU243jwaLw6jlM+A4P8Z2MhQhGyohedTuHSrdDgenBfrjOs9JOnzRMkoFolwQGpuGZ2ky15kVXzOuPG1aFctTVSomzfpf8INLEYX3zltWZbSVzjbEA2NoSKA7LuK3ERJQG0qGWLAZAxxtv808XfW00OnknX612dO5zfhGb/BH68=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=P82BL2LG; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=ig2zL+5A; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=P82BL2LG; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=ig2zL+5A; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
+	s=arc-20240116; t=1762537081; c=relaxed/simple;
+	bh=H2aWY8pJhwwSmeCbnVjsCQCQhKB/jNwBxQA8GYtab/U=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=UXTfYmVM74tAorZi0sjPKyS1eBeTVuNeWuU13UfnclG83cVAUjvemPa+hnoaXz/mpc3lgUmVbDZtPVUZ+UQg9fHkf/Dh1w3qap6bhTSZSVyMJIMMcDz4qKaTLOZfzVjWPMc5rQWop4Uv8Bjz5Nc7ecpaG6njvbz0rcFfIFvNgKo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mit.edu; spf=pass smtp.mailfrom=mit.edu; dkim=pass (2048-bit key) header.d=mit.edu header.i=@mit.edu header.b=PUfHRXJY; arc=none smtp.client-ip=18.9.28.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mit.edu
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mit.edu
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="P82BL2LG";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="ig2zL+5A";
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="P82BL2LG";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="ig2zL+5A"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 89284211FC;
-	Fri,  7 Nov 2025 14:26:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1762525577; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=eQKbrIXvqSMxNJUdXoPd9pomVDFVPBjwEwiLonwMJ/0=;
-	b=P82BL2LG0hSEz1TYJ9FHyJs5nQr7FkPgePqEBdqyPCxFupHTbfuGOdM7tlOgYQu1feLFgP
-	PPUiTSTynzcr0/5CXDW1VKvmi8Pjlyxq2Z23fiHQeXY79tDTi3Y9IcUqZt/OudIx9JZRDh
-	T7KnQenJ+Elb0g0pipW9Xp4KAZtOeT8=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1762525577;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=eQKbrIXvqSMxNJUdXoPd9pomVDFVPBjwEwiLonwMJ/0=;
-	b=ig2zL+5Aq3s52xbyl7mb7EnGobse5CIk2HoXwu2EHA8ZBcIcC9ZKdJ0o3Szcl05NMCV7+G
-	NwJfTJ3kFDVodrCQ==
-Authentication-Results: smtp-out1.suse.de;
-	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=P82BL2LG;
-	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b=ig2zL+5A
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1762525577; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=eQKbrIXvqSMxNJUdXoPd9pomVDFVPBjwEwiLonwMJ/0=;
-	b=P82BL2LG0hSEz1TYJ9FHyJs5nQr7FkPgePqEBdqyPCxFupHTbfuGOdM7tlOgYQu1feLFgP
-	PPUiTSTynzcr0/5CXDW1VKvmi8Pjlyxq2Z23fiHQeXY79tDTi3Y9IcUqZt/OudIx9JZRDh
-	T7KnQenJ+Elb0g0pipW9Xp4KAZtOeT8=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1762525577;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=eQKbrIXvqSMxNJUdXoPd9pomVDFVPBjwEwiLonwMJ/0=;
-	b=ig2zL+5Aq3s52xbyl7mb7EnGobse5CIk2HoXwu2EHA8ZBcIcC9ZKdJ0o3Szcl05NMCV7+G
-	NwJfTJ3kFDVodrCQ==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 3D06313A60;
-	Fri,  7 Nov 2025 14:26:17 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id OA62DYkBDmkaLgAAD6G6ig
-	(envelope-from <tzimmermann@suse.de>); Fri, 07 Nov 2025 14:26:17 +0000
-From: Thomas Zimmermann <tzimmermann@suse.de>
-To: jfalempe@redhat.com,
-	javierm@redhat.com,
-	simona@ffwll.ch,
-	airlied@gmail.com,
-	mripard@kernel.org,
-	maarten.lankhorst@linux.intel.com,
-	gregkh@linuxfoundation.org,
-	jirislaby@kernel.org
-Cc: dri-devel@lists.freedesktop.org,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Thomas Zimmermann <tzimmermann@suse.de>
-Subject: [PATCH 3/3] drm/client: log: Implement struct drm_client_funcs.restore
-Date: Fri,  7 Nov 2025 15:19:27 +0100
-Message-ID: <20251107142612.467817-4-tzimmermann@suse.de>
-X-Mailer: git-send-email 2.51.1
-In-Reply-To: <20251107142612.467817-1-tzimmermann@suse.de>
-References: <20251107142612.467817-1-tzimmermann@suse.de>
+	dkim=pass (2048-bit key) header.d=mit.edu header.i=@mit.edu header.b="PUfHRXJY"
+Received: from trampoline.thunk.org (pool-173-48-124-240.bstnma.fios.verizon.net [173.48.124.240])
+	(authenticated bits=0)
+        (User authenticated as tytso@ATHENA.MIT.EDU)
+	by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 5A7HbhRs009049
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 7 Nov 2025 12:37:44 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
+	t=1762537065; bh=PnIy+8sK0+OTDVEtWJptJZPMJBsaqK4vxl8hMBGR68k=;
+	h=Date:From:Subject:Message-ID:MIME-Version:Content-Type;
+	b=PUfHRXJYSyFv0d+crtu998+4eUezvQeYmAqf//OWnKmEcLFgPFzMXs9yrmLypwDot
+	 uOhMOj76oEFavbi7Qvth68uVOa3BIENBu2Ssyx7jNqAhzx4+9NlDW/zW+BYGqo0PoM
+	 AamcYOvZGWnfafPEtbyE71kXZi7RgvwtTMBHt/69+FBGS/grA9Ueid3UaOw04cofaB
+	 AyyNwxPhdyvLq8W+0S1U7MQkyJO33iZpqXGvwpeWiJ3x9E2T4R4gM7J0VJzGDLqRKM
+	 2axJiNLYY19J3mVYYFRd9Qn/zk6azIfLGAZ/YKi4Wu9iJ8d/cVDDuiqZaKNv/WAyFt
+	 /BGwZ0evCX28Q==
+Received: by trampoline.thunk.org (Postfix, from userid 15806)
+	id 0F26F2E00D9; Fri, 07 Nov 2025 12:37:43 -0500 (EST)
+Date: Fri, 7 Nov 2025 12:37:43 -0500
+From: "Theodore Ts'o" <tytso@mit.edu>
+To: "H. Peter Anvin" <hpa@zytor.com>
+Cc: linux-serial@vger.kernel.org, linux-api@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: RFC: Serial port DTR/RTS - O_NRESETDEV
+Message-ID: <20251107173743.GA3131573@mit.edu>
+References: <bb44f856-10a2-40c7-a3f7-be50c8e4b0a9@zytor.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: 89284211FC
-X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
-X-Spamd-Result: default: False [-3.01 / 50.00];
-	BAYES_HAM(-3.00)[100.00%];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	MID_CONTAINS_FROM(1.00)[];
-	R_MISSING_CHARSET(0.50)[];
-	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	NEURAL_HAM_SHORT(-0.20)[-0.999];
-	MIME_GOOD(-0.10)[text/plain];
-	MX_GOOD(-0.01)[];
-	ARC_NA(0.00)[];
-	RCVD_TLS_ALL(0.00)[];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	MIME_TRACE(0.00)[0:+];
-	FUZZY_RATELIMITED(0.00)[rspamd.com];
-	RCPT_COUNT_TWELVE(0.00)[12];
-	RCVD_COUNT_TWO(0.00)[2];
-	FREEMAIL_TO(0.00)[redhat.com,ffwll.ch,gmail.com,kernel.org,linux.intel.com,linuxfoundation.org];
-	FREEMAIL_ENVRCPT(0.00)[gmail.com];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.de:email,suse.de:mid,suse.de:dkim,imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns];
-	FROM_EQ_ENVFROM(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	DNSWL_BLOCKED(0.00)[2a07:de40:b281:106:10:150:64:167:received,2a07:de40:b281:104:10:150:64:97:from];
-	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	TO_DN_SOME(0.00)[];
-	DKIM_TRACE(0.00)[suse.de:+]
-X-Rspamd-Action: no action
-X-Spam-Flag: NO
-X-Spam-Score: -3.01
-X-Spam-Level: 
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <bb44f856-10a2-40c7-a3f7-be50c8e4b0a9@zytor.com>
 
-Restore the log client's output when the DRM core invokes the restore
-callback. Follow the existing behavior of fbdev emulation wrt. the
-value of the force parameter.
+On Thu, Nov 06, 2025 at 11:53:23PM -0800, H. Peter Anvin wrote:
+> 
+> I recently ran into a pretty serious issue due to the Unix/Linux
+> (mis)behavior of forcing DTR and RTS asserted when a serial port is
+> set, losing the pre-existing status in the process.
 
-If force is false, acquire the DRM master lock and reprogram the
-display. This is the case when the user-space compositor exists and
-the DRM core transfers the display back to the in-kernel client. This
-also enables log output during reboots.
+There's a hidden assumption in your problem statement which is that
+DTR / RTS has a "state" which can be saved when the serial port is not
+active, where active is one or more file descriptors holding the
+serial port open.  There may be certain hardware or drivers where this
+is just not possible, because nothing is defined if the serial port is
+not active.  It might make sense if you are using a 8250 UART, but not
+all the world is the National Semiconductor (or clones) UART.
 
-If force is true, reprogram without considering the master lock. This
-overrides the current compositor and prints the log to the screen. In
-case of system malfunction, users can enter SysRq+v to invoke the
-emergency error reporting. See Documentation/admin-guide/sysrq.rst for
-more information.
+Certainly the "state" will not be preserved across boots, since how we
+autodetect the UART is going to mess with UART settings.  So
+*presumably* what you are talking about is you want to be able to open
+the serial port, mess with DTR / RTS, and then be able to close the
+serial port, and then later on, re-open the serial port, have the DTR
+/ RTS remain the same.  And it's Too Hard(tm) to have userspace
+keeping a file descriptor open during the whole time?  (Which is
+traditionally how Unix/Linux has required that applications do
+things.)
 
-Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
----
- drivers/gpu/drm/clients/drm_log.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+Is that a fair summary of the requirements?
 
-diff --git a/drivers/gpu/drm/clients/drm_log.c b/drivers/gpu/drm/clients/drm_log.c
-index 19e55aa0ed74..4d3005273b27 100644
---- a/drivers/gpu/drm/clients/drm_log.c
-+++ b/drivers/gpu/drm/clients/drm_log.c
-@@ -315,6 +315,18 @@ static void drm_log_client_unregister(struct drm_client_dev *client)
- 	drm_client_release(client);
- }
- 
-+static int drm_log_client_restore(struct drm_client_dev *client, bool force)
-+{
-+	int ret;
-+
-+	if (force)
-+		ret = drm_client_modeset_commit_locked(client);
-+	else
-+		ret = drm_client_modeset_commit(client);
-+
-+	return ret;
-+}
-+
- static int drm_log_client_hotplug(struct drm_client_dev *client)
- {
- 	struct drm_log *dlog = client_to_drm_log(client);
-@@ -348,6 +360,7 @@ static const struct drm_client_funcs drm_log_client_funcs = {
- 	.owner		= THIS_MODULE,
- 	.free		= drm_log_client_free,
- 	.unregister	= drm_log_client_unregister,
-+	.restore	= drm_log_client_restore,
- 	.hotplug	= drm_log_client_hotplug,
- 	.suspend	= drm_log_client_suspend,
- 	.resume		= drm_log_client_resume,
--- 
-2.51.1
+> It seems to me that this may very well be a problem beyond ttys, in
+> which case a new open flag to request to a driver that the
+> configuration and (observable) state of the underlying hardware
+> device -- whatever it may be -- should not be disturbed by calling
+> open(). This is of course already the case for many devices, not to
+> mention block and non-devices, in which case this flag is a don't
+> care.
 
+I think it's going to be a lot simpler to keep this specific to serial
+ports and DTR / RTS, because the concept that the hardware should not
+be changed when the file descriptor is opened may simply not be
+possible.  For example, it might be that until you open it, the there
+might not even be power applied to the device.  The concept that all
+hardware should burn battery power once the machine is booted may not
+make sense, and the assumption that hardware has the extra
+millicent(s) worth of silicon to maintain state when power is dropped
+may again, not be something that we can assume as being possible for
+all devices.
+
+If that's the case, if you want to have something where DTR and RTS
+stay the same, and for some reason we can't assume that userspace
+can't just keep a process holding the tty device open, my suggestion is to use 
+
+Given that DTR and RTS are secial port concepts, my suggesiton is to
+set a serial port flag, using setserial(8).  It may be the case that
+for certain types of serial device, the attempt to set the flag may be
+rejected, but that's something which the ioctl used by setserial
+already can do and which userspace applications such as setserial
+understand may be the case.
+
+Cheers,
+
+						- Ted
