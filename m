@@ -1,460 +1,207 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DADAE304BD5
-	for <linux-serial@vger.kernel.org>; Mon, 10 Nov 2025 10:11:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BD0A306B21;
+	Mon, 10 Nov 2025 10:43:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762769496; cv=none; b=Nr7yPgLyWxMxW2zxP66V/8JQREwDxPFj+jML+6mNObZanN+pMptC3bNlDzqpVMv2hdEpZW31WyJmlEsAaVvSE6Xk9FsHO5itY4wQQAVfwgyTCA0YDb4Ua40DyO4zrHvveVNRr7SEKIv+aanIGOIbfQ2U1SPkOmtCjp20y8oeYho=
+	t=1762771413; cv=none; b=kGsGgfr8VCM75oNECxbWLMc0167WjoRT7kBCaOkwwH1X/KvPkJi5O+5UgAc5/MuhwH2wRJWRfKtkOh3GD/I0gj2jUy/1cGyuCVV6OEqWUQlgRVlAT8w5nBY6a4O8ZColrjV2f8A7eQMLSAi1nBOte/rSlkFEOBIvMvhfDLFDbrg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762769496; c=relaxed/simple;
-	bh=avdbOjtYjjspykRVsUUtWg6cfuZvT5U9ZXhkpqVgrZo=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=J7pBUNlh6aXo5CbmuI95FatFDBYwZIS7mUe5QEW1nOTlcnugZ321hBy6z+M2oh4HO4YWvXadyiImh5tvUXbpVDsSCU56CjM/F9ewU9rTyx4ieIs1hxeuLol4DejnUrxm/YDEg65+oObKIhotVvA0CxjMQjtI5yfgvDFvNWFipWc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=KxSTfN0f; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=KKjVluCj; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1762771413; c=relaxed/simple;
+	bh=CWZ+v9Aa714nliB9kR2HOKc62+ldN8K4Qh1U+sPy/rA=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=bvhaWJAIjY0++M4VBGdXXerKou/3ISY/bt1XBp8Oy1+FsC1LIyl2YucwybUYlP6q9wPnyTvjwyzYpmNC1VOxDRPXOZcaveYkDE9Cf+sy9oQ3zas7+Y05Bf4IL5r9fFlDnqnsHxTnwCUbWa5iXPH6xOIUhtAky3ouxBv0A+sMDQ4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iWCPWabM; arc=none smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="KxSTfN0f";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="KKjVluCj"
-Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5AA8wfGS1809147
-	for <linux-serial@vger.kernel.org>; Mon, 10 Nov 2025 10:11:33 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:date:from:in-reply-to:message-id
-	:mime-version:references:subject:to; s=qcppdkim1; bh=umoTsayoxjI
-	q9HPAHkGXJKeGVR9hgzkk10/RihXOsJg=; b=KxSTfN0fzgF8PGnoO3vr1Pc029x
-	/WZo19sS582o3pG6hKQNPO2ocqdYtbJVKWn6J6XIPPboSazgYkAownOjkwbFpywE
-	tZq3RZcW1/WTvbUlriAtmyx2ieRVkIhy4h29s7t/q4JXSQung7wqZoMKP8GasTEQ
-	2+JeWprP7ecy0/rzni3H0YPSn8QA/LcwHLF8oP+6MArtd9fk6YWakTS5Z3eyh03E
-	R4ZCoG1rhmLxp97AjQ31/HGeSpavfpe5oh+Ad1zg5ukU5Nfa8gRxVMN22TJmxP9U
-	lzAZw606PUygaSWRGzPsoLB2jYp/OMyb6IxdbQYYkt7U/V3ixbqWg9dQKFA==
-Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com [209.85.214.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4ab5m1hevg-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-serial@vger.kernel.org>; Mon, 10 Nov 2025 10:11:32 +0000 (GMT)
-Received: by mail-pl1-f199.google.com with SMTP id d9443c01a7336-297f48e81b8so27042405ad.0
-        for <linux-serial@vger.kernel.org>; Mon, 10 Nov 2025 02:11:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1762769492; x=1763374292; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=umoTsayoxjIq9HPAHkGXJKeGVR9hgzkk10/RihXOsJg=;
-        b=KKjVluCjTGPRMMzZDqhS8iEc3uB7ZCYYrsosK9GrOIZ6v3EJ5GcQT/u7dstFkQtAPB
-         3m9wHjr8RhD0EOeaZhViayDu0w8qKd/jY50xA/9KW9nRjr/NSIeqXcerKVoYTl9UZ2pI
-         L5WOnEePLDoiiIln5wh+eTdVG3bzsy+EozxJh3nKXRQRbeOAvuGKxcUiSA5LUT1ZJTvv
-         WolD+vWQ3sLGCQaw2xz1i50SJ6XlUssXJBuYy09gzgCpRyHGzFaqHPSE+250qiP0XZfK
-         RX5uQRHnvxsxFDGmZn2fDWLIEZgUWRh3dsQbQpXJsC2dM2r3uyiuKKapEEPa2/M6ST1M
-         c0Bg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1762769492; x=1763374292;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=umoTsayoxjIq9HPAHkGXJKeGVR9hgzkk10/RihXOsJg=;
-        b=UioV0PjfW+GFcaHXTDlgP5s1vdl5nUHkRu3CJtI0EL3YIi6AZDUW6a1M3ieJqVwge3
-         EhJbHUsgOgPtHEY/EyDrryX0rzJLf8tOgEBCm9BQK+SfCSVbnyfIapUuxN31BU4NKs7P
-         NkfJyJAVDLEMAXCCnP2UZ2QUh4b2fb0g4C8/Sm39MdCFJ21RM2k1GcQGB4SOd5JACQnU
-         WMbkkn4omWvwWUj81QX0msyJDc88SHDsWsYd/yRoC/YaAuuWlHGrb3GXgayqfWU+jyPR
-         6ROjyZf04ec90rEDfCswUac0xBTteYWVqeBB2mj6ukHcqgZzmuKyMUpdSlVs+79aaWyy
-         Nytg==
-X-Forwarded-Encrypted: i=1; AJvYcCULV2/jUvy5hmlkdKztE5rJ4/vy2rwrSkDn/Gp2svzV8icG60LM8QixCSbGlrCYjFgW6Xk5Z1PHybzkszY=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx09tooq4jE81nBKKw8dWZY9V6Hu6EQOfus9qWVk52xZ/9aq/th
-	VB7hTH/E0wn8Cze2Kt3tuw9fo8AoE62z/V9SbMLSOt1CyJ/E6l/C6L9ShhaIJ9OMYPibcZgDuE5
-	tvrfHVbu+CXyd2OOEOkFrDLk36hpFg6tgKdLZlgDE3Y31tskThlft5MUB2pRT8JF3K6s=
-X-Gm-Gg: ASbGnctZx9xBSnH30oDPBTQHZqL0b+7Z7nVTL+7zMqmn61ZRZ3qSl/FhPTmlB1glH/5
-	mi/PZj9N5YUA8v63Ged1NPc7scZ66P3dHiT0/042yQTGWAn/SLUsk0aFtMSr+1DI+tiZ1r3Ahbq
-	TUUbr6u34AVi1G+xtCt8RK+dU+wdgAmv3tLfok6ku3Ne8v4d3hlpqlp5i4xzY3uNuiBxxU4wA5c
-	BVc7jSVQWu1r9ZGtX+F7LvdyXZl/glNJO6p1OwYvmmnVL+knx7h7PK2A0Gg1wLNXxuiZTtBIk8i
-	kO94FxEY93eBK9qcimuXkAyNHK8gXTNE71DVGTB9KkSZhZS33RCyGagzfiH3kgalbBYKu0ZmfaN
-	Lkc7VfZyE2WGstcu2e78HEHfBk3iyij1O
-X-Received: by 2002:a17:903:3b87:b0:269:b2e5:900d with SMTP id d9443c01a7336-297e1d76b3dmr106985905ad.5.1762769491446;
-        Mon, 10 Nov 2025 02:11:31 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IG2TlZXzJFWNIFeewfecm9mawvVMBytIPCTGJJY339S/Up8oJUKFBzVY76H05fluq3Yktm82A==
-X-Received: by 2002:a17:903:3b87:b0:269:b2e5:900d with SMTP id d9443c01a7336-297e1d76b3dmr106985185ad.5.1762769490714;
-        Mon, 10 Nov 2025 02:11:30 -0800 (PST)
-Received: from hu-ptalari-hyd.qualcomm.com ([202.46.22.19])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-297f2d9c971sm60180395ad.55.2025.11.10.02.11.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Nov 2025 02:11:30 -0800 (PST)
-From: Praveen Talari <praveen.talari@oss.qualcomm.com>
-To: Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, Dmitry Baryshkov <lumag@kernel.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-serial@vger.kernel.org, alexey.klimov@linaro.org,
-        krzk@kernel.org, bryan.odonoghue@linaro.org,
-        jorge.ramirez@oss.qualcomm.com, dmitry.baryshkov@oss.qualcomm.com
-Cc: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>, psodagud@quicinc.com,
-        djaggi@quicinc.com, quic_msavaliy@quicinc.com,
-        quic_vtanuku@quicinc.com, quic_arandive@quicinc.com,
-        quic_shazhuss@quicinc.com, quic_cchiluve@quicinc.com,
-        Praveen Talari <praveen.talari@oss.qualcomm.com>
-Subject: [PATCH v1 4/4] serial: qcom-geni: Enable Serial on SA8255p Qualcomm platforms
-Date: Mon, 10 Nov 2025 15:40:43 +0530
-Message-Id: <20251110101043.2108414-5-praveen.talari@oss.qualcomm.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20251110101043.2108414-1-praveen.talari@oss.qualcomm.com>
-References: <20251110101043.2108414-1-praveen.talari@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iWCPWabM"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1762771411; x=1794307411;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version:content-id;
+  bh=CWZ+v9Aa714nliB9kR2HOKc62+ldN8K4Qh1U+sPy/rA=;
+  b=iWCPWabM8aDRPNA5Y+qjnFGI/Gh/hILnBAFjp6t7qrHNkqfXSuStwi37
+   TAcjzjCVowMvFGhjVbaQBMUOWAHEpgs71XsFN/VIOqzcBaPLG/tkxTgM6
+   7P4sdZwV+9Mi/jzD3BsLkmb1hcBUL4uxsd60F3D7YdzpZv3PnYcudh23a
+   DpW0hYvN+4iEzLFCA4BzPl21G6CKSXLS1OcPlot2PXlDu+pqhSV4U4dpm
+   KrYYy2LCbwlaJm/JQ+3D20rgmfVXLN7OQhrTvOACjb5cO+DNktMXxujhA
+   ywwrFFOIYrTm7qYpCPMZhIlHjZe0C1efiNo1HfyGE2z4SjVe5jTRp/Laj
+   g==;
+X-CSE-ConnectionGUID: JlikWe9eTGyubRgLoaO0uw==
+X-CSE-MsgGUID: SPmDdfH1RfWy4wacumbntA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11608"; a="75112029"
+X-IronPort-AV: E=Sophos;i="6.19,293,1754982000"; 
+   d="scan'208";a="75112029"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2025 02:43:31 -0800
+X-CSE-ConnectionGUID: np1TOxVHTvqrE1kqp8Evpw==
+X-CSE-MsgGUID: ANeosOeWS1uhMRMfkkSaSw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.19,293,1754982000"; 
+   d="scan'208";a="189082230"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.13])
+  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2025 02:43:27 -0800
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Mon, 10 Nov 2025 12:43:22 +0200 (EET)
+To: Stephen Rothwell <sfr@canb.auug.org.au>, 
+    Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+cc: Jiri Slaby <jirislaby@kernel.org>, Alex Davis <alex47794@gmail.com>, 
+    Borislav Petkov <bp@alien8.de>, 
+    Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+    Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, 
+    John Ogness <john.ogness@linutronix.de>, 
+    linux-serial <linux-serial@vger.kernel.org>
+Subject: Re: [Regression] depmod fails on kernel 6.17.1 rc1
+In-Reply-To: <20251109173413.10c9aa0a@canb.auug.org.au>
+Message-ID: <b1c99727-0d09-3a61-d82e-31e29801f837@linux.intel.com>
+References: <CADiockCvM6v+d+UoFZpJSMoLAdpy99_h-hJdzUsdfaWGn3W7-g@mail.gmail.com> <20251106160235.GBaQzGm8W2Gt_VMy-s@fat_crate.local> <aQzJveMYT6O3EHeK@smile.fi.intel.com> <20251106162436.GFaQzLxBW-_50ndwtr@fat_crate.local> <3fe70726-80d6-a84a-4101-446fd8b49209@linux.intel.com>
+ <ddfbc4bf-658f-3eda-5b4f-f111ecd932f5@linux.intel.com> <82e2ce7f-bd08-4b53-b232-3dd8cb1a0726@kernel.org> <20251109105203.622ebe9e@pine.rothwell.emu.id.au> <2025110956-swaddling-chapter-5932@gregkh> <20251109173413.10c9aa0a@canb.auug.org.au>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMTEwMDA4OSBTYWx0ZWRfX+EoQrElGpp8A
- Erzbwc/QQI7/mCeAqivZlieIru+KoKW6Nr2JXykvPDL9kQqk4sUZfeW13slTUzt2C5DYJ/Fnxji
- ED6oWwcpZr5QF6gNJC8TZ1IpTM6O2xC42e6uEV6pcLXuDMLVkGdXn/47kV6Ju4pkkNZ4zN0eA6U
- pB0TOmpZJMcBgn0eddtlMQ3WCv05JzzJyJQaXyy5+LWZfM1YrYYDw+26N9LDHfB9Rijk0WzNTY9
- pdl87qfkQYB0HoLKBzdG7ARt14QNRAbnNxGnYjYf56WKMXyclpvktSjVKtJX97+N2llQ+FxdSk+
- EFwqYmdYDCJbR4VwGqmoCz4fGFHo/LF4GtXLu2koRMLn5SlbDJ4AxEBmbR0cCOmJgZ7rDm7TMDc
- vNoQcGmx661xwyCd4SZ18JZlHboCvA==
-X-Authority-Analysis: v=2.4 cv=TsXrRTXh c=1 sm=1 tr=0 ts=6911ba54 cx=c_pps
- a=JL+w9abYAAE89/QcEU+0QA==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
- a=6UeiqGixMTsA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=EUspDBNiAAAA:8 a=jrFwUxAOa3TL-QiBvmcA:9 a=324X-CrmTo6CU4MGRt3R:22
-X-Proofpoint-ORIG-GUID: 9yUWCeHctYDvR-C50sJJBAsH81VJAjR9
-X-Proofpoint-GUID: 9yUWCeHctYDvR-C50sJJBAsH81VJAjR9
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
- definitions=2025-11-10_04,2025-11-06_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- adultscore=0 lowpriorityscore=0 clxscore=1015 phishscore=0 spamscore=0
- malwarescore=0 impostorscore=0 priorityscore=1501 bulkscore=0 suspectscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2510240001 definitions=main-2511100089
+Content-Type: multipart/mixed; BOUNDARY="8323328-185351875-1762770758=:1060"
+Content-ID: <a498616d-2f88-7b39-c3dc-11f10df3890e@linux.intel.com>
 
-The Qualcomm automotive SA8255p SoC relies on firmware to configure
-platform resources, including clocks, interconnects and TLMM.
-The driver requests resources operations over SCMI using power
-and performance protocols.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-The SCMI power protocol enables or disables resources like clocks,
-interconnect paths, and TLMM (GPIOs) using runtime PM framework APIs,
-such as resume/suspend, to control power states(on/off).
+--8323328-185351875-1762770758=:1060
+Content-Type: text/plain; CHARSET=ISO-8859-15
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-ID: <ecc0b2e1-8407-bbb2-0409-02d056ac81fb@linux.intel.com>
 
-The SCMI performance protocol manages UART baud rates, with each baud
-rate represented by a performance level. The driver uses the
-dev_pm_opp_set_level() API to request the desired baud rate by
-specifying the performance level.
+On Sun, 9 Nov 2025, Stephen Rothwell wrote:
+> On Sun, 9 Nov 2025 09:49:29 +0900 Greg Kroah-Hartman <gregkh@linuxfoundat=
+ion.org> wrote:
+> > On Sun, Nov 09, 2025 at 10:52:03AM +1100, Stephen Rothwell wrote:
+> > > On Fri, 7 Nov 2025 07:20:26 +0100 Jiri Slaby <jirislaby@kernel.org> w=
+rote: =20
+> > > >
+> > > > On 06. 11. 25, 19:00, Ilpo J=E4rvinen wrote: =20
+> > > > > This seems to resolve the build issue for me:
+> > > > >=20
+> > > > > --
+> > > > > From: =3D?UTF-8?q?Ilpo=3D20J=3DC3=3DA4rvinen?=3D <ilpo.jarvinen@l=
+inux.intel.com>
+> > > > > Subject: [PATCH 1/1] serial: 8250: Fix 8250_rsa symbol loop
+> > > > >=20
+> > > > > make allmodconfig build fails due to dependency loop:
+> > > > >=20
+> > > > >    depmod: ERROR: Cycle detected: 8250 -> 8250_base -> 8250
+> > > > >    depmod: ERROR: Found 2 modules in dependency cycles!
+> > > > >=20
+> > > > > Break dependency loop by moving 8250_rsa.o into 8250_base and by
+> > > > > passing univ8250_port_base_ops to univ8250_rsa_support() that can=
+ make
+> > > > > a local copy of it.
+> > > > >=20
+> > > > > Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> > > > > Reported-by: Alex Davis <alex47794@gmail.com>
+> > > > > Fixes: b20d6576cdb3 ("serial: 8250: export RSA functions")
+> > > > > Signed-off-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>   =
+=20
+> > > >=20
+> > > > LGTM, thanks for the fix.
+> > > >=20
+> > > > Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+> > > >=20
+> > > > If the reporters could give it a shot and mark this by Tested-by, i=
+t would be great... =20
+> > >=20
+> > > I have not seen this for quite some time ... I assumed it had been
+> > > fixed. =20
+> >=20
+> > I too thought this was fixed a while ago, what changed to cause this to
+> > happen now?  Anyone have a .config to reproduce this, 'allmodconfig' on
+> > x86 works for me.
+>=20
+> Actually, I think the current report is for v6.17.1-rc1, so maybe
+> something got missed in a stable backport? My original report was for
+> next-20250728 (July 28).  The only response I got was on October 1,
+> but I am pretty sure it was fixed well before then.
+>=20
+> Also, you probably only get the error when you do a "make
+> modules_install" after the allmodconfig build (at least that is where I
+> got it).
 
-Signed-off-by: Praveen Talari <praveen.talari@oss.qualcomm.com>
----
- drivers/tty/serial/qcom_geni_serial.c | 158 +++++++++++++++++++++++---
- 1 file changed, 141 insertions(+), 17 deletions(-)
+Hi all,
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 9c820302047c..6ce6528f5c10 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -14,6 +14,7 @@
- #include <linux/irq.h>
- #include <linux/module.h>
- #include <linux/of.h>
-+#include <linux/pm_domain.h>
- #include <linux/pm_opp.h>
- #include <linux/platform_device.h>
- #include <linux/pm_runtime.h>
-@@ -101,10 +102,16 @@
- #define DMA_RX_BUF_SIZE		2048
- 
- static DEFINE_IDA(port_ida);
-+#define DOMAIN_IDX_POWER	0
-+#define DOMAIN_IDX_PERF		1
- 
- struct qcom_geni_device_data {
- 	bool console;
- 	enum geni_se_xfer_mode mode;
-+	struct dev_pm_domain_attach_data pd_data;
-+	int (*resources_init)(struct uart_port *uport);
-+	int (*set_rate)(struct uart_port *uport, unsigned int baud);
-+	int (*power_state)(struct uart_port *uport, bool state);
- };
- 
- struct qcom_geni_private_data {
-@@ -142,6 +149,7 @@ struct qcom_geni_serial_port {
- 
- 	struct qcom_geni_private_data private_data;
- 	const struct qcom_geni_device_data *dev_data;
-+	struct dev_pm_domain_list *pd_list;
- };
- 
- static const struct uart_ops qcom_geni_console_pops;
-@@ -1299,6 +1307,42 @@ static int geni_serial_set_rate(struct uart_port *uport, unsigned int baud)
- 	return 0;
- }
- 
-+static int geni_serial_set_level(struct uart_port *uport, unsigned int baud)
-+{
-+	struct qcom_geni_serial_port *port = to_dev_port(uport);
-+	struct device *perf_dev = port->pd_list->pd_devs[DOMAIN_IDX_PERF];
-+
-+	/*
-+	 * The performance protocol sets UART communication
-+	 * speeds by selecting different performance levels
-+	 * through the OPP framework.
-+	 *
-+	 * Supported perf levels for baudrates in firmware are below
-+	 * +---------------------+--------------------+
-+	 * |  Perf level value   |  Baudrate values   |
-+	 * +---------------------+--------------------+
-+	 * |      300            |      300           |
-+	 * |      1200           |      1200          |
-+	 * |      2400           |      2400          |
-+	 * |      4800           |      4800          |
-+	 * |      9600           |      9600          |
-+	 * |      19200          |      19200         |
-+	 * |      38400          |      38400         |
-+	 * |      57600          |      57600         |
-+	 * |      115200         |      115200        |
-+	 * |      230400         |      230400        |
-+	 * |      460800         |      460800        |
-+	 * |      921600         |      921600        |
-+	 * |      2000000        |      2000000       |
-+	 * |      3000000        |      3000000       |
-+	 * |      3200000        |      3200000       |
-+	 * |      4000000        |      4000000       |
-+	 * +---------------------+--------------------+
-+	 */
-+
-+	return dev_pm_opp_set_level(perf_dev, baud);
-+}
-+
- static void qcom_geni_serial_set_termios(struct uart_port *uport,
- 					 struct ktermios *termios,
- 					 const struct ktermios *old)
-@@ -1317,7 +1361,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
- 	/* baud rate */
- 	baud = uart_get_baud_rate(uport, termios, old, 300, 8000000);
- 
--	ret = geni_serial_set_rate(uport, baud);
-+	ret = port->dev_data->set_rate(uport, baud);
- 	if (ret)
- 		return;
- 
-@@ -1604,8 +1648,27 @@ static int geni_serial_resources_off(struct uart_port *uport)
- 	return 0;
- }
- 
--static int geni_serial_resource_init(struct qcom_geni_serial_port *port)
-+static int geni_serial_resource_state(struct uart_port *uport, bool power_on)
-+{
-+	return power_on ? geni_serial_resources_on(uport) : geni_serial_resources_off(uport);
-+}
-+
-+static int geni_serial_pwr_init(struct uart_port *uport)
-+{
-+	struct qcom_geni_serial_port *port = to_dev_port(uport);
-+	int ret;
-+
-+	ret = dev_pm_domain_attach_list(port->se.dev,
-+					&port->dev_data->pd_data, &port->pd_list);
-+	if (ret <= 0)
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
-+static int geni_serial_resource_init(struct uart_port *uport)
- {
-+	struct qcom_geni_serial_port *port = to_dev_port(uport);
- 	int ret;
- 
- 	port->se.clk = devm_clk_get(port->se.dev, "se");
-@@ -1756,13 +1819,16 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 	port->se.dev = &pdev->dev;
- 	port->se.wrapper = dev_get_drvdata(pdev->dev.parent);
- 
--	ret = geni_serial_resource_init(port);
-+	ret = port->dev_data->resources_init(uport);
- 	if (ret)
- 		return ret;
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	if (!res)
--		return -EINVAL;
-+	if (!res) {
-+		ret = -EINVAL;
-+		goto error;
-+	}
-+
- 	uport->mapbase = res->start;
- 
- 	uport->rs485_config = qcom_geni_rs485_config;
-@@ -1774,19 +1840,26 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 	if (!data->console) {
- 		port->rx_buf = devm_kzalloc(uport->dev,
- 					    DMA_RX_BUF_SIZE, GFP_KERNEL);
--		if (!port->rx_buf)
--			return -ENOMEM;
-+		if (!port->rx_buf) {
-+			ret = -ENOMEM;
-+			goto error;
-+		}
- 	}
- 
- 	port->name = devm_kasprintf(uport->dev, GFP_KERNEL,
- 			"qcom_geni_serial_%s%d",
- 			uart_console(uport) ? "console" : "uart", uport->line);
--	if (!port->name)
--		return -ENOMEM;
-+	if (!port->name) {
-+		ret = -ENOMEM;
-+		goto error;
-+	}
- 
- 	irq = platform_get_irq(pdev, 0);
--	if (irq < 0)
--		return irq;
-+	if (irq < 0) {
-+		ret = irq;
-+		goto error;
-+	}
-+
- 	uport->irq = irq;
- 	uport->has_sysrq = IS_ENABLED(CONFIG_SERIAL_QCOM_GENI_CONSOLE);
- 
-@@ -1808,18 +1881,18 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 			IRQF_TRIGGER_HIGH, port->name, uport);
- 	if (ret) {
- 		dev_err(uport->dev, "Failed to get IRQ ret %d\n", ret);
--		return ret;
-+		goto error;
- 	}
- 
- 	ret = uart_get_rs485_mode(uport);
- 	if (ret)
--		return ret;
-+		goto error;
- 
- 	devm_pm_runtime_enable(port->se.dev);
- 
- 	ret = uart_add_one_port(drv, uport);
- 	if (ret)
--		return ret;
-+		goto error;
- 
- 	if (port->wakeup_irq > 0) {
- 		device_init_wakeup(&pdev->dev, true);
-@@ -1829,11 +1902,15 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 			device_init_wakeup(&pdev->dev, false);
- 			ida_free(&port_ida, uport->line);
- 			uart_remove_one_port(drv, uport);
--			return ret;
-+			goto error;
- 		}
- 	}
- 
- 	return 0;
-+
-+error:
-+	dev_pm_domain_detach_list(port->pd_list);
-+	return ret;
- }
- 
- static void qcom_geni_serial_remove(struct platform_device *pdev)
-@@ -1846,22 +1923,31 @@ static void qcom_geni_serial_remove(struct platform_device *pdev)
- 	device_init_wakeup(&pdev->dev, false);
- 	ida_free(&port_ida, uport->line);
- 	uart_remove_one_port(drv, &port->uport);
-+	dev_pm_domain_detach_list(port->pd_list);
- }
- 
- static int __maybe_unused qcom_geni_serial_runtime_suspend(struct device *dev)
- {
- 	struct qcom_geni_serial_port *port = dev_get_drvdata(dev);
- 	struct uart_port *uport = &port->uport;
-+	int ret = 0;
- 
--	return geni_serial_resources_off(uport);
-+	if (port->dev_data->power_state)
-+		ret = port->dev_data->power_state(uport, false);
-+
-+	return ret;
- }
- 
- static int __maybe_unused qcom_geni_serial_runtime_resume(struct device *dev)
- {
- 	struct qcom_geni_serial_port *port = dev_get_drvdata(dev);
- 	struct uart_port *uport = &port->uport;
-+	int ret = 0;
-+
-+	if (port->dev_data->power_state)
-+		ret = port->dev_data->power_state(uport, true);
- 
--	return geni_serial_resources_on(uport);
-+	return ret;
- }
- 
- static int qcom_geni_serial_suspend(struct device *dev)
-@@ -1899,11 +1985,41 @@ static int qcom_geni_serial_resume(struct device *dev)
- static const struct qcom_geni_device_data qcom_geni_console_data = {
- 	.console = true,
- 	.mode = GENI_SE_FIFO,
-+	.resources_init = geni_serial_resource_init,
-+	.set_rate = geni_serial_set_rate,
-+	.power_state = geni_serial_resource_state,
- };
- 
- static const struct qcom_geni_device_data qcom_geni_uart_data = {
- 	.console = false,
- 	.mode = GENI_SE_DMA,
-+	.resources_init = geni_serial_resource_init,
-+	.set_rate = geni_serial_set_rate,
-+	.power_state = geni_serial_resource_state,
-+};
-+
-+static const struct qcom_geni_device_data sa8255p_qcom_geni_console_data = {
-+	.console = true,
-+	.mode = GENI_SE_FIFO,
-+	.pd_data = {
-+		.pd_flags = PD_FLAG_DEV_LINK_ON,
-+		.pd_names = (const char*[]) { "power", "perf" },
-+		.num_pd_names = 2,
-+	},
-+	.resources_init = geni_serial_pwr_init,
-+	.set_rate = geni_serial_set_level,
-+};
-+
-+static const struct qcom_geni_device_data sa8255p_qcom_geni_uart_data = {
-+	.console = false,
-+	.mode = GENI_SE_DMA,
-+	.pd_data = {
-+		.pd_flags = PD_FLAG_DEV_LINK_ON,
-+		.pd_names = (const char*[]) { "power", "perf" },
-+		.num_pd_names = 2,
-+	},
-+	.resources_init = geni_serial_pwr_init,
-+	.set_rate = geni_serial_set_level,
- };
- 
- static const struct dev_pm_ops qcom_geni_serial_pm_ops = {
-@@ -1917,10 +2033,18 @@ static const struct of_device_id qcom_geni_serial_match_table[] = {
- 		.compatible = "qcom,geni-debug-uart",
- 		.data = &qcom_geni_console_data,
- 	},
-+	{
-+		.compatible = "qcom,sa8255p-geni-debug-uart",
-+		.data = &sa8255p_qcom_geni_console_data,
-+	},
- 	{
- 		.compatible = "qcom,geni-uart",
- 		.data = &qcom_geni_uart_data,
- 	},
-+	{
-+		.compatible = "qcom,sa8255p-geni-uart",
-+		.data = &sa8255p_qcom_geni_uart_data,
-+	},
- 	{}
- };
- MODULE_DEVICE_TABLE(of, qcom_geni_serial_match_table);
--- 
-2.34.1
+I don't want to waste my time building allmodconfig but this is with=20
+allnoconfig + a few key CONFIGs set and without my patch:
 
+$ git log -n1
+commit e9a6fb0bcdd7609be6969112f3fbfcce3b1d4a7c (grafted, HEAD -> master,=
+=20
+tag: v6.18-rc5, origin/master, origin/HEAD)
+Author: Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sun Nov 9 15:10:19 2025 -0800
+
+    Linux 6.18-rc5
+$ make allnoconfig
+  LEX     scripts/kconfig/lexer.lex.c
+  YACC    scripts/kconfig/parser.tab.[ch]
+  HOSTCC  scripts/kconfig/lexer.lex.o
+  HOSTCC  scripts/kconfig/menu.o
+  HOSTCC  scripts/kconfig/parser.tab.o
+  HOSTCC  scripts/kconfig/preprocess.o
+  HOSTCC  scripts/kconfig/symbol.o
+  HOSTCC  scripts/kconfig/util.o
+  HOSTLD  scripts/kconfig/conf
+#
+# configuration written to .config
+#
+$ echo -e "CONFIG_MODULES=3Dy\nCONFIG_SERIAL_8250=3Dm\nCONFIG_SERIAL_8250_E=
+XTENDED=3Dy\nCONFIG_SERIAL_8250_RSA=3Dy" >> .config=20
+$ make olddefconfig
+=2Econfig:1528:warning: override: reassigning to symbol MODULES
+=2Econfig:1529:warning: override: reassigning to symbol SERIAL_8250
+=2Econfig:1530:warning: override: reassigning to symbol SERIAL_8250_EXTENDE=
+D
+#
+# configuration written to .config
+#
+$ make -j4 > /dev/null && sudo make modules_install
+  INSTALL /lib/modules/6.18.0-rc5/modules.order
+  INSTALL /lib/modules/6.18.0-rc5/modules.builtin
+  INSTALL /lib/modules/6.18.0-rc5/modules.builtin.modinfo
+  SYMLINK /lib/modules/6.18.0-rc5/build
+  INSTALL /lib/modules/6.18.0-rc5/kernel/drivers/tty/serial/8250/8250.ko
+  INSTALL /lib/modules/6.18.0-rc5/kernel/drivers/tty/serial/8250/8250_base.=
+ko
+  INSTALL /lib/modules/6.18.0-rc5/kernel/drivers/tty/serial/serial_base.ko
+  DEPMOD  /lib/modules/6.18.0-rc5
+depmod: ERROR: Cycle detected: 8250 -> 8250_base -> 8250
+depmod: ERROR: Found 2 modules in dependency cycles!
+make[2]: *** [scripts/Makefile.modinst:132: depmod] Error 1
+make[1]: *** [/home/user/linux/Makefile:1916: modules_install] Error 2
+make: *** [Makefile:248: __sub-make] Error 2
+
+=2E..so no, it does not look fixed.
+
+With the patch:
+
+$ git am 0001-serial-8250-Fix-8250_rsa-symbol-loop.patch=20
+Applying: serial: 8250: Fix 8250_rsa symbol loop
+user@disp1097:~/linux$ make -j4 > /dev/null && sudo make modules_install
+  SYMLINK /lib/modules/6.18.0-rc5+/build
+  INSTALL /lib/modules/6.18.0-rc5+/modules.order
+  INSTALL /lib/modules/6.18.0-rc5+/modules.builtin
+  INSTALL /lib/modules/6.18.0-rc5+/modules.builtin.modinfo
+  INSTALL /lib/modules/6.18.0-rc5+/kernel/drivers/tty/serial/8250/8250.ko
+  INSTALL /lib/modules/6.18.0-rc5+/kernel/drivers/tty/serial/8250/8250_base=
+=2Eko
+  INSTALL /lib/modules/6.18.0-rc5+/kernel/drivers/tty/serial/serial_base.ko
+  DEPMOD  /lib/modules/6.18.0-rc5+
+$=20
+
+I'll just make the official submission with the #else block's prototype=20
+fixed (thanks to lkp).
+
+--=20
+ i.
+--8323328-185351875-1762770758=:1060--
