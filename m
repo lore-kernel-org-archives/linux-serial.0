@@ -1,207 +1,263 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BD0A306B21;
-	Mon, 10 Nov 2025 10:43:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 916AC306492;
+	Mon, 10 Nov 2025 10:50:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762771413; cv=none; b=kGsGgfr8VCM75oNECxbWLMc0167WjoRT7kBCaOkwwH1X/KvPkJi5O+5UgAc5/MuhwH2wRJWRfKtkOh3GD/I0gj2jUy/1cGyuCVV6OEqWUQlgRVlAT8w5nBY6a4O8ZColrjV2f8A7eQMLSAi1nBOte/rSlkFEOBIvMvhfDLFDbrg=
+	t=1762771858; cv=none; b=NZ8Hi19N8EBNuQ00KWUWcvqRyA/RzK7qz7MO0jG/SNt/kYxCzfvb1zXgowKAxmdH05gtQWvyRNS2oY9Z4W0/yt+iOD0q4KexxGPrYOtFe3FWkt5lrLQVw+VLGKgymzzlPDf+UIwxHhZXLB9wFHMI569o9IExuRX5TsH5FoyGqPg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762771413; c=relaxed/simple;
-	bh=CWZ+v9Aa714nliB9kR2HOKc62+ldN8K4Qh1U+sPy/rA=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=bvhaWJAIjY0++M4VBGdXXerKou/3ISY/bt1XBp8Oy1+FsC1LIyl2YucwybUYlP6q9wPnyTvjwyzYpmNC1VOxDRPXOZcaveYkDE9Cf+sy9oQ3zas7+Y05Bf4IL5r9fFlDnqnsHxTnwCUbWa5iXPH6xOIUhtAky3ouxBv0A+sMDQ4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iWCPWabM; arc=none smtp.client-ip=198.175.65.11
+	s=arc-20240116; t=1762771858; c=relaxed/simple;
+	bh=SxLpJRCLNbGRJQQxfNl9Sjq3Ybg28Uj5WOePADjH8Jg=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=QxRqBLdFIDcylHD/vZJuAHYTEsfTpeu4vUJc8ZI6Q9VnBaDqOFI3/shmtRcZ9eVvR2B5lAXuFf4qlV2wts6bcya+/0uYX2pHfWr/c2XORBRQnew3KXOWi3ec0Ij0NFzzKWCxQ1jJBhQolpmbbZ43iOZxkp/VB3nsEsvFpmOQGCo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cTOlzGjk; arc=none smtp.client-ip=198.175.65.13
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iWCPWabM"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cTOlzGjk"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1762771411; x=1794307411;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=CWZ+v9Aa714nliB9kR2HOKc62+ldN8K4Qh1U+sPy/rA=;
-  b=iWCPWabM8aDRPNA5Y+qjnFGI/Gh/hILnBAFjp6t7qrHNkqfXSuStwi37
-   TAcjzjCVowMvFGhjVbaQBMUOWAHEpgs71XsFN/VIOqzcBaPLG/tkxTgM6
-   7P4sdZwV+9Mi/jzD3BsLkmb1hcBUL4uxsd60F3D7YdzpZv3PnYcudh23a
-   DpW0hYvN+4iEzLFCA4BzPl21G6CKSXLS1OcPlot2PXlDu+pqhSV4U4dpm
-   KrYYy2LCbwlaJm/JQ+3D20rgmfVXLN7OQhrTvOACjb5cO+DNktMXxujhA
-   ywwrFFOIYrTm7qYpCPMZhIlHjZe0C1efiNo1HfyGE2z4SjVe5jTRp/Laj
-   g==;
-X-CSE-ConnectionGUID: JlikWe9eTGyubRgLoaO0uw==
-X-CSE-MsgGUID: SPmDdfH1RfWy4wacumbntA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11608"; a="75112029"
+  t=1762771856; x=1794307856;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=SxLpJRCLNbGRJQQxfNl9Sjq3Ybg28Uj5WOePADjH8Jg=;
+  b=cTOlzGjkAPqNHFRl2Q7zUCsZK/6qHlCv0bnY2Y3INl+sAfF1Du78IDPp
+   w+dXehF81ja1a06yo3IdSGuPmmrasqM9pgP05daFDzU5Rvfi96K/PbE+8
+   WQ9K2LhCHhB80OdqbJOjXWZZ/C8w7SF/hkgNFnqriizIduBNIZehJtjSp
+   fbPL8rr+Pq5zkZFNmn+EQDCI1dOZMCCb6K4ZqNaUWDTaBJeKfRBkp+QRo
+   wPxtx1P4+PeQ0+jeKjuuG1/uFYpzqvfOra/xhqieQtBaEU0tex+mfx3XF
+   7pl6aamyrC5AZE8gXDz4DRonmA4SGqCnPn0oTo+5KoNig7zyYz/8T0R5N
+   Q==;
+X-CSE-ConnectionGUID: VYAapwTyS2S5Vk5lYBVndg==
+X-CSE-MsgGUID: GXkB9cDqQnqV9Bp2vSE8ew==
+X-IronPort-AV: E=McAfee;i="6800,10657,11608"; a="75925574"
 X-IronPort-AV: E=Sophos;i="6.19,293,1754982000"; 
-   d="scan'208";a="75112029"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2025 02:43:31 -0800
-X-CSE-ConnectionGUID: np1TOxVHTvqrE1kqp8Evpw==
-X-CSE-MsgGUID: ANeosOeWS1uhMRMfkkSaSw==
+   d="scan'208";a="75925574"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2025 02:50:56 -0800
+X-CSE-ConnectionGUID: LLRhveABRwWVw52PFBWn2A==
+X-CSE-MsgGUID: QReF50qTSe2FD+S9BQAV2Q==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.19,293,1754982000"; 
-   d="scan'208";a="189082230"
+   d="scan'208";a="188286919"
 Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.13])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2025 02:43:27 -0800
+  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2025 02:50:52 -0800
 From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Mon, 10 Nov 2025 12:43:22 +0200 (EET)
-To: Stephen Rothwell <sfr@canb.auug.org.au>, 
-    Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-cc: Jiri Slaby <jirislaby@kernel.org>, Alex Davis <alex47794@gmail.com>, 
-    Borislav Petkov <bp@alien8.de>, 
-    Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-    Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, 
-    John Ogness <john.ogness@linutronix.de>, 
-    linux-serial <linux-serial@vger.kernel.org>
-Subject: Re: [Regression] depmod fails on kernel 6.17.1 rc1
-In-Reply-To: <20251109173413.10c9aa0a@canb.auug.org.au>
-Message-ID: <b1c99727-0d09-3a61-d82e-31e29801f837@linux.intel.com>
-References: <CADiockCvM6v+d+UoFZpJSMoLAdpy99_h-hJdzUsdfaWGn3W7-g@mail.gmail.com> <20251106160235.GBaQzGm8W2Gt_VMy-s@fat_crate.local> <aQzJveMYT6O3EHeK@smile.fi.intel.com> <20251106162436.GFaQzLxBW-_50ndwtr@fat_crate.local> <3fe70726-80d6-a84a-4101-446fd8b49209@linux.intel.com>
- <ddfbc4bf-658f-3eda-5b4f-f111ecd932f5@linux.intel.com> <82e2ce7f-bd08-4b53-b232-3dd8cb1a0726@kernel.org> <20251109105203.622ebe9e@pine.rothwell.emu.id.au> <2025110956-swaddling-chapter-5932@gregkh> <20251109173413.10c9aa0a@canb.auug.org.au>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Cc: Stephen Rothwell <sfr@canb.auug.org.au>,
+	Alex Davis <alex47794@gmail.com>,
+	stable@vger.kernel.org,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH 1/1] serial: 8250: Fix 8250_rsa symbol loop
+Date: Mon, 10 Nov 2025 12:50:43 +0200
+Message-Id: <20251110105043.4062-1-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.39.5
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323328-185351875-1762770758=:1060"
-Content-ID: <a498616d-2f88-7b39-c3dc-11f10df3890e@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Depmod fails for a kernel made with:
+  make allnoconfig
+  echo -e "CONFIG_MODULES=y\nCONFIG_SERIAL_8250=m\nCONFIG_SERIAL_8250_EXTENDED=y\nCONFIG_SERIAL_8250_RSA=y" >> .config 
+  make olddefconfig
 
---8323328-185351875-1762770758=:1060
-Content-Type: text/plain; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Content-ID: <ecc0b2e1-8407-bbb2-0409-02d056ac81fb@linux.intel.com>
+...due to a dependency loop:
 
-On Sun, 9 Nov 2025, Stephen Rothwell wrote:
-> On Sun, 9 Nov 2025 09:49:29 +0900 Greg Kroah-Hartman <gregkh@linuxfoundat=
-ion.org> wrote:
-> > On Sun, Nov 09, 2025 at 10:52:03AM +1100, Stephen Rothwell wrote:
-> > > On Fri, 7 Nov 2025 07:20:26 +0100 Jiri Slaby <jirislaby@kernel.org> w=
-rote: =20
-> > > >
-> > > > On 06. 11. 25, 19:00, Ilpo J=E4rvinen wrote: =20
-> > > > > This seems to resolve the build issue for me:
-> > > > >=20
-> > > > > --
-> > > > > From: =3D?UTF-8?q?Ilpo=3D20J=3DC3=3DA4rvinen?=3D <ilpo.jarvinen@l=
-inux.intel.com>
-> > > > > Subject: [PATCH 1/1] serial: 8250: Fix 8250_rsa symbol loop
-> > > > >=20
-> > > > > make allmodconfig build fails due to dependency loop:
-> > > > >=20
-> > > > >    depmod: ERROR: Cycle detected: 8250 -> 8250_base -> 8250
-> > > > >    depmod: ERROR: Found 2 modules in dependency cycles!
-> > > > >=20
-> > > > > Break dependency loop by moving 8250_rsa.o into 8250_base and by
-> > > > > passing univ8250_port_base_ops to univ8250_rsa_support() that can=
- make
-> > > > > a local copy of it.
-> > > > >=20
-> > > > > Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> > > > > Reported-by: Alex Davis <alex47794@gmail.com>
-> > > > > Fixes: b20d6576cdb3 ("serial: 8250: export RSA functions")
-> > > > > Signed-off-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>   =
-=20
-> > > >=20
-> > > > LGTM, thanks for the fix.
-> > > >=20
-> > > > Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-> > > >=20
-> > > > If the reporters could give it a shot and mark this by Tested-by, i=
-t would be great... =20
-> > >=20
-> > > I have not seen this for quite some time ... I assumed it had been
-> > > fixed. =20
-> >=20
-> > I too thought this was fixed a while ago, what changed to cause this to
-> > happen now?  Anyone have a .config to reproduce this, 'allmodconfig' on
-> > x86 works for me.
->=20
-> Actually, I think the current report is for v6.17.1-rc1, so maybe
-> something got missed in a stable backport? My original report was for
-> next-20250728 (July 28).  The only response I got was on October 1,
-> but I am pretty sure it was fixed well before then.
->=20
-> Also, you probably only get the error when you do a "make
-> modules_install" after the allmodconfig build (at least that is where I
-> got it).
+  depmod: ERROR: Cycle detected: 8250 -> 8250_base -> 8250
+  depmod: ERROR: Found 2 modules in dependency cycles!
 
-Hi all,
+This is caused by the move of 8250 RSA code from 8250_port.c (in
+8250_base.ko) into 8250_rsa.c (in 8250.ko) by the commit 5a128fb475fb
+("serial: 8250: move RSA functions to 8250_rsa.c"). The commit
+b20d6576cdb3 ("serial: 8250: export RSA functions") tried to fix a
+missing symbol issue with EXPORTs but those then cause this dependency
+cycle.
 
-I don't want to waste my time building allmodconfig but this is with=20
-allnoconfig + a few key CONFIGs set and without my patch:
+Break dependency loop by moving 8250_rsa.o from 8250.ko to 8250_base.ko
+and by passing univ8250_port_base_ops to univ8250_rsa_support() that
+can make a local copy of it.
 
-$ git log -n1
-commit e9a6fb0bcdd7609be6969112f3fbfcce3b1d4a7c (grafted, HEAD -> master,=
-=20
-tag: v6.18-rc5, origin/master, origin/HEAD)
-Author: Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sun Nov 9 15:10:19 2025 -0800
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Reported-by: Alex Davis <alex47794@gmail.com>
+Fixes: 5a128fb475fb ("serial: 8250: move RSA functions to 8250_rsa.c")
+Fixes: b20d6576cdb3 ("serial: 8250: export RSA functions")
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/all/87frc3sd8d.fsf@posteo.net/
+Link: https://lore.kernel.org/all/CADiockCvM6v+d+UoFZpJSMoLAdpy99_h-hJdzUsdfaWGn3W7-g@mail.gmail.com/
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+---
 
-    Linux 6.18-rc5
-$ make allnoconfig
-  LEX     scripts/kconfig/lexer.lex.c
-  YACC    scripts/kconfig/parser.tab.[ch]
-  HOSTCC  scripts/kconfig/lexer.lex.o
-  HOSTCC  scripts/kconfig/menu.o
-  HOSTCC  scripts/kconfig/parser.tab.o
-  HOSTCC  scripts/kconfig/preprocess.o
-  HOSTCC  scripts/kconfig/symbol.o
-  HOSTCC  scripts/kconfig/util.o
-  HOSTLD  scripts/kconfig/conf
-#
-# configuration written to .config
-#
-$ echo -e "CONFIG_MODULES=3Dy\nCONFIG_SERIAL_8250=3Dm\nCONFIG_SERIAL_8250_E=
-XTENDED=3Dy\nCONFIG_SERIAL_8250_RSA=3Dy" >> .config=20
-$ make olddefconfig
-=2Econfig:1528:warning: override: reassigning to symbol MODULES
-=2Econfig:1529:warning: override: reassigning to symbol SERIAL_8250
-=2Econfig:1530:warning: override: reassigning to symbol SERIAL_8250_EXTENDE=
-D
-#
-# configuration written to .config
-#
-$ make -j4 > /dev/null && sudo make modules_install
-  INSTALL /lib/modules/6.18.0-rc5/modules.order
-  INSTALL /lib/modules/6.18.0-rc5/modules.builtin
-  INSTALL /lib/modules/6.18.0-rc5/modules.builtin.modinfo
-  SYMLINK /lib/modules/6.18.0-rc5/build
-  INSTALL /lib/modules/6.18.0-rc5/kernel/drivers/tty/serial/8250/8250.ko
-  INSTALL /lib/modules/6.18.0-rc5/kernel/drivers/tty/serial/8250/8250_base.=
-ko
-  INSTALL /lib/modules/6.18.0-rc5/kernel/drivers/tty/serial/serial_base.ko
-  DEPMOD  /lib/modules/6.18.0-rc5
-depmod: ERROR: Cycle detected: 8250 -> 8250_base -> 8250
-depmod: ERROR: Found 2 modules in dependency cycles!
-make[2]: *** [scripts/Makefile.modinst:132: depmod] Error 1
-make[1]: *** [/home/user/linux/Makefile:1916: modules_install] Error 2
-make: *** [Makefile:248: __sub-make] Error 2
+in thread -> v1:
+- Changed prototype also in the #else block
 
-=2E..so no, it does not look fixed.
+ drivers/tty/serial/8250/8250.h          |  4 ++--
+ drivers/tty/serial/8250/8250_platform.c |  2 +-
+ drivers/tty/serial/8250/8250_rsa.c      | 26 ++++++++++++++++---------
+ drivers/tty/serial/8250/Makefile        |  2 +-
+ 4 files changed, 21 insertions(+), 13 deletions(-)
 
-With the patch:
+diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+index 58e64c4e1e3a..e99f5193d8f1 100644
+--- a/drivers/tty/serial/8250/8250.h
++++ b/drivers/tty/serial/8250/8250.h
+@@ -322,13 +322,13 @@ static inline void serial8250_pnp_exit(void) { }
+ #endif
+ 
+ #ifdef CONFIG_SERIAL_8250_RSA
+-void univ8250_rsa_support(struct uart_ops *ops);
++void univ8250_rsa_support(struct uart_ops *ops, const struct uart_ops *core_ops);
+ void rsa_enable(struct uart_8250_port *up);
+ void rsa_disable(struct uart_8250_port *up);
+ void rsa_autoconfig(struct uart_8250_port *up);
+ void rsa_reset(struct uart_8250_port *up);
+ #else
+-static inline void univ8250_rsa_support(struct uart_ops *ops) { }
++static inline void univ8250_rsa_support(struct uart_ops *ops, const struct uart_ops *core_ops) { }
+ static inline void rsa_enable(struct uart_8250_port *up) {}
+ static inline void rsa_disable(struct uart_8250_port *up) {}
+ static inline void rsa_autoconfig(struct uart_8250_port *up) {}
+diff --git a/drivers/tty/serial/8250/8250_platform.c b/drivers/tty/serial/8250/8250_platform.c
+index b27981340e76..fe7ec440ffa5 100644
+--- a/drivers/tty/serial/8250/8250_platform.c
++++ b/drivers/tty/serial/8250/8250_platform.c
+@@ -75,7 +75,7 @@ static void __init __serial8250_isa_init_ports(void)
+ 
+ 	/* chain base port ops to support Remote Supervisor Adapter */
+ 	univ8250_port_ops = *univ8250_port_base_ops;
+-	univ8250_rsa_support(&univ8250_port_ops);
++	univ8250_rsa_support(&univ8250_port_ops, univ8250_port_base_ops);
+ 
+ 	if (share_irqs)
+ 		irqflag = IRQF_SHARED;
+diff --git a/drivers/tty/serial/8250/8250_rsa.c b/drivers/tty/serial/8250/8250_rsa.c
+index 40a3dbd9e452..1f182f165525 100644
+--- a/drivers/tty/serial/8250/8250_rsa.c
++++ b/drivers/tty/serial/8250/8250_rsa.c
+@@ -14,6 +14,8 @@
+ static unsigned long probe_rsa[PORT_RSA_MAX];
+ static unsigned int probe_rsa_count;
+ 
++static const struct uart_ops *core_port_base_ops;
++
+ static int rsa8250_request_resource(struct uart_8250_port *up)
+ {
+ 	struct uart_port *port = &up->port;
+@@ -67,7 +69,7 @@ static void univ8250_config_port(struct uart_port *port, int flags)
+ 		}
+ 	}
+ 
+-	univ8250_port_base_ops->config_port(port, flags);
++	core_port_base_ops->config_port(port, flags);
+ 
+ 	if (port->type != PORT_RSA && up->probe & UART_PROBE_RSA)
+ 		rsa8250_release_resource(up);
+@@ -78,11 +80,11 @@ static int univ8250_request_port(struct uart_port *port)
+ 	struct uart_8250_port *up = up_to_u8250p(port);
+ 	int ret;
+ 
+-	ret = univ8250_port_base_ops->request_port(port);
++	ret = core_port_base_ops->request_port(port);
+ 	if (ret == 0 && port->type == PORT_RSA) {
+ 		ret = rsa8250_request_resource(up);
+ 		if (ret < 0)
+-			univ8250_port_base_ops->release_port(port);
++			core_port_base_ops->release_port(port);
+ 	}
+ 
+ 	return ret;
+@@ -94,15 +96,25 @@ static void univ8250_release_port(struct uart_port *port)
+ 
+ 	if (port->type == PORT_RSA)
+ 		rsa8250_release_resource(up);
+-	univ8250_port_base_ops->release_port(port);
++	core_port_base_ops->release_port(port);
+ }
+ 
+-void univ8250_rsa_support(struct uart_ops *ops)
++/*
++ * It is not allowed to directly reference any symbols from 8250.ko here as
++ * that would result in a dependency loop between the 8250.ko and
++ * 8250_base.ko modules. This function is called from 8250.ko and is used to
++ * break the symbolic dependency cycle. Anything that is needed from 8250.ko
++ * has to be passed as pointers to this function which then can adjust those
++ * variables on 8250.ko side or store them locally as needed.
++ */
++void univ8250_rsa_support(struct uart_ops *ops, const struct uart_ops *core_ops)
+ {
++	core_port_base_ops = core_ops;
+ 	ops->config_port  = univ8250_config_port;
+ 	ops->request_port = univ8250_request_port;
+ 	ops->release_port = univ8250_release_port;
+ }
++EXPORT_SYMBOL_FOR_MODULES(univ8250_rsa_support, "8250");
+ 
+ module_param_hw_array(probe_rsa, ulong, ioport, &probe_rsa_count, 0444);
+ MODULE_PARM_DESC(probe_rsa, "Probe I/O ports for RSA");
+@@ -146,7 +158,6 @@ void rsa_enable(struct uart_8250_port *up)
+ 	if (up->port.uartclk == SERIAL_RSA_BAUD_BASE * 16)
+ 		serial_out(up, UART_RSA_FRR, 0);
+ }
+-EXPORT_SYMBOL_FOR_MODULES(rsa_enable, "8250_base");
+ 
+ /*
+  * Attempts to turn off the RSA FIFO and resets the RSA board back to 115kbps compat mode. It is
+@@ -178,7 +189,6 @@ void rsa_disable(struct uart_8250_port *up)
+ 	if (result)
+ 		up->port.uartclk = SERIAL_RSA_BAUD_BASE_LO * 16;
+ }
+-EXPORT_SYMBOL_FOR_MODULES(rsa_disable, "8250_base");
+ 
+ void rsa_autoconfig(struct uart_8250_port *up)
+ {
+@@ -191,7 +201,6 @@ void rsa_autoconfig(struct uart_8250_port *up)
+ 	if (__rsa_enable(up))
+ 		up->port.type = PORT_RSA;
+ }
+-EXPORT_SYMBOL_FOR_MODULES(rsa_autoconfig, "8250_base");
+ 
+ void rsa_reset(struct uart_8250_port *up)
+ {
+@@ -200,7 +209,6 @@ void rsa_reset(struct uart_8250_port *up)
+ 
+ 	serial_out(up, UART_RSA_FRR, 0);
+ }
+-EXPORT_SYMBOL_FOR_MODULES(rsa_reset, "8250_base");
+ 
+ #ifdef CONFIG_SERIAL_8250_DEPRECATED_OPTIONS
+ #ifndef MODULE
+diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
+index 513a0941c284..9ec4d5fe64de 100644
+--- a/drivers/tty/serial/8250/Makefile
++++ b/drivers/tty/serial/8250/Makefile
+@@ -7,7 +7,6 @@ obj-$(CONFIG_SERIAL_8250)		+= 8250.o
+ 8250-y					:= 8250_core.o
+ 8250-y					+= 8250_platform.o
+ 8250-$(CONFIG_SERIAL_8250_PNP)		+= 8250_pnp.o
+-8250-$(CONFIG_SERIAL_8250_RSA)		+= 8250_rsa.o
+ 
+ obj-$(CONFIG_SERIAL_8250)		+= 8250_base.o
+ 8250_base-y				:= 8250_port.o
+@@ -15,6 +14,7 @@ obj-$(CONFIG_SERIAL_8250)		+= 8250_base.o
+ 8250_base-$(CONFIG_SERIAL_8250_DWLIB)	+= 8250_dwlib.o
+ 8250_base-$(CONFIG_SERIAL_8250_FINTEK)	+= 8250_fintek.o
+ 8250_base-$(CONFIG_SERIAL_8250_PCILIB)	+= 8250_pcilib.o
++8250_base-$(CONFIG_SERIAL_8250_RSA)	+= 8250_rsa.o
+ 
+ obj-$(CONFIG_SERIAL_8250_CONSOLE)	+= 8250_early.o
+ 
 
-$ git am 0001-serial-8250-Fix-8250_rsa-symbol-loop.patch=20
-Applying: serial: 8250: Fix 8250_rsa symbol loop
-user@disp1097:~/linux$ make -j4 > /dev/null && sudo make modules_install
-  SYMLINK /lib/modules/6.18.0-rc5+/build
-  INSTALL /lib/modules/6.18.0-rc5+/modules.order
-  INSTALL /lib/modules/6.18.0-rc5+/modules.builtin
-  INSTALL /lib/modules/6.18.0-rc5+/modules.builtin.modinfo
-  INSTALL /lib/modules/6.18.0-rc5+/kernel/drivers/tty/serial/8250/8250.ko
-  INSTALL /lib/modules/6.18.0-rc5+/kernel/drivers/tty/serial/8250/8250_base=
-=2Eko
-  INSTALL /lib/modules/6.18.0-rc5+/kernel/drivers/tty/serial/serial_base.ko
-  DEPMOD  /lib/modules/6.18.0-rc5+
-$=20
+base-commit: 719f3df3e113e03d2c8cf324827da1fd17a9bd8f
+-- 
+2.39.5
 
-I'll just make the official submission with the #else block's prototype=20
-fixed (thanks to lkp).
-
---=20
- i.
---8323328-185351875-1762770758=:1060--
