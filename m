@@ -1,53 +1,53 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC3682FCC0F;
-	Mon, 10 Nov 2025 12:12:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89FDE1DF271;
+	Mon, 10 Nov 2025 13:48:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762776764; cv=none; b=aDXU+8QXA3cznCzUttdgll6F+n057C+Qh/3qJCGcK3OGpK4Rn6Ot4xKR+RQieD1VeJ1v8rYJLxeeb90CWLtn3cWteu0Zb5RXp+4WzL3Lqnsk7OpgoM0tE/DRRO5aDxA09ersk9+RpzuxI7BJwgTRgJ/bDR1wARKRG/Qw+iv1v0Y=
+	t=1762782535; cv=none; b=QcRLsaqs/zxm33uVEpNavjFgoiNZqcoA1uIynh3aOc9+vJKK057WtN0eck8z8yD2otGEp6KAKeCh/VcOrWJIJ/7XBCc1HVmojDUY5exDfU51/WdkOSjQsij+ovBeZmD/5zd9i+kqvMRvKkv60G4JNWNEk01cFHXL2qboNZd4xcI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762776764; c=relaxed/simple;
-	bh=yzGSD1deVr4Tn78N15H/ci6TxRT1XXPF04nElnFf1xY=;
+	s=arc-20240116; t=1762782535; c=relaxed/simple;
+	bh=LOyAN0iO2EMSmgKDPwrtHMT6er9B+4VjQSQPgBTISus=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=aT6lS+1e0Qin5ioCgNDtu3EaPdyB84HjmrFa1APb/Svh8AtPcrrRkWaOBZCUX3xJyJ5ZJaI6J6ZLXAo95+2CdqNWWCcDP/d9kzfershoYqNmV0jAu2UdpoEW5Urlh8Yq/QrrVp62NYGndaFU66Ru4cuYM8Llymh4yYA5vpSrtrA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=STAxsVxM; arc=none smtp.client-ip=198.175.65.17
+	 Content-Type:Content-Disposition:In-Reply-To; b=QhLwMvTZ3PdDZIx0Z9bCnps//wuPXJvVpYiZksOf3gcEBKXNebSnS6bhV3DhWJ2jEva+qhIO8sxtyxJzEbXFAp2KETXs9lB87KPLO3P7pwlqyzQY1wz7MfOTSWTek6za6kaWsaEGMztWNJQhMxwB0ej5A/2/KTyIka0rwitBC3c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Zxl62qE/; arc=none smtp.client-ip=198.175.65.13
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="STAxsVxM"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Zxl62qE/"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1762776762; x=1794312762;
+  t=1762782533; x=1794318533;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=yzGSD1deVr4Tn78N15H/ci6TxRT1XXPF04nElnFf1xY=;
-  b=STAxsVxMsMI1ob2TaPgyKz+P0rtMiMeJvFysP0tpNekrewQX4WzD/+cs
-   WCwAewWBrtlmAzCxDPHpucMxDWuHQ5GHXhAfZJPEm/p03B0BQqOgiKJLa
-   XM2TAatksT/l7dBgBcgg3C/i/3/cHiuT/mZEfeCDOh7yDsKQejvqOURxE
-   ddLCyvhHC8AnCvnGGyGvh1ZdwGAZNzEkVYzswV88TGvpK1dKGb+Kx8Jna
-   9m5rsdNjVmJhAnCMgVOib1dLCD8Ux5o+OjPF2N8VXyCqK0T9RfhDVBtm1
-   DkvIKWSIwGvPVdYvBJoHiSKHlFdxCwYAHoRLm47L9msiNVPAoBEA0pT67
-   w==;
-X-CSE-ConnectionGUID: rct8Aw6rQ7u592oPz68lvg==
-X-CSE-MsgGUID: QCHI4xBhS32GnmmWX6LH3g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11531"; a="64753475"
-X-IronPort-AV: E=Sophos;i="6.17,312,1747724400"; 
-   d="scan'208";a="64753475"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2025 04:12:42 -0800
-X-CSE-ConnectionGUID: 8+TWTtMwSYW5Hzc880c7CA==
-X-CSE-MsgGUID: 4XqcJeUdQIC5ubqAW2QpFg==
+  bh=LOyAN0iO2EMSmgKDPwrtHMT6er9B+4VjQSQPgBTISus=;
+  b=Zxl62qE/F8pjfiV+uyQYleO5AnsFg2/uTYj+sRB7Fk9XbeNES4JrdZ12
+   vZMyxOPzmR2nKCVhM1r11EMV4D2PXmMAyfjKJjWz3Xdk6WcdxXDYJshz4
+   jbMJPBfkeNfCc/eqZVcJHAK9cJzplxEq/IIuN35q4y+HraNWIetkuAk8r
+   PH9XvX8B+XXnSDhPwYNZ7FGAHE4FiQDNNq5oZTF8IwzfZmdTNsiwnsixA
+   ZvkNM1Y578A84cyi3QK1aze30Qn6l9w7qvzNwz92+ND43cN7T4/x2VsV+
+   jW0+nfDet2qxntYU3Czs2DL6lnL96xQzj5G0IXHdzWJSefGqVDcwEWHqR
+   Q==;
+X-CSE-ConnectionGUID: hRK1iNcsRsmpVOhaLzbJKg==
+X-CSE-MsgGUID: SjfAveFiRkyDjqObyaMuag==
+X-IronPort-AV: E=McAfee;i="6800,10657,11609"; a="75936348"
+X-IronPort-AV: E=Sophos;i="6.19,293,1754982000"; 
+   d="scan'208";a="75936348"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2025 05:48:53 -0800
+X-CSE-ConnectionGUID: ksHDq/jlT0CyTbiAG0Kh1A==
+X-CSE-MsgGUID: fTYm8Jd0R7+bZjc6v7kurQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.19,293,1754982000"; 
-   d="scan'208";a="188496676"
+   d="scan'208";a="193060165"
 Received: from lkp-server01.sh.intel.com (HELO 7b01c990427b) ([10.239.97.150])
-  by fmviesa006.fm.intel.com with ESMTP; 10 Nov 2025 04:12:39 -0800
+  by orviesa004.jf.intel.com with ESMTP; 10 Nov 2025 05:48:50 -0800
 Received: from kbuild by 7b01c990427b with local (Exim 4.96)
 	(envelope-from <lkp@intel.com>)
-	id 1vIQlA-0000Op-2P;
-	Mon, 10 Nov 2025 12:12:36 +0000
-Date: Mon, 10 Nov 2025 20:12:27 +0800
+	id 1vISGF-0000UV-1e;
+	Mon, 10 Nov 2025 13:48:47 +0000
+Date: Mon, 10 Nov 2025 21:47:48 +0800
 From: kernel test robot <lkp@intel.com>
 To: Thomas Zimmermann <tzimmermann@suse.de>, jfalempe@redhat.com,
 	javierm@redhat.com, simona@ffwll.ch, airlied@gmail.com,
@@ -59,7 +59,7 @@ Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
 	Thomas Zimmermann <tzimmermann@suse.de>
 Subject: Re: [PATCH 2/3] drm/client: Support emergency restore via sysrq for
  all clients
-Message-ID: <202511101950.bIUDG3LX-lkp@intel.com>
+Message-ID: <202511102156.RRA8JQGz-lkp@intel.com>
 References: <20251107142612.467817-3-tzimmermann@suse.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -73,9 +73,9 @@ In-Reply-To: <20251107142612.467817-3-tzimmermann@suse.de>
 
 Hi Thomas,
 
-kernel test robot noticed the following build warnings:
+kernel test robot noticed the following build errors:
 
-[auto build test WARNING on next-20251107]
+[auto build test ERROR on next-20251107]
 [cannot apply to drm/drm-next drm-exynos/exynos-drm-next drm-intel/for-linux-next drm-intel/for-linux-next-fixes drm-misc/drm-misc-next drm-tip/drm-tip linus/master v6.18-rc4 v6.18-rc3 v6.18-rc2 v6.18-rc5]
 [If your patch is applied to the wrong git tree, kindly drop us a note.
 And when submitting patch, we suggest to use '--base' as documented in
@@ -85,49 +85,83 @@ url:    https://github.com/intel-lab-lkp/linux/commits/Thomas-Zimmermann/drm-cli
 base:   next-20251107
 patch link:    https://lore.kernel.org/r/20251107142612.467817-3-tzimmermann%40suse.de
 patch subject: [PATCH 2/3] drm/client: Support emergency restore via sysrq for all clients
-config: powerpc64-randconfig-001-20251110 (https://download.01.org/0day-ci/archive/20251110/202511101950.bIUDG3LX-lkp@intel.com/config)
+config: powerpc64-randconfig-001-20251110 (https://download.01.org/0day-ci/archive/20251110/202511102156.RRA8JQGz-lkp@intel.com/config)
 compiler: clang version 22.0.0git (https://github.com/llvm/llvm-project 0d786b9a207aa0e6d88dde7fd9ffe0b364db69a4)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20251110/202511101950.bIUDG3LX-lkp@intel.com/reproduce)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20251110/202511102156.RRA8JQGz-lkp@intel.com/reproduce)
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202511101950.bIUDG3LX-lkp@intel.com/
+| Closes: https://lore.kernel.org/oe-kbuild-all/202511102156.RRA8JQGz-lkp@intel.com/
 
-All warnings (new ones prefixed by >>):
+All errors (new ones prefixed by >>):
 
-   In file included from drivers/gpu/drm/drm_debugfs_crc.c:41:
->> drivers/gpu/drm/drm_internal.h:64:6: warning: no previous prototype for function 'drm_client_sysrq_register' [-Wmissing-prototypes]
-      64 | void drm_client_sysrq_register(struct drm_device *dev)
-         |      ^
-   drivers/gpu/drm/drm_internal.h:64:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-      64 | void drm_client_sysrq_register(struct drm_device *dev)
-         | ^
-         | static 
->> drivers/gpu/drm/drm_internal.h:66:6: warning: no previous prototype for function 'drm_client_sysrq_unregister' [-Wmissing-prototypes]
-      66 | void drm_client_sysrq_unregister(struct drm_device *dev)
-         |      ^
-   drivers/gpu/drm/drm_internal.h:66:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-      66 | void drm_client_sysrq_unregister(struct drm_device *dev)
-         | ^
-         | static 
-   2 warnings generated.
-
-
-vim +/drm_client_sysrq_register +64 drivers/gpu/drm/drm_internal.h
-
-    58	
-    59	/* drm_client_sysrq.c */
-    60	#if defined(CONFIG_DRM_CLIENT) && defined(CONFIG_MAGIC_SYSRQ)
-    61	void drm_client_sysrq_register(struct drm_device *dev);
-    62	void drm_client_sysrq_unregister(struct drm_device *dev);
-    63	#else
-  > 64	void drm_client_sysrq_register(struct drm_device *dev)
-    65	{ }
-  > 66	void drm_client_sysrq_unregister(struct drm_device *dev)
-    67	{ }
-    68	#endif
-    69	
+>> ld.lld: error: duplicate symbol: drm_client_sysrq_register
+   >>> defined at drm_internal.h:65 (drivers/gpu/drm/drm_internal.h:65)
+   >>>            drivers/gpu/drm/drm_atomic.o:(drm_client_sysrq_register) in archive vmlinux.a
+   >>> defined at drm_internal.h:65 (drivers/gpu/drm/drm_internal.h:65)
+   >>>            drivers/gpu/drm/drm_auth.o:(.text+0x0) in archive vmlinux.a
+--
+>> ld.lld: error: duplicate symbol: drm_client_sysrq_unregister
+   >>> defined at drm_internal.h:67 (drivers/gpu/drm/drm_internal.h:67)
+   >>>            drivers/gpu/drm/drm_atomic.o:(drm_client_sysrq_unregister) in archive vmlinux.a
+   >>> defined at drm_internal.h:67 (drivers/gpu/drm/drm_internal.h:67)
+   >>>            drivers/gpu/drm/drm_auth.o:(.text+0x40) in archive vmlinux.a
+--
+>> ld.lld: error: duplicate symbol: drm_client_sysrq_register
+   >>> defined at drm_internal.h:65 (drivers/gpu/drm/drm_internal.h:65)
+   >>>            drivers/gpu/drm/drm_atomic.o:(drm_client_sysrq_register) in archive vmlinux.a
+   >>> defined at drm_internal.h:65 (drivers/gpu/drm/drm_internal.h:65)
+   >>>            drivers/gpu/drm/drm_edid.o:(.text+0x0) in archive vmlinux.a
+--
+>> ld.lld: error: duplicate symbol: drm_client_sysrq_unregister
+   >>> defined at drm_internal.h:67 (drivers/gpu/drm/drm_internal.h:67)
+   >>>            drivers/gpu/drm/drm_atomic.o:(drm_client_sysrq_unregister) in archive vmlinux.a
+   >>> defined at drm_internal.h:67 (drivers/gpu/drm/drm_internal.h:67)
+   >>>            drivers/gpu/drm/drm_edid.o:(.text+0x40) in archive vmlinux.a
+--
+>> ld.lld: error: duplicate symbol: drm_client_sysrq_register
+   >>> defined at drm_internal.h:65 (drivers/gpu/drm/drm_internal.h:65)
+   >>>            drivers/gpu/drm/drm_atomic.o:(drm_client_sysrq_register) in archive vmlinux.a
+   >>> defined at drm_internal.h:65 (drivers/gpu/drm/drm_internal.h:65)
+   >>>            drivers/gpu/drm/drm_encoder.o:(.text+0x0) in archive vmlinux.a
+--
+>> ld.lld: error: duplicate symbol: drm_client_sysrq_unregister
+   >>> defined at drm_internal.h:67 (drivers/gpu/drm/drm_internal.h:67)
+   >>>            drivers/gpu/drm/drm_atomic.o:(drm_client_sysrq_unregister) in archive vmlinux.a
+   >>> defined at drm_internal.h:67 (drivers/gpu/drm/drm_internal.h:67)
+   >>>            drivers/gpu/drm/drm_encoder.o:(.text+0x40) in archive vmlinux.a
+--
+>> ld.lld: error: duplicate symbol: drm_client_sysrq_register
+   >>> defined at drm_internal.h:65 (drivers/gpu/drm/drm_internal.h:65)
+   >>>            drivers/gpu/drm/drm_atomic.o:(drm_client_sysrq_register) in archive vmlinux.a
+   >>> defined at drm_internal.h:65 (drivers/gpu/drm/drm_internal.h:65)
+   >>>            drivers/gpu/drm/drm_file.o:(.text+0x0) in archive vmlinux.a
+--
+>> ld.lld: error: duplicate symbol: drm_client_sysrq_unregister
+   >>> defined at drm_internal.h:67 (drivers/gpu/drm/drm_internal.h:67)
+   >>>            drivers/gpu/drm/drm_atomic.o:(drm_client_sysrq_unregister) in archive vmlinux.a
+   >>> defined at drm_internal.h:67 (drivers/gpu/drm/drm_internal.h:67)
+   >>>            drivers/gpu/drm/drm_file.o:(.text+0x40) in archive vmlinux.a
+--
+>> ld.lld: error: duplicate symbol: drm_client_sysrq_register
+   >>> defined at drm_internal.h:65 (drivers/gpu/drm/drm_internal.h:65)
+   >>>            drivers/gpu/drm/drm_atomic.o:(drm_client_sysrq_register) in archive vmlinux.a
+   >>> defined at drm_internal.h:65 (drivers/gpu/drm/drm_internal.h:65)
+   >>>            drivers/gpu/drm/drm_framebuffer.o:(.text+0x0) in archive vmlinux.a
+--
+>> ld.lld: error: duplicate symbol: drm_client_sysrq_unregister
+   >>> defined at drm_internal.h:67 (drivers/gpu/drm/drm_internal.h:67)
+   >>>            drivers/gpu/drm/drm_atomic.o:(drm_client_sysrq_unregister) in archive vmlinux.a
+   >>> defined at drm_internal.h:67 (drivers/gpu/drm/drm_internal.h:67)
+   >>>            drivers/gpu/drm/drm_framebuffer.o:(.text+0x40) in archive vmlinux.a
+--
+>> ld.lld: error: duplicate symbol: drm_client_sysrq_register
+   >>> defined at drm_internal.h:65 (drivers/gpu/drm/drm_internal.h:65)
+   >>>            drivers/gpu/drm/drm_atomic.o:(drm_client_sysrq_register) in archive vmlinux.a
+   >>> defined at drm_internal.h:65 (drivers/gpu/drm/drm_internal.h:65)
+   >>>            drivers/gpu/drm/drm_gem.o:(.text+0x0) in archive vmlinux.a
+..
 
 -- 
 0-DAY CI Kernel Test Service
