@@ -1,159 +1,79 @@
-Received: from addi-data.com (firewall1.addi-data.de [62.154.208.154])
+Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6236D27EFEF
-	for <linux-serial@vger.kernel.org>; Mon, 10 Nov 2025 16:25:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=62.154.208.154
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E333A2EB5BA
+	for <linux-serial@vger.kernel.org>; Mon, 10 Nov 2025 20:19:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=18.9.28.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762791919; cv=none; b=WzuF5MrvUrE6prJVq8BNw1CyqnZKNXjjQhikdA74HT4OKTPiCaaUgdjiOS0MRubDD7Sc9+OFjO2+oQpd3H8luQmgqp4XhWVrDAqHy24p0R+ijqJ6kbsXQGK74hvMSX2njso6WOS0Mj1W8CqqOnwPbXyCWCpNkUiq37KtD2Fi32M=
+	t=1762805989; cv=none; b=N3SKgpwY65Uh8ywEiEahvkhm4jXfoYp1m5NWsXKcP/4r5Q2VPPbOMT53G+Zn606LbY9iZsFgtis7EFiYa0hgkw2H3e/+JeNXEELJlpB/NCk2MsmM/jP+J9v636JhcPEu7yUlcqiE9A74mMHgBSr2xSk+oieW5Nzfcc/Y9bk73Lo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762791919; c=relaxed/simple;
-	bh=2hB96KRh5D9bb1r1Szv4HgvM8/jBhI3zg42NHKLQZn0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=R8/EZgajWJ5JYzJFPjttTpDeTSJflUK7978Pv8RyL6PiXumTTX3P0fWFkhNuLywcDVLss+lq+fIIa7EBtxQt6Z/i9/0PGUvLMthns9SSvrSMFhCEdeZ8z9Ijsup1GLTCtY86yYoMxJybDdM6VEXym0JQgmFc8Gbei7bh0JLZO54=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=addi-data.com; spf=pass smtp.mailfrom=addi-data.com; dkim=pass (2048-bit key) header.d=addi-data.com header.i=@addi-data.com header.b=CWpXztjA; arc=none smtp.client-ip=62.154.208.154
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=addi-data.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=addi-data.com
+	s=arc-20240116; t=1762805989; c=relaxed/simple;
+	bh=9v9++OA9cIJhvT0eKRdiOOu8490H3SixxGQOWwhedd8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=abll9oUCWhl3yg7UQtTfXSOdfDVHiTzcTMFYTN1J3LoVcEo8SKR+Oco+I8IddGaaOKHBw2IaxfGyou7cgTJv2hiEts4XhDab9nR5LI3sZi8UFvKNh2ZNvJrlftgg7VLU/WAVcabBaaO1Xxewkahq4c8UkYBmoldliXxH6Q7l5t0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mit.edu; spf=pass smtp.mailfrom=mit.edu; dkim=pass (2048-bit key) header.d=mit.edu header.i=@mit.edu header.b=EARyUQnV; arc=none smtp.client-ip=18.9.28.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mit.edu
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mit.edu
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=addi-data.com header.i=@addi-data.com header.b="CWpXztjA"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=addi-data.com; s=standard; h=Content-Type:Content-Transfer-Encoding:
-	MIME-Version:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-	List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=WljwfAbBlk5hRQFSjj/YkA3foNuO0LFeVMy8i3jrofM=; b=CWpXztjAVwFI4f3ZZioCT6dia4
-	zsH5r12hZIvT8VGgHk/QzRIqVkiu1TzyTHIEcZDQT80Hz4BeVAwJNmOwLg8Z9WGhSb0rLTJWMdYAq
-	O1MbdsTBaZrxRkyFdMbi8bnaYEI6kSYw59w/uGwRLZvsGUfjhjjN+aEnQ2dsqJsN1rk9128smz+6h
-	Ie0aUZdEKIwQhpGN7vMXRoKWG7FvctMZqf5sz0hWABo9IXaPBL0Q3KZsf0i/oN37a/AoCNE8ZtppO
-	6W/hx+9FCJqw9yoYuRXLLusLnfOJYeA9zVWsomk+h1CHArrKp4jJpxgWkAVQdIhKoawlvnh/5dR+l
-	Rv9lei7w==;
-Received: from [172.16.2.41] (port=47804 helo=security01.addi-data.intra)
-	by addi-data.com with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.96)
-	(envelope-from <magne.bruno@addi-data.com>)
-	id 1vIUhe-000000003y7-1P1y;
-	Mon, 10 Nov 2025 17:25:14 +0100
-Received: from debian13.addi-data.intra (unknown [172.16.7.7])
-	by security01.addi-data.intra (MTA) with ESMTP id 4d4w4S2PkWz5Hjy2;
-	Mon, 10 Nov 2025 17:25:12 +0100 (CET)
-From: Magne Bruno <magne.bruno@addi-data.com>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	linux-serial@vger.kernel.org
-Cc: Magne Bruno <magne.bruno@addi-data.com>
-Subject: [PATCH 001/001] serial: add support of CPCI cards
-Date: Mon, 10 Nov 2025 17:24:56 +0100
-Message-ID: <20251110162456.341029-1-magne.bruno@addi-data.com>
-X-Mailer: git-send-email 2.47.3
+	dkim=pass (2048-bit key) header.d=mit.edu header.i=@mit.edu header.b="EARyUQnV"
+Received: from trampoline.thunk.org (pool-173-48-122-154.bstnma.fios.verizon.net [173.48.122.154])
+	(authenticated bits=0)
+        (User authenticated as tytso@ATHENA.MIT.EDU)
+	by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 5AAKJXmC009830
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 10 Nov 2025 15:19:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
+	t=1762805975; bh=XuNPATJHIZqaQ2tHE6vIjR+2AYXe/lFA1UKMDSwl9lQ=;
+	h=Date:From:Subject:Message-ID:MIME-Version:Content-Type;
+	b=EARyUQnVdrh/iSMn4TEmyk29zOSAaxGPnL0EndZCGFrVbGIfk48HhYZLXk+Fo9kxv
+	 GaVGGNY1dYwpBtE0ncN4vbhawz1fbTVOr+XAiO9XQpZjDDj10EB5UieCU70pDm8dSc
+	 r/0kJohxzgVqHPbHCE/BSz8/MxgMfA26IdDVmzRqqBQ2YjqevpZlpVEMIz1ckg016j
+	 8aotsyyXleX8ezN4sfWLFSSDbzqNBGvFZP7en6i97VW7Pv8SsShTVbuV36ygaJDtRW
+	 zDePABD64Kk7F8GAbDJrOHh9Dstq/Mzyh11CHSlFUHxf0n3kl9Nz1nUiWWRSmqsONq
+	 hclihBYZTuVaA==
+Received: by trampoline.thunk.org (Postfix, from userid 15806)
+	id 334442E00D9; Mon, 10 Nov 2025 15:19:33 -0500 (EST)
+Date: Mon, 10 Nov 2025 15:19:33 -0500
+From: "Theodore Ts'o" <tytso@mit.edu>
+To: Maarten Brock <Maarten.Brock@sttls.nl>
+Cc: "H. Peter Anvin" <hpa@zytor.com>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: RFC: Serial port DTR/RTS - O_NRESETDEV
+Message-ID: <20251110201933.GH2988753@mit.edu>
+References: <bb44f856-10a2-40c7-a3f7-be50c8e4b0a9@zytor.com>
+ <20251107173743.GA3131573@mit.edu>
+ <dc42f5d4-a707-4442-bda6-1c1990666f54@zytor.com>
+ <20251110033556.GC2988753@mit.edu>
+ <ADB50E23-DC8B-43D0-A345-E10396A3DFD4@zytor.com>
+ <AMBPR05MB11925DA076098B05E418BF64283CEA@AMBPR05MB11925.eurprd05.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-x-agari-authentication-results: security01.addi-data.intra;
-Content-Type: text/plain;
-    charset=ISO-8859-1
-x-msw-jemd-newsletter: false
-X-Sophos-OBS: success
-X-SASI-Version: Antispam-Engine: 6.0.1, AntispamData: 2025.11.10.152719
-X-SASI-RCODE: 200
-X-SASI-SpamProbability: 10%
-X-SASI-Hits: BODYTEXTP_SIZE_3000_LESS 0.000000, BODY_SIZE_1900_1999 0.000000,
- BODY_SIZE_2000_LESS 0.000000, BODY_SIZE_5000_LESS 0.000000,
- BODY_SIZE_7000_LESS 0.000000, CTE_8BIT 0.000000, CT_TP_8859_1 0.000000,
- HASHBUSTER_BLOCK_V2 0.500000, HTML_00_01 0.050000, HTML_00_10 0.050000,
- LEGITIMATE_SIGNS 0.000000, MULTIPLE_REAL_RCPTS 0.000000,
- NO_CTA_URI_FOUND 0.000000, NO_FUR_HEADER 0.000000, NO_URI_HTTPS 0.000000,
- OUTBOUND 0.000000, OUTBOUND_SOPHOS 0.000000, SENDER_NO_AUTH 0.000000,
- SUSP_DH_NEG 0.000000, TO_HAS_SPACES 0.000000, __ANY_URI 0.000000,
- __BODY_NO_MAILTO 0.000000, __BULK_NEGATE 0.000000, __CC_NAME 0.000000,
- __CC_NAME_DIFF_FROM_ACC 0.000000, __CC_REAL_NAMES 0.000000,
- __CRYPTO_ADDRESS_OBFU 0.000000, __CT 0.000000, __CTE 0.000000,
- __CT_TEXT_PLAIN 0.000000, __DQ_NEG_DOMAIN 0.000000, __DQ_NEG_HEUR 0.000000,
- __DQ_NEG_IP 0.000000, __FROM_DOMAIN_IN_ANY_CC1 0.000000,
- __FROM_DOMAIN_IN_RCPT 0.000000, __FUR_RDNS_SOPHOS 0.000000,
- __HASHBUSTER_BLOCK_V2_1 0.000000, __HAS_CC_HDR 0.000000, __HAS_FROM 0.000000,
- __HAS_MSGID 0.000000, __HAS_X_MAILER 0.000000, __HIGHBIT_ASCII_MIX 0.000000,
- __MIME_BOUND_CHARSET 0.000000, __MIME_TEXT_ONLY 0.000000,
- __MIME_TEXT_P 0.000000, __MIME_TEXT_P1 0.000000, __MIME_VERSION 0.000000,
- __MULTIPLE_RCPTS_TO_X2 0.000000, __NO_HTML_TAG_RAW 0.000000,
- __OUTBOUND_SOPHOS_FUR 0.000000, __OUTBOUND_SOPHOS_FUR_IP 0.000000,
- __OUTBOUND_SOPHOS_FUR_RDNS 0.000000, __PHISH_SPEAR_SUBJ_TEAM 0.000000,
- __SANE_MSGID 0.000000, __SUBJ_ALPHA_END 0.000000,
- __SUBJ_STARTS_S_BRACKETS 0.000000, __TO_MALFORMED_2 0.000000,
- __TO_NO_NAME 0.000000, __URI_MAILTO 0.000000, __URI_NO_WWW 0.000000,
- __URI_NS 0.000000
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <AMBPR05MB11925DA076098B05E418BF64283CEA@AMBPR05MB11925.eurprd05.prod.outlook.com>
 
-Addi-Data GmbH is manufacturing multi-serial ports cards supporting CompactPCI (known as CPCI).
-Those cards are identified with different DeviceIds. Those cards integrating standard UARTs
-work the same way as PCI/PCIe models already supported in the serial driver.
+On Mon, Nov 10, 2025 at 10:06:02AM +0000, Maarten Brock wrote:
+> I fully agree that you cannot expect users that wired something like RS485 Driver
+> Enable or a microcontroller reset to RTS or DTR to write their own kernel driver.
+> And you need to open the port to make the appropriate settings. But opening a
+> port should not e.g. claim the RS485 bus and mess up whatever communication
+> was going on there.
 
-Signed-off-by: Magne Bruno <magne.bruno@addi-data.com>
----
+Again, the existing seral driver code *will* mess with RTS and DTR at
+boot up because that's part of the autoconfiuration code, and that was
+added because it was needed for some number of serial ports.
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 152f914c599d..12e8ceffab65 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -95,6 +95,11 @@
- #define PCI_DEVICE_ID_MOXA_CP138E_A	0x1381
- #define PCI_DEVICE_ID_MOXA_CP168EL_A	0x1683
- 
-+#define PCI_DEVICE_ID_ADDIDATA_CPCI7500        0x7003
-+#define PCI_DEVICE_ID_ADDIDATA_CPCI7500_NG     0x7024
-+#define PCI_DEVICE_ID_ADDIDATA_CPCI7420_NG     0x7025
-+#define PCI_DEVICE_ID_ADDIDATA_CPCI7300_NG     0x7026
-+
- /* Unknown vendors/cards - this should not be in linux/pci_ids.h */
- #define PCI_SUBDEVICE_ID_UNKNOWN_0x1584	0x1584
- #define PCI_SUBDEVICE_ID_UNKNOWN_0x1588	0x1588
-@@ -5996,6 +6001,38 @@ static const struct pci_device_id serial_pci_tbl[] = {
- 		0,
- 		pbn_ADDIDATA_PCIe_8_3906250 },
- 
-+	{	PCI_VENDOR_ID_ADDIDATA,
-+		PCI_DEVICE_ID_ADDIDATA_CPCI7500,
-+		PCI_ANY_ID,
-+		PCI_ANY_ID,
-+		0,
-+		0,
-+		pbn_b0_4_115200 },
-+
-+	{	PCI_VENDOR_ID_ADDIDATA,
-+		PCI_DEVICE_ID_ADDIDATA_CPCI7500_NG,
-+		PCI_ANY_ID,
-+		PCI_ANY_ID,
-+		0,
-+		0,
-+		pbn_b0_4_115200 },
-+
-+	{	PCI_VENDOR_ID_ADDIDATA,
-+		PCI_DEVICE_ID_ADDIDATA_CPCI7420_NG,
-+		PCI_ANY_ID,
-+		PCI_ANY_ID,
-+		0,
-+		0,
-+		pbn_b0_2_115200 },
-+
-+	{	PCI_VENDOR_ID_ADDIDATA,
-+		PCI_DEVICE_ID_ADDIDATA_CPCI7300_NG,
-+		PCI_ANY_ID,
-+		PCI_ANY_ID,
-+		0,
-+		0,
-+		pbn_b0_1_115200 },
-+
- 	{	PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9835,
- 		PCI_VENDOR_ID_IBM, 0x0299,
- 		0, 0, pbn_b0_bt_2_115200 },
+If that's going to "mess up" the RS485 bus, maybe we need accept that
+RS-232 != RS-485 and have a different driver for the two.  That's
+going to be a lot simpler than trying to make the same code work for
+both RS-232 and RS-485, and claiming that the existing RS-232 code is
+"fundamentally buggy" when it interacts poorly with something that has
+very different requirements than the historical RS-232 use cases.
 
-
-
-
-
-
-ADDI-DATA GmbH - Airport Boulevard B210 - 77836 Rheinmünster (Germany) Amtsgericht Mannheim HRB210433 Geschäftsführer René Ohlmann
-UST-ID-Nr.: DE 143754253 WEEE-Reg.-Nr. DE 65862200
-
+              	  	     	    - Ted
