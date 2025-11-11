@@ -1,50 +1,57 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 121F320ED;
-	Tue, 11 Nov 2025 04:04:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9BD02777F9
+	for <linux-serial@vger.kernel.org>; Tue, 11 Nov 2025 04:38:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=18.9.28.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762833841; cv=none; b=kVaFIiX+uHTtq4NAY34iu7ViK6kYWQfSM8p/LWIJJVF2MFvTaBwg2GoGLIykXlkapmWSiLW+v1+cDSJAcKJXa3nQjTcNFAcpuvu0fnPnWpIW1E6wiYPi8jC3PEGnigrS6MUtJabzbWI7sqOdwdkXVUU5J86jYAflnVEpYySOQE0=
+	t=1762835896; cv=none; b=sTawiT/nnDxj8YJcV41NKHFjxHYYkpFTsto95BmiB3+Ok419tu+4T4HN/FqEOnh9Dnbw+Y/SxpW26R+hI6N6wkhJFVNf0pdB86vtsZkwyjl7kKrNbSlLFJc8vk8Yt3O3eq3PqqJ8GusBXWti+GfyYoPvz67Ex/r8eSedwOSTJ0s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762833841; c=relaxed/simple;
-	bh=5yESDvzUI5BgeeIMK00M3a30TNEx4W3yOd0yGANujh8=;
+	s=arc-20240116; t=1762835896; c=relaxed/simple;
+	bh=JwD+WfOXVSJGzZ8waVpo6l9WuxaN4TeD3oBx/bSxw9w=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PhKpY+s7ygCKtbaEJjXinDahm73MCweQefu4PBSlc65YczAOlyca38G1Ui/k3lGOPje3kFJvBmErHFLKHOAbgoQRWBImaGyfyWS1Ef9a20HI/qZzYtNafShTfAe+qKK8zl/StBb5t5PO4KdrQOUr7I6fWkajTWLiDINIMBpe6vI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Y6zKlGzi; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=KUrNNga/6OCOK+PfY6u2zV55WtJwFiXDdNcHBm5otmn2QoWpWFo60cR0tSpDkgKpufpxutTsHBIU6bMwB7Qv6sLrx/kSCPLOtM+TqjDOkhQZzaGvf5B58NfQtZaGUVJ+Khg8cz4Ti/gD/OxnKtNbMz93VeJax+lPRa+LLjkcsx8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mit.edu; spf=pass smtp.mailfrom=mit.edu; dkim=pass (2048-bit key) header.d=mit.edu header.i=@mit.edu header.b=eehdZMur; arc=none smtp.client-ip=18.9.28.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mit.edu
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mit.edu
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Y6zKlGzi"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98C4DC4CEFB;
-	Tue, 11 Nov 2025 04:03:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1762833840;
-	bh=5yESDvzUI5BgeeIMK00M3a30TNEx4W3yOd0yGANujh8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Y6zKlGziGHfGlLWxf6kkVE4MRCuw25GMSHNKVoNyXdCpQRQy9bLVF7Jaib+ALvHlq
-	 R/hSrXo3CXDs6QO70gzLiIwo6arusnv1TnLlsaFrPdjWKxnSqim92EV9sn028Hlzpu
-	 cylLYdGwV88NOJp2M2ccDBnvA4+bLYxyzHKsrbXmIgRPFziDktH73pBkZTq61hIffw
-	 ZZNBrxX3defk7itPm3t1M7gpC687YEVwLH8j3E2xxWQ21vQOYA4UpG9RL7krKi/K8M
-	 YMssT2V4jiAtkI5aU1UWtb/9SeTEnK70LrR9l8yxKfk2UIjw2sdDbq/3CvFBQCRlON
-	 HLQLWBLF/6TMw==
-Date: Mon, 10 Nov 2025 22:08:08 -0600
-From: Bjorn Andersson <andersson@kernel.org>
-To: Praveen Talari <praveen.talari@oss.qualcomm.com>
-Cc: Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Dmitry Baryshkov <lumag@kernel.org>, 
-	linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, alexey.klimov@linaro.org, 
-	krzk@kernel.org, bryan.odonoghue@linaro.org, jorge.ramirez@oss.qualcomm.com, 
-	dmitry.baryshkov@oss.qualcomm.com, Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>, 
-	psodagud@quicinc.com, djaggi@quicinc.com, quic_msavaliy@quicinc.com, 
-	quic_vtanuku@quicinc.com, quic_arandive@quicinc.com, quic_shazhuss@quicinc.com, 
-	quic_cchiluve@quicinc.com, Prasad Sodagudi <prasad.sodagudi@oss.qualcomm.com>
-Subject: Re: [PATCH v1 2/4] pinctrl: qcom: msm: Fix potential deadlock in
- pinmux configuration
-Message-ID: <l2jnveusblgo5cfou3mx3usn7qgenj65wfyrnycmaqamkvhkee@gy745hkc3poc>
-References: <20251110101043.2108414-1-praveen.talari@oss.qualcomm.com>
- <20251110101043.2108414-3-praveen.talari@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=mit.edu header.i=@mit.edu header.b="eehdZMur"
+Received: from trampoline.thunk.org (pool-173-48-122-154.bstnma.fios.verizon.net [173.48.122.154])
+	(authenticated bits=0)
+        (User authenticated as tytso@ATHENA.MIT.EDU)
+	by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 5AB4c3EB024917
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 10 Nov 2025 23:38:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
+	t=1762835885; bh=7f9nskz50US5otTMA56btf4ZARhkZmFuBPp3q+iG5ok=;
+	h=Date:From:Subject:Message-ID:MIME-Version:Content-Type;
+	b=eehdZMur31zN5Wddqp0swc/sc6oyq2We5uCcxSJJDU8i2RcIrmb+Ex81Ma2pDX8+6
+	 RhxhzsLaKJhKqoCX5gAg8H3nfyQOua/XHBTcFJOjJoNkOfVQGcrSaDHLQrK/ZJrikO
+	 MuAn1VJTH77w1vKa6qDIzQ4WfBXme6mq9JM760ej0QW2Wdrgxa7c9K5oEp/3X8URuI
+	 tVKtIJHuOnnWXmFm3D/qRfLM7cTkJNptdJtTFSIYyBOwOemxRtjSM+dZ+LCPIfGqTp
+	 E4urQcNeyC6FGo1v5erx/eAEgWNyKjTRrGjJ4eP+kC5Z2aL+sI4S+R8deR1nXfLqtf
+	 P4BNQDVtWW2UA==
+Received: by trampoline.thunk.org (Postfix, from userid 15806)
+	id A9A7B2E00D9; Mon, 10 Nov 2025 23:38:03 -0500 (EST)
+Date: Mon, 10 Nov 2025 23:38:03 -0500
+From: "Theodore Ts'o" <tytso@mit.edu>
+To: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Maarten Brock <Maarten.Brock@sttls.nl>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: RFC: Serial port DTR/RTS - O_NRESETDEV
+Message-ID: <20251111043803.GK2988753@mit.edu>
+References: <bb44f856-10a2-40c7-a3f7-be50c8e4b0a9@zytor.com>
+ <20251107173743.GA3131573@mit.edu>
+ <dc42f5d4-a707-4442-bda6-1c1990666f54@zytor.com>
+ <20251110033556.GC2988753@mit.edu>
+ <ADB50E23-DC8B-43D0-A345-E10396A3DFD4@zytor.com>
+ <AMBPR05MB11925DA076098B05E418BF64283CEA@AMBPR05MB11925.eurprd05.prod.outlook.com>
+ <20251110201933.GH2988753@mit.edu>
+ <0F8021E8-F288-4669-8195-9948844E36FD@zytor.com>
+ <20251111035143.GJ2988753@mit.edu>
+ <D4AF3E24-8698-4EEC-9D52-655D69897111@zytor.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -53,63 +60,40 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20251110101043.2108414-3-praveen.talari@oss.qualcomm.com>
+In-Reply-To: <D4AF3E24-8698-4EEC-9D52-655D69897111@zytor.com>
 
-On Mon, Nov 10, 2025 at 03:40:41PM +0530, Praveen Talari wrote:
-> Replace disable_irq() with disable_irq_nosync() in msm_pinmux_set_mux()
-> to prevent potential deadlock when wakeup IRQ is triggered on the same
+On Mon, Nov 10, 2025 at 07:57:22PM -0800, H. Peter Anvin wrote:
+> I really think you are looking at this from a very odd point of
+> view, and you seem to be very inconsistent. Boot time setup? Isn't
+> that what setserial is for? We have the ability to feed this
+> configuration already, but you need a file descriptor.
 
-"potential"? In what case will calling disable_irq() from the irq
-handler of that irq not deadlock?
+I'm not really fond of adding some new open flag that to me seems
+**very** serial / RS-485 specific, and so I'm trying to find some
+way to avoid it.
 
-> GPIO being reconfigured.
-> 
-> The issue occurs when a wakeup IRQ is triggered on a GPIO and the IRQ
-> handler attempts to reconfigure the same GPIO's pinmux. In this scenario,
-> msm_pinmux_set_mux() calls disable_irq() which waits for the currently
-> running IRQ handler to complete, creating a circular dependency that
-> results in deadlock.
-> 
-> Using disable_irq_nosync() avoids waiting for the IRQ handler to
-> complete, preventing the deadlock condition while still properly
-> disabling the interrupt during pinmux reconfiguration.
-> 
-> Suggested-by: Prasad Sodagudi <prasad.sodagudi@oss.qualcomm.com>
+I also think that that the GPIO style timing requirements of RTS
+**really** should be done as a line discpline, and not in userspace.
 
-That's weird, I debugged your deadlock for you and told you to make this
-very change in:
+> Honestly, though, I'm far less interested in what 8250-based hardware does than e.g. USB.
 
-https://lore.kernel.org/all/7sxsfyu2kqbycyfftwfhrncwk3dfnubmzhyi2rqi3jtvi5qsnh@bya3cii45zhn/
+I'm quite confident that USB won't have "state" that will be preserved
+across a reboot, because the device won't even get powered up until
+the USB device is attached.  And part of the problem was that the
+requirements weren't particularly clear, and given the insistence that
+the "state" be preserved even across reboot, despite the serial port
+autoconfiguration, I had assumed you were posting uing the COM 1/2/3/4
+ports where autoconfiguration isn't stricty speaking necessary.
 
-So I guess Prasad told you how to fix this issue before I invested the
-time helping you?
+In some ways, USB ports might be easier, since it should be possible
+to specify udev rules which get passed to the driver when the USB
+serial device is inserted, and so *that* can easily be done without
+needing a file descriptor.
 
+And for this sort of thing, it seems perfectly fair to hard code some
+specific behavior using either a boot command line or a udev rule,
+since you seem to be positing that the serial port will be dedicated
+to some kind of weird-shit RS-485 bus device, where any time RTS/DTR
+gets raised, the bus will malfunction in weird and wondrous ways....
 
-Change looks good, and description captures the problem.
-
-Reviewed-by: Bjorn Andersson <andersson@kernel.org>
-
-Regards,
-Bjorn
-
-> Signed-off-by: Praveen Talari <praveen.talari@oss.qualcomm.com>
-> ---
->  drivers/pinctrl/qcom/pinctrl-msm.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/pinctrl/qcom/pinctrl-msm.c b/drivers/pinctrl/qcom/pinctrl-msm.c
-> index 67525d542c5b..e99871b90ab9 100644
-> --- a/drivers/pinctrl/qcom/pinctrl-msm.c
-> +++ b/drivers/pinctrl/qcom/pinctrl-msm.c
-> @@ -189,7 +189,7 @@ static int msm_pinmux_set_mux(struct pinctrl_dev *pctldev,
->  	 */
->  	if (d && i != gpio_func &&
->  	    !test_and_set_bit(d->hwirq, pctrl->disabled_for_mux))
-> -		disable_irq(irq);
-> +		disable_irq_nosync(irq);
->  
->  	raw_spin_lock_irqsave(&pctrl->lock, flags);
->  
-> -- 
-> 2.34.1
-> 
+     	     	     	  	      	 - Ted
