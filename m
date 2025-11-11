@@ -1,134 +1,88 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 299A735F8D7;
-	Tue, 11 Nov 2025 15:31:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB1671FC0ED;
+	Tue, 11 Nov 2025 18:01:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762875094; cv=none; b=GdmYsbYmvNSxh/bWYOSs3v1xL6F6hNZ4BEPprvdn1FvznUMjBtX3MeE3mg8pYWpziH7KV4g9YyJxMXi77ZNYIvI1bUZ2k8toZCmb9DtNttssO9Aas5wViPxxjRTKR/EX6zOD5vgzUJlqNalzyOfNpC6lt30nIo2A4yRiCuIQn0I=
+	t=1762884077; cv=none; b=h10T/uKQ32KYVczMsJgY43NmaNFSvcJDJQ/EoPy7dLCOI1rWNVRzAMIiogDJk+5i/9tHLH5/MhiDgjK2f7qeVAIVJ+Msq52AOqC2TRRFXsNv+cXeXcWtTujkPo+8Nd70//1JLFFbMl2/d6/9YHKz+dz5XlLQUzKoCdtPByJrV7o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762875094; c=relaxed/simple;
-	bh=4UJ1g/RrS+1ok3QrqJbUIP9v0jFKaMDfl7/AKpbi0Ts=;
+	s=arc-20240116; t=1762884077; c=relaxed/simple;
+	bh=f1tQc9fKxPXjOAXomvZMDR+OXXQMQ2u54M9yxOwFvaQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rdV/0YnbJzIEyoKYl+XHqVzcF0xBHUbd8LRWNDvvecGMxeZTJqQtPOxRhLkYgygFYCViO9ZT+/6T5jzFkqjljyLKiHszhybGnFFMTHoawGeXyejt2Yyx+KysYQPmkGYtGdgfQ+wfmO0xI3AQeLU+4AfDt4tAsugH1FS9fpS6GKA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=C3kE4ClJ; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=JN/s1b8iPFlRq0QyrGNC5ripWPJeAQZVfFg4HUJi+5eeHVlyaQcgBeu5k8EFA9JCy2z4fie9jfAmiuiiZb0ceXOhuOdBUZFYEyOwnY0mrSmX0IPfuzyAyrCB0+5e+ph1er6LsQflf7OgeOjnH4MiNJXUwdolC12pXQ062an45N8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fMnkboKg; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="C3kE4ClJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C218FC19422;
-	Tue, 11 Nov 2025 15:31:30 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fMnkboKg"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 609F8C113D0;
+	Tue, 11 Nov 2025 18:01:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1762875092;
-	bh=4UJ1g/RrS+1ok3QrqJbUIP9v0jFKaMDfl7/AKpbi0Ts=;
+	s=k20201202; t=1762884076;
+	bh=f1tQc9fKxPXjOAXomvZMDR+OXXQMQ2u54M9yxOwFvaQ=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=C3kE4ClJ9ge3PmupH8qGcfzs6GX2cnMkEQ+8Qe0tnSB90r6kana3akA4DX909CPnb
-	 Qxfy29plOEbifdRwWnq4a/Miy+W+AE8cvSmYGgoOw3ZKc9jfyl2npUUj1KS1PnD9f/
-	 qiP3BELSI5m2gMnBUZLr0XGw0m97s/6vSsefGggrgcOlA06SZMRR3eqrzIMn25/uOJ
-	 254AOx5GFlvZp9jY02BXzKXB0ZOBmP2qCZNqvmgql5TBET5sKpPiX3eFnAt0Gowecb
-	 RYEksejsE4tyfVECaDAZlbdKRt5BSs0Tgpz//Akil9t1xx5l2ifBjronUXeeYLpnzM
-	 5355npDMkjuOg==
-Date: Tue, 11 Nov 2025 09:35:43 -0600
-From: Bjorn Andersson <andersson@kernel.org>
-To: Praveen Talari <praveen.talari@oss.qualcomm.com>
-Cc: Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Dmitry Baryshkov <lumag@kernel.org>, 
-	linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, alexey.klimov@linaro.org, 
-	krzk@kernel.org, bryan.odonoghue@linaro.org, jorge.ramirez@oss.qualcomm.com, 
-	dmitry.baryshkov@oss.qualcomm.com, Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>, 
-	psodagud@quicinc.com, djaggi@quicinc.com, quic_msavaliy@quicinc.com, 
-	quic_vtanuku@quicinc.com, quic_arandive@quicinc.com, quic_shazhuss@quicinc.com, 
-	quic_cchiluve@quicinc.com, Prasad Sodagudi <prasad.sodagudi@oss.qualcomm.com>
-Subject: Re: [PATCH v1 2/4] pinctrl: qcom: msm: Fix potential deadlock in
- pinmux configuration
-Message-ID: <z2oh7r56b7w3genfbq4jj24nvjehmnncufwwp6oj6duhafdaja@f2dle7jfao7e>
-References: <20251110101043.2108414-1-praveen.talari@oss.qualcomm.com>
- <20251110101043.2108414-3-praveen.talari@oss.qualcomm.com>
- <l2jnveusblgo5cfou3mx3usn7qgenj65wfyrnycmaqamkvhkee@gy745hkc3poc>
- <5cd78217-8da9-4290-b098-8210280e65d8@oss.qualcomm.com>
+	b=fMnkboKgujlmFzn+1F12YPG0LrNsL91vnvn/TUaHmyNFFWL5O9ua8Vt0+9og4W4SD
+	 BBCkFndVJY/FAdIdXHQXE6w8eGcsHc2LUrZ4bFj3ascztlgJN7KftPO0B3TxD/R0mJ
+	 IYimW6mPvZwjTg+oxfVYA9OERnqCnrI6nVwyu8IibLiP6fX9/el1eW4d6S5qXDwDzK
+	 b7vto81dT3Fu1sK1LpH9Rdpxm91E2mhmKIbXEwmrhIgLPSmwkM2pxG9JMtrEql9Q11
+	 IdfxuLPKBWCFZiovJcrbeDfko2anZvHPKTe9vsZFm1ZF/YCTBHL+CZmEL55qjbdTei
+	 FY+9eoDAR1lZQ==
+Date: Tue, 11 Nov 2025 18:01:08 +0000
+From: Conor Dooley <conor@kernel.org>
+To: Jack Hsu <jh.hsu@mediatek.com>
+Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+	jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	andy@kernel.org, matthias.bgg@gmail.com,
+	angelogioacchino.delregno@collabora.com, srini@kernel.org,
+	ukleinek@kernel.org, gregkh@linuxfoundation.org,
+	jirislaby@kernel.org, daniel.lezcano@linaro.org, tglx@linutronix.de,
+	chunfeng.yun@mediatek.com, wim@linux-watchdog.org,
+	linux@roeck-us.net, sean.wang@mediatek.com,
+	zhiyong.tao@mediatek.com, andrew-ct.chen@mediatek.com,
+	lala.lin@mediatek.com, jitao.shi@mediatek.com,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-mediatek@lists.infradead.org, linux-pwm@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+	linux-watchdog@vger.kernel.org,
+	Project_Global_Chrome_Upstream_Group@mediatek.com
+Subject: Re: [PATCH v7 5/9] dt-bindings: usb: Support MediaTek MT8189 xhci
+Message-ID: <20251111-ocelot-ipod-4d5f902b640b@spud>
+References: <20251111070031.305281-1-jh.hsu@mediatek.com>
+ <20251111070031.305281-6-jh.hsu@mediatek.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="mkp7Vm+0xTxl2wgI"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <5cd78217-8da9-4290-b098-8210280e65d8@oss.qualcomm.com>
+In-Reply-To: <20251111070031.305281-6-jh.hsu@mediatek.com>
 
-On Tue, Nov 11, 2025 at 10:52:25AM +0530, Praveen Talari wrote:
-> Hi Bjorn,
-> 
-> Thank you for review.
-> 
-> On 11/11/2025 9:38 AM, Bjorn Andersson wrote:
-> > On Mon, Nov 10, 2025 at 03:40:41PM +0530, Praveen Talari wrote:
-> > > Replace disable_irq() with disable_irq_nosync() in msm_pinmux_set_mux()
-> > > to prevent potential deadlock when wakeup IRQ is triggered on the same
-> > 
-> > "potential"? In what case will calling disable_irq() from the irq
-> > handler of that irq not deadlock?
-> > 
-> > > GPIO being reconfigured.
-> > > 
-> > > The issue occurs when a wakeup IRQ is triggered on a GPIO and the IRQ
-> > > handler attempts to reconfigure the same GPIO's pinmux. In this scenario,
-> > > msm_pinmux_set_mux() calls disable_irq() which waits for the currently
-> > > running IRQ handler to complete, creating a circular dependency that
-> > > results in deadlock.
-> > > 
-> > > Using disable_irq_nosync() avoids waiting for the IRQ handler to
-> > > complete, preventing the deadlock condition while still properly
-> > > disabling the interrupt during pinmux reconfiguration.
-> > > 
-> > > Suggested-by: Prasad Sodagudi <prasad.sodagudi@oss.qualcomm.com>
-> > 
-> > That's weird, I debugged your deadlock for you and told you to make this
-> > very change in:
-> > 
-> > https://lore.kernel.org/all/7sxsfyu2kqbycyfftwfhrncwk3dfnubmzhyi2rqi3jtvi5qsnh@bya3cii45zhn/
-> > 
-> > So I guess Prasad told you how to fix this issue before I invested the
-> > time helping you?
-> 
-> Yes, that’s correct. Prasad had suggested it earlier.
-> 
 
-Okay, then this patch looks good.
+--mkp7Vm+0xTxl2wgI
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Regards,
-Bjorn
+On Tue, Nov 11, 2025 at 02:59:19PM +0800, Jack Hsu wrote:
+> modify dt-binding for support mt8189 dts node of xhci
+>=20
+> Signed-off-by: Jack Hsu <jh.hsu@mediatek.com>
 
-> Thanks,
-> Praveen Talari
-> 
-> > 
-> > 
-> > Change looks good, and description captures the problem.
-> > 
-> > Reviewed-by: Bjorn Andersson <andersson@kernel.org>
-> > 
-> > Regards,
-> > Bjorn
-> > 
-> > > Signed-off-by: Praveen Talari <praveen.talari@oss.qualcomm.com>
-> > > ---
-> > >   drivers/pinctrl/qcom/pinctrl-msm.c | 2 +-
-> > >   1 file changed, 1 insertion(+), 1 deletion(-)
-> > > 
-> > > diff --git a/drivers/pinctrl/qcom/pinctrl-msm.c b/drivers/pinctrl/qcom/pinctrl-msm.c
-> > > index 67525d542c5b..e99871b90ab9 100644
-> > > --- a/drivers/pinctrl/qcom/pinctrl-msm.c
-> > > +++ b/drivers/pinctrl/qcom/pinctrl-msm.c
-> > > @@ -189,7 +189,7 @@ static int msm_pinmux_set_mux(struct pinctrl_dev *pctldev,
-> > >   	 */
-> > >   	if (d && i != gpio_func &&
-> > >   	    !test_and_set_bit(d->hwirq, pctrl->disabled_for_mux))
-> > > -		disable_irq(irq);
-> > > +		disable_irq_nosync(irq);
-> > >   	raw_spin_lock_irqsave(&pctrl->lock, flags);
-> > > -- 
-> > > 2.34.1
-> > > 
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+pw-bot: not-applicable
+
+--mkp7Vm+0xTxl2wgI
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaRN55AAKCRB4tDGHoIJi
+0nZ6AP46To/9lZ7sJV4I2ivoFKzECzpBwHjBzWlqIKPxNe0XpwEAoe7F6s2tr9ca
+hGvlAGOJEUCvxWDv5C09Q2U7m+8MuwI=
+=k5Lj
+-----END PGP SIGNATURE-----
+
+--mkp7Vm+0xTxl2wgI--
