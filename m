@@ -1,59 +1,61 @@
-Received: from mail-pg1-f174.google.com (mail-pg1-f174.google.com [209.85.215.174])
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 136833254B2
-	for <linux-serial@vger.kernel.org>; Tue, 11 Nov 2025 19:26:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91177326D73
+	for <linux-serial@vger.kernel.org>; Tue, 11 Nov 2025 19:26:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762889200; cv=none; b=cYtti2cSe95Xc9nn3ZqyyABb1WfkxiPAwYZ2hbDPJgHeBLcnm3uqUVT3EtB+GMr535GmQXBnEeEmh1qjWm0Of5SFE2lTVRwrfWADFkNDlVCcg4U+EQVEWR+Ol/zcqLLe9yv9MM1HQlhHtDsgttj5kzn2+VyDHOF2/Pq5FhCHkM4=
+	t=1762889205; cv=none; b=YRvotTmjAnZycm84WcIB9I0rOZUXmRxgLAzHk8KuX5DwHbeAeVOlnGED4t+VHf4EV7UaSXN4bp8Xb2ZkTCR8oshLJj5P97m8RgsA6Um8sKMz+Um26pC7ScXGevze6ERlqxuby1nwwQdgF0yCG0jOQrQOtwvAERdixQ0AHMIYSlY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762889200; c=relaxed/simple;
-	bh=f5tl5Jvq2Hy4zPlmf7aG3KhINJQaIW2CKTgzdHwDxdg=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=apjbwdEs3Tf2NpFs+dK1AMRRq4AjWfwj/qqzADx5QyX201fi8QtI+8AqBhCHj9BoWz1MuClqgQJg1MpWLH/gzZNljPzpyiV0T/46/IlWQma7SGJWZYnF3+q+G+lh7ceaZmPCIPYe/ngGQl4kXk0QXlRnik/YAqUsYHjwuCyX5gA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=fworl9JJ; arc=none smtp.client-ip=209.85.215.174
+	s=arc-20240116; t=1762889205; c=relaxed/simple;
+	bh=PuM1AACg2d+I1zG41cyM/NLvQTJ2/H6JFpNiUOMJQO8=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=fEH7v5cYjMO3uB794AaqqwbFGu6lGmkZpc/dSoYBVaW1Ieo8n0HnXn1/czxrtaH7zkIhk9HLhXUC8s4IKsWPknKNwOk8dvkHXbnLp0ED0NAhG8Pil7I5xUbHaZ1VqUe1M4F+JNWqPG2PoAMYUaNrzI+3ouwHMlOSQIQCzR/9eBM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=czTSgGHG; arc=none smtp.client-ip=209.85.214.180
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="fworl9JJ"
-Received: by mail-pg1-f174.google.com with SMTP id 41be03b00d2f7-b996c8db896so57939a12.3
-        for <linux-serial@vger.kernel.org>; Tue, 11 Nov 2025 11:26:38 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="czTSgGHG"
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-297e239baecso11698645ad.1
+        for <linux-serial@vger.kernel.org>; Tue, 11 Nov 2025 11:26:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1762889198; x=1763493998; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=R3hXO0kohcojDK5N1gDQnbb7SNR3dS5AVJdqaUadyUo=;
-        b=fworl9JJ+4vd3fn2WOlGb5AqkA6rYiZCmYBo3d8aQGQ/NqLkXAa0JVpDvJ9nuWPKRz
-         d8RiWHeAVHBDeQ+L2pljavh42DtQMbly8l+/q9T5mt9H24Tn0ZevyKB0JjIYrztvMmC/
-         +OAG35/iohrb9LkjxkXhwy2Uwdr1kC+w/fjMc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1762889198; x=1763493998;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=chromium.org; s=google; t=1762889203; x=1763494003; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=R3hXO0kohcojDK5N1gDQnbb7SNR3dS5AVJdqaUadyUo=;
-        b=qTrpFhr7hBQ4/x2QpF6qyqH39b2u4yVCptcSg3Go8K8t5Pixq0e8nMe0ll5WZKL+ud
-         lMsL46ttceHwow46yKc8CnFiGwzNON0Bfd8NZVLk9moeSlIjCr85V7ep+nBvo9QQd1OI
-         +11iDUOEYeeiF2m5Cywc/rRuYP1MGK7bNCNsxu1UuuRtZjWc8a7Vu33oRGjLv+VF6ycu
-         nUGKnSu2qsQehhE+3LRJp9dH36D10Hxx+LpIKoq82Aub3Ny4XvqS0+dFDgKOCloZUvP6
-         V8dMV4dESW/jBGAgpaiN8SUea7B/unrL35fmb/UoX1DiI3lHQKJ42UsBzBwIKqEIeyyZ
-         BCsQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWl32z/wC/brelGfR3T+DYzsNLTp6xQqJHqb+IG0CCMo2PVTrJsH7b1J5T4rp6K3fxAYyfcbUYVwYYVorU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyErmY4RuUPr3J6JxKBShOkRnkwXgnenW2m5WSdOKZd3G2EH3QV
-	glRj9BgKgSIfMWRgJXPVBAMkYX42WVoxLrBlTaN1gOJWHRTRq3OLPhra95hMgR1q9w==
-X-Gm-Gg: ASbGncuvr1LBKwHpQBRh6gsGAV/2yi0AkSmOVSLNQEtH7Xpdszgag5rZWpxqllliRI4
-	Acpcl1m+bWLC8+o7SLYhACZ1BWszyN2B8o7vY0OSch3UhAYobjFX2ddGl5NnXRnqBDc6QRJxlFp
-	Y7ZcEaFkq+k9DaAOr0BCfgt+GsOEZDZOcOw9Jz0iz30oCTrTB0gRNG9LQyBP8EqW+cmeqWD+3JC
-	NpLQwYdLfNV9PbOSKRhprwyAm6tYaRDQQ9ckDfyUoO6ZlTMZ0YuhVXne5bRFvI2ns1IOhowyNc/
-	1VnbC27yxGwYqScDUATe3wBP4yDceFcXRW4uIhYnEynVnw28LWb+QruHm9cZPVWj2qnlcIh8X1K
-	UIMU8vTS4drf1DzBTfnEfaCtS4G53R01mPKbWr+JeTzs7rRs5KvfHuJJREbPM+cYcshburUamCa
-	CUbO6QLLrVM4s6m5vQ5S5prqUX8PlWcUge0MneqYfPd8sUj1RUExMgVPw90Vc=
-X-Google-Smtp-Source: AGHT+IGzawljQPfuMSEdjKEu2O+TbUwNMNOGAm74gscUESQKCa416kMewGM3RhTWM1GA5ootFgKOLg==
-X-Received: by 2002:a17:902:f684:b0:26a:8171:dafa with SMTP id d9443c01a7336-2984ed49524mr5944105ad.21.1762889198163;
-        Tue, 11 Nov 2025 11:26:38 -0800 (PST)
+        bh=BdNxsDJ9m7UGbRcYc8TABHid3VHQHv2h0LQ2tYeasVo=;
+        b=czTSgGHGABHc27+UBO36i8NZqqDMtOKmZJeshxFQSzE7w8yHWNBVghJ1OKn+sh/OTr
+         pO7ohLbAh3htpT5Tab1CnPR28QtdkyFyl1OX0XN2t7g8oGbTYQI7SVLTchelDU8JgIxB
+         AvhMjwViVRw3M+mr9FgRdEyIebm2BDdUMFLy8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1762889203; x=1763494003;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=BdNxsDJ9m7UGbRcYc8TABHid3VHQHv2h0LQ2tYeasVo=;
+        b=CnWRuCrRgwdvpC/m5SIa0X3M6zL4/p+5hr97KllCB0xljQw8LQuFH7irhwJFsuQ+qU
+         X3IQrM3EusEp9ZuCWND6aj/RLhUFhb5W1apnuHzmNeF7Q8Aa4Qs+djdmz/g0igYbhs5r
+         3GSOvZPqk/xGFuStFzuCj1dPb1biD28Gc9BRwRO1ba4tnixk/IOk89MBjLT9BmXYn+0C
+         KHzeMwwJPthGi3jom7x6/pA2h7xK4FQmFmIjL6iAms7xB29jjmmsS0Hn41nbzsVZd6aM
+         1eHZuUfJBoEd12Hls+SON63PkkgZXYC5olF2ZKxdFGAxQ0f/DlAhSSCKYzEUj1Ebbqt1
+         nnpA==
+X-Forwarded-Encrypted: i=1; AJvYcCVyDBy/tF3IjDT6hbjRF23wfpSvJoC6i6RLMQv14j4vjDr2cDvN0cpkgr66NAzufldgO70AQz7+YyltP3A=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyVwYfpaVzTbokwThrjbCo7od0zpE+LoeunDBKyaPzgQDQ3sYhD
+	Y2qhGFN3mYUZB0ct5IDfbLnYCA5phWslUebZMd6hU53fzJpeLYaD3ilJdBAG7j2KNQ==
+X-Gm-Gg: ASbGncvLHfveVrjHwpdXndQ2yVj79g7R1GMfwA9A/1WpgghIBCP1/+vl53XkF4s4bPT
+	gZpLbtaIWjuCOXfOQUAhmFABO9KMR4iJpfPm/C3dk1mg7VLNgRB0xvWJC4+w3YAGfBMxTfrS+p8
+	ZwYENl7GlC3rChOVrdEnq3K5liackCbWpH4hwDuVSEwvccrZmJPaAv8VuEZddgr4To2QwlD/dVq
+	IxT+lKhnDIAK3fIE4fqDS3I/aLqIJk7V0Z2YRLeHpdQUTojh+WJmhSPj9wHOBYp3jikWVVNbHF5
+	dbMPf0vOsG4hOWdWAMJZ/wLF6Nk1WVD1sJlrg9aryHcWCkOogzyC43xVxjzD38joJMnz3rKKfPt
+	l5Mu71jjHAWTCqMZqwj2e2yMOo/NJ3LKHNq9NIw5xrpMeBcZyPJe3CHOjYboM9OZbj8UlN6fFrk
+	4qYlJYcBRQKPPf34CbswShCxk/M5c3U6ixsjjSOSgVS5NoJ6CLrowFuqa5CHOkpxs7xTW+4w==
+X-Google-Smtp-Source: AGHT+IFUhgG9WpQVUBXncCvJtpv/AdoMd+/rut91fwnGCd4l3imDRqM9pTW1tm/5jIJ9RftY3SLcaw==
+X-Received: by 2002:a17:903:944:b0:295:28a4:f0c6 with SMTP id d9443c01a7336-2984ec88253mr6581805ad.0.1762889202759;
+        Tue, 11 Nov 2025 11:26:42 -0800 (PST)
 Received: from dianders.sjc.corp.google.com ([2a00:79e0:2e7c:8:ba9f:d4c6:9323:4864])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2984dcd0974sm4861075ad.90.2025.11.11.11.26.36
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2984dcd0974sm4861075ad.90.2025.11.11.11.26.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Nov 2025 11:26:36 -0800 (PST)
+        Tue, 11 Nov 2025 11:26:41 -0800 (PST)
 From: Douglas Anderson <dianders@chromium.org>
 To: Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
@@ -69,67 +71,49 @@ Cc: linux-samsung-soc@vger.kernel.org,
 	Julius Werner <jwerner@chromium.org>,
 	William McVicker <willmcvicker@google.com>,
 	Douglas Anderson <dianders@chromium.org>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Drew Fustini <fustini@kernel.org>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Will Deacon <will@kernel.org>,
 	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	soc@lists.linux.dev
-Subject: [PATCH 0/4] arm64: google: Introduce frankel, blazer, and mustang boards
-Date: Tue, 11 Nov 2025 11:22:03 -0800
-Message-ID: <20251111192422.4180216-1-dianders@chromium.org>
+	linux-serial@vger.kernel.org
+Subject: [PATCH 2/4] dt-bindings: serial: snps-dw-apb-uart: Add "google,lga-uart"
+Date: Tue, 11 Nov 2025 11:22:05 -0800
+Message-ID: <20251111112158.2.I040412d80bc262f213444aa6f6ec4f0334315a67@changeid>
 X-Mailer: git-send-email 2.51.2.1041.gc1ab5b90ca-goog
+In-Reply-To: <20251111192422.4180216-1-dianders@chromium.org>
+References: <20251111192422.4180216-1-dianders@chromium.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
+The Google Tensor G5 SoC (known as "laguna" and canonically written in
+code as "lga") has a UART based on Designware IP. The UART appears to
+work reasonably well, at least for serial console, with the existing
+driver in Linux. Add a compatible for this UART based on the canonical
+"lga" name for this SoC with a fallback to the existing
+"snps,dw-apb-uart".
 
-This series adds barebones device trees for Pixel 10 (frankel), Pixel
-10 Pro (blazer), and Pixel 10 Pro XL (mustang). With a yet-unreleased
-bootloader these can boot to a UART command prompt from an initramfs.
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+---
 
-The end result of the device trees introduced in this series is really
-pretty simple, so it's expected that most of the discussion in the
-series will be about compatible strings, file organization, dts/dtso
-organization, etc.
+ Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-
-Douglas Anderson (4):
-  dt-bindings: arm: google: Add bindings for frankel/blazer/mustang
-  dt-bindings: serial: snps-dw-apb-uart: Add "google,lga-uart"
-  arm64: dts: google: Add dts directory for Google-designed silicon
-  arm64: dts: google: Add initial dts for frankel, blazer, and mustang
-
- .../devicetree/bindings/arm/google.yaml       |  87 +++-
- .../bindings/serial/snps-dw-apb-uart.yaml     |   1 +
- MAINTAINERS                                   |   1 +
- arch/arm64/Kconfig.platforms                  |   6 +
- arch/arm64/boot/dts/Makefile                  |   1 +
- arch/arm64/boot/dts/google/Makefile           |  10 +
- arch/arm64/boot/dts/google/lga-b0.dts         | 391 ++++++++++++++++++
- .../arm64/boot/dts/google/lga-blazer-mp1.dtso |  22 +
- .../boot/dts/google/lga-frankel-mp1.dtso      |  22 +
- .../boot/dts/google/lga-mustang-mp1.dtso      |  22 +
- .../boot/dts/google/lga-muzel-common.dtsi     |  17 +
- 11 files changed, 561 insertions(+), 19 deletions(-)
- create mode 100644 arch/arm64/boot/dts/google/Makefile
- create mode 100644 arch/arm64/boot/dts/google/lga-b0.dts
- create mode 100644 arch/arm64/boot/dts/google/lga-blazer-mp1.dtso
- create mode 100644 arch/arm64/boot/dts/google/lga-frankel-mp1.dtso
- create mode 100644 arch/arm64/boot/dts/google/lga-mustang-mp1.dtso
- create mode 100644 arch/arm64/boot/dts/google/lga-muzel-common.dtsi
-
+diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+index cb9da6c97afc..df6a7558a9f2 100644
+--- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
++++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+@@ -53,6 +53,7 @@ properties:
+           - enum:
+               - brcm,bcm11351-dw-apb-uart
+               - brcm,bcm21664-dw-apb-uart
++              - google,lga-uart
+               - rockchip,px30-uart
+               - rockchip,rk1808-uart
+               - rockchip,rk3036-uart
 -- 
 2.51.2.1041.gc1ab5b90ca-goog
 
