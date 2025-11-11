@@ -1,30 +1,30 @@
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA37C34DB59;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D8E534DB53;
 	Tue, 11 Nov 2025 07:02:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.61.82.184
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.244.123.138
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762844562; cv=none; b=rKqJqudHDSUxQ6POC5/WGa5ljEacz0+F4+8rij6hVPVn6GtmhPAvX+zoOci4GgOBqjMPNqmFE+jj6nhW4BO7fZO2gnqD1NNPZwB+6A1QorySNtecfs73+DY7jV+V8cnoJrcSG2uSDuWR6n2Taf33G4Z6vOYamXCf9vPwWXMJlDQ=
+	t=1762844562; cv=none; b=tEXzPizvvV0mM2ErtHVPxUkh/9BLycP+Ova51U31RytMCNDeJ4rCkvl9eXT5PFKqkShfkjIvRNYlFW+Sda7TaIr0DnFyKZmqecyEXsw/xm0zzc8zDPCgAK2lqKrF+FAQsH69iLI3O1Inwtx5MMFYxl6dR5AGDwp5kvAnUD/N2Ps=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1762844562; c=relaxed/simple;
-	bh=utOtDWXgVfKwvn0wMcm5ctzBTWF/6NDWQMCm2gVko3A=;
+	bh=4rqrvKTQKXv/3wCxlOe5oWqv3eXw/EzrqaA+oV4YTQk=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=lJIe7C7VLBTpHPPk9tJV7dNRg2kwwlEK9DSq1tZKrEjdwtxd2Al5ygmyfFZQ0FwXm+VB4BWPK1ZhNZBL1d6mukRIHEsOrkHBdc4IJm4QXdSWeNqTUemK6YHwTh+9eNyXsJTLKJEC2VupsTsiHbJlDIXD2GWEDbdzwtzZJ3uBsi4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com; spf=pass smtp.mailfrom=mediatek.com; dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b=p4Liz86F; arc=none smtp.client-ip=210.61.82.184
+	 MIME-Version:Content-Type; b=aQn70VzgpuPVPifS5T+Hq3omVL10E4GEuXe42lt8FUIOMilZodirYsHf6YtWArUa9LX7kk8KVIbpvoPvuIt1HXG9QqhqBVmj9Sfl3JSO3sLYHmYOkLDiD8/paNL3nuUVNJZ+WCtv7knYf77TdZExg6Y3dxBfOf7YvU4ItTO3Ecw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com; spf=pass smtp.mailfrom=mediatek.com; dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b=a5KUNZcj; arc=none smtp.client-ip=60.244.123.138
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mediatek.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="p4Liz86F"
-X-UUID: 64eda7b0becc11f0b33aeb1e7f16c2b6-20251111
+	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="a5KUNZcj"
+X-UUID: 64958ae4becc11f08ac0a938fc7cd336-20251111
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=Z+SH4nfDD3SqIImpkWk6Lx8c6F14byP5m22pOkak3bY=;
-	b=p4Liz86F3btpEkL0yLFV6riexUTTGi6wITVPiTm49qJs/4KRlgEclIbwFAgC5ED42SyjUDm9RTeeSKN8NcAQlZgTuqOhmY4Qd+GXnPtW02TAWmrInnetY62mHvzwlHgI/3IejpRJQJBgzxlJAwQvTz+Jb9D5I4Lx7e2HA6j1LB8=;
+	h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=Qk22FsiJ1TZvIF9daOcqQcqNQF9noq0TtjJi4MpQ5+s=;
+	b=a5KUNZcjKN2YGuB4HP0Ny7TQ4Y2fwewdEd/TZL/moOjpoigHjQwGHl/9hBkzj1YyTco3EUBibIzgAimsHYIXYkhXpeB9OT4kRnCDoQnv8FT2E36f89H/mhamF1O23SmPKKcbDqdnEkexxn9BIf0O0Iry+zyT26VSWoZYXR7yLWE=;
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.3.6,REQID:cdd54d82-149e-4f35-9986-30b04e1fd1d1,IP:0,UR
+X-CID-O-INFO: VERSION:1.3.6,REQID:fd59ec90-7e36-42e7-9190-31392a881b29,IP:0,UR
 	L:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:r
 	elease,TS:0
-X-CID-META: VersionHash:a9d874c,CLOUDID:0f8fc357-17e4-43d2-bf73-55337eed999a,B
+X-CID-META: VersionHash:a9d874c,CLOUDID:1ee18382-b6af-4b29-9981-6bf838f9504d,B
 	ulkID:nil,BulkQuantity:0,Recheck:0,SF:81|82|102|836|888|898,TC:-5,Content:
 	0|15|50,EDM:-3,IP:nil,URL:0,File:130,RT:0,Bulk:nil,QS:nil,BEC:nil,COL:0,OS
 	I:0,OSA:0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
@@ -32,13 +32,13 @@ X-CID-BVR: 2,SSN|SDN
 X-CID-BAS: 2,SSN|SDN,0,_
 X-CID-FACTOR: TF_CID_SPAM_SNR
 X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
-X-UUID: 64eda7b0becc11f0b33aeb1e7f16c2b6-20251111
-Received: from mtkmbs09n1.mediatek.inc [(172.21.101.35)] by mailgw02.mediatek.com
+X-UUID: 64958ae4becc11f08ac0a938fc7cd336-20251111
+Received: from mtkmbs13n1.mediatek.inc [(172.21.101.193)] by mailgw01.mediatek.com
 	(envelope-from <jh.hsu@mediatek.com>)
 	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-	with ESMTP id 1568436034; Tue, 11 Nov 2025 15:02:32 +0800
+	with ESMTP id 1866401083; Tue, 11 Nov 2025 15:02:31 +0800
 Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs13n1.mediatek.inc (172.21.101.193) with Microsoft SMTP Server
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
  15.2.1748.26; Tue, 11 Nov 2025 15:02:30 +0800
 Received: from mtksitap99.mediatek.inc (10.233.130.16) by
@@ -61,10 +61,10 @@ CC: <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
 	<linux-serial@vger.kernel.org>, <linux-usb@vger.kernel.org>,
 	<linux-watchdog@vger.kernel.org>,
 	<Project_Global_Chrome_Upstream_Group@mediatek.com>, Jack Hsu
-	<jh.hsu@mediatek.com>, Conor Dooley <conor.dooley@microchip.com>
-Subject: [PATCH v7 6/9] dt-bindings: watchdog: Support MediaTek MT8189 wdt
-Date: Tue, 11 Nov 2025 14:59:20 +0800
-Message-ID: <20251111070031.305281-7-jh.hsu@mediatek.com>
+	<jh.hsu@mediatek.com>
+Subject: [PATCH v7 8/9] arm64: dts: mediatek: update rtc properties for MT6359
+Date: Tue, 11 Nov 2025 14:59:22 +0800
+Message-ID: <20251111070031.305281-9-jh.hsu@mediatek.com>
 X-Mailer: git-send-email 2.45.2
 In-Reply-To: <20251111070031.305281-1-jh.hsu@mediatek.com>
 References: <20251111070031.305281-1-jh.hsu@mediatek.com>
@@ -78,33 +78,33 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-MTK: N
 
-modify dt-binding for support mt8189 dts node of wdt
+Update properties of rtc for mt6359 PMIC
 
 Signed-off-by: Jack Hsu <jh.hsu@mediatek.com>
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
-Acked-by: Guenter Roeck <linux@roeck-us.net>
 
 ---
 Changs in v7:
- - update dt-bindings commit msg
-   (use "mt8189" instead of "mt8189 evb board")
+ - remove mt635x-auadc.h
+ - remove fg nodes
 
 ---
- Documentation/devicetree/bindings/watchdog/mediatek,mtk-wdt.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/boot/dts/mediatek/mt6359.dtsi | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/watchdog/mediatek,mtk-wdt.yaml b/Documentation/devicetree/bindings/watchdog/mediatek,mtk-wdt.yaml
-index ba0bfd73ab62..a05f8155b738 100644
---- a/Documentation/devicetree/bindings/watchdog/mediatek,mtk-wdt.yaml
-+++ b/Documentation/devicetree/bindings/watchdog/mediatek,mtk-wdt.yaml
-@@ -41,6 +41,7 @@ properties:
-               - mediatek,mt7623-wdt
-               - mediatek,mt7629-wdt
-               - mediatek,mt8173-wdt
-+              - mediatek,mt8188-wdt
-               - mediatek,mt8365-wdt
-               - mediatek,mt8516-wdt
-           - const: mediatek,mt6589-wdt
+diff --git a/arch/arm64/boot/dts/mediatek/mt6359.dtsi b/arch/arm64/boot/dts/mediatek/mt6359.dtsi
+index 467d8a4c2aa7..fe737254c091 100644
+--- a/arch/arm64/boot/dts/mediatek/mt6359.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt6359.dtsi
+@@ -302,6 +302,9 @@ mt6359_vsram_others_sshub_ldo: ldo_vsram_others_sshub {
+ 
+ 		mt6359rtc: rtc {
+ 			compatible = "mediatek,mt6358-rtc";
++			#address-cells = <1>;
++			#size-cells = <1>;
++			status = "disabled";
+ 		};
+ 	};
+ };
 -- 
 2.45.2
 
