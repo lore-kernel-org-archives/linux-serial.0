@@ -1,99 +1,212 @@
-Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9BD02777F9
-	for <linux-serial@vger.kernel.org>; Tue, 11 Nov 2025 04:38:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=18.9.28.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E321280033
+	for <linux-serial@vger.kernel.org>; Tue, 11 Nov 2025 05:22:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762835896; cv=none; b=sTawiT/nnDxj8YJcV41NKHFjxHYYkpFTsto95BmiB3+Ok419tu+4T4HN/FqEOnh9Dnbw+Y/SxpW26R+hI6N6wkhJFVNf0pdB86vtsZkwyjl7kKrNbSlLFJc8vk8Yt3O3eq3PqqJ8GusBXWti+GfyYoPvz67Ex/r8eSedwOSTJ0s=
+	t=1762838558; cv=none; b=GJeMkFr0qT4zo6pEHqOJg+aF0PXpCQ1I5xnNLguMD4BH4ajudCnlfgZ+vYTXGbB5mf+w78DAg7Y6c202YHfqaPZVbJhIaG0M2cbI0TGjkFzfPoXlnnRae1CUbgTSe6JUWoZRrByOXGFNrGZGmu03CHM+5JRu2dLE7zdwNSgimzE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762835896; c=relaxed/simple;
-	bh=JwD+WfOXVSJGzZ8waVpo6l9WuxaN4TeD3oBx/bSxw9w=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KUrNNga/6OCOK+PfY6u2zV55WtJwFiXDdNcHBm5otmn2QoWpWFo60cR0tSpDkgKpufpxutTsHBIU6bMwB7Qv6sLrx/kSCPLOtM+TqjDOkhQZzaGvf5B58NfQtZaGUVJ+Khg8cz4Ti/gD/OxnKtNbMz93VeJax+lPRa+LLjkcsx8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mit.edu; spf=pass smtp.mailfrom=mit.edu; dkim=pass (2048-bit key) header.d=mit.edu header.i=@mit.edu header.b=eehdZMur; arc=none smtp.client-ip=18.9.28.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mit.edu
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mit.edu
+	s=arc-20240116; t=1762838558; c=relaxed/simple;
+	bh=9OF1VOFFihuJuwmCepEzHh2ATgtLynGxJRG5+laPChQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=L1GOr0PIuCCyaGjnY8MA2AdvZhgFCBAYlWzHbn5fOnBlkPa/ElYNkWt1SMnDoQ5gGge53qm70BUC0trGh3smqSx+0ay7zgDrJQGgG5xiIWK67GIqjpeIVzyAYie0dy7y++6fMHMTSviz5pNnfczuC28D6RyAuiZ9yOMJF10BeGQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=MosCMOCW; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=L2DgMTqq; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mit.edu header.i=@mit.edu header.b="eehdZMur"
-Received: from trampoline.thunk.org (pool-173-48-122-154.bstnma.fios.verizon.net [173.48.122.154])
-	(authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-	by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 5AB4c3EB024917
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 10 Nov 2025 23:38:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
-	t=1762835885; bh=7f9nskz50US5otTMA56btf4ZARhkZmFuBPp3q+iG5ok=;
-	h=Date:From:Subject:Message-ID:MIME-Version:Content-Type;
-	b=eehdZMur31zN5Wddqp0swc/sc6oyq2We5uCcxSJJDU8i2RcIrmb+Ex81Ma2pDX8+6
-	 RhxhzsLaKJhKqoCX5gAg8H3nfyQOua/XHBTcFJOjJoNkOfVQGcrSaDHLQrK/ZJrikO
-	 MuAn1VJTH77w1vKa6qDIzQ4WfBXme6mq9JM760ej0QW2Wdrgxa7c9K5oEp/3X8URuI
-	 tVKtIJHuOnnWXmFm3D/qRfLM7cTkJNptdJtTFSIYyBOwOemxRtjSM+dZ+LCPIfGqTp
-	 E4urQcNeyC6FGo1v5erx/eAEgWNyKjTRrGjJ4eP+kC5Z2aL+sI4S+R8deR1nXfLqtf
-	 P4BNQDVtWW2UA==
-Received: by trampoline.thunk.org (Postfix, from userid 15806)
-	id A9A7B2E00D9; Mon, 10 Nov 2025 23:38:03 -0500 (EST)
-Date: Mon, 10 Nov 2025 23:38:03 -0500
-From: "Theodore Ts'o" <tytso@mit.edu>
-To: "H. Peter Anvin" <hpa@zytor.com>
-Cc: Maarten Brock <Maarten.Brock@sttls.nl>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: RFC: Serial port DTR/RTS - O_NRESETDEV
-Message-ID: <20251111043803.GK2988753@mit.edu>
-References: <bb44f856-10a2-40c7-a3f7-be50c8e4b0a9@zytor.com>
- <20251107173743.GA3131573@mit.edu>
- <dc42f5d4-a707-4442-bda6-1c1990666f54@zytor.com>
- <20251110033556.GC2988753@mit.edu>
- <ADB50E23-DC8B-43D0-A345-E10396A3DFD4@zytor.com>
- <AMBPR05MB11925DA076098B05E418BF64283CEA@AMBPR05MB11925.eurprd05.prod.outlook.com>
- <20251110201933.GH2988753@mit.edu>
- <0F8021E8-F288-4669-8195-9948844E36FD@zytor.com>
- <20251111035143.GJ2988753@mit.edu>
- <D4AF3E24-8698-4EEC-9D52-655D69897111@zytor.com>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="MosCMOCW";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="L2DgMTqq"
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5AAKHlZN211093
+	for <linux-serial@vger.kernel.org>; Tue, 11 Nov 2025 05:22:36 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	7Te5+jGKVmczWAFRX4897loQZ9s+94IKGhi21It1SFQ=; b=MosCMOCW3NChtPvs
+	1bMlSDAStRvBjBJXjFGSIIe7xvCam9wnhaxQzB66lwiNjiOQ/qnwNa72xMafmilu
+	PlW8P2WijEWhS+bhRRQAXYqJLiEkCvJ596Xzxl7HtrFjvcmw+PTma5FAp1Ajap3S
+	zSR/bK8hYfviy4wkcYa2aMxyZzhPXjbuRNawLs/NE07hoRJmFMmUUbwsevY3uyI2
+	YbohSNdFNIDmOFZ9+jTEEsg04GL3AF5R29fevs0MOKf8/aU64bqQwYd7xkC7gHp3
+	TVtvbwICqiGH13o6ULl4Jr3PVpkNBc1KxT1P+VTTrC7BHTPWphRa/nyb9pBsstbH
+	pb/Wqw==
+Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com [209.85.215.197])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4abpy8h683-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-serial@vger.kernel.org>; Tue, 11 Nov 2025 05:22:36 +0000 (GMT)
+Received: by mail-pg1-f197.google.com with SMTP id 41be03b00d2f7-b993eb2701bso3313566a12.0
+        for <linux-serial@vger.kernel.org>; Mon, 10 Nov 2025 21:22:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1762838556; x=1763443356; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=7Te5+jGKVmczWAFRX4897loQZ9s+94IKGhi21It1SFQ=;
+        b=L2DgMTqqT2kHCVAgyb0L1d2M5AhD+8YwPLnlM3JJuLvnoQT52aDkTGLek27Fk+JsgD
+         GzQ6+tMMzpuL0JH/H7WfN5t30E8xUoA1VAzSTLcxEw1bpcZVTt6BZhtLM6PmNWC/Jd98
+         Rcug8a9m/InRbm5nO2yrljyXpMndqB/rojuoyKE292y8hcW4N0zd7gqoiQ/99+REL6Dg
+         Es883jIpXTGBBAiu8xGZH9IB1U0jcAf5i9yKDStuO57EKDYuLS0hGah8EpvuutqCZhPp
+         LZOi/txN8ca/FYp4mYf3czoqx44XLmcS/M7kIlQQlN2Hp/jmPvWCAE1GBuOqRI7oczq1
+         zASQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1762838556; x=1763443356;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=7Te5+jGKVmczWAFRX4897loQZ9s+94IKGhi21It1SFQ=;
+        b=VeehPLV2BjK+4+HNdIGIzjNv31mPozqhkz/VP4JvGSauzIByhx01DRUclG5RCyylxA
+         1HSp12/S3e+HLhRofO8DYokZuHW9ZLX9HDvS9x7ghPe1P1snns4470Dkvir5VtvqzNwH
+         vfX5M41ocmvlGnkWeEzDmZ+GcjODYhtm52kIk1JUq+NY2HhU22uYp5/XT3d8PDktRgad
+         it/qyJqWPszLhrTFmqAfNzdpdnpVE8JG5fml7chHcExlywaLNo1MW6ehk3O4xKXw8qWM
+         XQCvxIam00vAwgJfT88LcyeBqtPxQdBKdU8xYqhfzF5Q28pyrqkDDxDJG7bEdrYNCk0w
+         EMtw==
+X-Forwarded-Encrypted: i=1; AJvYcCXFrtudabTTxrG3wENognxwA8KNG/RAzJXqD6iy0w8qvNS+678MctcOdlBkdzMtOzuN0f/qGSgh9LAJCfc=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxo76o8t2SAw6ldFwWfmzqEV8mWUqYbA38e0CZEgnZVaPyURdv2
+	g4jAievZ42q5y+wVM1oGmz7uHB9XQ8KHAQ2SMlLwd/NBO/p4HRnLwTrAdYlkQv/m19kHiZu/DYm
+	yZ7pTxHH3j3HlylW8m5iO52TAeWgbCMzOnL413cL5n0FZktcihjln2AMzTihy8Q2kc3g=
+X-Gm-Gg: ASbGncuVEvMDRBvYFMwYRb1MiuTAyqgh6Qua8ufMo77RUf4vb0LVb5YRzCsqRQ0Lzhh
+	ZmREtDgy0B74NYVVfh++rrFtjdG4PCkijHxFZo7q/sk61OIql00zPrEYceQmFPbB+idUEe6H8La
+	G6ahQH1sefg7kl9Q8PmVan5jETT8++GJ/gJaKBodCfxLSU/hhPvFjIlXX6lmzqmD4wCKMlKo/4l
+	o7VDCteXldyMV8WIupXwLsLiXcJ/fjZ5srDwK13+UIUeH6vLCa5lMefSmHbiZA9Ra+gNZingSQL
+	AxsKh9KUr18YkkNgmsARoX2HUY7WEggMBF6c4cWuvhMHhaVPSyQxxmZyrmTVFy8M7Vr2IObPxJ5
+	ZDxbTPCAOwMENEl+zGCCW4t3/y+2zLGw=
+X-Received: by 2002:a17:903:244a:b0:246:7a43:3f66 with SMTP id d9443c01a7336-297e561ac3dmr145695845ad.7.1762838555577;
+        Mon, 10 Nov 2025 21:22:35 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IG44dhpC7FpqpgcK7ljK7RCCQ2W7yUdgoVHyPBRAs0CPdhZrrNwS6XdCmzCnymqvg8hfGr33Q==
+X-Received: by 2002:a17:903:244a:b0:246:7a43:3f66 with SMTP id d9443c01a7336-297e561ac3dmr145695555ad.7.1762838554961;
+        Mon, 10 Nov 2025 21:22:34 -0800 (PST)
+Received: from [10.218.32.171] ([202.46.22.19])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-29650c5f011sm165660855ad.25.2025.11.10.21.22.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 10 Nov 2025 21:22:34 -0800 (PST)
+Message-ID: <5cd78217-8da9-4290-b098-8210280e65d8@oss.qualcomm.com>
+Date: Tue, 11 Nov 2025 10:52:25 +0530
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <D4AF3E24-8698-4EEC-9D52-655D69897111@zytor.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1 2/4] pinctrl: qcom: msm: Fix potential deadlock in
+ pinmux configuration
+To: Bjorn Andersson <andersson@kernel.org>
+Cc: Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+ <conor+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, Dmitry Baryshkov <lumag@kernel.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-serial@vger.kernel.org, alexey.klimov@linaro.org,
+        krzk@kernel.org, bryan.odonoghue@linaro.org,
+        jorge.ramirez@oss.qualcomm.com, dmitry.baryshkov@oss.qualcomm.com,
+        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>, psodagud@quicinc.com,
+        djaggi@quicinc.com, quic_msavaliy@quicinc.com,
+        quic_vtanuku@quicinc.com, quic_arandive@quicinc.com,
+        quic_shazhuss@quicinc.com, quic_cchiluve@quicinc.com,
+        Prasad Sodagudi <prasad.sodagudi@oss.qualcomm.com>
+References: <20251110101043.2108414-1-praveen.talari@oss.qualcomm.com>
+ <20251110101043.2108414-3-praveen.talari@oss.qualcomm.com>
+ <l2jnveusblgo5cfou3mx3usn7qgenj65wfyrnycmaqamkvhkee@gy745hkc3poc>
+Content-Language: en-US
+From: Praveen Talari <praveen.talari@oss.qualcomm.com>
+In-Reply-To: <l2jnveusblgo5cfou3mx3usn7qgenj65wfyrnycmaqamkvhkee@gy745hkc3poc>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-ORIG-GUID: bV24Lr-yDLpThKZrWlwjwnWn_z13q3al
+X-Authority-Analysis: v=2.4 cv=AYW83nXG c=1 sm=1 tr=0 ts=6912c81c cx=c_pps
+ a=rz3CxIlbcmazkYymdCej/Q==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
+ a=IkcTkHD0fZMA:10 a=6UeiqGixMTsA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8
+ a=IV0jPyGM1QMGTU76z_QA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=bFCP_H2QrGi7Okbo017w:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMTExMDAzOSBTYWx0ZWRfX1i/vKBFyXmQ0
+ QWmg1NAf77fO/jSqJ0NtOC85adcMZw61IobX7v05WT9w4nvplyHbbWVxBo6cLKe7cgS1kCPhwqh
+ u7e3N488adPSS3m00yer76y06ByIXAsqMG5ERZCT4U2kzCm7GRUmyUfMdb8nTpDgJjKgLdgpu4b
+ 2NZya0WfZVcmCORO83M8F+cQHWNREButwcjHWXHbRdrMdUFIQDk9yTG2Wt8ryaX2I/Ya4XvFa3h
+ 6KcGjS0or+g4pG8uimN9EHw9z1hM5u95DWPdwA521kOwgoMtrcl77cKHf/FEGKHJ+DHNmHAUwY5
+ yPc7BO/JncjWmJ75u1b3kf3xnUlALiwWqkcl9U7Fa3u+WhNZUjO8mwvtkQCNDy0RyOY4j90hVZ1
+ J4nNt/fwPj87lB8ARv6UloxsmQoWug==
+X-Proofpoint-GUID: bV24Lr-yDLpThKZrWlwjwnWn_z13q3al
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
+ definitions=2025-11-11_01,2025-11-10_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ spamscore=0 impostorscore=0 malwarescore=0 adultscore=0 clxscore=1015
+ suspectscore=0 priorityscore=1501 lowpriorityscore=0 bulkscore=0 phishscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2510240001 definitions=main-2511110039
 
-On Mon, Nov 10, 2025 at 07:57:22PM -0800, H. Peter Anvin wrote:
-> I really think you are looking at this from a very odd point of
-> view, and you seem to be very inconsistent. Boot time setup? Isn't
-> that what setserial is for? We have the ability to feed this
-> configuration already, but you need a file descriptor.
+Hi Bjorn,
 
-I'm not really fond of adding some new open flag that to me seems
-**very** serial / RS-485 specific, and so I'm trying to find some
-way to avoid it.
+Thank you for review.
 
-I also think that that the GPIO style timing requirements of RTS
-**really** should be done as a line discpline, and not in userspace.
+On 11/11/2025 9:38 AM, Bjorn Andersson wrote:
+> On Mon, Nov 10, 2025 at 03:40:41PM +0530, Praveen Talari wrote:
+>> Replace disable_irq() with disable_irq_nosync() in msm_pinmux_set_mux()
+>> to prevent potential deadlock when wakeup IRQ is triggered on the same
+> 
+> "potential"? In what case will calling disable_irq() from the irq
+> handler of that irq not deadlock?
+> 
+>> GPIO being reconfigured.
+>>
+>> The issue occurs when a wakeup IRQ is triggered on a GPIO and the IRQ
+>> handler attempts to reconfigure the same GPIO's pinmux. In this scenario,
+>> msm_pinmux_set_mux() calls disable_irq() which waits for the currently
+>> running IRQ handler to complete, creating a circular dependency that
+>> results in deadlock.
+>>
+>> Using disable_irq_nosync() avoids waiting for the IRQ handler to
+>> complete, preventing the deadlock condition while still properly
+>> disabling the interrupt during pinmux reconfiguration.
+>>
+>> Suggested-by: Prasad Sodagudi <prasad.sodagudi@oss.qualcomm.com>
+> 
+> That's weird, I debugged your deadlock for you and told you to make this
+> very change in:
+> 
+> https://lore.kernel.org/all/7sxsfyu2kqbycyfftwfhrncwk3dfnubmzhyi2rqi3jtvi5qsnh@bya3cii45zhn/
+> 
+> So I guess Prasad told you how to fix this issue before I invested the
+> time helping you?
 
-> Honestly, though, I'm far less interested in what 8250-based hardware does than e.g. USB.
+Yes, that’s correct. Prasad had suggested it earlier.
 
-I'm quite confident that USB won't have "state" that will be preserved
-across a reboot, because the device won't even get powered up until
-the USB device is attached.  And part of the problem was that the
-requirements weren't particularly clear, and given the insistence that
-the "state" be preserved even across reboot, despite the serial port
-autoconfiguration, I had assumed you were posting uing the COM 1/2/3/4
-ports where autoconfiguration isn't stricty speaking necessary.
+Thanks,
+Praveen Talari
 
-In some ways, USB ports might be easier, since it should be possible
-to specify udev rules which get passed to the driver when the USB
-serial device is inserted, and so *that* can easily be done without
-needing a file descriptor.
-
-And for this sort of thing, it seems perfectly fair to hard code some
-specific behavior using either a boot command line or a udev rule,
-since you seem to be positing that the serial port will be dedicated
-to some kind of weird-shit RS-485 bus device, where any time RTS/DTR
-gets raised, the bus will malfunction in weird and wondrous ways....
-
-     	     	     	  	      	 - Ted
+> 
+> 
+> Change looks good, and description captures the problem.
+> 
+> Reviewed-by: Bjorn Andersson <andersson@kernel.org>
+> 
+> Regards,
+> Bjorn
+> 
+>> Signed-off-by: Praveen Talari <praveen.talari@oss.qualcomm.com>
+>> ---
+>>   drivers/pinctrl/qcom/pinctrl-msm.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/pinctrl/qcom/pinctrl-msm.c b/drivers/pinctrl/qcom/pinctrl-msm.c
+>> index 67525d542c5b..e99871b90ab9 100644
+>> --- a/drivers/pinctrl/qcom/pinctrl-msm.c
+>> +++ b/drivers/pinctrl/qcom/pinctrl-msm.c
+>> @@ -189,7 +189,7 @@ static int msm_pinmux_set_mux(struct pinctrl_dev *pctldev,
+>>   	 */
+>>   	if (d && i != gpio_func &&
+>>   	    !test_and_set_bit(d->hwirq, pctrl->disabled_for_mux))
+>> -		disable_irq(irq);
+>> +		disable_irq_nosync(irq);
+>>   
+>>   	raw_spin_lock_irqsave(&pctrl->lock, flags);
+>>   
+>> -- 
+>> 2.34.1
+>>
