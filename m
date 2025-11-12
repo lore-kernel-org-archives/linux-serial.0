@@ -1,117 +1,208 @@
-Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 573CF332EBA
-	for <linux-serial@vger.kernel.org>; Wed, 12 Nov 2025 12:43:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5676823D7CD;
+	Wed, 12 Nov 2025 14:45:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762951427; cv=none; b=oco90BEw3ssV+zedPXLPksUd2wG+M4BBNo/SlXaXQ8OIDKuwuV0rJe+t/TY36T1x4p3e793IL6lrQKAMMNsA/17MJydskXEvH6AwcoAWoxEzQY6GRi7AOH98oZG2FO2Se0BC2apjdowYj1PXZcakHMUOr2XMoPj9bGkrfq5OCcU=
+	t=1762958731; cv=none; b=IUYWAxfoP1LA+OAskdsN92KwrdlCcxo3MEex5VQZSPqDm49uxx2oFlpqVgFuasYwjZD+UBiYI7TUpiCsUkIQss4+rIuOMzVbTPXOQe1poipw1sfcaZlDbPfzdXqcHsNP1iVofHD4LxgHviW7ks993b/bboqU/HhMCHwR1suMjYI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762951427; c=relaxed/simple;
-	bh=oDG71wLkZH6zNZ8BBmCy1cYzzKvLo2hY7GqxG8NdDxk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=fVvh2zBf3j8FHhySs9NPz9ez760YhXUiUL+E8yZGSIjzlbqeuB+Avli81nl8XvRVt0v3BjAC/O5XkEraa4lGsHgu7uZVw/RzHAzgYhAUeYLY5fJpShpEFdtaMzoGvHOC8YNxGjolL5LhhMmFeiPPGzNV5D7m/vE6LkGJzN26pQk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=uxo36mmt; arc=none smtp.client-ip=209.85.167.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1762958731; c=relaxed/simple;
+	bh=n4VGx5zAuR93d8nYMgZV1H2hgcadDo+HwhKU8BhAt7M=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=cAw/g+9WMn6tm2sF1JMlluxThhdSC/4eDO4RAEDmySNrsn/TI0EUup9IE3UHVS1gLWCOB4v81oclAzc+gVrx6qKeUWIywauUjBKnH1T0HDl9MlUclGy74JNr6Zn+pAGi70SmDlupw9lEMeq6rPLeRzUhr4j3u5MUTAsMRiKIFeM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LYF4kRBA; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="uxo36mmt"
-Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-5942a631c2dso671457e87.2
-        for <linux-serial@vger.kernel.org>; Wed, 12 Nov 2025 04:43:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1762951423; x=1763556223; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=oDG71wLkZH6zNZ8BBmCy1cYzzKvLo2hY7GqxG8NdDxk=;
-        b=uxo36mmtj8Hh+wII3sTWzpG8uou1bkkJCbYDvyvOcxOOpzOUM7cmRMlItxiPTpT3lA
-         0G3JQ0olpAdjQaaMDHrN4TDKa9GjJx7tk6u6pd3Mc2Txjn7ROQuK4pSzF8Gq7fX4YyOk
-         MZjPar6m400HZLMhAqlqqVEBOJxUwcjMmfTtUkAK9CMhlolvzTw3+2VH+L4mzl1GdxMZ
-         qr8/FIgPcanmRg1Oen4DdUs9Iryg673YXkKnJj6U2FDyOB0MPjflGMfZpKyT9PHjSijc
-         u+lPz5943ICxpmNykEHYHxTVJeIAbR2JReXirkb5hro76hxAHTHg91ciWg2dX/tjksOM
-         AkWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1762951423; x=1763556223;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=oDG71wLkZH6zNZ8BBmCy1cYzzKvLo2hY7GqxG8NdDxk=;
-        b=PjxqjDHq8ANNY1Om50kFvMwTpeUP9lR1NeKpMiyCOWiNBv5dJTIvKKHDjxI7TTITdL
-         KbV/5Mby1ur2MqVOMQ6qv3V+stZ+dfiroZZ3SM+W1dWrbx/YxQJi4BNv6P5GMvUR6DVc
-         /96lrmEbuHn4kvGQ/3jVuTELTYONbA9g0Ky2Zd0tLH4YAYbIUwUbG8Ml+4gKs04VwHtj
-         JY7Y2jqpmDkww9Z2w+rVoBHnPlH1AVPxdxaKN0sr5il6HFcs/HyshEhVk1VRKGIArbno
-         2yHJ0ZDW0ODu1xTDPoOSpcpfOLbVb6AWAz1Bf7Noi0dJciU1QS+QYTopE8eep7mSZcuD
-         2ugA==
-X-Forwarded-Encrypted: i=1; AJvYcCWFLplkJXm5aYugA219VgcA9Hy5yhu9QyqmJISxtE0zxatoRaviE4fx0jpqtdvHgY6dQ4U22zzHH7Kq4S4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyUVzihq6f9FCO3wBvJsMzFNpprDaECLeavvcfYTmG8RKuAmbgd
-	YTssWvJeu7wxwMaZrRfuEXaGu6J9IMm7orMtbA1E70t3V5Gv1TfXdkpn+de2VlXZYtKDaGMvEqV
-	cOZn7vjmnsn+QJVSVCRSIQxXOdFA7SYNNvsENqC4jFA==
-X-Gm-Gg: ASbGncvoEM/rRzxLQOznqq+7GDNDXlLFu5PC1iFmzuoGld6plOPY/AIQFlexQgafsbz
-	0JdzZ2FJV1b1H4yW41LFuThERmgeFDuPQuZ3x2f+4uB+OtJlYyL1rcFES6dnSOWB/LZv8NMBZ6N
-	2ILElLUJQhzj0Ou0R1CLBS34Idy/Z5CKJycoXpzqnG6W/w7zWB8gSCtEo+J2wDolBgrkCtZ8QX/
-	XRQnCEi7RhC27NFRdOM8abdnjTsQGTrdh/jjtwF57FKf88RHlL45dahb6fD
-X-Google-Smtp-Source: AGHT+IFKrAN2G2zTZh4SCpeU6gZa9GThIvhb7rVDTGkR/MLZ+R0xImuA8WoUYuizes16PmjbOY9KlVCaKR3Fm5qO6C8=
-X-Received: by 2002:a05:6512:b9d:b0:595:7e01:6b3a with SMTP id
- 2adb3069b0e04-5957e016e6emr28072e87.14.1762951423456; Wed, 12 Nov 2025
- 04:43:43 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LYF4kRBA"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0C078C113D0;
+	Wed, 12 Nov 2025 14:45:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1762958731;
+	bh=n4VGx5zAuR93d8nYMgZV1H2hgcadDo+HwhKU8BhAt7M=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=LYF4kRBAPUsb+Lg+VTt5bz1GkokdfnPEyOYmdznIS05xlFl20JoTqmwgleDHEQSGr
+	 NSh1bdMzh+dWFY6hTy/cH6hbAbspOmFpjRO6n9INnRTdkUpcIH3FjQ8fh6TiUhtMf4
+	 W1Ghj/c58J+KQoOD9aetpDzt3niBbScoJ02fiL1EtST5HbD5bWQJc/dwHuqEm19d9Y
+	 YyPfGRBTtnQxkSsxM/ieDECLJaNc8qv4QpsLgZtSlBOC7Mo3CtrhL2wkGs/z6ld1U7
+	 sCa9WIscQ6msA36uiU9ymwhklUFNadVHtHm+GZxMwGRWd5lFQEBurzGqe/w9rAB6Up
+	 iroe+/0HetTkg==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF608CD1297;
+	Wed, 12 Nov 2025 14:45:30 +0000 (UTC)
+From: Manivannan Sadhasivam via B4 Relay <devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org>
+Date: Wed, 12 Nov 2025 20:15:14 +0530
+Subject: [PATCH 2/9] serdev: Add serdev device based driver match support
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20251110101043.2108414-1-praveen.talari@oss.qualcomm.com> <20251110101043.2108414-3-praveen.talari@oss.qualcomm.com>
-In-Reply-To: <20251110101043.2108414-3-praveen.talari@oss.qualcomm.com>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Wed, 12 Nov 2025 13:43:30 +0100
-X-Gm-Features: AWmQ_blw_0zZEbC2wTIU0HIhaE3Pg5Px5M6V4b6IhL47o7V7zMZgJkY7fz-LNV8
-Message-ID: <CACRpkdYEbxtjoi8KQxS5fY6xr3UZwQmG-yKvT3L8fRcCXDaAwQ@mail.gmail.com>
-Subject: Re: [PATCH v1 2/4] pinctrl: qcom: msm: Fix potential deadlock in
- pinmux configuration
-To: Praveen Talari <praveen.talari@oss.qualcomm.com>
-Cc: Bjorn Andersson <andersson@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Dmitry Baryshkov <lumag@kernel.org>, linux-arm-msm@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, 
-	alexey.klimov@linaro.org, krzk@kernel.org, bryan.odonoghue@linaro.org, 
-	jorge.ramirez@oss.qualcomm.com, dmitry.baryshkov@oss.qualcomm.com, 
-	Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>, psodagud@quicinc.com, djaggi@quicinc.com, 
-	quic_msavaliy@quicinc.com, quic_vtanuku@quicinc.com, 
-	quic_arandive@quicinc.com, quic_shazhuss@quicinc.com, 
-	quic_cchiluve@quicinc.com, Prasad Sodagudi <prasad.sodagudi@oss.qualcomm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20251112-pci-m2-e-v1-2-97413d6bf824@oss.qualcomm.com>
+References: <20251112-pci-m2-e-v1-0-97413d6bf824@oss.qualcomm.com>
+In-Reply-To: <20251112-pci-m2-e-v1-0-97413d6bf824@oss.qualcomm.com>
+To: Rob Herring <robh@kernel.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Nathan Chancellor <nathan@kernel.org>, 
+ Nicolas Schier <nicolas.schier@linux.dev>, Hans de Goede <hansg@kernel.org>, 
+ =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+ Mark Pearson <mpearson-lenovo@squebb.ca>, 
+ "Derek J. Clark" <derekjohn.clark@gmail.com>, 
+ Manivannan Sadhasivam <mani@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Marcel Holtmann <marcel@holtmann.org>, 
+ Luiz Augusto von Dentz <luiz.dentz@gmail.com>, 
+ Bartosz Golaszewski <brgl@bgdev.pl>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-kbuild@vger.kernel.org, platform-driver-x86@vger.kernel.org, 
+ linux-pci@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org, 
+ linux-pm@vger.kernel.org, Stephan Gerhold <stephan.gerhold@linaro.org>, 
+ Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, 
+ Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=4197;
+ i=manivannan.sadhasivam@oss.qualcomm.com; h=from:subject:message-id;
+ bh=nlTsT1KuaCByFt+CSA6xTACxTdskiJ12kycskYPPccs=;
+ b=owGbwMvMwMUYOl/w2b+J574ynlZLYsgUmdv29OlUg/BV3A+d6k4uKeJU0Hk27zpng/n/ip/3/
+ Vty267EdDIaszAwcjHIiimypC911mr0OH1jSYT6dJhBrEwgUxi4OAVgIsYWHAyzO1dLnLyaOKXp
+ A3PP/5YuY9l5uw+I39568paoWoWXylnba4G8J5u09Hf1mD/5Wv5ZoKXx+b0NeuI3s77mPOJKqbw
+ y5xzvLcllfYWSfBufmlzZpGxYf2vuDcvXGSZHMpSbJHy2nrCX5jA+cHjb+hkr2Gs+nA3iizfKeJ
+ xiVKd6ybKOqflv/CO2k6tfOFTXn67QVlWJeHBGhycqYHqligOr+Z9rgl7h3vLSmku5a249UC/nf
+ eaowjspJmFllWdoxnfX5TVitodChToPruS8co3zgG9+TJNdhtyE0Gkdekkf7OpZLVKN5ynomOsn
+ TrZWV/yeHCai/lXuJYvK9asH9rS3rZrb8MbzoujRvlkFAA==
+X-Developer-Key: i=manivannan.sadhasivam@oss.qualcomm.com; a=openpgp;
+ fpr=C668AEC3C3188E4C611465E7488550E901166008
+X-Endpoint-Received: by B4 Relay for
+ manivannan.sadhasivam@oss.qualcomm.com/default with auth_id=461
+X-Original-From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+Reply-To: manivannan.sadhasivam@oss.qualcomm.com
 
-Hi Praveen,
+From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
 
-thanks for your patch!
+Add support to match serdev devices with serdev drivers based on the serdev
+ID table defined in serdev_device_driver::id_table.
 
-On Mon, Nov 10, 2025 at 11:11=E2=80=AFAM Praveen Talari
-<praveen.talari@oss.qualcomm.com> wrote:
+The matching function, serdev_driver_match_device() uses the serdev device
+name to match against the entries in serdev_device_driver::id_table.
 
-> Replace disable_irq() with disable_irq_nosync() in msm_pinmux_set_mux()
-> to prevent potential deadlock when wakeup IRQ is triggered on the same
-> GPIO being reconfigured.
->
-> The issue occurs when a wakeup IRQ is triggered on a GPIO and the IRQ
-> handler attempts to reconfigure the same GPIO's pinmux. In this scenario,
-> msm_pinmux_set_mux() calls disable_irq() which waits for the currently
-> running IRQ handler to complete, creating a circular dependency that
-> results in deadlock.
->
-> Using disable_irq_nosync() avoids waiting for the IRQ handler to
-> complete, preventing the deadlock condition while still properly
-> disabling the interrupt during pinmux reconfiguration.
->
-> Suggested-by: Prasad Sodagudi <prasad.sodagudi@oss.qualcomm.com>
-> Signed-off-by: Praveen Talari <praveen.talari@oss.qualcomm.com>
+If there is no serdev id_table for the driver, then serdev_device_match()
+will fallback to ACPI and DT based matching.
 
-I applied this patch 2/4 to the pin control tree for fixes.
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+---
+ drivers/tty/serdev/core.c         | 23 ++++++++++++++++++++++-
+ include/linux/mod_devicetable.h   |  7 +++++++
+ include/linux/serdev.h            |  4 ++++
+ scripts/mod/devicetable-offsets.c |  3 +++
+ 4 files changed, 36 insertions(+), 1 deletion(-)
 
-I removed the word "potential" from subject and text so as to
-reflect what Bjorn is saying: it's a very real issue.
+diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+index b33e708cb2455fc144a9fd4ac40ce9118e1a8faa..2b5582cd5063a87c9a6c99f83a8ab071637eae57 100644
+--- a/drivers/tty/serdev/core.c
++++ b/drivers/tty/serdev/core.c
+@@ -85,12 +85,33 @@ static const struct device_type serdev_ctrl_type = {
+ 	.release	= serdev_ctrl_release,
+ };
+ 
++static int serdev_driver_match_device(struct device *dev, const struct device_driver *drv)
++{
++	const struct serdev_device_driver *serdev_drv = to_serdev_device_driver(drv);
++	struct serdev_device *serdev = to_serdev_device(dev);
++	const struct serdev_device_id *id;
++
++	if (!serdev_drv->id_table)
++		return 0;
++
++	for (id = serdev_drv->id_table; id->name[0]; id++) {
++		if (!strcmp(dev_name(dev), id->name)) {
++			serdev->id = id;
++			return 1;
++		}
++	}
++
++	return 0;
++}
++
+ static int serdev_device_match(struct device *dev, const struct device_driver *drv)
+ {
+ 	if (!is_serdev_device(dev))
+ 		return 0;
+ 
+-	/* TODO: platform matching */
++	if (serdev_driver_match_device(dev, drv))
++		return 1;
++
+ 	if (acpi_driver_match_device(dev, drv))
+ 		return 1;
+ 
+diff --git a/include/linux/mod_devicetable.h b/include/linux/mod_devicetable.h
+index 6077972e8b45de3d07881c0226459d815dd1f83d..70c54c4bedba2fcb8f5eb37c2d9ede05d5d91188 100644
+--- a/include/linux/mod_devicetable.h
++++ b/include/linux/mod_devicetable.h
+@@ -976,4 +976,11 @@ struct coreboot_device_id {
+ 	kernel_ulong_t driver_data;
+ };
+ 
++#define SERDEV_NAME_SIZE 32
++
++struct serdev_device_id {
++	const char name[SERDEV_NAME_SIZE];
++	kernel_ulong_t driver_data;
++};
++
+ #endif /* LINUX_MOD_DEVICETABLE_H */
+diff --git a/include/linux/serdev.h b/include/linux/serdev.h
+index ab185cac556380dfa3cdf94b7af6ee168b677587..ee42e293445d928a311bd3c120e609214f89a5dd 100644
+--- a/include/linux/serdev.h
++++ b/include/linux/serdev.h
+@@ -39,6 +39,7 @@ struct serdev_device_ops {
+  * @ops:	Device operations.
+  * @write_comp	Completion used by serdev_device_write() internally
+  * @write_lock	Lock to serialize access when writing data
++ * @id:		serdev device ID entry
+  */
+ struct serdev_device {
+ 	struct device dev;
+@@ -47,6 +48,7 @@ struct serdev_device {
+ 	const struct serdev_device_ops *ops;
+ 	struct completion write_comp;
+ 	struct mutex write_lock;
++	const struct serdev_device_id *id;
+ };
+ 
+ #define to_serdev_device(d) container_of(d, struct serdev_device, dev)
+@@ -55,11 +57,13 @@ struct serdev_device {
+  * struct serdev_device_driver - serdev slave device driver
+  * @driver:	serdev device drivers should initialize name field of this
+  *		structure.
++ * @id_table:	serdev device ID table
+  * @probe:	binds this driver to a serdev device.
+  * @remove:	unbinds this driver from the serdev device.
+  */
+ struct serdev_device_driver {
+ 	struct device_driver driver;
++	const struct serdev_device_id *id_table;
+ 	int	(*probe)(struct serdev_device *);
+ 	void	(*remove)(struct serdev_device *);
+ };
+diff --git a/scripts/mod/devicetable-offsets.c b/scripts/mod/devicetable-offsets.c
+index d3d00e85edf73553ba3d9b5f9fccf1ff61c99026..c1bfa8eddc4d638c55db54cfd9b6407f47594b4c 100644
+--- a/scripts/mod/devicetable-offsets.c
++++ b/scripts/mod/devicetable-offsets.c
+@@ -280,5 +280,8 @@ int main(void)
+ 	DEVID(coreboot_device_id);
+ 	DEVID_FIELD(coreboot_device_id, tag);
+ 
++	DEVID(serdev_device_id);
++	DEVID_FIELD(serdev_device_id, name);
++
+ 	return 0;
+ }
 
-Thanks for fixing this!
-Linus Walleij
+-- 
+2.48.1
+
+
