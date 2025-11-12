@@ -1,174 +1,104 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail.zytor.com (terminus.zytor.com [198.137.202.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C485341642;
-	Wed, 12 Nov 2025 14:45:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6926133F388;
+	Wed, 12 Nov 2025 16:10:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.136
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762958731; cv=none; b=ZWQk9UWlNF3UOZTaGncnNR2O3VARQbaRZSacdFpLAk3JVfXTy+jJsravbEBuLECGCnj9ZxCIPYd0ganCGmHTq92RtvPeuji/0mZ5XZnlkrdHa8hKgO50JRmBYxU+kRzNrVXquxWOeCBXwGAuX1NArmgYZKRmyvrdVZn9mBkYQ7s=
+	t=1762963805; cv=none; b=iyq02dXakIVvKJJtHjmtZegkvuX+Ki1j13u31GVnbUzH09h0ceU2YCNmWaNljOh4alT6cuYzatYxmtlTCZVQ+u3pp5K/xLIAfu8o0847rTbq4t6Y9xPyr+4zpX0ZOybg2cTenfFRPVwGBWzsrqQGhcinMU2CQPkrIjUHijzIEJ0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762958731; c=relaxed/simple;
-	bh=ZTNyhNFf+p9S6BsXERBUufVxby0L/rriRpDnCjmebu0=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Y+HfB4367+6JE4M6txICxo34XPeUx+Bjo6QFObxj/pylCgURepi/rwq+WYC/gF4lMtGI8nyLzd3owH3ARxIqJdgYoAAFhl+h/SPha/g/T0ujmyHpB9aurNCE1ArQJTkSAVJRehyXJOk4Ahd7+xISlNIjq6Zdr86WZij4asE2Df8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=c+eWFXLV; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1762963805; c=relaxed/simple;
+	bh=6+90iYt8yHn6fLVeRcRMn5yECTpBE605bYsebObkKiA=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
+	 MIME-Version:Content-Type; b=MmLevz4BdhQsNSb86nYL2h2099Mjk1208FFxj7cquL4QBKGniTpiZOuo4B6lzmo6NH1Js5hBHxCQjE84rCe1+LSjSiN227H4b1Grla6DHJx8Z2+5446WMAjp76I4/lTnwBN4ijXTsyxFzvW+BnfjMXmd6NsMrOS+vFITouBTfJI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com; spf=pass smtp.mailfrom=zytor.com; dkim=fail (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b=gs7yr+ih reason="signature verification failed"; arc=none smtp.client-ip=198.137.202.136
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zytor.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="c+eWFXLV"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 30C6DC4CEF1;
-	Wed, 12 Nov 2025 14:45:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1762958731;
-	bh=ZTNyhNFf+p9S6BsXERBUufVxby0L/rriRpDnCjmebu0=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=c+eWFXLVVteOvv4fIzjsKblkThHYhc5ibkkgVCrxCYjAbRU9sZvC0W2NsRkPWDD7L
-	 wuClsqH0O8DEEqHgFdIYFdlSUl8pHqEd304fkB9tzkRiyoAB3sB227XVjrFfmi+Qfc
-	 W6BYl+TaXj5RSovSCewKJgS5/LMm2qCcM7+oVgBhmZMprkoCCcFiahsh7l3EsTaEh5
-	 VILyCGIZl0HDu9lhuqQiv6fwfsI4uhB8L1aV02m+vxyXbd2nlqO9Gjk11WMHjA4kcL
-	 64fIVPVSnsjRLCIoljDLNCShdloLJoEoCYX4DyXAC9QVKtTOC6gSiNl1vsCeeBB57k
-	 JVQBrC2Wh7H8g==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28BEBCD13D3;
-	Wed, 12 Nov 2025 14:45:31 +0000 (UTC)
-From: Manivannan Sadhasivam via B4 Relay <devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org>
-Date: Wed, 12 Nov 2025 20:15:17 +0530
-Subject: [PATCH 5/9] serdev: Add modalias support for serdev client devices
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b="gs7yr+ih"
+Received: from ehlo.thunderbird.net ([172.59.162.180])
+	(authenticated bits=0)
+	by mail.zytor.com (8.18.1/8.17.1) with ESMTPSA id 5ACG9qKk858789
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
+	Wed, 12 Nov 2025 08:09:53 -0800
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 5ACG9qKk858789
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
+	s=2025102301; t=1762963794;
+	bh=heGREnEy97DJ/3PBLnuPWHyDMClDirtaVhwc7KBGZD8=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References:From;
+	b=gs7yr+ihaeLF4QpSBvoh3wuHOzShTiGaY57Urvlxkap6MmKJc1LlzHWO8CyOn61+w
+	 gVc4aoheKzEVojPfU+eJLDUTceZKBHKeQA5ZBTuBYuDySrmcBbwp/mTK17UsHdv++V
+	 Fc8e9dfkZOfVe39kPFZHq3+01Y/RkFXsU2OFZ7YvJl3/+Ua5mCGyhZn2uoSXiDplg/
+	 AgRtj/73RtezqVMns+B4X6//QBzpPZOW7XDloRZquelz0jW8k8ZezvL2jDA8BW6VG5
+	 VAvhXF7riHKl4rbJdyHP7LP8Zf7SqAid5Q97nOlBgM/ViIUvT6rQKpFfkDDy+E+U8a
+	 TaQxHrwbgkxQA==
+Date: Wed, 12 Nov 2025 08:09:45 -0800
+From: "H. Peter Anvin" <hpa@zytor.com>
+To: Greg KH <gregkh@linuxfoundation.org>
+CC: "Theodore Ts'o" <tytso@mit.edu>, Maarten Brock <Maarten.Brock@sttls.nl>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: RFC: Serial port DTR/RTS - O_NRESETDEV
+User-Agent: K-9 Mail for Android
+In-Reply-To: <2025111214-doily-anyway-b24b@gregkh>
+References: <bb44f856-10a2-40c7-a3f7-be50c8e4b0a9@zytor.com> <20251107173743.GA3131573@mit.edu> <dc42f5d4-a707-4442-bda6-1c1990666f54@zytor.com> <20251110033556.GC2988753@mit.edu> <ADB50E23-DC8B-43D0-A345-E10396A3DFD4@zytor.com> <AMBPR05MB11925DA076098B05E418BF64283CEA@AMBPR05MB11925.eurprd05.prod.outlook.com> <20251110201933.GH2988753@mit.edu> <0F8021E8-F288-4669-8195-9948844E36FD@zytor.com> <20251111035143.GJ2988753@mit.edu> <D4AF3E24-8698-4EEC-9D52-655D69897111@zytor.com> <2025111214-doily-anyway-b24b@gregkh>
+Message-ID: <6DBB5931-ACD4-4174-9FCE-96C45FFC4603@zytor.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20251112-pci-m2-e-v1-5-97413d6bf824@oss.qualcomm.com>
-References: <20251112-pci-m2-e-v1-0-97413d6bf824@oss.qualcomm.com>
-In-Reply-To: <20251112-pci-m2-e-v1-0-97413d6bf824@oss.qualcomm.com>
-To: Rob Herring <robh@kernel.org>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, Nathan Chancellor <nathan@kernel.org>, 
- Nicolas Schier <nicolas.schier@linux.dev>, Hans de Goede <hansg@kernel.org>, 
- =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
- Mark Pearson <mpearson-lenovo@squebb.ca>, 
- "Derek J. Clark" <derekjohn.clark@gmail.com>, 
- Manivannan Sadhasivam <mani@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Marcel Holtmann <marcel@holtmann.org>, 
- Luiz Augusto von Dentz <luiz.dentz@gmail.com>, 
- Bartosz Golaszewski <brgl@bgdev.pl>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-kbuild@vger.kernel.org, platform-driver-x86@vger.kernel.org, 
- linux-pci@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org, 
- linux-pm@vger.kernel.org, Stephan Gerhold <stephan.gerhold@linaro.org>, 
- Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, 
- Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3104;
- i=manivannan.sadhasivam@oss.qualcomm.com; h=from:subject:message-id;
- bh=d3crWSGCGUGn4wtoYTdDJMgOBARJSAYtgVh6kQhItYQ=;
- b=owEBbQGS/pANAwAKAVWfEeb+kc71AcsmYgBpFJ2HLBj0atRdQkoYoEtIlsRq/2nfEpNLLTmK8
- 0Ee8SHCPp2JATMEAAEKAB0WIQRnpUMqgUjL2KRYJ5dVnxHm/pHO9QUCaRSdhwAKCRBVnxHm/pHO
- 9ccoB/9JulXVNBQpte5g04Zu3cGVEtybP7nbcJRotlJ106/5GvyjbUjrShqI832UjbWtjgtNtc3
- myVXAVbBbIRPoaVWY356o/T3owMpyRDkiLZk1NFJ0RVInasTwuDM+GXTT3URoLQkCYbusx7nlfn
- pP+eHsk+ZjcXWswcI+pRcm1d63s65LwpVHyeZlcxQv8r/cg/MbUp/PMEZiSHw/e4Ka3pprDytt7
- 2Osv6Mynw2x9nJ5M+sb3n1u0NRLnqeM/D5s/sPFAwyMHsCHy2VVabnJSwo7BsY/opFJ4jUa1c/k
- ryGpgpPFOpTHT7cFdpd8gXslxG4YoRjCn7kZZjis3WqdlDMM
-X-Developer-Key: i=manivannan.sadhasivam@oss.qualcomm.com; a=openpgp;
- fpr=C668AEC3C3188E4C611465E7488550E901166008
-X-Endpoint-Received: by B4 Relay for
- manivannan.sadhasivam@oss.qualcomm.com/default with auth_id=461
-X-Original-From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
-Reply-To: manivannan.sadhasivam@oss.qualcomm.com
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+On November 12, 2025 3:22:56 AM PST, Greg KH <gregkh@linuxfoundation=2Eorg>=
+ wrote:
+>On Mon, Nov 10, 2025 at 07:57:22PM -0800, H=2E Peter Anvin wrote:
+>> Honestly, though, I'm far less interested in what 8250-based hardware d=
+oes than e=2Eg=2E USB=2E
+>
+>hahahahahahaha {snort}
+>
+>Hah=2E  that's a good one=2E
+>
+>Oh, you aren't kidding=2E
+>
+>Wow, good luck with this=2E  USB-serial adaptors are all over the place,
+>some have real uarts in them (and so do buffering in the device, and
+>line handling in odd ways when powered up), and some are almost just a
+>straight pipe through to the USB host with control line handling ideas
+>tacked on to the side as an afterthought, if at all=2E
+>
+>There is no standard here, they all work differently, and even work
+>differently across the same device type with just barely enough hints
+>for us to determine what is going on=2E
+>
+>So don't worry about USB, if you throw that into the mix, all bets are
+>off and you should NEVER rely on that=2E
+>
+>Remeber USB->serial was explicitly rejected by the USB standard group,
+>only to have it come back in the "side door" through the spec process
+>when it turned out that Microsoft hated having to write a zillion
+>different vendor-specific drivers because the vendor provided ones kept
+>crashing user's machines=2E  So what we ended up with was "just enough" t=
+o
+>make it through the spec process, and even then line signals are
+>probably never tested so you can't rely on them=2E
+>
+>good luck!
+>
+>greg "this brought up too many bad memories" k-h
 
-Add modlias support to serdev so that the serdev client driver can be
-autoloaded by udev when the serdev client device gets created.
+Ugh=2E
 
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
----
- drivers/tty/serdev/core.c       | 15 +++++++++++----
- include/linux/mod_devicetable.h |  1 +
- scripts/mod/file2alias.c        |  8 ++++++++
- 3 files changed, 20 insertions(+), 4 deletions(-)
+I have made it very clear that I am very aware that there is broken hardwa=
+re=2E=20
 
-diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index f90095cb778f2374303f98809d1639a000e0d9e0..8c2a40a537d93f4b9353a2f128cdf51b521929b1 100644
---- a/drivers/tty/serdev/core.c
-+++ b/drivers/tty/serdev/core.c
-@@ -34,7 +34,11 @@ static ssize_t modalias_show(struct device *dev,
- 	if (len != -ENODEV)
- 		return len;
- 
--	return of_device_modalias(dev, buf, PAGE_SIZE);
-+	len = of_device_modalias(dev, buf, PAGE_SIZE);
-+	if (len != -ENODEV)
-+		return len;
-+
-+	return sysfs_emit(buf, SERDEV_DEVICE_MODALIAS_FMT "\n", dev_name(dev));
- }
- static DEVICE_ATTR_RO(modalias);
- 
-@@ -48,13 +52,16 @@ static int serdev_device_uevent(const struct device *dev, struct kobj_uevent_env
- {
- 	int rc;
- 
--	/* TODO: platform modalias */
--
- 	rc = acpi_device_uevent_modalias(dev, env);
- 	if (rc != -ENODEV)
- 		return rc;
- 
--	return of_device_uevent_modalias(dev, env);
-+	rc = of_device_uevent_modalias(dev, env);
-+	if (rc != -ENODEV)
-+		return rc;
-+
-+	return add_uevent_var(env, "MODALIAS=" SERDEV_DEVICE_MODALIAS_FMT,
-+					dev_name(dev));
- }
- 
- static void serdev_device_release(struct device *dev)
-diff --git a/include/linux/mod_devicetable.h b/include/linux/mod_devicetable.h
-index 70c54c4bedba2fcb8f5eb37c2d9ede05d5d91188..dad9637cf28552c3423affc4eb249efa6ba05514 100644
---- a/include/linux/mod_devicetable.h
-+++ b/include/linux/mod_devicetable.h
-@@ -976,6 +976,7 @@ struct coreboot_device_id {
- 	kernel_ulong_t driver_data;
- };
- 
-+#define SERDEV_DEVICE_MODALIAS_FMT "serdev:%s"
- #define SERDEV_NAME_SIZE 32
- 
- struct serdev_device_id {
-diff --git a/scripts/mod/file2alias.c b/scripts/mod/file2alias.c
-index b3333560b95ee998fbe5bdc9ed380847962d1bd1..27e9f7c718c4d48ca5dbd5538490529119df9509 100644
---- a/scripts/mod/file2alias.c
-+++ b/scripts/mod/file2alias.c
-@@ -1371,6 +1371,13 @@ static void do_coreboot_entry(struct module *mod, void *symval)
- 	module_alias_printf(mod, false, "coreboot:t%08X", tag);
- }
- 
-+/* Looks like: serdev:S */
-+static void do_serdev_entry(struct module *mod, void *symval)
-+{
-+	DEF_FIELD_ADDR(symval, serdev_device_id, name);
-+	module_alias_printf(mod, false, SERDEV_DEVICE_MODALIAS_FMT, *name);
-+}
-+
- /* Does namelen bytes of name exactly match the symbol? */
- static bool sym_is(const char *name, unsigned namelen, const char *symbol)
- {
-@@ -1467,6 +1474,7 @@ static const struct devtable devtable[] = {
- 	{"usb", SIZE_usb_device_id, do_usb_entry_multi},
- 	{"pnp", SIZE_pnp_device_id, do_pnp_device_entry},
- 	{"pnp_card", SIZE_pnp_card_device_id, do_pnp_card_entry},
-+	{"serdev", SIZE_serdev_device_id, do_serdev_entry},
- };
- 
- /* Create MODULE_ALIAS() statements.
-
--- 
-2.48.1
-
+What I'm trying to do is to deal with the (occasional) case of *non*-broke=
+n hardware=2E Right now Linux breaks the non-broken hardware for it, and I =
+don't think the existence of broken hardware is a good justification for th=
+at=2E
 
