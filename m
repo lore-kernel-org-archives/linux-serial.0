@@ -1,39 +1,33 @@
-Received: from mail.zytor.com (terminus.zytor.com [198.137.202.136])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8046A2868B5;
-	Tue, 11 Nov 2025 21:31:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.136
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE7D52F1FCF;
+	Wed, 12 Nov 2025 07:59:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762896715; cv=none; b=rJUOrwtxkXTI51WjQB9aprG2AtaqZRhQOTVARxEp/tXQYtRANCeGV/+CiEElaDoOHFLhpCv5nIoL+WLj1m5G4Xnd9XVltVTH5m1VE73n1DppL7s83p3NlzjmtkIS2jF58qHsXHI7Z6HOk5C0hz9T8yVWQSPujw3IVmTkDPIUJN8=
+	t=1762934392; cv=none; b=T7JqSaProzJ+jIk4VfFpzbmAZnCC/2BWzBcC5DoLNoToKykhAk/GapC9rhYE0O8fIUBqBI9UR3/yNoxiF9iBKrWIXucAGF+pU65QZpBvyEKyjQlp4+gU+T8gZJS9y/+0HnjsQov/+kFEwuxD7xbUQzM5ad0FU8iS+besmxqiPmQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762896715; c=relaxed/simple;
-	bh=6Odj3tYkRiZs6yTQz6IlceMUTLk6AQXtihXfMKVwsFk=;
+	s=arc-20240116; t=1762934392; c=relaxed/simple;
+	bh=8akT4ONHrb64kEpomTVQoIZ4ml3bBSkkAHISRhlCNw8=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=cHMb7T9mIxDQ4hvW4JRHNYeTovNYfsPdBccV/cktxVYioQ/A+ciClR2ni8FlQe5iXp3JPbFRXaffng+szStCp0Yr5HUXe5ZoOqMhFv/wFYsSjK8tOwwpx1cSMsdH4SC9TUNx6YQzTBKpbkiYkwBCWMJE6YAK1pVNMrtPjKa3Wzg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com; spf=pass smtp.mailfrom=zytor.com; dkim=fail (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b=mDB9MXB2 reason="signature verification failed"; arc=none smtp.client-ip=198.137.202.136
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zytor.com
+	 In-Reply-To:Content-Type; b=TQOLfDj4xq0OYs0RZgWsf7GSvEIMWsFOyJhA8oG9F8sS1T1zov44Zo/hPBcycnQ5YbyMZl4MAmrAxgDOKivfSyd+OU1dlW2UFmDwvxqZ1FoONbk/gYenBFTPdhPkTco8Yhq8uklSzdm4sLdtl5BboqbizOfiv9ElRxhEzUldz5k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KK7zbsj5; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b="mDB9MXB2"
-Received: from [172.27.2.41] (c-76-133-66-138.hsd1.ca.comcast.net [76.133.66.138])
-	(authenticated bits=0)
-	by mail.zytor.com (8.18.1/8.17.1) with ESMTPSA id 5ABLSeYS360987
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
-	Tue, 11 Nov 2025 13:28:41 -0800
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 5ABLSeYS360987
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
-	s=2025102301; t=1762896521;
-	bh=bzL1y42NUb+51GA1nahiKxPpmYzfoAoFGVxMM1ISNHQ=;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KK7zbsj5"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 752BBC16AAE;
+	Wed, 12 Nov 2025 07:59:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1762934391;
+	bh=8akT4ONHrb64kEpomTVQoIZ4ml3bBSkkAHISRhlCNw8=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=mDB9MXB23HIeu2vMp0aP0xjdZH1lztVtNQJ4L0qP3vrvVuQFwBLMzudT8ddRlokNk
-	 g3dHPd7GP6uW+pxkSrKHt8S3FfUeFwB4FCXqcnpORWed3Stkbmtw+8Zmu+xgcGI1MM
-	 Xge6IcCgniccOK60FAzVdwQUcGnT6/BCqL2FNvbeyjq4TBKJuapFGLZLck+R2gfdBh
-	 vsyPS/+RSXAVQsHL14/nDLGQ+xkBUnApWuqFWdzwEHiv6BWJsN4XPiTD+Gs6WHQkyo
-	 JNqWoawmdl2ozCEUQtNE3aEYN5lqITkryWFe3s4bYX/iABtBtzgsCBbd8bUtvC/3GW
-	 yIvurM9YnVrWw==
-Message-ID: <85c9b487-eb18-46a9-babe-6223ae3e05f5@zytor.com>
-Date: Tue, 11 Nov 2025 13:28:40 -0800
+	b=KK7zbsj5Z0zIlqpCf3ig03tzzo5aDho0FdA6Jh8r9UqeVB64YKFrEcENBmYHPUfDj
+	 LpCZLoMQwXhuiVo68hhc/iEd7o+aQBun6Dp47cZX5TtClU6j/i2dPV1/ODxZrKe1oW
+	 hWbzh2VGRJYM4Ui6/fyN1OUqHs1fa3COoLhsu7ZMIoMxENAhrPtBCcSPewgpHQN3IC
+	 y5qSFS0pYdnxqC0OjmM3EegXcnGTcHGyd+6Rhy1Rk8FF/Bys8HJGBYRbVFD/7eoYcy
+	 RD2xXuQqC46jJoBdND9y3TjWuAIAWv/mm8EakQQ0u44SzE0HgC//5GH95dXAUlQRFV
+	 Qb9VNAmPaUFng==
+Message-ID: <3e99dcf8-7a8d-42e9-9d29-f05542df1fa4@kernel.org>
+Date: Wed, 12 Nov 2025 08:59:45 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -41,85 +35,84 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: RFC: Serial port DTR/RTS - O_NRESETDEV
-To: "Theodore Ts'o" <tytso@mit.edu>
-Cc: Maarten Brock <Maarten.Brock@sttls.nl>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <bb44f856-10a2-40c7-a3f7-be50c8e4b0a9@zytor.com>
- <20251107173743.GA3131573@mit.edu>
- <dc42f5d4-a707-4442-bda6-1c1990666f54@zytor.com>
- <20251110033556.GC2988753@mit.edu>
- <ADB50E23-DC8B-43D0-A345-E10396A3DFD4@zytor.com>
- <AMBPR05MB11925DA076098B05E418BF64283CEA@AMBPR05MB11925.eurprd05.prod.outlook.com>
- <20251110201933.GH2988753@mit.edu>
- <0F8021E8-F288-4669-8195-9948844E36FD@zytor.com>
- <20251111035143.GJ2988753@mit.edu>
- <D4AF3E24-8698-4EEC-9D52-655D69897111@zytor.com>
- <20251111043803.GK2988753@mit.edu>
-Content-Language: en-US, sv-SE
-From: "H. Peter Anvin" <hpa@zytor.com>
-In-Reply-To: <20251111043803.GK2988753@mit.edu>
+Subject: Re: [PATCH 2/4] dt-bindings: serial: snps-dw-apb-uart: Add
+ "google,lga-uart"
+To: Douglas Anderson <dianders@chromium.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Peter Griffin <peter.griffin@linaro.org>,
+ =?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>,
+ Tudor Ambarus <tudor.ambarus@linaro.org>
+Cc: linux-samsung-soc@vger.kernel.org, Roy Luo <royluo@google.com>,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ Chen-Yu Tsai <wenst@chromium.org>, Julius Werner <jwerner@chromium.org>,
+ William McVicker <willmcvicker@google.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org
+References: <20251111192422.4180216-1-dianders@chromium.org>
+ <20251111112158.2.I040412d80bc262f213444aa6f6ec4f0334315a67@changeid>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 a/A=
+In-Reply-To: <20251111112158.2.I040412d80bc262f213444aa6f6ec4f0334315a67@changeid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 2025-11-10 20:38, Theodore Ts'o wrote:
-> On Mon, Nov 10, 2025 at 07:57:22PM -0800, H. Peter Anvin wrote:
->> I really think you are looking at this from a very odd point of
->> view, and you seem to be very inconsistent. Boot time setup? Isn't
->> that what setserial is for? We have the ability to feed this
->> configuration already, but you need a file descriptor.
+On 11/11/2025 20:22, Douglas Anderson wrote:
+> The Google Tensor G5 SoC (known as "laguna" and canonically written in
+> code as "lga") has a UART based on Designware IP. The UART appears to
+> work reasonably well, at least for serial console, with the existing
+> driver in Linux. Add a compatible for this UART based on the canonical
+> "lga" name for this SoC with a fallback to the existing
+> "snps,dw-apb-uart".
 > 
-> I'm not really fond of adding some new open flag that to me seems
-> **very** serial / RS-485 specific, and so I'm trying to find some
-> way to avoid it.
-> 
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> ---
 
-I don't think it is.  "Opening this device for configuration."
 
-> I also think that that the GPIO style timing requirements of RTS
-> **really** should be done as a line discpline, and not in userspace.
-> 
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-No disagreement there -- and so it is. What I want to do is a way to *attach*
-that line discipline without poking with the serial port itself.  That's what
-I keep trying to get at.
-
->> Honestly, though, I'm far less interested in what 8250-based hardware does than e.g. USB.
-> 
-> I'm quite confident that USB won't have "state" that will be preserved
-> across a reboot, because the device won't even get powered up until
-> the USB device is attached.  And part of the problem was that the
-> requirements weren't particularly clear, and given the insistence that
-> the "state" be preserved even across reboot, despite the serial port
-> autoconfiguration, I had assumed you were posting uing the COM 1/2/3/4
-> ports where autoconfiguration isn't stricty speaking necessary.
-> 
-> In some ways, USB ports might be easier, since it should be possible
-> to specify udev rules which get passed to the driver when the USB
-> serial device is inserted, and so *that* can easily be done without
-> needing a file descriptor.
-> 
-> And for this sort of thing, it seems perfectly fair to hard code some
-> specific behavior using either a boot command line or a udev rule,
-> since you seem to be positing that the serial port will be dedicated
-> to some kind of weird-shit RS-485 bus device, where any time RTS/DTR
-> gets raised, the bus will malfunction in weird and wondrous ways....
-
-But again, it is very much a configuration property.  You don't know where
-your dynamically assigned serial port will end up -- and you *can't*, because
-it is a property of the DCE -- what is plugged *into* the device.
-
-Now you have someone writing a terminal program or something like Arduino and
-decide to enumerate serial ports (which, as I stated, you can't actually do
-right now without opening the devices).  This is why it makes sense for the
-open() caller to declare intent; this is similar to how O_NDELAY replaced
-callout devices.
-
-It would be lovely if we could do something like
-open("/dev/ttyS0/option-string") and so on, but that is well and truly a far
-bigger change to the whole driver API.
-
-	-hpa
-
+Best regards,
+Krzysztof
