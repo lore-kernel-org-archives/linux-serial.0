@@ -1,115 +1,122 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 774ED3451CA;
-	Wed, 12 Nov 2025 17:12:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3C3632ABD6;
+	Wed, 12 Nov 2025 17:18:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762967535; cv=none; b=NQ7oUA3eh78tDJHy9E9Fe/YCQPr2UTLnwpoIub1RpGSLwsVa0l+zL7vBsEKnLcCwJHdrvqBa+iINY97/qQvacGkOhTAO3YBX+4WVehEmhwYudG+cYnZ2MsC228HB/Ie9nz857Uu2h71mNDqD0Hs+8/8tgffp9DuTBtlFcEhYcQo=
+	t=1762967887; cv=none; b=F8YLhFfSEzkSMRAsMXArr3qHh06uxQWL/gVoQbUbzMP2TiALD4GNi6OnARXPKBlLG5IsMso3ekGuI9RcMTHYmITXVlYTP39QWrDVtoavhxhDQgALdiZRSZdtLR8mvpWAFxZ31vue66G6gt2lgng8ak9ZaP68rjRr2aOCKcJS6mM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762967535; c=relaxed/simple;
-	bh=LfwDw5nDHN9mjQ61ppHmMZFw8Tz8l0KhDqOCjnLSsZs=;
+	s=arc-20240116; t=1762967887; c=relaxed/simple;
+	bh=lywOI3ugT5GWb9bwVFXxkmySZuCeiZT6yvSuaKP0HcU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=g9vHbF18bmmneTHi6wc8HNZXGMzJ97E1fgekDIrmapSSQB7q4zy1ggivBNqlsmehdPWPp5OMMN7EPw3Aw3on/P4UdNJTsfc7HJ+/tWHlErZBLdaVzRa7wsub8lMkYhljgwq8wRvsAcuFnbLp3z0OyiqYsMlzR/AyFsabino30fo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=KTYxyHGT; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=JXWTRAO2CedNUgSWMcUgxQsSPPSl9Sq4lY53c5FkQi+NxZn8q9Tb/UZW5FiqcSRtNihhYBVXCrgneN/gaa3fgvGLoKoOO5AaxvwXOmNSsjXrrPcP5LWY1yNetY1LsGPQ+ydrPAux8ICrYgJKaJr9/6V2js7Eatwr3rXgCQ5uPSA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bwK61djM; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="KTYxyHGT"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0021C113D0;
-	Wed, 12 Nov 2025 17:12:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1762967533;
-	bh=LfwDw5nDHN9mjQ61ppHmMZFw8Tz8l0KhDqOCjnLSsZs=;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bwK61djM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1882C4CEF7;
+	Wed, 12 Nov 2025 17:17:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1762967885;
+	bh=lywOI3ugT5GWb9bwVFXxkmySZuCeiZT6yvSuaKP0HcU=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=KTYxyHGTfO4RZ7Qp+aEhY9+SN67VWZDd2oFFjjTfeAaciwJQIETuyG3VBpSKtwpeE
-	 MPDhM71JtUblUCmp8YZVjUEVNwdCsrJ9CCW9xAme1tvzqI1vdSMVDqCcoZlu7cR83o
-	 7OYGS2MbE1Df5kVTccsRCPaZegHiw6nKxsc83dd0=
-Date: Wed, 12 Nov 2025 11:46:50 -0500
-From: Greg KH <gregkh@linuxfoundation.org>
-To: "H. Peter Anvin" <hpa@zytor.com>
-Cc: Theodore Ts'o <tytso@mit.edu>, Maarten Brock <Maarten.Brock@sttls.nl>,
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	"linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>
-Subject: Re: RFC: Serial port DTR/RTS - O_NRESETDEV
-Message-ID: <2025111241-domestic-moonstone-f75f@gregkh>
-References: <dc42f5d4-a707-4442-bda6-1c1990666f54@zytor.com>
- <20251110033556.GC2988753@mit.edu>
- <ADB50E23-DC8B-43D0-A345-E10396A3DFD4@zytor.com>
- <AMBPR05MB11925DA076098B05E418BF64283CEA@AMBPR05MB11925.eurprd05.prod.outlook.com>
- <20251110201933.GH2988753@mit.edu>
- <0F8021E8-F288-4669-8195-9948844E36FD@zytor.com>
- <20251111035143.GJ2988753@mit.edu>
- <D4AF3E24-8698-4EEC-9D52-655D69897111@zytor.com>
- <2025111214-doily-anyway-b24b@gregkh>
- <6DBB5931-ACD4-4174-9FCE-96C45FFC4603@zytor.com>
+	b=bwK61djMIzlYVBJc4Z+qj++gbp7r+37xPxbLaPk/yQnLIoBvSOEuXsvHZYOd7uFzw
+	 AazikNH2wSTsfKCKQoT4J7Yj/XOt83DkO+Y6752a3ur8rfvKcQyL3Md9GHy8pzJj39
+	 a+xb2ppjv/PZ2gTEf+8OjgIlhSFPRC/2nMbtXTH7MVDY4S2OpdWnD88oOqp3hdJ/eK
+	 UlUcv0XSDLkriDXp1QKO8YIKuxycCakV/M2WvQfoC9HpoLylVoXc7WuafnKiBDQ7Um
+	 EoscBrZSBliWNOgV0rJh+az/NLMf1Yj6U23fykSjLTWGDNWPI5v+dSF4nECmNMLnsz
+	 IU5A8BD7Dd8PQ==
+Date: Wed, 12 Nov 2025 17:17:57 +0000
+From: Conor Dooley <conor@kernel.org>
+To: Junhui Liu <junhui.liu@pigmoral.tech>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Samuel Holland <samuel.holland@sifive.com>,
+	Chen Wang <unicorn_wang@outlook.com>,
+	Inochi Amaoto <inochiama@gmail.com>,
+	Daniel Lezcano <daniel.lezcano@linaro.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Palmer Dabbelt <palmer@sifive.com>, linux-riscv@lists.infradead.org,
+	Inochi Amaoto <inochiama@outlook.com>, sophgo@lists.linux.dev,
+	linux-serial@vger.kernel.org,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	Conor Dooley <conor.dooley@microchip.com>
+Subject: Re: [PATCH v3 00/13] riscv: Add initial support for Anlogic DR1V90
+Message-ID: <20251112-bazooka-dragster-cf5c508094e3@spud>
+References: <20251021-dr1v90-basic-dt-v3-0-5478db4f664a@pigmoral.tech>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="sV5/agMmM68jKYjx"
 Content-Disposition: inline
-In-Reply-To: <6DBB5931-ACD4-4174-9FCE-96C45FFC4603@zytor.com>
+In-Reply-To: <20251021-dr1v90-basic-dt-v3-0-5478db4f664a@pigmoral.tech>
 
-On Wed, Nov 12, 2025 at 08:09:45AM -0800, H. Peter Anvin wrote:
-> On November 12, 2025 3:22:56 AM PST, Greg KH <gregkh@linuxfoundation.org> wrote:
-> >On Mon, Nov 10, 2025 at 07:57:22PM -0800, H. Peter Anvin wrote:
-> >> Honestly, though, I'm far less interested in what 8250-based hardware does than e.g. USB.
-> >
-> >hahahahahahaha {snort}
-> >
-> >Hah.  that's a good one.
-> >
-> >Oh, you aren't kidding.
-> >
-> >Wow, good luck with this.  USB-serial adaptors are all over the place,
-> >some have real uarts in them (and so do buffering in the device, and
-> >line handling in odd ways when powered up), and some are almost just a
-> >straight pipe through to the USB host with control line handling ideas
-> >tacked on to the side as an afterthought, if at all.
-> >
-> >There is no standard here, they all work differently, and even work
-> >differently across the same device type with just barely enough hints
-> >for us to determine what is going on.
-> >
-> >So don't worry about USB, if you throw that into the mix, all bets are
-> >off and you should NEVER rely on that.
-> >
-> >Remeber USB->serial was explicitly rejected by the USB standard group,
-> >only to have it come back in the "side door" through the spec process
-> >when it turned out that Microsoft hated having to write a zillion
-> >different vendor-specific drivers because the vendor provided ones kept
-> >crashing user's machines.  So what we ended up with was "just enough" to
-> >make it through the spec process, and even then line signals are
-> >probably never tested so you can't rely on them.
-> >
-> >good luck!
-> >
-> >greg "this brought up too many bad memories" k-h
-> 
-> Ugh.
-> 
-> I have made it very clear that I am very aware that there is broken hardware. 
 
-I would posit that there is NO "non-broken" usb->serial devices out
-there.  The closest I have seen was the old IO-Edgeport devices, but
-they were expensive and got bought out by some other company and in the
-end didn't succeed due to all of the "cheap" devices/chips out there
-that just did dumb tx/rx transfers over a fake serial connection.
+--sV5/agMmM68jKYjx
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> What I'm trying to do is to deal with the (occasional) case of
-> *non*-broken hardware. Right now Linux breaks the non-broken hardware
-> for it, and I don't think the existence of broken hardware is a good
-> justification for that.
+On Tue, Oct 21, 2025 at 05:41:35PM +0800, Junhui Liu wrote:
+> This introduces initial support for the Anlogic DR1V90 SoC [1] and the
+> Milianke MLKPAI-FS01 [2] board.
+>=20
+> The DR1V90 is a RISC-V based FPSoC from Anlogic, featuring a Nuclei
+> UX900 [3] core as its processing system (PS) and 94,464 LUTs in the
+> programmable logic (PL) part. The Milianke MLKPAI-FS01 board is one of
+> the first platforms based on this SoC, with UART1 routed to a Type-C
+> interface for console access.
+>=20
+> Tested on the Milianke MLKPAI-FS01 board with both the vendor's OpenSBI
+> and the not-yet-upstreamed mainline OpenSBI [4], as well as the vendor=E2=
+=80=99s
+> U-Boot. Because the vendor=E2=80=99s OpenSBI is loaded at 0x1f300000, we =
+have
+> to additionally reserve the DRAM region 0x1fe00000=E2=80=930x1fffffff to =
+prevent
+> overlap if using vendor's OpenSBI.
+>=20
+> Link: https://www.anlogic.com/product/fpga/saldragon/dr1 [1]
+> Link: https://www.milianke.com/product-item-104.html [2]
+> Link: https://nucleisys.com/product/900.php [3]
+> Link: https://github.com/pigmoral/opensbi/tree/dr1v90 [4]
 
-No, but we have to handle both somehow.
+Thanks for grabbing the irqchip stuff Thomas.
 
-And given that we still get brand-new UART drivers sent to use every few
-months, there is just more and more "broken" hardware out there overall.
+I've applied this, with myself listed as maintainer. I set the status to
+"Odd Fixes" because I will be doing no work on it and only applying
+patches that people send in. I'll happy pass the platform off to someone
+qualified to maintain it, should that person be willing to do so :)
 
-Anyway, good luck coming up with a scheme to handle your crazy
-connections, I would push back and say "any device that treats a serial
-control line as a power signal is broken to start with" :)
+Patches are here:
+https://git.kernel.org/pub/scm/linux/kernel/git/conor/linux.git/log/?h=3Dan=
+logic-initial
 
-greg k-h
+I'll submit as a standalone PR to Arnd et al over in the soc group for
+the next release.
+
+Cheers,
+Conor.
+
+--sV5/agMmM68jKYjx
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaRTBRQAKCRB4tDGHoIJi
+0m7BAQD1yYi9jfzMwFoKsn729d+GEAmzldurXKdZYtAcmWmIdAEAxWTgsRJKilvT
+RFkLQvvfFeBChW/ncbEBG5CxBatGEg0=
+=CwfP
+-----END PGP SIGNATURE-----
+
+--sV5/agMmM68jKYjx--
