@@ -1,108 +1,90 @@
-Received: from mail.zytor.com (terminus.zytor.com [198.137.202.136])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0CC931E10B;
-	Thu, 13 Nov 2025 22:25:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.136
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CE6424A076;
+	Fri, 14 Nov 2025 00:13:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763072741; cv=none; b=bV8dxaBcioCmvPOtPUZ1eX0UumQrcvWjosluryTPVQemQvDhvqs5R/l/QBUQ2o+paDU2VJoLpT/USguejFN2+M6t5zSXudA8rnSEZIvuDkzoyHRf74dgn7O+ZZZQykqPiRWkfn5ScKTxdja1wwl4ZGRMpjnw1BXHIm+tWhN9gwc=
+	t=1763079232; cv=none; b=cvi/q5RZN+cHs5nonSv2FRaWpeNtYyHbSMgB5wUtbDtN7hKJfZaEQiSPWxZZY6SRJ3b1xzvAWRgnY3Mn6hR8h3Qb+gJHX5P011BMN6aG5FyFyWhFq2lHzI7OOfkaFlZMDK21CqmfCYRAxruWus6MWp8RnPieE/gyUKNTtHSgpjo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763072741; c=relaxed/simple;
-	bh=AOGEdHNVbUMBAq9xdoW+RwF5ebiA9iHBaU1AO4C0fdQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=dDCa1I0e2Ulmna0xx9ky3XrxssVLTmAgjRYLkDvChpalQ5wQtKoLw+FIUGKad6QmTuLJTBaSUkWl7J6NeyI1F/7c7Vuuaw9atb21b74t4/gOr+0KcnPeIWCRPv9bjQP77Q2THQdaiYwAdhV1YE1Y0z7uSGxaEJBluepBjmf/M3w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com; spf=pass smtp.mailfrom=zytor.com; dkim=fail (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b=Uc6OMPRP reason="signature verification failed"; arc=none smtp.client-ip=198.137.202.136
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zytor.com
+	s=arc-20240116; t=1763079232; c=relaxed/simple;
+	bh=rdZnR3xDdHkTeQnczfy6MYPCmRTg2pqzHT9akRpPanA=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=XPjhj2UP17prdY5J8KDnf3Cd5k8a2GjsH4W2o6nE46NFTVqTesiEgGgZSdKV1Z6N9gbLgRn9r5ud9qGxlNAb07SHhIdTfVqSkJNLz/RQCKuPHYTvSySQSAuded9/pMoHu2zVafv8VIWmLvY2JCpdRgMbLS4GtI/MY/G9aF3p2Gs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VCAZ1RsJ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b="Uc6OMPRP"
-Received: from [172.27.2.41] (c-76-133-66-138.hsd1.ca.comcast.net [76.133.66.138])
-	(authenticated bits=0)
-	by mail.zytor.com (8.18.1/8.17.1) with ESMTPSA id 5ADMOZkH1737854
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
-	Thu, 13 Nov 2025 14:24:55 -0800
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 5ADMOZkH1737854
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
-	s=2025102301; t=1763072730;
-	bh=Ef7JhnQ0JYtlLyCA3ni98/yw3ogDxsD755XjQ2Ol9X4=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=Uc6OMPRP7fm+SNaoG/EMIYrKq5RqN8DokG7NJ3wsgjcMtcixWAD/Nr6s/cclzHA+a
-	 U4+eUsHLIBkLNXEBkzjAgTbe0KfVobxE8apWNCnLJkKSrO4Gs6gELYYSn9TB1SHLRl
-	 Re4eE+lk5ru9IVVSIv+OtMDK3m45/72AKOgUKXVMxUjYGrt+NSOu98ZykSX7GABtIe
-	 9jCFyxm8QwXIzrgLl6mWEXTbopNmkFVo+ol+KVzEXZJdh5slK71lGGoq69Osf78SwS
-	 M4MFRCzWw0eUaKH55UfHPuB9AyNQ7195vwWWqCWOe1L02oLiElRaz9P20jxGgrCSp7
-	 LSsPgYtst0qZg==
-Message-ID: <14b1bc5c-83ac-431f-a53b-14872024b969@zytor.com>
-Date: Thu, 13 Nov 2025 14:24:27 -0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VCAZ1RsJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D678C4CEF8;
+	Fri, 14 Nov 2025 00:13:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1763079232;
+	bh=rdZnR3xDdHkTeQnczfy6MYPCmRTg2pqzHT9akRpPanA=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=VCAZ1RsJSM0H1KbXKs6ddoOlormlqxsEAE4ZjunJzXaWvEEIpJdZYYZiu9sJiLpt9
+	 h65t+dLthODM0MqpFbRrekcFYCvoQX66IgghYryZjXawg/ObBJ+2bCH0tTJIwrhjEo
+	 7lHYVhBT1ZkomoA4lvlhjp6qWxm26TXEPYCmafRvyxUtoa1edeeyXeEgGHP8M2V9s6
+	 SzEhttdZtued7EdKvzNC03kdLIq+bhQtc7JbXnhpV2ulUr8TQRwRXzVApVQ+l8yvsB
+	 dVoPWHO1qBkd4ch5OqLvgMj7g3K2jLAHycEU1Mkr/LwnxFCz2IvCZO3JdvB+ld2mSM
+	 Kcvx8TACzu+bA==
+From: Bjorn Andersson <andersson@kernel.org>
+To: Konrad Dybcio <konradybcio@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Dmitry Baryshkov <lumag@kernel.org>,
+	linux-arm-msm@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-gpio@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	alexey.klimov@linaro.org,
+	krzk@kernel.org,
+	bryan.odonoghue@linaro.org,
+	jorge.ramirez@oss.qualcomm.com,
+	dmitry.baryshkov@oss.qualcomm.com,
+	Praveen Talari <praveen.talari@oss.qualcomm.com>
+Cc: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+	psodagud@quicinc.com,
+	djaggi@quicinc.com,
+	quic_msavaliy@quicinc.com,
+	quic_vtanuku@quicinc.com,
+	quic_arandive@quicinc.com,
+	quic_shazhuss@quicinc.com,
+	quic_cchiluve@quicinc.com
+Subject: Re: (subset) [PATCH v1 0/4] Enable Serial on SA8255p Qualcomm platforms
+Date: Thu, 13 Nov 2025 18:18:09 -0600
+Message-ID: <176307948644.2565969.17951410722748623028.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.51.0
+In-Reply-To: <20251110101043.2108414-1-praveen.talari@oss.qualcomm.com>
+References: <20251110101043.2108414-1-praveen.talari@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: RFC: Serial port DTR/RTS - O_<something>
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: "Theodore Ts'o" <tytso@mit.edu>, Maarten Brock <Maarten.Brock@sttls.nl>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <ADB50E23-DC8B-43D0-A345-E10396A3DFD4@zytor.com>
- <AMBPR05MB11925DA076098B05E418BF64283CEA@AMBPR05MB11925.eurprd05.prod.outlook.com>
- <20251110201933.GH2988753@mit.edu>
- <0F8021E8-F288-4669-8195-9948844E36FD@zytor.com>
- <20251111035143.GJ2988753@mit.edu>
- <D4AF3E24-8698-4EEC-9D52-655D69897111@zytor.com>
- <2025111214-doily-anyway-b24b@gregkh>
- <6DBB5931-ACD4-4174-9FCE-96C45FFC4603@zytor.com>
- <2025111241-domestic-moonstone-f75f@gregkh>
- <DD67C0CF-D330-4D40-B610-FD3EB7AA0218@zytor.com>
- <2025111227-equipment-magnetism-1443@gregkh>
-Content-Language: en-US, sv-SE
-From: "H. Peter Anvin" <hpa@zytor.com>
-In-Reply-To: <2025111227-equipment-magnetism-1443@gregkh>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-On 2025-11-12 11:39, Greg KH wrote:
->>
->> 1. Opening a device for configuration as opposed to data streaming; in the tty case that doesn't just improve the DTR# and RTS# issue but allows setserial, configuring line disciplines and so on.
->>
->> As I have said, this is application-specific intent, which is why I strongly believe that it needs to be part of the open system call. I furthermore believe that it would have use cases beyond ttys and serial ports, which is why I'm proposing a new open flag as opposed to a sysfs attribute, which actually was my initial approach (yes, I have already prototyped some of this, and as referenced before there is an existing patchset that was never merged.)
+
+On Mon, 10 Nov 2025 15:40:39 +0530, Praveen Talari wrote:
+> PM runtime support was previously added to the serial driver but had to
+> be reverted due to wakeup IRQ storms and deadlock issues observed on the
+> RB1 platform.
 > 
-> I think this is going to be the most difficult.  I don't remember why I
-> rejected the old submission, but maybe it would have modified the
-> existing behaviour?  A new open flag "O_DO_NOT_TOUCH_ANYTHING" might be
-> the simplest?
+> Reference:
+> https://lore.kernel.org/all/DC0D53ZTNOBU.E8LSD5E5Z8TX@linaro.org/
 > 
+> [...]
 
-Okay, to I'm going to toss out a couple suggestions for naming:
+Applied, thanks!
 
-	O_(PRE|FOR|N|NO)?(INIT|CONFIG|START)(DEV|HW|IO)?
-	O_(NO?RESET|PREPARE)(DEV|HW|IO)?
-	O_NO?TOUCH
-	O_NYET ("not yet")
-	
-I think my personal preference at the moment is either O_NYET or O_PRECONFIG
-or O_NYET; although it is perhaps a bit more "use case centric" than "what
-actual effect it has" I think it might be clearer.  A -DEV, -HW or -IO suffix
-would seem to needlessly preclude it being used for future similar use cases
-for files that are not device nodes.
+[1/4] arm64: dts: qcom: qrb2210-rb1: Fix UART3 wakeup IRQ storm
+      commit: dd5385c322857ccb760d9bf18619b64b55c27e5f
 
-O_NYET ("not yet") is kind of attractive because it has some geekish smirk
-value, doesn't have "obvious enough" meaning that if you don't know what it
-does you'll guess rather than looking it up, but once you know you are not
-going to forget it!  There is even precedent: USB 2 already has the NYET
-packet type meaning just "not yet".  The more I'm thinking about it the more
-am starting to like it...
-
-Many of the other combinations have the problem of seeming to do the opposite
-of what the used wants in some use cases; it seems rather odd to open a device
-node that you are intending to configure with "O_NOCONFIG".  On the other
-hand, "O_CONFIG" might be a valid indication of the intent (like O_RDONLY or
-O_RDWR are indicator of intent), but also has the implication that it *will*
-cause the device to configure itself.  It also would seem to imply that the
-resulting file descriptor can *only* be used for that purpose.
-
-	-hpa
-
+Best regards,
+-- 
+Bjorn Andersson <andersson@kernel.org>
