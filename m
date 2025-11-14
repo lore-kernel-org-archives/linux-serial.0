@@ -1,63 +1,63 @@
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1993C313E03
-	for <linux-serial@vger.kernel.org>; Fri, 14 Nov 2025 10:52:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE78D313E0E
+	for <linux-serial@vger.kernel.org>; Fri, 14 Nov 2025 10:52:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763117531; cv=none; b=qX4VK7SB4T9im7/GVP4kb4PoFE73WUXr8Urv3Zk5+q35LQJF3tfUii+jjI8uiBLNqxQVOuKIm1fhtDnCHWSLelC5ZvmiEBh24BaatGd5DjH6ceOdV/uefYVS850gC6QEGKymMlwOezmST/Sjt8//k5Q1Lpa24pNXhL4HSN3HXLA=
+	t=1763117532; cv=none; b=qu8NBwWRhFxx4Xm/y2sywqwtc1lYJrjCzmQUjALy6JLDW/V+WBu53v+BtbqMwbD2PDDER+lDiyKW8Ad3j+GGiOU9BK/HwxpGAepI9al5Az1Yq8K7TXpXdroVodJB9sn871YTOnZ8tM7Kf8zUDkKe1FDSJFkEqcaacSDKaN3oX4Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763117531; c=relaxed/simple;
-	bh=iDr+sjQfrHDp3DxxIo6LAV+CM7T5ZIZH8WpOIp7Dj7k=;
+	s=arc-20240116; t=1763117532; c=relaxed/simple;
+	bh=Bo7fHv11Re9CoW+XK21VskhvvMCHF+6Qb3LdhXkgXoY=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=oZ2RYFcRr15M9w0vH8jAPtpEWid5fNWvvSsAqEpW0cRJqDuvkUnChV6nMz2BUeEGuW/Aw4eFgLMN/mbtZ7wFuHsrhvj17B1n5Ftgk9rvsyVQtUf5GnvSHyvWray+qVhXoAIluPY+S1iCc0ew+U5nrwny0qtUXHKhFSfixywJtvI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MQrYut4c; arc=none smtp.client-ip=209.85.221.53
+	 MIME-Version; b=VIfxsmwXTvlGPZO0OCqSuGvysApqv4Pda8dxGU5RQPgjft30ZBXtnyIMjfZSY3RKyswCh5FxZQIzudmczge6qn1Ehb9YIt7cF8phGC4ZHUUIFtAzpIVYl1ikO/AoZfwqg/U3D6xU+QFSbVRLoCYhDroHjtZMA7Bw4xo3sXHT08o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dSYNPYnD; arc=none smtp.client-ip=209.85.221.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MQrYut4c"
-Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-42b312a08a2so1449262f8f.1
-        for <linux-serial@vger.kernel.org>; Fri, 14 Nov 2025 02:52:06 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dSYNPYnD"
+Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-42b312a086eso1113771f8f.2
+        for <linux-serial@vger.kernel.org>; Fri, 14 Nov 2025 02:52:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1763117525; x=1763722325; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1763117526; x=1763722326; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=sE9iX1ursNOQzfwEha6Mc4rDjGJl4IqWi+8gkqilwc0=;
-        b=MQrYut4chTP6Ud3I4s6YI2vVmEAGucr7ICqauo98zFsEDe+mpr8DLt04JRyE8uyixx
-         kxSaogSkXd99wmuv8U6LoKmocHh/QTuGutEcQTHWqU/5GSw+ybQp1tnHSlUG/cu27v+A
-         5dfzUHbwZ4C0106KjaOYUk2vHxUW9fVAlfxoy2Yn77NBrjXNWXHSjtsQiDr7wQb2c+Ii
-         nLmctwGVhPTabZN4ncM3k3nGMEPY9ufWs2qZa31CR/Qmy9uA4FJBFOtQNukR7fzQQDZM
-         +DuZEZ3G88QLJc6DBbDWGglm9ORqX9vrOG4TmU/B+jYmiedxmISWQFHFfkwNty9KG4bn
-         LLZQ==
+        bh=XcdLKywiX2/UGkDQLLsxetMHBbjl411Sv7eO32NzeAE=;
+        b=dSYNPYnDtxvD/zMSx+TnOx89GV3zaX58Oq+4ZO0EfcoxK6RaZXFrFdRvKBZcVk5Ahy
+         8PcICF9eI954oMoSylVTxqDuRMbvQ5Yzo9fSD6JLcEE1zjOfRLQo6zFunccTr5uxhCoi
+         4Fd/+Pd7/xnt4j22UeDxua803k/nMZ1xu5r5qgcpwzBPuA4oFY90TB5SjLGEIK1w17GE
+         gvbCjGBW9VWLDpdY1Xhry8hGpIT8WQtpJlXPhdNjqgEpkJ0xReu0qEVoD111AV7YYh6X
+         Wl0CjYWdKQlASRm77MEAFFPbeTxwaVI2voA7q9KN0tl7RNTDotzzOsOTkvCCgIjLRXTz
+         MJdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1763117525; x=1763722325;
+        d=1e100.net; s=20230601; t=1763117526; x=1763722326;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=sE9iX1ursNOQzfwEha6Mc4rDjGJl4IqWi+8gkqilwc0=;
-        b=slkxJrTDQTbS3q0d04Ny9GzXnmtInZHvlvVi8+/aZQw5wE3EkfsK/k7vGRqd8Ou91I
-         6WJ7wk9mLyZCaogrYpZhFy/JfqmmZ0cjMERNNFJX7pcf3xjobRqJ43eGIRXoZvsxMswr
-         QnxGIJyGzTRMY/fFgoVsUmrkKtsuHVvBVQV5UZbWKmnYT0i434y7p/ItRk9HQTTPAl7N
-         zbl7bosiPSePxKiMLkaAoaMrtAZ+X00/knx/GgPVPfxe9nJWh4qRoAbKlW+JZjjsWWLI
-         Op0XzvPJyhXF+rJ51qxqhcaF+cRW77nBN3fsNBThVQOC9Kb6gzG5mOo7BEZhtSHC5c9l
-         7vSA==
-X-Forwarded-Encrypted: i=1; AJvYcCX3W83l1XPDy8MlVgpY/bPlJaYeshxutalPatH+5oeK3ykGkDPpzU5tL7RDZCitfK8d+sJ65lB7g07+ZDs=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx8XUQ6Y97K3CP60EsIaFEC/PrZS0aL9aKyezpihcFlxRbiPs8M
-	SzvTQ7Vh2l/GRPokKVl8DvufR59VH4B+FKZk2mKSYDq+6uyQjl30YoD3
-X-Gm-Gg: ASbGncvsoHbQHpllHaj/gvYDn6aGL8GQ9tj7TVuUh8N5Jo0PyhU3+361k7TSf4dKf7F
-	7RLxz9gVoSHEiHcBZzxLloPo2lcU8hjxHGwSZGiM6BolQ3DU98v0/3Lsa6wzDE4fJlpf/QB7DDL
-	Lp8vwlQpuOn7S7C2LaU5/1JcnDa1I1dvnkvFHfau2IaPRU4sDo5g/c43/TYTS1liKNqwU+P+0Fs
-	/cxzIGrPZYVlNA1/gcuZz8il2Pom6s0U/VBWC3gCyvzkiT/wx7oAgTX6Gdv2++uYo+rvkdBeJBH
-	Bp52EC/0xFZYFhPwZeBC893lFfGjlCWvhZGOdyIEW2XKaI6DmyYSVwzBFS/wG0UdgGG6nhwJRkk
-	qt3Z0EohpAigjHZQq8alg6e1ZgpjLs3xcGiNVbchjVGn2lyFc1MRYTEOY85Wx4RgyJHEx0T1hL3
-	IxxTCMANCxNHPF8Xkr4sSVe9aIFxhSwQvVfGInvn1s32MxnllPZt5zRWGNdjaD/otgIOWy29N8M
-	A9E6QSPCMZ9M58/uRpQkJSij+0=
-X-Google-Smtp-Source: AGHT+IHh5EhVhpsPi+K/X6iNqc6qBAFlJJgODP+ZykzrObwqlrD1Pj83VU22VCd8tYUDjSmwsdu2Nw==
-X-Received: by 2002:a5d:5f47:0:b0:42b:3825:2ac8 with SMTP id ffacd0b85a97d-42b5939ce2emr2119323f8f.59.1763117525277;
+        bh=XcdLKywiX2/UGkDQLLsxetMHBbjl411Sv7eO32NzeAE=;
+        b=ltZfT/D5dv43vGAmpNwtu7D6WhJDRNqxunwTUrlfQJX9piYP6nYweS4UZIL0ecSDn/
+         ccdmb7bLu8U4j/IfaGJnUtDgQJbBGZ3HYAxDinelXgq2JadFECSh5vudKAOAu9vwzvIr
+         p0hHVzpVtjQPLl1Wja8VxbjSLLorxHoeqCriE15khg3XbYYrc4CeUmnxbjpNXo0mW4hP
+         UZyXM0zimbQqqnlhNyN0k8Y/1u00xOovDHt3mFMpF5+a05izDio3SbESTjKP3i2Kxz1s
+         mgHN/es8HRg72FhzIPpwe2q6l1fj4LZ1/1TYsR71CD7MtirHfHzmBUqmZvw5XRp1CNhb
+         CNrQ==
+X-Forwarded-Encrypted: i=1; AJvYcCX9hw8CV46P03hNt7B56yGiE/p+j9aRu8q2uxFxJksT0gq0b4Fgrl+UlFXJe+2qhnu5ef78OVIOikEAXMY=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw3VX6yIkEyc8HihjQAKHri3Pov0V8G6UCOMdVEQtur/iI8X9CY
+	wcbuIwZKdn/lUa9Sr15loUDjjZPETYCVFj1MKYKJlcA24P+z2lg2o3tL
+X-Gm-Gg: ASbGncvKhuA2/9fHcy9tJTrcGhF+mA0Q9FkEGaeCMUV3Cxp/RMR1kMX2c0imuE0TsfM
+	svTTdpeWZBRAouh7lOI+S87knl1KnkzZM5qRbZHDL68a05l5eGe9+K+6G+2smQ9vfKrGCoVVG+L
+	IytgMXLcW5GL4OjSmx35SxCk0pVTihqhhXDCpWg1YhxV3WQI6Eg2jap6xbCuar2wybfP8h56559
+	h7IjYYrsxzxYock2k0kWbFOjFmgtoY3yyjclVLi3En8wObcsEAVurtLqrIxJgxcGzPLAn7xtMvg
+	XGqnK0S+s2gy9wzA2ZvU8gfG/nuNANkZNYBLUtlyjkfJtm/FOLmVbuH2bzAehzTAqIcrZV7kKIM
+	BXuyVyegcLlZWi2OZozBe14QIVkfUDGAAw40ke2Ty4JZ+CH6ktH/97SmKpZOfASMaKopCRqxFgX
+	dot6WKU3lcc+sNKx01Qk+V4WEurVNyQr28AktUhhQAW6wcS9nHWZo3BZJqHCz+n460qC1hS1ZJc
+	CgXrqhsvrVFsv0j
+X-Google-Smtp-Source: AGHT+IF9AeRcYUxmrudgZkczghPrqdHlfNHpVMvqeLBzhtxnBkmtDd/7lfsgfcFS62tiRc4aZwfVTw==
+X-Received: by 2002:a05:6000:40cc:b0:429:b9bc:e826 with SMTP id ffacd0b85a97d-42b59399155mr2685801f8f.53.1763117525845;
         Fri, 14 Nov 2025 02:52:05 -0800 (PST)
 Received: from localhost.localdomain (host86-162-200-138.range86-162.btcentralplus.com. [86.162.200.138])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-42b53f17cbfsm9031255f8f.35.2025.11.14.02.52.04
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-42b53f17cbfsm9031255f8f.35.2025.11.14.02.52.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Fri, 14 Nov 2025 02:52:05 -0800 (PST)
 From: Biju <biju.das.au@gmail.com>
@@ -77,9 +77,9 @@ Cc: Biju Das <biju.das.jz@bp.renesas.com>,
 	devicetree@vger.kernel.org,
 	linux-renesas-soc@vger.kernel.org,
 	Biju Das <biju.das.au@gmail.com>
-Subject: [PATCH v3 02/13] serial: rsci: Drop rsci_clear_CFC()
-Date: Fri, 14 Nov 2025 10:51:11 +0000
-Message-ID: <20251114105201.107406-3-biju.das.jz@bp.renesas.com>
+Subject: [PATCH v3 03/13] serial: sh-sci: Drop extra lines
+Date: Fri, 14 Nov 2025 10:51:12 +0000
+Message-ID: <20251114105201.107406-4-biju.das.jz@bp.renesas.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20251114105201.107406-1-biju.das.jz@bp.renesas.com>
 References: <20251114105201.107406-1-biju.das.jz@bp.renesas.com>
@@ -93,44 +93,58 @@ Content-Transfer-Encoding: 8bit
 
 From: Biju Das <biju.das.jz@bp.renesas.com>
 
-Drop rsci_clear_CFC() by reusing rsci_clear_SCxSR() as the contents of
-both functions are the same.
+Shorten the number lines in sci_init_clocks() by fitting the error
+messages within an 100-character length limit.
 
 Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 ---
 v2->v3:
- * No change.
+ * Updated dev_err_probe() in sci_init_clocks() as it fits in 100-column
+   limit.
 v1->v2:
- * No change.
+ * Updated commit message 80-character->100-character.
+ * Increased line limit for error messages to 100-column limit.
 ---
- drivers/tty/serial/rsci.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ drivers/tty/serial/sh-sci.c | 14 ++++----------
+ 1 file changed, 4 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/tty/serial/rsci.c b/drivers/tty/serial/rsci.c
-index b3c48dc1e07d..9681e8ef4bfb 100644
---- a/drivers/tty/serial/rsci.c
-+++ b/drivers/tty/serial/rsci.c
-@@ -199,11 +199,6 @@ static unsigned int rsci_get_mctrl(struct uart_port *port)
- 	return 0;
- }
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 53edbf1d8963..1065773555ba 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -3186,11 +3186,8 @@ static int sci_init_clocks(struct sci_port *sci_port, struct device *dev)
+ 			return PTR_ERR(clk);
  
--static void rsci_clear_CFC(struct uart_port *port, unsigned int mask)
--{
--	rsci_serial_out(port, CFCLR, mask);
--}
--
- static void rsci_start_tx(struct uart_port *port)
- {
- 	struct sci_port *sp = to_sci_port(port);
-@@ -275,7 +270,7 @@ static void rsci_transmit_chars(struct uart_port *port)
- 			break;
+ 		if (!clk && sci_port->type == SCI_PORT_RSCI &&
+-		    (i == SCI_FCK || i == SCI_BRG_INT)) {
+-			return dev_err_probe(dev, -ENODEV,
+-					     "failed to get %s\n",
+-					     name);
+-		}
++		    (i == SCI_FCK || i == SCI_BRG_INT))
++			return dev_err_probe(dev, -ENODEV, "failed to get %s\n", name);
+ 
+ 		if (!clk && i == SCI_FCK) {
+ 			/*
+@@ -3200,16 +3197,13 @@ static int sci_init_clocks(struct sci_port *sci_port, struct device *dev)
+ 			 */
+ 			clk = devm_clk_get(dev, "peripheral_clk");
+ 			if (IS_ERR(clk))
+-				return dev_err_probe(dev, PTR_ERR(clk),
+-						     "failed to get %s\n",
+-						     name);
++				return dev_err_probe(dev, PTR_ERR(clk), "failed to get %s\n", name);
  		}
  
--		rsci_clear_CFC(port, CFCLR_TDREC);
-+		rsci_clear_SCxSR(port, CFCLR_TDREC);
- 		rsci_serial_out(port, TDR, c);
- 
- 		port->icount.tx++;
+ 		if (!clk)
+ 			dev_dbg(dev, "failed to get %s\n", name);
+ 		else
+-			dev_dbg(dev, "clk %s is %pC rate %lu\n", name,
+-				clk, clk_get_rate(clk));
++			dev_dbg(dev, "clk %s is %pC rate %lu\n", name, clk, clk_get_rate(clk));
+ 		sci_port->clks[i] = clk;
+ 	}
+ 	return 0;
 -- 
 2.43.0
 
