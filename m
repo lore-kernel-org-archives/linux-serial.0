@@ -1,65 +1,65 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6C78313E04
-	for <linux-serial@vger.kernel.org>; Fri, 14 Nov 2025 10:52:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1993C313E03
+	for <linux-serial@vger.kernel.org>; Fri, 14 Nov 2025 10:52:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763117531; cv=none; b=um2sTtkVp6RgZSW4oerdOYI4pfupQusr8Qp6hRedouixiGD7d+WJ7ISc9KzKuTzE2aQym2BHx8852HVH8fEJ26c45hHzbuj7n0MFBuonWfvFScr2/PeLOwtkHFPBdRr4WriOLUPNuUvomNZCemYKCSQ9LD0gEiz1WIkek+bbMo8=
+	t=1763117531; cv=none; b=qX4VK7SB4T9im7/GVP4kb4PoFE73WUXr8Urv3Zk5+q35LQJF3tfUii+jjI8uiBLNqxQVOuKIm1fhtDnCHWSLelC5ZvmiEBh24BaatGd5DjH6ceOdV/uefYVS850gC6QEGKymMlwOezmST/Sjt8//k5Q1Lpa24pNXhL4HSN3HXLA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1763117531; c=relaxed/simple;
-	bh=lhrbj0OcSPih2hHSQIH0J0fKDkHISmrd2RLvWhH6Nyk=;
+	bh=iDr+sjQfrHDp3DxxIo6LAV+CM7T5ZIZH8WpOIp7Dj7k=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=N6eV4HJG7oIw3nTi+h/0C2cgyV9/9NJ5Msx9jYBFG6c0N18P8zeqil5KJlDqXraCt4hWuXyDftq1sCcW4GWS1sjZYIzrKAuNe9563a9EBvHliJ0Z/iHqCRPoZpKhFBmikY6nrj0oDHcXHJV37HS73bnw8tCdoyBfF0AkBhEl6AY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ngKpl8LO; arc=none smtp.client-ip=209.85.221.51
+	 MIME-Version; b=oZ2RYFcRr15M9w0vH8jAPtpEWid5fNWvvSsAqEpW0cRJqDuvkUnChV6nMz2BUeEGuW/Aw4eFgLMN/mbtZ7wFuHsrhvj17B1n5Ftgk9rvsyVQtUf5GnvSHyvWray+qVhXoAIluPY+S1iCc0ew+U5nrwny0qtUXHKhFSfixywJtvI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MQrYut4c; arc=none smtp.client-ip=209.85.221.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ngKpl8LO"
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-42b32ff5d10so1751393f8f.1
-        for <linux-serial@vger.kernel.org>; Fri, 14 Nov 2025 02:52:07 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MQrYut4c"
+Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-42b312a08a2so1449262f8f.1
+        for <linux-serial@vger.kernel.org>; Fri, 14 Nov 2025 02:52:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1763117526; x=1763722326; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1763117525; x=1763722325; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=xYpxnPtlPop5alBk2PoZYH1TzJtgTomEZwrKVEB1e8E=;
-        b=ngKpl8LO4KYDtsy6reYHYXl3iRsGoqOiQAtFGJ4sqQRlSOxuXtbs2lndWuyNqRaPdL
-         ICxsEzIPmt9D3qjUnSikbhp3bNozUjR5r1RvVNdFTOT8+Xcn1rTEQbfnHCDNLhhGtXSC
-         hwDpbXMmCnNIaxGotcR5kF4RoThxOxjeEYaNWO1hV4ucsAa1R6cnizii0jOTq64exqOc
-         Y05EjDzCoseDh+xWtn9rSIAfCmaKBVnpH6EWsMKCATpEtXNGhYdSPMjKvNrC9QuSx26o
-         CHygOdyRcA9n89dvQNuby8vwshhBt7ze5unR6izS/IOldqhFmQkYlgmegi3+gPTjS7TL
-         UF7A==
+        bh=sE9iX1ursNOQzfwEha6Mc4rDjGJl4IqWi+8gkqilwc0=;
+        b=MQrYut4chTP6Ud3I4s6YI2vVmEAGucr7ICqauo98zFsEDe+mpr8DLt04JRyE8uyixx
+         kxSaogSkXd99wmuv8U6LoKmocHh/QTuGutEcQTHWqU/5GSw+ybQp1tnHSlUG/cu27v+A
+         5dfzUHbwZ4C0106KjaOYUk2vHxUW9fVAlfxoy2Yn77NBrjXNWXHSjtsQiDr7wQb2c+Ii
+         nLmctwGVhPTabZN4ncM3k3nGMEPY9ufWs2qZa31CR/Qmy9uA4FJBFOtQNukR7fzQQDZM
+         +DuZEZ3G88QLJc6DBbDWGglm9ORqX9vrOG4TmU/B+jYmiedxmISWQFHFfkwNty9KG4bn
+         LLZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1763117526; x=1763722326;
+        d=1e100.net; s=20230601; t=1763117525; x=1763722325;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=xYpxnPtlPop5alBk2PoZYH1TzJtgTomEZwrKVEB1e8E=;
-        b=tPub0S+6VLS21HDJxxOcR6U2Cq57+UQMa/1GDgbCD2qhrCtzj07/wZY35CfW2VjNyo
-         lGzaELz/sF3HXV3pkeqQPOy0Uf6rraQTHrjxbVMG7ym2e57SdNFjHJCKGW53589nQCop
-         R5DGLngKXy3mzlS6eJMvgaKY6l6jeEhC7+cAedj2vMT0rRX1L30uDOraFkiYKXrPIkTY
-         uCggn5nMhiQwjp8Y5aWyqUW0EI7HNTmeLqDZgipyR1RQAG3RWVOX8Yq50HjbuuRTnbF5
-         6Z7g99GJhgeRR2Be3/PWg45TDtkHa6OZrUnf++cl7OFjn1VwuwrWhhu10CvbMRKzwkge
-         UnlQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVF52Mzpn5JGR8t26pOWi02S4v/5mriPmRLvHtwzdtAHVEvVpGLNwG9y2207Di8bCy1CDgrBzdwd6qG8Q0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzOxp2Q1KWqjhCH0JxOqdcrEZIh17w8pyjuWfJitOtHXXmwpzcL
-	q7y1qpO6hIqciHv1mf3Gpm+JEUVO3pPZBqWuLH2aX9u75kETL2MukE+K
-X-Gm-Gg: ASbGncuKfYafso+6q+2faK50Y4mzf7AtyIk4CjAXnJ2zGsUYntf7i/KYmuCzG3e+TRp
-	J6+XXIueQlkMFlBywTJpV9TzW4Sg90ug4t+Z+1n+dna6611LJuq6utoF54xq4zm6TcDi8PnYIIc
-	gycfh/gjivdBaxS7XUdTfVZ16IrGoL1aGN+Hl6fCUyYE2K3oq5IRA6284I78IEYoYQTnAyAy5tw
-	l1l/n8l90o1Uv8Nb+vPl5Z+PndTvGDBB1g4NcG5Eg7ixxQVo5z1CdcfOtw2X0IKXN3r3kqrMPLw
-	fsvABpzU0yYK4EkUWh+20EZKr08wfTYdu56Z4iela/08oHE6g8bWrkmxrMx8fS+Wg4LU/hAQvBl
-	0cjghadGTJsy0VZbWRELV5AcHvjsSy6rjWJrZh9tU7tkvR6ksa0kE1BiTm5zrFwwEJUAh1KwbfV
-	oSjtZyKKkjbPChoszieqg+oLk739ZYhNLbvwwsYNdOID+/hG74Zc1qxK8nTHuI1r5Lv3F1TqG3j
-	ev+hn18gHWqzlfq
-X-Google-Smtp-Source: AGHT+IGOR8QW0xb98M0JpE1UwFVZnxmTMEVweqBtK/qFgVR6+iALWh+Xf1+2TqWQnP+jdt03f7/uHw==
-X-Received: by 2002:a05:6000:40dc:b0:429:ef72:c33a with SMTP id ffacd0b85a97d-42b527955aemr6201873f8f.3.1763117526404;
-        Fri, 14 Nov 2025 02:52:06 -0800 (PST)
+        bh=sE9iX1ursNOQzfwEha6Mc4rDjGJl4IqWi+8gkqilwc0=;
+        b=slkxJrTDQTbS3q0d04Ny9GzXnmtInZHvlvVi8+/aZQw5wE3EkfsK/k7vGRqd8Ou91I
+         6WJ7wk9mLyZCaogrYpZhFy/JfqmmZ0cjMERNNFJX7pcf3xjobRqJ43eGIRXoZvsxMswr
+         QnxGIJyGzTRMY/fFgoVsUmrkKtsuHVvBVQV5UZbWKmnYT0i434y7p/ItRk9HQTTPAl7N
+         zbl7bosiPSePxKiMLkaAoaMrtAZ+X00/knx/GgPVPfxe9nJWh4qRoAbKlW+JZjjsWWLI
+         Op0XzvPJyhXF+rJ51qxqhcaF+cRW77nBN3fsNBThVQOC9Kb6gzG5mOo7BEZhtSHC5c9l
+         7vSA==
+X-Forwarded-Encrypted: i=1; AJvYcCX3W83l1XPDy8MlVgpY/bPlJaYeshxutalPatH+5oeK3ykGkDPpzU5tL7RDZCitfK8d+sJ65lB7g07+ZDs=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx8XUQ6Y97K3CP60EsIaFEC/PrZS0aL9aKyezpihcFlxRbiPs8M
+	SzvTQ7Vh2l/GRPokKVl8DvufR59VH4B+FKZk2mKSYDq+6uyQjl30YoD3
+X-Gm-Gg: ASbGncvsoHbQHpllHaj/gvYDn6aGL8GQ9tj7TVuUh8N5Jo0PyhU3+361k7TSf4dKf7F
+	7RLxz9gVoSHEiHcBZzxLloPo2lcU8hjxHGwSZGiM6BolQ3DU98v0/3Lsa6wzDE4fJlpf/QB7DDL
+	Lp8vwlQpuOn7S7C2LaU5/1JcnDa1I1dvnkvFHfau2IaPRU4sDo5g/c43/TYTS1liKNqwU+P+0Fs
+	/cxzIGrPZYVlNA1/gcuZz8il2Pom6s0U/VBWC3gCyvzkiT/wx7oAgTX6Gdv2++uYo+rvkdBeJBH
+	Bp52EC/0xFZYFhPwZeBC893lFfGjlCWvhZGOdyIEW2XKaI6DmyYSVwzBFS/wG0UdgGG6nhwJRkk
+	qt3Z0EohpAigjHZQq8alg6e1ZgpjLs3xcGiNVbchjVGn2lyFc1MRYTEOY85Wx4RgyJHEx0T1hL3
+	IxxTCMANCxNHPF8Xkr4sSVe9aIFxhSwQvVfGInvn1s32MxnllPZt5zRWGNdjaD/otgIOWy29N8M
+	A9E6QSPCMZ9M58/uRpQkJSij+0=
+X-Google-Smtp-Source: AGHT+IHh5EhVhpsPi+K/X6iNqc6qBAFlJJgODP+ZykzrObwqlrD1Pj83VU22VCd8tYUDjSmwsdu2Nw==
+X-Received: by 2002:a5d:5f47:0:b0:42b:3825:2ac8 with SMTP id ffacd0b85a97d-42b5939ce2emr2119323f8f.59.1763117525277;
+        Fri, 14 Nov 2025 02:52:05 -0800 (PST)
 Received: from localhost.localdomain (host86-162-200-138.range86-162.btcentralplus.com. [86.162.200.138])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-42b53f17cbfsm9031255f8f.35.2025.11.14.02.52.05
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-42b53f17cbfsm9031255f8f.35.2025.11.14.02.52.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Nov 2025 02:52:06 -0800 (PST)
+        Fri, 14 Nov 2025 02:52:05 -0800 (PST)
 From: Biju <biju.das.au@gmail.com>
 X-Google-Original-From: Biju <biju.das.jz@bp.renesas.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -77,9 +77,9 @@ Cc: Biju Das <biju.das.jz@bp.renesas.com>,
 	devicetree@vger.kernel.org,
 	linux-renesas-soc@vger.kernel.org,
 	Biju Das <biju.das.au@gmail.com>
-Subject: [PATCH v3 04/13] serial: rsci: Drop unused macro DCR
-Date: Fri, 14 Nov 2025 10:51:13 +0000
-Message-ID: <20251114105201.107406-5-biju.das.jz@bp.renesas.com>
+Subject: [PATCH v3 02/13] serial: rsci: Drop rsci_clear_CFC()
+Date: Fri, 14 Nov 2025 10:51:11 +0000
+Message-ID: <20251114105201.107406-3-biju.das.jz@bp.renesas.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20251114105201.107406-1-biju.das.jz@bp.renesas.com>
 References: <20251114105201.107406-1-biju.das.jz@bp.renesas.com>
@@ -93,7 +93,8 @@ Content-Transfer-Encoding: 8bit
 
 From: Biju Das <biju.das.jz@bp.renesas.com>
 
-Drop unused macro DCR and its bit definition.
+Drop rsci_clear_CFC() by reusing rsci_clear_SCxSR() as the contents of
+both functions are the same.
 
 Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 ---
@@ -102,30 +103,34 @@ v2->v3:
 v1->v2:
  * No change.
 ---
- drivers/tty/serial/rsci.c | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/tty/serial/rsci.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
 diff --git a/drivers/tty/serial/rsci.c b/drivers/tty/serial/rsci.c
-index 9681e8ef4bfb..9fa5d387d7db 100644
+index b3c48dc1e07d..9681e8ef4bfb 100644
 --- a/drivers/tty/serial/rsci.c
 +++ b/drivers/tty/serial/rsci.c
-@@ -24,7 +24,6 @@ MODULE_IMPORT_NS("SH_SCI");
- #define CCR3	0x14
- #define CCR4	0x18
- #define FCR	0x24
--#define DCR	0x30
- #define CSR	0x48
- #define FRSR	0x50
- #define FTSR	0x54
-@@ -119,8 +118,6 @@ MODULE_IMPORT_NS("SH_SCI");
- /* FFCLR (FIFO Flag CLear Register) */
- #define FFCLR_DRC		BIT(0)	/* DR Clear */
+@@ -199,11 +199,6 @@ static unsigned int rsci_get_mctrl(struct uart_port *port)
+ 	return 0;
+ }
  
--#define DCR_DEPOL		BIT(0)
+-static void rsci_clear_CFC(struct uart_port *port, unsigned int mask)
+-{
+-	rsci_serial_out(port, CFCLR, mask);
+-}
 -
- static u32 rsci_serial_in(struct uart_port *p, int offset)
+ static void rsci_start_tx(struct uart_port *port)
  {
- 	return readl(p->membase + offset);
+ 	struct sci_port *sp = to_sci_port(port);
+@@ -275,7 +270,7 @@ static void rsci_transmit_chars(struct uart_port *port)
+ 			break;
+ 		}
+ 
+-		rsci_clear_CFC(port, CFCLR_TDREC);
++		rsci_clear_SCxSR(port, CFCLR_TDREC);
+ 		rsci_serial_out(port, TDR, c);
+ 
+ 		port->icount.tx++;
 -- 
 2.43.0
 
