@@ -1,39 +1,39 @@
 Received: from mail.zytor.com (terminus.zytor.com [198.137.202.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDECF1DE4E1;
-	Sat, 15 Nov 2025 22:29:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44AF2183CC3;
+	Sun, 16 Nov 2025 00:47:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.136
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763245777; cv=none; b=A9ssK8PpNAR3BAPkGIWQdmSkhTO2iVs0k7foEBuIkBf2kzIxume1sOyK/LkaEAOGGVnvQXfBPZNPj0kF8B2q9Zi4CAmWkBO/2NcS5oADfonVeN1T2meneI6g/DKDkkyL5+JuhbISfVcjhnX2m6Z39NR4BXaaJwUttYdynP9HmLM=
+	t=1763254080; cv=none; b=atsV9s6WBsM9OPaZUzXgAF+lmYptzdnQtPBFpGBJ0LJDVMZA87gC5i1/0/AnM9ZSlZ3v7Rz4xPCGG5YKhcs945E1qj9stXGsU4xtgtUDye9qsZ00ikwO3n5oqmlNMT7siX9BQlJjIqJeFzeri/G+TXqJ9dQo4JDG6tzLUzYLL4c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763245777; c=relaxed/simple;
-	bh=TmBZ71KtSH+xixCjuLARnjJtxSt1AmGwf28/TRF3fLY=;
+	s=arc-20240116; t=1763254080; c=relaxed/simple;
+	bh=4Fm2KFD6qpiUF1onn2drzUH/6heEStbzNEpoDDp5l7Q=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=USjuh8nizfPT5xmqz/3z00XrVUEM+e2BLyGiYmH0WjZ7LB469RR9E+9dxHIKsnQs/1KTsXc7FCerUlOtllcAkP9OmhL/qaV/T2yz3Acf7oFF4yoaryIGPkTN6O0pK2+PH6pcWn9/7D49a9JQQeCdrTmfqQAHzJu3iCcA91hlnoc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com; spf=pass smtp.mailfrom=zytor.com; dkim=fail (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b=PwsSYdSw reason="signature verification failed"; arc=none smtp.client-ip=198.137.202.136
+	 In-Reply-To:Content-Type; b=TCabIe33ZOLvPkAQCmlKfb15UiCWjRyugqtGNmkqnB2WJalNzhoH2hKz/Ue3QOUG3ltt7xc6I1IT3K71c9Z8PYiLSabfFr3XRPjC9Mz4Xjk13Sa1NnEem8+rjupoml90xSDI35asyaJ/tRpdV2QVzZBdNds9DuR0Cv8cvA1BzIE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com; spf=pass smtp.mailfrom=zytor.com; dkim=fail (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b=frRTY50N reason="signature verification failed"; arc=none smtp.client-ip=198.137.202.136
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zytor.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b="PwsSYdSw"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b="frRTY50N"
 Received: from [172.27.2.41] (c-76-133-66-138.hsd1.ca.comcast.net [76.133.66.138])
 	(authenticated bits=0)
-	by mail.zytor.com (8.18.1/8.17.1) with ESMTPSA id 5AFMT7dN3213645
+	by mail.zytor.com (8.18.1/8.17.1) with ESMTPSA id 5AG0lbca3277012
 	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
-	Sat, 15 Nov 2025 14:29:10 -0800
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 5AFMT7dN3213645
+	Sat, 15 Nov 2025 16:47:40 -0800
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 5AG0lbca3277012
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
-	s=2025102301; t=1763245758;
-	bh=o6FcQy8d4be39w/3gkzCf13G91XwD08Zmq/c7rYZIi4=;
+	s=2025102301; t=1763254066;
+	bh=OTohMxDctL+N1RZVFe4ejI/vvpQQqRI7JMQ/mGjWJBU=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=PwsSYdSwMDIyhv/kdJM/Qq49dgUmKIS329fItwIcIYDiiJE7Ud2NKtr7RurBRoQHU
-	 VjxtjEysbgA8oyOvdYXJ2y+aIHlKjeN9r8RjP1cE2ipDX+xt6lOuS+Cj7ylxu87KJ1
-	 Ceta8he5Q/qYKvH2fZ3tmZYgvCsjfi/sUxSv0uEBQxg9YOEeEUQfGts0RVbj2q1aJN
-	 leRPjxCgH7AH75E6LX1gfgXPg1IN0q6vg/VoPGsuA2K9SMqxR60nf/CtA8xvbQIFNk
-	 f/t+C9kjJoOyb/Z8bzn9MnYt75Y5O9Kf8hcQV7MmAvN2A9jeWlrZusyxf2Dlmk13ld
-	 LBh/awmbkte3w==
-Message-ID: <cd31fbbc-89f3-4130-9566-1e06ed6339d9@zytor.com>
-Date: Sat, 15 Nov 2025 14:29:06 -0800
+	b=frRTY50Nf8atDwpW3mateVklpYa0EM01BoooCdH+BxibGWhecyintnjXfjBYid6Cw
+	 P7vsQtTBxsLMhe58/a3kVQpnCQLxfMkgfaCcLcpl68BjAovNEIxvyuudxxYjoTwGLO
+	 AqxAS+ym/YH0QSEUOw3/Ri2iI6ckiy2UCCNigKsfrcYk2BbQIrqGFIyC/OF7+GZAeB
+	 j2kUIw5IQ2GpvxHCjPNOewZYHT9grIv9y8NCd0TbstJUYflVlB9VY2OrS+d1U00MNt
+	 SB8DjMXdfjZKn3RNWtATYV0cDSEaARfYKrCubKSFda6oHpskZj0XfPaoGeD5g1SM3w
+	 rA7u4cgEfCXtQ==
+Message-ID: <2846db90-fb05-41d2-b8de-c678af75a04b@zytor.com>
+Date: Sat, 15 Nov 2025 16:47:37 -0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -67,56 +67,37 @@ Content-Language: en-US, sv-SE
 From: "H. Peter Anvin" <hpa@zytor.com>
 In-Reply-To: <6c26eea2-6f90-f48a-9488-e7480f086c70@netscape.net>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
 On 2025-11-15 13:29, Ned Ulbricht wrote:
-> On 11/14/25 10:53, H. Peter Anvin wrote:
->> On November 14, 2025 10:49:09 AM PST, "Maciej W. Rozycki"
->> <macro@orcam.me.uk> wrote:
->>> On Thu, 13 Nov 2025, H. Peter Anvin wrote:
->>>
->>>>> I think this is going to be the most difficult.  I don't remember why I
->>>>> rejected the old submission, but maybe it would have modified the
->>>>> existing behaviour?  A new open flag "O_DO_NOT_TOUCH_ANYTHING" might be
->>>>> the simplest?
->>>>>
->>>>
->>>> Okay, to I'm going to toss out a couple suggestions for naming:
->>>>
->>>>     O_(PRE|FOR|N|NO)?(INIT|CONFIG|START)(DEV|HW|IO)?
->>>>     O_(NO?RESET|PREPARE)(DEV|HW|IO)?
->>>>     O_NO?TOUCH
->>>>     O_NYET ("not yet")
->>>>     
->>>> I think my personal preference at the moment is either O_NYET or O_PRECONFIG
->>>> or O_NYET; although it is perhaps a bit more "use case centric" than "what
->>>> actual effect it has" I think it might be clearer.  A -DEV, -HW or -IO suffix
->>>> would seem to needlessly preclude it being used for future similar use cases
->>>> for files that are not device nodes.
->>>
->>> Hmm, I'm inconvinced about any of these.
->>>
->>> How about O_FDONLY, to reflect that you are after a file descriptor only
->>> [snip]
+> |
+> | O_TTY_INIT
 > 
-> Hi all,
+> https://pubs.opengroup.org/onlinepubs/9799919799/
 > 
-> Resurrecting a (private email) discussion from a few years back now, my
-> personal preferences are:
-> (1) O_KEEP
-> (2) O_TTY_KEEP
-> (3) O_TTY_NOINIT.
+> That's what motivates my first-glance preference to name this new flag,
+> which will have approximately opposite behavior, as O_TTY_NOINIT.
 > 
-> (Of course, naming an open() flag has got to be a paradigmatic
-> invitation for bike-shedding...)
-> 
-> It's worth pointing out, though, that even though O_TTY_INIT doesn't
-> generally appear in linux headers, that particular flag is documented in
-> POSIX to have at least incompatible --perhaps even strictly opposite--
-> behavior compared with this new proposed flag.
+> But as a generic abstraction, I more prefer O_KEEP.
 > 
 
-I dislike O_TTY_* because restricts it to the TTY use case.
+O_KEEP seems a little vague, but O_KEEPCONFIG seems like a decent name.
+
+It seems like we don't have several new flags:
+
+	O_EXEC
+	O_SEARCH
+	O_CLOFORK
+	O_TTY_INIT
+	O_RSYNC
+	O_NOCLOBBER
+
+Some of them *may* be possible to construct with existing Linux options, I'm
+not 100% sure; in particular O_SEARCH might be the same as (O_DIRECTORY|O_PATH).
+
+O_NOCLOBBER looks like an odd in-between between O_EXCL and
+(O_EXCL|O_NOFOLLOW); stated to be specifically to implement the shell
+"noclobber" semantic.
 
 	-hpa
 
