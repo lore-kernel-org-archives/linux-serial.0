@@ -1,188 +1,153 @@
-Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
+Received: from sonic303-21.consmr.mail.ne1.yahoo.com (sonic303-21.consmr.mail.ne1.yahoo.com [66.163.188.147])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B454D35C19E
-	for <linux-serial@vger.kernel.org>; Tue, 18 Nov 2025 14:30:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9FE1320CA7
+	for <linux-serial@vger.kernel.org>; Tue, 18 Nov 2025 16:53:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=66.163.188.147
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763476206; cv=none; b=a8nLBc6dJh3K5sso6xrVE3gb316EuF7z736OnA3rmdeYNYoN7YJE6+KL/Fi6UumTWnDuLfOzU1RfeS0R3YlvSvYSyGQt2Pm+uIpxKrXdGUi3aQ4CV1eMBX6JN1ByVY+MHYUNS5HIrea0jbDn3phJBLZeNoEr3ClKw846aeK8L+w=
+	t=1763484818; cv=none; b=Io+vqUVGpQV6Y5QMyzSA30R8xKmzYfvxNAGFGNM/U6yThdmVEDx9lV0B51YVx7VbVVUMAR9DAuofM7jDBsewCh22bcTh1wKhzp7zRdBXn0JapPhMBvFGXFvQRHjMZdCXBsjRQQER/G78RPzkf3ilXPoldYhLrGVFiZbIgmIDKK0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763476206; c=relaxed/simple;
-	bh=812u0/kE8U6KIifXA4o4gTvauRi/MWbHZ1WwZdLX1Rs=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=U7eBykUMRwC5oe5zz9g4tKGCPd0IRUDWZWOeRYfynNAH05IDWV/G2pMJn2dZgFheyRslc5W9LUqpJo8UGDCg0yaJVgRPzr6YBbGPQdAawQ/wCoTmprVS2Yy9kiZKvr730hSrogA1j17LfOOp25H+sCPmVTCRkc+7pFUVCtmd9JU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl; spf=none smtp.mailfrom=bgdev.pl; dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b=Lq4z7uIo; arc=none smtp.client-ip=209.85.167.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bgdev.pl
+	s=arc-20240116; t=1763484818; c=relaxed/simple;
+	bh=KS62ociukMyBwGkZwAE/Xgp8jUq2blnlf0Gxkw7tAXY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ZQw0qYQKlUHb7pmo7Q39dmLfjqAI0SwCPit31/2qhb8iG8Xm5SfV7xtC3xCaj7ciPxI4RoVaJxKsMwpFlTHV15yObbx4IY0hc9s0Jc9Yn+G9XT2Gq95MbfW0xm2qWdsfAbBmtFLAVGt7rrrN/y55VkfkSqZV0CN0VYaMTh+Z238=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=netscape.net; spf=pass smtp.mailfrom=netscape.net; dkim=pass (2048-bit key) header.d=netscape.net header.i=@netscape.net header.b=dzrxZ8QO; arc=none smtp.client-ip=66.163.188.147
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=netscape.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=netscape.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b="Lq4z7uIo"
-Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-5942bac322dso5255261e87.0
-        for <linux-serial@vger.kernel.org>; Tue, 18 Nov 2025 06:30:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20230601.gappssmtp.com; s=20230601; t=1763476202; x=1764081002; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=JPuRb3+haxxFSoGOZ/Vv3ClCGfszWqWGAZKDKrczFMg=;
-        b=Lq4z7uIoHwX+T0oZpnQeE7Sgq9N1okHHPsxFDCimKWGvAYYyd1L3RkOxAFX6qqwgAK
-         n7bdZ81LqGV1aeevTqZ8wYxo8zm2fcmodj9xNDXKeQJspHWeAezhpEaV3ItXy5cPjLX4
-         6lleapZWGYLkpOGJxS/+B70xq3sqzhS76pnHvh3KpwGhTjAk0fG5Bfaevs8HoAynZMpF
-         6Y9f9b3Bef5JuVIba38qaCDqJwveVXQ19CNrRhMaBrwVBCOxUcjdGZbK08iPRuO8sCQ+
-         nlyYi9cr1Cu3HHRMrga2WbosxHKUD2ZvZJFSImC9bw3VIP1RTXdGahqstC5GX3Xx94Lo
-         LSYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1763476202; x=1764081002;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=JPuRb3+haxxFSoGOZ/Vv3ClCGfszWqWGAZKDKrczFMg=;
-        b=CroZIMNsCFNmRXbOOWT16PFgbjZrRByRy21KoiZCZzFoTrGWYht/vU2yOrxA4c3gaE
-         yCAI60r08T4ucg7piPOGLJqoonVJS/kEt2PuRFPTDuns7malgrymvO6lEUk0efxMZIVB
-         608TwCPllni6jXr/IPibnb7XskhCxOyIIDLjECRv3bDJm0nB8dCPBqBiH7+ZZO3Z3fhX
-         IOCfOA/40XA0U30cXU+KM+380n4ChTgof5pexFb36CAsxUrgR+tvDHIrqqzTK/ISfrCT
-         KK0l2QLuQpMwfS8t9xC/wAzMmVOpBnXwu/4kkXrs2SBLySJbukOdsZ/9Yl4zXVuMv3FH
-         IlbQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUjis1Hb/rS3j0guEAQiYx+ppoFg78Zbdml5evr52WTpKAt3nRQvqudB3BEWTcgQQySkhp1V4akfu+NplU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxAAS2BrzsEZKwuAppkLPTBXIUJ2ma/tmr4MG2QYwrag6Mq569Z
-	6kfWrWLff1xfIfEQtKLJPbdl3gZFShc0/De+Budrw28lWVdWW7mHEfRqUYfrvsjpY2emrsJfAVO
-	/+4BVQjIClDEoMtxqJPm0xLnLxY0wOV+efDQPbJ+Mbg==
-X-Gm-Gg: ASbGncuUwWXB1CiSyJuY2NQTYye5EX3NFlg8UcIEiR2YETtrWIs2xG6mtn+0A8e+uj3
-	TAXhspp1WoGPqjEZgjLUuIA3zdiaxdRBXYxCWQKaVKm0nVJXLAekB8kEhJ2UwycHQgHsq8vBuUP
-	sZcXoGcKMTmEboAMVwOq8Y7k79B18Ki0azOcKYD6qp0rocx8rz7+AjPZc/nG0AL97N5gZVHxcuj
-	PmCGhoffIzmR9V0MqwCg0hfE7MzUpg7dDzD74qqC0DWD+vyc8a60m82WURbX2wZt+sz6/M/p5vL
-	pXu1szqf1ZykGAYJnqc0NMMZQjufDhzxpgae
-X-Google-Smtp-Source: AGHT+IG/8x599leRbcc55AKG5x7ewC54AAGqLK2r1ZPyGFLtbdnyvhRmFu7yQc8cTfZdSXpR6fRtj7AIKLBehJrw2m0=
-X-Received: by 2002:a05:6512:3ca2:b0:57a:2be1:d779 with SMTP id
- 2adb3069b0e04-595841febd2mr6716947e87.31.1763476201587; Tue, 18 Nov 2025
- 06:30:01 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=netscape.net header.i=@netscape.net header.b="dzrxZ8QO"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=netscape.net; s=a2048; t=1763484809; bh=RCEtiA1u1QuC7OiubOGGVM/4Lxxr7mh2gJ0A5RIm45Q=; h=Date:Subject:To:Cc:References:From:In-Reply-To:From:Subject:Reply-To; b=dzrxZ8QO0ZKWFTCvwIblLcJ+T7ORJjmpzEdKwW/0n1LjBvhWgTClu9rOcX/PxPTYA9dqDSoZIok2pEkjh2y+MdMF4J/gHxSLN427qUoXJSnW2i7mU7Ge3EvH94/M+Q5kYQvDReS+qG1mHYxYkgVU4V7Zkf3nTOqMkpcm7JEi4Bw5avK7qrGv6eMBFpEDcINDlY4JcK7oqIjmGEM+13VczgmHOYT6wP4DWu2lFCSmCel3O2xigI2iYMEeVGOIkIZWJg9Tjpj4L2sgwowAd+kwD95JU+0YG+7SNxKw/zPg8LCnWbbkGlksrq5738FfITsS+erbrqy6dExAh0aWBxuqAg==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1763484809; bh=sO4aS0XRixkErdKA3nlIy3x2VBdqyvZ/DFVJsjQffB5=; h=X-Sonic-MF:Date:Subject:To:From:From:Subject; b=LdKFY2v90JpypRjtjMoTpmXR7DSquekxqXZs4bhYsognzYbtujXNsc/Md91JN9C5R6RB9lHTR1EfndBg4+AVgXm0Bae0ikUtbmKbBYFq5gGJQYk32ANvudEpiF4aoeeQfxRe5BTbMq+TM9sxVMoFAYcfhcFqzcNWVygpQUDYY9JPhaILu2uyNVCTyqo17yV2HCJ9WIUiL32EQW2JzBEw8v3VuDbTzW0I4ceyhvIgYK06T7Tf9MaTgAKFRvrkBwJz7Bmyastp9qeM9Bom/ZVLG2Rku2y2vNHFquoAgHUPgiKdKYaEOdmw3ySSgiPUIIMqnu7vPvgj9t2BR6MaYxnyUA==
+X-YMail-OSG: 6jIUZNAVM1lmfMzPGN9Wcbf5ovAVSdENZXeCvjOgwi4aMexya3LzQWLoMCfpwGV
+ euymIqBar025nvKEKX7AKU5nibMqjp.rsfuXuz87M6kmNTICnzmWJeNWVYVvDQBNQQrN097DlmjX
+ lYTQ5zZVlBanJTlJWcKW1qiI5Dmb2UD79mQgQnmrlvByAr_a_IklC4Z7_1SDGxENxdASGhn5rXe6
+ AmsOwU8o2xDyBPJXHCWamvBYrOgxWrifnGUhVMM02JZkawDmG8qy15Xhn.q.ldBk0E_GSQerS9qI
+ uiqv07cp2ltM6KOpGzvzp2.64JJ9LOa8g1GMSmDe5xj657eDiSrkichPWNE.xhVr3rExITG1Z_HL
+ vQIgYdhJBQlEce4rGDEHSGAlUa.sn6uLQseqVdSFfq3qxVarnqNh_XUDYhQRpw2skZyz04AFBEKh
+ tJ4tKJd1WxpHSF43yrtV54CI81qblzGS8dYWceokK0kwZXFCHdF1m71385aOEt_j8NGeOG7gUs0N
+ CMipfZ_cbeyVzf48hPoMdfUpbcqCyjVdnKeBNXNU5RCnNMXDrYoh03cznPe2qrDTu9JgE3PFA3Bx
+ Ryr64d0xRjShIz6IL.ZhBet_Z.UGL4CbsUbiYT1zxnN.Kcn_DY.58Js7x69gyjUoY93RiEtRV9tP
+ TiW3G9NqWuhpVphIY_TX_ijB1YUIjW9VtHXtOOqRKbsEpcy59IlcZkyU7s.CKRC..WSyT8dz_v8M
+ 0qnquSTyiQwY8lA3b6TaUUsKT3C.pyMayBgikI42oSow7Klv7x.lxyHjjA2Ds5kMd6LIVisNmmgA
+ xZ5LVz7C_P6EW_bLHzQzJwgdBZJh86y9QiSZSfUpbGRjKJthcZxruCIQtcEgI5dQxjqf.RaES62H
+ gUMfOp5IhKvuj0I6WUsOheTCsSt1NwuN0DwnepZf2awHCbvQjkGLmRbf7U46QxeZLCGrQmpqy4e_
+ UJnjFtNf2RLBIVh7q0xzK754dZTkYEfHMuR3qt5KRNKhFEQxUravsBSoeOlkhTuCgy0.YPlyaO1v
+ bffFrGR095WJhDpgj5Y6lNwILio9ywvHB9Xneh1BpwB0xizFfUBn4bs9F5M70PZ55KVMQnlhZcF_
+ cMC_QYpEHBsZyveBXD192.gm0sXzDQi_HP.MLXe8kk.fWxSRxHKyb9LwbGtbr3wAc2rgggUs3j8J
+ bNU1RgdjY2.1_NJ81rUNEC9aZGiv1KKmaYomtDw3kmvDUyhWD.woiVbhtd7vthG8iLR7xR0xJMyO
+ YrfkCVoqQZBEjU.wYr8Gx9I2qOjIHn8tDvmJmn8Wv..U7hLSRnS7Fgd_QpTcVqB4cDef.eBYo3L0
+ fMpYv.mycTgN8fzpovFrCEUV2dtFxhF4OZrDLAul3m4QH.CT.p0TagSVF66c1HpQqxiOBE6dVMlP
+ RFiF3RJ6WmclB7PJV8JMaQetkQxOu_FQ9m8wv2PhRjpPCZZKOCP65fgBsGuL_Pnsg_uqorfs52zH
+ VzXoXJ823VO39UHcy61m1rHR9c.EcrTej5acjTU7jd8th8eblpkeIUGGZcOv7NyBvnrSFic_C_mQ
+ .Efnbp2XjY32F2acElkQM_y3Ij0Jt.r0t00_9fMQO29pI8sBYxiVPFEUt2Z5av_ZjGJ2NtjeEnUU
+ LMxM0VxnRUGhscEA0qetu8VC_RHnkMyoo.xY.IcDarKWf0bWCMg9DM0JnaCojPEfM3JIvBgpeLNs
+ eYiQBO0vjQl6VH9vfwPfHQGW0FJT6.S2yn58Yca592JhvYYLO8ULQfPWzHm37D2ET.1hh56Dml59
+ MH38OzIVyJE.YAGXB9iIkO1074z3JFhMjV9yY3FZL_e.NmAz3CoE3aZ0CbtzrgMf.FnBgQKdKsU4
+ ll7C2xEM7Nh45GtFgaZM5DZYhUzsue7RWUqOZ50qWek7FwNl2Kn8GnNY1w6x5Iyu5xPLyZ1iCVA5
+ FL_FXUI3eKnEDdsCEtGi62rxG795arniD.GdZI726kPYPz96.Jnb9NifinxT.UJoTCCW4FNVcD5n
+ NNsQ6Je3rpI1LyyVc8A8cwh6C_LDjuQkdlxYHPHVuj8ikyESB2P0PVWVbT9PDxoXhKYZCvfa_ERQ
+ QbBLl8I.q.fVsS.gwZG44_eKMdqQNjOTn2xRqd.ndRDPpR3UH651LLtJC9YHd7Tam5pXHBOE0Ind
+ 7Zawt9MN5vQ7vW58X3ZvmPGGrZkKBxOjuDxJklYcf2gXHRmMboqGYVE9uuQP72St_TqliQFsAVpm
+ Z5ZbDf1hkQyHKBCqTzeCFJwdHbbqwpmIMpjiykS4-
+X-Sonic-MF: <nedu@netscape.net>
+X-Sonic-ID: f7fc60c8-e546-40fc-be70-f25ea8d238d3
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic303.consmr.mail.ne1.yahoo.com with HTTP; Tue, 18 Nov 2025 16:53:29 +0000
+Received: by hermes--production-gq1-76c986f798-vwdb2 (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 4e4d8c6ae76838aed8130d78544447b9;
+          Tue, 18 Nov 2025 16:33:09 +0000 (UTC)
+Message-ID: <06279d25-73d6-01f5-dcf8-8667415048d2@netscape.net>
+Date: Tue, 18 Nov 2025 08:33:07 -0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20251112-pci-m2-e-v1-0-97413d6bf824@oss.qualcomm.com> <20251112-pci-m2-e-v1-8-97413d6bf824@oss.qualcomm.com>
-In-Reply-To: <20251112-pci-m2-e-v1-8-97413d6bf824@oss.qualcomm.com>
-From: Bartosz Golaszewski <brgl@bgdev.pl>
-Date: Tue, 18 Nov 2025 15:29:49 +0100
-X-Gm-Features: AWmQ_bnS7J2LiofnEnjv4l_cFHHTAIWcbKZPMExzLrGKBD6vTSaTLBGi1oU52Ic
-Message-ID: <CAMRc=MdRw+spjN0ySJ7We_GJ8GaDU2Nb4unaxcnr2ZLjLOeSrA@mail.gmail.com>
-Subject: Re: [PATCH 8/9] Bluetooth: hci_qca: Add support for WCN7850 PCIe M.2 card
-To: manivannan.sadhasivam@oss.qualcomm.com
-Cc: Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Nathan Chancellor <nathan@kernel.org>, 
-	Nicolas Schier <nicolas.schier@linux.dev>, Hans de Goede <hansg@kernel.org>, 
-	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
-	Mark Pearson <mpearson-lenovo@squebb.ca>, "Derek J. Clark" <derekjohn.clark@gmail.com>, 
-	Manivannan Sadhasivam <mani@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Marcel Holtmann <marcel@holtmann.org>, Luiz Augusto von Dentz <luiz.dentz@gmail.com>, linux-serial@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org, 
-	platform-driver-x86@vger.kernel.org, linux-pci@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
-	linux-bluetooth@vger.kernel.org, linux-pm@vger.kernel.org, 
-	Stephan Gerhold <stephan.gerhold@linaro.org>, 
-	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: RFC: Serial port DTR/RTS - O_<something>
+Content-Language: en-US
+To: "H. Peter Anvin" <hpa@zytor.com>, "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc: Greg KH <gregkh@linuxfoundation.org>, Theodore Ts'o <tytso@mit.edu>,
+ Maarten Brock <Maarten.Brock@sttls.nl>,
+ "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+ "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+ LKML <linux-kernel@vger.kernel.org>
+References: <ADB50E23-DC8B-43D0-A345-E10396A3DFD4@zytor.com>
+ <AMBPR05MB11925DA076098B05E418BF64283CEA@AMBPR05MB11925.eurprd05.prod.outlook.com>
+ <20251110201933.GH2988753@mit.edu>
+ <0F8021E8-F288-4669-8195-9948844E36FD@zytor.com>
+ <20251111035143.GJ2988753@mit.edu>
+ <D4AF3E24-8698-4EEC-9D52-655D69897111@zytor.com>
+ <2025111214-doily-anyway-b24b@gregkh>
+ <6DBB5931-ACD4-4174-9FCE-96C45FFC4603@zytor.com>
+ <2025111241-domestic-moonstone-f75f@gregkh>
+ <DD67C0CF-D330-4D40-B610-FD3EB7AA0218@zytor.com>
+ <2025111227-equipment-magnetism-1443@gregkh>
+ <14b1bc5c-83ac-431f-a53b-14872024b969@zytor.com>
+ <alpine.DEB.2.21.2511141836130.47194@angie.orcam.me.uk>
+ <B72D6F71-7C0B-4C5A-8866-25D7946E0932@zytor.com>
+ <6c26eea2-6f90-f48a-9488-e7480f086c70@netscape.net>
+ <2846db90-fb05-41d2-b8de-c678af75a04b@zytor.com>
+From: Ned Ulbricht <nedu@netscape.net>
+In-Reply-To: <2846db90-fb05-41d2-b8de-c678af75a04b@zytor.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Mailer: WebService/1.1.24652 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.aol
 
-On Wed, Nov 12, 2025 at 3:45=E2=80=AFPM Manivannan Sadhasivam via B4 Relay
-<devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org> wrote:
->
-> From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
->
-> The WCN7850 PCIe M.2 card connected to the UART controller exposes the
-> 'WCN7850' serdev device and is controlled using the pwrseq framework.
->
-> Hence, add support for it in the driver. It reuses the existing
-> 'qca_soc_data_wcn7850' driver data.
->
-> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.=
-com>
-> ---
->  drivers/bluetooth/hci_qca.c | 20 ++++++++++++++++++++
->  1 file changed, 20 insertions(+)
->
-> diff --git a/drivers/bluetooth/hci_qca.c b/drivers/bluetooth/hci_qca.c
-> index 4cff4d9be3132561ee9bae4ddf2c8ac0bc13ecd7..09bfb3bba93698f496947775b=
-f6b31f2f20279f1 100644
-> --- a/drivers/bluetooth/hci_qca.c
-> +++ b/drivers/bluetooth/hci_qca.c
-> @@ -26,6 +26,7 @@
->  #include <linux/mod_devicetable.h>
->  #include <linux/module.h>
->  #include <linux/of.h>
-> +#include <linux/of_graph.h>
->  #include <linux/acpi.h>
->  #include <linux/platform_device.h>
->  #include <linux/pwrseq/consumer.h>
-> @@ -2344,6 +2345,9 @@ static int qca_serdev_probe(struct serdev_device *s=
-erdev)
->
->         qcadev->serdev_hu.serdev =3D serdev;
->         data =3D device_get_match_data(&serdev->dev);
-> +       if (!data && serdev->id)
-> +               data =3D (const struct qca_device_data *) serdev->id->dri=
-ver_data;
-> +
->         serdev_device_set_drvdata(serdev, qcadev);
->         device_property_read_string_array(&serdev->dev, "firmware-name",
->                                          qcadev->firmware_name, ARRAY_SIZ=
-E(qcadev->firmware_name));
-> @@ -2384,6 +2388,15 @@ static int qca_serdev_probe(struct serdev_device *=
-serdev)
->         case QCA_WCN6855:
->         case QCA_WCN7850:
->         case QCA_WCN6750:
-> +               if (of_graph_is_present(dev_of_node(&serdev->ctrl->dev)))=
- {
-> +                       qcadev->bt_power->pwrseq =3D devm_pwrseq_get(&ser=
-dev->ctrl->dev,
-> +                                                                  "uart"=
-);
-> +                       if (IS_ERR(qcadev->bt_power->pwrseq))
-> +                               qcadev->bt_power->pwrseq =3D NULL;
-> +                       else
-> +                               break;
-> +               }
+On 11/15/25 16:47, H. Peter Anvin wrote:
+> On 2025-11-15 13:29, Ned Ulbricht wrote:
+>> |
+>> | O_TTY_INIT
+>>
+>> https://pubs.opengroup.org/onlinepubs/9799919799/
+>>
+>> That's what motivates my first-glance preference to name this new flag,
+>> which will have approximately opposite behavior, as O_TTY_NOINIT.
+>>
+>> But as a generic abstraction, I more prefer O_KEEP.
+>>
+> 
+> O_KEEP seems a little vague, but O_KEEPCONFIG seems like a decent name.
+> 
+> It seems like we don't have several new flags:
+> 
+> 	O_EXEC
+> 	O_SEARCH
+> 	O_CLOFORK
+> 	O_TTY_INIT
+> 	O_RSYNC
+> 	O_NOCLOBBER
+> 
+> Some of them *may* be possible to construct with existing Linux options, I'm
+> not 100% sure; in particular O_SEARCH might be the same as (O_DIRECTORY|O_PATH).
+> 
+> O_NOCLOBBER looks like an odd in-between between O_EXCL and
+> (O_EXCL|O_NOFOLLOW); stated to be specifically to implement the shell
+> "noclobber" semantic.
 
-Did you by any chance copy this logic from commit: db0ff7e15923
-("driver: bluetooth: hci_qca:fix unable to load the BT driver")? This
-commit is wrong and it flew under my radar during the summer and I
-never got around to fixing it. It doesn't take into account probe
-deferral.
+"(O_EXCL|O_NOFOLLOW)" provokes a thought...
 
-Bartosz
+As essential context, fs/open.c build_open_flags() has:
 
-> +
->                 if (!device_property_present(&serdev->dev, "enable-gpios"=
-)) {
->                         /*
->                          * Backward compatibility with old DT sources. If=
- the
-> @@ -2740,6 +2753,12 @@ static const struct acpi_device_id qca_bluetooth_a=
-cpi_match[] =3D {
->  MODULE_DEVICE_TABLE(acpi, qca_bluetooth_acpi_match);
->  #endif
->
-> +static const struct serdev_device_id qca_bluetooth_serdev_match[] =3D {
-> +       { "WCN7850", (kernel_ulong_t)&qca_soc_data_wcn7850 },
-> +       { },
-> +};
-> +MODULE_DEVICE_TABLE(serdev, qca_bluetooth_serdev_match);
-> +
->  #ifdef CONFIG_DEV_COREDUMP
->  static void hciqca_coredump(struct device *dev)
->  {
-> @@ -2756,6 +2775,7 @@ static void hciqca_coredump(struct device *dev)
->  static struct serdev_device_driver qca_serdev_driver =3D {
->         .probe =3D qca_serdev_probe,
->         .remove =3D qca_serdev_remove,
-> +       .id_table =3D qca_bluetooth_serdev_match,
->         .driver =3D {
->                 .name =3D "hci_uart_qca",
->                 .of_match_table =3D of_match_ptr(qca_bluetooth_of_match),
->
-> --
-> 2.48.1
->
->
+if (flags & O_CREAT) {
+	op->intent |= LOOKUP_CREATE;
+	if (flags & O_EXCL) {
+		op->intent |= LOOKUP_EXCL;
+		flags |= O_NOFOLLOW;
+	}
+}
+
+if (!(flags & O_NOFOLLOW))
+	lookup_flags |= LOOKUP_FOLLOW;
+
+So with that context, just imagine hypothetically implementing both a
+non-zero O_TTY_INIT flag and an O_KEEPCONFIG flag. What would
+build_open_flags() look like to handle the case where userspace
+simultaneously asserts both flags?  Even if it's documented, specified
+as unspecified behavior, what would the code actually do?
+
+Or, alternatively, should an hypothetical standardization insist that in
+any implementation, one of O_TTY_INIT, O_KEEPCONFIG must be #define'd 0?
+
+
+Ned
