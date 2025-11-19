@@ -1,110 +1,87 @@
-Received: from mail.zytor.com (terminus.zytor.com [198.137.202.136])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 103A134B1A8;
-	Tue, 18 Nov 2025 18:06:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.136
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C875033C503;
+	Wed, 19 Nov 2025 09:25:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763489175; cv=none; b=USl6My8QMgXdseBF6MsjKa7ZRYIus8ADniwaTFYNrXPsgI/ZpJBle0kkdLsnGytacaCzYtEm8c8R/9Q7A5q3P4VOuMMGa+3G5QX4ihEuEcj/1BUk64GBzbKvxgoOG74PcldtnKEkDm/Tus1CSS8z8e4yAHBlyGyHA3daNOPkj3Y=
+	t=1763544302; cv=none; b=ZmWpkdrglmqRAdsms1/GeeXT1GLVR6GxJo6t0gVX+cfO8pByHPioFOA0S31pkupW2Ae/358LQB60C6BPglSwV5GkSOvSVd+Y9b9ReqSKnRQ0v9UKFEozKEzFgxhSzgWXgq4WA07JW7qZnjYv+w4kDMQf/tSv2JXup290xn5kvVc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763489175; c=relaxed/simple;
-	bh=GmoW9vGXWaGx6NYxS82Dg18uEeYHjLvLUoCxO4JOIBc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=n9e4ze3QsHfON2puzrPyAo4U+CnpTiU1uCvLOFMW85i6NT7F4Lq9QLSo0EpgYLuUihGwR8po24GHh8u5RGptNjtnrLAfECMP9gjwz8EXczhD4d1vSH+BzWBCwmDG/h2clrEEJ0r1WIhi8Rpng9q+9enzkz8KBs+aZqyVvnOAcJ8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com; spf=pass smtp.mailfrom=zytor.com; dkim=fail (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b=tH/1GbOn reason="signature verification failed"; arc=none smtp.client-ip=198.137.202.136
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zytor.com
+	s=arc-20240116; t=1763544302; c=relaxed/simple;
+	bh=t3uLWazg6A/iVsMQl7BV3J0IdsMfnAt6SnIjNbRfS9I=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=MjDq0TrOiiQ6+GNLKPDfhJja8DjqLZZF9RZxJdNYvnr+f482qqnsv9twm/nnqr0ZQ0sjrk/iDXsN/KtR9ToY3Os5R7yjP23IAM6CaWjPAk1TtAlSnql3/bRzlgoVbB4gLPNezaqI6BXBTGcqOIsGPIAAZ5CVYcl+cQ0VNL4mXZM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JGd7oOBG; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b="tH/1GbOn"
-Received: from [IPV6:2601:646:8081:9484:7ccc:663a:75c9:3b5f] ([IPv6:2601:646:8081:9484:7ccc:663a:75c9:3b5f])
-	(authenticated bits=0)
-	by mail.zytor.com (8.18.1/8.17.1) with ESMTPSA id 5AII5q6u957991
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
-	Tue, 18 Nov 2025 10:05:55 -0800
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 5AII5q6u957991
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
-	s=2025102301; t=1763489161;
-	bh=ZDbIEvFyitmcmgYxH/czrNe/thn0yf0mvhEEq3vHaA0=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=tH/1GbOnhISej+xA1C+w4Qt7bNtKWDKAecsCkdhBZkoJgs+Y8KUBQ+kiK2XOMJsp0
-	 S5PBPhnAfTyaabPmsjGgdTj5/fAjQcYT9mCDGCEB8XLL84kGLAbRC3WY7CPY9DkzLJ
-	 C/eQrrOKgHk72GZuXfIRpigdNlIv+RuCKPiBwc8DB18yeJSJt0Z20+wopcZuNtGnzw
-	 1rtxKawAgnQNhTtQKQ7vEzWowcdCglWBVS/+RAMa8YjujyZcOTlwAkC6oRxhdUXiTC
-	 MTPMMv8Evlhncr/HIUg9Y8akz0NgOK2QhTObSUiglh5OwDt9caWWh51liMSQtihPL+
-	 Dp2RTuCZ3TaPQ==
-Message-ID: <f643f1f6-7e69-4be6-ac8a-7b1a3a9c402d@zytor.com>
-Date: Tue, 18 Nov 2025 10:05:47 -0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JGd7oOBG"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09262C116D0;
+	Wed, 19 Nov 2025 09:24:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1763544301;
+	bh=t3uLWazg6A/iVsMQl7BV3J0IdsMfnAt6SnIjNbRfS9I=;
+	h=From:To:Cc:Subject:Date:From;
+	b=JGd7oOBGKsiguNaLfCkCvaz5ygDjOgqlgAoQBQ8IuwBUVSkED6nS7KTjO1UEIHNAh
+	 DS9D6RSbVkiUJB+PdYtv0MPD1S2D2aoR8vnLbQ3PqT0O/XmbS4z1Hy93GGBlOQdbRo
+	 fhoeQMAratRvMXInCpEAzTe1cNhAPIyWXBVrLJODHsesox1mCskt7+QftQZyWQhjbw
+	 b/Fa0M/YcTdCq+nO7w2/xR7iReKGO8184nokopF2UJYEkPECnx19Si30AzC7wL283c
+	 1XquGo/z+xvKV6Ir5k9q9Fub0tcjF3i0iYPnWHD74utWAB2wj6PzWXRzvYuWnUTOiv
+	 xxED7/Jfh8lIg==
+From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+To: gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Subject: [PATCH 0/6] tty cleanup for 6.19 or later
+Date: Wed, 19 Nov 2025 10:24:51 +0100
+Message-ID: <20251119092457.826789-1-jirislaby@kernel.org>
+X-Mailer: git-send-email 2.51.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: RFC: Serial port DTR/RTS - O_<something>
-To: Ned Ulbricht <nedu@netscape.net>, "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc: Greg KH <gregkh@linuxfoundation.org>, "Theodore Ts'o" <tytso@mit.edu>,
-        Maarten Brock <Maarten.Brock@sttls.nl>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <ADB50E23-DC8B-43D0-A345-E10396A3DFD4@zytor.com>
- <AMBPR05MB11925DA076098B05E418BF64283CEA@AMBPR05MB11925.eurprd05.prod.outlook.com>
- <20251110201933.GH2988753@mit.edu>
- <0F8021E8-F288-4669-8195-9948844E36FD@zytor.com>
- <20251111035143.GJ2988753@mit.edu>
- <D4AF3E24-8698-4EEC-9D52-655D69897111@zytor.com>
- <2025111214-doily-anyway-b24b@gregkh>
- <6DBB5931-ACD4-4174-9FCE-96C45FFC4603@zytor.com>
- <2025111241-domestic-moonstone-f75f@gregkh>
- <DD67C0CF-D330-4D40-B610-FD3EB7AA0218@zytor.com>
- <2025111227-equipment-magnetism-1443@gregkh>
- <14b1bc5c-83ac-431f-a53b-14872024b969@zytor.com>
- <alpine.DEB.2.21.2511141836130.47194@angie.orcam.me.uk>
- <B72D6F71-7C0B-4C5A-8866-25D7946E0932@zytor.com>
- <6c26eea2-6f90-f48a-9488-e7480f086c70@netscape.net>
- <2846db90-fb05-41d2-b8de-c678af75a04b@zytor.com>
- <06279d25-73d6-01f5-dcf8-8667415048d2@netscape.net>
-Content-Language: en-US, sv-SE
-From: "H. Peter Anvin" <hpa@zytor.com>
-In-Reply-To: <06279d25-73d6-01f5-dcf8-8667415048d2@netscape.net>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-On 2025-11-18 08:33, Ned Ulbricht wrote:
->>
->> O_NOCLOBBER looks like an odd in-between between O_EXCL and
->> (O_EXCL|O_NOFOLLOW); stated to be specifically to implement the shell
->> "noclobber" semantic.
-> 
-> "(O_EXCL|O_NOFOLLOW)" provokes a thought...
-> 
-> As essential context, fs/open.c build_open_flags() has:
-> 
-> if (flags & O_CREAT) {
->     op->intent |= LOOKUP_CREATE;
->     if (flags & O_EXCL) {
->         op->intent |= LOOKUP_EXCL;
->         flags |= O_NOFOLLOW;
->     }
-> }
-> 
-> if (!(flags & O_NOFOLLOW))
->     lookup_flags |= LOOKUP_FOLLOW;
-> 
+Hi,
 
-Interesting. As far as O_NOCLOBBER is concerned, that is an "O_EXCL unless the
-output is a special file (device node, FIFO, etc)"; presumably to allow the
-shell to not flip out when doing, say "foo > /dev/ttyS0" when in noclobber mode.
+this is another couple of random cleanup patches over the tty drivers.
 
-I had missed the bit in the spec that says that O_CREAT|O_EXCL is required to
-imply O_NOFOLLOW (as Linux indeed does as seen above.)
+Jiri Slaby (SUSE) (6):
+  tty: vt: do not open code DIV_ROUND_UP()
+  serial: xilinx_uartps: drop cdns_uart::cdns_uart_driver
+  serial: drop SERIAL_8250_DEPRECATED_OPTIONS
+  serial: 8250: move skip_txen_test to core
+  serial: 8250: make share_irqs local to 8250_platform
+  serial: 8250_platform: simplify IRQF_SHARED handling
 
-O_NOCLOBBER emulation in user space would seem to be possible with a loop;
-first try to open O_CREAT|O_EXCL and if that fails with EEXIST then open
-without either; if that succeeds test with fstat() to see if it is a regular
-file, and if it is, close it and error. However, it is hardly ideal, and I
-might have overlooked some mechanism by which this may fail.
+ arch/arm/configs/aspeed_g4_defconfig        |  1 -
+ arch/arm/configs/aspeed_g5_defconfig        |  1 -
+ arch/arm/configs/hisi_defconfig             |  1 -
+ arch/arm/configs/lpc18xx_defconfig          |  1 -
+ arch/arm/configs/shmobile_defconfig         |  1 -
+ arch/mips/configs/bcm47xx_defconfig         |  1 -
+ arch/mips/configs/bmips_stb_defconfig       |  1 -
+ arch/mips/configs/gcw0_defconfig            |  1 -
+ arch/nios2/configs/10m50_defconfig          |  1 -
+ arch/parisc/configs/generic-32bit_defconfig |  1 -
+ arch/parisc/configs/generic-64bit_defconfig |  1 -
+ arch/powerpc/configs/44x/akebono_defconfig  |  1 -
+ arch/powerpc/configs/microwatt_defconfig    |  1 -
+ arch/riscv/configs/nommu_virt_defconfig     |  1 -
+ arch/xtensa/configs/audio_kc705_defconfig   |  1 -
+ arch/xtensa/configs/generic_kc705_defconfig |  1 -
+ arch/xtensa/configs/nommu_kc705_defconfig   |  1 -
+ arch/xtensa/configs/smp_lx200_defconfig     |  1 -
+ arch/xtensa/configs/xip_kc705_defconfig     |  1 -
+ drivers/tty/serial/8250/8250.h              |  9 ----
+ drivers/tty/serial/8250/8250_core.c         |  4 ++
+ drivers/tty/serial/8250/8250_platform.c     | 55 +++++----------------
+ drivers/tty/serial/8250/8250_rsa.c          | 24 ---------
+ drivers/tty/serial/8250/Kconfig             | 17 -------
+ drivers/tty/serial/xilinx_uartps.c          | 15 ++----
+ drivers/tty/vt/vt.c                         |  4 +-
+ 26 files changed, 22 insertions(+), 125 deletions(-)
 
-	-hpa
+-- 
+2.51.1
 
