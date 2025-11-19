@@ -1,216 +1,110 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mailtransmit04.runbox.com (mailtransmit04.runbox.com [185.226.149.37])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E574C366575;
-	Wed, 19 Nov 2025 13:54:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85B60332EBC;
+	Wed, 19 Nov 2025 22:42:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.226.149.37
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763560471; cv=none; b=WFw5dQUAwTSsjfsPmvwdogIx+l2aBKHEdZ9Ki+y2kLc9FyTTC65ZWq9XP63cL4LUWSwwtQpPoO0YyIZ/yC+7hHVpYHsAWS/zB7T0bRoCZCJr5q5W2MuzlfV8xZrv8bYViAFPHqw9qrEi9YPC3GUo5uMhWYWIEB+ndIyfBjT3ajU=
+	t=1763592173; cv=none; b=jykhkwMPiFWR1OV2lCqVcgWLLKEx6nPW7aCYYo2wljdv5kL7btNOaLOR5LmXWV6mSHYXxdxK+GxZ8GFWP+SGOAhTAd2X2idsLJH5IWsYXOcfDhcCm9dw8fzT5s3erB4wTptKRIAwSwiPxCfZWMz0Yjt41J0yPvSFKIszq4nbUrs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763560471; c=relaxed/simple;
-	bh=H2MmjTun/d2cwMOlmdoW2i7WyqB09cABdEW/N90tSjI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=b2vheI8Tz9DnmedoyLf6OmuZxhy1fZeGHrRGlEoLjdeQuR4J6rn4VNzbx/nN2/4tfvPizToI/nR71nbpyLsa9a6MbV2yI+P9yTIje36ttbNSlSWHkTZXgSIBVJaDR6D2AGsWKTBhl57MmEulzHpiq1I9DeLHYVOr5XwABhG81HE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DiwsSHVB; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1763592173; c=relaxed/simple;
+	bh=T0Sxp6xsTa8WHrZCPbphVeR1iBAUpsGRCq/LGdqVZ7o=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=qM/zo+ajYS3/IeF+OpyKKItfQRaMy+ZnLKGNYG8dpFe7HufDIQYqc1faV8Zc2Bt054QB6ggJuCVLXXTZiqHBW6OWQP7Rk+XzPp67RjNgQ8oL2uUcSC60gaDITPlYzvbg/q9LJZpL9kzJQr0Snnp0p7+3eVQJs3rcZAj9zgAcuRE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=runbox.com; dkim=pass (2048-bit key) header.d=runbox.com header.i=@runbox.com header.b=2QQoyEmF; arc=none smtp.client-ip=185.226.149.37
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=runbox.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DiwsSHVB"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC790C2BC86;
-	Wed, 19 Nov 2025 13:54:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1763560470;
-	bh=H2MmjTun/d2cwMOlmdoW2i7WyqB09cABdEW/N90tSjI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=DiwsSHVBC8qiiXtRWrusuo5cDlObMGrhdRWLjmLPRgS4nIF0Ah28evTGM27AXSHTF
-	 04qeDfXp4+4oodk7nmggYhcHB9dKxFmRPFi7elkpqBQbTsSec8RvcwKeKV8efzfDnE
-	 ogXEpEcK9QZVDNmB/KgT4GjzDtLdSDUmqGMM6e1OhwI8nRyBdxGIx5VGLizR+t+lLi
-	 L+C/Zjb6VmeyUwFMMM4PyGlHqxJCFxYAPA2//qkd0QM8NMiNKGaRqwg7pSrfdiYuf9
-	 TsZFno8dCh1P2jHQwkfL/wic7WkP1WzmZuok3IGPlak5KTijO5CRCk4mCDWCL8QTdf
-	 gIEmTteUmlZFw==
-Date: Wed, 19 Nov 2025 19:24:12 +0530
-From: Manivannan Sadhasivam <mani@kernel.org>
-To: Bartosz Golaszewski <brgl@bgdev.pl>
-Cc: manivannan.sadhasivam@oss.qualcomm.com, Rob Herring <robh@kernel.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Nathan Chancellor <nathan@kernel.org>, Nicolas Schier <nicolas.schier@linux.dev>, 
-	Hans de Goede <hansg@kernel.org>, Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, 
-	Mark Pearson <mpearson-lenovo@squebb.ca>, "Derek J. Clark" <derekjohn.clark@gmail.com>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Marcel Holtmann <marcel@holtmann.org>, Luiz Augusto von Dentz <luiz.dentz@gmail.com>, 
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org, 
-	platform-driver-x86@vger.kernel.org, linux-pci@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org, linux-pm@vger.kernel.org, 
-	Stephan Gerhold <stephan.gerhold@linaro.org>, Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Subject: Re: [PATCH 9/9] power: sequencing: pcie-m2: Add support for PCIe M.2
- Key E connectors
-Message-ID: <igtegc4wgi3xiolpbilr3jw7c4xlyrj2d4bqb4b4m2yxcxutjh@4evsl2w6taud>
-References: <20251112-pci-m2-e-v1-0-97413d6bf824@oss.qualcomm.com>
- <20251112-pci-m2-e-v1-9-97413d6bf824@oss.qualcomm.com>
- <CAMRc=MeyeyuNVP6CWcxNp8XSCT+P9ZNmgSj6Hktrv8ZYNN5kMg@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=runbox.com header.i=@runbox.com header.b="2QQoyEmF"
+Received: from mailtransmit02.runbox ([10.9.9.162] helo=aibo.runbox.com)
+	by mailtransmit04.runbox.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+	(Exim 4.93)
+	(envelope-from <david.laight.linux_spam@runbox.com>)
+	id 1vLqsz-006yvY-CN; Wed, 19 Nov 2025 23:42:49 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=runbox.com;
+	 s=selector1; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To
+	:Message-Id:Date:Subject:Cc:To:From;
+	bh=kajQNevhoLguN2aApJmIevDLTauYCAm5/mL/qG+eV6w=; b=2QQoyEmF89XnRHRftzYQ3PCMno
+	j8slCyBoubJF4Z+hMjOecF3xZQOoc395Mx5+XcCxFu9p46TImC1VgYqxrVCejxPrsilkTX5pKhozr
+	QkAWo3Nw7BVXcgdfnFADk2LmDf6/x8bM2NspHWc6ut3qUMxJC8Soz48/1vh8OLKYuJTMv2KG4v9bG
+	OWYSx9Bh4tpmi4k1DFxUYTmFeZQLeoHV10+u53JB28l6E6HqKWN8N1ARPyzZWUwPyLSAEa50jyE2s
+	5dyKrg1fCbxEDzZWx72ZQwM1p74tntZC5G2VK9j0dCMqvPJCkvPyCCT50liutIYbfQ5byu/nfuDOl
+	bMQsXtVA==;
+Received: from [10.9.9.74] (helo=submission03.runbox)
+	by mailtransmit02.runbox with esmtp (Exim 4.86_2)
+	(envelope-from <david.laight.linux_spam@runbox.com>)
+	id 1vLqsz-00086B-3c; Wed, 19 Nov 2025 23:42:49 +0100
+Received: by submission03.runbox with esmtpsa  [Authenticated ID (1493616)]  (TLS1.2:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+	(Exim 4.93)
+	id 1vLqsh-00Fos6-JE; Wed, 19 Nov 2025 23:42:31 +0100
+From: david.laight.linux@gmail.com
+To: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	David Laight <david.laight.linux@gmail.com>
+Subject: [PATCH 27/44] drivers/tty/vt: use umin() instead of min_t(u16, ...) for row/col limits
+Date: Wed, 19 Nov 2025 22:41:23 +0000
+Message-Id: <20251119224140.8616-28-david.laight.linux@gmail.com>
+X-Mailer: git-send-email 2.39.5
+In-Reply-To: <20251119224140.8616-1-david.laight.linux@gmail.com>
+References: <20251119224140.8616-1-david.laight.linux@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAMRc=MeyeyuNVP6CWcxNp8XSCT+P9ZNmgSj6Hktrv8ZYNN5kMg@mail.gmail.com>
 
-On Wed, Nov 19, 2025 at 02:28:00PM +0100, Bartosz Golaszewski wrote:
-> On Wed, Nov 12, 2025 at 3:45 PM Manivannan Sadhasivam via B4 Relay
-> <devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org> wrote:
-> >
-> > From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
-> >
-> > Add support for handling the power sequence of the PCIe M.2 Key E
-> > connectors. These connectors are used to attach the Wireless Connectivity
-> > devices to the host machine including combinations of WiFi, BT, NFC using
-> > interfaces such as PCIe/SDIO for WiFi, USB/UART for BT and I2C for NFC.
-> >
-> > Currently, this driver supports only the PCIe interface for WiFi and UART
-> > interface for BT. The driver also only supports driving the 3.3v/1.8v power
-> > supplies and W_DISABLE{1/2}# GPIOs. The optional signals of the Key E
-> > connectors are not currently supported.
-> >
-> > For supporting Bluetooth over the non-discoverable UART interface, the
-> > driver currently creates the serdev interface after enumerating the PCIe
-> > interface. This is mandatory since the device ID is only known after the
-> > PCIe enumeration and the ID is used for creating the serdev device.
-> >
-> > Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
-> > ---
-> >
-> > +static int pwrseq_pci_m2_e_uart_enable(struct pwrseq_device *pwrseq)
-> > +{
-> > +       struct pwrseq_pcie_m2_ctx *ctx = pwrseq_device_get_drvdata(pwrseq);
-> > +
-> > +       gpiod_set_value_cansleep(ctx->w_disable2_gpio, 0);
-> 
-> Since this is new code and gpiod_set_value_cansleep() now returns an
-> integer, can you do
-> 
+From: David Laight <david.laight.linux@gmail.com>
 
-Ack
+The row/column bounds (for a screen window box) are changed from
+'offset one' to 'offset zero' and bound to the screen size using:
+	v->xs = min_t(u16, v->xs - 1, vc->vc_cols - 1);
+This has the side effect of converting zero to the limit.
 
->   return gpiod_set_value_cansleep()?
-> 
-> Same elsewhere.
-> 
-> >
-> > +static int pwrseq_m2_pcie_notify(struct notifier_block *nb, unsigned long action,
-> > +                             void *data)
-> > +{
-> > +       struct pwrseq_pcie_m2_ctx *ctx = container_of(nb, struct pwrseq_pcie_m2_ctx, nb);
-> > +       struct pci_dev *pdev = to_pci_dev(data);
-> > +       struct device_node *remote;
-> > +       struct serdev_controller *serdev_ctrl;
-> > +       struct serdev_device *serdev;
-> > +       struct device *dev = ctx->dev;
-> > +       int ret;
-> > +
-> > +       /*
-> > +        * Check whether the PCI device is associated with this M.2 connector or
-> > +        * not, by comparing the OF node of the PCI device parent and the Port 0
-> > +        * (PCIe) remote node parent OF node.
-> > +        */
-> > +       remote = of_graph_get_remote_node(dev_of_node(ctx->dev), 0, -1);
-> > +       if (!remote || (remote != pdev->dev.parent->of_node)) {
-> > +               of_node_put(remote);
-> 
-> You could really use some __free(device_node) here. It would simplify
-> the code below quite a bit and make sure you don't miss anything.
-> 
+A check I'm adding to min_t() reports that (u16)(v->xs - 1) (etc)
+discards signiticant bits (because v->xs is promoted to 'int' before
+the addition).
+If v->xs is zero (it comes from userspace) it converts -1 to 0xffff.
+This is then bounded to 'vc->vc_cols - 1' which will be fine.
 
-Ack. I'm still trying to get used to the scope based cleanup :)
+Replace with:
+	v->xs = umin(v->xs - 1, vc->vc_cols - 1);
+which again converts a -1 to unsigned - this time to 0xffffffff,
+with the same overall effect.
 
-> > +               return NOTIFY_DONE;
-> > +       }
-> > +       of_node_put(remote);
-> > +
-> > +       switch (action) {
-> > +       case BUS_NOTIFY_ADD_DEVICE:
-> > +               /* Create serdev device for WCN7850 */
-> > +               if (pdev->vendor == PCI_VENDOR_ID_QCOM && pdev->device == 0x1107) {
-> > +                       remote = of_graph_get_remote_node(dev_of_node(ctx->dev), 1, -1);
-> > +                       if (!remote) {
-> > +                               of_node_put(remote);
-> > +                               return NOTIFY_DONE;
-> > +                       }
-> > +
-> > +                       serdev_ctrl = of_find_serdev_controller_by_node(remote);
-> > +                       of_node_put(remote);
-> > +                       if (!serdev_ctrl)
-> > +                               return NOTIFY_DONE;
-> > +
-> > +                       serdev = serdev_device_alloc(serdev_ctrl);
-> > +                       if (!serdev)
-> > +                               return NOTIFY_DONE;
-> > +
-> > +                       ret = serdev_device_add(serdev, "WCN7850");
-> > +                       if (ret) {
-> > +                               dev_err(dev, "Failed to add serdev for WCN7850: %d\n", ret);
-> > +                               serdev_device_put(serdev);
-> > +                               return NOTIFY_DONE;
-> > +                       }
-> > +               }
-> > +               break;
-> > +       }
-> > +
-> > +       return NOTIFY_DONE;
-> > +}
-> > +
-> > +static bool pwrseq_pcie_m2_check_remote_node(struct device *dev, u8 port, const char *node)
-> > +{
-> > +       struct device_node *remote;
-> 
-> Same here.
-> 
-> > +
-> > +       remote = of_graph_get_remote_node(dev_of_node(dev), port, -1);
-> > +       if (remote && of_node_name_eq(remote, node)) {
-> > +               of_node_put(remote);
-> > +               return true;
-> > +       }
-> > +
-> > +       of_node_put(remote);
-> > +
-> > +       return false;
-> > +}
-> > +
-> > +/*
-> > + * If the connector exposes a non-discoverable bus like UART, the respective
-> > + * protocol device needs to be created manually with the help of the notifier
-> > + * of the discoverable bus like PCIe.
-> > + */
-> 
-> I really like this idea BTW!
-> 
-> > +static void pwrseq_pcie_m2_register_notifier(struct pwrseq_pcie_m2_ctx *ctx, struct device *dev)
-> > +{
-> > +       int ret;
-> > +
-> > +       /*
-> > +        * Register a PCI notifier for Key E connector that has PCIe as Port 0
-> > +        * interface and Serial as Port 1 interface.
-> > +        */
-> > +       if (pwrseq_pcie_m2_check_remote_node(dev, 1, "serial")) {
-> > +               if (pwrseq_pcie_m2_check_remote_node(dev, 0, "pcie")) {
-> > +                       ctx->dev = dev;
-> > +                       ctx->nb.notifier_call = pwrseq_m2_pcie_notify;
-> > +                       ret = (bus_register_notifier(&pci_bus_type, &ctx->nb));
-> > +                       if (ret) {
-> > +                               dev_err_probe(dev, ret, "Failed to register notifier for serdev\n");
-> 
-> If this is optional and we don't handle the error, should we really
-> print it as one? I'd say a dev_dbg() would suffice unless the failure
-> here impacts the driver's behavior (which it does, so maybe the
-> notifier should not be optional?).
-> 
+Whether zero is meant to mean the 'maximum size' is unknown.
+I can't find any documentation for the ioctl and it pre-dates git.
 
-Fair enough. I was on double mind tbh. But it makes sense to return failure.
+Detected by an extra check added to min_t().
 
-- Mani
+Signed-off-by: David Laight <david.laight.linux@gmail.com>
+---
+ drivers/tty/vt/selection.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
+diff --git a/drivers/tty/vt/selection.c b/drivers/tty/vt/selection.c
+index 07d3b93975d3..13f4e48b4142 100644
+--- a/drivers/tty/vt/selection.c
++++ b/drivers/tty/vt/selection.c
+@@ -348,10 +348,11 @@ static int vc_selection(struct vc_data *vc, struct tiocl_selection *v,
+ 		return 0;
+ 	}
+ 
+-	v->xs = min_t(u16, v->xs - 1, vc->vc_cols - 1);
+-	v->ys = min_t(u16, v->ys - 1, vc->vc_rows - 1);
+-	v->xe = min_t(u16, v->xe - 1, vc->vc_cols - 1);
+-	v->ye = min_t(u16, v->ye - 1, vc->vc_rows - 1);
++	/* Historically 0 => max value */
++	v->xs = umin(v->xs - 1, vc->vc_cols - 1);
++	v->ys = umin(v->ys - 1, vc->vc_rows - 1);
++	v->xe = umin(v->xe - 1, vc->vc_cols - 1);
++	v->ye = umin(v->ye - 1, vc->vc_rows - 1);
+ 
+ 	if (mouse_reporting() && (v->sel_mode & TIOCL_SELMOUSEREPORT)) {
+ 		mouse_report(tty, v->sel_mode & TIOCL_SELBUTTONMASK, v->xs,
 -- 
-மணிவண்ணன் சதாசிவம்
+2.39.5
+
