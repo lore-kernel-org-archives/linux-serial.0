@@ -1,39 +1,39 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E7CD346E70;
-	Wed, 19 Nov 2025 10:01:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E366349B0F;
+	Wed, 19 Nov 2025 10:01:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763546514; cv=none; b=dMWhx9bvatxm0FwmhQIocswPQLpTXWRsDecV8aC9AQG2k7CPPS/pQiCUEX4GA208/q6MHVYczWEby3fvesjgV6X6oFtHWVWDV1V0ApEX0bEhsCY99fXlgFv2AbxHixwmlHdFbGnHeuEPHUrdPL1U5zPVWgPCCPmCzYs4qiSPBtA=
+	t=1763546516; cv=none; b=qI97iclX5qlLT9pHSDDJi59D7HuAeqf/90Nx9UFqbfa36mQKzrAe42z+wlZ582XGmB21MU4L9nKn91/25OSa1L1Iw0pVZAlHdJMR0kmoSJWllRsuFv2J3vaYpNPhd7sx9QIT5kG984daL1IKtz5v+RBkh2pUEPi+45K+Xz4ASHU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763546514; c=relaxed/simple;
-	bh=FBfLHQ3P3iL1raCnmEfum+XMNjqj6e2eQvLJgf3EJE4=;
+	s=arc-20240116; t=1763546516; c=relaxed/simple;
+	bh=dKYd4f9bTvh4dq4HOKmCrwwkBgqb3laCunGX/2ECfEM=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=bsYgdGReIy1ZEF323bBjqX1su2xZ5DYKtJnHavNNGz4qsjxxYvwj6N5gkpmmldL2S6W1JP+Ng7mgG9N2gsirLIKtpLlFKby+eGwThbBMqWgPYlDcuvTev6oA9Y3gcybOlnSWQX+vuqDRQ+MXIr10Ywqipx22+8groZ0FrYUAimo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VbiBUJ9W; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=o0Zh/ESyOlTSHJkw2/DkFlq/I5v8sQ7od2kBIHlNYKN0rPCHc1OErelFXe6B0mDppkORyQaelt88HhVAyLnRidtXNPVgRFEi/DT/RyUtnRxju2FcfThvoB+XMK+1fkgROxrfzOTceJS3JP6hydTIPFBcLtO7qMuHbLMai21oiPk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WBQhxQo1; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VbiBUJ9W"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B003C4AF09;
-	Wed, 19 Nov 2025 10:01:52 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WBQhxQo1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 467C4C4AF11;
+	Wed, 19 Nov 2025 10:01:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1763546513;
-	bh=FBfLHQ3P3iL1raCnmEfum+XMNjqj6e2eQvLJgf3EJE4=;
+	s=k20201202; t=1763546515;
+	bh=dKYd4f9bTvh4dq4HOKmCrwwkBgqb3laCunGX/2ECfEM=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=VbiBUJ9WWFb49wtDA1uLmDoIzpYV8YZ3Yd0c8I/LXOoW52K/MMiDZt+CiirwAhdC5
-	 Sfga4ffl+yuZNbZgBnf4dfOLm0fxpAwXV8O/FXwx7WUvj9ZRzUAnxtR8ojRMDGAoh5
-	 MhPkQt9qkxRxRzI1BcSBDXtz51wUba3fjoiDWTiUd/+2tX5WyhL0OkAZw1gbh95Hdi
-	 ClO5GxjHa2mYJ402yitNRnIwf5+o6nbVeo6K39/48qQliV/RIx+0JM7Sj+zM5N0lIq
-	 JTvw55FFTArnEmCwBZxMpOpPDZ9Ya56VfLNdqrOlOJ4yUF2TwSkifvjVzKdKFiMvwz
-	 VchqOWbumx9EA==
+	b=WBQhxQo1TcBmIol8jiqeioVEa4oqEvySrqWplf6lo40CYSl+Vn/Mch0TYQViCRb9V
+	 71vNbGpOjW4kHqTEYLaFKXk6K+2be/5MhG3vgQsTdzaxR62Gj9As2Rl7wICcqT5uek
+	 PJexCe1U5BATqVFv9OAJL4dfReT+k3saRWa0B693xAJg9VXr9CUdeZ+FUyqBdni/zW
+	 bJa8Ut3e6AkCqFJU9NSXduk3odNmd1o5y9SSc0ecHKuTXXncZxhDEabiXxgoPfsIqE
+	 AuxOj1vlBpGeGQEN/eFmt9tH4KvuhK1PiYRcd2/6WtxVUUd+30RYO5apDY/A5W/uv4
+	 gMVuwNSX6BaGw==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 05/10] tty: moxa: use guard()s
-Date: Wed, 19 Nov 2025 11:01:35 +0100
-Message-ID: <20251119100140.830761-6-jirislaby@kernel.org>
+Subject: [PATCH 06/10] tty: vt/keyboard: use __free()
+Date: Wed, 19 Nov 2025 11:01:36 +0100
+Message-ID: <20251119100140.830761-7-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.51.1
 In-Reply-To: <20251119100140.830761-1-jirislaby@kernel.org>
 References: <20251119100140.830761-1-jirislaby@kernel.org>
@@ -45,333 +45,261 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Use guards in the moxa code. This improves readability, makes error
-handling easier, and marks locked portions of code explicit. All that
-while being sure the lock is unlocked.
+The vt/keyboard code can use __free to ensure the temporary buffers are
+freed. Perform the switch.
+
+And even one non-temporary in kbd_connect(). There are fail paths, so
+ensure the buffer is freed in them and not when returning 0 -- by
+retain_and_null_ptr().
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- drivers/tty/moxa.c | 169 ++++++++++++++++++++-------------------------
- 1 file changed, 73 insertions(+), 96 deletions(-)
+ drivers/tty/vt/keyboard.c | 90 ++++++++++++++++-----------------------
+ 1 file changed, 37 insertions(+), 53 deletions(-)
 
-diff --git a/drivers/tty/moxa.c b/drivers/tty/moxa.c
-index 329b30fac8fc..1bb2376af85c 100644
---- a/drivers/tty/moxa.c
-+++ b/drivers/tty/moxa.c
-@@ -487,25 +487,20 @@ static void moxa_wait_finish(void __iomem *ofsAddr)
- 
- static void moxafunc(void __iomem *ofsAddr, u16 cmd, u16 arg)
+diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
+index ee1d9c448c7e..65913a137862 100644
+--- a/drivers/tty/vt/keyboard.c
++++ b/drivers/tty/vt/keyboard.c
+@@ -1566,10 +1566,9 @@ static bool kbd_match(struct input_handler *handler, struct input_dev *dev)
+ static int kbd_connect(struct input_handler *handler, struct input_dev *dev,
+ 			const struct input_device_id *id)
  {
--        unsigned long flags;
--        spin_lock_irqsave(&moxafunc_lock, flags);
-+	guard(spinlock_irqsave)(&moxafunc_lock);
- 	writew(arg, ofsAddr + FuncArg);
- 	writew(cmd, ofsAddr + FuncCode);
- 	moxa_wait_finish(ofsAddr);
--	spin_unlock_irqrestore(&moxafunc_lock, flags);
+-	struct input_handle *handle;
+ 	int error;
+ 
+-	handle = kzalloc(sizeof(struct input_handle), GFP_KERNEL);
++	struct input_handle __free(kfree) *handle = kzalloc(sizeof(*handle), GFP_KERNEL);
+ 	if (!handle)
+ 		return -ENOMEM;
+ 
+@@ -1579,18 +1578,18 @@ static int kbd_connect(struct input_handler *handler, struct input_dev *dev,
+ 
+ 	error = input_register_handle(handle);
+ 	if (error)
+-		goto err_free_handle;
++		return error;
+ 
+ 	error = input_open_device(handle);
+ 	if (error)
+ 		goto err_unregister_handle;
+ 
++	retain_and_null_ptr(handle);
++
+ 	return 0;
+ 
+  err_unregister_handle:
+ 	input_unregister_handle(handle);
+- err_free_handle:
+-	kfree(handle);
+ 	return error;
  }
  
- static int moxafuncret(void __iomem *ofsAddr, u16 cmd, u16 arg)
+@@ -1683,17 +1682,15 @@ int vt_do_diacrit(unsigned int cmd, void __user *udp, int perm)
  {
--        unsigned long flags;
--        u16 ret;
--        spin_lock_irqsave(&moxafunc_lock, flags);
-+	guard(spinlock_irqsave)(&moxafunc_lock);
- 	writew(arg, ofsAddr + FuncArg);
- 	writew(cmd, ofsAddr + FuncCode);
- 	moxa_wait_finish(ofsAddr);
--	ret = readw(ofsAddr + FuncArg);
--	spin_unlock_irqrestore(&moxafunc_lock, flags);
--	return ret;
+ 	unsigned long flags;
+ 	int asize;
+-	int ret = 0;
+ 
+ 	switch (cmd) {
+ 	case KDGKBDIACR:
+ 	{
+ 		struct kbdiacrs __user *a = udp;
+-		struct kbdiacr *dia;
+ 		int i;
+ 
+-		dia = kmalloc_array(MAX_DIACR, sizeof(struct kbdiacr),
+-								GFP_KERNEL);
++		struct kbdiacr __free(kfree) *dia = kmalloc_array(MAX_DIACR, sizeof(struct kbdiacr),
++								  GFP_KERNEL);
+ 		if (!dia)
+ 			return -ENOMEM;
+ 
+@@ -1713,20 +1710,17 @@ int vt_do_diacrit(unsigned int cmd, void __user *udp, int perm)
+ 		spin_unlock_irqrestore(&kbd_event_lock, flags);
+ 
+ 		if (put_user(asize, &a->kb_cnt))
+-			ret = -EFAULT;
+-		else  if (copy_to_user(a->kbdiacr, dia,
+-				asize * sizeof(struct kbdiacr)))
+-			ret = -EFAULT;
+-		kfree(dia);
+-		return ret;
++			return -EFAULT;
++		if (copy_to_user(a->kbdiacr, dia, asize * sizeof(struct kbdiacr)))
++			return -EFAULT;
++		return 0;
+ 	}
+ 	case KDGKBDIACRUC:
+ 	{
+ 		struct kbdiacrsuc __user *a = udp;
+-		void *buf;
+ 
+-		buf = kmalloc_array(MAX_DIACR, sizeof(struct kbdiacruc),
+-								GFP_KERNEL);
++		void __free(kfree) *buf = kmalloc_array(MAX_DIACR, sizeof(struct kbdiacruc),
++							GFP_KERNEL);
+ 		if (buf == NULL)
+ 			return -ENOMEM;
+ 
+@@ -1740,18 +1734,17 @@ int vt_do_diacrit(unsigned int cmd, void __user *udp, int perm)
+ 		spin_unlock_irqrestore(&kbd_event_lock, flags);
+ 
+ 		if (put_user(asize, &a->kb_cnt))
+-			ret = -EFAULT;
+-		else if (copy_to_user(a->kbdiacruc, buf,
+-				asize*sizeof(struct kbdiacruc)))
+-			ret = -EFAULT;
+-		kfree(buf);
+-		return ret;
++			return -EFAULT;
++		if (copy_to_user(a->kbdiacruc, buf, asize * sizeof(struct kbdiacruc)))
++			return -EFAULT;
 +
-+	return readw(ofsAddr + FuncArg);
- }
- 
- static void moxa_low_water_check(void __iomem *ofsAddr)
-@@ -1002,11 +997,11 @@ static int moxa_init_board(struct moxa_board_conf *brd, struct device *dev)
- 	if (ret)
- 		goto err_free;
- 
--	spin_lock_bh(&moxa_lock);
--	brd->ready = 1;
--	if (!timer_pending(&moxaTimer))
--		mod_timer(&moxaTimer, jiffies + HZ / 50);
--	spin_unlock_bh(&moxa_lock);
-+	scoped_guard(spinlock_bh, &moxa_lock) {
-+		brd->ready = 1;
-+		if (!timer_pending(&moxaTimer))
-+			mod_timer(&moxaTimer, jiffies + HZ / 50);
-+	}
- 
- 	first_idx = (brd - moxa_boards) * MAX_PORTS_PER_BOARD;
- 	for (i = 0; i < brd->numPorts; i++)
-@@ -1026,29 +1021,29 @@ static void moxa_board_deinit(struct moxa_board_conf *brd)
- {
- 	unsigned int a, opened, first_idx;
- 
--	mutex_lock(&moxa_openlock);
--	spin_lock_bh(&moxa_lock);
--	brd->ready = 0;
--	spin_unlock_bh(&moxa_lock);
--
--	/* pci hot-un-plug support */
--	for (a = 0; a < brd->numPorts; a++)
--		if (tty_port_initialized(&brd->ports[a].port))
--			tty_port_tty_hangup(&brd->ports[a].port, false);
--
--	for (a = 0; a < MAX_PORTS_PER_BOARD; a++)
--		tty_port_destroy(&brd->ports[a].port);
-+	scoped_guard(mutex, &moxa_openlock) {
-+		scoped_guard(spinlock_bh, &moxa_lock)
-+			brd->ready = 0;
- 
--	while (1) {
--		opened = 0;
-+		/* pci hot-un-plug support */
- 		for (a = 0; a < brd->numPorts; a++)
- 			if (tty_port_initialized(&brd->ports[a].port))
--				opened++;
--		mutex_unlock(&moxa_openlock);
--		if (!opened)
--			break;
--		msleep(50);
--		mutex_lock(&moxa_openlock);
-+				tty_port_tty_hangup(&brd->ports[a].port, false);
-+
-+		for (a = 0; a < MAX_PORTS_PER_BOARD; a++)
-+			tty_port_destroy(&brd->ports[a].port);
-+
-+		while (1) {
-+			opened = 0;
-+			for (a = 0; a < brd->numPorts; a++)
-+				if (tty_port_initialized(&brd->ports[a].port))
-+					opened++;
-+			if (!opened)
-+				break;
-+			mutex_unlock(&moxa_openlock);
-+			msleep(50);
-+			mutex_lock(&moxa_openlock);
-+		}
++		return 0;
  	}
  
- 	first_idx = (brd - moxa_boards) * MAX_PORTS_PER_BOARD;
-@@ -1206,12 +1201,9 @@ static void moxa_shutdown(struct tty_port *port)
- static bool moxa_carrier_raised(struct tty_port *port)
- {
- 	struct moxa_port *ch = container_of(port, struct moxa_port, port);
--	int dcd;
+ 	case KDSKBDIACR:
+ 	{
+ 		struct kbdiacrs __user *a = udp;
+-		struct kbdiacr *dia = NULL;
++		struct kbdiacr __free(kfree) *dia = NULL;
+ 		unsigned int ct;
+ 		int i;
  
--	spin_lock_irq(&port->lock);
--	dcd = ch->DCDState;
--	spin_unlock_irq(&port->lock);
--	return dcd;
-+	guard(spinlock_irq)(&port->lock);
-+	return ch->DCDState;
- }
- 
- static void moxa_dtr_rts(struct tty_port *port, bool active)
-@@ -1225,37 +1217,31 @@ static int moxa_open(struct tty_struct *tty, struct file *filp)
- {
- 	struct moxa_board_conf *brd;
- 	struct moxa_port *ch;
--	int port;
--
--	port = tty->index;
--	if (mutex_lock_interruptible(&moxa_openlock))
--		return -ERESTARTSYS;
--	brd = &moxa_boards[port / MAX_PORTS_PER_BOARD];
--	if (!brd->ready) {
--		mutex_unlock(&moxa_openlock);
--		return -ENODEV;
--	}
-+	int port = tty->index;
- 
--	if (port % MAX_PORTS_PER_BOARD >= brd->numPorts) {
--		mutex_unlock(&moxa_openlock);
--		return -ENODEV;
--	}
--
--	ch = &brd->ports[port % MAX_PORTS_PER_BOARD];
--	ch->port.count++;
--	tty->driver_data = ch;
--	tty_port_tty_set(&ch->port, tty);
--	mutex_lock(&ch->port.mutex);
--	if (!tty_port_initialized(&ch->port)) {
--		ch->statusflags = 0;
--		moxa_set_tty_param(tty, &tty->termios);
--		MoxaPortLineCtrl(ch, true, true);
--		MoxaPortEnable(ch);
--		MoxaSetFifo(ch, ch->type == PORT_16550A);
--		tty_port_set_initialized(&ch->port, true);
-+	scoped_cond_guard(mutex_intr, return -ERESTARTSYS, &moxa_openlock) {
-+		brd = &moxa_boards[port / MAX_PORTS_PER_BOARD];
-+		if (!brd->ready)
-+			return -ENODEV;
+@@ -1780,7 +1773,7 @@ int vt_do_diacrit(unsigned int cmd, void __user *udp, int perm)
+ 					conv_8bit_to_uni(dia[i].result);
+ 		}
+ 		spin_unlock_irqrestore(&kbd_event_lock, flags);
+-		kfree(dia);
 +
-+		if (port % MAX_PORTS_PER_BOARD >= brd->numPorts)
-+			return -ENODEV;
-+
-+		ch = &brd->ports[port % MAX_PORTS_PER_BOARD];
-+		ch->port.count++;
-+		tty->driver_data = ch;
-+		tty_port_tty_set(&ch->port, tty);
-+
-+		guard(mutex)(&ch->port.mutex);
-+		if (!tty_port_initialized(&ch->port)) {
-+			ch->statusflags = 0;
-+			moxa_set_tty_param(tty, &tty->termios);
-+			MoxaPortLineCtrl(ch, true, true);
-+			MoxaPortEnable(ch);
-+			MoxaSetFifo(ch, ch->type == PORT_16550A);
-+			tty_port_set_initialized(&ch->port, true);
-+		}
- 	}
--	mutex_unlock(&ch->port.mutex);
--	mutex_unlock(&moxa_openlock);
- 
- 	return tty_port_block_til_ready(&ch->port, tty, filp);
- }
-@@ -1270,15 +1256,13 @@ static void moxa_close(struct tty_struct *tty, struct file *filp)
- static ssize_t moxa_write(struct tty_struct *tty, const u8 *buf, size_t count)
- {
- 	struct moxa_port *ch = tty->driver_data;
--	unsigned long flags;
- 	int len;
- 
- 	if (ch == NULL)
  		return 0;
+ 	}
  
--	spin_lock_irqsave(&moxa_lock, flags);
--	len = MoxaPortWriteData(tty, buf, count);
--	spin_unlock_irqrestore(&moxa_lock, flags);
-+	scoped_guard(spinlock_irqsave, &moxa_lock)
-+		len = MoxaPortWriteData(tty, buf, count);
+@@ -1788,7 +1781,7 @@ int vt_do_diacrit(unsigned int cmd, void __user *udp, int perm)
+ 	{
+ 		struct kbdiacrsuc __user *a = udp;
+ 		unsigned int ct;
+-		void *buf = NULL;
++		void __free(kfree) *buf = NULL;
  
- 	set_bit(LOWWAIT, &ch->statusflags);
- 	return len;
-@@ -1349,12 +1333,10 @@ static int moxa_tiocmset(struct tty_struct *tty,
- 	bool dtr_active, rts_active;
- 	struct moxa_port *ch;
- 
--	mutex_lock(&moxa_openlock);
-+	guard(mutex)(&moxa_openlock);
- 	ch = tty->driver_data;
--	if (!ch) {
--		mutex_unlock(&moxa_openlock);
-+	if (!ch)
- 		return -EINVAL;
--	}
- 
- 	MoxaPortGetLineOut(ch, &dtr_active, &rts_active);
- 	if (set & TIOCM_RTS)
-@@ -1366,7 +1348,7 @@ static int moxa_tiocmset(struct tty_struct *tty,
- 	if (clear & TIOCM_DTR)
- 		dtr_active = false;
- 	MoxaPortLineCtrl(ch, dtr_active, rts_active);
--	mutex_unlock(&moxa_openlock);
-+
- 	return 0;
+ 		if (!perm)
+ 			return -EPERM;
+@@ -1811,11 +1804,10 @@ int vt_do_diacrit(unsigned int cmd, void __user *udp, int perm)
+ 					ct * sizeof(struct kbdiacruc));
+ 		accent_table_size = ct;
+ 		spin_unlock_irqrestore(&kbd_event_lock, flags);
+-		kfree(buf);
+ 		return 0;
+ 	}
+ 	}
+-	return ret;
++	return 0;
  }
  
-@@ -1415,18 +1397,17 @@ static void moxa_hangup(struct tty_struct *tty)
- 
- static void moxa_new_dcdstate(struct moxa_port *p, u8 dcd)
+ /**
+@@ -1934,7 +1926,7 @@ static int vt_kdskbent(unsigned char kbdmode, unsigned char idx,
+ 		unsigned char map, unsigned short val)
  {
--	unsigned long flags;
- 	dcd = !!dcd;
+ 	unsigned long flags;
+-	unsigned short *key_map, *new_map, oldval;
++	unsigned short *key_map, oldval;
  
--	spin_lock_irqsave(&p->port.lock, flags);
--	if (dcd != p->DCDState) {
--        	p->DCDState = dcd;
--        	spin_unlock_irqrestore(&p->port.lock, flags);
--		if (!dcd)
--			tty_port_tty_hangup(&p->port, true);
-+	scoped_guard(spinlock_irqsave, &p->port.lock) {
-+		if (dcd == p->DCDState)
-+			return;
-+
-+		p->DCDState = dcd;
- 	}
--	else
--		spin_unlock_irqrestore(&p->port.lock, flags);
-+
-+	if (!dcd)
-+		tty_port_tty_hangup(&p->port, true);
- }
+ 	if (!idx && val == K_NOSUCHMAP) {
+ 		spin_lock_irqsave(&kbd_event_lock, flags);
+@@ -1965,7 +1957,7 @@ static int vt_kdskbent(unsigned char kbdmode, unsigned char idx,
+ 		return 0;
+ #endif
  
- static int moxa_poll_port(struct moxa_port *p, unsigned int handle,
-@@ -1494,7 +1475,7 @@ static void moxa_poll(struct timer_list *unused)
- 	u16 __iomem *ip;
- 	unsigned int card, port, served = 0;
+-	new_map = kmalloc(sizeof(plain_map), GFP_KERNEL);
++	unsigned short __free(kfree) *new_map = kmalloc(sizeof(plain_map), GFP_KERNEL);
+ 	if (!new_map)
+ 		return -ENOMEM;
  
--	spin_lock(&moxa_lock);
-+	guard(spinlock)(&moxa_lock);
- 	for (card = 0; card < MAX_BOARDS; card++) {
- 		brd = &moxa_boards[card];
- 		if (!brd->ready)
-@@ -1525,7 +1506,6 @@ static void moxa_poll(struct timer_list *unused)
- 
- 	if (served)
- 		mod_timer(&moxaTimer, jiffies + HZ / 50);
--	spin_unlock(&moxa_lock);
- }
- 
- /******************************************************************************/
-@@ -1861,13 +1841,11 @@ static int MoxaPortSetTermio(struct moxa_port *port, struct ktermios *termio,
- 	baud = MoxaPortSetBaud(port, baud);
- 
- 	if (termio->c_iflag & (IXON | IXOFF | IXANY)) {
--	        spin_lock_irq(&moxafunc_lock);
-+		guard(spinlock_irq)(&moxafunc_lock);
- 		writeb(termio->c_cc[VSTART], ofsAddr + FuncArg);
- 		writeb(termio->c_cc[VSTOP], ofsAddr + FuncArg1);
- 		writeb(FC_SetXonXoff, ofsAddr + FuncCode);
- 		moxa_wait_finish(ofsAddr);
--		spin_unlock_irq(&moxafunc_lock);
--
- 	}
- 	return baud;
- }
-@@ -2098,13 +2076,13 @@ static int moxa_get_serial_info(struct tty_struct *tty,
- 
- 	if (!info)
- 		return -ENODEV;
--	mutex_lock(&info->port.mutex);
-+	guard(mutex)(&info->port.mutex);
- 	ss->type = info->type;
- 	ss->line = info->port.tty->index;
- 	ss->flags = info->port.flags;
- 	ss->baud_base = 921600;
- 	ss->close_delay = jiffies_to_msecs(info->port.close_delay) / 10;
--	mutex_unlock(&info->port.mutex);
-+
- 	return 0;
- }
- 
-@@ -2120,13 +2098,12 @@ static int moxa_set_serial_info(struct tty_struct *tty,
- 
- 	close_delay = msecs_to_jiffies(ss->close_delay * 10);
- 
--	mutex_lock(&info->port.mutex);
-+	guard(mutex)(&info->port.mutex);
- 	if (!capable(CAP_SYS_ADMIN)) {
- 		if (close_delay != info->port.close_delay ||
- 		    ss->type != info->type ||
- 		    ((ss->flags & ~ASYNC_USR_MASK) !=
- 		     (info->port.flags & ~ASYNC_USR_MASK))) {
--			mutex_unlock(&info->port.mutex);
+@@ -1977,17 +1969,14 @@ static int vt_kdskbent(unsigned char kbdmode, unsigned char idx,
+ 		if (keymap_count >= MAX_NR_OF_USER_KEYMAPS &&
+ 		    !capable(CAP_SYS_RESOURCE)) {
+ 			spin_unlock_irqrestore(&kbd_event_lock, flags);
+-			kfree(new_map);
  			return -EPERM;
  		}
- 	} else {
-@@ -2136,7 +2113,7 @@ static int moxa_set_serial_info(struct tty_struct *tty,
+-		key_maps[map] = new_map;
+-		key_map = new_map;
++		key_map = key_maps[map] = no_free_ptr(new_map);
+ 		key_map[0] = U(K_ALLOCATED);
+ 		for (j = 1; j < NR_KEYS; j++)
+ 			key_map[j] = U(K_HOLE);
+ 		keymap_count++;
+-	} else
+-		kfree(new_map);
++	}
  
- 		info->type = ss->type;
- 	}
--	mutex_unlock(&info->port.mutex);
+ 	oldval = U(key_map[idx]);
+ 	if (val == oldval)
+@@ -2050,8 +2039,6 @@ int vt_do_kdgkb_ioctl(int cmd, struct kbsentry __user *user_kdgkb, int perm)
+ {
+ 	unsigned char kb_func;
+ 	unsigned long flags;
+-	char *kbs;
+-	int ret;
+ 
+ 	if (get_user(kb_func, &user_kdgkb->kb_func))
+ 		return -EFAULT;
+@@ -2063,7 +2050,7 @@ int vt_do_kdgkb_ioctl(int cmd, struct kbsentry __user *user_kdgkb, int perm)
+ 		/* size should have been a struct member */
+ 		ssize_t len = sizeof(user_kdgkb->kb_string);
+ 
+-		kbs = kmalloc(len, GFP_KERNEL);
++		char __free(kfree) *kbs = kmalloc(len, GFP_KERNEL);
+ 		if (!kbs)
+ 			return -ENOMEM;
+ 
+@@ -2071,20 +2058,20 @@ int vt_do_kdgkb_ioctl(int cmd, struct kbsentry __user *user_kdgkb, int perm)
+ 		len = strscpy(kbs, func_table[kb_func] ? : "", len);
+ 		spin_unlock_irqrestore(&func_buf_lock, flags);
+ 
+-		if (len < 0) {
+-			ret = -ENOSPC;
+-			break;
+-		}
+-		ret = copy_to_user(user_kdgkb->kb_string, kbs, len + 1) ?
+-			-EFAULT : 0;
+-		break;
++		if (len < 0)
++			return -ENOSPC;
 +
- 	return 0;
++		if (copy_to_user(user_kdgkb->kb_string, kbs, len + 1))
++			return -EFAULT;
++
++		return 0;
+ 	}
+ 	case KDSKBSENT:
+ 		if (!perm || !capable(CAP_SYS_TTY_CONFIG))
+ 			return -EPERM;
+ 
+-		kbs = strndup_user(user_kdgkb->kb_string,
+-				sizeof(user_kdgkb->kb_string));
++		char __free(kfree) *kbs = strndup_user(user_kdgkb->kb_string,
++						       sizeof(user_kdgkb->kb_string));
+ 		if (IS_ERR(kbs))
+ 			return PTR_ERR(kbs);
+ 
+@@ -2092,13 +2079,10 @@ int vt_do_kdgkb_ioctl(int cmd, struct kbsentry __user *user_kdgkb, int perm)
+ 		kbs = vt_kdskbsent(kbs, kb_func);
+ 		spin_unlock_irqrestore(&func_buf_lock, flags);
+ 
+-		ret = 0;
+-		break;
++		return 0;
+ 	}
+ 
+-	kfree(kbs);
+-
+-	return ret;
++	return 0;
  }
  
+ int vt_do_kdskled(unsigned int console, int cmd, unsigned long arg, int perm)
 -- 
 2.51.1
 
