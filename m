@@ -1,222 +1,148 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from sonic310-23.consmr.mail.ne1.yahoo.com (sonic310-23.consmr.mail.ne1.yahoo.com [66.163.186.204])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C5682DD60F;
-	Thu, 20 Nov 2025 12:57:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 941873358B5
+	for <linux-serial@vger.kernel.org>; Thu, 20 Nov 2025 13:31:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=66.163.186.204
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763643454; cv=none; b=m2mUAPJ3vYnGYESM0Uyj+mUuQtU+kTNijvjfkJua/+ciXW3fShrMHK07rYXZdwaaHjxUed8zNcAPmYcxbwXWY4znDxpiVCIcKNC32xQqFrIs18aAuMcyCpCsUysRo9Re+w0HTKIXjYApwwCN6zfmO1tufSvkRmF++nUltAmQdec=
+	t=1763645500; cv=none; b=U+sf44/3qskYIfbCAFcpjyLVJQMRkvHxbdkqytE6SMUXZnBJslZGA4P2vLM1o7QlUWjpexkrxkOTBqkKKOzpce/qqHA5VrVbjukqoiDgixE4p1yJX2AulBhcwG+4AOPbQBG97PLLH/ml9TyojQ2JRm9hta5w/EE01oIOenbw098=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763643454; c=relaxed/simple;
-	bh=BSAJnV6hGwIlrdf26TVWYrTtWavqRfw5o5IS/pX+paY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Agz7etuS7gI0daIhRzKUf+hysz9lnjEdi8VozmiOlKQLNI7AHGn/SJsWE5D/YObVYIkzjvGlRPknXw4wDi3SIiDTivCcYA/UL9Hk9XC2iG+uxjL0+KExfgtWRaEhp96ZPhvJTO3pC7N1e5YrMha8FWQb03Mg22Ff7d3Ern18Qy8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=U6dAjwAN; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1763645500; c=relaxed/simple;
+	bh=nYDDYk+8h6uwVUWyCoc9O6cosfnlL6nl663e7aKT0f0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=MZE/ZgsHZOs9hhROVDemZBwOZFKJHm57G4wbJugAzWyc0iprmLNxxkGw70W0mQwkIUDDSQ7McxBKwJf30S5jKJ7Dv4gagfvOgwLwYKklzUGJYP9X68hpK1svwjNn2tw4gYA0q/J4jZ8Ge8HfzTI6dQFgw5vDzzom8YGoa6Qjxnc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=netscape.net; spf=pass smtp.mailfrom=netscape.net; dkim=pass (2048-bit key) header.d=netscape.net header.i=@netscape.net header.b=nF0wmjBi; arc=none smtp.client-ip=66.163.186.204
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=netscape.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=netscape.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="U6dAjwAN"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35235C4CEF1;
-	Thu, 20 Nov 2025 12:57:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1763643454;
-	bh=BSAJnV6hGwIlrdf26TVWYrTtWavqRfw5o5IS/pX+paY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=U6dAjwANw4n/6ZVjJ+Seqdabz28l0Onx7duGdEvU7ZZtHs5Hc8Ggfu7Z0js38Nx86
-	 diRyJUNdPGO+7TgPQMXk/o6MQigTi+HXCP5LV7yM4EqH8cQCrWMB1ZLvS2ZCjul6G5
-	 Lms68eWAqPWHkzqprGdEz+wxr/CwjlnDd9HyU0Ehj9fPavXce0DbENY3r53MXvia8p
-	 8cKtJTZFsjfNItIpdoD8iPrfj/ikp/MKUNpbzbfjmPUGTMC6ggVjznVJbNbc0MS3Lj
-	 zzsNZ78ijnO+25UNbWxxvGaLb9H4AMxQNir5Xr5f3xShPNl56yyA9ajVlBr1ROb2SZ
-	 M1kOF05OwM0wQ==
-Date: Thu, 20 Nov 2025 18:27:06 +0530
-From: Manivannan Sadhasivam <mani@kernel.org>
-To: Rob Herring <robh@kernel.org>
-Cc: Frank Li <Frank.li@nxp.com>, 
-	Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Nathan Chancellor <nathan@kernel.org>, 
-	Nicolas Schier <nicolas.schier@linux.dev>, Hans de Goede <hansg@kernel.org>, 
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Mark Pearson <mpearson-lenovo@squebb.ca>, 
-	"Derek J. Clark" <derekjohn.clark@gmail.com>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Marcel Holtmann <marcel@holtmann.org>, 
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>, Bartosz Golaszewski <brgl@bgdev.pl>, 
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org, 
-	platform-driver-x86@vger.kernel.org, linux-pci@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org, linux-pm@vger.kernel.org, 
-	Stephan Gerhold <stephan.gerhold@linaro.org>, Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Subject: Re: [PATCH 7/9] dt-bindings: connector: Add PCIe M.2 Mechanical Key
- E connector
-Message-ID: <2dtqb5cpuhb4ln3vfuudortjesrcamwpokkcwoih6gz7u25rxr@mgtdturwyhq3>
-References: <20251112-pci-m2-e-v1-0-97413d6bf824@oss.qualcomm.com>
- <20251112-pci-m2-e-v1-7-97413d6bf824@oss.qualcomm.com>
- <aRS/3OTerCBGlmBm@lizhi-Precision-Tower-5810>
- <qiwgnela4b6gbwuuq7xaqjong47c2ix6caagjl6ryqukzqkswn@6l7rvkf4dfyx>
- <20251119235905.GA3575788-robh@kernel.org>
+	dkim=pass (2048-bit key) header.d=netscape.net header.i=@netscape.net header.b="nF0wmjBi"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=netscape.net; s=a2048; t=1763645492; bh=ooAP9iTM/pE+pgzb1RtgNMhInF3D/HxOO/X8AaR+3Zg=; h=Date:Subject:To:Cc:References:From:In-Reply-To:From:Subject:Reply-To; b=nF0wmjBiPsQxHEEPasGo6gksJwFHWMA5E/pTx4w1Okvo7SuN8fdh/ltNYiDQwhgNrpBxvmQSSgtiq0cifjV+dxIRXk1Fvz3hJdVaiZ/QwTiUaITelfrLLTy73H4tKP7UbR/LnVELs+Dn01gbbAu8xgxs2IV7/RACkF7RLhECemNkG+Eji+xA9FT05Eq4dayR/IyqXCU1g4P7E/ri2lUsw+Y9MH51uCWTS/5qemz+BAscT5xAGQSBYTPZo1Pqc8AxZj6qBlk7E9eViWQU2HI4DwwRUNaONDvxM7ba5ou/whybLH4xW0nhikRsQVYHpCKnoZT02JhdjB1HS450sRREhw==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1763645492; bh=ay0BArqgCK4xK3jaTTMZPWHNw+jIYZyRPk0HFJY+u1M=; h=X-Sonic-MF:Date:Subject:To:From:From:Subject; b=OXsCZGlnv5E6VV7+5FiYqIpjE6uNFsR7OhSM6LXyRfmtphQSwqN59oTWzUnHL97YVg51JihxKdYOQVyGENwD+5a8dg/jlOBtI+zi9FboyhpP3ggYfZ82+8Wnbp7R+fEEjtCDsXbZC8l2sYcZrjDt+SPSiw5QxCuui2KgmVZD4O8p9HNlyJRo82A3p3QMacrz6dbYmMEednfzBKXicJ6PaKicNXt70eklAj1ISIDZ2Q7BjVvqQJt/Dk8gqRBz4XXHQZWO/jJqAm64PqGkKHUQBod69+GOfCHkOzEIZ375A0vqCj4/z+Sr3eL4VTga5iWar2bymccrvVeor4Jx9N6AIw==
+X-YMail-OSG: U9JqMx4VM1notgdF0Dk2PmuWTzGjqGnmuu4bygTc5J7L3Yc5aTH635JTeuBqq8_
+ qpd0wGIJ7e7r9RpQfNu8En86z29.ERiLWe9sEMwnrBDUs0prrsBDMmESAmSB4FWaf3F4uM72hx0G
+ .NPstGxa8GvWil6Ipp99J6cw64QW4mGCjqwoTWyPfZLxZQ4wp31KT3XVA_f3Wg8xxTrusoGZIIJU
+ p3NmAYj1NZvUembrq8_T3ZcO_xwRQKbod7fYd7p70wbiVgv1qAzv71f64UgscevcuB6rZaUSz0oK
+ HeNjkgAcNJZO5H4RWPVwlg2YYVPUFri4clQq_bSlQclrzA5P_vuRU0XDwKe87FkDSc4Em6a6m936
+ irYz7qQH.AHHPw3xYQ.GghxJd1mIy01qNazCo1q9NgMK.fLlxuGif.EwSsky.qEuZ30IOObgN_7s
+ 8I_9b4olirBLK71jTzm6MtorEtxveh..TA9DEZyo77yXw7XQNAlU6b_4VrVUkFBtH.HYGNK2GV7q
+ oc31XGuCZ5LaoS7Fk8JgfYj8IK61.qSGAgjONvbh42OwTFVPPVIIjZ_kfExgrZUt5cAsrEW8o4Vh
+ xWmRFWxTrpZoCoI8j4eP7PSs4V8vOTyONGaEGnjZXnJq6Q_vOM3EnY7MxMrSjpYPRvSqq035iOTj
+ vnoGalAZs5o49Q6SkuEtY7LgEg0_9KMbxcxii0U03ALsPlrOtFNmY_ksK1RlsLvDsaf21R2proNP
+ dtUgJj.Qqj686h_d2eHD.VOp8eIOH3CB8PgLgA7JrGPoYrOeQpAbFRLc8uf7GhQD.uG6o045XxtR
+ LikNZ6XmrHEL2H52okri6.iAhBeL4YOX.U_jo8RtndotzBm8UVXcZppdp1czePh7vcF.pAeuH7Tj
+ LQA0nDzrYfIElOYbcLbtYNzNJeJtxIkqH.6R4LAoqAzdqKJxcO9jc_boIs4qjqnHcHwjDIxS7lci
+ jmWYm8g2vqIsATfBjHnVjgrvJff8fxpMP6x9SBtZ5Cu4Ye7.6qw57dBALwEov2nrFryskrO1PIJh
+ SHzCQuCEo_BIE_oMJlqUV82az.JkeYE.OOGFuyBap1WMUqz91HVUD6sW9vQJjoRHDeu5AYiMDmuE
+ j75XP.kPWOZ753hRQ2wPvZtbMqyjbnyuOgNZW6L.Su6NzzhBLCmOcsU8UmeeLcwyUtq_5xKPZzwW
+ IFangGY9nmstC8KgrZPGXxThU6lgtzsrZ24iA5n1NRMk_C7R6ZVwn6fIOAk005ffhHUVumseo.Zz
+ TjROaukrCLFmt8oGoY.U23GhQpayPID2.w6Blb6NsDjOxIWxDQrNEY.Y3b5LQ8ZCvn.JxG6ZYnuV
+ E2UR9.zmoCumIcNU28YP0MuUcGrhaQVPZ9a1KdP04D5ZI6tz18TccgfwlngJXqdma9.oHPANMaS6
+ ui_cxkqj0g1bZjLqdo3qI_jEJ1cYYuM00cNmKt.Cx6kd8XQXLlCN.5kbAtwWFvZ.glPrq_4VtwaX
+ gDFIeFkf4MORkMaO.VjsKZQpZI31nCgQjv1wEc0EhvAwGsUNtq7YNTrDFqXTgpapEkDERa_gJGqX
+ mHvzT.m7KuLxeIK8Zk0iQrTQE.XIlgaXgM_Cm4EnETgk92jktIVoNrHZBBCDU1JxJR5UQ.I8KluR
+ 6IVw.W0vu5viS.2h2ShBiyPk252lLmA5VAXrNe3zRBNJ9CX3UbDDCAx8RRpssy8x8MZrG1OQyWKy
+ X9j_BKuyS5NMnS4NHlFzc0OlDwZyjL0JiCIF9GQmJKQivwEpj2kpsjsNWJpPCyLTGgv4KmGMmVR_
+ xcLXH3n37uslNNuqcoepn.aptpYhJUYs5WRQhrTRLxEs3sJ0TNvhUsbkF8gloPcRjnakZijGmCBB
+ xFcRE5.WnrOT4ss3eDqJ2OOTI54fW2vTcdz5dwrhIqJOa5o49DHIUa4XkXGh7xg0h7j3KrXrH4Lm
+ Qgan8E.Gd7UqV7ohu1.eoV5ktetYNWj86BoQctmfKI9gpy543EQOyBX1LrcCfBZ54nb_kACH872E
+ f6azIkvXYJuslYn3Xt0KYN9_vIOCN3erIHDZkCj7s3pdLIrkHqCOnhLaPOCPfWMvaeNKeL54.iHY
+ lphmm.5nr_hsCLc5igTLVkxqNiJU.6J1hdWx_sUe_tvSzH_5TbZPVe.FI3qb4ARzAFPqvua5tN4l
+ uBTAy10dKmEOIfFYAArxpCKcEckOWv7ggj5wEYte7FF21DQ6KqCksu_ZOhBVnXcS0.BGMuQJFo9e
+ xrmiqJVwcadU2yzuu.MvR1WScnReeQfQxpzdN9ms-
+X-Sonic-MF: <nedu@netscape.net>
+X-Sonic-ID: 676e37d7-09ca-4c83-bd07-43b068c0b120
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic310.consmr.mail.ne1.yahoo.com with HTTP; Thu, 20 Nov 2025 13:31:32 +0000
+Received: by hermes--production-gq1-869cc4b577-n7vfw (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 999518821c423a75a84d1cc13c1757c9;
+          Thu, 20 Nov 2025 13:31:30 +0000 (UTC)
+Message-ID: <0d3f89a8-66c6-2ae2-9cf3-6b2aff8e1f5e@netscape.net>
+Date: Thu, 20 Nov 2025 05:31:27 -0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: RFC: Serial port DTR/RTS - O_<something>
+Content-Language: en-US
+To: "H. Peter Anvin" <hpa@zytor.com>, "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc: Greg KH <gregkh@linuxfoundation.org>, Theodore Ts'o <tytso@mit.edu>,
+ Maarten Brock <Maarten.Brock@sttls.nl>,
+ "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+ "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+ LKML <linux-kernel@vger.kernel.org>
+References: <ADB50E23-DC8B-43D0-A345-E10396A3DFD4@zytor.com>
+ <AMBPR05MB11925DA076098B05E418BF64283CEA@AMBPR05MB11925.eurprd05.prod.outlook.com>
+ <20251110201933.GH2988753@mit.edu>
+ <0F8021E8-F288-4669-8195-9948844E36FD@zytor.com>
+ <20251111035143.GJ2988753@mit.edu>
+ <D4AF3E24-8698-4EEC-9D52-655D69897111@zytor.com>
+ <2025111214-doily-anyway-b24b@gregkh>
+ <6DBB5931-ACD4-4174-9FCE-96C45FFC4603@zytor.com>
+ <2025111241-domestic-moonstone-f75f@gregkh>
+ <DD67C0CF-D330-4D40-B610-FD3EB7AA0218@zytor.com>
+ <2025111227-equipment-magnetism-1443@gregkh>
+ <14b1bc5c-83ac-431f-a53b-14872024b969@zytor.com>
+ <alpine.DEB.2.21.2511141836130.47194@angie.orcam.me.uk>
+ <B72D6F71-7C0B-4C5A-8866-25D7946E0932@zytor.com>
+ <6c26eea2-6f90-f48a-9488-e7480f086c70@netscape.net>
+ <2846db90-fb05-41d2-b8de-c678af75a04b@zytor.com>
+ <06279d25-73d6-01f5-dcf8-8667415048d2@netscape.net>
+ <f643f1f6-7e69-4be6-ac8a-7b1a3a9c402d@zytor.com>
+From: Ned Ulbricht <nedu@netscape.net>
+In-Reply-To: <f643f1f6-7e69-4be6-ac8a-7b1a3a9c402d@zytor.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20251119235905.GA3575788-robh@kernel.org>
+X-Mailer: WebService/1.1.24652 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.aol
 
-On Wed, Nov 19, 2025 at 05:59:05PM -0600, Rob Herring wrote:
-> On Thu, Nov 13, 2025 at 10:30:42AM +0530, Manivannan Sadhasivam wrote:
-> > On Wed, Nov 12, 2025 at 12:11:56PM -0500, Frank Li wrote:
-> > > On Wed, Nov 12, 2025 at 08:15:19PM +0530, Manivannan Sadhasivam wrote:
-> > > > Add the devicetree binding for PCIe M.2 Mechanical Key E connector defined
-> > > > in the PCI Express M.2 Specification, r4.0, sec 5.1.2. This connector
-> > > > provides interfaces like PCIe or SDIO to attach the WiFi devices to the
-> > > > host machine, USB or UART+PCM interfaces to attach the Bluetooth (BT)
-> > > > devices along with additional interfaces like I2C for NFC solution. At any
-> > > > point of time, the connector can only support either PCIe or SDIO as the
-> > > > WiFi interface and USB or UART as the BT interface.
-> > > >
-> > > > The connector provides a primary power supply of 3.3v, along with an
-> > > > optional 1.8v VIO supply for the Adapter I/O buffer circuitry operating at
-> > > > 1.8v sideband signaling.
-> > > >
-> > > > The connector also supplies optional signals in the form of GPIOs for fine
-> > > > grained power management.
-> > > >
-> > > > Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
-> > > > ---
-> > > >  .../bindings/connector/pcie-m2-e-connector.yaml    | 154 +++++++++++++++++++++
-> > > >  MAINTAINERS                                        |   1 +
-> > > >  2 files changed, 155 insertions(+)
-> > > >
-> > > > diff --git a/Documentation/devicetree/bindings/connector/pcie-m2-e-connector.yaml b/Documentation/devicetree/bindings/connector/pcie-m2-e-connector.yaml
-> > > > new file mode 100644
-> > > > index 0000000000000000000000000000000000000000..91cb56b1a75b7e3de3b9fe9a7537089f96875746
-> > > > --- /dev/null
-> > > > +++ b/Documentation/devicetree/bindings/connector/pcie-m2-e-connector.yaml
-> > > > @@ -0,0 +1,154 @@
-> > > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > > > +%YAML 1.2
-> > > > +---
-> > > > +$id: http://devicetree.org/schemas/connector/pcie-m2-e-connector.yaml#
-> > > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > > > +
-> > > > +title: PCIe M.2 Mechanical Key E Connector
-> > > > +
-> > > > +maintainers:
-> > > > +  - Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
-> > > > +
-> > > > +description:
-> > > > +  A PCIe M.2 E connector node represents a physical PCIe M.2 Mechanical Key E
-> > > > +  connector. Mechanical Key E connectors are used to connect Wireless
-> > > > +  Connectivity devices including combinations of Wi-Fi, BT, NFC to the host
-> > > > +  machine over interfaces like PCIe/SDIO, USB/UART+PCM, and I2C.
-> > > > +
-> > > > +properties:
-> > > > +  compatible:
-> > > > +    const: pcie-m2-e-connector
-> > > > +
-> > > > +  vpcie3v3-supply:
-> > > > +    description: A phandle to the regulator for 3.3v supply.
-> > > > +
-> > > > +  vpcie1v8-supply:
-> > > > +    description: A phandle to the regulator for VIO 1.8v supply.
-> > > > +
-> > > > +  ports:
-> > > > +    $ref: /schemas/graph.yaml#/properties/ports
-> > > > +    description: OF graph bindings modeling the interfaces exposed on the
-> > > > +      connector. Since a single connector can have multiple interfaces, every
-> > > > +      interface has an assigned OF graph port number as described below.
-> > > > +
-> > > > +    properties:
-> > > > +      port@0:
-> > > > +        $ref: /schemas/graph.yaml#/properties/port
-> > > > +        description: PCIe/SDIO interface
-> > > 
-> > > 
-> > > PCIe and SDIO is difference signal at key E. why combine to one port? The
-> > > similar case is USB2.0/UART
-> > > 
-> > 
-> > They will be defined as separate endpoints in the next version.
-> > 
-> > > > +
-> > > > +      port@1:
-> > > > +        $ref: /schemas/graph.yaml#/properties/port
-> > > > +        description: USB 2.0/UART interface
-> > > > +
-> > > > +      port@2:
-> > > > +        $ref: /schemas/graph.yaml#/properties/port
-> > > > +        description: PCM/I2S interface
-> > > > +
-> > > > +      port@3:
-> > > > +        $ref: /schemas/graph.yaml#/properties/port
-> > > > +        description: I2C interface
-> > > > +
-> > > > +    oneOf:
-> > > > +      - required:
-> > > > +          - port@0
-> > > > +
-> > > > +  clocks:
-> > > > +    description: 32.768 KHz Suspend Clock (SUSCLK) input from the host system to
-> > > > +      the M.2 card. Refer, PCI Express M.2 Specification r4.0, sec 3.1.12.1 for
-> > > > +      more details.
-> > > > +    maxItems: 1
-> > > 
-> > > Do we need add pciref clock here?
-> > > 
-> > > > +
-> > > > +  w_disable1-gpios:
-> > > 
-> > > use "-"
-> > > 
-> > > w-disable1-gpios
-> > > 
-> > 
-> > I just went with the spec that defines the signal as W_DISABLE.
-> > 
-> > > > +    description: GPIO controlled connection to W_DISABLE1# signal. This signal
-> > > > +      is used by the system to disable WiFi radio in the M.2 card. Refer, PCI
-> > > > +      Express M.2 Specification r4.0, sec 3.1.12.3 for more details.
-> > > > +    maxItems: 1
-> > > > +
-> > > > +  w_disable2-gpios:
-> > > > +    description: GPIO controlled connection to W_DISABLE2# signal. This signal
-> > > > +      is used by the system to disable BT radio in the M.2 card. Refer, PCI
-> > > > +      Express M.2 Specification r4.0, sec 3.1.12.3 for more details.
-> > > > +    maxItems: 1
-> > > > +
-> > > > +  led1-gpios:
-> > > > +    description: GPIO controlled connection to LED_1# signal. This signal is
-> > > > +      used by the M.2 card to indicate the card status via the system mounted
-> > > > +      LED. Refer, PCI Express M.2 Specification r4.0, sec 3.1.12.2 for more
-> > > > +      details.
-> > > > +    maxItems: 1
-> > > > +
-> > > > +  led2-gpios:
-> > > > +    description: GPIO controlled connection to LED_2# signal. This signal is
-> > > > +      used by the M.2 card to indicate the card status via the system mounted
-> > > > +      LED. Refer, PCI Express M.2 Specification r4.0, sec 3.1.12.2 for more
-> > > > +      details.
-> > > > +    maxItems: 1
-> > > > +
-> > > > +  viocfg-gpios:
-> > > > +    description: GPIO controlled connection to IO voltage configuration
-> > > > +      (VIO_CFG) signal. This signal is used by the M.2 card to indicate to the
-> > > > +      host system that the card supports an independent IO voltage domain for
-> > > > +      the sideband signals. Refer, PCI Express M.2 Specification r4.0, sec
-> > > > +      3.1.15.1 for more details.
-> > > > +    maxItems: 1
-> > > > +
-> > > > +  uim_power_src-gpios:
-> > > 
-> > > property use -
-> > > 
-> > 
-> > Again, this is as per the spec. If DT maintainers object to it, I'll change it.
-> 
-> Use '-'.
-> 
+On 11/18/25 10:05, H. Peter Anvin wrote:
 
-OK!
+>> "(O_EXCL|O_NOFOLLOW)" provokes a thought...
+>>
+>> As essential context, fs/open.c build_open_flags() has:
+>>
+>> if (flags & O_CREAT) {
+>>      op->intent |= LOOKUP_CREATE;
+>>      if (flags & O_EXCL) {
+>>          op->intent |= LOOKUP_EXCL;
+>>          flags |= O_NOFOLLOW;
+>>      }
+>> }
 
-- Mani
+[snip]
 
--- 
-மணிவண்ணன் சதாசிவம்
+> I had missed the bit in the spec that says that O_CREAT|O_EXCL is required to
+> imply O_NOFOLLOW (as Linux indeed does as seen above.)
+
+Fwiw, earlier today I had an ultimately unsuccessful series of searches
+using the Austin Group Issue tracker at:
+
+https://austingroupbugs.net/view_all_bug_page.php
+
+Searched (serially): "O_EXCL", "O_NOFOLLOW", "EEXIST", "ELOOP"; all with
+no other filter refinements.  Then searched filtering by 'Section'
+(multiple adjacent selections): 'open' .. 'openat'. In all results,
+simply eyeball-scanned 'Summary' (w/o opening most).
+
+Apparent upshot, unless I'm mistaken, is that the exact error return is
+a trivial conflict with no appreciable impact on higher levels.
+
+
+In roughly same vein, FreeBSD open(2) man page, specifically at
+"[EMLINK]" and "STANDARDS", might possibly be stretched to read as
+implicitly encouraging that assessment.
+
+https://man.freebsd.org/cgi/man.cgi?query=open&manpath=FreeBSD+16.0-CURRENT
+
+Alhough I don't have a FreeBSD box available to actually test
+(O_CREAT|O_EXCL|O_NOFOLLOW) symlink behavior on that platform.  (Maybe
+that combo's wired to detonate tnt nasal daemons? Dunno;-)
+
+
+Unfortunately, this does prompt a close re-scrutinization of linux's
+open(2) man page. Notwithstanding the damn spec, the linux man page
+should precisely and accurately reflect the observed error return?
+
+
+Ned
