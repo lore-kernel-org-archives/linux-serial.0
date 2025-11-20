@@ -1,148 +1,161 @@
-Received: from sonic310-23.consmr.mail.ne1.yahoo.com (sonic310-23.consmr.mail.ne1.yahoo.com [66.163.186.204])
+Received: from mail-il1-f170.google.com (mail-il1-f170.google.com [209.85.166.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 941873358B5
-	for <linux-serial@vger.kernel.org>; Thu, 20 Nov 2025 13:31:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=66.163.186.204
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D83633F8C9
+	for <linux-serial@vger.kernel.org>; Thu, 20 Nov 2025 14:52:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763645500; cv=none; b=U+sf44/3qskYIfbCAFcpjyLVJQMRkvHxbdkqytE6SMUXZnBJslZGA4P2vLM1o7QlUWjpexkrxkOTBqkKKOzpce/qqHA5VrVbjukqoiDgixE4p1yJX2AulBhcwG+4AOPbQBG97PLLH/ml9TyojQ2JRm9hta5w/EE01oIOenbw098=
+	t=1763650371; cv=none; b=DMEqNkmMia7NAz+vyWwBNVkBz7lIkLhTgyoENBLQDsqB2QDqfklX6f9HeupTSrTWRPOfOMITdeIo8EphZh+0qKmfBpQGo63j0OotbMQGzmSq2fmnnmI11c4bqgMNkmErmInV3WMK/1sx0ZtPpPC/TaDibLtCgF1CsyA2BIS6flg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763645500; c=relaxed/simple;
-	bh=nYDDYk+8h6uwVUWyCoc9O6cosfnlL6nl663e7aKT0f0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=MZE/ZgsHZOs9hhROVDemZBwOZFKJHm57G4wbJugAzWyc0iprmLNxxkGw70W0mQwkIUDDSQ7McxBKwJf30S5jKJ7Dv4gagfvOgwLwYKklzUGJYP9X68hpK1svwjNn2tw4gYA0q/J4jZ8Ge8HfzTI6dQFgw5vDzzom8YGoa6Qjxnc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=netscape.net; spf=pass smtp.mailfrom=netscape.net; dkim=pass (2048-bit key) header.d=netscape.net header.i=@netscape.net header.b=nF0wmjBi; arc=none smtp.client-ip=66.163.186.204
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=netscape.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=netscape.net
+	s=arc-20240116; t=1763650371; c=relaxed/simple;
+	bh=fJNbQYu7PoiJLsEPpjUYNqAPI6k2geFEJacIKnsv5a4=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
+	 MIME-Version:Content-Type; b=TXEbB1eUVH8L+Wqj3NukzdLW62EdATs19OO06AS62AA7UzWjrBUAwca31HpTr8qEllkXGun+KRTffmPkcgcE/3ElBggV2ebDTP2vsvad/oXCRyUXDN/AIZmFPOizXnNV6w+jcChXuRoF26+mckDfLcYpa+hV6Z6edCSo+JVsMdA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kernel.dk; spf=pass smtp.mailfrom=kernel.dk; dkim=pass (2048-bit key) header.d=kernel-dk.20230601.gappssmtp.com header.i=@kernel-dk.20230601.gappssmtp.com header.b=Nlop4bDN; arc=none smtp.client-ip=209.85.166.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kernel.dk
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kernel.dk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=netscape.net header.i=@netscape.net header.b="nF0wmjBi"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=netscape.net; s=a2048; t=1763645492; bh=ooAP9iTM/pE+pgzb1RtgNMhInF3D/HxOO/X8AaR+3Zg=; h=Date:Subject:To:Cc:References:From:In-Reply-To:From:Subject:Reply-To; b=nF0wmjBiPsQxHEEPasGo6gksJwFHWMA5E/pTx4w1Okvo7SuN8fdh/ltNYiDQwhgNrpBxvmQSSgtiq0cifjV+dxIRXk1Fvz3hJdVaiZ/QwTiUaITelfrLLTy73H4tKP7UbR/LnVELs+Dn01gbbAu8xgxs2IV7/RACkF7RLhECemNkG+Eji+xA9FT05Eq4dayR/IyqXCU1g4P7E/ri2lUsw+Y9MH51uCWTS/5qemz+BAscT5xAGQSBYTPZo1Pqc8AxZj6qBlk7E9eViWQU2HI4DwwRUNaONDvxM7ba5ou/whybLH4xW0nhikRsQVYHpCKnoZT02JhdjB1HS450sRREhw==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1763645492; bh=ay0BArqgCK4xK3jaTTMZPWHNw+jIYZyRPk0HFJY+u1M=; h=X-Sonic-MF:Date:Subject:To:From:From:Subject; b=OXsCZGlnv5E6VV7+5FiYqIpjE6uNFsR7OhSM6LXyRfmtphQSwqN59oTWzUnHL97YVg51JihxKdYOQVyGENwD+5a8dg/jlOBtI+zi9FboyhpP3ggYfZ82+8Wnbp7R+fEEjtCDsXbZC8l2sYcZrjDt+SPSiw5QxCuui2KgmVZD4O8p9HNlyJRo82A3p3QMacrz6dbYmMEednfzBKXicJ6PaKicNXt70eklAj1ISIDZ2Q7BjVvqQJt/Dk8gqRBz4XXHQZWO/jJqAm64PqGkKHUQBod69+GOfCHkOzEIZ375A0vqCj4/z+Sr3eL4VTga5iWar2bymccrvVeor4Jx9N6AIw==
-X-YMail-OSG: U9JqMx4VM1notgdF0Dk2PmuWTzGjqGnmuu4bygTc5J7L3Yc5aTH635JTeuBqq8_
- qpd0wGIJ7e7r9RpQfNu8En86z29.ERiLWe9sEMwnrBDUs0prrsBDMmESAmSB4FWaf3F4uM72hx0G
- .NPstGxa8GvWil6Ipp99J6cw64QW4mGCjqwoTWyPfZLxZQ4wp31KT3XVA_f3Wg8xxTrusoGZIIJU
- p3NmAYj1NZvUembrq8_T3ZcO_xwRQKbod7fYd7p70wbiVgv1qAzv71f64UgscevcuB6rZaUSz0oK
- HeNjkgAcNJZO5H4RWPVwlg2YYVPUFri4clQq_bSlQclrzA5P_vuRU0XDwKe87FkDSc4Em6a6m936
- irYz7qQH.AHHPw3xYQ.GghxJd1mIy01qNazCo1q9NgMK.fLlxuGif.EwSsky.qEuZ30IOObgN_7s
- 8I_9b4olirBLK71jTzm6MtorEtxveh..TA9DEZyo77yXw7XQNAlU6b_4VrVUkFBtH.HYGNK2GV7q
- oc31XGuCZ5LaoS7Fk8JgfYj8IK61.qSGAgjONvbh42OwTFVPPVIIjZ_kfExgrZUt5cAsrEW8o4Vh
- xWmRFWxTrpZoCoI8j4eP7PSs4V8vOTyONGaEGnjZXnJq6Q_vOM3EnY7MxMrSjpYPRvSqq035iOTj
- vnoGalAZs5o49Q6SkuEtY7LgEg0_9KMbxcxii0U03ALsPlrOtFNmY_ksK1RlsLvDsaf21R2proNP
- dtUgJj.Qqj686h_d2eHD.VOp8eIOH3CB8PgLgA7JrGPoYrOeQpAbFRLc8uf7GhQD.uG6o045XxtR
- LikNZ6XmrHEL2H52okri6.iAhBeL4YOX.U_jo8RtndotzBm8UVXcZppdp1czePh7vcF.pAeuH7Tj
- LQA0nDzrYfIElOYbcLbtYNzNJeJtxIkqH.6R4LAoqAzdqKJxcO9jc_boIs4qjqnHcHwjDIxS7lci
- jmWYm8g2vqIsATfBjHnVjgrvJff8fxpMP6x9SBtZ5Cu4Ye7.6qw57dBALwEov2nrFryskrO1PIJh
- SHzCQuCEo_BIE_oMJlqUV82az.JkeYE.OOGFuyBap1WMUqz91HVUD6sW9vQJjoRHDeu5AYiMDmuE
- j75XP.kPWOZ753hRQ2wPvZtbMqyjbnyuOgNZW6L.Su6NzzhBLCmOcsU8UmeeLcwyUtq_5xKPZzwW
- IFangGY9nmstC8KgrZPGXxThU6lgtzsrZ24iA5n1NRMk_C7R6ZVwn6fIOAk005ffhHUVumseo.Zz
- TjROaukrCLFmt8oGoY.U23GhQpayPID2.w6Blb6NsDjOxIWxDQrNEY.Y3b5LQ8ZCvn.JxG6ZYnuV
- E2UR9.zmoCumIcNU28YP0MuUcGrhaQVPZ9a1KdP04D5ZI6tz18TccgfwlngJXqdma9.oHPANMaS6
- ui_cxkqj0g1bZjLqdo3qI_jEJ1cYYuM00cNmKt.Cx6kd8XQXLlCN.5kbAtwWFvZ.glPrq_4VtwaX
- gDFIeFkf4MORkMaO.VjsKZQpZI31nCgQjv1wEc0EhvAwGsUNtq7YNTrDFqXTgpapEkDERa_gJGqX
- mHvzT.m7KuLxeIK8Zk0iQrTQE.XIlgaXgM_Cm4EnETgk92jktIVoNrHZBBCDU1JxJR5UQ.I8KluR
- 6IVw.W0vu5viS.2h2ShBiyPk252lLmA5VAXrNe3zRBNJ9CX3UbDDCAx8RRpssy8x8MZrG1OQyWKy
- X9j_BKuyS5NMnS4NHlFzc0OlDwZyjL0JiCIF9GQmJKQivwEpj2kpsjsNWJpPCyLTGgv4KmGMmVR_
- xcLXH3n37uslNNuqcoepn.aptpYhJUYs5WRQhrTRLxEs3sJ0TNvhUsbkF8gloPcRjnakZijGmCBB
- xFcRE5.WnrOT4ss3eDqJ2OOTI54fW2vTcdz5dwrhIqJOa5o49DHIUa4XkXGh7xg0h7j3KrXrH4Lm
- Qgan8E.Gd7UqV7ohu1.eoV5ktetYNWj86BoQctmfKI9gpy543EQOyBX1LrcCfBZ54nb_kACH872E
- f6azIkvXYJuslYn3Xt0KYN9_vIOCN3erIHDZkCj7s3pdLIrkHqCOnhLaPOCPfWMvaeNKeL54.iHY
- lphmm.5nr_hsCLc5igTLVkxqNiJU.6J1hdWx_sUe_tvSzH_5TbZPVe.FI3qb4ARzAFPqvua5tN4l
- uBTAy10dKmEOIfFYAArxpCKcEckOWv7ggj5wEYte7FF21DQ6KqCksu_ZOhBVnXcS0.BGMuQJFo9e
- xrmiqJVwcadU2yzuu.MvR1WScnReeQfQxpzdN9ms-
-X-Sonic-MF: <nedu@netscape.net>
-X-Sonic-ID: 676e37d7-09ca-4c83-bd07-43b068c0b120
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic310.consmr.mail.ne1.yahoo.com with HTTP; Thu, 20 Nov 2025 13:31:32 +0000
-Received: by hermes--production-gq1-869cc4b577-n7vfw (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 999518821c423a75a84d1cc13c1757c9;
-          Thu, 20 Nov 2025 13:31:30 +0000 (UTC)
-Message-ID: <0d3f89a8-66c6-2ae2-9cf3-6b2aff8e1f5e@netscape.net>
-Date: Thu, 20 Nov 2025 05:31:27 -0800
+	dkim=pass (2048-bit key) header.d=kernel-dk.20230601.gappssmtp.com header.i=@kernel-dk.20230601.gappssmtp.com header.b="Nlop4bDN"
+Received: by mail-il1-f170.google.com with SMTP id e9e14a558f8ab-43476cba770so4317435ab.1
+        for <linux-serial@vger.kernel.org>; Thu, 20 Nov 2025 06:52:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20230601.gappssmtp.com; s=20230601; t=1763650367; x=1764255167; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:date:message-id:subject
+         :references:in-reply-to:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=mIp1emodWmrQX+c6TjoXmEBGWcecINECr9nK+dGHBUw=;
+        b=Nlop4bDNIOkjuo0pMhzaqc0ODrEsmRo7XtLqwhp00uyFASxw+sbIvvfDKg63/0WNIr
+         Irgw7i1L5c7f3KspyZuRfY76O51HffIuodvQy5ZIcDN4No7WwIxUOGZ9dpes/M6K+nsd
+         SNLzENdMcdkRpJUmuFjuM9BMlGaR61DPmsUMatu7aVJzbpi7Z/RO6GbliOgOscpBha8S
+         DnzFtV5phPRpPEJgf98WlMFKyzL6CdLykV3ZnkTgBAq3ZRb9M24771+6fglXYKmcEHuj
+         JwzMwrRMP1iOEu/PZF6XSo/nxjqLzdvmfaif9TGvKGR4YXIy2m1LIpokuAZvSHGS7C+s
+         olCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1763650367; x=1764255167;
+        h=content-transfer-encoding:mime-version:date:message-id:subject
+         :references:in-reply-to:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=mIp1emodWmrQX+c6TjoXmEBGWcecINECr9nK+dGHBUw=;
+        b=qmR+NiKpQdL2F8Z2FUEGmqxMxk3yjP1i8sVc6NvAW6OzRtgxaXNA37JOPzubEuJBKy
+         0ctIifcl+dWneo4zbwDkYCxV6r2mA600NzVu+FrQvLL1J1CPwwJHD3UTaibG23nR5+SW
+         gizcD1SlPt3EtzWb/cSEyLeINThdlSmqQF72oFpUAdpjOh4MUcfGj6qhdCUbmbzOfd4S
+         lN5Jc1Xp5ysb6iXyh9SApNbCWfrOFFcKrKCfoKVCqsVlLyNcPjp6JEqGCVy9/Kl/5/Pq
+         EzAoKfQspPSKA0wVbKsupeBrxF364UGDu0kwGRHVTvRGsY0yXoaYn6+U2D3YT8nvNdAl
+         krZA==
+X-Forwarded-Encrypted: i=1; AJvYcCW5Mp6SLvG3SLTQ1nmaDt3kmsliVJKytmdTVsLdko+dPD4voUPoMNIYWhEgolJ1LLItz6pTvEbNoNd5Zeo=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxziY0NCAUyuUOctkMNeZ4Q0PMpteGiTUzKsKVE3dWjUp24f6O4
+	R3+Bwr8Xjnb93JXgGwkWOn5+/V/yWvI6KKM1ZRe2EwA8fh5DuVURjknoHaznAwz8UdY=
+X-Gm-Gg: ASbGnct15bWNeU1EWY2dbgaSKBK2ykF4aqh0eesVUfEgD30tI9gHuMm4sKry0QwEAmQ
+	7Cb/tHvKVNO97dQJaeoqQ+HYLWUtFkx4WunMD1BYE6cJPrDmpktQ1PcNVg1urmF4OhBEvqt4AyM
+	bhVHyYPGjFMVpQD4lSxLdD/U6kcsdvPfnE8EpKCcXY7AwTWGpyKtWA63C978ENhoYIS2oED+Kl9
+	lUcVvFr8VrO7zquAS45zDNx53a1/70PiQGgwNCuGK0l20+wDoAUaTL7aNi8VY3gdAxh4MvNi67K
+	HHjYMNyXC9bdlUGuc3LfoV+n5SA2HSfw1yICfdSQvvlLtCC6OTdbfqQpj05dudUhNLEzUtafOWR
+	HtrWKAWLptfwUpJBVIkhIE7el2d6MO9hSF2dIfIBB4kPYq5WKu1nAvKnzQH8UP7XnLSySAU8iay
+	vHOQ==
+X-Google-Smtp-Source: AGHT+IEmRlVKCe07qbgo1t2w3uFpBKsqx62crTftDC+8sZ0oUBIrcGL53VTRakva//fmnWvcfQrQww==
+X-Received: by 2002:a05:6e02:1c01:b0:433:1d5a:5157 with SMTP id e9e14a558f8ab-435aa88e822mr21434775ab.6.1763650367018;
+        Thu, 20 Nov 2025 06:52:47 -0800 (PST)
+Received: from [127.0.0.1] ([96.43.243.2])
+        by smtp.gmail.com with ESMTPSA id 8926c6da1cb9f-5b954b207d7sm1008611173.33.2025.11.20.06.52.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Nov 2025 06:52:46 -0800 (PST)
+From: Jens Axboe <axboe@kernel.dk>
+To: linux-kernel@vger.kernel.org, david.laight.linux@gmail.com
+Cc: Alan Stern <stern@rowland.harvard.edu>, 
+ Alexander Viro <viro@zeniv.linux.org.uk>, 
+ Alexei Starovoitov <ast@kernel.org>, Andi Shyti <andi.shyti@kernel.org>, 
+ Andreas Dilger <adilger.kernel@dilger.ca>, Andrew Lunn <andrew@lunn.ch>, 
+ Andrew Morton <akpm@linux-foundation.org>, 
+ Andrii Nakryiko <andrii@kernel.org>, 
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+ Ard Biesheuvel <ardb@kernel.org>, 
+ Arnaldo Carvalho de Melo <acme@kernel.org>, 
+ Bjorn Helgaas <bhelgaas@google.com>, Borislav Petkov <bp@alien8.de>, 
+ Christian Brauner <brauner@kernel.org>, 
+ =?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
+ Christoph Hellwig <hch@lst.de>, Daniel Borkmann <daniel@iogearbox.net>, 
+ Dan Williams <dan.j.williams@intel.com>, 
+ Dave Hansen <dave.hansen@linux.intel.com>, 
+ Dave Jiang <dave.jiang@intel.com>, David Ahern <dsahern@kernel.org>, 
+ Davidlohr Bueso <dave@stgolabs.net>, 
+ "David S. Miller" <davem@davemloft.net>, Dennis Zhou <dennis@kernel.org>, 
+ Eric Dumazet <edumazet@google.com>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Herbert Xu <herbert@gondor.apana.org.au>, Ingo Molnar <mingo@redhat.com>, 
+ Jakub Kicinski <kuba@kernel.org>, Jakub Sitnicki <jakub@cloudflare.com>, 
+ "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, 
+ Jarkko Sakkinen <jarkko@kernel.org>, "Jason A. Donenfeld" <Jason@zx2c4.com>, 
+ Jiri Slaby <jirislaby@kernel.org>, Johannes Weiner <hannes@cmpxchg.org>, 
+ John Allen <john.allen@amd.com>, 
+ Jonathan Cameron <jonathan.cameron@huawei.com>, 
+ Juergen Gross <jgross@suse.com>, Kees Cook <kees@kernel.org>, 
+ KP Singh <kpsingh@kernel.org>, Linus Walleij <linus.walleij@linaro.org>, 
+ "Martin K. Petersen" <martin.petersen@oracle.com>, 
+ "Matthew Wilcox (Oracle)" <willy@infradead.org>, 
+ Mika Westerberg <westeri@kernel.org>, Mike Rapoport <rppt@kernel.org>, 
+ Miklos Szeredi <miklos@szeredi.hu>, Namhyung Kim <namhyung@kernel.org>, 
+ Neal Cardwell <ncardwell@google.com>, nic_swsd@realtek.com, 
+ OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>, 
+ Olivia Mackall <olivia@selenic.com>, Paolo Abeni <pabeni@redhat.com>, 
+ Paolo Bonzini <pbonzini@redhat.com>, Peter Huewe <peterhuewe@gmx.de>, 
+ Peter Zijlstra <peterz@infradead.org>, 
+ "Rafael J. Wysocki" <rafael@kernel.org>, 
+ Sean Christopherson <seanjc@google.com>, 
+ Srinivas Kandagatla <srini@kernel.org>, 
+ Stefano Stabellini <sstabellini@kernel.org>, 
+ Steven Rostedt <rostedt@goodmis.org>, Tejun Heo <tj@kernel.org>, 
+ Theodore Ts'o <tytso@mit.edu>, Thomas Gleixner <tglx@linutronix.de>, 
+ Tom Lendacky <thomas.lendacky@amd.com>, 
+ Willem de Bruijn <willemdebruijn.kernel@gmail.com>, x86@kernel.org, 
+ Yury Norov <yury.norov@gmail.com>, amd-gfx@lists.freedesktop.org, 
+ bpf@vger.kernel.org, cgroups@vger.kernel.org, 
+ dri-devel@lists.freedesktop.org, io-uring@vger.kernel.org, 
+ kvm@vger.kernel.org, linux-acpi@vger.kernel.org, 
+ linux-block@vger.kernel.org, linux-crypto@vger.kernel.org, 
+ linux-cxl@vger.kernel.org, linux-efi@vger.kernel.org, 
+ linux-ext4@vger.kernel.org, linux-fsdevel@vger.kernel.org, 
+ linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org, 
+ linux-integrity@vger.kernel.org, linux-mm@kvack.org, 
+ linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org, 
+ linux-perf-users@vger.kernel.org, linux-scsi@vger.kernel.org, 
+ linux-serial@vger.kernel.org, linux-trace-kernel@vger.kernel.org, 
+ linux-usb@vger.kernel.org, mptcp@lists.linux.dev, netdev@vger.kernel.org, 
+ usb-storage@lists.one-eyed-alien.net, David Hildenbrand <david@kernel.org>
+In-Reply-To: <20251119224140.8616-1-david.laight.linux@gmail.com>
+References: <20251119224140.8616-1-david.laight.linux@gmail.com>
+Subject: Re: (subset) [PATCH 00/44] Change a lot of min_t() that might mask
+ high bits
+Message-Id: <176365036384.566630.2992984118137417732.b4-ty@kernel.dk>
+Date: Thu, 20 Nov 2025 07:52:43 -0700
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: RFC: Serial port DTR/RTS - O_<something>
-Content-Language: en-US
-To: "H. Peter Anvin" <hpa@zytor.com>, "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc: Greg KH <gregkh@linuxfoundation.org>, Theodore Ts'o <tytso@mit.edu>,
- Maarten Brock <Maarten.Brock@sttls.nl>,
- "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
- "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
- LKML <linux-kernel@vger.kernel.org>
-References: <ADB50E23-DC8B-43D0-A345-E10396A3DFD4@zytor.com>
- <AMBPR05MB11925DA076098B05E418BF64283CEA@AMBPR05MB11925.eurprd05.prod.outlook.com>
- <20251110201933.GH2988753@mit.edu>
- <0F8021E8-F288-4669-8195-9948844E36FD@zytor.com>
- <20251111035143.GJ2988753@mit.edu>
- <D4AF3E24-8698-4EEC-9D52-655D69897111@zytor.com>
- <2025111214-doily-anyway-b24b@gregkh>
- <6DBB5931-ACD4-4174-9FCE-96C45FFC4603@zytor.com>
- <2025111241-domestic-moonstone-f75f@gregkh>
- <DD67C0CF-D330-4D40-B610-FD3EB7AA0218@zytor.com>
- <2025111227-equipment-magnetism-1443@gregkh>
- <14b1bc5c-83ac-431f-a53b-14872024b969@zytor.com>
- <alpine.DEB.2.21.2511141836130.47194@angie.orcam.me.uk>
- <B72D6F71-7C0B-4C5A-8866-25D7946E0932@zytor.com>
- <6c26eea2-6f90-f48a-9488-e7480f086c70@netscape.net>
- <2846db90-fb05-41d2-b8de-c678af75a04b@zytor.com>
- <06279d25-73d6-01f5-dcf8-8667415048d2@netscape.net>
- <f643f1f6-7e69-4be6-ac8a-7b1a3a9c402d@zytor.com>
-From: Ned Ulbricht <nedu@netscape.net>
-In-Reply-To: <f643f1f6-7e69-4be6-ac8a-7b1a3a9c402d@zytor.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Mailer: WebService/1.1.24652 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.aol
-
-On 11/18/25 10:05, H. Peter Anvin wrote:
-
->> "(O_EXCL|O_NOFOLLOW)" provokes a thought...
->>
->> As essential context, fs/open.c build_open_flags() has:
->>
->> if (flags & O_CREAT) {
->>      op->intent |= LOOKUP_CREATE;
->>      if (flags & O_EXCL) {
->>          op->intent |= LOOKUP_EXCL;
->>          flags |= O_NOFOLLOW;
->>      }
->> }
-
-[snip]
-
-> I had missed the bit in the spec that says that O_CREAT|O_EXCL is required to
-> imply O_NOFOLLOW (as Linux indeed does as seen above.)
-
-Fwiw, earlier today I had an ultimately unsuccessful series of searches
-using the Austin Group Issue tracker at:
-
-https://austingroupbugs.net/view_all_bug_page.php
-
-Searched (serially): "O_EXCL", "O_NOFOLLOW", "EEXIST", "ELOOP"; all with
-no other filter refinements.  Then searched filtering by 'Section'
-(multiple adjacent selections): 'open' .. 'openat'. In all results,
-simply eyeball-scanned 'Summary' (w/o opening most).
-
-Apparent upshot, unless I'm mistaken, is that the exact error return is
-a trivial conflict with no appreciable impact on higher levels.
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Mailer: b4 0.14.3
 
 
-In roughly same vein, FreeBSD open(2) man page, specifically at
-"[EMLINK]" and "STANDARDS", might possibly be stretched to read as
-implicitly encouraging that assessment.
+On Wed, 19 Nov 2025 22:40:56 +0000, david.laight.linux@gmail.com wrote:
+> It in not uncommon for code to use min_t(uint, a, b) when one of a or b
+> is 64bit and can have a value that is larger than 2^32;
+> This is particularly prevelant with:
+> 	uint_var = min_t(uint, uint_var, uint64_expression);
+> 
+> Casts to u8 and u16 are very likely to discard significant bits.
+> 
+> [...]
 
-https://man.freebsd.org/cgi/man.cgi?query=open&manpath=FreeBSD+16.0-CURRENT
+Applied, thanks!
 
-Alhough I don't have a FreeBSD box available to actually test
-(O_CREAT|O_EXCL|O_NOFOLLOW) symlink behavior on that platform.  (Maybe
-that combo's wired to detonate tnt nasal daemons? Dunno;-)
+[12/44] block: use min() instead of min_t()
+        commit: 9420e720ad192c53c8d2803c5a2313b2d586adbd
 
-
-Unfortunately, this does prompt a close re-scrutinization of linux's
-open(2) man page. Notwithstanding the damn spec, the linux man page
-should precisely and accurately reflect the observed error return?
+Best regards,
+-- 
+Jens Axboe
 
 
-Ned
+
