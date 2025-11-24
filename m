@@ -1,111 +1,60 @@
-Received: from abb.hmeau.com (abb.hmeau.com [180.181.231.80])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C901424B28;
-	Mon, 24 Nov 2025 09:54:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=180.181.231.80
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36823270ED7
+	for <linux-serial@vger.kernel.org>; Mon, 24 Nov 2025 10:26:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763978079; cv=none; b=OrhBTwl6BMqS8pYcfarqR9HGAhSeI26vREWeXj7sBtD3362M7aMbqTWKdvA+MacwqTfvv60xSfYJrLX5R7ZY13HB4AG4msj+1X0S9R+Z/MP740gcweSDj6N1kvAhRDqqwqzdmvUcPjbfzOSF6WcoccepgvIZ1DE8k4B1kYcckKQ=
+	t=1763979964; cv=none; b=KBwy70getEuerBxbyzAXdVKbhjhvYXytgXZw8pPdJ2L+2+JMisREEYsCy+qJoVbevAnujPlmkU4etNogO3fOTTQOi6ZGYUcqmcT9X6ONHaC9ot734O97+VOccEmZvznWZVTkUpAdncpO8/1C/87bsEasMEpQpgAD2600J2Lcsu0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763978079; c=relaxed/simple;
-	bh=zgUegguLz9fnh3Kc5FyiFvVdDbDa4+bOp5Www3PDcuc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ctY5ec1pVMPgAQziivIuyNMUNBBzBLjHqXG57D/iuzXjRNcJdrcJjU9kdacC12pvOLum/X7GMW/2XgVUnWfvsJJolpF2qFqE3iXEuv3DrL1T+h/W/fWPLtntbF/kEBoAZhmjDER1oIdcu/C7H+zIkeFDv76zc8PF6r9/vuR0yyU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gondor.apana.org.au; spf=pass smtp.mailfrom=gondor.apana.org.au; dkim=pass (2048-bit key) header.d=gondor.apana.org.au header.i=@gondor.apana.org.au header.b=P87gnIuA; arc=none smtp.client-ip=180.181.231.80
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gondor.apana.org.au
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gondor.apana.org.au
+	s=arc-20240116; t=1763979964; c=relaxed/simple;
+	bh=Wcgqb/bStxt0QivTfmpKbkj5LmEvovo7f5/zQ1a5Fws=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=K0FdfSl6AmvEiBCZi5SqTeWAjUTXTh6nLLH4GiBK9EM5BnJJ01chQpSoxgSL3sCq7fsc7UcPVYVZ8Gzyp48hgHy4f0H4b/vKxDPXJ/067Zq7IURd/38UMcIqS2B7PxU2CPtjJ2+Yt6Zpwl8+dNGTOl9oPF5KH5PEGEk5nMI9ews=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EZb70UfH; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gondor.apana.org.au header.i=@gondor.apana.org.au header.b="P87gnIuA"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=gondor.apana.org.au; s=h01; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:cc:to:subject:message-id:date:
-	from:content-type:reply-to; bh=B05uJapQfRMGohKkgF1xNVyERBHmagh8Bd3xg1q2NeI=; 
-	b=P87gnIuANW/TJp73uiT1mmsGlTWnBuH0H7vh23lNqSWq4OBDSGmsQEtkmAFMHotC7U4wL6z8BsM
-	xZhrA2DnJ6Byz1eNq9hCgsl0YlQqjChTspvActJHQABJusXSSyN3NViM7BAWMow9uYLi6/azgr/1S
-	bPNPkqeI4K++8lXngyxVPKygWdoefLDaHUV8R9vP4h+Voyby/LgDfyG/U2ZiZD9XFH7HpGmBTtoYh
-	gxxkqEEHWY1my7y2fTHFr9TydDJrVMgiVb3KBgJmEGPf57jfBn092eZeVh0rkWj5FfVDm/r5gwJdx
-	bl004005PGTqWH4a9OI+Nq6nG2BqQ4oMU7WA==;
-Received: from loth.rohan.me.apana.org.au ([192.168.167.2])
-	by formenos.hmeau.com with smtp (Exim 4.96 #2 (Debian))
-	id 1vNTCh-005XNj-0w;
-	Mon, 24 Nov 2025 17:49:52 +0800
-Received: by loth.rohan.me.apana.org.au (sSMTP sendmail emulation); Mon, 24 Nov 2025 17:49:51 +0800
-Date: Mon, 24 Nov 2025 17:49:51 +0800
-From: Herbert Xu <herbert@gondor.apana.org.au>
-To: david.laight.linux@gmail.com
-Cc: linux-kernel@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-	Alexander Viro <viro@zeniv.linux.org.uk>,
-	Alexei Starovoitov <ast@kernel.org>,
-	Andi Shyti <andi.shyti@kernel.org>,
-	Andreas Dilger <adilger.kernel@dilger.ca>,
-	Andrew Lunn <andrew@lunn.ch>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Andrii Nakryiko <andrii@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Ard Biesheuvel <ardb@kernel.org>,
-	Arnaldo Carvalho de Melo <acme@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>, Borislav Petkov <bp@alien8.de>,
-	Christian Brauner <brauner@kernel.org>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	Christoph Hellwig <hch@lst.de>,
-	Daniel Borkmann <daniel@iogearbox.net>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	Dave Jiang <dave.jiang@intel.com>, David Ahern <dsahern@kernel.org>,
-	David Hildenbrand <david@redhat.com>,
-	Davidlohr Bueso <dave@stgolabs.net>,
-	"David S. Miller" <davem@davemloft.net>,
-	Dennis Zhou <dennis@kernel.org>, Eric Dumazet <edumazet@google.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Ingo Molnar <mingo@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
-	Jakub Sitnicki <jakub@cloudflare.com>,
-	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-	Jarkko Sakkinen <jarkko@kernel.org>,
-	"Jason A. Donenfeld" <Jason@zx2c4.com>,
-	Jens Axboe <axboe@kernel.dk>, Jiri Slaby <jirislaby@kernel.org>,
-	Johannes Weiner <hannes@cmpxchg.org>,
-	John Allen <john.allen@amd.com>,
-	Jonathan Cameron <jonathan.cameron@huawei.com>,
-	Juergen Gross <jgross@suse.com>, Kees Cook <kees@kernel.org>,
-	KP Singh <kpsingh@kernel.org>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	"Martin K. Petersen" <martin.petersen@oracle.com>,
-	"Matthew Wilcox (Oracle)" <willy@infradead.org>,
-	Mika Westerberg <westeri@kernel.org>,
-	Mike Rapoport <rppt@kernel.org>, Miklos Szeredi <miklos@szeredi.hu>,
-	Namhyung Kim <namhyung@kernel.org>,
-	Neal Cardwell <ncardwell@google.com>, nic_swsd@realtek.com,
-	OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
-	Olivia Mackall <olivia@selenic.com>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Paolo Bonzini <pbonzini@redhat.com>,
-	Peter Huewe <peterhuewe@gmx.de>,
-	Peter Zijlstra <peterz@infradead.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Sean Christopherson <seanjc@google.com>,
-	Srinivas Kandagatla <srini@kernel.org>,
-	Stefano Stabellini <sstabellini@kernel.org>,
-	Steven Rostedt <rostedt@goodmis.org>, Tejun Heo <tj@kernel.org>,
-	Theodore Ts'o <tytso@mit.edu>, Thomas Gleixner <tglx@linutronix.de>,
-	Tom Lendacky <thomas.lendacky@amd.com>,
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>, x86@kernel.org,
-	Yury Norov <yury.norov@gmail.com>, amd-gfx@lists.freedesktop.org,
-	bpf@vger.kernel.org, cgroups@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, io-uring@vger.kernel.org,
-	kvm@vger.kernel.org, linux-acpi@vger.kernel.org,
-	linux-block@vger.kernel.org, linux-crypto@vger.kernel.org,
-	linux-cxl@vger.kernel.org, linux-efi@vger.kernel.org,
-	linux-ext4@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-	linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org,
-	linux-integrity@vger.kernel.org, linux-mm@kvack.org,
-	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
-	linux-perf-users@vger.kernel.org, linux-scsi@vger.kernel.org,
-	linux-serial@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
-	linux-usb@vger.kernel.org, mptcp@lists.linux.dev,
-	netdev@vger.kernel.org, usb-storage@lists.one-eyed-alien.net
-Subject: Re: [PATCH 00/44] Change a lot of min_t() that might mask high bits
-Message-ID: <aSQqP6nlqGYOGqcJ@gondor.apana.org.au>
-References: <20251119224140.8616-1-david.laight.linux@gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EZb70UfH"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1763979962; x=1795515962;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Wcgqb/bStxt0QivTfmpKbkj5LmEvovo7f5/zQ1a5Fws=;
+  b=EZb70UfHsqEV37EUO7MLVrXRYCjaGKTyK/64oHPjixpQkC6pPG4zGRfS
+   3vpZBEpOBd9Vt/MKRGhfrkn21kcKhP7DawUMVdbhGXW0l08hX09cEUMRL
+   PJ7e120J1pVsRsejG2TsLqtIz6zlbnSPJkA3Uttzh/fKsO2cry1+7K9i0
+   8g0S+DKznYjGT28pyO57P/0/hP1w/oB4vDmVArKOvAwyDbDEOnlozWgWq
+   6dYzQdgTXrKYFKUsvg15iRSlqvcjnhl58oyH3ZaxoIfhVLPPRFWwmiOTl
+   0/Z1tFt8zipGQXJuMcVn4WCH6CU8cpMsnN5vg69e7uFxGQISnS7Zjo3YR
+   w==;
+X-CSE-ConnectionGUID: H858GaSwQtyikA8I1FRVQw==
+X-CSE-MsgGUID: eBuJMMjBS/itSWW3d1PHpQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11622"; a="91461576"
+X-IronPort-AV: E=Sophos;i="6.20,222,1758610800"; 
+   d="scan'208";a="91461576"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2025 02:26:01 -0800
+X-CSE-ConnectionGUID: OUPtAsvWR7+4XxFqAluNyA==
+X-CSE-MsgGUID: Va3ykgHoR7O0p+sequb97w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.20,222,1758610800"; 
+   d="scan'208";a="229579446"
+Received: from lkp-server01.sh.intel.com (HELO 4664bbef4914) ([10.239.97.150])
+  by orviesa001.jf.intel.com with ESMTP; 24 Nov 2025 02:26:00 -0800
+Received: from kbuild by 4664bbef4914 with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1vNTld-000000000bf-1mAG;
+	Mon, 24 Nov 2025 10:25:57 +0000
+Date: Mon, 24 Nov 2025 18:25:26 +0800
+From: kernel test robot <lkp@intel.com>
+To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	linux-serial@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [tty:tty-next 27/37] drivers/tty/vt/keyboard.c:1712:7: error: cannot
+ jump from this asm goto statement to one of its possible targets
+Message-ID: <202511241835.EA8lShgH-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -114,180 +63,235 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20251119224140.8616-1-david.laight.linux@gmail.com>
 
-On Wed, Nov 19, 2025 at 10:40:56PM +0000, david.laight.linux@gmail.com wrote:
-> From: David Laight <david.laight.linux@gmail.com>
-> 
-> It in not uncommon for code to use min_t(uint, a, b) when one of a or b
-> is 64bit and can have a value that is larger than 2^32;
-> This is particularly prevelant with:
-> 	uint_var = min_t(uint, uint_var, uint64_expression);
-> 
-> Casts to u8 and u16 are very likely to discard significant bits.
-> 
-> These can be detected at compile time by changing min_t(), for example:
-> #define CHECK_SIZE(fn, type, val) \
-> 	BUILD_BUG_ON_MSG(sizeof (val) > sizeof (type) && \
-> 		!statically_true(((val) >> 8 * (sizeof (type) - 1)) < 256), \
-> 		fn "() significant bits of '" #val "' may be discarded")
-> 
-> #define min_t(type, x, y) ({ \
-> 	CHECK_SIZE("min_t", type, x); \
-> 	CHECK_SIZE("min_t", type, y); \
-> 	__cmp_once(min, type, x, y); })
-> 
-> (and similar changes to max_t() and clamp_t().)
-> 
-> This shows up some real bugs, some unlikely bugs and some false positives.
-> In most cases both arguments are unsigned type (just different ones)
-> and min_t() can just be replaced by min().
-> 
-> The patches are all independant and are most of the ones needed to
-> get the x86-64 kernel I build to compile.
-> I've not tried building an allyesconfig or allmodconfig kernel.
-> I've also not included the patch to minmax.h itself.
-> 
-> I've tried to put the patches that actually fix things first.
-> The last one is 0009.
-> 
-> I gave up on fixing sched/fair.c - it is too broken for a single patch!
-> The patch for net/ipv4/tcp.c is also absent because do_tcp_getsockopt()
-> needs multiple/larger changes to make it 'sane'.
-> 
-> I've had to trim the 124 maintainers/lists that get_maintainer.pl finds
-> from 124 to under 100 to be able to send the cover letter.
-> The individual patches only go to the addresses found for the associated files.
-> That reduces the number of emails to a less unsane number.
-> 
-> David Laight (44):
->   x86/asm/bitops: Change the return type of variable__ffs() to unsigned
->     int
->   ext4: Fix saturation of 64bit inode times for old filesystems
->   perf: Fix branch stack callchain limit
->   io_uring/net: Change some dubious min_t()
->   ipc/msg: Fix saturation of percpu counts in msgctl_info()
->   bpf: Verifier, remove some unusual uses of min_t() and max_t()
->   net/core/flow_dissector: Fix cap of __skb_flow_dissect() return value.
->   net: ethtool: Use min3() instead of nested min_t(u16,...)
->   ipv6: __ip6_append_data() don't abuse max_t() casts
->   x86/crypto: ctr_crypt() use min() instead of min_t()
->   arch/x96/kvm: use min() instead of min_t()
->   block: use min() instead of min_t()
->   drivers/acpi: use min() instead of min_t()
->   drivers/char/hw_random: use min3() instead of nested min_t()
->   drivers/char/tpm: use min() instead of min_t()
->   drivers/crypto/ccp: use min() instead of min_t()
->   drivers/cxl: use min() instead of min_t()
->   drivers/gpio: use min() instead of min_t()
->   drivers/gpu/drm/amd: use min() instead of min_t()
->   drivers/i2c/busses: use min() instead of min_t()
->   drivers/net/ethernet/realtek: use min() instead of min_t()
->   drivers/nvme: use min() instead of min_t()
->   arch/x86/mm: use min() instead of min_t()
->   drivers/nvmem: use min() instead of min_t()
->   drivers/pci: use min() instead of min_t()
->   drivers/scsi: use min() instead of min_t()
->   drivers/tty/vt: use umin() instead of min_t(u16, ...) for row/col
->     limits
->   drivers/usb/storage: use min() instead of min_t()
->   drivers/xen: use min() instead of min_t()
->   fs: use min() or umin() instead of min_t()
->   block: bvec.h: use min() instead of min_t()
->   nodemask: use min() instead of min_t()
->   ipc: use min() instead of min_t()
->   bpf: use min() instead of min_t()
->   bpf_trace: use min() instead of min_t()
->   lib/bucket_locks: use min() instead of min_t()
->   lib/crypto/mpi: use min() instead of min_t()
->   lib/dynamic_queue_limits: use max() instead of max_t()
->   mm: use min() instead of min_t()
->   net: Don't pass bitfields to max_t()
->   net/core: Change loop conditions so min() can be used
->   net: use min() instead of min_t()
->   net/netlink: Use umin() to avoid min_t(int, ...) discarding high bits
->   net/mptcp: Change some dubious min_t(int, ...) to min()
-> 
->  arch/x86/crypto/aesni-intel_glue.c            |  3 +-
->  arch/x86/include/asm/bitops.h                 | 18 +++++-------
->  arch/x86/kvm/emulate.c                        |  3 +-
->  arch/x86/kvm/lapic.c                          |  2 +-
->  arch/x86/kvm/mmu/mmu.c                        |  2 +-
->  arch/x86/mm/pat/set_memory.c                  | 12 ++++----
->  block/blk-iocost.c                            |  6 ++--
->  block/blk-settings.c                          |  2 +-
->  block/partitions/efi.c                        |  3 +-
->  drivers/acpi/property.c                       |  2 +-
->  drivers/char/hw_random/core.c                 |  2 +-
->  drivers/char/tpm/tpm1-cmd.c                   |  2 +-
->  drivers/char/tpm/tpm_tis_core.c               |  4 +--
->  drivers/crypto/ccp/ccp-dev.c                  |  2 +-
->  drivers/cxl/core/mbox.c                       |  2 +-
->  drivers/gpio/gpiolib-acpi-core.c              |  2 +-
->  .../gpu/drm/amd/amdgpu/amdgpu_doorbell_mgr.c  |  4 +--
->  drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c        |  2 +-
->  .../gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |  2 +-
->  drivers/i2c/busses/i2c-designware-master.c    |  2 +-
->  drivers/net/ethernet/realtek/r8169_main.c     |  3 +-
->  drivers/nvme/host/pci.c                       |  3 +-
->  drivers/nvme/host/zns.c                       |  3 +-
->  drivers/nvmem/core.c                          |  2 +-
->  drivers/pci/probe.c                           |  3 +-
->  drivers/scsi/hosts.c                          |  2 +-
->  drivers/tty/vt/selection.c                    |  9 +++---
->  drivers/usb/storage/protocol.c                |  3 +-
->  drivers/xen/grant-table.c                     |  2 +-
->  fs/buffer.c                                   |  2 +-
->  fs/exec.c                                     |  2 +-
->  fs/ext4/ext4.h                                |  2 +-
->  fs/ext4/mballoc.c                             |  3 +-
->  fs/ext4/resize.c                              |  2 +-
->  fs/ext4/super.c                               |  2 +-
->  fs/fat/dir.c                                  |  4 +--
->  fs/fat/file.c                                 |  3 +-
->  fs/fuse/dev.c                                 |  2 +-
->  fs/fuse/file.c                                |  8 ++---
->  fs/splice.c                                   |  2 +-
->  include/linux/bvec.h                          |  3 +-
->  include/linux/nodemask.h                      |  9 +++---
->  include/linux/perf_event.h                    |  2 +-
->  include/net/tcp_ecn.h                         |  5 ++--
->  io_uring/net.c                                |  6 ++--
->  ipc/mqueue.c                                  |  4 +--
->  ipc/msg.c                                     |  6 ++--
->  kernel/bpf/core.c                             |  4 +--
->  kernel/bpf/log.c                              |  2 +-
->  kernel/bpf/verifier.c                         | 29 +++++++------------
->  kernel/trace/bpf_trace.c                      |  2 +-
->  lib/bucket_locks.c                            |  2 +-
->  lib/crypto/mpi/mpicoder.c                     |  2 +-
->  lib/dynamic_queue_limits.c                    |  2 +-
->  mm/gup.c                                      |  4 +--
->  mm/memblock.c                                 |  2 +-
->  mm/memory.c                                   |  2 +-
->  mm/percpu.c                                   |  2 +-
->  mm/truncate.c                                 |  3 +-
->  mm/vmscan.c                                   |  2 +-
->  net/core/datagram.c                           |  6 ++--
->  net/core/flow_dissector.c                     |  7 ++---
->  net/core/net-sysfs.c                          |  3 +-
->  net/core/skmsg.c                              |  4 +--
->  net/ethtool/cmis_cdb.c                        |  7 ++---
->  net/ipv4/fib_trie.c                           |  2 +-
->  net/ipv4/tcp_input.c                          |  4 +--
->  net/ipv4/tcp_output.c                         |  5 ++--
->  net/ipv4/tcp_timer.c                          |  4 +--
->  net/ipv6/addrconf.c                           |  8 ++---
->  net/ipv6/ip6_output.c                         |  7 +++--
->  net/ipv6/ndisc.c                              |  5 ++--
->  net/mptcp/protocol.c                          |  8 ++---
->  net/netlink/genetlink.c                       |  9 +++---
->  net/packet/af_packet.c                        |  2 +-
->  net/unix/af_unix.c                            |  4 +--
->  76 files changed, 141 insertions(+), 176 deletions(-)
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-next
+head:   da218406dd50e0ac96bb383de4edd208286efe70
+commit: bfb24564b5fd8625ce5c007f274cabdc3b570969 [27/37] tty: vt/keyboard: use __free()
+config: powerpc-randconfig-002-20251124 (https://download.01.org/0day-ci/archive/20251124/202511241835.EA8lShgH-lkp@intel.com/config)
+compiler: clang version 16.0.6 (https://github.com/llvm/llvm-project 7cbf1a2591520c2491aa35339f227775f4d3adf6)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20251124/202511241835.EA8lShgH-lkp@intel.com/reproduce)
 
-Patches 10,14,16,37 applied.  Thanks.
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202511241835.EA8lShgH-lkp@intel.com/
+
+All errors (new ones prefixed by >>):
+
+>> drivers/tty/vt/keyboard.c:1712:7: error: cannot jump from this asm goto statement to one of its possible targets
+                   if (put_user(asize, &a->kb_cnt))
+                       ^
+   arch/powerpc/include/asm/uaccess.h:67:5: note: expanded from macro 'put_user'
+                     __put_user(x, _pu_addr) : -EFAULT;                    \
+                     ^
+   arch/powerpc/include/asm/uaccess.h:49:3: note: expanded from macro '__put_user'
+                   __put_user_size_goto(__pu_val, __pu_addr, __pu_size, __pu_failed);      \
+                   ^
+   arch/powerpc/include/asm/uaccess.h:127:10: note: expanded from macro '__put_user_size_goto'
+           case 1: __put_user_asm_goto(x, __pus_addr, label, "stb"); break;        \
+                   ^
+   arch/powerpc/include/asm/uaccess.h:87:2: note: expanded from macro '__put_user_asm_goto'
+           asm goto(                                       \
+           ^
+   drivers/tty/vt/keyboard.c:1736:7: note: possible target of asm goto statement
+                   if (put_user(asize, &a->kb_cnt))
+                       ^
+   arch/powerpc/include/asm/uaccess.h:67:5: note: expanded from macro 'put_user'
+                     __put_user(x, _pu_addr) : -EFAULT;                    \
+                     ^
+   arch/powerpc/include/asm/uaccess.h:53:9: note: expanded from macro '__put_user'
+                                                                   \
+                                                                   ^
+   drivers/tty/vt/keyboard.c:1692:33: note: jump exits scope of variable with __attribute__((cleanup))
+                   struct kbdiacr __free(kfree) *dia = kmalloc_array(MAX_DIACR, sizeof(struct kbdiacr),
+                                                 ^
+   drivers/tty/vt/keyboard.c:1722:23: note: jump bypasses initialization of variable with __attribute__((cleanup))
+                   void __free(kfree) *buf = kmalloc_array(MAX_DIACR, sizeof(struct kbdiacruc),
+                                       ^
+   drivers/tty/vt/keyboard.c:1736:7: error: cannot jump from this asm goto statement to one of its possible targets
+                   if (put_user(asize, &a->kb_cnt))
+                       ^
+   arch/powerpc/include/asm/uaccess.h:67:5: note: expanded from macro 'put_user'
+                     __put_user(x, _pu_addr) : -EFAULT;                    \
+                     ^
+   arch/powerpc/include/asm/uaccess.h:49:3: note: expanded from macro '__put_user'
+                   __put_user_size_goto(__pu_val, __pu_addr, __pu_size, __pu_failed);      \
+                   ^
+   arch/powerpc/include/asm/uaccess.h:127:10: note: expanded from macro '__put_user_size_goto'
+           case 1: __put_user_asm_goto(x, __pus_addr, label, "stb"); break;        \
+                   ^
+   arch/powerpc/include/asm/uaccess.h:87:2: note: expanded from macro '__put_user_asm_goto'
+           asm goto(                                       \
+           ^
+   drivers/tty/vt/keyboard.c:1712:7: note: possible target of asm goto statement
+                   if (put_user(asize, &a->kb_cnt))
+                       ^
+   arch/powerpc/include/asm/uaccess.h:67:5: note: expanded from macro 'put_user'
+                     __put_user(x, _pu_addr) : -EFAULT;                    \
+                     ^
+   arch/powerpc/include/asm/uaccess.h:53:9: note: expanded from macro '__put_user'
+                                                                   \
+                                                                   ^
+   drivers/tty/vt/keyboard.c:1722:23: note: jump exits scope of variable with __attribute__((cleanup))
+                   void __free(kfree) *buf = kmalloc_array(MAX_DIACR, sizeof(struct kbdiacruc),
+                                       ^
+   drivers/tty/vt/keyboard.c:1692:33: note: jump bypasses initialization of variable with __attribute__((cleanup))
+                   struct kbdiacr __free(kfree) *dia = kmalloc_array(MAX_DIACR, sizeof(struct kbdiacr),
+                                                 ^
+   2 errors generated.
+
+
+vim +1712 drivers/tty/vt/keyboard.c
+
+247ff8e610cb63 Alan Cox              2012-02-24  1671  
+247ff8e610cb63 Alan Cox              2012-02-24  1672  /**
+247ff8e610cb63 Alan Cox              2012-02-24  1673   *	vt_do_diacrit		-	diacritical table updates
+247ff8e610cb63 Alan Cox              2012-02-24  1674   *	@cmd: ioctl request
+9d329c1c68d2cc Mark Rustad           2014-09-05  1675   *	@udp: pointer to user data for ioctl
+247ff8e610cb63 Alan Cox              2012-02-24  1676   *	@perm: permissions check computed by caller
+247ff8e610cb63 Alan Cox              2012-02-24  1677   *
+247ff8e610cb63 Alan Cox              2012-02-24  1678   *	Update the diacritical tables atomically and safely. Lock them
+247ff8e610cb63 Alan Cox              2012-02-24  1679   *	against simultaneous keypresses
+247ff8e610cb63 Alan Cox              2012-02-24  1680   */
+9d329c1c68d2cc Mark Rustad           2014-09-05  1681  int vt_do_diacrit(unsigned int cmd, void __user *udp, int perm)
+247ff8e610cb63 Alan Cox              2012-02-24  1682  {
+247ff8e610cb63 Alan Cox              2012-02-24  1683  	unsigned long flags;
+247ff8e610cb63 Alan Cox              2012-02-24  1684  	int asize;
+247ff8e610cb63 Alan Cox              2012-02-24  1685  
+247ff8e610cb63 Alan Cox              2012-02-24  1686  	switch (cmd) {
+247ff8e610cb63 Alan Cox              2012-02-24  1687  	case KDGKBDIACR:
+247ff8e610cb63 Alan Cox              2012-02-24  1688  	{
+9d329c1c68d2cc Mark Rustad           2014-09-05  1689  		struct kbdiacrs __user *a = udp;
+247ff8e610cb63 Alan Cox              2012-02-24  1690  		int i;
+247ff8e610cb63 Alan Cox              2012-02-24  1691  
+bfb24564b5fd86 Jiri Slaby (SUSE      2025-11-19  1692) 		struct kbdiacr __free(kfree) *dia = kmalloc_array(MAX_DIACR, sizeof(struct kbdiacr),
+247ff8e610cb63 Alan Cox              2012-02-24  1693  								  GFP_KERNEL);
+9d329c1c68d2cc Mark Rustad           2014-09-05  1694  		if (!dia)
+247ff8e610cb63 Alan Cox              2012-02-24  1695  			return -ENOMEM;
+247ff8e610cb63 Alan Cox              2012-02-24  1696  
+247ff8e610cb63 Alan Cox              2012-02-24  1697  		/* Lock the diacriticals table, make a copy and then
+247ff8e610cb63 Alan Cox              2012-02-24  1698  		   copy it after we unlock */
+247ff8e610cb63 Alan Cox              2012-02-24  1699  		spin_lock_irqsave(&kbd_event_lock, flags);
+247ff8e610cb63 Alan Cox              2012-02-24  1700  
+247ff8e610cb63 Alan Cox              2012-02-24  1701  		asize = accent_table_size;
+247ff8e610cb63 Alan Cox              2012-02-24  1702  		for (i = 0; i < asize; i++) {
+9d329c1c68d2cc Mark Rustad           2014-09-05  1703  			dia[i].diacr = conv_uni_to_8bit(
+247ff8e610cb63 Alan Cox              2012-02-24  1704  						accent_table[i].diacr);
+9d329c1c68d2cc Mark Rustad           2014-09-05  1705  			dia[i].base = conv_uni_to_8bit(
+247ff8e610cb63 Alan Cox              2012-02-24  1706  						accent_table[i].base);
+9d329c1c68d2cc Mark Rustad           2014-09-05  1707  			dia[i].result = conv_uni_to_8bit(
+247ff8e610cb63 Alan Cox              2012-02-24  1708  						accent_table[i].result);
+247ff8e610cb63 Alan Cox              2012-02-24  1709  		}
+247ff8e610cb63 Alan Cox              2012-02-24  1710  		spin_unlock_irqrestore(&kbd_event_lock, flags);
+247ff8e610cb63 Alan Cox              2012-02-24  1711  
+247ff8e610cb63 Alan Cox              2012-02-24 @1712  		if (put_user(asize, &a->kb_cnt))
+bfb24564b5fd86 Jiri Slaby (SUSE      2025-11-19  1713) 			return -EFAULT;
+bfb24564b5fd86 Jiri Slaby (SUSE      2025-11-19  1714) 		if (copy_to_user(a->kbdiacr, dia, asize * sizeof(struct kbdiacr)))
+bfb24564b5fd86 Jiri Slaby (SUSE      2025-11-19  1715) 			return -EFAULT;
+bfb24564b5fd86 Jiri Slaby (SUSE      2025-11-19  1716) 		return 0;
+247ff8e610cb63 Alan Cox              2012-02-24  1717  	}
+247ff8e610cb63 Alan Cox              2012-02-24  1718  	case KDGKBDIACRUC:
+247ff8e610cb63 Alan Cox              2012-02-24  1719  	{
+9d329c1c68d2cc Mark Rustad           2014-09-05  1720  		struct kbdiacrsuc __user *a = udp;
+247ff8e610cb63 Alan Cox              2012-02-24  1721  
+bfb24564b5fd86 Jiri Slaby (SUSE      2025-11-19  1722) 		void __free(kfree) *buf = kmalloc_array(MAX_DIACR, sizeof(struct kbdiacruc),
+247ff8e610cb63 Alan Cox              2012-02-24  1723  							GFP_KERNEL);
+247ff8e610cb63 Alan Cox              2012-02-24  1724  		if (buf == NULL)
+247ff8e610cb63 Alan Cox              2012-02-24  1725  			return -ENOMEM;
+247ff8e610cb63 Alan Cox              2012-02-24  1726  
+247ff8e610cb63 Alan Cox              2012-02-24  1727  		/* Lock the diacriticals table, make a copy and then
+247ff8e610cb63 Alan Cox              2012-02-24  1728  		   copy it after we unlock */
+247ff8e610cb63 Alan Cox              2012-02-24  1729  		spin_lock_irqsave(&kbd_event_lock, flags);
+247ff8e610cb63 Alan Cox              2012-02-24  1730  
+247ff8e610cb63 Alan Cox              2012-02-24  1731  		asize = accent_table_size;
+247ff8e610cb63 Alan Cox              2012-02-24  1732  		memcpy(buf, accent_table, asize * sizeof(struct kbdiacruc));
+247ff8e610cb63 Alan Cox              2012-02-24  1733  
+247ff8e610cb63 Alan Cox              2012-02-24  1734  		spin_unlock_irqrestore(&kbd_event_lock, flags);
+247ff8e610cb63 Alan Cox              2012-02-24  1735  
+247ff8e610cb63 Alan Cox              2012-02-24  1736  		if (put_user(asize, &a->kb_cnt))
+bfb24564b5fd86 Jiri Slaby (SUSE      2025-11-19  1737) 			return -EFAULT;
+bfb24564b5fd86 Jiri Slaby (SUSE      2025-11-19  1738) 		if (copy_to_user(a->kbdiacruc, buf, asize * sizeof(struct kbdiacruc)))
+bfb24564b5fd86 Jiri Slaby (SUSE      2025-11-19  1739) 			return -EFAULT;
+bfb24564b5fd86 Jiri Slaby (SUSE      2025-11-19  1740) 
+bfb24564b5fd86 Jiri Slaby (SUSE      2025-11-19  1741) 		return 0;
+247ff8e610cb63 Alan Cox              2012-02-24  1742  	}
+247ff8e610cb63 Alan Cox              2012-02-24  1743  
+247ff8e610cb63 Alan Cox              2012-02-24  1744  	case KDSKBDIACR:
+247ff8e610cb63 Alan Cox              2012-02-24  1745  	{
+9d329c1c68d2cc Mark Rustad           2014-09-05  1746  		struct kbdiacrs __user *a = udp;
+bfb24564b5fd86 Jiri Slaby (SUSE      2025-11-19  1747) 		struct kbdiacr __free(kfree) *dia = NULL;
+247ff8e610cb63 Alan Cox              2012-02-24  1748  		unsigned int ct;
+247ff8e610cb63 Alan Cox              2012-02-24  1749  		int i;
+247ff8e610cb63 Alan Cox              2012-02-24  1750  
+247ff8e610cb63 Alan Cox              2012-02-24  1751  		if (!perm)
+247ff8e610cb63 Alan Cox              2012-02-24  1752  			return -EPERM;
+247ff8e610cb63 Alan Cox              2012-02-24  1753  		if (get_user(ct, &a->kb_cnt))
+247ff8e610cb63 Alan Cox              2012-02-24  1754  			return -EFAULT;
+247ff8e610cb63 Alan Cox              2012-02-24  1755  		if (ct >= MAX_DIACR)
+247ff8e610cb63 Alan Cox              2012-02-24  1756  			return -EINVAL;
+247ff8e610cb63 Alan Cox              2012-02-24  1757  
+247ff8e610cb63 Alan Cox              2012-02-24  1758  		if (ct) {
+e651faa2fba4d3 Philipp Stanner       2023-11-03  1759  			dia = memdup_array_user(a->kbdiacr,
+e651faa2fba4d3 Philipp Stanner       2023-11-03  1760  						ct, sizeof(struct kbdiacr));
+1051937d465665 Saurabh Sengar        2015-10-28  1761  			if (IS_ERR(dia))
+1051937d465665 Saurabh Sengar        2015-10-28  1762  				return PTR_ERR(dia);
+247ff8e610cb63 Alan Cox              2012-02-24  1763  		}
+247ff8e610cb63 Alan Cox              2012-02-24  1764  
+247ff8e610cb63 Alan Cox              2012-02-24  1765  		spin_lock_irqsave(&kbd_event_lock, flags);
+247ff8e610cb63 Alan Cox              2012-02-24  1766  		accent_table_size = ct;
+247ff8e610cb63 Alan Cox              2012-02-24  1767  		for (i = 0; i < ct; i++) {
+247ff8e610cb63 Alan Cox              2012-02-24  1768  			accent_table[i].diacr =
+9d329c1c68d2cc Mark Rustad           2014-09-05  1769  					conv_8bit_to_uni(dia[i].diacr);
+247ff8e610cb63 Alan Cox              2012-02-24  1770  			accent_table[i].base =
+9d329c1c68d2cc Mark Rustad           2014-09-05  1771  					conv_8bit_to_uni(dia[i].base);
+247ff8e610cb63 Alan Cox              2012-02-24  1772  			accent_table[i].result =
+9d329c1c68d2cc Mark Rustad           2014-09-05  1773  					conv_8bit_to_uni(dia[i].result);
+247ff8e610cb63 Alan Cox              2012-02-24  1774  		}
+247ff8e610cb63 Alan Cox              2012-02-24  1775  		spin_unlock_irqrestore(&kbd_event_lock, flags);
+bfb24564b5fd86 Jiri Slaby (SUSE      2025-11-19  1776) 
+247ff8e610cb63 Alan Cox              2012-02-24  1777  		return 0;
+247ff8e610cb63 Alan Cox              2012-02-24  1778  	}
+247ff8e610cb63 Alan Cox              2012-02-24  1779  
+247ff8e610cb63 Alan Cox              2012-02-24  1780  	case KDSKBDIACRUC:
+247ff8e610cb63 Alan Cox              2012-02-24  1781  	{
+9d329c1c68d2cc Mark Rustad           2014-09-05  1782  		struct kbdiacrsuc __user *a = udp;
+247ff8e610cb63 Alan Cox              2012-02-24  1783  		unsigned int ct;
+bfb24564b5fd86 Jiri Slaby (SUSE      2025-11-19  1784) 		void __free(kfree) *buf = NULL;
+247ff8e610cb63 Alan Cox              2012-02-24  1785  
+247ff8e610cb63 Alan Cox              2012-02-24  1786  		if (!perm)
+247ff8e610cb63 Alan Cox              2012-02-24  1787  			return -EPERM;
+247ff8e610cb63 Alan Cox              2012-02-24  1788  
+247ff8e610cb63 Alan Cox              2012-02-24  1789  		if (get_user(ct, &a->kb_cnt))
+247ff8e610cb63 Alan Cox              2012-02-24  1790  			return -EFAULT;
+247ff8e610cb63 Alan Cox              2012-02-24  1791  
+247ff8e610cb63 Alan Cox              2012-02-24  1792  		if (ct >= MAX_DIACR)
+247ff8e610cb63 Alan Cox              2012-02-24  1793  			return -EINVAL;
+247ff8e610cb63 Alan Cox              2012-02-24  1794  
+247ff8e610cb63 Alan Cox              2012-02-24  1795  		if (ct) {
+e651faa2fba4d3 Philipp Stanner       2023-11-03  1796  			buf = memdup_array_user(a->kbdiacruc,
+e651faa2fba4d3 Philipp Stanner       2023-11-03  1797  						ct, sizeof(struct kbdiacruc));
+9b6519009dbe2b Muhammad Falak R Wani 2016-05-20  1798  			if (IS_ERR(buf))
+9b6519009dbe2b Muhammad Falak R Wani 2016-05-20  1799  				return PTR_ERR(buf);
+247ff8e610cb63 Alan Cox              2012-02-24  1800  		} 
+247ff8e610cb63 Alan Cox              2012-02-24  1801  		spin_lock_irqsave(&kbd_event_lock, flags);
+247ff8e610cb63 Alan Cox              2012-02-24  1802  		if (ct)
+247ff8e610cb63 Alan Cox              2012-02-24  1803  			memcpy(accent_table, buf,
+247ff8e610cb63 Alan Cox              2012-02-24  1804  					ct * sizeof(struct kbdiacruc));
+247ff8e610cb63 Alan Cox              2012-02-24  1805  		accent_table_size = ct;
+247ff8e610cb63 Alan Cox              2012-02-24  1806  		spin_unlock_irqrestore(&kbd_event_lock, flags);
+247ff8e610cb63 Alan Cox              2012-02-24  1807  		return 0;
+247ff8e610cb63 Alan Cox              2012-02-24  1808  	}
+247ff8e610cb63 Alan Cox              2012-02-24  1809  	}
+bfb24564b5fd86 Jiri Slaby (SUSE      2025-11-19  1810) 	return 0;
+247ff8e610cb63 Alan Cox              2012-02-24  1811  }
+079c9534a96da9 Alan Cox              2012-02-28  1812  
+
+:::::: The code at line 1712 was first introduced by commit
+:::::: 247ff8e610cb63c015de19191db9666754c2ed79 vt: lock the accent table
+
+:::::: TO: Alan Cox <alan@linux.intel.com>
+:::::: CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
 -- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
