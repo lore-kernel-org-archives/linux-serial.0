@@ -1,329 +1,293 @@
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.5])
+Received: from abb.hmeau.com (abb.hmeau.com [180.181.231.80])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 860C22C21F9;
-	Mon, 24 Nov 2025 05:18:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.5
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C901424B28;
+	Mon, 24 Nov 2025 09:54:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=180.181.231.80
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763961524; cv=none; b=QT1Qfe/nxMohX2yZZmv1uY1EWbtbRD5cY2UTiUE7dgztgn5ynSdsLIBamgWC43EW5cIoFQlyuZffH3tWswYZCV60vHxyji0BRqAukPBDJOD6GffucFWrddKbOp9SGiwq9tnLgVmwontfjGBel2Pt4ked01ZMT7O1FsO7OSWp948=
+	t=1763978079; cv=none; b=OrhBTwl6BMqS8pYcfarqR9HGAhSeI26vREWeXj7sBtD3362M7aMbqTWKdvA+MacwqTfvv60xSfYJrLX5R7ZY13HB4AG4msj+1X0S9R+Z/MP740gcweSDj6N1kvAhRDqqwqzdmvUcPjbfzOSF6WcoccepgvIZ1DE8k4B1kYcckKQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763961524; c=relaxed/simple;
-	bh=xF6FJgVrY4ZQHNi+bbeVHtZPyWrzwRVLWrQmuQByxHc=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Pmwok8Yp/chy9oOJUVnb8aCIc0Wtu5NIwMrZaat/Cx8xgOs2AMtKX7hK241yrqRT0oH+/laW1Hbe2j/QdWmpTN2FmU4cmyXgsEo3QABKij/qZNKy9R8otSYsTpnrNBx63p3r2l46H9Cs4EgnhhKU7Qq5yGINJXZs+H/qMCKzDRs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=QuGBuqEn; arc=none smtp.client-ip=220.197.31.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1763978079; c=relaxed/simple;
+	bh=zgUegguLz9fnh3Kc5FyiFvVdDbDa4+bOp5Www3PDcuc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ctY5ec1pVMPgAQziivIuyNMUNBBzBLjHqXG57D/iuzXjRNcJdrcJjU9kdacC12pvOLum/X7GMW/2XgVUnWfvsJJolpF2qFqE3iXEuv3DrL1T+h/W/fWPLtntbF/kEBoAZhmjDER1oIdcu/C7H+zIkeFDv76zc8PF6r9/vuR0yyU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gondor.apana.org.au; spf=pass smtp.mailfrom=gondor.apana.org.au; dkim=pass (2048-bit key) header.d=gondor.apana.org.au header.i=@gondor.apana.org.au header.b=P87gnIuA; arc=none smtp.client-ip=180.181.231.80
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gondor.apana.org.au
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gondor.apana.org.au
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="QuGBuqEn"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version:
-	Content-Type; bh=qnn47CvTPdAR4vylwtwxLoHKYT7Vsw7bXp1dkjeP40k=;
-	b=QuGBuqEnuhuQGRBclw8vr/hq60pr2DMmSkfmkdd0oLEGvYSmHDJ8aEJYim66Y6
-	kWlX0X+gg94uTXVBy1H/2r5+iXmUeslEuLO+J0h6FLipBpUS5MWxIsoSOxqXKeG1
-	intIw0DuhcoHCxHGFhBZV/cPPqshNO8vPB8uXRxTcWlQ0=
-Received: from zhaoxin-MS-7E12.. (unknown [])
-	by gzga-smtp-mtada-g0-3 (Coremail) with SMTP id _____wDXFBl_6iNp+Eb8CA--.2452S2;
-	Mon, 24 Nov 2025 13:17:52 +0800 (CST)
-From: Xin Zhao <jackzxcui1989@163.com>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org
-Cc: hch@infradead.org,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	tj@kernel.org
-Subject: Re: [PATCH v3] tty: tty_port: add workqueue to flip tty buffer
-Date: Mon, 24 Nov 2025 13:17:51 +0800
-Message-Id: <20251124051751.787161-1-jackzxcui1989@163.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20251027060929.394053-1-jackzxcui1989@163.com>
-References: <20251027060929.394053-1-jackzxcui1989@163.com>
+	dkim=pass (2048-bit key) header.d=gondor.apana.org.au header.i=@gondor.apana.org.au header.b="P87gnIuA"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=gondor.apana.org.au; s=h01; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:cc:to:subject:message-id:date:
+	from:content-type:reply-to; bh=B05uJapQfRMGohKkgF1xNVyERBHmagh8Bd3xg1q2NeI=; 
+	b=P87gnIuANW/TJp73uiT1mmsGlTWnBuH0H7vh23lNqSWq4OBDSGmsQEtkmAFMHotC7U4wL6z8BsM
+	xZhrA2DnJ6Byz1eNq9hCgsl0YlQqjChTspvActJHQABJusXSSyN3NViM7BAWMow9uYLi6/azgr/1S
+	bPNPkqeI4K++8lXngyxVPKygWdoefLDaHUV8R9vP4h+Voyby/LgDfyG/U2ZiZD9XFH7HpGmBTtoYh
+	gxxkqEEHWY1my7y2fTHFr9TydDJrVMgiVb3KBgJmEGPf57jfBn092eZeVh0rkWj5FfVDm/r5gwJdx
+	bl004005PGTqWH4a9OI+Nq6nG2BqQ4oMU7WA==;
+Received: from loth.rohan.me.apana.org.au ([192.168.167.2])
+	by formenos.hmeau.com with smtp (Exim 4.96 #2 (Debian))
+	id 1vNTCh-005XNj-0w;
+	Mon, 24 Nov 2025 17:49:52 +0800
+Received: by loth.rohan.me.apana.org.au (sSMTP sendmail emulation); Mon, 24 Nov 2025 17:49:51 +0800
+Date: Mon, 24 Nov 2025 17:49:51 +0800
+From: Herbert Xu <herbert@gondor.apana.org.au>
+To: david.laight.linux@gmail.com
+Cc: linux-kernel@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+	Alexander Viro <viro@zeniv.linux.org.uk>,
+	Alexei Starovoitov <ast@kernel.org>,
+	Andi Shyti <andi.shyti@kernel.org>,
+	Andreas Dilger <adilger.kernel@dilger.ca>,
+	Andrew Lunn <andrew@lunn.ch>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Andrii Nakryiko <andrii@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Ard Biesheuvel <ardb@kernel.org>,
+	Arnaldo Carvalho de Melo <acme@kernel.org>,
+	Bjorn Helgaas <bhelgaas@google.com>, Borislav Petkov <bp@alien8.de>,
+	Christian Brauner <brauner@kernel.org>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	Christoph Hellwig <hch@lst.de>,
+	Daniel Borkmann <daniel@iogearbox.net>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	Dave Jiang <dave.jiang@intel.com>, David Ahern <dsahern@kernel.org>,
+	David Hildenbrand <david@redhat.com>,
+	Davidlohr Bueso <dave@stgolabs.net>,
+	"David S. Miller" <davem@davemloft.net>,
+	Dennis Zhou <dennis@kernel.org>, Eric Dumazet <edumazet@google.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Ingo Molnar <mingo@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
+	Jakub Sitnicki <jakub@cloudflare.com>,
+	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+	Jarkko Sakkinen <jarkko@kernel.org>,
+	"Jason A. Donenfeld" <Jason@zx2c4.com>,
+	Jens Axboe <axboe@kernel.dk>, Jiri Slaby <jirislaby@kernel.org>,
+	Johannes Weiner <hannes@cmpxchg.org>,
+	John Allen <john.allen@amd.com>,
+	Jonathan Cameron <jonathan.cameron@huawei.com>,
+	Juergen Gross <jgross@suse.com>, Kees Cook <kees@kernel.org>,
+	KP Singh <kpsingh@kernel.org>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	"Martin K. Petersen" <martin.petersen@oracle.com>,
+	"Matthew Wilcox (Oracle)" <willy@infradead.org>,
+	Mika Westerberg <westeri@kernel.org>,
+	Mike Rapoport <rppt@kernel.org>, Miklos Szeredi <miklos@szeredi.hu>,
+	Namhyung Kim <namhyung@kernel.org>,
+	Neal Cardwell <ncardwell@google.com>, nic_swsd@realtek.com,
+	OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
+	Olivia Mackall <olivia@selenic.com>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Paolo Bonzini <pbonzini@redhat.com>,
+	Peter Huewe <peterhuewe@gmx.de>,
+	Peter Zijlstra <peterz@infradead.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Sean Christopherson <seanjc@google.com>,
+	Srinivas Kandagatla <srini@kernel.org>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Steven Rostedt <rostedt@goodmis.org>, Tejun Heo <tj@kernel.org>,
+	Theodore Ts'o <tytso@mit.edu>, Thomas Gleixner <tglx@linutronix.de>,
+	Tom Lendacky <thomas.lendacky@amd.com>,
+	Willem de Bruijn <willemdebruijn.kernel@gmail.com>, x86@kernel.org,
+	Yury Norov <yury.norov@gmail.com>, amd-gfx@lists.freedesktop.org,
+	bpf@vger.kernel.org, cgroups@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, io-uring@vger.kernel.org,
+	kvm@vger.kernel.org, linux-acpi@vger.kernel.org,
+	linux-block@vger.kernel.org, linux-crypto@vger.kernel.org,
+	linux-cxl@vger.kernel.org, linux-efi@vger.kernel.org,
+	linux-ext4@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+	linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org,
+	linux-integrity@vger.kernel.org, linux-mm@kvack.org,
+	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
+	linux-perf-users@vger.kernel.org, linux-scsi@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
+	linux-usb@vger.kernel.org, mptcp@lists.linux.dev,
+	netdev@vger.kernel.org, usb-storage@lists.one-eyed-alien.net
+Subject: Re: [PATCH 00/44] Change a lot of min_t() that might mask high bits
+Message-ID: <aSQqP6nlqGYOGqcJ@gondor.apana.org.au>
+References: <20251119224140.8616-1-david.laight.linux@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wDXFBl_6iNp+Eb8CA--.2452S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW3tr4fGrWDKFW5AFWUur45Wrg_yoWDCF13pF
-	s0yFy7tay5JanFkrnrGF17AayY93Z29a4xurW7G34aqr1DAryUW3Wjgr90vr95Gr4kGrya
-	yFsxtas8CFnFvrJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UA3kNUUUUU=
-X-CM-SenderInfo: pmdfy650fxxiqzyzqiywtou0bp/1tbiGRwQCmkj5rlZdQAAsm
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251119224140.8616-1-david.laight.linux@gmail.com>
 
-
-Hi, guys, any comments on this patch？
-
-
-On Mon, 27 Oct 2025 14:09:29 +0800 Xin Zhao <jackzxcui1989@163.com> wrote:
-
-> On the embedded platform, certain critical data, such as IMU data, is
-> transmitted through UART. The tty_flip_buffer_push interface in the TTY
-> layer uses system_unbound_wq to handle the flipping of the TTY buffer.
-> Although the unbound workqueue can create new threads on demand and wake
-> up the kworker thread on an idle CPU, it may be preeempted by real-time
-> tasks or other high-prio tasks.
-> In flush_to_ldisc, when executing n_tty_receive_buf_common, it wakes up
-> other tasks. __wake_up_common_lock calls spin_lock_irqsave, which does
-> not disable preemption but disable migration in RT-Linux. This prevents
-> the kworker thread from being migrated to other cores by CPU's balancing
-> logic, resulting in long delays.
-> In our system, the processing interval for each frame of IMU data
-> transmitted via UART can experience significant jitter due to this issue.
-> Instead of the expected 10 to 15 ms frame processing interval, we see
-> spikes up to 30 to 35 ms. Moreover, in just one or two hours, there can
-> be 2 to 3 occurrences of such high jitter, which is quite frequent. This
-> jitter exceeds the software's tolerable limit of 20 ms.
-> Introduce tty_flip_wq in tty_port, allocating a workqueue using WQ_SYSFS,
-> so that we can set cpumask and nice dynamically.
-> We set the cpumask to the same cpu where the IMU data is handled and has
-> less long-time high-prio jobs, and then set nice to -20, the frame
-> processing interval remains between 10 and 15ms, no jitter occurs.
+On Wed, Nov 19, 2025 at 10:40:56PM +0000, david.laight.linux@gmail.com wrote:
+> From: David Laight <david.laight.linux@gmail.com>
 > 
-> ---
-> Change in v3:
-> - Add tty flip workqueue for all tty ports, as suggested by Greg KH.
->   Every tty port use an individual flip workqueue, while all pty ports
->   share the same workqueue created in pty_flip_wq_init.
-> - Modify the commit log to describe the reason for latency spikes in
->   RT-Linux.
+> It in not uncommon for code to use min_t(uint, a, b) when one of a or b
+> is 64bit and can have a value that is larger than 2^32;
+> This is particularly prevelant with:
+> 	uint_var = min_t(uint, uint_var, uint64_expression);
 > 
-> Change in v2:
-> - Do not add new module parameters
->   as suggested by Greg KH
-> - Set WQ_SYSFS to allow properties changes from userspace
->   as suggested by Tejun Heo
-> - Link to v2: https://lore.kernel.org/all/20251024155534.2302590-1-jackzxcui1989@163.com
+> Casts to u8 and u16 are very likely to discard significant bits.
 > 
-> Signed-off-by: Xin Zhao <jackzxcui1989@163.com>
-> ---
->  drivers/tty/pty.c          |  6 ++++
->  drivers/tty/tty_buffer.c   |  9 +++---
->  drivers/tty/tty_io.c       |  2 +-
->  drivers/tty/tty_port.c     | 58 ++++++++++++++++++++++++++++++++++++++
->  include/linux/tty.h        |  1 +
->  include/linux/tty_buffer.h |  1 +
->  include/linux/tty_port.h   |  3 ++
->  7 files changed, 75 insertions(+), 5 deletions(-)
+> These can be detected at compile time by changing min_t(), for example:
+> #define CHECK_SIZE(fn, type, val) \
+> 	BUILD_BUG_ON_MSG(sizeof (val) > sizeof (type) && \
+> 		!statically_true(((val) >> 8 * (sizeof (type) - 1)) < 256), \
+> 		fn "() significant bits of '" #val "' may be discarded")
 > 
-> diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
-> index 8bb1a01fe..93779bc09 100644
-> --- a/drivers/tty/pty.c
-> +++ b/drivers/tty/pty.c
-> @@ -412,6 +412,8 @@ static int pty_common_install(struct tty_driver *driver, struct tty_struct *tty,
->  	o_tty->port = ports[0];
->  	tty->port = ports[1];
->  	o_tty->port->itty = o_tty;
-> +	tty_flip_wq_init(ports[0], driver->other, idx);
-> +	tty_flip_wq_init(ports[1], driver->other, idx);
->  
->  	tty_buffer_set_lock_subclass(o_tty->port);
->  
-> @@ -547,6 +549,8 @@ static void __init legacy_pty_init(void)
->  	if (IS_ERR(pty_slave_driver))
->  		panic("Couldn't allocate pty slave driver");
->  
-> +	pty_flip_wq_init();
-> +
->  	pty_driver->driver_name = "pty_master";
->  	pty_driver->name = "pty";
->  	pty_driver->major = PTY_MASTER_MAJOR;
-> @@ -889,6 +893,8 @@ static void __init unix98_pty_init(void)
->  	if (IS_ERR(pts_driver))
->  		panic("Couldn't allocate Unix98 pts driver");
->  
-> +	pty_flip_wq_init();
-> +
->  	ptm_driver->driver_name = "pty_master";
->  	ptm_driver->name = "ptm";
->  	ptm_driver->major = UNIX98_PTY_MASTER_MAJOR;
-> diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-> index 67271fc0b..54d61792f 100644
-> --- a/drivers/tty/tty_buffer.c
-> +++ b/drivers/tty/tty_buffer.c
-> @@ -76,7 +76,7 @@ void tty_buffer_unlock_exclusive(struct tty_port *port)
->  	mutex_unlock(&buf->lock);
->  
->  	if (restart)
-> -		queue_work(system_unbound_wq, &buf->work);
-> +		queue_work(buf->tty_flip_wq, &buf->work);
->  }
->  EXPORT_SYMBOL_GPL(tty_buffer_unlock_exclusive);
->  
-> @@ -530,7 +530,7 @@ void tty_flip_buffer_push(struct tty_port *port)
->  	struct tty_bufhead *buf = &port->buf;
->  
->  	tty_flip_buffer_commit(buf->tail);
-> -	queue_work(system_unbound_wq, &buf->work);
-> +	queue_work(buf->tty_flip_wq, &buf->work);
->  }
->  EXPORT_SYMBOL(tty_flip_buffer_push);
->  
-> @@ -560,7 +560,7 @@ int tty_insert_flip_string_and_push_buffer(struct tty_port *port,
->  		tty_flip_buffer_commit(buf->tail);
->  	spin_unlock_irqrestore(&port->lock, flags);
->  
-> -	queue_work(system_unbound_wq, &buf->work);
-> +	queue_work(buf->tty_flip_wq, &buf->work);
->  
->  	return size;
->  }
-> @@ -583,6 +583,7 @@ void tty_buffer_init(struct tty_port *port)
->  	init_llist_head(&buf->free);
->  	atomic_set(&buf->mem_used, 0);
->  	atomic_set(&buf->priority, 0);
-> +	buf->tty_flip_wq = system_unbound_wq;
->  	INIT_WORK(&buf->work, flush_to_ldisc);
->  	buf->mem_limit = TTYB_DEFAULT_MEM_LIMIT;
->  }
-> @@ -613,7 +614,7 @@ void tty_buffer_set_lock_subclass(struct tty_port *port)
->  
->  bool tty_buffer_restart_work(struct tty_port *port)
->  {
-> -	return queue_work(system_unbound_wq, &port->buf.work);
-> +	return queue_work(port->buf.tty_flip_wq, &port->buf.work);
->  }
->  
->  bool tty_buffer_cancel_work(struct tty_port *port)
-> diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-> index e2d92cf70..95bd6ae19 100644
-> --- a/drivers/tty/tty_io.c
-> +++ b/drivers/tty/tty_io.c
-> @@ -1191,7 +1191,7 @@ static void pty_line_name(struct tty_driver *driver, int index, char *p)
->   *
->   * Locking: None
->   */
-> -static ssize_t tty_line_name(struct tty_driver *driver, int index, char *p)
-> +ssize_t tty_line_name(struct tty_driver *driver, int index, char *p)
->  {
->  	if (driver->flags & TTY_DRIVER_UNNUMBERED_NODE)
->  		return sprintf(p, "%s", driver->name);
-> diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-> index 5b4d5fb99..7eb9f31d1 100644
-> --- a/drivers/tty/tty_port.c
-> +++ b/drivers/tty/tty_port.c
-> @@ -103,6 +103,62 @@ void tty_port_init(struct tty_port *port)
->  }
->  EXPORT_SYMBOL(tty_port_init);
->  
-> +static struct workqueue_struct *pty_flip_wq;
-> +
-> +/**
-> + * pty_flip_wq_init -- initialize workqueue for pty flip buffer work
-> + *
-> + * Initialzes workqueue for pty ports, they share the same workqueue which
-> + * should be created when pty driver init.
-> + * Pty ports are numerous and hard to distinguish, it is meaningless to
-> + * separate them when create tty flip workqueue.
-> + */
-> +void pty_flip_wq_init(void)
-> +{
-> +	if (!pty_flip_wq) {
-> +		pty_flip_wq = alloc_workqueue("pty-flip-wq", WQ_UNBOUND | WQ_SYSFS, 0);
-> +		if (!pty_flip_wq)
-> +			pty_flip_wq = system_unbound_wq;
-> +	}
-> +}
-> +
-> +/**
-> + * tty_flip_wq_init -- prepare workqueue for tty/pty flip buffer work
-> + * @port: tty_port of the device
-> + * @driver: tty_driver for this device
-> + * @index: index of the tty
-> + *
-> + * Not all tty_port will be initialized by tty_port_init where tty_flip_wq will
-> + * be set to system_unbound_wq as default. Allocate workqueue with WQ_SYSFS for
-> + * flip buffer, so that cpumask and nice can be changed dynamically.
-> + */
-> +void tty_flip_wq_init(struct tty_port *port, struct tty_driver *driver,
-> +		      unsigned int index)
-> +{
-> +	char name[64];
-> +
-> +	if (driver->type == TTY_DRIVER_TYPE_PTY) {
-> +		port->buf.tty_flip_wq = pty_flip_wq;
-> +		return;
-> +	}
-> +	tty_line_name(driver, index, name);
-> +	if (!port->buf.tty_flip_wq
-> +		|| port->buf.tty_flip_wq == system_unbound_wq) {
-> +		port->buf.tty_flip_wq = alloc_workqueue("%s-flip-wq",
-> +							WQ_UNBOUND | WQ_SYSFS,
-> +							0, name);
-> +		if (unlikely(!port->buf.tty_flip_wq))
-> +			port->buf.tty_flip_wq = system_unbound_wq;
-> +	}
-> +}
-> +
-> +static void tty_flip_wq_destroy(struct tty_port *port)
-> +{
-> +	if (port->buf.tty_flip_wq != system_unbound_wq
-> +		&& port->buf.tty_flip_wq != pty_flip_wq)
-> +		destroy_workqueue(port->buf.tty_flip_wq);
-> +}
-> +
->  /**
->   * tty_port_link_device - link tty and tty_port
->   * @port: tty_port of the device
-> @@ -119,6 +175,7 @@ void tty_port_link_device(struct tty_port *port,
->  {
->  	if (WARN_ON(index >= driver->num))
->  		return;
-> +	tty_flip_wq_init(port, driver, index);
->  	driver->ports[index] = port;
->  }
->  EXPORT_SYMBOL_GPL(tty_port_link_device);
-> @@ -259,6 +316,7 @@ EXPORT_SYMBOL(tty_port_free_xmit_buf);
->  void tty_port_destroy(struct tty_port *port)
->  {
->  	tty_buffer_cancel_work(port);
-> +	tty_flip_wq_destroy(port);
->  	tty_buffer_free_all(port);
->  }
->  EXPORT_SYMBOL(tty_port_destroy);
-> diff --git a/include/linux/tty.h b/include/linux/tty.h
-> index 0a46e4054..c4d535912 100644
-> --- a/include/linux/tty.h
-> +++ b/include/linux/tty.h
-> @@ -399,6 +399,7 @@ static inline struct tty_struct *tty_kref_get(struct tty_struct *tty)
->  	return tty;
->  }
->  
-> +ssize_t tty_line_name(struct tty_driver *driver, int index, char *p);
->  const char *tty_driver_name(const struct tty_struct *tty);
->  void tty_wait_until_sent(struct tty_struct *tty, long timeout);
->  void stop_tty(struct tty_struct *tty);
-> diff --git a/include/linux/tty_buffer.h b/include/linux/tty_buffer.h
-> index 31125e3be..e9928fa36 100644
-> --- a/include/linux/tty_buffer.h
-> +++ b/include/linux/tty_buffer.h
-> @@ -34,6 +34,7 @@ static inline u8 *flag_buf_ptr(struct tty_buffer *b, unsigned int ofs)
->  
->  struct tty_bufhead {
->  	struct tty_buffer *head;	/* Queue head */
-> +	struct workqueue_struct *tty_flip_wq;
->  	struct work_struct work;
->  	struct mutex	   lock;
->  	atomic_t	   priority;
-> diff --git a/include/linux/tty_port.h b/include/linux/tty_port.h
-> index 332ddb936..31c149640 100644
-> --- a/include/linux/tty_port.h
-> +++ b/include/linux/tty_port.h
-> @@ -138,6 +138,9 @@ struct tty_port {
->  					   kernel */
->  
->  void tty_port_init(struct tty_port *port);
-> +void pty_flip_wq_init(void);
-> +void tty_flip_wq_init(struct tty_port *port, struct tty_driver *driver,
-> +		      unsigned int index);
->  void tty_port_link_device(struct tty_port *port, struct tty_driver *driver,
->  		unsigned index);
->  struct device *tty_port_register_device(struct tty_port *port,
-> -- 
-> 2.34.1
+> #define min_t(type, x, y) ({ \
+> 	CHECK_SIZE("min_t", type, x); \
+> 	CHECK_SIZE("min_t", type, y); \
+> 	__cmp_once(min, type, x, y); })
+> 
+> (and similar changes to max_t() and clamp_t().)
+> 
+> This shows up some real bugs, some unlikely bugs and some false positives.
+> In most cases both arguments are unsigned type (just different ones)
+> and min_t() can just be replaced by min().
+> 
+> The patches are all independant and are most of the ones needed to
+> get the x86-64 kernel I build to compile.
+> I've not tried building an allyesconfig or allmodconfig kernel.
+> I've also not included the patch to minmax.h itself.
+> 
+> I've tried to put the patches that actually fix things first.
+> The last one is 0009.
+> 
+> I gave up on fixing sched/fair.c - it is too broken for a single patch!
+> The patch for net/ipv4/tcp.c is also absent because do_tcp_getsockopt()
+> needs multiple/larger changes to make it 'sane'.
+> 
+> I've had to trim the 124 maintainers/lists that get_maintainer.pl finds
+> from 124 to under 100 to be able to send the cover letter.
+> The individual patches only go to the addresses found for the associated files.
+> That reduces the number of emails to a less unsane number.
+> 
+> David Laight (44):
+>   x86/asm/bitops: Change the return type of variable__ffs() to unsigned
+>     int
+>   ext4: Fix saturation of 64bit inode times for old filesystems
+>   perf: Fix branch stack callchain limit
+>   io_uring/net: Change some dubious min_t()
+>   ipc/msg: Fix saturation of percpu counts in msgctl_info()
+>   bpf: Verifier, remove some unusual uses of min_t() and max_t()
+>   net/core/flow_dissector: Fix cap of __skb_flow_dissect() return value.
+>   net: ethtool: Use min3() instead of nested min_t(u16,...)
+>   ipv6: __ip6_append_data() don't abuse max_t() casts
+>   x86/crypto: ctr_crypt() use min() instead of min_t()
+>   arch/x96/kvm: use min() instead of min_t()
+>   block: use min() instead of min_t()
+>   drivers/acpi: use min() instead of min_t()
+>   drivers/char/hw_random: use min3() instead of nested min_t()
+>   drivers/char/tpm: use min() instead of min_t()
+>   drivers/crypto/ccp: use min() instead of min_t()
+>   drivers/cxl: use min() instead of min_t()
+>   drivers/gpio: use min() instead of min_t()
+>   drivers/gpu/drm/amd: use min() instead of min_t()
+>   drivers/i2c/busses: use min() instead of min_t()
+>   drivers/net/ethernet/realtek: use min() instead of min_t()
+>   drivers/nvme: use min() instead of min_t()
+>   arch/x86/mm: use min() instead of min_t()
+>   drivers/nvmem: use min() instead of min_t()
+>   drivers/pci: use min() instead of min_t()
+>   drivers/scsi: use min() instead of min_t()
+>   drivers/tty/vt: use umin() instead of min_t(u16, ...) for row/col
+>     limits
+>   drivers/usb/storage: use min() instead of min_t()
+>   drivers/xen: use min() instead of min_t()
+>   fs: use min() or umin() instead of min_t()
+>   block: bvec.h: use min() instead of min_t()
+>   nodemask: use min() instead of min_t()
+>   ipc: use min() instead of min_t()
+>   bpf: use min() instead of min_t()
+>   bpf_trace: use min() instead of min_t()
+>   lib/bucket_locks: use min() instead of min_t()
+>   lib/crypto/mpi: use min() instead of min_t()
+>   lib/dynamic_queue_limits: use max() instead of max_t()
+>   mm: use min() instead of min_t()
+>   net: Don't pass bitfields to max_t()
+>   net/core: Change loop conditions so min() can be used
+>   net: use min() instead of min_t()
+>   net/netlink: Use umin() to avoid min_t(int, ...) discarding high bits
+>   net/mptcp: Change some dubious min_t(int, ...) to min()
+> 
+>  arch/x86/crypto/aesni-intel_glue.c            |  3 +-
+>  arch/x86/include/asm/bitops.h                 | 18 +++++-------
+>  arch/x86/kvm/emulate.c                        |  3 +-
+>  arch/x86/kvm/lapic.c                          |  2 +-
+>  arch/x86/kvm/mmu/mmu.c                        |  2 +-
+>  arch/x86/mm/pat/set_memory.c                  | 12 ++++----
+>  block/blk-iocost.c                            |  6 ++--
+>  block/blk-settings.c                          |  2 +-
+>  block/partitions/efi.c                        |  3 +-
+>  drivers/acpi/property.c                       |  2 +-
+>  drivers/char/hw_random/core.c                 |  2 +-
+>  drivers/char/tpm/tpm1-cmd.c                   |  2 +-
+>  drivers/char/tpm/tpm_tis_core.c               |  4 +--
+>  drivers/crypto/ccp/ccp-dev.c                  |  2 +-
+>  drivers/cxl/core/mbox.c                       |  2 +-
+>  drivers/gpio/gpiolib-acpi-core.c              |  2 +-
+>  .../gpu/drm/amd/amdgpu/amdgpu_doorbell_mgr.c  |  4 +--
+>  drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c        |  2 +-
+>  .../gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |  2 +-
+>  drivers/i2c/busses/i2c-designware-master.c    |  2 +-
+>  drivers/net/ethernet/realtek/r8169_main.c     |  3 +-
+>  drivers/nvme/host/pci.c                       |  3 +-
+>  drivers/nvme/host/zns.c                       |  3 +-
+>  drivers/nvmem/core.c                          |  2 +-
+>  drivers/pci/probe.c                           |  3 +-
+>  drivers/scsi/hosts.c                          |  2 +-
+>  drivers/tty/vt/selection.c                    |  9 +++---
+>  drivers/usb/storage/protocol.c                |  3 +-
+>  drivers/xen/grant-table.c                     |  2 +-
+>  fs/buffer.c                                   |  2 +-
+>  fs/exec.c                                     |  2 +-
+>  fs/ext4/ext4.h                                |  2 +-
+>  fs/ext4/mballoc.c                             |  3 +-
+>  fs/ext4/resize.c                              |  2 +-
+>  fs/ext4/super.c                               |  2 +-
+>  fs/fat/dir.c                                  |  4 +--
+>  fs/fat/file.c                                 |  3 +-
+>  fs/fuse/dev.c                                 |  2 +-
+>  fs/fuse/file.c                                |  8 ++---
+>  fs/splice.c                                   |  2 +-
+>  include/linux/bvec.h                          |  3 +-
+>  include/linux/nodemask.h                      |  9 +++---
+>  include/linux/perf_event.h                    |  2 +-
+>  include/net/tcp_ecn.h                         |  5 ++--
+>  io_uring/net.c                                |  6 ++--
+>  ipc/mqueue.c                                  |  4 +--
+>  ipc/msg.c                                     |  6 ++--
+>  kernel/bpf/core.c                             |  4 +--
+>  kernel/bpf/log.c                              |  2 +-
+>  kernel/bpf/verifier.c                         | 29 +++++++------------
+>  kernel/trace/bpf_trace.c                      |  2 +-
+>  lib/bucket_locks.c                            |  2 +-
+>  lib/crypto/mpi/mpicoder.c                     |  2 +-
+>  lib/dynamic_queue_limits.c                    |  2 +-
+>  mm/gup.c                                      |  4 +--
+>  mm/memblock.c                                 |  2 +-
+>  mm/memory.c                                   |  2 +-
+>  mm/percpu.c                                   |  2 +-
+>  mm/truncate.c                                 |  3 +-
+>  mm/vmscan.c                                   |  2 +-
+>  net/core/datagram.c                           |  6 ++--
+>  net/core/flow_dissector.c                     |  7 ++---
+>  net/core/net-sysfs.c                          |  3 +-
+>  net/core/skmsg.c                              |  4 +--
+>  net/ethtool/cmis_cdb.c                        |  7 ++---
+>  net/ipv4/fib_trie.c                           |  2 +-
+>  net/ipv4/tcp_input.c                          |  4 +--
+>  net/ipv4/tcp_output.c                         |  5 ++--
+>  net/ipv4/tcp_timer.c                          |  4 +--
+>  net/ipv6/addrconf.c                           |  8 ++---
+>  net/ipv6/ip6_output.c                         |  7 +++--
+>  net/ipv6/ndisc.c                              |  5 ++--
+>  net/mptcp/protocol.c                          |  8 ++---
+>  net/netlink/genetlink.c                       |  9 +++---
+>  net/packet/af_packet.c                        |  2 +-
+>  net/unix/af_unix.c                            |  4 +--
+>  76 files changed, 141 insertions(+), 176 deletions(-)
 
---
-Xin Zhao
-
+Patches 10,14,16,37 applied.  Thanks.
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
