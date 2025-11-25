@@ -1,217 +1,367 @@
-Received: from mail-wr1-f68.google.com (mail-wr1-f68.google.com [209.85.221.68])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8C58333439
-	for <linux-serial@vger.kernel.org>; Tue, 25 Nov 2025 19:57:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.68
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0599F1F9F7A;
+	Tue, 25 Nov 2025 22:54:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764100647; cv=none; b=oDizEQ6RHZD4IBTYEt1urdIsbVCYvImttIgXucTK2B39pgVumbLsdO1NvXSdVSVCjBq/ppWtcLT74/8K0VGTV701msjeDRCfsylbcT3xtc6RPmZXNGJkhA/Bs9CnmUt3RYZCxiDxP3+W5/fpGK5Eee3s7w0Gqm32aml3RH6rshk=
+	t=1764111286; cv=none; b=s7PfnRvNyyAhMk0ywwWr9YRCu0reqBXw1dtAIF4OvdfqKxwEwri5ZN8H9y4szNwfaCqpDZ7rnPlMeBINtZZBm6MA6cJJCvW1NViHM32sRuADwXapbppXPcYavIibQM1Rb5C92lrwiaG0RMqc36I4fn4MwhZem/OiQPwN8lkKOlc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764100647; c=relaxed/simple;
-	bh=iokwoTFVPBOTaPfOIU5c7pX/GalN7fc0nJfgCYlBKvM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VJuaN2qk8fSqvp5YKZ5K73RMrulDQM5/Vq6dLG3KVl65ry588qhzQtt+9scqqXzOgvJzwNj7wBbb773/cxPqoPxUFO8SnSYpBkeAny/dNvDSxRRiQAXWAenLhPTeWH9xgewN7viuo3whDBLTgwUWDCkR/sb6k0cfyAYgoBekPcc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=E3+WFYd7; arc=none smtp.client-ip=209.85.221.68
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1764111286; c=relaxed/simple;
+	bh=S9CohV3WfyjsUpzsiQrOOpbeG/bubQXmxtesOUEle0s=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=WflK5QXyiiXeaRkaQpmvDqpXgrFhjz6iO3cJg9wlgjbnaRVFH/pHcMQ9TFtx8MbKNOoydhBdCEBnsMscGcWABmomAp3pr42rjBVa/Iakwi7Qv1zRe2NMGu27GO/rxDjEOvetNStBuS7/7C2DzyaIc0M7sU/IUjzmjvy/+Fj/5xs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cviqIa9B; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="E3+WFYd7"
-Received: by mail-wr1-f68.google.com with SMTP id ffacd0b85a97d-42b3669ca3dso2372640f8f.0
-        for <linux-serial@vger.kernel.org>; Tue, 25 Nov 2025 11:57:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1764100643; x=1764705443; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=E1UnNoOWnCZ6jNATqSLrvL0gVBX8cPau2AT5/t6kV9Y=;
-        b=E3+WFYd7f5+MIm16F523Jp2L/0FdmLr2llL7NvcjJTaVC7gDZ4jAJ3ZT92cjbATxxy
-         K1neAO0iFSJp8rd6CMc46LL0vFY2ZxYuff7IhW47BekmuS9OlG6eozp9ZPoQWIpHT89C
-         NFXd3qkiLizg7f/a3lWPgX8VVnaHVdcUt3zGL+uCUE6EbbzGXUYHSpasPSbAXqfSPobO
-         e3LLS+2RS+Ol8n/1DBwdv47Vl9IdOsxUE+KJBIv0pUYV78VVC55KiqzuPCPQcRc/6xDg
-         F0O6d/mQ47TNSJurO7m1fpqIYpSPMarRaECaISWbkqPu5iLzwy0CSkkxPMjANFl2VqeJ
-         lzpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764100643; x=1764705443;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=E1UnNoOWnCZ6jNATqSLrvL0gVBX8cPau2AT5/t6kV9Y=;
-        b=oCqpUj1CqrYLHdOC5po/GDFqKiymYtf3CMpfcg9iLMksk/HjopaKAtLg8ci+Lja+FJ
-         22bTtnxpLxQsfm2MTMgD0hltsn/gV1IdTZblJt3uoZBIhtb9ssTE6mHD7OWKuj95zjMh
-         pJQ0qzvhl1J452UnynW/G2EFeg6KSwsUEDKBc853i4e8xLTUo3y/j954X3zTI+qdp4Q7
-         CzXkE8099IfZHArN47w8CfSEYztzUk3Mu2JtRt204JWUWCjy1facudS32K8yopPBYuJY
-         Hwfvy0iumbZQ8b7g2s/7FFPk+A4QvGE94OQ90DN37/+y9XQE8chm5iGahgFXc0WXHcUB
-         PZwQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVhRut4QwwTNRRTBaAIwH9BCuFCoWhP071B4DgJQO6dgpsxbllFZJk3nkHVV5hWSooTzYgy0SQ8RJFbFxs=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwXdv5K/j+kMYsFiS30Syjgn45m3/Yhbca71vAjntEyeMUEZJSv
-	z88ntuBpQhM+J2KXOHgjrIz+w++7IOkqF6mn5Ou78e/yNZuF5tkbf0Gf2TpUKCkiazWWUb3XRk0
-	G+DLuAJPT2h3h
-X-Gm-Gg: ASbGncu+OCwdSDetvEZM/RS9A/F0XUXoDGR4JvSJeGuWmmR+XUVew0o8wH8yc725FzS
-	iBQY4Og79Ysq+EVnMR9HPQz3WPQIB00qITMF+sps4NDmqAIh5KQcFxV4zRzZJTmxMMai4tD27zO
-	bGbd727fJqaXPto2VKAbP3dckqiZMSzgMIO5vE5TaCfPM6dMymor7fkqxVsm7pkFDSaCGJThnjw
-	GqgXhqIou5+QYR6gMJvwrS3n1R+b0nZKyVDWz6EK6pZqQxdD4r6JqdQl2+kBQoxei7f7t+EjtIi
-	kL+mgiqbDBS6Bu4+/slcZEl6K5/xXlUzE5dDFbaN2lyDTa2+EpYKrp8PC105He85TlNtmXFtckZ
-	Jq3tdls2T1B5GWO5hJwgBdIAX0tOTLh0PQxGsNkoU7jqv5ih2KXL7APgyKiFDEoBe24nMicDgHV
-	pF1bd32tGYhodj/XX7xI+pt/A=
-X-Google-Smtp-Source: AGHT+IEAbkYexDq6opE/RHcWGXGaG9IQZqQuowS+lidqh7NE88eFU6gVV4oNIEt+OqoiQG7s1o7+ow==
-X-Received: by 2002:a05:6000:2881:b0:42b:3dfb:645c with SMTP id ffacd0b85a97d-42cc1ac9debmr18306375f8f.12.1764100643122;
-        Tue, 25 Nov 2025 11:57:23 -0800 (PST)
-Received: from linaro.org ([2a02:2454:ff23:4430:a656:9e9b:eea0:17e9])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-42cb7fb9190sm36157180f8f.33.2025.11.25.11.57.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Nov 2025 11:57:22 -0800 (PST)
-Date: Tue, 25 Nov 2025 20:57:18 +0100
-From: Stephan Gerhold <stephan.gerhold@linaro.org>
-To: manivannan.sadhasivam@oss.qualcomm.com
-Cc: Rob Herring <robh@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Nathan Chancellor <nathan@kernel.org>,
-	Nicolas Schier <nicolas.schier@linux.dev>,
-	Hans de Goede <hansg@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Mark Pearson <mpearson-lenovo@squebb.ca>,
-	"Derek J. Clark" <derekjohn.clark@gmail.com>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Marcel Holtmann <marcel@holtmann.org>,
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-	Bartosz Golaszewski <brgl@bgdev.pl>, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
-	platform-driver-x86@vger.kernel.org, linux-pci@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-	linux-bluetooth@vger.kernel.org, linux-pm@vger.kernel.org,
-	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Subject: Re: [PATCH v2 00/10] Add support for handling PCIe M.2 Key E
- connectors in devicetree
-Message-ID: <aSYKHjpJkXWUVIyo@linaro.org>
-References: <20251125-pci-m2-e-v2-0-32826de07cc5@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cviqIa9B"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84D9FC4CEF1;
+	Tue, 25 Nov 2025 22:54:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1764111285;
+	bh=S9CohV3WfyjsUpzsiQrOOpbeG/bubQXmxtesOUEle0s=;
+	h=From:Date:Subject:To:Cc:From;
+	b=cviqIa9BGbcTWPGqY8LQMxLy+m+tweNHvZXJOmvezINxxUmi3NJ7v2hNyW4fGGipG
+	 i1kZrZsk/7pMZ/2G7bDuARXmZAyTlwMEKK8rUtrXo9JjBTfpgceEkHjrH5OBVz0SSv
+	 D5lhIb7wQPf96YnvP+DuZbYQSdoTqHv0lCbo0ntBPvbDaJDrB693dsZu0Zchtc6Icr
+	 6TvwN6eYjzu9GB0zT2aznwanfrtTZKKj6nyO8BHQA3LcFvwqQMrPyXFasdqy5pqMPS
+	 urZklCN6o+ecXkZ3jjzgEknrWyvEEfs4Y9cc8vgSk73nqpkiK/a+hZG44KfzGzrcqF
+	 qlUV+jL1iAm1g==
+From: Nathan Chancellor <nathan@kernel.org>
+Date: Tue, 25 Nov 2025 15:54:37 -0700
+Subject: [PATCH] tty: vt/keyboard: Split apart vt_do_diacrit()
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251125-pci-m2-e-v2-0-32826de07cc5@oss.qualcomm.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20251125-tty-vt-keyboard-wa-clang-scope-check-error-v1-1-f5a5ea55c578@kernel.org>
+X-B4-Tracking: v=1; b=H4sIAKwzJmkC/yXNUQrCMBCE4auUfXbBBIPgVcSHdDO1sdKUTVotp
+ Xc36uMHw/wbZWhEpkuzkWKJOaaxwhwakt6Pd3AM1WSP1hljHZey8lJ4wNomr4FfnuVZh5wlTWD
+ pIQNDNSm3OAUXzsF1FlQPJ0UX37/Y9fZ3ntsHpHwLtO8f2SuI9Y4AAAA=
+X-Change-ID: 20251125-tty-vt-keyboard-wa-clang-scope-check-error-be4d5d7d5f2e
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: Nick Desaulniers <nick.desaulniers+lkml@gmail.com>, 
+ Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>, 
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ llvm@lists.linux.dev, kernel test robot <lkp@intel.com>, 
+ Nathan Chancellor <nathan@kernel.org>
+X-Mailer: b4 0.15-dev
+X-Developer-Signature: v=1; a=openpgp-sha256; l=9562; i=nathan@kernel.org;
+ h=from:subject:message-id; bh=S9CohV3WfyjsUpzsiQrOOpbeG/bubQXmxtesOUEle0s=;
+ b=owGbwMvMwCUmm602sfCA1DTG02pJDJlqxptd9p7+2rdcVDrOs9rtWRl78QTd3eKM7SdOppz1u
+ l/9YX5dRykLgxgXg6yYIkv1Y9XjhoZzzjLeODUJZg4rE8gQBi5OAZjI7jeMDL0n/kkcXuDxQ/v4
+ 86WTjZwr15xKLUtbtuVgTEtWdqx+RQ8jw9q0nKXp9SqmO2Y0+Vdoxcz3OOZhtvaFjeicfUsdcxl
+ S+AA=
+X-Developer-Key: i=nathan@kernel.org; a=openpgp;
+ fpr=2437CB76E544CB6AB3D9DFD399739260CB6CB716
 
-On Tue, Nov 25, 2025 at 08:15:04PM +0530, Manivannan Sadhasivam via B4 Relay wrote:
-> This series is the continuation of the series [1] that added the initial support
-> for the PCIe M.2 connectors. This series extends it by adding support for Key E
-> connectors. These connectors are used to connect the Wireless Connectivity
-> devices such as WiFi, BT, NFC and GNSS devices to the host machine over
-> interfaces such as PCIe/SDIO, USB/UART and NFC. This series adds support for
-> connectors that expose PCIe interface for WiFi and UART interface for BT. Other
-> interfaces are left for future improvements.
-> 
-> Serdev device support for BT
-> ============================
-> 
-> Adding support for the PCIe interface was mostly straightforward and a lot
-> similar to the previous Key M connector. But adding UART interface has proved to
-> be tricky. This is mostly because of the fact UART is a non-discoverable bus,
-> unlike PCIe which is discoverable. So this series relied on the PCI notifier to
-> create the serdev device for UART/BT. This means the PCIe interface will be
-> brought up first and after the PCIe device enumeration, the serdev device will
-> be created by the pwrseq driver. This logic is necessary since the connector
-> driver and DT node don't describe the device, but just the connector. So to make
-> the connector interface Plug and Play, the connector driver uses the PCIe device
-> ID to identify the card and creates the serdev device. This logic could be
-> extended in the future to support more M.2 cards. Even if the M.2 card uses SDIO
-> interface for connecting WLAN, a SDIO notifier could be added to create the
-> serdev device.
-> 
-> Open questions
-> ==============
-> 
-> Though this series adds the relevant functionality for handling the M.2 Key M
-> connectors, there are still a few open questions exists on the design. 
-> 
-> 1. I've used the M.2 card model name as the serdev device name. This is found
-> out by comparing the PCIe VID:PID in the notifier. Is this approach acceptable?
-> I did not use the PID as the serdev name since it will vary if the SDIO
-> interface is used in the future.
-> 
-> 2. PCIe client drivers of some M.2 WLAN cards like the Qcom QCA6390, rely on
-> the PCIe device DT node to extract properties such as
-> 'qcom,calibration-variant', 'firmware-name', etc... For those drivers, should we
-> add the PCIe DT node in the Root Port in conjunction with the Port node as
-> below?
-> 
-> pcie@0 {
-> 	wifi@0 {
-> 		compatible = "pci17cb,1103";
-> 		...
-> 		qcom,calibration-variant = "LE_X13S";
-> 	};
-> 
-> 	port {
-> 		pcie4_port0_ep: endpoint {
-> 			remote-endpoint = <&m2_e_pcie_ep>;
-> 		};
-> 	};
-> };
-> 
-> This will also require marking the PMU supplies optional in the relevant ath
-> bindings for M.2 cards.
-> 
-> 3. Some M.2 cards require specific power up sequence like delays between
-> regulator/GPIO and such. For instance, the WCN7850 card supported in this series
-> requires 50ms delay between powering up an interface and driving it. I've just
-> hardcoded the delay in the driver, but it is a pure hack. Since the pwrseq
-> driver doesn't know anything about the device it is dealing with before powering
-> it ON, how should it handle the device specific power requirements? Should we
-> hardcode the device specific property in the connector node? But then, it will
-> no longer become a generic M.2 connector and sort of defeats the purpose of the
-> connector binding.
-> 
-> I hope to address these questions with the help of the relevant subsystem
-> maintainers and the community. 
-> 
-> Testing
-> =======
-> 
-> This series, together with the devicetree changes [2] was tested on the
-> Qualcomm X1e based Lenovo Thinkpad T14s Laptop which has the WCN7850 WLAN/BT M.2
-> card connected over PCIe and UART.
-> 
-> [2] https://github.com/Mani-Sadhasivam/linux/commit/acbee74a5c90fc8839bb7b6f326c677ee1c0d89c
+After commit bfb24564b5fd ("tty: vt/keyboard: use __free()"), builds
+using asm goto for put_user() and get_user() with a version of clang
+older than 17 error with:
 
-Thanks for working on describing the M.2 connectors properly in the
-device tree!
+  drivers/tty/vt/keyboard.c:1709:7: error: cannot jump from this asm goto statement to one of its possible targets
+                  if (put_user(asize, &a->kb_cnt))
+                      ^
+  ...
+  arch/arm64/include/asm/uaccess.h:298:2: note: expanded from macro '__put_mem_asm'
+          asm goto(                                                       \
+          ^
+  drivers/tty/vt/keyboard.c:1687:7: note: possible target of asm goto statement
+                  if (put_user(asize, &a->kb_cnt))
+                      ^
+  ...
+  arch/arm64/include/asm/uaccess.h:342:2: note: expanded from macro '__raw_put_user'
+          __rpu_failed:                                                   \
+          ^
+  drivers/tty/vt/keyboard.c:1697:23: note: jump exits scope of variable with __attribute__((cleanup))
+                  void __free(kfree) *buf = kmalloc_array(MAX_DIACR, sizeof(struct kbdiacruc),
+                                      ^
+  drivers/tty/vt/keyboard.c:1671:33: note: jump bypasses initialization of variable with __attribute__((cleanup))
+                  struct kbdiacr __free(kfree) *dia = kmalloc_array(MAX_DIACR, sizeof(struct kbdiacr),
+                                                ^
 
-I haven't had time to look into this in detail yet, but a quick look at
-the dt-bindings and examples looks good to me! Thanks for keeping the
-bindings as generic as possible.
+Prior to a fix to clang's scope checker in clang 17 [1], all labels in a
+function were validated as potential targets of all asm gotos in a
+function, regardless of whether they actually were a target of an asm
+goto call, resulting in false positive errors about skipping over
+variables marked with the cleanup attribute.
 
-I have a small nitpick for the specific example you have here: The
-Lenovo ThinkPad T14s does not actually have a "M.2 Mechanical Key E
-connector". If you look at a picture of the mainboard [1], the WLAN/BT
-module is "soldered-down" (look on the right, on the right side next to
-the large copper bracket). In the M.2 specification, "soldered-down"
-modules do not have a "key", they have a specific pinout that is
-followed (see section 5.4). The power sequencing etc and the set of pins
-is quite similar/the same though.
+To workaround this error, split up the bodies of the case statements in
+vt_do_diacrit() into their own functions so that the scope checker does
+not trip up on the multiple instances of __free().
 
-My notes (from a few months ago) suggest the T14s probably uses a
-non-standard M.2 Type 1620 LGA pinout. I don't remember the exact chain
-of thought behind that, but you can find similarly looking modules with
-this type, e.g. https://www.sparklan.com/product/wnsq-290be/. There is a
-1620 *BGA* pinout in the M.2 specification, but a 1620 *LGA* pinout does
-not exist there. Interestingly, in the block diagram of the module in
-the link above this type is called *Q*M.2 1620 LGA 168 pin, as if this
-is some Qualcomm-specific form factor.
+Reported-by: kernel test robot <lkp@intel.com>
+Closes: https://lore.kernel.org/oe-kbuild-all/202509091702.Oc7eCRDw-lkp@intel.com/
+Closes: https://lore.kernel.org/oe-kbuild-all/202511241835.EA8lShgH-lkp@intel.com/
+Link: https://github.com/llvm/llvm-project/commit/f023f5cdb2e6c19026f04a15b5a935c041835d14 [1]
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+---
+ drivers/tty/vt/keyboard.c | 221 ++++++++++++++++++++++++----------------------
+ 1 file changed, 115 insertions(+), 106 deletions(-)
 
-A real mechanical key E connector can be found e.g. in the X1E CRD, X1E
-Devkit, or I think some of the X1E-based HP laptops (would need to check
-which one exactly).
+diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
+index d65fc60dd7be..3538d54d6a6a 100644
+--- a/drivers/tty/vt/keyboard.c
++++ b/drivers/tty/vt/keyboard.c
+@@ -1649,134 +1649,143 @@ int __init kbd_init(void)
+ 
+ /* Ioctl support code */
+ 
+-/**
+- *	vt_do_diacrit		-	diacritical table updates
+- *	@cmd: ioctl request
+- *	@udp: pointer to user data for ioctl
+- *	@perm: permissions check computed by caller
+- *
+- *	Update the diacritical tables atomically and safely. Lock them
+- *	against simultaneous keypresses
+- */
+-int vt_do_diacrit(unsigned int cmd, void __user *udp, int perm)
++static int vt_do_kdgkbdiacr(void __user *udp)
+ {
+-	int asize;
+-
+-	switch (cmd) {
+-	case KDGKBDIACR:
+-	{
+-		struct kbdiacrs __user *a = udp;
+-		int i;
++	struct kbdiacrs __user *a = udp;
++	int i, asize;
+ 
+-		struct kbdiacr __free(kfree) *dia = kmalloc_array(MAX_DIACR, sizeof(struct kbdiacr),
+-								  GFP_KERNEL);
+-		if (!dia)
+-			return -ENOMEM;
++	struct kbdiacr __free(kfree) *dia = kmalloc_array(MAX_DIACR, sizeof(struct kbdiacr),
++							  GFP_KERNEL);
++	if (!dia)
++		return -ENOMEM;
+ 
+-		/* Lock the diacriticals table, make a copy and then
+-		   copy it after we unlock */
+-		scoped_guard(spinlock_irqsave, &kbd_event_lock) {
+-			asize = accent_table_size;
+-			for (i = 0; i < asize; i++) {
+-				dia[i].diacr = conv_uni_to_8bit(accent_table[i].diacr);
+-				dia[i].base = conv_uni_to_8bit(accent_table[i].base);
+-				dia[i].result = conv_uni_to_8bit(accent_table[i].result);
+-			}
++	/* Lock the diacriticals table, make a copy and then
++	   copy it after we unlock */
++	scoped_guard(spinlock_irqsave, &kbd_event_lock) {
++		asize = accent_table_size;
++		for (i = 0; i < asize; i++) {
++			dia[i].diacr = conv_uni_to_8bit(accent_table[i].diacr);
++			dia[i].base = conv_uni_to_8bit(accent_table[i].base);
++			dia[i].result = conv_uni_to_8bit(accent_table[i].result);
+ 		}
+-
+-		if (put_user(asize, &a->kb_cnt))
+-			return -EFAULT;
+-		if (copy_to_user(a->kbdiacr, dia, asize * sizeof(struct kbdiacr)))
+-			return -EFAULT;
+-		return 0;
+ 	}
+-	case KDGKBDIACRUC:
+-	{
+-		struct kbdiacrsuc __user *a = udp;
+ 
+-		void __free(kfree) *buf = kmalloc_array(MAX_DIACR, sizeof(struct kbdiacruc),
+-							GFP_KERNEL);
+-		if (buf == NULL)
+-			return -ENOMEM;
++	if (put_user(asize, &a->kb_cnt))
++		return -EFAULT;
++	if (copy_to_user(a->kbdiacr, dia, asize * sizeof(struct kbdiacr)))
++		return -EFAULT;
++	return 0;
++}
+ 
+-		/* Lock the diacriticals table, make a copy and then
+-		   copy it after we unlock */
+-		scoped_guard(spinlock_irqsave, &kbd_event_lock) {
+-			asize = accent_table_size;
+-			memcpy(buf, accent_table, asize * sizeof(struct kbdiacruc));
+-		}
++static int vt_do_kdgkbdiacruc(void __user *udp)
++{
++	struct kbdiacrsuc __user *a = udp;
++	int asize;
+ 
+-		if (put_user(asize, &a->kb_cnt))
+-			return -EFAULT;
+-		if (copy_to_user(a->kbdiacruc, buf, asize * sizeof(struct kbdiacruc)))
+-			return -EFAULT;
++	void __free(kfree) *buf = kmalloc_array(MAX_DIACR, sizeof(struct kbdiacruc),
++						GFP_KERNEL);
++	if (buf == NULL)
++		return -ENOMEM;
+ 
+-		return 0;
++	/* Lock the diacriticals table, make a copy and then
++	   copy it after we unlock */
++	scoped_guard(spinlock_irqsave, &kbd_event_lock) {
++		asize = accent_table_size;
++		memcpy(buf, accent_table, asize * sizeof(struct kbdiacruc));
+ 	}
+ 
+-	case KDSKBDIACR:
+-	{
+-		struct kbdiacrs __user *a = udp;
+-		struct kbdiacr __free(kfree) *dia = NULL;
+-		unsigned int ct;
+-		int i;
++	if (put_user(asize, &a->kb_cnt))
++		return -EFAULT;
++	if (copy_to_user(a->kbdiacruc, buf, asize * sizeof(struct kbdiacruc)))
++		return -EFAULT;
+ 
+-		if (!perm)
+-			return -EPERM;
+-		if (get_user(ct, &a->kb_cnt))
+-			return -EFAULT;
+-		if (ct >= MAX_DIACR)
+-			return -EINVAL;
++	return 0;
++}
+ 
+-		if (ct) {
+-			dia = memdup_array_user(a->kbdiacr,
+-						ct, sizeof(struct kbdiacr));
+-			if (IS_ERR(dia))
+-				return PTR_ERR(dia);
+-		}
++static int vt_do_kdskbdiacr(void __user *udp, int perm)
++{
++	struct kbdiacrs __user *a = udp;
++	struct kbdiacr __free(kfree) *dia = NULL;
++	unsigned int ct;
++	int i;
+ 
+-		guard(spinlock_irqsave)(&kbd_event_lock);
+-		accent_table_size = ct;
+-		for (i = 0; i < ct; i++) {
+-			accent_table[i].diacr =
+-					conv_8bit_to_uni(dia[i].diacr);
+-			accent_table[i].base =
+-					conv_8bit_to_uni(dia[i].base);
+-			accent_table[i].result =
+-					conv_8bit_to_uni(dia[i].result);
+-		}
++	if (!perm)
++		return -EPERM;
++	if (get_user(ct, &a->kb_cnt))
++		return -EFAULT;
++	if (ct >= MAX_DIACR)
++		return -EINVAL;
+ 
+-		return 0;
++	if (ct) {
++		dia = memdup_array_user(a->kbdiacr,
++					ct, sizeof(struct kbdiacr));
++		if (IS_ERR(dia))
++			return PTR_ERR(dia);
+ 	}
+ 
+-	case KDSKBDIACRUC:
+-	{
+-		struct kbdiacrsuc __user *a = udp;
+-		unsigned int ct;
+-		void __free(kfree) *buf = NULL;
++	guard(spinlock_irqsave)(&kbd_event_lock);
++	accent_table_size = ct;
++	for (i = 0; i < ct; i++) {
++		accent_table[i].diacr =
++				conv_8bit_to_uni(dia[i].diacr);
++		accent_table[i].base =
++				conv_8bit_to_uni(dia[i].base);
++		accent_table[i].result =
++				conv_8bit_to_uni(dia[i].result);
++	}
+ 
+-		if (!perm)
+-			return -EPERM;
++	return 0;
++}
+ 
+-		if (get_user(ct, &a->kb_cnt))
+-			return -EFAULT;
++static int vt_do_kdskbdiacruc(void __user *udp, int perm)
++{
++	struct kbdiacrsuc __user *a = udp;
++	unsigned int ct;
++	void __free(kfree) *buf = NULL;
+ 
+-		if (ct >= MAX_DIACR)
+-			return -EINVAL;
++	if (!perm)
++		return -EPERM;
+ 
+-		if (ct) {
+-			buf = memdup_array_user(a->kbdiacruc,
+-						ct, sizeof(struct kbdiacruc));
+-			if (IS_ERR(buf))
+-				return PTR_ERR(buf);
+-		}
+-		guard(spinlock_irqsave)(&kbd_event_lock);
+-		if (ct)
+-			memcpy(accent_table, buf,
+-					ct * sizeof(struct kbdiacruc));
+-		accent_table_size = ct;
+-		return 0;
++	if (get_user(ct, &a->kb_cnt))
++		return -EFAULT;
++
++	if (ct >= MAX_DIACR)
++		return -EINVAL;
++
++	if (ct) {
++		buf = memdup_array_user(a->kbdiacruc,
++					ct, sizeof(struct kbdiacruc));
++		if (IS_ERR(buf))
++			return PTR_ERR(buf);
+ 	}
++	guard(spinlock_irqsave)(&kbd_event_lock);
++	if (ct)
++		memcpy(accent_table, buf,
++				ct * sizeof(struct kbdiacruc));
++	accent_table_size = ct;
++	return 0;
++}
++
++/**
++ *	vt_do_diacrit		-	diacritical table updates
++ *	@cmd: ioctl request
++ *	@udp: pointer to user data for ioctl
++ *	@perm: permissions check computed by caller
++ *
++ *	Update the diacritical tables atomically and safely. Lock them
++ *	against simultaneous keypresses
++ */
++int vt_do_diacrit(unsigned int cmd, void __user *udp, int perm)
++{
++	switch (cmd) {
++	case KDGKBDIACR:
++		return vt_do_kdgkbdiacr(udp);
++	case KDGKBDIACRUC:
++		return vt_do_kdgkbdiacruc(udp);
++	case KDSKBDIACR:
++		return vt_do_kdskbdiacr(udp, perm);
++	case KDSKBDIACRUC:
++		return vt_do_kdskbdiacruc(udp, perm);
+ 	}
+ 	return 0;
+ }
 
-I'm not sure if it's really appropriate modeling the "soldered-down"
-variant as "Mechanical Key E connector" in the DT. We might need
-a separate compatible for this. Do you have any thoughts about that?
+---
+base-commit: da218406dd50e0ac96bb383de4edd208286efe70
+change-id: 20251125-tty-vt-keyboard-wa-clang-scope-check-error-be4d5d7d5f2e
 
-Thanks,
-Stephan
+Best regards,
+--  
+Nathan Chancellor <nathan@kernel.org>
 
-[1]: https://www.notebookcheck.com/fileadmin/_processed_/d/c/csm_DSC_0003_aadae1ddd2.jpg
