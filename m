@@ -1,65 +1,65 @@
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95011328260
-	for <linux-serial@vger.kernel.org>; Tue, 25 Nov 2025 15:06:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FC90329C74
+	for <linux-serial@vger.kernel.org>; Tue, 25 Nov 2025 15:06:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764083210; cv=none; b=R0POXz1IpJcIi3iyIZzt8YMenqRDimwxc5UbZRQufOj6HIedyksKJpJjqtkF22MYkOWruKubkWgPtbO2KI9//N6D2SfTtdy2056F6DlhKySnTauVkTFrCixVgyHaYKwvbpW9K47/QJHh4ZZC56LR9HsjteM/zFzbLcvqHDLw7rc=
+	t=1764083211; cv=none; b=ultlFLNU5S0WOyJ950xXR0DGYgtcT4RK++x2lgfgV669Wn9Mvs8Ohabfp4mGRPAeo9PnH07ZMMML/zkas7nJ7TKLwqXJezZcN+Ph+MQ34x/O1Ygat8WgFL96D/WucmLiLdtiSZX5SJoYFze9oI8ab0lYZylWVqKb8zqJ+XQspp8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764083210; c=relaxed/simple;
-	bh=Et690Nyk+pHGvb5l80zTzY2XD8G7Ab7SHaBdICOlCHA=;
+	s=arc-20240116; t=1764083211; c=relaxed/simple;
+	bh=GR7AQUFCcqvPF/xmvO64o5WNJi1uyjJFb8FwxFAhp1g=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=MP+7E+izXibtqHMmtlCfiHdhVDKNXUd7IF4+ych9MFfDuSnyqOXF363aIIo7R1/jzNVoQRZ+/RxGbv5qxwx/w2WgBeAjsEb87dTRtn5S4AaHW2NiX8kSfKXuBMHslZWrzyceHpf2FbQ5KB2JNSgjjHTb4kFMGqPRtsNdpUI8RjM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DQWPqBOo; arc=none smtp.client-ip=209.85.221.52
+	 MIME-Version; b=Jkmq9anpCLgrhLve9/xNNDGw96mZk0W+WpLcr2OEzLFtQlJ5KycgG/7UAmC9eYTqpleC9qv1ZkCuYJJAvvv5QlZO4m0C7Vpvy3ZdQd3UVyACj32dCz9ncd1JSTWT3nbSI3ZyrfTr9X6t+3crok/MSavHtRHDyUR/ow8HcUnfmmU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IJhQh+PK; arc=none smtp.client-ip=209.85.221.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DQWPqBOo"
-Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-429c82bf86bso3305626f8f.1
-        for <linux-serial@vger.kernel.org>; Tue, 25 Nov 2025 07:06:45 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IJhQh+PK"
+Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-42b31507ed8so4770928f8f.1
+        for <linux-serial@vger.kernel.org>; Tue, 25 Nov 2025 07:06:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1764083204; x=1764688004; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1764083206; x=1764688006; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=7uBC2MlE1HUaPDZb990/KasBIbCj5RriVOgSLly0aqY=;
-        b=DQWPqBOoJqbCl4InN4YsYk4GG0gcpbFXaVbWrzpY70oq9QWn6AC9I4FcdYmSQ+PHUI
-         TVHbi+1DzZVhuSyo1p+fg3ft6Bd3YeTyB2LadK1U/LFnRYIh17RhQbBHujgpRwiEIi1Y
-         grzcuPydxVzW/1dsBBSIQbSjmzOMCL8PbTvwbuyrPnC2GRTY4wCJI9XYO8qnn/AlXIG4
-         8moDXTCUvyZYGmlboBT1Bi5rTSLqDVw7N4JlZviAGQIPHb1AtLP9NkWkOJdUN9P8m9/4
-         eJZzGCS7vhz9IBkMx4/z6dP4X+8PTHs9XpHDiu0HM+dzyZGnp/XsGndA/Brdd523hi1m
-         SX1Q==
+        bh=PMdMTt+JFYnpGbbPIGHe+o50cDdqqdMvbBY5niAClpg=;
+        b=IJhQh+PKAQVk2UZj0tVZJtV7EIedRqB6V2K0f11CfavvxedcfOUCM4vMjDjeKMdHA5
+         wg5gjWtOgCgRpKNdVCp7gYWVRpXN0fdBsAwff2Ddhd8YNxt++w25j2rs8dnR/OYByWA6
+         BCrtDwMLXrEe6pVrInos5ruHmTtNyXx2cWL5GL3IOz9BRWpUu0qaZ5RRpIax3TTRO+rs
+         q0ayWyjcLcJlRRpWFvT3HsnijUGVOMv3W2eZ5Nup+sWEMq7mPWhg+mRVJGOBvz3I8f/+
+         N9svwtKji7GE7nCAZOdEJ+EWe04ubPgPChNuGD+ChsIpaHjVvM+n/R/JVfD/fsjuhsmR
+         ha2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764083204; x=1764688004;
+        d=1e100.net; s=20230601; t=1764083206; x=1764688006;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=7uBC2MlE1HUaPDZb990/KasBIbCj5RriVOgSLly0aqY=;
-        b=nch+LyQg2XaWSAVgcJG7Oe7BLr1lCofnAC5lDQbscB74HNJxA9uJR8wJDyjXexOrj2
-         0MC/RklZzkMKfNoMyKJlnUadiweT/8neok3QikcWPCI46op7AkqirZru3xEE0lTdmBdT
-         avAbqErwiA4PZybz2AoUyLgGA69PRVnLRwveuJ3EzJjo492xshMX4w2NgrifiLRToWf5
-         YZKxN/+cnMRpDfyQSPFdRfdNYg3GZ96ksBzVgaGMxN29J7cLc2nfT+uZPlKjv3It+D+C
-         VTkWFQoLEih8qScfOsNk5W7VDvVlU+MVqjxB/jktaWgMDMbVN52uhEVs4iS9s5N584lu
-         q8Ug==
-X-Forwarded-Encrypted: i=1; AJvYcCWIKgqJhznsOdQZnY6QRpSkMcax4wajzT5OUoicBVU5brzmCo2bSfvkeom1eW8TSJALA9M4XxNwjWFeTbE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyEN2O9raX2grvLtIoi/5eucO0BdZ3neA8kGypA9TLCbKYGE8Vi
-	JNHMhokHVhB/uDAnO8gXJdodcWe1rta5e8I9jVcG+r6PZ+j8xYBHxYHE
-X-Gm-Gg: ASbGncsHNh1IdDh5BF8UozewuXlfIFRqMnQTpSTkPbofKLyXgyryG0vxS6IkcBzepcV
-	aIHqnx7NudU6qIfgOHWP5LEx2lh2/aw+2Vv6eV8UWvrXu+wLIS7QWxi1r+QqS1pBVm5+16h4hT1
-	3rO1JONLRIkmfG4FbkqGzFJnfOUXVWdaXvyV513nu3EfljvfXdd4u+CwUYUWaKbOfP79LtdBTMr
-	CxEjNeqq/80HBEnCRRS01G68SP2GhYxP1GY9v7SJ3KuXF/aCkABRCLvCtmJI/g4+/vBgM6C+Rqm
-	xUrsm+YskLslbO0Lsd+vyOWHERaTKEQ4Tj0UFhDH0v1xKegPmKond6pIuor6x41vhWuxAkIKhqc
-	CGtg0Z4S/06owOCV7fCfXzyNAbGf1hywDdeQFtGE/SJEKDP8bCRSdRYq0WRxRqHc3a+Yyjg9FDp
-	s/ON8W7g3bJzjbmzWkgvpgd0J4NvKbdYQd82VV9Ogt1TLlQDwSfro7DJHEnkufBBnVEosUKFjNA
-	ypNBXl0XdV/WWS2Nd1jsqBf5To=
-X-Google-Smtp-Source: AGHT+IGhwA2qdHgjK6YzJJeEkagwt4swWh4uBsW/k/KPMyocV9syebEZD5VRePRYGEoDb7M2JT1+hg==
-X-Received: by 2002:a05:6000:1866:b0:427:580:998c with SMTP id ffacd0b85a97d-42cc1d0cf60mr16904982f8f.43.1764083203740;
-        Tue, 25 Nov 2025 07:06:43 -0800 (PST)
+        bh=PMdMTt+JFYnpGbbPIGHe+o50cDdqqdMvbBY5niAClpg=;
+        b=FxdMviaCL1q3D20yumkyu08NnpGSzPCo6OkZa2yUF1omi+JSaMP/VXILDr6e9R1b/q
+         QMfX10OKG+9z/TKG9vyNC3YeMU6R6Mw22YRjhnf+hUS7OGGd7KvpSntfNyySK5VcAoOD
+         KnHZ4HxUN0RjHmxUS8OGrkv9h2GzCVbFoUQ9tfdeWv3gskiEbZmB8uQ4yP5ow7Rdyp++
+         Yucn4ABJa2O6PRzo75+l+TRyWYzsPuYM/5RNHQdPuYfbaEZhHeW//gKFZyhc5ZMtApSX
+         hYX0uZSvQuH2AfOTdT95pDpWYKaXYDqbLItt2CyyiHj4s1v9+C/gkkxbMS1BR+rl78QZ
+         QAkw==
+X-Forwarded-Encrypted: i=1; AJvYcCVfr3LOAiaksLOEZgCFz5ZT30+yJBhVlBqGXHcmwaAa9iTA6RD6Qwz6tjXbG5l2EPjiBajDmVSLIOCJhCQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz2Ffy9rZn6yf3RNnVmXbUOnsKLFu0EfgJegXRciH6zBFUbVWC0
+	gNgVV6lndH4KngC5rTh9IrZnUMKE2373wgDNKEW/RhV316XonTljb4rw
+X-Gm-Gg: ASbGncuamnYw17ZxNaNY57udeHsVr/lde54rhB/bhJEvrVR6OxPlQFLzNNeKNB9zxyQ
+	RHfnpOouyzURA+tdcVGOAd6sDZ/D5elIuds6UJF8ZHsCgz2Ess3fNZWJkrxIkD4mBpFy169UZx+
+	uGrKwQaWAyz8FYTVCs9ZxoGmOY5NNDhenIjfo5u+xtOLp71fpXGemlLzEdxrv21dkwC/quA21Gq
+	7R/8QVOa5hhU3c9P7QhJo1+prALq71U+Bj3oQ6BO/9ovaWzFkebmG4lyDvTRY/mVE1eFx+GY6gD
+	R8nR/ywacAPbPmwhNVH6peO5BU8ZaVhTEAosJqh7auK0/6EtGDwafHAFiIm3atYEYvb9QzLeGE6
+	lL2+axo9Bi9fN9Ue3s89AWIvpXrQBZPov3HWe+nGEZtFIjqCEMSovIT3fTEPFR2maWAT/1RbLzs
+	kIilG+IVBkPdfPPFjkufcGl/F/B5uK9Z/VNzz2ZFvDrtKR5PqNmyhruUIxZ6bhqWhmexPipG8FV
+	Q==
+X-Google-Smtp-Source: AGHT+IFuWiI66xvhdjHEr9Z1CmL3fFUvEFoM5WKfaDkk3t2aGCOFdyz4xMINOhVkrmyybZo0cqY9jg==
+X-Received: by 2002:a05:6000:26c1:b0:42b:5592:ebd1 with SMTP id ffacd0b85a97d-42e0f133696mr3679548f8f.0.1764083206283;
+        Tue, 25 Nov 2025 07:06:46 -0800 (PST)
 Received: from localhost.localdomain (host86-162-200-138.range86-162.btcentralplus.com. [86.162.200.138])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-42cb7fba201sm34797809f8f.32.2025.11.25.07.06.43
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-42cb7fba201sm34797809f8f.32.2025.11.25.07.06.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Nov 2025 07:06:43 -0800 (PST)
+        Tue, 25 Nov 2025 07:06:46 -0800 (PST)
 From: Biju <biju.das.au@gmail.com>
 X-Google-Original-From: Biju <biju.das.jz@bp.renesas.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -77,9 +77,9 @@ Cc: Biju Das <biju.das.jz@bp.renesas.com>,
 	devicetree@vger.kernel.org,
 	linux-renesas-soc@vger.kernel.org,
 	Biju Das <biju.das.au@gmail.com>
-Subject: [PATCH v4 11/16] serial: sh-sci: Add RSCI_PORT_SCIF32 port ID
-Date: Tue, 25 Nov 2025 15:06:13 +0000
-Message-ID: <20251125150632.299890-12-biju.das.jz@bp.renesas.com>
+Subject: [PATCH v4 15/16] serial: rsci: Update early_console data and callback() names
+Date: Tue, 25 Nov 2025 15:06:17 +0000
+Message-ID: <20251125150632.299890-16-biju.das.jz@bp.renesas.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20251125150632.299890-1-biju.das.jz@bp.renesas.com>
 References: <20251125150632.299890-1-biju.das.jz@bp.renesas.com>
@@ -93,60 +93,76 @@ Content-Transfer-Encoding: 8bit
 
 From: Biju Das <biju.das.jz@bp.renesas.com>
 
-The RZ/G3E RSCI IP has 32-stage FIFO compared to 16-stage FIFO on RZ/T2H.
-Add RSCI_PORT_SCIF32 port ID to differentiate it from RZ/T2H RSCI and
-update sci_is_rsci_type() and sci_is_fifo_type()
+Update early_console data of_sci_rsci_data->of_rsci_rzt2h_data and
+rename rsci_early_console_setup()->rsci_rzt2h_early_console_setup()
+to support RZ/G3E RSCI that uses different data and callback().
 
 Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 ---
-v3->v4:
- * Dropped enum RSCI_PORT_SCI
- * Replaced the enum RSCI_PORT_SCIF->RSCI_PORT_SCIF32
- * Moved rx_trigger update to later patch.
-v2->v3:
- * No change.
-v1->v2:
- * No change.
+v4:
+ * New patch.
 ---
- drivers/tty/serial/sh-sci-common.h | 1 +
- drivers/tty/serial/sh-sci.c        | 5 +++--
- 2 files changed, 4 insertions(+), 2 deletions(-)
+ drivers/tty/serial/rsci.c   | 10 +++++-----
+ drivers/tty/serial/rsci.h   |  2 +-
+ drivers/tty/serial/sh-sci.c |  2 +-
+ 3 files changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/tty/serial/sh-sci-common.h b/drivers/tty/serial/sh-sci-common.h
-index 1b9480c7f4cb..abcd5bcc7c36 100644
---- a/drivers/tty/serial/sh-sci-common.h
-+++ b/drivers/tty/serial/sh-sci-common.h
-@@ -8,6 +8,7 @@
- /* Private port IDs */
- enum SCI_PORT_TYPE {
- 	RSCI_PORT_SCIF16 = BIT(7) | 0,
-+	RSCI_PORT_SCIF32 = BIT(7) | 1,
+diff --git a/drivers/tty/serial/rsci.c b/drivers/tty/serial/rsci.c
+index c5d373ee494f..f6b61f33358c 100644
+--- a/drivers/tty/serial/rsci.c
++++ b/drivers/tty/serial/rsci.c
+@@ -444,7 +444,7 @@ static const struct sci_port_ops rsci_port_ops = {
+ 	.shutdown_complete	= rsci_shutdown_complete,
  };
  
- enum SCI_CLKS {
+-struct sci_of_data of_sci_rsci_data = {
++struct sci_of_data of_rsci_rzt2h_data = {
+ 	.type = RSCI_PORT_SCIF16,
+ 	.ops = &rsci_port_ops,
+ 	.uart_ops = &rsci_uart_ops,
+@@ -453,13 +453,13 @@ struct sci_of_data of_sci_rsci_data = {
+ 
+ #ifdef CONFIG_SERIAL_SH_SCI_EARLYCON
+ 
+-static int __init rsci_early_console_setup(struct earlycon_device *device,
+-					   const char *opt)
++static int __init rsci_rzt2h_early_console_setup(struct earlycon_device *device,
++						 const char *opt)
+ {
+-	return scix_early_console_setup(device, &of_sci_rsci_data);
++	return scix_early_console_setup(device, &of_rsci_rzt2h_data);
+ }
+ 
+-OF_EARLYCON_DECLARE(rsci, "renesas,r9a09g077-rsci", rsci_early_console_setup);
++OF_EARLYCON_DECLARE(rsci, "renesas,r9a09g077-rsci", rsci_rzt2h_early_console_setup);
+ 
+ #endif /* CONFIG_SERIAL_SH_SCI_EARLYCON */
+ 
+diff --git a/drivers/tty/serial/rsci.h b/drivers/tty/serial/rsci.h
+index 2af3f28b465a..9547148e8bd1 100644
+--- a/drivers/tty/serial/rsci.h
++++ b/drivers/tty/serial/rsci.h
+@@ -5,6 +5,6 @@
+ 
+ #include "sh-sci-common.h"
+ 
+-extern struct sci_of_data of_sci_rsci_data;
++extern struct sci_of_data of_rsci_rzt2h_data;
+ 
+ #endif /* __RSCI_H__ */
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 08a1898f14ea..9afc3b8aae91 100644
+index ee26ffc4632c..e7d4cac39906 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -1184,7 +1184,7 @@ static int sci_handle_errors(struct uart_port *port)
- 
- static bool sci_is_rsci_type(u8 type)
- {
--	return (type == RSCI_PORT_SCIF16);
-+	return (type == RSCI_PORT_SCIF16 || type == RSCI_PORT_SCIF32);
- }
- 
- static int sci_handle_fifo_overrun(struct uart_port *port)
-@@ -3548,7 +3548,8 @@ static struct uart_driver sci_uart_driver = {
- static bool sci_is_fifo_type(u8 type)
- {
- 	return (type == PORT_SCIFA || type == PORT_SCIFB ||
--		type == PORT_HSCIF || type == RSCI_PORT_SCIF16);
-+		type == PORT_HSCIF || type == RSCI_PORT_SCIF16 ||
-+		type == RSCI_PORT_SCIF32);
- }
- 
- static void sci_remove(struct platform_device *dev)
+@@ -3672,7 +3672,7 @@ static const struct of_device_id of_sci_match[] __maybe_unused = {
+ #ifdef CONFIG_SERIAL_RSCI
+ 	{
+ 		.compatible = "renesas,r9a09g077-rsci",
+-		.data = &of_sci_rsci_data,
++		.data = &of_rsci_rzt2h_data,
+ 	},
+ #endif	/* CONFIG_SERIAL_RSCI */
+ 	/* Family-specific types */
 -- 
 2.43.0
 
