@@ -1,97 +1,99 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 588D4285071;
-	Wed, 26 Nov 2025 09:12:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 860BB26A0DB;
+	Wed, 26 Nov 2025 11:20:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764148366; cv=none; b=AYLQcdqHmylw1ArtKGVeBfXqb1eBFdUxdMXpR0A9UUj8U4LICfH3T6NYjQ2/P9a+U6TOTOnCLaiXWSmLYBoVIxXjvFVOBpaBVpWf8tTXuhlzCQs8FMcRh2lMTHkRM5PjNNfMD2gZvkTm+F/AYv8TS4js7YzyOjM5crg5KKjOc4g=
+	t=1764156060; cv=none; b=bBWSshyu25D9vAtgX+8MJVxRSBTDkrIP37m4S94JA2zKkbLvhJINKwD+E3z0N2b8tx/kShpOH0YCJtzvNelPTqL69phfLKEqOPnSZxoE9ybbBNWYpJugiIX5+Yjcf4sjR/CqEYrip+Jy/pWNvUyW3mz2DbokNBWOAJDm/9Z8BcA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764148366; c=relaxed/simple;
-	bh=R9aJ44s0Pck4UKLhBc8/lG4gOTHPHzrmFn109fEeoF0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=XEXxJcOwqJZA2OE4ZT8JRfIoXAFROKNyrtY+cvatudiQxGL2Yp2tZ1d70aJW04ed9dYtCokiNuzn9aqnV6loMc3e6dVMTFaN59Pj5HvL60G2nRnFpXn1WVRMsD5AP3o108LKDw5PnvoBTyLF2PtaMJYuBtcM/3ycKg3AdXc6P/o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=J6TXh9rW; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1764156060; c=relaxed/simple;
+	bh=OAHgqHSuutAzajxjg4ZMojJbQ0FLRXY/bsAUAQ+tWtE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=V7re5kIHFpPck0xoxtYDmnVtWbcMWoxOw1Z5lEO7sKA12//KOmZpKJ5Yq0a8ntxFb6jlstUpf3r0weu6fNdyuR4rxSBMnXW009uBsZeJdO3+wDCYBXhfprTjDQs5mpJEYJClZFkG5/4+BTKKHWxd0L/MClJ6uFCeDl5GoxNb65o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KFlVFFKo; arc=none smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="J6TXh9rW"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3C8BC113D0;
-	Wed, 26 Nov 2025 09:12:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1764148365;
-	bh=R9aJ44s0Pck4UKLhBc8/lG4gOTHPHzrmFn109fEeoF0=;
-	h=From:To:Cc:Subject:Date:From;
-	b=J6TXh9rWpGe3fNOJ2puYp/RK1pzOGTDkkUpsv6sNAZA4eqJRIPsK3//yc76M0f8sf
-	 HcC9qdsiWxeuJvUDe1YzkWjpcFyE/qV2MhK5IT0XkGrchULTflK0Rq8nhQBmKph8V+
-	 IFd4z9gucF5sEJ561JTiFixRXE1RY75bDSlSBDP8gxPLhatOs8ktlb5orDNZbn6Czs
-	 Ex+XgLye9QefBTWLLdPmpvBgekOBMs8Em4evWZlJuEZ8besi0eyHsGzbn6LloBFBoH
-	 L4TZxgp5G5CiHcKpjNOEl1ZNkE/IwnXjttIwfB0WCYrFm4YkGND3qKVkd8foZIn9xL
-	 ujBZTsY6i8eLQ==
-From: Philipp Stanner <phasta@kernel.org>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KFlVFFKo"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1764156056; x=1795692056;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=OAHgqHSuutAzajxjg4ZMojJbQ0FLRXY/bsAUAQ+tWtE=;
+  b=KFlVFFKo0Bamc9PULlVnStioNjYNj1VtTBsEEBQDGfE2JyxpU34Uvaw/
+   KXth3CNL4a3hpvmsd8sard+xp9Q0jMj/nhC/WhAcJfkARkfgH4G/klXwQ
+   W3cR+QFi3F3J9dATZXHX1yq7JjLFq7Eq9X4m1bTXGCWFqXhIUUaxUlqO1
+   tdQfQf+BREEqfPnIOjtCze5iq3mMqXt2qODwOb+w+oNnTwTsXctAT1Gv6
+   obgZOCHEWcvALFXFDyecy3IqQY0i2Cw5rXQpvFhuZRZraVRI3HKceGmyA
+   8pnHoGipKqpIZWzcO85sstYPkI4C1hQ5AbwjDd+uW5t6XO9pVzckwaU6x
+   Q==;
+X-CSE-ConnectionGUID: VUz/LI9wRb6C/mY/reFvoA==
+X-CSE-MsgGUID: g7PCQHDUSoaKVUNIjYECyQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11624"; a="70053007"
+X-IronPort-AV: E=Sophos;i="6.20,228,1758610800"; 
+   d="scan'208";a="70053007"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2025 03:20:56 -0800
+X-CSE-ConnectionGUID: ccDy4/hUTmmWn0rLVaEBmg==
+X-CSE-MsgGUID: WX4Ff8DeSbyupnmFSLEykg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.20,228,1758610800"; 
+   d="scan'208";a="223634775"
+Received: from rvuia-mobl.ger.corp.intel.com (HELO localhost) ([10.245.245.89])
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2025 03:20:53 -0800
+Date: Wed, 26 Nov 2025 13:20:50 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Francesco Lavra <flavra@baylibre.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
-	Philipp Stanner <phasta@kernel.org>,
-	Peter Zijlstra <peterz@infradead.org>
-Cc: linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH] tty: serial: Replace deprecated PCI API
-Date: Wed, 26 Nov 2025 10:10:33 +0100
-Message-ID: <20251126091032.130787-2-phasta@kernel.org>
-X-Mailer: git-send-email 2.49.0
+	Kartik Rajput <kkartik@nvidia.com>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Wolfram Sang <wsa+renesas@sang-engineering.com>,
+	Robert Marko <robert.marko@sartura.hr>,
+	Thierry Bultel <thierry.bultel.yh@bp.renesas.com>,
+	Douglas Anderson <dianders@chromium.org>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH] serial: tegra: remove Kconfig dependency on APB DMA
+ controller
+Message-ID: <aSbikmpzkADKkna6@smile.fi.intel.com>
+References: <20251126090759.4042709-1-flavra@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251126090759.4042709-1-flavra@baylibre.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-pcim_iomap_table() is deprecated. Moreover, its special usage in 8250,
-causes a WARN_ON to fire (in pcim_add_mapping_to_legacy_table()).
+On Wed, Nov 26, 2025 at 10:07:59AM +0100, Francesco Lavra wrote:
+> This driver runs also on SoCs without a Tegra20 APB DMA controller (e.g.
+> Tegra234).
+> Remove the Kconfig dependency on TEGRA20_APB_DMA, and remove reference to
+> the APB DMA controller from the Kconfig help text.
 
-8250's function serial8250_pci_setup_port() effectively maps the same
-BAR multiple times and adds an offset to the start address. While
-mapping and adding offsets is not a bug, it can be achieved in a far
-more straightforward way by using the specialized function
-pcim_iomap_range().
+...
 
-pcim_iomap_range() does not add the mapping addresses to the deprecated
-iomap table - that's not a problem, however, because non of the users of
-serial8250_pci_setup_port() uses pcim_iomap_table().
+>  	help
+>  	  Support for the on-chip UARTs on the NVIDIA Tegra series SOCs
+>  	  providing /dev/ttyTHS0, 1, 2, 3 and 4 (note, some machines may not
+>  	  provide all of these ports, depending on how the serial port
+> -	  are enabled). This driver uses the APB DMA to achieve higher baudrate
+> -	  and better performance.
+> +	  are enabled).
 
-Replace the deprecated PCI functions with pcim_iomap_range().
+I think this removes a good piece of information. Perhaps rephrase?
 
-Cc: Guenter Roeck <linux@roeck-us.net>
-Link: https://lore.kernel.org/dri-devel/16cd212f-6ea0-471d-bf32-34f55d7292fe@roeck-us.net/
-Signed-off-by: Philipp Stanner <phasta@kernel.org>
----
-@Guenther: Can you please test this? I hope it fixes your issue.
----
- drivers/tty/serial/8250/8250_pcilib.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+	  This driver may use the APB DMA when available to achieve
+	  higher baudrate and better performance.
 
-diff --git a/drivers/tty/serial/8250/8250_pcilib.c b/drivers/tty/serial/8250/8250_pcilib.c
-index d8d0ae0d7238..f98eb2ab1005 100644
---- a/drivers/tty/serial/8250/8250_pcilib.c
-+++ b/drivers/tty/serial/8250/8250_pcilib.c
-@@ -28,13 +28,14 @@ int serial8250_pci_setup_port(struct pci_dev *dev, struct uart_8250_port *port,
- 		return -EINVAL;
- 
- 	if (pci_resource_flags(dev, bar) & IORESOURCE_MEM) {
--		if (!pcim_iomap(dev, bar, 0) && !pcim_iomap_table(dev))
--			return -ENOMEM;
--
- 		port->port.iotype = UPIO_MEM;
- 		port->port.iobase = 0;
- 		port->port.mapbase = pci_resource_start(dev, bar) + offset;
--		port->port.membase = pcim_iomap_table(dev)[bar] + offset;
-+
-+		port->port.membase = pcim_iomap_range(dev, bar, offset, 0);
-+		if (IS_ERR(port->port.membase))
-+			return PTR_ERR(port->port.membase);
-+
- 		port->port.regshift = regshift;
- 	} else if (IS_ENABLED(CONFIG_HAS_IOPORT)) {
- 		port->port.iotype = UPIO_PORT;
 -- 
-2.49.0
+With Best Regards,
+Andy Shevchenko
+
 
