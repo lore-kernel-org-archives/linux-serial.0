@@ -1,81 +1,145 @@
-Received: from mx09lb.world4you.com (mx09lb.world4you.com [81.19.149.119])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BE7E298987
-	for <linux-serial@vger.kernel.org>; Wed, 26 Nov 2025 21:19:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=81.19.149.119
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79C5D9463
+	for <linux-serial@vger.kernel.org>; Wed, 26 Nov 2025 21:33:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764191946; cv=none; b=GdB55dpwlCxT4QZxa973bK+PKhC0fv5UNlPV4xWClGNP5i+dqrO0ZSx6+rerCXKBgZ5MFvLl3FtorjqLf90KfnXdI482u7ebB/NorKbW4/Ggn/rcb/xDvokWbo+jNAnfdEElhZC9tmzpxMEIhQ7ujdneoYNIe5eWxwz0Z6noAiw=
+	t=1764192824; cv=none; b=H9PxpdlFvHz/aeE70btEazL6DtHQDDwy6q8WIIxaGTruKazly9WdOoV8O/wAy4eUCm5KITI1bWjX5YnaLKKudpJ/WLK06VQib9xFtiydjFnp1ZFM2uADzMT8AhJt2LRfYUymvFfYeHW9sccvxpI94sVNT5nvQqBq/twjSB0ZZtc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764191946; c=relaxed/simple;
-	bh=O53v66/n2tm86Ej6cJd8JA+4L61tiJrsXjstEIU7vJ4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=AHlqQlPpBC0s6dZqrd//cmZYE/m2EMweSkIKY+/Nq3+9V0axwmfAPJ4ws8CXw+FxRfvQpFpgx9M6k8a5LgPZUy3JrW4t7vCxQ4PHI8xoKzd9QRRuEGIEWXSkvs7GCAmUfORZFKD+a0w/gBFvdTtRqrwaurt1kQf7+/sr8UwEpwg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=engleder-embedded.com; spf=pass smtp.mailfrom=engleder-embedded.com; dkim=pass (1024-bit key) header.d=engleder-embedded.com header.i=@engleder-embedded.com header.b=EEJtmSQZ; arc=none smtp.client-ip=81.19.149.119
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=engleder-embedded.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=engleder-embedded.com
+	s=arc-20240116; t=1764192824; c=relaxed/simple;
+	bh=iieyN2UU2nk1jjoImPSobtvcPXRx17cc6hr3aODk08Q=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=i+EKlXqm0OucemMrQMiLUrfb2jFBkplPNAo/EOepvmQYhchTfO0p/j2B9/zhZyzLPaCrFI002M5xwk2zjj8wDu/l928n1tbxIiBYqE91WwUUYDAhS3Htcp7ikSlpfh/lKqocjz0RWercnExLN9+VSuOB/sJPFkHNVNySfxGA/bs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Kdpaum4Z; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=engleder-embedded.com header.i=@engleder-embedded.com header.b="EEJtmSQZ"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:Content-Type:
-	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=odMzHSLU50BreEMTUMtbuxO2jPQfkKMW23gxZ/9ghRA=; b=EEJtmSQZ+N9cGBuMI0zjz82u9f
-	IwW1clLECqbjU4r5wxuu+XMhl2PQPd2iKKRYfCh4jkwXFvG7jMFl0jCnm9Tn8GGoTmcBiRsYnVNlr
-	UpXNzNKareak837JjhonliPR4lGeeM26Ex/0RnEY8zcL2wUBTNrcUU7eEP3DzuN2lJmA=;
-Received: from [188.23.34.236] (helo=[10.0.0.160])
-	by mx09lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.97.1)
-	(envelope-from <gerhard@engleder-embedded.com>)
-	id 1vOMLH-000000000sJ-3iwh;
-	Wed, 26 Nov 2025 21:42:24 +0100
-Message-ID: <6759314e-d595-4319-976b-cfc9edad0239@engleder-embedded.com>
-Date: Wed, 26 Nov 2025 21:42:22 +0100
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Kdpaum4Z"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1764192822; x=1795728822;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=iieyN2UU2nk1jjoImPSobtvcPXRx17cc6hr3aODk08Q=;
+  b=Kdpaum4Z5UnSAfHmjJq1+RzLxbxN4YGDMkLaDBG/szmSobYNVw2w/3JB
+   jgZoZqyQt2mP1hSG5lERQQFpo3L8GMlkmRrfe2Pz4gZwSkRsNQET+Vqx7
+   awxa695Y+nCp2vJK41/2vQPDz/ssSKRSiJ4Jdkfpnx9DrpJTEIXQaam2Q
+   PHPcN81n/4r9fCcMZkEgL/DP1iDrKRIsj589z9tQvceGHakKTHD/7y0CS
+   TirR3hFgwbjbjtEZuyxkRW3pNQg2govWUAAOINsuWPHh+akcF4NbbQxv9
+   X1NQKj/ATvASOnryO7jfwTA+6l75XZistOgU5nhYOGXKH01qnmNtnmwV3
+   g==;
+X-CSE-ConnectionGUID: mhbBxWOOTxGznahOKdrOPg==
+X-CSE-MsgGUID: +Py6tINCTkuV3R/ExuyLxA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11625"; a="66126498"
+X-IronPort-AV: E=Sophos;i="6.20,229,1758610800"; 
+   d="scan'208";a="66126498"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2025 13:33:41 -0800
+X-CSE-ConnectionGUID: e/JHrvFKSH2388kanuQnfg==
+X-CSE-MsgGUID: WzxYAXbZRg6EaFcq/HuchA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.20,229,1758610800"; 
+   d="scan'208";a="216405181"
+Received: from rvuia-mobl.ger.corp.intel.com (HELO localhost) ([10.245.245.89])
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2025 13:33:40 -0800
+Date: Wed, 26 Nov 2025 23:33:37 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Gerhard Engleder <gerhard@engleder-embedded.com>
+Cc: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+	jirislaby@kernel.org, lukas@wunner.de,
+	Gerhard Engleder <eg@keba.com>, Daniel Gierlinger <gida@keba.com>
+Subject: Re: [PATCH v4 2/2] serial: 8250: add driver for KEBA UART
+Message-ID: <aSdyMXhtpDX_Eo82@smile.fi.intel.com>
+References: <20251023151229.11774-1-gerhard@engleder-embedded.com>
+ <20251023151229.11774-3-gerhard@engleder-embedded.com>
+ <aSb99zuXhUh3VD4J@black.igk.intel.com>
+ <1692bf5e-a0de-4f75-8ec0-b228e94b6b4b@engleder-embedded.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 1/2] serial: Keep rs485 settings for devices without
- firmware node
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
- jirislaby@kernel.org, lukas@wunner.de, Gerhard Engleder <eg@keba.com>
-References: <20251023151229.11774-1-gerhard@engleder-embedded.com>
- <20251023151229.11774-2-gerhard@engleder-embedded.com>
- <aSb8OTRLUsgcXUjO@black.igk.intel.com>
-Content-Language: en-US
-From: Gerhard Engleder <gerhard@engleder-embedded.com>
-In-Reply-To: <aSb8OTRLUsgcXUjO@black.igk.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AV-Do-Run: Yes
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1692bf5e-a0de-4f75-8ec0-b228e94b6b4b@engleder-embedded.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 26.11.25 14:10, Andy Shevchenko wrote:
-> On Thu, Oct 23, 2025 at 05:12:28PM +0200, Gerhard Engleder wrote:
->>
->> Commit fe7f0fa43cef ("serial: 8250: Support rs485 devicetree properties")
->> retrieves rs485 properties for 8250 drivers. These properties are read
->> from the firmware node of the device within uart_get_rs485_mode(). If the
->> firmware node does not exist, then the rs485 flags are still reset. Thus,
->> 8250 driver cannot set rs485 flags to enable a defined rs485 mode during
->> driver loading. This is no problem so far, as no 8250 driver sets the
->> rs485 flags.
->>
->> The default rs485 mode can also be set by firmware nodes. But for some
->> devices a firmware node does not exist. E.g., for a PCIe based serial
->> interface on x86 no device tree is available and the ACPI information of
->> the BIOS often cannot by modified.
+On Wed, Nov 26, 2025 at 10:06:17PM +0100, Gerhard Engleder wrote:
+> On 26.11.25 14:17, Andy Shevchenko wrote:
+> > On Thu, Oct 23, 2025 at 05:12:29PM +0200, Gerhard Engleder wrote:
+
+...
+
+> > > +#include <linux/auxiliary_bus.h>
+> > 
+> > + bits.h
+> > + container_of.h
+> > 
+> > > +#include <linux/device.h>
+> > 
+> > I don't see how it's being used.
+> > What I see are
+> > 
+> > + dev_printk.h
+> > + device/devres.h
+> > 
+> > + err.h
+> > 
+> > > +#include <linux/io.h>
+> > > +#include <linux/misc/keba.h>
+> > 
+> > + mod_devicetable.h
+> > 
+> > > +#include <linux/module.h>
+> > 
+> > + spinlock.h
+> > + types.h
 > 
-> While the code is okay per se, the above statement is not fully true.
-> We specifically have device properties and software nodes to provide
-> the missing bits.
+> Is there any extra tool to check for missing headers? Or do I have to
+> check the header for every used function?
 
-Yes, Lukas Wunner teached me that possibility. I did not mention this
-alternative solution in the commit, because I did not use it.
+There is iwyu, which is heavily tweaked by Jonathan Cameron for use in Linux
+kernel and even though it gives some false positives.
 
-Gerhard
+I did this manually by reading the code of the driver and remembering which
+header provides which API.
+
+...
+
+> > Can't you call uart_read_port_properties()?
+> > 
+> > If ever you gain some properties either via FW description or via software
+> > nodes, they will be automatically used without need to update the driver!
+> 
+> Yes that would be some nice behavior. But __uart_read_properties()
+> sets some defaults even if no firmware node exist (UPF_SHARE_IRQ,
+
+Is it a problem? Even a single IRQ may be marked shared.
+
+> 0 as irq number
+
+It doesn't do that, it just skips setting it in that case.
+
+> or it fails if not irq number is found).
+
+Yeah, this is most "problematic" part in case of this driver. Why is it
+auxiliary and not platform? With that the __uart_read_properties() needs
+to be updated to also query IRQ from respective aux device, and aux dev
+needs implementation of dev_is_auxiliary(). Not that big deal, though.
+
+> So __uart_read_properties() would need to be changed. IMO it makes no sense
+> to change __uart_read_properties() as this functionality is currently
+> not required.
+
+Yes, but as I said it will give you for free the possibility to use those
+properties without future modifications of the driver. OTOH, driver is in
+tree and modifications will be needed one way or another :-)
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
