@@ -1,68 +1,433 @@
-Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.4])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6956303A07;
-	Wed, 26 Nov 2025 14:47:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5247830DD29
+	for <linux-serial@vger.kernel.org>; Wed, 26 Nov 2025 15:46:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764168450; cv=none; b=jnVix4VoQ7e/0FKUCCAe/QuuCqVJwc3n3fmahHBmV+do4bAaNxitFhBdsRCw9P9ZbqtJ0xHde3svF/x/iBBPrs0yS/XhOZlt20DiBa1Rw8lvnMhQts/4pRL3gcVey5o4bunlCqTgx0MUfHis5smifiBHegM9Nt7mHK55ZimNUcM=
+	t=1764172000; cv=none; b=kijcs0Ate87ODmYkCLZlhfUVK1BpINkvGl2rnkJflfWEMtfpdDMnpcztRCF5LZQ7ocE1CzkhSGLvJ7QecA8iJS0jq5ZrRjxG9XgBgW9CwfYvvsll4SaYXwm8vydD4iMkjxlbhf9x8BcS9XQMRL9/fDmJ5n/DEXRko4iBO35WvGk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764168450; c=relaxed/simple;
-	bh=nNZuDjUUX40k181EdfgWM9nRuLEqXqEcWcFFtpNuwqs=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=nlnLsheRvby6IMQ/8Kk3xJEz7TH0AOO5Fg75tDpr5zOrYPHGbv5HfwvgbPX36pIperksJ4wbjMdSTj7TURs9japS4+Qk8YDT8xyuR4Azu1T9BwzlqgnJ+HE6I2ssCM7lsP75cOAgtn5tzGRpJ0/ndT9XhFFUppVT4Qe7zzwU5PI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=gWLCc6GZ; arc=none smtp.client-ip=117.135.210.4
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1764172000; c=relaxed/simple;
+	bh=MGtFP8YILbMADekUv10B1Ddqg4A9E17E2xxt4aQSpCM=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=Il9H9FzauyRYqomA8vN4Cem4VQ1SLJosEKWqnpnqb3uERsi8+RlbUzhl4AvL/KuGcJ7CQS8exHo5TZaNWxVldlyvp0feJfjb7jV+hZ7H/DkZZIx+k2kH1f0yKI90ODEgHESmMD7h4kGqVKR5EvFLldgwv+LMOBE1j5qZcu4nFv0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dkKMpbq3; arc=none smtp.client-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="gWLCc6GZ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=Or
-	LJ5RnzxdcuSxO6QWxutyrR3uTW9B83ZnMQjPKjHUs=; b=gWLCc6GZ1g++l6rOR8
-	EsE9GI/fVwmBqpRNu6ojYiH/pzJUeOdmEWua+NBtxD/eHP8vnR4oMdnvRcPLYt2Z
-	IaFJ+8uqHCDZoexPuZ6761mnOpuJ2fsivopkbb16EV/5/0Y0ghsYHi0MIjtaIZZQ
-	aVxoEtD4lzOhHBD/TLeX3a5wM=
-Received: from zhaoxin-MS-7E12.. (unknown [])
-	by gzga-smtp-mtada-g0-1 (Coremail) with SMTP id _____wCHb1vaEidpn+nTCQ--.3197S2;
-	Wed, 26 Nov 2025 22:46:51 +0800 (CST)
-From: Xin Zhao <jackzxcui1989@163.com>
-To: gregkh@linuxfoundation.org
-Cc: hch@infradead.org,
-	jackzxcui1989@163.com,
-	jirislaby@kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	tj@kernel.org
-Subject: Re: [PATCH v3] tty: tty_port: add workqueue to flip tty buffer
-Date: Wed, 26 Nov 2025 22:46:50 +0800
-Message-Id: <20251126144650.2799567-1-jackzxcui1989@163.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <2025112654-shaping-undoing-afe4@gregkh>
-References: <2025112654-shaping-undoing-afe4@gregkh>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dkKMpbq3"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1764171998; x=1795707998;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=MGtFP8YILbMADekUv10B1Ddqg4A9E17E2xxt4aQSpCM=;
+  b=dkKMpbq3aHOSok1ZJemwZTTsn5qwEddwS+jNXh4sDhm4/1Xh+t986ebw
+   J8KibdDunNiCibdPcEj8FSPAYEv6iU09FBeuISu9OwT8PemSSc6A7jGRB
+   rOm+/zou3lggevlOFYrmh2B5i1UuiV2o7bE05r++TEqLmvZ7U3SXh5/3K
+   nBpVm2l4NtTZqGIMPtgCoJONoH3TOYKJWqmrl1brSZRgByBVG8xbkuviH
+   377CbChGOP+QEoqCs/yFKjj2JrdgLTx7gjcSWYViSYZT+ZmGRmjlnb/8O
+   kvylq69Mgew7dmNfnrCxkwGFNIywLwAXMlwv2bQmtTIQlbf/iLU6XAZjw
+   g==;
+X-CSE-ConnectionGUID: UsQQN7QNR4KBSbQ/bJWoUQ==
+X-CSE-MsgGUID: j3t4J/W7SXexYYvgmS8Fww==
+X-IronPort-AV: E=McAfee;i="6800,10657,11625"; a="66173455"
+X-IronPort-AV: E=Sophos;i="6.20,228,1758610800"; 
+   d="scan'208";a="66173455"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2025 07:46:38 -0800
+X-CSE-ConnectionGUID: kAMLuGswTm+cAg6d0a/k2Q==
+X-CSE-MsgGUID: pUv5OXH9SS2vbYmIKnNI6w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.20,228,1758610800"; 
+   d="scan'208";a="192856237"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.97])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2025 07:46:34 -0800
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Wed, 26 Nov 2025 17:46:31 +0200 (EET)
+To: Gerhard Engleder <gerhard@engleder-embedded.com>
+cc: linux-serial <linux-serial@vger.kernel.org>, 
+    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, Lukas Wunner <lukas@wunner.de>, 
+    Gerhard Engleder <eg@keba.com>, Daniel Gierlinger <gida@keba.com>
+Subject: Re: [PATCH v4 2/2] serial: 8250: add driver for KEBA UART
+In-Reply-To: <20251023151229.11774-3-gerhard@engleder-embedded.com>
+Message-ID: <b7f51612-9192-998c-b0fd-18512d84c154@linux.intel.com>
+References: <20251023151229.11774-1-gerhard@engleder-embedded.com> <20251023151229.11774-3-gerhard@engleder-embedded.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wCHb1vaEidpn+nTCQ--.3197S2
-X-Coremail-Antispam: 1Uf129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
-	VFW2AGmfu7bjvjm3AaLaJ3UbIYCTnIWIevJa73UjIFyTuYvjTRQSdvUUUUU
-X-CM-SenderInfo: pmdfy650fxxiqzyzqiywtou0bp/xtbCvxzf6WknEtwWPAAA3-
+Content-Type: text/plain; charset=US-ASCII
 
-On Wed, 26 Nov 2025 13:10:49 +0100 Greg KH <gregkh@linuxfoundation.org> wrote:
+On Thu, 23 Oct 2025, Gerhard Engleder wrote:
 
-> I don't know, what have you found in your testing?  Will multiple
-> workqueues cause too much overhead for large multi-port systems (i.e.
-> modem banks?)
+> From: Gerhard Engleder <eg@keba.com>
 > 
-> Perhaps start with just a single workqueue and then increase it if there
-> is contention later if people notice?
+> The KEBA UART is found in the system FPGA of KEBA PLC devices. It is
+> mostly 8250 compatible with extension for some UART modes.
+> 
+> 3 different variants exist. The simpliest variant supports only RS-232
+> and is used for debug interfaces. The next variant supports only RS-485
+> and is used mostly for communication with KEBA panel devices. The third
+> variant is able to support RS-232, RS-485 and RS-422. For this variant
+> not only the mode of the UART is configured, also the physics and
+> transceivers are switched according to the mode.
+> 
+> Signed-off-by: Gerhard Engleder <eg@keba.com>
+> Tested-by: Daniel Gierlinger <gida@keba.com>
+> ---
+>  drivers/tty/serial/8250/8250_keba.c | 280 ++++++++++++++++++++++++++++
+>  drivers/tty/serial/8250/Kconfig     |  13 ++
+>  drivers/tty/serial/8250/Makefile    |   1 +
+>  3 files changed, 294 insertions(+)
+>  create mode 100644 drivers/tty/serial/8250/8250_keba.c
+> 
+> diff --git a/drivers/tty/serial/8250/8250_keba.c b/drivers/tty/serial/8250/8250_keba.c
+> new file mode 100644
+> index 000000000000..c05b89551b12
+> --- /dev/null
+> +++ b/drivers/tty/serial/8250/8250_keba.c
+> @@ -0,0 +1,280 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright (C) 2025 KEBA Industrial Automation GmbH
+> + *
+> + * Driver for KEBA UART FPGA IP core
+> + */
+> +
+> +#include <linux/auxiliary_bus.h>
+> +#include <linux/device.h>
+> +#include <linux/io.h>
+> +#include <linux/misc/keba.h>
+> +#include <linux/module.h>
 
-OK. I will allocate single workqueue of one tty_driver in v4, simplifying
-the logic for creating and releasing the workqueue.
++ linux/serial_core.h
 
---
-Xin Zhao
+> +
+> +#include "8250.h"
+> +
+> +#define KUART "kuart"
+> +
+> +/* flags */
+> +#define KUART_RS485		BIT(0)
+> +#define KUART_USE_CAPABILITY	BIT(1)
+> +
+> +/* registers */
+> +#define KUART_VERSION		0x0000
+> +#define KUART_REVISION		0x0001
+> +#define KUART_CAPABILITY	0x0002
+> +#define KUART_CONTROL		0x0004
+> +#define KUART_BASE		0x000C
+> +#define KUART_REGSHIFT		2
+> +#define KUART_CLK		1843200
+> +
+> +/* mode flags */
+> +enum kuart_mode {
+> +	KUART_MODE_NONE = 0,
+> +	KUART_MODE_RS485,
+> +	KUART_MODE_RS422,
+> +	KUART_MODE_RS232
+> +};
+> +
+> +/* capability flags */
+> +#define KUART_CAPABILITY_NONE	BIT(KUART_MODE_NONE)
+> +#define KUART_CAPABILITY_RS485	BIT(KUART_MODE_RS485)
+> +#define KUART_CAPABILITY_RS422	BIT(KUART_MODE_RS422)
+> +#define KUART_CAPABILITY_RS232	BIT(KUART_MODE_RS232)
+> +#define KUART_CAPABILITY_MASK	GENMASK(3, 0)
+> +
+> +/* Additional Control Register DTR line configuration */
+> +#define UART_ACR_DTRLC_MASK		0x18
+> +#define UART_ACR_DTRLC_COMPAT		0x00
+> +#define UART_ACR_DTRLC_ENABLE_LOW	0x10
+> +
+> +struct kuart {
+> +	struct keba_uart_auxdev *auxdev;
+> +	void __iomem *base;
+> +	unsigned int line;
+> +
+> +	unsigned int flags;
+> +	u8 capability;
+> +	enum kuart_mode mode;
+> +};
+> +
+> +static void kuart_set_phy_mode(struct kuart *kuart, enum kuart_mode mode)
+> +{
+> +	iowrite8(mode, kuart->base + KUART_CONTROL);
+> +}
+> +
+> +static void kuart_enhanced_mode(struct uart_8250_port *up, bool enable)
+> +{
+> +	u8 lcr, efr;
+> +
+> +	/* backup LCR register */
+
+Save + restore is quite obvious thing. IMO, no comment is needed about it.
+
+> +	lcr = serial_in(up, UART_LCR);
+> +
+> +	/* enable 650 compatible register set (EFR, ...) */
+> +	serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
+> +
+> +	/* enable/disable enhanced mode with indexed control registers */
+> +	efr = serial_in(up, UART_EFR);
+> +	if (enable)
+> +		efr |= UART_EFR_ECB;
+> +	else
+> +		efr &= ~UART_EFR_ECB;
+> +	serial_out(up, UART_EFR, efr);
+> +
+> +	/* disable 650 compatible register set, restore LCR */
+> +	serial_out(up, UART_LCR, lcr);
+> +}
+> +
+> +static void kuart_dtr_line_config(struct uart_8250_port *up, u8 dtrlc)
+> +{
+> +	u8 acr;
+> +
+> +	/* set index register to 0 to access ACR register */
+> +	serial_out(up, UART_SCR, UART_ACR);
+
+So the scratch register has some special use on this UART (register 
+multiplexer?), it would probably better name it with define, if that's the 
+case.
+
+> +
+> +	/* set value register to 0x10 writing DTR mode (1,0) */
+> +	acr = serial_in(up, UART_LSR);
+> +	acr &= ~UART_ACR_DTRLC_MASK;
+> +	acr |= dtrlc;
+> +	serial_out(up, UART_LSR, acr);
+> +}
+> +
+> +static int kuart_rs485_config(struct uart_port *port, struct ktermios *termios,
+> +			      struct serial_rs485 *rs485)
+> +{
+> +	struct uart_8250_port *up = up_to_u8250p(port);
+> +	struct kuart *kuart = port->private_data;
+> +	enum kuart_mode mode;
+> +	u8 dtrlc;
+> +
+> +	if (rs485->flags & SER_RS485_ENABLED) {
+> +		if (rs485->flags & SER_RS485_MODE_RS422)
+> +			mode = KUART_MODE_RS422;
+> +		else
+> +			mode = KUART_MODE_RS485;
+> +	} else {
+> +		mode = KUART_MODE_RS232;
+> +	}
+> +
+> +	if (mode == kuart->mode)
+> +		return 0;
+> +
+> +	if (kuart->flags & KUART_USE_CAPABILITY) {
+> +		/* deactivate physical interface, break before make */
+> +		kuart_set_phy_mode(kuart, KUART_MODE_NONE);
+> +	}
+> +
+> +	if (mode == KUART_MODE_RS485) {
+> +		/*
+> +		 * Set DTR line configuration of 95x UART to DTR mode (1,0).
+> +		 * In this mode the DTR pin drives the active-low enable pin of
+> +		 * an external RS485 buffer. The DTR pin will be forced low
+> +		 * whenever the transmitter is not empty, otherwise DTR pin is
+> +		 * high.
+> +		 */
+> +		dtrlc = UART_ACR_DTRLC_ENABLE_LOW;
+> +	} else {
+> +		/*
+> +		 * Set DTR line configuration of 95x UART to DTR mode (0,0).
+> +		 * In this mode the DTR pin is compatible with 16C450, 16C550,
+> +		 * 16C650 and 16c670 (i.e. normal).
+> +		 */
+> +		dtrlc = UART_ACR_DTRLC_COMPAT;
+> +	}
+> +
+> +	kuart_enhanced_mode(up, true);
+> +	kuart_dtr_line_config(up, dtrlc);
+> +	kuart_enhanced_mode(up, false);
+> +
+> +	if (kuart->flags & KUART_USE_CAPABILITY) {
+> +		/* activate selected physical interface */
+> +		kuart_set_phy_mode(kuart, mode);
+> +	}
+> +
+> +	kuart->mode = mode;
+> +
+> +	return 0;
+> +}
+> +
+> +static int kuart_probe(struct auxiliary_device *auxdev,
+> +		       const struct auxiliary_device_id *id)
+> +{
+> +	struct device *dev = &auxdev->dev;
+> +	struct uart_8250_port uart = {};
+> +	struct resource res;
+> +	struct kuart *kuart;
+> +	int retval;
+> +
+> +	kuart = devm_kzalloc(dev, sizeof(*kuart), GFP_KERNEL);
+> +	if (!kuart)
+> +		return -ENOMEM;
+> +	kuart->auxdev = container_of(auxdev, struct keba_uart_auxdev, auxdev);
+> +	kuart->flags = id->driver_data;
+> +	auxiliary_set_drvdata(auxdev, kuart);
+> +
+> +	/*
+> +	 * map only memory in front of UART registers, UART registers will be
+> +	 * mapped by serial port
+> +	 */
+> +	res = kuart->auxdev->io;
+> +	res.end = res.start + KUART_BASE - 1;
+> +	kuart->base = devm_ioremap_resource(dev, &res);
+> +	if (IS_ERR(kuart->base))
+> +		return PTR_ERR(kuart->base);
+> +
+> +	if (kuart->flags & KUART_USE_CAPABILITY) {
+> +		/*
+> +		 * supported modes are read from capability register, at least
+> +		 * one mode other than none must be supported
+> +		 */
+> +		kuart->capability = ioread8(kuart->base + KUART_CAPABILITY) &
+> +				    KUART_CAPABILITY_MASK;
+> +		if ((kuart->capability & ~KUART_CAPABILITY_NONE) == 0)
+> +			return -EIO;
+> +	}
+> +
+> +	spin_lock_init(&uart.port.lock);
+> +	uart.port.dev = dev;
+> +	uart.port.mapbase = kuart->auxdev->io.start + KUART_BASE;
+> +	uart.port.irq = kuart->auxdev->irq;
+> +	uart.port.uartclk = KUART_CLK;
+> +	uart.port.private_data = kuart;
+> +
+> +	/* 8 bit registers are 32 bit aligned => shift register offset */
+> +	uart.port.iotype = UPIO_MEM32;
+> +	uart.port.regshift = KUART_REGSHIFT;
+> +
+> +	/*
+> +	 * UART mixes 16550, 16750 and 16C950 (for RS485) standard => auto
+> +	 * configuration works best
+> +	 */
+> +	uart.port.flags = UPF_SKIP_TEST | UPF_BOOT_AUTOCONF | UPF_IOREMAP;
+> +
+> +	/*
+> +	 * UART supports RS485, RS422 and RS232 with switching of physical
+> +	 * interface
+> +	 */
+> +	uart.port.rs485_config = kuart_rs485_config;
+> +	if (kuart->flags & KUART_RS485) {
+> +		uart.port.rs485_supported.flags = SER_RS485_ENABLED |
+> +						  SER_RS485_RTS_ON_SEND;
+> +		uart.port.rs485.flags = SER_RS485_ENABLED |
+> +					SER_RS485_RTS_ON_SEND;
+> +	}
+> +	if (kuart->flags & KUART_USE_CAPABILITY) {
+> +		/* default mode priority is RS485 > RS422 > RS232 */
+> +		if (kuart->capability & KUART_CAPABILITY_RS422) {
+> +			uart.port.rs485_supported.flags |= SER_RS485_ENABLED |
+> +							   SER_RS485_RTS_ON_SEND |
+> +							   SER_RS485_MODE_RS422;
+> +			uart.port.rs485.flags = SER_RS485_ENABLED |
+> +						SER_RS485_RTS_ON_SEND |
+> +						SER_RS485_MODE_RS422;
+> +		}
+> +		if (kuart->capability & KUART_CAPABILITY_RS485) {
+> +			uart.port.rs485_supported.flags |= SER_RS485_ENABLED |
+> +							   SER_RS485_RTS_ON_SEND;
+> +			uart.port.rs485.flags = SER_RS485_ENABLED |
+> +						SER_RS485_RTS_ON_SEND;
+> +		}
+> +	}
+
+Is it so that only one mode is supported or can that be changes using 
+kuart_rs485_config() in which case you should have all flags listed (you 
+seem to talk about priority so that sounds like all are supported)?
+
+> +
+> +	retval = serial8250_register_8250_port(&uart);
+> +	if (retval < 0) {
+> +		dev_err(&auxdev->dev, "UART registration failed!\n");
+
+Missing header.
+
+> +		return retval;
+> +	}
+> +	kuart->line = retval;
+> +
+> +	return 0;
+> +}
+> +
+> +static void kuart_remove(struct auxiliary_device *auxdev)
+> +{
+> +	struct kuart *kuart = auxiliary_get_drvdata(auxdev);
+> +
+> +	if (kuart->flags & KUART_USE_CAPABILITY)
+> +		kuart_set_phy_mode(kuart, KUART_MODE_NONE);
+> +
+> +	serial8250_unregister_port(kuart->line);
+> +}
+> +
+> +static const struct auxiliary_device_id kuart_devtype_aux[] = {
+> +	{ .name = "keba.rs485-uart", .driver_data = KUART_RS485 },
+> +	{ .name = "keba.rs232-uart", .driver_data = 0 },
+> +	{ .name = "keba.uart", .driver_data = KUART_USE_CAPABILITY },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(auxiliary, kuart_devtype_aux);
+> +
+> +static struct auxiliary_driver kuart_driver_aux = {
+> +	.name = KUART,
+> +	.id_table = kuart_devtype_aux,
+> +	.probe  = kuart_probe,
+> +	.remove = kuart_remove,
+> +};
+> +module_auxiliary_driver(kuart_driver_aux);
+> +
+> +MODULE_AUTHOR("Gerhard Engleder <eg@keba.com>");
+> +MODULE_DESCRIPTION("KEBA 8250 serial port driver");
+> +MODULE_LICENSE("GPL");
+> diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+> index f64ef0819cd4..5c3e4bcb3b93 100644
+> --- a/drivers/tty/serial/8250/Kconfig
+> +++ b/drivers/tty/serial/8250/Kconfig
+> @@ -430,6 +430,19 @@ config SERIAL_8250_IOC3
+>  	  behind the IOC3 device on those systems.  Maximum baud speed is
+>  	  38400bps using this driver.
+>  
+> +config SERIAL_8250_KEBA
+> +	tristate "Support for KEBA 8250 UART"
+> +	depends on SERIAL_8250
+> +	depends on KEBA_CP500
+> +	help
+> +	  Selecting this option will add support for KEBA UARTs. These UARTs
+> +	  are used for the serial interfaces of KEBA PLCs.
+> +
+> +	  This driver can also be built as a module. If so, the module will
+> +	  be called 8250_keba.
+> +
+> +	  If unsure, say N.
+> +
+>  config SERIAL_8250_RT288X
+>  	bool "Ralink RT288x/RT305x/RT3662/RT3883 serial port support"
+>  	depends on SERIAL_8250
+> diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
+> index 513a0941c284..f7a463c9860a 100644
+> --- a/drivers/tty/serial/8250/Makefile
+> +++ b/drivers/tty/serial/8250/Makefile
+> @@ -38,6 +38,7 @@ obj-$(CONFIG_SERIAL_8250_HP300)		+= 8250_hp300.o
+>  obj-$(CONFIG_SERIAL_8250_HUB6)		+= 8250_hub6.o
+>  obj-$(CONFIG_SERIAL_8250_INGENIC)	+= 8250_ingenic.o
+>  obj-$(CONFIG_SERIAL_8250_IOC3)		+= 8250_ioc3.o
+> +obj-$(CONFIG_SERIAL_8250_KEBA)		+= 8250_keba.o
+>  obj-$(CONFIG_SERIAL_8250_LPC18XX)	+= 8250_lpc18xx.o
+>  obj-$(CONFIG_SERIAL_8250_LPSS)		+= 8250_lpss.o
+>  obj-$(CONFIG_SERIAL_8250_MEN_MCB)	+= 8250_men_mcb.o
+> 
+
+-- 
+ i.
 
