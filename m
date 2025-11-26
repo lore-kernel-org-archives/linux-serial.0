@@ -1,145 +1,214 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from mx05lb.world4you.com (mx05lb.world4you.com [81.19.149.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79C5D9463
-	for <linux-serial@vger.kernel.org>; Wed, 26 Nov 2025 21:33:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DF422E228C
+	for <linux-serial@vger.kernel.org>; Wed, 26 Nov 2025 22:05:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=81.19.149.115
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764192824; cv=none; b=H9PxpdlFvHz/aeE70btEazL6DtHQDDwy6q8WIIxaGTruKazly9WdOoV8O/wAy4eUCm5KITI1bWjX5YnaLKKudpJ/WLK06VQib9xFtiydjFnp1ZFM2uADzMT8AhJt2LRfYUymvFfYeHW9sccvxpI94sVNT5nvQqBq/twjSB0ZZtc=
+	t=1764194733; cv=none; b=JuvJDe6RJWozKByYouX4r87lBVDLmBLL2rXcNMAxN8FoNKLl+0wUtefmI9t/dT53P/3z++Qzwq07o9eQ7kr7WJkyGAt67XQo7q4BQEriTSC/Yz0BIaO0WMYFHrtfbRcbYTB+05FJ4ar5V/finorrA1tKccMFmFKRUNGRjLvEMnI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764192824; c=relaxed/simple;
-	bh=iieyN2UU2nk1jjoImPSobtvcPXRx17cc6hr3aODk08Q=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=i+EKlXqm0OucemMrQMiLUrfb2jFBkplPNAo/EOepvmQYhchTfO0p/j2B9/zhZyzLPaCrFI002M5xwk2zjj8wDu/l928n1tbxIiBYqE91WwUUYDAhS3Htcp7ikSlpfh/lKqocjz0RWercnExLN9+VSuOB/sJPFkHNVNySfxGA/bs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Kdpaum4Z; arc=none smtp.client-ip=198.175.65.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1764194733; c=relaxed/simple;
+	bh=cwb50hWHXXXYh0hB2g+VdutJEGlOlVvOj2HjVMOFPkw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=hCUN7Jo7FzjZsE1mTZVKlYWV0kUNE1cVPfkBeGZJq2Tq2ZL15/xrVqTo35jTYm24TGV3S0SZzurROF2uSTcpz1FGCccm69D2PPvZhXXwwTBFi3uYwztlxmqTB9rSGPscs9oYp+YeX8dd/U5f0PkhngICZNCd7IBBMKF3LZbZr+0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=engleder-embedded.com; spf=pass smtp.mailfrom=engleder-embedded.com; dkim=pass (1024-bit key) header.d=engleder-embedded.com header.i=@engleder-embedded.com header.b=t6AaKJvt; arc=none smtp.client-ip=81.19.149.115
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=engleder-embedded.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=engleder-embedded.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Kdpaum4Z"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1764192822; x=1795728822;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=iieyN2UU2nk1jjoImPSobtvcPXRx17cc6hr3aODk08Q=;
-  b=Kdpaum4Z5UnSAfHmjJq1+RzLxbxN4YGDMkLaDBG/szmSobYNVw2w/3JB
-   jgZoZqyQt2mP1hSG5lERQQFpo3L8GMlkmRrfe2Pz4gZwSkRsNQET+Vqx7
-   awxa695Y+nCp2vJK41/2vQPDz/ssSKRSiJ4Jdkfpnx9DrpJTEIXQaam2Q
-   PHPcN81n/4r9fCcMZkEgL/DP1iDrKRIsj589z9tQvceGHakKTHD/7y0CS
-   TirR3hFgwbjbjtEZuyxkRW3pNQg2govWUAAOINsuWPHh+akcF4NbbQxv9
-   X1NQKj/ATvASOnryO7jfwTA+6l75XZistOgU5nhYOGXKH01qnmNtnmwV3
-   g==;
-X-CSE-ConnectionGUID: mhbBxWOOTxGznahOKdrOPg==
-X-CSE-MsgGUID: +Py6tINCTkuV3R/ExuyLxA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11625"; a="66126498"
-X-IronPort-AV: E=Sophos;i="6.20,229,1758610800"; 
-   d="scan'208";a="66126498"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2025 13:33:41 -0800
-X-CSE-ConnectionGUID: e/JHrvFKSH2388kanuQnfg==
-X-CSE-MsgGUID: WzxYAXbZRg6EaFcq/HuchA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.20,229,1758610800"; 
-   d="scan'208";a="216405181"
-Received: from rvuia-mobl.ger.corp.intel.com (HELO localhost) ([10.245.245.89])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2025 13:33:40 -0800
-Date: Wed, 26 Nov 2025 23:33:37 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Gerhard Engleder <gerhard@engleder-embedded.com>
-Cc: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-	jirislaby@kernel.org, lukas@wunner.de,
-	Gerhard Engleder <eg@keba.com>, Daniel Gierlinger <gida@keba.com>
-Subject: Re: [PATCH v4 2/2] serial: 8250: add driver for KEBA UART
-Message-ID: <aSdyMXhtpDX_Eo82@smile.fi.intel.com>
-References: <20251023151229.11774-1-gerhard@engleder-embedded.com>
- <20251023151229.11774-3-gerhard@engleder-embedded.com>
- <aSb99zuXhUh3VD4J@black.igk.intel.com>
- <1692bf5e-a0de-4f75-8ec0-b228e94b6b4b@engleder-embedded.com>
+	dkim=pass (1024-bit key) header.d=engleder-embedded.com header.i=@engleder-embedded.com header.b="t6AaKJvt"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:Content-Type:
+	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=DGmPzWEQYvbyS/Qga/juhtfLR+VduMu4bcH8jNn1yp0=; b=t6AaKJvts3H3lhpzQCCU3K/eyt
+	SUW9p3QwoBXQp1QNBNXS94k8PiR6AS7QUm2TUHI1VbXHcPJkiWviCOCga3/mDxol+SN/5GCDjeKDs
+	froZvtwXrWX2dSBgg8qHijKWmyyewMUgTTaBfNyMVrqF26fGZPmYdQHVyrpx/d3LjmdM=;
+Received: from [188.23.34.236] (helo=[10.0.0.160])
+	by mx05lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.97.1)
+	(envelope-from <gerhard@engleder-embedded.com>)
+	id 1vON5O-0000000059l-3Y30;
+	Wed, 26 Nov 2025 22:30:03 +0100
+Message-ID: <2e23bf3b-c42e-45b2-8035-e210ed566f0d@engleder-embedded.com>
+Date: Wed, 26 Nov 2025 22:30:01 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1692bf5e-a0de-4f75-8ec0-b228e94b6b4b@engleder-embedded.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 2/2] serial: 8250: add driver for KEBA UART
+To: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: linux-serial <linux-serial@vger.kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Lukas Wunner <lukas@wunner.de>,
+ Gerhard Engleder <eg@keba.com>, Daniel Gierlinger <gida@keba.com>
+References: <20251023151229.11774-1-gerhard@engleder-embedded.com>
+ <20251023151229.11774-3-gerhard@engleder-embedded.com>
+ <b7f51612-9192-998c-b0fd-18512d84c154@linux.intel.com>
+Content-Language: en-US
+From: Gerhard Engleder <gerhard@engleder-embedded.com>
+In-Reply-To: <b7f51612-9192-998c-b0fd-18512d84c154@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-AV-Do-Run: Yes
 
-On Wed, Nov 26, 2025 at 10:06:17PM +0100, Gerhard Engleder wrote:
-> On 26.11.25 14:17, Andy Shevchenko wrote:
-> > On Thu, Oct 23, 2025 at 05:12:29PM +0200, Gerhard Engleder wrote:
+On 26.11.25 16:46, Ilpo Järvinen wrote:
+> On Thu, 23 Oct 2025, Gerhard Engleder wrote:
+> 
+>> From: Gerhard Engleder <eg@keba.com>
+>>
+>> The KEBA UART is found in the system FPGA of KEBA PLC devices. It is
+>> mostly 8250 compatible with extension for some UART modes.
+>>
+>> 3 different variants exist. The simpliest variant supports only RS-232
+>> and is used for debug interfaces. The next variant supports only RS-485
+>> and is used mostly for communication with KEBA panel devices. The third
+>> variant is able to support RS-232, RS-485 and RS-422. For this variant
+>> not only the mode of the UART is configured, also the physics and
+>> transceivers are switched according to the mode.
+>>
+>> Signed-off-by: Gerhard Engleder <eg@keba.com>
+>> Tested-by: Daniel Gierlinger <gida@keba.com>
+>> ---
+>>   drivers/tty/serial/8250/8250_keba.c | 280 ++++++++++++++++++++++++++++
+>>   drivers/tty/serial/8250/Kconfig     |  13 ++
+>>   drivers/tty/serial/8250/Makefile    |   1 +
+>>   3 files changed, 294 insertions(+)
+>>   create mode 100644 drivers/tty/serial/8250/8250_keba.c
+>>
+>> diff --git a/drivers/tty/serial/8250/8250_keba.c b/drivers/tty/serial/8250/8250_keba.c
+>> new file mode 100644
+>> index 000000000000..c05b89551b12
+>> --- /dev/null
+>> +++ b/drivers/tty/serial/8250/8250_keba.c
+>> @@ -0,0 +1,280 @@
+>> +// SPDX-License-Identifier: GPL-2.0
+>> +/*
+>> + * Copyright (C) 2025 KEBA Industrial Automation GmbH
+>> + *
+>> + * Driver for KEBA UART FPGA IP core
+>> + */
+>> +
+>> +#include <linux/auxiliary_bus.h>
+>> +#include <linux/device.h>
+>> +#include <linux/io.h>
+>> +#include <linux/misc/keba.h>
+>> +#include <linux/module.h>
+> 
+> + linux/serial_core.h
+
+Is this really necessary even with the include of 8250.h below?
+
+>> +
+>> +#include "8250.h"
+>> +
+>> +#define KUART "kuart"
 
 ...
 
-> > > +#include <linux/auxiliary_bus.h>
-> > 
-> > + bits.h
-> > + container_of.h
-> > 
-> > > +#include <linux/device.h>
-> > 
-> > I don't see how it's being used.
-> > What I see are
-> > 
-> > + dev_printk.h
-> > + device/devres.h
-> > 
-> > + err.h
-> > 
-> > > +#include <linux/io.h>
-> > > +#include <linux/misc/keba.h>
-> > 
-> > + mod_devicetable.h
-> > 
-> > > +#include <linux/module.h>
-> > 
-> > + spinlock.h
-> > + types.h
+>> +static void kuart_enhanced_mode(struct uart_8250_port *up, bool enable)
+>> +{
+>> +	u8 lcr, efr;
+>> +
+>> +	/* backup LCR register */
 > 
-> Is there any extra tool to check for missing headers? Or do I have to
-> check the header for every used function?
+> Save + restore is quite obvious thing. IMO, no comment is needed about it.
 
-There is iwyu, which is heavily tweaked by Jonathan Cameron for use in Linux
-kernel and even though it gives some false positives.
+Yes it could be ommited. The patch is already merged, so I would keep
+it. Ok?
 
-I did this manually by reading the code of the driver and remembering which
-header provides which API.
+>> +	lcr = serial_in(up, UART_LCR);
+>> +
+>> +	/* enable 650 compatible register set (EFR, ...) */
+>> +	serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
+>> +
+>> +	/* enable/disable enhanced mode with indexed control registers */
+>> +	efr = serial_in(up, UART_EFR);
+>> +	if (enable)
+>> +		efr |= UART_EFR_ECB;
+>> +	else
+>> +		efr &= ~UART_EFR_ECB;
+>> +	serial_out(up, UART_EFR, efr);
+>> +
+>> +	/* disable 650 compatible register set, restore LCR */
+>> +	serial_out(up, UART_LCR, lcr);
+>> +}
+>> +
+>> +static void kuart_dtr_line_config(struct uart_8250_port *up, u8 dtrlc)
+>> +{
+>> +	u8 acr;
+>> +
+>> +	/* set index register to 0 to access ACR register */
+>> +	serial_out(up, UART_SCR, UART_ACR);
+> 
+> So the scratch register has some special use on this UART (register
+> multiplexer?), it would probably better name it with define, if that's the
+> case.
+
+This UART supports an enhanced mode, which changes the behavior of some
+registers. But the register still have their normal use with enhanced
+mode disabled. So I would keep the register name.
+
+>> +
+>> +	/* set value register to 0x10 writing DTR mode (1,0) */
+>> +	acr = serial_in(up, UART_LSR);
+>> +	acr &= ~UART_ACR_DTRLC_MASK;
+>> +	acr |= dtrlc;
+>> +	serial_out(up, UART_LSR, acr);
+>> +}
 
 ...
 
-> > Can't you call uart_read_port_properties()?
-> > 
-> > If ever you gain some properties either via FW description or via software
-> > nodes, they will be automatically used without need to update the driver!
+>> +	/*
+>> +	 * UART supports RS485, RS422 and RS232 with switching of physical
+>> +	 * interface
+>> +	 */
+>> +	uart.port.rs485_config = kuart_rs485_config;
+>> +	if (kuart->flags & KUART_RS485) {
+>> +		uart.port.rs485_supported.flags = SER_RS485_ENABLED |
+>> +						  SER_RS485_RTS_ON_SEND;
+>> +		uart.port.rs485.flags = SER_RS485_ENABLED |
+>> +					SER_RS485_RTS_ON_SEND;
+>> +	}
+>> +	if (kuart->flags & KUART_USE_CAPABILITY) {
+>> +		/* default mode priority is RS485 > RS422 > RS232 */
+>> +		if (kuart->capability & KUART_CAPABILITY_RS422) {
+>> +			uart.port.rs485_supported.flags |= SER_RS485_ENABLED |
+>> +							   SER_RS485_RTS_ON_SEND |
+>> +							   SER_RS485_MODE_RS422;
+>> +			uart.port.rs485.flags = SER_RS485_ENABLED |
+>> +						SER_RS485_RTS_ON_SEND |
+>> +						SER_RS485_MODE_RS422;
+>> +		}
+>> +		if (kuart->capability & KUART_CAPABILITY_RS485) {
+>> +			uart.port.rs485_supported.flags |= SER_RS485_ENABLED |
+>> +							   SER_RS485_RTS_ON_SEND;
+>> +			uart.port.rs485.flags = SER_RS485_ENABLED |
+>> +						SER_RS485_RTS_ON_SEND;
+>> +		}
+>> +	}
 > 
-> Yes that would be some nice behavior. But __uart_read_properties()
-> sets some defaults even if no firmware node exist (UPF_SHARE_IRQ,
+> Is it so that only one mode is supported or can that be changes using
+> kuart_rs485_config() in which case you should have all flags listed (you
+> seem to talk about priority so that sounds like all are supported)?
 
-Is it a problem? Even a single IRQ may be marked shared.
+Both. As written in the commit message, there are 3 variants of the
+device. 2 variants support only one mode and 1 variant supports up to
+3 modes.
 
-> 0 as irq number
+>> +
+>> +	retval = serial8250_register_8250_port(&uart);
+>> +	if (retval < 0) {
+>> +		dev_err(&auxdev->dev, "UART registration failed!\n");
+> 
+> Missing header.
 
-It doesn't do that, it just skips setting it in that case.
+I will check for the header.
 
-> or it fails if not irq number is found).
+As this patch is already merged, I will do a follow up.
 
-Yeah, this is most "problematic" part in case of this driver. Why is it
-auxiliary and not platform? With that the __uart_read_properties() needs
-to be updated to also query IRQ from respective aux device, and aux dev
-needs implementation of dev_is_auxiliary(). Not that big deal, though.
-
-> So __uart_read_properties() would need to be changed. IMO it makes no sense
-> to change __uart_read_properties() as this functionality is currently
-> not required.
-
-Yes, but as I said it will give you for free the possibility to use those
-properties without future modifications of the driver. OTOH, driver is in
-tree and modifications will be needed one way or another :-)
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+regards, gerhard
