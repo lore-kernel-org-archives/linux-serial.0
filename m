@@ -1,76 +1,77 @@
 Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9729C21FF4C
-	for <linux-serial@vger.kernel.org>; Thu, 27 Nov 2025 14:32:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECBA8333453
+	for <linux-serial@vger.kernel.org>; Thu, 27 Nov 2025 14:37:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764253930; cv=none; b=VYXQg25Se9F0DDpRwHGZnBBEw55xGtBeOFLrdYOY0qtL0tnVRa73SVuoZQWXoq9h0SCcsU4RYotgi4LrwAuPAWuiwL52VGN7adBK2XXyvsgVHGjhTQ1tUJ6DAhe35oyV5NBoqks+j2uM5k+PzXwGpJQOFg+JMqZpmprwJ5dwijo=
+	t=1764254279; cv=none; b=MQQyHVs7X+J41TyO8v0gNCC77CCsXEr42uglKh1d6h0JEQbZe7H0gpck3DGPI5GygzejieUI9WoN6+lC58Aop2hkwgHbgBNQLWJS2+d0wLwTyaYX3C7HCvOgntrvBnUjueq6/pVAxvFmQ4TMbcJWCY0cWWX68qlu8wLgd/BMWpY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764253930; c=relaxed/simple;
-	bh=5s4kM/4I9QIFAIQ7Xr2TkK6RVCGV+sQOtn5UYl+vDlI=;
+	s=arc-20240116; t=1764254279; c=relaxed/simple;
+	bh=X1Ldd1pDA8Igmeknj7tlqAQAGac9Gmdov5hMB67qp6c=;
 	h=From:In-Reply-To:MIME-Version:References:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=oHLnpNQZx639jN7Fn+zcW+FXSHvuw/N3QbB7gthlTu4pFPttNswGfb7Q9e2idVq6EeZ9k5N0iNM4v9D3DRYkoswFENOX5wU7WrF4Zi2Iuv2GFzSPmxvyYJB4qTMeLuDOLC8fbeSNjCK5w/mUD88FSR5uuffk34VHjHxaTadfhhk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl; spf=none smtp.mailfrom=bgdev.pl; dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b=IWxFRvrM; arc=none smtp.client-ip=209.85.167.43
+	 To:Cc:Content-Type; b=M6ipwXVk6b1Rx/SXmz8eGWjKrngPWPtCdQW13qgN6QHpbw8PBd7J2i6AdhObKMBlIELXWReJn1r8GFtU6oyvU56PwZMaYWLTkGeSuHQrEnHzWRFebIG6S9LsvvhizP6yMdIDIxHm/fR+CBIjx7QlZJAVCrpxrW4eCtS1Ld5T350=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl; spf=none smtp.mailfrom=bgdev.pl; dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b=jxF5SLN/; arc=none smtp.client-ip=209.85.167.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bgdev.pl
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b="IWxFRvrM"
-Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-5959da48139so975702e87.1
-        for <linux-serial@vger.kernel.org>; Thu, 27 Nov 2025 06:32:08 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b="jxF5SLN/"
+Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-5942a631c2dso1337274e87.2
+        for <linux-serial@vger.kernel.org>; Thu, 27 Nov 2025 06:37:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20230601.gappssmtp.com; s=20230601; t=1764253927; x=1764858727; darn=vger.kernel.org;
+        d=bgdev-pl.20230601.gappssmtp.com; s=20230601; t=1764254275; x=1764859075; darn=vger.kernel.org;
         h=cc:to:subject:message-id:date:references:mime-version:in-reply-to
          :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=kV+ineTuRO2FCjwv8fpM2FJ3fRBCPasbNXO10VdD+pQ=;
-        b=IWxFRvrMBKqU2T7gnCRsGpMHoF1i3Xi+cfhr+RyIsef0wp/QKhTcnfhklLfGXRnASb
-         pcH6UiEpO4jJN3Ib4jpPSiR/Wwf8SW96dUC/ciDVikh96MyfKn8fnMDt4ipw8p6wYME4
-         C8s3FtqyMCTJAUAjxl2mBs2HMq4OIAV9TqQTh6zjgwi878I6+q2cXSzTFqPse7Es368i
-         ylGVQxglxUwTNtKjv570uq+c3g/nbEidck5W/BdxvFhnCwJRVfdTl6SojmpKAVFH3+Od
-         mjqcdHRw6DBYfq2DIUKJKLoDfF2TMgIznce9NtBv8joUFMpIOr8TMfeNYtLfL2fWr34n
-         tZEw==
+        bh=VYjGgDc62jC79UPrwBm0Wqe2D8LTyTSAMvzD7Li+ucA=;
+        b=jxF5SLN/pGSuWhG6RX6JQ/iQtzX1+hvCKdXFLQ02hzVEHuibi9lhcOylRZtpgBtYtW
+         Bte1hAnjfpTjYlO+lH0k8ulDN+RfDwbsFNsiJJ8WueffeHIJA2cLYc5vakN5P5V9fLBz
+         HuzcDIwN6oOvYnubDW8nW3VQSYg0f9wTZbNA6eQBLZvE/+bph/TbtrjCtlc/dJupRC5K
+         r0VZslHg4XTIkNjGxZeARcDYEJM2GlJZQBuRx/ptgrDfKM4aOLwIl2L2mcYM2oo+Bn3n
+         V2Omjo9ySA1obEEes0B1Qv1qmMJHzR0rTmONVhwSRQteQM0RwPMIY4DmNeWJIZLMp1AS
+         CYVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764253927; x=1764858727;
+        d=1e100.net; s=20230601; t=1764254275; x=1764859075;
         h=cc:to:subject:message-id:date:references:mime-version:in-reply-to
          :from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=kV+ineTuRO2FCjwv8fpM2FJ3fRBCPasbNXO10VdD+pQ=;
-        b=KEyeZ5oW2JEMOEibKu/afIyJqVpMOzTtNkAOa/eH/cXmeRCRdEgMhMsiKM/P9lJFSO
-         OCvhJlK4ZbbKTS92HggQRiYpy3KGEWpaN/+hXX2IAB49I1G4pKKtkXD4GxVx4I00drkA
-         Ca0C+DfGXLTkbuAIavMrRpUntG4cPrn6C114pomvuRZ7n9ubIl2OJWD/AkQDprbPyU5Q
-         vEcXu8FF1yiwOJ4MiAH+n5Dixjbms4/HO5Wke8sVXvr4wdZIZoddkSQzwoG17ffD8rnb
-         QAfm7VliB+tSroHydKRdxzunTNQaU7qoqMESc9UfDX3ph0gUQ+MyB6nz2LBsuih1KuuH
-         EoDA==
-X-Forwarded-Encrypted: i=1; AJvYcCXD3ezgm8TItSMGP5QsJPtNasLtQLJNsDniBzwVi8aSy0phxfgyQpZ2w1vHXQR5MW/qgkBoXcQciZ2htBo=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxSl0yxYD9xInR0rw1Ax6+eXcj98azMKJO9RJ/tIm6ruO/oh5yO
-	1S6Vso+Ekxh53iYtRygRZ4YZrvn7qb2W03UWq4/NNxUIYrHZSigF//3uGQ0DvCojy88c3Z3J+vF
-	F0Sb5CVG/pkYd0FqNPU2SXmvvZZBC3ADdS/mW7sVcemUB8Moouqmp
-X-Gm-Gg: ASbGnctW8A5Biuw51VCQzibiD8qFsN2CnP9KtLSPq2bo5qdl0JnYAfyLVjax54DmOzK
-	fSX3uoj2X6vgdottEZR2wp0O07drdi4kDEIGXnw5lMzdQdQ2WA5tXUB5I5kDgEMg/oSToD9wMPD
-	PnlLQPQpVt+RdkmCaPuP49Jl6v+2HpY8aZJM8elqnLzSOzuzaVCNu4z3rvvL14NaSbgT0p5nNv6
-	dJy1OIGYdWvySsYwSoKPjAb7GyTz1T26rYQ12dX6plilJfeYhVJBlOw/DxI443C94416hZ5I638
-	HErqtqEHiUfXHJ7ajmFiywWrcmI=
-X-Google-Smtp-Source: AGHT+IHlhhzIIp/gnfsTHhd+vqhk+v48Z9xJOXoO7x5goAaqvtEG81gcVcAV13Y3mYngJi03cv1qgF1Hme/Zouniots=
-X-Received: by 2002:a05:6512:3e14:b0:591:c8de:467b with SMTP id
- 2adb3069b0e04-596b528c028mr4219398e87.40.1764253926578; Thu, 27 Nov 2025
- 06:32:06 -0800 (PST)
+        bh=VYjGgDc62jC79UPrwBm0Wqe2D8LTyTSAMvzD7Li+ucA=;
+        b=s2Wz33yLB7a054ubgyj2LkEP7MW30IzQ2NjS4jzuTAmpYgCMw/MkWPe3TBx8O5czhJ
+         yfZVmoOC1jbui5r6c5SLdJa7XhVf3dRJCl9FV8bda3XXi4ugTWHNQ/HYTB5mB0pvNavR
+         jzfG8FTHar40qub8VcLmyFGv1dcf7JLpcYwKh+fqb+5liJ1L5fMoiWjjZ1kx8R0RaBhW
+         F3UFE4JM2LPTkhW3kqqOf39Oic/5qAuPMAW/CsLwVJmrjRdp5WtkRXKfKfhVM03aMGXQ
+         A1YJAn72gD1I0VQ/F7N2hG0FFMWFwngUG/oG0cSBJELWvvpfJJdPpDh7pnwEcUmaFYwt
+         mNkg==
+X-Forwarded-Encrypted: i=1; AJvYcCV/kNmA3wP0tHhAwMK5QbmZjUKYXHi0SIshdoSO7Py797MEr+S2Ot+vRweIcUwOQSUSuMEOZkVp7CMaGCM=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz32sDGKgSo0nuMaWs53SEVsYUwvHejTNdRViepKEFr4H2Y8ba5
+	BGWmX26D5Rmbz0jgOpuXM3cKrda2Stn3ZaTy2HXRkEX+C99r2xaA8kCw7QDkyz6HOplW7wQNbzh
+	PPI6GnycY7Ia5+GIO+cL+aPwxl0QxGdcAmyLxRVQHvg==
+X-Gm-Gg: ASbGncsCP+dLkUAf9VTC1xmTC8oF4aCHzk9teraHUsBybg9tb5HluPAom2qxBihkSFY
+	hMkvzKUWoXwXxN2AwOsrg8s8ePEUgYmjpho29m9SLD4CnWCtXSupCZrnz5qZX9XGSAW9nzn/a1G
+	bw2r1LIBlXDIjHyiJA6Zkck2riIASR4+lxkV07nI2w/Hx2VOcB0o/7eQDUHIIFjYc/trmYj2QgW
+	hf22U9JcIC+lw+8s04RaZXeV8M5gmVM9NWN8rkRrvHY8Eh0ltCX8PwJTsaB1TNifhZRdW7SE07p
+	8FNi6iYDpnICsWI/2whsBzByoAE=
+X-Google-Smtp-Source: AGHT+IH8Ttsbi5KEeEAGk11LiOYQsu2N95FdEs0+cbMJMu5dLDKPCc8OYAk6PKicQIK8vI3aANmTaZiucmGCvDUboNk=
+X-Received: by 2002:a05:6512:3a95:b0:595:a5f0:1110 with SMTP id
+ 2adb3069b0e04-596a3ec065fmr8521200e87.30.1764254274981; Thu, 27 Nov 2025
+ 06:37:54 -0800 (PST)
 Received: from 969154062570 named unknown by gmailapi.google.com with
- HTTPREST; Thu, 27 Nov 2025 06:32:04 -0800
+ HTTPREST; Thu, 27 Nov 2025 06:37:53 -0800
 Received: from 969154062570 named unknown by gmailapi.google.com with
- HTTPREST; Thu, 27 Nov 2025 06:32:04 -0800
+ HTTPREST; Thu, 27 Nov 2025 06:37:53 -0800
 From: Bartosz Golaszewski <brgl@bgdev.pl>
-In-Reply-To: <20251125-pci-m2-e-v2-2-32826de07cc5@oss.qualcomm.com>
+In-Reply-To: <20251125-pci-m2-e-v2-10-32826de07cc5@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20251125-pci-m2-e-v2-0-32826de07cc5@oss.qualcomm.com> <20251125-pci-m2-e-v2-2-32826de07cc5@oss.qualcomm.com>
-Date: Thu, 27 Nov 2025 06:32:04 -0800
-X-Gm-Features: AWmQ_bmdSkzBaj3zxXIgo7YdGy9A3hKC58TOOOS51TGwxK6BIP2tm8BLLT5PXkE
-Message-ID: <CAMRc=Mc-WebsQZ3jt2xirioNMticiWj9PJ3fsPTXGCeJ1iTLRg@mail.gmail.com>
-Subject: Re: [PATCH v2 02/10] serdev: Add serdev device based driver match support
+References: <20251125-pci-m2-e-v2-0-32826de07cc5@oss.qualcomm.com> <20251125-pci-m2-e-v2-10-32826de07cc5@oss.qualcomm.com>
+Date: Thu, 27 Nov 2025 06:37:53 -0800
+X-Gm-Features: AWmQ_bmnE127PrJJlBfvUEW3R05_jJjqY__HdS6nPt4vVoiWctPQWqo-RlX_yNA
+Message-ID: <CAMRc=McH9u7Y8EZMwSjcCUs6rVx9K+h5OxFOrjwXhKm1td-EeQ@mail.gmail.com>
+Subject: Re: [PATCH v2 10/10] power: sequencing: pcie-m2: Add support for PCIe
+ M.2 Key E connectors
 To: manivannan.sadhasivam@oss.qualcomm.com
 Cc: Manivannan Sadhasivam via B4 Relay <devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org>, 
 	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
@@ -88,48 +89,173 @@ Cc: Manivannan Sadhasivam via B4 Relay <devnull+manivannan.sadhasivam.oss.qualco
 	Bartosz Golaszewski <brgl@bgdev.pl>
 Content-Type: text/plain; charset="UTF-8"
 
-On Tue, 25 Nov 2025 15:45:06 +0100, Manivannan Sadhasivam via B4 Relay
+On Tue, 25 Nov 2025 15:45:14 +0100, Manivannan Sadhasivam via B4 Relay
 <devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org> said:
 > From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
 >
-> Add support to match serdev devices with serdev drivers based on the serdev
-> ID table defined in serdev_device_driver::id_table.
+> Add support for handling the power sequence of the PCIe M.2 Key E
+> connectors. These connectors are used to attach the Wireless Connectivity
+> devices to the host machine including combinations of WiFi, BT, NFC using
+> interfaces such as PCIe/SDIO for WiFi, USB/UART for BT and I2C for NFC.
 >
-> The matching function, serdev_driver_match_device() uses the serdev device
-> name to match against the entries in serdev_device_driver::id_table.
+> Currently, this driver supports only the PCIe interface for WiFi and UART
+> interface for BT. The driver also only supports driving the 3.3v/1.8v power
+> supplies and W_DISABLE{1/2}# GPIOs. The optional signals of the Key E
+> connectors are not currently supported.
 >
-> If there is no serdev id_table for the driver, then serdev_device_match()
-> will fallback to ACPI and DT based matching.
+> For supporting Bluetooth over the non-discoverable UART interface, the
+> driver currently creates the serdev interface after enumerating the PCIe
+> interface. This is mandatory since the device ID is only known after the
+> PCIe enumeration and the ID is used for creating the serdev device.
 >
 > Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
 > ---
->  drivers/tty/serdev/core.c         | 23 ++++++++++++++++++++++-
->  include/linux/mod_devicetable.h   |  7 +++++++
->  include/linux/serdev.h            |  4 ++++
->  scripts/mod/devicetable-offsets.c |  3 +++
->  4 files changed, 36 insertions(+), 1 deletion(-)
+>  drivers/power/sequencing/Kconfig          |   1 +
+>  drivers/power/sequencing/pwrseq-pcie-m2.c | 205 +++++++++++++++++++++++++++++-
+>  2 files changed, 199 insertions(+), 7 deletions(-)
 >
-> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-> index b33e708cb245..2b5582cd5063 100644
-> --- a/drivers/tty/serdev/core.c
-> +++ b/drivers/tty/serdev/core.c
-> @@ -85,12 +85,33 @@ static const struct device_type serdev_ctrl_type = {
->  	.release	= serdev_ctrl_release,
->  };
+> diff --git a/drivers/power/sequencing/Kconfig b/drivers/power/sequencing/Kconfig
+> index f5fff84566ba..29bd204319cc 100644
+> --- a/drivers/power/sequencing/Kconfig
+> +++ b/drivers/power/sequencing/Kconfig
+> @@ -38,6 +38,7 @@ config POWER_SEQUENCING_TH1520_GPU
+>  config POWER_SEQUENCING_PCIE_M2
+>  	tristate "PCIe M.2 connector power sequencing driver"
+>  	depends on OF || COMPILE_TEST
+> +	depends on PCI
+>  	help
+>  	  Say Y here to enable the power sequencing driver for PCIe M.2
+>  	  connectors. This driver handles the power sequencing for the M.2
+> diff --git a/drivers/power/sequencing/pwrseq-pcie-m2.c b/drivers/power/sequencing/pwrseq-pcie-m2.c
+> index 4835d099d967..c2cc129f6917 100644
+> --- a/drivers/power/sequencing/pwrseq-pcie-m2.c
+> +++ b/drivers/power/sequencing/pwrseq-pcie-m2.c
+> @@ -5,14 +5,17 @@
+>   */
 >
-> +static int serdev_driver_match_device(struct device *dev, const struct device_driver *drv)
+
+I think you're missing linux/err.h here.
+
+>  #include <linux/device.h>
+> +#include <linux/gpio/consumer.h>
+>  #include <linux/mod_devicetable.h>
+>  #include <linux/module.h>
+>  #include <linux/of.h>
+>  #include <linux/of_graph.h>
+>  #include <linux/of_platform.h>
+> +#include <linux/pci.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/pwrseq/provider.h>
+>  #include <linux/regulator/consumer.h>
+> +#include <linux/serdev.h>
+>  #include <linux/slab.h>
+
+(snip)
+
+>
+> +static int pwrseq_m2_pcie_notify(struct notifier_block *nb, unsigned long action,
+> +			      void *data)
 > +{
-> +	const struct serdev_device_driver *serdev_drv = to_serdev_device_driver(drv);
-> +	struct serdev_device *serdev = to_serdev_device(dev);
-> +	const struct serdev_device_id *id;
+> +	struct pwrseq_pcie_m2_ctx *ctx = container_of(nb, struct pwrseq_pcie_m2_ctx, nb);
+> +	struct pci_dev *pdev = to_pci_dev(data);
+> +	struct device_node *pci_remote __free(device_node) = NULL;
+> +	struct device_node *serdev_remote __free(device_node) = NULL;
+> +	struct serdev_controller *serdev_ctrl;
+> +	struct serdev_device *serdev;
+> +	struct device *dev = ctx->dev;
+> +	int ret;
 > +
-> +	if (!serdev_drv->id_table)
-> +		return 0;
+> +	/*
+> +	 * Check whether the PCI device is associated with this M.2 connector or
+> +	 * not, by comparing the OF node of the PCI device parent and the Port 0
+> +	 * (PCIe) remote node parent OF node.
+> +	 */
+> +	pci_remote = of_graph_get_remote_node(dev_of_node(ctx->dev), 0, 0);
+> +	if (!pci_remote || (pci_remote != pdev->dev.parent->of_node))
+> +		return NOTIFY_DONE;
 > +
-> +	for (id = serdev_drv->id_table; id->name[0]; id++) {
-> +		if (!strcmp(dev_name(dev), id->name)) {
-> +			serdev->id = id;
-> +			return 1;
+> +	switch (action) {
+> +	case BUS_NOTIFY_ADD_DEVICE:
+> +		/* Create serdev device for WCN7850 */
+> +		if (pdev->vendor == PCI_VENDOR_ID_QCOM && pdev->device == 0x1107) {
+> +			serdev_remote = of_graph_get_remote_node(dev_of_node(ctx->dev), 1, 1);
+> +			if (!serdev_remote)
+> +				return NOTIFY_DONE;
+> +
+> +			serdev_ctrl = of_find_serdev_controller_by_node(serdev_remote);
+> +			if (!serdev_ctrl)
+> +				return NOTIFY_DONE;
+> +
+> +			serdev = serdev_device_alloc(serdev_ctrl);
+> +			if (!serdev)
+> +				return NOTIFY_BAD;
+> +
+
+
+This is where you'd add the software node I wrote about under another patch
+from this series.
+
+> +			ret = serdev_device_add(serdev, "WCN7850");
+> +			if (ret) {
+> +				dev_err(dev, "Failed to add serdev for WCN7850: %d\n", ret);
+> +				serdev_device_put(serdev);
+
+If you're touching serdev code in the same series, maybe you could define
+a cleanup action for serdev devices and use it here?
+
+> +				return NOTIFY_BAD;
+> +			}
+> +		}
+> +		break;
+> +	}
+> +
+> +	return NOTIFY_OK;
+> +}
+> +
+> +static bool pwrseq_pcie_m2_check_remote_node(struct device *dev, u8 port, u8 endpoint,
+> +					     const char *node)
+> +{
+> +	struct device_node *remote __free(device_node) = NULL;
+> +
+> +	remote = of_graph_get_remote_node(dev_of_node(dev), port, endpoint);
+
+I'd do it like this to follow the convention of initializing automatic
+variables at definition.
+
+	struct device_node *remote __free(device_node) =
+		of_graph_get_remote_node(dev_of_node(dev), port, endpoint);
+
+> +	if (remote && of_node_name_eq(remote, node))
+> +		return true;
+> +
+> +	return false;
+> +}
+> +
+> +/*
+> + * If the connector exposes a non-discoverable bus like UART, the respective
+> + * protocol device needs to be created manually with the help of the notifier
+> + * of the discoverable bus like PCIe.
+> + */
+> +static int pwrseq_pcie_m2_register_notifier(struct pwrseq_pcie_m2_ctx *ctx, struct device *dev)
+> +{
+> +	int ret;
+> +
+> +	/*
+> +	 * Register a PCI notifier for Key E connector that has PCIe as Port
+> +	 * 0/Endpoint 0 interface and Serial as Port 1/Endpoint 1 interface.
+> +	 */
+> +	if (pwrseq_pcie_m2_check_remote_node(dev, 1, 1, "serial")) {
+> +		if (pwrseq_pcie_m2_check_remote_node(dev, 0, 0, "pcie")) {
+> +			ctx->dev = dev;
+> +			ctx->nb.notifier_call = pwrseq_m2_pcie_notify;
+> +			ret = bus_register_notifier(&pci_bus_type, &ctx->nb);
+> +			if (ret) {
+> +				dev_err_probe(dev, ret, "Failed to register notifier for serdev\n");
+> +				return ret;
+> +			}
+
+return dev_err_probe() and save three lines?
+
 > +		}
 > +	}
 > +
@@ -137,104 +263,4 @@ On Tue, 25 Nov 2025 15:45:06 +0100, Manivannan Sadhasivam via B4 Relay
 > +}
 > +
 
-I don't know if Rob agrees with me but I would very much prefer to see
-software-node-based approach instead of an ID table matching.
-
-Could you in the pwrseq driver, create a software node for the serdev device
-you allocate, set its "compatible" to "qcom,wcn7850-bt" and match against it
-here?
-
-This has several benefits: if you ever need to pass more properties to the
-serdev devices, you already have a medium for that and you can also leave
-serdev_device_add() alone. You're comparing the entire name here - what if
-someone sets device's ID to some value and the name will be "WCN7850.2"?
-
-You could also drop the serdev_id field from struct serdev_device. For matching
-you could even reuse the of_device_id from the device driver.
-
-Which also makes me think that maybe we should finally think about a generic,
-fwnode-based device driver matching in the driver model...
-
-Bartosz
-
->  static int serdev_device_match(struct device *dev, const struct device_driver *drv)
->  {
->  	if (!is_serdev_device(dev))
->  		return 0;
->
-> -	/* TODO: platform matching */
-> +	if (serdev_driver_match_device(dev, drv))
-> +		return 1;
-> +
->  	if (acpi_driver_match_device(dev, drv))
->  		return 1;
->
-> diff --git a/include/linux/mod_devicetable.h b/include/linux/mod_devicetable.h
-> index 6077972e8b45..70c54c4bedba 100644
-> --- a/include/linux/mod_devicetable.h
-> +++ b/include/linux/mod_devicetable.h
-> @@ -976,4 +976,11 @@ struct coreboot_device_id {
->  	kernel_ulong_t driver_data;
->  };
->
-> +#define SERDEV_NAME_SIZE 32
-> +
-> +struct serdev_device_id {
-> +	const char name[SERDEV_NAME_SIZE];
-> +	kernel_ulong_t driver_data;
-> +};
-> +
->  #endif /* LINUX_MOD_DEVICETABLE_H */
-> diff --git a/include/linux/serdev.h b/include/linux/serdev.h
-> index ecde0ad3e248..aca92e0ee6e7 100644
-> --- a/include/linux/serdev.h
-> +++ b/include/linux/serdev.h
-> @@ -39,6 +39,7 @@ struct serdev_device_ops {
->   * @ops:	Device operations.
->   * @write_comp	Completion used by serdev_device_write() internally
->   * @write_lock	Lock to serialize access when writing data
-> + * @id:		serdev device ID entry
->   */
->  struct serdev_device {
->  	struct device dev;
-> @@ -47,6 +48,7 @@ struct serdev_device {
->  	const struct serdev_device_ops *ops;
->  	struct completion write_comp;
->  	struct mutex write_lock;
-> +	const struct serdev_device_id *id;
->  };
->
->  #define to_serdev_device(d) container_of_const(d, struct serdev_device, dev)
-> @@ -55,11 +57,13 @@ struct serdev_device {
->   * struct serdev_device_driver - serdev slave device driver
->   * @driver:	serdev device drivers should initialize name field of this
->   *		structure.
-> + * @id_table:	serdev device ID table
->   * @probe:	binds this driver to a serdev device.
->   * @remove:	unbinds this driver from the serdev device.
->   */
->  struct serdev_device_driver {
->  	struct device_driver driver;
-> +	const struct serdev_device_id *id_table;
->  	int	(*probe)(struct serdev_device *);
->  	void	(*remove)(struct serdev_device *);
->  };
-> diff --git a/scripts/mod/devicetable-offsets.c b/scripts/mod/devicetable-offsets.c
-> index d3d00e85edf7..c1bfa8eddc4d 100644
-> --- a/scripts/mod/devicetable-offsets.c
-> +++ b/scripts/mod/devicetable-offsets.c
-> @@ -280,5 +280,8 @@ int main(void)
->  	DEVID(coreboot_device_id);
->  	DEVID_FIELD(coreboot_device_id, tag);
->
-> +	DEVID(serdev_device_id);
-> +	DEVID_FIELD(serdev_device_id, name);
-> +
->  	return 0;
->  }
->
-> --
-> 2.48.1
->
->
->
+Bart
