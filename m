@@ -1,261 +1,397 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34B01311C35
-	for <linux-serial@vger.kernel.org>; Thu, 27 Nov 2025 09:28:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 640CD316904
+	for <linux-serial@vger.kernel.org>; Thu, 27 Nov 2025 09:49:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764235696; cv=none; b=l5iG4bRGsHyDPnAiq3wB3GfCWTgUxIQWJWx5mYWKhx4P2Ij9A9s1jUgNFG7aOHUSFGkkMGVMrzrEBEAhFXcfWupAIZPp7jy1nNlCkUjNC68XwkxcxzOD1ecu6R/vIziwWPqUK4jp4SQ+jstq9zbiWvGFv5EqA2GZdArk/vyzytM=
+	t=1764236975; cv=none; b=SIL6xcpvA4gVjBQZ5eGbm+TAOu1sS/JA/SzGUThiUMRAbedh7ne/taUnoVb9t8fksElUgUsztorOZKyZP4YmClsuDWYn6AAv0SISy+pE+N4ebzBffWUj7YOW2TZ8fTfxWsLoYuFJ65w525VE4o9dTQLOU5fafscYqD/gfuPiLOw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764235696; c=relaxed/simple;
-	bh=HTXoxDXfGGvRujojE4GihAsh+GMmR3u0ZriTuIY9eEo=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=WFIQ9mX67BvNH1ClBVWYSkmij2EPe2TkReuUjzoRQHQ/+nqcXnQl9e43MSolHIHNEw+h8HxaaMvmp5Kot7Hcgqh4C4uvDA97zRtyoAbJMfrZXur3IzWO2eHvasS/3geSspBIdmLSlQ+8hJ4p1KEqqXG1IrOPIsXuqHZuu2Nwmng=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BdXygR5X; arc=none smtp.client-ip=192.198.163.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1764236975; c=relaxed/simple;
+	bh=1w3icSO0TBdK1xD2/6Uy3zTHvCanKIgCdKJcedP9454=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=FU147FHlrt16iGnsX1FPucLZXJPBthQ9fwKv8ZVkKa1j4nBDlDLv9G0NtrH9Fn/xPwV2ptUFoKZ4ag+xkl4MAYjp6XqVKLi7XtDHA7+tYmirznH0AWX+wgjyWJDKUjkZeFEwDAZtgzi9K9z/ITfUEmEzzoW808L6Jq2M/dpnkE8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=DF4ZA+Ht; arc=none smtp.client-ip=209.85.208.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BdXygR5X"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1764235694; x=1795771694;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=HTXoxDXfGGvRujojE4GihAsh+GMmR3u0ZriTuIY9eEo=;
-  b=BdXygR5XTr8CTmWbSxJ2NWrsrv0r1vEffSLOVjT+yfM+e8d7vCcEbGij
-   7lf8Du+1A51QilmBCMTBsU9UYWA4DYgo+M/RHlf9Ag2iytH3Os9kYpD80
-   Gwk/6ID8sFIoFbBnQWXk8ZhI0CZzXm7YpdR/JVSEELQ3uV7rfgjxAddlQ
-   eXydHtdjxQqtWJUmkCW9mM2BhSDJSiYlXuiCtefQm1A+7LP2zRMDez31d
-   DD9PIDIOGgGWQW2cCdef4Ww9P+kpPwQLgTQMUt5/fsPnXgcBXUVSx0uGo
-   moF029NbPeeQquNmG7J6R0pq4XCmNRXmK2n2XCOC+hcllgosOFLQu9No+
-   g==;
-X-CSE-ConnectionGUID: zhQcUjTWTmaXgFiEbTtKyQ==
-X-CSE-MsgGUID: vBx8xLqpSF+Cv3eiOOGrPQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11625"; a="76909191"
-X-IronPort-AV: E=Sophos;i="6.20,230,1758610800"; 
-   d="scan'208";a="76909191"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2025 01:28:14 -0800
-X-CSE-ConnectionGUID: j1t8W0hbR8iojRBrXw3ekg==
-X-CSE-MsgGUID: KCVZ0ZvvReOETREknfs5KQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.20,230,1758610800"; 
-   d="scan'208";a="193285854"
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.27])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2025 01:28:11 -0800
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Thu, 27 Nov 2025 11:28:07 +0200 (EET)
-To: Gerhard Engleder <gerhard@engleder-embedded.com>
-cc: linux-serial <linux-serial@vger.kernel.org>, 
-    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>, Lukas Wunner <lukas@wunner.de>, 
-    Gerhard Engleder <eg@keba.com>, Daniel Gierlinger <gida@keba.com>
-Subject: Re: [PATCH v4 2/2] serial: 8250: add driver for KEBA UART
-In-Reply-To: <2e23bf3b-c42e-45b2-8035-e210ed566f0d@engleder-embedded.com>
-Message-ID: <9abd5fcd-973d-cede-5165-591ecf6e14da@linux.intel.com>
-References: <20251023151229.11774-1-gerhard@engleder-embedded.com> <20251023151229.11774-3-gerhard@engleder-embedded.com> <b7f51612-9192-998c-b0fd-18512d84c154@linux.intel.com> <2e23bf3b-c42e-45b2-8035-e210ed566f0d@engleder-embedded.com>
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="DF4ZA+Ht"
+Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-64149f78c0dso1079300a12.3
+        for <linux-serial@vger.kernel.org>; Thu, 27 Nov 2025 01:49:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1764236972; x=1764841772; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=M55NOPX6+5YD0B0HIxdp5eD8kEu/VA3rAyDyjjhFwp8=;
+        b=DF4ZA+Htxfo9uVnJxve6l6AEqqleFXSFMJWap4j0Z3mT3FTjSNWiKbUIfcjrE5XndM
+         4qFoE2hnBcLxeZA+DrurnQdjHdAy2P8rA5c/ekaUg6g8aIk+735UtcH0Ze8VpVRFRsbQ
+         XwaamAJs8nS1++e3ON7jgwXDos0QTE0KX3gqKI6Wlz2SYAVuR41Jz/bxC+oLfX4+hE+3
+         0EZeafP7QXQdOr7wQ8OHzLQDp9eT97TaLb2bODFH5hx8pfolmKm2QLDPNykNNQpEb8jb
+         9jRRfTXstNzC4BZTBsg3RDwcf2sjQKd3OHhY7S3rJ6fiAaNA+zBlUAKiLvg6gI/hhQTO
+         g1wQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1764236972; x=1764841772;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=M55NOPX6+5YD0B0HIxdp5eD8kEu/VA3rAyDyjjhFwp8=;
+        b=e+Nga83bLKrPg17irEHOtvEIfq4NOA4TCnLXOBPl8erYIOixqtj/11vtoEHlLA/bbS
+         /arvdi2Aap5xoAlKHtyOImg9Wxss4WSseLyoh5QmgOdTQA7bTk+tb4r9f/45GX9KTv63
+         ON0m0wu86OkQeomiahk78JXGAC8LLbKlIYilIIQ1ANtl9ZDjFxJYRUGjhXI2Gs+I6jiC
+         eZX/yqsAta1cCo1jcOYV7kI6E/8qrWLFxmJ2bzlpvjTwCNjtvFr+bGSsEoNPpGh3mszA
+         HubIzKoP6Ltp5Xct0Fzze33FmqIs4IkeUzrFdcYGrxSDWqk6QAzktnF+kHuz4wm/weFq
+         2IAg==
+X-Forwarded-Encrypted: i=1; AJvYcCUMS0YnZpjyk52Jp8B9Dqc9x4JKEZ9zem9bUVNUmCNfYifxxkDPyQU+1D5xbtFtKoHO4uSj6VTrRTLHOdA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwOUzE0wj/ypwiVSu3OtnaFtJkbWnR2g+8kfmmuiw3hqJ0vj7Ia
+	2ufNV3coHOzHZzXoTkmOcRTp2objwTfupREYfEAUfMqVenhsUFQ9+ov9ANx1ixYhcOY=
+X-Gm-Gg: ASbGncuyyXvbT1gtD2HVMZHtdPWgFuGAUVZg44ea2+0YV4/tNEb8NsyqC51IhZPt/yX
+	R5HqosdUH/hcnR8NsSpVun6JNW1yTgVy9XVKs7NgTkkqUAwNcY2m4VOUBot5WdrhmvnjC2hLYo6
+	iGfDD5bqFiW2FV+a8IkKgKM1h/KAvx6VL5luTDdWQR1mBnk7Y7Y3SuIDHGgdgVazEV9MJZ5GPzr
+	i8rUYDhLLVsGcmTQnXP/7CaAt2ayBwjb2pe5nXrI1dgdDWdDanmqTg4MCE4AuWt3PmwRJBoLuBS
+	TvWG2oBrMnWBF7VhHrO6x9Vm4wigC34UyflPrwHRARcB07ugQfB7RN8xXmEack9ElEPJdJtFdgK
+	5IliYklyDEzTft+NxJrKzHVKnFYZ7Y0rd+4lhwaWj3i9Fflc49dldtXD9m8EZw2pDQx/02y7PO2
+	YqXjOj7fzic9AxSA==
+X-Google-Smtp-Source: AGHT+IFxlu0dGYyZ0OR2t4e3UxMOdqisZjIAo/bgT3egjX/1jqRrOdQbJ5C0zIWcx5YhoZUyiTy5Wg==
+X-Received: by 2002:a17:906:2612:b0:b76:b632:1123 with SMTP id a640c23a62f3a-b76b63214demr1036789966b.42.1764236971612;
+        Thu, 27 Nov 2025 01:49:31 -0800 (PST)
+Received: from pathway.suse.cz ([176.114.240.130])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b76f5162093sm123547366b.2.2025.11.27.01.49.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Nov 2025 01:49:31 -0800 (PST)
+Date: Thu, 27 Nov 2025 10:49:28 +0100
+From: Petr Mladek <pmladek@suse.com>
+To: Marcos Paulo de Souza <mpdesouza@suse.com>
+Cc: Steven Rostedt <rostedt@goodmis.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Jason Wessel <jason.wessel@windriver.com>,
+	Daniel Thompson <danielt@kernel.org>,
+	Douglas Anderson <dianders@chromium.org>,
+	Richard Weinberger <richard@nod.at>,
+	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	kgdb-bugreport@lists.sourceforge.net, linux-um@lists.infradead.org
+Subject: Re: [PATCH v2 4/4] printk: Make console_{suspend,resume} handle
+ CON_SUSPENDED
+Message-ID: <aSgeqM3DWvR8-cMY@pathway.suse.cz>
+References: <20251121-printk-cleanup-part2-v2-0-57b8b78647f4@suse.com>
+ <20251121-printk-cleanup-part2-v2-4-57b8b78647f4@suse.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323328-431976794-1764235162=:8713"
-Content-ID: <9c3ed528-f198-dbdb-3298-3aff3077ce0e@linux.intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251121-printk-cleanup-part2-v2-4-57b8b78647f4@suse.com>
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Fri 2025-11-21 15:50:36, Marcos Paulo de Souza wrote:
+> Since commit 9e70a5e109a4 ("printk: Add per-console suspended state")
+> the CON_SUSPENDED flag was introced, and this flag was being checked
+> on console_is_usable function, which returns false if the console is
+> suspended.
+> 
+> To make the behavior consistent, change show_cons_active to look for
+> consoles that are not suspended, instead of checking CON_ENABLED.
+> 
+> --- a/drivers/tty/tty_io.c
+> +++ b/drivers/tty/tty_io.c
+> @@ -3554,7 +3554,7 @@ static ssize_t show_cons_active(struct device *dev,
+>  			continue;
+>  		if (!(c->flags & CON_NBCON) && !c->write)
+>  			continue;
+> -		if ((c->flags & CON_ENABLED) == 0)
+> +		if (c->flags & CON_SUSPENDED)
 
---8323328-431976794-1764235162=:8713
-Content-Type: text/plain; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Content-ID: <c83367e6-02d5-fbdc-fda6-3793763c3912@linux.intel.com>
+I believe that we could and should replace
 
-On Wed, 26 Nov 2025, Gerhard Engleder wrote:
+		if (!(c->flags & CON_NBCON) && !c->write)
+			continue;
+		if (c->flags & CON_SUSPENDED)
+			continue;
 
-> On 26.11.25 16:46, Ilpo J=E4rvinen wrote:
-> > On Thu, 23 Oct 2025, Gerhard Engleder wrote:
-> >=20
-> > > From: Gerhard Engleder <eg@keba.com>
-> > >=20
-> > > The KEBA UART is found in the system FPGA of KEBA PLC devices. It is
-> > > mostly 8250 compatible with extension for some UART modes.
-> > >=20
-> > > 3 different variants exist. The simpliest variant supports only RS-23=
-2
-> > > and is used for debug interfaces. The next variant supports only RS-4=
-85
-> > > and is used mostly for communication with KEBA panel devices. The thi=
-rd
-> > > variant is able to support RS-232, RS-485 and RS-422. For this varian=
-t
-> > > not only the mode of the UART is configured, also the physics and
-> > > transceivers are switched according to the mode.
-> > >=20
-> > > Signed-off-by: Gerhard Engleder <eg@keba.com>
-> > > Tested-by: Daniel Gierlinger <gida@keba.com>
-> > > ---
-> > >   drivers/tty/serial/8250/8250_keba.c | 280 +++++++++++++++++++++++++=
-+++
-> > >   drivers/tty/serial/8250/Kconfig     |  13 ++
-> > >   drivers/tty/serial/8250/Makefile    |   1 +
-> > >   3 files changed, 294 insertions(+)
-> > >   create mode 100644 drivers/tty/serial/8250/8250_keba.c
-> > >=20
-> > > diff --git a/drivers/tty/serial/8250/8250_keba.c
-> > > b/drivers/tty/serial/8250/8250_keba.c
-> > > new file mode 100644
-> > > index 000000000000..c05b89551b12
-> > > --- /dev/null
-> > > +++ b/drivers/tty/serial/8250/8250_keba.c
-> > > @@ -0,0 +1,280 @@
-> > > +// SPDX-License-Identifier: GPL-2.0
-> > > +/*
-> > > + * Copyright (C) 2025 KEBA Industrial Automation GmbH
-> > > + *
-> > > + * Driver for KEBA UART FPGA IP core
-> > > + */
-> > > +
-> > > +#include <linux/auxiliary_bus.h>
-> > > +#include <linux/device.h>
-> > > +#include <linux/io.h>
-> > > +#include <linux/misc/keba.h>
-> > > +#include <linux/module.h>
-> >=20
-> > + linux/serial_core.h
->=20
-> Is this really necessary even with the include of 8250.h below?
+with
 
-Yes. Generally don't rely on indirect includes.
+		if (!console_is_usable(c, c->flags, true) &&
+		    !console_is_usable(c, c->flags, false))
+			continue;
 
-> > > +
-> > > +#include "8250.h"
-> > > +
-> > > +#define KUART "kuart"
->=20
-> ...
->=20
-> > > +static void kuart_enhanced_mode(struct uart_8250_port *up, bool enab=
-le)
-> > > +{
-> > > +=09u8 lcr, efr;
-> > > +
-> > > +=09/* backup LCR register */
-> >=20
-> > Save + restore is quite obvious thing. IMO, no comment is needed about =
-it.
->=20
-> Yes it could be ommited. The patch is already merged, so I would keep
-> it. Ok?
+It would make the value compatible with all other callers/users of
+the console drivers.
 
-Ah, I didn't realize this is already merged. Just leave them then, it's=20
-not that big thing.
+The variant using two console_is_usable() calls with "true/false"
+parameters is inspited by __pr_flush().
 
-> > > +=09lcr =3D serial_in(up, UART_LCR);
-> > > +
-> > > +=09/* enable 650 compatible register set (EFR, ...) */
-> > > +=09serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
-> > > +
-> > > +=09/* enable/disable enhanced mode with indexed control registers */
-> > > +=09efr =3D serial_in(up, UART_EFR);
-> > > +=09if (enable)
-> > > +=09=09efr |=3D UART_EFR_ECB;
-> > > +=09else
-> > > +=09=09efr &=3D ~UART_EFR_ECB;
-> > > +=09serial_out(up, UART_EFR, efr);
-> > > +
-> > > +=09/* disable 650 compatible register set, restore LCR */
-> > > +=09serial_out(up, UART_LCR, lcr);
-> > > +}
-> > > +
-> > > +static void kuart_dtr_line_config(struct uart_8250_port *up, u8 dtrl=
-c)
-> > > +{
-> > > +=09u8 acr;
-> > > +
-> > > +=09/* set index register to 0 to access ACR register */
-> > > +=09serial_out(up, UART_SCR, UART_ACR);
-> >=20
-> > So the scratch register has some special use on this UART (register
-> > multiplexer?), it would probably better name it with define, if that's =
-the
-> > case.
->=20
-> This UART supports an enhanced mode, which changes the behavior of some
-> registers. But the register still have their normal use with enhanced
-> mode disabled. So I would keep the register name.
+>  			continue;
+>  		cs[i++] = c;
+>  		if (i >= ARRAY_SIZE(cs))
+> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+> index fed98a18e830..fe7c956f73bd 100644
+> --- a/kernel/printk/printk.c
+> +++ b/kernel/printk/printk.c
+> @@ -3542,7 +3542,7 @@ void console_suspend(struct console *console)
+>  {
+>  	__pr_flush(console, 1000, true);
+>  	console_list_lock();
+> -	console_srcu_write_flags(console, console->flags & ~CON_ENABLED);
+> +	console_srcu_write_flags(console, console->flags | CON_SUSPENDED);
 
-But this code clearly assume UART is in enhanced mode. Same number can
-have different names. You could of course reuse the other define in the=20
-define:
+This is the same flag which is set also by the console_suspend_all()
+API. Now, as discussed at
+https://lore.kernel.org/lkml/844j4lepak.fsf@jogness.linutronix.de/
 
-#define KUART_EMODE_INDEX_REG=09UART_SCR
+   + console_suspend()/console_resume() API is used by few console
+     drivers to suspend the console when the related HW device
+     gets suspended.
 
-> > > +=09/* set value register to 0x10 writing DTR mode (1,0) */
-> > > +=09acr =3D serial_in(up, UART_LSR);
-> > > +=09acr &=3D ~UART_ACR_DTRLC_MASK;
-> > > +=09acr |=3D dtrlc;
-> > > +=09serial_out(up, UART_LSR, acr);
-> > > +}
->=20
-> ...
->=20
-> > > +=09/*
-> > > +=09 * UART supports RS485, RS422 and RS232 with switching of physica=
-l
-> > > +=09 * interface
-> > > +=09 */
-> > > +=09uart.port.rs485_config =3D kuart_rs485_config;
-> > > +=09if (kuart->flags & KUART_RS485) {
-> > > +=09=09uart.port.rs485_supported.flags =3D SER_RS485_ENABLED |
-> > > +=09=09=09=09=09=09  SER_RS485_RTS_ON_SEND;
-> > > +=09=09uart.port.rs485.flags =3D SER_RS485_ENABLED |
-> > > +=09=09=09=09=09SER_RS485_RTS_ON_SEND;
-> > > +=09}
-> > > +=09if (kuart->flags & KUART_USE_CAPABILITY) {
-> > > +=09=09/* default mode priority is RS485 > RS422 > RS232 */
-> > > +=09=09if (kuart->capability & KUART_CAPABILITY_RS422) {
-> > > +=09=09=09uart.port.rs485_supported.flags |=3D SER_RS485_ENABLED |
-> > > +
-> > > SER_RS485_RTS_ON_SEND |
-> > > +
-> > > SER_RS485_MODE_RS422;
-> > > +=09=09=09uart.port.rs485.flags =3D SER_RS485_ENABLED |
-> > > +=09=09=09=09=09=09SER_RS485_RTS_ON_SEND |
-> > > +=09=09=09=09=09=09SER_RS485_MODE_RS422;
-> > > +=09=09}
-> > > +=09=09if (kuart->capability & KUART_CAPABILITY_RS485) {
-> > > +=09=09=09uart.port.rs485_supported.flags |=3D SER_RS485_ENABLED |
-> > > +
-> > > SER_RS485_RTS_ON_SEND;
-> > > +=09=09=09uart.port.rs485.flags =3D SER_RS485_ENABLED |
-> > > +=09=09=09=09=09=09SER_RS485_RTS_ON_SEND;
-> > > +=09=09}
-> > > +=09}
-> >=20
-> > Is it so that only one mode is supported or can that be changes using
-> > kuart_rs485_config() in which case you should have all flags listed (yo=
-u
-> > seem to talk about priority so that sounds like all are supported)?
->=20
-> Both. As written in the commit message, there are 3 variants of the
-> device. 2 variants support only one mode and 1 variant supports up to
-> 3 modes.
->=20
-> > > +
-> > > +=09retval =3D serial8250_register_8250_port(&uart);
-> > > +=09if (retval < 0) {
-> > > +=09=09dev_err(&auxdev->dev, "UART registration failed!\n");
-> >=20
-> > Missing header.
->=20
-> I will check for the header.
->=20
-> As this patch is already merged, I will do a follow up.
->=20
-> regards, gerhard
->=20
+   + console_suspend_all()/console_resume_all() is used by
+     the power management subsystem to call down/up all consoles
+     when the system is going down/up. It is a big hammer approach.
 
---=20
- i.
---8323328-431976794-1764235162=:8713--
+We need to distinguish the two APIs so that console drivers which were
+suspended by both APIs stay suspended until they get resumed by both
+APIs. I mean:
+
+	// This should suspend all consoles unless it is not disabled
+	// by "no_console_suspend" API.
+	console_suspend_all();
+	// This suspends @con even when "no_console_suspend" parameter
+	// is used. It is needed because the HW is going to be suspended.
+	// It has no effect when the consoles were already suspended
+	// by the big hammer API.
+	console_suspend(con);
+
+	// This might resume the console when "no_console_suspend" option
+	// is used. The driver should work because the HW was resumed.
+	// But it should stay suspended when all consoles are supposed
+	// to stay suspended because of the big hammer API.
+	console_resume(con);
+	// This should resume all consoles.
+	console_resume_all();
+
+Other behavior would be unexpected and untested. It might cause regression.
+
+I see two solutions:
+
+   + add another CON_SUSPENDED_ALL flag
+   + add back "consoles_suspended" global variable
+
+I prefer adding back the "consoles_suspended" global variable because
+it is a global state...
+
+The global state should be synchronized the same way as the current
+per-console flag (write under console_list_lock, read under
+console_srcu_read_lock()).
+
+Also it should be checked by console_is_usable() API. Otherwise, we
+would need to update all callers.
+
+This brings a challenge how to make it safe and keep the API sane.
+I propose to create:
+
+  + __console_is_usable() where the "consoles_suspended" value will
+    be passed as parameter. It might be used directly under
+    console_list_lock().
+
+  + console_is_usable() with the existing parameters. It will check
+    the it was called under console_srcu_read_lock, read
+    the global "consoles_suspend" and pass it to
+    __console_is_usable().
+
+
+>  	console_list_unlock();
+>  
+>  	/*
+
+I played with the code to make sure that it looked sane
+and I ended with the following changes on top of this patch.
+
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 1b2ce0f36010..fda4683d12f1 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -3552,9 +3552,8 @@ static ssize_t show_cons_active(struct device *dev,
+ 	for_each_console(c) {
+ 		if (!c->device)
+ 			continue;
+-		if (!(c->flags & CON_NBCON) && !c->write)
+-			continue;
+-		if (c->flags & CON_SUSPENDED)
++		if (!__console_is_usable(c, c->flags, consoles_suspended, true) &&
++		    !__console_is_usable(c, c->flags, consoles_suspended, false))
+ 			continue;
+ 		cs[i++] = c;
+ 		if (i >= ARRAY_SIZE(cs))
+diff --git a/include/linux/console.h b/include/linux/console.h
+index 5f17321ed962..090490ef570f 100644
+--- a/include/linux/console.h
++++ b/include/linux/console.h
+@@ -496,6 +496,7 @@ extern void console_list_lock(void) __acquires(console_mutex);
+ extern void console_list_unlock(void) __releases(console_mutex);
+ 
+ extern struct hlist_head console_list;
++extern bool consoles_suspended;
+ 
+ /**
+  * console_srcu_read_flags - Locklessly read flags of a possibly registered
+@@ -548,6 +549,47 @@ static inline void console_srcu_write_flags(struct console *con, short flags)
+ 	WRITE_ONCE(con->flags, flags);
+ }
+ 
++/**
++ * consoles_suspended_srcu_read - Locklessly read the global flag for
++ *				suspending all consoles.
++ *
++ * The global "consoles_suspended" flag is synchronized using console_list_lock
++ * and console_srcu_read_lock. It is the same approach as CON_SUSSPENDED flag.
++ * See console_srcu_read_flags() for more details.
++ *
++ * Context: Any context.
++ * Return: The current value of the global "consoles_suspended" flag.
++ */
++static inline short consoles_suspended_srcu_read(void)
++{
++	WARN_ON_ONCE(!console_srcu_read_lock_is_held());
++
++	/*
++	 * The READ_ONCE() matches the WRITE_ONCE() when "consoles_suspended"
++	 * is modified with consoles_suspended_srcu_write().
++	 */
++	return data_race(READ_ONCE(consoles_suspended));
++}
++
++/**
++ * consoles_suspended_srcu_write - Write the global flag for suspending
++ *			all consoles.
++ * @suspend:	new value to write
++ *
++ * The write must be done under the console_list_lock. The caller is responsible
++ * for calling synchronize_srcu() to make sure that all callers checking the
++ * usablility of registered consoles see the new state.
++ *
++ * Context: Any context.
++ */
++static inline void consoles_suspended_srcu_write(bool suspend)
++{
++	lockdep_assert_console_list_lock_held();
++
++	/* This matches the READ_ONCE() in consoles_suspended_srcu_read(). */
++	WRITE_ONCE(consoles_suspended, suspend);
++}
++
+ /* Variant of console_is_registered() when the console_list_lock is held. */
+ static inline bool console_is_registered_locked(const struct console *con)
+ {
+@@ -617,13 +659,15 @@ extern bool nbcon_kdb_try_acquire(struct console *con,
+ extern void nbcon_kdb_release(struct nbcon_write_context *wctxt);
+ 
+ /*
+- * Check if the given console is currently capable and allowed to print
+- * records. Note that this function does not consider the current context,
+- * which can also play a role in deciding if @con can be used to print
+- * records.
++ * This variant might be called under console_list_lock where both
++ * @flags and @all_suspended flags can be read directly.
+  */
+-static inline bool console_is_usable(struct console *con, short flags, bool use_atomic)
++static inline bool __console_is_usable(struct console *con, short flags,
++				       bool all_suspended, bool use_atomic)
+ {
++	if (all_suspended)
++		return false;
++
+ 	if (!(flags & CON_ENABLED))
+ 		return false;
+ 
+@@ -666,6 +710,20 @@ static inline bool console_is_usable(struct console *con, short flags, bool use_
+ 	return true;
+ }
+ 
++/*
++ * Check if the given console is currently capable and allowed to print
++ * records. Note that this function does not consider the current context,
++ * which can also play a role in deciding if @con can be used to print
++ * records.
++ */
++static inline bool console_is_usable(struct console *con, short flags,
++				     bool use_atomic)
++{
++	bool all_suspended = consoles_suspended_srcu_read();
++
++	return __console_is_usable(con, flags, all_suspended, use_atomic);
++}
++
+ #else
+ static inline void nbcon_cpu_emergency_enter(void) { }
+ static inline void nbcon_cpu_emergency_exit(void) { }
+@@ -678,6 +736,8 @@ static inline void nbcon_reacquire_nobuf(struct nbcon_write_context *wctxt) { }
+ static inline bool nbcon_kdb_try_acquire(struct console *con,
+ 					 struct nbcon_write_context *wctxt) { return false; }
+ static inline void nbcon_kdb_release(struct nbcon_write_context *wctxt) { }
++static inline bool __console_is_usable(struct console *con, short flags,
++				       bool all_suspended, bool use_atomic) { return false; }
+ static inline bool console_is_usable(struct console *con, short flags,
+ 				     bool use_atomic) { return false; }
+ #endif
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 23a14e8c7a49..12247df07420 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -104,6 +104,13 @@ DEFINE_STATIC_SRCU(console_srcu);
+  */
+ int __read_mostly suppress_printk;
+ 
++/*
++ * Global flag for calling down all consoles during suspend.
++ * There is also a per-console flag which is used when the related
++ * device HW gets disabled, see CON_SUSPEND.
++ */
++bool consoles_suspended;
++
+ #ifdef CONFIG_LOCKDEP
+ static struct lockdep_map console_lock_dep_map = {
+ 	.name = "console_lock"
+@@ -2731,8 +2738,6 @@ MODULE_PARM_DESC(console_no_auto_verbose, "Disable console loglevel raise to hig
+  */
+ void console_suspend_all(void)
+ {
+-	struct console *con;
+-
+ 	if (console_suspend_enabled)
+ 		pr_info("Suspending console(s) (use no_console_suspend to debug)\n");
+ 
+@@ -2749,8 +2754,7 @@ void console_suspend_all(void)
+ 		return;
+ 
+ 	console_list_lock();
+-	for_each_console(con)
+-		console_srcu_write_flags(con, con->flags | CON_SUSPENDED);
++	consoles_suspended_srcu_write(true);
+ 	console_list_unlock();
+ 
+ 	/*
+@@ -2765,7 +2769,6 @@ void console_suspend_all(void)
+ void console_resume_all(void)
+ {
+ 	struct console_flush_type ft;
+-	struct console *con;
+ 
+ 	/*
+ 	 * Allow queueing irq_work. After restoring console state, deferred
+@@ -2776,8 +2779,7 @@ void console_resume_all(void)
+ 
+ 	if (console_suspend_enabled) {
+ 		console_list_lock();
+-		for_each_console(con)
+-			console_srcu_write_flags(con, con->flags & ~CON_SUSPENDED);
++		consoles_suspended_srcu_write(false);
+ 		console_list_unlock();
+ 
+ 		/*
+
+Best Regards,
+Petr
