@@ -1,139 +1,113 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 041491E9B22;
-	Thu, 27 Nov 2025 09:05:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F9CD326956
+	for <linux-serial@vger.kernel.org>; Thu, 27 Nov 2025 09:14:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764234317; cv=none; b=WKDpdy47qUN+5862siCjcfjiXqt6Lqca2eVwlzNx25WXPMzUfh8Ii1eQ4txciwfqyOC0Cf4FCd3MtOq5sNcPON+cfgnEBelrd6X7XA34iomi6roYr0Lj4Iu2Bt8c9hltFABd3+mImE9CkJ7vHuuT0bn01PxfB1H1t/VA1SDm+Nc=
+	t=1764234891; cv=none; b=RTVbT0Mg4k+TpP3gemLW446yvGW8hjOabuSKTQLYNfTxRn388MPBFWY6PVIOeLzVx7FPcZCyDfEuke4/DktP3ij29IEv6Exc8TwLmdndgIHlO4mbloTIR2cm1NJxYH7sPDbAZzxlbrlnWpfdKwydkUm/BUAOMiFa/1Eia3k5AQs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764234317; c=relaxed/simple;
-	bh=uzezHOgdfjxeuuqh9PuAC2SBUnz1PWD2xz4Zeeitw4I=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GahQiGFoxjoUcl5zYHbBHIULnoU0WWzw8rQRWuE9uwxbPurdt9i8liLQzKpOk4Rlw9ezul05KPKmqtX1uEGb65vrPZS1paFbiP82A+tCTZoOu4Jn53FuNxhlvXiRLX270eUV7VbE3p1cl0sJkNmHvn+y0As13AB2Q4Jq/TzXi1U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cFt1Jt85; arc=none smtp.client-ip=198.175.65.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1764234891; c=relaxed/simple;
+	bh=X03jox/gV8bqLBLEBTR625O9w1oSc+eeKS2ioi2DhKA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=jNUKZ9Vm4oTs2zKtUpnPhOCKMsEqVbu3e1YTIH04CEmQKb1b83jrePJ+1AqdwYBEZegkRsvoJWPyurG2/1BgBMrS50sHmw5PpvEf5QXhbdEEhiB7FSznfPn1NYNiVlgJMHABORIvrF76j603piUto3vyyJhPoY5gbOt0uNHk+i0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl; spf=none smtp.mailfrom=bgdev.pl; dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b=WYFUaeHT; arc=none smtp.client-ip=209.85.167.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bgdev.pl
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cFt1Jt85"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1764234316; x=1795770316;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=uzezHOgdfjxeuuqh9PuAC2SBUnz1PWD2xz4Zeeitw4I=;
-  b=cFt1Jt85HcxMIZJo8a7pLNlH8QHskcDqDxa14vUOrZ+1zB3nfRXBmLq8
-   ue0UylM7G9HCfXLuPF5ujz6sPptow2Wbo7419zZad1hWIoBnxWtaSkvDE
-   ZnU0oJCIL6LM7SvYpQcdWePpx9gDt33xSYmqVcWmt67pzVQk1BehTL83/
-   x43zxLYFRETHPbmxVis9CmXekPCuicNrQv1gI0xUAddyK+iJQQqIZDNZv
-   P2laN7+1JoZjEwMtwU3eAteegG4bxvyah8RcFHCrWVDTHj3Vsy2LTpMOY
-   Koa5P8EvMjXeiLH/R0WUw8jr5byMAO+zd6kmYctVwk7+5Ce8lm3r0gB7P
-   g==;
-X-CSE-ConnectionGUID: JxO/zr6sTyeOlAtahO/xPg==
-X-CSE-MsgGUID: w+vXYidgQbWMGGTDsnfSDA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11625"; a="66439348"
-X-IronPort-AV: E=Sophos;i="6.20,230,1758610800"; 
-   d="scan'208";a="66439348"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2025 01:05:12 -0800
-X-CSE-ConnectionGUID: 5j94vtkzQD667j0HMuR3qg==
-X-CSE-MsgGUID: gMiMBeKxQW+WzGiRQgGI2Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.20,230,1758610800"; 
-   d="scan'208";a="193081676"
-Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.225])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2025 01:05:08 -0800
-Date: Thu, 27 Nov 2025 11:05:06 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: wenhua lin <wenhua.lin1994@gmail.com>
-Cc: Wenhua Lin <Wenhua.Lin@unisoc.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Orson Zhai <orsonzhai@gmail.com>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Chunyan Zhang <zhang.lyra@gmail.com>,
-	Cixi Geng <cixi.geng@linux.dev>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Xiongpeng Wu <xiongpeng.wu@unisoc.com>,
-	Zhaochen Su <Zhaochen.Su@unisoc.com>,
-	Zhirong Qiu <Zhirong.Qiu@unisoc.com>
-Subject: Re: [PATCH] serial: sprd: Return -EPROBE_DEFER when uart clock is
- not ready
-Message-ID: <aSgUQvExNY2lCpYT@smile.fi.intel.com>
-References: <20251022030840.956589-1-Wenhua.Lin@unisoc.com>
- <aSb5Q0Giq8p43n_o@black.igk.intel.com>
- <CAB9BWhfkkssUK7inD1gQA7DJ0YFuXKzboYFQjvZgT9jKSmyZFA@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b="WYFUaeHT"
+Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-595819064cdso914399e87.0
+        for <linux-serial@vger.kernel.org>; Thu, 27 Nov 2025 01:14:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20230601.gappssmtp.com; s=20230601; t=1764234887; x=1764839687; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=X03jox/gV8bqLBLEBTR625O9w1oSc+eeKS2ioi2DhKA=;
+        b=WYFUaeHTCcZh99fNLyg4ZjCVWMHQInJ4eA1K7+hq/WQJjQDsK/MkEK+wSVvyqeuXla
+         KQa1t3ugiAEhdhvw5FvDcYQF8hkf+S9JRACEIlFnj3VNJmxNFmVmloBvRI9XUUrMNNfO
+         NmPNMA4MP0Rw/2YFqK6ctPM4s19cMSCQdeQgtQMihpOQsIDy96B/KeuwAEo1tirvPgTB
+         pAev8SvLVNCUeU227JfrXqZ9bW0ISv9TY3tN8kx3JZMvbUwnG4hz8CC8GNCYSqsMUPVm
+         4p4cqX3cEnv8LNJgZ6I2AGQm235EbNo/jgAtE2WSpViVqhBgk85pcb+xn31/dvq+fQgL
+         1yhg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1764234887; x=1764839687;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=X03jox/gV8bqLBLEBTR625O9w1oSc+eeKS2ioi2DhKA=;
+        b=kFnIOnIq0x/42quISVWVZrGpAT4OkyXPzorgk8ZPb48RgLSOLiqel8uNkrSpau0ngd
+         s3/hmVncuulBZ9YOjzJhxeQn//jDGkXMqOzyRQkEvfHtnGn/5GTROqZTCMogaduGKOi0
+         oQV7hLZ33cLp64Evm4zHXTbuH+/Hr1P+vKUHPoYWv1B1wxi2Eopu+uYpsNax9PbIbwfZ
+         Bx4Im9eN9m+00eTIui1/owXTes3ZSIJznVllUikKKqmvZqi303Cvxf0nbOJFN1Vo+HqB
+         7SR9av1qfAIXLkzUrZpPgQCb8pXdbBTlb9XeshC/RxVgoROprQwGZ88H1I7pR6n343yU
+         pRMQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXu6QeEHuEUspZKNTM8agq3g+y+bV+Sxj0Ujj+8PpQwjUYEOvDZT8W1AWRCK/CCrtNrrAyrWIL42SviKE0=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx16Nf5fQDVaSSORDA08ZclUzYuO7h9lDIuyMMAWSlst/3cgCCS
+	eeqS7uAiL+BuywMxfK+RCKqgsBj+2aj4rvtbbYDkz+MdJYYS/jFKLJdZrQw7kj/2TcQi45JQmay
+	XuoKZPKoIchsg0+dqH9x9w9Ls4zKgY6VPgM6LGepJOQ==
+X-Gm-Gg: ASbGncv+SQgNsonNEnk/RWT/svapM8jscyD8P7XuA/SVgQURhoTGLo09DRKMZHVLmhK
+	o70Iq6BGzJXWPRQwh9yJp97k6hPvexlxTIeBKBde+lreMDGWcMtzzmU3IO6l64iG85/EKn0AdoC
+	NQuEzQrzK1vDsj6YBH+YmFpqXOa57pwBlKLCEZx+zAEn4zwiKutMAfcdvm5DTq5DRntoLgddDmL
+	0b8P/UVkpDU4o9JdnEQvbrx5D4iXgZQb+oSqLX4xBJa0h9sxIc+UN1XvdF87qwiXx/5SFW/23W/
+	Z6C3FqLch1DKEEB8B985hbry1BQ=
+X-Google-Smtp-Source: AGHT+IEbc2TbO/tYVAauVYSWlsGPpU9aKscxV4CCCOtz2gTp8D6aQtAJcJ71cXNyLsAVeBjOKBJwqCStf35Mbf46OXA=
+X-Received: by 2002:a05:6512:8010:20b0:596:9ebf:25a2 with SMTP id
+ 2adb3069b0e04-5969ebf25d0mr6811454e87.19.1764234887164; Thu, 27 Nov 2025
+ 01:14:47 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAB9BWhfkkssUK7inD1gQA7DJ0YFuXKzboYFQjvZgT9jKSmyZFA@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20251125-pci-m2-e-v2-0-32826de07cc5@oss.qualcomm.com> <20251125-pci-m2-e-v2-3-32826de07cc5@oss.qualcomm.com>
+In-Reply-To: <20251125-pci-m2-e-v2-3-32826de07cc5@oss.qualcomm.com>
+From: Bartosz Golaszewski <brgl@bgdev.pl>
+Date: Thu, 27 Nov 2025 10:14:35 +0100
+X-Gm-Features: AWmQ_bkMx1pQI7KIzXZheaED5_3WOsSVYkYxsGF26N74WOl7tj2ktgI1roknym0
+Message-ID: <CAMRc=Mc_=F3HiKCVh26RtJ-8vcFWbdRRFS5R8tJa7320W-Tcig@mail.gmail.com>
+Subject: Re: [PATCH v2 03/10] serdev: Allow passing the serdev device name to serdev_device_add()
+To: manivannan.sadhasivam@oss.qualcomm.com
+Cc: Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Nathan Chancellor <nathan@kernel.org>, 
+	Nicolas Schier <nicolas.schier@linux.dev>, Hans de Goede <hansg@kernel.org>, 
+	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+	Mark Pearson <mpearson-lenovo@squebb.ca>, "Derek J. Clark" <derekjohn.clark@gmail.com>, 
+	Manivannan Sadhasivam <mani@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Marcel Holtmann <marcel@holtmann.org>, Luiz Augusto von Dentz <luiz.dentz@gmail.com>, linux-serial@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org, 
+	platform-driver-x86@vger.kernel.org, linux-pci@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
+	linux-bluetooth@vger.kernel.org, linux-pm@vger.kernel.org, 
+	Stephan Gerhold <stephan.gerhold@linaro.org>, 
+	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Nov 27, 2025 at 04:44:08PM +0800, wenhua lin wrote:
-> On Wed, Nov 26, 2025 at 8:57 PM Andy Shevchenko
-> <andriy.shevchenko@intel.com> wrote:
-> > On Wed, Oct 22, 2025 at 11:08:40AM +0800, Wenhua Lin wrote:
+On Tue, Nov 25, 2025 at 3:45=E2=80=AFPM Manivannan Sadhasivam via B4 Relay
+<devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org> wrote:
+>
+> From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+>
+> Instead of always setting the serdev device name from 'struct device' nam=
+e,
+> allow the callers to pass an optional name and set it as the serdev devic=
+e
+> name.
+>
+> This will be used by the future callers passing the serdev device ID as t=
+he
+> name.
+>
+> Acked-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.=
+com>
+> ---
 
-...
+Instead of modifying the existing callers with an unneeded argument,
+I'd suggest adding a new call - serdev_device_add_full() or something
+like that - that takes more arguments and make the existing function
+wrap it.
 
-> > >       clk_uart = devm_clk_get(uport->dev, "uart");
-> > >       if (IS_ERR(clk_uart)) {
-> > > +             if (PTR_ERR(clk_uart) == -EPROBE_DEFER)
-> > > +                     return -EPROBE_DEFER;
-> > > +
-> > >               dev_warn(uport->dev, "uart%d can't get uart clock\n",
-> > >                        uport->line);
-> > >               clk_uart = NULL;
-> >
-> > AFAICS this still ignores other issues, what should be done here is to
-> > replace devm_clk_get() by devm_clk_get_optional() and drop this NULL
-> > assignment.
-
->    The main reason for this change is that the UART driver is
-> built-in, while the CLK driver is loaded as a module (ko).
->    There may be a situation where the UART driver is loaded first. If
-> an EPROBE_DEFER error occurs, the driver will return directly
->    and continue waiting for the CLK driver to complete loading.
->    If this interface is changed to devm_clk_get_optional, in scenarios
-> where dependent components are not yet loaded,
->    it will no longer return EPROBE_DEFER but instead return null. This
-> behavior may not align with the desired outcome.
-
-No, the _optional does exactly what your code does with the better approach
-that may return other errors _in addition to_ the current state of affairs.
-
-So, please switch to _optional variant and drop all that unneeded dances.
-
-	clk_uart = devm_clk_get_optional(uport->dev, "uart");
-	if (IS_ERR(clk_uart)) {
-		return dev_err_probe(uport->dev, PTR_ERR(clk_uart),
-				     "uart%d can't get uart clock\n", uport->line);
-
-this will return an error when clock is present, but can't be retrieved.
-When there is no clock provided at all, it will return NULL.
-
-> > >       clk_parent = devm_clk_get(uport->dev, "source");
-> > >       if (IS_ERR(clk_parent)) {
-> > > +             if (PTR_ERR(clk_parent) == -EPROBE_DEFER)
-> > > +                     return -EPROBE_DEFER;
-> > > +
-> > >               dev_warn(uport->dev, "uart%d can't get source clock\n",
-> > >                        uport->line);
-> > >               clk_parent = NULL;
-
-Ditto.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Bart
