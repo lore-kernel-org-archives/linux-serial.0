@@ -1,94 +1,115 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 731DC2D12E2
-	for <linux-serial@vger.kernel.org>; Thu, 27 Nov 2025 16:05:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E6BB334698
+	for <linux-serial@vger.kernel.org>; Thu, 27 Nov 2025 16:11:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764259545; cv=none; b=qsL+J5ISckaj7akyvRA0GxeF7YT727H8ch/YVXMVrKQ6ToeXDk5ETn6B/BDp/Hh1pF2McGiFHsBkx41Y1lZhPxN70WNkoZVsV+OGb8f5RdWZxBACy48u9ucKWnoklxzu+LjyDZ3ewbB9FJdWuxrnVLi4R8R6xkKdR6I6MhZLrsk=
+	t=1764259873; cv=none; b=uIE90ox6lxuPpKVGhq11ffxzLtbk2klqo5CucOV0lp7EdACcwpWwWXYM1GFV818ifs7atxWqdeWalOopZTg1J0IMAZQYXHJIfC1XSXjVWeXByQDUb0RIZK0SfI8kJKE3GQTo7i8YAMf2/qQvT9v/MyOtvSXe/SD44N1Ucn2AULY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764259545; c=relaxed/simple;
-	bh=5twPnhjCrdHGInyzmZYiBigTPtrqJffYLDrpevO5RDo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Tyj2aIcuFZ/xfRR/9DC9UmzB864DQ7j5TwdIolmoy79Tl+DPvWmTUg17s9ZjzwyPkIW1/thR0LTgizSKtKFnyPJ9sPBw8ENSX90DM/xlAPw6KERcMhRF+1Mzro0g4rq+p/yTMlwyKHKVERGH1b7MvLJe4012IbT5JiNG+00j4HM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=UGstQ4xF; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1764259873; c=relaxed/simple;
+	bh=ladk689p2Y8k00NfW5QpkMPZIgCI9BT8rEOH8gBzA7c=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ekrgIUy2Sb+Jxb4rQaWHWWFjjG/CBuNwnNOojyJoR1Wu3PrdOLYpYDbiXzqnJvapodHisdrbW3l2cYZAPodRUSsuCHLG6750x/wOhmWmJvz5/dJWoWCUomShT8X6Tj1f7NwJLVqCgiXl+GIq1GehesyHLbrheLrP1AbS4YRq5I4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mT2IJR3f; arc=none smtp.client-ip=209.85.218.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="UGstQ4xF"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1764259543; x=1795795543;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=5twPnhjCrdHGInyzmZYiBigTPtrqJffYLDrpevO5RDo=;
-  b=UGstQ4xFTYeP7h4s6UfYYsbGZcAalZa3jLfocXRIe/edoJ8/LpPrtn36
-   VmcsK75gh/ElNXIwYXql2ZfQ0WTSgXEMdIiu7RzSzPlWyA7QoOhdq4uD1
-   vJSnOodZ6nbUSaVgInAIN2t/AFnis7d+mHHzI3kNPYMF+Pqkmsg/VSUmZ
-   wO7OengNPGc4/qGhU5+X7vhCiIVfk6Dg/q57qT/okpK1AxMDOVsbVDrkM
-   q4IhKbNIhG7R8J3z73Z9fopGPZ4jNsc+rpbGhUW8WZgELRg6kgkRMZDa7
-   ncaHQ+qYojA8EsCvMGV0GpbYWfUg7BaYWWQBgiO4PZLZULUacfrnP20HI
-   Q==;
-X-CSE-ConnectionGUID: yCXLv8HuReeymAoMAgSqhA==
-X-CSE-MsgGUID: KerZOx75R7y/pWk9bwybTw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11625"; a="65492758"
-X-IronPort-AV: E=Sophos;i="6.20,231,1758610800"; 
-   d="scan'208";a="65492758"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2025 08:05:42 -0800
-X-CSE-ConnectionGUID: mXc+i/zdR8mSgEINFvjSFw==
-X-CSE-MsgGUID: szCDs2+CQ2CV1VKOEnhUnw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.20,231,1758610800"; 
-   d="scan'208";a="192389822"
-Received: from black.igk.intel.com ([10.91.253.5])
-  by orviesa006.jf.intel.com with ESMTP; 27 Nov 2025 08:05:41 -0800
-Received: by black.igk.intel.com (Postfix, from userid 1003)
-	id 67BC6A0; Thu, 27 Nov 2025 17:05:40 +0100 (CET)
-Date: Thu, 27 Nov 2025 17:05:40 +0100
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Gerhard Engleder <gerhard@engleder-embedded.com>
-Cc: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-	jirislaby@kernel.org
-Subject: Re: [PATCH v2 0/2] serial: add KEBA UART driver
-Message-ID: <aSh21GDLStR3uhnX@black.igk.intel.com>
-References: <20251017144209.2662-1-gerhard@engleder-embedded.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mT2IJR3f"
+Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-b7355f6ef12so203423866b.3
+        for <linux-serial@vger.kernel.org>; Thu, 27 Nov 2025 08:11:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1764259869; x=1764864669; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=GfueEmXvJ4IoIPwxPQsIfZjF3SvSPLgK00r7p6jbi1Y=;
+        b=mT2IJR3fd/M+eM2FoiS697WpBi/Y7alBWOHDWlZrU/3ow6g/Qr+q4dtUunnhHWEPuY
+         EdTcGqzPfooqOP3wi4x4bduNirq5iubQ8XpyeXSFYMjTS+R46C4R1+l/ffY/gs3yzXwV
+         GMEULkBncAvguu3axAitJcLlW8RqqQT4gp0ITZQxhePGfcs94zOrmhTCBb4vCpOozwAP
+         F38rbW+Q+LqvIlE+UC/OBO0jkx38oryEIvR5SwoX7tXGmow1WbfWON1EglJQviPBLuX1
+         UbCgaxjt4lxAjO5Opdgzaoa+440t3k9GCwu6YujEauVCRlsF+9PesHs2ospqqdVZKEE8
+         K5Qw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1764259869; x=1764864669;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=GfueEmXvJ4IoIPwxPQsIfZjF3SvSPLgK00r7p6jbi1Y=;
+        b=nI9/4v+nEjpMPravEXG32Q4DJEnwWN/Vk3o4k2Uk1fnxOPtyFH2X3Z/ArzyaHpUlah
+         WY59K/06eKbao+IIGYryA84e9lJBdJe9i/Tz//YcysB3I5yZ0qeolTpTyjllpWvBActi
+         8TD11qDR2MHja0kr5K394Eaq9wlTmtHi/e7WQyzplMEUCgF7cf/UPrYIwp5jieoIhJ9v
+         6gJwU9vRQAqD4+7+QPgbl6lK6ds7SvjZGJIfjUUCJfkeI78FadNJpfFX/h4ujzBh2k4+
+         bcsxss88PyhEFYES6vrcAMrWkFXLTcNzYjN0b6ee3fQKbamC7ttpuRI2zfg0/AeEYvuM
+         iIuw==
+X-Forwarded-Encrypted: i=1; AJvYcCUxzsdlHMizHM6Wre6UUX7cwrQ7WWgJo5ma29yz/7DCLlep49Rgm3JF4hsmX7fLM/eyPIQ4bzGktOXdj2k=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzBRjGAlk9XySp78dvZqCl4gwmPnhrlf5wzvN2uz+mM5Y68gWPd
+	Uak3AYNkyffHoV3799AlP0T0UXFdLRK7zInGT7vQp2vwrlYJ6SX4xWpaTGNYKT+2nSjSXYRp7/D
+	1NB1hPnJxOYNOikpqprGfQc6B8lTUlVM=
+X-Gm-Gg: ASbGncur/95JR3Nyrxx2LGyp1rBRHzOJW4OYmidtOCCPXT4YP96BVMi9/gAoLbNRI2d
+	rhJoLw0IaDw8tE5NDLcPAO7tq2AWFdTjdZ6kLE/455p8cXD34vCj/0fOgfofACxT4chQ+dPzjiR
+	005+wdEcyGc6mxHKU1932tj1kxkDAcwDKHGtm6K73OdEuuSQ07IN3yHh6aegya7oYW3JffaiLU3
+	amzRUFb/XJ7mndn6C5p8l7jg6lD/PenAmsaLRhH0albleWuBDhNR/0JuyKHw8eRuwGNc7PS0SUJ
+	Icd99opVZJl+bBYnsDe5UgOVIwcNKOTZ53tg/vUCLkUBveVQEUN4gAIKBG7DcEavR3aKn1o=
+X-Google-Smtp-Source: AGHT+IHPjmtJ0YhnFRpAFPO7FW7GDKn/qLkUS4bZYR9r/p23OTOkGfgsg/KzIYgHWXF39SKHQ7TGRXRwHtlC86TBaBo=
+X-Received: by 2002:a17:907:7f1b:b0:b73:7d96:5c97 with SMTP id
+ a640c23a62f3a-b76716db9aemr2424152966b.34.1764259869080; Thu, 27 Nov 2025
+ 08:11:09 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251017144209.2662-1-gerhard@engleder-embedded.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20251127155452.42660-1-dev-josejavier.rodriguez@duagon.com> <20251127155452.42660-2-dev-josejavier.rodriguez@duagon.com>
+In-Reply-To: <20251127155452.42660-2-dev-josejavier.rodriguez@duagon.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Thu, 27 Nov 2025 18:10:33 +0200
+X-Gm-Features: AWmQ_bkZaNKY9PsNbF_lYOq5N8U5PsBQwE1WzozP3_OofEXzxp3swpNrRU_FPLQ
+Message-ID: <CAHp75VeNtYJPmXtDfWEN3a184YXTKNems657UDeBKp4xpOGovQ@mail.gmail.com>
+Subject: Re: [PATCH 1/2] mcb: Add missing modpost build support
+To: Jose Javier Rodriguez Barbarin <dev-josejavier.rodriguez@duagon.com>
+Cc: linus.walleij@linaro.org, brgl@kernel.org, jic23@kernel.org, 
+	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
+	gregkh@linuxfoundation.org, jirislaby@kernel.org, morbidrsa@gmail.com, 
+	jth@kernel.org, wim@linux-watchdog.org, linux@roeck-us.net, nathan@kernel.org, 
+	nsc@kernel.org, linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-iio@vger.kernel.org, linux-serial@vger.kernel.org, 
+	linux-watchdog@vger.kernel.org, linux-kbuild@vger.kernel.org, 
+	Jorge Sanjuan Garcia <dev-jorge.sanjuangarcia@duagon.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Oct 17, 2025 at 04:42:07PM +0200, Gerhard Engleder wrote:
-> First the serial subsystem is prepared to keep rs485 settings from the
-> driver if no firmware node exists. This enables drivers to configure a
-> default rs485 mode, which is set by the serial subsystem.
-> 
-> Second the driver for the KEBA UART is added. This driver supports
-> multiple rs485 modes and selects RS485 as default mode. This UART is
-> found in KEBA PLC devices. The auxiliary devices for this driver are
-> created by the cp500 driver.
+On Thu, Nov 27, 2025 at 5:56=E2=80=AFPM Jose Javier Rodriguez Barbarin
+<dev-josejavier.rodriguez@duagon.com> wrote:
+>
+> mcb bus is not prepared to autoload client drivers with the data defined =
+on
+> the drivers' MODULE_DEVICE_TABLE. modpost cannot access to mcb_table_id
+> inside MODULE_DEVICE_TABLE so the data declared inside is ignored.
+>
+> Add modpost build support for accessing to the mcb_table_id coded on devi=
+ce
+> drivers' MODULE_DEVICE_TABLE.
 
-I just realised (thanks, Lukas!) that this is for some kind of FPGA which makes
-even bigger question here.
+...
 
-First of all, we have the FPGA framework, which handles (re-)configurations of
-FPGAs. Second, why do you need a new driver when we have already one, i.e.
-8250_dfl that follows some kind of standards?
+>  static const struct devtable devtable[] =3D {
 
-Third, the expect approach is to see DT overlay provided along with the FPGA
-configuration. So, basically your cp500.c should not have been existed to begin
-with.
+>         {"cpu", SIZE_cpu_feature, do_cpu_entry},
+>         {"mei", SIZE_mei_cl_device_id, do_mei_entry},
+>         {"rapidio", SIZE_rio_device_id, do_rio_entry},
+> +       {"mcb", SIZE_mcb_device_id, do_mcb_entry},
 
-Can you elaborate on these considerations?
+Perhaps squeeze it to be more ordered (yes, I know that the table is
+not so ordered, but given context suggests to put it after "mei").
 
--- 
+>         {"ulpi", SIZE_ulpi_device_id, do_ulpi_entry},
+>         {"hdaudio", SIZE_hda_device_id, do_hda_entry},
+>         {"sdw", SIZE_sdw_device_id, do_sdw_entry},
+
+
+
+--=20
 With Best Regards,
 Andy Shevchenko
-
-
