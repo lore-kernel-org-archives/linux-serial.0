@@ -1,266 +1,117 @@
-Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECBA8333453
-	for <linux-serial@vger.kernel.org>; Thu, 27 Nov 2025 14:37:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D007332EBB
+	for <linux-serial@vger.kernel.org>; Thu, 27 Nov 2025 15:18:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764254279; cv=none; b=MQQyHVs7X+J41TyO8v0gNCC77CCsXEr42uglKh1d6h0JEQbZe7H0gpck3DGPI5GygzejieUI9WoN6+lC58Aop2hkwgHbgBNQLWJS2+d0wLwTyaYX3C7HCvOgntrvBnUjueq6/pVAxvFmQ4TMbcJWCY0cWWX68qlu8wLgd/BMWpY=
+	t=1764256728; cv=none; b=Ubanse8bucfHurZkCY3GH4ubpoEQPRG8uSTCEBh8iRaY4HcX9EALEmD3lisuMXwqczlj7QNgeoC7MKxDj9x/zy+0QfsSAJfDP226898oGTPuJOyPNzcVt/Ny3RnMqBORbkE2qcJqMDjMMAcFnPGf6DjiRZi/ztDZecYKHZQc6Zs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764254279; c=relaxed/simple;
-	bh=X1Ldd1pDA8Igmeknj7tlqAQAGac9Gmdov5hMB67qp6c=;
-	h=From:In-Reply-To:MIME-Version:References:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=M6ipwXVk6b1Rx/SXmz8eGWjKrngPWPtCdQW13qgN6QHpbw8PBd7J2i6AdhObKMBlIELXWReJn1r8GFtU6oyvU56PwZMaYWLTkGeSuHQrEnHzWRFebIG6S9LsvvhizP6yMdIDIxHm/fR+CBIjx7QlZJAVCrpxrW4eCtS1Ld5T350=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl; spf=none smtp.mailfrom=bgdev.pl; dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b=jxF5SLN/; arc=none smtp.client-ip=209.85.167.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bgdev.pl
+	s=arc-20240116; t=1764256728; c=relaxed/simple;
+	bh=rtLMAEmz2IzkA1DYaVPmPRU/8Efq7KaYN5SxwL5Z9Pk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Wel+zrZJnvs7AhyXEHZqP+Z8Fh0TZIMUGrNRJB2kcdsJKgiBNRAF/J2XrjH7eXqpaKs2ldjCJrZh+teh0EaXABt6ck1qYMEtJ74Pm+Crz8z+f3MuXZu8a7AaMRsquHIwXDtJMHOqdb5Zl4yRKLo2dDSyS00kRGSL7o++vW8tVE8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=YXTDVx7l; arc=none smtp.client-ip=209.85.128.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b="jxF5SLN/"
-Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-5942a631c2dso1337274e87.2
-        for <linux-serial@vger.kernel.org>; Thu, 27 Nov 2025 06:37:56 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="YXTDVx7l"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-4775e891b5eso3990325e9.2
+        for <linux-serial@vger.kernel.org>; Thu, 27 Nov 2025 07:18:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20230601.gappssmtp.com; s=20230601; t=1764254275; x=1764859075; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:references:mime-version:in-reply-to
-         :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=VYjGgDc62jC79UPrwBm0Wqe2D8LTyTSAMvzD7Li+ucA=;
-        b=jxF5SLN/pGSuWhG6RX6JQ/iQtzX1+hvCKdXFLQ02hzVEHuibi9lhcOylRZtpgBtYtW
-         Bte1hAnjfpTjYlO+lH0k8ulDN+RfDwbsFNsiJJ8WueffeHIJA2cLYc5vakN5P5V9fLBz
-         HuzcDIwN6oOvYnubDW8nW3VQSYg0f9wTZbNA6eQBLZvE/+bph/TbtrjCtlc/dJupRC5K
-         r0VZslHg4XTIkNjGxZeARcDYEJM2GlJZQBuRx/ptgrDfKM4aOLwIl2L2mcYM2oo+Bn3n
-         V2Omjo9ySA1obEEes0B1Qv1qmMJHzR0rTmONVhwSRQteQM0RwPMIY4DmNeWJIZLMp1AS
-         CYVQ==
+        d=suse.com; s=google; t=1764256724; x=1764861524; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=B8l5BzR1mRAYzIMvpm2Ko/o8KqU+gsOnJSeaJXaAzPk=;
+        b=YXTDVx7lX0H31A6I+5fApcWVB6YQNPB3gFzYkxH7GBCum7I6GGWM110Ljlfil+Di+A
+         bxqFmy3uE6/bnmNLBlkhmhp0LlVjYbZnXDji5PePLnXSVNL5GL6dk/bwNrGNWjyUVwNv
+         qFshlIki2XL/AfJfVu/0nFbhZpNzuugdUMeaNhM0XfHzTengNEXkGpFc9Zp8xbQT8O3r
+         E0aqf2XqSB46MEKsCMxyda0IBA890uFnEMOBbV5poV7sBytwkNoyFyOWE4fCS9pCkM9L
+         w/E+hu8LDJP5pXZK0JIaL2oThBh8NSyWz7H9bpRvgCIEAvCpNgIdFtkkLtQV+X5zgNDn
+         zKuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764254275; x=1764859075;
-        h=cc:to:subject:message-id:date:references:mime-version:in-reply-to
-         :from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=VYjGgDc62jC79UPrwBm0Wqe2D8LTyTSAMvzD7Li+ucA=;
-        b=s2Wz33yLB7a054ubgyj2LkEP7MW30IzQ2NjS4jzuTAmpYgCMw/MkWPe3TBx8O5czhJ
-         yfZVmoOC1jbui5r6c5SLdJa7XhVf3dRJCl9FV8bda3XXi4ugTWHNQ/HYTB5mB0pvNavR
-         jzfG8FTHar40qub8VcLmyFGv1dcf7JLpcYwKh+fqb+5liJ1L5fMoiWjjZ1kx8R0RaBhW
-         F3UFE4JM2LPTkhW3kqqOf39Oic/5qAuPMAW/CsLwVJmrjRdp5WtkRXKfKfhVM03aMGXQ
-         A1YJAn72gD1I0VQ/F7N2hG0FFMWFwngUG/oG0cSBJELWvvpfJJdPpDh7pnwEcUmaFYwt
-         mNkg==
-X-Forwarded-Encrypted: i=1; AJvYcCV/kNmA3wP0tHhAwMK5QbmZjUKYXHi0SIshdoSO7Py797MEr+S2Ot+vRweIcUwOQSUSuMEOZkVp7CMaGCM=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz32sDGKgSo0nuMaWs53SEVsYUwvHejTNdRViepKEFr4H2Y8ba5
-	BGWmX26D5Rmbz0jgOpuXM3cKrda2Stn3ZaTy2HXRkEX+C99r2xaA8kCw7QDkyz6HOplW7wQNbzh
-	PPI6GnycY7Ia5+GIO+cL+aPwxl0QxGdcAmyLxRVQHvg==
-X-Gm-Gg: ASbGncsCP+dLkUAf9VTC1xmTC8oF4aCHzk9teraHUsBybg9tb5HluPAom2qxBihkSFY
-	hMkvzKUWoXwXxN2AwOsrg8s8ePEUgYmjpho29m9SLD4CnWCtXSupCZrnz5qZX9XGSAW9nzn/a1G
-	bw2r1LIBlXDIjHyiJA6Zkck2riIASR4+lxkV07nI2w/Hx2VOcB0o/7eQDUHIIFjYc/trmYj2QgW
-	hf22U9JcIC+lw+8s04RaZXeV8M5gmVM9NWN8rkRrvHY8Eh0ltCX8PwJTsaB1TNifhZRdW7SE07p
-	8FNi6iYDpnICsWI/2whsBzByoAE=
-X-Google-Smtp-Source: AGHT+IH8Ttsbi5KEeEAGk11LiOYQsu2N95FdEs0+cbMJMu5dLDKPCc8OYAk6PKicQIK8vI3aANmTaZiucmGCvDUboNk=
-X-Received: by 2002:a05:6512:3a95:b0:595:a5f0:1110 with SMTP id
- 2adb3069b0e04-596a3ec065fmr8521200e87.30.1764254274981; Thu, 27 Nov 2025
- 06:37:54 -0800 (PST)
-Received: from 969154062570 named unknown by gmailapi.google.com with
- HTTPREST; Thu, 27 Nov 2025 06:37:53 -0800
-Received: from 969154062570 named unknown by gmailapi.google.com with
- HTTPREST; Thu, 27 Nov 2025 06:37:53 -0800
-From: Bartosz Golaszewski <brgl@bgdev.pl>
-In-Reply-To: <20251125-pci-m2-e-v2-10-32826de07cc5@oss.qualcomm.com>
+        d=1e100.net; s=20230601; t=1764256724; x=1764861524;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=B8l5BzR1mRAYzIMvpm2Ko/o8KqU+gsOnJSeaJXaAzPk=;
+        b=aEJQizTiW5xqzt+E20SzjDrfz0zEdhT8u8ZG/Zlt+A9lVJnSx6bAqai4TBch48UJEs
+         Pzrr3dqAYJGcjFug/0/iYO8b/M3Z6KbVqmt6V4TjAzBS3Sf/Xa2PcE+zkzRQLZLgXFv7
+         XXkfnQ9fwcDf1ZQIdxjEcU3cOjwwywSh0DFKEUbsy/kbJF2w0Uiu5rJvsmNZdmBQHWbH
+         rbGjrmwl1cueNRmti5BXPX2t93iHiJj3kMJHHgt0sESll2eCJiFcUXUbahmnmGT0nm+8
+         ve20vckJRd3mIvKBzZT5MCiH+BXjOld5z/1sgBx6pLYqhwXMlr2hXVF3Ois2SV6pUneW
+         NgSA==
+X-Forwarded-Encrypted: i=1; AJvYcCVRfAKVylbCCnumqACOoVmKcAt3VJ9doesQ+Mb4K5qV/ODGw3QhGEvZcU26e4jUS5dS3kPDVMu9+v4y6vc=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwtebI8YEsmnPLNnykTuYG65YCaukk01k1SSP/4a42Qba2u4NJw
+	CVk7LTgX1dVtHEL5m+yCihYWEnkSX+WIl+Gvbg77hP31s7Av5YUi2i1XdXWpmD4E4pQ=
+X-Gm-Gg: ASbGncuMSxKq1ch15XRfsWy4/fyrFYYCYhB44hSgCz3rxFdRao4eRmjTaFesnl3t5+T
+	AVxzLCi/BPq01mQybI95I2dp04TneAXMtRyEyoL/PJICRZMelPU2B4fdUeSDUy2N88sFMeuPUJf
+	Qtbl3HTdrJ8/VeUTVJA1ugBk6uySRZWI+gxo2ZCIG5NuhfTp4RWY7CFVIdTrSPWITpN+uZPbQtl
+	fmYRFcGYtg+DIuLSrsWhTRwriAjl0nmbOnVW6wm6iYAyG6nQGnuLlYepYfKzde11dx94+QpYyZo
+	uGVfNry6V+J6pGK39Ifq7pgCKXl3nh1KmiJjXWgVjOsd+CXI0g8UTKzzbrTyR3AyqOcDTTkf46c
+	avfqq5Kxzx2mLDI8aZi6YKgrnwV/3+fH4xKvxHSbcXd3jgHK3f/BGc3Gve4zlmwN1wWUAwQbkNJ
+	pVVRdglFO+f5rWcr19xt7bSn9F
+X-Google-Smtp-Source: AGHT+IE1ABJky03kTdd0RIp7HhLXOcrkFMBT0s/CBFZhAw1YYwvym+Cxf0cLbK7YSjhHltd5yp0qEw==
+X-Received: by 2002:a05:600c:1f94:b0:477:7725:c16a with SMTP id 5b1f17b1804b1-477c0170de8mr221559015e9.10.1764256723867;
+        Thu, 27 Nov 2025 07:18:43 -0800 (PST)
+Received: from pathway.suse.cz ([176.114.240.130])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-47911143a16sm36586915e9.1.2025.11.27.07.18.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Nov 2025 07:18:43 -0800 (PST)
+Date: Thu, 27 Nov 2025 16:18:40 +0100
+From: Petr Mladek <pmladek@suse.com>
+To: Marcos Paulo de Souza <mpdesouza@suse.com>
+Cc: Steven Rostedt <rostedt@goodmis.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Jason Wessel <jason.wessel@windriver.com>,
+	Daniel Thompson <danielt@kernel.org>,
+	Douglas Anderson <dianders@chromium.org>,
+	Richard Weinberger <richard@nod.at>,
+	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	kgdb-bugreport@lists.sourceforge.net, linux-um@lists.infradead.org
+Subject: Re: [PATCH v2 0/4] printk cleanup - part 2
+Message-ID: <aShr0DZRmpDnL0nz@pathway.suse.cz>
+References: <20251121-printk-cleanup-part2-v2-0-57b8b78647f4@suse.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20251125-pci-m2-e-v2-0-32826de07cc5@oss.qualcomm.com> <20251125-pci-m2-e-v2-10-32826de07cc5@oss.qualcomm.com>
-Date: Thu, 27 Nov 2025 06:37:53 -0800
-X-Gm-Features: AWmQ_bmnE127PrJJlBfvUEW3R05_jJjqY__HdS6nPt4vVoiWctPQWqo-RlX_yNA
-Message-ID: <CAMRc=McH9u7Y8EZMwSjcCUs6rVx9K+h5OxFOrjwXhKm1td-EeQ@mail.gmail.com>
-Subject: Re: [PATCH v2 10/10] power: sequencing: pcie-m2: Add support for PCIe
- M.2 Key E connectors
-To: manivannan.sadhasivam@oss.qualcomm.com
-Cc: Manivannan Sadhasivam via B4 Relay <devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org>, 
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-kbuild@vger.kernel.org, platform-driver-x86@vger.kernel.org, 
-	linux-pci@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org, 
-	linux-pm@vger.kernel.org, Stephan Gerhold <stephan.gerhold@linaro.org>, 
-	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, Rob Herring <robh@kernel.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Nathan Chancellor <nathan@kernel.org>, Nicolas Schier <nicolas.schier@linux.dev>, 
-	Hans de Goede <hansg@kernel.org>, =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
-	Mark Pearson <mpearson-lenovo@squebb.ca>, "Derek J. Clark" <derekjohn.clark@gmail.com>, 
-	Manivannan Sadhasivam <mani@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Marcel Holtmann <marcel@holtmann.org>, Luiz Augusto von Dentz <luiz.dentz@gmail.com>, 
-	Bartosz Golaszewski <brgl@bgdev.pl>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251121-printk-cleanup-part2-v2-0-57b8b78647f4@suse.com>
 
-On Tue, 25 Nov 2025 15:45:14 +0100, Manivannan Sadhasivam via B4 Relay
-<devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org> said:
-> From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
->
-> Add support for handling the power sequence of the PCIe M.2 Key E
-> connectors. These connectors are used to attach the Wireless Connectivity
-> devices to the host machine including combinations of WiFi, BT, NFC using
-> interfaces such as PCIe/SDIO for WiFi, USB/UART for BT and I2C for NFC.
->
-> Currently, this driver supports only the PCIe interface for WiFi and UART
-> interface for BT. The driver also only supports driving the 3.3v/1.8v power
-> supplies and W_DISABLE{1/2}# GPIOs. The optional signals of the Key E
-> connectors are not currently supported.
->
-> For supporting Bluetooth over the non-discoverable UART interface, the
-> driver currently creates the serdev interface after enumerating the PCIe
-> interface. This is mandatory since the device ID is only known after the
-> PCIe enumeration and the ID is used for creating the serdev device.
->
-> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
-> ---
->  drivers/power/sequencing/Kconfig          |   1 +
->  drivers/power/sequencing/pwrseq-pcie-m2.c | 205 +++++++++++++++++++++++++++++-
->  2 files changed, 199 insertions(+), 7 deletions(-)
->
-> diff --git a/drivers/power/sequencing/Kconfig b/drivers/power/sequencing/Kconfig
-> index f5fff84566ba..29bd204319cc 100644
-> --- a/drivers/power/sequencing/Kconfig
-> +++ b/drivers/power/sequencing/Kconfig
-> @@ -38,6 +38,7 @@ config POWER_SEQUENCING_TH1520_GPU
->  config POWER_SEQUENCING_PCIE_M2
->  	tristate "PCIe M.2 connector power sequencing driver"
->  	depends on OF || COMPILE_TEST
-> +	depends on PCI
->  	help
->  	  Say Y here to enable the power sequencing driver for PCIe M.2
->  	  connectors. This driver handles the power sequencing for the M.2
-> diff --git a/drivers/power/sequencing/pwrseq-pcie-m2.c b/drivers/power/sequencing/pwrseq-pcie-m2.c
-> index 4835d099d967..c2cc129f6917 100644
-> --- a/drivers/power/sequencing/pwrseq-pcie-m2.c
-> +++ b/drivers/power/sequencing/pwrseq-pcie-m2.c
-> @@ -5,14 +5,17 @@
->   */
->
+On Fri 2025-11-21 15:50:32, Marcos Paulo de Souza wrote:
+> The first part can be found here[1]. The proposed changes do not
+> change the functionality of printk, but were suggestions made by
+> Petr Mladek. I already have more patches for a part 3 ,but I would like
+> to see these ones merged first.
+> 
+> I did the testing with VMs, checking suspend and resume cycles, and it worked
+> as expected.
+> 
+> Thanks for reviewing!
 
-I think you're missing linux/err.h here.
+> Marcos Paulo de Souza (4):
+>       drivers: serial: kgdboc: Drop checks for CON_ENABLED and CON_BOOT
+>       arch: um: kmsg_dump: Use console_is_usable
+>       printk: Use console_is_usable on console_unblank
 
->  #include <linux/device.h>
-> +#include <linux/gpio/consumer.h>
->  #include <linux/mod_devicetable.h>
->  #include <linux/module.h>
->  #include <linux/of.h>
->  #include <linux/of_graph.h>
->  #include <linux/of_platform.h>
-> +#include <linux/pci.h>
->  #include <linux/platform_device.h>
->  #include <linux/pwrseq/provider.h>
->  #include <linux/regulator/consumer.h>
-> +#include <linux/serdev.h>
->  #include <linux/slab.h>
+These three patches were simple, straightforward, and ready for linux
+next.
 
-(snip)
+I have comitted them into printk/linux.git, branch rework/nbcon-in-kdb.
+I am going to push them for 6.19.
 
->
-> +static int pwrseq_m2_pcie_notify(struct notifier_block *nb, unsigned long action,
-> +			      void *data)
-> +{
-> +	struct pwrseq_pcie_m2_ctx *ctx = container_of(nb, struct pwrseq_pcie_m2_ctx, nb);
-> +	struct pci_dev *pdev = to_pci_dev(data);
-> +	struct device_node *pci_remote __free(device_node) = NULL;
-> +	struct device_node *serdev_remote __free(device_node) = NULL;
-> +	struct serdev_controller *serdev_ctrl;
-> +	struct serdev_device *serdev;
-> +	struct device *dev = ctx->dev;
-> +	int ret;
-> +
-> +	/*
-> +	 * Check whether the PCI device is associated with this M.2 connector or
-> +	 * not, by comparing the OF node of the PCI device parent and the Port 0
-> +	 * (PCIe) remote node parent OF node.
-> +	 */
-> +	pci_remote = of_graph_get_remote_node(dev_of_node(ctx->dev), 0, 0);
-> +	if (!pci_remote || (pci_remote != pdev->dev.parent->of_node))
-> +		return NOTIFY_DONE;
-> +
-> +	switch (action) {
-> +	case BUS_NOTIFY_ADD_DEVICE:
-> +		/* Create serdev device for WCN7850 */
-> +		if (pdev->vendor == PCI_VENDOR_ID_QCOM && pdev->device == 0x1107) {
-> +			serdev_remote = of_graph_get_remote_node(dev_of_node(ctx->dev), 1, 1);
-> +			if (!serdev_remote)
-> +				return NOTIFY_DONE;
-> +
-> +			serdev_ctrl = of_find_serdev_controller_by_node(serdev_remote);
-> +			if (!serdev_ctrl)
-> +				return NOTIFY_DONE;
-> +
-> +			serdev = serdev_device_alloc(serdev_ctrl);
-> +			if (!serdev)
-> +				return NOTIFY_BAD;
-> +
+>       printk: Make console_{suspend,resume} handle CON_SUSPENDED
 
+This patch still need some love and v3.
 
-This is where you'd add the software node I wrote about under another patch
-from this series.
-
-> +			ret = serdev_device_add(serdev, "WCN7850");
-> +			if (ret) {
-> +				dev_err(dev, "Failed to add serdev for WCN7850: %d\n", ret);
-> +				serdev_device_put(serdev);
-
-If you're touching serdev code in the same series, maybe you could define
-a cleanup action for serdev devices and use it here?
-
-> +				return NOTIFY_BAD;
-> +			}
-> +		}
-> +		break;
-> +	}
-> +
-> +	return NOTIFY_OK;
-> +}
-> +
-> +static bool pwrseq_pcie_m2_check_remote_node(struct device *dev, u8 port, u8 endpoint,
-> +					     const char *node)
-> +{
-> +	struct device_node *remote __free(device_node) = NULL;
-> +
-> +	remote = of_graph_get_remote_node(dev_of_node(dev), port, endpoint);
-
-I'd do it like this to follow the convention of initializing automatic
-variables at definition.
-
-	struct device_node *remote __free(device_node) =
-		of_graph_get_remote_node(dev_of_node(dev), port, endpoint);
-
-> +	if (remote && of_node_name_eq(remote, node))
-> +		return true;
-> +
-> +	return false;
-> +}
-> +
-> +/*
-> + * If the connector exposes a non-discoverable bus like UART, the respective
-> + * protocol device needs to be created manually with the help of the notifier
-> + * of the discoverable bus like PCIe.
-> + */
-> +static int pwrseq_pcie_m2_register_notifier(struct pwrseq_pcie_m2_ctx *ctx, struct device *dev)
-> +{
-> +	int ret;
-> +
-> +	/*
-> +	 * Register a PCI notifier for Key E connector that has PCIe as Port
-> +	 * 0/Endpoint 0 interface and Serial as Port 1/Endpoint 1 interface.
-> +	 */
-> +	if (pwrseq_pcie_m2_check_remote_node(dev, 1, 1, "serial")) {
-> +		if (pwrseq_pcie_m2_check_remote_node(dev, 0, 0, "pcie")) {
-> +			ctx->dev = dev;
-> +			ctx->nb.notifier_call = pwrseq_m2_pcie_notify;
-> +			ret = bus_register_notifier(&pci_bus_type, &ctx->nb);
-> +			if (ret) {
-> +				dev_err_probe(dev, ret, "Failed to register notifier for serdev\n");
-> +				return ret;
-> +			}
-
-return dev_err_probe() and save three lines?
-
-> +		}
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-
-Bart
+Best Regards,
+Petr
