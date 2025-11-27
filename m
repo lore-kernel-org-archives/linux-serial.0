@@ -1,136 +1,109 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx15lb.world4you.com (mx15lb.world4you.com [81.19.149.125])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13D2B283121;
-	Thu, 27 Nov 2025 19:07:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCB5C1E1A17
+	for <linux-serial@vger.kernel.org>; Thu, 27 Nov 2025 19:37:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=81.19.149.125
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764270472; cv=none; b=ORg/4uDW1iQudXLTL5vckiV8c4g2RrA0VqvKcV9MnSZCvK9CFkHCKqEZis1Kev3OQaLiNwPBMloX0GA7eMoVaRbuVhEBFch4sRwsfwhXW+TIF63DSzOI6c4JDn4QbA9k1YrOfE+kbi/hJ6rr+Kxdq/x0O/LRDAJsqOugLTQGv+Y=
+	t=1764272273; cv=none; b=hyl0CuGlVZNE5zMKpARCN/0G/lrZR+xluKjJdq4ms+XOQArYTUxlV2ZeZOEtXWkRhLsOT8igouO3BuirWiPSYaoM4VmiprmmR+7ZHjw8YJ+oPAUhFoQsinoTBueooe/q+4ARWN1rtqV63YjmdmQa69onMIQNlaIXToppT65YbXI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764270472; c=relaxed/simple;
-	bh=JKj3WRs8VmpjdQTFRDoG6VMyBxtWlzLWDeG34s6vSvk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DrV4sIXeLOUaGkmcZZkfA9+3StHuXJT14EwdcSCpFiba9eSAX0f76CrWvaNBBLfmdq1hB9EMAlzD9lTTvSy7xXheUr5t9ziSW99idYralbx8bGgjopCjYYVuY84od7k1xfKQhCEzdjDPc6fXf3t6hOciKy/XNmX2ntW5gCs2az4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=g/YHeLPt; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1764272273; c=relaxed/simple;
+	bh=OmyABx1KSRIwprAY5f7EaPfHB/YR0M7+l2mkLUJAKzY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Axjkl6zYbT0VS6hpxzTN18BuJT5yghIQ/K7vSYFgcwSmTdJqu5mLDI/ksEGK9Bjx3xTJLGOvURzY96Jck1M8mwLut570uwzhgedik6cg7bibQvrKcibvTja2gTsoLwnTovlKcregK7B7BY8eeqHHalUk21IaUtSPtfCIRIj1/F8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=engleder-embedded.com; spf=pass smtp.mailfrom=engleder-embedded.com; dkim=pass (1024-bit key) header.d=engleder-embedded.com header.i=@engleder-embedded.com header.b=L8m6//ex; arc=none smtp.client-ip=81.19.149.125
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=engleder-embedded.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=engleder-embedded.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="g/YHeLPt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0482C4CEF8;
-	Thu, 27 Nov 2025 19:07:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1764270471;
-	bh=JKj3WRs8VmpjdQTFRDoG6VMyBxtWlzLWDeG34s6vSvk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=g/YHeLPtOT4UmcxSFBAY/k42w46ApXovcuWE5r1aZQpsY4uPrMryCaw6cbHfq5UDj
-	 ku5clLPyfq4STJghlRItnk01JZcurKm/wKjNtcAKyUihH0yeqs+NMyH7dqaFWGYHPB
-	 Ktl1UzHZZ53bLWr7eQKV3Jr++vkkhiF8FdzE7kd0=
-Date: Thu, 27 Nov 2025 20:07:48 +0100
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v1 1/1] serial: core: Restore sysfs fwnode information
-Message-ID: <2025112739-hassle-duplicate-c31d@gregkh>
-References: <20251127163650.2942075-1-andriy.shevchenko@linux.intel.com>
+	dkim=pass (1024-bit key) header.d=engleder-embedded.com header.i=@engleder-embedded.com header.b="L8m6//ex"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:Content-Type:
+	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=MLkgmV21HGdUS6P6wV07GfliO+sZIx+IAiUma3JiYyw=; b=L8m6//exB6Jsh4M8Q/SIjG62MY
+	0UeT2a3g+zOO+W5wQCKf0bl8wYb8iHpZMBVDZYUtrqnBOEhWR6cMGqJsNRukZRHE5PAA8MOBWm+Pw
+	MQBy9cJ1jolgmxwLhYnVDUhzL3JD37peHttHtmu7DiUd5LbVOjmf0QqiJ4VxEl1hFbRE=;
+Received: from [188.23.34.236] (helo=[10.0.0.160])
+	by mx15lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.97.1)
+	(envelope-from <gerhard@engleder-embedded.com>)
+	id 1vOhd8-000000002be-2PFE;
+	Thu, 27 Nov 2025 20:26:15 +0100
+Message-ID: <d7f1fbbb-0ec0-47b7-beee-8e9487098c99@engleder-embedded.com>
+Date: Thu, 27 Nov 2025 20:26:13 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251127163650.2942075-1-andriy.shevchenko@linux.intel.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 0/2] serial: add KEBA UART driver
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+ jirislaby@kernel.org
+References: <20251017144209.2662-1-gerhard@engleder-embedded.com>
+ <aSh21GDLStR3uhnX@black.igk.intel.com>
+Content-Language: en-US
+From: Gerhard Engleder <gerhard@engleder-embedded.com>
+In-Reply-To: <aSh21GDLStR3uhnX@black.igk.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AV-Do-Run: Yes
 
-On Thu, Nov 27, 2025 at 05:36:50PM +0100, Andy Shevchenko wrote:
-> The change that restores sysfs fwnode information does it only for OF cases.
-> Update the fix to cover all possible types of fwnodes.
+On 27.11.25 17:05, Andy Shevchenko wrote:
+> On Fri, Oct 17, 2025 at 04:42:07PM +0200, Gerhard Engleder wrote:
+>> First the serial subsystem is prepared to keep rs485 settings from the
+>> driver if no firmware node exists. This enables drivers to configure a
+>> default rs485 mode, which is set by the serial subsystem.
+>>
+>> Second the driver for the KEBA UART is added. This driver supports
+>> multiple rs485 modes and selects RS485 as default mode. This UART is
+>> found in KEBA PLC devices. The auxiliary devices for this driver are
+>> created by the cp500 driver.
 > 
-> Fixes: d36f0e9a0002 ("serial: core: restore of_node information in sysfs")
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
->  drivers/tty/serial/serial_base_bus.c | 10 ++++++----
->  1 file changed, 6 insertions(+), 4 deletions(-)
+> I just realised (thanks, Lukas!) that this is for some kind of FPGA which makes
+> even bigger question here.
 > 
-> diff --git a/drivers/tty/serial/serial_base_bus.c b/drivers/tty/serial/serial_base_bus.c
-> index 22749ab0428a..8e891984cdc0 100644
-> --- a/drivers/tty/serial/serial_base_bus.c
-> +++ b/drivers/tty/serial/serial_base_bus.c
-> @@ -13,7 +13,7 @@
->  #include <linux/device.h>
->  #include <linux/idr.h>
->  #include <linux/module.h>
-> -#include <linux/of.h>
-> +#include <linux/property.h>
->  #include <linux/serial_core.h>
->  #include <linux/slab.h>
->  #include <linux/spinlock.h>
-> @@ -60,6 +60,7 @@ void serial_base_driver_unregister(struct device_driver *driver)
->  	driver_unregister(driver);
->  }
->  
-> +/* On failure the caller must put device @dev with put_device() */
->  static int serial_base_device_init(struct uart_port *port,
->  				   struct device *dev,
->  				   struct device *parent_dev,
-> @@ -73,7 +74,8 @@ static int serial_base_device_init(struct uart_port *port,
->  	dev->parent = parent_dev;
->  	dev->bus = &serial_base_bus_type;
->  	dev->release = release;
-> -	device_set_of_node_from_dev(dev, parent_dev);
-> +
-> +	device_set_node(dev, fwnode_handle_get(dev_fwnode(parent_dev)));
->  
->  	if (!serial_base_initialized) {
->  		dev_dbg(port->dev, "uart_add_one_port() called before arch_initcall()?\n");
-> @@ -94,7 +96,7 @@ static void serial_base_ctrl_release(struct device *dev)
->  {
->  	struct serial_ctrl_device *ctrl_dev = to_serial_base_ctrl_device(dev);
->  
-> -	of_node_put(dev->of_node);
-> +	fwnode_handle_put(dev_fwnode(dev));
->  	kfree(ctrl_dev);
->  }
->  
-> @@ -142,7 +144,7 @@ static void serial_base_port_release(struct device *dev)
->  {
->  	struct serial_port_device *port_dev = to_serial_base_port_device(dev);
->  
-> -	of_node_put(dev->of_node);
-> +	fwnode_handle_put(dev_fwnode(dev));
->  	kfree(port_dev);
->  }
->  
-> -- 
-> 2.50.1
-> 
-> 
+> First of all, we have the FPGA framework, which handles (re-)configurations of
+> FPGAs. Second, why do you need a new driver when we have already one, i.e.
+> 8250_dfl that follows some kind of standards?
 
-Hi,
+Yes, there is FPGA framework, which handles FPGA re-configuration.
+There is no FPGA re-configuration in the driver and neither in the
+system. The FPGA does not even support re-configuration. The FPGA is
+just a variant to implement a PCIe target. The FPGA loads its
+configuration on power up once from flash before the BIOS starts. So
+the operating system does not need to know that it is an FPGA. It is
+just a PCIe target.
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
+Why not 8250_dfl? Because this is a driver for a different IP core.
+The UART is no Altera/Intel or AMD/Xilinx IP core. It is a KEBA
+IP core and the 8250_keba driver only implements feature added by
+KEBA. The rest is 8250 and uses the 8250 infrastructure.
 
-You are receiving this message because of the following common error(s)
-as indicated below:
+> Third, the expect approach is to see DT overlay provided along with the FPGA
+> configuration. So, basically your cp500.c should not have been existed to begin
+> with.
 
-- You have marked a patch with a "Fixes:" tag for a commit that is in an
-  older released kernel, yet you do not have a cc: stable line in the
-  signed-off-by area at all, which means that the patch will not be
-  applied to any older kernel releases.  To properly fix this, please
-  follow the documented rules in the
-  Documentation/process/stable-kernel-rules.rst file for how to resolve
-  this.
+Like first, it is just a PCIe target and this PCIe target is divided
+into auxiliary devices, which was suggested by gregkh. Initially I
+divided it into platform devices, but the suggestion of gregkh is a
+better fit. It is a single PCIe target, which consists of multiple
+logical devices with its own registers and interrupts. This logical
+devices are then separated by auxiliary devices.
 
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
+3 years ago Intel was not able to deliver enough FPGAs. With just being
+a PCIe target, it was possible to switch the FPGA vendor without
+touching the software in the field. With Linux re-configuring the FPGA
+that would not have been possible. So re-configuring FPGAs during
+runtime is something that should be only used if needed.
 
-thanks,
+> Can you elaborate on these considerations?
 
-greg k-h's patch email bot
+I hope you get a better impression what this is about. For the drivers
+it is not relevant that the device is FPGA based.
+
+Gerhard
