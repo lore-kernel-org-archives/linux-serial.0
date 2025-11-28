@@ -1,83 +1,63 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCC142571A1;
-	Fri, 28 Nov 2025 16:34:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9DE02C15B1;
+	Fri, 28 Nov 2025 17:57:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764347663; cv=none; b=srzqqZ0zqGypgCZiHmT5vCS5YqqPmx/ScwlOVj4SRcNQep7srrukvfUoyUBWMCrYo9BaYmBEpZzTgftimLuKCYgYpTo/GYxGMXoQJ7m/nKSHDQ5NxxPcihEDi8kT1htd/2DCNux42FqpCYPjD3pb4jlhtA0z4m1TjNUy9re284A=
+	t=1764352678; cv=none; b=jM6Hvhmglva8Kcs/2aHeNLmwreahcHALBxQsSYZvJUld5fHZr+c+Nfh/XP5OEqnCFaHN8mv7bR0dXZTQicLEv5BkjuVuOtdy9THkDKLGu4+xDo4gjTwM67WYecTYUVFbEwzu6xnL4/PKwuvVn+aaTFdQiwNS79JhEybv7O0D0fo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764347663; c=relaxed/simple;
-	bh=fAyr5BqlBz7/g3ZwBsy8J6Jv3RJnaJghDOHU4AZ8hfU=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=teuZP65rQPom+One8izoLGt4Ie07i9tlbBqyOm4gK/5V6CiLRJWjZfAkPKcWBDwQOoOfHbWzw/3uiuF6ugvFxuWKlTPhwyMcJiOZ4jMaPKqEoFHpRmBFD3cF9AzD5T7Gd+xcGM1B7K+dth61ntXZ+Z7M6FpdbZD3z5cMuwyKywE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=PcuLILbp; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1764352678; c=relaxed/simple;
+	bh=SiOtVehZGM4MttO5C8nNkyhgnuve8Cu4BzyqIu1ixBY=;
+	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=Z7n7IzbMmpqWJ0ZHFnhInBFPZNdJrx0grjvZM7sVdMZeBigK73/vtFI20LxrNV0FDsUZq5bFUnzvIEhrWX8jCIXsB4jLKTR7ErOBLVJoyP5qlDgDDKAUKgtgsZFhJW5v4mo1hHnxO2VCHXGWgsfs1Hmubx+DnoPbnqaPQ6tyBqk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=S0gyhIVG; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="PcuLILbp"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3835BC4CEF1;
-	Fri, 28 Nov 2025 16:34:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1764347663;
-	bh=fAyr5BqlBz7/g3ZwBsy8J6Jv3RJnaJghDOHU4AZ8hfU=;
-	h=Date:From:To:Cc:Subject:From;
-	b=PcuLILbpZ4JFeE5RDdpLEf/zZPWiNEzTjcOF89Te3pYuqnfI8oUzDP9QRmHolswuo
-	 /+iSyIYaKRAnmHmqMjVypV1Towe0HPR2OVd8V5xE/sIB0ywBzuUtdwmnlNsr0kbajk
-	 IUw/xta/xBx7h74KAKwMMnnbgCOFo+p0eCz+BS3M=
-Date: Fri, 28 Nov 2025 17:34:21 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [GIT PULL] Serial driver fixes for 6.18-rc8
-Message-ID: <aSnPDe3bUlz_Xl7e@kroah.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="S0gyhIVG"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AC18C4CEFB;
+	Fri, 28 Nov 2025 17:57:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1764352678;
+	bh=SiOtVehZGM4MttO5C8nNkyhgnuve8Cu4BzyqIu1ixBY=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+	b=S0gyhIVGD3A6YdMfRZDpnbkzZwHXrk26sIJFdHQZvkh1JRBvACnz0UN5Hc1KHmouL
+	 6qfJBWs7eu0JMYKELcgzASK/vEv8BNOVPxjzLc6vUjb26KivUynq9Gwpq08HKMNvGH
+	 +FblhXTanOsBSRic+zcwmIwl7LsKXjXs/Afx7awG8mmpt7JjgVEqZXJebIeBPeyxbM
+	 14bFYfclljpHQfUtMDtlyGd6qnf4Rv63WOC5HNfYDk3qN6nIzYqUvykkVLK0clz1zv
+	 fZ1H7OHfOhuYeHhiLCkAjzdTdk0Dscu8KVcwbXKmHcjoFHdKpNEpol+Uom1LIRchod
+	 uXWDcjtYSMVeg==
+Received: from [10.30.226.235] (localhost [IPv6:::1])
+	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id B5BA53806929;
+	Fri, 28 Nov 2025 17:55:01 +0000 (UTC)
+Subject: Re: [GIT PULL] Serial driver fixes for 6.18-rc8
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <aSnPDe3bUlz_Xl7e@kroah.com>
+References: <aSnPDe3bUlz_Xl7e@kroah.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <aSnPDe3bUlz_Xl7e@kroah.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.18-rc8
+X-PR-Tracked-Commit-Id: 2bf95a9bcb50002ca9d47403d60aedaeb2e19abe
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: dabf127d641e43d5fbb72a1f48209818349db7ef
+Message-Id: <176435250041.746710.17253256111135314323.pr-tracker-bot@kernel.org>
+Date: Fri, 28 Nov 2025 17:55:00 +0000
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
 
-The following changes since commit dcb6fa37fd7bc9c3d2b066329b0d27dedf8becaa:
+The pull request you sent on Fri, 28 Nov 2025 17:34:21 +0100:
 
-  Linux 6.18-rc3 (2025-10-26 15:59:49 -0700)
+> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.18-rc8
 
-are available in the Git repository at:
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/dabf127d641e43d5fbb72a1f48209818349db7ef
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.18-rc8
+Thank you!
 
-for you to fetch changes up to 2bf95a9bcb50002ca9d47403d60aedaeb2e19abe:
-
-  serial: 8250: Fix 8250_rsa symbol loop (2025-11-26 13:16:53 +0100)
-
-----------------------------------------------------------------
-Serial driver fixes for 6.18-rc8
-
-Here are 2 serial driver fixes for reported issues for 6.18-rc8.
-
-These are:
-  - fix for a much reported symbol build loop that broke the build for
-    some kernel configurations.
-  - amba-pl011 driver bugfix for a reported issue
-
-Both have been in linux next (the last for weeks, the first for a
-shorter amount of time), with no reported issues.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Ilpo Järvinen (1):
-      serial: 8250: Fix 8250_rsa symbol loop
-
-Miaoqian Lin (1):
-      serial: amba-pl011: prefer dma_mapping_error() over explicit address checking
-
- drivers/tty/serial/8250/8250.h          |  4 ++--
- drivers/tty/serial/8250/8250_platform.c |  2 +-
- drivers/tty/serial/8250/8250_rsa.c      | 26 +++++++++++++++++---------
- drivers/tty/serial/8250/Makefile        |  2 +-
- drivers/tty/serial/amba-pl011.c         |  2 +-
- 5 files changed, 22 insertions(+), 14 deletions(-)
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
