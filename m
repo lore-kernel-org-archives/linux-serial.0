@@ -1,168 +1,144 @@
-Received: from mail-vk1-f179.google.com (mail-vk1-f179.google.com [209.85.221.179])
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8130327C05
-	for <linux-serial@vger.kernel.org>; Fri, 28 Nov 2025 12:53:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF422329C5D
+	for <linux-serial@vger.kernel.org>; Fri, 28 Nov 2025 12:59:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764334428; cv=none; b=FSKgzdIPOsqwfFlv/wb+qkmoBugdN+xp1NY7KEWZ/NondorM235CXi4YBivvgvAvw78eQJVxjfWKBEtt2oH9pjYgjB5abVHGt2mySCCkHeXycI29AIzEDMWYA1ROwzkdTfuC4vvp0shnKjvsIydlosWXXulLuXayI7LtfSX4xdU=
+	t=1764334775; cv=none; b=YUComtZRctbNQ0OS2FY3q8Snzfp4nCntqJPkwdjKyV0hKNxx38CPfXhovsFPef1Wi1nxmO23ldtNEGByHiVX2fLzKX4h89AhkAh44UKmbOHzxoJwPmCVw8y7QPGc7mdx03u240Nk2hfK5dW7PRRbq6QGY1kqZaohyLnR9cQ23eM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764334428; c=relaxed/simple;
-	bh=UPOcep9n81xsv668vSa9PNoqgPqmlBy5Zw/nNjOG7e0=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=gQozKyfCTI6nO0mFOkKG9hqR5ceDJIywIj6diPaWTBA7nXwIXdVOx5vz0E3bnmM7IIxWMHgzo/yxi1OPl0CRntBpgmjHEngzEOIyko46gqFJCapZ1Ozlx8krK3H9klm/umhASBO+Fy1tofjGyosPUplerW5vbinUWxcwBV/vHqA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-vk1-f179.google.com with SMTP id 71dfb90a1353d-55b22d3b2a6so1147487e0c.1
-        for <linux-serial@vger.kernel.org>; Fri, 28 Nov 2025 04:53:45 -0800 (PST)
+	s=arc-20240116; t=1764334775; c=relaxed/simple;
+	bh=0aBIuYE4nd+BYCFFHUQwg9DXqTRyApw0XxRj/xzcbAQ=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=slo0R01corbzZK8VFmSK9Umij9IrjTfLKOzAgxquZf2EcQPez+c7qIkOGAcQC9LtMk+FecszgGQOt731a4aabGUFD5R3QoLB597jSH2YgsH1ivw//dpP5qX4PZeg9IVtAo7Kf4bQsSfjizNMxkTRVVb4LgKyHuc9bdhrK3svmAk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=f5pvmOPO; arc=none smtp.client-ip=209.85.221.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="f5pvmOPO"
+Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-42bb288c17bso1215737f8f.2
+        for <linux-serial@vger.kernel.org>; Fri, 28 Nov 2025 04:59:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1764334772; x=1764939572; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:autocrypt
+         :references:in-reply-to:date:cc:to:from:subject:message-id:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=0aBIuYE4nd+BYCFFHUQwg9DXqTRyApw0XxRj/xzcbAQ=;
+        b=f5pvmOPOu+4JI7MLYETXibPQr6l+KXCQTxQ9B67srs3XcM5wKN2VRWT+fvO7zyTjef
+         WEuiWLuSISfKLYoVhbRb//o/Dd8w2EWkxi8xtAmREpdKGuPe9DFaaA9AsUnkz1kH3PJv
+         vEfEqUVMZcE7q53eW3kL4WPsThuXpcCOL05GBPyIEZ8VilI4WINT2HDfvQ84uEADWMpL
+         g270AXGJfaoIZd49EKcvP4/kPQmwrI0SEJTYj4ye7bjOgkkZGuKmrewTNxvCHZ7XQ7QS
+         jpG4Ur/A5I/SW3XzsJi/UKIjYMD5nSXKLhLzL3OXGLLcO36Ho8FSOwCFubr13xbSTffg
+         lW5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764334425; x=1764939225;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=kDseQkJisg4CVIxAT/T+T8CEfU/6CIXfQEhtmLfidg4=;
-        b=QisQMJoIvIT91uf+CFIzA9Uu4vpaMiNFyKapTeKXyOrzFAQ+zl1T5YEL187kf5kRe5
-         ucBnlzBb38Fh1D2xk+W42SzjH65FkstbAo5BfdRRD7TEEgHRZSCAM4nlPwiulaeDvuJC
-         u14K6PqaQVL/Dv4as8Yp56EAkPgwjw1yhsUijbS4nCWdc/Tk+J50rm74It8Utp2jQlKw
-         2pRwofuKaz4Ka1E9i/n/JZ8RUbeUK90VAZPwgIEjpoBlxX9MX8+ejL7fBolAf2LT5kQw
-         slUoo32xlJTY2eauCuQecwehQPzGKm4lnAbKt1mi7fkvT5g0+TA3x5PIcfAKjX3qe4Bj
-         0cRg==
-X-Forwarded-Encrypted: i=1; AJvYcCVGdOOkigmjkZRI13dMbQ3g3RHyYfZyXYzMvJJQMmOZK/dL6cj0HcGSjPX4z5t4/ag4bGdzFvKDXJ78vc4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzdibioY1YMzrl2DdrdqYbnohZgximRoGyuH3Cy+3tiUzP9NI/4
-	6afbna+//zA1c5ExQ2U6ObFsO5Jxp8mq13UKbXlJzXNrqynJt1daeLNflOrfROHT
-X-Gm-Gg: ASbGncuMIBM/aIOKDUcTWeaPyoJY+Anpyof9wengX1GE0/OFoXwYIrATDJxAe6MKTxv
-	oOyMV0gq6gQQlf3/J56xdtc64B4vTYzJiAIGa3G9BZmSKXmQxuI3YCAfZ/NGxc27c3YEwQCh6Wl
-	aCqfuESd6sfPI2a0LndfnJRuGKa/Zsdj7hstpqYXfQI8+sL740BZZBuGoEUMkmc9TFfwuEiH3eD
-	kXdej6jTiYP9K1RI2v16zXv3B0CLjPsjCaiWbi8cWTaZZwVbQrU1Df/rIZGs8jG3b9dNlNyDIkE
-	QFm5sGxRzkTySfYea92jhQYoiJ+44iQKVmdq7vlpb1LYlolxm8d+Vn5Olg4A+6UG4ZO2HoTNMc6
-	6tqH0oP9FmHyiCJ97mF3jBKxnui0bQ3PPHzn7U3PDE+PEaR7RvTWYPiz2SbNdMNaSi/IlD6VFer
-	1o0qXyNTcERF4CTnH0dyZiRUKF18ACyjy9jVAs6PkO1UPUiqVY
-X-Google-Smtp-Source: AGHT+IEqiR/tCuy2/QyMtkJ1cvIg3mjQbWaRO5TeggAAvToo1Ca6pEe0+j6a2PVMEJzwQwm063s1Lg==
-X-Received: by 2002:a05:6122:926:b0:55b:305b:675e with SMTP id 71dfb90a1353d-55b8d7dc685mr9954305e0c.9.1764334424729;
-        Fri, 28 Nov 2025 04:53:44 -0800 (PST)
-Received: from mail-vs1-f48.google.com (mail-vs1-f48.google.com. [209.85.217.48])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-55cf518c3efsm1783732e0c.22.2025.11.28.04.53.43
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 28 Nov 2025 04:53:43 -0800 (PST)
-Received: by mail-vs1-f48.google.com with SMTP id ada2fe7eead31-5dfaceec8deso1250723137.0
-        for <linux-serial@vger.kernel.org>; Fri, 28 Nov 2025 04:53:43 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCWMGXws7X7dxA+AJp5WJHvL5/9mmjdSVwZzfvlBl53AQpJp2M19+/opLTLXIiGTno97FM1KoC+7GRWamI8=@vger.kernel.org
-X-Received: by 2002:a05:6102:6444:b0:5d5:f6ae:3903 with SMTP id
- ada2fe7eead31-5e1c41bae5fmr14290159137.20.1764334422864; Fri, 28 Nov 2025
- 04:53:42 -0800 (PST)
+        d=1e100.net; s=20230601; t=1764334772; x=1764939572;
+        h=mime-version:user-agent:content-transfer-encoding:autocrypt
+         :references:in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=0aBIuYE4nd+BYCFFHUQwg9DXqTRyApw0XxRj/xzcbAQ=;
+        b=hfiaoQ2YTTuGlq7vHUDxHNZ1W50+mJpM86mYmxKyVnjANL+MtMrAUcr6+91ldfh2Id
+         zFAyHS/YOm2BNuJDRzqknHgM8+TwufEafIL60hFBXA900moA615ln5CXW32GPoPXqdft
+         +acFlOdYZ/p0/gbaXSxY6+g//4nxMa4QGTCTqLXya1oNZhkao5Eob4L3f5tV6A7UhyEz
+         K2ISaR2JFkuEuFGcGgTcr4iNZzG/+tPEXh2qw8sHhElHSyxDhj4xMrc9oCLY1GMZ5WH4
+         ZgwetEZdqnmZAfwMjpJav94eVfE8x9hypN6nlrLSbie7AgCnJLDh+Srrv3UZ68V/Vu2o
+         ZQqA==
+X-Forwarded-Encrypted: i=1; AJvYcCVurOV6DbxbfvzWLnfU3dY2UZwBIRcNipbZX/b7mM5XObv9GmPYT2N6Daa/AMGfhimFGvnfxvzYG0/2FK4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyvdmbuA464C9Cdm3AuxrhobUFNzzUet9gTO4L7b1tjANGsB3XX
+	AFyjGJghE23WN4o+2tlAiV+F9HLv9ujUseB3BmTDgEQmDUB1VBWwuI6wmBQiFCcBNO8=
+X-Gm-Gg: ASbGnctvPVB27Ab9JdLLXYJM6bR7JnpLrk59+IlRDML0V5tAbAG+33amuwWau0BanMb
+	AY7J6uqKMgoxISR1TXwvgW+/vVW0Gk+Aof9kSXegkpOsmtx/4J9CfuMMe6A4+k0gbGb5FpcbtPI
+	s7/dszR7kn27KfzPYcU2F/7XNNsZS/Z/NMGp+e7zPT5+AuLlCICUfVTsHwLsJJHwqXQ5C30xlcW
+	uILnxKhZFc4WS2/HUzHLsVviatb6YemsRD4vsSVvPLILbCL9hU7kwCUg35fSbUkCjaJMWy637HQ
+	FVf1ZeRtG213v6YkfhK0tHqU799b9VIA2p9UXL5j473d2j7H9rnpYi4pdXruXwco/DO4zBBOvOJ
+	xvVnR20n7/wT6ilEbDw4L+PEIRXx/5P6NUTLdwvodeS/QiWvemQHvu8ir1aWqjalHRfGjv8ZiiP
+	qS0pINnUOPjF1hf6+LFI+93HbunMnvhLg3I9YdpX4=
+X-Google-Smtp-Source: AGHT+IFwsjx1VXfBjmNiHK7aZcDtaWRNmdnPkV/Hi/q/9IXbn+xyWp7WtryWuxt5fSFV2BCqurib+Q==
+X-Received: by 2002:a5d:64c7:0:b0:429:edd0:29c with SMTP id ffacd0b85a97d-42cc1ac91edmr29116796f8f.19.1764334771958;
+        Fri, 28 Nov 2025 04:59:31 -0800 (PST)
+Received: from [192.168.3.33] (99.36.160.45.gramnet.com.br. [45.160.36.99])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-42e1c5d613esm9859184f8f.11.2025.11.28.04.59.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 28 Nov 2025 04:59:31 -0800 (PST)
+Message-ID: <aa78f0418ca2f408cdc31b478963ddeab797faa7.camel@suse.com>
+Subject: Re: [PATCH v2 0/4] printk cleanup - part 2
+From: Marcos Paulo de Souza <mpdesouza@suse.com>
+To: Daniel Thompson <daniel@riscstar.com>, Petr Mladek <pmladek@suse.com>
+Cc: Steven Rostedt <rostedt@goodmis.org>, John Ogness	
+ <john.ogness@linutronix.de>, Sergey Senozhatsky <senozhatsky@chromium.org>,
+  Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>, Jason Wessel	 <jason.wessel@windriver.com>, Daniel
+ Thompson <danielt@kernel.org>, Douglas Anderson <dianders@chromium.org>,
+ Richard Weinberger <richard@nod.at>, Anton Ivanov	
+ <anton.ivanov@cambridgegreys.com>, Johannes Berg
+ <johannes@sipsolutions.net>, 	linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, 	kgdb-bugreport@lists.sourceforge.net,
+ linux-um@lists.infradead.org
+Date: Fri, 28 Nov 2025 09:59:25 -0300
+In-Reply-To: <aSlw2AHo_AWzjH-s@aspen.lan>
+References: <20251121-printk-cleanup-part2-v2-0-57b8b78647f4@suse.com>
+	 <aShr0DZRmpDnL0nz@pathway.suse.cz> <aSlw2AHo_AWzjH-s@aspen.lan>
+Autocrypt: addr=mpdesouza@suse.com; prefer-encrypt=mutual;
+ keydata=mDMEZ/0YqhYJKwYBBAHaRw8BAQdA4JZz0FED+JD5eKlhkNyjDrp6lAGmgR3LPTduPYGPT
+ Km0Kk1hcmNvcyBQYXVsbyBkZSBTb3V6YSA8bXBkZXNvdXphQHN1c2UuY29tPoiTBBMWCgA7FiEE2g
+ gC66iLbhUsCBoBemssEuRpLLUFAmf9GKoCGwMFCwkIBwICIgIGFQoJCAsCBBYCAwECHgcCF4AACgk
+ QemssEuRpLLWGxwD/S1I0bjp462FlKb81DikrOfWbeJ0FOJP44eRzmn20HmEBALBZIMrfIH2dJ5eM
+ GO8seNG8sYiP6JfRjl7Hyqca6YsE
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.58.1 (by Flathub.org) 
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20251125150632.299890-1-biju.das.jz@bp.renesas.com> <20251125150632.299890-2-biju.das.jz@bp.renesas.com>
-In-Reply-To: <20251125150632.299890-2-biju.das.jz@bp.renesas.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Fri, 28 Nov 2025 13:53:31 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVaqnCmHBk+Zxo23KU7e+GuH022nDgpR59dH6K8Ei9O4Q@mail.gmail.com>
-X-Gm-Features: AWmQ_bmgULqFLeFRcycOL4pCRTkS5R6pidDFCRXPqROfRT1ZMmUGtqRK8msYPEk
-Message-ID: <CAMuHMdVaqnCmHBk+Zxo23KU7e+GuH022nDgpR59dH6K8Ei9O4Q@mail.gmail.com>
-Subject: Re: [PATCH v4 01/16] dt-bindings: serial: renesas,rsci: Document
- RZ/G3E support
-To: Biju <biju.das.au@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Geert Uytterhoeven <geert+renesas@glider.be>, Magnus Damm <magnus.damm@gmail.com>, 
-	Biju Das <biju.das.jz@bp.renesas.com>, 
-	Wolfram Sang <wsa+renesas@sang-engineering.com>, 
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-renesas-soc@vger.kernel.org, Conor Dooley <conor.dooley@microchip.com>
-Content-Type: text/plain; charset="UTF-8"
 
-Hi Biju,
+On Fri, 2025-11-28 at 09:52 +0000, Daniel Thompson wrote:
+> On Thu, Nov 27, 2025 at 04:18:40PM +0100, Petr Mladek wrote:
+> > On Fri 2025-11-21 15:50:32, Marcos Paulo de Souza wrote:
+> > > The first part can be found here[1]. The proposed changes do not
+> > > change the functionality of printk, but were suggestions made by
+> > > Petr Mladek. I already have more patches for a part 3 ,but I
+> > > would like
+> > > to see these ones merged first.
+> > >=20
+> > > I did the testing with VMs, checking suspend and resume cycles,
+> > > and it worked
+> > > as expected.
+> > >=20
+> > > Thanks for reviewing!
+> >=20
+> > > Marcos Paulo de Souza (4):
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 drivers: serial: kgdboc: Drop checks f=
+or CON_ENABLED and
+> > > CON_BOOT
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 arch: um: kmsg_dump: Use console_is_us=
+able
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 printk: Use console_is_usable on conso=
+le_unblank
+> >=20
+> > These three patches were simple, straightforward, and ready for
+> > linux
+> > next.
+> >=20
+> > I have comitted them into printk/linux.git, branch rework/nbcon-in-
+> > kdb.
+> > I am going to push them for 6.19.
+>=20
+> I pointed the kgdb test suite at this branch (as I did for the
+> earlier
+> part of the patchset, although I think I forgot to post about it).
+>=20
+> The console coverage is fairly modest (I think just 8250 and PL011
+> drivers, with and without earlycon) and the suite exercises features
+> rather than crash resilience. Nevertheless and FWIW, the tests didn't
+> pick up any regressions. Yay!
 
-On Tue, 25 Nov 2025 at 16:06, Biju <biju.das.au@gmail.com> wrote:
-> From: Biju Das <biju.das.jz@bp.renesas.com>
->
-> Add documentation for the serial communication interface (RSCI) found on
-> the Renesas RZ/G3E (R9A09G047) SoC. The RSCI IP on this SoC is identical
-> to that on the RZ/T2H (R9A09G077) SoC, but it has a 32-stage FIFO compared
-> to 16 on RZ/T2H. It supports both FIFO and non-FIFO mode operation. RZ/G3E
-> has 6 clocks(5 module clocks + 1 external clock) compared to 3 clocks
-> (2 module clocks + 1 external clock) on RZ/T2H, and it has multiple resets.
->
-> Acked-by: Conor Dooley <conor.dooley@microchip.com>
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> ---
-> v3->v4:
->  * Dropped separate compatible for non-FIFO mode and instead using single
->    compatible "renesas,r9a09g047-rsci" as non-FIFO mode can be achieved
->    by software configuration.
->  * Renamed clock-names bus->pclk
->  * Rearranged clock-names tclk{4, 16, 64}
->  * Retained the tag as the changes are trivial.
+Thanks Daniel! I remember that you said that you would run the
+testsuite in the previous patchset, but didn't want to bother asking
+you (I believe that if you found anything you would point it out either
+way :) ).
 
-Thanks for the update!
-
-> --- a/Documentation/devicetree/bindings/serial/renesas,rsci.yaml
-> +++ b/Documentation/devicetree/bindings/serial/renesas,rsci.yaml
-
-> @@ -62,6 +82,46 @@ required:
->    - clock-names
->    - power-domains
->
-> +allOf:
-> +  - $ref: serial.yaml#
-> +
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            const: renesas,r9a09g077-rsci
-> +    then:
-> +      properties:
-> +        clocks:
-> +          minItems: 2
-> +          maxItems: 3
-> +
-> +        clock-names:
-> +          minItems: 2
-> +          maxItems: 3
-> +
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            const: renesas,r9a09g047-rsci
-> +    then:
-> +      properties:
-> +        clocks:
-> +          minItems: 5
-> +          maxItems: 6
-> +
-> +        clock-names:
-> +          minItems: 5
-> +          maxItems: 6
-> +
-> +      required:
-> +        - resets
-> +        - reset-names
-> +    else:
-> +      properties:
-> +        resets: false
-
-While technically correct, please move the contents of the "else" branch
-to the "if ... renesas,r9a09g077-rsci" above, to increase uniformity.
-
-Also, RZ/G3E RSCI has two more interrupts: AED (active edge detection)
-and BFD (bus collision detection).  Sorry for missing that before.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+>=20
+>=20
+> Daniel.
