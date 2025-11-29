@@ -1,107 +1,188 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DCDC30FC22
-	for <linux-serial@vger.kernel.org>; Sat, 29 Nov 2025 14:51:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A53E030CDB0
+	for <linux-serial@vger.kernel.org>; Sat, 29 Nov 2025 16:43:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764427891; cv=none; b=fj3oOInOxMgy91vUknNiJW6YKaJh/mxeB7LJNFoBQ3prScwA+AhsmkRwiyHRFrjjeCR638pTXijIDXTwLAAFbTx335DaH7TSR8xbSlzR5lUITT+19jdLDg3DTiYWJTLQkHpcvaYthWR0tFwMV+2XZmDN9uhdabTVscptt3BCw34=
+	t=1764434613; cv=none; b=o5Rbuc8LxEmlzabyjUWjPgWLqnU98qrDwsrRXUJ7uZQSi9h7m09wx+YJZ97eKDNlStHNdjl14FSYr1hIICFxx1hslSXpmVgc+BRMtPjEp0Yw10F+lPqCTz59H5DQ41bUPszRs/0v0mUxDpR29381uq3bClleTht62lNpjr6OKb4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764427891; c=relaxed/simple;
-	bh=yXuzbB5K11aoAVf/PdUJHMtRCcNu/HBG6yFSLwI7cz0=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=uW7GdbVPdRF6xOsg9UVL8JI8xy91UkV7e6e/mAYbh+Bcl2paVebbveiztKrOVUKQYJWuIUO+Ykl3N9OL2y5BHbj5ZYoS8byEbX1bC23jLUbX1v2UJdpmaYB5q3DL2d2/INmqtcaKtb+NaarV92OQnAbjf25tYLi+kTSYIfJPMZU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=yI6hHpiD; arc=none smtp.client-ip=209.85.128.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1764434613; c=relaxed/simple;
+	bh=4+qdkiLaRporDdUrRzipvhog0ZgS7os+IKj+fRAluV4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=PH3yhNqMwakhEzgHQqy/5FPSvAbbh6NiryVK2O97sIE+o1COkr0paqzitGYw4PkJpXqIkDMKQfB75K08xtmYmI5n5HJCH+8U0BMxWWp1vjV+fgdMQ+TqCUtUZkdN/84RcjOconEOhrxivM2IZWp9navER7eXlDF8deVwL5IrZX0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=l30bLzuE; arc=none smtp.client-ip=209.85.128.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="yI6hHpiD"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-477619f8ae5so17017825e9.3
-        for <linux-serial@vger.kernel.org>; Sat, 29 Nov 2025 06:51:29 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="l30bLzuE"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-4775895d69cso11798325e9.0
+        for <linux-serial@vger.kernel.org>; Sat, 29 Nov 2025 08:43:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1764427888; x=1765032688; darn=vger.kernel.org;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=xQXSoEpDQmDeEVkRT8hWvYNMqUAKPz+YQ9lwivzZSic=;
-        b=yI6hHpiDZYiY8sH9G6K4TD3LgzDVhEiRTQkDIlmGtfKljEOnrlmLGUcpyAhMttZqh5
-         KMiL/V/kB/39iDelyQCgwBKp5USNS2/Y4dwKI0de6A/7ta6U7y8Q9WwVgdwHjEEN05bz
-         +9jyyrodsrEvoyRrA+kR0q4edLVnNWti6KoHi/wu2K1o8N+44ZYCFZcJS8Z5kdG/fjxn
-         6SxsEZy6SqUlA35ml+CX6seO6V6rLsOXspnH4WNTj9m/iSpwoh5wUSv4MDC3/9vLF8SF
-         g80GLyA+3zW5UUAARk/eLT9y+32QM4uUgyxOUQIabIG1E15A/rZfSLXWKOjyD/63NISQ
-         ydWw==
+        d=gmail.com; s=20230601; t=1764434609; x=1765039409; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=6H9KwOpHdjyaDI1JbCW5ce4fCWBO/3HVRps68z53Be8=;
+        b=l30bLzuEHrP9Dxc0xrAFcejaOrDnwDh/0y2JMeqFdkD8glkGNC2RRiKXpcifcv5eRK
+         4b6htDREeTKJzU3LpgiZxhuv6Da31ltSurGw/pvGr3dR2e2tmZYeEKE02l/qHbsYJkS2
+         5suRwBqFmtJLKAxqQfDdr5eTFxh27X99wRG0pqVsyKVtBNDXk9/LQqaBvxpsJabNxAT2
+         93Avp40k8P57YTCdj6Hy5KeqRn5VlSuaFTshqmX+uDmlatAZythWIeuOgWFFO7pZrPOw
+         7fq61orXyo8HQjuinNkaNWv4O0ohl8ENdKigb1nBwHCthy4JV0AzgupkXYABaJUMmPR9
+         SO7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764427888; x=1765032688;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=xQXSoEpDQmDeEVkRT8hWvYNMqUAKPz+YQ9lwivzZSic=;
-        b=rEPoAx7UBeV5lCMKVJrtJPjbMdond6tlC/KG1ruQVMKUn/vQ3wqhUN98FTxJcUwvMN
-         qhUgQ+IDSr3flUWaX8MkEvUVvqbvDoHEF8Pk6GPMZMOkpbaq2ktQbzoSsh2JMqug9Eq7
-         GfICjpxqVJPq+mFici+TCdpN4dGHfoFuNwisLeDoK3YXNk3EFL0RkuvZYIt+pHTRcj+I
-         PuhW2e8895MXHerD2FaKZwmXGs9BojdsxLD2+L1GhhkP3sGCrqdmjVYUOHDjMTjHjsZo
-         rZfen7BsdeB20L7UCI22qd5HeYBrwLCHXWBSYSxOOdgEAUnJeK4Aw49YNWbQYv2nvy4n
-         ZlEg==
-X-Forwarded-Encrypted: i=1; AJvYcCX2UJp9OgkmRiIDDnA8CgFJs2xpPGKjNVVFtabLRrvN30h18O2Ndrj3R8fLqYb9fE2MrEE407lNdElkMx8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzsPpuER9rsPm6A959c105xmol7zGthKUPp8doFIKi4M98LQtye
-	kaqHZrMUUK6MZf4xCRO1K/3ZkbW0TqBy/6jGUheF8OJ2yNZhG38Zn86cehIgT73ze7E=
-X-Gm-Gg: ASbGncsh13hlzqFfi8WQiiuRG3j0jm3hKQ+ncmsOcKYoHMOElEmraxG831rM3ViCEB4
-	fszhBMF0EY6l90qVB7s5GaY0o/+cTlqL/mRRRkE4cDhWG1CLWepiymF7XojBXfxWFHg6qZlK83W
-	XNnm7zlnfuD4fYeCZGBMRc82Mhi5qUNqXUVWWWdEmYmimimtZLSLc6oXzWTz9pxFwyiP1y1AXQw
-	39AwbION2BfSEfKdsHmKpTEMMmYAagA4gEvpwYSEY8H5JabwvGnMQEzi3eEy7j/NNrpXYqiBDx2
-	53hGxSHm2D9WGYW+6/3S7pLgg5BzWRHIuYA/v06rTWnFIY1U0cw4ULQt0I2ZaEVnVG1DpZ3PMm2
-	xPz+mP8WJzt49HvmZ49MapuKRVdfk5/s4qEUrhoLMWeb06Glb6wwpDNZFce3/wHMCPqmY1CACsL
-	4uXq4/m2wwE1PmWu1R
-X-Google-Smtp-Source: AGHT+IFCRIwwQjXEGnr5KMD8PEnIqaChZkTl9rQxhpXbO/SHWmtpUVHAMBf5uCzKP5Ao1WMgSwS/nA==
-X-Received: by 2002:a05:600c:1c13:b0:471:786:94d3 with SMTP id 5b1f17b1804b1-477c01b201fmr310642095e9.22.1764427887618;
-        Sat, 29 Nov 2025 06:51:27 -0800 (PST)
-Received: from localhost ([196.207.164.177])
-        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-42e1ca4078csm15519763f8f.29.2025.11.29.06.51.26
+        d=1e100.net; s=20230601; t=1764434609; x=1765039409;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6H9KwOpHdjyaDI1JbCW5ce4fCWBO/3HVRps68z53Be8=;
+        b=X0A3bODlREXGWL59vXGcbY39qJI9wcwKFnxDrrzbXX3wTB+JEH/8R0V9/qfTgatoyz
+         VkXkvjz3gryK8iaUqANTBSlcZfVuyba1Ty/TNUHFzPmS8KT31cWrLCVIiuO/kUOctdVC
+         7uIiLmZH7IcpbGp3ttyueGdjBZeMbAlQmyiReMFnkD6PyyEYjgSa8r4K1WIlbKV7Hd7c
+         bKLJLk89hxXbklmLDOysMFwppTQhgsDtbJQ+U1brTU6nmnQwksstF1eUb6/iMALvnfgN
+         S5iI4Cp5Wv9uD47xt43i5sV1/hopi1HD+G/xCUvzZQb6tAAOQLvyK2gGbqzSp8adg/U6
+         C4Dg==
+X-Forwarded-Encrypted: i=1; AJvYcCVV+aqCYx/VHdmTFaK96td9ed0eKznL8QCsLrKirBPTMe1wYvMAeNNPuUc9P4AX7QhjopBQ+Qi/e9bChbM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyK8uaYiV2T+rT1yUww+Z37/ITuX8HoyfQW26wEkzmnNnFD+rCM
+	gM5PLHS5J5SdYe+yUqK0MM56yp/pti+WCGTfT8qJMyM06slXF3ixt9ky
+X-Gm-Gg: ASbGnctREHW53Q8BPcRmu96oJSMxjm7i1D24IQ5nVM3FhnVTWv++K3o4JAHRMMyCxe+
+	+LICXPh/uX86FLmBtoAADh5LrfTElqjtf0koaP7w/jOwREeZuLNQq90XRglF6HX4RTWlxewYRJM
+	J1dkfNtBjuhR6RGBIDR5d6AAC0knx7YoCl13rmGJJguKFa+bmgkpACEEIlUOMpOyKpWjMDNv0Vb
+	GgwvnG1qIq8/FqQvMciFpBTr7SAfB7KwKmCarLLXwC/H5+NCu5DBvNmwcFtvh4iptj+I1fq2qTO
+	TW7dw+3GYxRTujV1WT9QKmZogv+YrYce4JByRMxJi4uK1qXvz03XvyhNaju8GZvYJUVUAItZHEs
+	bCpDj+v7KXGl3My6a/W25F+szWW+MGbmO2ahMP9PF0Z3kTRRclUea/6ZCIBVHqdlXDok/o/V2yK
+	bZZ0QbmtAuZ7/zDqyKXlrciPEcgZhobVWaYuROlMvC1M5P7hGwrOF9Sp8xKmhRNJzaXXLld4kQ7
+	MGf00kLr/Wb6qwdsHpV
+X-Google-Smtp-Source: AGHT+IF7BSSkL4PJ7kaLjjZt8SjH/QC2LhUcvOWBNmfsg3hyl22mKTnbN67vH2TMItHoa/S79deNhQ==
+X-Received: by 2002:a05:600c:35d2:b0:46e:4e6d:79f4 with SMTP id 5b1f17b1804b1-47904ae214emr233092365e9.15.1764434608673;
+        Sat, 29 Nov 2025 08:43:28 -0800 (PST)
+Received: from localhost.localdomain (host86-162-200-138.range86-162.btcentralplus.com. [86.162.200.138])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-42e1ca4078csm15970060f8f.29.2025.11.29.08.43.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 29 Nov 2025 06:51:27 -0800 (PST)
-Date: Sat, 29 Nov 2025 17:51:23 +0300
-From: Dan Carpenter <dan.carpenter@linaro.org>
-To: Binbin Zhou <zhoubinbin@loongson.cn>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sat, 29 Nov 2025 08:43:28 -0800 (PST)
+From: Biju <biju.das.au@gmail.com>
+X-Google-Original-From: Biju <biju.das.jz@bp.renesas.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
-	Haowei Zheng <zhenghaowei@loongson.cn>,
-	Huacai Chen <chenhuacai@kernel.org>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH next] serial: 8250: longson: Fix NULL vs IS_ERR() bug in probe
-Message-ID: <aSsIa3KdAlXh5uQC@stanley.mountain>
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Magnus Damm <magnus.damm@gmail.com>
+Cc: Biju Das <biju.das.jz@bp.renesas.com>,
+	Wolfram Sang <wsa+renesas@sang-engineering.com>,
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	Biju Das <biju.das.au@gmail.com>
+Subject: [PATCH v5 00/17] Add RZ/G3E RSCI support
+Date: Sat, 29 Nov 2025 16:42:56 +0000
+Message-ID: <20251129164325.209213-1-biju.das.jz@bp.renesas.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
+Content-Transfer-Encoding: 8bit
 
-The devm_platform_get_and_ioremap_resource() function never returns
-NULL, it returns error pointers.  Fix the error checking to match.
+From: Biju Das <biju.das.jz@bp.renesas.com>
 
-Fixes: 25e95d763176 ("serial: 8250: Add Loongson uart driver support")
-Signed-off-by: Dan Carpenter <dan.carpenter@linaro.org>
----
- drivers/tty/serial/8250/8250_loongson.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Add RZ/G3E RSCI support for FIFO and non-FIFO mode. RSCI IP found on
+RZ/G3E SoC is similar to one on RZ/T2H, but has 32-stage fifo. RZ/G3E has
+6 clocks (5 module clocks + 1 external clock) compared to 3 clocks
+(2 module clocks + 1 external clock) on RZ/T2H, and it has multiple
+resets. It has 6 irqs compared to 4 on RZ/T2H. Add support for the hardware
+flow control.
 
-diff --git a/drivers/tty/serial/8250/8250_loongson.c b/drivers/tty/serial/8250/8250_loongson.c
-index 53153a116c01..47df3c4c9d21 100644
---- a/drivers/tty/serial/8250/8250_loongson.c
-+++ b/drivers/tty/serial/8250/8250_loongson.c
-@@ -128,8 +128,8 @@ static int loongson_uart_probe(struct platform_device *pdev)
- 	port->private_data = priv;
- 
- 	port->membase = devm_platform_get_and_ioremap_resource(pdev, 0, &priv->res);
--	if (!port->membase)
--		return -ENOMEM;
-+	if (IS_ERR(port->membase))
-+		return PTR_ERR(port->membase);
- 
- 	port->mapbase = priv->res->start;
- 	port->mapsize = resource_size(priv->res);
+v4->v5:
+ * Updated commit description related to IRQ difference in binding patch.
+ * Dropped the tag for binding patch as there are new changes.
+ * Added aed and bfd irqs for RZ/G3E.
+ * Moved reset: false to RZ/T2H SoC and dropped the else part for RZ/G3E.
+ * Updated conditional schema with interrupts and interrupts-names.
+ * Added new patch for set_rtrg() callback.
+ * Dropped checking port type for device file{create, remove} and instead
+   started checking the fifosize.
+ * Dropped sci_is_fifo_type() helper.
+ * Renamed rsci_port_params->rsci_rzt2h_port_params.
+ * Renamed rsci_rzg3e_scif_port_params->rsci_rzg3e_port_params.
+v3->v4:
+ * Collected tags.
+ * Dropped separate compatible for non-FIFO mode and instead using single
+   compatible "renesas,r9a09g047-rsci" as non-FIFO mode can be achieved
+   by software configuration.
+ * Dropped the non-FIFO mode support and will add this support later.
+ * Renamed clock-names from bus->pclk
+ * Rearranged the clock-names tclk{4, 16, 64}
+ * Added separate patch for sci_is_fifo_type() covering all SoCs that has
+   FIFO.
+ * Updated commit header and description for patch#{3,9,16}
+ * Dropped rsci_clear_SCxSR() instead of rsci_clear_CFC() as it clears the
+   CFCLR register.
+ * Added separate patch for updating t2h rx_trigger size from 15->16.
+ * Added separate patch for renaming port SCI_PORT_RSCI->RSCI_PORT_SCIF16.
+ * Dropped enum RSCI_PORT_SCI
+ * Replaced the enum RSCI_PORT_SCIF->RSCI_PORT_SCIF32
+ * Moved rx_trigger update to later patch#16.
+ * Reduced the checks in sci_init_clocks() by avoid looking up clocks that
+   are not relevant for the port.
+ * Added separate patch for updating early_console data and callback()
+   names.
+ * Updated rsci_type() to drop "scif" type instead use "rsci"
+ * Replaced the compatible "renesas,r9a09g047-rscif" with
+   "renesas,r9a09g047-rsci"
+ * Renamed the port enum from RSCI_PORT_SCIF->RSCI_PORT_SCIF32.
+ * Renamed of_rsci_scif_data->of_rsci_rzg3e_data
+ * Renamed the funvtion rsci_rzg3e_scif_early_console_setup() with
+   rsci_rzg3e_early_console_setup().
+v2->v3:
+ * Dropped 1st and 3rd items from clk-names and added minItems for the
+   range for the binding patch.
+ * Added minItems for clk and clk-names for RZ/T2H as the range is 2-3
+ * Added maxItems for clk and clk-names for RZ/G3E as the range is 5-6
+ * Retained the tag as it is trivial change.
+ * Updated dev_err_probe() in sci_init_clocks() as it fits in 100-column
+   limit.
+ * Dropped cpu_relax() from rsci_finish_console_write() and added a
+   comment.
+ * Added sci_is_rsci_fifo_type() helper for reuse in probe() and remove().
+v1->v2:
+ * Updated commit message for patch#1,#3,#9
+ * Added resets:false for non RZ/G3E SoCs in bindings.
+ * Increased line limit for error messages to 100-column limit for patch#3
+ * Updated multiline comment to fit into single line.
+ * Updated set_termios() for getting baud_rate()
+
+Biju Das (17):
+  dt-bindings: serial: renesas,rsci: Document RZ/G3E support
+  serial: sh-sci: Update rx_trigger size for RZ/T2H RSCI
+  serial: rsci: Add set_rtrg() callback
+  serial: sh-sci: Drop checking port type for device file{create,
+    remove}
+  serial: rsci: Drop rsci_clear_SCxSR()
+  serial: sh-sci: Drop extra lines
+  serial: rsci: Drop unused macro DCR
+  serial: rsci: Drop unused TDR register
+  serial: sh-sci: Use devm_reset_control_array_get_exclusive()
+  serial: sh-sci: Add sci_is_rsci_type()
+  serial: sh-sci: Rename port SCI_PORT_RSCI->RSCI_PORT_SCIF16
+  serial: sh-sci: Add RSCI_PORT_SCIF32 port ID
+  serial: sh-sci: Add support for RZ/G3E RSCI clks
+  serial: sh-sci: Make sci_scbrr_calc() public
+  serial: sh-sci: Add finish_console_write() callback
+  serial: rsci: Rename early_console data, port_params and callback()
+    names
+  serial: sh-sci: Add support for RZ/G3E RSCI
+
+ .../bindings/serial/renesas,rsci.yaml         |  99 +++++-
+ drivers/tty/serial/rsci.c                     | 310 ++++++++++++++++--
+ drivers/tty/serial/rsci.h                     |   3 +-
+ drivers/tty/serial/sh-sci-common.h            |  10 +-
+ drivers/tty/serial/sh-sci.c                   |  80 +++--
+ 5 files changed, 422 insertions(+), 80 deletions(-)
+
 -- 
-2.51.0
+2.43.0
 
