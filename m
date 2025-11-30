@@ -1,46 +1,46 @@
-Received: from TYPPR03CU001.outbound.protection.outlook.com (mail-japaneastazon11022100.outbound.protection.outlook.com [52.101.126.100])
+Received: from OS8PR02CU002.outbound.protection.outlook.com (mail-japanwestazon11022105.outbound.protection.outlook.com [40.107.75.105])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D24D0295DAC;
-	Sun, 30 Nov 2025 10:45:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.126.100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B46F0296BCB;
+	Sun, 30 Nov 2025 10:45:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.75.105
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764499542; cv=fail; b=jqAX52gXWzI89fSvonFbZFNzSn4MtnMPv4LmOk3Nd1Xiot7AkM7qLUc/L3mNgO/TaXOrk0mj4afLSPfcWW9eHdtOnT+SnzdoObO1eHhYH5b9RkvdBXnwvMZs0YeOOJs/BC73aOJJbVJEFh5xhbrhErlov6JNpztAEkxXdDntsKA=
+	t=1764499547; cv=fail; b=VgzF6FFWv1PmIruPjjKZyyXUjb0IiXP7qYk+t94iDeNTnQOBndYEb5eS5kxbVo5Wc6+jXKJ671B/0WnfjIGEt7SZr8Ouh1pAGmbG4+tdM72AbLgrcO6YDary4uR7XTyk7QF3czoGFHjIH/6iSTdVuUsY8pWB2qxC+9ZzVwplO2U=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764499542; c=relaxed/simple;
-	bh=rE2CNB80WytoZSbJhb7JWpCoLTvfpy2zbK+W09I2VSM=;
+	s=arc-20240116; t=1764499547; c=relaxed/simple;
+	bh=uoVU3ZqkEMzoGQBu/ZUXW8ron7Z+J+OPugdaJSlyhbg=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=CAfFOlDvdreSGQg3gGryiEsjfwhe6flKyqrekzVME6eeH8ovsHtwwcVEsxqnwONjtFVqwg1O9OlnjNR1SwTaCJ31AL6QRo7e1I0Tv0he5yNtDLmyXQcZIYK7E3YCouGNiWWWKpeYL6pu39C5CkG7eBOweXsfdtqeCGV9luC6vBw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=moxa.com; spf=pass smtp.mailfrom=moxa.com; dkim=pass (1024-bit key) header.d=moxa.com header.i=@moxa.com header.b=VJOywNTx; arc=fail smtp.client-ip=52.101.126.100
+	 Content-Type:MIME-Version; b=bJGZ8ifL7rd//Ds+GQMBd3gxWTIXj4aR5Ry3yNRh/aSwSiWMQcb5NQm1us2YLwTOpmbq0MOBWVQVzubQgMr3bhbKQX73xQQmSW24aN5L57Zp+G4vQzw9x4uRzY7rqt8mtjD/ml6BnZclrjn76EStVTZKJwgtnckZoyGCYmePOsA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=moxa.com; spf=pass smtp.mailfrom=moxa.com; dkim=pass (1024-bit key) header.d=moxa.com header.i=@moxa.com header.b=Rjyb/xtp; arc=fail smtp.client-ip=40.107.75.105
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=moxa.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=moxa.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=moxa.com header.i=@moxa.com header.b="VJOywNTx"
+	dkim=pass (1024-bit key) header.d=moxa.com header.i=@moxa.com header.b="Rjyb/xtp"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=KbolpsuKmxiDwkn40SkaexGD6Of+83FOBIsE4f2bAobAGYf74N2iiyJGpVIGeEoBaaFvxlWgrv1ktNApalyiQDGUCGmyKQn1GUef89cqGzs2EkJJPN8tlGcoBW6ADuVUdbehyD1hh0OeKadG7YXcJDSYfhOsfDHFFxsXVBDNO1nYKe750k4QJB7zgEhk9Fbyp0kcqYgnTslA1fn3gYQK/4C2QTtrG1VfoOO7C6nyL7/yjZk4YT5w8UuiycFdOwVlUenMTQ1axCEkpAqpAHbtuRMxc4tll0yiCEgmisqaoVikrJA05La36sltf8wTrbcI++F0+ZKIHtfdwith6JtCOQ==
+ b=feq6HAVnObMx6hX9bPRYVwB9PLLV3B6vJD1EAzN2Li4VME/v8vV+LLnUpMMHasA9xvKL5eJhfE+QchJRHbx3CO/aB2ju1i9PfcO/+TUaMa1qZhvB9x8wrus96NNxT5fEVk4G0J9NCsUeKCvREYtF68m2Obu9QNpgDMe5ciw3FOr8Phh2hHeA7YiisNIuPfZe6txDkop+rxL1Ku5wfdpDFIoxiSCrh7izt9XWPB4MW3bVgg8Ik1Vtg/PBIPxsgjK7ye9QDVkcDS0dht5DaqgzLG4oYx5q722NMfgQNjMl5kp5yUItWSLY9y90gHMdXXyZTBD3CRYnWIYk2TcTsyBEqw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mzKeiWkVbzQ6hu5X0/zBABRkUgNwUVxShQb3Zg/w//8=;
- b=LjGCZrRvY5gFjxMsHdEz3Qnox6yLSM317Ex7odWf/mNxIjuUWOKdtfRDX80WqK94RN0aV63Ej22q7paDn9pmt6b2CRsT/nqE1bxTUz4o5oODZJIkE5Qv/nBEnEk2IymydRS2plLJdUBilWI397WwyyfBUHNAxkVOPfLh16P+7XBIyv8JDb9XG7U8Sdht1ChrFCyYTDRqqOi4hoCd2ti0aSbrTvVYBMiCjOfv5M5Ov2a9yKl81ecqgYvGi85fM7QNzsCHGK4XaoxZPaPImoPVYrQMpbAws1V2+1DE+EWxLxXA44mxE21nX0J9tzflRsheV7lD8UNARFhXUsocAmrMow==
+ bh=LH48BysqmETv9eAODvLxmaAkJKrSxKEWeGlFDvAEHj0=;
+ b=DssCqfDj2asdQ4uDUkRBN6WGcluBx9DcVLLa1/vWdEgNW+5cN1qTfFHGn+DTfGoYrqL8ha4Iajzj8FFhzMKsdHumRwgsGnG7h/bRiVRnwV5UrOL6AuXAdfBvTR4o9daM5N7kD0aI/Pd9aHiK4UYyJCofKNuF0WCi9oqPsykkBdiTKXGvFvSmm1R2an1iuBcELHd/IxwNNUNc0yJtltQS24PjWFgER+k73aYkcIBhCiJM13lGdjEHkXQXqfrcMkAMjOQfy1dSW6zAU3hXdUzEpDhDJXpfKXv3AcsCBg7s9Jqz07711nqcQsbgAT4fAwQu4tU7FIiiAS+ls19gdFTJpw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=moxa.com; dmarc=pass action=none header.from=moxa.com;
  dkim=pass header.d=moxa.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=moxa.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mzKeiWkVbzQ6hu5X0/zBABRkUgNwUVxShQb3Zg/w//8=;
- b=VJOywNTxRheIVFKqbpjZHilYUTEafKo7E2vNA44seBFcOIu61f9a1Ap+iWzN0zYv3LqvCvQbJJfhPyRYxrZf+r0aDBekQIatNpeWg135vBeYrC7HZpAnOoN+wEirnYTliFtpVDNiRjD+NpfcI8I8srJNOBZAePdNXphTEGGa6fM=
+ bh=LH48BysqmETv9eAODvLxmaAkJKrSxKEWeGlFDvAEHj0=;
+ b=Rjyb/xtp6jpQk/79jC0moc8NPY6PU9cZMqZkLY0iLGisO88BHFnX2gRPOqo0m0FtDr9o56qKxaQNEJOWwEDnStRjkz/pdJaqBBH3ZKmLMFcCij5VKyi6HGl6fhgyu7xfCRXTlpc5+OuQokqoORUQGRFw6YqggXSzgIp5W7EYHvM=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=moxa.com;
 Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
  (2603:1096:301:115::14) by SEZPR01MB6080.apcprd01.prod.exchangelabs.com
  (2603:1096:101:221::14) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9366.17; Sun, 30 Nov
- 2025 10:45:34 +0000
+ 2025 10:45:39 +0000
 Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
  ([fe80::60ab:8615:ab67:8817]) by PUZPR01MB5405.apcprd01.prod.exchangelabs.com
  ([fe80::60ab:8615:ab67:8817%6]) with mapi id 15.20.9320.013; Sun, 30 Nov 2025
- 10:45:34 +0000
+ 10:45:39 +0000
 From: Crescent Hsieh <crescentcy.hsieh@moxa.com>
 To: gregkh@linuxfoundation.org,
 	jirislaby@kernel.org,
@@ -49,9 +49,9 @@ To: gregkh@linuxfoundation.org,
 Cc: linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	crescentcy.hsieh@moxa.com
-Subject: [PATCH v1 25/31] serial: 8250_mxpcie: add basic GPIO helper functions
-Date: Sun, 30 Nov 2025 18:42:16 +0800
-Message-ID: <20251130104222.63077-26-crescentcy.hsieh@moxa.com>
+Subject: [PATCH v1 26/31] serial: 8250_mxpcie: add basic CPLD helper functions
+Date: Sun, 30 Nov 2025 18:42:17 +0800
+Message-ID: <20251130104222.63077-27-crescentcy.hsieh@moxa.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20251130104222.63077-1-crescentcy.hsieh@moxa.com>
 References: <20251130104222.63077-1-crescentcy.hsieh@moxa.com>
@@ -68,213 +68,384 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: PUZPR01MB5405:EE_|SEZPR01MB6080:EE_
-X-MS-Office365-Filtering-Correlation-Id: ab69bbb3-9cb2-4fc2-cef5-08de2ffd9746
+X-MS-Office365-Filtering-Correlation-Id: 24abab7f-30aa-47dd-b9a0-08de2ffd9a26
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
 	BCL:0;ARA:13230040|1800799024|52116014|376014|366016|38350700014;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?Y+SsC/I5BiVvYGwcx4gTr6KA77vR40bUvbzOYlKp92t1PBNMpO2KwMM9dxD+?=
- =?us-ascii?Q?9MhvVawn/4q3uxeGlxg2OtDnC1WC6XQXvG3/ouRnUUtx7eeLbqGUsFW5dcCj?=
- =?us-ascii?Q?fszOehhy3OjyYxJtk67p6RW2sLxl/Hzy3gguyOFJzEPM93WN37robvzytGHj?=
- =?us-ascii?Q?uBpedb5eQs4Vz5whCpE+4cAG9EuQdRFa7AoXAerCSjgP0Q8maw3KvoNjLqh5?=
- =?us-ascii?Q?6keliCBlmfBitglTYY7IsI7vbc1rc6txbuOkehMXkAryq3/FnKfi2NyjOo1Q?=
- =?us-ascii?Q?mtIwMzLyNHijf9j2jgbGvlYptq+eu1D5uVtORScLPp7lz392DFWijmER/Zuk?=
- =?us-ascii?Q?D3o5hNqpVDlkbpc9sQTpeDA7FzfaYWPp3IQ9D4jwxU8VnxNYsTlcSowNKvNX?=
- =?us-ascii?Q?tmSZEWhAFFRqtCQHUviSCTy/Ian1G7+sGk+wK+gz8G0woRJtPQDOOJ2hXMKD?=
- =?us-ascii?Q?Bk3JFo3SZxDML5RQdlbz3soJSOURShEaHP+PtNR5y8pxmMQc6SO2s8PjkOWH?=
- =?us-ascii?Q?TSmXdwYbJ2f9TNxIgoRvYs7TGs/mdJj0RXlmcUiZK4Ipq5F+3Dysc1P1uS1u?=
- =?us-ascii?Q?WtoVJ89Le7V+0QglNxts3M8bNUflbNXvH+F2vg6LVQagmF+XjtsIgC0uGqLM?=
- =?us-ascii?Q?vkD0Mg1JmSWETQtURd409Es/pR7X3jJHcv29h7kNXyBr+BZFMRa7V5hkSMDO?=
- =?us-ascii?Q?RA0X7Y7270NCrmYnKOPxf8QOTMgBbvnGhaEpRVLxjjVrUjaiq1xr9ODeUVO0?=
- =?us-ascii?Q?d4yAmXNbpT/bC3PEfQGieDDa9qUvIOjY7s6UfyrTefGRdkmdPF4+HkmAZdH1?=
- =?us-ascii?Q?qlst+dhQPmKvdP0E7QYxrnAr+zWB8AEcc5/EcmFQdUrTuC6ZLqVCV9ZmoM+y?=
- =?us-ascii?Q?jM0DMFPrhSngBZJptmgL6zeHvyKjMcn9kd7OU2RnDcFqO8IEyjyJ8crBJaUn?=
- =?us-ascii?Q?+Abbf9sF5lclVC8lPgh8JHHM7TTMwJlQGApIf58VQTx8zHqprL5fH6XQ/oAC?=
- =?us-ascii?Q?u/tlqc7i/dP4IyUlo6oHzF2u95aPB+hMQwSjNZJWy6RZy3S+t2L2oQ7svmXl?=
- =?us-ascii?Q?ldMYmckxxu4UO3iuZm4bkWFVWm74K4UmRm50bw0+x+DuoJdUDpU8tQFzR5VU?=
- =?us-ascii?Q?KhFkgkYK0Qr5SeLun+9UnS/uvcybvUPRRkIXo+83sSKMRypxLKpTbWE+u5Tm?=
- =?us-ascii?Q?Wm6AlNrkvyfDKuRiQXD5B8kZzaoMz4/Fk67O54Sx6sOGd58F8H1kPfsGGdem?=
- =?us-ascii?Q?eql1ouwmginxf6se5N2iQZcj9LyV/k2ku3WRzR8/vwG648/6UbCwRZUpinmt?=
- =?us-ascii?Q?j+cVT2mj5I90aC0HA9zhJm8TuhUlP1T3/LJVIwTjxe6TPXuGpbMPiM/zaN74?=
- =?us-ascii?Q?lpWERQl7bgdnPyLz0vHvTHiWi7PxDvBOypAmLjySJk2Ck96e3B8ReRaOkml7?=
- =?us-ascii?Q?OkBtK2UlAP6TKpdg76MfLFp1oQ5p23YJWSmsDD7ROjHVEsSmVzg4OzqGRrib?=
- =?us-ascii?Q?YA8p1FI6rFp+fGaOkAVRAO/YU9wD6tAgWd0b?=
+	=?us-ascii?Q?STi0LJpC0862CQI4tXSAiAAtudfmVdqyTpPBae++2vRfYg686pMW5BIvuSGm?=
+ =?us-ascii?Q?UN8FFrHdNsCdBRx3woWs4DAi+lSc404Ovo7oTGuxJ+ucOzaNoje1YpIn5lWe?=
+ =?us-ascii?Q?YLDkGYKJO6hFMraJBOTJbS7852RjFWYmtNlni5EOS8kNQ8wQwDWuka3q5FPx?=
+ =?us-ascii?Q?rDDFkM8BISvdn4NXPhAXFJM0s8/Vq87FosANrxQ8a1FJxVdxFG7YGik+loZE?=
+ =?us-ascii?Q?z1+ogWUeNf67Ui3qGRDsXXZlDwaEuGHDv3vNw02yatySTZeLcN08MuaoKV7C?=
+ =?us-ascii?Q?TwHJCYCdwjk1SRy1rZRXyCj56PNY1kOSwTy65DQpmdN/GtO1ajBPWdPCKofT?=
+ =?us-ascii?Q?gy6A24E4On8gEIZIxRvHx6d5arvu4Hb81GDqDrcFxCOXKus5uEn56UFz1sgC?=
+ =?us-ascii?Q?+BFlE9ji62A16Iwtc9T3NdhEWWL1xn9Ygno8YU8zc5XzI5tK/zABrGLBe6Wq?=
+ =?us-ascii?Q?n0lRDXL9nBxnTe+d5l+giiDU07X33WKhCJxYvWOBJo6xxMFBBbopzom+5xnb?=
+ =?us-ascii?Q?XqEP+rX/hy9ElG4Kux3evXdruHIlGa5BCZo9lO5q/wLBWejWeJltggrT72iT?=
+ =?us-ascii?Q?/aOpGxxzctyRs1t48+1CpcrsXQHF3js6ILRWsjcjzclFCwom0SojcLcd0YKm?=
+ =?us-ascii?Q?8bTn+25Hi/ENLzDUSiINFj9Wo1YODZldDWgLl5EIY9Zb9BzvlJ3Px2b0Shso?=
+ =?us-ascii?Q?676o9lPME/6BUMfYuN5fmsDZE2ZIJHOt+Aj7Pnpwt2ohmvQm0HEsHJJQgl/6?=
+ =?us-ascii?Q?6UOh34uzaU+riuXrKxbY5m6/rKQkASj4A4bJIhFhGB+z5E0iF9PsB+Cog0YV?=
+ =?us-ascii?Q?j3G7aTBZIRsS6EEEWnH9rUetuMWVWWKsi6LUMscs4G+kgCqJ3YEKsnMND9J3?=
+ =?us-ascii?Q?3ANrYOqCpGGxvppXc8VKyUU/EXIjdF/NvPZsGHHs9RMSm0SyzzOUrfc3c4ZG?=
+ =?us-ascii?Q?8yxzD8UL2/j+4MgRCk4wB81p8ypVzA+syZRvDaS/1PvX+XNlvwBzfmEu7ejP?=
+ =?us-ascii?Q?d8O2ZW/kc+qWY/RBmFPQrRjbDTcZiE1e1AdUjZnU3QbixWCUxcBpFRFW83ld?=
+ =?us-ascii?Q?Kxw2wPrcHjXc5cVcJHZp/N1stB/Ic1xsDE5scyo6G7DeU3YXDupa/q93jtRF?=
+ =?us-ascii?Q?MXAQeF3am7AKhh7NYw0FAqT+T/Ao9LlIRsM1xE+XkEDXIPBBJdHXpmT0N/70?=
+ =?us-ascii?Q?RqN+40VSaG88r4aNL4WsLZj5FFYR1QQ/t+sAWSS9+myNhTpfCAZ2L/i/qKVM?=
+ =?us-ascii?Q?uVeAQ5sMmL6OldOsiKTMwzdoUkASx63a3T25hMHQrZrDPei5/vM6N9wKxCFk?=
+ =?us-ascii?Q?VzmandIshsV8szxTguRsZ4jlEH2ocbGyGa5W0qVvsedQHit7V3ppKz6clHQF?=
+ =?us-ascii?Q?lyS6XUz0fh/WNFfTyX69/uInopF2yTos7r0AUdKhWXFVecqugFLZ9ympt85j?=
+ =?us-ascii?Q?Fi0MFakma+ky5zMJWLAJA+JLDkcDXyHIcqwmbvdHFBxrDmH3j2lpLh+3B7Cq?=
+ =?us-ascii?Q?SucO1uMyzABmuXxhcuWgou7Nt+VV0PxezarB?=
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PUZPR01MB5405.apcprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(52116014)(376014)(366016)(38350700014);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?BOghNugwK217A7ZXHxOegH2sU7SPyf/2DIJ337Bu/WM8pGUWBbUpblXH+v6I?=
- =?us-ascii?Q?WgubiEM2rQvFsl/F7a+FCgA41p5QRAXR+FaJ+SMQKC+6fo0lA6L0ajxWVjqJ?=
- =?us-ascii?Q?8BN8+Y43YLdBpteo9/WJcJwssnYG2itWB2tj4ptPgOBTAY4VoLehBmtqZo2X?=
- =?us-ascii?Q?1X6Tx/tyMARrjiSx2QmWyCkXzOtHYCHi18FZZnmu4Fga4xw+c7J2W89GqnRd?=
- =?us-ascii?Q?UC3mO6LT+WScfQaF51GrNoBzOUTl3qyFwHKu1hzmqONzaVKEBLLTJWXBDEIy?=
- =?us-ascii?Q?+1Hq40Yryr3nY7K9CckmdJy2ooCvvEJoARwNf8fisX7stNiQObzfqqLgOewM?=
- =?us-ascii?Q?gIgrRUJ/NF2n39CG5C5zSlMZ9AhhA8YqwYLTX6ZC1IwO09UbpG7COV0E4wMR?=
- =?us-ascii?Q?HyZtWBIIZH4e6eAa2n1AkmeksEpSvB9+cEws4haCpdYdKJ3e2SE/HXHbhsWW?=
- =?us-ascii?Q?nklam7fXz82RON0z6S7mrWfZB4hQgJ7Kg0F6CvKjCquaTmPtZa7VOCxNEdsT?=
- =?us-ascii?Q?ik5TKspi5Q6IdM0mH2s2EJQfUnjZyfZ3/X1X8u8bj1YKdyBINxS2t3MiUGjr?=
- =?us-ascii?Q?k7R42aZ6YoqpYBCUKrcgeZHln6mFO8H64UizKjvzyPZ7yq0ivsmZmE4huM56?=
- =?us-ascii?Q?dGosygacYTslIjOYR31VPYeWrtjKddrei8a9XLbOhhnfDChKmk2piwMxVEjj?=
- =?us-ascii?Q?bRTJ8HuZigCBjb7dvWivsyKuQWzrkFHWpfuCLT37mtfcYrfTfly5ItjQVl7V?=
- =?us-ascii?Q?zYg5ww7DWtIxXJ64F5s8dMB1F2kGF3FLkMC2iha1ZJV5n53MkCKUNQp43rDA?=
- =?us-ascii?Q?ys7rWGBl3q5SRu1abYDdxvsQU9scXNimv39bnUQmZ2STT84GZIPFvuAIcsl/?=
- =?us-ascii?Q?1eLCluAS576Tfyi526dH2NdCFENoAPSXucYUa2y+RJU95lNGfJY+i4bnZHVz?=
- =?us-ascii?Q?4F58PRqbptwmAX7MpLXG6Ve53kKPhbWGk0z4yc3OaNuvfeZZhV7Nf0OeXM6n?=
- =?us-ascii?Q?tc4N6e0sar5fzDSD38vv3a6BamVzqS72qhEFRUIeM8OI3QfR/qT36vfb43PA?=
- =?us-ascii?Q?QE3gR4UWT+yuNfHSV6H5gjmImpD+teRqI/YIK/vzM0q3VpccIshktXqG6ovR?=
- =?us-ascii?Q?U1TCagFDbcJ1Lz6K/VhGRQ3VFbgiQjRjVs1jGPxJO2aJAqmgIoXJZXKpUd/R?=
- =?us-ascii?Q?s1rLb1AsioPKIxi08KmVVtGKO6dm6ju7oT6JChbpihpRFHKl7Pb7CjiLCNFQ?=
- =?us-ascii?Q?khX92jAQcfbpicCjXF2vjDbqccx3YTnODwpE9c1MDiadHxhns/PfRgmbFtKq?=
- =?us-ascii?Q?tB5YICpe2YNEGhSLT+wEyYnNW4vqPtUz+jcLmwVFcLkOHpziZUyx+4acflVa?=
- =?us-ascii?Q?XDM9BYuGjQkYroM9EPaHlr5cAMe8aUgAWS6rlEqZEapAfArJAjAUJv9ueLLy?=
- =?us-ascii?Q?YMlRQKU6N3NpuSZZXUBgKjDwmyAZYpgAPTB7eAkb2LJ/z4imzgdAVRRu/e7S?=
- =?us-ascii?Q?dW8rpLW1Vdqh16SVhBX9jFFC1+HuEtMvhhh9t5lFV4V7Ni/Wcaa6s7qMdswg?=
- =?us-ascii?Q?tlDLnzk8jufVVML4ZA8UWQPAEyxcuKsr/TqwWXB+SHDGyfbtIqx3c59ADkYS?=
- =?us-ascii?Q?wQ=3D=3D?=
+	=?us-ascii?Q?KMHeSBI3iOUtyMJRBWAg/D8YNdt4Z7EfdM6eWkKS3/IuLnd3ZbIzJPtLDdlq?=
+ =?us-ascii?Q?WWGqFpgLfZVABCtgw2B2MlwV26tZ/fu9NtSGGx2HdF399JJBp29Ed50KsjEd?=
+ =?us-ascii?Q?oFmcru2+DR7wflDiDkh7Ta02gmN/xYa+TWD0wluMPE2bCddHmZ+cE/lrYGIk?=
+ =?us-ascii?Q?hfAG5ju1Ev9s4rtjXFOzy+KAa8iy92Bez6XVNf/Ksncj+4qpMYagh5d/WTss?=
+ =?us-ascii?Q?gAtr9/b+gRl2l4xLSTvekHEaaTYhYHszx0yO4CPq11Hc3YO2iSCVs1xwx5J4?=
+ =?us-ascii?Q?kV9JWbTaGHxd3YUtJCeA/P/wxReDpkZaKaAlzQBc0Z3K+N0K9Ihyrn5W8H9g?=
+ =?us-ascii?Q?R73jOIgMrqWsk+G7czOjncOAgPJlxlcJtjN3v1zwMzkX4D4Q1PzX+Rc63eZ9?=
+ =?us-ascii?Q?nuoM1IgTYydJFOxncip3KKbFJ65UQgxdT3oEkCg2gYev7Kiioyvs/vpnXf/i?=
+ =?us-ascii?Q?T6qdmHQLRoa7Pv27XAp2AuR7A3J/8WDKvu4qYbO0Tt3g3F5kwfhYKP8LqLdf?=
+ =?us-ascii?Q?gQeMEuk3QeF7VY3WN/3yEKO8UUEd3ikAC1lEtfWtTOey/7vqcwJztHKcSRQT?=
+ =?us-ascii?Q?Lq57LcsfyRtvkSid2osUQJxPpCGa+A1Ozf8aaHfQVsyY3UOc1iPa0MNNQchI?=
+ =?us-ascii?Q?r7khnmWRqdRuuMct83hf5n+/H5fy/GFCa0tbITlkA8u3j1wRJGGqyNdCyMMI?=
+ =?us-ascii?Q?Mq6XTYDbw9M7xKr1NAo3NrwvzcNxx6tdVe2ZYjGtTZ199EBLy9dRI48LVMp4?=
+ =?us-ascii?Q?VN8Yt+utwAhV2VeD/ttIJzLI+ozBSttKg7ZNdJcq1wmnOF/ouIgHi74N/MgJ?=
+ =?us-ascii?Q?Rsnjse7SMdwVrRlLrHO9cc/SMyk/PeKK2I8Aq9gv6GmtNNnG7ybO51yEFFOo?=
+ =?us-ascii?Q?MrtGDcgdyuYhFhSi0STL1iSQsBk0sRMJe1lZqhqh+PfkrfdkNr3zhsjWhj7z?=
+ =?us-ascii?Q?Pd3bFIbmmknXon5h5UAyrzHD55Z/cM7bDZQ5LVGgIm5PmYGdBaNkEhx54T3s?=
+ =?us-ascii?Q?78UM/PoWy7S3Qo9lA3tS66MVkLy6QcvI14gqYHGFkPPbjCQ2Cu1ip1KkT/E/?=
+ =?us-ascii?Q?/qzqAUgLiAApldBlXLzOT0rA4jirpb7QwOy2uCj5WV4q1l6YNHvmZ9KDCAzg?=
+ =?us-ascii?Q?JBGfmYIqn4ejAZYLnwgOaI/PblbmU5F5VakX176b/UzIwHseyMjdKZq9prBz?=
+ =?us-ascii?Q?x1X1Csv+rr9ymDN95p73MGOFDveJ12DBVc0tpubiiCJhh9EHqQrawkpZmonI?=
+ =?us-ascii?Q?7UZs1zABol2l2kC0NQF41SicL5emhGW015pvXcZt6TJCZWK5bJQ0qqKFZiRC?=
+ =?us-ascii?Q?iPStsQjzq4RkPEjVN16NMpMiPRMrmb9SHzad8H6T+rTX431AMafyDJZEFEIQ?=
+ =?us-ascii?Q?9pMsUWQxX2UgZB3AcckeYsn/+ij58s7easazBwZAlr4klPcBJdq9xilO62rs?=
+ =?us-ascii?Q?l8H3dmINZogQ6ZhzNJC9vg7OgRTjbZANy7QVwgoqiqcnH5mDCC3iIumKkYPs?=
+ =?us-ascii?Q?y6bVOuGYY+2TwN7eJg3W7YkGIShPD6qgCubLy9zWx0M5E6drVNNuodPp1qRh?=
+ =?us-ascii?Q?CTgWBc/OAy0IFVYvL3VP57p2hRqw8MAZqb8CRWJ/x86/OKwyMmSlpcvoc65K?=
+ =?us-ascii?Q?3w=3D=3D?=
 X-OriginatorOrg: moxa.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ab69bbb3-9cb2-4fc2-cef5-08de2ffd9746
+X-MS-Exchange-CrossTenant-Network-Message-Id: 24abab7f-30aa-47dd-b9a0-08de2ffd9a26
 X-MS-Exchange-CrossTenant-AuthSource: PUZPR01MB5405.apcprd01.prod.exchangelabs.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Nov 2025 10:45:34.5555
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Nov 2025 10:45:39.4267
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 5571c7d4-286b-47f6-9dd5-0aa688773c8e
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YunWVI5ovbrBHJx9J3aUyD3tb+8nNePjDVAOdJzhpNEyvY7m9sN4XQDxHFQrLnk8tX+tQtnLWEHgEecBiCjuhNKL2424m4wLwQEvOP84h0s=
+X-MS-Exchange-CrossTenant-UserPrincipalName: cae/4Vs3xt5GP/J9sxpxuJBZNJcnbEezEjWva+X+OWSXn/mXFm5g1zXKlg9VT2qXvBsLQoOsr+foxQtKWxy0CM51nOU9qcYtYRzeL19WN7A=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: SEZPR01MB6080
 
-Introduce a set of helper functions for accessing the on-board GPIO
-registers on Moxa PCIe serial devices. These cover:
+Introduce a set of helper functions to access the on-board CPLD on
+Moxa PCIe serial devices through the GPIO I/O space. These helpers
+cover:
 
-- Initializing all pins as outputs
-- Setting the direction of individual pins
-- Setting or clearing an output pin
-- Bulk set/get operations on OUTPUT and DIRECTION registers
+- Initializing the CPLD-related GPIO pins to a safe default state
+- Enabling/disabling the CPLD chip select
+- Switching between read/write and address/data modes
+- Performing single-byte read and write transactions using GPIO
+  bit-banging, with simple delay and retry logic
 
-These functions do not change any existing behavior yet. They are added
-as a preparation step for follow-up patches that will make use of the
-GPIOs to control board-specific signals.
+These functions do not affect the UART datapath and are not yet used
+by the driver. They are added as a preparation step for follow-up
+patches that will implement more complex CPLD-based features.
 
 Signed-off-by: Crescent Hsieh <crescentcy.hsieh@moxa.com>
 ---
- drivers/tty/serial/8250/8250_mxpcie.c | 91 +++++++++++++++++++++++++++
- 1 file changed, 91 insertions(+)
+ drivers/tty/serial/8250/8250_mxpcie.c | 240 ++++++++++++++++++++++++++
+ 1 file changed, 240 insertions(+)
 
 diff --git a/drivers/tty/serial/8250/8250_mxpcie.c b/drivers/tty/serial/8250/8250_mxpcie.c
-index a0deb464a318..6e727b77c105 100644
+index 6e727b77c105..88ab918fd000 100644
 --- a/drivers/tty/serial/8250/8250_mxpcie.c
 +++ b/drivers/tty/serial/8250/8250_mxpcie.c
-@@ -79,11 +79,18 @@
- #define MOXA_PUART_RX_FIFO_MEM	0x100	/* Memory Space to Rx FIFO Data Register */
+@@ -6,6 +6,7 @@
+  * Author: Crescent Hsieh <crescentcy.hsieh@moxa.com>
+  */
+ 
++#include <linux/delay.h>
+ #include <linux/module.h>
+ #include <linux/pci.h>
+ #include <linux/tty_flip.h>
+@@ -80,10 +81,18 @@
  #define MOXA_PUART_TX_FIFO_MEM	0x100	/* Memory Space to Tx FIFO Data Register */
  
-+/* GPIO */
+ /* GPIO */
++#define MOXA_GPIO_INPUT		0x08
  #define MOXA_GPIO_DIRECTION	0x09
  #define MOXA_GPIO_OUTPUT	0x0A
  
++#define MOXA_GPIO_PIN0	BIT(0)
++#define MOXA_GPIO_PIN1	BIT(1)
  #define MOXA_GPIO_PIN2	BIT(2)
++#define MOXA_GPIO_PIN3	BIT(3)
++#define MOXA_GPIO_PIN4	BIT(4)
++#define MOXA_GPIO_PIN5	BIT(5)	/* Address/Data Pin */
++#define MOXA_GPIO_PIN6	BIT(6)	/* Read/Write Pin */
++#define MOXA_GPIO_PIN7	BIT(7)	/* Chip Select Pin */
  
-+#define MOXA_GPIO_STATE_INPUT	0
-+#define MOXA_GPIO_STATE_OUTPUT	1
+ #define MOXA_GPIO_STATE_INPUT	0
+ #define MOXA_GPIO_STATE_OUTPUT	1
+@@ -91,6 +100,21 @@
+ #define MOXA_GPIO_LOW	0
+ #define MOXA_GPIO_HIGH	1
+ 
++/* CPLD */
++#define MOXA_CPLD_RETRY_CNT	5
 +
-+#define MOXA_GPIO_LOW	0
-+#define MOXA_GPIO_HIGH	1
++#define MOXA_CPLD_GET_STATE_BASE	0x10
++#define MOXA_CPLD_SET_STATE_BASE	0x18
++
++#define MOXA_CPLD_DATA_MASK	0x1F	/* Pin0 ~ Pin4 */
++#define MOXA_CPLD_CTRL_MASK	0xE0	/* Pin5 ~ Pin7 */
++
++#define MOXA_CPLD_READ	0
++#define MOXA_CPLD_WRITE	1
++
++#define MOXA_CPLD_ADDRESS	0
++#define MOXA_CPLD_DATA		1
 +
  #define MOXA_UIR_OFFSET		0x04
  #define MOXA_UIR_RS232		0x00
  #define MOXA_UIR_RS422		0x01
-@@ -120,6 +127,90 @@ static const struct serial_rs485 mxpcie8250_rs485_supported = {
- 	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | SER_RS485_RX_DURING_TX | SER_RS485_MODE_RS422,
- };
+@@ -211,6 +235,218 @@ static void mxpcie8250_gpio_get_all(resource_size_t iobar_addr, u8 *data, u8 off
+ 	*data = inb(iobar_addr + offset);
+ }
  
 +/**
-+ * mxpcie8250_gpio_init() - GPIO initialization routine
++ * mxpcie8250_cpld_init() - Initialize CPLD control GPIO pins
 + * @iobar_addr:	The base address of the GPIO I/O region
 + *
-+ * Initializes the GPIO direction. After calling this function, all GPIO
-+ * pins will be set to output.
++ * Initialize the GPIO pins used to control the CPLD. Also sets all GPIO pins
++ * to output and drives them HIGH to ensure a safe default state.
 + */
-+static void mxpcie8250_gpio_init(resource_size_t iobar_addr)
++static void mxpcie8250_cpld_init(resource_size_t iobar_addr)
 +{
-+	/* Initialize all the GPIO pins into output state */
-+	outb(0xff, iobar_addr + MOXA_GPIO_DIRECTION);
++	mxpcie8250_gpio_init(iobar_addr);
++
++	mxpcie8250_gpio_set(iobar_addr, MOXA_GPIO_PIN7, MOXA_GPIO_HIGH);
++	mxpcie8250_gpio_set(iobar_addr, MOXA_GPIO_PIN6, MOXA_GPIO_HIGH);
++	mxpcie8250_gpio_set(iobar_addr, MOXA_GPIO_PIN5, MOXA_GPIO_HIGH);
++	mxpcie8250_gpio_set(iobar_addr, MOXA_GPIO_PIN0, MOXA_GPIO_HIGH);
++	mxpcie8250_gpio_set(iobar_addr, MOXA_GPIO_PIN1, MOXA_GPIO_HIGH);
++	mxpcie8250_gpio_set(iobar_addr, MOXA_GPIO_PIN2, MOXA_GPIO_HIGH);
++	mxpcie8250_gpio_set(iobar_addr, MOXA_GPIO_PIN3, MOXA_GPIO_HIGH);
++	mxpcie8250_gpio_set(iobar_addr, MOXA_GPIO_PIN4, MOXA_GPIO_HIGH);
 +}
 +
 +/**
-+ * mxpcie8250_gpio_set_direction() - Set GPIO pin direction
++ * mxpcie8250_cpld_enable() - Enable the CPLD
 + * @iobar_addr:	The base address of the GPIO I/O region
-+ * @pin:	The target GPIO pin (MOXA_GPIO_PIN0 to MOXA_GPIO_PIN7)
-+ * @direction:	Desired direction (MOXA_GPIO_STATE_INPUT or MOXA_GPIO_STATE_OUTPUT)
 + *
-+ * Sets the direction of the specified GPIO pin. This function should be called
-+ * before performing GPIO set or get operations.
++ * Enables the CPLD by pulling the chip select pin low.
 + */
-+static void mxpcie8250_gpio_set_direction(resource_size_t iobar_addr, int pin, int direction)
++static void mxpcie8250_cpld_enable(resource_size_t iobar_addr)
 +{
-+	u8 cval;
++	mxpcie8250_gpio_set(iobar_addr, MOXA_GPIO_PIN7, MOXA_GPIO_LOW);
++}
 +
-+	cval = inb(iobar_addr + MOXA_GPIO_DIRECTION);
++/**
++ * mxpcie8250_cpld_disable() - Disable the CPLD and reset all GPIO pins
++ * @iobar_addr:	The base address of the GPIO I/O region
++ *
++ * Disables the CPLD by pulling the chip select pin high. Also resets all GPIO
++ * pins to output and drives them HIGH to ensure a safe default state.
++ */
++static void mxpcie8250_cpld_disable(resource_size_t iobar_addr)
++{
++	mxpcie8250_gpio_set(iobar_addr, MOXA_GPIO_PIN7, MOXA_GPIO_HIGH);
 +
-+	if (direction == MOXA_GPIO_STATE_INPUT)
-+		cval &= ~pin;
++	/* Set all GPIO pins to output state and pull them HIGH */
++	mxpcie8250_gpio_set_all(iobar_addr, 0xff, MOXA_GPIO_DIRECTION);
++	mxpcie8250_gpio_set_all(iobar_addr, 0xff, MOXA_GPIO_OUTPUT);
++}
++
++/**
++ * mxpcie8250_cpld_set_direction() - Set CPLD read/write direction
++ * @iobar_addr:	The base address of the GPIO I/O region
++ * @direction:	Desired CPLD direction (MOXA_CPLD_READ or MOXA_CPLD_WRITE)
++ *
++ * Sets the CPLD read/write direction by changing the state of the read/write
++ * control pin.
++ */
++static void mxpcie8250_cpld_set_direction(resource_size_t iobar_addr, int direction)
++{
++	if (direction == MOXA_CPLD_READ)
++		mxpcie8250_gpio_set(iobar_addr, MOXA_GPIO_PIN6, MOXA_GPIO_HIGH);
 +	else
-+		cval |= pin;
-+
-+	outb(cval, iobar_addr + MOXA_GPIO_DIRECTION);
++		mxpcie8250_gpio_set(iobar_addr, MOXA_GPIO_PIN6, MOXA_GPIO_LOW);
 +}
 +
 +/**
-+ * mxpcie8250_gpio_set() - Set GPIO output state
++ * mxpcie8250_cpld_set_mode() - Set CPLD address/data mode
 + * @iobar_addr:	The base address of the GPIO I/O region
-+ * @pin:	The target GPIO pin (MOXA_GPIO_PIN0 to MOXA_GPIO_PIN7)
-+ * @state:	Desired output state (MOXA_GPIO_HIGH or MOXA_GPIO_LOW)
++ * @mode:	Desired CPLD mode (MOXA_CPLD_ADDRESS or MOXA_CPLD_DATA)
 + *
-+ * Sets the output state of the specified GPIO pin.
++ * Sets the CPLD addr/data mode by changing the state of the address/data
++ * control pin.
 + */
-+static void mxpcie8250_gpio_set(resource_size_t iobar_addr, int pin, int state)
++static void mxpcie8250_cpld_set_mode(resource_size_t iobar_addr, int mode)
 +{
-+	u8 cval;
-+
-+	cval = inb(iobar_addr + MOXA_GPIO_OUTPUT);
-+
-+	if (state == MOXA_GPIO_HIGH)
-+		cval |= pin;
++	if (mode == MOXA_CPLD_ADDRESS)
++		mxpcie8250_gpio_set(iobar_addr, MOXA_GPIO_PIN5, MOXA_GPIO_LOW);
 +	else
-+		cval &= ~pin;
-+
-+	outb(cval, iobar_addr + MOXA_GPIO_OUTPUT);
++		mxpcie8250_gpio_set(iobar_addr, MOXA_GPIO_PIN5, MOXA_GPIO_HIGH);
 +}
 +
 +/**
-+ * mxpcie8250_gpio_set_all() - Set all GPIO output/direction pins at once
++ * mxpcie8250_cpld_read() - Read a byte from the CPLD at a specified address
 + * @iobar_addr:	The base address of the GPIO I/O region
-+ * @data:	The data to set for all pins
-+ * @offset:	Offset of the GPIO register (MOXA_GPIO_OUTPUT or MOXA_GPIO_DIRECTION)
++ * @addr:	Address in the CPLD to read from
++ * @data:	The buffer to store the read value
 + *
-+ * Sets the output state or direction of all GPIO pins at once.
++ * Reads a single byte of data from the CPLD at the given address using
++ * GPIO-based communication.
 + */
-+static void mxpcie8250_gpio_set_all(resource_size_t iobar_addr, u8 data, u8 offset)
++static void mxpcie8250_cpld_read(resource_size_t iobar_addr, u8 addr, u8 *data)
 +{
-+	outb(data, iobar_addr + offset);
++	u8 saved_state, new_state;
++	u8 samples[MOXA_CPLD_RETRY_CNT], votes[MOXA_CPLD_RETRY_CNT];
++	int i, j;
++
++	/* Perform multiple read attempts with majority voting */
++	for (i = 0; i < MOXA_CPLD_RETRY_CNT; i++) {
++		/* Set read/write pin to read state */
++		mxpcie8250_cpld_set_direction(iobar_addr, MOXA_CPLD_READ);
++		/* Set address/data bus pins to output for address phase */
++		mxpcie8250_gpio_set_direction(iobar_addr, MOXA_GPIO_PIN0, MOXA_GPIO_STATE_OUTPUT);
++		mxpcie8250_gpio_set_direction(iobar_addr, MOXA_GPIO_PIN1, MOXA_GPIO_STATE_OUTPUT);
++		mxpcie8250_gpio_set_direction(iobar_addr, MOXA_GPIO_PIN2, MOXA_GPIO_STATE_OUTPUT);
++		mxpcie8250_gpio_set_direction(iobar_addr, MOXA_GPIO_PIN3, MOXA_GPIO_STATE_OUTPUT);
++		mxpcie8250_gpio_set_direction(iobar_addr, MOXA_GPIO_PIN4, MOXA_GPIO_STATE_OUTPUT);
++		/* Backup current GPIO output state */
++		mxpcie8250_gpio_get_all(iobar_addr, &saved_state, MOXA_GPIO_OUTPUT);
++		/* Prepare address to GPIO bus */
++		new_state = saved_state & MOXA_CPLD_CTRL_MASK;
++		new_state |= (addr & MOXA_CPLD_DATA_MASK);
++		/* Output address to GPIO bus */
++		mxpcie8250_gpio_set_all(iobar_addr, new_state, MOXA_GPIO_OUTPUT);
++		/* Switch to address mode (address/data pin) */
++		mxpcie8250_cpld_set_mode(iobar_addr, MOXA_CPLD_ADDRESS);
++		/* Enable CPLD by pulling chip select pin low*/
++		mxpcie8250_cpld_enable(iobar_addr);
++		/* Wait for CPLD timing (about 70 ns) */
++		mdelay(1);
++		/* Switch to data mode (address/data pin) */
++		mxpcie8250_cpld_set_mode(iobar_addr, MOXA_CPLD_DATA);
++		/* Set address/data bus pins to input for data phase */
++		mxpcie8250_gpio_set_direction(iobar_addr, MOXA_GPIO_PIN0, MOXA_GPIO_STATE_INPUT);
++		mxpcie8250_gpio_set_direction(iobar_addr, MOXA_GPIO_PIN1, MOXA_GPIO_STATE_INPUT);
++		mxpcie8250_gpio_set_direction(iobar_addr, MOXA_GPIO_PIN2, MOXA_GPIO_STATE_INPUT);
++		mxpcie8250_gpio_set_direction(iobar_addr, MOXA_GPIO_PIN3, MOXA_GPIO_STATE_INPUT);
++		mxpcie8250_gpio_set_direction(iobar_addr, MOXA_GPIO_PIN4, MOXA_GPIO_STATE_INPUT);
++		/* Wait for CPLD timing (about 70 ns) */
++		mdelay(1);
++		/* Read data bus pins */
++		mxpcie8250_gpio_get_all(iobar_addr, data, MOXA_GPIO_INPUT);
++		*data &= MOXA_CPLD_DATA_MASK;
++		/* No need to restore read/write pin (defaults to read); disable CPLD */
++		mxpcie8250_cpld_disable(iobar_addr);
++		/* Store read value for voting */
++		samples[i] = *data;
++		votes[i] = 0;
++
++		for (j = i - 1; j >= 0; j--) {
++			if (samples[j] == samples[i])
++				votes[i]++;
++		}
++		/* Perform majority voting to select stable value */
++		if (votes[i] >= (MOXA_CPLD_RETRY_CNT / 2))
++			break;
++	}
 +}
 +
 +/**
-+ * mxpcie8250_gpio_get_all() - Get all GPIO input/output pins state at once
++ * mxpcie8250_cpld_write() - Write a byte to the CPLD at a specified address
 + * @iobar_addr:	The base address of the GPIO I/O region
-+ * @data:	The buffer to store the states of all pins
-+ * @offset:	Offset of the GPIO register (MOXA_GPIO_INPUT or MOXA_GPIO_OUTPUT)
++ * @addr:	Address in the CPLD to write to
++ * @data:	Data byte to write
 + *
-+ * Gets the input or output state of all GPIO pins at once.
++ * Writes a single byte of data to the CPLD at the given address using
++ * GPIO-based communication. Includes verification with optional retry.
 + */
-+static void mxpcie8250_gpio_get_all(resource_size_t iobar_addr, u8 *data, u8 offset)
++static void mxpcie8250_cpld_write(resource_size_t iobar_addr, u8 addr, u8 data)
 +{
-+	*data = inb(iobar_addr + offset);
++	u8 saved_state, new_state, verify_data;
++	int retry_cnt;
++
++	for (retry_cnt = 0; retry_cnt < MOXA_CPLD_RETRY_CNT; retry_cnt++) {
++		/* Set read/write pin to write state */
++		mxpcie8250_cpld_set_direction(iobar_addr, MOXA_CPLD_WRITE);
++		/* Set data bus pins to output for address phase */
++		mxpcie8250_gpio_set_direction(iobar_addr, MOXA_GPIO_PIN0, MOXA_GPIO_STATE_OUTPUT);
++		mxpcie8250_gpio_set_direction(iobar_addr, MOXA_GPIO_PIN1, MOXA_GPIO_STATE_OUTPUT);
++		mxpcie8250_gpio_set_direction(iobar_addr, MOXA_GPIO_PIN2, MOXA_GPIO_STATE_OUTPUT);
++		mxpcie8250_gpio_set_direction(iobar_addr, MOXA_GPIO_PIN3, MOXA_GPIO_STATE_OUTPUT);
++		mxpcie8250_gpio_set_direction(iobar_addr, MOXA_GPIO_PIN4, MOXA_GPIO_STATE_OUTPUT);
++		/* Backup current GPIO output state */
++		mxpcie8250_gpio_get_all(iobar_addr, &saved_state, MOXA_GPIO_OUTPUT);
++		/* Prepare bus value with address bits */
++		new_state = saved_state & MOXA_CPLD_CTRL_MASK;
++		new_state |= (addr & MOXA_CPLD_DATA_MASK);
++		/* Output address to GPIO bus */
++		mxpcie8250_gpio_set_all(iobar_addr, new_state, MOXA_GPIO_OUTPUT);
++		/* Switch to address mode (address/data pin)*/
++		mxpcie8250_cpld_set_mode(iobar_addr, MOXA_CPLD_ADDRESS);
++		/* Enable CPLD by pulling chip select pin low */
++		mxpcie8250_cpld_enable(iobar_addr);
++		/* Wait for CPLD timing (about 70 ns) */
++		mdelay(1);
++		/* Set data bus pins to output for data phase */
++		mxpcie8250_gpio_set_direction(iobar_addr, MOXA_GPIO_PIN0, MOXA_GPIO_STATE_OUTPUT);
++		mxpcie8250_gpio_set_direction(iobar_addr, MOXA_GPIO_PIN1, MOXA_GPIO_STATE_OUTPUT);
++		mxpcie8250_gpio_set_direction(iobar_addr, MOXA_GPIO_PIN2, MOXA_GPIO_STATE_OUTPUT);
++		mxpcie8250_gpio_set_direction(iobar_addr, MOXA_GPIO_PIN3, MOXA_GPIO_STATE_OUTPUT);
++		mxpcie8250_gpio_set_direction(iobar_addr, MOXA_GPIO_PIN4, MOXA_GPIO_STATE_OUTPUT);
++		/* Switch to data mode (address/data pin) */
++		mxpcie8250_cpld_set_mode(iobar_addr, MOXA_CPLD_DATA);
++		/* Backup current GPIO output state */
++		mxpcie8250_gpio_get_all(iobar_addr, &saved_state, MOXA_GPIO_OUTPUT);
++		/* Prepare bus value with data bits */
++		new_state = saved_state & MOXA_CPLD_CTRL_MASK;
++		new_state |= (data & MOXA_CPLD_DATA_MASK);
++		/* Output data to GPIO bus */
++		mxpcie8250_gpio_set_all(iobar_addr, new_state, MOXA_GPIO_OUTPUT);
++		/* Wait for CPLD timing (about 70 ns) */
++		mdelay(1);
++		/* Disable CPLD by releasing chip select pin */
++		mxpcie8250_cpld_disable(iobar_addr);
++
++		if (addr & MOXA_CPLD_SET_STATE_BASE) {
++			mxpcie8250_cpld_read(iobar_addr, ((addr & ~MOXA_CPLD_SET_STATE_BASE) | MOXA_CPLD_GET_STATE_BASE), &verify_data);
++
++			if (verify_data == data)
++				break;
++		}
++	}
 +}
 +
  static bool mxpcie8250_is_mini_pcie(unsigned short device)
  {
  	if (device == PCI_DEVICE_ID_MOXA_CP102N ||
+@@ -585,6 +821,10 @@ static int mxpcie8250_init(struct pci_dev *pdev)
+ 	resource_size_t iobar_addr = pci_resource_start(pdev, 2);
+ 	u8 cval;
+ 
++	mxpcie8250_cpld_init(iobar_addr);
++
++	outb(0x0f, iobar_addr + MOXA_GPIO_DIRECTION);
++
+ 	/* Initial terminator */
+ 	if (pdev->device == PCI_DEVICE_ID_MOXA_CP114EL ||
+ 	    pdev->device == PCI_DEVICE_ID_MOXA_CP118EL_A) {
 -- 
 2.45.2
 
