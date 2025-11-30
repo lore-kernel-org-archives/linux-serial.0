@@ -1,74 +1,74 @@
-Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
+Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88B261D47B4
-	for <linux-serial@vger.kernel.org>; Sun, 30 Nov 2025 17:18:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2D3A27055F
+	for <linux-serial@vger.kernel.org>; Sun, 30 Nov 2025 17:20:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764523098; cv=none; b=JZL9vtrH1Hjt0e6RppQMX+Gt/KQJM/1cqDfKFTuakcCJtG/H2mwjPZaC5sN6fKbv/W/ijYuVYBT3mcTnwQWDuBE9Kw185WX9HPAELCFJsmLq4q0lcqemjAruUHL2ItiG15dRB8NEv0KOt2zKzRxmNdEYC3OIV+TUeO71iGZ9I9M=
+	t=1764523242; cv=none; b=tAEgxDRh5XqrPZt0WOHA7cDCTxNj9CEfLJQm5okqEjkih3ERBCoB2Dqs8nWFieLleMepDu76cQ9f0kOxhCZkV7RNxjyRPciVS0BMorEsFzYCLOC7NEKI6UYaE599+jNoJQesCnQo01ntXCfKhBOjD9JSTRv/UOnu5SMC4fAqy8Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764523098; c=relaxed/simple;
-	bh=wLMMz4DUUSdjvsOoSM5t4bXm8k0Iip9Mw718z4y3W2M=;
+	s=arc-20240116; t=1764523242; c=relaxed/simple;
+	bh=6AZD8s/6Fj3/LjrlyUwKGQ443+wkPOIH6tsrFzYjJA4=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=sX4zBlYdVGDxVEJ7L2KPP6cU1AtZTFZr4GYeHVF23bGdZPLKskMknZsi2MU+Xc3CMzV1JD9wapLMrSZ29MaSI+toQBCfKszcS0DwI6i+GdLpniWgboniOb+N7ZbtUmc/aIHVEhs1pAewdKCiVhFCi6PAuaqHt0X+ehXrst5ZW9U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=L9Q8YmU5; arc=none smtp.client-ip=209.85.218.47
+	 To:Cc:Content-Type; b=aYC840+WmPIc2SXiB5DwTeEnx21KMOnRYUTnqZ+N2T4WiMUUVof1y2KKjTlPQa49TYI6HB1hikpgXkhUL1fCUoaVJlNzsHG8JOeDoJN1koZ5fFpkOG+P0wZ8qVMS6jHW9m6pgk1WIOKCBkjLtCg0WcrwlTHeizUs058MkfM2xII=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=azZ/VFwX; arc=none smtp.client-ip=209.85.208.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="L9Q8YmU5"
-Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-b7373fba6d1so543288066b.3
-        for <linux-serial@vger.kernel.org>; Sun, 30 Nov 2025 09:18:16 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="azZ/VFwX"
+Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-640e9f5951aso6375481a12.1
+        for <linux-serial@vger.kernel.org>; Sun, 30 Nov 2025 09:20:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1764523095; x=1765127895; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1764523239; x=1765128039; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=zN4H6f28ilxdDDRCz0iR5oEKy3WeFjraCxWP9yQfwDo=;
-        b=L9Q8YmU5fLW2z145vZWaWofRB67vvtG6g0aJpij2o4jkSvTAIWeo54o7pxRNssms7R
-         7zMK+G3voqzvdQo/xdE9jastScypD4roUJmmJAyN235CnbudC/f2Mxft6ZGWuf5A2XXu
-         EyamCBEpWDSemLktdfpuLhj3IacQEYaUNgxSGeNc0h/CQHW9iDNvP0zRJ4dBFbt0HX/O
-         0hbccUTvPvMM39VBCGbO/O851eejrgpuweE+BEHlqfsIaoA8kd9+myzTXbtNojP02Stp
-         27r3Rm0jcY5U60K6oJD0wdLDrp5IWrqUAC/4OYeE1fMG8hUPFwDA8goKtfi1FLJZM+2V
-         CPpA==
+        bh=4XGg/9mUmxbfEVhBy4JapAmnsmDTfCKnkBEAyKCNSl4=;
+        b=azZ/VFwXhGJci7TQEVi43sekYeZTfAZJ3MqfM8WdE+oWCxl+C+6PRQr078da6objgW
+         f15DuhCHwDCDTomk6+fZEATSjm0F1UoHO1GL3nHZ0YAbXptYCLfIJl2s89WASMz+O+l1
+         kYpmaRjbm255d7tmWP/8o0GBPDwNSDPbjVR4sggLYJ/oKfX3qSm7Wb4gtR4tkUFGKDO9
+         Ad1PsFpmTdk9LtmdX9Gsj4lISxEJDenlZvYpXQGSIyzoHOgV/6zsPyMuwZpLES6QbQJW
+         paHukVfwoOn9CIgY77llnjGhPg/2UhCn45DyokaKY8fA07PHAwF31FS1CF4m9hqV/Wrp
+         RZiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764523095; x=1765127895;
+        d=1e100.net; s=20230601; t=1764523239; x=1765128039;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=zN4H6f28ilxdDDRCz0iR5oEKy3WeFjraCxWP9yQfwDo=;
-        b=De4pEjhA/i17megjEctPc7m1ELA4waJUJNBo9Eb5AQBoCHzL5BuoNpjzN92SCmJt3e
-         kDVK5dJzF8MufqDvD1xiKWq95iiR3FZ4aac/cERe3kSZ+ddDaVJpyRhJMAQTjSmZGQ2Q
-         lO1GKAFGE3lwGGn+1bdYKN7JsqL8KnltdhcyVrTOUfj5bVnn3TC1wSO4GKHr1yq/2yrR
-         d70e6vlhWxfhSN5waS1jh0Z7lkWDlp+tsaCF/dV6F3Wga3uzZaft1pHCIuw4TNcym5+S
-         VNs4LDKoAxCRFKn7Xxks2VR/43Uonyx0tsK8ezfwpxtXQatJP3+tVNEZksjDJcef/th4
-         r9lQ==
-X-Forwarded-Encrypted: i=1; AJvYcCU2tlVXjq5jx/fPXkfs/JCRyO8zcjBGSBGusgcCHMGQhYhlnzSnSIVhPkwGt6L/gZgHWG6/BrMqvfLHKJw=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx1f1zJoBnbNdaMHgKA1MGLntMFjRnGmNiWHqOBht1/TR39llO7
-	59HKYGxlMwIHVNNSFHhYcwAsqtBBDyh3oF9VisTlA42tI0O61tigR+l5OY7Pl4woXkXIi5LKD2S
-	L/YKg49Y8mc+yO5aHrfBCc/sQ+YVX/IU=
-X-Gm-Gg: ASbGncuxq4mEmdg3Ehiblzpr8msEMoDBIdUS2g8abpinJlC9kYaAxqfFj82vqPXWBLg
-	ai3yHgYbbPOGSWEL6NfLarr42rFYWHd38mtvXpcPBldqi2+ZqKnMHZYt1L7fGumVG+Mg8+6dZKn
-	HhOUTSYE0/dePDTJKp3r1fSntVB5OgJCI1HEZvLvrN7QvfO732mpII4zMGKX90bpne8uMEMLC+9
-	wBeAPv+U82ncW0271FnUapsgXWrSoVbDii5+R75oGfs8LIrsB9DYS0gKz+xHpAAn5LRsoMxVIpA
-	MP/a/p9ZfxdMlabwb2D11omBfEZ9IO+MAlBxnMnlruXwhx5il7tFe8Q6l4fbQGveiGRZ3WRD9i9
-	lTuL2/gA=
-X-Google-Smtp-Source: AGHT+IEIIKqPAIlcOSERfxxUcRQekZ9/e9YARPKIcD03fAPo7qqvT9+dwi1SJR5MGQkyc1lgqc4e03FROYScsEKDjf8=
-X-Received: by 2002:a17:906:a191:b0:b76:7f64:77a5 with SMTP id
- a640c23a62f3a-b767f64a792mr2936471666b.20.1764523094620; Sun, 30 Nov 2025
- 09:18:14 -0800 (PST)
+        bh=4XGg/9mUmxbfEVhBy4JapAmnsmDTfCKnkBEAyKCNSl4=;
+        b=DKJQJdCZKEXpeaWTxSrcTT+fXGCV7pEHL9sQEQkgznGF05FJPFkrLLZiiKDz7W/ajW
+         CE9/Hx2+lG9JJybNEjgzveDDkPPkevztjRuRt855g3208uXTI7SpBVY2bmjFAVDRXg8C
+         ivbysQZXwwIJDJksBdGx2HWcJwI48jcyJ2BVQG18BZ1JzUihwowK9MOVNk6d1lqCk2+f
+         V6NyTMbUDwRE5A+AMeHRpPAa5RUjdvauPc4GHXNGksW46iRPH2/1qsGvCUzUyXFP6WvW
+         OMM5qzX2aaARFyyy9KoK9oFkFzM7gRKb+eAUR3kUYHNm9y0Zm0gjG5ZckZD89LPyp5cU
+         YIgQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWQO/vYD09be00MFjSlWv/d1YEaSygRhqmeMdbwUlJyJuMBTSqQ35DZxfMbaK8mEqdPSxEC+HVEsSJCIEs=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyNB2gzthSaPeJnaIWMe8TW3YJky2GyAHyQnUGOw0LRi364j4DC
+	Dno6T73PZvN3znYynE44v+ZR4MBSS7hBqv33RzMZJNbZVrxGyUuxKvsIa59YoIOsxFN8sapJz49
+	vU0tfWKV4Iiz59nc4L7nBsndEo0WPxNM=
+X-Gm-Gg: ASbGnctzaAloHowptbQBdOgMsODT3Wfs6kd177J7J8uqyowiCy6E4/AVxQmMwFGjJ9y
+	dMcGvZMCfbwE6DipCZiS4cCZUAuo1D5s7bp6TBygCgXnvjqqzZ+JZujvvFjQuMUc05UU7tk/rJE
+	mkHo10ogTlcra2cUZi9nrwt0jVOIhCGvqZIt/x67AhzXiM2jpgOkQiCPhWQCd36dHVvvXgpYGzr
+	pb/XmkvZ6zl1wwtq6UIyN4ZIlgTv5p4Jt/aa3IEE+6JjIJjihdion1v+A5craaxq7Mo+Dd8FEeB
+	vTCLJH7QWwcI3NUuCqPkSnUpSUF65v+4NrZJDJtRvcrVAgIiOB6ER/17L4kr2zltYFQMxXof7h1
+	HuaaHDLc=
+X-Google-Smtp-Source: AGHT+IF9MvoHBGQX3A9adyedYLz4m5BVsNEYr5I0yeXSWJb+jDe4+8pO9rAQ0WnejQXucl0su6LnwoXagDD5ULWHtC0=
+X-Received: by 2002:a17:907:7f09:b0:b76:4a7c:27a5 with SMTP id
+ a640c23a62f3a-b766ef47be6mr3614724466b.23.1764523239291; Sun, 30 Nov 2025
+ 09:20:39 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20251130104222.63077-1-crescentcy.hsieh@moxa.com> <20251130104222.63077-5-crescentcy.hsieh@moxa.com>
-In-Reply-To: <20251130104222.63077-5-crescentcy.hsieh@moxa.com>
+References: <20251130104222.63077-1-crescentcy.hsieh@moxa.com> <20251130104222.63077-7-crescentcy.hsieh@moxa.com>
+In-Reply-To: <20251130104222.63077-7-crescentcy.hsieh@moxa.com>
 From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Sun, 30 Nov 2025 19:17:38 +0200
-X-Gm-Features: AWmQ_bkfQTpVdU8fv3vpuNbVIuXDxB33RJiQhYhVU8fkTI-682CrqaKPH1OWqIo
-Message-ID: <CAHp75VfwR+FWGf3e8JJssJ6ori9vZg+Nou5xOk8MpZ2CccKNLQ@mail.gmail.com>
-Subject: Re: [PATCH v1 04/31] serial: 8250_mxupci: enable auto RTS/CTS flow control
+Date: Sun, 30 Nov 2025 19:20:03 +0200
+X-Gm-Features: AWmQ_blFFV2D-2mIqGg-EfXqwWNJsj4eZaaf_gtwp3bJPdQZKtFnkEsUJUHLWMA
+Message-ID: <CAHp75VcSLY_L6Xp9LrY_qOBCUrmaEMtPTFpUPK9bJNs6L8FgiA@mail.gmail.com>
+Subject: Re: [PATCH v1 06/31] serial: 8250_mxupci: add custom handle_irq()
 To: Crescent Hsieh <crescentcy.hsieh@moxa.com>
 Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
 	ilpo.jarvinen@linux.intel.com, linux-kernel@vger.kernel.org, 
@@ -79,38 +79,57 @@ Content-Transfer-Encoding: quoted-printable
 On Sun, Nov 30, 2025 at 12:43=E2=80=AFPM Crescent Hsieh
 <crescentcy.hsieh@moxa.com> wrote:
 >
-> Implement a custom set_termios() to configure RTS/CTS hardware flow
-> control. When CRTSCTS is enabled in termios, the UART_MCR[5] AFE (Auto
-> Flow Control Enable) bit is set to allow automatic RTS/CTS signaling.
+> Add a custom handle_irq() for 8250_mxupci based on serial8250_handle_irq(=
+),
+> removing PM wakeup and DMA handling that are not needed.
+>
+> This prepares for future adjustments to RX and TX behavior specific to
+> Moxa MU860 UART.
 
 ...
 
-> +static void mxupci8250_set_termios(struct uart_port *port, struct ktermi=
-os *new,
-> +                                  const struct ktermios *old)
+> +static int mxupci8250_handle_irq(struct uart_port *port)
 > +{
 > +       struct uart_8250_port *up =3D up_to_u8250p(port);
-> +       struct tty_struct *tty =3D port->state->port.tty;
-> +       unsigned int cflag =3D tty->termios.c_cflag;
+> +       bool skip_rx =3D false;
+> +       unsigned long flags;
+> +       u16 lsr;
+> +       u8 iir;
 > +
-> +       serial8250_do_set_termios(port, new, old);
-> +
-> +       up->port.status &=3D ~(UPSTAT_AUTORTS | UPSTAT_AUTOCTS);
-> +
-> +       up->mcr &=3D ~UART_MCR_AFE;
-> +
-> +       if (cflag & CRTSCTS) {
-> +               up->mcr |=3D (UART_MCR_AFE | UART_MCR_RTS);
-> +               up->port.status |=3D (UPSTAT_AUTORTS | UPSTAT_AUTOCTS);
-> +       }
-> +       serial_out(up, UART_MCR, up->mcr);
-> +}
+> +       iir =3D serial_in(up, UART_IIR);
 
-Here I have a d=C3=A9j=C3=A0 vu feeling, i.e. some other drivers may also d=
-o the
-same or very similar steps to enable it (8250_dw?). Can we create a
-helper for all of them? And if this is the case, perhaps add it to
-8250_pcilib.c?
+> +
+
+Stray blank line addition.
+
+> +       if (iir & UART_IIR_NO_INT)
+> +               return 0;
+> +
+> +       uart_port_lock_irqsave(port, &flags);
+> +
+> +       lsr =3D serial_lsr_in(up);
+
+> +
+
+Ditto.
+
+> +       if (!(lsr & (UART_LSR_FIFOE | UART_LSR_BRK_ERROR_BITS)) &&
+> +           (port->status & (UPSTAT_AUTOCTS | UPSTAT_AUTORTS)) &&
+> +           !(port->read_status_mask & UART_LSR_DR))
+> +               skip_rx =3D true;
+> +
+> +       if (lsr & (UART_LSR_DR | UART_LSR_BI) && !skip_rx)
+> +               lsr =3D serial8250_rx_chars(up, lsr);
+> +
+> +       serial8250_modem_status(up);
+> +
+> +       if ((lsr & UART_LSR_THRE) && (up->ier & UART_IER_THRI))
+> +               serial8250_tx_chars(up);
+> +
+> +       uart_unlock_and_check_sysrq_irqrestore(port, flags);
+> +
+> +       return 1;
+> +}
 
 --=20
 With Best Regards,
