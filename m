@@ -1,46 +1,46 @@
-Received: from TYPPR03CU001.outbound.protection.outlook.com (mail-japaneastazon11022074.outbound.protection.outlook.com [52.101.126.74])
+Received: from OS8PR02CU002.outbound.protection.outlook.com (mail-japanwestazon11022101.outbound.protection.outlook.com [40.107.75.101])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8B4C277C8D;
-	Sun, 30 Nov 2025 10:44:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.126.74
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03255285CAA;
+	Sun, 30 Nov 2025 10:44:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.75.101
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764499492; cv=fail; b=exocaLyFnCPdK2phit6moUFxaYthIKbM/JhVkgIHllnQb3RfztUWjnKOoxHXOZv5mSNXXzVfPlcIYsWJakH3eZ9JcYy68eOliZNPViQSJSW8eKsQ8Xcgziy5bAFf5rtGFw5uJ368WuFE/5bBK11V10F0dFodhyCcLhk32sSoTmY=
+	t=1764499497; cv=fail; b=lbNIOMGrUc7LxNW14C/o5k9djABGSJUKT8rNn04IeYUhRarP0Vgh6j8zsJY/f2a9w6uSwUrQsoJqHwBGE/lx5hnvVI+6sduwdFWsPQekctxi8Xi7jVLdL2yKHlNZKsTb6cfkcGPTLVQAmHBMb1lv22cFz6G8U46j4ZOj+JyaCq0=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764499492; c=relaxed/simple;
-	bh=+o2d+7O/s9ibiGD/ubtuOhyGLbdwq359hSMjaxfjXAs=;
+	s=arc-20240116; t=1764499497; c=relaxed/simple;
+	bh=FyVt10JMyR8At+ytNqlHW5L2MQgYZ8TicQhQRmDhutI=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=a1OzMH/EvTAOKjLQPgfAPHkDMow+KA7Ggdn11raNayK0q4yIuTZldZ60qVG8jPc9f5e/bDf+4/sq0Sx0qEO8z7gICF3TJvs25j0AJskTt4jkNpfDtmpiOmGUvU2Spe9505GQVdNdvkvYmIJxMzNlhs/T5jm4mwNEQ4een6Kl0q8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=moxa.com; spf=pass smtp.mailfrom=moxa.com; dkim=pass (1024-bit key) header.d=moxa.com header.i=@moxa.com header.b=dUbWKCGU; arc=fail smtp.client-ip=52.101.126.74
+	 Content-Type:MIME-Version; b=JVZl+IWtJYiL12Gf5d+Hee3TAjwlNh/lq7WbV2OA2MiegOpNMxZWcx52Epb3OcYdKNElzyHrCD/sA0+mG6alETQoAX6NqeL44s93idlIFDGLMNnnHO36r/X5KIZsF3yiup3LKzC9qWTkypZ4atHygA9O3U4zmPUrv69PFCUctRE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=moxa.com; spf=pass smtp.mailfrom=moxa.com; dkim=pass (1024-bit key) header.d=moxa.com header.i=@moxa.com header.b=KA90oLWP; arc=fail smtp.client-ip=40.107.75.101
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=moxa.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=moxa.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=moxa.com header.i=@moxa.com header.b="dUbWKCGU"
+	dkim=pass (1024-bit key) header.d=moxa.com header.i=@moxa.com header.b="KA90oLWP"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=w3sgiR4WB0YY8cns6vV+jFZ2mVIpcFeBuoZF7h42RFN1h5FwWYvbv3mdTVKikytKxtxMRpthRhMkpaBEpzpKuRul56rNRW+IW4+K+qeV7AwHDRBIwtP3KIpHJaPQLnmON922Uvj5TtT2jmjOFHDuH4RejeGiZV+i6TP251IIdQVL3bOtp1LMdysd0Rzt/SG57ZYkD9T55SN5VryBznx9nMaYNffhQu8eWqzkpaqoj3pHyA5yZl41QHXf+soJbfppKbnpC/K4Cq1dERR2udfeA/AJUAX4qJwtlN7WLfjA/w8Nfp5/aKde7OtTRm2bKir9/QQUTaXYdbxTlg6FUXzl2w==
+ b=e/RJ6eGnQ1fHNTIPR8QoMRCoBoG3kp817eOEzses2REkXbowp8jKzWaF6e09fdZCw+odfoh4cLHn0MBUpo7u7ka3uPLvor6xaiQemT+Lr6kc58vD3mr94x3z1yKWaDasYXaVu4ae0RXUaXtiW/QGwYVDxVV+EPhpPl0YzQws8oc/nOPVZOgoh4WUOomvZDco9kGjItmo+neFhlbxrokzjicLFeW0ByIML/JPVm89W3hIzrGqHrlb+wapBVT45ooGFrFlRT4oon30UuntSHO5lC0miOWnvUhRoruklxKb7Cvjd+gFTu/VHwGtXLGz1+D4odga2jICQFssXdl8c070ig==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=nosEr36Z+f86yrzs/Egc69+dWSHoSX3wrThkdJ6Vm5I=;
- b=VaWTNnqxRzgV+TOgnt0jG5yAUFFBw5ZvDA0nKyr0j3NoUCnsLNoZ1fV/TqKHNBAg8zjInSh0m6/UqClamUh77KEG55x1PoeXgWR3rz64BQzW9bx0Q/Y7ovejydYrP+FCayZbsm2XY/5epwXESZvc8FDxCs+EQGswdTQaSs+4Ht1QbVCMPtX99JvRHPfzKicAKPMmbxAcAN/+7TSDUVe9VnKau/HgaO1h8sN/UseFv0d84aArYHrxOc5Z5QeXjR/R/+GvrkblmgFFTUSRQrir/ZKmZtFZ3RJGwY41g4yFJFHN5FYTFcPAiJRLVz911tvbwsXOBI3zZtUIuqHa0rWU6A==
+ bh=r8wsN17oUIKdmiSDTDqSnJiAogSkY69ubx1bmG8UOeQ=;
+ b=o+JWeiMWCoGKglATrf6F6iK3Y2GV3f2WFavjH9xHehdHJaZZpNitMCqi1UbAdF3WbjiGA897GseqQsfaJUpOW0ysBFb1F8mU24muVO7k5EinBo78nuVJ3eqUWT2EWBipWpWrCqJlc/wGASwCD6gMadwbWa1Ht1/GKqv4kTrP+m5qgzzpnHpFwLwNlg1SBxEmca+TxNHnQTrQG2YrJQNtPfU1jEjc5/qvEYS4hkX5SYWGt+98b3aX9IKbCUChGdZ5kEn2O13PjKG6rGNxmR9ZxOR4ymZqzZ84rmpSooUrz2JI/GnLa8k7Bq7CZwZxMnOnNEjaAB8pPWkU1awlIGm+iQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=moxa.com; dmarc=pass action=none header.from=moxa.com;
  dkim=pass header.d=moxa.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=moxa.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nosEr36Z+f86yrzs/Egc69+dWSHoSX3wrThkdJ6Vm5I=;
- b=dUbWKCGU9M6GXam68kpA0tpODVxPX0FJXw85KQu7yL/VQspniyixpcdqDEiR7yPWvX1mXCGQQTRYY8ESeruNN2FZVWb+hZWyGBqOCCWmdgUTWuYNB74BUJfxhO0FCUFLXTwgsjCyuN68uL6tZc8LArm1rJTnIkScuROuODa+vv4=
+ bh=r8wsN17oUIKdmiSDTDqSnJiAogSkY69ubx1bmG8UOeQ=;
+ b=KA90oLWPYM/MjZ2NNxJokCA+xL8e2qilgh9YtHS1gG+qWi1JKvqcAXSTzYJfvno8NF11YVYHW3iKX0Jrvf8e1YxDnnfWlimwclmE2SVOaSGgJpir7hZSvX9kK+wFTMWrTaF3H/l0m0g52JLC3BkeRsbOgTUu3UnACRT2wrDiiM8=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=moxa.com;
 Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
  (2603:1096:301:115::14) by SEZPR01MB6080.apcprd01.prod.exchangelabs.com
  (2603:1096:101:221::14) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9366.17; Sun, 30 Nov
- 2025 10:44:44 +0000
+ 2025 10:44:52 +0000
 Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
  ([fe80::60ab:8615:ab67:8817]) by PUZPR01MB5405.apcprd01.prod.exchangelabs.com
  ([fe80::60ab:8615:ab67:8817%6]) with mapi id 15.20.9320.013; Sun, 30 Nov 2025
- 10:44:44 +0000
+ 10:44:52 +0000
 From: Crescent Hsieh <crescentcy.hsieh@moxa.com>
 To: gregkh@linuxfoundation.org,
 	jirislaby@kernel.org,
@@ -49,9 +49,9 @@ To: gregkh@linuxfoundation.org,
 Cc: linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	crescentcy.hsieh@moxa.com
-Subject: [PATCH v1 16/31] serial: 8250_mxpcie: optimize Tx using memory-mapped FIFO access
-Date: Sun, 30 Nov 2025 18:42:07 +0800
-Message-ID: <20251130104222.63077-17-crescentcy.hsieh@moxa.com>
+Subject: [PATCH v1 17/31] serial: 8250_mxpcie: enable serial interface switching
+Date: Sun, 30 Nov 2025 18:42:08 +0800
+Message-ID: <20251130104222.63077-18-crescentcy.hsieh@moxa.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20251130104222.63077-1-crescentcy.hsieh@moxa.com>
 References: <20251130104222.63077-1-crescentcy.hsieh@moxa.com>
@@ -68,155 +68,170 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: PUZPR01MB5405:EE_|SEZPR01MB6080:EE_
-X-MS-Office365-Filtering-Correlation-Id: 49326138-247e-4e49-1cff-08de2ffd7990
+X-MS-Office365-Filtering-Correlation-Id: 073c6b9f-d9a0-4a4a-72f7-08de2ffd7e41
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
 	BCL:0;ARA:13230040|1800799024|52116014|376014|366016|38350700014;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?0pKckdAki5x36q7TKPt+/nMEsCYFym7FBQQYBU6TR+8bKZ6yAjH6XBbfoC+L?=
- =?us-ascii?Q?tmdMfy5CQwVMEop0RVbWnxlocFw9bNMrRYB73fqAwgC4EfazeXUsrNG/rzBR?=
- =?us-ascii?Q?NiDgZ6i+r3QZECY9ZRX++ekT9KZwvyemDChHrYVg8TBLG4y5Ks83Xk6pdEYS?=
- =?us-ascii?Q?PF63Mp8tdP0c3YyzuJLZ77mgxnOWGYu9j8ZNKvEbfBfzy1NSFMsODqWitQ33?=
- =?us-ascii?Q?pJie8khSjGKMdQBL2iyYjhdagDCCEchT2O0XmG6mkanK+67qrivuungjsELh?=
- =?us-ascii?Q?wz6Q9rFjlhIOHzQDFFmQWDbSC6iImx7t6mlSs9oxYxdVOJTq+Rb8pYj3zS9X?=
- =?us-ascii?Q?G0//ATcoUErYK5iCrbC4MxpEu04nzjRJhueKn0waWAl0lpbYE8rlOmuLcn79?=
- =?us-ascii?Q?hkBxmMH+0Na/ANlJJqfSuORYrpJl5nTG3eflw4luTDvUSe21JdpRP22qTIcH?=
- =?us-ascii?Q?URtgUgYDpiFlcgEv0iB22xC36SsOGHFRRATmEbaw7X2A0WkfcMLmVMzRpWsx?=
- =?us-ascii?Q?dU3bh34jyJPNptxyvYU6mRikwqIxILMBC1rkP/Czof98dLSOtwTAJgy+hMHo?=
- =?us-ascii?Q?VtFHlhPZXlC1039DbCvaG3aNuWjaMgXd3VQqHE+diRhiEkzrUWvxs3oRRd8s?=
- =?us-ascii?Q?OBfTT+2Rhgc+5MESvd7+aS/8bsmk8WcJ/oXqY0ExEZlDKmgPy/KWrqRefqR6?=
- =?us-ascii?Q?5TyS3Joyww9Qak7qsbtWrIdAWnCBgbBIEMQUku2M/4sv02NQh1x5hVJKRN1B?=
- =?us-ascii?Q?zkapsjPXOLwBgheQY4+mUhkK/y6RksnTRyL6J/zg30T8SmBQLIiypuwbRdxB?=
- =?us-ascii?Q?Jsl14ZNAnHaRJE2Nf6+tsPq24lIdMD2ePi7wi266Pri2rPisq1W56tJAxFZI?=
- =?us-ascii?Q?UEVKBMRXBuk7T/ixBKJNc5hJqiXDhEvz1e2fCDRuHgH23kJb0Sr9CwCz12g6?=
- =?us-ascii?Q?RgCvsYEnsGICUCI2jUeeNE69im/JQiQRfiTphTZCwgsR6eZpBEJELU+7/2pR?=
- =?us-ascii?Q?Z2nnpbfMizTWcPL3+2h2ZnzxVzvNHL+NSUzOI92KAFMwYYNIVK1HnPmvli+9?=
- =?us-ascii?Q?K/vcZeYeV0/shVOT8SzDB/nH1lKMAbfqfir4omIAoO6CR82gVXj+LDvgGMyz?=
- =?us-ascii?Q?0VnfLwFS8T/enD5IX0OhN6Bogrui5BPc5aVa9AZ7WyWlrgnOicXYFyIUUIQb?=
- =?us-ascii?Q?KVAKr1B9IQVTekE9oT3/wZZQRjIB4AgKIBM8JKUSjGz8oNkH761nkyUeRWVk?=
- =?us-ascii?Q?31G/U8l/n55PVCoqIcq0RqgdGbYGJbA0VPD+O5hhvmcygUrzD8sd2t/tEd6+?=
- =?us-ascii?Q?l0sACmZjje9ZBU8J2iOt8IFkWyOyroQh5+ADsdgyXNTtlOclih/3XWqfmuGf?=
- =?us-ascii?Q?Itp9eT7Vw94RM9ezbYd2+DiL1bUFm9+ywFTzYA8ZZCYQhEK5HWgUg04x9J63?=
- =?us-ascii?Q?K84pV5LUUHNxBtpA3U8MRnoUuQrxpYWNfCx5r0sF8+xzr640F0s+mnP5YHaK?=
- =?us-ascii?Q?WiD+e6bMzXtFeIxiLEvECFyai0weTmg1TO+Q?=
+	=?us-ascii?Q?ksvIM5IbvMX4Q6go6CKz2gNyj3KjEyJLH4DOq0pvVrk1ZhI9p2Y1LsH/CNk8?=
+ =?us-ascii?Q?xJTxwEoMVm6H31yDPOKu6JUp4b6DNcV9BEr9OCGxaYIpwRLzApJAMZAiiDpo?=
+ =?us-ascii?Q?/CCkXwLtArKL4BFOwVN/ew7fUwRMmStR0SWFzC36F/ecvRz/d5ZRHImJ4/O8?=
+ =?us-ascii?Q?xP7/R2LztqDqR3cZsyCF2JDbM2p9OU4+5Wd+FotJHyuO/7P+/pt22CcLgp3Q?=
+ =?us-ascii?Q?/j8UiFSxNNLnGv4wNebV938AUmOm5teOat8Wkgf6XWkQqxK1R8B3G5WAMaKc?=
+ =?us-ascii?Q?wDPdItMgnMrWV2C6s01GM2GeSemG5eO8PzySLvsTnxxssvVZre1kjrpAdbIg?=
+ =?us-ascii?Q?s/hnMzMNl7QJbeWXyAUZzuw+OalzgD7ASWjahLjdFvIOcg1rtj0kDi/SpgGY?=
+ =?us-ascii?Q?ipPfRR5CoJywvEA8DH3Cj9PxCjgXux/7foNMxlttKrHHjXg1yKXJzo+2Tgpk?=
+ =?us-ascii?Q?pTHAh8odp7rDYI5MQw8Nl+yK7MGcadGV+17mfnavh9g1ZACAw6uO94ZiV/J5?=
+ =?us-ascii?Q?9C3OhX0YMJPbspwhhM1MN0H3e5DoXr01/5QW+5XJrtSwQr7nWL6am1a4LbZt?=
+ =?us-ascii?Q?qIiAZyf+fygVDje9WOtTQ4J3wLK0V4338fohA4sl2pOZFNYdwooCA3ra5BSG?=
+ =?us-ascii?Q?QDkze48HIirk7tlQVqTfG6z2gBMjFVrF7gxP6XMj+MixkIYWe1/UYv6FxUYP?=
+ =?us-ascii?Q?cQso7lP3pulz8vu6uXseyze66bdYzsPmKOcLx0KUjtJO1oDup9cHzXwc5POR?=
+ =?us-ascii?Q?LpFB4xqRxCYMai6laYWhnEPCSVG7G/ImQA/FdE3PXZ9B3HalrVQGtmjhyi91?=
+ =?us-ascii?Q?mP4Ta4IumLUSelM3L4tOSA5G59e8Q8Ldv4Boaa3FxYoyrdisj76zfrW9b8oR?=
+ =?us-ascii?Q?sYZEd2NF6FvWU5Tb6lDmZkTWkDPkFHG3QosplsQ5EVfLkxU3IWEfzvJA4nAm?=
+ =?us-ascii?Q?6bKMf49t/ra2uV4ERY3YPt7i6zUBa3VRWdHkYybofsZ/c7W2MV46FNbqnQy4?=
+ =?us-ascii?Q?+I/wpjiEKhEPDmZstUs5fy/bzaBRaLrHf9Djf0n3PW1Sfs06IvbYDCDL5NXc?=
+ =?us-ascii?Q?MuJpEjkGv7S+7wIu+l8+lDo6Ab6+WzhaOjZ+xUfGrYxJSJiDCZUML/vZj02/?=
+ =?us-ascii?Q?cwt0MZy+ghGEeEQgjbAlgOfCOUrxVmZjr3dAIc5MDmuNqTBni5eb7pzsenaS?=
+ =?us-ascii?Q?9AjhuDyN2ajrdwIkZOOqFi+PgtHLDfBP6xw820CeMTEhmWFzl7x8lY5+f1D2?=
+ =?us-ascii?Q?prmpeeVk8FXX4XHaiyQWRgoTgYofnhV0vdcO1/yn9OJ6oPhxS5jlbSOKU+0N?=
+ =?us-ascii?Q?J3JWQhnsFX8HpuMpf8uqPtNrDiskd5MnfuP+pnaf9+c6+L7c+EcniXdOdiQ3?=
+ =?us-ascii?Q?RdQxjKtKHmuzLq3DGZPlTN200ZYf58JPmpR2ixyuaiDzQT5CavZYAybBunNQ?=
+ =?us-ascii?Q?wG2L1767gj+Obq+oSW581OAOt0iec8jcNugTLto1bEh9puBbL8DZgT2RQP0T?=
+ =?us-ascii?Q?4+hthDVfAEQkjstMuIqwIU1teLYJFgHu1E3l?=
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PUZPR01MB5405.apcprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(52116014)(376014)(366016)(38350700014);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?93NdljD0oViH2gpRNb5f8EFD55hW7XMdiUd3cCwm2jBo0cuis5ctak8Ld/TU?=
- =?us-ascii?Q?LNPjYZ1qx4/UQn4unaAg7qXfoP3TzLsRcFqkD/Y5tF7aaXBH5Tjh2cPJ8NoO?=
- =?us-ascii?Q?+NZmrIbizCioxMUiBre3Leb8lHZCNeORvJIeWsboe272nlmrSdKZTtYjtGDF?=
- =?us-ascii?Q?A9XZDBAEWITAvY/gTA/u8dhRSVWyzAkwYp1xFH7XXhcc3/lTxk5CyQ292Hh4?=
- =?us-ascii?Q?4Slw/NVDKpggkmhCz4Fb/5RrG2K4GtwQPFjcPoOR18hEzo6u+TsZrV5DbAu1?=
- =?us-ascii?Q?+dc42a+KXTRNS0HI0r49Z1kh7A9/bJ3BVAn3I2n+y/ceJkLAxq8YjYdqstXP?=
- =?us-ascii?Q?AtYxXrc8d5kqiY3z0MrHLzMur7qopufjFmoJ2a39Ng74785aRZugidfzdXI0?=
- =?us-ascii?Q?/Ks9kTh53PX6Hftr4hzrLo0eXQfUImt8ed0g6PHJ1mxI125oqqU8RdOMnFs4?=
- =?us-ascii?Q?8FLoap2/6VVEfD00YMiLzcRQcVIkNL6Kis4exMSEG8gFr5zVPVyaRgCjCTr8?=
- =?us-ascii?Q?hSWN0g3NieKG0GGULBt7zDQ4MupqzCrMo0Gka+FRTyBby1/2GFmx7egd3gQc?=
- =?us-ascii?Q?U64umP+TCmxy5TZK6HvuLydfF2GTvh1m76ypnwsoVo6V7pE62ml2hKNptNwD?=
- =?us-ascii?Q?Qf9ihDgBgU1fOS+5siMzQD23Ni0WmGm0AcuAQkHL4KiDTdQGHc2kInG7W1Bq?=
- =?us-ascii?Q?WxmJGYTV1gRfCKg+IDemvYEKFqkYi1eBHxlqswTbOD4uzMa4SyI89bL8Qj8E?=
- =?us-ascii?Q?FjKxD45gddhaW0/Ppp6k54AAbeZC9k6TDkvpLlRkYVqo9VjEiIiBSbOiW+41?=
- =?us-ascii?Q?lEYWg6hkgcBGJt5VtiQarpuHNzecvMt+BN/stl3liIC+KCuIH/yiseoO9VgO?=
- =?us-ascii?Q?H0glezq4K5fiTZ2PLtSr6eGbo8W84XP71rLoHH+0yq6Kph+7NN8EKvEFl1y1?=
- =?us-ascii?Q?PptUMK+ZBUS3qaYSPfTKrQxW/XxWmKJP2dgatFJoVH+ZDruD4uW1d/gwvAe+?=
- =?us-ascii?Q?MeFLtWba+JDh3ECEgI6SB7p1kW6ltPAb5j5JOnYtwRVXs1Yg5rs2kx2/uRRn?=
- =?us-ascii?Q?xtHaNkwLZz95lpSmY+JL1EyA6wruBGxK1Lw+CAVaNlKRqhc4P55Bf8EXROsg?=
- =?us-ascii?Q?VZjc3owm/fz2dqSTrmwFb5Oc7dyt6giqoorqCRAA0CusBezWsj6/ZBScw7tY?=
- =?us-ascii?Q?i7Z4QL4H5VK7kDDT4qtcKA1h2wa42UNR0OLYa5MANFELM0ADldCGn+nC9xbI?=
- =?us-ascii?Q?Hd25x1b619c9LjUf1Zs7XBy3CinUHzA5bil0540FVb21bZRPlt+03duy8QYz?=
- =?us-ascii?Q?cUjNqhmy9WhiZWcNcsPBi11/Y5I6H9+hriNZifqoJgRGdUqxFSKwZxw136v/?=
- =?us-ascii?Q?GBUGPFPYsUzGdePeo+e+vbERs16F9znWL18xSeMB1Apf6NLdZAgYhq351Ag0?=
- =?us-ascii?Q?2r3IUd/8NRTMOoD88HlsfRdW16XJXVBR4rrRol9Janc4F3rk0n1aTwU4XBtf?=
- =?us-ascii?Q?vO2WMCjES5wobMuqQyD2VfLFn8bdSx+VRVQ5XRDe0aIKQO9kUnVBYPJVpR+l?=
- =?us-ascii?Q?LjGW1RaYnhQlkz6VopFSsUcTFEhv+vy817NGLneiTeDWwUTI0oYekKSEKeU4?=
- =?us-ascii?Q?yQ=3D=3D?=
+	=?us-ascii?Q?06U231ZObUppvi5z8y3ApGEfA2+NTF0/WhrwBeu6lUKg7AD6IbJZT25UfNII?=
+ =?us-ascii?Q?ZwUqWd2KK5phvWngNawIMGHNEkD3PNYKhdCl3ZsOyBpQ8OYWDql6WcdbW90B?=
+ =?us-ascii?Q?wVQKRYnr9A44E4pSli7m09r82NWb2DRNJRXMug9btxF9ZrNile8xLJhYXMGD?=
+ =?us-ascii?Q?2yCGUeBa2or9OTrTnOk48vygF9uCeDmbj1CoHJcWlRE/ZB6TP8yz41AEHL4A?=
+ =?us-ascii?Q?W30RrS6gEPdUVBCO1B71TfJptAceURr0TLcVewB7fmrKSORl07PPpRNaR2o1?=
+ =?us-ascii?Q?Kgub7eZVULVRZbS9s4bPUX2hRmRXk9xqlB964WJQIwsdRs37zgh5lvQBEZpr?=
+ =?us-ascii?Q?hgmE1rikDv8/OxyWWWBwMlFDCwpuGxmoWSEm8vPWB0Z1eCpBLznM2Vrc3Y4r?=
+ =?us-ascii?Q?mOpSSbRjDbnkPjpwBX9wEeHijeZnbIzHOSO+GqqUQTGIu8fh1nHtaCmAZYu3?=
+ =?us-ascii?Q?RMg0459hxpnE87pezsH4bDYLhXW3/WV8sxkGZn5SkihGdZXZo46VzMDVCBOF?=
+ =?us-ascii?Q?k6UwsczDObVM3QjDO5DHlHfmfZzsKbhic995J6TBxkRWGQml7qV+/hh6JW0H?=
+ =?us-ascii?Q?BuINjDjOT1gIka3mQaGkPEqSDUwaew5gS6dGeEFKZFvXw0/Ku/OtZGGkBJcN?=
+ =?us-ascii?Q?RcDZ+EIXnpWFQtAmyx3c6Z7PExoNTKRaY82cLyExSDPEcCVvE6s5+VE6csXT?=
+ =?us-ascii?Q?b5+pkoaFaWAoxUYDd3+PhdN3PPyrbJlnqQjDdh78OEbMUDqceC92IH75mgXv?=
+ =?us-ascii?Q?+yiZi3tZVmaANUXe5aUtmubFI8mma2ZfabnOa36bEvoxY5JE5WeTNcSC5qAu?=
+ =?us-ascii?Q?jSYG/zkl1nyT9vt0KIRxoZbeMwGNO7A9Xk2q1LTvmi0KkdfumkciKyBZEpO1?=
+ =?us-ascii?Q?19UBd3PV8bPBxO3Ty9rnQtzFuECpoKCteReZnEsCjN1yAQxlDtp/i3bjU8fw?=
+ =?us-ascii?Q?Q+g9neTgXp4mnpZZ/Hclixm1fUwa8DdgIl6jMQGFXptb+LEvTSjXEmY/4Nu3?=
+ =?us-ascii?Q?2Ah5EfXq5e6Gqyn6s7wyos4edoVifOedXfoTtDWMt+cmTYAurr6ewKHBmvuP?=
+ =?us-ascii?Q?UGCj4LeoQ7WfN1KGGifLYwNA7RFh5l2RjZay0Rn1okq3gCQOV6gzQqHlV3OF?=
+ =?us-ascii?Q?gFIURQFAwGQZ8a6d6S3x0w8XuaJZYRdKyh/wPWD+n21SAi8NoQchZtYIST9f?=
+ =?us-ascii?Q?377CtiKeXsbzPcBLcuDARO/Z8ot8L2bx8zz9cR83zRrD8yhGzNDoO2niaCrx?=
+ =?us-ascii?Q?6DAsz63tacrNtRXc7MakbJtdKV4gXoqrUfcewKCifP253iwPpkjRUk6HLEiL?=
+ =?us-ascii?Q?FTUJoebjPzmBMOeJFwcPrNvHSL2CwFti6d9PtxOjUCuCwDm9EBP/6VhnmAWe?=
+ =?us-ascii?Q?BEqyfFPftOqF1+n7cHD6qPuS5KyzQDoMHLHIpjl7/9Q+V4mVyfestj5EeTUk?=
+ =?us-ascii?Q?Z3b0923KwwP5vcsrUwyOECJb7ICVC2LH2CgL8n6lqwZA+szlcKD6oI82FlXo?=
+ =?us-ascii?Q?aSeWP+5AfoKTDAqaxi5f0j8GGrORXDqQdUNP91fwr3Wdkd/e6ztlXcUsm03V?=
+ =?us-ascii?Q?xkI0/kCh9b+gSGWxg7c9zcOMDPkjXK/uK4mqszDhnDKHUwrqXS67Y5HDYQ7a?=
+ =?us-ascii?Q?3A=3D=3D?=
 X-OriginatorOrg: moxa.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 49326138-247e-4e49-1cff-08de2ffd7990
+X-MS-Exchange-CrossTenant-Network-Message-Id: 073c6b9f-d9a0-4a4a-72f7-08de2ffd7e41
 X-MS-Exchange-CrossTenant-AuthSource: PUZPR01MB5405.apcprd01.prod.exchangelabs.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Nov 2025 10:44:44.6542
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Nov 2025 10:44:52.5747
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 5571c7d4-286b-47f6-9dd5-0aa688773c8e
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: h3bM6U5VTxEd49u+G4QyOsswqBV6V/i3wSYgtCc8VzNMOdk9lyH/X+VKPRBr0C6sxehjK6FCf9mAKGzLfkQH9UEm31TZKLK9+/k7mB60vNY=
+X-MS-Exchange-CrossTenant-UserPrincipalName: 4SQsD0EwyhvwAHFOR6Nz7AffXsOVS5EaVOMtcxDzD5biaNqJcAoZz8uYmiEc8wFkRO2A9FijxlsUdQ6wBONi/L46YvzX8rzru4eKiVgWO0U=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: SEZPR01MB6080
 
-Add mxpcie8250_tx_chars() to transmit data via memory-mapped FIFO
-access, using the UART-specific Tx FIFO counter and buffer region.
+Add support for Moxa PCIe multiport serial boards to switch serial
+interfaces via the ioctl() command "TIOCSRS485" using the following
+flags in the "serial_rs485" struct:
 
-This replaces serial8250_tx_chars() to reduce per-byte I/O operations
-and improve transmit throughput on Moxa PCIe UART devices.
+    - RS232                  = (no flags set)
+    - RS422                  = SER_RS485_ENABLED | SER_RS485_MODE_RS422
+    - RS485_2W (half-duplex) = SER_RS485_ENABLED
+    - RS485_4W (full-duplex) = SER_RS485_ENABLED | SER_RS485_RX_DURING_TX
+
+This allows users to dynamically configure the serial mode without
+requiring additional hardware modifications.
 
 Signed-off-by: Crescent Hsieh <crescentcy.hsieh@moxa.com>
 ---
- drivers/tty/serial/8250/8250_mxpcie.c | 35 ++++++++++++++++++++++++++-
- 1 file changed, 34 insertions(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_mxpcie.c | 45 +++++++++++++++++++++++++--
+ 1 file changed, 43 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_mxpcie.c b/drivers/tty/serial/8250/8250_mxpcie.c
-index cf519960d5d1..90ce522fe40f 100644
+index 90ce522fe40f..5d1097c166e4 100644
 --- a/drivers/tty/serial/8250/8250_mxpcie.c
 +++ b/drivers/tty/serial/8250/8250_mxpcie.c
-@@ -73,8 +73,10 @@
- #define MOXA_PUART_FCL		0x12	/* Flow Control Low Trigger Level */
- #define MOXA_PUART_FCH		0x13	/* Flow Control High Trigger Level */
- #define MOXA_PUART_RX_FIFO_CNT	0x15	/* Rx FIFO Data Counter */
-+#define MOXA_PUART_TX_FIFO_CNT	0x16	/* Tx FIFO Data Counter */
+@@ -105,6 +105,10 @@ enum {
+ 	MOXA_SUPP_RS485 = BIT(2),
+ };
  
- #define MOXA_PUART_RX_FIFO_MEM	0x100	/* Memory Space to Rx FIFO Data Register */
-+#define MOXA_PUART_TX_FIFO_MEM	0x100	/* Memory Space to Tx FIFO Data Register */
- 
- #define MOXA_GPIO_DIRECTION	0x09
- #define MOXA_GPIO_OUTPUT	0x0A
-@@ -282,6 +284,37 @@ static void mxpcie8250_rx_chars(struct uart_8250_port *up)
- 	}
++static const struct serial_rs485 mxpcie8250_rs485_supported = {
++	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | SER_RS485_RX_DURING_TX | SER_RS485_MODE_RS422,
++};
++
+ static bool mxpcie8250_is_mini_pcie(unsigned short device)
+ {
+ 	if (device == PCI_DEVICE_ID_MOXA_CP102N ||
+@@ -166,6 +170,38 @@ static int mxpcie8250_set_interface(struct mxpcie8250 *priv,
+ 	return 0;
  }
  
-+static void mxpcie8250_tx_chars(struct uart_8250_port *up)
++/*
++ * Moxa PCIe multiport serial boards support switching serial interfaces
++ * via the ioctl() command "TIOCSRS485". Supported modes and corresponding
++ * flags in "serial_rs485":
++ *
++ *	RS232			= (no flags set)
++ *	RS422			= SER_RS485_ENABLED | SER_RS485_MODE_RS422
++ *	RS485_2W (half-duplex)	= SER_RS485_ENABLED
++ *	RS485_4W (full-duplex)	= SER_RS485_ENABLED | SER_RS485_RX_DURING_TX
++ */
++static int mxpcie8250_rs485_config(struct uart_port *port,
++				   struct ktermios *termios,
++				   struct serial_rs485 *rs485)
 +{
-+	struct uart_port *port = &up->port;
-+	struct tty_port *tport = &port->state->port;
-+	unsigned int count, i;
-+	unsigned char c;
++	struct pci_dev *pdev = to_pci_dev(port->dev);
++	struct mxpcie8250 *priv = pci_get_drvdata(pdev);
++	u8 mode = MOXA_UIR_RS232;
 +
-+	if (port->x_char) {
-+		uart_xchar_out(port, UART_TX);
-+		return;
++	if (rs485->flags & SER_RS485_ENABLED) {
++		if (rs485->flags & SER_RS485_MODE_RS422)
++			mode = MOXA_UIR_RS422;
++		else if (rs485->flags & SER_RS485_RX_DURING_TX)
++			mode = MOXA_UIR_RS485_4W;
++		else
++			mode = MOXA_UIR_RS485_2W;
++	} else if (!(priv->supp_rs & MOXA_SUPP_RS232)) {
++		return -ENODEV;
 +	}
-+	if (uart_tx_stopped(port) || kfifo_is_empty(&tport->xmit_fifo)) {
-+		port->ops->stop_tx(port);
-+		return;
-+	}
-+	count = kfifo_len(&tport->xmit_fifo);
-+	count = min(count, port->fifosize - serial_in(up, MOXA_PUART_TX_FIFO_CNT));
 +
-+	for (i = 0; i < count; ++i) {
-+		if (!uart_fifo_get(port, &c))
-+			break;
-+
-+		*(port->membase + MOXA_PUART_TX_FIFO_MEM + i) = c;
-+	}
-+	if (kfifo_len(&tport->xmit_fifo) < WAKEUP_CHARS)
-+		uart_write_wakeup(port);
-+
-+	if (kfifo_is_empty(&tport->xmit_fifo) && !(up->capabilities & UART_CAP_RPM))
-+		port->ops->stop_tx(port);
++	return mxpcie8250_set_interface(priv, port->port_id, mode);
 +}
 +
- static int mxpcie8250_handle_irq(struct uart_port *port)
- {
- 	struct uart_8250_port *up = up_to_u8250p(port);
-@@ -314,7 +347,7 @@ static int mxpcie8250_handle_irq(struct uart_port *port)
- 	serial8250_modem_status(up);
+ static void mxpcie8250_set_termios(struct uart_port *port,
+ 				   struct ktermios *new,
+ 				   const struct ktermios *old)
+@@ -392,9 +428,14 @@ static int mxpcie8250_setup(struct pci_dev *pdev,
+ 	int offset = idx * MOXA_PUART_OFFSET;
+ 	u8 init_mode = MOXA_UIR_RS232;
  
- 	if ((lsr & UART_LSR_THRE) && (up->ier & UART_IER_THRI))
--		serial8250_tx_chars(up);
-+		mxpcie8250_tx_chars(up);
+-	if (!(priv->supp_rs & MOXA_SUPP_RS232))
++	if (priv->supp_rs & MOXA_SUPP_RS485) {
++		up->port.rs485_config = mxpcie8250_rs485_config;
++		up->port.rs485_supported = mxpcie8250_rs485_supported;
++	}
++	if (!(priv->supp_rs & MOXA_SUPP_RS232)) {
+ 		init_mode = MOXA_UIR_RS422;
+-
++		up->port.rs485.flags = SER_RS485_ENABLED | SER_RS485_MODE_RS422;
++	}
+ 	mxpcie8250_set_interface(priv, idx, init_mode);
  
- 	uart_unlock_and_check_sysrq_irqrestore(port, flags);
- 
+ 	if (idx == 3 &&
 -- 
 2.45.2
 
