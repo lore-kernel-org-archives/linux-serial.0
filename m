@@ -1,74 +1,75 @@
-Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1639E2C0F9A
-	for <linux-serial@vger.kernel.org>; Sun, 30 Nov 2025 19:24:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E57872C0303
+	for <linux-serial@vger.kernel.org>; Sun, 30 Nov 2025 19:26:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764530670; cv=none; b=IF+FpA3rlx6LTq7j3PgK4a9yneIGPnSM0NDwa+4/imPGZ0dA447662onbRQzL9VNYN/Suu+VxfbMuxs4h2I/dCoEtQcYO5qbRPuEyBEhVUSRsu4IeC27Q/epCwfcgABb+mMY1kgHfebiocUzWmpVooTvmPJ6vXIZjXJEd+m4FZE=
+	t=1764530763; cv=none; b=p77UWS5OsSpw8SnnqYtl379GdsiX222xJSpgyOPZVmFvC4KZ42OjE2+20JvxdLA56cqY+LeAp6dUdTSW+9NYN/oKXL57zZyhDQdqo5WXST44ArSnEIFQRocFyiPxryFSdT5/wzjiIA6tREs7Mts8F/Qk9rog3yUS9N/y+XOVBAM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764530670; c=relaxed/simple;
-	bh=iEA8BfmPTEPrAXky1vVg5GGWr2J6dHFK1f5PPvtOLXk=;
+	s=arc-20240116; t=1764530763; c=relaxed/simple;
+	bh=c+zOimuitl/67UI+nDkFprrYZ8WRNq7PHwAWktqqd5Y=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=B3n1Sw/qF3jZb7h1PjDq7JSjfU5Qn4iJBt90tEG9e/z9AgcqHEQuQqZzDCXiCZOeEDY2nb/kQiKfu+C6UkRv6TgPedfql6BH0ZkxXTsKcIUjIqZiMK4UcJLmtGxNcTjPSKevFKTNeYtubmzAjk0iOE7EC2tuz6vCKvWHv8D9pDk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GamZlT7b; arc=none smtp.client-ip=209.85.218.44
+	 To:Cc:Content-Type; b=lbNVwcSlMkOFemuJk3rS2MqodIGxAcl3NHfG0JBonEoBm6nn8yKsZt51X2U7ljrKEXFz94cVU/Nj6H4IASr/uaPa/9E8q0SIJgBIQjEgaQralAwTe+c3wiRX+4JrcGkBDSINVfbrGo223N5v7IvE++WxOpzA28zb1fdnU5UaYDM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bJEYUYfd; arc=none smtp.client-ip=209.85.218.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GamZlT7b"
-Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-b713c7096f9so559615366b.3
-        for <linux-serial@vger.kernel.org>; Sun, 30 Nov 2025 11:24:28 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bJEYUYfd"
+Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-b728a43e410so596248566b.1
+        for <linux-serial@vger.kernel.org>; Sun, 30 Nov 2025 11:26:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1764530667; x=1765135467; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1764530760; x=1765135560; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=iEA8BfmPTEPrAXky1vVg5GGWr2J6dHFK1f5PPvtOLXk=;
-        b=GamZlT7b1D2qW+h5MyiBCKSfYBVvNWwxgs6lJg22nohySznJ24mH8LkwoQV5vhj0mt
-         5KytENWkZD4ttg3X8CVrpHPi6rXy+L+q+rzQkSUrQ4KsFAIOqVPJhVj3RdA+e5FrVaSC
-         T8iTvNfQvb5RS3jOrr/T7Sr1sx0Sj4ct7N+kapG6MyvkprXHLrWD6MWIAKw1htwG8w5K
-         cvRYMVx5FAB5x9ULho1C5rEvwLhhsY+QPI3AIrub2PWjQ3bfjAENQV7fZMDSnWnUZeL4
-         hhPPi+eKKL25vQ+v2yb+LUz+9MPMZ2rtMtGGao3S964VT+Ydcmd3pjTaex15D8M0QMfn
-         /r4g==
+        bh=M3d7dbfFKw+GEwHSmAT14cmDoNzH19gX5uvXVu5ZZfE=;
+        b=bJEYUYfdeaD5K2HqxqUapBrFHmhegoUBGvkkh4QGAVzS9v/eAkK7W7znNETr2Q4nbH
+         fskDg1mecGuYdI1tAAk1DGRDgBEPrvY9snBIh4jQSyJgrXdNiwZvSRHZ+F96p00RaLhu
+         BSWU2dYR7O6PW5U7Y9EikO5cXh6Pu9EqMYXu4r9KzA0zP1xwGrYPeqLt0w3pwW6YewGb
+         wtaNmzPG4XwSDINOnWKdYgODSs49C529EyXT5G8JdqEKjeZZ0m7TFFHK8QnIwHeqkl4s
+         kDGQ4kXX2vVW8W4reXaejB4yJejaMIwiGSIBlywtCoF+qDI0aUek1hJ9rDF1Rua0vkng
+         +TIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764530667; x=1765135467;
+        d=1e100.net; s=20230601; t=1764530760; x=1765135560;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=iEA8BfmPTEPrAXky1vVg5GGWr2J6dHFK1f5PPvtOLXk=;
-        b=h8PDOz01q6WZd2+NxLbf6HkNbkFYmpFPFakgQqGDbA7NKD+8p7ldZRHzycKadeFjis
-         PuXjaQ4ZSTB+afVW6ErCQ0AX2FqN8UaJ2aBQiae5lATysl7iIa9AqadlVSDUGPAN0Llj
-         tntBJS4NWMS7TeU3l0RpTKmLXQP9FXnrRSkqF5XxHe8gbJHtne1A3qlDCh9sEdqVGAaL
-         f4W4oe9WIHceDydV3wYa5Jy5iXKyQ9lNEMRFSLD6UCnaTUvmCTcLJ8QRkq92aQ3pesm/
-         vaOX99QfiEZQTvnXWiz7dk/q/e8QP9Wgc9d8sIf3wndL7KPNBNLm+PQqRo7qf6qhv35o
-         QuBA==
-X-Forwarded-Encrypted: i=1; AJvYcCXaAl0w3TYuuT5F85tcVnsuL4xxPIQ8sena2Nhxu0pb4NTPu1qospfT6Z+jGvPWR5OvBQ00xNqwl72p+P0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzG+ao7XG7r2shxwMlHE0wxRksyNE+lUWnhGNBLcs733E2k/Xvl
-	pNnviKDfRxGYbzZvnHsjxBeV3ICvc3LqQ2ToM3Hv7Txh5hBmRw3MOaLtQMxPglcluVwoT5ROmSO
-	rU6+yvYcFLrL2BSXfaD0YGnsJrvLCf8qsbKVV8w8=
-X-Gm-Gg: ASbGnctbTSCxBMWmWScUM3yk5HRBrJmPJWBFAVznzLU+y8e4TE7eorFWn+p5VInrZUR
-	ZsrUMsadqTs+Up1+3DKzhUmKhOBO84+6Heo14xr3GUve0NqSh3ZNSuOCzPiDQiprVYWj9AUdsgu
-	DnZF6wIvOOONYBn9cc6nRU5XYVwZypLQFz2IwMz/3e0KU0uyn+YiwQ/vT8S5DQUWJQj7zb//ILF
-	2OFZgRHnEncju8IKu5W8ShR6qYJb8nAx3xGAVusji9MZ+cfMPpX0P+ECOVbnTE1vHc6aH0zf9QJ
-	rIQphV9zs6eeOtChRxVNcAuNg0zL+jdx3drfsMI9+Dbofp1f6MC8aYo5KekhzpjWsYzDMc90WD8
-	G7/y3wTJM7jmiqOjwyQ==
-X-Google-Smtp-Source: AGHT+IFTeWuwwEH00tAdhZ4SWgcl5/L+ikjyAOftov3Z6jNJjdwiRH641ILBXr94igQhyMGeNGVo1IDCtTsLm1xZq8M=
-X-Received: by 2002:a17:907:7213:b0:b73:301c:b158 with SMTP id
- a640c23a62f3a-b7671549d14mr3995853766b.6.1764530667278; Sun, 30 Nov 2025
- 11:24:27 -0800 (PST)
+        bh=M3d7dbfFKw+GEwHSmAT14cmDoNzH19gX5uvXVu5ZZfE=;
+        b=ij7kS7fcjQmyUeNM1eq6aqt5Isp03kdVnBuwMie+uuNb2jUcsEOBUjNxCcMCjQ8iH5
+         C3V2AVp0xZntK1QHU+C1fUp1xrflAyF6yO5/3uzWpn7nptH47DKaPMgdCHamsUlTtPrK
+         toDrU9f8q6lpaEZqKHyyOi017kNAEz2ZjPs4cYYl5WnE9X7+gDwguDcOgcmNS6VpZRx1
+         9wT4qFg6LoDook99utGTJYqCg8yaqACRhNQOJcdLKqlmXNtfiuK7DO7+hQrQoy6UBqCp
+         6uaiR+hUn1isfIE4WzdkcDSHlbfQSL7NkPzChwe5lxjKlBlvcayARbLlPRYFwaJKTmQz
+         Md4A==
+X-Forwarded-Encrypted: i=1; AJvYcCUoM3crT8C4ds+egr9xSsTD4nMDRj18vg36jkP3SnZGxq8QRRO+qGjSqABYYn2RbPK918pPK1yJJfBKU9o=@vger.kernel.org
+X-Gm-Message-State: AOJu0YygonI8bg7ZsScTUShDear7/EZD/UedTSk7OOHR1y/VO488iZ1L
+	AZ4M7hKVgPEOHjmiAllQt1N6MSgLbgDd+dAJnNGN6XM3xuF52MSg30F1oHhESlD+AsYdw0V8ZIv
+	crkBNQC0tfUarOkKmLxpApZINxPKd0To=
+X-Gm-Gg: ASbGncuoEJCbAocQXNXlUs4Th+XbIO3pJifZP/tFFPjNyXGX3Wes7W+Gq37kMjoM9dt
+	PBXaLTXqBpHlLT0OnKuWVeauzFY7Tz5FOpRJnYOL2x3OjA50vorvAJCl7XRNG4sasp3vG1t1MRh
+	8aEXNoBcldFEs5XiTafyKs2m+Vuacy3qDsA/+PsJOR72aokrfZCk4qZ4QQDWOocfj8BPOicel5O
+	pc/q6bd36nsXA2opQGFuFZcOkGaH1Fok6RiaBUUGqKVKMbHMSMDlvfi1rXIERRnnzOK3VoSJjDC
+	iLx/gI+iyl8gatndD9pjASG9/9FWkmDVwyISNYxBrjfMRIh+zZ/nqOGUO32i6H2qnckKuwpnmTp
+	aw5GMJGY=
+X-Google-Smtp-Source: AGHT+IEAfnPpOdP3szsXsieq37h91KnUg7nXKyocxM6pCQLLCAn5ASF72wWS+ZHVZDBemdwDFoDVfw7QVmk/wTmSh/I=
+X-Received: by 2002:a17:907:7b85:b0:b76:c498:d40f with SMTP id
+ a640c23a62f3a-b76c498eb61mr2084268066b.4.1764530760194; Sun, 30 Nov 2025
+ 11:26:00 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20251130104222.63077-1-crescentcy.hsieh@moxa.com> <20251130104222.63077-11-crescentcy.hsieh@moxa.com>
-In-Reply-To: <20251130104222.63077-11-crescentcy.hsieh@moxa.com>
+References: <20251130104222.63077-1-crescentcy.hsieh@moxa.com> <20251130104222.63077-12-crescentcy.hsieh@moxa.com>
+In-Reply-To: <20251130104222.63077-12-crescentcy.hsieh@moxa.com>
 From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Sun, 30 Nov 2025 21:23:51 +0200
-X-Gm-Features: AWmQ_bkdn5SKV0_T6fvqH4G-pgw4EvL26PyOZ-i3PuNEM2pSR6UWP7N0-1FDw9w
-Message-ID: <CAHp75VdyA+fcoRBHO7_i0N3AgQ0Kja1cpNkoxttfzZvjv3qH8Q@mail.gmail.com>
-Subject: Re: [PATCH v1 10/31] serial: 8250: add MUEx50 UART configuration
+Date: Sun, 30 Nov 2025 21:25:24 +0200
+X-Gm-Features: AWmQ_bnA6w-wUbfVXbm36sarq_BJNhXOnBfHMBPL2wRoOBUC8sjwZidOj2skcuo
+Message-ID: <CAHp75VfbpnMWqRUZTw+UzxrnnfWsHn2dgqVpz2WDQo5PW-sgEQ@mail.gmail.com>
+Subject: Re: [PATCH v1 11/31] serial: 8250_mxpcie: enable enhanced mode and
+ custom FIFO trigger levels
 To: Crescent Hsieh <crescentcy.hsieh@moxa.com>
 Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
 	ilpo.jarvinen@linux.intel.com, linux-kernel@vger.kernel.org, 
@@ -79,26 +80,41 @@ Content-Transfer-Encoding: quoted-printable
 On Sun, Nov 30, 2025 at 12:44=E2=80=AFPM Crescent Hsieh
 <crescentcy.hsieh@moxa.com> wrote:
 >
-> The MUEx50 UART does not fully conform to PORT_16550A or other standard
-> UART configurations.
-
-Same Q, what are the differences?
-
-> This patch introduces a new UART configuration to accurately represent
-
-Imperative voice.
-
-> the MUEx50 hardware capabilities and applies it to Moxa PCIe serial
-> boards.
+> Add support for enabling enhanced mode and configuring custom FIFO
+> trigger levels on Moxa PCIe serial boards.
 >
-> Signed-off-by: Crescent Hsieh <crescentcy.hsieh@moxa.com>
+> Enhanced mode is activated via EFR[4] and SFR[5], which is required to
+> access special function registers used for advanced features. Once
+> enhanced mode is enabled, custom TX/RX FIFO trigger levels and flow
+> control thresholds are configured through specific registers.
 
->
-> s
+...
 
-Stray line.
+> +static int mxpcie8250_startup(struct uart_port *port)
+> +{
+> +       struct uart_8250_port *up =3D up_to_u8250p(port);
+> +       int i, ret;
 
-> ---
+Should "i" be signed?
+
+> +       ret =3D serial8250_do_startup(port);
+
+Same Q here: Why do we continue if we know it failed already?
+
+> +       for (i =3D 0; i < 5; ++i)
+> +               serial_out(up, UART_FCR, UART_FCR_CLEAR_RCVR | UART_FCR_C=
+LEAR_XMIT);
+> +
+> +       serial_out(up, MOXA_PUART_EFR, MOXA_PUART_EFR_ENHANCED);
+> +       serial_out(up, MOXA_PUART_SFR, MOXA_PUART_SFR_950);
+> +
+> +       serial_out(up, MOXA_PUART_TTL, 0);
+> +       serial_out(up, MOXA_PUART_RTL, 96);
+> +       serial_out(up, MOXA_PUART_FCL, 16);
+> +       serial_out(up, MOXA_PUART_FCH, 110);
+> +
+> +       return ret;
+> +}
 
 --=20
 With Best Regards,
