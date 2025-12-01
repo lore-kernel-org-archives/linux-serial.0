@@ -1,74 +1,75 @@
-Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
+Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE73126AC3
-	for <linux-serial@vger.kernel.org>; Mon,  1 Dec 2025 01:40:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3168881AA8
+	for <linux-serial@vger.kernel.org>; Mon,  1 Dec 2025 01:44:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764553242; cv=none; b=I0IC5qlOBeHa72ZGqC5p5JtR07Co66Yf6KxWTEpqLZAQA0rgffDtbjYj7MKk8iQXUe/Iw23lmeX1fkC4fKjmPJ7rK7Bh4kiagNVJynkPdL+Co/0cb7MDrlOt4ZDzxCKdrB8c2nvGnZUgOJfO67cQ7wtSMNoyTk9kXAWx/079OFU=
+	t=1764553450; cv=none; b=GG3Yamz+wolMY/bIV7sXqxhWX8PKoYu/1iRIg5lin8bTbfxKi7Uv2Op+/AdAR7aaAV2xTOK/WUm1x+HQHf+dIk5E/W5IawS2zjM1KPHDeemYaB+u+88mJfQ4mXvwSNNwrLkkC61aJ8Loe1FnvOmdEA4HAClqEAooKFFCZSALHRQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764553242; c=relaxed/simple;
-	bh=5OkSm7FvrabtJy0gPysxYioIQTxWgkbYPVY4OzUXgNM=;
+	s=arc-20240116; t=1764553450; c=relaxed/simple;
+	bh=13bxe1qiLoK5kHa7Uj/jX29Ax3ynKL+ENMuAuuINPNg=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=a/YWMTXLMZ0a/X5q9qCSq5jZIAByrVmbfajCOlXruW6f3KmW72aLdclWQN1/lycTes7r/IIhYLmBIW2ec7l0vrmFu5dVVqOUL8nP8a8xKxCnByJlWbPIcIp5R1cl2+dkESruXWiI293TB11xyL04XOPHzHDWp1nCPaLrFtKGlm4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Un7Ee4ad; arc=none smtp.client-ip=209.85.208.45
+	 To:Cc:Content-Type; b=lj5tLws4lrSd7d6P9KvdUmVTeY6j8MUeaz1sw5fJ14ifeuMiG5GgterL4zViTLAM5LsSvSPsXa7UUzmXCuCmyXlvWdoYgGeQtPnZCf9GqQRa+VfS1CPKpsRLnsbM8hOQ+4jfMMOm99umXDIBNPYHMLDG5tIPV2M2Q6neXxRjKeQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CjYX6Zfg; arc=none smtp.client-ip=209.85.218.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Un7Ee4ad"
-Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-64198771a9bso7086231a12.2
-        for <linux-serial@vger.kernel.org>; Sun, 30 Nov 2025 17:40:40 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CjYX6Zfg"
+Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-b735ce67d1dso605308266b.3
+        for <linux-serial@vger.kernel.org>; Sun, 30 Nov 2025 17:44:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1764553239; x=1765158039; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1764553447; x=1765158247; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=1rAgLNYZiqU1X8w6VqWDQHjCVNL6UXHV/oi+vqyEtxg=;
-        b=Un7Ee4adKtxjoAg3glJeoU6BC2UfK4OzoIW97zBmT0MqE3OmBfXQ6BaqQ4aqBfwS0Q
-         1ETi/kymN4Py+ACQELcTMfhasOg32UuUcc+ISbXWTQ2+RQMJTPx+EvS8hKGtEvcfi/cN
-         ANp5HrlhZFXsiuYKdTjPr6AxCZamHq2RDJZXoW1lhiVQMlwzv69yMvHFnNJXLAHRrIaU
-         QUSxL17E12gCYVj4R3MX9iIFssjLkKhAu2+SplhmYXFM8vxkfHuRhCWIwv6TBn0iCm4k
-         chmSCbgf6bOK5ZXU9UANYLqQvFFxMxlioC76E2BeRGV0WUIN4ud5cz1qijm1XibXk4Ar
-         arkA==
+        bh=vyCeqeq/yDk+Xy95ao9oYY6IMzbOQuaxl5BkdoDz1MQ=;
+        b=CjYX6ZfgvpJddH+B5oUuEIC1dDV+nC4tLew4PG648LPwPhdW/Mh4/lndMfGdrcuQPe
+         79nWx9/m7TbusfdtWapTKLToDDygfc6rSz1vAxpadfB9oHQ9QTJzr6fLR70/uYKDcKb9
+         snIFUo0IHS0yNtYWiznALTKA04hYTWNQq+wdoV1+Rp179oX/0p/XRHGRrCMzUc2OOIpx
+         POD7geKx3qUFUqvvtUnuIxeqS7y+Zque1XjO2+TkWAZz/I3+JKhNs09U6LnCML0nyQan
+         9pcIHYy6QtudcH7NNI9IPESGMNFKrwBJWFFAzK6AbMpBvZI3uc77DwTcXbiz1iygRDbX
+         XCFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764553239; x=1765158039;
+        d=1e100.net; s=20230601; t=1764553447; x=1765158247;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=1rAgLNYZiqU1X8w6VqWDQHjCVNL6UXHV/oi+vqyEtxg=;
-        b=ek8NbzWOjJrbY9Fvnyap9Ug045+yp9/LfNFUeLzZagNptnAehNCl3ouGUh2nXLCFzw
-         c0BKc5n1Rg+XXzF5E5yHKf5vdflnhbnEDNowPNUBiiogDbGxWrJd2UbrE9PBwBXVIEBi
-         CKS61E7Jm4vsOLAJwOIiM3giVd4WQpoHTY0l/ja+J1eXvtr74v7LWsOaITt3390F1CWl
-         1plkKyWZBVUR7Eov1v9NY6xTDdYsqIWlWiQEarYAkp7l3p+1r3FqI8bhFoTSGWwyMd6p
-         U6ip8UFdsxVwscpyJSXelP0I3MHhaTFVBy+raYcZEYdvw5xUExXUxjmkizVvnuolcVxH
-         LPBg==
-X-Forwarded-Encrypted: i=1; AJvYcCUiKtD1xxDPc1W69/F/2UJ8jBueEuy+iuw48RTwu6UUlklz2grvOhfftu12ckRbcny2+HP8M3S8ql4huP0=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywe0EyLzCWqfNDorHxdJ/z6+iU0Ol6aDXuGNLOG4L8GN8NDea/Y
-	uZ2ap1l89DTtzetTfu/zUE7n5NebQGGRxbgDr7xg6Z+ciQvkUXobfdU4BbybE8ICMnD7TXXAeNv
-	1QMffqvhLynOliTq5Z0E4x1YIOq8a2AM=
-X-Gm-Gg: ASbGncu9LAVGSKGfw6tYmXg6IUBBlIrffvQHHLjWCADLXNWbvXEUi4LSHv0KDmiGpsk
-	AxFSWRShlvrJVw2c36LWp2Lf68q3hH1cciUv6nkPhePZPr69CVAdWqvUbLR/psFnL7gA/Y4/oCH
-	KcXLLmJFIJxnNKG/rGUwQH0r2+bwr8YbmyykGoe5F8YmEQjmDIRieZI/X4seMfWGdJTejSO/7qa
-	ml8MbBj7LGYs/6dXrvpjWUH8FJWFaTCc7l0OeRRSjDX9w9ysryG9e5TvKJ/6UF0DE0qhClD6i3u
-	FdwrsCOHB+cPds4npSsvDnqj+T6UW1eKgI2KD4F8rl5mGgUeyVFsvJb0DuQDdO6/xPWA3dojK7I
-	tL5tfYw==
-X-Google-Smtp-Source: AGHT+IGaPCcubI6rIg30FDEMfpG8+BxTSxLJtNKatKdPwcG+2xw+C6PXPm8iCEot+99wl9EkBHIpgnEp+V7x93xh6/k=
-X-Received: by 2002:a17:907:1c28:b0:b73:3ced:2f59 with SMTP id
- a640c23a62f3a-b76715dcc1bmr4214399466b.27.1764553238853; Sun, 30 Nov 2025
- 17:40:38 -0800 (PST)
+        bh=vyCeqeq/yDk+Xy95ao9oYY6IMzbOQuaxl5BkdoDz1MQ=;
+        b=q00Duxo3yAcgU9cAPi/p9HsDrN6Cyzt3cOawXPZUY0E9GTmm7bIR0Gu3zkDpTs2GSe
+         ndfEmHuPB1N9gkl+tIX/qQ+J53hOAXaxsfihwOV3zVrH42bYekn+gPWNP3LQLi/BrdPL
+         rd5yyF4tgpegwii2WQCGqMkVUhs/ScRCEx5JKnuiPkZtyB0s0lEGs4s38Mwsx74VX4OW
+         IRWtUxcGJO+1koWCMaVIFHwSn6cOGNpQ8s1cZzFHzKfjSJgkdO3WHPgADlatx5j2QekZ
+         P52jQz3UCiZGoUI6FjmJJT3OL6dYMOJCTVmF0i74Dmyq33lt0Vq2V8vSWidGidfDS8Dj
+         o+RA==
+X-Forwarded-Encrypted: i=1; AJvYcCWm6aCh2jT29lAQ/UC+UCkKLD2PLxi0NIckQabKiXvsPzKgXaURKlq7f5fOEUjrX1xMzJIZcOtTl9J5yiY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwHaukHnHvwJquTRkZlKznLFbp5cNF3oNlpCUUAOwe87Vzl7QkL
+	XmS3klNq2/VtCG6CT3vKE53oSPgIwRXU2wyhdJffdlLegMsZKore38xkG552VxyfX9rKCt+chLL
+	s/O6ZPt3q6uqpg98WA49yLrSV2H1v3Ww=
+X-Gm-Gg: ASbGncukeK/tNK8PsDldl9qXrsxh+P8vTALviYwKmzUqeCB9e4eF5la51ToCofoWvoL
+	ZSLylh52bG/vm0fs80bNVFaqlJcUfoPlVglG6sOdsdv0+T54KS/xzoe3cD4F7N/2OEPk/2qmIqo
+	LSpIVJCBRzrCYxrO7wywYDT3fGOpW/poVapq8Roq0ON7JRA1wGHOB20VsW/BQQ0ypqvXQQzEqai
+	3hf5uBq6KjokNl8ovvc4bu5FRmi8WJ52lpx7niTrzNqo0FqCJmBbpXS2V1Ua8KbWmhTNYD/JUGQ
+	DIhBPZzvd5eu3LAMPZdp3vPTME5v4kk7OxtqjSyawZGSpLR4I60iAtKFW12xjYt09eNFjzATiWp
+	DnvdhVw==
+X-Google-Smtp-Source: AGHT+IEVisNC1M/D0Ps//eZDMYYAbMq+UMKJES6mxIkEqX4Lo/Kqz1+77hMgF9hmYHNMd0bRG1UbvjY2EgqQq/9psaw=
+X-Received: by 2002:a17:907:7f8a:b0:b76:f5d0:5df4 with SMTP id
+ a640c23a62f3a-b76f5d06ecamr1796837066b.31.1764553447368; Sun, 30 Nov 2025
+ 17:44:07 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20251130104222.63077-1-crescentcy.hsieh@moxa.com> <20251130104222.63077-15-crescentcy.hsieh@moxa.com>
-In-Reply-To: <20251130104222.63077-15-crescentcy.hsieh@moxa.com>
+References: <20251130104222.63077-1-crescentcy.hsieh@moxa.com> <20251130104222.63077-16-crescentcy.hsieh@moxa.com>
+In-Reply-To: <20251130104222.63077-16-crescentcy.hsieh@moxa.com>
 From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Mon, 1 Dec 2025 03:40:02 +0200
-X-Gm-Features: AWmQ_blP9WS0pwpu_TnxB3AZsVmL7HcqwBuCvD1AzgAUFJuz0bcHTP1462fPegY
-Message-ID: <CAHp75Ve7XuqvmCK0EpKqFptLNTVH5x0=inwkO6BNVx9hsaHYYw@mail.gmail.com>
-Subject: Re: [PATCH v1 14/31] serial: 8250_mxpcie: add custom handle_irq()
+Date: Mon, 1 Dec 2025 03:43:31 +0200
+X-Gm-Features: AWmQ_blvDIzm4J_uuJrG_JE6btohfQXzDodtbkQxVnbuTX-fv3NY8sNkqXw008Y
+Message-ID: <CAHp75VdGxSpfiga71UsQip5SGj06v+hxbxayrWYd9eG5QLfSug@mail.gmail.com>
+Subject: Re: [PATCH v1 15/31] serial: 8250_mxpcie: optimize Rx using
+ memory-mapped FIFO access
 To: Crescent Hsieh <crescentcy.hsieh@moxa.com>
 Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
 	ilpo.jarvinen@linux.intel.com, linux-kernel@vger.kernel.org, 
@@ -79,61 +80,67 @@ Content-Transfer-Encoding: quoted-printable
 On Sun, Nov 30, 2025 at 12:44=E2=80=AFPM Crescent Hsieh
 <crescentcy.hsieh@moxa.com> wrote:
 >
-> Add a custom handle_irq() for 8250_mxpcie based on serial8250_handle_irq(=
-),
-> removing PM wakeup and DMA handling that are not needed.
+> Add mxpcie8250_rx_chars() to retrieve data from the Rx FIFO via
+> memory-mapped FIFO access, using the UART-specific FIFO byte counter
+> and FIFO memory region.
 >
-> This prepares for future adjustments to RX and TX behavior specific to
-> Moxa MUEx50 UART.
+> This avoids per-byte I/O reads through serial_in(), improving receive
+> throughput on Moxa PCIe UART devices. For break and error conditions,
+> the handler falls back to serial8250_rx_chars() to retain standard
+> error handling logic.
 
 ...
 
-> +static int mxpcie8250_handle_irq(struct uart_port *port)
+> +static void mxpcie8250_rx_chars(struct uart_8250_port *up)
 > +{
-> +       struct uart_8250_port *up =3D up_to_u8250p(port);
-> +       bool skip_rx =3D false;
-> +       unsigned long flags;
-> +       u16 lsr;
-> +       u8 iir;
+> +       struct uart_port *port =3D &up->port;
+> +       struct tty_port *tport =3D &port->state->port;
+> +       int recv_room, gdl, i;
+> +       u8 buf[MOXA_PUART_FIFO_SIZE];
 > +
-> +       iir =3D serial_in(up, UART_IIR);
+> +       recv_room =3D tty_buffer_request_room(tport, port->fifosize);
+
+> +
+
+Unneeded blank line
+
+> +       if (recv_room) {
+
+  if (!recv_room)
+    return;
+
+> +               gdl =3D serial_in(up, MOXA_PUART_RX_FIFO_CNT);
 
 > +
 
 Unneeded blank line.
 
-> +       if (iir & UART_IIR_NO_INT)
-> +               return 0;
-> +
-> +       uart_port_lock_irqsave(port, &flags);
-> +
-> +       lsr =3D serial_lsr_in(up);
+> +               if (gdl > recv_room)
+> +                       gdl =3D recv_room;
 
+> +               for (i =3D 0; i < gdl; ++i)
+> +                       buf[i] =3D *(port->membase + MOXA_PUART_RX_FIFO_M=
+EM + i);
 > +
-
-Ditto.
-
-> +       if (!(lsr & (UART_LSR_FIFOE | UART_LSR_BRK_ERROR_BITS)) &&
-> +           (port->status & (UPSTAT_AUTOCTS | UPSTAT_AUTORTS)) &&
-> +           !(port->read_status_mask & UART_LSR_DR))
-> +               skip_rx =3D true;
-> +
-> +       if (lsr & (UART_LSR_DR | UART_LSR_BI) && !skip_rx)
-> +               lsr =3D serial8250_rx_chars(up, lsr);
-
-Again, perhaps it's better to split the above to a few if-return
-conditionals in a local helper.
-
-> +       serial8250_modem_status(up);
-> +
-> +       if ((lsr & UART_LSR_THRE) && (up->ier & UART_IER_THRI))
-> +               serial8250_tx_chars(up);
-> +
-> +       uart_unlock_and_check_sysrq_irqrestore(port, flags);
-> +
-> +       return 1;
+> +               port->icount.rx +=3D gdl;
+> +               tty_insert_flip_string(tport, buf, gdl);
+> +               tty_flip_buffer_push(tport);
+> +       }
 > +}
 
+...
+
+> -       if (lsr & (UART_LSR_DR | UART_LSR_BI) && !skip_rx)
+> -               lsr =3D serial8250_rx_chars(up, lsr);
+> +       if (lsr & (UART_LSR_DR | UART_LSR_BI) && !skip_rx) {
+> +               if (lsr & UART_LSR_BRK_ERROR_BITS)
+> +                       lsr =3D serial8250_rx_chars(up, lsr);
+> +               else
+> +                       mxpcie8250_rx_chars(up);
+> +       }
+
+And again, please try not to modify the code you just added in the
+previous changes.
 
 --=20
 With Best Regards,
