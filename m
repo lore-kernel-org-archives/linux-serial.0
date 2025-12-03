@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DDB328DB54;
-	Wed,  3 Dec 2025 20:21:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B8F728DB54;
+	Wed,  3 Dec 2025 20:23:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764793296; cv=none; b=GB06goSxWXswflvuF3kyJSJCwdtygyCqNhOJVfM2zvlr5J2T7JtC6KvTPHyY+JXskzV2/HX+beNihVz3yPIYka4jRuAR8R4Bgu8QeD4UNnOMSlb0D/5g75b/IO5DMMHpVxrXFDNuMJBBpxlh8GLunsAFt7JabXv5+Z+pKWn/rJQ=
+	t=1764793391; cv=none; b=L8ccd3iwCvQirAHfuHXiL8ReTFEfPYA1jRasRKmAOOL1ld5scX6rW46cY3hgiM22iCe5lv6dQ13Y1+T8dteWiJd75R/h2tioal2THZorovXCOV6uLlXnM4Q4/cs6/mAnVpE11HMc37vqyhYPEOK2Y+6m8Pkg2vZkZBz66fshMzE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764793296; c=relaxed/simple;
-	bh=O9CMw9zfUdZXbfDejAv/vHh09KuF634TFeTYh1UC4Mc=;
+	s=arc-20240116; t=1764793391; c=relaxed/simple;
+	bh=XgIWvn45Ol59YX7A4N6l+xNIXT/v+a5H6neu07duj+o=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=MATBJVxGrmlwIjGaU/3P3BUxZ/AZ/9QnTqk9hmyiCPxHJ1iNgKNMtsL9sFsFn5XcKkHjsK/NfA1VwR2Evb/2if8ea9u/4S8uf6h3L0pZptr4mt+AtasepDyXjZAFX/Y2JvnzITzxTE4jw/P5TmZAurZavEDGFXIMtAK/jm0ySJQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JjucZfJe; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=HKQmkgiYr4+kb0CnGzoxq3gr/mdMuwsnkyhN6C3I5qFZmfZFAHHSfTkZo+CmYnAMk6QGy7TDI5bMkVGCVM48DmGnz/2R+2RpWn3Q4FUWw4KENwKvja+1N4ILSMgMtliL9ov6BhdAIBsV4s4I6kHyV+5+RedsXNes8lzPkzKR0hE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=t1Gdf+iX; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JjucZfJe"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69DA7C4CEF5;
-	Wed,  3 Dec 2025 20:21:31 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="t1Gdf+iX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8565C4CEF5;
+	Wed,  3 Dec 2025 20:23:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1764793296;
-	bh=O9CMw9zfUdZXbfDejAv/vHh09KuF634TFeTYh1UC4Mc=;
+	s=k20201202; t=1764793391;
+	bh=XgIWvn45Ol59YX7A4N6l+xNIXT/v+a5H6neu07duj+o=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=JjucZfJeY0OH9UWppFBT8tZoDIgM5X6kkGFdfa0GMDJTj8LJwdl37QIq0zTVkaVJ1
-	 saHKMTF8FxXZ60ffDNLavD+5nBvv1LuxG+wVC3wGxO9SQdkzLILuwgZGYObtleh6VQ
-	 41TCH055K1gO5rJ4SSunCW0L469BI1Ro0GouxOm40tkEWIsE+1oLNnEoX9XASPNME5
-	 p/0fLQoHcob4lBYr3KDhzNemZ5swnRImrLJACMctIRyjHXLIb53ZNTS5I3hDSUpSK5
-	 HA9eRkPvZE5uXcAbjUHMAK+yFfc6r+gw7zNY1jghkkUHb+8UbulhL45Joete5Z4k8b
-	 X+W8WThe5WggQ==
-Message-ID: <4dbab3a5-64bf-4c34-ad4c-94620a041993@kernel.org>
-Date: Wed, 3 Dec 2025 21:21:29 +0100
+	b=t1Gdf+iXwLN9LMuloorNGQYaolXRWMFPzt0jbqaLTUFnEmtunSgfVXBeC/a5xvR3i
+	 vxgHZqtI4xfMya49R/5myR08ZXyJLyrGJ5em7E7Fvzy6boEtidU2v243mzuClt3/BQ
+	 hUb1R8qs+P66mcLkEL/XJ8OryYjByuZHzS/yhq0rEajkTQspmOvY6yf70SneQKoPn6
+	 2hkBFwNRk0QbmVRv6WFcYdU9cpr8hSu3AIpqqNVgQu14/xokeLCn+0ft9iy90NTSVI
+	 xg8ltZTbniR7/H2KGuSuhgXTHbL86nSBQ932jP8Ne14bt/byttuHxZL7pwmn4DsXOX
+	 K3ieeeqHgUnCg==
+Message-ID: <1d516e97-5bfd-4bba-8496-65b00c26f76a@kernel.org>
+Date: Wed, 3 Dec 2025 21:23:06 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,8 +35,8 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/4] dt-bindings: serial: mediatek,uart: Add compatible
- for MT8189 SoC
+Subject: Re: [PATCH 2/4] dt-bindings: arm: mediatek: add compatibles for
+ Mediatek Genio 520/720-EVK boards
 To: Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
@@ -48,7 +48,7 @@ Cc: kernel@collabora.com, linux-kernel@vger.kernel.org,
  linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org
 References: <20251203-add-mediatek-genio-520-720-evk-v1-0-df794b2a30ae@collabora.com>
- <20251203-add-mediatek-genio-520-720-evk-v1-1-df794b2a30ae@collabora.com>
+ <20251203-add-mediatek-genio-520-720-evk-v1-2-df794b2a30ae@collabora.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -94,20 +94,19 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  jWt87ecuHlpL3uuQ0ZZNWqHgZoQLXoqC2ZV5KrtKWb/jyiFX/sxSrodALf0zf+tfHv0FZWT2
  zHjUqd0t4njD/UOsuIMOQn4Ig0SdivYPfZukb5cdasKJukG1NOpbW7yRNivaCnfZz6dTawXw
  XRIV/KDsHQiyVxKvN73bThKhONkcX2LWuD928tAR6XMM2G5ovxLe09vuOzzfTWQDsm++9UKF a/A=
-In-Reply-To: <20251203-add-mediatek-genio-520-720-evk-v1-1-df794b2a30ae@collabora.com>
+In-Reply-To: <20251203-add-mediatek-genio-520-720-evk-v1-2-df794b2a30ae@collabora.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 03/12/2025 14:59, Louis-Alexis Eyraud wrote:
-> Add a compatible string for the MT8189 SoC.
-> The UART IPs in this chip are fully compatible with the one found in
-> MT6577 SoC.
-> 
-> Signed-off-by: Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>
-> ---
->  Documentation/devicetree/bindings/serial/mediatek,uart.yaml | 1 +
->  1 file changed, 1 insertion(+)
+> Add compatible strings for the Mediatek Genio 520-EVK (based on
+> MT8371 SoC) and Mediatek Genio 720-EVK (based on MT8391 SoC) boards.
+> MT8391 and MT8371 SoC are less powerful variants of MT8189 SoC,
+> with identical hardware register maps.
 
+BTW, subject length is precious, so you can skip redundant parts like
+"compatibles for" and just have it "add Mediatek foobar boards". That's
+also expressed in submitting patches in DT. No need to resend for this.
 
 Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 
