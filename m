@@ -1,61 +1,61 @@
-Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
+Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC8A329C326
-	for <linux-serial@vger.kernel.org>; Wed,  3 Dec 2025 09:25:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B5182DE6F7
+	for <linux-serial@vger.kernel.org>; Wed,  3 Dec 2025 09:28:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764753939; cv=none; b=ka1my0GIEnu+8tX1XT1z7V3HJ46GbOgYd9CxdqP3SNN6/Y2zpziDtFCNOtixX9AB24X8jLRbS+BYiMjnkCqbunRyEF6xZjps/R45fP6zYHInnIE0COYsbWqEZ4g1Z4J+YCLcyfMFpTaejaHyXvVnGi/os9nBU2JI2pXpg2V99Jo=
+	t=1764754135; cv=none; b=qk5H5ORtMaMHytMqou2FwTzE4DOXM0HxlW+9UsN1FwiRXSTnFHybk0a/+mx9O/TgFftDFwvqaBuGRP5iwhiHjPJpohUNhaaZjd3C4TZWyttaBTyo8CSAmO3xm8vtyvs5yK6dKf2O6AFDtsYCwtp0lZ/UQqHyDLmxTMHOxHRcMPw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764753939; c=relaxed/simple;
-	bh=lEAJh8lhiqF5O/Jom8wK85lGiRLFwThRyPMLIqVR7gg=;
+	s=arc-20240116; t=1764754135; c=relaxed/simple;
+	bh=BDToOCIH5xTOtXV+nLCDcmNfqHeR0yw3F3MI96OBPF8=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=cWemQ1aKo3hhYRKT8nyG2Swbv2Wiii1/GVkWywFFkIERl3t3i0uv2WYwIHnwUsfKO19WDuEdu4EJraM9r1Sv/u6vHj8ccF16I3IKbvjRpX6cuyWJntx39mAfPxe1iy9mEjtVD/AUoI3yOLxfdKm+Jbc5ADh1+1KSQJxl5pjEq5U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Aog2EC1t; arc=none smtp.client-ip=209.85.218.53
+	 To:Cc:Content-Type; b=T5RQr/qDhdJl2nhTQqP/BkkXj5wEuXjw1BZWQFpzl+tXSKSRYjGCvw3w4B2itzVBg0ygzEjvv+OTu0VOqhZw5uz4YVaE49DLATfnIJ8XgB43NTXYyXQ/f6IUtIziJH68QZf/4NrfFIotThPK3Bgis2825gAL45ZYjckrEV+/rh0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HMzTtAZS; arc=none smtp.client-ip=209.85.218.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Aog2EC1t"
-Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-b7373fba6d1so1022371266b.3
-        for <linux-serial@vger.kernel.org>; Wed, 03 Dec 2025 01:25:37 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HMzTtAZS"
+Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-b7373fba6d1so1022925966b.3
+        for <linux-serial@vger.kernel.org>; Wed, 03 Dec 2025 01:28:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1764753936; x=1765358736; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1764754131; x=1765358931; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=wPgVES09L8PDeps2AFFaB1RPb9Blq2hbkPZaSRFfdkY=;
-        b=Aog2EC1t0snJvtOPvqYZgFgNSSFUWSgTbzQljx8HoEy16Xg8Th6ruBxcQjLZD6bFS5
-         gLn+hH8cnBB6h0daosPVmsei2fRbsZ8I5p3qY5vf1zPPLxhZOhOID+lgpR3OhpMuyc4B
-         HHvDwxLmnYh4V5/d7CS5qhCoxUxWcBk5vsfX/LJgmNMDLh1QXcnzuKT9JY0OsasxvDq1
-         V804byh/HVkMe8PYFgol30YynisDvYXIe921U/fj7MYk0Zb3xOUkjUR9xjHWfq7pGMOc
-         IN7+/cytcTZDpOWguNbBZl5u1HSpoZqapyvrsZMRmUrE1e4vKDbRMjP23gXe3yw5qtvh
-         fHew==
+        bh=9YuW6FaHX+QSnb/Uo0MBVSpTHYhpNNL64PfuqITsrWE=;
+        b=HMzTtAZSBDOV3ll8dXgtQJ8QXFNjNHJIS4cU0A15hH9FVLvjP2nT6z4tHzkejOo6/A
+         z5eD+Dslz8O8nP+1Q0NQGA3Yw8R9G9OiUbad5281QyjVnMk1dn/GIKZ1TgN4McMKppKL
+         gqCqloBN/ux6DgXzOZKn8P0QXwZngC3/JTKLBIk3QdRZ9z3G6mvts/gKmBJEGV5Dd8SR
+         5wfx0P3Q3jiaXhmcmHLdOY6qml723Y5/kYAnqq3CGXh/h2R7cMhmhBdziZBbQDOvafKm
+         RIlqXA7eTLZVONumNdVg+OVd/iS4uW9GIH+Hg/qXX0arIs5Qe4wnwYqdr/vJhPkkYlwl
+         JZtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764753936; x=1765358736;
+        d=1e100.net; s=20230601; t=1764754131; x=1765358931;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=wPgVES09L8PDeps2AFFaB1RPb9Blq2hbkPZaSRFfdkY=;
-        b=mk8/y09Xau1KK2XXyspJN3vl7URGS/sX8Y/JbY3Etr6palZWBibKpYdwVysZrPaw9o
-         LHGTEtO9UymsDN8VL8ELrYHUplTA60FxzL2nYCrQdgeAHaMRjFvImwfgHjS6CV/9/A9w
-         l53p8ZXZICtCubkl6tIwfffp4yTkFjnZaLQyYLaL0fvIarFFiY23C3T4c3o96r84hhCK
-         qd4fPzJz/42XnCoBTKS1ALnflufzlS04iqAV1b1C4eaFW9Mrp0EX9eA2YYgByqRlZnRE
-         DIDft2rzm6MfocWFouIUjYhw0m+tp15jYJlaQl2rXjSIBbPf11oPdTxfmvnM9ynK1TJ8
-         NnGQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWysgd116sZgDUe65PyzvE/b8BxJLOjTtBj0sCKlxEN53pNkOP+W1GHMt04uZn7XgpEsOVVX5H6yjY+6pQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzmWN3JL0wdAsjbhaOM3keC0kAcWFk53m77VTfFYOURyq0m7Rch
-	lhfXNvtWPHQyxqF/UmKmTQiDJ/xrG1MEhfLEEsW9bK0R9nNkQgZ4tXrMi7ZI6AUeHthrif1e1UU
-	BUwU6zbwA+OECXOb6orVI02ArQAutClM=
-X-Gm-Gg: ASbGncuv/qHzn+zzk7xu9iXyWmXP7KlujDxiYmHnJBLXToMW5/JuMqDYF56PehU+QE+
-	dkFiPpZiHnoabAmo8OXCkDBM1xsYDC9crk6qkkFQcafiEk7sijYCfSrKuxGiH053rAbPyTW4HXE
-	H8jcR3cFHOEBd+fKw7NZOIu9Bj/dzVBkA/+z51HM/+JgvR3sDlpPqbUHiLIbeEPC7aO53cYRxNu
-	oxZ61ovBH1VoAHfbOI0sr3Uk4wSDrf4nNCeN/e6btwCWCGK8qIm8Pjx8IzpXAXnpq8dJjjzBeSm
-	l9tPDVTiO4CidZgQ+m/+N6OGhdSUQJrNAoYc/iW13qM3CtQqM66hpgamxe+SUiG+6oVxde+5nLi
-	FYQSBKw==
-X-Google-Smtp-Source: AGHT+IGl9T+N25XB741brTUvlq7a0d2wn5371VAmYuaNlDsHysjmrvrsQeC9Wcta66ZomPSuEdJucwdn4Nm31mdVcTE=
-X-Received: by 2002:a17:907:7e9e:b0:b53:e871:f0ea with SMTP id
- a640c23a62f3a-b79dc782269mr129945466b.56.1764753935700; Wed, 03 Dec 2025
- 01:25:35 -0800 (PST)
+        bh=9YuW6FaHX+QSnb/Uo0MBVSpTHYhpNNL64PfuqITsrWE=;
+        b=S0bBME3GhOzcuyvoIfAjUktiyRCOA29ZOpdiuI7Clq+nBAO2qD0x8oxhJywBSUyqwq
+         JA9KxbtdTudlzdtwLLG7y9zzNx3KNjYUIhXyPQ+tf7ZzkulutxqeqXZ4lf+X3Ep8DUyS
+         GNSREKxj2Vj3TQ7RKfyzwt7mA10ua1fe5Y9qQG8hOTObvXRXttek3WpFf4n00ZAQ/qUd
+         AawKpuM5Vb2HA0iT3EBruGR6oNXk1vPClVlO8uUPl8L++pm6IJn6TVfcPRP4MipqSHZJ
+         K37pMOjkkKsMpkNqmF5B5LFWwG0iNVgFejmJOCg6vWxSwkaXC2KDVnL9yqf+/lnZkSan
+         jgEg==
+X-Forwarded-Encrypted: i=1; AJvYcCXTMWep1hq2UNX3Tcg7jCqtOkJ1aerRmMXm2oodkT1VaaLg9CtRbHcWBli4O1oH04hBdmxDBah8uzz+m14=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyH121f5k58T7lpUOhMZUxbEIBQ8JR0hK0bvtAOXVPrbWkCBvpb
+	VJeZJyEMUyR2TgXBfjPd+lPq3dqgIECL1S84/dru8aXnQUASLJK405WJ/KC8RCGvNsM1BoxyaOJ
+	AHBydn+mTLnPmDnry4vrzXUnAGDHE9z8=
+X-Gm-Gg: ASbGncuKeH5BnU/XXw4b5oCbmGNn5Bp8YJaJf1NCxBR7skHjGVbBYudaWIhLsLzLwcJ
+	FHmHfdG3kJ4fjZZ3TVz5P5o9ECsIw4NaFtK53Lrm9a/pnoQF6ljvFJ7M5y3Pu9dTE9spPDRjy9P
+	UGx+ZuJ4KkKUAKf0HeM6TEykypLBGCKhlBkQvKupHUzbfB/Kgk0FzafW5y/jwWKFm7Rl1L2s8dp
+	TELljDi+64TqtfmWLrpwIP4OR56fJmajAMhKYZH9jSvS2wKun3N51ed1EhNWIgY+9+rWcKBDvRp
+	hU+vBDPkKlSSNCbyV7yNI/g6gIK1NhK4HNPYdFSQpQOI/MSXv25lTNzFYf22/i72d+z1Ug2MtCr
+	omYiZow==
+X-Google-Smtp-Source: AGHT+IFoTS6AMamh0oE3R1bplcL+6AiNiAZnIm4fm/Y84WRE/Wx9U+TmbWFAY4gbSKbzCt8DpRNgFktDa7myF1Qc9rs=
+X-Received: by 2002:a17:906:f596:b0:b72:9d0b:def4 with SMTP id
+ a640c23a62f3a-b79dbe8e7e2mr172316466b.18.1764754131222; Wed, 03 Dec 2025
+ 01:28:51 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -64,12 +64,12 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 References: <20251130104222.63077-1-crescentcy.hsieh@moxa.com>
  <20251130104222.63077-32-crescentcy.hsieh@moxa.com> <CAHp75Vd4Fr9j3XF3Mxte8NDw_cE+_cyhWh=xs6YMQDTrmn=XnQ@mail.gmail.com>
- <aS-mugqHvS-OJvtU@moxa-ThinkCentre-M90t>
-In-Reply-To: <aS-mugqHvS-OJvtU@moxa-ThinkCentre-M90t>
+ <aS-mugqHvS-OJvtU@moxa-ThinkCentre-M90t> <CAHp75Vfqi3Cqm+vMC=VXWCsVDP1926gpU+xxocHnVgZ6Y2fyEw@mail.gmail.com>
+In-Reply-To: <CAHp75Vfqi3Cqm+vMC=VXWCsVDP1926gpU+xxocHnVgZ6Y2fyEw@mail.gmail.com>
 From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Wed, 3 Dec 2025 11:24:58 +0200
-X-Gm-Features: AWmQ_bn-jpXJtiF1a6oxwR0mfFSqonNYrnZXHSMf6RIJdUClGik5FyyKLQOe6as
-Message-ID: <CAHp75Vfqi3Cqm+vMC=VXWCsVDP1926gpU+xxocHnVgZ6Y2fyEw@mail.gmail.com>
+Date: Wed, 3 Dec 2025 11:28:14 +0200
+X-Gm-Features: AWmQ_bmyu8YrhJfqTTyeeoQzdwlWD8m-WlrWKXhnYYVHGbovmhnzpQum4fcJ8po
+Message-ID: <CAHp75VeVxtGCMX0_Bxcq2vEBtWcp+Q340b4egD6xBERqFcna8g@mail.gmail.com>
 Subject: Re: [PATCH v1 31/31] serial: 8250_mxpcie: add RS485-2W auto-adjust
  sysfs control
 To: Crescent Hsieh <crescentcy.hsieh@moxa.com>
@@ -79,42 +79,26 @@ Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Dec 3, 2025 at 4:56=E2=80=AFAM Crescent Hsieh <crescentcy.hsieh@mox=
-a.com> wrote:
-> On Mon, Dec 01, 2025 at 04:45:58AM +0200, Andy Shevchenko wrote:
-> > On Sun, Nov 30, 2025 at 12:46=E2=80=AFPM Crescent Hsieh
-> > <crescentcy.hsieh@moxa.com> wrote:
+On Wed, Dec 3, 2025 at 11:24=E2=80=AFAM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+> On Wed, Dec 3, 2025 at 4:56=E2=80=AFAM Crescent Hsieh <crescentcy.hsieh@m=
+oxa.com> wrote:
+> > On Mon, Dec 01, 2025 at 04:45:58AM +0200, Andy Shevchenko wrote:
+> > > On Sun, Nov 30, 2025 at 12:46=E2=80=AFPM Crescent Hsieh
+> > > <crescentcy.hsieh@moxa.com> wrote:
 
 ...
 
-> > I'm not going to review this, the patch series is already quite big. I
-> > suggest you to start from the small things in a different series E.g.,
-> > the first series is just converting MOXA from custom to 8250-based
-> > (assuming all features are kept working while ABI is being broken,
-
-In case you are wondering what I was talking about in the above, I
-meant move from /dev/ttyMIxx to /dev/ttySxx. This will break all the
-current kernel command lines and hence setups with the explicit
-mention of the /dev/ttyMIxx, such as console=3D.  There might be other
-breakages, but I leave it up to you to research and come up with a
-solution.
-
-> > which has to be explained in the commit message(s) / cover letter of
-> > that series), the second one is about splitting 8250_pci to the other
-> > Moxa case. When this is done, we may go forward with the additional
-> > features.
-
-> Thanks a lot for spending so much time reviewing this large patch set.
-> I appreciate the detailed feedback.
-
-You're welcome!
-
-> I will split this big patch series into smaller and more focused series
-> to make it easier to review.
+> > >  while ABI is being broken,
 >
-> Thanks again for your guidance.
+> In case you are wondering what I was talking about in the above, I
+> meant move from /dev/ttyMIxx to /dev/ttySxx. This will break all the
+> current kernel command lines and hence setups with the explicit
+> mention of the /dev/ttyMIxx, such as console=3D.
 
-Any time!
+FWIW, we used to have in the past more than one case like this, so if
+it's well justified and customers are aware of the change, it may go
+in.
 
 --=20
 With Best Regards,
