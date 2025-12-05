@@ -1,130 +1,268 @@
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF77230E856
-	for <linux-serial@vger.kernel.org>; Fri,  5 Dec 2025 08:36:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EE60227599;
+	Fri,  5 Dec 2025 22:36:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764923777; cv=none; b=fe/syu+gpNTtf+TuNQLNG9ZKgQdS8/TJjoYAm+G0gi+MFs8dRdXRHpT95XbV0vtOLjiOSegidJ7cjT6+Z9hekm+nBQMhy4oNYqPY1Zepy7+ytBVyTi1UF6m31Zp1Z9szj/k5gsK1A0yZypEdCKjSZQGno+q00486EDrNI8vGkT4=
+	t=1764974201; cv=none; b=WYlOmjrMMcExlGNurLVNEWYBnWfSlATeI7TR7C1MpM7L49Clv2TZO7/mWhSMtuxoAfAfr+8NIEM2dBCuatF3JvmTehuVvfpDTPJVk+hvfVT+lajMTUgqlS/peFqdTO5BFbvOYd58RJ6FZM4jOjA1KRAiL9i+AVcjle818fuufEA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764923777; c=relaxed/simple;
-	bh=6y4+7SP608HdlJoHAr5R8sGhNTwpQNJuxTONs+K+WbE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=L/QJCPJ/zAJw517bP1Kp5KE6nFCHp+19ApLbGUJlqBkt7jhI4y+PCQG6/Ug2pzv9fC4mSAOLvd3Rj80/DkLdp0bQhePod5B5wOn2UiF+jTcryaEfJzYOAdU9ICfT4NjSduEETv3jaNIa4Ol2P8Tp1kLdCtg9ZzFhHjdWT/G+djQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Zehs87UV; arc=none smtp.client-ip=209.85.208.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1764974201; c=relaxed/simple;
+	bh=jyoprTnb0euL03vxPz0Z60Gay9OGDg+3Fli9lQr140w=;
+	h=From:Date:Content-Type:MIME-Version:Cc:To:In-Reply-To:References:
+	 Message-Id:Subject; b=DNEooKejJ9BG3CJU4z+m5GmR1uM2AzjXxUrzh9I5ODRNIdWK4CTEdu/+UBAcakliEbNpQMWSkvGa98dZhHIJbjHZAhhzl/QGF4/uORq1Duc1ADno/hcP0DZnEktVLYUH6IIFum38ezo7v3xB95UhiTVSX/usy3Y8trYJNrXTRj8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MBXlM74t; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Zehs87UV"
-Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-64312565c10so3053466a12.2
-        for <linux-serial@vger.kernel.org>; Fri, 05 Dec 2025 00:36:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1764923768; x=1765528568; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=3WsEibAAOLXIXMNB/I4Bee+8iop+NcyUJNn7OWP7xy4=;
-        b=Zehs87UVe6MXavLLpeaI2/l5CyPnby33CIrhoSoL8qpq3mH+XKo0wQZi/MZvHiQJpv
-         WHw2ileiNRVa6vRqnqsLV6z5m94sI340qdxynQqBlEnxD28ullLtr2erTuvts12p8lUX
-         Bma0HPtP01ZBgIbrRH0HUtCG2lyJfo7NZrLZ2j8NqHKK0xr1D4IlEwf0z9VUfM3Txdjh
-         ZDoFnzlQLJZ6xraJNcWuntKmtyH2bwCRNr2b0Klh63AKJQeAln+cMC/rbKRelbduKj4y
-         sFJnVRMP0CCx0d7QahKqKzutFOuLrZvPAWJXws/9flNnORDMKVVHweamgka6/GWcfytU
-         jaUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764923768; x=1765528568;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=3WsEibAAOLXIXMNB/I4Bee+8iop+NcyUJNn7OWP7xy4=;
-        b=po7k+yt2yW295qTNBSC1CILTm2E7cztffVBNLCoxt2FitHv2A0x3pP3AxrLRynphuL
-         Ym24tf6L6q4F4g8w/22pCOUG13Z7CW9JAAYCqyCxr9iEXofxTQT+5FEdup+QmJHrJ4xc
-         rKFpXF1S2vXwDDtrDRNR9714haIXA+fBq8VmKnz35mKsHJula4yetbkoTQXSA1NOXe0D
-         1umbjHuI1dgndBtACZqAoMF9RqP0LkJHCgPJ0QW5tS7f71r9neqSi1j2fFjx4lpkKB2v
-         abQtaU5sQTpLrr5jSHWYqY6gShigBCHeWI/ehkG8q2CeIXGwLod8/voRe5RGdtOA/Con
-         j14Q==
-X-Forwarded-Encrypted: i=1; AJvYcCWfUZJGt0ctEmyqdcxW4J9/C7Jcp0UayW6ZLgGEuVLJimnBOnk6LdWj7kTCbONwppkgRJVkMNuyXVTuilQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyHFnwWoy57S76fOm8YDcsMb+xJxupK1CHG8BGrZM3WsxMQefi6
-	U/fv5mOz0vpKjWhXpYbOlO61EKEtLfrH38S+4KS9BaxQlKvPJvaTUy9bxBNfLTAcNlg4tfRsWP9
-	iVoVxPcQSUB42jH/bx6ivc+2Vuc3xJ44=
-X-Gm-Gg: ASbGncv0N/Au3LbsOw7pzhR39LNq5awLKPkDcp2HlxHNqcWf01NTdtOqG4FBpu42/mi
-	CslP7g8dHUVp8id07KaQdRqiY5Vjwu9BRHy2ltY/zVCQ6WMADTIfFBgXFQme8msmPgrTofmPuqW
-	s66s3YMcctZjTHUdLS6NFPTkbldMJTCpX9TGyro4NfzQOzwDaEPr/7ItDown9H6tKhJcYrZwFpr
-	c0CcwO8WxFBl8dCJRJEhy1BeLOvSUgj6n2CU3lK9Dl4HUM8dQUW4gPy7iv8UTmm4rqcG0XBtidR
-	z6oKQJdz8whH6C9fNhFh7TqGhWN4uXWq5gcElsJ+qom4c/9UCLGTETdeRbYn0yQXeKTmz6k=
-X-Google-Smtp-Source: AGHT+IG04VmPy9dMr6ehZfnq/e/wJ+xI+lynpamKtF7Aczr02JvZkxHH+d1kaKH9i9QiOFMoi44boL4xp7wBdoOIMuE=
-X-Received: by 2002:a17:906:4fc9:b0:b73:2a77:3128 with SMTP id
- a640c23a62f3a-b79ec4882e0mr582546766b.27.1764923768066; Fri, 05 Dec 2025
- 00:36:08 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MBXlM74t"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59898C4CEF1;
+	Fri,  5 Dec 2025 22:36:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1764974200;
+	bh=jyoprTnb0euL03vxPz0Z60Gay9OGDg+3Fli9lQr140w=;
+	h=From:Date:Cc:To:In-Reply-To:References:Subject:From;
+	b=MBXlM74tBR7jy3sWA92Vd8bhrdec2i6m/vYU3v/44vvtPs+iC+GkbHxRFYVwGdgte
+	 igzGm2L1pVG6RfuAN4W4oFgdBUJZ3XJ/bpPshlkYfF3FnbcfTyO7YxkFbQGp+sRAKl
+	 nHvydvQbqS19VJdNl2bYhJ0nMj7jMUEfCVkBupNQRA88xusW7UHfgiDm/Xpv1/6vqu
+	 Z2ZYJdZ0F3bXJhcfYuj5MtcslVkUDl73yP1+ImF6tdt2DQO/9keqmF7tWoACvHtKtV
+	 2SXnMDm9E6kphR5HuSNn3yG4cE5sizZ9ohzMiZjoS4LhkThSQmS2KXxi0FRnSTEDkc
+	 YupVwbQ2y50qg==
+From: Rob Herring <robh@kernel.org>
+Date: Fri, 05 Dec 2025 16:36:37 -0600
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20251130104222.63077-1-crescentcy.hsieh@moxa.com>
- <20251130104222.63077-32-crescentcy.hsieh@moxa.com> <CAHp75Vd4Fr9j3XF3Mxte8NDw_cE+_cyhWh=xs6YMQDTrmn=XnQ@mail.gmail.com>
- <aS-mugqHvS-OJvtU@moxa-ThinkCentre-M90t> <CAHp75Vfqi3Cqm+vMC=VXWCsVDP1926gpU+xxocHnVgZ6Y2fyEw@mail.gmail.com>
- <aTJtEmUycXeGrYPJ@moxa-ThinkCentre-M90t>
-In-Reply-To: <aTJtEmUycXeGrYPJ@moxa-ThinkCentre-M90t>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Fri, 5 Dec 2025 10:35:31 +0200
-X-Gm-Features: AWmQ_bnIgh4OeIrq7THoiyz7BG-NnMndETRSgFRGPXiHapuS426eHPZuMu3uJaM
-Message-ID: <CAHp75VdnC5FmXzf3oTqo0ZGZzwkd_+GAioTAss8EBCcVhC5Kww@mail.gmail.com>
-Subject: Re: [PATCH v1 31/31] serial: 8250_mxpcie: add RS485-2W auto-adjust
- sysfs control
-To: Crescent Hsieh <crescentcy.hsieh@moxa.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	ilpo.jarvinen@linux.intel.com, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org, 
+ Sean Wang <sean.wang@mediatek.com>, linux-arm-kernel@lists.infradead.org, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Conor Dooley <conor+dt@kernel.org>, kernel@collabora.com, 
+ linux-serial@vger.kernel.org, devicetree@vger.kernel.org, 
+ Matthias Brugger <matthias.bgg@gmail.com>, 
+ linux-mediatek@lists.infradead.org, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+To: Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>
+In-Reply-To: <20251203-add-mediatek-genio-520-720-evk-v1-0-df794b2a30ae@collabora.com>
+References: <20251203-add-mediatek-genio-520-720-evk-v1-0-df794b2a30ae@collabora.com>
+Message-Id: <176497381380.863373.5448430069012667069.robh@kernel.org>
+Subject: Re: [PATCH 0/4] Add support for the Mediatek Genio 520-EVK and
+ 720-EVK boards
 
-On Fri, Dec 5, 2025 at 7:26=E2=80=AFAM Crescent Hsieh <crescentcy.hsieh@mox=
-a.com> wrote:
-> On Wed, Dec 03, 2025 at 11:24:58AM +0200, Andy Shevchenko wrote:
-> > On Wed, Dec 3, 2025 at 4:56=E2=80=AFAM Crescent Hsieh <crescentcy.hsieh=
-@moxa.com> wrote:
-> > > On Mon, Dec 01, 2025 at 04:45:58AM +0200, Andy Shevchenko wrote:
-> > > > On Sun, Nov 30, 2025 at 12:46=E2=80=AFPM Crescent Hsieh
-> > > > <crescentcy.hsieh@moxa.com> wrote:
 
-...
+On Wed, 03 Dec 2025 14:59:25 +0100, Louis-Alexis Eyraud wrote:
+> This patch series adds the support for the Mediatek Genio 520-EVK (based
+> on MT8371 SoC) and Mediatek Genio 720-EVK (based on MT8391 SoC).
+> 
+> MT8371 and MT8391 SoC are less powerful variants of MT8189 SoC
+> with the following differences:
+>   - Arm Cortex-A78 CPU core maximum frequency (2.2 Ghz for MT8371, 2.6
+>     Ghz for MT8391, 3 Ghz for MT8189).
+>   - Arm Mali G57 MC2 GPU core maximum frequency (880 Mhz for MT8371,
+>     1.1 Ghz for MT8189 and MT8391)
+>   - ISP engine number (1 for MT8371, 2 for MT8189 and MT8391)
+> MT8371 and MT8391 SoC hardware register maps are identical to MT8189.
+> 
+> The Genio 520/720-EVK boards have following features:
+>   - MT8371 (or MT8391) SoC
+>   - MT6365 PMIC
+>   - MT6319 Buck IC
+>   - MT6375 Charger IC
+>   - 8GB LPDDR5 RAM
+>   - 64GB eMMC 5.1
+>   - 128GB UFS
+>   - 20V DC Jack
+>   - USB Type-C Power Adapter
+>   - Micro SD card slot
+>   - Push Button x 4 (Power, Reset, Download and Home Key)
+>   - LED x 3 (System Power, Reset, DC-IN Power)
+>   - USB Type-C Connector (USB 3.2) x 2
+>   - USB Type-C Connector (USB 2.0) x 1
+>   - 3.5mm Earphone Jack x 1 (with Microphone Input)
+>   - 3.5mm Line Out Audio Jack x 1
+>   - Analog Microphone x 1
+>   - Digital Microphone x 2
+>   - Gigabit Ethernet with RJ45 connector
+>   - DP x 1 (Mode over USB Type-C)
+>   - LVDS port x 1
+>   - eDP port x 1
+>   - UART x2 with serial-to-usb converters and USB Type-C connectors
+>   - UART Port x 2 on Pin Header
+>   - M.2 Slot x 2
+>   - I2C Capacitive Touch Pad
+>   - 4-Lane DSI x 1
+>   - 4-Data Lane CSI x 2
+>   - I2S Pin header
+>   - 40-Pin 2.54mm Pin Header x 1
+>   - CAN Bus x 1 (RS232 Connector)
+> 
+> The series adds two include files for mt8189 (mt8189.dtsi) and common
+> board definitions (mt8391-genio-common.dtsi) and a devicetree file for
+> each board. In regard to the current MT8189 SoC upstream support and in
+> order to limit the number of prerequisite patches, this series provides
+> the following basic hardware enablement for:
+>   - cpu
+>   - clocks
+>   - spmi and regulators
+>   - UART 0/1/2/3
+>   - eMMC and SD card
+>   - watchdog
+>   - timer
+>   - efuse and socinfo
+>   - auxadc
+> 
+> The series is based on linux-next next-20251203 tag, and the
+> following patch series are currently required:
+> - I2C dt-bindings [1]
+> - SPMI dt-bindings [2]
+> - timer dt-bindings [3]
+> - Add support for MT8189 clock/power controller [4]
+> - Add SD/MMC Card driver support for Mediatek MT8189 SoC [5]
+> - mt8189: Add pinmux macro header file [6]
+> 
+> Note:
+> The v3 revision of [4] patch series is causing the following `make dtbs_check`
+> issue for both board devicetrees:
+> ```
+> arch/arm64/boot/dts/mediatek/mt8391-genio-720-evk.dtb: /soc/clock-controller@1c000800:
+>   failed to match any schema with compatible: ['mediatek,mt8189-vlp-ao', 'syscon']
+> ```
+> The mismatch between compatible string in driver and dt-bindings has
+> already been reported during the series review ([7]) and hopefully will be
+> fixed in its future revision.
+> 
+> [1] https://lore.kernel.org/linux-mediatek/20251030-mt8189-dt-bindings-i2c-v1-1-5b60914c6453@collabora.com/
+> [2] https://lore.kernel.org/linux-mediatek/20251029-mt8189-dt-bindings-spmi-v1-1-fbea12a4ed5e@collabora.com/
+> [3] https://lore.kernel.org/linux-mediatek/20250825033136.7705-1-zhanzhan.ge@mediatek.com/
+> [4] https://lore.kernel.org/linux-mediatek/20251106124330.1145600-1-irving-ch.lin@mediatek.com/
+> [5] https://lore.kernel.org/linux-mediatek/20251203-mt8189-add-mmc-support-v1-0-f5ce43212fe9@collabora.com/
+> [6] https://lore.kernel.org/linux-mediatek/20250919020525.7904-1-ot_cathy.xu@mediatek.com/
+> [7] https://lore.kernel.org/linux-mediatek/a50e6d433afcf8b08a47694bc5a52acc28871ee5.camel@collabora.com/
+> 
+> Signed-off-by: Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>
+> ---
+> Louis-Alexis Eyraud (4):
+>       dt-bindings: serial: mediatek,uart: Add compatible for MT8189 SoC
+>       dt-bindings: arm: mediatek: add compatibles for Mediatek Genio 520/720-EVK boards
+>       arm64: dts: mediatek: add device-tree for Genio 720-EVK board
+>       arm64: dts: mediatek: add device-tree for Genio 520-EVK board
+> 
+>  .../devicetree/bindings/arm/mediatek.yaml          |  10 +
+>  .../devicetree/bindings/serial/mediatek,uart.yaml  |   1 +
+>  arch/arm64/boot/dts/mediatek/Makefile              |   2 +
+>  arch/arm64/boot/dts/mediatek/mt8189.dtsi           | 860 +++++++++++++++++++++
+>  .../boot/dts/mediatek/mt8371-genio-520-evk.dts     |  19 +
+>  .../boot/dts/mediatek/mt8391-genio-720-evk.dts     |  15 +
+>  .../boot/dts/mediatek/mt8391-genio-common.dtsi     | 555 +++++++++++++
+>  7 files changed, 1462 insertions(+)
+> ---
+> base-commit: e47d97576181b31291cf58e77d737d21def0e160
+> change-id: 20251128-add-mediatek-genio-520-720-evk-06162377974d
+> prerequisite-message-id: <20251030-mt8189-dt-bindings-i2c-v1-1-5b60914c6453@collabora.com>
+> prerequisite-patch-id: af92e103b9f50af16560a11d4eabc644bd724b07
+> prerequisite-message-id: <20251029-mt8189-dt-bindings-spmi-v1-1-fbea12a4ed5e@collabora.com>
+> prerequisite-patch-id: c82ad0d3145322fea43aed2e1d830ebc8eae8180
+> prerequisite-message-id: <20250825033136.7705-1-zhanzhan.ge@mediatek.com>
+> prerequisite-patch-id: 7aeee7d452186b3bc1c11722b7ddb7dfbae7d396
+> prerequisite-message-id: <20251106124330.1145600-1-irving-ch.lin@mediatek.com>
+> prerequisite-patch-id: ea3e5cf891c9753a77f126ad1ddad455a0752883
+> prerequisite-patch-id: ae9a4cb1daadb56cc298b87142b29b749dc11835
+> prerequisite-patch-id: 3df47b0207d75102032975e6811f71a5e7909e43
+> prerequisite-patch-id: 1c25a1327d50152cef227f58c08076072d65cee3
+> prerequisite-patch-id: f2cd301aea79253adb85bd3f62c012dd3850e1a7
+> prerequisite-patch-id: 81dc09321182c48f6928582e8b9d22f35a757515
+> prerequisite-patch-id: e0a251231fd14fa582800db8f3bb77011f6836f9
+> prerequisite-patch-id: da7c54c83cb8566df39beac753c80615523479e5
+> prerequisite-patch-id: 2f3d41e32b230ddc016fd75ace5b286cd11b2127
+> prerequisite-patch-id: 309f350ed5c942b640b5c3434737fee28d6825b0
+> prerequisite-patch-id: 7579b6db7ec7a31e28db616c73b4c1b0eb4ee106
+> prerequisite-patch-id: 0cdea5380c8d35cfd89e01bf843ef7fdafbc7830
+> prerequisite-patch-id: 3dc3e377981d3c894fc39122200a0f0d46f5d71b
+> prerequisite-patch-id: b57bf39e50a5316d2f9264e1eb89071d3e8e8b0a
+> prerequisite-patch-id: 56fd80d33667839823794173064860c613f911cd
+> prerequisite-patch-id: 963a3ed54fb5fd9fd518f28254eaf93a70b2f603
+> prerequisite-patch-id: 3c9cbc33093f754d867ca324cc7e689fbbaae8af
+> prerequisite-patch-id: 336ba35d1924706d1d21c6e46718d973277f207a
+> prerequisite-patch-id: f3322d6494603585fc4728074484055d07484dd6
+> prerequisite-patch-id: f5a70e41fe9df7df0ab29538701bdfdb401a9d01
+> prerequisite-patch-id: b46a91afc38bea2ee6a8440f59e71e39728df6ad
+> prerequisite-message-id: <20251203-mt8189-add-mmc-support-v1-0-f5ce43212fe9@collabora.com>
+> prerequisite-patch-id: feab935ed7d0d7234dcc1980185300782c61620e
+> prerequisite-patch-id: efbd41a9926397f9b3ffd19235a04791b61f35c7
+> prerequisite-patch-id: 5b12a1056dfe87e4d39af584d8b16c31a1a00a04
+> prerequisite-message-id: <20250919020525.7904-1-ot_cathy.xu@mediatek.com>
+> prerequisite-patch-id: 7f2d960cde2f0e0a307721150e83b7b05b9a60d7
+> 
+> Best regards,
+> --
+> Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>
+> 
+> 
+> 
 
-> > > > I'm not going to review this, the patch series is already quite big=
-. I
-> > > > suggest you to start from the small things in a different series E.=
-g.,
-> > > > the first series is just converting MOXA from custom to 8250-based
-> > > > (assuming all features are kept working while ABI is being broken,
-> >
-> > In case you are wondering what I was talking about in the above, I
-> > meant move from /dev/ttyMIxx to /dev/ttySxx. This will break all the
-> > current kernel command lines and hence setups with the explicit
-> > mention of the /dev/ttyMIxx, such as console=3D.  There might be other
-> > breakages, but I leave it up to you to research and come up with a
-> > solution.
->
-> Just to clarify my intention: the in-tree UPCI serial driver (mxser) has
-> been unmaintained for years, and my goal is to replace it with a clean
-> 8250-based implementation that preserves reasonable user expectations
-> while following the upstream serial framework. This will require some
-> analysis to reconcile the legacy behavior with what upstream expects.
 
-Right, so it's a good justification to break the above on the
-expectations that the users most likely don't use the in-kernel driver
-as it's unmaintained and has received no bug fixes, etc.
+My bot found new DTB warnings on the .dts files added or changed in this
+series.
 
-> I=E2=80=99d also like to ask about patch ordering. Since the PCIe serial =
-driver
-> is much simpler to migrate and has minimal user impact, would it be
-> acceptable to upstream the PCIe conversion first, before the more
-> complex UPCI transition? I=E2=80=99m happy to follow whichever order make=
-s
-> review easiest for you.
+Some warnings may be from an existing SoC .dtsi. Or perhaps the warnings
+are fixed by another series. Ultimately, it is up to the platform
+maintainer whether these warnings are acceptable or not. No need to reply
+unless the platform maintainer has comments.
 
-I don't see the downsides of this order. I believe the order of these
-big parts is not so important per se.
+If you already ran DT checks and didn't see these error(s), then
+make sure dt-schema is up to date:
 
---=20
-With Best Regards,
-Andy Shevchenko
+  pip3 install dtschema --upgrade
+
+
+This patch series was applied (using b4) to base:
+ Deps: looking for dependencies matching 28 patch-ids
+ Deps: Applying prerequisite patch: [PATCH] dt-bindings: i2c: i2c-mt65xx: Add compatible for MT8189 SoC
+ Deps: Applying prerequisite patch: [PATCH] dt-bindings: spmi: spmi-mtk-pmif: Add compatible for MT8189 SoC
+ Deps: Applying prerequisite patch: [PATCH v7 4/9] dt-bindings: timer: Support MediaTek MT8189 timer
+ Deps: Applying prerequisite patch: [PATCH v3 01/21] dt-bindings: clock: mediatek: Add MT8189 clock definitions
+ Deps: Applying prerequisite patch: [PATCH v3 02/21] dt-bindings: power: mediatek: Add MT8189 power domain definitions
+ Deps: Applying prerequisite patch: [PATCH v3 03/21] clk: mediatek: fix mfg mux issue
+ Deps: Applying prerequisite patch: [PATCH v3 04/21] clk: mediatek: Add MT8189 apmixedsys clock support
+ Deps: Applying prerequisite patch: [PATCH v3 05/21] clk: mediatek: Add MT8189 topckgen clock support
+ Deps: Applying prerequisite patch: [PATCH v3 06/21] clk: mediatek: Add MT8189 vlpckgen clock support
+ Deps: Applying prerequisite patch: [PATCH v3 07/21] clk: mediatek: Add MT8189 vlpcfg clock support
+ Deps: Applying prerequisite patch: [PATCH v3 08/21] clk: mediatek: Add MT8189 bus clock support
+ Deps: Applying prerequisite patch: [PATCH v3 09/21] clk: mediatek: Add MT8189 cam clock support
+ Deps: Applying prerequisite patch: [PATCH v3 10/21] clk: mediatek: Add MT8189 dbgao clock support
+ Deps: Applying prerequisite patch: [PATCH v3 11/21] clk: mediatek: Add MT8189 dvfsrc clock support
+ Deps: Applying prerequisite patch: [PATCH v3 12/21] clk: mediatek: Add MT8189 i2c clock support
+ Deps: Applying prerequisite patch: [PATCH v3 13/21] clk: mediatek: Add MT8189 img clock support
+ Deps: Applying prerequisite patch: [PATCH v3 14/21] clk: mediatek: Add MT8189 mdp clock support
+ Deps: Applying prerequisite patch: [PATCH v3 15/21] clk: mediatek: Add MT8189 mfg clock support
+ Deps: Applying prerequisite patch: [PATCH v3 16/21] clk: mediatek: Add MT8189 mmsys clock support
+ Deps: Applying prerequisite patch: [PATCH v3 17/21] clk: mediatek: Add MT8189 scp clock support
+ Deps: Applying prerequisite patch: [PATCH v3 18/21] clk: mediatek: Add MT8189 ufs clock support
+ Deps: Applying prerequisite patch: [PATCH v3 19/21] clk: mediatek: Add MT8189 vcodec clock support
+ Deps: Applying prerequisite patch: [PATCH v3 20/21] pmdomain: mediatek: Add bus protect control flow for MT8189
+ Deps: Applying prerequisite patch: [PATCH v3 21/21] pmdomain: mediatek: Add power domain driver for MT8189 SoC
+ Deps: Applying prerequisite patch: [PATCH 1/3] dt-bindings: mmc: mtk-sd: Add support for MT8189 SoC
+ Deps: Applying prerequisite patch: [PATCH 2/3] mmc: mtk-sd: add support for SPM resource release control
+ Deps: Applying prerequisite patch: [PATCH 3/3] mmc: mtk-sd: add support for MT8189 SoC
+ Deps: Applying prerequisite patch: [PATCH v2] arm64: dts: mediatek: mt8189: Add pinmux macro header file
+ Base: e47d97576181b31291cf58e77d737d21def0e160 (use --merge-base to override)
+
+If this is not the correct base, please add 'base-commit' tag
+(or use b4 which does this automatically)
+
+New warnings running 'make CHECK_DTBS=y for arch/arm64/boot/dts/mediatek/' for 20251203-add-mediatek-genio-520-720-evk-v1-0-df794b2a30ae@collabora.com:
+
+arch/arm64/boot/dts/mediatek/mt8371-genio-520-evk.dtb: /soc/clock-controller@1c000800: failed to match any schema with compatible: ['mediatek,mt8189-vlp-ao', 'syscon']
+arch/arm64/boot/dts/mediatek/mt8371-genio-520-evk.dtb: pmic (mediatek,mt6359): '#sound-dai-cells' does not match any of the regexes: '^pinctrl-[0-9]+$'
+	from schema $id: http://devicetree.org/schemas/mfd/mediatek,mt6397.yaml
+arch/arm64/boot/dts/mediatek/mt8391-genio-720-evk.dtb: /soc/clock-controller@1c000800: failed to match any schema with compatible: ['mediatek,mt8189-vlp-ao', 'syscon']
+arch/arm64/boot/dts/mediatek/mt8391-genio-720-evk.dtb: pmic (mediatek,mt6359): '#sound-dai-cells' does not match any of the regexes: '^pinctrl-[0-9]+$'
+	from schema $id: http://devicetree.org/schemas/mfd/mediatek,mt6397.yaml
+
+
+
+
+
