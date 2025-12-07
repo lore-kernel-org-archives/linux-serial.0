@@ -1,268 +1,266 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EE60227599;
-	Fri,  5 Dec 2025 22:36:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57AB58F4A;
+	Sun,  7 Dec 2025 00:46:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764974201; cv=none; b=WYlOmjrMMcExlGNurLVNEWYBnWfSlATeI7TR7C1MpM7L49Clv2TZO7/mWhSMtuxoAfAfr+8NIEM2dBCuatF3JvmTehuVvfpDTPJVk+hvfVT+lajMTUgqlS/peFqdTO5BFbvOYd58RJ6FZM4jOjA1KRAiL9i+AVcjle818fuufEA=
+	t=1765068370; cv=none; b=Sd4zAPw0reX9RCL+yT7+4TA3tZDN8Ddti2YF2wckqcgFN2GytT19WhWdxYJ3kkBonIlPY26/8JzxRYjq47bvOf5TuG6c/i1QDO+e6bw8tEcSNzyX8EXxqJec4TJTK0nXerNZE+O6WyrdUn5o4u77+KoNRNL7MHySpatl+L9DTF4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764974201; c=relaxed/simple;
-	bh=jyoprTnb0euL03vxPz0Z60Gay9OGDg+3Fli9lQr140w=;
-	h=From:Date:Content-Type:MIME-Version:Cc:To:In-Reply-To:References:
-	 Message-Id:Subject; b=DNEooKejJ9BG3CJU4z+m5GmR1uM2AzjXxUrzh9I5ODRNIdWK4CTEdu/+UBAcakliEbNpQMWSkvGa98dZhHIJbjHZAhhzl/QGF4/uORq1Duc1ADno/hcP0DZnEktVLYUH6IIFum38ezo7v3xB95UhiTVSX/usy3Y8trYJNrXTRj8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MBXlM74t; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1765068370; c=relaxed/simple;
+	bh=ttQXivXyir3fWJzBZ4NuNXvxzgrHaLzxWz1vIpM364o=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=uBFBr/Ge1BLOb7tvChJKFgpolWSjN4MNzLQJhkTXV+z3hqrHeeVwflBGgTATcIqZO2yKkqby33M5k0SWu0QK5jwr05yEGit7iJ4keds00nhnjYCsG8kSGcRRMmSU0WDWQ7HIXwaGVr140a5bnVWLkXsVaaBlcotKQqgcaNVTd18=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=xOUpnXK3; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MBXlM74t"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59898C4CEF1;
-	Fri,  5 Dec 2025 22:36:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1764974200;
-	bh=jyoprTnb0euL03vxPz0Z60Gay9OGDg+3Fli9lQr140w=;
-	h=From:Date:Cc:To:In-Reply-To:References:Subject:From;
-	b=MBXlM74tBR7jy3sWA92Vd8bhrdec2i6m/vYU3v/44vvtPs+iC+GkbHxRFYVwGdgte
-	 igzGm2L1pVG6RfuAN4W4oFgdBUJZ3XJ/bpPshlkYfF3FnbcfTyO7YxkFbQGp+sRAKl
-	 nHvydvQbqS19VJdNl2bYhJ0nMj7jMUEfCVkBupNQRA88xusW7UHfgiDm/Xpv1/6vqu
-	 Z2ZYJdZ0F3bXJhcfYuj5MtcslVkUDl73yP1+ImF6tdt2DQO/9keqmF7tWoACvHtKtV
-	 2SXnMDm9E6kphR5HuSNn3yG4cE5sizZ9ohzMiZjoS4LhkThSQmS2KXxi0FRnSTEDkc
-	 YupVwbQ2y50qg==
-From: Rob Herring <robh@kernel.org>
-Date: Fri, 05 Dec 2025 16:36:37 -0600
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="xOUpnXK3"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88353C4CEF5;
+	Sun,  7 Dec 2025 00:46:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1765068367;
+	bh=ttQXivXyir3fWJzBZ4NuNXvxzgrHaLzxWz1vIpM364o=;
+	h=Date:From:To:Cc:Subject:From;
+	b=xOUpnXK3fa45MphVV/nHuxNCcXhZsh/HlPWM0fCQtPE8IXFnjq+dWDxLyZZDbUkLT
+	 p4KYetLGhTyJQ2eHwuGzI9MWoACFRH7R+gpF6jUMCQhMNrnYORWBsbXqU2rbF+EmtV
+	 n4++Nnrh9r2V7m7lpvbMnLqMjx611tb0Tbqjtdj0=
+Date: Sun, 7 Dec 2025 09:46:05 +0900
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY/Serial driver updates for 6.19-rc1
+Message-ID: <aTTOTbUu7dkL07S3@kroah.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org, 
- Sean Wang <sean.wang@mediatek.com>, linux-arm-kernel@lists.infradead.org, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Conor Dooley <conor+dt@kernel.org>, kernel@collabora.com, 
- linux-serial@vger.kernel.org, devicetree@vger.kernel.org, 
- Matthias Brugger <matthias.bgg@gmail.com>, 
- linux-mediatek@lists.infradead.org, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-To: Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>
-In-Reply-To: <20251203-add-mediatek-genio-520-720-evk-v1-0-df794b2a30ae@collabora.com>
-References: <20251203-add-mediatek-genio-520-720-evk-v1-0-df794b2a30ae@collabora.com>
-Message-Id: <176497381380.863373.5448430069012667069.robh@kernel.org>
-Subject: Re: [PATCH 0/4] Add support for the Mediatek Genio 520-EVK and
- 720-EVK boards
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
+The following changes since commit dcb6fa37fd7bc9c3d2b066329b0d27dedf8becaa:
 
-On Wed, 03 Dec 2025 14:59:25 +0100, Louis-Alexis Eyraud wrote:
-> This patch series adds the support for the Mediatek Genio 520-EVK (based
-> on MT8371 SoC) and Mediatek Genio 720-EVK (based on MT8391 SoC).
-> 
-> MT8371 and MT8391 SoC are less powerful variants of MT8189 SoC
-> with the following differences:
->   - Arm Cortex-A78 CPU core maximum frequency (2.2 Ghz for MT8371, 2.6
->     Ghz for MT8391, 3 Ghz for MT8189).
->   - Arm Mali G57 MC2 GPU core maximum frequency (880 Mhz for MT8371,
->     1.1 Ghz for MT8189 and MT8391)
->   - ISP engine number (1 for MT8371, 2 for MT8189 and MT8391)
-> MT8371 and MT8391 SoC hardware register maps are identical to MT8189.
-> 
-> The Genio 520/720-EVK boards have following features:
->   - MT8371 (or MT8391) SoC
->   - MT6365 PMIC
->   - MT6319 Buck IC
->   - MT6375 Charger IC
->   - 8GB LPDDR5 RAM
->   - 64GB eMMC 5.1
->   - 128GB UFS
->   - 20V DC Jack
->   - USB Type-C Power Adapter
->   - Micro SD card slot
->   - Push Button x 4 (Power, Reset, Download and Home Key)
->   - LED x 3 (System Power, Reset, DC-IN Power)
->   - USB Type-C Connector (USB 3.2) x 2
->   - USB Type-C Connector (USB 2.0) x 1
->   - 3.5mm Earphone Jack x 1 (with Microphone Input)
->   - 3.5mm Line Out Audio Jack x 1
->   - Analog Microphone x 1
->   - Digital Microphone x 2
->   - Gigabit Ethernet with RJ45 connector
->   - DP x 1 (Mode over USB Type-C)
->   - LVDS port x 1
->   - eDP port x 1
->   - UART x2 with serial-to-usb converters and USB Type-C connectors
->   - UART Port x 2 on Pin Header
->   - M.2 Slot x 2
->   - I2C Capacitive Touch Pad
->   - 4-Lane DSI x 1
->   - 4-Data Lane CSI x 2
->   - I2S Pin header
->   - 40-Pin 2.54mm Pin Header x 1
->   - CAN Bus x 1 (RS232 Connector)
-> 
-> The series adds two include files for mt8189 (mt8189.dtsi) and common
-> board definitions (mt8391-genio-common.dtsi) and a devicetree file for
-> each board. In regard to the current MT8189 SoC upstream support and in
-> order to limit the number of prerequisite patches, this series provides
-> the following basic hardware enablement for:
->   - cpu
->   - clocks
->   - spmi and regulators
->   - UART 0/1/2/3
->   - eMMC and SD card
->   - watchdog
->   - timer
->   - efuse and socinfo
->   - auxadc
-> 
-> The series is based on linux-next next-20251203 tag, and the
-> following patch series are currently required:
-> - I2C dt-bindings [1]
-> - SPMI dt-bindings [2]
-> - timer dt-bindings [3]
-> - Add support for MT8189 clock/power controller [4]
-> - Add SD/MMC Card driver support for Mediatek MT8189 SoC [5]
-> - mt8189: Add pinmux macro header file [6]
-> 
-> Note:
-> The v3 revision of [4] patch series is causing the following `make dtbs_check`
-> issue for both board devicetrees:
-> ```
-> arch/arm64/boot/dts/mediatek/mt8391-genio-720-evk.dtb: /soc/clock-controller@1c000800:
->   failed to match any schema with compatible: ['mediatek,mt8189-vlp-ao', 'syscon']
-> ```
-> The mismatch between compatible string in driver and dt-bindings has
-> already been reported during the series review ([7]) and hopefully will be
-> fixed in its future revision.
-> 
-> [1] https://lore.kernel.org/linux-mediatek/20251030-mt8189-dt-bindings-i2c-v1-1-5b60914c6453@collabora.com/
-> [2] https://lore.kernel.org/linux-mediatek/20251029-mt8189-dt-bindings-spmi-v1-1-fbea12a4ed5e@collabora.com/
-> [3] https://lore.kernel.org/linux-mediatek/20250825033136.7705-1-zhanzhan.ge@mediatek.com/
-> [4] https://lore.kernel.org/linux-mediatek/20251106124330.1145600-1-irving-ch.lin@mediatek.com/
-> [5] https://lore.kernel.org/linux-mediatek/20251203-mt8189-add-mmc-support-v1-0-f5ce43212fe9@collabora.com/
-> [6] https://lore.kernel.org/linux-mediatek/20250919020525.7904-1-ot_cathy.xu@mediatek.com/
-> [7] https://lore.kernel.org/linux-mediatek/a50e6d433afcf8b08a47694bc5a52acc28871ee5.camel@collabora.com/
-> 
-> Signed-off-by: Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>
-> ---
-> Louis-Alexis Eyraud (4):
->       dt-bindings: serial: mediatek,uart: Add compatible for MT8189 SoC
->       dt-bindings: arm: mediatek: add compatibles for Mediatek Genio 520/720-EVK boards
->       arm64: dts: mediatek: add device-tree for Genio 720-EVK board
->       arm64: dts: mediatek: add device-tree for Genio 520-EVK board
-> 
->  .../devicetree/bindings/arm/mediatek.yaml          |  10 +
->  .../devicetree/bindings/serial/mediatek,uart.yaml  |   1 +
->  arch/arm64/boot/dts/mediatek/Makefile              |   2 +
->  arch/arm64/boot/dts/mediatek/mt8189.dtsi           | 860 +++++++++++++++++++++
->  .../boot/dts/mediatek/mt8371-genio-520-evk.dts     |  19 +
->  .../boot/dts/mediatek/mt8391-genio-720-evk.dts     |  15 +
->  .../boot/dts/mediatek/mt8391-genio-common.dtsi     | 555 +++++++++++++
->  7 files changed, 1462 insertions(+)
-> ---
-> base-commit: e47d97576181b31291cf58e77d737d21def0e160
-> change-id: 20251128-add-mediatek-genio-520-720-evk-06162377974d
-> prerequisite-message-id: <20251030-mt8189-dt-bindings-i2c-v1-1-5b60914c6453@collabora.com>
-> prerequisite-patch-id: af92e103b9f50af16560a11d4eabc644bd724b07
-> prerequisite-message-id: <20251029-mt8189-dt-bindings-spmi-v1-1-fbea12a4ed5e@collabora.com>
-> prerequisite-patch-id: c82ad0d3145322fea43aed2e1d830ebc8eae8180
-> prerequisite-message-id: <20250825033136.7705-1-zhanzhan.ge@mediatek.com>
-> prerequisite-patch-id: 7aeee7d452186b3bc1c11722b7ddb7dfbae7d396
-> prerequisite-message-id: <20251106124330.1145600-1-irving-ch.lin@mediatek.com>
-> prerequisite-patch-id: ea3e5cf891c9753a77f126ad1ddad455a0752883
-> prerequisite-patch-id: ae9a4cb1daadb56cc298b87142b29b749dc11835
-> prerequisite-patch-id: 3df47b0207d75102032975e6811f71a5e7909e43
-> prerequisite-patch-id: 1c25a1327d50152cef227f58c08076072d65cee3
-> prerequisite-patch-id: f2cd301aea79253adb85bd3f62c012dd3850e1a7
-> prerequisite-patch-id: 81dc09321182c48f6928582e8b9d22f35a757515
-> prerequisite-patch-id: e0a251231fd14fa582800db8f3bb77011f6836f9
-> prerequisite-patch-id: da7c54c83cb8566df39beac753c80615523479e5
-> prerequisite-patch-id: 2f3d41e32b230ddc016fd75ace5b286cd11b2127
-> prerequisite-patch-id: 309f350ed5c942b640b5c3434737fee28d6825b0
-> prerequisite-patch-id: 7579b6db7ec7a31e28db616c73b4c1b0eb4ee106
-> prerequisite-patch-id: 0cdea5380c8d35cfd89e01bf843ef7fdafbc7830
-> prerequisite-patch-id: 3dc3e377981d3c894fc39122200a0f0d46f5d71b
-> prerequisite-patch-id: b57bf39e50a5316d2f9264e1eb89071d3e8e8b0a
-> prerequisite-patch-id: 56fd80d33667839823794173064860c613f911cd
-> prerequisite-patch-id: 963a3ed54fb5fd9fd518f28254eaf93a70b2f603
-> prerequisite-patch-id: 3c9cbc33093f754d867ca324cc7e689fbbaae8af
-> prerequisite-patch-id: 336ba35d1924706d1d21c6e46718d973277f207a
-> prerequisite-patch-id: f3322d6494603585fc4728074484055d07484dd6
-> prerequisite-patch-id: f5a70e41fe9df7df0ab29538701bdfdb401a9d01
-> prerequisite-patch-id: b46a91afc38bea2ee6a8440f59e71e39728df6ad
-> prerequisite-message-id: <20251203-mt8189-add-mmc-support-v1-0-f5ce43212fe9@collabora.com>
-> prerequisite-patch-id: feab935ed7d0d7234dcc1980185300782c61620e
-> prerequisite-patch-id: efbd41a9926397f9b3ffd19235a04791b61f35c7
-> prerequisite-patch-id: 5b12a1056dfe87e4d39af584d8b16c31a1a00a04
-> prerequisite-message-id: <20250919020525.7904-1-ot_cathy.xu@mediatek.com>
-> prerequisite-patch-id: 7f2d960cde2f0e0a307721150e83b7b05b9a60d7
-> 
-> Best regards,
-> --
-> Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>
-> 
-> 
-> 
+  Linux 6.18-rc3 (2025-10-26 15:59:49 -0700)
 
+are available in the Git repository at:
 
-My bot found new DTB warnings on the .dts files added or changed in this
-series.
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.19-rc1
 
-Some warnings may be from an existing SoC .dtsi. Or perhaps the warnings
-are fixed by another series. Ultimately, it is up to the platform
-maintainer whether these warnings are acceptable or not. No need to reply
-unless the platform maintainer has comments.
+for you to fetch changes up to 75a9f4c54770f062f4b3813a83667452b326dda3:
 
-If you already ran DT checks and didn't see these error(s), then
-make sure dt-schema is up to date:
+  serial: sh-sci: Fix deadlock during RSCI FIFO overrun error (2025-11-26 13:15:28 +0100)
 
-  pip3 install dtschema --upgrade
+----------------------------------------------------------------
+TTY/Serial changes for 6.19-rc1
 
+Here is the big set of tty/serial driver changes for 6.19-rc1.  Nothing
+major at all, just small constant churn to make the tty layer "cleaner"
+as well as serial driver updates and even a new test added!  Included in
+here are:
+  - More tty/serial cleanups from Jiri
+  - tty tiocsti test added to hopefully ensure we don't regress in this
+    area again
+  - sc16is7xx driver updates
+  - imx serial driver updates
+  - 8250 driver updates
+  - new hardware device ids added
+  - other minor serial/tty driver cleanups and tweaks
 
-This patch series was applied (using b4) to base:
- Deps: looking for dependencies matching 28 patch-ids
- Deps: Applying prerequisite patch: [PATCH] dt-bindings: i2c: i2c-mt65xx: Add compatible for MT8189 SoC
- Deps: Applying prerequisite patch: [PATCH] dt-bindings: spmi: spmi-mtk-pmif: Add compatible for MT8189 SoC
- Deps: Applying prerequisite patch: [PATCH v7 4/9] dt-bindings: timer: Support MediaTek MT8189 timer
- Deps: Applying prerequisite patch: [PATCH v3 01/21] dt-bindings: clock: mediatek: Add MT8189 clock definitions
- Deps: Applying prerequisite patch: [PATCH v3 02/21] dt-bindings: power: mediatek: Add MT8189 power domain definitions
- Deps: Applying prerequisite patch: [PATCH v3 03/21] clk: mediatek: fix mfg mux issue
- Deps: Applying prerequisite patch: [PATCH v3 04/21] clk: mediatek: Add MT8189 apmixedsys clock support
- Deps: Applying prerequisite patch: [PATCH v3 05/21] clk: mediatek: Add MT8189 topckgen clock support
- Deps: Applying prerequisite patch: [PATCH v3 06/21] clk: mediatek: Add MT8189 vlpckgen clock support
- Deps: Applying prerequisite patch: [PATCH v3 07/21] clk: mediatek: Add MT8189 vlpcfg clock support
- Deps: Applying prerequisite patch: [PATCH v3 08/21] clk: mediatek: Add MT8189 bus clock support
- Deps: Applying prerequisite patch: [PATCH v3 09/21] clk: mediatek: Add MT8189 cam clock support
- Deps: Applying prerequisite patch: [PATCH v3 10/21] clk: mediatek: Add MT8189 dbgao clock support
- Deps: Applying prerequisite patch: [PATCH v3 11/21] clk: mediatek: Add MT8189 dvfsrc clock support
- Deps: Applying prerequisite patch: [PATCH v3 12/21] clk: mediatek: Add MT8189 i2c clock support
- Deps: Applying prerequisite patch: [PATCH v3 13/21] clk: mediatek: Add MT8189 img clock support
- Deps: Applying prerequisite patch: [PATCH v3 14/21] clk: mediatek: Add MT8189 mdp clock support
- Deps: Applying prerequisite patch: [PATCH v3 15/21] clk: mediatek: Add MT8189 mfg clock support
- Deps: Applying prerequisite patch: [PATCH v3 16/21] clk: mediatek: Add MT8189 mmsys clock support
- Deps: Applying prerequisite patch: [PATCH v3 17/21] clk: mediatek: Add MT8189 scp clock support
- Deps: Applying prerequisite patch: [PATCH v3 18/21] clk: mediatek: Add MT8189 ufs clock support
- Deps: Applying prerequisite patch: [PATCH v3 19/21] clk: mediatek: Add MT8189 vcodec clock support
- Deps: Applying prerequisite patch: [PATCH v3 20/21] pmdomain: mediatek: Add bus protect control flow for MT8189
- Deps: Applying prerequisite patch: [PATCH v3 21/21] pmdomain: mediatek: Add power domain driver for MT8189 SoC
- Deps: Applying prerequisite patch: [PATCH 1/3] dt-bindings: mmc: mtk-sd: Add support for MT8189 SoC
- Deps: Applying prerequisite patch: [PATCH 2/3] mmc: mtk-sd: add support for SPM resource release control
- Deps: Applying prerequisite patch: [PATCH 3/3] mmc: mtk-sd: add support for MT8189 SoC
- Deps: Applying prerequisite patch: [PATCH v2] arm64: dts: mediatek: mt8189: Add pinmux macro header file
- Base: e47d97576181b31291cf58e77d737d21def0e160 (use --merge-base to override)
+All of these have been in linux-next for a while with no reported issues
+other than a merge-conflict that you will have when you merge into your
+tree (should be simple to resolve, just delete the code on both sides
+of the merge).
 
-If this is not the correct base, please add 'base-commit' tag
-(or use b4 which does this automatically)
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-New warnings running 'make CHECK_DTBS=y for arch/arm64/boot/dts/mediatek/' for 20251203-add-mediatek-genio-520-720-evk-v1-0-df794b2a30ae@collabora.com:
+----------------------------------------------------------------
+Abhinav Saxena (1):
+      selftests/tty: add TIOCSTI test suite
 
-arch/arm64/boot/dts/mediatek/mt8371-genio-520-evk.dtb: /soc/clock-controller@1c000800: failed to match any schema with compatible: ['mediatek,mt8189-vlp-ao', 'syscon']
-arch/arm64/boot/dts/mediatek/mt8371-genio-520-evk.dtb: pmic (mediatek,mt6359): '#sound-dai-cells' does not match any of the regexes: '^pinctrl-[0-9]+$'
-	from schema $id: http://devicetree.org/schemas/mfd/mediatek,mt6397.yaml
-arch/arm64/boot/dts/mediatek/mt8391-genio-720-evk.dtb: /soc/clock-controller@1c000800: failed to match any schema with compatible: ['mediatek,mt8189-vlp-ao', 'syscon']
-arch/arm64/boot/dts/mediatek/mt8391-genio-720-evk.dtb: pmic (mediatek,mt6359): '#sound-dai-cells' does not match any of the regexes: '^pinctrl-[0-9]+$'
-	from schema $id: http://devicetree.org/schemas/mfd/mediatek,mt6397.yaml
+Andy Shevchenko (1):
+      serial: mux: Fix kernel doc for mux_poll()
 
+Biju Das (2):
+      dt-bindings: serial: rsci: Drop "uart-has-rtscts: false"
+      serial: sh-sci: Fix deadlock during RSCI FIFO overrun error
 
+Binbin Zhou (3):
+      dt-bindings: serial: 8250: Add Loongson uart compatible
+      serial: 8250: Add Loongson uart driver support
+      LoongArch: dts: Add uart new compatible string
 
+David Laight (1):
+      drivers/tty/vt: use umin() instead of min_t(u16, ...) for row/col limits
 
+Florian Eckert (1):
+      serial: 8250_pcilib: Replace deprecated PCI functions
 
+Gerhard Engleder (2):
+      serial: Keep rs485 settings for devices without firmware node
+      serial: 8250: add driver for KEBA UART
+
+Gopi Krishna Menon (1):
+      selftests: tty: add tty_tiocsti_test to .gitignore
+
+Greg Kroah-Hartman (1):
+      Merge 6.18-rc3 into tty-next
+
+Haotian Zhang (1):
+      serial: icom: Convert PCIBIOS_* return codes to errnos
+
+Heiko Stuebner (1):
+      dt-bindings: serial: snps-dw-apb-uart: Add support for rk3506
+
+Hugo Villeneuve (14):
+      serial: sc16is7xx: rename LCR macros to better reflect usage
+      serial: sc16is7xx: rename EFR mutex with generic name
+      serial: sc16is7xx: define common register access function
+      serial: sc16is7xx: remove unnecessary pointer cast
+      serial: sc16is7xx: use guards for simple mutex locks
+      serial: sc16is7xx: drop -ENOMEM error message
+      serial: sc16is7xx: declare SPR/TLR/XOFF2 register as volatile
+      serial: sc16is7xx: move port/channel init to separate function
+      serial: sc16is7xx: simplify to_sc16is7xx_one() with a single parameter
+      serial: sc16is7xx: Kconfig: allow building with COMPILE_TEST
+      serial: sc16is7xx: use KBUILD_MODNAME
+      serial: sc16is7xx: change conditional operator indentation
+      serial: sc16is7xx: reformat comments to improve readability
+      serial: sc16is7xx: add comments for lock requirements
+
+Ivaylo Ivanov (1):
+      dt-bindings: serial: samsung: add samsung,exynos8890-uart compatible
+
+Jiri Slaby (SUSE) (16):
+      tty: pty: use guard()s
+      tty: n_tty: use guard()s
+      tty: n_hdlc: simplify return from n_hdlc_tty_ioctl()
+      tty: n_hdlc: use guard()s
+      tty: moxa: use guard()s
+      tty: vt/keyboard: use __free()
+      tty: vt/keyboard: simplify returns from vt_do_kbkeycode_ioctl()
+      tty: vt/keyboard: use guard()s
+      serial: serial_core: simplify uart_ioctl() returns
+      serial: serial_core: use guard()s
+      tty: vt: do not open code DIV_ROUND_UP()
+      serial: xilinx_uartps: drop cdns_uart::cdns_uart_driver
+      serial: drop SERIAL_8250_DEPRECATED_OPTIONS
+      serial: 8250: move skip_txen_test to core
+      serial: 8250: make share_irqs local to 8250_platform
+      serial: 8250_platform: simplify IRQF_SHARED handling
+
+Kriish Sharma (1):
+      tty: document @dlci parameter in gsm_modem_send_initial_msc
+
+Lad Prabhakar (2):
+      serial: sh-sci: Sort include files alphabetically
+      serial: sh-sci: Merge sh-sci.h into sh-sci.c
+
+Magne Bruno (1):
+      serial: add support of CPCI cards
+
+Marco Crivellari (1):
+      tty: replace use of system_unbound_wq with system_dfl_wq
+
+Praveen Talari (2):
+      serial: qcom-geni: Enable PM runtime for serial driver
+      serial: qcom-geni: Enable Serial on SA8255p Qualcomm platforms
+
+Ravi Patel (1):
+      dt-bindings: serial: samsung: Add compatible for ARTPEC-9 SoC
+
+Sam Protsenko (1):
+      tty: serial: samsung: Declare earlycon for Exynos850
+
+Sherry Sun (3):
+      tty: serial: fsl_lpuart: Add missing wakeup event reporting
+      tty: serial: imx: Only configure the wake register when device is set as wakeup source
+      tty: serial: imx: Add missing wakeup event reporting
+
+Sven Eckelmann (1):
+      serial: ar933x: Add polling support
+
+Wenhua Lin (1):
+      serial: sprd: Return -EPROBE_DEFER when uart clock is not ready
+
+jempty.liang (1):
+      serial: 8250-of: Fix style issues in 8250_of.c
+
+ Documentation/devicetree/bindings/serial/8250.yaml |  14 +
+ .../devicetree/bindings/serial/renesas,rsci.yaml   |   2 -
+ .../devicetree/bindings/serial/samsung_uart.yaml   |   2 +
+ .../bindings/serial/snps-dw-apb-uart.yaml          |   1 +
+ arch/arm/configs/aspeed_g4_defconfig               |   1 -
+ arch/arm/configs/aspeed_g5_defconfig               |   1 -
+ arch/arm/configs/hisi_defconfig                    |   1 -
+ arch/arm/configs/lpc18xx_defconfig                 |   1 -
+ arch/arm/configs/shmobile_defconfig                |   1 -
+ arch/loongarch/boot/dts/loongson-2k0500.dtsi       |   2 +-
+ arch/loongarch/boot/dts/loongson-2k1000.dtsi       |   2 +-
+ arch/loongarch/boot/dts/loongson-2k2000.dtsi       |   2 +-
+ arch/mips/configs/bcm47xx_defconfig                |   1 -
+ arch/mips/configs/bmips_stb_defconfig              |   1 -
+ arch/mips/configs/gcw0_defconfig                   |   1 -
+ arch/nios2/configs/10m50_defconfig                 |   1 -
+ arch/parisc/configs/generic-32bit_defconfig        |   1 -
+ arch/parisc/configs/generic-64bit_defconfig        |   1 -
+ arch/powerpc/configs/44x/akebono_defconfig         |   1 -
+ arch/powerpc/configs/microwatt_defconfig           |   1 -
+ arch/riscv/configs/nommu_virt_defconfig            |   1 -
+ arch/xtensa/configs/audio_kc705_defconfig          |   1 -
+ arch/xtensa/configs/generic_kc705_defconfig        |   1 -
+ arch/xtensa/configs/nommu_kc705_defconfig          |   1 -
+ arch/xtensa/configs/smp_lx200_defconfig            |   1 -
+ arch/xtensa/configs/xip_kc705_defconfig            |   1 -
+ drivers/tty/moxa.c                                 | 165 +++---
+ drivers/tty/n_gsm.c                                |   2 +-
+ drivers/tty/n_hdlc.c                               |  79 +--
+ drivers/tty/n_tty.c                                | 107 ++--
+ drivers/tty/pty.c                                  | 103 ++--
+ drivers/tty/serial/8250/8250.h                     |   9 -
+ drivers/tty/serial/8250/8250_core.c                |   4 +
+ drivers/tty/serial/8250/8250_dw.c                  |   4 +-
+ drivers/tty/serial/8250/8250_exar.c                |   4 +-
+ drivers/tty/serial/8250/8250_keba.c                | 280 +++++++++
+ drivers/tty/serial/8250/8250_loongson.c            | 238 ++++++++
+ drivers/tty/serial/8250/8250_of.c                  |   2 +-
+ drivers/tty/serial/8250/8250_pci.c                 |  47 +-
+ drivers/tty/serial/8250/8250_pci1xxxx.c            |  10 +-
+ drivers/tty/serial/8250/8250_pcilib.c              |   7 +-
+ drivers/tty/serial/8250/8250_pcilib.h              |   2 +-
+ drivers/tty/serial/8250/8250_platform.c            |  55 +-
+ drivers/tty/serial/8250/8250_rsa.c                 |  24 -
+ drivers/tty/serial/8250/Kconfig                    |  40 +-
+ drivers/tty/serial/8250/Makefile                   |   2 +
+ drivers/tty/serial/Kconfig                         |   2 +-
+ drivers/tty/serial/ar933x_uart.c                   |  62 ++
+ drivers/tty/serial/fsl_lpuart.c                    |   8 +
+ drivers/tty/serial/icom.c                          |   1 +
+ drivers/tty/serial/imx.c                           |  24 +-
+ drivers/tty/serial/mux.c                           |   2 +-
+ drivers/tty/serial/qcom_geni_serial.c              | 178 +++++-
+ drivers/tty/serial/samsung_tty.c                   |   2 +
+ drivers/tty/serial/sc16is7xx.c                     | 413 ++++++-------
+ drivers/tty/serial/sc16is7xx.h                     |   1 -
+ drivers/tty/serial/sc16is7xx_i2c.c                 |   4 +-
+ drivers/tty/serial/sc16is7xx_spi.c                 |   4 +-
+ drivers/tty/serial/serial_core.c                   | 178 +++---
+ drivers/tty/serial/sh-sci.c                        | 196 ++++++-
+ drivers/tty/serial/sh-sci.h                        | 178 ------
+ drivers/tty/serial/sprd_serial.c                   |   6 +
+ drivers/tty/serial/xilinx_uartps.c                 |  15 +-
+ drivers/tty/tty_buffer.c                           |   8 +-
+ drivers/tty/vt/keyboard.c                          | 318 ++++------
+ drivers/tty/vt/selection.c                         |   9 +-
+ drivers/tty/vt/vt.c                                |   4 +-
+ tools/testing/selftests/tty/.gitignore             |   1 +
+ tools/testing/selftests/tty/Makefile               |   6 +-
+ tools/testing/selftests/tty/config                 |   1 +
+ tools/testing/selftests/tty/tty_tiocsti_test.c     | 650 +++++++++++++++++++++
+ 71 files changed, 2338 insertions(+), 1161 deletions(-)
+ create mode 100644 drivers/tty/serial/8250/8250_keba.c
+ create mode 100644 drivers/tty/serial/8250/8250_loongson.c
+ delete mode 100644 drivers/tty/serial/sh-sci.h
+ create mode 100644 tools/testing/selftests/tty/config
+ create mode 100644 tools/testing/selftests/tty/tty_tiocsti_test.c
