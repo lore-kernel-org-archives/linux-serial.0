@@ -1,226 +1,300 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A04C92FF64D
-	for <linux-serial@vger.kernel.org>; Mon,  8 Dec 2025 10:29:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CAA226056D;
+	Mon,  8 Dec 2025 20:28:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765189746; cv=none; b=K7x1FT/Mt+3nTI0jX5y/HPy779r+/VtmO5iwMxC6N1gdWZ3X7iYzwPZACozH7BsT0+i73gg4bARBDhT7gFbH2xZGyavYyShe3FFnFw2NiW6iopb2qrXzXygLefU8MJhffYggSzICX/zDq94W08aG3HWfkLx2ct+9PsaWsGgo2u0=
+	t=1765225687; cv=none; b=d+dHHiLrBMiGRgTnrypxhlhPVa6MF5dqQS7v7Tqy64DGWNY9z7VPdXcDp3FuDlhyrSlrATlGhe4vEuembI0oyWEBwPdEtHE8wsXhlUQJkwE9SgGtXUdYv+LfCbH1qXO9fNVABAxmts7eNW7hGmnb4wT3K40NzR0JRPNAY0y5jpc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765189746; c=relaxed/simple;
-	bh=dxhnhW380msEU7IB3PT4dXHPAn2AyhgMamjuaICX0fw=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=eaVTeAFUn/jLbuOwjksB1wFhpQgXZlnxxXRgXXEAl5cxnWUq0IiBPN+U5jzzBAOCG1ZQ+o23ZSsAcdj2Kbrs3PutLreOtVVlkZqbUqJ1DQSQ00XbC7iOFenAN0OW7k2amhZ68B+ncAaXMufzKq5J3pSaoyS5actn7MXS5H+XkiU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=GNlSvCO/; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=klEqEbXD; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=GNlSvCO/; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=klEqEbXD; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
+	s=arc-20240116; t=1765225687; c=relaxed/simple;
+	bh=YIXliSchTOGG+1D3mmfdvl+VICDaZKaTzDSnNx+OpKw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=CW2gyI8ypjI0lkE+Eidni43MS5rea9Oe7HXS7yYIHmQEb6kp4T2tZnJEFnLVC1VwKkWPdY74ONVfZp4AFdwF8p16utjn5LhEzig3ccNVMxbW3q1RJH9X+NLrK3zndL9CBsp0yC/E4/OnqujQQBckOl2nFC5e0mqLxKpoq9RbIOQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cKSQiL3F; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="GNlSvCO/";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="klEqEbXD";
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="GNlSvCO/";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="klEqEbXD"
-Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 8DF74336D2;
-	Mon,  8 Dec 2025 10:28:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1765189735; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=ELQjSzlIeejBBqU4pR7dmh0DEIoe4QyJRdFXyn2OpCg=;
-	b=GNlSvCO/9QfnaWvdncPetLph2KwLZzmN2CrA3zfQW8BX4yOh2teCe5DsNyVcXgVpiUdBxj
-	y2BlmM64swFF0WjN5vFwnaiNnR7Yx8UtZr4v+jLzwGwUyXtNXyVEfkyttNpDeMG79q2RgQ
-	kMt3ks0D3w8Va39jNtlq5OYjreHmeqI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1765189735;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=ELQjSzlIeejBBqU4pR7dmh0DEIoe4QyJRdFXyn2OpCg=;
-	b=klEqEbXDGCQPH7HPYXYkAY6mru+Xj4aICioqyGxXLLW9NwAOlqh9EztX5OH6CBzosfdynL
-	74XfDW6i24U91MBA==
-Authentication-Results: smtp-out1.suse.de;
-	none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1765189735; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=ELQjSzlIeejBBqU4pR7dmh0DEIoe4QyJRdFXyn2OpCg=;
-	b=GNlSvCO/9QfnaWvdncPetLph2KwLZzmN2CrA3zfQW8BX4yOh2teCe5DsNyVcXgVpiUdBxj
-	y2BlmM64swFF0WjN5vFwnaiNnR7Yx8UtZr4v+jLzwGwUyXtNXyVEfkyttNpDeMG79q2RgQ
-	kMt3ks0D3w8Va39jNtlq5OYjreHmeqI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1765189735;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=ELQjSzlIeejBBqU4pR7dmh0DEIoe4QyJRdFXyn2OpCg=;
-	b=klEqEbXDGCQPH7HPYXYkAY6mru+Xj4aICioqyGxXLLW9NwAOlqh9EztX5OH6CBzosfdynL
-	74XfDW6i24U91MBA==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 4BB3B3EA66;
-	Mon,  8 Dec 2025 10:28:55 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id aJAKEWeoNmm7VQAAD6G6ig
-	(envelope-from <tzimmermann@suse.de>); Mon, 08 Dec 2025 10:28:55 +0000
-From: Thomas Zimmermann <tzimmermann@suse.de>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	simona@ffwll.ch,
-	airlied@gmail.com
-Cc: linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	dri-devel@lists.freedesktop.org,
-	Thomas Zimmermann <tzimmermann@suse.de>
-Subject: [PATCH 2/2] vt: Remove con_debug_enter/_leave from struct consw
-Date: Mon,  8 Dec 2025 11:17:34 +0100
-Message-ID: <20251208102851.40894-3-tzimmermann@suse.de>
-X-Mailer: git-send-email 2.52.0
-In-Reply-To: <20251208102851.40894-1-tzimmermann@suse.de>
-References: <20251208102851.40894-1-tzimmermann@suse.de>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cKSQiL3F"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96B46C4CEF1;
+	Mon,  8 Dec 2025 20:28:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1765225686;
+	bh=YIXliSchTOGG+1D3mmfdvl+VICDaZKaTzDSnNx+OpKw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=cKSQiL3F7jbs9gE3oqTSJIXkLb7tk+tk91qixKYoK8qtGJAUSs5aJ9ePUjh2Qyia8
+	 nHuumMDiLGW1aiPxpaKX3WZKl+PSFWJ2IZJf5qmM9A3ntp+DnWf4EWqg8Mt20FNsiV
+	 o/BElrDBTbH82vMlXrixaqJYwwWoybic9v8tQbVhKn8pHPN5/PLJU3eAYfXUA78Zi4
+	 +tyZs8g1KoMMLqcFIe1M/jPs4Gp2QwLh9hKNINqnMoqyHy+KrNjxUG/R7NNuh/CfU2
+	 gqOTAR3nA/ZFH8fqhudoLG513fmgCYvOOeMyYP8VijHvl6qcbVorCvBQWiAJErnTbN
+	 mrFyypLkTFIww==
+Date: Mon, 8 Dec 2025 14:28:03 -0600
+From: Rob Herring <robh@kernel.org>
+To: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Nathan Chancellor <nathan@kernel.org>,
+	Nicolas Schier <nicolas.schier@linux.dev>,
+	Hans de Goede <hansg@kernel.org>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Mark Pearson <mpearson-lenovo@squebb.ca>,
+	"Derek J. Clark" <derekjohn.clark@gmail.com>,
+	Manivannan Sadhasivam <mani@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Marcel Holtmann <marcel@holtmann.org>,
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+	Bartosz Golaszewski <brgl@bgdev.pl>, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
+	platform-driver-x86@vger.kernel.org, linux-pci@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+	linux-bluetooth@vger.kernel.org, linux-pm@vger.kernel.org,
+	Stephan Gerhold <stephan.gerhold@linaro.org>,
+	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Subject: Re: [PATCH v2 08/10] dt-bindings: connector: Add PCIe M.2 Mechanical
+ Key E connector
+Message-ID: <20251208202803.GA2541017-robh@kernel.org>
+References: <20251125-pci-m2-e-v2-0-32826de07cc5@oss.qualcomm.com>
+ <20251125-pci-m2-e-v2-8-32826de07cc5@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spamd-Result: default: False [-2.80 / 50.00];
-	BAYES_HAM(-3.00)[100.00%];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	MID_CONTAINS_FROM(1.00)[];
-	R_MISSING_CHARSET(0.50)[];
-	NEURAL_HAM_SHORT(-0.20)[-0.998];
-	MIME_GOOD(-0.10)[text/plain];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	MIME_TRACE(0.00)[0:+];
-	RCPT_COUNT_SEVEN(0.00)[8];
-	FREEMAIL_TO(0.00)[linuxfoundation.org,kernel.org,ffwll.ch,gmail.com];
-	ARC_NA(0.00)[];
-	FUZZY_RATELIMITED(0.00)[rspamd.com];
-	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	URIBL_BLOCKED(0.00)[suse.de:mid,suse.de:email,imap1.dmz-prg2.suse.org:helo];
-	FROM_EQ_ENVFROM(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	TO_DN_SOME(0.00)[];
-	RCVD_TLS_ALL(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,suse.de:mid,suse.de:email];
-	RCVD_COUNT_TWO(0.00)[2];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	FREEMAIL_ENVRCPT(0.00)[gmail.com]
-X-Spam-Level: 
-X-Spam-Flag: NO
-X-Spam-Score: -2.80
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251125-pci-m2-e-v2-8-32826de07cc5@oss.qualcomm.com>
 
-There are no implementations of con_debug_enter and con_debug_leave.
-Remove the callbacks from struct consw and clean up the caller.
+On Tue, Nov 25, 2025 at 08:15:12PM +0530, Manivannan Sadhasivam wrote:
+> Add the devicetree binding for PCIe M.2 Mechanical Key E connector defined
+> in the PCI Express M.2 Specification, r4.0, sec 5.1.2. This connector
+> provides interfaces like PCIe or SDIO to attach the WiFi devices to the
+> host machine, USB or UART+PCM interfaces to attach the Bluetooth (BT)
+> devices along with additional interfaces like I2C for NFC solution. At any
+> point of time, the connector can only support either PCIe or SDIO as the
+> WiFi interface and USB or UART as the BT interface.
 
-This is a functional revert of commit b45cfba4e900 ("vt,console,kdb:
-implement atomic console enter/leave functions").
+AFAICT, there's no muxing of interfaces. Maybe that's a defacto 
+limitation on x86 systems? There's no reason to encode that into the 
+binding if the pins aren't mux'ed on the connector.
 
-Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
----
- drivers/tty/vt/vt.c     | 30 +-----------------------------
- include/linux/console.h |  8 --------
- 2 files changed, 1 insertion(+), 37 deletions(-)
+> 
+> The connector provides a primary power supply of 3.3v, along with an
+> optional 1.8v VIO supply for the Adapter I/O buffer circuitry operating at
+> 1.8v sideband signaling.
+> 
+> The connector also supplies optional signals in the form of GPIOs for fine
+> grained power management.
+> 
+> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+> ---
+>  .../bindings/connector/pcie-m2-e-connector.yaml    | 178 +++++++++++++++++++++
+>  MAINTAINERS                                        |   1 +
+>  2 files changed, 179 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/connector/pcie-m2-e-connector.yaml b/Documentation/devicetree/bindings/connector/pcie-m2-e-connector.yaml
+> new file mode 100644
+> index 000000000000..fe2c9a943a21
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/connector/pcie-m2-e-connector.yaml
+> @@ -0,0 +1,178 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/connector/pcie-m2-e-connector.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: PCIe M.2 Mechanical Key E Connector
+> +
+> +maintainers:
+> +  - Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+> +
+> +description:
+> +  A PCIe M.2 E connector node represents a physical PCIe M.2 Mechanical Key E
+> +  connector. Mechanical Key E connectors are used to connect Wireless
+> +  Connectivity devices including combinations of Wi-Fi, BT, NFC to the host
+> +  machine over interfaces like PCIe/SDIO, USB/UART+PCM, and I2C.
+> +
+> +properties:
+> +  compatible:
+> +    const: pcie-m2-e-connector
+> +
+> +  vpcie3v3-supply:
+> +    description: A phandle to the regulator for 3.3v supply.
+> +
+> +  vpcie1v8-supply:
+> +    description: A phandle to the regulator for VIO 1.8v supply.
+> +
+> +  ports:
+> +    $ref: /schemas/graph.yaml#/properties/ports
+> +    description: OF graph bindings modeling the interfaces exposed on the
+> +      connector. Since a single connector can have multiple interfaces, every
+> +      interface has an assigned OF graph port number as described below.
+> +
+> +    properties:
+> +      port@0:
+> +        $ref: /schemas/graph.yaml#/properties/port
+> +        description: Connector interfaces for Wi-Fi
+> +
+> +        properties:
+> +          endpoint@0:
+> +            $ref: /schemas/graph.yaml#/properties/endpoint
+> +            description: PCIe interface
+> +
+> +          endpoint@1:
+> +            $ref: /schemas/graph.yaml#/properties/endpoint
+> +            description: SDIO interface
+> +
+> +        anyOf:
+> +          - required:
+> +              - endpoint@0
+> +          - required:
+> +              - endpoint@1
+> +
+> +      port@1:
+> +        $ref: /schemas/graph.yaml#/properties/port
+> +        description: Connector interfaces for BT
+> +
+> +        properties:
+> +          endpoint@0:
+> +            $ref: /schemas/graph.yaml#/properties/endpoint
+> +            description: USB 2.0 interface
+> +
+> +          endpoint@1:
+> +            $ref: /schemas/graph.yaml#/properties/endpoint
+> +            description: UART interface
+> +
+> +        anyOf:
+> +          - required:
+> +              - endpoint@0
+> +          - required:
+> +              - endpoint@1
+> +
+> +      port@2:
+> +        $ref: /schemas/graph.yaml#/properties/port
+> +        description: PCM/I2S interface
 
-diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index 86a510e5f3d7..0bc3ea12b415 100644
---- a/drivers/tty/vt/vt.c
-+++ b/drivers/tty/vt/vt.c
-@@ -187,19 +187,12 @@ static DECLARE_WORK(con_driver_unregister_work, con_driver_unregister_callback);
-  * fg_console is the current virtual console,
-  * last_console is the last used one,
-  * want_console is the console we want to switch to,
-- * saved_* variants are for save/restore around kernel debugger enter/leave
-  */
- int fg_console;
- EXPORT_SYMBOL(fg_console);
- int last_console;
- int want_console = -1;
- 
--static int saved_fg_console;
--static int saved_last_console;
--static int saved_want_console;
--static int saved_vc_mode;
--static int saved_console_blanked;
--
- /*
-  * For each existing display, we have a pointer to console currently visible
-  * on that display, allowing consoles other than fg_console to be refreshed
-@@ -4287,15 +4280,6 @@ EXPORT_SYMBOL(con_is_visible);
-  */
- void con_debug_enter(struct vc_data *vc)
- {
--	saved_fg_console = fg_console;
--	saved_last_console = last_console;
--	saved_want_console = want_console;
--	saved_vc_mode = vc->vc_mode;
--	saved_console_blanked = console_blanked;
--	vc->vc_mode = KD_TEXT;
--	console_blanked = 0;
--	if (vc->vc_sw->con_debug_enter)
--		vc->vc_sw->con_debug_enter(vc);
- #ifdef CONFIG_KGDB_KDB
- 	/* Set the initial LINES variable if it is not already set */
- 	if (vc->vc_rows < 999) {
-@@ -4335,19 +4319,7 @@ EXPORT_SYMBOL_GPL(con_debug_enter);
-  * was invoked.
-  */
- void con_debug_leave(void)
--{
--	struct vc_data *vc;
--
--	fg_console = saved_fg_console;
--	last_console = saved_last_console;
--	want_console = saved_want_console;
--	console_blanked = saved_console_blanked;
--	vc_cons[fg_console].d->vc_mode = saved_vc_mode;
--
--	vc = vc_cons[fg_console].d;
--	if (vc->vc_sw->con_debug_leave)
--		vc->vc_sw->con_debug_leave(vc);
--}
-+{ }
- EXPORT_SYMBOL_GPL(con_debug_leave);
- 
- static int do_register_con_driver(const struct consw *csw, int first, int last)
-diff --git a/include/linux/console.h b/include/linux/console.h
-index 031a58dc2b91..99d67fc41fb5 100644
---- a/include/linux/console.h
-+++ b/include/linux/console.h
-@@ -78,12 +78,6 @@ enum vc_intensity;
-  *		characters. (optional)
-  * @con_invert_region: invert a region of length @count on @vc starting at @p.
-  *		(optional)
-- * @con_debug_enter: prepare the console for the debugger. This includes, but
-- *		is not limited to, unblanking the console, loading an
-- *		appropriate palette, and allowing debugger generated output.
-- *		(optional)
-- * @con_debug_leave: restore the console to its pre-debug state as closely as
-- *		possible. (optional)
-  */
- struct consw {
- 	struct module *owner;
-@@ -122,8 +116,6 @@ struct consw {
- 			enum vc_intensity intensity,
- 			bool blink, bool underline, bool reverse, bool italic);
- 	void	(*con_invert_region)(struct vc_data *vc, u16 *p, int count);
--	void	(*con_debug_enter)(struct vc_data *vc);
--	void	(*con_debug_leave)(struct vc_data *vc);
- };
- 
- extern const struct consw *conswitchp;
--- 
-2.52.0
+Does this work with any existing DAI bindings? Or conflict with the 
+audio graph card binding?
 
+> +
+> +      port@3:
+> +        $ref: /schemas/graph.yaml#/properties/port
+> +        description: I2C interface
+
+Like the other one, use i2c-parent.
+
+> +
+> +    oneOf:
+> +      - required:
+> +          - port@0
+> +
+> +  clocks:
+> +    description: 32.768 KHz Suspend Clock (SUSCLK) input from the host system to
+> +      the M.2 card. Refer, PCI Express M.2 Specification r4.0, sec 3.1.12.1 for
+> +      more details.
+> +    maxItems: 1
+> +
+> +  w-disable1-gpios:
+> +    description: GPIO controlled connection to W_DISABLE1# signal. This signal
+> +      is used by the system to disable WiFi radio in the M.2 card. Refer, PCI
+> +      Express M.2 Specification r4.0, sec 3.1.12.3 for more details.
+> +    maxItems: 1
+> +
+> +  w-disable2-gpios:
+> +    description: GPIO controlled connection to W_DISABLE2# signal. This signal
+> +      is used by the system to disable BT radio in the M.2 card. Refer, PCI
+> +      Express M.2 Specification r4.0, sec 3.1.12.3 for more details.
+> +    maxItems: 1
+> +
+> +  viocfg-gpios:
+> +    description: GPIO controlled connection to IO voltage configuration
+> +      (VIO_CFG) signal. This signal is used by the M.2 card to indicate to the
+> +      host system that the card supports an independent IO voltage domain for
+> +      the sideband signals. Refer, PCI Express M.2 Specification r4.0, sec
+> +      3.1.15.1 for more details.
+> +    maxItems: 1
+> +
+> +  uim-power-src-gpios:
+> +    description: GPIO controlled connection to UIM_POWER_SRC signal. This signal
+> +      is used when the NFC solution is implemented and receives the power output
+> +      from WWAN_UIM_PWR signal of the another WWAN M.2 card. Refer, PCI Express
+> +      M.2 Specification r4.0, sec 3.1.11.1 for more details.
+> +    maxItems: 1
+> +
+> +  uim-power-snk-gpios:
+> +    description: GPIO controlled connection to UIM_POWER_SNK signal. This signal
+> +      is used when the NFC solution is implemented and supplies power to the
+> +      Universal Integrated Circuit Card (UICC). Refer, PCI Express M.2
+> +      Specification r4.0, sec 3.1.11.2 for more details.
+> +    maxItems: 1
+> +
+> +  uim-swp-gpios:
+> +    description: GPIO controlled connection to UIM_SWP signal. This signal is
+> +      used when the NFC solution is implemented and implements the Single Wire
+> +      Protocol (SWP) interface to the UICC. Refer, PCI Express M.2 Specification
+> +      r4.0, sec 3.1.11.3 for more details.
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - vpcie3v3-supply
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  # PCI M.2 Key E connector for Wi-Fi/BT with PCIe/UART interfaces
+> +  - |
+> +    #include <dt-bindings/gpio/gpio.h>
+> +
+> +    connector {
+> +        compatible = "pcie-m2-e-connector";
+> +        vpcie3v3-supply = <&vreg_wcn_3p3>;
+> +        vpcie1v8-supply = <&vreg_l15b_1p8>;
+> +        w-disable1-gpios = <&tlmm 117 GPIO_ACTIVE_LOW>;
+> +        w-disable2-gpios = <&tlmm 116 GPIO_ACTIVE_LOW>;
+> +
+> +        ports {
+> +            #address-cells = <1>;
+> +            #size-cells = <0>;
+> +
+> +            port@0 {
+> +                #address-cells = <1>;
+> +                #size-cells = <0>;
+> +
+> +                reg = <0>;
+> +
+> +                endpoint@0 {
+> +                    reg = <0>;
+> +                    remote-endpoint = <&pcie4_port0_ep>;
+> +                };
+> +            };
+> +
+> +            port@1 {
+> +                #address-cells = <1>;
+> +                #size-cells = <0>;
+> +
+> +                reg = <1>;
+> +
+> +                endpoint@1 {
+> +                    reg = <1>;
+> +                    remote-endpoint = <&uart14_ep>;
+> +                };
+> +            };
+> +        };
+> +    };
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 9b3f689d1f50..f707f29d0a37 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -20478,6 +20478,7 @@ PCIE M.2 POWER SEQUENCING
+>  M:	Manivannan Sadhasivam <mani@kernel.org>
+>  L:	linux-pci@vger.kernel.org
+>  S:	Maintained
+> +F:	Documentation/devicetree/bindings/connector/pcie-m2-e-connector.yaml
+>  F:	Documentation/devicetree/bindings/connector/pcie-m2-m-connector.yaml
+>  F:	drivers/power/sequencing/pwrseq-pcie-m2.c
+>  
+> 
+> -- 
+> 2.48.1
+> 
