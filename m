@@ -1,158 +1,156 @@
-Received: from SHSQR01.spreadtrum.com (unknown [222.66.158.135])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f195.google.com (mail-pf1-f195.google.com [209.85.210.195])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9CCB224B0D
-	for <linux-serial@vger.kernel.org>; Wed, 10 Dec 2025 06:38:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=222.66.158.135
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 455B91F3BA4
+	for <linux-serial@vger.kernel.org>; Wed, 10 Dec 2025 06:48:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.195
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765348696; cv=none; b=uutcJWw5XwRsVdbXw0y24sg1Ut09IJBnb0gkiR7DUkKExQlsX6rnlfkhJjhw6/vivZ0A6FPFGNow7v56TuViM0MlBw+3nL6m8CK2fIa9jLP2lmdyB6RrmLvv7w3r08qqTnufokHZVFJMPY5eANbJwbOg0Os3XvVeFddQYnj8Yto=
+	t=1765349333; cv=none; b=a+DJLNVrORJqPbhlrCqtMPeOGBB2vH7+PH+w3vCitjfUzxJcV+Z/p8M9YG2Z/GgUqodHcqPuxtR23ekjfJCyL7DnIRqrYT2ECflOE7RM8YrO74eavPdXdPfFXgbbbYZK/SFG6E9P/nkE8dNDGY5b1AuDu3qt6+97Nxv/KYFNd5c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765348696; c=relaxed/simple;
-	bh=bWaeLXyrwPQoZNpJTS4rkPRAP6IqE3KxyPJwwHYaX+0=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=S8Km92Mic/gsEhvxglz3qMT9gQFRYl+1eKZ2Nd7aPXvUW+EE10tYKcYypsBw6TCtgu8MV0ANLAL+Cy6KJpGnihChUQ2Qh93V6OEM8tEs/kMsciol5DhphDSpRkmJu07fWng+1Br8wQttLaA1/siGoQoscAtuihlYh+kDcs5SbzI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=unisoc.com; spf=pass smtp.mailfrom=unisoc.com; dkim=pass (2048-bit key) header.d=unisoc.com header.i=@unisoc.com header.b=XoRbGIJF; arc=none smtp.client-ip=222.66.158.135
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=unisoc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=unisoc.com
+	s=arc-20240116; t=1765349333; c=relaxed/simple;
+	bh=XyFT/ijMOti+AUazOE3sm3jB85WLtoW49LVxRwcq6Ts=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=eGwsjhVhKyxHuFQ2LASRY2tS/rQZ9TmpwsP51xD5OvnpNB9vXE3LsRA5VqhyxKzOIAnx5qhpGFqQ1o59p/fc+Rts5Z9mtyFaBuWMlK9HpJ2gJhf5JtCoNL9aF5AShtIG9xR12nROoKHpgAmxVOybzxx5r9EKR+qIBbh7Zb8X9CM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LVr6qm5v; arc=none smtp.client-ip=209.85.210.195
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=unisoc.com header.i=@unisoc.com header.b="XoRbGIJF"
-Received: from dlp.unisoc.com ([10.29.3.86])
-	by SHSQR01.spreadtrum.com with ESMTP id 5BA6ZlFp012763;
-	Wed, 10 Dec 2025 14:35:47 +0800 (+08)
-	(envelope-from Wenhua.Lin@unisoc.com)
-Received: from SHDLP.spreadtrum.com (zeshmbx09.spreadtrum.com [10.29.3.107])
-	by dlp.unisoc.com (SkyGuard) with ESMTPS id 4dR5TY664mz2KXpDt;
-	Wed, 10 Dec 2025 14:31:29 +0800 (CST)
-Received: from zeshkernups01.spreadtrum.com (10.29.55.99) by
- zeshmbx09.spreadtrum.com (10.29.3.107) with Microsoft SMTP Server (TLS) id
- 15.0.1497.48; Wed, 10 Dec 2025 14:35:45 +0800
-From: Wenhua Lin <Wenhua.Lin@unisoc.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby
-	<jirislaby@kernel.org>
-CC: Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang
-	<baolin.wang@linux.alibaba.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>, Cixi
- Geng <cixi.geng@linux.dev>,
-        <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-        wenhua lin <wenhua.lin1994@gmail.com>,
-        Wenhua
- Lin <Wenhua.Lin@unisoc.com>,
-        Xiongpeng Wu <xiongpeng.wu@unisoc.com>,
-        Zhaochen
- Su <Zhaochen.Su@unisoc.com>,
-        Zhirong Qiu <Zhirong.Qiu@unisoc.com>
-Subject: [PATCH V2] serial: sprd: Use devm_clk_get_optional() to get the input clock
-Date: Wed, 10 Dec 2025 14:35:43 +0800
-Message-ID: <20251210063543.2185727-1-Wenhua.Lin@unisoc.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LVr6qm5v"
+Received: by mail-pf1-f195.google.com with SMTP id d2e1a72fcca58-7f121c00dedso1696015b3a.0
+        for <linux-serial@vger.kernel.org>; Tue, 09 Dec 2025 22:48:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1765349331; x=1765954131; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ipxlXAQURz5oB3Z/PSsHI8ypS45IfnNmF0KmJeS0Zv4=;
+        b=LVr6qm5vYhXzev2I4MYWSMWiUzeLWhofALgoj72HFao7djV7B2K2T5ExaqUVaH70mK
+         oolJ6+7o9s7GQqZgwaX67Gq3u6Drk+v7kAQQAHkTB1QonKZZSHpSDcWAy7uEIPnmi+HP
+         LBw11O/miKaPzYt8BqpKa1WPn5Ert1TQoQZqXaNTixFDQOO3rGBt2rkVElJp968uaS6o
+         ZhQpQXlh51CI/qWlRMSDnzfvpMW2Un5RkA+y72w+yYrm974BS9qH+6Jx9K9R7ubKANRq
+         dm7WxtEOf+X9P4vvNDgNhbnrUwV3pWeVv5yzTxlyoFMw9KRL+bQ1b9zvNmQTryC+Rla4
+         kBYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1765349332; x=1765954132;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=ipxlXAQURz5oB3Z/PSsHI8ypS45IfnNmF0KmJeS0Zv4=;
+        b=Dh2VevJ1wxDDubzd7vlWKOi/7PtbTKvtvja6fz0SOWEP4mBg4GwiySCuRlD/VYN2jc
+         Yh58QA35GnRT2QIXxTVnji894gAy3RM4J9scR6GRP+ms0xST35qkMYO+8+xXezmUIvmO
+         GORP6Rr4y0D/MRzLYMGemvP1SfoI3xF3UEGNccYCsGpTqqFyAT9Dj+wcG9mHjBElDPQs
+         QTwXL6lz/fr0YsdKCUJ0kX9HuPd96EOdtbRKp2pGc7OtXM+I9u6Aj/ktdhTMm+HWUhO3
+         Eze6emHJjzy2XGXFibbJ/trdnNOH0ocn/O0eRUnR9IMrSSVgW2M+3iLk6xMSAEqvgjpT
+         yeGg==
+X-Forwarded-Encrypted: i=1; AJvYcCVjIHJtPv5242sdcAlJzB3doA+6kGnBp4rqWgNYlJ/VeVoYBXPeJ/UmH0kZCz4piOwFFNCbhLtMRw3kB/I=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy36EM8DiQIHRvM47OetbjtkuegQ3DDPiJ380Hlrq20CAfOYkZM
+	do31ta4HclXovc7ZDh62cYOrMm+SZq2NOb7KXN5LmzTQs77dJoeXrKhf+caITvsV2yZsT14pW1t
+	D0fF6nBaMD6dXHIh68pPAlq3Uml1xko8=
+X-Gm-Gg: ASbGncv7vGL6QrTIAJVd131hC6/SghS63UrsK8j/OjGHWNbgL5Bm9yHzU6NHktGKgip
+	QmAVx0n19YGbJq5NF0GxxXOQ1cHwW4vraXaxuN7S0exD0MvEC+udLr3A8Yd2eju66SyquWgGgZO
+	mCkIr3c+QVlT2AXS5K6DB/OfqyKmhhXxE8DVR+OVUzF3PVe0Lqtqk+5zcBqXDl5EsL/Odr7xNdF
+	oz1Hs3Qc37PIli9kT98L0DcUPb6jpWr9l33sJ+L4Js9hdmTL367aX53TwPVQ9TwgOCl1Fv/
+X-Google-Smtp-Source: AGHT+IEXn9Yxn9d2+XJEDlQycZcbT8TdJ+jKbsf/w+E0RGrxFAn609NmzJIOLhNKbR5yr7/P9O9yBfsq87lJ0pVg32Y=
+X-Received: by 2002:a05:6a21:3298:b0:366:5b6d:ebe0 with SMTP id
+ adf61e73a8af0-366e33be43emr1558023637.72.1765349331554; Tue, 09 Dec 2025
+ 22:48:51 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SHCAS03.spreadtrum.com (10.0.1.207) To
- zeshmbx09.spreadtrum.com (10.29.3.107)
-X-MAIL:SHSQR01.spreadtrum.com 5BA6ZlFp012763
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=unisoc.com;
-	s=default; t=1765348560;
-	bh=bhfoQ/zG52KjLQqtMHJaCHwh3Ur9GbyKvPw5AodW5WE=;
-	h=From:To:CC:Subject:Date;
-	b=XoRbGIJFapLl2RJkcd6LM0VBc2WjyuMyOv57qw+Ggjd7dxIC7nDrFmqlQfzL9gjX0
-	 quAhxMRIp/71qiXbp0SzdqKb/99dX9RxxCUjAJBE/JMWem1c7NwlqMA4qqntgODrRm
-	 TGLX5O0BUJceqIaEAV0SpMjOXj7hahlhHSSLEenAdU3DExF3xlIU7k/owIDI66C+0a
-	 atLYGF2OcEHL7d4BAMYvZ2fpP9Iqj2DNnuu0qUWaG5GbGJrphikUfh+0638YSq6Dr1
-	 OqTG4rJtxNViyS0AONmi/5Bh1eoPzGp77RXv2koPw7chyR+stREm/nRoIf2YyplQov
-	 xGvBV+anJru1A==
+References: <20251022030840.956589-1-Wenhua.Lin@unisoc.com>
+ <aSb5Q0Giq8p43n_o@black.igk.intel.com> <CAB9BWhfkkssUK7inD1gQA7DJ0YFuXKzboYFQjvZgT9jKSmyZFA@mail.gmail.com>
+ <aSgUQvExNY2lCpYT@smile.fi.intel.com>
+In-Reply-To: <aSgUQvExNY2lCpYT@smile.fi.intel.com>
+From: wenhua lin <wenhua.lin1994@gmail.com>
+Date: Wed, 10 Dec 2025 14:48:40 +0800
+X-Gm-Features: AQt7F2qb39lLzb4HnZaVo64i-LGUQ_Q-s48fJhI061prBpBuO3jj2fRZlB3UX40
+Message-ID: <CAB9BWheCDwbS+=pwAK0+HyY+q5=DQ_2tUQXaFoH5-GKtVUDnBw@mail.gmail.com>
+Subject: Re: [PATCH] serial: sprd: Return -EPROBE_DEFER when uart clock is not ready
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Wenhua Lin <Wenhua.Lin@unisoc.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Orson Zhai <orsonzhai@gmail.com>, Baolin Wang <baolin.wang@linux.alibaba.com>, 
+	Chunyan Zhang <zhang.lyra@gmail.com>, Cixi Geng <cixi.geng@linux.dev>, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, Xiongpeng Wu <xiongpeng.wu@unisoc.com>, 
+	Zhaochen Su <Zhaochen.Su@unisoc.com>, Zhirong Qiu <Zhirong.Qiu@unisoc.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Simplify the code which fetches the input clock by using
-devm_clk_get_optional(). If no input clock is present
-devm_clk_get_optional() will return NULL instead of an error
-which matches the behavior of the old code.
+On Thu, Nov 27, 2025 at 5:05=E2=80=AFPM Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
+>
+> On Thu, Nov 27, 2025 at 04:44:08PM +0800, wenhua lin wrote:
+> > On Wed, Nov 26, 2025 at 8:57=E2=80=AFPM Andy Shevchenko
+> > <andriy.shevchenko@intel.com> wrote:
+> > > On Wed, Oct 22, 2025 at 11:08:40AM +0800, Wenhua Lin wrote:
+>
+> ...
+>
+> > > >       clk_uart =3D devm_clk_get(uport->dev, "uart");
+> > > >       if (IS_ERR(clk_uart)) {
+> > > > +             if (PTR_ERR(clk_uart) =3D=3D -EPROBE_DEFER)
+> > > > +                     return -EPROBE_DEFER;
+> > > > +
+> > > >               dev_warn(uport->dev, "uart%d can't get uart clock\n",
+> > > >                        uport->line);
+> > > >               clk_uart =3D NULL;
+> > >
+> > > AFAICS this still ignores other issues, what should be done here is t=
+o
+> > > replace devm_clk_get() by devm_clk_get_optional() and drop this NULL
+> > > assignment.
+>
+> >    The main reason for this change is that the UART driver is
+> > built-in, while the CLK driver is loaded as a module (ko).
+> >    There may be a situation where the UART driver is loaded first. If
+> > an EPROBE_DEFER error occurs, the driver will return directly
+> >    and continue waiting for the CLK driver to complete loading.
+> >    If this interface is changed to devm_clk_get_optional, in scenarios
+> > where dependent components are not yet loaded,
+> >    it will no longer return EPROBE_DEFER but instead return null. This
+> > behavior may not align with the desired outcome.
+>
+> No, the _optional does exactly what your code does with the better approa=
+ch
+> that may return other errors _in addition to_ the current state of affair=
+s.
+>
+> So, please switch to _optional variant and drop all that unneeded dances.
+>
+>         clk_uart =3D devm_clk_get_optional(uport->dev, "uart");
+>         if (IS_ERR(clk_uart)) {
+>                 return dev_err_probe(uport->dev, PTR_ERR(clk_uart),
+>                                      "uart%d can't get uart clock\n", upo=
+rt->line);
+>
+> this will return an error when clock is present, but can't be retrieved.
+> When there is no clock provided at all, it will return NULL.
+>
+> > > >       clk_parent =3D devm_clk_get(uport->dev, "source");
+> > > >       if (IS_ERR(clk_parent)) {
+> > > > +             if (PTR_ERR(clk_parent) =3D=3D -EPROBE_DEFER)
+> > > > +                     return -EPROBE_DEFER;
+> > > > +
+> > > >               dev_warn(uport->dev, "uart%d can't get source clock\n=
+",
+> > > >                        uport->line);
+> > > >               clk_parent =3D NULL;
+>
+> Ditto.
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
+>
+>
 
-Signed-off-by: Wenhua Lin <Wenhua.Lin@unisoc.com>
----
-Change in V2:
--Change title.
--Change commit message.
--Replace devm_clk_get() by devm_clk_get_optional() and drop NULL assignment.
--Delete the sprd_uart_is_console function, after using the devm_clk_get_optional()
- interface, this conditional check is redundant.
----
- drivers/tty/serial/sprd_serial.c | 40 +++++++-------------------------
- 1 file changed, 9 insertions(+), 31 deletions(-)
+Hi Andy:
+  Thank you for your valuable feedback.
+  We have implemented the changes in patch V2 and submitted a revised versi=
+on.
 
-diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
-index 8c9366321f8e..83ce77b435ee 100644
---- a/drivers/tty/serial/sprd_serial.c
-+++ b/drivers/tty/serial/sprd_serial.c
-@@ -1115,34 +1115,21 @@ static void sprd_remove(struct platform_device *dev)
- 		uart_unregister_driver(&sprd_uart_driver);
- }
- 
--static bool sprd_uart_is_console(struct uart_port *uport)
--{
--	struct console *cons = sprd_uart_driver.cons;
--
--	if ((cons && cons->index >= 0 && cons->index == uport->line) ||
--	    of_console_check(uport->dev->of_node, SPRD_TTY_NAME, uport->line))
--		return true;
--
--	return false;
--}
--
- static int sprd_clk_init(struct uart_port *uport)
- {
- 	struct clk *clk_uart, *clk_parent;
- 	struct sprd_uart_port *u = container_of(uport, struct sprd_uart_port, port);
- 
--	clk_uart = devm_clk_get(uport->dev, "uart");
-+	clk_uart = devm_clk_get_optional(uport->dev, "uart");
- 	if (IS_ERR(clk_uart)) {
--		dev_warn(uport->dev, "uart%d can't get uart clock\n",
--			 uport->line);
--		clk_uart = NULL;
-+		return dev_err_probe(uport->dev, PTR_ERR(clk_uart),
-+			"uart%d can't get uart clock\n", uport->line);
- 	}
- 
--	clk_parent = devm_clk_get(uport->dev, "source");
-+	clk_parent = devm_clk_get_optional(uport->dev, "source");
- 	if (IS_ERR(clk_parent)) {
--		dev_warn(uport->dev, "uart%d can't get source clock\n",
--			 uport->line);
--		clk_parent = NULL;
-+		return dev_err_probe(uport->dev, PTR_ERR(clk_parent),
-+			"uart%d can't get source clock\n", uport->line);
- 	}
- 
- 	if (!clk_uart || clk_set_parent(clk_uart, clk_parent))
-@@ -1150,19 +1137,10 @@ static int sprd_clk_init(struct uart_port *uport)
- 	else
- 		uport->uartclk = clk_get_rate(clk_uart);
- 
--	u->clk = devm_clk_get(uport->dev, "enable");
-+	u->clk = devm_clk_get_optional(uport->dev, "enable");
- 	if (IS_ERR(u->clk)) {
--		if (PTR_ERR(u->clk) == -EPROBE_DEFER)
--			return -EPROBE_DEFER;
--
--		dev_warn(uport->dev, "uart%d can't get enable clock\n",
--			uport->line);
--
--		/* To keep console alive even if the error occurred */
--		if (!sprd_uart_is_console(uport))
--			return PTR_ERR(u->clk);
--
--		u->clk = NULL;
-+		return dev_err_probe(uport->dev, PTR_ERR(u->clk),
-+			"uart%d can't get enable clock\n", uport->line);
- 	}
- 
- 	return 0;
--- 
-2.34.1
-
+Thanks
