@@ -1,452 +1,231 @@
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.3])
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED0FE35966;
-	Wed, 10 Dec 2025 12:51:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.3
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765371069; cv=none; b=WNnR3lelXgqcft4gNtDwBiw8RP3e0rP1T0p2bxTr1nsMu0Iw++4rmHU1qR0Y5IUHJg9zlx73aLTecAmtaWNLh7S0G4Im6au0Q9ck4Aw1/KlMFLnAhe+Ze5eJED+SwAxT+qOWA3rkPLRNbHzYtSCSXwBwNplNu+tDFGVmNDnldcA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765371069; c=relaxed/simple;
-	bh=G14drEwMvlYdyHhlEhtE4Qk5OyQzCMk0rSHUHj/6OYU=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=mtJelBWRwyyo6nJbUi5VLs2lAUesA0IwVHm1Z1vy8p1i7S/9QagM2slrlUi4wYfeEYO40jlWns2gQgsJ+GdGv7jK9wfgA27u51uExawh6Ng8jvTSdB4hUgODzdoIHUXT6yr/o4XJ0EeyFE2+8+2oFj4aqPsj8djokELAykKEfyA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=G0Z+diBZ; arc=none smtp.client-ip=220.197.31.3
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CC7B2FFFB2;
+	Wed, 10 Dec 2025 16:19:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=60.244.123.138
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1765383593; cv=fail; b=KkuXtU80+haiWJ5QLC2TU0hcvmGv7mTjHcUYZO0YhFOPRup8svmsvqs9d/UsUzbrz1FsWa2Y1XnXcMu4sUdnu3JslrBctYwHaEFSxxA0wDDJnhTFKkMAKZaNEG5K5uGEQ6iFeKrZuppzSJrVlaxEWPaq4K7MZknxEXdYyTr18mo=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1765383593; c=relaxed/simple;
+	bh=tVzGQ/o2eV74I9OjVnCu9SfGebQPH63DvmpIK2a0p1g=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=V1bk7Mb0pHxd8wv1SpvgHiFE9XtVvqKPtE/5GLslJ1veOUmWqAlPuevulYNzKPSnMQWzqxWGwrtWxenB7V1mVgcimrg8s0BdJFbbumc6SalolH1GyG31L5PQCH8+2TVDpQEtQXakSTlswdA3690fo3gmWo0kZSo61HpteS9h/Ps=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com; spf=pass smtp.mailfrom=mediatek.com; dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b=nBEzcBNr; dkim=pass (1024-bit key) header.d=mediateko365.onmicrosoft.com header.i=@mediateko365.onmicrosoft.com header.b=s2foePNy; arc=fail smtp.client-ip=60.244.123.138
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mediatek.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="G0Z+diBZ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=T7
-	Twz1u5WADeiHqghXkafABju3rL1IvxshM6715LHMY=; b=G0Z+diBZllIpAmN4YZ
-	8WYiOAdqU3hmcTBGpf4Hg8Hq+HJhwu8M/DfjKol/1YZf/VoFpmLBG7Lu12k0IcW2
-	S+If7CR3JwBKPf0kZJ4NmdI9y952Yv1CmxU95tyyGKM60cNHWPtNm53RPU+NlumC
-	1YYwQK4++FSvFUnQusGbdua5g=
-Received: from zhaoxin-MS-7E12.. (unknown [])
-	by gzga-smtp-mtada-g1-0 (Coremail) with SMTP id _____wBXH7yVbDlps1qbAw--.59421S2;
-	Wed, 10 Dec 2025 20:50:29 +0800 (CST)
-From: Xin Zhao <jackzxcui1989@163.com>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	tj@kernel.org
-Cc: hch@infradead.org,
-	jackzxcui1989@163.com,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH v7] tty: tty_port: add workqueue to flip TTY buffer
-Date: Wed, 10 Dec 2025 20:50:28 +0800
-Message-Id: <20251210125028.4174917-1-jackzxcui1989@163.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="nBEzcBNr";
+	dkim=pass (1024-bit key) header.d=mediateko365.onmicrosoft.com header.i=@mediateko365.onmicrosoft.com header.b="s2foePNy"
+X-UUID: 09f958acd5e411f0b2bf0b349165d6e0-20251211
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+	h=MIME-Version:Content-Transfer-Encoding:Content-ID:Content-Type:In-Reply-To:References:Message-ID:Date:Subject:CC:To:From; bh=tVzGQ/o2eV74I9OjVnCu9SfGebQPH63DvmpIK2a0p1g=;
+	b=nBEzcBNrIpQb5kk6d31DYo6mxKmxSfw6HSaJQD5/YdgEBa54zR1lBS/b6Z/5BMOaw9AAJVYVi0GSbYPHNwdumr0QsxlJ//ySQ8+EFZhjKceHdeaMREmxrMca9DuVbMmy5t+r/kK3vBcRqEFEI6VAOgkDbSio8+ApRBj3A1GsBj0=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.3.6,REQID:ae26c538-0ec1-467d-83c5-de2ed4cdaee0,IP:0,UR
+	L:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:r
+	elease,TS:0
+X-CID-META: VersionHash:a9d874c,CLOUDID:02c80baa-6421-45b1-b8b8-e73e3dc9a90f,B
+	ulkID:nil,BulkQuantity:0,Recheck:0,SF:80|81|82|83|102|110|111|836|888|898,
+	TC:-5,Content:0|15|50,EDM:-3,IP:nil,URL:0,File:130,RT:0,Bulk:nil,QS:nil,BE
+	C:nil,COL:0,OSI:0,OSA:0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
+X-CID-BVR: 2,SSN|SDN
+X-CID-BAS: 2,SSN|SDN,0,_
+X-CID-FACTOR: TF_CID_SPAM_SNR
+X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
+X-UUID: 09f958acd5e411f0b2bf0b349165d6e0-20251211
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+	(envelope-from <macpaul.lin@mediatek.com>)
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+	with ESMTP id 2141656674; Thu, 11 Dec 2025 00:19:44 +0800
+Received: from mtkmbs10n1.mediatek.inc (172.21.101.34) by
+ MTKMBS14N1.mediatek.inc (172.21.101.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.26; Thu, 11 Dec 2025 00:19:42 +0800
+Received: from SI4PR04CU001.outbound.protection.outlook.com (172.21.101.237)
+ by mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server id
+ 15.2.1748.26 via Frontend Transport; Thu, 11 Dec 2025 00:19:42 +0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=C6PTPhbf9KR89Yh8wJyX36mkcO7bPaJnQ9XnTNi8VRN7Ju7kLthqT1g2rhTys68wDEOBkK+mgwgFXI5X94PniM0oAqJ35sWx0iRjXMCsvfKtXsFGn/S975gnosdtnEDjW35rN+1EHcd6P9ZtYFMB8Uk9+CUujFuHa4LXaiDY0sumuzfR9vi0eSqKv/ZiOdQ4cYd5KtJlFh9U0RuoV8LnILLbmta1YF5rTHbMyQvQuhbSU7cSNmVlsSN6EJ7JQYfALJiRAES2otikxR5MlNYnTmldXETT9+ZTCH1TqfG6bX+7uVBuQrdJ4+Fxeh0ffR0sakkdlrWQwuV1xeaUdwPS0g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=tVzGQ/o2eV74I9OjVnCu9SfGebQPH63DvmpIK2a0p1g=;
+ b=AZV+09FCYhssjkSmkkozeepqv+BTrYVXHKVNSx+HUec99491SkIKdn+ENky/qu8VSbJFFDIBKX+zWb/mqCT+JYLJJK+eb1bvwERFCk2+2Fl3YedEnevpUNP96wHjiLMyo+c4AEcccr5tfMa+BCV6yR+F4QKxwxogN+nhSO+JHPhwwNutfJYoajL6Pg0yiikBnl+1M/DiL8HtOxal0yswNQ8ZyTBWxmhqJPjmB5D7QlHOK9IvoYArZCzGTiuS9KZinKxW3yJrxOyOuugmIwW8Ksa80mrHJqdDAVd0nk2WZLPmozYasc+o5LcVfcDXmu/TuYa6PFPW1D19Fs2j1yZhkA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mediatek.com; dmarc=pass action=none header.from=mediatek.com;
+ dkim=pass header.d=mediatek.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mediateko365.onmicrosoft.com; s=selector2-mediateko365-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tVzGQ/o2eV74I9OjVnCu9SfGebQPH63DvmpIK2a0p1g=;
+ b=s2foePNyEb4lwYkICvWm8cvPhmtMwaaggn+ryw/axA33fkgAZT/LcqZ3sQru3X1+yKaxqrcNtKCkiUe50/n7m5wb1iZsxtMLgdG8rK/rbuWYEleGs9jQqBsIl3MHVyw0o+rZHBlNL+eThA9+F9qqJbxmtJmi+bsoR+Dxdw5/bHM=
+Received: from SEZPR03MB7810.apcprd03.prod.outlook.com (2603:1096:101:184::13)
+ by TYUPR03MB7230.apcprd03.prod.outlook.com (2603:1096:400:356::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9412.7; Wed, 10 Dec
+ 2025 16:19:38 +0000
+Received: from SEZPR03MB7810.apcprd03.prod.outlook.com
+ ([fe80::2557:de4d:a3c7:41e8]) by SEZPR03MB7810.apcprd03.prod.outlook.com
+ ([fe80::2557:de4d:a3c7:41e8%4]) with mapi id 15.20.9412.005; Wed, 10 Dec 2025
+ 16:19:37 +0000
+From: =?utf-8?B?TWFjcGF1bCBMaW4gKOael+aZuuaWjCk=?= <Macpaul.Lin@mediatek.com>
+To: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	"robh@kernel.org" <robh@kernel.org>, "krzk+dt@kernel.org"
+	<krzk+dt@kernel.org>, "jirislaby@kernel.org" <jirislaby@kernel.org>, "Sean
+ Wang" <Sean.Wang@mediatek.com>, "conor+dt@kernel.org" <conor+dt@kernel.org>,
+	Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>,
+	"matthias.bgg@gmail.com" <matthias.bgg@gmail.com>
+CC: =?utf-8?B?QmVhciBXYW5nICjokKnljp/mg5/lvrcp?= <bear.wang@mediatek.com>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	=?utf-8?B?UGFibG8gU3VuICjlravmr5Pnv5Qp?= <pablo.sun@mediatek.com>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "linux-serial@vger.kernel.org"
+	<linux-serial@vger.kernel.org>, "linux-mediatek@lists.infradead.org"
+	<linux-mediatek@lists.infradead.org>, "kernel@collabora.com"
+	<kernel@collabora.com>
+Subject: Re: [PATCH 1/4] dt-bindings: serial: mediatek,uart: Add compatible
+ for MT8189 SoC
+Thread-Topic: [PATCH 1/4] dt-bindings: serial: mediatek,uart: Add compatible
+ for MT8189 SoC
+Thread-Index: AQHcZF0uL1pnI+mXKUiUyk/nFgXBebUbGNSA
+Date: Wed, 10 Dec 2025 16:19:37 +0000
+Message-ID: <b5cbb1fa0e56d926b4e9c0938d1364533d265c90.camel@mediatek.com>
+References: <20251203-add-mediatek-genio-520-720-evk-v1-0-df794b2a30ae@collabora.com>
+	 <20251203-add-mediatek-genio-520-720-evk-v1-1-df794b2a30ae@collabora.com>
+In-Reply-To: <20251203-add-mediatek-genio-520-720-evk-v1-1-df794b2a30ae@collabora.com>
+Accept-Language: zh-TW, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=mediatek.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SEZPR03MB7810:EE_|TYUPR03MB7230:EE_
+x-ms-office365-filtering-correlation-id: 16d1c8c8-db73-4986-2a3f-08de3807ea29
+x-ld-processed: a7687ede-7a6b-4ef6-bace-642f677fbe31,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|366016|376014|7416014|1800799024|38070700021;
+x-microsoft-antispam-message-info: =?utf-8?B?ekJYZWEzRnA1bmx0SVhhZStKeWlxS2hObHNEc29Fa25sYnRBQjFOcU1zTlht?=
+ =?utf-8?B?NmNwQ3U1ZHRBSk4zRitVbUQ4MUdGSlZDKzBtclo2MEdDa0ZDb2o3dUU2NUhp?=
+ =?utf-8?B?T2hvcHlMTHN1ckdwVWMwWTVMZFNmbVdUbmM2cDM3ZkgySlg2eG1yREs4eW0z?=
+ =?utf-8?B?UUZoMGF0ekdvb21xVDlMcUg3WjZXckJ4aFRVZHdQdHB0KzRPeDJPd2kxU3g3?=
+ =?utf-8?B?QThNMjZHb093VlJLNnJ0NnR5MDRPbUdJMnV2VUZQMXpxRWtPbDBFaEM5eEdo?=
+ =?utf-8?B?dEJ1RGhoK2FMOXdyMHFaZkJBMURZeVNkUVk0Y2JISWZDRzcra2ZkQThISmsy?=
+ =?utf-8?B?aW1YNXBXYmtFQzVwSGhLdWd5TGE3NWh6bW9iWDJTREpWbVJGek1XTmZQbU5L?=
+ =?utf-8?B?R3JvSDhaNVQ5WVRrK3pnRW9IMzFzQmFyMUFWWkxNcEMxanRYQ0tSdDhhc1Bv?=
+ =?utf-8?B?UDBsZUFpZWNySVZtOCs1bnpSbUNnb3dGbnhNYU1SQ2h0RlgxVVAvdGY4eUFm?=
+ =?utf-8?B?OTBXbnhZSzdJUWNQaWc0czMyNmNVUU8wVWlWQmRCeUNNcEJPeDA3UnNkMiti?=
+ =?utf-8?B?Nk4yYmlOdCtSaE01UkpiSWk5aXlNM2R2eXl3TTUzcW1LcGcybTFEbEdBeWta?=
+ =?utf-8?B?UjJKN3JrYlhNa3dkZzgxSTJ5RmZaMzcvY3ZuV2h4azFIZXYxM3ZiMmVqbGFm?=
+ =?utf-8?B?VU5VL2Z2RW55b1NzRU8xRnpGMTN0UlVPbGYvSUZuRG1RZlJjZ3FJVkJWQldX?=
+ =?utf-8?B?OGw4R3ByeXZpby9vcDkvcVQ3aklMRVRqb2ZzYTJHZ1liMzR4UlVEbGpNNnlI?=
+ =?utf-8?B?RmZUSmlsNUhUaVRLcFZnak9CZkZSK290Wi9Sekhla2xDVmdSWDRxa2tuVy91?=
+ =?utf-8?B?cU9hekVoMFNXSlgvZW5VM2RBWWg4WnM4TFhYY1hNUzNobTltY2IvenlKaGZK?=
+ =?utf-8?B?eDA2T0ZaY0ZGSGxaME5sd3h5QzBPcW1DSytvUmpyaGhoNDZpaDlUWmhjcUJo?=
+ =?utf-8?B?aURnQXhKaFJJN2JpVGR0eXljNDloSUVvbWFiT0xzc3psSWZwdHdqZW54SjJY?=
+ =?utf-8?B?czUrdTZya3dGMFdCcGdLNDRaM1RTTFhweGpZZmROOWlJOU5QZmRuZDV1a0ha?=
+ =?utf-8?B?QWRNOXdTZE1PSWc0cEpqdStVZjg3UURHaUhiK0FHQVN2RTRiWE8wOStlQUZP?=
+ =?utf-8?B?bjNYMFVjeEJtN0xsaVQxZUhBdVAwclhCYnpoR0s4QmhDdzBGd043dkhiK1ZB?=
+ =?utf-8?B?WnlQbUdIRjBRV1h2MmFHOW5IRHV4VzFEeGNmOXp6TGZQNDhhaENIYmpRbXN4?=
+ =?utf-8?B?UVZkWmRESVloUlFyOHZHY0UyMjFmT293ZnZVNUlCYm5SaDJranp3Q3dSeWEw?=
+ =?utf-8?B?MkRwMk5TZTQ1NzFaTDF4Q0VKSXp1d0p1REpRSTFIY09wQjhYQXhMR1AzZGxh?=
+ =?utf-8?B?V2lQTDA2MEYzS3BOZUNtcjBvdjhOMXo0ck9yU3k0ZXBML3BhUFNNYmVrcS9x?=
+ =?utf-8?B?UXdUVnMyZnNVNEp4b0VxTWlnMHg5LzRPY0VybDlnNGR2cUNCbnZmalZDR05E?=
+ =?utf-8?B?SGJHR09vcDgwQjVRQVZVc1BtdDcyRElGeS9hcGozeFZ5U2YrMjNpbEt5QXlV?=
+ =?utf-8?B?UlVLSFVrV2owMTE3RERCVjVicHFVUm5RUlFvWnBET2lpOHFHK0ZUN2dKZDFR?=
+ =?utf-8?B?eWRQMitqa0N1MzM2VWFIYUh2WDdpbWFGVzFZQWJPa1d3ZkxZbEkxNGt6NnF4?=
+ =?utf-8?B?LzhJTWlTVmJ1U3hHSHR2UWdicVJhQUNYM00yQ2lpUXhKTVllcWc4ZW9OSUpZ?=
+ =?utf-8?B?STVOZUVLRDVweVpGbTZ5OTNHTGp1WUFSbGNoZ1lNSForaG5JdzFvUjdKNkEx?=
+ =?utf-8?B?b3RnblpvdWE4SDJ3UlNIV21lVi9UTkVabUlEV05ZL0ViTnVMV1JGM3dwdFNa?=
+ =?utf-8?B?NHJ0dEhDMUxnTGxDM1hQc3YvSnE1SGlITWdaTm01UVMwQmVOQU1aQlltenVM?=
+ =?utf-8?B?OHRJSStWdzNoYWx6Um5KOFd4RnpmSmZTUjNUM0VxSzNRQk5ZbUVMemFxNEpM?=
+ =?utf-8?Q?jfEEn+?=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SEZPR03MB7810.apcprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(7416014)(1800799024)(38070700021);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?dVk1OEpqRTFTNndpVWQybEFSVjZLTFhnY0lwME9vMUtPb2g4ZUZuMkhjR3pU?=
+ =?utf-8?B?eFFHYkdOTTZXanlJcCtKTTJQaEpMRWE3RU00Y1JManJJazkvT0s4cFlTUTRa?=
+ =?utf-8?B?T0dQK1ZKTTdUZnEwMCtJZWxsQ1pRUTI2bW11WDRiUEZrSHF0cEFGblZ2UnJu?=
+ =?utf-8?B?U2pBM1pJaG9JUXFaNjE1SHlFcWxyNXNHcFNESFZNd040VldZa0gwTVUrODJz?=
+ =?utf-8?B?ZjBsakdybDlZQ2d3V2hldTkwRFNzUTZKNHpKMXdyVFF5eXFoem9JNWp6dlJ1?=
+ =?utf-8?B?U2FxVmxyKzZ2b3Z3TldJc0NXSUlPR1dsNkgyYkp2QVNrMmxieCtyaUhDRTQ2?=
+ =?utf-8?B?andjUytTYlIwRnRKcU8zejdtSTdRb05ab21CcHBHV0prZHpsakMvcHVqR0pT?=
+ =?utf-8?B?M2kzb1Qxd1ErdENIVVNpVGxOajlRQXlMYjM1bklzc20xVVRLK0VZdkxGZFRx?=
+ =?utf-8?B?dG1tbCtoRUZRRTUzd0pzYlNlZjdvbDhTWlRNMWY2aWZVeW9SZWJNRzdxZ0xv?=
+ =?utf-8?B?NENCRHBOeWw3cEYzNEw1V1RaT0ZmWWdKRUtxbHd1RkFGQkd0RzdtK2dVWHMr?=
+ =?utf-8?B?eHJDQ2VKTnVIbHNhVTJ3Q3lrc0RjQXdURm5tVFRTTTd4Q3pCazVJMEhwR05m?=
+ =?utf-8?B?eE5sbW96WWJzc21WamM0VDVnUEU3NWNVMmU1anJBdS9uQjc3akYreDhaOVRm?=
+ =?utf-8?B?TGo0Ry8zM3BRWHRtWDB5bkVxRDVzS2xaN1FqWUVBMHB0cmNzV0dndjlTeWRC?=
+ =?utf-8?B?T2NZcnNWRnlONzc4REVYNnRaYVQvQVU4MnhYMW13VHVwbk81S3l0K2Vyc0tI?=
+ =?utf-8?B?am1aOWlNZVNNeE50ZE1NOE5uZHh6VGFaY1lXUDRQbURLY1h0aXBoalV5RkMy?=
+ =?utf-8?B?MmJjUHZXcEJaU0FRWTlkSVRsTFZiSWN4cTBOYnJpakNEbW5haW9GU2l4dGxt?=
+ =?utf-8?B?a3gvaHJhazFFYldwV3BsUU5CQ2pWUWFpZnA2TEtEWGhla3Jrd2tVM1o2ZENM?=
+ =?utf-8?B?SGVyQkp6NmVGYlZ2NWNpVmV3SmkvUjRMRzJFaUNrT2VtWHRpWGV3RXEvV3ZM?=
+ =?utf-8?B?bkEyZllDY01RVDF2MnVJNjlISWRBVkcyVTl3eHVLb2REYkwrWmJJVWJCUkp3?=
+ =?utf-8?B?VUdKcEdpeCtmc0dab2Zsak0xdUhSRDRpR056NGRHSHA3UTViQmtXS3gxb0xJ?=
+ =?utf-8?B?UGluN1pRRFZTSjJzL1VCOGNzSG9uMTFiazFRazRzU2h5SVFNT0w4bjJjN2RE?=
+ =?utf-8?B?SytvY21PWHRjUWVXMXhRWmlEL0RRWGF0YjBHQTZkYzRObTB5aDdkUSt6cUNw?=
+ =?utf-8?B?eWJtVC9GZ1N2STJkOStvMDJMaTZuZmpic1VRZkJHRUV3a0dIRUZGdmNuN0s5?=
+ =?utf-8?B?TCtRMTRleWN2VW5xaFpHdEFONmxwUVVndlNFMFl2cHNqYzkwUW1VS0dWQ0xw?=
+ =?utf-8?B?U3AvcWxEamloeTVydWtZM2plVXVvU0k2OHpwZUxVa3VOMUdMelJXbHBRSTVn?=
+ =?utf-8?B?VmR4SGNYa3o0YURVTEdXUGhNcHRWVjlsV1VvbmNOSHdOOVBuMXovWTc2U0xX?=
+ =?utf-8?B?M0gySWJJVHdoenVPaDNMOEhNaU8rQUZIWC9ZSlk5YnVUNXhxcy80VysvMkll?=
+ =?utf-8?B?R3J1U1hVa3BwT1dVajZDTlB4amY5cVU3TzVFeXdZSGh0SHFFVjROQjRyUFpK?=
+ =?utf-8?B?MWcya0k3ZGlRNGdqR09yc1NrQXNMSjZxR0xQNnNCNjc2c0wyYXh6bUllTkw4?=
+ =?utf-8?B?R0gwRGU2Z0pUcE5yLzVqTFBoS0lMKzVlemZ4WUQzMmw0MUQrTTNWbkNGVlNm?=
+ =?utf-8?B?MnZ1QWpMTUdYRmZ4eXdoZzJnNTFnVkpqQTczQ0ljYlNGUU9iSWxRRXY0WkNk?=
+ =?utf-8?B?VUxyZ0x4cXRvTXpHL3VDalFKSllZNDdKMTl5RjM5RWEyK2tWMjVzZmNGTnBV?=
+ =?utf-8?B?V1orUStvVng2aWVqM3FwckIxaWpMMWFpUHhDbTc1QVNpcGhVWnFvZ2VsQk5H?=
+ =?utf-8?B?THRMNXJmdTBEZGhLR1B1bjY1TmIrZUhMbUZnNGQrVW5jak1kYStRT2gyU2hT?=
+ =?utf-8?B?bk1ETGV5a1p0Q2NsOHlOUHJwUkpXMURvY2FvcGlRQjA3Wmt2N3hJbEZKMVZF?=
+ =?utf-8?B?RkFlQUt4bDd6K2xzbllET3pLMDZzUTlOdDRNRWRwWnJGTENCSWxpQ0FIOU13?=
+ =?utf-8?B?Wnc9PQ==?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <04DB5CB4A28098449BCBD3721F76E339@apcprd03.prod.outlook.com>
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wBXH7yVbDlps1qbAw--.59421S2
-X-Coremail-Antispam: 1Uf129KBjvAXoW3ZFWUWF17GrWrKFyUWw47XFb_yoW8Wr18Wo
-	Z3Wa15J3ZYqr1xAa4Fyrs7AF1fXa9F9F98Cay8ArZ8Z348tF15XrZrG34Yqa43Wr4FkF45
-	Z3W7J3ZayF47Aa4rn29KB7ZKAUJUUUU8529EdanIXcx71UUUUU7v73VFW2AGmfu7bjvjm3
-	AaLaJ3UbIYCTnIWIevJa73UjIFyTuYvj4Rlg4fUUUUU
-X-CM-SenderInfo: pmdfy650fxxiqzyzqiywtou0bp/xtbCvxbo8mk5bJZ0hQAA3o
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SEZPR03MB7810.apcprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 16d1c8c8-db73-4986-2a3f-08de3807ea29
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Dec 2025 16:19:37.7365
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a7687ede-7a6b-4ef6-bace-642f677fbe31
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: kCfKMZnm2gkjuydaWnt+MYCcMWmBPdktl4AorWd3vAJEoiquoVbL6fbozSGNiIcWk23IELbIf5XUOc4knZDXwIbv1ieuYL7wRZzIn5FjgW8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYUPR03MB7230
 
-On the embedded platform, certain critical data, such as IMU data, is
-transmitted through UART. The tty_flip_buffer_push() interface in the TTY
-layer uses system_unbound_wq to handle the flipping of the TTY buffer.
-Although the unbound workqueue can create new threads on demand and wake
-up the kworker thread on an idle CPU, it may be preempted by real-time
-tasks or other high-prio tasks.
-
-flush_to_ldisc() needs to wake up the relevant data handle thread. When
-executing __wake_up_common_lock(), it calls spin_lock_irqsave(), which
-does not disable preemption but disables migration in RT-Linux. This
-prevents the kworker thread from being migrated to other cores by CPU's
-balancing logic, resulting in long delays. The call trace is as follows:
-    __wake_up_common_lock
-    __wake_up
-    ep_poll_callback
-    __wake_up_common
-    __wake_up_common_lock
-    __wake_up
-    n_tty_receive_buf_common
-    n_tty_receive_buf2
-    tty_ldisc_receive_buf
-    tty_port_default_receive_buf
-    flush_to_ldisc
-
-In our system, the processing interval for each frame of IMU data
-transmitted via UART can experience significant jitter due to this issue.
-Instead of the expected 10 to 15 ms frame processing interval, we see
-spikes up to 30 to 35 ms. Moreover, in just one or two hours, there can
-be 2 to 3 occurrences of such high jitter, which is quite frequent. This
-jitter exceeds the software's tolerable limit of 20 ms.
-
-Introduce flip_wq in tty_port which can be set by tty_port_link_wq() or as
-default linked to default workqueue allocated when tty_register_driver().
-The default workqueue is allocated with flag WQ_SYSFS, so that cpumask and
-nice can be set dynamically. The execution timing of tty_port_link_wq() is
-not clearly restricted. The newly added function tty_port_link_driver_wq()
-checks whether the flip_wq of the tty_port has already been assigned when
-linking the default tty_driver's workqueue to the port. After the user has
-set a custom workqueue for a certain tty_port using tty_port_link_wq(), the
-system will only use this custom workqueue, even if tty_driver does not
-have %TTY_DRIVER_CUSTOM_WORKQUEUE flag.
-
-Introduce %TTY_DRIVER_CUSTOM_WORKQUEUE flag meaning not to create the
-default single tty_driver workqueue. Two reasons why need to introduce the
-%TTY_DRIVER_CUSTOM_WORKQUEUE flag:
-1. If the WQ_SYSFS parameter is enabled, workqueue_sysfs_register() will
-fail when trying to create a workqueue with the same name. The pty is an
-example of this; if both CONFIG_LEGACY_PTYS and CONFIG_UNIX98_PTYS are
-enabled, the call to tty_register_driver() in unix98_pty_init() will fail.
-2. Different tty ports may be used for different tasks, which may require
-separate core binding control via workqueues. In this case, the workqueue
-created by default in the tty driver is unnecessary. Enabling this flag
-prevents the creation of this redundant workqueue.
-
-After applying this patch, we can set the related UART TTY flip buffer
-workqueue by sysfs. We set the cpumask to CPU cores associated with the
-IMU tasks, and set the nice to -20. Testing has shown significant
-improvement in the previously described issue, with almost no stuttering
-occurring anymore.
-
-Signed-off-by: Xin Zhao <jackzxcui1989@163.com>
----
-
-Change in v7:
-- Pty simply link to system_unbound_wq instead of allocating a custom one,
-  as suggested by Jiri Slaby.
-- Modify some inappropriate expressions in the code comments,
-  as suggested by Jiri Slaby.
-
-Change in v6:
-- Modify many inappropriate expressions in the commit log and code comments,
-  as suggested by Jiri Slaby.
-- Add reasons why need to introduce the %TTY_DRIVER_CUSTOM_WORKQUEUE in
-  commit log.
-- Modify the error handling related to the allocation failure of workqueue in
-  tty_register_driver(), as suggested by Jiri Slaby.
-- Add description of tty_port_link_driver_wq() in the commit log,
-  as suggested by Jiri Slaby.
-- Link to v6: https://lore.kernel.org/all/20251210031827.3771327-1-jackzxcui1989@163.com/
-
-Change in v5:
-- Do not allocate workqueue twice when CONFIG_UNIX98_PTYS and
-  CONFIG_LEGACY_PTYS are all enabled.
-- Link to v5: https://lore.kernel.org/all/20251205030829.1829987-1-jackzxcui1989@163.com/
-
-Change in v4:
-- Simplify the logic for creating and releasing the workqueue,
-  as suggested by Tejun Heo.
-- Allocate single workqueue of one tty_driver as default, link it to
-  port when tty_port register device or tty_driver.
-- Introduce tty_port_link_wq() to link specific workqueue to port.
-- Add driver flag %TTY_DRIVER_CUSTOM_WORKQUEUE meaning not to create the
-  default single tty_driver workqueue.
-- Link to v4: https://lore.kernel.org/all/202512041303.7192024b-lkp@intel.com/T/#t
-
-Change in v3:
-- Add tty flip workqueue for all tty ports, as suggested by Greg KH.
-  Every tty port use an individual flip workqueue, while all pty ports
-  share the same workqueue created in pty_flip_wq_init().
-- Modify the commit log to describe the reason for latency spikes in
-  RT-Linux.
-- Link to v3: https://lore.kernel.org/all/20251027060929.394053-1-jackzxcui1989@163.com/
-
-Change in v2:
-- Do not add new module parameters
-  as suggested by Greg KH
-- Set WQ_SYSFS to allow properties changes from userspace
-  as suggested by Tejun Heo
-- Link to v2: https://lore.kernel.org/all/20251024155534.2302590-1-jackzxcui1989@163.com
----
- drivers/tty/pty.c          | 14 ++++++++++----
- drivers/tty/tty_buffer.c   |  8 ++++----
- drivers/tty/tty_io.c       | 21 ++++++++++++++++++++-
- drivers/tty/tty_port.c     | 23 +++++++++++++++++++++++
- include/linux/tty_buffer.h |  1 +
- include/linux/tty_driver.h |  7 +++++++
- include/linux/tty_port.h   | 13 +++++++++++++
- 7 files changed, 78 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
-index 8bb1a01fe..9aefdecc5 100644
---- a/drivers/tty/pty.c
-+++ b/drivers/tty/pty.c
-@@ -407,6 +407,8 @@ static int pty_common_install(struct tty_driver *driver, struct tty_struct *tty,
- 	o_tty->link = tty;
- 	tty_port_init(ports[0]);
- 	tty_port_init(ports[1]);
-+	tty_port_link_wq(ports[0], system_unbound_wq);
-+	tty_port_link_wq(ports[1], system_unbound_wq);
- 	tty_buffer_set_limit(ports[0], 8192);
- 	tty_buffer_set_limit(ports[1], 8192);
- 	o_tty->port = ports[0];
-@@ -536,14 +538,16 @@ static void __init legacy_pty_init(void)
- 	pty_driver = tty_alloc_driver(legacy_count,
- 			TTY_DRIVER_RESET_TERMIOS |
- 			TTY_DRIVER_REAL_RAW |
--			TTY_DRIVER_DYNAMIC_ALLOC);
-+			TTY_DRIVER_DYNAMIC_ALLOC |
-+			TTY_DRIVER_CUSTOM_WORKQUEUE);
- 	if (IS_ERR(pty_driver))
- 		panic("Couldn't allocate pty driver");
- 
- 	pty_slave_driver = tty_alloc_driver(legacy_count,
- 			TTY_DRIVER_RESET_TERMIOS |
- 			TTY_DRIVER_REAL_RAW |
--			TTY_DRIVER_DYNAMIC_ALLOC);
-+			TTY_DRIVER_DYNAMIC_ALLOC |
-+			TTY_DRIVER_CUSTOM_WORKQUEUE);
- 	if (IS_ERR(pty_slave_driver))
- 		panic("Couldn't allocate pty slave driver");
- 
-@@ -877,7 +881,8 @@ static void __init unix98_pty_init(void)
- 			TTY_DRIVER_REAL_RAW |
- 			TTY_DRIVER_DYNAMIC_DEV |
- 			TTY_DRIVER_DEVPTS_MEM |
--			TTY_DRIVER_DYNAMIC_ALLOC);
-+			TTY_DRIVER_DYNAMIC_ALLOC |
-+			TTY_DRIVER_CUSTOM_WORKQUEUE);
- 	if (IS_ERR(ptm_driver))
- 		panic("Couldn't allocate Unix98 ptm driver");
- 	pts_driver = tty_alloc_driver(NR_UNIX98_PTY_MAX,
-@@ -885,7 +890,8 @@ static void __init unix98_pty_init(void)
- 			TTY_DRIVER_REAL_RAW |
- 			TTY_DRIVER_DYNAMIC_DEV |
- 			TTY_DRIVER_DEVPTS_MEM |
--			TTY_DRIVER_DYNAMIC_ALLOC);
-+			TTY_DRIVER_DYNAMIC_ALLOC |
-+			TTY_DRIVER_CUSTOM_WORKQUEUE);
- 	if (IS_ERR(pts_driver))
- 		panic("Couldn't allocate Unix98 pts driver");
- 
-diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-index 67271fc0b..86e1e7178 100644
---- a/drivers/tty/tty_buffer.c
-+++ b/drivers/tty/tty_buffer.c
-@@ -76,7 +76,7 @@ void tty_buffer_unlock_exclusive(struct tty_port *port)
- 	mutex_unlock(&buf->lock);
- 
- 	if (restart)
--		queue_work(system_unbound_wq, &buf->work);
-+		queue_work(buf->flip_wq, &buf->work);
- }
- EXPORT_SYMBOL_GPL(tty_buffer_unlock_exclusive);
- 
-@@ -530,7 +530,7 @@ void tty_flip_buffer_push(struct tty_port *port)
- 	struct tty_bufhead *buf = &port->buf;
- 
- 	tty_flip_buffer_commit(buf->tail);
--	queue_work(system_unbound_wq, &buf->work);
-+	queue_work(buf->flip_wq, &buf->work);
- }
- EXPORT_SYMBOL(tty_flip_buffer_push);
- 
-@@ -560,7 +560,7 @@ int tty_insert_flip_string_and_push_buffer(struct tty_port *port,
- 		tty_flip_buffer_commit(buf->tail);
- 	spin_unlock_irqrestore(&port->lock, flags);
- 
--	queue_work(system_unbound_wq, &buf->work);
-+	queue_work(buf->flip_wq, &buf->work);
- 
- 	return size;
- }
-@@ -613,7 +613,7 @@ void tty_buffer_set_lock_subclass(struct tty_port *port)
- 
- bool tty_buffer_restart_work(struct tty_port *port)
- {
--	return queue_work(system_unbound_wq, &port->buf.work);
-+	return queue_work(port->buf.flip_wq, &port->buf.work);
- }
- 
- bool tty_buffer_cancel_work(struct tty_port *port)
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index e2d92cf70..d64fb08ba 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -3446,10 +3446,23 @@ int tty_register_driver(struct tty_driver *driver)
- 	if (error < 0)
- 		goto err;
- 
-+	if (!(driver->flags & TTY_DRIVER_CUSTOM_WORKQUEUE)) {
-+		driver->flip_wq = alloc_workqueue("%s-flip-wq", WQ_UNBOUND | WQ_SYSFS,
-+						  0, driver->name);
-+		if (!driver->flip_wq) {
-+			error = -ENOMEM;
-+			goto err_unreg_char;
-+		}
-+		for (i = 0; i < driver->num; i++) {
-+			if (driver->ports[i])
-+				tty_port_link_driver_wq(driver->ports[i], driver);
-+		}
-+	}
-+
- 	if (driver->flags & TTY_DRIVER_DYNAMIC_ALLOC) {
- 		error = tty_cdev_add(driver, dev, 0, driver->num);
- 		if (error)
--			goto err_unreg_char;
-+			goto err_destroy_wq;
- 	}
- 
- 	scoped_guard(mutex, &tty_mutex)
-@@ -3475,6 +3488,10 @@ int tty_register_driver(struct tty_driver *driver)
- 	scoped_guard(mutex, &tty_mutex)
- 		list_del(&driver->tty_drivers);
- 
-+err_destroy_wq:
-+	if (!(driver->flags & TTY_DRIVER_CUSTOM_WORKQUEUE))
-+		destroy_workqueue(driver->flip_wq);
-+
- err_unreg_char:
- 	unregister_chrdev_region(dev, driver->num);
- err:
-@@ -3494,6 +3511,8 @@ void tty_unregister_driver(struct tty_driver *driver)
- 				driver->num);
- 	scoped_guard(mutex, &tty_mutex)
- 		list_del(&driver->tty_drivers);
-+	if (!(driver->flags & TTY_DRIVER_CUSTOM_WORKQUEUE))
-+		destroy_workqueue(driver->flip_wq);
- }
- EXPORT_SYMBOL(tty_unregister_driver);
- 
-diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-index 5b4d5fb99..c60fe6f33 100644
---- a/drivers/tty/tty_port.c
-+++ b/drivers/tty/tty_port.c
-@@ -103,6 +103,26 @@ void tty_port_init(struct tty_port *port)
- }
- EXPORT_SYMBOL(tty_port_init);
- 
-+/**
-+ * tty_port_link_wq - link tty_port and flip workqueue
-+ * @port: tty_port of the device
-+ * @flip_wq: workqueue to queue flip buffer work on
-+ *
-+ * When %TTY_DRIVER_CUSTOM_WORKQUEUE is used, every tty_port shall be linked to
-+ * a workqueue manually by this function, otherwise tty_flip_buffer_push() will
-+ * see %NULL flip_wq pointer on queue_work.
-+ * When %TTY_DRIVER_CUSTOM_WORKQUEUE is NOT used, the function can be used to
-+ * link a certain port to a specific workqueue, instead of using the workqueue
-+ * allocated in tty_register_driver().
-+ *
-+ * Note that TTY port API will NOT destroy the workqueue.
-+ */
-+void tty_port_link_wq(struct tty_port *port, struct workqueue_struct *flip_wq)
-+{
-+	port->buf.flip_wq = flip_wq;
-+}
-+EXPORT_SYMBOL_GPL(tty_port_link_wq);
-+
- /**
-  * tty_port_link_device - link tty and tty_port
-  * @port: tty_port of the device
-@@ -161,6 +181,7 @@ struct device *tty_port_register_device_attr(struct tty_port *port,
- 		const struct attribute_group **attr_grp)
- {
- 	tty_port_link_device(port, driver, index);
-+	tty_port_link_driver_wq(port, driver);
- 	return tty_register_device_attr(driver, index, device, drvdata,
- 			attr_grp);
- }
-@@ -187,6 +208,7 @@ struct device *tty_port_register_device_attr_serdev(struct tty_port *port,
- 	struct device *dev;
- 
- 	tty_port_link_device(port, driver, index);
-+	tty_port_link_driver_wq(port, driver);
- 
- 	dev = serdev_tty_port_register(port, host, parent, driver, index);
- 	if (PTR_ERR(dev) != -ENODEV) {
-@@ -718,6 +740,7 @@ int tty_port_install(struct tty_port *port, struct tty_driver *driver,
- 		struct tty_struct *tty)
- {
- 	tty->port = port;
-+	tty_port_link_driver_wq(port, driver);
- 	return tty_standard_install(driver, tty);
- }
- EXPORT_SYMBOL_GPL(tty_port_install);
-diff --git a/include/linux/tty_buffer.h b/include/linux/tty_buffer.h
-index 31125e3be..48adcb0e8 100644
---- a/include/linux/tty_buffer.h
-+++ b/include/linux/tty_buffer.h
-@@ -34,6 +34,7 @@ static inline u8 *flag_buf_ptr(struct tty_buffer *b, unsigned int ofs)
- 
- struct tty_bufhead {
- 	struct tty_buffer *head;	/* Queue head */
-+	struct workqueue_struct *flip_wq;
- 	struct work_struct work;
- 	struct mutex	   lock;
- 	atomic_t	   priority;
-diff --git a/include/linux/tty_driver.h b/include/linux/tty_driver.h
-index 188ee9b76..9c65854f7 100644
---- a/include/linux/tty_driver.h
-+++ b/include/linux/tty_driver.h
-@@ -69,6 +69,10 @@ struct serial_struct;
-  *	Do not create numbered ``/dev`` nodes. For example, create
-  *	``/dev/ttyprintk`` and not ``/dev/ttyprintk0``. Applicable only when a
-  *	driver for a single tty device is being allocated.
-+ *
-+ * @TTY_DRIVER_CUSTOM_WORKQUEUE:
-+ *	Do not create workqueue when tty_register_driver(). When set, flip
-+ *	buffer workqueue shall be set by tty_port_link_wq() for every port.
-  */
- enum tty_driver_flag {
- 	TTY_DRIVER_INSTALLED		= BIT(0),
-@@ -79,6 +83,7 @@ enum tty_driver_flag {
- 	TTY_DRIVER_HARDWARE_BREAK	= BIT(5),
- 	TTY_DRIVER_DYNAMIC_ALLOC	= BIT(6),
- 	TTY_DRIVER_UNNUMBERED_NODE	= BIT(7),
-+	TTY_DRIVER_CUSTOM_WORKQUEUE	= BIT(8),
- };
- 
- enum tty_driver_type {
-@@ -506,6 +511,7 @@ struct tty_operations {
-  * @flags: tty driver flags (%TTY_DRIVER_)
-  * @proc_entry: proc fs entry, used internally
-  * @other: driver of the linked tty; only used for the PTY driver
-+ * @flip_wq: workqueue to queue flip buffer work on
-  * @ttys: array of active &struct tty_struct, set by tty_standard_install()
-  * @ports: array of &struct tty_port; can be set during initialization by
-  *	   tty_port_link_device() and similar
-@@ -539,6 +545,7 @@ struct tty_driver {
- 	unsigned long	flags;
- 	struct proc_dir_entry *proc_entry;
- 	struct tty_driver *other;
-+	struct workqueue_struct *flip_wq;
- 
- 	/*
- 	 * Pointer to the tty data structures
-diff --git a/include/linux/tty_port.h b/include/linux/tty_port.h
-index 332ddb936..4c9f3b874 100644
---- a/include/linux/tty_port.h
-+++ b/include/linux/tty_port.h
-@@ -138,6 +138,7 @@ struct tty_port {
- 					   kernel */
- 
- void tty_port_init(struct tty_port *port);
-+void tty_port_link_wq(struct tty_port *port, struct workqueue_struct *flip_wq);
- void tty_port_link_device(struct tty_port *port, struct tty_driver *driver,
- 		unsigned index);
- struct device *tty_port_register_device(struct tty_port *port,
-@@ -165,6 +166,18 @@ static inline struct tty_port *tty_port_get(struct tty_port *port)
- 	return NULL;
- }
- 
-+/*
-+ * Never overwrite the workqueue set by tty_port_link_wq().
-+ * No effect when %TTY_DRIVER_CUSTOM_WORKQUEUE is set, as driver->flip_wq is
-+ * %NULL.
-+ */
-+static inline void tty_port_link_driver_wq(struct tty_port *port,
-+					   struct tty_driver *driver)
-+{
-+	if (!port->buf.flip_wq)
-+		port->buf.flip_wq = driver->flip_wq;
-+}
-+
- /* If the cts flow control is enabled, return true. */
- static inline bool tty_port_cts_enabled(const struct tty_port *port)
- {
--- 
-2.34.1
-
+T24gV2VkLCAyMDI1LTEyLTAzIGF0IDE0OjU5ICswMTAwLCBMb3Vpcy1BbGV4aXMgRXlyYXVkIHdy
+b3RlOg0KPiANCj4gRXh0ZXJuYWwgZW1haWwgOiBQbGVhc2UgZG8gbm90IGNsaWNrIGxpbmtzIG9y
+IG9wZW4gYXR0YWNobWVudHMgdW50aWwNCj4geW91IGhhdmUgdmVyaWZpZWQgdGhlIHNlbmRlciBv
+ciB0aGUgY29udGVudC4NCj4gDQo+IA0KPiBBZGQgYSBjb21wYXRpYmxlIHN0cmluZyBmb3IgdGhl
+IE1UODE4OSBTb0MuDQo+IFRoZSBVQVJUIElQcyBpbiB0aGlzIGNoaXAgYXJlIGZ1bGx5IGNvbXBh
+dGlibGUgd2l0aCB0aGUgb25lIGZvdW5kIGluDQo+IE1UNjU3NyBTb0MuDQo+IA0KPiBTaWduZWQt
+b2ZmLWJ5OiBMb3Vpcy1BbGV4aXMgRXlyYXVkIDxsb3Vpc2FsZXhpcy5leXJhdWRAY29sbGFib3Jh
+LmNvbT4NCj4gLS0tDQo+IMKgRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3Nlcmlh
+bC9tZWRpYXRlayx1YXJ0LnlhbWwgfCAxICsNCj4gwqAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRp
+b24oKykNCj4gDQo+IGRpZmYgLS1naXQNCj4gYS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmlu
+ZGluZ3Mvc2VyaWFsL21lZGlhdGVrLHVhcnQueWFtbA0KPiBiL0RvY3VtZW50YXRpb24vZGV2aWNl
+dHJlZS9iaW5kaW5ncy9zZXJpYWwvbWVkaWF0ZWssdWFydC55YW1sDQo+IGluZGV4DQo+IDViZDhh
+ODg1M2FlMGQ0YWUzMDlkMjgzNTBmZDU0YjZmOWI0ZTczMWUuLjNmMGY0YWVhMGE0YzBlZjExMDU1
+ZGRkMDhiYQ0KPiA3MWQwNDVlN2ZhNTE5IDEwMDY0NA0KPiAtLS0gYS9Eb2N1bWVudGF0aW9uL2Rl
+dmljZXRyZWUvYmluZGluZ3Mvc2VyaWFsL21lZGlhdGVrLHVhcnQueWFtbA0KPiArKysgYi9Eb2N1
+bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3Mvc2VyaWFsL21lZGlhdGVrLHVhcnQueWFtbA0K
+PiBAQCAtNDcsNiArNDcsNyBAQCBwcm9wZXJ0aWVzOg0KPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgIC0gbWVkaWF0ZWssbXQ4MTgzLXVhcnQNCj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoCAtIG1lZGlhdGVrLG10ODE4Ni11YXJ0DQo+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqAgLSBtZWRpYXRlayxtdDgxODgtdWFydA0KPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
+LSBtZWRpYXRlayxtdDgxODktdWFydA0KPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIC0g
+bWVkaWF0ZWssbXQ4MTkyLXVhcnQNCj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAtIG1l
+ZGlhdGVrLG10ODE5NS11YXJ0DQo+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgLSBtZWRp
+YXRlayxtdDgzNjUtdWFydA0KPiANCj4gLS0NCj4gMi41Mi4wDQo+IA0KPiANCg0KUmV2aWV3ZWQt
+YnkgTWFjcGF1bCBMaW4gPG1hY3BhdWwubGluQG1lZGlhdGVrLmNvbT4NCg0KQmVzdCByZWdhcmRz
+LA0KTWFjcGF1bCBMaW4NCg==
