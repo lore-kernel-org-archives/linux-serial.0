@@ -1,44 +1,41 @@
 Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.3])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BA82319601;
-	Wed, 10 Dec 2025 12:27:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED0FE35966;
+	Wed, 10 Dec 2025 12:51:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.3
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765369664; cv=none; b=BijexsMasHY9pspbvHrz00MXBVsj6XDqddF1oS4RNWX+qd2VYrSEZqYkHKh8tyZZ5SJRNRbPrm2X/0Q6w9H44sAWxXaVVU5wDzOzWPTeQidkBBBq2+YA8lqT7ZLx3blczfma15Wr+eOGSHU70jtZFCSBc0OnTougea//ZB3Nd/o=
+	t=1765371069; cv=none; b=WNnR3lelXgqcft4gNtDwBiw8RP3e0rP1T0p2bxTr1nsMu0Iw++4rmHU1qR0Y5IUHJg9zlx73aLTecAmtaWNLh7S0G4Im6au0Q9ck4Aw1/KlMFLnAhe+Ze5eJED+SwAxT+qOWA3rkPLRNbHzYtSCSXwBwNplNu+tDFGVmNDnldcA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765369664; c=relaxed/simple;
-	bh=raLbRxhOu3f5UCzKuQW6kjysoy+kHiB30fBwuBOSLgc=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=s9VQURQFSgCVJXdfpNreRoC0RfIg1GX+2CQPzIxIotwSTFS1gxm2FQn1xvVZ0wOLtnIBnfdSHDdy7yYrGgIth0BDx2Kh98Lzl/hUh9WVmLvtRuQg9ULVUlqr23g0peFbSVqZcNgJAj3BAi8ZPVcWK8/h07d0oqLIu0BZAhJfzHs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=nQ2lweAE; arc=none smtp.client-ip=220.197.31.3
+	s=arc-20240116; t=1765371069; c=relaxed/simple;
+	bh=G14drEwMvlYdyHhlEhtE4Qk5OyQzCMk0rSHUHj/6OYU=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=mtJelBWRwyyo6nJbUi5VLs2lAUesA0IwVHm1Z1vy8p1i7S/9QagM2slrlUi4wYfeEYO40jlWns2gQgsJ+GdGv7jK9wfgA27u51uExawh6Ng8jvTSdB4hUgODzdoIHUXT6yr/o4XJ0EeyFE2+8+2oFj4aqPsj8djokELAykKEfyA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=G0Z+diBZ; arc=none smtp.client-ip=220.197.31.3
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="nQ2lweAE"
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="G0Z+diBZ"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=jG
-	mAsBQvitU1D+MTobtYVmx30G9a53Rm5Jqq5viDTgA=; b=nQ2lweAE6hYdgajhp9
-	TLKKGLTXxo6XDKx50ag7KU+7/r12V6f8I+C355Us3nlSOKQnoO29Fo1t0laWV+PI
-	FmZjFOnljhOaFB6AyaW9AxtqPFl9jaQXZeajEYniVEm2VzSeb9IpflfB6tKEwp+E
-	An65zUujNzqyUMfh+ri3m3Jrg=
+	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=T7
+	Twz1u5WADeiHqghXkafABju3rL1IvxshM6715LHMY=; b=G0Z+diBZllIpAmN4YZ
+	8WYiOAdqU3hmcTBGpf4Hg8Hq+HJhwu8M/DfjKol/1YZf/VoFpmLBG7Lu12k0IcW2
+	S+If7CR3JwBKPf0kZJ4NmdI9y952Yv1CmxU95tyyGKM60cNHWPtNm53RPU+NlumC
+	1YYwQK4++FSvFUnQusGbdua5g=
 Received: from zhaoxin-MS-7E12.. (unknown [])
-	by gzga-smtp-mtada-g1-2 (Coremail) with SMTP id _____wAX13wZZzlpgUp4Aw--.3861S2;
-	Wed, 10 Dec 2025 20:27:07 +0800 (CST)
+	by gzga-smtp-mtada-g1-0 (Coremail) with SMTP id _____wBXH7yVbDlps1qbAw--.59421S2;
+	Wed, 10 Dec 2025 20:50:29 +0800 (CST)
 From: Xin Zhao <jackzxcui1989@163.com>
-To: jirislaby@kernel.org
-Cc: gregkh@linuxfoundation.org,
-	hch@infradead.org,
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	tj@kernel.org
+Cc: hch@infradead.org,
 	jackzxcui1989@163.com,
 	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	tj@kernel.org
-Subject: Re: [PATCH v5] tty: tty_port: add workqueue to flip tty buffer
-Date: Wed, 10 Dec 2025 20:27:05 +0800
-Message-Id: <20251210122705.4142873-1-jackzxcui1989@163.com>
+	linux-serial@vger.kernel.org
+Subject: [PATCH v7] tty: tty_port: add workqueue to flip TTY buffer
+Date: Wed, 10 Dec 2025 20:50:28 +0800
+Message-Id: <20251210125028.4174917-1-jackzxcui1989@163.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <6f23b96f-003f-482e-90b6-6db89083407d@kernel.org>
-References: <6f23b96f-003f-482e-90b6-6db89083407d@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -46,111 +43,410 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wAX13wZZzlpgUp4Aw--.3861S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxCrWDAF17uFyrJw47Cry5twb_yoW5Cw17pa
-	yYkrWUt3ykJr4jv398t3W5AFya9anxJr9Fgrn8W34xtws8tryjqF409F90ya4xAF97Z34a
-	vFyUA398AFWjyrJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0piJGYPUUUUU=
-X-CM-SenderInfo: pmdfy650fxxiqzyzqiywtou0bp/xtbC6BuIkmk5ZxsYRQAA3Y
+X-CM-TRANSID:_____wBXH7yVbDlps1qbAw--.59421S2
+X-Coremail-Antispam: 1Uf129KBjvAXoW3ZFWUWF17GrWrKFyUWw47XFb_yoW8Wr18Wo
+	Z3Wa15J3ZYqr1xAa4Fyrs7AF1fXa9F9F98Cay8ArZ8Z348tF15XrZrG34Yqa43Wr4FkF45
+	Z3W7J3ZayF47Aa4rn29KB7ZKAUJUUUU8529EdanIXcx71UUUUU7v73VFW2AGmfu7bjvjm3
+	AaLaJ3UbIYCTnIWIevJa73UjIFyTuYvj4Rlg4fUUUUU
+X-CM-SenderInfo: pmdfy650fxxiqzyzqiywtou0bp/xtbCvxbo8mk5bJZ0hQAA3o
 
-Dear Jiri,
+On the embedded platform, certain critical data, such as IMU data, is
+transmitted through UART. The tty_flip_buffer_push() interface in the TTY
+layer uses system_unbound_wq to handle the flipping of the TTY buffer.
+Although the unbound workqueue can create new threads on demand and wake
+up the kworker thread on an idle CPU, it may be preempted by real-time
+tasks or other high-prio tasks.
 
-On Wed, 10 Dec 2025 09:24:30 +0100 Jiri Slaby <jirislaby@kernel.org> wrote:
+flush_to_ldisc() needs to wake up the relevant data handle thread. When
+executing __wake_up_common_lock(), it calls spin_lock_irqsave(), which
+does not disable preemption but disables migration in RT-Linux. This
+prevents the kworker thread from being migrated to other cores by CPU's
+balancing logic, resulting in long delays. The call trace is as follows:
+    __wake_up_common_lock
+    __wake_up
+    ep_poll_callback
+    __wake_up_common
+    __wake_up_common_lock
+    __wake_up
+    n_tty_receive_buf_common
+    n_tty_receive_buf2
+    tty_ldisc_receive_buf
+    tty_port_default_receive_buf
+    flush_to_ldisc
 
-> I think Greg would mind missing "Change in v6" here :).
-> 
-> > Change in v5:
+In our system, the processing interval for each frame of IMU data
+transmitted via UART can experience significant jitter due to this issue.
+Instead of the expected 10 to 15 ms frame processing interval, we see
+spikes up to 30 to 35 ms. Moreover, in just one or two hours, there can
+be 2 to 3 occurrences of such high jitter, which is quite frequent. This
+jitter exceeds the software's tolerable limit of 20 ms.
 
-Sorry, I will add the descriptions of v6 and v7 in v7.
+Introduce flip_wq in tty_port which can be set by tty_port_link_wq() or as
+default linked to default workqueue allocated when tty_register_driver().
+The default workqueue is allocated with flag WQ_SYSFS, so that cpumask and
+nice can be set dynamically. The execution timing of tty_port_link_wq() is
+not clearly restricted. The newly added function tty_port_link_driver_wq()
+checks whether the flip_wq of the tty_port has already been assigned when
+linking the default tty_driver's workqueue to the port. After the user has
+set a custom workqueue for a certain tty_port using tty_port_link_wq(), the
+system will only use this custom workqueue, even if tty_driver does not
+have %TTY_DRIVER_CUSTOM_WORKQUEUE flag.
 
-> > +static struct workqueue_struct *pty_flip_wq;
-> 
-> Can't pty simply "link" to system_unbound_wq instead of allocating a 
-> custom one:
+Introduce %TTY_DRIVER_CUSTOM_WORKQUEUE flag meaning not to create the
+default single tty_driver workqueue. Two reasons why need to introduce the
+%TTY_DRIVER_CUSTOM_WORKQUEUE flag:
+1. If the WQ_SYSFS parameter is enabled, workqueue_sysfs_register() will
+fail when trying to create a workqueue with the same name. The pty is an
+example of this; if both CONFIG_LEGACY_PTYS and CONFIG_UNIX98_PTYS are
+enabled, the call to tty_register_driver() in unix98_pty_init() will fail.
+2. Different tty ports may be used for different tasks, which may require
+separate core binding control via workqueues. In this case, the workqueue
+created by default in the tty driver is unnecessary. Enabling this flag
+prevents the creation of this redundant workqueue.
 
-It's a great idea! I'll revise it.
+After applying this patch, we can set the related UART TTY flip buffer
+workqueue by sysfs. We set the cpumask to CPU cores associated with the
+IMU tasks, and set the nice to -20. Testing has shown significant
+improvement in the previously described issue, with almost no stuttering
+occurring anymore.
 
-> > > + * When %TTY_DRIVER_CUSTOM_WORKQUEUE is used, you must link every tty port to
-> > 
-> > Passive voice, please:
-> > every tty port shall be linked to a workqueue manually by this function
-> 
-> 
-> > +/**
-> > + * tty_port_link_wq - link tty_port and flip workqueue
-> > + * @port: tty_port of the device
-> > + * @flip_wq: workqueue to queue flip buffer work on
-> > + *
-> > + * When %TTY_DRIVER_CUSTOM_WORKQUEUE is used, you must link every tty port to
-> 
-> Passive voice, please:
-> every tty port shall be linked to a workqueue manually by this function
-> 
-> > + * workqueue manually by this function, otherwise tty_flip_buffer_push() will
-> > + * see NULL flip_wq pointer when queue_work.
-> 
-> %NULL flip_wq pointer on queue_work().
-> 
-> > + * When %TTY_DRIVER_CUSTOM_WORKQUEUE is NOT used, you can also use the function
-> 
-> this function can be used
-> 
-> > + * to link a certain port to a specific workqueue, instead of using the
-> > + * workqueue allocated in tty_register_driver().
-> > + *
-> > + * Note tty port api will not destroy the workqueue in the TTY port API.
-> 
-> You sometimes write "tty port", other times "TTY port" -- unify to 
-> whatever surrounding code does.
+Signed-off-by: Xin Zhao <jackzxcui1989@163.com>
+---
 
-Okay, here is the revised section:
+Change in v7:
+- Pty simply link to system_unbound_wq instead of allocating a custom one,
+  as suggested by Jiri Slaby.
+- Modify some inappropriate expressions in the code comments,
+  as suggested by Jiri Slaby.
 
-/**
- * tty_port_link_wq - link tty_port and flip workqueue
- * @port: tty_port of the device
- * @flip_wq: workqueue to queue flip buffer work on
- *
- * When %TTY_DRIVER_CUSTOM_WORKQUEUE is used, every tty_port shall be linked to
- * a workqueue manually by this function, otherwise tty_flip_buffer_push() will
- * see %NULL flip_wq pointer on queue_work.
- * When %TTY_DRIVER_CUSTOM_WORKQUEUE is NOT used, the function can be used to
- * link a certain port to a specific workqueue, instead of using the workqueue
- * allocated in tty_register_driver().
- *
- * Note that TTY port API will NOT destroy the workqueue.
- */
+Change in v6:
+- Modify many inappropriate expressions in the commit log and code comments,
+  as suggested by Jiri Slaby.
+- Add reasons why need to introduce the %TTY_DRIVER_CUSTOM_WORKQUEUE in
+  commit log.
+- Modify the error handling related to the allocation failure of workqueue in
+  tty_register_driver(), as suggested by Jiri Slaby.
+- Add description of tty_port_link_driver_wq() in the commit log,
+  as suggested by Jiri Slaby.
+- Link to v6: https://lore.kernel.org/all/20251210031827.3771327-1-jackzxcui1989@163.com/
 
-> > + * @TTY_DRIVER_CUSTOM_WORKQUEUE:
-> > + *	Do not create workqueue when tty_register_driver(). In the case, you must
-> > + *	set flip buffer workqueue by tty_port_link_wq() every port.
-> 
-> Do not create a workqueue in tty_register_driver(). When set, flip 
-> buffer workqueue shall be set by tty_port_link_wq() for every port.
+Change in v5:
+- Do not allocate workqueue twice when CONFIG_UNIX98_PTYS and
+  CONFIG_LEGACY_PTYS are all enabled.
+- Link to v5: https://lore.kernel.org/all/20251205030829.1829987-1-jackzxcui1989@163.com/
 
-Okay, here is the revised section:
+Change in v4:
+- Simplify the logic for creating and releasing the workqueue,
+  as suggested by Tejun Heo.
+- Allocate single workqueue of one tty_driver as default, link it to
+  port when tty_port register device or tty_driver.
+- Introduce tty_port_link_wq() to link specific workqueue to port.
+- Add driver flag %TTY_DRIVER_CUSTOM_WORKQUEUE meaning not to create the
+  default single tty_driver workqueue.
+- Link to v4: https://lore.kernel.org/all/202512041303.7192024b-lkp@intel.com/T/#t
 
- * @TTY_DRIVER_CUSTOM_WORKQUEUE:
- *	Do not create workqueue when tty_register_driver(). When set, flip
- *	buffer workqueue shall be set by tty_port_link_wq() for every port.
- */
+Change in v3:
+- Add tty flip workqueue for all tty ports, as suggested by Greg KH.
+  Every tty port use an individual flip workqueue, while all pty ports
+  share the same workqueue created in pty_flip_wq_init().
+- Modify the commit log to describe the reason for latency spikes in
+  RT-Linux.
+- Link to v3: https://lore.kernel.org/all/20251027060929.394053-1-jackzxcui1989@163.com/
 
-> > +/*
-> > + * Never overwrite the workqueue set by tty_port_link_wq().
-> > + * No effect when %TTY_DRIVER_CUSTOM_WORKQUEUE, as driver->flip_wq is NULL.
-> 
-> when %TTY_DRIVER_CUSTOM_WORKQUEUE is set
-> 
-> %NULL
+Change in v2:
+- Do not add new module parameters
+  as suggested by Greg KH
+- Set WQ_SYSFS to allow properties changes from userspace
+  as suggested by Tejun Heo
+- Link to v2: https://lore.kernel.org/all/20251024155534.2302590-1-jackzxcui1989@163.com
+---
+ drivers/tty/pty.c          | 14 ++++++++++----
+ drivers/tty/tty_buffer.c   |  8 ++++----
+ drivers/tty/tty_io.c       | 21 ++++++++++++++++++++-
+ drivers/tty/tty_port.c     | 23 +++++++++++++++++++++++
+ include/linux/tty_buffer.h |  1 +
+ include/linux/tty_driver.h |  7 +++++++
+ include/linux/tty_port.h   | 13 +++++++++++++
+ 7 files changed, 78 insertions(+), 9 deletions(-)
 
-Okay, here is the revised section:
-
-/*
- * Never overwrite the workqueue set by tty_port_link_wq().
- * No effect when %TTY_DRIVER_CUSTOM_WORKQUEUE is set, as driver->flip_wq is
- * %NULL.
- */
-
-
---
-Xin Zhao
+diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
+index 8bb1a01fe..9aefdecc5 100644
+--- a/drivers/tty/pty.c
++++ b/drivers/tty/pty.c
+@@ -407,6 +407,8 @@ static int pty_common_install(struct tty_driver *driver, struct tty_struct *tty,
+ 	o_tty->link = tty;
+ 	tty_port_init(ports[0]);
+ 	tty_port_init(ports[1]);
++	tty_port_link_wq(ports[0], system_unbound_wq);
++	tty_port_link_wq(ports[1], system_unbound_wq);
+ 	tty_buffer_set_limit(ports[0], 8192);
+ 	tty_buffer_set_limit(ports[1], 8192);
+ 	o_tty->port = ports[0];
+@@ -536,14 +538,16 @@ static void __init legacy_pty_init(void)
+ 	pty_driver = tty_alloc_driver(legacy_count,
+ 			TTY_DRIVER_RESET_TERMIOS |
+ 			TTY_DRIVER_REAL_RAW |
+-			TTY_DRIVER_DYNAMIC_ALLOC);
++			TTY_DRIVER_DYNAMIC_ALLOC |
++			TTY_DRIVER_CUSTOM_WORKQUEUE);
+ 	if (IS_ERR(pty_driver))
+ 		panic("Couldn't allocate pty driver");
+ 
+ 	pty_slave_driver = tty_alloc_driver(legacy_count,
+ 			TTY_DRIVER_RESET_TERMIOS |
+ 			TTY_DRIVER_REAL_RAW |
+-			TTY_DRIVER_DYNAMIC_ALLOC);
++			TTY_DRIVER_DYNAMIC_ALLOC |
++			TTY_DRIVER_CUSTOM_WORKQUEUE);
+ 	if (IS_ERR(pty_slave_driver))
+ 		panic("Couldn't allocate pty slave driver");
+ 
+@@ -877,7 +881,8 @@ static void __init unix98_pty_init(void)
+ 			TTY_DRIVER_REAL_RAW |
+ 			TTY_DRIVER_DYNAMIC_DEV |
+ 			TTY_DRIVER_DEVPTS_MEM |
+-			TTY_DRIVER_DYNAMIC_ALLOC);
++			TTY_DRIVER_DYNAMIC_ALLOC |
++			TTY_DRIVER_CUSTOM_WORKQUEUE);
+ 	if (IS_ERR(ptm_driver))
+ 		panic("Couldn't allocate Unix98 ptm driver");
+ 	pts_driver = tty_alloc_driver(NR_UNIX98_PTY_MAX,
+@@ -885,7 +890,8 @@ static void __init unix98_pty_init(void)
+ 			TTY_DRIVER_REAL_RAW |
+ 			TTY_DRIVER_DYNAMIC_DEV |
+ 			TTY_DRIVER_DEVPTS_MEM |
+-			TTY_DRIVER_DYNAMIC_ALLOC);
++			TTY_DRIVER_DYNAMIC_ALLOC |
++			TTY_DRIVER_CUSTOM_WORKQUEUE);
+ 	if (IS_ERR(pts_driver))
+ 		panic("Couldn't allocate Unix98 pts driver");
+ 
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index 67271fc0b..86e1e7178 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -76,7 +76,7 @@ void tty_buffer_unlock_exclusive(struct tty_port *port)
+ 	mutex_unlock(&buf->lock);
+ 
+ 	if (restart)
+-		queue_work(system_unbound_wq, &buf->work);
++		queue_work(buf->flip_wq, &buf->work);
+ }
+ EXPORT_SYMBOL_GPL(tty_buffer_unlock_exclusive);
+ 
+@@ -530,7 +530,7 @@ void tty_flip_buffer_push(struct tty_port *port)
+ 	struct tty_bufhead *buf = &port->buf;
+ 
+ 	tty_flip_buffer_commit(buf->tail);
+-	queue_work(system_unbound_wq, &buf->work);
++	queue_work(buf->flip_wq, &buf->work);
+ }
+ EXPORT_SYMBOL(tty_flip_buffer_push);
+ 
+@@ -560,7 +560,7 @@ int tty_insert_flip_string_and_push_buffer(struct tty_port *port,
+ 		tty_flip_buffer_commit(buf->tail);
+ 	spin_unlock_irqrestore(&port->lock, flags);
+ 
+-	queue_work(system_unbound_wq, &buf->work);
++	queue_work(buf->flip_wq, &buf->work);
+ 
+ 	return size;
+ }
+@@ -613,7 +613,7 @@ void tty_buffer_set_lock_subclass(struct tty_port *port)
+ 
+ bool tty_buffer_restart_work(struct tty_port *port)
+ {
+-	return queue_work(system_unbound_wq, &port->buf.work);
++	return queue_work(port->buf.flip_wq, &port->buf.work);
+ }
+ 
+ bool tty_buffer_cancel_work(struct tty_port *port)
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index e2d92cf70..d64fb08ba 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -3446,10 +3446,23 @@ int tty_register_driver(struct tty_driver *driver)
+ 	if (error < 0)
+ 		goto err;
+ 
++	if (!(driver->flags & TTY_DRIVER_CUSTOM_WORKQUEUE)) {
++		driver->flip_wq = alloc_workqueue("%s-flip-wq", WQ_UNBOUND | WQ_SYSFS,
++						  0, driver->name);
++		if (!driver->flip_wq) {
++			error = -ENOMEM;
++			goto err_unreg_char;
++		}
++		for (i = 0; i < driver->num; i++) {
++			if (driver->ports[i])
++				tty_port_link_driver_wq(driver->ports[i], driver);
++		}
++	}
++
+ 	if (driver->flags & TTY_DRIVER_DYNAMIC_ALLOC) {
+ 		error = tty_cdev_add(driver, dev, 0, driver->num);
+ 		if (error)
+-			goto err_unreg_char;
++			goto err_destroy_wq;
+ 	}
+ 
+ 	scoped_guard(mutex, &tty_mutex)
+@@ -3475,6 +3488,10 @@ int tty_register_driver(struct tty_driver *driver)
+ 	scoped_guard(mutex, &tty_mutex)
+ 		list_del(&driver->tty_drivers);
+ 
++err_destroy_wq:
++	if (!(driver->flags & TTY_DRIVER_CUSTOM_WORKQUEUE))
++		destroy_workqueue(driver->flip_wq);
++
+ err_unreg_char:
+ 	unregister_chrdev_region(dev, driver->num);
+ err:
+@@ -3494,6 +3511,8 @@ void tty_unregister_driver(struct tty_driver *driver)
+ 				driver->num);
+ 	scoped_guard(mutex, &tty_mutex)
+ 		list_del(&driver->tty_drivers);
++	if (!(driver->flags & TTY_DRIVER_CUSTOM_WORKQUEUE))
++		destroy_workqueue(driver->flip_wq);
+ }
+ EXPORT_SYMBOL(tty_unregister_driver);
+ 
+diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+index 5b4d5fb99..c60fe6f33 100644
+--- a/drivers/tty/tty_port.c
++++ b/drivers/tty/tty_port.c
+@@ -103,6 +103,26 @@ void tty_port_init(struct tty_port *port)
+ }
+ EXPORT_SYMBOL(tty_port_init);
+ 
++/**
++ * tty_port_link_wq - link tty_port and flip workqueue
++ * @port: tty_port of the device
++ * @flip_wq: workqueue to queue flip buffer work on
++ *
++ * When %TTY_DRIVER_CUSTOM_WORKQUEUE is used, every tty_port shall be linked to
++ * a workqueue manually by this function, otherwise tty_flip_buffer_push() will
++ * see %NULL flip_wq pointer on queue_work.
++ * When %TTY_DRIVER_CUSTOM_WORKQUEUE is NOT used, the function can be used to
++ * link a certain port to a specific workqueue, instead of using the workqueue
++ * allocated in tty_register_driver().
++ *
++ * Note that TTY port API will NOT destroy the workqueue.
++ */
++void tty_port_link_wq(struct tty_port *port, struct workqueue_struct *flip_wq)
++{
++	port->buf.flip_wq = flip_wq;
++}
++EXPORT_SYMBOL_GPL(tty_port_link_wq);
++
+ /**
+  * tty_port_link_device - link tty and tty_port
+  * @port: tty_port of the device
+@@ -161,6 +181,7 @@ struct device *tty_port_register_device_attr(struct tty_port *port,
+ 		const struct attribute_group **attr_grp)
+ {
+ 	tty_port_link_device(port, driver, index);
++	tty_port_link_driver_wq(port, driver);
+ 	return tty_register_device_attr(driver, index, device, drvdata,
+ 			attr_grp);
+ }
+@@ -187,6 +208,7 @@ struct device *tty_port_register_device_attr_serdev(struct tty_port *port,
+ 	struct device *dev;
+ 
+ 	tty_port_link_device(port, driver, index);
++	tty_port_link_driver_wq(port, driver);
+ 
+ 	dev = serdev_tty_port_register(port, host, parent, driver, index);
+ 	if (PTR_ERR(dev) != -ENODEV) {
+@@ -718,6 +740,7 @@ int tty_port_install(struct tty_port *port, struct tty_driver *driver,
+ 		struct tty_struct *tty)
+ {
+ 	tty->port = port;
++	tty_port_link_driver_wq(port, driver);
+ 	return tty_standard_install(driver, tty);
+ }
+ EXPORT_SYMBOL_GPL(tty_port_install);
+diff --git a/include/linux/tty_buffer.h b/include/linux/tty_buffer.h
+index 31125e3be..48adcb0e8 100644
+--- a/include/linux/tty_buffer.h
++++ b/include/linux/tty_buffer.h
+@@ -34,6 +34,7 @@ static inline u8 *flag_buf_ptr(struct tty_buffer *b, unsigned int ofs)
+ 
+ struct tty_bufhead {
+ 	struct tty_buffer *head;	/* Queue head */
++	struct workqueue_struct *flip_wq;
+ 	struct work_struct work;
+ 	struct mutex	   lock;
+ 	atomic_t	   priority;
+diff --git a/include/linux/tty_driver.h b/include/linux/tty_driver.h
+index 188ee9b76..9c65854f7 100644
+--- a/include/linux/tty_driver.h
++++ b/include/linux/tty_driver.h
+@@ -69,6 +69,10 @@ struct serial_struct;
+  *	Do not create numbered ``/dev`` nodes. For example, create
+  *	``/dev/ttyprintk`` and not ``/dev/ttyprintk0``. Applicable only when a
+  *	driver for a single tty device is being allocated.
++ *
++ * @TTY_DRIVER_CUSTOM_WORKQUEUE:
++ *	Do not create workqueue when tty_register_driver(). When set, flip
++ *	buffer workqueue shall be set by tty_port_link_wq() for every port.
+  */
+ enum tty_driver_flag {
+ 	TTY_DRIVER_INSTALLED		= BIT(0),
+@@ -79,6 +83,7 @@ enum tty_driver_flag {
+ 	TTY_DRIVER_HARDWARE_BREAK	= BIT(5),
+ 	TTY_DRIVER_DYNAMIC_ALLOC	= BIT(6),
+ 	TTY_DRIVER_UNNUMBERED_NODE	= BIT(7),
++	TTY_DRIVER_CUSTOM_WORKQUEUE	= BIT(8),
+ };
+ 
+ enum tty_driver_type {
+@@ -506,6 +511,7 @@ struct tty_operations {
+  * @flags: tty driver flags (%TTY_DRIVER_)
+  * @proc_entry: proc fs entry, used internally
+  * @other: driver of the linked tty; only used for the PTY driver
++ * @flip_wq: workqueue to queue flip buffer work on
+  * @ttys: array of active &struct tty_struct, set by tty_standard_install()
+  * @ports: array of &struct tty_port; can be set during initialization by
+  *	   tty_port_link_device() and similar
+@@ -539,6 +545,7 @@ struct tty_driver {
+ 	unsigned long	flags;
+ 	struct proc_dir_entry *proc_entry;
+ 	struct tty_driver *other;
++	struct workqueue_struct *flip_wq;
+ 
+ 	/*
+ 	 * Pointer to the tty data structures
+diff --git a/include/linux/tty_port.h b/include/linux/tty_port.h
+index 332ddb936..4c9f3b874 100644
+--- a/include/linux/tty_port.h
++++ b/include/linux/tty_port.h
+@@ -138,6 +138,7 @@ struct tty_port {
+ 					   kernel */
+ 
+ void tty_port_init(struct tty_port *port);
++void tty_port_link_wq(struct tty_port *port, struct workqueue_struct *flip_wq);
+ void tty_port_link_device(struct tty_port *port, struct tty_driver *driver,
+ 		unsigned index);
+ struct device *tty_port_register_device(struct tty_port *port,
+@@ -165,6 +166,18 @@ static inline struct tty_port *tty_port_get(struct tty_port *port)
+ 	return NULL;
+ }
+ 
++/*
++ * Never overwrite the workqueue set by tty_port_link_wq().
++ * No effect when %TTY_DRIVER_CUSTOM_WORKQUEUE is set, as driver->flip_wq is
++ * %NULL.
++ */
++static inline void tty_port_link_driver_wq(struct tty_port *port,
++					   struct tty_driver *driver)
++{
++	if (!port->buf.flip_wq)
++		port->buf.flip_wq = driver->flip_wq;
++}
++
+ /* If the cts flow control is enabled, return true. */
+ static inline bool tty_port_cts_enabled(const struct tty_port *port)
+ {
+-- 
+2.34.1
 
