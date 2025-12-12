@@ -1,127 +1,136 @@
-Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [80.241.56.152])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CDD72C0F97;
-	Thu, 11 Dec 2025 13:57:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=80.241.56.152
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30BC8255F52
+	for <linux-serial@vger.kernel.org>; Fri, 12 Dec 2025 08:09:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765461481; cv=none; b=q6YHBwcwHyQYZEU7RWEOYNaaHynEVUBsdTPp3sRQq/nftcZC+9IKlLWdp63mFWxBFSXQfGgzt4x2Ags+8Cd9eM4Sfwwad6fqt84MvxZt2APf8R6zPmq3ljsdciIBiHZggqZSxVn7FZIJM8vbv2vfHOYOZ8yVrSQpj+vCfFpddKY=
+	t=1765526971; cv=none; b=L7AQ0ZgYVB8n/IIjPkZlQa26zp3JiZKM9tqt7ghnWBZxkqLzgwLCgLgWBKNJocE5lHveEspk9jHgEdB6gnfGu7KQEfH8Ws+NY5LdXDEo5Klx6Nr8czoRysI+q7tnMB2Zah76PWw6OL7QjOW5nvIDngi6ryiUp1+Fy1r1nX6twAM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765461481; c=relaxed/simple;
-	bh=vZM32RnAWiEMeE9rSc7p4ytmGTsTE9ubn5xNv56iu7c=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=q1G60/WbzKyvGKT2gifwt1O9Nvh8WgDYTqMYMn0ylE838T1lDkOF+XO5x3gJCBHstt+OCvlq6XtLEOEe+q4atNFOoapZnkzuDRjNiObjpyzuY9A3KFjK62y3mSFom7lM5/klUWIawn6I41ArRNOAMZbahFaROegMKBC/nMDjUrQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org; spf=pass smtp.mailfrom=mailbox.org; dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b=gr6ljyuO; arc=none smtp.client-ip=80.241.56.152
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mailbox.org
+	s=arc-20240116; t=1765526971; c=relaxed/simple;
+	bh=K06CTF1+H8fsvJB8Sz7I3QqOSTfTlCxCmD4vCQHcp/Y=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Piwq8bMHE0l7pb9vKddzutuZidPV2+Qxtx8CbLt4fuLoqbqYTLYoYhlrFpoOXV8mFap0hmAmzTTLUi5XuASWlCpJPH+7mOu8AccjXADe2ffjEFLAc8nJIWjHGg9RnwbMKc10aKIPy/1MV05Ob4910fBiW2D/Vi5pgFl59MDrM5k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=VQyN9t+s; arc=none smtp.client-ip=209.85.218.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b="gr6ljyuO"
-Received: from smtp2.mailbox.org (smtp2.mailbox.org [IPv6:2001:67c:2050:b231:465::2])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4dRvL542SZz9tRr;
-	Thu, 11 Dec 2025 14:57:49 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
-	t=1765461469; h=from:from:reply-to:reply-to:subject:subject:date:date:
-	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-	 content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=7aiPBzNWfpt3cqpowU4DKu3351BhGbSF41lWXDiOhaQ=;
-	b=gr6ljyuO5EwhRw2XQ/XLMuDXN7llqXE0DthhLMZWiZddNSgz9+Lu+FYiBVgc4s2HmGot06
-	tkNQ2I+COM4Mzo6Rrj/D/cRy9uWmIQXP+iMtW4VXyL8RuiIIy5gABut3CA0pGMWcPP3etF
-	rqpfIA7t/sASosVH+hqBAHK+PQuJLT6ZIU9jzpcwhqjPGelqu5Gnj5SmwTE54SC4IYzwyy
-	sVz1fNaF2LYGEr5UyfJeaYHV7TkUEeX1p8yyJDPuMZFwbFdtzo7bhBVG2q0wOB6pD7stnS
-	OfjJj9HmJzKzV0mqm+bgWNqJS6eXpl/jbpbTRjslYpvLUl+4SfZAu+Ux3hj9fA==
-Message-ID: <de540d7789d0e9f77efde05fab4705b8d97245d8.camel@mailbox.org>
-Subject: Re: [PATCH] tty: serial: Replace deprecated PCI API
-From: Philipp Stanner <phasta@mailbox.org>
-Reply-To: phasta@kernel.org
-To: Guenter Roeck <linux@roeck-us.net>, Philipp Stanner <phasta@kernel.org>,
-  Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, Peter Zijlstra <peterz@infradead.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Date: Thu, 11 Dec 2025 14:57:46 +0100
-In-Reply-To: <3f5370b7-c67c-409d-8422-83b5096d1233@roeck-us.net>
-References: <20251126091032.130787-2-phasta@kernel.org>
-	 <3f5370b7-c67c-409d-8422-83b5096d1233@roeck-us.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="VQyN9t+s"
+Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-b713c7096f9so163138466b.3
+        for <linux-serial@vger.kernel.org>; Fri, 12 Dec 2025 00:09:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1765526967; x=1766131767; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=z4ODxaS91WWg8dms1l29deWZrC7eVseakTTbVZP9TPM=;
+        b=VQyN9t+sLEL/hIuBW/KIOEI00UrAqUlJjnEqwC+FdON6JLO9z7/yUMsP/cwtSqfOcx
+         D7CdkARndnfuvifT8wNgW11N7IwwnAqmWK76Q4E6b9iHh3M2IG58U9pMWbkCF9wzs89u
+         LEbhI9HYa8BioFTqLVMf3lTio7rhTTeZPMsbq9cJMopoD9HyqdTEaSxCv9TR08ZHx5wZ
+         XJ/cvZqmrLgksernPaiaU1JoiqT8GmGzmq6iliUP772TD72w6G4WKrXV97682fTIqvn+
+         3ud+YZOH7fC4TyMqbm9XTuEwPnEMnKm8nsLAGUF/YoZWkh5MivVoMJ7gJdRJrj90CoCx
+         p1VQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1765526967; x=1766131767;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=z4ODxaS91WWg8dms1l29deWZrC7eVseakTTbVZP9TPM=;
+        b=jFJDJC3vO+N3TPkW5E0wDNt87tLAcF0WIilUopmz7mU8J0crbCuzoPZx1RmwZyKqkd
+         SdgqqDZFctc8UE1aXBLYc6n+xoqprVBZmGiWhXyPPkmoZDguyl7kcv+0MKK9l6wdJhOf
+         C29sVi13DrHYFYWl5nVT7J4IiT1LWJ41MhyZb/O1E5pwraSplIyb3ByHXS8jrVXAHpdc
+         DOEJq7Kwwrpw8Bvc1grDuvLEpsxqJdDll50fqRhclzfGxFXUd0QY9JBmpHcdrq7jnJZC
+         OykGYzudhRPyF7yrhSNAvyv31GgkTuvjbjfunOmwFQEN1if30KnzvMfWQCKyCw4arMU1
+         ngbg==
+X-Gm-Message-State: AOJu0Yy3CwLmy6cCN1gTrvqQM6bHfGHgagaNpueucoxu5WiR+jEIW2Xo
+	ICMnDYwEaQPd2lmoiGuC8ZyiBmSibfVBKPrKBNeSCDHoFvvI6S7jOj8cVoimCUyT6jo=
+X-Gm-Gg: AY/fxX7hYog/KTO/QPovXViHrGXqhDP30PJWG4xDY/IlQr+mqdNZY7wOBhMuRoMNGXg
+	fAwQbd7TMw2vxAcLZ74ZQj6u4/c2gphn1as99kayo3V9fvwBb6EtA6Oe4obZKDk/theIvVDxOwH
+	BAfMh9DGmASIU7mgE841WsvSeU3u7ayBj5lhWCEvSEWWFf/scdBMpWxVzAZT5mZ2ReFgq0N9evB
+	T3CF/2k5B9pNrIAegFxNSHx55OSeqauSrX8s6GDHF5A5VDfk1wSdiaOxrbg1GlTUPZnavtDW1Dd
+	Cjq/+bK4NMllQvKW11b+6mne8raXnXoi9RMLyJ74OvI4VItJhbMI7ylzIz6dfZyteUWucV9de0a
+	tMgia3VwOBXqpzSJQ15hX1a+M6Laor+MxrWPXzlyvgOBD0shiax1UAYyNJRoRxKIAOfpusbRSaB
+	lkrFAISMic6yS0tH+ULScTaOghFslVQedfjMPKgqobJHyC78nqqRjhVmX30NHbkbje+a77tqw9H
+	gw=
+X-Google-Smtp-Source: AGHT+IGjlZGO7rwXFONsbS/nqwyomTwF06cuS1NBQZnSkxQyjYYdO5U9mb9vjrawLsD5RVoidrAzyQ==
+X-Received: by 2002:a17:907:8011:b0:b7a:6c98:32ba with SMTP id a640c23a62f3a-b7d235c977amr57851566b.1.1765526967412;
+        Fri, 12 Dec 2025 00:09:27 -0800 (PST)
+Received: from localhost (p200300f65f0066082ad4229ee042f7ed.dip0.t-ipconnect.de. [2003:f6:5f00:6608:2ad4:229e:e042:f7ed])
+        by smtp.gmail.com with UTF8SMTPSA id a640c23a62f3a-b7cfa29bedbsm510984066b.9.2025.12.12.00.09.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Dec 2025 00:09:27 -0800 (PST)
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
+To: Rob Herring <robh@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Yang Li <yang.li@amlogic.com>,
+	Marcel Holtmann <marcel@holtmann.org>,
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+	Maximilian Luz <luzmaximilian@gmail.com>,
+	Hans de Goede <hansg@kernel.org>,
+	=?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: linux-serial@vger.kernel.org,
+	linux-bluetooth@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org,
+	platform-driver-x86@vger.kernel.org
+Subject: [PATCH v1 0/4] serdev: Stop using device_driver callbacks
+Date: Fri, 12 Dec 2025 09:09:05 +0100
+Message-ID: <cover.1765526117.git.u.kleine-koenig@baylibre.com>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MBO-RS-ID: ac2e4983f9aeb5b9cb5
-X-MBO-RS-META: kmakwgpb48m9qy8fqz7zazp19cu7ztyu
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2042; i=u.kleine-koenig@baylibre.com; h=from:subject:message-id; bh=K06CTF1+H8fsvJB8Sz7I3QqOSTfTlCxCmD4vCQHcp/Y=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBpO82hS2J33V3DvLBVORXLLnffbAMzV3OfWdh2a VVjbXTGbp6JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCaTvNoQAKCRCPgPtYfRL+ To3JCACryjD6szyIbOAJaZIbJtZMnL1IOkIiXNzrMoIlqNyOhOwBe/3SwVg+zplh4KCp8HCJk+O y0YB98avclKkhAN8MqyBBiONeBwksmxil9PatLgexVwxQlb3BRfFCKaWkdecsThmRQoVC1dJ3FZ TiFdiZZFveRo4TT2RE2fj8mlgtdtwzponNXPqcznoA5L7QN5w2ZVUAGB3tRk585tZwFkZMYm56s B5YrvZ2zovmO2vhkdWeMc0rXKgJN2FjP4GVbYm8aWcSz3qFSY8cmzChofq/YnzdzSrPxuN+ttjD whNGQH+Nu7ZdRFUDa0F+PD93nRgzYZjNFt74aRphPSZAJzWw
+X-Developer-Key: i=u.kleine-koenig@baylibre.com; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
 
-On Wed, 2025-11-26 at 09:02 -0800, Guenter Roeck wrote:
-> On 11/26/25 01:10, Philipp Stanner wrote:
-> > pcim_iomap_table() is deprecated. Moreover, its special usage in 8250,
-> > causes a WARN_ON to fire (in pcim_add_mapping_to_legacy_table()).
-> >=20
-> > 8250's function serial8250_pci_setup_port() effectively maps the same
-> > BAR multiple times and adds an offset to the start address. While
-> > mapping and adding offsets is not a bug, it can be achieved in a far
-> > more straightforward way by using the specialized function
-> > pcim_iomap_range().
-> >=20
-> > pcim_iomap_range() does not add the mapping addresses to the deprecated
-> > iomap table - that's not a problem, however, because non of the users o=
-f
-> > serial8250_pci_setup_port() uses pcim_iomap_table().
-> >=20
-> > Replace the deprecated PCI functions with pcim_iomap_range().
-> >=20
-> > Cc: Guenter Roeck <linux@roeck-us.net>
-> > Link: https://lore.kernel.org/dri-devel/16cd212f-6ea0-471d-bf32-34f55d7=
-292fe@roeck-us.net/
-> > Signed-off-by: Philipp Stanner <phasta@kernel.org>
-> > ---
-> > @Guenther: Can you please test this? I hope it fixes your issue.
->=20
-> Yes, it does. Thanks a lot for fixing this!
->=20
-> Tested-by: Guenter Roeck <linux@roeck-us.net>
+Hello,
 
-@Greg:
-Can you apply this?
+the serdev subsystem currently doesn't provide a shutdown callback, thus
+drivers that want being notified on shutdown have to implement the
+respective callback in struct device_driver. This (and more)
+functionality can be provided by a bus method as it already done for
+.probe() and .remove().
 
-P.
+The eventual goal is to remove .shutdown() (and .probe() and .remove())
+from struct device_driver.
+
+Note that the first patch introduces a warning when the three affected
+drivers are registered (in driver_register() because `drv->bus->shutdown
+&& drv->shutdown`). Patches #2 - #4 fix these warnings. So from a user
+perspective it would be good to get the whole series in during a single
+merge window---either by creating an immutable branch containing patch
+#1 that is merged into the respective subsystems before applying the
+following patches, or merging the complete series via a single tree.
+
+At a later point in time the added check in
+__serdev_device_driver_register() and the function
+serdev_legacy_shutdown() can be dropped. I intend to cope for that in
+the merge window that removes the callbacks from struct device_driver
+because drivers that I might have missed to convert or that are rebased
+over that change break silently as long as struct
+device_driver::shutdown exists.
+
+Best regards
+Uwe
+
+Uwe Kleine-König (4):
+  serdev: Provide a bustype shutdown function
+  Bluetooth: hci_aml: Migrate to serdev specific shutdown function
+  Bluetooth: hci_qca: Migrate to serdev specific shutdown function
+  platform/surface: Migrate to serdev specific shutdown function
+
+ drivers/bluetooth/hci_aml.c                | 16 ++++++++--------
+ drivers/bluetooth/hci_qca.c                |  5 ++---
+ drivers/platform/surface/aggregator/core.c |  6 +++---
+ drivers/tty/serdev/core.c                  | 21 +++++++++++++++++++++
+ include/linux/serdev.h                     |  1 +
+ 5 files changed, 35 insertions(+), 14 deletions(-)
 
 
->=20
-> > ---
-> > =C2=A0 drivers/tty/serial/8250/8250_pcilib.c | 9 +++++----
-> > =C2=A0 1 file changed, 5 insertions(+), 4 deletions(-)
-> >=20
-> > diff --git a/drivers/tty/serial/8250/8250_pcilib.c b/drivers/tty/serial=
-/8250/8250_pcilib.c
-> > index d8d0ae0d7238..f98eb2ab1005 100644
-> > --- a/drivers/tty/serial/8250/8250_pcilib.c
-> > +++ b/drivers/tty/serial/8250/8250_pcilib.c
-> > @@ -28,13 +28,14 @@ int serial8250_pci_setup_port(struct pci_dev *dev, =
-struct uart_8250_port *port,
-> > =C2=A0=C2=A0		return -EINVAL;
-> > =C2=A0=20
-> > =C2=A0=C2=A0	if (pci_resource_flags(dev, bar) & IORESOURCE_MEM) {
-> > -		if (!pcim_iomap(dev, bar, 0) && !pcim_iomap_table(dev))
-> > -			return -ENOMEM;
-> > -
-> > =C2=A0=C2=A0		port->port.iotype =3D UPIO_MEM;
-> > =C2=A0=C2=A0		port->port.iobase =3D 0;
-> > =C2=A0=C2=A0		port->port.mapbase =3D pci_resource_start(dev, bar) + off=
-set;
-> > -		port->port.membase =3D pcim_iomap_table(dev)[bar] + offset;
-> > +
-> > +		port->port.membase =3D pcim_iomap_range(dev, bar, offset, 0);
-> > +		if (IS_ERR(port->port.membase))
-> > +			return PTR_ERR(port->port.membase);
-> > +
-> > =C2=A0=C2=A0		port->port.regshift =3D regshift;
-> > =C2=A0=C2=A0	} else if (IS_ENABLED(CONFIG_HAS_IOPORT)) {
-> > =C2=A0=C2=A0		port->port.iotype =3D UPIO_PORT;
->=20
+base-commit: 7d0a66e4bb9081d75c82ec4957c50034cb0ea449
+-- 
+2.47.3
 
