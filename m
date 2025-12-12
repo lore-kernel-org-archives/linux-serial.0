@@ -1,75 +1,75 @@
-Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
+Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E10C2836A0
-	for <linux-serial@vger.kernel.org>; Fri, 12 Dec 2025 08:09:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6501F2836A0
+	for <linux-serial@vger.kernel.org>; Fri, 12 Dec 2025 08:09:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765526976; cv=none; b=FCF46H7RhhYgSjcB/AY4X0s6J4svs1ziYw9O97cTd150MfVUVxyEOKtRRyEan/uGmc9yIECibKYoZ9ouSDoMty4hc5aj2EoQZsqceYWv+mAZXyqs1EwuUkQYjRAQIwdSkCZAnMakgEZzp+qKNs3Mh2OT3PsZuObYvbt5HZ9I1gc=
+	t=1765526978; cv=none; b=DW+khTIyyQA05fsOo3Ho8EurhAyy6S+Wo4ZFxQk2bzgZ692BFg/uisFiZDHvJvaBX2NCWx/WPum6mgRfVU0GETJ/EAaiw9NsUslLNTvJ/tXXeeYOeJZAFNVSh8vf5YOr1KV3riyi/xlQ1Sbud3imo1nSwSNyHy0asPz59iXeerA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765526976; c=relaxed/simple;
-	bh=vGCqn150HxJ8MtUS82THFrl3poKgmAltPNTl+cDcUXM=;
+	s=arc-20240116; t=1765526978; c=relaxed/simple;
+	bh=/7sjm8Q7YGQNrr3MXB7trnzKuxp3Tl+m5P4UFgGy1vw=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=kJzW18exwOAmUeBaPw/OSjIRfUl3lDcfO4k1qZWfP29gJbrwqHpJ+dJe95fedcihHwE7cMzqcZHZorPbGIT15N8VNyAMEgwmUg/Pg0i53BFDupZxcbkSVe9VAJuJbkkddS76c9xVjIWewN6b5Dnj3ln4AT3lQhrFJ4Uj4gH8aGM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=R0hUYoJA; arc=none smtp.client-ip=209.85.218.48
+	 MIME-Version:Content-Type; b=sr8vMecSFMf/8O/FJt4eypVPayLrzBFzNQVxp9w5HgC7RN7nXYYFhsYElgpkpxXpcTxa77DxrLZ47kF0j8hOzqklhqB3zMEF2UVpslzYjNUDciS4Qtah1idOH6zA4uUbhLoUSPEFQdWi1RyTpGGnXSgBF3Jqt8WHREeDmooPl2I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=rwfFh9J0; arc=none smtp.client-ip=209.85.208.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="R0hUYoJA"
-Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-b7636c96b9aso155837066b.2
-        for <linux-serial@vger.kernel.org>; Fri, 12 Dec 2025 00:09:33 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="rwfFh9J0"
+Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-641977dc00fso1444026a12.1
+        for <linux-serial@vger.kernel.org>; Fri, 12 Dec 2025 00:09:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1765526972; x=1766131772; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1765526975; x=1766131775; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=8y/WEFvgJT6eEHgu+k37sR9i/F7SLQirVFkB830SU88=;
-        b=R0hUYoJAVQB/gwRtuYrNlc52M9GwgKaKWUu5W6wngJjA2mlCirwQ7gZXbKGG8FH8uj
-         wPe5yigR15O7qcEvaB109fMKlU8XdRPMQWx2y4O9rzzv6/csg0wu9JoC4SwwMSSVpKen
-         AoP0owNeUelFOqlpytEgc9ux4heexokA8kRObfoJsIzv/6IB7cYVSSJTEXjrZ2ubXma0
-         n4BekFOXY46m4H4iR2TZdkeOQRtn0l0f9gQoHwTl3nwJHgO1mlCmmyYfJjzc6CNjz+Of
-         m1Vlo9vIJDUcHtS/LvlZeP/mWFq2ZQCeQOtgy12oF9htsQt5/RpW8BrL4mJmYM9dEx0p
-         OD8Q==
+        bh=B4Jg8UxPHFHcdnfExuoMtj57f/nwd0kAssY8YmZKc5g=;
+        b=rwfFh9J01l0ilvxx98Din/LJhkp5i4wrciQIUuwrnbf8qI9CqHYeL2zQG/5HpC222U
+         AIUj0EXbki3Jj+KxYrykVgtgh2IejE7Ye846uY5ybS7d5dK6PhNFAB7g+pMR16tFQgwz
+         jr8SBbl9P0GiEqe9Y6Ua1FMNG67JxC5V0ppS3IZ5Wl929QrwIWpq2C5DCrsrRsE0Vn0+
+         Np6st/W5gKxABFiuN0CX5kSNE9FkTdsgHyFKjX2pW10dtBPJFKXOT8aMiGJ8Qtv3v3tG
+         Emv/MJO420MRtuZcsAs3vEVMMwd7x4DKpUNstgxV0ptXYQHEVWa1QRO8r3JbyBhDfWBH
+         q2Jw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1765526972; x=1766131772;
+        d=1e100.net; s=20230601; t=1765526975; x=1766131775;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=8y/WEFvgJT6eEHgu+k37sR9i/F7SLQirVFkB830SU88=;
-        b=Q1zfdjtMF7T9WhWULdoPDqXfCLOlLqmv+3nSanevBdA5IDV4SAkfIjWuU+KX/JDJI4
-         89RBhcOUpGHoynYdWn07FyJ57gZgt3ie7N9zxX1dKaORvZH/d0nuVb15qyLbeMIw4xUo
-         MG0EtTpCmDMdfkSXE84dtBHg5YZChh/9SPk47FxWsDjo4L+2X1VrnmCOXbsP89tRoxUC
-         sdDB0YN1X6+qOdIJoOY9kxqTeqj5HXbAVPs9S6geOJiJ+Z1iZn2c6AaYC4IOcSAL3SNJ
-         ayWQWDHAPswNRukcsBsTzqn/iwW9Bb9LC/RIGyHepdTp4+UXmX9y7iGqubI83vOZzC8+
-         FK3Q==
-X-Gm-Message-State: AOJu0Yx1OfadPjOrFrwEb3xGXTTbXPrqxKRTixeeqNtCRWGOari1ntT8
-	2HxLw/pOCZ7xItm/dH2f44N/HYm+0B8P/cfJB9O2AzyvSvplVGtb4G3VxsWOVvfmoZQ=
-X-Gm-Gg: AY/fxX6sMBns6CkYHGhZFMVO79vhaEioKwqTVImbMx4j29dx06hXh+koEd4MChpOJN/
-	TBAJKquCiZrcDynLcxrlU6Lr1jiCgzOhi1n20qS4gKSHdJaJJzx+HWmXQyMqAxHLQ5U2Kv93rrc
-	v0xVcwsVVL9fkc+QUTLkQ5+rzFVLHe69rMuoW2sGG6Fsk+YnuLN/0oOn579Vx/+8XG9ubVy3p4H
-	8uqEK9KyL1istbIW2QL3fbRNFPTuBSkCkZkQGGpe60hLdxJs02LnXExNE8BVIXLF+c3YKjwx9Oc
-	mDgxM+N9g5dEQaInkMHXKJMOf59hm42+tD46MMBQKR6fbYTyYvWAGnCzgcgKwpG+quQHtv0pZQ0
-	VCYXkE52hCKiqJ0G4U4q+ohxbjSzP7+tA/4GiGeK8hOJtcSA4kAeRA/sp5J8xkj9M+NEimAeayg
-	biORHG7mEL0TrrJkAlROlvqN+UnQUCoXziNmj9GBJF/Xqv1jbAnJDzEhNeBzF6uyMd/ov5sahAs
-	BE=
-X-Google-Smtp-Source: AGHT+IEohkTFv9UGpNtY2ozJvK2nVZCaxRUfnkar2d2p6ZOEFnhYgp34EQJbKoIx1beUIjQCif+2vg==
-X-Received: by 2002:a17:906:c116:b0:b79:ff35:660d with SMTP id a640c23a62f3a-b7d2366fa8cmr104151166b.26.1765526972273;
-        Fri, 12 Dec 2025 00:09:32 -0800 (PST)
+        bh=B4Jg8UxPHFHcdnfExuoMtj57f/nwd0kAssY8YmZKc5g=;
+        b=G0VwJBZjjmZWFYIYiVcfm6JQDtpRLFchmy8jcJ7KxkPAXIpufX1zMtHDy4/4sPNpnq
+         N0LSfOIf37C8EHoG35PGBM9wvAD+vkUxd1aCTBMsFb3fg1egEpurVIZ5Of3Juwm3jf1U
+         QzjLrDIRP/zNLmo7SsfJ2uveL93SI8KO5KvUd1SI3MhajFTiG+c8cAr0GLTuvAHWwC/S
+         c6T9YexF/AtRYLNkWFSC02DNOmFVsHU404TnQ8VT75mVWgf5pRGPG9MlkynRSBLtTPHq
+         cMf5GWG5k7ghAJ/Ql8Yt85nVQb722PfLDACOjVdBI1ZpE/u4OfsAc6amUWZv29jTebSN
+         ITFw==
+X-Gm-Message-State: AOJu0YzsJJVFudE/dIwr5uQToNVvX0RRoVswEMBs60/ncEjTncm4meEK
+	0aT3sRxm47zeKimgg/Nk+CM0lMcnBRwSCvNMkoV4thDCEOMop0Y46yiPUEuGTjMEG/4=
+X-Gm-Gg: AY/fxX7P1WFHf+uuoiSqv75RkLF1qzAJFt0H452MRa4IYM8pGj2xeGucLNkvdjf4fo0
+	WMC3LOlNHbpvHEQIWIvVCWv8I/LaHzY9LoUs7Cs2OwNG+swF/6KDVOqjQi7J4C1lETEO67l7BeX
+	t75sdPXSGw8U1qGjeffzCCVhYhgMNyC3JhbFkUPkUc4zLd0oWKmnLW5sTvsihPJVMI3rheMJnT7
+	knsDVGI2XOsphOY4IEY0+y8J7+EvOA2ElWmkYax0Ucx566h7DauQxP0hcO7BEEqibRngyogGKvv
+	a8wSWMNZ4Gjb6wUp/uLwC7GLqbE+tJ/UVfRO3owwyD4x3AMQOo2vxMsdH9mhsrDiSnD79N6anvN
+	VFEA2FvRDV6ZYDik4P17Ckl58B7woEZ5BN6S1wRgnLQ24wypKArTY/L+84dpLvHx5bO56W0IZ4u
+	NZJzWUWg32tvugug39GjNgOyOecrpVbaV8xtl7w5j7BfhGROWSHPbAWvPIsd2wrCME/t9WIJ1yp
+	h396DDq1B/Xgw==
+X-Google-Smtp-Source: AGHT+IEiGXZhFB6p+hyp0kBExAqETtdOPekyIxm30rTftshwJqapD+Yjv5LOv9ezn7zRvtiwwyzuQw==
+X-Received: by 2002:a05:6402:40c2:b0:649:9e5e:1a02 with SMTP id 4fb4d7f45d1cf-6499e5e1b24mr701731a12.18.1765526974529;
+        Fri, 12 Dec 2025 00:09:34 -0800 (PST)
 Received: from localhost (p200300f65f0066082ad4229ee042f7ed.dip0.t-ipconnect.de. [2003:f6:5f00:6608:2ad4:229e:e042:f7ed])
-        by smtp.gmail.com with UTF8SMTPSA id a640c23a62f3a-b7cfa51701csm495212666b.39.2025.12.12.00.09.31
+        by smtp.gmail.com with UTF8SMTPSA id 4fb4d7f45d1cf-649820516d3sm4619343a12.9.2025.12.12.00.09.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Dec 2025 00:09:31 -0800 (PST)
+        Fri, 12 Dec 2025 00:09:34 -0800 (PST)
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
 To: Rob Herring <robh@kernel.org>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Marcel Holtmann <marcel@holtmann.org>,
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+	Maximilian Luz <luzmaximilian@gmail.com>,
+	Hans de Goede <hansg@kernel.org>,
+	=?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 Cc: linux-serial@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org,
-	linux-bluetooth@vger.kernel.org
-Subject: [PATCH v1 3/4] Bluetooth: hci_qca: Migrate to serdev specific shutdown function
-Date: Fri, 12 Dec 2025 09:09:08 +0100
-Message-ID:  <261a3384e25c4837d4efee87958805f15d7d4e3c.1765526117.git.u.kleine-koenig@baylibre.com>
+	platform-driver-x86@vger.kernel.org
+Subject: [PATCH v1 4/4] platform/surface: Migrate to serdev specific shutdown function
+Date: Fri, 12 Dec 2025 09:09:09 +0100
+Message-ID:  <9682d206a1f375cd98e7dbfce4f1a83b4b345178.1765526117.git.u.kleine-koenig@baylibre.com>
 X-Mailer: git-send-email 2.47.3
 In-Reply-To: <cover.1765526117.git.u.kleine-koenig@baylibre.com>
 References: <cover.1765526117.git.u.kleine-koenig@baylibre.com>
@@ -80,48 +80,48 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1562; i=u.kleine-koenig@baylibre.com; h=from:subject:message-id; bh=vGCqn150HxJ8MtUS82THFrl3poKgmAltPNTl+cDcUXM=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBpO82sxCSR+zwaL8wDmy0pjGy+036YQlzwewAee +DNGGdXGWKJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCaTvNrAAKCRCPgPtYfRL+ TsKtB/9EXul1lR98OzVC2zAr/SX+GDH8vkOKTQisjlrgA5rSXHSYHpcVKRVU/9TI9aLBqaXcFRb 61y68nDql3f4Enbd32XDWeAcVznqAVWmV5II4OzWWgbty2AxYtJ7h5FnhQVUFtCLEYhEj/n+Dc1 FtXygeQbTWZy4VTu7CkOZGHrQ9icdxPke57nWuuCsJ7rM6UVpOueeyoy0rXIFwSZoTQKXLuoZBh M13nOyd+FDb2FXWo4voHpGMHzZIfUlHMS05kJP1jYHbQyA4GdYVA0epVDvPhJg7oiVZcuJ/nS1+ gqi9HeXXW/dpxJSfwKt63ZDGK2QP3VfYdf2MX74n4n2LdYtm
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1564; i=u.kleine-koenig@baylibre.com; h=from:subject:message-id; bh=/7sjm8Q7YGQNrr3MXB7trnzKuxp3Tl+m5P4UFgGy1vw=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBpO82urC2XNh4xZfCpfb1ll6eKyqXlielR0jY1R aLnqkZBVLWJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCaTvNrgAKCRCPgPtYfRL+ TgIkB/0YvzpHr9vh2KO2NhKhX21RYsOzg/BuPVlwbm4YeXPTuzuRNI1qlRCaq9B8Kk8LfJkke81 sPGmQPf4fn9AYZuAVeTh1xv9PBeY1uLS1VvcU0e/xLzykhAXr5cPHLebUbEVhRNhLvrHIYdXGjU CxCqLGm7iQ3jo8gzhhJsrKgYShbNX6Lg49tbeVwGvxxF+VrSf/d+U+UNyyONaoyRxZ0J1OTtDzE sYUIapiIxoseIPoEhQuWDASt8VYRTdn6mvGy0tX/V65+41NDPDWVJQ1otM31xY1NGVCl/HS0K2Q hBmtun5x9MN41AeQHgPU+1Aq8zmfHuYsQbgGN/2MJ8Oa/BiB
 X-Developer-Key: i=u.kleine-koenig@baylibre.com; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 
-This saves a cast in the driver. The motivation is stop using the callback
-.shutdown in qca_serdev_driver.driver to make it possible to drop that.
+The motivation is stop using the callback .shutdown in
+qca_serdev_driver.driver to make it possible to drop that.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@baylibre.com>
 ---
- drivers/bluetooth/hci_qca.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/platform/surface/aggregator/core.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/bluetooth/hci_qca.c b/drivers/bluetooth/hci_qca.c
-index 888176b0faa9..6d54f747fde4 100644
---- a/drivers/bluetooth/hci_qca.c
-+++ b/drivers/bluetooth/hci_qca.c
-@@ -2530,11 +2530,10 @@ static void qca_serdev_remove(struct serdev_device *serdev)
- 	hci_uart_unregister_device(&qcadev->serdev_hu);
- }
+diff --git a/drivers/platform/surface/aggregator/core.c b/drivers/platform/surface/aggregator/core.c
+index c58e1fdd1a5f..860702c4266f 100644
+--- a/drivers/platform/surface/aggregator/core.c
++++ b/drivers/platform/surface/aggregator/core.c
+@@ -380,9 +380,9 @@ static int ssam_serdev_setup(struct acpi_device *ssh, struct serdev_device *serd
  
--static void qca_serdev_shutdown(struct device *dev)
-+static void qca_serdev_shutdown(struct serdev_device *serdev)
+ /* -- Power management. ----------------------------------------------------- */
+ 
+-static void ssam_serial_hub_shutdown(struct device *dev)
++static void ssam_serial_hub_shutdown(struct serdev_device *serdev)
  {
- 	int ret;
- 	int timeout = msecs_to_jiffies(CMD_TRANS_TIMEOUT_MS);
--	struct serdev_device *serdev = to_serdev_device(dev);
- 	struct qca_serdev *qcadev = serdev_device_get_drvdata(serdev);
- 	struct hci_uart *hu = &qcadev->serdev_hu;
- 	struct hci_dev *hdev = hu->hdev;
-@@ -2756,11 +2755,11 @@ static void hciqca_coredump(struct device *dev)
- static struct serdev_device_driver qca_serdev_driver = {
- 	.probe = qca_serdev_probe,
- 	.remove = qca_serdev_remove,
-+	.shutdown = qca_serdev_shutdown,
+-	struct ssam_controller *c = dev_get_drvdata(dev);
++	struct ssam_controller *c = dev_get_drvdata(&serdev->dev);
+ 	int status;
+ 
+ 	/*
+@@ -834,12 +834,12 @@ MODULE_DEVICE_TABLE(of, ssam_serial_hub_of_match);
+ static struct serdev_device_driver ssam_serial_hub = {
+ 	.probe = ssam_serial_hub_probe,
+ 	.remove = ssam_serial_hub_remove,
++	.shutdown = ssam_serial_hub_shutdown,
  	.driver = {
- 		.name = "hci_uart_qca",
- 		.of_match_table = of_match_ptr(qca_bluetooth_of_match),
- 		.acpi_match_table = ACPI_PTR(qca_bluetooth_acpi_match),
--		.shutdown = qca_serdev_shutdown,
- 		.pm = &qca_pm_ops,
- #ifdef CONFIG_DEV_COREDUMP
- 		.coredump = hciqca_coredump,
+ 		.name = "surface_serial_hub",
+ 		.acpi_match_table = ACPI_PTR(ssam_serial_hub_acpi_match),
+ 		.of_match_table = of_match_ptr(ssam_serial_hub_of_match),
+ 		.pm = &ssam_serial_hub_pm_ops,
+-		.shutdown = ssam_serial_hub_shutdown,
+ 		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+ 	},
+ };
 -- 
 2.47.3
 
