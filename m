@@ -1,127 +1,145 @@
-Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6501F2836A0
-	for <linux-serial@vger.kernel.org>; Fri, 12 Dec 2025 08:09:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7F5D285CAA;
+	Sat, 13 Dec 2025 08:05:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765526978; cv=none; b=DW+khTIyyQA05fsOo3Ho8EurhAyy6S+Wo4ZFxQk2bzgZ692BFg/uisFiZDHvJvaBX2NCWx/WPum6mgRfVU0GETJ/EAaiw9NsUslLNTvJ/tXXeeYOeJZAFNVSh8vf5YOr1KV3riyi/xlQ1Sbud3imo1nSwSNyHy0asPz59iXeerA=
+	t=1765613119; cv=none; b=iaerH967dNnft6SuthFpBimw1/4YALRvnO2hCyikU2AuTy3dH6xOOWLtX1N4XAKoj0MF7/mNLQiud4ylWoV7N4J/okJt5AtziZPJRdUaUlOUgcVFWWV41FXHkC5r+9Rdlk/72cSRF+Iituvo0o4wrHHvDpirfGm/az6YJNEDj7E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765526978; c=relaxed/simple;
-	bh=/7sjm8Q7YGQNrr3MXB7trnzKuxp3Tl+m5P4UFgGy1vw=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=sr8vMecSFMf/8O/FJt4eypVPayLrzBFzNQVxp9w5HgC7RN7nXYYFhsYElgpkpxXpcTxa77DxrLZ47kF0j8hOzqklhqB3zMEF2UVpslzYjNUDciS4Qtah1idOH6zA4uUbhLoUSPEFQdWi1RyTpGGnXSgBF3Jqt8WHREeDmooPl2I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=rwfFh9J0; arc=none smtp.client-ip=209.85.208.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1765613119; c=relaxed/simple;
+	bh=JHt6KFdYF/Lyw2aJzDOMKUhj9p9Y7VTvaJ2iqurQKh4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=JvKWpgnVRYKjgtKjxalwcsiTO1W8SPxKqt1bjG8SxAnwbzbew0RjimVKF9PqihMHlNrNX6XBEeZqUII11Ckc2j1PXQ/MPBmw6PR3kOpWkpnPl/GXgr66pl0+FcXTlI5OX0C5BYeWYRdva5MxCOY2QN/7+zD1VCDvAfI72nNDmpk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HVeXCo7R; arc=none smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="rwfFh9J0"
-Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-641977dc00fso1444026a12.1
-        for <linux-serial@vger.kernel.org>; Fri, 12 Dec 2025 00:09:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1765526975; x=1766131775; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=B4Jg8UxPHFHcdnfExuoMtj57f/nwd0kAssY8YmZKc5g=;
-        b=rwfFh9J01l0ilvxx98Din/LJhkp5i4wrciQIUuwrnbf8qI9CqHYeL2zQG/5HpC222U
-         AIUj0EXbki3Jj+KxYrykVgtgh2IejE7Ye846uY5ybS7d5dK6PhNFAB7g+pMR16tFQgwz
-         jr8SBbl9P0GiEqe9Y6Ua1FMNG67JxC5V0ppS3IZ5Wl929QrwIWpq2C5DCrsrRsE0Vn0+
-         Np6st/W5gKxABFiuN0CX5kSNE9FkTdsgHyFKjX2pW10dtBPJFKXOT8aMiGJ8Qtv3v3tG
-         Emv/MJO420MRtuZcsAs3vEVMMwd7x4DKpUNstgxV0ptXYQHEVWa1QRO8r3JbyBhDfWBH
-         q2Jw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1765526975; x=1766131775;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=B4Jg8UxPHFHcdnfExuoMtj57f/nwd0kAssY8YmZKc5g=;
-        b=G0VwJBZjjmZWFYIYiVcfm6JQDtpRLFchmy8jcJ7KxkPAXIpufX1zMtHDy4/4sPNpnq
-         N0LSfOIf37C8EHoG35PGBM9wvAD+vkUxd1aCTBMsFb3fg1egEpurVIZ5Of3Juwm3jf1U
-         QzjLrDIRP/zNLmo7SsfJ2uveL93SI8KO5KvUd1SI3MhajFTiG+c8cAr0GLTuvAHWwC/S
-         c6T9YexF/AtRYLNkWFSC02DNOmFVsHU404TnQ8VT75mVWgf5pRGPG9MlkynRSBLtTPHq
-         cMf5GWG5k7ghAJ/Ql8Yt85nVQb722PfLDACOjVdBI1ZpE/u4OfsAc6amUWZv29jTebSN
-         ITFw==
-X-Gm-Message-State: AOJu0YzsJJVFudE/dIwr5uQToNVvX0RRoVswEMBs60/ncEjTncm4meEK
-	0aT3sRxm47zeKimgg/Nk+CM0lMcnBRwSCvNMkoV4thDCEOMop0Y46yiPUEuGTjMEG/4=
-X-Gm-Gg: AY/fxX7P1WFHf+uuoiSqv75RkLF1qzAJFt0H452MRa4IYM8pGj2xeGucLNkvdjf4fo0
-	WMC3LOlNHbpvHEQIWIvVCWv8I/LaHzY9LoUs7Cs2OwNG+swF/6KDVOqjQi7J4C1lETEO67l7BeX
-	t75sdPXSGw8U1qGjeffzCCVhYhgMNyC3JhbFkUPkUc4zLd0oWKmnLW5sTvsihPJVMI3rheMJnT7
-	knsDVGI2XOsphOY4IEY0+y8J7+EvOA2ElWmkYax0Ucx566h7DauQxP0hcO7BEEqibRngyogGKvv
-	a8wSWMNZ4Gjb6wUp/uLwC7GLqbE+tJ/UVfRO3owwyD4x3AMQOo2vxMsdH9mhsrDiSnD79N6anvN
-	VFEA2FvRDV6ZYDik4P17Ckl58B7woEZ5BN6S1wRgnLQ24wypKArTY/L+84dpLvHx5bO56W0IZ4u
-	NZJzWUWg32tvugug39GjNgOyOecrpVbaV8xtl7w5j7BfhGROWSHPbAWvPIsd2wrCME/t9WIJ1yp
-	h396DDq1B/Xgw==
-X-Google-Smtp-Source: AGHT+IEiGXZhFB6p+hyp0kBExAqETtdOPekyIxm30rTftshwJqapD+Yjv5LOv9ezn7zRvtiwwyzuQw==
-X-Received: by 2002:a05:6402:40c2:b0:649:9e5e:1a02 with SMTP id 4fb4d7f45d1cf-6499e5e1b24mr701731a12.18.1765526974529;
-        Fri, 12 Dec 2025 00:09:34 -0800 (PST)
-Received: from localhost (p200300f65f0066082ad4229ee042f7ed.dip0.t-ipconnect.de. [2003:f6:5f00:6608:2ad4:229e:e042:f7ed])
-        by smtp.gmail.com with UTF8SMTPSA id 4fb4d7f45d1cf-649820516d3sm4619343a12.9.2025.12.12.00.09.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Dec 2025 00:09:34 -0800 (PST)
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-To: Rob Herring <robh@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Maximilian Luz <luzmaximilian@gmail.com>,
-	Hans de Goede <hansg@kernel.org>,
-	=?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc: linux-serial@vger.kernel.org,
-	platform-driver-x86@vger.kernel.org
-Subject: [PATCH v1 4/4] platform/surface: Migrate to serdev specific shutdown function
-Date: Fri, 12 Dec 2025 09:09:09 +0100
-Message-ID:  <9682d206a1f375cd98e7dbfce4f1a83b4b345178.1765526117.git.u.kleine-koenig@baylibre.com>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <cover.1765526117.git.u.kleine-koenig@baylibre.com>
-References: <cover.1765526117.git.u.kleine-koenig@baylibre.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HVeXCo7R"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1765613118; x=1797149118;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=JHt6KFdYF/Lyw2aJzDOMKUhj9p9Y7VTvaJ2iqurQKh4=;
+  b=HVeXCo7R7umG+kmzBHd+xxB7MLXkupy5TKgAD0LXQoMdBYonbZRJd8cb
+   ZAV9lyIsJ6eaB9QvM+4Mz9fN/ZdUf4/rhGHfhTD4+WaTk4W6LSTiUm0Gr
+   oIeMcwS/OPgJINkDuYuyCmiDvP/u4oeuNTLCiHVLpL2z5stijq/xw85v8
+   i//fcX/GIiofJrrhbRXE6DOF+hnJ9nPFJ0QPpIRtMLPVcFKu8XPMrOuAR
+   C9p1H2fovDXQTckODgmoYD9WeDeKoX2vxTvJt57488NAyLFNx7sMT7HxR
+   OZAEM26VdtpBtxyfJ603BNv3Sz7rJOy11yRSQ1sXuU7ecgCoy9vadUV4V
+   g==;
+X-CSE-ConnectionGUID: NGjsoJGvQVCc+hI1BNSwfg==
+X-CSE-MsgGUID: Q4yG5BeHTOy2VrG5br6DqQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11640"; a="77919221"
+X-IronPort-AV: E=Sophos;i="6.21,145,1763452800"; 
+   d="scan'208";a="77919221"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Dec 2025 00:05:17 -0800
+X-CSE-ConnectionGUID: 0AJztNN1RDml2bZ8YxYJFQ==
+X-CSE-MsgGUID: vUyvmoXUT8Gdfc3tNpFDgw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,145,1763452800"; 
+   d="scan'208";a="201695631"
+Received: from lkp-server01.sh.intel.com (HELO d335e3c6db51) ([10.239.97.150])
+  by fmviesa005.fm.intel.com with ESMTP; 13 Dec 2025 00:05:15 -0800
+Received: from kbuild by d335e3c6db51 with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1vUKcq-000000007H5-3UJt;
+	Sat, 13 Dec 2025 08:05:12 +0000
+Date: Sat, 13 Dec 2025 16:05:01 +0800
+From: kernel test robot <lkp@intel.com>
+To: Thomas Zimmermann <tzimmermann@suse.de>, gregkh@linuxfoundation.org,
+	jirislaby@kernel.org, simona@ffwll.ch, airlied@gmail.com
+Cc: oe-kbuild-all@lists.linux.dev, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	Thomas Zimmermann <tzimmermann@suse.de>
+Subject: Re: [PATCH 2/2] vt: Remove con_debug_enter/_leave from struct consw
+Message-ID: <202512131551.QwAYImi0-lkp@intel.com>
+References: <20251208102851.40894-3-tzimmermann@suse.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1564; i=u.kleine-koenig@baylibre.com; h=from:subject:message-id; bh=/7sjm8Q7YGQNrr3MXB7trnzKuxp3Tl+m5P4UFgGy1vw=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBpO82urC2XNh4xZfCpfb1ll6eKyqXlielR0jY1R aLnqkZBVLWJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCaTvNrgAKCRCPgPtYfRL+ TgIkB/0YvzpHr9vh2KO2NhKhX21RYsOzg/BuPVlwbm4YeXPTuzuRNI1qlRCaq9B8Kk8LfJkke81 sPGmQPf4fn9AYZuAVeTh1xv9PBeY1uLS1VvcU0e/xLzykhAXr5cPHLebUbEVhRNhLvrHIYdXGjU CxCqLGm7iQ3jo8gzhhJsrKgYShbNX6Lg49tbeVwGvxxF+VrSf/d+U+UNyyONaoyRxZ0J1OTtDzE sYUIapiIxoseIPoEhQuWDASt8VYRTdn6mvGy0tX/V65+41NDPDWVJQ1otM31xY1NGVCl/HS0K2Q hBmtun5x9MN41AeQHgPU+1Aq8zmfHuYsQbgGN/2MJ8Oa/BiB
-X-Developer-Key: i=u.kleine-koenig@baylibre.com; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251208102851.40894-3-tzimmermann@suse.de>
 
-The motivation is stop using the callback .shutdown in
-qca_serdev_driver.driver to make it possible to drop that.
+Hi Thomas,
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@baylibre.com>
----
- drivers/platform/surface/aggregator/core.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+kernel test robot noticed the following build errors:
 
-diff --git a/drivers/platform/surface/aggregator/core.c b/drivers/platform/surface/aggregator/core.c
-index c58e1fdd1a5f..860702c4266f 100644
---- a/drivers/platform/surface/aggregator/core.c
-+++ b/drivers/platform/surface/aggregator/core.c
-@@ -380,9 +380,9 @@ static int ssam_serdev_setup(struct acpi_device *ssh, struct serdev_device *serd
- 
- /* -- Power management. ----------------------------------------------------- */
- 
--static void ssam_serial_hub_shutdown(struct device *dev)
-+static void ssam_serial_hub_shutdown(struct serdev_device *serdev)
- {
--	struct ssam_controller *c = dev_get_drvdata(dev);
-+	struct ssam_controller *c = dev_get_drvdata(&serdev->dev);
- 	int status;
- 
- 	/*
-@@ -834,12 +834,12 @@ MODULE_DEVICE_TABLE(of, ssam_serial_hub_of_match);
- static struct serdev_device_driver ssam_serial_hub = {
- 	.probe = ssam_serial_hub_probe,
- 	.remove = ssam_serial_hub_remove,
-+	.shutdown = ssam_serial_hub_shutdown,
- 	.driver = {
- 		.name = "surface_serial_hub",
- 		.acpi_match_table = ACPI_PTR(ssam_serial_hub_acpi_match),
- 		.of_match_table = of_match_ptr(ssam_serial_hub_of_match),
- 		.pm = &ssam_serial_hub_pm_ops,
--		.shutdown = ssam_serial_hub_shutdown,
- 		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
- 	},
- };
+[auto build test ERROR on tty/tty-testing]
+[also build test ERROR on tty/tty-next tty/tty-linus linus/master v6.18 next-20251212]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Thomas-Zimmermann/vt-Remove-trailing-whitespace/20251208-183541
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+patch link:    https://lore.kernel.org/r/20251208102851.40894-3-tzimmermann%40suse.de
+patch subject: [PATCH 2/2] vt: Remove con_debug_enter/_leave from struct consw
+config: csky-randconfig-002-20251213 (https://download.01.org/0day-ci/archive/20251213/202512131551.QwAYImi0-lkp@intel.com/config)
+compiler: csky-linux-gcc (GCC) 11.5.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20251213/202512131551.QwAYImi0-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202512131551.QwAYImi0-lkp@intel.com/
+
+All errors (new ones prefixed by >>):
+
+>> drivers/video/fbdev/core/fbcon.c:3176:10: error: 'const struct consw' has no member named 'con_debug_enter'
+    3176 |         .con_debug_enter        = fbcon_debug_enter,
+         |          ^~~~~~~~~~~~~~~
+>> drivers/video/fbdev/core/fbcon.c:3176:35: error: initialization of 'void (*)(struct vc_data *, const unsigned char *)' from incompatible pointer type 'void (*)(struct vc_data *)' [-Werror=incompatible-pointer-types]
+    3176 |         .con_debug_enter        = fbcon_debug_enter,
+         |                                   ^~~~~~~~~~~~~~~~~
+   drivers/video/fbdev/core/fbcon.c:3176:35: note: (near initialization for 'fb_con.con_set_palette')
+   drivers/video/fbdev/core/fbcon.c:3176:35: warning: initialized field overwritten [-Woverride-init]
+   drivers/video/fbdev/core/fbcon.c:3176:35: note: (near initialization for 'fb_con.con_set_palette')
+>> drivers/video/fbdev/core/fbcon.c:3177:10: error: 'const struct consw' has no member named 'con_debug_leave'
+    3177 |         .con_debug_leave        = fbcon_debug_leave,
+         |          ^~~~~~~~~~~~~~~
+>> drivers/video/fbdev/core/fbcon.c:3177:35: error: initialization of 'void (*)(struct vc_data *, int)' from incompatible pointer type 'void (*)(struct vc_data *)' [-Werror=incompatible-pointer-types]
+    3177 |         .con_debug_leave        = fbcon_debug_leave,
+         |                                   ^~~~~~~~~~~~~~~~~
+   drivers/video/fbdev/core/fbcon.c:3177:35: note: (near initialization for 'fb_con.con_scrolldelta')
+   cc1: some warnings being treated as errors
+
+
+vim +3176 drivers/video/fbdev/core/fbcon.c
+
+fe2d70d6f6ff03 drivers/video/fbdev/core/fbcon.c Simona Vetter  2019-05-28  3154  
+^1da177e4c3f41 drivers/video/console/fbcon.c    Linus Torvalds 2005-04-16  3155  /*
+^1da177e4c3f41 drivers/video/console/fbcon.c    Linus Torvalds 2005-04-16  3156   *  The console `switch' structure for the frame buffer based console
+^1da177e4c3f41 drivers/video/console/fbcon.c    Linus Torvalds 2005-04-16  3157   */
+^1da177e4c3f41 drivers/video/console/fbcon.c    Linus Torvalds 2005-04-16  3158  
+^1da177e4c3f41 drivers/video/console/fbcon.c    Linus Torvalds 2005-04-16  3159  static const struct consw fb_con = {
+^1da177e4c3f41 drivers/video/console/fbcon.c    Linus Torvalds 2005-04-16  3160  	.owner			= THIS_MODULE,
+^1da177e4c3f41 drivers/video/console/fbcon.c    Linus Torvalds 2005-04-16  3161  	.con_startup 		= fbcon_startup,
+^1da177e4c3f41 drivers/video/console/fbcon.c    Linus Torvalds 2005-04-16  3162  	.con_init 		= fbcon_init,
+^1da177e4c3f41 drivers/video/console/fbcon.c    Linus Torvalds 2005-04-16  3163  	.con_deinit 		= fbcon_deinit,
+^1da177e4c3f41 drivers/video/console/fbcon.c    Linus Torvalds 2005-04-16  3164  	.con_clear 		= fbcon_clear,
+^1da177e4c3f41 drivers/video/console/fbcon.c    Linus Torvalds 2005-04-16  3165  	.con_putcs 		= fbcon_putcs,
+^1da177e4c3f41 drivers/video/console/fbcon.c    Linus Torvalds 2005-04-16  3166  	.con_cursor 		= fbcon_cursor,
+^1da177e4c3f41 drivers/video/console/fbcon.c    Linus Torvalds 2005-04-16  3167  	.con_scroll 		= fbcon_scroll,
+^1da177e4c3f41 drivers/video/console/fbcon.c    Linus Torvalds 2005-04-16  3168  	.con_switch 		= fbcon_switch,
+^1da177e4c3f41 drivers/video/console/fbcon.c    Linus Torvalds 2005-04-16  3169  	.con_blank 		= fbcon_blank,
+^1da177e4c3f41 drivers/video/console/fbcon.c    Linus Torvalds 2005-04-16  3170  	.con_font_set 		= fbcon_set_font,
+^1da177e4c3f41 drivers/video/console/fbcon.c    Linus Torvalds 2005-04-16  3171  	.con_font_get 		= fbcon_get_font,
+^1da177e4c3f41 drivers/video/console/fbcon.c    Linus Torvalds 2005-04-16  3172  	.con_font_default	= fbcon_set_def_font,
+^1da177e4c3f41 drivers/video/console/fbcon.c    Linus Torvalds 2005-04-16  3173  	.con_set_palette 	= fbcon_set_palette,
+^1da177e4c3f41 drivers/video/console/fbcon.c    Linus Torvalds 2005-04-16  3174  	.con_invert_region 	= fbcon_invert_region,
+^1da177e4c3f41 drivers/video/console/fbcon.c    Linus Torvalds 2005-04-16  3175  	.con_resize             = fbcon_resize,
+d219adc1228a38 drivers/video/console/fbcon.c    Jesse Barnes   2010-08-02 @3176  	.con_debug_enter	= fbcon_debug_enter,
+d219adc1228a38 drivers/video/console/fbcon.c    Jesse Barnes   2010-08-02 @3177  	.con_debug_leave	= fbcon_debug_leave,
+^1da177e4c3f41 drivers/video/console/fbcon.c    Linus Torvalds 2005-04-16  3178  };
+^1da177e4c3f41 drivers/video/console/fbcon.c    Linus Torvalds 2005-04-16  3179  
+
 -- 
-2.47.3
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
