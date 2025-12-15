@@ -1,117 +1,100 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D35931B102;
-	Mon, 15 Dec 2025 04:35:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD67731327A
+	for <linux-serial@vger.kernel.org>; Mon, 15 Dec 2025 07:29:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765773357; cv=none; b=l6+4xoMQFJEjmt6t6NEeCr5ngwXx4UF0gGvB6Re1gbb/MJB8mD9dJNTsKx1OuNqlLaP7JWHmw92xpEMqTB9J7SDiPlSoyk8mYSKSNVrMAmcWuxlElxp865c6KvidP6PvfpmpNpsV1pUO0qB39iXRMipUbpWtTomUjo0/+iM3g4k=
+	t=1765783791; cv=none; b=mrxDrQA0UGtSm71u1UyAT87qDNRj8/UlL3/awd5l7oZ+JFgNCa40zF3EkgR63YGk/CyDmvTCuHRPYXKWhUbGeC4bFjz0AYt+VY3CsRn6OtgOPx1jek6ZPdPK4mZwtX4rFkdDwdDVmvr8aF433/njyyDSq1EN9Hm0ekjBw5sTbEU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765773357; c=relaxed/simple;
-	bh=m2hWnxO6dswcQynVFBceOYQJOoEN1j6m3WBtaJJPowU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=D/GjFShfStfLRE1y96OiEI+5P9JoCc7W/QIgtOmXewXX4u2RP+flz4IiN1PlgMkDZKECtzJkhvht9RMuymkmvLRSa5YxveZCPkL74+9qmDyn5s9QQaxznXlr58aw2HAw8nz8oEQa/Ovyli7QHufN+8tYYxZ6LPPwTHHUoxnykIA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=E8a/Hmwi; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1765783791; c=relaxed/simple;
+	bh=Ti126A8phEH19vnYpIQ1yhDEhoiqNJa7dIgJWsEGgvg=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Ptlpi7cf7yJFrvXQKW8SkJR3p6F9247FxUwl5QeLtLHad4USbC5qCKm+DJD1uuHLhk1LUhP0DTKmNHjh/4uWC+xxs9W74VHnyFFd7yV+rhjtmYbCbsx0EctGMBptzN7DDjQ7cCM5ym710+7Y0f2I3fcndGMeYW96scHDe9S1VY4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UfbIwoTq; arc=none smtp.client-ip=209.85.160.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="E8a/Hmwi"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08313C4CEF5;
-	Mon, 15 Dec 2025 04:35:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1765773356;
-	bh=m2hWnxO6dswcQynVFBceOYQJOoEN1j6m3WBtaJJPowU=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=E8a/Hmwiwd4PEYFWwYYKioBFYaNtcVi2FEdR7Oxxb6KFMmOOh6i9Gvlma+OWIUgWh
-	 aBSd4BB5vhyE5sv9vlQX7QEpzrmwgVBwE2T6PZoEDLZrheEiZ2i69IwGtoNBWfnc/u
-	 ygLjUwBsKGfkYK40CGHL6ul9N70Z5Kf157sWJARJh7hM/K8OQUg5/7ktSZuBiWWqM8
-	 hae7SIsQHXXoM/gqdZT22izBNXYxywh/RF/vlfjuTlIp/3kFVMeq3uE+TkhlLfX+HB
-	 1h4+WusN48XWFU3gN0GInL2x1ODz1dPwhrY2ZCpEBKUJQK1RXNdKr6gJocZe6xtCes
-	 tf9Ja8AO7BbhQ==
-Message-ID: <4e41de7f-8c7b-4b94-b5d8-c12d33d751a5@kernel.org>
-Date: Mon, 15 Dec 2025 05:35:53 +0100
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UfbIwoTq"
+Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-3ec5df386acso2215223fac.1
+        for <linux-serial@vger.kernel.org>; Sun, 14 Dec 2025 23:29:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1765783789; x=1766388589; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=nL3AN3G7DYAXkc+5aAzLFKJQfSpHiNXG5fjAAH4wGZ4=;
+        b=UfbIwoTqpuQD80ASe8DneNugGbTizwfrNBNhhiWkhWqlHLKdGHeayE3gyv4Oxca4d+
+         8xHgFApOYKeZF5zDRox8fBZfy01PoGhifDXERRPwN4D0sTe6HdKBUtQ8Syq/9tRMy7Dk
+         vC/eNiC7CI+gSPphBIG+lfrettgYTmLgP99XVQW7s5HQQyrUgMwkE6iJ6iz5dTrf7t+6
+         qKBAScbZMkJSjCDMX6CNhaMtEsE7cUReAZPGKpdm8yD+fmtQxRb+G8tA2Gu5Q+OrrNIJ
+         kd/MyFjQ9TrFya1izLbTTWWnmj7xlU+co48EcdUi4c5fBmWdFW9cba8eX6KyYD7kvYYt
+         w+rQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1765783789; x=1766388589;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=nL3AN3G7DYAXkc+5aAzLFKJQfSpHiNXG5fjAAH4wGZ4=;
+        b=VZe07gL/dwDBP51lHlC4QHQrXeTHlz7pM71AVf2D+lmg1XksNLWQEM6ThZu2m84QeK
+         IrW0qLSSSa2wCBLn06pItGZEPSinBdKtvSxe4QJg+Vjc1XY80kEd35+NVw95FCzaaNVP
+         Qz2Oww1H82X3Mx+mGP1FJvStAo8VN7n4XSeZuhU/J/USoLDL3eT/LnMWjDVpv/AIN9bL
+         DARdJoj3qB/FoWc3sWi2eaqSa/T31pUxEkFGKpe08IQcNRJCJgovUe3r4/VsUG8rBi2x
+         JoyqE8PugA85IHXEOKuhn79ao3GOAwJyKIktP2hvwQOtbkIsNuaVdFEccNKyWLAen5Og
+         WuPg==
+X-Forwarded-Encrypted: i=1; AJvYcCX3OXrBJP2zYstnCLNSb8U/OgRRnqevvTVjTAo/jkeC2be6BrOJnI/hkY/OkHrNBXSW/+xvGjF/89kySMU=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx8WGMgdnoBVVGmvufEjaKh2PQsp9yhtgDdhpTlSBLakPlV9pjY
+	drvz3jkMgzOVCnfH/o7rRM0tClhjScSt+2t/w4QhMZ2Ukq7XGMCI/34E
+X-Gm-Gg: AY/fxX7iftPzbSynjS10aZKFafYY978tq2sOICTinePAI3uH8j1ZU192ANM5ze/8u29
+	HrcMGcq2eGGWVJoicHYwec2IfmNBnhGbJyz6t5lu08Ge7NoaV6c0T1dFahEalGXmVLRS8daaniR
+	mOHIc3/eZg5KVAumL2W+G/9V+3g9CGeETIS3Veb6glhIgbTcZWJtoxL3YeQGefZQzJXpiO8NIuD
+	nAg6LnfXo3K0StAwQf6KUbMLv6ArRLcRl9SeicioKIyxgHzyz8IMe80ZUvFnTjjhL8yj9pAxWz3
+	8Br9GBSIRmUGCBGwoEdj7zlmmpDxSYBZMSIYjtmuWzFgLJv+TGFphd73uX6l3sVBhY8PM0jx8W7
+	ZXInRpbrZ127TTQ0T8BN6a4aVxpkOVD/ZmPPmf048uZJMqbBI37kXzoWwekkpln2qB7+Bt2YXzE
+	SI0fbg4tKCfTvMEesXhjqTiYEKuDxa3sift9s1T9ln/ulGMQUV0/M/wwMqJie9PIv6gQ==
+X-Google-Smtp-Source: AGHT+IE9ByRSYwQAT/t5PqdA2hnfarOr7LJRblwEvGcmudAPA+W14aPrxI02obHJGezTmT75aSb1Ig==
+X-Received: by 2002:a05:6870:649f:b0:3ec:71d3:66ae with SMTP id 586e51a60fabf-3f5f8cbd34emr5821496fac.44.1765783788849;
+        Sun, 14 Dec 2025 23:29:48 -0800 (PST)
+Received: from localhost.localdomain (c-24-9-224-2.hsd1.co.comcast.net. [24.9.224.2])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-3f614be6be3sm4158605fac.7.2025.12.14.23.29.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 14 Dec 2025 23:29:48 -0800 (PST)
+From: Harikrishna Srinivasan <harikrs0905@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Harikrishna Srinivasan <harikrs0905@gmail.com>
+Subject: [PATCH v2 2/2] serial: pxa: Fix comment typo
+Date: Mon, 15 Dec 2025 00:28:46 -0700
+Message-ID: <20251215072846.11603-1-harikrs0905@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: pxa: Fix comment typo
-To: harindhu007 <harikrs0905@gmail.com>, gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20251214100413.10436-1-harikrs0905@gmail.com>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20251214100413.10436-1-harikrs0905@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 14. 12. 25, 11:04, harindhu007 wrote:
-> Fix a spelling mistake in a driver comment.
-> 
-> Signed-off-by: harindhu007 <harikrs0905@gmail.com>
+Fix a spelling mistake in a driver comment.
 
-This is not your real name, is it?
+Signed-off-by: Harikrishna Srinivasan <harikrs0905@gmail.com>
+---
+ drivers/tty/serial/pxa.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> ---
->   drivers/tty/serial/pxa.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
-> index e395ff29c1a2..218fa4003733 100644
-> --- a/drivers/tty/serial/pxa.c
-> +++ b/drivers/tty/serial/pxa.c
-> @@ -99,7 +99,7 @@ static inline void receive_chars(struct uart_pxa_port *up, int *status)
->   		 * Specification Update (May 2005)
->   		 *
->   		 * Step 2
-> -		 * Disable the Reciever Time Out Interrupt via IER[RTOEI]
-> +		 * Disable the Receiver Time Out Interrupt via IER[RTOEI]
-
-Perphaps change time out to timeout too?
-
-thanks,
+diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
+index e395ff29c1a2..19d85398e394 100644
+--- a/drivers/tty/serial/pxa.c
++++ b/drivers/tty/serial/pxa.c
+@@ -99,7 +99,7 @@ static inline void receive_chars(struct uart_pxa_port *up, int *status)
+ 		 * Specification Update (May 2005)
+ 		 *
+ 		 * Step 2
+-		 * Disable the Reciever Time Out Interrupt via IER[RTOEI]
++		 * Disable the receiver timeout interrupt via IER[RTOEI]
+ 		 */
+ 		up->ier &= ~UART_IER_RTOIE;
+ 		serial_out(up, UART_IER, up->ier);
 -- 
-js
-suse labs
+2.43.0
+
