@@ -1,72 +1,74 @@
-Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
+Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5558321445
-	for <linux-serial@vger.kernel.org>; Tue, 16 Dec 2025 17:00:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC8BD314D0E
+	for <linux-serial@vger.kernel.org>; Tue, 16 Dec 2025 17:01:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765904415; cv=none; b=LttoI4R6AgEoKJr6hslEoaQHc2XMNL2iQLc+0ZmNHTPuVL8w9x1dvODIJujb8hfkVynrMyupjDhe6Rrbf2zBGcKRgMoNbVFy4G+GXjSmjLNDmy9uDHjaGvsUWJwvMKKoQeL9crJzT9dr73H3M6x8+G+piu2yoFWTasxWr89awRk=
+	t=1765904478; cv=none; b=G1CS86jbjhqG31jomRATxt6OtC1EgrD7lSDBBwVEchEFhk5IQGdrS+JkHPUahFzJKa3+kcBTSp0xKoUsaXHBheH7WsNpD/NF/MuPtF0Y44a4eQyY9ijq+qMp1sXT0QmKyOiyTf7vBL01OMAlPck/XLnUwW+YSE2aBwkJe4M+gpA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765904415; c=relaxed/simple;
-	bh=3IYSY9PEuKyOHfJY9QUPzKffXbog8qESM1aHD/icEQI=;
+	s=arc-20240116; t=1765904478; c=relaxed/simple;
+	bh=FwQQU5q3mw9YrloIZOuHcsfzqU/fokbOnsPKngY00gM=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Ms2kdhbhMbNIgvk8mV3ec9uwmanMlbm6M3GDLVIqEzMPaEuNQbvpEdROSFeIyOg/dBn4TDiuynkJx8ThzH0V73R8LacKaU4hAbM3Xhz6UN566ae9q6hS/I3TW9TrEWTigP68dovKLGfGFyhE1qvMtbbYnWo9APXwan84DbfLiiQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr; spf=pass smtp.mailfrom=sartura.hr; dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b=uLbYzMri; arc=none smtp.client-ip=209.85.218.50
+	 To:Cc:Content-Type; b=Ka8Td9Hm2dCwvcfOg6wNH/9uQJZnx/WtQL7TkCwW8PPa3XbhWP/46oPCSm7hQJM0HXMzL/NdTWpQko2Q77rQ+znmdBQf3x1ra7VU1vSV+rbtPRDJKOMrQJE5K+8DStG4g1LPMnkKMxRvKsSTx0v6iwKSJXI13VUQQ1uYLs4S/gk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr; spf=pass smtp.mailfrom=sartura.hr; dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b=N6pxMkEd; arc=none smtp.client-ip=209.85.218.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sartura.hr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b="uLbYzMri"
-Received: by mail-ej1-f50.google.com with SMTP id a640c23a62f3a-b713c7096f9so808911466b.3
-        for <linux-serial@vger.kernel.org>; Tue, 16 Dec 2025 09:00:11 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b="N6pxMkEd"
+Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-b736ffc531fso967233766b.1
+        for <linux-serial@vger.kernel.org>; Tue, 16 Dec 2025 09:01:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sartura.hr; s=sartura; t=1765904409; x=1766509209; darn=vger.kernel.org;
+        d=sartura.hr; s=sartura; t=1765904474; x=1766509274; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=3IYSY9PEuKyOHfJY9QUPzKffXbog8qESM1aHD/icEQI=;
-        b=uLbYzMrikJbXrolr+nmd8GSQvVajEW2UEgZcKqPe98hLq6969czHgw88r2gKgv9n5u
-         ixZqm5Wo6D1T8G67PuoT1Pimw9a9H8Gng18B+7E8HTMjw56nSu1yz7gDHw+g+vmRSKLr
-         gk0/g8Y+x/aWaCUqxrwE9zDC5PD8LV9bGzo87ea8hL8QgKCjEm4k2rA4fDNMuZjdh67E
-         Lox7A5otoQz5W1IywzHMQiIHGRqUiI9nJtEW8Cx4k4A/B/guEyElge9f6iEfVJEdC0ux
-         j6abMKT6eZjDeqEBa22QNXgQVQsab+JFiVeCrui/Jnd8iWbRdR6hnfFf4cCZMy5cI6ar
-         P1KQ==
+        bh=j4BVhGwuqRhR0h5Wvfr3twMpRndihHjDu8cj/PGuiBM=;
+        b=N6pxMkEdCE0zY7b8qXrbJEKlw/BdW8A6uV0nIShekTo1OJUHTIjkrgZEannuSYp4iD
+         e4qkQOSmjfWADxiRkmXy96eLZp7PPAMSbWW706pULdpF3hdR86gFrdVNe14lwhyDrIM5
+         JLCQyN5Fr97W3mXlw6qrmrUKtExVoLgzPigg9cZri0jlrIbZRluWsp2Zyd4Z6s/a5QOb
+         C/82TmhhKHa1Nr3dLmXjnHDcory67KfhO8yAX92h6NJamErUr6XHFF4sJPZuo4+625Db
+         XPmEPl+1VdMm3tDvSlaFgKS5KWihV3PvA4DPbxkdVsvVtVyjR9XTjpemrRuZGNl00nBL
+         5hhQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1765904409; x=1766509209;
+        d=1e100.net; s=20230601; t=1765904474; x=1766509274;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=3IYSY9PEuKyOHfJY9QUPzKffXbog8qESM1aHD/icEQI=;
-        b=a3rXmGAxzLy06EFWkWoI1JWN7ll1BkxDnukpNBLQnWhiJqWXw9qIKgIDL+aYP7F3Aj
-         Gfql0M6QQFmoqKv1rVo5C1nfkU+hyHXdjk9/ciTpDIk7hNuWmO/415+XkwJxoj+qN+Yr
-         PpEac8+veuiq1Ttf054+rLJ6MCNiIwsfU93cUVKQX68MRXuCvL2FaC/yH5TDpD6l9t3z
-         2b7NMOjFhTADWB+0ldHX6obXYbGUoR06t4aG5kj85RJ+Bg5mP3zF1aZSdv5vZZuQozFY
-         m/SAB3VRdpXw/2fP1GSSfFI64BvXX0XQPtqlO537dvBGRhS9DHLrh+TtCigFFG5jry8/
-         O2bQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWo5iufaneST4wt7b2/e/roSX7YiZGNw496ux2oocT5hZPl6d+CioYCY+3OWBVF3VcdG40nWNTC7mSoFmQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywqi4pzwk4AENPjx86YQOyP3MhScknRHMRnj38taMxEJNcQndBx
-	v6fwjcV9xW++CmUblTttmaMkc2HGmMsYgkvXQ32zrqOOjQe7EBkhpepB6OeqtZ1E6Rz+3j9G9+Y
-	b0ATHCtBsqicdJCpy6puT+x0wa0ibRa5AB7yNP13Trw==
-X-Gm-Gg: AY/fxX7Ba/a0QVU3D6X24a/1AFo8jpwb+lDzgtepWXMah3HpE3briviwSprPX+6NaO+
-	umGh3zcSYFcFxcCLnbTePCiUnKTZnPvrKPdY7ahqVJLTR1+5SVTrFX1JonZQfGOmmon9rCJgFMr
-	fMyvJJOsqLmz2tldBjddyfp3gfgPjkAHcNpHObLUIUEqUOHtm40TWN1gBxen7v01YeCn5ZpC7Gw
-	AgPFs6vXGeJY8AlRzcsQ++llaGiQQDrR58mzXm+YoDWJkh4gUw+TmvGL5PvTyhVOL5aMVon
-X-Google-Smtp-Source: AGHT+IFwk4Ao673gGD7fsG2ghKfE+CBJxlDalRvkjfP0dfzZsUtUavnidDCo43zIGnGvG5i0aqfY+tiPySp8HUjss5M=
-X-Received: by 2002:a17:907:3e1f:b0:b76:f090:7779 with SMTP id
- a640c23a62f3a-b7d238bb030mr1612478166b.33.1765904408497; Tue, 16 Dec 2025
- 09:00:08 -0800 (PST)
+        bh=j4BVhGwuqRhR0h5Wvfr3twMpRndihHjDu8cj/PGuiBM=;
+        b=UmJrvpCY/OlQnv5YbaI3hXCMWuEEF1Ll/rm4BI1BSnH0btcGKeGxILyeZ4+oR0mcME
+         D6/4rOZTfWXLosm61I8fl8NQTXwNZx8HcJWC3tCgrqHSt1LAOEouTETne2YOwh7S9RuQ
+         epg+PYtWf2yQwvKRkr1pzJQ7+CZ1TQXSXQs0nej5eN2N3Pr3xZ8ED5w6msL12d3cLBwZ
+         mGjIQmRDzHVOWcBJCDvOLPjw6vMm07uv72VPhU0j1dP8PQ8MicUZfEfB+7rfJsUbszUb
+         lDX8ezyEnFVFCTLQ/1XCpNY8lYAjKKQ62U3+0j96kswq/o8pN3GeYQjsoPIuEAy1pEwp
+         hr5g==
+X-Forwarded-Encrypted: i=1; AJvYcCV+/EWP0SF6BReTVFDJVnN3dLx2oHNwBNY1eLOlSwQ9ytoZg3yEPgQdYYOD6RacAFJ+ouBJi8mCcCYCa1g=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyoY86iHKHTEAFCYu2l7eE7M9CDHLGEZMTiRn5CSx+73UsuEd7o
+	us/7s0iPlMiW5ZYCy876yCdSQXdD8LcvIxd2TPH5hX1cF0WQTOOe916+3P7h4qcSSWP7T3nNl/M
+	EcWIv1/FAjVtp/ZYVk+XC3pt5O1Kl2Tw+cZDiELCtsw==
+X-Gm-Gg: AY/fxX5DhyVvtx0HZzHvNSACFL1TvlafJPXWqgtBiBPxBa2Fi1COPmVQUzwYffMykwG
+	rs4oQHMYbEwEW1LmSaiaw1vHelOrpXJKDBNtRw10PN7bSI369Aoi0EkVbFtQKqnXt0EKyOhQg/S
+	Te4qOT1Qo9sGNSmYrX/Uvs4Nr14oD1MhIQZM01vhiWf4yBFzSfToDxuV+hkJdpVI2YLXxSCBO2l
+	4qvjZHdGWVvrJd9zKHqvL2JLJS1iKJEIe11gt9+R6tHbC06OanueJH1pjT7CCXLCHXWfO4n
+X-Google-Smtp-Source: AGHT+IFgWHsN8Jt+GNNh/GtbzMrps7YuiUN4HCSjrLSYBUNl98CacMkEeJqhHxiowRyslb2rMUAVRC886sKdRRnuksE=
+X-Received: by 2002:a17:907:608c:b0:b74:352d:6dc1 with SMTP id
+ a640c23a62f3a-b7d236b61b4mr1684820166b.28.1765904473954; Tue, 16 Dec 2025
+ 09:01:13 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20251215163820.1584926-1-robert.marko@sartura.hr> <23e02efa-bb94-48ba-9b6c-acee5d8f6576@kernel.org>
-In-Reply-To: <23e02efa-bb94-48ba-9b6c-acee5d8f6576@kernel.org>
+References: <20251215163820.1584926-1-robert.marko@sartura.hr>
+ <20251215163820.1584926-5-robert.marko@sartura.hr> <fe15fcce-865a-4969-9b6f-95920fcaa5c7@kernel.org>
+In-Reply-To: <fe15fcce-865a-4969-9b6f-95920fcaa5c7@kernel.org>
 From: Robert Marko <robert.marko@sartura.hr>
-Date: Tue, 16 Dec 2025 17:59:57 +0100
-X-Gm-Features: AQt7F2oKQzHSEY0k9JattjchuSq-s1wqnAD6k9L-CshDVUNdGCLvRtWCtUFfTxw
-Message-ID: <CA+HBbNG9wcDTPD8GAPVECecUN8maSvTyahkxaXsHqzLY_8aM3A@mail.gmail.com>
-Subject: Re: [PATCH v2 01/19] include: dt-bindings: add LAN969x clock bindings
+Date: Tue, 16 Dec 2025 18:01:02 +0100
+X-Gm-Features: AQt7F2oP6MyGEflW0Nvuzwrgr5iXWpqv_VRgduC1yuFaCXQ7imivVtKDExK377E
+Message-ID: <CA+HBbNGNMGRL11kdg14LwkiTazXJYXOZeVCKsmW6-XF6k5+sVA@mail.gmail.com>
+Subject: Re: [PATCH v2 05/19] dt-bindings: arm: microchip: move SparX-5 to
+ generic Microchip binding
 To: Krzysztof Kozlowski <krzk@kernel.org>
 Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
 	nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, 
@@ -92,37 +94,108 @@ Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Dec 16, 2025 at 4:57=E2=80=AFPM Krzysztof Kozlowski <krzk@kernel.or=
+On Tue, Dec 16, 2025 at 4:58=E2=80=AFPM Krzysztof Kozlowski <krzk@kernel.or=
 g> wrote:
 >
 > On 15/12/2025 17:35, Robert Marko wrote:
-> > Add the required LAN969x clock bindings.
+> > Now that we have a generic Microchip binding, lets move SparX-5 as well=
+ as
+> > there is no reason to have specific binding file for each SoC series.
 > >
-> > Signed-off-by: Robert Marko <robert.marko@sartura.hr>
-> > ---
-> > Changes in v2:
+> > The check for AXI node was dropped.
 >
->
-> Where is cover letter for this patch bomb explaining previous history,
-> giving lore link and providing any background/rationale for making it
-> one huge patchset?
+> Why?
 
-Hi Krzysztof,
-I should have made a cover letter indeed as it is quite confusing.
-
-I did not plan to add all of the new compatibles, but it was requested in v=
-1 by
-Conor [1], Nicolas [2] and Claudiu [3].
+According to Conor, it is pointless [1]
 
 [1] https://patchwork.kernel.org/project/linux-arm-kernel/patch/20251203122=
-313.1287950-4-robert.marko@sartura.hr/#26687201
-[2]https://patchwork.kernel.org/project/linux-arm-kernel/patch/202512031223=
-13.1287950-4-robert.marko@sartura.hr/#26698565
-[3] https://patchwork.kernel.org/project/linux-arm-kernel/patch/20251203122=
-313.1287950-4-robert.marko@sartura.hr/#26690625
+313.1287950-2-robert.marko@sartura.hr/#26691879
 
 Regards,
 Robert
+
+>
+> >
+> > Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+> > ---
+> >  .../bindings/arm/microchip,sparx5.yaml        | 67 -------------------
+> >  .../devicetree/bindings/arm/microchip.yaml    | 22 ++++++
+> >  2 files changed, 22 insertions(+), 67 deletions(-)
+> >  delete mode 100644 Documentation/devicetree/bindings/arm/microchip,spa=
+rx5.yaml
+> >
+> > diff --git a/Documentation/devicetree/bindings/arm/microchip,sparx5.yam=
+l b/Documentation/devicetree/bindings/arm/microchip,sparx5.yaml
+> > deleted file mode 100644
+> > index 9a0d54e9799c..000000000000
+> > --- a/Documentation/devicetree/bindings/arm/microchip,sparx5.yaml
+> > +++ /dev/null
+> > @@ -1,67 +0,0 @@
+> > -# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > -%YAML 1.2
+> > ----
+> > -$id: http://devicetree.org/schemas/arm/microchip,sparx5.yaml#
+> > -$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > -
+> > -title: Microchip Sparx5 Boards
+> > -
+> > -maintainers:
+> > -  - Lars Povlsen <lars.povlsen@microchip.com>
+> > -
+> > -description: |+
+> > -   The Microchip Sparx5 SoC is a ARMv8-based used in a family of
+> > -   gigabit TSN-capable gigabit switches.
+> > -
+> > -   The SparX-5 Ethernet switch family provides a rich set of switching
+> > -   features such as advanced TCAM-based VLAN and QoS processing
+> > -   enabling delivery of differentiated services, and security through
+> > -   TCAM-based frame processing using versatile content aware processor
+> > -   (VCAP)
+> > -
+> > -properties:
+> > -  $nodename:
+> > -    const: '/'
+> > -  compatible:
+> > -    oneOf:
+> > -      - description: The Sparx5 pcb125 board is a modular board,
+> > -          which has both spi-nor and eMMC storage. The modular design
+> > -          allows for connection of different network ports.
+> > -        items:
+> > -          - const: microchip,sparx5-pcb125
+> > -          - const: microchip,sparx5
+> > -
+> > -      - description: The Sparx5 pcb134 is a pizzabox form factor
+> > -          gigabit switch with 20 SFP ports. It features spi-nor and
+> > -          either spi-nand or eMMC storage (mount option).
+> > -        items:
+> > -          - const: microchip,sparx5-pcb134
+> > -          - const: microchip,sparx5
+> > -
+> > -      - description: The Sparx5 pcb135 is a pizzabox form factor
+> > -          gigabit switch with 48+4 Cu ports. It features spi-nor and
+> > -          either spi-nand or eMMC storage (mount option).
+> > -        items:
+> > -          - const: microchip,sparx5-pcb135
+> > -          - const: microchip,sparx5
+> > -
+> > -  axi@600000000:
+> > -    type: object
+> > -    description: the root node in the Sparx5 platforms must contain
+> > -      an axi bus child node. They are always at physical address
+> > -      0x600000000 in all the Sparx5 variants.
+> > -    properties:
+> > -      compatible:
+> > -        items:
+> > -          - const: simple-bus
+> > -
+> > -    required:
+> > -      - compatible
+> > -
+> > -required:
+> > -  - compatible
+> > -  - axi@600000000
+>
+> Nothing explains the rationale for doing this.
 >
 > Best regards,
 > Krzysztof
