@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95EBA213254;
-	Tue, 16 Dec 2025 16:40:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3C8F30B52C;
+	Tue, 16 Dec 2025 16:41:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765903233; cv=none; b=pz55q9tDKpO9YswxsP5de5ez41dkDk6i8NHwwfhifHVicxTz6ykl/00sz6Qs8mP9/EdrvMgxF9BYapTAgS4wxjNHATsd3VU+b7pXiCcW8tesDF51EqVN1i/JtVdbezdHPv+uOVZ2Bil8e0beohog15ltFDU3Y9WZOWotYPr/0uo=
+	t=1765903263; cv=none; b=rIFCT3XtwVtALUqaKaacakcHp6bLxc4ZagEVKPvRRfScvkHDEW6PvajUMzSHuUZLnEW91GvokuUUXtwtNhEf4iHX3Dmn7aNfYKxwa9qtgVkhMeTpgQ6Jwv9BUeTelIUmUCPvPgFKh2ooonTfkkQugivrqYDBQJDiayAHGnWssjg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765903233; c=relaxed/simple;
-	bh=IyXZRoNRbL0WbL68f2jfKpHRWTYsrTX6ecv3orlH2DQ=;
+	s=arc-20240116; t=1765903263; c=relaxed/simple;
+	bh=gLWf9IOQkDnImM+DlGc+esOKlGsP0FIXh/V7uRJefKQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VYdtCwY4/5I+PhJeCt4loUYa8wcnMo5EJaIBM6VkPMzL+4xyPsNids4x2jQ1DvTiTehWa4nedqD6T35aI1AEGHUdbgW5lkNd6q/0qzjRGDnqIUm8bmGB7k4UJMGCkyHzinD1UBvfn5x6VhAEC13/dAN2XrOaUlvs0EvCv6vYUcM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Pz/uO5OA; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=Qn+Bh/KKd/5ixcyIg6H0gptYyC6OE3hlO7d/40h7i1PyRROBvn9fIbi2eQ14qFPHJXpHzt0XLj+fWz6KzQ56nPNNZDkjsaxXMc6sqm1m9kuwEioxWX2lS7QoAGdxT8qQSm3gW5V3WuOhYvA9U8R7VrbpU4kPu7G3suqYSlu+Vb4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JhazTWPd; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Pz/uO5OA"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79251C4CEF1;
-	Tue, 16 Dec 2025 16:40:28 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JhazTWPd"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAF88C4CEF1;
+	Tue, 16 Dec 2025 16:40:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1765903233;
-	bh=IyXZRoNRbL0WbL68f2jfKpHRWTYsrTX6ecv3orlH2DQ=;
+	s=k20201202; t=1765903263;
+	bh=gLWf9IOQkDnImM+DlGc+esOKlGsP0FIXh/V7uRJefKQ=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Pz/uO5OAcXJwx0OQVP3qbACJTye9uv10Z3DI4Ykogwt1CZtIx9ay+xEYXYEuezOFC
-	 2xUkESb204/GWq+9luBZc2ufVfi2mJh52bE65akZWXCoHPa4LUPvBIKPXVt4A/03Vr
-	 ELW4yE+TmYCgglEZkKVeX0qe2xKnBHx4YmTSTPihmCjpl7io26dBXgyE/VzwemUMZU
-	 GmrRvXWFdn+vZ/8RJTbye2iJrBMniUCbILF2WW0F4GmmCgpiZ/SIijFQX5TYv9SKH7
-	 YiduLD0GFgiNu3jJPOD1whIOL6ITvoT0wCywGIKRo0h2lL8ZQGHuA13XYO3PxLkefy
-	 qf0UgrAaoUWCg==
-Date: Tue, 16 Dec 2025 16:40:26 +0000
+	b=JhazTWPdLbi3i9qJUTN2ZC43I/OyNoykyVQ0xg6mHucOwLfANYHpJX3FvMkWYufcV
+	 o1RLSXsuF/lOQg+3/VSHMkKPppBRH/y73XBRjFmP8ixqdymFVjTIGYz4P6QfrQA/oP
+	 Mxq9VZXUYBrQ4XX4M/I2MFVEeBsXbut4pn5xDBj2B4znltfNhrqgsOAoAfuuXCF2cV
+	 apKdfLFJWpf6JHn3XhwjMJQfYDlASZCciMeyLQcPlRFlh3ReVnoJgWSOdsTRNYQNYF
+	 0nNRGg3RULKZ+u9oqvEdIIUbIaf1yJ1t2dxIe8c6w4IlD0MgPzNfW49klSwZg609BB
+	 Roeq9iRc82hxg==
+Date: Tue, 16 Dec 2025 16:40:56 +0000
 From: Conor Dooley <conor@kernel.org>
 To: Guodong Xu <guodong@riscstar.com>
 Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
@@ -48,10 +48,11 @@ Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	devicetree@vger.kernel.org, linux-riscv@lists.infradead.org,
 	linux-kernel@vger.kernel.org, spacemit@lists.linux.dev,
 	linux-serial@vger.kernel.org
-Subject: Re: [PATCH 2/8] dt-bindings: timer: add SpacemiT K3 CLINT
-Message-ID: <20251216-reexamine-civic-79110198c948@spud>
+Subject: Re: [PATCH 3/8] dt-bindings: interrupt-controller: add SpacemiT K3
+ APLIC
+Message-ID: <20251216-aching-feed-1d27e71a0c63@spud>
 References: <20251216-k3-basic-dt-v1-0-a0d256c9dc92@riscstar.com>
- <20251216-k3-basic-dt-v1-2-a0d256c9dc92@riscstar.com>
+ <20251216-k3-basic-dt-v1-3-a0d256c9dc92@riscstar.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -59,27 +60,27 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="oiXnzifGyDDDbsIe"
+	protocol="application/pgp-signature"; boundary="JhmyKJ6DVv3RyAWJ"
 Content-Disposition: inline
-In-Reply-To: <20251216-k3-basic-dt-v1-2-a0d256c9dc92@riscstar.com>
+In-Reply-To: <20251216-k3-basic-dt-v1-3-a0d256c9dc92@riscstar.com>
 
 
---oiXnzifGyDDDbsIe
+--JhmyKJ6DVv3RyAWJ
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
 pw-bot: not-applicable
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
 
---oiXnzifGyDDDbsIe
+--JhmyKJ6DVv3RyAWJ
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaUGLegAKCRB4tDGHoIJi
-0hwwAPoDrtroebIfLkFlyWTb0bc8LgUEOYjMYPCEYfw50ls0rwEAiNLuqpsrff8R
-wHgSUxm7Hd6joVfLniWEW5RfZJviEQI=
-=b8Yc
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaUGLmAAKCRB4tDGHoIJi
+0pcqAQDpB+Dg1i3rnP/xTAl/Jw8jDSstTyZ2dBxoRyt/wHK9CgEApR/0s8e6AF1M
+cF49Ot1LSkgE66g/pqgEEP0wGxzizg4=
+=JI5p
 -----END PGP SIGNATURE-----
 
---oiXnzifGyDDDbsIe--
+--JhmyKJ6DVv3RyAWJ--
