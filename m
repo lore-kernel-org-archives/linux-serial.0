@@ -1,152 +1,140 @@
-Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C37B3A4EA0
-	for <linux-serial@vger.kernel.org>; Tue, 16 Dec 2025 13:34:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5727235028E
+	for <linux-serial@vger.kernel.org>; Tue, 16 Dec 2025 14:08:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.125.188.122
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765892069; cv=none; b=axSTnFYKZh+/kI6+MaH6o8GaBtWBbTxnAilkmnY76+bQppxaEpvrSpaKU++iGF8fkUeZnB/7uTzZ316uGqwEZ87FP55iGAyjTB1Kk0OQNA5HSM6q2U++TFLlJD4cphUaq/+Lfxgw5IdAH5VO1P1Tstf7K8tWPHWmFRU+rANIxZs=
+	t=1765894109; cv=none; b=MIMmOqjLFlz0AbSofEHZUktQmRH7IKqd6Ji8TUclGsIpSIbfB4rZo2b/SF7tx7h52sImPeMcawoHgqx/pEpVh1queJizgtazhCnI0KH6TRsXC1vCISR2yVsdhIAokmgKKT5AfR03O9+Qlh2gG77D2g+q0a34OIffaUtXF2NEXt4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765892069; c=relaxed/simple;
-	bh=KjhTJTkDXnNRFpIPUaoSGbev6YIGfYkMTsBBPhzGvcE=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=l6TcWz5eOP3iLINCzF2KumXLHskiafqkTbZ4DdxCy6zlZegr8667WbOu85toF2po0Cxvbmg9xNhk0vKA6mOTdqWkSzZtbiRCWGsM9faiSHhoghnly7CXBJJPtpluN87oneYQEQa5Z928em8b9cGw6z2g/jeC6n4HX1bMtJADAko=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com; spf=pass smtp.mailfrom=riscstar.com; dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b=WcV1nUQR; arc=none smtp.client-ip=209.85.214.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=riscstar.com
+	s=arc-20240116; t=1765894109; c=relaxed/simple;
+	bh=/Wododm6Hj52N73BD32ughfd/z1UEFrBFZydemobFr0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=oO6uC+bLtaAYivPvt6lkTvV3tGU1z7DrgL71SsK63pZ3S+mJ+PzvkzXIqS660aEvaMpurZKLE4nQYiWjZvwVhLdwN2gUdpXmDazFwMZoSwoZH67oljfPzDUTOBI1CRyCdIZx29ADHM7AVOOdLJuk7TWEvdaAC/f6WzTI0vILi/4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=canonical.com; spf=pass smtp.mailfrom=canonical.com; dkim=pass (4096-bit key) header.d=canonical.com header.i=@canonical.com header.b=EB95yM4t; arc=none smtp.client-ip=185.125.188.122
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=canonical.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=canonical.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b="WcV1nUQR"
-Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-29f0f875bc5so60714615ad.3
-        for <linux-serial@vger.kernel.org>; Tue, 16 Dec 2025 05:34:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=riscstar-com.20230601.gappssmtp.com; s=20230601; t=1765892066; x=1766496866; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=IjtsZDFBVTJEjQk/WUDeFopXVBua3qA0F4qJMc77ff0=;
-        b=WcV1nUQRebnfRO4g3dAsas2NloUn5XuVDdVFazmX6tT7whCI1tEKcWJjAlMiDqtSbX
-         Dh+g+eLg8nyoEc17FpmQH7JI7GgU8qZ/6lb4eJ8r/fKUIHepKG/XgUwkErfiGOpsNjO7
-         QxmWWNaiUlUVq5pF6uO3o+u2LUuCYUH8uMy4Szi58nps9qFwGb8/4Ypnt3cGnNkBtyFn
-         KOP2IQfuGS+AvWAIr9RjI98+MmJ2uNzHqT0g8C6XrMBfmD0pBPwqUZxJbpFgZDcBjHF/
-         quaZNJ69Ke2iK4PmmNlbeDRodWd6aMtUtAlMeK0u+aNl3p6leSe0JDM+SGI3UWK7ZgFH
-         0i9A==
+	dkim=pass (4096-bit key) header.d=canonical.com header.i=@canonical.com header.b="EB95yM4t"
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 89DC73FC34
+	for <linux-serial@vger.kernel.org>; Tue, 16 Dec 2025 14:08:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+	s=20251003; t=1765894086;
+	bh=s6OKug5US6pxBUrhttaNzk4ojcTJP4aLJKCdbICH8xs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type;
+	b=EB95yM4t9qIFdZaAOY3YK45qauMionXTEVRD+Un41IdxcnjfMqDRfZi9rmuCT6s3t
+	 k00f4uCTFKVwXoHlceGyV0nn75kJhgDDV5DHE88t4aoEVDmS6P/FV2OnFPMTLSzREs
+	 5o/b+hGiFAur4tdw7Hf+I5a4nYSWFARU9Tjo7w4Kb6Uv6E6Krao8onSIYXIPazS+1y
+	 MaJBI6VtKcRqtcwHJqRmxx0GWko2jqjUfoWcPYEf8LbIb//vJXuozebDMAHbMmMCg1
+	 5R43Uz5qGd8BKNczqAoPlpAIE25zi66XKOFzM9x3r9VakWgLDCa0oM9sPc3je+gbjK
+	 gSxOojBBu6d1Nj3CUObUC1pK3G25z39ULgvmSYOMYBbe263fiyXS1ts46EHxtGnB0u
+	 alhvbhtEW/RVQbZjYQ6ry4iPhS+PdEzHYxk+vjEUkzqGPTzCzXc6iHNdZaShmVEI7T
+	 Be6nyEiNRrgnp3g4NSjLXxyvGRuB9sZCLSnvgEPC28owFG4jDowIt0eSln9rtiViWQ
+	 AawKuukQxq8es2PR962rgOXOOaXXOMvlHWgbljk3DHscXHrsMXMebZtMdOwv2mA7P6
+	 /VIDC9lgQXh7OHdXZbfzMJ+VbLUL7whSn/9JSH55OYIKWN67yAAALCyRs4niG+fGrZ
+	 4GzaEAxcaqqk9tZswvH3swDg=
+Received: by mail-ed1-f69.google.com with SMTP id 4fb4d7f45d1cf-64981bd02a4so7403838a12.0
+        for <linux-serial@vger.kernel.org>; Tue, 16 Dec 2025 06:08:06 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1765892066; x=1766496866;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=IjtsZDFBVTJEjQk/WUDeFopXVBua3qA0F4qJMc77ff0=;
-        b=oN0CIODljBELfmO5bP7KMC3lWt0In3hQ7HhIVHcLtIhwrm6gr3QShexkTO0xwc6eZZ
-         GyoEbgrTPNnDpsNXPFuYxguYzl3WiYfCSefvg13nfvVEzuS9ZRkVsrpxnCD+cyT5jRwv
-         xOb0vR/7Aj7VQqmbKjTbhVrDaFTfYdQyhxcT2qQWAaotWzflT42sPbGOkkI71sG65SqY
-         sFj3htd8Z2+sV/64pY4OZTxeKrRpUQr4M+9uqXvRjnvNSGb8wYgEDcAZHbLKiAqutXky
-         iCxaIVz5zxiMQhp7N5ujzF+UTr5Fjl9pD8DWeD3XNm8nB9/jKH5Gg0ktUWT2KKhLiAnH
-         gX7w==
-X-Forwarded-Encrypted: i=1; AJvYcCVa9+iBtH5QFlABovbtK1+S0VK8poNeOoeJfRff1vA4O68+BQ7jn1WK4ULky16a98jtD3zXd+Ajuc8AQBA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwSUi0tHu3d5HKYjSA+vMZHKyvERih5SvN0JDTTuJhWUjjxRf8f
-	pq5P+a3/4OwKftf59Ijm/YoLw3rCkzStMCaON0k0LUhIyuTE7EvcqMx7WqPIuJFHmSs=
-X-Gm-Gg: AY/fxX6URVbsECaGPr/RlF6XlmbGri1MekwN8ymVd/r0dC3PMY4/V532CmY4ntLosOg
-	qnQzZwlpZBwE1QIAnL/Cb3Hfh5EJEDlykQTtUKgUyaDQcqImUCu+R8aTutuUHhTC1bWciIEA/4a
-	2D9hgcFV/ZyLuYr86LkCWQ0UYi63dAPTqcuIK9SqDKq0z1U0ZwNZEyhqhXfuu6mWy5ntvgVct3/
-	AnWayP3QLG7/GBo1O+gCQN7BBhm5f9cIZ/LzLtNh+deKqyIhUZ2oOJy5VOp6Q+fzIwq3MzjtVO/
-	DAVtCTLJ6bIdIVZlNoQRl/p3BTPljc6YD4fxE7DNDMJexukPff4/2Q5aqaW+0gnGV7H7M1SFNkC
-	0vdWheX4hNzsYdMdZmqR6vyJ5151pQCav8VU8AxG4YKiq4QQAYZCnAyCptsgcmppZkTHIs75CQd
-	eaQ398xv+Wf7nYXuui+VwMwFPyjLqpnqd3yKi6u3R5MA==
-X-Google-Smtp-Source: AGHT+IGVOxm+/QKyxHcc5Grjn3kteFx1uRcmQu8o0lO93tndrJa8YJKE/y22hloJlPWLdYElnvZGNQ==
-X-Received: by 2002:a17:902:ef44:b0:2a0:a9f8:48f7 with SMTP id d9443c01a7336-2a0a9f849f9mr99550055ad.55.1765892065830;
-        Tue, 16 Dec 2025 05:34:25 -0800 (PST)
-Received: from [127.0.1.1] ([2a12:a305:4::4029])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2a14625add8sm15829525ad.61.2025.12.16.05.34.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Dec 2025 05:34:25 -0800 (PST)
-From: Guodong Xu <guodong@riscstar.com>
-Date: Tue, 16 Dec 2025 21:32:32 +0800
-Subject: [PATCH 8/8] riscv: dts: spacemit: add SpacemiT K3 Pico-ITX board
- device tree
+        d=1e100.net; s=20230601; t=1765894085; x=1766498885;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=s6OKug5US6pxBUrhttaNzk4ojcTJP4aLJKCdbICH8xs=;
+        b=l2wzM5zIzSUvKYG3TH2Rus3kEKlkzTRtNThTyKP50YaNtShgGgpqmZ2lpiFVdS7ttk
+         coE4WPQz5l0nb//RJ+BZtucN9Q9rpJQGGxL+GrfuIXBwCHRrvWjCXpJzGpMk8xsxsepC
+         jLiHlFbV4mtqY95QA2n/wp3fIHj06w0VFw0iWHb53uMewqLgfSatIb8htlBDFYv+hDzU
+         Z8pl+Vz23j+vTJJ9BB7dpBvrfk5yFIldjNev7s1h1vg77I5NmUgMJtAByY+38/ahzEMt
+         MqHMP+UoNl2rl6IyEtf1GqHMaAbof0rRDQeY4oXxcAKh6TshYBEMRNFM+ZUm9MWgG8T3
+         JN3A==
+X-Forwarded-Encrypted: i=1; AJvYcCUF5HNLgOHppUF+OoCgcZtXgW9Z4Mj+U/aDsLyI5cp+QGnhHGvu5Woppb0P0sTX4rvbSBghyR/6qbz1PJk=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywalf9wmo1JuW8Lbaag/9X8xm0g8J9yrrDHPN058eAqNI1XCMdq
+	yQ5vC8FAWexcO24m8r8Blmlj97Zl2zvaZ1fGaIcyvaaorX4rFoYsgDSqD0AIjptvhB6Rg48jyaX
+	LbvRaemImsuqTMmw2Ocz905YA+uAriRNoGlJMWqtJmUE0rIcEjNxlAGprWM9U62PDPbJRx8j/E0
+	XT+IwfPQ==
+X-Gm-Gg: AY/fxX5OvFpU/+MjFFyNeRjsyMwphA+Vce3RPgYUTJ+yJZXfMFfH2yEYua0fQiUyZSx
+	6vT9XWy3b5PyjyDx2nh7qY2WgHYr6WAXFIzud91xKd/WqifwAM1YEQDDXdOCDFIvMx5+bu6inNZ
+	7oYnbiPDtXc7rA1L0gtgCUm+2BVHNZZ3GOZLlqwWWrw08UCTDGPfwOBDrFWOTVsWvzOwAFSNniL
+	PR/nfF9dZ01zwnlSIe5v1eMCeg77f5+5c6iXrCf/gfTdecVXs1vbopICk+ES5XvMLPJi3rlcQxa
+	JED+6b1keNt3vE75b7fapMB+GM7nC1PL/CD74Hby8EXpW4JCyFtjFSuT8sHrWVkP4nnJ36ibwi7
+	ESjM+lvAokMUeY/rXa5tbMw0DLW8fK94c0hQzLnbpIoe/oGDylkvqKYNk7wrzvuHSdxxDLSYNxe
+	VvjciPLxh6OWJv9A==
+X-Received: by 2002:a17:907:60cf:b0:b7c:f82e:30b with SMTP id a640c23a62f3a-b7d23b1c3ffmr1594364566b.52.1765894084887;
+        Tue, 16 Dec 2025 06:08:04 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IEtqWjNEWPbxkffOmFNn2OFkrwSQdkzVjA6Bq6rV9Lw/Z0LSQ+mn+A/wq7Eqay9PrsgCg2JGw==
+X-Received: by 2002:a17:907:60cf:b0:b7c:f82e:30b with SMTP id a640c23a62f3a-b7d23b1c3ffmr1594361066b.52.1765894084492;
+        Tue, 16 Dec 2025 06:08:04 -0800 (PST)
+Received: from [192.168.103.125] (dynamic-046-114-006-010.46.114.pool.telefonica.de. [46.114.6.10])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b7cfa51b859sm1698504466b.43.2025.12.16.06.08.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 16 Dec 2025 06:08:03 -0800 (PST)
+Message-ID: <e1383a10-84ac-483c-aca4-7f2b39ccac16@canonical.com>
+Date: Tue, 16 Dec 2025 15:08:01 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20251216-k3-basic-dt-v1-8-a0d256c9dc92@riscstar.com>
-References: <20251216-k3-basic-dt-v1-0-a0d256c9dc92@riscstar.com>
-In-Reply-To: <20251216-k3-basic-dt-v1-0-a0d256c9dc92@riscstar.com>
-To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>, 
- Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
- Alexandre Ghiti <alex@ghiti.fr>, Yixun Lan <dlan@gentoo.org>, 
- Daniel Lezcano <daniel.lezcano@linaro.org>, 
- Thomas Gleixner <tglx@linutronix.de>, 
- Samuel Holland <samuel.holland@sifive.com>, 
- Anup Patel <anup@brainfault.org>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>, 
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/8] dt-bindings: riscv: add SpacemiT X100 CPU compatible
+To: Guodong Xu <guodong@riscstar.com>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
+ Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
+ Alexandre Ghiti <alex@ghiti.fr>, Yixun Lan <dlan@gentoo.org>,
+ Daniel Lezcano <daniel.lezcano@linaro.org>,
+ Thomas Gleixner <tglx@linutronix.de>,
+ Samuel Holland <samuel.holland@sifive.com>, Anup Patel
+ <anup@brainfault.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
  Yangyu Chen <cyy@cyyself.name>
-Cc: Paul Walmsley <paul.walmsley@sifive.com>, 
- Palmer Dabbelt <palmer@sifive.com>, Conor Dooley <conor@kernel.org>, 
- Heinrich Schuchardt <xypron.glpk@gmx.de>, 
- Kevin Meng Zhang <zhangmeng.kevin@linux.spacemit.com>, 
- devicetree@vger.kernel.org, linux-riscv@lists.infradead.org, 
- linux-kernel@vger.kernel.org, spacemit@lists.linux.dev, 
- linux-serial@vger.kernel.org, Guodong Xu <guodong@riscstar.com>
-X-Mailer: b4 0.14.2
+Cc: Paul Walmsley <paul.walmsley@sifive.com>,
+ Palmer Dabbelt <palmer@sifive.com>, Conor Dooley <conor@kernel.org>,
+ Kevin Meng Zhang <zhangmeng.kevin@linux.spacemit.com>,
+ devicetree@vger.kernel.org, linux-riscv@lists.infradead.org,
+ linux-kernel@vger.kernel.org, spacemit@lists.linux.dev,
+ linux-serial@vger.kernel.org
+References: <20251216-k3-basic-dt-v1-0-a0d256c9dc92@riscstar.com>
+ <20251216-k3-basic-dt-v1-1-a0d256c9dc92@riscstar.com>
+Content-Language: en-US
+From: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
+In-Reply-To: <20251216-k3-basic-dt-v1-1-a0d256c9dc92@riscstar.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-K3 Pico-ITX is a 2.5-inch single-board computer equipted with a SpacemiT
-K3 SoC.
+On 12/16/25 14:32, Guodong Xu wrote:
+> Add compatible string for the SpacemiT X100 (RVA23 compliant) core.
+> 
+> Link: https://www.spacemit.com/en/spacemit-x100-core/
+> 
+> Signed-off-by: Guodong Xu <guodong@riscstar.com>
 
-This minimal device tree enables booting into a serial console with UART
-output.
+LGTM
 
-Signed-off-by: Guodong Xu <guodong@riscstar.com>
----
- arch/riscv/boot/dts/spacemit/Makefile        |  1 +
- arch/riscv/boot/dts/spacemit/k3-pico-itx.dts | 25 +++++++++++++++++++++++++
- 2 files changed, 26 insertions(+)
+Reviewed-by: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
 
-diff --git a/arch/riscv/boot/dts/spacemit/Makefile b/arch/riscv/boot/dts/spacemit/Makefile
-index 95889e7269d1bae679b28cd053e1b0a23ae6de68..7e2b877025718113a0e31917eadf7562f488d825 100644
---- a/arch/riscv/boot/dts/spacemit/Makefile
-+++ b/arch/riscv/boot/dts/spacemit/Makefile
-@@ -4,3 +4,4 @@ dtb-$(CONFIG_ARCH_SPACEMIT) += k1-milkv-jupiter.dtb
- dtb-$(CONFIG_ARCH_SPACEMIT) += k1-musepi-pro.dtb
- dtb-$(CONFIG_ARCH_SPACEMIT) += k1-orangepi-r2s.dtb
- dtb-$(CONFIG_ARCH_SPACEMIT) += k1-orangepi-rv2.dtb
-+dtb-$(CONFIG_ARCH_SPACEMIT) += k3-pico-itx.dtb
-diff --git a/arch/riscv/boot/dts/spacemit/k3-pico-itx.dts b/arch/riscv/boot/dts/spacemit/k3-pico-itx.dts
-new file mode 100644
-index 0000000000000000000000000000000000000000..0f9d04dd352f5331e82599285113b86af5b09ebe
---- /dev/null
-+++ b/arch/riscv/boot/dts/spacemit/k3-pico-itx.dts
-@@ -0,0 +1,25 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/*
-+ * Copyright (c) 2025 SpacemiT (Hangzhou) Technology Co. Ltd
-+ * Copyright (c) 2025 Guodong Xu <guodong@riscstar.com>
-+ */
-+
-+#include "k3.dtsi"
-+
-+/ {
-+	model = "SpacemiT K3 Pico-ITX";
-+	compatible = "spacemit,k3-pico-itx", "spacemit,k3";
-+
-+	chosen {
-+		stdout-path = "serial0";
-+	};
-+
-+	memory@100200000 {
-+		device_type = "memory";
-+		reg = <0x1 0x00200000 0x3 0xffe00000>;
-+	};
-+};
-+
-+&uart0 {
-+	status = "okay";
-+};
-
--- 
-2.43.0
+> ---
+>   Documentation/devicetree/bindings/riscv/cpus.yaml | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/riscv/cpus.yaml b/Documentation/devicetree/bindings/riscv/cpus.yaml
+> index d733c0bd534fb63ed7c0eada97c42832431f1fc1..cce87092dc7749f49066154d9a256af6c7b6c19f 100644
+> --- a/Documentation/devicetree/bindings/riscv/cpus.yaml
+> +++ b/Documentation/devicetree/bindings/riscv/cpus.yaml
+> @@ -62,6 +62,7 @@ properties:
+>                 - sifive,u74
+>                 - sifive,u74-mc
+>                 - spacemit,x60
+> +              - spacemit,x100
+>                 - thead,c906
+>                 - thead,c908
+>                 - thead,c910
+> 
 
