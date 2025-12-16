@@ -1,92 +1,122 @@
-Received: from out-179.mta1.migadu.com (out-179.mta1.migadu.com [95.215.58.179])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F25934DB53
-	for <linux-serial@vger.kernel.org>; Tue, 16 Dec 2025 15:44:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E32E92D3737;
+	Tue, 16 Dec 2025 15:55:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765899896; cv=none; b=CBiemqt18fCLTvI0+61/88hQFZL3+RNwR7+ad9wqBd+Iv/DzUEqMgLdAl54dgM81v2h8zi+iGUPar9/pqw1eCGtB0NCONlUupi+bt1NOgB4VBRJl7UmVZ2cm/QSnKUvNRWXI8y5d2OuRKtnXHH/Ho2hdWpolTUH6bhBK0jmeKUw=
+	t=1765900507; cv=none; b=R7zzo6vz3SY1YGXki1+fsK8v0Kio3tXel1Td53nqpD2jk+W0RqDm8flVRL9N8+v6jW5j5B3StfPbWMFCdUrmNz0eQHXFLzxfSYV26Qvbj3aCowEmOFJwzvIfuDPnfWNx/lPjLdVrWLbF4a/962n/cE/ZbeGATwveOifsdmGZ+x0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765899896; c=relaxed/simple;
-	bh=UIWAeJbgAFn1kFE20QeLwfWB5TzrWBNThWxnTglJfw8=;
+	s=arc-20240116; t=1765900507; c=relaxed/simple;
+	bh=01o5UEZSfkctZGOC5qlwlYDaww6GquCTHK/kGSGT9Qs=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=oM/uRQD3DmGHPSzMQbg6FeF919kNcAPAqL3sRGss76gXWF46Z1mXX6NLrpzopdxvkb8XcuTOF5UrejX6aJkMdeNpvIopm5VDxAjFtsZoK+IStgj1BceuoSis0cBwRiKHGypjbBYEs6QtzVg6FVN/8LpJOOx6KloJr935H5Yux/4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=A06oI68C; arc=none smtp.client-ip=95.215.58.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	 In-Reply-To:Content-Type; b=JnQYZrp2x0OZdMWLvktVyfnHViFljIF0q27YRYy4jYP7zJzXOfWANh4ZO3WwSYT4BtiBPdsn/40biBdXsmAqYeCAmnb1l2cS9xO45/5IZdC9Y9UP8mN0GZnH88P6PHRucLGzHQRWKbfvWH1QZ/4XCSYy8Qg7PydWltFBmV5xPig=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KnJY5LCi; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="A06oI68C"
-Message-ID: <7f42e053-b7d6-4216-9ed1-c496db3a54d0@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1765899882;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=WWhAy9+9PNeOPwF/R4/xqInvj31Q4dE74xVNHSXPp8A=;
-	b=A06oI68CcEav+v+vYa/lHCpPzjs52pwkzI5ahVnbFirnpvlIYTrsAMRD2nenKuaVv3BWgT
-	UhwzqRJ9tPqUGFMdfK6T8QlTOGgzIcMQEzce2TFTeEQhYNl6a5a1qtg27Rt/foouw5b9RW
-	Lu4l2a79fIqlZJddYQPMEozwDcYqL+k=
-Date: Tue, 16 Dec 2025 10:44:34 -0500
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KnJY5LCi"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1484C4CEF1;
+	Tue, 16 Dec 2025 15:54:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1765900506;
+	bh=01o5UEZSfkctZGOC5qlwlYDaww6GquCTHK/kGSGT9Qs=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=KnJY5LCi/daDI436cW11l2Wqr+RJlCMtWNkJk2AtzanmHz93rQJ124FWk4sFUtsA6
+	 iVo4ZZWRFT4V/zqvlbP7Mu/vlS+xtrtlI7SYy3E04iqXohV2Oe4HUDa6isZCRbzxTc
+	 /mvQXq7uA8hGmtra8djoYst0s2tt0EfGlkx6wwR7MTb0KQ4BY4unq4LgWmGXccHlMy
+	 ZHbUYJRJJh3TZgot7Lt2gxaABElqBUyrBX2iIfqM6dvs/N9XGlNoObcZlgTWXH9FO7
+	 9E6+x2wXTqTogPi50AcxgqckAp2FL7Su9wOSPLWvnUCCQAPFKrt8DexSDUaYg5cK1x
+	 HTM+jBrwl41cA==
+Message-ID: <d9665340-5a96-4105-88e9-ec14a715df5a@kernel.org>
+Date: Tue, 16 Dec 2025 16:54:54 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Subject: Re: [PATCH] serial: xilinx_uartps: fix rs485 initialization at boot
-To: "j.turek" <jakub.turek@elsta.tech>, gregkh@linuxfoundation.org,
- jirislaby@kernel.org
-Cc: michal.simek@amd.com, namcao@linutronix.de, tglx@linutronix.de,
- zack.rusin@broadcom.com, hshah@axiado.com, linux-serial@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20251216152641.196221-1-jakub.turek@elsta.tech>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 03/19] dt-bindings: arm: AT91: relicense to dual
+ GPL-2.0/BSD-2-Clause
+To: Robert Marko <robert.marko@sartura.hr>, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org, nicolas.ferre@microchip.com,
+ alexandre.belloni@bootlin.com, claudiu.beznea@tuxon.dev,
+ Steen.Hegelund@microchip.com, daniel.machon@microchip.com,
+ UNGLinuxDriver@microchip.com, herbert@gondor.apana.org.au,
+ davem@davemloft.net, vkoul@kernel.org, linux@roeck-us.net,
+ andi.shyti@kernel.org, lee@kernel.org, andrew+netdev@lunn.ch,
+ edumazet@google.com, kuba@kernel.org, pabeni@redhat.com, linusw@kernel.org,
+ olivia@selenic.com, radu_nicolae.pirea@upb.ro, richard.genoud@bootlin.com,
+ gregkh@linuxfoundation.org, jirislaby@kernel.org, mturquette@baylibre.com,
+ sboyd@kernel.org, richardcochran@gmail.com,
+ wsa+renesas@sang-engineering.com, romain.sioen@microchip.com,
+ Ryan.Wanner@microchip.com, lars.povlsen@microchip.com,
+ tudor.ambarus@linaro.org, charan.pedumuru@microchip.com,
+ kavyasree.kotagiri@microchip.com, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org,
+ linux-hwmon@vger.kernel.org, linux-i2c@vger.kernel.org,
+ netdev@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
+ linux-usb@vger.kernel.org, linux-clk@vger.kernel.org, mwalle@kernel.org
+Cc: luka.perkov@sartura.hr
+References: <20251215163820.1584926-1-robert.marko@sartura.hr>
+ <20251215163820.1584926-3-robert.marko@sartura.hr>
+From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Sean Anderson <sean.anderson@linux.dev>
-In-Reply-To: <20251216152641.196221-1-jakub.turek@elsta.tech>
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 a/A=
+In-Reply-To: <20251215163820.1584926-3-robert.marko@sartura.hr>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
 
-On 12/16/25 10:26, j.turek wrote:
-> When 'linux,rs485-enabled-at-boot-time;' property is enabled in device-tree
-> and there is no rts-gpio defined there is NULL pointer dereference in
-> function 'cdns_rts_gpio_enable' because 'cdns_uart->port->membase' pointer
-> is not set at this point
+On 15/12/2025 17:35, Robert Marko wrote:
+> As it is preferred to have bindings dual licensed, lets relicense the AT91
+> bindings from GPL-2.0 only to GPL-2.0/BSD-2 Clause.
 > 
-> Signed-off-by: Jakub Turek <jakub.turek@elsta.tech>
-> 
-> Fixes: fccc9d9233f9 ("tty: serial: uartps: Add rs485 support to uartps driver")
-> ---
->  drivers/tty/serial/xilinx_uartps.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-> index c793fc74c26b..1e4d54fd5762 100644
-> --- a/drivers/tty/serial/xilinx_uartps.c
-> +++ b/drivers/tty/serial/xilinx_uartps.c
-> @@ -1816,8 +1816,6 @@ static int cdns_uart_probe(struct platform_device *pdev)
->  		console_port = port;
->  	}
->  #endif
-> -	if (cdns_uart_data->port->rs485.flags & SER_RS485_ENABLED)
-> -		cdns_rs485_rx_setup(cdns_uart_data);
->  
->  	rc = uart_add_one_port(&cdns_uart_uart_driver, port);
->  	if (rc) {
-> @@ -1826,6 +1824,9 @@ static int cdns_uart_probe(struct platform_device *pdev)
->  		goto err_out_pm_disable;
->  	}
->  
-> +	if (cdns_uart_data->port->rs485.flags & SER_RS485_ENABLED)
-> +		cdns_rs485_rx_setup(cdns_uart_data);
-> +
->  #ifdef CONFIG_SERIAL_XILINX_PS_UART_CONSOLE
->  	/* This is not port which is used for console that's why clean it up */
->  	if (console_port == port &&
+> Signed-off-by: Robert Marko <robert.marko@sartura.hr>
 
-Is probe the right place to do this configuration? Maybe
-cdns_rs485_rx_setup should get moved to cdns_rs485_config.
+You need all contributors to ack this...
 
---Sean
+Best regards,
+Krzysztof
