@@ -1,155 +1,92 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from out-179.mta1.migadu.com (out-179.mta1.migadu.com [95.215.58.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8640534B194;
-	Tue, 16 Dec 2025 15:35:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F25934DB53
+	for <linux-serial@vger.kernel.org>; Tue, 16 Dec 2025 15:44:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765899329; cv=none; b=DVsDvpZ9iFAEwn2trd6zZJjCn5/WBgyPCuL5W8IbAT3fLJA1Lv8rokWmP6nnhbnAr4C9jvkyU2QRjJAl500SokNJTEJ2WbsRr0qsmSaRay1gY7VdT/CQvqA8AGBRJp0uXsIl51u9w26Jw/TV9swtYkH1Rmp77Z0AeE6W+zmcNGc=
+	t=1765899896; cv=none; b=CBiemqt18fCLTvI0+61/88hQFZL3+RNwR7+ad9wqBd+Iv/DzUEqMgLdAl54dgM81v2h8zi+iGUPar9/pqw1eCGtB0NCONlUupi+bt1NOgB4VBRJl7UmVZ2cm/QSnKUvNRWXI8y5d2OuRKtnXHH/Ho2hdWpolTUH6bhBK0jmeKUw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765899329; c=relaxed/simple;
-	bh=ogz6DU6yHeTIS19hmTjn7eKrxbGw0a8WOL02t8Hhp1s=;
+	s=arc-20240116; t=1765899896; c=relaxed/simple;
+	bh=UIWAeJbgAFn1kFE20QeLwfWB5TzrWBNThWxnTglJfw8=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=soJgiqdQreEi53P/mn5iNaRY+Qz8SB2qy1DPBBcDL+u6lriSmod2MpdH6nk80RUjbitVXpeSF4kfgmYCpNA3+5gm2gVzWZnAWFI4+Z95mFy19tVhmtsRhNPNoJSQrvsgIofmD8CYENQIi6+kEGoPAXlDf+hxOZxigxJVE9DrsNA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DTNTWkXp; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=oM/uRQD3DmGHPSzMQbg6FeF919kNcAPAqL3sRGss76gXWF46Z1mXX6NLrpzopdxvkb8XcuTOF5UrejX6aJkMdeNpvIopm5VDxAjFtsZoK+IStgj1BceuoSis0cBwRiKHGypjbBYEs6QtzVg6FVN/8LpJOOx6KloJr935H5Yux/4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=A06oI68C; arc=none smtp.client-ip=95.215.58.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DTNTWkXp"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD9BBC4CEF1;
-	Tue, 16 Dec 2025 15:35:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1765899329;
-	bh=ogz6DU6yHeTIS19hmTjn7eKrxbGw0a8WOL02t8Hhp1s=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=DTNTWkXpW9maNa6neQuNcscwLT24F+1ne21G8qSOJBnJ9jiHzQng4U8ursF4w0JmN
-	 gtFcs6bWu3xiSAz2c9CGm8pvU5Ve8Yt563YhATSlf/FZ07Q0Q6VkNFy500YkLkPLU1
-	 eUHnCZ/8lyFQb6gvjWJ9sICbKaKxoQb8RO3WKDFCOIhEZsOAqBK5AYKLLQepwmlO42
-	 MV950LyOSEiQEpPDr4xMcvaYYFT61twr4OdrS08dNEhZvsO0iBru+iNA5cFa769OtV
-	 UUSVztPFqQJADhFxAK6PRWi9MfUqXp+rSmlYNquLUP7XTLie/zOt9c0KujvWjeWPkv
-	 V/cOBKvOhbdig==
-Message-ID: <b0857d3b-5b82-47c1-8415-ec9b2046e704@kernel.org>
-Date: Tue, 16 Dec 2025 16:35:22 +0100
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="A06oI68C"
+Message-ID: <7f42e053-b7d6-4216-9ed1-c496db3a54d0@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1765899882;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=WWhAy9+9PNeOPwF/R4/xqInvj31Q4dE74xVNHSXPp8A=;
+	b=A06oI68CcEav+v+vYa/lHCpPzjs52pwkzI5ahVnbFirnpvlIYTrsAMRD2nenKuaVv3BWgT
+	UhwzqRJ9tPqUGFMdfK6T8QlTOGgzIcMQEzce2TFTeEQhYNl6a5a1qtg27Rt/foouw5b9RW
+	Lu4l2a79fIqlZJddYQPMEozwDcYqL+k=
+Date: Tue, 16 Dec 2025 10:44:34 -0500
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 7/8] riscv: dts: spacemit: add initial device tree of
- SpacemiT K3 SoC
-To: Guodong Xu <guodong@riscstar.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
- Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
- Alexandre Ghiti <alex@ghiti.fr>, Yixun Lan <dlan@gentoo.org>,
- Daniel Lezcano <daniel.lezcano@linaro.org>,
- Thomas Gleixner <tglx@linutronix.de>,
- Samuel Holland <samuel.holland@sifive.com>, Anup Patel
- <anup@brainfault.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
- Yangyu Chen <cyy@cyyself.name>
-Cc: Paul Walmsley <paul.walmsley@sifive.com>,
- Palmer Dabbelt <palmer@sifive.com>, Conor Dooley <conor@kernel.org>,
- Heinrich Schuchardt <xypron.glpk@gmx.de>,
- Kevin Meng Zhang <zhangmeng.kevin@linux.spacemit.com>,
- devicetree@vger.kernel.org, linux-riscv@lists.infradead.org,
- linux-kernel@vger.kernel.org, spacemit@lists.linux.dev,
- linux-serial@vger.kernel.org
-References: <20251216-k3-basic-dt-v1-0-a0d256c9dc92@riscstar.com>
- <20251216-k3-basic-dt-v1-7-a0d256c9dc92@riscstar.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
+Subject: Re: [PATCH] serial: xilinx_uartps: fix rs485 initialization at boot
+To: "j.turek" <jakub.turek@elsta.tech>, gregkh@linuxfoundation.org,
+ jirislaby@kernel.org
+Cc: michal.simek@amd.com, namcao@linutronix.de, tglx@linutronix.de,
+ zack.rusin@broadcom.com, hshah@axiado.com, linux-serial@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20251216152641.196221-1-jakub.turek@elsta.tech>
 Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 a/A=
-In-Reply-To: <20251216-k3-basic-dt-v1-7-a0d256c9dc92@riscstar.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Sean Anderson <sean.anderson@linux.dev>
+In-Reply-To: <20251216152641.196221-1-jakub.turek@elsta.tech>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
 
-On 16/12/2025 14:32, Guodong Xu wrote:
-> SpacemiT K3 is equipped with 8 X100 cores, which are RVA23 compliant.
-> Add nodes of uarts, timer and interrupt-controllers.
+On 12/16/25 10:26, j.turek wrote:
+> When 'linux,rs485-enabled-at-boot-time;' property is enabled in device-tree
+> and there is no rts-gpio defined there is NULL pointer dereference in
+> function 'cdns_rts_gpio_enable' because 'cdns_uart->port->membase' pointer
+> is not set at this point
 > 
-> Signed-off-by: Guodong Xu <guodong@riscstar.com>
+> Signed-off-by: Jakub Turek <jakub.turek@elsta.tech>
+> 
+> Fixes: fccc9d9233f9 ("tty: serial: uartps: Add rs485 support to uartps driver")
 > ---
->  arch/riscv/boot/dts/spacemit/k3.dtsi | 529 +++++++++++++++++++++++++++++++++++
->  1 file changed, 529 insertions(+)
+>  drivers/tty/serial/xilinx_uartps.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
 > 
-> diff --git a/arch/riscv/boot/dts/spacemit/k3.dtsi b/arch/riscv/boot/dts/spacemit/k3.dtsi
-> new file mode 100644
-> index 0000000000000000000000000000000000000000..cb27b790716fdd6dc2bc89c28dd2588a596a5af9
-> --- /dev/null
-> +++ b/arch/riscv/boot/dts/spacemit/k3.dtsi
-> @@ -0,0 +1,529 @@
-> +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-> +/*
-> + * Copyright (c) 2025 SpacemiT (Hangzhou) Technology Co. Ltd
-> + * Copyright (c) 2025 Guodong Xu <guodong@riscstar.com>
-> + */
+> diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+> index c793fc74c26b..1e4d54fd5762 100644
+> --- a/drivers/tty/serial/xilinx_uartps.c
+> +++ b/drivers/tty/serial/xilinx_uartps.c
+> @@ -1816,8 +1816,6 @@ static int cdns_uart_probe(struct platform_device *pdev)
+>  		console_port = port;
+>  	}
+>  #endif
+> -	if (cdns_uart_data->port->rs485.flags & SER_RS485_ENABLED)
+> -		cdns_rs485_rx_setup(cdns_uart_data);
+>  
+>  	rc = uart_add_one_port(&cdns_uart_uart_driver, port);
+>  	if (rc) {
+> @@ -1826,6 +1824,9 @@ static int cdns_uart_probe(struct platform_device *pdev)
+>  		goto err_out_pm_disable;
+>  	}
+>  
+> +	if (cdns_uart_data->port->rs485.flags & SER_RS485_ENABLED)
+> +		cdns_rs485_rx_setup(cdns_uart_data);
 > +
-> +#include <dt-bindings/interrupt-controller/irq.h>
-> +
-> +/dts-v1/;
-> +
-> +/ {
-> +	#address-cells = <2>;
-> +	#size-cells = <2>;
-> +	model = "SpacemiT K3";
-> +	compatible = "spacemit,k3";
-> +
-> +	aliases {
-> +		serial0 = &uart0;
-> +		serial2 = &uart2;
-> +		serial3 = &uart3;
-> +		serial4 = &uart4;
-> +		serial5 = &uart5;
-> +		serial6 = &uart6;
-> +		serial7 = &uart7;
-> +		serial8 = &uart8;
-> +		serial9 = &uart9;
-> +		serial10 = &uart10;
+>  #ifdef CONFIG_SERIAL_XILINX_PS_UART_CONSOLE
+>  	/* This is not port which is used for console that's why clean it up */
+>  	if (console_port == port &&
 
-These are not properties of the soc, but the board DTS.
+Is probe the right place to do this configuration? Maybe
+cdns_rs485_rx_setup should get moved to cdns_rs485_config.
 
-Best regards,
-Krzysztof
+--Sean
