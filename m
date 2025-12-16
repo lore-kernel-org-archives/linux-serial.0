@@ -1,130 +1,113 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail.elsta.tech (mail.elsta.tech [194.150.96.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3903345CDC;
-	Tue, 16 Dec 2025 15:34:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0927D346A11;
+	Tue, 16 Dec 2025 15:34:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.150.96.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765899245; cv=none; b=ChdIKfzZYkaKLgjsPGCLoL/H4T9qfq3nXXi0U3p2ryALaKIMD3N2v0tUVNqy91xEI7RTEwNp1jZ2YXZqonOM3FLewL+SjxuUqw6yJ0Mi5PW5NcrObS8SCECw/CiEhMfrmlcuMfmkU86/bFtcb2jJb3I/eQyqVxiD01uOCCgQNwg=
+	t=1765899253; cv=none; b=Yp0GS4YpHO452Od+8JK2AXTYMlKQc4AFluuRvdfPaXCCTKvEQGNGnCwUIqAfFtRYMxnT0HHfdT/eXfG/Sje79/l6AxoJ8I7vKUzuYcADRRaJ/uyWOVjiYI4s7NNaRVsgidwkjj5i2epciEg48UQHFOuun0HsbYImwt5ie/KRcf4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765899245; c=relaxed/simple;
-	bh=hM7hv/uTuPw7pyoCXXVQEAU9qrJdNAHs1PtiCSlFsmM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Smdm7CfD4+SnUKjVFn1B4iISFhWeeAgvWx6pqqXA1ZfIg1ImazWJckOvpMF5nKtzf3X4+ZJkXjGor2UZOzkoGPaOUTqKojrQG4UHcQarvcxvTuHseqn+3IJwq3Q1FR8cQ4DTtBAq+ZyHRGLrNxBXL2i3hxL9r+WHiaQ4dLUIt0A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=j72WahTN; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1765899253; c=relaxed/simple;
+	bh=A0B3UNA2l3Jrttc9EjCes1c+BbepUiBfORJgiE2TV30=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=q9QE4bObiMoIGlgZVpzFA1MxHn7XH0hsUWhONjEzTrFzEFONVABksivZXSgYblltIcNyB4bVV6fQ8dIg1CjIebAs86egUZYa50Yvot6epEibdWRNRBFn7W3X0bBp83uG2VhS1edMCbub5cMKKTVb/0S50dltHljlUp+1bGfzv+M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=elsta.tech; spf=pass smtp.mailfrom=elsta.tech; dkim=pass (2048-bit key) header.d=elsta.tech header.i=@elsta.tech header.b=D5qvq80e; arc=none smtp.client-ip=194.150.96.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=elsta.tech
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=elsta.tech
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="j72WahTN"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0795C4CEF1;
-	Tue, 16 Dec 2025 15:33:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1765899245;
-	bh=hM7hv/uTuPw7pyoCXXVQEAU9qrJdNAHs1PtiCSlFsmM=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=j72WahTNaRpouLKnmp3Xq5tYiE/Xsm8e9vemO6EUt4zFrYn9WnvJtMnEEbzXQxvhh
-	 iA9Qrj75/sn4DgXX0d099GGHKFKLQlkqYjM1c37KF7ZeFwJxqpKY/oTxWKrm8HPI8d
-	 mv3wVqyL4CgbayS3uGmfJp7YeNglZ5vOM3HA6DUdJNhkWe89yYXFOaZSw7uE+rDs/A
-	 CXxVbXSZYReSf+xnAnmAIb8Wo8hMnlqeseOQ92U77AF2ADxgZMie0BriYc+gDeB/fW
-	 vmz2WSnWtm40d0awiljo8LcB0cwHlzJUVwVmMorBacjjHKFgF9drEHva77pg2c07OP
-	 C3JNxeuoGBqsg==
-Message-ID: <b3af2b4a-1d70-4c49-a794-b4006e930fd7@kernel.org>
-Date: Tue, 16 Dec 2025 16:33:58 +0100
+	dkim=pass (2048-bit key) header.d=elsta.tech header.i=@elsta.tech header.b="D5qvq80e"
+Received: from localhost (localhost [127.0.0.1])
+	by mail.elsta.tech (Postfix) with ESMTP id 8E9B88C00C4;
+	Tue, 16 Dec 2025 16:27:39 +0100 (CET)
+Received: from mail.elsta.tech ([127.0.0.1])
+ by localhost (mail.elsta.tech [127.0.0.1]) (amavis, port 10032) with ESMTP
+ id 7ZJ2rgH8-Rks; Tue, 16 Dec 2025 16:27:39 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+	by mail.elsta.tech (Postfix) with ESMTP id 4DECE8C00E1;
+	Tue, 16 Dec 2025 16:27:39 +0100 (CET)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.elsta.tech 4DECE8C00E1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=elsta.tech;
+	s=0883730E-C77C-11E9-9DA4-0BE9876769AA; t=1765898859;
+	bh=OTkMzslZuFHuKZCP/n42zZM3gYCt1QyOVGH3TZnQcqk=;
+	h=From:To:Date:Message-Id:MIME-Version;
+	b=D5qvq80evHvKNB6XacBcIQrwESQjeC3JNVNwksjpeA28GJx1iqBWlyLuLYIw44YFp
+	 SD8VnDCk2CxJ09528689D+QJoLvxNAzPEbs93tWf5v2mUJbigpbB9JZI4D2x2DRdmW
+	 wA3ygPzFVMtFNQiAQCxSg1WyjXH2SqWW7zR5MQQ8BPLI0kVjAkhBsYExxOIipQL9iI
+	 QS8M8Hk5R86s/zghwZk7c8jHoVBi+be52DyPTQHRXOlMTZpGfsZ4n6nzmqiHmqTXGH
+	 c1POyMCh7t0NY55pgAw2m6ZWg+n5kcQEdZzcYRKk72WSoqmtE/tQ1W6ILf7CKjbLuE
+	 +1GF9cRQRlA9w==
+X-Virus-Scanned: amavis at elsta.tech
+Received: from mail.elsta.tech ([127.0.0.1])
+ by localhost (mail.elsta.tech [127.0.0.1]) (amavis, port 10026) with ESMTP
+ id HkQ4IHc0qYHm; Tue, 16 Dec 2025 16:27:39 +0100 (CET)
+Received: from dev-VirtualBox.elsta-tech.lan (unknown [172.31.0.125])
+	by mail.elsta.tech (Postfix) with ESMTPSA id 2017B8C00C4;
+	Tue, 16 Dec 2025 16:27:39 +0100 (CET)
+From: "j.turek" <jakub.turek@elsta.tech>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org
+Cc: michal.simek@amd.com,
+	namcao@linutronix.de,
+	tglx@linutronix.de,
+	zack.rusin@broadcom.com,
+	sean.anderson@linux.dev,
+	hshah@axiado.com,
+	linux-serial@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	"j.turek" <jakub.turek@elsta.tech>
+Subject: [PATCH] serial: xilinx_uartps: fix rs485 initialization at boot
+Date: Tue, 16 Dec 2025 16:26:41 +0100
+Message-Id: <20251216152641.196221-1-jakub.turek@elsta.tech>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 4/8] dt-bindings: interrupt-controller: add SpacemiT K3
- IMSIC
-To: Guodong Xu <guodong@riscstar.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
- Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
- Alexandre Ghiti <alex@ghiti.fr>, Yixun Lan <dlan@gentoo.org>,
- Daniel Lezcano <daniel.lezcano@linaro.org>,
- Thomas Gleixner <tglx@linutronix.de>,
- Samuel Holland <samuel.holland@sifive.com>, Anup Patel
- <anup@brainfault.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
- Yangyu Chen <cyy@cyyself.name>
-Cc: Paul Walmsley <paul.walmsley@sifive.com>,
- Palmer Dabbelt <palmer@sifive.com>, Conor Dooley <conor@kernel.org>,
- Heinrich Schuchardt <xypron.glpk@gmx.de>,
- Kevin Meng Zhang <zhangmeng.kevin@linux.spacemit.com>,
- devicetree@vger.kernel.org, linux-riscv@lists.infradead.org,
- linux-kernel@vger.kernel.org, spacemit@lists.linux.dev,
- linux-serial@vger.kernel.org
-References: <20251216-k3-basic-dt-v1-0-a0d256c9dc92@riscstar.com>
- <20251216-k3-basic-dt-v1-4-a0d256c9dc92@riscstar.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 a/A=
-In-Reply-To: <20251216-k3-basic-dt-v1-4-a0d256c9dc92@riscstar.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 
-On 16/12/2025 14:32, Guodong Xu wrote:
-> Add compatible string for SpacemiT K3 IMSIC.
-> 
-> Signed-off-by: Guodong Xu <guodong@riscstar.com>
-> ---
->  Documentation/devicetree/bindings/interrupt-controller/riscv,imsics.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/interrupt-controller/riscv,imsics.yaml b/Documentation/devicetree/bindings/interrupt-controller/riscv,imsics.yaml
-> index c23b5c09fdb90baccece03708f4a381084b22049..152eff7335dd8457bf01d02497b7080f2a02ab65 100644
-> --- a/Documentation/devicetree/bindings/interrupt-controller/riscv,imsics.yaml
-> +++ b/Documentation/devicetree/bindings/interrupt-controller/riscv,imsics.yaml
-> @@ -47,6 +47,7 @@ properties:
->    compatible:
->      items:
->        - enum:
-> +          - spacemit,k3-imsics
+When 'linux,rs485-enabled-at-boot-time;' property is enabled in device-tr=
+ee
+and there is no rts-gpio defined there is NULL pointer dereference in
+function 'cdns_rts_gpio_enable' because 'cdns_uart->port->membase' pointe=
+r
+is not set at this point
 
-Also not sorted. s > q.
+Signed-off-by: Jakub Turek <jakub.turek@elsta.tech>
 
-Best regards,
-Krzysztof
+Fixes: fccc9d9233f9 ("tty: serial: uartps: Add rs485 support to uartps dr=
+iver")
+---
+ drivers/tty/serial/xilinx_uartps.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xili=
+nx_uartps.c
+index c793fc74c26b..1e4d54fd5762 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -1816,8 +1816,6 @@ static int cdns_uart_probe(struct platform_device *=
+pdev)
+ 		console_port =3D port;
+ 	}
+ #endif
+-	if (cdns_uart_data->port->rs485.flags & SER_RS485_ENABLED)
+-		cdns_rs485_rx_setup(cdns_uart_data);
+=20
+ 	rc =3D uart_add_one_port(&cdns_uart_uart_driver, port);
+ 	if (rc) {
+@@ -1826,6 +1824,9 @@ static int cdns_uart_probe(struct platform_device *=
+pdev)
+ 		goto err_out_pm_disable;
+ 	}
+=20
++	if (cdns_uart_data->port->rs485.flags & SER_RS485_ENABLED)
++		cdns_rs485_rx_setup(cdns_uart_data);
++
+ #ifdef CONFIG_SERIAL_XILINX_PS_UART_CONSOLE
+ 	/* This is not port which is used for console that's why clean it up */
+ 	if (console_port =3D=3D port &&
+--=20
+2.34.1
+
