@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B95FEAE7;
-	Tue, 16 Dec 2025 15:33:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3903345CDC;
+	Tue, 16 Dec 2025 15:34:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765899215; cv=none; b=f6NevdrpGEiSfpQHWeFJP0mxK/096WqWZoGqAW0ZstGSy0wgDy4a21LmGiRITebG17YoIA4jWzDFGEhJBZrjJP/vhSUo+VK4Ipd1zJmAPiOv4Olznw9sglioXmGNqOg6u9b7fTsSAZ/5WKyOvXSgXN5IICBPeh+4xGJUM/uRKIo=
+	t=1765899245; cv=none; b=ChdIKfzZYkaKLgjsPGCLoL/H4T9qfq3nXXi0U3p2ryALaKIMD3N2v0tUVNqy91xEI7RTEwNp1jZ2YXZqonOM3FLewL+SjxuUqw6yJ0Mi5PW5NcrObS8SCECw/CiEhMfrmlcuMfmkU86/bFtcb2jJb3I/eQyqVxiD01uOCCgQNwg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765899215; c=relaxed/simple;
-	bh=Wi/8gVAQZ92pWHbC5uWAgtZ7hTvGUFE4Z1BvBUhU8gs=;
+	s=arc-20240116; t=1765899245; c=relaxed/simple;
+	bh=hM7hv/uTuPw7pyoCXXVQEAU9qrJdNAHs1PtiCSlFsmM=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=BUv/xo5+Q/xefd1I8354wM+Rfzwq5oTAwT7MykRmdUyNavy7czW0Vl+C0gqM7BmQdZTSVDSGChabbc+kcg9Asb7buPMeVUIJZ5CZbWptaNNP7ZpSo3K/PrrbrdM35VV1imEs2FIJ27UmUMU/Jz8bHBckQYFjtHu02WHv7EGttXo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=g9ME1aeG; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=Smdm7CfD4+SnUKjVFn1B4iISFhWeeAgvWx6pqqXA1ZfIg1ImazWJckOvpMF5nKtzf3X4+ZJkXjGor2UZOzkoGPaOUTqKojrQG4UHcQarvcxvTuHseqn+3IJwq3Q1FR8cQ4DTtBAq+ZyHRGLrNxBXL2i3hxL9r+WHiaQ4dLUIt0A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=j72WahTN; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="g9ME1aeG"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CA27C4CEF1;
-	Tue, 16 Dec 2025 15:33:29 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="j72WahTN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0795C4CEF1;
+	Tue, 16 Dec 2025 15:33:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1765899214;
-	bh=Wi/8gVAQZ92pWHbC5uWAgtZ7hTvGUFE4Z1BvBUhU8gs=;
+	s=k20201202; t=1765899245;
+	bh=hM7hv/uTuPw7pyoCXXVQEAU9qrJdNAHs1PtiCSlFsmM=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=g9ME1aeGypHnTBvCAUT2NcEogcl0uaULxxLf7AUJOMNwY+oXhYdnley9wvvB9boHM
-	 kQwQniEdaLpe0Yw458RZusQXkifpDK+tFSnUvW51vvV8NorwuRVNkouZLtmmrjXXZE
-	 DxRBWFzL1OzGiEp/VB8k71t4FPrCpd4psytxGAGvrRPqC6zCRD0sP3BGefRCqX+ZoG
-	 WC7fEjUSBj/zCTMvq1p72Y/kMUBy2I0TjLwIh5ZbIVq0xMaeNz2lv49l9IcsOOp88C
-	 QX1E9u3nPsXOZodwTNc5Utndia1Q2FVMqvxFBonbw8OAcbUIzpfkQCyHB6CqSGFsBr
-	 a6ZvzNDB6zM9g==
-Message-ID: <e596f624-b4da-4c93-910c-b3c35917eb9c@kernel.org>
-Date: Tue, 16 Dec 2025 16:33:27 +0100
+	b=j72WahTNaRpouLKnmp3Xq5tYiE/Xsm8e9vemO6EUt4zFrYn9WnvJtMnEEbzXQxvhh
+	 iA9Qrj75/sn4DgXX0d099GGHKFKLQlkqYjM1c37KF7ZeFwJxqpKY/oTxWKrm8HPI8d
+	 mv3wVqyL4CgbayS3uGmfJp7YeNglZ5vOM3HA6DUdJNhkWe89yYXFOaZSw7uE+rDs/A
+	 CXxVbXSZYReSf+xnAnmAIb8Wo8hMnlqeseOQ92U77AF2ADxgZMie0BriYc+gDeB/fW
+	 vmz2WSnWtm40d0awiljo8LcB0cwHlzJUVwVmMorBacjjHKFgF9drEHva77pg2c07OP
+	 C3JNxeuoGBqsg==
+Message-ID: <b3af2b4a-1d70-4c49-a794-b4006e930fd7@kernel.org>
+Date: Tue, 16 Dec 2025 16:33:58 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,7 +35,8 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/8] dt-bindings: riscv: add SpacemiT X100 CPU compatible
+Subject: Re: [PATCH 4/8] dt-bindings: interrupt-controller: add SpacemiT K3
+ IMSIC
 To: Guodong Xu <guodong@riscstar.com>, Rob Herring <robh@kernel.org>,
  Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
  <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
@@ -55,7 +56,7 @@ Cc: Paul Walmsley <paul.walmsley@sifive.com>,
  linux-kernel@vger.kernel.org, spacemit@lists.linux.dev,
  linux-serial@vger.kernel.org
 References: <20251216-k3-basic-dt-v1-0-a0d256c9dc92@riscstar.com>
- <20251216-k3-basic-dt-v1-1-a0d256c9dc92@riscstar.com>
+ <20251216-k3-basic-dt-v1-4-a0d256c9dc92@riscstar.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -101,33 +102,29 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  jWt87ecuHlpL3uuQ0ZZNWqHgZoQLXoqC2ZV5KrtKWb/jyiFX/sxSrodALf0zf+tfHv0FZWT2
  zHjUqd0t4njD/UOsuIMOQn4Ig0SdivYPfZukb5cdasKJukG1NOpbW7yRNivaCnfZz6dTawXw
  XRIV/KDsHQiyVxKvN73bThKhONkcX2LWuD928tAR6XMM2G5ovxLe09vuOzzfTWQDsm++9UKF a/A=
-In-Reply-To: <20251216-k3-basic-dt-v1-1-a0d256c9dc92@riscstar.com>
+In-Reply-To: <20251216-k3-basic-dt-v1-4-a0d256c9dc92@riscstar.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 16/12/2025 14:32, Guodong Xu wrote:
-> Add compatible string for the SpacemiT X100 (RVA23 compliant) core.
-> 
-> Link: https://www.spacemit.com/en/spacemit-x100-core/
+> Add compatible string for SpacemiT K3 IMSIC.
 > 
 > Signed-off-by: Guodong Xu <guodong@riscstar.com>
 > ---
->  Documentation/devicetree/bindings/riscv/cpus.yaml | 1 +
+>  Documentation/devicetree/bindings/interrupt-controller/riscv,imsics.yaml | 1 +
 >  1 file changed, 1 insertion(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/riscv/cpus.yaml b/Documentation/devicetree/bindings/riscv/cpus.yaml
-> index d733c0bd534fb63ed7c0eada97c42832431f1fc1..cce87092dc7749f49066154d9a256af6c7b6c19f 100644
-> --- a/Documentation/devicetree/bindings/riscv/cpus.yaml
-> +++ b/Documentation/devicetree/bindings/riscv/cpus.yaml
-> @@ -62,6 +62,7 @@ properties:
->                - sifive,u74
->                - sifive,u74-mc
->                - spacemit,x60
-> +              - spacemit,x100
+> diff --git a/Documentation/devicetree/bindings/interrupt-controller/riscv,imsics.yaml b/Documentation/devicetree/bindings/interrupt-controller/riscv,imsics.yaml
+> index c23b5c09fdb90baccece03708f4a381084b22049..152eff7335dd8457bf01d02497b7080f2a02ab65 100644
+> --- a/Documentation/devicetree/bindings/interrupt-controller/riscv,imsics.yaml
+> +++ b/Documentation/devicetree/bindings/interrupt-controller/riscv,imsics.yaml
+> @@ -47,6 +47,7 @@ properties:
+>    compatible:
+>      items:
+>        - enum:
+> +          - spacemit,k3-imsics
 
-
-Two reviews of this one-liner but no one pointed out that sorting is
-broken... What is being exactly reviewed in this one-liner?
+Also not sorted. s > q.
 
 Best regards,
 Krzysztof
