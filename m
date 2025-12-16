@@ -1,130 +1,121 @@
-Received: from smtpout-04.galae.net (smtpout-04.galae.net [185.171.202.116])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AE69221FB8;
-	Tue, 16 Dec 2025 16:29:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.171.202.116
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5151A27CB02;
+	Tue, 16 Dec 2025 16:33:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765902546; cv=none; b=btqXWhUkjD5FFzWRCDV9f03TSV5SkcO/u7HkFo4tfy2JqNCYnzSkhig1sLsf7KB2uJgGgSShFOCEm9m+P1Ga4IMe42jerhogZWsmVw4CgfN/8t1H/IZ7LgcQGPrWwOsIq4WHXjrNJJfIf+wjq3Wjd7X88nbou66+mTJFp9wPbmU=
+	t=1765902829; cv=none; b=j+sU5fyPCZYW3HvpJR7w2RQuEyKlTWqp9Ugrf8MyTYtVkg+PckdBiIhw+lnG5kBm9sunFzZzP+Q7Vt090A8p4fKuC2fGiHD4TV7yk5eQ8JbUvnn3U2wI3q/W6deFdXDwWEggZEwt4LDCaa9LbIHrQU3dPHJshPRYhtIkn7kwy18=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765902546; c=relaxed/simple;
-	bh=2Q+qK2NqcPX9cbzhyXO64+yCRyf/DbYINlYSrayO9q0=;
+	s=arc-20240116; t=1765902829; c=relaxed/simple;
+	bh=YKJMtPFWa6ht+n9Bxx5M3M/3OHahvRpYpniNwtoIfcE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Z4ctGdMIY9Jo67541CekSbPi7+FJiV6Umozw64XlRGQEeWX6SsNy/WE4/ot21kUxv1SNsaz+WnmDsha/pmD7170G0k2Me6p4steDa0uTzq4kXsiRZ1xrBo1NvUqkQQEiB7OPInznUA7al+KGPMbtFxR2MkquqG2q/IFbbFmeqWE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=JdmxJGyQ; arc=none smtp.client-ip=185.171.202.116
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=Z4zZw6IUQLzssUBHFLYuA89hfHwq5yOtTw3p5+/tgd0u3RfKJtinTs0CPw5cTgBqoMzoX8+Xn7/yZf4BsNPTcXv316UAO74fRHqtIPtMEkYjYd6U6jpvlIM3bICzbz91qhX7Tel73Zt7aPcfJDlZxIZ6xhSDOzP6YvRa/Nx6uHQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rD2pRTmX; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="JdmxJGyQ"
-Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
-	by smtpout-04.galae.net (Postfix) with ESMTPS id AC1D5C1A580;
-	Tue, 16 Dec 2025 16:28:37 +0000 (UTC)
-Received: from mail.galae.net (mail.galae.net [212.83.136.155])
-	by smtpout-01.galae.net (Postfix) with ESMTPS id 150F96071C;
-	Tue, 16 Dec 2025 16:29:02 +0000 (UTC)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id B6A63119A9036;
-	Tue, 16 Dec 2025 17:28:41 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
-	t=1765902535; h=from:subject:date:message-id:to:cc:mime-version:content-type:
-	 in-reply-to:references; bh=WDH8v49meu1cbdbqCsHVd8Ol6TU4lh3FhMKZUYOzIyw=;
-	b=JdmxJGyQPl89ZvAe+i5sgqoeA7jQmxJWnBAIHwZxcehomzVI9qb40ttSy9cx0wRqbThzlq
-	lHAyEaQZl2k3DPsEQjC65K+IuLFg7sKNjqiBePyTq7VviJcrRHiM9bN2eMTapQXooL3Lmu
-	joBBSrhkICZtvT6a/2rKkS5eNphmHSGwgOESA/7qal3nmlbmOmLz+W6tugpU9vkYI95Zr+
-	oxUYy7GXXT1YkRVynXnWByxfKZ94QxEpAfuHNh8d9Ac3oWCQsqX4988ORYKqvM0U/YQqfL
-	3mBQCk3ssFunMThFAA4+VRHjyfUtDGefOn2sRBJLRZ0Frk8p1CsW+dFfmlCeIg==
-Date: Tue, 16 Dec 2025 17:28:41 +0100
-From: Alexandre Belloni <alexandre.belloni@bootlin.com>
-To: Robert Marko <robert.marko@sartura.hr>
-Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
-	nicolas.ferre@microchip.com, claudiu.beznea@tuxon.dev,
-	Steen.Hegelund@microchip.com, daniel.machon@microchip.com,
-	UNGLinuxDriver@microchip.com, herbert@gondor.apana.org.au,
-	davem@davemloft.net, vkoul@kernel.org, linux@roeck-us.net,
-	andi.shyti@kernel.org, lee@kernel.org, andrew+netdev@lunn.ch,
-	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-	linusw@kernel.org, olivia@selenic.com, radu_nicolae.pirea@upb.ro,
-	richard.genoud@bootlin.com, gregkh@linuxfoundation.org,
-	jirislaby@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
-	richardcochran@gmail.com, wsa+renesas@sang-engineering.com,
-	romain.sioen@microchip.com, Ryan.Wanner@microchip.com,
-	lars.povlsen@microchip.com, tudor.ambarus@linaro.org,
-	charan.pedumuru@microchip.com, kavyasree.kotagiri@microchip.com,
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-	dmaengine@vger.kernel.org, linux-hwmon@vger.kernel.org,
-	linux-i2c@vger.kernel.org, netdev@vger.kernel.org,
-	linux-gpio@vger.kernel.org, linux-spi@vger.kernel.org,
-	linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-	linux-clk@vger.kernel.org, mwalle@kernel.org,
-	luka.perkov@sartura.hr
-Subject: Re: [PATCH v2 04/19] dt-bindings: arm: move AT91 to generic
- Microchip binding
-Message-ID: <202512161628415e9896d1@mail.local>
-References: <20251215163820.1584926-1-robert.marko@sartura.hr>
- <20251215163820.1584926-4-robert.marko@sartura.hr>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rD2pRTmX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BB5CC4CEF1;
+	Tue, 16 Dec 2025 16:33:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1765902828;
+	bh=YKJMtPFWa6ht+n9Bxx5M3M/3OHahvRpYpniNwtoIfcE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=rD2pRTmX6g38MqEQaqw1UPO3Qn55ibZ/bbyJaoRGufwZLufeGkG88EHBSDXFUabaO
+	 640367wbsRRwXZs1Myg2eN36rgpbN1bA1N44fXG8hZgG8H0qEww3e+uxo0g0c7KIfi
+	 q2Qs5HMImmZiZjsM6uyoA/5+fN0ZHxYpeZ3pyLA4+tGqEv/HNvNRIj7szFMWYd0Z1j
+	 DaeiKBc/0y/WW4bz+TdnR77riKVcs30CTmrBn9WyEbKP+U6PU5YXESVvas52pHfBoV
+	 ouJiRXUxFT0t30dxtShiqzxEVijxlxrFRIOus6ondRUejmAstBAnkj26AfvNrfU4Kd
+	 E6LbXeRVnlnYA==
+Date: Tue, 16 Dec 2025 16:33:41 +0000
+From: Conor Dooley <conor@kernel.org>
+To: Yixun Lan <dlan@gentoo.org>
+Cc: Guodong Xu <guodong@riscstar.com>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
+	Daniel Lezcano <daniel.lezcano@linaro.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Samuel Holland <samuel.holland@sifive.com>,
+	Anup Patel <anup@brainfault.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
+	Yangyu Chen <cyy@cyyself.name>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Palmer Dabbelt <palmer@sifive.com>,
+	Heinrich Schuchardt <xypron.glpk@gmx.de>,
+	Kevin Meng Zhang <zhangmeng.kevin@linux.spacemit.com>,
+	devicetree@vger.kernel.org, linux-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org, spacemit@lists.linux.dev,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH 6/8] dt-bindings: riscv: spacemit: add K3 and Pico-ITX
+ board bindings
+Message-ID: <20251216-wing-squander-2fed378d3035@spud>
+References: <20251216-k3-basic-dt-v1-0-a0d256c9dc92@riscstar.com>
+ <20251216-k3-basic-dt-v1-6-a0d256c9dc92@riscstar.com>
+ <20251216150530-GYD1903981@gentoo.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="WOHLg4B2RTM9rCY3"
+Content-Disposition: inline
+In-Reply-To: <20251216150530-GYD1903981@gentoo.org>
+
+
+--WOHLg4B2RTM9rCY3
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20251215163820.1584926-4-robert.marko@sartura.hr>
-X-Last-TLS-Session-Version: TLSv1.3
+Content-Transfer-Encoding: quoted-printable
 
-On 15/12/2025 17:35:21+0100, Robert Marko wrote:
-> Create a new binding file named microchip.yaml, to which all Microchip
-> based devices will be moved to.
-> 
-> Start by moving AT91, next will be SparX-5.
+On Tue, Dec 16, 2025 at 11:05:30PM +0800, Yixun Lan wrote:
+> Hi Guodong,
+>=20
+> On 21:32 Tue 16 Dec     , Guodong Xu wrote:
+> > Add DT binding documentation for the SpacemiT K3 SoC and the board Pico=
+-ITX
+> > which is a 2.5-inch single-board computer.
+> >=20
+> > Signed-off-by: Guodong Xu <guodong@riscstar.com>
+> > ---
+> >  Documentation/devicetree/bindings/riscv/spacemit.yaml | 6 +++++-
+> >  1 file changed, 5 insertions(+), 1 deletion(-)
+> >=20
+> > diff --git a/Documentation/devicetree/bindings/riscv/spacemit.yaml b/Do=
+cumentation/devicetree/bindings/riscv/spacemit.yaml
+> > index 9c49482002f768cd0cc59be6db02659a43fa31ce..003b0bc1539b621e39172a0=
+565dfea1274cbc8b8 100644
+> > --- a/Documentation/devicetree/bindings/riscv/spacemit.yaml
+> > +++ b/Documentation/devicetree/bindings/riscv/spacemit.yaml
+> > @@ -8,7 +8,8 @@ title: SpacemiT SoC-based boards
+> > =20
+> >  maintainers:
+> >    - Yangyu Chen <cyy@cyyself.name>
+> > -  - Yixun Lan <dlan@gentoo.org>
+> > +  - Yixun Lan   <dlan@gentoo.org>
+> > +  - Guodong Xu  <guodong@riscstar.com>
+> please simply use "one blank space" here, it's more consistent,
+> trying to align them like this would result in even worse situation..
+> =20
+> - only email addresses got aligned while not user names (first, second
+>   name?)
+> - adding another maintainer in future may break the alignment (if long
+>   name)
 
-Both lines of SoCs are designed by different business units and are
-wildly different and while both business units are currently owned by
-the same company, there are no guarantees this will stay this way so I
-would simply avoid merging both.
+Yeah, these are never aligned. Just do one space gap.
 
-> 
-> Signed-off-by: Robert Marko <robert.marko@sartura.hr>
-> ---
->  .../bindings/arm/{atmel-at91.yaml => microchip.yaml}       | 7 ++-----
->  1 file changed, 2 insertions(+), 5 deletions(-)
->  rename Documentation/devicetree/bindings/arm/{atmel-at91.yaml => microchip.yaml} (98%)
-> 
-> diff --git a/Documentation/devicetree/bindings/arm/atmel-at91.yaml b/Documentation/devicetree/bindings/arm/microchip.yaml
-> similarity index 98%
-> rename from Documentation/devicetree/bindings/arm/atmel-at91.yaml
-> rename to Documentation/devicetree/bindings/arm/microchip.yaml
-> index 88edca9b84d2..3c76f5b585fc 100644
-> --- a/Documentation/devicetree/bindings/arm/atmel-at91.yaml
-> +++ b/Documentation/devicetree/bindings/arm/microchip.yaml
-> @@ -1,19 +1,16 @@
->  # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->  %YAML 1.2
->  ---
-> -$id: http://devicetree.org/schemas/arm/atmel-at91.yaml#
-> +$id: http://devicetree.org/schemas/arm/microchip.yaml#
->  $schema: http://devicetree.org/meta-schemas/core.yaml#
->  
-> -title: Atmel AT91.
-> +title: Microchip platforms
->  
->  maintainers:
->    - Alexandre Belloni <alexandre.belloni@bootlin.com>
->    - Claudiu Beznea <claudiu.beznea@microchip.com>
->    - Nicolas Ferre <nicolas.ferre@microchip.com>
->  
-> -description: |
-> -  Boards with a SoC of the Atmel AT91 or SMART family shall have the following
-> -
->  properties:
->    $nodename:
->      const: '/'
-> -- 
-> 2.52.0
-> 
+--WOHLg4B2RTM9rCY3
+Content-Type: application/pgp-signature; name="signature.asc"
 
--- 
-Alexandre Belloni, co-owner and COO, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaUGJ4gAKCRB4tDGHoIJi
+0kA9AQCvdHdh3ZN6TPbUIs6IjVSdbLXEtx33bODh8014ZkTIPAD+O1FYIibih/H5
+/frJtNNEwi9BQrqT/KU1vwpLyBCJQwU=
+=4/Ek
+-----END PGP SIGNATURE-----
+
+--WOHLg4B2RTM9rCY3--
