@@ -1,60 +1,60 @@
-Received: from mail-yx1-f42.google.com (mail-yx1-f42.google.com [74.125.224.42])
+Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com [209.85.128.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3F7C33507E
-	for <linux-serial@vger.kernel.org>; Wed, 17 Dec 2025 07:12:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67E2A3358C0
+	for <linux-serial@vger.kernel.org>; Wed, 17 Dec 2025 07:14:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765955530; cv=none; b=tapyaTSsgN99lsvzm0l8svegtXxe74kujHJEgMaWzhdoeNy5SgSTa5Frqo10k/oCBFxNuW2qlTvsl/tlCus8WuR/NFXkA99YsN1mGJAOUNwLepVKLCUnPUJXEhPWBZ+5SsQ/KIJu1VEYljHJEw2b6sMV/8wMUL7HV9HaBJ65On0=
+	t=1765955644; cv=none; b=eAm/HFkLl4J0vetfAr6Mb1eQ3Lwihl6FL38ZPaEARvBIg+GeD/ZYC/uKXmn5JhjdfwR2HMIkKkJX1rPMTECm1onaMdSkN6yfCmLyEVrvOpLUXwHsH8mnn100fJ8EVOLrn40PP5atnztKWCxXEfyDL1msAt1N6WgtlS8HWz27WII=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765955530; c=relaxed/simple;
-	bh=PzRMkJtls7CLFFw4NHuBIdkL6x6XHd3Wm9X51oLX/jY=;
+	s=arc-20240116; t=1765955644; c=relaxed/simple;
+	bh=/3Qz6JpF9If22QjnUQlmi1erbphQgNsGGIVDRF+xmkY=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=aB5SYdG1j8NDTg6csyGdtkQxmjvijFRdjxAZg1PZrD8X6DvkufHkGRycZuxLxcDnwnhu0fvRISxobgWCMdwM1ls7v192wvUUduH9CflIUF1ffxK7Ki4XDm8gpUFI9+0pDDNOtDSsf5fh2OX9GxszQrWXNjqxSkgPzJq3c+w760I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com; spf=pass smtp.mailfrom=riscstar.com; dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b=0a/eN3D3; arc=none smtp.client-ip=74.125.224.42
+	 To:Cc:Content-Type; b=JmqC8W584qf12Jemg8jidMyItXFnnf+jwh0hFUBxnHFeIuVECG/vXkWqdTFoMgWjo3bqSYggINDJUguS14VQQsklYxtH7di4lX/prkn09ylcH1Nfq7zivabuAgjJUJh1qlpFZi8aQkyuAzBu+fuAJ8BruyTQ6fkb/yPyRkVRPm4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com; spf=pass smtp.mailfrom=riscstar.com; dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b=anjG4JjY; arc=none smtp.client-ip=209.85.128.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=riscstar.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b="0a/eN3D3"
-Received: by mail-yx1-f42.google.com with SMTP id 956f58d0204a3-6455a60c11fso3469515d50.2
-        for <linux-serial@vger.kernel.org>; Tue, 16 Dec 2025 23:12:07 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b="anjG4JjY"
+Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-78e7cfd782aso30278147b3.0
+        for <linux-serial@vger.kernel.org>; Tue, 16 Dec 2025 23:14:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=riscstar-com.20230601.gappssmtp.com; s=20230601; t=1765955526; x=1766560326; darn=vger.kernel.org;
+        d=riscstar-com.20230601.gappssmtp.com; s=20230601; t=1765955641; x=1766560441; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=PmFJSxesbxFHQ7/q1IylIXrQEr0i3Tqtt2nX92DzZ7M=;
-        b=0a/eN3D3WNM7pDxow0l0FCpGrS4+oE2ySrv38IEp56fZlvFpYYSQI4uHL2DNlJ/00B
-         pjkWUlrBg/MhDd/bY+/ib/LOvTEjvrIY7Pb97ujK0dba1mQNYkui0oFgq4BLgT/cqWXD
-         s6mJQZIcG0tcbdktjCxIvqICMO6Vp3rAph5YhkB5Z0tJ/rFeT0D8tN8qo6pYle2OO5na
-         mZ02XEIu70W6aQcVKV23eibRUHkLzic0l+YlurRD0jCt5Hum9ixmeLjF3NrsJewk5EPX
-         eZ704TNkbNMJzYr8L9e3EFXflqW5rJjQk17oRiXKywVfzDRoZRam9YG5pCcvmwxjvO+A
-         F6Tg==
+        bh=HDfl8qAKqI9K5fPdr90NV1qLIsNLvTVsSytePWp/iv8=;
+        b=anjG4JjYN5gXw3dZg8RDL6GoTv0C6SRB8ZNbcByd3fnK2FkFHH+KVsz0hvDG6TSw7V
+         2t8RBkBFJIQ/fTdlfKu83zeAzmvxhlzfm71GGuVcIJyJE9DJHHxVBpjSHjwayuZs4vcm
+         PMr+SC3JOimStguvcbvT7ReFEdx87BPOSdTbprTKwxoeRJ7N6hW93q2RzbZJR7SUYUMI
+         QnLyYHCi+QwlxuzHv+aypMcpH/PA/0D0/6T451Gx46QoPWkFgh5rwYJ7w7mVD1hPgGg6
+         L08Dan7GqwJWIiGgtJzrLrHgJ35hj85V6thYoXVhuV4TXgl9O1705Bd215rBEAcXVJpi
+         tMsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1765955526; x=1766560326;
+        d=1e100.net; s=20230601; t=1765955641; x=1766560441;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=PmFJSxesbxFHQ7/q1IylIXrQEr0i3Tqtt2nX92DzZ7M=;
-        b=S0TvUIjr5/J4W94VTM2Ny8t98xDnOGeQ2gSpEip9X9OFb7wrIfn9N7Ev7mj0At0j+B
-         /1gCwybSklXSr5olL4stM0nbOKcdSzM7JFlGyRYOB7JY+2X5CjlhP+VxyM+X+3gzmEuP
-         Sgxu9RZUuyOD+CFI2vR9ABqjHoN76UmEQWGwzEqRsgaS/A+EY+VqRIOIuSOq/EGDjqwt
-         fCYjxYGaF++BG8TVAxg6UkrChtBNXF6JAWycOTlo/oKbIwd/ED9/otzYAQhRkPu8a9BF
-         3azLZ0ba9/hUF63VhnyJScRERP8qWZLJcYfIWUcE3f/oQVLhose2P1WUAq6PFNKIMkXH
-         8vuQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUL2udT5jixQqQNXTZbTCm1ia7XpCBS7fjngpLO8i00tkxrm313FCb+I3xGDhoRxng7BwxvYCNMr5RvlQ4=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw/T8IveVsJgFv9OfU64kZZFJSDsWHhIEBRO1MZj3muYxhmhghQ
-	5dcZbP8WBriUxJae/+OKYph+iDRKZ19J33uA9qxn19pWnlBcMjcspeP+YebK9ld/uTyHYRrJpxH
-	qT0MFxlK03W64VemuqjGjCHTmy/jTCsVw5tVvlHmv2g==
-X-Gm-Gg: AY/fxX5N7GlFyuduKpO9wgF3jy9cvcZE1DNf3MNqEj6L7HRvmlbbrJbZEFryyLnVY4F
-	keik+tYkU/b91ngdnqTNmMwCn2NnfSCTuLVVf8hnvRH0zLcw2LcoXBtjXEL6rneDjbOaecoFkue
-	TJytt8HZ4WB99q0LLMBYYlgleT59nETSmIVIAhTgeTRe69Q+xEaa3F/og2hd9zTzFKfatEAW61g
-	IFGz2SE90u3tTwfVelVNFDVA5BboAfPJorF+50CreqYIFKxWFR6eJ+W6+lOCPYs7r0M5Sa8BUP4
-	PUi6Bla21MOQ0pdVM7l5mCJJ2KSD5tNs5Qgrw7V/y159
-X-Google-Smtp-Source: AGHT+IE8huFPmjeqVhigRS72exyW6RWye/SjaHiK5d2+xtE4vBR2EQkcVlmt5N9wvdRb4rljR0aa/NY7v8SaaR90Wtc=
-X-Received: by 2002:a05:690e:1910:b0:644:3850:9062 with SMTP id
- 956f58d0204a3-64555668019mr13876808d50.72.1765955526563; Tue, 16 Dec 2025
- 23:12:06 -0800 (PST)
+        bh=HDfl8qAKqI9K5fPdr90NV1qLIsNLvTVsSytePWp/iv8=;
+        b=DrWw34ORSaYlhuLY1CodEWcHK0u17xRQFdkbrM1bmcjiWwp0lhxYEO0G9EovVVfsSN
+         /pbneqmYwx1fI5XWnJNRdP5abL/8L7dh7COfIlaf8p43XH8psPNnk6S4QsCbkPrLaue3
+         XqIIdz7TWvNZzoXsP0buzGEOCKIdR+D++JLejtxddLUF5h+7a33eyScbeaduTWxVs2pw
+         o7I7b3weGOZDeMxE2FEJztpPIP7LIJFu2VysKnLHfUAfUOQ9NFBU6LFqxwcpCznn5Eut
+         sck7ke1h0HPJVPhsyD2CVVw3c3pq0mIfxfeh/MgJzI0jLpg6W7U/rdzUZ5hVrKO4wJlR
+         rzIQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUq/g/KX4NgtOJqPGhoYV9ME0AyNDTJtnRbw9XUG5k2fIsmweDYaNfJS0GXj8qyFbiy4l7IXNi5dV7x3xo=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzl2ZrEgHVukswCSW+9ksJuF11dLvrdLB2W+4s2x8BGY2zg1Jtq
+	uPamYma6MuqmtXhKJnSPmkJ2ZtHAovQ/FgxJ5DNAIIE/nwaR4RiOrZXEjcr7f2wdQaqZq4Ra5ff
+	A1X8hlkF3j2F4Cz59cea7PLUoGSgcfI3tyksODA1UQw==
+X-Gm-Gg: AY/fxX6sspN5txnR70dQ4Du5ON5YWuWzQ5r1lMq+/FSl8ey66wDVEQlS1qhbvoBFgXd
+	rywQqKoz4SlmoaU5tOWgLwdD/aZyxASwRM0UnYBy84cJ/qtBEt5aFBwfk91rLWcExS5ZdJ1YpZw
+	gtvAWXEsXYYCR3Fdb+/i1uNf7SDc7wmUeyqUMclReOeT1S+YajLcWNdj6GF7Hhu76QfhOaQwepF
+	2wXATYGQyijFkYcDskNUQJ5t8G/j8kkxi2jnBZx/qG5v1P9QWN9Kxt68OBZAwPUrrKbX7RjlFr1
+	uB55+PGV5wbycY4dHPUSSuLjbQ4QDJozHJx89XUkFssMxjalGZ6ddIk=
+X-Google-Smtp-Source: AGHT+IH0USc98adq68YuNkR6BO6s7ouNVB7SxQasWdlzVDiV6ZxglCL/bAho39AyjZN16MBGjdgmEImzF7UM0hhyf0g=
+X-Received: by 2002:a05:690c:6a0e:b0:78a:7a68:e4fe with SMTP id
+ 00721157ae682-78e6831c4dbmr123317137b3.25.1765955641406; Tue, 16 Dec 2025
+ 23:14:01 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -62,17 +62,17 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 References: <20251216-k3-basic-dt-v1-0-a0d256c9dc92@riscstar.com>
- <20251216-k3-basic-dt-v1-7-a0d256c9dc92@riscstar.com> <60948ca2-ed3d-485b-9b11-15df7ef8791d@canonical.com>
-In-Reply-To: <60948ca2-ed3d-485b-9b11-15df7ef8791d@canonical.com>
+ <20251216-k3-basic-dt-v1-8-a0d256c9dc92@riscstar.com> <3c38ce9c-4259-4149-bf2c-a54e74c00a34@canonical.com>
+In-Reply-To: <3c38ce9c-4259-4149-bf2c-a54e74c00a34@canonical.com>
 From: Guodong Xu <guodong@riscstar.com>
-Date: Wed, 17 Dec 2025 15:11:55 +0800
-X-Gm-Features: AQt7F2qskcnlJTlmY9mkZsjM35ekor5-LiDipt_O0jT58J0Q0vF7KdDCyFPY_3o
-Message-ID: <CAH1PCMb=+TvB1w+G6a2ANDp05HUwC4r6CFBDHXFwSmoP3Mm8xw@mail.gmail.com>
-Subject: Re: [PATCH 7/8] riscv: dts: spacemit: add initial device tree of
- SpacemiT K3 SoC
+Date: Wed, 17 Dec 2025 15:13:50 +0800
+X-Gm-Features: AQt7F2qt3rSNkF23w_AVCZL60KRRfHKfFoZFSmyzaNBRd3Kb1iOnGUyhNAVCUBk
+Message-ID: <CAH1PCMbzv_uggyZ3JLPyWXSwbe2dJAh7jVT64xpM6SLG77VZqQ@mail.gmail.com>
+Subject: Re: [PATCH 8/8] riscv: dts: spacemit: add SpacemiT K3 Pico-ITX board
+ device tree
 To: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
-Cc: Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@sifive.com>, 
-	Conor Dooley <conor@kernel.org>, Kevin Meng Zhang <zhangmeng.kevin@linux.spacemit.com>, 
+Cc: Paul Walmsley <paul.walmsley@sifive.com>, Conor Dooley <conor@kernel.org>, 
+	Heinrich Schuchardt <xypron.glpk@gmx.de>, Kevin Meng Zhang <zhangmeng.kevin@linux.spacemit.com>, 
 	devicetree@vger.kernel.org, linux-riscv@lists.infradead.org, 
 	linux-kernel@vger.kernel.org, spacemit@lists.linux.dev, 
 	linux-serial@vger.kernel.org, Rob Herring <robh@kernel.org>, 
@@ -86,148 +86,103 @@ Cc: Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@sifive.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Dec 16, 2025 at 10:24=E2=80=AFPM Heinrich Schuchardt
+On Tue, Dec 16, 2025 at 10:33=E2=80=AFPM Heinrich Schuchardt
 <heinrich.schuchardt@canonical.com> wrote:
 >
 > On 12/16/25 14:32, Guodong Xu wrote:
-> > SpacemiT K3 is equipped with 8 X100 cores, which are RVA23 compliant.
-> > Add nodes of uarts, timer and interrupt-controllers.
+> > K3 Pico-ITX is a 2.5-inch single-board computer equipted with a Spacemi=
+T
+> > K3 SoC.
+> >
+> > This minimal device tree enables booting into a serial console with UAR=
+T
+> > output.
 > >
 > > Signed-off-by: Guodong Xu <guodong@riscstar.com>
 > > ---
-> >   arch/riscv/boot/dts/spacemit/k3.dtsi | 529 ++++++++++++++++++++++++++=
-+++++++++
-> >   1 file changed, 529 insertions(+)
+> >   arch/riscv/boot/dts/spacemit/Makefile        |  1 +
+> >   arch/riscv/boot/dts/spacemit/k3-pico-itx.dts | 25 +++++++++++++++++++=
+++++++
+> >   2 files changed, 26 insertions(+)
 > >
-> > diff --git a/arch/riscv/boot/dts/spacemit/k3.dtsi b/arch/riscv/boot/dts=
-/spacemit/k3.dtsi
+> > diff --git a/arch/riscv/boot/dts/spacemit/Makefile b/arch/riscv/boot/dt=
+s/spacemit/Makefile
+> > index 95889e7269d1bae679b28cd053e1b0a23ae6de68..7e2b877025718113a0e3191=
+7eadf7562f488d825 100644
+> > --- a/arch/riscv/boot/dts/spacemit/Makefile
+> > +++ b/arch/riscv/boot/dts/spacemit/Makefile
+> > @@ -4,3 +4,4 @@ dtb-$(CONFIG_ARCH_SPACEMIT) +=3D k1-milkv-jupiter.dtb
+> >   dtb-$(CONFIG_ARCH_SPACEMIT) +=3D k1-musepi-pro.dtb
+> >   dtb-$(CONFIG_ARCH_SPACEMIT) +=3D k1-orangepi-r2s.dtb
+> >   dtb-$(CONFIG_ARCH_SPACEMIT) +=3D k1-orangepi-rv2.dtb
+> > +dtb-$(CONFIG_ARCH_SPACEMIT) +=3D k3-pico-itx.dtb
+> > diff --git a/arch/riscv/boot/dts/spacemit/k3-pico-itx.dts b/arch/riscv/=
+boot/dts/spacemit/k3-pico-itx.dts
 > > new file mode 100644
-> > index 0000000000000000000000000000000000000000..cb27b790716fdd6dc2bc89c=
-28dd2588a596a5af9
+> > index 0000000000000000000000000000000000000000..0f9d04dd352f5331e825992=
+85113b86af5b09ebe
 > > --- /dev/null
-> > +++ b/arch/riscv/boot/dts/spacemit/k3.dtsi
-> > @@ -0,0 +1,529 @@
+> > +++ b/arch/riscv/boot/dts/spacemit/k3-pico-itx.dts
+> > @@ -0,0 +1,25 @@
 > > +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 > > +/*
 > > + * Copyright (c) 2025 SpacemiT (Hangzhou) Technology Co. Ltd
 > > + * Copyright (c) 2025 Guodong Xu <guodong@riscstar.com>
 > > + */
 > > +
-> > +#include <dt-bindings/interrupt-controller/irq.h>
-> > +
-> > +/dts-v1/;
+> > +#include "k3.dtsi"
 > > +
 > > +/ {
-> > +     #address-cells =3D <2>;
-> > +     #size-cells =3D <2>;
-> > +     model =3D "SpacemiT K3";
-> > +     compatible =3D "spacemit,k3";
+> > +     model =3D "SpacemiT K3 Pico-ITX";
+> > +     compatible =3D "spacemit,k3-pico-itx", "spacemit,k3";
 > > +
-> > +     aliases {
-> > +             serial0 =3D &uart0;
-> > +             serial2 =3D &uart2;
-> > +             serial3 =3D &uart3;
-> > +             serial4 =3D &uart4;
-> > +             serial5 =3D &uart5;
-> > +             serial6 =3D &uart6;
-> > +             serial7 =3D &uart7;
-> > +             serial8 =3D &uart8;
-> > +             serial9 =3D &uart9;
-> > +             serial10 =3D &uart10;
+> > +     chosen {
+> > +             stdout-path =3D "serial0";
 > > +     };
 > > +
-> > +     cpus: cpus {
-> > +             #address-cells =3D <1>;
-> > +             #size-cells =3D <0>;
-> > +             timebase-frequency =3D <24000000>;
-> > +
-> > +             cpu_0: cpu@0 {
-> > +                     compatible =3D "spacemit,x100", "riscv";
-> > +                     device_type =3D "cpu";
-> > +                     reg =3D <0>;
-> > +                     riscv,isa-base =3D "rv64i";
-> > +                     riscv,isa-extensions =3D "i", "m", "a", "f", "d",=
- "c", "v", "h",
-> > +                                            "smaia", "smstateen", "ssa=
-ia", "sscofpmf",
-> > +                                            "ssnpm", "sstc", "svade", =
-"svinval", "svnapot",
-> > +                                            "svpbmt", "zawrs", "zba", =
-"zbb", "zbc", "zbs",
-> > +                                            "zca", "zcb", "zcd", "zcmo=
-p", "zfa", "zfbfmin",
-> > +                                            "zfh", "zfhmin", "zicbom",=
- "zicbop", "zicboz",
-> > +                                            "zicntr", "zicond", "zicsr=
-", "zifencei",
-> > +                                            "zihintntl", "zihintpause"=
-, "zihpm", "zimop",
-> > +                                            "zkt", "zvbb", "zvbc", "zv=
-fbfmin", "zvfbfwma",
-> > +                                            "zvfh", "zvfhmin", "zvkb",=
- "zvkg", "zvkn",
-> > +                                            "zvknc", "zvkned", "zvkng"=
-, "zvknha",
-> > +                                            "zvknhb", "zvks", "zvksc",=
- "zvksed",
-> > +                                            "zvksg", "zvksh", "zvkt";
+> > +     memory@100200000 {
+> > +             device_type =3D "memory";
+> > +             reg =3D <0x1 0x00200000 0x3 0xffe00000>;
 >
-> This not the description of an RVA23S64 cpu. It is not even RVA23U64,
-> e.g. `supm` is missing.
->
-> Is the description incomplete or is the CPU not compliant?
+> Shouldn't the reserved memory be described as no-map /reserved-memory
+> nodes instead?
 
 Hi Heinrich,
 
-The SpacemiT K3 supports the mandatory extensions defined in the RVA23
-Profile (ratified Oct 2024). The list appears incomplete here only because
-I am restricting the entries to those currently supported by the Linux
-kernel Device Tree bindings.
+Yes, you are right. Using a reserved-memory node with the no-map property i=
+s
+the correct approach. I will update this in the next version to explicitly
+reserve the first 2MB.
 
-Specifically, I must adhere to
-Documentation/devicetree/bindings/riscv/extensions.yaml (and cpus.yaml for
-properties like 'riscv,sv39' which stands for the extension Sv39). If I
-add extension strings that are not yet defined in these schemas, such as
-supm, running 'make dtbs_check W=3D3' fails with: 'supm' is not one of
-['i', 'm', 'a', ...], followed by "Unevaluated properties are not allowed."
+>
+> I would assume that 0x1,0000,0000 is the location of OpenSBI.
+> What is at 0x3,ffe0,0000?
 
-Another angle, I found there are other reasons why Linux kernel chose to
-'omit' some specific extension strings. For example, here are what I notice=
-d
-so far, including the 'supm' you mentioned:
+Yes, confirmed, 0x100000000 is the start of OpenSBI. The size 0x3ffe00000 i=
+n
+my original patch was the result of manually subtracting the 2MB OpenSBI
+offset from the total 16GB memory.
 
-supm: There is no binding string for this yet. However, in the kernel confi=
-g
-(refer to arch/riscv/Kconfig), RISCV_ISA_SUPM depends on the detection of t=
-he
-underlying 'smnpm' or 'ssnpm' hardware extensions. Since 'ssnpm' is
-present in my list, it can be considered as supported and the kernel
-will enable pointer masking support automatically.
+I will correct this in v2 to show the actual memory and put the first 2MB i=
+n
+reserved-memory {} for opensbi.
 
-Other examples:
-ssstateen: The kernel schema currently uses the smstateen string to
-cover CSR access control in all modes (H/S/VS/U/VU). I have included
-'smstateen' to satisfy this, as there is no separate 'ssstateen' binding
-in the extensions.yaml.
+Thanks for the review.
 
-ziccif: This extension is also absent from the bindings, despite being
-implied by ftrace dynamic code work. Reference:
-https://lore.kernel.org/all/20250407180838.42877-12-andybnac@gmail.com/
-I intend to submit a separate patch series to formally add ziccif to
-extensions.yaml.
-
-Anyway, I have limited the x100 riscv,isa-extensions list to strictly
-validate against the current kernel schema while exposing all features
-the kernel is currently capable of parsing.
-
-I hope this explanation clarifies the situation. Please let me know if you
-agree with this approach.
-
-Best Regards,
+BR,
 Guodong Xu
+
 
 >
 > Best regards
 >
 > Heinrich
+>
+> > +     };
+> > +};
+> > +
+> > +&uart0 {
+> > +     status =3D "okay";
+> > +};
+> >
 >
