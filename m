@@ -1,143 +1,96 @@
-Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6E84364EBF
-	for <linux-serial@vger.kernel.org>; Wed, 17 Dec 2025 13:33:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 203B3337118;
+	Wed, 17 Dec 2025 13:56:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765978386; cv=none; b=FC1s+6NTpvCuzwUBw8zrUh1LRrv/tzsGRRd388K452hka1nWb3dYMmlyzljp8bnrWuxcEiLyYOAt8YTgI8OKC+ZgAPiprHZQQsr7R5v+uaOgQT2RSnbPqcSJy33cSSoZ3/wXNlVeB3yNa5TvnSUsBIU/X349Rf00t+dMVHsXrW4=
+	t=1765979786; cv=none; b=G2scG1NJa0JstSnFHxyaTSuA+nP9GSIxQyixwDaZVfZboL5bNl0GOUKat8/zQZkt3eprskZXMm+z2cC3F+Wecjzc1+6QvrwFAla0dLzCPB5YKmwH4xuLptYLwU2hPFBb3p7Gky2siK3swZOgcfq4BKtYpC075WRfGTsHdDIa/go=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765978386; c=relaxed/simple;
-	bh=3NxV/sdr2BZyW6Fp6jeGvfWxTA5ctLtFaPPYKmOmWzs=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=CUB0bZ8j8An/lYOfMAJlupCvqbNf2Qax9b7QBG2ADpSDq1G33XFmb3JrM3RHOoLnbO20ijVbO6bYfH7zffqXFM9RyCmddOKKRh9RbezejqQS41N4C2LFTVWJZ7+q6/VTv/Qcm3d5JBNJZcsvP5r4c2/AnzzIgnBjuhMGRDXl5yE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr; spf=pass smtp.mailfrom=sartura.hr; dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b=G3TZwRs8; arc=none smtp.client-ip=209.85.208.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sartura.hr
+	s=arc-20240116; t=1765979786; c=relaxed/simple;
+	bh=cZqykFQOznjwTz/OusoHy8zpyp9EHoXH1lzz/xgvQxU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=f3GBuE5up6p7395dnbCDJJUYSIbmCWzK51kuTh0ZqW1TDEizQlMv4a5ekM57YR048bs3JxdZ6xliOVGy79vn57nmNdKLQv+3RtUFy0SqemhC9783Uqkx4J5M4jhdKi+PnTSGjVgA2GOwv5m4dy1bzp9Bw8L2jgApLdVjCqhu8To=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=rYgB+6Z3; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b="G3TZwRs8"
-Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-64312565c10so10281599a12.2
-        for <linux-serial@vger.kernel.org>; Wed, 17 Dec 2025 05:33:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sartura.hr; s=sartura; t=1765978382; x=1766583182; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=3NxV/sdr2BZyW6Fp6jeGvfWxTA5ctLtFaPPYKmOmWzs=;
-        b=G3TZwRs8slika+uM8zA2b/tbxbmR9UD4zQjKjHTYFdQgFKQIvb5WcOE963ZZ02V0Mc
-         qP0y3gHvcLeM0uzdbqcjgz/OUiak06hFqxxk2bqy9JyIuV+hWAOR+yfQT3/puygEdmcZ
-         mSOwl2czqg7bWviUHQvoqfL2VNr6lSNSEKluYXqSdbSaAHT1yuKd6fpzL1rD93FYSdgq
-         nGfR/UWTLwfs3EF6NQKalofoEucjD9bsNEEN4J8bADznJikY/0q8pziBBNcl66wb0YW6
-         VefrjPLW58syX/GbFPK5ltyANGRw4PSWy3W4rvQNgVF5nVe6Cj7L6F0oCvRlAt9PVq8m
-         SAHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1765978382; x=1766583182;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=3NxV/sdr2BZyW6Fp6jeGvfWxTA5ctLtFaPPYKmOmWzs=;
-        b=MUd/tx5J6Dyda38oFc2LSidKgj9E9I/pm9FhCVJI0OZhN+Bqb4uMjmr25xG40Uxl8U
-         JSQAfewjNqyO20pmq8kmAzBeHaMD4h9QCGaWK2GQMlzypLscra6ClMobvorV8hrbmge3
-         nXQKhbD+NjR/Yr3aTkTBCIXs1DdXtZZJpmVTRegyj8I8oi0dEM43wz6CZk3ACj4Mqu3g
-         zUsV39hHYahPYazo+c4t/KJqWwvFZezg0YHphgKhO4mX/iUEnoK4Lke3rC3QbUr7O33G
-         3b/qmEmSAJYtKQEJyxKfWuArjMwRvW3taYNZK7IeMWhGnnnjrL0ZOTNPGB6hxMTLREEc
-         /YNQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXOsgjaus/jvu1gmX/rDq02RMpOgeq/KJCFlnnNSfO+U25ZgGtVrKs8ovezr2zxJh88KK0FTgzixclYRts=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyy92tHo7hw7zcok0M8J0rsR9D1lTdVpyF+PmkcIR8wdbz5Xh2E
-	a56VoSmgqyVB7hszuEentE3bsTRGah1bjY4JYaWzXizT3/o1ZTjibd9Sxj7bQ4n/AtbYsJhSrp8
-	UlRmdNfNG2nzojQBwR/jjGoBDYx12PplNwPySPuvUQw==
-X-Gm-Gg: AY/fxX7r28Oo3QgKtmLCM5qe+z1n0rbpzy/aaKiaxZrhCCDFyR7cViJ/f1XQjH9/JzM
-	J0HU6FrqlLtTnnNVDqZ2G3XntF9iyO8Okt3CtqQ3XbQK/Olq2pqBBH0HbHUlmz8riHwFi4v+ryl
-	x+mXBEif3eX5LECqvPHWEnKVF36m2lfPx40F19QbzC7il8HklcP2ZAasttxtip132VOuh0FGfYJ
-	/K5ph7olASaPB+XnRlO4vL23TSvk8OSXO76Coh+diF0ZyXnbv8U9+J4A7QErQ+d841eSjC+p8mg
-	ZI6jY9uzdrYuijnuLDFtdqyeOodH0NvPokDHrCuqwK3sbsVp2RmO
-X-Google-Smtp-Source: AGHT+IHQBmS2mrQa3fgyiBBuz2kWHV24zlBwa/1NFFHKPKgWTqO46GlqIXXFCMupFuoXyMzVWH1kl/6iZAAmZg0kVsk=
-X-Received: by 2002:a17:906:c39e:b0:b7f:e709:d447 with SMTP id
- a640c23a62f3a-b7fe709d458mr591500066b.33.1765978382116; Wed, 17 Dec 2025
- 05:33:02 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="rYgB+6Z3"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F03A5C4CEF5;
+	Wed, 17 Dec 2025 13:56:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1765979785;
+	bh=cZqykFQOznjwTz/OusoHy8zpyp9EHoXH1lzz/xgvQxU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=rYgB+6Z31L7iamda9DEUpKZL3bQzh5PCOy99z79CkrwVw8oR0RCVu1cDnHOj6E0Xu
+	 1Ha8mtsEwaYuVQywQVrsyb+3wFZdIg54Vhnz1r4XhJmaqQhILqL2lVv2C3N4ljoqHY
+	 Hr7U9JujstJ7qksZvL/Nl66JdOMgaNrNIjphJOCI=
+Date: Wed, 17 Dec 2025 14:56:22 +0100
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Harikrishna Srinivasan <harikrs0905@gmail.com>
+Cc: Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] serial: pxa: Fix comment typo
+Message-ID: <2025121710-engulf-feminism-f536@gregkh>
+References: <20251215072846.11603-1-harikrs0905@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20251215163820.1584926-1-robert.marko@sartura.hr>
- <20251215163820.1584926-5-robert.marko@sartura.hr> <fe15fcce-865a-4969-9b6f-95920fcaa5c7@kernel.org>
- <CA+HBbNGNMGRL11kdg14LwkiTazXJYXOZeVCKsmW6-XF6k5+sVA@mail.gmail.com> <3d6f254c-d53f-47d9-8081-8506d202bf9d@kernel.org>
-In-Reply-To: <3d6f254c-d53f-47d9-8081-8506d202bf9d@kernel.org>
-From: Robert Marko <robert.marko@sartura.hr>
-Date: Wed, 17 Dec 2025 14:32:49 +0100
-X-Gm-Features: AQt7F2p7AtghDvAyv4NK8Ascs8BHBx___HwB1JF-DX23awYiIEMyiUo7jk7sWyI
-Message-ID: <CA+HBbNEKJ2qG4s51Gq9dh0uGuSwyPDfsq+mb5w6Kry6e9N0VSg@mail.gmail.com>
-Subject: Re: [PATCH v2 05/19] dt-bindings: arm: microchip: move SparX-5 to
- generic Microchip binding
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
-	nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, 
-	claudiu.beznea@tuxon.dev, Steen.Hegelund@microchip.com, 
-	daniel.machon@microchip.com, UNGLinuxDriver@microchip.com, 
-	herbert@gondor.apana.org.au, davem@davemloft.net, vkoul@kernel.org, 
-	linux@roeck-us.net, andi.shyti@kernel.org, lee@kernel.org, 
-	andrew+netdev@lunn.ch, edumazet@google.com, kuba@kernel.org, 
-	pabeni@redhat.com, linusw@kernel.org, olivia@selenic.com, 
-	radu_nicolae.pirea@upb.ro, richard.genoud@bootlin.com, 
-	gregkh@linuxfoundation.org, jirislaby@kernel.org, mturquette@baylibre.com, 
-	sboyd@kernel.org, richardcochran@gmail.com, wsa+renesas@sang-engineering.com, 
-	romain.sioen@microchip.com, Ryan.Wanner@microchip.com, 
-	lars.povlsen@microchip.com, tudor.ambarus@linaro.org, 
-	kavyasree.kotagiri@microchip.com, devicetree@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org, 
-	linux-hwmon@vger.kernel.org, linux-i2c@vger.kernel.org, 
-	netdev@vger.kernel.org, linux-gpio@vger.kernel.org, linux-spi@vger.kernel.org, 
-	linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, 
-	linux-clk@vger.kernel.org, mwalle@kernel.org, luka.perkov@sartura.hr
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251215072846.11603-1-harikrs0905@gmail.com>
 
-On Wed, Dec 17, 2025 at 2:23=E2=80=AFPM Krzysztof Kozlowski <krzk@kernel.or=
-g> wrote:
->
-> On 16/12/2025 18:01, Robert Marko wrote:
-> > On Tue, Dec 16, 2025 at 4:58=E2=80=AFPM Krzysztof Kozlowski <krzk@kerne=
-l.org> wrote:
-> >>
-> >> On 15/12/2025 17:35, Robert Marko wrote:
-> >>> Now that we have a generic Microchip binding, lets move SparX-5 as we=
-ll as
-> >>> there is no reason to have specific binding file for each SoC series.
-> >>>
-> >>> The check for AXI node was dropped.
-> >>
-> >> Why?
-> >
-> > According to Conor, it is pointless [1]
->
-> You have entire commit msg to explain this. It's basically my third
-> question where reasoning behind changes is not explained.
->
-> When you send v3, you will get the same questions...
+On Mon, Dec 15, 2025 at 12:28:46AM -0700, Harikrishna Srinivasan wrote:
+> Fix a spelling mistake in a driver comment.
+> 
+> Signed-off-by: Harikrishna Srinivasan <harikrs0905@gmail.com>
+> ---
+>  drivers/tty/serial/pxa.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
+> index e395ff29c1a2..19d85398e394 100644
+> --- a/drivers/tty/serial/pxa.c
+> +++ b/drivers/tty/serial/pxa.c
+> @@ -99,7 +99,7 @@ static inline void receive_chars(struct uart_pxa_port *up, int *status)
+>  		 * Specification Update (May 2005)
+>  		 *
+>  		 * Step 2
+> -		 * Disable the Reciever Time Out Interrupt via IER[RTOEI]
+> +		 * Disable the receiver timeout interrupt via IER[RTOEI]
+>  		 */
+>  		up->ier &= ~UART_IER_RTOIE;
+>  		serial_out(up, UART_IER, up->ier);
+> -- 
+> 2.43.0
+> 
+> 
 
-Hi Krzysztof,
-Considering that instead of merging the bindings LAN969x will be added
-to Atmel instead,
-this will be dropped in v3.
-Sorry for the inconvenience.
+Hi,
 
-Regards,
-Robert
->
->
-> Best regards,
-> Krzysztof
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
 
+You are receiving this message because of the following common error(s)
+as indicated below:
 
+- This looks like a new version of a previously submitted patch, but you
+  did not list below the --- line any changes from the previous version.
+  Please read the section entitled "The canonical patch format" in the
+  kernel file, Documentation/process/submitting-patches.rst for what
+  needs to be done here to properly describe this.
 
---=20
-Robert Marko
-Staff Embedded Linux Engineer
-Sartura d.d.
-Lendavska ulica 16a
-10000 Zagreb, Croatia
-Email: robert.marko@sartura.hr
-Web: www.sartura.hr
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
+
+thanks,
+
+greg k-h's patch email bot
