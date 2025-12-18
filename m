@@ -1,188 +1,170 @@
-Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [80.241.56.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D14433031A;
-	Thu, 18 Dec 2025 09:30:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=80.241.56.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B1D4344046
+	for <linux-serial@vger.kernel.org>; Thu, 18 Dec 2025 13:51:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766050236; cv=none; b=WVCDU2mk/EUj+iISct3bJHEpzfkn7UbIEQ650UmQLSwyFpfgtk93oR/InOAKTDVf956ClaajMwowmf4jOI2/Ond/xGrg7zX+BqYqraSrmh1UrdPITNgWlxfXp8C5qqsEtes276syDog9o9Fq4WzCNnGohOAKw3PSFTkfWywF7OY=
+	t=1766065901; cv=none; b=XrDMBd2EsMZlPrQRqRqM6IbCZPU56ZRkaSuifI3LuD9HYSaXUAgWYU+lfwNHnq3uki9nrZaNL8HRukPU/Nwv2ZqDNrHCr6Zyj+Mglr/I3jF59WIYJTjimkFP8xOSvyK1fAxPHlC3Gnvo6PZOBRPDQGX44a6tkpFa+uq7TrgyTzo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766050236; c=relaxed/simple;
-	bh=KM94aRRRu8H12IVd933tnxGJyWSun4oXOKMKXS8vMhk=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=Ssm4JVjqwyxkwNz8fAesZoiPbrzHZtVIxNk2w/2hsSMPZE3ckDwO3IXjPrcLvZEb2CY/lu8F9ILmOwcIunRftf+hFWU2g+hwB7ALNyWBom4y+P6/41x2aUJIAPZzPR6cc586Wg9jc7hfqBiJWIr8SYVKRoFflDTnJdihIQHGqJg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org; spf=pass smtp.mailfrom=mailbox.org; dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b=xzSWdDOV; arc=none smtp.client-ip=80.241.56.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mailbox.org
+	s=arc-20240116; t=1766065901; c=relaxed/simple;
+	bh=c83br87Fuj3FAiRyAe1sbqK67FAC37dBaSgus7jXXdk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=WVltgiG6LnHyx+Tl+H3okG2BnqEXiVeYdeauITCIGyr9Xtwbp5Ypqp2ZCR67E4gIYRcsy1fUDx8bBvq0FDNAV7pIJ6nU1Zdl3KUFgVIPjX4Fa30oRa/uJQliIgfBQS2Nh9dyJK1EGHJhg0qstnc+DyePXixtvsC58qHK7mRTQlc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Zp2m2tJY; arc=none smtp.client-ip=209.85.221.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b="xzSWdDOV"
-Received: from smtp102.mailbox.org (smtp102.mailbox.org [IPv6:2001:67c:2050:b231:465::102])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4dX54J27kDz9tty;
-	Thu, 18 Dec 2025 10:30:24 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
-	t=1766050224; h=from:from:reply-to:reply-to:subject:subject:date:date:
-	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-	 content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=KM94aRRRu8H12IVd933tnxGJyWSun4oXOKMKXS8vMhk=;
-	b=xzSWdDOVdj9xkiCp/I2pri460dxriTSyQzun+vue3/qarJuuOQ2csGbIrvVjcr+3BlOgZS
-	3Kq8loAUt9pqOwbK+QXTHNdZR7vgynwJ47dW0CMoIzk2lxT0PZcDMdS485L3Dt59EQiRAq
-	9Yb74g6RC7ZP8cngCipboDnKE9NVDs9o2MlZ3gtrPSGzkVXjV4NftbiQn5gTBBzHtAG4F2
-	ukqkJ0QOBLjjkNUXHgOb4t6FqaLr7EUc2qBaJQZxcfbwwmCUSQsDKHuMvWijjemX7rUAc2
-	OyAP7QKs584twuo8ybAdiDW79AR6Yg4l6MAERbz8JyDlYj6kciwmJ8Bb+OU+tA==
-Message-ID: <9f2960385d8ce318d3446fb6106f64b47781c730.camel@mailbox.org>
-Subject: Re: [PATCH] tty: serial: Replace deprecated PCI API
-From: Philipp Stanner <phasta@mailbox.org>
-Reply-To: phasta@kernel.org
-To: phasta@kernel.org, Guenter Roeck <linux@roeck-us.net>, Greg
- Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>, Peter Zijlstra
- <peterz@infradead.org>,  linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, Florian Eckert <fe@dev.tdt.de>
-Date: Thu, 18 Dec 2025 10:30:18 +0100
-In-Reply-To: <6a910f10581848991b485e48e2df4568fa4f1dbb.camel@mailbox.org>
-References: <20251126091032.130787-2-phasta@kernel.org>
-	 <3f5370b7-c67c-409d-8422-83b5096d1233@roeck-us.net>
-	 <de540d7789d0e9f77efde05fab4705b8d97245d8.camel@mailbox.org>
-	 <2025121710-audacious-slot-fa2f@gregkh>
-	 <9bf73b42-9669-4457-9b58-1420a29b61bf@roeck-us.net>
-	 <6a910f10581848991b485e48e2df4568fa4f1dbb.camel@mailbox.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Zp2m2tJY"
+Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-431048c4068so399031f8f.1
+        for <linux-serial@vger.kernel.org>; Thu, 18 Dec 2025 05:51:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1766065897; x=1766670697; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:content-language:from
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=YdUtQKBs3Djto0B8q8YJrjhk/z/uULAk4Nd5edvNU08=;
+        b=Zp2m2tJYmmGi8hqItfSjzum7aYHxgUgk7frt9WpOpBcd9BfQehNsvgbu50c45yx2RD
+         3Kt81RhFQgVwfZ3TyNNnRASw1TP+1sXyw9r2z+kA/lge5+Fh4hJrY0yv5k0KQvp1MhEQ
+         iEyLmq7eJ+oUi+hL6zRsOAzyhgEvsPfa2qTEe+BwHKBZFTbbZHm46zhWdUK3SRAd1h+X
+         rMEH55AL21XytwdWdO3LoNSnbW9gVskHHrlA2VO9JVfIk778kZ+xgbpz8jri21GEk0eS
+         lE14ijCj7fxlk1CIE8975+JXcSaL7tEUCe1e+JAcV/9Lt/peC4j5aNTcl6ftOGT54Pk9
+         WVSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1766065897; x=1766670697;
+        h=content-transfer-encoding:in-reply-to:content-language:from
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=YdUtQKBs3Djto0B8q8YJrjhk/z/uULAk4Nd5edvNU08=;
+        b=dZqm4jYX0FbcKQrLQ1ciOzDBc2X6Jqp42vELSfKUr2jjbCXrvZMiPGiICtyUepVbbO
+         QJfxoY6deO0lOOkuVAe5amBM/qPcwYzQZK31QkMR68/5QDiZXhJZBis1zxHQGBeFgOkX
+         4xmyRfl/x3egNj1MYvUnz+nafoAIoAKlAEXc9z7O/TMjQL3AMxo+wVRQvnV7HhLlrQrx
+         qG5khMeUbTpOrgfgaY8inu11Zj8w1Yq14KrB7fGH8rYOoD02etr8c0vTA8tbNHYRXryj
+         8rZMFyrVAJ7vVeSJJxrlczMzf6V+HQGRoJ4mT38FTEatfiP5LyGFPNMiDkCxGh5xfS/4
+         XrOg==
+X-Forwarded-Encrypted: i=1; AJvYcCUQq/q1/r5uXCCEMwmIv5Seyb5OG8bkBlijtxZUtTdhgLu53dAhYoiulN3A4xhqAsCW9u4XxgnVIU0bpxQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxHUDGQL4B71L1vFEJzOtUqvPSKQaPxiaVwOCX9tOJWMPlzcXA3
+	8xvPFkmDjC+sowGcpt0/O0aeRIiO0hUNNOS1Nz+gCaVSyLPtx+nNbzJ6
+X-Gm-Gg: AY/fxX6uTyleKorJo8ntTk4o9L/jrVdygYA8Xeu2QuA02lV24vjReX7ciuQnuQs5RCF
+	Jmuxwc7ONARP3lWpthhhTYv5ZXgPRWMHXKyZdbrmkdJEirsc98QVSBWTXtAbPNB73jyGRWk+B6Q
+	ggh32kbaa7SJZylGcyr50C9tVoyBuHysl+eOFKd/0WjRrQABbjVYdyYgDL9bcN7xiSSwLx6nvzu
+	OocZJpJoPAMMu/ptIkwads899hjUtU9Cgf6+d/OF5ITI/5g22UAaWS2FygzQtX81FmvVb7DhQtP
+	kj+2TMNliH9+XuqkH5x5YBEka7blN4Pfr9EFMdBNacbtO9aQLTGPGB2H8qNJjhyV5V56y66vN6y
+	qJRtR9ubBmSqG+JR81dGWK9wT9uhKilmj2sj7Vf+XTLy4P0JhQJ59BXOXhN6Rx/K97eSuwYKGuI
+	zvxyw1UWb4ODYA90QOsA==
+X-Google-Smtp-Source: AGHT+IESz48kSogK53GaGaTvcUuu/WVUi+Dp3vVcRjR5l2Bhk5WtPtlFNFJKTssk7+HOl5t9c5hDTw==
+X-Received: by 2002:a05:6000:288a:b0:431:2b7:f8da with SMTP id ffacd0b85a97d-432447a3c75mr3571571f8f.9.1766065897291;
+        Thu, 18 Dec 2025 05:51:37 -0800 (PST)
+Received: from [192.168.0.100] ([188.27.130.80])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43244940113sm5327670f8f.18.2025.12.18.05.51.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 Dec 2025 05:51:36 -0800 (PST)
+Message-ID: <4b601513-5257-4511-95db-390791e17ba8@gmail.com>
+Date: Thu, 18 Dec 2025 15:50:49 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MBO-RS-ID: 88d4240b9c489b9e2e6
-X-MBO-RS-META: eencdif7gaz4o9irpdn8j9s7c94juhbj
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1 1/1] serial: core: Restore sysfs fwnode information
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>
+References: <20251127163650.2942075-1-andriy.shevchenko@linux.intel.com>
+From: Cosmin Tanislav <demonsingur@gmail.com>
+Content-Language: en-US
+In-Reply-To: <20251127163650.2942075-1-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, 2025-12-18 at 10:02 +0100, Philipp Stanner wrote:
-> +Cc Florian
->=20
-> On Wed, 2025-12-17 at 08:11 -0800, Guenter Roeck wrote:
-> > On 12/17/25 06:06, Greg Kroah-Hartman wrote:
-> > > On Thu, Dec 11, 2025 at 02:57:46PM +0100, Philipp Stanner wrote:
-> > > > On Wed, 2025-11-26 at 09:02 -0800, Guenter Roeck wrote:
-> > > > > On 11/26/25 01:10, Philipp Stanner wrote:
-> > > > > > pcim_iomap_table() is deprecated. Moreover, its special usage i=
-n 8250,
-> > > > > > causes a WARN_ON to fire (in pcim_add_mapping_to_legacy_table()=
-).
-> > > > > >=20
-> > > > > > 8250's function serial8250_pci_setup_port() effectively maps th=
-e same
-> > > > > > BAR multiple times and adds an offset to the start address. Whi=
-le
-> > > > > > mapping and adding offsets is not a bug, it can be achieved in =
-a far
-> > > > > > more straightforward way by using the specialized function
-> > > > > > pcim_iomap_range().
-> > > > > >=20
-> > > > > > pcim_iomap_range() does not add the mapping addresses to the de=
-precated
-> > > > > > iomap table - that's not a problem, however, because non of the=
- users of
-> > > > > > serial8250_pci_setup_port() uses pcim_iomap_table().
-> > > > > >=20
-> > > > > > Replace the deprecated PCI functions with pcim_iomap_range().
-> > > > > >=20
-> > > > > > Cc: Guenter Roeck <linux@roeck-us.net>
-> > > > > > Link: https://lore.kernel.org/dri-devel/16cd212f-6ea0-471d-bf32=
--34f55d7292fe@roeck-us.net/
-> > > > > > Signed-off-by: Philipp Stanner <phasta@kernel.org>
-> > > > > > ---
-> > > > > > @Guenther: Can you please test this? I hope it fixes your issue=
-.
-> > > > >=20
-> > > > > Yes, it does. Thanks a lot for fixing this!
-> > > > >=20
-> > > > > Tested-by: Guenter Roeck <linux@roeck-us.net>
-> > > >=20
-> > > > @Greg:
-> > > > Can you apply this?
-> > >=20
-> > > Does not apply at all to 6.19-rc1 :(
-> > >=20
-> >=20
-> > It conflicts with commit b7cefdb663382 ("serial: 8250_pcilib: Replace d=
-eprecated
-> > PCI functions"). Unfortunately that commit does not fix the problem; I =
-still
-> > see it with v6.19-rc1.
->=20
-> Without me being too familiar with the code, it seems that that commit
-> didn't do what it promised, which is getting rid of the multiple
-> mappings of the same BAR. Presumably it is mapped multiple times
-> through setup_port():
->=20
-> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250=
-/8250_pci.c
-> index 152f914c599d..f0f13fdda2df 100644
-> --- a/drivers/tty/serial/8250/8250_pci.c
-> +++ b/drivers/tty/serial/8250/8250_pci.c
-> @@ -165,7 +165,15 @@ static int
-> =C2=A0setup_port(struct serial_private *priv, struct uart_8250_port *port=
-,
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u8 bar, unsi=
-gned int offset, int regshift)
-> =C2=A0{
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return serial8250_pci_setup_port(pr=
-iv->dev, port, bar, offset, regshift);
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 void __iomem *iomem =3D NULL;
+
+
+On 11/27/25 6:36 PM, Andy Shevchenko wrote:
+> The change that restores sysfs fwnode information does it only for OF cases.
+> Update the fix to cover all possible types of fwnodes.
+> 
+> Fixes: d36f0e9a0002 ("serial: core: restore of_node information in sysfs")
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>   drivers/tty/serial/serial_base_bus.c | 10 ++++++----
+>   1 file changed, 6 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/serial_base_bus.c b/drivers/tty/serial/serial_base_bus.c
+> index 22749ab0428a..8e891984cdc0 100644
+> --- a/drivers/tty/serial/serial_base_bus.c
+> +++ b/drivers/tty/serial/serial_base_bus.c
+> @@ -13,7 +13,7 @@
+>   #include <linux/device.h>
+>   #include <linux/idr.h>
+>   #include <linux/module.h>
+> -#include <linux/of.h>
+> +#include <linux/property.h>
+>   #include <linux/serial_core.h>
+>   #include <linux/slab.h>
+>   #include <linux/spinlock.h>
+> @@ -60,6 +60,7 @@ void serial_base_driver_unregister(struct device_driver *driver)
+>   	driver_unregister(driver);
+>   }
+>   
+> +/* On failure the caller must put device @dev with put_device() */
+>   static int serial_base_device_init(struct uart_port *port,
+>   				   struct device *dev,
+>   				   struct device *parent_dev,
+> @@ -73,7 +74,8 @@ static int serial_base_device_init(struct uart_port *port,
+>   	dev->parent = parent_dev;
+>   	dev->bus = &serial_base_bus_type;
+>   	dev->release = release;
+> -	device_set_of_node_from_dev(dev, parent_dev);
 > +
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (pci_resource_flags(priv->dev, b=
-ar) & IORESOURCE_MEM) {
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0 iomem =3D pcim_iomap(priv->dev, bar, 0);
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0 if (!iomem)
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return -ENOMEM=
-;
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
-> +
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return serial8250_pci_setup_port(pr=
-iv->dev, port, bar, offset, regshift, iomem);
-> =C2=A0}
->=20
->=20
-> Note that pcim_iomap() is the party that is *adding* the mappings to
-> the legacy table, whereas pcim_iomap_table() was just used to access
-> those.
->=20
-> In any case, I'm quite confident that this description of intended
-> behavior from the commit message
->=20
-> "the remapping should only be called once via 'pcim_iomap()'. Therefore
-> the remapping moved to the caller of 'serial8250_pci_setup_port()'."
->=20
-> has not been implemented in the actual code. Otherwise the WARN_ON
-> couldn't fire.
->=20
->=20
-> My personal opinion is that mapping the same BAR multiple times is not
-> a bug and there is no real practical reason why it shouldn't be done
-> when it can make sense. pci_iomap_range() exists for that reason since
-> quite some time.
->=20
-> So my suggested fix for this would be to revert b7cefdb663382 and apply
-> my patch here instead.
+> +	device_set_node(dev, fwnode_handle_get(dev_fwnode(parent_dev)));
 
+device_set_of_node_from_dev() used to set dev->of_node_reused = true;
+which made the pinctrl subsystem skip the logic inside
+pinctrl_bind_pins().
 
-Ah, nevermind. I thought about it and it's probably safe to say that
-that WARN_ON is useless anyways. So since Florian has already done the
-work of getting rid of the deprecated function, I think the clean thing
-to do is to remove the WARN_ON from PCI.
+Since you changed to device_set_node(), dev->of_node_reused is no longer
+set to true and the following errors are issued because pinctrl will try
+to request the same pins for all sub-devices.
 
-I proposed this to Bjorn today:
-https://lore.kernel.org/all/20251218092819.149665-2-phasta@kernel.org/
+> [    0.472463] pinctrl-rzt2h 802c0000.pinctrl: pin P27_4 already requested by 80005000.serial; cannot claim for 80005000.serial:0
+> [    0.472485] pinctrl-rzt2h 802c0000.pinctrl: error -EINVAL: pin-220 (80005000.serial:0)
+> [    0.472501] pinctrl-rzt2h 802c0000.pinctrl: error -EINVAL: could not request pin 220 (P27_4) from group sci0-pins on device pinctrl-rzt2h
+> [    0.472515] ctrl 80005000.serial:0: Error applying setting, reverse things back
+> [    0.472711] pinctrl-rzt2h 802c0000.pinctrl: pin P27_4 already requested by 80005000.serial; cannot claim for 80005000.serial:0.0
+> [    0.472725] pinctrl-rzt2h 802c0000.pinctrl: error -EINVAL: pin-220 (80005000.serial:0.0)
+> [    0.472738] pinctrl-rzt2h 802c0000.pinctrl: error -EINVAL: could not request pin 220 (P27_4) from group sci0-pins on device pinctrl-rzt2h
+> [    0.472752] port 80005000.serial:0.0: Error applying setting, reverse things back
 
-Sorry for the noise
+Maybe we should set
 
-P.
+dev->of_node_reused = true;
+
+manually right above the call to device_set_node(), grouped with the
+rest of dev initialization?
+
+>   
+>   	if (!serial_base_initialized) {
+>   		dev_dbg(port->dev, "uart_add_one_port() called before arch_initcall()?\n");
+> @@ -94,7 +96,7 @@ static void serial_base_ctrl_release(struct device *dev)
+>   {
+>   	struct serial_ctrl_device *ctrl_dev = to_serial_base_ctrl_device(dev);
+>   
+> -	of_node_put(dev->of_node);
+> +	fwnode_handle_put(dev_fwnode(dev));
+>   	kfree(ctrl_dev);
+>   }
+>   
+> @@ -142,7 +144,7 @@ static void serial_base_port_release(struct device *dev)
+>   {
+>   	struct serial_port_device *port_dev = to_serial_base_port_device(dev);
+>   
+> -	of_node_put(dev->of_node);
+> +	fwnode_handle_put(dev_fwnode(dev));
+>   	kfree(port_dev);
+>   }
+>   
+
