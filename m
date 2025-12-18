@@ -1,57 +1,57 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5ABA82DC793
-	for <linux-serial@vger.kernel.org>; Thu, 18 Dec 2025 14:27:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4C39335576
+	for <linux-serial@vger.kernel.org>; Thu, 18 Dec 2025 14:28:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766068033; cv=none; b=kvjRc/cY2/P2ozi0cjpsxtB8KjE0dvezELxTGzdBFZsAImdO9NVm/J/CW+gXn1soJpattMOFF+dsEP+Bf281S/ycXDYo8rBTotFwBXgrH3dswM4aNdCNb9RjzDH9sM3UcPVsHv7EcBIK3EZhgCpw+bO9QDYreFVKy8/gQhIRAaw=
+	t=1766068094; cv=none; b=doj/OVWsYlUAr09bdKs7fQtcdbUzUOPpVLN0bA/80WTib/Yol/jRb0LHsmbd7Hy5ssVYyguN3ykEOo9CMo9ekqO49maq4AXqOntGVRScpDEJ21SGtY/MApTrt3JToLzInPH1sEl0pBoHzNywvisb5MHi3uTpypvKaU+XnUT4OqM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766068033; c=relaxed/simple;
-	bh=R9K+8vU1Y3Qheacl+3UCr4u+7ai34MMX5y2SSuIp2Cw=;
-	h=Date:From:To:Cc:Subject:Message-ID; b=FHaBJ2D4maPZo5OBEsnEl8ZBz/DbxdBe5ppz+Rg6VMSPAuPM1wKlu6I1f55kbhDOEQl/GA00R3PCNaI/N35LSboIWCdJJiAMKm/NSZeWwKDCkC5jDPCz1QnVT6J6J3IN/v2J3H+mXTblDNPNGYcaYdI1KJReoEmUxhB2gAXTA7M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MtPqmCdL; arc=none smtp.client-ip=198.175.65.12
+	s=arc-20240116; t=1766068094; c=relaxed/simple;
+	bh=fkRKbAqDcR248ovIdnVHQBTLFZeqdWKKpfxT5eZgg84=;
+	h=Date:From:To:Cc:Subject:Message-ID; b=mhdjOUMk/cF16I8XETSdm7JVf2cppyINjeEMhAS61nEwTFGAtOmMBwoQA1x4dED89XMmJT/gogYSbbW85ePcBeBmHDn45mTletlMs1xHaBvtb+6I5U9reJtSbHeL/ih4QbJeMQYz4o/2ZyA0rqRP/I/UHzMIEnmKO9fOHoX3ZXs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=UjZTshFp; arc=none smtp.client-ip=192.198.163.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MtPqmCdL"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="UjZTshFp"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1766068030; x=1797604030;
+  t=1766068092; x=1797604092;
   h=date:from:to:cc:subject:message-id;
-  bh=R9K+8vU1Y3Qheacl+3UCr4u+7ai34MMX5y2SSuIp2Cw=;
-  b=MtPqmCdLIT41lmxm1rMs0izMTPV/5nnJxCZCksLDjeqP6ESKnR4swCvs
-   Y48oull/ld+w/ByTy7Fq5J0+p1TrB8hcm82RWdgOdz1xUpy/6L/Q4Xrax
-   LzPvDRvxksV1pacbivmULcb6MvpVqp+ae9aGjgjkhec3tEIOw1P9DWWsT
-   ImCGWIduXs2I2JxMEKeGvBrYIh+wu7XOMgIIyMzsrT9z4QPI77rtj4oma
-   4XGtTgcIakVs0FE2snCQccvtVeEFwFUYiWDIpZhct3z7DuztvxpVd2K50
-   kBpcRhuYtd4s4y492L77LC109Bp6IVMVfkYelNxDXQfoL6oI7mYWLichD
-   w==;
-X-CSE-ConnectionGUID: QCNt7vq8Q6aXNZrPkL0d1g==
-X-CSE-MsgGUID: lGtsMlsURci6AqtssosIKw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11646"; a="79478995"
+  bh=fkRKbAqDcR248ovIdnVHQBTLFZeqdWKKpfxT5eZgg84=;
+  b=UjZTshFpVWboE/5ZRKkb0E+Evaw20IY7xqt3cnWMw/BWOCbzQEW0vriw
+   Ivr3Zz26Yi0t9+2cgUiVxVKsZrOaFf++voreyrD23QYCJlV6DWOdjuf3m
+   zeK8brR7UQPu7n0ncg9mq/FnEl8tP57TztC6ortp1WXJQ9gVm0KObdvVD
+   Xq3/ylSPN07kQ/Oq+hDvpY4LyS070fZIaBvzupPwyT4jKmJ5v5jvBaeMj
+   4AMWQHN7Q66+i7NXcfy0ya5tM+KloJZfT18b0ZOLkA7uHdPR7vNikk1J0
+   gV+eiInIeOJgncH/Lz8Rg1CO/dxPYpWH7C1fUbfMUinvn6NaYOHtmC6WG
+   A==;
+X-CSE-ConnectionGUID: 1D2+ibcYRwC3txnqYocBGQ==
+X-CSE-MsgGUID: MdVDw/8KQXa0cdtm8Op0Hw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11646"; a="67216919"
 X-IronPort-AV: E=Sophos;i="6.21,158,1763452800"; 
-   d="scan'208";a="79478995"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Dec 2025 06:27:08 -0800
-X-CSE-ConnectionGUID: KU+r585hT367bqupyrJ2pw==
-X-CSE-MsgGUID: fo2C+GjOT4Gk4Y+3HnlmnQ==
+   d="scan'208";a="67216919"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Dec 2025 06:28:09 -0800
+X-CSE-ConnectionGUID: 7/A6/qIVThOo4KT2kqsACA==
+X-CSE-MsgGUID: Pa4HXNDDTMeIDAvPIDdKxA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,158,1763452800"; 
-   d="scan'208";a="199425934"
+   d="scan'208";a="198654736"
 Received: from lkp-server01.sh.intel.com (HELO 0d09efa1b85f) ([10.239.97.150])
-  by fmviesa010.fm.intel.com with ESMTP; 18 Dec 2025 06:27:07 -0800
+  by orviesa008.jf.intel.com with ESMTP; 18 Dec 2025 06:28:08 -0800
 Received: from kbuild by 0d09efa1b85f with local (Exim 4.98.2)
 	(envelope-from <lkp@intel.com>)
-	id 1vWEy9-000000002BF-0feF;
-	Thu, 18 Dec 2025 14:27:05 +0000
-Date: Thu, 18 Dec 2025 22:26:09 +0800
+	id 1vWEz7-000000002BV-2jz6;
+	Thu, 18 Dec 2025 14:28:05 +0000
+Date: Thu, 18 Dec 2025 22:27:41 +0800
 From: kernel test robot <lkp@intel.com>
 To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
 Cc: linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 284da5de616aaebf9c2c62e5fc7cb464a064eff7
-Message-ID: <202512182255.eVuU32Qh-lkp@intel.com>
+Subject: [tty:tty-linus] BUILD SUCCESS
+ 5edb7338d6117bb0ce17ead7973c67390da42258
+Message-ID: <202512182228.4zfCgL2d-lkp@intel.com>
 User-Agent: s-nail v14.9.25
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -59,13 +59,13 @@ List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 284da5de616aaebf9c2c62e5fc7cb464a064eff7  platform/surface: Migrate to serdev specific shutdown function
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-linus
+branch HEAD: 5edb7338d6117bb0ce17ead7973c67390da42258  serial: 8250: longson: Fix NULL vs IS_ERR() bug in probe
 
-elapsed time: 1452m
+elapsed time: 1453m
 
-configs tested: 183
-configs skipped: 1
+configs tested: 184
+configs skipped: 0
 
 The following configs have been built successfully.
 More configs may be tested in the coming days.
@@ -109,6 +109,7 @@ hexagon                             defconfig    gcc-15.1.0
 hexagon               randconfig-001-20251218    gcc-11.5.0
 hexagon               randconfig-002-20251218    gcc-11.5.0
 i386                             allmodconfig    clang-20
+i386                             allmodconfig    gcc-14
 i386                              allnoconfig    gcc-15.1.0
 i386                             allyesconfig    clang-20
 i386                             allyesconfig    gcc-14
