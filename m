@@ -1,63 +1,63 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F2502D5932;
-	Sat, 20 Dec 2025 15:00:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 703941531C8;
+	Sat, 20 Dec 2025 15:23:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766242818; cv=none; b=YAgweidLA8YvdQXcISlQCtM+ZVIcLZd9nHM4Po5lFUmCKz7tiuTA4olN0lEV6b9puIUSJOY5pDfKoj8BhRE5pbHWDbawj4Bf4mJhS5l9RDszgX4AHNhRdnyhujE69fLWLRgzuLGr1eDlzgyzqQrsr9yCbp73rjSmgHmySmcAl+o=
+	t=1766244201; cv=none; b=d78neomNCJiKUEsIjWlynl4xAnEv8rHPLaIrn7olAH7fKnl6Aghhh/37jisilIdr7lcw+slv25bcmY5S8jXrm9m0GdsVl0PAX3eeYsAr9yUiGVYRMkym5OgvjwNKZkH8z5BJJRoxD/RPusGGblwuTGICq/AtdTjzjm/wSkeVHT0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766242818; c=relaxed/simple;
-	bh=Zl/x/l+ntMqzLiAIf7xRigZ7suKHCDq5CNGwD/g6d2Y=;
+	s=arc-20240116; t=1766244201; c=relaxed/simple;
+	bh=a7aA/V9EvvL+19B0Kkb8JqjoPHRuFbxxgE9bFYw1JrM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ReKCCOJSxv4yVY64wuSM83hEKKDx8LPWqXQfhp+fnIyOvBck2P000Jc5NGo5oWqJh4aTBuy1MxNhtXV3Jifg109AgOtTdXdDMHn47FNIU3lbvJeehVzyzk448xB7Q4ql8pSDLgy0JM2xrrQE1kwxfb/jf/45raHZ8FHnUeBA8Eo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RRl1PaEK; arc=none smtp.client-ip=192.198.163.12
+	 Content-Type:Content-Disposition:In-Reply-To; b=cN+3A0hR/7TMo/CWuFfyYx0Rw9LEIA0e6fmwjQRt+ReCQoQ13LnLmYD8dznGjytd9ruMhxWAikhJAZtSh7V18zfLM1PNnDPveeGFnAQsF2NK1ieyNGizb+IvOXnj2m8/qoU06JYnN95V79IthmUNXgOLi4rXJoQSRpXeqjQ5xAo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XtwUD6G/; arc=none smtp.client-ip=198.175.65.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RRl1PaEK"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XtwUD6G/"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1766242817; x=1797778817;
+  t=1766244199; x=1797780199;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=Zl/x/l+ntMqzLiAIf7xRigZ7suKHCDq5CNGwD/g6d2Y=;
-  b=RRl1PaEKlDwkLb7P9WDGyjZGDiHxNKOa4SGilUgDbPkoaots1/WA0Brx
-   HR+XdP+Jd6YJfhIffTs7efh2peBGvhgOAbztqykVoA2LsGX2eCAqJZreE
-   MpEsO01U8behYW70yOp9TfJ4F10g3CRVPT4z9Ym7kNgYJn4id90py/s5A
-   PXg3EzSU4Jpi1cWOubCXWvWtR86B4qpvvDD2Qf35gJ5e//bPSo7T7dKKL
-   ReMPJK8IjST/O8RpN1QUiVNLQM01YnGBP6pvxlsyW1tJzZOH+WSQ88TM7
-   ex3miV5zXKiLt00WdI9PZ8Yf3WsbssACic/SvoYUqZV/+aTqJG+2KgASJ
-   A==;
-X-CSE-ConnectionGUID: wBxC3T4PT7y7SjzdF1xrKw==
-X-CSE-MsgGUID: k3BG5SObT+6EX9dhSxx0Dw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11648"; a="72034856"
+  bh=a7aA/V9EvvL+19B0Kkb8JqjoPHRuFbxxgE9bFYw1JrM=;
+  b=XtwUD6G/85d8vFVmI7a8xvgv5kvYnIqE91QAvUKFIJpx6YdaeXsecDSB
+   T0snDBaxvWdLcC9TTS/pe/lJ2mVspg4WlUNtNk8JQMujAy2j2Z2lgTzGa
+   4EAOAbyhrQFprIsMWULCv515wHhuRh87c1fOwKiI8+bHFaVrz4MIRBFcI
+   qq8nu+xaEkoTWkIPsnXes3V6w1TgRsTh4hIHEVDcxrI0ID7zb7JSJvcn1
+   5RDM6MiS862JbCO07Lg7yQ+YNZLERbTbjj7W0gRvtJT5jugXd07nDylbe
+   cIsL6R8GL9tkXVuoY4zb6oIb2xaWusAYbpNpM/TPpQq5bh86DqCBosLmU
+   Q==;
+X-CSE-ConnectionGUID: vaS4i0h5Tce2+HJ8jP2MIw==
+X-CSE-MsgGUID: qS/Mf7q+RVuTVR308vgCBw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11648"; a="78494902"
 X-IronPort-AV: E=Sophos;i="6.21,164,1763452800"; 
-   d="scan'208";a="72034856"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Dec 2025 07:00:15 -0800
-X-CSE-ConnectionGUID: GJ2Jc8Q1SHWOGtQOeDRYRw==
-X-CSE-MsgGUID: fQF6PTBvQeGgrzEVyM4pNg==
+   d="scan'208";a="78494902"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Dec 2025 07:23:19 -0800
+X-CSE-ConnectionGUID: YHhaTyrKTBel+oEgLWblGQ==
+X-CSE-MsgGUID: byjzN7fXRuW8Bpbc4O1sNg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,164,1763452800"; 
-   d="scan'208";a="198360001"
+   d="scan'208";a="203642738"
 Received: from lkp-server01.sh.intel.com (HELO 0d09efa1b85f) ([10.239.97.150])
-  by orviesa010.jf.intel.com with ESMTP; 20 Dec 2025 07:00:12 -0800
+  by orviesa004.jf.intel.com with ESMTP; 20 Dec 2025 07:23:15 -0800
 Received: from kbuild by 0d09efa1b85f with local (Exim 4.98.2)
 	(envelope-from <lkp@intel.com>)
-	id 1vWyRF-000000004hd-0hcs;
-	Sat, 20 Dec 2025 15:00:09 +0000
-Date: Sat, 20 Dec 2025 22:59:30 +0800
+	id 1vWynZ-000000004jx-01ea;
+	Sat, 20 Dec 2025 15:23:13 +0000
+Date: Sat, 20 Dec 2025 23:22:25 +0800
 From: kernel test robot <lkp@intel.com>
 To: "j.turek" <jakub.turek@elsta.tech>, gregkh@linuxfoundation.org,
 	jirislaby@kernel.org
-Cc: oe-kbuild-all@lists.linux.dev, michal.simek@amd.com,
-	namcao@linutronix.de, tglx@linutronix.de, zack.rusin@broadcom.com,
-	sean.anderson@linux.dev, hshah@axiado.com,
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	michal.simek@amd.com, namcao@linutronix.de, tglx@linutronix.de,
+	zack.rusin@broadcom.com, sean.anderson@linux.dev, hshah@axiado.com,
 	linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org, "j.turek" <jakub.turek@elsta.tech>
 Subject: Re: [PATCH] serial: xilinx_uartps: fix rs485 delay_rts_after_send
-Message-ID: <202512202222.7nCGPOv4-lkp@intel.com>
+Message-ID: <202512202351.ovK2vDUR-lkp@intel.com>
 References: <20251219114826.135017-1-jakub.turek@elsta.tech>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -83,22 +83,28 @@ url:    https://github.com/intel-lab-lkp/linux/commits/j-turek/serial-xilinx_uar
 base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
 patch link:    https://lore.kernel.org/r/20251219114826.135017-1-jakub.turek%40elsta.tech
 patch subject: [PATCH] serial: xilinx_uartps: fix rs485 delay_rts_after_send
-config: sh-allmodconfig (https://download.01.org/0day-ci/archive/20251220/202512202222.7nCGPOv4-lkp@intel.com/config)
-compiler: sh4-linux-gcc (GCC) 15.1.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20251220/202512202222.7nCGPOv4-lkp@intel.com/reproduce)
+config: hexagon-allmodconfig (https://download.01.org/0day-ci/archive/20251220/202512202351.ovK2vDUR-lkp@intel.com/config)
+compiler: clang version 17.0.6 (https://github.com/llvm/llvm-project 6009708b4367171ccdbf4b5905cb6a803753fe18)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20251220/202512202351.ovK2vDUR-lkp@intel.com/reproduce)
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202512202222.7nCGPOv4-lkp@intel.com/
+| Closes: https://lore.kernel.org/oe-kbuild-all/202512202351.ovK2vDUR-lkp@intel.com/
 
 All errors (new ones prefixed by >>):
 
-   drivers/tty/serial/xilinx_uartps.c: In function 'cdns_uart_handle_tx':
->> drivers/tty/serial/xilinx_uartps.c:438:25: error: 'rts_delay' undeclared (first use in this function)
+>> drivers/tty/serial/xilinx_uartps.c:438:4: error: use of undeclared identifier 'rts_delay'
      438 |                         rts_delay = ns_to_ktime(cdns_calc_after_tx_delay(cdns_uart));
-         |                         ^~~~~~~~~
-   drivers/tty/serial/xilinx_uartps.c:438:25: note: each undeclared identifier is reported only once for each function it appears in
+         |                         ^
+   drivers/tty/serial/xilinx_uartps.c:439:40: error: use of undeclared identifier 'rts_delay'; did you mean '__delay'?
+     439 |                         hrtimer_start(&cdns_uart->tx_timer, rts_delay, HRTIMER_MODE_REL);
+         |                                                             ^~~~~~~~~
+         |                                                             __delay
+   arch/hexagon/include/asm/delay.h:11:13: note: '__delay' declared here
+      11 | extern void __delay(unsigned long cycles);
+         |             ^
+   2 errors generated.
 
 
 vim +/rts_delay +438 drivers/tty/serial/xilinx_uartps.c
