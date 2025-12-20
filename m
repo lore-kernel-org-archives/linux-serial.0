@@ -1,131 +1,150 @@
-Received: from mail73.out.titan.email (mail73.out.titan.email [3.216.99.53])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E697A158535
-	for <linux-serial@vger.kernel.org>; Sat, 20 Dec 2025 02:48:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=3.216.99.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F2502D5932;
+	Sat, 20 Dec 2025 15:00:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766198940; cv=none; b=RQqX4VWVWesXRSKinqfg6sTKnAwhAo4DNSj9vT0SPP3s9XhHelRWDHMQDqArdWBF8g3bztm+YbaegUdCMIdTWeRzMcTSjcitHl2aTuTRLMzka5U094Cgll39hmremSeHCaOH+qH0gtOv9yGJGZy71CMSrsDDIUxPT/SRmrx5tL0=
+	t=1766242818; cv=none; b=YAgweidLA8YvdQXcISlQCtM+ZVIcLZd9nHM4Po5lFUmCKz7tiuTA4olN0lEV6b9puIUSJOY5pDfKoj8BhRE5pbHWDbawj4Bf4mJhS5l9RDszgX4AHNhRdnyhujE69fLWLRgzuLGr1eDlzgyzqQrsr9yCbp73rjSmgHmySmcAl+o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766198940; c=relaxed/simple;
-	bh=m2Ah9/mD8Z6fhlkypXmz8p9HUX/8q/HEg/WIFvEGCzs=;
+	s=arc-20240116; t=1766242818; c=relaxed/simple;
+	bh=Zl/x/l+ntMqzLiAIf7xRigZ7suKHCDq5CNGwD/g6d2Y=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rHwA0xP0XNKRY65NZEOmPCYMsnf1dY07ReU6tqofbPr/EhaL2Mlo1QgO8LrcUwBwPvbgKQLl+RAEJXdpcL4jurCYduHcwX1O7A8r7CGI1eIRBfDNPYyXmhG60/uPkr3cf/fREpjPV887aEy4O7R4JHEg8+ID5CM42nCdeqd/N2w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ziyao.cc; spf=pass smtp.mailfrom=ziyao.cc; dkim=pass (1024-bit key) header.d=ziyao.cc header.i=@ziyao.cc header.b=M/f85/qf; arc=none smtp.client-ip=3.216.99.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ziyao.cc
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziyao.cc
+	 Content-Type:Content-Disposition:In-Reply-To; b=ReKCCOJSxv4yVY64wuSM83hEKKDx8LPWqXQfhp+fnIyOvBck2P000Jc5NGo5oWqJh4aTBuy1MxNhtXV3Jifg109AgOtTdXdDMHn47FNIU3lbvJeehVzyzk448xB7Q4ql8pSDLgy0JM2xrrQE1kwxfb/jf/45raHZ8FHnUeBA8Eo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RRl1PaEK; arc=none smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ziyao.cc header.i=@ziyao.cc header.b="M/f85/qf"
-Received: from localhost (localhost [127.0.0.1])
-	by smtp-out.flockmail.com (Postfix) with ESMTP id 4dY8440vgrz2xCv;
-	Sat, 20 Dec 2025 02:48:52 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; bh=9hs/mZnXRigs3cVOr+/B8POWZbewDtqV2rmBsfTbDWM=;
-	c=relaxed/relaxed; d=ziyao.cc;
-	h=cc:subject:date:from:references:in-reply-to:to:message-id:mime-version:from:to:cc:subject:date:message-id:in-reply-to:references:reply-to;
-	q=dns/txt; s=titan1; t=1766198932; v=1;
-	b=M/f85/qfW08nQRYIBpNbEjp184VrhycoRo3YXYO38q7f3n7nA//0VcqX6P/J9dnUzGg7tnxO
-	OZbcKlq9JtraIdn5MVcsNpMbYnukrAmaF2FSHLFM3s3csWhorlZTS34g0fHsaT+aHTFFEeQlJ+3
-	Z+epGopsLFMpYwU6lW0HACvA=
-Received: from pie (unknown [117.171.66.90])
-	by smtp-out.flockmail.com (Postfix) with ESMTPA id 4dY83v45t9z2xB2;
-	Sat, 20 Dec 2025 02:48:43 +0000 (UTC)
-Date: Sat, 20 Dec 2025 02:48:34 +0000
-Feedback-ID: :me@ziyao.cc:ziyao.cc:flockmailId
-From: Yao Zi <me@ziyao.cc>
-To: Guodong Xu <guodong@riscstar.com>, Conor Dooley <conor@kernel.org>
-Cc: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Palmer Dabbelt <palmer@sifive.com>,
-	Kevin Meng Zhang <zhangmeng.kevin@linux.spacemit.com>,
-	devicetree@vger.kernel.org, linux-riscv@lists.infradead.org,
-	linux-kernel@vger.kernel.org, spacemit@lists.linux.dev,
-	linux-serial@vger.kernel.org, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
-	Yixun Lan <dlan@gentoo.org>,
-	Daniel Lezcano <daniel.lezcano@linaro.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Samuel Holland <samuel.holland@sifive.com>,
-	Anup Patel <anup@brainfault.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
-	Yangyu Chen <cyy@cyyself.name>
-Subject: Re: [PATCH 7/8] riscv: dts: spacemit: add initial device tree of
- SpacemiT K3 SoC
-Message-ID: <aUYOgl8ffcJ0Xfwg@pie>
-References: <20251216-k3-basic-dt-v1-0-a0d256c9dc92@riscstar.com>
- <20251216-k3-basic-dt-v1-7-a0d256c9dc92@riscstar.com>
- <60948ca2-ed3d-485b-9b11-15df7ef8791d@canonical.com>
- <CAH1PCMb=+TvB1w+G6a2ANDp05HUwC4r6CFBDHXFwSmoP3Mm8xw@mail.gmail.com>
- <f9b6b5e2-ec9e-4208-8267-77020e0a9411@canonical.com>
- <20251218-basil-quantum-225ce16e4699@spud>
- <CAH1PCMZ3KM9-D3NJ1N2LUHTHFSDVKmGKT5fU8knAL7NnV9E-gw@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RRl1PaEK"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1766242817; x=1797778817;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Zl/x/l+ntMqzLiAIf7xRigZ7suKHCDq5CNGwD/g6d2Y=;
+  b=RRl1PaEKlDwkLb7P9WDGyjZGDiHxNKOa4SGilUgDbPkoaots1/WA0Brx
+   HR+XdP+Jd6YJfhIffTs7efh2peBGvhgOAbztqykVoA2LsGX2eCAqJZreE
+   MpEsO01U8behYW70yOp9TfJ4F10g3CRVPT4z9Ym7kNgYJn4id90py/s5A
+   PXg3EzSU4Jpi1cWOubCXWvWtR86B4qpvvDD2Qf35gJ5e//bPSo7T7dKKL
+   ReMPJK8IjST/O8RpN1QUiVNLQM01YnGBP6pvxlsyW1tJzZOH+WSQ88TM7
+   ex3miV5zXKiLt00WdI9PZ8Yf3WsbssACic/SvoYUqZV/+aTqJG+2KgASJ
+   A==;
+X-CSE-ConnectionGUID: wBxC3T4PT7y7SjzdF1xrKw==
+X-CSE-MsgGUID: k3BG5SObT+6EX9dhSxx0Dw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11648"; a="72034856"
+X-IronPort-AV: E=Sophos;i="6.21,164,1763452800"; 
+   d="scan'208";a="72034856"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Dec 2025 07:00:15 -0800
+X-CSE-ConnectionGUID: GJ2Jc8Q1SHWOGtQOeDRYRw==
+X-CSE-MsgGUID: fQF6PTBvQeGgrzEVyM4pNg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,164,1763452800"; 
+   d="scan'208";a="198360001"
+Received: from lkp-server01.sh.intel.com (HELO 0d09efa1b85f) ([10.239.97.150])
+  by orviesa010.jf.intel.com with ESMTP; 20 Dec 2025 07:00:12 -0800
+Received: from kbuild by 0d09efa1b85f with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1vWyRF-000000004hd-0hcs;
+	Sat, 20 Dec 2025 15:00:09 +0000
+Date: Sat, 20 Dec 2025 22:59:30 +0800
+From: kernel test robot <lkp@intel.com>
+To: "j.turek" <jakub.turek@elsta.tech>, gregkh@linuxfoundation.org,
+	jirislaby@kernel.org
+Cc: oe-kbuild-all@lists.linux.dev, michal.simek@amd.com,
+	namcao@linutronix.de, tglx@linutronix.de, zack.rusin@broadcom.com,
+	sean.anderson@linux.dev, hshah@axiado.com,
+	linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, "j.turek" <jakub.turek@elsta.tech>
+Subject: Re: [PATCH] serial: xilinx_uartps: fix rs485 delay_rts_after_send
+Message-ID: <202512202222.7nCGPOv4-lkp@intel.com>
+References: <20251219114826.135017-1-jakub.turek@elsta.tech>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAH1PCMZ3KM9-D3NJ1N2LUHTHFSDVKmGKT5fU8knAL7NnV9E-gw@mail.gmail.com>
-X-F-Verdict: SPFVALID
-X-Titan-Src-Out: 1766198931978633735.27573.7898649982977667917@prod-use1-smtp-out1001.
-X-CMAE-Score: 0
-X-CMAE-Analysis: v=2.4 cv=a8/K9VSF c=1 sm=1 tr=0 ts=69460e93
-	a=rBp+3XZz9uO5KTvnfbZ58A==:117 a=rBp+3XZz9uO5KTvnfbZ58A==:17
-	a=IkcTkHD0fZMA:10 a=MKtGQD3n3ToA:10 a=CEWIc4RMnpUA:10 a=VwQbUJbxAAAA:8
-	a=jDTaAnbEAQuvd0Yd3F0A:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
-	a=3z85VNIBY5UIEeAh_hcH:22 a=NWVoK91CQySWRX1oVYDe:22
+In-Reply-To: <20251219114826.135017-1-jakub.turek@elsta.tech>
 
-On Fri, Dec 19, 2025 at 10:03:24AM +0800, Guodong Xu wrote:
-> Hi, Conor and Heinrich
-> 
-> On Thu, Dec 18, 2025 at 8:56 AM Conor Dooley <conor@kernel.org> wrote:
-> >
-> > On Wed, Dec 17, 2025 at 09:07:14AM +0100, Heinrich Schuchardt wrote:
-> > > On 12/17/25 08:11, Guodong Xu wrote:
-> >
-> > > > Specifically, I must adhere to
-> > > > Documentation/devicetree/bindings/riscv/extensions.yaml (and cpus.yaml for
-> > > > properties like 'riscv,sv39' which stands for the extension Sv39). If I
-> > > > add extension strings that are not yet defined in these schemas, such as
-> > > > supm, running 'make dtbs_check W=3' fails with: 'supm' is not one of
-> > > > ['i', 'm', 'a', ...], followed by "Unevaluated properties are not allowed."
-> > >
-> > > If Documentation/devicetree/bindings/riscv/extensions.yaml is incomplete
-> > > with respect to ratified extensions, I guess the right approach is to amend
-> > > it and not to curtail the CPU description.
-> >
-> > Absolutely. If the cpu supports something that is not documented, then
-> > please document it rather than omit from the devicetree.
-> 
+Hi j.turek,
 
-...
+kernel test robot noticed the following build errors:
 
-> Strictly describing the SpacemiT X100/K3 (or any core) as RVA23-compliant
-> requires adding these extensions that are currently missing from
-> the kernel bindings:
-> RVA23U64: Ziccif, Ziccamoa, Zicclsm, Za64rs
-> RVA23S64: Ss1p13, Ssccptr, Sstvecd, Sstvala, Sscounterenw, Ssu64xl,
->           Sha, Shcounterenw, Shvstvala, Shtvala, Shvstvecd, Shvsatpa, Shgatpa
-> Plus 'Supm', 'Zic64b', 'Ssstateen', 'B' where the kernel supports them but
+[auto build test ERROR on tty/tty-testing]
+[also build test ERROR on tty/tty-next tty/tty-linus usb/usb-testing usb/usb-next usb/usb-linus linus/master v6.19-rc1 next-20251219]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Please note B is just the abbreviation of "zba", "zbb", and "zbs", all
-of them have been documented in extensions.yaml.
+url:    https://github.com/intel-lab-lkp/linux/commits/j-turek/serial-xilinx_uartps-fix-rs485-delay_rts_after_send/20251219-203016
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+patch link:    https://lore.kernel.org/r/20251219114826.135017-1-jakub.turek%40elsta.tech
+patch subject: [PATCH] serial: xilinx_uartps: fix rs485 delay_rts_after_send
+config: sh-allmodconfig (https://download.01.org/0day-ci/archive/20251220/202512202222.7nCGPOv4-lkp@intel.com/config)
+compiler: sh4-linux-gcc (GCC) 15.1.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20251220/202512202222.7nCGPOv4-lkp@intel.com/reproduce)
 
-> they are not literally documented in yaml.
-> 
-> Is this approach acceptable to you? If so, I will proceed with submitting them.
-> 
-> Thank you very much.
-> 
-> Best regards,
-> Guodong Xu
-> 
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202512202222.7nCGPOv4-lkp@intel.com/
 
-Regards,
-Yao Zi
+All errors (new ones prefixed by >>):
+
+   drivers/tty/serial/xilinx_uartps.c: In function 'cdns_uart_handle_tx':
+>> drivers/tty/serial/xilinx_uartps.c:438:25: error: 'rts_delay' undeclared (first use in this function)
+     438 |                         rts_delay = ns_to_ktime(cdns_calc_after_tx_delay(cdns_uart));
+         |                         ^~~~~~~~~
+   drivers/tty/serial/xilinx_uartps.c:438:25: note: each undeclared identifier is reported only once for each function it appears in
+
+
+vim +/rts_delay +438 drivers/tty/serial/xilinx_uartps.c
+
+   418	
+   419	/**
+   420	 * cdns_uart_handle_tx - Handle the bytes to be transmitted.
+   421	 * @dev_id: Id of the UART port
+   422	 * Return: None
+   423	 */
+   424	static void cdns_uart_handle_tx(void *dev_id)
+   425	{
+   426		struct uart_port *port = (struct uart_port *)dev_id;
+   427		struct cdns_uart *cdns_uart = port->private_data;
+   428		struct tty_port *tport = &port->state->port;
+   429		unsigned int numbytes;
+   430		unsigned char ch;
+   431	
+   432		if (kfifo_is_empty(&tport->xmit_fifo) || uart_tx_stopped(port)) {
+   433			/* Disable the TX Empty interrupt */
+   434			writel(CDNS_UART_IXR_TXEMPTY, port->membase + CDNS_UART_IDR);
+   435			/* Set RTS line after delay */
+   436			if (cdns_uart->port->rs485.flags & SER_RS485_ENABLED) {
+   437				cdns_uart->tx_timer.function = &cdns_rs485_rx_callback;
+ > 438				rts_delay = ns_to_ktime(cdns_calc_after_tx_delay(cdns_uart));
+   439				hrtimer_start(&cdns_uart->tx_timer, rts_delay, HRTIMER_MODE_REL);
+   440			}
+   441			return;
+   442		}
+   443	
+   444		numbytes = port->fifosize;
+   445		while (numbytes &&
+   446		       !(readl(port->membase + CDNS_UART_SR) & CDNS_UART_SR_TXFULL) &&
+   447		       uart_fifo_get(port, &ch)) {
+   448			writel(ch, port->membase + CDNS_UART_FIFO);
+   449			numbytes--;
+   450		}
+   451	
+   452		if (kfifo_len(&tport->xmit_fifo) < WAKEUP_CHARS)
+   453			uart_write_wakeup(port);
+   454	
+   455		/* Enable the TX Empty interrupt */
+   456		writel(CDNS_UART_IXR_TXEMPTY, cdns_uart->port->membase + CDNS_UART_IER);
+   457	}
+   458	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
