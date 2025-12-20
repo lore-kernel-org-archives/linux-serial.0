@@ -1,109 +1,131 @@
-Received: from mx-relay28-hz2.antispameurope.com (mx-relay28-hz2.antispameurope.com [94.100.136.228])
+Received: from mail73.out.titan.email (mail73.out.titan.email [3.216.99.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13F3E32E15A
-	for <linux-serial@vger.kernel.org>; Fri, 19 Dec 2025 15:29:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=94.100.136.228
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766158152; cv=pass; b=dyP3L4jok1rKH66FWE9R9ZTI6vrpC1lST5r666fKgHeQDOPVscpR4dx7RTLW+d4CiMmV52pe7lDTt5AwsUy8dso/g3M/Yg9k6QOBc8zNZ4QMn/AJtklMVnez0IfXH6rPD2DkEW9Hr18lXjy3MWePnqcvXaqyVp32RXB/nJhmI/I=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766158152; c=relaxed/simple;
-	bh=gAV5OzuQXwWPCMJv316Z6wQuDjqrcDF85HWGHeKlv7w=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=NuETePBcWOARoXv9e9X2J9Vp0LcSv1METqVkenDgiytMIniQzBsNvss+FcJC2fGYMlVCCNhGGjumo2lPCWmZ+w4iOSpnqjFDN/B6DazoVhMfZ/j4lR9L6zonjP92pegoYu2/fq45+Q5OJabNfCX+qOTkL8OCa5fqaGETVwoxLDE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=ew.tq-group.com; spf=pass smtp.mailfrom=ew.tq-group.com; dkim=pass (2048-bit key) header.d=ew.tq-group.com header.i=@ew.tq-group.com header.b=YGN9xaEO; arc=pass smtp.client-ip=94.100.136.228
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=ew.tq-group.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ew.tq-group.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E697A158535
+	for <linux-serial@vger.kernel.org>; Sat, 20 Dec 2025 02:48:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=3.216.99.53
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1766198940; cv=none; b=RQqX4VWVWesXRSKinqfg6sTKnAwhAo4DNSj9vT0SPP3s9XhHelRWDHMQDqArdWBF8g3bztm+YbaegUdCMIdTWeRzMcTSjcitHl2aTuTRLMzka5U094Cgll39hmremSeHCaOH+qH0gtOv9yGJGZy71CMSrsDDIUxPT/SRmrx5tL0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1766198940; c=relaxed/simple;
+	bh=m2Ah9/mD8Z6fhlkypXmz8p9HUX/8q/HEg/WIFvEGCzs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=rHwA0xP0XNKRY65NZEOmPCYMsnf1dY07ReU6tqofbPr/EhaL2Mlo1QgO8LrcUwBwPvbgKQLl+RAEJXdpcL4jurCYduHcwX1O7A8r7CGI1eIRBfDNPYyXmhG60/uPkr3cf/fREpjPV887aEy4O7R4JHEg8+ID5CM42nCdeqd/N2w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ziyao.cc; spf=pass smtp.mailfrom=ziyao.cc; dkim=pass (1024-bit key) header.d=ziyao.cc header.i=@ziyao.cc header.b=M/f85/qf; arc=none smtp.client-ip=3.216.99.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ziyao.cc
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziyao.cc
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ew.tq-group.com header.i=@ew.tq-group.com header.b="YGN9xaEO"
-ARC-Authentication-Results: i=1; mx-gate28-hz2.hornetsecurity.com 1; spf=pass
- reason=mailfrom (ip=94.100.132.6, headerfrom=ew.tq-group.com)
- smtp.mailfrom=ew.tq-group.com smtp.helo=smtp-out02-hz1.hornetsecurity.com;
- dmarc=pass header.from=ew.tq-group.com orig.disposition=pass
-ARC-Message-Signature: a=rsa-sha256;
- bh=7z+cBDDiomQU7X5BwXP3yaiVOwHDXbtZONGbFihOuDQ=; c=relaxed/relaxed;
- d=hornetsecurity.com; h=from:to:date:subject:mime-version:; i=1; s=hse1;
- t=1766158114;
- b=W7ucKpAUs5QMLRGCkISsoEtG4k6OBoq2tq13GpGhh3rt0UaHh15wBb1nHUF1rWeNf6zWvlO5
- vY3vMcRBBzSp8ejfd4e1LQF8c3tJHYahZCkbCBUgvLFyRh33Ee3bLFkB9R+Ozt0LJ7bXWj9PdHk
- AYvgdiKHG84TFdM7eLvxVOD2NH31eJEpGGgmEPO64V/WUK+9zrsLN1pIJs4rtOm5sHQr1ryWQYT
- ihun6qbM71iYNps37N+NuyRRB5I02A9TesuiNjqZKmINsL5heyN5On2SMejzYOBXnXjcRcN5YEs
- 853dsMehCpdSPa1fMZZaVa07Ud5ZA91PzPWRb4eRy9FYQ==
-ARC-Seal: a=rsa-sha256; cv=none; d=hornetsecurity.com; i=1; s=hse1;
- t=1766158114;
- b=qu3ZAiv/zFXTCSU3BBnsZnRSTHOZvcPvxRICKi2Qe67LdrPAcnV3ft9DaSgItfISohuSlB45
- NkF6H6sBzZSzNg+GIyGI6dMGyZCxkjYWFADdWb/f7nWtV/w+AHOOG/cf4u2/cdNs76qOcm58i41
- gwwYKb0JHaffMKCmJybBcC+bWof+8hoH8mq8EMJM8IVrtFurP2Y5hfAZXxhi5tED7Dt22o1KQW7
- opHqnGRF8OEc2QYF5qfmaG4HEwSjyRbhBszsDx9KFXHCDOXL2NCAbhqVjXHaVbP+yf8Rl+8D5kz
- RZZ2Sw/g2HVwuHBBRRJO1uaxwA6nRm6Xq5couAY1TBAcQ==
-Received: from he-nlb01-hz1.hornetsecurity.com ([94.100.132.6]) by mx-relay28-hz2.antispameurope.com;
- Fri, 19 Dec 2025 16:28:33 +0100
-Received: from steina-w.tq-net.de (host-82-135-125-110.customer.m-online.net [82.135.125.110])
-	(Authenticated sender: alexander.stein@ew.tq-group.com)
-	by smtp-out02-hz1.hornetsecurity.com (Postfix) with ESMTPSA id DE6E25A0CA0;
-	Fri, 19 Dec 2025 16:28:19 +0100 (CET)
-From: Alexander Stein <alexander.stein@ew.tq-group.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Alexander Stein <alexander.stein@ew.tq-group.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Cosmin Tanislav <demonsingur@gmail.com>
-Subject: [PATCH 1/1] serial: core: Fix serial device initialization
-Date: Fri, 19 Dec 2025 16:28:12 +0100
-Message-ID: <20251219152813.1893982-1-alexander.stein@ew.tq-group.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (1024-bit key) header.d=ziyao.cc header.i=@ziyao.cc header.b="M/f85/qf"
+Received: from localhost (localhost [127.0.0.1])
+	by smtp-out.flockmail.com (Postfix) with ESMTP id 4dY8440vgrz2xCv;
+	Sat, 20 Dec 2025 02:48:52 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; bh=9hs/mZnXRigs3cVOr+/B8POWZbewDtqV2rmBsfTbDWM=;
+	c=relaxed/relaxed; d=ziyao.cc;
+	h=cc:subject:date:from:references:in-reply-to:to:message-id:mime-version:from:to:cc:subject:date:message-id:in-reply-to:references:reply-to;
+	q=dns/txt; s=titan1; t=1766198932; v=1;
+	b=M/f85/qfW08nQRYIBpNbEjp184VrhycoRo3YXYO38q7f3n7nA//0VcqX6P/J9dnUzGg7tnxO
+	OZbcKlq9JtraIdn5MVcsNpMbYnukrAmaF2FSHLFM3s3csWhorlZTS34g0fHsaT+aHTFFEeQlJ+3
+	Z+epGopsLFMpYwU6lW0HACvA=
+Received: from pie (unknown [117.171.66.90])
+	by smtp-out.flockmail.com (Postfix) with ESMTPA id 4dY83v45t9z2xB2;
+	Sat, 20 Dec 2025 02:48:43 +0000 (UTC)
+Date: Sat, 20 Dec 2025 02:48:34 +0000
+Feedback-ID: :me@ziyao.cc:ziyao.cc:flockmailId
+From: Yao Zi <me@ziyao.cc>
+To: Guodong Xu <guodong@riscstar.com>, Conor Dooley <conor@kernel.org>
+Cc: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Palmer Dabbelt <palmer@sifive.com>,
+	Kevin Meng Zhang <zhangmeng.kevin@linux.spacemit.com>,
+	devicetree@vger.kernel.org, linux-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org, spacemit@lists.linux.dev,
+	linux-serial@vger.kernel.org, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
+	Yixun Lan <dlan@gentoo.org>,
+	Daniel Lezcano <daniel.lezcano@linaro.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Samuel Holland <samuel.holland@sifive.com>,
+	Anup Patel <anup@brainfault.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
+	Yangyu Chen <cyy@cyyself.name>
+Subject: Re: [PATCH 7/8] riscv: dts: spacemit: add initial device tree of
+ SpacemiT K3 SoC
+Message-ID: <aUYOgl8ffcJ0Xfwg@pie>
+References: <20251216-k3-basic-dt-v1-0-a0d256c9dc92@riscstar.com>
+ <20251216-k3-basic-dt-v1-7-a0d256c9dc92@riscstar.com>
+ <60948ca2-ed3d-485b-9b11-15df7ef8791d@canonical.com>
+ <CAH1PCMb=+TvB1w+G6a2ANDp05HUwC4r6CFBDHXFwSmoP3Mm8xw@mail.gmail.com>
+ <f9b6b5e2-ec9e-4208-8267-77020e0a9411@canonical.com>
+ <20251218-basil-quantum-225ce16e4699@spud>
+ <CAH1PCMZ3KM9-D3NJ1N2LUHTHFSDVKmGKT5fU8knAL7NnV9E-gw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-cloud-security-sender:alexander.stein@ew.tq-group.com
-X-cloud-security-recipient:linux-serial@vger.kernel.org
-X-cloud-security-crypt: load encryption module
-X-cloud-security-Mailarchiv: E-Mail archived for: alexander.stein@ew.tq-group.com
-X-cloud-security-Mailarchivtype:outbound
-X-cloud-security-Virusscan:CLEAN
-X-cloud-security-disclaimer: This E-Mail was scanned by E-Mailservice on mx-relay28-hz2.antispameurope.com with 4dXryr37zzz1QFJX
-X-cloud-security-connect: he-nlb01-hz1.hornetsecurity.com[94.100.132.6], TLS=1, IP=94.100.132.6
-X-cloud-security-Digest:b6045aaf1d5356b3f007ca7799d8fc75
-X-cloud-security:scantime:2.162
-DKIM-Signature: a=rsa-sha256;
- bh=7z+cBDDiomQU7X5BwXP3yaiVOwHDXbtZONGbFihOuDQ=; c=relaxed/relaxed;
- d=ew.tq-group.com;
- h=content-type:mime-version:subject:from:to:message-id:date; s=hse1;
- t=1766158113; v=1;
- b=YGN9xaEOFWqGFwgvThuqNzklOAgKN5cT3OOGZEoXd/PURqU6040fOnAI9WTlK2N3Bf3tilFm
- A13jk0FrsdWXWc5pwxMEH8jyiVhNG0SJH7YNiAKu1lGcTgxGuw9pT6/CfR6l68dz8rlMaw2l/KQ
- ERP1IOSNljPEn1++65VETF8XNKLOZplmKnHZYZq0vsGOWSCr5swV7RJMRtiRwZtj/SxuzAgaZqJ
- JnlwiLcsVl8G3R2G6bZd2TY46BxITvl5CvLGf24E7e1psAXP1yO5BCjmYwrdBKxmdfZxnNW0n0o
- OvX6o7Za0PAuhpIFvX7UAujAc7mfb18qE0TEfaIxyOIKA==
+In-Reply-To: <CAH1PCMZ3KM9-D3NJ1N2LUHTHFSDVKmGKT5fU8knAL7NnV9E-gw@mail.gmail.com>
+X-F-Verdict: SPFVALID
+X-Titan-Src-Out: 1766198931978633735.27573.7898649982977667917@prod-use1-smtp-out1001.
+X-CMAE-Score: 0
+X-CMAE-Analysis: v=2.4 cv=a8/K9VSF c=1 sm=1 tr=0 ts=69460e93
+	a=rBp+3XZz9uO5KTvnfbZ58A==:117 a=rBp+3XZz9uO5KTvnfbZ58A==:17
+	a=IkcTkHD0fZMA:10 a=MKtGQD3n3ToA:10 a=CEWIc4RMnpUA:10 a=VwQbUJbxAAAA:8
+	a=jDTaAnbEAQuvd0Yd3F0A:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+	a=3z85VNIBY5UIEeAh_hcH:22 a=NWVoK91CQySWRX1oVYDe:22
 
-During restoring sysfs fwnode information the information of_node_reused
-was dropped. This was previously set by device_set_of_node_from_dev().
-Add it back manually
+On Fri, Dec 19, 2025 at 10:03:24AM +0800, Guodong Xu wrote:
+> Hi, Conor and Heinrich
+> 
+> On Thu, Dec 18, 2025 at 8:56 AM Conor Dooley <conor@kernel.org> wrote:
+> >
+> > On Wed, Dec 17, 2025 at 09:07:14AM +0100, Heinrich Schuchardt wrote:
+> > > On 12/17/25 08:11, Guodong Xu wrote:
+> >
+> > > > Specifically, I must adhere to
+> > > > Documentation/devicetree/bindings/riscv/extensions.yaml (and cpus.yaml for
+> > > > properties like 'riscv,sv39' which stands for the extension Sv39). If I
+> > > > add extension strings that are not yet defined in these schemas, such as
+> > > > supm, running 'make dtbs_check W=3' fails with: 'supm' is not one of
+> > > > ['i', 'm', 'a', ...], followed by "Unevaluated properties are not allowed."
+> > >
+> > > If Documentation/devicetree/bindings/riscv/extensions.yaml is incomplete
+> > > with respect to ratified extensions, I guess the right approach is to amend
+> > > it and not to curtail the CPU description.
+> >
+> > Absolutely. If the cpu supports something that is not documented, then
+> > please document it rather than omit from the devicetree.
+> 
 
-Fixes: 24ec03cc5512 ("serial: core: Restore sysfs fwnode information")
-Suggested-by: Cosmin Tanislav <demonsingur@gmail.com>
-Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
----
- drivers/tty/serial/serial_base_bus.c | 1 +
- 1 file changed, 1 insertion(+)
+...
 
-diff --git a/drivers/tty/serial/serial_base_bus.c b/drivers/tty/serial/serial_base_bus.c
-index 8e891984cdc0d..1e1ad28d83fcf 100644
---- a/drivers/tty/serial/serial_base_bus.c
-+++ b/drivers/tty/serial/serial_base_bus.c
-@@ -74,6 +74,7 @@ static int serial_base_device_init(struct uart_port *port,
- 	dev->parent = parent_dev;
- 	dev->bus = &serial_base_bus_type;
- 	dev->release = release;
-+	dev->of_node_reused = true;
- 
- 	device_set_node(dev, fwnode_handle_get(dev_fwnode(parent_dev)));
- 
--- 
-2.43.0
+> Strictly describing the SpacemiT X100/K3 (or any core) as RVA23-compliant
+> requires adding these extensions that are currently missing from
+> the kernel bindings:
+> RVA23U64: Ziccif, Ziccamoa, Zicclsm, Za64rs
+> RVA23S64: Ss1p13, Ssccptr, Sstvecd, Sstvala, Sscounterenw, Ssu64xl,
+>           Sha, Shcounterenw, Shvstvala, Shtvala, Shvstvecd, Shvsatpa, Shgatpa
+> Plus 'Supm', 'Zic64b', 'Ssstateen', 'B' where the kernel supports them but
 
+Please note B is just the abbreviation of "zba", "zbb", and "zbs", all
+of them have been documented in extensions.yaml.
+
+> they are not literally documented in yaml.
+> 
+> Is this approach acceptable to you? If so, I will proceed with submitting them.
+> 
+> Thank you very much.
+> 
+> Best regards,
+> Guodong Xu
+> 
+
+Regards,
+Yao Zi
