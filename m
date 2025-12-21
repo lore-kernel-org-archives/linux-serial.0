@@ -1,67 +1,67 @@
-Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A19421CC4F
-	for <linux-serial@vger.kernel.org>; Sun, 21 Dec 2025 09:11:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68E6A1E4AB
+	for <linux-serial@vger.kernel.org>; Sun, 21 Dec 2025 09:19:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766308319; cv=none; b=g1sTrcN88kfnHRpS9Z3DUkn9gEPTTSnoqtE2g4MehFI0WnSQqgAvu9o/UeFeQ7mMSiCzQXKsqf0eAGx4XV+JrTkMo5fs3UVF6pnGNY5qcUqDCvZ+xngZVzIQe4sZ/X//nfjztc2QnlLlfP+GenHTv8XhKRPZ3J9jkwygoOVCXPo=
+	t=1766308760; cv=none; b=PW2yDKFeQVmMxcx2UO24SKwtudfIcFLEU7lBZhol5V9S6ADwW2Cd6ecHcFhEQc4faAEh5VJPbi1oOYEATWBKojs0xufpdylKYDOyKZ2IH+vHWdkYEIrsLhapQu6A8wHHPA1tsl2g4o66M78xAwKMnBa6n+DC0X8Q1gMZEphuz10=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766308319; c=relaxed/simple;
-	bh=p4K6ZZ5UDbv6xtedRbkKqqzY+uDr3R/k1JkTcnv+oro=;
+	s=arc-20240116; t=1766308760; c=relaxed/simple;
+	bh=eqlkQJRKqtMXVBqn3VqjTrRNC3dJwL/DIWa+q2BpyEE=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=dRQq49bplB9A+jQz8lzInf9sGhf1Prwog35MG90hNr5KtOQ3DybHXZ/ZRatDPL0ymJOEQvowp7dqNa3yj1cRexkzW9AqpCYobINarlTiojSIXjS5B4MGUaNipOhjJiaHLsaPdrZb8hE/ncrs4F94aWpdEqw10T7RM6ImsuL5Jhc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=N6D1rLmk; arc=none smtp.client-ip=209.85.218.44
+	 In-Reply-To:Content-Type; b=bM3U2VgI2HgQip3oWak4+2VgsnSTgp9rtkR1apf3NI38IsYSCg62+x1GqpiS7ZeQ8CvYFC2TKpRKUobV1ZQYLB27ZRNaqfrebiDCb61Cp6pkgjseE6e96UcbnN01TNFDNlP+SeTW1a6CSxuymeyhtiU8NxqVV5j6U3jYiGFDm/Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nfungn1d; arc=none smtp.client-ip=209.85.128.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="N6D1rLmk"
-Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-b79f98adea4so457708466b.0
-        for <linux-serial@vger.kernel.org>; Sun, 21 Dec 2025 01:11:57 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nfungn1d"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-477632d9326so18587035e9.1
+        for <linux-serial@vger.kernel.org>; Sun, 21 Dec 2025 01:19:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1766308316; x=1766913116; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1766308756; x=1766913556; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=bJxTo1StsAPyAw5V2VT3FLs+d6cjUn62zSVYT6JS2So=;
-        b=N6D1rLmk3gP51ACwD0tA1zW27UOIXVfe4Elg8MJkX2SwEKtjMUQkEt4H44vKWfBN3+
-         UuzKSSgyne5VGI0uqg82gJajSi/ckpvSznIc5IjQ+QCzCTNu99DS5S0kadt0X5ixbiDO
-         lV8O2Ev5ss3qVIWEAx3J5HedVWbNK/JH2cqXbk3WPlP4vUAx0gd+NWIB1mggy1g4K8JA
-         BG4DPBx8kdaqc/6sdcDOQfH4rH6x78N1Cz3OQdV4tP7FuNill8diV7DyKhuOdPPcAmdi
-         8JTyT2ph38kgqzE7NT58UmBDEEbctbg1VfqDa2ans/QKw4X6uA4qQD2Hhqvwn2WQE62k
-         t2zw==
+        bh=jVxQ7m55+e7xHSmDYkZzWySVBucnYtEFV6uMMTNQV4s=;
+        b=nfungn1d3c45/tiMnDaneo84S1c++KsDtsW9v5I9enmkWUysc+hel6YCets78c1aD/
+         bJvs/BLmA+Vsv5Bwq9UZOowRG1gwAkFnZv88Hm75tO1KGuUysbPBrEIAMet/+zfspsri
+         IOTZ/BOFNhcJSXJTPNpp5a7PnMad41IJfIsjMuBX29dsoJaEu4TY33rW1ozTMZq2y7QQ
+         3FV7GjvaqfFNmxmk3YLunied4VFkIPDnjNHk+yulWqc2gvLtHnB4MJZnU1kzVs+vddYK
+         zUMCZ0cOQ4iJpjvfGGyugNyLTxGAs3cRQg59qQeQO0cGqp3EBwdWRYNBjMmFZFfw/fZr
+         k0kQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1766308316; x=1766913116;
+        d=1e100.net; s=20230601; t=1766308756; x=1766913556;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=bJxTo1StsAPyAw5V2VT3FLs+d6cjUn62zSVYT6JS2So=;
-        b=tfuGbBYBTgB/d7kVCDbjRT8KD6uo4IbXeU88KA+8MNCy8tq88YpzlGAuTw5tQrwknV
-         OubDCdefnNTKPwLsSLBbApg7hfOdIBl6TosU/l4Gun1/zmHuKCKTcZTuwV+jQmMetHph
-         pSc5LpzP6QoQ/tmGfAc8U30n+8sYrbcvdk/ZcGfn+ipDX5ScbW+NUNxEWw4yYEqHlbmY
-         hY/631SGT4iTdQV0mvCU9G5YXL1OR8UdMcPxEKECsQ62iKFdf1QBM5lGd+qDWFYelCBN
-         oe5VPdoZTwsLk/SRiMw34MF69E1bm1+euzpG0zc863vwzwvBKBMu1PZf4Ftf0gz92Z3S
-         MN5Q==
-X-Gm-Message-State: AOJu0YwviOzpCJqSNlVy7e29YtrXmPuhujFVbcvuHQR3gdNLcaoGAzUO
-	VEamdLBWjb9TcXGUIe+XmqGvJ+Hjradk5dhTnDNcXZsSiK2yWXYt6zMg
-X-Gm-Gg: AY/fxX5mSfD9pSo3xs+wredPydKbrqwkTh8TC3ez4NWMH/e6YpglbT4tkW1XztfbFrf
-	8qM43vKRhTh4+YMJowuRs5CMMZMuTVRCnjn8eR8Wq1yoO4XIPp5xR7Wc+vw+R0Cm84jApu6Nx67
-	flTQ3H+PNDUVMsZZUgXAaF7mNM4WmjVgdWERp5fgOWkHOwTcP6W02Xz3LTEMiDyEWpiW9N67Nke
-	DfS+8O+B5TC87jb3xpnOTTmEviaCTRLPhWhk36XSZmIYomVoKms6iGu1oKwdyNA6i2OyhGsVE0C
-	mfA9Wl1PVV/s6CMlB3LMPE9b6K4AmJLBVeXUGNAE0lmfkYtMulifi/TqbNR5AHL7tNOtmQJ26vu
-	ogu+IB7fEAsh+h+P+f7iVzwiTB7Z/95Ff4BHjYBqVjkDI6RbRb8XpxE7UcYXApihkJNB0UhWUSp
-	iHNzLll7hRnREojnOXRChY6+CJ407WmXF9KE1L9fWOuoFOi19bbTpJSHeCnvkO2WYKcq475GQid
-	aBnu3x2plkiA9ib2R04VgkZxLV0p/tnF2ZuuiesKFhuVw==
-X-Google-Smtp-Source: AGHT+IEsEr93QO0hH1tZL57OTUeoBwpBNF/UhF1GdR8z9V2lP4dhUOAFVvNvMgPMaCLAYn6SQxRbOA==
-X-Received: by 2002:a17:907:3fa8:b0:b76:3548:cdef with SMTP id a640c23a62f3a-b8036f2abcbmr808495166b.25.1766308315612;
-        Sun, 21 Dec 2025 01:11:55 -0800 (PST)
+        bh=jVxQ7m55+e7xHSmDYkZzWySVBucnYtEFV6uMMTNQV4s=;
+        b=PvwR6+Joy7PsjFmybPnS34JRw7l/KORtSchT7QxHSa/bJt77pL8BCM4WN4+7uee0tH
+         NF6Oi6yAp82/3Uss6mKGeQtEKpZ+1dsGUocCtbN43hvlyWq3y615jOcxI7canIo+/YuK
+         l8e1KBHL/+R0iBU5cUIcuRZlY4jnBGTh2/HLxvY//yrvfHITQogU8uY/0MpIXvK23YAp
+         xXDBp/dYUx86VgJ9Gadg0bCuv/xlN5l1nxD/VF+vk/OTUiZooTwiyjOqXwANxaQyRfci
+         NOo4x/6rMaHRSads3sJ67jwxq9bPDoQtMN0MGUAmtqdLN2NPYO5j1y3fMBw1333m+GQC
+         3QKw==
+X-Gm-Message-State: AOJu0YwBV9QPLsZFd3ty3RCh3ejf517TEIQ17itjxgnQohf9Puz73NrI
+	hE5PpPs68u99XBOskdACwvBSmp3ficOCA2CN3cWCx/1vkQauPCXFM36A
+X-Gm-Gg: AY/fxX6993zz5ztFsTGpTMb4agPhddsQrAsaKBEMI/X6+DexhqQCbVyhYPiqekyhFtV
+	FzlYlEzzNC5tMyztGsSV7H674nw1w524w6ei1CgBMOLVSkeovBvgUuEbuEQua401twFd8Y18COr
+	lVoZVWQ7aKxFsudb0F/2R4azjtL+CpIPGZjal5OYtr+BylhE8WNX1F+fgC0Vhf/MsVfUO6VoejF
+	o2y0QnsX3QjAmCz9BiBZqvQJwqt3hWAaUw11q0rDJK2KFfZXtUNubO/KqQ6dq8H+DCEKGR7V06Y
+	6Gt48Wm5Wvs3OFLbmCW1awUDxkDBPXKaQ0EAzrtC0qqtgeNWQxPYKtwqWI6++n/0NPkGxcMjEgp
+	jz4XXYDDQWLGJM3CQNfedDjCTXdGLbP23iVYW6NpvJkhCxQXwJyuu51CNkIMDIVGmPoePxvru/I
+	3BxFwswxuPDwfm73Qce12wlECt/4IC98GLk3l39vTpusZjbZNou43SQ+CE6tCiBe02MPhpJEegH
+	3SWTrhZNzUxEwMPj6Tmuw3oGlXwlrTmw70gwjc08j61ww==
+X-Google-Smtp-Source: AGHT+IFp7in95JzQaIywx+426dSw180lBWFw57Wf1Axn7bxB9kmLd4882MV17fHyMLI/zt2kGj3nPQ==
+X-Received: by 2002:a05:600c:858e:b0:46f:c55a:5a8d with SMTP id 5b1f17b1804b1-47d1c629902mr58448525e9.4.1766308755542;
+        Sun, 21 Dec 2025 01:19:15 -0800 (PST)
 Received: from ?IPV6:2003:df:bf2d:e300:9f8f:28b1:4136:8493? (p200300dfbf2de3009f8f28b141368493.dip0.t-ipconnect.de. [2003:df:bf2d:e300:9f8f:28b1:4136:8493])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b8037f37ee8sm704325366b.59.2025.12.21.01.11.54
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-47d19346d33sm135746565e9.3.2025.12.21.01.19.12
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 21 Dec 2025 01:11:55 -0800 (PST)
-Message-ID: <c65689bf-67fd-4f7e-a878-59675ad429c4@gmail.com>
-Date: Sun, 21 Dec 2025 10:11:53 +0100
+        Sun, 21 Dec 2025 01:19:14 -0800 (PST)
+Message-ID: <4c26408c-b8ce-42a6-b0df-47053fd81eda@gmail.com>
+Date: Sun, 21 Dec 2025 10:19:11 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -69,8 +69,7 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC 3/4] samples: rust: add Rust serial device bus sample
- device driver
+Subject: Re: [PATCH RFC 2/4] rust: add basic serial device bus abstractions
 To: Markus Probst <markus.probst@posteo.de>, Rob Herring <robh@kernel.org>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Jiri Slaby <jirislaby@kernel.org>, Miguel Ojeda <ojeda@kernel.org>,
@@ -83,175 +82,109 @@ To: Markus Probst <markus.probst@posteo.de>, Rob Herring <robh@kernel.org>,
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
  rust-for-linux@vger.kernel.org
 References: <20251220-rust_serdev-v1-0-e44645767621@posteo.de>
- <20251220-rust_serdev-v1-3-e44645767621@posteo.de>
-Content-Language: en-US
+ <20251220-rust_serdev-v1-2-e44645767621@posteo.de>
+Content-Language: de-AT-frami
 From: Dirk Behme <dirk.behme@gmail.com>
-In-Reply-To: <20251220-rust_serdev-v1-3-e44645767621@posteo.de>
+In-Reply-To: <20251220-rust_serdev-v1-2-e44645767621@posteo.de>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 Hi Markus,
 
 On 20.12.25 19:44, Markus Probst wrote:
-> Add a sample Rust serial device bus device driver illustrating the usage
-> of the platform bus abstractions.
+> Implement the basic serial device bus abstractions required to write a
+> serial device bus device driver with or without the need for initial device
+> data. This includes the following data structures:
 > 
-> This drivers probes through either a match of device / driver name or a
-> match within the OF ID table.
+> The `serdev::Driver` trait represents the interface to the driver.
+> 
+> The `serdev::Device` abstraction represents a `struct serdev_device`.
+> 
+> In order to provide the Serdev specific parts to a generic
+> `driver::Registration` the `driver::RegistrationOps` trait is
+> implemented by `serdev::Adapter`.
+> 
+> Co-developed-by: Kari Argillander <kari.argillander@gmail.com>
+> Signed-off-by: Kari Argillander <kari.argillander@gmail.com>
+> Signed-off-by: Markus Probst <markus.probst@posteo.de>
 > ---
->  samples/rust/Kconfig               |  10 +++
->  samples/rust/Makefile              |   1 +
->  samples/rust/rust_driver_serdev.rs | 175 +++++++++++++++++++++++++++++++++++++
->  3 files changed, 186 insertions(+)
+>  rust/bindings/bindings_helper.h |   1 +
+>  rust/helpers/helpers.c          |   1 +
+>  rust/helpers/serdev.c           |  22 ++
+>  rust/kernel/lib.rs              |   2 +
+>  rust/kernel/serdev.rs           | 815 ++++++++++++++++++++++++++++++++++++++++
+>  5 files changed, 841 insertions(+)
+> 
 ...
-> diff --git a/samples/rust/rust_driver_serdev.rs b/samples/rust/rust_driver_serdev.rs
+> diff --git a/rust/kernel/serdev.rs b/rust/kernel/serdev.rs
 > new file mode 100644
-> index 000000000000..f23b38a26c32
+> index 000000000000..0f5ef325a054
 > --- /dev/null
-> +++ b/samples/rust/rust_driver_serdev.rs
-> @@ -0,0 +1,175 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +
-> +//! Rust Serial device bus device driver sample.
-> +
-> +use kernel::{
-> +    acpi,
-> +    device::{
-> +        self,
-> +        property::{
-> +            FwNodeReferenceArgs,
-> +            NArgs, //
-> +        },
-> +        Bound,
-> +        Core, //
-> +    },
-> +    of,
-> +    prelude::*,
-> +    serdev,
-> +    str::CString,
-> +    sync::aref::ARef, //
-> +};
-> +
-> +struct SampleDriver {
-> +    sdev: ARef<serdev::Device>,
-> +}
-> +
-> +struct Info(u32);
-> +
-> +kernel::of_device_table!(
-> +    OF_TABLE,
-> +    MODULE_OF_TABLE,
-> +    <SampleDriver as serdev::Driver>::IdInfo,
-> +    [(of::DeviceId::new(c"test,rust_driver_serdev"), Info(42))]
+> +++ b/rust/kernel/serdev.rs
+....
+> +    /// Write data to the serial device until the controller has accepted all the data or has
+> +    /// been interrupted by a timeout or signal.
+> +    ///
+> +    /// Note that any accepted data has only been buffered by the controller. Use
+> +    /// [ Device::wait_until_sent`] to make sure the controller write buffer has actually been
+> +    /// emptied.
+> +    ///
+> +    /// Returns the number of bytes written (less than data if interrupted).
 
-I stopped reading here regarding the new "rust_driver_serdev" but
-re-reading Rob's
+Should it be "less than data.len"? Instead of just "data"? Same in the
+comment for `write()`below.
 
-https://lore.kernel.org/rust-for-linux/20241022234712.GB1848992-robh@kernel.org/
 
-adding "test,<whatever>" should be fine as-is without any documenation.
-
-> +);
-> +
-> +kernel::acpi_device_table!(
-> +    ACPI_TABLE,
-> +    MODULE_ACPI_TABLE,
-> +    <SampleDriver as serdev::Driver>::IdInfo,
-> +    [(acpi::DeviceId::new(c"LNUXBEEF"), Info(0))]
-> +);
-> +
-> +#[vtable]
-> +impl serdev::Driver for SampleDriver {
-> +    type IdInfo = Info;
-> +    type InitialData = ();
-> +    type LateProbeData = ();
-> +    const OF_ID_TABLE: Option<of::IdTable<Self::IdInfo>> = Some(&OF_TABLE);
-> +    const ACPI_ID_TABLE: Option<acpi::IdTable<Self::IdInfo>> = Some(&ACPI_TABLE);
-> +
-> +    fn probe(sdev: &serdev::Device, info: Option<&Self::IdInfo>) -> impl PinInit<Self, Error> {
-> +        let dev = sdev.as_ref();
-> +
-> +        dev_dbg!(dev, "Probe Rust Serial device bus device driver sample.\n");
-> +
-> +        if let Some(info) = info {
-> +            dev_info!(dev, "Probed with info: '{}'.\n", info.0);
+> +    /// [`kernel::error::code::ETIMEDOUT`] or [`kernel::error::code::ERESTARTSYS`] if interrupted
+> +    /// before any bytes were written.
+> +    pub fn write_all(&self, data: &[u8], timeout: Timeout) -> Result<usize> {
+> +        // SAFETY:
+> +        // - `self.as_raw()` is guaranteed to be a pointer to a valid `serdev_device`.
+> +        // - `data.as_ptr()` is guaranteed to be a valid array pointer with the size of
+> +        //   `data.len()`.
+> +        let ret = unsafe {
+> +            bindings::serdev_device_write(
+> +                self.as_raw(),
+> +                data.as_ptr(),
+> +                data.len(),
+> +                timeout.into_jiffies(),
+> +            )
+> +        };
+> +        if ret < 0 {
+> +            // CAST: negative return values are guaranteed to be between `-MAX_ERRNO` and `-1`,
+> +            // which always fit into a `i32`.
+> +            Err(Error::from_errno(ret as i32))
+> +        } else {
+> +            Ok(ret.unsigned_abs())
 > +        }
-
-Last time I had a look to the log output from rust_driver_platform.rs
-(where this is copied from?) I was slightly confused to see the
-"Probed with ..." in the log but not the "Probe Rust ...". Well, I
-hadn't DEBUG enabled. So I wonder if the combination of `dev_dbg!()`
-and `dev_info!()` this way should be improved? At least in
-rust_driver_platform.rs because we could drop that here completely? I
-mean in rust_driver_platform.rs it makes sense to demonstrate how
-`info` is supposed to work. But do we need that here?
-
-
-> +        if dev.fwnode().is_some_and(|node| node.is_of_node()) {
-> +            Self::properties_parse(dev)?;
+> +    }
+> +
+> +    /// Write data to the serial device.
+> +    ///
+> +    /// If you want to write until the controller has accepted all the data, use
+> +    /// [`Device::write_all`].
+> +    ///
+> +    /// Note that any accepted data has only been buffered by the controller. Use
+> +    /// [ Device::wait_until_sent`] to make sure the controller write buffer has actually been
+> +    /// emptied.
+> +    ///
+> +    /// Returns the number of bytes written (less than data if interrupted).
+> +    /// [`kernel::error::code::ETIMEDOUT`] or [`kernel::error::code::ERESTARTSYS`] if interrupted
+> +    /// before any bytes were written.
+> +    pub fn write(&self, data: &[u8]) -> Result<u32> {
+> +        // SAFETY:
+> +        // - `self.as_raw()` is guaranteed to be a pointer to a valid `serdev_device`.
+> +        // - `data.as_ptr()` is guaranteed to be a valid array pointer with the size of
+> +        //   `data.len()`.
+> +        let ret =
+> +            unsafe { bindings::serdev_device_write_buf(self.as_raw(), data.as_ptr(), data.len()) };
+> +        if ret < 0 {
+> +            Err(Error::from_errno(ret))
+> +        } else {
+> +            Ok(ret.unsigned_abs())
 > +        }
-
-
-This is a left over from copy & paste? I mean having all this
-`properties_parse()` below and calling it here does not make any sense
-here? And should be dropped completely?
-
-
-> +
-> +        Ok(Self { sdev: sdev.into() })
 > +    }
-> +
-> +    fn configure(
-> +        sdev: &serdev::Device<Core>,
-> +        _this: Pin<&Self>,
-> +        _id_info: Option<&Self::IdInfo>,
-> +    ) -> Result {
-> +        dev_dbg!(
-> +            sdev.as_ref(),
-> +            "Configure Rust Serial device bus device driver sample.\n"
-> +        );
-> +
-> +        sdev.set_baudrate(115200);
-> +        sdev.set_flow_control(false);
-> +        sdev.set_parity(serdev::Parity::None)?;
-> +        Ok(())
-> +    }
-> +
-> +    fn late_probe(
-> +        sdev: &serdev::Device<Bound>,
-> +        _this: Pin<&Self>,
-> +        _initial_data: Self::InitialData,
-> +    ) -> impl PinInit<Self::LateProbeData, Error> {
-> +        dev_dbg!(
-> +            sdev.as_ref(),
-> +            "Late Probe Rust Serial device bus device driver sample.\n"
-> +        );
-> +        Ok(())
-> +    }
-> +
-> +    fn receive(
-> +        sdev: &serdev::Device<Bound>,
-> +        _this: Pin<&Self>,
-> +        _late_probe_this: Pin<&Self::LateProbeData>,
-> +        data: &[u8],
-> +    ) -> usize {
-> +        let _ = sdev.write_all(data, serdev::Timeout::MaxScheduleTimeout);
 
-
-Is it intended to have a function with the name `receive()`calling
-`write()`?
-
-> +        data.len()
-> +    }
-> +}
-> +
-> +impl SampleDriver {
-> +    fn properties_parse(dev: &device::Device) -> Result {
-
-
-As mentioned above I think this is a left over from copy & paste and
-should be dropped?
-
-Cheers,
+Best regards
 
 Dirk
