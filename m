@@ -1,40 +1,39 @@
-Received: from mout01.posteo.de (mout01.posteo.de [185.67.36.65])
+Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADA082F6187
-	for <linux-serial@vger.kernel.org>; Sun, 21 Dec 2025 12:39:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.65
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1F542F6187
+	for <linux-serial@vger.kernel.org>; Sun, 21 Dec 2025 12:41:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.66
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766320799; cv=none; b=C6eN226Gq2p4vRPBbLRhbUwf/xKYrkT36E93pYJxeSMCixlADE+zbo0CykZJnwMuFxsKxCVBNwZrIkRuI6QSt6srYPP2KYqALz3Vy4KI2vByi9ZMk9X6HCOUqr807x6QZM7fsITp1gDCPZOe8NO02X+9rrBn+wI7FYr7MNT2Pd4=
+	t=1766320875; cv=none; b=P6Ex9xX/bKZk/A3eAuaX9I+L+bCaLXl/MpGov+wq+GzGFriSA03oNj3qSALgIrFOPojRviUauOJnZwKgwOcz7bbURAKv/N8uKwfn8NTw9OFnltWQADqPvrNVr5SJm3+ZDslJC5z3Uo6V75AoE8OLpTMm1BfJLfiDsCPE7qAcIrc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766320799; c=relaxed/simple;
-	bh=/3/QZmfVIC5B4D6mXau0TYYV6FS3BKLsn19ubTNxiLs=;
+	s=arc-20240116; t=1766320875; c=relaxed/simple;
+	bh=cZytxEdW4XTEOQ291sMH3JQMnG5LZFVodCXhGukLfyQ=;
 	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=EQ1MjmQGN5uMmRa3iRxsT92Ne9FWWgmAccMgktV9iJK0kfx9F4tdDWIKmmtba9JRfCOWeb6pDNGYBS4+/MS7lNA5X5MEVZubyoJdSnqKmp+fUKIPWs7c+XJr9MRGvdRCudYRl3duLtPcQvTOJRz0Gy6GNaLHfFgZ8g7gnxQsIsk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=Ky1lios+; arc=none smtp.client-ip=185.67.36.65
+	 Content-Type:MIME-Version; b=dola6qmXvQ0QDAOkIYxTxFbFfZGJgmE/cpzpEReQqW+VGI9mNO9BZzQhvnQPig3XlkBiRGVfn21SQPJlhNWJzZ4FbERhziChca44ogBTSpCY9u8eLz/ELs8ov7n4NyaZAYSSM29MSH2yctS5n3nlHGoRspvUKZAu4KvPzV7sLCw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=jFMq9lbX; arc=none smtp.client-ip=185.67.36.66
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="Ky1lios+"
+	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="jFMq9lbX"
 Received: from submission (posteo.de [185.67.36.169]) 
-	by mout01.posteo.de (Postfix) with ESMTPS id DA38E240028
-	for <linux-serial@vger.kernel.org>; Sun, 21 Dec 2025 13:39:55 +0100 (CET)
+	by mout02.posteo.de (Postfix) with ESMTPS id 36D3E240101
+	for <linux-serial@vger.kernel.org>; Sun, 21 Dec 2025 13:41:11 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de; s=2017;
-	t=1766320795; bh=hPUX8qdghOF0Zyc6gHbLhr07GrCmJ3eFXT1WSz6FmyY=;
+	t=1766320871; bh=ZRgiQM1NQkguPep0kX6Mk/2+ATcGhBqLmzP1kGUPBcU=;
 	h=Message-ID:Subject:From:To:Cc:Date:Autocrypt:Content-Type:
 	 MIME-Version:OpenPGP:From;
-	b=Ky1lios+fBwJY5newfSOVSnNhDgGZMzUGipPXyWd76iElzbozsWkwcKNmrDTfTeUS
-	 U3aZ+A1C+3Uj45MuwZRbtrCzoju11HI+i/uWmAlmP1t+L1mhaZCCCc1g+eAa3ulEu7
-	 1EAK02aNbYmvduWV4MV7qLo69RRBTr2VeYmEkUJGSE1s3mfd62ccTGMeGtqLiSVylw
-	 HyTV27wZQq0uFmt6VU+ABN4lXJR5N6RrtYgC241re0z20AcGRacUQ6g4zZ+8dY4BH+
-	 wgDJfVHcI1qL3gylkTZI79+uNeYHbln00WdvDvbLuaKkKcNzjcQfuGG7riGT2FY9ZX
-	 8xcxEYX/vV1xQ==
+	b=jFMq9lbXEWoqi1aoAYgeHkJvLbcAS7Iv2305SHDrbBj3LyBs2ImL1BV9poDMxnjTx
+	 iJi7S8HLxjo648NVBYyTFDyubv+NHX1gCFVu2O0z9nvVkdl8Esrf81+yPnA1Kygizj
+	 Xd0U7m3y8Tt1XQQU4FDJCeiqyqep+nulRjBWmXCy/L3795np3XRc53xmLwhngx82+u
+	 ltsSP3dGmRXbdiuz+FCnd7M+qfwbaF3E+9aGTQU246BqV8ZXpwV43HzwqAYORf1g6X
+	 hLur8QL1kTKKV/cC0I1ylO5VdEyEXJRBYJ43kR9DCzGFr1SvhkxlG5v2BPt6ToiZKu
+	 zfPEYUMnqiMzg==
 Received: from customer (localhost [127.0.0.1])
-	by submission (posteo.de) with ESMTPSA id 4dZ17Y4VNlz9rxF;
-	Sun, 21 Dec 2025 13:39:53 +0100 (CET)
-Message-ID: <d4b835e75db528274de38893644cdf7c61115627.camel@posteo.de>
-Subject: Re: [PATCH RFC 3/4] samples: rust: add Rust serial device bus
- sample device driver
+	by submission (posteo.de) with ESMTPSA id 4dZ1915D8jz9rwn;
+	Sun, 21 Dec 2025 13:41:09 +0100 (CET)
+Message-ID: <2f42525e678925a803ea4acaeb1e704953e44681.camel@posteo.de>
+Subject: Re: [PATCH RFC 2/4] rust: add basic serial device bus abstractions
 From: Markus Probst <markus.probst@posteo.de>
 To: Dirk Behme <dirk.behme@gmail.com>, Rob Herring <robh@kernel.org>, Greg
  Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
@@ -47,11 +46,11 @@ To: Dirk Behme <dirk.behme@gmail.com>, Rob Herring <robh@kernel.org>, Greg
  <kari.argillander@gmail.com>
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
 	rust-for-linux@vger.kernel.org
-Date: Sun, 21 Dec 2025 12:39:54 +0000
-In-Reply-To: <c65689bf-67fd-4f7e-a878-59675ad429c4@gmail.com>
+Date: Sun, 21 Dec 2025 12:41:10 +0000
+In-Reply-To: <4c26408c-b8ce-42a6-b0df-47053fd81eda@gmail.com>
 References: <20251220-rust_serdev-v1-0-e44645767621@posteo.de>
-	 <20251220-rust_serdev-v1-3-e44645767621@posteo.de>
-	 <c65689bf-67fd-4f7e-a878-59675ad429c4@gmail.com>
+	 <20251220-rust_serdev-v1-2-e44645767621@posteo.de>
+	 <4c26408c-b8ce-42a6-b0df-47053fd81eda@gmail.com>
 Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
  keydata=mQINBGiDvXgBEADAXUceKafpl46S35UmDh2wRvvx+UfZbcTjeQOlSwKP7YVJ4JOZrVs93
  qReNLkOWguIqPBxR9blQ4nyYrqSCV+MMw/3ifyXIm6Pw2YRUDg+WTEOjTixRCoWDgUj1nOsvJ9tVA
@@ -86,7 +85,7 @@ Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
  0G0cfBY0Sm7he4N2IYDWWdGnPBZ3rlLSdj5EiBU2YWgIgtLrb8ZNJ3ZlhYluGnBJDGRqy2jC9s1jY
  66sLA9g==
 Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-yAFJbOQoiwFi2gHleB90"
+	protocol="application/pgp-signature"; boundary="=-/XVG65cPYd9G6NsyoQIJ"
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -96,227 +95,156 @@ MIME-Version: 1.0
 OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
 
 
---=-yAFJbOQoiwFi2gHleB90
+--=-/XVG65cPYd9G6NsyoQIJ
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Hi Dirk,
 
-On Sun, 2025-12-21 at 10:11 +0100, Dirk Behme wrote:
+On Sun, 2025-12-21 at 10:19 +0100, Dirk Behme wrote:
 > Hi Markus,
 >=20
 > On 20.12.25 19:44, Markus Probst wrote:
-> > Add a sample Rust serial device bus device driver illustrating the usag=
-e
-> > of the platform bus abstractions.
+> > Implement the basic serial device bus abstractions required to write a
+> > serial device bus device driver with or without the need for initial de=
+vice
+> > data. This includes the following data structures:
 > >=20
-> > This drivers probes through either a match of device / driver name or a
-> > match within the OF ID table.
+> > The `serdev::Driver` trait represents the interface to the driver.
+> >=20
+> > The `serdev::Device` abstraction represents a `struct serdev_device`.
+> >=20
+> > In order to provide the Serdev specific parts to a generic
+> > `driver::Registration` the `driver::RegistrationOps` trait is
+> > implemented by `serdev::Adapter`.
+> >=20
+> > Co-developed-by: Kari Argillander <kari.argillander@gmail.com>
+> > Signed-off-by: Kari Argillander <kari.argillander@gmail.com>
+> > Signed-off-by: Markus Probst <markus.probst@posteo.de>
 > > ---
-> >  samples/rust/Kconfig               |  10 +++
-> >  samples/rust/Makefile              |   1 +
-> >  samples/rust/rust_driver_serdev.rs | 175 +++++++++++++++++++++++++++++=
+> >  rust/bindings/bindings_helper.h |   1 +
+> >  rust/helpers/helpers.c          |   1 +
+> >  rust/helpers/serdev.c           |  22 ++
+> >  rust/kernel/lib.rs              |   2 +
+> >  rust/kernel/serdev.rs           | 815 ++++++++++++++++++++++++++++++++=
 ++++++++
-> >  3 files changed, 186 insertions(+)
+> >  5 files changed, 841 insertions(+)
+> >=20
 > ...
-> > diff --git a/samples/rust/rust_driver_serdev.rs b/samples/rust/rust_dri=
-ver_serdev.rs
+> > diff --git a/rust/kernel/serdev.rs b/rust/kernel/serdev.rs
 > > new file mode 100644
-> > index 000000000000..f23b38a26c32
+> > index 000000000000..0f5ef325a054
 > > --- /dev/null
-> > +++ b/samples/rust/rust_driver_serdev.rs
-> > @@ -0,0 +1,175 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +
-> > +//! Rust Serial device bus device driver sample.
-> > +
-> > +use kernel::{
-> > +    acpi,
-> > +    device::{
-> > +        self,
-> > +        property::{
-> > +            FwNodeReferenceArgs,
-> > +            NArgs, //
-> > +        },
-> > +        Bound,
-> > +        Core, //
-> > +    },
-> > +    of,
-> > +    prelude::*,
-> > +    serdev,
-> > +    str::CString,
-> > +    sync::aref::ARef, //
-> > +};
-> > +
-> > +struct SampleDriver {
-> > +    sdev: ARef<serdev::Device>,
-> > +}
-> > +
-> > +struct Info(u32);
-> > +
-> > +kernel::of_device_table!(
-> > +    OF_TABLE,
-> > +    MODULE_OF_TABLE,
-> > +    <SampleDriver as serdev::Driver>::IdInfo,
-> > +    [(of::DeviceId::new(c"test,rust_driver_serdev"), Info(42))]
+> > +++ b/rust/kernel/serdev.rs
+> ....
+> > +    /// Write data to the serial device until the controller has accep=
+ted all the data or has
+> > +    /// been interrupted by a timeout or signal.
+> > +    ///
+> > +    /// Note that any accepted data has only been buffered by the cont=
+roller. Use
+> > +    /// [ Device::wait_until_sent`] to make sure the controller write =
+buffer has actually been
+> > +    /// emptied.
+> > +    ///
+> > +    /// Returns the number of bytes written (less than data if interru=
+pted).
 >=20
-> I stopped reading here regarding the new "rust_driver_serdev" but
-> re-reading Rob's
+> Should it be "less than data.len"? Instead of just "data"? Same in the
+> comment for `write()`below.
+Yes.
 >=20
-> https://lore.kernel.org/rust-for-linux/20241022234712.GB1848992-robh@kern=
-el.org/
 >=20
-> adding "test,<whatever>" should be fine as-is without any documenation.
->=20
-> > +);
-> > +
-> > +kernel::acpi_device_table!(
-> > +    ACPI_TABLE,
-> > +    MODULE_ACPI_TABLE,
-> > +    <SampleDriver as serdev::Driver>::IdInfo,
-> > +    [(acpi::DeviceId::new(c"LNUXBEEF"), Info(0))]
-> > +);
-> > +
-> > +#[vtable]
-> > +impl serdev::Driver for SampleDriver {
-> > +    type IdInfo =3D Info;
-> > +    type InitialData =3D ();
-> > +    type LateProbeData =3D ();
-> > +    const OF_ID_TABLE: Option<of::IdTable<Self::IdInfo>> =3D Some(&OF_=
-TABLE);
-> > +    const ACPI_ID_TABLE: Option<acpi::IdTable<Self::IdInfo>> =3D Some(=
-&ACPI_TABLE);
-> > +
-> > +    fn probe(sdev: &serdev::Device, info: Option<&Self::IdInfo>) -> im=
-pl PinInit<Self, Error> {
-> > +        let dev =3D sdev.as_ref();
-> > +
-> > +        dev_dbg!(dev, "Probe Rust Serial device bus device driver samp=
-le.\n");
-> > +
-> > +        if let Some(info) =3D info {
-> > +            dev_info!(dev, "Probed with info: '{}'.\n", info.0);
+> > +    /// [`kernel::error::code::ETIMEDOUT`] or [`kernel::error::code::E=
+RESTARTSYS`] if interrupted
+> > +    /// before any bytes were written.
+> > +    pub fn write_all(&self, data: &[u8], timeout: Timeout) -> Result<u=
+size> {
+> > +        // SAFETY:
+> > +        // - `self.as_raw()` is guaranteed to be a pointer to a valid =
+`serdev_device`.
+> > +        // - `data.as_ptr()` is guaranteed to be a valid array pointer=
+ with the size of
+> > +        //   `data.len()`.
+> > +        let ret =3D unsafe {
+> > +            bindings::serdev_device_write(
+> > +                self.as_raw(),
+> > +                data.as_ptr(),
+> > +                data.len(),
+> > +                timeout.into_jiffies(),
+> > +            )
+> > +        };
+> > +        if ret < 0 {
+> > +            // CAST: negative return values are guaranteed to be betwe=
+en `-MAX_ERRNO` and `-1`,
+> > +            // which always fit into a `i32`.
+> > +            Err(Error::from_errno(ret as i32))
+> > +        } else {
+> > +            Ok(ret.unsigned_abs())
 > > +        }
->=20
-> Last time I had a look to the log output from rust_driver_platform.rs
-> (where this is copied from?) I was slightly confused to see the
-> "Probed with ..." in the log but not the "Probe Rust ...". Well, I
-> hadn't DEBUG enabled. So I wonder if the combination of `dev_dbg!()`
-> and `dev_info!()` this way should be improved? At least in
-> rust_driver_platform.rs because we could drop that here completely? I
-> mean in rust_driver_platform.rs it makes sense to demonstrate how
-> `info` is supposed to work. But do we need that here?
->=20
->=20
-> > +        if dev.fwnode().is_some_and(|node| node.is_of_node()) {
-> > +            Self::properties_parse(dev)?;
+> > +    }
+> > +
+> > +    /// Write data to the serial device.
+> > +    ///
+> > +    /// If you want to write until the controller has accepted all the=
+ data, use
+> > +    /// [`Device::write_all`].
+> > +    ///
+> > +    /// Note that any accepted data has only been buffered by the cont=
+roller. Use
+> > +    /// [ Device::wait_until_sent`] to make sure the controller write =
+buffer has actually been
+> > +    /// emptied.
+> > +    ///
+> > +    /// Returns the number of bytes written (less than data if interru=
+pted).
+> > +    /// [`kernel::error::code::ETIMEDOUT`] or [`kernel::error::code::E=
+RESTARTSYS`] if interrupted
+> > +    /// before any bytes were written.
+> > +    pub fn write(&self, data: &[u8]) -> Result<u32> {
+> > +        // SAFETY:
+> > +        // - `self.as_raw()` is guaranteed to be a pointer to a valid =
+`serdev_device`.
+> > +        // - `data.as_ptr()` is guaranteed to be a valid array pointer=
+ with the size of
+> > +        //   `data.len()`.
+> > +        let ret =3D
+> > +            unsafe { bindings::serdev_device_write_buf(self.as_raw(), =
+data.as_ptr(), data.len()) };
+> > +        if ret < 0 {
+> > +            Err(Error::from_errno(ret))
+> > +        } else {
+> > +            Ok(ret.unsigned_abs())
 > > +        }
->=20
->=20
-> This is a left over from copy & paste? I mean having all this
-> `properties_parse()` below and calling it here does not make any sense
-> here? And should be dropped completely?
-It was meant to show, that this is the function in which fwnode
-properties should be parsed. As I did indeed base the sample on the
-platform driver sample, I left it as-is. I will minimize it down to 1
-property without an extra function, given that the platform driver
-sample already shows how to use properties.
->=20
->=20
-> > +
-> > +        Ok(Self { sdev: sdev.into() })
 > > +    }
-> > +
-> > +    fn configure(
-> > +        sdev: &serdev::Device<Core>,
-> > +        _this: Pin<&Self>,
-> > +        _id_info: Option<&Self::IdInfo>,
-> > +    ) -> Result {
-> > +        dev_dbg!(
-> > +            sdev.as_ref(),
-> > +            "Configure Rust Serial device bus device driver sample.\n"
-> > +        );
-> > +
-> > +        sdev.set_baudrate(115200);
-> > +        sdev.set_flow_control(false);
-> > +        sdev.set_parity(serdev::Parity::None)?;
-> > +        Ok(())
-> > +    }
-> > +
-> > +    fn late_probe(
-> > +        sdev: &serdev::Device<Bound>,
-> > +        _this: Pin<&Self>,
-> > +        _initial_data: Self::InitialData,
-> > +    ) -> impl PinInit<Self::LateProbeData, Error> {
-> > +        dev_dbg!(
-> > +            sdev.as_ref(),
-> > +            "Late Probe Rust Serial device bus device driver sample.\n=
-"
-> > +        );
-> > +        Ok(())
-> > +    }
-> > +
-> > +    fn receive(
-> > +        sdev: &serdev::Device<Bound>,
-> > +        _this: Pin<&Self>,
-> > +        _late_probe_this: Pin<&Self::LateProbeData>,
-> > +        data: &[u8],
-> > +    ) -> usize {
-> > +        let _ =3D sdev.write_all(data, serdev::Timeout::MaxScheduleTim=
-eout);
 >=20
->=20
-> Is it intended to have a function with the name `receive()`calling
-> `write()`?
-This sample driver echos any data it receives back to the serial
-device.
-
-It shows how to receive data from the serial device and how to send
-data to the serial device.
-
-It depends on the driver, if it is necessary to call write inside
-receive. The serial device may want a reply or ack from the driver
-after it sent a message.
-
->=20
-> > +        data.len()
-> > +    }
-> > +}
-> > +
-> > +impl SampleDriver {
-> > +    fn properties_parse(dev: &device::Device) -> Result {
->=20
->=20
-> As mentioned above I think this is a left over from copy & paste and
-> should be dropped?
->=20
-> Cheers,
+> Best regards
 >=20
 > Dirk
 
 Thanks
 - Markus Probst
 
---=-yAFJbOQoiwFi2gHleB90
+--=-/XVG65cPYd9G6NsyoQIJ
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: This is a digitally signed message part
 
 -----BEGIN PGP SIGNATURE-----
 
-iQJPBAABCAA5FiEEgnQYxPSsWOdyMMRzNHYf+OetQ9IFAmlH6o4bFIAAAAAABAAO
-bWFudTIsMi41KzEuMTEsMiwyAAoJEDR2H/jnrUPSQVsP/inhFaJjRSBAcsKhmyFE
-6jk3bbGEXxMjOACH5PtsMNFvjaGDZyaA/r/9IJyhaRA1AyqFu2ef+SK4DGmxy+Wo
-99SRABayVPVVS76IPkndWTOuBoVwh7uBAABrfSVteUuGUNCnu8p1AnmE7IaiHM6v
-O2E9zn0d2oaVbf5mFx+StaWKFKoauMNXGtioEni/rFdo74rGDb10an2fIl+WW8LW
-EzbwcUgRQ/C2E7p50SYFNQuDCtPumnBUmTdZWQmKVCXniJrJyFrOl3X8JoM5i/HZ
-obkAmDlAL3XwEead2uxm7NCtAV/klRVhWxXBXaIJpBHGeg2VkGFMzGl/we8qtmuK
-CYMICi8h29q/tTA3njRwylxIBstudT33p2NqeYgDIzPjoQJSii2Lw7nwe4NEBE7G
-tmL12/MP1kAH5pePRuCUrsxazIiasQoEuOFtFhWE6qCKy/P3peT6JWLAaA2Fhe0Y
-95DCpSf55pae7AWGUCWG6UiEPOtG53/Bn1jKTlHqvwIHHnMhz9qf9CJtoM8ctLzG
-Ppnno0a0ObUX/+CuQ78jcK+rrkLEPPfaUhE7nsxH8VRIVU8kP9hOPnf0lQoAzX5m
-VGjFRLhiF/m64X7rK2ZYEFHL7zjVSEyASU3FTLJSEwbY3pJKRoGrj1Tnd77ZvG4f
-0LkuriLVKRUZOQ0syuTpNuoW
-=JOzO
+iQJPBAABCAA5FiEEgnQYxPSsWOdyMMRzNHYf+OetQ9IFAmlH6uUbFIAAAAAABAAO
+bWFudTIsMi41KzEuMTEsMiwyAAoJEDR2H/jnrUPSKzwP/jRVFU10i5GjfwhXNi7L
+mNYrRiM1KRkacuJrAc4MknRGzn3C0KmgLTKMLvA2+P4Uei41Mo68buR1fuuFG98c
+9O42GBuOgcj/OJ2AWqynp83pIy2Dbt4GCnmgTOxKQe2r4mNgyPM2trWdc1Y0EJqJ
+aKy4jq+ZoX89RYN3gmbc13uvme6cBxkm7igHrPCE1kTDAqr+h4FcvWP+Z5aHGo2A
+ialZJqEyh+Xwzoun7YjuTiGwUfbfXCvB5n0VyO5iIswY2oDgOBemI89ZrfLQcf3V
+h3SMtZdzrzQ6C2pTDWwLmve/++HkqFgBqeek4RGEUgm6Dni27v1oWMsXyWvqOB2y
+qQVZKltS13OPmOunTCBuHgCSEfYBWRUGuZVhYDWOUNWOELaZLGFrrhpfZ1IJZOtv
+HSn+yHyqUzrSnptNE8aDG/lAy6ZBsWvr2LGtGdJIPl3QfidkOQ4CH8E56p3ykrfR
+G5pUwV6lTXtAj6RheQP62FgeZwwMn0T35yGa1GSGqpKeRYTvK44nDF1dCUSaYjHl
+MwY1meFU8NkZBXe5CA6azbqk9UIX30kl+8LKZSeMRWLKSm9dzu+wlNayeZdvl/hn
+7P2xSWkIT4yylvgq0v6G+l/yptafxcLoSdt1Lmge5tXuYbeLntYlK9BCibkp+W/X
+04yfGlkxSinXCKfHrzNnzOxE
+=93Qy
 -----END PGP SIGNATURE-----
 
---=-yAFJbOQoiwFi2gHleB90--
+--=-/XVG65cPYd9G6NsyoQIJ--
