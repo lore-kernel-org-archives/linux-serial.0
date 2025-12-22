@@ -1,121 +1,182 @@
-Received: from mail-wr1-f67.google.com (mail-wr1-f67.google.com [209.85.221.67])
+Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47AD032ED23
-	for <linux-serial@vger.kernel.org>; Mon, 22 Dec 2025 16:29:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.67
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F3E033B6E6
+	for <linux-serial@vger.kernel.org>; Mon, 22 Dec 2025 19:57:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766420956; cv=none; b=tCEgbvncv4OYEiIQ3jHhkEDRbY8itSYu0Ei3rxo17XtOZEp7+ZgpOAsWOR0YXGPc1Gy5iEfry0t0lIi+Rj7O3E1MJ9deSOWVTNrj+m8Rep1Ku6o/9TWY3MAtR1JmWhQzoobsl4dkVGXWuAfK5P1RbosKfwNMHuhwKCeLaUwq5Q0=
+	t=1766433449; cv=none; b=R1Zp6Ac30dRqG+nEppMA+AA6PXBEr0xq6+stZ/p9odhdBSqPww8zHtM1j312ym7DHUccCGAFBfQ1CqNs+h0bGAidW5Jr3xdXne1zWeP8Al0whIU9I30/q+s6StMSZsWIhaUi03V7uLrbZFf5sYY0bYPDTUOWwnjAbzJiB71FSFQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766420956; c=relaxed/simple;
-	bh=Dy/iCZc591fTXM1NlurWurScZtX+CWiYrJf2U1///FA=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=MJVllkjsUmPvR35GrZBE+qKkRPwBxP9aRkcns51idfPLRf2xijw8DH94wq9hCVDqrWs86eswl1xmujWJhDxPghfqtv6+xxBDNeptMgr2RO4dVceWcU180Edt2GO07Sju+Due0CtZwNNkE4VaHlWuaqtEecStI2CDkq56yeU32Mw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HwW0HC5S; arc=none smtp.client-ip=209.85.221.67
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1766433449; c=relaxed/simple;
+	bh=gqq7zNg4tUJJ0SmUCTR/rfb6bSKF7C5JMh5yMLNWhsw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=pgWLhntH6sCY8LXX+wXWJTMHmtO81WWMQHDuxmd8s7TQXio+TfhbLAaCakIbRs9HKvHpTruQmiT1bL/YoYmx5AL6IwTDUPWD2Q8J8XM+kygYe8qTJ+zoZrNePUJVGzi25VrQ9epHJpIpVelyK0Ltg4xOZfjpmYZ3LBrkZs4OQlM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr; spf=pass smtp.mailfrom=sartura.hr; dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b=pFZJUB+P; arc=none smtp.client-ip=209.85.218.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sartura.hr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HwW0HC5S"
-Received: by mail-wr1-f67.google.com with SMTP id ffacd0b85a97d-42fbbc3df8fso2098540f8f.2
-        for <linux-serial@vger.kernel.org>; Mon, 22 Dec 2025 08:29:14 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b="pFZJUB+P"
+Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-b7636c96b9aso747847366b.2
+        for <linux-serial@vger.kernel.org>; Mon, 22 Dec 2025 11:57:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1766420953; x=1767025753; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=NVVePL6nnCyJpfh1p8QmA9Q/bSlZ1ZK7e8Sn+qKYGBM=;
-        b=HwW0HC5SgiNK4dVCV0Yb2HzEprKFc1M8pwwliM6LQ1SQcWKWNC1EPRafee1YPaUM8B
-         r/K4JaqDFhQqh5QBGO4fJnBLBBhzBJt+e5pdTlnUI1D+HLSyOTwvw9ZhEPPl3FCZjIEL
-         +xRfMifIcCVM0K6ZkFkLCp6o9dSL0N6fgx6n/sOqs7FyhCXGJA0ynk/M5qAmtcVPwr7T
-         y5IgvV1dnNkjwcEHAawiRS8cCQE62mUiDD2srUY0iXE+wev39SxnsuWQV58AL9l6xRNr
-         kvyJGnAMputCj0OKgNLB9VH+OpjGc6gTmc9NzDtqNRCl8DtFgT9a5HDoD6wt4QNZG+Bt
-         9PRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1766420953; x=1767025753;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=sartura.hr; s=sartura; t=1766433445; x=1767038245; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=NVVePL6nnCyJpfh1p8QmA9Q/bSlZ1ZK7e8Sn+qKYGBM=;
-        b=Ov2JS3aqvWVMNaqmsxDHClE2rHGO/9wMiYlb+0tTF/OPqcYJcdGfyApJbWUMFhkPFn
-         100jdfd8u0gzBeks0QbnuSb9OM4iH2obfOjyYmGfUn8yLPyqo2OCFkolGaq5t6m3U27J
-         qul4pKLw4Lkrn7fZEH6qcBuTfBTf648HstRan77zSEX6CVYSKJ97/6jpCvlK7x/4xqo7
-         JqVIURlXjS/re1xL2iry2S1DO7e5GYZ/I0OTt1sZ6mQp5bPU3zt7XnwacoMxRlm8WUc+
-         CZBSNyP2dIhWMEGb3CyVrqrsGFN8GYq1PnDezv7HXToNeFX1TDoIzxy8XQ6fFwpU9/Ki
-         ktbA==
-X-Forwarded-Encrypted: i=1; AJvYcCWywRLYqXSrAz+WW8x5pPOnyv+IZQDvDnan7DHYXrGbqM5YbPieRrgvGt+1elsy41ag5gD9YWOEthUIZYE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxzvvoKsq4/taMO7if6BvwZcYgYgQSLGR0tQAWW8xu3Xe1dTFmY
-	/EyTczr3Lgkz8Le7IQMQZUtZ0khSbf6X0VSA0A12coe9UBPHZ1GffK16
-X-Gm-Gg: AY/fxX5dVT5glBmSYKfACEjYzqWEe6LI/GicHKglbQq2dXQBa81T2OwRvdZQzutMqMV
-	n9eJwSGdOBSwKhrCrF2sNAnyPcOWSU+rPXr3SL/WgnUiqWKxT40Y8aF7gWDvpjwhtAN8d5ZXtym
-	UPNBCLzcQPiI8w65rgzxNSYXpuj1x6KAmXExdw0ThOWoZNnFYdKqXZmw9gLU935IsRGzRXT+LOF
-	9377kfYOz5gDQburA/SNrhdiqkJTHcOfn+bsc+pHogoT6y55uhJ/DTIWOEAGS6hRF6OmdvcMUOe
-	88XOq8fUL9ixNUhyahCpBzg1QuigZkr+vWo4ekvMJc/e6K18Nq9P3EAq/yqXhvxbadIfLNVD/1/
-	TL26Am5q7514fm6awfR8vqmt2MxvPddoABFOQRlKv8zY8RxT+hgcX42lOholyr2PLWiT5NrLqeF
-	2WSmIn+WnplILicktpRkUDtwopbi8zPPX6AVYw3yKQBz5NqPu5DsUElH8JiYzkkTXTmx6hhWUnb
-	INA22aPglloDuPfH33YP9A=
-X-Google-Smtp-Source: AGHT+IEmzqCgGbE7s5GFKTMZ/TEykGpjkUE/yylqKBjpiGDrTr0RtJjyPZA2R2Gc7XIuClmlMSpg0A==
-X-Received: by 2002:a5d:5f49:0:b0:42c:b8fd:21b4 with SMTP id ffacd0b85a97d-4324e709d72mr13923252f8f.57.1766420953079;
-        Mon, 22 Dec 2025 08:29:13 -0800 (PST)
-Received: from iku.Home ([2a06:5906:61b:2d00:4dd:df38:7864:a996])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4324eaa08efsm23213962f8f.29.2025.12.22.08.29.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Dec 2025 08:29:12 -0800 (PST)
-From: Prabhakar <prabhakar.csengg@gmail.com>
-X-Google-Original-From: Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Magnus Damm <magnus.damm@gmail.com>
-Cc: linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	Prabhakar <prabhakar.csengg@gmail.com>,
-	Biju Das <biju.das.jz@bp.renesas.com>,
-	Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH] dt-bindings: serial: renesas,rsci: Document RZ/V2H(P) and RZ/V2N SoCs
-Date: Mon, 22 Dec 2025 16:29:09 +0000
-Message-ID: <20251222162909.155279-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.52.0
+        bh=h1Ffz7SUjA9uiSla9hHoS8dAeCi7tewQV/vP2Eehn8A=;
+        b=pFZJUB+PHZWLjPcQpowiytkshEGhxGj5eXPYicVBekCOyv5edtd/D/8QBRD4WducvS
+         rVpLJLuIAiUIWS2Km205Ah9T/sgmRQOZ9OER7gw0sEWH7OPUrzpo5AnmT6KDq00vmhqT
+         rBAs+UNDSUzDVSyWeqrZ7/t88wbpQXA7+rjHwGcjOD8V5mBeydw3VSesk/wA0KPiQC2/
+         tjj+RokSHTTJfyDwGuAWCGrrUkqM8ridBPmhsAs205vnT73lATgHhsCYpiusiPmgDrnx
+         3SiCZo4Noj8qZLChLZyEKiDBavbPc5IJU72tnwwaSUuh+9kbmKY3J/twONeia8BofiN+
+         Y9Gg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1766433445; x=1767038245;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=h1Ffz7SUjA9uiSla9hHoS8dAeCi7tewQV/vP2Eehn8A=;
+        b=JZvep65Bo55nKfye+buo0Iq0L4jdTBc/neGc1im/sLgW5EsFR8F0js00R7HDrHjgzy
+         zMZc86jetzak3xSQhIrEuGiNHOHHWIs3DXvqcaC/SQqjffqIT/M1SA5Z40YplGGpYjKG
+         Dwp7qOprom7uPMYe6/ECP78ARqaYCaoX04yeAu3QY6fTkJYTqZ3hkWfjTnToZGezUsIb
+         qOdqwCOKPbBa/e9nEVa8pf6YA7BeMPy+evLlQwMu9kTBoYR85qkvyX/b9l1J+BXvhUtt
+         NPTb/Ir0lC3EeWJDhkpr12uhKzkSdSdc8UWUClfUT3Kdsaz4xG9ZLI9DHQypfGhNAAbo
+         bAOg==
+X-Forwarded-Encrypted: i=1; AJvYcCXUTtUqq7OxW63vnwntkAvFXK8+1ckKaQgvfqvz64UIde1VMs68ygxV7QWoekX9oQYyfWpvhgjcYXVpNaI=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz5z752646LglBjZF5AmEz7qNntu1lLDUXgAoIR4ZihcsJ5LbMp
+	kiMJ9ib5MLZ0DKCzyW9VXEnVripJ6n0If4Zeh/ZdkECuAGM6r+Umtt8Z4X5lY2DD3UT+6bnUtZs
+	ZcSYsA3IGX0nOhB/o+5kkL/T/Qt+BERGzi+UoXzmhMQ==
+X-Gm-Gg: AY/fxX5MBfDFfCGzsFvcVHSdt1/m1L1KfBN6oK5294ayjsycra3CnGdlUde9ng5kp7/
+	UarAQa1cr5+I6BEVngZb0f2k3iw49JtCr/efD5aUkVsnYlYnilGljdK97iAn4OcDJy11Suvj2HD
+	bP2+OWWa+Of7RHa+1gprUmkBv6aTnx9EzMGApDIQ8AA0EvwG7985J3Xa1+Nik/dMnsPh4W5cuCD
+	+Vfx/axQxA65llOwKe8PZvamZmXPJQEphwD94nz/C9opOeslhCbXpnFwb0NACgOvGrk0HWh5jtD
+	pD0k46/q+d86NfXT8jW07zmF/sp8rcOEa4q2sqJQ/BAmF+WnMA==
+X-Google-Smtp-Source: AGHT+IEdtGGJL6owR7mmmwSv2zTvtla84ek3MFk4eZNiNP2lYiWN2sfcs6M8h0fxDoYpaxxvqE+4ieXBeUSoFs/4WBA=
+X-Received: by 2002:a17:907:3ccb:b0:b73:8cea:62bb with SMTP id
+ a640c23a62f3a-b80371a3d87mr1355933366b.31.1766433444769; Mon, 22 Dec 2025
+ 11:57:24 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20251215163820.1584926-1-robert.marko@sartura.hr>
+ <20251215163820.1584926-16-robert.marko@sartura.hr> <20251216-payback-ceremony-cfb7adad8ef1@spud>
+In-Reply-To: <20251216-payback-ceremony-cfb7adad8ef1@spud>
+From: Robert Marko <robert.marko@sartura.hr>
+Date: Mon, 22 Dec 2025 20:57:14 +0100
+X-Gm-Features: AQt7F2rDm7ZgyJ9ixNo09GJcdYbsF1DFNHNC0FIPR01SjncTPp1tTulCOrRyRyg
+Message-ID: <CA+HBbNESUZ6KB0BbpZUMfh1rjZTZMgY1SwmFQbx+CRP+a_1x9g@mail.gmail.com>
+Subject: Re: [PATCH v2 16/19] dt-bindings: pinctrl: pinctrl-microchip-sgpio:
+ add LAN969x
+To: Conor Dooley <conor@kernel.org>
+Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
+	nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, 
+	claudiu.beznea@tuxon.dev, Steen.Hegelund@microchip.com, 
+	daniel.machon@microchip.com, UNGLinuxDriver@microchip.com, 
+	herbert@gondor.apana.org.au, davem@davemloft.net, vkoul@kernel.org, 
+	linux@roeck-us.net, andi.shyti@kernel.org, lee@kernel.org, 
+	andrew+netdev@lunn.ch, edumazet@google.com, kuba@kernel.org, 
+	pabeni@redhat.com, linusw@kernel.org, olivia@selenic.com, 
+	radu_nicolae.pirea@upb.ro, richard.genoud@bootlin.com, 
+	gregkh@linuxfoundation.org, jirislaby@kernel.org, mturquette@baylibre.com, 
+	sboyd@kernel.org, richardcochran@gmail.com, wsa+renesas@sang-engineering.com, 
+	romain.sioen@microchip.com, Ryan.Wanner@microchip.com, 
+	lars.povlsen@microchip.com, tudor.ambarus@linaro.org, 
+	charan.pedumuru@microchip.com, kavyasree.kotagiri@microchip.com, 
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org, 
+	dmaengine@vger.kernel.org, linux-hwmon@vger.kernel.org, 
+	linux-i2c@vger.kernel.org, netdev@vger.kernel.org, linux-gpio@vger.kernel.org, 
+	linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, 
+	linux-usb@vger.kernel.org, linux-clk@vger.kernel.org, mwalle@kernel.org, 
+	luka.perkov@sartura.hr
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+On Tue, Dec 16, 2025 at 6:34=E2=80=AFPM Conor Dooley <conor@kernel.org> wro=
+te:
+>
+> On Mon, Dec 15, 2025 at 05:35:33PM +0100, Robert Marko wrote:
+> > Document LAN969x compatibles for SGPIO.
+> >
+> > Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+> > ---
+> >  .../pinctrl/microchip,sparx5-sgpio.yaml       | 20 ++++++++++++++-----
+> >  1 file changed, 15 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/Documentation/devicetree/bindings/pinctrl/microchip,sparx5=
+-sgpio.yaml b/Documentation/devicetree/bindings/pinctrl/microchip,sparx5-sg=
+pio.yaml
+> > index fa47732d7cef..9fbbafcdc063 100644
+> > --- a/Documentation/devicetree/bindings/pinctrl/microchip,sparx5-sgpio.=
+yaml
+> > +++ b/Documentation/devicetree/bindings/pinctrl/microchip,sparx5-sgpio.=
+yaml
+> > @@ -21,10 +21,15 @@ properties:
+> >      pattern: '^gpio@[0-9a-f]+$'
+> >
+> >    compatible:
+> > -    enum:
+> > -      - microchip,sparx5-sgpio
+> > -      - mscc,ocelot-sgpio
+> > -      - mscc,luton-sgpio
+> > +    oneOf:
+> > +      - enum:
+> > +          - microchip,sparx5-sgpio
+> > +          - mscc,ocelot-sgpio
+> > +          - mscc,luton-sgpio
+> > +      - items:
+> > +          - enum:
+> > +              - microchip,lan9691-sgpio
+> > +          - const: microchip,sparx5-sgpio
+> >
+> >    '#address-cells':
+> >      const: 1
+> > @@ -80,7 +85,12 @@ patternProperties:
+> >      type: object
+> >      properties:
+> >        compatible:
+> > -        const: microchip,sparx5-sgpio-bank
+>
+> This should just be able to become "compatible: contains: const: microchi=
+p,sparx5-sgpio-bank.
+> pw-bot: changes-requested
 
-Document the serial communication interface (RSCI) used on the Renesas
-RZ/V2H(P) (R9A09G057) and RZ/V2N (R9A09G056) SoCs. These SoCs integrate
-the same RSCI IP block as the RZ/G3E (R9A09G047), so the RZ/G3E
-compatible is used as a fallback for both.
+Hi Conor,
+I have tried using contains, but it would fail to match with the
+following error:
+arch/arm64/boot/dts/microchip/lan9696-ev23x71a.dtb:
+/axi/gpio@e2010230/gpio@0: failed to match any schema with compatible:
+['microchip,lan9691-sgpio-bank', 'microchip,sparx5-sgpio-bank']
+arch/arm64/boot/dts/microchip/lan9696-ev23x71a.dtb:
+/axi/gpio@e2010230/gpio@1: failed to match any schema with compatible:
+['microchip,lan9691-sgpio-bank', 'microchip,sparx5-sgpio-bank']
 
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
----
- Documentation/devicetree/bindings/serial/renesas,rsci.yaml | 6 ++++++
- 1 file changed, 6 insertions(+)
+Regards,
+Robert
+>
+> > +        oneOf:
+> > +          - items:
+> > +              - enum:
+> > +                  - microchip,lan9691-sgpio-bank
+> > +              - const: microchip,sparx5-sgpio-bank
+> > +          - const: microchip,sparx5-sgpio-bank
+> >
+> >        reg:
+> >          description: |
+> > --
+> > 2.52.0
+> >
 
-diff --git a/Documentation/devicetree/bindings/serial/renesas,rsci.yaml b/Documentation/devicetree/bindings/serial/renesas,rsci.yaml
-index 1f8cee8171de..e059b14775eb 100644
---- a/Documentation/devicetree/bindings/serial/renesas,rsci.yaml
-+++ b/Documentation/devicetree/bindings/serial/renesas,rsci.yaml
-@@ -17,6 +17,12 @@ properties:
-           - renesas,r9a09g047-rsci # RZ/G3E
-           - renesas,r9a09g077-rsci # RZ/T2H
- 
-+      - items:
-+          - enum:
-+              - renesas,r9a09g056-rsci # RZ/V2N
-+              - renesas,r9a09g057-rsci # RZ/V2H(P)
-+          - const: renesas,r9a09g047-rsci
-+
-       - items:
-           - const: renesas,r9a09g087-rsci # RZ/N2H
-           - const: renesas,r9a09g077-rsci # RZ/T2H
--- 
-2.52.0
 
+
+--=20
+Robert Marko
+Staff Embedded Linux Engineer
+Sartura d.d.
+Lendavska ulica 16a
+10000 Zagreb, Croatia
+Email: robert.marko@sartura.hr
+Web: www.sartura.hr
