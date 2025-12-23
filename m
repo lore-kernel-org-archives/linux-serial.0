@@ -1,151 +1,89 @@
-Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED618329C79
-	for <linux-serial@vger.kernel.org>; Tue, 23 Dec 2025 10:35:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F278E30F92D;
+	Tue, 23 Dec 2025 10:43:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.69.201.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766486111; cv=none; b=TsqprYozoMsn6fLgXafa0OoHYAR9hLbhRke79IcUFFpMX73NqCgryfYXMFo0bMJC8jc45hGsH88RBwksByumKpVJpTxcBrA2WYGH8ATwUcCpRNx8Ft7oGFGK5crCZG3ciC2LsBtfYNiP3xdCHYgOUk70AVRLwkS8YEJiOVpC+vQ=
+	t=1766486614; cv=none; b=JWbZYw69lzhsqNHKL7bR8mnLn4q3qVTUhIKOcfookHJtrnImhBk1yTVjL8UnJ7kD2iaNzjARmU87kGR+a3/bKsjEHZcBk9YtTJiOB1SB/QmRdqIre1MDtaQ/WLAQiEEKovL1ZSriVdmc9HtOMfGYdGOiy0WfJUT/vTOBBeRIaqo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766486111; c=relaxed/simple;
-	bh=nhnhn/ujbA1yivMUlMSXRd1v6Sz4LmmXkvWUytEJhUI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=FsJvGZqlUtJQykykutN1RnSknM6124wxRNxIYPcQFth8cuUxO9uB4QjjIJMRHqBFOec0kKoxlZODKzPuLDj9iiaQuhbZxg9TrosZkRh+1pCRoWKNx9IBj4NhdQJa8chI6sqvlx8J2pFN6XCrMGbu3J5rWjRIhNCH/Q6wCFG06l4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr; spf=pass smtp.mailfrom=sartura.hr; dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b=GF2uS7wi; arc=none smtp.client-ip=209.85.218.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sartura.hr
+	s=arc-20240116; t=1766486614; c=relaxed/simple;
+	bh=g9X3Dk0XV1834mKVYtr4ZyQnjS0CAcSr9absGlcIMTY=;
+	h=Mime-Version:Content-Type:Date:Message-Id:From:To:Subject:Cc:
+	 References:In-Reply-To; b=j4gjW812asCInVIBS9jb/Y0O8OOZUrsqadhZwfjFsp3Kvn6DB+q26fdtScyOQOBBqA/X5NaYkz6DCeqgT2AX2BC559xsNVkmVjL/20h+oNWh3QfycLuTxx1b04GnEaWhqmlw+3/MOFVu0zUdXI8yw+QyaiqY2V0GEdDLQgfLl+M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=walle.cc; spf=pass smtp.mailfrom=walle.cc; dkim=pass (2048-bit key) header.d=walle.cc header.i=@walle.cc header.b=iAgZo3wi; arc=none smtp.client-ip=159.69.201.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=walle.cc
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=walle.cc
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b="GF2uS7wi"
-Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-b7cee045187so870263266b.0
-        for <linux-serial@vger.kernel.org>; Tue, 23 Dec 2025 02:35:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sartura.hr; s=sartura; t=1766486106; x=1767090906; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=SWwHgDUayFaSdSqe2T6d6UFJFmjd2ZLae5KHc+yXH7I=;
-        b=GF2uS7wiRyhBmf1kLR0gIF3Rip3N0z7rurwMgvhBqXkpElhZHM//c4ztfkOfl34VXQ
-         1X14GkorXLzezj84xr2Y/dQLW+EfbQhQVOVhtnuM3M454FOIn2PNXJXS36N8bH/whQBV
-         zY0fHit1GfAmUbUyKlPfmB88R6AoVgxYJryPviR3Xhc9pr/mmX1utNgHaFZ5HiT/+TFT
-         EPfJeiatuCcTI+Wko2Rrfq/cDBpi0ycNUhFAp5hGmFIf/u3Ol72pdr/MxF3qgwek5A2i
-         SlQTW3sCFS0UxINftvR9ief03PbV1fiyjZferC+QgdFvMpknr46FIg9k8YC+cFlkaq8w
-         fJHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1766486106; x=1767090906;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=SWwHgDUayFaSdSqe2T6d6UFJFmjd2ZLae5KHc+yXH7I=;
-        b=R26MLMwPaJA5GHPU6BkVferIvCDSqVGDSXusrpMfqqmiLPL6o/t4YCDxwqoAmJP3Yb
-         fvxzM4ExqhxiTfoOtPOcZxCMrdIL76mVI0MuwWArkd1+sVp1ggV7C0ksB/UjmQcP9UEP
-         L7GnFChbFn/jUSK/vhoXWQqsrUF7rq8PzwxXKUHWrWaTpURVk1JSyvxSHuHu6m0pkJFe
-         erg19tHmqv15ufvZWU7Rh3LkfdP4hMiLGU9T7Uer6adULP8RLPnXlXKqd7C6XHOy/Y9M
-         WnM3oOKHRkRa86dKCWFOAeS0Huwi1IZEDsz4Qrcip7b0SECj8z3BYEINM9MQvEv3EfJt
-         jsCw==
-X-Forwarded-Encrypted: i=1; AJvYcCWYQeKOlmeN5naOiL5NkQNpmrCtCg53BE9vV0nr5ddwOUnHXlIY/prX6FwxavnKvcZRIES+obeZ97EGEVQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwSVKztqZsrsAm2OdWenIRpYOjyT/v5bRAQUE7RGmlgGOLrmsNE
-	jOvV/Ru3NKNfqceRIwuo73seSxN2Z8aXUdo7PB+3P0Lv+hUhWklub4QgD/VBnwDiXKrEOEsncbG
-	yb58IPoYDsQmv6yO7V1xPqm6WPzCsVSNgPaDR4KsYig==
-X-Gm-Gg: AY/fxX5MAj/ktjnL3QSPKXZcN5+R19QxM8S7KvRW7v3JpvlvKMVNEEQoq9r9Qgs3Jg3
-	UJO4BCtZ0N14Em+MmvaQZyP0qRKe6vxbN1/Yefbe/zZxyvmqMNtsEF+AOS/a4PFRvotSXfBKgEQ
-	NT3pZsszgbcx+P2s2v213aMKoJFGE0KpuAJj2jMdeZcgG5v9nVwC3GKmTvWBdc6gw6v3NyqlPbt
-	x1xaLdLijFJ9jxKM/Z802jPc9RRbFR0P2jwObDLpHOANGJ/jn48xkXK0rCRnuwgGOotdK0Qvfkm
-	l7CfjvUlejARZz7BkY+B2+F1KozExtOJpYkuEPVviQibooMEFg==
-X-Google-Smtp-Source: AGHT+IEJHssgBNa10sdxlMZ0RfBcXjnBKXrp4KRUpqNBX0cKMLRNtJZXOvlDmXwgBRgg1wr13xel6K2BxjWOkHuOL+E=
-X-Received: by 2002:a17:907:a45:b0:b81:ec7c:31fd with SMTP id
- a640c23a62f3a-b81ec7c321bmr332573366b.13.1766486105902; Tue, 23 Dec 2025
- 02:35:05 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=walle.cc header.i=@walle.cc header.b="iAgZo3wi"
+Received: from localhost (unknown [213.135.10.150])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.3ffe.de (Postfix) with ESMTPSA id 0672A162;
+	Tue, 23 Dec 2025 11:43:23 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
+	t=1766486604;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=g9X3Dk0XV1834mKVYtr4ZyQnjS0CAcSr9absGlcIMTY=;
+	b=iAgZo3wigskvMPzas5O7yGs+HZkNDlzkNSCcBsDRmP7g07qAcJBTaGagFfgie0tXDky3gC
+	BPqawSVTlehA5b3tC3KhAGqVXJkAGnuFHn4bxq82tDQC6k9RrTmnIA+dbYrJ0JNc8fhjwP
+	aric1uxvA0leRi4ZFppe3qgnX0h1KRjZBaQTvQzaueGd3S9Mvx7be1xkJKGoAjeS10enBY
+	ch/dhNGc9iDC2AiGDmwcG5UypipRkSjZVZQbnjVW45En4DCx0kKNcbKgptpE1Td2zPlpl4
+	XexQwDT9bBQ6Apr6kPKd/yKI9SBhf+a8lKRB2xXzSrZs8hLZO60LcL939PtNew==
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <20251215163820.1584926-1-robert.marko@sartura.hr>
- <20251215163820.1584926-18-robert.marko@sartura.hr> <20251216-endorse-password-ae692dda5a9c@spud>
-In-Reply-To: <20251216-endorse-password-ae692dda5a9c@spud>
-From: Robert Marko <robert.marko@sartura.hr>
-Date: Tue, 23 Dec 2025 11:34:55 +0100
-X-Gm-Features: AQt7F2rp1ybXWw2BWzfekoJJeczrMeV1nO2lvHuguNeXKU1awsBcuKjFcFE-_B8
-Message-ID: <CA+HBbNF-=W7A3Joftsqn+A6s170sqOZ77jpS105s5HPqkskQzA@mail.gmail.com>
-Subject: Re: [PATCH v2 18/19] dt-bindings: arm: microchip: document EV23X71A board
-To: Conor Dooley <conor@kernel.org>
-Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
-	nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, 
-	claudiu.beznea@tuxon.dev, Steen.Hegelund@microchip.com, 
-	daniel.machon@microchip.com, UNGLinuxDriver@microchip.com, 
-	herbert@gondor.apana.org.au, davem@davemloft.net, vkoul@kernel.org, 
-	linux@roeck-us.net, andi.shyti@kernel.org, lee@kernel.org, 
-	andrew+netdev@lunn.ch, edumazet@google.com, kuba@kernel.org, 
-	pabeni@redhat.com, linusw@kernel.org, olivia@selenic.com, 
-	radu_nicolae.pirea@upb.ro, richard.genoud@bootlin.com, 
-	gregkh@linuxfoundation.org, jirislaby@kernel.org, mturquette@baylibre.com, 
-	sboyd@kernel.org, richardcochran@gmail.com, wsa+renesas@sang-engineering.com, 
-	romain.sioen@microchip.com, Ryan.Wanner@microchip.com, 
-	lars.povlsen@microchip.com, tudor.ambarus@linaro.org, 
-	kavyasree.kotagiri@microchip.com, devicetree@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org, 
-	linux-hwmon@vger.kernel.org, linux-i2c@vger.kernel.org, 
-	netdev@vger.kernel.org, linux-gpio@vger.kernel.org, linux-spi@vger.kernel.org, 
-	linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, 
-	linux-clk@vger.kernel.org, mwalle@kernel.org, luka.perkov@sartura.hr
-Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+Content-Type: multipart/signed;
+ boundary=17d32d76fcb41777ad9089a6c68374b95f4f824ab89f8e0ec07187e534f6;
+ micalg=pgp-sha384; protocol="application/pgp-signature"
+Date: Tue, 23 Dec 2025 11:43:21 +0100
+Message-Id: <DF5J8LL1AALI.8P0VHHFLBDCA@walle.cc>
+From: "Michael Walle" <michael@walle.cc>
+To: "Alexander Stein" <alexander.stein@ew.tq-group.com>, "Greg
+ Kroah-Hartman" <gregkh@linuxfoundation.org>, "Jiri Slaby"
+ <jirislaby@kernel.org>, "Andy Shevchenko"
+ <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH 1/1] serial: core: Fix serial device initialization
+Cc: <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>, "Cosmin
+ Tanislav" <demonsingur@gmail.com>
+X-Mailer: aerc 0.20.0
+References: <20251219152813.1893982-1-alexander.stein@ew.tq-group.com>
+In-Reply-To: <20251219152813.1893982-1-alexander.stein@ew.tq-group.com>
+
+--17d32d76fcb41777ad9089a6c68374b95f4f824ab89f8e0ec07187e534f6
 Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
 
-On Tue, Dec 16, 2025 at 6:32=E2=80=AFPM Conor Dooley <conor@kernel.org> wro=
-te:
+On Fri Dec 19, 2025 at 4:28 PM CET, Alexander Stein wrote:
+> During restoring sysfs fwnode information the information of_node_reused
+> was dropped. This was previously set by device_set_of_node_from_dev().
+> Add it back manually
 >
-> On Mon, Dec 15, 2025 at 05:35:35PM +0100, Robert Marko wrote:
-> > Microchip EV23X71A board is an LAN9696 based evaluation board.
-> >
-> > Signed-off-by: Robert Marko <robert.marko@sartura.hr>
-> > ---
-> >  Documentation/devicetree/bindings/arm/microchip.yaml | 8 ++++++++
-> >  1 file changed, 8 insertions(+)
-> >
-> > diff --git a/Documentation/devicetree/bindings/arm/microchip.yaml b/Doc=
-umentation/devicetree/bindings/arm/microchip.yaml
-> > index 910ecc11d5d7..b20441edaac7 100644
-> > --- a/Documentation/devicetree/bindings/arm/microchip.yaml
-> > +++ b/Documentation/devicetree/bindings/arm/microchip.yaml
-> > @@ -239,6 +239,14 @@ properties:
-> >            - const: microchip,lan9668
-> >            - const: microchip,lan966
-> >
-> > +      - description: The LAN969x EVB (EV23X71A) is a 24x 1G + 4x 10G
-> > +          Ethernet development system board.
-> > +      - items:
-> > +          - enum:
-> > +              - microchip,ev23x71a
-> > +              - microchip,lan9696
->
-> This looks wrong, unless "microchip,lan9696" is a board (which I suspect
-> it isn't).
+> Fixes: 24ec03cc5512 ("serial: core: Restore sysfs fwnode information")
+> Suggested-by: Cosmin Tanislav <demonsingur@gmail.com>
+> Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
 
-Hi,
-No, LAN9696 is the exact SoC SKU used on the board.
-I will drop it in v3.
+Tested-by: Michael Walle <mwalle@kernel.org>
 
-Regards
-Robert
->
-> > +          - const: microchip,lan9691
-> > +
-> >        - description: The Sparx5 pcb125 board is a modular board,
-> >            which has both spi-nor and eMMC storage. The modular design
-> >            allows for connection of different network ports.
-> > --
-> > 2.52.0
-> >
+Thanks,
+-michael
 
+--17d32d76fcb41777ad9089a6c68374b95f4f824ab89f8e0ec07187e534f6
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
---=20
-Robert Marko
-Staff Embedded Linux Engineer
-Sartura d.d.
-Lendavska ulica 16a
-10000 Zagreb, Croatia
-Email: robert.marko@sartura.hr
-Web: www.sartura.hr
+iKcEABMJAC8WIQTIVZIcOo5wfU/AngkSJzzuPgIf+AUCaUpySREcbWljaGFlbEB3
+YWxsZS5jYwAKCRASJzzuPgIf+B0iAX97oQnnIHvjRE6JNIqEnYR4uKI/jKZbzZjm
+QzIJRdXBBMzjw/r/2j+N5hSLI3UG0g0Bf0UkJYHoqhKUt1SXJoxqRdnbeNTpUo5G
+Fmy30fn+B3UPljQjNkafMPYgpfXBCd1buw==
+=scXj
+-----END PGP SIGNATURE-----
+
+--17d32d76fcb41777ad9089a6c68374b95f4f824ab89f8e0ec07187e534f6--
