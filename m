@@ -1,86 +1,127 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B2C4253340;
-	Tue, 23 Dec 2025 13:48:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28E171DE4CE;
+	Tue, 23 Dec 2025 14:43:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766497694; cv=none; b=e5ReMy8cHpG+GnI+Oq/VtgzYUciqlLT1zD7J7dCvtlWbJ0S7sI1VeFYVfgmzvAsYbZgfWI4o3oYylevG4/6/Z/e1iZ2+6YGGNxZl4+/JX4FQADQGxdbJZFC/uPES6wpEKASMlzJ3/EI5rs+Zwg2YvCcqqJYd40rHrvc3ERtakcY=
+	t=1766501031; cv=none; b=diOwc07pYdXh/CE6PdckCZ+vuIr2S1DP7rpnEXSrcnEwec5mo7V89RloxCP01LztlMCLs18rTEAd496xWPsmWSIK2XpfKWUKTUbLAQZU9zkKIUwdbnPrK1DhdgU4uHbg87+T21A7vvmH3R4JkGUNcwwWw1KGYX9OwMVAqjKDJQA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766497694; c=relaxed/simple;
-	bh=bx657OI5tibWzD3FtMAugH/0bfKDFap5W4/OxxvT4To=;
+	s=arc-20240116; t=1766501031; c=relaxed/simple;
+	bh=dB/+cWWuWt5zZaOF4WBQgVGeqRwXMeabHbV/nLVmbvY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=P6hsMMI2RescwkE5q+UCYAHyPu8L87U4B8TokUOqGsFS3atcG+b/R4RasIVdupfqT/Gx69TZuW+gZon3czaQRP3hdhU1xkSIOUiJW+B6nU8NLkRy6vMjfMNxK2oKicyAB7PDWTDDKV2IBvD+n/hWTzdEnYCO0IY7gapoynXoWys=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Es1swHfS; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=afUMqXPURdEdsimcOfigUyw5QTDYU7iMSSmt2aHwZ7z7fgWsfGcWOSA9xefcJgLg7etEHbptUaWlqGnFyqaj8YIapBwr8GRVcwqRgZU/lJmBtdyO53iND/d2BoxdzRg8ANHYnonqNf/hLURzHfmK2YT0k/Zmab1RHv7W2ALggcc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MfAKWHuF; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Es1swHfS"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28794C113D0;
-	Tue, 23 Dec 2025 13:48:13 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MfAKWHuF"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 193F0C113D0;
+	Tue, 23 Dec 2025 14:43:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1766497693;
-	bh=bx657OI5tibWzD3FtMAugH/0bfKDFap5W4/OxxvT4To=;
+	s=k20201202; t=1766501030;
+	bh=dB/+cWWuWt5zZaOF4WBQgVGeqRwXMeabHbV/nLVmbvY=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Es1swHfSv6S6B2pHucKQZSoJ66PXsq6VNg9zC4wgOMhHg4ZrByc3vESkv7gopbzWI
-	 D9464yDncxCMzlAVsmY6zWN0syhzVNp+5jrzbsJv60ORYXJ3BY0XfSiU5L8EDqYIIr
-	 /VguxoOyUUlTkLnyzDX5qXCxvlkdvenU2Zn2MkHi/d29NWMOQJzcSz957qPCHLpYbE
-	 iWQPXbtdFpHGfI6XVpYAcAQD3FJ1s+0Wr61gHyeDeJKLe3IoYe3L5l4LL3W+iaDaq2
-	 w26G6AMjcUb6errmjMmyEEvGmIKGZFkHkyFuexrD8I3hXH/cLb3Ogk6eP0SeUaWLM1
-	 azntYpSL9yRpw==
-Date: Tue, 23 Dec 2025 14:48:10 +0100
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Guodong Xu <guodong@riscstar.com>
-Cc: Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Paul Walmsley <pjw@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>, 
-	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>, Yixun Lan <dlan@gentoo.org>, 
-	Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, 
-	Samuel Holland <samuel.holland@sifive.com>, Anup Patel <anup@brainfault.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Lubomir Rintel <lkundrak@v3.sk>, Yangyu Chen <cyy@cyyself.name>, 
-	Paul Walmsley <paul.walmsley@sifive.com>, Conor Dooley <conor@kernel.org>, 
-	Heinrich Schuchardt <xypron.glpk@gmx.de>, Kevin Meng Zhang <zhangmeng.kevin@linux.spacemit.com>, 
-	Andrew Jones <ajones@ventanamicro.com>, devicetree@vger.kernel.org, linux-riscv@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, spacemit@lists.linux.dev, linux-serial@vger.kernel.org, 
-	Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
-Subject: Re: [PATCH v2 01/13] dt-bindings: riscv: add SpacemiT X100 CPU
- compatible
-Message-ID: <20251223-just-indigo-coua-14b16e@quoll>
-References: <20251222-k3-basic-dt-v2-0-3af3f3cd0f8a@riscstar.com>
- <20251222-k3-basic-dt-v2-1-3af3f3cd0f8a@riscstar.com>
+	b=MfAKWHuFbtD0xW1u7oSpiVKbCSBZjKXbHZgHHl/15nnW/uyFFf4XJP00SoR3z9JdD
+	 rYuxJy4cH27U8+zKbhG9PznjFiDGu1ksCvBhMD3oJNWdMMZASOUQMjEAt3urdm9mD/
+	 bHhglQTjnotVIWBdxXhf5rB20ugMOrsi+w8SGJeJyft2KAgP42HsndKPDkA3fEyKC6
+	 qrkF48gedAccR7Gu+3jMczbHecCVYIrFS8TL1t1oj9DsyxGEVyc/jq3ddSmGNNhEcq
+	 iXl7U4o2uZdWtSEG6/m1F/+GqTMGBBhPJN8lA5bBa172Z5ogGGJV9RTOqtTP98FPAF
+	 hNURvzP+WpGwQ==
+Date: Tue, 23 Dec 2025 14:43:39 +0000
+From: Conor Dooley <conor@kernel.org>
+To: Robert Marko <robert.marko@sartura.hr>
+Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+	nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
+	claudiu.beznea@tuxon.dev, Steen.Hegelund@microchip.com,
+	daniel.machon@microchip.com, UNGLinuxDriver@microchip.com,
+	herbert@gondor.apana.org.au, davem@davemloft.net, vkoul@kernel.org,
+	linux@roeck-us.net, andi.shyti@kernel.org, lee@kernel.org,
+	andrew+netdev@lunn.ch, edumazet@google.com, kuba@kernel.org,
+	pabeni@redhat.com, linusw@kernel.org, olivia@selenic.com,
+	radu_nicolae.pirea@upb.ro, richard.genoud@bootlin.com,
+	gregkh@linuxfoundation.org, jirislaby@kernel.org,
+	mturquette@baylibre.com, sboyd@kernel.org, richardcochran@gmail.com,
+	wsa+renesas@sang-engineering.com, romain.sioen@microchip.com,
+	Ryan.Wanner@microchip.com, lars.povlsen@microchip.com,
+	tudor.ambarus@linaro.org, kavyasree.kotagiri@microchip.com,
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+	dmaengine@vger.kernel.org, linux-hwmon@vger.kernel.org,
+	linux-i2c@vger.kernel.org, netdev@vger.kernel.org,
+	linux-gpio@vger.kernel.org, linux-spi@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+	linux-clk@vger.kernel.org, mwalle@kernel.org,
+	luka.perkov@sartura.hr
+Subject: Re: [PATCH v2 18/19] dt-bindings: arm: microchip: document EV23X71A
+ board
+Message-ID: <20251223-chrome-simile-8cf1e9afe155@spud>
+References: <20251215163820.1584926-1-robert.marko@sartura.hr>
+ <20251215163820.1584926-18-robert.marko@sartura.hr>
+ <20251216-endorse-password-ae692dda5a9c@spud>
+ <CA+HBbNF-=W7A3Joftsqn+A6s170sqOZ77jpS105s5HPqkskQzA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="pLErx9Z52ADLmcrz"
+Content-Disposition: inline
+In-Reply-To: <CA+HBbNF-=W7A3Joftsqn+A6s170sqOZ77jpS105s5HPqkskQzA@mail.gmail.com>
+
+
+--pLErx9Z52ADLmcrz
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20251222-k3-basic-dt-v2-1-3af3f3cd0f8a@riscstar.com>
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Dec 22, 2025 at 09:04:11PM +0800, Guodong Xu wrote:
-> Add compatible string for the SpacemiT X100 core. [1]
-> 
-> The X100 is a 64-bit RVA23-compliant RISC-V core from SpacemiT. X100
-> supports the RISC-V vector and hypervisor extensions and all mandatory
-> extersions as required by the RVA23U64 and RVA23S64 profiles, per the
-> definition in 'RVA23 Profile, Version 1.0'. [2]
-> 
-> >From a microarchieture viewpoint, the X100 features a 4-issue
-> out-of-order pipeline.
-> 
-> X100 is used in SpacemiT K3 SoC.
-> 
-> Link: https://www.spacemit.com/en/spacemit-x100-core/ [1]
-> Link: https://docs.riscv.org/reference/profiles/rva23/_attachments/rva23-profile.pdf [2]
-> Reviewed-by: Yixun Lan <dlan@gentoo.org>
-> Reviewed-by: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
-> Signed-off-by: Guodong Xu <guodong@riscstar.com>
-> ---
-> v2: Fixed alphanumeric sorting of compatible strings, put x100 before x60,
->      as per Krzysztof's feedback.
+On Tue, Dec 23, 2025 at 11:34:55AM +0100, Robert Marko wrote:
+> On Tue, Dec 16, 2025 at 6:32=E2=80=AFPM Conor Dooley <conor@kernel.org> w=
+rote:
+> >
+> > On Mon, Dec 15, 2025 at 05:35:35PM +0100, Robert Marko wrote:
+> > > Microchip EV23X71A board is an LAN9696 based evaluation board.
+> > >
+> > > Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+> > > ---
+> > >  Documentation/devicetree/bindings/arm/microchip.yaml | 8 ++++++++
+> > >  1 file changed, 8 insertions(+)
+> > >
+> > > diff --git a/Documentation/devicetree/bindings/arm/microchip.yaml b/D=
+ocumentation/devicetree/bindings/arm/microchip.yaml
+> > > index 910ecc11d5d7..b20441edaac7 100644
+> > > --- a/Documentation/devicetree/bindings/arm/microchip.yaml
+> > > +++ b/Documentation/devicetree/bindings/arm/microchip.yaml
+> > > @@ -239,6 +239,14 @@ properties:
+> > >            - const: microchip,lan9668
+> > >            - const: microchip,lan966
+> > >
+> > > +      - description: The LAN969x EVB (EV23X71A) is a 24x 1G + 4x 10G
+> > > +          Ethernet development system board.
+> > > +      - items:
+> > > +          - enum:
+> > > +              - microchip,ev23x71a
+> > > +              - microchip,lan9696
+> >
+> > This looks wrong, unless "microchip,lan9696" is a board (which I suspect
+> > it isn't).
+>=20
+> Hi,
+> No, LAN9696 is the exact SoC SKU used on the board.
+> I will drop it in v3.
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Instead of dropping it, this should become an items list with 3 consts I
+think.
 
-Best regards,
-Krzysztof
+--pLErx9Z52ADLmcrz
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaUqqhAAKCRB4tDGHoIJi
+0kmEAPwMbSydapbKFensNMM3LBSQavqvbhont2R2vwPmXc9oUAEA++sW5lHhwJ+e
+9LfhPrkmqekkXDEYUUHTET78Ply7Xgw=
+=FgUt
+-----END PGP SIGNATURE-----
+
+--pLErx9Z52ADLmcrz--
