@@ -1,207 +1,143 @@
-Received: from SY5PR01CU010.outbound.protection.outlook.com (mail-australiaeastazolkn19012064.outbound.protection.outlook.com [52.103.72.64])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D1B01DF74F;
-	Thu, 25 Dec 2025 04:23:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.72.64
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766636591; cv=fail; b=Hn+eJ2AMfgS6NmsQTRqwG62LVzDIPJCHLHwIgjxcEi7HmDGR0k9J8D8zdTrxBxSe63IPZiRb2g7wMNEnJn2csdKMl9wYmpnqxdXhLaiw8N0XOHsbNco+tYoriVm9BEmXw0+8jD66Xm6w56wMXi2gDS4niSZaZKDqOeHnyEjH58c=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766636591; c=relaxed/simple;
-	bh=Jci1Qy1Cx+HPwQ8AF47AGCkvzgMia/TRfJhpsYfsWYU=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=cjXeEJWAwJkT06V8A0vBLZRDnRb/3FyORsaCxEyBYErBjg2WdZcBirYsLp782SEAhs2QNCQJjk9a7qhhooZxJLHM57qFeI6oGoxDnl+eDzHuLaPM9jBLyz57wdHH7eVYHqg3BG9e8lGK1b2naDO7NFl3lt4UiJFOcKJwYXQYwUA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=WXO5Zmwv; arc=fail smtp.client-ip=52.103.72.64
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6900314A83;
+	Thu, 25 Dec 2025 08:47:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1766652472; cv=none; b=K3NXHeyp1NAIvAgv7IEwBd4StYUFQPoSmtGS+xD8LzLwZ8YKO7T8iqtaA/res1ppLYDeJdiyyUanZteOkNo9SzNIstG7m0s1fhwBS9cZFdL8uvwYqamIr2LkhTRwe7sCW2QfiR3xuwFC8InzuxLdHjvbHz2qB/0pTttLB2kv2UQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1766652472; c=relaxed/simple;
+	bh=tGzoiwIypyZ1iLWL1dGZAiulpww0GETNLT0hTiOL9vU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=UZzeGi6q+nj8y7x1iEgJScub8HC0APJ8wOZB8jaZznlyaDsHLEoO/2MSkNOLndJSJ2cc7lm3kawrl4JW837WTMriJckbqCJ0K12vLngK9rFDfFSCD4TTHxXGxirO/UVaOs7usuVUZuuKkV+RDwP874a8NB0NXLfbFnO3Wn/ELxQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rSQfAtpu; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="WXO5Zmwv"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=bGcbT0hDP5wxo6y6I8dnDDlgOhK52rWBeBbk/LOCrtbpOOJP3AEU39EokSbUwBajV6cMSYfNGnRa0KqIIz9LKczswbMzCosPlhCmiQF7lOcnoqsO3TVNJw8rf6XVtDLEBN6eq0ivTjyUwNyERcjUq6UoEhUuxwkadk3/GPhOiuLtEBe2rQ/Iuqo9MIykFe8ajTpSeVUAkwfP9eSZEVGyxnn7WxCiWtVMVeOUKkJ+8CUv61DJKCGqQH5FPGop3hkcPm/b/kSFVPgZ06cvSifWtwdQraz50a5QTCxvHuEf/u2eI7QrDaPmfEb0aTZHgAs05/ZEX9I4ua61pThnCkDwGg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=cGJQCBpfCdcOEohJTRJXMn9mKFUJ6mJBs2muXjSCQHI=;
- b=A02llcxrLsw/3fe5SfXT3TFOvqRzo4VQmF7GmPpBRNBWsGgcwbNQX6URG/SievPNBMbTTR/HDuVKpW8XrhpXVrBHE7xnkkvS5tLjVuIEDqyn9+ceu+UCgLQFMe49qdPWj40El0NHIiPjcN6sv7YMERMLSOt1chPMcRZb+Rcpnu5cqqAxhLfF6RnJ5E5ZmQgCykE3GE3+f2SJFlEr8VfJkII15VK2hJKVx2THsHBXCAUThAnq59TotdqcnvdRr/zFSWEdC/exKRxKtErdK0xzuJ0CWeJjCrVF7aQLHoTwNaDPkZUYiCZS7alKZUjAkPO5uyAvbauWbA1zwbgkV1ZDLQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cGJQCBpfCdcOEohJTRJXMn9mKFUJ6mJBs2muXjSCQHI=;
- b=WXO5ZmwvQ04Pqff3BUVSU2s5dEqmsAo2cHjwUNzn2WPYETfAvnWMNyxcpNbEFzRV+FQimsZF3EYF5r3euSx+5faY6bQhyPprdV+Q7xCbkK6LX6FMf4AAjwP51G01OuD89YBLB66+3sH5vB46IiiPo9WTg82NnizXlh9JJ8ScKVbU/eMQRiwUQ+NDbcvlEE7CZqOZLJTqtDTGMuej/i0mhRco/gl4xjz/LwoOBBXs0Mswo0FIASEu1sPpqJJwFVGLrrI+nh52/rFxz4L3iSfkKWLmLQtb8vP1J/HaoLHO6BYwJ8uB/zEoZOqCrn9BMXNEQ1gn3VHUhzReC+UCm4EggQ==
-Received: from SYBPR01MB7881.ausprd01.prod.outlook.com (2603:10c6:10:1b0::5)
- by MEWPR01MB9289.ausprd01.prod.outlook.com (2603:10c6:220:1f6::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9456.11; Thu, 25 Dec
- 2025 04:23:01 +0000
-Received: from SYBPR01MB7881.ausprd01.prod.outlook.com
- ([fe80::7cd2:d6e8:3fa0:5f0c]) by SYBPR01MB7881.ausprd01.prod.outlook.com
- ([fe80::7cd2:d6e8:3fa0:5f0c%3]) with mapi id 15.20.9456.008; Thu, 25 Dec 2025
- 04:23:01 +0000
-From: Junrui Luo <moonafterrain@outlook.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Baruch Siach
-	<baruch@tkos.co.il>
-CC: Jiri Slaby <jirislaby@kernel.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org"
-	<linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, Yuhao Jiang <danisjiang@gmail.com>
-Subject: Re: [PATCH] serial: digicolor: fix use-after-free on driver unbind
-Thread-Topic: [PATCH] serial: digicolor: fix use-after-free on driver unbind
-Thread-Index: AQHccv8qvC1Z9aqY9UyWKzQaaUhT6bUtMKEAgAMcJyU=
-Date: Thu, 25 Dec 2025 04:23:01 +0000
-Message-ID:
- <SYBPR01MB7881835C63D3E6F5F4BA81FFAFB2A@SYBPR01MB7881.ausprd01.prod.outlook.com>
-References:
- <SYBPR01MB7881327BF7F679E76A7315DEAFB4A@SYBPR01MB7881.ausprd01.prod.outlook.com>
- <2025122232-grass-stoppage-6645@gregkh>
-In-Reply-To: <2025122232-grass-stoppage-6645@gregkh>
-Accept-Language: en-US, zh-CN
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-msip_labels:
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SYBPR01MB7881:EE_|MEWPR01MB9289:EE_
-x-ms-office365-filtering-correlation-id: 2e0339bf-6cf2-48c7-25c9-08de436d4ab8
-x-microsoft-antispam:
- BCL:0;ARA:14566002|31061999003|461199028|51005399006|8060799015|8062599012|19110799012|15080799012|15030799006|41001999006|12121999013|3412199025|440099028|40105399003|11031999003|12091999003|102099032;
-x-microsoft-antispam-message-info:
- =?iso-8859-1?Q?w4PnUlcjjBHRdvoc8N3Kkfre5tZtfLor0PnzqG8JnVDzCPYvkxGUlQFyU5?=
- =?iso-8859-1?Q?cVH9K5onf6qDtXadGJL3p7WORidvGLZXWKzWogA0QbToxgpN00zdqkstv/?=
- =?iso-8859-1?Q?qieIgLlU9LPxrGaTNeFOAdy0hwR2cUeiQAdFRAZ+Mf61BMC9CIaFtoc0Ln?=
- =?iso-8859-1?Q?C3/xqd8IN7dWyVLuWzDv5u0aWGXMMA8Xf5GnG/N6FFer3mLC8HcUtn7g5r?=
- =?iso-8859-1?Q?hlnzNzqwA8BZegALPMjT02Km6kvgtbSRPVRGLV+bSq+Nm8TE2WYuQGQfRa?=
- =?iso-8859-1?Q?dbsSDMlU/sZp4xaqRGyo0QbMpXXaccxzqZqDnGhzaNmXQlpRMPxD/goQDZ?=
- =?iso-8859-1?Q?I9pMA3+suXg03745NXPyJTnXDhGno5Dnqw+yMd+TtetKpV0WWrHW6f0iYX?=
- =?iso-8859-1?Q?HxLP7xQq29yRgIVuIcLY8A6/KRIJoh/Uf03kUUD69UXbTRTyxdeZE+2EpY?=
- =?iso-8859-1?Q?0LUz1ZG11Q11DIapphmr4wJsy9DfHm4V1uSrSvRIZOeioTa2qFi787pJ8O?=
- =?iso-8859-1?Q?WFW2Lv7EZMb/R++7OOaP2xvGeHdEOarw4zOBOUkrnd+UvheNlhvQjiHfek?=
- =?iso-8859-1?Q?RbiGArl5tIVe/fnrcMSHFn+rXHUfe5KTPDGzh/+uLmH8/gjyt3UFBdE4+G?=
- =?iso-8859-1?Q?lNWaplEQtCmhBKv7YHSHFYzMrYoQmOEBTLH8LQ/MwpEr4shkeG7Er2FWLk?=
- =?iso-8859-1?Q?9EfDsG+wetH9QX/yu/r7jZgaHR6DP0nll1ONzWIBoJbMmv8hAV+7BsO3Pu?=
- =?iso-8859-1?Q?1JKoGJA8tUDlPizVnoDCyt1+ieNXePvqPIcupKlLO3yI5vQX3l5VB5bxTG?=
- =?iso-8859-1?Q?yE/KgLFmBfE3EvzXo1UzH1bo5XRR0LYkqgYUAfK8q/KvJvnpBsNNgP3Nz3?=
- =?iso-8859-1?Q?QnGql4uv6ILyCUqrgjV64bV3IXckJF0dFGtdXOOXOybT6UfGk1TN6Juwbm?=
- =?iso-8859-1?Q?CP1i+KNbthChp+vO6M7GOzlzpzjvA1SXfmJYf4SFVHud5EZc2CUN7PBnd5?=
- =?iso-8859-1?Q?n2gqtnypUuY7VPyDbLNA6mcpZ85Pz37jFgNym2HKqIQzA81iMweD2fIwOi?=
- =?iso-8859-1?Q?FkBiLLCfgLdgWt4QJQpC4Jkn2/uJplHwfwNjqqWEyIoB87Xg+mCPDECojw?=
- =?iso-8859-1?Q?/sIl3yewe9fLqM+6x2mOjVQig0pnwSdfTEuj3fiPoi/M5ZVMWlHA4187Ol?=
- =?iso-8859-1?Q?BXUiDqBvIIQotOJUFH1ckNJTrvkloSadZKvQASseuDGFQpxZ4/yqDk3BSl?=
- =?iso-8859-1?Q?Vt1DFN7tvvCY7pUP047GrxL5xuZW1gWhmAgsBcilh4J0uSEDgPaepTqqMB?=
- =?iso-8859-1?Q?4Vla0uHR9R9YeY9Bm5F1zvpoZE5kIHY7v96Vvp716KNICwhM/JAvehIU7Z?=
- =?iso-8859-1?Q?gyqVjDT/0YOyHYHqUBE362x9Ji8I4WEA=3D=3D?=
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?iso-8859-1?Q?haXbBOTPGBHoFZgCcO8nTymlilkVsO6BDU6VQZnr3LErw2Qb8bMOaOuJjb?=
- =?iso-8859-1?Q?oJIiQq28eQWvJuJcyPqLe3gaUOFhKHLYzY+qzICX4cLqcrtXqLrr7DCPKQ?=
- =?iso-8859-1?Q?aEbdxSmSGLb9IdqEnEteo2Hd4uVegMQPs2PnV7BK1Fizx+mFtLOLePwyg7?=
- =?iso-8859-1?Q?A8N/cQq/YrVh+7673EOrWTnZcUF52qN0OZ2lt135ejnuA1jg87Hn46FVUu?=
- =?iso-8859-1?Q?eAVVjKJpPwbzOy3xyPITBwMn+vP6B2dsUKoKv+Czhpy0FnqVt5Hp5qDVJw?=
- =?iso-8859-1?Q?CLlMmX0ytCULw+2hbvwqPHd6R85iMwRO55nhGKOHeiL/Nm7aab471LK9Em?=
- =?iso-8859-1?Q?fDCczRnJ3wqsE+cbxlXVaZS7EDGBfY7hPzFiWpsXdJcsRic1+GewPIPN0e?=
- =?iso-8859-1?Q?TyYA9uUSb77FaohZKPcvAIebiUKyJccYPkAhGk9LgM0i+LyjMaGNEHIPNE?=
- =?iso-8859-1?Q?oyPZdpOkN8HNwir9KNJ+SGZzQ9LwMShg033REdf7TqBIaNNJ9+3S8Q3/ya?=
- =?iso-8859-1?Q?RXM33isprPC0LNT79v0a/VTEdl6qm7KeVMderOs6nRqQ3rkBB7+8KggX1o?=
- =?iso-8859-1?Q?IJKQntc8466cruQOJq7WNnDrCQGMc3p71PDvGkuEnHSejZGBgeBKiz22sw?=
- =?iso-8859-1?Q?5MxP1leSlV7B0WkcvQLyh76q6EHOHdH3WUUWR9fBwKzlrThzfXgkiCEzH6?=
- =?iso-8859-1?Q?7eheFY1xEa7ger/Gk7wFbF2BqGT1F8A34dYDmjaZEvZMZSTaZp4cLd/ogS?=
- =?iso-8859-1?Q?CeRAW1HCS7/bmx/UEMqjtIAYn3D4FsdufADfQPGxXF4nxocOsVb1jwABsH?=
- =?iso-8859-1?Q?iqDwraYpxeUYcCqip3ZMoZSj/o+nH80RSNsEWubhSJyewNWOO9zvVtSzu3?=
- =?iso-8859-1?Q?DX+5/+sHLRT2QEeUYpzArwS0KFoJu6ToUv4EFGwT6m9jvDH4gOJ32f+Tom?=
- =?iso-8859-1?Q?CZROZ68U3nAYVkc0E8n+3CsRQjPsTNM06PtE2BeM7xdW/gi8KBbLWLfPk1?=
- =?iso-8859-1?Q?/oVxIhGTkBQbAbBuTd57ChX3gK6p0AHvXRmovGHr/CLAUjHHE2C+1NmUcb?=
- =?iso-8859-1?Q?J2BvuJ1eUlDNmEiBIeBh36gamvRLbmPiXmnTTJq/X/Y0NzsABcxHC3HCgi?=
- =?iso-8859-1?Q?qnAhHjNvC1RUkHhYmD/klMzvu+bPumsWpvG7nkWekXFFhy3FccnJArzdBi?=
- =?iso-8859-1?Q?hM6ZzMPvp5DhyKr6qnLRUNsP959jBZLA7yIWOzltvUMN+FWuKNGOLqHEM0?=
- =?iso-8859-1?Q?oAws00mT/BI85Uj89jYWzh8Qme3N8FCalSsmCTZV6w/tWIV7QTu3GIHqwM?=
- =?iso-8859-1?Q?k57SwIbTWY14Nrq3v4y7QqeR9doscb/J8CfnmW4R7ApQEG9NbGaWQ0G5em?=
- =?iso-8859-1?Q?ZR5mSos2ise88jm+kQxyz18P7K8DXqeHNnan2Fknv8SS1Fm2IPiMqfD5ht?=
- =?iso-8859-1?Q?LjY0d9137zJJLpX/?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rSQfAtpu"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C230FC4CEF1;
+	Thu, 25 Dec 2025 08:47:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1766652472;
+	bh=tGzoiwIypyZ1iLWL1dGZAiulpww0GETNLT0hTiOL9vU=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=rSQfAtpu1Tvje/pcoez2UitanssUVwM5Cw1SU9kJa9Dw+XhVX2F+U9GlYoKtGJVbX
+	 yg+sXK4KfXtEVLU+r7yvHaiA8uPZaF4WDYdaALbqFC8+I2x4MDvryas+cJma11Ktgl
+	 bD/8n2VD+10tm2Qlrlbp4Uz5mFXnFttIOL5jxnpnZbqe/hojpQ/ctBkpk4ebOK7p53
+	 Jk0AxOaAoVTP73KCHaPr876LRnUVqNn4CHB1Bz/f24N2otmhGdG08GivmZk4jTOXzA
+	 kjH/eT9zXi3CGjKZ95ockcCO0V8gAcyf/rnmeM89AJXIW3sf8z5SUCO7F2KFrsQEdq
+	 HKbnq3pWlXfqg==
+Message-ID: <d210552f-c8bf-4084-9317-b743075d9946@kernel.org>
+Date: Thu, 25 Dec 2025 09:47:34 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SYBPR01MB7881.ausprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2e0339bf-6cf2-48c7-25c9-08de436d4ab8
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Dec 2025 04:23:01.6395
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MEWPR01MB9289
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 01/15] include: dt-bindings: add LAN969x clock bindings
+To: Robert Marko <robert.marko@sartura.hr>
+Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+ nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
+ claudiu.beznea@tuxon.dev, herbert@gondor.apana.org.au, davem@davemloft.net,
+ vkoul@kernel.org, andi.shyti@kernel.org, lee@kernel.org,
+ andrew+netdev@lunn.ch, edumazet@google.com, kuba@kernel.org,
+ pabeni@redhat.com, linusw@kernel.org, Steen.Hegelund@microchip.com,
+ daniel.machon@microchip.com, UNGLinuxDriver@microchip.com,
+ olivia@selenic.com, radu_nicolae.pirea@upb.ro, richard.genoud@bootlin.com,
+ gregkh@linuxfoundation.org, jirislaby@kernel.org, broonie@kernel.org,
+ mturquette@baylibre.com, sboyd@kernel.org, lars.povlsen@microchip.com,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+ dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org,
+ netdev@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
+ linux-usb@vger.kernel.org, linux-clk@vger.kernel.org, luka.perkov@sartura.hr
+References: <20251223201921.1332786-1-robert.marko@sartura.hr>
+ <20251223201921.1332786-2-robert.marko@sartura.hr>
+ <20251224-berserk-mackerel-of-snow-4cae54@quoll>
+ <CA+HBbNGym6Q9b166n-P=h_JssOHm0yfyL73JZ+G9P81muK=g4A@mail.gmail.com>
+ <78bf252c-fd5e-4a36-b1a3-ca8ed26fde7a@kernel.org>
+ <CA+HBbNG+ZVD6grGDp32Ninx7H1AyEbGvP0nwc0zUv94tOV8hYg@mail.gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 a/A=
+In-Reply-To: <CA+HBbNG+ZVD6grGDp32Ninx7H1AyEbGvP0nwc0zUv94tOV8hYg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Mon, Dec 22, 2025 at 07:22:14AM +0100, Greg Kroah-Hartman wrote:=0A=
-> On Mon, Dec 22, 2025 at 12:55:02PM +0800, Junrui Luo wrote:=0A=
-> > The digicolor_uart_console_write() function accesses the global=0A=
-> > digicolor_ports[] array to retrieve the uart port pointer, which=0A=
-> > can lead to a use-after-free if the console write occurs after=0A=
-> > the port has been removed via unbind.=0A=
-> > =0A=
-> > digicolor_uart_remove() leaves a dangling pointer in the array.=0A=
-> > =0A=
-> > Fix by clearing the array entry in digicolor_uart_remove() and=0A=
-> > adding a NULL check in digicolor_uart_console_write().=0A=
-> > =0A=
-> > Reported-by: Yuhao Jiang <danisjiang@gmail.com>=0A=
-> > Reported-by: Junrui Luo <moonafterrain@outlook.com>=0A=
-> > Fixes: 5930cb3511df ("serial: driver for Conexant Digicolor USART")=0A=
-> > Signed-off-by: Junrui Luo <moonafterrain@outlook.com>=0A=
-> > ---=0A=
-> >  drivers/tty/serial/digicolor-usart.c | 4 ++++=0A=
-> >  1 file changed, 4 insertions(+)=0A=
-> > =0A=
-> > diff --git a/drivers/tty/serial/digicolor-usart.c b/drivers/tty/serial/=
-digicolor-usart.c=0A=
-> > index d2482df5cb9b..5861be2072c4 100644=0A=
-> > --- a/drivers/tty/serial/digicolor-usart.c=0A=
-> > +++ b/drivers/tty/serial/digicolor-usart.c=0A=
-> > @@ -397,6 +397,9 @@ static void digicolor_uart_console_write(struct con=
-sole *co, const char *c,=0A=
-> >  	unsigned long flags;=0A=
-> >  	int locked =3D 1;=0A=
-> >  =0A=
-> > +	if (!port)=0A=
-> > +		return;=0A=
-> > +=0A=
-> =0A=
-> What prevents port from changing right after you tested this?=0A=
-=0A=
-Thanks for the review. You're right that there's a potentially race window=
-=0A=
-between the NULL check and port usage. I found that several drivers handle=
-=0A=
-this the same way:=0A=
-=0A=
-- meson_uart: has NULL check in console_write, clears array in remove=0A=
-- sprd_serial: Fixed similar issue in commit 99038fe75afa=0A=
-=0A=
-This check does not fully eliminate the race window, and adding stronger=0A=
-synchronization in the console_write() path may have non-trivial cost. I=0A=
-am willing to adopt an alternative if one is preferred.=0A=
-=0A=
-> =0A=
-> And who is calling unbind on a port?  Why?  That's a debuggging thing=0A=
-> that a developer could do, it should not be part of any normal system=0A=
-> operation.=0A=
-=0A=
-Although this may most commonly occur in development or testing=0A=
-environments, it is still a legitimate bug that should be fixed.=0A=
-=0A=
-In addition, unbind may also occur in:=0A=
-=0A=
-- Some embedded systems using runtime device tree overlays=0A=
-- Certain virtualization scenarios with device passthrough=0A=
-=0A=
-Though these are uncommon.=0A=
-=0A=
-thanks,=0A=
-Junrui Luo=
+On 24/12/2025 15:01, Robert Marko wrote:
+> On Wed, Dec 24, 2025 at 2:05 PM Krzysztof Kozlowski <krzk@kernel.org> wrote:
+>>
+>> On 24/12/2025 11:30, Robert Marko wrote:
+>>> On Wed, Dec 24, 2025 at 11:21 AM Krzysztof Kozlowski <krzk@kernel.org> wrote:
+>>>>
+>>>> On Tue, Dec 23, 2025 at 09:16:12PM +0100, Robert Marko wrote:
+>>>>> Add the required LAN969x clock bindings.
+>>>>
+>>>> I do not see clock bindings actually here. Where is the actual binding?
+>>>> Commit msg does not help me at all to understand why you are doing this
+>>>> without actual required bindings.
+>>>
+>>> I guess it is a bit confusing, there is no schema here, these are the
+>>> clock indexes that
+>>> reside in dt-bindings and are used by the SoC DTSI.
+>>
+>> I understand as not used by drivers? Then no ABI and there is no point
+>> in putting them into bindings.
+> 
+> It is not included by the driver directly, but it requires these exact
+> indexes to be passed
+> so its effectively ABI.
+
+How it requires the exact index? In what way? I do not see anything in
+the gck driver using/relying on these values. Nothing. Please point me
+to the line which directly uses these values.... or how many times I
+will need to write this is not ABI?
+
+
+
+Best regards,
+Krzysztof
