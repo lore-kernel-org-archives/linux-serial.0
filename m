@@ -1,67 +1,67 @@
-Received: from mail-wm1-f65.google.com (mail-wm1-f65.google.com [209.85.128.65])
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9FDC31ED61
-	for <linux-serial@vger.kernel.org>; Sat, 27 Dec 2025 12:18:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.65
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1461131BCA4
+	for <linux-serial@vger.kernel.org>; Sat, 27 Dec 2025 12:18:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766837907; cv=none; b=TJoi7Pqu33VAkaaqaD6E1w5zKdRyvnty+vYudhrb+B6J/BBlnhs3/a7L0V+9DnYRfZ/yb58jIw9479GFqD0RrYTYXE/rh6N+4PFHlt+JKDXaBoBRhN913ZxuEMLwz/m3sAgGDp8dXIvzW1AozzYdNekdWhL3Q8+JOeS2Agf6+Ac=
+	t=1766837913; cv=none; b=AhLHM6//qQWLIDyBw5/nGee+8uA7g9EsO05fJgqrJLlExyn7xVHoBuRNWrw9WhcXdjMRtRRe+d7aSwG8k3b2aXk1Ky0e4WoYBGpblBGyBtLrbOk7Csk8M4LphwPLMNNBbCHMhELRaN7CP3vGvFiNS6pgWRelk+3i+0uKCXTkJD4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766837907; c=relaxed/simple;
-	bh=3dvgtN1V/Te+qiB9DfrS6Ouyxfyny3L7qK8ewpooDVE=;
+	s=arc-20240116; t=1766837913; c=relaxed/simple;
+	bh=EzMaKsRNP/XrImaDzG6owj2ch5Rre3nG7qKvJVZXc3k=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=oCN4GEYQYcY0b+CDM84lECtPnM+W0OSCslPSXlGi3Hwxjz3nZZCPWjCNi7NHar0AfrxODYJgaemnA3zUD6g/FB7lao7Gzc5vWVpV40fEv2t0dPkEWFdHxsly/MvQIBI/UwQcc6qPlkiFqLA0AJ41HEzECmSSLb0d4mCr+vlB4Ys=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=H4RzMJ1s; arc=none smtp.client-ip=209.85.128.65
+	 In-Reply-To:To:Cc; b=nT4wTSgaXo1Mjo5W9IaZOqCi12mUdoO/76YfhZ4HwJn0rKYN0Nx5wS1KfCjEAiOhHNLj0LRlD5yRQWUN9nQ2oqafHcnwj2u6KIyqH3M0RAy+IZAnzauQgZlS3ZkaTP0uv7aLCNeHIS7qwaeJHWT2Ik7tWrr5vhQA0Jw47P7uZFc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=fail smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=IOS0hqxG; arc=none smtp.client-ip=209.85.128.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="H4RzMJ1s"
-Received: by mail-wm1-f65.google.com with SMTP id 5b1f17b1804b1-47774d3536dso61936315e9.0
-        for <linux-serial@vger.kernel.org>; Sat, 27 Dec 2025 04:18:21 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="IOS0hqxG"
+Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-47a80d4a065so39307655e9.2
+        for <linux-serial@vger.kernel.org>; Sat, 27 Dec 2025 04:18:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1766837900; x=1767442700; darn=vger.kernel.org;
+        d=suse.com; s=google; t=1766837909; x=1767442709; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=oUj1yTYG2OsJA5NR0t10qcegAjlFezEaj2Q6zpglNnU=;
-        b=H4RzMJ1s9ZwnjJwrCnWnd3j67LaiHjYoBgfV2z1wnIf37T26+DNg5xDvlBjEVE8otJ
-         kZ2dI5l/t4QZvlxSC0mWNKPvut1LsMFF223IPd5HHbNU+MI0qNCyZpKdRWRBFkkgH2JN
-         D4ALpdc6KHDsnkmnIPvWgWlbSPpi4qQh7OTavOKNMR9DmGdyqwzp0HJDRAvDoEUJ2zR0
-         GYmHIBqq9o4goE5t+JVhQmH1QNH2gj2cIpx9Wv2aAkq8rGei/TSRf3gitnBTzBEM7vf7
-         lFxjpO/zZWifNxpKD9YEe2cdMjk7ljAuds+wwBUmEg00mYAJLSAPHVb09/YbRaR1i+/Y
-         ePuw==
+        bh=z9kNg59vMLuZUSj8msr6djkrRczOEtEux+Dq5BMshWM=;
+        b=IOS0hqxGQGt53BaEgDieEO3PdDdYjQ4ZVmmVP8InQVGL9RYqG5YFkSvzR93nQBoqHX
+         +/Gjyy7ZdiD/oOn4i2I1/oqRQejNV4hytUVjcaL4fk5QW2YCNDwq5wlXrN4GwwA0Kixw
+         +4V9K3vrQO5OUUJ9aUJhyeF5WnTsMq+InZUsd6ShnYeRl9pE4xUIQsw4lYLgpj0cD2Km
+         1UN/A2jyxSUP9vVYCQNt1ciemKQqRXJvvHNgVSdirNdwbxUFQgA0UaGCSHJtbh9wUcKf
+         9UIVN+c5yVphJWOelyCGSztfuI+t4ibLXxpdnJC5Y+P3nVJ+lb2eU3oERD1DlRICCz4u
+         L6JA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1766837900; x=1767442700;
+        d=1e100.net; s=20230601; t=1766837909; x=1767442709;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=oUj1yTYG2OsJA5NR0t10qcegAjlFezEaj2Q6zpglNnU=;
-        b=TN1zudPyWeys/teU1XfKTYvzT/ptJGTn/nBKWXpj17BD94dzGpQN2ucdU6pXcez9md
-         W5wS+fN1RaLR7S2SXC1LlP5motva8SG/pD8MjpQh14HFehpCaYCuSG/emmA+VKeG7h6y
-         fAqDseAhJ4vf7p4LAYptQoK6z/x+qO/OQkGL2H1VMzqYQqf2NYZo6fa1yEGFsVKnWeVs
-         HE6DF+b0rnURdFdjY4efUcBkz4WrU1blP0MKdiIf1Iy/a4+dFTJqzumqad7vzU+h51+M
-         2LMT6QVSkWrHKSPY9vLhJcvxah6h+2ly1kfBKg4wSvIyF2kulHiSGyetL/YLvWXrzA8X
-         n5IQ==
-X-Forwarded-Encrypted: i=1; AJvYcCV8Tp5vfWFkB35+GoVRhwXnDzxq37cn8/y9nQgX3Eit32OAk0s/aHnEjFdzDqkbkVyR1nq29B6NEIpG9/A=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzcNx7/BqIfy6ksswEYh/Xc/iI9TThdJrQCZDSd/1Wu4ObNbLxQ
-	EqfkycXTcdbqhljTsX5u9hUuKjmkgLYUX2h+eRYNTiZuFHw+bcy3omgoDGCXdLsWG5o=
-X-Gm-Gg: AY/fxX6exZ/YjWpkFOu9Q4103/6TqVPG9u2Otl9fPOFI5Yqq/LhELeTJil1ckgm/HJn
-	POS0ssaNGuY/sIPuwq3RpJT7QC+xMEWpou7hD35c8I06hP1jwSspFJgbGK0KOzokifV2yQzNNyb
-	jWo5UTQO5Ht6eGSvqvw1/7bQOK+x89WaHDtOH0qCPsfljT9stmHPwFe4HNdS4LIJybM6V0T1zXD
-	ElHjeHmNkxu5H+wyiVRHpsLFSSwibi8+dLjg+FHwwIdZ4WpqYC891lnhMl/YCasCPNTe/gPOPNR
-	SAlmUO9YFiVNB09qpSuSwdtAfnVw6A0B/9DgW7VaZ4ZqaCFcFJpEx0LyiBLFmahT7Bt+0pLxwk2
-	V+OIBG3PUzFwpRgMnNeh8Z5XnmGLtBzkOkSnyg6JSqlmDF+tkETvfkNtWIhvKAIbON4NogwAcfv
-	wlMLkwV5dc
-X-Google-Smtp-Source: AGHT+IFXI+q7UVcETj2xrgWEDOplaD2DQfL+z5FfnKK5mI2lAjBc9EF1caRTkYKVAlNOUIoqedA3Qg==
-X-Received: by 2002:a05:600c:4d98:b0:475:d7fd:5c59 with SMTP id 5b1f17b1804b1-47be29f362amr221645875e9.16.1766837900191;
-        Sat, 27 Dec 2025 04:18:20 -0800 (PST)
+        bh=z9kNg59vMLuZUSj8msr6djkrRczOEtEux+Dq5BMshWM=;
+        b=urqNisCn2RWlgOp1VFOkHTcgCIJM2Hxv5VhFzOXLuMpKH6ZpKNYzhgdrFnPy8nxRMx
+         Ce4n+Q1dNL3zQ91p3+DX43iSW+pDF1FfG+0ocyWV3LNcKvDQWOnDc3l6mGYD2dQpwwLb
+         Afx7g3fJ2uVGeRwK0sQ74ccvgokJ5hMsGNMJnD6cQjUZtMyelReqyjbIyCZ3Rzr4Jah8
+         3IXbLHuhf/5HeShdWda5aWmxhBIRGdI3MuLPX1ip1ywwroO4dE0O6mebDsjRp/j9BEo4
+         G1t6/LMigcfsVtlFt10W0hoKlkoEm7MSdEERD0VNUw44W6wQxuR/zjUahJm9228isRMj
+         wwcw==
+X-Forwarded-Encrypted: i=1; AJvYcCUiWujK28SPC3sjyZYMeT7ZmxTGjxdsTYQRmRYgwtV8WOp1lNYC3F/YRijRgqWlpSY6hSGLRxQm1bw9Gl8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxW6mzbG5SeugoJK+n0KfuaDdHChzg+YOsT8nrcX8jMigusrhvK
+	3rf69iiR/GFzTyg4PriH0euBC5zlVapsS3HxYD8L/DS27p8j7AVHAo5bGLqweD+iTQo=
+X-Gm-Gg: AY/fxX6QKqUmrqBht4z6oZ8dqEMj79EExGTwcC91sNZsGfXPbGnjvgsx1ra9rzByZ8q
+	ARHiQxSiHhpSAOwYbVcmnOeksB2L7buzECzEnpi5T++iDtxReC8LKqvJoPUUnwFcFEJJeZjS8lj
+	HV4gGyqkliC+6cIDa5NYC7TlRw4ASkGx0cve8rfwzmPXqITfEfoB1iYVPW/ViLDXfyrOlRpIaZ4
+	icAjHnm/6GX7CShvBL+pANwIx12cHz1Tfs2IaLIEHzfpmBXoGZZKOBz4SPczhaRe4EgEwAtslEB
+	jY07x1LKGKyaZYaJEXLa3DOpzHx/Ptjidm4bOeLg/Pb+kaqBbS0eEqqqsCtgnZsrqolnFqQDyME
+	0V4iR4RXC/Acpdn5BQZbIAftjcgLRQCbsNFXkYVSz6mICAFAvAOLCj7YENZWtYqK2aoOFglROrD
+	+XOCfARpxAvZEmIE/d/Qk=
+X-Google-Smtp-Source: AGHT+IHrtEPOGW5HpG0S0h+CrpgwJd8+zbJNmNN/crxl7Vk2Gjo34WfIR0WT0TkmrlMgn1CALEr/CA==
+X-Received: by 2002:a05:600c:4f4c:b0:47a:7aa0:175a with SMTP id 5b1f17b1804b1-47d1958591bmr299387905e9.26.1766837909421;
+        Sat, 27 Dec 2025 04:18:29 -0800 (PST)
 Received: from [127.0.0.1] ([2804:5078:811:d400:58f2:fc97:371f:2])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-121724cfdd0sm97940127c88.4.2025.12.27.04.18.11
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-121724cfdd0sm97940127c88.4.2025.12.27.04.18.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 27 Dec 2025 04:18:19 -0800 (PST)
+        Sat, 27 Dec 2025 04:18:28 -0800 (PST)
 From: Marcos Paulo de Souza <mpdesouza@suse.com>
-Date: Sat, 27 Dec 2025 09:16:17 -0300
-Subject: [PATCH 10/19] fs: pstore: platform: Migrate to
+Date: Sat, 27 Dec 2025 09:16:18 -0300
+Subject: [PATCH 11/19] powerpc: kernel: udbg: Migrate to
  register_console_force helper
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -71,7 +71,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20251227-printk-cleanup-part3-v1-10-21a291bcf197@suse.com>
+Message-Id: <20251227-printk-cleanup-part3-v1-11-21a291bcf197@suse.com>
 References: <20251227-printk-cleanup-part3-v1-0-21a291bcf197@suse.com>
 In-Reply-To: <20251227-printk-cleanup-part3-v1-0-21a291bcf197@suse.com>
 To: Richard Weinberger <richard@nod.at>, 
@@ -108,11 +108,11 @@ Cc: linux-um@lists.infradead.org, linux-kernel@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, linux-fsdevel@vger.kernel.org, 
  Marcos Paulo de Souza <mpdesouza@suse.com>
 X-Mailer: b4 0.15-dev
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1766837798; l=1079;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1766837798; l=1180;
  i=mpdesouza@suse.com; s=20231031; h=from:subject:message-id;
- bh=3dvgtN1V/Te+qiB9DfrS6Ouyxfyny3L7qK8ewpooDVE=;
- b=vEVEr1V/PLyTXU5DKxPct4kmpsEX80YaTpb8m+k5Ll/RykRPcPf3SC/5piYXBTRWgZnh2jkWP
- FQP0jQiJpLBB9Qo/wJGJV1aoieFgYcnUso9xzkOCnscVwaYm3IY9A0b
+ bh=EzMaKsRNP/XrImaDzG6owj2ch5Rre3nG7qKvJVZXc3k=;
+ b=4hRgVgEFeE8Kfjdb4F4yho+pOLOr4/h5Rv8YKsyU7Hs44mjvTHW9sE+Wu4jBIqif6kS1nJWUa
+ QXrCwGXn4DFCsUQcLd3WwFDkthhp5OOtTZ3i5F2rVUBtIHQVlS2lOkg
 X-Developer-Key: i=mpdesouza@suse.com; a=ed25519;
  pk=/Ni/TsKkr69EOmdZXkp1Q/BlzDonbOBRsfPa18ySIwU=
 
@@ -124,27 +124,31 @@ No functional changes.
 
 Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
 ---
- fs/pstore/platform.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/powerpc/kernel/udbg.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/pstore/platform.c b/fs/pstore/platform.c
-index f8b9c9c73997..9d42c0f2de9e 100644
---- a/fs/pstore/platform.c
-+++ b/fs/pstore/platform.c
-@@ -418,10 +418,10 @@ static void pstore_register_console(void)
- 		sizeof(pstore_console.name));
- 	/*
- 	 * Always initialize flags here since prior unregister_console()
--	 * calls may have changed settings (specifically CON_ENABLED).
-+	 * calls may have changed settings.
- 	 */
--	pstore_console.flags = CON_PRINTBUFFER | CON_ENABLED | CON_ANYTIME;
--	register_console(&pstore_console);
-+	pstore_console.flags = CON_PRINTBUFFER | CON_ANYTIME;
-+	register_console_force(&pstore_console);
+diff --git a/arch/powerpc/kernel/udbg.c b/arch/powerpc/kernel/udbg.c
+index 862b22b2b616..0f88b7697755 100644
+--- a/arch/powerpc/kernel/udbg.c
++++ b/arch/powerpc/kernel/udbg.c
+@@ -142,7 +142,7 @@ static void udbg_console_write(struct console *con, const char *s,
+ static struct console udbg_console = {
+ 	.name	= "udbg",
+ 	.write	= udbg_console_write,
+-	.flags	= CON_PRINTBUFFER | CON_ENABLED | CON_BOOT | CON_ANYTIME,
++	.flags	= CON_PRINTBUFFER | CON_BOOT | CON_ANYTIME,
+ 	.index	= 0,
+ };
+ 
+@@ -163,7 +163,7 @@ void __init register_early_udbg_console(void)
+ 		udbg_console.flags &= ~CON_BOOT;
+ 	}
+ 	early_console = &udbg_console;
+-	register_console(&udbg_console);
++	register_console_force(&udbg_console);
  }
  
- static void pstore_unregister_console(void)
+ #if 0   /* if you want to use this as a regular output console */
 
 -- 
 2.52.0
