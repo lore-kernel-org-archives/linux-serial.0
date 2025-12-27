@@ -1,172 +1,112 @@
-Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A36927F756
-	for <linux-serial@vger.kernel.org>; Fri, 26 Dec 2025 21:28:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9CC92853E9;
+	Sat, 27 Dec 2025 11:17:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766784534; cv=none; b=lyBQOWp+1sgbjGUcBUf9jzRVHfe6PieYsx+fKxHNsMU5geZZRVIhfO8LG1bzPdlmkAJXdVhYCuxSWMQ0h7aGNumnoEa8jmH4/SQhcHXswfUGuPO9tIoa92l3Z7RQ5YbXNsdMZWz7gGuyN2euwW3hAHsEvWc29IFlf6tGlDekGzE=
+	t=1766834242; cv=none; b=uhe4DrJrk75m79+0UDM0BwCiS6ANvW8eGqYX61HQFEfOkNRvX2TeCyB52HECIZmkz9gpit9gLJBJZPpNBOm9V3HX24+XspYGkYfS8WhsqYG1ki22Y153sU81Fz3neAv+zZJS1aer2zUhlDQRjfymETOPyL6SLa1BDrPQ8tuDHWE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766784534; c=relaxed/simple;
-	bh=NspC7S3ikTMUwNzaq52BA472WHff+d7fgODKBGfPMtk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=iO7Zo20Cirj+DOW7ukYBl0veGoXX5BZyDzn2IC1cxjwjXmLYCJ6Q4MswMPo7TEYxBFQpMbhmlBc69zo1A0nDYUWJdm+Dm0cN+ubME7LWMIYxgh3pwZ+XgE7nqihbCzSxI7M2pnOmQ0mZUaytwhnb1miOpzKDiup7H+KPl4YafOc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com; spf=pass smtp.mailfrom=riscstar.com; dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b=Tq97YNnN; arc=none smtp.client-ip=209.85.222.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=riscstar.com
+	s=arc-20240116; t=1766834242; c=relaxed/simple;
+	bh=mkTJBdGWaaGFXpk4ABan/EOXP8frmcAGWpzfe9DTQsY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=RHdvuj2XjjAJUdzKsASVVjPnTmzXKv0m8dNl+CQdZxXSe1HLlFDbCXsKPV9eUur4dK/dm3kgTtrZHXIVqPBY4YsorIRmVKlu4yv2Nh+vm21pp69jPbjnRQ5XWJmIQCxnoGdp3RNTprAbmc/9KYc2Fx9On5/StfvYvCH++XGaa0k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mp7Vf87Q; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b="Tq97YNnN"
-Received: by mail-qk1-f169.google.com with SMTP id af79cd13be357-8b220ddc189so1023519585a.0
-        for <linux-serial@vger.kernel.org>; Fri, 26 Dec 2025 13:28:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=riscstar-com.20230601.gappssmtp.com; s=20230601; t=1766784531; x=1767389331; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=nntctK0gEdJs8MBuE2OMh+NNa2bU4c08j9CTg1079CE=;
-        b=Tq97YNnNwqXEjYB22akOkiNSUBqFu2zAbhh8GFPHNGeJb9qIZgxaN9nwUxrGV83eWk
-         Ug0/KSQwi3zp0qvgAdKshfnWLH1rXzOL1V+Mp5e3pBs0yJiF5M9REjMDQiMGtAHJ1Jq+
-         yTT8HdMIbbFnrvwA5qKkT3J7jPwZo41jBp6nIJDg8l1L8SiOzIWIIJ0RwNP5nZfkuuw5
-         xTkdGKfXVjquky0lLXsqMBXHyF0VJyAd65PpJxZUsMvvKISAK26rctCMWgyjJEjQYhj9
-         bpU/uYu+LgxMaLN3F3gAEiKDS26nGvMV5Q4svqtF2nTry84cRHkgqSklLo5+youVzU0V
-         67Zg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1766784531; x=1767389331;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=nntctK0gEdJs8MBuE2OMh+NNa2bU4c08j9CTg1079CE=;
-        b=c3zbr5mtjz10+hlxA0d+QvtHQ2yv/zmMEp55dFz91wfbC7TThmdtC5ph5dcn/XNON4
-         tiwx8NnqBhlbWqyW8YTdh4u94GAjGAf4Rj5kNHrTfRkO8g9HaKSMHDAN65coyfk2BAMH
-         s2WrpFUKRKaiODQM5uAWkmpVpqH/vEb3zD9FuIsTukXDgQ2/igcywd0lBvv51AJhiNqI
-         Y8Nf4k+NiW2a0gLGsDV09N9QOcL24vZSXuU4066H4YzpM/FUq9EzEPF9zmokDZshCgOx
-         YYoamwb25e0aBzIkoxPlHSO21xuDedkJUTujlZQ2yk3zaacqsycHOj3xHxY/cQgQ/VHF
-         rOtA==
-X-Forwarded-Encrypted: i=1; AJvYcCXhr8mq7ddHUP61O0y6+KyLToCn2q/ihamC0UR9rKt3Ww/vFV/HLfeQrSHmWZSKoi1BqxHNj8UW/q2TPzw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyExWjmfqAOQnl0NfEa/q046/nn393oSZ0hAvwO5FNfiTGjdGas
-	Jl6O/A5BrxI4030nSa7GTTcfmEej1ZzxWAB67Pk85xKoPz+JZ/9uR+t2UxhJ197ZMIM=
-X-Gm-Gg: AY/fxX76SMDD9lcuHprZ2Ahc16i09BoqUjzr+6RygyLlemKFFns8LgbNBn7WBL9OfuP
-	AD7NHeRxoS5JImeD+h7cQ8BnfFCDDkILDSz1obtKRyyquMGE+RRHvtx3YguVrlVwTsWP+rbVF2h
-	eQlcZqK8ljkBPOupMzL/iSDexagfITRs2jGclyZ0NW5uz55JhRw8wCr4X0ehn2LpSzWvAKZRasY
-	Sz702S2uNV76k8iRbk352XeW0vqD3edPoiRQ53z43ICHei3a15Ikdp0xPuzN7UCwcwnGlJqBHLY
-	1AMOoZNSyBK6JlFxpE5v0+tC0Uo2RR6x8fpovzJDPebomFNP4GNFM6d+LEyRnWrt7ECOcxxvyPw
-	LMzFlHsd9DGt2LMYgSv6IE5iDDq005ooaPXIY8oOeJ2Y5HGoyeEu+HEUimhJvk5l7rEVt7KMnGg
-	dwilpBf/6wZpcAex/k9z0dtXXhIztk5DoQZt46DDFMq1AVfa0nFK0=
-X-Google-Smtp-Source: AGHT+IEy/QOrxe2SQiRFQjJ/+nrpNVPGTV1wSqBMtHRM+j197OQHW+EwApB9rAJn4Nlwz0TrLac2kQ==
-X-Received: by 2002:a05:620a:454d:b0:8b1:ed55:e4f0 with SMTP id af79cd13be357-8c08fbc6077mr3782302885a.39.1766784530950;
-        Fri, 26 Dec 2025 13:28:50 -0800 (PST)
-Received: from [172.22.22.28] (c-75-72-117-212.hsd1.mn.comcast.net. [75.72.117.212])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-8c0973ee08dsm1824350585a.36.2025.12.26.13.28.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 Dec 2025 13:28:50 -0800 (PST)
-Message-ID: <fc719e92-10bc-455f-b402-c93bdbf878cf@riscstar.com>
-Date: Fri, 26 Dec 2025 15:28:47 -0600
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mp7Vf87Q"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F9FCC4CEF1;
+	Sat, 27 Dec 2025 11:17:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1766834241;
+	bh=mkTJBdGWaaGFXpk4ABan/EOXP8frmcAGWpzfe9DTQsY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=mp7Vf87QB6NclKUBLSZgG25HwjCXi0w1BFQg/Xi32LC2n/3/VELl6cCodVL+Uaohv
+	 knt2f4OAFECmBI2yR6QaJKc4Fu3a0RgdjeQelMCbEngpVtwWKTYTsHw2W1Iz+bxEWv
+	 0zWs04mKwiyvgUvPwIasj1QjjKsDJq89hdt7OjelzvGxzL+3ihvEu5fdHBabQtgXr8
+	 DllSXXTp5/+fVCOegZ18LBeyKqUAgJDvKyYQhRds9kFnFYu05Qmf5FSqSpvj2eGiJS
+	 UXpqSihw//fBPaMJNj+nca6ZTcB88RkYwMxJpkTmCUhvWbKSEP90A++xF9C0FO43Cv
+	 F68a/aRlgpAVQ==
+Date: Sat, 27 Dec 2025 12:17:18 +0100
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc: Robert Marko <robert.marko@sartura.hr>, robh@kernel.org, 
+	krzk+dt@kernel.org, conor+dt@kernel.org, nicolas.ferre@microchip.com, 
+	claudiu.beznea@tuxon.dev, herbert@gondor.apana.org.au, davem@davemloft.net, 
+	vkoul@kernel.org, andi.shyti@kernel.org, lee@kernel.org, andrew+netdev@lunn.ch, 
+	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com, linusw@kernel.org, 
+	Steen.Hegelund@microchip.com, daniel.machon@microchip.com, UNGLinuxDriver@microchip.com, 
+	olivia@selenic.com, radu_nicolae.pirea@upb.ro, richard.genoud@bootlin.com, 
+	gregkh@linuxfoundation.org, jirislaby@kernel.org, broonie@kernel.org, 
+	mturquette@baylibre.com, sboyd@kernel.org, lars.povlsen@microchip.com, 
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org, 
+	linux-i2c@vger.kernel.org, netdev@vger.kernel.org, linux-gpio@vger.kernel.org, 
+	linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, 
+	linux-clk@vger.kernel.org, luka.perkov@sartura.hr
+Subject: Re: [PATCH v3 01/15] include: dt-bindings: add LAN969x clock bindings
+Message-ID: <20251227-splendid-striped-starfish-ece074@quoll>
+References: <20251223201921.1332786-1-robert.marko@sartura.hr>
+ <20251223201921.1332786-2-robert.marko@sartura.hr>
+ <20251224-berserk-mackerel-of-snow-4cae54@quoll>
+ <CA+HBbNGym6Q9b166n-P=h_JssOHm0yfyL73JZ+G9P81muK=g4A@mail.gmail.com>
+ <78bf252c-fd5e-4a36-b1a3-ca8ed26fde7a@kernel.org>
+ <CA+HBbNG+ZVD6grGDp32Ninx7H1AyEbGvP0nwc0zUv94tOV8hYg@mail.gmail.com>
+ <d210552f-c8bf-4084-9317-b743075d9946@kernel.org>
+ <2025122516245554f59e2e@mail.local>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 11/13] dt-bindings: riscv: Add Supm extension
- description
-To: Guodong Xu <guodong@riscstar.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
- Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
- Alexandre Ghiti <alex@ghiti.fr>, Yixun Lan <dlan@gentoo.org>,
- Daniel Lezcano <daniel.lezcano@linaro.org>,
- Thomas Gleixner <tglx@linutronix.de>,
- Samuel Holland <samuel.holland@sifive.com>, Anup Patel
- <anup@brainfault.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
- Yangyu Chen <cyy@cyyself.name>
-Cc: Paul Walmsley <paul.walmsley@sifive.com>, Conor Dooley
- <conor@kernel.org>, Heinrich Schuchardt <xypron.glpk@gmx.de>,
- Kevin Meng Zhang <zhangmeng.kevin@linux.spacemit.com>,
- Andrew Jones <ajones@ventanamicro.com>, devicetree@vger.kernel.org,
- linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
- spacemit@lists.linux.dev, linux-serial@vger.kernel.org
-References: <20251222-k3-basic-dt-v2-0-3af3f3cd0f8a@riscstar.com>
- <20251222-k3-basic-dt-v2-11-3af3f3cd0f8a@riscstar.com>
-Content-Language: en-US
-From: Alex Elder <elder@riscstar.com>
-In-Reply-To: <20251222-k3-basic-dt-v2-11-3af3f3cd0f8a@riscstar.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <2025122516245554f59e2e@mail.local>
 
-On 12/22/25 7:04 AM, Guodong Xu wrote:
-> Add description for the Supm extension. Supm indicates support for pointer
-> masking in user mode. Supm is mandatory for RVA23S64.
-> 
-> The Supm extension is ratified in commit d70011dde6c2 ("Update to ratified
-> state") of riscv-j-extension.
-> 
-> Supm depends on either Smnpm or Ssnpm, so add a schema check to enforce
-> this dependency.
+On Thu, Dec 25, 2025 at 05:24:55PM +0100, Alexandre Belloni wrote:
+> On 25/12/2025 09:47:34+0100, Krzysztof Kozlowski wrote:
+> > On 24/12/2025 15:01, Robert Marko wrote:
+> > > On Wed, Dec 24, 2025 at 2:05=E2=80=AFPM Krzysztof Kozlowski <krzk@ker=
+nel.org> wrote:
+> > >>
+> > >> On 24/12/2025 11:30, Robert Marko wrote:
+> > >>> On Wed, Dec 24, 2025 at 11:21=E2=80=AFAM Krzysztof Kozlowski <krzk@=
+kernel.org> wrote:
+> > >>>>
+> > >>>> On Tue, Dec 23, 2025 at 09:16:12PM +0100, Robert Marko wrote:
+> > >>>>> Add the required LAN969x clock bindings.
+> > >>>>
+> > >>>> I do not see clock bindings actually here. Where is the actual bin=
+ding?
+> > >>>> Commit msg does not help me at all to understand why you are doing=
+ this
+> > >>>> without actual required bindings.
+> > >>>
+> > >>> I guess it is a bit confusing, there is no schema here, these are t=
+he
+> > >>> clock indexes that
+> > >>> reside in dt-bindings and are used by the SoC DTSI.
+> > >>
+> > >> I understand as not used by drivers? Then no ABI and there is no poi=
+nt
+> > >> in putting them into bindings.
+> > >=20
+> > > It is not included by the driver directly, but it requires these exact
+> > > indexes to be passed
+> > > so its effectively ABI.
+> >=20
+> > How it requires the exact index? In what way? I do not see anything in
+> > the gck driver using/relying on these values. Nothing. Please point me
+> > to the line which directly uses these values.... or how many times I
+> > will need to write this is not ABI?
+> >=20
+>=20
+> The index here is the exact id that needs to be set in the PMC_PCR
+> register and so it is dictated by the hardware.
 
-I have the same general question on this, about whether it's really
-necessary for the DT binding to enforce these requirements.  The
-RISC-V specifications are what truly defines their meaning, so I
-don't really see why the DT framework should need to enforce them.
-(That said, I'm sure there are other cases where DT enforces things
-it shouldn't have to.)
+So not a binding between Linux and DTS.
 
-
-And now, having looked at these added binding definitions (in patches
-07 through 11 in this series), I wonder what exactly is required for
-them to be accepted.  For the most part these seem to just be defining
-how the extensions specified for RISC-V are to be expressed in
-DT files.  It seems to be a fairly straightforward copy from the
-ratified specification(s) to the YAML format.
-
-Who need to sign off on it?  Conor?  Paul?  DT maintainers?
-
-Thanks.
-
-					-Alex
-
-> Signed-off-by: Guodong Xu <guodong@riscstar.com>
-> ---
-> v2: New patch.
-> ---
->   Documentation/devicetree/bindings/riscv/extensions.yaml | 16 ++++++++++++++++
->   1 file changed, 16 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/riscv/extensions.yaml b/Documentation/devicetree/bindings/riscv/extensions.yaml
-> index 1066b7e65dab89704dbac449db4aa5605c95b9d3..4997f533b2c0defad88fd59413a6885b5b9e109a 100644
-> --- a/Documentation/devicetree/bindings/riscv/extensions.yaml
-> +++ b/Documentation/devicetree/bindings/riscv/extensions.yaml
-> @@ -267,6 +267,12 @@ properties:
->               ratified in RISC-V Profiles Version 1.0, with commit b1d806605f87
->               ("Updated to ratified state.")
->   
-> +        - const: supm
-> +          description: |
-> +            The standard Supm extension for pointer masking support in user
-> +            mode as ratified at commit d70011dde6c2 ("Update to ratified state")
-> +            of riscv-j-extension.
-> +
->           - const: svade
->             description: |
->               The standard Svade supervisor-level extension for SW-managed PTE A/D
-> @@ -892,6 +898,16 @@ properties:
->                   const: shvstvecd
->               - contains:
->                   const: ssstateen
-> +      # Supm depends on either Smnpm or Ssnpm
-> +      - if:
-> +          contains:
-> +            const: supm
-> +        then:
-> +          anyOf:
-> +            - contains:
-> +                const: smnpm
-> +            - contains:
-> +                const: ssnpm
->         # Zcb depends on Zca
->         - if:
->             contains:
-> 
+Best regards,
+Krzysztof
 
