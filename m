@@ -1,67 +1,67 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+Received: from mail-wm1-f67.google.com (mail-wm1-f67.google.com [209.85.128.67])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95D123164C3
-	for <linux-serial@vger.kernel.org>; Sat, 27 Dec 2025 12:18:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD717322C73
+	for <linux-serial@vger.kernel.org>; Sat, 27 Dec 2025 12:18:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.67
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766837931; cv=none; b=utH+xSjVsUwcOUp/APZg7QNRm81qGe40VXnEf9JSbYRQIC6JR2Z7j3sttbRZbXBIBS+ujw/8rNKeuaiJ1T073rmqman9cxkv8dSgbjYOV8Sq+2iTOmGlsBEZNLBaAIWfMdvmhvj8fHIOsNOM129pQ+J5DA5OOYBNDQkP7vThoU8=
+	t=1766837940; cv=none; b=UW+0/7ZnTmh3sfrrYP5YBxV3zxFaHQIhboZK/TFAOC+/mftpUVZ7AE1RnQgjEznVnrH9CwxUtJdZQZmqyTB2z/7uIAOW/hmCgrJkmtEauZ5gr7xf6OBoTjZXgHqiJHMGqs8UkHfqE6iLfms+AF6DsmdTFjWmfFIa4lMGJ9JN0BA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766837931; c=relaxed/simple;
-	bh=9A3Brx5a3gQ0NUhTGZ1ViMT9HfTuP00Tgzee1GwnjVM=;
+	s=arc-20240116; t=1766837940; c=relaxed/simple;
+	bh=go1Xoe57mzaY/mIQIq5f3pHcbzGWVFe1Pe8aCGM93yA=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=G8Mk3B7t7IN0lH22+z0g6B292yCVsBC6edYOOZgY6+XX87RK6eN2rV8KQT4Kj7DYxqRfCiXFhjW8A/yxhGUGTVu7lI0KEzaXJJlirzuA2CwKawm8I7XDFm0K507bkhaKONHs6+fwLvR/wDA7mW1bvPtTeJL3WCt6WZUb/U2+bew=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=J0FA9L3E; arc=none smtp.client-ip=209.85.128.42
+	 In-Reply-To:To:Cc; b=hq0bqDY7jXA/+j208PnLmrW282cTEltkUFjOhoPWxDEUl2oiyixcqMDOp6Qta18T9aoLXVVzUjzBYLTfNGow9rh7NOH/ZnpcN0BcAKLoocl/HNkNhJ0TeDYad8DkgxfTlsMUjfk47NDqY38y3dv8Iz/GyBqqBjxIe9/rdv6VBFM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=fail smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=WkPdkqCj; arc=none smtp.client-ip=209.85.128.67
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="J0FA9L3E"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-47775fb6c56so59045995e9.1
-        for <linux-serial@vger.kernel.org>; Sat, 27 Dec 2025 04:18:49 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="WkPdkqCj"
+Received: by mail-wm1-f67.google.com with SMTP id 5b1f17b1804b1-47796a837c7so50831695e9.0
+        for <linux-serial@vger.kernel.org>; Sat, 27 Dec 2025 04:18:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1766837928; x=1767442728; darn=vger.kernel.org;
+        d=suse.com; s=google; t=1766837937; x=1767442737; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=NC/xlTHSkC5720zy/KPT378kGxggptiwCzT1YNGAqrI=;
-        b=J0FA9L3EEmy+IH7mL6HrvsAU2J8mMSuJmz6c7amiBc6l2t5p3f62JdTCtKxVbVw5tv
-         zuNS8vF1S+3BpGWqsjsvt4ONGTmjMi/I3YD222xJdfKU3h4VJfUslK/EeDgLn42ewU0j
-         LmFaia6d73wWqXt/KgBZ5iFETl+z6Rh9R0DQN/rMwXBfnCoWzcyGp4OYHq2TLfwXr2YW
-         QctsoL79xnhZYvgAc/ZHZCjw/UuAClU8c2kW/VmOPYGJFt21JADcG2l5JUTrhu5ga03I
-         +AJKNR7KieNZIm41zxSYT3sOU92LGB7G83JtmI3WGHaz3MQWgZVnsoOHQGzODtYm02LZ
-         d4Fg==
+        bh=jl/uMa7F0AxGo9UgKbw3ayYmv5/eAGkPJCpV4UBsG/A=;
+        b=WkPdkqCjvnF1WWewivsx9QKBvWv4Xkq6+Fh344PfMkM7aUVkscfEHyxnA9p64TN2H6
+         jrQomrJRmmLRcyIHDzB9nMlDty3nb6h93b8ZmPlw9sOvtbZeeDcmT66uLUIA0Di07OvP
+         bPe1SiO2UGhRR1eytL2fnbICWfMM5MFAY7iQw+sqAbuBql9wDEdV3AE3+sWMnUHDBSBn
+         iW7EHx8A78yboH3lzk179FGsD0tX9TZtVG/1DsI3onhwFM8G4AY0Ahye4bUK9Pa0XmD/
+         gcqgqd0tl7RamgGQRJoqDgwdq8cS7rhb2BfkdaFWU53nrWBUSLvGNgRBK1ChsnqneJei
+         o36Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1766837928; x=1767442728;
+        d=1e100.net; s=20230601; t=1766837937; x=1767442737;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=NC/xlTHSkC5720zy/KPT378kGxggptiwCzT1YNGAqrI=;
-        b=HI5ofmLQgpPGUX8REuS9m+LiILdLo6i/gE1CbxAvpRjyjcQiQCiP+cVl75iKiUrMeM
-         yIxfQr2tHJu/d/7hu5VRu9Y1SmGsd9sWiOLgCFLfN5n0IuA1tKrVc09HRa5fmySxSmJx
-         no95VhfFPSTjCBkCghOeO/gi/Q+n4TiQXesaQQ++yo+YnUAWWT8628rKagOwQRU+B6zR
-         krOw8v608vRFhX2U+fBvOhaI7wCTzaqzm/HFvmdd5W8eLDdZMuA1FtzhGFvSaaMB4OSd
-         2adDdrYAqCEaqTF8U6jIKxsCmOi5+oAn5+3KKtsOW2kqlS4Wyu7ZKMKai04K18BNvJ7I
-         hQEw==
-X-Forwarded-Encrypted: i=1; AJvYcCWg1arz8+3NriEx2TDOj7vsW8HyXCHzHoC14s2FKqrskc9UPtQjfPL4Pe2ZlU7fufboJEpokIiqYm4Fd1k=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx612YvJfZ/klev3xG3W1YxDfXrvoEC9NvmL70q/V8hkvTjoK+F
-	Y9czzKmRjVjSxQcr8lmWvFWk7mZiZ5l0l0L18aKV4ctbb0MX5d8MelFoA5YyoGjY2wI=
-X-Gm-Gg: AY/fxX7e37xSZ1013bN/JwQTmHfdRX8xlSR8cB2B7ZoBsMUf0homCpbi7XhOrHFWt7p
-	TYrOq9FmnHERll1PDOwoankzGbhyjXk5Bw1/UZfSlNsSzXBpR0JG9mnng9rEcyLG3RoDcnepaBv
-	Y5HcH4ktNU7/92a/FDJyL88Nw3Ttnr9bpOHd0w/23CHUXu1AeSm9M/YBZ2p2DezM2dUwvEVdK9c
-	LK2m2O+ZbWg759HLLWSOXf0Mb0uL+3sGdrSERHgZjd50VwGYxVTx/NQWRp8hoE1emgcx91RsPiM
-	ammwPLKKV7sThh0zlz9nOPgTR2rvfsNEEsuNa1431st0VKwLyNScQYIYRumBCNam1nvOEMErtMY
-	ed+zXqFuEPJl4kUsQWTd9ySS92WVsisixw2YFjzFYsd7exCRu/2iquTUEXBbGQaYlacGvj5TOjl
-	fk0u07snCk
-X-Google-Smtp-Source: AGHT+IFbCGvkCxGExFQLBl5yaU008gmiVvRdmeb7k0sjyaCh7Z1nYJocCXv7ZLYKC/Juko66305eyA==
-X-Received: by 2002:a05:600c:8183:b0:477:fad:acd9 with SMTP id 5b1f17b1804b1-47d195a9834mr270395745e9.34.1766837927833;
-        Sat, 27 Dec 2025 04:18:47 -0800 (PST)
+        bh=jl/uMa7F0AxGo9UgKbw3ayYmv5/eAGkPJCpV4UBsG/A=;
+        b=szpC2tuSUfgDlZIN97AKQNGRbwYmLcPwiHRtCyxkXNhr6WT3nJNPy3lbCv8/usrEik
+         DxJHreW9VjKFu5yzujy4hDYqoPR4U/qA/Zohuvr90RDDkyWDiqVx0mDLmEcAAMOeCxPz
+         rOJZQ3SxB+mZ49vLHZa9YFhKzFxZxnCaHmSiRnBoGDa6cQRhgiJpkgHaTUAcgULd3H34
+         zUENiKULLqjtN5Z25wI5roqOzHuX+QYo4IRgmAr1KTZz5lQlUCGigrQB3OyO0sKmLXxS
+         jIyDw1kpqaMa2BTLQmo8RB3dqH5NyXkqQj3V4Uf6OG7Ds3Xw9XTiZ1S0mN+xvifG/FEX
+         PW3A==
+X-Forwarded-Encrypted: i=1; AJvYcCUPaYoeBIyj4JhmgFkmfXnFBuLTHYHH/1CJjdrCJl3p59oPk1cxt2zHaaxJ11nEX2rUWJTVoY5H9aOx9kU=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz5yW6YV645AtazcI0EJezVtlpZHGgSciXyfmu6EzAZ8W6U09I4
+	AR1kofQG2fbylLSpswEMvbMx3HhJL94KB+kGWQLmGCCQYDkbh15ChGhBR96MjQJYNR0=
+X-Gm-Gg: AY/fxX6R9S+LnflJ5B+XhQfISCtrf6jKVgOMhLzMb0NreCC4sXjVAwZpRSus2Z/gPG9
+	6E3i1yvOD6oLKWx8sXnrhQkRjQ+8naK1Zz2DtbPpEicoaRe5yd/EMQTb/zgcYCx1pYPR2zIrXYS
+	MHceGQOhnJJOvgSUbHjVtTHTcvLRoAX/2FHT4swBhSusCE26cV0Zgpx50/n2sd2VKJwGgWIjqjs
+	hOt8t+6nT4V5p4hUhF+n4OWs5Kyxrielyw8Q6idOu1eP2s53r13Sfzp8MFB7pwrwV/ogZvKdBR7
+	iCE8u6MFyMiuyJk+7OlpK7qiuQb9mZiYOjxRD/sXCPDvrJ6CXW9Ayd533oAF1T6AeRsAE4gtGNe
+	q0IMvmXwvtywngCWE+lBVBV4RnBH0eNINTjrxYY1AKWv4V1NGJBjwnm8uk25hZZ+TKYA8H+hV4A
+	MBZtCfI4Ck
+X-Google-Smtp-Source: AGHT+IEilNPw9ykBXsWasfDesGg5n0pMdngWI0y9wCDnaTUFF7DpZ4wL0dzMcGNMkGv8jBn79QEjlQ==
+X-Received: by 2002:a05:600c:5249:b0:456:1a69:94fa with SMTP id 5b1f17b1804b1-47d1954a128mr290319795e9.13.1766837937081;
+        Sat, 27 Dec 2025 04:18:57 -0800 (PST)
 Received: from [127.0.0.1] ([2804:5078:811:d400:58f2:fc97:371f:2])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-121724cfdd0sm97940127c88.4.2025.12.27.04.18.38
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-121724cfdd0sm97940127c88.4.2025.12.27.04.18.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 27 Dec 2025 04:18:47 -0800 (PST)
+        Sat, 27 Dec 2025 04:18:56 -0800 (PST)
 From: Marcos Paulo de Souza <mpdesouza@suse.com>
-Date: Sat, 27 Dec 2025 09:16:20 -0300
-Subject: [PATCH 13/19] um: drivers: mconsole_kern.c: Migrate to
+Date: Sat, 27 Dec 2025 09:16:21 -0300
+Subject: [PATCH 14/19] drivers: hwtracing: stm: console.c: Migrate to
  register_console_force helper
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -71,7 +71,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20251227-printk-cleanup-part3-v1-13-21a291bcf197@suse.com>
+Message-Id: <20251227-printk-cleanup-part3-v1-14-21a291bcf197@suse.com>
 References: <20251227-printk-cleanup-part3-v1-0-21a291bcf197@suse.com>
 In-Reply-To: <20251227-printk-cleanup-part3-v1-0-21a291bcf197@suse.com>
 To: Richard Weinberger <richard@nod.at>, 
@@ -108,11 +108,11 @@ Cc: linux-um@lists.infradead.org, linux-kernel@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, linux-fsdevel@vger.kernel.org, 
  Marcos Paulo de Souza <mpdesouza@suse.com>
 X-Mailer: b4 0.15-dev
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1766837798; l=961;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1766837798; l=940;
  i=mpdesouza@suse.com; s=20231031; h=from:subject:message-id;
- bh=9A3Brx5a3gQ0NUhTGZ1ViMT9HfTuP00Tgzee1GwnjVM=;
- b=gNLF1CEZIFvupLFUy4kgNSgx2QLue8Fjf3sjVi+zSBhpSIWUfb0laNahgF6qahlq6x3pophwD
- dRykPPu3R/nALZM8P2pCpkq//4oDFgsmNLGc4Tixc+Z0JIXH+9rAGGe
+ bh=go1Xoe57mzaY/mIQIq5f3pHcbzGWVFe1Pe8aCGM93yA=;
+ b=2O7MS+wSbmBy5GHviNZc0eUrBGjBqbDvdZl/gWh/gmVWu32K1VqnWzIxEikovOvxtxQ1Ut5k4
+ SCkXkL827NRAROp5vOzN3LiFx30TLjgXwQqt3ej5ptdr+YtakhrR7Rs
 X-Developer-Key: i=mpdesouza@suse.com; a=ed25519;
  pk=/Ni/TsKkr69EOmdZXkp1Q/BlzDonbOBRsfPa18ySIwU=
 
@@ -124,27 +124,24 @@ No functional changes.
 
 Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
 ---
- arch/um/drivers/mconsole_kern.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/hwtracing/stm/console.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/um/drivers/mconsole_kern.c b/arch/um/drivers/mconsole_kern.c
-index ff4bda95b9c7..ce4f4ceb7f27 100644
---- a/arch/um/drivers/mconsole_kern.c
-+++ b/arch/um/drivers/mconsole_kern.c
-@@ -582,12 +582,11 @@ static void console_write(struct console *console, const char *string,
+diff --git a/drivers/hwtracing/stm/console.c b/drivers/hwtracing/stm/console.c
+index 097a00ac43a7..d3ae633e3bf1 100644
+--- a/drivers/hwtracing/stm/console.c
++++ b/drivers/hwtracing/stm/console.c
+@@ -42,8 +42,8 @@ static int stm_console_link(struct stm_source_data *data)
  
- static struct console mc_console = { .name	= "mc",
- 				     .write	= console_write,
--				     .flags	= CON_ENABLED,
- 				     .index	= -1 };
+ 	strcpy(sc->console.name, "stm_console");
+ 	sc->console.write = stm_console_write;
+-	sc->console.flags = CON_ENABLED | CON_PRINTBUFFER;
+-	register_console(&sc->console);
++	sc->console.flags = CON_PRINTBUFFER;
++	register_console_force(&sc->console);
  
- static int mc_add_console(void)
- {
--	register_console(&mc_console);
-+	register_console_force(&mc_console);
  	return 0;
  }
- 
 
 -- 
 2.52.0
