@@ -1,90 +1,130 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f193.google.com (mail-qk1-f193.google.com [209.85.222.193])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6A642DF716;
-	Sun, 28 Dec 2025 12:44:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D599E1E32D3
+	for <linux-serial@vger.kernel.org>; Sun, 28 Dec 2025 23:50:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.193
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766925853; cv=none; b=tvOX2mU/lUtgcdLQNo3ykdkjjUvSOM2Mbtxefu/uo0QLp2YHjmp+7DlG6kRmZ5evP3gVuHZJu/MOUtlGqraLd79KKbR8f03GM0r9u5DgSZakkwh9FxcIcbGyM3ixgYtCSuOUWNno5yVP6X7PpddlvvMVx6ZUvpCjDEYJTiY2+Tg=
+	t=1766965820; cv=none; b=cLo/J+Z5sVgvMvWF7jI+MwaiabPHwu79GULkNsPFqYY2E98kDYgnDxKf8lW3ry+llno4gwGx0ucK1vEHVUz/54Rb9X+zaBcif0Cf1R6G0EH0Tnb/doTk4nesXlaGYYA2lkzHr4eE02I30A/LY2E8yGdP7Ua/BEz1HraMCQTxBug=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766925853; c=relaxed/simple;
-	bh=yipT8W46+4H8a69Al/HxAa8jZec9ZO8yY0wRB+ZgYOE=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=cNGECWGUhtsBbwD25bH0I8zaIGxjFxvoxtnVfkyPRryRMtiMLBm+84vP8z/z7lm/qNUBgnlf4qwLZ8/uWMhwGZ9FNYK3SNfrC1C0s5HgQaYUzJylWrsrvnWB7lHnA0qf7rWFX6VlxA9C2QinZntPjYODfRReaSNjIoe96wTRwDE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=gfrQsEgt; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1766965820; c=relaxed/simple;
+	bh=2w0A7ymf9jXbqKrPGnI5Cug27+M1AwvX/RchOIlL1II=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Mk5pYl++0WKmDItZf5K7uaqoMlvQrpoyzCVAfymhXYCh96aE5CMHFK40h4eakAqApt4M413IuKXJ5bPuieXnn6gpq5cdp/EVIEE+oHGyu9nIEivQ2Fuhdcl7srL7hVBBj1ZhAAFQhVk/OrQenJXCoJyKzsSlg8vDnjGanB4Ywxo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com; spf=pass smtp.mailfrom=riscstar.com; dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b=XXvcvG+B; arc=none smtp.client-ip=209.85.222.193
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=riscstar.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="gfrQsEgt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4D4CC19423;
-	Sun, 28 Dec 2025 12:44:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1766925852;
-	bh=yipT8W46+4H8a69Al/HxAa8jZec9ZO8yY0wRB+ZgYOE=;
-	h=Date:From:To:Cc:Subject:From;
-	b=gfrQsEgtNGyv04ljqEMDLzRpWaZYMiXB7aAVwLur0bZc/7nHUb8xRgmAf670ETjY3
-	 1chKvjoNnIpevsLaywMrdVlriw5qKychluZdP5bl9PBHvq4HbdT8ADcUzJlCvlwqiv
-	 hmQoD694wd3iDb9gKVqj/oiKeEuWSPpcpfG+ykZI=
-Date: Sun, 28 Dec 2025 13:44:09 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [GIT PULL] Serial driver fixes for 6.19-rc3
-Message-ID: <aVEmGSlYL_sUQhXa@kroah.com>
+	dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b="XXvcvG+B"
+Received: by mail-qk1-f193.google.com with SMTP id af79cd13be357-8b220ddc189so1207079185a.0
+        for <linux-serial@vger.kernel.org>; Sun, 28 Dec 2025 15:50:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=riscstar-com.20230601.gappssmtp.com; s=20230601; t=1766965818; x=1767570618; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=GpN54oVgQguU3p5JgPy3uhgmnh+wgxqdR+Icp20pf+8=;
+        b=XXvcvG+BFtgKYWIg264AJ3Qu1/kcAI2XJhI1qt6IUc4qCgg4tBS+NOgM4YxllC/2cm
+         CFuuOLvFcK7z+rn3mc8j0Mhgk4TKIOADD7xlY/tRLFGBkhlzRW8U+e/abRGJIenOjJKB
+         K/+GKDz+F/0hesQW0qAqlOdAtjjZ2N9nvg5+Em6NszGdicaGJ+u3YmCDpHRSQ3MTpdXn
+         vTaAGrvOXWRZJSvXnZF4lvbI9rVF9ScL+mk7577ntWeIBX/jB6z5TBHf3xKTl29lzuW8
+         7/CsGvX+Q+1eb++kKXna7K1+WbnnYr8bmY0aDbmJlSjRsVn5vNN6j9O665bZs5m2tf6h
+         hf2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1766965818; x=1767570618;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=GpN54oVgQguU3p5JgPy3uhgmnh+wgxqdR+Icp20pf+8=;
+        b=cQdKXhf4CqXbdE0+n4XqAWF4QRFKkDnPvikIwIffvWV97HI5ncSeko1r7+QKsV6h0+
+         xiIkyhmBPGFKYgqGqn96h8gd6Gt5hjhCdAo4o9zOjFS5WeU+5by91n5lvLmDwqzuBIGC
+         c8+Tao49AS6k+a/J5ozU4b7bBbeD5mrHIrf2gLN215CEH3s1TwUa6es2RETgNOQs/+7P
+         Iem0+ANpFuUP+j+95YThb0au5qjowLUpk1TAQ+4a8pIG+jTKwjzZfD8Z8UtU85TsSd/1
+         +5q1lxA35K4CoRrFJjM15bFpb6NrTs2oX3SN006yplc4wTomW665Rb6cPzz5OrUlVE45
+         Qtng==
+X-Forwarded-Encrypted: i=1; AJvYcCWJAMMBMsNmmwLgQVCmKAOiemmhhC5REEZxIsK+AHtyspdh94MGp8GyWhuM3deRiV8DQpYQRCdDcNi2mpE=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy2IyjtVITCVFNvFb53CsW5PytCzbHLaJp4NsbEewcmJxp3p2+5
+	nGV6gVUuECTK2am1v9mnQw+lP3RIYF71xdV9CSqgDNYBGpQQdveUx+XhYi1M863uwy8=
+X-Gm-Gg: AY/fxX7AJTuWv6VMnUtScuPaMkqu1o6V1xfeG4lMWvyyVa8lSdbTyObKSBLt6ba5yi/
+	EiuPdeltzYO93z1TdGJFKoaB5WncZ7cIZdWXGjTiPF57ciOFfQowrLyTjTbdd/XLRuaV5fXEqOp
+	73PsNBDh39ryZjjeq0fz9Qh4fC736naqQaAIGM3o1QfSFcA8/VyzNbM018ySm5JUx2Gpl8YSH51
+	ytSR5XcyMUwEDJzocgdgNicp2d+RM8aTiTdNDuKx/Bgejp3t90cmaD65f++/T196Yr3zZ6tIeNH
+	pNV/7j/wsH7jUkGKoGShS0p6crSkWOtWoc+E8X7MvQ+TBNyTa6WTbTTM2ZQg2VRVvvHcAufoKa2
+	sBBpJpDZgNugEhD/cxJIeXTGZDU0zU17jMhrfIet6lATrxbHRdzBWhhSy2I+Mt3kh3NV3NWW/BM
+	nWayVmT+aqQB5kVpsJgQEKiWm7Ud+zkR/PTetcOZ0NWOrv1kqBGmM=
+X-Google-Smtp-Source: AGHT+IEGbKgRTG08k8rXERBJismFkK/tDgJdZx5wXocvbU/vsRR/qDK2KUySLLUQVB2beTsVWlcMDw==
+X-Received: by 2002:a05:620a:29c7:b0:809:eb12:1ea0 with SMTP id af79cd13be357-8c08fd18b81mr4252356785a.81.1766965817857;
+        Sun, 28 Dec 2025 15:50:17 -0800 (PST)
+Received: from [172.22.22.28] (c-75-72-117-212.hsd1.mn.comcast.net. [75.72.117.212])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-8c0973f28e3sm2406423185a.45.2025.12.28.15.50.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 28 Dec 2025 15:50:17 -0800 (PST)
+Message-ID: <5979c8ef-b0fa-40c8-944d-96e226fbcbe8@riscstar.com>
+Date: Sun, 28 Dec 2025 17:50:14 -0600
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 07/13] dt-bindings: riscv: Add B ISA extension
+ description
+To: Guodong Xu <guodong@riscstar.com>
+Cc: Conor Dooley <conor@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
+ Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
+ Alexandre Ghiti <alex@ghiti.fr>, Yixun Lan <dlan@gentoo.org>,
+ Daniel Lezcano <daniel.lezcano@linaro.org>,
+ Thomas Gleixner <tglx@linutronix.de>,
+ Samuel Holland <samuel.holland@sifive.com>, Anup Patel
+ <anup@brainfault.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
+ Yangyu Chen <cyy@cyyself.name>, Paul Walmsley <paul.walmsley@sifive.com>,
+ Heinrich Schuchardt <xypron.glpk@gmx.de>,
+ Kevin Meng Zhang <zhangmeng.kevin@linux.spacemit.com>,
+ Andrew Jones <ajones@ventanamicro.com>, devicetree@vger.kernel.org,
+ linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+ spacemit@lists.linux.dev, linux-serial@vger.kernel.org
+References: <20251222-k3-basic-dt-v2-0-3af3f3cd0f8a@riscstar.com>
+ <20251222-k3-basic-dt-v2-7-3af3f3cd0f8a@riscstar.com>
+ <20251222-stitch-preachy-3fab87fd6f0f@spud>
+ <CAH1PCMZ7ywZ3unLy0yHYK+fFHk0y=q2cEtPnRi=qSpf=fc75rw@mail.gmail.com>
+ <66c0676a-7920-4825-b916-3c00b1648a08@riscstar.com>
+ <CAH1PCMbBURb=DpChf+Y-DjYjzpXG-pKgoaHAu=TUuG4oVC56cg@mail.gmail.com>
+Content-Language: en-US
+From: Alex Elder <elder@riscstar.com>
+In-Reply-To: <CAH1PCMbBURb=DpChf+Y-DjYjzpXG-pKgoaHAu=TUuG4oVC56cg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-The following changes since commit 8f0b4cce4481fb22653697cced8d0d04027cb1e8:
+On 12/27/25 8:51 PM, Guodong Xu wrote:
+>> That's what I understand it to mean, anyway.
+>>     https://github.com/riscv/riscv-b
+>>
+>> There's no point in supporting "b" in devicetree to represent
+>> the others if it also requires the others to be present.
+>>
+>> I think that, instead, "b", "zba", "zbb", and "zbs" should all
+>> be allowed.
+>>
+>> I might even go further and harden the requirement, saying that
+>> if you specify "b" you should*not* specify "zba", "zbb", or "zbs".
+> Historical reasons here. "b" came too late. The chip vendors have published
+> cores with "zba", "zbb", and "zbs"already.
+> 
+> That's a migration bridge to require "b" must be listed
+> together with the other three.
 
-  Linux 6.19-rc1 (2025-12-14 16:05:07 +1200)
+Are you saying "b" has already been included with "zba", "zbb", and
+"zbs" in an existing DTS file?
 
-are available in the Git repository at:
+What I'm suggesting is that (unless someone has already done this in
+a DTS file), there is no reason to require "b" *and* the other three.
+You should allow either "b" *or* all of the other three, not both.
+That would support older platforms as well as newer ones that use
+the more concise "b" only.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.19-rc3
-
-for you to fetch changes up to 267ee93c417e685d9f8e079e41c70ba6ee4df5a5:
-
-  serial: xilinx_uartps: fix rs485 delay_rts_after_send (2025-12-23 11:55:16 +0100)
-
-----------------------------------------------------------------
-Serial driver fixes for 6.19-rc3
-
-Here are some small serial driver fixes for some reported issues.
-Included in here are:
-  - serial sysfs fwnode fix that was much reported
-  - sh-sci driver fix
-  - serial device init bugfix
-  - 8250 bugfix
-  - xilinx_uartps bugfix
-
-All of these have passed 0-day testing and individual testing
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Alexander Stein (1):
-      serial: core: Fix serial device initialization
-
-Andy Shevchenko (1):
-      serial: core: Restore sysfs fwnode information
-
-Claudiu Beznea (1):
-      serial: sh-sci: Check that the DMA cookie is valid
-
-Dan Carpenter (1):
-      serial: 8250: longson: Fix NULL vs IS_ERR() bug in probe
-
-j.turek (1):
-      serial: xilinx_uartps: fix rs485 delay_rts_after_send
-
- drivers/tty/serial/8250/8250_loongson.c |  4 ++--
- drivers/tty/serial/serial_base_bus.c    | 11 +++++++----
- drivers/tty/serial/sh-sci.c             |  2 +-
- drivers/tty/serial/xilinx_uartps.c      | 14 +++++++-------
- 4 files changed, 17 insertions(+), 14 deletions(-)
+					-Alex
