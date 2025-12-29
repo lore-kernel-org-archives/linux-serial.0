@@ -1,110 +1,145 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54F952D7DE8;
-	Mon, 29 Dec 2025 12:38:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 260DC205E25;
+	Mon, 29 Dec 2025 12:46:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767011893; cv=none; b=tZf2JT42uZ1Qf26TjHu+NES51bjLJtPo9/Z+fOjKdaY8iOxRz/+WQnEttLqq3HihzU4kjdilMt98t0LeXdOcwY6IitA9f/En4USGcbr6KBCJ3HuavibaJpFw7Htq0NoSwZKj7e9ZWo4HueqWzMmTIUUwj2ZwnvzIJXXvgZpeYxE=
+	t=1767012379; cv=none; b=NwUXdxALNe81DhSGy3rVVDD/XQQjMZ4jSEY6X8lYbBY/0ENh+LsBmWaQbuH9jQu1GNyOxLFiT+fYZuc/MKhyj/YT8GpX6KDm0xqTVwEe0MALYuuRVSRC3gqod6DAW1K0I+kdpIn0OqQQ21qP4TWo/qjQ+zwEoSH2CT8VtIok9gU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767011893; c=relaxed/simple;
-	bh=T26GPJaQhtJCJeNBKnKOssfyFqGUFNVtzfboQi7q0B0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Nru/gYWg1xP0lLONLtfDU3iqIMG7A0jxwBwPXSL1ityqh/8uejS8mPxaMhl4p/G3QrHfyv071qtGMb0IQAjWVaahI+I21FFwKXz3zhOn4LfMuQj0Iludt7ZAm8gs5JlM680tMZMzbxn9qu9IlRLQGEu5D9bFPPiX581a4BscK1E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kuO/N3DT; arc=none smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1767012379; c=relaxed/simple;
+	bh=YEEehNuAmCrRszpCZWxVYHNFGLvgk2GlJvR9Gw2D5kA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=LhpO26FFB/GoWIQcLkTF/hlfzlOyInsaoovIB+4MhzM8DHr7i7NfuVLJ98WOeINt1ejWhuslcm79H4GomkCXbQqY+9gnLQC4+TdOFesL0uwxazrjAr7R55iiPFlFyUMtE/YURBtNc6CnuNenW5ff6Qk0kw8tN2FNlB6Z8YUSfWo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uW8DbN4z; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kuO/N3DT"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1767011890; x=1798547890;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=T26GPJaQhtJCJeNBKnKOssfyFqGUFNVtzfboQi7q0B0=;
-  b=kuO/N3DTN2PlL9PwAE5XzGkKWzpAQkhaJPmYgyGfJ7eCq1efbSbCTOtK
-   amaS6p5/RXNE9HMF368oEtHUh+0FEGQqTD+4+z9c14W2GI4l5pfZsbrt8
-   pHrDWczh/k+7CU/MkBi6RFcGFdODzj7IHts1HuYLK8raMe+HQ9aVX+Kj9
-   zrd41lb8itZ5l5/xxwhjdvk0FL2jwtwzl+RR8Ua4a4gAmii1ZKKynHop5
-   HadLWJfcWOthxpfZsPG79aJxYHMUbgxTLiAkY+FRA0n6Qo7vnWmpVdlkD
-   qH5EZEV7Bqu2EZcpAmmrrMqZAF2T5pocVC38uqNkMSwA5VoD+rjWR667/
-   w==;
-X-CSE-ConnectionGUID: CH7SUEwWRPS6EwYHDeCNbA==
-X-CSE-MsgGUID: VFnN9FtCTcm8rARDtaQs1Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11655"; a="91275543"
-X-IronPort-AV: E=Sophos;i="6.21,185,1763452800"; 
-   d="scan'208";a="91275543"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Dec 2025 04:38:09 -0800
-X-CSE-ConnectionGUID: 4VvR82YOTUaht7DE9UMzWA==
-X-CSE-MsgGUID: EjRVyIY1Qi+L2Y/Axs+wFA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,185,1763452800"; 
-   d="scan'208";a="200040247"
-Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.31])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Dec 2025 04:38:07 -0800
-Date: Mon, 29 Dec 2025 14:38:04 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
-	Linus Walleij <linusw@kernel.org>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH v1 1/1] serial: core: Restore sysfs fwnode information
-Message-ID: <aVJ2LFT-ywYzJ3Jo@smile.fi.intel.com>
-References: <20251127163650.2942075-1-andriy.shevchenko@linux.intel.com>
- <CGME20251218152957eucas1p196470bc80be0d8a4037edfe6e53f3d13@eucas1p1.samsung.com>
- <265b9083-d744-4438-b539-9e001f2138ba@samsung.com>
- <713aa37f-161d-4f08-9417-d7d2abdcdfd9@sirena.org.uk>
- <361ad06d-0478-40f9-9894-6f53d7b27eff@samsung.com>
- <hwykqbo2ktw4slmmb2iodeitd5fqfvzuec5eyvgnttyh3keo3h@cibdr37t4shy>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uW8DbN4z"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9B10C4CEF7;
+	Mon, 29 Dec 2025 12:46:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1767012378;
+	bh=YEEehNuAmCrRszpCZWxVYHNFGLvgk2GlJvR9Gw2D5kA=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=uW8DbN4z6Tyhug910b8kLK7d8z9xCMwiIg3pb0DAjUICnmBPBz4KQX0ui8+mJMU2w
+	 pd06v2IEp9ttFE+sUrXYPY+9X0SqpRIDQ2lay7rntJw2PWD+LbED5mnL9hAl9WEzT1
+	 xSZzB5vJ+o19SLb9oe/lBh2B+/v7EhSMhXtrI4ihEDjR2t6sB6zM1wCcvev0REgGa/
+	 D6Buzmyzl/cfwkiyHe1CPCz8JwAKtoxVgbY0SlV7xz6BLaiWy0rG8hcfDW6Aru9tcK
+	 HpkvcPJsa8HZJ0ktCcDFolFGacXN61DEC7axbxeNR9ReEp+Tw4YYuCuUQiD9ngR7CP
+	 6AqQkTMevjDKw==
+Message-ID: <756ead5d-8c9b-480d-8ae5-71667575ab7c@kernel.org>
+Date: Mon, 29 Dec 2025 13:46:06 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <hwykqbo2ktw4slmmb2iodeitd5fqfvzuec5eyvgnttyh3keo3h@cibdr37t4shy>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 01/15] include: dt-bindings: add LAN969x clock bindings
+To: Robert Marko <robert.marko@sartura.hr>
+Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org, nicolas.ferre@microchip.com,
+ claudiu.beznea@tuxon.dev, herbert@gondor.apana.org.au, davem@davemloft.net,
+ vkoul@kernel.org, andi.shyti@kernel.org, lee@kernel.org,
+ andrew+netdev@lunn.ch, edumazet@google.com, kuba@kernel.org,
+ pabeni@redhat.com, linusw@kernel.org, Steen.Hegelund@microchip.com,
+ daniel.machon@microchip.com, UNGLinuxDriver@microchip.com,
+ olivia@selenic.com, radu_nicolae.pirea@upb.ro, richard.genoud@bootlin.com,
+ gregkh@linuxfoundation.org, jirislaby@kernel.org, broonie@kernel.org,
+ mturquette@baylibre.com, sboyd@kernel.org, lars.povlsen@microchip.com,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+ dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org,
+ netdev@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
+ linux-usb@vger.kernel.org, linux-clk@vger.kernel.org, luka.perkov@sartura.hr
+References: <20251223201921.1332786-1-robert.marko@sartura.hr>
+ <20251223201921.1332786-2-robert.marko@sartura.hr>
+ <20251224-berserk-mackerel-of-snow-4cae54@quoll>
+ <CA+HBbNGym6Q9b166n-P=h_JssOHm0yfyL73JZ+G9P81muK=g4A@mail.gmail.com>
+ <78bf252c-fd5e-4a36-b1a3-ca8ed26fde7a@kernel.org>
+ <CA+HBbNG+ZVD6grGDp32Ninx7H1AyEbGvP0nwc0zUv94tOV8hYg@mail.gmail.com>
+ <d210552f-c8bf-4084-9317-b743075d9946@kernel.org>
+ <2025122516245554f59e2e@mail.local>
+ <20251227-splendid-striped-starfish-ece074@quoll>
+ <CA+HBbNEqq9ZqBR88DFSSSrYw=LBzAreFC0kL88-HZCGAsOrqZw@mail.gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 a/A=
+In-Reply-To: <CA+HBbNEqq9ZqBR88DFSSSrYw=LBzAreFC0kL88-HZCGAsOrqZw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Mon, Dec 29, 2025 at 05:18:14AM +0200, Dmitry Baryshkov wrote:
-> On Mon, Dec 22, 2025 at 11:55:26AM +0100, Marek Szyprowski wrote:
-
-...
-
-> I can confirm that this patch fixes the breakage on Qualcomm devices.
-> Please send it as a proper patch (though I'd say, the flag should only
-> be set only if dev->of_node != NULL).
+On 29/12/2025 13:07, Robert Marko wrote:
+>>>>>> I understand as not used by drivers? Then no ABI and there is no point
+>>>>>> in putting them into bindings.
+>>>>>
+>>>>> It is not included by the driver directly, but it requires these exact
+>>>>> indexes to be passed
+>>>>> so its effectively ABI.
+>>>>
+>>>> How it requires the exact index? In what way? I do not see anything in
+>>>> the gck driver using/relying on these values. Nothing. Please point me
+>>>> to the line which directly uses these values.... or how many times I
+>>>> will need to write this is not ABI?
+>>>>
+>>>
+>>> The index here is the exact id that needs to be set in the PMC_PCR
+>>> register and so it is dictated by the hardware.
+>>
+>> So not a binding between Linux and DTS.
+>>
 > 
-> An alternative is to introduce dev_set_node_from_dev() which mimics both
-> dev_set_node() and device_set_of_node_from_dev().
+> What would be your suggestion on moving forwarding regarding the clock
+> HW indexes?
 
-While I am on vacation, I have a brief look at the report and fix and the
-discussion. There are several ongoing tasks that may collide with this:
+The same as for every other hardware constant, like interrupts,
+registers and addresses - you use the value directly.
 
-- the desire to split device.h, so we have something like device/fwnode.h with
-all related APIs listed there
+If you want nicer names, we moved them to DTS headers for several
+platforms (see several commits in the past).
 
-- taking these, it might be good to have device_set_used_node() as a combination
-of the above and also device_is_node_used() to be used in its solely user of pin
-control core
-
-- the proper understanding of this flag to begin with and how it may be related
-to ACPI-based platforms (or non-DT in general)
-
-- with that done, it might be a room to see if the flag actually should be
-somewhere in fwnode structure or elsewhere
-
-- or we can revisit the whole design and see if we can get rid of the flag
-
-+Cc: Linus for searching for his comments, thoughts, etc.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Best regards,
+Krzysztof
