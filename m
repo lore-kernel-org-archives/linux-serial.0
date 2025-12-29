@@ -1,63 +1,65 @@
-Received: from mail-wm1-f67.google.com (mail-wm1-f67.google.com [209.85.128.67])
+Received: from mail-wm1-f68.google.com (mail-wm1-f68.google.com [209.85.128.68])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD39C335555
-	for <linux-serial@vger.kernel.org>; Mon, 29 Dec 2025 18:40:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.67
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1DC733556A
+	for <linux-serial@vger.kernel.org>; Mon, 29 Dec 2025 18:40:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.68
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767033618; cv=none; b=GHHfxiImUJ3dnoKoklrY0WjzVJ6T8a4Or/pBrIo+H3T8ESYHSlvnUy7279XekvMcu01y1cPFkGmuU6+UQcu1VNmD0OdjPLTubMnWlCM9BKLyW2FjiGh910F075HJZ5n7qfyBjb7+SC/4BJ4vHu24eeXX9FhhMnlDMvAE5VdiL0o=
+	t=1767033619; cv=none; b=fgyjMYrt1WeOePtrN/6uGT6awbwLlA823iIPVGj3N39x7IU/pb2i/lHQEJ/VhADc/34fI6JtZzNG5GTHMtMDTTM2QtDmZD5WyrnRGn705JLFmGIOzAwkudMIm4D5Zn7MQ5KPT5PbCb4UqaEnNyHLHkuWePBXTGPCH91HoPWbqKA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767033618; c=relaxed/simple;
-	bh=Z2AkBlH1TVCbTdGSk93dGvIgyGWQV34J6Mazauy8A20=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=L4Udmb0Ue82TjFlFwoOqqN60rJHcBscNq2v6UxCvlaJ7NAASyOIWXBfDvS9OndxwdB/XdhMZi+HeQIGc4Lo3E3bGEnEAZ/iDqYh+evYO5vWyPfLUkzeBCks9TU6YmvObN7P8WQ3yEO48Nmh59wtX1FC687bq3SswYrmU20g6UpQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr; spf=pass smtp.mailfrom=sartura.hr; dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b=Eg7mWVXD; arc=none smtp.client-ip=209.85.128.67
+	s=arc-20240116; t=1767033619; c=relaxed/simple;
+	bh=dZfEjbKU/ouuTZTqPmjhpmJn3Qj+z3eYR6Bl3lD/xyY=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=nXQaD7RNubFoKb+tadGzPtKG7O6AFI4gpmbcRX45MGFuJa69qJgbJIry3XCEz/ISm+dQ4aIeJelOXn1J5HZazILmcHIbZMYPFVOZ1SXIhb8GhE/CK3BlB0z7HxibagBXAbOZz641AsYkkwSlifoYPa9mg9f3Smm/luBpsObY1G8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr; spf=pass smtp.mailfrom=sartura.hr; dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b=IyrgbF6F; arc=none smtp.client-ip=209.85.128.68
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sartura.hr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b="Eg7mWVXD"
-Received: by mail-wm1-f67.google.com with SMTP id 5b1f17b1804b1-47a8195e515so57683775e9.0
-        for <linux-serial@vger.kernel.org>; Mon, 29 Dec 2025 10:40:14 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b="IyrgbF6F"
+Received: by mail-wm1-f68.google.com with SMTP id 5b1f17b1804b1-477ba2c1ca2so98479025e9.2
+        for <linux-serial@vger.kernel.org>; Mon, 29 Dec 2025 10:40:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sartura.hr; s=sartura; t=1767033613; x=1767638413; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=xMNev2+IL4W0rOk2+Sz1iWUW5i0ra4Z/24SBDIc4eIk=;
-        b=Eg7mWVXDvdYJgNNjNjkgGCYqLOWaxsoVZaFc0g7FWoksidXXmUr5vG1VUv1IFVtPEd
-         maJ95rcL3bwn8vXWDnxv2suPM415fWG9/khKeVESYJuEYkPhgWeYLXPlTlBL81EVNWNx
-         UPq7EQQdI2JpoDmbcte9dq4zTwZ4v8FLpHCUKliikOSagV35Dofdtwyu8gvj4lD4mjHh
-         TG9jxzHxlJaWGRfHWerg0qKSeTnIN6arcp0tIHKtQ1CM3Xg22+hbD79IW2Rk/nVySu2Z
-         LOz0ijMEz/Y6C+qz5Ry0N3hEbGAwwvSn8G1YWSCLk6bpDep9T1WtkXMDhM1Okc3BrON+
-         e3RQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767033613; x=1767638413;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=sartura.hr; s=sartura; t=1767033615; x=1767638415; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=xMNev2+IL4W0rOk2+Sz1iWUW5i0ra4Z/24SBDIc4eIk=;
-        b=usmKe++080yhN7Keu3BN2W5T6Lwf/HAJjR0VxtMaC6k9mkpaNdAzfz1fOngMWI0tDY
-         fJkYX3BgFIx5SanH945afG/99eZKy1pbZbb/VEu+mAO4cc4dIRRUhYcMtQAVP3qgzuNY
-         1GFfkDbTv9cdF12Dif4qzF7pumslJvXkWoGkgrvF3SESwtuXs7+WUtppT7/LMlSAqb5E
-         3uzHX2zZ20aeXL3DTzBoK43J8kQMqi/cJjfTeW76HyPmz12T+aRav8mMH/vO1B3Z18rk
-         MuqIJhterFLHMuyveyrioyoLjUQpoOPRYYF0x5V9AJy7p3Dm0KXKHKYSgVtcNInyblKM
-         6HRQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXWmxgCufXPL5nsKHvgckFGUEOuxrRL69ZdTQ7QkaLZEPdca/CZjtqvj32/uDdYmlrGHSgODJ+6tI8wnLE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxTCrvfXT1mcHmBL7qn1aAAYD/8IdfgKYQEOIqMkVWLdrYIMjIk
-	9OCXe7A3Nu2UuDrUaLD1+FGuZVgdGxfTDNVrW1Cu8F+JW9A9Jrx4DyFThA+lI89ZUGs=
-X-Gm-Gg: AY/fxX61moXfCNVOPnwqOK5KK1rUu57Sgfx85YxKlA5J424uG2dgUb0wG8o3Y8OGzXF
-	Q/Ap8TFg1lI3E5rnuIyYyCIoWkq4rY0FxM626M/wLqfbdNxDhGVlgzN9tx7UvW2tZhFaTbj7T+9
-	eLMNBtCtMKXgVErQzpzjBlsf9hdvdepK6iubrUWRrtD6u43sqN+lHjD7Mj9v7C2Eybh9zWPEPGf
-	XcP1gG/+NfAvmSFeQKf6PSk41xImbT914BDNnHzjPkwB0DO22cZY0xgcbQqDhqW8GPtfinK5WSn
-	AhHKxKCp3DIGJY4RD5SNClnBscN/PgXNzZzDOSpnWa9pCqP6dvdnIZYB8+lD9rwFzAkyb8jDpDs
-	oKELt5NREt9ZVTqOOopjZ5JVHx0XkXDb1QDU+t/t4CqI4wCGEi4PoUihgbqZ9fqt6LmU5q3SLiR
-	CrzOgyxL+LRqgtERBB29nI83tfG/UrDNX2MpjJOmTRJ5NTu8pF1MC1fJKLtWm3DAk+33oE9mdtP
-	9vhrB3qy8xZtVowqPJtCeuN/JtB
-X-Google-Smtp-Source: AGHT+IF5mVbnc4OdKlh0x4EYHuw7zUgN0QfqgRBI5YPkVwIvD+VFTU0drNG67nyewlPrP/fkHHcexg==
-X-Received: by 2002:a05:600c:4ecd:b0:477:1bb6:17e5 with SMTP id 5b1f17b1804b1-47d19593e32mr383263515e9.30.1767033613155;
-        Mon, 29 Dec 2025 10:40:13 -0800 (PST)
+        bh=11UWr6vQeMvr9imUXUNdMnB+gxpMnYAq1afoJQH8nw8=;
+        b=IyrgbF6F0u28a5QzqGi50ibLI5sXMnrNs9w2nKZbHvTdLOMtT7fV5tB3XSXxbBin+z
+         +F7iemGAgQcoJ9Flf47KNjfQBnI/iqSFjhlwBxAY1TytmO/7e4JOQPrNinsFzbE1kobm
+         iwp1El2nfozKqd0uOOOIZy4E7W7vs7yG0bwPi2nR/PX0eYqAfLaqKeMcAVOr1MSg30k8
+         YcRIl3dZsgbyi6YROamI3AWybGB52crReQbGZAHW/Wz+ded6FK7NZnz6cmqe3OQd5D4p
+         FxFHbwh7lCbyarJxYMPPv6EjTjI0yKAlsapfEw6F7Nul42Yk6T7qVGvrs+Mor4Cok3iG
+         uIww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1767033615; x=1767638415;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=11UWr6vQeMvr9imUXUNdMnB+gxpMnYAq1afoJQH8nw8=;
+        b=KNkRc6Vlcv34jF7ZOl4NhNbCYm5dK/3Cicn16z9MlwgKuayx0k4yT2On4Fqc9gW7iy
+         N7W3qbZsUcQcdsrL8SAgdVPN0CzCCmFM3di2chEk8SGy8zpedrzOy2bM0m4742IhDe/j
+         /2a6P43OxJ9jrullijVUWiFpzdniACmhtbvkwgoXyEn0EPbhBhzkWULUtPhi5gx1qZNe
+         xXkWS/qmVFY9lDM73OmpLWc4qQg3PIi39G4HUjRI0v/CmEB1eszPsoVAq23tqPWIYrH2
+         ipf8uFvh0SMxRY873gREtvOZ8214dpcRU2hcovUGMJ24wn4ko3ECTx4KUW7kcHXBPRHC
+         Dugw==
+X-Forwarded-Encrypted: i=1; AJvYcCXboPmYrkmS/6TYTIl0S5ZjwHwLXjs0MDYosESZVbS0/GCq8/X264xvoJqZAJExeWHBl+UVcdg2sS2sN9Y=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzoTpf4kiaH5+/6Sy85UsAViMiSahVvpCWCt4bippNASYaBo/YP
+	AKxg/vt11nda8qnAh5alv7DGn4Op1dyXzEG+ssjEr+gJQ7if10xo7j44vaFOUUrnuTE=
+X-Gm-Gg: AY/fxX7bpl/W4l2fEMX6C3G7KkAQQTstLsEmiSixtBTQETGyz8UFuoi61jApNE7DGXS
+	nipGz6wmoJaTQ3KvKj6VkYOD8K4/pVtWjSxzxzjpZnaM7cr7a9AojcfaEIpCySzD5hjkoaBZrLs
+	v2Ui9GuYEQQ20hdP/rJKtIa1GMnCcZ0mq8Lo24x9cvrfYnV9XHiEjIj3yFxU96TlrRW7vohgC5f
+	db+f33zSTPRlKm19QO77CBnhD3f8mQeiZqeTAZWxmItdOdZBos6SfcrPExx7aCnUu/RV2WSVO6P
+	u56ZAPl+TE8OsqTDUthKGqb+jfQHyGrVg93cDRPYqOgFHiJSogQ0QPgMxpzPesGANL9SefI2Wmq
+	8KBw1X7ky6IZgl8p1wwN9ANdpEPxGbEZpt0yYtSaRTkvNfcrv6nAVOW107fK8xQTYI+2f9sx2Tc
+	ZasP7qpPLXj2D6rZe9SXHj3fTsFvh+Z2AJKHfUYL9iGgwtXNcoR0m+9IRBbmle7bfM7OsEbiv5o
+	3VquJtgl1EkdvsBjFxqtj8sgkO69E1etqy6wrE=
+X-Google-Smtp-Source: AGHT+IHLaRW54exoV7d2gj+gL+Rt0y3shCu9zPoBut21wi+sGprCRHwNncaVYYsnvBzR7kb1R2Xvfw==
+X-Received: by 2002:a05:600c:1f84:b0:479:3a87:2093 with SMTP id 5b1f17b1804b1-47d338a6109mr230056155e9.37.1767033615044;
+        Mon, 29 Dec 2025 10:40:15 -0800 (PST)
 Received: from fedora (cpezg-94-253-146-116-cbl.xnet.hr. [94.253.146.116])
-        by smtp.googlemail.com with ESMTPSA id 5b1f17b1804b1-47be27b28a7sm604907455e9.12.2025.12.29.10.40.10
+        by smtp.googlemail.com with ESMTPSA id 5b1f17b1804b1-47be27b28a7sm604907455e9.12.2025.12.29.10.40.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Dec 2025 10:40:12 -0800 (PST)
+        Mon, 29 Dec 2025 10:40:14 -0800 (PST)
 From: Robert Marko <robert.marko@sartura.hr>
 To: robh@kernel.org,
 	krzk+dt@kernel.org,
@@ -98,10 +100,12 @@ To: robh@kernel.org,
 	linux-usb@vger.kernel.org
 Cc: luka.perkov@sartura.hr,
 	Robert Marko <robert.marko@sartura.hr>
-Subject: [PATCH v4 00/15] Add support for Microchip LAN969x
-Date: Mon, 29 Dec 2025 19:37:41 +0100
-Message-ID: <20251229184004.571837-1-robert.marko@sartura.hr>
+Subject: [PATCH v4 01/15] dt-bindings: usb: Add Microchip LAN969x support
+Date: Mon, 29 Dec 2025 19:37:42 +0100
+Message-ID: <20251229184004.571837-2-robert.marko@sartura.hr>
 X-Mailer: git-send-email 2.52.0
+In-Reply-To: <20251229184004.571837-1-robert.marko@sartura.hr>
+References: <20251229184004.571837-1-robert.marko@sartura.hr>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -110,76 +114,90 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This series adds support for the Microchip LAN969x switch SoC family.
-
-Series is a bit long since after discussions in previous versions, it was
-recommended[1][2] to add SoC specific compatibles for device nodes so it
-includes the required bindings updates.
-
-[1] https://lore.kernel.org/all/20251203-splendor-cubbyhole-eda2d6982b46@spud/
-[2] https://lore.kernel.org/all/173412c8-c2fb-4c38-8de7-5b1c2eebdbf9@microchip.com/
-[3] https://lore.kernel.org/all/20251203-duly-leotard-86b83bd840c6@spud/
-[4] https://lore.kernel.org/all/756ead5d-8c9b-480d-8ae5-71667575ab7c@kernel.org/
+Microchip LAN969x has DWC3 compatible controller, though limited to 2.0(HS)
+speed, so document it.
 
 Signed-off-by: Robert Marko <robert.marko@sartura.hr>
-
-Changes in v4:
-* Pick Acked-by from Andi for I2C bindings
-* Move clock indexes from dt-bindings into a DTS header as suggested by
-Krzysztof[4]
-
-Changes in v3:
-* Pick Acked-by from Conor
-* Drop HWMON binding as it was picked into hwmon already
-* Document EV23X71A into AT91 binding
-* Drop SparX-5 and AT91 bindings merge
-* Apply remark from Conor on DMA binding regarding merging cases
-
+---
 Changes in v2:
-* Change LAN969x wildcards to LAN9691 in patches
-* Split SoC DTSI and evaluation board patches
-* Add the suggested binding changes required for SoC specific compatibles
-* Merge SparX-5 and AT91 bindings as suggested[3]
+* Fix example indentation
 
-Robert Marko (15):
-  dt-bindings: usb: Add Microchip LAN969x support
-  dt-bindings: mfd: atmel,sama5d2-flexcom: add microchip,lan9691-flexcom
-  dt-bindings: serial: atmel,at91-usart: add microchip,lan9691-usart
-  dt-bindings: spi: at91: add microchip,lan9691-spi
-  dt-bindings: i2c: atmel,at91sam: add microchip,lan9691-i2c
-  dt-bindings: rng: atmel,at91-trng: add microchip,lan9691-trng
-  dt-bindings: crypto: atmel,at91sam9g46-aes: add microchip,lan9691-aes
-  dt-bindings: crypto: atmel,at91sam9g46-sha: add microchip,lan9691-sha
-  dt-bindings: dma: atmel: add microchip,lan9691-dma
-  dt-bindings: net: mscc-miim: add microchip,lan9691-miim
-  dt-bindings: pinctrl: pinctrl-microchip-sgpio: add LAN969x
-  arm64: dts: microchip: add LAN969x clock header file
-  arm64: dts: microchip: add LAN969x support
-  dt-bindings: arm: AT91: document EV23X71A board
-  arm64: dts: microchip: add EV23X71A board
-
- .../devicetree/bindings/arm/atmel-at91.yaml   |   6 +
- .../crypto/atmel,at91sam9g46-aes.yaml         |   1 +
- .../crypto/atmel,at91sam9g46-sha.yaml         |   1 +
- .../bindings/dma/atmel,sama5d4-dma.yaml       |   4 +-
- .../bindings/i2c/atmel,at91sam-i2c.yaml       |   1 +
- .../bindings/mfd/atmel,sama5d2-flexcom.yaml   |   1 +
- .../devicetree/bindings/net/mscc,miim.yaml    |  11 +-
- .../pinctrl/microchip,sparx5-sgpio.yaml       |  20 +-
- .../bindings/rng/atmel,at91-trng.yaml         |   1 +
- .../bindings/serial/atmel,at91-usart.yaml     |   1 +
- .../bindings/spi/atmel,at91rm9200-spi.yaml    |   1 +
- .../bindings/usb/microchip,lan9691-dwc3.yaml  |  66 ++
- arch/arm64/boot/dts/microchip/Makefile        |   1 +
- arch/arm64/boot/dts/microchip/clk-lan9691.h   |  24 +
- arch/arm64/boot/dts/microchip/lan9691.dtsi    | 488 +++++++++++
- .../boot/dts/microchip/lan9696-ev23x71a.dts   | 757 ++++++++++++++++++
- 16 files changed, 1375 insertions(+), 9 deletions(-)
+ .../bindings/usb/microchip,lan9691-dwc3.yaml  | 66 +++++++++++++++++++
+ 1 file changed, 66 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/usb/microchip,lan9691-dwc3.yaml
- create mode 100644 arch/arm64/boot/dts/microchip/clk-lan9691.h
- create mode 100644 arch/arm64/boot/dts/microchip/lan9691.dtsi
- create mode 100644 arch/arm64/boot/dts/microchip/lan9696-ev23x71a.dts
 
+diff --git a/Documentation/devicetree/bindings/usb/microchip,lan9691-dwc3.yaml b/Documentation/devicetree/bindings/usb/microchip,lan9691-dwc3.yaml
+new file mode 100644
+index 000000000000..08113eac74b8
+--- /dev/null
++++ b/Documentation/devicetree/bindings/usb/microchip,lan9691-dwc3.yaml
+@@ -0,0 +1,66 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/usb/microchip,lan9691-dwc3.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Microchip LAN969x SuperSpeed DWC3 USB SoC controller
++
++maintainers:
++  - Robert Marko <robert.marko@sartura.hr>
++
++select:
++  properties:
++    compatible:
++      contains:
++        enum:
++          - microchip,lan9691-dwc3
++  required:
++    - compatible
++
++properties:
++  compatible:
++    items:
++      - enum:
++          - microchip,lan9691-dwc3
++      - const: snps,dwc3
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    items:
++      - description: Gated USB DRD clock
++      - description: Controller reference clock
++
++  clock-names:
++    items:
++      - const: bus_early
++      - const: ref
++
++unevaluatedProperties: false
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++  - clock-names
++
++allOf:
++  - $ref: snps,dwc3.yaml#
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++
++    usb@300000 {
++        compatible = "microchip,lan9691-dwc3", "snps,dwc3";
++        reg = <0x300000 0x80000>;
++        interrupts = <GIC_SPI 80 IRQ_TYPE_LEVEL_HIGH>;
++        clocks = <&clks 12>, <&clks 11>;
++        clock-names = "bus_early", "ref";
++    };
 -- 
 2.52.0
 
