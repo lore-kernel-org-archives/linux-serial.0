@@ -1,112 +1,185 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DE2843161BF;
-	Mon, 29 Dec 2025 13:24:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from mail-wm1-f67.google.com (mail-wm1-f67.google.com [209.85.128.67])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD39C335555
+	for <linux-serial@vger.kernel.org>; Mon, 29 Dec 2025 18:40:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.67
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767014678; cv=none; b=IqIybO75wXN9GY4hpqbNhE801hHZtxXACCjhdlWv1kyc+9oj2+cf7UtOd2e/hloZ/qBj+/gYByLscy5vzBE67JkN/K8ti+RBlrzQeLf/XXkbZWDZEkqbgU6SEMRMMd5pOK6CSq05x6zYdZ5MOMS/5J/mKAHaOPJ22kksavmun0U=
+	t=1767033618; cv=none; b=GHHfxiImUJ3dnoKoklrY0WjzVJ6T8a4Or/pBrIo+H3T8ESYHSlvnUy7279XekvMcu01y1cPFkGmuU6+UQcu1VNmD0OdjPLTubMnWlCM9BKLyW2FjiGh910F075HJZ5n7qfyBjb7+SC/4BJ4vHu24eeXX9FhhMnlDMvAE5VdiL0o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767014678; c=relaxed/simple;
-	bh=Eti9OD+iaXFZHvABZhXYA8IxrA241HcyalJWujGe0Oc=;
-	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:Content-Type; b=sGRd2SqGE1Yhw0Em6SjW1zjq3rfWutFav3A+Qnx2csFhaFwvxtfQEYJg+zpTc/98a0DnGrsJIkwfnAneEM+BrjxouU2P92+JNpKukDiAtt5vK9/0NM0U6lseA/vJqfGGW7BGsI4VAtAqNZxYaUsrpuygx0PyjFlD82lemYUhaMQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=XhlPr+Rl; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1767033618; c=relaxed/simple;
+	bh=Z2AkBlH1TVCbTdGSk93dGvIgyGWQV34J6Mazauy8A20=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=L4Udmb0Ue82TjFlFwoOqqN60rJHcBscNq2v6UxCvlaJ7NAASyOIWXBfDvS9OndxwdB/XdhMZi+HeQIGc4Lo3E3bGEnEAZ/iDqYh+evYO5vWyPfLUkzeBCks9TU6YmvObN7P8WQ3yEO48Nmh59wtX1FC687bq3SswYrmU20g6UpQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr; spf=pass smtp.mailfrom=sartura.hr; dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b=Eg7mWVXD; arc=none smtp.client-ip=209.85.128.67
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sartura.hr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="XhlPr+Rl"
-Received: from [192.168.0.110] (unknown [49.205.248.37])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 7CB6521246CD;
-	Mon, 29 Dec 2025 05:24:29 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7CB6521246CD
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1767014676;
-	bh=WTBZMPFma66XH+Tv66P7VImD7F9RFzMDO73bbZH+d1o=;
-	h=Date:From:Subject:To:Cc:From;
-	b=XhlPr+RldDTiOcPlEFzPKxhqSDJovliVbjN7hsxXfHKHFjp9+3dBT0mBWcKuFWgVS
-	 7/d4x4vCyaaOxGyqh9WxrWZoih0vtlI+gocGjl3VVZ+WkjZsxMmC2UBNyevLCJs0CE
-	 09zpm5UGBy1j8tjoJI6+ufuUXbYS4jyV7VwRo4jo=
-Message-ID: <6cc90adc-17e6-417e-8b9c-3a1f7f3d4fcd@linux.microsoft.com>
-Date: Mon, 29 Dec 2025 18:54:24 +0530
+	dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b="Eg7mWVXD"
+Received: by mail-wm1-f67.google.com with SMTP id 5b1f17b1804b1-47a8195e515so57683775e9.0
+        for <linux-serial@vger.kernel.org>; Mon, 29 Dec 2025 10:40:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sartura.hr; s=sartura; t=1767033613; x=1767638413; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=xMNev2+IL4W0rOk2+Sz1iWUW5i0ra4Z/24SBDIc4eIk=;
+        b=Eg7mWVXDvdYJgNNjNjkgGCYqLOWaxsoVZaFc0g7FWoksidXXmUr5vG1VUv1IFVtPEd
+         maJ95rcL3bwn8vXWDnxv2suPM415fWG9/khKeVESYJuEYkPhgWeYLXPlTlBL81EVNWNx
+         UPq7EQQdI2JpoDmbcte9dq4zTwZ4v8FLpHCUKliikOSagV35Dofdtwyu8gvj4lD4mjHh
+         TG9jxzHxlJaWGRfHWerg0qKSeTnIN6arcp0tIHKtQ1CM3Xg22+hbD79IW2Rk/nVySu2Z
+         LOz0ijMEz/Y6C+qz5Ry0N3hEbGAwwvSn8G1YWSCLk6bpDep9T1WtkXMDhM1Okc3BrON+
+         e3RQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1767033613; x=1767638413;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xMNev2+IL4W0rOk2+Sz1iWUW5i0ra4Z/24SBDIc4eIk=;
+        b=usmKe++080yhN7Keu3BN2W5T6Lwf/HAJjR0VxtMaC6k9mkpaNdAzfz1fOngMWI0tDY
+         fJkYX3BgFIx5SanH945afG/99eZKy1pbZbb/VEu+mAO4cc4dIRRUhYcMtQAVP3qgzuNY
+         1GFfkDbTv9cdF12Dif4qzF7pumslJvXkWoGkgrvF3SESwtuXs7+WUtppT7/LMlSAqb5E
+         3uzHX2zZ20aeXL3DTzBoK43J8kQMqi/cJjfTeW76HyPmz12T+aRav8mMH/vO1B3Z18rk
+         MuqIJhterFLHMuyveyrioyoLjUQpoOPRYYF0x5V9AJy7p3Dm0KXKHKYSgVtcNInyblKM
+         6HRQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXWmxgCufXPL5nsKHvgckFGUEOuxrRL69ZdTQ7QkaLZEPdca/CZjtqvj32/uDdYmlrGHSgODJ+6tI8wnLE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxTCrvfXT1mcHmBL7qn1aAAYD/8IdfgKYQEOIqMkVWLdrYIMjIk
+	9OCXe7A3Nu2UuDrUaLD1+FGuZVgdGxfTDNVrW1Cu8F+JW9A9Jrx4DyFThA+lI89ZUGs=
+X-Gm-Gg: AY/fxX61moXfCNVOPnwqOK5KK1rUu57Sgfx85YxKlA5J424uG2dgUb0wG8o3Y8OGzXF
+	Q/Ap8TFg1lI3E5rnuIyYyCIoWkq4rY0FxM626M/wLqfbdNxDhGVlgzN9tx7UvW2tZhFaTbj7T+9
+	eLMNBtCtMKXgVErQzpzjBlsf9hdvdepK6iubrUWRrtD6u43sqN+lHjD7Mj9v7C2Eybh9zWPEPGf
+	XcP1gG/+NfAvmSFeQKf6PSk41xImbT914BDNnHzjPkwB0DO22cZY0xgcbQqDhqW8GPtfinK5WSn
+	AhHKxKCp3DIGJY4RD5SNClnBscN/PgXNzZzDOSpnWa9pCqP6dvdnIZYB8+lD9rwFzAkyb8jDpDs
+	oKELt5NREt9ZVTqOOopjZ5JVHx0XkXDb1QDU+t/t4CqI4wCGEi4PoUihgbqZ9fqt6LmU5q3SLiR
+	CrzOgyxL+LRqgtERBB29nI83tfG/UrDNX2MpjJOmTRJ5NTu8pF1MC1fJKLtWm3DAk+33oE9mdtP
+	9vhrB3qy8xZtVowqPJtCeuN/JtB
+X-Google-Smtp-Source: AGHT+IF5mVbnc4OdKlh0x4EYHuw7zUgN0QfqgRBI5YPkVwIvD+VFTU0drNG67nyewlPrP/fkHHcexg==
+X-Received: by 2002:a05:600c:4ecd:b0:477:1bb6:17e5 with SMTP id 5b1f17b1804b1-47d19593e32mr383263515e9.30.1767033613155;
+        Mon, 29 Dec 2025 10:40:13 -0800 (PST)
+Received: from fedora (cpezg-94-253-146-116-cbl.xnet.hr. [94.253.146.116])
+        by smtp.googlemail.com with ESMTPSA id 5b1f17b1804b1-47be27b28a7sm604907455e9.12.2025.12.29.10.40.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Dec 2025 10:40:12 -0800 (PST)
+From: Robert Marko <robert.marko@sartura.hr>
+To: robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	nicolas.ferre@microchip.com,
+	alexandre.belloni@bootlin.com,
+	claudiu.beznea@tuxon.dev,
+	herbert@gondor.apana.org.au,
+	davem@davemloft.net,
+	vkoul@kernel.org,
+	andi.shyti@kernel.org,
+	lee@kernel.org,
+	andrew+netdev@lunn.ch,
+	edumazet@google.com,
+	kuba@kernel.org,
+	pabeni@redhat.com,
+	linusw@kernel.org,
+	Steen.Hegelund@microchip.com,
+	daniel.machon@microchip.com,
+	UNGLinuxDriver@microchip.com,
+	olivia@selenic.com,
+	radu_nicolae.pirea@upb.ro,
+	richard.genoud@bootlin.com,
+	gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	broonie@kernel.org,
+	lars.povlsen@microchip.com,
+	devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-crypto@vger.kernel.org,
+	dmaengine@vger.kernel.org,
+	linux-i2c@vger.kernel.org,
+	netdev@vger.kernel.org,
+	linux-gpio@vger.kernel.org,
+	linux-spi@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-usb@vger.kernel.org
+Cc: luka.perkov@sartura.hr,
+	Robert Marko <robert.marko@sartura.hr>
+Subject: [PATCH v4 00/15] Add support for Microchip LAN969x
+Date: Mon, 29 Dec 2025 19:37:41 +0100
+Message-ID: <20251229184004.571837-1-robert.marko@sartura.hr>
+X-Mailer: git-send-email 2.52.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Content-Language: en-US
-From: Naman Jain <namjain@linux.microsoft.com>
-Subject: Need inputs on hard lockups with "cat large_file.txt" use-case on 6.6
- kernel
-To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Russell King <linux@armlinux.org.uk>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>,
- "Thomas Gleixner, Ingo Molnar" <mingo@kernel.org>,
- Nam Cao <namcao@linutronix.de>, Miaoqian Lin <linmq006@gmail.com>,
- Toshiyuki Sato <fj6611ie@aa.jp.fujitsu.com>,
- Prasanna Kumar T S M <ptsm@linux.microsoft.com>,
- Saurabh Singh Sengar <ssengar@linux.microsoft.com>,
- Naman Jain <namjain@linux.microsoft.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-Hi,
-I am debugging a hard-lockup issue which is seen when I do "cat" of a 
-large text file (~3 MB or more) on my arm64 machine, which is based on 
-6.6.116 kernel version and is using pl011 driver for UART.
+This series adds support for the Microchip LAN969x switch SoC family.
 
-I came across NBCON framework which tries to deal with such problems, 
-but it is available on later kernels, and it would not be easy for me to 
-do kernel upgrade at this moment.
+Series is a bit long since after discussions in previous versions, it was
+recommended[1][2] to add SoC specific compatibles for device nodes so it
+includes the required bindings updates.
 
-I wanted to reach out here for any inputs that would help me debug this 
-issue further - whether such lockups are expected, any kernel parameter, 
-or patch that could fix this, etc.
+[1] https://lore.kernel.org/all/20251203-splendor-cubbyhole-eda2d6982b46@spud/
+[2] https://lore.kernel.org/all/173412c8-c2fb-4c38-8de7-5b1c2eebdbf9@microchip.com/
+[3] https://lore.kernel.org/all/20251203-duly-leotard-86b83bd840c6@spud/
+[4] https://lore.kernel.org/all/756ead5d-8c9b-480d-8ae5-71667575ab7c@kernel.org/
 
-Thanks in advance.
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
 
-More details below:
+Changes in v4:
+* Pick Acked-by from Andi for I2C bindings
+* Move clock indexes from dt-bindings into a DTS header as suggested by
+Krzysztof[4]
 
+Changes in v3:
+* Pick Acked-by from Conor
+* Drop HWMON binding as it was picked into hwmon already
+* Document EV23X71A into AT91 binding
+* Drop SparX-5 and AT91 bindings merge
+* Apply remark from Conor on DMA binding regarding merging cases
 
-I tried below experiments, but nothing worked:
-* changing interrupt affinity of UART irq to other CPUs or group of 
-CPUs, since all the UART interrupts were landing on CPU0.
-* finding kernel cmdline parameters that can be tweaked - didn't seem to 
-be related to "cat largefile" usecase, but for controlling general 
-logging from drivers.
-* Adding touch_nmi_watchdog(), cpu_relax() in different paths in the driver.
-* adding handle_sysrq('l') in hardlockup handler to get CPU call stacks, 
-or enable hardlockup_all_cpu_backtrace, but did not get call stacks of 
-stuck CPUs.
+Changes in v2:
+* Change LAN969x wildcards to LAN9691 in patches
+* Split SoC DTSI and evaluation board patches
+* Add the suggested binding changes required for SoC specific compatibles
+* Merge SparX-5 and AT91 bindings as suggested[3]
 
+Robert Marko (15):
+  dt-bindings: usb: Add Microchip LAN969x support
+  dt-bindings: mfd: atmel,sama5d2-flexcom: add microchip,lan9691-flexcom
+  dt-bindings: serial: atmel,at91-usart: add microchip,lan9691-usart
+  dt-bindings: spi: at91: add microchip,lan9691-spi
+  dt-bindings: i2c: atmel,at91sam: add microchip,lan9691-i2c
+  dt-bindings: rng: atmel,at91-trng: add microchip,lan9691-trng
+  dt-bindings: crypto: atmel,at91sam9g46-aes: add microchip,lan9691-aes
+  dt-bindings: crypto: atmel,at91sam9g46-sha: add microchip,lan9691-sha
+  dt-bindings: dma: atmel: add microchip,lan9691-dma
+  dt-bindings: net: mscc-miim: add microchip,lan9691-miim
+  dt-bindings: pinctrl: pinctrl-microchip-sgpio: add LAN969x
+  arm64: dts: microchip: add LAN969x clock header file
+  arm64: dts: microchip: add LAN969x support
+  dt-bindings: arm: AT91: document EV23X71A board
+  arm64: dts: microchip: add EV23X71A board
 
-Kernel cmdline:
+ .../devicetree/bindings/arm/atmel-at91.yaml   |   6 +
+ .../crypto/atmel,at91sam9g46-aes.yaml         |   1 +
+ .../crypto/atmel,at91sam9g46-sha.yaml         |   1 +
+ .../bindings/dma/atmel,sama5d4-dma.yaml       |   4 +-
+ .../bindings/i2c/atmel,at91sam-i2c.yaml       |   1 +
+ .../bindings/mfd/atmel,sama5d2-flexcom.yaml   |   1 +
+ .../devicetree/bindings/net/mscc,miim.yaml    |  11 +-
+ .../pinctrl/microchip,sparx5-sgpio.yaml       |  20 +-
+ .../bindings/rng/atmel,at91-trng.yaml         |   1 +
+ .../bindings/serial/atmel,at91-usart.yaml     |   1 +
+ .../bindings/spi/atmel,at91rm9200-spi.yaml    |   1 +
+ .../bindings/usb/microchip,lan9691-dwc3.yaml  |  66 ++
+ arch/arm64/boot/dts/microchip/Makefile        |   1 +
+ arch/arm64/boot/dts/microchip/clk-lan9691.h   |  24 +
+ arch/arm64/boot/dts/microchip/lan9691.dtsi    | 488 +++++++++++
+ .../boot/dts/microchip/lan9696-ev23x71a.dts   | 757 ++++++++++++++++++
+ 16 files changed, 1375 insertions(+), 9 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/usb/microchip,lan9691-dwc3.yaml
+ create mode 100644 arch/arm64/boot/dts/microchip/clk-lan9691.h
+ create mode 100644 arch/arm64/boot/dts/microchip/lan9691.dtsi
+ create mode 100644 arch/arm64/boot/dts/microchip/lan9696-ev23x71a.dts
 
-console=ttyAMA0 earlycon=pl011,mmio32,0xFF000000,115200n8 reboot=w 
-ima_hash=sha384 systemd.show_status=false ovlboot.bootdevice=E-MMC 
-root=/dev/ram rw sysctl.kernel.printk_ratelimit=30 
-sysctl.kernel.printk_ratelimit_burst=75 ima_policy=critical_data 
-rcupdate.rcu_expedited=1 systemd.gpt_auto=no systemd.ssh_auto=no fips=1 
-SYSTEMD_DEFAULT_MOUNT_RATE_LIMIT_BURST=100 systemd.log_ratelimit_kmsg=0 
-crashkernel=512M
-
-
-root@localhost:~# cat /proc/sys/kernel/printk
-2       1       1       2
-
-
-DT:
-        serial0: serial@f1920000 {
-                 bootph-all;
-                 compatible = "arm,pl011", "arm,primecell";
-                 status = "disabled";   -> enabled later in board
-                 reg = <0 0xf1920000 0 0x1000>;
-                 interrupts = <0 25 4>;
-                 reg-io-width = <4>;
-                 clock-names = "uartclk", "apb_pclk";
-                 current-speed = <115200>;
-         };
-
-Regards,
-Naman
+-- 
+2.52.0
 
