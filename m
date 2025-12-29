@@ -1,192 +1,97 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D6102737F4
-	for <linux-serial@vger.kernel.org>; Mon, 29 Dec 2025 03:18:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39C4625487B
+	for <linux-serial@vger.kernel.org>; Mon, 29 Dec 2025 08:12:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766978303; cv=none; b=olv8i9CwBqWJHLXPONULW/EC3ovoR72vCv0avUPD7VhBbKMQEEyE/CHiI3s1W/qEwhEuWnkUcd6a9C/z0k8hfvu0XCRbdb9YlPjudCLP2QTWsH/UDI97V3/gj5Vaxe2y7kJlmXmzMMh2/CH+YhGJmjoCvXA+yYXCSQNNX+ln2mU=
+	t=1766995951; cv=none; b=ZzCgmIl1N6i8z2IP4m+MSfWRWC8BK/uDPwUN2OOuq6JFWMKKuJ7oMQz6x5MVmIvR3M1u6oTvQIJiB5PMt3K5Sksnd+3K0vAtrcv84dVte1bJ8ZmUU/2LNjqpf8imT42P9WDIJiQSpIDb4NT+DZB223hNdfOL0zJ6B9vhzti1HfY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766978303; c=relaxed/simple;
-	bh=U5+tajyX4z37PiOhU0sqj51yXSZuLKFhmzkJ0pnOAJU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Ssu/LYaPLQMd6Gb0H8ObvKH8cTmMF6FihutwMffTqjkJITnVfmjuh57HhNjcmR1GTMrbUJ8CzVs48VIrlgr+FaPAtE30DqoeensBpMgMrqKbMgIZ5VzVGdSwFWMfmPdjBdW6zshrYK/tLtJCAC7gtBE+oMDDYhzlZ9pLO7IKShk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=J5q04TXu; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=BAmNkyRv; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="J5q04TXu";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="BAmNkyRv"
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5BSND2h83934445
-	for <linux-serial@vger.kernel.org>; Mon, 29 Dec 2025 03:18:19 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	ITdv+XD97ecvLgG1EQqqXSSAfTzuCTfF007YcPFmgq4=; b=J5q04TXuFzs4id3t
-	G+ycMSL7MVxwhcsmAbVkjKnHWGUbfDm6AAEPgkcE9L86I0a21GzDEbbT9rYEuIEp
-	4dj/MTJGN0X2/hwtOIsx9b7wxOGoL40lfcjtvkC2AyB57ScvsJyYbYP4rznu/hfZ
-	V5ZiBR/GwLv8epuJkr8k3gxZi7IbIcXkkL8C8s7F5Fb3OmGN9opj4E5+aucXoTvC
-	N31mG6Zp6wyT921fQVW1NGANkrPDVNysFz3G2T9MAOSzsMVVJjtCAXBet8xy8MQA
-	5R8TucuIe5gHz7/aJ1E91QTqHi72kHnru6aBtxX+k3peXRfGootloq6N591RMoap
-	eiXOWA==
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com [209.85.219.71])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4ba6dr3amc-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-serial@vger.kernel.org>; Mon, 29 Dec 2025 03:18:18 +0000 (GMT)
-Received: by mail-qv1-f71.google.com with SMTP id 6a1803df08f44-88a344b86f7so319947386d6.0
-        for <linux-serial@vger.kernel.org>; Sun, 28 Dec 2025 19:18:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1766978298; x=1767583098; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=ITdv+XD97ecvLgG1EQqqXSSAfTzuCTfF007YcPFmgq4=;
-        b=BAmNkyRvS0hNmv9D26LvP6wAE9BPOuZtWQfPhASGukUP5kHpRpF8nWB9benAhsmB1b
-         RfatdKda/VHxvTqQ1ZXGamWN9zxynMmYYuUed93TuDUVIun1XxzycryY7//RKW8BgC1B
-         4eeN207MDEI6zcFjbGWy+IJDbQ/13sFAUHkaq6DvGygFdYwfUTisDk/zMNXMk04srH2q
-         al0rp/j21OLn7oEKVMXnJ2fq1hmUgq8lTl7oIYnb3niDVLgwOOJXbX6Lh0NrMAtirVv3
-         LbZjonZUBZBtrjRQgRWohgW3fyWxBuelwuHVmpB954Dcyy9sCk4VjpeNJnoRFEatus/b
-         YvSA==
+	s=arc-20240116; t=1766995951; c=relaxed/simple;
+	bh=taIfWUNVF3rSzh0PYBFI5q7Vx5RhrWfrym0Xr7JJJj0=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=PJ2cI4saQgqCITjlcrRDSp771wXByoSsqlykGyWDdlMYOSnIBvPfjpCwtl0DBSZsGn2p/8O6QPYlaUbe5oKtxOlPtxrgvoBa+F/WQp6VuSUs6AP2MMOSLot6xxgJiPUUuJLRNToW7oGUtv5M5WoW1Fd+avgpFu1sjna1cDsE9/k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-65747d01bb0so15528567eaf.0
+        for <linux-serial@vger.kernel.org>; Mon, 29 Dec 2025 00:12:30 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1766978298; x=1767583098;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ITdv+XD97ecvLgG1EQqqXSSAfTzuCTfF007YcPFmgq4=;
-        b=lrd6fK3JkQCm9de2hH5XxBAEwqK5xVc8DUef9VbSPGie6lId+FkndXzr7SKSMvcV/A
-         qWe9v4Pp4eWWwEB7pc4UyD23OUVSQGrFBlzGy1j3skIOVXw+n0b+oD1vO81iZwQFDYyL
-         r0Ovso16wEqt+m/iOFttjeaH/7nsKozhIr0WeJXhi8BZ9nSRb0nQXfQd73gKzY+Em2Xk
-         w13blQEpZPInqUScCG2SRhMX2oUFJZYx2PFB6SR6v4rvh7vRayr8ir2biGkm9JS736ot
-         Bw2MYWrOkaDNYxqeUh7fxBnlZg0VObCsyMiGQVsjXHYxbP2Wj9NtA3hTq3RMSLHsY1vN
-         +sOA==
-X-Forwarded-Encrypted: i=1; AJvYcCUKnzm7Bkjr92nbucqAbHGmJViPyw9G0ZCQtIe6bEBCj2Oqr4zNtOXh+lkYNmuIMKkEpuzQoDOIiE79Eec=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyxUCbw+k0f1OPA7f+gKNBILZ3pgEsqiufON9/oESCf6DnL8b6o
-	wOIYLKbsf/17KdxI4YiiiPNx3Xdid9AiLxjYEo56+jgiKhvIgTziIG3WcCUkB9tdl9+hcHLm3AZ
-	2brlmCLWyN9nKHwXqCAp6LyYkkt0jTjHW7+7EWWfhqm5Y2x1SxSs6JA+zjnoCxc9QkvA=
-X-Gm-Gg: AY/fxX7q+L7Wtd3JD3qg1BelS/pOAsPn0d1fGaB60zYdcVGOx1k6RpRiUInTswmUBcQ
-	hxbVLB7fN/Qsf8xlZ9ynwPfykj6TirrhE/3t7WXGJEsG58JbGhLgMOXyslDpy6hbRclGpWddrqB
-	Ty4+vXvv9vhLsmsbyfQ2pBbH8GIy5S7Cjeu6Fa8SF6BztsDGSxgbOEOXNcZL96OWTDl6rI6mdwp
-	pSUZ9YNNH6a9SaIz6BMfsqZ4keT//k03Y4nwP0KN9y6Yx8fqdIC2V8XL9lLTlq1Z5nxzQAw5LVi
-	kWksoC+a8nD8eATwMjgz/kK548PSBAG23gT4uFh6yrehkoUcAzpjN0hqLZpGgDIcgVBY+JWmqPj
-	Uc3c/gWXSOQVSu9Jf67W/ixGCfhQm0j9h2ChFAs70ety8RkipRQHNwbhBeSyrkK0Y/ImMOhv5wY
-	PXYpwGP0ncg1rw/ej5yS6rfhw=
-X-Received: by 2002:a0c:f98c:0:b0:882:3ecd:20eb with SMTP id 6a1803df08f44-88d84f02c06mr321145036d6.25.1766978297651;
-        Sun, 28 Dec 2025 19:18:17 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IFsx2JCxWudDTojSLtJ9bcVxScTNsLs3QqKsDMkazXxFAFq4q4A8p3Q0cJLScqrGkFVeF0mDA==
-X-Received: by 2002:a0c:f98c:0:b0:882:3ecd:20eb with SMTP id 6a1803df08f44-88d84f02c06mr321144886d6.25.1766978297199;
-        Sun, 28 Dec 2025 19:18:17 -0800 (PST)
-Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3812264bf90sm74985771fa.35.2025.12.28.19.18.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 Dec 2025 19:18:16 -0800 (PST)
-Date: Mon, 29 Dec 2025 05:18:14 +0200
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH v1 1/1] serial: core: Restore sysfs fwnode information
-Message-ID: <hwykqbo2ktw4slmmb2iodeitd5fqfvzuec5eyvgnttyh3keo3h@cibdr37t4shy>
-References: <20251127163650.2942075-1-andriy.shevchenko@linux.intel.com>
- <CGME20251218152957eucas1p196470bc80be0d8a4037edfe6e53f3d13@eucas1p1.samsung.com>
- <265b9083-d744-4438-b539-9e001f2138ba@samsung.com>
- <713aa37f-161d-4f08-9417-d7d2abdcdfd9@sirena.org.uk>
- <361ad06d-0478-40f9-9894-6f53d7b27eff@samsung.com>
+        d=1e100.net; s=20230601; t=1766995949; x=1767600749;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=vY3aZZxjVWwDjFgLHiv/0AXJxOLgPlcs7AfFYWDwgdg=;
+        b=DjuJ7kKVgrR6NVVaNPl3dJDiI33xb4Af+ah/lnh7iDHgEFdE4keRfpz+h+wjJqbxCx
+         dnCDRNb1KSnRv0BIK0Du3xDmWW+LfcCA/xTX47x/Z/Ansj73EJs163okZEsCXuslIooT
+         bIjHvIvQ4gmHAhpi9eWXXD3SX0r8MiV0sY0xKICKfpOUsOBQzUvbTSN4L956/s9ZLWr5
+         nR0bv9fJnPEg62QaqPotlZnAn0yWufgi76pnmxmXUZzjCJjwUjCqIewGd93PPBncEFtI
+         WYAK+E/lybgukoyITuSEfopItTlJpA14CwDD/OE+LQMeb7HKoG3MQt2I2U2uiU/9PCX6
+         9XfA==
+X-Forwarded-Encrypted: i=1; AJvYcCUoHT+irdNaOHD2et2hU149m/1xmHwuDkLA39G/l7QnznFLBPxFPhH6v6p55XaJ3K+xYpuRYYoPZj8r668=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxckUcO3US0obHmlUiEtuCgY55dq6UJB8cHM8azGdkWGdmY53aF
+	+jPBvZ6MecWisPwTmzyF1ep+T9oUmuQ6pK87vJmOkUla3Esj2LeTqtE/ZgzJ+3HTslzsKh6ys+X
+	0MQ+zw8C9+CACbPnuV4zKDx6wH+b8x9RhnQp55pfRnnUiBd7rocoKdpSP6VQ=
+X-Google-Smtp-Source: AGHT+IFZzBEzyRMoobnuGlNd76ESTB2ELSt4+HC0wAiHAWy2aSWKGOc9bZWt5zXyblRuYbixkfZ3vYYp8d+wR+sogYmvGcQHquPB
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <361ad06d-0478-40f9-9894-6f53d7b27eff@samsung.com>
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMjI5MDAyOCBTYWx0ZWRfX4ZKcyQpcW8nZ
- 23iLAxAIv3NmrupGqqgQqFrOAeFj7gXTC+0B9OUXL5njrv9l9p/r1N20croGgX/QLOLlAttJFmy
- xFrWo+7gF2vqd6Zo9m/K7WN0HJOqHjszIhdjOn3vftVa3Wk3dJ8b38oRPVewcTABc0hCbJJAzVL
- xeoyLWbrOF1RU85dgjvfsn6o/4N4lo9A7Q9NXNGt5C8LpFQrlFGwIkTvC1q1P6pqNUHyQfceF2P
- /DAVLur5LmLxgWl5xmhkeUadEyLVlIcD59QExNU/89yo7WrIjNQdQPWXqkncX3fsdsJHC8QjFJY
- TyqGPY7wD16Ek1z5SDoQ+BaYtt3Y87rFkOzXZH5iFXbrJE4e9lyLmc8dF+zOmdPKWso35mQ4ec5
- ksYLwZyz2udkhzTHxZAt3OKBsrh5xHBnL6Dur/RmWcWuZpxySIoRmZ9jkdMP2Bj3DWfxS+jn6Tu
- Jk3hQ8XPI57H2+HukUg==
-X-Authority-Analysis: v=2.4 cv=VdP6/Vp9 c=1 sm=1 tr=0 ts=6951f2fa cx=c_pps
- a=UgVkIMxJMSkC9lv97toC5g==:117 a=xqWC_Br6kY4A:10 a=8nJEP1OIZ-IA:10
- a=wP3pNCr1ah4A:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=ZyJuO-foDHcur6j6Um8A:9 a=3ZKOabzyN94A:10 a=wPNLvfGTeEIA:10
- a=1HOtulTD9v-eNWfpl4qZ:22
-X-Proofpoint-GUID: SBqAiKH6HnRsu4Ml4e9reigexqC0rBb4
-X-Proofpoint-ORIG-GUID: SBqAiKH6HnRsu4Ml4e9reigexqC0rBb4
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
- definitions=2025-12-28_08,2025-12-26_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 spamscore=0 phishscore=0 lowpriorityscore=0 bulkscore=0
- adultscore=0 clxscore=1015 malwarescore=0 suspectscore=0 priorityscore=1501
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2512120000 definitions=main-2512290028
+X-Received: by 2002:a05:6820:f059:b0:65d:1336:f675 with SMTP id
+ 006d021491bc7-65d13371ffcmr9216003eaf.42.1766995949266; Mon, 29 Dec 2025
+ 00:12:29 -0800 (PST)
+Date: Mon, 29 Dec 2025 00:12:29 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <695237ed.a70a0220.c527.0022.GAE@google.com>
+Subject: [syzbot] Monthly serial report (Dec 2025)
+From: syzbot <syzbot+list2e994c0f62c763b8cec2@syzkaller.appspotmail.com>
+To: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 
-On Mon, Dec 22, 2025 at 11:55:26AM +0100, Marek Szyprowski wrote:
-> On 18.12.2025 17:54, Mark Brown wrote:
-> > On Thu, Dec 18, 2025 at 04:29:55PM +0100, Marek Szyprowski wrote:
-> >> On 27.11.2025 17:36, Andy Shevchenko wrote:
-> >>> The change that restores sysfs fwnode information does it only for OF cases.
-> >>> Update the fix to cover all possible types of fwnodes.
-> >> This patch landed in today's linux-next as commit 24ec03cc5512 ("serial:
-> >> core: Restore sysfs fwnode information"). In my tests I found that it
-> >> breaks booting of most of my test boards (ARM 32 and 64 bit).
-> >> Unfortunately I cannot provide anything useful besides the information
-> >> that booting stops and system doesn't reach shell. There is nothing
-> >> suspicious in the kernel logs. I suspect a memory trashing. Reverting
-> >> $subject on top of linux-next fixes booting.
-> > I'm also seeing this in my lab and Arm's lab, there are a few systems
-> > that survive but it's a small minority.
-> 
-> I have a few spare minutes and spent them analyzing this issue.
-> 
-> This is somehow related to dev->of_node_reused device property and its 
-> check in pinctrl_bind_pins() in drivers/base/pinctrl.c.
-> 
-> The following hack/workaround fixes the observed boot issues:
-> 
-> diff --git a/drivers/tty/serial/serial_base_bus.c 
-> b/drivers/tty/serial/serial_base_bus.c
-> index 8e891984cdc0..f3332a5e134c 100644
-> --- a/drivers/tty/serial/serial_base_bus.c
-> +++ b/drivers/tty/serial/serial_base_bus.c
-> @@ -76,6 +76,7 @@ static int serial_base_device_init(struct uart_port *port,
->          dev->release = release;
-> 
->          device_set_node(dev, fwnode_handle_get(dev_fwnode(parent_dev)));
-> +       dev->of_node_reused = true;
-> 
->          if (!serial_base_initialized) {
->                  dev_dbg(port->dev, "uart_add_one_port() called before 
-> arch_initcall()?\n");
-> 
-> 
-> If I then remove the dev->of_node_reused check in pinctrl_bind_pins(), 
-> the affected boards don't boot again the same way. I hope this helps 
-> fixing this issue.
+Hello serial maintainers/developers,
 
-I can confirm that this patch fixes the breakage on Qualcomm devices.
-Please send it as a proper patch (though I'd say, the flag should only
-be set only if dev->of_node != NULL).
+This is a 31-day syzbot report for the serial subsystem.
+All related reports/information can be found at:
+https://syzkaller.appspot.com/upstream/s/serial
 
-An alternative is to introduce dev_set_node_from_dev() which mimics both
-dev_set_node() and device_set_of_node_from_dev().
+During the period, 0 new issues were detected and 0 were fixed.
+In total, 17 issues are still open and 45 have already been fixed.
 
-Greg, what would be your preference?
+Some of the still happening issues:
 
-> 
-> Best regards
-> -- 
-> Marek Szyprowski, PhD
-> Samsung R&D Institute Poland
-> 
+Ref  Crashes Repro Title
+<1>  3201    Yes   possible deadlock in console_lock_spinning_enable (5)
+                   https://syzkaller.appspot.com/bug?extid=622acb507894a48b2ce9
+<2>  2565    Yes   KMSAN: uninit-value in n_tty_receive_buf_standard
+                   https://syzkaller.appspot.com/bug?extid=559c7fe4b8bac56d38c2
+<3>  1163    Yes   BUG: soft lockup in tx
+                   https://syzkaller.appspot.com/bug?extid=5e87db90e68fbc4707c6
+<4>  257     Yes   KASAN: slab-use-after-free Read in tty_write_room (2)
+                   https://syzkaller.appspot.com/bug?extid=2a81fdd5c6ddffee3894
+<5>  232     Yes   INFO: task can't die in show_free_areas
+                   https://syzkaller.appspot.com/bug?extid=8f41dccfb6c03cc36fd6
+<6>  235     Yes   KMSAN: uninit-value in n_tty_receive_buf_closing (3)
+                   https://syzkaller.appspot.com/bug?extid=dd514b5f0cf048aec256
+<7>  120     Yes   possible deadlock in tty_buffer_flush (3)
+                   https://syzkaller.appspot.com/bug?extid=52cf91760dcb1dac6376
+<8>  47      No    KMSAN: uninit-value in n_tty_lookahead_flow_ctrl (2)
+                   https://syzkaller.appspot.com/bug?extid=290abdcd4f509377a0eb
+<9>  18      Yes   INFO: rcu detected stall in console_callback
+                   https://syzkaller.appspot.com/bug?extid=32af18ae7b894a681f2d
+<10> 2       Yes   memory leak in gsm_activate_mux
+                   https://syzkaller.appspot.com/bug?extid=b5d1f455d385b2c7da3c
 
--- 
-With best wishes
-Dmitry
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+To disable reminders for individual bugs, reply with the following command:
+#syz set <Ref> no-reminders
+
+To change bug's subsystems, reply with:
+#syz set <Ref> subsystems: new-subsystem
+
+You may send multiple commands in a single email message.
