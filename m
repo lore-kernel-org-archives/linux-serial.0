@@ -1,33 +1,31 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 260DC205E25;
-	Mon, 29 Dec 2025 12:46:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DE2843161BF;
+	Mon, 29 Dec 2025 13:24:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767012379; cv=none; b=NwUXdxALNe81DhSGy3rVVDD/XQQjMZ4jSEY6X8lYbBY/0ENh+LsBmWaQbuH9jQu1GNyOxLFiT+fYZuc/MKhyj/YT8GpX6KDm0xqTVwEe0MALYuuRVSRC3gqod6DAW1K0I+kdpIn0OqQQ21qP4TWo/qjQ+zwEoSH2CT8VtIok9gU=
+	t=1767014678; cv=none; b=IqIybO75wXN9GY4hpqbNhE801hHZtxXACCjhdlWv1kyc+9oj2+cf7UtOd2e/hloZ/qBj+/gYByLscy5vzBE67JkN/K8ti+RBlrzQeLf/XXkbZWDZEkqbgU6SEMRMMd5pOK6CSq05x6zYdZ5MOMS/5J/mKAHaOPJ22kksavmun0U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767012379; c=relaxed/simple;
-	bh=YEEehNuAmCrRszpCZWxVYHNFGLvgk2GlJvR9Gw2D5kA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=LhpO26FFB/GoWIQcLkTF/hlfzlOyInsaoovIB+4MhzM8DHr7i7NfuVLJ98WOeINt1ejWhuslcm79H4GomkCXbQqY+9gnLQC4+TdOFesL0uwxazrjAr7R55iiPFlFyUMtE/YURBtNc6CnuNenW5ff6Qk0kw8tN2FNlB6Z8YUSfWo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uW8DbN4z; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1767014678; c=relaxed/simple;
+	bh=Eti9OD+iaXFZHvABZhXYA8IxrA241HcyalJWujGe0Oc=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:Content-Type; b=sGRd2SqGE1Yhw0Em6SjW1zjq3rfWutFav3A+Qnx2csFhaFwvxtfQEYJg+zpTc/98a0DnGrsJIkwfnAneEM+BrjxouU2P92+JNpKukDiAtt5vK9/0NM0U6lseA/vJqfGGW7BGsI4VAtAqNZxYaUsrpuygx0PyjFlD82lemYUhaMQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=XhlPr+Rl; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uW8DbN4z"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9B10C4CEF7;
-	Mon, 29 Dec 2025 12:46:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1767012378;
-	bh=YEEehNuAmCrRszpCZWxVYHNFGLvgk2GlJvR9Gw2D5kA=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=uW8DbN4z6Tyhug910b8kLK7d8z9xCMwiIg3pb0DAjUICnmBPBz4KQX0ui8+mJMU2w
-	 pd06v2IEp9ttFE+sUrXYPY+9X0SqpRIDQ2lay7rntJw2PWD+LbED5mnL9hAl9WEzT1
-	 xSZzB5vJ+o19SLb9oe/lBh2B+/v7EhSMhXtrI4ihEDjR2t6sB6zM1wCcvev0REgGa/
-	 D6Buzmyzl/cfwkiyHe1CPCz8JwAKtoxVgbY0SlV7xz6BLaiWy0rG8hcfDW6Aru9tcK
-	 HpkvcPJsa8HZJ0ktCcDFolFGacXN61DEC7axbxeNR9ReEp+Tw4YYuCuUQiD9ngR7CP
-	 6AqQkTMevjDKw==
-Message-ID: <756ead5d-8c9b-480d-8ae5-71667575ab7c@kernel.org>
-Date: Mon, 29 Dec 2025 13:46:06 +0100
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="XhlPr+Rl"
+Received: from [192.168.0.110] (unknown [49.205.248.37])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 7CB6521246CD;
+	Mon, 29 Dec 2025 05:24:29 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7CB6521246CD
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1767014676;
+	bh=WTBZMPFma66XH+Tv66P7VImD7F9RFzMDO73bbZH+d1o=;
+	h=Date:From:Subject:To:Cc:From;
+	b=XhlPr+RldDTiOcPlEFzPKxhqSDJovliVbjN7hsxXfHKHFjp9+3dBT0mBWcKuFWgVS
+	 7/d4x4vCyaaOxGyqh9WxrWZoih0vtlI+gocGjl3VVZ+WkjZsxMmC2UBNyevLCJs0CE
+	 09zpm5UGBy1j8tjoJI6+ufuUXbYS4jyV7VwRo4jo=
+Message-ID: <6cc90adc-17e6-417e-8b9c-3a1f7f3d4fcd@linux.microsoft.com>
+Date: Mon, 29 Dec 2025 18:54:24 +0530
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,111 +33,80 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 01/15] include: dt-bindings: add LAN969x clock bindings
-To: Robert Marko <robert.marko@sartura.hr>
-Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, nicolas.ferre@microchip.com,
- claudiu.beznea@tuxon.dev, herbert@gondor.apana.org.au, davem@davemloft.net,
- vkoul@kernel.org, andi.shyti@kernel.org, lee@kernel.org,
- andrew+netdev@lunn.ch, edumazet@google.com, kuba@kernel.org,
- pabeni@redhat.com, linusw@kernel.org, Steen.Hegelund@microchip.com,
- daniel.machon@microchip.com, UNGLinuxDriver@microchip.com,
- olivia@selenic.com, radu_nicolae.pirea@upb.ro, richard.genoud@bootlin.com,
- gregkh@linuxfoundation.org, jirislaby@kernel.org, broonie@kernel.org,
- mturquette@baylibre.com, sboyd@kernel.org, lars.povlsen@microchip.com,
- devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
- dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org,
- netdev@vger.kernel.org, linux-gpio@vger.kernel.org,
- linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-usb@vger.kernel.org, linux-clk@vger.kernel.org, luka.perkov@sartura.hr
-References: <20251223201921.1332786-1-robert.marko@sartura.hr>
- <20251223201921.1332786-2-robert.marko@sartura.hr>
- <20251224-berserk-mackerel-of-snow-4cae54@quoll>
- <CA+HBbNGym6Q9b166n-P=h_JssOHm0yfyL73JZ+G9P81muK=g4A@mail.gmail.com>
- <78bf252c-fd5e-4a36-b1a3-ca8ed26fde7a@kernel.org>
- <CA+HBbNG+ZVD6grGDp32Ninx7H1AyEbGvP0nwc0zUv94tOV8hYg@mail.gmail.com>
- <d210552f-c8bf-4084-9317-b743075d9946@kernel.org>
- <2025122516245554f59e2e@mail.local>
- <20251227-splendid-striped-starfish-ece074@quoll>
- <CA+HBbNEqq9ZqBR88DFSSSrYw=LBzAreFC0kL88-HZCGAsOrqZw@mail.gmail.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 a/A=
-In-Reply-To: <CA+HBbNEqq9ZqBR88DFSSSrYw=LBzAreFC0kL88-HZCGAsOrqZw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+From: Naman Jain <namjain@linux.microsoft.com>
+Subject: Need inputs on hard lockups with "cat large_file.txt" use-case on 6.6
+ kernel
+To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Russell King <linux@armlinux.org.uk>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>,
+ "Thomas Gleixner, Ingo Molnar" <mingo@kernel.org>,
+ Nam Cao <namcao@linutronix.de>, Miaoqian Lin <linmq006@gmail.com>,
+ Toshiyuki Sato <fj6611ie@aa.jp.fujitsu.com>,
+ Prasanna Kumar T S M <ptsm@linux.microsoft.com>,
+ Saurabh Singh Sengar <ssengar@linux.microsoft.com>,
+ Naman Jain <namjain@linux.microsoft.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 29/12/2025 13:07, Robert Marko wrote:
->>>>>> I understand as not used by drivers? Then no ABI and there is no point
->>>>>> in putting them into bindings.
->>>>>
->>>>> It is not included by the driver directly, but it requires these exact
->>>>> indexes to be passed
->>>>> so its effectively ABI.
->>>>
->>>> How it requires the exact index? In what way? I do not see anything in
->>>> the gck driver using/relying on these values. Nothing. Please point me
->>>> to the line which directly uses these values.... or how many times I
->>>> will need to write this is not ABI?
->>>>
->>>
->>> The index here is the exact id that needs to be set in the PMC_PCR
->>> register and so it is dictated by the hardware.
->>
->> So not a binding between Linux and DTS.
->>
-> 
-> What would be your suggestion on moving forwarding regarding the clock
-> HW indexes?
+Hi,
+I am debugging a hard-lockup issue which is seen when I do "cat" of a 
+large text file (~3 MB or more) on my arm64 machine, which is based on 
+6.6.116 kernel version and is using pl011 driver for UART.
 
-The same as for every other hardware constant, like interrupts,
-registers and addresses - you use the value directly.
+I came across NBCON framework which tries to deal with such problems, 
+but it is available on later kernels, and it would not be easy for me to 
+do kernel upgrade at this moment.
 
-If you want nicer names, we moved them to DTS headers for several
-platforms (see several commits in the past).
+I wanted to reach out here for any inputs that would help me debug this 
+issue further - whether such lockups are expected, any kernel parameter, 
+or patch that could fix this, etc.
 
-Best regards,
-Krzysztof
+Thanks in advance.
+
+More details below:
+
+
+I tried below experiments, but nothing worked:
+* changing interrupt affinity of UART irq to other CPUs or group of 
+CPUs, since all the UART interrupts were landing on CPU0.
+* finding kernel cmdline parameters that can be tweaked - didn't seem to 
+be related to "cat largefile" usecase, but for controlling general 
+logging from drivers.
+* Adding touch_nmi_watchdog(), cpu_relax() in different paths in the driver.
+* adding handle_sysrq('l') in hardlockup handler to get CPU call stacks, 
+or enable hardlockup_all_cpu_backtrace, but did not get call stacks of 
+stuck CPUs.
+
+
+Kernel cmdline:
+
+console=ttyAMA0 earlycon=pl011,mmio32,0xFF000000,115200n8 reboot=w 
+ima_hash=sha384 systemd.show_status=false ovlboot.bootdevice=E-MMC 
+root=/dev/ram rw sysctl.kernel.printk_ratelimit=30 
+sysctl.kernel.printk_ratelimit_burst=75 ima_policy=critical_data 
+rcupdate.rcu_expedited=1 systemd.gpt_auto=no systemd.ssh_auto=no fips=1 
+SYSTEMD_DEFAULT_MOUNT_RATE_LIMIT_BURST=100 systemd.log_ratelimit_kmsg=0 
+crashkernel=512M
+
+
+root@localhost:~# cat /proc/sys/kernel/printk
+2       1       1       2
+
+
+DT:
+        serial0: serial@f1920000 {
+                 bootph-all;
+                 compatible = "arm,pl011", "arm,primecell";
+                 status = "disabled";   -> enabled later in board
+                 reg = <0 0xf1920000 0 0x1000>;
+                 interrupts = <0 25 4>;
+                 reg-io-width = <4>;
+                 clock-names = "uartclk", "apb_pclk";
+                 current-speed = <115200>;
+         };
+
+Regards,
+Naman
+
