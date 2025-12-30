@@ -1,253 +1,353 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yx1-f45.google.com (mail-yx1-f45.google.com [74.125.224.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C82817A2FB
-	for <linux-serial@vger.kernel.org>; Mon, 29 Dec 2025 21:04:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 871CF2CCC5
+	for <linux-serial@vger.kernel.org>; Tue, 30 Dec 2025 00:57:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767042271; cv=none; b=rqN13/e4ojH0fd9UKlNK+TmE4l/WsxB5k5s7tmXbVhmr6faX9uAm70ezBFcxY5cp+rrud4ei2wqSjFTFuwhccNVdbj3DssC+cCl7VoJM+SX+kOyy5tl4oZBzwBbbjszgIk4nXuize8U0Fi2WMM4SQAv6K1Qpyzc0LaYhBVR2UNw=
+	t=1767056228; cv=none; b=RH6RCgR/VJvde7/4ZQcYAtutOjpcv64j0H9KX5iqhFejtz68Q7WO209KYlPbFzp0LC0ETTaaRBvqhVtsEtpxFERZ/ApvRe544YZJM2Uk4ox7djBxmUwXVEtPUwTHnHaQ7lH2CFHjfK0dwEMwUPJcO4GtYL3ECUQqvTxOHF0pT24=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767042271; c=relaxed/simple;
-	bh=VPcL8vkH9O4bIoTHMikGZ+Km+0YEgXbIGTip7DlBqqg=;
-	h=Date:From:To:Cc:Subject:Message-ID; b=UoCq+XPy0YWrHoIa4Pl7SUXU2ELw3N199/nLi+gJRGMM8vZuEUK4El2cqgfCBnrUFrQbdMy4SDN6TL0y5OIsHluqb0w3tAIiqRjQ6u4nAQ0JKf30UVFeaox5Hx9zqK3nnCYd7mZXbfm7ysuQ4tKQl6zbk+CIQvrJUS5R3tzqR7w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LAVVun5s; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1767056228; c=relaxed/simple;
+	bh=sE8b3IumfaKFKJQLuFVtn5oJy+2Nb8sWyrgWfQ95I8w=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=clRFpw3CydXKUDP2UyUuRd8vhC8/Iu4hbdvF59GxCMjdMXn7NVG6wCs21zk3Zsg22Lh/WxCI7bsB0dPbHhwmQ6aysNPn6q0XemsDM6uhr/zZuLxeyDesJRWMIo7QKiUWRRyii43vXWp1GNuhdQwRpGMG0YB5JQJ/+uxBqVkKf5Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com; spf=pass smtp.mailfrom=riscstar.com; dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b=bvuT3QiX; arc=none smtp.client-ip=74.125.224.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=riscstar.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LAVVun5s"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1767042269; x=1798578269;
-  h=date:from:to:cc:subject:message-id;
-  bh=VPcL8vkH9O4bIoTHMikGZ+Km+0YEgXbIGTip7DlBqqg=;
-  b=LAVVun5shITPgSZYPhmdREQ8RlhtcpDennxQ/0BwDQovSzzahLW7yiVJ
-   mEV9nZDFfq6ukWBtC46fEeH0hMuTNSaDVCHlBURwdUbGBxsVY8nZ8xvO/
-   1POaBUaP6lA+NQO60sOngE/wM+C+tc1RLc8nPH99s/4BMM9lcb49Bs+63
-   mt1t7U0eAyq1w4uQamDEBQHE+zzKHH6apCz705HxNCTUqvZ0i2tUsdOQJ
-   SVkhNdvbNwriAzjhhI3U/IQGuSKNz/u83lCUf0ddodAUbC7voOJuouTuP
-   uukoxNZ4KKdeaAoTe+wkbI6/2klOy8Ox+qSHR33JXD8Lnv/gFzc9TrnQj
-   w==;
-X-CSE-ConnectionGUID: BPsLv9quSgW60/MA7SRIzA==
-X-CSE-MsgGUID: vGXxQ57dTc2T5//SfHWZ5w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11656"; a="78954268"
-X-IronPort-AV: E=Sophos;i="6.21,186,1763452800"; 
-   d="scan'208";a="78954268"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Dec 2025 13:04:28 -0800
-X-CSE-ConnectionGUID: CMZINDRdQMaX035mMXZ64w==
-X-CSE-MsgGUID: KP55fP/8R2ieR/ZctVvx1A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,186,1763452800"; 
-   d="scan'208";a="232071903"
-Received: from lkp-server02.sh.intel.com (HELO dd3453e2b682) ([10.239.97.151])
-  by fmviesa001.fm.intel.com with ESMTP; 29 Dec 2025 13:04:25 -0800
-Received: from kbuild by dd3453e2b682 with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1vaKPC-0000000081b-1Azj;
-	Mon, 29 Dec 2025 21:04:01 +0000
-Date: Tue, 30 Dec 2025 04:58:21 +0800
-From: kernel test robot <lkp@intel.com>
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 322fc12949d2658da8c6b2866fffcb1daa7da019
-Message-ID: <202512300416.ZjjNV8Xr-lkp@intel.com>
-User-Agent: s-nail v14.9.25
+	dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b="bvuT3QiX"
+Received: by mail-yx1-f45.google.com with SMTP id 956f58d0204a3-6446c924f9eso8514464d50.1
+        for <linux-serial@vger.kernel.org>; Mon, 29 Dec 2025 16:57:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=riscstar-com.20230601.gappssmtp.com; s=20230601; t=1767056225; x=1767661025; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=2QaQUqBrCThJUkV4NZc52M6yJ8UuzgbQbqNLvgQLbZA=;
+        b=bvuT3QiXPCjf2InNu2DEXRFatHJmdGfwNE6fdr3vMgZVE0kqWgS/rAlZjeubB53b9q
+         UT5AXS2HUlHA/SgTTT4ufM8OcOPUELCt3jHghKltvMupQnV4AoLOrbRNFmwoLOCFRTTU
+         tggKH8fF7BBHhm5pfb4IjstNhR7skphWZ6M2QXR5fWudlgRmhXzXpbM6HBZuSYNiJryH
+         BwtMLNweAIK9zq58abxjfkrOZ96LxCRMUz5JkOlU4nQZ25ArXwe+MeDj1gbtJhzEPiM0
+         eAj+KPw0HG5BwbqB4+2uJNzsWMB+yWXsKtcro15N0X6/gjnM1OjUPS0QURFjXlps4YuK
+         JQpQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1767056225; x=1767661025;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=2QaQUqBrCThJUkV4NZc52M6yJ8UuzgbQbqNLvgQLbZA=;
+        b=o1v3dB4BbWJCS6V1EjUY9ENekgJrjczMGzca+CxO2MjNTGttXaeL9iJyE9LIikfJDN
+         UWRh5laOmrdNtXRZpxi7rCKOsk2yk3suIioVGxrK8seDuCm6N8T/BKZ4byY40nbq/Dht
+         DAYut1SAfJJOjtoAyO6djNfaH/KioOvmcROcqYIY+c77e/Uj7m7Up4Nn8DCYM5hLIu+l
+         xcA/QsY4vb9AJnfNWcft2jlFkQangmwyw1AZUZK73Nnl7fKqkW952WS1K8UFDQOjXqIa
+         8m52CKIEDeNF44b22D8TWCpjmjAKetMhPjs2uU6v0kEQ/cYPMvQjosslZdtfjNddQWp9
+         c0JQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWXFQsXVUWL4GD8v5yDlr8JUOp31jB8Pc9HpMQjNQZ9cbIV3/gCdeON4tASCy0F6RwcP5E4K5kjMOpBtCQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwniTQVp2ieBuFaWFQ5j0BwJGUZWe/nIe4EP1PoTTEat5BL6pqJ
+	IMdEl3oQeO/vRKxdM6WnUIsKgmigAzd8FCSx/SNjdkZw5dSYBndJyVBcLT+X2rWDb8fzqRBCIfD
+	/+JCqWXE2HHGKd5KzKUEt8yVLnu8TqC7/bMs0foEUiA==
+X-Gm-Gg: AY/fxX4rJ+p14USlnF3TdpdAp6z+r2cLPl8osPMyGDJum9cce5q+NSLhxhy4j3an5WE
+	n96bBQxn2SVDEKsv1ofBdn1BND9nfy0llIMl4shw1Trql6V/n86353yr9DvQw/+cljQe7cSedMv
+	MWT524mprtwdVGZ9x6X+s5+bG7nGC0K2V0rfOfbjp+zlIx+tjiqgWdjxtdXwxQfATASQSv5obKH
+	C7+2c5KYqQU0kYGSkI1XUxpToIXes83YkqlOIpkIUkpqjqMkHlxghfS4NvfKf3KcaVGAXBiDJ3h
+	UvFkiEqadRjy+/56iGJ7VoLfjj63fGlZteXF5JAL5ZwI
+X-Google-Smtp-Source: AGHT+IGtgvmkjxjySHzrMKMzf7ydD2MyhqhUqgAeNk1vTThMPHHyGCMfOECW0tMt6TrETjysrldkzMADoeZ+r5ghL4Q=
+X-Received: by 2002:a05:690e:1509:b0:63f:b9b3:9c3 with SMTP id
+ 956f58d0204a3-6466a899e88mr23263087d50.31.1767056225455; Mon, 29 Dec 2025
+ 16:57:05 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+References: <20251222-k3-basic-dt-v2-0-3af3f3cd0f8a@riscstar.com>
+ <20251222-k3-basic-dt-v2-8-3af3f3cd0f8a@riscstar.com> <8851c155-300a-4241-a5be-5163ba54e47c@riscstar.com>
+ <CAH1PCMatKR4rHuBdw0fih5P8naE=KU4Vp5-KNjeDeO-LsEe81g@mail.gmail.com> <50559ab9-c537-4796-9538-495bf3d14069@riscstar.com>
+In-Reply-To: <50559ab9-c537-4796-9538-495bf3d14069@riscstar.com>
+From: Guodong Xu <guodong@riscstar.com>
+Date: Tue, 30 Dec 2025 08:56:54 +0800
+X-Gm-Features: AQt7F2r30p17rJXlEGFv4xhSDXFsf2rOy_LSxq4J2RPG4AjiELxrr4KTvSbpnj0
+Message-ID: <CAH1PCMYX8RSy6pdUwANycxzjX_sfrnvjOFVysAFMFsv2Q8P3jw@mail.gmail.com>
+Subject: Re: [PATCH v2 08/13] dt-bindings: riscv: Add descriptions for Za64rs,
+ Ziccamoa, Ziccif, and Zicclsm
+To: Alex Elder <elder@riscstar.com>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>, 
+	Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
+	Alexandre Ghiti <alex@ghiti.fr>, Yixun Lan <dlan@gentoo.org>, 
+	Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, 
+	Samuel Holland <samuel.holland@sifive.com>, Anup Patel <anup@brainfault.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Lubomir Rintel <lkundrak@v3.sk>, Yangyu Chen <cyy@cyyself.name>, 
+	Paul Walmsley <paul.walmsley@sifive.com>, Conor Dooley <conor@kernel.org>, 
+	Heinrich Schuchardt <xypron.glpk@gmx.de>, Kevin Meng Zhang <zhangmeng.kevin@linux.spacemit.com>, 
+	Andrew Jones <ajones@ventanamicro.com>, devicetree@vger.kernel.org, 
+	linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org, 
+	spacemit@lists.linux.dev, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 322fc12949d2658da8c6b2866fffcb1daa7da019  Merge 6.19-rc3 into tty-next
+On Mon, Dec 29, 2025 at 7:50=E2=80=AFAM Alex Elder <elder@riscstar.com> wro=
+te:
+>
+> On 12/27/25 10:10 PM, Guodong Xu wrote:
+> > Hi, Alex, Conor
+> >
+> > On Sat, Dec 27, 2025 at 5:28=E2=80=AFAM Alex Elder <elder@riscstar.com>=
+ wrote:
+> >>
+> >> On 12/22/25 7:04 AM, Guodong Xu wrote:
+> >>> Add descriptions for four extensions: Za64rs, Ziccamoa, Ziccif, and
+> >>> Zicclsm. These extensions are ratified in RISC-V Profiles Version 1.0
+> >>> (commit b1d806605f87 "Updated to ratified state.").
+> >>
+> >> I think stating the RISC-V profiles commit ID here (in the commit
+> >> header) is good.
+> >>
+> >> I do *not* think it's necessary to include it in the descriptions
+> >> for the extensions, below, but I seem to be late to the party in
+> >> expressing this opinion...
+> >>
+> >> That commit ID is related to this repository:
+> >>     https://github.com/riscv/riscv-profiles.git
+> >>
+> >> I have a few other comments below but generally I think what you
+> >> did looks good.  I have one overall question though.
+> >>
+> >>> They are introduced as new extension names for existing features and
+> >>> regulate implementation details for RISC-V Profile compliance. Accord=
+ing
+> >>> to RISC-V Profiles Version 1.0 and RVA23 Profiles Version 1.0, they a=
+re
+> >
+> > Thank you for the review.
+> >
+> > Together with the filenames, I also listed the Version numbers.
+> >
+> > These are officially released versions of profile documents. I mean the=
+y
+> > won't be changed without modifying the version number.
+> >
+> >>> mandatory for the following profiles:
+> >>>
+> >>>    - za64rs: Mandatory in RVA22U64, RVA23U64
+> >>>    - ziccamoa: Mandatory in RVA20U64, RVA22U64, RVA23U64
+> >>>    - ziccif: Mandatory in RVA20U64, RVA22U64, RVA23U64
+> >>>    - zicclsm: Mandatory in RVA20U64, RVA22U64, RVA23U64
+> >>
+> >> I did not verify your statements about where these are
+> >> optional and mandatory, but I assume they're correct.
+> >
+> > Yes they are correct. As far as what stated in the two profile document=
+s.
+> >
+> >>
+> >>> Since Ziccamoa depends on the 'A' extension, add a schema check to
+> >>> enforce this dependency.
+> >>
+> >> All of these extensions are related to atomic operations, right?
+> >> Don't *all* of them (not just Ziccamoa) depend on the A extension?
+> >
+> >
+> > Za64rs and Zicclsm: no, they are not 'A'. They are cache related.
+>
+> Isn't a Za64rs reservation set related to atomic operations,
+> though?  They are related to load-reserved/store conditional
+> instructions, which are introduced in the atomic instructions
+> section.
 
-elapsed time: 725m
+Yes, you are right. Let me update the relationship:
+Za64rs defines a hard's reservation set implementation detail.
 
-configs tested: 176
-configs skipped: 2
+It is consumed by two extensions: Zalrsc and Zawrs.
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+Za64rs -> Zalrsc -> A
+Za64rs -> Zawrs -> Zalrsc -> A
 
-tested configs:
-alpha                             allnoconfig    gcc-15.1.0
-alpha                            allyesconfig    gcc-15.1.0
-alpha                               defconfig    gcc-15.1.0
-arc                              allmodconfig    gcc-15.1.0
-arc                               allnoconfig    gcc-15.1.0
-arc                              allyesconfig    gcc-15.1.0
-arc                          axs103_defconfig    gcc-15.1.0
-arc                                 defconfig    gcc-15.1.0
-arc                            hsdk_defconfig    gcc-15.1.0
-arc                   randconfig-001-20251229    gcc-13.4.0
-arc                   randconfig-002-20251229    gcc-8.5.0
-arm                               allnoconfig    clang-22
-arm                              allyesconfig    gcc-15.1.0
-arm                                 defconfig    clang-22
-arm                            dove_defconfig    gcc-15.1.0
-arm                            mps2_defconfig    clang-22
-arm                        multi_v5_defconfig    gcc-15.1.0
-arm                   randconfig-001-20251229    gcc-15.1.0
-arm                   randconfig-002-20251229    gcc-12.5.0
-arm                   randconfig-003-20251229    clang-22
-arm                   randconfig-004-20251229    gcc-15.1.0
-arm                         wpcm450_defconfig    gcc-15.1.0
-arm64                            allmodconfig    clang-19
-arm64                             allnoconfig    gcc-15.1.0
-arm64                               defconfig    gcc-15.1.0
-arm64                 randconfig-001-20251229    clang-22
-arm64                 randconfig-002-20251229    clang-22
-arm64                 randconfig-003-20251229    gcc-10.5.0
-arm64                 randconfig-004-20251229    gcc-9.5.0
-csky                             allmodconfig    gcc-15.1.0
-csky                              allnoconfig    gcc-15.1.0
-csky                                defconfig    gcc-15.1.0
-csky                  randconfig-001-20251229    gcc-15.1.0
-csky                  randconfig-002-20251229    gcc-15.1.0
-hexagon                          allmodconfig    clang-17
-hexagon                           allnoconfig    clang-22
-hexagon                             defconfig    clang-22
-hexagon               randconfig-001-20251229    clang-22
-hexagon               randconfig-002-20251229    clang-22
-i386                             allmodconfig    gcc-14
-i386                              allnoconfig    gcc-14
-i386                             allyesconfig    gcc-14
-i386        buildonly-randconfig-001-20251229    clang-20
-i386        buildonly-randconfig-002-20251229    gcc-14
-i386        buildonly-randconfig-003-20251229    gcc-13
-i386        buildonly-randconfig-004-20251229    clang-20
-i386        buildonly-randconfig-005-20251229    gcc-14
-i386        buildonly-randconfig-006-20251229    gcc-14
-i386                                defconfig    clang-20
-i386                  randconfig-001-20251229    gcc-14
-i386                  randconfig-002-20251229    clang-20
-i386                  randconfig-003-20251229    clang-20
-i386                  randconfig-004-20251229    clang-20
-i386                  randconfig-005-20251229    clang-20
-i386                  randconfig-006-20251229    clang-20
-i386                  randconfig-007-20251229    clang-20
-i386                  randconfig-011-20251229    gcc-14
-i386                  randconfig-012-20251229    gcc-14
-i386                  randconfig-013-20251229    gcc-14
-i386                  randconfig-014-20251229    gcc-14
-i386                  randconfig-015-20251229    gcc-14
-i386                  randconfig-016-20251229    gcc-14
-i386                  randconfig-017-20251229    gcc-14
-loongarch                        alldefconfig    clang-20
-loongarch                        allmodconfig    clang-19
-loongarch                         allnoconfig    clang-22
-loongarch                           defconfig    clang-19
-loongarch             randconfig-001-20251229    clang-18
-loongarch             randconfig-002-20251229    clang-18
-m68k                             allmodconfig    gcc-15.1.0
-m68k                              allnoconfig    gcc-15.1.0
-m68k                             allyesconfig    gcc-15.1.0
-m68k                                defconfig    gcc-15.1.0
-m68k                        mvme147_defconfig    gcc-15.1.0
-m68k                            q40_defconfig    gcc-15.1.0
-microblaze                        allnoconfig    gcc-15.1.0
-microblaze                       allyesconfig    gcc-15.1.0
-microblaze                          defconfig    gcc-15.1.0
-mips                             allmodconfig    gcc-15.1.0
-mips                              allnoconfig    gcc-15.1.0
-mips                             allyesconfig    gcc-15.1.0
-mips                       bmips_be_defconfig    gcc-15.1.0
-mips                           jazz_defconfig    clang-17
-mips                          rm200_defconfig    gcc-15.1.0
-nios2                            allmodconfig    gcc-11.5.0
-nios2                             allnoconfig    gcc-11.5.0
-nios2                               defconfig    gcc-11.5.0
-nios2                 randconfig-001-20251229    gcc-11.5.0
-nios2                 randconfig-002-20251229    gcc-11.5.0
-openrisc                         allmodconfig    gcc-15.1.0
-openrisc                          allnoconfig    gcc-15.1.0
-openrisc                            defconfig    gcc-15.1.0
-parisc                           allmodconfig    gcc-15.1.0
-parisc                            allnoconfig    gcc-15.1.0
-parisc                           allyesconfig    gcc-15.1.0
-parisc                              defconfig    gcc-15.1.0
-parisc                randconfig-001-20251229    gcc-13.4.0
-parisc                randconfig-002-20251229    gcc-13.4.0
-parisc64                            defconfig    gcc-15.1.0
-powerpc                          allmodconfig    gcc-15.1.0
-powerpc                           allnoconfig    gcc-15.1.0
-powerpc                    mvme5100_defconfig    gcc-15.1.0
-powerpc               randconfig-001-20251229    gcc-12.5.0
-powerpc               randconfig-002-20251229    clang-18
-powerpc64                        alldefconfig    clang-22
-powerpc64             randconfig-001-20251229    clang-20
-powerpc64             randconfig-002-20251229    clang-22
-riscv                            allmodconfig    clang-22
-riscv                             allnoconfig    gcc-15.1.0
-riscv                            allyesconfig    clang-16
-riscv                               defconfig    clang-22
-riscv                 randconfig-001-20251229    gcc-15.1.0
-riscv                 randconfig-002-20251229    clang-20
-s390                             allmodconfig    clang-18
-s390                              allnoconfig    clang-22
-s390                             allyesconfig    gcc-15.1.0
-s390                                defconfig    clang-22
-s390                  randconfig-001-20251229    clang-22
-s390                  randconfig-002-20251229    gcc-12.5.0
-sh                               allmodconfig    gcc-15.1.0
-sh                                allnoconfig    gcc-15.1.0
-sh                               allyesconfig    gcc-15.1.0
-sh                                  defconfig    gcc-15.1.0
-sh                    randconfig-001-20251229    gcc-10.5.0
-sh                    randconfig-002-20251229    gcc-15.1.0
-sh                           se7750_defconfig    gcc-15.1.0
-sparc                             allnoconfig    gcc-15.1.0
-sparc                               defconfig    gcc-15.1.0
-sparc                 randconfig-001-20251229    gcc-13.4.0
-sparc                 randconfig-002-20251229    gcc-15.1.0
-sparc64                          allmodconfig    clang-22
-sparc64                             defconfig    clang-20
-sparc64               randconfig-001-20251229    clang-20
-sparc64               randconfig-002-20251229    gcc-8.5.0
-um                               allmodconfig    clang-19
-um                                allnoconfig    clang-22
-um                               allyesconfig    gcc-14
-um                                  defconfig    clang-22
-um                             i386_defconfig    gcc-14
-um                    randconfig-001-20251229    gcc-14
-um                    randconfig-002-20251229    clang-22
-um                           x86_64_defconfig    clang-22
-x86_64                           allmodconfig    clang-20
-x86_64                            allnoconfig    clang-20
-x86_64                           allyesconfig    clang-20
-x86_64      buildonly-randconfig-001-20251229    clang-20
-x86_64      buildonly-randconfig-002-20251229    clang-20
-x86_64      buildonly-randconfig-003-20251229    gcc-14
-x86_64      buildonly-randconfig-004-20251229    clang-20
-x86_64      buildonly-randconfig-005-20251229    gcc-14
-x86_64      buildonly-randconfig-006-20251229    gcc-13
-x86_64                              defconfig    gcc-14
-x86_64                randconfig-001-20251229    gcc-14
-x86_64                randconfig-002-20251229    clang-20
-x86_64                randconfig-003-20251229    gcc-14
-x86_64                randconfig-004-20251229    clang-20
-x86_64                randconfig-005-20251229    gcc-14
-x86_64                randconfig-006-20251229    gcc-14
-x86_64                randconfig-011-20251229    clang-20
-x86_64                randconfig-012-20251229    gcc-14
-x86_64                randconfig-013-20251229    clang-20
-x86_64                randconfig-014-20251229    clang-20
-x86_64                randconfig-015-20251229    clang-20
-x86_64                randconfig-016-20251229    gcc-14
-x86_64                randconfig-071-20251229    clang-20
-x86_64                randconfig-072-20251229    gcc-14
-x86_64                randconfig-073-20251229    gcc-13
-x86_64                randconfig-074-20251229    clang-20
-x86_64                randconfig-075-20251229    clang-20
-x86_64                randconfig-076-20251229    clang-20
-x86_64                          rhel-9.4-rust    clang-20
-xtensa                            allnoconfig    gcc-15.1.0
-xtensa                           allyesconfig    gcc-15.1.0
-xtensa                       common_defconfig    gcc-15.1.0
-xtensa                randconfig-001-20251229    gcc-8.5.0
-xtensa                randconfig-002-20251229    gcc-15.1.0
+I would say maybe all these relationships deserve to be validated in
+cpufeature.c (so far, they are not.)
 
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+BR,
+Guodong Xu
+
+>
+> I was mistaken about Zicclsm, that's related to unaligned
+> accesses, but does not apply to atomic operations.
+>
+> > Ziccrse and Ziccamoa: yes, they are 'A' related.
+> >
+> > Ziccrse specifies the main memory must support "RsrvEventual", which is=
+ one
+> > (totally there are four) of the support level for Load-Reserved/
+> > Store-Conditional (LR/SC) atomic instructions.
+> >
+> > And in RVA profiles, two named features (exts) are added:
+> > Ziccrse: which further define the level of LR/SC operations being suppo=
+rted.
+> > Ziccamoa: which further define the level of AMOs instructions being sup=
+ported.
+> >
+> >
+> > We already know that "A" =3D Zaamo + Zalrsc;
+> >
+> > In summary, the dependencies among these extensions are:
+> > Ziccrse -> Zalrsc -> A;
+> > Ziccamoa -> Zaamo -> A;
+> >
+> >> Furthermore, the A extension is already mandated by RVA23U64, so
+> >> is it really necessary to add this logic?
+> >
+> > Hi, Conor
+> >
+> > What do you think? I am kind of agree with Alex to remove the schema
+> > checking logic.
+> >
+> > Leaving the dependency check to riscv/cpufeature.c, let the .validate c=
+all
+> > do the job. If you agree, I can remove the schema checking logic on Zic=
+camoa
+> > and A in my next version.
+>
+> Yes I think this is a better way to handle it.  Conor?
+>
+> > Btw, cpufeature.c validate() deserves another patch/patchset.
+> > I'll be happy to add that if we reach a consensus here.
+>
+> Yes I think you should do this once there is concensus.
+>
+>
+>
+> >
+> >>
+> >>
+> >>> Signed-off-by: Guodong Xu <guodong@riscstar.com>
+> >>> ---
+> >>> v2: New patch.
+> >>> ---
+> >>>    .../devicetree/bindings/riscv/extensions.yaml      | 34 ++++++++++=
+++++++++++++
+> >>>    1 file changed, 34 insertions(+)
+> >>>
+> >>> diff --git a/Documentation/devicetree/bindings/riscv/extensions.yaml =
+b/Documentation/devicetree/bindings/riscv/extensions.yaml
+> >>> index 385e1deb23996d294e7662693f1257f910a6e129..a6b9d7e3edf86ecfb117b=
+a72e295ef097bdc9831 100644
+> >>> --- a/Documentation/devicetree/bindings/riscv/extensions.yaml
+> >>> +++ b/Documentation/devicetree/bindings/riscv/extensions.yaml
+> >>> @@ -237,6 +237,12 @@ properties:
+> >>>                as ratified at commit 4a69197e5617 ("Update to ratifie=
+d state") of
+> >>>                riscv-svvptc.
+> >>>
+> >>> +        - const: za64rs
+> >>> +          description:
+> >>> +            The standard Za64rs extension for reservation set size o=
+f at most
+> >>> +            64 bytes, as ratified in RISC-V Profiles Version 1.0, wi=
+th commit
+> >>> +            b1d806605f87 ("Updated to ratified state.")
+> >>
+> >> The more complete description says:
+> >>
+> >>       Reservation sets are contiguous, naturally aligned, and a maximu=
+m
+> >>       of 64 bytes.
+> >>
+> >> But as I read on (below) I suppose using the more succinct description
+> >> from the glossary might be best, forcing people who care to go look
+> >
+> > That is exactly what I am doing.
+> >
+> >> at the reference documents.
+> >>
+> >>> +
+> >>>            - const: zaamo
+> >>>              description: |
+> >>>                The standard Zaamo extension for atomic memory operati=
+ons as
+> >>> @@ -378,6 +384,27 @@ properties:
+> >>>                in commit 64074bc ("Update version numbers for Zfh/Zfi=
+nx") of
+> >>>                riscv-isa-manual.
+> >>>
+> >>> +        - const: ziccamoa
+> >>> +          description:
+> >>> +            The standard Ziccamoa extension for main memory (cacheab=
+ility and
+> >>> +            coherence) must support all atomics in A, as ratified in=
+ RISC-V
+> >>> +            Profiles Version 1.0, with commit b1d806605f87 ("Updated=
+ to
+> >>> +            ratified state.")
+> >>
+> >> Similar comment here (but also with a similar caveat):
+> >>
+> >
+> > I am using what the RVA23 Profile defines:
+> > "Ziccamoa: Main memory supports all atomics in A"
+> >
+> > I prefer to keep it as is.
+>
+> That's fine.  I don't think I felt strongly about any of the things
+> I said about the exact wording used here.
+>
+> Thanks.
+>
+>                                         -Alex
+>
+> > BR,
+> > Guodong
+> >
+> >>     Main memory regions with both the cacheability and coherence PMAs
+> >>     must support all atomics in A.
+> >>
+> >> And I might say "the A extension", but maybe that's a bad idea.
+> >>
+> >>> +
+> >>> +        - const: ziccif
+> >>> +          description:
+> >>> +            The standard Ziccif extension for main memory (cacheabil=
+ity and
+> >>> +            coherence) instruction fetch atomicity, as ratified in R=
+ISC-V
+> >>> +            Profiles Version 1.0, with commit b1d806605f87 ("Updated=
+ to
+> >>> +            ratified state.")
+> >>> +
+> >>> +        - const: zicclsm
+> >>> +          description:
+> >>> +            The standard Zicclsm extension for main memory (cacheabi=
+lity and
+> >>> +            coherence) must support misaligned loads and stores, as =
+ratified
+> >>> +            in RISC-V Profiles Version 1.0, with commit b1d806605f87=
+ ("Updated
+> >>> +            to ratified state.")
+> >>> +
+> >>>            - const: ziccrse
+> >>>              description:
+> >>>                The standard Ziccrse extension which provides forward =
+progress
+> >>> @@ -795,6 +822,13 @@ properties:
+> >>>            then:
+> >>>              contains:
+> >>>                const: f
+> >>> +      # Ziccamoa depends on A
+> >>
+> >> Maybe more than just depends on the A extension.
+> >>
+> >>                                          -Alex
+> >>
+> >>> +      - if:
+> >>> +          contains:
+> >>> +            const: ziccamoa
+> >>> +        then:
+> >>> +          contains:
+> >>> +            const: a
+> >>>          # Zvfbfmin depends on V or Zve32f
+> >>>          - if:
+> >>>              contains:
+> >>>
+> >>
+>
