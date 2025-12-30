@@ -1,230 +1,183 @@
-Received: from mail-qk1-f194.google.com (mail-qk1-f194.google.com [209.85.222.194])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7027D19D8A8
-	for <linux-serial@vger.kernel.org>; Tue, 30 Dec 2025 17:29:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.194
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9DD02777FE;
+	Tue, 30 Dec 2025 17:37:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767115761; cv=none; b=jqWxvb5GCVFOTl32Fe8b8f78neF/RZuc546gJ6Y/1a6xhsxgYDxGQV6MxpXS3L05FTCx1ekV/y6AFgBDayEKnzX43Yh8iFHHExfBrYHSknnsU7Wl1azXUToaOGaavQujsuz1HOx1e7oFVZODY4xlkCRAFzYm+PWaRH4ZO8R0i3Q=
+	t=1767116253; cv=none; b=efr5EW3m12dvZ/4wTw+lZEPPqgM4e2htreZWyMejkAJZnS4OaZzqI6eRfd48pCEwomxJuHjRiblJcZTTbB2/DKmKVlS1nCSSQuR9cAV0FXuowJSMvlpwiURniXlLZjiQLDgQoIYZYn44+8W3oAKgaeQjh2K3j4TwULCdxPLQhjY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767115761; c=relaxed/simple;
-	bh=EGYCigrLn3174km11zrPPDHkk9dOk6f61Uivu113Aec=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=V3Xs4E1WpWelH9nIw0YVvygff+66Adozjji/WSc3v51wwLGyajGjj+nvoAsoWFFcPrLSWUILmjcHEadhyAoZfK5hVEOF5+738g+vbFtGIA62Oqqt0qnIL/u0UUdA5NhcgGqVX5GjkhNKVSe217BeLVxe+v8QZXhAFzipD1xO7KY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com; spf=pass smtp.mailfrom=riscstar.com; dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b=eUgv0fBU; arc=none smtp.client-ip=209.85.222.194
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=riscstar.com
+	s=arc-20240116; t=1767116253; c=relaxed/simple;
+	bh=ER043jVCO9ksspnoXQ3DT8YenpRNj1BgFtkwPByCQfE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=i6ItHXyX2IyzYUjjebhFsQXGBRKtkHblEE/Cl1NkYSbgFuapL9HF2KcvU3KdQy6u5G/x/vHetk2ZkzbQ0TOu3mXnH4XV4LCZslZc9fXR/tW3AEs5TRv5C9YyWNvuThS4HXWPcY7auY6YeMeOL4S6BMo3XSBtzbMojmEiNnHCmxQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=trHJTh89; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b="eUgv0fBU"
-Received: by mail-qk1-f194.google.com with SMTP id af79cd13be357-8c15e8b2f1aso639255485a.0
-        for <linux-serial@vger.kernel.org>; Tue, 30 Dec 2025 09:29:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=riscstar-com.20230601.gappssmtp.com; s=20230601; t=1767115757; x=1767720557; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ClCUh7zsnhsbA19JnDKkm5LuPYmbeU70s0bhWy9c0/U=;
-        b=eUgv0fBU7yQdLdVjlNYtKTBBdPVaWlUyg5CwuBAKLrjkXEpfXZSrYBKecXPUcV8geL
-         mTIL8Qiie3TJzdp2McTG5BCc6O6amwEQTPgiK8mdU4btylecE3menATgEqKiis+96Jeb
-         FilrAqb1PdupP740UPynxOVatGrAmUNGH19zv6pk8iF1gFuy9A9XLcv8eH7qYubzjijJ
-         mQnXZVCSXLGwSLhwqnqA6xwqCZAuo07Jjz8aTeAu0r1776Skmrjn/vbXzEe3HRDoM9mT
-         5X1eee7asDrktmApqlZUKrOv4Ud0bR/ivYI53LaxgO5Cqh0RmtGZj0/ojZjcdpG3sZrI
-         +8iA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767115757; x=1767720557;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ClCUh7zsnhsbA19JnDKkm5LuPYmbeU70s0bhWy9c0/U=;
-        b=C8mE7yXFhCduhtyNf1dLzjmiuraLC/+uIiDXS7GMbm8oKwUQryo+Al0xAHQLKNq1CV
-         cSbPcQvfDbcUqrQASQDnzwyAZVxjk0OGdthPXHKGlxek/uzAK+FdSieexVV6tPywsRhu
-         gUjn4sqk5nSzHJdl+BDCrI4sGMOtC2n99aRcjtYRxYVcgsPRrh9JeAiR1FqzydKibMuT
-         Iv2V7qLhA+naIn9L6NbbJllsz4v5aTIZ96YOtqVcLizQqm+zY49MBZmHGc0qINDc9e5l
-         0nlHR7QvPvrvNgV8dHpt8NBMr3hDZo/P1PeGHA8jnMbT0kypNTu8sDFROVe4v6CqkMhn
-         sjJA==
-X-Forwarded-Encrypted: i=1; AJvYcCXqrBOK40mq743i/8P9Z38KPLGITmvqkfFhcywzWtrzJ0Wyx7eHVB2EZuemVe/8CBUjtvQ+jOgbMGdApFg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxYd5iuMxIeit3SoCVePWH/58RESQlFXudsiA7t8YmVbaTkcuCy
-	uy+KyZB0eShcSLBYnpbta/E4MVIwZUkQOj3QzvqHy/6xiXaDQiEpTQ66C7A0jILQYm0=
-X-Gm-Gg: AY/fxX7rYiGJXGdzuKIRWwFbxgV4y1UnElCrFpEcU0v0QxLdoZLGQ0GUbHHBXqywyxB
-	gGUeJNZns0uXM9xFrlxg9j60mw8pfqAyitg2wxoRWlN2tN3LAQmyZlm/Y49uBCNG+8Iwc1Bt75g
-	wXYlHq7MBkiicxgEoh/BSHM4S/G5lHDnEcbhSkbJ0qI8inJyBnnIV0ISQ2f7qK/auG7NQU8vwTa
-	fPdDTHhxNfhoRKXMlpTlcGhiYSgQC+qV1yJSnCTZfwtvq72PQtmWhwHAj9l5WzfZ+B7SsUAanQD
-	0lt23tBTtsnUC6eFMwEwd08dySTchXNuhpgBHkvyJCc63LziCgid/qNNFBtEAwpeG5C+rKv+wOY
-	YkEBS2fNMl/70nez8w1oatQIX+vh+KRsbPvD2LDn7CrFxhAp+t+Gu4jAMkp0UB2TaryTL6zeTyJ
-	VTcB22qHwrT4T5RReYldnd0/Vpnl6DUAmYau0EmU5MQwF1O6O42zjg8ISMqFj+3w==
-X-Google-Smtp-Source: AGHT+IGPvUHSrmG9Ie9qzS3Ctu9VIUpR8C4eEU8Vq5QeEjI1H5P+1EGVldpe9Aku9nrcc2iPrnzPyg==
-X-Received: by 2002:a05:620a:4620:b0:892:a71a:c02 with SMTP id af79cd13be357-8c08f666f7dmr5034992285a.23.1767115757254;
-        Tue, 30 Dec 2025 09:29:17 -0800 (PST)
-Received: from [172.22.22.28] (c-75-72-117-212.hsd1.mn.comcast.net. [75.72.117.212])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-8c0975ee7bfsm2551055585a.51.2025.12.30.09.29.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Dec 2025 09:29:16 -0800 (PST)
-Message-ID: <dc87a3c0-8627-4328-a17a-6510ee8245ac@riscstar.com>
-Date: Tue, 30 Dec 2025 11:29:14 -0600
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="trHJTh89"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD252C4CEFB;
+	Tue, 30 Dec 2025 17:37:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1767116252;
+	bh=ER043jVCO9ksspnoXQ3DT8YenpRNj1BgFtkwPByCQfE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=trHJTh89ZZ0TlEasQyjQuvfGf3jU5D1a4C0y5jjMoIywc9mrU3sfLzjoQqpW8NgAI
+	 e5csb5YBL+JkJHJHw3JWwglX/STcIoAS+Wb1L5i2LyqYz13QgnQLrozBM/uWo8Rc8r
+	 U6ItN4iNXdSpNwdTMxFLD4M442kNyTNAQBLs/vQwyuhb80KCCa9ShIWm1wAsqSKaNh
+	 NiPbwN/XNzGGvo8pUv6GXFm7u0SUgj2qUKzLt6s8oQvQ9cpB3T1cNWxyU/uGBrS0TG
+	 Tpw+JJK5/xMBZpFcBIlLC9qYJrmla87YrKaszP8iNrAn7fRV6Oj3mE8Q3QvOgle4ai
+	 dUVR/Y0g0PLpQ==
+Date: Tue, 30 Dec 2025 17:37:25 +0000
+From: Conor Dooley <conor@kernel.org>
+To: Rob Herring <robh@kernel.org>
+Cc: Alex Elder <elder@riscstar.com>, Guodong Xu <guodong@riscstar.com>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
+	Yixun Lan <dlan@gentoo.org>,
+	Daniel Lezcano <daniel.lezcano@linaro.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Samuel Holland <samuel.holland@sifive.com>,
+	Anup Patel <anup@brainfault.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
+	Yangyu Chen <cyy@cyyself.name>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Heinrich Schuchardt <xypron.glpk@gmx.de>,
+	Kevin Meng Zhang <zhangmeng.kevin@linux.spacemit.com>,
+	Andrew Jones <ajones@ventanamicro.com>, devicetree@vger.kernel.org,
+	linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+	spacemit@lists.linux.dev, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v2 11/13] dt-bindings: riscv: Add Supm extension
+ description
+Message-ID: <20251230-budding-dimple-c34636b0ca4d@spud>
+References: <20251222-k3-basic-dt-v2-0-3af3f3cd0f8a@riscstar.com>
+ <20251222-k3-basic-dt-v2-11-3af3f3cd0f8a@riscstar.com>
+ <fc719e92-10bc-455f-b402-c93bdbf878cf@riscstar.com>
+ <20251230021306.GA3094273-robh@kernel.org>
+ <80e18a32-543a-48f5-81f2-4fa64cb8bf8c@riscstar.com>
+ <CAL_JsqK8hRsVWV6WfbZ6hF1PwFfOJhyOrpWwoOhviAgv5ZxKUw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 07/13] dt-bindings: riscv: Add B ISA extension
- description
-To: Conor Dooley <conor@kernel.org>
-Cc: Guodong Xu <guodong@riscstar.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
- Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
- Alexandre Ghiti <alex@ghiti.fr>, Yixun Lan <dlan@gentoo.org>,
- Daniel Lezcano <daniel.lezcano@linaro.org>,
- Thomas Gleixner <tglx@linutronix.de>,
- Samuel Holland <samuel.holland@sifive.com>, Anup Patel
- <anup@brainfault.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
- Yangyu Chen <cyy@cyyself.name>, Paul Walmsley <paul.walmsley@sifive.com>,
- Heinrich Schuchardt <xypron.glpk@gmx.de>,
- Kevin Meng Zhang <zhangmeng.kevin@linux.spacemit.com>,
- Andrew Jones <ajones@ventanamicro.com>, devicetree@vger.kernel.org,
- linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
- spacemit@lists.linux.dev, linux-serial@vger.kernel.org
-References: <20251222-k3-basic-dt-v2-0-3af3f3cd0f8a@riscstar.com>
- <20251222-k3-basic-dt-v2-7-3af3f3cd0f8a@riscstar.com>
- <20251222-stitch-preachy-3fab87fd6f0f@spud>
- <CAH1PCMZ7ywZ3unLy0yHYK+fFHk0y=q2cEtPnRi=qSpf=fc75rw@mail.gmail.com>
- <66c0676a-7920-4825-b916-3c00b1648a08@riscstar.com>
- <20251230-imprison-sleet-6b5a1e26d34b@spud>
-Content-Language: en-US
-From: Alex Elder <elder@riscstar.com>
-In-Reply-To: <20251230-imprison-sleet-6b5a1e26d34b@spud>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="ymaqOL8nauUqvgFe"
+Content-Disposition: inline
+In-Reply-To: <CAL_JsqK8hRsVWV6WfbZ6hF1PwFfOJhyOrpWwoOhviAgv5ZxKUw@mail.gmail.com>
 
-On 12/30/25 11:09 AM, Conor Dooley wrote:
-> On Fri, Dec 26, 2025 at 03:28:25PM -0600, Alex Elder wrote:
->> On 12/23/25 12:51 AM, Guodong Xu wrote:
->>> Hi, Conor
->>>
->>> On Tue, Dec 23, 2025 at 5:17 AM Conor Dooley <conor@kernel.org> wrote:
->>>>
->>>> On Mon, Dec 22, 2025 at 09:04:17PM +0800, Guodong Xu wrote:
->>>>> Add description of the single-letter "B" extennsion for Bit Manipulation.
->>>>> B is mandatory for RVA23U64.
->>>>>
->>>>> The B extension is ratified in the 20240411 version of the unprivileged
->>>>> ISA specification. According to the ratified spec, "the B standard
->>>>> extension comprises instructions provided by the Zba, Zbb, and Zbs
->>>>> extensions.
->>>>>
->>>>> Hence add a schema check rule to enforce that B implies Zba, Zbb and Zbs.
->>>>>
->>>>> Signed-off-by: Guodong Xu <guodong@riscstar.com>
->>>>> ---
->>>>> v2: New patch.
->>>>> ---
->>>>>    .../devicetree/bindings/riscv/extensions.yaml         | 19 +++++++++++++++++++
->>>>>    1 file changed, 19 insertions(+)
->>>>>
->>>>> diff --git a/Documentation/devicetree/bindings/riscv/extensions.yaml b/Documentation/devicetree/bindings/riscv/extensions.yaml
->>>>> index 565cb2cbb49b552959392810a9b731b43346a594..385e1deb23996d294e7662693f1257f910a6e129 100644
->>>>> --- a/Documentation/devicetree/bindings/riscv/extensions.yaml
->>>>> +++ b/Documentation/devicetree/bindings/riscv/extensions.yaml
->>>>> @@ -109,6 +109,13 @@ properties:
->>>>>                The standard C extension for compressed instructions, as ratified in
->>>>>                the 20191213 version of the unprivileged ISA specification.
->>>>>
->>>>> +        - const: b
->>>>> +          description:
->>>>> +            The standard B extension for bit manipulation instructions, as
->>>>> +            ratified in the 20240411 version of the unprivileged ISA
->>>>> +            specification. The B standard extension comprises instructions
->>>>> +            provided by the Zba, Zbb, and Zbs extensions.
->>>>> +
->>>>>            - const: v
->>>>>              description:
->>>>>                The standard V extension for vector operations, as ratified
->>>>> @@ -735,6 +742,18 @@ properties:
->>>>>            then:
->>>>>              contains:
->>>>>                const: f
->>>>> +      # b comprises the following extensions
->>>>> +      - if:
->>>>> +          contains:
->>>>> +            const: b
->>>>
->>>> What's the value in adding b, if it depends on having all 3 of the
->>>> components defined individually too? Currently all "superset" types of
->>>> extensions are permitted without their component parts also being defined,
->>>> this doesn't follow convention and therefore needs to be explained.
->>>>
->>>> You obviously need this construct because the kernel does not understand
->>>> "b", and even if you added support for interpreting "b" to the kernel
->>>> this is probably still needed to make sure the ABI is maintained for
->>>> anything importing a devicetree from the kernel.
->>>
->>> Yes, exactly. Unlike other single-letter extensions, "b" was ratified
->>> (Apr/2024) much later than its components zba/zbb/zbs (Jun/2021).
->>> Existing software and the kernel already expect these explicit component
->>> strings, so enforcing this dependency ensures cores declaring "b" will
->>> also be correctly understood by older software that only looks for
->>> zba/zbb/zbs.
->>
->> I might be misunderstanding you, but I don't think extension "b"
->> should *require* the other three extensions.  Instead, the "b"
->> extension should be considered *equivalent* to the other three.
->> That's what I understand it to mean, anyway.
->>    https://github.com/riscv/riscv-b
->>
->> There's no point in supporting "b" in devicetree to represent
->> the others if it also requires the others to be present.
-> 
-> The dependency can be go both ways, to also make specifying "b" mandatory
-> when the three components are. That probably produces the most helpful
-> devicetree ultimately.
 
-What about DT files that specified zba+zbb+zbs before "b" was
-ratified?
+--ymaqOL8nauUqvgFe
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
->> I think that, instead, "b", "zba", "zbb", and "zbs" should all
->> be allowed.
-> 
->> I might even go further and harden the requirement, saying that
->> if you specify "b" you should *not* specify "zba", "zbb", or "zbs".
->> But that might not be normal practice, and it's not necessary
->> because they aren't in conflict.
-> 
-> I disagree completely with this "even further", since that's potentially
-> actively harmful to importers of kernel devicetrees.
+On Tue, Dec 30, 2025 at 09:21:56AM -0600, Rob Herring wrote:
+> On Mon, Dec 29, 2025 at 9:14=E2=80=AFPM Alex Elder <elder@riscstar.com> w=
+rote:
+> >
+> > On 12/29/25 8:13 PM, Rob Herring wrote:
+> > > On Fri, Dec 26, 2025 at 03:28:47PM -0600, Alex Elder wrote:
+> > >> On 12/22/25 7:04 AM, Guodong Xu wrote:
+> > >>> Add description for the Supm extension. Supm indicates support for =
+pointer
+> > >>> masking in user mode. Supm is mandatory for RVA23S64.
+> > >>>
+> > >>> The Supm extension is ratified in commit d70011dde6c2 ("Update to r=
+atified
+> > >>> state") of riscv-j-extension.
+> > >>>
+> > >>> Supm depends on either Smnpm or Ssnpm, so add a schema check to enf=
+orce
+> > >>> this dependency.
+> > >>
+> > >> I have the same general question on this, about whether it's really
+> > >> necessary for the DT binding to enforce these requirements.  The
+> > >> RISC-V specifications are what truly defines their meaning, so I
+> > >> don't really see why the DT framework should need to enforce them.
+> > >> (That said, I'm sure there are other cases where DT enforces things
+> > >> it shouldn't have to.)
+> > >
+> > > Does the specification have some way to check it? What happens if a DT
+> > > is wrong? Are you going to require a DT update to make things right? =
+Or
+> > > the kernel has to work-around the error? Neither is great. So having
+> > > this as a schema makes sense to prevent either scenario.
+> >
+> > I'm really glad you weighed in.  I actually have several questions
+> > related to RISC-V extensions and DT.  But for now I'll focus on
+> > just this...
+> >
+> > To answer your first question, I'm not sure how the specification
+> > is "checked", or what "it" is that you're asking about for that
+> > matter.  Also I think we have to be clear about what "wrong" means.
+> >
+> > RISC-V is defined by a (large and growing) set of specifications
+> > that are developed through a well-defined process.  When a spec
+> > is *ratified* it is committed, and it won't be changed.  These
+> > specifications are ultimately *the* definition of RISC-V
+> > compliance.
+> >
+> > I assumed the "wrong" you're talking about is a DTS/DTB that has
+> > been committed but somehow does not match what a RISC-V spec
+> > says, but I might be mistaken.
+>=20
+> That's correct.
+>=20
+> > Anyway, we can flip that around and have a similar problem:  What
+> > if we define the DT binding in such a way that it doesn't match
+> > the RISC-V spec?  The (ratified) RISC-V spec is right.
+>=20
+> Sure. Any time there is more than 1 source of truth, they could be
+> mismatched. But it is 1 spec and 1 schema to compare, not N DTS files.
+> Checking the schema matches the spec is much easier than reviewing
+> every new DTS file.
 
-This is related to one of the things I mentioned to Rob that I
-wanted to discuss.
+The objective is not to define things with divergent meanings anyway,
+only to say "this string is exactly this version of this extension",
+so that if some other version of an extension comes along we have a way
+to differentiate. We didn't before and that became problematic for both
+standard extensions and vendor specific stuff. You'll note we don't look
+to define anything ourselves, just cite the spec that provides the
+definitions.
 
-This type of "equivalent" extension is problematic for DT, or I
-guess, it doesn't really add any value.  I'm sure the people
-ratifying "b" to be equivalent to "zba+zbb+zbs" intend for it
-to simplify how the supported extensions are represented.
+> The only true fix is to make the spec machine readable.
+>=20
+> > My thought was that we should have software do the verification,
+> > and recommend the software (e.g. arch/riscv/kernel/cpufeature.c
+> > in Linux) be updated to verify things before committing to a
+> > DT binding.
+>=20
+> That moves validation from build time to run time. How is that better?
+> And what about other OSs?
+>=20
+> I'm very much of the opinion that it is not the kernel's job to
+> validate the DT. It obviously has not done a very good job given
+> issues we find with schemas. It's fine to have some checks in this
+> case if the kernel can't function (or use/enable the extension)
+> without the dependent extensions, but there are lots of classes of
+> errors the kernel doesn't need to care about.
 
-But it actually complicates things for DT.  If you're going
-to support just "b" (which would be simpler and more concise)
-then there needs to be logic that treats the two possibilities
-as equivalent.  But old software won't recognize new DT files
-that contain only the newer (e.g. "b") extension.
+By and large what's in cpufeature.c is there to turn extensions off
+based on kconfig choices (vector support enabled etc) or kernel design
+decisions (kernel requiring both d and f extensions for fpu support). I
+don't think there's anything there that doesn't assume that the
+devicetree is correct. For my money, it's much simpler to describe
+dependencies in a binding than add more code to the kernel that tries to
+figure out dependencies at runtime.
 
-So I agree, there's active harm in doing what I suggested.
 
-But why even bother supporting "b" if you have to *also*
-support "zba+zbb+zbs" if you use it?  It adds the possibility
-of new errors ("b" without "zbs", for example), while not
-really enabling or representing anything new.
+--ymaqOL8nauUqvgFe
+Content-Type: application/pgp-signature; name="signature.asc"
 
-> If "b" is to be allowed, I'm only in favour if having it requires the
-> component parts.
+-----BEGIN PGP SIGNATURE-----
 
-I'd opt for ignoring the "b" extension, and any other
-"simplified" extensions that simply represent a specific
-set of other extensions and nothing more.  At least for DT.
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaVQN1QAKCRB4tDGHoIJi
+0pPPAP4x6bW65umXa6RU00YxbiyATI4Z5w1FZqeGJ2pVpPy15wEAn/l7pCbOzmgf
+4bOyYpW9PLJJt0w+gKHxg8U0+X6LcAg=
+=Cne9
+-----END PGP SIGNATURE-----
 
-That said, this "rule" would have to be followed/agreed to
-by all users of DT.
-
-					-Alex
+--ymaqOL8nauUqvgFe--
