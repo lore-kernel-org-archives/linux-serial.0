@@ -1,36 +1,41 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EAF4182D2;
-	Thu,  1 Jan 2026 00:08:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E8C21E3DDE;
+	Thu,  1 Jan 2026 00:24:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767226099; cv=none; b=faa+94XEAbkMaGSMAYz8eT7GhHwy5QkVYSNxaXGmyKRbGGnhuz+jGgZ0N3T9WjsUQkNBtm/O4mTkzskcxpzLwtHB+CqcCAmLqoiVArWZgAJdIUGgIGVNBXkV8HQk5VtWaFhR3eE98sEUIPogIQDug3ZUv6Z5jPjWC1qRCx65jo0=
+	t=1767227048; cv=none; b=IvI2fOtMmEJRvsNessps5msXm9Vy7im7JVM2WVI6DYSbFYILIfWWC82VHoJVe5VaqXsvVWZbNidttvPBRuYRuMvXhlxTGSVsNEA44V/VApx3JedJA798VD2a7TKTGke/cF73N+o88neMZlK3tXO35F3XxMG8ayOvL0wF13aX6r0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767226099; c=relaxed/simple;
-	bh=6X/Tp+Z3T5SzuykhqjUR/+IFjPdcuJD4olbZ2RtSbB4=;
+	s=arc-20240116; t=1767227048; c=relaxed/simple;
+	bh=KNoiApyMWT+DJ8JQATW2+HokfFFLugunixpx2ju/Efw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qG+tUViQfaBJw1DCPg+0XbjVnGZtI6/5qh83NtEyMeeSHF1rcUExgQQd5uYUhKVm1ghzZtoHTlyKrfXRdjOdZ8zOy0+Ol1V23lUfbKRJOiBiS02IZzqX5nJzYMWrZ49ceb3Pwq2AVhBkHB2iFclsVITzxCKpkZyt/TbfncYr1BQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Vz50lUO6; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=HcYIeWKJ+7/emBkVswlHZ5GaQMPTeMaJhSMS0wKILQ1bdN/+hNGdfAjOL6G8XI976oXI4Dy59dQdBKNz3Fn44XsaNM5cgfvsvMZb9lOe8bA0Exol+1iY0MOytYYgLT8TQ/xM18yVmjmpq3ImPgAqVN6lvDL6hGGb3llUSjpM/D4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=g/5VTD1B; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Vz50lUO6"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC0D6C113D0;
-	Thu,  1 Jan 2026 00:08:13 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="g/5VTD1B"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91A82C113D0;
+	Thu,  1 Jan 2026 00:24:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1767226098;
-	bh=6X/Tp+Z3T5SzuykhqjUR/+IFjPdcuJD4olbZ2RtSbB4=;
+	s=k20201202; t=1767227047;
+	bh=KNoiApyMWT+DJ8JQATW2+HokfFFLugunixpx2ju/Efw=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Vz50lUO6Ev5+SRB4FShQPTcJK0g2BnszKVTYTQJj8W9zYe1MSD7dXlKg4LXgdmIx3
-	 BCbOrFCfkJwJfPs1lLg+kg8lL0JvOLIVQLVxKOLz2zGqaBo0o8M7Gn47dAYMalzYAg
-	 IsTZ4WFYsxv2f8xLvcsyJDJWgVk8RTiz99ADbpdN5Ks25aC27GNlMf6co0aygCGY+F
-	 zBn+wXxt03uAe5MxUsjawLofeuhQYi5+x6+OumtscQC9R8ORN2WhZkn87Si613pQ7a
-	 ShWpVZQWS5FD5unbP44pw6M+MP+av+29s5MEL5gerp7g8aDI1S9S99TxAsNRen4k8a
-	 JNynEgmb7tvAA==
-Date: Thu, 1 Jan 2026 00:08:11 +0000
+	b=g/5VTD1BhKf5/WmuhqAfM50d2/IyTD8N6HxvtXDzKesz6dn/jpDImNFrOkRc/TdsW
+	 rpJxwoW9hd1fGmrsP0T1sU+a4jrWPAv+zVthRCZOXFc4h/Y7auCh90lJj2946gVhGb
+	 3lTyhgxycbHSOnozzEVTj7nD6nkQYohyk8SsUBzXRkXL1T7tBt5MwNSba5mCuo4sPB
+	 MZ9pBrD4u2RJ+jed66+QfogHzPi8nF7yukLACKy5peqY2TAM7e2uR/GAVec9TCvVlQ
+	 nADJT2YCvkhGrAvJvOw5NOWB0KawztDXlhqHH0moqLtgoQI+l90C+q7gGOPQPgrEhf
+	 8su+eCYh/8uxw==
+Date: Thu, 1 Jan 2026 00:24:00 +0000
 From: Conor Dooley <conor@kernel.org>
-To: Heinrich Schuchardt <xypron.glpk@gmx.de>
-Cc: Rob Herring <robh@kernel.org>, Alex Elder <elder@riscstar.com>,
-	Guodong Xu <guodong@riscstar.com>,
+To: Guodong Xu <guodong@riscstar.com>
+Cc: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Palmer Dabbelt <palmer@sifive.com>,
+	Kevin Meng Zhang <zhangmeng.kevin@linux.spacemit.com>,
+	devicetree@vger.kernel.org, linux-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org, spacemit@lists.linux.dev,
+	linux-serial@vger.kernel.org, Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
 	Palmer Dabbelt <palmer@dabbelt.com>,
@@ -42,23 +47,20 @@ Cc: Rob Herring <robh@kernel.org>, Alex Elder <elder@riscstar.com>,
 	Anup Patel <anup@brainfault.org>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
-	Yangyu Chen <cyy@cyyself.name>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Kevin Meng Zhang <zhangmeng.kevin@linux.spacemit.com>,
-	Andrew Jones <ajones@ventanamicro.com>, devicetree@vger.kernel.org,
-	linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-	spacemit@lists.linux.dev, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v2 11/13] dt-bindings: riscv: Add Supm extension
- description
-Message-ID: <20251231-grew-abrasion-dc1a9d34e632@spud>
-References: <20251222-k3-basic-dt-v2-0-3af3f3cd0f8a@riscstar.com>
- <20251222-k3-basic-dt-v2-11-3af3f3cd0f8a@riscstar.com>
- <fc719e92-10bc-455f-b402-c93bdbf878cf@riscstar.com>
- <20251230021306.GA3094273-robh@kernel.org>
- <80e18a32-543a-48f5-81f2-4fa64cb8bf8c@riscstar.com>
- <CAL_JsqK8hRsVWV6WfbZ6hF1PwFfOJhyOrpWwoOhviAgv5ZxKUw@mail.gmail.com>
- <20251230-budding-dimple-c34636b0ca4d@spud>
- <05B0AE03-E7B1-4DCD-88D0-DCB9053F30BA@gmx.de>
+	Yangyu Chen <cyy@cyyself.name>
+Subject: Re: [PATCH 7/8] riscv: dts: spacemit: add initial device tree of
+ SpacemiT K3 SoC
+Message-ID: <20260101-legume-engraved-0fae8282cfbe@spud>
+References: <20251216-k3-basic-dt-v1-7-a0d256c9dc92@riscstar.com>
+ <60948ca2-ed3d-485b-9b11-15df7ef8791d@canonical.com>
+ <CAH1PCMb=+TvB1w+G6a2ANDp05HUwC4r6CFBDHXFwSmoP3Mm8xw@mail.gmail.com>
+ <f9b6b5e2-ec9e-4208-8267-77020e0a9411@canonical.com>
+ <20251218-basil-quantum-225ce16e4699@spud>
+ <CAH1PCMZ3KM9-D3NJ1N2LUHTHFSDVKmGKT5fU8knAL7NnV9E-gw@mail.gmail.com>
+ <20251220-repacking-football-c79e660e788a@spud>
+ <4e4c9e7b-d95c-4157-94c3-b06002f94a48@canonical.com>
+ <20251222-dimmer-wooing-db29fe925498@spud>
+ <CAH1PCMbane4uN=N0UPRDG9x9NUbD9SYsbH+NnP-gzU6Bo8L2wQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -66,147 +68,54 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="U5hKiFJHOMcGatbm"
+	protocol="application/pgp-signature"; boundary="X7aUwCxMZok6EY4n"
 Content-Disposition: inline
-In-Reply-To: <05B0AE03-E7B1-4DCD-88D0-DCB9053F30BA@gmx.de>
+In-Reply-To: <CAH1PCMbane4uN=N0UPRDG9x9NUbD9SYsbH+NnP-gzU6Bo8L2wQ@mail.gmail.com>
 
 
---U5hKiFJHOMcGatbm
-Content-Type: text/plain; charset=utf-8
+--X7aUwCxMZok6EY4n
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Dec 30, 2025 at 09:41:56PM +0100, Heinrich Schuchardt wrote:
-> Am 30. Dezember 2025 18:37:25 MEZ schrieb Conor Dooley <conor@kernel.org>:
-> >On Tue, Dec 30, 2025 at 09:21:56AM -0600, Rob Herring wrote:
-> >> On Mon, Dec 29, 2025 at 9:14=E2=80=AFPM Alex Elder <elder@riscstar.com=
-> wrote:
-> >> >
-> >> > On 12/29/25 8:13 PM, Rob Herring wrote:
-> >> > > On Fri, Dec 26, 2025 at 03:28:47PM -0600, Alex Elder wrote:
-> >> > >> On 12/22/25 7:04 AM, Guodong Xu wrote:
-> >> > >>> Add description for the Supm extension. Supm indicates support f=
-or pointer
-> >> > >>> masking in user mode. Supm is mandatory for RVA23S64.
-> >> > >>>
-> >> > >>> The Supm extension is ratified in commit d70011dde6c2 ("Update t=
-o ratified
-> >> > >>> state") of riscv-j-extension.
-> >> > >>>
-> >> > >>> Supm depends on either Smnpm or Ssnpm, so add a schema check to =
-enforce
-> >> > >>> this dependency.
-> >> > >>
-> >> > >> I have the same general question on this, about whether it's real=
-ly
-> >> > >> necessary for the DT binding to enforce these requirements.  The
-> >> > >> RISC-V specifications are what truly defines their meaning, so I
-> >> > >> don't really see why the DT framework should need to enforce them.
-> >> > >> (That said, I'm sure there are other cases where DT enforces thin=
-gs
-> >> > >> it shouldn't have to.)
-> >> > >
-> >> > > Does the specification have some way to check it? What happens if =
-a DT
-> >> > > is wrong? Are you going to require a DT update to make things righ=
-t? Or
-> >> > > the kernel has to work-around the error? Neither is great. So havi=
-ng
-> >> > > this as a schema makes sense to prevent either scenario.
-> >> >
-> >> > I'm really glad you weighed in.  I actually have several questions
-> >> > related to RISC-V extensions and DT.  But for now I'll focus on
-> >> > just this...
-> >> >
-> >> > To answer your first question, I'm not sure how the specification
-> >> > is "checked", or what "it" is that you're asking about for that
-> >> > matter.  Also I think we have to be clear about what "wrong" means.
-> >> >
-> >> > RISC-V is defined by a (large and growing) set of specifications
-> >> > that are developed through a well-defined process.  When a spec
-> >> > is *ratified* it is committed, and it won't be changed.  These
-> >> > specifications are ultimately *the* definition of RISC-V
-> >> > compliance.
-> >> >
-> >> > I assumed the "wrong" you're talking about is a DTS/DTB that has
-> >> > been committed but somehow does not match what a RISC-V spec
-> >> > says, but I might be mistaken.
-> >>=20
-> >> That's correct.
-> >>=20
-> >> > Anyway, we can flip that around and have a similar problem:  What
-> >> > if we define the DT binding in such a way that it doesn't match
-> >> > the RISC-V spec?  The (ratified) RISC-V spec is right.
-> >>=20
-> >> Sure. Any time there is more than 1 source of truth, they could be
-> >> mismatched. But it is 1 spec and 1 schema to compare, not N DTS files.
-> >> Checking the schema matches the spec is much easier than reviewing
-> >> every new DTS file.
-> >
-> >The objective is not to define things with divergent meanings anyway,
-> >only to say "this string is exactly this version of this extension",
-> >so that if some other version of an extension comes along we have a way
-> >to differentiate. We didn't before and that became problematic for both
-> >standard extensions and vendor specific stuff. You'll note we don't look
-> >to define anything ourselves, just cite the spec that provides the
-> >definitions.
-> >
-> >> The only true fix is to make the spec machine readable.
-> >>=20
-> >> > My thought was that we should have software do the verification,
-> >> > and recommend the software (e.g. arch/riscv/kernel/cpufeature.c
-> >> > in Linux) be updated to verify things before committing to a
-> >> > DT binding.
-> >>=20
-> >> That moves validation from build time to run time. How is that better?
-> >> And what about other OSs?
-> >>=20
-> >> I'm very much of the opinion that it is not the kernel's job to
-> >> validate the DT. It obviously has not done a very good job given
-> >> issues we find with schemas. It's fine to have some checks in this
-> >> case if the kernel can't function (or use/enable the extension)
-> >> without the dependent extensions, but there are lots of classes of
-> >> errors the kernel doesn't need to care about.
-> >
-> >By and large what's in cpufeature.c is there to turn extensions off
-> >based on kconfig choices (vector support enabled etc) or kernel design
-> >decisions (kernel requiring both d and f extensions for fpu support). I
+On Fri, Dec 26, 2025 at 02:53:10PM +0800, Guodong Xu wrote:
+
+> As we wait for Samuel to share his opinion, maybe I can submit a patch in
+> (I already have it)
+> my next version or as in a different patchset to implement what you sugge=
+sted.
+>  - Assign RISCV_ISA_EXT_SUPM a standalone ext number in hwcap.h
+>  - Implement a riscv_ext_supm_validate() and put it in the callback of bo=
+th
+>     ssnpm and smnpm.
+>  - Kconfig will be kept as a top level gatekeeper, no change.
+>  - dt-binding entry for supm will not be added.
 >=20
-> Should supm be handled in the same way? Add it to the device-tree of
-> RVA23U64 devices. If a kernel does not support pointer masking in user
-> space, hide the extension in cpufeature.c.
+> The only reason support me to add sump into to the dt binding
+> (extensions.yaml) is it's now a mandatory extension required by RVA23U64.
+> However, as you explained, that logic seems not strong enough.
 
-Perhaps.
-Samuel opted not to add supm to dt when he introduced the other relevant
-extensions, so the rationale from him would be helpful but I'd like to
-get more opinions on how to deal with supm specifically. supm doesn't
-really describe hardware capability, since the privilege specific
-instructions are what does that, which makes me question if it should be
-in dt at all. On the other hand, it could be argued that supm describes
-a combination of hardware capability at the dt consumer's privilege level
-and is valid on that basis. Some wording like Zkr will probably be needed,
-specifically mentioning that having supm in the dt means that corresponding
-version sxnpm for the privilege level that the devicetree is provided to
-is supported.
+Regardless of what we end up doing in dt, I think you should write the
+kernel code as if we are adding it to the binding. That way you can "imply"
+supm from both ssnpm and smnpm (see riscv_zvkng_bundled_exts for an
+example) and add the validate callback that checks against the privilege
+level to supm itself. I don't think sxnpm should be disabled if the
+privilege level of the kernel is different to that of the extension
+(e.g. s mode kernel and smnpm) or if the kconfig option is disabled
+(because I think ssnpm could be providing kvm with pointer masking even
+when it is disabled for userspace). I think doing it the way I suggest
+works better for those kinds of cases but also will just happen to work
+for ACPI systems that have supm without the relevant sxmpm listed.
 
-Either way, we are going to need something in cpufeature.c to imply
-supm so that it appears to userspace if the privilege specific extension
-is detected and supm is enabled in the kernel. The kernel already does
-the implication internally it just isn't reported as an extension to
-userspace IIRC.
-If we permit supm in dt, we're also going to have to turn supm off if
-the Kconfig option is disabled, but that's relatively little effort
-since it mostly (or maybe entirely) reuses code from implying supm.
-
---U5hKiFJHOMcGatbm
+--X7aUwCxMZok6EY4n
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaVW66AAKCRB4tDGHoIJi
-0jdtAQDh+sAVToaEfPjzGxpRTEXEReCVS1mCPwrMK8rPVPTCgQEAwjo7fMTy9Dft
-Y6qKnMj6ZPI2VhbDfPQ3i6/wGzgxiAE=
-=aAhy
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaVW+oAAKCRB4tDGHoIJi
+0t9lAP0S+GP12VlrrHu2vbrcEV+WOXWl8WA2T3jhIVGaQnHF+QD/bc6sUs2BIlUa
+/VSDfvq3JlZVUzvMjkx29+2XvTi3yAc=
+=RYdG
 -----END PGP SIGNATURE-----
 
---U5hKiFJHOMcGatbm--
+--X7aUwCxMZok6EY4n--
