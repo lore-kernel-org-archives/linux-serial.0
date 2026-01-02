@@ -1,85 +1,196 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3F0A224AF1;
-	Thu,  1 Jan 2026 17:41:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C06E22E228D
+	for <linux-serial@vger.kernel.org>; Fri,  2 Jan 2026 11:13:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767289316; cv=none; b=NrTyiQWRpofLmJkcT0La0zOE28btIyA8GiYS41FfWN2bUbicL5plMTG4zofHuO57L7lxfkfV2P2JcEHzg4b1abYwHYSCacd+mNCdPRNCBHrn1mAK34pKKVDIN4eR5SX3/kIf5m5Jws3f4UcU9Lt8JbJYQ1Ncz+9kxAoR8DwuRHs=
+	t=1767352425; cv=none; b=keSymVoD6xnSa5MdCj9us3GqX+vqEgZPO+vqgN3HLYG1Qi6eQZcI5ioKoyY+NG8QzBDFQw6uXFDhGRHF19NXmA0Kn67jltHAbpXE9leftAjBLjIHyZ+m/OC7eoq2BiE2a4DwaAyAoBav1LGqOKM/NllS+8Xk5WY0pFbF3uKh6Po=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767289316; c=relaxed/simple;
-	bh=Zv64SapDen5kzKJuMbMGdMPYfIhGVyuPqNwGNzVunrE=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
-	 MIME-Version:Content-Type; b=m8XXNr8BZpXXMzhYmKYONw+6diQPTE2tmAiOrPA10aUOjHf0VqhKjWujHUTpVEZDL7AS7gOnMaqcOLUnTu8S+7psaPd5C0YHYkcT88CDc4+ID2tQ+cUeiPXt3ViuUM91MgxHYjGmtZECWjHMJ7rl/2QSSljpS8uFuhKKqLRs9FY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ER9t7cAl; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1767352425; c=relaxed/simple;
+	bh=nXFZwZZBKquh8LmMNfYlo2E6H3yvO66kM3Z2AGIucRg=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=P8RFpWOgSQplzM87UZx3cnlrcGPTN8w+sPIzkTb70naMy6gEHaDdun1yw5gJQ2pE3OxRuaXo/+QWa91g1TB9zeumgQaZIw3AnCTRr5qoAeTTofesDIE55D2c+ptyUmifmCjmaKgWWNMGMBsGJ4IqyJytPI21ndxleMM7Qcnk/iQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl; spf=none smtp.mailfrom=bgdev.pl; dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b=E+DJ2rP6; arc=none smtp.client-ip=209.85.167.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bgdev.pl
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ER9t7cAl"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 455F6C4CEF7;
-	Thu,  1 Jan 2026 17:41:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1767289315;
-	bh=Zv64SapDen5kzKJuMbMGdMPYfIhGVyuPqNwGNzVunrE=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-	b=ER9t7cAlj7MqNGXcP5YMCKuLDsKR9w84FCNrArooQFtHOjmbI/DfZrwYQE1VvulF8
-	 DZFaUNowxcdH965RH9OZgKQAcXSyG2w5/MG46R88qAOCABM+8kP/0TVLa6bD4kqL4E
-	 GriArNDwSzEGl3tltbYRZxoiNQGRjqyqUKNmhJI/GVdl1unkW+vYqi+lKLebLH9/PR
-	 Dtcrikk7oRT/GK4vdCGlBPTHnucq204vQ6dfb87P8u4v7kGhQl1vvcSbNh3KTThJRG
-	 FNP98/I/YiWCMXFsPA0TvmzkGoFOTDL9lb8djzInRuDqu1+qcPkf+hK4tlCEL93Sf5
-	 VUXlu59t8g4hA==
-From: Vinod Koul <vkoul@kernel.org>
-To: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
- nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, 
- claudiu.beznea@tuxon.dev, herbert@gondor.apana.org.au, davem@davemloft.net, 
- andi.shyti@kernel.org, lee@kernel.org, andrew+netdev@lunn.ch, 
- edumazet@google.com, kuba@kernel.org, pabeni@redhat.com, linusw@kernel.org, 
- Steen.Hegelund@microchip.com, daniel.machon@microchip.com, 
- UNGLinuxDriver@microchip.com, olivia@selenic.com, radu_nicolae.pirea@upb.ro, 
- richard.genoud@bootlin.com, gregkh@linuxfoundation.org, 
- jirislaby@kernel.org, broonie@kernel.org, lars.povlsen@microchip.com, 
- devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
- linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org, 
- dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org, 
- netdev@vger.kernel.org, linux-gpio@vger.kernel.org, 
- linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, 
- linux-usb@vger.kernel.org, Robert Marko <robert.marko@sartura.hr>
-Cc: luka.perkov@sartura.hr
-In-Reply-To: <20251229184004.571837-1-robert.marko@sartura.hr>
-References: <20251229184004.571837-1-robert.marko@sartura.hr>
-Subject: Re: (subset) [PATCH v4 00/15] Add support for Microchip LAN969x
-Message-Id: <176728930591.239406.10977505367349763113.b4-ty@kernel.org>
-Date: Thu, 01 Jan 2026 23:11:45 +0530
+	dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b="E+DJ2rP6"
+Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-5957ac0efc2so12815030e87.1
+        for <linux-serial@vger.kernel.org>; Fri, 02 Jan 2026 03:13:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20230601.gappssmtp.com; s=20230601; t=1767352420; x=1767957220; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=FsSijJtpaI/oDSTtzaUkeXToSyfCr4FMo1aTrP8qZaU=;
+        b=E+DJ2rP6MxVUCdmBqZoI8P0tCI2IXXRTYgVdh+t0wtuN5qhCvwC8gsXod6vw7KkFDh
+         FX0G8uZKwAKwhcZpD9fB0YcUqH7AYcatZ0IVw7+OSkhch+6ID6Y0kLwrn/R+CRqgVOyD
+         tpN3Dc2+4KHitrxseeIxY9cratYQyTnVB13uoPBYdWVGsqBSkVZ3vCa6OkigVNmpp3fv
+         5m7yPUiqflkZGIPCNgqdLBbFxbNi5+APmnzvs+69Ca5UOHYui3zP27LzMpqQDjSXaz0l
+         +le3YqGnrtn5GgRi2URtYCVep5lwkpa3u3/8tI+TAFBALnLY32FvPFm/rDNuKieBMvCj
+         Ee4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1767352420; x=1767957220;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=FsSijJtpaI/oDSTtzaUkeXToSyfCr4FMo1aTrP8qZaU=;
+        b=ns44nICT/lGD0nl1EhPVwXuauHzMQmu4fxTunNFIPpDiw9v3d1qKmOTYQkISmuOwW+
+         eSLz9f/wIHpHrLvlAK5XyvdcoDfcQOX9D173W4/LewGVnWOEytpnKztPDYPqdKwNimtL
+         uBk/VTlr8J64fa6V/dRnZK5h4cPrYo5+/Eigg+LXWDo0hQv0cWZMIsDgMf1eyFuXNGxn
+         pHAUiSHRsbwcAbWVOjeVXR/EocCKwjw6nIr7sS3Ll4EsRu2Qm3nobNEB+fXch9DQ3/WT
+         GcmGa9Z+a6TXYaIT1UEwik8X3uqMa46R3RfY4jwC2ahUwtsVtj/3jbUQvJFwYFdRRr75
+         xmqA==
+X-Forwarded-Encrypted: i=1; AJvYcCXIhrpj9cz2Q982W7s8fn8Okx72lh9Hrz8yygYU7R7J1NNkeAvVmjQE5NyDpcxfTmbGB4UGfu038sG1io0=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwkIIQVOGLFlM5auY6dpvk5GGn9WFfa6yDURwyIUIADIGS8opdi
+	K4tl4HStfdF3H5P4d8zvym8bXrA4b3cGkpNTNhd5Jpptkam/N8m7tPBgIox6fq/mqF2DpE+C+Y8
+	Zc6iQTll1pgFgW+GZ42YofOimzubou5Na/M9iwtoh+g==
+X-Gm-Gg: AY/fxX6m35fMkTtUaeQ0Eeid6ET5YjEu4jG9n7ZEpCsqCdjozg28ayC84RE1/ILUDKn
+	9FrSTvMILLZWXgUWN/GaFNpy3siT8oe0HbNG5QrjuQziUl9RD6EdmtK2+q0BkbR+O59Qv+hSN6I
+	RvxaFXTF3RIXuD3LV0gvv5PSsOKJx1ksnK90QEEPDBDZ59+iGj5MS93lRDm94WCsuoGIjCe20XR
+	5RGKxM0SNUNFwVdXU5vp/LL7Gjizn5ishGcF07ZnGBjBU020GgdIEF2USnLtm1RKWqGO9l4ekP3
+	W5BRYjt8RFQECL4CGCkG76dcJXY=
+X-Google-Smtp-Source: AGHT+IFAdaCcjUwdY3Ew9NHcwLT11KRJipC8z25Ztoxl2WB+caL1mXRBHlm39ALYwigrxotmoGpHP+uwj2P6/o6YWRA=
+X-Received: by 2002:a05:6512:b8b:b0:598:8f92:c33f with SMTP id
+ 2adb3069b0e04-59a17d77435mr14680425e87.51.1767352419706; Fri, 02 Jan 2026
+ 03:13:39 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Mailer: b4 0.13.0
+References: <20251125-pci-m2-e-v2-0-32826de07cc5@oss.qualcomm.com>
+ <20251125-pci-m2-e-v2-2-32826de07cc5@oss.qualcomm.com> <CAMRc=Mc-WebsQZ3jt2xirioNMticiWj9PJ3fsPTXGCeJ1iTLRg@mail.gmail.com>
+ <fwzmob6ez7c6xbakcd4rq2icp7mdwgdvimss3zybb4ivdds3uo@mwguaz7rekjc>
+In-Reply-To: <fwzmob6ez7c6xbakcd4rq2icp7mdwgdvimss3zybb4ivdds3uo@mwguaz7rekjc>
+From: Bartosz Golaszewski <brgl@bgdev.pl>
+Date: Fri, 2 Jan 2026 12:13:27 +0100
+X-Gm-Features: AQt7F2rD4Vva2u72gj0duDgyvxJiVfI_tVGQktahu3E6VwiSEZFuXnq9LhXUXbk
+Message-ID: <CAMRc=MdNTHtzTJ3f3qVHH=qFbK86MzUP0vvx3ogZsXG+iqMUnw@mail.gmail.com>
+Subject: Re: [PATCH v2 02/10] serdev: Add serdev device based driver match support
+To: Manivannan Sadhasivam <mani@kernel.org>
+Cc: manivannan.sadhasivam@oss.qualcomm.com, 
+	Manivannan Sadhasivam via B4 Relay <devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org>, 
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-kbuild@vger.kernel.org, platform-driver-x86@vger.kernel.org, 
+	linux-pci@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org, 
+	linux-pm@vger.kernel.org, Stephan Gerhold <stephan.gerhold@linaro.org>, 
+	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, Rob Herring <robh@kernel.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Nathan Chancellor <nathan@kernel.org>, Nicolas Schier <nicolas.schier@linux.dev>, 
+	Hans de Goede <hansg@kernel.org>, =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+	Mark Pearson <mpearson-lenovo@squebb.ca>, "Derek J. Clark" <derekjohn.clark@gmail.com>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Marcel Holtmann <marcel@holtmann.org>, Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+On Tue, Dec 30, 2025 at 8:56=E2=80=AFAM Manivannan Sadhasivam <mani@kernel.=
+org> wrote:
+>
+> On Thu, Nov 27, 2025 at 06:32:04AM -0800, Bartosz Golaszewski wrote:
+> > On Tue, 25 Nov 2025 15:45:06 +0100, Manivannan Sadhasivam via B4 Relay
+> > <devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org> said:
+> > > From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+> > >
+> > > Add support to match serdev devices with serdev drivers based on the =
+serdev
+> > > ID table defined in serdev_device_driver::id_table.
+> > >
+> > > The matching function, serdev_driver_match_device() uses the serdev d=
+evice
+> > > name to match against the entries in serdev_device_driver::id_table.
+> > >
+> > > If there is no serdev id_table for the driver, then serdev_device_mat=
+ch()
+> > > will fallback to ACPI and DT based matching.
+> > >
+> > > Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualc=
+omm.com>
+> > > ---
+> > >  drivers/tty/serdev/core.c         | 23 ++++++++++++++++++++++-
+> > >  include/linux/mod_devicetable.h   |  7 +++++++
+> > >  include/linux/serdev.h            |  4 ++++
+> > >  scripts/mod/devicetable-offsets.c |  3 +++
+> > >  4 files changed, 36 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+> > > index b33e708cb245..2b5582cd5063 100644
+> > > --- a/drivers/tty/serdev/core.c
+> > > +++ b/drivers/tty/serdev/core.c
+> > > @@ -85,12 +85,33 @@ static const struct device_type serdev_ctrl_type =
+=3D {
+> > >     .release        =3D serdev_ctrl_release,
+> > >  };
+> > >
+> > > +static int serdev_driver_match_device(struct device *dev, const stru=
+ct device_driver *drv)
+> > > +{
+> > > +   const struct serdev_device_driver *serdev_drv =3D to_serdev_devic=
+e_driver(drv);
+> > > +   struct serdev_device *serdev =3D to_serdev_device(dev);
+> > > +   const struct serdev_device_id *id;
+> > > +
+> > > +   if (!serdev_drv->id_table)
+> > > +           return 0;
+> > > +
+> > > +   for (id =3D serdev_drv->id_table; id->name[0]; id++) {
+> > > +           if (!strcmp(dev_name(dev), id->name)) {
+> > > +                   serdev->id =3D id;
+> > > +                   return 1;
+> > > +           }
+> > > +   }
+> > > +
+> > > +   return 0;
+> > > +}
+> > > +
+> >
+> > I don't know if Rob agrees with me but I would very much prefer to see
+> > software-node-based approach instead of an ID table matching.
+> >
+> > Could you in the pwrseq driver, create a software node for the serdev d=
+evice
+> > you allocate, set its "compatible" to "qcom,wcn7850-bt" and match again=
+st it
+> > here?
+> >
+> > This has several benefits: if you ever need to pass more properties to =
+the
+> > serdev devices, you already have a medium for that and you can also lea=
+ve
+> > serdev_device_add() alone. You're comparing the entire name here - what=
+ if
+> > someone sets device's ID to some value and the name will be "WCN7850.2"=
+?
+> >
+> > You could also drop the serdev_id field from struct serdev_device. For =
+matching
+> > you could even reuse the of_device_id from the device driver.
+> >
+>
+> I tried this approach and I really liked it since it gets rid of the yet-=
+another
+> id_table for serdev (which I didn't like it btw). But there is one concer=
+n
+> though. We need a generic 'device_get_match_data' implementation for swno=
+de.
+> While trying to implement it, I stumbled upon this patch [1] which does t=
+he same
+> for other usecase, but there was a disagreement on whether swnode should =
+be used
+> for driver matching or not. For my usecase, I find it very useful and
+> reasonable, but Dmitry Torokhov believes otherwise.
+>
+> Maybe I'll include this patch in the next version, CC Dmitry and see wher=
+e it
+> goes.
 
-On Mon, 29 Dec 2025 19:37:41 +0100, Robert Marko wrote:
-> This series adds support for the Microchip LAN969x switch SoC family.
-> 
-> Series is a bit long since after discussions in previous versions, it was
-> recommended[1][2] to add SoC specific compatibles for device nodes so it
-> includes the required bindings updates.
-> 
-> [1] https://lore.kernel.org/all/20251203-splendor-cubbyhole-eda2d6982b46@spud/
-> [2] https://lore.kernel.org/all/173412c8-c2fb-4c38-8de7-5b1c2eebdbf9@microchip.com/
-> [3] https://lore.kernel.org/all/20251203-duly-leotard-86b83bd840c6@spud/
-> [4] https://lore.kernel.org/all/756ead5d-8c9b-480d-8ae5-71667575ab7c@kernel.org/
-> 
-> [...]
+Thanks for bringing this to my attention. I think that historically
+software nodes were meant to always be "secondary" but now we have all
+kinds of auxiliary devices that use software nodes as their "primary"
+nodes so maybe we can re-discuss this.
 
-Applied, thanks!
-
-[09/15] dt-bindings: dma: atmel: add microchip,lan9691-dma
-        commit: c47422f4d0a26b25ff59709921eaaf8f916eec7d
-
-Best regards,
--- 
-~Vinod
-
-
+Bart
