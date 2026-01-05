@@ -1,35 +1,62 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FBCE23AB90;
-	Sun,  4 Jan 2026 18:55:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D753312828;
+	Mon,  5 Jan 2026 02:41:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.244.123.138
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767552955; cv=none; b=GuFsJaMsGb0giLUpW9LWxb/MAH0a1E8vj2DUUwVsaEQ04+e92REqndyHMr8VRet1cn3enEB3j9g/OALU6p4xafkzZyQNYMWh9+2agMdBvFZoU2vfIaPIurKv36yQOZc9AWHLRd8SicGqxMMhsTMN/N5TvmW5bBdaLtzM9Krzmug=
+	t=1767580878; cv=none; b=EDXbNlD/9BUOrHZo48VUlsQu9KXOwJ4mzND9fk3sXgfZ39B2NCWZb50ZdDo1VZwP7s9Wm1Tgk6GXyNIahJ2VjbkqQbshazfR14a6DyzLQ81yXQW19L0KS6nK8MCS236Ma/S+WVLonqANwAmyzbKh0Dqe+U6UjcOa4wRiSixZAew=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767552955; c=relaxed/simple;
-	bh=FsmYT4J2wneLygt9k8P00NIpU5dia1i3KeDHzRjOSyc=;
-	h=Content-Type:MIME-Version:Subject:From:Message-Id:Date:References:
-	 In-Reply-To:To:Cc; b=lgfvFDzKAZwDcGA6St5eX6bKOdP+MVwaHH4l/sOU1c4j+lYovfr10IAm2fBzlfSJXDGj4skFvmbO4ms/jifC/r8K2IUywDv9rYz89ombyIprPL4YUOeHm6TQClcHYvriVUY//tBoqPy8FCTcXiKFi935b24K72bUvr5NPGslHYU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IC7pSnzE; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1767580878; c=relaxed/simple;
+	bh=W3VmypK5QmSXALLjdf/Aa2MtOXluqCzul9xTCXjUqrk=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=kjRkfsrhxGhi6y99/Ga0UkZQon+0Fr9WwS1EpbUecXN4nVsu2eUoHxdGo0yC/V7atdPfP6TIoaRcOo6MKs5R3IfUV9E1MzAmtWimUu3z7L5orPrWevi4QzXKb1MJu8PLj4qjHqUj44alwVOjsfCV27PG308IVf41DN99S38vtnI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com; spf=pass smtp.mailfrom=mediatek.com; dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b=AQpmvQGz; arc=none smtp.client-ip=60.244.123.138
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mediatek.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IC7pSnzE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30F5FC4CEF7;
-	Sun,  4 Jan 2026 18:55:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1767552955;
-	bh=FsmYT4J2wneLygt9k8P00NIpU5dia1i3KeDHzRjOSyc=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=IC7pSnzEclHGwg200X/YkdBBynq7odRScUs9ppZoZpZ5+vCC75MulNZG9xoNbQ7ea
-	 YHl+gfz24aU8DAk/01qqCzHWqgE5huqcVehQ7bOvjuf1C9PfOOiVV+8sKjo5PD0Ux8
-	 gufnEXHEZAj84Zw7OxxJ8epEP1/fFxR6HWqDntc0r/AZVBg5anq5l1wosBra4diGjh
-	 HemjiMkiYw9l4FXiTGEZzICBstLP/oFQ2Kp80I2pGwGdvs9cEXvi/gXm+jLpkn5ydQ
-	 PaFF0rRXFM7FglqmFWK1tATHw28PJZH5oZFT/U/eEwxFbtqt5UsOaoH8qU0JuS60fs
-	 dMLakUjvihl3Q==
-Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 3BC38380AA4F;
-	Sun,  4 Jan 2026 18:52:35 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="AQpmvQGz"
+X-UUID: fbf73c8ce9df11f08a742f2735aaa5e5-20260105
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+	h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=iLcEgivO67/cJ6mzNXBkswo7rrMtv/QRBM7nPIN2wA4=;
+	b=AQpmvQGzeI44nlr2k5HYjnbwxhKNG7Qh0DVKCLaDy4Y8760Oo2a2kAPb8KLrZ29X1ST97NPxRE0fmAQhM1Qw0Cj74n3P18cbJuddRwpBnkSpS88FcGRmj5lKhEC4AFsCijUmkKo/kE5bKc8HOMfoOBc8eA/dU+kONyEaHhYiNWk=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.3.9,REQID:0b24837d-a146-40ce-9382-892d8ae77233,IP:0,UR
+	L:0,TC:0,Content:-5,EDM:-25,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTIO
+	N:release,TS:-30
+X-CID-META: VersionHash:5047765,CLOUDID:1e2d24c7-8a73-4871-aac2-7b886d064f36,B
+	ulkID:nil,BulkQuantity:0,Recheck:0,SF:102|836|888|898,TC:-5,Content:0|15|5
+	0,EDM:2,IP:nil,URL:0,File:130,RT:0,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA
+	:0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
+X-CID-BVR: 2,SSN|SDN
+X-CID-BAS: 2,SSN|SDN,0,_
+X-CID-FACTOR: TF_CID_SPAM_SNR
+X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
+X-UUID: fbf73c8ce9df11f08a742f2735aaa5e5-20260105
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+	(envelope-from <zhiyong.tao@mediatek.com>)
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+	with ESMTP id 504711488; Mon, 05 Jan 2026 10:41:06 +0800
+Received: from mtkmbs13n2.mediatek.inc (172.21.101.108) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.29; Mon, 5 Jan 2026 10:41:05 +0800
+Received: from mediatek.com (10.233.130.16) by mtkmbs13n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.2562.29 via Frontend
+ Transport; Mon, 5 Jan 2026 10:41:05 +0800
+Received: by mediatek.com (Postfix, from userid 10007317)
+	id 05CC1200CD; Mon,  5 Jan 2026 10:41:05 +0800 (CST)
+From: Zhiyong Tao <zhiyong.tao@mediatek.com>
+To: <jirislaby@kernel.org>, <matthias.bgg@gmail.com>,
+	<angelogioacchino.delregno@collabora.com>, <zhiyong.tao@mediatek.com>,
+	<fred2599@gmail.com>
+CC: <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-mediatek@lists.infradead.org>,
+	<Project_Global_Digits_Upstream_Group@mediatek.com>,
+	<liguo.zhang@mediatek.com>, <Vasanth.Reddy@mediatek.com>
+Subject: [PATCH 0/1] Mediatek uart patch 
+Date: Mon, 5 Jan 2026 10:39:54 +0800
+Message-ID: <20260105024103.2027085-1-zhiyong.tao@mediatek.com>
+X-Mailer: git-send-email 2.45.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -37,85 +64,18 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v4 00/15] Add support for Microchip LAN969x
-From: patchwork-bot+netdevbpf@kernel.org
-Message-Id: 
- <176755275401.146974.3696343941489230641.git-patchwork-notify@kernel.org>
-Date: Sun, 04 Jan 2026 18:52:34 +0000
-References: <20251229184004.571837-1-robert.marko@sartura.hr>
-In-Reply-To: <20251229184004.571837-1-robert.marko@sartura.hr>
-To: Robert Marko <robert.marko@sartura.hr>
-Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
- nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
- claudiu.beznea@tuxon.dev, herbert@gondor.apana.org.au, davem@davemloft.net,
- vkoul@kernel.org, andi.shyti@kernel.org, lee@kernel.org,
- andrew+netdev@lunn.ch, edumazet@google.com, kuba@kernel.org,
- pabeni@redhat.com, linusw@kernel.org, Steen.Hegelund@microchip.com,
- daniel.machon@microchip.com, UNGLinuxDriver@microchip.com,
- olivia@selenic.com, radu_nicolae.pirea@upb.ro, richard.genoud@bootlin.com,
- gregkh@linuxfoundation.org, jirislaby@kernel.org, broonie@kernel.org,
- lars.povlsen@microchip.com, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org,
- linux-i2c@vger.kernel.org, netdev@vger.kernel.org,
- linux-gpio@vger.kernel.org, linux-spi@vger.kernel.org,
- linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
- luka.perkov@sartura.hr
+Content-Type: text/plain
+X-MTK: N
 
-Hello:
+This series includes 1 patch:
+Add ACPI support on 8250_mtk driver
 
-This series was applied to netdev/net-next.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
+Zhiyong.Tao (1):
+  MEDIATEK: serial: 8250_mtk: Add ACPI support
 
-On Mon, 29 Dec 2025 19:37:41 +0100 you wrote:
-> This series adds support for the Microchip LAN969x switch SoC family.
-> 
-> Series is a bit long since after discussions in previous versions, it was
-> recommended[1][2] to add SoC specific compatibles for device nodes so it
-> includes the required bindings updates.
-> 
-> [1] https://lore.kernel.org/all/20251203-splendor-cubbyhole-eda2d6982b46@spud/
-> [2] https://lore.kernel.org/all/173412c8-c2fb-4c38-8de7-5b1c2eebdbf9@microchip.com/
-> [3] https://lore.kernel.org/all/20251203-duly-leotard-86b83bd840c6@spud/
-> [4] https://lore.kernel.org/all/756ead5d-8c9b-480d-8ae5-71667575ab7c@kernel.org/
-> 
-> [...]
+ drivers/tty/serial/8250/8250_mtk.c | 22 ++++++++++++++++++----
+ 1 file changed, 18 insertions(+), 4 deletions(-)
 
-Here is the summary with links:
-  - [v4,01/15] dt-bindings: usb: Add Microchip LAN969x support
-    (no matching commit)
-  - [v4,02/15] dt-bindings: mfd: atmel,sama5d2-flexcom: add microchip,lan9691-flexcom
-    (no matching commit)
-  - [v4,03/15] dt-bindings: serial: atmel,at91-usart: add microchip,lan9691-usart
-    (no matching commit)
-  - [v4,04/15] dt-bindings: spi: at91: add microchip,lan9691-spi
-    (no matching commit)
-  - [v4,05/15] dt-bindings: i2c: atmel,at91sam: add microchip,lan9691-i2c
-    (no matching commit)
-  - [v4,06/15] dt-bindings: rng: atmel,at91-trng: add microchip,lan9691-trng
-    (no matching commit)
-  - [v4,07/15] dt-bindings: crypto: atmel,at91sam9g46-aes: add microchip,lan9691-aes
-    (no matching commit)
-  - [v4,08/15] dt-bindings: crypto: atmel,at91sam9g46-sha: add microchip,lan9691-sha
-    (no matching commit)
-  - [v4,09/15] dt-bindings: dma: atmel: add microchip,lan9691-dma
-    (no matching commit)
-  - [v4,10/15] dt-bindings: net: mscc-miim: add microchip,lan9691-miim
-    https://git.kernel.org/netdev/net-next/c/c303e8b86d9d
-  - [v4,11/15] dt-bindings: pinctrl: pinctrl-microchip-sgpio: add LAN969x
-    (no matching commit)
-  - [v4,12/15] arm64: dts: microchip: add LAN969x clock header file
-    (no matching commit)
-  - [v4,13/15] arm64: dts: microchip: add LAN969x support
-    (no matching commit)
-  - [v4,14/15] dt-bindings: arm: AT91: document EV23X71A board
-    (no matching commit)
-  - [v4,15/15] arm64: dts: microchip: add EV23X71A board
-    (no matching commit)
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+--
+2.45.2
 
