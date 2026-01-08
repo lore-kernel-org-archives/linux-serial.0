@@ -1,192 +1,213 @@
-Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
+Received: from mail-pl1-f196.google.com (mail-pl1-f196.google.com [209.85.214.196])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 186F53D605E
-	for <linux-serial@vger.kernel.org>; Thu,  8 Jan 2026 10:08:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E31274A7E4D
+	for <linux-serial@vger.kernel.org>; Thu,  8 Jan 2026 12:26:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.196
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767866931; cv=none; b=JclXKCin0x2cs6tAyaHRmnK+/yp/+zx1Xf4N0RSH7076NtVJ2VUDg/PR7kT27AqMNZNJPPIIzL3+dWqQxK9DjK88qd81OrcdmpsWad8Do0OYDaKUnKS2VHHOBHc5CSJ/JGfxpbGCHwY7jsA1n+yIBOQdMDEFJ0VuLgaW8vPDInw=
+	t=1767875171; cv=none; b=u356lic6TgfDaVV8QbwIxPbVZphhrmHriIYC1Bg3kISvbo34kUO8Tu3PE4yUOR9ZEPqcpI4h3pZJRANKn3MMHW9AIeQjdi14Gscn5FB+ADqCAYJ/AW8AwymiAL+/OSoHDVW3+86OgX4TOYfA89KCHVUj90aFm0QhhFj5w2Nc2qI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767866931; c=relaxed/simple;
-	bh=1t0rpAxQeLHUoXH9EqV6OjuM5gq46cEpA0JagdgwR9k=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ERXHKcYW5OU1u95cyclCDQ+j7WwRBu0sz6h5izUWBsbMpAfUyHEQVsvwJ2Tyat/U3S1pnERi+fw8dew0pSFrMzMHaogD2s3O5Xb2Nn0S+NSbqyQmS0C5+QVaLDsmOdbYWjydcJF8NLRiRgM1uNBsLhJsQw0lgKuECwRoqTItGNQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Z/YiwKIo; arc=none smtp.client-ip=209.85.222.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1767875171; c=relaxed/simple;
+	bh=aPxeXi1YVSvYsu5/uu1m/VJK0dQbMLYTBSCsnYLUogg=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=dUxDpL3qjK0Ounl/s1Sx2w/NkerPcZNv0f8YxokOoFTq3z8GzjV5k36c3OM4Iqkyvlk8exRCBgOyB9kR9OM2QZtvs5ciyr8l6ffBhpdxnvxbrpITEcZMOA+goe0+ylZKcdrPJcBaYQZjGPRScEKks7toM9tFbHVug43JpinlvVM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com; spf=pass smtp.mailfrom=riscstar.com; dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b=h++sxQMN; arc=none smtp.client-ip=209.85.214.196
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=riscstar.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Z/YiwKIo"
-Received: by mail-qk1-f182.google.com with SMTP id af79cd13be357-8b2ea2b9631so340505285a.3
-        for <linux-serial@vger.kernel.org>; Thu, 08 Jan 2026 02:08:47 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b="h++sxQMN"
+Received: by mail-pl1-f196.google.com with SMTP id d9443c01a7336-29efd139227so25037415ad.1
+        for <linux-serial@vger.kernel.org>; Thu, 08 Jan 2026 04:26:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1767866927; x=1768471727; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=KNDmxXp+I2DQQMGpjKHJPmnR6bZXLNX2CabD4SmBa4E=;
-        b=Z/YiwKIo58evuPM6BsA2mmZ6l6Xle878X2XnLrlNHNsm4puEvoXO0rrrq0XgP0cRem
-         FLhMIWjY2Zan9SA1Gu8lT7Rl0xpoMXVcE8Hi5+M8sg5BNZFHFyGctKDkUHeZ4/Pj7uq0
-         eKFLvPXnhN8kGLBL5rK3RyrTv2TqPUMfqVUpoZyXegaqhki/ZZkX7ZoN6FhWUJHVgxDr
-         sm7PQakVEK7SPPxOtfU9kD9tX/6hel5GOKElunwO2xnocVDtjEJDGYEb/jFAzNQxvIeG
-         2BUMLISAyFO3VVsI9/koEwYGXGLsCWxH2++AD6UvwHamsBT31XQbtEdrQuCLrT6VUKrF
-         94xw==
+        d=riscstar-com.20230601.gappssmtp.com; s=20230601; t=1767875168; x=1768479968; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=5a5Cmx6eSpgB6FweLtrTLFy8CMWvSpkFBSClkOyo2G4=;
+        b=h++sxQMNe0zogIaXaSwaDtyyxxXrLnrhvmuO7HLC++n9+8kxDug4DrVeSRuVp9Bjj+
+         Hh76UshmGWvU5R/PAewGLsn25upz2PeYPquFXZ85ifRnoj63CvsbLOv+l5MlyBcLLVw3
+         2fwKt0NEQh7rDUV1uk7XFbFoTZPdmSrL1ntSsA/bclMNxt24i/6Dl9WdKQFedCrlxoxC
+         lpkp8W/YNiiaV0nmYOoWGJy0A+3N8zwheH21OLsHXvPX1t74Fux1wyAux5f8F8gWUqVH
+         d5hgNd+auJBsmOxcjGLKmplTmTIDcjJ4X1kag9lWkC87ChxPpktiUvTZS2IqzLQO2eQn
+         xw4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767866927; x=1768471727;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=KNDmxXp+I2DQQMGpjKHJPmnR6bZXLNX2CabD4SmBa4E=;
-        b=E6293PWvT19gNLL34QAZqBjWAr2hxy3bTu2YktjQwP5j+YKH0SYlUXKAvNgu5ulkPW
-         PykUWehcmkadEtP4Dqw9lVsb4aNrO6rwH8BO/RFDbY5C9bD2vSzOzFFdK3RmBMfpIBkt
-         Eq1pVTVvdtzs/+I15yG4R/H4TzgdmoN8bXS+e5dI4SsOalCGZaXhFfRupmq1LaHOIHVQ
-         vxkXrH96aMv4QhXgOkmAE2LWH8xlzWuaOowNgXmWsUkF7qDwKIJnDs81yKVVaPydxCzu
-         S/Vh7wd3Oa9+NzDmBrMuA5WcBajs8dCC8iY7cKaZPKmvz9iuHHtYQtxP8r4ZeOMlOZPj
-         P+Dg==
-X-Forwarded-Encrypted: i=1; AJvYcCULHbfwyZubpmzbT3QpZ1xJNmQ6aGsl/e9IjqzP3oyHw0kWt4sax+Vxy5wmFsnuamKX8WnrJtqSGy5nQdg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxZdA2Ka0jonA//+gO9tivisE7H9N9ekLEzZz5BAF+PXEBeaTvb
-	VWl6IAEVlL6zLvQBPpvv4wUoC+qLc20GV3F6LXgw3R1Yt929+rYsQDWNM0b+RQ==
-X-Gm-Gg: AY/fxX78pHOsCFSd9L1T+oVT+Gpyh5EM3MKe6HKegLbI6YMBsDfb0MbTnlwlR/czgES
-	WwTEUO7SojXLTh2pftll/5LRP1MtM9MSwrzwxdftoxsejHGWqGyOdEFpOHLAj0JTOpH6S4JdHN2
-	1e/thGwKmFW85t4IFuz6jZzAdZxSDh9YVDK0XlANUcOKA0hts6PDxlPckMUNuK4X7ukaC81khY9
-	uQz83kKYgaeumAfVDkmMD3xUXUO+XISBpn4ZTLH36NPfUTwEB4AclpynLr9+URakFtpj5kiB872
-	UF5GHU1eOb6SZWVXkFkVjcsd1rez37Xh+RSubG12BQssJtIFiJL0Ru8XUoVoNciZURwtMh5rTpF
-	6Cuwd0LnOW96AqoKGQi6fKhY+vk6OkbVipQKEsHbtrdglVttkxZzF8cVWTmxL+hVV8C+lFImOEe
-	ZJicNLRYZKWgZEVK8pUy3v7xPhlo3woS8tF31yy4Zgj+FMUsBSZwKKesP0Aw+MxtR9qLrBWPDNi
-	O2LK5sZiAI2bAdirTbDlDWwBApiZDqF
-X-Google-Smtp-Source: AGHT+IEtkI6q/xm4mTDrq1zwIoRGWeEmLimQWTPdv0cxMzV+X4wwZ1AH39dUZF1XLibUlHDhrrF/7Q==
-X-Received: by 2002:a17:90b:1d01:b0:34c:a35d:de1b with SMTP id 98e67ed59e1d1-34f68c48346mr5296424a91.37.1767859752118;
-        Thu, 08 Jan 2026 00:09:12 -0800 (PST)
-Received: from visitorckw-work01.c.googlers.com.com (25.118.81.34.bc.googleusercontent.com. [34.81.118.25])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-819bafe991dsm6900582b3a.16.2026.01.08.00.09.08
+        d=1e100.net; s=20230601; t=1767875168; x=1768479968;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5a5Cmx6eSpgB6FweLtrTLFy8CMWvSpkFBSClkOyo2G4=;
+        b=wZ7wP0dkTUmBxEuDez6l8IyQ39YY1SaqLGA6dZL26iRcv5J25dYw6CpkHzUd9Rde9h
+         csd3reOcHBTyRsaKCxJPQJRxVmwJYwnvbLkZrRrCSFbnOzWMb91Fu76XdN8sQYsZvFfY
+         rYKA0WaCYYN91TnIY9FPKClWQueZ4kMNO5ui1G1fyE6TE5j/muzr31eKxgEXdZkP7JK8
+         msT+x9Mjmm2Y276KvnqzMGg83amPopDsWwE/gLXnAc65DuYbCIKQctqnHtdVtRoBqIaZ
+         zjlJkGwGI+zRJ0KbFu7rMkagcV/mUXAoYi/F3Ziulq0smyjJKRXEASrimqRQywPv2ig/
+         v+Sw==
+X-Forwarded-Encrypted: i=1; AJvYcCWYQDDvLDnpabe33rRbTNgyuF52vVNBm3Ob11ByrfbpffiSDmYOp1xqsDJTR+DKTEWjSLxmDMHFvyxW15U=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzR9c8qaCV9JPk0r6XAnB9luxbFnaKvFdTzya2ZWWqcDa3azzGP
+	e9xo6YP17JlLjw0Ei8s5WMlgVRyaPrPHcs5e2iy3XxoHb5iRa3i6FO/ByhnRwgOR5fg=
+X-Gm-Gg: AY/fxX4EgdAm0OrxsgL1VULHfgjsMUrzMFcgVGybzMViM7fvDdhA/Em0nAIHAz7i7j5
+	9vV6g1MFFPfnE52qSdJT2CV6l/T7xu8wQ4kqXQH4GAyDB+w58RHdF+89+9sarwz0ufF8w5t5sau
+	2CYZ0dNhQvlfFdVlcWYKwhCtgWfz0K8kz2Job2xlCpSRbjR4ycjK4K5ctLmGAEuCtjiayMBLnzE
+	tKsTHqMtabQzs3m1uwo6C/wpIMsX/JdUJVy1EB31UV7tAA+Z0Atl7ajjhLeW6OA+UwG9EdOpITa
+	Sllay4WxFCaxIjSdBRLH2YzuNUHcvcBF8MKfiHWsDSSaON41wnzjroQz0eN/4Eg641ZWyxbz8qm
+	fUkDHYHQQWc+4wESxOBGxWu2PYEY6U+OL1INFUboKW0ZJIoc7JuUG/ylDQ4Uq++g7WMtuWw691D
+	/XEdP6Kds+GkRiQH/jK6sLuSDHoJMzOtQ=
+X-Google-Smtp-Source: AGHT+IG5WlQCcSrpKjtmrTKSuTso7FBs91pigsQBNziZVwp1qYR1+jHUes01I7ZrZxHGXnTVwt7C9A==
+X-Received: by 2002:a17:902:e5ca:b0:295:5dbe:f629 with SMTP id d9443c01a7336-2a3ee433154mr49122985ad.8.1767875168169;
+        Thu, 08 Jan 2026 04:26:08 -0800 (PST)
+Received: from [127.0.1.1] ([2a12:a305:4::40df])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-819bafe991dsm7656401b3a.16.2026.01.08.04.25.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Jan 2026 00:09:11 -0800 (PST)
-From: Kuan-Wei Chiu <visitorckw@gmail.com>
-To: airlied@gmail.com,
-	simona@ffwll.ch,
-	maarten.lankhorst@linux.intel.com,
-	mripard@kernel.org,
-	tzimmermann@suse.de,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	dmitry.torokhov@gmail.com,
-	sre@kernel.org,
-	gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	lgirdwood@gmail.com,
-	broonie@kernel.org
-Cc: jserv@ccns.ncku.edu.tw,
-	eleanor15x@gmail.com,
-	dri-devel@lists.freedesktop.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-input@vger.kernel.org,
-	linux-pm@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-sound@vger.kernel.org,
-	krzysztof.kozlowski@oss.qualcomm.com,
-	Kuan-Wei Chiu <visitorckw@gmail.com>
-Subject: [PATCH v2 1/6] dt-bindings: serial: google,goldfish-tty: Convert to DT schema
-Date: Thu,  8 Jan 2026 08:08:31 +0000
-Message-ID: <20260108080836.3777829-2-visitorckw@gmail.com>
-X-Mailer: git-send-email 2.52.0.457.g6b5491de43-goog
-In-Reply-To: <20260108080836.3777829-1-visitorckw@gmail.com>
-References: <20260108080836.3777829-1-visitorckw@gmail.com>
+        Thu, 08 Jan 2026 04:26:07 -0800 (PST)
+From: Guodong Xu <guodong@riscstar.com>
+Subject: [PATCH v3 00/11] riscv: spacemit: Add SpacemiT K3 SoC and K3
+ Pico-ITX board
+Date: Thu, 08 Jan 2026 20:25:51 +0800
+Message-Id: <20260108-k3-basic-dt-v3-0-ed99eb4c3ad3@riscstar.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAE+iX2kC/22PQU4DMQxFr1JlTVDidELCinsgFh47oRZqpyRhB
+ Kp6d9x2A4jlt/We/j+ZXpqUbh43J9PKKl2Wg4ZwtzG0w8NrscKaDTiYPPho34KdsQtZHpY4T1v
+ nos8pGyWOrVT5vNqeXzTvpI+lfV3lq79c//es3jqLjmGKlJkyPDXp1Ae2e1r25qJa4QcO8BsHx
+ QPWUAOxqwn/4OdbtVbeP3TfuPUziher/70M3QtQyUPeZoY4JcZEcYYUY62VZs+ID4zOZ5WdvwH
+ Ew//JNAEAAA==
+X-Change-ID: 20251216-k3-basic-dt-cd9540061989
+To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>, 
+ Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
+ Alexandre Ghiti <alex@ghiti.fr>, Yixun Lan <dlan@gentoo.org>, 
+ Daniel Lezcano <daniel.lezcano@linaro.org>, 
+ Thomas Gleixner <tglx@linutronix.de>, 
+ Samuel Holland <samuel.holland@sifive.com>, 
+ Anup Patel <anup@brainfault.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>, 
+ Yangyu Chen <cyy@cyyself.name>
+Cc: Paul Walmsley <paul.walmsley@sifive.com>, 
+ Conor Dooley <conor@kernel.org>, Heinrich Schuchardt <xypron.glpk@gmx.de>, 
+ Kevin Meng Zhang <zhangmeng.kevin@linux.spacemit.com>, 
+ Anup Patel <anup@brainfault.org>, Andrew Jones <ajones@ventanamicro.com>, 
+ devicetree@vger.kernel.org, linux-riscv@lists.infradead.org, 
+ linux-kernel@vger.kernel.org, spacemit@lists.linux.dev, 
+ linux-serial@vger.kernel.org, Guodong Xu <guodong@riscstar.com>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>, 
+ Heinrich Schuchardt <heinrich.schuchardt@canonical.com>, 
+ Conor Dooley <conor.dooley@microchip.com>
+X-Mailer: b4 0.14.2
 
-Convert the Google Goldfish TTY binding to DT schema format.
-Move the file to the serial directory to match the subsystem.
-Update the example node name to 'serial' to comply with generic node
-naming standards.
+This series introduces basic support for the SpacemiT K3 SoC and the
+K3 Pico-ITX evaluation board.
 
-Signed-off-by: Kuan-Wei Chiu <visitorckw@gmail.com>
----
+This series (starting from v2) also adds descriptions about ISA extensions
+mandated by the RVA23 Profile Version 1.0 into riscv/extensions.yaml.
+There are extensive discussions about how to handle these new extensions
+in v2. In v3, here is my best understading of what I think we have reached
+consensus on.
+
+The SpacemiT K3 is an SoC featuring 8 SpacemiT X100 RISC-V cores.
+The X100 is a 4-issue, out-of-order core compliant with the RVA23
+profile, targeting high-performance scenarios. [1]
+
+The K3 Pico-ITX is an evaluation board built around the K3 SoC.
+
+From an RVA23 profile compliance perspective, the X100 supports all
+mandatory extensions required by RVA23U64 and RVA23S64.
+
+Hi, Conor
+
+For the binding riscv/extensions.ymal, here's what changed in v3:
+
+ 1. Dropped the patch of adding "supm" into extensions.yaml. At the same time,
+    I will start another patchset which implements the strategy outlined
+    by Conor in Link [2]. I understand there could be different opinions
+    and anyway, let's move the discussion about "supm" into a patchset of
+    its own.
+ 2. Dropped the dependency checks for "sha" on "h", "shcounterenw", and
+    6 others. "sha" implies these extensions, and it should be allowed
+    to be declared independently.
+ 3. Enchanced the dependency check of "ziccamoa" on "a". Sepcifically,
+     - added the dependecy check of "ziccamoa" on "zaamo" or on "a".
+     - added the dependency check of "za64rs" on "zalrsc" or on "a".
+     - added the dependency check of "ziccrse" on "zalrsc" or "a".
+    The commit message of this patch is updated too, to better explain the
+    relationship  between "ziccamoa", "za64rs", "ziccrse" and "a".
+ 4. Enhanced checking dependency of "b" and "zba", "zbb", "zbs", making the
+    dependency check in both directions.
+
+Thank you for your review.
+
+Other Changes in v3 include:
+- Patch 1:
+   Acked-by: Krzysztof Kozlowski
+- Patch 4:
+   Acked-by: Krzysztof Kozlowski
+- Dropped Patch 5 "dt-bindings: serial: 8250: add SpacemiT K3 UART compatible"
+   as it has been applied to tty-next.
+
+The entire series now rebased on top of tty-next (tty.git), which now merged
+with v6.19-rc3.
+
+Link: https://www.spacemit.com/en/spacemit-x100-core/ [1]
+Link: https://lore.kernel.org/lkml/20260101-legume-engraved-0fae8282cfbe@spud/ [2]
+Link to v2: https://lore.kernel.org/r/20251222-k3-basic-dt-v2-0-3af3f3cd0f8a@riscstar.com
+
 Changes in v2:
-- Add reference to serial.yaml schema.
-- Change additionalProperties to unevaluatedProperties: false.
+- Patch 1:
+   Fixed alphanumeric sorting order of compatible strings (swapped x100 and
+     x60) as per Krzysztof's feedback.
+   Update commit message with more information about X100 featurs per
+     Yixun's feedback.
+- Patch 4:
+   Fixed the order to keep things alphabetically.
+- Patch 6:
+   Use "one blank space" between name and email address.
+- Patch 7 ~ 11:
+   New patches. Add description of RVA23 mandatory extensions into riscv
+    binding YAML file.
+- Patch 12 (Patch 7 in v1):
+   Removed aliases node.
+   Updated 'riscv,isa-extensions' with new extension strings available
+- Patch 13 (Patch 8 in v1):
+   Updated the memory address to the hardware truth.
+   Added aliases node in board dts.
+- Patch 1,2,3,5: Add Reviewed-by and Acked-by collected.
 
- .../devicetree/bindings/goldfish/tty.txt      | 17 --------
- .../bindings/serial/google,goldfish-tty.yaml  | 41 +++++++++++++++++++
- 2 files changed, 41 insertions(+), 17 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/goldfish/tty.txt
- create mode 100644 Documentation/devicetree/bindings/serial/google,goldfish-tty.yaml
+Link to v1: https://lore.kernel.org/r/20251216-k3-basic-dt-v1-0-a0d256c9dc92@riscstar.com
 
-diff --git a/Documentation/devicetree/bindings/goldfish/tty.txt b/Documentation/devicetree/bindings/goldfish/tty.txt
-deleted file mode 100644
-index 82648278da77..000000000000
---- a/Documentation/devicetree/bindings/goldfish/tty.txt
-+++ /dev/null
-@@ -1,17 +0,0 @@
--Android Goldfish TTY
--
--Android goldfish tty device generated by android emulator.
--
--Required properties:
--
--- compatible : should contain "google,goldfish-tty" to match emulator
--- reg        : <registers mapping>
--- interrupts : <interrupt mapping>
--
--Example:
--
--	goldfish_tty@1f004000 {
--		compatible = "google,goldfish-tty";
--		reg = <0x1f004000 0x1000>;
--		interrupts = <0xc>;
--	};
-diff --git a/Documentation/devicetree/bindings/serial/google,goldfish-tty.yaml b/Documentation/devicetree/bindings/serial/google,goldfish-tty.yaml
-new file mode 100644
-index 000000000000..0b702c8657c2
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/google,goldfish-tty.yaml
-@@ -0,0 +1,41 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/serial/google,goldfish-tty.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Google Goldfish TTY
-+
-+maintainers:
-+  - Kuan-Wei Chiu <visitorckw@gmail.com>
-+
-+allOf:
-+  - $ref: /schemas/serial/serial.yaml#
-+
-+description:
-+  Android goldfish TTY device generated by Android emulator.
-+
-+properties:
-+  compatible:
-+    const: google,goldfish-tty
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    serial@1f004000 {
-+        compatible = "google,goldfish-tty";
-+        reg = <0x1f004000 0x1000>;
-+        interrupts = <0xc>;
-+    };
+Signed-off-by: Guodong Xu <guodong@riscstar.com>
+---
+Guodong Xu (11):
+      dt-bindings: riscv: add SpacemiT X100 CPU compatible
+      dt-bindings: timer: add SpacemiT K3 CLINT
+      dt-bindings: interrupt-controller: add SpacemiT K3 APLIC
+      dt-bindings: interrupt-controller: add SpacemiT K3 IMSIC
+      dt-bindings: riscv: spacemit: add K3 and Pico-ITX board bindings
+      dt-bindings: riscv: Add B ISA extension description
+      dt-bindings: riscv: Add descriptions for Za64rs, Ziccamoa, Ziccif, and Zicclsm
+      dt-bindings: riscv: Add Ssccptr, Sscounterenw, Sstvala, Sstvecd, Ssu64xl
+      dt-bindings: riscv: Add Sha and its comprised extensions
+      riscv: dts: spacemit: add initial device tree of SpacemiT K3 SoC
+      riscv: dts: spacemit: add SpacemiT K3 Pico-ITX board device tree
+
+ .../bindings/interrupt-controller/riscv,aplic.yaml |   1 +
+ .../interrupt-controller/riscv,imsics.yaml         |   1 +
+ Documentation/devicetree/bindings/riscv/cpus.yaml  |   1 +
+ .../devicetree/bindings/riscv/extensions.yaml      | 169 +++++++
+ .../devicetree/bindings/riscv/spacemit.yaml        |   4 +
+ .../devicetree/bindings/timer/sifive,clint.yaml    |   1 +
+ arch/riscv/boot/dts/spacemit/Makefile              |   1 +
+ arch/riscv/boot/dts/spacemit/k3-pico-itx.dts       |  38 ++
+ arch/riscv/boot/dts/spacemit/k3.dtsi               | 548 +++++++++++++++++++++
+ 9 files changed, 764 insertions(+)
+---
+base-commit: 322fc12949d2658da8c6b2866fffcb1daa7da019
+change-id: 20251216-k3-basic-dt-cd9540061989
+
+Best regards,
 -- 
-2.52.0.457.g6b5491de43-goog
+Guodong Xu <guodong@riscstar.com>
 
