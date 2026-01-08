@@ -1,67 +1,68 @@
-Received: from mail-pf1-f169.google.com (mail-pf1-f169.google.com [209.85.210.169])
+Received: from mail-pf1-f172.google.com (mail-pf1-f172.google.com [209.85.210.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E989A4DF3A1
-	for <linux-serial@vger.kernel.org>; Thu,  8 Jan 2026 12:26:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 022562F547D
+	for <linux-serial@vger.kernel.org>; Thu,  8 Jan 2026 12:26:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767875193; cv=none; b=tefZbbASdz4ZGyrduzEQMz74/X8mcRZfCKxW7YR0bOEBpMSMFUWKAZiesz0Th/6twTJ/SKeln/+4K6vzU1PhchrRMTSvDSNXbzZGtYasfE7i6WWmDX6ipxXKmBazpLRPewmy+1jc0tMRGN8dVWAxWhuKKOreru55uXimhxCKw6I=
+	t=1767875203; cv=none; b=D2StTxyEAQyeGVhqQeh4I16QXzut9s3MGsUKo4LZrFIkgYR+nVeuWbYuWQ9f2TlAR2ob6iY2yRXC/wNAu49uMjDfENRIFhYRW+y1wTv+iTvC0wnLgVuRhpsvf5b3A/xZKfQzpmiw96VXec6g6AB8+cjVastkPxXmtPZIeRZipD0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767875193; c=relaxed/simple;
-	bh=jwDsgL7x7nOIt2v7JDXtla8T7Jp+LG2ZQ5oLy5SV1cE=;
+	s=arc-20240116; t=1767875203; c=relaxed/simple;
+	bh=BmARFNdMYVDF85A9HHxy7Xy3eWz7vlysBnNURs7Ug3g=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=LIaDeV5kkAkne9fY0u47Rn9c/q113AOvQHRhqA4k+6IJ9dtp+l59wvAsT8xtYjVueFTPRq3rgKuH/xv0rJYZWucN0+us7rJ9lnXHC5Mu9QfwykOu728/rfLsB5KI3eAPtZUPK/KRKNKN3KomhPbD1r37A5T6l9XCu2oprYKuLHc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com; spf=pass smtp.mailfrom=riscstar.com; dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b=2Dualw3x; arc=none smtp.client-ip=209.85.210.169
+	 In-Reply-To:To:Cc; b=KYWmTbebAfvGslqV+ZLYnHpDObhTXhnFylcZqjaQr7fRUdSnYBBX/ZH1TFXMSutXb5CsLwTBrJny7iB4R4R02vaA06ry9S/58bd7ln8uLH0hCXHqC+00ERJOlKCH1VNI89HuZsMWTQDpFBcI3dsVtHtxl/GdM4wOnIvpXc4mKY0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com; spf=pass smtp.mailfrom=riscstar.com; dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b=rz1YBrUK; arc=none smtp.client-ip=209.85.210.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=riscstar.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b="2Dualw3x"
-Received: by mail-pf1-f169.google.com with SMTP id d2e1a72fcca58-7b7828bf7bcso2347511b3a.2
-        for <linux-serial@vger.kernel.org>; Thu, 08 Jan 2026 04:26:31 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b="rz1YBrUK"
+Received: by mail-pf1-f172.google.com with SMTP id d2e1a72fcca58-7baf61be569so2155127b3a.3
+        for <linux-serial@vger.kernel.org>; Thu, 08 Jan 2026 04:26:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=riscstar-com.20230601.gappssmtp.com; s=20230601; t=1767875191; x=1768479991; darn=vger.kernel.org;
+        d=riscstar-com.20230601.gappssmtp.com; s=20230601; t=1767875201; x=1768480001; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=4rdFmdZfR4eNmRMqejKMXyCR2tEpYJOIzk9O2le0lBU=;
-        b=2Dualw3x6CyTtbaLuwn209P7JnYoSt18gXMKqevEXQc1Nr/DD1SuwY/p4U+SyJtufO
-         p0Vfm7MPX6qUL0c8HLTqKg9XbZwTtVRu9ythgFYVjsiTzhg9iyZ/ldKT1qRJYnLG8Y2N
-         nDPq9f1MWelS550yaXM9EOXhfTNRRGUtWSBdiTHAeM8RvVmxW7mZ1zsoyTF2X09eixK2
-         nBOL6KmkKT9UHHlcLU/zGz3jEXu01H6KUdp6ULdgdjX2b3XmuZplrlBr6/A2tQrNFkxn
-         kovqqUAgl7MqIdHl08MlGmgZLbM/65pqQ6kp7yPtZKvv3Zt8Gi3KOdH31nUNW0LRKUKH
-         i5KA==
+        bh=uE1KQ3Nap9wSa7ARNmv253D/zHZAcI3o2YellqaTrW0=;
+        b=rz1YBrUKroTnNeMDZaTQs9VcwI4BQFjXnYfLhe2qBiLUjF7OvIcFBBXI2a+x8LYOgL
+         qL1/xxR8ShU/8j5uulbM3QtIgElfHb/6Y8005PIt0laAAjkWs9zUqD7toQhwhljX/HvN
+         QI+4XqVctbAaasKaqrffm+0sIgOnlYjmDNVzeXHqiHNt7SaBvrB8bYfyH6Cqu5M80EBC
+         NXxlD537Gszp7tXWeJ16Q3UUIqEQBANvOGvhLA6+E0iM4wNaXTzfj9JYcdMgLgaSI30G
+         aHB+Y/pZw77LIowicJj93QR69GUeCXU7H7kvEA7waiFO0WsyhBFBRFSftSLVxw58Q8VJ
+         ymqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767875191; x=1768479991;
+        d=1e100.net; s=20230601; t=1767875201; x=1768480001;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=4rdFmdZfR4eNmRMqejKMXyCR2tEpYJOIzk9O2le0lBU=;
-        b=GMD9DAWIJxNUnDR6M38lF84cUmycKU/mE+Bxw0bnyB6tQ0tn3/i3q0z0iLQMo5QLj4
-         WMEjirgE9s9DnERmBIKFP92KOYZlChusjNzEF/htvFZzOdn2ewxgAhWZ5gAhalLg3psF
-         5k7Tpx42iE/elcOAJysH5csrrEsS4O4jPu4M2slxA16EEuT+cB8w+HnsAS5HJs+8uCg/
-         e8s0s4ma3Se8QQVa+VA3QsI1AliWChe581Z2KYS+Ok6JlLedvZBaoH7zVJDJRtCIW+xm
-         i9BZpdsMBMksE6jjvl5Pi+oTfCbarSBBeIhHgigsK+0IOtuojBXpf3Auf+KHZeuoUHfk
-         Co+g==
-X-Forwarded-Encrypted: i=1; AJvYcCVYF5+Hl54nf7oAGiq8x7MXuv3f4zm2ekhUyo2mqiz80mjnNPX43DGj0TeHwrVngMRJ+14nN9sJk+FhKqs=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwMIS2pa85bbEhi0RAyu3EMWrP1bRijyddMA+WoqeYFKCufqWGU
-	hg4CPgX38LqkBw2NWNlqKJ2xZcsPVj9+h8EZ7KkZfoZG0P6aNpjkYdgVGHjtthX2NAU=
-X-Gm-Gg: AY/fxX6d0n0VYOLnLlE0KTY9kIY3Xw4B2TcmYAbgGXBtdZJmNr0xx2DF9EFHAUoK0nS
-	bIlcgr5MWHD9h2LwSyDBTvNP9wUPT4kAy9Srzm6EuIsUcTT03hkpEKtlF0Itg29MTKqnA1wPwHJ
-	8e62Hs9o9CA5Qw0D5lexEB2QBobKg+4wctFP/fNasBHhrTzpgOcjYWXCyMiYlpGGCMRjFsBl54s
-	DCehRXLA8lxEiyVLvzM2BeTonIKusr+bJMwaF3aiexORbjLxPq2bM73FXDtszvxUFVpB5l3vCLY
-	RZdzUKDl7Ii189S+UfC2hARzZu9qr7Pal2mZjgx7vjwsKsuvIjCk3ud/uPx0IEbPaCfP3mErzFD
-	F7Kmh/klZ+PxadXu0ncQfOfujo76KvP/Rg1J2x4A2Xt2ONTurb1RDyBTsGcW/A0T2NZFJEhTvlt
-	wnQS5d2OEPG1tCsl5nH0pZqxSgGXvU1bM=
-X-Google-Smtp-Source: AGHT+IHheKi+WINIX/sN2F5BrXIlf0KDIJbSmAHkyxZzFI0+gQsjVJ9XwXI3CiyqReN01P5B6clk5g==
-X-Received: by 2002:a05:6a00:440a:b0:819:4284:365b with SMTP id d2e1a72fcca58-81b7d95f67emr5827148b3a.7.1767875191060;
-        Thu, 08 Jan 2026 04:26:31 -0800 (PST)
+        bh=uE1KQ3Nap9wSa7ARNmv253D/zHZAcI3o2YellqaTrW0=;
+        b=Vwu/Jxqcdt4a58c05ngCy5/YpALl5WlCM3MyPqzXOQ3m7KZdI1uJWA/5TSK9/AGE0E
+         nTczrfZXRz93ETeUo+B+nBkfYxBgRF6SXZQ8eAlAb7oWZsKv2C1RrGFqW+9oqT4L2IYp
+         reSeQs9UN34D1TWx96pwyW/Wcib3rD4IxgYm5f7Cmt9LFpHelDaBiBxg3C2Q3A7pc49E
+         uBeqPQNdfiXvVX9brCPRx7UxHRYu+Gdc7TZ/B0KrdIamBKvaYczoHJO+5XNWqV0Ov4ph
+         QVRFvfKI2+cgRCdyFbhsOW4hifHI9hXot+/3y9O6mNlBvzH1PhpPK8kx3QWZ5QVWpWpJ
+         TrvQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUeQofR9uUpAXmm86PLJC49tGPm4k1K+ZfmlHxcBTqAfupDDbYg0zYQiYLSwzVeiuatUe849kRgssR7994=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywk4GPHpFK4vhXfRSVkjvd/dyHsl/i87Ad0NhwYT9brcklet6Su
+	gVR010MZs9ns1iDKp920lKZ2SAkwON1ejK5bHbS1xU/lpeqp1bOvHkqot9gW2vqQinU=
+X-Gm-Gg: AY/fxX6Ak2ZSOdIZepChioi9f78tC8Ku14JhNHIw8dZqF1hk423zgZoimRR7kH9R0jN
+	PdJS/pCNN5IXPfWt7YfoaWNR14zRAvQBcm17g96pjqdOn3BwatQ4N4kT8f+JL5FPFOdV5et+9a/
+	N6J1mfpQ+/jzl75tFEgHn8z5Wn/imfadUHxuAKmHCmhKcbFrzBcy4S66yJLg1YoDzJbDPjZ5n2I
+	PMz0vYvH2r/UTAonJ8H0i9wMVwCwqLJ4DukxT7YmltISgz2yyQ4lLBcKIOnB78aIV7i8im5fCgS
+	tPJs7Ev3cCdHP4aCcty/+ecUs4rPS+ZZfOk1u0zDrFwsyTMI9jwriSdwbdZgCl7C5s3MF0lqlx4
+	3Sotui5rNqWw+wVOVb27no6dZZ4k5Hq9S6Wrdrg5Y1pLMCFOypCyuxeom+cl/xs1d0jKAY7/bSz
+	UWVBNvMDh4xZW4p4j91VRwxOKoYvJ7+Iw=
+X-Google-Smtp-Source: AGHT+IEf2mq8ef1YFTNrrFOuAanoejlFcGh2te7djhwZxqGKBzNIruQxKkJjwV3kGI0EiglOFPr0Pg==
+X-Received: by 2002:a05:6a00:4219:b0:7f7:2680:7325 with SMTP id d2e1a72fcca58-81b7d6511bemr5205066b3a.13.1767875201339;
+        Thu, 08 Jan 2026 04:26:41 -0800 (PST)
 Received: from [127.0.1.1] ([2a12:a305:4::40df])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-819bafe991dsm7656401b3a.16.2026.01.08.04.26.20
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-819bafe991dsm7656401b3a.16.2026.01.08.04.26.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Jan 2026 04:26:30 -0800 (PST)
+        Thu, 08 Jan 2026 04:26:40 -0800 (PST)
 From: Guodong Xu <guodong@riscstar.com>
-Date: Thu, 08 Jan 2026 20:25:53 +0800
-Subject: [PATCH v3 02/11] dt-bindings: timer: add SpacemiT K3 CLINT
+Date: Thu, 08 Jan 2026 20:25:54 +0800
+Subject: [PATCH v3 03/11] dt-bindings: interrupt-controller: add SpacemiT
+ K3 APLIC
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -70,7 +71,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260108-k3-basic-dt-v3-2-ed99eb4c3ad3@riscstar.com>
+Message-Id: <20260108-k3-basic-dt-v3-3-ed99eb4c3ad3@riscstar.com>
 References: <20260108-k3-basic-dt-v3-0-ed99eb4c3ad3@riscstar.com>
 In-Reply-To: <20260108-k3-basic-dt-v3-0-ed99eb4c3ad3@riscstar.com>
 To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
@@ -94,7 +95,7 @@ Cc: Paul Walmsley <paul.walmsley@sifive.com>,
  Conor Dooley <conor.dooley@microchip.com>
 X-Mailer: b4 0.14.2
 
-Add compatible string for SpacemiT K3 CLINT.
+Add compatible string for SpacemiT K3 APLIC.
 
 Acked-by: Conor Dooley <conor.dooley@microchip.com>
 Signed-off-by: Guodong Xu <guodong@riscstar.com>
@@ -102,21 +103,21 @@ Signed-off-by: Guodong Xu <guodong@riscstar.com>
 v3: No change.
 v2: Add Conor's Acked-by.
 ---
- Documentation/devicetree/bindings/timer/sifive,clint.yaml | 1 +
+ Documentation/devicetree/bindings/interrupt-controller/riscv,aplic.yaml | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/timer/sifive,clint.yaml b/Documentation/devicetree/bindings/timer/sifive,clint.yaml
-index 0d3b8dc362ba7e8d0ca6d0cea692ceddc5e1f89e..3bab40500df9bc2ba4f7d6f1bf340c8cbc06f9de 100644
---- a/Documentation/devicetree/bindings/timer/sifive,clint.yaml
-+++ b/Documentation/devicetree/bindings/timer/sifive,clint.yaml
-@@ -33,6 +33,7 @@ properties:
-               - eswin,eic7700-clint     # ESWIN EIC7700
-               - sifive,fu540-c000-clint # SiFive FU540
-               - spacemit,k1-clint       # SpacemiT K1
-+              - spacemit,k3-clint       # SpacemiT K3
-               - starfive,jh7100-clint   # StarFive JH7100
-               - starfive,jh7110-clint   # StarFive JH7110
-               - starfive,jh8100-clint   # StarFive JH8100
+diff --git a/Documentation/devicetree/bindings/interrupt-controller/riscv,aplic.yaml b/Documentation/devicetree/bindings/interrupt-controller/riscv,aplic.yaml
+index bef00521d5dacc002d24c50843ebe6380a7d5524..0718071444d29fbfa36283fc9666e8cecd6f77e7 100644
+--- a/Documentation/devicetree/bindings/interrupt-controller/riscv,aplic.yaml
++++ b/Documentation/devicetree/bindings/interrupt-controller/riscv,aplic.yaml
+@@ -28,6 +28,7 @@ properties:
+     items:
+       - enum:
+           - qemu,aplic
++          - spacemit,k3-aplic
+       - const: riscv,aplic
+ 
+   reg:
 
 -- 
 2.43.0
