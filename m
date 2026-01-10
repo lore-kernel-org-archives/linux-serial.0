@@ -1,48 +1,48 @@
 Received: from mail.mleia.com (mleia.com [178.79.152.223])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4817E238178;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD95A23D2A3;
 	Sat, 10 Jan 2026 02:46:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.79.152.223
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768013213; cv=none; b=oI821DH92SQ+iXeH82LHGfGIEUr+NKmLCnE/qPTcAfw+/Ja2bBYBUSIo0hvttLGzrk1hOTCP15khxnGj8Q1GoN/z1iBuUc5mGCNSz4iB1FjhQVw1U9ZnrYyMv9xFuU4wO92LKTqIFO0hzvnmenV9nl0WJRQik/QuJ6Dxw0WR6f4=
+	t=1768013214; cv=none; b=puav2CaupdG890DRzOHY6p/Tj39tXvfBbJRbzHP/2SOUZaJHWaA5u+gB5/JaZnXhklP5wchOP7ccsJ6DMxxgurY/2+lSHbKMKJgxJ3o/SKAU8stcOIj8Wfwv49rraJeH38T6DSnj/hxNKjJFP3ypr65SwT7LXKZ2otSDNjlHRPo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768013213; c=relaxed/simple;
-	bh=24hz3Id0LIKMRhcbMNAjYabls+Gw5398qtBHFFTVgL0=;
+	s=arc-20240116; t=1768013214; c=relaxed/simple;
+	bh=+BYuWtFv/XD2qRphe2CsoPtoHBClY2P0EnzOb7khs3A=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=oSgkr5pNg3S5iybLZakUMHRiz0lSRjaXkjWxeX26xKEeXNOvHNXkKePrMQDKbpH+no337RHIyUnLEbYBfEict3Z6w7t3VmcJr+9qYTDJe7FoZh6tXDpUpx5gPfvlq1Y+Yoz6jA95VEBwdezWR+SD0i6xgwD0bmgqD4IAzSCFdrE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=mleia.com; spf=none smtp.mailfrom=mleia.com; dkim=pass (2048-bit key) header.d=mleia.com header.i=@mleia.com header.b=LwMX2Li3; dkim=pass (2048-bit key) header.d=mleia.com header.i=@mleia.com header.b=LwMX2Li3; arc=none smtp.client-ip=178.79.152.223
+	 MIME-Version; b=bMX29B+pByJE27nLdFSubJ+faTkzB32kUG2PlFii5AQEohzeuJTos10TTapIVrpzUPW9N6G8BycDRV0+RzgpBdPOfFqrLjsIr1cmgVcLFYuepIJjbb2RmNBlIbiYmTMKaz7S4JWaig7fwmnvYNQ+cpeTI5a1b8fvvwtIMQxRioI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=mleia.com; spf=none smtp.mailfrom=mleia.com; dkim=pass (2048-bit key) header.d=mleia.com header.i=@mleia.com header.b=c7jZjyRg; dkim=pass (2048-bit key) header.d=mleia.com header.i=@mleia.com header.b=c7jZjyRg; arc=none smtp.client-ip=178.79.152.223
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=mleia.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=mleia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mleia.com header.i=@mleia.com header.b="LwMX2Li3";
-	dkim=pass (2048-bit key) header.d=mleia.com header.i=@mleia.com header.b="LwMX2Li3"
+	dkim=pass (2048-bit key) header.d=mleia.com header.i=@mleia.com header.b="c7jZjyRg";
+	dkim=pass (2048-bit key) header.d=mleia.com header.i=@mleia.com header.b="c7jZjyRg"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mleia.com; s=mail;
-	t=1768013210; bh=24hz3Id0LIKMRhcbMNAjYabls+Gw5398qtBHFFTVgL0=;
+	t=1768013211; bh=+BYuWtFv/XD2qRphe2CsoPtoHBClY2P0EnzOb7khs3A=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=LwMX2Li3pFgrq27AM+F/VtVUQfjYfbj276bnh8YIK02/pmXSUezFVVPiE6fO7ozb0
-	 2VH7MMBIG763lNDv82ooC2OGJLrIB4dY19sc3vQ8XwD+nQh21ntIEQGgSgbsMJbLou
-	 Eiy6h88BbmgCJRIfgmYHcayXDnwTdbjzw+4Jbm4QSrhyrGbvHyniURaO1a012Wj4gS
-	 VFycna6HQog7UmPQkj+hja56UCBn0AW0M7+pU/fnN2wdx12z9RU86IQRgsL7l/TWIJ
-	 CKfW01MFCZrrAqb4wESKileHeIt5hWqc4qbOLs/Len2Zv1PkfznfZrNPR/UsEvFc7Y
-	 7WvOv4iI8TnVA==
+	b=c7jZjyRgclnJ9qJAJncJGwCVsEBdzb8cMGVRKLYAAagW2iDOGsDjxbyWy5LhOOEkw
+	 3YYTs0YVZDerI28SUqSydaAuq9ztVoTGR8vXpWGxYdBLkR4jxK8g1e0qq/9/uHAdFK
+	 p+GRRbtAPuLX7LDsycjquqqkPWznXWKlN41+TxCcBYArc6pIA5q2n/oCUx+ZKulOpY
+	 dWaOKQ1ygR0DikB1sWyLLd91UFPbEovqGCHOGWMJPjlYMLOryGU8Jp6GzVd8ek8bkn
+	 6SLqyqlVE73anYrOWt09y3jFH67Izd5/fC2yhHITVqUSJbSxcb9Gmte/NM9VIexImv
+	 mRyDrSMoQ8oFw==
 Received: from mail.mleia.com (localhost [127.0.0.1])
-	by mail.mleia.com (Postfix) with ESMTP id B26DE3EB2D5;
-	Sat, 10 Jan 2026 02:46:50 +0000 (UTC)
+	by mail.mleia.com (Postfix) with ESMTP id 6C7453EB821;
+	Sat, 10 Jan 2026 02:46:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mleia.com; s=mail;
-	t=1768013210; bh=24hz3Id0LIKMRhcbMNAjYabls+Gw5398qtBHFFTVgL0=;
+	t=1768013211; bh=+BYuWtFv/XD2qRphe2CsoPtoHBClY2P0EnzOb7khs3A=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=LwMX2Li3pFgrq27AM+F/VtVUQfjYfbj276bnh8YIK02/pmXSUezFVVPiE6fO7ozb0
-	 2VH7MMBIG763lNDv82ooC2OGJLrIB4dY19sc3vQ8XwD+nQh21ntIEQGgSgbsMJbLou
-	 Eiy6h88BbmgCJRIfgmYHcayXDnwTdbjzw+4Jbm4QSrhyrGbvHyniURaO1a012Wj4gS
-	 VFycna6HQog7UmPQkj+hja56UCBn0AW0M7+pU/fnN2wdx12z9RU86IQRgsL7l/TWIJ
-	 CKfW01MFCZrrAqb4wESKileHeIt5hWqc4qbOLs/Len2Zv1PkfznfZrNPR/UsEvFc7Y
-	 7WvOv4iI8TnVA==
+	b=c7jZjyRgclnJ9qJAJncJGwCVsEBdzb8cMGVRKLYAAagW2iDOGsDjxbyWy5LhOOEkw
+	 3YYTs0YVZDerI28SUqSydaAuq9ztVoTGR8vXpWGxYdBLkR4jxK8g1e0qq/9/uHAdFK
+	 p+GRRbtAPuLX7LDsycjquqqkPWznXWKlN41+TxCcBYArc6pIA5q2n/oCUx+ZKulOpY
+	 dWaOKQ1ygR0DikB1sWyLLd91UFPbEovqGCHOGWMJPjlYMLOryGU8Jp6GzVd8ek8bkn
+	 6SLqyqlVE73anYrOWt09y3jFH67Izd5/fC2yhHITVqUSJbSxcb9Gmte/NM9VIexImv
+	 mRyDrSMoQ8oFw==
 Received: from mail.mleia.com (91-159-24-186.elisa-laajakaista.fi [91.159.24.186])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.mleia.com (Postfix) with ESMTPSA id 0FC6D3EB821;
+	by mail.mleia.com (Postfix) with ESMTPSA id BE6123EB823;
 	Sat, 10 Jan 2026 02:46:50 +0000 (UTC)
 From: Vladimir Zapolskiy <vz@mleia.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -55,9 +55,9 @@ Cc: Lubomir Rintel <lkundrak@v3.sk>,
 	devicetree@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 1/2] dt-bindings: serial: 8250: Explicitly make LPC32xx UARTs compatible with 16550A
-Date: Sat, 10 Jan 2026 04:46:46 +0200
-Message-ID: <20260110024647.3389345-2-vz@mleia.com>
+Subject: [PATCH 2/2] arm: dts: lpc32xx: Add ns16550a compatible value to UART device tree nodes
+Date: Sat, 10 Jan 2026 04:46:47 +0200
+Message-ID: <20260110024647.3389345-3-vz@mleia.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260110024647.3389345-1-vz@mleia.com>
 References: <20260110024647.3389345-1-vz@mleia.com>
@@ -69,38 +69,61 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-49551924 
-X-CRM114-CacheID: sfid-20260110_024650_745720_46ED961D 
-X-CRM114-Status: GOOD (  10.40  )
+X-CRM114-CacheID: sfid-20260110_024651_461707_31A473D0 
+X-CRM114-Status: GOOD (  12.88  )
 
-NXP LPC32xx SoC has 4 16550A compatible UARTs with 64 byte TX and RX FIFO
-sizes, and the platform UART hardware is well supported as a standard
-16550A UART.
+NXP LPC32xx SoC has 4 16550A compatible UARTs with a difference of minor
+significance, which is expectedly handled in the 8250 serial driver.
+
+Reflect this fact in the platform device tree file by adding the expected
+compatible value.
 
 Signed-off-by: Vladimir Zapolskiy <vz@mleia.com>
 ---
- Documentation/devicetree/bindings/serial/8250.yaml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/boot/dts/nxp/lpc/lpc32xx.dtsi | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/serial/8250.yaml b/Documentation/devicetree/bindings/serial/8250.yaml
-index 167ddcbd8800..1a5178320465 100644
---- a/Documentation/devicetree/bindings/serial/8250.yaml
-+++ b/Documentation/devicetree/bindings/serial/8250.yaml
-@@ -108,7 +108,6 @@ properties:
-       - const: nuvoton,wpcm450-uart
-       - const: nuvoton,npcm750-uart
-       - const: nvidia,tegra20-uart
--      - const: nxp,lpc3220-uart
-       - items:
-           - enum:
-               - exar,xr16l2552
-@@ -123,6 +122,7 @@ properties:
-               - fsl,16550-FIFO64
-               - andestech,uart16550
-               - nxp,lpc1850-uart
-+              - nxp,lpc3220-uart
-               - opencores,uart16550-rtlsvn105
-               - ti,da830-uart
-               - loongson,ls2k0500-uart
+diff --git a/arch/arm/boot/dts/nxp/lpc/lpc32xx.dtsi b/arch/arm/boot/dts/nxp/lpc/lpc32xx.dtsi
+index e94df78def18..8fa1848943f8 100644
+--- a/arch/arm/boot/dts/nxp/lpc/lpc32xx.dtsi
++++ b/arch/arm/boot/dts/nxp/lpc/lpc32xx.dtsi
+@@ -263,8 +263,7 @@ i2s1: i2s@2009c000 {
+ 
+ 			/* UART5 first since it is the default console, ttyS0 */
+ 			uart5: serial@40090000 {
+-				/* actually, ns16550a w/ 64 byte fifos! */
+-				compatible = "nxp,lpc3220-uart";
++				compatible = "nxp,lpc3220-uart", "ns16550a";
+ 				reg = <0x40090000 0x1000>;
+ 				interrupts = <9 IRQ_TYPE_LEVEL_HIGH>;
+ 				reg-shift = <2>;
+@@ -273,7 +272,7 @@ uart5: serial@40090000 {
+ 			};
+ 
+ 			uart3: serial@40080000 {
+-				compatible = "nxp,lpc3220-uart";
++				compatible = "nxp,lpc3220-uart", "ns16550a";
+ 				reg = <0x40080000 0x1000>;
+ 				interrupts = <7 IRQ_TYPE_LEVEL_HIGH>;
+ 				reg-shift = <2>;
+@@ -282,7 +281,7 @@ uart3: serial@40080000 {
+ 			};
+ 
+ 			uart4: serial@40088000 {
+-				compatible = "nxp,lpc3220-uart";
++				compatible = "nxp,lpc3220-uart", "ns16550a";
+ 				reg = <0x40088000 0x1000>;
+ 				interrupts = <8 IRQ_TYPE_LEVEL_HIGH>;
+ 				reg-shift = <2>;
+@@ -291,7 +290,7 @@ uart4: serial@40088000 {
+ 			};
+ 
+ 			uart6: serial@40098000 {
+-				compatible = "nxp,lpc3220-uart";
++				compatible = "nxp,lpc3220-uart", "ns16550a";
+ 				reg = <0x40098000 0x1000>;
+ 				interrupts = <10 IRQ_TYPE_LEVEL_HIGH>;
+ 				reg-shift = <2>;
 -- 
 2.43.0
 
