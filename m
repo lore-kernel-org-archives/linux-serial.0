@@ -1,109 +1,70 @@
-Received: from smtp.gentoo.org (woodpecker.gentoo.org [140.211.166.183])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FC7E33F371;
-	Sat, 10 Jan 2026 11:55:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=140.211.166.183
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A9FF18DB37;
+	Sat, 10 Jan 2026 23:26:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768046113; cv=none; b=ppx10hI60sPPY43F0big119sQAmz9soR61fwNurjPOyZwa/WOAk6p0JmoyQOLnuSyV6iQXqdE/6eujXUhv3FuCglIkVaT/BzWG78+Ckh0TWtFRdVWPvWOtmiOrI2QgNgb3lL7MtD/kb03RtlauAPRgGFjtYrp6kDRqZtxzRtsWY=
+	t=1768087614; cv=none; b=pdkJrqKLNl6cXbeBHsZ+UBga7mzbowNNbqQQltvtDAJO+2Rhudzu6fz9JYdtESeCvLjmhW1h8ohpyaBYJi40zfTk9bZZHgHOtV0u6p8Oj/0EMclMjN3S4vt389//lcg4OJDGWjJd+E6mkH1/RxghhWLXqMQh7lBC9JS3cBTLZ28=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768046113; c=relaxed/simple;
-	bh=iX4MiZGQL2z/88fUjb1EaNDBM4frLV4bsSb1g8BCzKI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BYa4jTM9A1YUUx74Ppn9SwF0RWZFbDbuK7A28FaQ/Lvn7dU09DCeLVfkZP8DRyigQJmKpKOgV/bqTTFtKuNJ6V3u+7A2BMPoCk7yjJONnPRj9Ay50iuG/gWT6B2G3HNAgpqRs3DWw1NDcOaRHQOhipnJABUYt4il6GYu4SGEyTI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org; spf=pass smtp.mailfrom=gentoo.org; arc=none smtp.client-ip=140.211.166.183
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gentoo.org
-Received: from localhost (unknown [116.232.18.222])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange secp256r1 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: dlan)
-	by smtp.gentoo.org (Postfix) with ESMTPSA id 23849340EA9;
-	Sat, 10 Jan 2026 11:55:08 +0000 (UTC)
-Date: Sat, 10 Jan 2026 19:55:03 +0800
-From: Yixun Lan <dlan@gentoo.org>
-To: Guodong Xu <guodong@riscstar.com>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
-	Daniel Lezcano <daniel.lezcano@linaro.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Samuel Holland <samuel.holland@sifive.com>,
-	Anup Patel <anup@brainfault.org>,
+	s=arc-20240116; t=1768087614; c=relaxed/simple;
+	bh=WCy1F6gUlUiHEaKv+j3z/c3UXIVutz3A4XmPLkOGAL0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=d4K7prrnTMElGlNFTr/kcAUoD3/AAMMPd5dY2yuuyuyeoe5EPoLRU5x5uYzxmYP1JBjIqKFq3YChxr0HMrTc9GkBfGXTrVVYfP7gEWJlM9oqSiBKCTvRJgHEauYf1/r06L25fUgxHzq6X1ItsYGGJlE02cxojwxgtnpdt/1xftA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=ZB+qyuWF; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="ZB+qyuWF"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	MIME-Version:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+	Content-ID:Content-Description:In-Reply-To:References;
+	bh=0wqz/acFyvI2Bv/YfOJ/LpoztRNFSxEYt7VGWEKKWOw=; b=ZB+qyuWFqRZDmr64Jlr1bGQdsx
+	2cySAAXrAh2ukCXdQXPsc71nfAJkHu852m3+x1HLqg8IgkKoGPWZ87dldf6pKkUGMgJktKgx2HDC4
+	HXEaqQTFMEkQY0pQf60DgxWZAdQXgSDdGtx9qnFrD3CGI4F3JZwQI5z0OhpJTNCdpaFeF1ZI8Ki15
+	02zsXf2zHcQLO2L7ZZf01M8vwnC+rhPbe7782rRoqRywgEwAzu1WniNsIHrbRh+74EmvPvF0gCOi+
+	aFa/hDrrDVBTw9KLljWdAh2YDKTIlLubGQCKguPeUnbiMS49aI1WB4XK3PlJ2B00j56ckMsig9bBd
+	FbcMKsSg==;
+Received: from [50.53.43.113] (helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1veiM0-00000003lbk-3DU4;
+	Sat, 10 Jan 2026 23:26:44 +0000
+From: Randy Dunlap <rdunlap@infradead.org>
+To: linux-kernel@vger.kernel.org
+Cc: Randy Dunlap <rdunlap@infradead.org>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
-	Yangyu Chen <cyy@cyyself.name>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Conor Dooley <conor@kernel.org>,
-	Heinrich Schuchardt <xypron.glpk@gmx.de>,
-	Kevin Meng Zhang <zhangmeng.kevin@linux.spacemit.com>,
-	Andrew Jones <ajones@ventanamicro.com>, devicetree@vger.kernel.org,
-	linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-	spacemit@lists.linux.dev, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v4 05/11] dt-bindings: riscv: spacemit: add K3 and
- Pico-ITX board bindings
-Message-ID: <20260110115503-GYC12783@gentoo.org>
-References: <20260110-k3-basic-dt-v4-0-d492f3a30ffa@riscstar.com>
- <20260110-k3-basic-dt-v4-5-d492f3a30ffa@riscstar.com>
+	Jiri Slaby <jirislaby@kernel.org>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	linux-serial@vger.kernel.org
+Subject: [PATCH 0/4 v2] serial: Kconfig cleanups
+Date: Sat, 10 Jan 2026 15:26:39 -0800
+Message-ID: <20260110232643.3533351-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.52.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260110-k3-basic-dt-v4-5-d492f3a30ffa@riscstar.com>
+Content-Transfer-Encoding: 8bit
 
-Hi Guodong,
+Clean up some Kconfig entries.
 
-On 13:18 Sat 10 Jan     , Guodong Xu wrote:
-> Add DT binding documentation for the SpacemiT K3 SoC and the board Pico-ITX
-> which is a 2.5-inch single-board computer.
-> 
-> Signed-off-by: Guodong Xu <guodong@riscstar.com>
+[PATCH 1/4 v2] serial: imx: change SERIAL_IMX_CONSOLE to bool
+[PATCH 2/4 v2] serial: 8250: fix ordering of entries for menu display
+[PATCH 3/4 v2] serial: Kconfig: fix ordering of entries for menu display
+[PATCH 4/4 v2] serial: SH_SCI: improve "DMA support" prompt
 
-Reviewed-by: Yixun Lan <dlan@gentoo.org>
+Patches 1-3 are the same as v1 other than dropping
+Fugang Duan <fugang.duan@nxp.com> from patch 1/4 (mail bounces).
 
-> ---
-> v4: Adjust maintainers list in alphabetic order.
->     Declare spacemit,k3-pico-itx as an enum, which can save future
->      code change when adding new boards.
-> v3: No change.
-> v2: Use one-blank-space between name and email address.
-> ---
->  Documentation/devicetree/bindings/riscv/spacemit.yaml | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/riscv/spacemit.yaml b/Documentation/devicetree/bindings/riscv/spacemit.yaml
-> index 9c49482002f7..b958b94a924d 100644
-> --- a/Documentation/devicetree/bindings/riscv/spacemit.yaml
-> +++ b/Documentation/devicetree/bindings/riscv/spacemit.yaml
-> @@ -7,6 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
->  title: SpacemiT SoC-based boards
->  
->  maintainers:
-> +  - Guodong Xu <guodong@riscstar.com>
->    - Yangyu Chen <cyy@cyyself.name>
->    - Yixun Lan <dlan@gentoo.org>
->  
-> @@ -26,6 +27,10 @@ properties:
->                - xunlong,orangepi-r2s
->                - xunlong,orangepi-rv2
->            - const: spacemit,k1
-> +      - items:
-> +          - enum:
-> +              - spacemit,k3-pico-itx
-> +          - const: spacemit,k3
->  
->  additionalProperties: true
->  
-> 
-> -- 
-> 2.43.0
-> 
+Patch 4 was modified at Geert's request.
 
--- 
-Yixun Lan (dlan)
+ drivers/tty/serial/8250/Kconfig |   95 +++++++++++++++---------------
+ drivers/tty/serial/Kconfig      |   34 +++++-----
+ 2 files changed, 65 insertions(+), 64 deletions(-)
+
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: linux-serial@vger.kernel.org
