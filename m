@@ -1,68 +1,68 @@
-Received: from mail-pg1-f193.google.com (mail-pg1-f193.google.com [209.85.215.193])
+Received: from mail-pg1-f175.google.com (mail-pg1-f175.google.com [209.85.215.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8B59279DC3
-	for <linux-serial@vger.kernel.org>; Sat, 10 Jan 2026 05:19:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.193
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7020F2E413
+	for <linux-serial@vger.kernel.org>; Sat, 10 Jan 2026 05:19:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768022392; cv=none; b=juInbI97hGMuY6u+p+XmG5VaW8njqs54+VKoDV/RpOAx0oA/adepEH/BHpQs10Bj2ttdksDm0jxLk481doZ85b7zz0vBqPUhMarYWgoB+stu/ReJMWhaEYJWnZ+E5ZIfI4douNaOl3Xrok32k2gOLc7OnW/yUO7+A1YpUqRA/SE=
+	t=1768022400; cv=none; b=us0tL7iPoPnfSa+AhOGnZgOT8A6AyWC9lX2Dx69G0VsNycv/2tHDukwvrr5C9iAgQblFBTByATkvkPziqxJiXVZoTdwh7WpSnUgKXVEMdSWZ37isyTzUt0jXG4s108io12QiWqhmpapsg1PnOVvtqakeIeb7LRFf1Ld5E2ghy5w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768022392; c=relaxed/simple;
-	bh=S1jisF6ftVT3rCNF0GDuik15Q/hcWo5k5Yu1I9kYLtQ=;
+	s=arc-20240116; t=1768022400; c=relaxed/simple;
+	bh=3wbWbc1mTzrz6eXxKXT7Ky0hEK+v9voe9g90BQf/vrs=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=QcQwam4h4h0vKiY53WnMZdVLXp/GVNvCd2pm7jwCrF5PQBNToqHRfPFqp/0OvRaYcEEI2Z7m3vOZjOZRZN+cMAMyAWV/rRjcjkxy0o20yTvq1GOGdVoRjvVgapQpqQHZh/FpR+2jQokl0n9l925pSb32FGJthA4IPEHYsiBRJS0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com; spf=pass smtp.mailfrom=riscstar.com; dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b=vlYMKlSv; arc=none smtp.client-ip=209.85.215.193
+	 In-Reply-To:To:Cc; b=KnSQmYKxKiFcgfhBZ+Jz7ZjADMqUkyd6gZY0VJDbQagl+Fcqh6bnF4QFN6Zy/i7yQTJoF8w/r8jxDDrl2JtoCelZdLcdaeXn6Zhwf1jOLihbM5FSIM/9qfrZo7vymkC+56j+5h4UfgFdGeZUOL53wDuBIjELb8aCkXaAOy/moio=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com; spf=pass smtp.mailfrom=riscstar.com; dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b=0jBaeU0C; arc=none smtp.client-ip=209.85.215.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=riscstar.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b="vlYMKlSv"
-Received: by mail-pg1-f193.google.com with SMTP id 41be03b00d2f7-c46d68f2b4eso2973660a12.2
-        for <linux-serial@vger.kernel.org>; Fri, 09 Jan 2026 21:19:49 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b="0jBaeU0C"
+Received: by mail-pg1-f175.google.com with SMTP id 41be03b00d2f7-bbf2c3eccc9so1546911a12.0
+        for <linux-serial@vger.kernel.org>; Fri, 09 Jan 2026 21:19:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=riscstar-com.20230601.gappssmtp.com; s=20230601; t=1768022389; x=1768627189; darn=vger.kernel.org;
+        d=riscstar-com.20230601.gappssmtp.com; s=20230601; t=1768022399; x=1768627199; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=BmyABXvs1SN8VuCBpy/0tab2Fs0I2RX3eOqS1zJrtK4=;
-        b=vlYMKlSvOZcq80+1cnMlX4Kh6DKcjduIgnWUoM75f4PNWCtPjvA/uh43NJVzJPuhzX
-         x90gahPJf2k9j79U43ifsc8r6FJxCF07F1kRRavVJuwQEMVqZYb86tOGeKJSs224BH6q
-         kW3bTHsg+XJkAMAoEJSdmwQh0lc3OR8NJUalY/D00/mei6yZLmpptkxDKh+oNUQOAwL7
-         08GblrV4P3zPI3YufiRZFu/gAYhQ+3N5HQ8b91VoOdTDHcBwooV2ucfZ2JK9+2Nbw1ln
-         DzzFIO4McEHdSJxsTyKXAWzw5EN7I0nX+kdICT+Pvjq0kA4JF/hhNBqrVAFG0334qj2Y
-         OxjA==
+        bh=jgbhy2bR2/d0ajbeUdzL14ozIkLKVnJeuVGHx2O7OYs=;
+        b=0jBaeU0ClznIF+jfrXmqmAm0RlJlA9CJmWj0KyNOerjAaljG9YDiVPFLW3ztRMNq52
+         kLnl0tkC7R9cBzxsNNChaKDLqkr2S2cqYavFfq2I5njEoEf8ktkPeLxGBwZ3FX9fliT4
+         4tELi6lZ0XZb3YMTzjJNSdDGcRt0DyfwKRyNCNPZjSZhd4uPl7Kg0aX7c1ELIm1S2ayQ
+         msuyIhfSXkzeTWoh8Dvc7mwEXw2F1iwnSGwMZBU7yMvgWyctdSzQ2vN7i/nubs5ZVA1X
+         eb39JT1i8ZVoRTpQZNoLw3gGjbXx2ZVN9Y48zeRPGzmP8MS4VXBHuK3Gl9JtyiM2AknG
+         LTnw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768022389; x=1768627189;
+        d=1e100.net; s=20230601; t=1768022399; x=1768627199;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=BmyABXvs1SN8VuCBpy/0tab2Fs0I2RX3eOqS1zJrtK4=;
-        b=u0XMaXjHFLVLbDsH4YERjfaaTG8IcwNzdnwa3y7L2QfkRgUzc04zySAu1ZdALe4I1T
-         mXgh7oQWoO0W5samWjtgm3ARazjamorUjzEZP0SvYxj/Y0CSSayNp5L6BmBqTkG8eC5W
-         eVagK6kvvFjyrwYkeKT7bH1GffgV6CH8LdTtTTsQusi6dXC8SpK34Y2tbqMu0+2ig31g
-         Bf7YCxsTSq5oR66Blw90hU5bzF0a8gBFFXdMrDstWNtc2fO0a1Nu1EA+nxy5UWZ5Ec7D
-         tMQAEgT2FYNuvcY/twAwW8lflQjAULUk4g9mhf6KD+F+bqYJVfA0oaYlViTgDHky9inT
-         xVQw==
-X-Forwarded-Encrypted: i=1; AJvYcCXVvAilnqyPs+MoQBWc12jngl33faK4qokF7rM/3d8+N2pty237rA+qB2hUkXw5vRRzgTc+0JcIKKLCdwU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyX6WKu0Tv7qWdh7MekLW/4j6EiRe/bLK+gJeVTmkkJ6FdTWnZu
-	S64lSxklEzx2stP9Uy8+p9v4ZxLY1czzXs2H0a39So7NWkGKLlQsh0/JYQ7Tns4HOq8=
-X-Gm-Gg: AY/fxX7vb888sXBzIKcJtCscLdwcfG4CqAM18VScjQv+qk+fc7tZPcG16UJxERsunw0
-	DD+Ggvl5Djo4fJl5RsPsNak+PndInIXwdIZrxgXELlt3p01S7HyuHIIo8B7Uzj8CWFcUPJ/c5XS
-	2oCg+evGxsKUgAC0Bn6IrlO4kN/CSCMEzCr/b5g02QeW7eVhRRfXwpXTq/Dvbl7EmEuTWJh+qPe
-	j6nZpzdhTgOfdy03uVqwLB2jNhZYR2jh1PgWi0y9SmGN+/VHi8kz5uaXt3wJCr6K8tHfblRtNF2
-	N/vl5180cm3cx9bMaQj8QJKxS+OHLD2YEGOQ1zWU14LOFcTE3d2DGQeHqSDXfHgCu2DtHo/MRCm
-	bsJgTWSSXICcb3m5alqdpbC2q2fc80g99XryH4uVQpu+UbTK1UWivJ7kfWaRYseqn/OsoZTeGzs
-	p6mFJm7UV/+3VDrVMWJzaZdtcSRm0R9sYL09sqUqPrWjR7sRjai4Z92SmlRIRbcq7R
-X-Google-Smtp-Source: AGHT+IEPPeIUWgsSKZBo27LQFfXmf78KQe8uU+5vPpaDED03FOdBQAsZNe/tyTQTcMQjGVrGxwlkJg==
-X-Received: by 2002:a17:902:cf06:b0:2a3:e7aa:dd6e with SMTP id d9443c01a7336-2a3ee48ac0fmr115216775ad.38.1768022389213;
-        Fri, 09 Jan 2026 21:19:49 -0800 (PST)
+        bh=jgbhy2bR2/d0ajbeUdzL14ozIkLKVnJeuVGHx2O7OYs=;
+        b=P1gtt59o1ahSrkwqx6Je4qCgusWRoMAQIfyeGLMnUEVyX9RpIKYznwRSX+D5/5BmsB
+         ThGpnjyeFGMqZXl2l1nyR+jCn/k1lGKiijnhqoU5lFhvr1mJzFjkt/JJL2kAbzYZk9Va
+         OIzxaxoUARh9IYxci5aQJHIbK6PxuvqJQeCw4ktlBb/tHyE/wZA4JmF9UzUEulj51RmY
+         EhlY62TmQoj2YBzKC12/yeo7fYq73OgqxrK9z5zc9J1/zzvzvJLTHLVeU0YMjCZl/M+r
+         i390rgQrzHb/MQuzlDAnxryaOm0PnE41BpOYCBkUT5RL5TGtCdu1otCgskARkk5fPnrM
+         kZ/Q==
+X-Forwarded-Encrypted: i=1; AJvYcCVSgSDThGlZxAo+YFNoo9mrZF5v2Wd1zUFYdxmJrok2jU8DO7tTQgwGipxBROWtqvlDgrujjTbAgA71ylw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzES8aq2mRAgxj9QVn8kphUB/IR8f+WEE+tLeHQsdssHcj2u6kV
+	AEP84IRo6rD9LWmQYEcn/di93kxnHS7bx+aNSQwhsWJ2+8cOqEDmvE4uzBEwIPsJnfw=
+X-Gm-Gg: AY/fxX7EN6PAW+5duJxts71L253icJisyuv1POHXAvPCiILvDjiH+qQc/e2clInTUfy
+	LcRNfGLGCXjgtrbJ+53ysj288vcpZ5A6HLwXqg5CCDcGQM3R+3B6pqnXRhAo9JVSP54vfrEjc6H
+	hQ1dPT/gJibnp5blfuRh9XzBIVTcpmzTLHrXg+jHJ1DQQuuHdZx5WK2zonMlsNBiWiRTNcg3i/o
+	Vf3qh9EZwFbgyxta9Vxd47y5SdBod1vLjTFDPTo5T2fkvH1oNeb1N4fKcaPtQeqVNYmg1VXzPtA
+	pSWZcSb8pcNUNJ7q/KnKsyhojJv+UHx+pSBxGoB6mxYiK8VzLkU5YDfRIAkmoQwOZ8HwvbapWxs
+	kVusTSk0XlwTtV3ERR2sfG4tuCiElgvk3S0ay0JW8o8q3rXAS21XSuit4CnJSPidROKvA/5vq4M
+	2VO8mwqXAFSql6MjSO8T8HoFGKxm+JsnFhNRlCyyKW9Tq7j5Vkgr/BwA==
+X-Google-Smtp-Source: AGHT+IGNuBpZhl78Zw5IbiS1grRE/HsJVf9xBHrMUUqcEcHDzEu/FhyxEhd8ywpJ3q/0ESFdRnbphg==
+X-Received: by 2002:a17:902:e545:b0:298:639b:a64f with SMTP id d9443c01a7336-2a3edb0de06mr132346145ad.6.1768022398915;
+        Fri, 09 Jan 2026 21:19:58 -0800 (PST)
 Received: from [127.0.1.1] ([45.8.220.108])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2a3e3cc88cdsm118208265ad.73.2026.01.09.21.19.39
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2a3e3cc88cdsm118208265ad.73.2026.01.09.21.19.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Jan 2026 21:19:48 -0800 (PST)
+        Fri, 09 Jan 2026 21:19:58 -0800 (PST)
 From: Guodong Xu <guodong@riscstar.com>
-Date: Sat, 10 Jan 2026 13:18:17 +0800
-Subject: [PATCH v4 05/11] dt-bindings: riscv: spacemit: add K3 and Pico-ITX
- board bindings
+Date: Sat, 10 Jan 2026 13:18:18 +0800
+Subject: [PATCH v4 06/11] dt-bindings: riscv: Add B ISA extension
+ description
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -71,7 +71,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260110-k3-basic-dt-v4-5-d492f3a30ffa@riscstar.com>
+Message-Id: <20260110-k3-basic-dt-v4-6-d492f3a30ffa@riscstar.com>
 References: <20260110-k3-basic-dt-v4-0-d492f3a30ffa@riscstar.com>
 In-Reply-To: <20260110-k3-basic-dt-v4-0-d492f3a30ffa@riscstar.com>
 To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
@@ -94,43 +94,90 @@ Cc: Paul Walmsley <paul.walmsley@sifive.com>,
  linux-serial@vger.kernel.org, Guodong Xu <guodong@riscstar.com>
 X-Mailer: b4 0.14.3
 
-Add DT binding documentation for the SpacemiT K3 SoC and the board Pico-ITX
-which is a 2.5-inch single-board computer.
+Add description of the single-letter B extension for Bit Manipulation.
+B is mandatory for RVA23U64.
+
+The B extension is ratified in the 20240411 version of the unprivileged
+ISA specification. According to the ratified spec, the B standard
+extension comprises instructions provided by the Zba, Zbb, and Zbs
+extensions.
+
+Add two-way dependency check to enforce that B implies Zba/Zbb/Zbs; and
+when Zba/Zbb/Zbs (all of them) are specified, then B must be added too.
+
+The reason why B/Zba/Zbb/Zbs must coexist at the same time is that
+unlike other single-letter extensions, B was ratified (Apr/2024) much
+later than its component extensions Zba/Zbb/Zbs (Jun/2021).
+
+When "b" is specified, zba/zbb/zbs must be present to ensure
+backward compatibility with existing software and kernels that only
+look for the explicit component strings.
+
+When all three components zba/zbb/zbs are specified, "b" should also be
+present. Making "b" mandatory when all three components are present.
+
+Existing devicetrees with zba/zbb/zbs but without "b" will generate
+warnings that can be fixed in follow-up patches.
 
 Signed-off-by: Guodong Xu <guodong@riscstar.com>
 ---
-v4: Adjust maintainers list in alphabetic order.
-    Declare spacemit,k3-pico-itx as an enum, which can save future
-     code change when adding new boards.
-v3: No change.
-v2: Use one-blank-space between name and email address.
+v4: No change.
+v3: Update the commit message to explain the retionale why B and
+     Zba/Zbb/Zbs should all exist in DT.
+v2: New patch.
 ---
- Documentation/devicetree/bindings/riscv/spacemit.yaml | 5 +++++
- 1 file changed, 5 insertions(+)
+ .../devicetree/bindings/riscv/extensions.yaml      | 31 ++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/riscv/spacemit.yaml b/Documentation/devicetree/bindings/riscv/spacemit.yaml
-index 9c49482002f7..b958b94a924d 100644
---- a/Documentation/devicetree/bindings/riscv/spacemit.yaml
-+++ b/Documentation/devicetree/bindings/riscv/spacemit.yaml
-@@ -7,6 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
- title: SpacemiT SoC-based boards
+diff --git a/Documentation/devicetree/bindings/riscv/extensions.yaml b/Documentation/devicetree/bindings/riscv/extensions.yaml
+index b615083f2544..f671299ac819 100644
+--- a/Documentation/devicetree/bindings/riscv/extensions.yaml
++++ b/Documentation/devicetree/bindings/riscv/extensions.yaml
+@@ -109,6 +109,13 @@ properties:
+             The standard C extension for compressed instructions, as ratified in
+             the 20191213 version of the unprivileged ISA specification.
  
- maintainers:
-+  - Guodong Xu <guodong@riscstar.com>
-   - Yangyu Chen <cyy@cyyself.name>
-   - Yixun Lan <dlan@gentoo.org>
- 
-@@ -26,6 +27,10 @@ properties:
-               - xunlong,orangepi-r2s
-               - xunlong,orangepi-rv2
-           - const: spacemit,k1
-+      - items:
-+          - enum:
-+              - spacemit,k3-pico-itx
-+          - const: spacemit,k3
- 
- additionalProperties: true
- 
++        - const: b
++          description:
++            The standard B extension for bit manipulation instructions, as
++            ratified in the 20240411 version of the unprivileged ISA
++            specification. The B standard extension comprises instructions
++            provided by the Zba, Zbb, and Zbs extensions.
++
+         - const: v
+           description:
+             The standard V extension for vector operations, as ratified
+@@ -752,6 +759,30 @@ properties:
+         then:
+           contains:
+             const: f
++      # B comprises Zba, Zbb, and Zbs
++      - if:
++          contains:
++            const: b
++        then:
++          allOf:
++            - contains:
++                const: zba
++            - contains:
++                const: zbb
++            - contains:
++                const: zbs
++      # Zba, Zbb, Zbs together require B
++      - if:
++          allOf:
++            - contains:
++                const: zba
++            - contains:
++                const: zbb
++            - contains:
++                const: zbs
++        then:
++          contains:
++            const: b
+       # Zcb depends on Zca
+       - if:
+           contains:
 
 -- 
 2.43.0
