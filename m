@@ -1,68 +1,68 @@
-Received: from mail-pg1-f175.google.com (mail-pg1-f175.google.com [209.85.215.175])
+Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7020F2E413
-	for <linux-serial@vger.kernel.org>; Sat, 10 Jan 2026 05:19:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BBC230E0FC
+	for <linux-serial@vger.kernel.org>; Sat, 10 Jan 2026 05:20:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768022400; cv=none; b=us0tL7iPoPnfSa+AhOGnZgOT8A6AyWC9lX2Dx69G0VsNycv/2tHDukwvrr5C9iAgQblFBTByATkvkPziqxJiXVZoTdwh7WpSnUgKXVEMdSWZ37isyTzUt0jXG4s108io12QiWqhmpapsg1PnOVvtqakeIeb7LRFf1Ld5E2ghy5w=
+	t=1768022411; cv=none; b=VvUoVtquwEkFbAeL0vPdEGT1EhqA39eW0nIAoYgVUNMsAtrGcR52HCEjxvlLdA7j4ahowMuWpH5ZM4U4TTpL6zNNtLzbdAfm1VoFf/3F/6lDBYfECwOmf9ws7rbF1cFhzNDj3sMb3phKzfqJ4Zo0ihnzt8fsxnmsAYmAnBqMHKg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768022400; c=relaxed/simple;
-	bh=3wbWbc1mTzrz6eXxKXT7Ky0hEK+v9voe9g90BQf/vrs=;
+	s=arc-20240116; t=1768022411; c=relaxed/simple;
+	bh=Fd0buc2DICUicJJxowP/3caVS6geQPw8Aog8chsWueU=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=KnSQmYKxKiFcgfhBZ+Jz7ZjADMqUkyd6gZY0VJDbQagl+Fcqh6bnF4QFN6Zy/i7yQTJoF8w/r8jxDDrl2JtoCelZdLcdaeXn6Zhwf1jOLihbM5FSIM/9qfrZo7vymkC+56j+5h4UfgFdGeZUOL53wDuBIjELb8aCkXaAOy/moio=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com; spf=pass smtp.mailfrom=riscstar.com; dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b=0jBaeU0C; arc=none smtp.client-ip=209.85.215.175
+	 In-Reply-To:To:Cc; b=b/9rHAcGKRti8fJkUd8Ad94k32yXuRBYx3hgzdUdbpTLLUYxI0f/DhfHEoLXfG1DEwdW9b/4rB80CtPqY7Uhb7GyBHJy1OmoT3L1pjzwOQAFhRo0hwv655PSRnBbzU2rLDqDCCBrhcc1HXIdwxw7vc8xKDHY9cFcsfiRV91SjJ0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com; spf=pass smtp.mailfrom=riscstar.com; dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b=edYNBsCy; arc=none smtp.client-ip=209.85.214.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=riscstar.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b="0jBaeU0C"
-Received: by mail-pg1-f175.google.com with SMTP id 41be03b00d2f7-bbf2c3eccc9so1546911a12.0
-        for <linux-serial@vger.kernel.org>; Fri, 09 Jan 2026 21:19:59 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b="edYNBsCy"
+Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-2a07fac8aa1so36603865ad.1
+        for <linux-serial@vger.kernel.org>; Fri, 09 Jan 2026 21:20:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=riscstar-com.20230601.gappssmtp.com; s=20230601; t=1768022399; x=1768627199; darn=vger.kernel.org;
+        d=riscstar-com.20230601.gappssmtp.com; s=20230601; t=1768022408; x=1768627208; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=jgbhy2bR2/d0ajbeUdzL14ozIkLKVnJeuVGHx2O7OYs=;
-        b=0jBaeU0ClznIF+jfrXmqmAm0RlJlA9CJmWj0KyNOerjAaljG9YDiVPFLW3ztRMNq52
-         kLnl0tkC7R9cBzxsNNChaKDLqkr2S2cqYavFfq2I5njEoEf8ktkPeLxGBwZ3FX9fliT4
-         4tELi6lZ0XZb3YMTzjJNSdDGcRt0DyfwKRyNCNPZjSZhd4uPl7Kg0aX7c1ELIm1S2ayQ
-         msuyIhfSXkzeTWoh8Dvc7mwEXw2F1iwnSGwMZBU7yMvgWyctdSzQ2vN7i/nubs5ZVA1X
-         eb39JT1i8ZVoRTpQZNoLw3gGjbXx2ZVN9Y48zeRPGzmP8MS4VXBHuK3Gl9JtyiM2AknG
-         LTnw==
+        bh=qbchAZCHr5FOjLOm2QkYq+0AjxbAU/srw4MJShYSMvo=;
+        b=edYNBsCyU4tEIIBzntm/ufcbYyMYjo0Lm4bW9rs0g/Dn+lGeV6VEghB6TtjZch5/ZY
+         twBJDf0eNLJJahvUTiwniMFGQMRohc7xzModKV0rNKOUL9po6CiSiK6dDsmU5K2l7e1n
+         A8YM59Z2yO9K6Qi0213HPvgh2lmGMEqW/bEbU0jZVOQ7fNdWnF7a3XTj83I9uXAiGWcs
+         6YqcGNY4dFmlA29o/TcJ2RUTVfjfLneRd3uqBftRGcsUWQreVLqpzXaCuDtkASamXMlW
+         mQBJsh8iD2sIsak6D97YDtx3E2zWS07wEqZhnHX8q31EqvtotpZHh7pwlZUWM04e6yjC
+         59tA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768022399; x=1768627199;
+        d=1e100.net; s=20230601; t=1768022408; x=1768627208;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=jgbhy2bR2/d0ajbeUdzL14ozIkLKVnJeuVGHx2O7OYs=;
-        b=P1gtt59o1ahSrkwqx6Je4qCgusWRoMAQIfyeGLMnUEVyX9RpIKYznwRSX+D5/5BmsB
-         ThGpnjyeFGMqZXl2l1nyR+jCn/k1lGKiijnhqoU5lFhvr1mJzFjkt/JJL2kAbzYZk9Va
-         OIzxaxoUARh9IYxci5aQJHIbK6PxuvqJQeCw4ktlBb/tHyE/wZA4JmF9UzUEulj51RmY
-         EhlY62TmQoj2YBzKC12/yeo7fYq73OgqxrK9z5zc9J1/zzvzvJLTHLVeU0YMjCZl/M+r
-         i390rgQrzHb/MQuzlDAnxryaOm0PnE41BpOYCBkUT5RL5TGtCdu1otCgskARkk5fPnrM
-         kZ/Q==
-X-Forwarded-Encrypted: i=1; AJvYcCVSgSDThGlZxAo+YFNoo9mrZF5v2Wd1zUFYdxmJrok2jU8DO7tTQgwGipxBROWtqvlDgrujjTbAgA71ylw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzES8aq2mRAgxj9QVn8kphUB/IR8f+WEE+tLeHQsdssHcj2u6kV
-	AEP84IRo6rD9LWmQYEcn/di93kxnHS7bx+aNSQwhsWJ2+8cOqEDmvE4uzBEwIPsJnfw=
-X-Gm-Gg: AY/fxX7EN6PAW+5duJxts71L253icJisyuv1POHXAvPCiILvDjiH+qQc/e2clInTUfy
-	LcRNfGLGCXjgtrbJ+53ysj288vcpZ5A6HLwXqg5CCDcGQM3R+3B6pqnXRhAo9JVSP54vfrEjc6H
-	hQ1dPT/gJibnp5blfuRh9XzBIVTcpmzTLHrXg+jHJ1DQQuuHdZx5WK2zonMlsNBiWiRTNcg3i/o
-	Vf3qh9EZwFbgyxta9Vxd47y5SdBod1vLjTFDPTo5T2fkvH1oNeb1N4fKcaPtQeqVNYmg1VXzPtA
-	pSWZcSb8pcNUNJ7q/KnKsyhojJv+UHx+pSBxGoB6mxYiK8VzLkU5YDfRIAkmoQwOZ8HwvbapWxs
-	kVusTSk0XlwTtV3ERR2sfG4tuCiElgvk3S0ay0JW8o8q3rXAS21XSuit4CnJSPidROKvA/5vq4M
-	2VO8mwqXAFSql6MjSO8T8HoFGKxm+JsnFhNRlCyyKW9Tq7j5Vkgr/BwA==
-X-Google-Smtp-Source: AGHT+IGNuBpZhl78Zw5IbiS1grRE/HsJVf9xBHrMUUqcEcHDzEu/FhyxEhd8ywpJ3q/0ESFdRnbphg==
-X-Received: by 2002:a17:902:e545:b0:298:639b:a64f with SMTP id d9443c01a7336-2a3edb0de06mr132346145ad.6.1768022398915;
-        Fri, 09 Jan 2026 21:19:58 -0800 (PST)
+        bh=qbchAZCHr5FOjLOm2QkYq+0AjxbAU/srw4MJShYSMvo=;
+        b=HGxQiLwZh5OAjhM4XYZKvHhwREXb0i/plCCPEi/UT2pqD4LSskb1CNOqC0sfPWNMTX
+         +GYGe/JxFDgvr4imkqQLFGrouaspvO0XF7Fun2BsRo+OpueH0sai0lxD1HwzNYGuuRd0
+         9TMXiehcGIW4jHxwz/EaOMY+m1fCtwHmVMFuz1XSa3H1SESLZQxj++cKzEQVtoCbU8oC
+         AlCsDAkAyJzEK77f6EAZGQmP5Xot8JCdyhX8390n5IeSoMEktUUqaiHEz+XDAZpv3Cvf
+         BdWjJw8tW7clWdLTQurjfctNiyiZmjoM6+wsGOL02jG/lsnSHpLiYZX5q5fYhvNM32mJ
+         f/xA==
+X-Forwarded-Encrypted: i=1; AJvYcCXcm8SVi3gKhJj7PnnBUqRXfejTKAEwaY4E1TrckEJSGlvvObinnZjkZNrAhPolzCO2lycR2HV2UuBRU9Y=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxuc/MFc8V5RAe3GFZvvq00oRvNX/dc48B/Zr0TIYj1MJ2L+7Vh
+	IOoRu/6KONhHszq4gj7CLtmelnWcCy5rS0q1U8tpHzQhjXfg8kDSPbYl4JWT3AqLHTE=
+X-Gm-Gg: AY/fxX4VtZm3AJrQ/ZWOf54ip31UuxQib6nVhHzRJG99zuYlGw6jLxqBe68sAgNryAu
+	oUX0qbFWB++JSE1jwu5gLkHWcsHf/IpAF5EJLFMGs38xTLfwwpT9C4+OhwxDMoTUB/I3/W+pzhf
+	/iHihtfkti9aWCqBxGNdvu1nNNAsnPriqZPB3WThfmK49aPbc1OKu7LUXq4EYcD7Q6bp3206gHp
+	0aZo5BPHEAy0RtfFPqBNI0W1KWnikjFl6r6VYAt4NGsQSlZWvdk1K6PUsKT0Xo0iZV4AjmGZVaW
+	nzOlXx0Jea6rukWS6kRHhyxTUre5RDIC4IwVPICNi0CCG8b67YOcmilQxeNAp2NmhMXl1M5Dznm
+	xFaE6ruX7t0LKCg7R9EMPW/7SKGB/+zukI9xA5YUFuEJynuhGSJrLqkQh9SxLaBVTCcYqsvy3ZN
+	a9L9/19J/G0NOlDjLuqpKwx5MzMDg6kh8o3Oegwu6ujGMfxKYnePss7w==
+X-Google-Smtp-Source: AGHT+IE3azJw/I++SvkHmJwZU+zeSQFOA0tCm0OjoB2dGO96pk6muEXdu7wFCQPtmLiZleMZdyVjig==
+X-Received: by 2002:a17:903:a8f:b0:2a1:3e15:380e with SMTP id d9443c01a7336-2a3ee4aae30mr108360315ad.34.1768022408419;
+        Fri, 09 Jan 2026 21:20:08 -0800 (PST)
 Received: from [127.0.1.1] ([45.8.220.108])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2a3e3cc88cdsm118208265ad.73.2026.01.09.21.19.49
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2a3e3cc88cdsm118208265ad.73.2026.01.09.21.19.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Jan 2026 21:19:58 -0800 (PST)
+        Fri, 09 Jan 2026 21:20:08 -0800 (PST)
 From: Guodong Xu <guodong@riscstar.com>
-Date: Sat, 10 Jan 2026 13:18:18 +0800
-Subject: [PATCH v4 06/11] dt-bindings: riscv: Add B ISA extension
- description
+Date: Sat, 10 Jan 2026 13:18:19 +0800
+Subject: [PATCH v4 07/11] dt-bindings: riscv: Add descriptions for Za64rs,
+ Ziccamoa, Ziccif, and Zicclsm
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -71,7 +71,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260110-k3-basic-dt-v4-6-d492f3a30ffa@riscstar.com>
+Message-Id: <20260110-k3-basic-dt-v4-7-d492f3a30ffa@riscstar.com>
 References: <20260110-k3-basic-dt-v4-0-d492f3a30ffa@riscstar.com>
 In-Reply-To: <20260110-k3-basic-dt-v4-0-d492f3a30ffa@riscstar.com>
 To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
@@ -94,88 +94,128 @@ Cc: Paul Walmsley <paul.walmsley@sifive.com>,
  linux-serial@vger.kernel.org, Guodong Xu <guodong@riscstar.com>
 X-Mailer: b4 0.14.3
 
-Add description of the single-letter B extension for Bit Manipulation.
-B is mandatory for RVA23U64.
+Add descriptions for four extensions: Za64rs, Ziccamoa, Ziccif, and
+Zicclsm. These extensions are ratified in RISC-V Profiles Version 1.0
+(commit b1d806605f87 "Updated to ratified state.").
 
-The B extension is ratified in the 20240411 version of the unprivileged
-ISA specification. According to the ratified spec, the B standard
-extension comprises instructions provided by the Zba, Zbb, and Zbs
-extensions.
+They are introduced as new extension names for existing features and
+regulate implementation details for RISC-V Profile compliance. According
+to RISC-V Profiles Version 1.0 and RVA23 Profiles Version 1.0, they are
+mandatory for the following profiles:
 
-Add two-way dependency check to enforce that B implies Zba/Zbb/Zbs; and
-when Zba/Zbb/Zbs (all of them) are specified, then B must be added too.
+ - za64rs: Mandatory in RVA22U64, RVA23U64
+ - ziccamoa: Mandatory in RVA20U64, RVA22U64, RVA23U64
+ - ziccif: Mandatory in RVA20U64, RVA22U64, RVA23U64
+ - zicclsm: Mandatory in RVA20U64, RVA22U64, RVA23U64
 
-The reason why B/Zba/Zbb/Zbs must coexist at the same time is that
-unlike other single-letter extensions, B was ratified (Apr/2024) much
-later than its component extensions Zba/Zbb/Zbs (Jun/2021).
+Ziccrse specifies the main memory must support "RsrvEventual", which is
+one (totally there are four) of the support level for Load-Reserved/
+Store-Conditional (LR/SC) atomic instructions. Thus it depends on Zalrsc.
 
-When "b" is specified, zba/zbb/zbs must be present to ensure
-backward compatibility with existing software and kernels that only
-look for the explicit component strings.
+Ziccamoa specifies the main memory must support AMOArithmetic, among the
+four levels of PMA support defined for AMOs in the A extension. Thus it
+depends on Zaamo.
 
-When all three components zba/zbb/zbs are specified, "b" should also be
-present. Making "b" mandatory when all three components are present.
+Za64rs defines reservation sets are contiguous, naturally aligned, and a
+maximum of 64 bytes. Za64rs is consumed by two extensions: Zalrsc and
+Zawrs. Zawrs itself depends on Zalrsc too.
 
-Existing devicetrees with zba/zbb/zbs but without "b" will generate
-warnings that can be fixed in follow-up patches.
+Based on the relationship that  "A" = Zaamo + Zalrsc, add the following
+dependencies checks:
+ Za64rs -> Zalrsc or A
+ Ziccrse -> Zalrsc or A
+ Ziccamoa -> Zaamo or A
 
 Signed-off-by: Guodong Xu <guodong@riscstar.com>
 ---
 v4: No change.
-v3: Update the commit message to explain the retionale why B and
-     Zba/Zbb/Zbs should all exist in DT.
+v3: Update the commit message to explain the relationship of Za64rs,
+     Ziccrse, Ziccamoa, Zalrsc and A.
+    Add dependency checks.
 v2: New patch.
 ---
- .../devicetree/bindings/riscv/extensions.yaml      | 31 ++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
+ .../devicetree/bindings/riscv/extensions.yaml      | 49 ++++++++++++++++++++++
+ 1 file changed, 49 insertions(+)
 
 diff --git a/Documentation/devicetree/bindings/riscv/extensions.yaml b/Documentation/devicetree/bindings/riscv/extensions.yaml
-index b615083f2544..f671299ac819 100644
+index f671299ac819..345624326e9f 100644
 --- a/Documentation/devicetree/bindings/riscv/extensions.yaml
 +++ b/Documentation/devicetree/bindings/riscv/extensions.yaml
-@@ -109,6 +109,13 @@ properties:
-             The standard C extension for compressed instructions, as ratified in
-             the 20191213 version of the unprivileged ISA specification.
+@@ -240,6 +240,12 @@ properties:
+             as ratified at commit 4a69197e5617 ("Update to ratified state") of
+             riscv-svvptc.
  
-+        - const: b
++        - const: za64rs
 +          description:
-+            The standard B extension for bit manipulation instructions, as
-+            ratified in the 20240411 version of the unprivileged ISA
-+            specification. The B standard extension comprises instructions
-+            provided by the Zba, Zbb, and Zbs extensions.
++            The standard Za64rs extension for reservation set size of at most
++            64 bytes, as ratified in RISC-V Profiles Version 1.0, with commit
++            b1d806605f87 ("Updated to ratified state.")
 +
-         - const: v
+         - const: zaamo
+           description: |
+             The standard Zaamo extension for atomic memory operations as
+@@ -381,6 +387,27 @@ properties:
+             in commit 64074bc ("Update version numbers for Zfh/Zfinx") of
+             riscv-isa-manual.
+ 
++        - const: ziccamoa
++          description:
++            The standard Ziccamoa extension for main memory (cacheability and
++            coherence) must support all atomics in A, as ratified in RISC-V
++            Profiles Version 1.0, with commit b1d806605f87 ("Updated to
++            ratified state.")
++
++        - const: ziccif
++          description:
++            The standard Ziccif extension for main memory (cacheability and
++            coherence) instruction fetch atomicity, as ratified in RISC-V
++            Profiles Version 1.0, with commit b1d806605f87 ("Updated to
++            ratified state.")
++
++        - const: zicclsm
++          description:
++            The standard Zicclsm extension for main memory (cacheability and
++            coherence) must support misaligned loads and stores, as ratified
++            in RISC-V Profiles Version 1.0, with commit b1d806605f87 ("Updated
++            to ratified state.")
++
+         - const: ziccrse
            description:
-             The standard V extension for vector operations, as ratified
-@@ -752,6 +759,30 @@ properties:
+             The standard Ziccrse extension which provides forward progress
+@@ -783,6 +810,18 @@ properties:
+         then:
+           contains:
+             const: b
++      # Za64rs and Ziccrse depend on Zalrsc or A
++      - if:
++          contains:
++            anyOf:
++              - const: za64rs
++              - const: ziccrse
++        then:
++          oneOf:
++            - contains:
++                const: zalrsc
++            - contains:
++                const: a
+       # Zcb depends on Zca
+       - if:
+           contains:
+@@ -824,6 +863,16 @@ properties:
          then:
            contains:
              const: f
-+      # B comprises Zba, Zbb, and Zbs
++      # Ziccamoa depends on Zaamo or A
 +      - if:
 +          contains:
-+            const: b
++            const: ziccamoa
 +        then:
-+          allOf:
++          oneOf:
 +            - contains:
-+                const: zba
++                const: zaamo
 +            - contains:
-+                const: zbb
-+            - contains:
-+                const: zbs
-+      # Zba, Zbb, Zbs together require B
-+      - if:
-+          allOf:
-+            - contains:
-+                const: zba
-+            - contains:
-+                const: zbb
-+            - contains:
-+                const: zbs
-+        then:
-+          contains:
-+            const: b
-       # Zcb depends on Zca
++                const: a
+       # Zvfbfmin depends on V or Zve32f
        - if:
            contains:
 
