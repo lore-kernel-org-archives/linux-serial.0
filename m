@@ -1,16 +1,16 @@
 Received: from smtp.gentoo.org (woodpecker.gentoo.org [140.211.166.183])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 816B03382C9;
-	Sat, 10 Jan 2026 11:05:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FC7E33F371;
+	Sat, 10 Jan 2026 11:55:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=140.211.166.183
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768043111; cv=none; b=c2JNfoWEZL7nYmM34hIof+qUSqxCoOh0e0tL6oX2BBV3obVlsMOqS7zRHr+SrhOsN7977VvkSqFM3IUjKkOZh7srioK+9Psx4akK9xCUpH1sKOU62nzXbDCmBN4YValN6xtrtcPQC5jGFwtbSmLBwHBDZVPzxrJzZETA+1OJLFw=
+	t=1768046113; cv=none; b=ppx10hI60sPPY43F0big119sQAmz9soR61fwNurjPOyZwa/WOAk6p0JmoyQOLnuSyV6iQXqdE/6eujXUhv3FuCglIkVaT/BzWG78+Ckh0TWtFRdVWPvWOtmiOrI2QgNgb3lL7MtD/kb03RtlauAPRgGFjtYrp6kDRqZtxzRtsWY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768043111; c=relaxed/simple;
-	bh=yhblASGMwjZl8k0XnBA+TOJEr69kbObgz3Nz8WWXILs=;
+	s=arc-20240116; t=1768046113; c=relaxed/simple;
+	bh=iX4MiZGQL2z/88fUjb1EaNDBM4frLV4bsSb1g8BCzKI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=P/i4po6WTdM62J/vMPREimXRfp2LxmclVr6UGGi9VeGBp6AgneHJvwUyFe8bP8Tyhf7eslXhdaJRNXbdlF1AxJDWX5Gim909giggYQehcSsfCsf9GFQMoM771G1ouM8rRtYuJOb1N8U++1oqJefcN9VlXISCr8vwLerishI/lT0=
+	 Content-Type:Content-Disposition:In-Reply-To; b=BYa4jTM9A1YUUx74Ppn9SwF0RWZFbDbuK7A28FaQ/Lvn7dU09DCeLVfkZP8DRyigQJmKpKOgV/bqTTFtKuNJ6V3u+7A2BMPoCk7yjJONnPRj9Ay50iuG/gWT6B2G3HNAgpqRs3DWw1NDcOaRHQOhipnJABUYt4il6GYu4SGEyTI=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org; spf=pass smtp.mailfrom=gentoo.org; arc=none smtp.client-ip=140.211.166.183
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gentoo.org
@@ -19,13 +19,12 @@ Received: from localhost (unknown [116.232.18.222])
 	 key-exchange secp256r1 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
 	(Authenticated sender: dlan)
-	by smtp.gentoo.org (Postfix) with ESMTPSA id C6D76340C98;
-	Sat, 10 Jan 2026 11:05:06 +0000 (UTC)
-Date: Sat, 10 Jan 2026 19:05:02 +0800
+	by smtp.gentoo.org (Postfix) with ESMTPSA id 23849340EA9;
+	Sat, 10 Jan 2026 11:55:08 +0000 (UTC)
+Date: Sat, 10 Jan 2026 19:55:03 +0800
 From: Yixun Lan <dlan@gentoo.org>
 To: Guodong Xu <guodong@riscstar.com>
-Cc: Inochi Amaoto <inochiama@gmail.com>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
 	Palmer Dabbelt <palmer@dabbelt.com>,
 	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
@@ -43,12 +42,11 @@ Cc: Inochi Amaoto <inochiama@gmail.com>, Rob Herring <robh@kernel.org>,
 	Andrew Jones <ajones@ventanamicro.com>, devicetree@vger.kernel.org,
 	linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
 	spacemit@lists.linux.dev, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v4 10/11] riscv: dts: spacemit: add initial device tree
- of SpacemiT K3 SoC
-Message-ID: <20260110110502-GYB12783@gentoo.org>
+Subject: Re: [PATCH v4 05/11] dt-bindings: riscv: spacemit: add K3 and
+ Pico-ITX board bindings
+Message-ID: <20260110115503-GYC12783@gentoo.org>
 References: <20260110-k3-basic-dt-v4-0-d492f3a30ffa@riscstar.com>
- <20260110-k3-basic-dt-v4-10-d492f3a30ffa@riscstar.com>
- <aWIi9LFdqSF3c-FP@inochi.infowork>
+ <20260110-k3-basic-dt-v4-5-d492f3a30ffa@riscstar.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -57,47 +55,55 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <aWIi9LFdqSF3c-FP@inochi.infowork>
+In-Reply-To: <20260110-k3-basic-dt-v4-5-d492f3a30ffa@riscstar.com>
 
 Hi Guodong,
 
-On 18:00 Sat 10 Jan     , Inochi Amaoto wrote:
-> On Sat, Jan 10, 2026 at 01:18:22PM +0800, Guodong Xu wrote:
-> > SpacemiT K3 is equipped with 8 X100 cores, which are RVA23 compliant.
-> > Add nodes of uarts, timer and interrupt-controllers.
-> > 
-> > Signed-off-by: Guodong Xu <guodong@riscstar.com>
-> > ---
-> > v4: Fix missing blank space after commas in compatible string.
-> >     Add m-mode imsic and aplic node.
-> >     Reorder properties in simsic, saplic, mimsic, and maplic nodes
-> >      to match DTS coding style.
-> > v3: Remove "supm" from the riscv,isa-extensions list.
-> > v2: Remove aliases from k3.dtsi, they should be in board DTS.
-> >     Updated riscv,isa-extensions with new extensions from the extensions.yaml.
-> > ---
-> >  arch/riscv/boot/dts/spacemit/k3.dtsi | 590 +++++++++++++++++++++++++++++++++++
-> >  1 file changed, 590 insertions(+)
-> > 
-> > diff --git a/arch/riscv/boot/dts/spacemit/k3.dtsi b/arch/riscv/boot/dts/spacemit/k3.dtsi
-> > new file mode 100644
-> > index 000000000000..a815f85cf5a6
-> > --- /dev/null
-> > +++ b/arch/riscv/boot/dts/spacemit/k3.dtsi
-> > @@ -0,0 +1,590 @@
-...
-> > +			d-cache-sets = <256>;
-> > +			next-level-cache = <&l2_cache0>;
+On 13:18 Sat 10 Jan     , Guodong Xu wrote:
+> Add DT binding documentation for the SpacemiT K3 SoC and the board Pico-ITX
+> which is a 2.5-inch single-board computer.
 > 
-> > +			mmu-type = "riscv,sv39";
+> Signed-off-by: Guodong Xu <guodong@riscstar.com>
+
+Reviewed-by: Yixun Lan <dlan@gentoo.org>
+
+> ---
+> v4: Adjust maintainers list in alphabetic order.
+>     Declare spacemit,k3-pico-itx as an enum, which can save future
+>      code change when adding new boards.
+> v3: No change.
+> v2: Use one-blank-space between name and email address.
+> ---
+>  Documentation/devicetree/bindings/riscv/spacemit.yaml | 5 +++++
+>  1 file changed, 5 insertions(+)
 > 
-> I think this should be riscv,sv48? IIRC K3 supports it.
+> diff --git a/Documentation/devicetree/bindings/riscv/spacemit.yaml b/Documentation/devicetree/bindings/riscv/spacemit.yaml
+> index 9c49482002f7..b958b94a924d 100644
+> --- a/Documentation/devicetree/bindings/riscv/spacemit.yaml
+> +++ b/Documentation/devicetree/bindings/riscv/spacemit.yaml
+> @@ -7,6 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+>  title: SpacemiT SoC-based boards
+>  
+>  maintainers:
+> +  - Guodong Xu <guodong@riscstar.com>
+>    - Yangyu Chen <cyy@cyyself.name>
+>    - Yixun Lan <dlan@gentoo.org>
+>  
+> @@ -26,6 +27,10 @@ properties:
+>                - xunlong,orangepi-r2s
+>                - xunlong,orangepi-rv2
+>            - const: spacemit,k1
+> +      - items:
+> +          - enum:
+> +              - spacemit,k3-pico-itx
+> +          - const: spacemit,k3
+>  
+>  additionalProperties: true
+>  
 > 
-I would second the idea here, if the underlying hardware support sv48,
-there is no reason we should limit it in DTS, DT should reflect the actual
-hardware.. if user still prefer to use sv39 for simplicity, a "no4lvl"
-command line argument can be passed.. see 
- arch/riscv/mm/init.c +860 -> set_satp_mode()
+> -- 
+> 2.43.0
+> 
 
 -- 
 Yixun Lan (dlan)
