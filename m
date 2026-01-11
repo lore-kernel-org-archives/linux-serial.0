@@ -1,67 +1,67 @@
-Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6B63348880
-	for <linux-serial@vger.kernel.org>; Sun, 11 Jan 2026 14:45:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C891734A3D9
+	for <linux-serial@vger.kernel.org>; Sun, 11 Jan 2026 14:46:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768142745; cv=none; b=CADdKTXnrC7YFfgbUTWT0MVyEvNae0Zaw/40rZOA2PsVGLTaVZ4QvE/ycpUtmyRrW2Ea+so1oVCOvgy5msruxmfZ5jeioI2wuJWaKw6Ecf2LOxbsCOgr27qtnukuFxDKTmDXe4n1TjDX5edIF3waFzkyJofjnMYZ3JsaH+W243w=
+	t=1768142769; cv=none; b=efBCWqhOEgSZbZbZAfFyXnH2d4dh0PJXRKXPi+6Fisy259nfdrTnRNf0NkvDoDqU/gl/05FsR27zrHx00hntsucwpE/0SjDsifOkGSDrFv5kOsGmrzOl2HZFkaEIeVPVE44BKUoS2az7I0Hws5NgSnBXLgXUu1+q9iksgT9w5CE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768142745; c=relaxed/simple;
-	bh=8+o9CrQDP9rR7vhYrkmBD4TEK1Ah1Um118V33OBjIn8=;
+	s=arc-20240116; t=1768142769; c=relaxed/simple;
+	bh=E3fIUBLPFnEXAfwoSTB7dOLky4Cj+/epBMllkCL2GpI=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=lu0a0WjYjVYLfZqSSAK0xesUC1ihYDusWrQ5db3FcBGYYD8s8Vd7kJuP0DXXd8ApLsjD6uiEb8XZcojBU2M88S0PaU58GEe4JRmjgce4FGAC+QWTzJ9VYjyo8sSJhY2kfEZ4QOo7EmeiKD/1YzMw2Bj0KWiA8n3ZMUND3lucgvg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=g58+wShN; arc=none smtp.client-ip=209.85.208.47
+	 In-Reply-To:Content-Type; b=NJyCma02K/uJNIdjhloUaE25xeERabXieNdRzbLSkZHLU3pjKYL/VFm0050ATEd0X+xFiaVUhEIszsecVnZYdRNtSnpC9Az7LuAYyCg430VLFauFMG26gr2AETFqUT8lLL6jjrsBv/QMLNCOxQ1POHUb9O91B949vnMkcScsewk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=ZFz5/xt1; arc=none smtp.client-ip=209.85.208.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="g58+wShN"
-Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-6505d3adc3aso8879916a12.1
-        for <linux-serial@vger.kernel.org>; Sun, 11 Jan 2026 06:45:42 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="ZFz5/xt1"
+Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-65089cebdb4so7237623a12.0
+        for <linux-serial@vger.kernel.org>; Sun, 11 Jan 2026 06:46:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1768142741; x=1768747541; darn=vger.kernel.org;
+        d=tuxon.dev; s=google; t=1768142765; x=1768747565; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=lfDtjbPnZQpFER+nbClQWcn44IBaDvTgM6H9iNz+Pz0=;
-        b=g58+wShNUGm4cSq/cIFs5BcjtBtziWlVwOnRIYJ0JBVThU79/8vxkDEUyOzt7AzJBB
-         cTZ9e0Q9nDikPkEBLmzCCkAYBMC9A64/OO6AU4Ed+EOGygTBTQEKuknv7Bvpc0Hq4pfW
-         tWuCEazhna5tzsEGgmV/QS1mDV7AI8F7irWQCIvLFAdd6UBceXKAjkUon+m8Sp9IuWPs
-         p2XYZJYaezhBjl4awlNqxLX5lYDftU2jHR0SSz7JmKdP4CM//mkBYchNBUXZFooCPe+6
-         dp21GWl3JMqXh5qWiJlPzG2nBfXylKpA9kssFDHJxDnXDPKiHgK0Z6Kpaw+F7SivT7OY
-         h9Gg==
+        bh=xSh5A9C/ikcooPDg3GNmd0+fIcS/l8zoJ1QKaA55bnM=;
+        b=ZFz5/xt1R3RPg0IfhqILS6DeIcAi+Q7dknvvl7zujx9QVOvzKxPv6PbFWkA+xsWdwy
+         q4RvbDBtR/HjlASIiVjVE8AqQ+cFMmSpSmHz/9zLrH9twpLhuoDOp2ifbX2+2rz35r8W
+         EZggkt2Z25Ce3wkYydKW1eTb6s6zNkVGI4+qfKwk56y0v5hgCqKDZMbRcQU8iiV6WcXD
+         bNlH8BXPaurlSjuMuJ8jWyp7GKnMkFz+dHJmqtCjFfpct6Tch/J1+bYJfTm+imAjQNT4
+         bYlIO26xS8CbA20ia+8l9ila1DeJP0BiFxQQHuZUchuSBxxfuj1eBGaY4zansROWmVws
+         ybLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768142741; x=1768747541;
+        d=1e100.net; s=20230601; t=1768142765; x=1768747565;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=lfDtjbPnZQpFER+nbClQWcn44IBaDvTgM6H9iNz+Pz0=;
-        b=gGOduQnZ1Eq9O2jfB9cVfRD/FRA/+quXhRHvi96sphfsd56PlXgw0G+/obF/yZ/nlO
-         Mll+k9RDhwgh4z5wvBfjlOSGUXBynu7Ob7ZvRnJOIm2SbGacOuqHDHLauvfixQ9GNkze
-         AXrbnZF+PNJ4z+3+VcvQ2OlKfFip8zMADTdFEd0Ue1luwc+r9zqWhs5egdMxatl5HO7k
-         q+QfGmSKeuCysUgH0u+2d6DV3yecDMU1AoFX9SinhJ6y/GW9WpAPh4Rdx94xMOeC5nr+
-         49B35CHIgGDRS4P4bljDVtBgHiaNV1+6OBR6H4DkhqFbZvMPeeZlsK+ZyB6C32wM3ojS
-         1zuQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWAVrsiN2NdD/xI8r7EXGc4h8RVn8GO0I2UqAGCYY+fbZ8t/zRca4Hqfu29vVzY75v5OalIJKohU4ouBws=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yydj3yhc0q0yo6ppqinMSC6e+S7WiVNPcEb4t1SO6vn93pvPYfC
-	MOGGU588EIAm9uy8vTaguzfQaDYL7ztE2PixI8q8MHRBNC6uCztJLGjxbeIqpun/8LY=
-X-Gm-Gg: AY/fxX5uTklX1/PZpj0nm8/NiDJYZ8aX8+N6/wueA9V6kDddVVvgVNASU0c+G1gZIFO
-	dO6fMNZbclorb3+JGZ7+aMW+ah8kynJa3l3SaWPPgw44GrQvVwGrLSsB5TaF4fm5XbLhjnhoZhr
-	2YHZgADS9xtI+sqzaXnS+ttKG7BlMiY5QolMwplSd/foyEWXEeZYP94k5zumI/sQD28eGGPsXU/
-	nHloxusPVHcyUfhaQb6ucb94KAko0w4i6jxRgrCbA4nh3je6snTh/iWGSPeOBIMhZ0wLbKRI3E+
-	dTLRkPiBkd3yqrtsLtnLe402eHO3s95oOGKGnps8210KzCPQ9vfUq1JqOeVG8QbP9A/R9v2yLsU
-	yQZTGJpfcIV60HKaMRLkkvDvLzYgvmDeHp9gAVSNhJBnUvRcajMNGkofzykUfAX/vxAaCEphLvx
-	fZg0Xi6nBlppcNYkSQZawtv9Y=
-X-Google-Smtp-Source: AGHT+IGzzRSG9JPiSsYLBto386guzGNBLdjrzZm8+JQDEKUQ0tWs5J3FidjE880cd/bBYxLZJrvW2A==
-X-Received: by 2002:a17:907:9455:b0:b3b:5fe6:577a with SMTP id a640c23a62f3a-b8445169517mr1585237766b.8.1768142741298;
-        Sun, 11 Jan 2026 06:45:41 -0800 (PST)
+        bh=xSh5A9C/ikcooPDg3GNmd0+fIcS/l8zoJ1QKaA55bnM=;
+        b=rt9Z7r6QBvmpXT5NOAo+ecRmv+WmtpjEf9c5S+TGjBGiTVxytbxlRTEoK3Uabzm/IU
+         DvcRXwVrj6q363Xz7vRDjcgXR7Z9wCUItmgDIPqR5sRwjGphTYjMaOLS16/dgy6kGQ/G
+         xLA/oJoHUyDPu3nXwODWuqr9/IQ9gkLApokldQuHgaAcyeX2FEymTE6Hq6TCdxKT2O5h
+         ErYeDetgZbMSPgLQEWUyN5GRzwTm7mjulxUK3eqTUGQyDP4/sRfq6tRRt6AlGo+lMSmz
+         zN5697thHLM3ngrdRjE8/6mgTwD27RGVtdSHHAgsk9Oc0715MV8ieNHHzs95Iab5rXwh
+         ktfg==
+X-Forwarded-Encrypted: i=1; AJvYcCXvSoctZqPAb3wYjD1ELRPS6EMp5keougnUhnHU5xdBj9vVNyNmvJtiNHLHovg19dx4QX0FetQsDDozWF8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyXSpGxrevpsKu6dva4+suiGX6Eck4O8OZ9iHaSBL9KCRwmp+pi
+	LOQDi10CENWcQofCxrk1TE3suMMbVsgtT0QkSmfz6a9JGddi6HVJoOxAVYkhbG1lkYk=
+X-Gm-Gg: AY/fxX6vt2GQXprbvy8bmlrAm7wrOb+59tM3AkgIBP4KJKYECsjWnD3z2LOIJU2A/q2
+	ZqoLbbTSOo+ExjSrWzA1s7OKDF63WXZeO/Mrcsi7xIy4unQZ4oEovRWr6waaMHjgRq6C32sPbfc
+	Ph6cHNenhkoVW9OcPFd6NjVvFuRMgMH+JtynzA2bthcFBCWx5Ao2r59ySdINo+RyGBB/9WBux9B
+	QrgaRPUZjfEY4p+5LxVDTz4w+cOG9yYCcDzlXdyoAeDeCUKrqSb+mj6GMYVHNUnqVBOTAyZjB1m
+	s829OVwT1cqT5AfdWCeYbY424X33hxHZwX0dO12We4kStIt+TNXmdE/twI96RLKQFTbV9fhZo7/
+	HFvlaLXBAhaDzCfW1oh10sT5Wag31/7duGPsxg8c4QPXHZ5CU07Y5V4ByN9ML65cu/4jg9RzT8H
+	v5BkLfut0Wc/QiYLPuqouWbBU=
+X-Google-Smtp-Source: AGHT+IHdSgN1j5CfCwzzuZuuUE6k4oOsy7A6FyHYN7fpU3s7QMByt1Yrcz5j8phSUL1uwYAKt/FfvA==
+X-Received: by 2002:a17:907:3c8a:b0:b87:1b2b:32fc with SMTP id a640c23a62f3a-b871b2b3d67mr52172166b.0.1768142765029;
+        Sun, 11 Jan 2026 06:46:05 -0800 (PST)
 Received: from [10.216.106.246] ([213.233.110.57])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b8706c2604bsm260020066b.16.2026.01.11.06.45.36
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b870b0dba4esm216046666b.17.2026.01.11.06.46.01
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 11 Jan 2026 06:45:40 -0800 (PST)
-Message-ID: <555883af-66da-43a0-a4d6-bd3bc52581b6@tuxon.dev>
-Date: Sun, 11 Jan 2026 16:45:36 +0200
+        Sun, 11 Jan 2026 06:46:04 -0800 (PST)
+Message-ID: <dd70bce6-77c5-4d73-96ae-6a0bd8ab7b22@tuxon.dev>
+Date: Sun, 11 Jan 2026 16:46:00 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -69,8 +69,8 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 10/15] dt-bindings: net: mscc-miim: add
- microchip,lan9691-miim
+Subject: Re: [PATCH v4 11/15] dt-bindings: pinctrl: pinctrl-microchip-sgpio:
+ add LAN969x
 To: Robert Marko <robert.marko@sartura.hr>, robh@kernel.org,
  krzk+dt@kernel.org, conor+dt@kernel.org, nicolas.ferre@microchip.com,
  alexandre.belloni@bootlin.com, herbert@gondor.apana.org.au,
@@ -88,17 +88,17 @@ To: Robert Marko <robert.marko@sartura.hr>, robh@kernel.org,
  linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
 Cc: luka.perkov@sartura.hr, Conor Dooley <conor.dooley@microchip.com>
 References: <20251229184004.571837-1-robert.marko@sartura.hr>
- <20251229184004.571837-11-robert.marko@sartura.hr>
+ <20251229184004.571837-12-robert.marko@sartura.hr>
 Content-Language: en-US
 From: claudiu beznea <claudiu.beznea@tuxon.dev>
-In-Reply-To: <20251229184004.571837-11-robert.marko@sartura.hr>
+In-Reply-To: <20251229184004.571837-12-robert.marko@sartura.hr>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 
 
 On 12/29/25 20:37, Robert Marko wrote:
-> Document Microchip LAN969x MIIM compatible.
+> Document LAN969x compatibles for SGPIO.
 > 
 > Signed-off-by: Robert Marko<robert.marko@sartura.hr>
 > Acked-by: Conor Dooley<conor.dooley@microchip.com>
