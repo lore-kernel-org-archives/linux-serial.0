@@ -1,296 +1,136 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32F082EA15C;
-	Mon, 12 Jan 2026 16:43:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41BD4374171
+	for <linux-serial@vger.kernel.org>; Mon, 12 Jan 2026 17:53:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768236210; cv=none; b=piWqC5+AOJhTv8vXoTAjOr6ckxT81mInOjrHG6GM3yIK7TaxY1XlutfR4ecW5JFf1DVbK7beu9UaoX3WYxm/p4DNUv5T/kVdOBPKSss+9PDA5UtYwK58OeDTGH4RMNjXzYzJjUCmb1qJxrFE+cCS4Inf97AT1RqL1IziIwISSes=
+	t=1768240414; cv=none; b=KY7qzW8e1EhARLEphHLk7kr9WdOQA4wMW8WII+MBwXKFcxZYuTwh3an7MP25oXZLKMq822/3vLD2FqJYYvr83OWL/MwSS4NP/VePoCojlZOOTMHnG/xQOsc7TA5S7PE3DHqSpgKLa6NPzAxmNw3VAn0KFLAxMvUbpS6JUhyo4YQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768236210; c=relaxed/simple;
-	bh=lFgctjtutGQXOiqTT6uzDo7xxjSfF86bzNybiJFqlFs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TqERfB7Ihs2lPnYlrc843qZm2YPpErJJBQDKzd9t9rYn1GO+pS/js2W61G8oDdRLYGXZOS/5RtkaihupD40Y/6CmrGjA9b5Q3SzT0z1GKrEyNYTNpz0gN27DNVgNqFTZEi8LB9VRktjxNJvL9jC/06NPjsA/z7MxD9Br2pyGycM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KQemu9lb; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1768240414; c=relaxed/simple;
+	bh=y6BPssvuqQ/qH26ZtP7OKYRtO9FGOS74oztLC07SRNg=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=pXLcuNGU7O6E43WPIWN4Amc0mUf7ZBddJJFr+gUDkh5S7Z02TRIvCX3cQLoRrd02UQ/Jtmnv7Hrzzm/RiIU19lgN0XNU5nn45Vv4MUIRVAlGwiRifa293mEaO2xIkau90EBFwgoqoniCGqmM904MWoOWe4D6J/2YqOq6si/dgV4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=HIrT55Tp; arc=none smtp.client-ip=209.85.128.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KQemu9lb"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DE18C116D0;
-	Mon, 12 Jan 2026 16:43:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1768236209;
-	bh=lFgctjtutGQXOiqTT6uzDo7xxjSfF86bzNybiJFqlFs=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=KQemu9lbPmlYlUdtCfab0b3qxZiqjkrWH1seRGrIAxCggA9PopzCct9Mh4DzyzYTx
-	 OepzY7Vybccjz7N141sngTsDVA35C3gqQ5wObndsc7Qskcw0zYDbxoezbrEfodA86z
-	 jmDo/5g3u7XxNhxgeh9FZ7x+GthsibsbLsw+CLJ+bJIN9izFhGzwfQpcywuu++wsnF
-	 i6Elmuk5du1aosfR0RdykwcjBsKiUaG+lQQMhDQYmwfAmqVxHWfKnvhW4k41V18qQ3
-	 u6qtf+z+VLd1ebCDg1TuxOBbYHIRDvgs47m8AEqbDwo/QU0KxGJDga6uPBbSWRhSyA
-	 h2zFd7sNTP96w==
-Date: Mon, 12 Jan 2026 22:13:16 +0530
-From: Manivannan Sadhasivam <mani@kernel.org>
-To: manivannan.sadhasivam@oss.qualcomm.com
-Cc: Rob Herring <robh@kernel.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Nathan Chancellor <nathan@kernel.org>, Nicolas Schier <nicolas.schier@linux.dev>, 
-	Hans de Goede <hansg@kernel.org>, Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, 
-	Mark Pearson <mpearson-lenovo@squebb.ca>, "Derek J. Clark" <derekjohn.clark@gmail.com>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Marcel Holtmann <marcel@holtmann.org>, Luiz Augusto von Dentz <luiz.dentz@gmail.com>, 
-	Bartosz Golaszewski <brgl@bgdev.pl>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	Bartosz Golaszewski <brgl@kernel.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-kbuild@vger.kernel.org, platform-driver-x86@vger.kernel.org, linux-pci@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org, 
-	linux-pm@vger.kernel.org, Stephan Gerhold <stephan.gerhold@linaro.org>, 
-	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, linux-acpi@vger.kernel.org
-Subject: Re: [PATCH v3 03/14] software node: Implement device_get_match_data
- fwnode callback
-Message-ID: <jo4flkszwuy6bxmjn55jtprtj567adlisaqfqgrqwbigfmvd4e@zp3kllj2y4fh>
-References: <20260112-pci-m2-e-v4-0-eff84d2c6d26@oss.qualcomm.com>
- <20260112-pci-m2-e-v4-9-eff84d2c6d26@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="HIrT55Tp"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-4779aa4f928so68404295e9.1
+        for <linux-serial@vger.kernel.org>; Mon, 12 Jan 2026 09:53:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1768240410; x=1768845210; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:autocrypt
+         :references:in-reply-to:date:cc:to:from:subject:message-id:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=y6BPssvuqQ/qH26ZtP7OKYRtO9FGOS74oztLC07SRNg=;
+        b=HIrT55Tppvg0XFYV5zS20v5xaWtuqbHwmR0+5GnSOqV3Zkqr+5e4bRVOWGa7T+G+dc
+         d5rshviEoUDadI8tfAjFRPSFxopu/3PZCFonHcYWFfwYqBaRD1P2ccUPAZOw57poJIgk
+         2o8Rq8MaIxKEDfVpi5OxW0oI7odIOVqyt0hNuhOTtPiDtjFXs91fI/lOWlNPLoY/ZaeM
+         mV7icrjbWluhuD2o9cvBSF4+skVjcVoRRmaIlc9BDsb4AbDqtsuQdXMpggf1CiXHQlfo
+         0FMj/pO63Bpync6rTiNgO02fKipgreSs9DrEqYwDCCSf/g0s+4H5xMDOF0UtZgbuZmby
+         4Rrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1768240410; x=1768845210;
+        h=mime-version:user-agent:content-transfer-encoding:autocrypt
+         :references:in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=y6BPssvuqQ/qH26ZtP7OKYRtO9FGOS74oztLC07SRNg=;
+        b=LbY+83BVlb799wBSfyTg6Ve1rbKnN0dptEiMHfoSpuMuA23DOl+mv3ZK3XDtVGQcQb
+         mOwA4JOc32/SUMlN6FV2QorRJdCwXs5lmnctUxFcm70vqafYkhqDycHEULe3ioSoCPk0
+         mPUOUO46wQi2r81jwlJ0uo9yDSK6NAypXLip3sJ9vOy5mNtYW3vxtkLy3eCWgPCza2L9
+         DRGx2jI5b251e9tax+QRtoW7xPi6cEuVRw1PpmwR0fsoxNWRX0JGjyTgeld4KaaQfLsj
+         uK39aIdOgWBTrz6sk6TEIaUxCgg0hInwPFrOa0qE12tbCoV7IhfiPBpo0TLPq3QCgoQ1
+         2EWw==
+X-Forwarded-Encrypted: i=1; AJvYcCUFvDeU4++DPTQVtfelqUvO8PASB3wCK2F5YQ5ZLAwm67+8aLKGfMoUohHx5lb3/ugJ+JnaEBH4PTWbjTM=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyoga6WcnvrP/vxSsRoPIFpB8XtoByrtfU2putfXeNulfwioq52
+	S5//koRPWHPMu02r8csXvwoNtJhEY4N3b1qC5HhJjLsgM/LjVhoWsHrlA4M+tO25gTo=
+X-Gm-Gg: AY/fxX4kf6Z2NVqZWFDm8jvHtmKwl4eahVbbsu9Aq4zxxL8FR2U9V67nz4yaatu2a7/
+	lS1l6+V/A5L30FTLauOIvtziIRZ5FibOB0laymSkmstLoyC13aJYRAYQATWGyX1lq907/2rlvE1
+	iwPdXlQweFGt4OrxJlwYhhGWZI/7zZuPweDnndz+wixpTiBUE5jhc80hRHhtma1+WDdB4ImOPYE
+	6xjmDW5SLsMqlvRQapbfEblUCCi8xdIT/VcV8K6Ma4LPNdTwPn8cT/FeQlw/Q5Tb+ThmE7eMx6P
+	opYTw6RmtYm8sSg6c+TCleDXTlMMCNJdl4pSfoIhsnqQavCf0SgRgs680gv9tjojf8dMhKO+KUB
+	Oa7VM98p8H8JjXtkJU3s9s1xKsQ3y6efs88Zwrh7LR9bOE/8GsOT34OQH/ZNq14sjyVxzXgGSIS
+	kLEuo+jReBVZlckh8p94IcwdYnHxSGHAdIrKLe8nYAgg==
+X-Google-Smtp-Source: AGHT+IGfCgsoYudB43gyY5VgiMyajRCyMKVvdA/K1TPc0FTW2J7Pqnzu3xNux2u9C7uenfxIM0LM/g==
+X-Received: by 2002:a05:600c:4e8a:b0:479:1b0f:dfff with SMTP id 5b1f17b1804b1-47d84b170famr247229235e9.10.1768240410449;
+        Mon, 12 Jan 2026 09:53:30 -0800 (PST)
+Received: from [192.168.3.33] (218.37.160.45.gramnet.com.br. [45.160.37.218])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-47d7f69e13bsm368953115e9.7.2026.01.12.09.53.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Jan 2026 09:53:30 -0800 (PST)
+Message-ID: <0585581cd2f19544c5e1565a9d241697d812b5f9.camel@suse.com>
+Subject: Re: [PATCH 00/19] printk cleanup - part 3
+From: Marcos Paulo de Souza <mpdesouza@suse.com>
+To: Andreas Larsson <andreas@gaisler.com>, Richard Weinberger
+ <richard@nod.at>,  Anton Ivanov <anton.ivanov@cambridgegreys.com>, Johannes
+ Berg <johannes@sipsolutions.net>, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Jason Wessel <jason.wessel@windriver.com>,
+ Daniel Thompson	 <danielt@kernel.org>, Douglas Anderson
+ <dianders@chromium.org>, Petr Mladek	 <pmladek@suse.com>, Steven Rostedt
+ <rostedt@goodmis.org>, John Ogness	 <john.ogness@linutronix.de>, Sergey
+ Senozhatsky <senozhatsky@chromium.org>,  Jiri Slaby <jirislaby@kernel.org>,
+ Breno Leitao <leitao@debian.org>, Andrew Lunn <andrew+netdev@lunn.ch>, 
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet
+ <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
+ <pabeni@redhat.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Kees Cook	
+ <kees@kernel.org>, Tony Luck <tony.luck@intel.com>, "Guilherme G. Piccoli"	
+ <gpiccoli@igalia.com>, Madhavan Srinivasan <maddy@linux.ibm.com>, Michael
+ Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
+ Christophe Leroy	 <christophe.leroy@csgroup.eu>, Alexander Shishkin	
+ <alexander.shishkin@linux.intel.com>, Maxime Coquelin	
+ <mcoquelin.stm32@gmail.com>, Alexandre Torgue
+ <alexandre.torgue@foss.st.com>,  Jacky Huang <ychuang3@nuvoton.com>,
+ Shan-Chun Hung <schung@nuvoton.com>, Laurentiu Tudor	
+ <laurentiu.tudor@nxp.com>
+Cc: linux-um@lists.infradead.org, linux-kernel@vger.kernel.org, 
+	kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org, 
+	netdev@vger.kernel.org, linux-m68k@lists.linux-m68k.org, 
+	linux-hardening@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, 
+	sparclinux@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, 
+	linux-arm-kernel@lists.infradead.org, linux-fsdevel@vger.kernel.org
+Date: Mon, 12 Jan 2026 14:53:12 -0300
+In-Reply-To: <836139d1-1425-4381-bb84-6c2654a4d239@gaisler.com>
+References: <20251227-printk-cleanup-part3-v1-0-21a291bcf197@suse.com>
+	 <836139d1-1425-4381-bb84-6c2654a4d239@gaisler.com>
+Autocrypt: addr=mpdesouza@suse.com; prefer-encrypt=mutual;
+ keydata=mDMEZ/0YqhYJKwYBBAHaRw8BAQdA4JZz0FED+JD5eKlhkNyjDrp6lAGmgR3LPTduPYGPT
+ Km0Kk1hcmNvcyBQYXVsbyBkZSBTb3V6YSA8bXBkZXNvdXphQHN1c2UuY29tPoiTBBMWCgA7FiEE2g
+ gC66iLbhUsCBoBemssEuRpLLUFAmf9GKoCGwMFCwkIBwICIgIGFQoJCAsCBBYCAwECHgcCF4AACgk
+ QemssEuRpLLWGxwD/S1I0bjp462FlKb81DikrOfWbeJ0FOJP44eRzmn20HmEBALBZIMrfIH2dJ5eM
+ GO8seNG8sYiP6JfRjl7Hyqca6YsE
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.58.2 (by Flathub.org) 
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260112-pci-m2-e-v4-9-eff84d2c6d26@oss.qualcomm.com>
 
-On Mon, Jan 12, 2026 at 09:56:08PM +0530, Manivannan Sadhasivam via B4 Relay wrote:
-> From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
-> 
-> For supporting bluetooth over the non-discoverable UART interface of
-> WCN7850, create the serdev device after enumerating the PCIe interface.
-> This is mandatory since the device ID is only known after the PCIe
-> enumeration and the ID is used for creating the serdev device.
-> 
-> Since by default there is no OF or ACPI node for the created serdev,
-> create a dynamic OF 'bluetooth' node with the 'compatible' property and
-> attach it to the serdev device. This will allow the serdev device to bind
-> to the existing bluetooth driver.
-> 
+On Wed, 2026-01-07 at 11:22 +0100, Andreas Larsson wrote:
+> On 2025-12-27 13:16, Marcos Paulo de Souza wrote:
+> > The parts 1 and 2 can be found here [1] and here[2].
+> >=20
+> > The changes proposed in this part 3 are mostly to clarify the usage
+> > of
+> > the interfaces for NBCON, and use the printk helpers more broadly.
+> > Besides it, it also introduces a new way to register consoles
+> > and drop thes the CON_ENABLED flag. It seems too much, but in
+> > reality
+> > the changes are not complex, and as the title says, it's basically
+> > a
+> > cleanup without changing the functional changes.
+>=20
+> Hi,
+>=20
+> Patches 7-17 all say "replacing the CON_ENABLE flag" in their
+> descriptions, which should rather be "replacing the CON_ENABLED
+> flag".
 
-Missed "select OF_DYNAMIC" in Kconfig...
+That's true, thanks for spotting!
 
-- Mani
-
-> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
-> ---
->  drivers/power/sequencing/pwrseq-pcie-m2.c | 170 +++++++++++++++++++++++++++++-
->  1 file changed, 169 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/power/sequencing/pwrseq-pcie-m2.c b/drivers/power/sequencing/pwrseq-pcie-m2.c
-> index 4b85a40d7692..5f9232e6c700 100644
-> --- a/drivers/power/sequencing/pwrseq-pcie-m2.c
-> +++ b/drivers/power/sequencing/pwrseq-pcie-m2.c
-> @@ -17,6 +17,7 @@
->  #include <linux/platform_device.h>
->  #include <linux/pwrseq/provider.h>
->  #include <linux/regulator/consumer.h>
-> +#include <linux/serdev.h>
->  #include <linux/slab.h>
->  
->  struct pwrseq_pcie_m2_pdata {
-> @@ -32,6 +33,9 @@ struct pwrseq_pcie_m2_ctx {
->  	struct gpio_desc *w_disable1_gpio;
->  	struct gpio_desc *w_disable2_gpio;
->  	struct device *dev;
-> +	struct serdev_device *serdev;
-> +	struct notifier_block nb;
-> +	struct of_changeset *ocs;
->  };
->  
->  static int pwrseq_pcie_m2_vregs_enable(struct pwrseq_device *pwrseq)
-> @@ -178,9 +182,169 @@ static void pwrseq_pcie_free_resources(void *data)
->  {
->  	struct pwrseq_pcie_m2_ctx *ctx = data;
->  
-> +	serdev_device_remove(ctx->serdev);
-> +	of_changeset_revert(ctx->ocs);
-> +	of_changeset_destroy(ctx->ocs);
-> +	bus_unregister_notifier(&pci_bus_type, &ctx->nb);
->  	regulator_bulk_free(ctx->num_vregs, ctx->regs);
->  }
->  
-> +static int pwrseq_m2_pcie_create_bt_node(struct pwrseq_pcie_m2_ctx *ctx,
-> +					struct device_node *parent)
-> +{
-> +	struct device *dev = ctx->dev;
-> +	struct device_node *np;
-> +	int ret;
-> +
-> +	ctx->ocs = devm_kzalloc(dev, sizeof(*ctx->ocs), GFP_KERNEL);
-> +	if (!ctx->ocs)
-> +		return -ENOMEM;
-> +
-> +	of_changeset_init(ctx->ocs);
-> +
-> +	np = of_changeset_create_node(ctx->ocs, parent, "bluetooth");
-> +	if (!np) {
-> +		dev_err(dev, "Failed to create bluetooth node\n");
-> +		ret = -ENODEV;
-> +		goto err_destroy_changeset;
-> +	}
-> +
-> +	ret = of_changeset_add_prop_string(ctx->ocs, np, "compatible", "qcom,wcn7850-bt");
-> +	if (ret) {
-> +		dev_err(dev, "Failed to add bluetooth compatible: %d\n", ret);
-> +		goto err_destroy_changeset;
-> +	}
-> +
-> +	ret = of_changeset_apply(ctx->ocs);
-> +	if (ret) {
-> +		dev_err(dev, "Failed to apply changeset: %d\n", ret);
-> +		goto err_destroy_changeset;
-> +	}
-> +
-> +	ret = device_add_of_node(&ctx->serdev->dev, np);
-> +	if (ret) {
-> +		dev_err(dev, "Failed to add OF node: %d\n", ret);
-> +		goto err_revert_changeset;
-> +	}
-> +
-> +	return 0;
-> +
-> +err_revert_changeset:
-> +	of_changeset_revert(ctx->ocs);
-> +err_destroy_changeset:
-> +	of_changeset_destroy(ctx->ocs);
-> +
-> +	return ret;
-> +}
-> +
-> +static int pwrseq_m2_pcie_notify(struct notifier_block *nb, unsigned long action,
-> +			      void *data)
-> +{
-> +	struct pwrseq_pcie_m2_ctx *ctx = container_of(nb, struct pwrseq_pcie_m2_ctx, nb);
-> +	struct pci_dev *pdev = to_pci_dev(data);
-> +	struct serdev_controller *serdev_ctrl;
-> +	struct device *dev = ctx->dev;
-> +	struct device_node *pci_parent;
-> +	int ret;
-> +
-> +	/*
-> +	 * Check whether the PCI device is associated with this M.2 connector or
-> +	 * not, by comparing the OF node of the PCI device parent and the Port 0
-> +	 * (PCIe) remote node parent OF node.
-> +	 */
-> +	pci_parent = of_graph_get_remote_node(dev_of_node(ctx->dev), 0, 0);
-> +	if (!pci_parent || (pci_parent != pdev->dev.parent->of_node)) {
-> +		of_node_put(pci_parent);
-> +		return NOTIFY_DONE;
-> +	}
-> +	of_node_put(pci_parent);
-> +
-> +	switch (action) {
-> +	case BUS_NOTIFY_ADD_DEVICE:
-> +		/* Create serdev device for WCN7850 */
-> +		if (pdev->vendor == PCI_VENDOR_ID_QCOM && pdev->device == 0x1107) {
-> +			struct device_node *serdev_parent __free(device_node) =
-> +				of_graph_get_remote_node(dev_of_node(ctx->dev), 1, 1);
-> +			if (!serdev_parent)
-> +				return NOTIFY_DONE;
-> +
-> +			serdev_ctrl = of_find_serdev_controller_by_node(serdev_parent);
-> +			if (!serdev_ctrl)
-> +				return NOTIFY_DONE;
-> +
-> +			ctx->serdev = serdev_device_alloc(serdev_ctrl);
-> +			if (!ctx->serdev)
-> +				return NOTIFY_BAD;
-> +
-> +			ret = pwrseq_m2_pcie_create_bt_node(ctx, serdev_parent);
-> +			if (ret) {
-> +				serdev_device_put(ctx->serdev);
-> +				return notifier_from_errno(ret);
-> +			}
-> +
-> +			ret = serdev_device_add(ctx->serdev);
-> +			if (ret) {
-> +				dev_err(dev, "Failed to add serdev for WCN7850: %d\n", ret);
-> +				of_changeset_revert(ctx->ocs);
-> +				of_changeset_destroy(ctx->ocs);
-> +				serdev_device_put(ctx->serdev);
-> +				return notifier_from_errno(ret);
-> +			}
-> +		}
-> +		break;
-> +	case BUS_NOTIFY_REMOVED_DEVICE:
-> +		/* Destroy serdev device for WCN7850 */
-> +		if (pdev->vendor == PCI_VENDOR_ID_QCOM && pdev->device == 0x1107) {
-> +			serdev_device_remove(ctx->serdev);
-> +			of_changeset_revert(ctx->ocs);
-> +			of_changeset_destroy(ctx->ocs);
-> +		}
-> +		break;
-> +	}
-> +
-> +	return NOTIFY_OK;
-> +}
-> +
-> +static bool pwrseq_pcie_m2_check_remote_node(struct device *dev, u8 port, u8 endpoint,
-> +					     const char *node)
-> +{
-> +	struct device_node *remote __free(device_node) =
-> +			of_graph_get_remote_node(dev_of_node(dev), port, endpoint);
-> +
-> +	if (remote && of_node_name_eq(remote, node))
-> +		return true;
-> +
-> +	return false;
-> +}
-> +
-> +/*
-> + * If the connector exposes a non-discoverable bus like UART, the respective
-> + * protocol device needs to be created manually with the help of the notifier
-> + * of the discoverable bus like PCIe.
-> + */
-> +static int pwrseq_pcie_m2_register_notifier(struct pwrseq_pcie_m2_ctx *ctx, struct device *dev)
-> +{
-> +	int ret;
-> +
-> +	/*
-> +	 * Register a PCI notifier for Key E connector that has PCIe as Port
-> +	 * 0/Endpoint 0 interface and Serial as Port 1/Endpoint 1 interface.
-> +	 */
-> +	if (pwrseq_pcie_m2_check_remote_node(dev, 1, 1, "serial")) {
-> +		if (pwrseq_pcie_m2_check_remote_node(dev, 0, 0, "pcie")) {
-> +			ctx->dev = dev;
-> +			ctx->nb.notifier_call = pwrseq_m2_pcie_notify;
-> +			ret = bus_register_notifier(&pci_bus_type, &ctx->nb);
-> +			if (ret) {
-> +				dev_err_probe(dev, ret, "Failed to register notifier for serdev\n");
-> +				return ret;
-> +			}
-> +		}
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  static int pwrseq_pcie_m2_probe(struct platform_device *pdev)
->  {
->  	struct device *dev = &pdev->dev;
-> @@ -235,7 +399,11 @@ static int pwrseq_pcie_m2_probe(struct platform_device *pdev)
->  		return dev_err_probe(dev, PTR_ERR(ctx->pwrseq),
->  				     "Failed to register the power sequencer\n");
->  
-> -	return 0;
-> +	/*
-> +	 * Register a notifier for creating protocol devices for
-> +	 * non-discoverable busses like UART.
-> +	 */
-> +	return pwrseq_pcie_m2_register_notifier(ctx, dev);
->  }
->  
->  static const struct of_device_id pwrseq_pcie_m2_of_match[] = {
-> 
-> -- 
-> 2.48.1
-> 
-> 
-
--- 
-மணிவண்ணன் சதாசிவம்
+>=20
+> Cheers,
+> Andreas
