@@ -1,78 +1,151 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 057F92DBF78;
-	Mon, 12 Jan 2026 13:37:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 342A6306B12;
+	Mon, 12 Jan 2026 16:28:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768225024; cv=none; b=QaDdO4i3s/eM26SCuwlDlK683Qu7HXgF20O8aPtPOPyr4Rx9KqcbVr7cRiEQUc43cahFqjuLTG399lvFFQr+o6zxpKZ6IjN3ev02ytckBeT1QvgjvqgljhI3Vw/zSh/Efx2+LLciNxT2oUVdkd9iWzem5tjB1O+P2Jvurb32bbM=
+	t=1768235313; cv=none; b=F8hVcokTJEAUK/f6jIHpq/Arsz6SEON0car4aAZ1N88GOsieVUGsyOcWoDeTMkBvGekAd3uIwqwYVOpj/YCAKzZ6cIF/uzBb4Rs7IuzWs4fMmJY1FUfBI3aL6PHsemLCCnhAnJb0gcQCbpV/LwNSeYojAON+6jY9exX+mHqAP3U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768225024; c=relaxed/simple;
-	bh=bzYUe9Krw1KHbB/obzxKLRvZYPhkA90KZUSBQi3hf2s=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lW1sus33ynA3Ie+o7qBBo9rUVvZufwZIr7tblnVFD81LTDZ89JZQEKsxGS6suTQCuzKn9I9smlM+jRmr2AXfcGXGXfolDQPIb5zwn2EWsqabniyhOsAT1GLfaBnSSVOkItXbn5KAUjUapdgp0QJo49hjB2ERyLEkO/HAdYJiK28=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=GYy0IXRw; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1768235313; c=relaxed/simple;
+	bh=GlJ71tujJcltgFnDfKrfK0RHu+muqUMEqgwXCraygEc=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=WPe0jGXBjEqXepV8yV59nLelKQPqUA97ya2SQ+hSXPF1Q1UvX03M3LFvd51SrZzII4C/pglEmjV7fJkQTBTIdIHTdQcXYRPOHh+GMmdH8HWe2ZbHH7HHjAs1T/7Wv2uXk5pSXv1O2YlqstUajXP/VVPjRTKN2nOOnmy7JZw/rwg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PaUH/J9R; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="GYy0IXRw"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6079BC16AAE;
-	Mon, 12 Jan 2026 13:37:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1768225023;
-	bh=bzYUe9Krw1KHbB/obzxKLRvZYPhkA90KZUSBQi3hf2s=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=GYy0IXRwxYRa6+Eb+mt0hD4IbxIA8k971nzVORZJz0zmrD/N8l/oqWJpUakCf6wyk
-	 4cDPflH+DuT8pXO12YmlZzAw/osbsYT5dykv2XNR3OTbA6ujOqz4XfvvS39ltm0Gz8
-	 LXG+ptmkdPUMV/1tppmmnwZXLEAlxkNvWXT1rWf8=
-Date: Mon, 12 Jan 2026 08:37:02 -0500
-From: Konstantin Ryabitsev <konstantin@linuxfoundation.org>
-To: Manivannan Sadhasivam <mani@kernel.org>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>, manivannan.sadhasivam@oss.qualcomm.com, 
-	Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Nathan Chancellor <nathan@kernel.org>, 
-	Nicolas Schier <nicolas.schier@linux.dev>, Hans de Goede <hansg@kernel.org>, 
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Mark Pearson <mpearson-lenovo@squebb.ca>, 
-	"Derek J. Clark" <derekjohn.clark@gmail.com>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Marcel Holtmann <marcel@holtmann.org>, 
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>, Bartosz Golaszewski <brgl@bgdev.pl>, 
-	Daniel Scally <djrscally@gmail.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, 
-	Sakari Ailus <sakari.ailus@linux.intel.com>, "Rafael J. Wysocki" <rafael@kernel.org>, 
-	Danilo Krummrich <dakr@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, 
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org, 
-	platform-driver-x86@vger.kernel.org, linux-pci@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org, linux-pm@vger.kernel.org, 
-	Stephan Gerhold <stephan.gerhold@linaro.org>, Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, 
-	linux-acpi@vger.kernel.org, Sui Jingfeng <sui.jingfeng@linux.dev>
-Subject: Re: [PATCH v3 03/14] software node: Implement device_get_match_data
- fwnode callback
-Message-ID: <20260112-miniature-quiet-gorilla-263fed@lemur>
-References: <20260110-pci-m2-e-v3-0-4faee7d0d5ae@oss.qualcomm.com>
- <20260110-pci-m2-e-v3-3-4faee7d0d5ae@oss.qualcomm.com>
- <aWSpFk9z0zpyKjr6@smile.fi.intel.com>
- <6l3rs5pv6xnrbygpvqrdxqoqtybjyefsltk5bl4336q56rfoza@ejo3sxuufghe>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PaUH/J9R"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 07FE9C16AAE;
+	Mon, 12 Jan 2026 16:28:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1768235313;
+	bh=GlJ71tujJcltgFnDfKrfK0RHu+muqUMEqgwXCraygEc=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=PaUH/J9RPZmbIvHp2Fn+kT5AYtWmn23AwVRzXo0vhaxyzQifOAi0+znz4sLkMxQBa
+	 J6Pwj+gwDTJM5TxkiOEdSus301MZUeGZrvvS/joQgoGBPtPGmOBxTrGyspe+UCXmKf
+	 yXmFHxTXh1dRZWSfBcSvHeDvRkaewgB1o9hWxuI7SJTFfMkj2Mv87QBVPAKgosUJGR
+	 wVt2XxGpd/twxXNR51uvuqK9/kUYRwVlocXpd7IAtq1/t0BkJI0K/GdzBf8l5b0oRE
+	 fBLp1A9+rjuVWxEsbB7mi3G8yXVMLDXO3ah01prMR0DpYlJA1BTFQZq9UR7XwBFesV
+	 nirHgWt74kmgA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3306D25041;
+	Mon, 12 Jan 2026 16:28:32 +0000 (UTC)
+From: Manivannan Sadhasivam via B4 Relay <devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org>
+Date: Mon, 12 Jan 2026 21:56:00 +0530
+Subject: [PATCH v4 1/9] serdev: Convert to_serdev_*() helpers to macros and
+ use container_of_const()
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <6l3rs5pv6xnrbygpvqrdxqoqtybjyefsltk5bl4336q56rfoza@ejo3sxuufghe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Message-Id: <20260112-pci-m2-e-v4-1-eff84d2c6d26@oss.qualcomm.com>
+References: <20260112-pci-m2-e-v4-0-eff84d2c6d26@oss.qualcomm.com>
+In-Reply-To: <20260112-pci-m2-e-v4-0-eff84d2c6d26@oss.qualcomm.com>
+To: Rob Herring <robh@kernel.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Nathan Chancellor <nathan@kernel.org>, 
+ Nicolas Schier <nicolas.schier@linux.dev>, Hans de Goede <hansg@kernel.org>, 
+ =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+ Mark Pearson <mpearson-lenovo@squebb.ca>, 
+ "Derek J. Clark" <derekjohn.clark@gmail.com>, 
+ Manivannan Sadhasivam <mani@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Marcel Holtmann <marcel@holtmann.org>, 
+ Luiz Augusto von Dentz <luiz.dentz@gmail.com>, 
+ Bartosz Golaszewski <brgl@bgdev.pl>, 
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+ Bartosz Golaszewski <brgl@kernel.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-kbuild@vger.kernel.org, platform-driver-x86@vger.kernel.org, 
+ linux-pci@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org, 
+ linux-pm@vger.kernel.org, Stephan Gerhold <stephan.gerhold@linaro.org>, 
+ Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, 
+ linux-acpi@vger.kernel.org, 
+ Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>, 
+ Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2192;
+ i=manivannan.sadhasivam@oss.qualcomm.com; h=from:subject:message-id;
+ bh=07vK9ciXXRPSn3N/nNhnkZAEN4PO5YKuZEczKGyjzQ4=;
+ b=owEBbQGS/pANAwAKAVWfEeb+kc71AcsmYgBpZSEtLU1+T/SQ8muTj88PMLYAc1JIDUMVESqYm
+ PJvutm3t5WJATMEAAEKAB0WIQRnpUMqgUjL2KRYJ5dVnxHm/pHO9QUCaWUhLQAKCRBVnxHm/pHO
+ 9ZvgCACOa5aYDJDQeVpU6yq+fCGtKV9Xz1BGEatNRuENRILo7sSUAPtGbyGfxzQ/0vcy4Gb+3tW
+ jcnVrjZLjEZ+dCXlNXAFyy6VwIckMC8ZO8GOlS67JL5iOmWHfQ/aFzmBY9Uz79eiPwI6BCQTliK
+ 1hhKWLBCLzlvHxyooeqQs1gksE36iewETbO1uczvYdH5m2JtG9K6jY89FC7YE756kTcdmskU6B4
+ CKcv2Zojofh08iFJ1rz0zid+PoQTNbqCffd6F7xPEkCRAl31mzXhHRzRKNItT5fgOdkhPKgCVC7
+ YRafq06sSCerUESzjyX7I3cqm12BXILp3NiBAcA8WQ3w/Pxo
+X-Developer-Key: i=manivannan.sadhasivam@oss.qualcomm.com; a=openpgp;
+ fpr=C668AEC3C3188E4C611465E7488550E901166008
+X-Endpoint-Received: by B4 Relay for
+ manivannan.sadhasivam@oss.qualcomm.com/default with auth_id=461
+X-Original-From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+Reply-To: manivannan.sadhasivam@oss.qualcomm.com
 
-On Mon, Jan 12, 2026 at 01:49:54PM +0530, Manivannan Sadhasivam wrote:
-> > I really do not want to see this patch without very good justification
-> > (note, there were at least two attempts in the past to add this stuff
-> >  and no-one was merged, have you studied those cases?).
-> > 
-> 
-> Yes I did. I didn't put the above justification in the cover letter, as it was
-> already overwhelmed with too much information regarding the connector node.
-> Maybe I should've added it in the comments section of this patch. But I didn't
-> know how to do that with b4.
+From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
 
-You can just amend the commit directly and put comments under "---". They
-will be preserved when email is sent, but won't be applied when the maintainer
-pulls the series.
+If these helpers receive the 'const struct device' pointer, then the const
+qualifier will get dropped, leading to below warning:
 
--K
+ warning: passing argument 1 of ‘to_serdev_device_driver’ discards 'const'
+ qualifier from pointer target type [-Wdiscarded-qualifiers]
+
+This is not an issue as of now, but with the future commits adding serdev
+device based driver matching, this warning will get triggered. Hence,
+convert these helpers to macros so that the qualifier get preserved and
+also use container_of_const() as container_of() is deprecated.
+
+Reviewed-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+---
+ include/linux/serdev.h | 15 +++------------
+ 1 file changed, 3 insertions(+), 12 deletions(-)
+
+diff --git a/include/linux/serdev.h b/include/linux/serdev.h
+index 34562eb99931..ecde0ad3e248 100644
+--- a/include/linux/serdev.h
++++ b/include/linux/serdev.h
+@@ -49,10 +49,7 @@ struct serdev_device {
+ 	struct mutex write_lock;
+ };
+ 
+-static inline struct serdev_device *to_serdev_device(struct device *d)
+-{
+-	return container_of(d, struct serdev_device, dev);
+-}
++#define to_serdev_device(d) container_of_const(d, struct serdev_device, dev)
+ 
+ /**
+  * struct serdev_device_driver - serdev slave device driver
+@@ -67,10 +64,7 @@ struct serdev_device_driver {
+ 	void	(*remove)(struct serdev_device *);
+ };
+ 
+-static inline struct serdev_device_driver *to_serdev_device_driver(struct device_driver *d)
+-{
+-	return container_of(d, struct serdev_device_driver, driver);
+-}
++#define to_serdev_device_driver(d) container_of_const(d, struct serdev_device_driver, driver)
+ 
+ enum serdev_parity {
+ 	SERDEV_PARITY_NONE,
+@@ -111,10 +105,7 @@ struct serdev_controller {
+ 	const struct serdev_controller_ops *ops;
+ };
+ 
+-static inline struct serdev_controller *to_serdev_controller(struct device *d)
+-{
+-	return container_of(d, struct serdev_controller, dev);
+-}
++#define to_serdev_controller(d) container_of_const(d, struct serdev_controller, dev)
+ 
+ static inline void *serdev_device_get_drvdata(const struct serdev_device *serdev)
+ {
+
+-- 
+2.48.1
+
+
