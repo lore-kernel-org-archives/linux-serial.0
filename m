@@ -1,131 +1,111 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00E3536829E;
-	Mon, 12 Jan 2026 16:28:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4780332EB3;
+	Mon, 12 Jan 2026 16:31:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768235314; cv=none; b=nh2HQ4uLWMY6H7PMn6WR/f7g67sKTZC6VtCIAff04GzQTM88mHZwj/eD/RXkANXQJy2K4xq2pYdT/WebHj4T7bT8xU5qQjPEG1QjgLkfr+U36BukGQysxOilS23fv/03k1ZE3yPksdWDbLaPrOqIZI0hJ3xcHNugemCCnvi0GsQ=
+	t=1768235499; cv=none; b=Z5b4DdCR1ACXZaIQmkx3LfN8bt05H6UD6OFO32/IELaQxtBay2G/eY7uoxF4530an+urWwRAEU4uSFPciLbyhkCgaJTCXRb2yyqdYbt8vzQBn4ydBlkxxPogAN0e+lg7wSwdNNNH+8KHv8L4XSE1f+ZjvBSzI4zvWQKJuf1jsVQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768235314; c=relaxed/simple;
-	bh=grrBzUog12+WE5FP8RC1t7J6n4Xk4iWQti4S7q8UyIM=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Da932bBoNQgqaYa5F6/9RIot34cHYz26rLIkzYgSOBQ12fMiXK70fRT/T5p7wyORfDvcWEfDGixqdhgUWKkg/KYp0e6+MTaXSKwl45v9cGmTK5QhHVIHQmXm16XJbmtfVO2U5zVTNA9LA74p5oypcek4/txkEGwFLcJBuDfhroU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=o0iD7YdF; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1768235499; c=relaxed/simple;
+	bh=CjrbP1mEaA5EQy2+OvYojgdtdzWXcCxBpcTAwZUK588=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ooRPE3+9pLRb6YDXheeMQxICkAKVuxjMcCaHhlI2qVCsAsYKJMCQeV2HNUVw1HhupwsQpnqLCxBcyuU/T8RB5jGn4hmi0VQooEAs8/dY5mno+hVz1v0SUpT1cffBfbDuPSZSi0GRlWpLt1B5nEhA8D013Gnp/NIdXsw8fdmYiwM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=a3QyeSil; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="o0iD7YdF"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C86F4C19422;
-	Mon, 12 Jan 2026 16:28:33 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="a3QyeSil"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93DF7C116D0;
+	Mon, 12 Jan 2026 16:31:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1768235313;
-	bh=grrBzUog12+WE5FP8RC1t7J6n4Xk4iWQti4S7q8UyIM=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=o0iD7YdFw8q6ThQ29JHAro4ZvVy2rVBNTTRMICyoAKU4mV/CkxFRp4PcViVdcZF0g
-	 f+uKrxgMnTH9Ds0npL8+70FXhqh+9hbTPaa+u8Srz+GthSbN8F+rwvprC6yh5hOlVV
-	 YKp/5/ibeefHpW7rsFHDND6TTzOrLJak1XZzL8SvlAH7Xu62pRpZAaX32Ooge3g1al
-	 uVCeEGlc0FytsxRz7As5+dUUmkvb8E7mvNmC2rT62J+VczvtaP/ZUYKmL/llcSQlFQ
-	 OcVdTvuXTIS2+iEgZg1yK35dvZXbdjHfct1t/a9mloLTW1ynSqnXQTGv3jpg61Rpgc
-	 0G+lZzezNWVJA==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDB78D25041;
-	Mon, 12 Jan 2026 16:28:33 +0000 (UTC)
-From: Manivannan Sadhasivam via B4 Relay <devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org>
-Date: Mon, 12 Jan 2026 21:56:06 +0530
-Subject: [PATCH v4 7/9] Bluetooth: hci_qca: Add M.2 Bluetooth device
- support using pwrseq
+	s=k20201202; t=1768235498;
+	bh=CjrbP1mEaA5EQy2+OvYojgdtdzWXcCxBpcTAwZUK588=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=a3QyeSilxBh+qsAUfVisRQ1SDImbABzyRrTqnuC3U6hyfJKfCokpRv4K194UfUg2P
+	 IAIboMOGC0qiUk5Aytg0oQCtXJIrRGAlJ0yiy6hFT7TPWBv+Uu1jeeqocry4Rs83Uv
+	 G8NkqFeGoZNkb1dXiumN5dcVaGhR+yKsSqbHg2unHJOWZWe9TKtjP/FBv5lGQxkUbc
+	 VloyXrPlK5XGTfWRmtkv/uBq3rZbZutqCDg0DfCZjBx00oLRe57b9HCGBquuN2f7nJ
+	 D1f2DTW1LfJIlmDs1bADpaFdFJyVvbs1SCYeKd4hV79YTAGUFgY2DqvBEdvXBBGaXa
+	 QuAFdy06RAzKg==
+Date: Mon, 12 Jan 2026 22:01:23 +0530
+From: Manivannan Sadhasivam <mani@kernel.org>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>, 
+	manivannan.sadhasivam@oss.qualcomm.com, Rob Herring <robh@kernel.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Nathan Chancellor <nathan@kernel.org>, Nicolas Schier <nicolas.schier@linux.dev>, 
+	Hans de Goede <hansg@kernel.org>, Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, 
+	Mark Pearson <mpearson-lenovo@squebb.ca>, "Derek J. Clark" <derekjohn.clark@gmail.com>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Marcel Holtmann <marcel@holtmann.org>, Luiz Augusto von Dentz <luiz.dentz@gmail.com>, 
+	Bartosz Golaszewski <brgl@bgdev.pl>, Daniel Scally <djrscally@gmail.com>, 
+	Heikki Krogerus <heikki.krogerus@linux.intel.com>, Sakari Ailus <sakari.ailus@linux.intel.com>, 
+	"Rafael J. Wysocki" <rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>, 
+	Bartosz Golaszewski <brgl@kernel.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-kbuild@vger.kernel.org, platform-driver-x86@vger.kernel.org, linux-pci@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org, 
+	linux-pm@vger.kernel.org, Stephan Gerhold <stephan.gerhold@linaro.org>, 
+	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, linux-acpi@vger.kernel.org, 
+	Sui Jingfeng <sui.jingfeng@linux.dev>
+Subject: Re: [PATCH v3 03/14] software node: Implement device_get_match_data
+ fwnode callback
+Message-ID: <ljqd5ovcsg7t62tdzd77w5mv5buawm3x7xyapy7n7l7azcaorh@tytj46t2lxyb>
+References: <20260110-pci-m2-e-v3-0-4faee7d0d5ae@oss.qualcomm.com>
+ <20260110-pci-m2-e-v3-3-4faee7d0d5ae@oss.qualcomm.com>
+ <aWSpFk9z0zpyKjr6@smile.fi.intel.com>
+ <6l3rs5pv6xnrbygpvqrdxqoqtybjyefsltk5bl4336q56rfoza@ejo3sxuufghe>
+ <aWSwgRiEkT9unYw9@smile.fi.intel.com>
+ <6peb6afhpm4l7opxbdt3b5sx32longevwds5c3dlqji2hr5dlh@kxuvj55jkqgi>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260112-pci-m2-e-v4-7-eff84d2c6d26@oss.qualcomm.com>
-References: <20260112-pci-m2-e-v4-0-eff84d2c6d26@oss.qualcomm.com>
-In-Reply-To: <20260112-pci-m2-e-v4-0-eff84d2c6d26@oss.qualcomm.com>
-To: Rob Herring <robh@kernel.org>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, Nathan Chancellor <nathan@kernel.org>, 
- Nicolas Schier <nicolas.schier@linux.dev>, Hans de Goede <hansg@kernel.org>, 
- =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
- Mark Pearson <mpearson-lenovo@squebb.ca>, 
- "Derek J. Clark" <derekjohn.clark@gmail.com>, 
- Manivannan Sadhasivam <mani@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Marcel Holtmann <marcel@holtmann.org>, 
- Luiz Augusto von Dentz <luiz.dentz@gmail.com>, 
- Bartosz Golaszewski <brgl@bgdev.pl>, 
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
- Bartosz Golaszewski <brgl@kernel.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-kbuild@vger.kernel.org, platform-driver-x86@vger.kernel.org, 
- linux-pci@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org, 
- linux-pm@vger.kernel.org, Stephan Gerhold <stephan.gerhold@linaro.org>, 
- Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, 
- linux-acpi@vger.kernel.org, 
- Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1456;
- i=manivannan.sadhasivam@oss.qualcomm.com; h=from:subject:message-id;
- bh=0KqheeXO4Oi8QyG11TDbNEO023eYG3+bTSLkuoPEKb8=;
- b=owEBbQGS/pANAwAKAVWfEeb+kc71AcsmYgBpZSEuKYIUhamgQf6AalMOWO7Rfl2Il8MaGaoj+
- gm0X0978nWJATMEAAEKAB0WIQRnpUMqgUjL2KRYJ5dVnxHm/pHO9QUCaWUhLgAKCRBVnxHm/pHO
- 9YI/B/4so8DL0igNTt5laHHShN9QY9BShj9qsVmgCmZZizALVLOpQtpgvprKHQpF3hI4Xt6L2FJ
- FJbZryxF13pMx3goH+YdgkzPmFyfUAjqbXyhaeaii/ouFz9bey7NQL7oV1PjGrJRNBIqH7iwQ+C
- wQc69799eXgaoRJvvfu2Gg/zX2Y/JrmVlEdxdDT1Tk0LBE9jUw5+OClD/6jj24ovQFQSUcCiN2A
- 5WojYECWh4+gWPWcuH3TfnCwn4IYD432qmpihCDTqXkaNjit1v5i4rp9+6DxeWD8ZCGNBcnL8uy
- +Zz3zxBGrAWSjRVDzEzuK1UjzbqdV1v5hBVrQmHs/YhRJWCg
-X-Developer-Key: i=manivannan.sadhasivam@oss.qualcomm.com; a=openpgp;
- fpr=C668AEC3C3188E4C611465E7488550E901166008
-X-Endpoint-Received: by B4 Relay for
- manivannan.sadhasivam@oss.qualcomm.com/default with auth_id=461
-X-Original-From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
-Reply-To: manivannan.sadhasivam@oss.qualcomm.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <6peb6afhpm4l7opxbdt3b5sx32longevwds5c3dlqji2hr5dlh@kxuvj55jkqgi>
 
-From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+On Mon, Jan 12, 2026 at 02:32:21PM +0530, Manivannan Sadhasivam wrote:
+> On Mon, Jan 12, 2026 at 10:27:45AM +0200, Andy Shevchenko wrote:
+> > On Mon, Jan 12, 2026 at 01:49:54PM +0530, Manivannan Sadhasivam wrote:
+> > > + Dmitry Torokhov (who was against this patch previously)
+> > > 
+> > > On Mon, Jan 12, 2026 at 09:56:06AM +0200, Andy Shevchenko wrote:
+> > > > On Sat, Jan 10, 2026 at 12:26:21PM +0530, Manivannan Sadhasivam via B4 Relay wrote:
+> > > > 
+> > > > > Because the software node backend of the fwnode API framework lacks an
+> > > > > implementation for the .device_get_match_data function callback.
+> > > > 
+> > > > Maybe this is done on purpose. Have you thought about this aspect?
+> > > 
+> > > IMO, software nodes were introduced to add sub-properties to the existing
+> > > firmware nodes, but it has usecase/potential to go beyond that. More below.
+> > 
+> > Potential doesn't mean the necessity.
+> > 
+> > > > > This makes it difficult to use(and/or test) a few drivers that originates
+> > > > > from DT world on the non-DT platform.
+> > > > 
+> > > > How difficult? DSA implementation went to the way of taking DT overlay
+> > > > approach. Why that one can't be applied here?
+> > > 
+> > > Sometimes you do not have any DT node at all.
+> > 
+> > Yes, that is exactly the case I have referred to. The PCI core (in Linux)
+> > is able to create DT subtree on non-OF based platforms.
+> > 
+> 
+> Maybe I should look into creating dynamic DT node for the device and insert it
+> to the uart node. Theoretically it should work.
+> 
 
-Power supply to the M.2 Bluetooth device attached to the host using M.2
-connector is controlled using the 'uart' pwrseq device. So add support for
-getting the pwrseq device if the OF graph link is present. Once obtained,
-the existing pwrseq APIs can be used to control the power supplies of the
-M.2 card.
+It worked flawlessly. So I sent v4 incorporating this design:
+https://lore.kernel.org/linux-pci/20260112-pci-m2-e-v4-0-eff84d2c6d26@oss.qualcomm.com/
 
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
----
- drivers/bluetooth/hci_qca.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+Thanks!
 
-diff --git a/drivers/bluetooth/hci_qca.c b/drivers/bluetooth/hci_qca.c
-index 888176b0faa9..4d562596ebf9 100644
---- a/drivers/bluetooth/hci_qca.c
-+++ b/drivers/bluetooth/hci_qca.c
-@@ -26,6 +26,7 @@
- #include <linux/mod_devicetable.h>
- #include <linux/module.h>
- #include <linux/of.h>
-+#include <linux/of_graph.h>
- #include <linux/acpi.h>
- #include <linux/platform_device.h>
- #include <linux/pwrseq/consumer.h>
-@@ -2384,6 +2385,14 @@ static int qca_serdev_probe(struct serdev_device *serdev)
- 	case QCA_WCN6855:
- 	case QCA_WCN7850:
- 	case QCA_WCN6750:
-+		if (of_graph_is_present(dev_of_node(&serdev->ctrl->dev))) {
-+			qcadev->bt_power->pwrseq = devm_pwrseq_get(&serdev->ctrl->dev,
-+								   "uart");
-+			if (IS_ERR(qcadev->bt_power->pwrseq))
-+				return PTR_ERR(qcadev->bt_power->pwrseq);
-+			break;
-+		}
-+
- 		if (!device_property_present(&serdev->dev, "enable-gpios")) {
- 			/*
- 			 * Backward compatibility with old DT sources. If the
+- Mani
 
 -- 
-2.48.1
-
-
+மணிவண்ணன் சதாசிவம்
