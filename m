@@ -1,136 +1,179 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41BD4374171
-	for <linux-serial@vger.kernel.org>; Mon, 12 Jan 2026 17:53:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 359DB31ED80;
+	Mon, 12 Jan 2026 19:22:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768240414; cv=none; b=KY7qzW8e1EhARLEphHLk7kr9WdOQA4wMW8WII+MBwXKFcxZYuTwh3an7MP25oXZLKMq822/3vLD2FqJYYvr83OWL/MwSS4NP/VePoCojlZOOTMHnG/xQOsc7TA5S7PE3DHqSpgKLa6NPzAxmNw3VAn0KFLAxMvUbpS6JUhyo4YQ=
+	t=1768245779; cv=none; b=oVQh5XhschZXCo4kyU+4D3nl1v6Q+m5u9IgMh/wLECYcBeyNp5/2GOfsKQEYW+F+/1Vr021akap5PmvwJXo/DXwbYs0wXtQ+BDjYioJvI7AQDalA8WzKsqJuulMsvJWwJ/Wfm2So+7d/KDkU+c6lJb2egN1SGX5hw1HK/JvN/BU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768240414; c=relaxed/simple;
-	bh=y6BPssvuqQ/qH26ZtP7OKYRtO9FGOS74oztLC07SRNg=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=pXLcuNGU7O6E43WPIWN4Amc0mUf7ZBddJJFr+gUDkh5S7Z02TRIvCX3cQLoRrd02UQ/Jtmnv7Hrzzm/RiIU19lgN0XNU5nn45Vv4MUIRVAlGwiRifa293mEaO2xIkau90EBFwgoqoniCGqmM904MWoOWe4D6J/2YqOq6si/dgV4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=HIrT55Tp; arc=none smtp.client-ip=209.85.128.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1768245779; c=relaxed/simple;
+	bh=ZhRs7xnPZSV6XzTqCAD9BCDygo93shWOqBF0P1AaaRE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=FzOFyZHnRzDFLzhHMao+5LGyKiTVJKN8/hKH217f4bkEZrHyjxEXXtjegcwzPrje9efqBca8DsG/ia/cQukeT7yvBagdE14eEgrF6ZWEWCC/ZJB+vYLv/+BN9bl57B7++/f86AexhMQ85R4RCh3Iflpq1BO+Qr0BfSaqtoXCpyU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LZEyCo93; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="HIrT55Tp"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-4779aa4f928so68404295e9.1
-        for <linux-serial@vger.kernel.org>; Mon, 12 Jan 2026 09:53:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1768240410; x=1768845210; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:autocrypt
-         :references:in-reply-to:date:cc:to:from:subject:message-id:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=y6BPssvuqQ/qH26ZtP7OKYRtO9FGOS74oztLC07SRNg=;
-        b=HIrT55Tppvg0XFYV5zS20v5xaWtuqbHwmR0+5GnSOqV3Zkqr+5e4bRVOWGa7T+G+dc
-         d5rshviEoUDadI8tfAjFRPSFxopu/3PZCFonHcYWFfwYqBaRD1P2ccUPAZOw57poJIgk
-         2o8Rq8MaIxKEDfVpi5OxW0oI7odIOVqyt0hNuhOTtPiDtjFXs91fI/lOWlNPLoY/ZaeM
-         mV7icrjbWluhuD2o9cvBSF4+skVjcVoRRmaIlc9BDsb4AbDqtsuQdXMpggf1CiXHQlfo
-         0FMj/pO63Bpync6rTiNgO02fKipgreSs9DrEqYwDCCSf/g0s+4H5xMDOF0UtZgbuZmby
-         4Rrw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768240410; x=1768845210;
-        h=mime-version:user-agent:content-transfer-encoding:autocrypt
-         :references:in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=y6BPssvuqQ/qH26ZtP7OKYRtO9FGOS74oztLC07SRNg=;
-        b=LbY+83BVlb799wBSfyTg6Ve1rbKnN0dptEiMHfoSpuMuA23DOl+mv3ZK3XDtVGQcQb
-         mOwA4JOc32/SUMlN6FV2QorRJdCwXs5lmnctUxFcm70vqafYkhqDycHEULe3ioSoCPk0
-         mPUOUO46wQi2r81jwlJ0uo9yDSK6NAypXLip3sJ9vOy5mNtYW3vxtkLy3eCWgPCza2L9
-         DRGx2jI5b251e9tax+QRtoW7xPi6cEuVRw1PpmwR0fsoxNWRX0JGjyTgeld4KaaQfLsj
-         uK39aIdOgWBTrz6sk6TEIaUxCgg0hInwPFrOa0qE12tbCoV7IhfiPBpo0TLPq3QCgoQ1
-         2EWw==
-X-Forwarded-Encrypted: i=1; AJvYcCUFvDeU4++DPTQVtfelqUvO8PASB3wCK2F5YQ5ZLAwm67+8aLKGfMoUohHx5lb3/ugJ+JnaEBH4PTWbjTM=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyoga6WcnvrP/vxSsRoPIFpB8XtoByrtfU2putfXeNulfwioq52
-	S5//koRPWHPMu02r8csXvwoNtJhEY4N3b1qC5HhJjLsgM/LjVhoWsHrlA4M+tO25gTo=
-X-Gm-Gg: AY/fxX4kf6Z2NVqZWFDm8jvHtmKwl4eahVbbsu9Aq4zxxL8FR2U9V67nz4yaatu2a7/
-	lS1l6+V/A5L30FTLauOIvtziIRZ5FibOB0laymSkmstLoyC13aJYRAYQATWGyX1lq907/2rlvE1
-	iwPdXlQweFGt4OrxJlwYhhGWZI/7zZuPweDnndz+wixpTiBUE5jhc80hRHhtma1+WDdB4ImOPYE
-	6xjmDW5SLsMqlvRQapbfEblUCCi8xdIT/VcV8K6Ma4LPNdTwPn8cT/FeQlw/Q5Tb+ThmE7eMx6P
-	opYTw6RmtYm8sSg6c+TCleDXTlMMCNJdl4pSfoIhsnqQavCf0SgRgs680gv9tjojf8dMhKO+KUB
-	Oa7VM98p8H8JjXtkJU3s9s1xKsQ3y6efs88Zwrh7LR9bOE/8GsOT34OQH/ZNq14sjyVxzXgGSIS
-	kLEuo+jReBVZlckh8p94IcwdYnHxSGHAdIrKLe8nYAgg==
-X-Google-Smtp-Source: AGHT+IGfCgsoYudB43gyY5VgiMyajRCyMKVvdA/K1TPc0FTW2J7Pqnzu3xNux2u9C7uenfxIM0LM/g==
-X-Received: by 2002:a05:600c:4e8a:b0:479:1b0f:dfff with SMTP id 5b1f17b1804b1-47d84b170famr247229235e9.10.1768240410449;
-        Mon, 12 Jan 2026 09:53:30 -0800 (PST)
-Received: from [192.168.3.33] (218.37.160.45.gramnet.com.br. [45.160.37.218])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-47d7f69e13bsm368953115e9.7.2026.01.12.09.53.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Jan 2026 09:53:30 -0800 (PST)
-Message-ID: <0585581cd2f19544c5e1565a9d241697d812b5f9.camel@suse.com>
-Subject: Re: [PATCH 00/19] printk cleanup - part 3
-From: Marcos Paulo de Souza <mpdesouza@suse.com>
-To: Andreas Larsson <andreas@gaisler.com>, Richard Weinberger
- <richard@nod.at>,  Anton Ivanov <anton.ivanov@cambridgegreys.com>, Johannes
- Berg <johannes@sipsolutions.net>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jason Wessel <jason.wessel@windriver.com>,
- Daniel Thompson	 <danielt@kernel.org>, Douglas Anderson
- <dianders@chromium.org>, Petr Mladek	 <pmladek@suse.com>, Steven Rostedt
- <rostedt@goodmis.org>, John Ogness	 <john.ogness@linutronix.de>, Sergey
- Senozhatsky <senozhatsky@chromium.org>,  Jiri Slaby <jirislaby@kernel.org>,
- Breno Leitao <leitao@debian.org>, Andrew Lunn <andrew+netdev@lunn.ch>, 
- "David S. Miller" <davem@davemloft.net>, Eric Dumazet
- <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
- <pabeni@redhat.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Kees Cook	
- <kees@kernel.org>, Tony Luck <tony.luck@intel.com>, "Guilherme G. Piccoli"	
- <gpiccoli@igalia.com>, Madhavan Srinivasan <maddy@linux.ibm.com>, Michael
- Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
- Christophe Leroy	 <christophe.leroy@csgroup.eu>, Alexander Shishkin	
- <alexander.shishkin@linux.intel.com>, Maxime Coquelin	
- <mcoquelin.stm32@gmail.com>, Alexandre Torgue
- <alexandre.torgue@foss.st.com>,  Jacky Huang <ychuang3@nuvoton.com>,
- Shan-Chun Hung <schung@nuvoton.com>, Laurentiu Tudor	
- <laurentiu.tudor@nxp.com>
-Cc: linux-um@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org, 
-	netdev@vger.kernel.org, linux-m68k@lists.linux-m68k.org, 
-	linux-hardening@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, 
-	sparclinux@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, 
-	linux-arm-kernel@lists.infradead.org, linux-fsdevel@vger.kernel.org
-Date: Mon, 12 Jan 2026 14:53:12 -0300
-In-Reply-To: <836139d1-1425-4381-bb84-6c2654a4d239@gaisler.com>
-References: <20251227-printk-cleanup-part3-v1-0-21a291bcf197@suse.com>
-	 <836139d1-1425-4381-bb84-6c2654a4d239@gaisler.com>
-Autocrypt: addr=mpdesouza@suse.com; prefer-encrypt=mutual;
- keydata=mDMEZ/0YqhYJKwYBBAHaRw8BAQdA4JZz0FED+JD5eKlhkNyjDrp6lAGmgR3LPTduPYGPT
- Km0Kk1hcmNvcyBQYXVsbyBkZSBTb3V6YSA8bXBkZXNvdXphQHN1c2UuY29tPoiTBBMWCgA7FiEE2g
- gC66iLbhUsCBoBemssEuRpLLUFAmf9GKoCGwMFCwkIBwICIgIGFQoJCAsCBBYCAwECHgcCF4AACgk
- QemssEuRpLLWGxwD/S1I0bjp462FlKb81DikrOfWbeJ0FOJP44eRzmn20HmEBALBZIMrfIH2dJ5eM
- GO8seNG8sYiP6JfRjl7Hyqca6YsE
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.2 (by Flathub.org) 
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LZEyCo93"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1768245768; x=1799781768;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ZhRs7xnPZSV6XzTqCAD9BCDygo93shWOqBF0P1AaaRE=;
+  b=LZEyCo93wnXyTfQbLqFQg0VpXsXl8PqF7X2A6MLtmiKMTbw2BO8U+MSt
+   dRXBqLL3n+4ZsfsVnv1QbOo/sk+abxPg9r89OI2gWeho20fSIICb+8Oa5
+   a2pJ3MA2CqyYw5j4y6CjDEszz8t+Y4a8Bxp1iZW2V3dG5Wp/aPsRwdffC
+   lhunireMdavEvJ+suCtRKmeVgA0HrTVteOA80aBDbj0eUrdo29RN6J/od
+   pOi/nyE679ci6KhBOrvruykiDBJMHdh+RMcOeunnU1nxK9ZYebMEC1mBq
+   otT6lyAgjYEWJDDXP2a+8/R8Npq6Gfv8pQEDuL2FwK/We+c17Fd5vzRWh
+   g==;
+X-CSE-ConnectionGUID: M1qEcAmqSamuh7M1v4oe2g==
+X-CSE-MsgGUID: 9l0OgbWyQUO7Mk6WGs7k4A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11669"; a="95004014"
+X-IronPort-AV: E=Sophos;i="6.21,221,1763452800"; 
+   d="scan'208";a="95004014"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2026 11:22:47 -0800
+X-CSE-ConnectionGUID: /POQ5LCQRMmFK2RRBMq4iA==
+X-CSE-MsgGUID: sRBvAVgdRVW3CVbcLKyFvw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,221,1763452800"; 
+   d="scan'208";a="208690532"
+Received: from dhhellew-desk2.ger.corp.intel.com (HELO localhost) ([10.245.245.37])
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2026 11:22:40 -0800
+Date: Mon, 12 Jan 2026 21:22:38 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: manivannan.sadhasivam@oss.qualcomm.com
+Cc: Rob Herring <robh@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Nathan Chancellor <nathan@kernel.org>,
+	Nicolas Schier <nicolas.schier@linux.dev>,
+	Hans de Goede <hansg@kernel.org>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Mark Pearson <mpearson-lenovo@squebb.ca>,
+	"Derek J. Clark" <derekjohn.clark@gmail.com>,
+	Manivannan Sadhasivam <mani@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Marcel Holtmann <marcel@holtmann.org>,
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+	Bartosz Golaszewski <brgl@bgdev.pl>,
+	Bartosz Golaszewski <brgl@kernel.org>, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
+	platform-driver-x86@vger.kernel.org, linux-pci@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+	linux-bluetooth@vger.kernel.org, linux-pm@vger.kernel.org,
+	Stephan Gerhold <stephan.gerhold@linaro.org>,
+	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+	linux-acpi@vger.kernel.org
+Subject: Re: [PATCH v4 9/9] power: sequencing: pcie-m2: Create serdev device
+ for WCN7850 bluetooth
+Message-ID: <aWVJ_ncUkAYswE3W@smile.fi.intel.com>
+References: <20260112-pci-m2-e-v4-0-eff84d2c6d26@oss.qualcomm.com>
+ <20260112-pci-m2-e-v4-9-eff84d2c6d26@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260112-pci-m2-e-v4-9-eff84d2c6d26@oss.qualcomm.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, 2026-01-07 at 11:22 +0100, Andreas Larsson wrote:
-> On 2025-12-27 13:16, Marcos Paulo de Souza wrote:
-> > The parts 1 and 2 can be found here [1] and here[2].
-> >=20
-> > The changes proposed in this part 3 are mostly to clarify the usage
-> > of
-> > the interfaces for NBCON, and use the printk helpers more broadly.
-> > Besides it, it also introduces a new way to register consoles
-> > and drop thes the CON_ENABLED flag. It seems too much, but in
-> > reality
-> > the changes are not complex, and as the title says, it's basically
-> > a
-> > cleanup without changing the functional changes.
->=20
-> Hi,
->=20
-> Patches 7-17 all say "replacing the CON_ENABLE flag" in their
-> descriptions, which should rather be "replacing the CON_ENABLED
-> flag".
+On Mon, Jan 12, 2026 at 09:56:08PM +0530, Manivannan Sadhasivam via B4 Relay wrote:
 
-That's true, thanks for spotting!
+> For supporting bluetooth over the non-discoverable UART interface of
+> WCN7850, create the serdev device after enumerating the PCIe interface.
+> This is mandatory since the device ID is only known after the PCIe
+> enumeration and the ID is used for creating the serdev device.
+> 
+> Since by default there is no OF or ACPI node for the created serdev,
+> create a dynamic OF 'bluetooth' node with the 'compatible' property and
+> attach it to the serdev device. This will allow the serdev device to bind
+> to the existing bluetooth driver.
 
->=20
-> Cheers,
-> Andreas
+...
+
+> +static int pwrseq_m2_pcie_notify(struct notifier_block *nb, unsigned long action,
+> +			      void *data)
+> +{
+> +	struct pwrseq_pcie_m2_ctx *ctx = container_of(nb, struct pwrseq_pcie_m2_ctx, nb);
+> +	struct pci_dev *pdev = to_pci_dev(data);
+> +	struct serdev_controller *serdev_ctrl;
+> +	struct device *dev = ctx->dev;
+> +	struct device_node *pci_parent;
+> +	int ret;
+> +
+> +	/*
+> +	 * Check whether the PCI device is associated with this M.2 connector or
+> +	 * not, by comparing the OF node of the PCI device parent and the Port 0
+> +	 * (PCIe) remote node parent OF node.
+> +	 */
+> +	pci_parent = of_graph_get_remote_node(dev_of_node(ctx->dev), 0, 0);
+
+> +	if (!pci_parent || (pci_parent != pdev->dev.parent->of_node)) {
+
+!device_match_of_node()
+
+> +		of_node_put(pci_parent);
+> +		return NOTIFY_DONE;
+> +	}
+> +	of_node_put(pci_parent);
+> +
+> +	switch (action) {
+> +	case BUS_NOTIFY_ADD_DEVICE:
+> +		/* Create serdev device for WCN7850 */
+> +		if (pdev->vendor == PCI_VENDOR_ID_QCOM && pdev->device == 0x1107) {
+> +			struct device_node *serdev_parent __free(device_node) =
+> +				of_graph_get_remote_node(dev_of_node(ctx->dev), 1, 1);
+> +			if (!serdev_parent)
+> +				return NOTIFY_DONE;
+> +
+> +			serdev_ctrl = of_find_serdev_controller_by_node(serdev_parent);
+> +			if (!serdev_ctrl)
+> +				return NOTIFY_DONE;
+> +
+> +			ctx->serdev = serdev_device_alloc(serdev_ctrl);
+> +			if (!ctx->serdev)
+> +				return NOTIFY_BAD;
+> +
+> +			ret = pwrseq_m2_pcie_create_bt_node(ctx, serdev_parent);
+> +			if (ret) {
+> +				serdev_device_put(ctx->serdev);
+> +				return notifier_from_errno(ret);
+> +			}
+> +
+> +			ret = serdev_device_add(ctx->serdev);
+> +			if (ret) {
+> +				dev_err(dev, "Failed to add serdev for WCN7850: %d\n", ret);
+> +				of_changeset_revert(ctx->ocs);
+> +				of_changeset_destroy(ctx->ocs);
+> +				serdev_device_put(ctx->serdev);
+> +				return notifier_from_errno(ret);
+> +			}
+> +		}
+> +		break;
+> +	case BUS_NOTIFY_REMOVED_DEVICE:
+> +		/* Destroy serdev device for WCN7850 */
+> +		if (pdev->vendor == PCI_VENDOR_ID_QCOM && pdev->device == 0x1107) {
+> +			serdev_device_remove(ctx->serdev);
+> +			of_changeset_revert(ctx->ocs);
+> +			of_changeset_destroy(ctx->ocs);
+> +		}
+> +		break;
+> +	}
+> +
+> +	return NOTIFY_OK;
+> +}
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
