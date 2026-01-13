@@ -1,187 +1,237 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB43C2EBBB0
-	for <linux-serial@vger.kernel.org>; Tue, 13 Jan 2026 16:25:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F2BA280A5A;
+	Tue, 13 Jan 2026 16:34:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768321559; cv=none; b=rucerL4kCrkylc0nx+2HgQymmKs1Rr5M9/MsuSB5vKwJceuq5XEiSEqkisD0T0G7Tot4ReddQGbmA7cMoufrWZGKzBeUHqJB6WcsgoNymZrLiDeHY4ZWICQxW+ROL1HeDmDGMDQU3z6R+9a+dREPQHLkIzorIXIsXlKy6PAKtIc=
+	t=1768322088; cv=none; b=No1UYvaSuvS7z6kedw/9nm1pRuc8jxMIk9PlpMRsd//6RbIGpRxPOfDDD2KmFPwx+h5KISzlAEezi3lsUnIwPtcAYzsxbASbAgU67PepFuk6ckrxtzXGeNPFvafcXZC3qmEVqmh7aEYgjyXl6kx8AbUxUfYxZLdFCQXCVnvbhXo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768321559; c=relaxed/simple;
-	bh=tEU15hlDUcTJJO53/6hArpv/PNu5aaHiWIXc6QqAK0Q=;
+	s=arc-20240116; t=1768322088; c=relaxed/simple;
+	bh=h0gckYf/2eQitVs/qpheSug3BpiAFpijfck5eDwbWGg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LMLTVu/4ACUq95fYtFOxXwGtbMIeL0faIE/NoRQ60y3zp1HQlBB2gZjfUFkUJ8Is43cuafQGMDP00CB8ap5mi9Ypwzp1NaJRGE072+6aoj8rDwLkTh32hTIC/I5rMASFc38r+7DqhYiOE9W7vttZzVx1Q3XhqYuzkK3HXjg0+eE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=FGSyEuus; arc=none smtp.client-ip=209.85.128.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=gM/Mo1dGO4rID6nsKrYO4+WeLGLIbMI66OS3Ul6PT/vbLU2KyVGH2EVLiEDDIaEAYkzggZc1Ydu9bGDBi0Gik4kzi1QyWbuui5EGYD6oZjZQc7BMYxxJn975ByHpz0GB+eeGQueCsJ7BJyGjIUGfr/ZQ/ZY0chhzgatoefMdSlk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FBQIpbWj; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="FGSyEuus"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-47ed987d51aso8637325e9.2
-        for <linux-serial@vger.kernel.org>; Tue, 13 Jan 2026 08:25:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1768321556; x=1768926356; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=y9kSWtn88k+QkPqpOG7NN6Fxk/gRH5gvJVVHZoYjlVA=;
-        b=FGSyEuusFmgrT0XsAUYKc+T1x7+rMlFZ0ZDJ13+ibdAuF76j/kaYXC/4SYPu2aBOzQ
-         sHeRusEJOZlBU4pbpvtBbiDdJoMZd1C8STFiLYT/KIQa14Sw1fkPw34aAflH83PLQL+E
-         lQR4drZq8Q5FQW+pDM9NGGnj7rODVJPPGbaek9pMRPTC2JYDDJnEsSV1L3tmXyJFlBce
-         BANRLJB0M7OgWSLC8LtB9994Q+ZAb/3YdsfFwDbFrYniG2Zs44fv05yeLk2yV47Q0SVz
-         J5yGi5P/qBe7Gbq5lz2kCYqhMqNJ263/zAzb+Zz91mt6v9BC/otd7447j5yJTlJXGXt5
-         VrqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768321556; x=1768926356;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=y9kSWtn88k+QkPqpOG7NN6Fxk/gRH5gvJVVHZoYjlVA=;
-        b=QrC8+bbhexAFC1ult42r2DydASwueMCy6qusNOQKqCn050v9H0F1iAFdlJJYTeYVqa
-         w+ObCZmVN7VFPQtLTDcD28k43rlW59Ob0Trq6N+7epR4ZRfllqQX2YrXm+kSJ9Fwi6Gc
-         la6TjhHTa+xYK/g077P7ZpRRCkLIm4M3rXMfviiatQMxSp9Bm+ksg9f7o5UstQWBxs8s
-         I/WJ5sPdZG5jtQ8HpPQEijBxkq1eWgR2+X6fHwQ2emS90Ip78PqamyWso8aKcSPKtUKz
-         rMOk2XNcYYw5zwNjvPKOiOv7Us6vFthpjyBc/1emmvrL5mGstEGqrTj14tC/d2iIzSPp
-         Qh+Q==
-X-Forwarded-Encrypted: i=1; AJvYcCXM8AKs5EunobhZT4FS+c19nosUc5RfCMXLxMqmZeTTUwloBNsZXuEF0eF5Q5/1naTS2jskv0ZQ74iv1Jw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzNzcFH3zNBxg9knL9Y89lN35Wm0Sos4Nmv3gzW51mllVga2fsn
-	Om07qkG3kY8J0rXrBkqkVJ1Lsv/3eCM9PDSHTeh6Hk1FuFKZffZcYyCYyusMboRNj0Y=
-X-Gm-Gg: AY/fxX5vNrS1nza9o7q4JSovLOTpO4dI201NUvkdo/m/RfzblQd364zxYqLKVxTbH0k
-	oeF2PtVh+ecjhX37fFGdhJD04G1WWlJBzZDJqPFRDeVdEdEjJ1oxcCjOx31xkkGBYwgO021ykHY
-	p03VETDYnyGoZdXVs0Sws1WRcp+JjsEJa0MxGyzhjMLrmat/w3GHENz8DtMCyrIw7lasfcR7WOh
-	pazk+apcRLSDsRGEg5Xka7lq1/ikEVqBatJqOo+yP9bQXJ4y4FrYCfkehc1wUn1aV9ZrgJRIU3x
-	+Pv9lnkzTwlmt7hcaThdQTLwNwSW01sScOQ7T8gLsWi+cVy9b2DZHEf5VdbaASzfCLfWe8QKAso
-	kUc/S81kxGzeeJaHFK4nysmq1JgJpNmSoq7B9ikHIzAenpJKlz+7KhHi04rYyQHCVubvZFdnz+A
-	LOTbxmU4+D2rv5w+NRLzi5w4yb
-X-Google-Smtp-Source: AGHT+IG4o2sMRbjal/wNqE1AyBhrQEhgOmuQP9i1Wb50Y85ZgDNaJvwCCbv/cl0e10bMkrsnwOfPLQ==
-X-Received: by 2002:a05:600c:1e1c:b0:477:58af:a91d with SMTP id 5b1f17b1804b1-47d84b0aa4bmr229523325e9.5.1768321556267;
-        Tue, 13 Jan 2026 08:25:56 -0800 (PST)
-Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-432bd0dad8bsm45637605f8f.8.2026.01.13.08.25.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Jan 2026 08:25:55 -0800 (PST)
-Date: Tue, 13 Jan 2026 17:25:52 +0100
-From: Petr Mladek <pmladek@suse.com>
-To: Marcos Paulo de Souza <mpdesouza@suse.com>
-Cc: Richard Weinberger <richard@nod.at>,
-	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jason Wessel <jason.wessel@windriver.com>,
-	Daniel Thompson <danielt@kernel.org>,
-	Douglas Anderson <dianders@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Breno Leitao <leitao@debian.org>,
-	Andrew Lunn <andrew+netdev@lunn.ch>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>,
-	"Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Christophe Leroy <christophe.leroy@csgroup.eu>,
-	Andreas Larsson <andreas@gaisler.com>,
-	Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Jacky Huang <ychuang3@nuvoton.com>,
-	Shan-Chun Hung <schung@nuvoton.com>,
-	Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-	linux-um@lists.infradead.org, linux-kernel@vger.kernel.org,
-	kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org,
-	netdev@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-	linux-hardening@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-	sparclinux@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org, linux-fsdevel@vger.kernel.org
-Subject: Re: [PATCH 01/19] printk/nbcon: Use an enum to specify the required
- callback in console_is_usable()
-Message-ID: <aWZyEHsOJFLRLRKT@pathway.suse.cz>
-References: <20251227-printk-cleanup-part3-v1-0-21a291bcf197@suse.com>
- <20251227-printk-cleanup-part3-v1-1-21a291bcf197@suse.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FBQIpbWj"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E8B0C116C6;
+	Tue, 13 Jan 2026 16:34:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1768322088;
+	bh=h0gckYf/2eQitVs/qpheSug3BpiAFpijfck5eDwbWGg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=FBQIpbWjH24K4Z06fK0wcuB9dT0G7ItXDQ7rKdptW7iiuM/mixJ1Z3/mDBMRMu4W2
+	 cZYo/UGeP92toiDT+ZADi1aDiKQdDNsGIx/09uENsNkcdDfllDgrIurJ2qPcix+LUq
+	 FhLxuv+gcvmnjabCS2sFd1CmdIiAWVSERAGXfBVOv9cP9C7HKCplH61YFkM7gkpQCX
+	 A1sHICLXghk5m6+bUyHsgE4LUehprgZwsn5DlnVHliC/BSPqMnHGNByl5mmsCWJG6M
+	 wwIDlTSBsb3jrTdnMgZq6ai1y3+vE65FObQAiypLy4k1ZMe7UNouaKmWIQkIideAqC
+	 wSPzt8FE5AddQ==
+Date: Tue, 13 Jan 2026 22:04:35 +0530
+From: Manivannan Sadhasivam <mani@kernel.org>
+To: Sean Anderson <sean.anderson@linux.dev>
+Cc: manivannan.sadhasivam@oss.qualcomm.com, Rob Herring <robh@kernel.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Nathan Chancellor <nathan@kernel.org>, Nicolas Schier <nicolas.schier@linux.dev>, 
+	Hans de Goede <hansg@kernel.org>, Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, 
+	Mark Pearson <mpearson-lenovo@squebb.ca>, "Derek J. Clark" <derekjohn.clark@gmail.com>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Marcel Holtmann <marcel@holtmann.org>, Luiz Augusto von Dentz <luiz.dentz@gmail.com>, 
+	Bartosz Golaszewski <brgl@bgdev.pl>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+	Bartosz Golaszewski <brgl@kernel.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-kbuild@vger.kernel.org, platform-driver-x86@vger.kernel.org, linux-pci@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org, 
+	linux-pm@vger.kernel.org, Stephan Gerhold <stephan.gerhold@linaro.org>, 
+	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, linux-acpi@vger.kernel.org
+Subject: Re: [PATCH v4 8/9] power: sequencing: pcie-m2: Add support for PCIe
+ M.2 Key E connectors
+Message-ID: <rxfnx6cq6dqifongrmhanpltacjqdkcn2yor7d7qsrrskmhueo@m3se3iyd4pfy>
+References: <20260112-pci-m2-e-v4-0-eff84d2c6d26@oss.qualcomm.com>
+ <20260112-pci-m2-e-v4-8-eff84d2c6d26@oss.qualcomm.com>
+ <2432dafc-4101-4b23-90b2-85ea5459435c@linux.dev>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20251227-printk-cleanup-part3-v1-1-21a291bcf197@suse.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <2432dafc-4101-4b23-90b2-85ea5459435c@linux.dev>
 
-On Sat 2025-12-27 09:16:08, Marcos Paulo de Souza wrote:
-> The current usage of console_is_usable() is clumsy. The parameter
-> @use_atomic is boolean and thus not self-explanatory. The function is
-> called twice in situations when there are no-strict requirements.
+On Tue, Jan 13, 2026 at 10:26:04AM -0500, Sean Anderson wrote:
+> On 1/12/26 11:26, Manivannan Sadhasivam via B4 Relay wrote:
+> > From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+> > 
+> > Add support for handling the power sequence of the PCIe M.2 Key E
+> > connectors. These connectors are used to attach the Wireless Connectivity
+> > devices to the host machine including combinations of WiFi, BT, NFC using
+> > interfaces such as PCIe/SDIO for WiFi, USB/UART for BT and I2C for NFC.
+> > 
+> > Currently, this driver supports only the PCIe interface for WiFi and UART
+> > interface for BT. The driver also only supports driving the 3.3v/1.8v power
+> > supplies and W_DISABLE{1/2}# GPIOs. The optional signals of the Key E
+> > connectors are not currently supported.
+> > 
+> > Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+> > ---
+> >  drivers/power/sequencing/Kconfig          |   1 +
+> >  drivers/power/sequencing/pwrseq-pcie-m2.c | 110 ++++++++++++++++++++++++++++--
+> >  2 files changed, 104 insertions(+), 7 deletions(-)
+> > 
+> > diff --git a/drivers/power/sequencing/Kconfig b/drivers/power/sequencing/Kconfig
+> > index f5fff84566ba..29bd204319cc 100644
+> > --- a/drivers/power/sequencing/Kconfig
+> > +++ b/drivers/power/sequencing/Kconfig
+> > @@ -38,6 +38,7 @@ config POWER_SEQUENCING_TH1520_GPU
+> >  config POWER_SEQUENCING_PCIE_M2
+> >  	tristate "PCIe M.2 connector power sequencing driver"
+> >  	depends on OF || COMPILE_TEST
+> > +	depends on PCI
+> >  	help
+> >  	  Say Y here to enable the power sequencing driver for PCIe M.2
+> >  	  connectors. This driver handles the power sequencing for the M.2
+> > diff --git a/drivers/power/sequencing/pwrseq-pcie-m2.c b/drivers/power/sequencing/pwrseq-pcie-m2.c
+> > index e01e19123415..4b85a40d7692 100644
+> > --- a/drivers/power/sequencing/pwrseq-pcie-m2.c
+> > +++ b/drivers/power/sequencing/pwrseq-pcie-m2.c
+> > @@ -4,12 +4,16 @@
+> >   * Author: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+> >   */
+> >  
+> > +#include <linux/err.h>
+> >  #include <linux/device.h>
+> > +#include <linux/delay.h>
+> > +#include <linux/gpio/consumer.h>
+> >  #include <linux/mod_devicetable.h>
+> >  #include <linux/module.h>
+> >  #include <linux/of.h>
+> >  #include <linux/of_graph.h>
+> >  #include <linux/of_platform.h>
+> > +#include <linux/pci.h>
+> >  #include <linux/platform_device.h>
+> >  #include <linux/pwrseq/provider.h>
+> >  #include <linux/regulator/consumer.h>
+> > @@ -25,17 +29,19 @@ struct pwrseq_pcie_m2_ctx {
+> >  	const struct pwrseq_pcie_m2_pdata *pdata;
+> >  	struct regulator_bulk_data *regs;
+> >  	size_t num_vregs;
+> > -	struct notifier_block nb;
+> > +	struct gpio_desc *w_disable1_gpio;
+> > +	struct gpio_desc *w_disable2_gpio;
+> > +	struct device *dev;
+> >  };
+> >  
+> > -static int pwrseq_pcie_m2_m_vregs_enable(struct pwrseq_device *pwrseq)
+> > +static int pwrseq_pcie_m2_vregs_enable(struct pwrseq_device *pwrseq)
+> >  {
+> >  	struct pwrseq_pcie_m2_ctx *ctx = pwrseq_device_get_drvdata(pwrseq);
+> >  
+> >  	return regulator_bulk_enable(ctx->num_vregs, ctx->regs);
+> >  }
+> >  
+> > -static int pwrseq_pcie_m2_m_vregs_disable(struct pwrseq_device *pwrseq)
+> > +static int pwrseq_pcie_m2_vregs_disable(struct pwrseq_device *pwrseq)
+> >  {
+> >  	struct pwrseq_pcie_m2_ctx *ctx = pwrseq_device_get_drvdata(pwrseq);
+> >  
+> > @@ -44,18 +50,84 @@ static int pwrseq_pcie_m2_m_vregs_disable(struct pwrseq_device *pwrseq)
+> >  
+> >  static const struct pwrseq_unit_data pwrseq_pcie_m2_vregs_unit_data = {
+> >  	.name = "regulators-enable",
+> > -	.enable = pwrseq_pcie_m2_m_vregs_enable,
+> > -	.disable = pwrseq_pcie_m2_m_vregs_disable,
+> > +	.enable = pwrseq_pcie_m2_vregs_enable,
+> > +	.disable = pwrseq_pcie_m2_vregs_disable,
+> >  };
+> >  
+> > -static const struct pwrseq_unit_data *pwrseq_pcie_m2_m_unit_deps[] = {
+> > +static const struct pwrseq_unit_data *pwrseq_pcie_m2_unit_deps[] = {
+> >  	&pwrseq_pcie_m2_vregs_unit_data,
+> >  	NULL
+> >  };
+> >  
+> > +static int pwrseq_pci_m2_e_uart_enable(struct pwrseq_device *pwrseq)
+> > +{
+> > +	struct pwrseq_pcie_m2_ctx *ctx = pwrseq_device_get_drvdata(pwrseq);
+> > +
+> > +	return gpiod_set_value_cansleep(ctx->w_disable2_gpio, 0);
+> > +}
+> > +
+> > +static int pwrseq_pci_m2_e_uart_disable(struct pwrseq_device *pwrseq)
+> > +{
+> > +	struct pwrseq_pcie_m2_ctx *ctx = pwrseq_device_get_drvdata(pwrseq);
+> > +
+> > +	return gpiod_set_value_cansleep(ctx->w_disable2_gpio, 1);
+> > +}
+> > +
+> > +static const struct pwrseq_unit_data pwrseq_pcie_m2_e_uart_unit_data = {
+> > +	.name = "uart-enable",
+> > +	.deps = pwrseq_pcie_m2_unit_deps,
+> > +	.enable = pwrseq_pci_m2_e_uart_enable,
+> > +	.disable = pwrseq_pci_m2_e_uart_disable,
+> > +};
+> > +
+> > +static int pwrseq_pci_m2_e_pcie_enable(struct pwrseq_device *pwrseq)
+> > +{
+> > +	struct pwrseq_pcie_m2_ctx *ctx = pwrseq_device_get_drvdata(pwrseq);
+> > +
+> > +	return gpiod_set_value_cansleep(ctx->w_disable1_gpio, 0);
+> > +}
+> > +
+> > +static int pwrseq_pci_m2_e_pcie_disable(struct pwrseq_device *pwrseq)
+> > +{
+> > +	struct pwrseq_pcie_m2_ctx *ctx = pwrseq_device_get_drvdata(pwrseq);
+> > +
+> > +	return gpiod_set_value_cansleep(ctx->w_disable1_gpio, 1);
+> > +}
+> > +
+> > +static const struct pwrseq_unit_data pwrseq_pcie_m2_e_pcie_unit_data = {
+> > +	.name = "pcie-enable",
+> > +	.deps = pwrseq_pcie_m2_unit_deps,
+> > +	.enable = pwrseq_pci_m2_e_pcie_enable,
+> > +	.disable = pwrseq_pci_m2_e_pcie_disable,
+> > +};
+> > +
+> >  static const struct pwrseq_unit_data pwrseq_pcie_m2_m_pcie_unit_data = {
+> >  	.name = "pcie-enable",
+> > -	.deps = pwrseq_pcie_m2_m_unit_deps,
+> > +	.deps = pwrseq_pcie_m2_unit_deps,
+> > +};
+> > +
+> > +static int pwrseq_pcie_m2_e_pwup_delay(struct pwrseq_device *pwrseq)
+> > +{
+> > +	/*
+> > +	 * FIXME: This delay is only required for some Qcom WLAN/BT cards like
+> > +	 * WCN7850 and not for all devices. But currently, there is no way to
+> > +	 * identify the device model before enumeration.
+> > +	 */
+> > +	msleep(50);
 > 
-> Replace it with enum nbcon_write_cb which provides a more descriptive
-> values for all 3 situations: atomic, thread or any.
+> Section 3.1.4 of the M.2 spec says that "Power Valid to PERST# input
+> inactive" (T_PVPGL) is "Implementation specific recommended 50 ms." So I
+> think we should delay for at least 50 ms for all M.2 cards.
+
+Yes, this pretty much looks like T_PVPGL, but this delay is already accounted
+for in pcie-qcom.c as a part of PERST# deassertion (I believe WCN7850 was tested
+with Qcom host). I will check it and get back.
+
+> Additionally, the PCIe CEM specifies that "Power stable to PERST#
+> inactive" (T_PVPERL) must be at least 100 ms. So I think we should just
+> delay for 100 ms regardless of the slot, perhaps making this
+> configurable in the devicetree if e.g. the system integrator knows the
+> soldered-down M.2 requires less initialization time. This is exactly
+> what I proposed in [1].
 > 
-> Note that console_is_usable() checks only NBCON_USE_ATOMIC because
-> .write_thread() callback is mandatory. But the other two values still
-> make sense because they describe the intention of the caller.
-> 
-> --- a/include/linux/console.h
-> +++ b/include/linux/console.h
-> @@ -202,6 +202,19 @@ enum cons_flags {
->  	CON_NBCON_ATOMIC_UNSAFE	= BIT(9),
->  };
->  
-> +/**
-> + * enum nbcon_write_cb - Defines which nbcon write() callback must be used based
-> + *                       on the caller context.
-> + * @NBCON_USE_ATOMIC: Use con->write_atomic().
-> + * @NBCON_USE_THREAD: Use con->write_thread().
-> + * @NBCON_USE_ANY:    The caller does not have any strict requirements.
-> + */
-> +enum nbcon_write_cb {
-> +	NBCON_USE_ATOMIC,
-> +	NBCON_USE_THREAD,
-> +	NBCON_USE_ANY,
 
-AFAIK, this would define NBCON_USE_ATOMIC as zero. See below.
+I'd love to do it in the pwrctrl/pwrseq driver, but most of the controller
+drivers are already handling this delay as a part of their PERST# deassertion.
+This was the only reason I didn't add the T_PVPERL delay here. Also, those
+controller drivers handle non-pwrctrl design as well (for backwards
+compatibility), so they need the delay anyway and it will make them messy if the
+delay is only handled in non-pwrctrl case.
 
-> +};
-> +
->  /**
->   * struct nbcon_state - console state for nbcon consoles
->   * @atom:	Compound of the state fields for atomic operations
-> @@ -622,7 +635,8 @@ extern void nbcon_kdb_release(struct nbcon_write_context *wctxt);
->   * which can also play a role in deciding if @con can be used to print
->   * records.
->   */
-> -static inline bool console_is_usable(struct console *con, short flags, bool use_atomic)
-> +static inline bool console_is_usable(struct console *con, short flags,
-> +				     enum nbcon_write_cb nwc)
->  {
->  	if (!(flags & CON_ENABLED))
->  		return false;
-> @@ -631,7 +645,7 @@ static inline bool console_is_usable(struct console *con, short flags, bool use_
->  		return false;
->  
->  	if (flags & CON_NBCON) {
-> -		if (use_atomic) {
-> +		if (nwc & NBCON_USE_ATOMIC) {
+- Mani
 
-This will always be false because NBCON_USE_ATOMIC is zero.
-I think that it was defined as "0x1" in the original proposal.
-
-Let's keep it defined by as zero and use here:
-
-		if (nwc == NBCON_USE_ATOMIC) {
-
-Note that we do _not_ want to return "false" for "NBCON_USE_ANY"
-when con->write_atomic does not exist.
-
->  			/* The write_atomic() callback is optional. */
->  			if (!con->write_atomic)
->  				return false;
-
-
-Otherwise, it looks good to me.
-
-Best Regards,
-Petr
+-- 
+மணிவண்ணன் சதாசிவம்
