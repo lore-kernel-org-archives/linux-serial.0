@@ -1,34 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FC162D7DF1;
-	Tue, 13 Jan 2026 08:00:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 256423793A9;
+	Tue, 13 Jan 2026 08:08:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768291231; cv=none; b=OtbIVp66dp+njzkvg82NNkAIBGTDpn0IqdLW61J7LEgxn7rtUEU3gXjvHqeHA1ZWfBekDn+K7WRV0m8+5z8EbJMPNccx6g0UmU6gcUh9A+Zwpn+MJLYlDqbXQK4IVySi4mhz0Y2DeC9mqad+V5be0FGg6sIXxG1K1zUofAbEI5U=
+	t=1768291738; cv=none; b=mf6T29UWFRO/6Pfwd6vLn8dEs5s5P94sK+UpVKjOqT4D8zp+cxskM/7cxDvreaVoAZWy/F2hwB7vtX48ItrzpQzrBUFxdVbC8JsuGt93rjNlFplAY/3dBo9mXhCjhYY0o240PWtOvn3SX1IhiSfy6Y6bMj/M1UvVYl+/UmMs+QQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768291231; c=relaxed/simple;
-	bh=SX+O0NmEQxOLjAFfursNoYVMHn4XYYdX1/Bzv1rdlFo=;
+	s=arc-20240116; t=1768291738; c=relaxed/simple;
+	bh=nEkrc/Oh+3NzIyLSk2QgA+bYBseCe2JUpKmxyygTlN4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fJUX4aF9+LpSCqk/GAaJmm9FOz2OnmOpbOKwruuwJCev45RCYuZOkxzmEg15VPu2L44kCaUYkS5Zvoa3ZMAzr6REAkUKK+ZvkzdSqd1+nZ+EdJo5/P1iSUpLLea3z1bhbZ40gd7eYD7JS22fsv+wOFTHVDt96XXGaqJ7J1vTQn4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9ED6CC19421;
-	Tue, 13 Jan 2026 08:00:30 +0000 (UTC)
-Date: Tue, 13 Jan 2026 09:00:28 +0100
-From: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-To: Kuan-Wei Chiu <visitorckw@gmail.com>
-Cc: airlied@gmail.com, simona@ffwll.ch, maarten.lankhorst@linux.intel.com, 
-	mripard@kernel.org, tzimmermann@suse.de, robh@kernel.org, krzk+dt@kernel.org, 
-	conor+dt@kernel.org, dmitry.torokhov@gmail.com, sre@kernel.org, 
-	gregkh@linuxfoundation.org, jirislaby@kernel.org, lgirdwood@gmail.com, broonie@kernel.org, 
-	jserv@ccns.ncku.edu.tw, eleanor15x@gmail.com, dri-devel@lists.freedesktop.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-input@vger.kernel.org, 
-	linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, linux-sound@vger.kernel.org
-Subject: Re: [PATCH v3 2/6] dt-bindings: misc: google,android-pipe: Convert
- to DT schema
-Message-ID: <20260113-orange-cat-of-examination-b8d2a7@quoll>
-References: <20260112185044.1865605-1-visitorckw@gmail.com>
- <20260112185044.1865605-3-visitorckw@gmail.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=NpQxWp0LVfvtSk1M51bRl3H9i73IHbHVQIQ1LOLBCODzfiGC55eQsml58MfC3brS19EUNk69MVTj2JwLGsNfxgAKmcF31hm0e1iYsdYAABcMdC81yHTeOQotYCnsE4nWNfvzU7NqTl4HJ2DVC93LvGJMnqGCK4jg7IjL4lKyDd0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dmE3/pIY; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dmE3/pIY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37D3FC116C6;
+	Tue, 13 Jan 2026 08:08:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1768291737;
+	bh=nEkrc/Oh+3NzIyLSk2QgA+bYBseCe2JUpKmxyygTlN4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=dmE3/pIYfU+TK5k2ZGmULC/Fyzu71VBQYHos9zhKooJtn4+FADDVsyN/D1q+dbr7F
+	 mxqAlZd29Dk644UWZgoieMaWZw/YvecGgNUKRe06S2ukA+2+ZSIOBEQ5Btpyv3tBJs
+	 tPpHzrgjj5ODKWOqfO3h9LdTLqNjwKzGa5wNYj64FcsIG2ZSLC2L5uGOl0+6zsj9om
+	 dWWRl1z0g4aRFA953uXWlv1cG7eNuEuoRtIllyBP7ZFq2nVsuuAM2EZAommdC8YTNA
+	 Q/wmoi3dHDsoVBM8kpU1nlN53mMaBlayrXVo/NEXESeb+BVZNTrAaNXadIgBQTGkJA
+	 fI8om3OHCXf9w==
+Date: Tue, 13 Jan 2026 09:08:55 +0100
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Prabhakar <prabhakar.csengg@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Geert Uytterhoeven <geert+renesas@glider.be>, Magnus Damm <magnus.damm@gmail.com>, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-renesas-soc@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>, 
+	Fabrizio Castro <fabrizio.castro.jz@renesas.com>, Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: Re: [PATCH v2] dt-bindings: serial: sh-sci: Fold single-entry
+ compatibles into enum
+Message-ID: <20260113-jolly-pug-of-serendipity-d3538f@quoll>
+References: <20260112095722.25556-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -37,18 +48,24 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260112185044.1865605-3-visitorckw@gmail.com>
+In-Reply-To: <20260112095722.25556-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-On Mon, Jan 12, 2026 at 06:50:40PM +0000, Kuan-Wei Chiu wrote:
-> +examples:
-> +  - |
-> +    pipe@ff018000 {
-> +        compatible = "google,android-pipe";
-> +        reg = <0xff018000 0x2000>;
-> +        interrupts = <0x12>;
+On Mon, Jan 12, 2026 at 09:57:22AM +0000, Prabhakar wrote:
+> From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> 
+> Group single compatibles into enum.
+> 
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+> v1->v2:
+> - Dropped "- items:" to reduce indentation level.
+> - Added Reviewed-by tag. 
+> ---
+>  .../devicetree/bindings/serial/renesas,scif.yaml  | 15 +++++----------
+>  1 file changed, 5 insertions(+), 10 deletions(-)
 
-Still not improved. I asked twice already. This is a nit, but I do not
-understand why I need to ask for it three times.
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 
 Best regards,
 Krzysztof
