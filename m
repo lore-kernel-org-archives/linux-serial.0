@@ -1,62 +1,106 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B73AE3502A5;
-	Tue, 13 Jan 2026 17:25:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D477F3803D1
+	for <linux-serial@vger.kernel.org>; Tue, 13 Jan 2026 17:37:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768325137; cv=none; b=bfCl2To0FLIb3sjrkJ48Pq6ZlE9aOeyyH7eEV3RKUm/AiDjwRm745ex6mnZDzbah3Xu92sW3bwla8gbvPm3LQjXac57rHoDyAZ6vo9x2EOqn7SfSWT4DnEsD2LEmWcP/dDKG5BU2UcOrL86SBD7JrvwuAH+RFc5CjGJc2aWGtio=
+	t=1768325845; cv=none; b=m+Tk7kdweN7zs/MvdoHk+d2mi9ZR8HA4jjYSeKQ/cGgh1IVftLAyLvrXYVcRjjvD6gJwBrrVxtzZbCu/uzUxOehG2x9KoHltobt8IhHFIwwD+0vaqKt7RPtL/expLCKlMYv0JVj/LX66OWhnuUhbiKvMCsAxjQYFhrT1SAn5Rz8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768325137; c=relaxed/simple;
-	bh=adh6nRjj4+RlJ7Axtj/4b81J0YYWlHJV3CYCdPPKpyM=;
+	s=arc-20240116; t=1768325845; c=relaxed/simple;
+	bh=ICK4ui9NDNRZmZPvqUFhVVRYDzu3U7vjvh8uoefFqv4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kNpK18fVMGaEThi1VliHv5ZPhbj/RbxqwdfwREPIrNChfFOfes0LOeB9U7uqakRxXgFvfcVohwsfkEAcXhyaxDmXiJa7gBFgQ/qBc3UP/tcLSvlKoz4GD0R4/oot80fN4VKl5Tmz8PMsMZqM95M4CVvadzasxnmYGeTYF/1KVe8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=h/jeB1KF; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=TE3uPhH7CqUO+0/DTau+AuUSaBAWQvEv8nbZ7fV3YFXuhKoDyRv6COq6+myygocr80iRZbm7vo0MSBRa9M4zUd4pun4AqcWAnRS32xRiUW0abtFpjo3n3yJQmYKnmU0ul2XdafQK7wgPbJbtzX4xs9r1Dt1pgPeTCM3GfdQZEl8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=Ru2sEbeo; arc=none smtp.client-ip=209.85.221.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="h/jeB1KF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68FEFC116C6;
-	Tue, 13 Jan 2026 17:25:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1768325137;
-	bh=adh6nRjj4+RlJ7Axtj/4b81J0YYWlHJV3CYCdPPKpyM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=h/jeB1KFdLdMVHHsD1HqYRsMkAl3liD/kCiRpmWWoMPlGFRzzRNRkBYe9gqkpJLKN
-	 BSYzreQKE4eFKVNO6PqeZknEPH1mUXiQHwqENmTeY39X7ETTq4AcQf/NDeHJmCCrwZ
-	 1Ecn5SOZcv98DTuHdhOf3XDyzPjXHG5p0jP0MiVW39dYICFv849a8cSKIehd7l0PKh
-	 uwmOj9kKyOnmIviCtmwsPUCYp2tVaMAezUnxgZBaWh1wpeiCZ5jtV4IrQOvwkaSB0/
-	 H06dl/2rPLEnf0+kuRe1wM68+eT4FiDp+ypL++VAzCguGkF+m8pU9Yu2R7LvZang08
-	 sa/EO/KXkbDJA==
-Date: Tue, 13 Jan 2026 11:25:36 -0600
-From: Rob Herring <robh@kernel.org>
-To: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Nathan Chancellor <nathan@kernel.org>,
-	Nicolas Schier <nicolas.schier@linux.dev>,
-	Hans de Goede <hansg@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Mark Pearson <mpearson-lenovo@squebb.ca>,
-	"Derek J. Clark" <derekjohn.clark@gmail.com>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Marcel Holtmann <marcel@holtmann.org>,
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-	Bartosz Golaszewski <brgl@bgdev.pl>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Bartosz Golaszewski <brgl@kernel.org>, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
-	platform-driver-x86@vger.kernel.org, linux-pci@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-	linux-bluetooth@vger.kernel.org, linux-pm@vger.kernel.org,
-	Stephan Gerhold <stephan.gerhold@linaro.org>,
-	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
-	linux-acpi@vger.kernel.org
-Subject: Re: [PATCH v4 6/9] dt-bindings: connector: m2: Add M.2 1620 LGA
- soldered down connector
-Message-ID: <20260113172536.GA3975461-robh@kernel.org>
-References: <20260112-pci-m2-e-v4-0-eff84d2c6d26@oss.qualcomm.com>
- <20260112-pci-m2-e-v4-6-eff84d2c6d26@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="Ru2sEbeo"
+Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-42fb5810d39so4117055f8f.2
+        for <linux-serial@vger.kernel.org>; Tue, 13 Jan 2026 09:37:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1768325840; x=1768930640; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=/CVOy4tPw1zWY0e6rYcKRwtfrfRvUlKFzd8YTNoGp5w=;
+        b=Ru2sEbeo3aF1V5dVdmZ8y7qebfvXyJmIOu3zKjZ0L9VDAaRDnX70AwM7BG2MTCNZwb
+         Wt2M0HgSorW10TpGQfsg9caRtjEHGygzZnBCUoVZVtJ9cb0vr93mesbIAhkVPGacjxdE
+         7HU2OwKQxMCRd8/BsuI9FzZju+1UH8Go43H+kiq9CHCnMXgCIpF7/w0CTdPzN1DW1Rpm
+         vJFnt7QVkUwAiqmRpO4P0wQ4QtHunX4dgFkC5Y5pl2pjWjZOPmVYlIv+L2228OrXc7FR
+         T3QgLrVe14c5TYcEkEJYXN3hig3ZqFkIKuc/jaTuv7lqME1z4P3n4adyHDJ+f9c9YNAe
+         Bvig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1768325840; x=1768930640;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=/CVOy4tPw1zWY0e6rYcKRwtfrfRvUlKFzd8YTNoGp5w=;
+        b=rEzkYxXLjffkqQ0nAQgMmZ2zJHG5NyseBojN03xkXHf46SyJ2EwoGmEq+kogO9JdkO
+         sQKsQsOqnEVkGoucV6fi6CwZESmRiEoryt2lbT/bP0EOpjy6+pO0VmWJcpKmP7TKAIpN
+         UaGf3+58KovqT2rJOXSQ712p13VbUemEtdlxfGtSCxG2TQo1nf4Po4D1XjGs/vN+UydU
+         pT3s9/SiE5UmTuGJw1kLBRwRhFFtL89v7vFK9XkI4qJSuVrm8VFXSBfoSHabp4pf0Aky
+         ZQFHyfEdyAdHlFQEkeaYaPalc17kE8YqknKoyT867uwrGmfUcA1DX9DKlQiorPyKiGwb
+         xLkg==
+X-Forwarded-Encrypted: i=1; AJvYcCU7MIrYM8ZTOXxyTl7nqS9pDEXQgvHMfltwe69+GjdpN+9Gz0JQ9gxEzaq3c/8lUAyN6LiP1gi1C7bfRag=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxWTXHLCRHZgWe8OqH8UYy0mPGm7YoWkHmITINLWvRIYsLeEAK7
+	YXWzTlR4ioB6CYNFrRR6LM43pR7SL2xufdrTjlzrVB20WjfY4K+kj460os48l1+lVsQ=
+X-Gm-Gg: AY/fxX4qrIiYu+aALCeHJvEQCMkgP11glXvUgRRETIkOcqNrWXMCrrEIsPEH1nqX3BR
+	OaVqk47WwI8kaFQ7EldmG8bJKh+pbma+ntmDlDAocBU/iKHabRNvnIIUKIQHyr9m1r9VY72OBud
+	t7aROw/JgyOeGs3kJM8KKj1iJNyJbvjzk5qwBI2luahE7GZVzwygykeG9Ys9gAe/n8sfdITYrKZ
+	g3ePob6ogOXIuvdKTVFwQip5AE09tf80yTmqclvaKoUUl+YRWC9fGcuMszL3RxXZ8+Hoc04QpDM
+	uMCPpuxGGkWgmshd7myeSspJMCSrz4B8U7Ix4tkncuVC8IWow77hzeU+bL5x5WfapJjKTh78138
+	VtumssmQcq9RYlhrJvCt+bWF1xJJmwz0dowaks6q/cIyxKBtSSVvhZS5FK2GKa2WCJMsQfJ6f8d
+	pYgSNMJCSx3/TD9Q==
+X-Google-Smtp-Source: AGHT+IHUReQqvVgC0db5F0/UgqAPwHgCcpq2ZD0lhm0g7XnDeEa3Phlj1/GEitKl8zvqkUFbSZC6XA==
+X-Received: by 2002:a05:6000:2dc9:b0:430:fced:902 with SMTP id ffacd0b85a97d-432c36436fbmr29258778f8f.26.1768325840268;
+        Tue, 13 Jan 2026 09:37:20 -0800 (PST)
+Received: from pathway.suse.cz ([176.114.240.130])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-432d9610671sm28342147f8f.34.2026.01.13.09.37.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Jan 2026 09:37:19 -0800 (PST)
+Date: Tue, 13 Jan 2026 18:37:17 +0100
+From: Petr Mladek <pmladek@suse.com>
+To: Marcos Paulo de Souza <mpdesouza@suse.com>
+Cc: Richard Weinberger <richard@nod.at>,
+	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jason Wessel <jason.wessel@windriver.com>,
+	Daniel Thompson <danielt@kernel.org>,
+	Douglas Anderson <dianders@chromium.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Breno Leitao <leitao@debian.org>,
+	Andrew Lunn <andrew+netdev@lunn.ch>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>,
+	"Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Christophe Leroy <christophe.leroy@csgroup.eu>,
+	Andreas Larsson <andreas@gaisler.com>,
+	Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Jacky Huang <ychuang3@nuvoton.com>,
+	Shan-Chun Hung <schung@nuvoton.com>,
+	Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+	linux-um@lists.infradead.org, linux-kernel@vger.kernel.org,
+	kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org,
+	netdev@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+	linux-hardening@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+	sparclinux@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org, linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH 02/19] printk: Introduce console_is_nbcon
+Message-ID: <aWaCzZ8_UuyAa6xp@pathway.suse.cz>
+References: <20251227-printk-cleanup-part3-v1-0-21a291bcf197@suse.com>
+ <20251227-printk-cleanup-part3-v1-2-21a291bcf197@suse.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -65,44 +109,83 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260112-pci-m2-e-v4-6-eff84d2c6d26@oss.qualcomm.com>
+In-Reply-To: <20251227-printk-cleanup-part3-v1-2-21a291bcf197@suse.com>
 
-On Mon, Jan 12, 2026 at 09:56:05PM +0530, Manivannan Sadhasivam wrote:
-> Lenovo Thinkpad T14s is found to have a soldered down version of M.2 1620
-> LGA connector. Though, there is no 1620 LGA form factor defined in the M.2
-> spec, it looks very similar to the M.2 Key M connector. So add the
-> "pcie-m2-1620-lga-connector" compatible with "pcie-m2-e-connector" fallback
-> to reuse the Key M binding.
-
-Key M or Key E? I'm confused.
-
+On Sat 2025-12-27 09:16:09, Marcos Paulo de Souza wrote:
+> Besides checking if the current console is NBCON or not, console->flags
+> is also being read in order to serve as argument of the console_is_usable
+> function.
 > 
-> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+> But CON_NBCON flag is unique: it's set just once in the console
+> registration and never cleared. In this case it can be possible to read
+> the flag when console_srcu_lock is held (which is the case when using
+> for_each_console).
+> 
+> This change makes possible to remove the flags argument from
+> console_is_usable in the next patches.
+> 
+> Signed-off-by: Petr Mladek <pmladek@suse.com>
+> Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
 > ---
->  .../devicetree/bindings/connector/pcie-m2-e-connector.yaml       | 9 ++++++++-
->  1 file changed, 8 insertions(+), 1 deletion(-)
+>  include/linux/console.h   | 27 +++++++++++++++++++++++++++
+>  kernel/debug/kdb/kdb_io.c |  2 +-
+>  kernel/printk/nbcon.c     |  2 +-
+>  kernel/printk/printk.c    | 15 ++++++---------
+>  4 files changed, 35 insertions(+), 11 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/connector/pcie-m2-e-connector.yaml b/Documentation/devicetree/bindings/connector/pcie-m2-e-connector.yaml
-> index b65b39ddfd19..9757fe92907b 100644
-> --- a/Documentation/devicetree/bindings/connector/pcie-m2-e-connector.yaml
-> +++ b/Documentation/devicetree/bindings/connector/pcie-m2-e-connector.yaml
-> @@ -17,7 +17,14 @@ description:
+> diff --git a/include/linux/console.h b/include/linux/console.h
+> index 35c03fc4ed51..dd4ec7a5bff9 100644
+> --- a/include/linux/console.h
+> +++ b/include/linux/console.h
+> @@ -561,6 +561,33 @@ static inline void console_srcu_write_flags(struct console *con, short flags)
+>  	WRITE_ONCE(con->flags, flags);
+>  }
 >  
->  properties:
->    compatible:
-> -    const: pcie-m2-e-connector
-> +    oneOf:
-> +      - items:
-> +          - enum:
-> +              - pcie-m2-1620-lga-connector
-> +          - const: pcie-m2-e-connector
-> +      - items:
-> +          - enum:
-> +              - pcie-m2-e-connector
->  
->    vpcie3v3-supply:
->      description: A phandle to the regulator for 3.3v supply.
-> 
-> -- 
-> 2.48.1
-> 
+> +/**
+> + * console_srcu_is_nbcon - Locklessly check whether the console is nbcon
+
+There is _srcu in the function name, see below.
+
+> + * @con:	struct console pointer of console to check
+> + *
+> + * Requires console_srcu_read_lock to be held, which implies that @con might
+> + * be a registered console. The purpose of holding console_srcu_read_lock is
+> + * to guarantee that no exit/cleanup routines will run if the console
+> + * is currently undergoing unregistration.
+> + *
+> + * If the caller is holding the console_list_lock or it is _certain_ that
+> + * @con is not and will not become registered, the caller may read
+> + * @con->flags directly instead.
+> + *
+> + * Context: Any context.
+> + * Return: True when CON_NBCON flag is set.
+> + */
+> +static inline bool console_is_nbcon(const struct console *con)
+
+And here it is without _srcu.
+
+I would prefer the variant with _srcu to make it clear that it
+can be called only under _srcu. Similar to console_srcu_read_flags(con).
+
+> +{
+> +	WARN_ON_ONCE(!console_srcu_read_lock_is_held());
+> +
+> +	/*
+> +	 * The CON_NBCON flag is statically initialized and is never
+> +	 * set or cleared at runtime.
+> +	 */
+> +	return data_race(con->flags & CON_NBCON);
+> +}
+> +
+>  /* Variant of console_is_registered() when the console_list_lock is held. */
+>  static inline bool console_is_registered_locked(const struct console *con)
+>  {
+
+Otherwise, it looks good to me.
+
+With a consistent name, feel free to use:
+
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+
+Best Regards,
+Petr
