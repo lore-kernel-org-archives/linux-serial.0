@@ -1,77 +1,146 @@
-Received: from mail.zeus03.de (zeus03.de [194.117.254.33])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 030A538F938
-	for <linux-serial@vger.kernel.org>; Tue, 13 Jan 2026 12:50:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.117.254.33
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26EC53904F0
+	for <linux-serial@vger.kernel.org>; Tue, 13 Jan 2026 13:54:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768308637; cv=none; b=dmE8Q6IYrJHfXHYHFI4OumE9n4+vJBiit1Tm5fq8MS1ECriY0X14NnpvaX8dHJLdeW4vddeUWiIy6mH61RCCCJ97eZh2tmyNQm+k4QG478iQO1P2la8HGO5gq/O/Wk2f9q2rhfxDysgmWOL3XntnNIg+2LMWqPOT4fKGHfyCY2I=
+	t=1768312498; cv=none; b=KEMSvQxhB+yPVbt9VWYeBRN2xJK3eD6BMepv2tGeZ1spUbzui36d7HF3fMgpAwWOof3naAvAy2VLJvKY/mSb73jlb1EFVpyDLD2YIJ1onclNg5pNRGF1VyqDD7i+dZlaeg89BXPZHSF/8UYvD0GPFA+fqLgttne6xAPxKxet7zE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768308637; c=relaxed/simple;
-	bh=1DKmmAMrTMc/B32nL+XGjSAKOro5Gz96ACGi7IqMW9k=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GUYwO9b+XhoRl08AmCbRbD3KU6vk+kIjohK+fM0Xfe5Zv+C1HimGtzp3aq33N4mtTKoEwSgQn7Gh0iQJqSlP3120jVdz/w37SYJB60JMBq9yYMap2Dv3ko5cjXEYMt6pZgx8v1V9JUEiopJ79GqYXzOYuj4hvmftm6R1qPyOSK4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=Jh0Q9Kkg; arc=none smtp.client-ip=194.117.254.33
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
+	s=arc-20240116; t=1768312498; c=relaxed/simple;
+	bh=qoD2yGygqaoN/33J25h6tmmzMz3XXXhCzzZUa7glhR0=;
+	h=From:In-Reply-To:MIME-Version:References:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=lu2V6Qfn4s8KvlQmTvfu3QNSY/1cHYUYNarX3HwioicrPKHobczCCTPKOUR+2LiPy0wvnhlN0H/PzhTEfVD9cYCZwRkMQ8D+Z7J2T/lYFhS4jSwwmy+AyETrquE2Pjw+Z851lywbfMy6BZdGXa7wsHeSHA5rcScAkFmNEYEpemc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=X6UqNK7a; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="Jh0Q9Kkg"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	sang-engineering.com; h=date:from:to:cc:subject:message-id
-	:references:mime-version:content-type:in-reply-to; s=k1; bh=bgYz
-	Q023QCEOFph6EUgTHi0vVdD25uncinH1QX1E4EQ=; b=Jh0Q9Kkg9hoNCkqQXdhX
-	gcQkYx9o2x2ZvYqfkeWiPR4Rkaj1Zf3CajlD71h1nMVg0c+0U4UjtOWGqg/ZOPEX
-	/BTlcNWWF8rtomnudWesc7ZlFTxZBmXB1g7oavfNE1OPq3JejuM46kUz5UApMOir
-	5c+p8x6pM5dgbBnNjRjB7s/sydNLK/TL7Nyy5H6F0nb0XzI1esKAT0mKlBi2iktG
-	S4UawpvkqZ+Y7tSpLv/uy4aYQn0w82z6Ohw59LIuyUN6AkduqdwWrZLZsnl6+nEN
-	UEvaydNjnROjP+RQ9g8y3Vmupz74Mu64hEkIPhSzTbpzi0usr51RLyLOfM5wo/TI
-	6w==
-Received: (qmail 1683370 invoked from network); 13 Jan 2026 13:50:26 +0100
-Received: by mail.zeus03.de with UTF8SMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 13 Jan 2026 13:50:26 +0100
-X-UD-Smtp-Session: l3s3148p1@aJd4b0RI2soujnvx
-Date: Tue, 13 Jan 2026 13:50:24 +0100
-From: Wolfram Sang <wsa+renesas@sang-engineering.com>
-To: Robert Marko <robert.marko@sartura.hr>
-Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
-	nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
-	claudiu.beznea@tuxon.dev, herbert@gondor.apana.org.au,
-	davem@davemloft.net, vkoul@kernel.org, andi.shyti@kernel.org,
-	lee@kernel.org, andrew+netdev@lunn.ch, edumazet@google.com,
-	kuba@kernel.org, pabeni@redhat.com, linusw@kernel.org,
-	Steen.Hegelund@microchip.com, daniel.machon@microchip.com,
-	UNGLinuxDriver@microchip.com, olivia@selenic.com,
-	radu_nicolae.pirea@upb.ro, richard.genoud@bootlin.com,
-	gregkh@linuxfoundation.org, jirislaby@kernel.org,
-	broonie@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
-	lars.povlsen@microchip.com, devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org,
-	linux-i2c@vger.kernel.org, netdev@vger.kernel.org,
-	linux-gpio@vger.kernel.org, linux-spi@vger.kernel.org,
-	linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-	linux-clk@vger.kernel.org, luka.perkov@sartura.hr,
-	Conor Dooley <conor.dooley@microchip.com>
-Subject: Re: [PATCH v3 06/15] dt-bindings: i2c: atmel,at91sam: add
- microchip,lan9691-i2c
-Message-ID: <aWY_kMIX_G2iSltN@ninjato>
-References: <20251223201921.1332786-1-robert.marko@sartura.hr>
- <20251223201921.1332786-7-robert.marko@sartura.hr>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="X6UqNK7a"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAD15C2BC86
+	for <linux-serial@vger.kernel.org>; Tue, 13 Jan 2026 13:54:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1768312497;
+	bh=qoD2yGygqaoN/33J25h6tmmzMz3XXXhCzzZUa7glhR0=;
+	h=From:In-Reply-To:References:Date:Subject:To:Cc:From;
+	b=X6UqNK7aswU+lA9kqtiwNbzfFTE7AXD8G34A3HFNcIq/B2EYROSgMDjZNtWsFli0W
+	 k32LO9Z65v0r3jZltkRIp1Rm8R0ZgM0KWMrlmDuZadmroW53bp6eD5wY1H7W+6eBqc
+	 1xbzZeAvLJ4QpJHtfj46YxPtvxOAZSbTP96oTJg0Ra27wTxRDWlBIdkIKza73Mfvn0
+	 hswtNHgzRjXkMl1tVcVsHinE2qax2yxkeCIaeHcMDfahObLWOR6NyeGur7OunaG+G/
+	 aEsLN//7A7rAR1JffPlgSN0Zzh3NWzqHKDqgbf5JTjBffeRCcpcS/NyxhgPZcI+jUY
+	 fWWxmgfEHi69g==
+Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-59b79451206so4786491e87.1
+        for <linux-serial@vger.kernel.org>; Tue, 13 Jan 2026 05:54:57 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCVzERjsmHEkPcqqnMIQx3GcaHmYgaOOAMQEypU8Nfftenbs/GdcUb0A7j45QqrcqavVSmNzWsHzX1ve8lI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzN6u0Y7BscK0GLBmGzoEI08h6jL7tIwYlv1UkDnGQdoJD+rSOE
+	aI8bAb3DzbfYbM++5ACHw8dPh5kYhiplPvni0+XjPc8pcFCVi/xLsL+ZBQGywRhbo5CiP0rnhMo
+	2hArBh7RVJ4cO0WUgRpmYp9flSa4f91+u+75jQ8g/hQ==
+X-Google-Smtp-Source: AGHT+IHtxkUGwU9KE66IHi1cBKvrXikFiqjf5FnMhLoUqzd0zbPBghAy/6jPyeE4fjWfRvr/ZtuwVmPnk4eOTeZtRkw=
+X-Received: by 2002:a2e:be13:0:b0:37f:a216:e455 with SMTP id
+ 38308e7fff4ca-382ff6a998emr60740471fa.18.1768312496407; Tue, 13 Jan 2026
+ 05:54:56 -0800 (PST)
+Received: from 969154062570 named unknown by gmailapi.google.com with
+ HTTPREST; Tue, 13 Jan 2026 08:54:55 -0500
+Received: from 969154062570 named unknown by gmailapi.google.com with
+ HTTPREST; Tue, 13 Jan 2026 08:54:55 -0500
+From: Bartosz Golaszewski <brgl@kernel.org>
+In-Reply-To: <20260112-pci-m2-e-v4-2-eff84d2c6d26@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251223201921.1332786-7-robert.marko@sartura.hr>
+References: <20260112-pci-m2-e-v4-0-eff84d2c6d26@oss.qualcomm.com> <20260112-pci-m2-e-v4-2-eff84d2c6d26@oss.qualcomm.com>
+Date: Tue, 13 Jan 2026 08:54:55 -0500
+X-Gmail-Original-Message-ID: <CAMRc=McDvQoqfH0Gy-wzbcEGvNCZACSACCcviwpCc4YNSpKYrw@mail.gmail.com>
+X-Gm-Features: AZwV_QiNfMpaasLV4YYAdk4pjC7egojRYHOX7MP76SYTH8HXlXx4MiSntJqB_WU
+Message-ID: <CAMRc=McDvQoqfH0Gy-wzbcEGvNCZACSACCcviwpCc4YNSpKYrw@mail.gmail.com>
+Subject: Re: [PATCH v4 2/9] serdev: Add an API to find the serdev controller
+ associated with the devicetree node
+To: manivannan.sadhasivam@oss.qualcomm.com
+Cc: Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Nathan Chancellor <nathan@kernel.org>, 
+	Nicolas Schier <nicolas.schier@linux.dev>, Hans de Goede <hansg@kernel.org>, 
+	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+	Mark Pearson <mpearson-lenovo@squebb.ca>, "Derek J. Clark" <derekjohn.clark@gmail.com>, 
+	Manivannan Sadhasivam <mani@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Marcel Holtmann <marcel@holtmann.org>, Luiz Augusto von Dentz <luiz.dentz@gmail.com>, 
+	Bartosz Golaszewski <brgl@bgdev.pl>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+	Bartosz Golaszewski <brgl@kernel.org>, 
+	Manivannan Sadhasivam via B4 Relay <devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org>, 
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-kbuild@vger.kernel.org, platform-driver-x86@vger.kernel.org, 
+	linux-pci@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org, 
+	linux-pm@vger.kernel.org, Stephan Gerhold <stephan.gerhold@linaro.org>, 
+	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, linux-acpi@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Tue, Dec 23, 2025 at 09:16:17PM +0100, Robert Marko wrote:
-> Document Microchip LAN969x I2C compatible.
-> 
-> Signed-off-by: Robert Marko <robert.marko@sartura.hr>
-> Acked-by: Conor Dooley <conor.dooley@microchip.com>
-> Acked-by: Andi Shyti <andi.shyti@kernel.org>
+On Mon, 12 Jan 2026 17:26:01 +0100, Manivannan Sadhasivam via B4 Relay
+<devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org> said:
+> From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+>
+> Add of_find_serdev_controller_by_node() API to find the serdev controller
+> device associated with the devicetree node.
+>
+> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+> ---
+>  drivers/tty/serdev/core.c | 16 ++++++++++++++++
+>  include/linux/serdev.h    |  9 +++++++++
+>  2 files changed, 25 insertions(+)
+>
+> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+> index b33e708cb245..25382c2d63e6 100644
+> --- a/drivers/tty/serdev/core.c
+> +++ b/drivers/tty/serdev/core.c
+> @@ -504,6 +504,22 @@ struct serdev_controller *serdev_controller_alloc(struct device *host,
+>  }
+>  EXPORT_SYMBOL_GPL(serdev_controller_alloc);
+>
+> +/**
+> + * of_find_serdev_controller_by_node() - Find the serdev controller associated
+> + *					 with the devicetree node
+> + * @node:	Devicetree node
+> + *
+> + * Return: Pointer to the serdev controller associated with the node. NULL if
+> + * the controller is not found.
+> + */
 
-Applied to for-next, thanks!
+Please also say that the caller is responsible for calling
+serdev_controller_put() on the returned object.
 
+Bart
+
+> +struct serdev_controller *of_find_serdev_controller_by_node(struct device_node *node)
+> +{
+> +	struct device *dev = bus_find_device_by_of_node(&serdev_bus_type, node);
+> +
+> +	return (dev && dev->type == &serdev_ctrl_type) ? to_serdev_controller(dev) : NULL;
+> +}
+> +EXPORT_SYMBOL_GPL(of_find_serdev_controller_by_node);
+> +
+>  static int of_serdev_register_devices(struct serdev_controller *ctrl)
+>  {
+>  	struct device_node *node;
+> diff --git a/include/linux/serdev.h b/include/linux/serdev.h
+> index ecde0ad3e248..db9bfaba0662 100644
+> --- a/include/linux/serdev.h
+> +++ b/include/linux/serdev.h
+> @@ -333,4 +333,13 @@ static inline bool serdev_acpi_get_uart_resource(struct acpi_resource *ares,
+>  }
+>  #endif /* CONFIG_ACPI */
+>
+> +#ifdef CONFIG_OF
+> +struct serdev_controller *of_find_serdev_controller_by_node(struct device_node *node);
+> +#else
+> +struct serdev_controller *of_find_serdev_controller_by_node(struct device_node *node)
+> +{
+> +	return NULL;
+> +}
+> +#endif /* CONFIG_OF */
+> +
+>  #endif /*_LINUX_SERDEV_H */
+>
+> --
+> 2.48.1
+>
+>
+>
