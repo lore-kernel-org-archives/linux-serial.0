@@ -1,191 +1,319 @@
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D477F3803D1
-	for <linux-serial@vger.kernel.org>; Tue, 13 Jan 2026 17:37:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB507350D50;
+	Tue, 13 Jan 2026 17:37:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768325845; cv=none; b=m+Tk7kdweN7zs/MvdoHk+d2mi9ZR8HA4jjYSeKQ/cGgh1IVftLAyLvrXYVcRjjvD6gJwBrrVxtzZbCu/uzUxOehG2x9KoHltobt8IhHFIwwD+0vaqKt7RPtL/expLCKlMYv0JVj/LX66OWhnuUhbiKvMCsAxjQYFhrT1SAn5Rz8=
+	t=1768325857; cv=none; b=WZpif51p6v01b/OC8nJToltlDGIEdwo83vaKyKC07Nv5CLSbEscjrgCkMEFrslmC+2AeJmAyC4mKUDzBL/TEC42VX4Hnr3g1nVOJfSdGHK1Pv5gHrwg2dWtfEews3LKPmdcq+zVDCMjXqcZiLlQMiCQ2yiYIEI9uGAw+Hi5CcFo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768325845; c=relaxed/simple;
-	bh=ICK4ui9NDNRZmZPvqUFhVVRYDzu3U7vjvh8uoefFqv4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TE3uPhH7CqUO+0/DTau+AuUSaBAWQvEv8nbZ7fV3YFXuhKoDyRv6COq6+myygocr80iRZbm7vo0MSBRa9M4zUd4pun4AqcWAnRS32xRiUW0abtFpjo3n3yJQmYKnmU0ul2XdafQK7wgPbJbtzX4xs9r1Dt1pgPeTCM3GfdQZEl8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=Ru2sEbeo; arc=none smtp.client-ip=209.85.221.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1768325857; c=relaxed/simple;
+	bh=Cp5crIbuQcHzWEEHYt1WMAFWV19fM6Vf342B6RTHqnM=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:To:From:
+	 References:In-Reply-To; b=s3gPMBAzjcYezP43MdfZW+sE5KdcfeJbh61p2QbD4cFveXVqm0GaLwn5Y67WQfm3bYFBEVPd2HckKoSQPTlnH6jDMLgldp7tZ47t8bTYKcM9MS3v6LiBfkPT5eGU0D5eVDSdb/5gsrphJBzhVd7YupGgZ3t6LabKiYRU8DmSAWY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=V7rVHWXp; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="Ru2sEbeo"
-Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-42fb5810d39so4117055f8f.2
-        for <linux-serial@vger.kernel.org>; Tue, 13 Jan 2026 09:37:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1768325840; x=1768930640; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=/CVOy4tPw1zWY0e6rYcKRwtfrfRvUlKFzd8YTNoGp5w=;
-        b=Ru2sEbeo3aF1V5dVdmZ8y7qebfvXyJmIOu3zKjZ0L9VDAaRDnX70AwM7BG2MTCNZwb
-         Wt2M0HgSorW10TpGQfsg9caRtjEHGygzZnBCUoVZVtJ9cb0vr93mesbIAhkVPGacjxdE
-         7HU2OwKQxMCRd8/BsuI9FzZju+1UH8Go43H+kiq9CHCnMXgCIpF7/w0CTdPzN1DW1Rpm
-         vJFnt7QVkUwAiqmRpO4P0wQ4QtHunX4dgFkC5Y5pl2pjWjZOPmVYlIv+L2228OrXc7FR
-         T3QgLrVe14c5TYcEkEJYXN3hig3ZqFkIKuc/jaTuv7lqME1z4P3n4adyHDJ+f9c9YNAe
-         Bvig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768325840; x=1768930640;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=/CVOy4tPw1zWY0e6rYcKRwtfrfRvUlKFzd8YTNoGp5w=;
-        b=rEzkYxXLjffkqQ0nAQgMmZ2zJHG5NyseBojN03xkXHf46SyJ2EwoGmEq+kogO9JdkO
-         sQKsQsOqnEVkGoucV6fi6CwZESmRiEoryt2lbT/bP0EOpjy6+pO0VmWJcpKmP7TKAIpN
-         UaGf3+58KovqT2rJOXSQ712p13VbUemEtdlxfGtSCxG2TQo1nf4Po4D1XjGs/vN+UydU
-         pT3s9/SiE5UmTuGJw1kLBRwRhFFtL89v7vFK9XkI4qJSuVrm8VFXSBfoSHabp4pf0Aky
-         ZQFHyfEdyAdHlFQEkeaYaPalc17kE8YqknKoyT867uwrGmfUcA1DX9DKlQiorPyKiGwb
-         xLkg==
-X-Forwarded-Encrypted: i=1; AJvYcCU7MIrYM8ZTOXxyTl7nqS9pDEXQgvHMfltwe69+GjdpN+9Gz0JQ9gxEzaq3c/8lUAyN6LiP1gi1C7bfRag=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxWTXHLCRHZgWe8OqH8UYy0mPGm7YoWkHmITINLWvRIYsLeEAK7
-	YXWzTlR4ioB6CYNFrRR6LM43pR7SL2xufdrTjlzrVB20WjfY4K+kj460os48l1+lVsQ=
-X-Gm-Gg: AY/fxX4qrIiYu+aALCeHJvEQCMkgP11glXvUgRRETIkOcqNrWXMCrrEIsPEH1nqX3BR
-	OaVqk47WwI8kaFQ7EldmG8bJKh+pbma+ntmDlDAocBU/iKHabRNvnIIUKIQHyr9m1r9VY72OBud
-	t7aROw/JgyOeGs3kJM8KKj1iJNyJbvjzk5qwBI2luahE7GZVzwygykeG9Ys9gAe/n8sfdITYrKZ
-	g3ePob6ogOXIuvdKTVFwQip5AE09tf80yTmqclvaKoUUl+YRWC9fGcuMszL3RxXZ8+Hoc04QpDM
-	uMCPpuxGGkWgmshd7myeSspJMCSrz4B8U7Ix4tkncuVC8IWow77hzeU+bL5x5WfapJjKTh78138
-	VtumssmQcq9RYlhrJvCt+bWF1xJJmwz0dowaks6q/cIyxKBtSSVvhZS5FK2GKa2WCJMsQfJ6f8d
-	pYgSNMJCSx3/TD9Q==
-X-Google-Smtp-Source: AGHT+IHUReQqvVgC0db5F0/UgqAPwHgCcpq2ZD0lhm0g7XnDeEa3Phlj1/GEitKl8zvqkUFbSZC6XA==
-X-Received: by 2002:a05:6000:2dc9:b0:430:fced:902 with SMTP id ffacd0b85a97d-432c36436fbmr29258778f8f.26.1768325840268;
-        Tue, 13 Jan 2026 09:37:20 -0800 (PST)
-Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-432d9610671sm28342147f8f.34.2026.01.13.09.37.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Jan 2026 09:37:19 -0800 (PST)
-Date: Tue, 13 Jan 2026 18:37:17 +0100
-From: Petr Mladek <pmladek@suse.com>
-To: Marcos Paulo de Souza <mpdesouza@suse.com>
-Cc: Richard Weinberger <richard@nod.at>,
-	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jason Wessel <jason.wessel@windriver.com>,
-	Daniel Thompson <danielt@kernel.org>,
-	Douglas Anderson <dianders@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Breno Leitao <leitao@debian.org>,
-	Andrew Lunn <andrew+netdev@lunn.ch>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>,
-	"Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Christophe Leroy <christophe.leroy@csgroup.eu>,
-	Andreas Larsson <andreas@gaisler.com>,
-	Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Jacky Huang <ychuang3@nuvoton.com>,
-	Shan-Chun Hung <schung@nuvoton.com>,
-	Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-	linux-um@lists.infradead.org, linux-kernel@vger.kernel.org,
-	kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org,
-	netdev@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-	linux-hardening@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-	sparclinux@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org, linux-fsdevel@vger.kernel.org
-Subject: Re: [PATCH 02/19] printk: Introduce console_is_nbcon
-Message-ID: <aWaCzZ8_UuyAa6xp@pathway.suse.cz>
-References: <20251227-printk-cleanup-part3-v1-0-21a291bcf197@suse.com>
- <20251227-printk-cleanup-part3-v1-2-21a291bcf197@suse.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="V7rVHWXp"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1BDAC19423;
+	Tue, 13 Jan 2026 17:37:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1768325856;
+	bh=Cp5crIbuQcHzWEEHYt1WMAFWV19fM6Vf342B6RTHqnM=;
+	h=Date:Subject:Cc:To:From:References:In-Reply-To:From;
+	b=V7rVHWXpzsa38/v9AYza6SwdtmtTlzPKvz/Ib35WG5BLDw/JVTbOF2aA1VOvLgWa3
+	 uJAUepyNvcqEKhsWLc7RHSOkI/QbiDHh00YGhGBMrS+2gEO31yRVtdjaCF4aU68W52
+	 YsmLmHz7AXv7kduKRSUvRWEtUYyu0NNHzjaMN5lbfNXj6Wz7vDtpe7H/BdhVfFRgBZ
+	 vVSVOlsXbQc3i3+W0AzVFEbFVgo5e2IKQNPtZibuGFxIzibCpu4mT/OJ1h2Z0jPoDR
+	 0UH5xVckITC+5MAjxHfdB6kDb6vgV0zEmmyjtWvAC3tZ1BWGZNxDolyJWdYhP4sWTd
+	 GyqpdPzq4+cFA==
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251227-printk-cleanup-part3-v1-2-21a291bcf197@suse.com>
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Tue, 13 Jan 2026 18:37:31 +0100
+Message-Id: <DFNN75KWL8B9.1YHK1ZRV43W7O@kernel.org>
+Subject: Re: [PATCH RFC 2/4] rust: add basic serial device bus abstractions
+Cc: "Kari Argillander" <kari.argillander@gmail.com>, "Rob Herring"
+ <robh@kernel.org>, "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>, "Jiri
+ Slaby" <jirislaby@kernel.org>, "Miguel Ojeda" <ojeda@kernel.org>, "Boqun
+ Feng" <boqun.feng@gmail.com>, "Gary Guo" <gary@garyguo.net>,
+ =?utf-8?q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, "Benno Lossin"
+ <lossin@kernel.org>, "Andreas Hindborg" <a.hindborg@kernel.org>, "Alice
+ Ryhl" <aliceryhl@google.com>, "Trevor Gross" <tmgross@umich.edu>,
+ <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+ <rust-for-linux@vger.kernel.org>
+To: "Markus Probst" <markus.probst@posteo.de>
+From: "Danilo Krummrich" <dakr@kernel.org>
+References: <20251220-rust_serdev-v1-0-e44645767621@posteo.de>
+ <20251220-rust_serdev-v1-2-e44645767621@posteo.de>
+ <CAC=eVgSmD+bYh48gZteAaqwSHvcHes3CFmbUUBu=6UQ6fKCUJg@mail.gmail.com>
+ <76491897ad6e0ff2749935c39702b93adc9951d6.camel@posteo.de>
+In-Reply-To: <76491897ad6e0ff2749935c39702b93adc9951d6.camel@posteo.de>
 
-On Sat 2025-12-27 09:16:09, Marcos Paulo de Souza wrote:
-> Besides checking if the current console is NBCON or not, console->flags
-> is also being read in order to serve as argument of the console_is_usable
-> function.
-> 
-> But CON_NBCON flag is unique: it's set just once in the console
-> registration and never cleared. In this case it can be possible to read
-> the flag when console_srcu_lock is held (which is the case when using
-> for_each_console).
-> 
-> This change makes possible to remove the flags argument from
-> console_is_usable in the next patches.
-> 
-> Signed-off-by: Petr Mladek <pmladek@suse.com>
-> Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
-> ---
->  include/linux/console.h   | 27 +++++++++++++++++++++++++++
->  kernel/debug/kdb/kdb_io.c |  2 +-
->  kernel/printk/nbcon.c     |  2 +-
->  kernel/printk/printk.c    | 15 ++++++---------
->  4 files changed, 35 insertions(+), 11 deletions(-)
-> 
-> diff --git a/include/linux/console.h b/include/linux/console.h
-> index 35c03fc4ed51..dd4ec7a5bff9 100644
-> --- a/include/linux/console.h
-> +++ b/include/linux/console.h
-> @@ -561,6 +561,33 @@ static inline void console_srcu_write_flags(struct console *con, short flags)
->  	WRITE_ONCE(con->flags, flags);
->  }
->  
-> +/**
-> + * console_srcu_is_nbcon - Locklessly check whether the console is nbcon
+On Tue Jan 13, 2026 at 5:15 PM CET, Markus Probst wrote:
+>> > +impl<T: Driver + 'static> Adapter<T> {
+>> > +    const OPS: &'static bindings::serdev_device_ops =3D &bindings::se=
+rdev_device_ops {
+>> > +        receive_buf: if T::HAS_RECEIVE {
+>> > +            Some(Self::receive_buf_callback)
+>> > +        } else {
+>> > +            None
+>> > +        },
+>> > +        write_wakeup: if T::HAS_WRITE_WAKEUP {
+>> > +            Some(Self::write_wakeup_callback)
+>> > +        } else {
+>> > +            Some(bindings::serdev_device_write_wakeup)
+>> > +        },
+>> > +    };
+>> > +    const INITIAL_OPS: &'static bindings::serdev_device_ops =3D &bind=
+ings::serdev_device_ops {
+>> > +        receive_buf: Some(Self::initial_receive_buf_callback),
+>> > +        write_wakeup: if T::HAS_WRITE_WAKEUP_INITIAL {
+>> > +            Some(Self::initial_write_wakeup_callback)
+>> > +        } else {
+>> > +            Some(bindings::serdev_device_write_wakeup)
+>> > +        },
+>> > +    };
+>> > +    const NO_OPS: &'static bindings::serdev_device_ops =3D &bindings:=
+:serdev_device_ops {
+>> > +        receive_buf: None,
+>> > +        write_wakeup: Some(bindings::serdev_device_write_wakeup),
+>> > +    };
+>> > +
+>> > +    extern "C" fn probe_callback(sdev: *mut bindings::serdev_device) =
+-> kernel::ffi::c_int {
+>> > +        // SAFETY: The serial device bus only ever calls the probe ca=
+llback with a valid pointer to
+>> > +        // a `struct serdev_device`.
+>> > +        //
+>> > +        // INVARIANT: `sdev` is valid for the duration of `probe_call=
+back()`.
+>> > +        let sdev =3D unsafe { &*sdev.cast::<Device<device::CoreIntern=
+al>>() };
+>> > +        let info =3D <Self as driver::Adapter>::id_info(sdev.as_ref()=
+);
+>> > +
+>> > +        from_result(|| {
+>> > +            let data =3D try_pin_init!(Drvdata {
+>> > +                driver <- T::probe(sdev, info),
+>> > +                initial_data: Some(Default::default()).into(),
+>> > +                late_probe_data: None.into(),
+>> > +            });
+>> > +
+>> > +            sdev.as_ref().set_drvdata(data)?;
 
-There is _srcu in the function name, see below.
+This does not work, a driver can obtain its device private data with
+Device::<Bound>::drvdata() [1].
 
-> + * @con:	struct console pointer of console to check
-> + *
-> + * Requires console_srcu_read_lock to be held, which implies that @con might
-> + * be a registered console. The purpose of holding console_srcu_read_lock is
-> + * to guarantee that no exit/cleanup routines will run if the console
-> + * is currently undergoing unregistration.
-> + *
-> + * If the caller is holding the console_list_lock or it is _certain_ that
-> + * @con is not and will not become registered, the caller may read
-> + * @con->flags directly instead.
-> + *
-> + * Context: Any context.
-> + * Return: True when CON_NBCON flag is set.
-> + */
-> +static inline bool console_is_nbcon(const struct console *con)
+For this the driver must assert the correct type, but since you use a priva=
+te
+type instead of the type given by the driver, i.e. T, Device::<Bound>::drvd=
+ata()
+will always fail for the driver.
 
-And here it is without _srcu.
+[1] https://rust.docs.kernel.org/kernel/device/struct.Device.html#method.dr=
+vdata
 
-I would prefer the variant with _srcu to make it clear that it
-can be called only under _srcu. Similar to console_srcu_read_flags(con).
+>> > +
+>> > +            // SAFETY: We just set drvdata to `Drvdata<T>`.
+>> > +            let data =3D unsafe { sdev.as_ref().drvdata_borrow::<Drvd=
+ata<T>>() };
+>> > +
+>> > +            // SAFETY: `sdev.as_raw()` is guaranteed to be a valid po=
+inter to `serdev_device`.
+>> > +            unsafe { bindings::serdev_device_set_client_ops(sdev.as_r=
+aw(), Self::INITIAL_OPS) };
+>> > +
+>> > +            // SAFETY: The serial device bus only ever calls the prob=
+e callback with a valid pointer
+>> > +            // to a `struct serdev_device`.
+>> > +            to_result(unsafe {
+>> > +                bindings::devm_serdev_device_open(sdev.as_ref().as_ra=
+w(), sdev.as_raw())
+>> > +            })?;
 
-> +{
-> +	WARN_ON_ONCE(!console_srcu_read_lock_is_held());
-> +
-> +	/*
-> +	 * The CON_NBCON flag is statically initialized and is never
-> +	 * set or cleared at runtime.
-> +	 */
-> +	return data_race(con->flags & CON_NBCON);
-> +}
-> +
->  /* Variant of console_is_registered() when the console_list_lock is held. */
->  static inline bool console_is_registered_locked(const struct console *con)
->  {
+I don't think it is a good idea to hardcode this into the probe() callback =
+and
+split it up in multiple stages, we can always solve things like ordering wi=
+th
+new types, type states and guards.
 
-Otherwise, it looks good to me.
+>> > +
+>> > +            // SAFETY: `&data.driver` is guaranteed to be pinned.
+>> > +            T::configure(sdev, unsafe { Pin::new_unchecked(&data.driv=
+er) }, info)?;
+>> > +
+>> > +            if !T::HAS_RECEIVE_INITIAL {
+>> > +                // SAFETY:
+>> > +                // - It is guaranteed that we have exclusive access t=
+o `data.initial_data` and
+>> > +                //   `data.late_probe_data`.
 
-With a consistent name, feel free to use:
+How is it ensured that this does not run concurrently with
+initial_receive_buf_callback(), etc.?
 
-Reviewed-by: Petr Mladek <pmladek@suse.com>
+>> > +                // - We just initialized `data.initial_data` with Som=
+e.
+>> > +                unsafe { Self::do_late_probe(sdev, data)? };
+>> > +            }
 
-Best Regards,
-Petr
+It is a bit unclear to me what you try to achieve here.
+
+Do you want to synchronize an initial data transfer? Then something along t=
+he
+lines of what Kari proposes seems reasonable.
+
+Or is the intention that this will run entirely async? But then distinct
+initialization stages as they appear above won't work.
+
+>> > +
+>> > +            Ok(0)
+>> > +        })
+>> > +    }
+>> > +
+>> > +    /// # Safety
+>> > +    ///
+>> > +    /// The caller must guarantee, that we have exclusive access to `=
+data.initial_data` and
+>> > +    /// `data.late_probe_data`. `data.initial_data` must be Some.
+>> > +    /// (i. e. `late_probe` has not been called yet).
+>> > +    unsafe fn do_late_probe(sdev: &Device<device::CoreInternal>, data=
+: Pin<&Drvdata<T>>) -> Result {
+>> > +        // SAFETY: `&data.driver` is guaranteed to be pinned.
+>> > +        let data_driver =3D unsafe { Pin::new_unchecked(&data.driver)=
+ };
+>> > +
+>> > +        // SAFETY: The function contract guarantees that we have excl=
+usive access to
+>> > +        // `data.initial_data`.
+>> > +        let initial_data =3D unsafe { &mut *data.initial_data.get() }=
+;
+>> > +
+>> > +        // SAFETY: The function contract guarantees that we have excl=
+usive access to
+>> > +        // `data.late_probe_data`.
+>> > +        let late_probe_data =3D unsafe { &mut *data.late_probe_data.g=
+et() };
+>> > +
+>> > +        *late_probe_data =3D Some(KBox::pin_init(
+>> > +            T::late_probe(
+>> > +                sdev,
+>> > +                data_driver,
+>> > +                // SAFETY: The function contract guarantees that `dat=
+a.initial_data` is Some.
+>> > +                unsafe { initial_data.take().unwrap_unchecked() },
+>> > +            ),
+>> > +            GFP_KERNEL,
+>> > +        )?);
+>> > +        // SAFETY: `sdev.as_raw()` is guaranteed to be a valid pointe=
+r to `serdev_device`.
+>> > +        unsafe { bindings::serdev_device_set_client_ops(sdev.as_raw()=
+, Self::OPS) };
+>> > +        Ok(())
+>> > +    }
+
+<snip>
+
+>> > +    extern "C" fn initial_receive_buf_callback(
+>> > +        sdev: *mut bindings::serdev_device,
+>> > +        buf: *const u8,
+>> > +        length: usize,
+>> > +    ) -> usize {
+>> > +        if !T::HAS_RECEIVE_INITIAL {
+>> > +            return 0;
+>> > +        }
+>> > +
+>> > +        // SAFETY: The serial device bus only ever calls the receive =
+buf callback with a valid
+>> > +        // pointer to a `struct serdev_device`.
+>> > +        //
+>> > +        // INVARIANT: `sdev` is valid for the duration of `receive_bu=
+f_callback()`.
+>> > +        let sdev =3D unsafe { &*sdev.cast::<Device<device::CoreIntern=
+al>>() };
+>> > +
+>> > +        // SAFETY: `buf` is guaranteed to be non-null and has the siz=
+e of `length`.
+>> > +        let buf =3D unsafe { core::slice::from_raw_parts(buf, length)=
+ };
+>> > +
+>> > +        // SAFETY: `initial_receive_buf_callback` is only ever called=
+ after a successful call to
+>> > +        // `probe_callback`, hence it's guaranteed that `Device::set_=
+drvdata()` has been called
+>> > +        // and stored a `Pin<KBox<Drvdata<T>>>`.
+>> > +        let data =3D unsafe { sdev.as_ref().drvdata_borrow::<Drvdata<=
+T>>() };
+>> > +
+>> > +        // SAFETY: `&data.driver` is guaranteed to be pinned.
+>> > +        let driver_data =3D unsafe { Pin::new_unchecked(&data.driver)=
+ };
+>> > +
+>> > +        // SAFETY:
+>> > +        // - `data.initial_data` is always Some until `InitialReceive=
+Result::Ready` is
+>> > +        //   returned below.
+>> > +        // - It is guaranteed that we have exclusive access to `data.=
+initial_data`.
+>> > +        let initial_data =3D unsafe { (*data.initial_data.get()).as_m=
+ut().unwrap_unchecked() };
+>> > +
+>> > +        match T::receive_initial(sdev, driver_data, initial_data, buf=
+) {
+>> > +            Ok(InitialReceiveResult::Pending(size)) =3D> size,
+>> > +            Ok(InitialReceiveResult::Ready(size)) =3D> {
+>> > +                // SAFETY:
+>> > +                // - It is guaranteed that we have exclusive access t=
+o `data.initial_data` and
+>> > +                //   `data.late_probe_data`.
+>> > +                // - We just initialized `data.initial_data` with Som=
+e.
+>> > +                if let Err(err) =3D unsafe { Self::do_late_probe(sdev=
+, data) } {
+
+We are calling late_probe() again from initial_receive_buf_callback()? Why?
+
+>> > +                    dev_err!(sdev.as_ref(), "Unable to late probe dev=
+ice: {err:?}\n");
+>> > +                    // SAFETY: `sdev.as_raw()` is guaranteed to be a =
+valid pointer to
+>> > +                    // `serdev_device`.
+>> > +                    unsafe { bindings::serdev_device_set_client_ops(s=
+dev.as_raw(), Self::NO_OPS) };
+>> > +                    return length;
+>> > +                }
+>> > +                size
+>> > +            }
+>> > +            Err(err) =3D> {
+>> > +                dev_err!(
+>> > +                    sdev.as_ref(),
+>> > +                    "Unable to receive initial data for probe: {err:?=
+}.\n"
+>> > +                );
+>> > +                // SAFETY: `sdev.as_raw()` is guaranteed to be a vali=
+d pointer to `serdev_device`.
+>> > +                unsafe { bindings::serdev_device_set_client_ops(sdev.=
+as_raw(), Self::NO_OPS) };
+>> > +                length
+>> > +            }
+>> > +        }
+>> > +    }
+
+<snip>
+
+> There currently is only one serial device bus driver in the kernel,
+> which needs initial data:
+> drivers/bluetooth/hci_uart.h
+> drivers/bluetooth/hci_ldisc.c
+> drivers/bluetooth/hci_serdev.c
+>
+> This driver retrieves this initial data after probe (not in the probe)
+> and then initializes it with a workqueue. Given it is part of the
+> kernel, I assume this is the intended behaviour.
+
+In this case I assume the driver has a lock protected buffer in its private
+data? Which would be entirely different than what you implement above, no?
