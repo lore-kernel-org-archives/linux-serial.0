@@ -1,107 +1,267 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38E92350A35;
-	Tue, 13 Jan 2026 19:10:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0C9136A039
+	for <linux-serial@vger.kernel.org>; Tue, 13 Jan 2026 20:09:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768331442; cv=none; b=mP/LKAwlSTur/bbLSc+2EeKj3wr1rElfQoBNf5MgcQgDrAooB11qLEEmofi43YuPfEmpywh3m9qSFrrllxciY2jRTK/STT4ZJN+/81r/61eQqlsF7lZnJ4WUMXVBpb6AFdh0EQXn/CVBqu0xh4RhHfC+4tMD1Dv4wTSytKEpzZg=
+	t=1768334995; cv=none; b=TFFo65JIzxyClova1WDxTw7V687t4oklSNGLS10Kb0uuivo871XHXX8jUHSFChUVtaepJbQhSiFprb8CxtuNvqN8mcdGyF/MsixI+WGW+fXTXXC3nt5Q24z1Hu4Uojm5T63bMIZb8gd8Zt8ng+H/tim3pXvGXJGexwh/pRuHMcs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768331442; c=relaxed/simple;
-	bh=1/AkY4Hd15pem0LVArGnolFn301RsjOr66DRQhsaaNk=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:To:From:
-	 References:In-Reply-To; b=mmPoMOz2VgVHCOd/6M16pAg70IKb0iYrY++axGxNgg704pwn8QAdQ/BRClkH1pkxKl0aOlOyc6IPWGGlL5u8eRPOfq/uSrAnKAeIhkvLg0ZrheRNoLtbekM5T/5//MwJQmxUOkd3ZMt66iReMcDn9gPM9uqqJ6lzMW78mSW81eo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=I2ug91q3; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1768334995; c=relaxed/simple;
+	bh=pyMp5oFQEzQGlgpWodh5m5sUhmJKSJMmcF9EpqTle4o=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ixXeueN/SEFzSezfOCIJqo/jqAmNd0SsohAtbUvo8qMisjsAnZYZuj8AFiHkzxMioz0p/KVnmfEn/U6RHyuEwGRPVyX+dzhDFmZnE3DRyt1IdqGq30wWUHV9+XTQ+E7xrNPq1C42UhEKexSZP44+gaODLJREiahvU1tfQzRgxYk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr; spf=pass smtp.mailfrom=sartura.hr; dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b=zIz8nYJt; arc=none smtp.client-ip=209.85.218.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sartura.hr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="I2ug91q3"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E63BCC19422;
-	Tue, 13 Jan 2026 19:10:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1768331441;
-	bh=1/AkY4Hd15pem0LVArGnolFn301RsjOr66DRQhsaaNk=;
-	h=Date:Subject:Cc:To:From:References:In-Reply-To:From;
-	b=I2ug91q3COTduELdbgc551Ovr2P4dv/rNEwkP4iFQblA962vvWLgTa6/+SxGzQMhY
-	 zn7lbm41UF+qmC0gH79CWU4Ofhr1bcUytcasDqx+ifJfOsLGpinyNMszCYeErUg8gc
-	 7h96CkeyJCk009r+EmJH1L7MuBK5xn53NX2dVGQbU3WBk5rYcKswGnjBeLXS0GiUIO
-	 mUg2CBMiHYoQTQfhpLp0Bc9bM2juy0iCTAYTg+yn7lGKkwOSTaDQU8G/jjaPWBClaA
-	 q7nZQD5Fl3UGeJoW8gBLhHKTYwY3Ic2ZTmhLdtX5JPomAojGlmU3MVuS93kuXHKnnO
-	 3ajh90hl+hLtg==
+	dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b="zIz8nYJt"
+Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-b874c00a39fso33589266b.0
+        for <linux-serial@vger.kernel.org>; Tue, 13 Jan 2026 12:09:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sartura.hr; s=sartura; t=1768334991; x=1768939791; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=X3PB19UpbesWMeT0R3+l59gQeDUb0GCMAUDX3FFcChs=;
+        b=zIz8nYJtuj84rCwrR4h2rYUNtQy0kQi3Vs6Pa4eyUFvYBSmR3JdcK91Z5LcbNLJJbd
+         KBv1zpWpctONSZSIZfox4XBRJ3RoOniV3X3ufcycnUMgiQws9qL2iJTLfcYz/6ywcGtF
+         IEbL5rTF894Idp+8ULCgygVGYo7r2T+AndIh1IP7v3vgatT1IQO43J17idGJA2xunR2Y
+         7fJ9k/8LfGQoxc/GCDnq0d/fOOs+esgxOp4GdBC/tXJBsPbMEB8jlL/iIMNJVyMCIozF
+         aMqv/iMccUIy3JOOqaYhzVETvgeYFGAbN22kE3vQ40Dtdd6YFQhBIm6KtULuMQfYbl9n
+         eBaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1768334991; x=1768939791;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=X3PB19UpbesWMeT0R3+l59gQeDUb0GCMAUDX3FFcChs=;
+        b=d751myxnfYjM+5EsbUF7ErMCXRJBPZOMMCG3R33m13GcE5tQ1eOwMUAsh181fEImXi
+         7MjLx6etLuCIjum2/PUY+/RBi8qk6v4qFkaJrCOXN9doU0QOjjkUi6SqZkz3LHMGZYpq
+         b5ncgEh7qEEk0ZkSsO/wwnPi3j0mA7vbVGzCIsBmuYvcIzAO7VEzS6F1TWSJ1lInfqEu
+         vUA1XodAX4f7ow0qyKGw5UYRmwMCNPPITdsHuzyYoFUqduDq4PDdR5K6ZuGya2CDmvm4
+         aD4Kzgty5M89VcP9mjSNSj9VfD75T7qqy+yD4dUNtewit+kL6jGxCANxOZ5B0IJxGmVp
+         AaiA==
+X-Forwarded-Encrypted: i=1; AJvYcCVgDVfDXkSTqWNrq3DSmfnF9p+rL8hYQHJkh7bmFxkqYqCHJQpT6egQ06J5no9Mqx+TKq8mxtfV3oMAtZY=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yytu9PFNQN2mbd4HvowvWGBoE+xRadKDf0c1e/YBKWfqodtIFkQ
+	q75eLW7uAtd2CBwrDLI/cB9LQmOpdQXDoLZjwceEYMpGRFou4ZfbREDq1ilehKWWCiaQGe7nw8A
+	4j4GaTgd25JMBODog7xaevHaBoMxaMLAu5loZukIqBA==
+X-Gm-Gg: AY/fxX4CRtnsBVPJk+tkf60Oo1Ajq1JOwBW+DQmu78tOqYAjyCfGRa24pvEb+S/g02n
+	IjWVvpXq33SbzLg8UkSFgDjZtq4KC0NktDLIr6CS5JK19cFGJUojMZgBs4mXr9rzKO7JOzDR0lR
+	FEnROcUolboSRX5UWkRPdCt+tXdcZLGcnw/Yp9rkATwSI2JLmdWgzTrVsSK9VB7KS8MWgYWvl60
+	5R6s+VeLajZKkB6ASZUl6ASQiEC+slWCcBr+e82sCRSP57vPpHPsUbO7iuSOyNWmracmCgA+yzg
+	aIEA69TK3wsthrUmAXIJ2hAeRc5j7AJIOT27HOfQXqTsZjA2iS9ErK5HaGwK
+X-Received: by 2002:a17:907:9483:b0:b87:191f:4fab with SMTP id
+ a640c23a62f3a-b8761d928b1mr18947166b.26.1768334991113; Tue, 13 Jan 2026
+ 12:09:51 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
+MIME-Version: 1.0
+References: <20251229184004.571837-1-robert.marko@sartura.hr>
+ <20251229184004.571837-16-robert.marko@sartura.hr> <858ca139-61c5-45e3-a2c9-d0af414e3592@tuxon.dev>
+In-Reply-To: <858ca139-61c5-45e3-a2c9-d0af414e3592@tuxon.dev>
+From: Robert Marko <robert.marko@sartura.hr>
+Date: Tue, 13 Jan 2026 21:09:40 +0100
+X-Gm-Features: AZwV_QhCSNrQ25JXSm6moAYHvYjCfUUDQoR1FC1MV_mP0oSiXaM4vWsMWx6MKV0
+Message-ID: <CA+HBbNFYBhtvUxd45O7eP_1JYENxeGZOkA+yUsEdztOSSi9Gdg@mail.gmail.com>
+Subject: Re: [PATCH v4 15/15] arm64: dts: microchip: add EV23X71A board
+To: claudiu beznea <claudiu.beznea@tuxon.dev>
+Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
+	nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, 
+	herbert@gondor.apana.org.au, davem@davemloft.net, vkoul@kernel.org, 
+	andi.shyti@kernel.org, lee@kernel.org, andrew+netdev@lunn.ch, 
+	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com, linusw@kernel.org, 
+	Steen.Hegelund@microchip.com, daniel.machon@microchip.com, 
+	UNGLinuxDriver@microchip.com, olivia@selenic.com, radu_nicolae.pirea@upb.ro, 
+	richard.genoud@bootlin.com, gregkh@linuxfoundation.org, jirislaby@kernel.org, 
+	broonie@kernel.org, lars.povlsen@microchip.com, devicetree@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+	linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org, 
+	linux-i2c@vger.kernel.org, netdev@vger.kernel.org, linux-gpio@vger.kernel.org, 
+	linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, 
+	linux-usb@vger.kernel.org, luka.perkov@sartura.hr
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Tue, 13 Jan 2026 20:10:37 +0100
-Message-Id: <DFNP6FEZ0S1O.1MQGAXEGX1P7@kernel.org>
-Subject: Re: [PATCH RFC 2/4] rust: add basic serial device bus abstractions
-Cc: "Kari Argillander" <kari.argillander@gmail.com>, "Rob Herring"
- <robh@kernel.org>, "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>, "Jiri
- Slaby" <jirislaby@kernel.org>, "Miguel Ojeda" <ojeda@kernel.org>, "Boqun
- Feng" <boqun.feng@gmail.com>, "Gary Guo" <gary@garyguo.net>,
- =?utf-8?q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, "Benno Lossin"
- <lossin@kernel.org>, "Andreas Hindborg" <a.hindborg@kernel.org>, "Alice
- Ryhl" <aliceryhl@google.com>, "Trevor Gross" <tmgross@umich.edu>,
- <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
- <rust-for-linux@vger.kernel.org>
-To: "Markus Probst" <markus.probst@posteo.de>
-From: "Danilo Krummrich" <dakr@kernel.org>
-References: <20251220-rust_serdev-v1-0-e44645767621@posteo.de>
- <20251220-rust_serdev-v1-2-e44645767621@posteo.de>
- <CAC=eVgSmD+bYh48gZteAaqwSHvcHes3CFmbUUBu=6UQ6fKCUJg@mail.gmail.com>
- <76491897ad6e0ff2749935c39702b93adc9951d6.camel@posteo.de>
- <DFNN75KWL8B9.1YHK1ZRV43W7O@kernel.org>
- <dcab1e61e451aeba27575c8245aef687caf94b23.camel@posteo.de>
-In-Reply-To: <dcab1e61e451aeba27575c8245aef687caf94b23.camel@posteo.de>
 
-On Tue Jan 13, 2026 at 6:59 PM CET, Markus Probst wrote:
-> This is gated behind "if T::HAS_RECEIVE_INITIAL". And in probe its
-> gated behind "if T::HAS_RECEIVE_INITIAL".
+On Sun, Jan 11, 2026 at 3:42=E2=80=AFPM claudiu beznea <claudiu.beznea@tuxo=
+n.dev> wrote:
+>
+> Hi, Robert,
+>
+> On 12/29/25 20:37, Robert Marko wrote:
+> > Microchip EV23X71A is an LAN9696 based evaluation board.
+> >
+> > Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+> > ---
+> > Changes in v2:
+> > * Split from SoC DTSI commit
+> > * Apply DTS coding style
+> > * Enclose array in i2c-mux
+> > * Alphanumericaly sort nodes
+> > * Change management port mode to RGMII-ID
+> >
+> >   arch/arm64/boot/dts/microchip/Makefile        |   1 +
+> >   .../boot/dts/microchip/lan9696-ev23x71a.dts   | 757 +++++++++++++++++=
++
+> >   2 files changed, 758 insertions(+)
+> >   create mode 100644 arch/arm64/boot/dts/microchip/lan9696-ev23x71a.dts
+> >
+> > diff --git a/arch/arm64/boot/dts/microchip/Makefile b/arch/arm64/boot/d=
+ts/microchip/Makefile
+> > index c6e0313eea0f..09d16fc1ce9a 100644
+> > --- a/arch/arm64/boot/dts/microchip/Makefile
+> > +++ b/arch/arm64/boot/dts/microchip/Makefile
+> > @@ -1,4 +1,5 @@
+> >   # SPDX-License-Identifier: GPL-2.0
+> > +dtb-$(CONFIG_ARCH_LAN969X) +=3D lan9696-ev23x71a.dtb
+> >   dtb-$(CONFIG_ARCH_SPARX5) +=3D sparx5_pcb125.dtb
+> >   dtb-$(CONFIG_ARCH_SPARX5) +=3D sparx5_pcb134.dtb sparx5_pcb134_emmc.d=
+tb
+> >   dtb-$(CONFIG_ARCH_SPARX5) +=3D sparx5_pcb135.dtb sparx5_pcb135_emmc.d=
+tb
+> > diff --git a/arch/arm64/boot/dts/microchip/lan9696-ev23x71a.dts b/arch/=
+arm64/boot/dts/microchip/lan9696-ev23x71a.dts
+> > new file mode 100644
+> > index 000000000000..435df455b078
+> > --- /dev/null
+> > +++ b/arch/arm64/boot/dts/microchip/lan9696-ev23x71a.dts
+>
+> [ ...]
+>
+> > +&gpio {
+> > +     emmc_sd_pins: emmc-sd-pins {
+> > +             /* eMMC_SD - CMD, CLK, D0, D1, D2, D3, D4, D5, D6, D7, RS=
+TN */
+> > +             pins =3D "GPIO_14", "GPIO_15", "GPIO_16", "GPIO_17",
+> > +                    "GPIO_18", "GPIO_19", "GPIO_20", "GPIO_21",
+> > +                    "GPIO_22", "GPIO_23", "GPIO_24";
+> > +             function =3D "emmc_sd";
+> > +     };
+> > +
+> > +     fan_pins: fan-pins {
+> > +             pins =3D "GPIO_25", "GPIO_26";
+> > +             function =3D "fan";
+> > +     };
+> > +
+> > +     fc0_pins: fc0-pins {
+> > +             pins =3D "GPIO_3", "GPIO_4";
+> > +             function =3D "fc";
+> > +     };
+> > +
+> > +     fc2_pins: fc2-pins {
+> > +             pins =3D "GPIO_64", "GPIO_65", "GPIO_66";
+> > +             function =3D "fc";
+> > +     };
+> > +
+> > +     fc3_pins: fc3-pins {
+> > +             pins =3D "GPIO_55", "GPIO_56";
+> > +             function =3D "fc";
+> > +     };
+> > +
+> > +     mdio_pins: mdio-pins {
+> > +             pins =3D "GPIO_9", "GPIO_10";
+> > +             function =3D "miim";
+> > +     };
+> > +
+> > +     mdio_irq_pins: mdio-irq-pins {
+> > +             pins =3D "GPIO_11";
+> > +             function =3D "miim_irq";
+> > +     };
+> > +
+> > +     sgpio_pins: sgpio-pins {
+> > +             /* SCK, D0, D1, LD */
+> > +             pins =3D "GPIO_5", "GPIO_6", "GPIO_7", "GPIO_8";
+> > +             function =3D "sgpio_a";
+> > +     };
+> > +
+> > +     usb_ulpi_pins: usb-ulpi-pins {
+> > +             pins =3D "GPIO_30", "GPIO_31", "GPIO_32", "GPIO_33",
+> > +                    "GPIO_34", "GPIO_35", "GPIO_36", "GPIO_37",
+> > +                    "GPIO_38", "GPIO_39", "GPIO_40", "GPIO_41";
+> > +             function =3D "usb_ulpi";
+> > +     };
+> > +
+> > +     usb_rst_pins: usb-rst-pins {
+> > +             pins =3D "GPIO_12";
+> > +             function =3D "usb2phy_rst";
+> > +     };
+> > +
+> > +     usb_over_pins: usb-over-pins {
+> > +             pins =3D "GPIO_13";
+> > +             function =3D "usb_over_detect";
+> > +     };
+> > +
+> > +     usb_power_pins: usb-power-pins {
+> > +             pins =3D "GPIO_1";
+> > +             function =3D "usb_power";
+> > +     };
+> > +
+> > +     ptp_out_pins: ptp-out-pins {
+> > +             pins =3D "GPIO_58";
+> > +             function =3D "ptpsync_4";
+> > +     };
+>
+> Could you please move this one upper to have all the entries in the gpio
+> container alphanumerically sorted?
+>
+> > +
+> > +     ptp_ext_pins: ptp-ext-pins {
+> > +             pins =3D "GPIO_59";
+> > +             function =3D "ptpsync_5";
+> > +     };
+>
+> Same here.
 
-I guess you mean `if !T::HAS_RECEIVE_INITIAL` in probe().
+Sure, I will make sure that pin nodes are alphabetical (I found some
+more that are not) in v5.
 
-Anyways, I now get what you are trying to do. (I got confused by late_probe=
-(),
-which I think is a misleading name for what it actually is and in which con=
-text
-it might run in. I think a better name would be initial_xfer() or something
-along those lines.)
+>
+> [ ...]
+>
+> > +             port29: port@29 {
+> > +                     reg =3D <29>;
+> > +                     phys =3D <&serdes 11>;
+> > +                     phy-handle =3D <&phy3>;
+> > +                     phy-mode =3D "rgmii-id";
+> > +                     microchip,bandwidth =3D <1000>;
+>
+> There are some questions around this node from Andrew in v1 of this serie=
+s,
+> which I don't see an answer for in any of the following versions. Could y=
+ou
+> please clarify?
 
-So, what you really want is additional private data that is valid between s=
-ome
-inital xfer happening at some point of time after probe() and unbind(), and
-hence is valid to access in all subsequent transfers callbacks.
+Sure, as for the RGMII I switched to rgmii-id so the PHY is adding the dela=
+ys.
+Though, I am not sure if its better to add them via MAC as it can add
+the delays instead of the PHY,
+so I am open to suggestions here.
 
-There are three options:
+As for the phys property, yes that is not required here as RGMII ports
+are dedicated, there are no
+SERDES lanes being used for them.
 
-  (1) What you already implement, but with less callbacks.
+I have updated the bindings to account for this and it will be part of v5.
 
-      I think the only additional callback you need is initial_xfer(), wher=
-e you
-      return the init private data.
+Regards,
+Robert
 
-      For storing this data you probably want to add void *init_data to
-      struct serdev_device.
+>
+> The rest looks good to me.
+>
+> Thank you,
+> Claudiu
+>
 
-  (2) A synchronous inital transfer in probe() as proposed by Kari.
 
-      This is much simpler than (1), but still leaves the driver without an
-      Option for the init data in its device private data.
-
-  (3) Leave it to the driver.
-
-      The driver can store an Option in its device private data, which is
-      initialized in the first callback.
-
-> Which one do you think should be used for the abstraction?
-
-I don't know, it depends on the requirements of serdev drivers.
-
-But since you already mentioned that there is only a single driver that nee=
-ds
-this initial xfer data, I'd say don't consider it in the abstraction at all
-until we are sure it is a common pattern needed by drivers. We can always a=
-dd it
-later on if needed.
+--=20
+Robert Marko
+Staff Embedded Linux Engineer
+Sartura d.d.
+Lendavska ulica 16a
+10000 Zagreb, Croatia
+Email: robert.marko@sartura.hr
+Web: www.sartura.hr
