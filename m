@@ -1,126 +1,162 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF2113921EB
-	for <linux-serial@vger.kernel.org>; Tue, 13 Jan 2026 13:56:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F23363921E5
+	for <linux-serial@vger.kernel.org>; Tue, 13 Jan 2026 13:57:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768312576; cv=none; b=TrZJK4qCrSNyQVr+vXbqi8Ysu61Dx/SbFfk1rwBh/+x+Dr1Kml+WuMOnEA7C39BKet3eRno4muFaqcLhIGHULG5WVE8Py3JH838j91CkDdGQk8rJLV+nTi2pDMP3dg03yrkkcicsLj8PI3jbSZT6zT1WPfpc0Fweh+J93inopr0=
+	t=1768312659; cv=none; b=IaPuMwYt40X7ItIZdTbR6rJ2boCd2qWWv8DKtVuAKRHXuoGQ8KGh1GlCYVqL80G+/rvh8J0rWstFxrEm2Yzd6GVZudN+ykk3G4x5IYv+SmP4THhbXSmFKGJOW8RXRSKothHkein0SwqxvwTgtZhdm86wD3Wenu+MN7Ch1FOzgNo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768312576; c=relaxed/simple;
-	bh=bkX4l6bShJ5JPLZtU6DOHZU1fn91ZPS1ZErO6EOXX+s=;
-	h=From:In-Reply-To:MIME-Version:References:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=StCJOG1qAyU/VYqbt8UR8VCn99FzMKutcur/ksEEPyKhVeqjGOKJMR+0Gg8ek+nG72/uGcqEuH/9R/ysGZypNpuzwDSozI9Aj6igTNThW1wN3BXXSSRpN+XTTOiPZBj9LZqpTG8kKcuY9rCklz5GIbcAZGIRg8z1/x216wgk7r0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Aurlwhdw; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1768312659; c=relaxed/simple;
+	bh=yHQXt2lohILulwRHWO2PwdKgbtksvgC0OIilYDvkikI=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=U8Vkrrwc2gUZoE3OgN+Ce8Ay7RHdZ0trf9M+lMRBH4Qu/ODj/9pAGFfq+AxOo+/rvk6pklQrb3wgHlDzDnBCMQy734iJhMV8wyIioZelmfN6Sb2yQvnsN2+pDiarIuKkvQ/j1Wn8gGwTtI0TpejjlIG9MqdkNVxj2xogOnOwDE0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr; spf=pass smtp.mailfrom=sartura.hr; dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b=zvfoV53a; arc=none smtp.client-ip=209.85.208.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sartura.hr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Aurlwhdw"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F1DFC4AF0B
-	for <linux-serial@vger.kernel.org>; Tue, 13 Jan 2026 13:56:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1768312576;
-	bh=bkX4l6bShJ5JPLZtU6DOHZU1fn91ZPS1ZErO6EOXX+s=;
-	h=From:In-Reply-To:References:Date:Subject:To:Cc:From;
-	b=AurlwhdwkIDyLEEG1sDbKkz1AhNR3/Z5B0OmENZhddhZy9Apv45pXt8G717qw2Lz6
-	 /wMCF4Db57+njRq6vjzM2d9xyHq5S7KLZ3CQak3zgy9vZ4JU3STtcQnU4JZv4TCzjf
-	 7mt/3IvqU5a+I1QKoQsePvwpAWenYAejouhzo/LyJoUhebTR3OxmBL2E05CuvqNDzz
-	 Kj1gLE5zwszow8T7weIvBpi0VyXdtt26q6Nc/F0nJblhM3F11u8RtCADNkMyNtRMjq
-	 9PBl1Gc8Mzd6JD2R9Z+p89SNm/naQtqwIhLTjNAj3gz5j42VcBGgUgLs01JGmt3YS4
-	 bNS5apfy9VhJA==
-Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-382fa663249so60133351fa.0
-        for <linux-serial@vger.kernel.org>; Tue, 13 Jan 2026 05:56:16 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCW9EKKEAy5eFSfDjMrDypyM0MAeYM+3tXN8uHq4HYWFtVF8q9jpgHJyji9/LqKg/NoIXvAFE9e1cKMk/9M=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw/8ggtZzjm3baDI/ujU9Lz/X4unN5JH3iEGDGe1ZsxVM5nDV5D
-	AZVrG783z4vfIhEUllnOnqk8ddPJ4kT3jHx4OfGDNGwvvayETFvhAbbQcCWflpSDBQzMRbFhwWH
-	t4pGmXEI8y9pUMg0wmYppp89AzZ84TFZHyO4sgUYg7w==
-X-Google-Smtp-Source: AGHT+IEIfAh+J1nW6a76QEZoxI99d1qiBCcpn0QuzyvBuvRQ90+CAZIf0T8IjrVOHV8vEbr04kW7VOMKTvIbkja0v0c=
-X-Received: by 2002:a2e:bc09:0:b0:37b:aafa:5af6 with SMTP id
- 38308e7fff4ca-382ff69a4f9mr56878211fa.16.1768312575104; Tue, 13 Jan 2026
- 05:56:15 -0800 (PST)
-Received: from 969154062570 named unknown by gmailapi.google.com with
- HTTPREST; Tue, 13 Jan 2026 08:56:14 -0500
-Received: from 969154062570 named unknown by gmailapi.google.com with
- HTTPREST; Tue, 13 Jan 2026 08:56:14 -0500
-From: Bartosz Golaszewski <brgl@kernel.org>
-In-Reply-To: <20260112-pci-m2-e-v4-7-eff84d2c6d26@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b="zvfoV53a"
+Received: by mail-ed1-f51.google.com with SMTP id 4fb4d7f45d1cf-64b9b0b4d5dso15919408a12.1
+        for <linux-serial@vger.kernel.org>; Tue, 13 Jan 2026 05:57:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sartura.hr; s=sartura; t=1768312655; x=1768917455; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ZYgsGgBKZshEd3LQPmk39JcNw7m/fhIkjkE+xKR+bec=;
+        b=zvfoV53a8KKlvQ3d1JQNoqsn1R64meaL/N0gvJBVsP07IpubGxx2QfE84x4Z2+kbFb
+         0hLYvrdv4SXvbje0qJL0Ne6nG9Fm0EboVzJAYkZUYQ9YLVSaQzuc2aaTV6Xaw3fXr4u5
+         epRUQ8Rr1fmQuXUGhAgjyFhKoeU5fsg5c9fXZgvqcAaQm3999ZjhMx1Bh0O7IukctDtr
+         cxNCZsPNksEYEPV48GWIxa6MuU7QzPugngj62cv1/mZlpNlETWTREwFO8KHkhEamhwC4
+         prCUxmFrHMkgeYCQCIr0xyrmQWG7B2ZuuAVRPrT+1i5F97N3cJr9JI7d5M8HP9SZcOFn
+         Uf9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1768312655; x=1768917455;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=ZYgsGgBKZshEd3LQPmk39JcNw7m/fhIkjkE+xKR+bec=;
+        b=uU0c9KxKmo3cQIw4Bfnx5J+Pp/a1Y7/hNT8WFtRo3S7cGLkU9GA/F3cE0p6U64LiZK
+         J+aqftyKxl2V5lAbnmDsFEuYYQo05FUcjrBrh86YHBmOPj1FceyzSMbd0WskdRwbf9gA
+         f99dkU/LwS0Kfd9S6yo2pDJhQS98+qJJ5DlZe+wOCYvEkML0cIWqWrEttxIOnRUOZQyx
+         mTDeo4AtjDLNJD8ZjzB5v6lMcxQ3YA+kYRSnY3DkhxxwfUGOgGqvtGebxwO2ZR9Cdsw/
+         sa1rd8gT9H/VGxX/FQ3QHPc+VKZf3/DTP3N2U2Wv+I6GALbPgAvEyeBmMAbpHVhNuEhi
+         gJsg==
+X-Forwarded-Encrypted: i=1; AJvYcCUdX1HiPb7kY1FSlwMFurDBKv335XiZa4REDGUJ2Z+Oy50LZ2CwDQ/4KhVk6mNu2pf3IbZcs/OqxMNNP5Y=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy07WJDE19dIx0HFSJpkHAzoaumNY+5+0WrQT1VLjom0XEdFylQ
+	jATIZUDeLHhh+3ne0Fh8mwGd1UcZ7BU0tcRzyIVDSVCZ2ar+6kU10JYPBreeMnnjqDA9QNfv9cf
+	qXGg72lSaKdZcw2Bm4aQtVEWZz62xNnKzLGoCzoRkdg==
+X-Gm-Gg: AY/fxX4Tkb42oVKzi9p375c0+LV+PLUG7UPjzcEagpnz4SRyUdfHyEfjSxn5Z1iepW0
+	NNw01N3Q31KmDkCnrD1hGzPyRn0Im5XJwwX8428VwleQQIYUbmUXhSLPlizIJCP33l9y0vhFidX
+	OFYVhrI3qduXlsIcAYQQS6FYTq1nFcChS74hRDWuEitpwXstlyCRQ2xKkLHZK8Pp7ds5RSFVhj9
+	im9PspxCW8Q0zoamx00wB3BJkFYkjDj4WQbSZqagP732zFkHxnsTZCORxG2VWNx9iZ2Gn6+Z9Aa
+	4RUhc+lRLWz6BAyJ7Lcl4n8NWpIfbe1ekXnc4bKfOx/MQNM3cA==
+X-Google-Smtp-Source: AGHT+IHC69qajNN2R0Oc5VosMApQk8dB2K8/wIPuNuXO4ULHt0+4HajErsuy6Dkjt1+pDa9ixvBw3NRLu/Pa+AU8sC0=
+X-Received: by 2002:a05:6402:1e8c:b0:640:e75a:f95d with SMTP id
+ 4fb4d7f45d1cf-65097dfbd5bmr20646641a12.15.1768312655296; Tue, 13 Jan 2026
+ 05:57:35 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260112-pci-m2-e-v4-0-eff84d2c6d26@oss.qualcomm.com> <20260112-pci-m2-e-v4-7-eff84d2c6d26@oss.qualcomm.com>
-Date: Tue, 13 Jan 2026 08:56:14 -0500
-X-Gmail-Original-Message-ID: <CAMRc=MfGWkg1qA63N2gqagVyYrVCX9OqXYRZk_Q97+H2KaoKsQ@mail.gmail.com>
-X-Gm-Features: AZwV_QgANpTS7RywRZ1G49K6N4fcP2tHLCImYNmU5c2lsGoEnaRUFh6sWYEGZio
-Message-ID: <CAMRc=MfGWkg1qA63N2gqagVyYrVCX9OqXYRZk_Q97+H2KaoKsQ@mail.gmail.com>
-Subject: Re: [PATCH v4 7/9] Bluetooth: hci_qca: Add M.2 Bluetooth device
- support using pwrseq
-To: manivannan.sadhasivam@oss.qualcomm.com
-Cc: Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Nathan Chancellor <nathan@kernel.org>, 
-	Nicolas Schier <nicolas.schier@linux.dev>, Hans de Goede <hansg@kernel.org>, 
-	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
-	Mark Pearson <mpearson-lenovo@squebb.ca>, "Derek J. Clark" <derekjohn.clark@gmail.com>, 
-	Manivannan Sadhasivam <mani@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Marcel Holtmann <marcel@holtmann.org>, Luiz Augusto von Dentz <luiz.dentz@gmail.com>, 
-	Bartosz Golaszewski <brgl@bgdev.pl>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	Bartosz Golaszewski <brgl@kernel.org>, 
-	Manivannan Sadhasivam via B4 Relay <devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org>, 
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-kbuild@vger.kernel.org, platform-driver-x86@vger.kernel.org, 
-	linux-pci@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org, 
-	linux-pm@vger.kernel.org, Stephan Gerhold <stephan.gerhold@linaro.org>, 
-	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, linux-acpi@vger.kernel.org
+References: <20251229184004.571837-1-robert.marko@sartura.hr>
+ <20251229184004.571837-13-robert.marko@sartura.hr> <2cdac084-4924-4ca2-85d6-2e6d9bf284aa@tuxon.dev>
+In-Reply-To: <2cdac084-4924-4ca2-85d6-2e6d9bf284aa@tuxon.dev>
+From: Robert Marko <robert.marko@sartura.hr>
+Date: Tue, 13 Jan 2026 14:57:24 +0100
+X-Gm-Features: AZwV_Qh0sAc6Pa2O_93Ow3lA3FmFDgK6_SoYiCOhp74HuwfyLgAjJuCjbp6xbBo
+Message-ID: <CA+HBbNH4q8o-4Jb=hu7JgE4emxFxktFSLHdfY4J6gCDbYTpWUA@mail.gmail.com>
+Subject: Re: [PATCH v4 12/15] arm64: dts: microchip: add LAN969x clock header file
+To: claudiu beznea <claudiu.beznea@tuxon.dev>
+Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
+	nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, 
+	herbert@gondor.apana.org.au, davem@davemloft.net, vkoul@kernel.org, 
+	andi.shyti@kernel.org, lee@kernel.org, andrew+netdev@lunn.ch, 
+	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com, linusw@kernel.org, 
+	Steen.Hegelund@microchip.com, daniel.machon@microchip.com, 
+	UNGLinuxDriver@microchip.com, olivia@selenic.com, radu_nicolae.pirea@upb.ro, 
+	richard.genoud@bootlin.com, gregkh@linuxfoundation.org, jirislaby@kernel.org, 
+	broonie@kernel.org, lars.povlsen@microchip.com, devicetree@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+	linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org, 
+	linux-i2c@vger.kernel.org, netdev@vger.kernel.org, linux-gpio@vger.kernel.org, 
+	linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, 
+	linux-usb@vger.kernel.org, luka.perkov@sartura.hr
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, 12 Jan 2026 17:26:06 +0100, Manivannan Sadhasivam via B4 Relay
-<devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org> said:
-> From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
->
-> Power supply to the M.2 Bluetooth device attached to the host using M.2
-> connector is controlled using the 'uart' pwrseq device. So add support for
-> getting the pwrseq device if the OF graph link is present. Once obtained,
-> the existing pwrseq APIs can be used to control the power supplies of the
-> M.2 card.
->
-> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
-> ---
->  drivers/bluetooth/hci_qca.c | 9 +++++++++
->  1 file changed, 9 insertions(+)
->
-> diff --git a/drivers/bluetooth/hci_qca.c b/drivers/bluetooth/hci_qca.c
-> index 888176b0faa9..4d562596ebf9 100644
-> --- a/drivers/bluetooth/hci_qca.c
-> +++ b/drivers/bluetooth/hci_qca.c
-> @@ -26,6 +26,7 @@
->  #include <linux/mod_devicetable.h>
->  #include <linux/module.h>
->  #include <linux/of.h>
-> +#include <linux/of_graph.h>
->  #include <linux/acpi.h>
->  #include <linux/platform_device.h>
->  #include <linux/pwrseq/consumer.h>
-> @@ -2384,6 +2385,14 @@ static int qca_serdev_probe(struct serdev_device *serdev)
->  	case QCA_WCN6855:
->  	case QCA_WCN7850:
->  	case QCA_WCN6750:
-> +		if (of_graph_is_present(dev_of_node(&serdev->ctrl->dev))) {
-> +			qcadev->bt_power->pwrseq = devm_pwrseq_get(&serdev->ctrl->dev,
-> +								   "uart");
-> +			if (IS_ERR(qcadev->bt_power->pwrseq))
-> +				return PTR_ERR(qcadev->bt_power->pwrseq);
-> +			break;
-> +		}
-> +
->  		if (!device_property_present(&serdev->dev, "enable-gpios")) {
->  			/*
->  			 * Backward compatibility with old DT sources. If the
->
-> --
-> 2.48.1
+On Sun, Jan 11, 2026 at 3:42=E2=80=AFPM claudiu beznea <claudiu.beznea@tuxo=
+n.dev> wrote:
 >
 >
+>
+> On 12/29/25 20:37, Robert Marko wrote:
+> > LAN969x uses hardware clock indexes, so document theses in a header to =
+make
+> > them humanly readable.
+> >
+> > Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+> > ---
+> > Changes in v4:
+> > * Move clock indexes from dt-bindings to a DTS header
+> >
+> > Changes in v2:
+> > * Rename file to microchip,lan9691.h
+> >
+> >   arch/arm64/boot/dts/microchip/clk-lan9691.h | 24 ++++++++++++++++++++=
++
+> >   1 file changed, 24 insertions(+)
+> >   create mode 100644 arch/arm64/boot/dts/microchip/clk-lan9691.h
+> >
+> > diff --git a/arch/arm64/boot/dts/microchip/clk-lan9691.h b/arch/arm64/b=
+oot/dts/microchip/clk-lan9691.h
+> > new file mode 100644
+> > index 000000000000..f0006a603747
+> > --- /dev/null
+> > +++ b/arch/arm64/boot/dts/microchip/clk-lan9691.h
+> > @@ -0,0 +1,24 @@
+> > +/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
+>
+> Shouldn't this use the same license as the dtsi including it?
+
+Yes, its a mistake on my side, will fix it in v5.
+
+Regards,
+Robert
+>
+> > +
+> > +#ifndef _DTS_CLK_LAN9691_H
+> > +#define _DTS_CLK_LAN9691_H
+> > +
+> > +#define GCK_ID_QSPI0         0
+> > +#define GCK_ID_QSPI2         1
+> > +#define GCK_ID_SDMMC0                2
+> > +#define GCK_ID_SDMMC1                3
+> > +#define GCK_ID_MCAN0         4
+> > +#define GCK_ID_MCAN1         5
+> > +#define GCK_ID_FLEXCOM0              6
+> > +#define GCK_ID_FLEXCOM1              7
+> > +#define GCK_ID_FLEXCOM2              8
+> > +#define GCK_ID_FLEXCOM3              9
+> > +#define GCK_ID_TIMER         10
+> > +#define GCK_ID_USB_REFCLK    11
+> > +
+> > +/* Gate clocks */
+> > +#define GCK_GATE_USB_DRD     12
+> > +#define GCK_GATE_MCRAMC              13
+> > +#define GCK_GATE_HMATRIX     14
+> > +
+> > +#endif
 >
 
-Reviewed-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+
+--=20
+Robert Marko
+Staff Embedded Linux Engineer
+Sartura d.d.
+Lendavska ulica 16a
+10000 Zagreb, Croatia
+Email: robert.marko@sartura.hr
+Web: www.sartura.hr
