@@ -1,162 +1,311 @@
-Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F23363921E5
-	for <linux-serial@vger.kernel.org>; Tue, 13 Jan 2026 13:57:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62BBB39282F
+	for <linux-serial@vger.kernel.org>; Tue, 13 Jan 2026 14:00:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768312659; cv=none; b=IaPuMwYt40X7ItIZdTbR6rJ2boCd2qWWv8DKtVuAKRHXuoGQ8KGh1GlCYVqL80G+/rvh8J0rWstFxrEm2Yzd6GVZudN+ykk3G4x5IYv+SmP4THhbXSmFKGJOW8RXRSKothHkein0SwqxvwTgtZhdm86wD3Wenu+MN7Ch1FOzgNo=
+	t=1768312839; cv=none; b=spZTJCoMe6tgyiOS74J8wjyyC5yferRHgevIPYz8EfB6VsTiI/Kgopa4BqGhYlE1zQn/oBX1H0YlRh0n7YoXhm1ibGKfnX4nxnWwckGEOqB6bbehV2ihow2+VdARLkoWIrmTTdFYlPFTGYFV0V3uCeC6DrfwvibJk8+5noSM12g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768312659; c=relaxed/simple;
-	bh=yHQXt2lohILulwRHWO2PwdKgbtksvgC0OIilYDvkikI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=U8Vkrrwc2gUZoE3OgN+Ce8Ay7RHdZ0trf9M+lMRBH4Qu/ODj/9pAGFfq+AxOo+/rvk6pklQrb3wgHlDzDnBCMQy734iJhMV8wyIioZelmfN6Sb2yQvnsN2+pDiarIuKkvQ/j1Wn8gGwTtI0TpejjlIG9MqdkNVxj2xogOnOwDE0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr; spf=pass smtp.mailfrom=sartura.hr; dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b=zvfoV53a; arc=none smtp.client-ip=209.85.208.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sartura.hr
+	s=arc-20240116; t=1768312839; c=relaxed/simple;
+	bh=X8mXhJTgAGq9IOf4F3jJlDw/W05b42TP8HpZ/2Vdrwg=;
+	h=From:In-Reply-To:MIME-Version:References:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=HA0iekQduAk2Er+HSKR1jev6rmcJReGE/NMR3J/UgNjPh/0/HbMnkgbGMlkyCiSpc9xcf9Fg5KFxX1L2cmrug5ORqEkzt5ST3H+NFMpwZWCEv5JXVttHfa3BHe5s/ifKZCD59r8L9H7L8BSz/yguObTjPxGBWmtDUZm7omQNEbc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nUqO98mK; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b="zvfoV53a"
-Received: by mail-ed1-f51.google.com with SMTP id 4fb4d7f45d1cf-64b9b0b4d5dso15919408a12.1
-        for <linux-serial@vger.kernel.org>; Tue, 13 Jan 2026 05:57:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sartura.hr; s=sartura; t=1768312655; x=1768917455; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ZYgsGgBKZshEd3LQPmk39JcNw7m/fhIkjkE+xKR+bec=;
-        b=zvfoV53a8KKlvQ3d1JQNoqsn1R64meaL/N0gvJBVsP07IpubGxx2QfE84x4Z2+kbFb
-         0hLYvrdv4SXvbje0qJL0Ne6nG9Fm0EboVzJAYkZUYQ9YLVSaQzuc2aaTV6Xaw3fXr4u5
-         epRUQ8Rr1fmQuXUGhAgjyFhKoeU5fsg5c9fXZgvqcAaQm3999ZjhMx1Bh0O7IukctDtr
-         cxNCZsPNksEYEPV48GWIxa6MuU7QzPugngj62cv1/mZlpNlETWTREwFO8KHkhEamhwC4
-         prCUxmFrHMkgeYCQCIr0xyrmQWG7B2ZuuAVRPrT+1i5F97N3cJr9JI7d5M8HP9SZcOFn
-         Uf9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768312655; x=1768917455;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=ZYgsGgBKZshEd3LQPmk39JcNw7m/fhIkjkE+xKR+bec=;
-        b=uU0c9KxKmo3cQIw4Bfnx5J+Pp/a1Y7/hNT8WFtRo3S7cGLkU9GA/F3cE0p6U64LiZK
-         J+aqftyKxl2V5lAbnmDsFEuYYQo05FUcjrBrh86YHBmOPj1FceyzSMbd0WskdRwbf9gA
-         f99dkU/LwS0Kfd9S6yo2pDJhQS98+qJJ5DlZe+wOCYvEkML0cIWqWrEttxIOnRUOZQyx
-         mTDeo4AtjDLNJD8ZjzB5v6lMcxQ3YA+kYRSnY3DkhxxwfUGOgGqvtGebxwO2ZR9Cdsw/
-         sa1rd8gT9H/VGxX/FQ3QHPc+VKZf3/DTP3N2U2Wv+I6GALbPgAvEyeBmMAbpHVhNuEhi
-         gJsg==
-X-Forwarded-Encrypted: i=1; AJvYcCUdX1HiPb7kY1FSlwMFurDBKv335XiZa4REDGUJ2Z+Oy50LZ2CwDQ/4KhVk6mNu2pf3IbZcs/OqxMNNP5Y=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy07WJDE19dIx0HFSJpkHAzoaumNY+5+0WrQT1VLjom0XEdFylQ
-	jATIZUDeLHhh+3ne0Fh8mwGd1UcZ7BU0tcRzyIVDSVCZ2ar+6kU10JYPBreeMnnjqDA9QNfv9cf
-	qXGg72lSaKdZcw2Bm4aQtVEWZz62xNnKzLGoCzoRkdg==
-X-Gm-Gg: AY/fxX4Tkb42oVKzi9p375c0+LV+PLUG7UPjzcEagpnz4SRyUdfHyEfjSxn5Z1iepW0
-	NNw01N3Q31KmDkCnrD1hGzPyRn0Im5XJwwX8428VwleQQIYUbmUXhSLPlizIJCP33l9y0vhFidX
-	OFYVhrI3qduXlsIcAYQQS6FYTq1nFcChS74hRDWuEitpwXstlyCRQ2xKkLHZK8Pp7ds5RSFVhj9
-	im9PspxCW8Q0zoamx00wB3BJkFYkjDj4WQbSZqagP732zFkHxnsTZCORxG2VWNx9iZ2Gn6+Z9Aa
-	4RUhc+lRLWz6BAyJ7Lcl4n8NWpIfbe1ekXnc4bKfOx/MQNM3cA==
-X-Google-Smtp-Source: AGHT+IHC69qajNN2R0Oc5VosMApQk8dB2K8/wIPuNuXO4ULHt0+4HajErsuy6Dkjt1+pDa9ixvBw3NRLu/Pa+AU8sC0=
-X-Received: by 2002:a05:6402:1e8c:b0:640:e75a:f95d with SMTP id
- 4fb4d7f45d1cf-65097dfbd5bmr20646641a12.15.1768312655296; Tue, 13 Jan 2026
- 05:57:35 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nUqO98mK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25230C2BC87
+	for <linux-serial@vger.kernel.org>; Tue, 13 Jan 2026 14:00:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1768312839;
+	bh=X8mXhJTgAGq9IOf4F3jJlDw/W05b42TP8HpZ/2Vdrwg=;
+	h=From:In-Reply-To:References:Date:Subject:To:Cc:From;
+	b=nUqO98mKJE7NXi7FLSuiAtTZXAqYxZ1nyDsJZzG7jWaaPs2Hy4EO/Y3i3mieoa7p+
+	 KN5m6yAgwsjf/88I+ElOWZElAVlfvtWoVohX2rXGsdq/xejw4/8YWFTQTmEZryzsIg
+	 HbmCLngM24fUzxvLJgyXm57Ppwr8+TwuUdAGb0qAJuUPHPTK2AFvVD3EgoNiymJlmZ
+	 uB4GfrHwgPeUzSGYayJrFSLyGPIEpbuq9qfoA7yx5tW7hlErFUditSkIqSEh/jFwty
+	 SAhH/SQ4wMYQluc0fAkdfY9HSpZG/mWKRaCfeJish4i12UcX24vqxEq16jRrkuOdeQ
+	 74ndcQTjSb1hg==
+Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-59b786b2a5dso6498184e87.3
+        for <linux-serial@vger.kernel.org>; Tue, 13 Jan 2026 06:00:39 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCWjP+UsfZECEMFYYS57S1DZNkGHhgRy/x9mrNPij4/ce7dzy0VDkRSVR/ATKESpOBe3HBt+j6CVVaExgsg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxYozqlEMj3FFw80AsYUFvfT9XDxklh8TCOL8LqO0xyQrXz23yc
+	gpjBJTO7/vrR4uHq1i/CHfkYfMWEJX2wDf+24HyFtz+MSJBxa6VdxkPXlalBbcX9Kdr2FaXQVft
+	Y/bp7CQ+ti9EBSHfHaQwneKN4wYN9vW/22VsUcssS4A==
+X-Google-Smtp-Source: AGHT+IHkGbH56mpERCqebm4I83lw0PurcteLr7cgNC0e+0pRpGvxWPIiTZ7DW2io/Q37pf6iiDvx11af8oXDK5+wY0I=
+X-Received: by 2002:a05:6512:239c:b0:59b:7c23:c639 with SMTP id
+ 2adb3069b0e04-59b7c23c757mr4838943e87.26.1768312837703; Tue, 13 Jan 2026
+ 06:00:37 -0800 (PST)
+Received: from 969154062570 named unknown by gmailapi.google.com with
+ HTTPREST; Tue, 13 Jan 2026 06:00:35 -0800
+Received: from 969154062570 named unknown by gmailapi.google.com with
+ HTTPREST; Tue, 13 Jan 2026 06:00:35 -0800
+From: Bartosz Golaszewski <brgl@kernel.org>
+In-Reply-To: <20260112-pci-m2-e-v4-8-eff84d2c6d26@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20251229184004.571837-1-robert.marko@sartura.hr>
- <20251229184004.571837-13-robert.marko@sartura.hr> <2cdac084-4924-4ca2-85d6-2e6d9bf284aa@tuxon.dev>
-In-Reply-To: <2cdac084-4924-4ca2-85d6-2e6d9bf284aa@tuxon.dev>
-From: Robert Marko <robert.marko@sartura.hr>
-Date: Tue, 13 Jan 2026 14:57:24 +0100
-X-Gm-Features: AZwV_Qh0sAc6Pa2O_93Ow3lA3FmFDgK6_SoYiCOhp74HuwfyLgAjJuCjbp6xbBo
-Message-ID: <CA+HBbNH4q8o-4Jb=hu7JgE4emxFxktFSLHdfY4J6gCDbYTpWUA@mail.gmail.com>
-Subject: Re: [PATCH v4 12/15] arm64: dts: microchip: add LAN969x clock header file
-To: claudiu beznea <claudiu.beznea@tuxon.dev>
-Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
-	nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, 
-	herbert@gondor.apana.org.au, davem@davemloft.net, vkoul@kernel.org, 
-	andi.shyti@kernel.org, lee@kernel.org, andrew+netdev@lunn.ch, 
-	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com, linusw@kernel.org, 
-	Steen.Hegelund@microchip.com, daniel.machon@microchip.com, 
-	UNGLinuxDriver@microchip.com, olivia@selenic.com, radu_nicolae.pirea@upb.ro, 
-	richard.genoud@bootlin.com, gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	broonie@kernel.org, lars.povlsen@microchip.com, devicetree@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org, 
-	linux-i2c@vger.kernel.org, netdev@vger.kernel.org, linux-gpio@vger.kernel.org, 
-	linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-usb@vger.kernel.org, luka.perkov@sartura.hr
+References: <20260112-pci-m2-e-v4-0-eff84d2c6d26@oss.qualcomm.com> <20260112-pci-m2-e-v4-8-eff84d2c6d26@oss.qualcomm.com>
+Date: Tue, 13 Jan 2026 06:00:35 -0800
+X-Gmail-Original-Message-ID: <CAMRc=McBamKzNYvWDcGeNU1raq1a1fdK0Pu2Ub154nTtMhFc5A@mail.gmail.com>
+X-Gm-Features: AZwV_QjzcyvwXxlEQgHd6qIWvQVbATOW0nBj5REO6Ph0AfkAJuuTNk3sa_W8efk
+Message-ID: <CAMRc=McBamKzNYvWDcGeNU1raq1a1fdK0Pu2Ub154nTtMhFc5A@mail.gmail.com>
+Subject: Re: [PATCH v4 8/9] power: sequencing: pcie-m2: Add support for PCIe
+ M.2 Key E connectors
+To: manivannan.sadhasivam@oss.qualcomm.com
+Cc: Manivannan Sadhasivam via B4 Relay <devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org>, 
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-kbuild@vger.kernel.org, platform-driver-x86@vger.kernel.org, 
+	linux-pci@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org, 
+	linux-pm@vger.kernel.org, Stephan Gerhold <stephan.gerhold@linaro.org>, 
+	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, linux-acpi@vger.kernel.org, 
+	Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Nathan Chancellor <nathan@kernel.org>, 
+	Nicolas Schier <nicolas.schier@linux.dev>, Hans de Goede <hansg@kernel.org>, 
+	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+	Mark Pearson <mpearson-lenovo@squebb.ca>, "Derek J. Clark" <derekjohn.clark@gmail.com>, 
+	Manivannan Sadhasivam <mani@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Marcel Holtmann <marcel@holtmann.org>, Luiz Augusto von Dentz <luiz.dentz@gmail.com>, 
+	Bartosz Golaszewski <brgl@bgdev.pl>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+	Bartosz Golaszewski <brgl@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Sun, Jan 11, 2026 at 3:42=E2=80=AFPM claudiu beznea <claudiu.beznea@tuxo=
-n.dev> wrote:
+On Mon, 12 Jan 2026 17:26:07 +0100, Manivannan Sadhasivam via B4 Relay
+<devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org> said:
+> From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
 >
+> Add support for handling the power sequence of the PCIe M.2 Key E
+> connectors. These connectors are used to attach the Wireless Connectivity
+> devices to the host machine including combinations of WiFi, BT, NFC using
+> interfaces such as PCIe/SDIO for WiFi, USB/UART for BT and I2C for NFC.
 >
+> Currently, this driver supports only the PCIe interface for WiFi and UART
+> interface for BT. The driver also only supports driving the 3.3v/1.8v power
+> supplies and W_DISABLE{1/2}# GPIOs. The optional signals of the Key E
+> connectors are not currently supported.
 >
-> On 12/29/25 20:37, Robert Marko wrote:
-> > LAN969x uses hardware clock indexes, so document theses in a header to =
-make
-> > them humanly readable.
-> >
-> > Signed-off-by: Robert Marko <robert.marko@sartura.hr>
-> > ---
-> > Changes in v4:
-> > * Move clock indexes from dt-bindings to a DTS header
-> >
-> > Changes in v2:
-> > * Rename file to microchip,lan9691.h
-> >
-> >   arch/arm64/boot/dts/microchip/clk-lan9691.h | 24 ++++++++++++++++++++=
-+
-> >   1 file changed, 24 insertions(+)
-> >   create mode 100644 arch/arm64/boot/dts/microchip/clk-lan9691.h
-> >
-> > diff --git a/arch/arm64/boot/dts/microchip/clk-lan9691.h b/arch/arm64/b=
-oot/dts/microchip/clk-lan9691.h
-> > new file mode 100644
-> > index 000000000000..f0006a603747
-> > --- /dev/null
-> > +++ b/arch/arm64/boot/dts/microchip/clk-lan9691.h
-> > @@ -0,0 +1,24 @@
-> > +/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
+> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+> ---
+>  drivers/power/sequencing/Kconfig          |   1 +
+>  drivers/power/sequencing/pwrseq-pcie-m2.c | 110 ++++++++++++++++++++++++++++--
+>  2 files changed, 104 insertions(+), 7 deletions(-)
 >
-> Shouldn't this use the same license as the dtsi including it?
+> diff --git a/drivers/power/sequencing/Kconfig b/drivers/power/sequencing/Kconfig
+> index f5fff84566ba..29bd204319cc 100644
+> --- a/drivers/power/sequencing/Kconfig
+> +++ b/drivers/power/sequencing/Kconfig
+> @@ -38,6 +38,7 @@ config POWER_SEQUENCING_TH1520_GPU
+>  config POWER_SEQUENCING_PCIE_M2
+>  	tristate "PCIe M.2 connector power sequencing driver"
+>  	depends on OF || COMPILE_TEST
+> +	depends on PCI
 
-Yes, its a mistake on my side, will fix it in v5.
+Now we can no longer compile-test it without PCI, I don't think this was the
+goal? Maybe "depends on (PCI && OF) || COMPILE_TEST"?
 
-Regards,
-Robert
+>  	help
+>  	  Say Y here to enable the power sequencing driver for PCIe M.2
+>  	  connectors. This driver handles the power sequencing for the M.2
+> diff --git a/drivers/power/sequencing/pwrseq-pcie-m2.c b/drivers/power/sequencing/pwrseq-pcie-m2.c
+> index e01e19123415..4b85a40d7692 100644
+> --- a/drivers/power/sequencing/pwrseq-pcie-m2.c
+> +++ b/drivers/power/sequencing/pwrseq-pcie-m2.c
+> @@ -4,12 +4,16 @@
+>   * Author: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+>   */
 >
-> > +
-> > +#ifndef _DTS_CLK_LAN9691_H
-> > +#define _DTS_CLK_LAN9691_H
-> > +
-> > +#define GCK_ID_QSPI0         0
-> > +#define GCK_ID_QSPI2         1
-> > +#define GCK_ID_SDMMC0                2
-> > +#define GCK_ID_SDMMC1                3
-> > +#define GCK_ID_MCAN0         4
-> > +#define GCK_ID_MCAN1         5
-> > +#define GCK_ID_FLEXCOM0              6
-> > +#define GCK_ID_FLEXCOM1              7
-> > +#define GCK_ID_FLEXCOM2              8
-> > +#define GCK_ID_FLEXCOM3              9
-> > +#define GCK_ID_TIMER         10
-> > +#define GCK_ID_USB_REFCLK    11
-> > +
-> > +/* Gate clocks */
-> > +#define GCK_GATE_USB_DRD     12
-> > +#define GCK_GATE_MCRAMC              13
-> > +#define GCK_GATE_HMATRIX     14
-> > +
-> > +#endif
+> +#include <linux/err.h>
+>  #include <linux/device.h>
+> +#include <linux/delay.h>
+> +#include <linux/gpio/consumer.h>
+>  #include <linux/mod_devicetable.h>
+>  #include <linux/module.h>
+>  #include <linux/of.h>
+>  #include <linux/of_graph.h>
+>  #include <linux/of_platform.h>
+> +#include <linux/pci.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/pwrseq/provider.h>
+>  #include <linux/regulator/consumer.h>
+> @@ -25,17 +29,19 @@ struct pwrseq_pcie_m2_ctx {
+>  	const struct pwrseq_pcie_m2_pdata *pdata;
+>  	struct regulator_bulk_data *regs;
+>  	size_t num_vregs;
+> -	struct notifier_block nb;
+
+Should this even be part of [1] at all then? It doesn't seem used now when
+I looked again?
+
+> +	struct gpio_desc *w_disable1_gpio;
+> +	struct gpio_desc *w_disable2_gpio;
+> +	struct device *dev;
+>  };
+>
+> -static int pwrseq_pcie_m2_m_vregs_enable(struct pwrseq_device *pwrseq)
+> +static int pwrseq_pcie_m2_vregs_enable(struct pwrseq_device *pwrseq)
+>  {
+>  	struct pwrseq_pcie_m2_ctx *ctx = pwrseq_device_get_drvdata(pwrseq);
+>
+>  	return regulator_bulk_enable(ctx->num_vregs, ctx->regs);
+>  }
+>
+> -static int pwrseq_pcie_m2_m_vregs_disable(struct pwrseq_device *pwrseq)
+> +static int pwrseq_pcie_m2_vregs_disable(struct pwrseq_device *pwrseq)
+>  {
+>  	struct pwrseq_pcie_m2_ctx *ctx = pwrseq_device_get_drvdata(pwrseq);
+>
+> @@ -44,18 +50,84 @@ static int pwrseq_pcie_m2_m_vregs_disable(struct pwrseq_device *pwrseq)
+>
+>  static const struct pwrseq_unit_data pwrseq_pcie_m2_vregs_unit_data = {
+>  	.name = "regulators-enable",
+> -	.enable = pwrseq_pcie_m2_m_vregs_enable,
+> -	.disable = pwrseq_pcie_m2_m_vregs_disable,
+> +	.enable = pwrseq_pcie_m2_vregs_enable,
+> +	.disable = pwrseq_pcie_m2_vregs_disable,
+>  };
+>
+> -static const struct pwrseq_unit_data *pwrseq_pcie_m2_m_unit_deps[] = {
+> +static const struct pwrseq_unit_data *pwrseq_pcie_m2_unit_deps[] = {
+>  	&pwrseq_pcie_m2_vregs_unit_data,
+>  	NULL
+>  };
+>
+> +static int pwrseq_pci_m2_e_uart_enable(struct pwrseq_device *pwrseq)
+> +{
+> +	struct pwrseq_pcie_m2_ctx *ctx = pwrseq_device_get_drvdata(pwrseq);
+> +
+> +	return gpiod_set_value_cansleep(ctx->w_disable2_gpio, 0);
+> +}
+> +
+> +static int pwrseq_pci_m2_e_uart_disable(struct pwrseq_device *pwrseq)
+> +{
+> +	struct pwrseq_pcie_m2_ctx *ctx = pwrseq_device_get_drvdata(pwrseq);
+> +
+> +	return gpiod_set_value_cansleep(ctx->w_disable2_gpio, 1);
+> +}
+> +
+> +static const struct pwrseq_unit_data pwrseq_pcie_m2_e_uart_unit_data = {
+> +	.name = "uart-enable",
+> +	.deps = pwrseq_pcie_m2_unit_deps,
+> +	.enable = pwrseq_pci_m2_e_uart_enable,
+> +	.disable = pwrseq_pci_m2_e_uart_disable,
+> +};
+> +
+> +static int pwrseq_pci_m2_e_pcie_enable(struct pwrseq_device *pwrseq)
+> +{
+> +	struct pwrseq_pcie_m2_ctx *ctx = pwrseq_device_get_drvdata(pwrseq);
+> +
+> +	return gpiod_set_value_cansleep(ctx->w_disable1_gpio, 0);
+> +}
+> +
+> +static int pwrseq_pci_m2_e_pcie_disable(struct pwrseq_device *pwrseq)
+> +{
+> +	struct pwrseq_pcie_m2_ctx *ctx = pwrseq_device_get_drvdata(pwrseq);
+> +
+> +	return gpiod_set_value_cansleep(ctx->w_disable1_gpio, 1);
+> +}
+> +
+> +static const struct pwrseq_unit_data pwrseq_pcie_m2_e_pcie_unit_data = {
+> +	.name = "pcie-enable",
+> +	.deps = pwrseq_pcie_m2_unit_deps,
+> +	.enable = pwrseq_pci_m2_e_pcie_enable,
+> +	.disable = pwrseq_pci_m2_e_pcie_disable,
+> +};
+> +
+>  static const struct pwrseq_unit_data pwrseq_pcie_m2_m_pcie_unit_data = {
+>  	.name = "pcie-enable",
+> -	.deps = pwrseq_pcie_m2_m_unit_deps,
+> +	.deps = pwrseq_pcie_m2_unit_deps,
+> +};
+> +
+> +static int pwrseq_pcie_m2_e_pwup_delay(struct pwrseq_device *pwrseq)
+> +{
+> +	/*
+> +	 * FIXME: This delay is only required for some Qcom WLAN/BT cards like
+> +	 * WCN7850 and not for all devices. But currently, there is no way to
+> +	 * identify the device model before enumeration.
+> +	 */
+> +	msleep(50);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct pwrseq_target_data pwrseq_pcie_m2_e_uart_target_data = {
+> +	.name = "uart",
+> +	.unit = &pwrseq_pcie_m2_e_uart_unit_data,
+> +	.post_enable = pwrseq_pcie_m2_e_pwup_delay,
+> +};
+> +
+> +static const struct pwrseq_target_data pwrseq_pcie_m2_e_pcie_target_data = {
+> +	.name = "pcie",
+> +	.unit = &pwrseq_pcie_m2_e_pcie_unit_data,
+> +	.post_enable = pwrseq_pcie_m2_e_pwup_delay,
+>  };
+>
+>  static const struct pwrseq_target_data pwrseq_pcie_m2_m_pcie_target_data = {
+> @@ -63,11 +135,21 @@ static const struct pwrseq_target_data pwrseq_pcie_m2_m_pcie_target_data = {
+>  	.unit = &pwrseq_pcie_m2_m_pcie_unit_data,
+>  };
+>
+> +static const struct pwrseq_target_data *pwrseq_pcie_m2_e_targets[] = {
+> +	&pwrseq_pcie_m2_e_pcie_target_data,
+> +	&pwrseq_pcie_m2_e_uart_target_data,
+> +	NULL
+> +};
+> +
+>  static const struct pwrseq_target_data *pwrseq_pcie_m2_m_targets[] = {
+>  	&pwrseq_pcie_m2_m_pcie_target_data,
+>  	NULL
+>  };
+>
+> +static const struct pwrseq_pcie_m2_pdata pwrseq_pcie_m2_e_of_data = {
+> +	.targets = pwrseq_pcie_m2_e_targets,
+> +};
+> +
+>  static const struct pwrseq_pcie_m2_pdata pwrseq_pcie_m2_m_of_data = {
+>  	.targets = pwrseq_pcie_m2_m_targets,
+>  };
+> @@ -126,6 +208,16 @@ static int pwrseq_pcie_m2_probe(struct platform_device *pdev)
+>  		return dev_err_probe(dev, ret,
+>  				     "Failed to get all regulators\n");
+>
+> +	ctx->w_disable1_gpio = devm_gpiod_get_optional(dev, "w-disable1", GPIOD_OUT_HIGH);
+> +	if (IS_ERR(ctx->w_disable1_gpio))
+> +		return dev_err_probe(dev, PTR_ERR(ctx->w_disable1_gpio),
+> +				     "Failed to get the W_DISABLE_1# GPIO\n");
+> +
+> +	ctx->w_disable2_gpio = devm_gpiod_get_optional(dev, "w-disable2", GPIOD_OUT_HIGH);
+> +	if (IS_ERR(ctx->w_disable2_gpio))
+> +		return dev_err_probe(dev, PTR_ERR(ctx->w_disable2_gpio),
+> +				     "Failed to get the W_DISABLE_2# GPIO\n");
+> +
+>  	ctx->num_vregs = ret;
+>
+>  	ret = devm_add_action_or_reset(dev, pwrseq_pcie_free_resources, ctx);
+> @@ -151,6 +243,10 @@ static const struct of_device_id pwrseq_pcie_m2_of_match[] = {
+>  		.compatible = "pcie-m2-m-connector",
+>  		.data = &pwrseq_pcie_m2_m_of_data,
+>  	},
+> +	{
+> +		.compatible = "pcie-m2-e-connector",
+> +		.data = &pwrseq_pcie_m2_e_of_data,
+> +	},
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(of, pwrseq_pcie_m2_of_match);
+>
+> --
+> 2.48.1
+>
+>
 >
 
+Otherwise LGTM.
 
---=20
-Robert Marko
-Staff Embedded Linux Engineer
-Sartura d.d.
-Lendavska ulica 16a
-10000 Zagreb, Croatia
-Email: robert.marko@sartura.hr
-Web: www.sartura.hr
+Bart
+
+[1] https://lore.kernel.org/all/20260107-pci-m2-v5-5-8173d8a72641@oss.qualcomm.com/
