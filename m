@@ -1,298 +1,132 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+Received: from smtp.gentoo.org (woodpecker.gentoo.org [140.211.166.183])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 971A81FDE14
-	for <linux-serial@vger.kernel.org>; Wed, 14 Jan 2026 00:32:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 931152F25FB;
+	Wed, 14 Jan 2026 02:14:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=140.211.166.183
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768350771; cv=none; b=s0W+00vBxWT4F27ryJ6SmP8iEND7ma76XBYlVRVq2gDHBqfA+clI5lCPDEVwwcFAP/xKaOzoIdr0boOVqgOJACALrIbvXf9STfEyXcylP53GIsrwa+yP3FkQyR1f3Ao1uTyhD0ZASWy4sdVUhNBT/SugaIKka+7pFllbQqRRZAs=
+	t=1768356852; cv=none; b=fCTrpqWSET96IvNsgju+lfukHlqtvUWLafc1RWcUMVZibrNMXVTkvO8Y80zAYkPUq8elMsyNMHWtBgz89mG+bSA49fJcynvxokk7a9NYj5S1F5rqRMT+3TJiSY7EzWSQMfRyUQyS1F5FWhSlwRnb10fLaxHboE0Ub3gTc3WR+Ys=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768350771; c=relaxed/simple;
-	bh=nGJ2jPxKcBzN+czMyCvoFnCk3OT6uIqZnT2Tcb9ddPo=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=b9oVGiBw5utf/nxg7eJjDXHErBHfWWQRGGh0dfvbvmNhDEvKebgM965NcZMyDmMR478JBN4lIq5lEKI5nP7zvAZEfk1x5nKz6HJiP0lT50LGGt8TsjZKQEthtl/4QR8dHyVhbeCaNc3QpDrJqJ3N7Iv82J/CRv4eCsvvYdtDot8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=WdCE0cSe; arc=none smtp.client-ip=209.85.128.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="WdCE0cSe"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-47ed987d51aso12094905e9.2
-        for <linux-serial@vger.kernel.org>; Tue, 13 Jan 2026 16:32:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1768350768; x=1768955568; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:autocrypt
-         :references:in-reply-to:date:cc:to:from:subject:message-id:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=gaWdSFFdOKkEXTHGFmdiT7EpMTfrWly43NlKkw7Tnic=;
-        b=WdCE0cSequz4kIsG0Bvq20O469ENKrlgcuLe6iZhfbc48iN5hskoBU+uCQld9TT/LJ
-         RijnSGKQJYxvX+j0y3/1ojflKfiS/a77faj1fUfor2Ta7sEhipGVYlqDZjVlfccuCvrr
-         Xkq8WgV7Nrb8vAuVAMHqsGmXZ/F/7H2/9pWP6Kx0QXTOeLxpROE9bKCTptHgARxEJWPu
-         7z7w07hyrzIe/L5B6npYw4SXT99LEqKPQ/c+FwQ1pvr+fQbwl0MEOk3XUBotQb6b+oaC
-         kVqxF0TecSwhJPrrbHM1G42WU7rsjgfKnn4r007pP0WoVwM2kfqA4Lbj8OYs5ef9pNAV
-         sGjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768350768; x=1768955568;
-        h=mime-version:user-agent:content-transfer-encoding:autocrypt
-         :references:in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=gaWdSFFdOKkEXTHGFmdiT7EpMTfrWly43NlKkw7Tnic=;
-        b=SHXsP5S4XtJ/zLaHtWreoBnqvvLgkdygKeLmyTGR9wNt81RnZ1VMeBBJzXYZuH2vBy
-         q9xn65OKGV49qD9bc0bUQHBgA9CeUanFY9NjI06RPFCgNR92EHGCWOxH3WJCvdCMOqhh
-         vR2UlpMXeRB2hqQEs1hhigrZ1LCROzKjOdsUlze6qZ3rzZ7lZfIK23TZixIhUJMbwao5
-         DaONunDr+w+dFPMnRTGkGPfsYWT4nvgENSffOyexYv1EMb+PFY4fZr8e86hRFzpOTx30
-         jT3UC9woX75CKZYEhwStvgO0cJFk3oPCId7Ol2NpD9mFPnSmZJ6LUjUmAz4dOcvjg0tH
-         AvJQ==
-X-Forwarded-Encrypted: i=1; AJvYcCV/l8Q/0nQQrWYy1LsPqVGKuwJf8MAqyf6NDIKcLNHlG8wce/knEhJM0l00nhwHAFd7Cnyzao/gDSzSvnk=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywc7KqIsLU6NL5E0FZuynXScmXDQyNx1gf4EQXHmBs8g0+7KfnK
-	RsJvU9juz4A7JU8F7F8eRqJCVW+1u2blwMQ8c+zaT6Au63BJ+0cV00HyjhLlMxla9rk=
-X-Gm-Gg: AY/fxX7Fu4T5OC1a9ezEWuGvdyphkbCOcwIjC0y7VNlJZSMl4EtbQetsPzaamrSUZsO
-	/+r48tyQ7LwLvfnBAVm+4v22jKwBSjphcPrXEJ3qZCI+K1Z+LzuwepJ3YwkVBcHhAJtM+ZZ102Q
-	HiUvJYsp44+AujUFntWqQdZlP+2QxFIyBQv2aEzcc4INkwLiKogc41ZQn9/c0pRqYio80hNiae2
-	EjzKtafpQpba+6Iz0AZOw9NM8VsLeBLBVWnRmwuwm5KIfClFPFEhtETaxDi22M46VdGTHL5kg3C
-	oqml8tLeN1eBlH/TObJwfEOoAwaxXG24qqrkcNW4jToKUfyTbk7iDcse5GugaVXLOp1eLoodJHo
-	w1SgsEuas+gF/AYWLOqvugofAoROTGBZEIISAyJbsxKvhOmEj6e/pfUwJtPsfnkRE6jnegf4JN1
-	qOS8273+k8jeRuKVE4bG7uXWs9irknAqQ4R59h61jTEg==
-X-Received: by 2002:a05:600c:a101:b0:47e:e48b:506d with SMTP id 5b1f17b1804b1-47ee48b510fmr2972975e9.16.1768350767989;
-        Tue, 13 Jan 2026 16:32:47 -0800 (PST)
-Received: from [192.168.3.33] (218.37.160.45.gramnet.com.br. [45.160.37.218])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-432bd5df9c5sm48257391f8f.22.2026.01.13.16.32.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Jan 2026 16:32:47 -0800 (PST)
-Message-ID: <89409a0f48e6998ff6dd2245691b9954f0e1e435.camel@suse.com>
-Subject: Re: [PATCH 00/19] printk cleanup - part 3
-From: Marcos Paulo de Souza <mpdesouza@suse.com>
-To: Daniel Thompson <daniel@riscstar.com>
-Cc: Richard Weinberger <richard@nod.at>, Anton Ivanov	
- <anton.ivanov@cambridgegreys.com>, Johannes Berg
- <johannes@sipsolutions.net>,  Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jason Wessel <jason.wessel@windriver.com>,
- Daniel Thompson	 <danielt@kernel.org>, Douglas Anderson
- <dianders@chromium.org>, Petr Mladek	 <pmladek@suse.com>, Steven Rostedt
- <rostedt@goodmis.org>, John Ogness	 <john.ogness@linutronix.de>, Sergey
- Senozhatsky <senozhatsky@chromium.org>,  Jiri Slaby <jirislaby@kernel.org>,
- Breno Leitao <leitao@debian.org>, Andrew Lunn <andrew+netdev@lunn.ch>, 
- "David S. Miller" <davem@davemloft.net>, Eric Dumazet
- <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
- <pabeni@redhat.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Kees Cook	
- <kees@kernel.org>, Tony Luck <tony.luck@intel.com>, "Guilherme G. Piccoli"	
- <gpiccoli@igalia.com>, Madhavan Srinivasan <maddy@linux.ibm.com>, Michael
- Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
- Christophe Leroy	 <christophe.leroy@csgroup.eu>, Andreas Larsson
- <andreas@gaisler.com>,  Alexander Shishkin
- <alexander.shishkin@linux.intel.com>, Maxime Coquelin
- <mcoquelin.stm32@gmail.com>, Alexandre Torgue	
- <alexandre.torgue@foss.st.com>, Jacky Huang <ychuang3@nuvoton.com>, 
- Shan-Chun Hung <schung@nuvoton.com>, Laurentiu Tudor
- <laurentiu.tudor@nxp.com>, linux-um@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net, 
-	linux-serial@vger.kernel.org, netdev@vger.kernel.org, 
-	linux-m68k@lists.linux-m68k.org, linux-hardening@vger.kernel.org, 
-	linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, 
-	linux-stm32@st-md-mailman.stormreply.com,
- linux-arm-kernel@lists.infradead.org, 	linux-fsdevel@vger.kernel.org
-Date: Tue, 13 Jan 2026 21:32:33 -0300
-In-Reply-To: <a5d83903fe2d2c2eb21de1527007913ff00847c5.camel@suse.com>
-References: <20251227-printk-cleanup-part3-v1-0-21a291bcf197@suse.com>
-		 <aVuz_hpbrk8oSCVC@aspen.lan> <aVvF2hivCm0vIlfE@aspen.lan>
-	 <a5d83903fe2d2c2eb21de1527007913ff00847c5.camel@suse.com>
-Autocrypt: addr=mpdesouza@suse.com; prefer-encrypt=mutual;
- keydata=mDMEZ/0YqhYJKwYBBAHaRw8BAQdA4JZz0FED+JD5eKlhkNyjDrp6lAGmgR3LPTduPYGPT
- Km0Kk1hcmNvcyBQYXVsbyBkZSBTb3V6YSA8bXBkZXNvdXphQHN1c2UuY29tPoiTBBMWCgA7FiEE2g
- gC66iLbhUsCBoBemssEuRpLLUFAmf9GKoCGwMFCwkIBwICIgIGFQoJCAsCBBYCAwECHgcCF4AACgk
- QemssEuRpLLWGxwD/S1I0bjp462FlKb81DikrOfWbeJ0FOJP44eRzmn20HmEBALBZIMrfIH2dJ5eM
- GO8seNG8sYiP6JfRjl7Hyqca6YsE
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.2 (by Flathub.org) 
+	s=arc-20240116; t=1768356852; c=relaxed/simple;
+	bh=vwtGEmt9gJmYSfL0GnZ1AXkZ5AEWUxDZZhCG8UgGjWc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=P+8TGPgvMyrVsMEhad4ahpTnakgzufEcNh93gAcOkpKLBdse4GNLwA3nXSByHgejXLonNHB6Sv7af3EkapRh0gjC+P2jeHlW734v31ZCD4iWZrqi5rd6OO7/IN1h10Bb6Vvlw6XsxL0EfZ/XPHxEvecDxoJKLj4WeXCSeKDDQlM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org; spf=pass smtp.mailfrom=gentoo.org; arc=none smtp.client-ip=140.211.166.183
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gentoo.org
+Received: from localhost (unknown [116.232.18.222])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange secp256r1 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: dlan)
+	by smtp.gentoo.org (Postfix) with ESMTPSA id DA74C341030;
+	Wed, 14 Jan 2026 02:14:09 +0000 (UTC)
+Date: Wed, 14 Jan 2026 10:14:05 +0800
+From: Yixun Lan <dlan@gentoo.org>
+To: Conor Dooley <conor@kernel.org>, Paul Walmsley <pjw@kernel.org>
+Cc: Guodong Xu <guodong@riscstar.com>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
+	Daniel Lezcano <daniel.lezcano@linaro.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Samuel Holland <samuel.holland@sifive.com>,
+	Anup Patel <anup@brainfault.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
+	Yangyu Chen <cyy@cyyself.name>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Heinrich Schuchardt <xypron.glpk@gmx.de>,
+	Kevin Meng Zhang <zhangmeng.kevin@linux.spacemit.com>,
+	Andrew Jones <ajones@ventanamicro.com>, devicetree@vger.kernel.org,
+	linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+	spacemit@lists.linux.dev, linux-serial@vger.kernel.org,
+	Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>,
+	Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
+	Conor Dooley <conor.dooley@microchip.com>
+Subject: Re: [PATCH v4 00/11] riscv: spacemit: Add SpacemiT K3 SoC and K3
+ Pico-ITX board
+Message-ID: <20260114021405-GYB25466@gentoo.org>
+References: <20260110-k3-basic-dt-v4-0-d492f3a30ffa@riscstar.com>
+ <20260112-shrivel-sarcastic-36d9acd2d96a@spud>
+ <20260113002123-GYA19926@gentoo.org>
+ <20260113-swarm-mama-cbd7d0546578@spud>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-
-On Tue, 2026-01-13 at 09:41 -0300, Marcos Paulo de Souza wrote:
-> On Mon, 2026-01-05 at 14:08 +0000, Daniel Thompson wrote:
-> > On Mon, Jan 05, 2026 at 12:52:14PM +0000, Daniel Thompson wrote:
-> > > Hi Marcos
-> > >=20
-> > > On Sat, Dec 27, 2025 at 09:16:07AM -0300, Marcos Paulo de Souza
-> > > wrote:
-> > > > The parts 1 and 2 can be found here [1] and here[2].
-> > > >=20
-> > > > The changes proposed in this part 3 are mostly to clarify the
-> > > > usage of
-> > > > the interfaces for NBCON, and use the printk helpers more
-> > > > broadly.
-> > > > Besides it, it also introduces a new way to register consoles
-> > > > and drop thes the CON_ENABLED flag. It seems too much, but in
-> > > > reality
-> > > > the changes are not complex, and as the title says, it's
-> > > > basically a
-> > > > cleanup without changing the functional changes.
-> > >=20
-> > > I ran this patchset through the kgdb test suite and I'm afraid it
-> > > is
-> > > reporting functional changes.
-> > >=20
-> > > Specifically the earlycon support for kdb has regressed (FWIW the
-> > > problem bisects down to the final patch in the series where
-> > > CON_ENABLED
-> > > is removed).
-> > >=20
-> > > Reproduction on x86-64 KVM outside of the test suite should be
-> > > easy:
-> > >=20
-> > > =C2=A0=C2=A0=C2=A0 make defconfig
-> > > =C2=A0=C2=A0=C2=A0 scripts/config \
-> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 --enable DEBUG_INFO \
-> > > 	--enable DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT \
-> > > 	--enable DEBUG_FS \
-> > > 	--enable KALLSYMS_ALL \
-> > > 	--enable MAGIC_SYSRQ \
-> > > 	--enable KGDB \
-> > > 	--enable KGDB_TESTS \
-> > > 	--enable KGDB_KDB \
-> > > 	--enable KDB_KEYBOARD \
-> > > 	--enable LKDTM \
-> > > 	--enable SECURITY_LOCKDOWN_LSM
-> > > =C2=A0=C2=A0=C2=A0 make olddefconfig
-> > > =C2=A0=C2=A0=C2=A0 make -j$(nproc)
-> > > =C2=A0=C2=A0=C2=A0 qemu-system-x86_64 \
-> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 -m 1G -smp 2 -nographic \
-> > > 	-kernel arch/x86/boot/bzImage \
-> > > 	-append "console=3DttyS0,115200 kgdboc=3DttyS0
-> > > earlycon=3Duart8250,io,0x3f8 kgdboc_earlycon kgdbwait"
-> >=20
-> > Actually I realized there was a simpler reproduction (hinted at by
-> > the
-> > missing "printk: legacy bootconsole [uart8250] enabled" in the
-> > regressed
-> > case). It looks like the earlycon simply doesn't work and that
-> > means
-> > the
-> > reproduction doesn't require anything related to kgdb at all.
-> > Simply:
-> >=20
-> > =C2=A0=C2=A0=C2=A0 make defconfig
-> > =C2=A0=C2=A0=C2=A0 make -j$(nproc)
-> > =C2=A0=C2=A0=C2=A0 qemu-system-x86_64 -m 1G -smp 2 -nographic -kernel
-> > arch/x86/boot/bzImage \
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 -append "earlycon=3Duart8250=
-,io,0x3f8"
-> >=20
-> > With the part 3 patchset applied I get no output from the earlycon
-> > (without the patch set I get the early boot messages which, as
-> > expected,
-> > stop when tty0 comes up).
->=20
-> Hi Daniel, sorry for the late reply! Lots of things to check lately
-> :)
->=20
-> Ok, I reproduced here, thanks a lot for testing kgdboc, it's a quick
-> way to check that the new register_console_force is not working. Let
-> me
-> take a look to find what's wrong. Thanks a lot for finding this
-> issue!
-
-Ok, I did a bisect and found out that the issue lies in the last
-commit, where CON_ENABLED was removed. After it, I then checked what
-was wrong, since everything was being plumbed correctly (tm), and then
-I found that it was not:
-
-On _register_console, the function try_enable_default_console is called
-when there are not registered consoles, and then it sets CON_ENABLED
-for the console. Later on, try_enable_preferred_console it checks if
-the console was specified by the user, and at the same time it had
-CON_ENABLED set.
-
-It worked by chance, but now, we don't have this flag anymore, and then
-we are not _marking_ the console on try_enable_default_console so
-try_enable_preferred_console returns ENOENT.
-
-I have added logs for both cases first the case with the patchset
-applied but the last one patch, and it works:
-
-$ vng --append "console=3DttyS0,115200 earlyprintk=3DttyS0,115200
-kgdboc=3DttyS0 earlycon=3Duart8250,io,0x3f8 kgdboc_earlycon kgdbwait" --
-verbose
-
-Decompressing Linux... Parsing ELF... Performing relocations... done.
-Booting the kernel (entry_offset: 0x000000000450d530).
-XXX register_console earlyser
-XXX try_enable_default_console earlyser enabled
-XXX try_enable_preferred_console earlyser user_specified 1 returned -
-ENOENT
-XXX try_enable_preferred_console earlyser user_specified 0 returned 0
-because flags was ENABLED
-
-^^ here, returning 0 means that the console was accepted and will be
-registered
-
-XXX __register_console earlyser registered
-XXX register_console uart
-XXX try_enable_default_console uart enabled
-XXX try_enable_preferred_console uart user_specified 1 returned -ENOENT
-XXX try_enable_preferred_console uart user_specified 0 returned 0
-because flags was ENABLED
-XXX __register_console uart registered
-
-^^^^ same here
-
-Going to register kgdb with earlycon 'uart'
-Entering kdb (current=3D0x0000000000000000, pid 0)=20
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260113-swarm-mama-cbd7d0546578@spud>
 
 
-Now, the logs of the patchset with the last patch also applied:
+On 22:17 Tue 13 Jan     , Conor Dooley wrote:
+> On Tue, Jan 13, 2026 at 08:21:23AM +0800, Yixun Lan wrote:
+> > Hi Conor,
+> > 
+> > On 21:45 Mon 12 Jan     , Conor Dooley wrote:
+> > > On Sat, Jan 10, 2026 at 01:18:12PM +0800, Guodong Xu wrote:
+> > > 
+> > > > Hi, Conor
+> > > > 
+> > > > For the binding riscv/extensions.ymal, here's what changed in v3 (no
+> > > > change in v4):
+> > > > 
+> > > >  1. Dropped the patch of adding "supm" into extensions.yaml. At the same
+> > > >     time, I will start another patchset which implements the strategy
+> > > >     outlined by Conor in Link [2] and by Samuel in Link [3].
+> > > 
+> > > Okay, that seems reasonable to separate out.
+> > > 
+> > > > 
+> > > >  2. Dropped the dependency checks for "sha" on "h", "shcounterenw", and
+> > > >     6 others. "sha" implies these extensions, and it should be allowed
+> > > >     to be declared independently. Like "a" implies "zaamo" and "zalrsc".
+> > > > 
+> > > >  3. Enchanced the dependency check of "ziccamoa" on "a". Specifically,
+> > > >      - added the dependency check of "ziccamoa" on "zaamo" or on "a".
+> > > >      - added the dependency check of "za64rs" on "zalrsc" or on "a".
+> > > >      - added the dependency check of "ziccrse" on "zalrsc" or "a".
+> > > >     The commit message of this patch is updated too, to better explain the
+> > > >     relationship  between "ziccamoa", "za64rs", "ziccrse" and "a".
+> > > > 
+> > > >  4. Enhanced checking dependency of "b" and "zba", "zbb", "zbs", making the
+> > > >     dependency check in both directions, as discussed in [4]. Since "b"
+> > > >     was ratified much later than its component extensions (zba/zbb/zbs),
+> > > >     existing software and kernels expect these explicit strings. This
+> > > >     bidirectional check ensures cores declaring "b" remain compatible
+> > > >     with older software that only recognizes zba/zbb/zbs.
+> > > 
+> > > This I asked about in the relevant patch, I would like to know what your
+> > > plan for adding the "b"s is.
+> > > 
+> > ..
+> > > Spacemit folks, I assume you weren't planning on taking the
+> > > extensions.yaml stuff via your tree? If you weren't, I'll grab it once
+> > > the question about b is answered.
+> > 
+> > sure, please take extension stuff which are patches 6-9, for 1-5, it's
+> > all about adding support for SpacemiT K3 SoC, to avoid petential conflicts,
+> > I wouldn't mind if you also taking them? then I can handle the rest 10,11 for DT
+> 
+> Stuff for spacemit is either for you or for the relevant subsystem
+> maintainers. You're probably safe enough taking the
+> timer/interrupt-controller stuff if the maintainers don't apply it in a
+> reasonable period, it's not abnormal for those in particular to go via
+> the platform maintainer in my experience. Just be clear that you have
+> done so. I'm only interested in taking 6-9.
+Hi Conor,
+  Ok, I got, thank you!
 
+Hi Paul Walmsley,
+  I assume you're responsible for more general riscv stuff with your
+effective maintainer hat, so do you mind if I take patches 1-5 via SpacemiT
+SoC tree? I think the potential conflicts should be low and easy to fix.
+  Or, in the other hand, just let me know which patches you would like
+to take, then I will handle the rest. Thanks
 
-Decompressing Linux... Parsing ELF... Performing relocations... done.
-Booting the kernel (entry_offset: 0x000000000450d530).
-XXX register_console earlyser
-XXX try_enable_default_console earlyser enabled
-XXX try_enable_preferred_console earlyser user_specified 1 returned -
-ENOENT
-XXX try_enable_preferred_console earlyser user_specified 0 returned -
-ENOENT
-XXX register_console uart
-XXX try_enable_default_console uart enabled
-XXX try_enable_preferred_console uart user_specified 1 returned -ENOENT
-XXX try_enable_preferred_console uart user_specified 0 returned -ENOENT
-
-^^^^ here, it should have registered the console
-
-XXX console_setup hvc0
-XXX __add_preferred_console hvc added, idx 0 i 0
-XXX console_setup ttyS0,115200
-XXX __add_preferred_console ttyS added, idx 0 i 1
-Poking KASLR using RDRAND RDTSC...
-XXX register_console tty
-XXX try_enable_preferred_console tty user_specified 1 returned -ENOENT
-XXX try_enable_preferred_console tty user_specified 0 returned -ENOENT
-
-
-^^^ again, it fails because we don't flag the console with CON_ENABLED
-as before.
-
-XXX register_console hvc
-XXX register_console ttyS
-XXX try_enable_preferred_console ttyS user_specified 1 returned 0 with
-user specified
-XXX __register_console ttyS registered
-[    0.000000] Linux version 6.18.0+ (mpdesouza@daedalus) (clang
-version 21.1.7, LLD 21.1.7) #374 SMP PREEMPT_RT Tue J
-an 13 21:08:34 -03 2026 reserved
-[    0.000000] earlycon: uart8250 at I/O port 0x3f8 (options '')     =20
-[    0.000000] kgdboc: No suitable earlycon yet, will try later       =20
-
-
-So, without any console kgdb is activated much later in the boot
-process, as you found it.
-
-I talked with Petr Mladek and it would need to rework the way that we
-register a console, and he's already working on it. For now I believe
-that we could take a look in all the patches besides the last one that
-currently breaks the earlycon with kgdb and maybe other usecases.
-
-Sorry for not catching this issue before. I'll use kgdb next time to
-make sure that it keeps working :)
+-- 
+Yixun Lan (dlan)
