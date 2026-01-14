@@ -1,182 +1,183 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtpout-04.galae.net (smtpout-04.galae.net [185.171.202.116])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D86D2D8377
-	for <linux-serial@vger.kernel.org>; Wed, 14 Jan 2026 08:44:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A788395DB1;
+	Wed, 14 Jan 2026 12:40:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.171.202.116
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768380267; cv=none; b=CVVq8TPPy1811ieaEa5RaDSMdvAL4KTMhA3TDEjFEb+kWB9svVyGQKl7GjypGZNM9KRO+3UpjBXx5rWGrFDsHlFDFKfmGOHVz9MW2eI0AKRgEoEKxljSA96Yt4Mf8x51X6AJ3MuYL8Y6GJDmRKZiDSfopb32ajwd32KlNW1QjPk=
+	t=1768394423; cv=none; b=Ibfcn0anLMcokYi0ao1g14S7wx/EigHxT3TaDFuE1rktK8ceOb0y9RPJfO0Ba26D7Mdfp/M9iz0cV3kw/s94CzzW3ehvkFBqcrM3yMOv6EAGsyq0wi9kXdefkMVcHU9lArDWlY4B1a1ZEUz+JyotBtUXTzcaqR2+8Ab/xzB2P6M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768380267; c=relaxed/simple;
-	bh=ysd4WYTvCh9+HsQ1AtbOfW5FzL4/iKQHwd6lm5bPF7A=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mMKl21FZ2PlsvMC51eq5MIUxVMwqseTwS2IkzSc0uHty13CVtvuprx5vf+OXCIgMwiWXWGDteW9IgqYjdQ0c67/66vZdxk760n5jxt+mr5IunsSVK8x2VZZWtj5ofjPbb3KcmKiAzRbXCnHSzdPSoXOH41/Y7erjk10C/hFrbpA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=UJDpRkoJ; arc=none smtp.client-ip=209.85.221.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1768394423; c=relaxed/simple;
+	bh=i3ywdlJEEbMCErXDckWbFK8qjmi5xbJlVYcN7KDYJQ8=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ShL2z7JoxS29v13P9xvdWB24IypYEldPHMbtcvno+csz965un7mh6xycXoM/K1iVVScLpuYQeu2HqMWmwaHJ41P5q8Y3mZ/RIzFFmZ20s6F7cnd//iV5YjWgKMnEplzjYNmmkgq6MgvH7YYwpmd99z1JHnBv9r1ZBAD9xOrDdsQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=uNacfl4B; arc=none smtp.client-ip=185.171.202.116
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="UJDpRkoJ"
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-42fbc305914so5911927f8f.0
-        for <linux-serial@vger.kernel.org>; Wed, 14 Jan 2026 00:44:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1768380255; x=1768985055; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=/Nn9M/VPDoeuifL+P7no8o5FApQZk7zNKYvSR+p2CRU=;
-        b=UJDpRkoJ07RgspaR1NhfCpR626ZyVYHDm/91x63cM8gsy5+B8MAqHavRm979cqv826
-         adfCBmE4P0x6kfOJf6QVKQ+F73K8lwHrXn3rzPWHcqFa3N4E1nvvheWr+fvWlsfjnG3d
-         q5I4aa3r8n+1bnVHkuJKjH4VnxEE0Ax/OlO+0AlsTNmjx9JmMpIQmGfXyFrUV7bjE4AG
-         b+aIpJVdS5yOciq4wFCdKoOH2ygYDkIIMtINtTrq5bEwn2hZxdIsOnH1Mevl7p3aXRkT
-         mmHrpfvAEIKMqwJsI6Dxxcv5mSGvyKeQIfwtfaMbksOr61rqb70D/17uospsX2LrpTOB
-         fjgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768380255; x=1768985055;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=/Nn9M/VPDoeuifL+P7no8o5FApQZk7zNKYvSR+p2CRU=;
-        b=FnxztjXEYrCNlNTDF2L/klegyYClLYYF4k7khg4Sb7CuEHK+9GA6g2yCafn5aGnDcb
-         thsW0M6V1sXGjpYoSff9X4/aCU6T0Bznw0NsRpPJ36ultBPTbnGGuLJKoAfhUfaqc8Fn
-         eRA63CxayxP+2v9rZUfw9uD9h07dBWUvLvQGEUbfWaGG7XH3xgPrg+gHMc0r+ccg9Tuu
-         kIjzMxx3k25YInHxUfEOtiYjuf1QJNacQSzhnZprPxkotVuqjXxKV9s5xL7CgJ1T2Sc8
-         frBO8jPbjYrIJVAm5cAoYgmDEuXCmNUuhfgQ7hR24hCQ2jEu+ZKvwbr3+z3dR2/sGdYg
-         a1XQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUiVUiIx/F7uyPb35tCvqtxRFUkg+o28d4ukX2cND3o01oy9JDfUJElr7BirCC1+DejEkFppolpjxRtnw0=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzrfb9VnF6MrUhBJYjpUnYvFEsH89VEz63mcfRmuF1uLw5BQfkE
-	J5bSQvLLAZ8fDf5A2Nff/YLwPxaRe+AV+MpZaDajJzkx9AuRul24jYZn4frB7st5rmk=
-X-Gm-Gg: AY/fxX4ug827iDGGD5NnYaa86HHNWcLTGnavm5TQkuei0+9EdB7ewneioL96gt6ZZHc
-	KS5v5d4+fcuSBI3SLFoppP62q4IcX/ojD7TAlLo10C1umZOtUs0SusfxyWlHO1nn6BbJ484H7zI
-	p6z+ZxxfI9S1FcnWUb4UGpczDiHUC2e1E/RfxpeOLg04Tue+9CQlgNf/aAMZXb/LukYslMgeDZJ
-	ynviF2kP79lEqreBULJGZ79FkpZcr3ubx9z23zBIxPegNyspSyJn8Aa6+BeKnSxxSX0TX3Cr5Hu
-	ZdlUGQ3gAnYULrRNT8UGEYcG4gxax3YfxEkNHWrKqi97tijNRr9zwmCRD4/cC3udagG9nB26r35
-	g6Y/c1HHu0S4TYqyU2SIep1zMljTaYGi1ZfXX727Wa5haJ+Cj/CGsPrfTrNYAUP6HDiZ+SVwXap
-	6w64fhLzwxdeJ5Fg==
-X-Received: by 2002:a05:6000:61e:b0:431:a38:c2f7 with SMTP id ffacd0b85a97d-4342c574bedmr1500621f8f.59.1768380254886;
-        Wed, 14 Jan 2026 00:44:14 -0800 (PST)
-Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-432bd5ee5e3sm48685590f8f.35.2026.01.14.00.44.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Jan 2026 00:44:14 -0800 (PST)
-Date: Wed, 14 Jan 2026 09:44:11 +0100
-From: Petr Mladek <pmladek@suse.com>
-To: Marcos Paulo de Souza <mpdesouza@suse.com>
-Cc: Richard Weinberger <richard@nod.at>,
-	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jason Wessel <jason.wessel@windriver.com>,
-	Daniel Thompson <danielt@kernel.org>,
-	Douglas Anderson <dianders@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Breno Leitao <leitao@debian.org>,
-	Andrew Lunn <andrew+netdev@lunn.ch>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>,
-	"Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Christophe Leroy <christophe.leroy@csgroup.eu>,
-	Andreas Larsson <andreas@gaisler.com>,
-	Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Jacky Huang <ychuang3@nuvoton.com>,
-	Shan-Chun Hung <schung@nuvoton.com>,
-	Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-	linux-um@lists.infradead.org, linux-kernel@vger.kernel.org,
-	kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org,
-	netdev@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-	linux-hardening@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-	sparclinux@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org, linux-fsdevel@vger.kernel.org
-Subject: Re: [PATCH 03/19] printk: Drop flags argument from console_is_usable
-Message-ID: <aWdXW6ohfQ7_z2B_@pathway.suse.cz>
-References: <20251227-printk-cleanup-part3-v1-0-21a291bcf197@suse.com>
- <20251227-printk-cleanup-part3-v1-3-21a291bcf197@suse.com>
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="uNacfl4B"
+Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
+	by smtpout-04.galae.net (Postfix) with ESMTPS id 9F55BC2087B;
+	Wed, 14 Jan 2026 12:39:52 +0000 (UTC)
+Received: from mail.galae.net (mail.galae.net [212.83.136.155])
+	by smtpout-01.galae.net (Postfix) with ESMTPS id 2F36F6074A;
+	Wed, 14 Jan 2026 12:40:19 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id AE9C110B68235;
+	Wed, 14 Jan 2026 13:40:07 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
+	t=1768394417; h=from:subject:date:message-id:to:cc:mime-version:content-type:
+	 content-transfer-encoding:in-reply-to:references;
+	bh=LdTB9SICd7x5Se7c+EJ+56/scU6NfThvAUtGnGGrMx4=;
+	b=uNacfl4Bs/+dFN/j5D9PlwbjgNS6nb7BgwzaR6oj2DCUMhGki9TlUQ/otRArV4T4TEPthb
+	vLECnyHHIjy9A5cLIyIKysmamaHZLz7lGf9CbftO+0yfLYGAJInMJJcocP1D42nN95FHhu
+	aYoE64ScAcn5BFZ2SnxBsUH+GiBv9fQeYg2sPyuLhoWjcTOT3cDH+pa9NU43D5fftdQd6h
+	mtCKjvOuuQbvV3ChzfQGdId8DRnDXRksF2WWqhMzKpPOb44Pj7ZhKKguWpUfIv6mOnptLC
+	urt5saAEuBgrYfeu017oRmKJVfhFd9ONDBz0VgyPVwVqmSl2jLy0Wjti0WNS1g==
+Date: Wed, 14 Jan 2026 13:40:04 +0100
+From: Herve Codina <herve.codina@bootlin.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: manivannan.sadhasivam@oss.qualcomm.com, Rob Herring <robh@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>, Nathan Chancellor <nathan@kernel.org>, Nicolas
+ Schier <nicolas.schier@linux.dev>, Hans de Goede <hansg@kernel.org>, Ilpo
+ =?UTF-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Mark Pearson
+ <mpearson-lenovo@squebb.ca>, "Derek J. Clark" <derekjohn.clark@gmail.com>,
+ Manivannan Sadhasivam <mani@kernel.org>, Krzysztof Kozlowski
+ <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Marcel Holtmann
+ <marcel@holtmann.org>, Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+ Bartosz Golaszewski <brgl@bgdev.pl>, Daniel Scally <djrscally@gmail.com>,
+ Heikki Krogerus <heikki.krogerus@linux.intel.com>, Sakari Ailus
+ <sakari.ailus@linux.intel.com>, "Rafael J. Wysocki" <rafael@kernel.org>,
+ Danilo Krummrich <dakr@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>,
+ linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-kbuild@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+ linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+ linux-pm@vger.kernel.org, Stephan Gerhold <stephan.gerhold@linaro.org>,
+ Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+ linux-acpi@vger.kernel.org, Bartosz Golaszewski
+ <bartosz.golaszewski@linaro.org>, Sui Jingfeng <sui.jingfeng@linux.dev>
+Subject: Re: [PATCH v3 00/14] Add support for handling PCIe M.2 Key E
+ connectors in devicetree
+Message-ID: <20260114134004.11023a7e@bootlin.com>
+In-Reply-To: <aWSuYd8zqCxZ9DYE@smile.fi.intel.com>
+References: <20260110-pci-m2-e-v3-0-4faee7d0d5ae@oss.qualcomm.com>
+	<aWSq_7_5kkQIv9Hc@smile.fi.intel.com>
+	<aWSuYd8zqCxZ9DYE@smile.fi.intel.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.49; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251227-printk-cleanup-part3-v1-3-21a291bcf197@suse.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Last-TLS-Session-Version: TLSv1.3
 
-On Sat 2025-12-27 09:16:10, Marcos Paulo de Souza wrote:
-> The flags argument was also used to check if CON_NBCON was set, but their
-> usage was fixed in the last commit. All current users are reading the
-> variable just to call console_is_usable.
+Hi Andy, Manivannan,
+
+On Mon, 12 Jan 2026 10:18:41 +0200
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+
+> +Cc: Herve (btw, any news on LAN966x support?)
+
+Related to LAN966x support, I am still stucked on issues related to
+fw_devlink and DT overlays [1].
+
+[1] https://lore.kernel.org/all/20260112154731.6540453b@bootlin.com/
+
 > 
-> By calling console_srcu_read_flags inside console_is_usable makes the
-> code cleaner and removes one argument from the function.
+> On Mon, Jan 12, 2026 at 10:04:24AM +0200, Andy Shevchenko wrote:
+> > On Sat, Jan 10, 2026 at 12:26:18PM +0530, Manivannan Sadhasivam via B4 Relay wrote:  
+> > > Hi,
+> > > 
+> > > This series is the continuation of the series [1] that added the initial support
+> > > for the PCIe M.2 connectors. This series extends it by adding support for Key E
+> > > connectors. These connectors are used to connect the Wireless Connectivity
+> > > devices such as WiFi, BT, NFC and GNSS devices to the host machine over
+> > > interfaces such as PCIe/SDIO, USB/UART and NFC. This series adds support for
+> > > connectors that expose PCIe interface for WiFi and UART interface for BT. Other
+> > > interfaces are left for future improvements.
+
+Related to describing a connector in DT. If DT overlays are involved to described
+what is connected to this connector, some issues need to be fixed.
+
+Those issues are related to referencing an external symbol from the overlay.
+
+We, at Boolin, have been working on the topic
+
+A talk (last year at ELC Europe) gives all details about the topic an related issue:
+  https://bootlin.com/pub/conferences/2025/elce/ceresoli-hotplug-status.pdf
+  https://www.youtube.com/watch?v=C8dEQ4OzMnc
+
+Also a discussion took place after this talk:
+  https://lore.kernel.org/all/20250902105710.00512c6d@booty/
+
+Recently, I also send a RFC series to DTC in order to move forward on this symbol
+reverence topic. This series implements features emerged from the pointed out
+discussion.
+
+> > > 
+> > > Serdev device support for BT
+> > > ============================
+> > > 
+> > > Adding support for the PCIe interface was mostly straightforward and a lot
+> > > similar to the previous Key M connector. But adding UART interface has proved to
+> > > be tricky. This is mostly because of the fact UART is a non-discoverable bus,
+> > > unlike PCIe which is discoverable. So this series relied on the PCI notifier to
+> > > create the serdev device for UART/BT. This means the PCIe interface will be
+> > > brought up first and after the PCIe device enumeration, the serdev device will
+> > > be created by the pwrseq driver. This logic is necessary since the connector
+> > > driver and DT node don't describe the device, but just the connector. So to make
+> > > the connector interface Plug and Play, the connector driver uses the PCIe device
+> > > ID to identify the card and creates the serdev device. This logic could be
+> > > extended in the future to support more M.2 cards. Even if the M.2 card uses SDIO
+> > > interface for connecting WLAN, a SDIO notifier could be added to create the
+> > > serdev device.
+> > > 
+> > > Open questions
+> > > ==============
+> > > 
+> > > Though this series adds the relevant functionality for handling the M.2 Key M
+> > > connectors, there are still a few open questions exists on the design. 
+> > > 
+> > > 1. I've used the DT compatible for the serdev swnode to match the existing OF
+> > > device_id of the bluetooth driver. This avoids implementing custom serdev id
+> > > matching as implemented till v2.  
+> > 
+> > Yeah, swnodes are not designed to replace the real DT or other firmware
+> > interface. The idea of swnodes is to have them providing quirks if needed (i.e.
+> > fixing up the broken or missed FW device properties). This should not have been
+> > done this way. Please, consider another approach, e.g. DT-overlay.  
 > 
-> Along with it, create a variant called __console_is_usable that can be
-> used under console_list_lock(), like unregister_console_locked.
+> This is what I have in mind when replied to you:
 > 
-> --- a/include/linux/console.h
-> +++ b/include/linux/console.h
-> @@ -656,13 +656,8 @@ extern bool nbcon_kdb_try_acquire(struct console *con,
->  				  struct nbcon_write_context *wctxt);
->  extern void nbcon_kdb_release(struct nbcon_write_context *wctxt);
->  
-> -/*
-> - * Check if the given console is currently capable and allowed to print
-> - * records. Note that this function does not consider the current context,
-> - * which can also play a role in deciding if @con can be used to print
-> - * records.
-> - */
-> -static inline bool console_is_usable(struct console *con, short flags,
-> +/* Variant of console_is_usable() when the console_list_lock is held. */
+> https://lore.kernel.org/all/20251015071420.1173068-1-herve.codina@bootlin.com/
+> 
+> > > 2. PCIe client drivers of some M.2 WLAN cards like the Qcom QCA6390, rely on
+> > > the PCIe device DT node to extract properties such as
+> > > 'qcom,calibration-variant', 'firmware-name', etc... For those drivers, should we
+> > > add the PCIe DT node in the Root Port in conjunction with the Port node as
+> > > below?
+> > > 
+> > > pcie@0 {
+> > > 	wifi@0 {
+> > > 		compatible = "pci17cb,1103";
+> > > 		...
+> > > 		qcom,calibration-variant = "LE_X13S";
+> > > 	};
+> > > 
+> > > 	port {
+> > > 		pcie4_port0_ep: endpoint {
+> > > 			remote-endpoint = <&m2_e_pcie_ep>;
+> > > 		};
+> > > 	};
+> > > };
 
-Nit: The comment is a bit misleading because this function is called
-     also from console_is_usable() under console_srcu_read_lock().
+Using mechanisms used by the LAN966x, those wifi@0 and port nodes could be added by
+a DT overlay by the PCI device driver handling the Qcom QCA6390 PCI device.
 
-     I would say something like:
-
-/*
- * The caller must ensure that @con can't disappear either by taking
- * console_list_lock() or console_srcu_read_lock(). See also
- * console_is_usable().
- */
-> +static inline bool __console_is_usable(struct console *con, short flags,
->  				     enum nbcon_write_cb nwc)
->  {
->  	if (!(flags & CON_ENABLED))
-> @@ -707,6 +702,18 @@ static inline bool console_is_usable(struct console *con, short flags,
->  	return true;
->  }
->  
-> +/*
-> + * Check if the given console is currently capable and allowed to print
-> + * records. Note that this function does not consider the current context,
-> + * which can also play a role in deciding if @con can be used to print
-> + * records.
-
-And I would add here something like:
-
- *
- * Context: Must be called under console_srcu_read_lock().
-
-> + */
-> +static inline bool console_is_usable(struct console *con,
-> +				     enum nbcon_write_cb nwc)
-> +{
-> +	return __console_is_usable(con, console_srcu_read_flags(con), nwc);
-> +}
-> +
->  #else
->  static inline void nbcon_cpu_emergency_enter(void) { }
->  static inline void nbcon_cpu_emergency_exit(void) { }
-
-Otherwise, it looks good. It is a nice clean up.
-
-Best Regards,
-Petr
+Best regards,
+Hervé
