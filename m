@@ -1,132 +1,155 @@
-Received: from smtp.gentoo.org (woodpecker.gentoo.org [140.211.166.183])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out-178.mta0.migadu.com (out-178.mta0.migadu.com [91.218.175.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 931152F25FB;
-	Wed, 14 Jan 2026 02:14:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=140.211.166.183
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18DF42D6E70;
+	Wed, 14 Jan 2026 03:41:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768356852; cv=none; b=fCTrpqWSET96IvNsgju+lfukHlqtvUWLafc1RWcUMVZibrNMXVTkvO8Y80zAYkPUq8elMsyNMHWtBgz89mG+bSA49fJcynvxokk7a9NYj5S1F5rqRMT+3TJiSY7EzWSQMfRyUQyS1F5FWhSlwRnb10fLaxHboE0Ub3gTc3WR+Ys=
+	t=1768362077; cv=none; b=dD9cUFgRx0+N+DvaFsuwedsvg1SvRhVHnJGuAKW8QkPDidKkXwNoq7gYLfSH4qfC75znr4BPmTU/7Z7rfBquf0+ZsAU8x2ATj3ycEF11LEsOK8bqU4fltcBkTgMwTgft3oh5pi2zCix1rHWCSiIhYQl71iJ3ziAZ558YQ+qPDGo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768356852; c=relaxed/simple;
-	bh=vwtGEmt9gJmYSfL0GnZ1AXkZ5AEWUxDZZhCG8UgGjWc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=P+8TGPgvMyrVsMEhad4ahpTnakgzufEcNh93gAcOkpKLBdse4GNLwA3nXSByHgejXLonNHB6Sv7af3EkapRh0gjC+P2jeHlW734v31ZCD4iWZrqi5rd6OO7/IN1h10Bb6Vvlw6XsxL0EfZ/XPHxEvecDxoJKLj4WeXCSeKDDQlM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org; spf=pass smtp.mailfrom=gentoo.org; arc=none smtp.client-ip=140.211.166.183
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gentoo.org
-Received: from localhost (unknown [116.232.18.222])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange secp256r1 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: dlan)
-	by smtp.gentoo.org (Postfix) with ESMTPSA id DA74C341030;
-	Wed, 14 Jan 2026 02:14:09 +0000 (UTC)
-Date: Wed, 14 Jan 2026 10:14:05 +0800
-From: Yixun Lan <dlan@gentoo.org>
-To: Conor Dooley <conor@kernel.org>, Paul Walmsley <pjw@kernel.org>
-Cc: Guodong Xu <guodong@riscstar.com>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
-	Daniel Lezcano <daniel.lezcano@linaro.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Samuel Holland <samuel.holland@sifive.com>,
-	Anup Patel <anup@brainfault.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
-	Yangyu Chen <cyy@cyyself.name>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Heinrich Schuchardt <xypron.glpk@gmx.de>,
-	Kevin Meng Zhang <zhangmeng.kevin@linux.spacemit.com>,
-	Andrew Jones <ajones@ventanamicro.com>, devicetree@vger.kernel.org,
-	linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-	spacemit@lists.linux.dev, linux-serial@vger.kernel.org,
-	Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>,
-	Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
-	Conor Dooley <conor.dooley@microchip.com>
-Subject: Re: [PATCH v4 00/11] riscv: spacemit: Add SpacemiT K3 SoC and K3
- Pico-ITX board
-Message-ID: <20260114021405-GYB25466@gentoo.org>
-References: <20260110-k3-basic-dt-v4-0-d492f3a30ffa@riscstar.com>
- <20260112-shrivel-sarcastic-36d9acd2d96a@spud>
- <20260113002123-GYA19926@gentoo.org>
- <20260113-swarm-mama-cbd7d0546578@spud>
+	s=arc-20240116; t=1768362077; c=relaxed/simple;
+	bh=fuHX1gJvEHLXSbrpNZBA4M1RZiyGD+1HT2Iv1MurZ9o=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Xaf1QGlNa7eJXhno2LdDZs58EF0zeNKYtZst/wMAgqMtUZZhGbYbqXz4XQeGniAeeaLZ12vCladFxIS2UyQWhCUDvQ7jJngSdLVEseLGejsVmq3zOV058yoSUjyxXqSTsRuG6/tEJqbuZNqdVmGG3tigYqDB+R7uk15qSMoJS1g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=kkyEAjf3; arc=none smtp.client-ip=91.218.175.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="kkyEAjf3"
+Message-ID: <977d29f6-4157-4fdb-b0d6-c24def482c06@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1768362064;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=wzuS26H8SYTScmOx3++ZwcMsS+D3jzSzvm/KUyjaJik=;
+	b=kkyEAjf3vAwmkpA6qQLnuaSZre5hBN1zivZR7feQaZvMwILYv8oANx8h+F6HDtKtMjlTGd
+	gn0lxegePRhz+XBSWXtBXaiKo9+/Gdy9/KJsL/7dx5iYjqhXvnXEZ+zWcHtH+MjVlHKQFM
+	4yb2rB8VCNXVTy1HzFsLEuwTZ+qx5q0=
+Date: Wed, 14 Jan 2026 11:40:51 +0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260113-swarm-mama-cbd7d0546578@spud>
+Subject: Re: [PATCH v3 03/14] software node: Implement device_get_match_data
+ fwnode callback
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ manivannan.sadhasivam@oss.qualcomm.com
+Cc: Rob Herring <robh@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Nathan Chancellor <nathan@kernel.org>,
+ Nicolas Schier <nicolas.schier@linux.dev>, Hans de Goede <hansg@kernel.org>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ Mark Pearson <mpearson-lenovo@squebb.ca>,
+ "Derek J. Clark" <derekjohn.clark@gmail.com>,
+ Manivannan Sadhasivam <mani@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Marcel Holtmann <marcel@holtmann.org>,
+ Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+ Bartosz Golaszewski <brgl@bgdev.pl>, Daniel Scally <djrscally@gmail.com>,
+ Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+ Sakari Ailus <sakari.ailus@linux.intel.com>,
+ "Rafael J. Wysocki" <rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>,
+ Bartosz Golaszewski <brgl@kernel.org>, linux-serial@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
+ platform-driver-x86@vger.kernel.org, linux-pci@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+ linux-bluetooth@vger.kernel.org, linux-pm@vger.kernel.org,
+ Stephan Gerhold <stephan.gerhold@linaro.org>,
+ Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+ linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org
+References: <20260110-pci-m2-e-v3-0-4faee7d0d5ae@oss.qualcomm.com>
+ <20260110-pci-m2-e-v3-3-4faee7d0d5ae@oss.qualcomm.com>
+ <aWSpFk9z0zpyKjr6@smile.fi.intel.com>
+Content-Language: en-US
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Sui Jingfeng <sui.jingfeng@linux.dev>
+In-Reply-To: <aWSpFk9z0zpyKjr6@smile.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
 
 
-On 22:17 Tue 13 Jan     , Conor Dooley wrote:
-> On Tue, Jan 13, 2026 at 08:21:23AM +0800, Yixun Lan wrote:
-> > Hi Conor,
-> > 
-> > On 21:45 Mon 12 Jan     , Conor Dooley wrote:
-> > > On Sat, Jan 10, 2026 at 01:18:12PM +0800, Guodong Xu wrote:
-> > > 
-> > > > Hi, Conor
-> > > > 
-> > > > For the binding riscv/extensions.ymal, here's what changed in v3 (no
-> > > > change in v4):
-> > > > 
-> > > >  1. Dropped the patch of adding "supm" into extensions.yaml. At the same
-> > > >     time, I will start another patchset which implements the strategy
-> > > >     outlined by Conor in Link [2] and by Samuel in Link [3].
-> > > 
-> > > Okay, that seems reasonable to separate out.
-> > > 
-> > > > 
-> > > >  2. Dropped the dependency checks for "sha" on "h", "shcounterenw", and
-> > > >     6 others. "sha" implies these extensions, and it should be allowed
-> > > >     to be declared independently. Like "a" implies "zaamo" and "zalrsc".
-> > > > 
-> > > >  3. Enchanced the dependency check of "ziccamoa" on "a". Specifically,
-> > > >      - added the dependency check of "ziccamoa" on "zaamo" or on "a".
-> > > >      - added the dependency check of "za64rs" on "zalrsc" or on "a".
-> > > >      - added the dependency check of "ziccrse" on "zalrsc" or "a".
-> > > >     The commit message of this patch is updated too, to better explain the
-> > > >     relationship  between "ziccamoa", "za64rs", "ziccrse" and "a".
-> > > > 
-> > > >  4. Enhanced checking dependency of "b" and "zba", "zbb", "zbs", making the
-> > > >     dependency check in both directions, as discussed in [4]. Since "b"
-> > > >     was ratified much later than its component extensions (zba/zbb/zbs),
-> > > >     existing software and kernels expect these explicit strings. This
-> > > >     bidirectional check ensures cores declaring "b" remain compatible
-> > > >     with older software that only recognizes zba/zbb/zbs.
-> > > 
-> > > This I asked about in the relevant patch, I would like to know what your
-> > > plan for adding the "b"s is.
-> > > 
-> > ..
-> > > Spacemit folks, I assume you weren't planning on taking the
-> > > extensions.yaml stuff via your tree? If you weren't, I'll grab it once
-> > > the question about b is answered.
-> > 
-> > sure, please take extension stuff which are patches 6-9, for 1-5, it's
-> > all about adding support for SpacemiT K3 SoC, to avoid petential conflicts,
-> > I wouldn't mind if you also taking them? then I can handle the rest 10,11 for DT
+
+On 2026/1/12 15:56, Andy Shevchenko wrote:
+> On Sat, Jan 10, 2026 at 12:26:21PM +0530, Manivannan Sadhasivam via B4 Relay wrote:
 > 
-> Stuff for spacemit is either for you or for the relevant subsystem
-> maintainers. You're probably safe enough taking the
-> timer/interrupt-controller stuff if the maintainers don't apply it in a
-> reasonable period, it's not abnormal for those in particular to go via
-> the platform maintainer in my experience. Just be clear that you have
-> done so. I'm only interested in taking 6-9.
-Hi Conor,
-  Ok, I got, thank you!
+>> Because the software node backend of the fwnode API framework lacks an
+>> implementation for the .device_get_match_data function callback.
+> 
+> Maybe this is done on purpose. 
 
-Hi Paul Walmsley,
-  I assume you're responsible for more general riscv stuff with your
-effective maintainer hat, so do you mind if I take patches 1-5 via SpacemiT
-SoC tree? I think the potential conflicts should be low and easy to fix.
-  Or, in the other hand, just let me know which patches you would like
-to take, then I will handle the rest. Thanks
 
--- 
-Yixun Lan (dlan)
+It is a *fact* that the broken swnode lacks an implementation for the 
+.device_get_match_data stub.
+
+
+Otherwise, If it is really done *on purpose*, the maintainers of swnode
+backend probably shall document it in the source file *explicitly*.
+
+Have you thought about this aspect?
+> 
+
+If it is sure thing, then it shouldn't start with "Maybe ..."
+
+
+>> This makes it difficult to use(and/or test) a few drivers that originates
+>> from DT world on the non-DT platform.
+> 
+> How difficult? 
+
+The emphasis isn't on the 'difficult' word, it means 'inconvenience'
+
+> DSA implementation went to the way of taking DT overlay
+> approach. Why that one can't be applied here?
+
+
+Software node as an complement of ACPI, Therefore should do the same.
+
+
+
+DT overlay introduce extra overhead/side effects on the non-DT systems.
+
+Besides, DT overlay requires the OS distribution(such as ubuntu) has the 
+DT overlay config option selected.
+
+
+
+> 
+>> Implement the .device_get_match_data fwnode callback, which helps to keep
+>> the three backends of the fwnode API aligned as much as possible. This is
+>> also a fundamental step to make a few drivers OF-independent truely
+>> possible.
+>>
+>> Device drivers or platform setup codes are expected to provide a software
+>> node string property, named as "compatible". At this moment, the value of
+>> this string property is being used to match against the compatible entries
+>> in the of_device_id table. It can be extended in the future though.
+> 
+> I really do not want to see this patch
+
+You can do that by dropping the maintainer-ship.
+
+Your endless, bruth-force ranting on such a straight-forward thing 
+doesn't make much sense, because that waste everybody's time.
+
+> without very good justification
+
+
+Justifications has been provided over and over again.
+
+> (note, there were at least two attempts in the past to add this stuff
+
+This exactly saying that the implementation is missing.
+
+>   and no-one was merged, 
+
+That's the reason why you see it at least the second time.
+
+have you studied those cases?).
+> 
+
+The first one is not 100% correct.
