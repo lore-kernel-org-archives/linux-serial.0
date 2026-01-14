@@ -1,146 +1,253 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f68.google.com (mail-wr1-f68.google.com [209.85.221.68])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF49F2D8371;
-	Wed, 14 Jan 2026 14:01:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B77BF284883
+	for <linux-serial@vger.kernel.org>; Wed, 14 Jan 2026 14:23:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.68
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768399319; cv=none; b=XQiOvRnxHTqWGontaEdcXhPAfLJ/mnWZBkE6Yydz3EhmCDEOxV4VqudEDm4VMxUt1EG3QfQyUSm1gmivjb805041wQCV+/Xc7NVmU4ueyi8kFqD4Jl6JsPClIpyrhjXdXXMnGDyHFBAon/NHbSaQlKUso5hUmrFWzHlXRIHReXE=
+	t=1768400586; cv=none; b=R/L3jR8nnk+9xXJpNeuMQh0yMaMnx9KR+6G+065aRFtbycW64pMw8BsevsNWfvzZpL4Dm15qeZzgSidEEi7QfZrKv6g/h+dAUAZ/h6JxRoSuIkP1YoOxCx4w/+kgaSpHOl+4B3Ls7i0Cxz8IhQrAJ+hiGmFqI9uIzgVT7DP/Hy8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768399319; c=relaxed/simple;
-	bh=YThRr+SqFQrj1xWYbkZyAQfpTQhSxOJrEz7Vmu8eYO0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=D9vQBa5OfCgazENkjB0mwTCmeN0N5uI2g4mu9qPFtlpNLEV6HFB75GGCyg/5BUd6MTRQ5LDeH9DJJ3Y6e3u1euYS/J+ItnsGT/UDxC8TUUInzeIA7jD5i8GjoE8c91cpVvlT0eEWvV9vB3tg5VQTFyqwg1y054cJ75T+RaoG//8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GamcmtOM; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1768400586; c=relaxed/simple;
+	bh=DfrdswblHy1q9UZ6D1iDapX7djYN6NrxRY58tdu4Ov8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=bjAWIShbQTOt8pFlr6f+G7GO0w/qpP2EJrjBBrDZLfV1DCVsoNAdqx6ba/UEl5wdmt+SrL5EK2jylcDJysqDhpxSprhpwWMKsSI9nvK3hMZ13NEHLVlmDeoB348nmXHgnnBItHtzNw6xuOlJz0NmswkevuF96QftVdySl4V6qH8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=HHqfcaHC; arc=none smtp.client-ip=209.85.221.68
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GamcmtOM"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62176C19423;
-	Wed, 14 Jan 2026 14:01:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1768399318;
-	bh=YThRr+SqFQrj1xWYbkZyAQfpTQhSxOJrEz7Vmu8eYO0=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=GamcmtOMZjUjnBtKP0uhc41XsMqZ5fSe9+uXZ30TVeZpZSpRIIMXLIZ6LSMmqmxZJ
-	 NMpWBOrVCw5ay9J9pII8Hg/QzzTF8slSB/w2unqe4TNoWuGWzngFiEoJoUAvAmqFB5
-	 Iwga7pBiI5Zhqw1J+tOTc30FaWvGC89yLrq+JlbFxL2kl2s3LxRjEpWvdFoSPyfKHh
-	 jTw7x+USzU8jCMBBzyudL54Ry+Ze3oj0BmfkDgneM6dbU0fXZXjVgZ4iNhOuJykciN
-	 khzGT4OdT3Wu+wQV1jAF14IH2be73WBLizVZPZCNbT/eImzvDLUXbcLvK5UdivHV/a
-	 mq/qzYKU6Fp5w==
-Message-ID: <2a44e967-ebae-4641-88d7-ccb4536ee3b7@kernel.org>
-Date: Wed, 14 Jan 2026 15:01:51 +0100
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="HHqfcaHC"
+Received: by mail-wr1-f68.google.com with SMTP id ffacd0b85a97d-432d256c2a9so4921276f8f.3
+        for <linux-serial@vger.kernel.org>; Wed, 14 Jan 2026 06:23:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1768400583; x=1769005383; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=rjJ0doliNf6plVmMYQkV7IlLiBwqr6x+viyB7m/anSs=;
+        b=HHqfcaHCDZ4C/25aiu2LLUMRB6a3JGJWGhQfFT6QaEtcdkNlMy33Eg5S1g6VGmzYXo
+         hpfCXuvsZWvysbszR52KoZ2Hm1zuNEeCpDbVwfZG4XIIepu7J6DwkkZTdV4+WvGZUfb2
+         J50i9CArQzRD7a32Tos9uS2iTNN+n78n5NdtroiOypIe6+cM2D5E/4P5BmzBG0Y1OMZi
+         TF2vHM81yG5bimXpDBncf/8rbHqG0I7eJ966s7d0iQ2MM9s31pdW7eDgXOSxl6kdp6c/
+         Y/on+swJawD0gJ25otHcu9wX57o6bpwey1K2T1Em/Ha1Hnr4ql+oU5YXD54Y+M9nX783
+         +Gyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1768400583; x=1769005383;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=rjJ0doliNf6plVmMYQkV7IlLiBwqr6x+viyB7m/anSs=;
+        b=MFW5qJyvgjcQ+WjIzqsJTqF56pdmQbQfcqhVFvQahfOLAyAXAts/9aE6vttHQG/IQx
+         mAlIwXcKRNr1AgBj/v9s2nqc1PPOFo14as7bS80dPGaF/NhEftiLvgvXamaTPd8TIAjz
+         UzvLWjFSUs/rirT1XkIpAYU4kk+zg2BKRmTc7qxND+W8cx9dXVpDXYXoM47qV9CxMXEs
+         ixEJ4oF44BfnATDiTqJ01GdP+L+b5bwYs1GuCNN8LUXxEiTXWd3s27upBtRbCl9jtG7r
+         txN/SdQr1cHs9uSGLaiJYUPYXmGucKc/6CPTvZ3QnfLY4Kkef+jNWNHRQ7MEGQ/zLqDx
+         t9eA==
+X-Forwarded-Encrypted: i=1; AJvYcCU4ZtvpwvxqBsCQdMGqFocBCxi5vavRImaZutQnfhJO1NEH7oRMMjFFl/Ad/ETpWkevM8XfDfdVgKPPl0U=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyRSdHLFoZoRBVvp6pUU1Xnno9W41maaMoIeZLYelVLpLe4VnHL
+	Ax4K3+EX8ydsUwzlvlRuKEo+6Q4y3xPmfM2UZ+MCg5dBMBPjNlUWhunu+gHwd7a1m1c=
+X-Gm-Gg: AY/fxX7mzK7rV7xR8yVDIWS2fl3a07Hs8xvZL7pAhzhLVGvOHn3hF86ldVLPFMWdL/1
+	IoV/I1WQLWMH9PHUBjQKn2yaayE12hRGgUOivQ/WGlduqMWWh1B6w8qeJ/rt+7Nk7/a+jphITNl
+	zlYJS3Ota6OsRBSgsk7opSEXJ2cTs66E0bpzPKu9NEfU4M7/pMkYNWMVBCOMUc3Ifn2XdkmJzyC
+	aN+DN8Q/mjVGCa5GRfi+SKPgBMbFaqbkHH4qyGuhd2UQAO6AzwLOdTGCzBQGR5/d9/3JDECKMOO
+	m1ZmqjRxyAxsgnuTr3GCNvmgfcbAoy46nz0KRmdS8PQrDp53K/bPnZbS3xS1SpT4NI7ld6pQ9GC
+	fsbjqoBmQYLn96zYTkufwRcnp/XHvb5pNvUwEUZ02Kzzlcqm/FN1xOyJddnQCa2Oz7BdKKgZ5jq
+	vWGwYqe7umjLpOKQ==
+X-Received: by 2002:a05:6000:3105:b0:431:104:6dd5 with SMTP id ffacd0b85a97d-4342c5728e2mr3256518f8f.58.1768400582935;
+        Wed, 14 Jan 2026 06:23:02 -0800 (PST)
+Received: from pathway.suse.cz ([176.114.240.130])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-432bd0dacd1sm49446446f8f.4.2026.01.14.06.23.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Jan 2026 06:23:02 -0800 (PST)
+Date: Wed, 14 Jan 2026 15:22:59 +0100
+From: Petr Mladek <pmladek@suse.com>
+To: Marcos Paulo de Souza <mpdesouza@suse.com>
+Cc: Richard Weinberger <richard@nod.at>,
+	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jason Wessel <jason.wessel@windriver.com>,
+	Daniel Thompson <danielt@kernel.org>,
+	Douglas Anderson <dianders@chromium.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Breno Leitao <leitao@debian.org>,
+	Andrew Lunn <andrew+netdev@lunn.ch>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>,
+	"Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Christophe Leroy <christophe.leroy@csgroup.eu>,
+	Andreas Larsson <andreas@gaisler.com>,
+	Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Jacky Huang <ychuang3@nuvoton.com>,
+	Shan-Chun Hung <schung@nuvoton.com>,
+	Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+	linux-um@lists.infradead.org, linux-kernel@vger.kernel.org,
+	kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org,
+	netdev@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+	linux-hardening@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+	sparclinux@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org, linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH 06/19] printk: Introduce register_console_force
+Message-ID: <aWemw2ZCwtAd17I1@pathway.suse.cz>
+References: <20251227-printk-cleanup-part3-v1-0-21a291bcf197@suse.com>
+ <20251227-printk-cleanup-part3-v1-6-21a291bcf197@suse.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 2/9] serdev: Add an API to find the serdev controller
- associated with the devicetree node
-To: manivannan.sadhasivam@oss.qualcomm.com, Rob Herring <robh@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Nathan Chancellor <nathan@kernel.org>,
- Nicolas Schier <nicolas.schier@linux.dev>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- Mark Pearson <mpearson-lenovo@squebb.ca>,
- "Derek J. Clark" <derekjohn.clark@gmail.com>,
- Manivannan Sadhasivam <mani@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Marcel Holtmann <marcel@holtmann.org>,
- Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
- Bartosz Golaszewski <brgl@bgdev.pl>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Bartosz Golaszewski <brgl@kernel.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-kbuild@vger.kernel.org, platform-driver-x86@vger.kernel.org,
- linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
- linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org,
- linux-pm@vger.kernel.org, Stephan Gerhold <stephan.gerhold@linaro.org>,
- Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
- linux-acpi@vger.kernel.org
-References: <20260112-pci-m2-e-v4-0-eff84d2c6d26@oss.qualcomm.com>
- <20260112-pci-m2-e-v4-2-eff84d2c6d26@oss.qualcomm.com>
-From: Hans de Goede <hansg@kernel.org>
-Content-Language: en-US, nl
-In-Reply-To: <20260112-pci-m2-e-v4-2-eff84d2c6d26@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251227-printk-cleanup-part3-v1-6-21a291bcf197@suse.com>
 
-Hi Mani,
+On Sat 2025-12-27 09:16:13, Marcos Paulo de Souza wrote:
+> The register_console_force function will register a console even if it
+> wasn't specified on boot. The new function will act like all consoles
+> being registered were using the CON_ENABLED flag.
 
-Thank you for your work in this.
+I am a bit confused by the last sentence. It might be bacause I am not
+a native speaker. I wonder if the following is more clear:
 
-On 12-Jan-26 17:26, Manivannan Sadhasivam via B4 Relay wrote:
-> From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+<proposal>
+The register_console_force() function will register a console even if it
+wasn't preferred via the command line, SPCR, or device tree. Currently,
+certain drivers pre-set the CON_ENABLE flag to achieve this.
+</proposal>
+
+> The CON_ENABLED flag will be removed in the following patches and the
+> drivers that use it will migrate to register_console_force instead.
 > 
-> Add of_find_serdev_controller_by_node() API to find the serdev controller
-> device associated with the devicetree node.
-> 
-> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
-> ---
->  drivers/tty/serdev/core.c | 16 ++++++++++++++++
->  include/linux/serdev.h    |  9 +++++++++
->  2 files changed, 25 insertions(+)
-> 
-> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-> index b33e708cb245..25382c2d63e6 100644
-> --- a/drivers/tty/serdev/core.c
-> +++ b/drivers/tty/serdev/core.c
-> @@ -504,6 +504,22 @@ struct serdev_controller *serdev_controller_alloc(struct device *host,
->  }
->  EXPORT_SYMBOL_GPL(serdev_controller_alloc);
->  
-> +/**
-> + * of_find_serdev_controller_by_node() - Find the serdev controller associated
-> + *					 with the devicetree node
-> + * @node:	Devicetree node
-> + *
-> + * Return: Pointer to the serdev controller associated with the node. NULL if
-> + * the controller is not found.
-> + */
-> +struct serdev_controller *of_find_serdev_controller_by_node(struct device_node *node)
-> +{
-> +	struct device *dev = bus_find_device_by_of_node(&serdev_bus_type, node);
-> +
-> +	return (dev && dev->type == &serdev_ctrl_type) ? to_serdev_controller(dev) : NULL;
-> +}
-> +EXPORT_SYMBOL_GPL(of_find_serdev_controller_by_node);
-> +
-
-This new of_find_serdev_controller_by_node() function needs:
-
-#ifdef CONFIG_OF ... #endif
-
-around it, to match the stubbing you are doing in serdev.h
-
->  static int of_serdev_register_devices(struct serdev_controller *ctrl)
+> --- a/kernel/printk/printk.c
+> +++ b/kernel/printk/printk.c
+> @@ -3858,7 +3858,7 @@ static int console_call_setup(struct console *newcon, char *options)
+>   * enabled such as netconsole
+>   */
+>  static int try_enable_preferred_console(struct console *newcon,
+> -					bool user_specified)
+> +					bool user_specified, bool force)
 >  {
->  	struct device_node *node;
-> diff --git a/include/linux/serdev.h b/include/linux/serdev.h
-> index ecde0ad3e248..db9bfaba0662 100644
-> --- a/include/linux/serdev.h
-> +++ b/include/linux/serdev.h
-> @@ -333,4 +333,13 @@ static inline bool serdev_acpi_get_uart_resource(struct acpi_resource *ares,
->  }
->  #endif /* CONFIG_ACPI */
+>  	struct console_cmdline *c;
+>  	int i, err;
+> @@ -3896,12 +3896,15 @@ static int try_enable_preferred_console(struct console *newcon,
+>  		return 0;
+>  	}
 >  
-> +#ifdef CONFIG_OF
-> +struct serdev_controller *of_find_serdev_controller_by_node(struct device_node *node);
-> +#else
-> +struct serdev_controller *of_find_serdev_controller_by_node(struct device_node *node)
-> +{
-> +	return NULL;
-> +}
+> +	if (force)
+> +		newcon->flags |= CON_ENABLED;
+> +
 
-stubs like this one should be static inline to avoid warnings like this one:
+This makes sense because the pre-enabled CON_ENABLED flag is handled
+right below.
 
-In file included from drivers/tty/serdev/core.c:21:
-./include/linux/serdev.h:339:27: warning: no previous prototype for ‘of_find_serdev_controller_by_node’ [-Wmissing-prototypes]
-  339 | struct serdev_controller *of_find_serdev_controller_by_node(struct device_node *node)
-      |                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>  	/*
+>  	 * Some consoles, such as pstore and netconsole, can be enabled even
+>  	 * without matching. Accept the pre-enabled consoles only when match()
+>  	 * and setup() had a chance to be called.
+>  	 */
+> -	if (newcon->flags & CON_ENABLED && c->user_specified ==	user_specified)
+> +	if (newcon->flags & CON_ENABLED && c->user_specified == user_specified)
+>  		return 0;
 
-Regards,
+But this location was not a good idea in the first place. It hides an unexpected
+side-effect into this function. It is easy to miss. A good example is
+the regression caused by the last patch in this patch set, see
+https://lore.kernel.org/all/89409a0f48e6998ff6dd2245691b9954f0e1e435.camel@suse.com/
 
-Hans
+I actually have a patch removing this side-effect:
+
+From d24cd6b812967669900f9866f6202e8b0b65325a Mon Sep 17 00:00:00 2001
+From: Petr Mladek <pmladek@suse.com>
+Date: Mon, 24 Nov 2025 17:34:25 +0100
+Subject: [PATCH] printk/console: Do not rely on
+ try_enable_preferred_console() for pre-enabled consoles
+
+try_enable_preferred_console() has non-obvious side effects. It returns
+success for pre-enabled consoles.
+
+Move the check for pre-enabled consoles to register_console(). It makes
+the handling of pre-enabled consoles more obvious.
+
+Also it will allow call try_enable_preferred_console() only when there
+is an entry in preferred_consoles[] array. But it would need some more
+changes.
+
+It is part of the code clean up. It should not change the existing
+behavior.
+
+Signed-off-by: Petr Mladek <pmladek@suse.com>
+---
+ kernel/printk/printk.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index abf1b93de056..d6b1d0a26217 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -3826,14 +3826,6 @@ static int try_enable_preferred_console(struct console *newcon,
+ 		return 0;
+ 	}
+ 
+-	/*
+-	 * Some consoles, such as pstore and netconsole, can be enabled even
+-	 * without matching. Accept the pre-enabled consoles only when match()
+-	 * and setup() had a chance to be called.
+-	 */
+-	if (newcon->flags & CON_ENABLED && pc->user_specified == user_specified)
+-		return 0;
+-
+ 	return -ENOENT;
+ }
+ 
+@@ -4022,6 +4014,14 @@ void register_console(struct console *newcon)
+ 	if (err == -ENOENT)
+ 		err = try_enable_preferred_console(newcon, false);
+ 
++	/*
++	 * Some consoles, such as pstore and netconsole, can be enabled even
++	 * without matching. Accept them at this stage when they had a chance
++	 * to match() and call setup().
++	 */
++	if (err == -ENOENT && (newcon->flags & CON_ENABLED))
++		err = 0;
++
+ 	/* printk() messages are not printed to the Braille console. */
+ 	if (err || newcon->flags & CON_BRL) {
+ 		if (newcon->flags & CON_NBCON)
+-- 
+2.52.0
 
 
+It would be better to do the above change 1st. Then the @force
+parameter might be checked in __register_console() directly, like:
+
+	/*
+	 * Some consoles, such as pstore and netconsole, can be enabled even
+	 * without matching. Accept them at this stage when they had a chance
+	 * to match() and call setup().
+	 */
+	if (err == -ENOENT && (force || newcon->flags & CON_ENABLED))
+		err = 0;
+
+You might just remove the check of CON_ENABLED in the last patch.
+I think that this should actually fix the regression. It will
+handle also the case when the console was enabled by
+try_enable_default_console() and try_enable_preferred_console()
+returned -ENOENT.
+
+Note: I have some more patches which clean up this mess. But they are
+      more complicated because of how the Braille console support
+      is wired. They still need some love. Anyway, the above patch should
+      be good enough for removing CON_ENABLED flag.
+
+Best Regards,
+Petr
