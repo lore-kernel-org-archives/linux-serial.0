@@ -1,94 +1,89 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9EDB36CDE8;
-	Wed, 14 Jan 2026 21:36:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AB50264A9D;
+	Wed, 14 Jan 2026 23:17:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768426608; cv=none; b=P7qor6mGNhrf3cXGyppSFcHqbKle3g8fWWTNLasWKBeeeIj5U0Ilr359U2931bsy/gkZdGKzkW6tR1bFwM0DjiIZlY0pK5WTG0VXhRtIHyVNpuzxlcpL8E5iZ4ApKHxW/Erd9d02At7hQAZpy7duppvqZXKCHg0nVhZun1fLK0A=
+	t=1768432655; cv=none; b=MqqjWsNAVmUxRNpAr1QFL7xykLgipfHJh/qLS76qmGcNqJviAXyL3lwgK+5XsdF9ckWZJh4NVtrvyzUBJNivEDZ1g0250d28MqB3EZ3l3TS6qb34J83POulRa2cAIRGj981IgPD2IUGZoJzTx1dJ5MIAIki5uKoQOTLBgt3G5f0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768426608; c=relaxed/simple;
-	bh=WVO6osBIohiBYtrg3CeMVJao578MY2yze+0eFa3vztY=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
-	 MIME-Version:Content-Type; b=OMwXZ/iUNLyL/6iLvyCJ8aFCsVif32R4EV8U+Rx3GPuFBuXQwqHSfUjAyjRfi5sQnngjRzIK+lD87sRDoT04buJXji+ZknvPM+HbVF9OSNuP6Wp4e7GWWMYM9RnVzWG3XoMZPsZm3ahwqf7rP2nF2SYH2CuRgMSILmzGRWLEQmg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=e8HsnKDp; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1768432655; c=relaxed/simple;
+	bh=yiZaT2+yUxyzhmN9BLG28Zi7rtf5bP+HzkcRffYh+5w=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=W10kWN2DwA+qneC0hM4MwNFQujwsq6R6esz3KsCprEHSuIZxElA/wWQYNeqRG4y8Wkc6nSjTWp1WFoV83yL7w4WAO4xilZFdFn94TFtVJuIkdpie4ZskgRmRntS/M9nB22JuQ/JyScUt7KEOhROvbrSorW9Gkcvb/TpNm0M09fM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=s/e0wuaV; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="e8HsnKDp"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5819AC19424;
-	Wed, 14 Jan 2026 21:36:43 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="s/e0wuaV"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F9B3C4CEF7;
+	Wed, 14 Jan 2026 23:17:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1768426607;
-	bh=WVO6osBIohiBYtrg3CeMVJao578MY2yze+0eFa3vztY=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-	b=e8HsnKDpwFN6/zQvtnWiC1TLCk1/a/d23fOLW+6w1LqjLlSkWQEgmfn1JLJLlDE7v
-	 cqRykWw1V57S492AZY6rJ+0yck1CplYYN3r1j+a6RwPHNUdemEEsY3N8TzTnLR/Gm6
-	 C9BmcagtEs7ODmgDAcv+M/20fiPhlm+7KH55Glpp/ukxJR8s23gJJZBA1VAZYlEO8q
-	 F8X68mDaW3JT+aMLmPGFJTV1N6zQx1CgOsQfQOa3FW6Rgl1WPvpxyqDN5NCxKEvhsW
-	 4/L/uNl4K3lGyvY9eN2tqMnd+YBc/reDpPBgD0lq6yqt/vlmTCHypFyRkY2MBfqy5F
-	 oBBlu1fKJ7uew==
-From: Mark Brown <broonie@kernel.org>
-To: airlied@gmail.com, simona@ffwll.ch, maarten.lankhorst@linux.intel.com, 
- mripard@kernel.org, tzimmermann@suse.de, robh@kernel.org, 
- krzk+dt@kernel.org, conor+dt@kernel.org, dmitry.torokhov@gmail.com, 
- sre@kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org, 
- lgirdwood@gmail.com, Kuan-Wei Chiu <visitorckw@gmail.com>
-Cc: jserv@ccns.ncku.edu.tw, dri-devel@lists.freedesktop.org, 
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-input@vger.kernel.org, linux-pm@vger.kernel.org, 
- linux-serial@vger.kernel.org, linux-sound@vger.kernel.org, 
- Yu-Chun Lin <eleanor.lin@realtek.com>
-In-Reply-To: <20260113092602.3197681-1-visitorckw@gmail.com>
-References: <20260113092602.3197681-1-visitorckw@gmail.com>
-Subject: Re: (subset) [PATCH v4 0/6] dt-bindings: goldfish: Convert to DT
- schema
-Message-Id: <176842660309.229619.6412457616367822654.b4-ty@kernel.org>
-Date: Wed, 14 Jan 2026 21:36:43 +0000
+	s=k20201202; t=1768432655;
+	bh=yiZaT2+yUxyzhmN9BLG28Zi7rtf5bP+HzkcRffYh+5w=;
+	h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+	b=s/e0wuaVujPJ1SdsmwMkhm3Ij1DfE1MgW3bPGlVytD562/c2dbAEJhmCsodwRlcVC
+	 AoWp/x/ep8hA2D3AUmd99Nzz/nMxJ2c3YsqiEWLGzmw8pHnTxvlb7YADZ49Q3n1h6u
+	 FumOYq6cMf6O/kS3fDkB1PWUsqrUCFJTVAqGBve1QyueuC+UtTUMDtvAbsN8y911BK
+	 m1+gta1U34OtyMzjo3wbDvhqarDbs37HFqXzVeVKGibJYZJh+bYL1dgaKhj1C4CW2E
+	 gbEbXSbXVMLN7fs3xQ/ByFOc5p06RAEe3mfTUVpWRehrll28lZIeo8eaOtVrB8xr4a
+	 MA6EoF2XZ5kcg==
+Date: Wed, 14 Jan 2026 16:17:32 -0700 (MST)
+From: Paul Walmsley <pjw@kernel.org>
+To: Guodong Xu <guodong@riscstar.com>
+cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+    Conor Dooley <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>, 
+    Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
+    Alexandre Ghiti <alex@ghiti.fr>, Yixun Lan <dlan@gentoo.org>, 
+    Daniel Lezcano <daniel.lezcano@linaro.org>, 
+    Thomas Gleixner <tglx@linutronix.de>, 
+    Samuel Holland <samuel.holland@sifive.com>, 
+    Anup Patel <anup@brainfault.org>, 
+    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>, 
+    Yangyu Chen <cyy@cyyself.name>, Paul Walmsley <paul.walmsley@sifive.com>, 
+    Conor Dooley <conor@kernel.org>, Heinrich Schuchardt <xypron.glpk@gmx.de>, 
+    Kevin Meng Zhang <zhangmeng.kevin@linux.spacemit.com>, 
+    Andrew Jones <ajones@ventanamicro.com>, devicetree@vger.kernel.org, 
+    linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org, 
+    spacemit@lists.linux.dev, linux-serial@vger.kernel.org, 
+    Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>, 
+    Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
+Subject: Re: [PATCH v3 01/11] dt-bindings: riscv: add SpacemiT X100 CPU
+ compatible
+In-Reply-To: <20260108-k3-basic-dt-v3-1-ed99eb4c3ad3@riscstar.com>
+Message-ID: <d15c3e1a-509b-0e99-c408-976fa4cf8e32@kernel.org>
+References: <20260108-k3-basic-dt-v3-0-ed99eb4c3ad3@riscstar.com> <20260108-k3-basic-dt-v3-1-ed99eb4c3ad3@riscstar.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Mailer: b4 0.15-dev-47773
+Content-Type: text/plain; charset=US-ASCII
 
-On Tue, 13 Jan 2026 09:25:56 +0000, Kuan-Wei Chiu wrote:
-> Convert the Android Goldfish emulator platform bindings from text
-> format to DT schema.
+On Thu, 8 Jan 2026, Guodong Xu wrote:
+
+> Add compatible string for the SpacemiT X100 core. [1]
 > 
-> Most of these bindings are currently located in
-> Documentation/devicetree/bindings/goldfish/. Move them to the
-> appropriate subsystem directories (serial, input, power, sound, misc)
-> to align with the kernel directory structure.
+> The X100 is a 64-bit RVA23-compliant RISC-V core from SpacemiT. X100
+> supports the RISC-V vector and hypervisor extensions and all mandatory
+> extersions as required by the RVA23U64 and RVA23S64 profiles, per the
+> definition in 'RVA23 Profile, Version 1.0'. [2]
 > 
-> [...]
+> >From a microarchieture viewpoint, the X100 features a 4-issue
+> out-of-order pipeline.
+> 
+> X100 is used in SpacemiT K3 SoC.
+> 
+> Link: https://www.spacemit.com/en/spacemit-x100-core/ [1]
+> Link: https://docs.riscv.org/reference/profiles/rva23/_attachments/rva23-profile.pdf [2]
+> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+> Reviewed-by: Yixun Lan <dlan@gentoo.org>
+> Reviewed-by: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
+> Signed-off-by: Guodong Xu <guodong@riscstar.com>
 
-Applied to
+I think Yixun Lan is going to pick this up, so 
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+Acked-by: Paul Walmsley <pjw@kernel.org>
 
-Thanks!
 
-[5/6] dt-bindings: sound: google,goldfish-audio: Convert to DT schema
-      commit: 10303b32519f52a5afd40593a507543143c8ec6a
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
-
+- Paul
