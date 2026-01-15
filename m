@@ -1,127 +1,172 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f67.google.com (mail-wr1-f67.google.com [209.85.221.67])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49C0036C0CC;
-	Thu, 15 Jan 2026 10:45:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6647A374187
+	for <linux-serial@vger.kernel.org>; Thu, 15 Jan 2026 11:05:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.67
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768473900; cv=none; b=qdzlAemVo7+4MCX/2IvV6t6yVALBtoJBpCpL+5BquJFmu9isMTdz3eQhZKoJiw8i6/NjsnXXCaqrl+K7n2jk51uyVQzM6TBsBCpObtK41ElBmubqgeA5FM7wwuOsrN63G3ICGng7zO5ksEbRccQIFMQZL5/n+gMOwJvu+xK+xIY=
+	t=1768475159; cv=none; b=phdOsMZa2nOiXjreKonCp1hjlUgndFB4nYEjqQu+iVr7c4lhooT7y0dLYiz3cdVc3BJQia4yQX6T21M/cIEaCYA+GYhCap9zPmx7Qf9CVsW1uZ65sWR/q2u6ONwv5qfxEW0av6RC85VqK8Ad+8k4+5farMxAXW0gsH5w8FitTyc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768473900; c=relaxed/simple;
-	bh=KCf9/BUWQWrV3YzZSQGIBitilFEV6z7FvLz9+gF37+I=;
+	s=arc-20240116; t=1768475159; c=relaxed/simple;
+	bh=5pJaxN7hZxh6H+l9RH7y9R9O3ys4FH/dz9mNWCjHNb8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Oex+vl1fhQmlZHLjnjUgH+5Ef382bp86X6OXITRa7IBg95eYAos71Mwob4tzCX9dAc7V+3Xyuw0xM04P8va69RY6A3CisXeR/FgKkQMbOdeUT07/W2nlfyxpJIv/ECaL4M5nYkeGweZUQmu1p3roWABM8hPbdwwtmdNX6fBnaQo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bzw1nZu0; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=upVg0vN86y8HCYeh5hTe/LqAS+05gUYnPkcuHFFRrC5lXjuaLkBzv0kcqETJCN2T2ALIBypStNOQfNlVPi2yCQAdRrh6Xj0fZ6CtMkhcwCKTzBbTu3OAkdbOyXHY0LocNwUIfzWp4KxIjSVr1ttDAcu9VDNI+bJRUkSWOAuUdoU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=fjVUrmSC; arc=none smtp.client-ip=209.85.221.67
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bzw1nZu0"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE9EAC116D0;
-	Thu, 15 Jan 2026 10:44:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1768473899;
-	bh=KCf9/BUWQWrV3YzZSQGIBitilFEV6z7FvLz9+gF37+I=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=bzw1nZu02dQejptA0JvWTI5Kzv8ZivGSWw//ar5HN7g3e3fvnK7diB8O0pmaWexh4
-	 5XojmtjQzGc+FqgbwVH2OFPPVeB906fgkmpSff5sPYhHM9sX74IQMkFXLXtpzuQfpO
-	 Pk8R5eLtUsALQjTeXVEzkQhHjDEr5iiYb4F3/cPOxl99In93iEdalxJ3MLkIBxWSLs
-	 H+RNlPsIdKmA7LfQjWgynvtJn1jEMFnR4fv0CDiviCt6UruWq6Lva0mb7fk3SP90DC
-	 JomhCfyV4tem4mdNhgWhbDBkTX7C0gcNvZ9B6aLLKSKPDPMSTV0V4oPzyFvhH5q9zu
-	 hvi8JEqsO6aag==
-Date: Thu, 15 Jan 2026 16:14:41 +0530
-From: Manivannan Sadhasivam <mani@kernel.org>
-To: Rob Herring <robh@kernel.org>
-Cc: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Nathan Chancellor <nathan@kernel.org>, Nicolas Schier <nicolas.schier@linux.dev>, 
-	Hans de Goede <hansg@kernel.org>, Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, 
-	Mark Pearson <mpearson-lenovo@squebb.ca>, "Derek J. Clark" <derekjohn.clark@gmail.com>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Marcel Holtmann <marcel@holtmann.org>, Luiz Augusto von Dentz <luiz.dentz@gmail.com>, 
-	Bartosz Golaszewski <brgl@bgdev.pl>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	Bartosz Golaszewski <brgl@kernel.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-kbuild@vger.kernel.org, platform-driver-x86@vger.kernel.org, linux-pci@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org, 
-	linux-pm@vger.kernel.org, Stephan Gerhold <stephan.gerhold@linaro.org>, 
-	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, linux-acpi@vger.kernel.org
-Subject: Re: [PATCH v4 5/9] dt-bindings: connector: Add PCIe M.2 Mechanical
- Key E connector
-Message-ID: <pfyzilu4xpggftei4th37uv7wb4gpfsntjlagctsydrrc35qci@4uyd3zog6t7j>
-References: <20260112-pci-m2-e-v4-0-eff84d2c6d26@oss.qualcomm.com>
- <20260112-pci-m2-e-v4-5-eff84d2c6d26@oss.qualcomm.com>
- <20260113171601.GB3925312-robh@kernel.org>
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="fjVUrmSC"
+Received: by mail-wr1-f67.google.com with SMTP id ffacd0b85a97d-42fb6ce71c7so674895f8f.1
+        for <linux-serial@vger.kernel.org>; Thu, 15 Jan 2026 03:05:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1768475155; x=1769079955; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=AuZzUvIQYamq4W1YoLrzX7y0En5/TpcBTyFE7gx3A0A=;
+        b=fjVUrmSC9MSMqvxswqINqxfP7kInAvh2yUZz80Lx3Oz+J0nN4bpCMKnlR2Zs8PT2QI
+         bru01CF9kzRl9QNE0aKptzLlWYeW6ezbhmt50gw0LnNCmoUv69ek4KUzsAEcc35qfbPM
+         lWwa/dQor4rpZjr+5VsOA/fiA1EK0/Jy8iu+Vs60ZCcGmBsET27cADZ4cxK5Bc5+M4wF
+         8Rfsv+bacl3Jjoo4oi5xtuZsFEhOPKiQKnDx/rO2nHosgTuggeMHXRbt+HfiFHfLlG5s
+         yQFtE0iNZlDQATflRbguDlFwutYJ15Xb41/PsBGo5/A8ZgOOOV3bF0JXKgayZCUHaGMb
+         NP7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1768475155; x=1769079955;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=AuZzUvIQYamq4W1YoLrzX7y0En5/TpcBTyFE7gx3A0A=;
+        b=EWIfnaGwjHOSyf/1HIV728OKhu1JGiKqlySdHoVAWyOtNMEj4cWMvgVEV5V68Dm7/l
+         LzBsqcm59m4a5b3iSekOxsMmURaoVOh0zR+ch7VSV+ctH3jW5eJKdP3YSoWKghoHztfl
+         an8spJZDqxjley5PniYc3IzC70b4hRkSdNCP3qDoZSsZLS6Aegf2SQEwhUFFZNRdzpMu
+         1t4bAMcJl2eEdA1uxreYB+dpLxGDSCNvFLP3aOuYxaKHaiOOX/jW8xrKYsHYIEZEKGqA
+         XRC7Dc3GPcc1tUh3zZyGHUEGFnM9a61VIYJ12tydPjcZX906eiPV9KF602oQHczO4/eX
+         fLgQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXNQcuiKM/zwMjPfMEQtBucGYte8BWDFxQNYoOBrO17IP3oaHJzJgjE6rje41C01TRIRG5uI9+0oVDO2dY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyPg9yOaUYcGhHjBS/X0mfUoWdBvCl36g1CkOACDTAkBniiHjtC
+	91LYTMqf1EXtmSYdnk3j1yjjrfBYDqzX34y8Nl9sp5V1WsFEyv/pn21gf9FLOPvJDR0=
+X-Gm-Gg: AY/fxX6QYtdyyqC0KtoBQ+WKg1Gx4aADc5omRA4aPfiQbnUXBKrqjoS942iVth+i7q1
+	6wh9B7cnNifX5Ef64MSMj3+8xiY9LtArNk3WAA0cim8/F9twyvzuwJoV1F5wWdgFDRXyRMTwdEM
+	hdv+j68txx/X6tnoC3R/bJjWEW72zFA7RzHfnWPUf9+P5S9MLO9lBZM08csn7ZXtQ6zRKzBuIDL
+	Djd6PyPVItm3ufzk+xTTfOSPNCB0P3sxTzhhu1JA+olm93ngpupc8LxJuSo77w7i3Xc7pmE/Xr0
+	97tPpl9sSguF096FmapSFMGSvD5b+X0HGdXTlljPJ7h1UIhwXDrQ+5CFt8BkD6jJjJkzwkWE54h
+	yosg6IBs6xVi+3i6vxMnirMQf+gkKvqk6405KiAsLorr0c6H+eulJkW8Ei84WkfF8zIizZIC3IC
+	huQl26DsZaou0MGA==
+X-Received: by 2002:a05:6000:2f84:b0:430:fa9a:74d with SMTP id ffacd0b85a97d-4342d3912bcmr7103110f8f.24.1768475154515;
+        Thu, 15 Jan 2026 03:05:54 -0800 (PST)
+Received: from pathway.suse.cz ([176.114.240.130])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-434af6d909fsm5297949f8f.31.2026.01.15.03.05.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Jan 2026 03:05:53 -0800 (PST)
+Date: Thu, 15 Jan 2026 12:05:51 +0100
+From: Petr Mladek <pmladek@suse.com>
+To: Marcos Paulo de Souza <mpdesouza@suse.com>
+Cc: Richard Weinberger <richard@nod.at>,
+	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jason Wessel <jason.wessel@windriver.com>,
+	Daniel Thompson <danielt@kernel.org>,
+	Douglas Anderson <dianders@chromium.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Breno Leitao <leitao@debian.org>,
+	Andrew Lunn <andrew+netdev@lunn.ch>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>,
+	"Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Christophe Leroy <christophe.leroy@csgroup.eu>,
+	Andreas Larsson <andreas@gaisler.com>,
+	Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Jacky Huang <ychuang3@nuvoton.com>,
+	Shan-Chun Hung <schung@nuvoton.com>,
+	Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+	linux-um@lists.infradead.org, linux-kernel@vger.kernel.org,
+	kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org,
+	netdev@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+	linux-hardening@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+	sparclinux@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org, linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH 10/19] fs: pstore: platform: Migrate to
+ register_console_force helper
+Message-ID: <aWjKD4jv8CySV0Rj@pathway.suse.cz>
+References: <20251227-printk-cleanup-part3-v1-0-21a291bcf197@suse.com>
+ <20251227-printk-cleanup-part3-v1-10-21a291bcf197@suse.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260113171601.GB3925312-robh@kernel.org>
+In-Reply-To: <20251227-printk-cleanup-part3-v1-10-21a291bcf197@suse.com>
 
-On Tue, Jan 13, 2026 at 11:16:01AM -0600, Rob Herring wrote:
-> On Mon, Jan 12, 2026 at 09:56:04PM +0530, Manivannan Sadhasivam wrote:
-> > Add the devicetree binding for PCIe M.2 Mechanical Key E connector defined
-> > in the PCI Express M.2 Specification, r4.0, sec 5.1.2. This connector
-> > provides interfaces like PCIe or SDIO to attach the WiFi devices to the
-> > host machine, USB or UART+PCM interfaces to attach the Bluetooth (BT)
-> > devices. Spec also provides an optional interface to connect the UIM card,
-> > but that is not covered in this binding.
-> > 
-> > The connector provides a primary power supply of 3.3v, along with an
-> > optional 1.8v VIO supply for the Adapter I/O buffer circuitry operating at
-> > 1.8v sideband signaling.
-> > 
-> > The connector also supplies optional signals in the form of GPIOs for fine
-> > grained power management.
-> > 
-> > Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
-> > ---
-> >  .../bindings/connector/pcie-m2-e-connector.yaml    | 154 +++++++++++++++++++++
-> >  MAINTAINERS                                        |   1 +
-> >  2 files changed, 155 insertions(+)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/connector/pcie-m2-e-connector.yaml b/Documentation/devicetree/bindings/connector/pcie-m2-e-connector.yaml
-> > new file mode 100644
-> > index 000000000000..b65b39ddfd19
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/connector/pcie-m2-e-connector.yaml
-> > @@ -0,0 +1,154 @@
-> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/connector/pcie-m2-e-connector.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: PCIe M.2 Mechanical Key E Connector
-> > +
-> > +maintainers:
-> > +  - Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
-> > +
-> > +description:
-> > +  A PCIe M.2 E connector node represents a physical PCIe M.2 Mechanical Key E
-> > +  connector. Mechanical Key E connectors are used to connect Wireless
-> > +  Connectivity devices including combinations of Wi-Fi, BT, NFC to the host
-> > +  machine over interfaces like PCIe/SDIO, USB/UART+PCM, and I2C.
-> > +
-> > +properties:
-> > +  compatible:
-> > +    const: pcie-m2-e-connector
-> > +
-> > +  vpcie3v3-supply:
-> > +    description: A phandle to the regulator for 3.3v supply.
-> > +
-> > +  vpcie1v8-supply:
-> > +    description: A phandle to the regulator for VIO 1.8v supply.
-> > +
-> > +  ports:
+On Sat 2025-12-27 09:16:17, Marcos Paulo de Souza wrote:
+> The register_console_force function was introduced to register consoles
+> even on the presence of default consoles, replacing the CON_ENABLE flag
+> that was forcing the same behavior.
 > 
-> Also, nodes go after all properties.
-> 
+> No functional changes.
 
-Ack.
+> --- a/fs/pstore/platform.c
+> +++ b/fs/pstore/platform.c
+> @@ -418,10 +418,10 @@ static void pstore_register_console(void)
+>  		sizeof(pstore_console.name));
+>  	/*
+>  	 * Always initialize flags here since prior unregister_console()
+> -	 * calls may have changed settings (specifically CON_ENABLED).
+> +	 * calls may have changed settings.
+>  	 */
+> -	pstore_console.flags = CON_PRINTBUFFER | CON_ENABLED | CON_ANYTIME;
+> -	register_console(&pstore_console);
+> +	pstore_console.flags = CON_PRINTBUFFER | CON_ANYTIME;
 
-- Mani
+As the original comment suggests, this was done primary because
+of CON_ENABLED flag. Otherwise, the console was not registered again.
 
--- 
-மணிவண்ணன் சதாசிவம்
+register_console() might remove CON_PRINTBUFFER when there was
+a boot console and the newly registered console will get associated
+with /dev/console. But I consider this a corner case. Other console
+drivers ignore this scenario.
+
+I suggest to define the two flags statically in
+struct console pstore_console definition as it is done by
+other console drivers. Remove this explicit dynamic assigment.
+And add the following into the commit message:
+
+<proposal>
+Define the remaining console flags statically in the structure definition
+as it is done by other console drivers.
+
+The flags were re-defined primary because of the CON_ENABLED flag.
+Otherwise, the re-registration failed.
+
+The CON_PRINTBUFFER might get cleared when a boot console was registered
+and the pstrore console got associated with /dev/console. In this
+case, the pstore console would not re-play the entire ring buffer
+on re-registration. But it is a corner case. And it actually might
+be a desired behavior.
+</proposal>
+
+Otherwise, the next generations of kernel developers might think that
+the re-assigment was there because of CON_PRINTBUFFER flag.
+And it might cause non-necessary headaches ;-)
+
+
+> +	register_console_force(&pstore_console);
+>  }
+>  
+>  static void pstore_unregister_console(void)
+
+Best Regards,
+Petr
