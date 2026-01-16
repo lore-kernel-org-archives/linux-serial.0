@@ -1,107 +1,166 @@
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70FAC20E334
-	for <linux-serial@vger.kernel.org>; Fri, 16 Jan 2026 07:22:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0E7B329E61
+	for <linux-serial@vger.kernel.org>; Fri, 16 Jan 2026 10:00:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768548144; cv=none; b=brb8UxCSbU8NOwSmWOwbvteHBhoFOGmQ9ibW/k/vIoavA5wQVvQZZ0Zg1auxN0SQPqztYV2MzCpLb/b+0ODJLMIjOWQQB22QIVrReC63lIyX9VTFLbfx2G5I3zQHhxO1a6jU0jfIMxfwcyz2qkFjXZp+Ocrtvyt4YtfqyzOIGJc=
+	t=1768557605; cv=none; b=Rg5NCJY52xM8xYLFBJAOipke+v/IlrMcK5h5XczNn7qieoEVr2eAtEy/mEzS/4IAyOEfkGAPhzMDUzoC4UlkRv2t64+RJMilxraYX5oKtXEpJeQqfkq5uF14IyKGyP/gbO5SRZq2cKDLvq3qEuv6+ycnBP7ap+VROM1Ni9P4TlI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768548144; c=relaxed/simple;
-	bh=ZoZCxIZIxuNG7iiq7ouEpN8AOaGaswIYZVOM5BEKY0g=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=nwDk8AkHLOOuykulfFO5fr3wJc6mjZxZjx7ygecI9XvNVFpulSLNndPkHSlauElE3fjEaEd4jP/PLm3h2OnW1+6ZhDF9PtZA+PGP/BQ/N3cT0WhbCzLENaIEAZgR6H7alzlM6M5uFNCoMOS0wGbflu5LdqgzQgFyGpcSbXVlMco=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=DOz03dJJ; arc=none smtp.client-ip=209.85.221.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
+	s=arc-20240116; t=1768557605; c=relaxed/simple;
+	bh=fW48aaLNkBbdqH7KvcMJgixNgMqvTRK+gAl5/GVTNZ0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=YMAbcBkse428wPi3yMsi9+6LmEMJjP39fe+3ggmVuRBlbM8DmwkTTkjUKlfNgJmnnHS8QjQGRf2wvuRtVomBsuTXEC7JH9UaGREdmBz/V0vzDyniPmH8boFggZTTzg7JAFQUKL15TWYxZMAUHAxJk1gl3jmFBu0CTYq3Ih56iRg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=WCF7cVDD; arc=none smtp.client-ip=209.85.221.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="DOz03dJJ"
-Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-432755545fcso1010963f8f.1
-        for <linux-serial@vger.kernel.org>; Thu, 15 Jan 2026 23:22:22 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="WCF7cVDD"
+Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-432d256c2e6so1442726f8f.3
+        for <linux-serial@vger.kernel.org>; Fri, 16 Jan 2026 02:00:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1768548141; x=1769152941; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=W95GN1V+oZI3tCyhJrWoqvfYp2X9bfUg8CvoDb5FSAs=;
-        b=DOz03dJJJrHhANTzRWfRIwG4CLx0lVlmsIjqaVXIAMhwfUkQMzxluDIvnt6G5tZvZr
-         4c0dlJQT35H7vKeQ2kACS7kFyjHOCBRMDhEqHMGjvAHO3J/KXmEMGQKVzcuA8Tkh5u4v
-         iSdLnjY0HoFbhIx7+jU9y4jcsGD5y9+L4A9Rbbfwe9Oajkr9Uy/QAO6wftMa4FTKMWiv
-         Xr2onvXDgcKQNOVRRMi3T/uSAL+HyazSQJuk5cqWgDP+C85At8mPoVxlZUnJY2INJNn6
-         NZOLFZwP31nUoRTSEM/hLvbT2rEi9re57qBnGAEmHczkC9DApHPsTcrZS0p+KjQiDy4r
-         ffNQ==
+        d=suse.com; s=google; t=1768557601; x=1769162401; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=ik7nBSUvqjiZji8p0UMpcxyJ9CmKYvj/STnQwZRmw6o=;
+        b=WCF7cVDDVoB7pSe59ofWaHYm6WNWzgeCXj8b+qY0A56i1sLhU7jfZqSVNd09WGg+iP
+         f4eR9gPxvQR5/pHfAGNpik4PCuv6aKvY6ouYfZtAaHwrnRuZFJw3FTz4pmkHEG86FoB7
+         TMmoYc+q95nONQi9si31m7D047LidkhP8UUnwP+UOdoThlMX5CJcYB04BF9WOnets/Tg
+         L5dlHcJONq2vPjUjHvC1mCTJQ2urla/2xjO+iH5DEdnk4eUv+OCuOjTemCPEY2alMOZa
+         fWYcpaR3qVDtomJZhGypYpkv6zIeBvXluZfpLRi9Y+0snNxTaupLZlVdQB6Xr29r1t2X
+         AIQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768548141; x=1769152941;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=W95GN1V+oZI3tCyhJrWoqvfYp2X9bfUg8CvoDb5FSAs=;
-        b=TrIwOvpsnvFNNURgSVrlGWZSfchX00EJTdAsGwg4EmDPjJB36x1hWgw7O73lazu7jj
-         jE4ehh3JDvsunXEsS6287oqgoSkUNBxG1eqeDSmF6015dQ0qD/H/RVsgiZXEUCVhmhqK
-         WaiJOiyfTCuG6Icl24RyS5EMFyCDN6/YPz0FmpJd4sKMm0Zmla+VUhmt8+x1o1HFWpOm
-         Fvfv60VOmA5cCOr2LLEBLXeucNiAM3GcxhS01bRY6hy9KLjFc7uqr2ogG6ShHog20j03
-         FYSvW3ZV/3mdkyh4wDWpdFkPEToI5m12bpdKSXu67IkSzY6vQtbxBulAPF7pHEm07arB
-         W3gQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUEImxkc2mAgf2DOy3/usIY5h2tokk5O/KWgv+8S+RC6EdTkFNx7N/mE5cm4eTys4rD4HZLCAsqxP1+1Cw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxCaD4gF2kRqJAvW+EdRCaPkAjpoI0BzJrlJBxLJsYxPQKSA9+M
-	jVeAG9+Qd1k8KG975CTkduw+QisIGaPQ2fi6X7285w1G1JI58whiFc3vvlPN2+MXEgw=
-X-Gm-Gg: AY/fxX7KJt44r3KN2eK4ejex7IeA7RpgsAQV1nwuE9tl5iG3SMofnGVOMGYcUQKIEjl
-	jPaX9T9HOD3rykvyVSpCJi7/mvAniky6WTLjygnjzFSdq5+0ATMa5ld0767ddlyv+ALVi3UkCTb
-	cReHIBZXIsoaOy2QT3OSZeSP0MjgZVHmMyiKuxCuUHjCXFnc3RpMS8wamgRTvxYMVJK6Bd6vdLY
-	7O2sgP9VACHivWQyybBK3E2ABCVK0yAfk2Kis7w9cFwk8T4dIm3vQY7LVcTDdbSt8F15qiiAPj4
-	sStljvU0Xu5JsGqwuU3syf6xGC076+Qm13em2QO2t5VGpJ63+F7+7TWxGYuVCcYmvZftJKwPvfY
-	EjhVVa+65PV8K8eoK6GRnSo7WmJP37aSLGkkjVVPkmKUb7Jmir4sFlqH7OxcD1mFUZQ1rIb5LWr
-	dZBYR7Dx+xoFGjV6r1oQ==
-X-Received: by 2002:a5d:5d81:0:b0:431:752:672b with SMTP id ffacd0b85a97d-4356998a823mr1864994f8f.14.1768548140696;
-        Thu, 15 Jan 2026 23:22:20 -0800 (PST)
-Received: from [10.31.13.216] ([82.77.28.160])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-435699982aasm3496749f8f.42.2026.01.15.23.22.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 15 Jan 2026 23:22:20 -0800 (PST)
-Message-ID: <40b636b3-b1d3-4c67-bbfd-6f41a5b0b290@tuxon.dev>
-Date: Fri, 16 Jan 2026 09:22:16 +0200
+        d=1e100.net; s=20230601; t=1768557601; x=1769162401;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ik7nBSUvqjiZji8p0UMpcxyJ9CmKYvj/STnQwZRmw6o=;
+        b=X/LhYYw32u12fvFbjTaGGGkz6gPyuGQ0BluirjemTqALXmJwI8sd7uwPstWOeqMumf
+         +Y4b5AOl3UVGgz7Ggdg9Txwmn+aSiH8xkPkajLjVCO8Q+LIcSuW7E9l50Ryk48fULmYg
+         nqM4IcNywD6QTKKuxQZYmFCUSVd7ZrbXEL1sRkUsUbgMhu9Vz6Cplx10iKKUfPFPLAMR
+         OrHYTos7g5WhXU1eaGFiD7q+PmY6Q7pKB8C4N2DB/Qqfb/owCx3v4lrmL7NjZEEc5aUr
+         YmjX6e+DpKCj+4irsUw++Ofa4vk6L4scTNoDcbnOLM75+c31khRiMJ0/fkKLE/AyiXCS
+         XLvw==
+X-Forwarded-Encrypted: i=1; AJvYcCUROdqiwoE2Zmlko7LMyChMpQ1cxg6X8lMHAbUFYiav+8NXflfj4KKhJbNABTo6idnFpCRbeUaIIePszpI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxXjiDfCz374G7KexLhY3gGENFWfTAENWRiQyBtPupH2U9od4YM
+	3fr52sZhvWJvJvfiLiy2kaqilandk9RGfmoW//bo7BldCoEl1a6BMS08RsUA70/L2uQ=
+X-Gm-Gg: AY/fxX4BZx6w+ZKp9BJAnSR+7OidgaLCenZLz2FAtej7zx0Gs/5uTfFkG3Tcohq/gEE
+	y3YYVTTxO+RSWvc0Kx1RZoIAlVJLbqs86zdRv6q2G6ubYdQm+5B7yUwFF/+7Th+JK+vJBkcNNEg
+	YLa4RwIGG+1haeP/ZZASWOaKDRhh82k5xATqxfAv8yjXd014t1ZBABIFrKD+aMk06Rw+gp4Xjlf
+	ldw10fKsUNZ/zNRDm3YtJnscglELIwXgrH68MmTw09SG6aaD4w1vuI2TVKQ1Bwo05w7Y8ebSGoU
+	0DhJ/xQkzP2marev16VTR85g86K9Sj3K6kqOKyRKh65wiFemQRGAAl1y2HD57UjfRT+UQopXauJ
+	zmZT/HLERTZqBU5D3mu5hXsTehatFTnu1fm0JJB9uiF8rKcAabV0iXKMyRwTV6LOwXfdJ8ri29Q
+	kC59BBmLJ9cPUMZA==
+X-Received: by 2002:a05:6000:26ce:b0:432:dfea:1fa8 with SMTP id ffacd0b85a97d-43569bc5767mr3019291f8f.45.1768557601174;
+        Fri, 16 Jan 2026 02:00:01 -0800 (PST)
+Received: from pathway.suse.cz ([176.114.240.130])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43569921f6esm4337797f8f.4.2026.01.16.01.59.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Jan 2026 02:00:00 -0800 (PST)
+Date: Fri, 16 Jan 2026 10:59:57 +0100
+From: Petr Mladek <pmladek@suse.com>
+To: Marcos Paulo de Souza <mpdesouza@suse.com>
+Cc: Richard Weinberger <richard@nod.at>,
+	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jason Wessel <jason.wessel@windriver.com>,
+	Daniel Thompson <danielt@kernel.org>,
+	Douglas Anderson <dianders@chromium.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Breno Leitao <leitao@debian.org>,
+	Andrew Lunn <andrew+netdev@lunn.ch>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>,
+	"Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Christophe Leroy <christophe.leroy@csgroup.eu>,
+	Andreas Larsson <andreas@gaisler.com>,
+	Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Jacky Huang <ychuang3@nuvoton.com>,
+	Shan-Chun Hung <schung@nuvoton.com>,
+	Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+	linux-um@lists.infradead.org, linux-kernel@vger.kernel.org,
+	kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org,
+	netdev@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+	linux-hardening@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+	sparclinux@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org, linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH 15/19] drivers: tty: serial: mux.c: Migrate to
+ register_console_force helper
+Message-ID: <aWoMHbbn-BmmbZMg@pathway.suse.cz>
+References: <20251227-printk-cleanup-part3-v1-0-21a291bcf197@suse.com>
+ <20251227-printk-cleanup-part3-v1-15-21a291bcf197@suse.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 07/11] arm64: dts: microchip: add LAN969x clock header
- file
-To: Robert Marko <robert.marko@sartura.hr>, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, nicolas.ferre@microchip.com,
- alexandre.belloni@bootlin.com, herbert@gondor.apana.org.au,
- davem@davemloft.net, lee@kernel.org, andrew+netdev@lunn.ch,
- edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
- Steen.Hegelund@microchip.com, daniel.machon@microchip.com,
- UNGLinuxDriver@microchip.com, linusw@kernel.org, olivia@selenic.com,
- richard.genoud@bootlin.com, radu_nicolae.pirea@upb.ro,
- gregkh@linuxfoundation.org, richardcochran@gmail.com,
- horatiu.vultur@microchip.com, Ryan.Wanner@microchip.com,
- tudor.ambarus@linaro.org, kavyasree.kotagiri@microchip.com,
- lars.povlsen@microchip.com, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-crypto@vger.kernel.org, netdev@vger.kernel.org,
- linux-gpio@vger.kernel.org, linux-spi@vger.kernel.org,
- linux-serial@vger.kernel.org
-Cc: luka.perkov@sartura.hr
-References: <20260115114021.111324-1-robert.marko@sartura.hr>
- <20260115114021.111324-8-robert.marko@sartura.hr>
-Content-Language: en-US
-From: claudiu beznea <claudiu.beznea@tuxon.dev>
-In-Reply-To: <20260115114021.111324-8-robert.marko@sartura.hr>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251227-printk-cleanup-part3-v1-15-21a291bcf197@suse.com>
 
-
-
-On 1/15/26 13:37, Robert Marko wrote:
-> LAN969x uses hardware clock indexes, so document theses in a header to make
-> them humanly readable.
+On Sat 2025-12-27 09:16:22, Marcos Paulo de Souza wrote:
+> The register_console_force function was introduced to register consoles
+> even on the presence of default consoles, replacing the CON_ENABLE flag
+> that was forcing the same behavior.
 > 
-> Signed-off-by: Robert Marko<robert.marko@sartura.hr>
+> --- a/drivers/tty/serial/mux.c
+> +++ b/drivers/tty/serial/mux.c
+> @@ -390,7 +390,7 @@ static struct console mux_console = {
+>  	.write =	mux_console_write,
+>  	.device =	uart_console_device,
+>  	.setup =	mux_console_setup,
+> -	.flags =	CON_ENABLED | CON_PRINTBUFFER,
+> +	.flags =	CON_PRINTBUFFER,
+>  	.index =	0,
+>  	.data =		&mux_driver,
+>  };
+> @@ -547,7 +547,7 @@ static int __init mux_init(void)
+>  		mod_timer(&mux_timer, jiffies + MUX_POLL_DELAY);
+>  
+>  #ifdef CONFIG_SERIAL_MUX_CONSOLE
+> -	        register_console(&mux_console);
+> +		register_console_force(&mux_console);
 
-Reviewed-by: Claudiu Beznea <claudiu.beznea@tuxon.dev>
+The situation here is the same as in 16th patch for
+ma35d1serial_console().
 
+Also "mux_console" is assigned to
+
+static int __init mux_probe(struct parisc_device *dev)
+{
+[...]
+		mux_driver.cons = MUX_CONSOLE;
+
+		status = uart_register_driver(&mux_driver);
+[...]
+		status = uart_add_one_port(&mux_driver, port);
+[...]
+}
+
+So, that it can get registered also by:
+
+  + mux_probe()
+    + uart_add_one_port()
+      + serial_ctrl_register_port()
+	+ serial_core_register_port()
+	  + serial_core_add_one_port()
+	    + uart_configure_port()
+	      + register_console()
+
+And we would need to pass the "force" information via CON_FORCE flag.
+
+Best Regards,
+Petr
