@@ -1,140 +1,197 @@
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEF6F2853F2
-	for <linux-serial@vger.kernel.org>; Fri, 16 Jan 2026 13:54:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 609E2329C70
+	for <linux-serial@vger.kernel.org>; Fri, 16 Jan 2026 14:19:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768571672; cv=none; b=d/lt0bW0MvEBdk+jFEFLTd6ONX05mYp4p2RJM2ZMeGS1gidosWP0YRs3k9WxoqgUCNTKtyu5flLX6l7YeA6DZ5+ZdhcPWQtZy6ni9M2aJo3sXlqnjx8NmNRxMqMD+huKX84L0ct89KIl4jifAuaivTzf/NlcQT+G3/ZLkjewtjw=
+	t=1768573162; cv=none; b=nuXGaKVAAyMy2v34W3kvbg2zTNYVVh9/HQ20qEaJfqoJUjNLaNoJqxvQxkUNL3cNzE02RsJU/pTISh4g1nhNdB/vdG0ZMa29oAYdiM3H2iaiSJ1hYZwo4xikUdADtziw1BCJvpmlZLn533NaKezlChU/OoiJ/zv3eZrtiPSg2n0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768571672; c=relaxed/simple;
-	bh=2Jyc4vjPWHQ8N29GFPPd4QPUxfDxmdAZddY3K56YrUM=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=TOH1pcPU+L4ZRYY4c0Ghb3PJ38FWRKN/PTTxCSy2DMVdlYXZ+mRK6lv9vjO/w/KmT0oTaW4ebYJlvjXgCTuuXCqHAaZL5qtVtPWCJTjfCANLQRYYV39oGOPTGFrqT1JSiF8VDZFqQqjSv+ejhdcfRR7ZgcN/KbXiyeTsa2+sfd0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=K9BQh4a8; arc=none smtp.client-ip=209.85.221.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1768573162; c=relaxed/simple;
+	bh=JghXPm6HOBFNktLIBiI8eyfuN76nwomk97JpiXS3QS0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ChtOy5OUvJxBwrnlGdsZFI8Weo0zWavNepE0Og06lyd16dlwz/RfXoOLebZNh9b7OUj8vGh1zQNNsMzkrZSUIbKDCcR2IeknGSzPSyEO6Y9N66qz2dv7tjub07tt+6H3fZWef+Gqpsq+ZBlaI0rjgnod3Q4OiiMbmjMaoyRnqi4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OxL4pcBU; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="K9BQh4a8"
-Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-42fbc544b09so1465853f8f.1
-        for <linux-serial@vger.kernel.org>; Fri, 16 Jan 2026 05:54:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1768571667; x=1769176467; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:autocrypt
-         :references:in-reply-to:date:cc:to:from:subject:message-id:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=2Jyc4vjPWHQ8N29GFPPd4QPUxfDxmdAZddY3K56YrUM=;
-        b=K9BQh4a8aZ5mcKvc22cHMHLYT6xwWRlRDeFBc2yLrCgG0AD47CVxTHoudVy98hUYOc
-         8bz86qaXlX2ZPMbs6RD/y5QKpWaA2GaVWL1SlttExDux1BkhdSSjJGj5/ElT8LfTRm0+
-         dj11njKu65iXAGj2QJJmrd4/HlC/cezwhU90d5bCTuuOxZZguFikqJKi4Zt3Q+he34s/
-         x546B1I5RhsHx3bVNBC5pay8PP+oIJKrC3sfGWazehRAVlttZgr5xF9YLRMrNBHA/fzP
-         SOvipZeJoypOVTD+4P+zmxHD/tNOqnJRl42CfhiuvQllYWg/t6psKMiZNwSnWmO4I2BZ
-         kWNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768571667; x=1769176467;
-        h=mime-version:user-agent:content-transfer-encoding:autocrypt
-         :references:in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=2Jyc4vjPWHQ8N29GFPPd4QPUxfDxmdAZddY3K56YrUM=;
-        b=r+8iNMwXBtaFbVlbMK6/GWi7YrGPBHvx5UuKJbrh8Q9nm3yNOZC7WlDwYF5jsOygov
-         jtnQlIX03sBE4x53mTTp2rlxt0topJuRxxuLgsbVTj1ErQYQbCh4mb0XTGgfYMH46qVr
-         OjdcBQMtQY/43+8mr5VXDweVk1h7BcOgzL6Dyyyt4KCH9ZAFkIOTbhUiZY0z9+d2wwZB
-         +BjC2SgPun59FR+fiLd6RAhidt7/agjfMTy8bGok6y/hmN5rGdxf3FAdtcXjaYpIWzgs
-         AIWUjZAqIbrkbLnloDiSzj/pPdUc8qvBD/YIPc3tmUNrOkWtYrlL+e/5Hehaf3rI55xk
-         N2lQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUhQNGOW0dchors6nm2kloJaDxHXDuibukoAEPxC3Ce2UkEixrFMqHblcb+uxBnsZqjfMxfWCcIZSqg0Tk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YytqwtUmhOvpNmhU+efyMdGcTdj3q8RUGtHTKT8dfXL1N6W5NuO
-	lks/svGYrDbpHDLRZX9XxgoZZQCEfuiVc7Homvided2YAwx30XxXo7DrvA3hjoGmeMk=
-X-Gm-Gg: AY/fxX7OYSDfQKWP+WBhsUHmNxqtg5EkPbqVt7Aqcvh1RX4itVqfU1dxifE7pwxeEvL
-	NoyPIY51WPoG3f8ddwY98fxc8jT77qTJKZVd2g2iSOEYjLdmaOG4E5yahklkySpGBmXGuzs8DzY
-	g3zD2qqQragnE/HXoATVKB/C3Y4hs4Bcix7BqZRpPTyNgr3K4yA+ahO8EnnaqdyeaI9Trez/spU
-	9UD4PAqf+vpsWUGT8TsR7zFyB2Ijn5dmvDCYGiWdyTraF89uT23yv0w29C8n+jjqZ5arOpesL1D
-	VQ946isW3BY2JqojKodWpaWMMwGNwN7pqLvBj/QdrH+LgEBjGbOAuHDBVWrFUJmN80V/eL9rMmM
-	/L3RoqO8MljVdOmgJ6EhRfTts0VVRcJzlEMxxldSl4Go3uEdjFKVkPdPPOUhYV87rHpuUEXu2ui
-	MOXUGglm/GGcHj2VI4pMr0Jk+OwBd+h7qLO6Y2yk8=
-X-Received: by 2002:a05:6000:4387:b0:431:1ae:a3d0 with SMTP id ffacd0b85a97d-435699810a1mr3695386f8f.25.1768571667158;
-        Fri, 16 Jan 2026 05:54:27 -0800 (PST)
-Received: from [192.168.3.33] (97.36.160.45.gramnet.com.br. [45.160.36.97])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-435696fbea8sm5433542f8f.0.2026.01.16.05.54.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Jan 2026 05:54:26 -0800 (PST)
-Message-ID: <6168099632390068c8544b48f2e81bf737aa10d7.camel@suse.com>
-Subject: Re: [PATCH 14/19] drivers: hwtracing: stm: console.c: Migrate to
- register_console_force helper
-From: Marcos Paulo de Souza <mpdesouza@suse.com>
-To: Alexander Shishkin <alexander.shishkin@linux.intel.com>, Richard
- Weinberger <richard@nod.at>, Anton Ivanov
- <anton.ivanov@cambridgegreys.com>, Johannes Berg	
- <johannes@sipsolutions.net>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>,  Jason Wessel <jason.wessel@windriver.com>,
- Daniel Thompson <danielt@kernel.org>, Douglas Anderson	
- <dianders@chromium.org>, Petr Mladek <pmladek@suse.com>, Steven Rostedt	
- <rostedt@goodmis.org>, John Ogness <john.ogness@linutronix.de>, Sergey
- Senozhatsky <senozhatsky@chromium.org>, Jiri Slaby <jirislaby@kernel.org>,
- Breno Leitao <leitao@debian.org>,  Andrew Lunn <andrew+netdev@lunn.ch>,
- "David S. Miller" <davem@davemloft.net>, Eric Dumazet	
- <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni	
- <pabeni@redhat.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Kees Cook	
- <kees@kernel.org>, Tony Luck <tony.luck@intel.com>, "Guilherme G. Piccoli"	
- <gpiccoli@igalia.com>, Madhavan Srinivasan <maddy@linux.ibm.com>, Michael
- Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
- Christophe Leroy	 <christophe.leroy@csgroup.eu>, Andreas Larsson
- <andreas@gaisler.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>,
- Alexandre Torgue <alexandre.torgue@foss.st.com>, Jacky Huang	
- <ychuang3@nuvoton.com>, Shan-Chun Hung <schung@nuvoton.com>, Laurentiu
- Tudor	 <laurentiu.tudor@nxp.com>
-Cc: linux-um@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org, 
-	netdev@vger.kernel.org, linux-m68k@lists.linux-m68k.org, 
-	linux-hardening@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, 
-	sparclinux@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, 
-	linux-arm-kernel@lists.infradead.org, linux-fsdevel@vger.kernel.org
-Date: Fri, 16 Jan 2026 10:54:14 -0300
-In-Reply-To: <83zf6daetu.fsf@black.igk.intel.com>
-References: <20251227-printk-cleanup-part3-v1-0-21a291bcf197@suse.com>
-	 <20251227-printk-cleanup-part3-v1-14-21a291bcf197@suse.com>
-	 <83zf6daetu.fsf@black.igk.intel.com>
-Autocrypt: addr=mpdesouza@suse.com; prefer-encrypt=mutual;
- keydata=mDMEZ/0YqhYJKwYBBAHaRw8BAQdA4JZz0FED+JD5eKlhkNyjDrp6lAGmgR3LPTduPYGPT
- Km0Kk1hcmNvcyBQYXVsbyBkZSBTb3V6YSA8bXBkZXNvdXphQHN1c2UuY29tPoiTBBMWCgA7FiEE2g
- gC66iLbhUsCBoBemssEuRpLLUFAmf9GKoCGwMFCwkIBwICIgIGFQoJCAsCBBYCAwECHgcCF4AACgk
- QemssEuRpLLWGxwD/S1I0bjp462FlKb81DikrOfWbeJ0FOJP44eRzmn20HmEBALBZIMrfIH2dJ5eM
- GO8seNG8sYiP6JfRjl7Hyqca6YsE
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.2 (by Flathub.org) 
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OxL4pcBU"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8422C2BCB7
+	for <linux-serial@vger.kernel.org>; Fri, 16 Jan 2026 14:19:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1768573161;
+	bh=JghXPm6HOBFNktLIBiI8eyfuN76nwomk97JpiXS3QS0=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=OxL4pcBU9qQTdx9n8ylW4+63JJn3jJQq1mb+5GohfdbIkucdwgCLkyjualU8mlIyy
+	 KxP0DkLB/NyJewlJloc2Fr0VoT54B2cMfGhElk2oGuLk/HATJ2d9MzlmU+xlLNVKLi
+	 UdxOLCIiz/MBK4oMCLlstwC4mmVWzFqsjfE2WAPVfZ98PBKaU/gylwOIuMy3iBVnSS
+	 FI2bcwrjfnZ0xPfq38Jr5byWaPhIJFGWpXgFYfrCyyrVBEfGaUwReAp4jwJLCZoWvb
+	 O/8HwT//akwL51JCMSdMN8En3448ykrd3BUbpmXuYrUeQLGPvkOUu7Q9lJY0SGmlRm
+	 GUEfyx4z/vcsQ==
+Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-b8708930695so332785866b.3
+        for <linux-serial@vger.kernel.org>; Fri, 16 Jan 2026 06:19:21 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCUkRywOhA4Lq18+t2XYoguEyEB7BLoED4i15qpGXmInvquTla5MqKynlL6hRKu6vyoAqnErkKc+lULgVhw=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx2p4Z7kP1AzWaBgFGomKKzvVf31Rr6mWXEsGXKnUy+rtKVT5MD
+	x8G2s4DDldJPm5bLgDFuK/av9nHOwPFJUq0uw0ipFL/YLffwRPcaqRU1MQhLQGNnRAZcizs90yy
+	xUzvzOZPbSU0bgHW59881AFDsprE46A==
+X-Received: by 2002:a17:907:d03:b0:b87:892:f43f with SMTP id
+ a640c23a62f3a-b87969386d0mr231202266b.29.1768573159725; Fri, 16 Jan 2026
+ 06:19:19 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+References: <20260112-pci-m2-e-v4-0-eff84d2c6d26@oss.qualcomm.com>
+ <20260112-pci-m2-e-v4-5-eff84d2c6d26@oss.qualcomm.com> <20260113171424.GA3925312-robh@kernel.org>
+ <xyttom64ht5hrrp5hecjqehnyfgsv4mfl2t36e2sveu44ccpjl@lkzquse2kqsx>
+ <CAL_JsqJxBNm0y6T7vji6MXgsO65iDJ-tdUEo0cOxkw7EuMKpkg@mail.gmail.com> <gcmm23ji4fkcqeshcyiehuyega7kdbtvmofp4usmol2icwn6gy@i46icelwwqh5>
+In-Reply-To: <gcmm23ji4fkcqeshcyiehuyega7kdbtvmofp4usmol2icwn6gy@i46icelwwqh5>
+From: Rob Herring <robh@kernel.org>
+Date: Fri, 16 Jan 2026 08:19:07 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqKKBjurY7ZrScayvkTijR-F6GWBofry48xoPFBFi55u4w@mail.gmail.com>
+X-Gm-Features: AZwV_QhaVXIgz8bq4CqPsm9NXLoIfFaoT-4jNhJ-ZskY8n0WuXohQmqAGOhuiUQ
+Message-ID: <CAL_JsqKKBjurY7ZrScayvkTijR-F6GWBofry48xoPFBFi55u4w@mail.gmail.com>
+Subject: Re: [PATCH v4 5/9] dt-bindings: connector: Add PCIe M.2 Mechanical
+ Key E connector
+To: Manivannan Sadhasivam <mani@kernel.org>
+Cc: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Nathan Chancellor <nathan@kernel.org>, Nicolas Schier <nicolas.schier@linux.dev>, 
+	Hans de Goede <hansg@kernel.org>, =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+	Mark Pearson <mpearson-lenovo@squebb.ca>, "Derek J. Clark" <derekjohn.clark@gmail.com>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Marcel Holtmann <marcel@holtmann.org>, Luiz Augusto von Dentz <luiz.dentz@gmail.com>, 
+	Bartosz Golaszewski <brgl@bgdev.pl>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+	Bartosz Golaszewski <brgl@kernel.org>, linux-serial@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org, 
+	platform-driver-x86@vger.kernel.org, linux-pci@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
+	linux-bluetooth@vger.kernel.org, linux-pm@vger.kernel.org, 
+	Stephan Gerhold <stephan.gerhold@linaro.org>, 
+	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, linux-acpi@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, 2026-01-16 at 14:04 +0100, Alexander Shishkin wrote:
-> Marcos Paulo de Souza <mpdesouza@suse.com> writes:
->=20
-> > The register_console_force function was introduced to register
-> > consoles
-> > even on the presence of default consoles, replacing the CON_ENABLE
-> > flag
-> > that was forcing the same behavior.
-> >=20
-> > No functional changes.
-> >=20
-> > Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
->=20
-> Acked-by: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+On Thu, Jan 15, 2026 at 4:42=E2=80=AFAM Manivannan Sadhasivam <mani@kernel.=
+org> wrote:
+>
+> On Wed, Jan 14, 2026 at 11:45:42AM -0600, Rob Herring wrote:
+> > On Wed, Jan 14, 2026 at 10:14=E2=80=AFAM Manivannan Sadhasivam <mani@ke=
+rnel.org> wrote:
+> > >
+> > > On Tue, Jan 13, 2026 at 11:14:24AM -0600, Rob Herring wrote:
+> > > > On Mon, Jan 12, 2026 at 09:56:04PM +0530, Manivannan Sadhasivam wro=
+te:
+> > > > > Add the devicetree binding for PCIe M.2 Mechanical Key E connecto=
+r defined
+> > > > > in the PCI Express M.2 Specification, r4.0, sec 5.1.2. This conne=
+ctor
+> > > > > provides interfaces like PCIe or SDIO to attach the WiFi devices =
+to the
+> > > > > host machine, USB or UART+PCM interfaces to attach the Bluetooth =
+(BT)
+> > > > > devices. Spec also provides an optional interface to connect the =
+UIM card,
+> > > > > but that is not covered in this binding.
+> > > > >
+> > > > > The connector provides a primary power supply of 3.3v, along with=
+ an
+> > > > > optional 1.8v VIO supply for the Adapter I/O buffer circuitry ope=
+rating at
+> > > > > 1.8v sideband signaling.
+> > > > >
+> > > > > The connector also supplies optional signals in the form of GPIOs=
+ for fine
+> > > > > grained power management.
+> > > > >
+> > > > > Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.q=
+ualcomm.com>
+> > > > > ---
+> > > > >  .../bindings/connector/pcie-m2-e-connector.yaml    | 154 +++++++=
+++++++++++++++
+> > > > >  MAINTAINERS                                        |   1 +
+> > > > >  2 files changed, 155 insertions(+)
+> > > > >
+> > > > > diff --git a/Documentation/devicetree/bindings/connector/pcie-m2-=
+e-connector.yaml b/Documentation/devicetree/bindings/connector/pcie-m2-e-co=
+nnector.yaml
+> > > > > new file mode 100644
+> > > > > index 000000000000..b65b39ddfd19
+> > > > > --- /dev/null
+> > > > > +++ b/Documentation/devicetree/bindings/connector/pcie-m2-e-conne=
+ctor.yaml
+> > > > > @@ -0,0 +1,154 @@
+> > > > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > > > > +%YAML 1.2
+> > > > > +---
+> > > > > +$id: http://devicetree.org/schemas/connector/pcie-m2-e-connector=
+.yaml#
+> > > > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > > > > +
+> > > > > +title: PCIe M.2 Mechanical Key E Connector
+> > > > > +
+> > > > > +maintainers:
+> > > > > +  - Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.co=
+m>
+> > > > > +
+> > > > > +description:
+> > > > > +  A PCIe M.2 E connector node represents a physical PCIe M.2 Mec=
+hanical Key E
+> > > > > +  connector. Mechanical Key E connectors are used to connect Wir=
+eless
+> > > > > +  Connectivity devices including combinations of Wi-Fi, BT, NFC =
+to the host
+> > > > > +  machine over interfaces like PCIe/SDIO, USB/UART+PCM, and I2C.
+> > > > > +
+> > > > > +properties:
+> > > > > +  compatible:
+> > > > > +    const: pcie-m2-e-connector
+> > > > > +
+> > > > > +  vpcie3v3-supply:
+> > > > > +    description: A phandle to the regulator for 3.3v supply.
+> > > > > +
+> > > > > +  vpcie1v8-supply:
+> > > > > +    description: A phandle to the regulator for VIO 1.8v supply.
+> > > >
+> > > > I don't see any 1.8V supply on the connector. There are 1.8V IOs an=
+d you
+> > > > may need something in DT to ensure those are powered. However, ther=
+e's
+> > > > no guarantee that it's a single supply.
+> > > >
+> > >
+> > > 1.8v VIO supply is an optional supply and is only required if the pla=
+tform
+> > > supports 1.8v for sideband signals such as PERST#, WAKE#... I can inc=
+lude it in
+> > > the example for completeness.
+> >
+> > My point is that PERST# and WAKE# supplies could be 2 different 1.8V
+> > supplies and those supply the I/O pads of the GPIO pins (and possibly
+> > external pull-ups) that drive them. The 1.8V supply doesn't supply
+> > 1.8V to the slot, so making it a slot/connector property is wrong.
+> >
+>
+> Ok, I get your point that VIO 1.8v supply is just limited to the I/O logi=
+c and
+> not the whole card/adapter. But I don't get your multiple supplies concer=
+n. Spec
+> says, "A 1.8 V supply pin called VIO 1.8 V is used to supply the on-Adapt=
+er I/O
+> buffer circuitry operating at 1.8 V." So it implies that either the singl=
+e
+> supply available to the card through VIO might be used to power the whole=
+ I/O
+> circuit logic or the card can derive its own 1.8v supply from 3.3v supply=
+.
+>
+> So how come the card can have 2 different 1.8v supplies powering the I/O
+> circuitry?
 
-Thanks Alexander!
+Is there a pin on the connector for 1.8V supply? I don't have the
+spec, but the pinout I found[1] didn't show one. If there's a pin,
+then I have no concern.
 
->=20
-> Should I pick this up or will you send this with the rest of the
-> series?
+Rob
 
-I'll need a v2, since some things will also change in other parts of
-the patchset, so I would wait for the next version.
-
->=20
-> Cheers,
-> --
-> Alex
+[1] https://pinoutguide.com/HD/M.2_NGFF_connector_pinout.shtml
