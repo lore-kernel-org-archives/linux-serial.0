@@ -1,57 +1,57 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD805299937
-	for <linux-serial@vger.kernel.org>; Sat, 17 Jan 2026 02:02:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D4E7244661
+	for <linux-serial@vger.kernel.org>; Sat, 17 Jan 2026 02:03:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768615357; cv=none; b=aAk2oUJljJ/XpukYA01DcQTsXtbcex23Qj5Wci4+yxw6/lnnU6qUbJo0UjU9QMFR4/JqRGmGESj486zDapX4SZZVDjT1H+eI0DbDEoYJIsPSCHOc3oNuAaLPhdvvYZSPjdAqOSzboVbLFA6KSSY6YnbKa3E9xzJY6QJJHcHzz68=
+	t=1768615417; cv=none; b=Lz7XdsdMokvFO87mlTITogSC6waf2ZGZF4ShBSlV2nz0tUoHXNnNjGfzSCDGyqIhooVuqg75TZOIb0gslioztIbk5O5F/V+mX24MGmWRzD4fyisNVVVm8uUN2CNimHC7SrB8hlaIf7CeQnSTdZwaEYhCc/ndWxgd3p+lnc6wFZw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768615357; c=relaxed/simple;
-	bh=4yN75ig0TN4qSeZQ93C7tvl5wCjHtt+rlLFAiug+T2A=;
-	h=Date:From:To:Cc:Subject:Message-ID; b=r0o6VfvAxMtfYDOnTeVThJtKk/R+ujZY2fKNzGVVc715ZJ/fGPFg1Z8T+38fGQcthK8fiExs5ZhWYKBLEHgSnPWhYsNiaJbZZzspQqnPUsxFWygAEciXC9CFXhojDipes27xQtsBSuSi+E8k3ZSCGNQ5kHn9kbCOUTyQd7nI6X4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hDLOlRho; arc=none smtp.client-ip=192.198.163.8
+	s=arc-20240116; t=1768615417; c=relaxed/simple;
+	bh=B+ydfEk/Jkex0Bw3dZH2eTirQegFRk6FQs0qJtNPPnw=;
+	h=Date:From:To:Cc:Subject:Message-ID; b=oGO+uVi+xl+heqwn6nLSVhQM0XE4Jm1wGw0eDTcTbpe78i4J+/Svak1FT/ow3I9LJms+ofIWBRNvbkfplSuS7Sdk4Ftv0QetrZpJ2KbiACPh8PxQSveJDNGDnzaj1YuAqbK4cUffGeF5bnBcMbej8kPviOmYuYzfixLhl6d6d2w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OCC7ZP/L; arc=none smtp.client-ip=198.175.65.20
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hDLOlRho"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OCC7ZP/L"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1768615355; x=1800151355;
+  t=1768615415; x=1800151415;
   h=date:from:to:cc:subject:message-id;
-  bh=4yN75ig0TN4qSeZQ93C7tvl5wCjHtt+rlLFAiug+T2A=;
-  b=hDLOlRho2Rvbq1ekxXNS8dZfnPFfIKw/QIdMr0OXtrzf3X7tGpVf5/Vs
-   FPtzUYAGs4nOgu3BOdRdCkADINyIbOX/8p2fDntelejjTfnUsJUBsCu4D
-   oezIhmYsJ5zMPi0KZNLcQfdou9dXXep/RgFopaaGyy8pGbeGH7Npvx/6V
-   U1ChBzjKzWdiiXT15IBxlBvCMqv/oc9msOxVPXvLSfCPS/5tcowf7BadW
-   wcrqB/DLKjEiVE/HoKDiQFD0Qj03+qc+MRVF4r3hwFLjV4vOwhfyBrc+5
-   RpQj++XZ43kpniGbcSKM9BXxWuVsaWjQbAXMRWobS96MlJ6rZSLBMXkev
+  bh=B+ydfEk/Jkex0Bw3dZH2eTirQegFRk6FQs0qJtNPPnw=;
+  b=OCC7ZP/LzspzWmgNgf6WM2waL5MHV/A8+unv+kP7fRSU1IW1UWVYF4iA
+   OZd0Xp6lb54LpALWIj04eOi/1tM6Z77vwjtfzGf/UKhQw3PueyZrBq953
+   FUm8I9y1nhWLBK2+fKzK0WpsrMRXJDrNEbowHH/eaGl03HTh2EXLvYkvp
+   GJYlRBDAip1mUlpKbbs75mMTw77wf62Q/ER6ljTlRnD6wu/ceWL52pbR3
+   31tJRIVa2d8m0AcXKtCG1mldZR+gK5QvSDC0TEGaQpA23DQTjbl/wYMfO
+   IZs3j5QESLxIIl3CrfvpM1DayL5lpv7C/sWMwUGAhuDkYDXOrTVuPtpf+
    w==;
-X-CSE-ConnectionGUID: 25HWtXJEQkGg6Xwqja8p5A==
-X-CSE-MsgGUID: aOsoY7a+TcGC9hcZkXRW5w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11673"; a="87504203"
+X-CSE-ConnectionGUID: Byop+nHqSTO44bZzFHKc3A==
+X-CSE-MsgGUID: m2cgwLIbRE2l/KyFTXYIxg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11673"; a="69663877"
 X-IronPort-AV: E=Sophos;i="6.21,232,1763452800"; 
-   d="scan'208";a="87504203"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2026 18:02:34 -0800
-X-CSE-ConnectionGUID: 3O1Cxbn9Rb+cXC93nSvaVQ==
-X-CSE-MsgGUID: Gx9WU+CZS5G/bBYFKiO7qQ==
+   d="scan'208";a="69663877"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2026 18:03:35 -0800
+X-CSE-ConnectionGUID: L1HUT+LMQkm8huG4vR8NdQ==
+X-CSE-MsgGUID: gzdW5pN8SL2gpVznhg0kiA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,232,1763452800"; 
-   d="scan'208";a="205664818"
+   d="scan'208";a="228381690"
 Received: from lkp-server01.sh.intel.com (HELO 765f4a05e27f) ([10.239.97.150])
-  by fmviesa008.fm.intel.com with ESMTP; 16 Jan 2026 18:02:33 -0800
+  by fmviesa002.fm.intel.com with ESMTP; 16 Jan 2026 18:03:33 -0800
 Received: from kbuild by 765f4a05e27f with local (Exim 4.98.2)
 	(envelope-from <lkp@intel.com>)
-	id 1vgve2-00000000LRm-2hG6;
-	Sat, 17 Jan 2026 02:02:30 +0000
-Date: Sat, 17 Jan 2026 10:01:59 +0800
+	id 1vgvf0-00000000LRs-2pWh;
+	Sat, 17 Jan 2026 02:03:30 +0000
+Date: Sat, 17 Jan 2026 10:02:32 +0800
 From: kernel test robot <lkp@intel.com>
 To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
 Cc: linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 0e19f73ffde187458fadfff60eb4771bff704296
-Message-ID: <202601171054.T1o9USC5-lkp@intel.com>
+Subject: [tty:tty-linus] BUILD SUCCESS
+ 27aff0a56b3c77ea1a73641c9b3c4172a8f7238f
+Message-ID: <202601171027.EGUYbWkk-lkp@intel.com>
 User-Agent: s-nail v14.9.25
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -59,10 +59,10 @@ List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 0e19f73ffde187458fadfff60eb4771bff704296  tty: hvc-iucv: Remove KMSG_COMPONENT macro
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-linus
+branch HEAD: 27aff0a56b3c77ea1a73641c9b3c4172a8f7238f  serial: 8250_pci: Fix broken RS485 for F81504/508/512
 
-elapsed time: 728m
+elapsed time: 729m
 
 configs tested: 175
 configs skipped: 2
