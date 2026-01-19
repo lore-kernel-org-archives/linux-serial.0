@@ -1,66 +1,33 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5220334C2D
-	for <linux-serial@vger.kernel.org>; Sun, 18 Jan 2026 14:03:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6840E23D7C2;
+	Mon, 19 Jan 2026 07:08:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768744996; cv=none; b=Tm5x+DE/tpDwNWqjZ+MjE5HPkcPps8euiz2W+12nU5Ll9CwvA95vWTe1C0odp0G0fOi9Wboki3ullSmPtDxTSvcDbctC6WdPtB19ASwLb+23bcJpjx24s/yJqK/FVJJTFQpJj6DMMsSp8INAdMtygxrq6A115tiVWPUr77q8OTE=
+	t=1768806490; cv=none; b=W5LYmPNMrhTPDKZ96GJM/tBaTy4roUmGQsTC9rlnowMywIiha3E2vl+SdsPCyEutGKtHUrQFPTecp7czG8dkgjooSawKdPVBxhun6BahF0XlQ+kdCqwF+2+w6e3YOywxskxO0xneqITbskjXgYB51FlhhmKcSrfADjIHIUUL+JU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768744996; c=relaxed/simple;
-	bh=/GsF+Uwls1Cn2yinM71Z8W+ioXcZeW9vpkl4szRkNjI=;
+	s=arc-20240116; t=1768806490; c=relaxed/simple;
+	bh=w5v5NJGubsnohnWB4hRbBIx4hFV70tcopy5GlPKAWAw=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=rCr+PFVmVTXdP6iNVRwfmo+6v8uYtOQeWqLCxJirTyfWHoOLmglZTdsO4tf4QPJGVela79cFt8wkGqiCQQbGSwsF7f2a+GJS1i4kt+OVChTVrmQmeyozmza7Wa2F1CKewQKNWtnn2klvgwuvBcChkpUP+b1JNGJzTUK9+nRkeSc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=AU1u6WOt; arc=none smtp.client-ip=209.85.128.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
+	 In-Reply-To:Content-Type; b=D7MV/8DLZ8sZWRdE3T3Z03JqwG55ex9v5kZFAVslzxy2KPlLcHe1apkNb67XuBfbDDxi6xbguFKKT2M6E6FXeDCSPTekPVfsnNdWkeH6g8J14segujn19MERwdtO9QzMVD27kZH3oKhk5e+aCh8HAjwoE/94/G7aP0NRNJ1YKbI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=U6OBGjvU; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="AU1u6WOt"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-47ff94b46afso22472995e9.1
-        for <linux-serial@vger.kernel.org>; Sun, 18 Jan 2026 06:03:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1768744991; x=1769349791; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=IMK1YqKVaUf0IoyRsQOMCKJ4gS01F7A0JEX5JckEMXs=;
-        b=AU1u6WOtLoi8xhtxE3eZH2de7tMEOJBbWbxjQ3yhiZkjPT2U+TxzYsQSeFKocZiPFp
-         AfUR8WeygLNHXiE9Viiw1RtzFAsj1KyVxaWitGd2d8N3ANyj+Y7kO43+hm5JZhbBq+Lb
-         lPvGKm4ZddOA32TKUnbLjuE3F06FWBpu3jNeWG8PxL6W7eEJcdrnLaI8SrtPWsd/V4W6
-         +EAvlq2BKqQ/VvftFp9V9f78dx1EN5wahowO2gdSHzutwK6Z8mTGZRreowFvAg6oCWZ7
-         I8ZU60NADPdABqce0/chNtZRxbKpG3J3sqT37gvVSYI6RT6C+EjRstJOaUfYQFkChaEz
-         m0SQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768744991; x=1769349791;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=IMK1YqKVaUf0IoyRsQOMCKJ4gS01F7A0JEX5JckEMXs=;
-        b=Ed+WZIndojbWoV2/CFzQj/oKgdB+T3EZkj9iGci2omgfiuPa2E0K1SP2MgNM1pDb71
-         tKZ9PRi3lgk0rwryUmaMVFTKIZiGaNb9w2oeif5HmXIXdOfl0ibJhG2nOnjcExSkAgVE
-         QwM/jd831JGEVirJOKRGZ6sF2KHUVexdwwowA9Gi1YdArLA295sVgOAZwJ9i910Z1mTD
-         x9cNaob1ujwzW5AnPh3Y1ImKV2plW4TKOlax68ETwmqr2pJ8JPebQ1UIU5TJAy4eDAvA
-         Nto36hnxS9mloCNtmr9hjPEApEzEH0hoDbp/U7Skl8ytpiQVMWg6sGTy2QmRqVFjPg9d
-         6x5g==
-X-Forwarded-Encrypted: i=1; AJvYcCUiN2BAQhqm1jm+F+5f82jDwFoDrcK5M8Mu45amED9phCF5RJYoRLJIc7hv9lHRdsxc3vydMdeu5dvhKSM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzO8V23FHppsoZLnefxDuNUY4NaVVchK3tEcWX0UxfBCndn0haZ
-	OIVR27wYFOxCzfMGpjUIJ4sfhRIsXidtBVKsUVWOVeOcnVPcgW9Lr+dGKBDG/0fzxfU=
-X-Gm-Gg: AY/fxX6zU0z1scj9fa/TPbgaefRlSx/uLBtgInKAinLfwHxM9//dGsNTM3KfE1b6+nU
-	EWa9Ej98bn37gJheff+kF4r7o0X5WzBHjD6OZzZad4UeKzDbVjeMqXLvDMUt7S9VMl4Vl0N7eHB
-	0w9NzOOPn3bAuNbI7K3dhY7wkQXNIWsL10ShLJEngGnvSffhbAqz88irDEBOzdtIVWd9njVVQmt
-	sc+GTqmZzOcTMwA3mFlkddfrXWH3wCVBcnTutx3tKL7Ufj3gno9gLPyFbmLpHegUgf6blhVXHPE
-	4lCG/7G2JxrBRfyzaHXFadcGjkO1NoRCT233rEnHL9O0ONgSHFoLciBCIuWp8OvlZl2gZiMuA/8
-	9CnuwbSxWxrvaFHYM0CWzQK/dSF+FHZSqAwd/sER4cERwRPA77fFuZEWzDoc1gm/0pqJhEkaR6M
-	xH99IXmGYY1uPHUin4nw==
-X-Received: by 2002:a05:600c:4da3:b0:47d:7004:f488 with SMTP id 5b1f17b1804b1-47f428f5e9amr84049025e9.10.1768744990847;
-        Sun, 18 Jan 2026 06:03:10 -0800 (PST)
-Received: from [192.168.50.4] ([82.78.167.31])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43569921df9sm17725892f8f.3.2026.01.18.06.03.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 18 Jan 2026 06:03:10 -0800 (PST)
-Message-ID: <9c34b805-8c6f-4711-9718-6c39a141d451@tuxon.dev>
-Date: Sun, 18 Jan 2026 16:03:07 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="U6OBGjvU"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B127CC116C6;
+	Mon, 19 Jan 2026 07:08:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1768806490;
+	bh=w5v5NJGubsnohnWB4hRbBIx4hFV70tcopy5GlPKAWAw=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=U6OBGjvUhnsjsZ7cxtWIyBvKI5zgEO3lYAJATPVXCOWMzA+x3DdKsiGtArRiesw4y
+	 rRJtautAjM0oUimCGI3ALYiTWQkyy3P/bsHGvj+bIOvtYkfN5IOM6MIn7y5d2uAKnU
+	 b8e90f6YfTorNnI8Vno5OTFqa++hTi2FfLHvNGzavwzohHHb6id1AErHWNQ7CDbm8q
+	 L+8RHsb0vP1fCmb5DAxvUbcxDX3ZauY3DltjyYGJpLK+6vvBnOkGtyz8ij/ipLz1Wn
+	 v1RpyW8v/Fn6iP0ssyI+mdy00AAaca95qHiq4AmvqIdG5TK/+elMOYyzPqzrzBPLxU
+	 dKq3jibcIcGQA==
+Message-ID: <6182b524-6e15-40b8-b43c-1b2479f91b47@kernel.org>
+Date: Mon, 19 Jan 2026 08:08:07 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -68,37 +35,127 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 11/11] arm64: dts: microchip: add EV23X71A board
-To: Robert Marko <robert.marko@sartura.hr>, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, nicolas.ferre@microchip.com,
- alexandre.belloni@bootlin.com, herbert@gondor.apana.org.au,
- davem@davemloft.net, lee@kernel.org, andrew+netdev@lunn.ch,
- edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
- Steen.Hegelund@microchip.com, daniel.machon@microchip.com,
- UNGLinuxDriver@microchip.com, linusw@kernel.org, olivia@selenic.com,
- richard.genoud@bootlin.com, radu_nicolae.pirea@upb.ro,
- gregkh@linuxfoundation.org, richardcochran@gmail.com,
- horatiu.vultur@microchip.com, Ryan.Wanner@microchip.com,
- tudor.ambarus@linaro.org, kavyasree.kotagiri@microchip.com,
- lars.povlsen@microchip.com, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-crypto@vger.kernel.org, netdev@vger.kernel.org,
- linux-gpio@vger.kernel.org, linux-spi@vger.kernel.org,
+Subject: Re: [PATCH v8] tty: tty_port: add workqueue to flip TTY buffer
+To: Xin Zhao <jackzxcui1989@163.com>, gregkh@linuxfoundation.org,
+ tj@kernel.org
+Cc: hch@infradead.org, linux-kernel@vger.kernel.org,
  linux-serial@vger.kernel.org
-Cc: luka.perkov@sartura.hr
-References: <20260115114021.111324-1-robert.marko@sartura.hr>
- <20260115114021.111324-12-robert.marko@sartura.hr>
+References: <20251223034836.2625547-1-jackzxcui1989@163.com>
 Content-Language: en-US
-From: Claudiu Beznea <claudiu.beznea@tuxon.dev>
-In-Reply-To: <20260115114021.111324-12-robert.marko@sartura.hr>
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20251223034836.2625547-1-jackzxcui1989@163.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-
-
-On 1/15/26 13:37, Robert Marko wrote:
-> Microchip EV23X71A is an LAN9696 based evaluation board.
+On 23. 12. 25, 4:48, Xin Zhao wrote:
+> On the embedded platform, certain critical data, such as IMU data, is
+> transmitted through UART. The tty_flip_buffer_push() interface in the TTY
+> layer uses system_dfl_wq to handle the flipping of the TTY buffer.
+> Although the unbound workqueue can create new threads on demand and wake
+> up the kworker thread on an idle CPU, it may be preempted by real-time
+> tasks or other high-prio tasks.
 > 
-> Signed-off-by: Robert Marko<robert.marko@sartura.hr>
+> flush_to_ldisc() needs to wake up the relevant data handle thread. When
+> executing __wake_up_common_lock(), it calls spin_lock_irqsave(), which
+> does not disable preemption but disables migration in RT-Linux. This
+> prevents the kworker thread from being migrated to other cores by CPU's
+> balancing logic, resulting in long delays. The call trace is as follows:
+>      __wake_up_common_lock
+>      __wake_up
+>      ep_poll_callback
+>      __wake_up_common
+>      __wake_up_common_lock
+>      __wake_up
+>      n_tty_receive_buf_common
+>      n_tty_receive_buf2
+>      tty_ldisc_receive_buf
+>      tty_port_default_receive_buf
+>      flush_to_ldisc
+> 
+> In our system, the processing interval for each frame of IMU data
+> transmitted via UART can experience significant jitter due to this issue.
+> Instead of the expected 10 to 15 ms frame processing interval, we see
+> spikes up to 30 to 35 ms. Moreover, in just one or two hours, there can
+> be 2 to 3 occurrences of such high jitter, which is quite frequent. This
+> jitter exceeds the software's tolerable limit of 20 ms.
+> 
+> Introduce flip_wq in tty_port which can be set by tty_port_link_wq() or as
+> default linked to default workqueue allocated when tty_register_driver().
+> The default workqueue is allocated with flag WQ_SYSFS, so that cpumask and
+> nice can be set dynamically. The execution timing of tty_port_link_wq() is
+> not clearly restricted. The newly added function tty_port_link_driver_wq()
+> checks whether the flip_wq of the tty_port has already been assigned when
+> linking the default tty_driver's workqueue to the port. After the user has
+> set a custom workqueue for a certain tty_port using tty_port_link_wq(), the
+> system will only use this custom workqueue, even if tty_driver does not
+> have %TTY_DRIVER_CUSTOM_WORKQUEUE flag.
+> 
+> Introduce %TTY_DRIVER_CUSTOM_WORKQUEUE flag meaning not to create the
+> default single tty_driver workqueue. Two reasons why need to introduce the
+> %TTY_DRIVER_CUSTOM_WORKQUEUE flag:
+> 1. If the WQ_SYSFS parameter is enabled, workqueue_sysfs_register() will
+> fail when trying to create a workqueue with the same name. The pty is an
+> example of this; if both CONFIG_LEGACY_PTYS and CONFIG_UNIX98_PTYS are
+> enabled, the call to tty_register_driver() in unix98_pty_init() will fail.
+> 2. Different tty ports may be used for different tasks, which may require
+> separate core binding control via workqueues. In this case, the workqueue
+> created by default in the tty driver is unnecessary. Enabling this flag
+> prevents the creation of this redundant workqueue.
+> 
+> After applying this patch, we can set the related UART TTY flip buffer
+> workqueue by sysfs. We set the cpumask to CPU cores associated with the
+> IMU tasks, and set the nice to -20. Testing has shown significant
+> improvement in the previously described issue, with almost no stuttering
+> occurring anymore.
+> 
+> Signed-off-by: Xin Zhao <jackzxcui1989@163.com>
 
-Reviewed-by: Claudiu Beznea <claudiu.beznea@tuxon.dev>
+This forgotten XMAS present LGTM ;).
+
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+
+-- 
+js
+suse labs
