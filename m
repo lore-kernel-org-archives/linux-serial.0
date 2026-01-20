@@ -1,115 +1,75 @@
-Received: from mail-ej1-f68.google.com (mail-ej1-f68.google.com [209.85.218.68])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34B4F35B12B
-	for <linux-serial@vger.kernel.org>; Tue, 20 Jan 2026 12:52:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.68
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A10D11C01;
+	Tue, 20 Jan 2026 15:53:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768913561; cv=none; b=Nzc7GX4O6Cy1Tbd7+JwJ2NAKrac0BWBLz4pDkbgIktX7eIo4w2R13LFeEjLMWxRoVZCaNCpmYi5+IPLdI8a5zzo4PB8wTxKpzZ90n0Ka3WisU5+Rwa9J8dcM3/sC1jmGq95MmJHsUBJlbRtA9D4+jmh+HsZC7Nqu6QyWOZsHWog=
+	t=1768924430; cv=none; b=TcuZoxpRafURRHCXlCud8gzxMfX06LGlz7oBkt5yrTDcCJ94BsyLQEeB7IYaOMfJfCkVyz9lgU6sZTLAqH4AbHsrCcFrxo9zpdNcY2D+KCQ6/l/JoRlKvC4QeZCj0lQTJQw9zGxlRL1w2t6uMjlbV3s0b7C/XMr85qlATfPsDvA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768913561; c=relaxed/simple;
-	bh=tKERO6SBJJqx3TRK7XGrvuoyFR1bVVvpi8MF7J8Ro6U=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Bg+K3tJvbNQroHsuqKlEAaRZX4Mol351LV3NnF2CsHiWHVH8TD69Eg+PyPAaDV2lsv5GXVCT5cEeePh/UKgC8Z0FUuLeO88r6WSu1CmD++bs86lINMherKwkZaC+b8jFaHMbFt7oYgv7OGJpTBcjd8c+ppRGzml0waqH4mY5nJ0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SUuHvB//; arc=none smtp.client-ip=209.85.218.68
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1768924430; c=relaxed/simple;
+	bh=2lyQ956y/cjzj/E2Ndhkr/nFnx1nEeiq4PAxUbapuuU=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
+	 MIME-Version:Content-Type; b=ZVJIHOfGIoHuSYYBKcFyBvCQdYwBWhBItxuZBWeZecRtSMsT2wn2NVAyAM6EM9MicQ5PFAJCq+9k0wiX3UWVtNQtguWVnPwyoj3B+DBJtaRLdBPZdsxj1xnlR7I1WjorqAmkoUHzPyeyOTT6m9tOm7AwR3hEZF3XiXrtS7+iVk0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tda9PqQf; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SUuHvB//"
-Received: by mail-ej1-f68.google.com with SMTP id a640c23a62f3a-b7cf4a975d2so932429366b.2
-        for <linux-serial@vger.kernel.org>; Tue, 20 Jan 2026 04:52:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1768913556; x=1769518356; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=JSRKj6wmV+AKwbO+bGsCVB/saW4/0FVnBMzHhAa7IM4=;
-        b=SUuHvB//U5azkJAptRBi2hNg6e0eHeJyvP3UiQRQCdhVfaKsGgVus6BVPV1UgwM7Mw
-         PE9w4sCsRSZZoukS9P9xB3Fc7gXFOYgOESmanrCAGAH5RCp2Sa+EK28UGlnSvUWQR+Vk
-         fRrqyj8eSdDK3lzOAZNgScmR8zftY4JRVp0QFrxJiy9k8PNMOXv8enCjtkOdtbvoGjNl
-         5/R80L0WxxqpG3eKt8eAB0Sh8vyRX0236p7mDjsPmdlQ2tS2HSEWxn/FbXmU7sJHlNKi
-         60IIEqvHh5V6vgZd3N5R2hXv4fZegWN8XU4uKoEgmDqgM9ktR6ipUSwgmCvY0wulK8eB
-         KFpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768913556; x=1769518356;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=JSRKj6wmV+AKwbO+bGsCVB/saW4/0FVnBMzHhAa7IM4=;
-        b=nqe6MFmtH7V7DmcAFUZ1tkAkZd9EeJAWQZA0z0tWHeT8caSOQ/CiFKa4TSTSA0wvrV
-         QhtIR64RcAPo8NxH76VaNeYK35DQyR5iq3TBNrX1ADnroYONaz5jYn1dY2Z3CgOB/g2a
-         zf/54d7sWOtypiHDcyVBiEXl28tZ3e6MV2XgFxBUNAil46qkzU2wBQaFM4Cvpv+zH6te
-         5vs+iBC/F+wEtpZ1CBMW6O9uuwh2zWcSS23sxWhulQjfFkKrHKkv4+mwr8UdChd5lcih
-         D6D5ueoTL9hf5ycjjRdrV2oAJiCOvVZt+MdYIM2dS0EeQkOU7KJTk1p50o8KIL2pIozh
-         Y9nA==
-X-Forwarded-Encrypted: i=1; AJvYcCWqs0VlDgqdgGvQKD9aPu0eaHiXEoBXKM3/Vn0n4m1myxVTJZDPSzFqikc1hjul0vsQFyo6KhKFUteTi/Y=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyXpoSy9A2BYS8g3vHDR+wE1aCtbUKfsqZHyENd+9Wn5m1Wx7O+
-	gpFFG8yGwBa29EOe0nUT4+8qCFNjrAVbckIQaBWvFXJ/AuIFRMzCQQka
-X-Gm-Gg: AZuq6aL2WCwGcek96Vzbr661CfqKLCQ6k1o1348ytPQA+qxMu5m/4vcfrq4vcx0BIO2
-	TJGcHXAqBaO345f5ZNNjeWavkB0pXvs4k/iAmQ64BAACr5aWjlv+NYpG4/Uh5AfNFbMVOdswgQh
-	P4xgWAWli3CPzCqu2lcbcAYaJVxuh9XuJyMmAvIdSty+xzzfHWVIIuEKCu0o9VtmgQsl6rso9+q
-	vEzoRKRd9hq0qx0nikWDsJ11oFeed2wwDxtm1SRYz4yfhuPaJwx0TmOKP2e7sTDQMhtpIQdaeV8
-	xEdXpBorQx5yL7BgXmOglRXByThRwcik3nMk8SnW53V78pAkknswIKozzekhe8QUVCmTYh5pNY1
-	HXo7hpQ02nGDtagSI10FVvIeREuyweUyrg+mFYwrZbXsUVCaye7PlxDEtyFk0SFbVFJyF/90HGj
-	kw5z8iEIMDtnwxL7V727uAtXYMGVCZU5v/pi0=
-X-Received: by 2002:a17:907:a089:b0:b87:fad:442f with SMTP id a640c23a62f3a-b8800348bdamr159690166b.42.1768913555975;
-        Tue, 20 Jan 2026 04:52:35 -0800 (PST)
-Received: from localhost.localdomain ([2a00:23c4:a758:8a01:c8c7:2ef6:8ac5:5556])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b87959ca32esm1420626066b.41.2026.01.20.04.52.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Jan 2026 04:52:35 -0800 (PST)
-From: Biju <biju.das.au@gmail.com>
-X-Google-Original-From: Biju <biju.das.jz@bp.renesas.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Magnus Damm <magnus.damm@gmail.com>
-Cc: Biju Das <biju.das.jz@bp.renesas.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-	Biju Das <biju.das.au@gmail.com>
-Subject: [PATCH 01/12] dt-bindings: serial: renesas,scif: Document RZ/G3L SoC
-Date: Tue, 20 Jan 2026 12:52:12 +0000
-Message-ID: <20260120125232.349708-2-biju.das.jz@bp.renesas.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260120125232.349708-1-biju.das.jz@bp.renesas.com>
-References: <20260120125232.349708-1-biju.das.jz@bp.renesas.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tda9PqQf"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DF38C2BCB6;
+	Tue, 20 Jan 2026 15:53:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1768924430;
+	bh=2lyQ956y/cjzj/E2Ndhkr/nFnx1nEeiq4PAxUbapuuU=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+	b=tda9PqQf6mdU5ZN2ASc03cnbHIaazXkfER9jbCeHOVDKmaYXcnps15COS5KzH9sk9
+	 q8b4Aa0lwNs26Nrq6ObHD2+UYOeAUb+PmoWGV4v5Rf0qj/hRiRV4irKDn7SxXLsI+X
+	 A4C8phW1WNMqXH4vQKTyAJm2LWz5zZCMnVB4HfGGA+q2YSbruVNNX+9c3/nu6Xi8ZW
+	 7biB1Ph8RRFoUdg7mXSUjARCaQhrJ3IcDgm92qSiY8USKG5kSK4pQSSiSljFezBN7H
+	 tatat8ZmbUyGWWnHJ2hZCQ3YnD6MOGK2P+BYCAfmLdIcWadbT8fFTEyV7Dv9shvaDl
+	 ZSEpuqTQeljdA==
+From: Lee Jones <lee@kernel.org>
+To: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
+ nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, 
+ claudiu.beznea@tuxon.dev, herbert@gondor.apana.org.au, davem@davemloft.net, 
+ vkoul@kernel.org, andi.shyti@kernel.org, lee@kernel.org, 
+ andrew+netdev@lunn.ch, edumazet@google.com, kuba@kernel.org, 
+ pabeni@redhat.com, linusw@kernel.org, Steen.Hegelund@microchip.com, 
+ daniel.machon@microchip.com, UNGLinuxDriver@microchip.com, 
+ olivia@selenic.com, radu_nicolae.pirea@upb.ro, richard.genoud@bootlin.com, 
+ gregkh@linuxfoundation.org, jirislaby@kernel.org, broonie@kernel.org, 
+ lars.povlsen@microchip.com, devicetree@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+ linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org, 
+ linux-i2c@vger.kernel.org, netdev@vger.kernel.org, 
+ linux-gpio@vger.kernel.org, linux-spi@vger.kernel.org, 
+ linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, 
+ Robert Marko <robert.marko@sartura.hr>
+Cc: luka.perkov@sartura.hr, Conor Dooley <conor.dooley@microchip.com>
+In-Reply-To: <20251229184004.571837-3-robert.marko@sartura.hr>
+References: <20251229184004.571837-3-robert.marko@sartura.hr>
+Subject: Re: (subset) [PATCH v4 02/15] dt-bindings: mfd:
+ atmel,sama5d2-flexcom: add microchip,lan9691-flexcom
+Message-Id: <176892442293.2297977.2838802915163703902.b4-ty@kernel.org>
+Date: Tue, 20 Jan 2026 15:53:42 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+X-Mailer: b4 0.15-dev-52d38
 
-From: Biju Das <biju.das.jz@bp.renesas.com>
+On Mon, 29 Dec 2025 19:37:43 +0100, Robert Marko wrote:
+> Add binding documentation for Microchip LAN969x.
+> 
+> 
 
-Add SCIF binding documentation for Renesas RZ/G3L SoC. SCIF block on the
-RZ/G3L is identical to one found on the RZ/G3S SoC.
+Applied, thanks!
 
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
----
- Documentation/devicetree/bindings/serial/renesas,scif.yaml | 1 +
- 1 file changed, 1 insertion(+)
+[02/15] dt-bindings: mfd: atmel,sama5d2-flexcom: add microchip,lan9691-flexcom
+        commit: 41d1f3cf1f52c75f72ce1a3e2f2ee82e7c6eb59a
 
-diff --git a/Documentation/devicetree/bindings/serial/renesas,scif.yaml b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-index a6ef02327be8..82f54446835e 100644
---- a/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-+++ b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-@@ -82,6 +82,7 @@ properties:
-               - renesas,scif-r9a07g043      # RZ/G2UL and RZ/Five
-               - renesas,scif-r9a07g054      # RZ/V2L
-               - renesas,scif-r9a08g045      # RZ/G3S
-+              - renesas,scif-r9a08g046      # RZ/G3L
-           - const: renesas,scif-r9a07g044   # RZ/G2{L,LC} fallback
- 
-       - items:
--- 
-2.43.0
+--
+Lee Jones [李琼斯]
 
