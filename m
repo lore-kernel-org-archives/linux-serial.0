@@ -1,77 +1,56 @@
-Received: from mail-dl1-f49.google.com (mail-dl1-f49.google.com [74.125.82.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8D9542668E
-	for <linux-serial@vger.kernel.org>; Tue, 20 Jan 2026 19:56:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EB3F32252D;
+	Wed, 21 Jan 2026 02:20:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768938996; cv=none; b=f2tc810z2glQvBmc8rpEqwfDuDJJdXmNuIgRrPo3WuREyGGyZU2/MknLKumT2ibKkXMXmXp6E1HyG1FgMkO6UudF1WmNoCy+AsO5mCSxRCQs5auP/c3kf/2pKXi6bgmI7P+JWDucCpu3g5URPhl7M2c6GskvOJhMaD1Duw6J5i4=
+	t=1768962008; cv=none; b=kHs5gWCGbMYtHvKSK5Ia0Nc+70Z7AqunciInYgRzE1087PBFiAPrdZPFz3M1ddLnxRJclyzgHaBpA+3CNc3A7M7FWIN08rKXJ/Xvc0RMd3WvyrF/8RqfgM+5oP0WPOmQIwdNSI0KraeJ+Hl+xo58z9RkiL83QVUuONh8TctQG4o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768938996; c=relaxed/simple;
-	bh=dpRYr3skIgV0rzJn+6D/Wwyl8T3WJJeqflIDq7vz970=;
+	s=arc-20240116; t=1768962008; c=relaxed/simple;
+	bh=0nU4w252q2DLRZ1F2BgYWeOeH4dQbxVKvzzaFa9j4I0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cNQvLhNHQDw9tp4hWYBmrmytqJGECmqu5BLMSPnsx2ieKuPwVXszYvDY3msOLTxaMHl+Dgjxlqx/tRax1nSco/oqnguw8uPYCabZh0PKiKgqv+4aT3lXDDq0xmKggP6ljkaDGE38Gxrb9DKgCLMq1bPY2pkZI4p4raknlQL8yww=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ilTP+W8u; arc=none smtp.client-ip=74.125.82.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=f2DGBMSlQxP3xdjSp1HB0WZ9orgcRDmkr9hxKbtxkUlveI5tiFkV8F9hW1ESYV/wdfykFWyD71R6vAZoeVVhEGryF3SHX8C9UmTrRYD8vJVIQLdiHTVI7Yxg1KUTXOMBE/NxMM+QPFOaNTfYlUt/mqOrN5D7oQ0diLnLzPATl1Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LVYKMaQ2; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ilTP+W8u"
-Received: by mail-dl1-f49.google.com with SMTP id a92af1059eb24-12332910300so9199761c88.0
-        for <linux-serial@vger.kernel.org>; Tue, 20 Jan 2026 11:56:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1768938993; x=1769543793; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=lPDgUMFRl+w+AbB4KcmndfGR0As68bgylKNbbH3AGMk=;
-        b=ilTP+W8u0C7h7XBeoah7AsJ9JL095ZDFwxa6je9YceSe5kL434AEa3e23rZIbJCd2e
-         jnO4xLKmsw5RyE29tSBo1CYXW/XhUGjPEV8BMF3noJo9ZL8fHVkWA5vnGSaSQLiOet2G
-         u33Z96XEok44vp/L8jcalhxIbLF2VdgdGVnEmHJyBf+WvA6eY40iDArMrDCHTCvuYbGV
-         R2IRMW4ie8d0lDUcYo3zWHSLjXKq85+4R/INtdkQm9SrWFC2O2lwXCSL+pV6WY7K/Y4J
-         v/prpxeGXBy2mhWGLzQMm/WfVUt37+/etLvLAhGEDEyKKhHhl6i31LdTJJSmRTJrCn8K
-         b7Hw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768938993; x=1769543793;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=lPDgUMFRl+w+AbB4KcmndfGR0As68bgylKNbbH3AGMk=;
-        b=AtAV+iIseo6X1vaq0PHhpJXfO0a/7SWVgVLg1vxTCFzIu9SxmDRAUsxqIMLjJg1/2V
-         LK3dw7FlI2cmwCu4gPo34AO7rJoCj8rxkq/+7YDkJxx7OzTcaGoDz01q4s6E2hyaJzVy
-         sISEVhjjeTDL5fnYZgMKH2sMXejl3IwWWP+xvDJWh8EH6IvkB+a7vQgKIqA1pqG7Qr+8
-         irwbKcu5DcAcsoT9GQADMb1nsx8PMhwDy84u0S7SCkmSAVDQDenKhIZf44XHVGfx379d
-         6xmhBlZ37RgTy2QJbEHyiFq4GWLn5Ex3ldv/a9chPJr6nyv63FE9I+noFxQBCn8csNRk
-         +xig==
-X-Forwarded-Encrypted: i=1; AJvYcCXBnOMXocYwUvCPNFXcy8m7S9wn+47UHbDb9tyymGtjmf060RHZ9xE6GZd190GTNLdr7WCTYzJTQtKjCuU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxOhyT/Zbl5lrlhGp/8/ePdoSiwHiJM1KpzJBgiONYKDpd2mskt
-	VzIbRDE58Q2jhuWE16yGq2ASF1E3BqEY0wAe7yLdwkQ90ObG7HpUdKMk
-X-Gm-Gg: AY/fxX4wGLkR7abnHiGySyeY14hFgvvNIT/7KLtkBGVaoFtam8tZ7xaxYRnB0P401v6
-	Aor2IL73W68VZlI9/NER6pFUXSeTchqMGbPLFXMFi8922eF0atgL3b22NoTFFiGAFB7rKd80I50
-	u4pom/TQEZDP0XpQjJxdTEUIgqRMPwgAD6cxzwaF4GMrhbsDDgAGuM1Isx9a17QkPeYnl+FcLEa
-	OMe0ecQa7HHTjerk2o11a3cGoYTnVolIOAZeOhCepcoVy5dihi6ZJkaFLEOhYE6JVPRuKTvViWp
-	S4lRYIPR6BydOdfa7dBcBxSrgnssYhIAuYUMEIMVaf5RpTWkkv9oIwY55xB8qJkNQdeqjGRHQDQ
-	UbgQb3FSDbdee1M4FR+p+9oNXdEeDi9JfUNszTM+WHxzaxQubyGiCIgKN+hFgf8JRAUfdd6RWFo
-	2R7IVWClOHGiyy5U4qxR6mziXMoi9rYnomVjZL+lK9wNep/yTwg+/U
-X-Received: by 2002:a05:7022:608b:b0:11e:3e9:3e8a with SMTP id a92af1059eb24-1244a7910d8mr14869120c88.49.1768938993269;
-        Tue, 20 Jan 2026 11:56:33 -0800 (PST)
-Received: from google.com ([2a00:79e0:2ebe:8:d631:e554:f0bd:4106])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1244ad740c5sm23388705c88.8.2026.01.20.11.56.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Jan 2026 11:56:32 -0800 (PST)
-Date: Tue, 20 Jan 2026 11:56:29 -0800
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To: Kuan-Wei Chiu <visitorckw@gmail.com>
-Cc: airlied@gmail.com, simona@ffwll.ch, maarten.lankhorst@linux.intel.com, 
-	mripard@kernel.org, tzimmermann@suse.de, robh@kernel.org, krzk+dt@kernel.org, 
-	conor+dt@kernel.org, sre@kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	lgirdwood@gmail.com, broonie@kernel.org, jserv@ccns.ncku.edu.tw, eleanor15x@gmail.com, 
-	dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-input@vger.kernel.org, linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-sound@vger.kernel.org
-Subject: Re: [PATCH v4 3/6] dt-bindings: input:
- google,goldfish-events-keypad: Convert to DT schema
-Message-ID: <nab4yksjgk7jbofm5fkrafuz5c3dmi2oocdzgoscfj6ua7zwfh@olnrxt7sa3qp>
-References: <20260113092602.3197681-1-visitorckw@gmail.com>
- <20260113092602.3197681-4-visitorckw@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LVYKMaQ2"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DCFBC19425;
+	Wed, 21 Jan 2026 02:20:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1768962007;
+	bh=0nU4w252q2DLRZ1F2BgYWeOeH4dQbxVKvzzaFa9j4I0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=LVYKMaQ2cHRQNeAi9n25y0Dv91VfSuogevihUsmk2HR9BuNwnDZrw9Q455PhpWHjd
+	 J7lJB/eGzMzezrSzvAKD3s+heJlgmi8IW+NFcC7cj+KofCbN0IznoWFTqTrID1pBcO
+	 0ez7ADlglRFbcBRqRSKO8kLdV85TQ6xZcgxRHpKN5zLRCQx9t7DF8drFDVvqgLeBU3
+	 61FGgO+9OQvI/pgSxEfSZGuVXQvuWH/OMfZUH6vRuRqtIjopbkdMZ4hfjbRo5IF3VY
+	 arLgb8ZMcTQekrLJsWpNivH/dME9bgT+sARcCWS/zP+Frz9iQFRIYQRfYg9OZaavC2
+	 DqbGyVoBtBE4Q==
+Date: Tue, 20 Jan 2026 20:20:06 -0600
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: Robert Marko <robert.marko@sartura.hr>
+Cc: nicolas.ferre@microchip.com, UNGLinuxDriver@microchip.com,
+	gregkh@linuxfoundation.org, horatiu.vultur@microchip.com,
+	andrew+netdev@lunn.ch, luka.perkov@sartura.hr,
+	lars.povlsen@microchip.com, lee@kernel.org, kuba@kernel.org,
+	linusw@kernel.org, richardcochran@gmail.com,
+	Steen.Hegelund@microchip.com, richard.genoud@bootlin.com,
+	kavyasree.kotagiri@microchip.com, davem@davemloft.net,
+	krzk+dt@kernel.org, linux-spi@vger.kernel.org,
+	daniel.machon@microchip.com, linux-kernel@vger.kernel.org,
+	edumazet@google.com, linux-crypto@vger.kernel.org,
+	conor+dt@kernel.org, linux-gpio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, pabeni@redhat.com,
+	tudor.ambarus@linaro.org, claudiu.beznea@tuxon.dev,
+	herbert@gondor.apana.org.au, alexandre.belloni@bootlin.com,
+	netdev@vger.kernel.org, devicetree@vger.kernel.org,
+	olivia@selenic.com, radu_nicolae.pirea@upb.ro,
+	linux-serial@vger.kernel.org, Ryan.Wanner@microchip.com
+Subject: Re: [PATCH v5 10/11] dt-bindings: net: sparx5: do not require phys
+ when RGMII is used
+Message-ID: <176896200632.1779741.2061551364132854431.robh@kernel.org>
+References: <20260115114021.111324-1-robert.marko@sartura.hr>
+ <20260115114021.111324-11-robert.marko@sartura.hr>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -80,17 +59,21 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260113092602.3197681-4-visitorckw@gmail.com>
+In-Reply-To: <20260115114021.111324-11-robert.marko@sartura.hr>
 
-On Tue, Jan 13, 2026 at 09:25:59AM +0000, Kuan-Wei Chiu wrote:
-> Convert the Android Goldfish Events Keypad binding to DT schema format.
-> Move the file to the input directory to match the subsystem.
-> Update the example node name to 'keypad' to comply with generic node
-> naming standards.
+
+On Thu, 15 Jan 2026 12:37:35 +0100, Robert Marko wrote:
+> LAN969x has 2 dedicated RGMII ports, so regular SERDES lanes are not used
+> for RGMII.
 > 
-> Signed-off-by: Kuan-Wei Chiu <visitorckw@gmail.com>
+> So, lets not require phys to be defined when any of the rgmii phy-modes are
+> set.
+> 
+> Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+> ---
+>  .../bindings/net/microchip,sparx5-switch.yaml     | 15 ++++++++++++++-
+>  1 file changed, 14 insertions(+), 1 deletion(-)
+> 
 
-Applied, thank you.
+Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
 
--- 
-Dmitry
