@@ -1,101 +1,172 @@
-Received: from mail-pg1-f174.google.com (mail-pg1-f174.google.com [209.85.215.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4791127EC80
-	for <linux-serial@vger.kernel.org>; Thu, 22 Jan 2026 00:18:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2BF03C1986;
+	Thu, 22 Jan 2026 08:51:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769041122; cv=none; b=Lz08CcRHFpZ2IIXBVkccUYWnDVfqyacIHCVmj40KHe1dWzP2hVB00Ru9R20nBVQa2H2we1Ms3bTSfzkLTqitgKrTvRqy5SAEsC+CJm6l11bjBBAgOo1yco984chMgSPcQNcFoqhAy+O8r1SYodfvMHrfME6vmLlyNiD0ZG3Emco=
+	t=1769071915; cv=none; b=nvPWj3CYm0BUVih5HTpscpSJXUhngGfByctubHrVfZ8Y4AHkcbj1+sXoLCT0FKK4fy6FkC/lTcZOeyZJsZLQwL/8sLkb9GZl/QpzgiYY823vYdLHazOPKKFNPX0fFAfKCpe3Xax9o/Y947ds0Ix9p2UZBPR5eZFEpoPhCRc8Uvk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769041122; c=relaxed/simple;
-	bh=iuzvtx9kOTb0huJ+lhAz1IToNhc/QNH+QeLzaFIfu9I=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=SGyWLMso1t9m2mEZWM48OR+fmeJEPktFnOBp6mDJ2FdIY1xD1UJBo6dlQbh0xJtItHJQYpzNW0vrLAT862xs/6trCzu0TMkvyRCgRGeJKYVaXNplFl2GEW09b1kqLmXfek6bP511BjfUD1paQ7CiQSQ9XVm51ZLjoxus9IEUX0g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Y+lJX4yZ; arc=none smtp.client-ip=209.85.215.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1769071915; c=relaxed/simple;
+	bh=Z1BPPqPX3pPbBMPk0JKd8AgqIRbd45v5OCLMXlCvDmI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=TWspjDnk60CBP5jG1y4mHpmxTECn3mpXTlBeh901k3LIJWe3fuLYdwKQQ1mB2elTKBy0ri0BHRhkt3bw/CE0bKgLnxSIavDjOPbaPSJVkY+vww/w1uOg9DqXw53t7ksBHzfRovMyDkeKy6eLlTnYLfLGSEp9hGiHFIO0RzHBRQ0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=E7E5MQUA; arc=none smtp.client-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Y+lJX4yZ"
-Received: by mail-pg1-f174.google.com with SMTP id 41be03b00d2f7-c6113524690so115660a12.1
-        for <linux-serial@vger.kernel.org>; Wed, 21 Jan 2026 16:18:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1769041120; x=1769645920; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=iuzvtx9kOTb0huJ+lhAz1IToNhc/QNH+QeLzaFIfu9I=;
-        b=Y+lJX4yZgkHOn5NTuzPRvCPx9tPJ4UYzrnxqABD70WkyPQXSCxcT/qjf3zfXoSiufg
-         71h7MT6UhsR1KpMIyzmMzVKnkYsY/ZibVe6+jFK4Ncscw78twuaeawkmEJGNsUfyrkI0
-         XhATmln2n+TXNGt6DI5IeRHyfjOKb3EMTPTnOCYSP8YlrPRktrOx3m613Qap6MELNS8t
-         8wriY8392Z7jvc2h+a7byPhegajhLyj5exRfsTxruUnisH4vQ/MYJW028uWZIoAh9Jjd
-         n+v7FHY8oLdECXgrgpF5aD3y+X7cZNxD6cbbUMP1CupAoX4WmPOpzdxnVcutpuHBeUEn
-         MA+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769041120; x=1769645920;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=iuzvtx9kOTb0huJ+lhAz1IToNhc/QNH+QeLzaFIfu9I=;
-        b=SXsvtPMjQbJL1kTgqsP3jElNYpsQYQiYqTsO0LO/SE15mq/ntLDQ87m6ENZwfhT2wm
-         zsIfF3w5o3zAEwPbU1xoQvoiwyCB9I2lBp5iUAo9iNn/A/1z9ak29yzMjLnGcHerL72N
-         TUeonhrCjYmq9LwHh0mne26RAF5CNWN9C3WUy0sm3J5tah4fo+oFoGdxoeYbQrehhu1f
-         tP1zmuxkq2ZO9nQWGN4iDXISj+uNOEa3fQ2W7AVxLb31SdFFZb7krBtegmzgFiVr9y+J
-         cXQkyH9/70xNgO1WguVeTLmF9seoWBzaYF1xyhPIgTvikm2vYOBjnfyfR2mpA+RUHa5t
-         SIGA==
-X-Forwarded-Encrypted: i=1; AJvYcCXNeLMpn2LBCuld6A31pvOPB0QW15OA0Vyc95JEPjiOhr8mFmo7gORegwBIem+wpSzRJ5Ukfv+H+FaQuOE=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy+sG1gvPThmVBs0/jKQdx4CWMXmunMdEru4rADQs7u8Pfoo+zv
-	vAw8SCSdaKBEhflRhA9Xa55RtA/OwVQtRJL9kL0+t3SyDWJsZny4scIB
-X-Gm-Gg: AZuq6aKeXltnDkdrF5H3Gs9C0xgJxtC/UYYa65T+HeCVPdFNryU2/aO9XmnyVWnRsCv
-	mUx9jqFe7pWr4UUMTHEdOLtjyaf55p5aiPmsg6hu3LoBCo6qAEtGWove3CC66SvY54lrK8O9xi7
-	4JRMqcGI3FTWTdlwBde+NNxNsTq/lpgmgFS+4Yyfqr+sbgOlYc3U6ac2MXHEL940MKcB340+RZa
-	2d2UwjrhL++akSeogqgwu65xf2rVfLwW2rnNkOLkXbwextszmoE5Xj8aV7E2zFwb7gmh02dFUOt
-	ne0EHQAobLjru4ktI6ppPwZfl3Yldx78DES61wZKMVb7fHamx2853tcpUdKihPnmUhvjVa0RSst
-	Wpv0L/4KrohNcd7qPdWR6Nv9O/+1yE9cT8Vmxnc4c7RSDvfm9cDkwh0eA75jcz/XnPrfhNv4tWZ
-	QwwnCEEvkZszOC2vrhQUY=
-X-Received: by 2002:a17:903:1746:b0:2a7:a5b3:bf4f with SMTP id d9443c01a7336-2a7a5b3c0fcmr33705195ad.34.1769041120499;
-        Wed, 21 Jan 2026 16:18:40 -0800 (PST)
-Received: from localhost.localdomain ([58.29.79.238])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2a71941c56bsm166270735ad.92.2026.01.21.16.18.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Jan 2026 16:18:40 -0800 (PST)
-From: Lee Yongjun <jun85566@gmail.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>,
-	linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH] serial: 8250_pci: Fix uninitialized variable use in pci_oxsemi_tornado_get_divisor
-Date: Thu, 22 Jan 2026 09:18:17 +0900
-Message-Id: <20260122001817.53355-1-jun85566@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <2026012141-arrival-mounted-0d49@gregkh>
-References: <2026012141-arrival-mounted-0d49@gregkh>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="E7E5MQUA"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1769071913; x=1800607913;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Z1BPPqPX3pPbBMPk0JKd8AgqIRbd45v5OCLMXlCvDmI=;
+  b=E7E5MQUA86S2kVqhNNBjhls97COoh4iDg41WpWIUvxZ3zlfilzZMNmtG
+   uqPMBjiAXQqNA8ajbFVXlq1HxI6gZ3KX4BXMgX2yoiyEMV9hahOEoOvOg
+   qB72TC0BFoshZpC+L/Y8TQyKmW+W5HQIgQAZ19HHRj0GB9DJ6KFRnft3s
+   J6W6vL8zo2KHxA+UiZagjRF0LlFuAqpmwri5/kjBD70sI1jJ+IsXJKhR7
+   LYOQrbKMwoB6PUpYIJ8x+PKBKusljKxX7VbLt6tHfUU7gF1dm7VFSItP4
+   0A2YlzlhcpUe6Hvp2PZXLzNRfVvzpxZ+Fp0tKZ7rcJc8XozuLMEidBc4s
+   w==;
+X-CSE-ConnectionGUID: Kzuh9nCeQWO3ObbJjCDniQ==
+X-CSE-MsgGUID: TEjq8q/JTVaSGN/gGfWPFQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11678"; a="87886583"
+X-IronPort-AV: E=Sophos;i="6.21,245,1763452800"; 
+   d="scan'208";a="87886583"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jan 2026 00:51:52 -0800
+X-CSE-ConnectionGUID: Ut8v1+UKSXefrKbRvupFww==
+X-CSE-MsgGUID: Fmn0XlYCQ9Ow5Wf/9VG+3g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,245,1763452800"; 
+   d="scan'208";a="211130999"
+Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.225])
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jan 2026 00:51:45 -0800
+Date: Thu, 22 Jan 2026 10:51:43 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Sui Jingfeng <sui.jingfeng@linux.dev>
+Cc: manivannan.sadhasivam@oss.qualcomm.com, Rob Herring <robh@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Nathan Chancellor <nathan@kernel.org>,
+	Nicolas Schier <nicolas.schier@linux.dev>,
+	Hans de Goede <hansg@kernel.org>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Mark Pearson <mpearson-lenovo@squebb.ca>,
+	"Derek J. Clark" <derekjohn.clark@gmail.com>,
+	Manivannan Sadhasivam <mani@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Marcel Holtmann <marcel@holtmann.org>,
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+	Bartosz Golaszewski <brgl@bgdev.pl>,
+	Daniel Scally <djrscally@gmail.com>,
+	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+	Sakari Ailus <sakari.ailus@linux.intel.com>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
+	platform-driver-x86@vger.kernel.org, linux-pci@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+	linux-bluetooth@vger.kernel.org, linux-pm@vger.kernel.org,
+	Stephan Gerhold <stephan.gerhold@linaro.org>,
+	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+	linux-acpi@vger.kernel.org
+Subject: Re: [PATCH v3 03/14] software node: Implement device_get_match_data
+ fwnode callback
+Message-ID: <aXHlHyba_kkqnQPP@smile.fi.intel.com>
+References: <20260110-pci-m2-e-v3-0-4faee7d0d5ae@oss.qualcomm.com>
+ <20260110-pci-m2-e-v3-3-4faee7d0d5ae@oss.qualcomm.com>
+ <aWSpFk9z0zpyKjr6@smile.fi.intel.com>
+ <26a001c3-2140-4241-87dd-604eab3f827b@linux.dev>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <26a001c3-2140-4241-87dd-604eab3f827b@linux.dev>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Hi Greg,
+On Wed, Jan 14, 2026 at 11:21:59AM +0800, Sui Jingfeng wrote:
+> On 2026/1/12 15:56, Andy Shevchenko wrote:
+> > On Sat, Jan 10, 2026 at 12:26:21PM +0530, Manivannan Sadhasivam via B4 Relay wrote:
+> > > Because the software node backend of the fwnode API framework lacks an
+> > > implementation for the .device_get_match_data function callback.
+> > Maybe this is done on purpose.
+> 
+> It is a *fact* that the broken swnode lacks an implementation for the .device_get_match_data stub.
 
-Thanks for the clarification.
+No need to re-create board files when it's not needed or doesn't fit.
 
-I agree that this case cannot occur in practice and the current code is
-fine as-is. I will drop this patch.
+> Otherwise, If it is really done *on purpose*, the maintainers of swnode
+> backend could/shall document it in the source file *explicitly*.
 
-Thanks,
+Probably it should be spoken in a better way.
 
-Lee Yongjun
+> > Have you thought about this aspect?
+> 
+> If you are sure, then stop telling us something start with "Maybe ..."
 
-Hi Greg,
+I wasn't the author of the swnode idea I can't read their minds. Please,
+ask the respective people about this directly.
 
-Thanks for the clarification.
+> > > This makes it difficult to use(and/or test) a few drivers that originates
+> > > from DT world on the non-DT platform.
+> > How difficult?
+> 
+> The emphasis isn't on the 'difficult', it means that not convenient
+> 
+> > DSA implementation went to the way of taking DT overlay
+> > approach.
+> 
+> Software node can do the same implementation just as what ACPI fwnode backend does.
+> 
+> > Why that one can't be applied here?
+> 
+> DT overlay requires the OS distribution(such as ubuntu) has theDT overlay
+> config option selected.  this is introduce extra overhead/side effects on the
+> non-DT systems.
 
-I agree that this case cannot occur in practice and the current code is
-fine as-is. I will drop this patch.
+If we have hotpluggable or runtime reconfigurable devices this is the expected
+option to support them. I don't see a problem here.
 
-Thanks,
+> > > Implement the .device_get_match_data fwnode callback, which helps to keep
+> > > the three backends of the fwnode API aligned as much as possible. This is
+> > > also a fundamental step to make a few drivers OF-independent truely
+> > > possible.
+> > > 
+> > > Device drivers or platform setup codes are expected to provide a software
+> > > node string property, named as "compatible". At this moment, the value of
+> > > this string property is being used to match against the compatible entries
+> > > in the of_device_id table. It can be extended in the future though.
+> > I really do not want to see this patch
+> 
+> Whatever!
+> 
+> Then just stop the endless, bruth-force ranting on such a straight-forward thing.
+> 
+> > without very good justification
+> 
+> Justifications has been provided over and over again.
+> 
+> > (note, there were at least two attempts in the past
+> 
+> This exactly saying that the implementation is missing.
 
-Lee Yongjun
+Now you count a third one for your pleasure :-)
+
+P.S.
+We already had this discussion in the past and this attitude won't help
+moving forward.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
