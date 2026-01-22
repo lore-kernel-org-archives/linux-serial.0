@@ -1,214 +1,186 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A3D73904FE
-	for <linux-serial@vger.kernel.org>; Thu, 22 Jan 2026 17:00:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B41022DCF71
+	for <linux-serial@vger.kernel.org>; Thu, 22 Jan 2026 17:12:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769101251; cv=none; b=uS/+AOGck2KlVTS3c3oAUmzL1vgPXJXBuNoCFrYqNMgfzciX6ZSapV/PvqFe3w1XncfPiqQkhYBOrB7LrSnDff8WWo+IGj32A7TLIrFcHUKTYZuJD1ii2QEjALwqv93OMreVmr6ZrJz5Psq62zcb0mFFjASZkJkN9p0dmRtdjzo=
+	t=1769101934; cv=none; b=f/8T2UlGW3DnGAA0pbcnA+x8ffIuhwy8MnhiNjHRQ25HnA7YW5yQkIaLCknuyIQe40gexllAazpZXv0kz2gnFrpr42TmAPaBGbMbo7BeNZ1MmPHe5TSxrTJ7Jlas5oa98Q8IJw/qm3Xhgc7sjzMt6+s5j61+lMnGfHC7GH8QXh0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769101251; c=relaxed/simple;
-	bh=SYQnDRy3gXye1n8xw6IAVS14uNbovqYrq5pQMsKusI4=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ffxLp+LjSypfmKJFIsBL/kyNAbfhJ8pbQpORJcXeJ1OFh2rzSs/HjWqUA7L6LRPpv8e8rhKgK1r8Pd4zGKCS5nMln/FZOEXn/tpP4Lwuy6fPDQnDT691CMFyN1WDiwtYPip4cXsj/ordDTK/TyTsPEOwapOjRxSr8OzJAx1ZVZ8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=eh+9t+jy; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=fxAh6VRn; arc=none smtp.client-ip=205.220.168.131
+	s=arc-20240116; t=1769101934; c=relaxed/simple;
+	bh=uZ1SGlCxl1R4gFzNS2I0EgnNLQXTj+DNqllFC8dcKIs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=rBxWKin4bjcZb4XZjxusRkRPAS/dLS+hnCSHoX/au4u1D5/u5gQJOTykc3KOYpDAqfAwT4KxXYUNNyC+0tBr9OaJVGpFr5Duzp5k8e2avP2dkVLIVLjRF55ckaaSOlILHgshfv5Y8LLmDPDT64YWPzkVauonqrXvmVRtMAeARLo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=YytJqkTS; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=aXwMPHJB; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="eh+9t+jy";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="fxAh6VRn"
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 60MB4gVR2629500
-	for <linux-serial@vger.kernel.org>; Thu, 22 Jan 2026 17:00:40 GMT
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="YytJqkTS";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="aXwMPHJB"
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 60MG4nKw2582572
+	for <linux-serial@vger.kernel.org>; Thu, 22 Jan 2026 17:12:03 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:date:from:message-id:mime-version
-	:subject:to; s=qcppdkim1; bh=2N6/IDHinoRDWXKmcT4CHhXv5X0fnjd64DC
-	/fRTaml0=; b=eh+9t+jyoIXr+ztOK1/m8ShMiJZ2Ye62mt5D5BDMoYIjCdWn6RW
-	t39bPS5tF+AlTr6YBRcbNRQudKMBA24Qix5gh1sJmPrOz8Q9RDDUiOUEfSHNc5Dk
-	tlkjb6pKkvOsAV6v57rqm//ByBMSLiDatdKPIUf4N9okVVoP6RKvg2ZQihSgrTm9
-	ewOe6TdswbZFNp1bFpjLSc7zg+9vFdisAC1huU+BYiEgSOYLXW1HDB+eL3VnQSKn
-	VCmRWN1K8wN7bxUWcypBTDMoDa/Tk23U6Jood5g4mGwVNAe5Dv3CcYXNQKialxzS
-	K7h9zlb9aTS7umYQpzuau9iPDfHXlyck0RA==
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com [209.85.219.69])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4bujq198jv-1
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	uZ1SGlCxl1R4gFzNS2I0EgnNLQXTj+DNqllFC8dcKIs=; b=YytJqkTSGqYzvgkE
+	ni/n1UNsn7EvI5JbsZxZIJUErXqKfTFtASUWBKN+EClTDHjnr/b2+CnAp40rJJUV
+	mYyj/clI80NHMyxb1zaq8e8l0IcE2UlRp/YKv78tjNixbO8U2xOyKAGj3TxeD6va
+	X8KGdjJsgn46pUx5iXse5gf9qAv6gaJ71nIC8cyuTMl7kF2V+fXQbGEprhQfTZkJ
+	l5jU9sYC5XCFzTbl00zrlOx5qvqWSAed9eH2JaMyUsZIwaQ73vIpiHH3DWb7UeKx
+	GTojB36/77tseqapGWJq3kL1I7GR6Za6VHjCtx4K1fdCUsdpr3nPVUfdBB/R4zIS
+	J3R2jw==
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com [209.85.222.197])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4buq3g8auu-1
 	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-serial@vger.kernel.org>; Thu, 22 Jan 2026 17:00:40 +0000 (GMT)
-Received: by mail-qv1-f69.google.com with SMTP id 6a1803df08f44-8947c4398c4so34584866d6.3
-        for <linux-serial@vger.kernel.org>; Thu, 22 Jan 2026 09:00:39 -0800 (PST)
+	for <linux-serial@vger.kernel.org>; Thu, 22 Jan 2026 17:12:03 +0000 (GMT)
+Received: by mail-qk1-f197.google.com with SMTP id af79cd13be357-8c5e166fb75so286433285a.0
+        for <linux-serial@vger.kernel.org>; Thu, 22 Jan 2026 09:12:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1769101239; x=1769706039; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=2N6/IDHinoRDWXKmcT4CHhXv5X0fnjd64DC/fRTaml0=;
-        b=fxAh6VRnfySKY6jszSJGDi4MkXh1kCFrEIqhABFtAVHTuDDoswWXSCFiBvU8UHkwX5
-         o69P4x3D/oV89bxyQcYPTQRIZqm2hz9mnm/Y0v9xYXMzXfQIyj/FYBdncxsirMTqTdsp
-         22YmUOWgYF3af9o+49BuvUvQS3Pc9ySAIK68ZeYGLIlNhFXIej0/gJgL003vPqee8Eh9
-         sH9XVDQNpj3Ahr7UkukklcQ8bvke3sLazfyjTWQ11n0Br0QOS3uTPphHI6vZRacgylgB
-         IL7BPTAX4h2rTGGQJ09CuBfZ7WqKVppNr86frKp0DKWGszaVz80i0t8GjbRaf1TDQTL9
-         0scg==
+        d=oss.qualcomm.com; s=google; t=1769101922; x=1769706722; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
+         :from:references:cc:to:subject:user-agent:mime-version:date
+         :message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=uZ1SGlCxl1R4gFzNS2I0EgnNLQXTj+DNqllFC8dcKIs=;
+        b=aXwMPHJB6D+AqJpufroJ4IZu9Oyn/O1zjOApfNr5NVUpYsCk4oen+zZLN2FJ5k7u2u
+         ejW2vsWPbec24FsBp27gVaxkW3xvJVLi6HpsKtpsSesj1KTPs+vLs3mlzKGxr1wj/lU2
+         +xZvvKEQuNmATvEXvL8FiysItIrVIC9jQsxAGMv4Y0bnf4XH1MrLcXBgQgkIV4S7ZHUI
+         3a4HL/tchWZKYdWPkJyXLodTUTycb6LB6F8Gi+JURS0NPwiPnbA+4smNQRbB+4BkGP0X
+         OCsaOL6kToU7wbZckR5tEZ63uVQctXI2hQ5mKDz+7AG3yVVbQNXuuRnKd/K3Cg0QyIJY
+         +WDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769101239; x=1769706039;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=1e100.net; s=20230601; t=1769101922; x=1769706722;
+        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
+         :from:references:cc:to:subject:user-agent:mime-version:date
+         :message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=2N6/IDHinoRDWXKmcT4CHhXv5X0fnjd64DC/fRTaml0=;
-        b=UdPW+CGRMcnZfKgeOs0KI+FKZRPT6I8xNtTs2y4TQO7fO9MYsXDetgpIf6xeiwh++Q
-         GNszTmZt7J20A2+o1i6X+wH6Dh2foKAPp8whz/FKWbj7+kQdUI3AZMyv+cDnM6dGdnxM
-         /6AglJCJIuO4ft4aHDWNMJpToeqBfuNRjI/PbE7eMQ3zfFtHYqDsQsPv4NGCV01bbPIV
-         WEXqs5c8JV+AWFvLVDJ1eZZ9g/+fp7gDkRBw7RhFVzvrZjPJ4uBxVuHfGINSicc5GIiB
-         F5H2HZ7zSsIHOQ2LXSMKsVBijM0RUzt4gY9eE7jsGBnGz4FMdfPGeN9t7OY+WCx/KJPK
-         Hy0A==
-X-Forwarded-Encrypted: i=1; AJvYcCX4oNHrlUm/djyOaOflnMJOs0YpcyYFXn7D+HJqundQhREmYi0QCGeH0LtZtiCKrte95UZDd6rAzNhAzwk=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx8X72eYLsA89JiOgGSs1d4tspGK56Wev3r9ioeMqCytmWTSmxP
-	2D0T4BugF155esbMEcuRY9UkXe2AlOfE17iBEToeiM1hXrHnRyZJKWyO9n7bkWCnEhLT6fkOiYU
-	WlytrD6H1RTlZEkiVfR9hw4cvwaWJLw+IIdXUD/Q155WQjf4T/B3E5BSrLzRbnlNc2G4=
-X-Gm-Gg: AZuq6aI/WMi9juJke2mYpAtgJaUYoAMNF4rUF24oT4te4TPZBjq13FqFv9vxKV4IpaE
-	rrje7kg7Runy07Lyam0WGeCHXP58HdnpLmw7EfAm6wPksg4d0U1hF0nHK8LqIz9YN5GX968TInG
-	C/zY5NR6OHlVOYgzLBc5UZmwFU+txKjc8mkhNz9o2Eda+HVifrl1S8Bdnq1fYqsSuRmzSlpk+tq
-	vi3Y1ycL9qTZ3jQimndigsHe9qVooUUKUMnye0YUZ3k6h0SUv3duD51FiZmC/G7khbo4lD4mCFd
-	2+2wWlR4A38YG4YZq4ZeOW0R4JN/odBZlEE0+TN82yUUOwhnc1E6hlmINdrv9mgZul0/BDxghWQ
-	neUuW5GUbwgabBYqYY9BRsf8oAw==
-X-Received: by 2002:a05:620a:454d:b0:8b2:6b9e:5396 with SMTP id af79cd13be357-8c6e2e4c8abmr8932585a.83.1769101238671;
-        Thu, 22 Jan 2026 09:00:38 -0800 (PST)
-X-Received: by 2002:a05:620a:454d:b0:8b2:6b9e:5396 with SMTP id af79cd13be357-8c6e2e4c8abmr8916285a.83.1769101237537;
-        Thu, 22 Jan 2026 09:00:37 -0800 (PST)
-Received: from quoll ([178.197.218.229])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4804d26a91fsm578165e9.2.2026.01.22.09.00.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Jan 2026 09:00:36 -0800 (PST)
-From: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Cc: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>,
-        stable@vger.kernel.org
-Subject: [PATCH] serial: Fix not set tty->port race condition
-Date: Thu, 22 Jan 2026 18:00:32 +0100
-Message-ID: <20260122170031.433724-2-krzysztof.kozlowski@oss.qualcomm.com>
-X-Mailer: git-send-email 2.51.0
+        bh=uZ1SGlCxl1R4gFzNS2I0EgnNLQXTj+DNqllFC8dcKIs=;
+        b=RYvV0EnIotH2DnnmEWUwtX2y2AXa17vu1bqlPnX2czSfDhhrilFcqd9ynHK+iS3l6H
+         cDifiNu+nEBCU3/Q3m5FV+QWhwfd20TkpnSpeAfxvJmnefTl2EQbH8AZHWv4aHYy8zwC
+         x/HmxRC4SS+Gti24aljMr5Py45YYRPZzisnLEhWz58y95zaxBOLyiNjxLwzVPjk5w4lE
+         YB7pEt0bo0lGfe+FUOCRLTClRv1HhwdQVk4FQKe/hLCE+6QAyQeMa+ctSraQqUAy+0fz
+         g7yVJSFSdHtVcuAMgeU3PBrSsbq4XePoDtZqk8F3VHUw3+MlYBGTA7OLzyGIFls1cWOc
+         Iu2w==
+X-Forwarded-Encrypted: i=1; AJvYcCX+67h/phVzF3jU+uA8uEtlqQlxYQatO8TbqfKDCyqyBg0QXLaov3XaBoK5JhwGV0g5hZ3eNH8cENYBLqY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwNv3f/9U2XqMrsqFoTp94p+eqOiDRZc6vfrykaChoNTkmZXLpQ
+	+7SFekPiqzyrP60VTznyH37CcEtsUY5MwHMzzjmr8ALzxZA3Bbsdk50TNpweBpAQt6ZFuI3rBTg
+	t+dNWijHDmDpoaF9Edyh7TsGNMXfrpQndHfK6zfdV1Jp41+L/qKuJkTDotBCaIVHnyiA=
+X-Gm-Gg: AZuq6aINvcfA2Q8IUwffm0xG554a41XWA3VkS5QwYGh5H575sdr+vxUiShNXtN+SUm3
+	NDbfSFgbPzbBrYoLdreIhuqSj7jLZd+2yMjZa9C8/+z4q7axJWnMBWjLbgvosBR1OWBK0g8UU0K
+	NBp7fsJMuyDPsZr6PyW0e5jNQF7WQPZ0obamNc+9MjCvAwsflPAuq55ln5J+vWOJM3yPvXisnK1
+	ckSDah8Uehy/qn9mH0fy4TeNM4F43YWgfxjeiYOO9m/xyohRlQoEE8/hTD59hGDtPycF0E3xdmz
+	jg8IFU4aVNYWQIPLnw5CfQyrg7pZTveo5hChoC1Qegof1ip8KKsFx3Vn/VYFPtGy7PL1JKTMVd+
+	/InxOwAT+wK1iby5oatXFepuxdu1erW4GC4WmDw==
+X-Received: by 2002:a05:620a:29d6:b0:8b2:dabe:de32 with SMTP id af79cd13be357-8c6e2e19376mr17705585a.42.1769101922213;
+        Thu, 22 Jan 2026 09:12:02 -0800 (PST)
+X-Received: by 2002:a05:620a:29d6:b0:8b2:dabe:de32 with SMTP id af79cd13be357-8c6e2e19376mr17701385a.42.1769101921744;
+        Thu, 22 Jan 2026 09:12:01 -0800 (PST)
+Received: from [192.168.1.29] ([178.197.218.229])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4804704b4e6sm81577885e9.7.2026.01.22.09.12.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 22 Jan 2026 09:12:01 -0800 (PST)
+Message-ID: <d86ad878-a125-41c9-a0a3-bc24c926ba55@oss.qualcomm.com>
+Date: Thu, 22 Jan 2026 18:11:59 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3536; i=krzysztof.kozlowski@oss.qualcomm.com;
- h=from:subject; bh=SYQnDRy3gXye1n8xw6IAVS14uNbovqYrq5pQMsKusI4=;
- b=owEBbQKS/ZANAwAKAcE3ZuaGi4PXAcsmYgBpclev9cxxgZkXsMxsURilU3jXG5Z15qh8tFH8r
- BurBi4FwJeJAjMEAAEKAB0WIQTd0mIoPREbIztuuKjBN2bmhouD1wUCaXJXrwAKCRDBN2bmhouD
- 15YVEACPEgsrQyYmGt5uibl1LL0ijwt7jnSAoHiI64wWhYYwcYSLWR8wROlbnqnTx9GXX0/rJw6
- ATM9QQ2xIMwO1y5r38utI/+TwE8VDP+me3XbOUBoc2JEmOxtfXYLpEGM5q8smw7wz+jHNPkR+fa
- Vis5yZRwvcHvNcYMCFIl2ENlfGpVKxg7hKSQb4x2sZmtNCNnMnmQk2KAB3zlrNsB0y1znrYjmL9
- YKVxtZ60eoQhbR2IMvg5RqnNX5u+bcVUMaqpeGqDmUAiLvN8oRA87CIzTbiS9npcq/5UyIiX1cd
- GXgbSgCuyCkr22p9Bn045Sk8VUW+PzyHMHKHynHqzkJziDC5NRZot3fJ7jpSeOAzyZ0fhqi+taI
- hrClK7cHMtuNM5hm/+sKTgx2ABAqvgPhL2fLwhDBApII4FSwghzxjC/523tBTbyivzwFHUXru2w
- sHCy96cCBZfA8POcMHxn4RATatunEo6AsGK7Ur5HwSdee+1OoQVf8EBL6GXQenpztWMUj7lcfP1
- aoKIUPPdJdijFJmEDvhVeYokq+Eqp7+B3aueKM/q94xsutLkZyb/wkVvLxA2BSQnceX9JIK2BZW
- JYv69gkXFzrqMswNsLOdZY8LpaKhLvvZsab9WqnY4Bp3iGIXRDmhKA9yLUE/4smw7ww7W0fmknb CgRu0hjNCxAnfGA==
-X-Developer-Key: i=krzysztof.kozlowski@oss.qualcomm.com; a=openpgp; fpr=9BD07E0E0C51F8D59677B7541B93437D3B41629B
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-ORIG-GUID: cKPo2CJpkuWeVElcqu2Eyq3AHxV56iPr
-X-Authority-Analysis: v=2.4 cv=O480fR9W c=1 sm=1 tr=0 ts=697257b8 cx=c_pps
- a=wEM5vcRIz55oU/E2lInRtA==:117 a=Eb9f15NH/cHKzfGOmZSO4Q==:17
- a=vUbySO9Y5rIA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=10lJyrFIdA-fwsh8KigA:9
- a=OIgjcC2v60KrkQgK7BGD:22
-X-Proofpoint-GUID: cKPo2CJpkuWeVElcqu2Eyq3AHxV56iPr
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMTIyMDEyOCBTYWx0ZWRfX6PXZ1ThTGIL6
- ots2NejgeNxcv07sS4EEbmsnk7kXDE/a4FrG5jXjMbm/8rrYMTHnkkNhJm6xb3x12daZRn0Q6Sw
- bEiDV7PSjWZgiF9Z5ule9t8b2k77FFEuPt+J3wehv2xkMd1tdFTgqGs3kYnjC3qzV+hs5Og1VBM
- HgDQqTgcMFRU3+JfdZ6XHCA+XRdF+h48hvs98DB2dYgyvqfdmaZMGA0s/F14JcWmbueYE/OC/vu
- 6xrYwoG54SF49YOY/wORJoec5wrzb5CQoKt2a7n8pKuRR8V0GVI4k197Wvj2fgGYjPirUfZ/NAb
- leQ5Jmv0mbUlbQ1iM3Qs1q6Yf0pkiNToLVA1kv+KdDdhBQzIJc8HOUdAK90txKjoIwvlqIpfyI4
- mObNlG4qIB3ViERva3AwVoRArrHp28p/3rK6io1lKnLR625uawhqFtREvDTSOVu5bHpaMylo8Ma
- /ETdyHlyB43F1+39jYQ==
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] serial: Fix not set tty->port race condition
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Cc: stable@vger.kernel.org
+References: <20260122170031.433724-2-krzysztof.kozlowski@oss.qualcomm.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Content-Language: en-US
+Autocrypt: addr=krzysztof.kozlowski@oss.qualcomm.com; keydata=
+ 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
+ cwzYbmi/Et7T2+47PN9NZAOyb771QoVr8A==
+In-Reply-To: <20260122170031.433724-2-krzysztof.kozlowski@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Authority-Analysis: v=2.4 cv=I9Johdgg c=1 sm=1 tr=0 ts=69725a63 cx=c_pps
+ a=50t2pK5VMbmlHzFWWp8p/g==:117 a=Eb9f15NH/cHKzfGOmZSO4Q==:17
+ a=IkcTkHD0fZMA:10 a=vUbySO9Y5rIA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=iGW4CxhK6uMy43gILDQA:9 a=QEXdDO2ut3YA:10
+ a=IoWCM6iH3mJn3m4BftBB:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMTIyMDEzMCBTYWx0ZWRfX+s9C3kdoEsDv
+ nXDAAlPy7/IqeL1ZCUaVzhUEcIijU9fFNbHcKN6lSXOtHjMIZWpB2WfpEDRB8Hv0dTlUX8oV/9q
+ AB2FQm8ZnJvFaiCzZXWfAxuc1mbY9SHCW3w7FJmjXcfdIPzqXYi8shF0rK/sXxmXLbB1aSJ7qhf
+ kMYnmR8NQJaWnqSCICvGU96pf7uPXaa2SzvjEFTU3SUtaE3IsEsEYCK3AwPOVK+SxUpGAON7/1R
+ I8TWuiiUnP1WLuO3MpXeZ4jijeUl4wIBG+Y3NuV8ewNLXrHbG2ndAzmojRAV4xprtQRLHdhDkjC
+ QZ8CkXwaOsmQZatvow2DZonEuKrytaTq2AA8f9TmIb6sjxlJ7NSSeia4aCLzjZAstXGwICEZD2p
+ 5zTYegjnoTEXe0L5E+6DQu+77H70I5/iRQMETuWiwbP9ZvpHbXCiTFxHfK5c4Z1p5Rdf7ftJxl3
+ bdx97ZqzTtJQFVEOHfA==
+X-Proofpoint-GUID: atRI3U8MYXwAdu4UIBmpCxPM6Djl9vGZ
+X-Proofpoint-ORIG-GUID: atRI3U8MYXwAdu4UIBmpCxPM6Djl9vGZ
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.20,FMLib:17.12.100.49
  definitions=2026-01-22_03,2026-01-22_02,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 phishscore=0 adultscore=0 bulkscore=0 spamscore=0
- malwarescore=0 suspectscore=0 lowpriorityscore=0 impostorscore=0
+ adultscore=0 priorityscore=1501 bulkscore=0 impostorscore=0
+ lowpriorityscore=0 spamscore=0 suspectscore=0 malwarescore=0 phishscore=0
  clxscore=1015 classifier=typeunknown authscore=0 authtc= authcc=
  route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2601150000
- definitions=main-2601220128
+ definitions=main-2601220130
 
-Revert commit bfc467db60b7 ("serial: remove redundant
-tty_port_link_device()") because the tty_port_link_device() is not
-redundant: the tty->port has to be confured before we call
-uart_configure_port(), otherwise user-space can open console without TTY
-linked to the driver.
+On 22/01/2026 18:00, Krzysztof Kozlowski wrote:
+> Revert commit bfc467db60b7 ("serial: remove redundant
+> tty_port_link_device()") because the tty_port_link_device() is not
 
-This tty_port_link_device() was added explicitly to avoid this exact
-issue in commit fb2b90014d78 ("tty: link tty and port before configuring
-it as console"), so offending commit basically reverted the fix saying
-it is redundant without addressing the actual race condition presented
-there.
+And grumpy side note because I was looking at this for more than a day
+blaming my new hardware:
 
-Reproducible always as tty->port warning on Qualcomm SoC with most of
-devices disabled, so with very fast boot, and one serial device being
-the console:
+I really wish commits (e.g. bfc467db60b7) calling something redundant
+had that much of message written why something is redundant as the
+commit (fb2b90014d78) which introduced that part of code.
 
-  printk: legacy console [ttyMSM0] enabled
-  printk: legacy console [ttyMSM0] enabled
-  printk: legacy bootconsole [qcom_geni0] disabled
-  printk: legacy bootconsole [qcom_geni0] disabled
-  ------------[ cut here ]------------
-  tty_init_dev: ttyMSM driver does not set tty->port. This would crash the kernel. Fix the driver!
-  WARNING: drivers/tty/tty_io.c:1414 at tty_init_dev.part.0+0x228/0x25c, CPU#2: systemd/1
-  Modules linked in: socinfo tcsrcc_eliza gcc_eliza sm3_ce fuse ipv6
-  CPU: 2 UID: 0 PID: 1 Comm: systemd Tainted: G S                  6.19.0-rc4-next-20260108-00024-g2202f4d30aa8 #73 PREEMPT
-  Tainted: [S]=CPU_OUT_OF_SPEC
-  Hardware name: Qualcomm Technologies, Inc. Eliza (DT)
-  ...
-  tty_init_dev.part.0 (drivers/tty/tty_io.c:1414 (discriminator 11)) (P)
-  tty_open (arch/arm64/include/asm/atomic_ll_sc.h:95 (discriminator 3) drivers/tty/tty_io.c:2073 (discriminator 3) drivers/tty/tty_io.c:2120 (discriminator 3))
-  chrdev_open (fs/char_dev.c:411)
-  do_dentry_open (fs/open.c:962)
-  vfs_open (fs/open.c:1094)
-  do_open (fs/namei.c:4634)
-  path_openat (fs/namei.c:4793)
-  do_filp_open (fs/namei.c:4820)
-  do_sys_openat2 (fs/open.c:1391 (discriminator 3))
-  ...
-  Starting Network Name Resolution...
+If someone wrote one page of text why foo is needed, we should write not
+less why it is not needed :)
 
-Apparently the flow with this small Yocto-based ramdisk user-space is:
-
-driver (qcom_geni_serial.c):                  user-space:
-============================                  ===========
-qcom_geni_serial_probe()
- uart_add_one_port()
-  serial_core_register_port()
-   serial_core_add_one_port()
-    uart_configure_port()
-     register_console()
-    |
-    |                                         open console
-    |                                         ...
-    |                                         tty_init_dev()
-    |                                         driver->ports[idx] is NULL
-    |
-    tty_port_register_device_attr_serdev()
-     tty_port_link_device() <- set driver->ports[idx]
-
-Fixes: bfc467db60b7 ("serial: remove redundant tty_port_link_device()")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
----
- drivers/tty/serial/serial_core.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 0534b2eb1682..116f33f0643f 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -3077,6 +3077,7 @@ static int serial_core_add_one_port(struct uart_driver *drv, struct uart_port *u
- 	if (uport->cons && uport->dev)
- 		of_console_check(uport->dev->of_node, uport->cons->name, uport->line);
- 
-+	tty_port_link_device(port, drv->tty_driver, uport->line);
- 	uart_configure_port(drv, state, uport);
- 
- 	port->console = uart_console(uport);
--- 
-2.51.0
-
+Best regards,
+Krzysztof
