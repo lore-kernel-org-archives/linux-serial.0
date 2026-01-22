@@ -1,115 +1,147 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACC953242A5;
-	Thu, 22 Jan 2026 08:53:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769071991; cv=none; b=rUv/RJ9tVcKqqYCXthQnzewNiD6W/p8Qs4V7XPKHn7mzr9SdNgC3vm85V5vP6mcrdstiZL3UgHVhELSk1D/7qJkyCkijIpZQK2m1PLd6R/XKE1Acp9v0ysMMnEG9JxUMuP98XzXOyaSh5EjWj8QAt3XPxyRrlxbI4X3Hhu/vmyw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769071991; c=relaxed/simple;
-	bh=8GXZ78y8CHLxVWaGUwAMSCcpjd9/2XbwpJa6NRVR70k=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Yq3dALbwoJCDoKckoSzY4Hp1+uwKAaW0CimvSEEjz0Zg4mmG4fTkVoM43qfOZ/puwAcelN5J5IfvPIgJgIaXhac3+JaFcbHveaz2kzk7MVBz5iQG6hFYXXdGJ7WdAVCjKkfyQmPAXY7HOR/V4BCklEXnMcnYHdCaMMz2cE4RgQg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hP9b5Cx1; arc=none smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FCE32E764B
+	for <linux-serial@vger.kernel.org>; Thu, 22 Jan 2026 09:35:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.52
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1769074548; cv=pass; b=oXXq3e8JDKdcAv3hO6jSJhR+w9vc7beMV0oE3xeLz3XSdXV1nZewiyGKZ5MNggZW8G6ghRwY9UiAYnyFXeIRlwoWmQWRhNQFzwgCXz0mGm1iZ+tEmntU4oWBHx/Q78HOTh+4ojWroOxzaF+aHMiHf5mGGKz78T0gjEMQSgAIFdI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1769074548; c=relaxed/simple;
+	bh=CpowxPIs9WsIvTj4/MuMW1Y5/GmzHzBIUQWzh9qqtsQ=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=mt0dPe118CMePcrFe5IitdVxRQAoDRXTHgqwJVS+G4d/nls2G+M9cBQ5h1IB6bY9kZGz8IjVpyJ9w6ytEI4ecXbsPF9EDB10ICEiLU2FAIddAw41qxhtUIj5QB3rLi2jSiLXFNuAewNk6vE/6DHTixfTcFbzm/ZJBCyyvNXoyBw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr; spf=pass smtp.mailfrom=sartura.hr; dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b=WMmVf+cD; arc=pass smtp.client-ip=209.85.208.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sartura.hr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hP9b5Cx1"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1769071989; x=1800607989;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=8GXZ78y8CHLxVWaGUwAMSCcpjd9/2XbwpJa6NRVR70k=;
-  b=hP9b5Cx1Ur53efTptkYhkwKUAMqKXqlnj8JO3jzNJOw4a3zebVnRiuVT
-   olxDK3j37eNhexS0TYN7qM19Q6FREHydE8G/7b7rf+dETsRkq+PoRam/R
-   bO4FpKRFIs1cLyWobOCQePOo0ld+nRcslUtxR6uJSrOU64CwInJTFvzFX
-   jzNT0qRzrchERV/dLGHDQsjZ3C3ZSDYod5oz6sYbY/KV4WDIkKL07MfmV
-   i425q8wwqohS3hrC2OUQVulIUN6tO3AEeNfN5UDGOJF8t6sA6/oHotIus
-   QIE1bqbBZkpvdBV2uL1n8T78yXsk2izoOt+ugrZaEZU0KYB1C61Ov8A5H
-   Q==;
-X-CSE-ConnectionGUID: 60SKLjmwTP+ttGwZ4NKQuA==
-X-CSE-MsgGUID: 9Zj7jEq5ToiuZMRqfCLZ6Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11678"; a="87886668"
-X-IronPort-AV: E=Sophos;i="6.21,245,1763452800"; 
-   d="scan'208";a="87886668"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jan 2026 00:53:06 -0800
-X-CSE-ConnectionGUID: 2Ox0rrcrTtWxqhipEQyCNQ==
-X-CSE-MsgGUID: jXg7yxJ6Sq6lbQEsmhpcVg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,245,1763452800"; 
-   d="scan'208";a="211131120"
-Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.225])
-  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jan 2026 00:52:58 -0800
-Date: Thu, 22 Jan 2026 10:52:56 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Herve Codina <herve.codina@bootlin.com>
-Cc: manivannan.sadhasivam@oss.qualcomm.com, Rob Herring <robh@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Nathan Chancellor <nathan@kernel.org>,
-	Nicolas Schier <nicolas.schier@linux.dev>,
-	Hans de Goede <hansg@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Mark Pearson <mpearson-lenovo@squebb.ca>,
-	"Derek J. Clark" <derekjohn.clark@gmail.com>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Marcel Holtmann <marcel@holtmann.org>,
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-	Bartosz Golaszewski <brgl@bgdev.pl>,
-	Daniel Scally <djrscally@gmail.com>,
-	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-	Sakari Ailus <sakari.ailus@linux.intel.com>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
-	platform-driver-x86@vger.kernel.org, linux-pci@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-	linux-bluetooth@vger.kernel.org, linux-pm@vger.kernel.org,
-	Stephan Gerhold <stephan.gerhold@linaro.org>,
-	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
-	linux-acpi@vger.kernel.org,
-	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
-	Sui Jingfeng <sui.jingfeng@linux.dev>
-Subject: Re: [PATCH v3 00/14] Add support for handling PCIe M.2 Key E
- connectors in devicetree
-Message-ID: <aXHlaMQ1mpi4Tu-f@smile.fi.intel.com>
-References: <20260110-pci-m2-e-v3-0-4faee7d0d5ae@oss.qualcomm.com>
- <aWSq_7_5kkQIv9Hc@smile.fi.intel.com>
- <aWSuYd8zqCxZ9DYE@smile.fi.intel.com>
- <20260114134004.11023a7e@bootlin.com>
+	dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b="WMmVf+cD"
+Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-6582e8831aeso1244675a12.1
+        for <linux-serial@vger.kernel.org>; Thu, 22 Jan 2026 01:35:46 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1769074545; cv=none;
+        d=google.com; s=arc-20240605;
+        b=LWwGDmZLQUc9i1hoxdRyQk+4DvkZlG300fo3MI7a/5sSabklDGsdnvo85LsEE+vgxi
+         pRwozyFC4W1I/y0kuOpcP2bl/6A4jDb+jWXGZeAy+8jrpUaVfeie6LLPMfxy0QiGW8B6
+         qL2bep5XnumvH4GoTrMhSxLJQPkOxS7lqoWsdsl+oWakYhkFxFWCrSHc5wjnb9SlU7ik
+         kHHDujT7dT0QiMguHphV6bIWR0Jfj4gFtxI09/SHiZs0JCpbW5yI7pqdD8oX4csC9phI
+         FxqHjms6sGBNXiUaE6GrQ+MVedTKVejVYTsWloebiUHz9DsNIDxKx46959P8VurCdDWe
+         L5BQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=CpowxPIs9WsIvTj4/MuMW1Y5/GmzHzBIUQWzh9qqtsQ=;
+        fh=fAyKZhc2xpPbEKPJOQS/repcW6ozqQQByxEQKUpHM8Y=;
+        b=UhHlnBCJ1ernHO645MJGAhW2nhOPYRPBVVyraod8w7FcJFYgDtO1yFLMKH2W1GZJYx
+         sGOjBFp5rbLwfH4+Yl+BtAYS8CaG7UnJtGMfDCglWkjqm3QwZZ49/QUfz2fQnuDgNFDB
+         H57ty7bjhsivvlAqovByTJ3ghByNjkJGY7FeiXCJjiaHo5gviNn+tVGyGmfErdqo71IB
+         lnFlGCX6xe5EntvXMSV+zB55HTxw6+gY5KKqnQ0fofsoNRI5bmlXzxi3izgjDJNw8EnC
+         QbHVsw3DVIiJuXFizw21aWgNgbjtskjyUFNT/le2naugOhXhHpizhYhk+zChIovsx9jM
+         ZBQw==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sartura.hr; s=sartura; t=1769074545; x=1769679345; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=CpowxPIs9WsIvTj4/MuMW1Y5/GmzHzBIUQWzh9qqtsQ=;
+        b=WMmVf+cDPVXyzKm73nlXhVqX/GgwBPysyw+V8fdoMVElEaKbT5iIB+JX6bg1SMgNHp
+         BZ/xpZLXmDtL49wkbLH6Qe5t/c1FlVbMBwB35Yj2bfbomiTfVmmlbRHxUoEZR/oQWck+
+         Be74nd4grwTHoU8lZrxh7rK5Z11b36UuyBJ2+hjYl8aOJ18c08LpQdSkzjpNZL7dXtFS
+         T9v9pdYZUJX2F6R2ZKeQUFJ7x2iA+DdPl0QupDzrrWAwUT1dVBgpkasAEVxZ/M05ccks
+         CyBCrEYEw1asEPFNKbUBuBO1ZPFruijEtPlo7DqxHXrUhxmMxMlp5rmrVyWYwRFOfOVs
+         sNLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1769074545; x=1769679345;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=CpowxPIs9WsIvTj4/MuMW1Y5/GmzHzBIUQWzh9qqtsQ=;
+        b=IScI0u3sou8gTCwas07U/7edGrlT7NNVId7rp8DX4oxt7hA6DqAF7/N4nyFUSpF9Qn
+         hWsUzKGXwkEqbeV2YG7iHpt67a125JaGqc6BBwC+Pu/pqnJ14bJEXAQIIce0fhQ1XZnA
+         BeKu4rTb09z1+BO9zHu+no+yvW92CyTtb27NAeT/R0vGbKOtXV7vJaH3qs1IAW9iOekK
+         3T52xYusu3/c6s1faCUQzh4lkVyX3YhRyQ1eMs96G2am2uzzq9hyDDcnf977cj7NisO6
+         5oVtZzYfCB8RcOYBxfFstjqUSWI9XelsYl9pVzB9xtkM6d/tU4Yz5m0iZNgwvKjXkbu1
+         QoPg==
+X-Forwarded-Encrypted: i=1; AJvYcCU5a4L8IpXbvsLsbQ4chLD0rSh/BOg4bUucNIIiYezIxNl1AC6QPq5n1ehFJl+uj6TU2D7L6j8CnrvVyMI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzQ5suKJZVafOQr3sV9qds5e6o8uKW+luje131xA7R47rKXbAaA
+	YpvcoyMb182q86dmL+OomnZMXLTuo91X42SDLxVBtf4CDZnmsTfA03SvX9egJFtPwjPogQADJg4
+	Pm9WJ9+cB5ut6wHcbf1XP17ugttx4uVGfrcnhqwe7mQ==
+X-Gm-Gg: AZuq6aIFXfsL1LJ8h9C4+JPPTe0G4Rm/vPDFf+sqa5M5L3wjRRL3+5Wu7TLBSqCnGB/
+	ZEIblfHtN1MrPUu+yzctXxhgyFMbcm94OmzMx83PsOkQjHQ911KF29vn4NF9UYaE0YlCC1mQ31T
+	4pduOpDcPI7Otjms47njv/pfOHn/2kx+U3PX6fZqYEGp/HVzXSJg1aYYNGNSWzB0a4gKzfUurRs
+	14qCFN28k0M5pgfoLy4BJZn9XwmTpOWXc9E4NbP4LsX9KVWkkHt/3onFCaSWM4eGXm1C1J9hLK+
+	Y9LaXLatQbr8DQvOXIFYiw+UvofkRPJoGe7UDZDhmkpvasxvIiiPxtIyjOHxhQ==
+X-Received: by 2002:a05:6402:f02:b0:658:1304:b68b with SMTP id
+ 4fb4d7f45d1cf-6581304b771mr3388171a12.15.1769074544348; Thu, 22 Jan 2026
+ 01:35:44 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260114134004.11023a7e@bootlin.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20260115114021.111324-1-robert.marko@sartura.hr>
+ <20260115114021.111324-7-robert.marko@sartura.hr> <CAD++jLmitNVhWmUf9BBqLR2_WsAR7V-+ykVJsLK3MuOSUKQF0A@mail.gmail.com>
+In-Reply-To: <CAD++jLmitNVhWmUf9BBqLR2_WsAR7V-+ykVJsLK3MuOSUKQF0A@mail.gmail.com>
+From: Robert Marko <robert.marko@sartura.hr>
+Date: Thu, 22 Jan 2026 10:35:33 +0100
+X-Gm-Features: AZwV_QgGcZewelkI3QjoxNf_Rdp39oV_bH_54mEjrqvn-sBMKJLuqze3gq5di5o
+Message-ID: <CA+HBbNEw_9FNOFxx8Mo63Aq49MxWvvuQ4Sc75mXFYpwtMmETiw@mail.gmail.com>
+Subject: Re: [PATCH v5 06/11] dt-bindings: pinctrl: pinctrl-microchip-sgpio:
+ add LAN969x
+To: Linus Walleij <linusw@kernel.org>
+Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
+	nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, 
+	claudiu.beznea@tuxon.dev, herbert@gondor.apana.org.au, davem@davemloft.net, 
+	lee@kernel.org, andrew+netdev@lunn.ch, edumazet@google.com, kuba@kernel.org, 
+	pabeni@redhat.com, Steen.Hegelund@microchip.com, daniel.machon@microchip.com, 
+	UNGLinuxDriver@microchip.com, olivia@selenic.com, richard.genoud@bootlin.com, 
+	radu_nicolae.pirea@upb.ro, gregkh@linuxfoundation.org, 
+	richardcochran@gmail.com, horatiu.vultur@microchip.com, 
+	Ryan.Wanner@microchip.com, tudor.ambarus@linaro.org, 
+	kavyasree.kotagiri@microchip.com, lars.povlsen@microchip.com, 
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org, 
+	netdev@vger.kernel.org, linux-gpio@vger.kernel.org, linux-spi@vger.kernel.org, 
+	linux-serial@vger.kernel.org, luka.perkov@sartura.hr, 
+	Conor Dooley <conor.dooley@microchip.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jan 14, 2026 at 01:40:04PM +0100, Herve Codina wrote:
-> On Mon, 12 Jan 2026 10:18:41 +0200
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> 
-> > +Cc: Herve (btw, any news on LAN966x support?)
-> 
-> Related to LAN966x support, I am still stucked on issues related to
-> fw_devlink and DT overlays [1].
+On Wed, Jan 21, 2026 at 1:44=E2=80=AFPM Linus Walleij <linusw@kernel.org> w=
+rote:
+>
+> Hi Robert,
+>
+> On Thu, Jan 15, 2026 at 12:41=E2=80=AFPM Robert Marko <robert.marko@sartu=
+ra.hr> wrote:
+>
+> > Document LAN969x compatibles for SGPIO.
+> >
+> > Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+> > Acked-by: Conor Dooley <conor.dooley@microchip.com>
+> > Reviewed-by: Claudiu Beznea <claudiu.beznea@tuxon.dev>
+>
+> Should I just merge this one patch to the pinctrl tree?
 
-Thank you for the update and your reply here!
+That would be great as other bindings are slowly being picked into
+their respective trees.
 
-> [1] https://lore.kernel.org/all/20260112154731.6540453b@bootlin.com/
+Regards,
+Robert
+> Looks good to me.
+>
+> Yours,
+> Linus Walleij
 
--- 
-With Best Regards,
-Andy Shevchenko
 
 
+--=20
+Robert Marko
+Staff Embedded Linux Engineer
+Sartura d.d.
+Lendavska ulica 16a
+10000 Zagreb, Croatia
+Email: robert.marko@sartura.hr
+Web: www.sartura.hr
