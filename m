@@ -1,148 +1,174 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EDC42FD69B
-	for <linux-serial@vger.kernel.org>; Fri, 23 Jan 2026 00:50:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F259372B3E;
+	Fri, 23 Jan 2026 05:55:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769129404; cv=none; b=k4AZ796zghMfBhVR+8mTuUf+b7IKbuMPBy06lvlomlunMFPXX8SGlQr2kfPYPXS5u0BEAcLsdesezg7pGzKfQJSif84gc1xPCR3FpadxZEad46cS9GThEsvMHL91aYBPw6YTinLm9i0aHku23jsTqvUTHzNVX2/gAQZzBDHYFVo=
+	t=1769147720; cv=none; b=kV5rgt1MTsv2ugYIuCJUfNEqUTv0YcDKiUQSXcwmhjvrainz1uIKzfR+ML7UmyP5jzJgKei3tlRUaPpWWDuC2IyREkhRy0Ijgu7/onstFalG98xeumfzDfMBCHTwiOkHEpIIfUAZIOMlOpHr4SoFKEsed7c0yRSIop/B18z2ZNc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769129404; c=relaxed/simple;
-	bh=61fxTBvmM+nEDTnrxV8wyBLBgYPiDsz7hg08HBbLwi8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 In-Reply-To:Content-Type:Content-Disposition; b=mt+UfsvMjxuwb722JOpxWKqPlBKkkud3RMhCCt2+pD+ss+Z+NVRrGeQZRsbRzKS5hDgHN94lal4Ix7tcdho63Cbfpa9+JdmxKHINcbTiKyP2EzcFvwKq3mS8XMxD1yPCNBNk2occfAeLxBKNmnlXzg8PaypgT+ZAjHxj65UOZ68=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=UEWrLgmH; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1769147720; c=relaxed/simple;
+	bh=AshL+gXPoIG3qqr7OO2chsFUhi+3/LfRd6/uBwxw5No=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=NcvYqkjtqYIRBHTokj0UJwoomokR26oCn+mvO79TVRD2A1AKJvSjR0KdbBFhpB3kin0I9WcBV6xcM4gwY1dQDjxEJtWJD7HEqjG3yNI6NHoBmCTL3JB/R5211YL8z0CehYwUl7H5NCND6Tn8FKPIGlc9mfFPDrGHZjKspJLNHUY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=l+NfzNlt; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="UEWrLgmH"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1769129397;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=GoBRPgL92gOt6XV5p8QK+5WmhSABAsu+khI/gr5kMBo=;
-	b=UEWrLgmHHcRpi51aAWBwZQW32Ki5r9cXzrC6+n0xO92Vbca3hnrziZEUOwgdpnPUbntI/a
-	roend+QGV0UZ5yzWIILvUwrXRVetYIYEACXpKkVGk401RZKHs9zz24nPVOJiOkqXm8YZOU
-	b4ZSr3l2spEdOvw5xz2sWukDUfz2vcI=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-153-pbtSvTbdNdOrBgzJp9F7DA-1; Thu, 22 Jan 2026 19:49:55 -0500
-X-MC-Unique: pbtSvTbdNdOrBgzJp9F7DA-1
-X-Mimecast-MFC-AGG-ID: pbtSvTbdNdOrBgzJp9F7DA_1769129395
-Received: by mail-qk1-f197.google.com with SMTP id af79cd13be357-8ba026720eeso516332385a.1
-        for <linux-serial@vger.kernel.org>; Thu, 22 Jan 2026 16:49:55 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769129395; x=1769734195;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=GoBRPgL92gOt6XV5p8QK+5WmhSABAsu+khI/gr5kMBo=;
-        b=GDB1L2tUS823nX30XdgJqj3PXcrX8ga+5Nqvl+Brh4bSmXV3CcmGVloMRdXQyF/h7l
-         Bkgpr9Z3YI31VziX1/K4q4t6952k2u3UqZTAPUIlaTTye0aE3YYhiCM7N+C8CfmIvYbN
-         PPAvk9us5Rgw0lv5vYTNLruOmRCwhSn6YBBXY1XdbMgopWNNUZxPj5KoAdgV2GXuN6cV
-         n2C7Lo08DLS3/It9cPDyMgWoFtwXildzoAfBw6O/GyOzFVBlQKQIttT27md54WJE/MnR
-         do0nOmZg4qMwhqQVvHCC+rPLlL6xGveQk1KmHYrkwLv2lDRhtliYUsWGO9St9ajuOv5B
-         kTCg==
-X-Forwarded-Encrypted: i=1; AJvYcCUdxUtx7ilePs8+kGmRJZmEh2Vfkaav/az3hqJuT+cgI88dge8fcV9UZUMasP2KD17wfWlBLIVN5A0ST0k=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyBNK3aO5n74bbC8yn71ofrYOrKE5gEDn5Wd6cnAP9wGaoOkr30
-	6mjbt8Kh8aI6KP65ZGt+xahPBSgI+Z4aCLkdINm7EjaCB2O+nEKqNxg8DwQmuVXhDjHnB38XkUn
-	MjgrOgdtozMf3Yy7W7QdQPANsAUFkeGoeJcEH+mcnJpqhTErlEZEbqUUr/YmVMMUIvQ==
-X-Gm-Gg: AZuq6aIJXW9Uusr24OIRilgigF5i3oyqDgZI4rmSBheYYxaSpzXiyUWqeUUYeKNOoUN
-	GHWbDOaX2OKpFcYjFjxRYrM7GiztQ6L2rJQzNdatkXMgOlaIuTxVqMZZEp1jlHhIbFs56riPVpY
-	HQRpK0wIL2lkUpDk4w9Rapu6+AhiZrP5aumfTnVRcF9f7WAa7YmB3ktAF8DWWytP5hWOzkE5F16
-	gfEhJWXVw7lvqQNehMPEhAcPr6r50MaH8zyP4uOJcQCteo+BiBXxLr6Nbzg0jgF9M87syAQ7x9i
-	PsBlFyGflso6hkm7HtRz2u42cZZq3nFRZxHcztf1ZZRv/zXBtEYHirmpFdrmMrv9ve7byc2Y6iG
-	EhtHTN3yR8TsUUyyqWevJ4ukTAYnfm90x4biwCDLjTmIV
-X-Received: by 2002:a05:620a:298e:b0:8c5:2bcc:fbc2 with SMTP id af79cd13be357-8c6e2e4bf45mr189824185a.81.1769129395210;
-        Thu, 22 Jan 2026 16:49:55 -0800 (PST)
-X-Received: by 2002:a05:620a:298e:b0:8c5:2bcc:fbc2 with SMTP id af79cd13be357-8c6e2e4bf45mr189821085a.81.1769129394805;
-        Thu, 22 Jan 2026 16:49:54 -0800 (PST)
-Received: from redhat.com (c-73-183-52-120.hsd1.pa.comcast.net. [73.183.52.120])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-8c6e383c2bfsm54737785a.29.2026.01.22.16.49.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Jan 2026 16:49:54 -0800 (PST)
-Date: Thu, 22 Jan 2026 19:49:52 -0500
-From: Brian Masney <bmasney@redhat.com>
-To: Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	Claudiu Beznea <claudiu.beznea@tuxon.dev>
-Cc: linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Michael Turquette <mturquette@baylibre.com>,
-	Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Adrian Hunter <adrian.hunter@intel.com>,
-	Ulf Hansson <ulf.hansson@linaro.org>, linux-mmc@vger.kernel.org,
-	Linus Walleij <linusw@kernel.org>, linux-gpio@vger.kernel.org,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	linux-rtc@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
-	Guenter Roeck <linux@roeck-us.net>,
-	Wim Van Sebroeck <wim@linux-watchdog.org>,
-	linux-watchdog@vger.kernel.org
-Subject: Re: [PATCH v2 00/16] MIPS: move pic32.h header file from asm to
- platform_data
-Message-ID: <aXLFsA_bEkXLr33P@redhat.com>
-References: <20260112-mips-pic32-header-move-v2-0-927d516b1ff9@redhat.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="l+NfzNlt"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 957BDC19422;
+	Fri, 23 Jan 2026 05:55:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1769147718;
+	bh=AshL+gXPoIG3qqr7OO2chsFUhi+3/LfRd6/uBwxw5No=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=l+NfzNlt2T8ZxdGSVcPAoxpI58ZVs7X6gvyD3fUk7/tKLg1GkqWn4s8tqlCmnaC5e
+	 TaMqFyfT0vfkMEhkTGessiim8eOnmjiop1iDPvmgnDGp1QzwXCNPMDFDk9dZH+rJCf
+	 Kh6V2f8HC52xPuhXPL/aPigfgpkGgM5wwjbl3Q93Afn3Bk0REORhuydinRtKxHwDMF
+	 iEBdJ3N4GM6mVSbYZqQghHuvQP+9+ipeCiEcwBSvQlaSr4BwL+Sas2jNKkT3v0vXvI
+	 MUYi/yHZMuLDLFDHjgphtT1HQW/gcauUq92nQp58oPIDO+cZeiHznwr2KcR+VSoLMu
+	 wSch+v8tNa0Xw==
+Message-ID: <e0ee73fe-2b9e-4976-9648-35a6822b8ad1@kernel.org>
+Date: Fri, 23 Jan 2026 06:55:15 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20260112-mips-pic32-header-move-v2-0-927d516b1ff9@redhat.com>
-User-Agent: Mutt/2.2.14 (2025-02-20)
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: 8hImJbcpvTtNNBwN1LeH7pOe9lR7wwTSWJGl1CJNDMA_1769129395
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] serial: Fix not set tty->port race condition
+To: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: stable@vger.kernel.org
+References: <20260122170031.433724-2-krzysztof.kozlowski@oss.qualcomm.com>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20260122170031.433724-2-krzysztof.kozlowski@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Thomas,
-
-On Mon, Jan 12, 2026 at 05:47:54PM -0500, Brian Masney wrote:
-> There are currently some pic32 MIPS drivers that are in tree, and are
-> only configured to be compiled on the MIPS pic32 platform. There's a
-> risk of breaking some of these drivers when migrating drivers away from
-> legacy APIs. It happened to me with a pic32 clk driver.
+On 22. 01. 26, 18:00, Krzysztof Kozlowski wrote:
+> Revert commit bfc467db60b7 ("serial: remove redundant
+> tty_port_link_device()") because the tty_port_link_device() is not
+> redundant: the tty->port has to be confured before we call
+> uart_configure_port(), otherwise user-space can open console without TTY
+> linked to the driver.
 > 
-> Let's go ahead and move the pic32.h from the asm to the platform_data
-> include directory in the tree. This will make it easier, and cleaner to
-> enable COMPILE_TEST for some of these pic32 drivers. To do this requires
-> updating some includes, which I do at the beginning of this series.
+> This tty_port_link_device() was added explicitly to avoid this exact
+> issue in commit fb2b90014d78 ("tty: link tty and port before configuring
+> it as console"), so offending commit basically reverted the fix saying
+> it is redundant without addressing the actual race condition presented
+> there.
 > 
-> This series was compile tested on a centos-stream-10 arm64 host in two
-> different configurations:
+> Reproducible always as tty->port warning on Qualcomm SoC with most of
+> devices disabled, so with very fast boot, and one serial device being
+> the console:
 > 
-> - native arm64 build with COMPILE_TEST (via make allmodconfig)
-> - MIPS cross compile on arm64 with:
->       ARCH=mips CROSS_COMPILE=mips64-linux-gnu- make pic32mzda_defconfig
+>    printk: legacy console [ttyMSM0] enabled
+>    printk: legacy console [ttyMSM0] enabled
+>    printk: legacy bootconsole [qcom_geni0] disabled
+>    printk: legacy bootconsole [qcom_geni0] disabled
+>    ------------[ cut here ]------------
+>    tty_init_dev: ttyMSM driver does not set tty->port. This would crash the kernel. Fix the driver!
+>    WARNING: drivers/tty/tty_io.c:1414 at tty_init_dev.part.0+0x228/0x25c, CPU#2: systemd/1
+>    Modules linked in: socinfo tcsrcc_eliza gcc_eliza sm3_ce fuse ipv6
+>    CPU: 2 UID: 0 PID: 1 Comm: systemd Tainted: G S                  6.19.0-rc4-next-20260108-00024-g2202f4d30aa8 #73 PREEMPT
+>    Tainted: [S]=CPU_OUT_OF_SPEC
+>    Hardware name: Qualcomm Technologies, Inc. Eliza (DT)
+>    ...
+>    tty_init_dev.part.0 (drivers/tty/tty_io.c:1414 (discriminator 11)) (P)
+>    tty_open (arch/arm64/include/asm/atomic_ll_sc.h:95 (discriminator 3) drivers/tty/tty_io.c:2073 (discriminator 3) drivers/tty/tty_io.c:2120 (discriminator 3))
+>    chrdev_open (fs/char_dev.c:411)
+>    do_dentry_open (fs/open.c:962)
+>    vfs_open (fs/open.c:1094)
+>    do_open (fs/namei.c:4634)
+>    path_openat (fs/namei.c:4793)
+>    do_filp_open (fs/namei.c:4820)
+>    do_sys_openat2 (fs/open.c:1391 (discriminator 3))
+>    ...
+>    Starting Network Name Resolution...
 > 
-> Note that there is a separate MIPS compile error in linux-next, and I
-> reported it at https://lore.kernel.org/all/aWVs2gVB418WiMVa@redhat.com/
+> Apparently the flow with this small Yocto-based ramdisk user-space is:
 > 
-> I included a patch at the end that shows enabling COMPILE_TEST for a
-> pic32 clk driver.
+> driver (qcom_geni_serial.c):                  user-space:
+> ============================                  ===========
+> qcom_geni_serial_probe()
+>   uart_add_one_port()
+>    serial_core_register_port()
+>     serial_core_add_one_port()
+>      uart_configure_port()
+>       register_console()
+>      |
+>      |                                         open console
+>      |                                         ...
+>      |                                         tty_init_dev()
+>      |                                         driver->ports[idx] is NULL
+>      |
+>      tty_port_register_device_attr_serdev()
+>       tty_port_link_device() <- set driver->ports[idx]
 > 
-> Merge Strategy
-> ==============
-> - Patches 1-15 can go through the MIPS tree.
+> Fixes: bfc467db60b7 ("serial: remove redundant tty_port_link_device()")
+> Cc: <stable@vger.kernel.org>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+> ---
+>   drivers/tty/serial/serial_core.c | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 0534b2eb1682..116f33f0643f 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -3077,6 +3077,7 @@ static int serial_core_add_one_port(struct uart_driver *drv, struct uart_port *u
+>   	if (uport->cons && uport->dev)
+>   		of_console_check(uport->dev->of_node, uport->cons->name, uport->line);
+>   
+> +	tty_port_link_device(port, drv->tty_driver, uport->line);
 
-I'm just checking if you'll be able to take patches 1-15 this
-development cycle before the merge window opens?
+Bah, so add a comment or I (or somebody) remove it again eventually :(.
 
-If this series goes to Linus during this upcoming merge window, then
-I have 17 patches ready to post in a month for the next development
-cycle that can go to various individual subsystems that allows all
-of these pic32 MIPS drivers to be compiled on all architectures. The
-patches also fix some issues in those drivers that were found by
-kernel CI.
-
-This merge strategy makes it so that we won't have to deal with any
-cross tree merge issues, or immutable branches.
-
-Thanks,
-
-Brian
-
+thanks,
+-- 
+js
+suse labs
