@@ -1,62 +1,67 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5920263F5E;
-	Fri, 23 Jan 2026 22:13:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30B3126C3BD;
+	Fri, 23 Jan 2026 22:42:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769206415; cv=none; b=kv4ZLOQ20hlgK1r1OcmpuP+hTQwcyW/+++Vc88IRVMnZE6HRDlBkon8rfb5HDB3oGGB4BTyNXwfXfNfuKgeIsl1jKaJQXYUZhVi9Sg5e6LiXB7DZfmzMCVFVVDqF6XZ0lX8oEiI4t4RgATdfVB6Tck3pc3uentUaqJGtNfuU9mo=
+	t=1769208168; cv=none; b=GUrb3WRydHjv76QlYlqzzWKOOkwB40vuiNUFWMV73KjE3Lol/oqg5OB2VnV1qANt/kc2DDoC3x31GgA3o0kl6DyUjiUzjJZIzFj/gBhkEM7H5dU9GbZzUtverZywdrg1cOTrouA/BIxosi3xL34qeWETgxAPsjY6rEWz3/OuUgU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769206415; c=relaxed/simple;
-	bh=9VnspifS8nsU2HzElpoe/IYvKsTGMIwZ36X4cZoiaic=;
+	s=arc-20240116; t=1769208168; c=relaxed/simple;
+	bh=De9b6ZQikLqzMV20WpHp7NJ28FmPpNQ1DuZslv1czBw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RAMiMgk3GCDLrluwDvu7vSZ2vQ6vFMEXiFMPH7kgAQeNjvhlyshuzuCWWWXiztj3TkrLxfxivu+980LVHg1ebLzra/iUW9ySO2sIR58ZjM5xIbITp7RAumSPduOs/3h07UkG8do687+fqPSZkA/CAKFG6Z02ZAxSh/Det6CrvE4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JYlRRSKa; arc=none smtp.client-ip=192.198.163.16
+	 Content-Type:Content-Disposition:In-Reply-To; b=SNgDCpcOPXmzVu9Gxv3To9Ez0i50ZCrTZwlA7ISppUWQ1U/LBzuAtRYOB13/ckJXWtd+2+OBTHw/CP9lW7J1MRqCwGT/r6T+7RW+CIxW+fUEtihjBDTksVw9H/cVCKKD8bIfUo/j9qg6IMiitPMjoWROiqdR4qgrZttg/CP39VA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lvr2yBnW; arc=none smtp.client-ip=198.175.65.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JYlRRSKa"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lvr2yBnW"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1769206414; x=1800742414;
+  t=1769208166; x=1800744166;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:content-transfer-encoding:in-reply-to;
-  bh=9VnspifS8nsU2HzElpoe/IYvKsTGMIwZ36X4cZoiaic=;
-  b=JYlRRSKaG+fGH8QAKGYVcoovezs5DWxX5VkZioM6Ol0CJzkK4AvuUL0d
-   OcEjGwEjEePy96b8RpTZyfEm+ViCM+QR/Z+XvB765tdQMcGtJgZQcT/lx
-   EIaJUq2f2OsUjF+rQcHi3R5BMm/xXbJt+nh7n15Lx5IHbutoHCTJhi0ak
-   CqGfLtn+Fk//gyiRBYk6LdiKlU0gSfNuUa/BHeLanDfBcj/jW7HgYJp24
-   7a/EwbXJeHItA8drzLiy2h6LLYSZC3UXfFpgCwrH2Sn9Gw+mkU/HagWxB
-   36LKLyICUHwFBXYMVZgSWr1o25EPyXg3ZWUbkiGneUz9KjjVgLBs54Q8x
-   g==;
-X-CSE-ConnectionGUID: 1PwX11iVQiW6cySXSCRH2w==
-X-CSE-MsgGUID: zXroaTRsQruFxD5tv1P7ZA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11680"; a="58035183"
+  bh=De9b6ZQikLqzMV20WpHp7NJ28FmPpNQ1DuZslv1czBw=;
+  b=lvr2yBnWhWzJ1DSTfK5S07tO+jMKv3NBZhrPi/ruEfG7RzFkERT1EPg5
+   xxceAVrX2dAWXW81rYM0I31XAqSD4dlkTroGqlYCqw7cfc053S0ThZxLa
+   O22l9wWOwso1qBFtcAGosFYqlMuCFmluJoGKEh4PLr1NORubnjgBEqVep
+   v5iyYXz3LPsPM2Bjz7a42rrNmV8FD8WzwMh2duW/pqGK6UNhihCJbF1sW
+   84Pau1NJoKAmys0DRhLTKgII1JtyQZJYjujM3wBasA2cYNV5YlHVDtxOX
+   mHbjz5OQlxxLonsYeTHHPPKEkdTQRBC1tuYfjzgXF6Uem+979szC8Qa2l
+   A==;
+X-CSE-ConnectionGUID: kKXUP3qzSAWt0JOTtsmw4Q==
+X-CSE-MsgGUID: nhFzQg9vRYOKGVa5ZvxpGg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11680"; a="81905480"
 X-IronPort-AV: E=Sophos;i="6.21,249,1763452800"; 
-   d="scan'208";a="58035183"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jan 2026 14:13:33 -0800
-X-CSE-ConnectionGUID: zV+odf6wQE6h7fGtaK/EPA==
-X-CSE-MsgGUID: AOdJk9f2Te6rXUr5GLCEfg==
+   d="scan'208";a="81905480"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jan 2026 14:42:46 -0800
+X-CSE-ConnectionGUID: 5gxmsB9EQu+J+tPNuIqEPg==
+X-CSE-MsgGUID: kjq7Hk0SSwGDiME44amQKA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,249,1763452800"; 
-   d="scan'208";a="211589727"
+   d="scan'208";a="207480297"
 Received: from rvuia-mobl.ger.corp.intel.com (HELO localhost) ([10.245.244.112])
-  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jan 2026 14:13:30 -0800
-Date: Sat, 24 Jan 2026 00:13:28 +0200
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jan 2026 14:42:42 -0800
+Date: Sat, 24 Jan 2026 00:42:40 +0200
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
 	qianfan Zhao <qianfanguijin@163.com>,
-	Adriana Nicolae <adriana@arista.com>, linux-kernel@vger.kernel.org,
+	Adriana Nicolae <adriana@arista.com>,
+	Markus Mayer <markus.mayer@linaro.org>,
+	Tim Kryger <tim.kryger@linaro.org>,
+	Matt Porter <matt.porter@linaro.org>,
+	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+	Jamie Iles <jamie@jamieiles.com>, linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org,
 	"Bandal, Shankar" <shankar.bandal@intel.com>,
 	"Murthy, Shanth" <shanth.murthy@intel.com>
-Subject: Re: [PATCH 4/6] serial: 8250_dw: Rework IIR_NO_INT handling to stop
- interrupt storm
-Message-ID: <aXPyiOMxClprdOQM@smile.fi.intel.com>
+Subject: Re: [PATCH 6/6] serial: 8250_dw: Ensure BUSY is deasserted
+Message-ID: <aXP5YMNix8EfbJeF@smile.fi.intel.com>
 References: <20260123172739.13410-1-ilpo.jarvinen@linux.intel.com>
- <20260123172739.13410-5-ilpo.jarvinen@linux.intel.com>
+ <20260123172739.13410-7-ilpo.jarvinen@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -66,62 +71,154 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260123172739.13410-5-ilpo.jarvinen@linux.intel.com>
+In-Reply-To: <20260123172739.13410-7-ilpo.jarvinen@linux.intel.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Jan 23, 2026 at 07:27:37PM +0200, Ilpo Järvinen wrote:
-> INTC10EE UART can end up into an interrupt storm where it reports
-> IIR_NO_INT (0x1). If the storm happens during active UART operation, it
-> is promptly stopped by IIR value change due to Rx or Tx events.
-> However, when there is no activity, either due to idle serial line or
-> due to specific circumstances such as during shutdown that writes
-> IER=0, there is nothing to stop the storm.
+On Fri, Jan 23, 2026 at 07:27:39PM +0200, Ilpo Järvinen wrote:
+> DW UART cannot write to LCR, DLL, and DLH while BUSY is asserted.
+> Existance of BUSY depends on uart_16550_compatible, if UART HW is
+> configured with 16550 compatible those registers can always be written.
+
+with 16550 compatible --> with it
+
+> There currently is dw8250_force_idle() which attempts to archive
+> non-BUSY state by disabling FIFO, however, the solution is unreliable
+> when Rx keeps getting more and more characters.
 > 
-> During shutdown the storm is particularly problematic because
-> serial8250_do_shutdown() calls synchronize_irq() that will hang in
-> waiting for the storm to finish which never happens.
+> Create a sequence of operations to enforce that ensures UART cannot
+> keep BUSY asserted indefinitely. The new sequence relies on enabling
+> loopback mode temporarily to prevent incoming Rx characters keeping
+> UART BUSY.
+
+What if UART was already in a loopback mode? I assume that Tx pause
+described below should not affect the case.
+
+The real case scenario that I am thinking of is a stress test of UART
+using loopback mode.
+
+> Ensure no Tx in ongoing while the UART is switches into the loopback
+> mode (requires exporting serial8250_fifo_wait_for_lsr_thre() and adding
+> DMA Tx pause/resume functions).
 > 
-> This problem can also result in triggering a warning:
+> According to tests performed by Adriana Nicolae <adriana@arista.com>,
+> simply disabling FIFO or clearing FIFOs only once does not always
+> ensure BUSY is deasserted but up to two tries may be needed. This could
+> be related to ongoing Rx of a character (a guess, not known for sure).
+
+Sounds like a plausible theory because UART has shift registers that are
+working independently on the current situation with FIFO. They are actual
+frontends for Tx and Rx data on the wire.
+
+> Therefore, retry FIFO clearing a few times (retry limit 4 is arbitrary
+> number but using, e.g., p->fifosize seems overly large). Tests
+> performed by others did not exhibit similar challenge but it does not
+> seem harmful to leave the FIFO clearing loop in place for all DW UARTs
+> with BUSY functionality.
 > 
->   irq 45: nobody cared (try booting with the "irqpoll" option)
->   [...snip...]
->   handlers:
->     serial8250_interrupt
->   Disabling IRQ #45
+> Use the new dw8250_idle_enter/exit() to do divisor writes and LCR
+> writes. In case of plain LCR writes, opportunistically try to update
+> LCR first and only invoke dw8250_idle_enter() if the write did not
+> succeed (it has been observed that in practice most LCR writes do
+> succeed without complications).
 > 
-> Normal means to reset interrupt status by reading LSR, MSR, USR, or RX
-> register do not result in the UART deasserting the IRQ.
-> 
-> Add a quirk to INTC10EE UARTs to enable Tx interrupts if UART's Tx is
-> currently empty and inactive. Rework IIR_NO_INT to keep track of the
-> number of consecutive IIR_NO_INT, and on third one perform the quirk.
-> Enabling Tx interrupts should change IIR value from IIR_NO_INT to
-> IIR_THRI which has been observed to stop the storm.
+> This issue was first reported by qianfan Zhao who put lots of debugging
+> effort into understanding the solution space.
 
 ...
 
-> +	u64			no_int_count;
+> +	/* Prevent triggering interrupt from RBR filling */
+> +	p->serial_out(p, UART_IER, 0);
 
-Why so big?
+Do we specifically use callbacks directly and not wrappers all over the change?
 
 ...
 
-> +		d->no_int_count++;
-> +		if (d->no_int_count > 2 && quirks & DW_UART_QUIRK_IER_KICK)
-> +			dw8250_quirk_ier_kick(p);
+> +	serial8250_fifo_wait_for_lsr_thre(up, p->fifosize);
+> +	ndelay(p->frame_time);
 
-Usual way is to use modulo. And perhaps use 4 for the sake of avoiding
-division:
+Wouldn't be a problem on lowest baud rates (exempli gratia 110)?
 
-		if (d->no_int_count == 3 && quirks & DW_UART_QUIRK_IER_KICK)
-			dw8250_quirk_ier_kick(p);
+...
 
-		d->no_int_count = (d->no_int_count + 1) % 4;
+> +	retries = 4;	/* Arbitrary limit, 2 was always enough in tests */
+> +	do {
+> +		serial8250_clear_fifos(up);
+> +		if (!(p->serial_in(p, usr_reg) & DW_UART_USR_BUSY))
+> +			break;
+> +		ndelay(p->frame_time);
+> +	} while (--retries);
 
-where 4 may be defined with meaningful name. With that u8 is more than enough.
+read_poll_timeout_atomic() ? I assume it can't be used due to small frame time?
 
->  		return 0;
+...
+
+> +	if (d->in_idle) {
+
+> +		/*
+> +		 * FIXME: this deadlocks if port->lock is already held
+> +		 * dev_err(p->dev, "Couldn't set LCR to %d\n", value);
+> +		 */
+
+Hmm... That FIXME should gone since we have non-blocking consoles, no?
+
+> +		return;
+> +	}
+
+...
+
+> +	ret = dw8250_idle_enter(p);
+> +	if (ret < 0) {
+> +		/*
+> +		 * FIXME: this deadlocks if port->lock is already held
+> +		 * dev_err(p->dev, "Couldn't set LCR to %d\n", value);
+> +		 */
+> +		goto idle_failed;
+>  	}
+> -	/*
+> -	 * FIXME: this deadlocks if port->lock is already held
+> -	 * dev_err(p->dev, "Couldn't set LCR to %d\n", value);
+> -	 */
+
+Ditto.
+
+>  }
+
+...
+
+>  	p->dev		= dev;
+
+Maybe put an added line here?
+
+>  	p->set_ldisc	= dw8250_set_ldisc;
+>  	p->set_termios	= dw8250_set_termios;
+> +	p->set_divisor	= dw8250_set_divisor;
+
+...
+
+> +EXPORT_SYMBOL_GPL(serial8250_clear_fifos);
+
+Same Q, perhaps start exporting with a namespace?
+
+>  }
+>  EXPORT_SYMBOL_GPL(serial8250_set_defaults);
+
+...
+
+> +void serial8250_fifo_wait_for_lsr_thre(struct uart_8250_port *up, unsigned int count)
+> +{
+> +	unsigned int i;
+> +
+> +	for (i = 0; i < count; i++) {
+
+	while (count--) ?
+
+Ah, it's existing code... OK then.
+
+> +		if (wait_for_lsr(up, UART_LSR_THRE))
+> +			return;
+> +	}
+> +}
 
 -- 
 With Best Regards,
