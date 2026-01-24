@@ -1,227 +1,279 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30B3126C3BD;
-	Fri, 23 Jan 2026 22:42:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14C3F2F3C3F
+	for <linux-serial@vger.kernel.org>; Sat, 24 Jan 2026 04:38:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769208168; cv=none; b=GUrb3WRydHjv76QlYlqzzWKOOkwB40vuiNUFWMV73KjE3Lol/oqg5OB2VnV1qANt/kc2DDoC3x31GgA3o0kl6DyUjiUzjJZIzFj/gBhkEM7H5dU9GbZzUtverZywdrg1cOTrouA/BIxosi3xL34qeWETgxAPsjY6rEWz3/OuUgU=
+	t=1769229530; cv=none; b=kLrEYoDe76OHvLz0pCTBuie5tvy3mSz8E81mXtVvRngS7PKnajmMoUGhbfDd4Khnsvoo7OWnP2KTp1FiznX6v5fYxJhTugQ5IjQuiqEbWtK1IB7MH/4K8rt6uAmkB/sGw15JyAEyidiINsB7Vp7/JKt5pOiwbbpWAWoW+0GXv28=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769208168; c=relaxed/simple;
-	bh=De9b6ZQikLqzMV20WpHp7NJ28FmPpNQ1DuZslv1czBw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SNgDCpcOPXmzVu9Gxv3To9Ez0i50ZCrTZwlA7ISppUWQ1U/LBzuAtRYOB13/ckJXWtd+2+OBTHw/CP9lW7J1MRqCwGT/r6T+7RW+CIxW+fUEtihjBDTksVw9H/cVCKKD8bIfUo/j9qg6IMiitPMjoWROiqdR4qgrZttg/CP39VA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lvr2yBnW; arc=none smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1769229530; c=relaxed/simple;
+	bh=oNKkxXLrCJqmHGUbuFtp6WLRZhDOGy7ZiflaUUt6Brw=;
+	h=Date:From:To:Cc:Subject:Message-ID; b=Ci2YGAs7CeyvRVG5YTSjyGMW0r3zKctv+4s6uaofiSkyDwQTmCaiY7NH6TNjGtrVaQseae9nkaF0gmGdX2K+cbJoMf9BeV0IfJAJ1dMb0hoQ/hdngZIG1jlCQJHKtTM2dc1fLWIWiN0mPeJUvwCVAZw1kSCaWAztp+w5+VVxUOM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nwOAbRXr; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lvr2yBnW"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nwOAbRXr"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1769208166; x=1800744166;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=De9b6ZQikLqzMV20WpHp7NJ28FmPpNQ1DuZslv1czBw=;
-  b=lvr2yBnWhWzJ1DSTfK5S07tO+jMKv3NBZhrPi/ruEfG7RzFkERT1EPg5
-   xxceAVrX2dAWXW81rYM0I31XAqSD4dlkTroGqlYCqw7cfc053S0ThZxLa
-   O22l9wWOwso1qBFtcAGosFYqlMuCFmluJoGKEh4PLr1NORubnjgBEqVep
-   v5iyYXz3LPsPM2Bjz7a42rrNmV8FD8WzwMh2duW/pqGK6UNhihCJbF1sW
-   84Pau1NJoKAmys0DRhLTKgII1JtyQZJYjujM3wBasA2cYNV5YlHVDtxOX
-   mHbjz5OQlxxLonsYeTHHPPKEkdTQRBC1tuYfjzgXF6Uem+979szC8Qa2l
-   A==;
-X-CSE-ConnectionGUID: kKXUP3qzSAWt0JOTtsmw4Q==
-X-CSE-MsgGUID: nhFzQg9vRYOKGVa5ZvxpGg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11680"; a="81905480"
+  t=1769229529; x=1800765529;
+  h=date:from:to:cc:subject:message-id;
+  bh=oNKkxXLrCJqmHGUbuFtp6WLRZhDOGy7ZiflaUUt6Brw=;
+  b=nwOAbRXr8WDJr3zBo8H/iG9RUTKMWVD8T68wlqHSj90SulDFjdKGW0rj
+   XvVH3v+hHoSi9xeqZ9o5ewBMwSS/SZ/C6C4xvsx6sZ8ucGcTrLRuo6H3N
+   ZLyloEc+S/TtJ2oBnzKBMgBnSN6zq6KpqO/Izobi5AEwx+cntdvTuBNre
+   Fjbsi9rZ9d/Ex3AGniE/Q6YLyknuOQ915VyerSxLmR98fM5ZdqM102UWu
+   NFJUG9xNyiq9WDvQjS5AlGurOlDk4X/aT+cZ13/QO0opFWaOfPy5rpAaC
+   SkDPicIoamySMB/ZJIBDXrdqJqOOe92iCsRUD/Og12icGYfVyhK1drHCa
+   Q==;
+X-CSE-ConnectionGUID: UHqvUBonTp+OhLscRaWa9A==
+X-CSE-MsgGUID: HGYtc2YlSl2IXERUfIGDlQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11680"; a="73065839"
 X-IronPort-AV: E=Sophos;i="6.21,249,1763452800"; 
-   d="scan'208";a="81905480"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jan 2026 14:42:46 -0800
-X-CSE-ConnectionGUID: 5gxmsB9EQu+J+tPNuIqEPg==
-X-CSE-MsgGUID: kjq7Hk0SSwGDiME44amQKA==
+   d="scan'208";a="73065839"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jan 2026 20:38:46 -0800
+X-CSE-ConnectionGUID: 9FbvWLVATg+guMAc4fyi4g==
+X-CSE-MsgGUID: IBLr5+uFSg+1nbmDZJMCfQ==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,249,1763452800"; 
-   d="scan'208";a="207480297"
-Received: from rvuia-mobl.ger.corp.intel.com (HELO localhost) ([10.245.244.112])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jan 2026 14:42:42 -0800
-Date: Sat, 24 Jan 2026 00:42:40 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
-	qianfan Zhao <qianfanguijin@163.com>,
-	Adriana Nicolae <adriana@arista.com>,
-	Markus Mayer <markus.mayer@linaro.org>,
-	Tim Kryger <tim.kryger@linaro.org>,
-	Matt Porter <matt.porter@linaro.org>,
-	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-	Jamie Iles <jamie@jamieiles.com>, linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org,
-	"Bandal, Shankar" <shankar.bandal@intel.com>,
-	"Murthy, Shanth" <shanth.murthy@intel.com>
-Subject: Re: [PATCH 6/6] serial: 8250_dw: Ensure BUSY is deasserted
-Message-ID: <aXP5YMNix8EfbJeF@smile.fi.intel.com>
-References: <20260123172739.13410-1-ilpo.jarvinen@linux.intel.com>
- <20260123172739.13410-7-ilpo.jarvinen@linux.intel.com>
+Received: from lkp-server01.sh.intel.com (HELO 765f4a05e27f) ([10.239.97.150])
+  by fmviesa003.fm.intel.com with ESMTP; 23 Jan 2026 20:38:44 -0800
+Received: from kbuild by 765f4a05e27f with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1vjVQ2-00000000UpG-3AIW;
+	Sat, 24 Jan 2026 04:38:42 +0000
+Date: Sat, 24 Jan 2026 12:38:31 +0800
+From: kernel test robot <lkp@intel.com>
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ d000422a46aad32217cf1be747eb61d641baae2f
+Message-ID: <202601241225.1a74X7UM-lkp@intel.com>
+User-Agent: s-nail v14.9.25
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260123172739.13410-7-ilpo.jarvinen@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Jan 23, 2026 at 07:27:39PM +0200, Ilpo Järvinen wrote:
-> DW UART cannot write to LCR, DLL, and DLH while BUSY is asserted.
-> Existance of BUSY depends on uart_16550_compatible, if UART HW is
-> configured with 16550 compatible those registers can always be written.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: d000422a46aad32217cf1be747eb61d641baae2f  tty: tty_port: add workqueue to flip TTY buffer
 
-with 16550 compatible --> with it
+elapsed time: 729m
 
-> There currently is dw8250_force_idle() which attempts to archive
-> non-BUSY state by disabling FIFO, however, the solution is unreliable
-> when Rx keeps getting more and more characters.
-> 
-> Create a sequence of operations to enforce that ensures UART cannot
-> keep BUSY asserted indefinitely. The new sequence relies on enabling
-> loopback mode temporarily to prevent incoming Rx characters keeping
-> UART BUSY.
+configs tested: 204
+configs skipped: 2
 
-What if UART was already in a loopback mode? I assume that Tx pause
-described below should not affect the case.
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-The real case scenario that I am thinking of is a stress test of UART
-using loopback mode.
+tested configs:
+alpha                             allnoconfig    gcc-15.2.0
+alpha                            allyesconfig    gcc-15.2.0
+alpha                               defconfig    gcc-15.2.0
+arc                              allmodconfig    clang-16
+arc                               allnoconfig    gcc-15.2.0
+arc                              allyesconfig    clang-22
+arc                      axs103_smp_defconfig    gcc-15.2.0
+arc                                 defconfig    gcc-15.2.0
+arc                   randconfig-001-20260124    clang-18
+arc                   randconfig-002-20260124    clang-18
+arm                               allnoconfig    clang-22
+arm                               allnoconfig    gcc-15.2.0
+arm                              allyesconfig    clang-16
+arm                                 defconfig    gcc-15.2.0
+arm                          gemini_defconfig    gcc-15.2.0
+arm                       imx_v4_v5_defconfig    gcc-15.2.0
+arm                       multi_v4t_defconfig    clang-16
+arm                          pxa168_defconfig    clang-16
+arm                   randconfig-001-20260124    clang-18
+arm                   randconfig-002-20260124    clang-18
+arm                   randconfig-003-20260124    clang-18
+arm                   randconfig-004-20260124    clang-18
+arm                           sama7_defconfig    clang-16
+arm                        spear3xx_defconfig    gcc-15.2.0
+arm                       versatile_defconfig    gcc-15.2.0
+arm                    vt8500_v6_v7_defconfig    gcc-15.2.0
+arm64                            allmodconfig    clang-22
+arm64                             allnoconfig    gcc-15.2.0
+arm64                               defconfig    gcc-15.2.0
+arm64                 randconfig-001-20260124    gcc-15.2.0
+arm64                 randconfig-002-20260124    gcc-15.2.0
+arm64                 randconfig-003-20260124    gcc-15.2.0
+arm64                 randconfig-004-20260124    gcc-15.2.0
+csky                             allmodconfig    gcc-15.2.0
+csky                              allnoconfig    gcc-15.2.0
+csky                                defconfig    gcc-15.2.0
+csky                  randconfig-001-20260124    gcc-15.2.0
+csky                  randconfig-002-20260124    gcc-15.2.0
+hexagon                          allmodconfig    gcc-15.2.0
+hexagon                           allnoconfig    clang-22
+hexagon                           allnoconfig    gcc-15.2.0
+hexagon                             defconfig    gcc-15.2.0
+hexagon               randconfig-001-20260124    gcc-15.2.0
+hexagon               randconfig-002-20260124    gcc-15.2.0
+i386                             alldefconfig    clang-16
+i386                             allmodconfig    clang-20
+i386                              allnoconfig    gcc-14
+i386                              allnoconfig    gcc-15.2.0
+i386                             allyesconfig    clang-20
+i386        buildonly-randconfig-001-20260124    gcc-14
+i386        buildonly-randconfig-002-20260124    gcc-14
+i386        buildonly-randconfig-003-20260124    gcc-14
+i386        buildonly-randconfig-004-20260124    gcc-14
+i386        buildonly-randconfig-005-20260124    gcc-14
+i386        buildonly-randconfig-006-20260124    gcc-14
+i386                                defconfig    gcc-15.2.0
+i386                  randconfig-001-20260124    gcc-14
+i386                  randconfig-002-20260124    gcc-14
+i386                  randconfig-003-20260124    gcc-14
+i386                  randconfig-004-20260124    gcc-14
+i386                  randconfig-005-20260124    gcc-14
+i386                  randconfig-006-20260124    gcc-14
+i386                  randconfig-007-20260124    gcc-14
+i386                  randconfig-011-20260124    clang-20
+i386                  randconfig-012-20260124    clang-20
+i386                  randconfig-013-20260124    clang-20
+i386                  randconfig-014-20260124    clang-20
+i386                  randconfig-015-20260124    clang-20
+i386                  randconfig-016-20260124    clang-20
+i386                  randconfig-017-20260124    clang-20
+loongarch                        allmodconfig    clang-22
+loongarch                         allnoconfig    clang-22
+loongarch                         allnoconfig    gcc-15.2.0
+loongarch                           defconfig    clang-19
+loongarch             randconfig-001-20260124    gcc-15.2.0
+loongarch             randconfig-002-20260124    gcc-15.2.0
+m68k                             allmodconfig    gcc-15.2.0
+m68k                              allnoconfig    gcc-15.2.0
+m68k                             allyesconfig    clang-16
+m68k                                defconfig    clang-19
+m68k                       m5475evb_defconfig    gcc-15.2.0
+m68k                           virt_defconfig    gcc-15.2.0
+microblaze                        allnoconfig    gcc-15.2.0
+microblaze                       allyesconfig    gcc-15.2.0
+microblaze                          defconfig    clang-19
+mips                             allmodconfig    gcc-15.2.0
+mips                              allnoconfig    gcc-15.2.0
+mips                             allyesconfig    gcc-15.2.0
+mips                malta_qemu_32r6_defconfig    clang-16
+mips                  maltasmvp_eva_defconfig    gcc-15.2.0
+mips                        maltaup_defconfig    gcc-15.2.0
+mips                    maltaup_xpa_defconfig    gcc-15.2.0
+mips                        qi_lb60_defconfig    clang-16
+nios2                            allmodconfig    clang-22
+nios2                             allnoconfig    clang-22
+nios2                             allnoconfig    gcc-11.5.0
+nios2                               defconfig    clang-19
+nios2                 randconfig-001-20260124    gcc-15.2.0
+nios2                 randconfig-002-20260124    gcc-15.2.0
+openrisc                         allmodconfig    clang-22
+openrisc                          allnoconfig    clang-22
+openrisc                          allnoconfig    gcc-15.2.0
+openrisc                            defconfig    gcc-15.2.0
+parisc                           allmodconfig    gcc-15.2.0
+parisc                            allnoconfig    clang-22
+parisc                            allnoconfig    gcc-15.2.0
+parisc                           allyesconfig    clang-19
+parisc                              defconfig    gcc-15.2.0
+parisc                randconfig-001-20260124    gcc-8.5.0
+parisc                randconfig-002-20260124    gcc-8.5.0
+parisc64                            defconfig    clang-19
+powerpc                          allmodconfig    gcc-15.2.0
+powerpc                           allnoconfig    clang-22
+powerpc                           allnoconfig    gcc-15.2.0
+powerpc                   motionpro_defconfig    gcc-15.2.0
+powerpc                     ppa8548_defconfig    gcc-15.2.0
+powerpc               randconfig-001-20260124    gcc-8.5.0
+powerpc               randconfig-002-20260124    gcc-8.5.0
+powerpc64             randconfig-001-20260124    gcc-8.5.0
+powerpc64             randconfig-002-20260124    gcc-8.5.0
+riscv                            allmodconfig    clang-22
+riscv                             allnoconfig    clang-22
+riscv                             allnoconfig    gcc-15.2.0
+riscv                            allyesconfig    clang-16
+riscv                               defconfig    gcc-15.2.0
+riscv                 randconfig-001-20260124    gcc-8.5.0
+riscv                 randconfig-002-20260124    gcc-8.5.0
+s390                             allmodconfig    clang-19
+s390                              allnoconfig    clang-22
+s390                             allyesconfig    gcc-15.2.0
+s390                                defconfig    gcc-15.2.0
+s390                  randconfig-001-20260124    gcc-8.5.0
+s390                  randconfig-002-20260124    gcc-8.5.0
+sh                               allmodconfig    gcc-15.2.0
+sh                                allnoconfig    clang-22
+sh                                allnoconfig    gcc-15.2.0
+sh                               allyesconfig    clang-19
+sh                                  defconfig    gcc-14
+sh                        edosk7705_defconfig    gcc-15.2.0
+sh                          r7780mp_defconfig    clang-16
+sh                    randconfig-001-20260124    gcc-8.5.0
+sh                    randconfig-002-20260124    gcc-8.5.0
+sh                   secureedge5410_defconfig    clang-16
+sparc                             allnoconfig    clang-22
+sparc                             allnoconfig    gcc-15.2.0
+sparc                               defconfig    gcc-15.2.0
+sparc                 randconfig-001-20260124    gcc-13.4.0
+sparc                 randconfig-002-20260124    gcc-13.4.0
+sparc                       sparc64_defconfig    gcc-15.2.0
+sparc64                          allmodconfig    clang-22
+sparc64                             defconfig    gcc-14
+sparc64               randconfig-001-20260124    gcc-13.4.0
+sparc64               randconfig-002-20260124    gcc-13.4.0
+um                               allmodconfig    clang-19
+um                                allnoconfig    clang-22
+um                               allyesconfig    gcc-15.2.0
+um                                  defconfig    gcc-14
+um                             i386_defconfig    gcc-14
+um                    randconfig-001-20260124    gcc-13.4.0
+um                    randconfig-002-20260124    gcc-13.4.0
+um                           x86_64_defconfig    gcc-14
+x86_64                           alldefconfig    gcc-15.2.0
+x86_64                           allmodconfig    clang-20
+x86_64                            allnoconfig    clang-20
+x86_64                            allnoconfig    clang-22
+x86_64                           allyesconfig    clang-20
+x86_64      buildonly-randconfig-001-20260124    clang-20
+x86_64      buildonly-randconfig-002-20260124    clang-20
+x86_64      buildonly-randconfig-003-20260124    clang-20
+x86_64      buildonly-randconfig-004-20260124    clang-20
+x86_64      buildonly-randconfig-005-20260124    clang-20
+x86_64      buildonly-randconfig-006-20260124    clang-20
+x86_64                              defconfig    gcc-14
+x86_64                                  kexec    clang-20
+x86_64                randconfig-001-20260124    gcc-13
+x86_64                randconfig-002-20260124    gcc-13
+x86_64                randconfig-003-20260124    gcc-13
+x86_64                randconfig-004-20260124    gcc-13
+x86_64                randconfig-005-20260124    gcc-13
+x86_64                randconfig-006-20260124    gcc-13
+x86_64                randconfig-011-20260124    gcc-12
+x86_64                randconfig-012-20260124    gcc-12
+x86_64                randconfig-013-20260124    gcc-12
+x86_64                randconfig-014-20260124    gcc-12
+x86_64                randconfig-015-20260124    gcc-12
+x86_64                randconfig-016-20260124    gcc-12
+x86_64                randconfig-071-20260124    gcc-14
+x86_64                randconfig-072-20260124    gcc-14
+x86_64                randconfig-073-20260124    gcc-14
+x86_64                randconfig-074-20260124    gcc-14
+x86_64                randconfig-075-20260124    gcc-14
+x86_64                randconfig-076-20260124    gcc-14
+x86_64                               rhel-9.4    clang-20
+x86_64                           rhel-9.4-bpf    gcc-14
+x86_64                          rhel-9.4-func    clang-20
+x86_64                    rhel-9.4-kselftests    clang-20
+x86_64                         rhel-9.4-kunit    gcc-14
+x86_64                           rhel-9.4-ltp    gcc-14
+x86_64                          rhel-9.4-rust    clang-20
+xtensa                            allnoconfig    clang-22
+xtensa                            allnoconfig    gcc-15.2.0
+xtensa                           allyesconfig    clang-22
+xtensa                randconfig-001-20260124    gcc-13.4.0
+xtensa                randconfig-002-20260124    gcc-13.4.0
 
-> Ensure no Tx in ongoing while the UART is switches into the loopback
-> mode (requires exporting serial8250_fifo_wait_for_lsr_thre() and adding
-> DMA Tx pause/resume functions).
-> 
-> According to tests performed by Adriana Nicolae <adriana@arista.com>,
-> simply disabling FIFO or clearing FIFOs only once does not always
-> ensure BUSY is deasserted but up to two tries may be needed. This could
-> be related to ongoing Rx of a character (a guess, not known for sure).
-
-Sounds like a plausible theory because UART has shift registers that are
-working independently on the current situation with FIFO. They are actual
-frontends for Tx and Rx data on the wire.
-
-> Therefore, retry FIFO clearing a few times (retry limit 4 is arbitrary
-> number but using, e.g., p->fifosize seems overly large). Tests
-> performed by others did not exhibit similar challenge but it does not
-> seem harmful to leave the FIFO clearing loop in place for all DW UARTs
-> with BUSY functionality.
-> 
-> Use the new dw8250_idle_enter/exit() to do divisor writes and LCR
-> writes. In case of plain LCR writes, opportunistically try to update
-> LCR first and only invoke dw8250_idle_enter() if the write did not
-> succeed (it has been observed that in practice most LCR writes do
-> succeed without complications).
-> 
-> This issue was first reported by qianfan Zhao who put lots of debugging
-> effort into understanding the solution space.
-
-...
-
-> +	/* Prevent triggering interrupt from RBR filling */
-> +	p->serial_out(p, UART_IER, 0);
-
-Do we specifically use callbacks directly and not wrappers all over the change?
-
-...
-
-> +	serial8250_fifo_wait_for_lsr_thre(up, p->fifosize);
-> +	ndelay(p->frame_time);
-
-Wouldn't be a problem on lowest baud rates (exempli gratia 110)?
-
-...
-
-> +	retries = 4;	/* Arbitrary limit, 2 was always enough in tests */
-> +	do {
-> +		serial8250_clear_fifos(up);
-> +		if (!(p->serial_in(p, usr_reg) & DW_UART_USR_BUSY))
-> +			break;
-> +		ndelay(p->frame_time);
-> +	} while (--retries);
-
-read_poll_timeout_atomic() ? I assume it can't be used due to small frame time?
-
-...
-
-> +	if (d->in_idle) {
-
-> +		/*
-> +		 * FIXME: this deadlocks if port->lock is already held
-> +		 * dev_err(p->dev, "Couldn't set LCR to %d\n", value);
-> +		 */
-
-Hmm... That FIXME should gone since we have non-blocking consoles, no?
-
-> +		return;
-> +	}
-
-...
-
-> +	ret = dw8250_idle_enter(p);
-> +	if (ret < 0) {
-> +		/*
-> +		 * FIXME: this deadlocks if port->lock is already held
-> +		 * dev_err(p->dev, "Couldn't set LCR to %d\n", value);
-> +		 */
-> +		goto idle_failed;
->  	}
-> -	/*
-> -	 * FIXME: this deadlocks if port->lock is already held
-> -	 * dev_err(p->dev, "Couldn't set LCR to %d\n", value);
-> -	 */
-
-Ditto.
-
->  }
-
-...
-
->  	p->dev		= dev;
-
-Maybe put an added line here?
-
->  	p->set_ldisc	= dw8250_set_ldisc;
->  	p->set_termios	= dw8250_set_termios;
-> +	p->set_divisor	= dw8250_set_divisor;
-
-...
-
-> +EXPORT_SYMBOL_GPL(serial8250_clear_fifos);
-
-Same Q, perhaps start exporting with a namespace?
-
->  }
->  EXPORT_SYMBOL_GPL(serial8250_set_defaults);
-
-...
-
-> +void serial8250_fifo_wait_for_lsr_thre(struct uart_8250_port *up, unsigned int count)
-> +{
-> +	unsigned int i;
-> +
-> +	for (i = 0; i < count; i++) {
-
-	while (count--) ?
-
-Ah, it's existing code... OK then.
-
-> +		if (wait_for_lsr(up, UART_LSR_THRE))
-> +			return;
-> +	}
-> +}
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+--
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
