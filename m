@@ -1,225 +1,137 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDC4F2E54D3;
-	Mon, 26 Jan 2026 18:08:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DE4030BF60
+	for <linux-serial@vger.kernel.org>; Mon, 26 Jan 2026 22:59:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769450922; cv=none; b=jhlQ7yI5lza0h9pOTJiQj8T49ckQkd+YgNwzhECzpIwOAAoZRX9fOE5jpMDxpFT2sPgpS2FJRryzIy9UJ7IQloSBjbrT1kf7xSNQ8PK7nDPumnvojclMb2JlSuUqtQ0EoO9ttZFpAJpN1abwN7Zc3+WsuHAphcpZUeTNRVNlB5k=
+	t=1769468390; cv=none; b=s9z9dkOK2bX46iAhGGXJZd+hKt4yOyM1hYJtYpsN3YHqG/VaqAydwcZZ2W3pVoSqkAHgqxKIuXCQ5WPBnc8EacWnPD8cIuAKX798JjZPdTnwXagHG339LHJzHGcMKWIk07HdhQegu9j2r+KBK+ZH1NMtt7iLC7t5aTiY6Qam9ms=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769450922; c=relaxed/simple;
-	bh=A6IciAb2xnYWGVMWPriEZm7A4sDXFXGVxz6UL8XwdxM=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=AGdpdzUdlSviJf7quDvM0xV+oyU4A81R9TBQqWRZPuH6i2Dk2/pvPKAZplgaqu4Tcev/zqitAoCKQVn8KvA2uMqzPSzVFh7HpWA8SdWVD929SxaHmTjdDG+N015+31K2LMxxo9tmMLv2o/12diDaOm2mbmSMQoMj9B3jKetXLBI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=zA71ZuEe; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=ixutS52Y; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1769468390; c=relaxed/simple;
+	bh=LZygu8bZmlRR2avZDSz9+Gytd59GFQBczWPSLAsb/N4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Qfxa5T9Nj+pCtU9+qj/TPfvhpAQj6yWqLejNH0t0Re80/R1lJqenhccaL9ui9pucKnMJyrJ29rVRCZ/EpE0yijXhxICAzkOTnZgwyMlwG4DLpwYPTrL8SKq3C7F+n93DpKXXckDIIhT48CmkM/l4nmImUQRBLdfJ39AKpbWmgaQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=WoLUNzmY; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="zA71ZuEe";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="ixutS52Y"
-Date: Mon, 26 Jan 2026 19:08:36 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1769450918;
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="WoLUNzmY"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1769468388;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-	bh=n25mEkYQU/glokJCvaiTwx52pP8eauU0AvEm85TLH8I=;
-	b=zA71ZuEewFBi4MT7lBql2Gddc58rxd16xkRREuW8LoYi9IKPBrocQiXvXzP1tu67DM96+2
-	uwycgmoTK7l0P/C99zd8qDMFtgCUaT9iqkMWoskgqt8aryA/L/O0+bmWUTjX/WLPVp/K6y
-	U4dGaW4wW5Fi/zTUu/QxXkuHs4ZEjMLXQVFo2PISmS2ypzjgLA9wjb+IjRgMfy30jFHLd+
-	NVHaBfbVD+09jDgxBYSk0Z7Rt9YL9Xjj7mi3dKfvgTPRcECkuld4JH4p6iUmluU2qWeE0M
-	3UG1QQ3ngGUQD4k+jMXGIB5BUrRpj08LfIqH+ntOgfgRsWJhw87Cx+jVVPEeJw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1769450918;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-	bh=n25mEkYQU/glokJCvaiTwx52pP8eauU0AvEm85TLH8I=;
-	b=ixutS52YHuUN8cAazK53op9LSVXKYj+L7tTcuTfX0ZgExwcqBlUynQDi28APWYREAjSiEV
-	cUFDysE+f9Wo9ECA==
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linux-rt-devel@lists.linux.dev
-Cc: Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Simona Vetter <simona@ffwll.ch>,
-	Helge Deller <deller@gmx.de>
-Subject: [PATCH] printk, vt, fbcon: Remove console_conditional_schedule()
-Message-ID: <20260126180836.SNCdMW2f@linutronix.de>
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=8Q8p5FirVxhQtEfjtH5PH9EqUasLHpWsZO9RvAKId/o=;
+	b=WoLUNzmYYQOZjzuuHA25/9jI+P5fJJrQ91iplKebq/mDaktcASenikyANoovRngKEY7gGf
+	8bDkhlHGPybsF4wkRob40ehxDaM3XRhuJSbw2rqE+uGAl5r9Psj1Wzelhtry0z5dEXyKvi
+	k8BQiLclUmmQsVdc4n1GXGt/hNG8eF8=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-74-p1jjLERoMfGXGcXE3EicNw-1; Mon, 26 Jan 2026 17:59:46 -0500
+X-MC-Unique: p1jjLERoMfGXGcXE3EicNw-1
+X-Mimecast-MFC-AGG-ID: p1jjLERoMfGXGcXE3EicNw_1769468385
+Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-4801ad6e51cso43605355e9.2
+        for <linux-serial@vger.kernel.org>; Mon, 26 Jan 2026 14:59:46 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1769468385; x=1770073185;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=8Q8p5FirVxhQtEfjtH5PH9EqUasLHpWsZO9RvAKId/o=;
+        b=cQ2HUBpSiT+byIBYhWwkZ2EohPpU8QxFseATjOm8UE26HmumqKKA4y6ZLNcd1qoDqr
+         aa0MHrkCU23RQk1T9dKfP6oRNQV5Fyc9s6Z289v6upE1HfZHwT22UzwKuRiOBd5EwIX3
+         bVqAozTCuHQ6BWf2n5PwS/3zdHTfXU/bciKA2W2eJU9aIlZqY3daTo4xmpSXbPfRBJln
+         1BgalhQsHZNQqdPt74iWdV8W0xyg/KtE0rI6OQ6qMnYgkX0+89oJc7KEknUn535H310Z
+         GhyKdtFfLJ9yoK2SDttcrQ1sWrOzSDzELBNOL59geK0nobR+FpaQl314z/I+EgITzSBw
+         4/2A==
+X-Forwarded-Encrypted: i=1; AJvYcCXXoq2bPjKDNbwNXOHRbAskAogz7JNLIoAt19tbTKABWia4mfRBe+pZ6tB9mHhnOZGQ/15HObG9jAWL7m4=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz09tDbeofS+s0A9sLjIrFtBHvKtV+NiVvxWQv9NQI69agSJln7
+	pp+R2ldREgxUUOzFvX9eDFrh4eN51Vz2S9s/dmKFsqqxKxg3LEjAm81KGvkgecGuXPerzLpRYi+
+	y/17eE0MHiWXefAu645b48pU+C6Fa9FVkCt9yJrd4IQT+W4n1YsRhYBc8ff4UhniKrg==
+X-Gm-Gg: AZuq6aIRERAzhU+3qN47B/ywUVA9MorRFISdULajsV8cpI6wcTK5Yhqlmc+wEEiElQO
+	9Bmdqxffi+pCnEh0kIzqSa/UxOk5NcbXVSin408d1ER8VJdWKGg6bXozTbJ94higuMA8g9eF8GN
+	W+Nwu7Qjr7AFyePnI0r8nP7sXCS2flDs95JBycscOug6ckI4Io0LZKCHBQfo9waT69fhLkoG97x
+	xml9trcg2PLrre0TtXAqduiy20Xb3ZNvSXVgH/D5Zl10FZgswZfaKRLj8ZbUw2KVLFrHD0dJQ7I
+	6Z9SjOZeEf27PZYKiKIKaHZA/Bf+M4+cXRDmtd16Df3i2xiInxBXaxs5aBbC8DUa7dJUVenP830
+	kxJu12ImP+6LSsHf/MhAOBfvBaLbD/BZlz7hc0hws+EaXbi0oRg==
+X-Received: by 2002:a05:600c:4693:b0:477:af07:dd1c with SMTP id 5b1f17b1804b1-4805d066303mr119945205e9.35.1769468385185;
+        Mon, 26 Jan 2026 14:59:45 -0800 (PST)
+X-Received: by 2002:a05:600c:4693:b0:477:af07:dd1c with SMTP id 5b1f17b1804b1-4805d066303mr119945045e9.35.1769468384740;
+        Mon, 26 Jan 2026 14:59:44 -0800 (PST)
+Received: from ?IPV6:2a01:e0a:c:37e0:8998:e0cf:68cc:1b62? ([2a01:e0a:c:37e0:8998:e0cf:68cc:1b62])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48066aaf30esm19583515e9.0.2026.01.26.14.59.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 26 Jan 2026 14:59:44 -0800 (PST)
+Message-ID: <5707632d-3fd8-4a5e-9273-dd7d48d5b438@redhat.com>
+Date: Mon, 26 Jan 2026 23:59:41 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] vt: Add enable module parameter
+To: Nicolas Pitre <nico@fluxnic.net>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>,
+ Calixte Pernot <calixte.pernot@grenoble-inp.org>,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20260126092234.713465-1-jfalempe@redhat.com>
+ <2026012613-cotton-jellied-b67a@gregkh>
+ <48be84fb-bee4-4a22-bde4-0d0c78282f80@redhat.com>
+ <2026012648-vantage-mummified-2a43@gregkh>
+ <45526d98-57b6-456e-babc-61b7331318c0@redhat.com>
+ <2026012642-threefold-atypical-a3ad@gregkh>
+ <99371939-e9b2-4114-8e27-e605ebf941de@redhat.com>
+ <2026012653-designer-capably-d575@gregkh>
+ <286bfe2e-796e-4c71-a75c-4967450edaab@redhat.com>
+ <2026012620-retool-gloater-6cd3@gregkh>
+ <28snspp2-3912-rs5o-04s0-1648504sq90r@syhkavp.arg>
+From: Jocelyn Falempe <jfalempe@redhat.com>
+In-Reply-To: <28snspp2-3912-rs5o-04s0-1648504sq90r@syhkavp.arg>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: 0NLvOF8cmgWRVdDVYf6sf1NpiVGA0m6zYm49LmtBqss_1769468385
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US, fr
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-do_con_write(), fbcon_redraw.*() invoke console_conditional_schedule()
-which is a conditional scheduling point based on printk's internal
-variables console_may_schedule. It may only be used if the console lock
-is acquired for instance via console_lock() or console_trylock().
+On 26/01/2026 18:24, Nicolas Pitre wrote:
+> On Mon, 26 Jan 2026, Greg Kroah-Hartman wrote:
+> 
+>> On Mon, Jan 26, 2026 at 02:05:36PM +0100, Jocelyn Falempe wrote:
+>>> I think that one of the reason, is that if you switch off VT, of course some
+>>> users will complain, as it has a lot of implications.
+>>
+>> Again, that's a distro's policy decision to make, don't force the kernel
+>> to support a wishy-washy distro's decision :)
+> 
+> As a daily VT user for my primary Linux interface due to accessibility
+> needs, I'm baffled by the idea of distributions removing this support.
+> 
+> Of course this has lots of implications. For many users with
+> disabilities, VT is not optional - it's the only _fully_ usable
+> interface.
+> 
+> Consider this my official objection. Just don't do that.
 
-Prinkt sets the internal variable to 1 (and allows to schedule)
-if the console lock has been acquired via console_lock(). The trylock
-does not allow it.
+That patch is clearly for people like you, that will need more time to 
+adapt their tools and workflow to a VT-less system.
+It's also less practical to develop alternative, if you need to rebuild 
+your kernel to disable VT.
+Regarding accessibility, I don't see any technical reason why a VT-less 
+system would be less efficient that what is currently available with VT.
 
-The console_conditional_schedule() invocation in do_con_write() is
-invoked shortly before console_unlock().
-The console_conditional_schedule() invocation in fbcon_redraw.*()
-original from fbcon_scroll() / vt's con_scroll() which originate from a
-line feed.
-
-In console_unlock() the variable is set to 0 (forbids to schedule) and
-it tries to schedule while making progress printing. This is brand new
-compared to when console_conditional_schedule() was added in v2.4.9.11.
-
-In v2.6.38-rc3, console_unlock() (started its existence) iterated over
-all consoles and flushed them with disabled interrupts. A scheduling
-attempt here was not possible, it relied that a long print scheduled
-before console_unlock().
-
-Since commit 8d91f8b15361d ("printk: do cond_resched() between lines
-while outputting to consoles"), which appeared in v4.5-rc1,
-console_unlock() attempts to schedule if it was allowed to schedule
-while during console_lock(). Each record is idealy one line so after
-every line feed.
-
-This console_conditional_schedule() is also only relevant on
-PREEMPT_NONE and PREEMPT_VOLUNTARY builds. In other configurations
-cond_resched() becomes a nop and has no impact.
-
-I'm bringing this all up just proof that it is not required anymore. It
-becomes a problem on a PREEMPT_RT build with debug code enabled because
-that might_sleep() in cond_resched() remains and triggers a warnings.
-This is due to
-
- legacy_kthread_func-> console_flush_one_record ->  vt_console_print-> lf
-   -> con_scroll -> fbcon_scroll
-
-and vt_console_print() acquires a spinlock_t which does not allow a
-voluntary schedule. There is no need to fb_scroll() to schedule since
-console_flush_one_record() attempts to schedule after each line.
-!PREEMPT_RT is not affected because the legacy printing thread is only
-enabled on PREEMPT_RT builds.
-
-Therefore I suggest to remove console_conditional_schedule().
-
-Cc: Simona Vetter <simona@ffwll.ch>
-Cc: Helge Deller <deller@gmx.de>
-Cc: linux-fbdev@vger.kernel.org
-Cc: dri-devel@lists.freedesktop.org
-Fixes: 5f53ca3ff83b4 ("printk: Implement legacy printer kthread for PREEMPT_RT")
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
-
-A follow-up to
-	https://lore.kernel.org/all/20260114145955.d924Z-zu@linutronix.de/
-
- drivers/tty/vt/vt.c              |  1 -
- drivers/video/fbdev/core/fbcon.c |  6 ------
- include/linux/console.h          |  1 -
- kernel/printk/printk.c           | 16 ----------------
- 4 files changed, 24 deletions(-)
-
-diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index 59b4b5e126ba1..53daf7614b1af 100644
---- a/drivers/tty/vt/vt.c
-+++ b/drivers/tty/vt/vt.c
-@@ -3236,7 +3236,6 @@ static int do_con_write(struct tty_struct *tty, const u8 *buf, int count)
- 			goto rescan_last_byte;
- 	}
- 	con_flush(vc, &draw);
--	console_conditional_schedule();
- 	notify_update(vc);
- 
- 	return n;
-diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
-index 7be9e865325d9..36dd9d4a46ae0 100644
---- a/drivers/video/fbdev/core/fbcon.c
-+++ b/drivers/video/fbdev/core/fbcon.c
-@@ -1607,12 +1607,10 @@ static void fbcon_redraw_move(struct vc_data *vc, struct fbcon_display *p,
- 					start = s;
- 				}
- 			}
--			console_conditional_schedule();
- 			s++;
- 		} while (s < le);
- 		if (s > start)
- 			fbcon_putcs(vc, start, s - start, dy, x);
--		console_conditional_schedule();
- 		dy++;
- 	}
- }
-@@ -1648,14 +1646,12 @@ static void fbcon_redraw_blit(struct vc_data *vc, struct fb_info *info,
- 			}
- 
- 			scr_writew(c, d);
--			console_conditional_schedule();
- 			s++;
- 			d++;
- 		} while (s < le);
- 		if (s > start)
- 			par->bitops->bmove(vc, info, line + ycount, x, line, x, 1,
- 					     s - start);
--		console_conditional_schedule();
- 		if (ycount > 0)
- 			line++;
- 		else {
-@@ -1703,13 +1699,11 @@ static void fbcon_redraw(struct vc_data *vc, int line, int count, int offset)
- 				}
- 			}
- 			scr_writew(c, d);
--			console_conditional_schedule();
- 			s++;
- 			d++;
- 		} while (s < le);
- 		if (s > start)
- 			fbcon_putcs(vc, start, s - start, line, x);
--		console_conditional_schedule();
- 		if (offset > 0)
- 			line++;
- 		else {
-diff --git a/include/linux/console.h b/include/linux/console.h
-index fc9f5c5c1b04c..ec506d3501965 100644
---- a/include/linux/console.h
-+++ b/include/linux/console.h
-@@ -697,7 +697,6 @@ extern int unregister_console(struct console *);
- extern void console_lock(void);
- extern int console_trylock(void);
- extern void console_unlock(void);
--extern void console_conditional_schedule(void);
- extern void console_unblank(void);
- extern void console_flush_on_panic(enum con_flush_mode mode);
- extern struct tty_driver *console_device(int *);
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 1d765ad242b82..9296bf41aa49d 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -3362,22 +3362,6 @@ void console_unlock(void)
- }
- EXPORT_SYMBOL(console_unlock);
- 
--/**
-- * console_conditional_schedule - yield the CPU if required
-- *
-- * If the console code is currently allowed to sleep, and
-- * if this CPU should yield the CPU to another task, do
-- * so here.
-- *
-- * Must be called within console_lock();.
-- */
--void __sched console_conditional_schedule(void)
--{
--	if (console_may_schedule)
--		cond_resched();
--}
--EXPORT_SYMBOL(console_conditional_schedule);
--
- void console_unblank(void)
- {
- 	bool found_unblank = false;
 -- 
-2.51.0
+
+Jocelyn
+
+> 
+> 
+> Nicolas
+> 
 
