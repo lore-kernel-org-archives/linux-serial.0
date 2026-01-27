@@ -1,90 +1,146 @@
-Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
+Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49B18625
-	for <linux-serial@vger.kernel.org>; Tue, 27 Jan 2026 20:13:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 452DF1D9346
+	for <linux-serial@vger.kernel.org>; Tue, 27 Jan 2026 22:56:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769544791; cv=none; b=azwtcKVs8xaTcJ3kP1+ZFt5HyvrsdIAAIphA2M0OoCptCygKnHqx2aI8PDMb70anLJ4qrbP3BXmdTkUmtk4OSTrcBKTy/X89ENjj4IcBYgH4Tt/c3C3Ex7qstjWMWtrlsMI8OX1DrdJd1CKgu+ANvMuuX8B7hqEQCj5Pbyd/9Jo=
+	t=1769554566; cv=none; b=G0gbOrSBcUEFVMT0JGM72EWYvuqDMhoQbpxPb+gGRcO+4LTxaHg2X6KQnSrQFqNdCaCXIqQHJivmnguW+yHh0Cbcv2X3W1gp8jGobZiaeqrrAvTuu0pFKg4dc50IEIB5pEjmAVwuPZpIyq+Dx/aQ4d42XJ7QzeYolE7Orqug2Vo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769544791; c=relaxed/simple;
-	bh=IYa4gzKcTqYnhir/bviw2BDALYF8BbbyFzNBvwXRIsg=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=uObro6yAqIpF7Zw4M3cg9jDwisAOpRl8NjpCQ+Lgnw4bjuVv5LXAQJJDvwcpEr4i/OnYc4HKsRHjoB38NaB5/hdV2rXt/yS2o2Mj4hvHkb4tZkKGUcEss1kzbd+3cZuVZDMQ0tAwfglbU6wGq/CwYRsGmZPHMcHHF7j9TFcL3xY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=Q0dtVsDA; arc=none smtp.client-ip=209.85.214.177
+	s=arc-20240116; t=1769554566; c=relaxed/simple;
+	bh=BIqtV71O4b2nNBJ39pBWJei81bi2HK91qUvVgENdbQ0=;
+	h=Date:From:To:cc:Subject:Message-ID:MIME-Version:Content-Type; b=iFA/R3lutDdwEQ42rZUACf0RM1RAlsGZwqbbFKZJDC4kX43rZK+WxfziUQ1qu43IPElSY5K9jehjVPYt7zDACjpOzI25BMxnWY7x88mrF4MRPBb/FgSM3ckLAx+0t3PdCBUOA6JEXA5CmvirI8acnRsrYi+iAoC3KBBi5kF3GUs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=3f/m2CtP; arc=none smtp.client-ip=209.85.222.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="Q0dtVsDA"
-Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-2a7786d7895so40752745ad.1
-        for <linux-serial@vger.kernel.org>; Tue, 27 Jan 2026 12:13:09 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="3f/m2CtP"
+Received: by mail-qk1-f178.google.com with SMTP id af79cd13be357-8c5349ba802so632197685a.1
+        for <linux-serial@vger.kernel.org>; Tue, 27 Jan 2026 14:56:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1769544789; x=1770149589; darn=vger.kernel.org;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=IYa4gzKcTqYnhir/bviw2BDALYF8BbbyFzNBvwXRIsg=;
-        b=Q0dtVsDAeos3XKA6Jr4NFDlLKe+QTTYXsAk9MCOlrSdcn0qW3GOk9W9il7Du0OOJ2i
-         b5iliFdFjJ72AueCx7tpYHZdW1R8/iD54/7tNcM0nkJduQtMC6jeo4EwSSE0P6N0VbPN
-         RoE2gak/Pe0uOCYxqGn/m4Axwq/gZLY99PoJalc4LnB/ZdswT8zFSxtGLORQwGcrRPj7
-         OMKWd2FjmsDExiLIkrVUZkXNUfHbkLWIIyHa1ynxcKemg07xpPdSV8EYFz+eoWEfoxxG
-         6XjM86IxhpktyLox6I9cFy1B8US9IVGe3rJo3UItG4J7OJboe+e+wmoWK1WT+gLRZCKg
-         OI5w==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1769554563; x=1770159363; darn=vger.kernel.org;
+        h=mime-version:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=be7rCfgGfMyw8VXlN7Q+qrUYUoCH9F4cDfmNDHeRxCI=;
+        b=3f/m2CtPUNVolk2N69gEc7bviJ1m+nKBFeRmpYkkWYlWhrv8k/yqXOHeV6BvnPkSok
+         aTl8yRpeifm4BgFvLWm91Bmax9M3zxi1xTKRUQkrNEgxCUo4rxv5XbPh8I9zS4lnQdY4
+         U7m6EGV5wnHVLON91mq+kSA8KV3GWErvZu9cxnQyejMtrkB6BR2HsFpP/ufMBqhKSvvQ
+         qfew+HXummM77l3xqfGaicL/sNE2NQ57b4wV4jxkxhYob7tviZJvDkgsHxNpUm5g3FrB
+         IU3mYARufjGqRNLw7XHlP0G6keHF9HYMF7ZYoW+IG3Aj6Lrall/dsefb8CUafgsoN8wV
+         qZuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769544789; x=1770149589;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=IYa4gzKcTqYnhir/bviw2BDALYF8BbbyFzNBvwXRIsg=;
-        b=jkNxbmTb6lNWqsS5utzA6TH3yePRaPrB3PrQjZ+sy6bJhjS9jiGudUm1zJ+VPEat0L
-         I8Eki4f8qGCmfz5U+74Vp8kByxv8Gd6XurlJWhcvLjVFAhycGdYZNNpRhkEs3pboyy1E
-         68+4hyFH/VCGWvuw8KBTG/enBf2LSaKiYzZgITXt4Gzrqokbj6+7nMqBag+j/vPkRmuT
-         B+cmhwKap+YhLQ3qQF+o1aCTRN4tsdSzEh99/6CGsH9/XHFXvTwAGjxDW0E+vEDM2HuV
-         ZCqbaXBG0tV1cAT0+CGklFU+ft+8aX9C6ksGa1r1NZTH+4h7jBfgOodPnsETNrBdRWte
-         CVvQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXP0rXlrr5Wn9FDJRitfE06US6FDHDSDXCM+PvCVoIpOs5Zib2CqM0nZwaMGaWmjUvO+/c3H7IlrcDHuEQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzbQhLrEpWXfDazCFMSbS3KISktaouc4aHJi1I1bjHb9DmeaPSq
-	5SGJGDQDDfgL57IyGOOwstVdCCeVJLUCX15JZx4NdYOShyHB5o5IK7XpVFL9bTDYdsOqT8NbAdp
-	nJ8SXrbE=
-X-Gm-Gg: AZuq6aLh1HRSjjltFq+H6pYLiiDmUWIFqRAdvYgV2kBbifE/IqzO1C/mEpb+oWGricn
-	lavohWygrRchBnabmPoKiTg4hkbHp9hL8gfoJzuUuAJGV1kzJwZFHCzpRLyzOOw4BD25p0lifrl
-	QLdjhFL0d+p2LFvcuuFE8uqCP2Y+FtK8zwxohOpxWOXAhFW6u2wHQibVkgBoUuuJPx3gGaemhcm
-	2+ZmC/eyPJ6gDChhh7SEytBKK82ZvXSeu04wMy2D/r9littk2rMOZdVMKhHEEo4+DWrRcvZHPOt
-	7t0mBLHHdrlvfEwcd9JeRIgvzkZr50q0wnWl9/AVOWbXAxfxJ4xMWkLwtmjiJ0mfSe5frnHVQqO
-	xLf/FJNEDV+vmSfkSU59sOFXu8LwO9lYisG3CUrjacjkM2uAWo1oxUQk8RKJs5/duJvzHbjPbyR
-	HobJhQeA9o
-X-Received: by 2002:a17:903:1b0d:b0:2a7:7c66:f3d1 with SMTP id d9443c01a7336-2a870d78e73mr31913995ad.26.1769544788698;
-        Tue, 27 Jan 2026 12:13:08 -0800 (PST)
-Received: from localhost ([71.212.200.220])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2a88b414f7csm1854295ad.35.2026.01.27.12.13.07
+        d=1e100.net; s=20230601; t=1769554563; x=1770159363;
+        h=mime-version:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=be7rCfgGfMyw8VXlN7Q+qrUYUoCH9F4cDfmNDHeRxCI=;
+        b=qlk/MkOUC5ma6AK32UBd+/w9IpWsodPdYGohTrTP8hnWTlFvCG0JhWPbUGGBu1FROj
+         p+Zmn2SIaW/lJ2x2u1ArK0zkfobiT/F0xeg99Mp57DFqxGpKsc6LlK+kSqx0lEb3kvN+
+         C8JP2QZ35Z0xT1Lhh2alPTytvP7CfttZjuvsv+I5vMcjk5LZL0od8rFx5KkIC6l/p7yk
+         iL6evVVIhlvpqdyR2Xn2nWvTPeqAYoytLbXc7jer5idr0o57DTP1B70lqbL6XhVeezMA
+         5aj5HOAmPo262Sn3Sm9QbJA7cdlMFTosAjtihmcxrbXhi2x/mpYouQcKB2BuL/mOI7Gq
+         kHqA==
+X-Forwarded-Encrypted: i=1; AJvYcCUuowEvDDQpT6yrbLHIXMYgpxPzKfYHHH2aKKdd2lVl3yOHr2gzbRkzeQAzaozPd00YCYu8t5/FzH0NTPg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzUN5GIOqhBa2HzISnBw0qs7FsamVVp8EZbqZEHTfENtToofGRX
+	NglxiqDrhbS5L+DoUu1RxWgK5CdL38psGUpRpihmccZH2ikrUGBogIiGgR1g6awKPt3G/Zx7my6
+	WNRpamJ8=
+X-Gm-Gg: AZuq6aLTKSzNh/tcYFF67XOdwxO5dBtdqbwZhx7H7O07NRra/PYzhIoulk+t6o92sxB
+	4IyUCn75LO3wY6BPnt6tCPLmaa6KmpxAbz4zTuPDhxOjNbY+uaP4/maqGDVJ/paEHoPljivztDZ
+	uaixmmqaCVjr3K+uz9yxSp7lw9QEhE7EEOXHInjF/kdLFjWlBvDpIfmLP6zBPGJiOd1R82FjKsh
+	LwWrntF6i+WfkiYTYgG9xMPXeiVtFK8oAQhXnLJBHpkQNcPVeI8btA/vK7wS/qovnZA/GlRe8/P
+	lCuf6oXtRxTjnwNQz7A85t8KXqQbEAFKakoINVTWWHBqE2lBaq7HhfPkZHk6x7oWAc7XLAoWEnU
+	rDGK1o+WuAnt+wEXLXwz10RZDjjZzkFZiSQyoEknaOdwoRjs14CuOAeyg1JEbG2Hz7iJIe2X73n
+	zEXejUCzeOH+0ecTUQEmuUAkgyouEI+zVuleRPwfcfFOVwcxxWNog=
+X-Received: by 2002:a05:620a:4624:b0:8b2:dcde:b670 with SMTP id af79cd13be357-8c70b918e63mr420739285a.70.1769554563190;
+        Tue, 27 Jan 2026 14:56:03 -0800 (PST)
+Received: from xanadu (modemcable048.4-80-70.mc.videotron.ca. [70.80.4.48])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-8c711d2a2d4sm64282485a.32.2026.01.27.14.56.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Jan 2026 12:13:08 -0800 (PST)
-From: Kevin Hilman <khilman@baylibre.com>
-To: Kendall Willis <k-willis@ti.com>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
-Cc: d-gole@ti.com, vishalm@ti.com, sebin.francis@ti.com, msp@baylibre.com,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Kendall Willis
- <k-willis@ti.com>
-Subject: Re: [PATCH v2] serial: 8250: omap: set out-of-band wakeup if wakeup
- pinctrl exists
-In-Reply-To: <20260116-uart-wakeup-v2-1-0078ae9996e4@ti.com>
-References: <20260116-uart-wakeup-v2-1-0078ae9996e4@ti.com>
-Date: Tue, 27 Jan 2026 12:13:07 -0800
-Message-ID: <7hecna6ch8.fsf@baylibre.com>
+        Tue, 27 Jan 2026 14:56:02 -0800 (PST)
+Date: Tue, 27 Jan 2026 17:56:01 -0500 (EST)
+From: Nicolas Pitre <npitre@baylibre.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, 
+    Calixte Pernot <calixte.pernot@grenoble-inp.org>
+cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [PATCH] vt: save/restore unicode screen buffer for alternate
+ screen
+Message-ID: <5o2p6qp3-91pq-0p17-or02-1oors4417ns7@onlyvoer.pbz>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
 
-Kendall Willis <k-willis@ti.com> writes:
+The alternate screen support added by commit 23743ba64709 ("vt: add
+support for smput/rmput escape codes") only saves and restores the
+regular screen buffer (vc_origin), but completely ignores the corresponding
+unicode screen buffer (vc_uni_lines) creating a messed-up display.
 
-> In TI K3 SoCs, I/O daisy chaining is used to allow wakeup from UART when the
-> UART controller is off. Set UART device as wakeup capable using out-of-band
-> wakeup if the 'wakeup' pinctrl state exists and the device may wakeup.
->
-> Reviewed-by: Dhruva Gole <d-gole@ti.com>
-> Signed-off-by: Kendall Willis <k-willis@ti.com>
+Add vc_saved_uni_lines to save the unicode screen buffer when entering
+the alternate screen, and restore it when leaving. Also ensure proper
+cleanup in reset_terminal() and vc_deallocate().
 
-Reviewed-by: Kevin Hilman <khilman@baylibre.com>
+Fixes: 23743ba64709 ("vt: add support for smput/rmput escape codes")
+Signed-off-by: Nicolas Pitre <npitre@baylibre.com>
+---
+ drivers/tty/vt/vt.c            | 8 ++++++++
+ include/linux/console_struct.h | 1 +
+ 2 files changed, 9 insertions(+)
+
+diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+index 59b4b5e126ba..83a285577708 100644
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -1345,6 +1345,8 @@ struct vc_data *vc_deallocate(unsigned int currcons)
+ 			kfree(vc->vc_saved_screen);
+ 			vc->vc_saved_screen = NULL;
+ 		}
++		vc_uniscr_free(vc->vc_saved_uni_lines);
++		vc->vc_saved_uni_lines = NULL;
+ 	}
+ 	return vc;
+ }
+@@ -1890,6 +1892,8 @@ static void enter_alt_screen(struct vc_data *vc)
+ 	vc->vc_saved_screen = kmemdup((u16 *)vc->vc_origin, size, GFP_KERNEL);
+ 	if (vc->vc_saved_screen == NULL)
+ 		return;
++	vc->vc_saved_uni_lines = vc->vc_uni_lines;
++	vc->vc_uni_lines = NULL;
+ 	vc->vc_saved_rows = vc->vc_rows;
+ 	vc->vc_saved_cols = vc->vc_cols;
+ 	save_cur(vc);
+@@ -1911,6 +1915,8 @@ static void leave_alt_screen(struct vc_data *vc)
+ 		dest = ((u16 *)vc->vc_origin) + r * vc->vc_cols;
+ 		memcpy(dest, src, 2 * cols);
+ 	}
++	vc_uniscr_set(vc, vc->vc_saved_uni_lines);
++	vc->vc_saved_uni_lines = NULL;
+ 	restore_cur(vc);
+ 	/* Update the entire screen */
+ 	if (con_should_update(vc))
+@@ -2233,6 +2239,8 @@ static void reset_terminal(struct vc_data *vc, int do_clear)
+ 	if (vc->vc_saved_screen != NULL) {
+ 		kfree(vc->vc_saved_screen);
+ 		vc->vc_saved_screen = NULL;
++		vc_uniscr_free(vc->vc_saved_uni_lines);
++		vc->vc_saved_uni_lines = NULL;
+ 		vc->vc_saved_rows = 0;
+ 		vc->vc_saved_cols = 0;
+ 	}
+diff --git a/include/linux/console_struct.h b/include/linux/console_struct.h
+index 13b35637bd5a..d5ca855116df 100644
+--- a/include/linux/console_struct.h
++++ b/include/linux/console_struct.h
+@@ -160,6 +160,7 @@ struct vc_data {
+ 	struct uni_pagedict **uni_pagedict_loc; /* [!] Location of uni_pagedict variable for this console */
+ 	u32 **vc_uni_lines;			/* unicode screen content */
+ 	u16		*vc_saved_screen;
++	u32		**vc_saved_uni_lines;
+ 	unsigned int	vc_saved_cols;
+ 	unsigned int	vc_saved_rows;
+ 	/* additional information is in vt_kern.h */
+-- 
+2.52.0
+
