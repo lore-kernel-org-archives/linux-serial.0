@@ -1,164 +1,173 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4A12346E47;
-	Tue, 27 Jan 2026 12:48:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A6422D837C;
+	Tue, 27 Jan 2026 12:58:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769518118; cv=none; b=gsbbU/tIghTnUzBGvwTEnisBNTSMUwgkSY0bVXKb1yMAEA9Yx15fhFdY6AGyjneI6uHmPVBQRnWbOxAbEjLJjosVXpOpmCTJYUBmLEICDa4LbZGrKqLbie0OXlevZuOxnCXgthg0neFmeg+QuSwe89gxS7zY3q5TGCLs3PlF6Ec=
+	t=1769518680; cv=none; b=MSHHq+dnfW/8UI734EVPf7U0YwkNuZmUX9OSEtBLfqiid9aglfyUbSshYG4ChpQJocuaygVlPML2Y89qrVDOC/M4kgbSkG7cXYWIbmQAhV05jKtNaGqd0vbApegTu/CeHWotF4k+PwRg3tU5oTK/Flhi0VfZXYg0DQ/q4kw5CLA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769518118; c=relaxed/simple;
-	bh=GqWUGXJtTrHBklS29/A0qTtPq4CvYGqnNNgT6G9PqsE=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=MkLlRgfp7zLUYPjZmQW8dsdR7MZkzB6jN0IgV61VKnfPEvJhikBlczeqQFHf8MD86H2bzn9GlRsmQjtxUeb5fSb+kfZ+794E0cpOBscrWU8b6WyonTXDOS8g835b1r6br5cCM2Q9kGi/ujRBoeolDz1Vp64ZpAploBAjTPmqfV4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Fd1IQNr6; arc=none smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1769518680; c=relaxed/simple;
+	bh=3o64PwU28ysjnNUiRB1D57wvNoSimtplK+EBmTlnC9w=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=a3Mo/tkF4KQbyVHtr0gH361bgYG07Jy1zb6V9Mbnc/dZv5f+KqftvR5BWAOd2a52k/E8GaU1kvhye2vVteEFK+cct4yRDzjvbKso2ub/DD/dq+FgAHzAOxJi3xyl+/zly5tAlOfbJl1w5w6m0G97edB3awnVV6ltgWX6h0iWFeU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=eQBRy99R; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Fd1IQNr6"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1769518117; x=1801054117;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=GqWUGXJtTrHBklS29/A0qTtPq4CvYGqnNNgT6G9PqsE=;
-  b=Fd1IQNr6dL6QFxP94yyh9lLoNiDMgd42YR8f8QnxmadrcOSirY3uBDSj
-   +7GLvwYoIeShd1bbBkdYTT7owJoWwfsVU7LFsWK/ttEXhP2oTwWMoHbfm
-   +KV89AnZavBdQVwLrMKHo5HeLbMU3UDa+/oaoh+8DmUkwNyyRrxJNJq+U
-   0T/Kx5EwsGWWa0ZN7I+scpKGVXeWlZeC+2GYXGut3QSTL3lSj226LWcaB
-   TaKPhFFVPUX7P6bCJuVXBFhaEsFtFfyLfjLVmVybvE3hNhaIbkwK06Axu
-   xxuSQSZPJE1jTrD8wrpDB5nlaqK79+1mUWr2JgKnbCu1q4WX7wkO6pn4f
-   A==;
-X-CSE-ConnectionGUID: bRdFqFxvStao+sXAldh84g==
-X-CSE-MsgGUID: WccyPUsHQFGV5jSfnbb1gQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11684"; a="74574196"
-X-IronPort-AV: E=Sophos;i="6.21,257,1763452800"; 
-   d="scan'208";a="74574196"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2026 04:48:37 -0800
-X-CSE-ConnectionGUID: UbEoc7xbQi6fuYTYcFmGjw==
-X-CSE-MsgGUID: VsEdJa1EQfaCKkFkxBpeiw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,257,1763452800"; 
-   d="scan'208";a="207212867"
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.67])
-  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2026 04:48:33 -0800
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Tue, 27 Jan 2026 14:48:30 +0200 (EET)
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>, 
-    linux-serial <linux-serial@vger.kernel.org>, 
-    qianfan Zhao <qianfanguijin@163.com>, Adriana Nicolae <adriana@arista.com>, 
-    LKML <linux-kernel@vger.kernel.org>, 
-    "Bandal, Shankar" <shankar.bandal@intel.com>, 
-    "Murthy, Shanth" <shanth.murthy@intel.com>
-Subject: Re: [PATCH 3/6] serial: 8250_dw: Rework dw8250_handle_irq() locking
- and IIR handling
-In-Reply-To: <aXPwmfqPlUkI2zuw@smile.fi.intel.com>
-Message-ID: <2aa4aaa4-07b5-2003-eba7-6e1e6fa89611@linux.intel.com>
-References: <20260123172739.13410-1-ilpo.jarvinen@linux.intel.com> <20260123172739.13410-4-ilpo.jarvinen@linux.intel.com> <aXPwmfqPlUkI2zuw@smile.fi.intel.com>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="eQBRy99R"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8ACA7C116C6;
+	Tue, 27 Jan 2026 12:57:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1769518679;
+	bh=3o64PwU28ysjnNUiRB1D57wvNoSimtplK+EBmTlnC9w=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=eQBRy99R/xG1kluqhxZ1tmjcKJJpwKeCxg+7OsxRlbAUIP4fK/J/uT09g9OLyhwdI
+	 aKhX9PUrvmQgoV3o/DFIOaQ3MSZ+fzf91+QpImzyxH+FJeUogZB0yWm4wI6XZhZ5gu
+	 QZ/hEX9lyE7AS2lzDvlS2/U5RtspqLJOXNmr51iE=
+Date: Tue, 27 Jan 2026 13:57:56 +0100
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Tommaso Merciai <tommaso.merciai.xr@bp.renesas.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Xin Zhao <jackzxcui1989@163.com>, jirislaby@kernel.org,
+	tj@kernel.org, hch@infradead.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Subject: Re: [PATCH v8] tty: tty_port: add workqueue to flip TTY buffer
+Message-ID: <2026012739-compile-bling-3779@gregkh>
+References: <20251223034836.2625547-1-jackzxcui1989@163.com>
+ <CGME20260127103433eucas1p1ce8d8c194d4fd16d2f1dbbc0e9df28de@eucas1p1.samsung.com>
+ <d1942304-ee30-478d-90fb-279519f3ae81@samsung.com>
+ <aXic3pyl0xfTSYB-@tom-desktop>
+ <CAMuHMdV2SLyrTs5MJKwAL2-jVLpd=TP+bMMnuEj-Ump0oyLjJA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-1047078821-1769518110=:1055"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdV2SLyrTs5MJKwAL2-jVLpd=TP+bMMnuEj-Ump0oyLjJA@mail.gmail.com>
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Tue, Jan 27, 2026 at 01:02:44PM +0100, Geert Uytterhoeven wrote:
+> On Tue, 27 Jan 2026 at 12:10, Tommaso Merciai
+> <tommaso.merciai.xr@bp.renesas.com> wrote:
+> > On Tue, Jan 27, 2026 at 11:34:32AM +0100, Marek Szyprowski wrote:
+> > > On 23.12.2025 04:48, Xin Zhao wrote:
+> > > > On the embedded platform, certain critical data, such as IMU data, is
+> > > > transmitted through UART. The tty_flip_buffer_push() interface in the TTY
+> > > > layer uses system_dfl_wq to handle the flipping of the TTY buffer.
+> > > > Although the unbound workqueue can create new threads on demand and wake
+> > > > up the kworker thread on an idle CPU, it may be preempted by real-time
+> > > > tasks or other high-prio tasks.
+> > > >
+> > > > flush_to_ldisc() needs to wake up the relevant data handle thread. When
+> > > > executing __wake_up_common_lock(), it calls spin_lock_irqsave(), which
+> > > > does not disable preemption but disables migration in RT-Linux. This
+> > > > prevents the kworker thread from being migrated to other cores by CPU's
+> > > > balancing logic, resulting in long delays. The call trace is as follows:
+> > > >      __wake_up_common_lock
+> > > >      __wake_up
+> > > >      ep_poll_callback
+> > > >      __wake_up_common
+> > > >      __wake_up_common_lock
+> > > >      __wake_up
+> > > >      n_tty_receive_buf_common
+> > > >      n_tty_receive_buf2
+> > > >      tty_ldisc_receive_buf
+> > > >      tty_port_default_receive_buf
+> > > >      flush_to_ldisc
+> > > >
+> > > > In our system, the processing interval for each frame of IMU data
+> > > > transmitted via UART can experience significant jitter due to this issue.
+> > > > Instead of the expected 10 to 15 ms frame processing interval, we see
+> > > > spikes up to 30 to 35 ms. Moreover, in just one or two hours, there can
+> > > > be 2 to 3 occurrences of such high jitter, which is quite frequent. This
+> > > > jitter exceeds the software's tolerable limit of 20 ms.
+> > > >
+> > > > Introduce flip_wq in tty_port which can be set by tty_port_link_wq() or as
+> > > > default linked to default workqueue allocated when tty_register_driver().
+> > > > The default workqueue is allocated with flag WQ_SYSFS, so that cpumask and
+> > > > nice can be set dynamically. The execution timing of tty_port_link_wq() is
+> > > > not clearly restricted. The newly added function tty_port_link_driver_wq()
+> > > > checks whether the flip_wq of the tty_port has already been assigned when
+> > > > linking the default tty_driver's workqueue to the port. After the user has
+> > > > set a custom workqueue for a certain tty_port using tty_port_link_wq(), the
+> > > > system will only use this custom workqueue, even if tty_driver does not
+> > > > have %TTY_DRIVER_CUSTOM_WORKQUEUE flag.
+> > > >
+> > > > Introduce %TTY_DRIVER_CUSTOM_WORKQUEUE flag meaning not to create the
+> > > > default single tty_driver workqueue. Two reasons why need to introduce the
+> > > > %TTY_DRIVER_CUSTOM_WORKQUEUE flag:
+> > > > 1. If the WQ_SYSFS parameter is enabled, workqueue_sysfs_register() will
+> > > > fail when trying to create a workqueue with the same name. The pty is an
+> > > > example of this; if both CONFIG_LEGACY_PTYS and CONFIG_UNIX98_PTYS are
+> > > > enabled, the call to tty_register_driver() in unix98_pty_init() will fail.
+> > > > 2. Different tty ports may be used for different tasks, which may require
+> > > > separate core binding control via workqueues. In this case, the workqueue
+> > > > created by default in the tty driver is unnecessary. Enabling this flag
+> > > > prevents the creation of this redundant workqueue.
+> > > >
+> > > > After applying this patch, we can set the related UART TTY flip buffer
+> > > > workqueue by sysfs. We set the cpumask to CPU cores associated with the
+> > > > IMU tasks, and set the nice to -20. Testing has shown significant
+> > > > improvement in the previously described issue, with almost no stuttering
+> > > > occurring anymore.
+> > > >
+> > > > Signed-off-by: Xin Zhao <jackzxcui1989@163.com>
+> > >
+> > > This patch landed in linux-next as commit d000422a46aa ("tty: tty_port:
+> > > add workqueue to flip TTY buffer"). In my tests I found that it causes
+> > > some regressions, see the comments in the code below.
+> >
+> > Same here, testing on RZ/G3E looks like s2idle is broken:
+> 
+> > [  185.237717] Call trace:
+> > [  185.240176]  __queue_work+0x20/0x474 (P)
+> > [  185.244141]  queue_work_on+0x8c/0xa8
+> > [  185.247753]  tty_flip_buffer_push+0x2c/0x38
+> 
+> Lucky you, there is a hint to tty in your trace ;-)
+> 
+> I see a similar crash during boot on koelsch (R-Car M2-W), and a
+> lock-up during boot on salvator-xs (R-Car H3 ES2.0), with either no
+> output or an rcu stall:
+> 
+>     rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+>     rcu:     1-...!: (0 ticks this GP) idle=1fe8/0/0x0 softirq=85/85
+> fqs=1 (false positive?)
+>     rcu:     2-...!: (1 ticks this GP) idle=1c78/0/0x0 softirq=77/77
+> fqs=1 (false positive?)
+>     rcu:     6-...!: (0 ticks this GP) idle=07b8/0/0x0 softirq=9/9
+> fqs=1 (false positive?)
+>     rcu:     (detected by 3, t=5260 jiffies, g=-1015, q=274 ncpus=8)
+>     Sending NMI from CPU 3 to CPUs 1:
+>     Sending NMI from CPU 3 to CPUs 2:
+>     Sending NMI from CPU 3 to CPUs 6:
+>     rcu: rcu_preempt kthread timer wakeup didn't happen for 12771
+> jiffies! g-1015 f0x0 RCU_GP_WAIT_FQS(5) ->state=0x200
+>     rcu:     Possible timer handling issue on cpu=6 timer-softirq=1
+>     rcu: rcu_preempt kthread starved for 12780 jiffies! g-1015 f0x0
+> RCU_GP_WAIT_FQS(5) ->state=0x200 ->cpu=6
+>     rcu:     Unless rcu_preempt kthread gets sufficient CPU time, OOM
+> is now expected behavior.
+>     rcu: RCU grace-period kthread stack dump:
+>     task:rcu_preempt     state:R stack:0     pid:15    tgid:15
+> ppid:2      task_flags:0x208040 flags:0x00000010
+>     Call trace:
+>      __switch_to+0xcc/0x100 (T)
+>      __schedule+0x368/0xc00
+>      schedule+0x30/0x100
+>      schedule_timeout+0x80/0xf8
+>      rcu_gp_fqs_loop+0xfc/0x418
+>      rcu_gp_kthread+0xe0/0xf4
+>      kthread+0x128/0x1e0
+>      ret_from_fork+0x10/0x20
+> 
+> Reverting commit d000422a46aad322 ("tty: tty_port: add workqueue to
+> flip TTY buffer") in tty-next fixes both.
 
---8323328-1047078821-1769518110=:1055
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Thanks all for the reports, I'll go revert this for now, sorry for the
+problems!
 
-On Sat, 24 Jan 2026, Andy Shevchenko wrote:
-
-> On Fri, Jan 23, 2026 at 07:27:36PM +0200, Ilpo J=E4rvinen wrote:
-> > dw8250_handle_irq() takes port's lock multiple times with no good
-> > reason to release it in between and calls serial8250_handle_irq()
-> > that also takes port's lock.
-> >=20
-> > As serial8250_handle_irq() takes port's lock itself, create
-> > serial8250_handle_irq_locked() that allows caller to hold port's lock
-> > across the call. Take port's lock only once in dw8250_handle_irq() and
-> > call serial8250_handle_irq_locked() directly.
->=20
-> Sounds to me that the latter can be split to a prerequisite patch.
-
-It's not easy to split this DW-side IIR rework and locking changes. What I=
-=20
-can do is to make 8250_port change separately. I guess I'll do just that=20
-and only the 8250_dw change in this patch.
-
-> > As IIR_NO_INT check in serial8250_handle_irq() was outside of port's
-> > lock, it has to be done already in dw8250_handle_irq().
-> >=20
-> > DW UART can, in addition to IIR_NO_INT, report BUSY_DETECT (0x7) which
-> > collided with the IIR_NO_INT (0x1) check in serial8250_handle_irq()
-> > (because & is used instead of =3D=3D) meaning that no other work is don=
-e by
-> > serial8250_handle_irq() during an BUSY_DETECT interrupt.
-> >=20
-> > This allows reorganizing code in dw8250_handle_irq() to do both
-> > IIR_NO_INT and BUSY_DETECT handling right at the start simplifying
-> > the logic.
->=20
-> ...
->=20
-> > +#include <linux/bitfield.h>
-> > +#include <linux/bits.h>
->=20
-> + cleanup.h
->
-> >  #include <linux/clk.h>
-> >  #include <linux/delay.h>
-> >  #include <linux/device.h>
->=20
-> ...
->=20
-> > --- a/drivers/tty/serial/8250/8250_port.c
-> > +++ b/drivers/tty/serial/8250/8250_port.c
->=20
-> >  #include <linux/ioport.h>
-> >  #include <linux/init.h>
-> >  #include <linux/irq.h>
->=20
-> > +#include <linux/lockdep.h>
->=20
-> I would still keep more order.
->=20
-> >  #include <linux/console.h>
-> >  #include <linux/gpio/consumer.h>
->=20
-> Giving the context we have, the better place for a new inclusion is somew=
-here
-> here.
-
-Feels to me something that is in the eye of the beholder, but whatever, I=
-=20
-can move it from one's "correct" place to somebody elses "correct"
-place. :-)
-
-> >  #include <linux/sysrq.h>
->=20
-> (Also perhaps sorting headers in a separate patch helps with finding bett=
-er
->  places for the future inclusions?)
-
-Yes, later (not in this series).
-
-> ...
->=20
-> > +EXPORT_SYMBOL_GPL(serial8250_handle_irq_locked);
->=20
-> Wondering if we can start exporting with a namespace...
-
-I'll do that. I picked "SERIAL_8250", is that fine or should I use e.g.=20
-"8250" instead?
-
---=20
- i.
-
---8323328-1047078821-1769518110=:1055--
+greg k-h
