@@ -1,66 +1,72 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1E0933B6FC;
-	Tue, 27 Jan 2026 13:57:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFB4934F472;
+	Tue, 27 Jan 2026 14:10:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769522269; cv=none; b=DRJeqnybgnzprxIeOTiaZbs+jRl3m30GPAUT+KZfeXxSSd7ELCxBTRuaAaXOCWGDXmJlf2rIPOUE49az/VUnsMlotGg7wNwcy0H11Csp0F1rAB8PjrsX+OkjeknDe+tl+9ZiBhf9mDwFlUNS5+C1/jEBi0HCAlQUWU5776Km2Ec=
+	t=1769523053; cv=none; b=jaTZjMNxT7HG5nxkuQAH3Pddl73jEGdkgMa6Am/QDM4i1R6xEgHN2NvH5lGX3DWtayhNlz+oSaSPDrCL5QeYYTMbR7hn9ROLlWvjZZnJ0y8YuxIcwrCe0EP5C22OfHMO/zBe+cM38SQ3OKWOeQ7/Ud0SoqHA8QDCFSd47bE2TYo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769522269; c=relaxed/simple;
-	bh=bxmaCfyCj5/qM4wFvjutrBJXmXjHJNfa+bGwOfgbbJU=;
+	s=arc-20240116; t=1769523053; c=relaxed/simple;
+	bh=raT5qDfoCho1XB7kfBfjvEHWMDY42gL7+rt+GyZuwR4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=eJuwt+g3eJvJVs2cqUvg4Mb+ztqyEwaerrMh2ir1aBBvtJyGn4+iWSCrKwuAeecgrTrKU4d8fmXo8Z3YxTyoiN+hEVS8Ul3C01+zPX5ic8fkr+51GPFa/rXSfrkw1M5HUolu1HGsT8AoHkMm+5sRb/6XpYeiqgWUZUoTLAzjl+4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=UII/9yI8; arc=none smtp.client-ip=192.198.163.10
+	 Content-Type:Content-Disposition:In-Reply-To; b=KE2DcMA+4+kVLBxJKC0oVCcKz1/Z6SeSm2bgN0Nt54XV17u0SnZRqmBnAp1byRpzbTIiEUuY9Cpt0H/DgX0fR/LF9ZEFcdQaKYhUFQBeGeuvP6hCDm3xv9sghC2VF8VtKxBpKKxEHeFdAoz6DKbT/afTTDH7QAXE9aHgnSp5vx8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hearboA6; arc=none smtp.client-ip=198.175.65.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="UII/9yI8"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hearboA6"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1769522268; x=1801058268;
+  t=1769523052; x=1801059052;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:content-transfer-encoding:in-reply-to;
-  bh=bxmaCfyCj5/qM4wFvjutrBJXmXjHJNfa+bGwOfgbbJU=;
-  b=UII/9yI8yKTiiGaOSRqMoFXupKIGtcuTo+I6xq0rFzfYseT2NlKyWzUO
-   7itYYh5d8oC1AUw3zOt9Q7celtrKpPKR3dlZRnTAIUY8L8sx+mat6ResC
-   pOpVl0laCyHzTdLcSg1gIFIYK71ggBNVsXVpP8qLeECE2gsD8oBtnGF2H
-   7BhsoOMoJ5Kvb4kkB2uOaM6aSVYbI19DrWjPPRzIpKqK67V676WCGCrqj
-   7CpH52/IeD90dsSP/9Azbr5lNsmfhCquSMwPSxO7U0D3amhFivvYwCpmB
-   9naEHovwgTpCw0l7uHVy4okOS5ZkoQmTXOUS0iHmAfsA+GdhNNSezTFji
-   Q==;
-X-CSE-ConnectionGUID: x2CkAFYGRhGZb9t/MQ0ZfA==
-X-CSE-MsgGUID: NFBfgC/mR9GuE9kLS3ggTg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11684"; a="82082833"
+  bh=raT5qDfoCho1XB7kfBfjvEHWMDY42gL7+rt+GyZuwR4=;
+  b=hearboA6tyiZemMZFb6KDzFijLB7ZSqQXlG+0RFEqHxr1m5onS1JHC4X
+   3+PhX6E4mXXgzCAeSUJG7ImMY/AblHK289tjJYDrW6Huy0LnJG0JJ5hFP
+   QjU2f/RDa3JRGq3mR7mM3JGC2cd7Zg60sFN9TmXSlJxoLGDksDMLcHqEF
+   Bj66TVjj0nROs7QZNv/8vGHvVbrF1L0CWK/q6F4IRbNgSi3O3v9yed4Tb
+   t1VwcmMsdlGe0ZaaMMz38M8n8i2v0zD6fbgq2SXbST0ffu2cnsznpBkYU
+   RCVLj2DnOJ1bflqSTUf1SGTMKwu6aIQKwlL3bOV5UuF6k4j9fcV4oZNX/
+   A==;
+X-CSE-ConnectionGUID: AvsFxUb1SlubtOXYI+riFA==
+X-CSE-MsgGUID: X8zgL8tMQZeFIKJEIOIRpA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11684"; a="81022303"
 X-IronPort-AV: E=Sophos;i="6.21,257,1763452800"; 
-   d="scan'208";a="82082833"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2026 05:57:47 -0800
-X-CSE-ConnectionGUID: RDSDa0WAT5iH/oe4ZkcTzA==
-X-CSE-MsgGUID: eU58YX6DSwykAFFvuegPhg==
+   d="scan'208";a="81022303"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2026 06:10:52 -0800
+X-CSE-ConnectionGUID: d6gKfEIsSr+Pi38RZnhhRg==
+X-CSE-MsgGUID: StlcWXzTRLiLHJHZwXK1Lg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,257,1763452800"; 
-   d="scan'208";a="208225700"
+   d="scan'208";a="212524574"
 Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.245.248])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2026 05:57:44 -0800
-Date: Tue, 27 Jan 2026 15:57:42 +0200
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2026 06:10:48 -0800
+Date: Tue, 27 Jan 2026 16:10:45 +0200
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Petr Mladek <pmladek@suse.com>,
+	John Ogness <john.ogness@linutronix.de>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
 	linux-serial <linux-serial@vger.kernel.org>,
 	qianfan Zhao <qianfanguijin@163.com>,
 	Adriana Nicolae <adriana@arista.com>,
-	LKML <linux-kernel@vger.kernel.org>,
+	Markus Mayer <markus.mayer@linaro.org>,
+	Tim Kryger <tim.kryger@linaro.org>,
+	Matt Porter <matt.porter@linaro.org>,
+	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+	Jamie Iles <jamie@jamieiles.com>,
+	LKML <linux-kernel@vger.kernel.org>, stable@vger.kernel.org,
 	"Bandal, Shankar" <shankar.bandal@intel.com>,
 	"Murthy, Shanth" <shanth.murthy@intel.com>
-Subject: Re: [PATCH 4/6] serial: 8250_dw: Rework IIR_NO_INT handling to stop
- interrupt storm
-Message-ID: <aXjEVtI7Bo5BCOiX@smile.fi.intel.com>
+Subject: Re: [PATCH 6/6] serial: 8250_dw: Ensure BUSY is deasserted
+Message-ID: <aXjHZQnIFjfPabdU@smile.fi.intel.com>
 References: <20260123172739.13410-1-ilpo.jarvinen@linux.intel.com>
- <20260123172739.13410-5-ilpo.jarvinen@linux.intel.com>
- <aXPyiOMxClprdOQM@smile.fi.intel.com>
- <be94eddc-0395-7215-df1e-ba5e718701f8@linux.intel.com>
+ <20260123172739.13410-7-ilpo.jarvinen@linux.intel.com>
+ <aXP5YMNix8EfbJeF@smile.fi.intel.com>
+ <fc09f6fd-013f-25fd-484c-cac59b0a60b6@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -70,40 +76,85 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <be94eddc-0395-7215-df1e-ba5e718701f8@linux.intel.com>
+In-Reply-To: <fc09f6fd-013f-25fd-484c-cac59b0a60b6@linux.intel.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Jan 27, 2026 at 03:01:46PM +0200, Ilpo Järvinen wrote:
+On Tue, Jan 27, 2026 at 03:35:27PM +0200, Ilpo Järvinen wrote:
 > On Sat, 24 Jan 2026, Andy Shevchenko wrote:
-> > On Fri, Jan 23, 2026 at 07:27:37PM +0200, Ilpo Järvinen wrote:
+> > On Fri, Jan 23, 2026 at 07:27:39PM +0200, Ilpo Järvinen wrote:
+
++Cc: printk people to check on printing from a serial driver routines.
 
 ...
 
-> > > +		d->no_int_count++;
-> > > +		if (d->no_int_count > 2 && quirks & DW_UART_QUIRK_IER_KICK)
-> > > +			dw8250_quirk_ier_kick(p);
+> > > +	/* Prevent triggering interrupt from RBR filling */
+> > > +	p->serial_out(p, UART_IER, 0);
 > > 
-> > Usual way is to use modulo. And perhaps use 4 for the sake of avoiding
-> > division:
-> > 
-> > 		if (d->no_int_count == 3 && quirks & DW_UART_QUIRK_IER_KICK)
-> > 			dw8250_quirk_ier_kick(p);
-> > 
-> > 		d->no_int_count = (d->no_int_count + 1) % 4;
+> > Do we specifically use callbacks directly and not wrappers all over the change?
 > 
-> This doesn't look equivalent code as it only fires on 4th NO_INT,
+> I guess it's just a habit, I suppose you meant using serial_port_in/out 
+> instead. I can try to change those.
 
-Correct, I forgot to clarify this in my original reply. Yes, bumping to
-power-of-two for simplicity, but as you noticed it bumps also the loop to
-"every 4th". (I was under impression that I wrote it somewhere else in
-the reply, but now I see it's not the case.)
+Not (only) me. Jiri updated this driver (and many others) to use callbacks.
+That's why I added comments here and there about possible recursions.
 
-> but I guess the difference doesn't matter that much so changing to your
-> suggestion so that the kick will only occurs on fourth NO_INT interrupt.
+...
 
-> > where 4 may be defined with meaningful name. With that u8 is more than enough.
+> > > +	serial8250_fifo_wait_for_lsr_thre(up, p->fifosize);
+> > > +	ndelay(p->frame_time);
+> > 
+> > Wouldn't be a problem on lowest baud rates (exempli gratia 110)?
+> 
+> Perhaps, but until somebody comes with an issue report related to 110, I'm 
+> wondering if this really is worth trying to address. Any suggestion how is 
+> welcome as well?
 
+Polling work? Timer?
+
+> > > +	retries = 4;	/* Arbitrary limit, 2 was always enough in tests */
+> > > +	do {
+> > > +		serial8250_clear_fifos(up);
+> > > +		if (!(p->serial_in(p, usr_reg) & DW_UART_USR_BUSY))
+> > > +			break;
+> > > +		ndelay(p->frame_time);
+> > > +	} while (--retries);
+> > 
+> > read_poll_timeout_atomic() ? I assume it can't be used due to small frame time?
+> 
+> Frame time is in nanoseconds yes. I did consider 
+> read_poll_timeout_atomic() but it would have required nsec -> usec 
+> conversion so I left this as it is.
+
+Yeah with the same issue on low baud rates. So far I think we need to consider
+9600 as commonly used by the old HW (which may be connected to a modern PC with
+this new kernel running), so the frame time sounds like close to a millisecond.
+And this can be met in real life.
+
+Maybe put TODO/FIXME around these ndelay() calls?
+
+> > > +	if (d->in_idle) {
+> > 
+> > > +		/*
+> > > +		 * FIXME: this deadlocks if port->lock is already held
+> > > +		 * dev_err(p->dev, "Couldn't set LCR to %d\n", value);
+> > > +		 */
+> > 
+> > Hmm... That FIXME should gone since we have non-blocking consoles, no?
+> 
+> No, lockdep still gets angry if printing is used while holding port's 
+> lock.
+
+Hmm... Let's ask PRINTK people about this. John, do we still have a gap
+with nbcon? Or did I misunderstand the scope of its use?
+
+> What would be possible though, is to mark the port's lock critical section 
+> for print deferral (but it's outside the scope of this series). In case of 
+> serial, it would be justified to use deferred printing (which is only 
+> meant for special cases) because serial console and printing are related.
+> 
+> > > +		return;
+> > > +	}
 
 -- 
 With Best Regards,
