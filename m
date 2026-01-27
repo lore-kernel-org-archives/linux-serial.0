@@ -1,136 +1,96 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBA3F35CBB2;
-	Tue, 27 Jan 2026 14:45:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D3F335CBC6;
+	Tue, 27 Jan 2026 16:19:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769525118; cv=none; b=RcoEpMAaruyJWkYWHEjHKiUo4tDq71l377BuWXwQAah5XSsrll+h5H/Ew+eF1N7FAOsZVcEmxZL1wZxH5I1B/FAePhrpLbeRFQvWblmvg0XIJOXElZUmHet9jVlMxO2hTaZl+qR5SwiQvBviYMKMIE+QC6sKyZRmnFRjzDoLvgg=
+	t=1769530752; cv=none; b=u0nhRXDWaRT6L6ijiefBw8zn64FnhWYczzUEK+fxBs53zHfdAEwn2EXTirhudcQSyckZ3ZfO4v/KYKWZelHY7vtgn0GQKLOfrdRgVkG93cxFM+Ka3skPFMfuFPQ/kbVak7n5frlvouT70NUbL/56lUVrMzv60E8FVAq5GB9IyDs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769525118; c=relaxed/simple;
-	bh=FZSLZndPM2IFrzMqbhFWGL/bCVFHfI5oqgjmq1IXq3k=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=fDA5mC1TFh9s+CTv4Py8rFJyxZyEtVXMbRKdSQyIjsvzcFEZ8GDJf7D54w9s9rWrIhKBpn0X0sNRNLIE1OkajoF0c6jU42dS6d28+LDoHcLGfO0C3stWy5Wu9vskw213GP3SZkY1Tq+CnY1tp96ozaWhd7rb30oLh30OVT5vMT0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=N7KrMF+B; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1769530752; c=relaxed/simple;
+	bh=Y1R+TJNguLWi69GtS7mRj+xsWoAN4CJgoKP+3u0CB4Y=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=uBnnI8i1lR0kM7E/JcVJHkgNPL6ldmhHxmqDxu+9gnxb042GbllNb3jhO0D8ZOYlcGOj7YK+xraSGD2WKMTBpX8twdw5fW3FEVAmV5kjyTcp8PO5knRp3EmNl1s9sT2oEzCr53AlK/CB2R64rzOYcTXqX23FpBgnrW2KkKzpLtg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=ufdKbr4O; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=abXFZ/MN; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="N7KrMF+B"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1769525117; x=1801061117;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=FZSLZndPM2IFrzMqbhFWGL/bCVFHfI5oqgjmq1IXq3k=;
-  b=N7KrMF+Bx3RPDBqgKn3UP6RgqCymJcwFuiSsgDkBwhG0p+BM7wyHToNw
-   wB80O0LM9a4ts1T6yf5LzMSUWbQ8JtMPuBOeJI/IQ1WwNU1WH4T68z031
-   wBP6380x//ne+4YkIIkD5TjXsNSDLzJRVOZWhhkOo/TefEsnhGx6zSYBM
-   hbjvW8Oa5vkjqavs93R3/ytSX3a4e45PrDOT/7Wp1RX17DaKPInVsT+Ce
-   fJhLhxcvwee1HVpCDPLF15v8Txq224oi7cxwS0+kscIzw1tXRiYjIQNB0
-   EaMVQrv+FNwPMmMXvHSlGhrCF/E1DFtyiZme/mPLbydiie4bLcgvqCeVN
-   Q==;
-X-CSE-ConnectionGUID: b8Q+Ml+9RQutuqGex9sgtQ==
-X-CSE-MsgGUID: +cNgRNAcR+WMAtw2pvGNwQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11684"; a="74344222"
-X-IronPort-AV: E=Sophos;i="6.21,257,1763452800"; 
-   d="scan'208";a="74344222"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2026 06:45:17 -0800
-X-CSE-ConnectionGUID: 59t1uevXQpSsaQYRGsZMIg==
-X-CSE-MsgGUID: mv/AoVqSQFa1o7aR1v7LdQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,257,1763452800"; 
-   d="scan'208";a="207788311"
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.67])
-  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2026 06:45:11 -0800
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Tue, 27 Jan 2026 16:45:08 +0200 (EET)
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-cc: Jiri Slaby <jirislaby@kernel.org>, 
-    linux-serial <linux-serial@vger.kernel.org>, 
-    Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-    qianfan Zhao <qianfanguijin@163.com>, Adriana Nicolae <adriana@arista.com>, 
-    Markus Mayer <markus.mayer@linaro.org>, Tim Kryger <tim.kryger@linaro.org>, 
-    Matt Porter <matt.porter@linaro.org>, 
-    Heikki Krogerus <heikki.krogerus@linux.intel.com>, 
-    Jamie Iles <jamie@jamieiles.com>, LKML <linux-kernel@vger.kernel.org>, 
-    stable@vger.kernel.org, "Bandal, Shankar" <shankar.bandal@intel.com>, 
-    "Murthy, Shanth" <shanth.murthy@intel.com>
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="ufdKbr4O";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="abXFZ/MN"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1769530749;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=5rTWFCtf+mdQvk1B3TlRGJzO6FYqSCXfxkBPbyjRRz0=;
+	b=ufdKbr4Oqx/uYlPl3IAPk0gx8FgxGgkBFVhOgua7A07i2Cnam5feqLGvLEEGFKL/GO7Y+k
+	2TmQ2TG8ndfoSl2SudkSQuvJi6OOqcFqkpoQ2MKaQsmK/hR3KSY5zyP9bU1BWrQTP/oGS1
+	810cwHj+ehIG2WYYWcsqq44bsI/oLI43mHZ+6nnYjWI3XlKF+jwQoYyYyYLad1xrmqzsq3
+	ALlpTRJQGhyt6rEen6aOT9QqRKJdyQFOY+IQnzGMTS04GQ0AMtKQpzmM3/iViv2qhl7iT2
+	Ynw+4c2dpmWj+iC+XXTHd0Oln3iiPbVOueSqOF8ieshjPnveiDAr7RXdl7B7AA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1769530749;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=5rTWFCtf+mdQvk1B3TlRGJzO6FYqSCXfxkBPbyjRRz0=;
+	b=abXFZ/MNcUARd7jEp9+PwBfc2hc3SIU3Xezk1TDbGygK45me6LMH7BdLw8fpraAVFrd7o8
+	Oa2hT11/vC1kSTAw==
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Ilpo =?utf-8?Q?J?=
+ =?utf-8?Q?=C3=A4rvinen?=
+ <ilpo.jarvinen@linux.intel.com>, Petr Mladek <pmladek@suse.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>, linux-serial <linux-serial@vger.kernel.org>,
+ qianfan Zhao <qianfanguijin@163.com>, Adriana Nicolae
+ <adriana@arista.com>, Markus Mayer <markus.mayer@linaro.org>, Tim Kryger
+ <tim.kryger@linaro.org>, Matt Porter <matt.porter@linaro.org>, Heikki
+ Krogerus <heikki.krogerus@linux.intel.com>, Jamie Iles
+ <jamie@jamieiles.com>, LKML <linux-kernel@vger.kernel.org>,
+ stable@vger.kernel.org, "Bandal, Shankar" <shankar.bandal@intel.com>,
+ "Murthy, Shanth" <shanth.murthy@intel.com>
 Subject: Re: [PATCH 6/6] serial: 8250_dw: Ensure BUSY is deasserted
-In-Reply-To: <2026012608-slicing-vehicular-6987@gregkh>
-Message-ID: <608bedc0-41b4-8d00-b586-5adf8754c701@linux.intel.com>
-References: <20260123172739.13410-1-ilpo.jarvinen@linux.intel.com> <20260123172739.13410-7-ilpo.jarvinen@linux.intel.com> <2026012608-slicing-vehicular-6987@gregkh>
+In-Reply-To: <aXjHZQnIFjfPabdU@smile.fi.intel.com>
+References: <20260123172739.13410-1-ilpo.jarvinen@linux.intel.com>
+ <20260123172739.13410-7-ilpo.jarvinen@linux.intel.com>
+ <aXP5YMNix8EfbJeF@smile.fi.intel.com>
+ <fc09f6fd-013f-25fd-484c-cac59b0a60b6@linux.intel.com>
+ <aXjHZQnIFjfPabdU@smile.fi.intel.com>
+Date: Tue, 27 Jan 2026 17:25:08 +0106
+Message-ID: <871pjb6nb7.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323328-2035551506-1769521494=:1055"
-Content-ID: <da8768f5-3a13-5971-af1e-c82c279f1563@linux.intel.com>
+Content-Type: text/plain
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On 2026-01-27, Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+>> > > +	if (d->in_idle) {
+>> > 
+>> > > +		/*
+>> > > +		 * FIXME: this deadlocks if port->lock is already held
+>> > > +		 * dev_err(p->dev, "Couldn't set LCR to %d\n", value);
+>> > > +		 */
+>> > 
+>> > Hmm... That FIXME should gone since we have non-blocking consoles, no?
+>> 
+>> No, lockdep still gets angry if printing is used while holding port's 
+>> lock.
+>
+> Hmm... Let's ask PRINTK people about this. John, do we still have a gap
+> with nbcon? Or did I misunderstand the scope of its use?
 
---8323328-2035551506-1769521494=:1055
-Content-Type: text/plain; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Content-ID: <b5ab8498-ef41-ce3b-79df-e4f4ccecfea6@linux.intel.com>
+The 8250 has not yet been converted to a nbcon. I am still working on
+it. Unfortunately I got side-tracked first fixing the broken 8250
+console hardware-flow-control support. :-/
 
-On Mon, 26 Jan 2026, Greg Kroah-Hartman wrote:
+So the comment is correct. Once the driver converts to nbcon, the
+dev_err() is fine.
 
-> On Fri, Jan 23, 2026 at 07:27:39PM +0200, Ilpo J=E4rvinen wrote:
-> > DW UART cannot write to LCR, DLL, and DLH while BUSY is asserted.
-> > Existance of BUSY depends on uart_16550_compatible, if UART HW is
-> > configured with 16550 compatible those registers can always be written.
-> >=20
-> > There currently is dw8250_force_idle() which attempts to archive
-> > non-BUSY state by disabling FIFO, however, the solution is unreliable
-> > when Rx keeps getting more and more characters.
-> >=20
-> > Create a sequence of operations to enforce that ensures UART cannot
-> > keep BUSY asserted indefinitely. The new sequence relies on enabling
-> > loopback mode temporarily to prevent incoming Rx characters keeping
-> > UART BUSY.
-> >=20
-> > Ensure no Tx in ongoing while the UART is switches into the loopback
-> > mode (requires exporting serial8250_fifo_wait_for_lsr_thre() and adding
-> > DMA Tx pause/resume functions).
-> >=20
-> > According to tests performed by Adriana Nicolae <adriana@arista.com>,
-> > simply disabling FIFO or clearing FIFOs only once does not always
-> > ensure BUSY is deasserted but up to two tries may be needed. This could
-> > be related to ongoing Rx of a character (a guess, not known for sure).
-> > Therefore, retry FIFO clearing a few times (retry limit 4 is arbitrary
-> > number but using, e.g., p->fifosize seems overly large). Tests
-> > performed by others did not exhibit similar challenge but it does not
-> > seem harmful to leave the FIFO clearing loop in place for all DW UARTs
-> > with BUSY functionality.
-> >=20
-> > Use the new dw8250_idle_enter/exit() to do divisor writes and LCR
-> > writes. In case of plain LCR writes, opportunistically try to update
-> > LCR first and only invoke dw8250_idle_enter() if the write did not
-> > succeed (it has been observed that in practice most LCR writes do
-> > succeed without complications).
-> >=20
-> > This issue was first reported by qianfan Zhao who put lots of debugging
-> > effort into understanding the solution space.
-> >=20
-> > Fixes: c49436b657d0 ("serial: 8250_dw: Improve unwritable LCR workaroun=
-d")
-> > Fixes: 7d4008ebb1c9 ("tty: add a DesignWare 8250 driver")
-> > Cc: <stable@vger.kernel.org>
->=20
-> Why is patch 6/6 only marked for stable?  If this is needed "now",
-> shouldn't this be a separate patch?  Do you need all of the first 5 for
-> this to work properly?
+Note that if the message is important, you could use a printk_deferred()
+here with a FIXME to say to convert it to dev_err() once the 8250
+supports nbcon.
 
-Some of those are really dependencies but I'll try to improve this=20
-situation for v2 and add a few more Fixes tag to the introducing commits.
-
-> I can't take this series as-is because I don't know how to route it :(
-
-
---=20
- i.
---8323328-2035551506-1769521494=:1055--
+John Ogness
