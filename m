@@ -1,55 +1,54 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EACE235C188;
-	Tue, 27 Jan 2026 14:40:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBA3F35CBB2;
+	Tue, 27 Jan 2026 14:45:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769524841; cv=none; b=jG0UABmSowuLGyWMwJH5cFjEC3rzpH9P/QDxLlWxuF8y/6VEoZV3zhLN8XZ8yWql6gUC8Dp3ru4sEvMo4cjSkdZMbCrop3+J2ZXug6BfaEwDGo8QJm62onT5kjs7qk5jMnf60HWM/+06aQjc1xSqY6+93kRfSRnz0Fa3sBZckUk=
+	t=1769525118; cv=none; b=RcoEpMAaruyJWkYWHEjHKiUo4tDq71l377BuWXwQAah5XSsrll+h5H/Ew+eF1N7FAOsZVcEmxZL1wZxH5I1B/FAePhrpLbeRFQvWblmvg0XIJOXElZUmHet9jVlMxO2hTaZl+qR5SwiQvBviYMKMIE+QC6sKyZRmnFRjzDoLvgg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769524841; c=relaxed/simple;
-	bh=mXRBNsG1KvltKGLWMjB9OhvYSZUWg1JfD4N+xZ/vjto=;
+	s=arc-20240116; t=1769525118; c=relaxed/simple;
+	bh=FZSLZndPM2IFrzMqbhFWGL/bCVFHfI5oqgjmq1IXq3k=;
 	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=COm9ppWq8HLlwR+mv58wBLs/0drFGiY7lIYlXGWAcz7AXaVARM3sEZiv3he5FEJl/b8HcW8oXvKAPjQOAa05zrHnDzRhqBmGwhsh12xNX6j7Dr/zW/6/lnCmB7Jf24VGEByHRE/S/RaC6K4jYR9eCIYRNcRmjcwTSfADCNxxIe4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TJ2CN8Cr; arc=none smtp.client-ip=192.198.163.10
+	 MIME-Version:Content-Type; b=fDA5mC1TFh9s+CTv4Py8rFJyxZyEtVXMbRKdSQyIjsvzcFEZ8GDJf7D54w9s9rWrIhKBpn0X0sNRNLIE1OkajoF0c6jU42dS6d28+LDoHcLGfO0C3stWy5Wu9vskw213GP3SZkY1Tq+CnY1tp96ozaWhd7rb30oLh30OVT5vMT0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=N7KrMF+B; arc=none smtp.client-ip=198.175.65.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TJ2CN8Cr"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="N7KrMF+B"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1769524840; x=1801060840;
+  t=1769525117; x=1801061117;
   h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=mXRBNsG1KvltKGLWMjB9OhvYSZUWg1JfD4N+xZ/vjto=;
-  b=TJ2CN8CrzlXOnhc1UElZcJhawv/7mBKWkcK7Q4iaTLLOvgY7ZR0g0lH0
-   Rg7sCYbfgWZ7l6nkYhWSaVRtC70jJwlJZkjQXJ3B2MSCeUPXGjziVduDC
-   II1C5KaXlVxBQMIQXcvp9lvj6kmcmKXhwLx7knUm3K3fEAq/slQgWQIjo
-   dDQJQjHVWtolOAEnzzFrhKG2zTq0BFQZ3tdjxL1eUDCYvSAUWSw7Rcocl
-   CmpJucfDBtlF7yxFQO7SfrSY6+KvU+51OrX52/7dOKIgXqvf1NJU0KdFL
-   dI3Mtwu/UGMt5Hy0oM9WZXHnUsUpQGQ20AN8e0w8svfyY2AwyMbeBXNwv
-   w==;
-X-CSE-ConnectionGUID: CGTu9dU9SVupw07ho5p6fA==
-X-CSE-MsgGUID: 7mcYIUYsQl+zFMN21eCKew==
-X-IronPort-AV: E=McAfee;i="6800,10657,11684"; a="82086059"
+   references:mime-version:content-id;
+  bh=FZSLZndPM2IFrzMqbhFWGL/bCVFHfI5oqgjmq1IXq3k=;
+  b=N7KrMF+Bx3RPDBqgKn3UP6RgqCymJcwFuiSsgDkBwhG0p+BM7wyHToNw
+   wB80O0LM9a4ts1T6yf5LzMSUWbQ8JtMPuBOeJI/IQ1WwNU1WH4T68z031
+   wBP6380x//ne+4YkIIkD5TjXsNSDLzJRVOZWhhkOo/TefEsnhGx6zSYBM
+   hbjvW8Oa5vkjqavs93R3/ytSX3a4e45PrDOT/7Wp1RX17DaKPInVsT+Ce
+   fJhLhxcvwee1HVpCDPLF15v8Txq224oi7cxwS0+kscIzw1tXRiYjIQNB0
+   EaMVQrv+FNwPMmMXvHSlGhrCF/E1DFtyiZme/mPLbydiie4bLcgvqCeVN
+   Q==;
+X-CSE-ConnectionGUID: b8Q+Ml+9RQutuqGex9sgtQ==
+X-CSE-MsgGUID: +cNgRNAcR+WMAtw2pvGNwQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11684"; a="74344222"
 X-IronPort-AV: E=Sophos;i="6.21,257,1763452800"; 
-   d="scan'208";a="82086059"
+   d="scan'208";a="74344222"
 Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2026 06:40:39 -0800
-X-CSE-ConnectionGUID: 6sh9hCMKQyqWj2mWPnfFqA==
-X-CSE-MsgGUID: k7g4QTf8TD2VVBG9XzPC/A==
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2026 06:45:17 -0800
+X-CSE-ConnectionGUID: 59t1uevXQpSsaQYRGsZMIg==
+X-CSE-MsgGUID: mv/AoVqSQFa1o7aR1v7LdQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,257,1763452800"; 
-   d="scan'208";a="207787333"
+   d="scan'208";a="207788311"
 Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.67])
-  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2026 06:40:32 -0800
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2026 06:45:11 -0800
 From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Tue, 27 Jan 2026 16:40:28 +0200 (EET)
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-cc: Petr Mladek <pmladek@suse.com>, John Ogness <john.ogness@linutronix.de>, 
-    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>, 
+Date: Tue, 27 Jan 2026 16:45:08 +0200 (EET)
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+cc: Jiri Slaby <jirislaby@kernel.org>, 
     linux-serial <linux-serial@vger.kernel.org>, 
+    Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
     qianfan Zhao <qianfanguijin@163.com>, Adriana Nicolae <adriana@arista.com>, 
     Markus Mayer <markus.mayer@linaro.org>, Tim Kryger <tim.kryger@linaro.org>, 
     Matt Porter <matt.porter@linaro.org>, 
@@ -58,150 +57,80 @@ cc: Petr Mladek <pmladek@suse.com>, John Ogness <john.ogness@linutronix.de>,
     stable@vger.kernel.org, "Bandal, Shankar" <shankar.bandal@intel.com>, 
     "Murthy, Shanth" <shanth.murthy@intel.com>
 Subject: Re: [PATCH 6/6] serial: 8250_dw: Ensure BUSY is deasserted
-In-Reply-To: <aXjHZQnIFjfPabdU@smile.fi.intel.com>
-Message-ID: <379cc557-7d09-d6e9-3b16-9621e344bd36@linux.intel.com>
-References: <20260123172739.13410-1-ilpo.jarvinen@linux.intel.com> <20260123172739.13410-7-ilpo.jarvinen@linux.intel.com> <aXP5YMNix8EfbJeF@smile.fi.intel.com> <fc09f6fd-013f-25fd-484c-cac59b0a60b6@linux.intel.com> <aXjHZQnIFjfPabdU@smile.fi.intel.com>
+In-Reply-To: <2026012608-slicing-vehicular-6987@gregkh>
+Message-ID: <608bedc0-41b4-8d00-b586-5adf8754c701@linux.intel.com>
+References: <20260123172739.13410-1-ilpo.jarvinen@linux.intel.com> <20260123172739.13410-7-ilpo.jarvinen@linux.intel.com> <2026012608-slicing-vehicular-6987@gregkh>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-20834577-1769524828=:1055"
+Content-Type: multipart/mixed; BOUNDARY="8323328-2035551506-1769521494=:1055"
+Content-ID: <da8768f5-3a13-5971-af1e-c82c279f1563@linux.intel.com>
 
   This message is in MIME format.  The first part should be readable text,
   while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323328-20834577-1769524828=:1055
-Content-Type: text/plain; charset=iso-8859-1
+--8323328-2035551506-1769521494=:1055
+Content-Type: text/plain; CHARSET=ISO-8859-15
 Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-ID: <b5ab8498-ef41-ce3b-79df-e4f4ccecfea6@linux.intel.com>
 
-On Tue, 27 Jan 2026, Andy Shevchenko wrote:
+On Mon, 26 Jan 2026, Greg Kroah-Hartman wrote:
 
-> On Tue, Jan 27, 2026 at 03:35:27PM +0200, Ilpo J=E4rvinen wrote:
-> > On Sat, 24 Jan 2026, Andy Shevchenko wrote:
-> > > On Fri, Jan 23, 2026 at 07:27:39PM +0200, Ilpo J=E4rvinen wrote:
->=20
-> +Cc: printk people to check on printing from a serial driver routines.
->=20
-> ...
->=20
-> > > > +=09/* Prevent triggering interrupt from RBR filling */
-> > > > +=09p->serial_out(p, UART_IER, 0);
-> > >=20
-> > > Do we specifically use callbacks directly and not wrappers all over t=
-he change?
+> On Fri, Jan 23, 2026 at 07:27:39PM +0200, Ilpo J=E4rvinen wrote:
+> > DW UART cannot write to LCR, DLL, and DLH while BUSY is asserted.
+> > Existance of BUSY depends on uart_16550_compatible, if UART HW is
+> > configured with 16550 compatible those registers can always be written.
 > >=20
-> > I guess it's just a habit, I suppose you meant using serial_port_in/out=
-=20
-> > instead. I can try to change those.
->=20
-> Not (only) me. Jiri updated this driver (and many others) to use callback=
-s.
-> That's why I added comments here and there about possible recursions.
-
-Fair, this patch originated from a time way older than Jiri's conversion
-(not an excuse, just stating how it came to be and I've not realized=20
-using an old way until you mentioned).
-
-> > > > +=09serial8250_fifo_wait_for_lsr_thre(up, p->fifosize);
-> > > > +=09ndelay(p->frame_time);
-> > >=20
-> > > Wouldn't be a problem on lowest baud rates (exempli gratia 110)?
+> > There currently is dw8250_force_idle() which attempts to archive
+> > non-BUSY state by disabling FIFO, however, the solution is unreliable
+> > when Rx keeps getting more and more characters.
 > >=20
-> > Perhaps, but until somebody comes with an issue report related to 110, =
-I'm=20
-> > wondering if this really is worth trying to address. Any suggestion how=
- is=20
-> > welcome as well?
->=20
-> Polling work? Timer?
-
-And how do I prevent others messing with the UART during that time? While=
-=20
-IER is zeroed here (and I could make up->ier zero as well, I think), I=20
-can't hold port's lock if I do either of those.
-
-And I can't take the tty_port's mutex here either because the caller=20
-is already holding port's lock (and it wouldn't prevent console writes=20
-anyway as that, I think, only takes port's lock).
-
-Sadly THRE/TEMT are not trustworthy as they are set before all those=20
-non-data bits have been fully blasted on to the wire (we learned this with=
-=20
-rs485 half-duplex scenarios).
-
-
-Normal behavioral exceptation what I have here is that userspace is sane=20
-and won't do LCR write and tx at the same time but I don't know how to=20
-ensure that. Perhaps using now > last xmit timestamp + frame_time could=20
-avoid this unconditional delay.
-
-> > > > +=09retries =3D 4;=09/* Arbitrary limit, 2 was always enough in tes=
-ts */
-> > > > +=09do {
-> > > > +=09=09serial8250_clear_fifos(up);
-> > > > +=09=09if (!(p->serial_in(p, usr_reg) & DW_UART_USR_BUSY))
-> > > > +=09=09=09break;
-> > > > +=09=09ndelay(p->frame_time);
-> > > > +=09} while (--retries);
-> > >=20
-> > > read_poll_timeout_atomic() ? I assume it can't be used due to small f=
-rame time?
+> > Create a sequence of operations to enforce that ensures UART cannot
+> > keep BUSY asserted indefinitely. The new sequence relies on enabling
+> > loopback mode temporarily to prevent incoming Rx characters keeping
+> > UART BUSY.
 > >=20
-> > Frame time is in nanoseconds yes. I did consider=20
-> > read_poll_timeout_atomic() but it would have required nsec -> usec=20
-> > conversion so I left this as it is.
->=20
-> Yeah with the same issue on low baud rates. So far I think we need to con=
-sider
-> 9600 as commonly used by the old HW (which may be connected to a modern P=
-C with
-> this new kernel running), so the frame time sounds like close to a millis=
-econd.
-> And this can be met in real life.
->=20
-> Maybe put TODO/FIXME around these ndelay() calls?
-
-Seems reasonable, I'll add that.
-
-I'm under impression that all LCR writes occur from contexts that are=20
-non-atomic by nature (except they are holding the port's lock, of course)=
-=20
-so this should never delay an interrupt handler.
-
-> > > > +=09if (d->in_idle) {
-> > >=20
-> > > > +=09=09/*
-> > > > +=09=09 * FIXME: this deadlocks if port->lock is already held
-> > > > +=09=09 * dev_err(p->dev, "Couldn't set LCR to %d\n", value);
-> > > > +=09=09 */
-> > >=20
-> > > Hmm... That FIXME should gone since we have non-blocking consoles, no=
-?
+> > Ensure no Tx in ongoing while the UART is switches into the loopback
+> > mode (requires exporting serial8250_fifo_wait_for_lsr_thre() and adding
+> > DMA Tx pause/resume functions).
 > >=20
-> > No, lockdep still gets angry if printing is used while holding port's=
-=20
-> > lock.
->=20
-> Hmm... Let's ask PRINTK people about this. John, do we still have a gap
-> with nbcon? Or did I misunderstand the scope of its use?
->=20
-> > What would be possible though, is to mark the port's lock critical sect=
-ion=20
-> > for print deferral (but it's outside the scope of this series). In case=
- of=20
-> > serial, it would be justified to use deferred printing (which is only=
-=20
-> > meant for special cases) because serial console and printing are relate=
-d.
+> > According to tests performed by Adriana Nicolae <adriana@arista.com>,
+> > simply disabling FIFO or clearing FIFOs only once does not always
+> > ensure BUSY is deasserted but up to two tries may be needed. This could
+> > be related to ongoing Rx of a character (a guess, not known for sure).
+> > Therefore, retry FIFO clearing a few times (retry limit 4 is arbitrary
+> > number but using, e.g., p->fifosize seems overly large). Tests
+> > performed by others did not exhibit similar challenge but it does not
+> > seem harmful to leave the FIFO clearing loop in place for all DW UARTs
+> > with BUSY functionality.
 > >=20
-> > > > +=09=09return;
-> > > > +=09}
+> > Use the new dw8250_idle_enter/exit() to do divisor writes and LCR
+> > writes. In case of plain LCR writes, opportunistically try to update
+> > LCR first and only invoke dw8250_idle_enter() if the write did not
+> > succeed (it has been observed that in practice most LCR writes do
+> > succeed without complications).
+> >=20
+> > This issue was first reported by qianfan Zhao who put lots of debugging
+> > effort into understanding the solution space.
+> >=20
+> > Fixes: c49436b657d0 ("serial: 8250_dw: Improve unwritable LCR workaroun=
+d")
+> > Fixes: 7d4008ebb1c9 ("tty: add a DesignWare 8250 driver")
+> > Cc: <stable@vger.kernel.org>
 >=20
->=20
+> Why is patch 6/6 only marked for stable?  If this is needed "now",
+> shouldn't this be a separate patch?  Do you need all of the first 5 for
+> this to work properly?
+
+Some of those are really dependencies but I'll try to improve this=20
+situation for v2 and add a few more Fixes tag to the introducing commits.
+
+> I can't take this series as-is because I don't know how to route it :(
+
 
 --=20
  i.
-
---8323328-20834577-1769524828=:1055--
+--8323328-2035551506-1769521494=:1055--
