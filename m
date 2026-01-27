@@ -1,163 +1,133 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFB4934F472;
-	Tue, 27 Jan 2026 14:10:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DDC22D7D2F;
+	Tue, 27 Jan 2026 14:24:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769523053; cv=none; b=jaTZjMNxT7HG5nxkuQAH3Pddl73jEGdkgMa6Am/QDM4i1R6xEgHN2NvH5lGX3DWtayhNlz+oSaSPDrCL5QeYYTMbR7hn9ROLlWvjZZnJ0y8YuxIcwrCe0EP5C22OfHMO/zBe+cM38SQ3OKWOeQ7/Ud0SoqHA8QDCFSd47bE2TYo=
+	t=1769523864; cv=none; b=WbRqVK1xgA5oyPk3hUmFYL9kiLWw/RoBMJ+4S9n1mE7rfcmAlDEaNb/1o0zHxJIqVO8fE5kmKRy4VnAcnwI/MshCrczJh9eFTSdm3pqVEo7UZ0iFVzFZfVNjvN4ANF+/X3Y8CzCjUDeV+Wnyze7PG8pXyjVDpyqNwQC5HdXZG7M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769523053; c=relaxed/simple;
-	bh=raT5qDfoCho1XB7kfBfjvEHWMDY42gL7+rt+GyZuwR4=;
+	s=arc-20240116; t=1769523864; c=relaxed/simple;
+	bh=/X+4BfoLMHfHUsv/F8snNQqOAYWNbZ5/49zAJRESWvc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KE2DcMA+4+kVLBxJKC0oVCcKz1/Z6SeSm2bgN0Nt54XV17u0SnZRqmBnAp1byRpzbTIiEUuY9Cpt0H/DgX0fR/LF9ZEFcdQaKYhUFQBeGeuvP6hCDm3xv9sghC2VF8VtKxBpKKxEHeFdAoz6DKbT/afTTDH7QAXE9aHgnSp5vx8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hearboA6; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=SrcN4r/cqVFR7pDaVqfSrhKyQHbopeZ+MLM84CNOAq5c09KDPGHXeyiQETadmwNZcTNk/BuOW7fRisKK1LHxIBBIrvIA0V2vCyCkhpBhKJplfp9wJNNQkCGKwmRnuVSDdejjUWcnr1p6kgXZ/L+vr6oAszh7MjJE7nw0zgnjE4w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=VNnZbYPh; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hearboA6"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1769523052; x=1801059052;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=raT5qDfoCho1XB7kfBfjvEHWMDY42gL7+rt+GyZuwR4=;
-  b=hearboA6tyiZemMZFb6KDzFijLB7ZSqQXlG+0RFEqHxr1m5onS1JHC4X
-   3+PhX6E4mXXgzCAeSUJG7ImMY/AblHK289tjJYDrW6Huy0LnJG0JJ5hFP
-   QjU2f/RDa3JRGq3mR7mM3JGC2cd7Zg60sFN9TmXSlJxoLGDksDMLcHqEF
-   Bj66TVjj0nROs7QZNv/8vGHvVbrF1L0CWK/q6F4IRbNgSi3O3v9yed4Tb
-   t1VwcmMsdlGe0ZaaMMz38M8n8i2v0zD6fbgq2SXbST0ffu2cnsznpBkYU
-   RCVLj2DnOJ1bflqSTUf1SGTMKwu6aIQKwlL3bOV5UuF6k4j9fcV4oZNX/
-   A==;
-X-CSE-ConnectionGUID: AvsFxUb1SlubtOXYI+riFA==
-X-CSE-MsgGUID: X8zgL8tMQZeFIKJEIOIRpA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11684"; a="81022303"
-X-IronPort-AV: E=Sophos;i="6.21,257,1763452800"; 
-   d="scan'208";a="81022303"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2026 06:10:52 -0800
-X-CSE-ConnectionGUID: d6gKfEIsSr+Pi38RZnhhRg==
-X-CSE-MsgGUID: StlcWXzTRLiLHJHZwXK1Lg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,257,1763452800"; 
-   d="scan'208";a="212524574"
-Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.245.248])
-  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2026 06:10:48 -0800
-Date: Tue, 27 Jan 2026 16:10:45 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Petr Mladek <pmladek@suse.com>,
-	John Ogness <john.ogness@linutronix.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	linux-serial <linux-serial@vger.kernel.org>,
-	qianfan Zhao <qianfanguijin@163.com>,
-	Adriana Nicolae <adriana@arista.com>,
-	Markus Mayer <markus.mayer@linaro.org>,
-	Tim Kryger <tim.kryger@linaro.org>,
-	Matt Porter <matt.porter@linaro.org>,
-	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-	Jamie Iles <jamie@jamieiles.com>,
-	LKML <linux-kernel@vger.kernel.org>, stable@vger.kernel.org,
-	"Bandal, Shankar" <shankar.bandal@intel.com>,
-	"Murthy, Shanth" <shanth.murthy@intel.com>
-Subject: Re: [PATCH 6/6] serial: 8250_dw: Ensure BUSY is deasserted
-Message-ID: <aXjHZQnIFjfPabdU@smile.fi.intel.com>
-References: <20260123172739.13410-1-ilpo.jarvinen@linux.intel.com>
- <20260123172739.13410-7-ilpo.jarvinen@linux.intel.com>
- <aXP5YMNix8EfbJeF@smile.fi.intel.com>
- <fc09f6fd-013f-25fd-484c-cac59b0a60b6@linux.intel.com>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="VNnZbYPh"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22EC2C116C6;
+	Tue, 27 Jan 2026 14:24:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1769523863;
+	bh=/X+4BfoLMHfHUsv/F8snNQqOAYWNbZ5/49zAJRESWvc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=VNnZbYPha4qPCkxHaN7h3JcGPinzgjSakSyg1u2eCYlCihPom7g4T7gNWn3vx24kv
+	 8KcWMqAwUoVI0suAlFjYXs9oG1Nfa7Je89Bwavm1G7knB4Ut4H47IoNyPfp84N44ab
+	 1Wcak7mL/CrcFaZFp8ehfr4k0KL103c6klQc2wak=
+Date: Tue, 27 Jan 2026 15:24:15 +0100
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linux-rt-devel@lists.linux.dev, Petr Mladek <pmladek@suse.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Simona Vetter <simona@ffwll.ch>,
+	Helge Deller <deller@gmx.de>
+Subject: Re: [PATCH] printk, vt, fbcon: Remove console_conditional_schedule()
+Message-ID: <2026012757-voting-griminess-ca35@gregkh>
+References: <20260126180836.SNCdMW2f@linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <fc09f6fd-013f-25fd-484c-cac59b0a60b6@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <20260126180836.SNCdMW2f@linutronix.de>
 
-On Tue, Jan 27, 2026 at 03:35:27PM +0200, Ilpo Järvinen wrote:
-> On Sat, 24 Jan 2026, Andy Shevchenko wrote:
-> > On Fri, Jan 23, 2026 at 07:27:39PM +0200, Ilpo Järvinen wrote:
-
-+Cc: printk people to check on printing from a serial driver routines.
-
-...
-
-> > > +	/* Prevent triggering interrupt from RBR filling */
-> > > +	p->serial_out(p, UART_IER, 0);
-> > 
-> > Do we specifically use callbacks directly and not wrappers all over the change?
+On Mon, Jan 26, 2026 at 07:08:36PM +0100, Sebastian Andrzej Siewior wrote:
+> do_con_write(), fbcon_redraw.*() invoke console_conditional_schedule()
+> which is a conditional scheduling point based on printk's internal
+> variables console_may_schedule. It may only be used if the console lock
+> is acquired for instance via console_lock() or console_trylock().
 > 
-> I guess it's just a habit, I suppose you meant using serial_port_in/out 
-> instead. I can try to change those.
-
-Not (only) me. Jiri updated this driver (and many others) to use callbacks.
-That's why I added comments here and there about possible recursions.
-
-...
-
-> > > +	serial8250_fifo_wait_for_lsr_thre(up, p->fifosize);
-> > > +	ndelay(p->frame_time);
-> > 
-> > Wouldn't be a problem on lowest baud rates (exempli gratia 110)?
+> Prinkt sets the internal variable to 1 (and allows to schedule)
+> if the console lock has been acquired via console_lock(). The trylock
+> does not allow it.
 > 
-> Perhaps, but until somebody comes with an issue report related to 110, I'm 
-> wondering if this really is worth trying to address. Any suggestion how is 
-> welcome as well?
-
-Polling work? Timer?
-
-> > > +	retries = 4;	/* Arbitrary limit, 2 was always enough in tests */
-> > > +	do {
-> > > +		serial8250_clear_fifos(up);
-> > > +		if (!(p->serial_in(p, usr_reg) & DW_UART_USR_BUSY))
-> > > +			break;
-> > > +		ndelay(p->frame_time);
-> > > +	} while (--retries);
-> > 
-> > read_poll_timeout_atomic() ? I assume it can't be used due to small frame time?
+> The console_conditional_schedule() invocation in do_con_write() is
+> invoked shortly before console_unlock().
+> The console_conditional_schedule() invocation in fbcon_redraw.*()
+> original from fbcon_scroll() / vt's con_scroll() which originate from a
+> line feed.
 > 
-> Frame time is in nanoseconds yes. I did consider 
-> read_poll_timeout_atomic() but it would have required nsec -> usec 
-> conversion so I left this as it is.
-
-Yeah with the same issue on low baud rates. So far I think we need to consider
-9600 as commonly used by the old HW (which may be connected to a modern PC with
-this new kernel running), so the frame time sounds like close to a millisecond.
-And this can be met in real life.
-
-Maybe put TODO/FIXME around these ndelay() calls?
-
-> > > +	if (d->in_idle) {
-> > 
-> > > +		/*
-> > > +		 * FIXME: this deadlocks if port->lock is already held
-> > > +		 * dev_err(p->dev, "Couldn't set LCR to %d\n", value);
-> > > +		 */
-> > 
-> > Hmm... That FIXME should gone since we have non-blocking consoles, no?
+> In console_unlock() the variable is set to 0 (forbids to schedule) and
+> it tries to schedule while making progress printing. This is brand new
+> compared to when console_conditional_schedule() was added in v2.4.9.11.
 > 
-> No, lockdep still gets angry if printing is used while holding port's 
-> lock.
-
-Hmm... Let's ask PRINTK people about this. John, do we still have a gap
-with nbcon? Or did I misunderstand the scope of its use?
-
-> What would be possible though, is to mark the port's lock critical section 
-> for print deferral (but it's outside the scope of this series). In case of 
-> serial, it would be justified to use deferred printing (which is only 
-> meant for special cases) because serial console and printing are related.
+> In v2.6.38-rc3, console_unlock() (started its existence) iterated over
+> all consoles and flushed them with disabled interrupts. A scheduling
+> attempt here was not possible, it relied that a long print scheduled
+> before console_unlock().
 > 
-> > > +		return;
-> > > +	}
+> Since commit 8d91f8b15361d ("printk: do cond_resched() between lines
+> while outputting to consoles"), which appeared in v4.5-rc1,
+> console_unlock() attempts to schedule if it was allowed to schedule
+> while during console_lock(). Each record is idealy one line so after
+> every line feed.
+> 
+> This console_conditional_schedule() is also only relevant on
+> PREEMPT_NONE and PREEMPT_VOLUNTARY builds. In other configurations
+> cond_resched() becomes a nop and has no impact.
+> 
+> I'm bringing this all up just proof that it is not required anymore. It
+> becomes a problem on a PREEMPT_RT build with debug code enabled because
+> that might_sleep() in cond_resched() remains and triggers a warnings.
+> This is due to
+> 
+>  legacy_kthread_func-> console_flush_one_record ->  vt_console_print-> lf
+>    -> con_scroll -> fbcon_scroll
+> 
+> and vt_console_print() acquires a spinlock_t which does not allow a
+> voluntary schedule. There is no need to fb_scroll() to schedule since
+> console_flush_one_record() attempts to schedule after each line.
+> !PREEMPT_RT is not affected because the legacy printing thread is only
+> enabled on PREEMPT_RT builds.
+> 
+> Therefore I suggest to remove console_conditional_schedule().
+> 
+> Cc: Simona Vetter <simona@ffwll.ch>
+> Cc: Helge Deller <deller@gmx.de>
+> Cc: linux-fbdev@vger.kernel.org
+> Cc: dri-devel@lists.freedesktop.org
+> Fixes: 5f53ca3ff83b4 ("printk: Implement legacy printer kthread for PREEMPT_RT")
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> ---
+> 
+> A follow-up to
+> 	https://lore.kernel.org/all/20260114145955.d924Z-zu@linutronix.de/
+> 
+>  drivers/tty/vt/vt.c              |  1 -
+>  drivers/video/fbdev/core/fbcon.c |  6 ------
+>  include/linux/console.h          |  1 -
+>  kernel/printk/printk.c           | 16 ----------------
+>  4 files changed, 24 deletions(-)
+> 
+> diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+> index 59b4b5e126ba1..53daf7614b1af 100644
+> --- a/drivers/tty/vt/vt.c
+> +++ b/drivers/tty/vt/vt.c
+> @@ -3236,7 +3236,6 @@ static int do_con_write(struct tty_struct *tty, const u8 *buf, int count)
+>  			goto rescan_last_byte;
+>  	}
+>  	con_flush(vc, &draw);
+> -	console_conditional_schedule();
+>  	notify_update(vc);
+>  
+>  	return n;
 
--- 
-With Best Regards,
-Andy Shevchenko
+No objection from me about removing this if it's not needed anymore!
 
-
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
