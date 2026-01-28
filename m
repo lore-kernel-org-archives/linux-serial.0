@@ -1,32 +1,61 @@
-Received: from twinsen.zall.org (twinsen.zall.org [109.74.194.249])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5E560221DB5;
-	Wed, 28 Jan 2026 11:35:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.74.194.249
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A29531355C;
+	Wed, 28 Jan 2026 13:12:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769600108; cv=none; b=qYnPd0oBXZnf7KVmwNw+/4dvigWvbOXy3Ut580/JZM4RH18vSfoFXTfasIm7sHnOBTcPBc3qWeBunbYmR0X3RwrbbzRDulR8F4mcVyYI4bOmpNRBx7ug5AIl9XYQR4onjz/JtHGwjIIS/UPAc7kEHbBmm66MrJAfEoLYX4CMtgk=
+	t=1769605940; cv=none; b=U9Sv1CeUgwAZu3JfNe3GZgINUHRsiZtimoSNH9SoO4pPDWjaQoPx4oHjNE42ScHKIvz2BKZt8e7byCJP1DAFpYYBFkfTScbGXWGzn1GonhFjaRWQ0Lz+3zXv3YCNEd94HdssbF53KTNtjxdXpmrAayTQs8g6foWlwAmeQLNOydE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769600108; c=relaxed/simple;
-	bh=pWF/AjDwYIl1fzngFOeAyCmY0tpTpu9uKImTzC0XgX0=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=bhr3I0nNhVkA6dV6Th7aFkrSAWeVik48gi91JtguqHbMry7Lr/021aSii8hH6DgxVmXg4hXqaBC7UUDQoed2RfKwuNmSz2W02TRoG0uBq0i98HmWhI+aGIBTCtV0FB8C0FPbXYHiaRRa86TqBPMP8MGiuo/RQ2jfZjBmsNtCZYU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=zall.org; spf=pass smtp.mailfrom=zall.org; arc=none smtp.client-ip=109.74.194.249
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=zall.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zall.org
-Received: by twinsen.zall.org (Postfix, from userid 1000)
-	id C76786E3F; Wed, 28 Jan 2026 11:28:54 +0000 (UTC)
-Date: Wed, 28 Jan 2026 11:28:54 +0000
-From: Alyssa Milburn <amilburn@zall.org>
-To: Krzysztof Kozlowski <krzk@kernel.org>,
-	Alim Akhtar <alim.akhtar@samsung.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Faraz Ata <faraz.ata@samsung.com>,
-	linux-arm-kernel@lists.infradead.org,
-	linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Cc: Alyssa Milburn <amilburn@zall.org>
-Subject: [PATCH] tty: serial: samsung_tty: avoid dev_dbg deadlock
-Message-ID: <aXny9km6N1v9eoXU@zall.org>
+	s=arc-20240116; t=1769605940; c=relaxed/simple;
+	bh=caMJj5MeXWu40BTtO1svNq6KPU22GmNvoXPFEBVKB20=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=eel/KJVGuryihIbhkpH1sf6E20plu1F04Rf6iT9a1JwsEbEvNwrn1z20Bo1ACGo355qgFTBtVdFnucRyvlifi8fWRqoXXgkR9doWBUbwnImXuVLVtV9JinYDjZfwhJTqJcUsvlWOmQmE0/XGo6voim3pPR1WhDkliKylCledpMU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SlL6Pkc3; arc=none smtp.client-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SlL6Pkc3"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1769605940; x=1801141940;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=caMJj5MeXWu40BTtO1svNq6KPU22GmNvoXPFEBVKB20=;
+  b=SlL6Pkc37N3qzBhiLdtKoZVx/Q0OB7yetjYH0XZkC8Y6YYinUY5rtP93
+   wg0fEIkHUhHv/VOhwpvt3LdMTIQFWxpT6ONT7KbQHQBmL6vFKDhEwm5NA
+   94Lf+uUTFQTo8mY25zBHCNG3XMO1kWgV60Wlwyw+/V6Uni5mC4is19neU
+   xQzw5aKfAQCQqbHGE0bNvaKQS0QeYh1yEZoYcBaDfMBn8IAtC5yV4PSZZ
+   KoymJZd/nO2K5oAqgYqRTVWtWfxzx6Wa03B1VqvoC3hLo8yYHOVdvbu0U
+   v69K3MGuldxovVXLHff1Y9/nh31Xs1y54ueGBFa4yb+QVpP6lD65Y4WA7
+   g==;
+X-CSE-ConnectionGUID: hi3sUG5cRwesQuwL/biixQ==
+X-CSE-MsgGUID: B3FGsmTFTMOzaOY9J3CcsA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11684"; a="70716351"
+X-IronPort-AV: E=Sophos;i="6.21,258,1763452800"; 
+   d="scan'208";a="70716351"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2026 05:12:19 -0800
+X-CSE-ConnectionGUID: DlRy0w6cTXCBeNHBC4xmIg==
+X-CSE-MsgGUID: +dp6+yVLT6ayjqdD5Av3jg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,258,1763452800"; 
+   d="scan'208";a="208501745"
+Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.196])
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2026 05:12:16 -0800
+Date: Wed, 28 Jan 2026 15:12:14 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
+	qianfan Zhao <qianfanguijin@163.com>,
+	Adriana Nicolae <adriana@arista.com>, linux-kernel@vger.kernel.org,
+	"Bandal, Shankar" <shankar.bandal@intel.com>,
+	"Murthy, Shanth" <shanth.murthy@intel.com>, stable@vger.kernel.org
+Subject: Re: [PATCH v2 1/7] serial: 8250: Protect LCR write in shutdown
+Message-ID: <aXoLLq17mWtGzZU7@smile.fi.intel.com>
+References: <20260128105301.1869-1-ilpo.jarvinen@linux.intel.com>
+ <20260128105301.1869-2-ilpo.jarvinen@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,55 +64,24 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260128105301.1869-2-ilpo.jarvinen@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-commit a05025d0ce72 ("tty: serial: samsung_tty: use standard
-debugging macros") changed the debug prints to dev_dbg, which can
-result in deadlocks:
+On Wed, Jan 28, 2026 at 12:52:55PM +0200, Ilpo Järvinen wrote:
+> The 8250_dw driver needs to potentially perform very complex operations
+> during LCR writes because its BUSY handling prevents updates to LCR
+> while UART is BUSY (which is not fully under our control without those
+> complex operations). Thus, LCR writes should occur under port's lock.
+> 
+> Move LCR write under port's lock in serial8250_do_shutdown(). Also
+> split the LCR RMW so that the logic is on a separate line for clarity.
 
-s3c24xx_serial_set_termios can be called with the port lock, and then
-calls dev_dbg, which needs the console mutex. At the same time,
-s3c24xx_serial_console_write can be called with the console lock
-(e.g., inside console_unlock), and needs the port lock.
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-To avoid this, move one dev_dbg call and just delete the other.
-
-Signed-off-by: Alyssa Milburn <amilburn@zall.org>
----
- drivers/tty/serial/samsung_tty.c | 10 ++--------
- 1 file changed, 2 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index 563688c50751..4a82779a4c38 100644
---- a/drivers/tty/serial/samsung_tty.c
-+++ b/drivers/tty/serial/samsung_tty.c
-@@ -1582,12 +1582,12 @@ static void s3c24xx_serial_set_termios(struct uart_port *port,
- 		ulcon |= S3C2410_LCON_PNONE;
- 	}
- 
--	uart_port_lock_irqsave(port, &flags);
--
- 	dev_dbg(port->dev,
- 		"setting ulcon to %08x, brddiv to %d, udivslot %08x\n",
- 		ulcon, quot, udivslot);
- 
-+	uart_port_lock_irqsave(port, &flags);
-+
- 	wr_regl(port, S3C2410_ULCON, ulcon);
- 	wr_regl(port, S3C2410_UBRDIV, quot);
- 
-@@ -1607,12 +1607,6 @@ static void s3c24xx_serial_set_termios(struct uart_port *port,
- 	if (ourport->info->has_divslot)
- 		wr_regl(port, S3C2443_DIVSLOT, udivslot);
- 
--	dev_dbg(port->dev,
--		"uart: ulcon = 0x%08x, ucon = 0x%08x, ufcon = 0x%08x\n",
--		rd_regl(port, S3C2410_ULCON),
--		rd_regl(port, S3C2410_UCON),
--		rd_regl(port, S3C2410_UFCON));
--
- 	/*
- 	 * Update the per-port timeout.
- 	 */
 -- 
-2.52.0
+With Best Regards,
+Andy Shevchenko
+
 
