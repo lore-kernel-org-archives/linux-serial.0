@@ -1,120 +1,110 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD3E333FE0A;
-	Wed, 28 Jan 2026 15:07:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDACD288C22;
+	Wed, 28 Jan 2026 15:09:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769612864; cv=none; b=TB95/PJKSBtOSg8v5hLj9qnzHoKpCq5YorY4sJQsyEwQaGC3gpAWmOUan6hL8QaTv53eDP7RVSNON9E1luWPudcdPeGy0PiFj3j7MTiCXPWP4ZFnqvBer1I6T9LVD7gVIGUKX9cGXOW7hBCPLOPk/N9ke37CizC2TxldYndGJmI=
+	t=1769612983; cv=none; b=h1zJeCk0JnJcp2qinE4mzaRMC3lYYt43KVK3eGR4L6hsoGQUfF22niYmj+wDA+AiuBJd9fqEAemfu3dPV3rzJdlzaVppuSRV65EqogNXiOHsw8HosIXpEHp7xY0S8R+6p7KCD7lX7U5QfEyQ32rKufOcTDHYBDuYo22NV6x6ZK0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769612864; c=relaxed/simple;
-	bh=42xJqEppx6uere65jFemS9UG62b/cEvdAtAStThdFP0=;
+	s=arc-20240116; t=1769612983; c=relaxed/simple;
+	bh=99TIhnyP8asXVXQLWDoMJXHTaNSbjKcuxYcrZ1UWSTQ=;
 	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=YqZgbGGi3bh3IzMxYqcWK6uh3H3ALLBKiskzbadAleD6frWZT/gAIetue0W0r5N1/Muoh2CZ9/3ZwHnxwtGJ1S26PmWCBCMY8AAa4/Y8Zw4bf6ehfOR0F0J2S5xlVLvwmWO4rqdAKcKeEZlfzUyeitdaO4v8++AjeP4yjxhCHvw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MHe0BDkj; arc=none smtp.client-ip=198.175.65.16
+	 MIME-Version:Content-Type; b=ujAFXQU//BBc+tBdO99t0W4uwy8VVDoWdm2amYC3e1Nph1wtFqb07VCtJ5nDRsuXWHuTMnSjKAXrgRO9eV2vOC4nUTtcGlfIFuW2KC5XCR5tZs5xvzbcymAioFvHmYJm6cvfonCC2cC6bymBfhmalwceQIXhxhfokdOLhmzfBKY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GF4500mB; arc=none smtp.client-ip=192.198.163.8
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MHe0BDkj"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GF4500mB"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1769612863; x=1801148863;
+  t=1769612982; x=1801148982;
   h=from:date:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=42xJqEppx6uere65jFemS9UG62b/cEvdAtAStThdFP0=;
-  b=MHe0BDkjWaionmKEE88ju4tI0v44hLD0cx6v/6GcQIpVgkSux4Mhlv+M
-   SkwoyPDqOxweUPGpTSk53L/NKZS1d0aqLCGYDxny1KOVV/vAcsYvnlWEu
-   pgKHfcJTuc7bOOSC2tC4DrJ7ZbC6RtvcVTFQu2OvWrOJ/eszLPYJxdsRv
-   EmO97A27zlY9coVtznHAw/trHknjoOkJ3JQwIn5ZKL/ZXDF2j8QlfqJeX
-   gl6SG93hS4MWhsX9Z+BlMjZ6mSFu503b+ZQmXxtFqfby3ZbTeIkZqr6D7
-   pGUoLeCH5A/tduCKOF3U+O9chHZNkMFAsz3AjWIpt4vDoK3ff0vHC8ESn
-   A==;
-X-CSE-ConnectionGUID: GgGuAJDsQ3eEpVL+L3hLFA==
-X-CSE-MsgGUID: AavM88rdTg6pbEOqD3ikEg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11684"; a="70993196"
+  bh=99TIhnyP8asXVXQLWDoMJXHTaNSbjKcuxYcrZ1UWSTQ=;
+  b=GF4500mBNgC8O1PfTlZh/qFaAJBf6KW4W48UP5iPgOlmKHw/o/43dbf0
+   sXuKfc7fyVMdLJ1AAXU+ttP08B7XrLzH99/5Xbf0IPt0DwwVXeTh3uYcH
+   MhaJcnnv0vtcp8xcSok98ornvPxkUt6KXMtlxL7iZIryKPG65Qh1EjgOz
+   ZcoBaecR4CKuwh+nBMg/iHfAP6NFmuDkiD+Z6PVdWEbb1mPCV/OLhfB1u
+   vysZ19M5PRB61ipubcaw/NULJ6sOEzp85htmMb7+kew5F6ZU/Vj3oSU23
+   7slkV7rY7kf0G5rSGB7/zATo9sQ+pBCpFSv7+zwNNVc0betieTm4P8Hn9
+   g==;
+X-CSE-ConnectionGUID: mxzwWZSYSt+84L7dUmC3Ng==
+X-CSE-MsgGUID: U8iWDZpUR6a5avXUSvHjVQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11685"; a="88400964"
 X-IronPort-AV: E=Sophos;i="6.21,258,1763452800"; 
-   d="scan'208";a="70993196"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2026 07:07:41 -0800
-X-CSE-ConnectionGUID: Ng84lqKFTcm10fyFboFo2w==
-X-CSE-MsgGUID: wwXtok1KRsK9fx08QVO0sg==
+   d="scan'208";a="88400964"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2026 07:09:37 -0800
+X-CSE-ConnectionGUID: g/dB/hdrSuqXkEMMabKD+A==
+X-CSE-MsgGUID: BLJEv0gHTfyf1dTM9DXGAA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,258,1763452800"; 
-   d="scan'208";a="208666219"
+   d="scan'208";a="212849657"
 Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.14])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2026 07:07:37 -0800
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2026 07:09:35 -0800
 From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Wed, 28 Jan 2026 17:07:33 +0200 (EET)
+Date: Wed, 28 Jan 2026 17:09:31 +0200 (EET)
 To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>, 
-    linux-serial <linux-serial@vger.kernel.org>, 
-    qianfan Zhao <qianfanguijin@163.com>, Adriana Nicolae <adriana@arista.com>, 
-    Jamie Iles <jamie@jamieiles.com>, LKML <linux-kernel@vger.kernel.org>, 
-    "Bandal, Shankar" <shankar.bandal@intel.com>, 
-    "Murthy, Shanth" <shanth.murthy@intel.com>, stable@vger.kernel.org
-Subject: Re: [PATCH v2 6/7] serial: 8250: Add late synchronize_irq() to
- shutdown to handle DW UART BUSY
-In-Reply-To: <aXodg7E6dkqS2e37@smile.fi.intel.com>
-Message-ID: <7d6747b0-5cdc-6936-d52f-414edb063d3e@linux.intel.com>
-References: <20260128105301.1869-1-ilpo.jarvinen@linux.intel.com> <20260128105301.1869-7-ilpo.jarvinen@linux.intel.com> <aXodg7E6dkqS2e37@smile.fi.intel.com>
+    "Jiri Slaby (SUSE)" <jirislaby@kernel.org>, 
+    LKML <linux-kernel@vger.kernel.org>, 
+    linux-serial <linux-serial@vger.kernel.org>
+Subject: Re: [PATCH v1 1/1] serial: 8250_port: Drop duplicate NULL check
+In-Reply-To: <20260128142726.128175-1-andriy.shevchenko@linux.intel.com>
+Message-ID: <c2f50f9e-fc4c-dc6f-8bc7-8cc758c741dc@linux.intel.com>
+References: <20260128142726.128175-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-159550698-1769612853=:1017"
+Content-Type: multipart/mixed; boundary="8323328-1297348080-1769612971=:1017"
 
   This message is in MIME format.  The first part should be readable text,
   while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323328-159550698-1769612853=:1017
-Content-Type: text/plain; charset=iso-8859-1
+--8323328-1297348080-1769612971=:1017
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 
 On Wed, 28 Jan 2026, Andy Shevchenko wrote:
 
-> On Wed, Jan 28, 2026 at 12:53:00PM +0200, Ilpo J=E4rvinen wrote:
-> > When DW UART is !uart_16550_compatible, it can indicate BUSY at any
-> > point (when under constant Rx pressure) unless a complex sequence of
-> > steps is performed. Any LCR write can run a foul with the condition
-> > that prevents writing LCR while the UART is BUSY, which triggers
-> > BUSY_DETECT interrupt that seems unmaskable using IER bits.
-> >=20
-> > Normal flow is that dw8250_handle_irq() handles BUSY_DETECT condition
-> > by reading USR register. This BUSY feature, however, breaks the
-> > assumptions made in serial8250_do_shutdown(), which runs
-> > synchronize_irq() after clearing IER and assumes no interrupts can
-> > occur after that point but then proceeds to update LCR, which on DW
-> > UART can trigger an interrupt.
-> >=20
-> > If serial8250_do_shutdown() releases the interrupt handler before the
-> > handler has run and processed the BUSY_DETECT condition by read the USR
-> > register, the IRQ is not deasserted resulting in interrupt storm that
-> > triggers "irq x: nobody cared" warning leading to disabling the IRQ.
-> >=20
-> > Add late synchronize_irq() into serial8250_do_shutdown() to ensure
-> > BUSY_DETECT from DW UART is handled before port's interrupt handler is
-> > released. Alternative would be to add DW UART specific shutdown
-> > function but it would mostly duplicate the generic code and the extra
-> > synchronize_irq() seems pretty harmless in serial8250_do_shutdown().
+> serial8250_release_dma() is NULL-aware, no need to check this in the call=
+er.
+> While at it, make sure DMA won't be used again, by NULLifying the pointer=
+=2E
 >=20
-> Dunno if the triggered interrupt may lead to a new DMA transfers (since
-> this is generic 8520 code...) in some cases.
-
-If BUSY_DETECT interrupt fires (like I'd expect), the handler won't start=
-=20
-anything but exits early from dw8250_handle_irq().
-
-> Anyway I've just sent a patch
-> that is Cc'ed to you to prevent that from happening. Not sure if it needs
-> to be incorporated into your series or should have a Fixes tag.
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>  drivers/tty/serial/8250/8250_port.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 >=20
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/825=
+0/8250_port.c
+> index 21fdf84f118f..c40d750d5a4b 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -2366,8 +2366,8 @@ void serial8250_do_shutdown(struct uart_port *port)
+> =20
+>  =09synchronize_irq(port->irq);
+> =20
+> -=09if (up->dma)
+> -=09=09serial8250_release_dma(up);
+> +=09serial8250_release_dma(up);
+> +=09up->dma =3D NULL;
+> =20
+>  =09scoped_guard(uart_port_lock_irqsave, port) {
+>  =09=09if (port->flags & UPF_FOURPORT) {
+>=20
+
+Seems reasonable safeguard,
+
+Reviewed-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
 
 
 --=20
  i.
 
---8323328-159550698-1769612853=:1017--
+--8323328-1297348080-1769612971=:1017--
