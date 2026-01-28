@@ -1,171 +1,161 @@
-Received: from mail-oo1-f78.google.com (mail-oo1-f78.google.com [209.85.161.78])
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A655C1E5B7B
-	for <linux-serial@vger.kernel.org>; Wed, 28 Jan 2026 00:35:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.78
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 911AE337BAA
+	for <linux-serial@vger.kernel.org>; Wed, 28 Jan 2026 09:02:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769560536; cv=none; b=BqVD36VXriCh0OdBguGlFkrH6Rlhg3oc3yeI4jP7gaQ8TX8d25AigKawUU/LkZRbTW8HfCBGw8dv9nIIsjeoOLwu23OO/f0KmMe+Nlm8cUCGW187SA9sKSsMmrgHgp0Gfle9uMx1mX1tdYa5uuNsEm7ebCEE5APWty86900Oohw=
+	t=1769590929; cv=none; b=NilBu1rXNlNtgPROH1m2gnpckDd3O+FJON1AY1fOl6cH8jVvujVTlthdnrXbYOP9novWwVOiab7B8fhioKW9wg7sH9GuTvmEgF4pj4b/mtqkUQWf8nNbW1NjAqLRdEJEAI5VZEZKRESZiGEC8vGfkfb3QmC2soWquRqWKhrOJHM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769560536; c=relaxed/simple;
-	bh=rsYhG4vNF2tjG+6NQ8vlM3NK/7kIHjmb7diqCpLo39o=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=K9fZgp/us/wIeUpbPDHebFzZgtQ0u0j6Ck36ZG3jJfurfNOtUQCwWUs9rL02RxwAMsONNz6QSpqOEDFn02DKJUMFQaVtY67mgrNBAHUVH5NcoNAbMcXw/e2yMEWkSuc4wSzuAP767uah1/+8mSzMBxPqvuXKufauBl0MPNJrvAk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.78
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f78.google.com with SMTP id 006d021491bc7-66115eb3950so13735503eaf.3
-        for <linux-serial@vger.kernel.org>; Tue, 27 Jan 2026 16:35:34 -0800 (PST)
+	s=arc-20240116; t=1769590929; c=relaxed/simple;
+	bh=1GPlGKZgcb1DldoonD0OPHNoXEsNDWUi3TBlJQ2/goc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=b8Urbhy7jYO+aW04n6SDh4zs5tMahUYol9dcJLIq69V3XspOLut6Y/xi4/OKrdyn1zDz7HcGRqCxydCHf2dS4vOejbz7UdW3SgyOyYzXHFRJlqKeSwJnXQrrKvBINaXX/7amWmC517cHGTPOfTQzQES1JGdhKefWiiF77uoeZC4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=SV+SE//Y; arc=none smtp.client-ip=209.85.128.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="SV+SE//Y"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-480706554beso2862955e9.1
+        for <linux-serial@vger.kernel.org>; Wed, 28 Jan 2026 01:02:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1769590925; x=1770195725; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=qAOxIVYTEue9E0jsTADeINvfipVSQ2+6/g8YDctDKvU=;
+        b=SV+SE//Y+5F3DksQv4y6lLM9JJhsuUk/LhKy1Z2iWviotqjZvZRuzivoJAUf4WS3pY
+         HXaqPlqKFg2/zrSeftU2o/v6EYfI2efFxfwo8qFEf0oTjNaTXvxBDOdHtI9B4L+8IAxi
+         PYs4KrRfSDTZvynb7RAzB6zzHXMGXPrKYqR9QRrqy1OS3QHDqgZK1i3DyIpSGDVXYjvq
+         eWZmn6QbqnjdQf7mCyU/tMXpXux1KAdLdQ2mtL6KXp0WcaoLrNyitgrCbhSbO3VArfCH
+         YoG9Hk3U8FOsTpoaFA+zTMu8bZDgVTlKx3rAK67wJ58HUos1YqQpRV0FK1Yu7O+iAIRW
+         GZ+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769560533; x=1770165333;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=FiL/J+GAd7m8/xrFYt4nDSBEtCYZ184sjlc7HOx8SLI=;
-        b=s3VZXYsnibi8vefAsp1B3BoIgVgO8RxNX01b+WfUesOg0mR3YIS82i1pKMt+GdeoWz
-         XnixTPdIHLrjtKFFCrOymAB/oP2bZo1DtVF0eLrWN0VZ4ci/o3WP22JubLY7zNfTdsiN
-         GWvw8PlWmoiI72JDg+S2T649XeoOgOIpfbdPM/MrS6sOs9sFIgbSqFrI0y2dgm0+oGqD
-         pnoffHc1+4B5nKt1t14mo3jKDYvSEp25jsXL7kRza8BFyKrVam31iuOwCdnvmLXHq3dm
-         TNHLPP6xA1hyG82ihEk8P7xGgn3M49en0EIrEAb4YFcm5k9KiMLBFrldHq2stbzhqo6d
-         w5nw==
-X-Forwarded-Encrypted: i=1; AJvYcCWOF49RBC20pZiXHWbc3LdpXbwthEP83yNB5ET/N1FG3qa+KHscO0bP3GypKCJyHPNNm5HXAAsIK6bBR68=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxv2B+N9uZhLpZl1WO5hVA45pFqOn2GfO/9t74+HbTGkudQQ0F+
-	zv0Nw9dEMRtik+7Ix/G13H1+XyYLGQ/9lLGHviIF9X4lMFRT9EDje5lLHnx+PfPbwGq3aqAD+Kw
-	Nfe8OIeuLV0bXwKri8lZgEHKs8XdxUoX26ulRq1Ny47R0BzW4WHt/EpgRGQk=
+        d=1e100.net; s=20230601; t=1769590925; x=1770195725;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=qAOxIVYTEue9E0jsTADeINvfipVSQ2+6/g8YDctDKvU=;
+        b=W8W+gFMXTKgcQ16ND4tgeUU5e0ZBh/xu9fQ/5HzvzgsBjk0frnRodNFukUOlfOvIvf
+         xW5B070kRGg6pYlJIlwMvOtsBhUyZSJd9vxauXDUaOop1a1pUiCPZ/ZoDDXSp8SIs1Ti
+         qXjbCU3pyuUHRVaCC0GiagwBurUBKhldH8qRvRPC17I63rAMkZPeM3m1AgAPhSSKM7Ml
+         zzVUzQuwLPPfCfVqZl9unHFO5pJTZExbI21hFEHgTuA6ZJxO/yQbYdEQ6oTrj+qWRLPJ
+         La7SNeldIIbuKDsh0rLpz7+HswS/xj1VglOI1HDSWbl7/EgahgT8PDFKdTkg61AXZCjs
+         mNIg==
+X-Forwarded-Encrypted: i=1; AJvYcCVmg59rHFf+qzosm/1mHd9Lbb+kwuunlxXurpNXhcNE62K+PwH9pTRqYxCdQzVN3jfPPnxUeIK9ahcxado=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwPV7/lfml7kXVzDJ3VUK8tQyagqBeGbLa0wzOyO+osNjTnPyJk
+	UEDaoHjveXw5hg8pEPAl8G6nkZxgLMtebOMkhLpwT1PKEch/NSmLVA9F5VR2ccBKWRo=
+X-Gm-Gg: AZuq6aI/YoTaikAiMvSvKlaWxH03rf9HYB1aUZ9mWmrN3ng9dKFs2mvfk0vOqSEOPYM
+	hJH9m20Pfryd52Mj/IdRFQk/LqM6SopR2p6K8Q1H+f/F+SN0S15G8q2KMS3BxHQbMFW1dTSKxje
+	Q9Hl24jMXTQ6kyiOeOrWcb1muAQtZqrJm201tp7Ou8sUQy9SWO1iFUF0Jp3QwjYm1hMbk7s2k4g
+	4ggosIzFzMlEBk37RhlYOFQFePE+Wb4CKD2mbjdz40BDrJgYSoJL1gv4VV2toBstuII1z5NBZ9W
+	Hn8bFM1B/MaMqadf28w1btwe1Ndxs24beDp9nWamXSKaSiL/NhSMwFa1576hJQR24ePxK37MmrW
+	TclA7jcm2fjr6yZCC7upeEQDbq3RfzxPD3nRE13v16SPQeKo1DEeZ68Decj3V8HlcS6GwVXjm+D
+	0FdJwCw4/u2dF3Gw==
+X-Received: by 2002:a05:600c:3154:b0:477:5cc6:7e44 with SMTP id 5b1f17b1804b1-48069c1a7ebmr50821355e9.11.1769590924606;
+        Wed, 28 Jan 2026 01:02:04 -0800 (PST)
+Received: from pathway.suse.cz ([176.114.240.130])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48066bee7d0sm122234435e9.4.2026.01.28.01.02.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 28 Jan 2026 01:02:04 -0800 (PST)
+Date: Wed, 28 Jan 2026 10:02:01 +0100
+From: Petr Mladek <pmladek@suse.com>
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linux-rt-devel@lists.linux.dev,
+	Steven Rostedt <rostedt@goodmis.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Simona Vetter <simona@ffwll.ch>,
+	Helge Deller <deller@gmx.de>
+Subject: Re: [PATCH] printk, vt, fbcon: Remove console_conditional_schedule()
+Message-ID: <aXnQiSBskXo4RDAL@pathway.suse.cz>
+References: <20260126180836.SNCdMW2f@linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:2207:b0:662:c4c8:7adc with SMTP id
- 006d021491bc7-662f2053007mr2311970eaf.34.1769560533545; Tue, 27 Jan 2026
- 16:35:33 -0800 (PST)
-Date: Tue, 27 Jan 2026 16:35:33 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <697959d5.050a0220.c9109.002b.GAE@google.com>
-Subject: [syzbot] [serial?] general protection fault in fn_enter
-From: syzbot <syzbot+bbe4d8bcf8e458140bb8@syzkaller.appspotmail.com>
-To: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260126180836.SNCdMW2f@linutronix.de>
 
-Hello,
+On Mon 2026-01-26 19:08:36, Sebastian Andrzej Siewior wrote:
+> do_con_write(), fbcon_redraw.*() invoke console_conditional_schedule()
+> which is a conditional scheduling point based on printk's internal
+> variables console_may_schedule. It may only be used if the console lock
+> is acquired for instance via console_lock() or console_trylock().
+> 
+> Prinkt sets the internal variable to 1 (and allows to schedule)
+> if the console lock has been acquired via console_lock(). The trylock
+> does not allow it.
+> 
+> The console_conditional_schedule() invocation in do_con_write() is
+> invoked shortly before console_unlock().
+> The console_conditional_schedule() invocation in fbcon_redraw.*()
+> original from fbcon_scroll() / vt's con_scroll() which originate from a
+> line feed.
+> 
+> In console_unlock() the variable is set to 0 (forbids to schedule) and
+> it tries to schedule while making progress printing. This is brand new
+> compared to when console_conditional_schedule() was added in v2.4.9.11.
+> 
+> In v2.6.38-rc3, console_unlock() (started its existence) iterated over
+> all consoles and flushed them with disabled interrupts. A scheduling
+> attempt here was not possible, it relied that a long print scheduled
+> before console_unlock().
+> 
+> Since commit 8d91f8b15361d ("printk: do cond_resched() between lines
+> while outputting to consoles"), which appeared in v4.5-rc1,
+> console_unlock() attempts to schedule if it was allowed to schedule
+> while during console_lock(). Each record is idealy one line so after
+> every line feed.
+> 
+> This console_conditional_schedule() is also only relevant on
+> PREEMPT_NONE and PREEMPT_VOLUNTARY builds. In other configurations
+> cond_resched() becomes a nop and has no impact.
+> 
+> I'm bringing this all up just proof that it is not required anymore. It
+> becomes a problem on a PREEMPT_RT build with debug code enabled because
+> that might_sleep() in cond_resched() remains and triggers a warnings.
+> This is due to
+> 
+>  legacy_kthread_func-> console_flush_one_record ->  vt_console_print-> lf
+>    -> con_scroll -> fbcon_scroll
+> 
+> and vt_console_print() acquires a spinlock_t which does not allow a
+> voluntary schedule. There is no need to fb_scroll() to schedule since
+> console_flush_one_record() attempts to schedule after each line.
+> !PREEMPT_RT is not affected because the legacy printing thread is only
+> enabled on PREEMPT_RT builds.
+> 
+> Therefore I suggest to remove console_conditional_schedule().
+> 
+> Cc: Simona Vetter <simona@ffwll.ch>
+> Cc: Helge Deller <deller@gmx.de>
+> Cc: linux-fbdev@vger.kernel.org
+> Cc: dri-devel@lists.freedesktop.org
+> Fixes: 5f53ca3ff83b4 ("printk: Implement legacy printer kthread for PREEMPT_RT")
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-syzbot found the following issue on:
+Just for record. This change looks OK from printk() POV.
+printk() does console_trylock() and calls console_unlock()
+with preemption disabled anyway, see vprintk_emit().
 
-HEAD commit:    615aad0f61e0 Add linux-next specific files for 20260126
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=1625a6ef980000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=d51c584a7396ddf1
-dashboard link: https://syzkaller.appspot.com/bug?extid=bbe4d8bcf8e458140bb8
-compiler:       Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11747d2a580000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1190d05a580000
+VT code still synchronizes some operations using console_lock().
+It is possible that some non-printk related operations rely
+on this. But it is hard to say. It might actually be a good
+idea to find it out.
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/5318e5f027be/disk-615aad0f.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/d165e561fa49/vmlinux-615aad0f.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/fb0e01c90aa5/bzImage-615aad0f.xz
+Also I have seen many printk-related softlockups. But they
+were always caused by slow serial consoles. I can't remember
+any in VT code.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+bbe4d8bcf8e458140bb8@syzkaller.appspotmail.com
+Feel free to use:
 
-Oops: general protection fault, probably for non-canonical address 0xdffffc0000000038: 0000 [#1] SMP KASAN PTI
-KASAN: null-ptr-deref in range [0x00000000000001c0-0x00000000000001c7]
-CPU: 1 UID: 0 PID: 6023 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/13/2026
-RIP: 0010:__queue_work+0xa2/0xf90 kernel/workqueue.c:2269
-Code: 11 31 ff 89 ee e8 4e f4 37 00 85 ed 0f 85 ef 0c 00 00 e8 01 f0 37 00 4d 8d b7 c0 01 00 00 4c 89 f0 48 c1 e8 03 48 89 44 24 28 <42> 0f b6 04 20 84 c0 0f 85 22 0d 00 00 4c 89 34 24 41 8b 2e 89 ee
-RSP: 0018:ffffc900036f74b8 EFLAGS: 00010002
-RAX: 0000000000000038 RBX: 0000000000000008 RCX: ffff888031643c80
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: 0000000000000000 R08: ffff88813ff72017 R09: 1ffff11027fee402
-R10: dffffc0000000000 R11: ffffed1027fee403 R12: dffffc0000000000
-R13: ffff88813ff72010 R14: 00000000000001c0 R15: 0000000000000000
-FS:  0000555577a96500(0000) GS:ffff8881253b4000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fccc4f840c0 CR3: 000000007b780000 CR4: 00000000003526f0
-Call Trace:
- <TASK>
- queue_work_on+0x106/0x1d0 kernel/workqueue.c:2405
- put_queue drivers/tty/vt/keyboard.c:328 [inline]
- fn_enter+0x45d/0x900 drivers/tty/vt/keyboard.c:480
- kbd_keycode drivers/tty/vt/keyboard.c:1497 [inline]
- kbd_event+0x2ec1/0x40d0 drivers/tty/vt/keyboard.c:1515
- input_handle_events_default+0xd4/0x1a0 drivers/input/input.c:2541
- input_pass_values+0x288/0x890 drivers/input/input.c:128
- input_event_dispose+0x330/0x6b0 drivers/input/input.c:342
- input_inject_event+0x1dd/0x340 drivers/input/input.c:424
- evdev_write+0x325/0x4c0 drivers/input/evdev.c:528
- vfs_write+0x29a/0xb90 fs/read_write.c:686
- ksys_write+0x150/0x270 fs/read_write.c:740
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0xe2/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fccc4f9aeb9
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffe15585178 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-RAX: ffffffffffffffda RBX: 00007fccc5215fa0 RCX: 00007fccc4f9aeb9
-RDX: 00000000000012d8 RSI: 0000200000000040 RDI: 0000000000000003
-RBP: 00007fccc5008c1f R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fccc5215fac R14: 00007fccc5215fa0 R15: 00007fccc5215fa0
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:__queue_work+0xa2/0xf90 kernel/workqueue.c:2269
-Code: 11 31 ff 89 ee e8 4e f4 37 00 85 ed 0f 85 ef 0c 00 00 e8 01 f0 37 00 4d 8d b7 c0 01 00 00 4c 89 f0 48 c1 e8 03 48 89 44 24 28 <42> 0f b6 04 20 84 c0 0f 85 22 0d 00 00 4c 89 34 24 41 8b 2e 89 ee
-RSP: 0018:ffffc900036f74b8 EFLAGS: 00010002
-RAX: 0000000000000038 RBX: 0000000000000008 RCX: ffff888031643c80
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: 0000000000000000 R08: ffff88813ff72017 R09: 1ffff11027fee402
-R10: dffffc0000000000 R11: ffffed1027fee403 R12: dffffc0000000000
-R13: ffff88813ff72010 R14: 00000000000001c0 R15: 0000000000000000
-FS:  0000555577a96500(0000) GS:ffff8881253b4000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fccc4f840c0 CR3: 000000007b780000 CR4: 00000000003526f0
-----------------
-Code disassembly (best guess), 1 bytes skipped:
-   0:	31 ff                	xor    %edi,%edi
-   2:	89 ee                	mov    %ebp,%esi
-   4:	e8 4e f4 37 00       	call   0x37f457
-   9:	85 ed                	test   %ebp,%ebp
-   b:	0f 85 ef 0c 00 00    	jne    0xd00
-  11:	e8 01 f0 37 00       	call   0x37f017
-  16:	4d 8d b7 c0 01 00 00 	lea    0x1c0(%r15),%r14
-  1d:	4c 89 f0             	mov    %r14,%rax
-  20:	48 c1 e8 03          	shr    $0x3,%rax
-  24:	48 89 44 24 28       	mov    %rax,0x28(%rsp)
-* 29:	42 0f b6 04 20       	movzbl (%rax,%r12,1),%eax <-- trapping instruction
-  2e:	84 c0                	test   %al,%al
-  30:	0f 85 22 0d 00 00    	jne    0xd58
-  36:	4c 89 34 24          	mov    %r14,(%rsp)
-  3a:	41 8b 2e             	mov    (%r14),%ebp
-  3d:	89 ee                	mov    %ebp,%esi
+Acked-by: Petr Mladek <pmladek@suse.com> # from printk() POV
 
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-
-If the report is already addressed, let syzbot know by replying with:
-#syz fix: exact-commit-title
-
-If you want syzbot to run the reproducer, reply with:
-#syz test: git://repo/address.git branch-or-commit-hash
-If you attach or paste a git patch, syzbot will apply it before testing.
-
-If you want to overwrite report's subsystems, reply with:
-#syz set subsystems: new-subsystem
-(See the list of subsystem names on the web dashboard)
-
-If the report is a duplicate of another one, reply with:
-#syz dup: exact-subject-of-another-report
-
-If you want to undo deduplication, reply with:
-#syz undup
+Best Regards,
+Petr
