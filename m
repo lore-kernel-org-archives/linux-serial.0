@@ -1,158 +1,171 @@
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.3])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3EA737FF6A;
-	Thu, 29 Jan 2026 10:32:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.3
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50E2926CE39;
+	Thu, 29 Jan 2026 11:41:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769682752; cv=none; b=izYkVHjJ01o9hSC/5lTi+ZBzir5e3W8BoUx/qYGPiSrHqtI9QTeesRp0uljTxOpcvloJeqxa85eErC6izuuS1Fvw/a9TX8TKC4OMad8+5tJYHi6PlLG2XatFYBUqJVO+4U6no+g0bMnQWEpmsy/TN6X8OCUAjC+qoSO/0rPJVUA=
+	t=1769686870; cv=none; b=pnWSb9eeqdIqan9OJmfhe41E+y5UaSDYmgEHvomZpyAEGPTJXwDWeJcQIZbfd3ToRn8Z4YDzBmSJn4NEkbj/EPsNJY2dzHfKb3lS59znzaEJ0lsJILm2KfG0Y+0sqrcDxEoTM3P9nDLZVtgbX2kip1sY6DVfP91aPgJ+Sl4XfLw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769682752; c=relaxed/simple;
-	bh=1bQYK8IacfwSNGVK5GuB1+Gp+uYx3am5EW74qsojXX4=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=bhVX0xogvijRKXLMtcYk3hOjhC3FedNosN7ONYQyV4HpOdMWwd/barfvj62hqYxm4II9qmUgep3sDFbEV3Vmy9Xv8JGECBZVijLPXqVBqhRgBQezqdoB/VZPaibnmKqYlNhdBjtJrch9iCWgE5FAag6pvwFkls+I2JZWkS5GMiM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=Qvg+lEoY; arc=none smtp.client-ip=220.197.31.3
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1769686870; c=relaxed/simple;
+	bh=GxMf/5mp8QjYk8b0oivIjo05Zaj5YW+DCUftJ/YqvNM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=pxAdogfWVpw736g4zpl6czHA8O4KzMvJa05t1G1vyz7uPYmj6ytiStHYm9BdNddMVfUF8yS0BiGxZlzyRad+SOMiJeeVgiW8uRmfso2C6iAAfiQczARF2h4HP9QoRE4uxedWRlCqiDqWtEz+c4DaGjX5y+E3zXCsQnfFmFtBKAY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hhFtYdDg; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="Qvg+lEoY"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=EL
-	dN71COLeZk+g0przg5cAdmCR92SeR+RRNaH9kCEGA=; b=Qvg+lEoYbnnxAED+Wu
-	vuOkpUJbT7dq3XW5cnlXiWe5af9R6CAVYqHfsSg7M3ucek/oWPnHufmoT3mrjlck
-	jLgtmLHu2r1P2Vs+jDZRGVvXMs3KpUROyieWHnP0xPm2gBPbcLGRJnK9OW4mUlO9
-	10ZiAT779SA4dNo86rtFFiQKg=
-Received: from zhaoxin-MS-7E12.. (unknown [])
-	by gzga-smtp-mtada-g0-2 (Coremail) with SMTP id _____wDnHn8BN3tp+MxUJw--.23801S2;
-	Thu, 29 Jan 2026 18:31:30 +0800 (CST)
-From: Xin Zhao <jackzxcui1989@163.com>
-To: m.szyprowski@samsung.com
-Cc: gregkh@linuxfoundation.org,
-	hch@infradead.org,
-	jackzxcui1989@163.com,
-	jirislaby@kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	tj@kernel.org,
-	tommaso.merciai.xr@bp.renesas.com,
-	geert@linux-m68k.org
-Subject: Re: [PATCH v8] tty: tty_port: add workqueue to flip TTY buffer
-Date: Thu, 29 Jan 2026 18:31:29 +0800
-Message-Id: <20260129103129.2928955-1-jackzxcui1989@163.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <d1942304-ee30-478d-90fb-279519f3ae81@samsung.com>
-References: <d1942304-ee30-478d-90fb-279519f3ae81@samsung.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hhFtYdDg"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 057BEC4CEF7;
+	Thu, 29 Jan 2026 11:41:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1769686869;
+	bh=GxMf/5mp8QjYk8b0oivIjo05Zaj5YW+DCUftJ/YqvNM=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=hhFtYdDgi04FrQb5oG6WU8WJT4pW/Ad6DqcjX3kcqWfoeCoUWWlUTa6fEjrKjjgNK
+	 Ny5NJ8XnpEARZaj7GCmoGiijjtYfNLHEn/MQYPvkfALCH4OyNO9VBy/AN75ciNVtXy
+	 1/DWf/378vO5qA9itsnqFsNxJtXhgDa825aZFwQzucY2BWQzaXTLQLCE6ZxGZJG1To
+	 1zL9oj4Ffpqkzu6ephruC4criEO4DC6NlaiO4kgdN0UTJHk7DSN7nkMoZwc0B+Pjy0
+	 /Ji2JuMWSbeb57Wzf4AJBJ0xaRdacitwyC33idjkx5m7qtlSejYsIfBvvk/sid2ymE
+	 NV+TlEt7VlsSQ==
+Message-ID: <24935907-76b8-4369-a221-f408c9747642@kernel.org>
+Date: Thu, 29 Jan 2026 12:41:03 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wDnHn8BN3tp+MxUJw--.23801S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxWF45Cr13Jw1Uur4fJrWxCrg_yoW7JrW8pF
-	Z8KrWFkF4kJFsFyw42yF17uFyfZay09ay5Krn7J345Zrs09r9Y9r17KrWY9F1UJr4vva45
-	t3W0vrWYk3Z0v3DanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pRfb1nUUUUU=
-X-CM-SenderInfo: pmdfy650fxxiqzyzqiywtou0bp/xtbC5wIHEWl7NwItCwAA3y
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] tty: synclink_gt: remove broken driver
+To: Ethan Nelson-Moore <enelsonmoore@gmail.com>,
+ linux-serial@vger.kernel.org, linux-doc@vger.kernel.org,
+ netdev@vger.kernel.org
+Cc: linux-api@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+ Madhavan Srinivasan <maddy@linux.ibm.com>,
+ Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
+ "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+ Andrew Lunn <andrew+netdev@lunn.ch>, "David S. Miller"
+ <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Haren Myneni <haren@linux.ibm.com>, Bagas Sanjaya <bagasdotme@gmail.com>,
+ Simon Horman <horms@kernel.org>, Eric Biggers <ebiggers@google.com>
+References: <20260129075200.38060-1-enelsonmoore@gmail.com>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20260129075200.38060-1-enelsonmoore@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi all,
-    Sorry for the problems! I didn't consider all the situation.
+On 29. 01. 26, 8:51, Ethan Nelson-Moore wrote:
+> The synclink_gt driver was marked as broken in commit 426263d5fb40
+> ("tty: synclink_gt: mark as BROKEN") in July 2023 because it had severe
+> structural problems and there had been no evidence of users since 2016.
+> Since then, no meaningful improvements have been made to the driver,
+> and it is unlikely that will ever happen due to the lack of interest.
+> Drop the driver and references to it in comments and documentation.
 
-On Tue, 27 Jan 2026 11:34:32 +0100 Marek Szyprowski <m.szyprowski@samsung.com> wrote:
-> It looks that driver->name is not unique on some systems, see:
-> 
-> $ git grep ttyMSM drivers/tty/
-> drivers/tty/serial/msm_serial.c:        .name = "ttyMSM",
-> drivers/tty/serial/msm_serial.c:        .dev_name = "ttyMSM",
-> drivers/tty/serial/qcom_geni_serial.c:  .name = "ttyMSM",
-> drivers/tty/serial/qcom_geni_serial.c:  .dev_name = "ttyMSM",
-> 
-> This fails on Qualcomm RB5 boards, breaking the boot process (booting 
-> hangs, because drivers try to use the unregistered wq):
+Overall, I am all for it, but a few remarks:
 
-I think I should use the name format "%s-%s-flip-wq", ..., driver->name, driver->driver_name
-as you suggested, and remove the 'flip-wq' part to avoid exceeding the WQ_NAME_LEN limit.
-I checked the lengths of all dev_name + driver_name in all tty/* files, and none exceeded
-WQ_NAME_LEN (32).
+> Signed-off-by: Ethan Nelson-Moore <enelsonmoore@gmail.com>
+> ---
+>   .../userspace-api/ioctl/ioctl-number.rst      |    2 +-
+>   arch/powerpc/configs/ppc6xx_defconfig         |    1 -
+>   drivers/net/ppp/Kconfig                       |    4 +-
+>   drivers/tty/Kconfig                           |   11 +-
+>   drivers/tty/Makefile                          |    1 -
+>   drivers/tty/n_hdlc.c                          |    7 -
+>   drivers/tty/synclink_gt.c                     | 5038 -----------------
+>   include/linux/synclink.h                      |   37 -
 
+     vvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
-> The other issue with this patch I've observed on ARM Juno R1 board. With 
-> one of the above fixes for the workqueue name, the boot process is still 
-> broken because of the NULL pointer dereference:
-> 
-> input: gpio-keys as /de ** replaying previous printk message ** input: 
-> gpio-keys as /devices/platform/gpio-keys/input/input3 Unable to handle 
-> kernel NULL pointer dereference at virtual address 00000000000001c0 Mem 
-> abort info: ... [00000000000001c0] user address but active_mm is swapper 
-> Internal error: Oops: 0000000096000004 [#1] SMP Modules linked in: CPU: 
-> 1 UID: 0 PID: 1 Comm: swapper/0 Not tainted 6.19.0-rc7-next-20260126+ 
-> #16443 PREEMPT Hardware name: ARM Juno development board (r1) (DT) 
-> pstate: 400000c5 (nZcv daIF -PAN -UAO -TCO -DIT -SSBS BTYPE=--) pc : 
-> __queue_work+0x30/0x7c4 lr : queue_work_on+0xac/0xdc ... Call trace: 
-> __queue_work+0x30/0x7c4 (P) queue_work_on+0xac/0xdc 
-> tty_flip_buffer_push+0x2c/0x38 k_fn.part.0+0x7c/0xc8 k_fn+0x20/0x2c 
-> kbd_event+0x2d8/0x504 input_handle_events_default+0x50/0x74 
-> input_pass_values+0x148/0x2b4 input_handle_event+0xcc/0x5e0 
-> input_event+0x64/0xa4 gpio_keys_open+0x9c/0xc4 
-> input_open_device+0x8c/0x128 kbd_connect+0x84/0xa0 
-> input_attach_handler+0x9c/0xf4 input_register_device+0x308/0x48c 
-> gpio_keys_probe+0x40c/0xafc platform_probe+0x5c/0xac 
-> really_probe+0xbc/0x298 __driver_probe_device+0x78/0x12c 
-> driver_probe_device+0xdc/0x164 __driver_attach+0xe4/0x224 
-> bus_for_each_dev+0x74/0xd0 driver_attach+0x24/0x30 
-> bus_add_driver+0xe4/0x208 driver_register+0x60/0x128 
-> __platform_driver_register+0x24/0x30 gpio_keys_init+0x1c/0x28 
-> do_one_initcall+0x64/0x308 kernel_init_freeable+0x284/0x508 
-> kernel_init+0x24/0x1dc ret_from_fork+0x10/0x20 Code: a9025bf5 a90573fb 
-> aa0203fb 35001843 (b941c260) ---[ end trace 0000000000000000 ]--- note: 
-> swapper/0[1] exited with irqs disabled note: swapper/0[1] exited with 
-> preempt_count 3 Kernel panic - not syncing: Attempted to kill init! 
-> exitcode=0x0000000b SMP: stopping secondary CPUs Kernel Offset: disabled 
-> CPU features: 0x1040000,41858004,00020000,0400421b Memory Limit: none 
-> ---[ end Kernel panic - not syncing: Attempted to kill init! 
-> exitcode=0x0000000b ]---
-> 
-> Reverting $subject on top of current linux-next fixes this issue.
+>   include/uapi/linux/synclink.h                 |  301 -
 
-Thank you very much for your detailed stack; it has been very helpful to me.
-I followed the call stack in detail and found that the line in kbd_keycode(),
-(*k_handler[type])(vc, KVAL(keysym), !down);
-calls k_fn(), which ultimately calls tty_flip_buffer_push().
+Have you checked this is not included in any relevant userspace? How? 
+Hints: debian code search, github...
 
-In kbd_keycode(), vc is set as follows:
-struct vc_data *vc = vc_cons[fg_console].d;
-fg_console is set to 0 in con_init().
+> diff --git a/Documentation/userspace-api/ioctl/ioctl-number.rst b/Documentation/userspace-api/ioctl/ioctl-number.rst
+> index 7232b3544cec..8abedab9fea7 100644
+> --- a/Documentation/userspace-api/ioctl/ioctl-number.rst
+> +++ b/Documentation/userspace-api/ioctl/ioctl-number.rst
+> @@ -271,7 +271,7 @@ Code  Seq#    Include File                                             Comments
+>   'm'   00-09  linux/mmtimer.h                                           conflict!
+>   'm'   all    linux/mtio.h                                              conflict!
+>   'm'   all    linux/soundcard.h                                         conflict!
+> -'m'   all    linux/synclink.h                                          conflict!
+> +'m'   all    linux/synclink.h                                          Dead since 2026
 
-con_init() calls tty_port_init() to init vc_cons[0].d->port but do not call
-tty_port_install() which link flip_wq to the port.
+I would just drop the line, removing one conflicting entry. The letter 
+is not going to be dead.
 
-Although tty_port_install() is dedicated for in-memory devices like PTY to
-link port allocated on demand, the logic of tty_port_install() is so simple
-that people may not call it. vc_cons[0].d->port is one such case.
-On the other hand, not all instances during tty_port_init() have easy access
-to the corresponding driver pointer, which makes it inconvenient to directly
-link flip_wq during all tty_port_init calls. Below are some other code that
-I found, which may not link wq, potentially leading to flip_wq being null:
+Or is this Dead note some ioctl-number's policy?
 
-drivers/s390/char/sclp_vt220.c:
-    sclp_vt220_con_init
-        __sclp_vt220_init
-            tty_port_init
-drivers/tty/n_gsm.c
-    gsm_queue
-        gsm_dlci_alloc
-            tty_port_init
-drivers/tty/vcc.c
-    vcc_install
-        tty_port_init
-drivers/usb/serial/usb-serial.c
-    usb_serial_probe
-        tty_port_init
+> --- a/drivers/tty/n_hdlc.c
+> +++ b/drivers/tty/n_hdlc.c
+> @@ -4,8 +4,6 @@
+>    * Written by Paul Fulghum paulkf@microgate.com
+>    * for Microgate Corporation
+>    *
+> - * Microgate and SyncLink are registered trademarks of Microgate Corporation
+> - *
+>    * Adapted from ppp.c, written by Michael Callahan <callahan@maths.ox.ac.uk>,
+>    *	Al Longyear <longyear@netcom.com>,
+>    *	Paul Mackerras <Paul.Mackerras@cs.anu.edu.au>
+> @@ -54,11 +52,6 @@
+>    * this line discipline (or another line discipline that is frame
+>    * oriented such as N_PPP).
+>    *
+> - * The SyncLink driver (synclink.c) implements both asynchronous
+> - * (using standard line discipline N_TTY) and synchronous HDLC
+> - * (using N_HDLC) communications, with the latter using the above
+> - * conventions.
 
-Maybe in tty_flip_buffer_push() 'checking whether flip_wq is NULL and use
-system_dfl_wq instead if it is NULL' is a better choice. 
-
---
-Xin Zhao
-
+This paragraph actually talks about long removed synclink.c, removed in:
+   a1f714b44e34 tty: Remove redundant synclink driver
+But OK, let's kick all the remaining traces of synclinks.
+thanks,
+-- 
+js
+suse labs
