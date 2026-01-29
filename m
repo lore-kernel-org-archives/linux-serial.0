@@ -1,171 +1,96 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f69.google.com (mail-oa1-f69.google.com [209.85.160.69])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50E2926CE39;
-	Thu, 29 Jan 2026 11:41:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E866385516
+	for <linux-serial@vger.kernel.org>; Thu, 29 Jan 2026 11:51:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769686870; cv=none; b=pnWSb9eeqdIqan9OJmfhe41E+y5UaSDYmgEHvomZpyAEGPTJXwDWeJcQIZbfd3ToRn8Z4YDzBmSJn4NEkbj/EPsNJY2dzHfKb3lS59znzaEJ0lsJILm2KfG0Y+0sqrcDxEoTM3P9nDLZVtgbX2kip1sY6DVfP91aPgJ+Sl4XfLw=
+	t=1769687491; cv=none; b=CXiDBl3j9L/KyMCO/TdVz9iFQel0HyuWRvHeRYvYiIpi3PzfoNf3jZj5jHuOT75iJqO+bwuCLJ76HAYXJxL8Oy0HYtU7yM7T21CtnrOY0xZM33WVjq+6pXVihgns3sAnsNsi9ao/i0misFzVfSp0WhexYFWqoOSDmbEnR/EbApg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769686870; c=relaxed/simple;
-	bh=GxMf/5mp8QjYk8b0oivIjo05Zaj5YW+DCUftJ/YqvNM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=pxAdogfWVpw736g4zpl6czHA8O4KzMvJa05t1G1vyz7uPYmj6ytiStHYm9BdNddMVfUF8yS0BiGxZlzyRad+SOMiJeeVgiW8uRmfso2C6iAAfiQczARF2h4HP9QoRE4uxedWRlCqiDqWtEz+c4DaGjX5y+E3zXCsQnfFmFtBKAY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hhFtYdDg; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hhFtYdDg"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 057BEC4CEF7;
-	Thu, 29 Jan 2026 11:41:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769686869;
-	bh=GxMf/5mp8QjYk8b0oivIjo05Zaj5YW+DCUftJ/YqvNM=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=hhFtYdDgi04FrQb5oG6WU8WJT4pW/Ad6DqcjX3kcqWfoeCoUWWlUTa6fEjrKjjgNK
-	 Ny5NJ8XnpEARZaj7GCmoGiijjtYfNLHEn/MQYPvkfALCH4OyNO9VBy/AN75ciNVtXy
-	 1/DWf/378vO5qA9itsnqFsNxJtXhgDa825aZFwQzucY2BWQzaXTLQLCE6ZxGZJG1To
-	 1zL9oj4Ffpqkzu6ephruC4criEO4DC6NlaiO4kgdN0UTJHk7DSN7nkMoZwc0B+Pjy0
-	 /Ji2JuMWSbeb57Wzf4AJBJ0xaRdacitwyC33idjkx5m7qtlSejYsIfBvvk/sid2ymE
-	 NV+TlEt7VlsSQ==
-Message-ID: <24935907-76b8-4369-a221-f408c9747642@kernel.org>
-Date: Thu, 29 Jan 2026 12:41:03 +0100
+	s=arc-20240116; t=1769687491; c=relaxed/simple;
+	bh=lIUDlXObb5uEF//k43KhXjonJY7/eMR3MoOZwQ+ASjw=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=Zw/wKvF3FKxeBtUXteUn6OZEQUxMRK6UGmrvodgue0Q4aD69W6cq5mPOOz7P1WvMPqeVX2pVA1UiOI60faGMmyDorjFzSpxCb3Fl8FqFNEgvoObJk5nE2+d9dOqQTM+1fslYBhW0rybtBwK32thfJEnn8elEcW1O+q7WhoMp2cQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oa1-f69.google.com with SMTP id 586e51a60fabf-3ff590953b1so2542203fac.2
+        for <linux-serial@vger.kernel.org>; Thu, 29 Jan 2026 03:51:29 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1769687488; x=1770292288;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=m0NG2LGgo/HRDPw+ohIUZo78HxQ4jjxW86wJXLvVSKY=;
+        b=AF4p67XSb/+agqjXOh1mzduWPaaeUMlV4uijul9VfbMW/9SFeIJtIS1kZ6yNhPC4TL
+         XwemHlrfJs8+aXwP/MjGjp4DjMVYVVyukcdRt/fmtn9rWGpEmTESIRUG9H8/txwkqm+/
+         8KYhk8oB7ID+j0nsBtx8sR29SNZaEW8H8Nc9qolAabW0n51AmlkB8gdx6SbdJ0iBhYy+
+         q//KxpZRfyeZ0Twb4nfp0juvxVwIXzA70eFI9Q2hH7/i0ISH9rx1brEkilXIRPgHNDkd
+         PfInLWSv2yoCLv0YXClcYzIzLHB15eAPetu5GSEKquvjfosXY9ZcWiTEhhhNf4oLR8lR
+         frSg==
+X-Forwarded-Encrypted: i=1; AJvYcCW1fiDPsBHqllxshaxrHFviclybJISDF5k/MB8gyS+5HE7ABEhuet9k9EEvofhODRmF+dJ1e1wzbNdOBc4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyX7nWrrdwS8MXpcTqQQvHOLrr3Elozx7iEu2wbLw6zrInMx4Ui
+	xSQSWjhrhUeoOLhkZdUClb15UJKyVuCV/N0Ov/fRUyoYqEHF9RbhVEczsxOtH7DFLGhaqH5kbrx
+	sqp4hw32DNwJFHepqTeVgFpzq8X8cF44VydNfuxH3DZ9nSJveJJlS+N9QhV8=
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] tty: synclink_gt: remove broken driver
-To: Ethan Nelson-Moore <enelsonmoore@gmail.com>,
- linux-serial@vger.kernel.org, linux-doc@vger.kernel.org,
- netdev@vger.kernel.org
-Cc: linux-api@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
- Madhavan Srinivasan <maddy@linux.ibm.com>,
- Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
- "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
- Andrew Lunn <andrew+netdev@lunn.ch>, "David S. Miller"
- <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Haren Myneni <haren@linux.ibm.com>, Bagas Sanjaya <bagasdotme@gmail.com>,
- Simon Horman <horms@kernel.org>, Eric Biggers <ebiggers@google.com>
-References: <20260129075200.38060-1-enelsonmoore@gmail.com>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20260129075200.38060-1-enelsonmoore@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a05:6820:488c:b0:663:3ad:4c2d with SMTP id
+ 006d021491bc7-66303ad4c73mr1541410eaf.60.1769687488551; Thu, 29 Jan 2026
+ 03:51:28 -0800 (PST)
+Date: Thu, 29 Jan 2026 03:51:28 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <697b49c0.a70a0220.9914.001b.GAE@google.com>
+Subject: [syzbot] Monthly serial report (Jan 2026)
+From: syzbot <syzbot+listac358ce31459004989d9@syzkaller.appspotmail.com>
+To: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 
-On 29. 01. 26, 8:51, Ethan Nelson-Moore wrote:
-> The synclink_gt driver was marked as broken in commit 426263d5fb40
-> ("tty: synclink_gt: mark as BROKEN") in July 2023 because it had severe
-> structural problems and there had been no evidence of users since 2016.
-> Since then, no meaningful improvements have been made to the driver,
-> and it is unlikely that will ever happen due to the lack of interest.
-> Drop the driver and references to it in comments and documentation.
+Hello serial maintainers/developers,
 
-Overall, I am all for it, but a few remarks:
+This is a 31-day syzbot report for the serial subsystem.
+All related reports/information can be found at:
+https://syzkaller.appspot.com/upstream/s/serial
 
-> Signed-off-by: Ethan Nelson-Moore <enelsonmoore@gmail.com>
-> ---
->   .../userspace-api/ioctl/ioctl-number.rst      |    2 +-
->   arch/powerpc/configs/ppc6xx_defconfig         |    1 -
->   drivers/net/ppp/Kconfig                       |    4 +-
->   drivers/tty/Kconfig                           |   11 +-
->   drivers/tty/Makefile                          |    1 -
->   drivers/tty/n_hdlc.c                          |    7 -
->   drivers/tty/synclink_gt.c                     | 5038 -----------------
->   include/linux/synclink.h                      |   37 -
+During the period, 1 new issues were detected and 0 were fixed.
+In total, 15 issues are still open and 45 have already been fixed.
 
-     vvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+Some of the still happening issues:
 
->   include/uapi/linux/synclink.h                 |  301 -
+Ref  Crashes Repro Title
+<1>  3669    Yes   possible deadlock in console_lock_spinning_enable (5)
+                   https://syzkaller.appspot.com/bug?extid=622acb507894a48b2ce9
+<2>  3002    Yes   KMSAN: uninit-value in n_tty_receive_buf_standard
+                   https://syzkaller.appspot.com/bug?extid=559c7fe4b8bac56d38c2
+<3>  265     Yes   KASAN: slab-use-after-free Read in tty_write_room (2)
+                   https://syzkaller.appspot.com/bug?extid=2a81fdd5c6ddffee3894
+<4>  261     Yes   KMSAN: uninit-value in n_tty_receive_buf_closing (3)
+                   https://syzkaller.appspot.com/bug?extid=dd514b5f0cf048aec256
+<5>  238     Yes   INFO: task can't die in show_free_areas
+                   https://syzkaller.appspot.com/bug?extid=8f41dccfb6c03cc36fd6
+<6>  120     Yes   possible deadlock in tty_buffer_flush (3)
+                   https://syzkaller.appspot.com/bug?extid=52cf91760dcb1dac6376
+<7>  53      No    KMSAN: uninit-value in n_tty_lookahead_flow_ctrl (2)
+                   https://syzkaller.appspot.com/bug?extid=290abdcd4f509377a0eb
+<8>  18      Yes   INFO: rcu detected stall in console_callback
+                   https://syzkaller.appspot.com/bug?extid=32af18ae7b894a681f2d
+<9>  6       Yes   INFO: task hung in paste_selection (2)
+                   https://syzkaller.appspot.com/bug?extid=275e275bd3f536725dd8
+<10> 3       No    possible deadlock in stop_tty
+                   https://syzkaller.appspot.com/bug?extid=7ca5a40e8164fe2609fd
 
-Have you checked this is not included in any relevant userspace? How? 
-Hints: debian code search, github...
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-> diff --git a/Documentation/userspace-api/ioctl/ioctl-number.rst b/Documentation/userspace-api/ioctl/ioctl-number.rst
-> index 7232b3544cec..8abedab9fea7 100644
-> --- a/Documentation/userspace-api/ioctl/ioctl-number.rst
-> +++ b/Documentation/userspace-api/ioctl/ioctl-number.rst
-> @@ -271,7 +271,7 @@ Code  Seq#    Include File                                             Comments
->   'm'   00-09  linux/mmtimer.h                                           conflict!
->   'm'   all    linux/mtio.h                                              conflict!
->   'm'   all    linux/soundcard.h                                         conflict!
-> -'m'   all    linux/synclink.h                                          conflict!
-> +'m'   all    linux/synclink.h                                          Dead since 2026
+To disable reminders for individual bugs, reply with the following command:
+#syz set <Ref> no-reminders
 
-I would just drop the line, removing one conflicting entry. The letter 
-is not going to be dead.
+To change bug's subsystems, reply with:
+#syz set <Ref> subsystems: new-subsystem
 
-Or is this Dead note some ioctl-number's policy?
-
-> --- a/drivers/tty/n_hdlc.c
-> +++ b/drivers/tty/n_hdlc.c
-> @@ -4,8 +4,6 @@
->    * Written by Paul Fulghum paulkf@microgate.com
->    * for Microgate Corporation
->    *
-> - * Microgate and SyncLink are registered trademarks of Microgate Corporation
-> - *
->    * Adapted from ppp.c, written by Michael Callahan <callahan@maths.ox.ac.uk>,
->    *	Al Longyear <longyear@netcom.com>,
->    *	Paul Mackerras <Paul.Mackerras@cs.anu.edu.au>
-> @@ -54,11 +52,6 @@
->    * this line discipline (or another line discipline that is frame
->    * oriented such as N_PPP).
->    *
-> - * The SyncLink driver (synclink.c) implements both asynchronous
-> - * (using standard line discipline N_TTY) and synchronous HDLC
-> - * (using N_HDLC) communications, with the latter using the above
-> - * conventions.
-
-This paragraph actually talks about long removed synclink.c, removed in:
-   a1f714b44e34 tty: Remove redundant synclink driver
-But OK, let's kick all the remaining traces of synclinks.
-thanks,
--- 
-js
-suse labs
+You may send multiple commands in a single email message.
