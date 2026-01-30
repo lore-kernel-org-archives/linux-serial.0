@@ -1,99 +1,186 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0D3430C373;
-	Fri, 30 Jan 2026 07:29:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D4BD3783C7;
+	Fri, 30 Jan 2026 12:44:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769758185; cv=none; b=Op76cj4MCykR4jViR6yueiG4R7U2VtDJmg5vXAspbV1PwubiPwny+hLAkhlV6a/Jp3TwgT5JcOPjyAaveKv1wymF2Dg5ntDptIbXPy6FY8kJwoIMLizxJf/5cKpIvChHf4/Sk7xO442XVIF+A7BlTC29hNoftEjQcbB9SgNt6Fk=
+	t=1769777090; cv=none; b=RcI+8WbNJZXn5KerjBOjC83GkwrsBRrgxWXTRNZ1EXN4xevPqk2oI6fg38G/s/fZ6dqVbCZNQO2sn9eANgvE6H3/RyvGJhv+4Ra3e5ohEWKfenf53L/WvHWBEQVO+FGGymbhcaX35kjtRaT4tCtQpGKxsleotaF+VZ7fxUAtCN0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769758185; c=relaxed/simple;
-	bh=6WE0Xds7QJU7MoPff11UxI8f5HpcyyFD6UDYWO+e9qw=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=cimIyqtGMilAgE+fHAWpblTEUpRcua4F96VsV9tDdJvUvdnJuWDhB0PaeyBI6tmkCAfLebOeLcMD48TNtLN+KByxIir++JKXG7Jp9suHfePnK/0LP6xd7HfSdnYExJQ6mcxbospCJgu6chz0ut+DZ4qD1iVxmBgLmaICmLBPe0I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=37q1F1+I; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	s=arc-20240116; t=1769777090; c=relaxed/simple;
+	bh=BYWDzl1hpidTm8MVscZ7wuR/NoorAY6uuctOeV4P49Q=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=FK5MY9oSy21w4wfosV+L+eEgd3fYFWj4BlFAcXd6usb3qMLJXBm9KLiDIBP0rMh5e7DBTOKfM+iX1fOHoIJsfAzc1ub6Tyc/OJjoUya2uQcjXsujiUB4C0wuqIUzDWM4WfvCTSuVtRjWl85AgfMknMKHDmrU23W+5ZAzajtxX8U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=CSZNVj9l; arc=none smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="37q1F1+I"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	Content-Type:MIME-Version:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:
-	Content-ID:Content-Description:In-Reply-To:References;
-	bh=1q7l3cf0hPLD0O5rGHsZ/nxvzquqh1DhwSv089uPgvw=; b=37q1F1+IGMJHE3H3pez/SK5TwD
-	GyDPjg6knF5AqQOTNXY6IbB0f7SRq6eWLcdIPbJn7Io/tC5kGtNj/lDlosEWQLjeVdVba1lWr11pR
-	c2PVIuAZPt6St8c9X6/fQitseCUQ7CkUkNEvktgDu30micPiFePqUVD5/pI8QWnNHKg7syhVZB+cq
-	mczCWgUtopj70MgvONsz06UNJ6pr9R4Lxba+pq13Jgh5GUem51eWVcjKRtcxPuLWKlZ8A7sXi3q+T
-	JWH3GpM+zqXlpZGoSaa+vy9ym/tQRCVA5cSXyKbNCp+IqamvmV6qoo6RwXszc2mx3if+Y633jzB0F
-	myUeIcJQ==;
-Received: from [50.53.43.113] (helo=bombadil.infradead.org)
-	by bombadil.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1vliwm-000000019KS-0lqa;
-	Fri, 30 Jan 2026 07:29:40 +0000
-From: Randy Dunlap <rdunlap@infradead.org>
-To: linux-kernel@vger.kernel.org
-Cc: Randy Dunlap <rdunlap@infradead.org>,
-	=?UTF-8?q?Ahelenia=20Ziemia=C5=84ska?= <nabijaczleweli@nabijaczleweli.xyz>,
-	Hendrik Brueckner <brueckner@linux.vnet.ibm.com>,
-	linuxppc-dev@lists.ozlabs.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	linux-serial@vger.kernel.org,
-	Andrew Morton <akpm@linux-foundation.org>,
-	"Borislav Petkov (AMD)" <bp@alien8.de>
-Subject: [PATCH] tty: hvc_iucv: fix off-by-one in number of supported devices
-Date: Thu, 29 Jan 2026 23:29:37 -0800
-Message-ID: <20260130072939.1535869-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.52.0
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CSZNVj9l"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1769777089; x=1801313089;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version:content-id;
+  bh=BYWDzl1hpidTm8MVscZ7wuR/NoorAY6uuctOeV4P49Q=;
+  b=CSZNVj9lzMEJ2zN66DRVTmN+tTflQwwg4S25YPzSx9JgDPOJ5kGNeg24
+   ufstdX2MToQH/w2/ALU0Hx8vK56l5VvxZu6/gnbAoVnHiitGx9leRjNDx
+   ORpz0L2YZHoHzx/xqiePYzVZRdiqg83xxxVULtAcf68OvgPKIkFICIp4o
+   WsGiw1TMn29qBR+qpMvtt5OdHF6vFciBLc+towu/F/apsgwkH8PPNsxsp
+   qh/7M3Yj8Wxu8d4lQj5bWQUKQd5/JVUto8jE/YReybdhVvN3YAzeud8PM
+   WhLyEwyKaq+Yf2PlIwF0Q0EpK5K6VSu3mvd6iiprvyGU6lvrlmonH18EL
+   g==;
+X-CSE-ConnectionGUID: 86ozDU8HRYK9kLIH74Yx+A==
+X-CSE-MsgGUID: wBSJ4cBpSputP95bPbIY3g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11686"; a="74889485"
+X-IronPort-AV: E=Sophos;i="6.21,262,1763452800"; 
+   d="scan'208";a="74889485"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2026 04:44:48 -0800
+X-CSE-ConnectionGUID: U0sX5SB6RhigwbyWQAANNA==
+X-CSE-MsgGUID: Vw0gopSMTQeVgHby5bSPgg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,262,1763452800"; 
+   d="scan'208";a="239568926"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.54])
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2026 04:44:41 -0800
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Fri, 30 Jan 2026 14:44:38 +0200 (EET)
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, 
+    linux-serial <linux-serial@vger.kernel.org>, 
+    qianfan Zhao <qianfanguijin@163.com>, Adriana Nicolae <adriana@arista.com>, 
+    Tim Kryger <tim.kryger@linaro.org>, Matt Porter <matt.porter@linaro.org>, 
+    Heikki Krogerus <heikki.krogerus@linux.intel.com>, 
+    Markus Mayer <markus.mayer@linaro.org>, Jamie Iles <jamie@jamieiles.com>, 
+    LKML <linux-kernel@vger.kernel.org>, 
+    "Bandal, Shankar" <shankar.bandal@intel.com>, 
+    "Murthy, Shanth" <shanth.murthy@intel.com>, stable@vger.kernel.org
+Subject: Re: [PATCH v2 7/7] serial: 8250_dw: Ensure BUSY is deasserted
+In-Reply-To: <aXouStgDF635dYya@smile.fi.intel.com>
+Message-ID: <407db45d-c4d9-e6b1-8e35-e398da89d40e@linux.intel.com>
+References: <20260128105301.1869-1-ilpo.jarvinen@linux.intel.com> <20260128105301.1869-8-ilpo.jarvinen@linux.intel.com> <aXouStgDF635dYya@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; BOUNDARY="8323328-1204532064-1769777025=:988"
+Content-ID: <a3a9dc3e-c4a5-a654-e523-0842e8e22999@linux.intel.com>
 
-MAX_HVC_IUCV_LINES == HVC_ALLOC_TTY_ADAPTERS == 8.
-This is the number of entries in:
-  static struct hvc_iucv_private *hvc_iucv_table[MAX_HVC_IUCV_LINES];
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Sometimes hvc_iucv_table[] is limited by:
-(a)	if (num > hvc_iucv_devices) // for error detection
-or
-(b)	for (i = 0; i < hvc_iucv_devices; i++) // in 2 places
-(so these 2 don't agree; second one appears to be correct to me.)
+--8323328-1204532064-1769777025=:988
+Content-Type: text/plain; CHARSET=ISO-8859-15
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-ID: <705e7d09-3806-dd46-66ca-a6d132db4dd5@linux.intel.com>
 
-hvc_iucv_devices can be 0..8. This is a counter.
-(c)	if (hvc_iucv_devices > MAX_HVC_IUCV_LINES)
+On Wed, 28 Jan 2026, Andy Shevchenko wrote:
 
-If hvc_iucv_devices == 8, (a) allows the code to access hvc_iucv_table[8].
-Oops.
+> On Wed, Jan 28, 2026 at 12:53:01PM +0200, Ilpo J=E4rvinen wrote:
+> > DW UART cannot write to LCR, DLL, and DLH while BUSY is asserted.
+> > Existance of BUSY depends on uart_16550_compatible, if UART HW is
+> > configured with it those registers can always be written.
+> >=20
+> > There currently is dw8250_force_idle() which attempts to achieve
+> > non-BUSY state by disabling FIFO, however, the solution is unreliable
+> > when Rx keeps getting more and more characters.
+> >=20
+> > Create a sequence of operations that ensures UART cannot keep BUSY
+> > asserted indefinitely. The new sequence relies on enabling loopback mod=
+e
+> > temporarily to prevent incoming Rx characters keeping UART BUSY.
+> >=20
+> > Ensure no Tx in ongoing while the UART is switches into the loopback
+> > mode (requires exporting serial8250_fifo_wait_for_lsr_thre() and adding
+> > DMA Tx pause/resume functions).
+> >=20
+> > According to tests performed by Adriana Nicolae <adriana@arista.com>,
+> > simply disabling FIFO or clearing FIFOs only once does not always
+> > ensure BUSY is deasserted but up to two tries may be needed. This could
+> > be related to ongoing Rx of a character (a guess, not known for sure).
+> > Therefore, retry FIFO clearing a few times (retry limit 4 is arbitrary
+> > number but using, e.g., p->fifosize seems overly large). Tests
+> > performed by others did not exhibit similar challenge but it does not
+> > seem harmful to leave the FIFO clearing loop in place for all DW UARTs
+> > with BUSY functionality.
+> >=20
+> > Use the new dw8250_idle_enter/exit() to do divisor writes and LCR
+> > writes. In case of plain LCR writes, opportunistically try to update
+> > LCR first and only invoke dw8250_idle_enter() if the write did not
+> > succeed (it has been observed that in practice most LCR writes do
+> > succeed without complications).
+> >=20
+> > This issue was first reported by qianfan Zhao who put lots of debugging
+> > effort into understanding the solution space.
+>=20
+> Some nit-picks below, otherwise seems good to go
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+>=20
+> ...
+>=20
+> > Reported-by: qianfan Zhao <qianfanguijin@163.com>
+> > Link: https://lore.kernel.org/linux-serial/289bb78a-7509-1c5c-2923-a04e=
+d3b6487d@163.com/
+> > Reported-by: Adriana Nicolae <adriana@arista.com>
+> > Link: https://lore.kernel.org/linux-serial/20250819182322.3451959-1-adr=
+iana@arista.com/
+>=20
+> Shouldn't these Link:s be Closes: tags?
 
-Fixes: 44a01d5ba8a4 ("[S390] s390/hvc_console: z/VM IUCV hypervisor console support")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
----
-No, I haven't seen an issue with this out in the wild.
+To not possibly give wrong signals, until they confirm their cases are=20
+indeed solved by this patch, I'd like to keep these as Link tag only.
 
-Cc: Ahelenia Ziemiańska <nabijaczleweli@nabijaczleweli.xyz>
-Cc: Hendrik Brueckner <brueckner@linux.vnet.ibm.com>
-Cc: linuxppc-dev@lists.ozlabs.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-serial@vger.kernel.org
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: "Borislav Petkov (AMD)" <bp@alien8.de>
+> > +=09struct dw8250_data *d =3D to_dw8250_data(p->private_data);
+> >  =09struct uart_8250_port *up =3D up_to_u8250p(p);
+> > +=09unsigned int usr_reg =3D DW_UART_USR;
+> > +=09int retries;
+> > +=09u32 lsr;
+>=20
+>=20
+> > +=09if (d->pdata)
+> > +=09=09usr_reg =3D d->pdata->usr_reg;
+>=20
+> I would unite this with definition above:
+>=20
+> =09unsigned int usr_reg =3D d->pdata ? d->pdata->usr_reg : DW_UART_USR;
+>
+> > +=09lsr =3D serial_lsr_in(up);
+>=20
+> > +=09if (lsr & UART_LSR_DR) {
+> > +=09=09serial_port_in(p, UART_RX);
+> > +=09=09up->lsr_saved_flags =3D 0;
+> >  =09}
+>=20
+> This seems repeating a top of serial8250_read_char(). Perhaps we can do i=
+t
+> in a helper at some point?
 
- drivers/tty/hvc/hvc_iucv.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I don't see enough similarity as I'd need to deal with lsr_saved_flags=20
+somehow still here.
 
---- linux-next-20260128.orig/drivers/tty/hvc/hvc_iucv.c
-+++ linux-next-20260128/drivers/tty/hvc/hvc_iucv.c
-@@ -130,7 +130,7 @@ static struct iucv_handler hvc_iucv_hand
-  */
- static struct hvc_iucv_private *hvc_iucv_get_private(uint32_t num)
- {
--	if (num > hvc_iucv_devices)
-+	if (num >= hvc_iucv_devices)
- 		return NULL;
- 	return hvc_iucv_table[num];
- }
+> > +=09if (d->in_idle) {
+>=20
+> > +=09=09/*
+> > +=09=09 * FIXME: this deadlocks if port->lock is already held
+> > +=09=09 * dev_err(p->dev, "Couldn't set LCR to %d\n", value);
+> > +=09=09 */
+>=20
+> Does it make sense to print an error here (assuming it will work with nbc=
+on)?
+> If so, maybe leave it at the end of the function, after dw8250_idle_exit(=
+)
+> and goto there?
+
+I think the print would be useful. I'll leave the FIXME+commented out=20
+print into the end of the function in v3.
+
+I also realized that on error, dw8250_idle_enter() should undo what it=20
+changed, that is, call dw8250_idle_exit() within which will simplify=20
+caller-side error handling slightly.
+
+--=20
+ i.
+--8323328-1204532064-1769777025=:988--
