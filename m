@@ -1,134 +1,151 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5256A364024;
-	Fri, 30 Jan 2026 17:27:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87F1C38170E;
+	Fri, 30 Jan 2026 20:59:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769794051; cv=none; b=JX0ZdVqwWBpvbt/Yd9xh20CpEznH90ket8328KKx2r9suj6lMrKowIgR2zNGnSYngHtWXYA/Qlc30/Om1JUSEBNr2AuL3qgXRotGs2tPfZU4xYsMygVwiDV5pxuUDZXXPaH+yRUV56K5AbpfdkN0JHhDvu6zhr7tI8foRGD1+sE=
+	t=1769806777; cv=none; b=gvijehLMTrIJupzdlrFI40kWC1tExJ5jKxF7hMh5OpFdWNh4qSKRbDJViVNdWYNLqGq7BdzDkPjzdqoP6PFftN4DP4ZluW7dhPDUYO1T5Ebti+FQc/GIysluA0FBJbjhGdUyqdwC36sbjRlCGoc3L2hfN2mrG0VByfxmumbYAe4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769794051; c=relaxed/simple;
-	bh=2+OMGUQcuKS2tJWaxFiW0o1E0ku3RG+1C/hjNsN6rPI=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=u3gwN9Z0FlK4ZcRip2xnSiFJhvWnwHb6LEvvFZEoKYkAz2+YXPIETKyWwJ+th5tr9MYxG05JPOFHjs/0Vb9wjDc/5iZkMkuNihWyohlRqoABM2YxTrHeqpruJoCz7BLpHjbbB7TTjJI0nwTIk2r353W16h9r9fjs3t3A/IUzqdQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=4vjFnCId; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=520kqiAp; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1769806777; c=relaxed/simple;
+	bh=baKThfj+uFC29r614dW5AycogE14elKtuMG3Rd0W1m4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=jkIbjXIwgwzF1GacQhET9LEll0e5iIUYG6zOpxWTjbTk8trdGi5drWR2c7ZT4J000Gz62GeO/KL/jlSvdqoa38ClDYurkQDneop8vjN80i45Re9o17GWMM1znAb0n2fkLAwB6kEG7WHOXUelmvIWO5AVERR+uYqJmWi3UZ/cCOE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iWZLZ+Rl; arc=none smtp.client-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="4vjFnCId";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="520kqiAp"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1769794048;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=o3M3i7fOsBJJ8QZ7iZoiOC82WHRYdzsj5QwfB37tvhM=;
-	b=4vjFnCIdprQ4bapgrR0W30E28e5XqGnWTzlLJRIchP5KT0mQiU7C2HocIuX1Kdz8pUDo0Y
-	qc+5Orpl1l1vZoFNRQKL24RKcgRr4rbqO02DrPCVc+5aUzHom7b8+oniEw+b53sZSdrxJg
-	+9kDxpq15AQ1xIFUPYwfQgdiBumRwsh+faRgD4dNJMyLkXr/A+P3jXB+CHRA0Hld9eIR+Y
-	7xvqnLxeTCF6EQZwTVn1wPEr2oy9Q/+88+eiC8F7PD8kB/n3dpKOZdgpjEsqUgdQZXqqI6
-	yQRXOGphajl9ppYkFrEud4nWZdOCa3/Ob9kGErESIR3cRVjE/LChlCPSJd3YTA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1769794048;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=o3M3i7fOsBJJ8QZ7iZoiOC82WHRYdzsj5QwfB37tvhM=;
-	b=520kqiApVkDPFPboRTL5PTkP4fVPei7/H7ecnPwf1SVFxrBJQEXzDTADXeZGZGuaQ0gr4c
-	ZZ61wAzhpOPpFsDw==
-To: Marcos Paulo de Souza <mpdesouza@suse.com>, Richard Weinberger
- <richard@nod.at>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, Johannes
- Berg <johannes@sipsolutions.net>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jason Wessel <jason.wessel@windriver.com>,
- Daniel Thompson <danielt@kernel.org>, Douglas Anderson
- <dianders@chromium.org>, Petr Mladek <pmladek@suse.com>, Steven Rostedt
- <rostedt@goodmis.org>, Sergey Senozhatsky <senozhatsky@chromium.org>, Jiri
- Slaby <jirislaby@kernel.org>, Breno Leitao <leitao@debian.org>, Andrew
- Lunn <andrew+netdev@lunn.ch>, "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Geert Uytterhoeven
- <geert@linux-m68k.org>, Kees Cook <kees@kernel.org>, Tony Luck
- <tony.luck@intel.com>, "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
- Madhavan Srinivasan <maddy@linux.ibm.com>, Michael Ellerman
- <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Christophe
- Leroy <christophe.leroy@csgroup.eu>, Andreas Larsson
- <andreas@gaisler.com>, Alexander Shishkin
- <alexander.shishkin@linux.intel.com>, Maxime Coquelin
- <mcoquelin.stm32@gmail.com>, Alexandre Torgue
- <alexandre.torgue@foss.st.com>, Jacky Huang <ychuang3@nuvoton.com>,
- Shan-Chun Hung <schung@nuvoton.com>, Laurentiu Tudor
- <laurentiu.tudor@nxp.com>
-Cc: linux-um@lists.infradead.org, linux-kernel@vger.kernel.org,
- kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org,
- netdev@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
- linux-hardening@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
- sparclinux@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
- linux-arm-kernel@lists.infradead.org, linux-fsdevel@vger.kernel.org,
- Marcos Paulo de Souza <mpdesouza@suse.com>
-Subject: Re: [PATCH 05/19] printk: Add more context to suspend/resume functions
-In-Reply-To: <20251227-printk-cleanup-part3-v1-5-21a291bcf197@suse.com>
-References: <20251227-printk-cleanup-part3-v1-0-21a291bcf197@suse.com>
- <20251227-printk-cleanup-part3-v1-5-21a291bcf197@suse.com>
-Date: Fri, 30 Jan 2026 18:33:27 +0106
-Message-ID: <87343n3ta8.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iWZLZ+Rl"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1769806776; x=1801342776;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=baKThfj+uFC29r614dW5AycogE14elKtuMG3Rd0W1m4=;
+  b=iWZLZ+RlipdUq9IvwVd3rhkrTECBGL9+VG1Du/37aFdXsA+iWVJ5aJ8v
+   Wsw+XGsmhoo9Dy7jO8QmDkDfKR6SAZD1qYuKaL7RdN/5n/omuaf5cgLH/
+   n+Yd//qsQRg4vMCnlK3zoDF9S8LkZGz3J4KWq/ww6qfFNX5Xsa3rk0who
+   GNTzLmRCuZAEn9j9/tCstJi6eeRDJ+dOIGAGf/pe5bQ5smRVHDoj7+PDT
+   3yjIV93E6rupjCfM9HowEA49ghixAvWOnK4+tVwml+aSBnLjiV4CmyEA+
+   7ZXMiUG1/qXRW7VK/s//Uu/XQ4GUy5e6MSIPkZe0QoCTbl5VoHjLrasni
+   w==;
+X-CSE-ConnectionGUID: O6T1n+FER8iV9TWhFpu3HA==
+X-CSE-MsgGUID: sYZmVKxcSHebMTT1ss9R8g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11687"; a="88636591"
+X-IronPort-AV: E=Sophos;i="6.21,263,1763452800"; 
+   d="scan'208";a="88636591"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2026 12:59:35 -0800
+X-CSE-ConnectionGUID: TOvX5lamQxKe+vP8xRY4yQ==
+X-CSE-MsgGUID: MGpvkZjGTruQ+cPX22T0Aw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,263,1763452800"; 
+   d="scan'208";a="209351537"
+Received: from lkp-server01.sh.intel.com (HELO 765f4a05e27f) ([10.239.97.150])
+  by fmviesa009.fm.intel.com with ESMTP; 30 Jan 2026 12:59:30 -0800
+Received: from kbuild by 765f4a05e27f with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1vlvaS-00000000dMG-3LNm;
+	Fri, 30 Jan 2026 20:59:28 +0000
+Date: Sat, 31 Jan 2026 04:59:09 +0800
+From: kernel test robot <lkp@intel.com>
+To: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	qianfan Zhao <qianfanguijin@163.com>,
+	Adriana Nicolae <adriana@arista.com>,
+	Tim Kryger <tim.kryger@linaro.org>,
+	Matt Porter <matt.porter@linaro.org>,
+	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+	Markus Mayer <markus.mayer@linaro.org>,
+	Jamie Iles <jamie@jamieiles.com>, linux-kernel@vger.kernel.org
+Cc: oe-kbuild-all@lists.linux.dev,
+	"Bandal, Shankar" <shankar.bandal@intel.com>,
+	"Murthy, Shanth" <shanth.murthy@intel.com>, stable@vger.kernel.org
+Subject: Re: [PATCH v3 7/7] serial: 8250_dw: Ensure BUSY is deasserted
+Message-ID: <202601310404.Rdq0kVXE-lkp@intel.com>
+References: <20260130132857.13124-8-ilpo.jarvinen@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260130132857.13124-8-ilpo.jarvinen@linux.intel.com>
 
-On 2025-12-27, Marcos Paulo de Souza <mpdesouza@suse.com> wrote:
-> The new comments clarifies from where the functions are supposed to be
-> called.
->
-> Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
-> ---
->  kernel/printk/printk.c | 12 ++++++++++--
->  1 file changed, 10 insertions(+), 2 deletions(-)
->
-> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-> index 173c14e08afe..85a8b6521d9e 100644
-> --- a/kernel/printk/printk.c
-> +++ b/kernel/printk/printk.c
-> @@ -2734,7 +2734,8 @@ MODULE_PARM_DESC(console_no_auto_verbose, "Disable console loglevel raise to hig
->  /**
->   * console_suspend_all - suspend the console subsystem
->   *
-> - * This disables printk() while we go into suspend states
-> + * This disables printk() while we go into suspend states. Called by the power
-> + * management subsystem.
+Hi Ilpo,
 
-Since you are touching this comment, I would prefer to make it
-technically accurate. It is not printk() that is disabled, it is console
-printing that is disabled. Perhaps something like:
+kernel test robot noticed the following build errors:
 
- * Block all console printing while the system goes into suspend state.
- * Called by the power management subsystem.
-   
->   */
->  void console_suspend_all(void)
->  {
-> @@ -2766,6 +2767,12 @@ void console_suspend_all(void)
->  	synchronize_srcu(&console_srcu);
->  }
->  
-> +/**
-> + * console_resume_all - resume the console subsystem
-> + *
-> + * This resumes printk() when the system is being restored. Called by the power
-> + * management subsystem.
+[auto build test ERROR on 8f0b4cce4481fb22653697cced8d0d04027cb1e8]
 
-And something similar here:
+url:    https://github.com/intel-lab-lkp/linux/commits/Ilpo-J-rvinen/serial-8250-Protect-LCR-write-in-shutdown/20260130-213314
+base:   8f0b4cce4481fb22653697cced8d0d04027cb1e8
+patch link:    https://lore.kernel.org/r/20260130132857.13124-8-ilpo.jarvinen%40linux.intel.com
+patch subject: [PATCH v3 7/7] serial: 8250_dw: Ensure BUSY is deasserted
+config: parisc-randconfig-001-20260131 (https://download.01.org/0day-ci/archive/20260131/202601310404.Rdq0kVXE-lkp@intel.com/config)
+compiler: hppa-linux-gcc (GCC) 8.5.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260131/202601310404.Rdq0kVXE-lkp@intel.com/reproduce)
 
- * Allow all console printing when the system resumes from suspend. Called by
- * the power management system.
- 
-> + */
->  void console_resume_all(void)
->  {
->  	struct console_flush_type ft;
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202601310404.Rdq0kVXE-lkp@intel.com/
 
-John Ogness
+All errors (new ones prefixed by >>):
+
+   drivers/tty/serial/8250/8250_dw.c: In function 'dw8250_check_lcr':
+>> drivers/tty/serial/8250/8250_dw.c:267:1: error: label at end of compound statement
+    write_err:
+    ^~~~~~~~~
+
+
+vim +267 drivers/tty/serial/8250/8250_dw.c
+
+   234	
+   235	/*
+   236	 * This function is being called as part of the uart_port::serial_out()
+   237	 * routine. Hence, special care must be taken when serial_port_out() or
+   238	 * serial_out() against the modified registers here, i.e. LCR (d->in_idle is
+   239	 * used to break recursion loop).
+   240	 */
+   241	static void dw8250_check_lcr(struct uart_port *p, unsigned int offset, u32 value)
+   242	{
+   243		struct dw8250_data *d = to_dw8250_data(p->private_data);
+   244		u32 lcr;
+   245		int ret;
+   246	
+   247		if (offset != UART_LCR || d->uart_16550_compatible)
+   248			return;
+   249	
+   250		lcr = serial_port_in(p, UART_LCR);
+   251	
+   252		/* Make sure LCR write wasn't ignored */
+   253		if ((value & ~UART_LCR_SPAR) == (lcr & ~UART_LCR_SPAR))
+   254			return;
+   255	
+   256		if (d->in_idle)
+   257			goto write_err;
+   258	
+   259		ret = dw8250_idle_enter(p);
+   260		if (ret < 0)
+   261			goto write_err;
+   262	
+   263		serial_port_out(p, UART_LCR, value);
+   264		dw8250_idle_exit(p);
+   265		return;
+   266	
+ > 267	write_err:
+   268		/*
+   269		 * FIXME: this deadlocks if port->lock is already held
+   270		 * dev_err(p->dev, "Couldn't set LCR to %d\n", value);
+   271		 */
+   272	}
+   273	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
