@@ -1,96 +1,363 @@
-Received: from mail-oa1-f69.google.com (mail-oa1-f69.google.com [209.85.160.69])
+Received: from mail-oo1-f51.google.com (mail-oo1-f51.google.com [209.85.161.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E866385516
-	for <linux-serial@vger.kernel.org>; Thu, 29 Jan 2026 11:51:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.69
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F3222E88B6
+	for <linux-serial@vger.kernel.org>; Fri, 30 Jan 2026 03:54:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769687491; cv=none; b=CXiDBl3j9L/KyMCO/TdVz9iFQel0HyuWRvHeRYvYiIpi3PzfoNf3jZj5jHuOT75iJqO+bwuCLJ76HAYXJxL8Oy0HYtU7yM7T21CtnrOY0xZM33WVjq+6pXVihgns3sAnsNsi9ao/i0misFzVfSp0WhexYFWqoOSDmbEnR/EbApg=
+	t=1769745295; cv=none; b=mPEdxMfX+TC18A4jvdmVLiAhB8B6fHtRb+F4cUsmEpb7zGZFKMymOBvj4FSgalZokU4xuqu7O6L8Q40k5gmi44eDZ45g2MXRXDi2OGjNsghMaTB50fV8fiWIbHz2bJyp2C0ak5+6MTwHdW92BdkJ+gN0mHu+gj2FIiccDTMyniI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769687491; c=relaxed/simple;
-	bh=lIUDlXObb5uEF//k43KhXjonJY7/eMR3MoOZwQ+ASjw=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=Zw/wKvF3FKxeBtUXteUn6OZEQUxMRK6UGmrvodgue0Q4aD69W6cq5mPOOz7P1WvMPqeVX2pVA1UiOI60faGMmyDorjFzSpxCb3Fl8FqFNEgvoObJk5nE2+d9dOqQTM+1fslYBhW0rybtBwK32thfJEnn8elEcW1O+q7WhoMp2cQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.69
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oa1-f69.google.com with SMTP id 586e51a60fabf-3ff590953b1so2542203fac.2
-        for <linux-serial@vger.kernel.org>; Thu, 29 Jan 2026 03:51:29 -0800 (PST)
+	s=arc-20240116; t=1769745295; c=relaxed/simple;
+	bh=61AdblHSKpwEd8XSc8ByKLLBiiiUs87L9eDfd5ye0XU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WcxO9GQWODwWW08FS7jLHJAsv9FwjLHijjqMqr7qaF64E+mewPG3Bl0du/IPcKjsLcjT9zvwhHAMd7owsAqMwt320FXPjS/sVLuKHBCjDy32m2If5VO+D2A3GSEXE1jzU3LWY7YANGyw3Z440pbKmHJRagb7tFE0Z8THTaRzN4o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=CbjmrdpP; arc=none smtp.client-ip=209.85.161.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="CbjmrdpP"
+Received: by mail-oo1-f51.google.com with SMTP id 006d021491bc7-662f9aeb782so1162339eaf.3
+        for <linux-serial@vger.kernel.org>; Thu, 29 Jan 2026 19:54:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1769745291; x=1770350091; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=wKrsJyAADsVbRFEkxPd+kVRNcQo0Gojt5413CoBLvuY=;
+        b=CbjmrdpPxsILGAeCGCoFsxIlxBXDsw3nlfndAbrgw/q2e9TfpMKNzRy+OGfKtuQqXR
+         b2PRgSDzM6SwKsRl1NNZtnBg8yof8//DdIk+lHNA2nyq5gurWTzMV9LxYzvtHDDAeV3a
+         w7LjHPRdGA+zWV6YPfSZ8bUpMPJEPZh7MhkCI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769687488; x=1770292288;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=m0NG2LGgo/HRDPw+ohIUZo78HxQ4jjxW86wJXLvVSKY=;
-        b=AF4p67XSb/+agqjXOh1mzduWPaaeUMlV4uijul9VfbMW/9SFeIJtIS1kZ6yNhPC4TL
-         XwemHlrfJs8+aXwP/MjGjp4DjMVYVVyukcdRt/fmtn9rWGpEmTESIRUG9H8/txwkqm+/
-         8KYhk8oB7ID+j0nsBtx8sR29SNZaEW8H8Nc9qolAabW0n51AmlkB8gdx6SbdJ0iBhYy+
-         q//KxpZRfyeZ0Twb4nfp0juvxVwIXzA70eFI9Q2hH7/i0ISH9rx1brEkilXIRPgHNDkd
-         PfInLWSv2yoCLv0YXClcYzIzLHB15eAPetu5GSEKquvjfosXY9ZcWiTEhhhNf4oLR8lR
-         frSg==
-X-Forwarded-Encrypted: i=1; AJvYcCW1fiDPsBHqllxshaxrHFviclybJISDF5k/MB8gyS+5HE7ABEhuet9k9EEvofhODRmF+dJ1e1wzbNdOBc4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyX7nWrrdwS8MXpcTqQQvHOLrr3Elozx7iEu2wbLw6zrInMx4Ui
-	xSQSWjhrhUeoOLhkZdUClb15UJKyVuCV/N0Ov/fRUyoYqEHF9RbhVEczsxOtH7DFLGhaqH5kbrx
-	sqp4hw32DNwJFHepqTeVgFpzq8X8cF44VydNfuxH3DZ9nSJveJJlS+N9QhV8=
+        d=1e100.net; s=20230601; t=1769745291; x=1770350091;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=wKrsJyAADsVbRFEkxPd+kVRNcQo0Gojt5413CoBLvuY=;
+        b=WKDlCln433iRkJoITzhqpZ7Wl4/1bNQhnb1E3HY0iaIxyt9Jk78e13qrss8XpFQZb+
+         VYy5AbtuHDX5NC3NpsaNm/rgVTtRC8T/PslpQZ7PHw9Msr2G+HVE6SjI6ED3bQLCaYS7
+         Ol8BmKfnxDw2I998/KyTUyY+/0uaIsR0espfBOASQ2Dc3RQUxlHNtx5ZN9hM+9atBl9J
+         a0KBJqUZXZBuRvSsMzfs1WUwokTKEA9tmog78fV7nJpwdy5vJ3N/BR7w5H2MzhjKfi+d
+         l+RZzT6Hhw6CG5V/O7enEC1JLFLeRFVucWBwMzjct/gW5eoQ3azwiBBCIYe8ILdGum/+
+         05rA==
+X-Forwarded-Encrypted: i=1; AJvYcCXrasPKlBOGYQxPV4ttyc1JDVyrPAdMhSPn3FfaHFKP5UApQNjbhqVVca/Eq9h7389WnpcxbayEY1Pwfbk=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywn1NtcH0EF9aGBCH0Z1NvSG+wrHcJWQRm4RYHJVWtyWyyWZm34
+	xtwkLyid4/JEOZIWb016pTbA/WnoKjqujB5dDUjvvgisyvSHzIIFJMXHSmw7emB1VA==
+X-Gm-Gg: AZuq6aL/nbt38fjxBh1vD/wuis7loRIvpBXMN8jihknlLlN0SxmXaEC8buxivVeY/FX
+	YH9YInDbFgQ2wvZWg1hc1ywIP+SSycfSzxus2GV/9ZB4RXkgGwLbL1K4oYhwB8RSfgPPTytYRPi
+	9euXLaQvBj0UlejoDGE8boSeaaIMAohMPo5wY3olkF7Dxze3bPsuSRNZSDn5ZWBCJwZPVHISXO1
+	6EZrHY+P9DTP+BU/IsolXLSNXb6gOkgABqZORQY2ilN7yT+ucRJC2AJ+vjZGsBYQqfHp9VAzJyp
+	i2lE81v6pHXQ3Ss8W89LV8ZdeU4MkbuEviJmsPrSQ3Jt3SXmyM/2znZqTOkEHalufDawkLsFVNh
+	kyBpRnLwSCfQ6A8PbZGAHmTKSd5YTfZaJgpy+xmQe+CNR541uPOk+0ZFinVnuajfmLDfWhcgh1X
+	H7nqwYzTNwhu5Jl4hwb38by4qGx4G0d0CK/XkTNv4Hsd5obYfHwKYawziBNac8dT9g
+X-Received: by 2002:a05:6820:820:b0:662:c372:4cc9 with SMTP id 006d021491bc7-6630f3d7346mr805426eaf.79.1769745290803;
+        Thu, 29 Jan 2026 19:54:50 -0800 (PST)
+Received: from google.com (h96-60-216-201.arvdco.broadband.dynamic.tds.net. [96.60.216.201])
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-662f9a18de2sm4424183eaf.11.2026.01.29.19.54.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Jan 2026 19:54:49 -0800 (PST)
+Date: Thu, 29 Jan 2026 20:54:45 -0700
+From: Raul E Rangel <rrangel@chromium.org>
+To: John Keeping <jkeeping@inmusicbrands.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Sunil V L <sunilvl@ventanamicro.com>,
+	Petr Mladek <pmladek@suse.com>, Arnd Bergmann <arnd@arndb.de>,
+	John Ogness <john.ogness@linutronix.de>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Ferry Toth <ftoth@exalondelft.nl>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Serge Semin <fancer.lancer@gmail.com>,
+	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v3] serial: 8250: Fix fifo underflow on flush
+Message-ID: <aXwrhV6_FQ-o8KY2@google.com>
+References: <20250208124148.1189191-1-jkeeping@inmusicbrands.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:488c:b0:663:3ad:4c2d with SMTP id
- 006d021491bc7-66303ad4c73mr1541410eaf.60.1769687488551; Thu, 29 Jan 2026
- 03:51:28 -0800 (PST)
-Date: Thu, 29 Jan 2026 03:51:28 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <697b49c0.a70a0220.9914.001b.GAE@google.com>
-Subject: [syzbot] Monthly serial report (Jan 2026)
-From: syzbot <syzbot+listac358ce31459004989d9@syzkaller.appspotmail.com>
-To: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250208124148.1189191-1-jkeeping@inmusicbrands.com>
 
-Hello serial maintainers/developers,
+On Sat, Feb 08, 2025 at 12:41:44PM +0000, John Keeping wrote:
+> When flushing the serial port's buffer, uart_flush_buffer() calls
+> kfifo_reset() but if there is an outstanding DMA transfer then the
+> completion function will consume data from the kfifo via
+> uart_xmit_advance(), underflowing and leading to ongoing DMA as the
+> driver tries to transmit another 2^32 bytes.
+> 
+> This is readily reproduced with serial-generic and amidi sending even
+> short messages as closing the device on exit will wait for the fifo to
+> drain and in the underflow case amidi hangs for 30 seconds on exit in
+> tty_wait_until_sent().  A trace of that gives:
+> 
+>      kworker/1:1-84    [001]    51.769423: bprint:               serial8250_tx_dma: tx_size=3 fifo_len=3
+>            amidi-763   [001]    51.769460: bprint:               uart_flush_buffer: resetting fifo
+>  irq/21-fe530000-76    [000]    51.769474: bprint:               __dma_tx_complete: tx_size=3
+>  irq/21-fe530000-76    [000]    51.769479: bprint:               serial8250_tx_dma: tx_size=4096 fifo_len=4294967293
+>  irq/21-fe530000-76    [000]    51.781295: bprint:               __dma_tx_complete: tx_size=4096
+>  irq/21-fe530000-76    [000]    51.781301: bprint:               serial8250_tx_dma: tx_size=4096 fifo_len=4294963197
+>  irq/21-fe530000-76    [000]    51.793131: bprint:               __dma_tx_complete: tx_size=4096
+>  irq/21-fe530000-76    [000]    51.793135: bprint:               serial8250_tx_dma: tx_size=4096 fifo_len=4294959101
+>  irq/21-fe530000-76    [000]    51.804949: bprint:               __dma_tx_complete: tx_size=4096
+> 
+> Since the port lock is held in when the kfifo is reset in
+> uart_flush_buffer() and in __dma_tx_complete(), adding a flush_buffer
+> hook to adjust the outstanding DMA byte count is sufficient to avoid the
+> kfifo underflow.
+> 
+> Fixes: 9ee4b83e51f74 ("serial: 8250: Add support for dmaengine")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: John Keeping <jkeeping@inmusicbrands.com>
+> ---
+> Changes in v3:
+> - Fix !CONFIG_SERIAL_8250_DMA build
+> Changes in v2:
+> - Add Fixes: tag
+> - Return early to reduce indentation in serial8250_tx_dma_flush()
+> 
+>  drivers/tty/serial/8250/8250.h      |  2 ++
+>  drivers/tty/serial/8250/8250_dma.c  | 16 ++++++++++++++++
+>  drivers/tty/serial/8250/8250_port.c |  9 +++++++++
+>  3 files changed, 27 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+> index 11e05aa014e54..b861585ca02ac 100644
+> --- a/drivers/tty/serial/8250/8250.h
+> +++ b/drivers/tty/serial/8250/8250.h
+> @@ -374,6 +374,7 @@ static inline int is_omap1510_8250(struct uart_8250_port *pt)
+>  
+>  #ifdef CONFIG_SERIAL_8250_DMA
+>  extern int serial8250_tx_dma(struct uart_8250_port *);
+> +extern void serial8250_tx_dma_flush(struct uart_8250_port *);
+>  extern int serial8250_rx_dma(struct uart_8250_port *);
+>  extern void serial8250_rx_dma_flush(struct uart_8250_port *);
+>  extern int serial8250_request_dma(struct uart_8250_port *);
+> @@ -406,6 +407,7 @@ static inline int serial8250_tx_dma(struct uart_8250_port *p)
+>  {
+>  	return -1;
+>  }
+> +static inline void serial8250_tx_dma_flush(struct uart_8250_port *p) { }
+>  static inline int serial8250_rx_dma(struct uart_8250_port *p)
+>  {
+>  	return -1;
+> diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
+> index d215c494ee24c..f245a84f4a508 100644
+> --- a/drivers/tty/serial/8250/8250_dma.c
+> +++ b/drivers/tty/serial/8250/8250_dma.c
+> @@ -149,6 +149,22 @@ int serial8250_tx_dma(struct uart_8250_port *p)
+>  	return ret;
+>  }
+>  
+> +void serial8250_tx_dma_flush(struct uart_8250_port *p)
+> +{
+> +	struct uart_8250_dma *dma = p->dma;
+> +
+> +	if (!dma->tx_running)
+> +		return;
+> +
+> +	/*
+> +	 * kfifo_reset() has been called by the serial core, avoid
+> +	 * advancing and underflowing in __dma_tx_complete().
+> +	 */
+> +	dma->tx_size = 0;
+> +
+> +	dmaengine_terminate_async(dma->rxchan);
 
-This is a 31-day syzbot report for the serial subsystem.
-All related reports/information can be found at:
-https://syzkaller.appspot.com/upstream/s/serial
+Hrmm, I think this is causing a deadlock.
+If the DMA transaction is canceled, then the callback might not run.
+This leaves dma->tx_running set to 1 causing the channel to never
+restart the channel.
 
-During the period, 1 new issues were detected and 0 were fixed.
-In total, 15 issues are still open and 45 have already been fixed.
+I tried the following fix (and it works for me), but I'm not sure it's
+the correct fix.
 
-Some of the still happening issues:
+diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
+index bdd26c9f34bd..58b914c20d98 100644
+--- a/drivers/tty/serial/8250/8250_dma.c
++++ b/drivers/tty/serial/8250/8250_dma.c
+@@ -162,7 +162,22 @@ void serial8250_tx_dma_flush(struct uart_8250_port *p)
+         */
+        dma->tx_size = 0;
 
-Ref  Crashes Repro Title
-<1>  3669    Yes   possible deadlock in console_lock_spinning_enable (5)
-                   https://syzkaller.appspot.com/bug?extid=622acb507894a48b2ce9
-<2>  3002    Yes   KMSAN: uninit-value in n_tty_receive_buf_standard
-                   https://syzkaller.appspot.com/bug?extid=559c7fe4b8bac56d38c2
-<3>  265     Yes   KASAN: slab-use-after-free Read in tty_write_room (2)
-                   https://syzkaller.appspot.com/bug?extid=2a81fdd5c6ddffee3894
-<4>  261     Yes   KMSAN: uninit-value in n_tty_receive_buf_closing (3)
-                   https://syzkaller.appspot.com/bug?extid=dd514b5f0cf048aec256
-<5>  238     Yes   INFO: task can't die in show_free_areas
-                   https://syzkaller.appspot.com/bug?extid=8f41dccfb6c03cc36fd6
-<6>  120     Yes   possible deadlock in tty_buffer_flush (3)
-                   https://syzkaller.appspot.com/bug?extid=52cf91760dcb1dac6376
-<7>  53      No    KMSAN: uninit-value in n_tty_lookahead_flow_ctrl (2)
-                   https://syzkaller.appspot.com/bug?extid=290abdcd4f509377a0eb
-<8>  18      Yes   INFO: rcu detected stall in console_callback
-                   https://syzkaller.appspot.com/bug?extid=32af18ae7b894a681f2d
-<9>  6       Yes   INFO: task hung in paste_selection (2)
-                   https://syzkaller.appspot.com/bug?extid=275e275bd3f536725dd8
-<10> 3       No    possible deadlock in stop_tty
-                   https://syzkaller.appspot.com/bug?extid=7ca5a40e8164fe2609fd
++       /*
++        * We can't use `dmaengine_terminate_sync` because `uart_flush_buffer` is
++        * holding the uart port spinlock.
++        */
+        dmaengine_terminate_async(dma->txchan);
++
++       /*
++        * The callback might or might not run. If it doesn't run, we need to ensure
++        * that `tx_running` is cleared so that we can schedule new transactions.
++        * If it does run, then the zombie callback will clear `tx_running` for us
++        * and perform a no-op since `tx_size` was cleared.
++        *
++        * In either case, we assume DMA transaction will be terminated or the
++        * callback will run before we issue a new `serial8250_tx_dma`.
++        */
++       dma->tx_running = 0;
+ }
+
+ int serial8250_rx_dma(struct uart_8250_port *p)
+
+The problem is IIUC, that we need to either use dmaengine_terminate_sync
+or dmaengine_synchronize so we can guarantee that the hardware is
+stopped, the callback is done, and we can free-reuse the resources.
+I think a better approach might be to add a `tx_flushing` bool and push
+a job onto a work queue that calls `dmaengine_terminate_sync`, and then
+sets `tx_running=0` and `tx_flushing=0`. I'm not sure what happens
+though if something comes along and starts writing to the UART registers
+while we are waiting for the DMA transaction to complete.
+
+Thoughts?
 
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Here is the debug trace I took that shows the problem:
 
-To disable reminders for individual bugs, reply with the following command:
-#syz set <Ref> no-reminders
+< lots of tty_write omitted >
+3250.941306 |    0)               |  tty_write() {
+3250.941307 |    0)   0.174 us    |    tty_ldisc_ref_wait();
+3250.941307 |    0)   0.154 us    |    tty_hung_up_p();
+3250.941307 |    0)               |    tty_write_room() {
+3250.941308 |    0)   0.211 us    |      uart_write_room();
+3250.941308 |    0)   0.542 us    |    }
+3250.941308 |    0)               |    uart_write() {
+3250.941308 |    0)               |      serial8250_start_tx() {
+3250.941309 |    0)               |        serial8250_tx_dma() {
+3250.941309 |    0)               |          /* serial8250_tx_dma: tx_running => 1 */
+3250.941309 |    0)   0.408 us    |        }
+3250.941309 |    0)   0.714 us    |      }
+3250.941309 |    0)   1.261 us    |    }
+3250.941310 |    0)               |    tty_write_room() {
+3250.941310 |    0)   0.217 us    |      uart_write_room();
+3250.941310 |    0)   0.489 us    |    }
+3250.941310 |    0)               |    uart_flush_chars() {
+3250.941310 |    0)               |      uart_start() {
+3250.941311 |    0)               |        serial8250_start_tx() {
+3250.941311 |    0)               |          serial8250_tx_dma() {
+3250.941311 |    0)               |            /* serial8250_tx_dma: tx_running => 1 */
+3250.941311 |    0)   0.389 us    |          }
+3250.941311 |    0)   0.681 us    |        }
+3250.941312 |    0)   1.207 us    |      }
+3250.941312 |    0)   1.488 us    |    }
+3251.008825 |   10)               |  serial8250_interrupt() {
+3251.008828 |   10)               |    serial8250_default_handle_irq() {
+3251.008830 |   10) + 17.915 us   |      dw8250_serial_in32 [8250_dw]();
+3251.008848 |   10)   0.207 us    |      serial8250_handle_irq();
+3251.008849 |   10) + 20.208 us   |    }
+3251.008849 |   10) + 27.505 us   |  }
+3251.008862 |   10)               |  /* __dma_tx_complete: tx_running <= 0 */
+3251.008863 |   10)               |  serial8250_tx_dma() {
+3251.008864 |   10)               |  /* serial8250_tx_dma: tx_running => 0 */
+3251.008872 |   10)               |  /* serial8250_tx_dma: tx_running <= 1 */
+3251.008879 |   10)   9.410 us    |  }
+3251.107685 |   10)               |  serial8250_interrupt() {
+3251.107688 |   10)               |    serial8250_default_handle_irq() {
+3251.107689 |   10) + 18.007 us   |      dw8250_serial_in32 [8250_dw]();
+3251.107707 |   10)               |      serial8250_handle_irq() {
+3251.107708 |   10)   1.847 us    |        dw8250_serial_in32 [8250_dw]();
+3251.107713 |   10)   1.003 us    |        serial8250_rx_dma_flush();
+3251.107714 |   10)               |        serial8250_read_char() {
+3251.107715 |   10) + 17.452 us   |          dw8250_serial_in32 [8250_dw]();
+3251.107732 |   10)   1.008 us    |          uart_insert_char();
+3251.107734 |   10) + 19.136 us   |        }
+3251.107734 |   10)   3.914 us    |        dw8250_serial_in32 [8250_dw]();
+3251.107739 |   10)   6.789 us    |        tty_flip_buffer_push();
+3251.107746 |   10)               |        serial8250_modem_status() {
+3251.107746 |   10) + 17.556 us   |          dw8250_serial_in32 [8250_dw]();
+3251.107764 |   10) + 18.039 us   |        }
+3251.107764 |   10) + 56.710 us   |      }
+3251.107764 |   10) + 76.870 us   |    }
+3251.107765 |   10)               |    serial8250_default_handle_irq() {
+3251.107765 |   10)   4.205 us    |      dw8250_serial_in32 [8250_dw]();
+3251.107769 |   10)   0.219 us    |      serial8250_handle_irq();
+3251.107770 |   10)   5.076 us    |    }
+3251.107770 |   10) + 88.331 us   |  }
+3251.107805 |    6)               |  tty_port_default_receive_buf() {
+3251.107808 |    6)   1.377 us    |    tty_ldisc_ref();
+3251.107810 |    6)               |    tty_ldisc_receive_buf() {
+3251.107813 |    6)   0.639 us    |      tty_get_pgrp();
+3251.107823 |    6)               |      tty_driver_flush_buffer() {
+3251.107824 |    6)               |        uart_flush_buffer() {
+3251.107825 |    6)               |          serial8250_flush_buffer() {
+3251.107826 |    6)               |            serial8250_tx_dma_flush() {
+3251.107829 |    6)               |              /* serial8250_tx_dma_flush: tx_running => 1 */
+                                                 /* Notice the callback is never ran */
+3251.108186 |    6) ! 360.293 us  |            }
+3251.108186 |    6) ! 361.125 us  |          }
+3251.108196 |    6)               |          tty_port_tty_wakeup() {
+3251.108196 |    6)               |            tty_port_default_wakeup() {
+3251.108196 |    6)   1.146 us    |              tty_wakeup();
+3251.108198 |    6)   0.247 us    |              tty_kref_put();
+3251.108198 |    6)   2.359 us    |            }
+3251.108199 |    6)   2.987 us    |          }
+3251.108199 |    6) ! 374.727 us  |        }
+3251.108199 |    6) ! 375.679 us  |      }
+3251.108202 |    6)               |      tty_write_room() {
+3251.108203 |    6)   0.286 us    |        uart_write_room();
+3251.108203 |    6)   1.074 us    |      }
+3251.108204 |    6)               |      tty_put_char() {
+3251.108204 |    6)   0.487 us    |        uart_put_char();
+3251.108205 |    6)   1.177 us    |      }
+3251.108205 |    6)               |      tty_put_char() {
+3251.108205 |    6)   0.261 us    |        uart_put_char();
+3251.108206 |    6)   0.677 us    |      }
+3251.108206 |    6)               |      uart_flush_chars() {
+3251.108207 |    6)               |        uart_start() {
+3251.108208 |    6)               |          serial8250_start_tx() {
+3251.108209 |    6)               |            serial8250_tx_dma() {
+3251.108210 |    6)               |              /* serial8250_tx_dma: tx_running => 1 */
+3251.108210 |    6)   1.194 us    |            }
+3251.108211 |    6)   2.251 us    |          }
+3251.108213 |    6)   5.829 us    |        }
+3251.108213 |    6)   6.532 us    |      }
+3251.108214 |    6) ! 404.132 us  |    }
+3251.108214 |    6)   0.238 us    |    tty_ldisc_deref();
+3251.108214 |    6) ! 411.672 us  |  }
+3251.108260 |    0)   3.102 us    |    tty_ldisc_deref();
+3251.108263 |    0) @ 166956.2 us |  }
+3251.108270 |    0)   0.465 us    |  tty_audit_exit();
+3251.109013 |   11)   2.680 us    |  tty_kref_put();
+3251.109059 |   11)               |  tty_ioctl() {
+3251.109060 |   11)               |    tty_jobctrl_ioctl() {
+3251.109060 |   11)   0.622 us    |      __tty_check_change();
+3251.109062 |   11)   2.450 us    |    }
+3251.109063 |   11)   4.003 us    |  }
+3251.109064 |   11)               |  tty_ioctl() {
+3251.109064 |   11)   0.225 us    |    tty_jobctrl_ioctl();
+3251.109065 |   11)   1.550 us    |    uart_ioctl();
+3251.109067 |   11)   0.554 us    |    tty_ldisc_ref_wait();
+3251.109069 |   11)               |    tty_mode_ioctl() {
+3251.109069 |   11)               |      tty_check_change() {
+3251.109070 |   11)   0.282 us    |        __tty_check_change();
+3251.109070 |   11)   0.662 us    |      }
+3251.109071 |   11)   0.477 us    |      tty_termios_input_baud_rate();
+3251.109071 |   11)   0.214 us    |      tty_termios_baud_rate();
+3251.109072 |   11)   0.483 us    |      uart_chars_in_buffer();
+3251.109073 |   11)   0.247 us    |      uart_chars_in_buffer();
+------------------------------------------
+11)    sh-7708     =>   kworker-90
+------------------------------------------
 
-To change bug's subsystems, reply with:
-#syz set <Ref> subsystems: new-subsystem
+3251.686493 |   11)               |  serial8250_start_tx() {
+3251.686496 |   11)               |    serial8250_tx_dma() {
+3251.686500 |   11)               |      /* serial8250_tx_dma: tx_running => 1 */
+3251.686501 |   11)   4.696 us    |    }
+3251.686501 |   11) + 12.203 us   |  }
+3252.311575 |   11)               |  serial8250_start_tx() {
+3252.311579 |   11)               |    serial8250_tx_dma() {
+3252.311582 |   11)               |      /* serial8250_tx_dma: tx_running => 1 */
+3252.311583 |   11)   4.020 us    |    }
+3252.311583 |   11) + 10.556 us   |  }
+3252.936657 |   11)               |  serial8250_start_tx() {
+3252.936661 |   11)               |    serial8250_tx_dma() {
+3252.936664 |   11)               |      /* serial8250_tx_dma: tx_running => 1 */
+3252.936665 |   11)   3.989 us    |    }
+3252.936665 |   11) + 10.880 us   |  }
 
-You may send multiple commands in a single email message.
+Thanks,
+Raul
+
