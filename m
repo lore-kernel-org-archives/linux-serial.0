@@ -1,186 +1,124 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D4BD3783C7;
-	Fri, 30 Jan 2026 12:44:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CD362D660E;
+	Fri, 30 Jan 2026 13:29:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769777090; cv=none; b=RcI+8WbNJZXn5KerjBOjC83GkwrsBRrgxWXTRNZ1EXN4xevPqk2oI6fg38G/s/fZ6dqVbCZNQO2sn9eANgvE6H3/RyvGJhv+4Ra3e5ohEWKfenf53L/WvHWBEQVO+FGGymbhcaX35kjtRaT4tCtQpGKxsleotaF+VZ7fxUAtCN0=
+	t=1769779755; cv=none; b=sggSzOIVSSzUQfZKQfGowp3ll2JfKCj75wBFVGasw8YTH4ElGRtMWFDwybVqUipCbssENHqPT7T1wIyMGg7l67aJRFtfQEdk6NF3+oi0Nbn2Mrm7BBdu7ZFaOFdjFtrSP6lKiRdb/og27chUIBpL1PsE959zx4KJclD5CZTlsrs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769777090; c=relaxed/simple;
-	bh=BYWDzl1hpidTm8MVscZ7wuR/NoorAY6uuctOeV4P49Q=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=FK5MY9oSy21w4wfosV+L+eEgd3fYFWj4BlFAcXd6usb3qMLJXBm9KLiDIBP0rMh5e7DBTOKfM+iX1fOHoIJsfAzc1ub6Tyc/OJjoUya2uQcjXsujiUB4C0wuqIUzDWM4WfvCTSuVtRjWl85AgfMknMKHDmrU23W+5ZAzajtxX8U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=CSZNVj9l; arc=none smtp.client-ip=192.198.163.12
+	s=arc-20240116; t=1769779755; c=relaxed/simple;
+	bh=DJY8jeEMA2g8yvKK4+pNIYfktXTywqa+cWfcCcfsGGk=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=XqjaSLpDlnZWh/plIz5LAjYb5Sjlwbciag21Vs+WxhOsnY7I9aSUKld8XBPQWIaewFPn9kZlKWGsDd4PNqqUppcDOFpKD5c9AD+LyKEEgLHGWVpXKat8YFPdQjfpoaTQoCED77AWMHghps+nbfQA7rfF4PJDiGKhyzoc2iHfaUA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=b9NW7O9Q; arc=none smtp.client-ip=198.175.65.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CSZNVj9l"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="b9NW7O9Q"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1769777089; x=1801313089;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=BYWDzl1hpidTm8MVscZ7wuR/NoorAY6uuctOeV4P49Q=;
-  b=CSZNVj9lzMEJ2zN66DRVTmN+tTflQwwg4S25YPzSx9JgDPOJ5kGNeg24
-   ufstdX2MToQH/w2/ALU0Hx8vK56l5VvxZu6/gnbAoVnHiitGx9leRjNDx
-   ORpz0L2YZHoHzx/xqiePYzVZRdiqg83xxxVULtAcf68OvgPKIkFICIp4o
-   WsGiw1TMn29qBR+qpMvtt5OdHF6vFciBLc+towu/F/apsgwkH8PPNsxsp
-   qh/7M3Yj8Wxu8d4lQj5bWQUKQd5/JVUto8jE/YReybdhVvN3YAzeud8PM
-   WhLyEwyKaq+Yf2PlIwF0Q0EpK5K6VSu3mvd6iiprvyGU6lvrlmonH18EL
+  t=1769779754; x=1801315754;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=DJY8jeEMA2g8yvKK4+pNIYfktXTywqa+cWfcCcfsGGk=;
+  b=b9NW7O9Qz2UZMzB9XreRTaWPUXCFLt6jwB5ywdB74hz9ZtG/x4UHplc0
+   pPiJEaYUGxt6kJGNnTv7DTSmo28PLudfbvmGWJlwgbfnK1CaFJMqNzY2Q
+   woHbkEofK+9rbfBpKUtYdvRUjANB3o9maZTxUaZK3fd0jwUmw1cHK+Ekp
+   Yce+MwZ83fOMKJFd0fBfxos4KLA+39sXJ9qaa4LgL3vnhMj2nlVvZuT30
+   qTAhAVtnNfWqxbIUOUVLnmi964oKmDk1AsDM9LhRjEPiW0jYjNKx4JxjU
+   ljqAyZNsN2YLfp49BdKtC4GAz0MpVKqB6D4FQvmubBkhTiZyho5PxpeIB
    g==;
-X-CSE-ConnectionGUID: 86ozDU8HRYK9kLIH74Yx+A==
-X-CSE-MsgGUID: wBSJ4cBpSputP95bPbIY3g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11686"; a="74889485"
-X-IronPort-AV: E=Sophos;i="6.21,262,1763452800"; 
-   d="scan'208";a="74889485"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2026 04:44:48 -0800
-X-CSE-ConnectionGUID: U0sX5SB6RhigwbyWQAANNA==
-X-CSE-MsgGUID: Vw0gopSMTQeVgHby5bSPgg==
+X-CSE-ConnectionGUID: rBDAbvLbS3eIcklA3YIbZA==
+X-CSE-MsgGUID: pr7D0E6hTAaYjT+1EF/7Sg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11686"; a="74882358"
+X-IronPort-AV: E=Sophos;i="6.21,263,1763452800"; 
+   d="scan'208";a="74882358"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2026 05:29:13 -0800
+X-CSE-ConnectionGUID: 1WONRTJDRNuKJ03x5/4mXQ==
+X-CSE-MsgGUID: abyZmnEfSou5rQdmpvQnmg==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,262,1763452800"; 
-   d="scan'208";a="239568926"
+X-IronPort-AV: E=Sophos;i="6.21,263,1763452800"; 
+   d="scan'208";a="209103775"
 Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.54])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2026 04:44:41 -0800
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2026 05:29:09 -0800
 From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Fri, 30 Jan 2026 14:44:38 +0200 (EET)
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>, 
-    linux-serial <linux-serial@vger.kernel.org>, 
-    qianfan Zhao <qianfanguijin@163.com>, Adriana Nicolae <adriana@arista.com>, 
-    Tim Kryger <tim.kryger@linaro.org>, Matt Porter <matt.porter@linaro.org>, 
-    Heikki Krogerus <heikki.krogerus@linux.intel.com>, 
-    Markus Mayer <markus.mayer@linaro.org>, Jamie Iles <jamie@jamieiles.com>, 
-    LKML <linux-kernel@vger.kernel.org>, 
-    "Bandal, Shankar" <shankar.bandal@intel.com>, 
-    "Murthy, Shanth" <shanth.murthy@intel.com>, stable@vger.kernel.org
-Subject: Re: [PATCH v2 7/7] serial: 8250_dw: Ensure BUSY is deasserted
-In-Reply-To: <aXouStgDF635dYya@smile.fi.intel.com>
-Message-ID: <407db45d-c4d9-e6b1-8e35-e398da89d40e@linux.intel.com>
-References: <20260128105301.1869-1-ilpo.jarvinen@linux.intel.com> <20260128105301.1869-8-ilpo.jarvinen@linux.intel.com> <aXouStgDF635dYya@smile.fi.intel.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	linux-serial@vger.kernel.org,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	qianfan Zhao <qianfanguijin@163.com>,
+	Adriana Nicolae <adriana@arista.com>
+Cc: linux-kernel@vger.kernel.org,
+	"Bandal, Shankar" <shankar.bandal@intel.com>,
+	"Murthy, Shanth" <shanth.murthy@intel.com>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH v3 0/7] 8250 DW UART fixes when under constant Rx pressure
+Date: Fri, 30 Jan 2026 15:28:50 +0200
+Message-Id: <20260130132857.13124-1-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.39.5
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323328-1204532064-1769777025=:988"
-Content-ID: <a3a9dc3e-c4a5-a654-e523-0842e8e22999@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Hi all,
 
---8323328-1204532064-1769777025=:988
-Content-Type: text/plain; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Content-ID: <705e7d09-3806-dd46-66ca-a6d132db4dd5@linux.intel.com>
+Here are fixes to 8250 DW UART conditions that mostly occur in scenarios
+under constant Rx pressure which are made complicated by BUSY handling
+of DW UARTs (used when !uart_16550_compatible).
 
-On Wed, 28 Jan 2026, Andy Shevchenko wrote:
+A few of the changes touch also 8250_port but it's mostly moving existing
+code around (except for the extra synchronize_irq() in shutdown).
 
-> On Wed, Jan 28, 2026 at 12:53:01PM +0200, Ilpo J=E4rvinen wrote:
-> > DW UART cannot write to LCR, DLL, and DLH while BUSY is asserted.
-> > Existance of BUSY depends on uart_16550_compatible, if UART HW is
-> > configured with it those registers can always be written.
-> >=20
-> > There currently is dw8250_force_idle() which attempts to achieve
-> > non-BUSY state by disabling FIFO, however, the solution is unreliable
-> > when Rx keeps getting more and more characters.
-> >=20
-> > Create a sequence of operations that ensures UART cannot keep BUSY
-> > asserted indefinitely. The new sequence relies on enabling loopback mod=
-e
-> > temporarily to prevent incoming Rx characters keeping UART BUSY.
-> >=20
-> > Ensure no Tx in ongoing while the UART is switches into the loopback
-> > mode (requires exporting serial8250_fifo_wait_for_lsr_thre() and adding
-> > DMA Tx pause/resume functions).
-> >=20
-> > According to tests performed by Adriana Nicolae <adriana@arista.com>,
-> > simply disabling FIFO or clearing FIFOs only once does not always
-> > ensure BUSY is deasserted but up to two tries may be needed. This could
-> > be related to ongoing Rx of a character (a guess, not known for sure).
-> > Therefore, retry FIFO clearing a few times (retry limit 4 is arbitrary
-> > number but using, e.g., p->fifosize seems overly large). Tests
-> > performed by others did not exhibit similar challenge but it does not
-> > seem harmful to leave the FIFO clearing loop in place for all DW UARTs
-> > with BUSY functionality.
-> >=20
-> > Use the new dw8250_idle_enter/exit() to do divisor writes and LCR
-> > writes. In case of plain LCR writes, opportunistically try to update
-> > LCR first and only invoke dw8250_idle_enter() if the write did not
-> > succeed (it has been observed that in practice most LCR writes do
-> > succeed without complications).
-> >=20
-> > This issue was first reported by qianfan Zhao who put lots of debugging
-> > effort into understanding the solution space.
->=20
-> Some nit-picks below, otherwise seems good to go
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
->=20
-> ...
->=20
-> > Reported-by: qianfan Zhao <qianfanguijin@163.com>
-> > Link: https://lore.kernel.org/linux-serial/289bb78a-7509-1c5c-2923-a04e=
-d3b6487d@163.com/
-> > Reported-by: Adriana Nicolae <adriana@arista.com>
-> > Link: https://lore.kernel.org/linux-serial/20250819182322.3451959-1-adr=
-iana@arista.com/
->=20
-> Shouldn't these Link:s be Closes: tags?
+Pending cleanups (to be sent separately):
+ - 8250_dw: UART_IIR_RX_TIMEOUT move to switch/case 
+ - 8250: include sorting
+ - 8250: iir types to u8
 
-To not possibly give wrong signals, until they confirm their cases are=20
-indeed solved by this patch, I'd like to keep these as Link tag only.
+v3:
+- Rollback dw8250_idle_enter() failures within
+- usr_reg = ... ? ... : ...;
+- Leave LCR write fail dev_err() where it was (commented out)
 
-> > +=09struct dw8250_data *d =3D to_dw8250_data(p->private_data);
-> >  =09struct uart_8250_port *up =3D up_to_u8250p(p);
-> > +=09unsigned int usr_reg =3D DW_UART_USR;
-> > +=09int retries;
-> > +=09u32 lsr;
->=20
->=20
-> > +=09if (d->pdata)
-> > +=09=09usr_reg =3D d->pdata->usr_reg;
->=20
-> I would unite this with definition above:
->=20
-> =09unsigned int usr_reg =3D d->pdata ? d->pdata->usr_reg : DW_UART_USR;
->
-> > +=09lsr =3D serial_lsr_in(up);
->=20
-> > +=09if (lsr & UART_LSR_DR) {
-> > +=09=09serial_port_in(p, UART_RX);
-> > +=09=09up->lsr_saved_flags =3D 0;
-> >  =09}
->=20
-> This seems repeating a top of serial8250_read_char(). Perhaps we can do i=
-t
-> in a helper at some point?
+v2:
+- Added Fixes tags pointing DW & INTC10EE introducing commits
+- Added Cc stable to prerequisite patches
+- Separate adding serial8250_handle_irq_locked() to own patch
+- Put new exports to SERIAL_8250 namespace (eventually all 8250
+  exports should move there, but out-of-scope for this series)
+- Changes to no_int_count
+	- Change type to u8
+	- Use modulo in increment, add a define for it
+	- Perform kick only on 4th NO_INT
+- Use serial_port_in/out() throughout the series
+- Add FIXME comments to ndelay(frame_time) about very low baud rates
+- Add cleanup.h
+- Tweak lockdep.h place among misordered includes
+- Wording tweaks to changelogs and comments
 
-I don't see enough similarity as I'd need to deal with lsr_saved_flags=20
-somehow still here.
+Ilpo Järvinen (7):
+  serial: 8250: Protect LCR write in shutdown
+  serial: 8250_dw: Avoid unnecessary LCR writes
+  serial: 8250: Add serial8250_handle_irq_locked()
+  serial: 8250_dw: Rework dw8250_handle_irq() locking and IIR handling
+  serial: 8250_dw: Rework IIR_NO_INT handling to stop interrupt storm
+  serial: 8250: Add late synchronize_irq() to shutdown to handle DW UART
+    BUSY
+  serial: 8250_dw: Ensure BUSY is deasserted
 
-> > +=09if (d->in_idle) {
->=20
-> > +=09=09/*
-> > +=09=09 * FIXME: this deadlocks if port->lock is already held
-> > +=09=09 * dev_err(p->dev, "Couldn't set LCR to %d\n", value);
-> > +=09=09 */
->=20
-> Does it make sense to print an error here (assuming it will work with nbc=
-on)?
-> If so, maybe leave it at the end of the function, after dw8250_idle_exit(=
-)
-> and goto there?
+ drivers/tty/serial/8250/8250.h      |  25 +++
+ drivers/tty/serial/8250/8250_dw.c   | 295 ++++++++++++++++++++++------
+ drivers/tty/serial/8250/8250_port.c |  69 ++++---
+ include/linux/serial_8250.h         |   1 +
+ 4 files changed, 303 insertions(+), 87 deletions(-)
 
-I think the print would be useful. I'll leave the FIXME+commented out=20
-print into the end of the function in v3.
 
-I also realized that on error, dw8250_idle_enter() should undo what it=20
-changed, that is, call dw8250_idle_exit() within which will simplify=20
-caller-side error handling slightly.
+base-commit: 8f0b4cce4481fb22653697cced8d0d04027cb1e8
+-- 
+2.39.5
 
---=20
- i.
---8323328-1204532064-1769777025=:988--
