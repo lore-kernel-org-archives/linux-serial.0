@@ -1,143 +1,206 @@
-Received: from abb.hmeau.com (abb.hmeau.com [180.181.231.80])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f79.google.com (mail-oa1-f79.google.com [209.85.160.79])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 384DB30F957;
-	Sat, 31 Jan 2026 02:57:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=180.181.231.80
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DE5A309DDB
+	for <linux-serial@vger.kernel.org>; Sat, 31 Jan 2026 03:14:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.79
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769828268; cv=none; b=oPC9WGgm2q8WZyDHztglc5zD1qjB/L5XwownJwEzMmcshnG/09L0JA/lQf/lCTx0OnfJlA5YBYwXeqyjG/XVYvxAIYXYSI7pu1BjiGSvs1JgKiSrchPYn+jx9hhWxX7GhcfWBtzRITXPAoFBSXBNFSOnAcOvZ59ixxlaGhsAQHI=
+	t=1769829267; cv=none; b=ui8+q8yVmXWy7fimjmBBWkq0gyMm5h3bAEra+tot6hZHDLAlE8UbLdH2tgs/CydSOE440kxH1KcUrMWomamo0mkQ8VZo0prNHDs8Yt0hLNnOKg8qlyM9Wyr67Or28nAOKgWJqHXF0ySw2UZKWXFfH1pB5Kj/D8+TUYhFqgtWkT4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769828268; c=relaxed/simple;
-	bh=Hv6fVzSSkS5TMg+Bv/8xYIUfDlpPRu1M7eFCPb4nc2o=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=npSi1hlmzrAMTO9qLz1iZ4t4vVhvo9LrsnSHyX1W7gila6v6RSiNwdwLfGJWXoAf71E8t9nSrCx8RAQy23PK6HWMAmndYxLdhtK+OQnsFaL/RiVsqIlO4fnSd8Tvgr/i1Tu00SafRW5doxES1k4zg4S4eARkHD6XW2h1yGEhDMY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gondor.apana.org.au; spf=pass smtp.mailfrom=gondor.apana.org.au; dkim=pass (2048-bit key) header.d=gondor.apana.org.au header.i=@gondor.apana.org.au header.b=By+Agdnc; arc=none smtp.client-ip=180.181.231.80
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gondor.apana.org.au
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gondor.apana.org.au
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gondor.apana.org.au header.i=@gondor.apana.org.au header.b="By+Agdnc"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=gondor.apana.org.au; s=h01; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:cc:to:subject:message-id:date:
-	from:content-type:reply-to; bh=3wOThwjVEjG7NQ8lLaWkkzYwTr8y0NPlBDgaBGr3XXw=; 
-	b=By+AgdncMdzlIMzRIK30y3oQ0fLmq1VtJRb1xEb5FzqSPF7oVWGxezbu5+8YmMtVgwHU0zk/kAH
-	d6Xq9+oXd+hdFXjmSoPWZ6BwJqTbbdpg0mkukIXiNJu0KaVjn6T3b9xSe8hNCMO2VMSOhotdrU5dk
-	VlcLB8YmlQFCmpvYTh1QAeUrxploNeXWZvVVtOdE9lxpo5P6VQoQhFEWizfUXbKojAgcjvO6jkw6i
-	fb7BbYvOGfl11Zh6hxEw86K/wHQDIzMzb+o+Lq1PRkqA4CH6Bsj7POkXoeUiX40Z4Pjcm9GlpDL2c
-	h2DtyGc/oFK7fPwNmziDuPkSL8LhPqyLpnDQ==;
-Received: from loth.rohan.me.apana.org.au ([192.168.167.2])
-	by formenos.hmeau.com with smtp (Exim 4.96 #2 (Debian))
-	id 1vm1Aa-003S1b-1y;
-	Sat, 31 Jan 2026 10:57:09 +0800
-Received: by loth.rohan.me.apana.org.au (sSMTP sendmail emulation); Sat, 31 Jan 2026 10:57:08 +0800
-Date: Sat, 31 Jan 2026 10:57:08 +0800
-From: Herbert Xu <herbert@gondor.apana.org.au>
-To: Robert Marko <robert.marko@sartura.hr>
-Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
-	nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
-	claudiu.beznea@tuxon.dev, davem@davemloft.net, lee@kernel.org,
-	andrew+netdev@lunn.ch, edumazet@google.com, kuba@kernel.org,
-	pabeni@redhat.com, Steen.Hegelund@microchip.com,
-	daniel.machon@microchip.com, UNGLinuxDriver@microchip.com,
-	linusw@kernel.org, olivia@selenic.com, richard.genoud@bootlin.com,
-	radu_nicolae.pirea@upb.ro, gregkh@linuxfoundation.org,
-	richardcochran@gmail.com, horatiu.vultur@microchip.com,
-	Ryan.Wanner@microchip.com, tudor.ambarus@linaro.org,
-	kavyasree.kotagiri@microchip.com, lars.povlsen@microchip.com,
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-	netdev@vger.kernel.org, linux-gpio@vger.kernel.org,
-	linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
-	luka.perkov@sartura.hr
-Subject: Re: [PATCH v5 00/11] Add support for Microchip LAN969x
-Message-ID: <aX1vhJ7SCu5JB2ga@gondor.apana.org.au>
-References: <20260115114021.111324-1-robert.marko@sartura.hr>
+	s=arc-20240116; t=1769829267; c=relaxed/simple;
+	bh=KvE5Cr0argFxZL6Ry3HuGw2SVPM+bg2vd/26ndGW6i8=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=Qoe5YMdvMlWc4T1aqOb5dDCpgrkzAmKsLJljVrrCYVSx3rvZStzB+sTov8lg4FZhIsa7IbcScgvnyEASHavw7C60n0HGyq3KhCTQqX1/FXq3pc07w4GNl4r2tVFtkR14NzmkSD9A/v45hK9iq/5j5I7Y6rs4EvERgcW9hx4bWUo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.79
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oa1-f79.google.com with SMTP id 586e51a60fabf-4042356948fso10054829fac.3
+        for <linux-serial@vger.kernel.org>; Fri, 30 Jan 2026 19:14:25 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1769829264; x=1770434064;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=T2haHDjwxy1ppiV1c3ehNi9kAO9S8pubyopAnq8yBrQ=;
+        b=GcBI65C+noWXFiS8mzdPZAiraH9t24+LwbaEoz2s9/vN756IFamY4mffIsr23sqFbH
+         Bhn5QFDStDWYZoD2VuipNREzFq1N2jRY+IrRhzyd7BcU9ngICsX6KPsHAh75wk/VMVFq
+         u2qu0P/hesFUVxqAg2sqTTmaruwQlgdXOJYp1TqyyimRgSlk622YZtD4nHXor0Ie2Ozu
+         Jcc2F8d9laKFHhaFhr0ek+7fBFVuOv9R9E6pN5ulLM2g9oOK+kVQLzEGsvW4JlKOm3gk
+         6vsfduOXXxt7ZenYnb6LnD+jIAcR52lSYW38AlN/CSgzt+wGLuudN1aJkL38ZmGHEfnS
+         MBgA==
+X-Forwarded-Encrypted: i=1; AJvYcCVbtxJNXKhPcwbHpR6pYVo0UZgHroprEIeEoMd3Wt+7NWuiHzhfIrmlas1PrSl55f2gZaox1eQ8Mqr7IGE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyAneDQ+X3k5V0olxbiwyFMB4XbHPL3w2CQmqy0118nQKSX4hkr
+	7SzUpqcSW0iPW+qrkLUTQe0CDlBZr8MRNzVVGsQy2G3ipWwsFbBV46vHlW0jagpTqqGlk1Ac4wu
+	oahiWtuGQiSK9dRKZNzAZ1cXmV4yqURyTmSvkqQz0W/KhrSvT404jySd03MU=
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260115114021.111324-1-robert.marko@sartura.hr>
+X-Received: by 2002:a05:6820:1689:b0:663:e8d:ce8 with SMTP id
+ 006d021491bc7-6630f389944mr2441877eaf.57.1769829264382; Fri, 30 Jan 2026
+ 19:14:24 -0800 (PST)
+Date: Fri, 30 Jan 2026 19:14:24 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <697d7390.050a0220.1d0a41.0002.GAE@google.com>
+Subject: [syzbot] [serial?] general protection fault in puts_queue
+From: syzbot <syzbot+c3693b491545af43db87@syzkaller.appspotmail.com>
+To: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 
-On Thu, Jan 15, 2026 at 12:37:25PM +0100, Robert Marko wrote:
-> This series adds support for the Microchip LAN969x switch SoC family.
-> 
-> Series is a bit long since after discussions in previous versions, it was
-> recommended[1][2] to add SoC specific compatibles for device nodes so it
-> includes the required bindings updates.
-> 
-> [1] https://lore.kernel.org/all/20251203-splendor-cubbyhole-eda2d6982b46@spud/
-> [2] https://lore.kernel.org/all/173412c8-c2fb-4c38-8de7-5b1c2eebdbf9@microchip.com/
-> [3] https://lore.kernel.org/all/20251203-duly-leotard-86b83bd840c6@spud/
-> [4] https://lore.kernel.org/all/756ead5d-8c9b-480d-8ae5-71667575ab7c@kernel.org/
-> 
-> Signed-off-by: Robert Marko <robert.marko@sartura.hr>
-> 
-> Changes in v5:
-> * Picked Acked-by and Reviewed-by tags
-> * Change clock header license to match the DTSI one
-> * Alphabetize EV23X71A pin nodes
-> * Remove the requirment for all ethernet-port nodes to have phys property
-> as when RGMII is used there is no SERDES being used
-> * Drop phys from RGMII port on EV23X71A
-> * Drop USB, DMA, MIIM, SPI and I2C bindings as those were already picked
-> 
-> Changes in v4:
-> * Pick Acked-by from Andi for I2C bindings
-> * Move clock indexes from dt-bindings into a DTS header as suggested by
-> Krzysztof[4]
-> 
-> Changes in v3:
-> * Pick Acked-by from Conor
-> * Drop HWMON binding as it was picked into hwmon already
-> * Document EV23X71A into AT91 binding
-> * Drop SparX-5 and AT91 bindings merge
-> * Apply remark from Conor on DMA binding regarding merging cases
-> 
-> Changes in v2:
-> * Change LAN969x wildcards to LAN9691 in patches
-> * Split SoC DTSI and evaluation board patches
-> * Add the suggested binding changes required for SoC specific compatibles
-> * Merge SparX-5 and AT91 bindings as suggested[3]
-> 
-> Robert Marko (11):
->   dt-bindings: mfd: atmel,sama5d2-flexcom: add microchip,lan9691-flexcom
->   dt-bindings: serial: atmel,at91-usart: add microchip,lan9691-usart
->   dt-bindings: rng: atmel,at91-trng: add microchip,lan9691-trng
->   dt-bindings: crypto: atmel,at91sam9g46-aes: add microchip,lan9691-aes
->   dt-bindings: crypto: atmel,at91sam9g46-sha: add microchip,lan9691-sha
->   dt-bindings: pinctrl: pinctrl-microchip-sgpio: add LAN969x
->   arm64: dts: microchip: add LAN969x clock header file
->   arm64: dts: microchip: add LAN969x support
->   dt-bindings: arm: AT91: document EV23X71A board
->   dt-bindings: net: sparx5: do not require phys when RGMII is used
->   arm64: dts: microchip: add EV23X71A board
-> 
->  .../devicetree/bindings/arm/atmel-at91.yaml   |   6 +
->  .../crypto/atmel,at91sam9g46-aes.yaml         |   1 +
->  .../crypto/atmel,at91sam9g46-sha.yaml         |   1 +
->  .../bindings/mfd/atmel,sama5d2-flexcom.yaml   |   1 +
->  .../bindings/net/microchip,sparx5-switch.yaml |  15 +-
->  .../pinctrl/microchip,sparx5-sgpio.yaml       |  20 +-
->  .../bindings/rng/atmel,at91-trng.yaml         |   1 +
->  .../bindings/serial/atmel,at91-usart.yaml     |   1 +
->  arch/arm64/boot/dts/microchip/Makefile        |   1 +
->  arch/arm64/boot/dts/microchip/clk-lan9691.h   |  24 +
->  arch/arm64/boot/dts/microchip/lan9691.dtsi    | 488 +++++++++++
->  .../boot/dts/microchip/lan9696-ev23x71a.dts   | 756 ++++++++++++++++++
->  12 files changed, 1309 insertions(+), 6 deletions(-)
->  create mode 100644 arch/arm64/boot/dts/microchip/clk-lan9691.h
->  create mode 100644 arch/arm64/boot/dts/microchip/lan9691.dtsi
->  create mode 100644 arch/arm64/boot/dts/microchip/lan9696-ev23x71a.dts
-> 
-> -- 
-> 2.52.0
+Hello,
 
-Patches 4-5 applied.  Thanks.
--- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+syzbot found the following issue on:
+
+HEAD commit:    615aad0f61e0 Add linux-next specific files for 20260126
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=16d3705a580000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=750532df2c47a03
+dashboard link: https://syzkaller.appspot.com/bug?extid=c3693b491545af43db87
+compiler:       Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=109cb98a580000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=179d4ec6580000
+
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/6a23e465e877/disk-615aad0f.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/e1ef2e20639b/vmlinux-615aad0f.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/e82b02375a3f/bzImage-615aad0f.xz
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+c3693b491545af43db87@syzkaller.appspotmail.com
+
+Oops: general protection fault, probably for non-canonical address 0xdffffc0000000038: 0000 [#1] SMP KASAN PTI
+KASAN: null-ptr-deref in range [0x00000000000001c0-0x00000000000001c7]
+CPU: 1 UID: 0 PID: 5996 Comm: udevd Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/13/2026
+RIP: 0010:__queue_work+0xa2/0xf90 kernel/workqueue.c:2269
+Code: 11 31 ff 89 ee e8 4e f4 37 00 85 ed 0f 85 ef 0c 00 00 e8 01 f0 37 00 4d 8d b7 c0 01 00 00 4c 89 f0 48 c1 e8 03 48 89 44 24 28 <42> 0f b6 04 20 84 c0 0f 85 22 0d 00 00 4c 89 34 24 41 8b 2e 89 ee
+RSP: 0018:ffffc90000a07ed8 EFLAGS: 00010002
+RAX: 0000000000000038 RBX: 0000000000000008 RCX: ffff88802d660000
+RDX: 0000000000000100 RSI: 0000000000000000 RDI: 0000000000000000
+RBP: 0000000000000000 R08: ffff88813fe32017 R09: 1ffff11027fc6402
+R10: dffffc0000000000 R11: ffffed1027fc6403 R12: dffffc0000000000
+R13: ffff88813fe32010 R14: 00000000000001c0 R15: 0000000000000000
+FS:  00007fc71835f880(0000) GS:ffff888125163000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00002000000011f8 CR3: 000000007b69a000 CR4: 00000000003526f0
+Call Trace:
+ <IRQ>
+ queue_work_on+0x106/0x1d0 kernel/workqueue.c:2405
+ puts_queue+0xa3/0xe0 drivers/tty/vt/keyboard.c:334
+ k_fn+0x7c/0xd0 drivers/tty/vt/keyboard.c:763
+ k_pad+0x79a/0xa90 drivers/tty/vt/keyboard.c:-1
+ kbd_keycode drivers/tty/vt/keyboard.c:1497 [inline]
+ kbd_event+0x2ec1/0x40d0 drivers/tty/vt/keyboard.c:1515
+ input_handle_events_default+0xd4/0x1a0 drivers/input/input.c:2541
+ input_pass_values+0x288/0x890 drivers/input/input.c:128
+ input_event_dispose+0x3e5/0x6b0 drivers/input/input.c:353
+ input_event+0x89/0xe0 drivers/input/input.c:396
+ hidinput_hid_event+0x1487/0x1e60 drivers/hid/hid-input.c:1747
+ hid_process_event+0x4be/0x620 drivers/hid/hid-core.c:1565
+ hid_input_array_field+0x41c/0x5f0 drivers/hid/hid-core.c:1677
+ hid_process_report drivers/hid/hid-core.c:1719 [inline]
+ hid_report_raw_event+0xdd7/0x1720 drivers/hid/hid-core.c:2074
+ __hid_input_report drivers/hid/hid-core.c:2144 [inline]
+ hid_input_report+0x44b/0x580 drivers/hid/hid-core.c:2166
+ hid_irq_in+0x47e/0x6d0 drivers/hid/usbhid/hid-core.c:286
+ __usb_hcd_giveback_urb+0x376/0x540 drivers/usb/core/hcd.c:1657
+ dummy_timer+0xbbd/0x45d0 drivers/usb/gadget/udc/dummy_hcd.c:1995
+ __run_hrtimer kernel/time/hrtimer.c:1785 [inline]
+ __hrtimer_run_queues+0x529/0xc30 kernel/time/hrtimer.c:1849
+ hrtimer_run_softirq+0x182/0x5a0 kernel/time/hrtimer.c:1866
+ handle_softirqs+0x22a/0x7c0 kernel/softirq.c:626
+ do_softirq+0x76/0xd0 kernel/softirq.c:523
+ </IRQ>
+ <TASK>
+ __local_bh_enable_ip+0xf8/0x130 kernel/softirq.c:450
+ sha256_blocks lib/crypto/x86/sha256.h:37 [inline]
+ __sha256_update+0xf7/0x150 lib/crypto/sha256.c:208
+ sha256_update include/crypto/sha2.h:356 [inline]
+ crypto_sha256_update+0x27/0x40 crypto/sha256.c:145
+ crypto_shash_update include/crypto/hash.h:1006 [inline]
+ ima_calc_file_hash_tfm security/integrity/ima/ima_crypto.c:491 [inline]
+ ima_calc_file_shash security/integrity/ima/ima_crypto.c:511 [inline]
+ ima_calc_file_hash+0x1300/0x17f0 security/integrity/ima/ima_crypto.c:568
+ ima_collect_measurement+0x48b/0x930 security/integrity/ima/ima_api.c:294
+ process_measurement+0x12cd/0x1c80 security/integrity/ima/ima_main.c:407
+ ima_bprm_check+0x121/0x180 security/integrity/ima/ima_main.c:589
+ security_bprm_check+0xcd/0x240 security/security.c:794
+ search_binary_handler fs/exec.c:1654 [inline]
+ exec_binprm fs/exec.c:1696 [inline]
+ bprm_execve+0x896/0x1410 fs/exec.c:1748
+ do_execveat_common+0x50d/0x690 fs/exec.c:1846
+ __do_sys_execve fs/exec.c:1930 [inline]
+ __se_sys_execve fs/exec.c:1924 [inline]
+ __x64_sys_execve+0x97/0xc0 fs/exec.c:1924
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xe2/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fc717cf2107
+Code: 0f 00 64 c7 00 07 00 00 00 b8 ff ff ff ff c9 c3 0f 1f 00 48 8b 05 a9 ee 0f 00 48 8b 10 e9 01 00 00 00 90 b8 3b 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d c1 ec 0f 00 f7 d8 64 89 01 48
+RSP: 002b:00007ffc10b356d8 EFLAGS: 00000206 ORIG_RAX: 000000000000003b
+RAX: ffffffffffffffda RBX: 00005646a103f140 RCX: 00007fc717cf2107
+RDX: 00005646a1e9e9c0 RSI: 00007ffc10b357f0 RDI: 00007ffc10b35ff0
+RBP: 0000000000000008 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000008 R11: 0000000000000206 R12: 00005646a1e9e9c0
+R13: 00007ffc10b357f0 R14: 000000000000000d R15: 0000000000000009
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:__queue_work+0xa2/0xf90 kernel/workqueue.c:2269
+Code: 11 31 ff 89 ee e8 4e f4 37 00 85 ed 0f 85 ef 0c 00 00 e8 01 f0 37 00 4d 8d b7 c0 01 00 00 4c 89 f0 48 c1 e8 03 48 89 44 24 28 <42> 0f b6 04 20 84 c0 0f 85 22 0d 00 00 4c 89 34 24 41 8b 2e 89 ee
+RSP: 0018:ffffc90000a07ed8 EFLAGS: 00010002
+RAX: 0000000000000038 RBX: 0000000000000008 RCX: ffff88802d660000
+RDX: 0000000000000100 RSI: 0000000000000000 RDI: 0000000000000000
+RBP: 0000000000000000 R08: ffff88813fe32017 R09: 1ffff11027fc6402
+R10: dffffc0000000000 R11: ffffed1027fc6403 R12: dffffc0000000000
+R13: ffff88813fe32010 R14: 00000000000001c0 R15: 0000000000000000
+FS:  00007fc71835f880(0000) GS:ffff888125163000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00002000000011f8 CR3: 000000007b69a000 CR4: 00000000003526f0
+----------------
+Code disassembly (best guess), 1 bytes skipped:
+   0:	31 ff                	xor    %edi,%edi
+   2:	89 ee                	mov    %ebp,%esi
+   4:	e8 4e f4 37 00       	call   0x37f457
+   9:	85 ed                	test   %ebp,%ebp
+   b:	0f 85 ef 0c 00 00    	jne    0xd00
+  11:	e8 01 f0 37 00       	call   0x37f017
+  16:	4d 8d b7 c0 01 00 00 	lea    0x1c0(%r15),%r14
+  1d:	4c 89 f0             	mov    %r14,%rax
+  20:	48 c1 e8 03          	shr    $0x3,%rax
+  24:	48 89 44 24 28       	mov    %rax,0x28(%rsp)
+* 29:	42 0f b6 04 20       	movzbl (%rax,%r12,1),%eax <-- trapping instruction
+  2e:	84 c0                	test   %al,%al
+  30:	0f 85 22 0d 00 00    	jne    0xd58
+  36:	4c 89 34 24          	mov    %r14,(%rsp)
+  3a:	41 8b 2e             	mov    (%r14),%ebp
+  3d:	89 ee                	mov    %ebp,%esi
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+
+If the report is already addressed, let syzbot know by replying with:
+#syz fix: exact-commit-title
+
+If you want syzbot to run the reproducer, reply with:
+#syz test: git://repo/address.git branch-or-commit-hash
+If you attach or paste a git patch, syzbot will apply it before testing.
+
+If you want to overwrite report's subsystems, reply with:
+#syz set subsystems: new-subsystem
+(See the list of subsystem names on the web dashboard)
+
+If the report is a duplicate of another one, reply with:
+#syz dup: exact-subject-of-another-report
+
+If you want to undo deduplication, reply with:
+#syz undup
