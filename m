@@ -1,61 +1,61 @@
-Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
+Received: from mail-pf1-f174.google.com (mail-pf1-f174.google.com [209.85.210.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D49B21E9B3A
-	for <linux-serial@vger.kernel.org>; Sun,  1 Feb 2026 04:18:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A295821257F
+	for <linux-serial@vger.kernel.org>; Sun,  1 Feb 2026 04:37:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769919497; cv=none; b=e7236dtJMS5RemL3ZEwH3fW5Bh55m8k0uld2RQbc+TPggxmySDsvJNtuc6H/rYYODrOxY9jXxOMNDYfEJBn4cmnKYcZuldv19vbveU6usrOP5zaeD15nbvMlQempDoS0Ns1YZWgvQIuClUA3cJExQWB4cuf27XUrz21ywHvGzkQ=
+	t=1769920668; cv=none; b=mN9hJLucObBM0GxqewQGGvbMFZqP5As7RRLLMAhV6kT+09z52OYlFcBVXryRLqxI4ToqSBqBvqLM5k8ROHoHA5KTr9VdwHBOJXg5QbWZiBARwxxD6+DzXnPcEPEc1dAO8FghQetbe9kxOinII9CGeg1DiujKHM42i86cU/JZaXs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769919497; c=relaxed/simple;
-	bh=/snMkqA7Et8ZH1WOjyXfR67tFXsbjARBTR2KV0MW/bw=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Qxh60bQAv9eUIO54y5E/NJIvhxIF+VzdvNhtP/CETE+C39rfEi2HSXdxMB3Th+5bEbHSU5v9K/RSQfR12PeY9tWxsmx3ol9o2/cNv0ZFSA1YGF5dYtGJvIuqmmr3jBrtTRgioIKKLRLWyWOeRmJo+EbPDGgAbGiPOjJnMujo8HI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=j9RVD0Tw; arc=none smtp.client-ip=209.85.214.176
+	s=arc-20240116; t=1769920668; c=relaxed/simple;
+	bh=l75NC+dMGo52Z/lqI8Tklxzk49YVO9S4uo0C8MSPvQQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Z9BvbjpFoGZiS3E2oqDhS/kV5EjYmAkEN5ANHgYakl3Zg0RRYkX0tgk/jp4sxXfgUyyhL/s/jTO1MY4paJ1Mxga3F8KyJVntEOagPynqKsngm77LmZq9/qIJ/8jDuLJrtY8HSAnSEcAK60tPY1vVVJ/7UFklRF9g4unJbrqt4Us=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ss/8O/Cm; arc=none smtp.client-ip=209.85.210.174
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="j9RVD0Tw"
-Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-2a08cb5e30eso4461505ad.1
-        for <linux-serial@vger.kernel.org>; Sat, 31 Jan 2026 20:18:15 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ss/8O/Cm"
+Received: by mail-pf1-f174.google.com with SMTP id d2e1a72fcca58-7baa28f553dso30955b3a.3
+        for <linux-serial@vger.kernel.org>; Sat, 31 Jan 2026 20:37:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1769919495; x=1770524295; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1769920666; x=1770525466; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Zvvl3iAKbAgCYx4gt1xiD+2SkCOVEBm5+O7+NxrV/0w=;
-        b=j9RVD0Tw9Ty1dscCIhKG5qcgUVzPjfrjctDz4h6pHgTaYumrGh0GKgqveeaBlIzSMM
-         GXO8971wsCKCsdoBSmh8of+TsNrqWWIyUkAVEeejimbjg4Sk+CRhDoLRiPlagfa5Igmb
-         i3ZXmCFVyGvvY7mkRxzk7jpN99NAHeqNWKipatElM3pLm5dLMJuKm1rL1WLWuNcRcTJL
-         etx7pmgSXnX4umLgkPAlNb9fTgq0mSUxZbNoDOmRMN4m3p2DJ5Q50NDBjHk2WHtq2byC
-         ABmlgmFxba5M+wxi0XCwA1FyTp9tR8HQy13ixeWWwI3i4ZEEEWU5X2icwLvpYlu6Euym
-         9ZeQ==
+        bh=Lro5M12HN28kueqyuSddo9Mm5/79VAOOVxaIFPHYvAw=;
+        b=Ss/8O/Cmp5+nwNJAeFMNuG3jtzWaCOxQNn5v5+GZeGPwA/GP/3B1KkTaZSvUE2zQTw
+         6qQ5h8oDJtm68KdcgIGwilbMcUu+lMwCEZBhvQIQscsR5vzHC2Jbkh1tGjqVJZJDs+qN
+         bipVo0dP/34UKHx0NkHjnqcHQNydpuN0DPwZWUSnNYYbcfRPrbEKfj5JJsLUoOGCbYpP
+         g0xFOMr8D9h3fdTd7K+4jOOsZsvmAQyuxvwh6B9LGlbFZaxrcQxi886WuQKom+VmVhJE
+         oRv6vv5OyYPa1qt+QyALzJmmdLZr8St9uJsueu2PxjoViJmQoW4WukuEFCTFZfgtTCiT
+         b1cw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769919495; x=1770524295;
+        d=1e100.net; s=20230601; t=1769920666; x=1770525466;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Zvvl3iAKbAgCYx4gt1xiD+2SkCOVEBm5+O7+NxrV/0w=;
-        b=tYEMxmwzXDocLyKjroL06jKjgjw+oF22x3r7NkD9o8iOCzgkoDOoH5YMjvOVsJ09id
-         X7y5kmLEYv+HkbyJp40+VmxVD3bocP3DAmINZYk1EDGNagCDNu6P4stD3KCJ624aG1ne
-         7maMMdTH8FqjJKQZA4LE2rali4q/slCUJxPCjppmGGaVf8+ssHOn/rwDfEjeN5uC7wOK
-         0atYKBc6AIqufwBoJQhZjBXfZe5lPicuDd0JqWLXiJkfKhujnyEW0C3C0eeiFF9scBPN
-         pXQXl4oa7bnT82ORjMxkvrtiVaO2qlyioA3cLt3+hK/B4oaDZTSdMTmIIX+1tEj3aVA3
-         17kw==
-X-Forwarded-Encrypted: i=1; AJvYcCWuP/AziRRvNUuETEuCrqN25mjwgHti5oz6zVond73dRtdRvBDr/3XZl5qrzGgp+1eTaOL1nq3k5dF2nM4=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx/RhJoaTUzQnU3gi9vM6vgAuu05VsPx+XXTqwNnHwgzIKTW31c
-	MZdM1RYmAVyo6ooXHFdotdnQvudowwMSVBjKAPXNKrV6gIon/+SEOUvrRfVlbA==
-X-Gm-Gg: AZuq6aLszJKJM0nZTtn0DuxogEVmmA8Esf/gsbe5HzP6edzR88djZoRB5LnxsyHOBVL
-	4OwioAh+sbUVUgEVirW8zh4jghu2qH7srhf1aWMTwoyxpZ1R4otS0iAyh/pzOQn61mvTQNx+q3c
-	/WLf04kVftlKNfroBSRPzA/4nsQWcJKcT6sk/Y6bin3p3PRHJjxNj7zMLhPkDTHSw80E8YyZibv
-	f3KMqFoKLY3xiWnEWPszxiby7BIxcyrf030sJOtbP5J1W5JrB4AYFOnJ8nZAL8la34z/U0Ydjs8
-	1QKd2QFbOnuaE0y7oQsMQezudqn4c0FhDtJohV8PYW4dP4HkJrQ1XipuAwOq1qv0oxzZAXqkPEx
-	J2p7WiE7QbgUAZ/NgjfGe0QOSIfbuf6ZpOPYTb9VM0VNjOqYLg/GNZqjihroHmw03v0DBpxpOzd
-	f4XLKoRNmoSMqoxlHaErogqAmqjfDqIoRVNdTdsrYTaHKuECrgyI93PLxrDdEADw==
-X-Received: by 2002:a17:903:15ce:b0:2a0:f0c7:9998 with SMTP id d9443c01a7336-2a8d9949670mr62371115ad.6.1769919494983;
-        Sat, 31 Jan 2026 20:18:14 -0800 (PST)
+        bh=Lro5M12HN28kueqyuSddo9Mm5/79VAOOVxaIFPHYvAw=;
+        b=a+9ClMes/GWaAUU6ZEQGuYA7q7sxXPlFK2tyCA26EoScX9YNWRqvCXJsWXFi+X6bl1
+         DdPdz/622YLC1koKV6TmmpI3hTZlODh7gO8/f3vE/wLfWRVkMYr1hFXw5DGnctcK9kqn
+         fsLG3vRxez1iPYcCi3b9OMDJx3WiEEIcW2HF3xj+EWEkazkLmP73I7LBkmtlyMokN9/v
+         hgICvyiKpXpBcH9/qAjxkLlF4S+uPyCpqG5dK3U4L/aNMzR1f54tgv/d9PYJYjpQz1Ji
+         cADbfPEzBBICN5CgE3L2X44ZbBuKn8uLvViU2s4bHvNJJEbg7CpeXDvfFd8zOeOpV9Ne
+         fbpQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXdbUgt6fl8n8jZ0mmv7q8ZBTtBuNOSgTsMQ62b7vSHMawTl/+wVAYO67JLFJCVUKA+I6E/Ai7b6yHChJ8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwsYFZeio60WMmI+UavMtuV/WOQpiGpL5rQKwjYHcEFWBt2C76h
+	6xYBwdPH7O2qWLuC88I+pkXKn30T0doff2jYmEtgputGIV8/mNfP8fZr/uPNSw==
+X-Gm-Gg: AZuq6aImITjQVGjxKYJhtGs+3YCpDXst7BFrmS15fm76OTTQB/kFglYuT/myYZHKDDY
+	1atjMcDmaLdd2TSs/jVmkrQ0Wfgk5AetwI2hsKb+IjFR02JFgyG4nsjxsC4erPAdVTFUzcjghuz
+	Uium42J8noUX0C5tXEbmJm/8eaT9KNoXo31MnRSsyjmd5oacRFfJFPMkAHzUDSZ8sPH1Hl+D3Pd
+	Eg2v6jMwF5drV862TIk7Vtbaou5V922ZEOIKCsSiD8LYgZjFA86aFQt1N65MtI6oBon3Fw52bU9
+	jyxBpbxNFBvIQrjZriRvK/YHR2vRnDzuKjab1MEQsye0+P7VGHy/y26tCJLDtgZ+aJe6wqiNGju
+	J50fIaM81aLyjJoodX0Gh3rim3utEk/PyOn93FEQcIptx0kMAiCSw8ZEYo68zgU0BdYflFFg1UR
+	agM/w/hakJ8r2AqkZXIW8EDyAXeSXAysQUy585iSW0um7bZFAdbhjT40SsaNYoEQ==
+X-Received: by 2002:a05:6a00:bd02:b0:81f:e791:ea3d with SMTP id d2e1a72fcca58-823ab42ec6emr5920465b3a.0.1769920666442;
+        Sat, 31 Jan 2026 20:37:46 -0800 (PST)
 Received: from syu-OptiPlex-3010.lan ([2001:569:5a4c:2100:4f8c:995d:2e16:10c7])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2a88b41390bsm109628635ad.23.2026.01.31.20.18.14
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82379bfcaadsm13229401b3a.37.2026.01.31.20.37.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 31 Jan 2026 20:18:14 -0800 (PST)
+        Sat, 31 Jan 2026 20:37:46 -0800 (PST)
 From: Sheng Yu <yushenglive@gmail.com>
 To: gregkh@linuxfoundation.org
 Cc: jirislaby@kernel.org,
@@ -63,8 +63,8 @@ Cc: jirislaby@kernel.org,
 	linux-kernel@vger.kernel.org,
 	Sheng Yu <yushenglive@gmail.com>
 Subject: [PATCH] serial: 8250: add CONFIG_SERIAL_8250_PROBE_BAUD option
-Date: Sat, 31 Jan 2026 20:18:11 -0800
-Message-ID: <20260201041811.520010-1-yushenglive@gmail.com>
+Date: Sat, 31 Jan 2026 20:36:14 -0800
+Message-ID: <20260201043615.524435-1-yushenglive@gmail.com>
 X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -86,9 +86,9 @@ no options are specified, rather than forcing the 9600 default.
 Signed-off-by: Sheng Yu <yushenglive@gmail.com>
 ---
  drivers/tty/serial/8250/8250_core.c |  2 +-
- drivers/tty/serial/8250/8250_port.c |  6 +++++-
+ drivers/tty/serial/8250/8250_port.c |  5 ++++-
  drivers/tty/serial/8250/Kconfig     | 12 ++++++++++++
- 3 files changed, 18 insertions(+), 2 deletions(-)
+ 3 files changed, 17 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
 index 0e81f78c6063..c11b19921a1f 100644
@@ -104,10 +104,10 @@ index 0e81f78c6063..c11b19921a1f 100644
  		uart_port_set_cons(port, NULL);
  	return retval;
 diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 719faf92aa8a..dbc0ef56f995 100644
+index 719faf92aa8a..5309b921e7b7 100644
 --- a/drivers/tty/serial/8250/8250_port.c
 +++ b/drivers/tty/serial/8250/8250_port.c
-@@ -3399,8 +3399,12 @@ int serial8250_console_setup(struct uart_port *port, char *options, bool probe)
+@@ -3399,8 +3399,11 @@ int serial8250_console_setup(struct uart_port *port, char *options, bool probe)
  
  	if (options)
  		uart_parse_options(options, &baud, &parity, &bits, &flow);
@@ -116,7 +116,6 @@ index 719faf92aa8a..dbc0ef56f995 100644
  		baud = probe_baud(port);
 +		pr_info("console [%s%d] probed baud rate: %d\n",
 +			port->cons->name, port->cons->index, baud);
-+
 +	}
  
  	ret = uart_set_options(port, port->cons, baud, parity, bits, flow);
