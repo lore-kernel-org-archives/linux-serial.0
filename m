@@ -1,167 +1,146 @@
-Received: from mail-oa1-f77.google.com (mail-oa1-f77.google.com [209.85.160.77])
+Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 026E216DEB0
-	for <linux-serial@vger.kernel.org>; Sat, 31 Jan 2026 14:57:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D49B21E9B3A
+	for <linux-serial@vger.kernel.org>; Sun,  1 Feb 2026 04:18:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769871450; cv=none; b=hBpp13ZUe4CZZBQf7UR/Mtsfb1h7Jb7x2Uag9p4poU9CbK2hQeXGdQzTFNS7reqRnqQBlEUCuyybhQ7yIAefZP8Xmp2nQ+7ySmrW1o1yLHZY5C+nxo3X5k+nYqiqqTxtN/14Ibzb47Mayuj05QVjPv6HPtUfCi+CB7nhTuzyw8A=
+	t=1769919497; cv=none; b=e7236dtJMS5RemL3ZEwH3fW5Bh55m8k0uld2RQbc+TPggxmySDsvJNtuc6H/rYYODrOxY9jXxOMNDYfEJBn4cmnKYcZuldv19vbveU6usrOP5zaeD15nbvMlQempDoS0Ns1YZWgvQIuClUA3cJExQWB4cuf27XUrz21ywHvGzkQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769871450; c=relaxed/simple;
-	bh=dNarCsmxRopTRVGxfo/mOod5Tdjk0kHQiMyA/n7EDL0=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=F2vH5SPNOsoVXf7s+igXZ03jWDhir0m2M6Bmzu9xmiLDH/7119Tc30lkEQUByq+JnoL2hAyREOTEekBKo4Y4TNfQiRyMByVCQsH+Zpk0MilWCALAPqzRmUfn+YVmAkQqZzKIMHPWOlVNjomDtXMnLuL60cMp4zP3u4CZjHI87gc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oa1-f77.google.com with SMTP id 586e51a60fabf-4042e22be4bso9882947fac.1
-        for <linux-serial@vger.kernel.org>; Sat, 31 Jan 2026 06:57:28 -0800 (PST)
+	s=arc-20240116; t=1769919497; c=relaxed/simple;
+	bh=/snMkqA7Et8ZH1WOjyXfR67tFXsbjARBTR2KV0MW/bw=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Qxh60bQAv9eUIO54y5E/NJIvhxIF+VzdvNhtP/CETE+C39rfEi2HSXdxMB3Th+5bEbHSU5v9K/RSQfR12PeY9tWxsmx3ol9o2/cNv0ZFSA1YGF5dYtGJvIuqmmr3jBrtTRgioIKKLRLWyWOeRmJo+EbPDGgAbGiPOjJnMujo8HI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=j9RVD0Tw; arc=none smtp.client-ip=209.85.214.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="j9RVD0Tw"
+Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-2a08cb5e30eso4461505ad.1
+        for <linux-serial@vger.kernel.org>; Sat, 31 Jan 2026 20:18:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1769919495; x=1770524295; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Zvvl3iAKbAgCYx4gt1xiD+2SkCOVEBm5+O7+NxrV/0w=;
+        b=j9RVD0Tw9Ty1dscCIhKG5qcgUVzPjfrjctDz4h6pHgTaYumrGh0GKgqveeaBlIzSMM
+         GXO8971wsCKCsdoBSmh8of+TsNrqWWIyUkAVEeejimbjg4Sk+CRhDoLRiPlagfa5Igmb
+         i3ZXmCFVyGvvY7mkRxzk7jpN99NAHeqNWKipatElM3pLm5dLMJuKm1rL1WLWuNcRcTJL
+         etx7pmgSXnX4umLgkPAlNb9fTgq0mSUxZbNoDOmRMN4m3p2DJ5Q50NDBjHk2WHtq2byC
+         ABmlgmFxba5M+wxi0XCwA1FyTp9tR8HQy13ixeWWwI3i4ZEEEWU5X2icwLvpYlu6Euym
+         9ZeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769871448; x=1770476248;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=a0R3MvPUMn/R7hSOaimE/agS4+r2TfsLL4Ghh5ivieU=;
-        b=b7OsnE4An4Q84k1uSBJwqIw5JsMVDl9BanqMwBPQOLctlDPrTHFVsG2gqLHIq2RURt
-         3209yHm9NXvy8xVtzSjv4Gw+tZ96KUugMsvyuHbn7CYrxfunegngBzZZ5twZouTIdXnC
-         4TkvsnrpNGTeyX7uWLlPinODGz9CWJe3s+afzYAvoQ7IM1xAjY00JziSOQUbuT3jK1K7
-         Nk4dIk3P+Fw7KpHUdoGArOIMLWS2yq/XTqg3oct4b7mv9SOfuC7BFwEvo42xMH4hXY3c
-         9ntPvZmo3B1eWtL0Dm6XNR7j0//hcD6hcvxO1Y3L8F8ALofa/hxbfUJN44kr0X1YnRXL
-         Y2Dg==
-X-Forwarded-Encrypted: i=1; AJvYcCV9cnYbg5NWdmP4tXGg45BTWs32Ebyct4UazoJCJdbaqnL2B0VQsRvXSjcA/llxsb34MZF74IBFVQTMuTk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YytHRLV1zvvDsWvz/siUv/GLUM5t6iMZBCf2loimM3sXa6U5cW9
-	j5+gf+pBfLBpPyvXFyoraCcWRx74kdz9z2J/xSyGomC1wuywgZAn5MbAaezib5Q4I9FjPWtsoFY
-	qJGrJ/ZS6zm1wX9QBkqqyDQtZzov/sZORVn6UYW6dZx+/9mcBH8dNxL7A41w=
+        d=1e100.net; s=20230601; t=1769919495; x=1770524295;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Zvvl3iAKbAgCYx4gt1xiD+2SkCOVEBm5+O7+NxrV/0w=;
+        b=tYEMxmwzXDocLyKjroL06jKjgjw+oF22x3r7NkD9o8iOCzgkoDOoH5YMjvOVsJ09id
+         X7y5kmLEYv+HkbyJp40+VmxVD3bocP3DAmINZYk1EDGNagCDNu6P4stD3KCJ624aG1ne
+         7maMMdTH8FqjJKQZA4LE2rali4q/slCUJxPCjppmGGaVf8+ssHOn/rwDfEjeN5uC7wOK
+         0atYKBc6AIqufwBoJQhZjBXfZe5lPicuDd0JqWLXiJkfKhujnyEW0C3C0eeiFF9scBPN
+         pXQXl4oa7bnT82ORjMxkvrtiVaO2qlyioA3cLt3+hK/B4oaDZTSdMTmIIX+1tEj3aVA3
+         17kw==
+X-Forwarded-Encrypted: i=1; AJvYcCWuP/AziRRvNUuETEuCrqN25mjwgHti5oz6zVond73dRtdRvBDr/3XZl5qrzGgp+1eTaOL1nq3k5dF2nM4=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx/RhJoaTUzQnU3gi9vM6vgAuu05VsPx+XXTqwNnHwgzIKTW31c
+	MZdM1RYmAVyo6ooXHFdotdnQvudowwMSVBjKAPXNKrV6gIon/+SEOUvrRfVlbA==
+X-Gm-Gg: AZuq6aLszJKJM0nZTtn0DuxogEVmmA8Esf/gsbe5HzP6edzR88djZoRB5LnxsyHOBVL
+	4OwioAh+sbUVUgEVirW8zh4jghu2qH7srhf1aWMTwoyxpZ1R4otS0iAyh/pzOQn61mvTQNx+q3c
+	/WLf04kVftlKNfroBSRPzA/4nsQWcJKcT6sk/Y6bin3p3PRHJjxNj7zMLhPkDTHSw80E8YyZibv
+	f3KMqFoKLY3xiWnEWPszxiby7BIxcyrf030sJOtbP5J1W5JrB4AYFOnJ8nZAL8la34z/U0Ydjs8
+	1QKd2QFbOnuaE0y7oQsMQezudqn4c0FhDtJohV8PYW4dP4HkJrQ1XipuAwOq1qv0oxzZAXqkPEx
+	J2p7WiE7QbgUAZ/NgjfGe0QOSIfbuf6ZpOPYTb9VM0VNjOqYLg/GNZqjihroHmw03v0DBpxpOzd
+	f4XLKoRNmoSMqoxlHaErogqAmqjfDqIoRVNdTdsrYTaHKuECrgyI93PLxrDdEADw==
+X-Received: by 2002:a17:903:15ce:b0:2a0:f0c7:9998 with SMTP id d9443c01a7336-2a8d9949670mr62371115ad.6.1769919494983;
+        Sat, 31 Jan 2026 20:18:14 -0800 (PST)
+Received: from syu-OptiPlex-3010.lan ([2001:569:5a4c:2100:4f8c:995d:2e16:10c7])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2a88b41390bsm109628635ad.23.2026.01.31.20.18.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 31 Jan 2026 20:18:14 -0800 (PST)
+From: Sheng Yu <yushenglive@gmail.com>
+To: gregkh@linuxfoundation.org
+Cc: jirislaby@kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Sheng Yu <yushenglive@gmail.com>
+Subject: [PATCH] serial: 8250: add CONFIG_SERIAL_8250_PROBE_BAUD option
+Date: Sat, 31 Jan 2026 20:18:11 -0800
+Message-ID: <20260201041811.520010-1-yushenglive@gmail.com>
+X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:1c83:b0:65f:67b7:95bb with SMTP id
- 006d021491bc7-6630f0338b9mr3033370eaf.18.1769871448009; Sat, 31 Jan 2026
- 06:57:28 -0800 (PST)
-Date: Sat, 31 Jan 2026 06:57:27 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <697e1857.050a0220.1d0a41.0009.GAE@google.com>
-Subject: [syzbot] [serial?] general protection fault in k_meta
-From: syzbot <syzbot+03f79366754268a0f20c@syzkaller.appspotmail.com>
-To: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-Hello,
+Currently, the 8250 driver defaults to 9600 baud if no console options
+are provided via the command line. This can result in garbled output if
+the firmware or bootloader has already initialized the UART to a
+different speed.
 
-syzbot found the following issue on:
+Introduce CONFIG_SERIAL_8250_PROBE_BAUD. When enabled, the driver will
+attempt to read the current baud rate from the hardware registers if
+no options are specified, rather than forcing the 9600 default.
 
-HEAD commit:    4f938c7d3b25 Add linux-next specific files for 20260127
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=1503b1b2580000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=d51c584a7396ddf1
-dashboard link: https://syzkaller.appspot.com/bug?extid=03f79366754268a0f20c
-compiler:       Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/cc0457d4d9f3/disk-4f938c7d.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/c54b095e6488/vmlinux-4f938c7d.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/5c734206eb97/bzImage-4f938c7d.xz
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+03f79366754268a0f20c@syzkaller.appspotmail.com
-
-Oops: general protection fault, probably for non-canonical address 0xdffffc0000000038: 0000 [#1] SMP KASAN PTI
-KASAN: null-ptr-deref in range [0x00000000000001c0-0x00000000000001c7]
-CPU: 0 UID: 0 PID: 14584 Comm: syz.4.2379 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/13/2026
-RIP: 0010:__queue_work+0xa2/0xf90 kernel/workqueue.c:2269
-Code: 11 31 ff 89 ee e8 2e f3 37 00 85 ed 0f 85 ef 0c 00 00 e8 e1 ee 37 00 4d 8d b7 c0 01 00 00 4c 89 f0 48 c1 e8 03 48 89 44 24 28 <42> 0f b6 04 20 84 c0 0f 85 22 0d 00 00 4c 89 34 24 41 8b 2e 89 ee
-RSP: 0018:ffffc9001ac9f4b8 EFLAGS: 00010002
-RAX: 0000000000000038 RBX: 0000000000000008 RCX: 0000000000080000
-RDX: ffffc9000c3c2000 RSI: 00000000000007c1 RDI: 00000000000007c2
-RBP: 0000000000000000 R08: ffff88813ff72017 R09: 1ffff11027fee402
-R10: dffffc0000000000 R11: ffffed1027fee403 R12: dffffc0000000000
-R13: ffff88813ff72010 R14: 00000000000001c0 R15: 0000000000000000
-FS:  00007fded38f66c0(0000) GS:ffff8881252af000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000020000015a000 CR3: 0000000077524000 CR4: 00000000003526f0
-Call Trace:
- <TASK>
- queue_work_on+0x106/0x1d0 kernel/workqueue.c:2405
- put_queue drivers/tty/vt/keyboard.c:328 [inline]
- k_meta+0x3e7/0x7f0 drivers/tty/vt/keyboard.c:884
- kbd_keycode drivers/tty/vt/keyboard.c:1497 [inline]
- kbd_event+0x2ec1/0x40d0 drivers/tty/vt/keyboard.c:1515
- input_handle_events_default+0xd4/0x1a0 drivers/input/input.c:2541
- input_pass_values+0x288/0x890 drivers/input/input.c:128
- input_event_dispose+0x330/0x6b0 drivers/input/input.c:342
- input_inject_event+0x1dd/0x340 drivers/input/input.c:424
- evdev_write+0x325/0x4c0 drivers/input/evdev.c:528
- vfs_write+0x29a/0xb90 fs/read_write.c:686
- ksys_write+0x150/0x270 fs/read_write.c:740
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0xe2/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fded299aeb9
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fded38f6028 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-RAX: ffffffffffffffda RBX: 00007fded2c15fa0 RCX: 00007fded299aeb9
-RDX: 0000000000002250 RSI: 0000200000000040 RDI: 0000000000000004
-RBP: 00007fded2a08c1f R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fded2c16038 R14: 00007fded2c15fa0 R15: 00007ffff85354c8
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:__queue_work+0xa2/0xf90 kernel/workqueue.c:2269
-Code: 11 31 ff 89 ee e8 2e f3 37 00 85 ed 0f 85 ef 0c 00 00 e8 e1 ee 37 00 4d 8d b7 c0 01 00 00 4c 89 f0 48 c1 e8 03 48 89 44 24 28 <42> 0f b6 04 20 84 c0 0f 85 22 0d 00 00 4c 89 34 24 41 8b 2e 89 ee
-RSP: 0018:ffffc9001ac9f4b8 EFLAGS: 00010002
-RAX: 0000000000000038 RBX: 0000000000000008 RCX: 0000000000080000
-RDX: ffffc9000c3c2000 RSI: 00000000000007c1 RDI: 00000000000007c2
-RBP: 0000000000000000 R08: ffff88813ff72017 R09: 1ffff11027fee402
-R10: dffffc0000000000 R11: ffffed1027fee403 R12: dffffc0000000000
-R13: ffff88813ff72010 R14: 00000000000001c0 R15: 0000000000000000
-FS:  00007fded38f66c0(0000) GS:ffff8881252af000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000020000015a000 CR3: 0000000077524000 CR4: 00000000003526f0
-----------------
-Code disassembly (best guess), 1 bytes skipped:
-   0:	31 ff                	xor    %edi,%edi
-   2:	89 ee                	mov    %ebp,%esi
-   4:	e8 2e f3 37 00       	call   0x37f337
-   9:	85 ed                	test   %ebp,%ebp
-   b:	0f 85 ef 0c 00 00    	jne    0xd00
-  11:	e8 e1 ee 37 00       	call   0x37eef7
-  16:	4d 8d b7 c0 01 00 00 	lea    0x1c0(%r15),%r14
-  1d:	4c 89 f0             	mov    %r14,%rax
-  20:	48 c1 e8 03          	shr    $0x3,%rax
-  24:	48 89 44 24 28       	mov    %rax,0x28(%rsp)
-* 29:	42 0f b6 04 20       	movzbl (%rax,%r12,1),%eax <-- trapping instruction
-  2e:	84 c0                	test   %al,%al
-  30:	0f 85 22 0d 00 00    	jne    0xd58
-  36:	4c 89 34 24          	mov    %r14,(%rsp)
-  3a:	41 8b 2e             	mov    (%r14),%ebp
-  3d:	89 ee                	mov    %ebp,%esi
-
-
+Signed-off-by: Sheng Yu <yushenglive@gmail.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ drivers/tty/serial/8250/8250_core.c |  2 +-
+ drivers/tty/serial/8250/8250_port.c |  6 +++++-
+ drivers/tty/serial/8250/Kconfig     | 12 ++++++++++++
+ 3 files changed, 18 insertions(+), 2 deletions(-)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 0e81f78c6063..c11b19921a1f 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -427,7 +427,7 @@ static int univ8250_console_setup(struct console *co, char *options)
+ 	/* link port to console */
+ 	uart_port_set_cons(port, co);
+ 
+-	retval = serial8250_console_setup(port, options, false);
++	retval = serial8250_console_setup(port, options, IS_ENABLED(CONFIG_SERIAL_8250_PROBE_BAUD));
+ 	if (retval != 0)
+ 		uart_port_set_cons(port, NULL);
+ 	return retval;
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 719faf92aa8a..dbc0ef56f995 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -3399,8 +3399,12 @@ int serial8250_console_setup(struct uart_port *port, char *options, bool probe)
+ 
+ 	if (options)
+ 		uart_parse_options(options, &baud, &parity, &bits, &flow);
+-	else if (probe)
++	else if (probe) {
+ 		baud = probe_baud(port);
++		pr_info("console [%s%d] probed baud rate: %d\n",
++			port->cons->name, port->cons->index, baud);
++
++	}
+ 
+ 	ret = uart_set_options(port, port->cons, baud, parity, bits, flow);
+ 	if (ret)
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index c488ff6f2865..bee6a82023d4 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -596,3 +596,15 @@ config SERIAL_OF_PLATFORM
+ 	  are probed through devicetree, including Open Firmware based
+ 	  PowerPC systems and embedded systems on architectures using the
+ 	  flattened device tree format.
++
++config SERIAL_8250_PROBE_BAUD
++	bool "Probe baud rate if console options are missing"
++	depends on SERIAL_8250
++	help
++	  If the "console=" command line parameter is missing options (e.g.,
++	  "console=ttyS0" instead of "console=ttyS0,115200n8"), this option
++	  allows the kernel to probe the baud rate from hardware instead of
++	  defaulting to 9600.
++
++	  If a baud rate is explicitly provided in the options, that value
++	  is always respected.
+-- 
+2.51.0
 
-If the report is already addressed, let syzbot know by replying with:
-#syz fix: exact-commit-title
-
-If you want to overwrite report's subsystems, reply with:
-#syz set subsystems: new-subsystem
-(See the list of subsystem names on the web dashboard)
-
-If the report is a duplicate of another one, reply with:
-#syz dup: exact-subject-of-another-report
-
-If you want to undo deduplication, reply with:
-#syz undup
