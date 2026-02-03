@@ -1,55 +1,55 @@
 Received: from fhigh-a4-smtp.messagingengine.com (fhigh-a4-smtp.messagingengine.com [103.168.172.155])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DA7A21146C;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DAE921D3D2;
 	Tue,  3 Feb 2026 04:56:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.155
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770094575; cv=none; b=E6Z3LLN9i1zp7K0nDqTgUXbgYlKrGd8Cdy0PecP00j7POoNyj71L51IvOAkVLciys5x9Ps2R/b3ev6zZKKssySHLnmi9ZdATq2IC3QWsQHpGDbiXUM6a17UO/jD7XBAaXWpd8VoUObcavx6RbYTUYRNZAkVHScbhUMSr3wmYS9I=
+	t=1770094575; cv=none; b=dWFtN//VGjjqN/sMBZIV6X+A5bItJS0tb0eaVE96lo57x8emBrg0hgZETfEw6XlMyyg3uxm7NaPL5LvFmwVvUrKz7A94n1eKwrkCUP/TAIx+UwlgJJp91M/qHdODKnEHketahqcufdUtGDDcOcDk2tdClt78cloOP0zvUvBpUrs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1770094575; c=relaxed/simple;
-	bh=bcQqnBtOxfsIxJdYptWpGCQ6WgSyW1+NBCV7XLlU8yw=;
+	bh=YX3ddRErhJmkqLa2vI7Uo4ePlfnJ4VRoyrNL81YBCXQ=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=uDXy7XenUAxzvyWseoR9drw24bLsgU32wkjiBRzQBTV3Q2uLNB12RzMnffbOj7tXALYX6qkbQH/1LYz/ze+6rPrNt+OdC6EkutV/ZO5DwjLVgLqTH/sF0wShpBkZxBhWcWEVeYQhF2GQjZxM0ZOsLgg8nvR3fEByqjNA+nUleGE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net; spf=pass smtp.mailfrom=fluxnic.net; dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b=RyxNqF6j; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=tD7p13C2; arc=none smtp.client-ip=103.168.172.155
+	 MIME-Version; b=o+ddsDitB4AdwgPGCACfGhsNiU8+81ZzymMuY29GLROYGTnJo+H1cqTo53phlx6crDA7esvVnPNjDVP5V2RcKtXNIzYrfTHT66pHEkZ4+KoCcfm2KStbznRJGqso3LKDxl24oISsc+uZP/f0fImjii7UiCI9ZrFWp+07XFzedgI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net; spf=pass smtp.mailfrom=fluxnic.net; dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b=KM2ALRzt; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=llBQ8aO2; arc=none smtp.client-ip=103.168.172.155
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fluxnic.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b="RyxNqF6j";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="tD7p13C2"
-Received: from phl-compute-05.internal (phl-compute-05.internal [10.202.2.45])
-	by mailfhigh.phl.internal (Postfix) with ESMTP id C2D091400097;
+	dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b="KM2ALRzt";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="llBQ8aO2"
+Received: from phl-compute-03.internal (phl-compute-03.internal [10.202.2.43])
+	by mailfhigh.phl.internal (Postfix) with ESMTP id A663C140008A;
 	Mon,  2 Feb 2026 23:56:12 -0500 (EST)
-Received: from phl-frontend-02 ([10.202.2.161])
-  by phl-compute-05.internal (MEProxy); Mon, 02 Feb 2026 23:56:12 -0500
+Received: from phl-frontend-01 ([10.202.2.160])
+  by phl-compute-03.internal (MEProxy); Mon, 02 Feb 2026 23:56:12 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fluxnic.net; h=
 	cc:cc:content-transfer-encoding:content-type:date:date:from:from
 	:in-reply-to:in-reply-to:message-id:mime-version:references
 	:reply-to:subject:subject:to:to; s=fm3; t=1770094572; x=
-	1770180972; bh=V+iATsliaEJ8WRf6f5LtvsK4ED3QI4H8YLvrpzkli9A=; b=R
-	yxNqF6j9oRo99Mi1ftZHyP7QfyZtKsL7VpTRfUoHSTYaFsa616VU2IPJsqY3B+ql
-	qJNg3+mo0pfFVGyW5T5QgxNnrRi+Tmy8Hj5R0FNldH90idMC798DVtm4SC8dTFB2
-	5WZ1hTzk7zzgsXGh1X1yliID6okDqxhHFAZOB+0RzebPa14oezZwIviPkXzAkfJI
-	l8bLb1+dlKhV4nrzsqSfqniRGA91niiVomZnOZE2g8EiSTR5QF5Myc00Cy6PyMzC
-	vPMnQQJcN9lq1ZCp9ywtLAwGs4bOiPIrcLhOoqq/NIP9zEwqXZzzIz+qTeq1wk6u
-	njK3NgyazkZcPc1nbORiA==
+	1770180972; bh=6OgqYQ+bJP/Rsu67GlT4totdCauvICVJAmMVEgcwnn8=; b=K
+	M2ALRztuYBbFrIhEG81P2EB0LOBYKN86joVGqDwKHTEZrNn/VzY/YSMoghploydi
+	mTVFTg13s2nZJ2KqE6IF213bDSSJeCw5rv5yyknZI4qiiSt/M57wY9v8+xp6ZyNt
+	7yolaDYCa2UEEvW+BlAV48+T22F4hswJ4mmL6peSoF9/W5FOHpUEGsrUMPwbEVuz
+	fSPdlgLNLUYCaJtuP1MCSiWhrSuEiLJ911Ih4EtB66P7IioJuY4kxO8bbmCC3Ina
+	Tv2Uy8PBr3D1dgVvCatBXWR2TkNAL6fkkkcUf7op1eCem2nAX2OjzsSN1k37otQF
+	wxZwesaK+JQ3wJJXFz6MQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
 	messagingengine.com; h=cc:cc:content-transfer-encoding
 	:content-type:date:date:feedback-id:feedback-id:from:from
 	:in-reply-to:in-reply-to:message-id:mime-version:references
 	:reply-to:subject:subject:to:to:x-me-proxy:x-me-sender
-	:x-me-sender:x-sasl-enc; s=fm3; t=1770094572; x=1770180972; bh=V
-	+iATsliaEJ8WRf6f5LtvsK4ED3QI4H8YLvrpzkli9A=; b=tD7p13C2NjMc9Z+8j
-	4VByAr1XVhn0w6lrKTFiV9CPkg7IGTMYSzemltgZNGa/64L/mdQmNwWC4BBzd3dX
-	c6W772Z7BvUyJXhj9Sl0p7DAk9YwzGU/BmizyvEIkhAMAvT8cPcJ45jn7sugPIv4
-	6KK9IvgpZ7b3u4/TmDr7YmFGM6dXDDy3mOPUDqewQmUha8WHV6RpExbIiR0SCyqF
-	O/LL1xn7A3z8Jo0s2KJPzN0+7xDbtHngbYYyD+YpxSVKOHMa39fgld6M1vrcJ1kR
-	lgy6tBG808nb3jZBU767G7aTQRthrVJyjP7AR5r+YEdhwkfsZIDCgqBX8WHLL6Rb
-	L7sMA==
-X-ME-Sender: <xms:7H-BaRDgAPYcFEA7FfcdW_Y0XXb4l3MQvDgbJHAHtjpWZaRFHq2Mxw>
-    <xme:7H-BaY02W9qTUFokQhpXCdIvlxm9oHBNwMfrlfI9bfkqPM49EtOAEg_aAGtW88_7Z
-    GUWFEEdODJLvJpICa3T0LCRy_v2fEShy0m9oAB15kGOhu8nWOBc5hY>
-X-ME-Received: <xmr:7H-BaT23SuKh3W5lX5nwHAOvrFH6TiE6BmBmApt0MGT-VQRQc96l2Ti-QilXW5baedyoC8OZKAH5pKojcNUMtH5Rxu6VMz7KqTz3u-Bu>
+	:x-me-sender:x-sasl-enc; s=fm3; t=1770094572; x=1770180972; bh=6
+	OgqYQ+bJP/Rsu67GlT4totdCauvICVJAmMVEgcwnn8=; b=llBQ8aO2gyNduX29b
+	4SHb2ylXW1SItbq/KUdSDGqZvQpL5eWv62gvbLKK1G0vk4yXKTfMk21HbmKhkPl0
+	IwfkQZ4zZkiw8nKZYPHO08NXdKASg8PDe7DDCBI151HU96RJCpOSMmqiKNEbvaV6
+	U9VpH2SFTokKmZfgunalhQDj+GRM+JVZSufCpdk2ptJqNm1h+WAdbOdc9dqm/Kwb
+	q26dz4uZmnu+Rr1BSnhPx3H/EwH7EBiOiKQzy7dKOs7pnI216T7dJBba0mUTTy0f
+	VbpuO7uLUR+Dci4FrekPgF3bPRXvHbDvkGKPL4gh3QgdIGy4vKYms4sOjcHMP6Sc
+	jGQxg==
+X-ME-Sender: <xms:7H-BacMlwACFlJmMq30Br5PApPnwsL8Qp9G4hlFCUOyALAoC5gwuXw>
+    <xme:7H-BacS1bsFZvHqs3aG4xOIe6dENqTZafggEC1xz50zB5ITivuBO_I4N-HC_gmJ0a
+    qUuA0_sIw-098aG7Qh1ug-cErksFAiouQjKUQT-dkmfrgAMtHUzI6o>
+X-ME-Received: <xmr:7H-BaahLl8I5InN70JRXKVuyQ5PWZ3Z9tv8pPCl-N4jvcs7NgynCL9TAbWFFMP8gl9XVuUA-nUrdc_FM_KoEn-LkKfOgY1ePggHdzJaW>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgddujeelheelucetufdoteggodetrf
     dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
     rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujf
@@ -64,16 +64,16 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgddujeelheelucetufdote
     hunhgurghtihhonhdrohhrghdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhg
     vghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhsvghrihgrlhesvh
     hgvghrrdhkvghrnhgvlhdrohhrgh
-X-ME-Proxy: <xmx:7H-BadDx3Nvo0q02_uMJgDXfukbtUBOCXKTcfV2TJ04yFANjRa3FAw>
-    <xmx:7H-BaS5MHHgEpqNgvKwYjFQeZGgmeMBX4NK5m_Y08lI4gG_cUPw33A>
-    <xmx:7H-BaeLHs63aXnMtL4aWdmkp0BgRxD9LOkRwLNMsu41Y-F7lPIE-AA>
-    <xmx:7H-BaTsDvabPHYMw2TI2wIGyik-m7ACE2L7iFzDHv0CfPbKCYxtVoA>
-    <xmx:7H-BaU0oi8ubnOaVgeZjhoP8VYWwgeYr6IceLk6SQFQ_Y4sijO0tm8hr>
+X-ME-Proxy: <xmx:7H-BaV9FdMZJF8lQzqYWWzeQZkL9ela2qTxX-83SbaS0FBNm3kiUWw>
+    <xmx:7H-BaRFacVl9a5va9UAHIANYbmyHdNgvpZfHmrnd3ez_LC2Ue8iffg>
+    <xmx:7H-BaYmjqLCZTytrJiEPBIS1JVXQDT-b6XpfdUV-jXE3oebQimKiNA>
+    <xmx:7H-BaVaTSjaEYu4jyrGk6rnaNdI3juUhYx-f-p-agm1fl5XaQOpDOQ>
+    <xmx:7H-BaSBHEGGDBR1hIPA_HfU8S3Mrw7KJE994R22buCaPwKhbv2CQ_GYl>
 Feedback-ID: i58514971:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
  2 Feb 2026 23:56:12 -0500 (EST)
 Received: from xanadu.lan (_gateway [192.168.1.1])
-	by yoda.fluxnic.net (Postfix) with ESMTPSA id CA03D151AE3C;
+	by yoda.fluxnic.net (Postfix) with ESMTPSA id B922E151AE3A;
 	Mon, 02 Feb 2026 23:56:11 -0500 (EST)
 From: Nicolas Pitre <nico@fluxnic.net>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -82,9 +82,9 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 Cc: Nicolas Pitre <npitre@baylibre.com>,
 	linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 3/3] vt: add fallback to plain map for modifier-aware key types
-Date: Mon,  2 Feb 2026 23:52:48 -0500
-Message-ID: <20260203045457.1049793-4-nico@fluxnic.net>
+Subject: [PATCH 2/3] vt: add KT_CSI keysym type for modifier-aware CSI sequences
+Date: Mon,  2 Feb 2026 23:52:47 -0500
+Message-ID: <20260203045457.1049793-3-nico@fluxnic.net>
 X-Mailer: git-send-email 2.52.0
 In-Reply-To: <20260203045457.1049793-1-nico@fluxnic.net>
 References: <20260203045457.1049793-1-nico@fluxnic.net>
@@ -98,65 +98,153 @@ Content-Transfer-Encoding: 8bit
 
 From: Nicolas Pitre <npitre@baylibre.com>
 
-When a key is pressed with modifiers (Shift, Ctrl, Alt, etc.) and the
-modifier-specific keymap has no binding (K_HOLE) or doesn't exist, fall
-back to the plain keymap if the plain entry is a modifier-aware type
-(KT_CUR or KT_CSI).
+Add a new keysym type KT_CSI that generates CSI tilde sequences with
+automatic modifier encoding. The keysym value encodes the CSI parameter
+number, producing sequences like ESC [ <value> ~ or ESC [ <value> ; <mod> ~
+when Shift, Alt, or Ctrl modifiers are held.
 
-This allows arrow keys and CSI navigation keys to automatically handle
-all modifier combinations with just a single plain map entry. The key
-handlers (k_cur and k_csi) read the modifier state at runtime and encode
-it into the output sequence.
+This allows navigation keys (Home, End, Insert, Delete, PgUp, PgDn) and
+function keys to generate modifier-aware escape sequences without
+consuming string table entries for each modifier combination.
 
-For example, with just:
-    keycode 103 = Up
-    keycode 104 = Csi_Home
+Define key symbols for navigation keys (K_CSI_HOME, K_CSI_END, etc.)
+and function keys (K_CSI_F1 through K_CSI_F20) using standard xterm
+CSI parameter values.
 
-All these combinations now work automatically:
-    Up         -> ESC [ A
-    Shift+Up   -> ESC [ 1 ; 2 A
-    Ctrl+Up    -> ESC [ 1 ; 5 A
-    Home       -> ESC [ 1 ~
-    Shift+Home -> ESC [ 1 ; 2 ~
-    Ctrl+Home  -> ESC [ 1 ; 5 ~
+The modifier encoding follows the xterm convention:
+  mod = 1 + (shift ? 1 : 0) + (alt ? 2 : 0) + (ctrl ? 4 : 0)
 
-Previously, each modifier combination required an explicit keymap entry,
-which was tedious and consumed keymap slots.
+Allowed CSI parameter values range from 0 to 99.
 
-Explicit modifier bindings still take precedence - the fallback only
-triggers when the modifier-specific entry is empty.
+Note: The Linux console historically uses a non-standard double-bracket
+format for F1-F5 (ESC [ [ A through ESC [ [ E) rather than the xterm
+tilde format (ESC [ 11 ~ through ESC [ 15 ~). The K_CSI_F1 through
+K_CSI_F5 definitions use the xterm format. Converting F1-F5 to KT_CSI
+would require updating the "linux" terminfo entry to match. Navigation
+keys and F6-F20 already use the tilde format and are fully compatible.
 
 Signed-off-by: Nicolas Pitre <npitre@baylibre.com>
 ---
- drivers/tty/vt/keyboard.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ drivers/tty/vt/keyboard.c     | 38 ++++++++++++++++++++++++++++++-----
+ include/uapi/linux/keyboard.h | 29 ++++++++++++++++++++++++++
+ 2 files changed, 62 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
-index 0b323cefc647..a145048e4da3 100644
+index dacc2267de6b..0b323cefc647 100644
 --- a/drivers/tty/vt/keyboard.c
 +++ b/drivers/tty/vt/keyboard.c
-@@ -1498,6 +1498,21 @@ static void kbd_keycode(unsigned int keycode, int down, bool hw_raw)
- 	param.ledstate = kbd->ledflagstate;
- 	key_map = key_maps[shift_final];
+@@ -74,7 +74,7 @@ static inline int kbd_defleds(void)
+ 	k_self,		k_fn,		k_spec,		k_pad,\
+ 	k_dead,		k_cons,		k_cur,		k_shift,\
+ 	k_meta,		k_ascii,	k_lock,		k_lowercase,\
+-	k_slock,	k_dead2,	k_brl,		k_ignore
++	k_slock,	k_dead2,	k_brl,		k_csi
  
-+	/*
-+	 * Fall back to the plain map if modifiers are active, the modifier-
-+	 * specific map is missing or has no entry, and the plain map has a
-+	 * modifier-aware key type (KT_CUR or KT_CSI). These handlers encode
-+	 * the modifier state into the emitted escape sequence.
-+	 */
-+	if (shift_final && keycode < NR_KEYS &&
-+	    (!key_map || key_map[keycode] == K_HOLE) && key_maps[0]) {
-+		unsigned short plain = key_maps[0][keycode];
-+		unsigned char type = KTYP(plain);
+ typedef void (k_handler_fn)(struct vc_data *vc, unsigned char value,
+ 			    char up_flag);
+@@ -127,6 +127,7 @@ static const unsigned char max_vals[] = {
+ 	[ KT_SLOCK	] = NR_LOCK - 1,
+ 	[ KT_DEAD2	] = 255,
+ 	[ KT_BRL	] = NR_BRL - 1,
++	[ KT_CSI	] = 99,
+ };
+ 
+ static const int NR_TYPES = ARRAY_SIZE(max_vals);
+@@ -644,10 +645,6 @@ static void fn_null(struct vc_data *vc)
+ /*
+  * Special key handlers
+  */
+-static void k_ignore(struct vc_data *vc, unsigned char value, char up_flag)
+-{
+-}
+-
+ static void k_spec(struct vc_data *vc, unsigned char value, char up_flag)
+ {
+ 	if (up_flag)
+@@ -1029,6 +1026,37 @@ static void k_brl(struct vc_data *vc, unsigned char value, char up_flag)
+ 	}
+ }
+ 
++/*
++ * Handle KT_CSI keysym type: generate CSI tilde sequences with modifier
++ * support. The value encodes the CSI parameter number, producing sequences
++ * like ESC [ <value> ~ or ESC [ <value> ; <mod> ~ when modifiers are held.
++ */
++static void k_csi(struct vc_data *vc, unsigned char value, char up_flag)
++{
++	char buf[10];
++	int i = 0;
++	int mod;
 +
-+		if (type >= 0xf0 && (type - 0xf0 == KT_CUR || type - 0xf0 == KT_CSI))
-+			key_map = key_maps[0];
++	if (up_flag)
++		return;
++
++	mod = csi_modifier_param();
++
++	buf[i++] = 0x1b;
++	buf[i++] = '[';
++	if (value >= 10)
++		buf[i++] = '0' + value / 10;
++	buf[i++] = '0' + value % 10;
++	if (mod > 1) {
++		buf[i++] = ';';
++		buf[i++] = '0' + mod;
 +	}
++	buf[i++] = '~';
++	buf[i] = 0x00;
 +
- 	rc = atomic_notifier_call_chain(&keyboard_notifier_list,
- 					KBD_KEYCODE, &param);
- 	if (rc == NOTIFY_STOP || !key_map) {
++	puts_queue(vc, buf);
++}
++
+ #if IS_ENABLED(CONFIG_INPUT_LEDS) && IS_ENABLED(CONFIG_LEDS_TRIGGERS)
+ 
+ struct kbd_led_trigger {
+diff --git a/include/uapi/linux/keyboard.h b/include/uapi/linux/keyboard.h
+index 36d230cedf12..48ecb0cefb45 100644
+--- a/include/uapi/linux/keyboard.h
++++ b/include/uapi/linux/keyboard.h
+@@ -41,6 +41,7 @@
+ #define KT_SLOCK	12
+ #define KT_DEAD2	13
+ #define KT_BRL		14
++#define KT_CSI		15	/* CSI sequences with modifier support */
+ 
+ #define K(t,v)		(((t)<<8)|(v))
+ #define KTYP(x)		((x) >> 8)
+@@ -461,5 +462,33 @@
+ 
+ #define NR_BRL		11
+ 
++/* KT_CSI keys: value is the CSI parameter number for ESC [ <value> ~ */
++#define K_CSI_HOME	K(KT_CSI, 1)	/* ESC [ 1 ~ */
++#define K_CSI_INSERT	K(KT_CSI, 2)	/* ESC [ 2 ~ */
++#define K_CSI_DELETE	K(KT_CSI, 3)	/* ESC [ 3 ~ */
++#define K_CSI_END	K(KT_CSI, 4)	/* ESC [ 4 ~ */
++#define K_CSI_PGUP	K(KT_CSI, 5)	/* ESC [ 5 ~ */
++#define K_CSI_PGDN	K(KT_CSI, 6)	/* ESC [ 6 ~ */
++#define K_CSI_F1	K(KT_CSI, 11)	/* ESC [ 11 ~ */
++#define K_CSI_F2	K(KT_CSI, 12)	/* ESC [ 12 ~ */
++#define K_CSI_F3	K(KT_CSI, 13)	/* ESC [ 13 ~ */
++#define K_CSI_F4	K(KT_CSI, 14)	/* ESC [ 14 ~ */
++#define K_CSI_F5	K(KT_CSI, 15)	/* ESC [ 15 ~ */
++#define K_CSI_F6	K(KT_CSI, 17)	/* ESC [ 17 ~ */
++#define K_CSI_F7	K(KT_CSI, 18)	/* ESC [ 18 ~ */
++#define K_CSI_F8	K(KT_CSI, 19)	/* ESC [ 19 ~ */
++#define K_CSI_F9	K(KT_CSI, 20)	/* ESC [ 20 ~ */
++#define K_CSI_F10	K(KT_CSI, 21)	/* ESC [ 21 ~ */
++#define K_CSI_F11	K(KT_CSI, 23)	/* ESC [ 23 ~ */
++#define K_CSI_F12	K(KT_CSI, 24)	/* ESC [ 24 ~ */
++#define K_CSI_F13	K(KT_CSI, 25)	/* ESC [ 25 ~ */
++#define K_CSI_F14	K(KT_CSI, 26)	/* ESC [ 26 ~ */
++#define K_CSI_F15	K(KT_CSI, 28)	/* ESC [ 28 ~ */
++#define K_CSI_F16	K(KT_CSI, 29)	/* ESC [ 29 ~ */
++#define K_CSI_F17	K(KT_CSI, 31)	/* ESC [ 31 ~ */
++#define K_CSI_F18	K(KT_CSI, 32)	/* ESC [ 32 ~ */
++#define K_CSI_F19	K(KT_CSI, 33)	/* ESC [ 33 ~ */
++#define K_CSI_F20	K(KT_CSI, 34)	/* ESC [ 34 ~ */
++
+ #define MAX_DIACR	256
+ #endif /* _UAPI__LINUX_KEYBOARD_H */
 -- 
 2.52.0
 
