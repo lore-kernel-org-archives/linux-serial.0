@@ -1,115 +1,174 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from out-182.mta0.migadu.com (out-182.mta0.migadu.com [91.218.175.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 385F6353ED1;
-	Wed,  4 Feb 2026 08:20:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11A9A392C4D
+	for <linux-serial@vger.kernel.org>; Wed,  4 Feb 2026 08:29:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770193239; cv=none; b=aiT3FOpcDa/XmEBJIPqALDL4fyrWaYRAcW6zy50zW5SX0ttjXYUD2f2b5rGwdKQ5u7zbUwSQnvlIPMULGG2n6kQhvsAYECvjFlT3QptFhZI/tFxiRkJYp03TYZXARbjvVfkW1sYys2OzpsQIwfdy3bW8yIMsfmgPySWVSM+OHqM=
+	t=1770193763; cv=none; b=Ba0PCxxoUm15OAN0lH25WaYToMCLhaY5ONg+cVzw734IdxVqx4ZTgkNx7D1UWIDjCxfHP6XjN20tumb3gbDpzURGfLzz9KuSvzyGqSWOObna/OThgDk+g6z2bYroQgjHf1AIoO823vmja4dN+zk5yS42fdo4t/kv34bN31xkeR4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770193239; c=relaxed/simple;
-	bh=yUYwL4XsrR+ssKF3suhcgL7xpxD2Y1iYxcpkETNLAv4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qng847bw6uBnrXMSEnTJYtfwKJ2o32W09Q/L/N/3agzlKSjg3BG3oev2kHQu+GbCyAia8X5vKLBexcwzQPZpa7QIVA/bvFrmByXS7DAVwnSYg3Kbr0/UPqYpuuErP+LVaBRVZ4Kn0Kx7CF5mvbyOdalHH9/yGq46WX4jgfWxM7M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=xiPC4yRZ; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1770193763; c=relaxed/simple;
+	bh=NTJnpd0cRSR19Bv8AO127gNmpo01Vcr66tYghj0AsA4=;
+	h=MIME-Version:Date:Content-Type:From:Message-ID:Subject:To:Cc:
+	 In-Reply-To:References; b=ASY0Cm3gKF9jKDjlJISIycJ0qqr9xoAKUp0i3HrQVNu38z6MFjik8oNZHgSn9S49inqlNgTbb6XDut2GOs44lgGWG0JnlwRqJytYMj6jOTKuGNhHxiMF7YKqUlKqoVLUakbO5z4uF9KterZzU5BjSiwBTXfWdYrs8WLzeqEDOUo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=oGDf3TAj; arc=none smtp.client-ip=91.218.175.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="xiPC4yRZ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36A4CC4CEF7;
-	Wed,  4 Feb 2026 08:20:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1770193238;
-	bh=yUYwL4XsrR+ssKF3suhcgL7xpxD2Y1iYxcpkETNLAv4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=xiPC4yRZsd3oXgvJOEFE16bdJ+ta8VA5pTnj+295pgJbTe5B2kTQeo2H+K2sbcaPp
-	 fBVLxynvl5bVwWDToGiNLbVpZxY7h/ClVDEkKLat1P1V6Fh8sCcWS1aI//Tsl3P6E8
-	 JldMCQn/h6HSQLJpsycTy8mkiEMIeRo01mIJLaoc=
-Date: Wed, 4 Feb 2026 09:20:34 +0100
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Jiayuan Chen <jiayuan.chen@linux.dev>
-Cc: linux-serial@vger.kernel.org, Jiayuan Chen <jiayuan.chen@shopee.com>,
-	Jiri Slaby <jirislaby@kernel.org>, Petr Mladek <pmladek@suse.com>,
-	Marcos Paulo de Souza <mpdesouza@suse.com>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>,
-	"Dr. David Alan Gilbert" <linux@treblig.org>,
-	Joseph Tilahun <jtilahun@astranis.com>,
-	Sjur Braendeland <sjur.brandeland@stericsson.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1] serial: core: fix infinite loop in handle_tx() for
- PORT_UNKNOWN
-Message-ID: <2026020459-lisp-display-0506@gregkh>
-References: <20260204074327.226165-1-jiayuan.chen@linux.dev>
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="oGDf3TAj"
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260204074327.226165-1-jiayuan.chen@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1770193751;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=hI7c6NXuIo6rUtS9JyG+mDju7fGpyuTcvrLrgtK/i+o=;
+	b=oGDf3TAjb+lVt3Q9ZEZAW1ywzXJhj4NO+JdBVzAe/tMhbNy2O/eyiCMxxnix9lyjOahR4/
+	EPqlbGBO97CVpIp4fHoPR883O4V1YEjJdSNbe5CJmFhJz4Gpoa1OIC4iiL7+LnAOazLzBo
+	BgCK13ha1wi9J5vxqS4F8NFzPv1nNtM=
+Date: Wed, 04 Feb 2026 08:29:06 +0000
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: "Jiayuan Chen" <jiayuan.chen@linux.dev>
+Message-ID: <fa7e9e86df95ffcc301c60367654e084cbff5d83@linux.dev>
+TLS-Required: No
+Subject: Re: [PATCH v1] serial: core: fix infinite loop in handle_tx() for
+ PORT_UNKNOWN
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, "Jiayuan Chen" <jiayuan.chen@shopee.com>,
+ "Jiri Slaby" <jirislaby@kernel.org>, "Petr Mladek" <pmladek@suse.com>,
+ "Marcos Paulo de Souza" <mpdesouza@suse.com>, "Krzysztof Kozlowski"
+ <krzysztof.kozlowski@oss.qualcomm.com>, "Dr. David Alan Gilbert"
+ <linux@treblig.org>, "Joseph Tilahun" <jtilahun@astranis.com>, "Sjur
+ Braendeland" <sjur.brandeland@stericsson.com>, "David S. Miller"
+ <davem@davemloft.net>, linux-kernel@vger.kernel.org
+In-Reply-To: <2026020459-lisp-display-0506@gregkh>
+References: <20260204074327.226165-1-jiayuan.chen@linux.dev>
+ <2026020459-lisp-display-0506@gregkh>
+X-Migadu-Flow: FLOW_OUT
 
-On Wed, Feb 04, 2026 at 03:43:20PM +0800, Jiayuan Chen wrote:
-> From: Jiayuan Chen <jiayuan.chen@shopee.com>
-> 
-> uart_write_room() and uart_write() behave inconsistently when
-> xmit_buf is NULL (which happens for PORT_UNKNOWN ports that were
-> never properly initialized):
+2026/2/4 16:20, "Greg Kroah-Hartman" <gregkh@linuxfoundation.org mailto:g=
+regkh@linuxfoundation.org?to=3D%22Greg%20Kroah-Hartman%22%20%3Cgregkh%40l=
+inuxfoundation.org%3E > wrote:
 
-How does this happen?  Why were they not initialized properly, what
-drivers/hardware cause this?
 
-> - uart_write_room() returns kfifo_avail() which can be > 0
-> - uart_write() checks xmit_buf and returns 0 if NULL
-> 
-> This inconsistency causes an infinite loop in drivers that rely on
-> tty_write_room() to determine if they can write:
-> 
->   while (tty_write_room(tty) > 0) {
->       written = tty->ops->write(...);
->       // written is always 0, loop never exits
->   }
-> 
-> For example, caif_serial's handle_tx() enters an infinite loop when
-> used with PORT_UNKNOWN serial ports, causing system hangs.
-> 
-> Fix by making uart_write_room() also check xmit_buf and return 0 if
-> it's NULL, consistent with uart_write().
-> 
-> Reproducer: https://gist.github.com/mrpre/d9a694cc0e19828ee3bc3b37983fde13
-> 
-> Fixes: 9b27105b4a44 ("net-caif-driver: add CAIF serial driver (ldisc)")
+>=20
+>=20On Wed, Feb 04, 2026 at 03:43:20PM +0800, Jiayuan Chen wrote:
+>=20
+>=20>=20
+>=20> From: Jiayuan Chen <jiayuan.chen@shopee.com>
+> >=20=20
+>=20>  uart_write_room() and uart_write() behave inconsistently when
+> >  xmit_buf is NULL (which happens for PORT_UNKNOWN ports that were
+> >  never properly initialized):
+> >=20
+>=20How does this happen? Why were they not initialized properly, what
+> drivers/hardware cause this?
 
-This really isn't a fix for that driver, but rather something else.
 
-> Signed-off-by: Jiayuan Chen <jiayuan.chen@shopee.com>
-> Signed-off-by: Jiayuan Chen <jiayuan.chen@linux.dev>
+  In QEMU environment, /dev/ttyS3 is PORT_UNKNOWN type (no real UART hard=
+ware).
+  When uart_port_startup() sees uport->type =3D=3D PORT_UNKNOWN, it retur=
+ns early
+  without allocating xmit_buf:
+      if (uport->type =3D=3D PORT_UNKNOWN)
+          return 1;   // xmit_buf never allocated
+  So xmit_buf remains NULL.
 
-This doesn't make sense, signing off twice for the same person?
+> >=20
+>=20> - uart_write_room() returns kfifo_avail() which can be > 0
+> >  - uart_write() checks xmit_buf and returns 0 if NULL
+> >=20=20
+>=20>  This inconsistency causes an infinite loop in drivers that rely on
+> >  tty_write_room() to determine if they can write:
+> >=20=20
+>=20>  while (tty_write_room(tty) > 0) {
+> >  written =3D tty->ops->write(...);
+> >  // written is always 0, loop never exits
+> >  }
+> >=20=20
+>=20>  For example, caif_serial's handle_tx() enters an infinite loop whe=
+n
+> >  used with PORT_UNKNOWN serial ports, causing system hangs.
+> >=20=20
+>=20>  Fix by making uart_write_room() also check xmit_buf and return 0 i=
+f
+> >  it's NULL, consistent with uart_write().
+> >=20=20
+>=20>  Reproducer: https://gist.github.com/mrpre/d9a694cc0e19828ee3bc3b37=
+983fde13
+> >=20=20
+>=20>  Fixes: 9b27105b4a44 ("net-caif-driver: add CAIF serial driver (ldi=
+sc)")
+> >=20
+>=20This really isn't a fix for that driver, but rather something else.
 
-As you did this from your shopee.com account, that should be sufficient.
+  You're right, this is awkward. The API inconsistency between uart_write=
+_room()
+  and uart_write() has existed since 2.6.12, but it only became visible a=
+s a
+  deadloop when CAIF was introduced - because CAIF's handle_tx() relies o=
+n
+  tty_write_room() to decide whether to call write().
+  The fix location is in uart, but the trigger condition requires CAIF (o=
+r
+  similar drivers). I can remove the Fixes tag if you prefer.
 
-> ---
->  drivers/tty/serial/serial_core.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index 2805cad10511..0b2edf185cc7 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -643,7 +643,10 @@ static unsigned int uart_write_room(struct tty_struct *tty)
->  	unsigned int ret;
->  
->  	port = uart_port_ref_lock(state, &flags);
-> -	ret = kfifo_avail(&state->port.xmit_fifo);
-> +	if (!state->port.xmit_buf)
+> >=20
+>=20> Signed-off-by: Jiayuan Chen <jiayuan.chen@shopee.com>
+> >  Signed-off-by: Jiayuan Chen <jiayuan.chen@linux.dev>
+> >=20
+>=20This doesn't make sense, signing off twice for the same person?
+>=20
+>=20As you did this from your shopee.com account, that should be sufficie=
+nt.
 
-This feels odd.  What ports have no transmit buffers?  And why would
-this be the only check that is needed for such broken devices?
+Sorry, I'll keep only one Signed-off-by.
 
-Maybe let's fix the root cause here, the driver that does not have a
-transmit buffer at all?
+> >=20
+>=20> ---
+> >  drivers/tty/serial/serial_core.c | 5 ++++-
+> >  1 file changed, 4 insertions(+), 1 deletion(-)
+> >=20=20
+>=20>  diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial=
+/serial_core.c
+> >  index 2805cad10511..0b2edf185cc7 100644
+> >  --- a/drivers/tty/serial/serial_core.c
+> >  +++ b/drivers/tty/serial/serial_core.c
+> >  @@ -643,7 +643,10 @@ static unsigned int uart_write_room(struct tty_=
+struct *tty)
+> >  unsigned int ret;
+> >=20=20
+>=20>  port =3D uart_port_ref_lock(state, &flags);
+> >  - ret =3D kfifo_avail(&state->port.xmit_fifo);
+> >  + if (!state->port.xmit_buf)
+> >=20
+>=20This feels odd. What ports have no transmit buffers? And why would
+> this be the only check that is needed for such broken devices?
+>=20
+>=20Maybe let's fix the root cause here, the driver that does not have a
+> transmit buffer at all?
 
-thanks,
 
-greg k-h
+  Do you suggest we should prevent setting line discipline (like N_CAIF)
+  on PORT_UNKNOWN ports? Or should CAIF check the port type before using =
+it?
+  Note that CAIF is currently in orphan status (no active maintainer), so
+  I'm not sure about the process for modifying it. The serial core fix
+  might be more straightforward.
+
+  I'm happy to take either direction.
+  Thanks,
+  Jiayuan
+
+> thanks,
+>=20
+>=20greg k-h
+>
