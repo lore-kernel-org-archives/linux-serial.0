@@ -1,70 +1,80 @@
-Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
+Received: from mail-dl1-f45.google.com (mail-dl1-f45.google.com [74.125.82.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5863A2E7F25
-	for <linux-serial@vger.kernel.org>; Fri,  6 Feb 2026 06:20:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 903D1426D33
+	for <linux-serial@vger.kernel.org>; Fri,  6 Feb 2026 18:13:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770358809; cv=none; b=WC0n9yYqV8Sr4XduYKOI1zfYTJDlgdPzLQtKm3fwkOv53bFpI9SS/RO7MKTppU45fqdrtLmA2jBrY+iDSDGx8DFQPH+O5KnfNB0GKPOh1VUi5/fj2bS4gKeqlfryhp+KMuw8nWXwJZfW8WrN61tIqROnqaoLgXkfaP43GPmYfMk=
+	t=1770401623; cv=none; b=RltqYBB8LY8G6g2MxWn9oqud3N2NMnWsLYLsD++cTdpT7a7N4ZSLa0xS4sBuC/p08vms2eGHIp40q2V+xYCBabK7UUsse1s2DWOE+0ery7AT4nXZkRlRZEx4LT6WCecAbcQ41ywEG5/clqbjiIPDr/y8TeIFAlUNgadCZP2xa9A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770358809; c=relaxed/simple;
-	bh=xIOMITzk6t7GBFmQGzTwzNYLousGKE0G8vJxVVPGw2s=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version; b=uZfRVZIltz53uWh6n5+QmAo4rsd6XpAmYjSu9wfxdy8V9maz0hiOkhSGUg0zsfFP1M/y9WDSXgcE0EJQMW6ToSrJGInuTBgtzv9CX+9az0B/miL1HPX9XZ4Z4YL13RBCEjnSqM1gqqAQHtfKM09X7YWImiKnDpIskg8bNhFdYGs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fWNFy18B; arc=none smtp.client-ip=209.85.208.44
+	s=arc-20240116; t=1770401623; c=relaxed/simple;
+	bh=AXvgsUCaF1FG8wPSsB4PShKdluoSIOzjC6gXHZSQCRU=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=J1xSUTB+noe61JwnmpkenRjmvvlSuLpJOi4OFHPgDumrv+DDCm0xFiZYZ/CeWjKHh0YS2H0TGd/JIlnV+HCH28zqhtycdtIL6AH4uUneFJ7dEaOg3P9d2wlyrpFoeKjjOCmX3Nn4ZzWJ4gHv+rSQigrKujxys6IUth73+5C30UA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=V6e3VDxo; arc=none smtp.client-ip=74.125.82.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fWNFy18B"
-Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-65941c07fb4so2737406a12.3
-        for <linux-serial@vger.kernel.org>; Thu, 05 Feb 2026 22:20:09 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="V6e3VDxo"
+Received: by mail-dl1-f45.google.com with SMTP id a92af1059eb24-1270adc5121so643478c88.0
+        for <linux-serial@vger.kernel.org>; Fri, 06 Feb 2026 10:13:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770358808; x=1770963608; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:to
-         :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Z91AyLavQ9E+OzREQeugmqJzK6joS+ypk+HxCV0cQS0=;
-        b=fWNFy18BwEyCuy7uCvLeURIv85h+6r6wWNU+5JMsebsj5TlgpZalkQwMgRatCG1F7S
-         SrHQUmvPoEVhi88H2elMzUSYjKQIZYzSRcn2HsCyIdamz69tLWG9ZBJqB9902K0p8x65
-         dQh7SB5pAAqsp2e9i5Ppnye63WGYiA3vB1MyYtTSRF0e9vYB1qsaG3bhQt3AMTZcc+sq
-         bOnAcGMJhpO4KEubovmN/IDW6N1ojEpn5d/zoD3PD8fo070cEYG7rzfuul+vVC3Wa5XH
-         2PVcPlKkhMwjZU1Rvb6qUXelfhUFa3SQCHH7WvWFktjOQmJzI+6Qh9UbB4Fa1zUydLAB
-         +Jiw==
+        d=gmail.com; s=20230601; t=1770401623; x=1771006423; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=tgXGBSZoBFQqX1EttjH60dA2QMgCjVJpHFXppYJ+DT0=;
+        b=V6e3VDxo9oqvdmpey8OremBBGlSIT+fRT/QQ5HJG16dhCei/k+t/GGhLpj4Oixh2Pu
+         mcXkKmmpw4hZby1OyeLMYk24uLPQLjbRpQhcMEmz4yAHhVap8jisFRj7ekgKvFeSWXpP
+         B3CmpAWm1i5THW7xiIAwf+jE01ZHd8mqChXRO7BylH6fBHoyq1o9GrVKXGixemVwuxdU
+         bZxuPB15MrOZeeorIGRGeNiFtd10641qLs5jXPZ5kJrFpsXQiQ+KH+XoNs8cpZa9maUc
+         dT7FmcDNqWzOETZ94cA+SH/i+noZRcqKXKG7xfO5gusDykTGs5QMNnKprAoaL0oe63oJ
+         9wZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770358808; x=1770963608;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:to
-         :from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Z91AyLavQ9E+OzREQeugmqJzK6joS+ypk+HxCV0cQS0=;
-        b=JXmAs5/R1yPYLEw0c3F7Uss1V36Xzd3YQ0rAY1hWQ+g/8Z96KUAg739qb3W4+JTvDL
-         sKBFrSCgdmhaSEbgepF/xh/OYCbJwUGqfeCcO7hlNjX//F0S/U0BzqSsRTdd7CiWCCWP
-         nxiv4NfLTNfMT2Mhu2FtN2zSBehF5k/Z2CgchbTDJ+dRHAZLafR7MXeMeNXnNcJahw3d
-         KTL0ixkVVjBqRxL8XOl2QimZj2SJUklbAdn3BrS8DGNVlCfhWw2dYVZbEzlcEKnLe4og
-         oyUnnulVTiEYjlvVefVuyuJJYwV/1f5Lyz7y+wPanduNRM0C/m29n9F+Qs1pcCEWb/m2
-         Xp7Q==
-X-Forwarded-Encrypted: i=1; AJvYcCWzl62rKVtt5O65ucom9kd6dfTvknMeQDMAn9v8EhZLyH6vdrr8rAKJNLEKku9Q2++mPhaPhfgm1P4tmII=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx54en3JafrXHNx4dmYjw6tOfp+aPqWJReXRmu9PjA2yBAODl/5
-	GOLGLFXmKb3qByZMHdAwlTbUWCXkLNZT8jtGRMkY64SRIJ7sWULuyhfD
-X-Gm-Gg: AZuq6aKapVNav4Ax5F25V39LpUYZGD2cC+DIWEMZVrBTqXzBnOZacq1L30dOBPN/PNI
-	c7Wyq5Vvh7sJ/OWHER9frcWB8zBydMbiLeyVakoN05uF0ph7BpixKeGuyEEY8nvzLSQ17/gT8c3
-	5dDCMJzjR0N7kOZiUrO2s3ouqwTYvm7sFMkVzALV3ihHKW+LC2czUTScTHC0L1ulomOfICRbS2l
-	oKH9xiexC6tKo9D9C661Jw/cLfsW8bgg00nEMQ4rUyKYiu76DzPmHwRwTg0NjXvcOdvkiL5itEr
-	eaRQIuf4cAHhfO3ZOPXRm9CJt7V3u73WexSzXsh3ivboixbKCtklShW2GFfNVDsWD/CxzALZYZ7
-	PXwMYiyLfP19zwWvyYDDP/+5yZYZA6Vmw5sERHGkd7aDIvKKpedmDEZRtJtZNtokZqEBK5braFw
-	vfAw==
-X-Received: by 2002:a17:907:2d86:b0:b8e:796a:fd5c with SMTP id a640c23a62f3a-b8edf1f0e52mr86321466b.27.1770358807540;
-        Thu, 05 Feb 2026 22:20:07 -0800 (PST)
-Received: from gmail.com ([2a09:bac5:4e27:270f::3e4:5d])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b8edae6fa84sm52835066b.67.2026.02.05.22.20.05
+        d=1e100.net; s=20230601; t=1770401623; x=1771006423;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=tgXGBSZoBFQqX1EttjH60dA2QMgCjVJpHFXppYJ+DT0=;
+        b=JQ51f26hzJLc2QmVchw7IZ2LV34MqAAtTM/c07JEOZngoKdFYM2n8cpSRd4jTCQgL8
+         N0f0QmpIixkNhCWv3NzP4v30/bJVDCu/EO/Orcgfv/j/v1Zxu5RALrdg31x6a/fXkabY
+         /4uACdgEPMBgqDxzWsoy9+92tUbIMma4KuhCm82FfIMaX6N/O7HrDM4Xo1qUDze5SSbQ
+         TYc47o+/nF/jxPGL4tzYOSNm2j5u2rodvmj7tH9/YiC4qZd+hTG8MeiGDyf8xsnuq/eI
+         E4LXaKtBioCku3n0IENME+ZFTbu9JYZv9XbHiMIQnOk5xGsd3blKDkgoUSS3xEZUeKd7
+         CK0w==
+X-Forwarded-Encrypted: i=1; AJvYcCXylhdzyUxTlQHHVCq8QMzbToqQ7xKmHLBgKbwFg/4HHdyRJQMmUFih2JLL2RMXewmSim/a01R8fnPCB0k=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxrs0vVnn8wCLxPTG1ioonHH4Ig2oDr9+BWSB76L2M5gMF8braL
+	7UfWnF2sj2G2P/PwlECR5I/b7eM9rX7D4nnNdXAB2FQFQVZcQ/IhlWVW
+X-Gm-Gg: AZuq6aLYqJHd6AlXeBvsP1dJQmTslAjDcbzhlQnH9fbnZG9nVR2y6hVqfqfEx51sPGe
+	lBLsYIEMT453+yO8fBhfEUId08nJgSF3swPYOjDWYjm2rf0Ax+NkUi28dUO7hN9yxAEMg+ybx2z
+	1qmUR7NKEnTvbmM7c3wc6ot3g7KTZYrPiKkLISAMCY17OGWE5gX0McMm3hZ2lpXDuk+1TE87V0N
+	fb2zGogi0+Qn3kBDWq8glUHWGSJMAByyYub9TALnoBzDq2BFJNw19p1y1LWRJ1ojBDUuSMcot/U
+	XmKjQwl94JWXrFWz9q+oYUpNCBrkVkCq3mFXA8KcpB1LTxqkwcBy+PsMcPDU8+up2f5TzWodfMV
+	An2KEgqe3vStnmyyWdxkMoyH7gUoh+h03Psh8JkFJ8S2KDJM4LjzBfNPAnIClfG+ABtsG6Xc0wv
+	n5pfySc2XvXgaZ3HgUntko+SmIRrF3VTw3rNM=
+X-Received: by 2002:a05:7022:49a:b0:119:e56b:98b9 with SMTP id a92af1059eb24-12704048c3bmr1984751c88.32.1770401622642;
+        Fri, 06 Feb 2026 10:13:42 -0800 (PST)
+Received: from fabio-Precision-3551.. ([2804:14c:485:4b61:44a3:2bb7:a035:fd7e])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1270433ab31sm2782500c88.11.2026.02.06.10.13.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Feb 2026 22:20:07 -0800 (PST)
-From: Qingfang Deng <dqfext@gmail.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	linux-kernel@vger.kernel.org,
+        Fri, 06 Feb 2026 10:13:42 -0800 (PST)
+From: Fabio Estevam <festevam@gmail.com>
+To: heiko@sntech.de
+Cc: robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org,
+	Fabio Estevam <festevam@nabladev.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	linux-serial@vger.kernel.org
-Subject: [PATCH] tty: constify tty_ldisc_ops
-Date: Fri,  6 Feb 2026 14:20:03 +0800
-Message-ID: <20260206062004.1273890-1-dqfext@gmail.com>
-X-Mailer: git-send-email 2.43.0
+Subject: [PATCH 07/11] dt-bindings: serial: snps-dw-apb-uart: Add support for RV1103B
+Date: Fri,  6 Feb 2026 15:13:05 -0300
+Message-Id: <20260206181309.2696095-8-festevam@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20260206181309.2696095-1-festevam@gmail.com>
+References: <20260206181309.2696095-1-festevam@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -73,109 +83,31 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-tty_ldisc_ops is not modified once registered, so make it const.
+From: Fabio Estevam <festevam@nabladev.com>
 
-Signed-off-by: Qingfang Deng <dqfext@gmail.com>
+The UART used in the RV1103B SoC is still the same dw-apb-uart compatible
+type as on the SoCs that came before, so add the RV1103B to the list
+of variants.
+
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Signed-off-by: Fabio Estevam <festevam@nabladev.com>
 ---
- drivers/tty/tty_ldisc.c   | 16 ++++++++--------
- include/linux/tty_ldisc.h |  6 +++---
- 2 files changed, 11 insertions(+), 11 deletions(-)
+ Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-index d80e9d4c974b..470a47aca03e 100644
---- a/drivers/tty/tty_ldisc.c
-+++ b/drivers/tty/tty_ldisc.c
-@@ -44,7 +44,7 @@ enum {
- 
- static DEFINE_RAW_SPINLOCK(tty_ldiscs_lock);
- /* Line disc dispatch table */
--static struct tty_ldisc_ops *tty_ldiscs[NR_LDISCS];
-+static const struct tty_ldisc_ops *tty_ldiscs[NR_LDISCS];
- 
- /**
-  * tty_register_ldisc	-	install a line discipline
-@@ -55,7 +55,7 @@ static struct tty_ldisc_ops *tty_ldiscs[NR_LDISCS];
-  *
-  * Locking: takes %tty_ldiscs_lock to guard against ldisc races
-  */
--int tty_register_ldisc(struct tty_ldisc_ops *new_ldisc)
-+int tty_register_ldisc(const struct tty_ldisc_ops *new_ldisc)
- {
- 	unsigned long flags;
- 
-@@ -80,7 +80,7 @@ EXPORT_SYMBOL(tty_register_ldisc);
-  * Locking: takes %tty_ldiscs_lock to guard against ldisc races
-  */
- 
--void tty_unregister_ldisc(struct tty_ldisc_ops *ldisc)
-+void tty_unregister_ldisc(const struct tty_ldisc_ops *ldisc)
- {
- 	unsigned long flags;
- 
-@@ -90,10 +90,10 @@ void tty_unregister_ldisc(struct tty_ldisc_ops *ldisc)
- }
- EXPORT_SYMBOL(tty_unregister_ldisc);
- 
--static struct tty_ldisc_ops *get_ldops(int disc)
-+static const struct tty_ldisc_ops *get_ldops(int disc)
- {
- 	unsigned long flags;
--	struct tty_ldisc_ops *ldops, *ret;
-+	const struct tty_ldisc_ops *ldops, *ret;
- 
- 	raw_spin_lock_irqsave(&tty_ldiscs_lock, flags);
- 	ret = ERR_PTR(-EINVAL);
-@@ -107,7 +107,7 @@ static struct tty_ldisc_ops *get_ldops(int disc)
- 	return ret;
- }
- 
--static void put_ldops(struct tty_ldisc_ops *ldops)
-+static void put_ldops(const struct tty_ldisc_ops *ldops)
- {
- 	unsigned long flags;
- 
-@@ -139,7 +139,7 @@ int tty_ldisc_autoload = IS_BUILTIN(CONFIG_LDISC_AUTOLOAD);
- static struct tty_ldisc *tty_ldisc_get(struct tty_struct *tty, int disc)
- {
- 	struct tty_ldisc *ld;
--	struct tty_ldisc_ops *ldops;
-+	const struct tty_ldisc_ops *ldops;
- 
- 	if (disc < N_TTY || disc >= NR_LDISCS)
- 		return ERR_PTR(-EINVAL);
-@@ -202,7 +202,7 @@ static void tty_ldiscs_seq_stop(struct seq_file *m, void *v)
- static int tty_ldiscs_seq_show(struct seq_file *m, void *v)
- {
- 	int i = *(loff_t *)v;
--	struct tty_ldisc_ops *ldops;
-+	const struct tty_ldisc_ops *ldops;
- 
- 	ldops = get_ldops(i);
- 	if (IS_ERR(ldops))
-diff --git a/include/linux/tty_ldisc.h b/include/linux/tty_ldisc.h
-index c5cccc3fc1e8..d227a58e3e49 100644
---- a/include/linux/tty_ldisc.h
-+++ b/include/linux/tty_ldisc.h
-@@ -266,7 +266,7 @@ struct tty_ldisc_ops {
- };
- 
- struct tty_ldisc {
--	struct tty_ldisc_ops *ops;
-+	const struct tty_ldisc_ops *ops;
- 	struct tty_struct *tty;
- };
- 
-@@ -281,8 +281,8 @@ struct tty_ldisc *tty_ldisc_ref_wait(struct tty_struct *);
- 
- void tty_ldisc_flush(struct tty_struct *tty);
- 
--int tty_register_ldisc(struct tty_ldisc_ops *new_ldisc);
--void tty_unregister_ldisc(struct tty_ldisc_ops *ldisc);
-+int tty_register_ldisc(const struct tty_ldisc_ops *new_ldisc);
-+void tty_unregister_ldisc(const struct tty_ldisc_ops *ldisc);
- int tty_set_ldisc(struct tty_struct *tty, int disc);
- 
- #endif /* _LINUX_TTY_LDISC_H */
+diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+index 6efe43089a74..685c1eceb782 100644
+--- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
++++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+@@ -71,6 +71,7 @@ properties:
+               - rockchip,rk3568-uart
+               - rockchip,rk3576-uart
+               - rockchip,rk3588-uart
++              - rockchip,rv1103b-uart
+               - rockchip,rv1108-uart
+               - rockchip,rv1126-uart
+               - sophgo,sg2044-uart
 -- 
-2.43.0
+2.34.1
 
