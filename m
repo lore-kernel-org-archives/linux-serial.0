@@ -1,113 +1,67 @@
-Received: from mail-dl1-f45.google.com (mail-dl1-f45.google.com [74.125.82.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 903D1426D33
-	for <linux-serial@vger.kernel.org>; Fri,  6 Feb 2026 18:13:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F3703385A5;
+	Sat,  7 Feb 2026 10:59:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770401623; cv=none; b=RltqYBB8LY8G6g2MxWn9oqud3N2NMnWsLYLsD++cTdpT7a7N4ZSLa0xS4sBuC/p08vms2eGHIp40q2V+xYCBabK7UUsse1s2DWOE+0ery7AT4nXZkRlRZEx4LT6WCecAbcQ41ywEG5/clqbjiIPDr/y8TeIFAlUNgadCZP2xa9A=
+	t=1770461948; cv=none; b=p/qUHT4uQ30ZD2hxfUJlprunB2dPz6z2LuNGSBvQ/H/y3c/z0skAhrDCHtSPUEErn4BxjqIloxBer7vMj1YweE4hNkUOchhQ/6ALhZ+9SSUXFLILVCU6/Eh1AY7wC2vZLdmg4bfrPJ3AwT/KMbpQu/WPr+HJGX6S0VhiwHjB4R8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770401623; c=relaxed/simple;
-	bh=AXvgsUCaF1FG8wPSsB4PShKdluoSIOzjC6gXHZSQCRU=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=J1xSUTB+noe61JwnmpkenRjmvvlSuLpJOi4OFHPgDumrv+DDCm0xFiZYZ/CeWjKHh0YS2H0TGd/JIlnV+HCH28zqhtycdtIL6AH4uUneFJ7dEaOg3P9d2wlyrpFoeKjjOCmX3Nn4ZzWJ4gHv+rSQigrKujxys6IUth73+5C30UA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=V6e3VDxo; arc=none smtp.client-ip=74.125.82.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1770461948; c=relaxed/simple;
+	bh=LeBjoFE01jmavA3LFYkp2oQ2vFfSUBNi+LrOIhvp+ds=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=FKL050+8mVAvvSVoqvfS5wI2H1iZeSRkwk1cyYHjKaXCJR8Zp1fWOGSJfXd1Htd81KXLfiN101mrM+8Nx895h5FXqzzc87/WjnSmeJ5KGB1OBrgo6EnLlynR+XF5Kd26/44AMY4PnHABOTcwOfZg5utoBXQiKHE6/rzlUj2TWc4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Jf5PEQ3t; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="V6e3VDxo"
-Received: by mail-dl1-f45.google.com with SMTP id a92af1059eb24-1270adc5121so643478c88.0
-        for <linux-serial@vger.kernel.org>; Fri, 06 Feb 2026 10:13:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770401623; x=1771006423; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tgXGBSZoBFQqX1EttjH60dA2QMgCjVJpHFXppYJ+DT0=;
-        b=V6e3VDxo9oqvdmpey8OremBBGlSIT+fRT/QQ5HJG16dhCei/k+t/GGhLpj4Oixh2Pu
-         mcXkKmmpw4hZby1OyeLMYk24uLPQLjbRpQhcMEmz4yAHhVap8jisFRj7ekgKvFeSWXpP
-         B3CmpAWm1i5THW7xiIAwf+jE01ZHd8mqChXRO7BylH6fBHoyq1o9GrVKXGixemVwuxdU
-         bZxuPB15MrOZeeorIGRGeNiFtd10641qLs5jXPZ5kJrFpsXQiQ+KH+XoNs8cpZa9maUc
-         dT7FmcDNqWzOETZ94cA+SH/i+noZRcqKXKG7xfO5gusDykTGs5QMNnKprAoaL0oe63oJ
-         9wZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770401623; x=1771006423;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=tgXGBSZoBFQqX1EttjH60dA2QMgCjVJpHFXppYJ+DT0=;
-        b=JQ51f26hzJLc2QmVchw7IZ2LV34MqAAtTM/c07JEOZngoKdFYM2n8cpSRd4jTCQgL8
-         N0f0QmpIixkNhCWv3NzP4v30/bJVDCu/EO/Orcgfv/j/v1Zxu5RALrdg31x6a/fXkabY
-         /4uACdgEPMBgqDxzWsoy9+92tUbIMma4KuhCm82FfIMaX6N/O7HrDM4Xo1qUDze5SSbQ
-         TYc47o+/nF/jxPGL4tzYOSNm2j5u2rodvmj7tH9/YiC4qZd+hTG8MeiGDyf8xsnuq/eI
-         E4LXaKtBioCku3n0IENME+ZFTbu9JYZv9XbHiMIQnOk5xGsd3blKDkgoUSS3xEZUeKd7
-         CK0w==
-X-Forwarded-Encrypted: i=1; AJvYcCXylhdzyUxTlQHHVCq8QMzbToqQ7xKmHLBgKbwFg/4HHdyRJQMmUFih2JLL2RMXewmSim/a01R8fnPCB0k=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxrs0vVnn8wCLxPTG1ioonHH4Ig2oDr9+BWSB76L2M5gMF8braL
-	7UfWnF2sj2G2P/PwlECR5I/b7eM9rX7D4nnNdXAB2FQFQVZcQ/IhlWVW
-X-Gm-Gg: AZuq6aLYqJHd6AlXeBvsP1dJQmTslAjDcbzhlQnH9fbnZG9nVR2y6hVqfqfEx51sPGe
-	lBLsYIEMT453+yO8fBhfEUId08nJgSF3swPYOjDWYjm2rf0Ax+NkUi28dUO7hN9yxAEMg+ybx2z
-	1qmUR7NKEnTvbmM7c3wc6ot3g7KTZYrPiKkLISAMCY17OGWE5gX0McMm3hZ2lpXDuk+1TE87V0N
-	fb2zGogi0+Qn3kBDWq8glUHWGSJMAByyYub9TALnoBzDq2BFJNw19p1y1LWRJ1ojBDUuSMcot/U
-	XmKjQwl94JWXrFWz9q+oYUpNCBrkVkCq3mFXA8KcpB1LTxqkwcBy+PsMcPDU8+up2f5TzWodfMV
-	An2KEgqe3vStnmyyWdxkMoyH7gUoh+h03Psh8JkFJ8S2KDJM4LjzBfNPAnIClfG+ABtsG6Xc0wv
-	n5pfySc2XvXgaZ3HgUntko+SmIRrF3VTw3rNM=
-X-Received: by 2002:a05:7022:49a:b0:119:e56b:98b9 with SMTP id a92af1059eb24-12704048c3bmr1984751c88.32.1770401622642;
-        Fri, 06 Feb 2026 10:13:42 -0800 (PST)
-Received: from fabio-Precision-3551.. ([2804:14c:485:4b61:44a3:2bb7:a035:fd7e])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1270433ab31sm2782500c88.11.2026.02.06.10.13.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Feb 2026 10:13:42 -0800 (PST)
-From: Fabio Estevam <festevam@gmail.com>
-To: heiko@sntech.de
-Cc: robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org,
-	Fabio Estevam <festevam@nabladev.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-serial@vger.kernel.org
-Subject: [PATCH 07/11] dt-bindings: serial: snps-dw-apb-uart: Add support for RV1103B
-Date: Fri,  6 Feb 2026 15:13:05 -0300
-Message-Id: <20260206181309.2696095-8-festevam@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20260206181309.2696095-1-festevam@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Jf5PEQ3t"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6999C116D0;
+	Sat,  7 Feb 2026 10:59:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1770461948;
+	bh=LeBjoFE01jmavA3LFYkp2oQ2vFfSUBNi+LrOIhvp+ds=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Jf5PEQ3t+kYsnrAn2zyWd2G0akmQiXmVc+mujySm79xEIhRvY40/aDOMW+lA0gFym
+	 Xt6GR1cxiICZ6YxYvLgI8xjK42eQtqU/gylzImiJlGH/zEkVRrlaOfQ0r3jd8SlvA8
+	 37XlDqRdElNWL8SEMX5EVlWkqWRGNcgajoxvzD9riUHW9j4V3B7FdLhm6plHgW1Cid
+	 RrZfoYkTapRnRLdT1WDp0Tz71V5kRG9EXAYZedP0+7Vl7gNMQAPioOQWAYeKh7g/m4
+	 JtjbHdx+lFTiTsFkzEsHaYHa3kh0qFyR/XYlzP0m1zRobGW+qSVWA0l7XzfQWOCswt
+	 G6HUx7XivFw4A==
+Date: Sat, 7 Feb 2026 11:59:06 +0100
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Fabio Estevam <festevam@gmail.com>
+Cc: heiko@sntech.de, robh@kernel.org, krzk+dt@kernel.org, 
+	conor+dt@kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-rockchip@lists.infradead.org, Fabio Estevam <festevam@nabladev.com>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
+Subject: Re: [PATCH 07/11] dt-bindings: serial: snps-dw-apb-uart: Add support
+ for RV1103B
+Message-ID: <20260207-unselfish-gorgeous-duck-cfc1ce@quoll>
 References: <20260206181309.2696095-1-festevam@gmail.com>
+ <20260206181309.2696095-8-festevam@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20260206181309.2696095-8-festevam@gmail.com>
 
-From: Fabio Estevam <festevam@nabladev.com>
+On Fri, Feb 06, 2026 at 03:13:05PM -0300, Fabio Estevam wrote:
+> From: Fabio Estevam <festevam@nabladev.com>
+> 
+> The UART used in the RV1103B SoC is still the same dw-apb-uart compatible
+> type as on the SoCs that came before, so add the RV1103B to the list
+> of variants.
+> 
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: linux-serial@vger.kernel.org
+> Signed-off-by: Fabio Estevam <festevam@nabladev.com>
 
-The UART used in the RV1103B SoC is still the same dw-apb-uart compatible
-type as on the SoCs that came before, so add the RV1103B to the list
-of variants.
+Greg expressed MANY times that patches for him should be sent
+separately.
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
-Signed-off-by: Fabio Estevam <festevam@nabladev.com>
----
- Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-index 6efe43089a74..685c1eceb782 100644
---- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-+++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-@@ -71,6 +71,7 @@ properties:
-               - rockchip,rk3568-uart
-               - rockchip,rk3576-uart
-               - rockchip,rk3588-uart
-+              - rockchip,rv1103b-uart
-               - rockchip,rv1108-uart
-               - rockchip,rv1126-uart
-               - sophgo,sg2044-uart
--- 
-2.34.1
+Best regards,
+Krzysztof
 
