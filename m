@@ -1,106 +1,106 @@
-Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7679E3101DE
-	for <linux-serial@vger.kernel.org>; Sat,  7 Feb 2026 13:09:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 459F12E090B;
+	Sat,  7 Feb 2026 18:37:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770469740; cv=none; b=mXBCVcjhDQulWTmtfrPF2f3TXt5yRu4uPkjAIgYAtj5Cnxeg8QhBKdnd/GHchcT4lbHXKwoytw8YzOJiRpD7GEl0rGzK9cbEYgd9ZepTarw6S1tsYNnqRBzhW5MXsqflQ2w1qXWmbgsGojvrDEvRFwaviKofdhCFjnuP6JHZYwU=
+	t=1770489458; cv=none; b=CcNPF1rnUfK0et6tRSQARSFVYbbva8ZU1069kE1DkK1PO7cbSCYnKoltU7j+mAKSddTFc8vuBDC/btbFKVlD3oF154cQXxHeVzX7uDe3MjtgYd30JUNljzvHkoF1CgMDeMpMveOWXvj7olkVB99bD+29F/pvVp130VZJx7wCmOw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770469740; c=relaxed/simple;
-	bh=luQk0DerAVF25F8oYa5dPXRxiY1DpjkvWwyPxuw+n5g=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=JcN1dzUALqTsvreG411aQrMxqbwB3dyo9Ww1ioLWBj+PIoE1UvP9r2W3/BBdmucBT34WB8K39f2L9wrsfW4r1mbxQFqKwfNRI0EDu3iB4piIiVib+hSOyFshuni+Jln85DffO7K8DPKSh1mkFRTYLPwdutvnmdk51hMPlHG0cSY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Zd5BzEhU; arc=none smtp.client-ip=209.85.128.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1770489458; c=relaxed/simple;
+	bh=ac7vzoSEyu7lsaAnCxcmmL7MRlzaRS6eYKF4ZG0uVQ4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=WEO1FtHGdqt7g2vza0O5IXcLwee0Z2pyUGR++oh0Ba0pvzq0/yJQ0i3KMd3BkJP1JCKxSZcH9OMa8o5NFxjq7vDk1slreKqH4Vv4B22Me/Ttk3CXoCPVDh1RHuhc8g9z7c1xSyyysYgjWBhXjwN1vYvAlFjCltR5iOqksmJ2pFE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WAykkCsw; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Zd5BzEhU"
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-7962119ff2bso13276417b3.3
-        for <linux-serial@vger.kernel.org>; Sat, 07 Feb 2026 05:09:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770469739; x=1771074539; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=nQ+/85pWHhHQTZFmm+5xHUX3idtLaulzxY1FbmAsiZk=;
-        b=Zd5BzEhU1oVEh/s4/5Ip2phNlLy+C+n1715i4fWw/vy5bSdSDAS7vpPsVCL9GJJAkT
-         u7BVQc+5KjlpQUh3puZXFEXwzl1VNtDaJowHzboYQ7ZwhH62ihGGJ0cV12HznlWx3mNA
-         HNptpUplQmW3IlRbYiaWXiX65NgweZfiVa/Qf+ypDCGQyVnmj1aPy1/zkNO1WhladLGq
-         elS7IkzApzs/4YizlorCdKt8bOooRBG3OagYZAmaqMaSvF8oMmr7/MrgpHAMRsA1YYbf
-         vsQbWugadqiSc9M496ICBwC1AqZuvtcwU1NAYsZz+r0g3ldqMQI8U100fhG/kWmXAsMs
-         IjcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770469739; x=1771074539;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=nQ+/85pWHhHQTZFmm+5xHUX3idtLaulzxY1FbmAsiZk=;
-        b=dDCBgoFYVmjBq7fkQDV+ZsFoy+yJ+8yba4dGv8erSegfKF9wPIEg07PMAOlYk20gp+
-         yYYiQafJvhv8y9d7Nde6siCijdXhVU+3fcApq07C46n9MGtdXdeO586YuS45GOKULkvG
-         wkHFIsjkwLgkjV2aGJpsG6w6H8hu6HeuFreTSgFpUxqWv1mmzy+R8TjyJIHCZd+XOs+b
-         c4qq+0WxjBCx+0vGNBJ+8jnQKWa6g+N9VaEUm7TBnuw51KjnZIfazDN9Cc+f256T34gv
-         X1W1tGU3scMap2QvOrKzxjD0xA+KyAdIdmUJFlECv68+OfSFxKLky3aYdadMecunA4j4
-         PQiA==
-X-Forwarded-Encrypted: i=1; AJvYcCWRWmDt+DqT8voJeUSDaLVjIQzkrKl9IU/HQEnA67G67DzZx1mrzLZV0kPRn1WahkLNnYJGPDpWLIlsLAo=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywq/QoMQ+hJjf8ji2/+nLEwXch1D+9UsDOskeia3z8EQPq2EpmK
-	WGVCtpl4uWy/HCvD4P1ZSynXznJMudbKohMNlBTDJJepqpHqPS/gfKIx
-X-Gm-Gg: AZuq6aKeNuO5t4w6j7lWDCjaVMScrUTPyccvg4TNCPTGscY+nfXFHVndVszWdLYeu5s
-	vJ4PA+hg0DJBS4csbUsGtnbGt3Mko+SLIcHSNwRchBB46kPnq3O67qCtnkwzuVapEbc+6Y2XAyL
-	BdLQc9GHXrcjOPMwI7LTCkbzOi4gK6fJEMVyVyicsM5SqZ6E7t07B0XgyFS7KgQ3F4XAV7DG7Q3
-	w39pop/aZuROiV5mI8F6zoBL7Ztr//vZ6cLQT7n8JJApe2AdrB76kLy4z791/ACsa5qj/jlHMab
-	kDiOM8b58Rm0xWqhuuPM7d+USLWa4MhwoZueVHSCoF1whOwfZfC4og8ymtjz2ePyLRCp0gX8LSt
-	SAXLC0hkhd7U7RyLZPtj8vLdcrNrQ5RUjwV11aflq95F/OLon0TPlxmn4WrOFWVd5VDqxACGvEk
-	jQS8kXUE65a3Fzkmbr4P8zGx1d
-X-Received: by 2002:a05:690c:22c1:b0:794:ee65:6ab8 with SMTP id 00721157ae682-7952ab62aa4mr59344667b3.62.1770469739467;
-        Sat, 07 Feb 2026 05:08:59 -0800 (PST)
-Received: from fabio-Precision-3551.. ([2804:14c:485:4b61:b1ab:5cb0:a2f8:764b])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-7952a1db63csm46228197b3.33.2026.02.07.05.08.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Feb 2026 05:08:58 -0800 (PST)
-From: Fabio Estevam <festevam@gmail.com>
-To: gregkh@linuxfoundation.org
-Cc: robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	Fabio Estevam <festevam@nabladev.com>
-Subject: [PATCH v2] dt-bindings: serial: snps-dw-apb-uart: Add RV1103B compatible
-Date: Sat,  7 Feb 2026 10:08:48 -0300
-Message-Id: <20260207130848.2833599-1-festevam@gmail.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WAykkCsw"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 359A6C116D0;
+	Sat,  7 Feb 2026 18:37:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1770489457;
+	bh=ac7vzoSEyu7lsaAnCxcmmL7MRlzaRS6eYKF4ZG0uVQ4=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=WAykkCsw4ZcAWlXnjdSSW9gaar/bFdF69WxLxnokikHrlARq5xw+xXuQ1eAyDRAMc
+	 BZuKX1TzRVdM6iVhwkjWCdlsnohv9/0hd3uOA5uUEf5/0mEbUyAlSr1z/0RCe9t5uM
+	 vlNIZIH8sj4cqpExaJBuQRjCLRltrqn+6fQIiVKcD8N+h4EYfoL/rZmJtwwKCZYw3e
+	 H1VH3SFZl48w0/8kBT2nbeTISxxwyS2ijzt27mVtfm1kGLu7rs0uo2+UIXbTMLEyQR
+	 /qMZR70HDDD7+VcEnTmslNThwKL1qk9oo7S2z5UyUsFEF2JOQliKCXj9DuSHpjvqwq
+	 zdqNI2ntoypeA==
+Message-ID: <a2be67b7-a33a-4d72-b5b7-fa900063b599@kernel.org>
+Date: Sat, 7 Feb 2026 19:37:34 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] dt-bindings: serial: snps-dw-apb-uart: Add RV1103B
+ compatible
+To: Fabio Estevam <festevam@gmail.com>, gregkh@linuxfoundation.org
+Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+ linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+ Fabio Estevam <festevam@nabladev.com>
+References: <20260207130848.2833599-1-festevam@gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 a/A=
+In-Reply-To: <20260207130848.2833599-1-festevam@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-From: Fabio Estevam <festevam@nabladev.com>
+On 07/02/2026 14:08, Fabio Estevam wrote:
+> From: Fabio Estevam <festevam@nabladev.com>
+> 
+> The RV1103B UART is compatible with the existing DesignWare APB UART
+> binding. Add the rockchip,rv1103b-uart compatible string.
+> 
+> Signed-off-by: Fabio Estevam <festevam@nabladev.com>
 
-The RV1103B UART is compatible with the existing DesignWare APB UART
-binding. Add the rockchip,rv1103b-uart compatible string.
 
-Signed-off-by: Fabio Estevam <festevam@nabladev.com>
----
-Changes since v1:
-- Make commit log more concise.
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 
- Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-index 6efe43089a74..685c1eceb782 100644
---- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-+++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-@@ -71,6 +71,7 @@ properties:
-               - rockchip,rk3568-uart
-               - rockchip,rk3576-uart
-               - rockchip,rk3588-uart
-+              - rockchip,rv1103b-uart
-               - rockchip,rv1108-uart
-               - rockchip,rv1126-uart
-               - sophgo,sg2044-uart
--- 
-2.34.1
-
+Best regards,
+Krzysztof
