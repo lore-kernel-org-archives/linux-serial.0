@@ -1,27 +1,31 @@
-Received: from zg8tmja5ljk3lje4mi4ymjia.icoremail.net (zg8tmja5ljk3lje4mi4ymjia.icoremail.net [209.97.182.222])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 40C6B29BDAB;
-	Sun,  8 Feb 2026 14:54:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.97.182.222
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0ACD435A948;
+	Sun,  8 Feb 2026 14:58:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770562448; cv=none; b=pmzjNRoBf//QPfUSke2c1Z4mkogPF/Tdlywo1+XeuBRqmgyGx5atrf7up1tcy6zeN9mnEPyQFOMm24aQdHnkdZjtX/041VySsCgPxtSJP4tReR5NCa4IJ/sryDAkIdUwJlKhW8xvhCAISU9cX/OVzDWW6kjfCcXxm+0r5AUGK9o=
+	t=1770562684; cv=none; b=ZAJdP/2+dn94QxbL/fxP6Y24z9mceM7kgmH9RIdIFcUMa6lTYOuFKylJrCnRWggSDf1C9s4zqpgjKV8eSXmPmWXRfr9Ts1rjf5cNuYktDyNK94JjLybS9mJTLKyIUGmxEgb/vpzoZUO+YbmGDuNiiriR2e9iwYj5kmRN2MGbw9k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770562448; c=relaxed/simple;
-	bh=hgcrV7Lw5oTu/WcmwtscLj6OQr+ZVLrFEJ/hMqyr4F8=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
-	 MIME-Version:Message-ID; b=T6TTMnMlbQZmKGbK4T+bHQ6M4UbLbsPQXFZ+U+w5n36ShMYdRan5FBeg8NbIQ+c4MuREQ4OnuiXWNyaEasslfcg3KG3NaGoBEl1weiWxghHHUOktT3PEMEUCQi4+zvzvHEZgpizLKf/NNXM/6i7t0NGSc6PmJ23agt63sHZzu3k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=zju.edu.cn; spf=pass smtp.mailfrom=zju.edu.cn; arc=none smtp.client-ip=209.97.182.222
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=zju.edu.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zju.edu.cn
-Received: from zju.edu.cn (unknown [218.12.17.94])
-	by mtasvr (Coremail) with SMTP id _____wCHGthoo4hpDmmUAA--.15925S3;
-	Sun, 08 Feb 2026 22:53:29 +0800 (CST)
-Received: from duoming$zju.edu.cn ( [218.12.17.94] ) by
- ajax-webmail-mail-app3 (Coremail) ; Sun, 8 Feb 2026 22:53:26 +0800
- (GMT+08:00)
-Date: Sun, 8 Feb 2026 22:53:26 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From: duoming@zju.edu.cn
-To: "Greg KH" <gregkh@linuxfoundation.org>
+	s=arc-20240116; t=1770562684; c=relaxed/simple;
+	bh=hOk2byfPQZRwPxqdq7JgTR4yzfFktsHBAFdN9WwKYpA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=iAuplGuF4B+98vYUVuHTKNrWYexiHSefAsvjQTB8J6BOXQ1JIFh7j02oG1dVv0Q0b1Y2kp/+ubyN9ROUOeiVZPCxAeRQPR0ibS+pJ/C3uVJnR2289XkuZMO2160gu41xWfZfz1g+ZdOSYGWp64g39Vueq+V5zE3bFxelLLHtI/Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=ToW9U7kl; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="ToW9U7kl"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF690C4CEF7;
+	Sun,  8 Feb 2026 14:58:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1770562683;
+	bh=hOk2byfPQZRwPxqdq7JgTR4yzfFktsHBAFdN9WwKYpA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=ToW9U7kl/afZbZPBTHOgVpxf6hoekt/n3eKbzntE0QkzgSoHEsJOQb5iPTIhJ9+RY
+	 kRNlGYePvHd/CyiMzERItvgqHb4kKxlhdi32I65VbI0Q3uKcfkJ6icuW+svoZDllSg
+	 3WhecM1qbgNkfOLpR1WqFgOLysB8DEeGdufNLJ/c=
+Date: Sun, 8 Feb 2026 15:58:00 +0100
+From: Greg KH <gregkh@linuxfoundation.org>
+To: duoming@zju.edu.cn
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
 	jikos@kernel.org, dsterba@suse.com, jirislaby@kernel.org,
 	kuba@kernel.org, alexander.deucher@amd.com,
@@ -29,116 +33,108 @@ Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
 	mingo@kernel.org
 Subject: Re: [PATCH] tty: ipwireless: Fix use-after-free in tasklet during
  device removal
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version 2024.3-cmXT6 build
- 20250620(94335109) Copyright (c) 2002-2026 www.mailtech.cn zju.edu.cn
-In-Reply-To: <2026020814-aorta-reptilian-e91a@gregkh>
+Message-ID: <2026020853-revered-charging-719f@gregkh>
 References: <20260208062538.29608-1-duoming@zju.edu.cn>
  <2026020828-unretired-mannish-8465@gregkh>
  <41b47e38.6ddb4.19c3ccb8e4d.Coremail.duoming@zju.edu.cn>
  <2026020859-caretaker-duckbill-0fb3@gregkh>
  <777dbdbf.6d6f0.19c3d8b1a1c.Coremail.duoming@zju.edu.cn>
  <2026020814-aorta-reptilian-e91a@gregkh>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+ <7ece79f6.6d747.19c3dbe4a1f.Coremail.duoming@zju.edu.cn>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Message-ID: <7ece79f6.6d747.19c3dbe4a1f.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID:zS_KCgC3t2pno4hpR6AeBg--.61234W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAwIQAWmHlYcdigABs6
-X-CM-DELIVERINFO: =?B?UA6YAQXKKxbFmtjJiESix3B1w3uoVhYI+vyen2ZzBEkOnu5chDpkB+ZdGnv/zQ0PbP
-	CR1wRsHXm+Mgh+3viip07Qjc/tNobcqISxg86LnRNW247YnK8x9AGEKuDXUqCUsUTIdmRC
-	La8rD+d1eyu2jARR897+2L3xCgEah+LXmZjRh0eDJiTz6NgEIuixcTKeT4X56A==
-X-Coremail-Antispam: 1Uk129KBj93XoWxArWDKryrCF1xtw4xWFy3GFX_yoW5KFy8pF
-	WfGa1qyF4DJr12qw1jva10vr10qry7KrW5Wryvkw1Uuwn0yrySqrsrtFW5uFZ8KF4UA3W0
-	vryrtry3u3WDAagCm3ZEXasCq-sJn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7KY7ZEXa
-	sCq-sGcSsGvfJ3Ic02F40EFcxC0VAKzVAqx4xG6I80ebIjqfuFe4nvWSU5nxnvy29KBjDU
-	0xBIdaVrnRJUUUQKb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2
-	IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48v
-	e4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI
-	0_Cr0_Gr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v2
-	6rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l57IF6xkI12xvs2x26I8E6xACxx1l5I
-	8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AK
-	xVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7xvr2IYc2Ij64
-	vIr40E4x8a64kEw24lFcxC0VAYjxAxZF0Ew4CEw7xC0wACY4xI67k04243AVC20s07M4II
-	rI8v6xkF7I0E8cxan2IY04v7M4kE6xkIj40Ew7xC0wCF04k20xvY0x0EwIxGrwCFx2IqxV
-	CFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r10
-	6r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxV
-	WUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG
-	6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr
-	1UMVCEFcxC0VAYjxAxZFUvcSsGvfC2KfnxnUUI43ZEXa7IU848BUUUUUU==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7ece79f6.6d747.19c3dbe4a1f.Coremail.duoming@zju.edu.cn>
 
-T24gU3VuLCA4IEZlYiAyMDI2IDE1OjM0OjQ5ICswMTAwIEdyZWcgS0ggd3JvdGU6Cj4gPiA+ID4g
-PiA+IFdoZW4gSVBXaXJlbGVzcyBQQ01DSUEgY2FyZCBpcyBiZWluZyBkZXRhY2hlZCwgdGhlIGlw
-d19oYXJkd2FyZSBpcwo+ID4gPiA+ID4gPiBkZWFsbG9jYXRlZCBpbiBpcHdpcmVsZXNzX2hhcmR3
-YXJlX2ZyZWUoKS4gSG93ZXZlciwgdGhlIGh3LT50YXNrbGV0IG1heQo+ID4gPiA+ID4gPiBzdGls
-bCBiZSBydW5uaW5nIG9yIHBlbmRpbmcsIGxlYWRpbmcgdG8gdXNlLWFmdGVyLWZyZWUgYnVncyB3
-aGVuIHRoZQo+ID4gPiA+ID4gPiBhbHJlYWR5IGZyZWVkIGlwd19oYXJkd2FyZSBpcyBhY2Nlc3Nl
-ZCBhZ2FpbiBpbiBpcHdpcmVsZXNzX2RvX3Rhc2tsZXQoKS4KPiA+ID4gPiA+IAo+ID4gPiA+ID4g
-TmljZSwgZG8geW91IGhhdmUgdGhpcyBoYXJkd2FyZSB0byB0ZXN0IHRoaXMgd2l0aD8KPiA+ID4g
-PiAKPiA+ID4gPiBJIGRvbid0IGhhdmUgdGhlIHJlYWwgaGFyZHdhcmUuIEluIG9yZGVyIHRvIHJl
-cHJvZHVjZSB0aGUgYnVnLCBJIHNpbXVsYXRlIAo+ID4gPiA+IHRoZSBJUFdpcmVsZXNzIFBDTUNJ
-QSBjYXJkIGluIHRoZSBxZW11IGJ5IGFsbG9jYXRpbmcgYW5kIGNvbmZpZ3VyaW5nIHRoZSAKPiA+
-ID4gPiBuZWNlc3NhcnkgcmVzb3VyY2VzKEkvTyBwb3J0cywgbWVtb3J5IHJlZ2lvbnMsIGludGVy
-cnVwdHMgYW5kIHNvIG9uKSB0bwo+ID4gPiA+IGNvcnJlc3BvbmQgd2l0aCB0aGUgaGFyZHdhcmUg
-ZXhwZWN0ZWQgYnkgdGhlIGRyaXZlciBpbiB0aGUgaW5pdGlhbGl6YXRpb24gCj4gPiA+ID4gY29k
-ZSBvZiB0aGUgdmlydHVhbCBkZXZpY2UuCj4gPiA+IAo+ID4gPiBJIHdvbmRlciBpZiB0aGlzIGRl
-dmljZSBldmVuIGlzIHN0aWxsIGFyb3VuZCwgZ2l2ZW4gdGhhdCBwY21jaWEgaXMgYWxsCj4gPiA+
-IGJ1dCBkZWFkIGZvciBhIHZlcnkgbG9uZyB0aW1lLgo+ID4gPiAKPiA+ID4gPiA+ID4gT25lIHJh
-Y2UgY29uZGl0aW9uIHNjZW5hcmlvIGlzIGFzIGZvbGxvd3M6Cj4gPiA+ID4gPiA+IAo+ID4gPiA+
-ID4gPiBDUFUgMCAoY2xlYW51cCkgICAgICAgICAgICAgICB8IENQVSAxIChpbnRlcnJ1cHQpCj4g
-PiA+ID4gPiA+IGlwd2lyZWxlc3NfaGFyZHdhcmVfZnJlZSgpICAgIHwgaXB3aXJlbGVzc19pbnRl
-cnJ1cHQoKQo+ID4gPiA+ID4gPiAgIGlwd2lyZWxlc3Nfc3RvcF9pbnRlcnJ1cHRzKCl8ICAgaXB3
-aXJlbGVzc19oYW5kbGVfdjFfaW50ZXJydXB0KCkKPiA+ID4gPiA+ID4gICAgIGRvX2Nsb3NlX2hh
-cmR3YXJlKCkgICAgICAgfCAgICAgdGFza2xldF9zY2hlZHVsZSgpCj4gPiA+ID4gPiA+ICAgICAg
-IHN5bmNocm9uaXplX2lycSgpICAgICAgIHwKPiA+ID4gPiA+ID4gICBrZnJlZShodykgLy9GUkVF
-ICAgICAgICAgICAgfCBpcHdpcmVsZXNzX2RvX3Rhc2tsZXQoKSAvL2hhbmRsZXIKPiA+ID4gPiA+
-ID4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgIGh3ID0gZnJvbV90YXNrbGV0KCkg
-Ly9VU0UKPiA+ID4gPiA+ID4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgIGh3LT4g
-Ly9VU0UKPiA+ID4gPiA+ID4gCj4gPiA+ID4gPiA+IEZpeCB0aGlzIGJ5IGVuc3VyaW5nIGh3LT50
-YXNrbGV0IGlzIHByb3Blcmx5IGNhbmNlbGVkIGJlZm9yZSBpcHdfaGFyZHdhcmUKPiA+ID4gPiA+
-ID4gaXMgcmVsZWFzZWQuIEFkZCB0YXNrbGV0X2tpbGwoKSBpbiBpcHdpcmVsZXNzX3N0b3BfaW50
-ZXJydXB0cygpIHRvCj4gPiA+ID4gPiA+IHN5bmNocm9uaXplIHdpdGggYW55IHBlbmRpbmcgb3Ig
-cnVubmluZyB0YXNrbGV0LiBTaW5jZSBkb19jbG9zZV9oYXJkd2FyZSgpCj4gPiA+ID4gPiA+IGNv
-dWxkIHByZXZlbnQgZnVydGhlciBpbnRlcnJ1cHRzLCBwbGFjZSB0YXNrbGV0X2tpbGwoKSBhZnRl
-ciBpdCB0byBhdm9pZAo+ID4gPiA+ID4gPiB0aGUgdGFza2xldCBiZWluZyByZXNjaGVkdWxlZCBi
-eSBpcHdpcmVsZXNzX2ludGVycnVwdCgpLgo+ID4gPiA+ID4gCj4gPiA+ID4gPiBIb3cgd2FzIHRo
-aXMgaXNzdWUgZm91bmQgYW5kIHRlc3RlZD8KPiA+ID4gPiAKPiA+ID4gPiBUaGUgaXNzdWUgd2Fz
-IGZvdW5kIGJ5IHN0YXRpYyBhbmFseXNpcy4gSSB0ZXN0IGl0IHRocm91Z2ggdGhlIGZvbGxvd2lu
-ZyBzdGVwczoKPiA+ID4gPiAxLiBTaW11bGF0aW5nIHRoZSBJUFdpcmVsZXNzIFBDTUNJQSBkZXZp
-Y2UgaW4gdGhlIHFlbXUgYW5kIGVuYWJsZSBpdCB0byB0cmlnZ2VyIGludGVycnVwdHMuCj4gPiA+
-ID4gMi4gQ29udHJvbGxpbmcgdGhlIHJlbW92YWwgYW5kIGF0dGFjaG1lbnQgb2YgZGV2aWNlIHZp
-YSBzeXNmcy4KPiA+ID4gCj4gPiA+IFNvIHRoaXMgaXMgd2l0aCB0aGUgYmluZC91bmJpbmQgbG9n
-aWMsIG9yIHNvbWUgb3RoZXIgd2F5PyAgSWYgeW91IGFyZQo+ID4gPiB1bmxvYWRpbmcgdGhlIGRy
-aXZlciwgdGhhdCBpcyBzb21ldGhpbmcgdGhhdCBvbmx5IHJvb3QgY2FuIGRvLCBhbmQgdGhpcwo+
-ID4gPiBpcyBhIGRlYnVnZ2luZyBmYWNpbGl0eSwgbm90IGEgInJlYWwiIHdheSB0byBjb250cm9s
-IGRyaXZlcnMgYW5kIGRldmljZXMKPiA+ID4gKHllcywgdGhlIHZpcnQgZHJpdmVycyBhYnVzZSB0
-aGlzIHRvIG5vIGVuZCwgZXZlcnkgdGltZSBJIHNlZSB0aGlzIEkKPiA+ID4gbGF1Z2guLi4pCj4g
-PiAKPiA+IFdoZW4gdGhlIFBDTUNJQSBkZXZpY2UgaXMgYXR0YWNoZWQsIHdlIGNhbiBvcGVyYXRl
-IHRoZSBmaWxlCj4gPiAvc3lzL2J1cy9wY21jaWEvZGV2aWNlcy8uLi4vcmVtb3ZlIHRvIGRldGFj
-aCB0aGUgZGV2aWNlLgo+IAo+ICdyZW1vdmUnIHNob3VsZCBiZSByZW1vdmluZyB0aGUgZHJpdmVy
-IGZyb20gdGhlIGRldmljZSwgc29tZXRoaW5nIHRoYXQKPiBpcyBvbmx5IGFsbG93ZWQgYnkgcm9v
-dCBhbmQgaXMgbm90IGEgbm9ybWFsIG9wZXJhdGlvbiBhdCBhbGwuICByYWNlCj4gY29uZGl0aW9u
-cyB0aGVyZSBhcmUgImF0IHlvdXIgb3duIHJpc2siIGZvciBhbGwgZHJpdmVycyBhcyBpdCdzIHBy
-ZXR0eQo+IG11Y2ggdGhlIHNhbWUgYXMgdW5sb2FkaW5nIHRoZSBtb2R1bGUsIGl0IGlzIHRoZXJl
-IGZvciBkZXZlbG9wZXIgZWFzZQo+IG9ubHkuCgpJIGRpZCB0aGlzIG9ubHkgdG8gdmVyaWZ5IHRo
-ZSBleGlzdGVuY2Ugb2YgdGhlIGJ1Zy4gSW4gcmVhbCB3b3JkIHNjZW5hcmlvcywKdGhlIGRldmlj
-ZSByZW1vdmFsIGNvZGUgY2FuIGJlIHRyaWdnZXJlZCBieSByZW1vdmluZyB0aGUgcmVhbCBwY21j
-aWEgaGFyZHdhcmUuCgo+ID4gPiA+IDMuIFRyaWdnZXJpbmcgaW50ZXJydXB0cyBieSB3cml0aW5n
-IGRhdGEgdG8gZGV2aWNlIHJlZ2lzdGVycyB2aWEgL2Rldi9tZW0gbWVtb3J5IG1hcHBpbmcKPiA+
-ID4gPiAgICBpbiB1c2Vyc3BhY2UuCj4gPiA+IAo+ID4gPiBJbnRlcnJ1cHRzIHdvdWxkIG5vdCBo
-YXBwZW4gaWYgdGhlIGRldmljZSBpcyByZW1vdmVkLiAgT3IgaXMgdGhpcyBvbmx5Cj4gPiA+IGlm
-IHRoZSBkcml2ZXIgaXMgdW5ib3VuZD8KPiA+IAo+ID4gVGhlIGludGVycnVwdHMgc2hvdWxkIGJl
-IHRyaWdnZXJlZCBiZWZvcmUgdGhlIGRlaXZjZSBpcyByZW1vdmVkLgo+IAo+IEJ1dCB3aGVuIHRo
-ZSBkZXZpY2UgaXMgcGh5c2ljYWxseSByZW1vdmVkIGZyb20gdGhlIHN5c3RlbSwgbm8gbW9yZQo+
-IGludGVycnVwdHMgd2lsbCBoYXBwZW4uCgpJIHRoaW5rIHRoZSB0YXNrbGV0IGlzIGEgZGVmZXJy
-ZWQgbWVjaGFuaXNtLiBBbHRob3VnaCBpbnRlcnJ1cHRzIGNhbm5vdApoYXBwZW4gYWZ0ZXIgZGV2
-aWNlIGlzIHJlbW92ZWQsIHRoZSB0YXNrbGV0IGhhbmRsZXIgbWF5IHN0aWxsIGJlIGV4ZWN1dGlu
-ZwpvciBwZW5kaW5nLiBUaGlzIGlzIHdoeSB0YXNrbGV0X2tpbGwoKSBuZWVkcyB0byBiZSBhZGRl
-ZC4KCkJlc3QgcmVnYXJkcywKRHVvbWluZyBaaG91Cg==
+On Sun, Feb 08, 2026 at 10:53:26PM +0800, duoming@zju.edu.cn wrote:
+> On Sun, 8 Feb 2026 15:34:49 +0100 Greg KH wrote:
+> > > > > > > When IPWireless PCMCIA card is being detached, the ipw_hardware is
+> > > > > > > deallocated in ipwireless_hardware_free(). However, the hw->tasklet may
+> > > > > > > still be running or pending, leading to use-after-free bugs when the
+> > > > > > > already freed ipw_hardware is accessed again in ipwireless_do_tasklet().
+> > > > > > 
+> > > > > > Nice, do you have this hardware to test this with?
+> > > > > 
+> > > > > I don't have the real hardware. In order to reproduce the bug, I simulate 
+> > > > > the IPWireless PCMCIA card in the qemu by allocating and configuring the 
+> > > > > necessary resources(I/O ports, memory regions, interrupts and so on) to
+> > > > > correspond with the hardware expected by the driver in the initialization 
+> > > > > code of the virtual device.
+> > > > 
+> > > > I wonder if this device even is still around, given that pcmcia is all
+> > > > but dead for a very long time.
+> > > > 
+> > > > > > > One race condition scenario is as follows:
+> > > > > > > 
+> > > > > > > CPU 0 (cleanup)               | CPU 1 (interrupt)
+> > > > > > > ipwireless_hardware_free()    | ipwireless_interrupt()
+> > > > > > >   ipwireless_stop_interrupts()|   ipwireless_handle_v1_interrupt()
+> > > > > > >     do_close_hardware()       |     tasklet_schedule()
+> > > > > > >       synchronize_irq()       |
+> > > > > > >   kfree(hw) //FREE            | ipwireless_do_tasklet() //handler
+> > > > > > >                               |   hw = from_tasklet() //USE
+> > > > > > >                               |   hw-> //USE
+> > > > > > > 
+> > > > > > > Fix this by ensuring hw->tasklet is properly canceled before ipw_hardware
+> > > > > > > is released. Add tasklet_kill() in ipwireless_stop_interrupts() to
+> > > > > > > synchronize with any pending or running tasklet. Since do_close_hardware()
+> > > > > > > could prevent further interrupts, place tasklet_kill() after it to avoid
+> > > > > > > the tasklet being rescheduled by ipwireless_interrupt().
+> > > > > > 
+> > > > > > How was this issue found and tested?
+> > > > > 
+> > > > > The issue was found by static analysis. I test it through the following steps:
+> > > > > 1. Simulating the IPWireless PCMCIA device in the qemu and enable it to trigger interrupts.
+> > > > > 2. Controlling the removal and attachment of device via sysfs.
+> > > > 
+> > > > So this is with the bind/unbind logic, or some other way?  If you are
+> > > > unloading the driver, that is something that only root can do, and this
+> > > > is a debugging facility, not a "real" way to control drivers and devices
+> > > > (yes, the virt drivers abuse this to no end, every time I see this I
+> > > > laugh...)
+> > > 
+> > > When the PCMCIA device is attached, we can operate the file
+> > > /sys/bus/pcmcia/devices/.../remove to detach the device.
+> > 
+> > 'remove' should be removing the driver from the device, something that
+> > is only allowed by root and is not a normal operation at all.  race
+> > conditions there are "at your own risk" for all drivers as it's pretty
+> > much the same as unloading the module, it is there for developer ease
+> > only.
+> 
+> I did this only to verify the existence of the bug. In real word scenarios,
+> the device removal code can be triggered by removing the real pcmcia hardware.
 
+How?  Doesn't the interrupt not happen, and the device get cleaned up by
+the bus when it is noticed and then removed?  ipwireless_hardware_free()
+should not be called if ipwireless_interrupt() is ever happening in that
+case just by virtue of the fact that the interrupt will not be there.
+
+> > > > > 3. Triggering interrupts by writing data to device registers via /dev/mem memory mapping
+> > > > >    in userspace.
+> > > > 
+> > > > Interrupts would not happen if the device is removed.  Or is this only
+> > > > if the driver is unbound?
+> > > 
+> > > The interrupts should be triggered before the deivce is removed.
+> > 
+> > But when the device is physically removed from the system, no more
+> > interrupts will happen.
+> 
+> I think the tasklet is a deferred mechanism. Although interrupts cannot
+> happen after device is removed, the tasklet handler may still be executing
+> or pending. This is why tasklet_kill() needs to be added.
+
+Ok, there might be a small race, but given that no one has ever seen
+this with real hardware (and you need physical access for it), it's
+pretty small.  But again, I'll let the maintainers here decide if it
+should be accepted or not.
+
+thanks,
+
+greg k-h
