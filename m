@@ -1,27 +1,31 @@
-Received: from zg8tmja2lje4os4yms4ymjma.icoremail.net (zg8tmja2lje4os4yms4ymjma.icoremail.net [206.189.21.223])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4CA2D1DE3DB;
-	Sun,  8 Feb 2026 10:28:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=206.189.21.223
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46217346A0D;
+	Sun,  8 Feb 2026 11:00:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770546524; cv=none; b=VoOiGAozo2c/wScU/RuCroCCoU9DU5n0d+yS1M35ixqkINwqwHZe5dVbzzNC0TyC3oc1hN59SoXh8Zahh4+E0wRi+RjCrimwBsD4FJst/CYJyEHEm40w75a2+urOoYgbazatqxuJGAAVk+TjwZCMCx+sEhkbCKHxficJJn3793o=
+	t=1770548412; cv=none; b=uqIFi6O/aMzmIsWCUoK1sEsTuLXjsxv3MZ2IBzyRm+az+rLMw/CEzJPbNyOJJ9q+J6KmRpUpOJs6RTF8X9n/ZJy3feWsakMzws5w90CIpJwhiWXueojtuefm4WYL10ZWzJaWr+pMqfVbPWr6cy32GxcRk0eHcdcKKEk8k7CXKVg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770546524; c=relaxed/simple;
-	bh=pdEG2MScwzhisV8BajTyMdh1cZ7Sgs0oTp8UUbPTB9g=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
-	 MIME-Version:Message-ID; b=jLB/7hOboIoV+Zcd3aiG6Z2ViC2zpY/8MxZYFKE7WgQp1z5mRoL/iya7s3vVc9eJD9xcOUGg9lvqXyBpySpGdnRltCTWm9tu+ja2ZjtnNwLYDGbxiUpVmCBkrAYWlbm84f9ez4+SNkQgv/Yop1hOJCHIrH/7rMC+B0q4OHxqxsw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=zju.edu.cn; spf=pass smtp.mailfrom=zju.edu.cn; arc=none smtp.client-ip=206.189.21.223
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=zju.edu.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zju.edu.cn
-Received: from zju.edu.cn (unknown [218.12.17.94])
-	by mtasvr (Coremail) with SMTP id _____wD3wXFFZYhpMKuTAA--.14254S3;
-	Sun, 08 Feb 2026 18:28:22 +0800 (CST)
-Received: from duoming$zju.edu.cn ( [218.12.17.94] ) by
- ajax-webmail-mail-app4 (Coremail) ; Sun, 8 Feb 2026 18:28:19 +0800
- (GMT+08:00)
-Date: Sun, 8 Feb 2026 18:28:19 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From: duoming@zju.edu.cn
-To: "Greg KH" <gregkh@linuxfoundation.org>
+	s=arc-20240116; t=1770548412; c=relaxed/simple;
+	bh=kcO3sL79yCwMDWMPkcCHsO4amKCRMLiBru3uGyKtGO8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=AA8lLu2CLT7JZFap9hPIv1rOfXUV/du/J/mxSC49UhqriwA8d4vcFSmS+DxciXD2MqwSBocqVo/LBDAJOlLExiY13q2gVkJvYeCLxoGCetCfXdARWrNIGvGIwINNtkhmvaCs20pUSbVbSXdYw05mJLia+QBNePczU9J66U1OzQ8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=keorUYqh; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="keorUYqh"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F949C4CEF7;
+	Sun,  8 Feb 2026 11:00:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1770548411;
+	bh=kcO3sL79yCwMDWMPkcCHsO4amKCRMLiBru3uGyKtGO8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=keorUYqhkkBmg6QfeHCxJvTgAjd2u1fZRCummxY4yahyB1lbf7GkRCcV7oWWD1Tyy
+	 ClKnG288hqCY3S/sBKqWntAFfz6kgvXyizaoelSUbRlM3Um5SUQBbrxjWTPckwgOr6
+	 fPmmxnh25gp/mMOsZcIH2IppusDy2RgBlYb2JLC8=
+Date: Sun, 8 Feb 2026 12:00:08 +0100
+From: Greg KH <gregkh@linuxfoundation.org>
+To: duoming@zju.edu.cn
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
 	jikos@kernel.org, dsterba@suse.com, jirislaby@kernel.org,
 	kuba@kernel.org, alexander.deucher@amd.com,
@@ -29,87 +33,88 @@ Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
 	mingo@kernel.org
 Subject: Re: [PATCH] tty: ipwireless: Fix use-after-free in tasklet during
  device removal
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version 2024.3-cmXT6 build
- 20250620(94335109) Copyright (c) 2002-2026 www.mailtech.cn zju.edu.cn
-In-Reply-To: <2026020828-unretired-mannish-8465@gregkh>
+Message-ID: <2026020859-caretaker-duckbill-0fb3@gregkh>
 References: <20260208062538.29608-1-duoming@zju.edu.cn>
  <2026020828-unretired-mannish-8465@gregkh>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+ <41b47e38.6ddb4.19c3ccb8e4d.Coremail.duoming@zju.edu.cn>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Message-ID: <41b47e38.6ddb4.19c3ccb8e4d.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID:zi_KCgDnnoVEZYhpLYVEBQ--.45825W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAwAQAWmHlYcYFwAAsh
-X-CM-DELIVERINFO: =?B?E6uecQXKKxbFmtjJiESix3B1w3uoVhYI+vyen2ZzBEkOnu5chDpkB+ZdGnv/zQ0PbP
-	CR18GxWvZ7HBjU4uCb4un4a12hNoHlDpCcHwn2+QDInfzyVQ0H23tejj5WHKoikWnKq5l1
-	2HMSryMJ/ZFglh7Qibm9ppRdr6kVWJ6O7VxJrpSs80cXa/noPisxn2ArpXPttw==
-X-Coremail-Antispam: 1Uk129KBj93XoW7tryfJFy7Zw4xXr4UZFyrAFc_yoW8Kr1fpF
-	WxGanFyrW8tr1jyr1UXa1xZr1xJ3Z3GrWYkr1vk3y8Aw15ZryFvr9rKa15WFs8KayUZ3W8
-	ZryYvryYgan7AFXCm3ZEXasCq-sJn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7KY7ZEXa
-	sCq-sGcSsGvfJ3Ic02F40EFcxC0VAKzVAqx4xG6I80ebIjqfuFe4nvWSU5nxnvy29KBjDU
-	0xBIdaVrnRJUUUQKb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2
-	IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48v
-	e4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI
-	0_Cr0_Gr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v2
-	6rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l57IF6xkI12xvs2x26I8E6xACxx1l5I
-	8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AK
-	xVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7xvr2IYc2Ij64
-	vIr40E4x8a64kEw24lFcxC0VAYjxAxZF0Ew4CEw7xC0wACY4xI67k04243AVC20s07M4II
-	rI8v6xkF7I0E8cxan2IY04v7M4kE6xkIj40Ew7xC0wCF04k20xvY0x0EwIxGrwCFx2IqxV
-	CFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r10
-	6r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxV
-	WUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG
-	6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr
-	1UMVCEFcxC0VAYjxAxZFUvcSsGvfC2KfnxnUUI43ZEXa7IU848BUUUUUU==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <41b47e38.6ddb4.19c3ccb8e4d.Coremail.duoming@zju.edu.cn>
 
-T24gU3VuLCA4IEZlYiAyMDI2IDA3OjM4OjAwICswMTAwIEdyZWcgS0ggd3JvdGU6Cj4gPiBXaGVu
-IElQV2lyZWxlc3MgUENNQ0lBIGNhcmQgaXMgYmVpbmcgZGV0YWNoZWQsIHRoZSBpcHdfaGFyZHdh
-cmUgaXMKPiA+IGRlYWxsb2NhdGVkIGluIGlwd2lyZWxlc3NfaGFyZHdhcmVfZnJlZSgpLiBIb3dl
-dmVyLCB0aGUgaHctPnRhc2tsZXQgbWF5Cj4gPiBzdGlsbCBiZSBydW5uaW5nIG9yIHBlbmRpbmcs
-IGxlYWRpbmcgdG8gdXNlLWFmdGVyLWZyZWUgYnVncyB3aGVuIHRoZQo+ID4gYWxyZWFkeSBmcmVl
-ZCBpcHdfaGFyZHdhcmUgaXMgYWNjZXNzZWQgYWdhaW4gaW4gaXB3aXJlbGVzc19kb190YXNrbGV0
-KCkuCj4gCj4gTmljZSwgZG8geW91IGhhdmUgdGhpcyBoYXJkd2FyZSB0byB0ZXN0IHRoaXMgd2l0
-aD8KCkkgZG9uJ3QgaGF2ZSB0aGUgcmVhbCBoYXJkd2FyZS4gSW4gb3JkZXIgdG8gcmVwcm9kdWNl
-IHRoZSBidWcsIEkgc2ltdWxhdGUgCnRoZSBJUFdpcmVsZXNzIFBDTUNJQSBjYXJkIGluIHRoZSBx
-ZW11IGJ5IGFsbG9jYXRpbmcgYW5kIGNvbmZpZ3VyaW5nIHRoZSAKbmVjZXNzYXJ5IHJlc291cmNl
-cyhJL08gcG9ydHMsIG1lbW9yeSByZWdpb25zLCBpbnRlcnJ1cHRzIGFuZCBzbyBvbikgdG8KY29y
-cmVzcG9uZCB3aXRoIHRoZSBoYXJkd2FyZSBleHBlY3RlZCBieSB0aGUgZHJpdmVyIGluIHRoZSBp
-bml0aWFsaXphdGlvbiAKY29kZSBvZiB0aGUgdmlydHVhbCBkZXZpY2UuCgo+ID4gCj4gPiBPbmUg
-cmFjZSBjb25kaXRpb24gc2NlbmFyaW8gaXMgYXMgZm9sbG93czoKPiA+IAo+ID4gQ1BVIDAgKGNs
-ZWFudXApICAgICAgICAgICAgICAgfCBDUFUgMSAoaW50ZXJydXB0KQo+ID4gaXB3aXJlbGVzc19o
-YXJkd2FyZV9mcmVlKCkgICAgfCBpcHdpcmVsZXNzX2ludGVycnVwdCgpCj4gPiAgIGlwd2lyZWxl
-c3Nfc3RvcF9pbnRlcnJ1cHRzKCl8ICAgaXB3aXJlbGVzc19oYW5kbGVfdjFfaW50ZXJydXB0KCkK
-PiA+ICAgICBkb19jbG9zZV9oYXJkd2FyZSgpICAgICAgIHwgICAgIHRhc2tsZXRfc2NoZWR1bGUo
-KQo+ID4gICAgICAgc3luY2hyb25pemVfaXJxKCkgICAgICAgfAo+ID4gICBrZnJlZShodykgLy9G
-UkVFICAgICAgICAgICAgfCBpcHdpcmVsZXNzX2RvX3Rhc2tsZXQoKSAvL2hhbmRsZXIKPiA+ICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICBodyA9IGZyb21fdGFza2xldCgpIC8vVVNF
-Cj4gPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgaHctPiAvL1VTRQo+ID4gCj4g
-PiBGaXggdGhpcyBieSBlbnN1cmluZyBody0+dGFza2xldCBpcyBwcm9wZXJseSBjYW5jZWxlZCBi
-ZWZvcmUgaXB3X2hhcmR3YXJlCj4gPiBpcyByZWxlYXNlZC4gQWRkIHRhc2tsZXRfa2lsbCgpIGlu
-IGlwd2lyZWxlc3Nfc3RvcF9pbnRlcnJ1cHRzKCkgdG8KPiA+IHN5bmNocm9uaXplIHdpdGggYW55
-IHBlbmRpbmcgb3IgcnVubmluZyB0YXNrbGV0LiBTaW5jZSBkb19jbG9zZV9oYXJkd2FyZSgpCj4g
-PiBjb3VsZCBwcmV2ZW50IGZ1cnRoZXIgaW50ZXJydXB0cywgcGxhY2UgdGFza2xldF9raWxsKCkg
-YWZ0ZXIgaXQgdG8gYXZvaWQKPiA+IHRoZSB0YXNrbGV0IGJlaW5nIHJlc2NoZWR1bGVkIGJ5IGlw
-d2lyZWxlc3NfaW50ZXJydXB0KCkuCj4gCj4gSG93IHdhcyB0aGlzIGlzc3VlIGZvdW5kIGFuZCB0
-ZXN0ZWQ/CgpUaGUgaXNzdWUgd2FzIGZvdW5kIGJ5IHN0YXRpYyBhbmFseXNpcy4gSSB0ZXN0IGl0
-IHRocm91Z2ggdGhlIGZvbGxvd2luZyBzdGVwczoKMS4gU2ltdWxhdGluZyB0aGUgSVBXaXJlbGVz
-cyBQQ01DSUEgZGV2aWNlIGluIHRoZSBxZW11IGFuZCBlbmFibGUgaXQgdG8gdHJpZ2dlciBpbnRl
-cnJ1cHRzLgoyLiBDb250cm9sbGluZyB0aGUgcmVtb3ZhbCBhbmQgYXR0YWNobWVudCBvZiBkZXZp
-Y2UgdmlhIHN5c2ZzLgozLiBUcmlnZ2VyaW5nIGludGVycnVwdHMgYnkgd3JpdGluZyBkYXRhIHRv
-IGRldmljZSByZWdpc3RlcnMgdmlhIC9kZXYvbWVtIG1lbW9yeSBtYXBwaW5nCiAgIGluIHVzZXJz
-cGFjZS4KNC4gSW4gb3JkZXIgdG8gZW5zdXJlIHRoYXQgdGhlcmUgYXJlIHVuZmluaXNoZWQgdGFz
-a2xldCBkdXJpbmcgdGhlIHJlbW92YWwgcHJvY2VzcywgSQogICBtYW51YWxseSBpbmplY3QgZGVs
-YXlzIHN1Y2ggYXMgbWRlbGF5KCkgaW50byB0YXNrbGV0IGhhbmRsZXIuCgo+ID4gRml4ZXM6IDA5
-OWRjNGZiNjI2NSAoImlwd2lyZWxlc3M6IGRyaXZlciBmb3IgUEMgQ2FyZCAzRy9VTVRTIG1vZGVt
-IikKPiA+IFNpZ25lZC1vZmYtYnk6IER1b21pbmcgWmhvdSA8ZHVvbWluZ0B6anUuZWR1LmNuPgo+
-IAo+IE5vIENDOiBzdGFibGU/ICBXaHkgbm90PwoKVGhhbmtzIGZvciBjaGVja2luZywgWW91IGFy
-ZSByaWdodCwgaXQgc2hvdWxkIGdvIHRvIHRoZSBzdGFibGUuCgpCZXN0IHJlZ2FyZHMsCkR1b21p
-bmcgWmhvdQo=
+On Sun, Feb 08, 2026 at 06:28:19PM +0800, duoming@zju.edu.cn wrote:
+> On Sun, 8 Feb 2026 07:38:00 +0100 Greg KH wrote:
+> > > When IPWireless PCMCIA card is being detached, the ipw_hardware is
+> > > deallocated in ipwireless_hardware_free(). However, the hw->tasklet may
+> > > still be running or pending, leading to use-after-free bugs when the
+> > > already freed ipw_hardware is accessed again in ipwireless_do_tasklet().
+> > 
+> > Nice, do you have this hardware to test this with?
+> 
+> I don't have the real hardware. In order to reproduce the bug, I simulate 
+> the IPWireless PCMCIA card in the qemu by allocating and configuring the 
+> necessary resources(I/O ports, memory regions, interrupts and so on) to
+> correspond with the hardware expected by the driver in the initialization 
+> code of the virtual device.
 
+I wonder if this device even is still around, given that pcmcia is all
+but dead for a very long time.
+
+> > > One race condition scenario is as follows:
+> > > 
+> > > CPU 0 (cleanup)               | CPU 1 (interrupt)
+> > > ipwireless_hardware_free()    | ipwireless_interrupt()
+> > >   ipwireless_stop_interrupts()|   ipwireless_handle_v1_interrupt()
+> > >     do_close_hardware()       |     tasklet_schedule()
+> > >       synchronize_irq()       |
+> > >   kfree(hw) //FREE            | ipwireless_do_tasklet() //handler
+> > >                               |   hw = from_tasklet() //USE
+> > >                               |   hw-> //USE
+> > > 
+> > > Fix this by ensuring hw->tasklet is properly canceled before ipw_hardware
+> > > is released. Add tasklet_kill() in ipwireless_stop_interrupts() to
+> > > synchronize with any pending or running tasklet. Since do_close_hardware()
+> > > could prevent further interrupts, place tasklet_kill() after it to avoid
+> > > the tasklet being rescheduled by ipwireless_interrupt().
+> > 
+> > How was this issue found and tested?
+> 
+> The issue was found by static analysis. I test it through the following steps:
+> 1. Simulating the IPWireless PCMCIA device in the qemu and enable it to trigger interrupts.
+> 2. Controlling the removal and attachment of device via sysfs.
+
+So this is with the bind/unbind logic, or some other way?  If you are
+unloading the driver, that is something that only root can do, and this
+is a debugging facility, not a "real" way to control drivers and devices
+(yes, the virt drivers abuse this to no end, every time I see this I
+laugh...)
+
+> 3. Triggering interrupts by writing data to device registers via /dev/mem memory mapping
+>    in userspace.
+
+Interrupts would not happen if the device is removed.  Or is this only
+if the driver is unbound?
+
+> 4. In order to ensure that there are unfinished tasklet during the removal process, I
+>    manually inject delays such as mdelay() into tasklet handler.
+
+That's a lot of work for a piece of obsolete hardware, but hey, thanks
+for doing this!
+
+> > > Fixes: 099dc4fb6265 ("ipwireless: driver for PC Card 3G/UMTS modem")
+> > > Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+> > 
+> > No CC: stable?  Why not?
+> 
+> Thanks for checking, You are right, it should go to the stable.
+
+Let's see what the maintainers of this driver say.
+
+thanks,
+
+greg k-h
