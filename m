@@ -1,71 +1,44 @@
-Received: from mail-pf1-f193.google.com (mail-pf1-f193.google.com [209.85.210.193])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from devnull.danielhodges.dev (vps-2f6e086e.vps.ovh.us [135.148.138.8])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B9F02DF156
-	for <linux-serial@vger.kernel.org>; Sat,  7 Feb 2026 19:29:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.193
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2EF41CEAC2;
+	Sun,  8 Feb 2026 00:31:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=135.148.138.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770492572; cv=none; b=GIM0MWCcYgQe3UlcT0/vUbxSIjIvFF9cUh1vZ+K2IuButn1C/vZti7bpV5F3dD9/AEThib6NZa9iTNpszoxQvt0Jfm0FDJ/HRPNZXsL4bmpH/JSDvzw/aJ2+ZbMNnCsgofekdhPnDJXwA9fo2DjS7wRB4SrNB8n2J/pUm0vC04w=
+	t=1770510674; cv=none; b=qWHfKfqPI7KzxYKr5ViGuTTXK+7YAOGpYS7rxaWpby6R+2MFGi5jGN9CBYNcYvl+Y6h5qqR3tOR6O++VqliAx7pG7lSofqSfjsu3IzPA2MYiiCPB5r9VXKoLZ4I35fqdciw5GwuLLDtNnRVM/20GkevmWN7wXxupEiJfNbqo+fo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770492572; c=relaxed/simple;
-	bh=1XwCZACXh7XVimHfiAz3VFxENT0qeowTpniTRbSryQo=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=eKWwQoHgyYQC4uHA1tJRa+NaggnCksyUqFA/EeiibFMFwuGRU6ouyzotA3Cjq0P1m1tbBy8vHuiHQ5igZmkJc2SVutn8xbBR38rZMgXkdid+NXObz9VicybWfph+jgb31OrX5jgdJNc8LSfi11N9Aar40+9lVJQiUC17T+LkKWQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HeQCBsG1; arc=none smtp.client-ip=209.85.210.193
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1770510674; c=relaxed/simple;
+	bh=c3Fc67UyYIw03s54J4+BB08LuSpEtyN46fRCrW4s4vE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=TstfpyUOWVypO7Xb7pbJksZb28ilBiDiX+co59apaHYvfhuhd5WnbDCiuDXcn2VQcwNjx9JraAeJt7Ya391wN+I5eVL8PfkqVNOlc1N696ltuW2E/NxBP1qmW9gGCeHoQby2VmpbGX+sWMpJQWsLVZzoRXHhtIAeC+OvRJBptDw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=danielhodges.dev; spf=pass smtp.mailfrom=danielhodges.dev; dkim=pass (2048-bit key) header.d=danielhodges.dev header.i=@danielhodges.dev header.b=F3d/DdQn; dkim=permerror (0-bit key) header.d=danielhodges.dev header.i=@danielhodges.dev header.b=+wQu3ZBq; arc=none smtp.client-ip=135.148.138.8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=danielhodges.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=danielhodges.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HeQCBsG1"
-Received: by mail-pf1-f193.google.com with SMTP id d2e1a72fcca58-81f38d974e0so415829b3a.0
-        for <linux-serial@vger.kernel.org>; Sat, 07 Feb 2026 11:29:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770492572; x=1771097372; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=WcvhmNVs84PWH3yl8LDlWw8EhMaj5VuDhhNZHpIXvLo=;
-        b=HeQCBsG1oHOX/NOWlmvMEKeRCbnXSfYGs3bL9uk4Y1dUx5W8DSdxXH4uM1VJO23Zdg
-         tC+4sIbbnEwQOT0t+CwDq9gV6ponFf2cZb47DugmvMRiK6n6LFtTgdoF2Iei/7cuq1mC
-         3rh/77WyQveE+TSLBxzEKj9rSF2SPX8rfMtCTBQUNjgvFA+bkE1wUedS8wYIV9wAeucT
-         DLzfAmdnWmLiY0UWd/plyc3VQeupIP8hkDkMPgN0nQHoJUI2W1Uh4/X39oOJZbpxO12u
-         jGvTMTwWjNgVSOBaPEDNKMKwnELpSPor9O0HFjbHouiEb8DSz+TP6YSzFB+LXjnJpesQ
-         HRzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770492572; x=1771097372;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=WcvhmNVs84PWH3yl8LDlWw8EhMaj5VuDhhNZHpIXvLo=;
-        b=fCBvWElc92k9k4g2M9YIzDY8yY15S93v78MFP4oKibafQ5CJtSun11tYWm95zC/aPS
-         OM5qo/+YLiGcwru6dJWEWT3378XSBrwzCWci/1z5YfpH5TS9WcKdygf3/73VgvIqANol
-         4aGjc8A2B7/bUojRxuBtC2hiDSUuxVYQ2gsWR7T9GERMqAJFJa3Va3mb7/F1eC7E8Ghj
-         D0YMBP3iZ/FO5EIcdArFulgzrn1RP6Gd/h9roi505Wd4zXoC/ltNLhx4GxNvCr7qNULq
-         1va9Jla05C85YT7anKYPTTbeIXKRu1pkMDFCml3MnkASVELTklvDhDiWi9DXh3DpaQ5z
-         FK0w==
-X-Gm-Message-State: AOJu0Yw36mrPTHh1zh/M+uSiTsIcZVyorNQlaGNWb2/+tEZObrKPsW9g
-	pt/BA8EoyxgBNmjHJ1Uq84DjSw6ppoYJflkLANZ+Tzukz0m9rKcdmiuELo0X5EpnWG0=
-X-Gm-Gg: AZuq6aL+q0sbB52Sg2zhSq+++IKfd6DctrvX85fywWtBROXgCBVgyFmdWTDx0RO3OVu
-	ieRhlveGemw2CVPbVXCvaDTGCTGxHuuDnXR5OHyuAC6TjTe9KUZ23HIMOGOdX9a4akITYyxnm16
-	LII6RfL1ozII2N/6frOq0P6mlWJJt5W4zTJDvWulZ7wQ97E8hEcYMRLrggnM5ziOx5iCjrP6Liy
-	jh3mAM2IA1pT8z9V+zORKqqJQr0WFd4ZP8eYSDnboXaprIWIE/Cru33FP4Pbx4BFI+hhWXOW8Jy
-	R/2bbRQTk32cIsmAiOJpFecXmrbKs7DNblmCYKKKDQ5tyuF7/in2AxUK6UXKavdnWRY2AZKs+9o
-	FEYURQ5uVTxl7a4j+xCouxHw8D5mYWpstMQ79Q2kcftvqHs+8PfKbizMRROWEF5Uv47bO+q8IWB
-	twXJ5Cd1onyNvLGQ==
-X-Received: by 2002:a17:903:2407:b0:29f:2df2:cf49 with SMTP id d9443c01a7336-2a951819ed4mr49880115ad.5.1770492571637;
-        Sat, 07 Feb 2026 11:29:31 -0800 (PST)
-Received: from cute.. ([2405:201:31:d01f:bb2d:e035:1f86:719f])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2a951c782desm60852705ad.25.2026.02.07.11.29.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Feb 2026 11:29:31 -0800 (PST)
-From: Soham Kute <officialsohamkute@gmail.com>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org
-Cc: linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Soham Kute <officialsohamkute@gmail.com>,
+	dkim=pass (2048-bit key) header.d=danielhodges.dev header.i=@danielhodges.dev header.b="F3d/DdQn";
+	dkim=permerror (0-bit key) header.d=danielhodges.dev header.i=@danielhodges.dev header.b="+wQu3ZBq"
+DKIM-Signature: v=1; a=rsa-sha256; s=202510r; d=danielhodges.dev; c=relaxed/relaxed;
+	h=Message-ID:Date:Subject:To:From; t=1770510672; bh=u3AQzQjLgJSz+4RZzdBmNxZ
+	GqwZ2T1MUXQaa4ZFfPbQ=; b=F3d/DdQnrxlaZLqH4wv4nKHcv5+DVBkz4sSnb8AM1SuKNv5JXZ
+	FzIY7G0jcTm6ciPT7c8rbmhQsCWs31LBbXtf0APmJIJBVgZbXxlN2FLkmDlpUu7VLMcHvXmm72A
+	yS4dF+0DDVa9XQbRfNqIkY82qsLrtr29HTlws1NrvYa7aBYwYQmi9PpmupOgW378MN5dBI0GL3W
+	Ac/2psstV6+yZ65nW55wQA94xXpgBQmP+1Q5vCJz3TIQJn/5aK2qtVRngZDl/4l8mpMIlNJygVt
+	PU8qF4TLfh61aTdtRNljA5BtxfgT78rXDfVrkc2XPfS2FtwVw/tmG1Mw0AI2LqgL00A==;
+DKIM-Signature: v=1; a=ed25519-sha256; s=202510e; d=danielhodges.dev; c=relaxed/relaxed;
+	h=Message-ID:Date:Subject:To:From; t=1770510672; bh=u3AQzQjLgJSz+4RZzdBmNxZ
+	GqwZ2T1MUXQaa4ZFfPbQ=; b=+wQu3ZBqS8c693hH8Y7huqzcyJ5GYMJz7lqLU4D/beA6GrP9kl
+	shjvFG2HMgf1PI9eumhQubaZnMZ7zDl46RBg==;
+From: Daniel Hodges <git@danielhodges.dev>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Daniel Hodges <git@danielhodges.dev>,
+	syzbot+c3693b491545af43db87@syzkaller.appspotmail.com,
 	syzbot+03f79366754268a0f20c@syzkaller.appspotmail.com
-Subject: [PATCH] tty: vt: keyboard: fix general protection fault in k_meta
-Date: Sun,  8 Feb 2026 00:57:08 +0530
-Message-Id: <20260207192708.44188-1-officialsohamkute@gmail.com>
-X-Mailer: git-send-email 2.34.1
+Subject: [PATCH] vt: keyboard: add NULL check for vc_cons[fg_console].d in kbd_keycode and kbd_rawcode
+Date: Sat,  7 Feb 2026 19:31:12 -0500
+Message-ID: <20260208003112.6040-1-git@danielhodges.dev>
+X-Mailer: git-send-email 2.52.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -74,32 +47,54 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-syzbot reported a general protection fault in k_meta() caused by
-dereferencing an invalid keyboard pointer when checking META mode.
+kbd_keycode() and kbd_rawcode() dereference vc_cons[fg_console].d
+without checking if it is NULL. The foreground console should normally
+always be allocated, but there could be a time during console setup or
+teardown where this pointer could be NULL, leading to a general
+protection fault.
 
-Add a defensive check to ensure the keyboard pointer is valid before
-calling vc_kbd_mode().
+Syzkaller triggers this by injecting USB HID input events that reach
+kbd_event() while the console state may not be fully consistent. The crash
+manifests as a null-ptr-deref in __queue_work when put_queue() or
+puts_queue() calls tty_flip_buffer_push() on the uninitialized vc port.
 
+Add a NULL check for vc at the start of both kbd_rawcode() and
+kbd_keycode() to bail out early if the foreground console is not allocated.
+
+Reported-by: syzbot+c3693b491545af43db87@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=c3693b491545af43db87
 Reported-by: syzbot+03f79366754268a0f20c@syzkaller.appspotmail.com
-
-Signed-off-by: Soham Kute <officialsohamkute@gmail.com>
+Closes: https://syzkaller.appspot.com/bug?extid=03f79366754268a0f20c
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Daniel Hodges <git@danielhodges.dev>
 ---
- drivers/tty/vt/keyboard.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/vt/keyboard.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
 diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
-index d65fc60dd..b535d7a42 100644
+index a2116e135a82..975830013d24 100644
 --- a/drivers/tty/vt/keyboard.c
 +++ b/drivers/tty/vt/keyboard.c
-@@ -880,7 +880,7 @@ static void k_meta(struct vc_data *vc, unsigned char value, char up_flag)
- 	if (up_flag)
- 		return;
+@@ -1389,6 +1389,9 @@ static void kbd_rawcode(unsigned char data)
+ {
+ 	struct vc_data *vc = vc_cons[fg_console].d;
  
--	if (vc_kbd_mode(kbd, VC_META)) {
-+	if (kbd && vc_kbd_mode(kbd, VC_META)) {
- 		put_queue(vc, '\033');
- 		put_queue(vc, value);
- 	} else
++	if (!vc)
++		return;
++
+ 	kbd = &kbd_table[vc->vc_num];
+ 	if (kbd->kbdmode == VC_RAW)
+ 		put_queue(vc, data);
+@@ -1405,6 +1408,9 @@ static void kbd_keycode(unsigned int keycode, int down, bool hw_raw)
+ 	struct keyboard_notifier_param param = { .vc = vc, .value = keycode, .down = down };
+ 	int rc;
+ 
++	if (!vc)
++		return;
++
+ 	tty = vc->port.tty;
+ 
+ 	if (tty && (!tty->driver_data)) {
 -- 
-2.34.1
+2.52.0
 
