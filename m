@@ -1,121 +1,81 @@
-Received: from smtpfb1-g21.free.fr (smtpfb1-g21.free.fr [212.27.42.9])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E8E1336F427;
-	Mon,  9 Feb 2026 11:37:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.27.42.9
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83BC3317715;
+	Mon,  9 Feb 2026 13:25:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.153.233
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770637074; cv=none; b=VvA+Wsg1wD0NNk8jGQ1dImGdWQHSQelRfkCZM1sSpfcIyY6eOmsODpz0+lHOPVmM7UHMIbhf3ofFLcJZX23NycRzn5HLW+Fiu64ZJYXmiKI8YbL8v6fTyR0t1JaF0jcQ/fJONhbGDrZgodssMUbE2Aic1LLMIFJaMijXlubdc3s=
+	t=1770643531; cv=none; b=rVT6t+VnNE46didULgNBEKCFa23cPXdbQ46Gmp5IJ5XIKgMQz1RdwxUfI5rzcyAQOqDucS+UVB57f2m7BLlfU0stjs/lYWM5dlGhrbVhJoFRqQhHQkjKyhGfIFOXT92kHNchmI7bRTEyU5wVud8NE5a7MJyQhoGP2caf2zZpFDM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770637074; c=relaxed/simple;
-	bh=e3sacGlxfTPmKEADMHmwZehhprRXlmYcEZyhypxurQw=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=hes3MI5wIJXFaYjAWQ/GDfRHWk8+BM9WAH5yjJRBeQV19RixHN4Pj0QK6PNyO5U1t5eKnltDdMlf4LNzLhpH8JEhbGSQLbX7Nin1qX4HPmBlf1KfiYGtDSqes1VCHzF8z3eRucZdx8Fs0g9JjaHkrWcLtchYvx1aNkj2RnUjvvc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=lht.dlh.de; spf=pass smtp.mailfrom=free.fr; arc=none smtp.client-ip=212.27.42.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=lht.dlh.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=free.fr
-Received: from smtp2-g21.free.fr (smtp2-g21.free.fr [212.27.42.2])
-	by smtpfb1-g21.free.fr (Postfix) with ESMTP id 9A81FDF94D6;
-	Mon,  9 Feb 2026 12:32:36 +0100 (CET)
-Received: from albans-vm.. (unknown [213.61.141.186])
-	(Authenticated sender: albeu@free.fr)
-	by smtp2-g21.free.fr (Postfix) with ESMTPSA id 054702003C1;
-	Mon,  9 Feb 2026 12:32:13 +0100 (CET)
-From: Alban Bedel <alban.bedel@lht.dlh.de>
-To: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	Nam Cao <namcao@linutronix.de>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Lennert Buytenhek <buytenh@arista.com>,
-	Peng Zhang <zhangpeng.00@bytedance.com>,
-	stable@vger.kernel.org,
-	Muchun Song <songmuchun@bytedance.com>,
-	Alban Bedel <alban.bedel@lht.dlh.de>,
-	Maximilian Lueer <maximilian.lueer@lht.dlh.de>
-Subject: [PATCH v3] serial: 8250: always disable IRQ during THRE test
-Date: Mon,  9 Feb 2026 12:32:07 +0100
-Message-Id: <20260209113207.2118445-1-alban.bedel@lht.dlh.de>
-X-Mailer: git-send-email 2.39.5
+	s=arc-20240116; t=1770643531; c=relaxed/simple;
+	bh=x/JFFSSdXz21Xwy0PVHHauItjrrsvw406j0rnGBJUAk=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=N0RdYETgAn5koOS5EIgq+9dxpCMjDcDzcTllOuTkd4cMrEV0KlaQ3RTzUUkad+lm1q7mUW1NDWZkKa/ZX8BFWyTw5ihP6v1Nycozasls8YW8ulBgNEtSH46DNt7J5NlPLCGDNunoxD/yA4vLxEZkz0x3dZT2g/rcNwoaLXC97M8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=JnbnDVZI; arc=none smtp.client-ip=68.232.153.233
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="JnbnDVZI"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1770643530; x=1802179530;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=x/JFFSSdXz21Xwy0PVHHauItjrrsvw406j0rnGBJUAk=;
+  b=JnbnDVZIHtH/jewkt9aVdKqILMEvGtR+Tx8puWlW3YDjmSk7IvosXqKE
+   wznSHQ0LwBR9QemmlLYitexO9TDEiW4pfVTyknraEc45itrNYBnmXO8K6
+   iahjIvHrR8mQ8vmkrhz1tPtAzmbO0Dh1kdfhe6qUWv+nB/cVbDiCnDAyz
+   bM8r9qCyoXxITBHSQLGaONL5xqDzCcHf7uCFi70RjthobCALRDeHnAHT+
+   8rVNI1aRgos+qkwYi5ghO/jotJZKi0ECoKOZksC2MYfzkINtC8AUp3/kl
+   b8PM0bg2SU81Vc691N8dkqRJpnhu/oGhB/u/vsNW4JULR4SiPomfaOkSk
+   g==;
+X-CSE-ConnectionGUID: oP1LAc5MQFujvwkAhKJHHQ==
+X-CSE-MsgGUID: IBJrM1wyRPKl5KcA381PqA==
+X-IronPort-AV: E=Sophos;i="6.21,282,1763449200"; 
+   d="scan'208";a="60392621"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 09 Feb 2026 06:25:28 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.58; Mon, 9 Feb 2026 06:24:58 -0700
+Received: from DEN-DL-M70577 (10.10.85.11) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.58 via Frontend
+ Transport; Mon, 9 Feb 2026 06:24:52 -0700
+Date: Mon, 9 Feb 2026 14:24:52 +0100
+From: Daniel Machon <daniel.machon@microchip.com>
+To: Robert Marko <robert.marko@sartura.hr>
+CC: <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
+	<nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+	<claudiu.beznea@tuxon.dev>, <herbert@gondor.apana.org.au>,
+	<davem@davemloft.net>, <lee@kernel.org>, <andrew+netdev@lunn.ch>,
+	<edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+	<Steen.Hegelund@microchip.com>, <UNGLinuxDriver@microchip.com>,
+	<linusw@kernel.org>, <olivia@selenic.com>, <richard.genoud@bootlin.com>,
+	<radu_nicolae.pirea@upb.ro>, <gregkh@linuxfoundation.org>,
+	<richardcochran@gmail.com>, <horatiu.vultur@microchip.com>,
+	<Ryan.Wanner@microchip.com>, <tudor.ambarus@linaro.org>,
+	<kavyasree.kotagiri@microchip.com>, <lars.povlsen@microchip.com>,
+	<devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-kernel@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
+	<netdev@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
+	<linux-spi@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+	<luka.perkov@sartura.hr>
+Subject: Re: [PATCH v5 08/11] arm64: dts: microchip: add LAN969x support
+Message-ID: <20260209132452.avsmiidcyjcqys7j@DEN-DL-M70577>
+References: <20260115114021.111324-1-robert.marko@sartura.hr>
+ <20260115114021.111324-9-robert.marko@sartura.hr>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20260115114021.111324-9-robert.marko@sartura.hr>
 
-From: Peng Zhang <zhangpeng.00@bytedance.com>
+> Add support for Microchip LAN969x switch SoC series by adding the SoC DTSI.
 
-commit 039d4926379b ("serial: 8250: Toggle IER bits on only after irq
-has been set up") moved IRQ setup before the THRE test, so the interrupt
-handler can run during the test and race with its IIR reads. This can
-produce wrong THRE test results and cause spurious registration of the
-serial8250_backup_timeout timer. Unconditionally disable the IRQ for the
-short duration of the test and re-enable it afterwards to avoid the race.
-
-Cc: stable@vger.kernel.org
-Fixes: 039d4926379b ("serial: 8250: Toggle IER bits on only after irq has been set up")
-Signed-off-by: Peng Zhang <zhangpeng.00@bytedance.com>
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
-Signed-off-by: Alban Bedel <alban.bedel@lht.dlh.de>
-Tested-by: Maximilian Lueer <maximilian.lueer@lht.dlh.de>
----
-Changelog:
-
-v2: Replaced disable_irq_nosync() with disable_irq() to prevent interrupts
-    that are currently being handled
-v3: Added changelog
----
-
-Commit 039d4926379b ("serial: 8250: Toggle IER bits on only after irq
-has been set up") introduced a bug which showed in some of our devices
-after updating them to kernel 5.15.169. These devices have an I2C
-touch screen which is behind an UART to I2C bridge. This bug lead to
-an ever growing latency on the bus, delaying the touch events by up to
-several seconds.
-
-Looking for other solutions than reverting commit 039d4926379b I found
-Peng Zhang's patch, backported it to 5.15 and could confirm that it
-solve the high delay issue.
-
-As this a quiet sever regression I'm taking the liberty to re-submit
-Peng Zhang's patch in the hope it will be considered for inclusion. I
-added the changelog requested by greg k-h's patch email bot after the
-last submission.
-
-Also please note that commit 039d4926379b was backported as far back as
-5.10, so quiet a few stable kernels are affected. This patch doesn't
-apply as-is on older kernels, I can provide a patch for 5.15 if desired.
-
-Alban Bedel
----
- drivers/tty/serial/8250/8250_port.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 719faf92aa8ae..f1740cc911431 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -2147,8 +2147,7 @@ static void serial8250_THRE_test(struct uart_port *port)
- 	if (up->port.flags & UPF_NO_THRE_TEST)
- 		return;
- 
--	if (port->irqflags & IRQF_SHARED)
--		disable_irq_nosync(port->irq);
-+	disable_irq(port->irq);
- 
- 	/*
- 	 * Test for UARTs that do not reassert THRE when the transmitter is idle and the interrupt
-@@ -2170,8 +2169,7 @@ static void serial8250_THRE_test(struct uart_port *port)
- 		serial_port_out(port, UART_IER, 0);
- 	}
- 
--	if (port->irqflags & IRQF_SHARED)
--		enable_irq(port->irq);
-+	enable_irq(port->irq);
- 
- 	/*
- 	 * If the interrupt is not reasserted, or we otherwise don't trust the iir, setup a timer to
--- 
-2.39.5
-
+Acked-by: Daniel Machon <daniel.machon@microchip.com>
