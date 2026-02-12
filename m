@@ -1,113 +1,129 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3567935EDCD
-	for <linux-serial@vger.kernel.org>; Wed, 11 Feb 2026 21:08:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B228E17C21C;
+	Thu, 12 Feb 2026 08:41:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770844126; cv=none; b=t98i85A4Q5K45ECGfpMVql7MBUgTudRE95qi4UBAOOQ957IfduwuaTViaTwFWIXU6hLOihLn3pBlZCleHvYognpuNNw0WFovTc20W3O0E67B56DJUw7PAGEApowxrI1MUZRcum3UtFcc2Y8qLRl9t7N9+MC8NA46U+xKFdl+W7g=
+	t=1770885673; cv=none; b=ZbFWaYHJah9HxrI66mZda4nl1TWA5Uwalsoy1myyTmNomIDeeD6eozrq2LOnDZgKamjY5tTsd0GugwXYf0fQZeofXlxpP5HEpaIW2oms5mad56R3RLsiBdRet5rAtiKOFpU3SyKY0cJyigVvIhyTTyddbPPB3JkmIQekbly2fRk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770844126; c=relaxed/simple;
-	bh=z4jTTEESpNFZ2fEd3XolkTZlAnL3AOQzhNkcZSkP2VQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=OyI37mOBIwObKkWUOyk8JWuEAlr2Bke4JMNvHIB+hmQZtOkFS8IjDDC2SDc+AiWr1f1EWXrRHj93mESzTyxXQ6uxpoSJTTqiPzHNkmZDAITNXwTBwVvIpQYDCh6F3fH78ZHBjcrJgo9Qm5UEtNS+oOKmaifOuaXxtEXZdOAMPnw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AK2QMlxy; arc=none smtp.client-ip=209.85.128.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1770885673; c=relaxed/simple;
+	bh=v5a8soip+JsJkAMMNBhXJydPIRTWc9cL910WD2WRa9E=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=AoG3SBbdHsCKn+vzjPHhU6jwUF7pmHXpnT9KZnWrmvjPvMR1yoxAjhvZej0Ydd9dvyfhcP7deGnMEc66qB4G1i1p70y8g/Ry61r0eEsnPVSFzZY664IA+A0eimZrY1/vcE55BwI8+wmq4VGzVHGU7hW/Hi5iNhIdAW0bsFmdbtM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UKCZ9zaX; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AK2QMlxy"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-47ff94b46afso13499665e9.1
-        for <linux-serial@vger.kernel.org>; Wed, 11 Feb 2026 13:08:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770844123; x=1771448923; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=UQk37ORPfKRulJt2gHEQspYYcrEwHGWlISpZL4lD8CQ=;
-        b=AK2QMlxywnrt65+L7xQLqf6CPLgDnsbIgqXYiOlDdJeN6HIRsiCbEC9WWChiG8IctA
-         fVLZBi2IVOysCVhCubUEfl2r5lPdkBtDDzEkxvpNS25J8VtMwi9MmQWr2CTUG9BCGSa8
-         tXJFjnrIvhXBjuE1ZxmJxxxZZ5a4FqCvm9x34i5jX4YiAaKAZz06FWPe8YyotDhZgUnV
-         kY7uAa2VzJtuujPU00jZXhgbQt4Y6nVDo3PVGOdixbOMq3xy7RG+yKjVBPnFSGr6lrVC
-         II2lhOL0Vk/sr9PsjdQhzJCzMW1jsO+aus34Ca7cIfxgv1PLDqnhnsXXEZTrAngiMhFj
-         rHqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770844124; x=1771448924;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=UQk37ORPfKRulJt2gHEQspYYcrEwHGWlISpZL4lD8CQ=;
-        b=sf6VtcQynO92HL4l6ozrRfzfxFGoBQEmH0v0E3dgzaqpLIMaOLFlNcTl6kCpi8mgsu
-         gyJ37Y0BILdoWG1SPUiVNcWA548mnamYLgDJ8O7pRQ5dIF/jCLMpjRY/ZhApcOCZf4c+
-         KYpps07Rbdlz9keWFCq3ijp0HCfSRnSiNpza6CX/9+jv0ApXz5VfL+4Igy6oa6drkDVa
-         n8+YdEOsK8piKAKYWzgrCsl0DLMXfTXWRd/mCwfXh/FPD2GTcq255WH3uuk8xj9p1kNX
-         2zcWZypgx520ZeTi0bXQfHtpUPp9sWslISDjRBqev524sVJQQWYaOahMXaYs/PvrU9H/
-         3WSg==
-X-Forwarded-Encrypted: i=1; AJvYcCW5VtEwUPRdGoKYq+12SCKhDQ/ftuDnQ9VnY4SC8ckI4va0nUwg+ka/iJZcBD+9Jpp6Q9TnAlhIAwcl2BY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzXaMOrY82/TsVxf1O24j2PQ8r3tPU1FAGqrQMrBEj02UXHwgh1
-	85PcRoXeD/Gm/KnkRH9AMswLMvLsKGfKVE4s0R3XmllZ0C3iqKxCK8w3
-X-Gm-Gg: AZuq6aJ9gFmGgna9HUY3KbCX6TjVyXXnjJVg0R7YG0xM3n4mLsFGg//MdCxvSq2E/wS
-	js9hjo3lLBRqC+o+7KUhPn+Eh+y9P8GFN/o46+NWUERRFHQsXIsJGBTaH1dqp5q9D1hKq4VWpeL
-	z1VhldGr1c/U/VvlRseuqCHsViPE715fkJIc4TvjsMMcoLJ8tpjfcKPqNJ0BjzJLqUnoYFNcM5X
-	OsCNQo9WKON+GqqufmVGj+nbPVJZMdjeIHwj45oYnlfa/hKfYimfh6Q+FmZcPKBP4T/jipdHIyc
-	D2vSUqg3IkCCzKhCc4Vfs48bADmrK6TjpKdDUG2KFUmfUZPdcLHrNpm1KvusESj+rVFyoPb6sRC
-	cMaMWFq37JNyE8SGaiF0dO5zRf+BvU+8llYPo5+k/m6PDY0MBPO2fTQPHfYVektMwsPc1MYg0g7
-	OBfzcKYcjc3M+MJ2vqidUWorDe6aLPcQSx44sqnZTO/5LrnFrsI6Xwii8=
-X-Received: by 2002:a05:600c:6c4b:b0:47e:e452:ec12 with SMTP id 5b1f17b1804b1-483660302c9mr2249625e9.15.1770844123399;
-        Wed, 11 Feb 2026 13:08:43 -0800 (PST)
-Received: from osama.. ([41.36.52.230])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4834d7e50casm141590125e9.8.2026.02.11.13.08.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Feb 2026 13:08:43 -0800 (PST)
-From: Osama Abdelkader <osama.abdelkader@gmail.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Andy Shevchenko <andy.shevchenko@gmail.com>,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Cc: Osama Abdelkader <osama.abdelkader@gmail.com>,
-	syzbot+80806cf7508e92c7cc86@syzkaller.appspotmail.com
-Subject: [PATCH] tty: n_tty: fix KCSAN data-race in n_tty_flush_buffer / n_tty_lookahead_flow_ctrl
-Date: Wed, 11 Feb 2026 22:08:38 +0100
-Message-ID: <20260211210838.45127-1-osama.abdelkader@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UKCZ9zaX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9392C4CEF7;
+	Thu, 12 Feb 2026 08:41:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1770885673;
+	bh=v5a8soip+JsJkAMMNBhXJydPIRTWc9cL910WD2WRa9E=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=UKCZ9zaXVICCIZ0tNCgWREolaxtAZbSeCJomL3OUKyY1Ue+eMGn1iPqKSjy+rAwoP
+	 P9vFu9jtcmHw/+/LYncs31V3Dud0FEAMPuY4Es9b0j2gaXGu7/iRedjD87D01Ev7qO
+	 noBHTNKIkC8oHv0hvA96L/j/Ug0YGSJbaCwHJSOlD9Me5fRILJdDfwg5dyLa5a8XuB
+	 7K8ahw2VGdBbXlHhG/cWBq/6CeXKzSLYG0QpzJIF1uMQuFICq21aTY/ZtNX1Cuq18t
+	 /gBPU5Ku2aINyamkI6MIB8JzcoHnNBjX0SdVaLjHD0qoWTG0OTwWEbboLMsKedaMtD
+	 LSB2fG2h6sjqg==
+Message-ID: <5964c41f-ddd3-406d-91b1-62fa33364163@kernel.org>
+Date: Thu, 12 Feb 2026 09:41:08 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3] serial: 8250: always disable IRQ during THRE test
+To: Alban Bedel <alban.bedel@lht.dlh.de>, linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Nam Cao <namcao@linutronix.de>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Lennert Buytenhek <buytenh@arista.com>,
+ Peng Zhang <zhangpeng.00@bytedance.com>, stable@vger.kernel.org,
+ Muchun Song <songmuchun@bytedance.com>,
+ Maximilian Lueer <maximilian.lueer@lht.dlh.de>
+References: <20260209113207.2118445-1-alban.bedel@lht.dlh.de>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20260209113207.2118445-1-alban.bedel@lht.dlh.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-n_tty_lookahead_flow_ctrl() accesses ldata->lookahead_count without
-holding termios_rwsem, while reset_buffer_flags() in n_tty_flush_buffer()
-resets it with exclusive termios_rwsem held. This causes a data race
-reported by KCSAN when a PTY is closed while flush_to_ldisc is still
-processing lookahead data.
+On 09. 02. 26, 12:32, Alban Bedel wrote:
+> From: Peng Zhang <zhangpeng.00@bytedance.com>
+> 
+> commit 039d4926379b ("serial: 8250: Toggle IER bits on only after irq
+> has been set up") moved IRQ setup before the THRE test, so the interrupt
+> handler can run during the test and race with its IIR reads. This can
+> produce wrong THRE test results and cause spurious registration of the
+> serial8250_backup_timeout timer. Unconditionally disable the IRQ for the
+> short duration of the test and re-enable it afterwards to avoid the race.
+> 
+> Cc: stable@vger.kernel.org
+> Fixes: 039d4926379b ("serial: 8250: Toggle IER bits on only after irq has been set up")
+> Signed-off-by: Peng Zhang <zhangpeng.00@bytedance.com>
+> Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+> Signed-off-by: Alban Bedel <alban.bedel@lht.dlh.de>
+> Tested-by: Maximilian Lueer <maximilian.lueer@lht.dlh.de>
+> ---
+> Changelog:
+> 
+> v2: Replaced disable_irq_nosync() with disable_irq() to prevent interrupts
+>      that are currently being handled
 
-Fix by taking termios_rwsem (read) in n_tty_lookahead_flow_ctrl(),
-consistent with __receive_buf() which also modifies lookahead_count
-under the read lock.
+This made me to check, why/how this is possible. It appears to be, but 
+only thanks to:
+   205d300aea75 serial: 8250: change lock order in serial8250_do_startup()
 
-Reported-by: syzbot+80806cf7508e92c7cc86@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=80806cf7508e92c7cc86
-Fixes: 6bb6fa6908eb ("tty: Implement lookahead to process XON/XOFF timely")
-Signed-off-by: Osama Abdelkader <osama.abdelkader@gmail.com>
----
- drivers/tty/n_tty.c | 2 ++
- 1 file changed, 2 insertions(+)
+And the change should be documented in the commit log. Especially to 
+avoid stable backports to trees without 205d300aea75.
 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index e6a0f5b40d0a..725d6ed2b863 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -1480,6 +1480,8 @@ static void n_tty_lookahead_flow_ctrl(struct tty_struct *tty, const u8 *cp,
- 	struct n_tty_data *ldata = tty->disc_data;
- 	u8 flag = TTY_NORMAL;
- 
-+	guard(rwsem_read)(&tty->termios_rwsem);
-+
- 	ldata->lookahead_count += count;
- 
- 	if (!I_IXON(tty))
+thanks,
 -- 
-2.43.0
-
+js
+suse labs
