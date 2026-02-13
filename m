@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 221F81E32D6
-	for <linux-serial@vger.kernel.org>; Fri, 13 Feb 2026 10:03:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 156EE13DBA0
+	for <linux-serial@vger.kernel.org>; Fri, 13 Feb 2026 14:24:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770976985; cv=none; b=i8oBzgp10sPt7uMWHG3d6CPxgcSdCcfK+0F70AvGLeZtX8NXrEQ5ajzbtxJv/5dvENxAtfEXlfdbD1hRDqx2LlB8Pcem4+UnCzyop44LoRiIaHsfrem+K1QxQKb1NUuk8ylWNWaA16S2hn+dk7Zyyu/2+M8gbM121Xwe5gNja5M=
+	t=1770992678; cv=none; b=d3ygqOSe9Nn8X6wzUN69D2EXtD/0iVa8LhKKpy6KRlDYyKfnhq7ml9+vQ5L4wHyn3TOAW0Bn+apklEEglHO5skSQRi6Ir9kn5A5kJZqUIleG76X3y5S1xTDRKtjIGvlQN/SPTqhio9Smn3zZOuFyRJZN88yoF5KETC/n3wdxmYQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770976985; c=relaxed/simple;
-	bh=3aEbedt9KqMlW+VjNiPv5T8wSDV+Ls+DMvJhNjjdjxk=;
+	s=arc-20240116; t=1770992678; c=relaxed/simple;
+	bh=LTM88QDgWH48zOj70bQNAZ6+1rhc+CZE+svnF4hyZmE=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=gr2yfWNmBANL64EPlTP2jVrdzLE2DKOSgXErGcUZ8pGIp5v8ysJjIKlEC0hGGFp52KhzSNhjHmGi2QGi5LAa5GobC/yidTVMilhGJ+QHcw6oe2rZ2ljBnnzosfYnqlNdDyyTu3Hh6xRiWtM0XZ+muhIfPyy11yfiBIPpG0Ruem8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JP6s900s; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=RgWKcLQT814pZrmg7CN2bO5olbuDahsNN9Ltv9dWxU6fyIlUiEro/y18cp2b6MGm8NZUd1yduE4Oxq0uXDPT6AMlP1vLiwrSiacBK+UvR4HuzWgOTIxBa+o6hR9pkpkfHoeBgjpxYeLvHtUNFb9RZPtsSNLDkGWB3owcF+90aD8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qHA17cgV; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JP6s900s"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BD2AC16AAE;
-	Fri, 13 Feb 2026 10:02:59 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qHA17cgV"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7FC3C116C6;
+	Fri, 13 Feb 2026 14:24:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770976984;
-	bh=3aEbedt9KqMlW+VjNiPv5T8wSDV+Ls+DMvJhNjjdjxk=;
+	s=k20201202; t=1770992677;
+	bh=LTM88QDgWH48zOj70bQNAZ6+1rhc+CZE+svnF4hyZmE=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=JP6s900sXDn7dvVOnrhRAvNNM8Qzlm52t6tSiJTkKeJxviMsDefAX3aVb6cyMK+/I
-	 UiM2BsC/nHzPraX86v5IeecNbEPVEL0rChKTuZxeVjb80hNOM68LcsboXaRXZsCuxY
-	 gY7TFeYfU9tDaQfTOAZ8lSvdyxM075NfpmJsZbpfCYYlOWu7Li8GoJDsLIs9gnuIdJ
-	 yxsOABTs6B1Pte1OAObEUJLeMNJ9MB+r94Tb350YUPowbGy6+rGVujgStrah/88GqT
-	 RaXKgo0xJSKk+XipkYeP9OvRbZoqD4ui+L2sAvfC6jI901g17GUWNHXq0eaeTHSSFY
-	 ep7iuRxmiGTiA==
-Message-ID: <3387b1bd-c945-4b9d-915a-baf9412f656f@kernel.org>
-Date: Fri, 13 Feb 2026 11:02:57 +0100
+	b=qHA17cgVkm2k1hxnIs9bmhkKDOXAD4l/5JF7JuIGloky3YqRKR0z4LkILJ9pMmuQL
+	 dOwR8BFP7myde6Ual1ByYX2DMWfYS9Sqh9aiXUqp+Ib4kHHyL3Pjexbnz8EUM06sCZ
+	 2u4Hzj4olMmEC+mkLj6fi7+c1UyGexG6eoVExlVCoz89N2OZ/TKJa+D5S3nwvTdiGp
+	 ovkcSBELOhLXjdBKVo1UoJh/+dNk7Bn61Dkp7SGITdoGlEuP9euB5FVhiy2HIGMamR
+	 6Tf7kjxJpeIy+HVEwgAN61ZXDIAoUWXRGN4tMkcinPyFVzYZOuMILMhWWMPh/DqQtc
+	 o0+TjVd3ylIsQ==
+Message-ID: <deffd8c5-df19-495f-8d0d-768e2b9aed0f@kernel.org>
+Date: Fri, 13 Feb 2026 15:24:30 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,7 +35,7 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 2/2] LRW UART: serial: add driver for the LRW UART
+Subject: Re: [PATCH v1 1/2] LRW UART: dt-bindings: Add binding for LRW UART
 To: LiuQingtao <qtliu@mail.ustc.edu.cn>, gregkh@linuxfoundation.org
 Cc: jirislaby@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
  conor+dt@kernel.org, neil.armstrong@linaro.org,
@@ -47,7 +47,7 @@ Cc: jirislaby@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
  bai.lu5@zte.com.cn, yang.susheng@zte.com.cn, shen.lin1@zte.com.cn,
  tan.hu@zte.com.cn, zuo.jiang@zte.com.cn
 References: <20260213093334.9217-1-qtliu@mail.ustc.edu.cn>
- <20260213093334.9217-3-qtliu@mail.ustc.edu.cn>
+ <20260213093334.9217-2-qtliu@mail.ustc.edu.cn>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -93,88 +93,35 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  jWt87ecuHlpL3uuQ0ZZNWqHgZoQLXoqC2ZV5KrtKWb/jyiFX/sxSrodALf0zf+tfHv0FZWT2
  zHjUqd0t4njD/UOsuIMOQn4Ig0SdivYPfZukb5cdasKJukG1NOpbW7yRNivaCnfZz6dTawXw
  XRIV/KDsHQiyVxKvN73bThKhONkcX2LWuD928tAR6XMM2G5ovxLe09vuOzzfTWQDsm++9UKF a/A=
-In-Reply-To: <20260213093334.9217-3-qtliu@mail.ustc.edu.cn>
+In-Reply-To: <20260213093334.9217-2-qtliu@mail.ustc.edu.cn>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 13/02/2026 10:33, LiuQingtao wrote:
 > From: Wenhong Liu <liu.wenhong35@zte.com.cn>
 > 
-> This commit introduces a serial driver for the LRW UART controller
-
-
-Please do not use "This commit/patch/change", but imperative mood. See
-longer explanation here:
-https://elixir.bootlin.com/linux/v6.16/source/Documentation/process/submitting-patches.rst#L94
-
-> 
-> Key features implemented:
-> - Support for FIFO mode (16-byte depth)
-> - Baud rate configuration
-> - Standard asynchronous communication formats:
->   * Data bits: 5, 6, 7, 8, 9 bits
->   * Parity: odd, even, fixed, none
->   * Stop bits: 1 or 2 bits
-> - Hardware flow control (RTS/CTS)
-> - Multiple interrupt reporting mechanisms
+> Add documentation for LRW UART devicetree bindings.
 > 
 > Signed-off-by: Wenhong Liu <liu.wenhong35@zte.com.cn>
 > Signed-off-by: Qingtao Liu <liu.qingtao2@zte.com.cn>
 
-Mismatched DCO/SoB.
+Please use scripts/get_maintainers.pl to get a list of necessary people
+and lists to CC. It might happen, that command when run on an older
+kernel, gives you outdated entries. Therefore please be sure you base
+your patches on recent Linux kernel.
 
-Run checkpatch on your code.
+Tools like b4 or scripts/get_maintainer.pl provide you proper list of
+people, so fix your workflow. Tools might also fail if you work on some
+ancient tree (don't, instead use mainline) or work on fork of kernel
+(don't, instead use mainline). Just use b4 and everything should be
+fine, although remember about `b4 prep --auto-to-cc` if you added new
+patches to the patchset.
 
-> ---
->  MAINTAINERS                      |    3 +
->  drivers/tty/serial/Kconfig       |   33 +
->  drivers/tty/serial/Makefile      |    1 +
->  drivers/tty/serial/lrw_uart.c    | 2822 ++++++++++++++++++++++++++++++
->  include/uapi/linux/serial_core.h |    3 +
->  5 files changed, 2862 insertions(+)
->  create mode 100644 drivers/tty/serial/lrw_uart.c
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index ad6acbe24544..a97fbd205f75 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -15041,6 +15041,9 @@ R:	Qingtao Liu <liu.qingtao2@zte.com.cn>
->  L:	linux-serial@vger.kernel.org
->  S:	Maintained
->  F:	Documentation/devicetree/bindings/serial/lrw,lrw-uart.yaml
-> +F:	drivers/tty/serial/Kconfig
-> +F:	drivers/tty/serial/Makefile
+You missed at least devicetree list (maybe more), so this won't be
+tested by automated tooling. Performing review on untested code might be
+a waste of time.
 
-Why do you claim you maintain these files?
-
-> +F:	drivers/tty/serial/lrw_uart.c
->  
-
-
-...
-
-
-> +
-> +static int lrw_uart_probe(struct platform_device *pdev)
-> +{
-> +	struct lrw_uart_port *sup;
-> +	struct resource *r;
-> +	int portnr, ret;
-> +	unsigned int clk;
-> +	unsigned int baudrate;
-> +
-> +	/*
-> +	 * Check the mandatory baud rate parameter in the DT node early
-> +	 * so that we can easily exit with the error.
-> +	 */
-> +	if (pdev->dev.of_node) {
-> +		struct device_node *np = pdev->dev.of_node;
-> +
-> +		ret = of_property_read_u32(np, "current-speed", &baudrate);
-
-Test your code/DTS - there is no such property allowed and you would see
-warnings on DTS.
-
+Please kindly resend and include all necessary To/Cc entries.
 
 Best regards,
 Krzysztof
