@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3510532B9BB
-	for <linux-serial@vger.kernel.org>; Fri, 13 Feb 2026 10:00:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 221F81E32D6
+	for <linux-serial@vger.kernel.org>; Fri, 13 Feb 2026 10:03:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770976819; cv=none; b=dPRzzXjUHMQtBnBfpFhWdSPawOoH7S6fjVhuFiCKtSf2ogC0/X6DEXyr77S6Kw41BhGYOcjDpSDRbr7Sap8LGWTV7RX0MXrnqwxsPErruWOFYFzsXemoxPevkh5eEpc2EVTKwAV5FHfj8Z5NijH9VhB1s8JFVp5cKNh3wXv4LK0=
+	t=1770976985; cv=none; b=i8oBzgp10sPt7uMWHG3d6CPxgcSdCcfK+0F70AvGLeZtX8NXrEQ5ajzbtxJv/5dvENxAtfEXlfdbD1hRDqx2LlB8Pcem4+UnCzyop44LoRiIaHsfrem+K1QxQKb1NUuk8ylWNWaA16S2hn+dk7Zyyu/2+M8gbM121Xwe5gNja5M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770976819; c=relaxed/simple;
-	bh=hYdt0mOemDPJEc1IUoghgDpAbwCI//ho6Xs7557o2JY=;
+	s=arc-20240116; t=1770976985; c=relaxed/simple;
+	bh=3aEbedt9KqMlW+VjNiPv5T8wSDV+Ls+DMvJhNjjdjxk=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=GqNflWTz4IeebC5H4VAGCFeFzENVTnulnmAbYg7fIFmMaiz2IbAuHBk1Ak57vTzxYUxMrwBqgRodotdvTgQcSmWGjSo9Yig3/Yrw2uf0bSSUU8EGkStA/cJlvaecwwtXdr9695Kggw9U39SUCQkhlc91+mQHKZjINBKuRTJK3y0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Z0rhLaau; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=gr2yfWNmBANL64EPlTP2jVrdzLE2DKOSgXErGcUZ8pGIp5v8ysJjIKlEC0hGGFp52KhzSNhjHmGi2QGi5LAa5GobC/yidTVMilhGJ+QHcw6oe2rZ2ljBnnzosfYnqlNdDyyTu3Hh6xRiWtM0XZ+muhIfPyy11yfiBIPpG0Ruem8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JP6s900s; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Z0rhLaau"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C697CC116C6;
-	Fri, 13 Feb 2026 10:00:13 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JP6s900s"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BD2AC16AAE;
+	Fri, 13 Feb 2026 10:02:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770976818;
-	bh=hYdt0mOemDPJEc1IUoghgDpAbwCI//ho6Xs7557o2JY=;
+	s=k20201202; t=1770976984;
+	bh=3aEbedt9KqMlW+VjNiPv5T8wSDV+Ls+DMvJhNjjdjxk=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=Z0rhLaauXaXdw5GMiCVZvlmuVttugUxltUA9KgFX/KsmRmoxwGgcdk/fvtRntc//H
-	 Sl7GW4RpkO9eqxZieH3Ce630v+UunWvAeLhzavWO8jvPXV8e7nMZMfyayX2YHo82Aj
-	 l+glx2nuyEFItjnua9LmDA4QjsvLNA2eijR5zZD8no37y+xdi4xjMeTK/Sd/MUFRmQ
-	 1TCUOkw7IUnBH5XhDY/Kr9Om4JqByhQ9Y8ff+kgDEAlpQs/6bTwmYsqngrdms6X+5I
-	 AxlL926a0ISwK7gcKuuXqtusobA0dOvmNRejkyHd/w3UI61EZbLKkioQDi1wxg/FPR
-	 2tcL/ZyvUa8lQ==
-Message-ID: <6ba2a916-739c-4c4a-92a6-951707aaa212@kernel.org>
-Date: Fri, 13 Feb 2026 11:00:10 +0100
+	b=JP6s900sXDn7dvVOnrhRAvNNM8Qzlm52t6tSiJTkKeJxviMsDefAX3aVb6cyMK+/I
+	 UiM2BsC/nHzPraX86v5IeecNbEPVEL0rChKTuZxeVjb80hNOM68LcsboXaRXZsCuxY
+	 gY7TFeYfU9tDaQfTOAZ8lSvdyxM075NfpmJsZbpfCYYlOWu7Li8GoJDsLIs9gnuIdJ
+	 yxsOABTs6B1Pte1OAObEUJLeMNJ9MB+r94Tb350YUPowbGy6+rGVujgStrah/88GqT
+	 RaXKgo0xJSKk+XipkYeP9OvRbZoqD4ui+L2sAvfC6jI901g17GUWNHXq0eaeTHSSFY
+	 ep7iuRxmiGTiA==
+Message-ID: <3387b1bd-c945-4b9d-915a-baf9412f656f@kernel.org>
+Date: Fri, 13 Feb 2026 11:02:57 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,7 +35,7 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 1/2] LRW UART: dt-bindings: Add binding for LRW UART
+Subject: Re: [PATCH v1 2/2] LRW UART: serial: add driver for the LRW UART
 To: LiuQingtao <qtliu@mail.ustc.edu.cn>, gregkh@linuxfoundation.org
 Cc: jirislaby@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
  conor+dt@kernel.org, neil.armstrong@linaro.org,
@@ -47,7 +47,7 @@ Cc: jirislaby@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
  bai.lu5@zte.com.cn, yang.susheng@zte.com.cn, shen.lin1@zte.com.cn,
  tan.hu@zte.com.cn, zuo.jiang@zte.com.cn
 References: <20260213093334.9217-1-qtliu@mail.ustc.edu.cn>
- <20260213093334.9217-2-qtliu@mail.ustc.edu.cn>
+ <20260213093334.9217-3-qtliu@mail.ustc.edu.cn>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -93,114 +93,87 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  jWt87ecuHlpL3uuQ0ZZNWqHgZoQLXoqC2ZV5KrtKWb/jyiFX/sxSrodALf0zf+tfHv0FZWT2
  zHjUqd0t4njD/UOsuIMOQn4Ig0SdivYPfZukb5cdasKJukG1NOpbW7yRNivaCnfZz6dTawXw
  XRIV/KDsHQiyVxKvN73bThKhONkcX2LWuD928tAR6XMM2G5ovxLe09vuOzzfTWQDsm++9UKF a/A=
-In-Reply-To: <20260213093334.9217-2-qtliu@mail.ustc.edu.cn>
+In-Reply-To: <20260213093334.9217-3-qtliu@mail.ustc.edu.cn>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 13/02/2026 10:33, LiuQingtao wrote:
 > From: Wenhong Liu <liu.wenhong35@zte.com.cn>
 > 
-> Add documentation for LRW UART devicetree bindings.
+> This commit introduces a serial driver for the LRW UART controller
+
+
+Please do not use "This commit/patch/change", but imperative mood. See
+longer explanation here:
+https://elixir.bootlin.com/linux/v6.16/source/Documentation/process/submitting-patches.rst#L94
+
+> 
+> Key features implemented:
+> - Support for FIFO mode (16-byte depth)
+> - Baud rate configuration
+> - Standard asynchronous communication formats:
+>   * Data bits: 5, 6, 7, 8, 9 bits
+>   * Parity: odd, even, fixed, none
+>   * Stop bits: 1 or 2 bits
+> - Hardware flow control (RTS/CTS)
+> - Multiple interrupt reporting mechanisms
 > 
 > Signed-off-by: Wenhong Liu <liu.wenhong35@zte.com.cn>
 > Signed-off-by: Qingtao Liu <liu.qingtao2@zte.com.cn>
 
-Please use subject prefixes matching the subsystem. You can get them for
-example with `git log --oneline -- DIRECTORY_OR_FILE` on the directory
-your patch is touching. For bindings, the preferred subjects are
-explained here:
-https://www.kernel.org/doc/html/latest/devicetree/bindings/submitting-patches.html#i-for-patch-submitters
+Mismatched DCO/SoB.
 
-
-A nit, subject: drop second/last, redundant "bindings". The
-"dt-bindings" prefix is already stating that these are bindings.
-See also:
-https://elixir.bootlin.com/linux/v6.17-rc3/source/Documentation/devicetree/bindings/submitting-patches.rst#L18
+Run checkpatch on your code.
 
 > ---
->  .../bindings/serial/lrw,lrw-uart.yaml         | 49 +++++++++++++++++++
->  .../devicetree/bindings/vendor-prefixes.yaml  |  2 +
->  MAINTAINERS                                   |  7 +++
->  3 files changed, 58 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/serial/lrw,lrw-uart.yaml
+>  MAINTAINERS                      |    3 +
+>  drivers/tty/serial/Kconfig       |   33 +
+>  drivers/tty/serial/Makefile      |    1 +
+>  drivers/tty/serial/lrw_uart.c    | 2822 ++++++++++++++++++++++++++++++
+>  include/uapi/linux/serial_core.h |    3 +
+>  5 files changed, 2862 insertions(+)
+>  create mode 100644 drivers/tty/serial/lrw_uart.c
 > 
-> diff --git a/Documentation/devicetree/bindings/serial/lrw,lrw-uart.yaml b/Documentation/devicetree/bindings/serial/lrw,lrw-uart.yaml
-> new file mode 100644
-> index 000000000000..a2d41c278c4f
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/lrw,lrw-uart.yaml
-> @@ -0,0 +1,49 @@
-> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> +
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/serial/lrw-uart.yaml#
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index ad6acbe24544..a97fbd205f75 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -15041,6 +15041,9 @@ R:	Qingtao Liu <liu.qingtao2@zte.com.cn>
+>  L:	linux-serial@vger.kernel.org
+>  S:	Maintained
+>  F:	Documentation/devicetree/bindings/serial/lrw,lrw-uart.yaml
+> +F:	drivers/tty/serial/Kconfig
+> +F:	drivers/tty/serial/Makefile
 
-Never tested, NAK. There are several other issues here, but I am not
-going through rest of review if you did not bother to even build test
-it. Please open any other recent binding and apply same style here
-(filename, descriptions etc), so you won't be repeating SAME mistakes.
+Why do you claim you maintain these files?
+
+> +F:	drivers/tty/serial/lrw_uart.c
+>  
 
 
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: LRW serial UART
-> +
-> +maintainers:
-> +  - Wenhong Liu <liu.wenhong35@zte.com.cn>
-> +  - Qingtao Liu <liu.qingtao2@zte.com.cn>
-> +
-> +description: |
-> +  Should be something similar to "lrw,<chip>-uart"
-> +  for the UART as integrated on a particular chip, It supports
-> +  multiple CPU architectures, currently including e.g. RISC-V and ARM.
-> +
-> +properties:
-> +  compatible:
-> +    const: lrw,lrw-uart
+...
 
-No way lrw is a chip if this is a company.
 
 > +
-> +  reg:
-> +    maxItems: 1
+> +static int lrw_uart_probe(struct platform_device *pdev)
+> +{
+> +	struct lrw_uart_port *sup;
+> +	struct resource *r;
+> +	int portnr, ret;
+> +	unsigned int clk;
+> +	unsigned int baudrate;
 > +
-> +  interrupts:
-> +    maxItems: 1
+> +	/*
+> +	 * Check the mandatory baud rate parameter in the DT node early
+> +	 * so that we can easily exit with the error.
+> +	 */
+> +	if (pdev->dev.of_node) {
+> +		struct device_node *np = pdev->dev.of_node;
 > +
-> +  clocks:
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - current-speed
-> +  - clocks
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    uart0: serial@e0001800 {
-> +      compatible = "lrw,lrw-uart";
-> +      interrupt-parent = <&aplic0>;
-> +      interrupts = <0x12 0x4>;
-> +      reg = <0xe0001800 0x100>;
-> +      clocks = <&bar_clk>;
-> +      current-speed = <115200>;
-> +    };
-> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> index ee7fd3cfe203..ec9bf262f466 100644
-> --- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> +++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> @@ -961,6 +961,8 @@ patternProperties:
->      description: Loongson Technology Corporation Limited
->    "^loongmasses,.*":
->      description: Nanjing Loongmasses Ltd.
-> +  "^lrw,.*":
-> +    description: LRW Corp.
+> +		ret = of_property_read_u32(np, "current-speed", &baudrate);
 
-What is the website/domain address?
+Test your code/DTS - there is no such property allowed and you would see
+warnings on DTS.
 
 
 Best regards,
