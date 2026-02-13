@@ -1,57 +1,58 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A388E239E6C
-	for <linux-serial@vger.kernel.org>; Fri, 13 Feb 2026 16:27:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB0062505AA
+	for <linux-serial@vger.kernel.org>; Fri, 13 Feb 2026 17:50:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771000064; cv=none; b=uIwTXR0ApoXUIg3nfIzAwBwdxVKyh2QcI9oBXaJ94Ctc8fJT2UDjxzXsWDm77b34iSXn7fsFU1ds0xPVOsaWY3U2bIzG0QLiCWXSvkWctR8RJc+2+8WaV+xY0Ta26vLKoMXjHKvMTbkDavEscxjq4Royn4IxLQwV4d/6BTKQ3So=
+	t=1771005048; cv=none; b=Iupympv1i9265gthCdJgigroTrQ/afTeqkOZu1zfXjxDcUPurMNigUJucOiNBJkW1If/IOI9QXEzbdbuZMdiTv5f9Bx10Mxlj/aG959WekUF0MYa047jDBLdp75fITJL9xq77fcl1b80nb3ORXMbtJURpXn8/CykrBrqjOYo3UQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771000064; c=relaxed/simple;
-	bh=loXZez4fU6bTVN0GB9jS/17xXYK/cezQdjrmGTcZACM=;
+	s=arc-20240116; t=1771005048; c=relaxed/simple;
+	bh=Hn/YbMCFPNwy7WqclUnTHTDS9PREVwpYJ6OC8kfWHYQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qu7VpbCKJmlGjw8OZYmkoYoT6KPTNxtsqf5lt76qTdD3gv7b5bx72zLAaI1iuKkqTsZIhAGHSUHzbW56vXzVi3BIRCm5AoYNgOfb3xKElwdm/P4hpt1vdYaOsfBTXXbJ7bkCd9u9jh17y8MxUpuEy1Tg1mcrnSt+aOmumk5ZhdY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=B0/a7ha1; arc=none smtp.client-ip=198.175.65.21
+	 Content-Type:Content-Disposition:In-Reply-To; b=jvXK9DDR6H64vj7J9uQapiO+0z7cELMg0pZhVmx8j0JPE1A+kRg//rZrehe8243moup1ycsbvMKimC+UONdsSHKLRlvWhMt8qpJq0qeWP5p/06hH6ZqaTUxi6N3kOeJ2qSe7re6UxXDcmxAwExWkwqXJIHTeY7O3BQSgT5AArds=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lAaxG2qN; arc=none smtp.client-ip=192.198.163.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="B0/a7ha1"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lAaxG2qN"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1771000064; x=1802536064;
+  t=1771005047; x=1802541047;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=loXZez4fU6bTVN0GB9jS/17xXYK/cezQdjrmGTcZACM=;
-  b=B0/a7ha1v+v8NcDDlRH76+5J5KhLPhluz6jOe29oy6LB1cIAQ/mDPVAj
-   Lv8/y3pM/pvRTCRLEqstevXvQ8dDVK5OUjkiDOzG1WrG/d7dfoF2LfJI0
-   xcilDsgZq2cmmbwJ7qbFhbfriqcqsgg4HGlaOA0h1ahmEwZUMGEFvfYDv
-   /5ViQaP8Gxxr+RKV/ppyPgGvEGjoc/Ae+XWXCwfA5QSzaha0W0ScJyIA8
-   SOiBfGKt2NguRDgCpFN7TANfwVMVpBRQyMUnCM1NR/3BorpKq0V/z82+H
-   eN/f35SfVoP0+O+JvNglqzTQ50l1DvuSP16RlZGThuFdkXVzSwmXzdSHO
-   A==;
-X-CSE-ConnectionGUID: NGNR6itoTCqTs3nFBmqpFQ==
-X-CSE-MsgGUID: 3V9kYHlySJK+QUrP7Mv6Zg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11700"; a="72080400"
-X-IronPort-AV: E=Sophos;i="6.21,288,1763452800"; 
-   d="scan'208";a="72080400"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2026 08:27:43 -0800
-X-CSE-ConnectionGUID: qjkegM0URdKv5bNMpcxCNw==
-X-CSE-MsgGUID: oOBomfvvQiC05aSwqnejxA==
+  bh=Hn/YbMCFPNwy7WqclUnTHTDS9PREVwpYJ6OC8kfWHYQ=;
+  b=lAaxG2qNH4ZlQSogjeXake+jOm5hDzzCm/aBXaiubv6FjmkIshyW69a2
+   B9JUvwb9zEufM83GEzytGhw/Zzf8TS846J1QssbiTomyZ82HX5l7kx/L7
+   O0PW9AB13ZWMZdqpHtlPovHQ7qiATMdYXIjQXPU6q4AaAnUOyKc3Xr7hD
+   +ydrVWl9T3Lfp9zVu2RT8sJpvIMXlVQLRxaL/grtVpw3mJkmkmV2jsRL0
+   bivlc0MqzcWnz6Z8Fgo/iqCLfqrAeQl/gAzV3cxIoYG+HArTLKJ27lOEl
+   rMUOxpcRpQDPRtmWTh9cdoQxNHLIBJl/OyPUN3+2TXvP3kuN0FEltADLF
+   Q==;
+X-CSE-ConnectionGUID: 9b0ibA3bSEC666gYxwgkBg==
+X-CSE-MsgGUID: lQc0CsQwSn65otBFkK6TvA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11700"; a="76042147"
+X-IronPort-AV: E=Sophos;i="6.21,289,1763452800"; 
+   d="scan'208";a="76042147"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2026 09:50:46 -0800
+X-CSE-ConnectionGUID: HsqJDspKS4WjuQjo+NXLxQ==
+X-CSE-MsgGUID: bqD5zFG7TJa7NeOs2yrG/Q==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,288,1763452800"; 
-   d="scan'208";a="212057138"
+X-IronPort-AV: E=Sophos;i="6.21,289,1763452800"; 
+   d="scan'208";a="212227967"
 Received: from lkp-server01.sh.intel.com (HELO 765f4a05e27f) ([10.239.97.150])
-  by orviesa006.jf.intel.com with ESMTP; 13 Feb 2026 08:27:37 -0800
+  by orviesa010.jf.intel.com with ESMTP; 13 Feb 2026 09:50:40 -0800
 Received: from kbuild by 765f4a05e27f with local (Exim 4.98.2)
 	(envelope-from <lkp@intel.com>)
-	id 1vqw11-00000000vfA-1389;
-	Fri, 13 Feb 2026 16:27:35 +0000
-Date: Sat, 14 Feb 2026 00:27:22 +0800
+	id 1vqxJN-00000000viu-43MR;
+	Fri, 13 Feb 2026 17:50:38 +0000
+Date: Sat, 14 Feb 2026 01:50:20 +0800
 From: kernel test robot <lkp@intel.com>
 To: LiuQingtao <qtliu@mail.ustc.edu.cn>, gregkh@linuxfoundation.org
-Cc: oe-kbuild-all@lists.linux.dev, jirislaby@kernel.org, robh@kernel.org,
-	krzk+dt@kernel.org, conor+dt@kernel.org, neil.armstrong@linaro.org,
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	jirislaby@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, neil.armstrong@linaro.org,
 	bjorn.andersson@oss.qualcomm.com, marex@nabladev.com, dev@kael-k.io,
 	mani@kernel.org, prabhakar.mahadev-lad.rj@bp.renesas.com,
 	linux-serial@vger.kernel.org, linux-riscv@lists.infradead.org,
@@ -61,7 +62,7 @@ Cc: oe-kbuild-all@lists.linux.dev, jirislaby@kernel.org, robh@kernel.org,
 	bai.lu5@zte.com.cn, yang.susheng@zte.com.cn, shen.lin1@zte.com.cn,
 	tan.hu@zte.com.cn, zuo.jiang@zte.com.cn
 Subject: Re: [PATCH v1 2/2] LRW UART: serial: add driver for the LRW UART
-Message-ID: <202602140029.NXkDToZ7-lkp@intel.com>
+Message-ID: <202602140108.kLMOYbwS-lkp@intel.com>
 References: <20260213093334.9217-3-qtliu@mail.ustc.edu.cn>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -87,130 +88,80 @@ url:    https://github.com/intel-lab-lkp/linux/commits/LiuQingtao/LRW-UART-dt-bi
 base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
 patch link:    https://lore.kernel.org/r/20260213093334.9217-3-qtliu%40mail.ustc.edu.cn
 patch subject: [PATCH v1 2/2] LRW UART: serial: add driver for the LRW UART
-config: m68k-allmodconfig (https://download.01.org/0day-ci/archive/20260214/202602140029.NXkDToZ7-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 15.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260214/202602140029.NXkDToZ7-lkp@intel.com/reproduce)
+config: riscv-allyesconfig (https://download.01.org/0day-ci/archive/20260214/202602140108.kLMOYbwS-lkp@intel.com/config)
+compiler: clang version 16.0.6 (https://github.com/llvm/llvm-project 7cbf1a2591520c2491aa35339f227775f4d3adf6)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260214/202602140108.kLMOYbwS-lkp@intel.com/reproduce)
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202602140029.NXkDToZ7-lkp@intel.com/
+| Closes: https://lore.kernel.org/oe-kbuild-all/202602140108.kLMOYbwS-lkp@intel.com/
 
 All warnings (new ones prefixed by >>):
 
-   In file included from arch/m68k/include/asm/bug.h:32,
-                    from include/linux/bug.h:5,
-                    from include/linux/thread_info.h:13,
-                    from include/asm-generic/preempt.h:5,
-                    from ./arch/m68k/include/generated/asm/preempt.h:1,
-                    from include/linux/preempt.h:79,
-                    from include/linux/spinlock.h:56,
-                    from include/linux/mmzone.h:8,
-                    from include/linux/gfp.h:7,
-                    from include/linux/umh.h:4,
-                    from include/linux/kmod.h:9,
-                    from include/linux/module.h:18,
-                    from drivers/tty/serial/lrw_uart.c:8:
-   drivers/tty/serial/lrw_uart.c: In function 'lrw_uart_dma_rx_irq':
->> drivers/tty/serial/lrw_uart.c:973:23: warning: format '%zu' expects argument of type 'size_t', but argument 6 has type 'long unsigned int' [-Wformat=]
-     973 |                       "pending %zu exceeds DMA buffer size %zu\n",
-         |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/asm-generic/bug.h:142:62: note: in definition of macro '__WARN_printf'
-     142 |                 warn_slowpath_fmt(__FILE__, __LINE__, taint, arg);      \
-         |                                                              ^~~
-   include/linux/once_lite.h:31:25: note: in expansion of macro 'WARN'
-      31 |                         func(__VA_ARGS__);                              \
-         |                         ^~~~
-   include/asm-generic/bug.h:185:9: note: in expansion of macro 'DO_ONCE_LITE_IF'
-     185 |         DO_ONCE_LITE_IF(condition, WARN, 1, format)
-         |         ^~~~~~~~~~~~~~~
-   drivers/tty/serial/lrw_uart.c:972:13: note: in expansion of macro 'WARN_ONCE'
-     972 |         if (WARN_ONCE(pending > LRW_UART_DMA_BUFFER_SIZE,
-         |             ^~~~~~~~~
-   drivers/tty/serial/lrw_uart.c:973:62: note: format string is defined here
-     973 |                       "pending %zu exceeds DMA buffer size %zu\n",
-         |                                                            ~~^
-         |                                                              |
-         |                                                              unsigned int
-         |                                                            %lu
-   drivers/tty/serial/lrw_uart.c: In function 'lrw_uart_dma_rx_callback':
-   drivers/tty/serial/lrw_uart.c:1022:23: warning: format '%zu' expects argument of type 'size_t', but argument 6 has type 'long unsigned int' [-Wformat=]
-    1022 |                       "pending %zu exceeds DMA buffer size %zu\n",
-         |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/asm-generic/bug.h:142:62: note: in definition of macro '__WARN_printf'
-     142 |                 warn_slowpath_fmt(__FILE__, __LINE__, taint, arg);      \
-         |                                                              ^~~
-   include/linux/once_lite.h:31:25: note: in expansion of macro 'WARN'
-      31 |                         func(__VA_ARGS__);                              \
-         |                         ^~~~
-   include/asm-generic/bug.h:185:9: note: in expansion of macro 'DO_ONCE_LITE_IF'
-     185 |         DO_ONCE_LITE_IF(condition, WARN, 1, format)
-         |         ^~~~~~~~~~~~~~~
-   drivers/tty/serial/lrw_uart.c:1021:13: note: in expansion of macro 'WARN_ONCE'
-    1021 |         if (WARN_ONCE(pending > LRW_UART_DMA_BUFFER_SIZE,
-         |             ^~~~~~~~~
-   drivers/tty/serial/lrw_uart.c:1022:62: note: format string is defined here
-    1022 |                       "pending %zu exceeds DMA buffer size %zu\n",
-         |                                                            ~~^
-         |                                                              |
-         |                                                              unsigned int
-         |                                                            %lu
+>> drivers/tty/serial/lrw_uart.c:2266:3: warning: variable 'new_mcfg' is uninitialized when used here [-Wuninitialized]
+                   new_mcfg |= UARTMCFG_UARTEN | UARTMCFG_TXE;
+                   ^~~~~~~~
+   drivers/tty/serial/lrw_uart.c:2246:37: note: initialize the variable 'new_mcfg' to silence this warning
+           unsigned int old_mcfg = 0, new_mcfg;
+                                              ^
+                                               = 0
+   1 warning generated.
 
 
-vim +973 drivers/tty/serial/lrw_uart.c
+vim +/new_mcfg +2266 drivers/tty/serial/lrw_uart.c
 
-   943	
-   944	static void lrw_uart_dma_rx_irq(struct lrw_uart_port *sup)
-   945	{
-   946		struct lrw_uart_dmarx_data *dmarx = &sup->dmarx;
-   947		struct dma_chan *rxchan = dmarx->chan;
-   948		struct lrw_uart_dmabuf *dbuf = dmarx->use_buf_b ?
-   949			&dmarx->dbuf_b : &dmarx->dbuf_a;
-   950		size_t pending;
-   951		struct dma_tx_state state;
-   952		enum dma_status dmastat;
-   953	
-   954		/*
-   955		 * Pause the transfer so we can trust the current counter,
-   956		 * do this before we pause the LRW UART block, else we may
-   957		 * overflow the FIFO.
-   958		 */
-   959		if (dmaengine_pause(rxchan))
-   960			dev_err(sup->port.dev, "unable to pause DMA transfer\n");
-   961		dmastat = rxchan->device->device_tx_status(rxchan,
-   962							   dmarx->cookie, &state);
-   963		if (dmastat != DMA_PAUSED)
-   964			dev_err(sup->port.dev, "unable to pause DMA transfer\n");
-   965	
-   966		/* Disable RX DMA - incoming data will wait in the FIFO */
-   967		sup->dmacr &= ~UARTFCCR_RXDMAE;
-   968		lrw_uart_write(sup->dmacr, sup, REG_FCCR);
-   969		sup->dmarx.running = false;
-   970	
-   971		pending = dbuf->len - state.residue;
-   972		if (WARN_ONCE(pending > LRW_UART_DMA_BUFFER_SIZE,
- > 973			      "pending %zu exceeds DMA buffer size %zu\n",
-   974			      pending, LRW_UART_DMA_BUFFER_SIZE))
-   975			pending = LRW_UART_DMA_BUFFER_SIZE;
-   976		/* Then we terminate the transfer - we now know our residue */
-   977		dmaengine_terminate_all(rxchan);
-   978	
-   979		/*
-   980		 * This will take the chars we have so far and insert
-   981		 * into the framework.
-   982		 */
-   983		lrw_uart_dma_rx_chars(sup, pending, dmarx->use_buf_b, true);
-   984	
-   985		/* Switch buffer & re-trigger DMA job */
-   986		dmarx->use_buf_b = !dmarx->use_buf_b;
-   987		if (lrw_uart_dma_rx_trigger_dma(sup)) {
-   988			dev_dbg(sup->port.dev,
-   989				"could not retrigger RX DMA job fall back to interrupt mode\n");
-   990			sup->im |= UARTIMSC_RXIM;
-   991			lrw_uart_write(sup->im, sup, REG_IMSC);
-   992		}
-   993	}
-   994	
+  2240	
+  2241	static void
+  2242	lrw_uart_console_write(struct console *co, const char *s, unsigned int count)
+  2243	{
+  2244		struct lrw_uart_port *sup = lrw_uart_console_ports[co->index];
+  2245		unsigned int old_fccr = 0, new_fccr;
+  2246		unsigned int old_mcfg = 0, new_mcfg;
+  2247		unsigned long flags;
+  2248		int locked = 1;
+  2249	
+  2250		clk_enable(sup->clk);
+  2251	
+  2252		if (oops_in_progress)
+  2253			locked = uart_port_trylock_irqsave(&sup->port, &flags);
+  2254		else
+  2255			uart_port_lock_irqsave(&sup->port, &flags);
+  2256	
+  2257		/*
+  2258		 *	First save the FCCR then disable the interrupts
+  2259		 */
+  2260		if (!sup->vendor->always_enabled) {
+  2261			old_fccr = lrw_uart_read(sup, REG_FCCR);
+  2262			new_fccr = old_fccr & ~UARTFCCR_CTSEN;
+  2263			lrw_uart_write(new_fccr, sup, REG_FCCR);
+  2264	
+  2265			old_mcfg = lrw_uart_read(sup, REG_MCFG);
+> 2266			new_mcfg |= UARTMCFG_UARTEN | UARTMCFG_TXE;
+  2267			lrw_uart_write(new_mcfg, sup, REG_MCFG);
+  2268		}
+  2269	
+  2270		uart_console_write(&sup->port, s, count, lrw_uart_console_putchar);
+  2271	
+  2272		/*
+  2273		 *	Finally, wait for transmitter to become empty and restore the
+  2274		 *	TCR. Allow feature register bits to be inverted to work around
+  2275		 *	errata.
+  2276		 */
+  2277		while ((lrw_uart_read(sup, REG_FR) ^ sup->vendor->inv_fr)
+  2278							& sup->vendor->fr_busy)
+  2279			cpu_relax();
+  2280		if (!sup->vendor->always_enabled) {
+  2281			lrw_uart_write(old_fccr, sup, REG_FCCR);
+  2282			lrw_uart_write(old_mcfg, sup, REG_MCFG);
+  2283		}
+  2284	
+  2285		if (locked)
+  2286			uart_port_unlock_irqrestore(&sup->port, flags);
+  2287	
+  2288		clk_disable(sup->clk);
+  2289	}
+  2290	
 
 -- 
 0-DAY CI Kernel Test Service
