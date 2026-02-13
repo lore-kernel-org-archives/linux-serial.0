@@ -1,40 +1,40 @@
 Received: from ustc.edu.cn (smtp2.ustc.edu.cn [202.38.64.46])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3BB7B28505E
-	for <linux-serial@vger.kernel.org>; Fri, 13 Feb 2026 09:24:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EFCEC312836
+	for <linux-serial@vger.kernel.org>; Fri, 13 Feb 2026 09:26:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.38.64.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770974672; cv=none; b=WLkjQ/isvYQfdwGdtb2MzrzegYteK2FfIs7RV7dJlfD9wIyMnhDX5QJpEW+UOTU/jbvykwKLqCPsH9CT+j49JjH3egyhECvhbnJljeLjsCNHiL76zHNc1t0jOop7B/VQAtovFuerjosAKnWB5pxQqKBq+h+funjWLoBItaQfOA0=
+	t=1770974788; cv=none; b=KdP1mWialJYV5KFe1NQTbC9xa4JOQe5eTDvuDBUU0cD/vu8q8AQyegGOHjp+f4t8e+dyByRUz+Dx2u12AaL7UbLhSQb3HkXB9deRfbjpI6/LwYVLAfjOw8uTLOY1Bw0893OqLS/qKZrvW9i8Lh0IhMBHkLJmt+q9WSTh05B9ghQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770974672; c=relaxed/simple;
+	s=arc-20240116; t=1770974788; c=relaxed/simple;
 	bh=KJP6NILfrsS1KqdS/iQcRpiThMYU0/7Wz0OM/flMSw4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=NEyL8/vajDeK1CgwjXCIZ4nWEaoqMWCOWqNOCae6RDfR02EAND/iHVuwhs1IUcFx29LA1hn6n/86u+cEvmrbWaL5FMmVToCn4JJWgfRI9APt2duBUCM/F8/WGm4qNtIbT43zuDapFtTt+M3cXKSPwo+FWqjq87BMy0ArRUL+ydI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mail.ustc.edu.cn; spf=pass smtp.mailfrom=mail.ustc.edu.cn; dkim=pass (1024-bit key) header.d=mail.ustc.edu.cn header.i=@mail.ustc.edu.cn header.b=Bp77bQdj; arc=none smtp.client-ip=202.38.64.46
+	 MIME-Version; b=ZE+W7cdhsn0MswKaiTRoqRHNVex8kS+p9rZX7jlGFHzaOU5jh0bJn4CPzMKuh3MWstV31WLJdPAAjCNf5WEj0r0T0IB34sdW35SqfeTAcCE0c8dUSLZy9EFtqB6ca1+jFcJzxyM1x6NULTpaotaRuJxAHFcqTqcLRb1pi8SULGA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mail.ustc.edu.cn; spf=pass smtp.mailfrom=mail.ustc.edu.cn; dkim=pass (1024-bit key) header.d=mail.ustc.edu.cn header.i=@mail.ustc.edu.cn header.b=eqHhZUt9; arc=none smtp.client-ip=202.38.64.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mail.ustc.edu.cn
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mail.ustc.edu.cn
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=mail.ustc.edu.cn header.i=@mail.ustc.edu.cn header.b="Bp77bQdj"
+	dkim=pass (1024-bit key) header.d=mail.ustc.edu.cn header.i=@mail.ustc.edu.cn header.b="eqHhZUt9"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=mail.ustc.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
 	Message-ID:In-Reply-To:References:MIME-Version:
 	Content-Transfer-Encoding; bh=aIy8H9sqDuJdjsiYxc3g4Tminz7xF1jG1m
-	mAfBXkOLU=; b=Bp77bQdjXKL53gsxe63yDlrD8lJxQbY+PdwWWJ+8FLdEPI4wbT
-	N6H4ojR+A+4vFgM+XwZbcxCpCdWhyznQUrCOFcY9jNKUtWcU/55gdHhor+YPRutR
-	W0g/5eWJOilis87PQjoWfxOHd60YonNwFWMvXucSsWpwk34z2nxDdkbF8=
+	mAfBXkOLU=; b=eqHhZUt9IUct012VbpGa0py9UgVhE825FDo1+U5Ankm+6JMNL5
+	yRRLxylQ4ITqrOVOAQUb3wR4HATqCFJbuMIsrimsuva7H5aXNGI5nt9wsCqfJ3KB
+	T8h2VOiEhxxq+pU9wqrjFXz388cUicyb9LN3/vG9eobe4d7JjILHvlkH8=
 Received: from mail.ustc.edu.cn (unknown [116.130.208.26])
-	by mailimap2024 (Coremail) with SMTP id 3pYKCgDXEdJ27Y5p_L08AA--.987S4;
-	Fri, 13 Feb 2026 17:23:30 +0800 (CST)
+	by mailimap2024 (Coremail) with SMTP id 3pYKCgBXebk57o5pa8Q8AA--.1111S4;
+	Fri, 13 Feb 2026 17:26:21 +0800 (CST)
 From: LiuQingtao <qtliu@mail.ustc.edu.cn>
 To: liu.qingtao2@zte.com.cn
 Cc: Wenhong Liu <liu.wenhong35@zte.com.cn>,
 	linux-serial@vger.kernel.org,
 	linux-riscv@lists.infradead.org
-Subject: [PATCH 2/2] tty: serial: add driver for the LRW UART
-Date: Fri, 13 Feb 2026 17:22:52 +0800
-Message-ID: <20260213092252.8244-3-qtliu@mail.ustc.edu.cn>
+Subject: [PATCH 2/2] LRW UART: serial: add driver for the LRW UART
+Date: Fri, 13 Feb 2026 17:26:15 +0800
+Message-ID: <20260213092615.8584-3-qtliu@mail.ustc.edu.cn>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260213092252.8244-1-qtliu@mail.ustc.edu.cn>
-References: <20260213092252.8244-1-qtliu@mail.ustc.edu.cn>
+In-Reply-To: <20260213092615.8584-1-qtliu@mail.ustc.edu.cn>
+References: <20260213092615.8584-1-qtliu@mail.ustc.edu.cn>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -42,24 +42,25 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:3pYKCgDXEdJ27Y5p_L08AA--.987S4
+X-CM-TRANSID:3pYKCgBXebk57o5pa8Q8AA--.1111S4
 X-Coremail-Antispam: 1UD129KBjvAXoWkWr48Wr4UZrWxtr4DXr4kCrg_yoW3trWUKo
 	WIqF43trWrKr1xXws5ZF1fJr1xX3W5Xr15Ar1rZrZ7W3Z8Xr1Yqayxu3yrt3WYyFs0kr13
-	WFySq3WxZrs3Ar95n29KB7ZKAUJUUUU8529EdanIXcx71UUUUU7v73VFW2AGmfu7bjvjm3
-	AaLaJ3UjIYCTnIWjp_UUUYG7k0a2IF6w4kM7kC6x804xWl14x267AKxVW8JVW5JwAFc2x0
+	WFySq3WxZrs3Ar95n29KB7ZKAUJUUUU5529EdanIXcx71UUUUU7v73VFW2AGmfu7bjvjm3
+	AaLaJ3UjIYCTnIWjp_UUUO17k0a2IF6w4kM7kC6x804xWl14x267AKxVW8JVW5JwAFc2x0
 	x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87
 	I2jVAFwI0_Jryl82xGYIkIc2x26xkF7I0E14v26r1Y6r1xM28lY4IEw2IIxxk0rwA2F7IY
 	1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20x
 	vEc7CjxVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv67AKxVWxJr0_GcWl84ACjcxK6I8E87Iv
 	6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c
-	02F40Ex7xfMcIj6xIIjxv20xvE14v26r106r15McIj6I8E87Iv67AKxVWUJVW8JwAm72CE
-	4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lc2xSY4AK67AK6r4fMxAIw28IcxkI7V
-	AKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCj
-	r7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxGrwCI42IY6x
-	IIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAI
-	w20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x
-	0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7IU5vzutUUUUU==
-X-CM-SenderInfo: 5twox3o6pdxzwoxv3uoohg3hdfq/1tbiARERAGmN67Eo2QAEsK
+	02F40Ex7xfMcIj6xIIjxv20xvE14v26r1Y6r17McIj6I8E87Iv67AKxVWUJVW8JwAm72CE
+	4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lc7CjxVAaw2AFwI0_JF0_Jw1lc2xSY4
+	AK67AK6r4fMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8C
+	rVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtw
+	CIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1I6r4UMIIF0xvE2Ix0cI8IcVCY1x02
+	67AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr
+	0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7IU5Gh
+	FDUUUUU==
+X-CM-SenderInfo: 5twox3o6pdxzwoxv3uoohg3hdfq/1tbiARERAGmN67Eo2QAHsJ
 
 From: Wenhong Liu <liu.wenhong35@zte.com.cn>
 
