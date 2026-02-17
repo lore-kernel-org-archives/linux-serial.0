@@ -1,71 +1,75 @@
-Received: from mail.pythcoiner.dev (unknown [159.198.47.63])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B157222584;
-	Tue, 17 Feb 2026 03:29:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.198.47.63
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 165952BCF5D;
+	Tue, 17 Feb 2026 07:07:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771298984; cv=none; b=ruBRK63niavnMxhSrLgj1grTrAM2qY9d1eQfajE/7K8+9JU7ndGEZbxwbQ6ZmUwA+rmxwMLrviUeTt0US8hFqfDl9Op26igsWNhQ1eTF6IWbEix3hTUYcD57PrXvM5wbFdroNFvq39aP3Ielu5zYdufdwhtpyacHlFqdA3eDWMw=
+	t=1771312079; cv=none; b=erEDHM4ymX0UWj/SfmaHO80MYcD6J4wWw7U9ZtN145VIdgUq2xe7VfyNKJl7V2ew/MjZM7dRuJ/pKPUpgxYz27l7DjRPOqSwNEmXehriU9ksQeDta+p9X2l5dDnzJusC4q/i7g71SThUwqK5uGVO0B3M2k9hHNcMZtPWZUvrL2k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771298984; c=relaxed/simple;
-	bh=Q9HJR8ZlJDXNqq/opcn86eWl8m6JBWvpYDOZ0obgEOE=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Sji0dctnvJSgqeWhnUz/lS2BjBYRU4F87pGvCMGYrC9jQ3Nja8vaQfiXyqICWNDxCQ0bKdjIHgRJjB/uunX2nu/sxHZKZSHYsO97Fw2ANODGHVXHQFYiNef7gY4m2IK6d4ut1ix/uUoVHijhgpLJmez+5YDfcdP48CLd7G8CCJs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=pythcoiner.dev; spf=pass smtp.mailfrom=pythcoiner.dev; dkim=pass (2048-bit key) header.d=pythcoiner.dev header.i=@pythcoiner.dev header.b=lXscuYGe; arc=none smtp.client-ip=159.198.47.63
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=pythcoiner.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pythcoiner.dev
+	s=arc-20240116; t=1771312079; c=relaxed/simple;
+	bh=4pRFY6G60I0r+UOtFLu3ntd6y7DabgtdX73gpV9QRpU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=KdceE2qOCxlRrFuBlRElwGFCykc9d2iC59YNluwDrFQIrku64tVCeOuLK7WR0AVV0AxYMYDJjlvxKSAVx0xemvinNm5Bmsz5r2goanTzpQHFkQvZO90TkU5jJbGJtXozKYM15MkZZTXt1YOTCTfwJGfjH40O5jHM8IYtcaZ6kO0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=NAAYlrD/; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=IvE3jiB/; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=pythcoiner.dev header.i=@pythcoiner.dev header.b="lXscuYGe"
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id E3BF5AAF89;
-	Tue, 17 Feb 2026 03:20:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pythcoiner.dev;
-	s=dkim; t=1771298427; h=from:subject:date:message-id:to:cc:mime-version:
-	 content-transfer-encoding; bh=uRtLPqQMGhjNsCO4iwfqS8zEqGhEiD3jTSg5XEJ6qCw=;
-	b=lXscuYGeVbqyE34cxF4ySCCYbeQvg58h/+gtJmZOs1ySxwebJUHr3sKUfkv5PSJAQMmK8i
-	nn49mG4HYHVcawSIAN5yW+JiiWZMzgOxlAZbIuWARM11XzqLMkmN8RVmoI741J+DAOtVLR
-	U1v1yi0fhc2j+JBb8FQ/z93VAvtJ1BYwAo6Y+C71jeeiv/+ByuVZ+JVk4dyNRDzs+mGjWa
-	mRTx8twF1b931JW8zaAZU8/vK1rZukMuLK6rIj8FcEK5lBoUDBD8V44UGNOb6VwbbWBI/f
-	QFR6RKvAcwEVYBdkYyVF/OYuM1gqo7PT0d83WHeKevsUwvYBOfQnKslFc+gOUg==
-From: Pete Connor <pete.connor@pythcoiner.dev>
-To: Chaitanya Vadrevu <chaitanya.vadrevu@emerson.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="NAAYlrD/";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="IvE3jiB/"
+Date: Tue, 17 Feb 2026 08:07:54 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1771312076;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=4pRFY6G60I0r+UOtFLu3ntd6y7DabgtdX73gpV9QRpU=;
+	b=NAAYlrD/Rae99xXpUzk0gHDQV6J4m0jotKlUIElrsFSDc9NvihK+LGMyk5xkQn+P/y2fnu
+	gtFmsT+sZVh/mbifvboKS6wynSTLbZ7KrnONLTrRxU5u+Um/oh0paw9E6I42PI5LefKVsC
+	/VkYQ+m5MCOnlT4fyGDjrS9mU9EjF4jXUp46k8uIgruiMpik/RmVNcXBJZUvey2mKfsRjm
+	+eIRTlftkI1zqH5zXTWpbrEznE48+w8LDzFIFEQ1An7nskgdqSL7giK/LbZSnftn1oF5oz
+	NiQGrcbKJLoeyk2Vku0Oq62bCgqQoSzW6sunlsnMy2tAR1pMKe1t1GO1t9AwPw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1771312076;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=4pRFY6G60I0r+UOtFLu3ntd6y7DabgtdX73gpV9QRpU=;
+	b=IvE3jiB/J2UiyTGawTyvPv8uMfY+bRg/qy9GtG9wOwdR+MNtLibli8ruFdImvVfwQtzA5u
+	zMhzL44n0xoulPDw==
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: Nam Cao <namcao@linutronix.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
-	linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: Pete Connor <pete.connor@pythcoiner.dev>
-Subject: [PATCH] serial: 8250_ni: use kzalloc_obj() for allocation
-Date: Mon, 16 Feb 2026 22:19:13 -0500
-Message-ID: <20260217031913.1166949-1-pete.connor@pythcoiner.dev>
-X-Mailer: git-send-email 2.47.3
+	Nicolas Pitre <npitre@baylibre.com>,
+	Calixte Pernot <calixte.pernot@grenoble-inp.org>,
+	Petr Mladek <pmladek@suse.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Clark Williams <clrkwllms@kernel.org>, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-rt-devel@lists.linux.dev
+Subject: Re: printk, vt: sleep from invalid context bug
+Message-ID: <20260217070754.Y4BolmnM@linutronix.de>
+References: <87v7fwdsln.fsf@yellow.woof>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Last-TLS-Session-Version: TLSv1.3
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <87v7fwdsln.fsf@yellow.woof>
 
-  Replace kzalloc() with the preferred kzalloc_obj() helper
-  to address a checkpatch warning.
+On 2026-02-17 09:14:12 [+0700], Nam Cao wrote:
+> Hi,
 
-  Signed-off-by: Pete Connor <pete.connor@pythcoiner.dev>
----
- drivers/tty/serial/8250/8250_ni.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hi,
 
-diff --git a/drivers/tty/serial/8250/8250_ni.c b/drivers/tty/serial/8250/8250_ni.c
-index cb5b42b3609c..3f3dac694e20 100644
---- a/drivers/tty/serial/8250/8250_ni.c
-+++ b/drivers/tty/serial/8250/8250_ni.c
-@@ -285,7 +285,7 @@ static int ni16550_probe(struct platform_device *pdev)
- 	bool rs232_property;
- 	int ret;
- 
--	uart = kzalloc(sizeof(*uart), GFP_KERNEL);
-+	uart = kzalloc_obj(*uart, GFP_KERNEL);
- 	if (!uart)
- 		return -ENOMEM;
- 
--- 
-2.47.3
+> Since commit 1bc9a28f076f ("printk: Use console_flush_one_record for
+> legacy printer kthread"), I see this warning:
 
+https://lore.kernel.org/all/20260126180836.SNCdMW2f@linutronix.de/T/#u
+
+Sebastian
