@@ -1,139 +1,191 @@
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CFC12D8382
-	for <linux-serial@vger.kernel.org>; Tue, 17 Feb 2026 08:54:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C6A628151C;
+	Tue, 17 Feb 2026 14:29:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771318487; cv=none; b=EtS22F8H6AFGvnCGd/D5CXbuTe5D/91nI4ml38nS7N154srF71C/rmeJy1ljNNWq6kQbzuK49wZU93oFGaE6flZlU3AL3AdB9OJi/rbK0Vrd/dTlbj+5QWX/+f5z/3WwJREC+ISBRra5rpXIxjtZqxwgsP8RvCA0Ghig89EnoBw=
+	t=1771338584; cv=none; b=kBGRuKQuARiFpQPyonY9cztMIhYQhpJnNwws4Ihn+AetqlKdxwZeeAEaXC0h298VAV0U16t2XGQFGw8GId6YUgNjaXS5uh28vOt7qfUaj2WYdjqFEVPqf8sgv+kJ0B8fzoOZlxPS3gEfomOx7KtMzv3M8drVqMF9e7rI4No7KMI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771318487; c=relaxed/simple;
-	bh=U/y+F5lXzT6ipnlHOpj1gEg9m7Car22XHVLh0x06TMw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UEFfOWT8W6jnVwerhhKd1LVZrJjsev0i3Cel5EAgQK7Pjn43YtNwo87eCFkvQX75X82RRp+meItfjyc0rCuM3kohem2t+nDmvu1C4VJ3KL7tZlOZrJmVbZQa/8l85DOiwxaZ2ge3/F95y39Jt+fGNAwW0zF6/AClfaSFO635fbE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=eYONv0y+; arc=none smtp.client-ip=209.85.221.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1771338584; c=relaxed/simple;
+	bh=quQrCw8z5CLxvblNDdBLNr5zqN99RiLOinCRO+F1n+w=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=NWElSaD6+Pxxb5Utb93f8YJUUwMRC5N8W+PadIdIAzYT/Wf08kjTHcchPHSAHKivuNf8tB0IMBg2/GWnBw3YF7MHBJgyyNXIabqbqQ4h9DqKoFt6QIlOdzo5T5M4MmRSL8Th8Gxi6QAc5T6W5RjoAV2IUIPvALeZBI2SiYO4jrM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=OBhQ6ft9; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="eYONv0y+"
-Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-435f177a8f7so4293291f8f.1
-        for <linux-serial@vger.kernel.org>; Tue, 17 Feb 2026 00:54:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1771318484; x=1771923284; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=hjMcRNdBXILoAJvk/EWdE0yoDcwaUF03VAGg5Yay6bE=;
-        b=eYONv0y+pnL9IPnsGqxqqWnKjIQdAfxH7Avfe7WukheLQNrkkjIffecfZORuilpLyN
-         8jC92pS/uUnMbUX4SODjLJQGE22/FF5nALRSYCU7cfwQk+NoLeEeEQ5GifX+TGBg8OLR
-         oA2Pmyry8R/4vg+reIaIGhJ0ucNpM/cdhheIy5YCCdm7MG0T1LhkVR16OQTIOzlduEQE
-         wJN13ssKy+SOzW35HaC6os0J7pn/KWoYnAn1JHx+m46QDG7PHRX1NF8Gd0+yKtLDUcze
-         +C9W+ie+2v0UTVdU28wr0mPHBIiVpp+V+SXHDf/3Fv8r894yxACNr8N0zOvsBCdYLBrj
-         b4ZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771318484; x=1771923284;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=hjMcRNdBXILoAJvk/EWdE0yoDcwaUF03VAGg5Yay6bE=;
-        b=IcjjS2u5e2y44jQZHJjggHdJ5oFxR+Ihl1EE36aJQmVdrUoNypOZZkZ0ONiyvCpaB+
-         W78+J2G3etfBBF/b4ev2mN6SLdiBkvlPQg7c30XEVb7HZZqGAWBZeXKqfZlI8PVVDuZu
-         ykZy1dq4jZ1yKFbPdtU7KV4Ho7T6tB1M3RpFKl254yG237FlMvk2DQcdVOeSTEB4eRVq
-         MRadwnnP2ujuUn/35Mwc4TuSjsC/2Zb/iO8wKuwVfR05NZWiYwynNqTHDG1MDXP0F7X6
-         ZY6pBSJZDFOM5J+CExtYcvLr3DKCByva6Mxr27/+lFjLJDGQNn/U3I76KuVvlBTSmXjt
-         qzJw==
-X-Forwarded-Encrypted: i=1; AJvYcCUhZNaJAwC48iZL/qCTvRfEOEo/DiZ2Tz5zdvdCn81PCoPfowZNy58ODMcQuVkP1CJJkVHom53evf+K5jA=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxq7cDRYyNe565OypasVhHNX6dUeSVp7ltpXj1Te8MyUYyb8OOH
-	3/wX6e45z6NVQ79KcGzQnDBwQ7cnUxSL5eXX7pKCCL024+wbcbTjOi+Lq+o2rjvzAgc=
-X-Gm-Gg: AZuq6aIl7AFFYMDthO+eEHZcZoD4//N3AwkkdelBLKwRbF3jTx7p2imwlVzXDkJAVBf
-	lFpBEbQ0qdTVp9sZ9AYN1M999wLqFjX6vdpSiCYvmygqFijsG0JsHVdpOxeGO8cWAFCxEvmfozs
-	+vS93d6QZNJwfejoi3puk01qYFAejB+EHYyKEuAK+Gc6aEGiYZezJPC9TvtLJd+0DwVrAr5alky
-	SR9GMFgUYtbardzsTjKGbDWkVOCwlae/FlWDbovvGuFW1/hAB7xZ3RjbwXlfFGwCRVQTZQetE4q
-	8Ti1wWfBPeCfaD0ZbFt2ovGig63xFkFXk/Vo47lMzS72VKSh2r5GHut9ZZwFRSdNq39F/Eyrtfi
-	Tr5WbG7EJSp9KmmIxxT7BbKH4RjpVfQIowKi5tgRkN337lgKfQ5wwcSb8tV9qmiENUs4uqiEpJE
-	4X8QVH7IJC+sfYhHpQ/Mt2p9mtLg==
-X-Received: by 2002:a5d:5850:0:b0:437:8f37:882 with SMTP id ffacd0b85a97d-4379db93a97mr20414374f8f.33.1771318483803;
-        Tue, 17 Feb 2026 00:54:43 -0800 (PST)
-Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43796abd793sm32552682f8f.25.2026.02.17.00.54.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Feb 2026 00:54:43 -0800 (PST)
-Date: Tue, 17 Feb 2026 09:54:41 +0100
-From: Petr Mladek <pmladek@suse.com>
-To: Nam Cao <namcao@linutronix.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Nicolas Pitre <npitre@baylibre.com>,
-	Calixte Pernot <calixte.pernot@grenoble-inp.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Clark Williams <clrkwllms@kernel.org>, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-rt-devel@lists.linux.dev
-Subject: Re: printk, vt: sleep from invalid context bug
-Message-ID: <aZQs0WYk262ZNybc@pathway.suse.cz>
-References: <87v7fwdsln.fsf@yellow.woof>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="OBhQ6ft9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEDECC4CEF7;
+	Tue, 17 Feb 2026 14:29:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1771338584;
+	bh=quQrCw8z5CLxvblNDdBLNr5zqN99RiLOinCRO+F1n+w=;
+	h=Date:From:To:Cc:Subject:From;
+	b=OBhQ6ft9IbRhwZF2mm2vq8HPn7dY3JSiYZqfoGWMmqTTvzCsoAcEpdQ9zX7/VkKp8
+	 eEjMSMwxno2CpJXMG+Se3ePp2Xpz9uHuRxo1s4ky5RWDa/7+z7un7D7z7E6q5Px2Id
+	 len0rkrcDPu3KFWouzWjVNrGKsWdUMBvLgZwQH74=
+Date: Tue, 17 Feb 2026 15:29:40 +0100
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY/Serial driver updates for 7.0-rc1
+Message-ID: <aZR7VPj-GDiNMcX9@kroah.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <87v7fwdsln.fsf@yellow.woof>
+Content-Transfer-Encoding: 8bit
 
-On Tue 2026-02-17 09:14:12, Nam Cao wrote:
-> Hi,
-> 
-> Since commit 1bc9a28f076f ("printk: Use console_flush_one_record for
-> legacy printer kthread"), I see this warning:
-> 
-> BUG: sleeping function called from invalid context at kernel/printk/printk.c:3431
-> in_atomic(): 0, irqs_disabled(): 0, non_block: 0, pid: 14, name: pr/legacy
-> preempt_count: 0, expected: 0
-> RCU nest depth: 1, expected: 0
-> 4 locks held by pr/legacy/14:
->  #0: ffffffff807dcdf0 (console_lock){+.+.}-{0:0}, at: legacy_kthread_func+0x40/0x114
->  #1: ffffffff807dce30 (console_srcu){....}-{0:0}, at: console_flush_one_record+0x0/0x3c8
->  #2: ffffffff8083af88 (printing_lock){+.+.}-{3:3}, at: vt_console_print+0x48/0x330
->  #3: ffffffff807df2e8 (rcu_read_lock){....}-{1:3}, at: rt_spin_trylock+0x24/0x138
-> CPU: 0 UID: 0 PID: 14 Comm: pr/legacy Not tainted 6.19.0-rvvm-09292-g7449f86bafcd #79 PREEMPT_RT 
-> Hardware name: RVVM v0.7-git-g8c45ccf (DT)
-> Call Trace:
->     walk_stackframe+0x0/0x80
->     dump_stack_lvl+0x4e/0x74
->     rt_spin_trylock+0x9e/0x138
->     __might_resched+0x19e/0x1e0
->     fbcon_redraw+0x74/0x1a0
->     fbcon_scroll+0xf2/0x13c
->     con_scroll+0x122/0x188
->     lf+0x6a/0x74
->     vt_console_print+0x2ac/0x330
->     console_flush_one_record+0x208/0x3c8
->     console_flush_one_record+0x3c4/0x3c8
->     kthread+0xc6/0x100
->     legacy_kthread_func+0x4c/0x114
->     prio_changed_stop+0xc/0x10
->     kthread+0xc6/0x100
->     ret_from_fork_kernel_asm+0x12/0x18
->     ret_from_fork_kernel+0xe/0x3fc
->     rt_spin_unlock+0x56/0x128
->     kthread_affine_node+0x88/0x8c
->     ret_from_fork_kernel_asm+0x12/0x18
-> 
-> If I understand it correctly, vt_console_print() grabs the spin lock
-> "printing_lock", and then calls fbcon_redraw() which does
-> console_conditional_schedule(), triggering the warning.
+The following changes since commit f8f9c1f4d0c7a64600e2ca312dec824a0bc2f1da:
 
-Sebastian has recently sent a patch which should remove the
-cond_resched(), see
-https://lore.kernel.org/all/20260126180836.SNCdMW2f@linutronix.de
+  Linux 6.19-rc3 (2025-12-28 13:24:26 -0800)
 
-It seems that the patch has made it upstream in this merge window
-for 7.0, see the commit 8e9bf8b9e8c0 ("printk, vt, fbcon: Remove
-console_conditional_schedule()").
+are available in the Git repository at:
 
-Best Regards,
-Petr
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-7.0-rc1
 
+for you to fetch changes up to 0a15f43b92ddaa2fdb476891a12ac2e207c7fcd2:
+
+  Revert "tty: tty_port: add workqueue to flip TTY buffer" (2026-01-27 13:58:21 +0100)
+
+----------------------------------------------------------------
+TTY / Serial driver updates for 7.0-rc1
+
+Here is the small amount of tty and serial driver updates for 7.0-rc1.
+Nothing major in here at all, just some driver updates and minor tweaks
+and cleanups including:
+  - sh-sci serial driver updates
+  - 8250 driver updates
+  - attempt to make the tty ports have their own workqueue, but was
+    reverted after testing found it to have problems on some platforms.
+    This will probably come back for 7.1 after it has been reworked and
+    resubmitted
+  - other tiny tty driver changes
+
+All of these have been in linux-next for a while with no reported
+problems.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Andy Shevchenko (2):
+      serial: 8250_omap: Remove custom deprecated baud setting routine
+      serial: 8250_pci: Remove custom deprecated baud setting routine
+
+Artem Shimko (2):
+      serial: 8250_dw: handle clock enable errors in runtime_resume
+      serial: 8250_dw: fix runtime PM initialization sequence
+
+Bartlomiej Kubik (1):
+      tty/n_hdlc: Fix struct n_hdlc kernel-doc warnings
+
+Biju Das (18):
+      dt-bindings: serial: renesas,rsci: Document RZ/G3E support
+      serial: sh-sci: Update rx_trigger size for RZ/T2H RSCI
+      serial: rsci: Add set_rtrg() callback
+      serial: sh-sci: Drop checking port type for device file{create, remove}
+      serial: rsci: Drop rsci_clear_SCxSR()
+      serial: sh-sci: Drop extra lines
+      serial: rsci: Drop unused macro DCR
+      serial: rsci: Drop unused TDR register
+      serial: sh-sci: Use devm_reset_control_array_get_exclusive()
+      serial: sh-sci: Add sci_is_rsci_type()
+      serial: sh-sci: Rename port SCI_PORT_RSCI->RSCI_PORT_SCIF16
+      serial: sh-sci: Add RSCI_PORT_SCIF32 port ID
+      serial: sh-sci: Add support for RZ/G3E RSCI clks
+      serial: sh-sci: Make sci_scbrr_calc() public
+      serial: sh-sci: Add finish_console_write() callback
+      serial: rsci: Rename early_console data, port_params and callback() names
+      serial: sh-sci: Add support for RZ/G3E RSCI
+      dt-bindings: serial: renesas,scif: Document RZ/G3L SoC
+
+Filip Jensen (1):
+      serial: 8250_men_mcb: Clean defines
+
+Geert Uytterhoeven (1):
+      serial: rsci: Convert to FIELD_MODIFY()
+
+Gerhard Engleder (3):
+      serial: 8250_keba: Add missing includes
+      serial: 8250_keba: Add ICR defines
+      serial: 8250_keba: Use dev_err_probe()
+
+Greg Kroah-Hartman (2):
+      Merge 6.19-rc3 into tty-next
+      Revert "tty: tty_port: add workqueue to flip TTY buffer"
+
+Guodong Xu (1):
+      dt-bindings: serial: 8250: add SpacemiT K3 UART compatible
+
+Heiko Carstens (1):
+      tty: hvc-iucv: Remove KMSG_COMPONENT macro
+
+Jose Javier Rodriguez Barbarin (2):
+      serial: men_z135_uart: drop unneeded MODULE_ALIAS
+      8250_men_mcb: drop unneeded MODULE_ALIAS
+
+Kendall Willis (1):
+      serial: 8250: omap: set out-of-band wakeup if wakeup pinctrl exists
+
+Kuan-Wei Chiu (1):
+      dt-bindings: serial: google,goldfish-tty: Convert to DT schema
+
+Lad Prabhakar (2):
+      dt-bindings: serial: renesas,rsci: Document RZ/V2H(P) and RZ/V2N SoCs
+      dt-bindings: serial: sh-sci: Fold single-entry compatibles into enum
+
+Moteen Shah (2):
+      serial: 8250: 8250_omap.c: Add support for handling UART error conditions
+      serial: 8250: 8250_omap.c: Clear DMA RX running status only after DMA termination is done
+
+Nathan Chancellor (1):
+      tty: vt/keyboard: Split apart vt_do_diacrit()
+
+Randy Dunlap (4):
+      serial: imx: change SERIAL_IMX_CONSOLE to bool
+      serial: 8250: fix ordering of entries for menu display
+      serial: Kconfig: fix ordering of entries for menu display
+      serial: SH_SCI: improve "DMA support" prompt
+
+Uwe Kleine-König (4):
+      serdev: Provide a bustype shutdown function
+      Bluetooth: hci_aml: Migrate to serdev specific shutdown function
+      Bluetooth: hci_qca: Migrate to serdev specific shutdown function
+      platform/surface: Migrate to serdev specific shutdown function
+
+Xin Zhao (1):
+      tty: tty_port: add workqueue to flip TTY buffer
+
+ Documentation/devicetree/bindings/goldfish/tty.txt |  17 --
+ Documentation/devicetree/bindings/serial/8250.yaml |   1 +
+ .../bindings/serial/google,goldfish-tty.yaml       |  41 +++
+ .../devicetree/bindings/serial/renesas,rsci.yaml   | 105 ++++++-
+ .../devicetree/bindings/serial/renesas,scif.yaml   |  16 +-
+ Documentation/misc-devices/oxsemi-tornado.rst      |  26 +-
+ drivers/bluetooth/hci_aml.c                        |  16 +-
+ drivers/bluetooth/hci_qca.c                        |   5 +-
+ drivers/platform/surface/aggregator/core.c         |   6 +-
+ drivers/tty/hvc/hvc_iucv.c                         |   5 +-
+ drivers/tty/n_hdlc.c                               |   2 +
+ drivers/tty/serdev/core.c                          |  21 ++
+ drivers/tty/serial/8250/8250_dw.c                  |  23 +-
+ drivers/tty/serial/8250/8250_keba.c                |  27 +-
+ drivers/tty/serial/8250/8250_men_mcb.c             |  15 +-
+ drivers/tty/serial/8250/8250_omap.c                |  43 +--
+ drivers/tty/serial/8250/8250_pci.c                 |  85 +++---
+ drivers/tty/serial/8250/Kconfig                    |  95 +++----
+ drivers/tty/serial/Kconfig                         |  34 +--
+ drivers/tty/serial/men_z135_uart.c                 |   1 -
+ drivers/tty/serial/rsci.c                          | 309 ++++++++++++++++++---
+ drivers/tty/serial/rsci.h                          |   3 +-
+ drivers/tty/serial/sh-sci-common.h                 |  10 +-
+ drivers/tty/serial/sh-sci.c                        |  80 +++---
+ drivers/tty/vt/keyboard.c                          | 233 ++++++++--------
+ include/linux/serdev.h                             |   1 +
+ 26 files changed, 801 insertions(+), 419 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/goldfish/tty.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/google,goldfish-tty.yaml
