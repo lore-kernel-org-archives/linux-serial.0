@@ -1,199 +1,218 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f68.google.com (mail-wm1-f68.google.com [209.85.128.68])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA781316182;
-	Thu, 19 Feb 2026 02:05:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 311952C21FE
+	for <linux-serial@vger.kernel.org>; Thu, 19 Feb 2026 08:22:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.68
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771466714; cv=none; b=uOc+TyepH3jcVmiJG/y5ZlTydQF1DKaIug/lwBAv9FzTgto2QiPtbY3rInabhW6xk88yuWnv2d5LV/uGRxK28W8Y9zpSMtdIt10J1otGc1zd7A3Tn7+rhrGzGZtBgQ1NzVpSZuOGW/9J4U4Pv/FUdL+xzdwrcRM0MUnHaPbQ/Ok=
+	t=1771489362; cv=none; b=kw2gti0uJ4ttNHoAoiofdoH2TKcK+OIsTBUj3VMGf1zj/b/y6mFx3e/J2/QywIw0MrGndIb6/iF3gnHbkCU8QyL5P5MIgt7/Lp6SKdy7g0eTqwUJyprIZDK9bNxF3tgtSeksLGvJWtk9hnnUkHv6OSl2uXhh9AV1l8zsmToqut0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771466714; c=relaxed/simple;
-	bh=xX8M1F2pCk4jHgcY8DXnKaHEXFtCdd43FcJkHq/IXjE=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=DirALkKHERMHuk0gAQA4sdZUGL1ILIcvWJUfD3omVxFYV/kBdWrfQX+T7BQb9Qr+yhqdTFUWgvJQc1ZO1mNeALOg1hqTetZOkea5Y39fL/iivfjG+AEMTOsdvpjdhYt5PY/l0gvAFbiRUu3THM9Ozv44U1yFvOIh87C4xjdYZak=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=D+aRyOqk; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1771489362; c=relaxed/simple;
+	bh=yJ+COvpiMGz+oVO3xJ3UpYvs+If0stPqHups40gU1fM=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To; b=cK6GBVBDAcTFO0jCOFzKUx5FtiHVDJ+wDker1Im0P182UD665RRkRunvCpikX5W9zUxJs5izAWr2iuf0PMMu348OYPvPmn4CdsDNQpklB62jCN21a6iu8vhE/5bM2sxzvcwVYGYk2jccslzbJsw3fkkT3aBJtOW+of4RF68SaKQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=LR2WH5ne; arc=none smtp.client-ip=209.85.128.68
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="D+aRyOqk"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0935C116D0;
-	Thu, 19 Feb 2026 02:05:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771466713;
-	bh=xX8M1F2pCk4jHgcY8DXnKaHEXFtCdd43FcJkHq/IXjE=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=D+aRyOqkIw3LpPc6dEuT+I7X6w1rkv0AA2RCCLbPYtwtpeaJ9dbu7LFBmuY35E5Rm
-	 g9sLenwYOSERSsdkU2ZQuS6XQvc49evbN5eDr3U/TlOJVx8GqTYhzfQGSwECtDRAsv
-	 uUwFHhylo7UpjXD7iWF34lk2bX+ccxwyG3C+QXy7XShFIMFqpYYQNlrg0AZGixmIGi
-	 H1HOZ5wNyTg6S071S52o089gx6RWFeurLWAFB74viVCmJfniTKAaHc9BIx7HdwqLkM
-	 iAwsLp23xW+RV5GUW8HfCY4Iph8e5l/imkD4JWFBVWakYUeAIQ8v4pk4hdAuIKKpNw
-	 5qxwLTwQG1Tbw==
-From: Sasha Levin <sashal@kernel.org>
-To: patches@lists.linux.dev,
-	stable@vger.kernel.org
-Cc: Moteen Shah <m-shah@ti.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Sasha Levin <sashal@kernel.org>,
-	jirislaby@kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.19-5.10] serial: 8250: 8250_omap.c: Clear DMA RX running status only after DMA termination is done
-Date: Wed, 18 Feb 2026 21:04:15 -0500
-Message-ID: <20260219020422.1539798-39-sashal@kernel.org>
-X-Mailer: git-send-email 2.51.0
-In-Reply-To: <20260219020422.1539798-1-sashal@kernel.org>
-References: <20260219020422.1539798-1-sashal@kernel.org>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="LR2WH5ne"
+Received: by mail-wm1-f68.google.com with SMTP id 5b1f17b1804b1-4838c15e3cbso5362855e9.3
+        for <linux-serial@vger.kernel.org>; Thu, 19 Feb 2026 00:22:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1771489359; x=1772094159; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:message-id:subject:cc
+         :to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=0D6P+pMy0FNkLSD5nYId8+lNUqZXXTENXB4evIwBeIY=;
+        b=LR2WH5ne+2DFwqu0zvtQYR3x8AWZaDRFmJ21Vt44UKjvnjGu9KtJvIvf3szPx7z7GY
+         fIrz9dTLAQNpnH1RRT39JXEEbzGGTR6ZDZw5bCLp7CFiRsEutUFBt2ANxosfL1l1IuoP
+         IDwNXAP6sTxYFC3OxYZJf8I5Zpq9ZQzndCNwxcrKL0aC7ZuFE4KXDt79VNV/tq1XoZ8k
+         b0n6j6EOSDjrH5e1LowK92BNbwvRdIAF6e/kFSN/sjPFN3zSYsDyaPthOfcdgLbYV0hD
+         YzQJAhaaeqWQG88oQ2hl7d3o+jJzYW3p8ow9xtwoPy/+foF2cvZd2W8PSfV9/XhMYSmZ
+         V7xw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1771489359; x=1772094159;
+        h=in-reply-to:content-disposition:mime-version:message-id:subject:cc
+         :to:from:date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=0D6P+pMy0FNkLSD5nYId8+lNUqZXXTENXB4evIwBeIY=;
+        b=KKrohe9c6i1HyRa4WvY9rSJnz9wr/FeiWjhHfBen0RlScKGJpiGG6cl1PM7qU6YKy5
+         fPouj4zvaIJQViioGzXZuF1urktRZmItBncc0P0uIEaFLl1OT1n+0NGQKeFXdu/T8+bj
+         XMrZSWm5VlSiwuJ7ZPfnMioKmagTwra1OYy5gyy2WQ0SDRqs4D/kfjWJj+cfCA0Jgt9Z
+         2KzpynTHl5ma2jwyFQxBbiNSuZ4n9J6g8LvdV73JwKgtAbB4vOu6d0e0iiWybd0okeyV
+         cy7zJweG6I2xo+NGqsYyylR9WtC3JDZ0xsV8F8k2QXiFS7hji+40zSWXgIf2k+f9TzBN
+         DkyQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWbG7f1+XMw/z56nIYx4XvKCsZyd8frb/NOFeIlexVRdmPBw+c8JyPE8VJYPBdCVatofj94vOTuWrECx2Y=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy5QRwrDBqvmrJtWJY7+pDf96SQz/y+XgXYkHSn1cTDrn1I6U1N
+	aiYFyfGcksT9hY6r+F4+adcZSbDiZD3QyLpoPiXQvCw7Dr6JFMH68Gcg4BAQj3wPFDE=
+X-Gm-Gg: AZuq6aLkLT4efOJknU/SWw265uy96I0FT9vpC8NzQ6cylNFkyutRBhviBTbYmSKa72N
+	eOri8MmV/oymKIQ+LQ+F8HpdEYRuXZloc7mc2PVVJ/8ZM3Ihfs2NdxfDJQEHjkZz5lUdbEraQ9C
+	F0GQL1hq4sJngc+apNl/c8t0+OiEWJAmHnmBnN59tcxYEX+Zqasaoivzhh4f5Ga4QxADIm+DgoE
+	RzgYFgkhsfNC8BRaJwLJMxb8ntVzQk3sGWVBDC0N0QuVe+bXiOI/peicDA4GjjbmD0trJRgGtt+
+	X3lqGomNzGFiFtVSevcpesZTBs75Rl8ZQ10MvKR8DwNGhO1cJeePNZTbEeAtjMoSuZDsJNhZHVA
+	CZ77hNKVoTaJGhuUqLhp1mekuEyAbE9KC3mgRlu7+JzHsKjYcMDKbitmb/+M+fj/p6/tzCw4LIN
+	e1hYl0zXAkyhSZR6/IPCf2JFKbxD7v
+X-Received: by 2002:a05:600c:870b:b0:483:6f37:1b56 with SMTP id 5b1f17b1804b1-48371051b15mr358346635e9.10.1771489359323;
+        Thu, 19 Feb 2026 00:22:39 -0800 (PST)
+Received: from localhost ([196.207.164.177])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4839f986118sm12865185e9.21.2026.02.19.00.22.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Feb 2026 00:22:38 -0800 (PST)
+Date: Thu, 19 Feb 2026 11:22:35 +0300
+From: Dan Carpenter <dan.carpenter@linaro.org>
+To: oe-kbuild@lists.linux.dev, Larisa Grigore <larisa.grigore@oss.nxp.com>,
+	gregkh@linuxfoundation.org, jirislaby@kernel.org, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org, sumit.semwal@linaro.org,
+	christian.koenig@amd.com, chester62515@gmail.com,
+	cosmin.stoica@nxp.com, adrian.nitu@freescale.com,
+	stefan-gabriel.mirea@nxp.com, Mihaela.Martinas@freescale.com
+Cc: lkp@intel.com, oe-kbuild-all@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-media@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+	s32@nxp.com, imx@lists.linux.dev, clizzi@redhat.com,
+	aruizrui@redhat.com, eballetb@redhat.com, echanude@redhat.com,
+	jkangas@redhat.com, Larisa Grigore <larisa.grigore@oss.nxp.com>,
+	Radu Pirea <radu-nicolae.pirea@nxp.com>,
+	Phu Luu An <phu.luuan@nxp.com>, Js Ha <js.ha@nxp.com>,
+	Ghennadi Procopciuc <ghennadi.procopciuc@nxp.com>
+Subject: Re: [PATCH 12/13] serial: linflexuart: Add DMA support
+Message-ID: <202602171109.6YSFXcJ3-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.19.2
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260216150205.212318-13-larisa.grigore@oss.nxp.com>
 
-From: Moteen Shah <m-shah@ti.com>
+Hi Larisa,
 
-[ Upstream commit a5fd8945a478ff9be14812693891d7c9b4185a50 ]
+kernel test robot noticed the following build warnings:
 
-Clear rx_running flag only after DMA teardown polling completes. In the
-previous implementation the flag was being cleared while hardware teardown
-was still in progress, creating a mismatch between software state
-(flag = 0, "ready") and hardware state (still terminating).
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Signed-off-by: Moteen Shah <m-shah@ti.com>
-Link: https://patch.msgid.link/20260112081829.63049-3-m-shah@ti.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
+url:    https://github.com/intel-lab-lkp/linux/commits/Larisa-Grigore/serial-linflexuart-Fix-locking-in-set_termios/20260216-231403
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+patch link:    https://lore.kernel.org/r/20260216150205.212318-13-larisa.grigore%40oss.nxp.com
+patch subject: [PATCH 12/13] serial: linflexuart: Add DMA support
+config: i386-randconfig-141-20260217 (https://download.01.org/0day-ci/archive/20260217/202602171109.6YSFXcJ3-lkp@intel.com/config)
+compiler: gcc-14 (Debian 14.2.0-19) 14.2.0
+smatch version: v0.5.0-8994-gd50c5a4c
 
-LLM Generated explanations, may be completely bogus:
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Reported-by: Dan Carpenter <dan.carpenter@linaro.org>
+| Closes: https://lore.kernel.org/r/202602171109.6YSFXcJ3-lkp@intel.com/
 
-## 3. Classification
+smatch warnings:
+drivers/tty/serial/fsl_linflexuart.c:1441 linflex_probe() warn: missing unwind goto?
 
-This is a **bug fix** — specifically a **state synchronization/race
-condition fix** between software state and hardware state. The
-`rx_running` flag was being cleared prematurely, before DMA hardware
-teardown completed, creating a window where software and hardware states
-were inconsistent.
+vim +1441 drivers/tty/serial/fsl_linflexuart.c
 
-## 4. Scope and Risk Assessment
+09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1377  static int linflex_probe(struct platform_device *pdev)
+09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1378  {
+09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1379  	struct device_node *np = pdev->dev.of_node;
+1d3f5f07fafc71 Radu Pirea           2026-02-16  1380  	struct linflex_port *lfport;
+09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1381  	struct uart_port *sport;
+09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1382  	struct resource *res;
+09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1383  	int ret;
+09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1384  
+1d3f5f07fafc71 Radu Pirea           2026-02-16  1385  	lfport = devm_kzalloc(&pdev->dev, sizeof(*lfport), GFP_KERNEL);
+1d3f5f07fafc71 Radu Pirea           2026-02-16  1386  	if (!lfport)
+09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1387  		return -ENOMEM;
+09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1388  
+1d3f5f07fafc71 Radu Pirea           2026-02-16  1389  	sport = &lfport->port;
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1390  	sport->dev = &pdev->dev;
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1391  
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1392  	lfport->dma_tx_chan = dma_request_chan(sport->dev, "tx");
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1393  	if (IS_ERR(lfport->dma_tx_chan)) {
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1394  		ret = PTR_ERR(lfport->dma_tx_chan);
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1395  		if (ret == -EPROBE_DEFER)
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1396  			return ret;
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1397  
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1398  		dev_info(sport->dev,
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1399  			 "DMA tx channel request failed, operating without tx DMA %ld\n",
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1400  			 PTR_ERR(lfport->dma_tx_chan));
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1401  		lfport->dma_tx_chan = NULL;
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1402  	}
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1403  
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1404  	lfport->dma_rx_chan = dma_request_chan(sport->dev, "rx");
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1405  	if (IS_ERR(lfport->dma_rx_chan)) {
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1406  		ret = PTR_ERR(lfport->dma_rx_chan);
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1407  		if (ret == -EPROBE_DEFER) {
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1408  			dma_release_channel(lfport->dma_tx_chan);
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1409  			return ret;
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1410  		}
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1411  
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1412  		dev_info(sport->dev,
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1413  			 "DMA rx channel request failed, operating without rx DMA %ld\n",
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1414  			 PTR_ERR(lfport->dma_rx_chan));
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1415  		lfport->dma_rx_chan = NULL;
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1416  	}
+1d3f5f07fafc71 Radu Pirea           2026-02-16  1417  
+09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1418  	ret = of_alias_get_id(np, "serial");
+09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1419  	if (ret < 0) {
+09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1420  		dev_err(&pdev->dev, "failed to get alias id, errno %d\n", ret);
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1421  		goto linflex_probe_free_dma;
+09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1422  	}
+09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1423  	if (ret >= UART_NR) {
+09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1424  		dev_err(&pdev->dev, "driver limited to %d serial ports\n",
+09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1425  			UART_NR);
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1426  		ret = -ENOMEM;
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1427  		goto linflex_probe_free_dma;
+09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1428  	}
+09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1429  
+09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1430  	sport->line = ret;
+09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1431  
+8c6d7e5fd50b45 Yangtao Li           2023-07-12  1432  	sport->membase = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1433  	if (IS_ERR(sport->membase)) {
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1434  		ret = PTR_ERR(sport->membase);
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1435  		goto linflex_probe_free_dma;
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1436  	}
+8c6d7e5fd50b45 Yangtao Li           2023-07-12  1437  	sport->mapbase = res->start;
+09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1438  
+4e8da86fc1f767 Zhang Shurong        2023-08-26  1439  	ret = platform_get_irq(pdev, 0);
+4e8da86fc1f767 Zhang Shurong        2023-08-26  1440  	if (ret < 0)
+4e8da86fc1f767 Zhang Shurong        2023-08-26 @1441  		return ret;
 
-- **Lines changed**: 2 lines — one line removed, one line added (just
-  moving `dma->rx_running = 0;`)
-- **Files touched**: 1 file (drivers/tty/serial/8250/8250_omap.c)
-- **Complexity**: Minimal — a single line is moved to a later position
-  in the same function
-- **Risk**: Very low. The change only affects the timing of when
-  `rx_running` is cleared. The core logic is unchanged.
-- **Potential concern**: The `count == 0` early return path (`goto out`)
-  now skips clearing `rx_running`, which could theoretically leave the
-  flag set. However, this is a minor edge case that likely doesn't occur
-  in practice (DMA completion with zero data transfer).
+No clean up?
 
-## 5. User Impact
+4e8da86fc1f767 Zhang Shurong        2023-08-26  1442  
+09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1443  	sport->iotype = UPIO_MEM;
+4e8da86fc1f767 Zhang Shurong        2023-08-26  1444  	sport->irq = ret;
+09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1445  	sport->ops = &linflex_pops;
+09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1446  	sport->flags = UPF_BOOT_AUTOCONF;
+4151bbed79f98b Dmitry Safonov       2019-12-13  1447  	sport->has_sysrq = IS_ENABLED(CONFIG_SERIAL_FSL_LINFLEXUART_CONSOLE);
+09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1448  
+1d3f5f07fafc71 Radu Pirea           2026-02-16  1449  	ret = linflex_init_clk(lfport);
+1d3f5f07fafc71 Radu Pirea           2026-02-16  1450  	if (ret)
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1451  		goto linflex_probe_free_dma;
+1d3f5f07fafc71 Radu Pirea           2026-02-16  1452  
+09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1453  	linflex_ports[sport->line] = sport;
+09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1454  
+1d3f5f07fafc71 Radu Pirea           2026-02-16  1455  	platform_set_drvdata(pdev, lfport);
+09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1456  
+1d3f5f07fafc71 Radu Pirea           2026-02-16  1457  	ret = uart_add_one_port(&linflex_reg, sport);
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1458  	if (ret) {
+1d3f5f07fafc71 Radu Pirea           2026-02-16  1459  		clk_bulk_disable_unprepare(LINFLEX_CLK_NUM, lfport->clks);
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1460  		goto linflex_probe_free_dma;
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1461  	}
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1462  
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1463  	return 0;
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1464  
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1465  linflex_probe_free_dma:
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1466  	if (lfport->dma_tx_chan)
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1467  		dma_release_channel(lfport->dma_tx_chan);
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1468  	if (lfport->dma_rx_chan)
+0b34325c5f79f1 Larisa Grigore       2026-02-16  1469  		dma_release_channel(lfport->dma_rx_chan);
+1d3f5f07fafc71 Radu Pirea           2026-02-16  1470  
+1d3f5f07fafc71 Radu Pirea           2026-02-16  1471  	return ret;
+09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1472  }
 
-- **Who is affected**: Users of OMAP SoC serial ports with DMA (TI
-  AM335x, AM437x, AM65x, etc.) — widely used in embedded/industrial
-  systems
-- **Severity if triggered**: The state mismatch could cause:
-  - A new DMA being started while old hardware teardown is still in
-    progress
-  - Potential data corruption or missed serial data
-  - Possible DMA engine errors or hangs
-- **Likelihood**: Moderate — this would occur when DMA teardown takes
-  time (in-flight bytes scenario) and another DMA operation is attempted
-  during the teardown window
-
-## 6. Stability Indicators
-
-- Author is from TI (SoC vendor) — deep knowledge of the hardware
-- Reviewed by another TI engineer (Kumar, Udit)
-- Accepted by Greg Kroah-Hartman (serial subsystem maintainer)
-- Small, obviously correct fix with clear rationale
-- Self-contained — no dependencies on other patches in the series
-
-## 7. Stable Kernel Criteria Assessment
-
-| Criterion | Met? |
-|-----------|------|
-| Obviously correct and tested | Yes — simple line movement, accepted by
-maintainer |
-| Fixes a real bug | Yes — software/hardware state mismatch |
-| Fixes important issue | Yes — potential data corruption/DMA errors |
-| Small and contained | Yes — 2 lines in 1 file |
-| No new features | Correct — pure bug fix |
-| No new APIs | Correct |
-
-## Verification
-
-- **Code analysis**: Read `__dma_rx_do_complete()` at lines 916-971 to
-  understand the full function flow and confirm the bug mechanism
-  (premature flag clearing before teardown polling)
-- **Caller analysis**: Verified `__dma_rx_do_complete` is called from
-  `__dma_rx_complete` (line 991, DMA completion callback) and
-  `omap_8250_rx_dma_flush` (line 1022, flush path)
-- **Lock analysis**: Verified that `__dma_rx_complete` does NOT hold
-  `rx_dma_lock` (only port lock at line 981), while
-  `omap_8250_rx_dma_flush` does hold `rx_dma_lock` (line 1009). This
-  confirms a real synchronization gap.
-- **Race window**: After `__dma_rx_complete` calls
-  `__dma_rx_do_complete`, it calls `omap_8250_rx_dma(p)` at line 998,
-  which checks `rx_running`. With old code, `rx_running==0` was visible
-  during teardown polling.
-- **Self-contained**: Verified patch 2/3 (623b07b370e99) modifies
-  different functions (`am654_8250_handle_rx_dma`,
-  `am654_8250_handle_uart_errors`) and does not conflict with or depend
-  on this patch
-- **File history**: `8250_omap.c` DMA-RX callback added in commit
-  0e31c8d173ab1 (2014-09-29), present in all active stable trees
-- **Mailing list**: Found the patch on lore.kernel.org, reviewed by
-  Kumar, Udit (TI), accepted by Greg KH
-- **count==0 edge case**: Identified that with the patch, the `goto out`
-  for `count==0` skips clearing `rx_running`. This is a minor concern
-  but the count==0 case after DMA completion is unusual. This was NOT
-  verified to be problematic in practice (unverified edge case concern).
-
-## Conclusion
-
-This is a small, surgical, obviously correct fix for a real state
-synchronization bug in the OMAP 8250 serial DMA path. The `rx_running`
-flag was cleared too early, before hardware DMA teardown completed,
-creating a window where software and hardware state were inconsistent.
-This could lead to DMA conflicts, data corruption, or hangs on OMAP/AM
-series SoCs which are widely used in embedded systems.
-
-The fix is minimal (moving one line), self-contained, has no
-dependencies, was written by the SoC vendor (TI), reviewed by another TI
-engineer, and accepted by the serial subsystem maintainer. It meets all
-stable kernel criteria.
-
-**YES**
-
- drivers/tty/serial/8250/8250_omap.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index e26bae0a6488f..272bc07c9a6b5 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -931,7 +931,6 @@ static void __dma_rx_do_complete(struct uart_8250_port *p)
- 		goto out;
- 
- 	cookie = dma->rx_cookie;
--	dma->rx_running = 0;
- 
- 	/* Re-enable RX FIFO interrupt now that transfer is complete */
- 	if (priv->habit & UART_HAS_RHR_IT_DIS) {
-@@ -965,6 +964,7 @@ static void __dma_rx_do_complete(struct uart_8250_port *p)
- 		goto out;
- 	ret = tty_insert_flip_string(tty_port, dma->rx_buf, count);
- 
-+	dma->rx_running = 0;
- 	p->port.icount.rx += ret;
- 	p->port.icount.buf_overrun += count - ret;
- out:
 -- 
-2.51.0
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
 
