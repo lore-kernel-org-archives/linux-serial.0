@@ -1,44 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA8F227C84E;
-	Thu, 19 Feb 2026 02:04:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59AE42D876F;
+	Thu, 19 Feb 2026 02:04:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771466668; cv=none; b=Nn9h1ETp5rw/vWfPnA95hJ7p2dQtDonJ8RX9EBzkcyTowiToSHOfb6Dyr4Vn+lVtd3eluxc7HMUzYw6UxsI8EQ/B/b5hUukjlyF5G01pZiOHB6Lj3gSE8Ly67Qtqj4swxVpZhOcD+02dCPNi9P2wenfig3386Xxegj433PjKYIs=
+	t=1771466679; cv=none; b=s2lJ5N96g45uv905sFkSzLWEGpb0W+n3A5TZc8JT8hDvTNi1RuYtynCyLA0ITF2iLPIqY6H6E2lF3zgZE047pEHqgPluS2kRAII6HgPEjFCJ2skJ8Y2ifjoPaAjAfS/J/wnOeOabdViQWx+vvrPtMCPIjru0ry5/lkAW1FwJQBM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771466668; c=relaxed/simple;
-	bh=MVqRvrLQPFbJEeqA9cWcn4Tv0F7Rsw3ktTfs1h5d4kU=;
+	s=arc-20240116; t=1771466679; c=relaxed/simple;
+	bh=CuMhCVSmuT5vA+n2XKKILWQICnHS1GTuDcB33JxXLmk=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=fHWQ1I2hNlx0IQrpRLZsX8OLK6iMxFfoKoUbyrMwtRbUswHo4Na9azzP9S4wc7NFD+yVZlDj6CC1QQKVeeMwQcfoHtYzbV3MyfrxWDoOXsJkN9Rx8doMXFYS6pZES//TP8IcFMcPjul053bGUG+Y9cZ9L8sL54BklLxNUGo0TTg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ingiEvPl; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=IdnXogl3X0mr+eJzlAWCwdQtzhqW+lc+POiptNiKLNCOjhgvTIquBXPUleyyh91p3243pmwdbgutLMHGOkaxrKzac3WLmlILWtiuhNmG0kxSj2OPSKUbgCDKxPjGJ3p6AgVTt6+En9BagbI6zL2fa1joCht9npt7vda38QLAnuw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kXYgQdTg; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ingiEvPl"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC2FEC116D0;
-	Thu, 19 Feb 2026 02:04:27 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kXYgQdTg"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F871C116D0;
+	Thu, 19 Feb 2026 02:04:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771466668;
-	bh=MVqRvrLQPFbJEeqA9cWcn4Tv0F7Rsw3ktTfs1h5d4kU=;
+	s=k20201202; t=1771466679;
+	bh=CuMhCVSmuT5vA+n2XKKILWQICnHS1GTuDcB33JxXLmk=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=ingiEvPl1Ne8X8+cQHN+rNs9bErxWdpl3k/G5CN99bxU09TCcsdV1lE8lBeo3u7HI
-	 bcU7aRaNNJLgBDDgefS8yzLXASH9ZnfIXrHGUVR00KMcI0NkqjbbvO9nGj/d1Gsc3V
-	 BlYHFF0jVZephxu4TE/ZIAWj1KKfzRXMIplufsBgjjuKieFNTQfhgMEdKiO3yUhXsR
-	 +vlNEfL69BEHBVxMHyRfhNSmcZbBDAVV9TN3caSErZBYBmevPBlGBGwp11gk4SzyBm
-	 Bb/+timyIDgPebjdMV8X7FRS4VK5ab8YSqINvwzTlWdopu9ApBPHQNwN4y6Q7T0VNR
-	 tflK4uADJ+nRA==
+	b=kXYgQdTgglEX91madhD+2JqTRJaT2mocZKgD8/xuoLT2ADC+SY23zNaMwxSiBm0e2
+	 jKY88pgKCnQKIgn5oT1gsowXfwgJoUoy4xE301max922N7OOtW15txxfZxFsrQ5A8l
+	 qOfIVdW4Qsnf1N6maz0pRDrWufKv09aGqzLePRUGtVQ8CvCYRbP4eWQKrh2JKfRXwQ
+	 b7+PJAqgvmQXedxAOwFh8PWZ82DMvzsjhlo9N31KUP+gRNQERHMKaDa3Bdo+NcFmv0
+	 qu2oZJwSXZQ+4KpBY5xq7KYcM61mH72e1n5yBHIYhVwrw04/qeCzxOEOidqYjDCVWu
+	 AoPdroNXGnH9w==
 From: Sasha Levin <sashal@kernel.org>
 To: patches@lists.linux.dev,
 	stable@vger.kernel.org
-Cc: Nathan Chancellor <nathan@kernel.org>,
-	kernel test robot <lkp@intel.com>,
+Cc: Artem Shimko <a.shimko.dev@gmail.com>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Sasha Levin <sashal@kernel.org>,
+	ilpo.jarvinen@linux.intel.com,
 	jirislaby@kernel.org,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.19] tty: vt/keyboard: Split apart vt_do_diacrit()
-Date: Wed, 18 Feb 2026 21:03:40 -0500
-Message-ID: <20260219020422.1539798-4-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.19-5.10] serial: 8250_dw: handle clock enable errors in runtime_resume
+Date: Wed, 18 Feb 2026 21:03:48 -0500
+Message-ID: <20260219020422.1539798-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.51.0
 In-Reply-To: <20260219020422.1539798-1-sashal@kernel.org>
 References: <20260219020422.1539798-1-sashal@kernel.org>
@@ -51,389 +51,162 @@ MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
 X-stable-base: Linux 6.19.2
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Artem Shimko <a.shimko.dev@gmail.com>
 
-[ Upstream commit 0a76a17238f805b231d97b118232a5185bbb7a18 ]
+[ Upstream commit d31228143a489ba6ba797896a07541ce06828c09 ]
 
-After commit bfb24564b5fd ("tty: vt/keyboard: use __free()"), builds
-using asm goto for put_user() and get_user() with a version of clang
-older than 17 error with:
+Add error checking for clk_prepare_enable() calls in
+dw8250_runtime_resume(). Currently if either clock fails to enable,
+the function returns success while leaving clocks in inconsistent state.
 
-  drivers/tty/vt/keyboard.c:1709:7: error: cannot jump from this asm goto statement to one of its possible targets
-                  if (put_user(asize, &a->kb_cnt))
-                      ^
-  ...
-  arch/arm64/include/asm/uaccess.h:298:2: note: expanded from macro '__put_mem_asm'
-          asm goto(                                                       \
-          ^
-  drivers/tty/vt/keyboard.c:1687:7: note: possible target of asm goto statement
-                  if (put_user(asize, &a->kb_cnt))
-                      ^
-  ...
-  arch/arm64/include/asm/uaccess.h:342:2: note: expanded from macro '__raw_put_user'
-          __rpu_failed:                                                   \
-          ^
-  drivers/tty/vt/keyboard.c:1697:23: note: jump exits scope of variable with __attribute__((cleanup))
-                  void __free(kfree) *buf = kmalloc_array(MAX_DIACR, sizeof(struct kbdiacruc),
-                                      ^
-  drivers/tty/vt/keyboard.c:1671:33: note: jump bypasses initialization of variable with __attribute__((cleanup))
-                  struct kbdiacr __free(kfree) *dia = kmalloc_array(MAX_DIACR, sizeof(struct kbdiacr),
-                                                ^
+This change implements comprehensive error handling by checking the return
+values of both clk_prepare_enable() calls. If the second clock enable
+operation fails after the first clock has already been successfully
+enabled, the code now properly cleans up by disabling and unpreparing
+the first clock before returning. The error code is then propagated to
+the caller, ensuring that clock enable failures are properly reported
+rather than being silently ignored.
 
-Prior to a fix to clang's scope checker in clang 17 [1], all labels in a
-function were validated as potential targets of all asm gotos in a
-function, regardless of whether they actually were a target of an asm
-goto call, resulting in false positive errors about skipping over
-variables marked with the cleanup attribute.
-
-To workaround this error, split up the bodies of the case statements in
-vt_do_diacrit() into their own functions so that the scope checker does
-not trip up on the multiple instances of __free().
-
-Reported-by: kernel test robot <lkp@intel.com>
-Closes: https://lore.kernel.org/oe-kbuild-all/202509091702.Oc7eCRDw-lkp@intel.com/
-Closes: https://lore.kernel.org/oe-kbuild-all/202511241835.EA8lShgH-lkp@intel.com/
-Link: https://github.com/llvm/llvm-project/commit/f023f5cdb2e6c19026f04a15b5a935c041835d14 [1]
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Link: https://patch.msgid.link/20251125-tty-vt-keyboard-wa-clang-scope-check-error-v1-1-f5a5ea55c578@kernel.org
+Signed-off-by: Artem Shimko <a.shimko.dev@gmail.com>
+Link: https://patch.msgid.link/20251104145433.2316165-2-a.shimko.dev@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
 
 LLM Generated explanations, may be completely bogus:
 
-The current code in this tree has the `__free()` annotations from
-`bfb24564b5fd8`, confirming that the prerequisite commit is present and
-this fix is needed.
+## Classification
 
-### Scope and Risk Assessment
+This is an **error handling fix** — a recognized category of bug fixes
+for stable. The commit adds missing error checking for
+`clk_prepare_enable()` return values in the runtime resume path.
 
-- **Files changed**: 1 (drivers/tty/vt/keyboard.c)
-- **Nature of change**: Pure mechanical refactoring - moving code into
-  separate functions
-- **Logic changes**: None - the behavior is identical
-- **Risk**: Very low. The code is simply moved into helper functions. No
-  logic changes, no new paths, no changed semantics.
-- **Lines changed**: The diff looks large (~170 lines removed and added)
-  but it's entirely code movement, not new code.
+## Bug Assessment
 
-### User Impact
+**What was broken:**
+- `clk_prepare_enable()` can fail (e.g., clock hardware issues,
+  regulator failure), returning a negative error code.
+- The old code ignored these return values and always returned 0
+  (success).
+- This means the PM runtime framework would believe the device is active
+  when clocks may not actually be enabled.
 
-- **Who is affected**: Anyone building the kernel with clang < 17 on
-  arm64 (or potentially other architectures using asm goto for
-  put_user/get_user)
-- **Severity**: Build failure - the kernel **cannot be compiled** at all
-  with these toolchain combinations
-- **Practical impact**: Enterprise distributions and CI systems that use
-  older clang versions would be completely blocked
+**Consequences of the bug:**
+1. **Inconsistent clock state**: If `clk` fails after `pclk` succeeds,
+   only one clock is enabled but the function claims success. On the
+   next `runtime_suspend`, both clocks will be disabled/unprepared —
+   leading to an unbalanced `clk_disable_unprepare()` on a clock that
+   was never successfully enabled.
+2. **Serial port malfunction**: Without clocks properly enabled, the
+   UART hardware won't function, but the software stack thinks it's
+   ready.
+3. **Clock framework imbalance**: Unbalanced enable/disable calls can
+   cause issues in the clock framework, potentially affecting other
+   devices sharing the same clock tree.
 
-### Stable Criteria Assessment
+**Bug existed since 2013** (commit `ffc3ae6dd925b6`) — over 12 years.
 
-1. **Obviously correct and tested**: Yes - pure code movement, reported
-   by kernel test robot, authored by Nathan Chancellor (clang/compiler
-   expert), signed off by Greg KH
-2. **Fixes a real bug**: Yes - build failure
-3. **Important issue**: Yes - build failures prevent kernel compilation
-   entirely
-4. **Small and contained**: Yes - single file, pure refactoring
-5. **No new features**: Correct - no new features
-6. **Applies cleanly**: Should apply cleanly since the prerequisite
-   `bfb24564b5fd8` must also be present
+## Severity Assessment
 
-### Dependency
+**Moderate severity.** While `clk_prepare_enable()` failing in runtime
+resume is not a common occurrence in normal operation, when it does
+happen:
+- The consequences are real (clock imbalance, non-functional hardware)
+- The PM framework gets incorrect state information
+- Other drivers in the same subsystem (fsl_lpuart, imx) properly check
+  these return values, showing this is a known pattern
 
-This commit depends on `bfb24564b5fd8` ("tty: vt/keyboard: use
-__free()") being present in the stable tree. The fix is only needed if
-`__free()` annotations were backported. If `bfb24564b5fd8` was
-backported to a stable tree, then this fix **must** also be backported
-to avoid build failures with older clang.
+## Stable Kernel Criteria Check
 
-### Verification
+1. **Obviously correct and tested**: Yes — the pattern is
+   straightforward error checking, matching what other serial drivers
+   already do. Merged by Greg Kroah-Hartman (the serial/stable
+   maintainer).
+2. **Fixes a real bug**: Yes — ignoring clock enable failures leaves
+   hardware in inconsistent state and can cause unbalanced clock
+   operations.
+3. **Important issue**: Moderate — clock enable failures can cause
+   device malfunction and clock framework inconsistency.
+4. **Small and contained**: Yes — only ~10 lines changed in a single
+   function, single file.
+5. **No new features**: Correct — purely error handling.
+6. **Applies cleanly**: The affected code has been stable since 2019
+   (`a8afc193558a4`), so it should apply cleanly to all active stable
+   trees.
 
-- **git log master -- drivers/tty/vt/keyboard.c** confirmed
-  `bfb24564b5fd8` is present in the tree
-- **Read of keyboard.c lines 1650-1699** confirmed the `__free(kfree)`
-  annotations are present in the current codebase, making this fix
-  necessary
-- **git show bfb24564b5fd8** confirmed this is the prerequisite that
-  introduced the problematic `__free()` usage
-- Commit message includes concrete error output from the kernel test
-  robot, confirming the build failure is real and reproducible
-- The commit references the specific clang fix (llvm-project commit
-  f023f5cdb2e6c19) confirming this is a known compiler issue
-- Author is Nathan Chancellor, the primary Linux kernel clang/LLVM
-  maintainer - expert in this area
-- Signed-off by Greg KH (stable tree maintainer)
+## Risk Assessment
 
-### Conclusion
+**Very low risk.** The change:
+- Only adds error checking to an existing code path
+- Only affects the failure case (when `clk_prepare_enable()` returns
+  non-zero)
+- The success path is unchanged
+- Proper cleanup of `pclk` when `clk` fails prevents resource leaks
+- Follows established patterns used by other serial drivers
 
-This is a textbook **build fix** - one of the explicitly allowed
-categories for stable backporting. It fixes a real compilation failure
-with clang < 17 on arm64, the change is purely mechanical (code movement
-into helper functions with zero logic changes), the risk is extremely
-low, and it's authored by the kernel's clang expert and signed off by
-the stable maintainer. The only caveat is that it requires the
-prerequisite commit `bfb24564b5fd8` to be present in the stable tree.
+## Verification
+
+- **Git blame** confirmed the buggy code has been present since 2013
+  (`ffc3ae6dd925b6` by Heikki Krogerus) with pclk added in 2014
+  (`7d78cbefaa465`).
+- **Code review** of other serial drivers (fsl_lpuart.c, imx.c)
+  confirmed they properly check `clk_prepare_enable()` return values in
+  runtime_resume, establishing this as an expected pattern.
+- **8250_mtk.c** has the same unchecked pattern, confirming this is a
+  real class of bugs in 8250 drivers.
+- **Commit was merged by Greg Kroah-Hartman** (serial subsystem and
+  stable maintainer), who linked it via patch.msgid.link.
+- **dw8250_runtime_suspend** unconditionally calls
+  `clk_disable_unprepare()` on both clocks — verified that if
+  runtime_resume falsely reports success, the next suspend would call
+  disable on a clock that wasn't successfully enabled, causing clock
+  framework imbalance.
+- **Could NOT verify** whether any user actually reported hitting this
+  bug in practice — the commit has no Reported-by tag, suggesting this
+  was found by code review rather than a user report.
+
+## Conclusion
+
+This is a legitimate bug fix that adds missing error handling for clock
+enable operations in a runtime PM callback. The fix is small, surgical,
+obviously correct, follows patterns established by other drivers in the
+same subsystem, and carries essentially zero regression risk. While the
+bug may not be frequently triggered in practice (clock enable failures
+are relatively uncommon), when it does trigger, it causes real problems
+(clock imbalance, non-functional hardware). The code has been present in
+all stable trees since 2013-2014, so the fix is applicable broadly.
 
 **YES**
 
- drivers/tty/vt/keyboard.c | 221 ++++++++++++++++++++------------------
- 1 file changed, 115 insertions(+), 106 deletions(-)
+ drivers/tty/serial/8250/8250_dw.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
-index d65fc60dd7bed..3538d54d6a6ac 100644
---- a/drivers/tty/vt/keyboard.c
-+++ b/drivers/tty/vt/keyboard.c
-@@ -1649,134 +1649,143 @@ int __init kbd_init(void)
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index 27af83f0ff463..0f8207652efe6 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -741,11 +741,18 @@ static int dw8250_runtime_suspend(struct device *dev)
  
- /* Ioctl support code */
- 
--/**
-- *	vt_do_diacrit		-	diacritical table updates
-- *	@cmd: ioctl request
-- *	@udp: pointer to user data for ioctl
-- *	@perm: permissions check computed by caller
-- *
-- *	Update the diacritical tables atomically and safely. Lock them
-- *	against simultaneous keypresses
-- */
--int vt_do_diacrit(unsigned int cmd, void __user *udp, int perm)
-+static int vt_do_kdgkbdiacr(void __user *udp)
+ static int dw8250_runtime_resume(struct device *dev)
  {
--	int asize;
--
--	switch (cmd) {
--	case KDGKBDIACR:
--	{
--		struct kbdiacrs __user *a = udp;
--		int i;
-+	struct kbdiacrs __user *a = udp;
-+	int i, asize;
++	int ret;
+ 	struct dw8250_data *data = dev_get_drvdata(dev);
  
--		struct kbdiacr __free(kfree) *dia = kmalloc_array(MAX_DIACR, sizeof(struct kbdiacr),
--								  GFP_KERNEL);
--		if (!dia)
--			return -ENOMEM;
-+	struct kbdiacr __free(kfree) *dia = kmalloc_array(MAX_DIACR, sizeof(struct kbdiacr),
-+							  GFP_KERNEL);
-+	if (!dia)
-+		return -ENOMEM;
+-	clk_prepare_enable(data->pclk);
++	ret = clk_prepare_enable(data->pclk);
++	if (ret)
++		return ret;
  
--		/* Lock the diacriticals table, make a copy and then
--		   copy it after we unlock */
--		scoped_guard(spinlock_irqsave, &kbd_event_lock) {
--			asize = accent_table_size;
--			for (i = 0; i < asize; i++) {
--				dia[i].diacr = conv_uni_to_8bit(accent_table[i].diacr);
--				dia[i].base = conv_uni_to_8bit(accent_table[i].base);
--				dia[i].result = conv_uni_to_8bit(accent_table[i].result);
--			}
-+	/* Lock the diacriticals table, make a copy and then
-+	   copy it after we unlock */
-+	scoped_guard(spinlock_irqsave, &kbd_event_lock) {
-+		asize = accent_table_size;
-+		for (i = 0; i < asize; i++) {
-+			dia[i].diacr = conv_uni_to_8bit(accent_table[i].diacr);
-+			dia[i].base = conv_uni_to_8bit(accent_table[i].base);
-+			dia[i].result = conv_uni_to_8bit(accent_table[i].result);
- 		}
--
--		if (put_user(asize, &a->kb_cnt))
--			return -EFAULT;
--		if (copy_to_user(a->kbdiacr, dia, asize * sizeof(struct kbdiacr)))
--			return -EFAULT;
--		return 0;
- 	}
--	case KDGKBDIACRUC:
--	{
--		struct kbdiacrsuc __user *a = udp;
- 
--		void __free(kfree) *buf = kmalloc_array(MAX_DIACR, sizeof(struct kbdiacruc),
--							GFP_KERNEL);
--		if (buf == NULL)
--			return -ENOMEM;
-+	if (put_user(asize, &a->kb_cnt))
-+		return -EFAULT;
-+	if (copy_to_user(a->kbdiacr, dia, asize * sizeof(struct kbdiacr)))
-+		return -EFAULT;
-+	return 0;
-+}
- 
--		/* Lock the diacriticals table, make a copy and then
--		   copy it after we unlock */
--		scoped_guard(spinlock_irqsave, &kbd_event_lock) {
--			asize = accent_table_size;
--			memcpy(buf, accent_table, asize * sizeof(struct kbdiacruc));
--		}
-+static int vt_do_kdgkbdiacruc(void __user *udp)
-+{
-+	struct kbdiacrsuc __user *a = udp;
-+	int asize;
- 
--		if (put_user(asize, &a->kb_cnt))
--			return -EFAULT;
--		if (copy_to_user(a->kbdiacruc, buf, asize * sizeof(struct kbdiacruc)))
--			return -EFAULT;
-+	void __free(kfree) *buf = kmalloc_array(MAX_DIACR, sizeof(struct kbdiacruc),
-+						GFP_KERNEL);
-+	if (buf == NULL)
-+		return -ENOMEM;
- 
--		return 0;
-+	/* Lock the diacriticals table, make a copy and then
-+	   copy it after we unlock */
-+	scoped_guard(spinlock_irqsave, &kbd_event_lock) {
-+		asize = accent_table_size;
-+		memcpy(buf, accent_table, asize * sizeof(struct kbdiacruc));
- 	}
- 
--	case KDSKBDIACR:
--	{
--		struct kbdiacrs __user *a = udp;
--		struct kbdiacr __free(kfree) *dia = NULL;
--		unsigned int ct;
--		int i;
-+	if (put_user(asize, &a->kb_cnt))
-+		return -EFAULT;
-+	if (copy_to_user(a->kbdiacruc, buf, asize * sizeof(struct kbdiacruc)))
-+		return -EFAULT;
- 
--		if (!perm)
--			return -EPERM;
--		if (get_user(ct, &a->kb_cnt))
--			return -EFAULT;
--		if (ct >= MAX_DIACR)
--			return -EINVAL;
-+	return 0;
-+}
- 
--		if (ct) {
--			dia = memdup_array_user(a->kbdiacr,
--						ct, sizeof(struct kbdiacr));
--			if (IS_ERR(dia))
--				return PTR_ERR(dia);
--		}
-+static int vt_do_kdskbdiacr(void __user *udp, int perm)
-+{
-+	struct kbdiacrs __user *a = udp;
-+	struct kbdiacr __free(kfree) *dia = NULL;
-+	unsigned int ct;
-+	int i;
- 
--		guard(spinlock_irqsave)(&kbd_event_lock);
--		accent_table_size = ct;
--		for (i = 0; i < ct; i++) {
--			accent_table[i].diacr =
--					conv_8bit_to_uni(dia[i].diacr);
--			accent_table[i].base =
--					conv_8bit_to_uni(dia[i].base);
--			accent_table[i].result =
--					conv_8bit_to_uni(dia[i].result);
--		}
-+	if (!perm)
-+		return -EPERM;
-+	if (get_user(ct, &a->kb_cnt))
-+		return -EFAULT;
-+	if (ct >= MAX_DIACR)
-+		return -EINVAL;
- 
--		return 0;
-+	if (ct) {
-+		dia = memdup_array_user(a->kbdiacr,
-+					ct, sizeof(struct kbdiacr));
-+		if (IS_ERR(dia))
-+			return PTR_ERR(dia);
- 	}
- 
--	case KDSKBDIACRUC:
--	{
--		struct kbdiacrsuc __user *a = udp;
--		unsigned int ct;
--		void __free(kfree) *buf = NULL;
-+	guard(spinlock_irqsave)(&kbd_event_lock);
-+	accent_table_size = ct;
-+	for (i = 0; i < ct; i++) {
-+		accent_table[i].diacr =
-+				conv_8bit_to_uni(dia[i].diacr);
-+		accent_table[i].base =
-+				conv_8bit_to_uni(dia[i].base);
-+		accent_table[i].result =
-+				conv_8bit_to_uni(dia[i].result);
+-	clk_prepare_enable(data->clk);
++	ret = clk_prepare_enable(data->clk);
++	if (ret) {
++		clk_disable_unprepare(data->pclk);
++		return ret;
 +	}
  
--		if (!perm)
--			return -EPERM;
-+	return 0;
-+}
- 
--		if (get_user(ct, &a->kb_cnt))
--			return -EFAULT;
-+static int vt_do_kdskbdiacruc(void __user *udp, int perm)
-+{
-+	struct kbdiacrsuc __user *a = udp;
-+	unsigned int ct;
-+	void __free(kfree) *buf = NULL;
- 
--		if (ct >= MAX_DIACR)
--			return -EINVAL;
-+	if (!perm)
-+		return -EPERM;
- 
--		if (ct) {
--			buf = memdup_array_user(a->kbdiacruc,
--						ct, sizeof(struct kbdiacruc));
--			if (IS_ERR(buf))
--				return PTR_ERR(buf);
--		}
--		guard(spinlock_irqsave)(&kbd_event_lock);
--		if (ct)
--			memcpy(accent_table, buf,
--					ct * sizeof(struct kbdiacruc));
--		accent_table_size = ct;
--		return 0;
-+	if (get_user(ct, &a->kb_cnt))
-+		return -EFAULT;
-+
-+	if (ct >= MAX_DIACR)
-+		return -EINVAL;
-+
-+	if (ct) {
-+		buf = memdup_array_user(a->kbdiacruc,
-+					ct, sizeof(struct kbdiacruc));
-+		if (IS_ERR(buf))
-+			return PTR_ERR(buf);
- 	}
-+	guard(spinlock_irqsave)(&kbd_event_lock);
-+	if (ct)
-+		memcpy(accent_table, buf,
-+				ct * sizeof(struct kbdiacruc));
-+	accent_table_size = ct;
-+	return 0;
-+}
-+
-+/**
-+ *	vt_do_diacrit		-	diacritical table updates
-+ *	@cmd: ioctl request
-+ *	@udp: pointer to user data for ioctl
-+ *	@perm: permissions check computed by caller
-+ *
-+ *	Update the diacritical tables atomically and safely. Lock them
-+ *	against simultaneous keypresses
-+ */
-+int vt_do_diacrit(unsigned int cmd, void __user *udp, int perm)
-+{
-+	switch (cmd) {
-+	case KDGKBDIACR:
-+		return vt_do_kdgkbdiacr(udp);
-+	case KDGKBDIACRUC:
-+		return vt_do_kdgkbdiacruc(udp);
-+	case KDSKBDIACR:
-+		return vt_do_kdskbdiacr(udp, perm);
-+	case KDSKBDIACRUC:
-+		return vt_do_kdskbdiacruc(udp, perm);
- 	}
  	return 0;
  }
 -- 
