@@ -1,218 +1,134 @@
-Received: from mail-wm1-f68.google.com (mail-wm1-f68.google.com [209.85.128.68])
+Received: from mail-oa1-f46.google.com (mail-oa1-f46.google.com [209.85.160.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 311952C21FE
-	for <linux-serial@vger.kernel.org>; Thu, 19 Feb 2026 08:22:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.68
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38F9E199D8
+	for <linux-serial@vger.kernel.org>; Fri, 20 Feb 2026 00:09:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771489362; cv=none; b=kw2gti0uJ4ttNHoAoiofdoH2TKcK+OIsTBUj3VMGf1zj/b/y6mFx3e/J2/QywIw0MrGndIb6/iF3gnHbkCU8QyL5P5MIgt7/Lp6SKdy7g0eTqwUJyprIZDK9bNxF3tgtSeksLGvJWtk9hnnUkHv6OSl2uXhh9AV1l8zsmToqut0=
+	t=1771546159; cv=none; b=aO/XWmtlmCpEB5QJsNsa3z2NnjMbqhkHZun9ODI97MFRLZ74WZqsfTrBJoZUr4bxTbFHhct/98jjYP6ilSNrYU3rZtxg4vwKhaUmdSjzqvwVDnWlv7nJ9hqzARA+Fz/o0vsVsbUiLjVW0QICT1xqtwJJcZcdcxjBE9AdwY79eVE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771489362; c=relaxed/simple;
-	bh=yJ+COvpiMGz+oVO3xJ3UpYvs+If0stPqHups40gU1fM=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=cK6GBVBDAcTFO0jCOFzKUx5FtiHVDJ+wDker1Im0P182UD665RRkRunvCpikX5W9zUxJs5izAWr2iuf0PMMu348OYPvPmn4CdsDNQpklB62jCN21a6iu8vhE/5bM2sxzvcwVYGYk2jccslzbJsw3fkkT3aBJtOW+of4RF68SaKQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=LR2WH5ne; arc=none smtp.client-ip=209.85.128.68
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1771546159; c=relaxed/simple;
+	bh=muqBDDQTZm8WW7TEPJ3B4WrvP0tqyQqdJwOdcR66Lgw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=h0ZAfI9az5qn7nGWG886gZ54TU3uT93Yn0zJ2Mj7ACCKQRttQZaY9X2VES2qnJZ2afcVi8acWoub2ppt7Lx+9cBbqgbcNynQQ3D4t+T5ZITl4aNEc0XIqQGuy/Ctw+irj+aWYkUQ9zSQCLgU6FWrFQsdoFWznIlvdM/c0Xozbzw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=231dObeF; arc=none smtp.client-ip=209.85.160.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="LR2WH5ne"
-Received: by mail-wm1-f68.google.com with SMTP id 5b1f17b1804b1-4838c15e3cbso5362855e9.3
-        for <linux-serial@vger.kernel.org>; Thu, 19 Feb 2026 00:22:40 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="231dObeF"
+Received: by mail-oa1-f46.google.com with SMTP id 586e51a60fabf-40970f97638so980735fac.3
+        for <linux-serial@vger.kernel.org>; Thu, 19 Feb 2026 16:09:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1771489359; x=1772094159; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:message-id:subject:cc
-         :to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=0D6P+pMy0FNkLSD5nYId8+lNUqZXXTENXB4evIwBeIY=;
-        b=LR2WH5ne+2DFwqu0zvtQYR3x8AWZaDRFmJ21Vt44UKjvnjGu9KtJvIvf3szPx7z7GY
-         fIrz9dTLAQNpnH1RRT39JXEEbzGGTR6ZDZw5bCLp7CFiRsEutUFBt2ANxosfL1l1IuoP
-         IDwNXAP6sTxYFC3OxYZJf8I5Zpq9ZQzndCNwxcrKL0aC7ZuFE4KXDt79VNV/tq1XoZ8k
-         b0n6j6EOSDjrH5e1LowK92BNbwvRdIAF6e/kFSN/sjPFN3zSYsDyaPthOfcdgLbYV0hD
-         YzQJAhaaeqWQG88oQ2hl7d3o+jJzYW3p8ow9xtwoPy/+foF2cvZd2W8PSfV9/XhMYSmZ
-         V7xw==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1771546156; x=1772150956; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=/4mPm+ZoP8DxO5yOKQMVe/JsfKSmfmW2/A8ErJD8Mio=;
+        b=231dObeFA30pDlly4NfK8dSnOKkZbSHUzm5rLuhoSXuCK+Z/aataC7+lQC4AP1gEj7
+         0rtRqzar5JYhCciPcb93QMJpCSZvyfSf9ecvVLu+9U+9iLHeFykB2IaPQ1q4jHERhuSP
+         O5HXEPsKuq8gVr7txMJOMaKMJde9/6fhZV0cnAQ6LCleHzeiygNGzu3GEwzmngTnCaTv
+         aOe6yjm3L3WXnUSOvXy5yyc3MfTRVhDcl2HnKk7mZryEZKRZVJFVOFoGrgpvuyzshNEd
+         VJPo2dmKP+7nOIoL8EboeZWAG4TiloweDJL1wblQgySvhO0GjTrF/liXaMz68II2LgLi
+         hPfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771489359; x=1772094159;
-        h=in-reply-to:content-disposition:mime-version:message-id:subject:cc
-         :to:from:date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=0D6P+pMy0FNkLSD5nYId8+lNUqZXXTENXB4evIwBeIY=;
-        b=KKrohe9c6i1HyRa4WvY9rSJnz9wr/FeiWjhHfBen0RlScKGJpiGG6cl1PM7qU6YKy5
-         fPouj4zvaIJQViioGzXZuF1urktRZmItBncc0P0uIEaFLl1OT1n+0NGQKeFXdu/T8+bj
-         XMrZSWm5VlSiwuJ7ZPfnMioKmagTwra1OYy5gyy2WQ0SDRqs4D/kfjWJj+cfCA0Jgt9Z
-         2KzpynTHl5ma2jwyFQxBbiNSuZ4n9J6g8LvdV73JwKgtAbB4vOu6d0e0iiWybd0okeyV
-         cy7zJweG6I2xo+NGqsYyylR9WtC3JDZ0xsV8F8k2QXiFS7hji+40zSWXgIf2k+f9TzBN
-         DkyQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWbG7f1+XMw/z56nIYx4XvKCsZyd8frb/NOFeIlexVRdmPBw+c8JyPE8VJYPBdCVatofj94vOTuWrECx2Y=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy5QRwrDBqvmrJtWJY7+pDf96SQz/y+XgXYkHSn1cTDrn1I6U1N
-	aiYFyfGcksT9hY6r+F4+adcZSbDiZD3QyLpoPiXQvCw7Dr6JFMH68Gcg4BAQj3wPFDE=
-X-Gm-Gg: AZuq6aLkLT4efOJknU/SWw265uy96I0FT9vpC8NzQ6cylNFkyutRBhviBTbYmSKa72N
-	eOri8MmV/oymKIQ+LQ+F8HpdEYRuXZloc7mc2PVVJ/8ZM3Ihfs2NdxfDJQEHjkZz5lUdbEraQ9C
-	F0GQL1hq4sJngc+apNl/c8t0+OiEWJAmHnmBnN59tcxYEX+Zqasaoivzhh4f5Ga4QxADIm+DgoE
-	RzgYFgkhsfNC8BRaJwLJMxb8ntVzQk3sGWVBDC0N0QuVe+bXiOI/peicDA4GjjbmD0trJRgGtt+
-	X3lqGomNzGFiFtVSevcpesZTBs75Rl8ZQ10MvKR8DwNGhO1cJeePNZTbEeAtjMoSuZDsJNhZHVA
-	CZ77hNKVoTaJGhuUqLhp1mekuEyAbE9KC3mgRlu7+JzHsKjYcMDKbitmb/+M+fj/p6/tzCw4LIN
-	e1hYl0zXAkyhSZR6/IPCf2JFKbxD7v
-X-Received: by 2002:a05:600c:870b:b0:483:6f37:1b56 with SMTP id 5b1f17b1804b1-48371051b15mr358346635e9.10.1771489359323;
-        Thu, 19 Feb 2026 00:22:39 -0800 (PST)
-Received: from localhost ([196.207.164.177])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4839f986118sm12865185e9.21.2026.02.19.00.22.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Feb 2026 00:22:38 -0800 (PST)
-Date: Thu, 19 Feb 2026 11:22:35 +0300
-From: Dan Carpenter <dan.carpenter@linaro.org>
-To: oe-kbuild@lists.linux.dev, Larisa Grigore <larisa.grigore@oss.nxp.com>,
-	gregkh@linuxfoundation.org, jirislaby@kernel.org, robh@kernel.org,
-	krzk+dt@kernel.org, conor+dt@kernel.org, sumit.semwal@linaro.org,
-	christian.koenig@amd.com, chester62515@gmail.com,
-	cosmin.stoica@nxp.com, adrian.nitu@freescale.com,
-	stefan-gabriel.mirea@nxp.com, Mihaela.Martinas@freescale.com
-Cc: lkp@intel.com, oe-kbuild-all@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-media@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-	s32@nxp.com, imx@lists.linux.dev, clizzi@redhat.com,
-	aruizrui@redhat.com, eballetb@redhat.com, echanude@redhat.com,
-	jkangas@redhat.com, Larisa Grigore <larisa.grigore@oss.nxp.com>,
-	Radu Pirea <radu-nicolae.pirea@nxp.com>,
-	Phu Luu An <phu.luuan@nxp.com>, Js Ha <js.ha@nxp.com>,
-	Ghennadi Procopciuc <ghennadi.procopciuc@nxp.com>
-Subject: Re: [PATCH 12/13] serial: linflexuart: Add DMA support
-Message-ID: <202602171109.6YSFXcJ3-lkp@intel.com>
+        d=1e100.net; s=20230601; t=1771546156; x=1772150956;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=/4mPm+ZoP8DxO5yOKQMVe/JsfKSmfmW2/A8ErJD8Mio=;
+        b=H/JaYAyJoHVwIff9zVuZXbcCZJ2Z3t7v8bu+xk79/5pDYCwlPlGtxistmw7j8+pwjG
+         f6pfr1MgkGWIgzzLtf4Bl35RL4qADdsuDknBwpH7+KokpoImNUVyXAKVBECLAAMKfGNT
+         +0S7ol4sVp6eO0mmC2MUdCQXP+cCISurWBH5+cC/RzsZv9TLoDH4drN4pESdJLhGCA59
+         e8plC6BXinAsbJIZq6gf5TSzkhiuSBdhBuN7T5HAaA2J6aCjTE23QzeVz4MivWLEbbR4
+         Q7wTTKt142SdRA2TnX22LmB2DCs2BSb/7+OrP4ePdEGC7FfRXyiqSsuoQzqiqfr+gSqn
+         5PTQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXMk5Lx2nQUgj5Au5EC8TMprAERZ6y/aQju632qPnDRw6ZhMHDZeOwBoqY1gU9pUWATCuKQXyJV8oHMa0A=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz/koX9wnF81xAd5ba3loaVmGsVUFoRsIDKNJ6bX66G0qePyDiM
+	kq9n8IPVWLiuY09C+y3FGe/ObICdphBKUx79J1V2iqWVk7vTH9Rp0mfsOsnApX9ds2k=
+X-Gm-Gg: AZuq6aJUflXnxxFjwso0Ou6IXGv3zM/QMmPYiak4SMfsIxiu4Pw03B+774r1y9HKp6A
+	3clK5pH2xRRa2/isGHPax31hMDVFrrxCseXISeJym/ZbXtOjSauynssMoc5ipKeTF4H+24RpOZ8
+	xZDJ4jy0TMFddgQG0fKmZA+5smVHHGc5EySTdU22Bc9RQpNs040HV53D4junhXYzKbMtyIgkx0M
+	AgT4RuRqmcChzUGQ4ioP7Znc05yeiAJzlb4mJftKxCDvS37cvirIZasfViFlP2Xqov+z1GW7Ygu
+	kzhwIvH0ZaGcvr0o/V+iIUihIX/f6AUe8z+R0u8Kp6uPUBg0YdcGZlR/7gz5r4C74fCYC/YcsgJ
+	bRHjjI6N6mBrwlqZ+JVm5WPxEtGqYgdxFUWTV+FR40pwh1KTYnUkB/qL+VNQOrT5zKjQ90nETe6
+	n9SeTq0p9G8sP19xxCrJw//Hcr1wpEqiRe1qyrFmsvgkOqdIzZw1Xz7TkNsSPJFH046tdzjrHpk
+	HQ6CHMP
+X-Received: by 2002:a05:6871:eb01:b0:409:7c0b:6aff with SMTP id 586e51a60fabf-4152917bfc6mr3628005fac.43.1771546156112;
+        Thu, 19 Feb 2026 16:09:16 -0800 (PST)
+Received: from ?IPV6:2600:8803:e7e4:500:d4c1:bce:26a1:c903? ([2600:8803:e7e4:500:d4c1:bce:26a1:c903])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-40eaeeab492sm25902271fac.5.2026.02.19.16.09.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 Feb 2026 16:09:15 -0800 (PST)
+Message-ID: <23778b52-9aa2-49fc-946b-e858b99fc3c9@baylibre.com>
+Date: Thu, 19 Feb 2026 18:09:14 -0600
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260216150205.212318-13-larisa.grigore@oss.nxp.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 3/4] arm64: dts: mediatek: add device-tree for Genio
+ 720-EVK board
+To: Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Sean Wang <sean.wang@mediatek.com>
+Cc: kernel@collabora.com, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org
+References: <20251203-add-mediatek-genio-520-720-evk-v1-0-df794b2a30ae@collabora.com>
+ <20251203-add-mediatek-genio-520-720-evk-v1-3-df794b2a30ae@collabora.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20251203-add-mediatek-genio-520-720-evk-v1-3-df794b2a30ae@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Hi Larisa,
+On 12/3/25 7:59 AM, Louis-Alexis Eyraud wrote:
+> Add support for MediaTek MT8189 SoC and its variants, and a device-tree
+> for the basic hardware enablement of the Genio 720-EVK board, based on
+> MT8391 SoC.
+> 
+> MT8391 SoC is a variant of MT8189 SoC with a difference for the Arm
+> Cortex-A78 CPU core maximum frequency (2.6 Ghz for MT8391, 3 Ghz for
+> MT8189). MT8391 hardware register maps are identical to MT8189.
+> 
+> The Genio 720-EVK board has following features:
+>   - MT8391 SoC
+>   - MT6365 PMIC
 
-kernel test robot noticed the following build warnings:
+Is MT6365 PMIC ...
 
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8391-genio-common.dtsi b/arch/arm64/boot/dts/mediatek/mt8391-genio-common.dtsi
+> new file mode 100644
+> index 0000000000000000000000000000000000000000..744641916952111a4b389cf6adbd27c429b6eff2
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/mediatek/mt8391-genio-common.dtsi
+> @@ -0,0 +1,555 @@
+> +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+> +/*
+> + * Copyright (c) 2025 Collabora Ltd.
+> + * Author: Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>
+> + */
+> +
+> +#include "mt6359.dtsi"
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Larisa-Grigore/serial-linflexuart-Fix-locking-in-set_termios/20260216-231403
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-patch link:    https://lore.kernel.org/r/20260216150205.212318-13-larisa.grigore%40oss.nxp.com
-patch subject: [PATCH 12/13] serial: linflexuart: Add DMA support
-config: i386-randconfig-141-20260217 (https://download.01.org/0day-ci/archive/20260217/202602171109.6YSFXcJ3-lkp@intel.com/config)
-compiler: gcc-14 (Debian 14.2.0-19) 14.2.0
-smatch version: v0.5.0-8994-gd50c5a4c
+... really 100% identical to MT6359 PMIC?
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Reported-by: Dan Carpenter <dan.carpenter@linaro.org>
-| Closes: https://lore.kernel.org/r/202602171109.6YSFXcJ3-lkp@intel.com/
+Asking because I'm working on this in U-Boot and would be helpful
+to know that this is correct. Would probably be a good idea to mention
+it in the commit message too to show this is intentional.
 
-smatch warnings:
-drivers/tty/serial/fsl_linflexuart.c:1441 linflex_probe() warn: missing unwind goto?
 
-vim +1441 drivers/tty/serial/fsl_linflexuart.c
+And I wonder if it would be a good idea to add a compatible with fallback
+just to be sure.
 
-09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1377  static int linflex_probe(struct platform_device *pdev)
-09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1378  {
-09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1379  	struct device_node *np = pdev->dev.of_node;
-1d3f5f07fafc71 Radu Pirea           2026-02-16  1380  	struct linflex_port *lfport;
-09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1381  	struct uart_port *sport;
-09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1382  	struct resource *res;
-09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1383  	int ret;
-09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1384  
-1d3f5f07fafc71 Radu Pirea           2026-02-16  1385  	lfport = devm_kzalloc(&pdev->dev, sizeof(*lfport), GFP_KERNEL);
-1d3f5f07fafc71 Radu Pirea           2026-02-16  1386  	if (!lfport)
-09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1387  		return -ENOMEM;
-09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1388  
-1d3f5f07fafc71 Radu Pirea           2026-02-16  1389  	sport = &lfport->port;
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1390  	sport->dev = &pdev->dev;
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1391  
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1392  	lfport->dma_tx_chan = dma_request_chan(sport->dev, "tx");
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1393  	if (IS_ERR(lfport->dma_tx_chan)) {
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1394  		ret = PTR_ERR(lfport->dma_tx_chan);
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1395  		if (ret == -EPROBE_DEFER)
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1396  			return ret;
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1397  
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1398  		dev_info(sport->dev,
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1399  			 "DMA tx channel request failed, operating without tx DMA %ld\n",
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1400  			 PTR_ERR(lfport->dma_tx_chan));
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1401  		lfport->dma_tx_chan = NULL;
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1402  	}
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1403  
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1404  	lfport->dma_rx_chan = dma_request_chan(sport->dev, "rx");
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1405  	if (IS_ERR(lfport->dma_rx_chan)) {
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1406  		ret = PTR_ERR(lfport->dma_rx_chan);
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1407  		if (ret == -EPROBE_DEFER) {
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1408  			dma_release_channel(lfport->dma_tx_chan);
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1409  			return ret;
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1410  		}
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1411  
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1412  		dev_info(sport->dev,
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1413  			 "DMA rx channel request failed, operating without rx DMA %ld\n",
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1414  			 PTR_ERR(lfport->dma_rx_chan));
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1415  		lfport->dma_rx_chan = NULL;
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1416  	}
-1d3f5f07fafc71 Radu Pirea           2026-02-16  1417  
-09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1418  	ret = of_alias_get_id(np, "serial");
-09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1419  	if (ret < 0) {
-09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1420  		dev_err(&pdev->dev, "failed to get alias id, errno %d\n", ret);
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1421  		goto linflex_probe_free_dma;
-09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1422  	}
-09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1423  	if (ret >= UART_NR) {
-09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1424  		dev_err(&pdev->dev, "driver limited to %d serial ports\n",
-09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1425  			UART_NR);
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1426  		ret = -ENOMEM;
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1427  		goto linflex_probe_free_dma;
-09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1428  	}
-09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1429  
-09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1430  	sport->line = ret;
-09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1431  
-8c6d7e5fd50b45 Yangtao Li           2023-07-12  1432  	sport->membase = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1433  	if (IS_ERR(sport->membase)) {
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1434  		ret = PTR_ERR(sport->membase);
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1435  		goto linflex_probe_free_dma;
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1436  	}
-8c6d7e5fd50b45 Yangtao Li           2023-07-12  1437  	sport->mapbase = res->start;
-09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1438  
-4e8da86fc1f767 Zhang Shurong        2023-08-26  1439  	ret = platform_get_irq(pdev, 0);
-4e8da86fc1f767 Zhang Shurong        2023-08-26  1440  	if (ret < 0)
-4e8da86fc1f767 Zhang Shurong        2023-08-26 @1441  		return ret;
-
-No clean up?
-
-4e8da86fc1f767 Zhang Shurong        2023-08-26  1442  
-09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1443  	sport->iotype = UPIO_MEM;
-4e8da86fc1f767 Zhang Shurong        2023-08-26  1444  	sport->irq = ret;
-09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1445  	sport->ops = &linflex_pops;
-09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1446  	sport->flags = UPF_BOOT_AUTOCONF;
-4151bbed79f98b Dmitry Safonov       2019-12-13  1447  	sport->has_sysrq = IS_ENABLED(CONFIG_SERIAL_FSL_LINFLEXUART_CONSOLE);
-09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1448  
-1d3f5f07fafc71 Radu Pirea           2026-02-16  1449  	ret = linflex_init_clk(lfport);
-1d3f5f07fafc71 Radu Pirea           2026-02-16  1450  	if (ret)
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1451  		goto linflex_probe_free_dma;
-1d3f5f07fafc71 Radu Pirea           2026-02-16  1452  
-09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1453  	linflex_ports[sport->line] = sport;
-09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1454  
-1d3f5f07fafc71 Radu Pirea           2026-02-16  1455  	platform_set_drvdata(pdev, lfport);
-09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1456  
-1d3f5f07fafc71 Radu Pirea           2026-02-16  1457  	ret = uart_add_one_port(&linflex_reg, sport);
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1458  	if (ret) {
-1d3f5f07fafc71 Radu Pirea           2026-02-16  1459  		clk_bulk_disable_unprepare(LINFLEX_CLK_NUM, lfport->clks);
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1460  		goto linflex_probe_free_dma;
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1461  	}
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1462  
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1463  	return 0;
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1464  
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1465  linflex_probe_free_dma:
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1466  	if (lfport->dma_tx_chan)
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1467  		dma_release_channel(lfport->dma_tx_chan);
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1468  	if (lfport->dma_rx_chan)
-0b34325c5f79f1 Larisa Grigore       2026-02-16  1469  		dma_release_channel(lfport->dma_rx_chan);
-1d3f5f07fafc71 Radu Pirea           2026-02-16  1470  
-1d3f5f07fafc71 Radu Pirea           2026-02-16  1471  	return ret;
-09864c1cdf5c53 Stefan-gabriel Mirea 2019-08-09  1472  }
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+&pmic {
+	compatible = "mediatek,mt6365", "mediatek,mt6359";
+};
 
