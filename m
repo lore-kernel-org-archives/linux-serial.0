@@ -1,182 +1,220 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail-m2489.xmail.ntesmail.com (mail-m2489.xmail.ntesmail.com [45.195.24.89])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97EAD3783BA
-	for <linux-serial@vger.kernel.org>; Mon, 23 Feb 2026 20:40:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.51
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771879239; cv=pass; b=aRJ11fRXG+JP+cwxbmntooJBOnFXKPUW+YhhIVPLhYhddmaCcZTpZWdGE8m1fSZIzpYsg3rbkTwJTOUaRwJ6KNtYIjQ4ZvoPWgUgsNdtpIyn8BYwvKi0u8/F3TR3yusAHT77DoTdcGWQIhP9w79ZT2s5QkrtgX+9Bgqlw6FfZwg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771879239; c=relaxed/simple;
-	bh=tB/Bh69YT1o5AGl6zuMHY8RN4uTpr/OJyhpDSgAOaRU=;
-	h=MIME-Version:From:Date:Message-ID:Subject:To:Cc:Content-Type; b=Xceo+OSxK1AFLjHbyMnhsGQIWhfXLkVKg1MOEMUaNklI26xdof/l6YBHIRjRKaNd+rq52s6meJyY7jcpPbHtVSOvnYQ8BcQAShMozFSGZOXrKXnHfhBvg9jscThjtGTBDp6OPx7ksFC1CPv3bEYCrsJajQc5tpZ54z7FqpjGFRs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nexthop.ai; spf=pass smtp.mailfrom=nexthop.ai; dkim=pass (2048-bit key) header.d=nexthop.ai header.i=@nexthop.ai header.b=atzPsd1L; arc=pass smtp.client-ip=209.85.128.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nexthop.ai
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nexthop.ai
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0A52F4F1;
+	Mon, 23 Feb 2026 21:15:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.195.24.89
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1771881338; cv=none; b=XIzvgnF5YHIvLQ5rvQ2Fp6GSRNSTOuJl0gWB9tA80rI7ELoF7VP5JGCNCpwHs3mZXu/mZ5VeXVDovRe0X7fpK6fwEAQD6p1xoZigHWiFviMeXVkTtpj5AhsZB6eGNv8oV032o//jIPER2lrAMgzIyThwyzLr7uEXs9TmPcIJdag=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1771881338; c=relaxed/simple;
+	bh=Zq2IirUyfEPFzMu6m9iwUulfmXx1dT5LTcM+Mxmn32U=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References; b=dsFWsyABv064nHcTNUQ6KXGD+JLy6v2oGHDMVluIPYUfcq/t0OvUwiuRNhF1P+d0ysqUlxao3g9emPtNMdyj65954rNAVQQb1THqCzAnbj1w0z/wOqLoBeGofYeorsnkWCp1Qcx3ikE9PRCQS9tFncv66UvJ+5Ed1ikQdGcNv9A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com; spf=pass smtp.mailfrom=rock-chips.com; dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b=hesEBWpu; arc=none smtp.client-ip=45.195.24.89
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=nexthop.ai header.i=@nexthop.ai header.b="atzPsd1L"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4806cc07ce7so45246755e9.1
-        for <linux-serial@vger.kernel.org>; Mon, 23 Feb 2026 12:40:37 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1771879236; cv=none;
-        d=google.com; s=arc-20240605;
-        b=SSC98+2CmQgIHdrHG2YKsALCPeGwFGXk7b2D1pmqnpPVjTNK+jXKlcKkQFY2678zJi
-         CtLAY0CFebFB7tB0S3AUC3+dhYg0FUR4eZVl2iHpoLDBuxcqucEm4yMKEGNohBg2R2V9
-         J+uPi47WLYck0FYwLpfjRvo/1Q/+GW86git7tCvlKhbwnKpb1iJ/XsEsWdH1wRkoC0ST
-         d2GuGL9Ktn3O90Wa8RbeW3HzeRN3Zp5W1jZqPbifwuNTQsgOdchfiSiq65QgdG8Y3laF
-         Oxt0fILriMuiFAnCvyre6f+SUpmW3ryz2sdLs03ECaVjRWcmPLnC79hKJPLXwwr+sCZC
-         IoRA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:mime-version:dkim-signature;
-        bh=mbL37sOWut6us6TJEOfcO6gTAIz76WnjRpvpITqUljE=;
-        fh=n/FzJjftoLefyaTFuKBWAHL1ztu4wPP1oUrCWH7nSys=;
-        b=UAVBZUPMoq2d6Tc41lg+Rw7hQ2mfvmHBz2iQK0+Qj7E+gYMwNrfsPnxF6IXW/u1aGV
-         qyLG1Jvq5EDxTAeX6gI3Y1rINR7K8lE2DSGAezdFOpZx1DI4nPYv/KFeck/EOxLotTZ/
-         5fybJlvr2pvwEg59BoM4Y3QHbh9B1vsnOsjyshBpEjQQQz/dHuzNX9cAdZyHuAXo6P9f
-         oMFjFb/E4/DBrKTOCXE/3N6C23FTITuhTVG9HdUD3BK5wiH1vwl71feFuAzziBJ9HI/Z
-         ScmbMLfVo2/iVzOc0EBrqpvUDSR9/ObKedbw9e6FLCODmi9W35E4XwoamQ9cxG4Vj4F4
-         rYmw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=nexthop.ai; s=google; t=1771879236; x=1772484036; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=mbL37sOWut6us6TJEOfcO6gTAIz76WnjRpvpITqUljE=;
-        b=atzPsd1Ls+EH4Cwosd4A2xW63INCSWaMPw1vnL4OwpF7h5KYCMXZdh0OH0j42WgU4X
-         nxpYipF0qk3TpPJR5gyNB58UP6YVue56/X1eQtmN7l93clObvsZPP1Gn+v8SSQgOj2M8
-         d3Dl4bQKGJgnV7mJ3y327PttH5qBTv5xtaBtY//zGRxib4GXc++khq1gyttXLPeGWVJq
-         vHy4xslpsL5CY4RxWh7kuio4WUvlhl1/WbxfSECxxjO7KydIss7Fuj39gPKHEmXdbCaN
-         vlUPGlSgNbOzZm8zoAOHpZCt4ViRz6weK0wwhhd5bq3qvJ/XysIsmT1Zr+7ugyD3IkjB
-         6TXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771879236; x=1772484036;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=mbL37sOWut6us6TJEOfcO6gTAIz76WnjRpvpITqUljE=;
-        b=J3AeYCRaeirBi1xmOk0YFBxubS8WiRPBRwYZg+M8QQq+pbXdHDa5VfXSVdiNftiNyy
-         fW1srNgULo12ZAUxoKLxSqCHZ7ac4BMLwu96mG+LQTnUnk/79RQVtlB0XeQq1UmFMEJh
-         SSZKhZ9vDYhz9n1eqy37GQCSaPlJuBOHZkTKxK99nLnJnCQD8emh23dZmRFP9DV149gd
-         Kznygw49tKC9oZyw/e4zt0N2lY/vLgB5Fzuz+P7llBAW8s4SyZRWAjvlvf+Zv+hZNyLv
-         /9o9KS6IA5FkSmePfBUTQvTq288kA07IKWJ8W7mFL+r4Fr7mg0H49x7tCqrTjMN/iINT
-         ENBA==
-X-Gm-Message-State: AOJu0Yy1KTHqRWF5Hbsg3K5CAgBEgIIu/5Ik63fK+u+WGuwVtv0F3BR8
-	4v7pWlnDilI+/27tYmeqkwxb981czMvXz9G7PJDE0oFCyCjBNePb3bLWLMD0p1FRZPTXp7bqW1d
-	DxD/sx9j4A/Kyw/ed+RTneefpTq4lmw1h29Nqo97LEQ==
-X-Gm-Gg: AZuq6aLXWre8jq3hD6rIDa7H39Bse4GpLIrNkYvWf+SeRblGh0xiPVIJbP9CEl4H7uS
-	iYKHtaiEGeUa8lEu4Jkvn/sZB0JdcyxieFtlIlmxFknuUXIMlcO+AdwN1yiKSBsyXlme3A/N5ta
-	gUvny0YKScuQ9c8yv6I9P9yRPnD8Yd2lUC+5wu7zB2WxAdI/CXhPjyPAm5o0hSZoIhNQIQtTjbl
-	5ucnGjs83M6DELu0Lm1WRJcUxPyfYuYSq/ZYgKotwL+1bHn95Y7jvOuIu0IA2NmSxcr0JbpQIqY
-	8Y5YwcyRGeuzrgtxrgJsXGdmh1dh2//5nnhGFYQ=
-X-Received: by 2002:a05:600c:528a:b0:482:eec4:76d with SMTP id
- 5b1f17b1804b1-483a95e9570mr157817555e9.17.1771879235557; Mon, 23 Feb 2026
- 12:40:35 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b="hesEBWpu"
+Received: from localhost.localdomain (unknown [58.22.7.114])
+	by smtp.qiye.163.com (Hmail) with ESMTP id 34b37f77f;
+	Mon, 23 Feb 2026 23:31:55 +0800 (GMT+08:00)
+From: Shawn Lin <shawn.lin@rock-chips.com>
+To: Bjorn Helgaas <bhelgaas@google.com>,
+	"Vaibhaav Ram T . L" <vaibhaavram.tl@microchip.com>,
+	Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
+	Even Xu <even.xu@intel.com>,
+	Xinpeng Sun <xinpeng.sun@intel.com>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Jiri Kosina <jikos@kernel.org>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	Zhou Wang <wangzhou1@hisilicon.com>,
+	Longfang Liu <liulongfang@huawei.com>,
+	Vinod Koul <vkoul@kernel.org>,
+	Lee Jones <lee@kernel.org>,
+	Jijie Shao <shaojijie@huawei.com>,
+	Jian Shen <shenjian15@huawei.com>,
+	Sunil Goutham <sgoutham@marvell.com>,
+	Andrew Lunn <andrew+netdev@lunn.ch>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	"David S . Miller" <davem@davemloft.net>,
+	Jeff Hugo <jeff.hugo@oss.qualcomm.com>,
+	Oded Gabbay <ogabbay@kernel.org>,
+	Maciej Falkowski <maciej.falkowski@linux.intel.com>,
+	Karol Wachowski <karol.wachowski@linux.intel.com>,
+	Min Ma <mamin506@gmail.com>,
+	Lizhi Hou <lizhi.hou@amd.com>,
+	Andreas Noever <andreas.noever@gmail.com>,
+	Mika Westerberg <westeri@kernel.org>,
+	Tomasz Jeznach <tjeznach@rivosinc.com>,
+	Will Deacon <will@kernel.org>,
+	Xinliang Liu <xinliang.liu@linaro.org>,
+	Tian Tao <tiantao6@hisilicon.com>,
+	Davidlohr Bueso <dave@stgolabs.net>,
+	Jonathan Cameron <jonathan.cameron@huawei.com>,
+	Srujana Challa <schalla@marvell.com>,
+	Bharat Bhushan <bbhushan2@marvell.com>,
+	Antoine Tenart <atenart@kernel.org>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	Raag Jadav <raag.jadav@intel.com>,
+	Hans de Goede <hansg@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Andy Shevchenko <andy@kernel.org>,
+	Manivannan Sadhasivam <mani@kernel.org>,
+	Mika Westerberg <mika.westerberg@linux.intel.com>,
+	Andi Shyti <andi.shyti@kernel.org>,
+	Robert Richter <rric@kernel.org>,
+	Mark Brown <broonie@kernel.org>,
+	Nirmal Patel <nirmal.patel@linux.intel.com>,
+	Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>,
+	Sakari Ailus <sakari.ailus@linux.intel.com>,
+	Bingbu Cao <bingbu.cao@intel.com>,
+	Ulf Hansson <ulf.hansson@linaro.org>
+Cc: Arnd Bergmann <arnd@arndb.de>,
+	Benjamin Tissoires <bentiss@kernel.org>,
+	linux-input@vger.kernel.org,
+	linux-i3c@lists.infradead.org,
+	dmaengine@vger.kernel.org,
+	Philipp Stanner <phasta@kernel.org>,
+	netdev@vger.kernel.org,
+	nic_swsd@realtek.com,
+	linux-arm-msm@vger.kernel.org,
+	dri-devel@lists.freedesktop.org,
+	linux-usb@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-riscv@lists.infradead.org,
+	David Airlie <airlied@gmail.com>,
+	Simona Vetter <simona@ffwll.ch>,
+	linux-cxl@vger.kernel.org,
+	linux-crypto@vger.kernel.org,
+	platform-driver-x86@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	mhi@lists.linux.dev,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Jan Dabros <jsd@semihalf.com>,
+	linux-i2c@vger.kernel.org,
+	Daniel Mack <daniel@zonque.org>,
+	Haojian Zhuang <haojian.zhuang@gmail.com>,
+	linux-spi@vger.kernel.org,
+	Jonathan Derrick <jonathan.derrick@linux.dev>,
+	linux-pci@vger.kernel.org,
+	linux-gpio@vger.kernel.org,
+	Mauro Carvalho Chehab <mchehab@kernel.org>,
+	linux-media@vger.kernel.org,
+	linux-mmc@vger.kernel.org,
+	Shawn Lin <shawn.lin@rock-chips.com>
+Subject: [PATCH 01/37] PCI/MSI: Add Devres managed IRQ vectors allocation
+Date: Mon, 23 Feb 2026 23:29:40 +0800
+Message-Id: <1771860581-82092-2-git-send-email-shawn.lin@rock-chips.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1771860581-82092-1-git-send-email-shawn.lin@rock-chips.com>
+References: <1771860581-82092-1-git-send-email-shawn.lin@rock-chips.com>
+X-HM-Tid: 0a9c8b20e63209cckunm6946b3c7986369
+X-HM-MType: 1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+	tZV1koWUFDSUNOT01LS0k3V1ktWUFJV1kPCRoVCBIfWUFZGh5JGFYdQhpNQ0tOHx8aQhpWFRQJFh
+	oXVRMBExYaEhckFA4PWVdZGBILWUFZTkNVSUlVTFVKSk9ZV1kWGg8SFR0UWUFZS1VLVUtVS1kG
+DKIM-Signature: a=rsa-sha256;
+	b=hesEBWpuUfkngcgz1f2Ig1nlGmmzRwW4WQwqVSHNJo/8mDrQHyi2jBXfpRejbQ5213Bi/x3y5ZKsO4yPdU29saCaBfjZuhiQPZrXuFi/nfbjzR0kpb+gL5Eft5gNlVXtMsgoBjIOykghNIgFG4xZvqITu8wqjNed5lf17v/+SjU=; s=default; c=relaxed/relaxed; d=rock-chips.com; v=1;
+	bh=j3H95hgVRLs6dldnhhXVuqSGrPI2yynu10KTCXrGKLk=;
+	h=date:mime-version:subject:message-id:from;
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-From: Ravindra Rama <ravindra@nexthop.ai>
-Date: Mon, 23 Feb 2026 14:40:24 -0600
-X-Gm-Features: AaiRm51ddYmXnVL3Gv-fyrm0xNTajUdCZY3MuT87_JoPXxKn2AHK7MTM8av77MU
-Message-ID: <CA+mnHaW481bx8nJBNkkgS+oB+=Y=+qeX+hP0q6ObULt8=ewr-g@mail.gmail.com>
-Subject: [PATCH] serial: 8250_fintek: Add support for F81214E
-To: gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
 
-The F81214E is a LPC/eSPI to 2 UART Super I/O chip.
+pcim_alloc_irq_vectors() and pcim_alloc_irq_vectors_affinity() are created for
+pci device drivers which rely on the devres machinery to help cleanup the IRQ
+vectors.
 
-Functionally, it is the same as the F81216E. The only difference
-is that the F81216E has 4 UART ports, whereas the F81214E has 2
-UART ports.
-
-Signed-off-by: Ravi Rama <ravi.rama@nexthop.ai>
+Signed-off-by: Shawn Lin <shawn.lin@rock-chips.com>
 ---
- drivers/tty/serial/8250/8250_fintek.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/8250/8250_fintek.c
-b/drivers/tty/serial/8250/8250_fintek.c
-index b4461a89b8d0..976c5748905c 100644
---- a/drivers/tty/serial/8250/8250_fintek.c
-+++ b/drivers/tty/serial/8250/8250_fintek.c
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0
- /*
-- *  Probe for F81216A LPC to 4 UART
-+ *  Probe for F81216A LPC to 4 UART and F81214E LPC/eSPI to 2 UART
-  *
-  *  Copyright (C) 2014-2016 Ricardo Ribalda, Qtechnology A/S
-  */
-@@ -23,6 +23,7 @@
- #define CHIP_ID_F81216AD 0x1602
- #define CHIP_ID_F81216E 0x1617
- #define CHIP_ID_F81216H 0x0501
-+#define CHIP_ID_F81214E 0x1417
- #define CHIP_ID_F81216 0x0802
- #define VENDOR_ID1 0x23
- #define VENDOR_ID1_VAL 0x19
-@@ -161,6 +162,7 @@ static int fintek_8250_check_id(struct fintek_8250 *pdata)
-  case CHIP_ID_F81216AD:
-  case CHIP_ID_F81216E:
-  case CHIP_ID_F81216H:
-+ case CHIP_ID_F81214E:
-  case CHIP_ID_F81216:
-  break;
-  default:
-@@ -185,6 +187,7 @@ static int fintek_8250_get_ldn_range(struct
-fintek_8250 *pdata, int *min,
-  case CHIP_ID_F81216AD:
-  case CHIP_ID_F81216E:
-  case CHIP_ID_F81216H:
-+ case CHIP_ID_F81214E:
-  case CHIP_ID_F81216:
-  *min = F81216_LDN_LOW;
-  *max = F81216_LDN_HIGH;
-@@ -255,6 +258,7 @@ static void fintek_8250_set_irq_mode(struct
-fintek_8250 *pdata, bool is_level)
-  case CHIP_ID_F81216AD:
-  case CHIP_ID_F81216E:
-  case CHIP_ID_F81216H:
-+ case CHIP_ID_F81214E:
-  case CHIP_ID_F81216:
-  sio_write_mask_reg(pdata, FINTEK_IRQ_MODE, IRQ_SHARE,
-     IRQ_SHARE);
-@@ -269,6 +273,7 @@ static void fintek_8250_set_max_fifo(struct
-fintek_8250 *pdata)
-  switch (pdata->pid) {
-  case CHIP_ID_F81216E: /* 128Bytes FIFO */
-  case CHIP_ID_F81216H:
-+ case CHIP_ID_F81214E:
-  case CHIP_ID_F81966:
-  case CHIP_ID_F81866:
-  sio_write_mask_reg(pdata, FIFO_CTRL,
-@@ -304,6 +309,7 @@ static void fintek_8250_set_termios(struct uart_port *port,
-  switch (pdata->pid) {
-  case CHIP_ID_F81216E:
-  case CHIP_ID_F81216H:
-+ case CHIP_ID_F81214E:
-  reg = RS485;
-  break;
-  case CHIP_ID_F81966:
-@@ -354,6 +360,7 @@ static void fintek_8250_set_termios_handler(struct
-uart_8250_port *uart)
-  switch (pdata->pid) {
-  case CHIP_ID_F81216E:
-  case CHIP_ID_F81216H:
-+ case CHIP_ID_F81214E:
-  case CHIP_ID_F81966:
-  case CHIP_ID_F81866:
-  uart->port.set_termios = fintek_8250_set_termios;
-@@ -446,6 +453,7 @@ static void fintek_8250_set_rs485_handler(struct
-uart_8250_port *uart)
-  break;
+ drivers/pci/msi/api.c | 26 ++++++++++++++++++++++++++
+ include/linux/pci.h   | 22 ++++++++++++++++++++++
+ 2 files changed, 48 insertions(+)
 
-  case CHIP_ID_F81216E: /* F81216E does not support RS485 delays */
-+ case CHIP_ID_F81214E: /* F81214E does not support RS485 delays */
-  uart->port.rs485_config = fintek_8250_rs485_config;
-  uart->port.rs485_supported = fintek_8250_rs485_supported;
-  break;
+diff --git a/drivers/pci/msi/api.c b/drivers/pci/msi/api.c
+index c18559b..2362fca 100644
+--- a/drivers/pci/msi/api.c
++++ b/drivers/pci/msi/api.c
+@@ -297,6 +297,32 @@ int pci_alloc_irq_vectors_affinity(struct pci_dev *dev, unsigned int min_vecs,
+ EXPORT_SYMBOL(pci_alloc_irq_vectors_affinity);
+ 
+ /**
++ * pcim_alloc_irq_vectors() - devres managed pci_alloc_irq_vectors()
++ * Interrupt vectors are automatically freed by the devres machinery
++ */
++int pcim_alloc_irq_vectors(struct pci_dev *dev, unsigned int min_vecs,
++			   unsigned int max_vecs, unsigned int flags)
++{
++	return pcim_alloc_irq_vectors_affinity(dev, min_vecs, max_vecs,
++					       flags, NULL);
++}
++EXPORT_SYMBOL(pcim_alloc_irq_vectors);
++
++/**
++ * pcim_alloc_irq_vectors_affinity() - devres managed pci_alloc_irq_vectors_affinity()
++ * Interrupt vectors are automatically freed by the devres machinery
++ */
++int pcim_alloc_irq_vectors_affinity(struct pci_dev *dev, unsigned int min_vecs,
++				   unsigned int max_vecs, unsigned int flags,
++				   struct irq_affinity *affd)
++{
++	dev->is_msi_managed = true;
++	return pci_alloc_irq_vectors_affinity(dev, min_vecs, max_vecs,
++					      flags, affd);
++}
++EXPORT_SYMBOL(pcim_alloc_irq_vectors_affinity);
++
++/**
+  * pci_irq_vector() - Get Linux IRQ number of a device interrupt vector
+  * @dev: the PCI device to operate on
+  * @nr:  device-relative interrupt vector index (0-based); has different
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index d5ec0f8..ae58f70 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -1764,6 +1764,12 @@ int pci_alloc_irq_vectors_affinity(struct pci_dev *dev, unsigned int min_vecs,
+ 				   unsigned int max_vecs, unsigned int flags,
+ 				   struct irq_affinity *affd);
+ 
++int pcim_alloc_irq_vectors(struct pci_dev *dev, unsigned int min_vecs,
++			  unsigned int max_vecs, unsigned int flags);
++int pcim_alloc_irq_vectors_affinity(struct pci_dev *dev, unsigned int min_vecs,
++				   unsigned int max_vecs, unsigned int flags,
++				   struct irq_affinity *affd);
++
+ bool pci_msix_can_alloc_dyn(struct pci_dev *dev);
+ struct msi_map pci_msix_alloc_irq_at(struct pci_dev *dev, unsigned int index,
+ 				     const struct irq_affinity_desc *affdesc);
+@@ -1806,6 +1812,22 @@ pci_alloc_irq_vectors(struct pci_dev *dev, unsigned int min_vecs,
+ 					      flags, NULL);
+ }
+ 
++static inline int
++pcim_alloc_irq_vectors_affinity(struct pci_dev *dev, unsigned int min_vecs,
++			       unsigned int max_vecs, unsigned int flags,
++			       struct irq_affinity *aff_desc)
++{
++	return pci_alloc_irq_vectors_affinity(dev, min_vecs, max_vecs,
++					      flags, aff_desc);
++}
++static inline int
++pcim_alloc_irq_vectors(struct pci_dev *dev, unsigned int min_vecs,
++		      unsigned int max_vecs, unsigned int flags)
++{
++	return pcim_alloc_irq_vectors_affinity(dev, min_vecs, max_vecs,
++					      flags, NULL);
++}
++
+ static inline bool pci_msix_can_alloc_dyn(struct pci_dev *dev)
+ { return false; }
+ static inline struct msi_map pci_msix_alloc_irq_at(struct pci_dev *dev, unsigned int index,
 -- 
-2.50.1
+2.7.4
+
