@@ -1,214 +1,182 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F4553328ED;
-	Mon, 23 Feb 2026 17:38:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771868336; cv=none; b=S0TDDsvzZx6kNRvbVQgbRkKM8whhRbD1pOF1b8Qh5ncKju18ZJ1Hbz9RP1NOs8xq/4FSDTMxBza9tuPy2PsrFsjUP0OGDCBVC8QmRHJamUDbiq4ImrTmyQTQgGChdBN6PvUreolfdM3m83/vBxR7LVSjmBMoheYxCv95brtT2aM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771868336; c=relaxed/simple;
-	bh=OFs+F2i4fpeRmsTH7tUJ5hO0npgCDxBo25FPhTX/hFs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FE0pNcsIdieHenKdz4s0nolqaxsrB3RIVp71Iabx+AgxS75Z5+p/sIj9saDfKA97vI9w7LRFRfYShrGoDlpMBS2btFk5miAzjNNuM0oxvFeZjOXtPCxARM2sACeTlCqWH0jJIlKbNeP5II3760TLhyAk6qLk8VEY7qaBCBoSV4k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NvMPcrsr; arc=none smtp.client-ip=198.175.65.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97EAD3783BA
+	for <linux-serial@vger.kernel.org>; Mon, 23 Feb 2026 20:40:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.51
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1771879239; cv=pass; b=aRJ11fRXG+JP+cwxbmntooJBOnFXKPUW+YhhIVPLhYhddmaCcZTpZWdGE8m1fSZIzpYsg3rbkTwJTOUaRwJ6KNtYIjQ4ZvoPWgUgsNdtpIyn8BYwvKi0u8/F3TR3yusAHT77DoTdcGWQIhP9w79ZT2s5QkrtgX+9Bgqlw6FfZwg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1771879239; c=relaxed/simple;
+	bh=tB/Bh69YT1o5AGl6zuMHY8RN4uTpr/OJyhpDSgAOaRU=;
+	h=MIME-Version:From:Date:Message-ID:Subject:To:Cc:Content-Type; b=Xceo+OSxK1AFLjHbyMnhsGQIWhfXLkVKg1MOEMUaNklI26xdof/l6YBHIRjRKaNd+rq52s6meJyY7jcpPbHtVSOvnYQ8BcQAShMozFSGZOXrKXnHfhBvg9jscThjtGTBDp6OPx7ksFC1CPv3bEYCrsJajQc5tpZ54z7FqpjGFRs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nexthop.ai; spf=pass smtp.mailfrom=nexthop.ai; dkim=pass (2048-bit key) header.d=nexthop.ai header.i=@nexthop.ai header.b=atzPsd1L; arc=pass smtp.client-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nexthop.ai
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nexthop.ai
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NvMPcrsr"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1771868335; x=1803404335;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=OFs+F2i4fpeRmsTH7tUJ5hO0npgCDxBo25FPhTX/hFs=;
-  b=NvMPcrsrscxq4yCJYNHBwma5dXpYiaLlpl5YaiHU4AbKmW1dss4zVpgH
-   eKc6wHV4HSpKqyOZ8UlLVlghXkur2gCHm4j/0tVPiKMiMs8WIyTYBU/2a
-   6yowW4cOU55qzj4P1UFjG06x85lKFyOgcBuajicG0+hQ7xUZWW5IVie0T
-   CzejcQppfEPzmSpHn0vPl0BWBUbMvv0s0ke5e+Qjssqu807Hmk7eyaE7j
-   rAcT4p6XKH7FNn0xujYAvGZ00DAcOtrZCn+DLE46UjHdqz7MQNGpBv4ef
-   eZ4zNkJ8cO1QoE+PCo+ORxkR4NcdogZJ2/EBVMiLNS/FtyyTrgvpBtjZv
-   g==;
-X-CSE-ConnectionGUID: jsfaBeNbRdOcjkAScBt/AA==
-X-CSE-MsgGUID: qC3ahawxSriUb3w5OK63yQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11710"; a="73050398"
-X-IronPort-AV: E=Sophos;i="6.21,307,1763452800"; 
-   d="scan'208";a="73050398"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2026 09:38:54 -0800
-X-CSE-ConnectionGUID: i7eZdD4uRr+gNr/ct2htpA==
-X-CSE-MsgGUID: B0cv0ytAS2ClRPRHaDlf4w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,307,1763452800"; 
-   d="scan'208";a="214708424"
-Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.222])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2026 09:38:36 -0800
-Date: Mon, 23 Feb 2026 19:38:33 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Shawn Lin <shawn.lin@rock-chips.com>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	"Vaibhaav Ram T . L" <vaibhaavram.tl@microchip.com>,
-	Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
-	Even Xu <even.xu@intel.com>, Xinpeng Sun <xinpeng.sun@intel.com>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Jiri Kosina <jikos@kernel.org>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	Zhou Wang <wangzhou1@hisilicon.com>,
-	Longfang Liu <liulongfang@huawei.com>,
-	Vinod Koul <vkoul@kernel.org>, Lee Jones <lee@kernel.org>,
-	Jijie Shao <shaojijie@huawei.com>,
-	Jian Shen <shenjian15@huawei.com>,
-	Sunil Goutham <sgoutham@marvell.com>,
-	Andrew Lunn <andrew+netdev@lunn.ch>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	"David S . Miller" <davem@davemloft.net>,
-	Jeff Hugo <jeff.hugo@oss.qualcomm.com>,
-	Oded Gabbay <ogabbay@kernel.org>,
-	Maciej Falkowski <maciej.falkowski@linux.intel.com>,
-	Karol Wachowski <karol.wachowski@linux.intel.com>,
-	Min Ma <mamin506@gmail.com>, Lizhi Hou <lizhi.hou@amd.com>,
-	Andreas Noever <andreas.noever@gmail.com>,
-	Mika Westerberg <westeri@kernel.org>,
-	Tomasz Jeznach <tjeznach@rivosinc.com>,
-	Will Deacon <will@kernel.org>,
-	Xinliang Liu <xinliang.liu@linaro.org>,
-	Tian Tao <tiantao6@hisilicon.com>,
-	Davidlohr Bueso <dave@stgolabs.net>,
-	Jonathan Cameron <jonathan.cameron@huawei.com>,
-	Srujana Challa <schalla@marvell.com>,
-	Bharat Bhushan <bbhushan2@marvell.com>,
-	Antoine Tenart <atenart@kernel.org>,
-	Herbert Xu <herbert@gondor.apana.org.au>,
-	Raag Jadav <raag.jadav@intel.com>, Hans de Goede <hansg@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Andy Shevchenko <andy@kernel.org>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	Mika Westerberg <mika.westerberg@linux.intel.com>,
-	Andi Shyti <andi.shyti@kernel.org>,
-	Robert Richter <rric@kernel.org>, Mark Brown <broonie@kernel.org>,
-	Nirmal Patel <nirmal.patel@linux.intel.com>,
-	Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Linus Walleij <linusw@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	Sakari Ailus <sakari.ailus@linux.intel.com>,
-	Bingbu Cao <bingbu.cao@intel.com>,
-	Ulf Hansson <ulf.hansson@linaro.org>, Arnd Bergmann <arnd@arndb.de>,
-	Benjamin Tissoires <bentiss@kernel.org>,
-	linux-input@vger.kernel.org, linux-i3c@lists.infradead.org,
-	dmaengine@vger.kernel.org, Philipp Stanner <phasta@kernel.org>,
-	netdev@vger.kernel.org, nic_swsd@realtek.com,
-	linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linux-usb@vger.kernel.org, iommu@lists.linux.dev,
-	linux-riscv@lists.infradead.org, David Airlie <airlied@gmail.com>,
-	Simona Vetter <simona@ffwll.ch>, linux-cxl@vger.kernel.org,
-	linux-crypto@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-	linux-serial@vger.kernel.org, mhi@lists.linux.dev,
-	Jan Dabros <jsd@semihalf.com>, linux-i2c@vger.kernel.org,
-	Daniel Mack <daniel@zonque.org>,
-	Haojian Zhuang <haojian.zhuang@gmail.com>,
-	linux-spi@vger.kernel.org,
-	Jonathan Derrick <jonathan.derrick@linux.dev>,
-	linux-pci@vger.kernel.org, linux-gpio@vger.kernel.org,
-	Mauro Carvalho Chehab <mchehab@kernel.org>,
-	linux-media@vger.kernel.org, linux-mmc@vger.kernel.org
-Subject: Re: [PATCH 0/37] PCI/MSI: Enforce explicit IRQ vector management by
- removing devres auto-free
-Message-ID: <aZyQmc7nOt87jitX@smile.fi.intel.com>
-References: <1771860581-82092-1-git-send-email-shawn.lin@rock-chips.com>
- <CAHp75VeWD5A0r7-Uayyte1ZXXxdhLixd+z_y0xNeki0N+Ro=jQ@mail.gmail.com>
- <cb878741-7b61-b72c-5a72-6ed6d5091b1f@rock-chips.com>
+	dkim=pass (2048-bit key) header.d=nexthop.ai header.i=@nexthop.ai header.b="atzPsd1L"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4806cc07ce7so45246755e9.1
+        for <linux-serial@vger.kernel.org>; Mon, 23 Feb 2026 12:40:37 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1771879236; cv=none;
+        d=google.com; s=arc-20240605;
+        b=SSC98+2CmQgIHdrHG2YKsALCPeGwFGXk7b2D1pmqnpPVjTNK+jXKlcKkQFY2678zJi
+         CtLAY0CFebFB7tB0S3AUC3+dhYg0FUR4eZVl2iHpoLDBuxcqucEm4yMKEGNohBg2R2V9
+         J+uPi47WLYck0FYwLpfjRvo/1Q/+GW86git7tCvlKhbwnKpb1iJ/XsEsWdH1wRkoC0ST
+         d2GuGL9Ktn3O90Wa8RbeW3HzeRN3Zp5W1jZqPbifwuNTQsgOdchfiSiq65QgdG8Y3laF
+         Oxt0fILriMuiFAnCvyre6f+SUpmW3ryz2sdLs03ECaVjRWcmPLnC79hKJPLXwwr+sCZC
+         IoRA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:mime-version:dkim-signature;
+        bh=mbL37sOWut6us6TJEOfcO6gTAIz76WnjRpvpITqUljE=;
+        fh=n/FzJjftoLefyaTFuKBWAHL1ztu4wPP1oUrCWH7nSys=;
+        b=UAVBZUPMoq2d6Tc41lg+Rw7hQ2mfvmHBz2iQK0+Qj7E+gYMwNrfsPnxF6IXW/u1aGV
+         qyLG1Jvq5EDxTAeX6gI3Y1rINR7K8lE2DSGAezdFOpZx1DI4nPYv/KFeck/EOxLotTZ/
+         5fybJlvr2pvwEg59BoM4Y3QHbh9B1vsnOsjyshBpEjQQQz/dHuzNX9cAdZyHuAXo6P9f
+         oMFjFb/E4/DBrKTOCXE/3N6C23FTITuhTVG9HdUD3BK5wiH1vwl71feFuAzziBJ9HI/Z
+         ScmbMLfVo2/iVzOc0EBrqpvUDSR9/ObKedbw9e6FLCODmi9W35E4XwoamQ9cxG4Vj4F4
+         rYmw==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=nexthop.ai; s=google; t=1771879236; x=1772484036; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=mbL37sOWut6us6TJEOfcO6gTAIz76WnjRpvpITqUljE=;
+        b=atzPsd1Ls+EH4Cwosd4A2xW63INCSWaMPw1vnL4OwpF7h5KYCMXZdh0OH0j42WgU4X
+         nxpYipF0qk3TpPJR5gyNB58UP6YVue56/X1eQtmN7l93clObvsZPP1Gn+v8SSQgOj2M8
+         d3Dl4bQKGJgnV7mJ3y327PttH5qBTv5xtaBtY//zGRxib4GXc++khq1gyttXLPeGWVJq
+         vHy4xslpsL5CY4RxWh7kuio4WUvlhl1/WbxfSECxxjO7KydIss7Fuj39gPKHEmXdbCaN
+         vlUPGlSgNbOzZm8zoAOHpZCt4ViRz6weK0wwhhd5bq3qvJ/XysIsmT1Zr+7ugyD3IkjB
+         6TXg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1771879236; x=1772484036;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=mbL37sOWut6us6TJEOfcO6gTAIz76WnjRpvpITqUljE=;
+        b=J3AeYCRaeirBi1xmOk0YFBxubS8WiRPBRwYZg+M8QQq+pbXdHDa5VfXSVdiNftiNyy
+         fW1srNgULo12ZAUxoKLxSqCHZ7ac4BMLwu96mG+LQTnUnk/79RQVtlB0XeQq1UmFMEJh
+         SSZKhZ9vDYhz9n1eqy37GQCSaPlJuBOHZkTKxK99nLnJnCQD8emh23dZmRFP9DV149gd
+         Kznygw49tKC9oZyw/e4zt0N2lY/vLgB5Fzuz+P7llBAW8s4SyZRWAjvlvf+Zv+hZNyLv
+         /9o9KS6IA5FkSmePfBUTQvTq288kA07IKWJ8W7mFL+r4Fr7mg0H49x7tCqrTjMN/iINT
+         ENBA==
+X-Gm-Message-State: AOJu0Yy1KTHqRWF5Hbsg3K5CAgBEgIIu/5Ik63fK+u+WGuwVtv0F3BR8
+	4v7pWlnDilI+/27tYmeqkwxb981czMvXz9G7PJDE0oFCyCjBNePb3bLWLMD0p1FRZPTXp7bqW1d
+	DxD/sx9j4A/Kyw/ed+RTneefpTq4lmw1h29Nqo97LEQ==
+X-Gm-Gg: AZuq6aLXWre8jq3hD6rIDa7H39Bse4GpLIrNkYvWf+SeRblGh0xiPVIJbP9CEl4H7uS
+	iYKHtaiEGeUa8lEu4Jkvn/sZB0JdcyxieFtlIlmxFknuUXIMlcO+AdwN1yiKSBsyXlme3A/N5ta
+	gUvny0YKScuQ9c8yv6I9P9yRPnD8Yd2lUC+5wu7zB2WxAdI/CXhPjyPAm5o0hSZoIhNQIQtTjbl
+	5ucnGjs83M6DELu0Lm1WRJcUxPyfYuYSq/ZYgKotwL+1bHn95Y7jvOuIu0IA2NmSxcr0JbpQIqY
+	8Y5YwcyRGeuzrgtxrgJsXGdmh1dh2//5nnhGFYQ=
+X-Received: by 2002:a05:600c:528a:b0:482:eec4:76d with SMTP id
+ 5b1f17b1804b1-483a95e9570mr157817555e9.17.1771879235557; Mon, 23 Feb 2026
+ 12:40:35 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <cb878741-7b61-b72c-5a72-6ed6d5091b1f@rock-chips.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+From: Ravindra Rama <ravindra@nexthop.ai>
+Date: Mon, 23 Feb 2026 14:40:24 -0600
+X-Gm-Features: AaiRm51ddYmXnVL3Gv-fyrm0xNTajUdCZY3MuT87_JoPXxKn2AHK7MTM8av77MU
+Message-ID: <CA+mnHaW481bx8nJBNkkgS+oB+=Y=+qeX+hP0q6ObULt8=ewr-g@mail.gmail.com>
+Subject: [PATCH] serial: 8250_fintek: Add support for F81214E
+To: gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Tue, Feb 24, 2026 at 12:09:37AM +0800, Shawn Lin wrote:
-> 在 2026/02/23 星期一 23:50, Andy Shevchenko 写道:
-> > On Mon, Feb 23, 2026 at 5:32 PM Shawn Lin <shawn.lin@rock-chips.com> wrote:
-> > > 
-> > > This patch series addresses a long-standing design issue in the PCI/MSI
-> > > subsystem where the implicit, automatic management of IRQ vectors by
-> > > the devres framework conflicts with explicit driver cleanup, creating
-> > > ambiguity and potential resource management bugs.
-> > > 
-> > > ==== The Problem: Implicit vs. Explicit Management ====
-> > > Historically, `pcim_enable_device()` not only manages standard PCI resources
-> > > (BARs) via devres but also implicitly triggers automatic IRQ vector management
-> > > by setting a flag that registers `pcim_msi_release()` as a cleanup action.
-> > > 
-> > > This creates an ambiguous ownership model. Many drivers follow a pattern of:
-> > > 1. Calling `pci_alloc_irq_vectors()` to allocate interrupts.
-> > > 2. Also calling `pci_free_irq_vectors()` in their error paths or remove routines.
-> > > 
-> > > When such a driver also uses `pcim_enable_device()`, the devres framework may
-> > > attempt to free the IRQ vectors a second time upon device release, leading to
-> > > a double-free. Analysis of the tree shows this hazardous pattern exists widely,
-> > > while 35 other drivers correctly rely solely on the implicit cleanup.
-> > 
-> > Is this confirmed? What I read from the cover letter, this series was
-> > only compile-tested, so how can you prove the problem exists in the
-> > first place?
-> 
-> Yes, it's confirmed. My debug of a double free issue of a out-of-tree
-> PCIe wifi driver which uses
-> pcim_enable_device + pci_alloc_irq_vectors + pci_free_irq_vectors expose
-> it. And we did have a TODO to cleanup this hybrid usage, targeted in
-> this cycle[1] suggested by Philipp:
+The F81214E is a LPC/eSPI to 2 UART Super I/O chip.
 
-Okay, fair enough. I think this bit was missing in the cover letter.
+Functionally, it is the same as the F81216E. The only difference
+is that the F81216E has 4 UART ports, whereas the F81214E has 2
+UART ports.
 
-> [1] https://git.kernel.org/pub/scm/linux/kernel/git/pci/pci.git/log/?h=msi
+Signed-off-by: Ravi Rama <ravi.rama@nexthop.ai>
+---
+ drivers/tty/serial/8250/8250_fintek.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-> > > ==== The Solution: Making Management Explicit ====
-> > > This series enforces a clear, predictable model:
-> > > 1.  New Managed API (Patch 1/37): Introduces pcim_alloc_irq_vectors() and
-> > >      pcim_alloc_irq_vectors_affinity(). Drivers that desire devres-managed IRQ
-> > >      vectors should use these functions, which set the is_msi_managed flag and
-> > >      ensure automatic cleanup.
-> > > 2.  Patches 2 through 36 convert each driver that uses pcim_enable_device() alongside
-> > >      pci_alloc_irq_vectors() and relies on devres for IRQ vector cleanup to instead
-> > >      make an explicit call to pcim_alloc_irq_vectors().
-> > > 3.  Core Change (Patch 37/37): With the former cleanup, now modifies pcim_setup_msi_release()
-> > >      to check only the is_msi_managed flag. This decouples automatic IRQ cleanup from
-> > >      pcim_enable_device(). IRQ vectors allocated via pci_alloc_irq_vectors*()
-> > >      are now solely the driver's responsibility to free with pci_free_irq_vectors().
-> > > 
-> > > With these changes, we clear ownership model: Explicit resource management eliminates
-> > > ambiguity and follows the "principle of least surprise." New drivers choose one model and
-> > > be consistent.
-> > > - Use `pci_alloc_irq_vectors()` + `pci_free_irq_vectors()` for explicit control.
-> > > - Use `pcim_alloc_irq_vectors()` for devres-managed, automatic cleanup.
-> > 
-> > Have you checked previous attempts? Why is your series better than those?
-> 
-> There seems not previous attempts.
+diff --git a/drivers/tty/serial/8250/8250_fintek.c
+b/drivers/tty/serial/8250/8250_fintek.c
+index b4461a89b8d0..976c5748905c 100644
+--- a/drivers/tty/serial/8250/8250_fintek.c
++++ b/drivers/tty/serial/8250/8250_fintek.c
+@@ -1,6 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /*
+- *  Probe for F81216A LPC to 4 UART
++ *  Probe for F81216A LPC to 4 UART and F81214E LPC/eSPI to 2 UART
+  *
+  *  Copyright (C) 2014-2016 Ricardo Ribalda, Qtechnology A/S
+  */
+@@ -23,6 +23,7 @@
+ #define CHIP_ID_F81216AD 0x1602
+ #define CHIP_ID_F81216E 0x1617
+ #define CHIP_ID_F81216H 0x0501
++#define CHIP_ID_F81214E 0x1417
+ #define CHIP_ID_F81216 0x0802
+ #define VENDOR_ID1 0x23
+ #define VENDOR_ID1_VAL 0x19
+@@ -161,6 +162,7 @@ static int fintek_8250_check_id(struct fintek_8250 *pdata)
+  case CHIP_ID_F81216AD:
+  case CHIP_ID_F81216E:
+  case CHIP_ID_F81216H:
++ case CHIP_ID_F81214E:
+  case CHIP_ID_F81216:
+  break;
+  default:
+@@ -185,6 +187,7 @@ static int fintek_8250_get_ldn_range(struct
+fintek_8250 *pdata, int *min,
+  case CHIP_ID_F81216AD:
+  case CHIP_ID_F81216E:
+  case CHIP_ID_F81216H:
++ case CHIP_ID_F81214E:
+  case CHIP_ID_F81216:
+  *min = F81216_LDN_LOW;
+  *max = F81216_LDN_HIGH;
+@@ -255,6 +258,7 @@ static void fintek_8250_set_irq_mode(struct
+fintek_8250 *pdata, bool is_level)
+  case CHIP_ID_F81216AD:
+  case CHIP_ID_F81216E:
+  case CHIP_ID_F81216H:
++ case CHIP_ID_F81214E:
+  case CHIP_ID_F81216:
+  sio_write_mask_reg(pdata, FINTEK_IRQ_MODE, IRQ_SHARE,
+     IRQ_SHARE);
+@@ -269,6 +273,7 @@ static void fintek_8250_set_max_fifo(struct
+fintek_8250 *pdata)
+  switch (pdata->pid) {
+  case CHIP_ID_F81216E: /* 128Bytes FIFO */
+  case CHIP_ID_F81216H:
++ case CHIP_ID_F81214E:
+  case CHIP_ID_F81966:
+  case CHIP_ID_F81866:
+  sio_write_mask_reg(pdata, FIFO_CTRL,
+@@ -304,6 +309,7 @@ static void fintek_8250_set_termios(struct uart_port *port,
+  switch (pdata->pid) {
+  case CHIP_ID_F81216E:
+  case CHIP_ID_F81216H:
++ case CHIP_ID_F81214E:
+  reg = RS485;
+  break;
+  case CHIP_ID_F81966:
+@@ -354,6 +360,7 @@ static void fintek_8250_set_termios_handler(struct
+uart_8250_port *uart)
+  switch (pdata->pid) {
+  case CHIP_ID_F81216E:
+  case CHIP_ID_F81216H:
++ case CHIP_ID_F81214E:
+  case CHIP_ID_F81966:
+  case CHIP_ID_F81866:
+  uart->port.set_termios = fintek_8250_set_termios;
+@@ -446,6 +453,7 @@ static void fintek_8250_set_rs485_handler(struct
+uart_8250_port *uart)
+  break;
 
-Maybe we are looking to the different projects...
-
-https://lore.kernel.org/all/?q=pcim_alloc_irq_vectors
-
-> > > ==== Testing And Review ====
-> > > 1. This series is only compiled test with allmodconfig.
-> > > 2. Given the substantial size of this patch series, I have structured the mailing
-> > >     to facilitate efficient review. The cover letter, the first patch and the last one will be sent
-> > >     to all relevant mailing lists and key maintainers to ensure broad visibility and
-> > >     initial feedback on the overall approach. The remaining subsystem-specific patches
-> > >     will be sent only to the respective subsystem maintainers and their associated
-> > >     mailing lists, reducing noise.
-
+  case CHIP_ID_F81216E: /* F81216E does not support RS485 delays */
++ case CHIP_ID_F81214E: /* F81214E does not support RS485 delays */
+  uart->port.rs485_config = fintek_8250_rs485_config;
+  uart->port.rs485_supported = fintek_8250_rs485_supported;
+  break;
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+2.50.1
