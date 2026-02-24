@@ -1,65 +1,103 @@
-Received: from c.mail.sonic.net (c.mail.sonic.net [64.142.111.80])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E206D37F739
-	for <linux-serial@vger.kernel.org>; Mon, 23 Feb 2026 23:29:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=64.142.111.80
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB3473EBF3A;
+	Tue, 24 Feb 2026 00:04:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771889389; cv=none; b=TfxbPPSK1fPqQnV3LLNUZlTql5MCyAaNLCvXwulyKcvhPXDKVG8lZCFplzoLmSIRYXEQObyAPoXgK2oOM+30smT4laA2SxtXamm8AKfnfHzW0usWEK38J5JHATqU93VGgXH0Rpt9B5YQykjTGA8CvrpB4aPtwFZzjT/AWB4kYV4=
+	t=1771891447; cv=none; b=IZhNJnfHSwRwgEeBoyhtx/43E80eSQkLqvXAExdXib7UlrgcV1cESIdEnVFg4flNCsdQXWRhKOSGuvxzegrj+smCRAT7RD9GW7pBbjEdPiMykd9ma7YxoPrKiTaH6TFWv2WJnsGQt61gpm27n2EZN92qwa4zJPNN9Kn4yFNPAew=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771889389; c=relaxed/simple;
-	bh=5X+mHcPY8BYiGhq21zGnYHWzBP+QZdBmGFkyvOnzHZQ=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Bds7sA5PqKJZu3GTyMOQObtoZ8l8Fz9fVuSfmtYyYzOERO7iPkgVjf4lEoJ+G1vz3rmnad+R3kXUfzllfGLoX+epRZOSH3iyH7ijIQ1eitzuH4INqwIUce4WRNKvwewRVHdTtn8zp2q5q0G9bmasi0pCkqdPCd4SYW58EVl9tSo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gaga.casa; spf=pass smtp.mailfrom=gaga.casa; arc=none smtp.client-ip=64.142.111.80
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gaga.casa
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gaga.casa
-Received: from 192-184-189-139.static.sonic.net (192-184-189-139.static.sonic.net [192.184.189.139])
-	(authenticated bits=0)
-	by c.mail.sonic.net (8.16.1/8.16.1) with ESMTPA id 61NNJ3To029605
-	for <linux-serial@vger.kernel.org>; Mon, 23 Feb 2026 15:19:03 -0800
-From: Forest <forestix@gaga.casa>
-To: linux-serial@vger.kernel.org
-Subject: Seeking help diagnosing serial port failure to transmit (while receive works)
-Date: Mon, 23 Feb 2026 15:19:03 -0800
-Message-ID: <7imppktb51fdnlm8jaovts1tkhr6r1751c@sonic.net>
+	s=arc-20240116; t=1771891447; c=relaxed/simple;
+	bh=eSEVzSG1u7kDX0qIB57v1bGEdvuxp7q/644aS2mjq3Y=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=EUWhWVfdRsZ9Quo3bUn6Vo+FlBriw+gEfnVK9MtfSoow7SkR/FBrUN2FPNGDok1FeyKeJcbQwZYYOhvDb46X9nSr7xyUHXM0Oiugx0fhQw8f/wUbPBGzDnJZ8SOLvEOe5eqEUT/E+tC1RCHRl0T0JpDL80/J2Yam9Uoffkwb3YY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BiCxi3L9; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BiCxi3L9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E022C116C6;
+	Tue, 24 Feb 2026 00:04:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1771891447;
+	bh=eSEVzSG1u7kDX0qIB57v1bGEdvuxp7q/644aS2mjq3Y=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=BiCxi3L9JoXgkrh8SC5MAkJMhbY/Gt/ee8dkTYQlEReSuB4BTdHAinqlJ2OFDp6yS
+	 K2IocFIKpN9ibOJpRL9+VOLTSUbH7qQsPiBKrovipxTbo9eajt0gUvhxCDhwVDhO+8
+	 5Rlxa1CWbGyQ9Q36KM5NC+FfklyKper67d1Qv2aJIuTZ7s4KnLHKQM7iB0zRPc84mq
+	 jsXCWBPoX2cNDpVLYgAQmic4uvU8sr2uc48rEwfkKkj6Mxf3f1OBn5Wx+AaROlWqSn
+	 ntIjCz+6RR634lgigRfzRx83aoqzpm4WdYAuAXJwSFy0UCaudKb02bX6tegaaBV0nb
+	 MfkMoAbVPBZkQ==
+Date: Mon, 23 Feb 2026 16:04:02 -0800
+From: Jakub Kicinski <kuba@kernel.org>
+To: Shawn Lin <shawn.lin@rock-chips.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, "Vaibhaav Ram T . L"
+ <vaibhaavram.tl@microchip.com>, Kumaravel Thiagarajan
+ <kumaravel.thiagarajan@microchip.com>, Even Xu <even.xu@intel.com>, Xinpeng
+ Sun <xinpeng.sun@intel.com>, Srinivas Pandruvada
+ <srinivas.pandruvada@linux.intel.com>, Jiri Kosina <jikos@kernel.org>,
+ Alexandre Belloni <alexandre.belloni@bootlin.com>, Zhou Wang
+ <wangzhou1@hisilicon.com>, Longfang Liu <liulongfang@huawei.com>, Vinod
+ Koul <vkoul@kernel.org>, Lee Jones <lee@kernel.org>, Jijie Shao
+ <shaojijie@huawei.com>, Jian Shen <shenjian15@huawei.com>, Sunil Goutham
+ <sgoutham@marvell.com>, Andrew Lunn <andrew+netdev@lunn.ch>, Heiner
+ Kallweit <hkallweit1@gmail.com>, "David S . Miller" <davem@davemloft.net>,
+ Jeff Hugo <jeff.hugo@oss.qualcomm.com>, Oded Gabbay <ogabbay@kernel.org>,
+ Maciej Falkowski <maciej.falkowski@linux.intel.com>, Karol Wachowski
+ <karol.wachowski@linux.intel.com>, Min Ma <mamin506@gmail.com>, Lizhi Hou
+ <lizhi.hou@amd.com>, Andreas Noever <andreas.noever@gmail.com>, Mika
+ Westerberg <westeri@kernel.org>, Tomasz Jeznach <tjeznach@rivosinc.com>,
+ Will Deacon <will@kernel.org>, Xinliang Liu <xinliang.liu@linaro.org>, Tian
+ Tao <tiantao6@hisilicon.com>, Davidlohr Bueso <dave@stgolabs.net>, Jonathan
+ Cameron <jonathan.cameron@huawei.com>, Srujana Challa
+ <schalla@marvell.com>, Bharat Bhushan <bbhushan2@marvell.com>, Antoine
+ Tenart <atenart@kernel.org>, Herbert Xu <herbert@gondor.apana.org.au>, Raag
+ Jadav <raag.jadav@intel.com>, Hans de Goede <hansg@kernel.org>, Greg
+ Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>, Andy Shevchenko <andy@kernel.org>, Manivannan
+ Sadhasivam <mani@kernel.org>, Mika Westerberg
+ <mika.westerberg@linux.intel.com>, Andi Shyti <andi.shyti@kernel.org>,
+ Robert Richter <rric@kernel.org>, Mark Brown <broonie@kernel.org>, Nirmal
+ Patel <nirmal.patel@linux.intel.com>, Kurt Schwemmer
+ <kurt.schwemmer@microsemi.com>, Logan Gunthorpe <logang@deltatee.com>,
+ Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>,
+ Sakari Ailus <sakari.ailus@linux.intel.com>, Bingbu Cao
+ <bingbu.cao@intel.com>, Ulf Hansson <ulf.hansson@linaro.org>, Arnd Bergmann
+ <arnd@arndb.de>, Benjamin Tissoires <bentiss@kernel.org>,
+ linux-input@vger.kernel.org, linux-i3c@lists.infradead.org,
+ dmaengine@vger.kernel.org, Philipp Stanner <phasta@kernel.org>,
+ netdev@vger.kernel.org, nic_swsd@realtek.com,
+ linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ linux-usb@vger.kernel.org, iommu@lists.linux.dev,
+ linux-riscv@lists.infradead.org, David Airlie <airlied@gmail.com>, Simona
+ Vetter <simona@ffwll.ch>, linux-cxl@vger.kernel.org,
+ linux-crypto@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+ linux-serial@vger.kernel.org, mhi@lists.linux.dev, Andy Shevchenko
+ <andriy.shevchenko@linux.intel.com>, Jan Dabros <jsd@semihalf.com>,
+ linux-i2c@vger.kernel.org, Daniel Mack <daniel@zonque.org>, Haojian Zhuang
+ <haojian.zhuang@gmail.com>, linux-spi@vger.kernel.org, Jonathan Derrick
+ <jonathan.derrick@linux.dev>, linux-pci@vger.kernel.org,
+ linux-gpio@vger.kernel.org, Mauro Carvalho Chehab <mchehab@kernel.org>,
+ linux-media@vger.kernel.org, linux-mmc@vger.kernel.org
+Subject: Re: [PATCH 01/37] PCI/MSI: Add Devres managed IRQ vectors
+ allocation
+Message-ID: <20260223160402.3ad8f079@kernel.org>
+In-Reply-To: <1771860581-82092-2-git-send-email-shawn.lin@rock-chips.com>
+References: <1771860581-82092-1-git-send-email-shawn.lin@rock-chips.com>
+	<1771860581-82092-2-git-send-email-shawn.lin@rock-chips.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Sonic-CAuth: UmFuZG9tSVZfYk2yRinjJBH80TkuDdbISQHE4My7iVMKF1YQHggXF4QwBXb6qB09NoY4s/iEFEEGB7iDQV69jHOubqrnAsQQ
-X-Sonic-ID: C;RHHsCg4R8RGdBLw6laNSag== M;/t8YCw4R8RGdBLw6laNSag==
-X-Spam-Flag: No
-X-Sonic-Spam-Details: 0.0/5.0 by cerberusd
 
-Hi, folks.
+On Mon, 23 Feb 2026 23:29:40 +0800 Shawn Lin wrote:
+> pcim_alloc_irq_vectors() and pcim_alloc_irq_vectors_affinity() are created for
+> pci device drivers which rely on the devres machinery to help cleanup the IRQ
+> vectors.
 
-I'm seeing puzzling behavior from a recent AMD motherboard serial port:
-It receives data, but doesn't appear to send, and doesn't report any
-errors. Does this problem ring a bell for anyone here?
-
-dmesg reports this:
-Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
-00:04: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
-
-The /proc/tty/driver/serial tx count rises as I type in picocom, but the
-terminal at the other end of a null-modem cable (a laptop with a
-USB/serial adapter) doesn't see the typed characters. The other
-direction of the same connection works just fine.
-
-Things that have not helped:
-- Replacing the motherboard's cables and connectors
-- Replacing the null modem adapter with a different model
-- Replacing the remote USB/serial adapter with a different model
-- Switching picocom's flow control between RTS/CTS, xon/xoff, none
-- Changing the serial port's IRQ and address in the BIOS
-- Changing between 9600 and 115200 bps
-
-I'm approaching my wit's end. Could this be a known problem with the
-kernel's serial driver and the B650 chipset (socket AM5), or with recent
-AGESA versions?
-
-Thanks for your thoughts.
+If you can please add this API with just a few users, and then convert
+remaining users via the subsystem trees in the next cycle.
+There's no need to risk wasting maintainer time on conflicts with
+conversions like this.
