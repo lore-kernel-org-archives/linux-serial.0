@@ -1,127 +1,105 @@
-Received: from smtpfb1-g21.free.fr (smtpfb1-g21.free.fr [212.27.42.9])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8D431396D03;
-	Tue, 24 Feb 2026 12:22:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.27.42.9
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 289643806B8;
+	Tue, 24 Feb 2026 16:20:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771935781; cv=none; b=XhFoJxk6ERf4m9wezQ2/IqWEL9kjlc8J/R1tSvHtIIenr6ikwjqG/YawH3utSBp3slCLpRk4SMO+iArm7vptYrY9dN+BRgjhGXq08Z0Adjc4L3SHQr7xbA1wyCsukU41BizI93XvNxJjCGDly2U2phTUAHcIOstwSVDURplsAp0=
+	t=1771950009; cv=none; b=a/3p31JN+Ln/iVhYClMUdHR3BEsDFxCHW96XzI3tyXtY5LCkp2vrLjg86/BEWyjuipZvFv2s1Y0cqe8joQM+E2YLtk7p5dsjrQ890aFqnxiJG1LiGX7PXqsqORj6ZDEm+02lyVU/bnFW4xDNumuejjzP9warqWLYpTsupDig0IA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771935781; c=relaxed/simple;
-	bh=TXKJIKiEPtHfcGEJx/r052JjVn3m4tuf41dI1DM7msk=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=CiC/HaFcpOECUwxSUQGu82gGIQS3rE2g9VQVFuDkJoq4b0A2ZkKvWBtgGutUkuEko1+xVt4TSsJTZLeHiBCGUElQQVvmu5mFZvORW6+ZzbHhfViq5KKR9NdrepBxacwfjYGCYYTAYWY/XYm1Y2lVrwW+VwmTTDB1MHxUPg3kc5U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=lht.dlh.de; spf=pass smtp.mailfrom=free.fr; arc=none smtp.client-ip=212.27.42.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=lht.dlh.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=free.fr
-Received: from smtp2-g21.free.fr (smtp2-g21.free.fr [212.27.42.2])
-	by smtpfb1-g21.free.fr (Postfix) with ESMTP id C56BCDF9503;
-	Tue, 24 Feb 2026 13:17:18 +0100 (CET)
-Received: from albans-vm.. (unknown [213.61.141.186])
-	(Authenticated sender: albeu@free.fr)
-	by smtp2-g21.free.fr (Postfix) with ESMTPSA id 9DB3420039E;
-	Tue, 24 Feb 2026 13:16:58 +0100 (CET)
-From: Alban Bedel <alban.bedel@lht.dlh.de>
-To: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Peng Zhang <zhangpeng.00@bytedance.com>,
-	stable@vger.kernel.org,
-	Muchun Song <songmuchun@bytedance.com>,
-	Alban Bedel <alban.bedel@lht.dlh.de>,
-	Maximilian Lueer <maximilian.lueer@lht.dlh.de>
-Subject: [PATCH v4] serial: 8250: always disable IRQ during THRE test
-Date: Tue, 24 Feb 2026 13:16:39 +0100
-Message-Id: <20260224121639.579404-1-alban.bedel@lht.dlh.de>
-X-Mailer: git-send-email 2.39.5
+	s=arc-20240116; t=1771950009; c=relaxed/simple;
+	bh=6G91BbTqFSYq68w6yhfkl+JDGrXisXHtlEgCseE/wwo=;
+	h=Date:From:To:CC:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=USqOVO1G8thfgen45iXNVM6Ww1j0fmbiTNzRg5c7dxMz8bF4y4wQ0aLX+j9GyfK2JA3wIrVqkYLQdlrzBkNRCizxSSmBL4mlSz2rAAu5ju1vSO5mAI3PlnyzZd0LFo3AZFrEeaA2khoswtV2yxqdIflZTG4g0REjoy8UHhwRGjY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.18.224.107])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTPS id 4fL2xC01QGzJ46C2;
+	Wed, 25 Feb 2026 00:19:43 +0800 (CST)
+Received: from dubpeml500005.china.huawei.com (unknown [7.214.145.207])
+	by mail.maildlp.com (Postfix) with ESMTPS id C0C2D40570;
+	Wed, 25 Feb 2026 00:20:04 +0800 (CST)
+Received: from localhost (10.203.177.15) by dubpeml500005.china.huawei.com
+ (7.214.145.207) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.11; Tue, 24 Feb
+ 2026 16:20:01 +0000
+Date: Tue, 24 Feb 2026 16:20:00 +0000
+From: Jonathan Cameron <jonathan.cameron@huawei.com>
+To: Shawn Lin <shawn.lin@rock-chips.com>
+CC: Bjorn Helgaas <bhelgaas@google.com>, "Vaibhaav Ram T . L"
+	<vaibhaavram.tl@microchip.com>, Kumaravel Thiagarajan
+	<kumaravel.thiagarajan@microchip.com>, Even Xu <even.xu@intel.com>, Xinpeng
+ Sun <xinpeng.sun@intel.com>, Srinivas Pandruvada
+	<srinivas.pandruvada@linux.intel.com>, Jiri Kosina <jikos@kernel.org>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>, Zhou Wang
+	<wangzhou1@hisilicon.com>, Longfang Liu <liulongfang@huawei.com>, "Vinod
+ Koul" <vkoul@kernel.org>, Lee Jones <lee@kernel.org>, Jijie Shao
+	<shaojijie@huawei.com>, Jian Shen <shenjian15@huawei.com>, Sunil Goutham
+	<sgoutham@marvell.com>, Andrew Lunn <andrew+netdev@lunn.ch>, "Heiner
+ Kallweit" <hkallweit1@gmail.com>, "David S . Miller" <davem@davemloft.net>,
+	Jeff Hugo <jeff.hugo@oss.qualcomm.com>, Oded Gabbay <ogabbay@kernel.org>,
+	Maciej Falkowski <maciej.falkowski@linux.intel.com>, Karol Wachowski
+	<karol.wachowski@linux.intel.com>, Min Ma <mamin506@gmail.com>, Lizhi Hou
+	<lizhi.hou@amd.com>, Andreas Noever <andreas.noever@gmail.com>, "Mika
+ Westerberg" <westeri@kernel.org>, Tomasz Jeznach <tjeznach@rivosinc.com>,
+	Will Deacon <will@kernel.org>, Xinliang Liu <xinliang.liu@linaro.org>, Tian
+ Tao <tiantao6@hisilicon.com>, Davidlohr Bueso <dave@stgolabs.net>, Srujana
+ Challa <schalla@marvell.com>, Bharat Bhushan <bbhushan2@marvell.com>, Antoine
+ Tenart <atenart@kernel.org>, Herbert Xu <herbert@gondor.apana.org.au>, Raag
+ Jadav <raag.jadav@intel.com>, "Hans de Goede" <hansg@kernel.org>, Greg
+ Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+	<jirislaby@kernel.org>, Andy Shevchenko <andy@kernel.org>, Manivannan
+ Sadhasivam <mani@kernel.org>, Mika Westerberg
+	<mika.westerberg@linux.intel.com>, Andi Shyti <andi.shyti@kernel.org>, Robert
+ Richter <rric@kernel.org>, Mark Brown <broonie@kernel.org>, "Nirmal Patel"
+	<nirmal.patel@linux.intel.com>, Kurt Schwemmer
+	<kurt.schwemmer@microsemi.com>, Logan Gunthorpe <logang@deltatee.com>, Linus
+ Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, Sakari
+ Ailus <sakari.ailus@linux.intel.com>, Bingbu Cao <bingbu.cao@intel.com>, Ulf
+ Hansson <ulf.hansson@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Benjamin
+ Tissoires <bentiss@kernel.org>, <linux-input@vger.kernel.org>,
+	<linux-i3c@lists.infradead.org>, <dmaengine@vger.kernel.org>, Philipp Stanner
+	<phasta@kernel.org>, <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
+	<linux-arm-msm@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+	<linux-usb@vger.kernel.org>, <iommu@lists.linux.dev>,
+	<linux-riscv@lists.infradead.org>, David Airlie <airlied@gmail.com>, Simona
+ Vetter <simona@ffwll.ch>, <linux-cxl@vger.kernel.org>,
+	<linux-crypto@vger.kernel.org>, <platform-driver-x86@vger.kernel.org>,
+	<linux-serial@vger.kernel.org>, <mhi@lists.linux.dev>, Andy Shevchenko
+	<andriy.shevchenko@linux.intel.com>, Jan Dabros <jsd@semihalf.com>,
+	<linux-i2c@vger.kernel.org>, Daniel Mack <daniel@zonque.org>, "Haojian
+ Zhuang" <haojian.zhuang@gmail.com>, <linux-spi@vger.kernel.org>, "Jonathan
+ Derrick" <jonathan.derrick@linux.dev>, <linux-pci@vger.kernel.org>,
+	<linux-gpio@vger.kernel.org>, Mauro Carvalho Chehab <mchehab@kernel.org>,
+	<linux-media@vger.kernel.org>, <linux-mmc@vger.kernel.org>
+Subject: Re: [PATCH 01/37] PCI/MSI: Add Devres managed IRQ vectors
+ allocation
+Message-ID: <20260224162000.000001a5@huawei.com>
+In-Reply-To: <1771860581-82092-2-git-send-email-shawn.lin@rock-chips.com>
+References: <1771860581-82092-1-git-send-email-shawn.lin@rock-chips.com>
+	<1771860581-82092-2-git-send-email-shawn.lin@rock-chips.com>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.42; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: lhrpeml500009.china.huawei.com (7.191.174.84) To
+ dubpeml500005.china.huawei.com (7.214.145.207)
 
-From: Peng Zhang <zhangpeng.00@bytedance.com>
+On Mon, 23 Feb 2026 23:29:40 +0800
+Shawn Lin <shawn.lin@rock-chips.com> wrote:
 
-commit 039d4926379b ("serial: 8250: Toggle IER bits on only after irq
-has been set up") moved IRQ setup before the THRE test, in combination
-with commit 205d300aea75 ("serial: 8250: change lock order in
-serial8250_do_startup()") the interrupt handler can run during the
-test and race with its IIR reads. This can produce wrong THRE test
-results and cause spurious registration of the
-serial8250_backup_timeout timer. Unconditionally disable the IRQ for
-the short duration of the test and re-enable it afterwards to avoid
-the race.
+> pcim_alloc_irq_vectors() and pcim_alloc_irq_vectors_affinity() are created for
+> pci device drivers which rely on the devres machinery to help cleanup the IRQ
+> vectors.
 
-Cc: stable@vger.kernel.org
-Fixes: 039d4926379b ("serial: 8250: Toggle IER bits on only after irq has been set up")
-Depends-on: 205d300aea75 ("serial: 8250: change lock order in serial8250_do_startup()")
-Signed-off-by: Peng Zhang <zhangpeng.00@bytedance.com>
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
-Signed-off-by: Alban Bedel <alban.bedel@lht.dlh.de>
-Tested-by: Maximilian Lueer <maximilian.lueer@lht.dlh.de>
----
-Changelog:
+It might be worth adding some details on why we need the is_msi_managed
+flag in the first place vs just doing conventional devm_add_action_or_reset()
+with pci_free_irq_vectors().
 
-v2: Replaced disable_irq_nosync() with disable_irq() to prevent interrupts
-    that are currently being handled
-v3: Added changelog
-v4: Updated commit message to mention the addtional relation to commit
-    205d300aea75
----
-
-Commit 039d4926379b ("serial: 8250: Toggle IER bits on only after irq
-has been set up"), in combination with 205d300aea75 ("serial: 8250:
-change lock order in serial8250_do_startup()"), introduced a bug which
-showed in some of our devices after updating them to kernel
-5.15.169. These devices have an I2C touch screen which is behind an
-UART to I2C bridge. This bug lead to an ever growing latency on the
-bus, delaying the touch events by up to several seconds.
-
-Looking for other solutions than reverting commit 039d4926379b I found
-Peng Zhang's patch, backported it to 5.15 and could confirm that it
-solve the high delay issue.
-
-As this a quiet sever regression I'm taking the liberty to re-submit
-Peng Zhang's patch in the hope it will be considered for inclusion. I
-added the changelog requested by greg k-h's patch email bot after the
-v2 submission, as well as the mention of commit 205d300aea75 requested
-by Jiri Slaby after v3.
-
-Also please note that commit 039d4926379b was backported as far back as
-5.10, so quiet a few stable kernels are affected. This patch doesn't
-apply as-is on older kernels, I can provide a patch for 5.15 if desired.
-
-Alban Bedel
----
- drivers/tty/serial/8250/8250_port.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index cc94af2d578a6..a743964c9d227 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -2147,8 +2147,7 @@ static void serial8250_THRE_test(struct uart_port *port)
- 	if (up->port.flags & UPF_NO_THRE_TEST)
- 		return;
- 
--	if (port->irqflags & IRQF_SHARED)
--		disable_irq_nosync(port->irq);
-+	disable_irq(port->irq);
- 
- 	/*
- 	 * Test for UARTs that do not reassert THRE when the transmitter is idle and the interrupt
-@@ -2170,8 +2169,7 @@ static void serial8250_THRE_test(struct uart_port *port)
- 		serial_port_out(port, UART_IER, 0);
- 	}
- 
--	if (port->irqflags & IRQF_SHARED)
--		enable_irq(port->irq);
-+	enable_irq(port->irq);
- 
- 	/*
- 	 * If the interrupt is not reasserted, or we otherwise don't trust the iir, setup a timer to
--- 
-2.39.5
 
