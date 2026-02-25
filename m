@@ -1,161 +1,79 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E6543939B0
-	for <linux-serial@vger.kernel.org>; Wed, 25 Feb 2026 11:22:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E01F2D877D;
+	Wed, 25 Feb 2026 11:24:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772018574; cv=none; b=llSxDP2z8K2YkI4A73ORqNB8sJf2r4jnG3Yg5RU+ZYYGQPVib9ifGf2RUdvtYsFUWn+/nMvBz8uuXpQATNhOTKWIjLGsA7gF40agWPswmbGp7oTDw7ZKEAup2ggBRFPj0nPnsr+20h8ELJwuR2TeQNLp6TY5yZmVXqLtwcYyK8A=
+	t=1772018649; cv=none; b=NaanRjulOq9DY2zpp0WY7WgZZWkurzpJMxycxlcVrII+/Ar0w9niIxk3+zArcFFFYUYRsru5YSk8hbqSkpH+7gfg1u7wHSOCFOjmDSR+GEa1odrET6Kan2qpopEhF0s4cyohlyGoYogG0btYKTgfj/OPfSbfyeDfGzELGNbZPKY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772018574; c=relaxed/simple;
-	bh=6gev5tZqUw00NLGRGzGj1w6G1r7M37S8MzU31Ep9P3c=;
-	h=From:In-Reply-To:MIME-Version:References:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=JhxEb6Bo4l60Cp1UEfuJ61MAbHD4RyEKXzd/48EkyNsWs0i0TwmmAL62gZRqqPB4SNw0bBIKAOFksimBJiimULO1lYfeLV+D3/cqIIv+qaDVge8431dRiE6Og+3DmzXR8QIzeWbQvkfUp1xwVUM/IORZHuiZRnTB8bhod6G+aR4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WaRacXYw; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1772018649; c=relaxed/simple;
+	bh=83nPCdbWqaF9WpFrOPmSzxEWhHCp8sgCyS1cq+2cTF0=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
+	 MIME-Version:Content-Type; b=gekuCSpdHW68iqqJz4orvKy5YW3wfvJzXBb/OFO5n+y2/IIKtBOMxOHZjAxh0hhl1NVKuJHkngB1WhSi5iZLDD7ucKWc4Ky2CiVnCiUFBkTCmlsIMBtgmJSKD8Nmr4zVCZDEqa369qN1pmhIC7vMkFnzJQUD7XQLVVJaOTr6u6A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uHYtBxfc; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WaRacXYw"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CEA1C19423
-	for <linux-serial@vger.kernel.org>; Wed, 25 Feb 2026 11:22:54 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uHYtBxfc"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30415C116D0;
+	Wed, 25 Feb 2026 11:24:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772018574;
-	bh=6gev5tZqUw00NLGRGzGj1w6G1r7M37S8MzU31Ep9P3c=;
-	h=From:In-Reply-To:References:Date:Subject:To:Cc:From;
-	b=WaRacXYwBEbkSqFnb09HqJI8/90YgW1HTGqdQiaAlv2yd7eCoDinW+Oj4IwkPKsDY
-	 LFfX1TX5a5CAuN+cu2tJ1G7N6aMRD7dnUqxgvpksCBQ7R6cEWKyTOO9YIbUTQEpDRB
-	 D7TFtEJNAMVvKTGgZ7H2rUC0dPf6Zap+wJMUrzPe9h2ZjhriDOAJJ3o7r7JMe3a1Fe
-	 BEFzbAAUmwV+HgmiEpS/K/733VIZwgEMNacF9T+xAGLjQdlF2WVt43F9FJt0eisMpd
-	 Y5ZBh+uA0ro6birUuESD8EclhzzWezKSAydu/YQWH0bbWU5hgp7svPLI2TZlpjn5VP
-	 c23oiYayZRYfg==
-Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-59dcdf60427so7670354e87.3
-        for <linux-serial@vger.kernel.org>; Wed, 25 Feb 2026 03:22:54 -0800 (PST)
-X-Gm-Message-State: AOJu0YykrC2gagYscYuUIQn10FxBILEpezgW8fLc6fDp3NonCPuIWJuO
-	otFpUCkqk7vHyVCgRJZ15hXntD0rLs+ji1gPV4qkEPo8IT6uSV/aTOSPs8Y5iVHaUE2QJKeXmiq
-	3c9xGbN8d90KCZCvFHWVgiZ4TpS18E6/92IiOh2d81A==
-X-Received: by 2002:ac2:4e13:0:b0:59f:7a22:fae with SMTP id
- 2adb3069b0e04-5a0ed9bc6demr5028853e87.43.1772018572919; Wed, 25 Feb 2026
- 03:22:52 -0800 (PST)
-Received: from 969154062570 named unknown by gmailapi.google.com with
- HTTPREST; Wed, 25 Feb 2026 03:22:51 -0800
-Received: from 969154062570 named unknown by gmailapi.google.com with
- HTTPREST; Wed, 25 Feb 2026 03:22:50 -0800
-From: Bartosz Golaszewski <brgl@kernel.org>
-In-Reply-To: <20260224-pci-m2-e-v5-9-dd9b9501d33c@oss.qualcomm.com>
+	s=k20201202; t=1772018648;
+	bh=83nPCdbWqaF9WpFrOPmSzxEWhHCp8sgCyS1cq+2cTF0=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+	b=uHYtBxfcZmQo9Meu26j2W+u5i4XpsVkP1nTSSj+JI6Li/b42oVVyHnsPYxbCUN6a2
+	 cg2ol2qa7tdUxBeWBO4YoGIFrYGy+YT6Oi4Ejgi1OhMhbKPv5As7fR7KVEy3CEOQMW
+	 Zah/xRWR/pmw3DgUQdelJzsfer9vr5O6X9iyOW7k2Tz4u0zElwZOs14g3gaRhHrGHo
+	 F42Skzctc0Ta8UFUbq2vYjjsMe+c9Zt+oT1M3c3m8O/3nRnh3Ft6r1XQo/2S504GvO
+	 JiTxdZ5fb0kTUAozBDzlwZLyD2CxTm1ZPoaKT8KZjZww5Bzj6i7VnwXUa8F2hp29Lp
+	 Ib8lenOq6cqWw==
+From: Vinod Koul <vkoul@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, 
+ Michael Turquette <mturquette@baylibre.com>, 
+ Stephen Boyd <sboyd@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Geert Uytterhoeven <geert+renesas@glider.be>, 
+ Magnus Damm <magnus.damm@gmail.com>, Biju <biju.das.au@gmail.com>
+Cc: Biju Das <biju.das.jz@bp.renesas.com>, linux-kernel@vger.kernel.org, 
+ linux-serial@vger.kernel.org, dmaengine@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-clk@vger.kernel.org, 
+ linux-renesas-soc@vger.kernel.org, 
+ Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20260203103031.247435-1-biju.das.jz@bp.renesas.com>
+References: <20260203103031.247435-1-biju.das.jz@bp.renesas.com>
+Subject: Re: (subset) [PATCH v3 00/10] Add support for Renesas RZ/G3L SoC
+ and SMARC-EVK platform
+Message-Id: <177201864381.93331.5903665743776251595.b4-ty@kernel.org>
+Date: Wed, 25 Feb 2026 16:54:03 +0530
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260224-pci-m2-e-v5-0-dd9b9501d33c@oss.qualcomm.com> <20260224-pci-m2-e-v5-9-dd9b9501d33c@oss.qualcomm.com>
-Date: Wed, 25 Feb 2026 03:22:50 -0800
-X-Gmail-Original-Message-ID: <CAMRc=MeJP-BLf3_zM9b+nz1nMOGVzyUhXemejHkV+AJREGPz_w@mail.gmail.com>
-X-Gm-Features: AaiRm52oa36SxdO2esRz0tZiEY1x2dCziUGws1cBwrcfkRk5CfGY9pNkO3m4CZg
-Message-ID: <CAMRc=MeJP-BLf3_zM9b+nz1nMOGVzyUhXemejHkV+AJREGPz_w@mail.gmail.com>
-Subject: Re: [PATCH v5 9/9] power: sequencing: pcie-m2: Create serdev device
- for WCN7850 bluetooth
-To: manivannan.sadhasivam@oss.qualcomm.com
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-kbuild@vger.kernel.org, platform-driver-x86@vger.kernel.org, 
-	linux-pci@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org, 
-	linux-pm@vger.kernel.org, Stephan Gerhold <stephan.gerhold@linaro.org>, 
-	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, linux-acpi@vger.kernel.org, 
-	Hans de Goede <johannes.goede@oss.qualcomm.com>, Rob Herring <robh@kernel.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Nathan Chancellor <nathan@kernel.org>, Nicolas Schier <nicolas.schier@linux.dev>, 
-	Hans de Goede <hansg@kernel.org>, =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
-	Mark Pearson <mpearson-lenovo@squebb.ca>, "Derek J. Clark" <derekjohn.clark@gmail.com>, 
-	Manivannan Sadhasivam <mani@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Marcel Holtmann <marcel@holtmann.org>, Luiz Augusto von Dentz <luiz.dentz@gmail.com>, 
-	Bartosz Golaszewski <brgl@bgdev.pl>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	Bartosz Golaszewski <brgl@kernel.org>, 
-	Manivannan Sadhasivam via B4 Relay <devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Mailer: b4 0.13.0
 
-On Tue, 24 Feb 2026 06:30:55 +0100, Manivannan Sadhasivam via B4 Relay
-<devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org> said:
-> From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
->
-> For supporting bluetooth over the non-discoverable UART interface of
-> WCN7850, create the serdev device after enumerating the PCIe interface.
-> This is mandatory since the device ID is only known after the PCIe
-> enumeration and the ID is used for creating the serdev device.
->
-> Since by default there is no OF or ACPI node for the created serdev,
-> create a dynamic OF 'bluetooth' node with the 'compatible' property and
-> attach it to the serdev device. This will allow the serdev device to bind
-> to the existing bluetooth driver.
->
-> Tested-by: Hans de Goede <johannes.goede@oss.qualcomm.com> # ThinkPad T14s gen6 (arm64)
-> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
-> ---
->
 
-[snip]
+On Tue, 03 Feb 2026 10:30:08 +0000, Biju wrote:
+> This patch series adds initial support for the Renesas RZ/G3L SoC and
+> RZ/G3L SMARC EVK platform. The RZ/G3L device is a general-purpose
+> microprocessor with a quad-core CA-55, single core CM-33, Mali-G31
+> 3-D Graphics and other peripherals.
+> 
+> Support for the below list of blocks is added in the SoC DTSI (r9a08g046.dtsi):
+> 
+> [...]
 
-> -static void pwrseq_pcie_m2_free_regulators(void *data)
-> +static void pwrseq_pcie_m2_free_resources(void *data)
->  {
->  	struct pwrseq_pcie_m2_ctx *ctx = data;
->
-> +	serdev_device_remove(ctx->serdev);
-> +	bus_unregister_notifier(&pci_bus_type, &ctx->nb);
-> +	of_changeset_revert(ctx->ocs);
-> +	of_changeset_destroy(ctx->ocs);
->  	regulator_bulk_free(ctx->num_vregs, ctx->regs);
->  }
->
-> +static int pwrseq_m2_pcie_create_bt_node(struct pwrseq_pcie_m2_ctx *ctx,
-> +					struct device_node *parent)
-> +{
-> +	struct device *dev = ctx->dev;
-> +	struct device_node *np;
-> +	int ret;
-> +
-> +	ctx->ocs = devm_kzalloc(dev, sizeof(*ctx->ocs), GFP_KERNEL);
-> +	if (!ctx->ocs)
-> +		return -ENOMEM;
-> +
-> +	of_changeset_init(ctx->ocs);
-> +
-> +	np = of_changeset_create_node(ctx->ocs, parent, "bluetooth");
-> +	if (!np) {
-> +		dev_err(dev, "Failed to create bluetooth node\n");
-> +		ret = -ENODEV;
-> +		goto err_destroy_changeset;
-> +	}
-> +
-> +	ret = of_changeset_add_prop_string(ctx->ocs, np, "compatible", "qcom,wcn7850-bt");
-> +	if (ret) {
-> +		dev_err(dev, "Failed to add bluetooth compatible: %d\n", ret);
-> +		goto err_destroy_changeset;
-> +	}
-> +
-> +	ret = of_changeset_apply(ctx->ocs);
-> +	if (ret) {
-> +		dev_err(dev, "Failed to apply changeset: %d\n", ret);
-> +		goto err_destroy_changeset;
-> +	}
-> +
-> +	ret = device_add_of_node(&ctx->serdev->dev, np);
-> +	if (ret) {
-> +		dev_err(dev, "Failed to add OF node: %d\n", ret);
-> +		goto err_revert_changeset;
-> +	}
-> +
-> +	return 0;
-> +
-> +err_revert_changeset:
-> +	of_changeset_revert(ctx->ocs);
-> +err_destroy_changeset:
-> +	of_changeset_destroy(ctx->ocs);
-> +
+Applied, thanks!
 
-I would prefer pwrseq_pcie_m2_free_resources() to be split into separate
-devm actions, otherwise it's not much different from simply having the
-.remove() callback. With a split like that you'd avoid having these labels
-here.
+[01/10] dt-bindings: dma: rz-dmac: Document RZ/G3L SoC
+        commit: e45cf0c7d9b960f1aae4ee56c3c3d46549ccde86
 
-Otherwise looks good.
+Best regards,
+-- 
+~Vinod
 
-Bart
+
