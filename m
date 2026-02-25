@@ -1,28 +1,28 @@
-Received: from SJ2PR03CU001.outbound.protection.outlook.com (mail-westusazon11012026.outbound.protection.outlook.com [52.101.43.26])
+Received: from BN1PR04CU002.outbound.protection.outlook.com (mail-eastus2azon11010034.outbound.protection.outlook.com [52.101.56.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5200D3081C2;
-	Wed, 25 Feb 2026 06:59:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.43.26
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA1F53081C2;
+	Wed, 25 Feb 2026 06:59:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.56.34
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772002789; cv=fail; b=szU7is/BisfeTdrlQ5NfiVULWG+i90g//0MClvOewSCfkaWi6O0SIBW30wtUMZMukYWu7The2a3Bq4YcTPCraurID/5n6voC3F0RLCX9bA8IJhqEDv9799ohp5RoIovXp7gLM/X/80AJlZ1W7Hv+2XIA8nubmX5PrD/nSLvbj10=
+	t=1772002794; cv=fail; b=nygjinaAVEwdeMBesUjXA8UlTWqNOwdYtw8KQnjnrtsIyVUwlzVf/HxHk6TNxjNvEMXNF8C9FSOpiqWBmNkF885p8nGRJoL6y0QGZ8Kix2eDP13RaamFyLCpIl9wVoT9AZLBTDw5UJxrkV+GeIsNcrgTT8h7VXsLP9laQu/7aSk=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772002789; c=relaxed/simple;
-	bh=P2zs0VWZn0unFBi3/h3BPH5kZ/B9Q/hM+KtgZy/5JmY=;
+	s=arc-20240116; t=1772002794; c=relaxed/simple;
+	bh=k5eX4Ga4TP2U7yuKpcUUB3bxdpIZ/LM6DYQBdKPXT5I=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=btw9UdgNe3t1OHPnxDoqwEYw0R+xvB9uVgBV1dFkAzwLWq8Dv2drNx+8/pXmYLfeuz0qXwjEfQNO9od2t08fvHUTPJzXnb5LoXLL1i64ll3xEDFcHHCCQcX8TwE0qUgiMrvnymwyvCM4Rzo08e2eyPDa16Hyp13nAPkzX/mMWTE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=p+5YcsSR; arc=fail smtp.client-ip=52.101.43.26
+	 MIME-Version:Content-Type; b=EvmiOfTpIQU44K7ySOHRGbQILml5Yi9Q9BTKd1dfeUHCr2Tn2QK07jbVBleUWiNBVeSLfYvjZpGUTcJnLNIvCj1frock8loXHqK+u2a9ndJxqRQ/HEUjPT0+9d26sYp6ok6tOy7kIuenfXzq4mCJWim+PrWyE5kRTPr4H9ufhVs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=XDwA2mMO; arc=fail smtp.client-ip=52.101.56.34
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="p+5YcsSR"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="XDwA2mMO"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=JyQW45RbL6hmvFuguM7hwfLFSgfteLcTZKcrmciIYH268f7w++3OAhMLij30oSF57BoeAD+RzzD50yvUz7X6nSTW9pIkdL50nsJkOPlnWXa+HmYhRKyYBywFOJI10Dfmx7FF9EoimxRBYw9eo0sVKZjP89xuIZLfK2FxlmA0vfJwAfLzo/oq/dVbik5ZN6eYOG1tC7o91FH9cpZiBJHqBNK3Sw1lPxJTt6CbbEUDn4E1pPUCwJF5qVtdErQpvaTCFLE4zt5M6piuxGUDw56C7+yMP/OamPNfUdknJhd2udDGLZYRZefVZYOcNfUfcCDuUC57wphZdfr+f14YC+dnbg==
+ b=dP83JGLqMIxIqvPht4pi4LJRMczRvDTWAzjiMlR3ErMRZ59sginDHHlaTFrDoi5YUkBDhVth/z+PaPBR9sssoiNk8NukK1VfpXNsB2YzH17ggMuJsDt4RnGRSMDvpaIYYnK+tCoXtoH7dC0xOLYZIm4MH9xUZiT6cQD3rLHoB6pIDYS1x05O27E1SMtXMmaKLBxuIPc0ZQW/lWWNsfuq1wY+IgD/7ktky7qQDzur2k04dB0YBlOYrVmWDhsm/HXtrDJ1WTltI3+m40BgQsmsUluyIgIo+/BmJBqNGskjvlHPcZ81JR1/zhtCTNSFPgxpy0hcqla4274DMJ3RBVBLDQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=TVtcThJPxQB7HK1DAs15Y1MAqXFbs5DESPi1onuNWjE=;
- b=ujaPAvm8JvQk/y456XH8Go7IwgLZ31pGZhyETolpTvrBH/A9cgI32KH3DY8QzIE4b4PeVSWJCH9HCiamQUYcRrd5DTOREuSGFyEZZirUg845N5+7A0IkweJrGYnQ81gU1C+QM0rLQ97cEKPDfxO+FR35S8aPxvzxYc8e3RK7LntIZLryLW/LCs/PhA+rfnRrna3qpYNu5H2lbnLgk+L78E2Htr29bks+u6sOjg8ESMIB/YGQUJXvECnYajHSmz5fzjmn3vPj8KFTSfELbsWO8J13BWn0opyKjxVyp63BavsVyf+msBhHcdOee8eWRVmwi+k/APe6NaTCeStm1R6eWA==
+ bh=WmI0fp4WqiOCbfvsh2VCnwz5kdR5zYqQQafVmq9a4wk=;
+ b=c7ZAXNoBZPbmC3ZQkLGatZ81XDLfZkienyrbzhRz0ZmSLxnUIxetg9dsccJUJ6g9FS7w67mTDkz2WJVfFJ9ecFsqR8Za+Dj2lmeIN3nzGqkvgHZafwyHV3aQi0nJxFnUGD7un9Jrzgo2ICNrnZSLyYSMuzuXDTofILSodLjloRuCuGpL5CG2wradZf8KlziAV7NeSyJFlUeTgN6adXX4NHOInbU7QjbD1ytHc+H/iIL9l3zBVWpA0VbuixEWGisdtm2jAoKRwMABYSqR055MRovrIxav2JsfDfqjVq5U38Fp0ITFmS62XdVaB24snS59oBaoMri4OuW/AwrkCJTzcg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.117.161) smtp.rcpttodomain=armlinux.org.uk smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
@@ -30,18 +30,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TVtcThJPxQB7HK1DAs15Y1MAqXFbs5DESPi1onuNWjE=;
- b=p+5YcsSRG1C0L7e4qHOhBeb/nTmL2vmb/r0jn9yxKWdbxfYRb0hxkV/kmrsEJLEVyLrkl+rGDNxB8swCkFNZyBV8z7dY8uz0uO++VV/G/Ym/aNYCMWDwCAAsN015MeDWhaYjUOtfM+SLaFpFugztVqn3DNCJxY2Jy0D9AWAI2/JC7kkhwmFf1OBmqAtijwbAWE3440DL5wKgVADXiGtMcNrtZfSsCgH7MrFemqhDg/F+oQGuBO5xm+vL1ivV0RzqLZBr3w/kxHkyMLMCjTdzSi3qYLw0Ke9Llv8ByhtNn6vh5Y9my0b24hosY1gKH/C0MfWXJSWg9AfsXuoosqAdHg==
-Received: from CH0PR03CA0246.namprd03.prod.outlook.com (2603:10b6:610:e5::11)
- by SA0PR12MB4463.namprd12.prod.outlook.com (2603:10b6:806:92::14) with
+ bh=WmI0fp4WqiOCbfvsh2VCnwz5kdR5zYqQQafVmq9a4wk=;
+ b=XDwA2mMOoxxgMmTtmF72NIzIgVKo0+1zMwqvfqcsSnSx3NmQvoT/2dscSqyUdr69dhKTmVud0Ddwl5ul2DLyKt+mzUOJiUjl85FIc21xgE/CWYuaWgNTm57TydU2FZ+ThNgKBUIZa5gQtmzTsWCWVWtW+RNoHyUY88M8ngmlDC3P/5C8u59nXe2h8WlPYRcRS1xRTGYypurwQobJZfSrGEAgZPOgph+kr4gnAGVcZBgvY1iFKlC8Ps9DVgvgnjCCk3OkHc0cYkiQWQdgVpYYfM8bg+rJqb1j+EnxdgBt09Nd4O+LEQTRmbeDVQ72C/TMCclf6rC31ymtEu7li3JV5A==
+Received: from CH0PR04CA0114.namprd04.prod.outlook.com (2603:10b6:610:75::29)
+ by BY5PR12MB4130.namprd12.prod.outlook.com (2603:10b6:a03:20b::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9632.21; Wed, 25 Feb
- 2026 06:59:44 +0000
-Received: from CH2PEPF00000141.namprd02.prod.outlook.com
- (2603:10b6:610:e5:cafe::cc) by CH0PR03CA0246.outlook.office365.com
- (2603:10b6:610:e5::11) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9632.23 via Frontend Transport; Wed,
- 25 Feb 2026 06:59:42 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9632.22; Wed, 25 Feb
+ 2026 06:59:48 +0000
+Received: from CH2PEPF0000013F.namprd02.prod.outlook.com
+ (2603:10b6:610:75:cafe::e1) by CH0PR04CA0114.outlook.office365.com
+ (2603:10b6:610:75::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9632.23 via Frontend
+ Transport; Wed, 25 Feb 2026 06:59:43 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
@@ -49,20 +49,20 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.117.161 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
 Received: from mail.nvidia.com (216.228.117.161) by
- CH2PEPF00000141.mail.protection.outlook.com (10.167.244.74) with Microsoft
+ CH2PEPF0000013F.mail.protection.outlook.com (10.167.244.71) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9632.12 via Frontend Transport; Wed, 25 Feb 2026 06:59:44 +0000
+ 15.20.9632.12 via Frontend Transport; Wed, 25 Feb 2026 06:59:48 +0000
 Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
  (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Tue, 24 Feb
- 2026 22:59:29 -0800
+ 2026 22:59:33 -0800
 Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail204.nvidia.com
  (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Tue, 24 Feb
- 2026 22:59:29 -0800
+ 2026 22:59:33 -0800
 Received: from kkartik-desktop.nvidia.com (10.127.8.13) by mail.nvidia.com
  (10.129.68.10) with Microsoft SMTP Server id 15.2.2562.20 via Frontend
- Transport; Tue, 24 Feb 2026 22:59:25 -0800
+ Transport; Tue, 24 Feb 2026 22:59:29 -0800
 From: Kartik Rajput <kkartik@nvidia.com>
 To: <linux@armlinux.org.uk>, <gregkh@linuxfoundation.org>,
 	<jirislaby@kernel.org>, <mingo@kernel.org>, <tglx@kernel.org>,
@@ -70,9 +70,9 @@ To: <linux@armlinux.org.uk>, <gregkh@linuxfoundation.org>,
 	<jonathanh@nvidia.com>, <linux-kernel@vger.kernel.org>,
 	<linux-serial@vger.kernel.org>
 CC: Kartik Rajput <kkartik@nvidia.com>
-Subject: [PATCH 2/4] serial: amba-pl011: Introduce set_uartclk_rate vendor flag
-Date: Wed, 25 Feb 2026 12:29:12 +0530
-Message-ID: <20260225065915.341522-3-kkartik@nvidia.com>
+Subject: [PATCH 3/4] serial: amba-pl011: Add Tegra264 UART support
+Date: Wed, 25 Feb 2026 12:29:13 +0530
+Message-ID: <20260225065915.341522-4-kkartik@nvidia.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260225065915.341522-1-kkartik@nvidia.com>
 References: <20260225065915.341522-1-kkartik@nvidia.com>
@@ -87,129 +87,117 @@ Content-Type: text/plain
 X-NV-OnPremToCloud: ExternallySecured
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH2PEPF00000141:EE_|SA0PR12MB4463:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6d343df9-c644-45ed-a998-08de743b74ae
+X-MS-TrafficTypeDiagnostic: CH2PEPF0000013F:EE_|BY5PR12MB4130:EE_
+X-MS-Office365-Filtering-Correlation-Id: bf6fc96f-779a-411c-600c-08de743b7753
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|7416014|1800799024|82310400026|36860700013|921020;
+	BCL:0;ARA:13230040|36860700013|7416014|376014|82310400026|1800799024|921020;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?tH9mrFr/j0jLh31tRpb4gm9y9STMIWJif3s85SlTGMC5Eco9iaROg3590OkA?=
- =?us-ascii?Q?KCaGKMuRYZ4zJofBIPA9nahoyO5rbanNHZ7djtDqFdOIjXvxsCknmnGyA8fH?=
- =?us-ascii?Q?rFhUr4ncd/lsWPgKzaQbrd0rQpLXq+YPhLEsPlwhnzXXSDY9uh7bvCnUuEnK?=
- =?us-ascii?Q?fqAV0uSFDH4z1ogxj2LFmRyY/45wfQD3yJiqq3EWnBQPH6Rg1EMTBYxVpNLt?=
- =?us-ascii?Q?ieZ6BbV41nMH2QHo5FG1OxixI1bHtVh8GgseKQGVrR21vx6PR3HCuY/UfxqF?=
- =?us-ascii?Q?c+tXmWVTI96x5PFTU0eueVJkbyQclrmgceuGjH/Uc3gYe0gGEDZjk6v9Tonv?=
- =?us-ascii?Q?AAqrk8EIIXwktm3GB3RZC8lhB8rzIY8Ko1qC7UjoJIh6awcbGOAGtZF+df9u?=
- =?us-ascii?Q?ZX5nYiEFAgzi0OxtZkUM2TCEhvGsuUnI+MqxBua3zesuxIRKSVJFtjk5f3mQ?=
- =?us-ascii?Q?qyvMmfas532DzOsdNpDoVLIKXMhmpEPFDrtoKtBVHm+1YIO8oB7rTJhoc2oO?=
- =?us-ascii?Q?ZzBHvKjJKFL+hu2nQe8JlgkVI8nJNrS6vmn2CZkHVN4j3dXuy6Ekv0Niynm+?=
- =?us-ascii?Q?1Rw63/b+YW8AsKl4Z0Y/yvXxgpWKUjCR2qlagMdeNkGCsmduJOALzDKuJl1T?=
- =?us-ascii?Q?OlezrITgXT4w9Hv1QXXLJb9/uHtrK3II5OV0K53ycKHLaV+uOibJc733pf60?=
- =?us-ascii?Q?YsIsLgqriQO/Q5ZbUWi+62Yv7M3hNxF0FECscpU9tpIsF9YToTyE47z+LLAK?=
- =?us-ascii?Q?vrNa+MTW76vHKmEOdbwqrxoFfcAmzck9zstDK/WdUga5fZhAYFtFoBE3vjQu?=
- =?us-ascii?Q?8zpqOtdLjHt/n8MGrHH+NijUTCyNWLCr70uoCgfjGKQUlq4w9Xf2ABfSp9h0?=
- =?us-ascii?Q?FRS/E/yziQl8G5W4daPkcWx8uC7h2a2zAtOjuRoj2hOOQaja2VTnvSB8ZIgY?=
- =?us-ascii?Q?z9BYIjrOjuKQNZQPjFP7v/jXcOCqCSt0P534S+EQPhAwe3FUHALVx3SeuQ3W?=
- =?us-ascii?Q?6RfML3L02b3Xe0BahcZ54DnnXxsslR0MACsHTXPOwBr5docdoj/yx5QQaJaD?=
- =?us-ascii?Q?yzm0ZJZc1IJx8jAiUUV7e9X2t1bwglsF1oFe/iRNk+87xv463b/8rZ4rYL8L?=
- =?us-ascii?Q?QswPvill2bXHSuM6jYamsWQM6EugEiugPCKp0OO/qC5gnV80X7Vdb9qV9WpN?=
- =?us-ascii?Q?Wi8hZtUCoqM/LmR0HxUMCllFcq5+tAiVbyVtmMX+cIb715ZMwYW0InctrOQ2?=
- =?us-ascii?Q?lwzLBowm5Jg79uEBnDiqn64k/Konk+sFFNnSK7RRqpdSIzHJXh0iAQ2buu14?=
- =?us-ascii?Q?M2FeWZes9ymQkPb1pHs82n3D1ipkyMWF6O6Mde4pxFjd8Nx+zWMDtrwnMdDR?=
- =?us-ascii?Q?43J+6XFsQbj35gGdvEjR4HNe87OloNJaAT64pA/oiccXjI4uC+wdeMDCcc7P?=
- =?us-ascii?Q?3FTDVxyO7FyLU5Ii4cJ5jAmEmIUrjgS+MDSVf7li07mTHcdIoHTB3az4+DnK?=
- =?us-ascii?Q?mnMvxYYMuPfWRpAYCRww3Vx506TsoWkCFvYOSGkurNK3EWUIcmzEHi3t5mAy?=
- =?us-ascii?Q?DftX5hyDQAQ6IP++0e8Sxt33FdQWnwma4E+f0rwMEIoGVvFKOeh7ysGYKiMg?=
- =?us-ascii?Q?kJ3OczqFw7SDzARwuYsUhmxy+hTjz/i/D6Uh1pxAmQrjEmCM8NiCiRdWQXK7?=
- =?us-ascii?Q?C86jlMphk4QkPj6SfsKaDQCaLGM=3D?=
+	=?us-ascii?Q?0BT5CPUPVWuo86J+uhGL/mP0OhBuqR9uRjmS6ovJ6fDMOQVZlBMDI6mDdd9E?=
+ =?us-ascii?Q?1o+/z7LuYUw/SSN8hFNdyGA0OSKG6owt0D35ekT4N0mYuKlFnoSPF3qeXI+Z?=
+ =?us-ascii?Q?aKy1OxZd/HTAEGaPxRYugRgG75DG8IEN23XbPxDPHHfkcSQIJlGDpgHDv+PD?=
+ =?us-ascii?Q?XgzPMwh6bdSKPgr+zJey+mQmV37sCEKwFsp37defPH37uC0c5sqW1+gtVRSA?=
+ =?us-ascii?Q?rnk6w4+JLLMoN5Zd5s0KuttfA591Iutx/qqGcMRLrG9xIs7je9PIj0OEi8MW?=
+ =?us-ascii?Q?rRNqiyiF1x6QRzfMxLCjAzQjz4pzk8FfFfF8jxgd2Pm6Qom1eXt+0KZx0GId?=
+ =?us-ascii?Q?DiFZiJwLiLaCjTMbbO62ZgR6u+YCGRbKJNfGvQB0Sw6LjI1jK7G1Ep9aoHiG?=
+ =?us-ascii?Q?ajKJ/x4LTyRwiqGTYxOXGy1J+PE7Y2B68JFoCV8e7WaNr0JaCdRzDu/0Nnyx?=
+ =?us-ascii?Q?zKk9NmzYwNnWAjL++Wbv64AN6Vhrz2lwigG5uy6ZIqPMRp1bojO67zfqrS7z?=
+ =?us-ascii?Q?GQ1B7Z+XNJ/ZoHoHH6HBPvtT8jnndtHHW7ld6A6rAMfCoiSTMi4C3JHifatB?=
+ =?us-ascii?Q?B/XOTJIo5/ygBVILllvab7CgnL7eGpEkK6pwu6W/oT/WW2UnZvcwuDT3bEGg?=
+ =?us-ascii?Q?kajIqAxzq8Mmi8qnA1nvM2vLS+zDab4hX2upCwrDx8Uwp+fo/DVR9MHhQ9KX?=
+ =?us-ascii?Q?2ddN5Wl1TBxTxBY8Psk1gAkK1wU6e2r0Pk2jp9DE0eyCiTHnTgKFykhXKZ4w?=
+ =?us-ascii?Q?5rIAZykhzpuANy4hwLAmkoQk8WwxdwopBpxYE4UYYA3LdL4lMbaTPdW/mek0?=
+ =?us-ascii?Q?2k4TvP2OLoIGGj6xNVL4rDCxzbeTd4mS27jrltx6Qq2w8hZpFhvzNr0Wn9+h?=
+ =?us-ascii?Q?odSIiokHA5KNGYOYXvL+6623hfoQwiaV3G15ssP3y4Me3CkdE5yRAzsq5/zz?=
+ =?us-ascii?Q?yLTUNN6uRDULjZ1nUoHmDOY2RdjLBXDfabQZQbrfvWdf2ZWftCfejLCIOGZn?=
+ =?us-ascii?Q?RQINSFipOTQzxI7qN8kvDDqE48XDqeeEDgWJ0sB1u3TudP4ab1ZTTyj3Opf/?=
+ =?us-ascii?Q?OvI9mTRl56tnwIr/zs2/sYqT4KZR0Fry1t7rHYi0tF2IAAsVypNAVIDx42vT?=
+ =?us-ascii?Q?Xer3wpAMjIuEmN5Rk2PyB4utIjPkApGETTQaiVJmEeqT03SsRZ1NcXZToH4e?=
+ =?us-ascii?Q?mlm0nE68R8ZifdrRYZ80zl624sNE3FfauoKHcWNHa84wabYDyFkCdrSfcIIJ?=
+ =?us-ascii?Q?z39XEO20+B/bp4tS9OMlul4Bnnfe2esy9QY4iCQDuUTwuWqMT4HEZAFs9IRI?=
+ =?us-ascii?Q?lfxjYqmP5Yd8X5b8zzJh3RA11l0OH9pNYSPDAhomNVI3iMmRHFXNyGC2403+?=
+ =?us-ascii?Q?Vg1WLROIljQaNlrnmbI/qwfh1y5jQTl5Ei1nlKzoWTuoWaW6We8rjpFLB8q6?=
+ =?us-ascii?Q?yN8JsAr+GWXewcmaIqUZJAsqjSHthfOWWhF23bO/i732asvjuz3vyeK4g223?=
+ =?us-ascii?Q?HjOP1O3nF/SdXci1jwmJT3JKskpz78x/ht3r230lFXAvGSoESbyObE8DG8M2?=
+ =?us-ascii?Q?jcERWpmSlea/L04Jg9hi3PI9RbRtJtXEe+tjT05m09jfpESw2fq4+B/SChl4?=
+ =?us-ascii?Q?zWatdcl5/E5aqBpumO4w1nIc8jBmpMBkDtGcGnj/ofSslOjaROzWb3hCAwE3?=
+ =?us-ascii?Q?wa9fjnF+jrYT5v4VtBwmYnuEQ0c=3D?=
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(82310400026)(36860700013)(921020);DIR:OUT;SFP:1101;
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(36860700013)(7416014)(376014)(82310400026)(1800799024)(921020);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	1ofmuFBje+QlE+Mr0qbvQ/Awab4TMmj0EA8W4QeTz9LwR9fdMWqhHisBnZjUSgSLRP2Txe5lXEC9QohCtT+uhRuGwTxjO/oqLF8eXIPwJS9NXaL6BodQVzOd7daKx1lI7xMsuiAuUicC4aJ+4ZvKANu6ghG+8s1FmW66Wok0/Xsd7mLPnS/jk+CyOfR3MMr8x178WrVqulyKuIpbQFs5fgpcSozOOY+DaZLIuEfwX6XnP5KUdCF8fW9/ZN87NKNHOPHwKwcf2BaM2ft/m4S2eFghHCQMWjyYz3KVNev7Blw8MM49c2H5O+Bu5agRT6+5LXci59qBObuovB40y6Ab6IPFz6OeM79j25QuNa+xSpkjARtDSdlxk8RKVxV30fP0sfpZZizytthfeo9kOX8XtpNyBDWTClitnmXWWFZRRNbQHp38OID46HNi0gCp+bDR
+	Dh36eSJulBumw/c0AjTvuQSUJPw3ZFH8EaF/1Nn/S4JCi8kIrX2N0SKH9A2fxot6V35UfFK2cV+kW/IjPuBjVla8JoFw0xp9VI9iHqNvRQqpT25gWdmprcuJplJNF+H4gGMJyLxPDV3RLv6M9ArLbdaCRVO5blYG7iPsWhJ6ecCiL40CgUPPvPokCoFuBbrY1iKFogPFelZDSefPErFnqv0rGQGU/CBAFI+hg+Jbog4d7FoXDLRDnhYiIPFb++amETKpnBPPmnmgokorbyUTxslzx987Lm6DNEXRceJuEc6RCiFCJZMTeg+kTN8dVWGQKYMxd8rdmOdKQ//LWsLD3wBsLvuq8RGG5bvpjXio+4A0014CDrTHxas/X8iH+ZUdSIAohIPvWToAQd3fLTesEOsjdALXW1kxJLPgFJpQHTO7yF4JLmrJIc9DQO9vfoRF
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2026 06:59:44.0640
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2026 06:59:48.5627
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6d343df9-c644-45ed-a998-08de743b74ae
+X-MS-Exchange-CrossTenant-Network-Message-Id: bf6fc96f-779a-411c-600c-08de743b7753
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	CH2PEPF00000141.namprd02.prod.outlook.com
+	CH2PEPF0000013F.namprd02.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4463
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4130
 
-The NVIDIA Tegra264 UART relies on configuring the UART clock rate
-directly to program the desired baud rate.
+Add support for the NVIDIA Tegra264 UART controller, which is derived
+from the AMBA PL011 design.
 
-Introduce the set_uartclk_rate vendor flag. When set, the driver
-uses clk_set_rate() to program the UART clock to the desired baud
-rate and clk_round_rate() to determine the maximum supported baud
-rate.
+On Tegra264, the fractional baud rate divisor (FBRD) register is broken.
+Using IBRD alone may not achieve the required baud rate
+tolerance. Enable the skip_ibrd_fbrd and set_uartclk_rate flags for
+the NVIDIA variant.
 
 Signed-off-by: Kartik Rajput <kkartik@nvidia.com>
 ---
- drivers/tty/serial/amba-pl011.c | 29 +++++++++++++++++++++++++++--
- 1 file changed, 27 insertions(+), 2 deletions(-)
+ drivers/tty/serial/amba-pl011.c | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
 
 diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 79e1c937a600..ad06dc4cdf6e 100644
+index ad06dc4cdf6e..7f8deb30650a 100644
 --- a/drivers/tty/serial/amba-pl011.c
 +++ b/drivers/tty/serial/amba-pl011.c
-@@ -115,6 +115,7 @@ struct vendor_data {
- 	bool			always_enabled;
- 	bool			fixed_options;
- 	bool			skip_ibrd_fbrd;
-+	bool			set_uartclk_rate;
- 
- 	unsigned int (*get_fifosize)(struct amba_device *dev);
+@@ -218,6 +218,28 @@ static struct vendor_data vendor_st = {
+ 	.get_fifosize		= get_fifosize_st,
  };
-@@ -2096,6 +2097,7 @@ pl011_set_termios(struct uart_port *port, struct ktermios *termios,
- 	unsigned int lcr_h, old_cr;
- 	unsigned long flags;
- 	unsigned int baud, quot, clkdiv;
-+	unsigned int max_baud;
- 	unsigned int bits;
  
- 	if (uap->vendor->oversampling)
-@@ -2103,11 +2105,34 @@ pl011_set_termios(struct uart_port *port, struct ktermios *termios,
- 	else
- 		clkdiv = 16;
++static unsigned int get_fifosize_nvidia(struct amba_device *dev)
++{
++	return 32;
++}
++
++static struct vendor_data vendor_nvidia = {
++	.reg_offset		= pl011_std_offsets,
++	.ifls			= UART011_IFLS_RX4_8 | UART011_IFLS_TX4_8,
++	.fr_busy		= UART01x_FR_BUSY,
++	.fr_dsr			= UART01x_FR_DSR,
++	.fr_cts			= UART01x_FR_CTS,
++	.fr_ri			= UART011_FR_RI,
++	.oversampling		= false,
++	.dma_threshold		= false,
++	.cts_event_workaround	= false,
++	.always_enabled		= false,
++	.fixed_options		= false,
++	.skip_ibrd_fbrd		= true,
++	.set_uartclk_rate	= true,
++	.get_fifosize		= get_fifosize_nvidia,
++};
++
+ /* Deals with DMA transactions */
  
-+	max_baud = port->uartclk / clkdiv;
-+
-+	if (uap->vendor->set_uartclk_rate) {
-+		long max_clkrate = clk_round_rate(uap->clk, UINT_MAX);
-+
-+		/*
-+		 * Clock is reprogrammable - determine max baud from the clock's
-+		 * maximum rate, not the current uartclk.
-+		 */
-+		if (max_clkrate > 0)
-+			max_baud = max_clkrate / clkdiv;
-+	}
-+
- 	/*
- 	 * Ask the core to calculate the divisor for us.
- 	 */
--	baud = uart_get_baud_rate(port, termios, old, 0,
--				  port->uartclk / clkdiv);
-+	baud = uart_get_baud_rate(port, termios, old, 0, max_baud);
-+
-+	if (uap->vendor->set_uartclk_rate) {
-+		int err;
-+
-+		err = clk_set_rate(uap->clk, baud * clkdiv);
-+		if (err) {
-+			dev_err(port->dev, "Failed to set clock rate: %d\n", err);
-+			return;
-+		}
-+	}
-+
- #ifdef CONFIG_DMA_ENGINE
- 	/*
- 	 * Adjust RX DMA polling rate with baud rate if not specified.
+ struct pl011_dmabuf {
+@@ -3115,6 +3137,11 @@ static const struct amba_id pl011_ids[] = {
+ 		.mask	= 0x00ffffff,
+ 		.data	= &vendor_st,
+ 	},
++	{
++		.id	= 0x0006b011,
++		.mask	= 0x000fffff,
++		.data	= &vendor_nvidia,
++	},
+ 	{ 0, 0 },
+ };
+ 
 -- 
 2.43.0
 
