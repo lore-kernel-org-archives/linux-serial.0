@@ -1,118 +1,131 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 944C63EDABD
-	for <linux-serial@vger.kernel.org>; Thu, 26 Feb 2026 15:16:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E31D3255E43;
+	Fri, 27 Feb 2026 07:22:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772119016; cv=none; b=WkY/nRqDgDls4Tdqjv3KUWXMaPy/+IuAcPeiConIjixMOepI9xtmtLg8dcvulJo5Qx5GiUPXc1tHS8XPdT7LiR2g3bgxL4SGquIFAnYyMI9gHN0OuPDV1ky0WjtfAfJ5W9ufgE9bkxoEwiBzaXIFbycpIiwT+SgnQjk6b9erhsE=
+	t=1772176936; cv=none; b=YE3oSrMLeTcHEITnT/L3GIIuSCGlSNBhTd7HmO2YmXJ0JltnZq2UgG82Jj/V+ZLgfpLaMmbdANpxyuMOHEpXQzb7lYpaWbcPbsCrsj5umlOoaIzKcdg4/AcRTWtTKyZmICO6CYkvGB0cPVni6IiB9gAyS9qu+iqcnVadiweaR7o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772119016; c=relaxed/simple;
-	bh=31s2WJyuIuyZZS39CvKxsQBTXRhjei2RcsCwi+NC6g0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lBSwgEmKLNI4bVB5cxlVaARskcJdmg9cf2zUgBDu+4Uq4eyGeZboK9ipOhToaSP0ri2Jq8HS7r8/v28UVijTBA6glJT4CfEvyShX9A76Ayw5p1ty2tZwUFnwTFj963YVrPwJuO/nATdYOQN5llMS/b3GWc0w75Z/7atuq42j+cY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Wj1jzceO; arc=none smtp.client-ip=209.85.128.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1772176936; c=relaxed/simple;
+	bh=J0Ry3EQI7qsrlGGuQP/5VPs1aF4z1uslKz83pbqiQhc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=q/N5sPNbZ0WpBT3LBVRaQMt0lRda/8J+nYX3pDxq9Yp+C96a9rR6fmQL4y9nbYyiEu21gW410sdPoZdpMXa0HzO96XEgDegmh2Ae1Tjr7/YDc1bx6GQv0ANuup5E7IA1GAunvJwybeuBx6ZsbhPBBCsgV0LocEo7jTTr6HyzcQQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SIU8tiSU; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Wj1jzceO"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-48371119eacso11532725e9.2
-        for <linux-serial@vger.kernel.org>; Thu, 26 Feb 2026 07:16:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1772119014; x=1772723814; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=x+9nNRTMs9TtVhYWkHqh6WpqdW+Y7K36DSB96fNVI8Q=;
-        b=Wj1jzceOQnBcvuq3HBPXc4pkAD6wDfd9ubyXSy38hq6N9eA5GhitBTZYzsWZAO9crD
-         eHulHl5nytsvClP3e/tsSjNvl7TBlvBfnPTb90Qz+GoI22hrFLe28Cs0bZCF6dGrZUp7
-         Gu+eC3XBZ6nIq+M8JFEH4NZgDbBNLr2oOUSsHBVRGIynpsryI9ClCvtOC0KY/8Gc/Ar3
-         ElU/IWIDxTmcO96wtBIJJSeK2paLCFX9rIUsGwrx/X/aud1t8Kwp49P9XxnZu5GRLwV4
-         bgoJucC1V8y/HBhzmPcSKkBDzOQCDjO0Cb7veoX1QziCaRIecMIo6kqjphAIAY24iE6H
-         TN6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772119014; x=1772723814;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=x+9nNRTMs9TtVhYWkHqh6WpqdW+Y7K36DSB96fNVI8Q=;
-        b=gJ6o+ECb9IMWM/XGPSOJXbdJ+TX2AbYQLzQF4oCApNHSB1UILt50teomlCc6hsmubM
-         5MIKEeJpyZFIT2iu0cYt/p/D+xkJnORf//xel+/BgeNn+8/aXmKmf2kD68EbE2juimnX
-         zf2K5zapysJTorfpOmJh/ZA1x23fJIC6dK+rwuvb0EkX+JLeKCtXUykjJGWmaVJ0NmcZ
-         E4sdka1lrOhhTYhLPRBJTd8wNNxqFShRBEZDl0W/SPFqNJlX4rDKpx444+GDx0p0tRH7
-         Idt5F5JVZn95/QvGbuM8bndN9RdjxfD5/tIzwXwm0ufsLuwVZdMHFTgxAdgyWYgW4iyd
-         zQoA==
-X-Forwarded-Encrypted: i=1; AJvYcCVgLE2JDItgSFmsPizZe/ZD2pC3K8J4cdIzza0j3dya1/GE71YELgEe0y+raU1JtFyDMEIlH2SYbIXidKU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwlfCLVl1DfSqQ1T2iyGOE7iVeRmLfskkc0InFEK6TYnRcpMLRo
-	rmyxlOmCidHN7CcCnrqo5L3qkXBwxMBWWXQ2myFjCHmGRQuyqISDfkqT
-X-Gm-Gg: ATEYQzwc+s2z/xeTcRkpaWBXPvyvTc+bTqhOG1BMNLExT4nNChA1TdIpZbtmR0ho/i2
-	42CLQtQTr1SrGjUNNPY/EdnVM0tTo9YSMycqTN3EtQo39d8+PgtvUHe/0EMdSqpSYXKshCJktVW
-	M0IFJBmLkjTKq4CnzZ8FjOrZOJhLx4OtRpDPtjWtzib4x9pdJzHwNmWSs3Z63aEDrFCq6zELab3
-	1d1j/FZ0X9XuBuGmmjIoOOV+S3WEE1f9nl6LNLj+I9aqFZrcO41jm7WJB9NJ79xmequ8OLTp8IL
-	DqxPurQDAMeAA2xE/Ts41uQpJkPNh4XSqtq9G8e3ibbPoa9ps8S/CaKkNO3ul8yfStRmYn8E6ii
-	dmRaAxTSsf8tG+NRLhTQ9vobwLLGNTtYfasJMhqaIdJyvMoEMUE3vsFY2Sh2k/HpaYsGTsYbQOx
-	4IL9POcjXu+EuUArvL9dHMOIm6zZm9pJpCvgG2KUY9i713S3396u0pEOwd
-X-Received: by 2002:a05:600c:638d:b0:477:b642:9dc1 with SMTP id 5b1f17b1804b1-483c3dd71eamr33988995e9.20.1772119013595;
-        Thu, 26 Feb 2026 07:16:53 -0800 (PST)
-Received: from osama ([41.232.219.174])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-483c3b84023sm50654235e9.12.2026.02.26.07.16.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Feb 2026 07:16:53 -0800 (PST)
-Date: Thu, 26 Feb 2026 16:16:49 +0100
-From: Osama Abdelkader <osama.abdelkader@gmail.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Andy Shevchenko <andy.shevchenko@gmail.com>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: syzbot+80806cf7508e92c7cc86@syzkaller.appspotmail.com
-Subject: Re: [PATCH] tty: n_tty: fix KCSAN data-race in n_tty_flush_buffer /
- n_tty_lookahead_flow_ctrl
-Message-ID: <aaBj4TvUu_-4qhyI@osama>
-References: <20260211210838.45127-1-osama.abdelkader@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SIU8tiSU"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAEB1C116C6;
+	Fri, 27 Feb 2026 07:22:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1772176935;
+	bh=J0Ry3EQI7qsrlGGuQP/5VPs1aF4z1uslKz83pbqiQhc=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=SIU8tiSUDX3y6z5uI+DtlfRaQzrErCoYns9pVLigFc/UDxYY0nnX4SuRm2+JZf6vm
+	 BjT6a6RiNKl2ECpg6iEAA+P5NxhsXJ1LFuXBjoYqcz1rKlOZN04UIVkC/qqDyFtsu0
+	 rmy6XstntHKzjAXXaoS+NTXARHa6SDVQ3grUt830wpwn2U5FNXNIHUYtDYN12XpedC
+	 XUnzUV8zvtaug9tDqFZ98VowSvXSWwa9ay0PBIHRjGaOJssRkw5ZtPSC31mTVSYDSf
+	 uGeIjFTGF/Nq08kzEoMbwWX65+WastgL4DcvIuSAgU82BxtK3j40zH2Oe3+ihzn3R5
+	 WJGXgs1BNkYHw==
+Message-ID: <78bf91c6-8dd7-4c69-bd9f-61551990f02d@kernel.org>
+Date: Fri, 27 Feb 2026 08:22:11 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260211210838.45127-1-osama.abdelkader@gmail.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] tty: vt/keyboard: Hoist and reuse variable in
+ vt_do_kdgkb_ioctl
+To: Thorsten Blum <thorsten.blum@linux.dev>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Alexey Gladkov <legion@kernel.org>, Thomas Gleixner <tglx@kernel.org>,
+ Nathan Chancellor <nathan@kernel.org>,
+ Myrrh Periwinkle <myrrhperiwinkle@qtmlabs.xyz>
+Cc: Kees Cook <kees@kernel.org>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org
+References: <20260226123419.737669-1-thorsten.blum@linux.dev>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20260226123419.737669-1-thorsten.blum@linux.dev>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Feb 11, 2026 at 10:08:38PM +0100, Osama Abdelkader wrote:
-> n_tty_lookahead_flow_ctrl() accesses ldata->lookahead_count without
-> holding termios_rwsem, while reset_buffer_flags() in n_tty_flush_buffer()
-> resets it with exclusive termios_rwsem held. This causes a data race
-> reported by KCSAN when a PTY is closed while flush_to_ldisc is still
-> processing lookahead data.
+On 26. 02. 26, 13:34, Thorsten Blum wrote:
+> Hoist 'len' and use it in both cases.
 > 
-> Fix by taking termios_rwsem (read) in n_tty_lookahead_flow_ctrl(),
-> consistent with __receive_buf() which also modifies lookahead_count
-> under the read lock.
-> 
-> Reported-by: syzbot+80806cf7508e92c7cc86@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=80806cf7508e92c7cc86
-> Fixes: 6bb6fa6908eb ("tty: Implement lookahead to process XON/XOFF timely")
-> Signed-off-by: Osama Abdelkader <osama.abdelkader@gmail.com>
+> The last 'kbs' assignment is useless and a leftover from commit
+> bfb24564b5fd ("tty: vt/keyboard: use __free()"). Remove it.
+
+No, kbs is set to NULL by vt_kdskbsent() when it should NOT be freed.
+
+> Signed-off-by: Thorsten Blum <thorsten.blum@linux.dev>
 > ---
->  drivers/tty/n_tty.c | 2 ++
->  1 file changed, 2 insertions(+)
+>   drivers/tty/vt/keyboard.c | 11 ++++++-----
+>   1 file changed, 6 insertions(+), 5 deletions(-)
 > 
-> diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-> index e6a0f5b40d0a..725d6ed2b863 100644
-> --- a/drivers/tty/n_tty.c
-> +++ b/drivers/tty/n_tty.c
-> @@ -1480,6 +1480,8 @@ static void n_tty_lookahead_flow_ctrl(struct tty_struct *tty, const u8 *cp,
->  	struct n_tty_data *ldata = tty->disc_data;
->  	u8 flag = TTY_NORMAL;
->  
-> +	guard(rwsem_read)(&tty->termios_rwsem);
-> +
->  	ldata->lookahead_count += count;
->  
->  	if (!I_IXON(tty))
-> -- 
-> 2.43.0
-> 
+> diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
+> index d65fc60dd7be..6a1044f87216 100644
+> --- a/drivers/tty/vt/keyboard.c
+> +++ b/drivers/tty/vt/keyboard.c
+...
+> @@ -2022,12 +2023,12 @@ int vt_do_kdgkb_ioctl(int cmd, struct kbsentry __user *user_kdgkb, int perm)
+>   			return -EPERM;
+>   
+>   		char __free(kfree) *kbs = strndup_user(user_kdgkb->kb_string,
+> -						       sizeof(user_kdgkb->kb_string));
+> +						       len);
+>   		if (IS_ERR(kbs))
+>   			return PTR_ERR(kbs);
+>   
+>   		guard(spinlock_irqsave)(&func_buf_lock);
+> -		kbs = vt_kdskbsent(kbs, kb_func);
+> +		vt_kdskbsent(kbs, kb_func);
 
-ping
+
+
+-- 
+js
+suse labs
