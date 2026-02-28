@@ -1,148 +1,165 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from TYPPR03CU001.outbound.protection.outlook.com (mail-japaneastazon11022115.outbound.protection.outlook.com [52.101.126.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49D92421EF6
-	for <linux-serial@vger.kernel.org>; Fri, 27 Feb 2026 14:03:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772200995; cv=none; b=UfPVhbop2IDPhP7hDNCF/gKyFT5+g+cwt6Kq9sNp/r3jza/P1QlK0zHDqd8LNBrjswwdwSs0KCnVf5xzg6S8RozKd4IWkwa+EEHUVdF62gjuJkbHJt0hotOWupuJ9ldw4f4kqze8qWTvCTJ1iqqs4oOUUx+pRspeaWKB80M2dug=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772200995; c=relaxed/simple;
-	bh=B7fHy1cGZkNQ2wdNUr90lrf+1d59/jJ2MVkVEhWoe5Y=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 In-Reply-To:Content-Type:Content-Disposition; b=Gn2xpCOWExrUMJRnzjliGzyQDulZ/9IogGPyHTcSmWNvuxBEyASdnb2JKnzalxRKTsl94yPIhlPQOJCeu59HfARf1PvzdHfnTsHQ8fCVuD4XqEAE7EfI7C3iiInsdFDk6GJDzzclLSd5WLOQhHGNEJXqc5kB7PK0e8LW4M2Udaw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Sr7DMt0Q; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 400F937105D;
+	Sat, 28 Feb 2026 07:38:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.126.115
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772264310; cv=fail; b=lVZweDO63Sk+VeFu6yofrv1XTBIpUTTNuZTQVz8eGFn5/3kbPXC6ucRaf2wi10D+tc6j/BTlyGJxsR3lbAnP+Pd2tGUvFsJyI1YQV/kjxVADBp64UJszZNyUTgeU587KJezq1n9YTmPrQ/rje+UffO3WNxJ/MGNxYWVyQ59Zly4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772264310; c=relaxed/simple;
+	bh=vbe0iosbAikv0D+AIT8NU9UFKVXEC1/hN+o8PLg1T3E=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=Uj7qYX1bx5uwGbpmJKct94fL74eaWAxcW3t/Rh+xszQ3ALcCJzOQBJMhNIt3iqZNea+vdhbqEtRGkOd9rwvsak+/KOtVkODvXPUCASrAKNdwz+8CJltzM6MSajf8KvxgGubjQTbyCsW5/v6quFovG5oAofR23X0QurAumkByrLk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amlogic.com; spf=pass smtp.mailfrom=amlogic.com; dkim=pass (2048-bit key) header.d=amlogic.com header.i=@amlogic.com header.b=Nx3V1Anh; arc=fail smtp.client-ip=52.101.126.115
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amlogic.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amlogic.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Sr7DMt0Q"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1772200992;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=oV2BIg3dhsX9PonNzGGB5cY2QemaB9h/4eyj8OI7C6o=;
-	b=Sr7DMt0Qf7a4MHqdkKNmmGBCUsZYBIUB7kPwn3EeWNYIb2+TgpcqtCw7uxP8DPKVw/Kmed
-	RlmmTiMbns5BkT29HHV8I8MefoqSzTVIMoxSxDyOtqVHeO/8zzU4/PZLUz9Boimj6g72i6
-	fM/FEr22Hiz8LzoqmynD0YCUea/JRYQ=
-Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com
- [209.85.216.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-674-LOLopNflNruPqG9sDb5qDw-1; Fri, 27 Feb 2026 09:03:11 -0500
-X-MC-Unique: LOLopNflNruPqG9sDb5qDw-1
-X-Mimecast-MFC-AGG-ID: LOLopNflNruPqG9sDb5qDw_1772200990
-Received: by mail-pj1-f70.google.com with SMTP id 98e67ed59e1d1-3568090851aso10737476a91.1
-        for <linux-serial@vger.kernel.org>; Fri, 27 Feb 2026 06:03:11 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772200990; x=1772805790;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=oV2BIg3dhsX9PonNzGGB5cY2QemaB9h/4eyj8OI7C6o=;
-        b=AXF7BRq9u0Dl9DWDR3YaeAtcIL9hhYVJ5mWUWxYElJTeci6pS8Zd36G9iugH5qOoLN
-         RjDzkC19iUjinwq3d2zK0YG0gIu3UQ7khv5kd7YdwJbQDzvR1NScP+0LDAE1iXuXBXJG
-         jnxT7uGglmTpmSKVye/2/bnxHaa6bK3cGG+dXi2hKZxY3w/S+mQYlaWwbcSoZKIS59OA
-         Rz5I0QqB2fSe4Vb7LBq4kF3C4p8hiAZhP/y3ZHVYELhalcmuswhUuIOtqRO565fSRuvu
-         tosFenAVzKWSSViJBQot9U4rYZ2voRhc+e7lZSTdB+u76Ca9CKjHwl+QxgmDMDBX1HeP
-         4d2w==
-X-Forwarded-Encrypted: i=1; AJvYcCV3rinM/Y6SxygzohwleN8bGNczwVbhhxW6DI+MUkFcviAlmreyH0i9z1YrUJtxhL5wGGxgFuZlAspvGKo=@vger.kernel.org
-X-Gm-Message-State: AOJu0YweYD49Efffvosx5t++Q1JCKwrV4VoyHFUzPdOY18djloYDsNbz
-	RVArnLIjW1XZxxS/OW04Zv2mlBJ3lrfhpsnpv9tR40tD41ypEU+Rc9iezMa5Q8oO/wD/jxKAy2E
-	JjspUjBUqNv0LPiESms8P0FBCoWM8EROtaZXjayl9CtZkJac0ezlIIcv3KIXY2Ay67A==
-X-Gm-Gg: ATEYQzwPEPPmjjCYQmVBhhR7++UPYt5DT9Lt8VwMut/RSKdMcWfKhUZXkCNZhVJLFLk
-	z9BOXe9/z9UWH0X93CwknCROTVulZXXq5f3Xez1AUJO0mpTq+giL4H17bKxWn9sH5Z3G6KUE/pm
-	Iug93i+EJ+55a03mkGhNGTOu27Urfdz79iyuUWsCNrLw1VMavlebPla17mYJCIEHrvRPVrql6TK
-	07abr7yG3p4PIAaEs5JYDseMOqdNW1wfZse4n82imBdGKYEz/Xdmg59RZH2hbgxqDUf/ndWDTNx
-	na2/kQ+melyd8KIL9czq34kU5CtHrOsq9hwMP/OrTSC6OdunQYhMWMKkJYkRKWSwXr7FOo2Pu+v
-	57a+KGaHCRv1smG3ZS16Z4UrcuVcIppixQf4TcQ62z3WVNnLQMEnIyA==
-X-Received: by 2002:a17:90b:5710:b0:341:88c9:6eb2 with SMTP id 98e67ed59e1d1-35965c3385fmr2137014a91.1.1772200989848;
-        Fri, 27 Feb 2026 06:03:09 -0800 (PST)
-X-Received: by 2002:a17:90b:5710:b0:341:88c9:6eb2 with SMTP id 98e67ed59e1d1-35965c3385fmr2136984a91.1.1772200989423;
-        Fri, 27 Feb 2026 06:03:09 -0800 (PST)
-Received: from jkangas-thinkpadp1gen3.rmtuswa.csb ([2601:1c2:4400:eb20:99f3:ffd5:11da:6745])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-35913269232sm5305497a91.5.2026.02.27.06.03.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Feb 2026 06:03:09 -0800 (PST)
-Date: Fri, 27 Feb 2026 06:03:07 -0800
-From: Jared Kangas <jkangas@redhat.com>
-To: Larisa Grigore <larisa.grigore@oss.nxp.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, robh@kernel.org,
-	krzk+dt@kernel.org, conor+dt@kernel.org, sumit.semwal@linaro.org,
-	christian.koenig@amd.com, chester62515@gmail.com,
-	cosmin.stoica@nxp.com, adrian.nitu@freescale.com,
-	stefan-gabriel.mirea@nxp.com, Mihaela.Martinas@freescale.com,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-media@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-	s32@nxp.com, imx@lists.linux.dev, clizzi@redhat.com,
-	aruizrui@redhat.com, eballetb@redhat.com, echanude@redhat.com
-Subject: Re: [PATCH 00/13] Add DMA support for LINFlexD UART driver
-Message-ID: <aaGkGwbk-sh0YJqj@jkangas-thinkpadp1gen3.rmtuswa.csb>
-References: <20260216150205.212318-1-larisa.grigore@oss.nxp.com>
+	dkim=pass (2048-bit key) header.d=amlogic.com header.i=@amlogic.com header.b="Nx3V1Anh"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=l34i/jNcE7kcOk9J+fzqI0N7IrcB8lHls8y4UvOertuN4bkGhoeVFnMHofn3Ic4nE/npS67D/tUL0gVYqma/12P4S5HNZQ7rkHQgEcXJTp6q565jobRNnoEKvGtT+pKsTow2/aJVkRdgN6HrX5G0MpoDfssk2GBbET3NQiFzOei/0k9rzeuYb9Q8GPMyx0oMG0QBvV9hOX0ipeQtr4Gl8z/KJ4Ta2Suy0woPdgRSz1ZJsr1VkhwVUg47XXSa/3Fc5KRL4HWOppjv0JVQUdLaON1mmub57yKxTA5wCm+uwaBSREWqGAt1kXaE/95ONiHAD9AgpNXeQtuza7SL1hOOEw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=0ldq32dcltsUd50tnJED6VBErYyfIhkgCldGRQqhwFw=;
+ b=mZZOcKRYRLFE+yFdbcIC/tBJTLBTFrXF7+/FcuZYJlBxpezWIZojze+ZE1fXEBURlkoW1HmfrP4oc38defID2Oc2eXIbi+4W7d+NZWKuBk2mkH3vzhsJw7HCF0wvpYatfjt9NC4mzmZ1xlBiukqVOfc3gonVuU0BsVBRzjdAI7Eb0m3ulkReacW2V4Stq2iSNB5rOaawr+W3Y0PH+oqGZyNqX6OnvhQrdYlMyW88N4dLfJl1LBf4qOIm0Fts7SmsrPw2M6blwAOCgouDfNHd1MDO5xgPw8Av5UEtyOv3JBFv6iB7Z9iOmEUuVOowNeMc6/FnhVYVm38MOA69ruihsg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amlogic.com; dmarc=pass action=none header.from=amlogic.com;
+ dkim=pass header.d=amlogic.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amlogic.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0ldq32dcltsUd50tnJED6VBErYyfIhkgCldGRQqhwFw=;
+ b=Nx3V1AnhcKJyoGoCOn2gN8l2dUYkZcUGjfTsWbDrJxLLcNNjIpcIcZjEaHRTIlZQYuzT8GFBiskZ5js0QKwMnbW2G2aLQ00Fu184QE+2+dL+JmMMYL8cZpDG1NdL3p+HH8gydu5DwTqJGdfTXSd+E9SQmNrQLIOCdQRGHOjrku/CVdDJoPb9BSMuDoUhziq4Rx3N98iJWwiW9RDyMCKbShQp1/9nkHfoiUaHV7YAcmLMyX5zuXpqO7PMGC8GZuFHDR4zRPavG4nJ61pM3jIRjgtGcSzcX2F+cfuAtDNEoYhX+Tzq/wRmjhA23vEsdmfPiFcfKWKcF/oKFSotvcicrA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amlogic.com;
+Received: from TYZPR03MB6896.apcprd03.prod.outlook.com (2603:1096:400:289::14)
+ by KUXPR03MB9643.apcprd03.prod.outlook.com (2603:1096:d10:5f::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9654.16; Sat, 28 Feb
+ 2026 07:38:24 +0000
+Received: from TYZPR03MB6896.apcprd03.prod.outlook.com
+ ([fe80::78d4:9dee:2e32:d1e4]) by TYZPR03MB6896.apcprd03.prod.outlook.com
+ ([fe80::78d4:9dee:2e32:d1e4%6]) with mapi id 15.20.9654.015; Sat, 28 Feb 2026
+ 07:38:24 +0000
+Message-ID: <1e2f18ac-bba9-41bd-a5b6-3b3a3d870eee@amlogic.com>
+Date: Sat, 28 Feb 2026 15:38:21 +0800
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 3/3] arm64: dts: add support for A9 based Amlogic BY401
+Content-Language: en-US
+To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>,
+ Neil Armstrong <neil.armstrong@linaro.org>,
+ Jerome Brunet <jbrunet@baylibre.com>, Kevin Hilman <khilman@baylibre.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-amlogic@lists.infradead.org
+References: <20260205-a9-baisc-dts-v1-0-1212b46f95a7@amlogic.com>
+ <20260205-a9-baisc-dts-v1-3-1212b46f95a7@amlogic.com>
+ <CAFBinCDmOG74HMTo7AtYPUhWCJu3_e0XjE=CKuDWOdwfq21ygA@mail.gmail.com>
+From: Xianwei Zhao <xianwei.zhao@amlogic.com>
+In-Reply-To: <CAFBinCDmOG74HMTo7AtYPUhWCJu3_e0XjE=CKuDWOdwfq21ygA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: TYCP286CA0087.JPNP286.PROD.OUTLOOK.COM
+ (2603:1096:400:2b3::18) To TYZPR03MB6896.apcprd03.prod.outlook.com
+ (2603:1096:400:289::14)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20260216150205.212318-1-larisa.grigore@oss.nxp.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: f8sjG4YT61bblWQpaqpKmFrNREwfYNN7rN8TXms4huk_1772200990
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: TYZPR03MB6896:EE_|KUXPR03MB9643:EE_
+X-MS-Office365-Filtering-Correlation-Id: 812f5061-441f-4638-99ba-08de769c5ac3
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|7416014|366016|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	TJGFdRavGrLJuy5gWi8UrtlTxHDH4vi5vdSDe1/jGe0t33VY5pSMgbJ+FchLnP1M575M5gZZH+yFwnGkSHtGcci3o+2fReh1Li8gxXQRhLe3HVGs1SKrAae/j5xIFagYrzSmfqM8t24EB1yHmHB78DI5flehKyiPVVm2uZo68cQZcpCrYXlmy8KqL06ppc2ucsaWlLoG8dlc/1bQ0q9AwdkYt1ONuXEz8mCdwXe5lAcZ1UW970cHXqGqh/C54Y9cBpwOeMIQIVSPtYarkO0dYZ8zf3tVm1VlIzPG0EY7fNpS/0Ik+aX9QnRqJcFYqQjywh0su4cnxdAXO7SJ1V4xdip6mcDmPyUY937KY8c2rSIxZfjYyCdPrCmqQ1xlqjls7MgKegENvni0Gqxig0QbBwWM/JAU0hKGKXmn+Z3uKybea2u1E5W+GxkkLVpkBs/WBRyoSSv32UlylZaqcxMpKiucrfhV39n11jwyiFt6F9ZpNghvFYVvv+uZe4L9pDEKXnlQkVyXIg0++1tsM0h6euUaEqSCwD08IEMNaAjZ4cE+k4SEQNFwB51EmFUuvRtb1XYASMAlZP0eSiqxtpa04THgfCsc3gf46/2I1V1nFbOTxFyU5W5BjM+aG5Hs56q4LXBRJf7NOhsk0bhdCxzHbfYQsIiqYfNgwx1ygCcuxCK442EQbuZIMWLiA0CxeRoXP1JsegRc96gQkTtDdciWpSeH3eQzG4jOnF3SPkpFbmE=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYZPR03MB6896.apcprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(366016)(1800799024);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?S1R1VUd1cXU3cFo1Z2JVaTlubWZMWXhiMmJOM0NSM1FoYXVmdVlWTzJRRWlw?=
+ =?utf-8?B?Q213R0lzMlZUcFZ1MWNxU1MrK09jMWkybGxxSlUvK2VIZWxlbUgzU245eUYx?=
+ =?utf-8?B?UVpkdlJ0cVZkL0M5RzBzd1FlL3EvRjRNK2Z2K3U4Yi9Ed2RDR0hqNFg1ck1T?=
+ =?utf-8?B?TDNDcDhLcmVEamFtNlFVNlQ3ZnN4dVk3NzBlc05vOWZEc2lRZlY5eUcrTWE1?=
+ =?utf-8?B?ZlEyNmdIWWV3TG1IYWtjK29TSWcydk02ZHp4TkZIdTJ0UHhnN3RIVUVhZnRz?=
+ =?utf-8?B?dHVkRHpmUzRUdXlXb0JuRzNkdmQyczFsMS9SZVd4OVlSU01tMEw1QUVzVHE5?=
+ =?utf-8?B?b0dZbU9WdHkvUjZvVTZpN0FJRWdvYnF0RDlza1QzUnpCSGZsenIwd0d3ejRx?=
+ =?utf-8?B?bmRwcXpjVk5EV3BqUEdPYUtBUWZ1VHExeWdMOHBLUzZNR3RZMzN6VXVuMUcz?=
+ =?utf-8?B?eVpLbjMxMnBsb0p2MXdtSGsvM0VzS2l2TjhUbWpDM3BQVzNCTC9QRGxPNUNr?=
+ =?utf-8?B?SjZtWWxKTmhOSVhBTHdiVXFvUzZUZ2NEbDRsZTJkTXF4SUtlbVBmV2NjVEw4?=
+ =?utf-8?B?eUJkd1R2dkpwYjlJNDdYTVcraERNKzhTSkdOa1ZEcys1V2hzNnIydUQrelZo?=
+ =?utf-8?B?ZE1OSGJMZThXeHVybGNad1BuNWxlWStLRllQQ0Z2aTBITUw5aytmVnJCVFo1?=
+ =?utf-8?B?d044dUZNNDRmY2duQTBrdmFQR1JacXZmcXNLTUNBVHNOUWNuZCtrb2ovL0Iv?=
+ =?utf-8?B?NURucm1sbFgvc0J6Mi9FeFQzR0hFUU81UVRKWlFwbnFkeVZEdGM5ZXExRWdE?=
+ =?utf-8?B?VG1ZNS9RM3BxbWQ0M0hTTWpiM29oV2k1cVhYYlRXTU1VM1FWWVVRdVRadWZr?=
+ =?utf-8?B?eTQ3T0lSSklFMndEb0R1TXBxQXN0dlVCV1BoeDBmbVlxQ0F3K3JOSnNPYnRB?=
+ =?utf-8?B?NG1xczY2R3dveU9pcjhXUDJiNWUyN0orNnl5RnNCeXFnQWxsZ1BhK1AvWjkw?=
+ =?utf-8?B?OHJCUWVTS3I3WER6UU1JMkR1c08xOVYrY05hMEJLaDhJVmdBRnRIL3BsZnRu?=
+ =?utf-8?B?cWxRUnNIWEgvNXJsMTltMVlPS21tbVJKbkxMdXExRlB1bmpRd3BJdVFZYXFk?=
+ =?utf-8?B?QWQ2cExWaEp2Ym1GRnB6VmVMc3NVNkVOTERmSVVOZFczb0I3OFVVOHVtYVMw?=
+ =?utf-8?B?cVZJNjZrVytYVlN3TFhkMGFKbEc2WmNKcElxS3pwS21PcWcvbzBxNFNqTFJL?=
+ =?utf-8?B?MURlWkNvdFh6aDZsSWRBWWY3Q0xoRXlVdFpmeGgybDY5Z1Fzazl5b0tCRXFq?=
+ =?utf-8?B?Vmt2SktGaUlxTDk5cEovRkdVaXd3SG9YaFlkM0xRWW00Zm9LcTJ0ellKYm9Z?=
+ =?utf-8?B?RkdVWFlVTCtRM1BUNVJVRjR3L1hQaW1xYU9NYkhSaHNZRi9Ya21nK1U2R1NW?=
+ =?utf-8?B?a2pwWEpxN1kwRWlXRjYveDBvUktrTHpSMnNmRXMrRUFodnI5K0ZpdWVkU0J2?=
+ =?utf-8?B?VmFwTGdkTWdYd2toV1JmendLaUZLVDNzYWdxM0lMRnFBMHpua1dTQXdxWW9R?=
+ =?utf-8?B?YUVOZ2dFcHIzTGUrcUEyNVc5ajdobHJINUVwV241eCtXSjVkM2hCSUdISGZu?=
+ =?utf-8?B?S2hlNzFtVmNKQm8xRHJiYnNaNm1hMGF4R0ordWp0MmQzZEkxM29TMno4MVZT?=
+ =?utf-8?B?dlFtV21VQmdUdnVkZlNYaHFsbkxUQm1hVDRBd0sxdmhEbGdENHFxTTYzV25F?=
+ =?utf-8?B?dmx5cS90ODlNcG92VG9OV1BkbUQvTGNSYkNLUTQwdk5rNWNtdFBqNnlhSnAz?=
+ =?utf-8?B?dS9BTGlNWWY0MSsrN29CRUpzblJtTFF4UUpJdmNvWWIvOXM2RlJoNFkrOThj?=
+ =?utf-8?B?TGhKb0NrQjY5Qis0OFB4SEhoWDNpSExQR012Z3liTEc4Y09TRW5QT09MWXEv?=
+ =?utf-8?B?QzNMNVQ2K2s2RkNVV29BdU1nT1l0UWdldjJXa1BNaXdJMkt2UmhDc3ZiUHVW?=
+ =?utf-8?B?TU03VTlmVFJzRWRJZHVLVnFibGdRL21hWm9sbU9QZGU5KzJyaTBmTFpFYXpD?=
+ =?utf-8?B?aGxxcXI1dU4zaDJJVWNXbEs5Ti9PRnpTS1RSZlRZYVJidlR6eXBLaFZrcStj?=
+ =?utf-8?B?V21iK25xU3lQR3ZCSnhVN3JxaDlPbFRNazZ2T2txakIxU2VXb0dCdURWWitI?=
+ =?utf-8?B?Ky9HRE1NRU5yMEJBWWY3RWRJWWVFeUxrR1R0S1E0UU1HU0Y2Vm15aEltZE1P?=
+ =?utf-8?B?NzdqMyttODJLbktlR3lPeEdsOWE4M0lsS2kzR1JXZkdyTnFSaWtRSGRxTHdt?=
+ =?utf-8?B?SlBxdHdQcEFDK0RrSVRGeFBoL2tRSTlmUVNKUGxNMWtjTC9ZS1R4QT09?=
+X-OriginatorOrg: amlogic.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 812f5061-441f-4638-99ba-08de769c5ac3
+X-MS-Exchange-CrossTenant-AuthSource: TYZPR03MB6896.apcprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Feb 2026 07:38:24.5167
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 0df2add9-25ca-4b3a-acb4-c99ddf0b1114
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 10RSZ2UVt7fiLr+zSYEzMSLEPK58sr88ApTp9X5IqiQAHbjf96QQEjDXSjpQGoem8jMY8MhQ4KOdMWTvOKPqm080Uv1FyzDxlDAtoGn4uRw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: KUXPR03MB9643
 
-Hi Larisa,
+Hi Martin,
+    Thanks for your reply.
 
-On Mon, Feb 16, 2026 at 04:01:52PM +0100, Larisa Grigore wrote:
-> This patchset enhances the LINFlexD UART driver and its device tree bindings to
-> support DMA transfers, configurable clock inputs, dynamic baudrate changes, and
-> termios features. It also includes a series of fixes and improvements to ensure
-> reliable operation across various modes and configurations.
-> 
-> The changes added can be summarized as follows:
-> 1. Fixes with respect to FIFO handling, locking, interrupt related registers and
-> INITM mode transition.
-
-Tested this series with the default devicetree configuration by booting
-the board to a login prompt about 200 times. Without the series applied,
-I was seeing a bug roughly every 30-50 boots where the kernel would
-would hang in linflex_console_putchar() waiting for DTFTFF. In my tests
-with the series applied, I didn't see any regressions and the bug no
-longer appeared. Thanks for the fix!
-
-Tested-by: Jared Kangas <jkangas@redhat.com> # S32G3, interrupt-driven
-
-> 2. Removal of the earlycon workaround, as proper FIFO handling and INITM
-> transitions now ensure stable behavior.
-> 3. Support for configurable stop bits and dynamic baudrate changes based on
-> clock inputs and termios settings.
-> 4. Optional DMA support for RX and TX paths, preventing character loss during
-> high-throughput operations like copy-paste. Cyclic DMA is used for RX to avoid
-> gaps between transactions.
-> 
-> Larisa Grigore (8):
->   serial: linflexuart: Clean SLEEP bit in LINCR1 after suspend
->   serial: linflexuart: Check FIFO full before writing
->   serial: linflexuart: Correctly clear UARTSR in buffer mode
->   serial: linflexuart: Update RXEN/TXEN outside INITM mode
->   serial: linflexuart: Ensure FIFO is empty when entering INITM
->   serial: linflexuart: Revert earlycon workaround
->   serial: linflexuart: Add support for configurable stop bits
->   serial: linflexuart: Add DMA support
-> 
-> Radu Pirea (5):
->   serial: linflexuart: Fix locking in set_termios
->   dt-bindings: serial: fsl-linflexuart: add clock input properties
->   dt-bindings: serial: fsl-linflexuart: add dma properties
->   serial: linflexuart: Add support for changing baudrate
->   serial: linflexuart: Avoid stopping DMA during receive operations
-> 
->  .../bindings/serial/fsl,s32-linflexuart.yaml  |  31 +
->  drivers/tty/serial/fsl_linflexuart.c          | 972 +++++++++++++++---
->  2 files changed, 846 insertions(+), 157 deletions(-)
-> 
-> -- 
-> 2.47.0
-> 
-
+On 2026/2/10 06:19, Martin Blumenstingl wrote:
+> On Thu, Feb 5, 2026 at 7:04 AM Xianwei Zhao via B4 Relay
+> <devnull+xianwei.zhao.amlogic.com@kernel.org>  wrote:
+> [...]
+>> diff --git a/arch/arm64/boot/dts/amlogic/amlogic-a9-a311y3-by401.dts b/arch/arm64/boot/dts/amlogic/amlogic-a9-a311y3-by401.dts
+>> new file mode 100644
+>> index 000000000000..ad35a3292d49
+>> --- /dev/null
+>> +++ b/arch/arm64/boot/dts/amlogic/amlogic-a9-a311y3-by401.dts
+>> @@ -0,0 +1,41 @@
+>> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+>> +/*
+>> + * Copyright (c) 2026 Amlogic, Inc. All rights reserved.
+>> + */
+>> +
+>> +/dts-v1/;
+>> +
+>> +#include "amlogic-a9.dtsi"
+>> +/ {
+>> +       model = "Amlogic A311DY3 BY401 Development Board";
+>> +       compatible = "amlogic,by401", "amlogic,a9";
+>> +       interrupt-parent = <&gic>;
+> Shouldn't this go into amlogic-a9.dtsi (I can't see why different
+> boards may choose a different default interrupt-parent)?
+Will do.
