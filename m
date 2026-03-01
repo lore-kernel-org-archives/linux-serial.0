@@ -1,64 +1,47 @@
-Received: from xmbghk7.mail.qq.com (xmbghk7.mail.qq.com [43.163.128.44])
+Received: from a4i608.smtp2go.com (a4i608.smtp2go.com [158.120.82.96])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D111F2C028C;
-	Sun,  1 Mar 2026 16:23:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=43.163.128.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 184773033F6
+	for <linux-serial@vger.kernel.org>; Sun,  1 Mar 2026 22:03:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=158.120.82.96
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772382186; cv=none; b=C7YupBHGoGDHjfd9onHEYfL+S8FhZm84MvN0tGlo7NQCQN1YiVxllD87YMnwOAlVhazeeZrDQ9VU/JrJLsgBQzpbLxB9/ytLxQXIrtLnrRyXlSvQDflAAFWIeNFgVM1m32Fq1MnsIHMPE97Vzy34OrYFqppkyIHuv30XtzlAQNM=
+	t=1772402602; cv=none; b=f0BTUR2WAaKau2c7rtHxo6Jolsc/cNapZA/3lSYe8LM76HwmhaHPY0F7Qi9IBjIalxybASUBGHR8jsNaqlOZRKQKHVv2UwtG1AYGTgpd+H1VQq1BGlWYz0ztfl2hiQdzxToeHrI7yozmpbM8OJ7AdPArExG6wb9MuRNrWjCXXJg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772382186; c=relaxed/simple;
-	bh=9eRyUiK0/9uja+PNMqhpVO14GsThaMS0Xfyg5RhUQSw=;
-	h=Message-ID:From:To:Cc:Subject:Date:MIME-Version; b=R5Ghmihl+n1kKdkecDrbWf64w/u3uWj+EETszDI/kzEicm65tStnyBmqQ1OvmHU9NFColdS48YWWKjZR8oce8QR5/iUOnvDsNxFL9hJmm2UTeMkVscjFUGR16A1CyRm9ur3wMRYAfgsK+8VNO46334t/sZp+PftO+URVpP9aI4I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com; spf=pass smtp.mailfrom=qq.com; dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b=QU6r7CSU; arc=none smtp.client-ip=43.163.128.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qq.com
+	s=arc-20240116; t=1772402602; c=relaxed/simple;
+	bh=uz3gVg2kenPxXQ5TOLYHf84TzeLVgm6XmFUsx8miI64=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=EtI39QXHev6c8l3xyC6uW8dEkcjr0g7HINFv11VfANN7xGqaJ30YpAFfGwtLvg2XBfGGpCoYbIG1QXCq2SpWoSfzKsvUeccBtaA+4l07yASuWF9Sf3f/apFa0Z8OKY4fCa+sI7Wqi5CJ/WFshqbfd1vN7Q3SK54MXKb/WSEyHq0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=php.net; spf=pass smtp.mailfrom=return.smtpservice.net; dkim=pass (2048-bit key) header.d=smtpservice.net header.i=@smtpservice.net header.b=3J+cmiMW; arc=none smtp.client-ip=158.120.82.96
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=php.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=return.smtpservice.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b="QU6r7CSU"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qq.com; s=s201512;
-	t=1772382181; bh=FxOGfWAcvu8utBdn+O1zmIsYuW7wtW7N4+J3Xi+kwB8=;
-	h=From:To:Cc:Subject:Date;
-	b=QU6r7CSUbVF/5S0Tfw1HcXWelo6RXRdYCLc/ughPRD1MPVx8nYC3dtq0EuaBFoNv4
-	 bdgI5ctxjobZnY6d7Mgni6weI0PjWVIa9mjhln1ZBzIfU14hE7jEqA02OU2DBjIXlu
-	 t7ps+I7kwem4z+7YJcXC1n7+pKvHAINuA+OyiwwI=
-Received: from admin.. ([2001:da8:205:20a0:6eeb:b6ff:fe15:94a7])
-	by newxmesmtplogicsvrszc43-0.qq.com (NewEsmtp) with SMTP
-	id 5BA3884F; Mon, 02 Mar 2026 00:22:58 +0800
-X-QQ-mid: xmsmtpt1772382178th2l0aroy
-Message-ID: <tencent_AB29FADF1FAD67D818283B6BB4FDF66F2F08@qq.com>
-X-QQ-XMAILINFO: M8SslFiB5g9ISFL2SGn5VXSgyojemWtaTJZt6q3a5EITqt9Wcfx11YnIWPWNwP
-	 KXelWv8ze0gJz2zuC/q/Pm6AIfGBtRPy9LWM1xlThmm+e/OFWZvMvxT+hULDo5wv4eJy1Lxtb3d5
-	 +GUlgHABoxg5bWfL/7OwhBgeGjl3WOYKsmscJr8G2RuVgnQTP6JX18h/mUtu9lgCKvpXlb0OVqD2
-	 FLbre00Psevvm9fbLzjxvL07WdKnaddkrbqn9vBpdU+Q75rnQnJMlDiuiRo6JRJAi1Pen/Y6216C
-	 paxiZsem16YMFhub/r4O2hj8gZqqqFGPObHgUXiGR6Mog8EkSm9WLKNESOWK9TUWTMKaajQAbTXr
-	 2TB1IEbZxNnjTspJqWCMm8Cu3PiZM3JyxbLT65iGKhXD0Ir7aEmklZOsS99jKRaA/AwpVgQ41xoF
-	 kDT4VFhJFbm+9V+zcYSmF6ZuWTIFfKXrI5eV+AlDpvTN5/tHt5gjPZ0N+bSs2SqYNMpwkG1XywVj
-	 0l+9Gw0/s+Ar0r9qlod4AHsnmbfsiUgsS5Tp1b7wiJzcLjbZBymiKpHL+gPF8wBiiiDO2D+JBjpa
-	 xIr62Qnob3O66nZYADBWoWgMpYSW+IoLRu9fmm27Okovr03KMtRihFJx9feRYureRyuLh5rLOrEx
-	 QZ0iGHTsnAY2QAwP3XO1AoxJAHSu/eqVGqU60Uyiq/tWSW7YSpo5qFzYRwSPZ3RgXbngdTR5QAFt
-	 ywd4ByM+vHJr/op4mQ4NwrmKSvPp2XxRjQD/gUvVdPxFPgfFR82gzk6+wPBsU7lrIpzM0Uu2pvdO
-	 62WYWfrhs5+k94+bVSvk1+yFiJo39GPKOWecJpSsTZ4kc/LucPDcrfj6S4OXdGzy++jQWyMb7nO4
-	 wghKzBS55LgL8wNrRRW52NfM93v8hFvgtcydHrkTtb05h2mbgWFMnce/toT/1t4VyNFwUa7tAjrT
-	 LIstUpUwap2XLs5pLq1x6xC0a53+SHIqsRhGoaa5ckdsjC2anJMBSLW5b66h5CnTEspOBOxSkxvr
-	 y6RZ4/sCaP5+ATul4SzoYeolRS7WNY6GJGsPuvOVS7yE6gT80vVafhtyKdOPAM95NDMtwHX5RFRQ
-	 ZPxNbH
-X-QQ-XMRINFO: MSVp+SPm3vtSI1QTLgDHQqIV1w2oNKDqfg==
-From: Zhaoyang Yu <2426767509@qq.com>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	shawnguo@kernel.org,
-	s.hauer@pengutronix.de
-Cc: kernel@pengutronix.de,
-	festevam@gmail.com,
-	linux-serial@vger.kernel.org,
-	imx@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
+	dkim=pass (2048-bit key) header.d=smtpservice.net header.i=@smtpservice.net header.b="3J+cmiMW"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=smtpservice.net;
+ i=@smtpservice.net; q=dns/txt; s=a1-4; t=1772401694; h=feedback-id :
+ x-smtpcorp-track : date : message-id : to : subject : from : reply-to
+ : sender : list-unsubscribe : list-unsubscribe-post;
+ bh=1BVveRRLNCSPeHsZ8boBCy9xkRHhDKXcLowJaV0eSnc=;
+ b=3J+cmiMWfKxFGAB+zvGSSMzE+JAKW12l6Lf0EbgMgG3/uwZ2wr6mkDErhPj46DbipHKvS
+ XJ+t2GzV7OGWrgSvUWEaY9HF1lYU15VYtXPO0dRJXVDYD5WiFZo3DbFsbHilplXjBAoW2TO
+ sZZSLWI73xek6fouSwHYv9aimeqNbcNXUzOhdDmKdmLIbBvkykTs40qPevjcPMuXWOVtUtO
+ k40enA1rPUKLmxI+7Ou+H/qNOcnsIqr94IAU2XI5yHasvlgeG4ZK3fJKVYlXrFxrIlo26ih
+ A2OQoVFQsNHE1/Ijia6A/7edLctnAdpP+XR1cm0RmflbayJ0B7v8MJp4vFIQ==
+Received: from [10.90.244.30] (helo=localhost)
+	by smtpcorp.com with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+	(Exim 4.99.1-S2G)
+	(envelope-from <as@php.net>)
+	id 1vwoe1-FnQW0hQ0zBs-0pbc;
+	Sun, 01 Mar 2026 21:48:09 +0000
+From: Adam Saponara <as@php.net>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
 	linux-kernel@vger.kernel.org,
-	Zhaoyang Yu <2426767509@qq.com>
-Subject: [PATCH] serial: auart: check clk_enable() return in console write
-Date: Sun,  1 Mar 2026 16:22:56 +0000
-X-OQ-MSGID: <20260301162256.267212-1-2426767509@qq.com>
-X-Mailer: git-send-email 2.34.1
+	linux-serial@vger.kernel.org,
+	linux-doc@vger.kernel.org
+Cc: Adam Saponara <as@php.net>
+Subject: [PATCH] vt: Add boot param for setting default vt console
+Date: Sun,  1 Mar 2026 16:48:04 -0500
+Message-ID: <20260301214804.283484-1-as@php.net>
+X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -66,30 +49,136 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Report-Abuse: Please forward a copy of this message, including all headers, to <abuse-report@smtp2go.com>
+Feedback-ID: 852842m:852842aGMEEIJ:852842snSm7HADLo
+X-smtpcorp-track: nhoi3XBM1w2X.f4qy0rbIxgWZ.CY7rPQqEAvl
 
-Add a check for clk_enable() in auart_console_write(). If
-clk_enable() fails, return immediately to avoid accessing
-hardware registers while the clock is not enabled.
+Presently the default console is hard-coded to vt1.
 
-Signed-off-by: Zhaoyang Yu <2426767509@qq.com>
+The param allows for setting a different default. The param defaults to 0
+(vt1), preserving the current behavior. It is clamped by the constants
+`(MIN|MAX)_NR_CONSOLES`. If set `>= MIN`, `con_init` will initialize that
+vt as well (a couple extra kilobytes heap for the `vc_data` and
+`vc_screenbuf` structs).
+
+Without this feature, users achieve the same effect with an init
+script[0][1][2][3]. This works but requires an extra `chvt(1)` which can
+race with user interaction and flicker the screen at login.
+
+[0]: https://bbs.archlinux.org/viewtopic.php?id=232058
+[1]: https://unix.stackexchange.com/questions/399986
+[2]: https://github.com/systemd/systemd/issues/7247
+[3]: https://www.linuxquestions.org/questions/linux-general-1/x-4175722418
+
+Signed-off-by: Adam Saponara <as@php.net>
 ---
- drivers/tty/serial/mxs-auart.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ .../admin-guide/kernel-parameters.txt         |  5 +++
+ drivers/tty/vt/vt.c                           | 44 +++++++++++++------
+ 2 files changed, 36 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index cc65c9fb6446..693b491f1e75 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -1318,7 +1318,8 @@ auart_console_write(struct console *co, const char *str, unsigned int count)
- 	s = auart_port[co->index];
- 	port = &s->port;
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index cb850e5290c2..6694b2edcfd6 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -8429,6 +8429,11 @@ Kernel parameters
+ 			overridden by individual drivers. 0 will hide
+ 			cursors, 1 will display them.
  
--	clk_enable(s->clk);
-+	if (clk_enable(s->clk))
-+		return;
++	vt.default_console=
++			[VT]
++			Set default console; 0-62.
++			Default: 0 (vt1)
++
+ 	vt.italic=	[VT] Default color for italic text; 0-15.
+ 			Default: 2 = green.
  
- 	/* First save the CR then disable the interrupts */
- 	old_ctrl2 = mxs_read(s, REG_CTRL2);
+diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+index c1f152d8b03b..e566942c380f 100644
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -140,6 +140,7 @@ EXPORT_SYMBOL(vc_cons);
+ static const struct consw *con_driver_map[MAX_NR_CONSOLES];
+ 
+ static int con_open(struct tty_struct *, struct file *);
++static void con_init_vc(int console_idx);
+ static void vc_init(struct vc_data *vc, int do_clear);
+ static void gotoxy(struct vc_data *vc, int new_x, int new_y);
+ static void restore_cur(struct vc_data *vc);
+@@ -159,10 +160,14 @@ static void unblank_screen(void);
+ 
+ int default_utf8 = true;
+ module_param(default_utf8, int, S_IRUGO | S_IWUSR);
++
+ int global_cursor_default = -1;
+ module_param(global_cursor_default, int, S_IRUGO | S_IWUSR);
+ EXPORT_SYMBOL(global_cursor_default);
+ 
++int default_console;
++module_param(default_console, int, S_IRUGO | S_IWUSR);
++
+ static int cur_default = CUR_UNDERLINE;
+ module_param(cur_default, int, S_IRUGO | S_IWUSR);
+ 
+@@ -3742,7 +3747,7 @@ static int __init con_init(void)
+ {
+ 	const char *display_desc = NULL;
+ 	struct vc_data *vc;
+-	unsigned int currcons = 0, i;
++	unsigned int i, di;
+ 
+ 	console_lock();
+ 
+@@ -3776,18 +3781,18 @@ static int __init con_init(void)
+ 		mod_timer(&console_timer, jiffies + (blankinterval * HZ));
+ 	}
+ 
+-	for (currcons = 0; currcons < MIN_NR_CONSOLES; currcons++) {
+-		vc_cons[currcons].d = vc = kzalloc_obj(struct vc_data,
+-						       GFP_NOWAIT);
+-		INIT_WORK(&vc_cons[currcons].SAK_work, vc_SAK);
+-		tty_port_init(&vc->port);
+-		visual_init(vc, currcons, true);
+-		/* Assuming vc->vc_{cols,rows,screenbuf_size} are sane here. */
+-		vc->vc_screenbuf = kzalloc(vc->vc_screenbuf_size, GFP_NOWAIT);
+-		vc_init(vc, currcons || !vc->vc_sw->con_save_screen);
+-	}
+-	currcons = fg_console = 0;
+-	master_display_fg = vc = vc_cons[currcons].d;
++	for (i = 0; i < MIN_NR_CONSOLES; i++)
++		con_init_vc(i);
++
++	/* Init default_console if we didn't already do that above */
++	di = clamp(default_console, 0, MAX_NR_CONSOLES - 1);
++	if (di >= MIN_NR_CONSOLES)
++		con_init_vc(di);
++
++	fg_console = di;
++
++	vc = vc_cons[fg_console].d;
++	master_display_fg = vc;
+ 	set_origin(vc);
+ 	save_screen(vc);
+ 	gotoxy(vc, vc->state.x, vc->state.y);
+@@ -3806,6 +3811,19 @@ static int __init con_init(void)
+ }
+ console_initcall(con_init);
+ 
++static void con_init_vc(int console_idx)
++{
++	struct vc_data *vc = kzalloc_obj(struct vc_data, GFP_NOWAIT);
++
++	vc_cons[console_idx].d = vc;
++	INIT_WORK(&vc_cons[console_idx].SAK_work, vc_SAK);
++	tty_port_init(&vc->port);
++	visual_init(vc, console_idx, true);
++	/* Assuming vc->vc_{cols,rows,screenbuf_size} are sane here. */
++	vc->vc_screenbuf = kzalloc(vc->vc_screenbuf_size, GFP_NOWAIT);
++	vc_init(vc, console_idx || !vc->vc_sw->con_save_screen);
++}
++
+ static const struct tty_operations con_ops = {
+ 	.install = con_install,
+ 	.open = con_open,
 -- 
-2.34.1
+2.51.0
 
