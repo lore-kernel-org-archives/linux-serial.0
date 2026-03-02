@@ -1,39 +1,90 @@
-Received: from out-182.mta1.migadu.com (out-182.mta1.migadu.com [95.215.58.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9F7C3016FA;
-	Mon,  2 Mar 2026 04:43:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D1F9361DA8
+	for <linux-serial@vger.kernel.org>; Mon,  2 Mar 2026 11:22:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772426583; cv=none; b=H6c5VnQc/DuqMCInRQGZqyBhLi4Qx/dITe6RQtSc5a5i3ghpwpln3110dDPsNfEpsTwwFAvuvvxqT0CAScs6KUMfrF103iFDpY70PHRpwldfIMa9KSlB3leMBoy/DXfS9hC07Gl0S3WP+ynwFht+uweWhHj/VCIYcvtg012J3H0=
+	t=1772450525; cv=none; b=p+fxIeZnyN+VMI6kwALs/+68bURgca0WBPkuakIZRaIYvoJuFYaOIaIl6ccRj0/sQHvRD3GGhqCaSRi0OQESxr+pYl1Lwg/hXJhHiAaAwrURgebdvIMUIOCpYlvRIO4E03Z40YC4tzuy4YxF/iZW+Ub990hc7Tz3zRwfMQFGbE0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772426583; c=relaxed/simple;
-	bh=tvFh9t1S6t749AwBjlb006RoGDFpiyNgigKjAKRa5Gc=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=GHOWtNiuSzWdjaqW6CBVH6rAPs+zCnSceSyQt0mQchrnpntUHkxXoO8PEH/KOxoACtZ9rbFIuZmMnhfo158hZ5IcHbm7Su8jXwv6gypc4P4E8UWJ9PKlL6H4cLItcgh2aK0y1v4U2dEirFwXXFxvXB/XvgfzvB3ZlU3oDlibmtk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=rjp.ie; spf=pass smtp.mailfrom=rjp.ie; dkim=pass (1024-bit key) header.d=rjp.ie header.i=@rjp.ie header.b=g8i6Juca; arc=none smtp.client-ip=95.215.58.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=rjp.ie
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rjp.ie
+	s=arc-20240116; t=1772450525; c=relaxed/simple;
+	bh=6IIQUbyZGOF8ofJDPgy82sEzZ9Ny3AGVpK58BJFrOzM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=nFpGzpAXpOTa1H+OZglSIqloRNahMJUmVVv61HN4caSSvDXskxFVWYQsqZnrZlRhno7KQeHMN7mgftNFg/1h14V3hbCsbLWHPFTCPxL9ytnUGaQ8SWK8p4lCJvxo0IXn+N8CMXJQCY+/xeIGYCNg0gS4KVCWsnMV/pZUnEKv++o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr; spf=pass smtp.mailfrom=sartura.hr; dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b=jd0WLhmr; arc=none smtp.client-ip=209.85.128.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sartura.hr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=rjp.ie header.i=@rjp.ie header.b="g8i6Juca"
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=rjp.ie; s=key1;
-	t=1772426579;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=C5HRcg8rTbnjX+sj2kq1iDOp0yQxgSP94sAtrD670bo=;
-	b=g8i6JucaFTAi2JxE/FPflZrHvh/Xi+/+3esnDG53+DBSM45+E6hNurjCJecmgt0kdxdCIE
-	ps6wwYkVrcSjh905dZTT5fiabBjyyE/cal99RAQepMk9GFAV6ViQxX5rtfaYazSBhjn9rX
-	5XYTu6Sk0OC0ai0/oDQ2GNuSjTfhQTA=
-From: Ronan Pigott <ronan@rjp.ie>
-To: linux-kernel@vger.kernel.org
-Cc: linux-serial@vger.kernel.org,
+	dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b="jd0WLhmr"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-4833115090dso44382125e9.3
+        for <linux-serial@vger.kernel.org>; Mon, 02 Mar 2026 03:22:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sartura.hr; s=sartura; t=1772450523; x=1773055323; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=9OyoJW81V1ePbm3yEDh6NHzrMwB3X1grrgMlNcKt/q4=;
+        b=jd0WLhmrQy/4HTxoMDcPRXpXNYHPXmPjPrqD8SQs1gqYEdv6BUKEeX6WJXj+jtERg6
+         nmYcoQL5167kpBuT1vKeDyfDZH0yh8WhdDikuhPWCr3GeQ082A0CNGQg5AfEreTvuD3a
+         9KHIcEKhnA8NAFGEaw22z0XTVfxmzVhEVyvFSJ8UjOJsGqn+WLVfDw/0e/B3n3kK29az
+         3W7VnQzPzO/aYkWrLzvFtfaLhzqnofo4kUHK9+I822aBQT1IOn/7ZHDksR65DvXGYdcL
+         lMuupbOd50JM/XjBZahCDp+XynskK5jSm8ehlHryfeV/MxpY93VSXeH8/1j27MCuJTJB
+         bPNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772450523; x=1773055323;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=9OyoJW81V1ePbm3yEDh6NHzrMwB3X1grrgMlNcKt/q4=;
+        b=HxWEKoZIV2YQs51LxT8chUYFSrRDgohrVUn1bqgNUVK/mhV3NhiL1uQUKevPQs6c9M
+         Cqh14sbj92m8e60ShYm4jj3wsLUukSmPOWFSHYWtzsa5cBCrYtybd54E4MA/iD/81cS1
+         /PQO9WK03RB8uQiJ5OfIzu7bOl822LNk3HTey65mBXXgt+4VKvL2DxaF2G1Hsha+mWUc
+         cNRUOuCWQR/Q3FYghetR/FSN55zAd76vl8y6SNiSTbZa472mh+GJzLT7rb67FXmJHDuz
+         HQK551+2iKUgKAF7WXg5zAywqmzFQUympop8+2kEQ7wvxe2QOY4ti5hGyFECXtCTlnCZ
+         nB9A==
+X-Forwarded-Encrypted: i=1; AJvYcCU/KKcoBGjyQcinVYlNz9O8QZJ9geSYiAjV7Ivg3LjLiQYHWJgWZPlsDFG9n05UWYAFdbIKjK1gsQLPAY4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzHyavQqxBPeyvt207KzgmOgCSFb5S01KfZSnxGbkqS6Tf24GP5
+	kAiFZ6HSy513yJPVD6/g8/XA1TMBJIJ133hrCQIHQOxaNPKdNr4ugFKFG0tiIyWp7Ls=
+X-Gm-Gg: ATEYQzyJwOClSqKx+3+MntaVMFny9TlfoMjBXAzXm3ZJ3dKyHyE0ndv+YiTgOrr9PSp
+	6jQPJJny+93QmdXj6KwtISqOqSsYhEuOBaKr44nP5HQV0sJacYgGeuUVZp6oSkhnDrVYDslfQEe
+	lIavP/1aRW1xZdE7apwD4mBAkA5edD0rA7SfMoY1Ne2bNRyzJ2lGG3VU1aPb9+PA2mrFNG7s8ea
+	B/uN4QWQviX7G/Rs5I+zB9JdyMFNME5ppy8ASLI952tTgPc5y4DIQ92k0OfZQEa0a+sFESKwqcg
+	kAX7b5yn5PtPCRfdyz5pTqIRlVT5L/cL5YfauxIREJYzEmsk2EqCE+oVkkS1WIqjVyZaWPfxRRL
+	TwTrZ4vJdkqXRzfD7qpHjcLaqgzDzYT0mBjyqS5EZNVtsa/nK+D3yLs1bMHtvdr4E+h/XfdIKUk
+	VwZlP/981OeyWw08jgltbozeL/kxf8YJw5MyNYUDkJvEND9sV5viNsbO6hvijkXpfUZ8Xqt0kXK
+	EpnT/eEXTRQT4ZeBNjGhIisWX9JXy+mjCLY9UKM6+I=
+X-Received: by 2002:a05:600c:548a:b0:483:6e32:50d4 with SMTP id 5b1f17b1804b1-483c9bed9bbmr211639925e9.18.1772450522114;
+        Mon, 02 Mar 2026 03:22:02 -0800 (PST)
+Received: from fedora (cpe-109-60-83-135.zg3.cable.xnet.hr. [109.60.83.135])
+        by smtp.googlemail.com with ESMTPSA id 5b1f17b1804b1-483bfbb465bsm292493035e9.3.2026.03.02.03.22.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Mar 2026 03:22:01 -0800 (PST)
+From: Robert Marko <robert.marko@sartura.hr>
+To: robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	nicolas.ferre@microchip.com,
+	alexandre.belloni@bootlin.com,
+	claudiu.beznea@tuxon.dev,
+	olivia@selenic.com,
+	herbert@gondor.apana.org.au,
+	radu_nicolae.pirea@upb.ro,
+	richard.genoud@bootlin.com,
 	gregkh@linuxfoundation.org,
 	jirislaby@kernel.org,
-	Ronan Pigott <ronan@rjp.ie>
-Subject: [PATCH] vt: support ITU-T T.416 color subparameters
-Date: Sun,  1 Mar 2026 21:42:39 -0700
-Message-ID: <20260302044245.391943-1-ronan@rjp.ie>
+	horatiu.vultur@microchip.com,
+	Ryan.Wanner@microchip.com,
+	devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-crypto@vger.kernel.org,
+	linux-spi@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	daniel.machon@microchip.com
+Cc: luka.perkov@sartura.hr,
+	Robert Marko <robert.marko@sartura.hr>
+Subject: [PATCH v6 0/6] Add support for Microchip LAN969x
+Date: Mon,  2 Mar 2026 12:20:08 +0100
+Message-ID: <20260302112153.464422-1-robert.marko@sartura.hr>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -41,72 +92,72 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
 
-The colon ("bit combination 03/10") is a valid character in parameter
-substrings. ECMA-48 says:
+This series adds support for the Microchip LAN969x switch SoC family.
 
-  Each parameter sub-string consists of one or more bit combinations
-  from 03/00 to 03/10; the bit combinations from 03/00 to 03/09
-  represent the digits ZERO to NINE; bit combination 03/10 may be used
-  as a separator in a parameter sub-string, for example, to separate
-  the fractional part of a decimal number from the integer part of
-  that number.
+Series is a bit long since after discussions in previous versions, it was
+recommended[1][2] to add SoC specific compatibles for device nodes so it
+includes the required bindings updates.
 
-To my knowledge, the only codes where 03/10 is actually used as a
-separator are the CSI-m SGR sequences. The colon separated format is
-superior as an embedded string for software that doesn't wish to link
-ncurses terminal database, because terminals that do not support the
-requested SGR sequence can safely skip the sub-parameters rather than
-misinterpret them as another sequence. Hence, some software have started
-using this "modern" format [1]. We should support the colon separated
-format as well.
+[1] https://lore.kernel.org/all/20251203-splendor-cubbyhole-eda2d6982b46@spud/
+[2] https://lore.kernel.org/all/173412c8-c2fb-4c38-8de7-5b1c2eebdbf9@microchip.com/
+[3] https://lore.kernel.org/all/20251203-duly-leotard-86b83bd840c6@spud/
+[4] https://lore.kernel.org/all/756ead5d-8c9b-480d-8ae5-71667575ab7c@kernel.org/
 
-[1] https://github.com/systemd/systemd/commit/6eabe9f2ff48c1b6924724d5afe64e7b661ccdbf
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
 
-Signed-off-by: Ronan Pigott <ronan@rjp.ie>
----
- drivers/tty/vt/vt.c | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+Changes in v6:
+* Drop AES, SHA, SGPIO, SparX-5 and Flexcom bindings as those were picked
+* Add Reviewed-by, Acked-by and Tested-by tags
+* Rebase onto next-20260227
 
-diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index c1f152d8b03b..3951bd49bc27 100644
---- a/drivers/tty/vt/vt.c
-+++ b/drivers/tty/vt/vt.c
-@@ -1644,9 +1644,7 @@ static void rgb_background(struct vc_data *vc, const struct rgb *c)
- 
- /*
-  * ITU T.416 Higher colour modes. They break the usual properties of SGR codes
-- * and thus need to be detected and ignored by hand. That standard also
-- * wants : rather than ; as separators but sequences containing : are currently
-- * completely ignored by the parser.
-+ * and thus need to be detected and ignored by hand.
-  *
-  * Subcommands 3 (CMY) and 4 (CMYK) are so insane there's no point in
-  * supporting them.
-@@ -1703,6 +1701,7 @@ enum {
- 	CSI_m_BG_COLOR_END		= 47,
- 	CSI_m_BG_COLOR			= 48,
- 	CSI_m_DEFAULT_BG_COLOR		= 49,
-+	CSI_m_UNDERLINE_COLOR		= 58,
- 	CSI_m_BRIGHT_FG_COLOR_BEG	= 90,
- 	CSI_m_BRIGHT_FG_COLOR_END	= 97,
- 	CSI_m_BRIGHT_FG_COLOR_OFF	= CSI_m_BRIGHT_FG_COLOR_BEG - CSI_m_FG_COLOR_BEG,
-@@ -2699,6 +2698,14 @@ static void do_con_trol(struct tty_struct *tty, struct vc_data *vc, u8 c)
- 		fallthrough;
- 	case ESgetpars: /* ESC [ aka CSI, parameters expected */
- 		switch (c) {
-+		case ':': /* ITU-T T.416 color subparameters */
-+			if (vc->vc_par[0] != CSI_m_FG_COLOR &&
-+			    vc->vc_par[0] != CSI_m_BG_COLOR &&
-+			    vc->vc_par[0] != CSI_m_UNDERLINE_COLOR) {
-+				vc->vc_state = EScsiignore;
-+				return;
-+			}
-+			fallthrough;
- 		case ';':
- 			if (vc->vc_npar < NPAR - 1) {
- 				vc->vc_npar++;
+Changes in v5:
+* Picked Acked-by and Reviewed-by tags
+* Change clock header license to match the DTSI one
+* Alphabetize EV23X71A pin nodes
+* Remove the requirment for all ethernet-port nodes to have phys property
+as when RGMII is used there is no SERDES being used
+* Drop phys from RGMII port on EV23X71A
+* Drop USB, DMA, MIIM, SPI and I2C bindings as those were already picked
+
+Changes in v4:
+* Pick Acked-by from Andi for I2C bindings
+* Move clock indexes from dt-bindings into a DTS header as suggested by
+Krzysztof[4]
+
+Changes in v3:
+* Pick Acked-by from Conor
+* Drop HWMON binding as it was picked into hwmon already
+* Document EV23X71A into AT91 binding
+* Drop SparX-5 and AT91 bindings merge
+* Apply remark from Conor on DMA binding regarding merging cases
+
+Changes in v2:
+* Change LAN969x wildcards to LAN9691 in patches
+* Split SoC DTSI and evaluation board patches
+* Add the suggested binding changes required for SoC specific compatibles
+* Merge SparX-5 and AT91 bindings as suggested[3]
+
+Robert Marko (6):
+  dt-bindings: serial: atmel,at91-usart: add microchip,lan9691-usart
+  dt-bindings: rng: atmel,at91-trng: add microchip,lan9691-trng
+  arm64: dts: microchip: add LAN969x clock header file
+  arm64: dts: microchip: add LAN969x support
+  dt-bindings: arm: AT91: document EV23X71A board
+  arm64: dts: microchip: add EV23X71A board
+
+ .../devicetree/bindings/arm/atmel-at91.yaml   |   6 +
+ .../bindings/rng/atmel,at91-trng.yaml         |   1 +
+ .../bindings/serial/atmel,at91-usart.yaml     |   1 +
+ arch/arm64/boot/dts/microchip/Makefile        |   1 +
+ arch/arm64/boot/dts/microchip/clk-lan9691.h   |  24 +
+ arch/arm64/boot/dts/microchip/lan9691.dtsi    | 488 +++++++++++
+ .../boot/dts/microchip/lan9696-ev23x71a.dts   | 756 ++++++++++++++++++
+ 7 files changed, 1277 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/microchip/clk-lan9691.h
+ create mode 100644 arch/arm64/boot/dts/microchip/lan9691.dtsi
+ create mode 100644 arch/arm64/boot/dts/microchip/lan9696-ev23x71a.dts
+
 -- 
 2.53.0
 
