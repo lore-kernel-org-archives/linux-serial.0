@@ -1,95 +1,112 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9E9F17A309;
-	Tue,  3 Mar 2026 08:26:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E09BE38C2DF;
+	Tue,  3 Mar 2026 10:05:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772526377; cv=none; b=E6yhBmKJ+nmIm0MQ4oXbd6iBOqCm1eMRxb9HG89yx2Mbg9Cr76q+iEe0R/xDNcJ8m3CYlHSiV1zDexNH6+GlW+WHG0dfk6ewF2D/j4Iw7QRmyWlJ5cCdwC6c3c8nR4+Wf/Dsn7SywK5CrTVyWFGrJSYhGkHc4lyciwzzhRgmE2s=
+	t=1772532328; cv=none; b=EJTvrNsBY0TU6VqkWb6lZCadv9Muj+s/WaR041Wjppuy5oazyMEakYdx413XUUABlBzb+rGy3dNmYss3nNM9/GzRGoPxMK2nOESHQNXxVOs4EMb86lHhTgzV/Q5qAgPeUAGBf7NI33SLGKpYsn5OoLE7oFFCAd+0IkY9OgE6ed8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772526377; c=relaxed/simple;
-	bh=448dK8GnIa9bf97ungbXtcNYT/1dnAsvokMfQnlvWHA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SYjYX/FwowIOAwHk0+MKTxE41ltY6+/vQNDSeR6wlpr+oOMDU57/LIUHG5nFIsXX51hVIaI/0wNpERuVtCYV4if4X6HcafU2DE2V4439D1/S/SxU4hVYAd3QUkJc6C4AeXggl4M00jaYfROD6PCvHx/3CUv21FqmseEw85CSpDg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IMF3V784; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1772532328; c=relaxed/simple;
+	bh=9dJ8qLLYIZAO2CG6AxPuvLdbo0/KEzaLIw6AaTJMJd4=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=cu75CPHjQoYU2F4ODRXU3CCmRCbit+cNjms4qA95J+KFQ2XM5lQe6H4BH4hYvqpLMqcMHMG3tbCBy9nX8GIgzxi8GY/qlkR6Tu9Zt+x0pqNna/i3bfijaC0tFy+OIysNeDs80RWX0Zmje1VZe/V7CLLcr6LBY6HQF5LsUdCpwQs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tNqIhFGy; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IMF3V784"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1772526376; x=1804062376;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=448dK8GnIa9bf97ungbXtcNYT/1dnAsvokMfQnlvWHA=;
-  b=IMF3V784cLAHHv0EoL3iKZiiEIGSX/IrVGOV477KNgbC/gKK1XjcM26t
-   wKi8M6fVH/8vbaUo4belx90P0B3GBqNhslzpVtVi9Ozfhutv/kt8USLfC
-   ap1oKr0E7JClbl4FJ0TgsywG7uv+gi8aQXgUZw0NLj5VA6EW8IrVt05cA
-   Pt7b3eRpyh6mEw8o+NVoZX7hdcqIisAOy+VWC7sJ6jKdkpJIWBOiSrcBj
-   DPqIQysKepP3KFoRyWBsXtZpQDJMfYq5J3/xFVRM5muZM//NfuZEf48ss
-   g9XpMxP5/TrqKfhacq5MggXUGqJFwHrKfY6wiN1F42utFQyvjEhd3afb8
-   A==;
-X-CSE-ConnectionGUID: WDtSG9nIT+KGLXC1IMB2VQ==
-X-CSE-MsgGUID: lyYxbF+FQ7CUpaVjByfuwQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11717"; a="73598159"
-X-IronPort-AV: E=Sophos;i="6.21,321,1763452800"; 
-   d="scan'208";a="73598159"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2026 00:26:13 -0800
-X-CSE-ConnectionGUID: yeA/LFCOSmy1UtfsMaGJBw==
-X-CSE-MsgGUID: rE8pnFa0RnapIJyzaiMUWA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,321,1763452800"; 
-   d="scan'208";a="222084181"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.196])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2026 00:26:12 -0800
-Date: Tue, 3 Mar 2026 10:26:09 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Jiri Slaby <jirislaby@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v1 1/1] serial: 8250_port: Drop duplicate NULL check
-Message-ID: <aaabITX34OyXB2Dg@ashevche-desk.local>
-References: <20260302152738.2498579-1-andriy.shevchenko@linux.intel.com>
- <c1500ee2-d609-4c66-b301-2b081722eef9@kernel.org>
- <aaaT_LiDbWX-ifK1@ashevche-desk.local>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tNqIhFGy"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6FCEDC116C6;
+	Tue,  3 Mar 2026 10:05:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1772532327;
+	bh=9dJ8qLLYIZAO2CG6AxPuvLdbo0/KEzaLIw6AaTJMJd4=;
+	h=From:Date:Subject:To:Cc:Reply-To:From;
+	b=tNqIhFGyv+8lZVoVDvwE8QvojLMCyfL2tmt84dEhbczmoEsco9rI+RloW/K61AoPY
+	 6sf8b+59/9p6RLFKXl07xEJFLWUKPWBHUY9I0KSJ/Gy9CII0tdTm6BFSIrSqeifhfE
+	 mOxZjcTAml3uhF+Hm+Ypjmvh8IKDOF+obV8bdNbWlrYziyaK3Zp4BGmzFb+LdWHLGu
+	 u+jmEtA579IQ+hwWvWRaqQhgMqBL5HBtT2UaY4JqCZrnHkYqhrK0k99fBo16gRHDv+
+	 p2zxJQOxQhCYbck+uGo/726uW4MMoBz9k8jgyNZrx9q0t4AyD+DQCEDPyHAGbex55s
+	 H8IXvpS+PjfmQ==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63220EC048B;
+	Tue,  3 Mar 2026 10:05:27 +0000 (UTC)
+From: Xianwei Zhao via B4 Relay <devnull+xianwei.zhao.amlogic.com@kernel.org>
+Date: Tue, 03 Mar 2026 10:05:24 +0000
+Subject: [PATCH] dt-bindings: serial: amlogic,meson-uart: Add compatible
+ string for A9
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aaaT_LiDbWX-ifK1@ashevche-desk.local>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260303-serial-binding-v1-1-c3df2a8f6fa3@amlogic.com>
+X-B4-Tracking: v=1; b=H4sIAGOypmkC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDIzMDYwNjXZD6xBzdpMy8lMy8dN20FEtDEwsTE3NDczMloKaCotS0zAqwgdG
+ xtbUAB4QGzmAAAAA=
+X-Change-ID: 20260303-serial-binding-fd9148447176
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Neil Armstrong <neil.armstrong@linaro.org>, 
+ Kevin Hilman <khilman@baylibre.com>, Jerome Brunet <jbrunet@baylibre.com>, 
+ Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+ linux-amlogic@lists.infradead.org, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>, 
+ Xianwei Zhao <xianwei.zhao@amlogic.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1772532325; l=1431;
+ i=xianwei.zhao@amlogic.com; s=20251216; h=from:subject:message-id;
+ bh=9mURwWMNKHKPj5DQwkxO2/oc3KhRCoTzoGeBobWkQYM=;
+ b=JymmJL57wfD3WRuexnCQrwj4gWarkh2+sQtMISQ+nJ1d184MWywv+CAUTFEJ+63gky+C2/16m
+ Q8gP9fwsZgFDGeltyP3ZIJJ6/77WPI0Z0i/jNaphv5N1Ab//xjCNCEa
+X-Developer-Key: i=xianwei.zhao@amlogic.com; a=ed25519;
+ pk=dWwxtWCxC6FHRurOmxEtr34SuBYU+WJowV/ZmRJ7H+k=
+X-Endpoint-Received: by B4 Relay for xianwei.zhao@amlogic.com/20251216 with
+ auth_id=578
+X-Original-From: Xianwei Zhao <xianwei.zhao@amlogic.com>
+Reply-To: xianwei.zhao@amlogic.com
 
-On Tue, Mar 03, 2026 at 09:55:45AM +0200, Andy Shevchenko wrote:
-> On Tue, Mar 03, 2026 at 06:25:29AM +0100, Jiri Slaby wrote:
-> > On 02. 03. 26, 16:27, Andy Shevchenko wrote:
-> > > serial8250_release_dma() is NULL-aware, no need to check this in the caller.
-> > > While at it, make sure DMA won't be used again, by NULLifying the pointer.
+From: Xianwei Zhao <xianwei.zhao@amlogic.com>
 
-...
+Amlogic A9 SoCs uses the same UART controller as S4 SoCs.
+There is no need for an extra compatible line in the driver,
+but add A9 compatible line for documentation.
 
-> > > -	if (up->dma)
-> > > -		serial8250_release_dma(up);
-> > > +	serial8250_release_dma(up);
-> > > +	up->dma = NULL;
-> > 
-> > Shouldn't serial8250_release_dma() NULL it instead, so the callers need not
-> > to bother?
-> 
-> I copied what 8250_omap is doing. But we can do what you suggested I think.
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Signed-off-by: Xianwei Zhao <xianwei.zhao@amlogic.com>
+---
+This patch is from the submission below(patch 2/3).
+https://lore.kernel.org/all/20260205-a9-baisc-dts-v1-0-1212b46f95a7@amlogic.com/
 
-I looked at the 8250_dma code and serial8250_release_dma() in particular,
-and I think I am not going to change the approach. The 'dma' pointer is
-assigned outside of serial8250_request_dma() and NULLifying it in
-serial8250_release_dma() will be a layering violation.
+It is just sent again separately since it goes via the tty tree
+---
+ Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
+index d8ad1bb6172d..a2702319685d 100644
+--- a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
++++ b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
+@@ -56,6 +56,7 @@ properties:
+         items:
+           - enum:
+               - amlogic,a4-uart
++              - amlogic,a9-uart
+               - amlogic,s6-uart
+               - amlogic,s7-uart
+               - amlogic,s7d-uart
+
+---
+base-commit: 6de23f81a5e08be8fbf5e8d7e9febc72a5b5f27f
+change-id: 20260303-serial-binding-fd9148447176
+
+Best regards,
 -- 
-With Best Regards,
-Andy Shevchenko
+Xianwei Zhao <xianwei.zhao@amlogic.com>
 
 
