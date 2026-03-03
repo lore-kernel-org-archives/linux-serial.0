@@ -1,106 +1,125 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46A8E391515;
-	Tue,  3 Mar 2026 10:06:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CC363ECBFA
+	for <linux-serial@vger.kernel.org>; Tue,  3 Mar 2026 11:14:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772532389; cv=none; b=JvIfgxkF3QrYrJ24C5u26WyI8x9Wu5oPlNT06IYX0eLMU/Kccy33LEI4QBsBv6TIUmLKyuVAVUPfr3IQDyQiEo4dZ7+wcp4Wrdrahb/QnYgXYdrbKUsPAoECxbXdSSG0BoqiQALzGH+Rclg2uuuL87gMtTYKW0Eml/fdH4P2WUg=
+	t=1772536484; cv=none; b=uPpzINw0LeKDvGyrHNK/rfUW45E7OrZEELBHSbe/1NjdBfyqE1o7sOYDXwBXlx8Wq1KQWxB6QLZfJ4xGxbXgzghTYX3aiauuiaNmuzn3RitLtPGnqyi5gK2Z0hXRawXLdl9c3phuzZOfCKlKkx8OnDdHUrxFQVlZ8BAl1tgP9Uo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772532389; c=relaxed/simple;
-	bh=xDY2zUL4lo50XwlAxftH7mcEOPS7xG11OXc5XAcUsug=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=WLA2Kk5Td0wYnq9tbAdD+XDDqCvevhGT6AKa3JYjn8mj7QuyvdE1z/MGaXplBajuKBqgs2ZIc4x3X6zEjqAdbo6m7yTVfhS0wZmY9YdYXMDqYy+YWPMsYyXa96mmu/hTVOFnEG5EJyaqUiKPuYUpmJzfCGLEzbqE3rcstAcl17g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kXxVvjLh; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1772536484; c=relaxed/simple;
+	bh=lG/DZ3WywMxkW718njBWn7clqicbwq5XJkykLBVrlxU=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=ZJ3hPpRyVm3UKIYKfyvVUzOIVba3fZFevhNykB06DbNRGKYbZOU8tH834jbooTXCGgmrVJ4A1cdqh1FjUIkjR7EEui5pNzK+1UBylIXvJSI7CbqMRDeYVjYNhLr+8akUuZkoY/FRQyNLkAYGKuLGQ2gjFUgld7nFYJx3Kxubf/Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=U5HyLv8P; arc=none smtp.client-ip=209.85.128.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kXxVvjLh"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C475DC116C6;
-	Tue,  3 Mar 2026 10:06:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772532388;
-	bh=xDY2zUL4lo50XwlAxftH7mcEOPS7xG11OXc5XAcUsug=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=kXxVvjLhASHctIxoRdS9tBfadNQBHtdcCXyHpOdeVvjMrL7RtFGkx8fxwCt0P7Pij
-	 LEFk4LLja5qorRCzcjQMSDucBnGcpohEEkrnghbxk4xLccE9r141VNJCWuPB6+CCSS
-	 LdylA9vOig0Uv3vycPFCxgXJsXPxVyviW6/2dCUqCU/q9f/aMzJgLB+oxsmY0R4KQk
-	 twbQw84Yzcah/qAQFs5ixWNSTmoPjZSBIFRyZHt4NRT1rz6pj4daHPg/uw6M+0QhXt
-	 FRtxKZn3U/2Nn2bs5fdwo2jKKpTMwCdGL9L7qRYjfLQoQ6bcc5i40+GP9jB6mwkKUr
-	 yYvKmhKg3V2wg==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B94F1EC048A;
-	Tue,  3 Mar 2026 10:06:28 +0000 (UTC)
-From: Xianwei Zhao via B4 Relay <devnull+xianwei.zhao.amlogic.com@kernel.org>
-Subject: [PATCH v3 0/2] basic devicetree support for Amlogic A9
-Date: Tue, 03 Mar 2026 10:06:24 +0000
-Message-Id: <20260303-a9-baisc-dts-v3-0-4bf21001f05c@amlogic.com>
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="U5HyLv8P"
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-48374014a77so66484285e9.3
+        for <linux-serial@vger.kernel.org>; Tue, 03 Mar 2026 03:14:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772536480; x=1773141280; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Xgdv9fVdx/IEA9nZHRjuPZVXLrXBxXsiA90FmBdGMb0=;
+        b=U5HyLv8Pho13u/f+I/VS8HGivtUhBmlPHKZGs3ruUQ6tZPB5FMR9PB8JfJbVyZzpdn
+         903IE7AbTrVf+9p1ONpfCkGLXzyoCRSVP5AtHpX0vYjFYgNtDrAZWMqducZPC1Ff2enq
+         GoSF4iRStBYYrqDMbCmlfp1Oz6d8wEMMhwa/kq90qqMAIu6OQ03FJ0BbP8nrcLKV4IEM
+         SaWaiReST+XomkoO03wAYUxmzTMGZ8r6V3L5kM+H2zlPA8Zx0CLeGPEU4JXYzdjAAM7V
+         39GU4W/ZWhd/+KmU5o2O7/7HLC0KuSM1mJTMtN2b3V35asKX1R+Aldumd1oSYXCij/CQ
+         CpPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772536480; x=1773141280;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Xgdv9fVdx/IEA9nZHRjuPZVXLrXBxXsiA90FmBdGMb0=;
+        b=UkwwqdEhFub6TOGU1EXf8Ks8ZvsQseEL2AX63crY+naMHsfEBCNpS6qUHASWbfqbCg
+         xmQHwgp02bmBaoAB+x0FUU3iZ0YnLlSIMmrGUpvu1ATxccqMvon5Lb+z9SkHKSBMLrKr
+         wV2hLGw3/NQ3i+Pol/jj+LguwqTpmFu4yHEEsqxQ5e+h+l4Ej7mitV2zuVHdzeSV8iHP
+         +YueFfQiPc/At7pEQRd7p5rLU9nT0bpvqi7zi9/bUmK23iy6ONU8uW5I0eUWAl9+gvFm
+         RrsNVdg8u6uddTFEsbm3PbgQaDTJ8lt96/bIK2DM8rETDqVpf9IHUCoR5NT/ZIT+iGU3
+         Uwww==
+X-Forwarded-Encrypted: i=1; AJvYcCWP30+e475+Jy8D53yY4Fc8RqegbPq/0Ry7wlx6PAfo3Ag4oVRN+W8As6HR2Y5QafzCPRP1LoYl2RVasUk=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywk3tJkwBrHmT2ocCmWHpJPJo0vRXS7WzNaqFOYpZwinL+SoITF
+	ldrbWaENjVgAgpyh0U48xqBn4ptJTl3NU2ht4bcLCny6Wks78UXrqGIEy4V6cfgKxuM=
+X-Gm-Gg: ATEYQzwPGJk4W7xJ0XFu7o3JvkmTFK0F6JRWVHiwycXvEcuy4qVqAwhTIe2XBVvnlfF
+	/F8CJICzi6eVmXRR6ht/NiQBPXACqcLz3h+IGrU9WbYlCkdq3ZpTbxn2JjyiE2GCpjvBzv4imiA
+	Lr3TE5LBj43btEy3MjgLeTYGKHXyjmkAGWDOxeDst0YtEVSAs+UjVAtH1R/9eGlAwgZtvc4xNKN
+	ZaArXB3qEaEB0cWWKM4umIznROsYRuoNo7hAlYEV5OD9Ml1zXNvI0ookTZr0lOPKtILJyG02STr
+	doURt+ffUFLMQF9gPOvdA7OTWr5V6EidQDeWjLz2xKpqVl2d+qCaXyiOtIv43pwkkuDCDb2gWkZ
+	pHCiPHlRVXq5d4xCcQeAD3eroOrOA24WTE02LHwZExLOYfoOO6oXTHYuh1NrkfhHHLr9L
+X-Received: by 2002:a05:600c:c4a6:b0:480:1d0b:2d32 with SMTP id 5b1f17b1804b1-483c9bc0344mr259053495e9.12.1772536480350;
+        Tue, 03 Mar 2026 03:14:40 -0800 (PST)
+Received: from localhost ([151.19.25.210])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-485133508bbsm17667855e9.5.2026.03.03.03.14.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Mar 2026 03:14:40 -0800 (PST)
+From: Francesco Lavra <flavra@baylibre.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Zong Jiang <quic_zongjian@quicinc.com>,
+	Thierry Bultel <thierry.bultel.yh@bp.renesas.com>,
+	Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>,
+	Robert Marko <robert.marko@sartura.hr>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-tegra@vger.kernel.org
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2] serial: tegra: remove Kconfig dependency on APB DMA controller
+Date: Tue,  3 Mar 2026 12:14:38 +0100
+Message-Id: <20260303111438.2691799-1-flavra@baylibre.com>
+X-Mailer: git-send-email 2.39.5
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAKCypmkC/3XMSw7CIBSF4a00jMXAtQ/qyH0YB0Bv25vYYqAhm
- oa9SztSE4fnJN+/soCeMLBzsTKPkQK5OY/ToWB21POAnLq8GQioBYiK65YbTcHybgncGmMQUMh
- eCZbJw2NPzz13veU9Ulicf+31KLf3TyhKLrgECaas+7bSzUVPdzeQPVo3sS0V4YOD+uGQedmUq
- u0qa6VW3zyl9AZjGApq6QAAAA==
-X-Change-ID: 20260205-a9-baisc-dts-cbbbe2e01f80
-To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Neil Armstrong <neil.armstrong@linaro.org>, 
- Martin Blumenstingl <martin.blumenstingl@googlemail.com>, 
- Jerome Brunet <jbrunet@baylibre.com>, Kevin Hilman <khilman@baylibre.com>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
- linux-amlogic@lists.infradead.org, Xianwei Zhao <xianwei.zhao@amlogic.com>, 
- Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1772532387; l=1285;
- i=xianwei.zhao@amlogic.com; s=20251216; h=from:subject:message-id;
- bh=xDY2zUL4lo50XwlAxftH7mcEOPS7xG11OXc5XAcUsug=;
- b=K7ff/AITnNBzEaAERMwOvCVFbtGofqTk6HA3TRi2H7p6R37aiNO599ue4wYKwUWZgmtq0HIwJ
- wD/cL9vnwNkDHbE8Uf35G+xwW7GDC1fHUUYmnZo29fZQXTMFnirHrNQ
-X-Developer-Key: i=xianwei.zhao@amlogic.com; a=ed25519;
- pk=dWwxtWCxC6FHRurOmxEtr34SuBYU+WJowV/ZmRJ7H+k=
-X-Endpoint-Received: by B4 Relay for xianwei.zhao@amlogic.com/20251216 with
- auth_id=578
-X-Original-From: Xianwei Zhao <xianwei.zhao@amlogic.com>
-Reply-To: xianwei.zhao@amlogic.com
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1461; i=flavra@baylibre.com; h=from:subject; bh=lG/DZ3WywMxkW718njBWn7clqicbwq5XJkykLBVrlxU=; b=owEB7QES/pANAwAKAe3xO3POlDZfAcsmYgBppsIidjpJYctRWN5hOyNxVnAxdEa0f5jD7q4mR uzU4wLOdImJAbMEAAEKAB0WIQSGV4VPlTvcox7DFObt8TtzzpQ2XwUCaabCIgAKCRDt8TtzzpQ2 X4ATC/96p9lCQmb44HSR3w9JqD1EHcLByEZFcPkoExD7sDGiieEB+CH535JniKYxqREOVQlfv+S 5cIEBoK7p9IHqCh8NVX0vQjY99JaZ3a1YF60RDWD6z58CGAVUoCMXjx+LOeRF+c+QZIQDUnXYtE u+rHOzXPY1Z7GYJdE3vxvtCX0SjTv9gUT3zCtXsfucHPRP+TfsSbhEw/Vr3w3wtphsN7qBVEjma 6wkdMlBsClq3NO1segO6rKiSI4xmWGSQ2DCy2Oe4BFrXGcAK0rg770YU8BHvJUEHv/90PmGbc98 czYGo2A5+7zBFle4NH6neAU4QIdc8iVq8F0A6qghEz7c1QzWXSOj62qNKsu2Bf1wiW1qwH0wLVy XU4FYby8xqDFPw75Q3mnUnZLTGCiufFaXeIH/c/BFpw5CgZPswsKMQ0+p4UGsb9G6XG4EAQXGK2 y/HW62d9bRQ9ejp5M3OQSkCaBq3yBNesNEfQo6It1WX2KrmsDxlZoL1L7f2W2twqskBGU=
+X-Developer-Key: i=flavra@baylibre.com; a=openpgp; fpr=8657854F953BDCA31EC314E6EDF13B73CE94365F
+Content-Transfer-Encoding: 8bit
 
-Add the new A9 SoC/board device tree and related bindings.
+This driver runs also on SoCs without a Tegra20 APB DMA controller (e.g.
+Tegra234).
+Remove the Kconfig dependency on TEGRA20_APB_DMA, and remove reference to
+the APB DMA controller from the Kconfig help text.
 
-Since the serial submission has removed this patch as a separate patch.
-The dtb check needs to be relied upon for serial submission mereged, or
-check failed, when run "make ARCH=arm64 dtbs_check W=1".
-
-Signed-off-by: Xianwei Zhao <xianwei.zhao@amlogic.com>
+Signed-off-by: Francesco Lavra <flavra@baylibre.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
-Changes in v3:
-- Remove serial bindings from this patches and will send it independently.
-- Link to v2: https://lore.kernel.org/r/20260228-a9-baisc-dts-v2-0-47489d5cc1a8@amlogic.com
+Changes from v1 [1]:
+- added Andy's Reviewed-by tag
+- removed Fixes tag (Jon)
 
-Changes in v2:
-- Move default interrupt-parent into dtsi.
-- Link to v1: https://lore.kernel.org/r/20260205-a9-baisc-dts-v1-0-1212b46f95a7@amlogic.com
+[1] https://lore.kernel.org/linux-serial/20251126090759.4042709-1-flavra@baylibre.com/T/
 
----
-Xianwei Zhao (2):
-      dt-bindings: arm: amlogic: add A311Y3 support
-      arm64: dts: add support for A9 based Amlogic BY401
+ drivers/tty/serial/Kconfig | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
- Documentation/devicetree/bindings/arm/amlogic.yaml |   6 +
- arch/arm64/boot/dts/amlogic/Makefile               |   1 +
- .../boot/dts/amlogic/amlogic-a9-a311y3-by401.dts   |  40 +++++++
- arch/arm64/boot/dts/amlogic/amlogic-a9.dtsi        | 128 +++++++++++++++++++++
- 4 files changed, 175 insertions(+)
----
-base-commit: e3194dfb772304a1b7ca3bcfccacefec3468b7bf
-change-id: 20260205-a9-baisc-dts-cbbbe2e01f80
-
-Best regards,
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index f86775cfdcc9..8500b1eed5b5 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -255,14 +255,13 @@ config SERIAL_SAMSUNG_CONSOLE
+ 
+ config SERIAL_TEGRA
+ 	tristate "NVIDIA Tegra20/30 SoC serial controller"
+-	depends on (ARCH_TEGRA && TEGRA20_APB_DMA) || COMPILE_TEST
++	depends on ARCH_TEGRA || COMPILE_TEST
+ 	select SERIAL_CORE
+ 	help
+ 	  Support for the on-chip UARTs on the NVIDIA Tegra series SOCs
+ 	  providing /dev/ttyTHS0, 1, 2, 3 and 4 (note, some machines may not
+ 	  provide all of these ports, depending on how the serial port
+-	  are enabled). This driver uses the APB DMA to achieve higher baudrate
+-	  and better performance.
++	  are enabled).
+ 
+ config SERIAL_TEGRA_TCU
+ 	tristate "NVIDIA Tegra Combined UART"
 -- 
-Xianwei Zhao <xianwei.zhao@amlogic.com>
-
+2.39.5
 
