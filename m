@@ -1,125 +1,114 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CC363ECBFA
-	for <linux-serial@vger.kernel.org>; Tue,  3 Mar 2026 11:14:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B2842C9D;
+	Wed,  4 Mar 2026 07:19:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772536484; cv=none; b=uPpzINw0LeKDvGyrHNK/rfUW45E7OrZEELBHSbe/1NjdBfyqE1o7sOYDXwBXlx8Wq1KQWxB6QLZfJ4xGxbXgzghTYX3aiauuiaNmuzn3RitLtPGnqyi5gK2Z0hXRawXLdl9c3phuzZOfCKlKkx8OnDdHUrxFQVlZ8BAl1tgP9Uo=
+	t=1772608791; cv=none; b=Ww4842R3q8HLzPZ6l3HZBy4mlck23Jq9+NLU8SEMBnEeKSsj8aOiovaiuWyEAuqmOpWlMPGMlMZJ56qW+muHPpSF5KV9CSowWsG4+3Zp8PH6SUhQH1H19lH9fu/Hu7Tz9m81ohtO8DCuaOMUK7ORVGYp7frRJtPD4h+NceQpy8o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772536484; c=relaxed/simple;
-	bh=lG/DZ3WywMxkW718njBWn7clqicbwq5XJkykLBVrlxU=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=ZJ3hPpRyVm3UKIYKfyvVUzOIVba3fZFevhNykB06DbNRGKYbZOU8tH834jbooTXCGgmrVJ4A1cdqh1FjUIkjR7EEui5pNzK+1UBylIXvJSI7CbqMRDeYVjYNhLr+8akUuZkoY/FRQyNLkAYGKuLGQ2gjFUgld7nFYJx3Kxubf/Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=U5HyLv8P; arc=none smtp.client-ip=209.85.128.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1772608791; c=relaxed/simple;
+	bh=4KgE52dPbV2gpFs6aV7KA/62JEm9ltLn1ws2XcJrOx0=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=lC2XvxdFCuYU40I/aDRKiv1pLQEig78rfmWM45RWZqyIW8HPMfKt/kWyF2Ew1dgyzZhlombgX/LzFcOOk3WAnrvgqmF8DerZBKMfGEIxc3fp4sKtfwbz15EOOaC/o8XdJmklX7Hp8BBgow0ikGLH4GjW3oEHvIVeFwo6enu2Gv0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sj9/H7hv; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="U5HyLv8P"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-48374014a77so66484285e9.3
-        for <linux-serial@vger.kernel.org>; Tue, 03 Mar 2026 03:14:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772536480; x=1773141280; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Xgdv9fVdx/IEA9nZHRjuPZVXLrXBxXsiA90FmBdGMb0=;
-        b=U5HyLv8Pho13u/f+I/VS8HGivtUhBmlPHKZGs3ruUQ6tZPB5FMR9PB8JfJbVyZzpdn
-         903IE7AbTrVf+9p1ONpfCkGLXzyoCRSVP5AtHpX0vYjFYgNtDrAZWMqducZPC1Ff2enq
-         GoSF4iRStBYYrqDMbCmlfp1Oz6d8wEMMhwa/kq90qqMAIu6OQ03FJ0BbP8nrcLKV4IEM
-         SaWaiReST+XomkoO03wAYUxmzTMGZ8r6V3L5kM+H2zlPA8Zx0CLeGPEU4JXYzdjAAM7V
-         39GU4W/ZWhd/+KmU5o2O7/7HLC0KuSM1mJTMtN2b3V35asKX1R+Aldumd1oSYXCij/CQ
-         CpPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772536480; x=1773141280;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Xgdv9fVdx/IEA9nZHRjuPZVXLrXBxXsiA90FmBdGMb0=;
-        b=UkwwqdEhFub6TOGU1EXf8Ks8ZvsQseEL2AX63crY+naMHsfEBCNpS6qUHASWbfqbCg
-         xmQHwgp02bmBaoAB+x0FUU3iZ0YnLlSIMmrGUpvu1ATxccqMvon5Lb+z9SkHKSBMLrKr
-         wV2hLGw3/NQ3i+Pol/jj+LguwqTpmFu4yHEEsqxQ5e+h+l4Ej7mitV2zuVHdzeSV8iHP
-         +YueFfQiPc/At7pEQRd7p5rLU9nT0bpvqi7zi9/bUmK23iy6ONU8uW5I0eUWAl9+gvFm
-         RrsNVdg8u6uddTFEsbm3PbgQaDTJ8lt96/bIK2DM8rETDqVpf9IHUCoR5NT/ZIT+iGU3
-         Uwww==
-X-Forwarded-Encrypted: i=1; AJvYcCWP30+e475+Jy8D53yY4Fc8RqegbPq/0Ry7wlx6PAfo3Ag4oVRN+W8As6HR2Y5QafzCPRP1LoYl2RVasUk=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywk3tJkwBrHmT2ocCmWHpJPJo0vRXS7WzNaqFOYpZwinL+SoITF
-	ldrbWaENjVgAgpyh0U48xqBn4ptJTl3NU2ht4bcLCny6Wks78UXrqGIEy4V6cfgKxuM=
-X-Gm-Gg: ATEYQzwPGJk4W7xJ0XFu7o3JvkmTFK0F6JRWVHiwycXvEcuy4qVqAwhTIe2XBVvnlfF
-	/F8CJICzi6eVmXRR6ht/NiQBPXACqcLz3h+IGrU9WbYlCkdq3ZpTbxn2JjyiE2GCpjvBzv4imiA
-	Lr3TE5LBj43btEy3MjgLeTYGKHXyjmkAGWDOxeDst0YtEVSAs+UjVAtH1R/9eGlAwgZtvc4xNKN
-	ZaArXB3qEaEB0cWWKM4umIznROsYRuoNo7hAlYEV5OD9Ml1zXNvI0ookTZr0lOPKtILJyG02STr
-	doURt+ffUFLMQF9gPOvdA7OTWr5V6EidQDeWjLz2xKpqVl2d+qCaXyiOtIv43pwkkuDCDb2gWkZ
-	pHCiPHlRVXq5d4xCcQeAD3eroOrOA24WTE02LHwZExLOYfoOO6oXTHYuh1NrkfhHHLr9L
-X-Received: by 2002:a05:600c:c4a6:b0:480:1d0b:2d32 with SMTP id 5b1f17b1804b1-483c9bc0344mr259053495e9.12.1772536480350;
-        Tue, 03 Mar 2026 03:14:40 -0800 (PST)
-Received: from localhost ([151.19.25.210])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-485133508bbsm17667855e9.5.2026.03.03.03.14.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Mar 2026 03:14:40 -0800 (PST)
-From: Francesco Lavra <flavra@baylibre.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Zong Jiang <quic_zongjian@quicinc.com>,
-	Thierry Bultel <thierry.bultel.yh@bp.renesas.com>,
-	Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>,
-	Robert Marko <robert.marko@sartura.hr>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-tegra@vger.kernel.org
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v2] serial: tegra: remove Kconfig dependency on APB DMA controller
-Date: Tue,  3 Mar 2026 12:14:38 +0100
-Message-Id: <20260303111438.2691799-1-flavra@baylibre.com>
-X-Mailer: git-send-email 2.39.5
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sj9/H7hv"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94209C19423;
+	Wed,  4 Mar 2026 07:19:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1772608790;
+	bh=4KgE52dPbV2gpFs6aV7KA/62JEm9ltLn1ws2XcJrOx0=;
+	h=From:Date:Subject:To:Cc:From;
+	b=sj9/H7hvP2BZf6uYdbl2QPhcIeyhJSKZbtMDLBtw6OqZzR1mghPPLUUOAim9zL3Vk
+	 C+zeUUwnz7NotcDmn4Q5s9QjrPtY8TVW0D+e6YUM4D0oGmvZLNlEqKojl5DLtehzom
+	 jsKQ3nZ/SOwVyCd3BzSMSQY5fL/tAy1eLoJF255S8piB/F7NLR/mKzx7ZfmqjxQQ2w
+	 F5ZyNwl8s4R5BN+gSqyHdfNoER/fSJ/pl2QNBelLcWND8oTfCP6P7FfSnoYXCV2oh/
+	 f6uhravbUNyFqE5lmTTOV6Dxk3JKj/KoQH6ZzZbbPkT6HMG8bsaDW4oNkuq+SRG/MI
+	 h3inKHxK9PWaw==
+From: Yixun Lan <dlan@kernel.org>
+Date: Wed, 04 Mar 2026 07:19:39 +0000
+Subject: [PATCH] dt-bindings: serial: 8250: spacemit: fix clock property
+ for K3 SoC
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1461; i=flavra@baylibre.com; h=from:subject; bh=lG/DZ3WywMxkW718njBWn7clqicbwq5XJkykLBVrlxU=; b=owEB7QES/pANAwAKAe3xO3POlDZfAcsmYgBppsIidjpJYctRWN5hOyNxVnAxdEa0f5jD7q4mR uzU4wLOdImJAbMEAAEKAB0WIQSGV4VPlTvcox7DFObt8TtzzpQ2XwUCaabCIgAKCRDt8TtzzpQ2 X4ATC/96p9lCQmb44HSR3w9JqD1EHcLByEZFcPkoExD7sDGiieEB+CH535JniKYxqREOVQlfv+S 5cIEBoK7p9IHqCh8NVX0vQjY99JaZ3a1YF60RDWD6z58CGAVUoCMXjx+LOeRF+c+QZIQDUnXYtE u+rHOzXPY1Z7GYJdE3vxvtCX0SjTv9gUT3zCtXsfucHPRP+TfsSbhEw/Vr3w3wtphsN7qBVEjma 6wkdMlBsClq3NO1segO6rKiSI4xmWGSQ2DCy2Oe4BFrXGcAK0rg770YU8BHvJUEHv/90PmGbc98 czYGo2A5+7zBFle4NH6neAU4QIdc8iVq8F0A6qghEz7c1QzWXSOj62qNKsu2Bf1wiW1qwH0wLVy XU4FYby8xqDFPw75Q3mnUnZLTGCiufFaXeIH/c/BFpw5CgZPswsKMQ0+p4UGsb9G6XG4EAQXGK2 y/HW62d9bRQ9ejp5M3OQSkCaBq3yBNesNEfQo6It1WX2KrmsDxlZoL1L7f2W2twqskBGU=
-X-Developer-Key: i=flavra@baylibre.com; a=openpgp; fpr=8657854F953BDCA31EC314E6EDF13B73CE94365F
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260304-01-uart-clock-names-v1-1-338483f04a8b@kernel.org>
+X-B4-Tracking: v=1; b=H4sIAArdp2kC/x3MTQ5AMBBA4avIrE3SHyxcRSwmNZigpEUkjbtrL
+ L/FewkiB+EIbZEg8C1Rdp+hywLcTH5ilCEbjDKNsqpCpfGicKJbd7egp40j1rWuGqutGYggl0f
+ gUZ7/2vXv+wEJDhPGZQAAAA==
+X-Change-ID: 20260304-01-uart-clock-names-551463132daa
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>, 
+ devicetree@vger.kernel.org, Guodong Xu <guodong@riscstar.com>
+Cc: Conor Dooley <conor.dooley@microchip.com>, linux-kernel@vger.kernel.org, 
+ linux-serial@vger.kernel.org, linux-riscv@lists.infradead.org, 
+ spacemit@lists.linux.dev, Yixun Lan <dlan@kernel.org>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1326; i=dlan@kernel.org;
+ h=from:subject:message-id; bh=4KgE52dPbV2gpFs6aV7KA/62JEm9ltLn1ws2XcJrOx0=;
+ b=owEB6QIW/ZANAwAKATGq6kdZTbvtAcsmYgBpp90OSzQi7nGsdg9K58aE5UjVtEEL8S327ubuC
+ npFkrjCvC+JAq8EAAEKAJkWIQS1urjJwxtxFWcCI9wxqupHWU277QUCaafdDhsUgAAAAAAEAA5t
+ YW51MiwyLjUrMS4xMSwyLDJfFIAAAAAALgAoaXNzdWVyLWZwckBub3RhdGlvbnMub3BlbnBncC5
+ maWZ0aGhvcnNlbWFuLm5ldEI1QkFCOEM5QzMxQjcxMTU2NzAyMjNEQzMxQUFFQTQ3NTk0REJCRU
+ QACgkQMarqR1lNu+3vrg//U3TtCvsfKSLVsD4OichzNLJtLFG4hQOnMYqDvayoPwLcQQaJcW8SP
+ X65d2XRLofzH22yepa65GW4ILkEoVe94PHW6Cvg3lfyyfQj42uxRn7P8YcLceRX8g5OrpFFX+Ii
+ uL4Kbo38hj3TN2H5NNsIQCYLPAbAiwzg1C+oe/FpfPj/2Z1UC88CxnY+ilvae+fN2iQhR3R6lr9
+ RgTyZwfa1Cn2s0fyg28kfSxrioYpl/lSukjdEMbXOeWEhDYs9qzi+DRpaIWQ2tX4KIlomDeDZds
+ 50iFQfiEVX85z9BF5cVZzz4AqFUXn7k4LcW/G+cnu5e7op07Uv1gsNe6rg5bfPjUmIwatz/OqNu
+ IfLbdiGaD/Tt/4FXh4yK/8XTCi6a2bTeOGzAAbPDX58+zIZBfEE1CD2o40xkW+jb3n8H62c6U1b
+ aZijE7swdRkBO65TcnHoSSTPhkJ7gxkb5ggtHC4NVeYNvceHSKwQqLluNnM7yftxFZewclqQmFV
+ kTNtZXQQdwmPVFO49PtSBdEVzgAptapdSO5S8jfaORCd6IIMNUAsYc9aicqNMOsjxUeeEttcWPV
+ LT5m2gv8uii6x3mHfk508MeJOlvRb1i8mZ6UpBi21j77grIiRtgZQ29Vfy1ck5mnFa+42drefzv
+ vKeLOcKSuBcc9M/mD2WXHa9fbCa3Kg=
+X-Developer-Key: i=dlan@kernel.org; a=openpgp;
+ fpr=50B03A1A5CBCD33576EF8CD7920C0DBCAABEFD55
 
-This driver runs also on SoCs without a Tegra20 APB DMA controller (e.g.
-Tegra234).
-Remove the Kconfig dependency on TEGRA20_APB_DMA, and remove reference to
-the APB DMA controller from the Kconfig help text.
+The UART of SpacemiT K3 SoC has same clock property as K1 generation which
+request two clock sources, fix the binding otherwise will get DT check
+warnings.
 
-Signed-off-by: Francesco Lavra <flavra@baylibre.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Fixes: b5024e804ee0 ("dt-bindings: serial: 8250: add SpacemiT K3 UART compatible")
+Signed-off-by: Yixun Lan <dlan@kernel.org>
 ---
-Changes from v1 [1]:
-- added Andy's Reviewed-by tag
-- removed Fixes tag (Jon)
+ Documentation/devicetree/bindings/serial/8250.yaml | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-[1] https://lore.kernel.org/linux-serial/20251126090759.4042709-1-flavra@baylibre.com/T/
+diff --git a/Documentation/devicetree/bindings/serial/8250.yaml b/Documentation/devicetree/bindings/serial/8250.yaml
+index 73851f19330d..e9e07c2356bc 100644
+--- a/Documentation/devicetree/bindings/serial/8250.yaml
++++ b/Documentation/devicetree/bindings/serial/8250.yaml
+@@ -63,7 +63,9 @@ allOf:
+       properties:
+         compatible:
+           contains:
+-            const: spacemit,k1-uart
++            enum:
++              - spacemit,k1-uart
++              - spacemit,k3-uart
+     then:
+       properties:
+         clock-names:
+@@ -76,6 +78,7 @@ allOf:
+           contains:
+             enum:
+               - spacemit,k1-uart
++              - spacemit,k3-uart
+               - nxp,lpc1850-uart
+     then:
+       required:
 
- drivers/tty/serial/Kconfig | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+---
+base-commit: ec1fb4e55df47ed043ab2ccc6787e39b9d67e49b
+change-id: 20260304-01-uart-clock-names-551463132daa
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index f86775cfdcc9..8500b1eed5b5 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -255,14 +255,13 @@ config SERIAL_SAMSUNG_CONSOLE
- 
- config SERIAL_TEGRA
- 	tristate "NVIDIA Tegra20/30 SoC serial controller"
--	depends on (ARCH_TEGRA && TEGRA20_APB_DMA) || COMPILE_TEST
-+	depends on ARCH_TEGRA || COMPILE_TEST
- 	select SERIAL_CORE
- 	help
- 	  Support for the on-chip UARTs on the NVIDIA Tegra series SOCs
- 	  providing /dev/ttyTHS0, 1, 2, 3 and 4 (note, some machines may not
- 	  provide all of these ports, depending on how the serial port
--	  are enabled). This driver uses the APB DMA to achieve higher baudrate
--	  and better performance.
-+	  are enabled).
- 
- config SERIAL_TEGRA_TCU
- 	tristate "NVIDIA Tegra Combined UART"
+Best regards,
 -- 
-2.39.5
+Yixun Lan <dlan@kernel.org>
 
