@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D81936D504;
-	Fri,  6 Mar 2026 06:11:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4948133689E;
+	Fri,  6 Mar 2026 06:32:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772777503; cv=none; b=e5IWDg/7SD1dicgCEeIVnsAxj3PwCeiIYkaoglKPcZkMvojUhCpP8833rQZoaJLZh4ZGeUhN7OPgBkUfQilW7s3+SeP7H06DwGGs7HfDg2f/7lGraITX4zMmVY8A+SDcKEtCg7P8nu+jaEPKMbOr0xt6TJUBwVaph4lBUK8PHU4=
+	t=1772778762; cv=none; b=GRUDH/uedwBEsXD4DYyXkVC/nTbGokkk3lDUirZZ2xHBjFnqk1QP4/2uJqp1SbAYyJ8yOekFRji5L8zANAdQkaBh9TQFfI6LMFKHUTx2phLoxTMr/0qR9M8b91prBWOeopii7BiP0s59xljB52zhD3BBbWVI8+zuJHfIz1F0Ayg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772777503; c=relaxed/simple;
-	bh=k9HSx9Hv5fPZ75EWWMQnHqMUrdVA+JtEnMTXcrHpe2Q=;
+	s=arc-20240116; t=1772778762; c=relaxed/simple;
+	bh=PyHSu/XLNUufj+SM5UQKqUVMfMk2xCDzXveP9Z2/oF8=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=LFeu5HiGxozcsM0kkgcUafCs6HpCgCdWvpkmF33ebxZFU3ovaFxqGn3sdkYqiSFF189aoooOdsi+P5Lw0Yvo+l0u8PshMVueJU8hwLApX1wBtMMPCvFxck36dMM9Npm0iF1X/8CkG+TZjwiPW9l6QX7+zWEF8axVJRbGFvIhO3g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nciUqy0m; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=Hh345lU++DeiSJx4xLEHaqB89CfaEj1nW1OAHBRglcOKtOqemI57sl6tJJq9kclsZW/+k3NCeKyktG4wYz+bkRH5sKOL+oTGZ90sNnSkavKaJ/+tTqfByLjQzTOkfwUmCjJICsTf6N+pa4cBSGHLtk0EbF5LzeRYVXazX2zfMY0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rDDdN0r4; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nciUqy0m"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3315EC4CEF7;
-	Fri,  6 Mar 2026 06:11:41 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rDDdN0r4"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72381C4CEF7;
+	Fri,  6 Mar 2026 06:32:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772777503;
-	bh=k9HSx9Hv5fPZ75EWWMQnHqMUrdVA+JtEnMTXcrHpe2Q=;
+	s=k20201202; t=1772778761;
+	bh=PyHSu/XLNUufj+SM5UQKqUVMfMk2xCDzXveP9Z2/oF8=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=nciUqy0mJ6EQGvbvtpk7OU4dBt8QWO7f/VCqBl/TpjJ8PrwUfpGBAW1o9NhNyQCSW
-	 7XPsZKy8vRfjNBAsKoycuUWl/HIa/JXl5RBWvaSXi+f58J+97/HnFo7wi8tlVmZZz0
-	 AKDVDIig/ALBZSan3cYPfmJsINReskms169DNx3BpESfn0cGdfu5cfRzWyLfv5pyft
-	 McJusIccdgDL2IVxUL+51YVE4Gia/RE1O5y+HcDTNSSbOxYNFOwNw0iDfHYFFRZ1SK
-	 XiC2rcCk8jFDfgZVLLy63OtJ3NJZz+f0uapGYDne5GpvXmXb8CpVk9vRbm6yAt+FGw
-	 oWN4XWlILux2Q==
-Message-ID: <d73206a1-cabc-4de4-b85b-90c13cc1e0d0@kernel.org>
-Date: Fri, 6 Mar 2026 07:11:39 +0100
+	b=rDDdN0r4tB2FHk1XOOceTNdUeIu5FO+Djh7EqhOtWgpVWRf+FrYEJ1sOUg/gSx2nA
+	 7rYCov32CY/sjiTwSV4zDzcwmsBDJIlA33gwEFACTZsfMJ2X0ps/CvVJiBvCmPW+aI
+	 6zn1UFVfXuJmocKOGoV0D7ZZ22InVdTWgXUUUwDmlINu7cR/US5RuEnxt1bBczltnm
+	 V0B4mSrPQ+3ZPkmaEUK7O7d1vxe+97oQe8qxfmD9WqEuAennkjZ2mUtkpKgamAwamv
+	 8d1da0OjXE9TtB7sMqGtlF8SLGcu/69EhkEvNHDv4co9cwPPdtPpcFdRyATgSffzZy
+	 tXRJrl5EtmrIA==
+Message-ID: <51fed793-869b-4a5b-b90f-2ba80c13d773@kernel.org>
+Date: Fri, 6 Mar 2026 07:32:37 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,13 +35,18 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: 8250: null ptr deref in has_acpi_companion
-To: Filip Jensen <dev-Felipe.Jensen@duagon.com>, gregkh@linuxfoundation.org,
- ilpo.jarvinen@linux.intel.com, mingo@kernel.org, tglx@kernel.org,
- osama.abdelkader@gmail.com, kees@kernel.org
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- Jose Javier Rodriguez Barbarin <dev-josejavier.rodriguez@duagon.com>
-References: <20260305163358.42599-1-dev-Felipe.Jensen@duagon.com>
+Subject: Re: [RFC PATCH 3/7] drivers/tty/serial/serial_core: ratelimit
+ uart_wait_until_sent
+To: Jim Cromie <jim.cromie@gmail.com>, linux-kernel@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
+ intel-gvt-dev@lists.freedesktop.org, intel-gfx@lists.freedesktop.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Petr Mladek <pmladek@suse.com>, =?UTF-8?Q?Ilpo_J=C3=A4rvinen?=
+ <ilpo.jarvinen@linux.intel.com>, "Dr. David Alan Gilbert"
+ <linux@treblig.org>, Joseph Tilahun <jtilahun@astranis.com>,
+ linux-serial@vger.kernel.org
+References: <20260306015022.1940986-1-jim.cromie@gmail.com>
+ <20260306015022.1940986-4-jim.cromie@gmail.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -86,57 +91,36 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20260305163358.42599-1-dev-Felipe.Jensen@duagon.com>
+In-Reply-To: <20260306015022.1940986-4-jim.cromie@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-Hi,
-
-1) the subject says:
-[PATCH] serial: 8250: null ptr deref in has_acpi_companion
-
-I read it as you are *adding* a null ptr dereference.
-
-2) do not cut&paste literally the ./scripts/get_maintainer.pl output. I 
-doubt Ingo and Thomas or others will help you with tty :P.
-
-On 05. 03. 26, 17:33, Filip Jensen wrote:
-> uart->port.dev is set in serial8250_register_8250_port if the port number
-> is under the initial CONFIG_SERIAL_8250_RUNTIME_UARTS. If unset, it will
-> depend upon up->port.dev being set by the particular serial driver. A
-> faulty driver might not set this value and this leads to null pointer
-> dereferenced later in has_acpi_companion and later at uart_add_one_port
-> call:
+On 06. 03. 26, 2:50, Jim Cromie wrote:
+> Ratelimiting these pr_debug()s can reduce the console flood during
+> bulk dynamic-debug activation, in environments where a serial console
+> is used.
 > 
-> Oops: general protection fault, probably for non-canonical address
-> KASAN: null-ptr-deref in range
-> RIP: 0010:serial8250_register_8250_port+0xd34/0x2030
-> drivers/tty/serial/8250/8250_core.c
-> 
-> Reviewed-by: Jose Javier Rodriguez Barbarin <dev-josejavier.rodriguez@duagon.com>
-> Signed-off-by: Filip Jensen <dev-Felipe.Jensen@duagon.com>
+> Signed-off-by: Jim Cromie <jim.cromie@gmail.com>
 > ---
+>   drivers/tty/serial/serial_core.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> For a case of a low level driver not setting this, cf.
-> Link: https://lore.kernel.org/linux-serial/20260305162815.41818-1-dev-Felipe.Jensen@duagon.com/
-> 
->   drivers/tty/serial/8250/8250_core.c | 2 ++
->   1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> index d2e2c5dfef99..8ac3f4efa7fd 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -756,6 +756,8 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
->   		if (ret)
->   			goto err;
->   	}
-> +	if (!uart->port.dev)
-> +		goto err;
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 487756947a96..6db465619c70 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -1790,8 +1790,8 @@ static void uart_wait_until_sent(struct tty_struct *tty, int timeout)
+>   
+>   	expire = jiffies + timeout;
+>   
+> -	pr_debug("uart_wait_until_sent(%u), jiffies=%lu, expire=%lu...\n",
+> -		port->line, jiffies, expire);
+> +	pr_debug_ratelimited("waiting on (%u) jiffies=%lu, expire=%lu...\n",
+> +			     port->line, jiffies, expire);
 
-So ret actually can be unitialized, right?
+The changed message does not make any sense.
 
-thanks,
+
 -- 
 js
 suse labs
