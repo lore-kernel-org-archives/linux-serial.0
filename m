@@ -1,107 +1,142 @@
-Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3FE5366DAF
-	for <linux-serial@vger.kernel.org>; Fri,  6 Mar 2026 03:41:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D81936D504;
+	Fri,  6 Mar 2026 06:11:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772768467; cv=none; b=HbQzoehC1wYGymV5wwIMZu86oQ8BcZOkrWUrmm3kBnL//XO48yLcCTbitpN7BlsI4vHU2qjqzqSoaEi7bTW4tsaMTE7aeUo6VohyXkTKJO6M606a6AJB7BwUJlEbe0JstBysW1jU6kL2lUpYJVnZfFhGwPLTBmmr4ruUknZVGQY=
+	t=1772777503; cv=none; b=e5IWDg/7SD1dicgCEeIVnsAxj3PwCeiIYkaoglKPcZkMvojUhCpP8833rQZoaJLZh4ZGeUhN7OPgBkUfQilW7s3+SeP7H06DwGGs7HfDg2f/7lGraITX4zMmVY8A+SDcKEtCg7P8nu+jaEPKMbOr0xt6TJUBwVaph4lBUK8PHU4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772768467; c=relaxed/simple;
-	bh=o7fIf5OOycLC9qngUuRxTqt9gkAdOEzhp3E9nahQNQ0=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version; b=TxB+o0XrHbHGc91jAWypZ7phWb5sC1Bc/KlilQUMF/hPxZI4r6RLu/9AU6lC6IiQqq3WFkACNTI2v7i95jG7UXjktHW3cW2rwS4grualNBZ6nkZeYi215v4//X6/SdnK6s9OcuYBblY9kklN7iRbImrZhUBnl12MruahYlnCL7s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kUNtFG5H; arc=none smtp.client-ip=209.85.218.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1772777503; c=relaxed/simple;
+	bh=k9HSx9Hv5fPZ75EWWMQnHqMUrdVA+JtEnMTXcrHpe2Q=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=LFeu5HiGxozcsM0kkgcUafCs6HpCgCdWvpkmF33ebxZFU3ovaFxqGn3sdkYqiSFF189aoooOdsi+P5Lw0Yvo+l0u8PshMVueJU8hwLApX1wBtMMPCvFxck36dMM9Npm0iF1X/8CkG+TZjwiPW9l6QX7+zWEF8axVJRbGFvIhO3g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nciUqy0m; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kUNtFG5H"
-Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-b9419e561fcso139577666b.3
-        for <linux-serial@vger.kernel.org>; Thu, 05 Mar 2026 19:41:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1772768464; x=1773373264; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:to
-         :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=8wglCAHOQz9caPuUxvse8NP45XIi3Vs8/MIsuXO4kGI=;
-        b=kUNtFG5HNfJYHFuiXhSgQeX3auqxiZxYkJ57NjsR5KQnvsmnNvM0nPw09HUSDjQ5Tn
-         Q2DC8ipd0gTYchIWq+N50HAC3ivoDCkyuSLxBoGPq23fT36j7ztsQOiw8hwmtn3hWusD
-         Dqk6/zAqNkte719lcKCO9s60Gr9ODSuxg/XZW39xJmITWbBJLfjkevnV/bBEdxuxQPn9
-         4t95lM6RwAZT4SB9inE6ZCNFjkkOze6agjzuxqnY4YDiqPVEpRwAaG5Dv9iovLEhwl+q
-         WqyMo1WjUE8D8/7NAL2mjaXWohK2Nb7u5jcZK9HMZG6y6VhElzOVLDglpysuc8ZUdxe+
-         H0Kg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772768464; x=1773373264;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:to
-         :from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=8wglCAHOQz9caPuUxvse8NP45XIi3Vs8/MIsuXO4kGI=;
-        b=lm+5Ki15V0/zW4OwybbjI0Ym9+2MlnXrwpVptw0Vc/NJf/Uu+CtNBoMWxaPIci5QH1
-         gUTwDAD3fpsP6omq5TDYFSQgLDBWizKLSSYT5J314I066NPgGUfA2vFJYkTwMYIWkATv
-         mn3bGtM/A71D91XpXvqfx4rXGgyNUI0rdclxC7tqIQaTi9GIf96lLLqQfAIZVMg8NI37
-         2N/p844oyPRAg0qQt83ygrDAMXtvE0Xz+dXiW9gDckULfzms1n2xNbQSvBL4Q9LM7kBn
-         3qwk17vFnkwjmgKsqcbVBtaBWTDd2ylr49QKS4KHimGBPrD03TyzWapmPeDMnW1P/4fN
-         cL2Q==
-X-Forwarded-Encrypted: i=1; AJvYcCXs+PNSZuvYg6IDcLGvhLWByN2Pu65vKnNu9fJaCASSkk7C8ytL9lyVCXGQowgL/tWAmemKaHYgZ7ROQKg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwspLC2ajwL5C4ubLQlGggaLIGrrrkb83l+4F28RYWj6akeZ8xc
-	secKmi3eWLquqjzKjI2ugWhDzfZBtyVr9DPOm20PPPnHrlB4gsDLjJlN
-X-Gm-Gg: ATEYQzylcsmoYmRdh45jcdEGyX07x5VEKnZ4IgkDYNbNOrpkGiXu0YBQ36bIPSIs+7x
-	OcMsvGPz3T4xjp22+3mMzTuDQ9hWpLt58OdKWQWfnM4bJVKHIwlWDkHw5JKMgcm3AIn+O3EpaMs
-	ihk1WAUSvxWiKCpvW0X1Xp7i7K6C9meB+AJIgbMHmu+8SgGa/BoIqiEMNamzNadW6p3a/FLV2RH
-	W9rMWOO+ChWhxHFF9k5iUggndomqK0fSSuKVGRAJXLXLS98by47kEgAxqBpHbnaPFXEhOJ/1/zt
-	dy6GqZlBKls4Ys/d+epDeKTo87AviwDN+13cbrpskeZsV+JhvT5Da8DQ6+aLrXJOipqfW1bk5On
-	Ix0gX7c5NXXJl8hGUW0tk9RUqqECivXuTtDVlbdtWKEQVwyvp4ZM8c5IHULL2E9JBslo8Cu9Bao
-	KhoQ9DUYiQ/JcR/g==
-X-Received: by 2002:a17:907:26cc:b0:b88:5ef6:17f4 with SMTP id a640c23a62f3a-b942df77fe2mr28205966b.17.1772768463919;
-        Thu, 05 Mar 2026 19:41:03 -0800 (PST)
-Received: from gmail.com ([2a09:bac5:4e27:2705::3e3:31])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b942f13a3afsm14979066b.40.2026.03.05.19.41.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Mar 2026 19:41:03 -0800 (PST)
-From: Qingfang Deng <dqfext@gmail.com>
-To: Jiri Kosina <jikos@kernel.org>,
-	David Sterba <dsterba@suse.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Stephen Blackheath <stephen@symmetric.co.nz>,
-	Ben Martel <benm@symmetric.co.nz>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH] tty: ipwireless: fix memory leak in do_go_offline()
-Date: Fri,  6 Mar 2026 11:40:58 +0800
-Message-ID: <20260306034058.386747-1-dqfext@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nciUqy0m"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3315EC4CEF7;
+	Fri,  6 Mar 2026 06:11:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1772777503;
+	bh=k9HSx9Hv5fPZ75EWWMQnHqMUrdVA+JtEnMTXcrHpe2Q=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=nciUqy0mJ6EQGvbvtpk7OU4dBt8QWO7f/VCqBl/TpjJ8PrwUfpGBAW1o9NhNyQCSW
+	 7XPsZKy8vRfjNBAsKoycuUWl/HIa/JXl5RBWvaSXi+f58J+97/HnFo7wi8tlVmZZz0
+	 AKDVDIig/ALBZSan3cYPfmJsINReskms169DNx3BpESfn0cGdfu5cfRzWyLfv5pyft
+	 McJusIccdgDL2IVxUL+51YVE4Gia/RE1O5y+HcDTNSSbOxYNFOwNw0iDfHYFFRZ1SK
+	 XiC2rcCk8jFDfgZVLLy63OtJ3NJZz+f0uapGYDne5GpvXmXb8CpVk9vRbm6yAt+FGw
+	 oWN4XWlILux2Q==
+Message-ID: <d73206a1-cabc-4de4-b85b-90c13cc1e0d0@kernel.org>
+Date: Fri, 6 Mar 2026 07:11:39 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] serial: 8250: null ptr deref in has_acpi_companion
+To: Filip Jensen <dev-Felipe.Jensen@duagon.com>, gregkh@linuxfoundation.org,
+ ilpo.jarvinen@linux.intel.com, mingo@kernel.org, tglx@kernel.org,
+ osama.abdelkader@gmail.com, kees@kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ Jose Javier Rodriguez Barbarin <dev-josejavier.rodriguez@duagon.com>
+References: <20260305163358.42599-1-dev-Felipe.Jensen@duagon.com>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20260305163358.42599-1-dev-Felipe.Jensen@duagon.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-The ppp_channel is allocated and registered in do_go_online(). But when
-the channel is unregistered in do_go_offline(), the driver forgets to
-release its memory. This leads to a memory leak each time the network
-goes online and then offline.
+Hi,
 
-Fix this by adding a kfree call after unregistering the channel.
+1) the subject says:
+[PATCH] serial: 8250: null ptr deref in has_acpi_companion
 
-Fixes: 099dc4fb6265 ("ipwireless: driver for PC Card 3G/UMTS modem")
-Signed-off-by: Qingfang Deng <dqfext@gmail.com>
----
- drivers/tty/ipwireless/network.c | 1 +
- 1 file changed, 1 insertion(+)
+I read it as you are *adding* a null ptr dereference.
 
-diff --git a/drivers/tty/ipwireless/network.c b/drivers/tty/ipwireless/network.c
-index ad2c5157a018..ec0353c1005a 100644
---- a/drivers/tty/ipwireless/network.c
-+++ b/drivers/tty/ipwireless/network.c
-@@ -303,6 +303,7 @@ static void do_go_offline(struct work_struct *work_go_offline)
- 		spin_unlock_irqrestore(&network->lock, flags);
- 		mutex_unlock(&network->close_lock);
- 		ppp_unregister_channel(channel);
-+		kfree(channel);
- 	} else {
- 		spin_unlock_irqrestore(&network->lock, flags);
- 		mutex_unlock(&network->close_lock);
+2) do not cut&paste literally the ./scripts/get_maintainer.pl output. I 
+doubt Ingo and Thomas or others will help you with tty :P.
+
+On 05. 03. 26, 17:33, Filip Jensen wrote:
+> uart->port.dev is set in serial8250_register_8250_port if the port number
+> is under the initial CONFIG_SERIAL_8250_RUNTIME_UARTS. If unset, it will
+> depend upon up->port.dev being set by the particular serial driver. A
+> faulty driver might not set this value and this leads to null pointer
+> dereferenced later in has_acpi_companion and later at uart_add_one_port
+> call:
+> 
+> Oops: general protection fault, probably for non-canonical address
+> KASAN: null-ptr-deref in range
+> RIP: 0010:serial8250_register_8250_port+0xd34/0x2030
+> drivers/tty/serial/8250/8250_core.c
+> 
+> Reviewed-by: Jose Javier Rodriguez Barbarin <dev-josejavier.rodriguez@duagon.com>
+> Signed-off-by: Filip Jensen <dev-Felipe.Jensen@duagon.com>
+> ---
+> 
+> For a case of a low level driver not setting this, cf.
+> Link: https://lore.kernel.org/linux-serial/20260305162815.41818-1-dev-Felipe.Jensen@duagon.com/
+> 
+>   drivers/tty/serial/8250/8250_core.c | 2 ++
+>   1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+> index d2e2c5dfef99..8ac3f4efa7fd 100644
+> --- a/drivers/tty/serial/8250/8250_core.c
+> +++ b/drivers/tty/serial/8250/8250_core.c
+> @@ -756,6 +756,8 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
+>   		if (ret)
+>   			goto err;
+>   	}
+> +	if (!uart->port.dev)
+> +		goto err;
+
+So ret actually can be unitialized, right?
+
+thanks,
 -- 
-2.43.0
-
+js
+suse labs
