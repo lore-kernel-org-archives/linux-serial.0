@@ -1,113 +1,201 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mout01.posteo.de (mout01.posteo.de [185.67.36.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 871C947F2C5;
-	Fri,  6 Mar 2026 20:40:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6A73480341
+	for <linux-serial@vger.kernel.org>; Fri,  6 Mar 2026 20:46:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.65
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772829621; cv=none; b=QSk0HWSlQlbQr37SrNV+cs2d6kgYbtVk63KwpF5S1DnGPVacUWdcMloIcSLkvgXstVS1zfopoOzkJTjTOR/dneUlhIyt9y9Cu/ebQMWCESjn3VMxwZXT1IdFMNyQTkmivevBA4Dk9EXXQA436SagHrjRqWX52Scad/FaT+k3Axw=
+	t=1772829983; cv=none; b=W4+Ic6cY8gBMB3srpIsfO+u1XxnvItj9XDIOJIISHITAguuzmWmd2uJW21qTu3JMRz//4SoHdsdB2G6mrDNE7FBn0peNrpxuFzrCiprtkBv8wlovtjWx0XMkZ0wDHGDh1W+xL2QGDEaVAOISYtDUplVqL25B+94NJAP4mPQHH+Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772829621; c=relaxed/simple;
-	bh=s4RDs0Sy8yYTYYQcL6MMYKDtq50LSWwy8CeiXluWEkg=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:To:From:
-	 References:In-Reply-To; b=pbRN2E9qmnl0F89dpn0nJ9bH3dwl2/01QVZOv7LezQe1NdYL/ndrjQq5iHsfAz4aFF/6iazTcFsXNE/FPXr+iIalR5doMV9XexDZTfnq+8hb0UauMsx6xeShDz2sslExG6WyFy7ilI/9XcOK9HkGpkzVXESKP5wrQsyH953GpKc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=twajuNQM; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1772829983; c=relaxed/simple;
+	bh=YR03A36g/qiuwB5XBPpJJN25fkqroyaXGPCRgXfTigE=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=fOhdx+E6awUYQ1vTrCnzGOw78Ty3vjzfGTSHjC9rKwsq93+Dkvttob9g6Ez3M2Uuejr47lC3wQ+kkQVC8TWtZRGW08x1+IoO13FjsGeheQ8CcnJPikN9ojp+63stmFeaoUWEGldgWn3VLdW+7ODpUC+wJviXT1Y7BQQSjizrdo4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=phk0fw+J; arc=none smtp.client-ip=185.67.36.65
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="twajuNQM"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A6A9C4CEF7;
-	Fri,  6 Mar 2026 20:40:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772829621;
-	bh=s4RDs0Sy8yYTYYQcL6MMYKDtq50LSWwy8CeiXluWEkg=;
-	h=Date:Subject:Cc:To:From:References:In-Reply-To:From;
-	b=twajuNQM4icDyMkN9QMukT/ei+/6SKyeXSIe7jnVpq44xni17dXCaFXBgUNiY8sVD
-	 ddGPXIafwTVIzVqrX3VEqW2c1PhfYIsUL+laaCCh11NacnaHAi2ncNEQAtfUoONqQ9
-	 262P7xc5hYBr/zGz3cRLGVuai6sQg0oetZFtKut6nf5cWkPnvPAaOR8I7vPFCBlNZs
-	 nFjH5PrPZ1ISoCgOySMen/k9D5U6U1gQ4raD4s2CCjE6fwIcD2vo1FoksKxFxtJ2Va
-	 ZiydTLoDiFF7Vg7U3Bh7mUm2Wpi9uZSXy6CUk29bfqDyo1vt0ZCVzDghEWuvfsxXsR
-	 Y5pv0BiF4dB+A==
+	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="phk0fw+J"
+Received: from submission (posteo.de [185.67.36.169]) 
+	by mout01.posteo.de (Postfix) with ESMTPS id 6055524002A
+	for <linux-serial@vger.kernel.org>; Fri,  6 Mar 2026 21:46:20 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de; s=2017;
+	t=1772829980; bh=2iaC+pQxbZxpQoXRMUqKToJTmZXkRZTNoMlTI0V8Hnw=;
+	h=Message-ID:Subject:From:To:Cc:Date:Autocrypt:Content-Type:
+	 MIME-Version:OpenPGP:From;
+	b=phk0fw+J2DkqY919TIIAsyR+a+Rtz4/lr1nuk/ouG3opB6VJdC8rzSClPyt+8vQN4
+	 i1JBf/paRzFBWcL3jwYwhValdnSWIqcm/1jFQSPNh0LQZ0dcHz0xXganj1ZGKOC9On
+	 0uEyYF0rZz9miXFNJiWl65+O91yLCTdcFfLo4jF/WDlAxCWDCPYqKSX/x5eXJsFgdl
+	 5PObe5/dzLfp+N3MZER89yroJWHeGlYy/u+aJiDAcx7Nwkbymz9c2H5vUrocePsg6H
+	 NoDUpfYqG2M/iv/eh4huzkktUvkkgEjmPWqhld0A0VCfVMvhfUNuViCgn0AZsnlTFI
+	 RmM+pU8lnW/7w==
+Received: from customer (localhost [127.0.0.1])
+	by submission (posteo.de) with ESMTPSA id 4fSJN963Qyz6twG;
+	Fri,  6 Mar 2026 21:46:17 +0100 (CET)
+Message-ID: <ecb158925934c38bf044adcbacadb920300d35dc.camel@posteo.de>
+Subject: Re: [PATCH v2 3/4] rust: add basic serial device bus abstractions
+From: Markus Probst <markus.probst@posteo.de>
+To: Danilo Krummrich <dakr@kernel.org>
+Cc: Rob Herring <robh@kernel.org>, Greg Kroah-Hartman	
+ <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Miguel
+ Ojeda	 <ojeda@kernel.org>, Gary Guo <gary@garyguo.net>,
+ =?ISO-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>, Benno Lossin
+ <lossin@kernel.org>, Andreas Hindborg	 <a.hindborg@kernel.org>, Alice Ryhl
+ <aliceryhl@google.com>, Trevor Gross	 <tmgross@umich.edu>, Kari Argillander
+ <kari.argillander@gmail.com>, "Rafael J. Wysocki" <rafael@kernel.org>,
+ Viresh Kumar <viresh.kumar@linaro.org>, Boqun Feng <boqun@kernel.org>, 
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+ linux-serial@vger.kernel.org, 	linux-kernel@vger.kernel.org,
+ rust-for-linux@vger.kernel.org, 	linux-pm@vger.kernel.org,
+ driver-core@lists.linux.dev, 	dri-devel@lists.freedesktop.org
+Date: Fri, 06 Mar 2026 20:46:19 +0000
+In-Reply-To: <DGVZNDKJ7RAG.A66CR0EV9T3P@kernel.org>
+References: <20260306-rust_serdev-v2-0-e9b23b42b255@posteo.de>
+	 <20260306-rust_serdev-v2-3-e9b23b42b255@posteo.de>
+	 <DGVZNDKJ7RAG.A66CR0EV9T3P@kernel.org>
+Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
+ keydata=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
+ jfGillcaQOqFZ3WwVqyzG1BUfTow==
+Content-Type: multipart/signed; micalg="pgp-sha256";
+	protocol="application/pgp-signature"; boundary="=-o/KXAoogandmA1L4aMdF"
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
+MIME-Version: 1.0
+OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
+
+
+--=-o/KXAoogandmA1L4aMdF
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Fri, 06 Mar 2026 21:40:14 +0100
-Message-Id: <DGVZNDKJ7RAG.A66CR0EV9T3P@kernel.org>
-Subject: Re: [PATCH v2 3/4] rust: add basic serial device bus abstractions
-Cc: "Rob Herring" <robh@kernel.org>, "Greg Kroah-Hartman"
- <gregkh@linuxfoundation.org>, "Jiri Slaby" <jirislaby@kernel.org>, "Miguel
- Ojeda" <ojeda@kernel.org>, "Gary Guo" <gary@garyguo.net>,
- =?utf-8?q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, "Benno Lossin"
- <lossin@kernel.org>, "Andreas Hindborg" <a.hindborg@kernel.org>, "Alice
- Ryhl" <aliceryhl@google.com>, "Trevor Gross" <tmgross@umich.edu>, "Kari
- Argillander" <kari.argillander@gmail.com>, "Rafael J. Wysocki"
- <rafael@kernel.org>, "Viresh Kumar" <viresh.kumar@linaro.org>, "Boqun Feng"
- <boqun@kernel.org>, "David Airlie" <airlied@gmail.com>, "Simona Vetter"
- <simona@ffwll.ch>, <linux-serial@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, <rust-for-linux@vger.kernel.org>,
- <linux-pm@vger.kernel.org>, <driver-core@lists.linux.dev>,
- <dri-devel@lists.freedesktop.org>
-To: "Markus Probst" <markus.probst@posteo.de>
-From: "Danilo Krummrich" <dakr@kernel.org>
-References: <20260306-rust_serdev-v2-0-e9b23b42b255@posteo.de>
- <20260306-rust_serdev-v2-3-e9b23b42b255@posteo.de>
-In-Reply-To: <20260306-rust_serdev-v2-3-e9b23b42b255@posteo.de>
 
-On Fri Mar 6, 2026 at 8:35 PM CET, Markus Probst wrote:
-> +    extern "C" fn receive_buf_callback(
-> +        sdev: *mut bindings::serdev_device,
-> +        buf: *const u8,
-> +        length: usize,
-> +    ) -> usize {
-> +        // SAFETY: The serial device bus only ever calls the receive buf=
- callback with a valid
-> +        // pointer to a `struct serdev_device`.
-> +        //
-> +        // INVARIANT: `sdev` is valid for the duration of `receive_buf_c=
-allback()`.
-> +        let sdev =3D unsafe { &*sdev.cast::<Device<device::CoreInternal>=
->() };
-> +
-> +        // SAFETY: `receive_buf_callback` is only ever called after a su=
-ccessful call to
-> +        // `probe_callback`, hence it's guaranteed that `Device::set_drv=
-data()` has been called
-> +        // and stored a `Pin<KBox<T>>`.
-> +        let data =3D unsafe { sdev.as_ref().drvdata_borrow::<T>() };
-> +
-> +        // SAFETY:
-> +        // - The serial device bus only ever calls the receive buf callb=
-ack with a valid pointer to
-> +        //   a `struct serdev_device`.
-> +        // - `receive_buf_callback` is only ever called after a successf=
-ul call to
-> +        //   `probe_callback`, hence it's guaranteed that `sdev.private_=
-data` is a pointer
-> +        //   to a valid `PrivateData`.
-> +        let private_data =3D unsafe { &*(*sdev.as_raw()).private_data.ca=
-st::<PrivateData>() };
-> +
-> +        private_data.probe_complete.complete_all();
+On Fri, 2026-03-06 at 21:40 +0100, Danilo Krummrich wrote:
+> On Fri Mar 6, 2026 at 8:35 PM CET, Markus Probst wrote:
+> > +    extern "C" fn receive_buf_callback(
+> > +        sdev: *mut bindings::serdev_device,
+> > +        buf: *const u8,
+> > +        length: usize,
+> > +    ) -> usize {
+> > +        // SAFETY: The serial device bus only ever calls the receive b=
+uf callback with a valid
+> > +        // pointer to a `struct serdev_device`.
+> > +        //
+> > +        // INVARIANT: `sdev` is valid for the duration of `receive_buf=
+_callback()`.
+> > +        let sdev =3D unsafe { &*sdev.cast::<Device<device::CoreInterna=
+l>>() };
+> > +
+> > +        // SAFETY: `receive_buf_callback` is only ever called after a =
+successful call to
+> > +        // `probe_callback`, hence it's guaranteed that `Device::set_d=
+rvdata()` has been called
+> > +        // and stored a `Pin<KBox<T>>`.
+> > +        let data =3D unsafe { sdev.as_ref().drvdata_borrow::<T>() };
+> > +
+> > +        // SAFETY:
+> > +        // - The serial device bus only ever calls the receive buf cal=
+lback with a valid pointer to
+> > +        //   a `struct serdev_device`.
+> > +        // - `receive_buf_callback` is only ever called after a succes=
+sful call to
+> > +        //   `probe_callback`, hence it's guaranteed that `sdev.privat=
+e_data` is a pointer
+> > +        //   to a valid `PrivateData`.
+> > +        let private_data =3D unsafe { &*(*sdev.as_raw()).private_data.=
+cast::<PrivateData>() };
+> > +
+> > +        private_data.probe_complete.complete_all();
+>=20
+> Will do a full review pass later on, but one quick question in advance:
+>=20
+> What is this used for? It is completed here and in probe(), but I don't s=
+ee it ever
+> being used to actually wait.
+Uh, thats a typo. It is supposed to wait here in receive_buf_callback.
 
-Will do a full review pass later on, but one quick question in advance:
+Thanks
+- Markus Probst
 
-What is this used for? It is completed here and in probe(), but I don't see=
- it ever
-being used to actually wait.
+>=20
+> > +
+> > +        // SAFETY: No one has exclusive access to `private_data.error`=
+.
+> > +        if unsafe { *private_data.error.get() } {
+> > +            return length;
+> > +        }
+> > +
+> > +        // SAFETY: `buf` is guaranteed to be non-null and has the size=
+ of `length`.
+> > +        let buf =3D unsafe { core::slice::from_raw_parts(buf, length) =
+};
+> > +
+> > +        T::receive(sdev, data, buf)
+> > +    }
+> > +}
 
-> +
-> +        // SAFETY: No one has exclusive access to `private_data.error`.
-> +        if unsafe { *private_data.error.get() } {
-> +            return length;
-> +        }
-> +
-> +        // SAFETY: `buf` is guaranteed to be non-null and has the size o=
-f `length`.
-> +        let buf =3D unsafe { core::slice::from_raw_parts(buf, length) };
-> +
-> +        T::receive(sdev, data, buf)
-> +    }
-> +}
+--=-o/KXAoogandmA1L4aMdF
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+
+-----BEGIN PGP SIGNATURE-----
+
+iQJPBAABCAA5FiEEgnQYxPSsWOdyMMRzNHYf+OetQ9IFAmmrPRcbFIAAAAAABAAO
+bWFudTIsMi41KzEuMTEsMiwyAAoJEDR2H/jnrUPSWVEP/1ag22PV+effqCIXNtIi
+ojhUChzfy4ZFNQt7RTYHSrKwzWk0LWTMbCrEH2S818Rbhhwb8xVGLKFOujTKFx/0
+RhnYaiCBCa5LmYRcSLIvp4cf9DLR547L9kAIQEbqZ0UaXyINt1sIKm9A17R28Zo8
+JKu+Z57BkfSEn65N0E5w9xcHpzlBx7dK1zp0vLCWT/6GM1uXLwJQ5RYIP0ejcVpc
+xWKbwcLjPY6Wc35tIHOgTW4kJyQOBfNkO7flQn4kZvvnnVqwJz/bVl6TWH93s94H
+np6fggCna/m1JmOklY4MQVPLnLrDAAOSEWVZTytEXH6gYnOCbpYqwIdKiDrbTQKz
+Hki4V/ytUtSvoCtsoj53rPqawbTGP1dBCgcnNZwOf64h4HqY1UGqWGfriRFvczB+
+DuHAndPRI/doaHzm7u/jXmVKjhHIfq1QByvF5n2JEii0YtqvFFqJ/+IOcQLewugx
+p8DUTAhPTLsXwfsuy/D4hgfpJVayXdnGxA7L8IUMbFyMnNS+8qwGSn0OkIfZbQIi
+1zpi2P2FUwAB+YpEGxoI9r9cDSl0TckIoTny8BZskbzb6ZCZP9mB2Ie095UJbP3s
+BauRToFJ+KZi67Z8V4ooNgREBKEECBlxxs4aVPCo2lIHvW8aftj2riSq5Gy4hIgD
+rznZ+gd+0JDfXZFuGhtCi5SM
+=HjzS
+-----END PGP SIGNATURE-----
+
+--=-o/KXAoogandmA1L4aMdF--
