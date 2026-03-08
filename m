@@ -1,201 +1,240 @@
-Received: from mout01.posteo.de (mout01.posteo.de [185.67.36.65])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6A73480341
-	for <linux-serial@vger.kernel.org>; Fri,  6 Mar 2026 20:46:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.65
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 423FD17AE11
+	for <linux-serial@vger.kernel.org>; Sun,  8 Mar 2026 13:12:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772829983; cv=none; b=W4+Ic6cY8gBMB3srpIsfO+u1XxnvItj9XDIOJIISHITAguuzmWmd2uJW21qTu3JMRz//4SoHdsdB2G6mrDNE7FBn0peNrpxuFzrCiprtkBv8wlovtjWx0XMkZ0wDHGDh1W+xL2QGDEaVAOISYtDUplVqL25B+94NJAP4mPQHH+Q=
+	t=1772975524; cv=none; b=hZmlTiNW6P6e7u2cSgtSExcJ2QpuR4b0Qri7TdKcq99AxB9evXBopKbjewa3M7xhBrf9tdz5J4v1p6eCq/vyJy3uJyxrBzXSs2DA9k06fKtmJNVytHUBNkLBkXci3dhWZKELrFieCGYRv+hWj6eQAlfUukF2YXfQm9/OdSiEsFY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772829983; c=relaxed/simple;
-	bh=YR03A36g/qiuwB5XBPpJJN25fkqroyaXGPCRgXfTigE=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=fOhdx+E6awUYQ1vTrCnzGOw78Ty3vjzfGTSHjC9rKwsq93+Dkvttob9g6Ez3M2Uuejr47lC3wQ+kkQVC8TWtZRGW08x1+IoO13FjsGeheQ8CcnJPikN9ojp+63stmFeaoUWEGldgWn3VLdW+7ODpUC+wJviXT1Y7BQQSjizrdo4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=phk0fw+J; arc=none smtp.client-ip=185.67.36.65
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
+	s=arc-20240116; t=1772975524; c=relaxed/simple;
+	bh=ayV0mPSWTYq40kHYXVY6l1WJRrs219j6nJPh+Ai6wFA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ZfVwIVmXgoKVmX1RrATd7l3kqjwpeCGuuSHpWe3wwA/kTW5ESiQj4ZG5CoSh39FoBrtw02P4B6m+FK9yoWsRETn8VctK65nbeFynjD5XCV+kdzSXuXEZTTJ9uiDal+4Wxr/iQ3Z60j5RxDurnFRJfuJczmmVMx8vwBoBvnA0dKA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JjrqfJmR; arc=none smtp.client-ip=209.85.218.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="phk0fw+J"
-Received: from submission (posteo.de [185.67.36.169]) 
-	by mout01.posteo.de (Postfix) with ESMTPS id 6055524002A
-	for <linux-serial@vger.kernel.org>; Fri,  6 Mar 2026 21:46:20 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de; s=2017;
-	t=1772829980; bh=2iaC+pQxbZxpQoXRMUqKToJTmZXkRZTNoMlTI0V8Hnw=;
-	h=Message-ID:Subject:From:To:Cc:Date:Autocrypt:Content-Type:
-	 MIME-Version:OpenPGP:From;
-	b=phk0fw+J2DkqY919TIIAsyR+a+Rtz4/lr1nuk/ouG3opB6VJdC8rzSClPyt+8vQN4
-	 i1JBf/paRzFBWcL3jwYwhValdnSWIqcm/1jFQSPNh0LQZ0dcHz0xXganj1ZGKOC9On
-	 0uEyYF0rZz9miXFNJiWl65+O91yLCTdcFfLo4jF/WDlAxCWDCPYqKSX/x5eXJsFgdl
-	 5PObe5/dzLfp+N3MZER89yroJWHeGlYy/u+aJiDAcx7Nwkbymz9c2H5vUrocePsg6H
-	 NoDUpfYqG2M/iv/eh4huzkktUvkkgEjmPWqhld0A0VCfVMvhfUNuViCgn0AZsnlTFI
-	 RmM+pU8lnW/7w==
-Received: from customer (localhost [127.0.0.1])
-	by submission (posteo.de) with ESMTPSA id 4fSJN963Qyz6twG;
-	Fri,  6 Mar 2026 21:46:17 +0100 (CET)
-Message-ID: <ecb158925934c38bf044adcbacadb920300d35dc.camel@posteo.de>
-Subject: Re: [PATCH v2 3/4] rust: add basic serial device bus abstractions
-From: Markus Probst <markus.probst@posteo.de>
-To: Danilo Krummrich <dakr@kernel.org>
-Cc: Rob Herring <robh@kernel.org>, Greg Kroah-Hartman	
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Miguel
- Ojeda	 <ojeda@kernel.org>, Gary Guo <gary@garyguo.net>,
- =?ISO-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>, Benno Lossin
- <lossin@kernel.org>, Andreas Hindborg	 <a.hindborg@kernel.org>, Alice Ryhl
- <aliceryhl@google.com>, Trevor Gross	 <tmgross@umich.edu>, Kari Argillander
- <kari.argillander@gmail.com>, "Rafael J. Wysocki" <rafael@kernel.org>,
- Viresh Kumar <viresh.kumar@linaro.org>, Boqun Feng <boqun@kernel.org>, 
- David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
- linux-serial@vger.kernel.org, 	linux-kernel@vger.kernel.org,
- rust-for-linux@vger.kernel.org, 	linux-pm@vger.kernel.org,
- driver-core@lists.linux.dev, 	dri-devel@lists.freedesktop.org
-Date: Fri, 06 Mar 2026 20:46:19 +0000
-In-Reply-To: <DGVZNDKJ7RAG.A66CR0EV9T3P@kernel.org>
-References: <20260306-rust_serdev-v2-0-e9b23b42b255@posteo.de>
-	 <20260306-rust_serdev-v2-3-e9b23b42b255@posteo.de>
-	 <DGVZNDKJ7RAG.A66CR0EV9T3P@kernel.org>
-Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
- keydata=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
- jfGillcaQOqFZ3WwVqyzG1BUfTow==
-Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-o/KXAoogandmA1L4aMdF"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JjrqfJmR"
+Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-b96e579c0fcso72793766b.3
+        for <linux-serial@vger.kernel.org>; Sun, 08 Mar 2026 06:12:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1772975520; x=1773580320; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:sender:from:to:cc:subject:date:message-id:reply-to;
+        bh=YZmjSe2f6AmZLKDK24gip2MTz9bDyoXie7g+0s0Xf3Y=;
+        b=JjrqfJmRDh0jrlAEmSVT3U7Igjq11cFgXbGMJhGAC3Q2OFCLdXt5xKOJYA6XK96Kyv
+         BnNIbFwM0dvgbfs+0at6XTfvGwrWuBACLB4q2Xl4kOIOAD9qBfFpWNkROSYjKj1hxWNI
+         a9dZh4oTYf1/Evu2SJnEdw8sNJHYBIuLr/JMk8r0xPoO634Z9t2A4MYn4sG5UwT1BnLE
+         Q+eo9Npj+vRI9kHkt+3GL0Rauun8NwUjDBPnJMql8QAnc1r4QqFhZr7AhLaKhIZ8ViCK
+         bB1OoaQDhXZ5B2T6cv71BvLWqtj9nQ/kAcKEJKA4pr77WX0upBdWnJEZ2IKCNhHAYAcf
+         PnoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772975520; x=1773580320;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:sender:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=YZmjSe2f6AmZLKDK24gip2MTz9bDyoXie7g+0s0Xf3Y=;
+        b=a5MIXU/gUdv/FQAv2uO20mS54LBI1xlSLxhqi53giSf+rUJ057eLV+NSg0/unpNdRr
+         /IsgG6Zf5/qvDJ6kT2iuwGzqsqMg7J901NtLhWpZ5I0LQcQTif9zkA1LWp3IhI+r1LTl
+         b5YSifNS50YEyPTlLE1v1gYJVOc2bXNlr0jMTIqchpqXr3zo2fnJaLbzInSCM3cenDor
+         x9AN1ftKC3htP9cHj7m8egsGToBRh2jm1AcPuOrNRrb76bqm7SOZote94YHABvFjXWtI
+         GIGqO2YNmYGvR3MKUtODr//IwlrQuIfAk/uiY3/H23kjhc+Eh045kFUuNstgrIeqQe1B
+         1H6Q==
+X-Forwarded-Encrypted: i=1; AJvYcCUIP6TdJ59q6OqniSuaQZwjsBV/RvK+EIm0V2tBRvr9AO2Jm8JQWD/8JegY0aUva+o+H22HSK7bgIoXaYE=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywzt+7mgUNZxfL4ZFdJvn2T7aJau1z+kG94WSvLUpNyuS6uFGaG
+	aS204ndXU5a+WQW5PtV6twBQ3wdkY02uf3ulJmEAHdl47llhn7I12Bcl
+X-Gm-Gg: ATEYQzwFKa4rKlC0BCwrrN6aoBmoFbkVfLtciHYlN2IZSw3yII65GTGe+QVIsaT/fql
+	Nb6VrNgVcl02V3UhJxHE9rxDLfxNp+kVYzU5P6FcsK3V6hxq3zwAK8EmrkDD/gVly5kiddKT+mR
+	7+/HVy5c2aIPt+RwVQURuOzRAWjbHRV/rpHCjxng2e+g0B+BdbqsAGYVsCRg6oYdElDnJAsl/n7
+	2CyLYUID2AUdB0vmSDaKzUzx14OBRaNFbkZ1w/DODdVfK8Jrr7HajnzDZjMZmKGK/kIe/eTujSB
+	Dy4An6QZi3BotT368Eim7BQKNeBUAS4NbG7hgpUrqA+8/EYzM9CaVcJI3pDYrNc0qJuaFU/F1Sl
+	Ytl4V0cP59JKmqqHeEnGLi/7Y22o7Fa8BOVgifOgGLscbSjKrLSdnx5zn1EL9MnkPSDk+kX5FZL
+	sV6gEA6Z+Z9EgFvkiZmvE3nj0TVxZxMU+wRA3h4XrjkZfHjt/zc35eT/QpBnFeFgatwKB0Ag==
+X-Received: by 2002:a17:907:3faa:b0:b8a:f2cb:8088 with SMTP id a640c23a62f3a-b942df7e851mr378460266b.33.1772975520183;
+        Sun, 08 Mar 2026 06:12:00 -0700 (PDT)
+Received: from nixos-office (98.206.213.193.static.cust.telenor.net. [193.213.206.98])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b942f18bb43sm240592066b.66.2026.03.08.06.11.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 Mar 2026 06:11:59 -0700 (PDT)
+Sender: Julian Braha <julian.braha@gmail.com>
+From: Julian Braha <julianbraha@gmail.com>
+To: gregkg@linuxfoundation.org,
+	jcmvbkbc@gmail.com
+Cc: rdunlap@infradead.org,
+	ilpo.jarvinen@linux.intel.com,
+	conor+dt@kernel.org,
+	krzysztof.kozlowski+dt@linaro.org,
+	robh+dt@kernel.org,
+	jirislaby@kernel.org,
+	linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Julian Braha <julianbraha@gmail.com>
+Subject: [PATCH] drivers/tty/serial: move ESP32 UART drivers into staging
+Date: Sun,  8 Mar 2026 13:11:56 +0000
+Message-ID: <20260308131156.1102166-1-julianbraha@gmail.com>
+X-Mailer: git-send-email 2.51.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
+Content-Transfer-Encoding: 8bit
 
+These drivers were added about 3 years ago, and depend on the
+XTENSA_PLATFORM_ESP32 config option which has never existed,
+so no device can actually use them.
+They can only be compiled with COMPILE_TEST.
 
---=-o/KXAoogandmA1L4aMdF
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+As you can see, this config option is still undefined
+in the downstream tree:
+https://github.com/search?q=repo%3Ajcmvbkbc%2Flinux-xtensa%20XTENSA_PLATFORM_ESP32&type=code
 
-On Fri, 2026-03-06 at 21:40 +0100, Danilo Krummrich wrote:
-> On Fri Mar 6, 2026 at 8:35 PM CET, Markus Probst wrote:
-> > +    extern "C" fn receive_buf_callback(
-> > +        sdev: *mut bindings::serdev_device,
-> > +        buf: *const u8,
-> > +        length: usize,
-> > +    ) -> usize {
-> > +        // SAFETY: The serial device bus only ever calls the receive b=
-uf callback with a valid
-> > +        // pointer to a `struct serdev_device`.
-> > +        //
-> > +        // INVARIANT: `sdev` is valid for the duration of `receive_buf=
-_callback()`.
-> > +        let sdev =3D unsafe { &*sdev.cast::<Device<device::CoreInterna=
-l>>() };
-> > +
-> > +        // SAFETY: `receive_buf_callback` is only ever called after a =
-successful call to
-> > +        // `probe_callback`, hence it's guaranteed that `Device::set_d=
-rvdata()` has been called
-> > +        // and stored a `Pin<KBox<T>>`.
-> > +        let data =3D unsafe { sdev.as_ref().drvdata_borrow::<T>() };
-> > +
-> > +        // SAFETY:
-> > +        // - The serial device bus only ever calls the receive buf cal=
-lback with a valid pointer to
-> > +        //   a `struct serdev_device`.
-> > +        // - `receive_buf_callback` is only ever called after a succes=
-sful call to
-> > +        //   `probe_callback`, hence it's guaranteed that `sdev.privat=
-e_data` is a pointer
-> > +        //   to a valid `PrivateData`.
-> > +        let private_data =3D unsafe { &*(*sdev.as_raw()).private_data.=
-cast::<PrivateData>() };
-> > +
-> > +        private_data.probe_complete.complete_all();
->=20
-> Will do a full review pass later on, but one quick question in advance:
->=20
-> What is this used for? It is completed here and in probe(), but I don't s=
-ee it ever
-> being used to actually wait.
-Uh, thats a typo. It is supposed to wait here in receive_buf_callback.
+I propose moving these drivers into staging
+until there is a device that can boot the mainline kernel and use them.
 
-Thanks
-- Markus Probst
+Signed-off-by: Julian Braha <julianbraha@gmail.com>
+---
+ drivers/staging/Kconfig                       |  2 ++
+ drivers/staging/Makefile                      |  1 +
+ drivers/staging/serial_esp32/Kconfig          | 28 +++++++++++++++++++
+ drivers/staging/serial_esp32/Makefile         |  4 +++
+ .../serial_esp32}/esp32_acm.c                 |  0
+ .../serial_esp32}/esp32_uart.c                |  0
+ drivers/tty/serial/Kconfig                    | 26 -----------------
+ drivers/tty/serial/Makefile                   |  2 --
+ 8 files changed, 35 insertions(+), 28 deletions(-)
+ create mode 100644 drivers/staging/serial_esp32/Kconfig
+ create mode 100644 drivers/staging/serial_esp32/Makefile
+ rename drivers/{tty/serial => staging/serial_esp32}/esp32_acm.c (100%)
+ rename drivers/{tty/serial => staging/serial_esp32}/esp32_uart.c (100%)
 
->=20
-> > +
-> > +        // SAFETY: No one has exclusive access to `private_data.error`=
-.
-> > +        if unsafe { *private_data.error.get() } {
-> > +            return length;
-> > +        }
-> > +
-> > +        // SAFETY: `buf` is guaranteed to be non-null and has the size=
- of `length`.
-> > +        let buf =3D unsafe { core::slice::from_raw_parts(buf, length) =
-};
-> > +
-> > +        T::receive(sdev, data, buf)
-> > +    }
-> > +}
+diff --git a/drivers/staging/Kconfig b/drivers/staging/Kconfig
+index 2f92cd698bef..97593e31ca47 100644
+--- a/drivers/staging/Kconfig
++++ b/drivers/staging/Kconfig
+@@ -48,4 +48,6 @@ source "drivers/staging/axis-fifo/Kconfig"
+ 
+ source "drivers/staging/vme_user/Kconfig"
+ 
++source "drivers/staging/serial_esp32/Kconfig"
++
+ endif # STAGING
+diff --git a/drivers/staging/Makefile b/drivers/staging/Makefile
+index f5b8876aa536..78c2e4f49fe5 100644
+--- a/drivers/staging/Makefile
++++ b/drivers/staging/Makefile
+@@ -2,6 +2,7 @@
+ # Makefile for staging directory
+ 
+ obj-y				+= media/
++obj-y				+= serial_esp32/
+ obj-$(CONFIG_RTL8723BS)		+= rtl8723bs/
+ obj-$(CONFIG_OCTEON_ETHERNET)	+= octeon/
+ obj-$(CONFIG_VME_BUS)		+= vme_user/
+diff --git a/drivers/staging/serial_esp32/Kconfig b/drivers/staging/serial_esp32/Kconfig
+new file mode 100644
+index 000000000000..61c56bfe7764
+--- /dev/null
++++ b/drivers/staging/serial_esp32/Kconfig
+@@ -0,0 +1,28 @@
++# SPDX-License-Identifier: GPL-2.0
++config SERIAL_ESP32
++	tristate "Espressif ESP32 UART support"
++	depends on HAS_IOMEM
++	depends on XTENSA_PLATFORM_ESP32 || (COMPILE_TEST && OF)
++	select SERIAL_CORE
++	select SERIAL_CORE_CONSOLE
++	select SERIAL_EARLYCON
++	help
++	  Driver for the UART controllers of the Espressif ESP32xx SoCs.
++	  When earlycon option is enabled the following kernel command line
++	  snippets may be used:
++	    earlycon=esp32s3uart,mmio32,0x60000000,115200n8,40000000
++	    earlycon=esp32uart,mmio32,0x3ff40000,115200n8
++
++config SERIAL_ESP32_ACM
++	tristate "Espressif ESP32 USB ACM gadget support"
++	depends on HAS_IOMEM
++	depends on XTENSA_PLATFORM_ESP32 || (COMPILE_TEST && OF)
++	select SERIAL_CORE
++	select SERIAL_CORE_CONSOLE
++	select SERIAL_EARLYCON
++	help
++	  Driver for the CDC ACM gadget controller of the Espressif ESP32S3
++	  SoCs that share separate USB controller with the JTAG adapter.
++	  When earlycon option is enabled the following kernel command line
++	  snippet may be used:
++	    earlycon=esp32s3acm,mmio32,0x60038000
+diff --git a/drivers/staging/serial_esp32/Makefile b/drivers/staging/serial_esp32/Makefile
+new file mode 100644
+index 000000000000..3c23321944e2
+--- /dev/null
++++ b/drivers/staging/serial_esp32/Makefile
+@@ -0,0 +1,4 @@
++# SPDX-License-Identifier: GPL-2.0
++
++obj-$(CONFIG_SERIAL_ESP32)		+= esp32_uart.o
++obj-$(CONFIG_SERIAL_ESP32_ACM)		+= esp32_acm.o
+diff --git a/drivers/tty/serial/esp32_acm.c b/drivers/staging/serial_esp32/esp32_acm.c
+similarity index 100%
+rename from drivers/tty/serial/esp32_acm.c
+rename to drivers/staging/serial_esp32/esp32_acm.c
+diff --git a/drivers/tty/serial/esp32_uart.c b/drivers/staging/serial_esp32/esp32_uart.c
+similarity index 100%
+rename from drivers/tty/serial/esp32_uart.c
+rename to drivers/staging/serial_esp32/esp32_uart.c
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index f86775cfdcc9..686e7fb073b8 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1593,32 +1593,6 @@ config SERIAL_NUVOTON_MA35D1_CONSOLE
+ 	  but you can alter that using a kernel command line option such as
+ 	  "console=ttyNVTx".
+ 
+-config SERIAL_ESP32
+-	tristate "Espressif ESP32 UART support"
+-	depends on XTENSA_PLATFORM_ESP32 || (COMPILE_TEST && OF)
+-	select SERIAL_CORE
+-	select SERIAL_CORE_CONSOLE
+-	select SERIAL_EARLYCON
+-	help
+-	  Driver for the UART controllers of the Espressif ESP32xx SoCs.
+-	  When earlycon option is enabled the following kernel command line
+-	  snippets may be used:
+-	    earlycon=esp32s3uart,mmio32,0x60000000,115200n8,40000000
+-	    earlycon=esp32uart,mmio32,0x3ff40000,115200n8
+-
+-config SERIAL_ESP32_ACM
+-	tristate "Espressif ESP32 USB ACM gadget support"
+-	depends on XTENSA_PLATFORM_ESP32 || (COMPILE_TEST && OF)
+-	select SERIAL_CORE
+-	select SERIAL_CORE_CONSOLE
+-	select SERIAL_EARLYCON
+-	help
+-	  Driver for the CDC ACM gadget controller of the Espressif ESP32S3
+-	  SoCs that share separate USB controller with the JTAG adapter.
+-	  When earlycon option is enabled the following kernel command line
+-	  snippet may be used:
+-	    earlycon=esp32s3acm,mmio32,0x60038000
+-
+ endmenu
+ 
+ config SERIAL_MCTRL_GPIO
+diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
+index a2ccbc508ec5..bba7b21a4a1d 100644
+--- a/drivers/tty/serial/Makefile
++++ b/drivers/tty/serial/Makefile
+@@ -37,8 +37,6 @@ obj-$(CONFIG_SERIAL_CLPS711X)		+= clps711x.o
+ obj-$(CONFIG_SERIAL_CPM)		+= cpm_uart.o
+ obj-$(CONFIG_SERIAL_CONEXANT_DIGICOLOR)	+= digicolor-usart.o
+ obj-$(CONFIG_SERIAL_DZ)			+= dz.o
+-obj-$(CONFIG_SERIAL_ESP32)		+= esp32_uart.o
+-obj-$(CONFIG_SERIAL_ESP32_ACM)		+= esp32_acm.o
+ obj-$(CONFIG_SERIAL_FSL_LINFLEXUART)	+= fsl_linflexuart.o
+ obj-$(CONFIG_SERIAL_FSL_LPUART)		+= fsl_lpuart.o
+ obj-$(CONFIG_SERIAL_ICOM)		+= icom.o
+-- 
+2.51.2
 
---=-o/KXAoogandmA1L4aMdF
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-
------BEGIN PGP SIGNATURE-----
-
-iQJPBAABCAA5FiEEgnQYxPSsWOdyMMRzNHYf+OetQ9IFAmmrPRcbFIAAAAAABAAO
-bWFudTIsMi41KzEuMTEsMiwyAAoJEDR2H/jnrUPSWVEP/1ag22PV+effqCIXNtIi
-ojhUChzfy4ZFNQt7RTYHSrKwzWk0LWTMbCrEH2S818Rbhhwb8xVGLKFOujTKFx/0
-RhnYaiCBCa5LmYRcSLIvp4cf9DLR547L9kAIQEbqZ0UaXyINt1sIKm9A17R28Zo8
-JKu+Z57BkfSEn65N0E5w9xcHpzlBx7dK1zp0vLCWT/6GM1uXLwJQ5RYIP0ejcVpc
-xWKbwcLjPY6Wc35tIHOgTW4kJyQOBfNkO7flQn4kZvvnnVqwJz/bVl6TWH93s94H
-np6fggCna/m1JmOklY4MQVPLnLrDAAOSEWVZTytEXH6gYnOCbpYqwIdKiDrbTQKz
-Hki4V/ytUtSvoCtsoj53rPqawbTGP1dBCgcnNZwOf64h4HqY1UGqWGfriRFvczB+
-DuHAndPRI/doaHzm7u/jXmVKjhHIfq1QByvF5n2JEii0YtqvFFqJ/+IOcQLewugx
-p8DUTAhPTLsXwfsuy/D4hgfpJVayXdnGxA7L8IUMbFyMnNS+8qwGSn0OkIfZbQIi
-1zpi2P2FUwAB+YpEGxoI9r9cDSl0TckIoTny8BZskbzb6ZCZP9mB2Ie095UJbP3s
-BauRToFJ+KZi67Z8V4ooNgREBKEECBlxxs4aVPCo2lIHvW8aftj2riSq5Gy4hIgD
-rznZ+gd+0JDfXZFuGhtCi5SM
-=HjzS
------END PGP SIGNATURE-----
-
---=-o/KXAoogandmA1L4aMdF--
