@@ -1,86 +1,106 @@
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp.gentoo.org (woodpecker.gentoo.org [140.211.166.183])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE3143644C7;
-	Tue, 10 Mar 2026 08:11:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.11.138.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35F1F43CECD;
+	Tue, 10 Mar 2026 09:34:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=140.211.166.183
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773130286; cv=none; b=NNd94rVVQ68S7oDidhFmJVKO96xdpVGQ+Had+50JIqQpwx1Eic8mOa1VoxCa6VsjIEyuGjgOV1iPTOMnLXwF6H6yO2pzUSQQJ4OFX8D7Nc0JWZ3zU7sTIJfCmrwPLvnlGdP+qJIZSpOe3TvAc5siKyzVtMsr16XEk74Ts7Kggfk=
+	t=1773135302; cv=none; b=OiX6CuQu26GAK328pSKBafAPiwgX1X2ES1nCXj7E8TxFQIQ9tcPMKPpvaOTB5iaGhrOlckrDVVSXav+2V7tUo7K/usE8p0lM5OcxsbDLqZOzE0KckabcZ3N7GAXt1kpS4yA+0+NLHNAlyPH1oQF4zqf5j88bwmWNvNwZshzX5L8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773130286; c=relaxed/simple;
-	bh=ipr58oDiPJvPD66wTuXKeOszxNw/dgQZ9WEFfxa45YE=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=U4ZaqENFL/yat3RKN5qbfKB4W0mqivp2mup+ub91zU/P+PF7yW92NVAWAGPhFNK0uuvkqaDMY+/m0h/BgZUUrAaDiIOhj5zUqxLQRQAqpd0tN8f/KJb9BM9urLjKosrYOKtbZAR7rqorzf72oS/SB30TJFJ477587e4n2ZGJ8Uc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=sntech.de; spf=pass smtp.mailfrom=sntech.de; dkim=pass (2048-bit key) header.d=sntech.de header.i=@sntech.de header.b=AbKdJpBJ; arc=none smtp.client-ip=185.11.138.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=sntech.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sntech.de
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sntech.de header.i=@sntech.de header.b="AbKdJpBJ"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sntech.de;
-	s=gloria202408; h=Content-Type:Content-Transfer-Encoding:MIME-Version:
-	References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Reply-To;
-	bh=I6xrK61zKxaYaQBHuBwK+rNHZNpJEhlMQOrf1rDBu98=; b=AbKdJpBJ6sU7Tjs+QU3PGJAZHG
-	SZyfscC6eWtu5evNx7s+iGSlcSTJ6lEOd4mHzE5IJjChLQxlC0VI6Uu8yhKx3KIzSEuFibC12epLP
-	UPI4OLmhJCj/YfpEXQVDH4xkKgAhG6r6Uifui769iv83XWGsSBQi5rtx4UOK+YAHC1Fcvm4ezBZIR
-	mbRFnv1tJI+jo+HqSh80RzFpPZ/A2UzswMqqYS0EB2HHJB02w0jvjrTJReWWgT7nKf+Ty51/4nK21
-	OQwezbj6jUzs19w7Ig4Qq3Jcb3iT4ZZPhZCsr9Lxv6Q2Fxf9sLXrecocp65E2QI1hQBhy6KaYmKHi
-	GeVVGuNg==;
-From: Heiko Stuebner <heiko@sntech.de>
-To: gregkh@linuxfoundation.org, Fabio Estevam <festevam@gmail.com>
-Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- devicetree@vger.kernel.org, Fabio Estevam <festevam@nabladev.com>,
- Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-Subject:
- Re: [PATCH v2 RESEND] dt-bindings: serial: snps-dw-apb-uart: Add RV1103B
- compatible
-Date: Tue, 10 Mar 2026 09:11:19 +0100
-Message-ID: <2468363.NG923GbCHz@phil>
-In-Reply-To: <20260310000606.415206-1-festevam@gmail.com>
-References: <20260310000606.415206-1-festevam@gmail.com>
+	s=arc-20240116; t=1773135302; c=relaxed/simple;
+	bh=zMpeqIx7sBBI1S2RMUSCnMkIt07seU1gQt3Ztw7zkVo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qs2r1mUMdc33I7+zYXC5jt8sHAfIzim85ay19dfbQgRMYhrqkDZ+pbvVcn9rSjixZg/+IBfDv4F98zoi0HSYpINYrhnXFhUv13+SCh5wLtN7+vdspRBR/BeZpKVsioBsrimtrxis1vj7dNmlTTduoC/abIeyU4hT8VxkqKcXgwY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org; spf=pass smtp.mailfrom=gentoo.org; arc=none smtp.client-ip=140.211.166.183
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gentoo.org
+Received: from localhost (unknown [116.232.48.232])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: dlan)
+	by smtp.gentoo.org (Postfix) with ESMTPSA id 429FD341EE5;
+	Tue, 10 Mar 2026 09:34:56 +0000 (UTC)
+Date: Tue, 10 Mar 2026 17:34:46 +0800
+From: Yixun Lan <dlan@gentoo.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
+	devicetree@vger.kernel.org, Guodong Xu <guodong@riscstar.com>,
+	Conor Dooley <conor.dooley@microchip.com>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-riscv@lists.infradead.org, spacemit@lists.linux.dev
+Subject: Re: [PATCH] dt-bindings: serial: 8250: spacemit: fix clock property
+ for K3 SoC
+Message-ID: <20260310093446-GYC318052@gentoo.org>
+References: <20260304-01-uart-clock-names-v1-1-338483f04a8b@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260304-01-uart-clock-names-v1-1-338483f04a8b@kernel.org>
 
-Am Dienstag, 10. M=C3=A4rz 2026, 01:06:06 Mitteleurop=C3=A4ische Normalzeit=
- schrieb Fabio Estevam:
-> From: Fabio Estevam <festevam@nabladev.com>
->=20
-> The RV1103B UART is compatible with the existing DesignWare APB UART
-> binding. Add the rockchip,rv1103b-uart compatible string.
->=20
-> Signed-off-by: Fabio Estevam <festevam@nabladev.com>
-> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Hi Greg, Jiri,
 
-Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+  Do you mind if I taking this patch via SpacemiT's SoC tree? and if
+possible, it would be nice to have your Acks..
+(or either way works for me, if you grab it and merged via tty tree)
 
+On 07:19 Wed 04 Mar     , Yixun Lan wrote:
+> The UART of SpacemiT K3 SoC has same clock property as K1 generation which
+> request two clock sources, fix the binding otherwise will get DT check
+> warnings.
+> 
+> Fixes: b5024e804ee0 ("dt-bindings: serial: 8250: add SpacemiT K3 UART compatible")
+I would just drop the Fixes tag, as I think at the time of Gudong
+submitting the patch, the clock driver isn't ready, so he deliberatly
+removed this clock contraint and provided with a fixed clock frequency
+(the bindings match with DTS)
+
+https://github.com/torvalds/linux/blob/v7.0-rc3/arch/riscv/boot/dts/spacemit/k3.dtsi#L414
+
+> Signed-off-by: Yixun Lan <dlan@kernel.org>
 > ---
-> Changes since v1:
-> - Make commit log more concise.
->=20
->  Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml | 1 +
->  1 file changed, 1 insertion(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.ya=
-ml b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-> index 6efe43089a74..685c1eceb782 100644
-> --- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-> @@ -71,6 +71,7 @@ properties:
->                - rockchip,rk3568-uart
->                - rockchip,rk3576-uart
->                - rockchip,rk3588-uart
-> +              - rockchip,rv1103b-uart
->                - rockchip,rv1108-uart
->                - rockchip,rv1126-uart
->                - sophgo,sg2044-uart
->=20
+>  Documentation/devicetree/bindings/serial/8250.yaml | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/8250.yaml b/Documentation/devicetree/bindings/serial/8250.yaml
+> index 73851f19330d..e9e07c2356bc 100644
+> --- a/Documentation/devicetree/bindings/serial/8250.yaml
+> +++ b/Documentation/devicetree/bindings/serial/8250.yaml
+> @@ -63,7 +63,9 @@ allOf:
+>        properties:
+>          compatible:
+>            contains:
+> -            const: spacemit,k1-uart
+> +            enum:
+> +              - spacemit,k1-uart
+> +              - spacemit,k3-uart
+>      then:
+>        properties:
+>          clock-names:
+> @@ -76,6 +78,7 @@ allOf:
+>            contains:
+>              enum:
+>                - spacemit,k1-uart
+> +              - spacemit,k3-uart
+>                - nxp,lpc1850-uart
+>      then:
+>        required:
+> 
+> ---
+> base-commit: ec1fb4e55df47ed043ab2ccc6787e39b9d67e49b
+> change-id: 20260304-01-uart-clock-names-551463132daa
+> 
+> Best regards,
+> -- 
+> Yixun Lan <dlan@kernel.org>
+> 
 
-
-
-
+-- 
+Yixun Lan (dlan)
