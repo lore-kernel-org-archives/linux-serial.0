@@ -1,46 +1,41 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC9E72D837C;
-	Thu, 12 Mar 2026 13:46:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70EBA351C03;
+	Thu, 12 Mar 2026 13:48:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773323164; cv=none; b=uWixHm8xN0xAQR4ZNduzrWjj5swYVkmfAdilKqzqaSUA6TiMUZ19i6Hk5ZqRJAKT+ZfM3427B10L2aZuzkF8qbj4gZEyf/mV2Le66R5R4DaCq5ASmLgkNh+7RnhjllbsWXRvBGhwHx5nnrD+fA6FRXdNToVbobCMtbYqehxRFyY=
+	t=1773323316; cv=none; b=GNPR+y8JKU6sTRSD2bhYr1uCG72dkFyBJqoJmimSvWkhEqboT4SZpmI0TdSZx9S9X14JYA+4lCzzPMIFa1NwASZl8ouB/moyKcEE714CkmnYCfSRw+FhJL6ncymyr9tFEG0umJE5NIgot06EPzjelJOYBfDHdBAe0aK7H4cGeX0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773323164; c=relaxed/simple;
-	bh=tC35RsqzjjyjLf2nIHQplQZOFFuOpKdWewHzucMI1eE=;
+	s=arc-20240116; t=1773323316; c=relaxed/simple;
+	bh=LXzWk9Dk2u3syKJj4iSOsmlQ3qpOQFPOQqu+vntpYvc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FPlqHf/qV0V+yvFrPzbgeo7qEI8V1TbOtvQ6FvJiacUlueMemuPyoXTegvDcGdHr9w1XnR7mwULk4aNxq7vjReMj6lD+pL3ru16dD3eeENU9N1QmeUs+uOB8+uhG6rBvJ5KvDx6KLcDv/kYOkTemnIMU6n9TCDPM090vjECF4dU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Zy6/l9zc; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=UoHpxWZ+77+hNN/ArzYUEPsiFpwrUgcPO+UNeM7aKq32d5TBrqGAz7SkWZL4uzJXupHUoa7EtGKyj5WZAuYEA+CeAP7KMeFiJNQQSp85ZJaya2JMT+047n1c3obUG4LKM84PFwj3DzCADzPTY9RyU6Xm+uQcwgxXmuEp+ueiJb4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=2YajpBhD; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Zy6/l9zc"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02077C4CEF7;
-	Thu, 12 Mar 2026 13:46:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773323164;
-	bh=tC35RsqzjjyjLf2nIHQplQZOFFuOpKdWewHzucMI1eE=;
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="2YajpBhD"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34914C4CEF7;
+	Thu, 12 Mar 2026 13:48:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1773323316;
+	bh=LXzWk9Dk2u3syKJj4iSOsmlQ3qpOQFPOQqu+vntpYvc=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Zy6/l9zc52C9xgXBMrB6UV75iyXNovk2H5Zm0OE+TyNEhtB41TFudk358k8AO0SZD
-	 vOCAVQIE+vfVZXeTMamdhZteKoxjEDN9q9xDtrEqaQfxLhnYQbHymtSd6ht5y1hYJc
-	 v63rfBL4VO9SwrkF48v6qyvHeNusIhSAKbb5gZ/qhMwHydJ+QnBdYrDSI6HmdqZ1aR
-	 ZtYQtCvTz8uFeaHCQvUbT9wlcKfUsuE/iDpwUOCntRqf0BjbR+sWqab3TNYEgtryz3
-	 70Mav9Y0zzb84nHcsB1GrF7sp9GRNaVebIckcgcB0R8YV8LldCY3wzLXVdJcfFG4LA
-	 Kqsd49j7eFqIA==
-Date: Thu, 12 Mar 2026 08:46:03 -0500
-From: "Rob Herring (Arm)" <robh@kernel.org>
-To: Yixun Lan <dlan@kernel.org>
-Cc: devicetree@vger.kernel.org, Conor Dooley <conor+dt@kernel.org>,
-	Conor Dooley <conor.dooley@microchip.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Lubomir Rintel <lkundrak@v3.sk>, linux-kernel@vger.kernel.org,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Guodong Xu <guodong@riscstar.com>, linux-serial@vger.kernel.org,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, spacemit@lists.linux.dev,
-	linux-riscv@lists.infradead.org
-Subject: Re: [PATCH] dt-bindings: serial: 8250: spacemit: fix clock property
- for K3 SoC
-Message-ID: <177332316270.2898009.16159680813861530459.robh@kernel.org>
-References: <20260304-01-uart-clock-names-v1-1-338483f04a8b@kernel.org>
+	b=2YajpBhDR+DEhEJNBXPiigQniDUITvkjgkNtvDZpTs2TOZJShYrnwuiS3Hd74Y7x7
+	 7cZLZOa6J93qkabrnN2JrOaMTUB7/012/qWX/EC/sVLnxfQDiS9d/AhuEqM2SQ3FEI
+	 hFaAZGRzjR+6yyQTpC5MoFBknGThkdNXbTUc/DVg=
+Date: Thu, 12 Mar 2026 14:48:31 +0100
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Nicolas Pitre <nico@fluxnic.net>
+Cc: Jiri Slaby <jirislaby@kernel.org>, Alexey Gladkov <legion@kernel.org>,
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/3] vt: add modifier support to cursor and navigation
+ keys
+Message-ID: <2026031225-daylong-uselessly-1821@gregkh>
+References: <20260203045457.1049793-1-nico@fluxnic.net>
+ <2026020851-bullhorn-glitch-0e37@gregkh>
+ <q19s9nr3-6o47-4pq9-7r49-8q25p0021o1q@syhkavp.arg>
+ <2026021006-reenact-suave-c86c@gregkh>
+ <p6r658p5-4q55-8pn6-q78n-107599qq653n@syhkavp.arg>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -49,20 +44,26 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260304-01-uart-clock-names-v1-1-338483f04a8b@kernel.org>
+In-Reply-To: <p6r658p5-4q55-8pn6-q78n-107599qq653n@syhkavp.arg>
 
-
-On Wed, 04 Mar 2026 07:19:39 +0000, Yixun Lan wrote:
-> The UART of SpacemiT K3 SoC has same clock property as K1 generation which
-> request two clock sources, fix the binding otherwise will get DT check
-> warnings.
+On Fri, Mar 06, 2026 at 01:26:56PM -0500, Nicolas Pitre wrote:
+> On Tue, 10 Feb 2026, Greg Kroah-Hartman wrote:
 > 
-> Fixes: b5024e804ee0 ("dt-bindings: serial: 8250: add SpacemiT K3 UART compatible")
-> Signed-off-by: Yixun Lan <dlan@kernel.org>
-> ---
->  Documentation/devicetree/bindings/serial/8250.yaml | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
+> > On Sun, Feb 08, 2026 at 11:22:27AM -0500, Nicolas Pitre wrote:
+> > > On Sun, 8 Feb 2026, Greg Kroah-Hartman wrote:
+> > > 
+> > > > Argh, sorry, I saw this patch series too late for this merge window.
+> > > > I'll review it after -rc1 is out.
+> > > 
+> > > Too bad.
+> > > 
+> > > But please at least consider  this one now
+> > > https://lkml.org/lkml/2026/1/27/1886
+> > > and queue it for the stable tree as well.
+> > 
+> > Sorry, that slipped through as well, I'll grab it after -rc1 is out and
+> > get it backported to stable kernels.
 > 
+> Ping.  ;-)
 
-Acked-by: Rob Herring (Arm) <robh@kernel.org>
-
+Sorry, am catching up now...
