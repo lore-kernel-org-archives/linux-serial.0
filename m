@@ -1,46 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDBCD31F9A0;
-	Fri, 13 Mar 2026 07:06:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B72531F987;
+	Fri, 13 Mar 2026 07:11:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773385567; cv=none; b=rBg04Z/zvKujo0XQLUbO7s5x5oThiZiCmDObMpHeguQvUcPHvtcrJHYu8AhHoLE4VBWUNobCJFXSFO/MBtMxqicF3CpFlK+Az8AAFZKWUQnlmYzj7cf4+GYuf4tcxEt8hmRbjmSUt3K/XTtqlBIdCv3iO6bU5a+tKdYeRx8SNNU=
+	t=1773385897; cv=none; b=rQYjUn28MAOsjnDMGUcVVtcNcseoFD27ZqiFQdjOWt6TByNx4q2QST2qOPsKxJtUtqFj5AzvY2LqtFTA2xAYJVEbMw0ijyEghcBeY3dYyhhQDQGNMq7ClFEdvi+eBGyS6nPmx5v2GpgEnnfOQ451CY0vA45Y1oCA+UXtKmtm7QE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773385567; c=relaxed/simple;
-	bh=cFxTeORzoBh5yrTQu5gbFRopOPKKtVbksSq1U5jNLFY=;
+	s=arc-20240116; t=1773385897; c=relaxed/simple;
+	bh=Xisn20JbEu2qtBzid/NeHxhVQAsxx33T4CrjEEK+zXg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Zpbu3ONQUmwvRxcvP8BbKIV7NQkC64vUOpXvtVnOCpC3ONABV2s0Kbj3ySQiHi1yza0YfsxEObJUtCJ5z/mn0qBcmL3p5Jx9bTRswtK0C0Kzw+amU8P8O8D593MSaRSF7oIIbuho7+FSqFc44RfDRiBKwUEb5zCLRV1cwxKPhdE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=ZtrhaIr1; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=dLgf6uW2zyR2pKgYD8kyFSPMIqtfL2tcDt0+iuD3ZNO0fvR9kHBKaP1gvPWy1tmxs9ab5w1s358DGVTET/HHjKj9sdF2ZdCxAlOSqZl8f12YMtIUHPMI+ur8xDcQyKpLF18TmBa/XehuLY9mn/tUlB1HvAOQBiqjbmbXnfq9Ps4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=DZ200fPR; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="ZtrhaIr1"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A197C19421;
-	Fri, 13 Mar 2026 07:06:05 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="DZ200fPR"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04AFFC19421;
+	Fri, 13 Mar 2026 07:11:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1773385566;
-	bh=cFxTeORzoBh5yrTQu5gbFRopOPKKtVbksSq1U5jNLFY=;
+	s=korg; t=1773385896;
+	bh=Xisn20JbEu2qtBzid/NeHxhVQAsxx33T4CrjEEK+zXg=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ZtrhaIr1MRpUh8c6OylnW1rHwx8y+dXU12D78Veri7x8Y94WUujRcJixgZGDj5Llt
-	 3mKATdISePftWdwKyniGUmendfmLZv+gTgADzFKn1vYpDihXNsCrzrhWL9qnMVLoYG
-	 l1i71ZKmBpIpURBqmPIEuMwxNAy5e993yYApmkyo=
-Date: Fri, 13 Mar 2026 08:06:02 +0100
+	b=DZ200fPR7O2exYnpNIPhXe8z+03ty8RVyeUOkVeu4jqRPo/Mw+gyT8sX31PfN/Rt6
+	 uZ725CtrIUMOVDxwQnDlTGK+JC3cLqsRrE6z5FTjYvVvLEifirw3tKgNvLOtbkzsxI
+	 Lx9463Lmkhj1enVJzz38U5fxO29Nl99uvQpwY3g8=
+Date: Fri, 13 Mar 2026 08:11:31 +0100
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Yixun Lan <dlan@kernel.org>
-Cc: Yixun Lan <dlan@gentoo.org>, Jiri Slaby <jirislaby@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
-	devicetree@vger.kernel.org, Guodong Xu <guodong@riscstar.com>,
-	Conor Dooley <conor.dooley@microchip.com>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-riscv@lists.infradead.org, spacemit@lists.linux.dev
-Subject: Re: [PATCH] dt-bindings: serial: 8250: spacemit: fix clock property
- for K3 SoC
-Message-ID: <2026031357-storeroom-repurpose-f680@gregkh>
-References: <20260304-01-uart-clock-names-v1-1-338483f04a8b@kernel.org>
- <20260310093446-GYC318052@gentoo.org>
- <2026031226-utter-spellbind-53bf@gregkh>
- <20260313011910-GKL302167@kernel.org>
+To: Nicolas Pitre <nico@fluxnic.net>
+Cc: Jiri Slaby <jirislaby@kernel.org>, Alexey Gladkov <legion@kernel.org>,
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/3] vt: add modifier support to cursor and navigation
+ keys
+Message-ID: <2026031309-arena-obsessive-f68f@gregkh>
+References: <20260203045457.1049793-1-nico@fluxnic.net>
+ <2026020851-bullhorn-glitch-0e37@gregkh>
+ <q19s9nr3-6o47-4pq9-7r49-8q25p0021o1q@syhkavp.arg>
+ <2026021006-reenact-suave-c86c@gregkh>
+ <p6r658p5-4q55-8pn6-q78n-107599qq653n@syhkavp.arg>
+ <2026031225-daylong-uselessly-1821@gregkh>
+ <69o09136-13nq-41sr-s3o8-s6sn68rq1s8o@syhkavp.arg>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -49,38 +46,39 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260313011910-GKL302167@kernel.org>
+In-Reply-To: <69o09136-13nq-41sr-s3o8-s6sn68rq1s8o@syhkavp.arg>
 
-On Fri, Mar 13, 2026 at 09:19:10AM +0800, Yixun Lan wrote:
-> Hi Greg,
+On Thu, Mar 12, 2026 at 02:56:05PM -0400, Nicolas Pitre wrote:
+> On Thu, 12 Mar 2026, Greg Kroah-Hartman wrote:
 > 
-> On 15:13 Thu 12 Mar     , Greg Kroah-Hartman wrote:
-> > On Tue, Mar 10, 2026 at 05:34:46PM +0800, Yixun Lan wrote:
-> > > Hi Greg, Jiri,
+> > On Fri, Mar 06, 2026 at 01:26:56PM -0500, Nicolas Pitre wrote:
+> > > On Tue, 10 Feb 2026, Greg Kroah-Hartman wrote:
 > > > 
-> > >   Do you mind if I taking this patch via SpacemiT's SoC tree? and if
-> > > possible, it would be nice to have your Acks..
-> > > (or either way works for me, if you grab it and merged via tty tree)
-> > > 
-> > > On 07:19 Wed 04 Mar     , Yixun Lan wrote:
-> > > > The UART of SpacemiT K3 SoC has same clock property as K1 generation which
-> > > > request two clock sources, fix the binding otherwise will get DT check
-> > > > warnings.
+> > > > On Sun, Feb 08, 2026 at 11:22:27AM -0500, Nicolas Pitre wrote:
+> > > > > On Sun, 8 Feb 2026, Greg Kroah-Hartman wrote:
+> > > > > 
+> > > > > > Argh, sorry, I saw this patch series too late for this merge window.
+> > > > > > I'll review it after -rc1 is out.
+> > > > > 
+> > > > > Too bad.
+> > > > > 
+> > > > > But please at least consider  this one now
+> > > > > https://lkml.org/lkml/2026/1/27/1886
+> > > > > and queue it for the stable tree as well.
 > > > > 
-> > > > Fixes: b5024e804ee0 ("dt-bindings: serial: 8250: add SpacemiT K3 UART compatible")
-> > > I would just drop the Fixes tag, as I think at the time of Gudong
-> > > submitting the patch, the clock driver isn't ready, so he deliberatly
-> > > removed this clock contraint and provided with a fixed clock frequency
-> > > (the bindings match with DTS)
+> > > > Sorry, that slipped through as well, I'll grab it after -rc1 is out and
+> > > > get it backported to stable kernels.
 > > > 
-> > > https://github.com/torvalds/linux/blob/v7.0-rc3/arch/riscv/boot/dts/spacemit/k3.dtsi#L414
+> > > Ping.  ;-)
 > > 
-> > You need to get a DT maintainer to review it before you can apply it.
-> Ok, so Rob gave an Ack
+> > Sorry, am catching up now...
 > 
-> > If you want to take it through your tree once that happens, that's fine
-> > with me.
-> Thanks, so this imply an Ack, but could give an explict Acked-by?
-> then I will proceed..
+> Thanks, appreciated.
+> 
+> Also please consider the patch fixing alt screen support linked above.
+> That one should go to stable afterwards.
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+That is very odd, I don't have a copy of it anywhere locally, sorry
+about that.  I'll queue it up later today.  Thanks for reminding me!
+
+greg k-h
