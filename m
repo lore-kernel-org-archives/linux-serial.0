@@ -1,161 +1,197 @@
-Received: from CH5PR02CU005.outbound.protection.outlook.com (mail-northcentralusazon11012006.outbound.protection.outlook.com [40.107.200.6])
+Received: from mout01.posteo.de (mout01.posteo.de [185.67.36.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7CF53B9DB5;
-	Fri, 13 Mar 2026 15:36:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.200.6
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773416221; cv=fail; b=hKXcwtyyysZOZMeCuuU7AqUap+e15rtzTVsZjwxWpKoYcYrBGpdyZjQRYy/eGvzJC0UsN369l8zelNTqBE8xfu89GG010gRhXaG7JjDwL2KbwcC4SBCBpnoBcEwX14SGW/BjxD9ezWQuSJlsJzxBQty0dG8WAOH8ez/c6cFoXY8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773416221; c=relaxed/simple;
-	bh=4163kjxGBrtghr6OMO1XNa62U/oBHFBodU6gu+y8RTQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=N5mcRmXv4MUeSEI42LiUz1UnBOMdHbiuOUefqE78Hjf/1ws2w3qpQpBo9xeq7t94jxpKaDEDlw8qfMNuPzgL4nyAVCGtXDIbVpu2dhcZPceS/Ry0UkCGc5xYvDFjf6Q63iC6W/igyP+q0mQAI6h/d51XGJBCwdnvd0LNjFXUyQo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=yavLp5nC; arc=fail smtp.client-ip=40.107.200.6
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2734F3DCD93
+	for <linux-serial@vger.kernel.org>; Fri, 13 Mar 2026 18:12:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.65
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773425557; cv=none; b=SlQlI1hYF9Ihzy8MVeKhhBkEKtTxt+o/EVOJcc73Ws0G/AkHq3kyXteoIgWf1SbfJQLGEnx3p0VX6zsrZvHN8Pq6OIm9I36W+fJw/F06XtuT/UBo1h1kus+KgSfBSlvyP+2CgailqhNsILiK5zp7jn5wlfQok4W6cji/SvMe+WM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773425557; c=relaxed/simple;
+	bh=nhzCKHcpSQOEzqoUhprA9k7Hu+jE/8eApFY1eIPTW04=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=bG5p8vOGc73t5uaptwN/iqyNPvIiS0gk4NC3EDEuk2AAH6rUwlVkOPpZR2GHR9OL+Oo6hcxlRYm5j3b2YaZpn5DAI8Q/1zJ9W4TeETDtjkv+LNDb4my3I1sQRzFSHcXnWD78OBoTSMx63J/HvgPlUszcYJcV7eRGbRIqHilk+Sc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=oPres7mu; arc=none smtp.client-ip=185.67.36.65
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="yavLp5nC"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=bDKVeuAfwihw/uOaeZtvDlB56BoFnf9jRI4HnSFbsjEJ24WCKaiSM0CenB6hQWxagCknqR/ywDN7rxY10gW505yUOyOZXmYCvUGedZlfGHmrGUbHinJRYbBuVS0mO753tgJxXDEwuSWUnwmdFIZO0VQVf5ffod2QoJHNTMRnAZvYXYaBXxRHjYxmPkPWy+1cvdinkcz2ql+5vVqZG56DwfNJzBzFCr7i8rqFx5EH4fOjIhdIYV5tWrC7fZwPTCS50nyE4uTFu3iNyhZ3KX1pxCuoVhyQO3dXoAUU623aQFD5R6Z5LpfiA9oaj+6dG556+Xbzp2HLNQ6qGnsjOf3qRg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=SnCtm0yzjBseWVLNICpKiuO4CjGyHKEWrxJhQw43Ny8=;
- b=SfETW9KLZVqwM88S9MHc5mxFZrAt96KrGEWT7p2uvoBO+4wXzyZPkxbAivGObRkNXIIH86RuFcmR1HBw9dCUsTUky1D2qLA1695BACSHwK50kNNRKQX48d+Rc0NCMbtW+RsBO2ZE4koZH3yctg7ypwhVJ7yPgYjKStup/JM5EZY7g0I7JrIKthJe9uT6rQsCzk3uTssfnGcFQ9+a9NQ8t1rAGvnIWX9d2/Uuea84d+PHG4n1V7mTabV/b2A9BymcCGCO4QkR/Z/A+1sywPnXliiY99ADwMZtm9jwo0AKFn7Va9dpTPGdRcEgCRz+GAn4v3jFk7gXcLdjujx87/s/PA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=citrix.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SnCtm0yzjBseWVLNICpKiuO4CjGyHKEWrxJhQw43Ny8=;
- b=yavLp5nCpL3xoYcIO2FScReEPua3wDvn+EstUmba8hM22KYHN5ZtX3+1plQOwc/l5R2qsccxsFjzlNNZoEcYkVEechbcko9LM8j9OOJjlLE0CvbPB/HTDoYg+lPnORRYhr/qgQBPntCfRi7v5QHwm/DRRjm+iUQEE9etSA0NDw4=
-Received: from DS7PR05CA0078.namprd05.prod.outlook.com (2603:10b6:8:57::24) by
- CH1PR12MB9718.namprd12.prod.outlook.com (2603:10b6:610:2b2::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9723.8; Fri, 13 Mar
- 2026 15:36:52 +0000
-Received: from DS1PEPF0001709B.namprd05.prod.outlook.com
- (2603:10b6:8:57:cafe::bd) by DS7PR05CA0078.outlook.office365.com
- (2603:10b6:8:57::24) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9700.17 via Frontend Transport; Fri,
- 13 Mar 2026 15:36:51 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb08.amd.com; pr=C
-Received: from satlexmb08.amd.com (165.204.84.17) by
- DS1PEPF0001709B.mail.protection.outlook.com (10.167.18.105) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9700.17 via Frontend Transport; Fri, 13 Mar 2026 15:36:51 +0000
-Received: from Satlexmb09.amd.com (10.181.42.218) by satlexmb08.amd.com
- (10.181.42.217) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17; Fri, 13 Mar
- 2026 10:36:51 -0500
-Received: from satlexmb08.amd.com (10.181.42.217) by satlexmb09.amd.com
- (10.181.42.218) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17; Fri, 13 Mar
- 2026 08:36:50 -0700
-Received: from [172.31.96.139] (10.180.168.240) by satlexmb08.amd.com
- (10.181.42.217) with Microsoft SMTP Server id 15.2.2562.17 via Frontend
- Transport; Fri, 13 Mar 2026 10:36:49 -0500
-Message-ID: <0552a259-16ee-4b87-834f-def9cadaca1b@amd.com>
-Date: Fri, 13 Mar 2026 11:36:49 -0400
+	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="oPres7mu"
+Received: from submission (posteo.de [185.67.36.169]) 
+	by mout01.posteo.de (Postfix) with ESMTPS id 78282240029
+	for <linux-serial@vger.kernel.org>; Fri, 13 Mar 2026 19:12:28 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de; s=2017;
+	t=1773425548; bh=oP1CwqkAzPip8KPnsHIuwNOs+ExBzvZniOq/Ft8GfNI=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:To:Cc:Autocrypt:OpenPGP:From;
+	b=oPres7muxfKgHkLoJKVK63A39hZGGygi5uuWSFBvf5SxSn3MPn8DLzcF0hfwxZvoZ
+	 oq0WlI2jpTJ8N9qFvNzM+7Tgx6QVlFcEURamIkGIhCcwiaO+6nPuPN2f85b2YeNgnO
+	 2KZ+m7muoxLXK6Fb3jpxIK4iQjV8bLuzXwUnOwFGt07Erdtpc8FLiYXq8aj3EyzgG9
+	 ZPqOz4XIUeW2T9EqZl9ls23g3Zz+IjpUQT7b7X4CSZnmNW3Wawe+WqfVphkHrslEhq
+	 0ClK0OyrCswmxYDtxVK8TcJZzCTczV8aBB0ygEXi2pncrcslxTyzmbdqKKiZiTpTqX
+	 c88F5T0crqg4g==
+Received: from customer (localhost [127.0.0.1])
+	by submission (posteo.de) with ESMTPSA id 4fXXdN4yr5z6txb;
+	Fri, 13 Mar 2026 19:12:24 +0100 (CET)
+From: Markus Probst <markus.probst@posteo.de>
+Subject: [PATCH v3 0/4] rust: add basic serial device bus abstractions
+Date: Fri, 13 Mar 2026 18:12:27 +0000
+Message-Id: <20260313-rust_serdev-v3-0-c9a3af214f7f@posteo.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] hvc/xen: Check console connection flag
-To: Andrew Cooper <andrew.cooper3@citrix.com>, Jiri Slaby
-	<jirislaby@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Juergen Gross <jgross@suse.com>, Stefano Stabellini <sstabellini@kernel.org>,
-	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-CC: <linuxppc-dev@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
-	<linux-serial@vger.kernel.org>, <xen-devel@lists.xenproject.org>
-References: <20260312173845.47235-1-jason.andryuk@amd.com>
- <8e5974b1-da6d-4718-9140-1f943cdd2404@kernel.org>
- <ff1cce61-abb4-463d-adce-0e5fc0a326df@citrix.com>
-Content-Language: en-US
-From: Jason Andryuk <jason.andryuk@amd.com>
-In-Reply-To: <ff1cce61-abb4-463d-adce-0e5fc0a326df@citrix.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS1PEPF0001709B:EE_|CH1PR12MB9718:EE_
-X-MS-Office365-Filtering-Correlation-Id: 72fca0ed-e9b1-4812-9aa0-08de81165936
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|376014|7416014|1800799024|36860700016|18002099003|56012099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	79occZ3Y9ko3ZJ8eeFxzhz73g+Q/h0JrJ10HQCkC+FJIBve88L72RnZ3J2BXPxIDuqmhnefDDpbyepszyI7ubqj9B0LazhfcX7buwaYrFmvAy2Tx0F1RTdfcA4DTvrkUdabuDX4m74OJkgzKd8k39G6wZxSCNzJU5x5/ZUkZxXPLnqZlHv9Yi6Nhz18PW3SiOsuUpz1KhKp33hyiQKiPAYkqJNyUc/MdHkclM0OajfJkpc1FCG4PZi7FdiuCNdGLDO/TTDmzEtJPlmUfyjI/2X+WFybURmCVT1+Bl15aaQMbwhQ7ka3gnzWqjP5WkBqMNzOBpRUHSS2DFkV6lK9AwcZYnwq70r/OrE83cA1KZqK0PCAxaGfG/Ia1AZTHCICrIdIjyb0dGgbgvpf0h90o19IEsYYgINcQPq9tyD94IF7q/v9Zj3u6K0+V7gSUeWHRDNXFvU02YQXpr/UnT/QRf2dIpglmWghGKsnf37Nh8UlsnitrBPcncGG70b5bLCVQfiyxrBqwjx91f1fsm392FyShTWcKEChmw/jnny3sNoEteOvpn0kcH5wgYxw3/r8uZbSElwQTaCHhFJijxw/wYyIjpkGv1ztYfi+VcJDaNEGGXf9f3IJB+4ac618ZXoN2e/l1wHMTVxaVMdD7BHRs5PgK7X5jG20oYAvNJxnd0Qld+TyQWWcHXrdVDgIzD0K3RZFKSFU9oV0vjG7M/aaVhZhLk0SyVRE3ND1Whmjbg8ILvccJr+2tl4FZnvjp6SiZfRHf3YArBugF/MgjBldXmA==
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb08.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(376014)(7416014)(1800799024)(36860700016)(18002099003)(56012099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	cStaS04QRskcp2qCnjBqvqiQxCvNWJpfc650XJqlTRqrMpDTt0KBWlI2Fjq6YtdNqNkZqhQLilKP2Ge8AhYQ3qGlHuLOlm0WytxXMPlbT/a7PDC/sZLU48jukTtFfe8tzJSJOyTquxTwS9UBBlhxH3xVtrpcEgKt7g/Kj/HqEPZoit3UZiq53jphXcboSzMD7RZ8fpLnj4JMSbS4k0FHJQMnRKArSUCPbBO6hF/beX9uN/+lMu2tKFd+2/QMLWkPRxroy2ysm/2azLZDPWqINvBVN8b8mLbCRHS1pZzLXLANPQKDcrMWA2rtPi3o6UD5PrVJfoclutT3Mxb0ewcbRXSbye2vYsliT1BkhtgQ3L/wJHzEDxWCHHKH6fN5ZZwZ9ssb/Rorj54p8Xgo0QgPhhXI3Tezlzc024qyIcTMjj+AyB5Sw5U2hB2VyD0djCya
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Mar 2026 15:36:51.8471
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 72fca0ed-e9b1-4812-9aa0-08de81165936
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb08.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DS1PEPF0001709B.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH1PR12MB9718
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAG9TtGkC/1XMSw6CMBSF4a2QO7amvX0BI/dhjBG4SieUtNhoC
+ Hu3EE1keE7y/TNECo4i1MUMgZKLzg95yEMBbX8bHsRclzcgRy1QWBaecbpm1FFiRFqVgipe6ha
+ yGAPd3WurnS959y5OPry3eBLr++0g33WSYJyRUkZpa6xBcRp9nMgfO4K1k/BnDZfc7C2utmpQN
+ gob1PrfLsvyAVQlkmfiAAAA
+X-Change-ID: 20251217-rust_serdev-ee5481e9085c
+To: Rob Herring <robh@kernel.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Miguel Ojeda <ojeda@kernel.org>, 
+ Gary Guo <gary@garyguo.net>, 
+ =?utf-8?q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
+ Benno Lossin <lossin@kernel.org>, Andreas Hindborg <a.hindborg@kernel.org>, 
+ Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>, 
+ Danilo Krummrich <dakr@kernel.org>, 
+ Kari Argillander <kari.argillander@gmail.com>, 
+ "Rafael J. Wysocki" <rafael@kernel.org>, 
+ Viresh Kumar <viresh.kumar@linaro.org>, Boqun Feng <boqun@kernel.org>, 
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+ Boqun Feng <boqun@kernel.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ rust-for-linux@vger.kernel.org, linux-pm@vger.kernel.org, 
+ driver-core@lists.linux.dev, dri-devel@lists.freedesktop.org, 
+ Markus Probst <markus.probst@posteo.de>
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2932;
+ i=markus.probst@posteo.de; h=from:subject:message-id;
+ bh=nhzCKHcpSQOEzqoUhprA9k7Hu+jE/8eApFY1eIPTW04=;
+ b=owEBiQJ2/ZANAwAIATR2H/jnrUPSAcsmYgBptFN6g+aGMPfixr0XlcGVBcwNy4Px4KRsaJTEd
+ y5+CVZ53IeJAk8EAAEIADkWIQSCdBjE9KxY53IwxHM0dh/4561D0gUCabRTehsUgAAAAAAEAA5t
+ YW51MiwyLjUrMS4xMSwyLDIACgkQNHYf+OetQ9J54A//SNYv1EpOne/57kO88w2ksXoyXY7kXkV
+ Cbcc0EWbCMlSTYBx5ykIKtal9EW5qNYyZlI2D4l4JePfwwDcMQd0a92N5w1AJScLHpmYVmATcjb
+ zv6O4ICOe3+IeH4XCgOeeav2/QlvvrBUTdw1W4st49/AJlbfoh6trp5C+PjtsIxwGPVGc2iiOzM
+ YuSq4Bz35DzWCaxLTcbkv638fz+Jho95OXKNDlu8IT7NFmnc/nTo2aBLkhPIq9WqZFxldwPe/Rb
+ IdMA6Du9fTa0xqMcX6bXZWaiG5azCODp8T+EKv8np7gYqT0n556lKsKGy0GaVtjA2m73huEm6eU
+ fncI10o2p8MGi1YlhRFV5pD52BXpzwi3Q/HfZwHi0ypKxeM82vDlqyZVWyXESPBycIzkC2Mql+Y
+ YK5lQi7B/0AA8rJp+w2md0yIx+1GcxrmqrMbbvjksY0ccZMqClfZWobWPq0lgpsB1G5z1Ta4obd
+ FcbMPk9pQzI5rcH4ucD9Hm+CPsEfLoDZxtWEsg9SJsNKbLvW9P77p5emtyPB8Pf7yb7eHin8guL
+ j9C719KgHJD+MB6yC9HFKNrA7sA5kLH6PWej0Rm3ZPzkOApB9mEzzFqtzxOsdvHd/u3DG7kO7fK
+ PP6cBdVc82/KjwcFIIuWWta9gLQiFN5HrTZw6yh7ZXEk7Mx7tsEQ=
+X-Developer-Key: i=markus.probst@posteo.de; a=openpgp;
+ fpr=827418C4F4AC58E77230C47334761FF8E7AD43D2
+Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
+  keydata=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
+  aBeNN4ijKZchBXHPgVx+YtWRHfcm4l8=
+OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
 
-On 2026-03-13 06:44, Andrew Cooper wrote:
-> On 13/03/2026 8:33 am, Jiri Slaby wrote:
->> On 12. 03. 26, 18:38, Jason Andryuk wrote:
->>> --- a/include/xen/interface/io/console.h
->>> +++ b/include/xen/interface/io/console.h
->>> @@ -19,6 +19,19 @@ struct xencons_interface {
->>>        char out[2048];
->>>        XENCONS_RING_IDX in_cons, in_prod;
->>>        XENCONS_RING_IDX out_cons, out_prod;
->>> +/*
->>> + * Flag values signaling from backend to frontend whether the
->>> console is
->>> + * connected.  i.e. Whether it will be serviced and emptied.
->>> + *
->>> + * The flag starts as disconnected.
->>> + */
->>> +#define XENCONSOLE_DISCONNECTED 1
->>> +/*
->>> + * The flag is set to connected when the backend connects and the
->>> console
->>> + * will be serviced.
->>> + */
->>> +#define XENCONSOLE_CONNECTED    0
->>
->> This all should be an enum. And you can document it using kernel-doc
->> properly then.
->>
->>> +    uint8_t connection;
->>
->> And type check as well.
-> 
-> This is a non-Linux header file being re-sync'd with it's original source.
-> 
-> It describes an ABI between VMs, where things like enum are forbidden.
+This patch series adds the serdev device bus rust abstraction into the
+kernel.
 
-Yes, it is as Andrew wrote.  I included "Update the console.h header to 
-bring in the new field." in the commit message to try in indicate that. 
-"Sync console.h from the xen repo to bring in the new field." would 
-better explain its origin.
+This abstraction will be used by a driver,
+which targets the MCU devices in Synology devices.
 
-I only brought in the needed part.  There is an emacs variable block 
-that is not synced for other headers.  There is also an ifdef block for
-XEN_WANT_FLEX_CONSOLE_RING that isn't used by linux, which I did not sync.
+Kari Argillander also messaged me, stating that he wants to write a
+watchdog driver with this abstraction (needing initial device data).
 
-Thanks,
-Jason
+@Rob: Are you willing to maintain these rust abstractions yourself,
+as you are the expert on this subsystem, otherwise I would take care of
+it with a "SERIAL DEVICE BUS [RUST]" section in the MAINTAINERS file. In
+the second case, I assume you are going to pick those patches as-is into
+your tree, after they have been reviewed?
+
+Signed-off-by: Markus Probst <markus.probst@posteo.de>
+---
+Changes in v3:
+- fix vertical import style
+- add Kconfig entry for the rust abstraction
+- fix documentation in include/linux/serdev.h
+- rename private_data to rust_private_data
+- fix `complete_all` <-> `wait_for_completion` typo
+- move drvdata_borrow call after the completion
+- Link to v2: https://lore.kernel.org/r/20260306-rust_serdev-v2-0-e9b23b42b255@posteo.de
+
+Changes in v2:
+- fix documentation in `serdev::Driver::write` and
+  `serdev::Driver::write_all`
+- remove use of `dev_info` in probe from the sample
+- remove `properties_parse` from the sample
+- add optional `baudrate` property to the sample
+- remove 1. patch
+- remove `TryFrom<&device::Device<Ctx>> for &serdev::Device<Ctx>`
+  implementation
+- fix import style
+- add patch to return reference in `devres::register` to fix safety
+  issue
+- add patch to add private data to serdev_device, to fix
+  `Device.drvdata()` from failing
+- simplify abstraction by removing ability to receive the initial
+  transmission. It may be added later in a separate patch series if
+  needed.
+- Link to v1: https://lore.kernel.org/r/20251220-rust_serdev-v1-0-e44645767621@posteo.de
+
+---
+Markus Probst (4):
+      rust: devres: return reference in `devres::register`
+      serdev: add rust private data to serdev_device
+      rust: add basic serial device bus abstractions
+      samples: rust: add Rust serial device bus sample device driver
+
+ drivers/tty/serdev/Kconfig         |   7 +
+ include/linux/serdev.h             |  15 +-
+ rust/bindings/bindings_helper.h    |   1 +
+ rust/helpers/helpers.c             |   1 +
+ rust/helpers/serdev.c              |  22 ++
+ rust/kernel/cpufreq.rs             |   3 +-
+ rust/kernel/devres.rs              |  15 +-
+ rust/kernel/drm/driver.rs          |   3 +-
+ rust/kernel/lib.rs                 |   2 +
+ rust/kernel/serdev.rs              | 536 +++++++++++++++++++++++++++++++++++++
+ samples/rust/Kconfig               |  11 +
+ samples/rust/Makefile              |   1 +
+ samples/rust/rust_driver_serdev.rs |  86 ++++++
+ 13 files changed, 693 insertions(+), 10 deletions(-)
+---
+base-commit: 1f318b96cc84d7c2ab792fcc0bfd42a7ca890681
+change-id: 20251217-rust_serdev-ee5481e9085c
+
