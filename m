@@ -1,41 +1,40 @@
 Received: from mout01.posteo.de (mout01.posteo.de [185.67.36.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 291973DD515
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7425A3DD518
 	for <linux-serial@vger.kernel.org>; Fri, 13 Mar 2026 18:12:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.65
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773425560; cv=none; b=DDYFB3XzDRZoc+xbxKVvefw9oHzCgAu4o0Z+ESJHm5S8uXezpb6xX+12E1xWuDczp5WLpQR7IDjLznDEp7mIKeGtQMWkhR3U22Qjsm2T4lWqhPHH/5kr5wRpO5vm1A79seZ2nlGnBB8GsbpWeTrRnevV6GH+M4C2xVKUKCBavrk=
+	t=1773425560; cv=none; b=ml4L+6SU0T1mpMONVUfNTQt+/n3nNqZbaLtq9flvXnEA3h/M4+snyW/fic8SHQSgkKT2KIrLGrHyxzceZzE7lqPBZ03SuJkkz0KaR9NYg2hDROpVjfrbyE4vZoqr6MTIQYQRtPpQ4kUO6GF0oDbaOLBm+bKJb1EoiCcYEJT9zm4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1773425560; c=relaxed/simple;
-	bh=keqz28rKvxuSgS9woVzrUhaF71wCeQ6RBjDla6L6OYM=;
+	bh=ECl35l4KVjDGQ1987vPeXlJAH328JZDbp6x8p1+V+Tw=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=gEo/gWRmLgXh2+QF5BKYyUQGBt1Mz7ZEhkNkvGdpEuN+BTtF3q+P+j3cLpmZ3OO9443RnNUpA8jh7t8M9COxSXAznbjfMcr0dTKIzOwdQye+5MwQSIR4gPzvBzVgCQg9MfmXCmG+neOQaiZWxlHchNQQ+6FuyWz45a0RjGzh/ik=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=EJBc90ci; arc=none smtp.client-ip=185.67.36.65
+	 In-Reply-To:To:Cc; b=htcxzGezao2aMS0mtGSOg2vxes/L18sLqQIvLNIubo2TDdnfIVqs8CQj1bsaHTDdn3DKp652AlqcwIzyqr+Y2aeKGWTFKHMULgPVpEY468Of54OZvCKudCq9OmWw6v1hNkZ3OhGQE0uJV0U6qoInPnI0VqkW9uPLVBbpBndNT2Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=IkxR70q1; arc=none smtp.client-ip=185.67.36.65
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="EJBc90ci"
+	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="IkxR70q1"
 Received: from submission (posteo.de [185.67.36.169]) 
-	by mout01.posteo.de (Postfix) with ESMTPS id C5A6E24002A
-	for <linux-serial@vger.kernel.org>; Fri, 13 Mar 2026 19:12:30 +0100 (CET)
+	by mout01.posteo.de (Postfix) with ESMTPS id B5EFA240028
+	for <linux-serial@vger.kernel.org>; Fri, 13 Mar 2026 19:12:32 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de; s=2017;
-	t=1773425550; bh=HVPpVZG7q91124YZI/Aaqk7D7oF9wWOqNzAvI9ipxxA=;
+	t=1773425552; bh=75iCErYdyp9Wiyr3L13jLe2X/q5ye8h5xDYdqwVoNnc=;
 	h=From:Date:Subject:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding:Message-Id:To:Cc:Autocrypt:OpenPGP:From;
-	b=EJBc90ciqStILTS58+xx9ZQSJHxcbz8a0uPdxx+L+wxq4E5JTRAby/DAYNCxXc+vp
-	 8GJC+jDoinDkHiBKnqskc7OdReASX23CmfM/n7NfjmQmwEGP+vVV3PRQvAOgHFOikh
-	 tH3DekWJzfz3Ju9JUa+eQIKR+zbPRba6aNHh8PXSOrRYXWdPiKcdbY33dSBG1MBFS3
-	 dxcmjDFj/ZXBZeXIIa6cRkUUNV+rsEQm898gCYSpJdE/MBkNVv/He39Ng2b1M46lez
-	 3orAOl/WnPZgaPAMUxAX2w32s4ljPyczzXKbGgaGPQEsfbAnZph2ixe4P9TnHzvcfH
-	 SaZ7k7SzUbo9g==
+	b=IkxR70q1wruRrwHZz5QkW0MX5TXPSCZj7I3pdN39IPSN9AReS2Pslhqcm4NLdrvIj
+	 I/6AqwsSJWgvd2jPEs306b3pdHQs9WUf7HGOi8NDo0bqD9QskUouNYlexEo7gct/Jv
+	 /XfsKt21L0Pg/bGvAvirdbP/3kZqv7YDaWC69coJt/NMyc10B/Ab1ux89USxuzxk3R
+	 EXQgNKv57p/m7Kv71mGklUSvZ82pFVnvfb5Om8J+rlde8p+JlN9cG/zQsrvPL5uniT
+	 KQPO9O6+ByRvQMHY25lmceXf9QuM8vN06bgMV40krB85SS5tPugN7aFtVBcnTS9Ris
+	 qFTEmKUkgFT7w==
 Received: from customer (localhost [127.0.0.1])
-	by submission (posteo.de) with ESMTPSA id 4fXXdR3sJbz6twH;
-	Fri, 13 Mar 2026 19:12:27 +0100 (CET)
+	by submission (posteo.de) with ESMTPSA id 4fXXdT5dKYz6v0H;
+	Fri, 13 Mar 2026 19:12:29 +0100 (CET)
 From: Markus Probst <markus.probst@posteo.de>
-Date: Fri, 13 Mar 2026 18:12:29 +0000
-Subject: [PATCH v3 1/4] rust: devres: return reference in
- `devres::register`
+Date: Fri, 13 Mar 2026 18:12:31 +0000
+Subject: [PATCH v3 2/4] serdev: add rust private data to serdev_device
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -44,7 +43,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260313-rust_serdev-v3-1-c9a3af214f7f@posteo.de>
+Message-Id: <20260313-rust_serdev-v3-2-c9a3af214f7f@posteo.de>
 References: <20260313-rust_serdev-v3-0-c9a3af214f7f@posteo.de>
 In-Reply-To: <20260313-rust_serdev-v3-0-c9a3af214f7f@posteo.de>
 To: Rob Herring <robh@kernel.org>, 
@@ -64,21 +63,21 @@ Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
  rust-for-linux@vger.kernel.org, linux-pm@vger.kernel.org, 
  driver-core@lists.linux.dev, dri-devel@lists.freedesktop.org, 
  Markus Probst <markus.probst@posteo.de>
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2571;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1717;
  i=markus.probst@posteo.de; h=from:subject:message-id;
- bh=keqz28rKvxuSgS9woVzrUhaF71wCeQ6RBjDla6L6OYM=;
- b=owEBiQJ2/ZANAwAIATR2H/jnrUPSAcsmYgBptFN9OVuNhJqcH4ra1bSheygLt4ZfzA+F4c7xh
- /vWo+AEepKJAk8EAAEIADkWIQSCdBjE9KxY53IwxHM0dh/4561D0gUCabRTfRsUgAAAAAAEAA5t
- YW51MiwyLjUrMS4xMSwyLDIACgkQNHYf+OetQ9KUohAAm4rMGurhjYoODB7kiH4xTfowXrAT9Qr
- NKyXRXGHVG4zDzAnEtpm2uLHc3rl7TceKiVt7sM5G5VrKkPKtzn028dDXTRfOYXz4Fz8GnOU4jA
- tbRLW7V4xhg+TSDfPFcGDsqVgfSXE2ytSfs9a9CzS2ChDSNCRpm1EF0bSvNHpakTR6ZjKS/Hdiv
- XVMQi3RXnbEaaW/D/+IzD+eRJo9MuObzhi+aNRjF/1xpuxkavw50kcw1XurathwMfN4o/F4exEf
- kDiHiRs4SfBMhe9FSv5xzsLddBGy7BJh6B21fAxjAGTQA7Um4Pm1BdB0WJw3DawXG6xOjgMx1nR
- YgBmC79//e1O+w2VkSV7fLqKUPSopf+vIxKII0vSfkdRXyS8+rTTHLC5K+5f/WWSFct5vcPcSVZ
- HbqMnVY14EgetWKwzIud20skEUxPWwcsGaQnb+lJXoZXoiQ2gipUwYuS2GDm39oZK4MR2Ihd24F
- sWZPSsc2P9cP7UvsTLreH0dyJFwWvd5rvroDbJT7EWt7IQGQ8SgmvpeevQa/A3yHvZyVkuJ+q2u
- Sj2od32Og9MfOeNIPucEj2R9M34oQKFYs0SWi7BFwCQ7chI4Z1zW2oSz6umrspwABL+dM/WZBsP
- MfGQOhvtaEdq9ACfNcmCiUH5ZkDwt9anbLGuvLXUr1a6PZhw2/Ww=
+ bh=ECl35l4KVjDGQ1987vPeXlJAH328JZDbp6x8p1+V+Tw=;
+ b=owEBiQJ2/ZANAwAIATR2H/jnrUPSAcsmYgBptFOAXe2qwnF/1lGexDSrt5nHtAjHWrI2Vasw2
+ CwJeSl28z+JAk8EAAEIADkWIQSCdBjE9KxY53IwxHM0dh/4561D0gUCabRTgBsUgAAAAAAEAA5t
+ YW51MiwyLjUrMS4xMSwyLDIACgkQNHYf+OetQ9J/kg//YeyFMrNHyQ5X8znae+NR9YBo/g/0H+k
+ 6OOMwP5U9EhSYiaO0fmMUTmvwaX1bqMgu59JnrqE66O/GcikoeZDB/F2akj4m8yRIvWv9UcBCaW
+ p5P/yySUoDOGZUUnR/mVxa0ALpNAWHJx306+RbRmyfCWH/nx7aSQN5/iJi3jdGsH7mSvJv6maA9
+ jcf5lABJ4VCk85faveIJ2sw4D+JVTq1DLWhScIHKz3gu2VEU//mcoxgnZXLgHV4VYDn0N2DsmB4
+ QPgCUFWDsvvJda96hkGpKKAdzmXiyDeEymj7TS1MfCscuzjL6c9yyvMMkyMwoAubX5rsjdjUO6O
+ UuUSozMI+rTtMyYPGpL0HvNr2z1LurRTBK8bKzG6f/qeZvfnYsFBPLJ6EFnVVHcwaYblXcN2fw8
+ lgN9Kum0azUEKKG6I6S8WsdVMALzfu3SI6g0LVZwonh+wwZTX6RJcSsQslJFRxWTFJ9w9tzkwOa
+ GcE7ABJBd2xMlBT8U2X5ax0ALj81mCC/fqiw7TAZCaZUrQeNeis4CoBtfs1YpHYsvyd+CW/WgYl
+ RxSmBCTTDFzGgjFYmLjc35KokuFQ5GDOFQGVWnPkraEK0lPmjw8D3ozyxD4oU+EbZNcWHzkp/3Y
+ ykzKD/0m/evY/4Xq12OmzbnZemTyPTOmxOmYkukxcoljEmL1RIqM=
 X-Developer-Key: i=markus.probst@posteo.de; a=openpgp;
  fpr=827418C4F4AC58E77230C47334761FF8E7AD43D2
 Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
@@ -124,80 +123,48 @@ Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
   aBeNN4ijKZchBXHPgVx+YtWRHfcm4l8=
 OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
 
-Return the reference to the initialized data in the `devres::register`
-function.
-
-This is needed in a following commit (rust: add basic serial device bus
-abstractions).
+Add rust private data to `struct serdev_device`, as it is required by the
+rust abstraction added in the following commit
+(rust: add basic serial device bus abstractions).
 
 Signed-off-by: Markus Probst <markus.probst@posteo.de>
 ---
- rust/kernel/cpufreq.rs    |  3 ++-
- rust/kernel/devres.rs     | 15 +++++++++++++--
- rust/kernel/drm/driver.rs |  3 ++-
- 3 files changed, 17 insertions(+), 4 deletions(-)
+ include/linux/serdev.h | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-diff --git a/rust/kernel/cpufreq.rs b/rust/kernel/cpufreq.rs
-index 76faa1ac8501..8cf86bb8e0f4 100644
---- a/rust/kernel/cpufreq.rs
-+++ b/rust/kernel/cpufreq.rs
-@@ -1051,7 +1051,8 @@ pub fn new_foreign_owned(dev: &Device<Bound>) -> Result
-     where
-         T: 'static,
-     {
--        devres::register(dev, Self::new()?, GFP_KERNEL)
-+        devres::register(dev, Self::new()?, GFP_KERNEL)?;
-+        Ok(())
-     }
- }
+diff --git a/include/linux/serdev.h b/include/linux/serdev.h
+index 5654c58eb73c..c74c345d60ae 100644
+--- a/include/linux/serdev.h
++++ b/include/linux/serdev.h
+@@ -33,12 +33,14 @@ struct serdev_device_ops {
  
-diff --git a/rust/kernel/devres.rs b/rust/kernel/devres.rs
-index 6afe196be42c..f882bace8601 100644
---- a/rust/kernel/devres.rs
-+++ b/rust/kernel/devres.rs
-@@ -326,15 +326,26 @@ fn register_foreign<P>(dev: &Device<Bound>, data: P) -> Result
- /// }
- ///
- /// fn from_bound_context(dev: &Device<Bound>) -> Result {
--///     devres::register(dev, Registration::new(), GFP_KERNEL)
-+///     devres::register(dev, Registration::new(), GFP_KERNEL)?;
-+///     Ok(())
- /// }
- /// ```
--pub fn register<T, E>(dev: &Device<Bound>, data: impl PinInit<T, E>, flags: Flags) -> Result
-+pub fn register<'a, T, E>(
-+    dev: &'a Device<Bound>,
-+    data: impl PinInit<T, E>,
-+    flags: Flags,
-+) -> Result<&'a T>
- where
-     T: Send + 'static,
-     Error: From<E>,
- {
-     let data = KBox::pin_init(data, flags)?;
+ /**
+  * struct serdev_device - Basic representation of an serdev device
+- * @dev:	Driver model representation of the device.
+- * @nr:		Device number on serdev bus.
+- * @ctrl:	serdev controller managing this device.
+- * @ops:	Device operations.
+- * @write_comp	Completion used by serdev_device_write() internally
+- * @write_lock	Lock to serialize access when writing data
++ * @dev:	       Driver model representation of the device.
++ * @nr:		       Device number on serdev bus.
++ * @ctrl:	       serdev controller managing this device.
++ * @ops:	       Device operations.
++ * @write_comp:	       Completion used by serdev_device_write() internally
++ * @write_lock:	       Lock to serialize access when writing data
++ * @rust_private_data: Private data for the rust abstraction. This should
++ *		       not be used by the C drivers.
+  */
+ struct serdev_device {
+ 	struct device dev;
+@@ -47,6 +49,7 @@ struct serdev_device {
+ 	const struct serdev_device_ops *ops;
+ 	struct completion write_comp;
+ 	struct mutex write_lock;
++	void *rust_private_data;
+ };
  
-+    let data_ptr = &raw const *data;
-+
-     register_foreign(dev, data)
-+        // SAFETY: `dev` is valid for the lifetime of 'a. As long as there is a reference to
-+        // `Device<Bound>`, it is guaranteed that the device is not unbound and data has not been
-+        // dropped. Thus `data_ptr` is also valid for the lifetime of 'a.
-+        .map(|()| unsafe { &*data_ptr })
- }
-diff --git a/rust/kernel/drm/driver.rs b/rust/kernel/drm/driver.rs
-index e09f977b5b51..51e0c7e30cc2 100644
---- a/rust/kernel/drm/driver.rs
-+++ b/rust/kernel/drm/driver.rs
-@@ -145,7 +145,8 @@ pub fn new_foreign_owned(
- 
-         let reg = Registration::<T>::new(drm, flags)?;
- 
--        devres::register(dev, reg, GFP_KERNEL)
-+        devres::register(dev, reg, GFP_KERNEL)?;
-+        Ok(())
-     }
- 
-     /// Returns a reference to the `Device` instance for this registration.
+ static inline struct serdev_device *to_serdev_device(struct device *d)
 
 -- 
 2.52.0
