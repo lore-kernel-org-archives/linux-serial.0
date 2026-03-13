@@ -1,84 +1,97 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B72531F987;
-	Fri, 13 Mar 2026 07:11:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EE7031F9A0
+	for <linux-serial@vger.kernel.org>; Fri, 13 Mar 2026 07:56:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773385897; cv=none; b=rQYjUn28MAOsjnDMGUcVVtcNcseoFD27ZqiFQdjOWt6TByNx4q2QST2qOPsKxJtUtqFj5AzvY2LqtFTA2xAYJVEbMw0ijyEghcBeY3dYyhhQDQGNMq7ClFEdvi+eBGyS6nPmx5v2GpgEnnfOQ451CY0vA45Y1oCA+UXtKmtm7QE=
+	t=1773388618; cv=none; b=Ee1G2ulfRAQZfOfLTs8Gag7HCo9T8E6+XXHc3p45pnP9J/I1Tv88FCmjVo6SJD0ACKg2vapTlBNd9qeM0uJNAk40JZ7wSvQ5gRjbiLWfW5DqZ65AFxRCmSrvlf2+GxzBbCA77Wj9wsqRoqroLvgdxuDRb8FF8EDrJ15axz8WpZU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773385897; c=relaxed/simple;
-	bh=Xisn20JbEu2qtBzid/NeHxhVQAsxx33T4CrjEEK+zXg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dLgf6uW2zyR2pKgYD8kyFSPMIqtfL2tcDt0+iuD3ZNO0fvR9kHBKaP1gvPWy1tmxs9ab5w1s358DGVTET/HHjKj9sdF2ZdCxAlOSqZl8f12YMtIUHPMI+ur8xDcQyKpLF18TmBa/XehuLY9mn/tUlB1HvAOQBiqjbmbXnfq9Ps4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=DZ200fPR; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1773388618; c=relaxed/simple;
+	bh=88oV/wY09RL1JT0C4MCkLhpCVxBd9308jToc+nygFPU=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=c4iomlMTaOIt/5tThFsb66eunfGWog2ImPRely/sv82zs0Z24oYLNZaqDi+ErMmV3Fs1+PNc83jeQpdc+Oj0j5E+1QfKS132cYLkmfLbucz+IbNRfJ8Wg3hi1yt4HTB7KR/pvPkTiIiZQOL2bNLwPdbBe1kWlxxJrQ6SPFCxjOI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=yLoWfcsH; arc=none smtp.client-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="DZ200fPR"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04AFFC19421;
-	Fri, 13 Mar 2026 07:11:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1773385896;
-	bh=Xisn20JbEu2qtBzid/NeHxhVQAsxx33T4CrjEEK+zXg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=DZ200fPR7O2exYnpNIPhXe8z+03ty8RVyeUOkVeu4jqRPo/Mw+gyT8sX31PfN/Rt6
-	 uZ725CtrIUMOVDxwQnDlTGK+JC3cLqsRrE6z5FTjYvVvLEifirw3tKgNvLOtbkzsxI
-	 Lx9463Lmkhj1enVJzz38U5fxO29Nl99uvQpwY3g8=
-Date: Fri, 13 Mar 2026 08:11:31 +0100
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Nicolas Pitre <nico@fluxnic.net>
-Cc: Jiri Slaby <jirislaby@kernel.org>, Alexey Gladkov <legion@kernel.org>,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/3] vt: add modifier support to cursor and navigation
- keys
-Message-ID: <2026031309-arena-obsessive-f68f@gregkh>
-References: <20260203045457.1049793-1-nico@fluxnic.net>
- <2026020851-bullhorn-glitch-0e37@gregkh>
- <q19s9nr3-6o47-4pq9-7r49-8q25p0021o1q@syhkavp.arg>
- <2026021006-reenact-suave-c86c@gregkh>
- <p6r658p5-4q55-8pn6-q78n-107599qq653n@syhkavp.arg>
- <2026031225-daylong-uselessly-1821@gregkh>
- <69o09136-13nq-41sr-s3o8-s6sn68rq1s8o@syhkavp.arg>
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="yLoWfcsH"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-48540355459so16062595e9.3
+        for <linux-serial@vger.kernel.org>; Fri, 13 Mar 2026 00:56:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1773388615; x=1773993415; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:organization
+         :references:in-reply-to:date:cc:to:from:subject:message-id:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=88oV/wY09RL1JT0C4MCkLhpCVxBd9308jToc+nygFPU=;
+        b=yLoWfcsH/hX8jMGHv5Z2oRgIWNjhaRbhzfsVVvBSHv0NJ3uz7xHxWRoebKlOsGJNYG
+         dNGGsJxuecgofgPfz4QJGM8OasiNmO3A4h3KhxXB1Qx2zbGiog92BMzoFYp/CkdStaE5
+         5R3HddBIfSOAYO6pMncpvIL7mIrGgpbcBFZoWRESlSY8CWAe6K7NyRHrWYr7FqelAk8d
+         IQ3KYHVKWxV6sYoF/oUHUULVVjbxGwJyzF1eNyRLu9Q8m7mxFRVVIJe3aMPwTpNrjEi+
+         0wNXn/8f22gII4eZHhXco6tzRRsIMQUuFF2lC4Oq3/djdaqjUK+0z4DqITvP436/oLeG
+         wk6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1773388615; x=1773993415;
+        h=mime-version:user-agent:content-transfer-encoding:organization
+         :references:in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=88oV/wY09RL1JT0C4MCkLhpCVxBd9308jToc+nygFPU=;
+        b=CF2eUzGe2E84J35hWkQW/5HChlZ4L7MBHecXZutM1BrhiPCc0pUQVRmlMZjf8TFWLz
+         lJjxx72QeKdxg9JMmt7D2K8auNFiMlUeueXkehKV2SpsGw5aGqUz/wDAD64irpu/v0mb
+         N9u5sHOiLFtjl0Yw+JvcVyRSRW9WGGOWbeJuVV7A5CyuHVVpEfzXNB8HCYYI4CVFFYJc
+         QWO2fDf7yuWuYga7J+1GyV5/g6EUlbtWC0tRf0uBcBOSztxjpVN6XS/yqDkMNdBjo0hv
+         CTDxGRx97Cq+RrazfqyV+xCWmeuaUZXuGwXf4yvbZ4BMwtTV2OKAJEBITN3tZ3U+uIBc
+         26EA==
+X-Forwarded-Encrypted: i=1; AJvYcCXMU7o6bi3LvHhHCr5wmiyBn5Jb0KCoarvn+QPCCTHtVr/AgVNj1jCLwCcWsot+58Gu1EIqab8ccpnge14=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwNYGKAP8DK5mjJDPwkxaKEvXXX6HR8XXZrb32aEp6ztCXFr/+U
+	WhHy88xqyIMh6ngl9N9lbNN9C6QgbzOpZcHCa+XR3+xk77k87Mnegt+DJO7/hZL/oAw=
+X-Gm-Gg: ATEYQzz+VXwJIFI2/+5FLq4w1tmtKYVEofwLbZlIZIPekFyr7e7cHWH9jUvd/YY1ls/
+	tNZpJjL7RPGv80XsuCT94VJQXXD4yTMBNhqzIhm34Z/Mbb3urLjdC63cKG8lQJjb7C1/gRweL9T
+	fS35JFAECTbIZ+JVf8LJbrBTZ4UmdSj5+lrSteDequw8hIaNk2h9DDabPB4BjnXhpzWGWQMNkTF
+	WnTQP5xEtfcNPsNDMhLw7+XWCrtCmHHVeMnThiVq/6Xd9gBzY6VH0QzN46uoXHkfWOT7tN64VNq
+	wrH+Zp2xWsnZz6wnT8ODt7yJORHMR2V/SbK3V59T4LGswnQ9MT2aVvYXlkjj+xD2IVx6HRsf5Bc
+	awcBACOgC22woAhcxSvz/MIMiLBHPUrs0pw0OBXzs5JR/S/y9LcgjK0s9q01Snjtced0NsbDkGs
+	iMGWanHQ==
+X-Received: by 2002:a05:600d:6444:20b0:485:4388:3492 with SMTP id 5b1f17b1804b1-485566d8d8fmr23777485e9.11.1773388614705;
+        Fri, 13 Mar 2026 00:56:54 -0700 (PDT)
+Received: from [10.128.148.22] ([151.47.92.241])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4854b66e3f8sm186821945e9.14.2026.03.13.00.56.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Mar 2026 00:56:53 -0700 (PDT)
+Message-ID: <2bdfaf42eacaaca8960589ccbb0a420f1e5c4aed.camel@baylibre.com>
+Subject: Re: [PATCH] serial: tegra: remove Kconfig dependency on APB DMA
+ controller
+From: Francesco Lavra <flavra@baylibre.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>, Andy Shevchenko
+ <andriy.shevchenko@linux.intel.com>, Kartik Rajput <kkartik@nvidia.com>, 
+ Geert Uytterhoeven <geert+renesas@glider.be>, Wolfram Sang
+ <wsa+renesas@sang-engineering.com>, Robert Marko <robert.marko@sartura.hr>,
+ Thierry Bultel <thierry.bultel.yh@bp.renesas.com>,  Douglas Anderson
+ <dianders@chromium.org>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org
+Date: Fri, 13 Mar 2026 08:56:49 +0100
+In-Reply-To: <2026031248-devalue-diabetic-51ed@gregkh>
+References: <20251126090759.4042709-1-flavra@baylibre.com>
+	 <c850b374071b694e4c33ca091d124c0e90df02e1.camel@baylibre.com>
+	 <2026031248-devalue-diabetic-51ed@gregkh>
+Organization: BayLibre
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4-2 
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <69o09136-13nq-41sr-s3o8-s6sn68rq1s8o@syhkavp.arg>
 
-On Thu, Mar 12, 2026 at 02:56:05PM -0400, Nicolas Pitre wrote:
-> On Thu, 12 Mar 2026, Greg Kroah-Hartman wrote:
-> 
-> > On Fri, Mar 06, 2026 at 01:26:56PM -0500, Nicolas Pitre wrote:
-> > > On Tue, 10 Feb 2026, Greg Kroah-Hartman wrote:
-> > > 
-> > > > On Sun, Feb 08, 2026 at 11:22:27AM -0500, Nicolas Pitre wrote:
-> > > > > On Sun, 8 Feb 2026, Greg Kroah-Hartman wrote:
-> > > > > 
-> > > > > > Argh, sorry, I saw this patch series too late for this merge window.
-> > > > > > I'll review it after -rc1 is out.
-> > > > > 
-> > > > > Too bad.
-> > > > > 
-> > > > > But please at least consider  this one now
-> > > > > https://lkml.org/lkml/2026/1/27/1886
-> > > > > and queue it for the stable tree as well.
-> > > > 
-> > > > Sorry, that slipped through as well, I'll grab it after -rc1 is out and
-> > > > get it backported to stable kernels.
-> > > 
-> > > Ping.  ;-)
-> > 
-> > Sorry, am catching up now...
-> 
-> Thanks, appreciated.
-> 
-> Also please consider the patch fixing alt screen support linked above.
-> That one should go to stable afterwards.
+On Thu, 2026-03-12 at 14:43 +0100, Greg Kroah-Hartman wrote:
+> On Wed, Feb 25, 2026 at 12:35:53PM +0100, Francesco Lavra wrote:
+> > Friendly ping
+>=20
+> Can you resend this, I don't have it around anymore, thanks.
 
-That is very odd, I don't have a copy of it anywhere locally, sorry
-about that.  I'll queue it up later today.  Thanks for reminding me!
-
-greg k-h
+I saw that it has been applied to the tty-testing branch already (thanks!),
+anyway for reference the last version of the patch can be found at
+https://patch.msgid.link/20260303111438.2691799-1-flavra@baylibre.com
