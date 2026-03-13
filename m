@@ -1,119 +1,171 @@
-Received: from devnull.danielhodges.dev (vps-2f6e086e.vps.ovh.us [135.148.138.8])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C3793DA7E1;
-	Fri, 13 Mar 2026 18:54:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=135.148.138.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26C3A34B183
+	for <linux-serial@vger.kernel.org>; Fri, 13 Mar 2026 19:48:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773428057; cv=none; b=bu46ScY6SZG5bUu2QobK+se6dzaVNViIpN7uO3II93avaVP6DUkwlD88iOlVSR01lUq912wgsT/pKA1W1oxiYt36fy9SXUsvHK6EfMR5PE+AZAT+LnVZv453xxTpx3oiTUulcw2D0FjGMQs+ye3ULlL0H563cUWfz93jxHV47Vk=
+	t=1773431300; cv=none; b=UIWUtxEvYtIUNMn/YFyA4RQp6gdN6lOmC+xeIiErcUBlK49Aig0D+ixKzrd2K5rmkTCU9nPz+rAkJO90YEVxpm51rNiApU0cwD2ICiBaQ3Fci301PanULzLgItTvz+bsERUoTzPg1mP1Wo1aqOHTaoCxw/p8INFyPBT1Kcc9QAk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773428057; c=relaxed/simple;
-	bh=Tl7z6Yy78Glh81sdWONlPM4L+CSlgG9MTjUYqLG4czg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rGAmsjzrTZJ5Lpnonk0g3bLPYDghJlzYGZQ92LbxDh5DbXszkX/a12GwkFvDDYOjnFEUAFPa9P91IETl985xt3HqDaft4QIDpwDy0BoiaRWmUdKi0IVu9PVim4/bB2Go7NYnpzfB+EdOr48/UmgncE2YzpJXAPs4Eo9I+/R4jgE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=danielhodges.dev; spf=pass smtp.mailfrom=danielhodges.dev; dkim=pass (2048-bit key) header.d=danielhodges.dev header.i=@danielhodges.dev header.b=Zs0REexm; dkim=permerror (0-bit key) header.d=danielhodges.dev header.i=@danielhodges.dev header.b=0QBfe134; arc=none smtp.client-ip=135.148.138.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=danielhodges.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=danielhodges.dev
+	s=arc-20240116; t=1773431300; c=relaxed/simple;
+	bh=59/FT/ZRiirhnPJyeScbEpjQE+bQSYnEDUDWDN0QaGA=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=m0ibcVUo/tdeNR59Fz96LrhdmnIzhzSpfXCItHWPU3FVnpPATEQFXrubi4Psr6ThtOg1dUf+1AswU9eufcFwb087BSD+tEq7KkVdDaLNCJBQckf+UQQL79LnrYdZrkOOSEx/S6QQYrPD7NC69tB2gI2DOlZwiOqk+uitCI4YPoU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nexthop.ai; spf=pass smtp.mailfrom=nexthop.ai; dkim=pass (2048-bit key) header.d=nexthop.ai header.i=@nexthop.ai header.b=W25RtGVQ; arc=none smtp.client-ip=209.85.128.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nexthop.ai
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nexthop.ai
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=danielhodges.dev header.i=@danielhodges.dev header.b="Zs0REexm";
-	dkim=permerror (0-bit key) header.d=danielhodges.dev header.i=@danielhodges.dev header.b="0QBfe134"
-DKIM-Signature: v=1; a=rsa-sha256; s=202510r; d=danielhodges.dev; c=relaxed/relaxed;
-	h=Message-ID:Subject:To:From:Date; t=1773428042; bh=G4OJqkgFHy0NygoDtUbppgl
-	yYlJv1XQcBEJJ9rMCP1s=; b=Zs0REexmp5gQKl7C07IOWnMA10B/m1Vdbdcu9XTw03fkBmsIl6
-	9oj6BJ5r/xzPZyXBnBkp3DVbGciw7vHbtWHvUmmVnJb1VJDKROMPpd6ftQPSTDhbieW0rSC/s3u
-	uWkPvQP2vG8eHbmLpVSDUZ9SWMT2kasj0x+HdNcrdplRpX+NKa5CNXHyLVRkGOcKMNxoR/NCNSB
-	QHxcAQw8yJkIirl5L/6lS7RLMjIdQ0H4GM/vcAFOzPBsrknX895/7uKbwK6Mddy3DlOk8mtAbB1
-	dJrf42fRbAZpACGd8ROK/YLeeIAp669OzjJtxiLZcY3vq+2c2VkCF0PCBDhbsk0T1+w==;
-DKIM-Signature: v=1; a=ed25519-sha256; s=202510e; d=danielhodges.dev; c=relaxed/relaxed;
-	h=Message-ID:Subject:To:From:Date; t=1773428042; bh=G4OJqkgFHy0NygoDtUbppgl
-	yYlJv1XQcBEJJ9rMCP1s=; b=0QBfe134KAo42sBw/N5+GthR6Q4RaH/FXFSxKNPqUX6igcNj1w
-	Jfz5BeNZls28vSIjqdmXa6sBwOzWcyMFJBAg==;
-Date: Fri, 13 Mar 2026 14:54:01 -0400
-From: Daniel Hodges <daniel@danielhodges.dev>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Daniel Hodges <git@danielhodges.dev>, 
-	Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	syzbot+c3693b491545af43db87@syzkaller.appspotmail.com, syzbot+03f79366754268a0f20c@syzkaller.appspotmail.com
-Subject: Re: [PATCH] vt: keyboard: add NULL check for vc_cons[fg_console].d
- in kbd_keycode and kbd_rawcode
-Message-ID: <zwtqyw3ztjbgjodwrnriex3plpr4akz3nz3aj7tvfeyflo4be3@mp4emzvcug6r>
-References: <20260208003112.6040-1-git@danielhodges.dev>
- <2026031236-unfold-repurpose-52e6@gregkh>
+	dkim=pass (2048-bit key) header.d=nexthop.ai header.i=@nexthop.ai header.b="W25RtGVQ"
+Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-79853c0f5b9so22506987b3.0
+        for <linux-serial@vger.kernel.org>; Fri, 13 Mar 2026 12:48:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=nexthop.ai; s=google; t=1773431298; x=1774036098; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=DI/lBNvmQEarIeV0+efxvYzBpNM+n0lrFVQtTAAmvzw=;
+        b=W25RtGVQg7caYdLtS2P/F+sULe+inwz8LJKf9BfuLN4s9OFsJR9ElWc8jivxVC/Xb5
+         H2NVceIV5SBrdJb20h4UpRPNiBRdOS8bYZ8XCgmXUpqrJnU1w5BN0C15zC4USb+Om7Qj
+         Wpxbe+37se54eYEaYCRKS5jCuTQ1aVlKnXaHjwpADSIr8SPH+XQNx88gmv1NGU33Yxzx
+         KhGO4WeV8TwaQJt7XlHMqXcTIizOdCv1Eit0mNG/JaM84i/mWdtaw8uxwGVg13vGEvm2
+         PydYiqu8a61cHQQ4D6MofKV/m9uFsg+4B7uK9dyaG2rgSBoDlDVZ2xFnoi1JaCx19szD
+         +JjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1773431298; x=1774036098;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=DI/lBNvmQEarIeV0+efxvYzBpNM+n0lrFVQtTAAmvzw=;
+        b=NUV5CRDHS6WWHwWzgmTE4TNSiFqiJ5jbmz0h7z2NHxksMW2G1kdMoaumThDBkHeVU8
+         TYjX2jePA2quYR4Ytnalnu9x3Zp1CE9H0Z3m9KLf6GBlDdipDT+/dUI3sSQU5FNxQXSr
+         kb5U/Ji4VYWa9nJa+WrUalRg9o/fOiaTcXkkCTRdD1Q27Utj4Q/SYRV/9UNGBEKNAzbJ
+         IyeqykK1UxdWmrCrJo2HhwOy9ZS7MSjgP6uPrK+Eo+LUQaUy9EdxOKE2kQRDMuG7ndLo
+         cYpCyT0nKTh/MQR0i7zIRcOQGiNrAHLN6Lj8HPP2uvyvhOXlMC8ejN1MLHqxtzoGSErz
+         FhTA==
+X-Gm-Message-State: AOJu0Yy2XUgnFq7Qd3JSI+PYvXfUaYWLZs8MpJlRg+2vRVivn1DEJiYv
+	E1x915xBqVDnFeZnvX2hR3ptxnGQq/Z7N2JJRyoDpDG36ir1Aw9Qvm+H/H2OlMrtjl+1b1Ez6fd
+	kJGNwn4Y=
+X-Gm-Gg: ATEYQzw6YeCDWp9l/9ryiX/GzBkanNwQj06B86d6mVnq03QImEeuP+ij39yWArDv1Bs
+	mLHZFuipMaYrLv+o2uJcg2D7cbHgzAJOiFpN7/TlwO7QGpQhPboYnEDFF3RrIK7+jo2qlVapKO4
+	+odDWBoooC67tI9jpuweWzbr6hgUvD/uvbHZWbUVZ/wCK3yw0dTVsM3r/N46bQxq6qCH7B/OtLF
+	UF3IRHfrtLNafq++d6clhU3BDtN1BZ1xjNwuqgG76Osg9RbzMqYFfDl9DoT6LkAZvFyznz25NWg
+	+7DWw6l83I6eWqHTzZVhWjARx9URo4EIHuBbG3JSK50DrG9c/7QViqFPmUbYZP8A1UqG6zuo5g+
+	Ow2oTjctihXuTDZQqauTLgSwBFOF8Q7s3VF++0DpJ2jIHgJVyDymCIovKpDkEHi2m9q6Z/R3xBT
+	9zXI1gBHygMu4o9W40G1l6TXaF5GjSOrmXQ5Q+wmIS7Kq8C/7AmAsy
+X-Received: by 2002:a05:690c:d95:b0:798:578c:2ad7 with SMTP id 00721157ae682-79a1c1a7098mr53967817b3.39.1773431297798;
+        Fri, 13 Mar 2026 12:48:17 -0700 (PDT)
+Received: from Mac.attlocal.net ([2600:1700:90:60b0:91dc:5e47:6b38:ff0])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-79a1f86f73esm14031017b3.29.2026.03.13.12.48.17
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Fri, 13 Mar 2026 12:48:17 -0700 (PDT)
+From: Ravi Rama <ravindra@nexthop.ai>
+X-Google-Original-From: Ravi Rama <ravi.rama@nexthop.ai>
+To: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	jirislaby@kernel.org,
+	gregkh@linuxfoundation.org,
+	Ravi Rama <ravi.rama@nexthop.ai>
+Subject: [PATCH] serial: 8250_fintek: Add support for F81214E
+Date: Fri, 13 Mar 2026 14:47:27 -0500
+Message-ID: <20260313194731.2671-1-ravi.rama@nexthop.ai>
+X-Mailer: git-send-email 2.50.1
+In-Reply-To: <CA+mnHaW481bx8nJBNkkgS+oB+=Y=+qeX+hP0q6ObULt8=ewr-g@mail.gmail.com>
+References: <CA+mnHaW481bx8nJBNkkgS+oB+=Y=+qeX+hP0q6ObULt8=ewr-g@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2026031236-unfold-repurpose-52e6@gregkh>
+Content-Transfer-Encoding: 8bit
 
-On Thu, Mar 12, 2026 at 03:22:09PM +0100, Greg Kroah-Hartman wrote:
-> On Sat, Feb 07, 2026 at 07:31:12PM -0500, Daniel Hodges wrote:
-> > kbd_keycode() and kbd_rawcode() dereference vc_cons[fg_console].d
-> > without checking if it is NULL. The foreground console should normally
-> > always be allocated, but there could be a time during console setup or
-> > teardown where this pointer could be NULL, leading to a general
-> > protection fault.
-> > 
-> > Syzkaller triggers this by injecting USB HID input events that reach
-> > kbd_event() while the console state may not be fully consistent. The crash
-> > manifests as a null-ptr-deref in __queue_work when put_queue() or
-> > puts_queue() calls tty_flip_buffer_push() on the uninitialized vc port.
-> > 
-> > Add a NULL check for vc at the start of both kbd_rawcode() and
-> > kbd_keycode() to bail out early if the foreground console is not allocated.
-> > 
-> > Reported-by: syzbot+c3693b491545af43db87@syzkaller.appspotmail.com
-> > Closes: https://syzkaller.appspot.com/bug?extid=c3693b491545af43db87
-> > Reported-by: syzbot+03f79366754268a0f20c@syzkaller.appspotmail.com
-> > Closes: https://syzkaller.appspot.com/bug?extid=03f79366754268a0f20c
-> > Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> > Signed-off-by: Daniel Hodges <git@danielhodges.dev>
-> > ---
-> >  drivers/tty/vt/keyboard.c | 6 ++++++
-> >  1 file changed, 6 insertions(+)
-> > 
-> > diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
-> > index a2116e135a82..975830013d24 100644
-> > --- a/drivers/tty/vt/keyboard.c
-> > +++ b/drivers/tty/vt/keyboard.c
-> > @@ -1389,6 +1389,9 @@ static void kbd_rawcode(unsigned char data)
-> >  {
-> >  	struct vc_data *vc = vc_cons[fg_console].d;
-> >  
-> > +	if (!vc)
-> > +		return;
-> > +
-> 
-> What prevents vc from being NULL right after checking this?
+The F81214E is a LPC/eSPI to 2 UART Super I/O chip.
 
-Yeah, your right about that. I spent a bit of time to make a reproducer
-using a kernel module and I think if RCU is used on vc_cons[].d it
-should then be properly protected. Let me know if that sounds like a
-reasonable approach and I can send a v2.
+Functionally, it is the same as the F81216E. The only difference
+is that the F81216E has 4 UART ports, whereas the F81214E has 2
+UART ports.
 
-> 
-> 
-> 
-> >  	kbd = &kbd_table[vc->vc_num];
-> >  	if (kbd->kbdmode == VC_RAW)
-> >  		put_queue(vc, data);
-> > @@ -1405,6 +1408,9 @@ static void kbd_keycode(unsigned int keycode, int down, bool hw_raw)
-> >  	struct keyboard_notifier_param param = { .vc = vc, .value = keycode, .down = down };
-> >  	int rc;
-> >  
-> > +	if (!vc)
-> > +		return;
-> 
-> Same here, where is the locking?
-> 
-> thanks,
-> 
-> greg k-h
+Signed-off-by: Ravi Rama <ravi.rama@nexthop.ai>
+---
+ drivers/tty/serial/8250/8250_fintek.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-Same as above if this is protected with RCU I think that should work
-properly.
+diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
+index b4461a89b8d0..976c5748905c 100644
+--- a/drivers/tty/serial/8250/8250_fintek.c
++++ b/drivers/tty/serial/8250/8250_fintek.c
+@@ -1,6 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /*
+- *  Probe for F81216A LPC to 4 UART
++ *  Probe for F81216A LPC to 4 UART and F81214E LPC/eSPI to 2 UART
+  *
+  *  Copyright (C) 2014-2016 Ricardo Ribalda, Qtechnology A/S
+  */
+@@ -23,6 +23,7 @@
+ #define CHIP_ID_F81216AD 0x1602
+ #define CHIP_ID_F81216E 0x1617
+ #define CHIP_ID_F81216H 0x0501
++#define CHIP_ID_F81214E 0x1417
+ #define CHIP_ID_F81216 0x0802
+ #define VENDOR_ID1 0x23
+ #define VENDOR_ID1_VAL 0x19
+@@ -161,6 +162,7 @@ static int fintek_8250_check_id(struct fintek_8250 *pdata)
+ 	case CHIP_ID_F81216AD:
+ 	case CHIP_ID_F81216E:
+ 	case CHIP_ID_F81216H:
++	case CHIP_ID_F81214E:
+ 	case CHIP_ID_F81216:
+ 		break;
+ 	default:
+@@ -185,6 +187,7 @@ static int fintek_8250_get_ldn_range(struct fintek_8250 *pdata, int *min,
+ 	case CHIP_ID_F81216AD:
+ 	case CHIP_ID_F81216E:
+ 	case CHIP_ID_F81216H:
++	case CHIP_ID_F81214E:
+ 	case CHIP_ID_F81216:
+ 		*min = F81216_LDN_LOW;
+ 		*max = F81216_LDN_HIGH;
+@@ -255,6 +258,7 @@ static void fintek_8250_set_irq_mode(struct fintek_8250 *pdata, bool is_level)
+ 	case CHIP_ID_F81216AD:
+ 	case CHIP_ID_F81216E:
+ 	case CHIP_ID_F81216H:
++	case CHIP_ID_F81214E:
+ 	case CHIP_ID_F81216:
+ 		sio_write_mask_reg(pdata, FINTEK_IRQ_MODE, IRQ_SHARE,
+ 				   IRQ_SHARE);
+@@ -269,6 +273,7 @@ static void fintek_8250_set_max_fifo(struct fintek_8250 *pdata)
+ 	switch (pdata->pid) {
+ 	case CHIP_ID_F81216E: /* 128Bytes FIFO */
+ 	case CHIP_ID_F81216H:
++	case CHIP_ID_F81214E:
+ 	case CHIP_ID_F81966:
+ 	case CHIP_ID_F81866:
+ 		sio_write_mask_reg(pdata, FIFO_CTRL,
+@@ -304,6 +309,7 @@ static void fintek_8250_set_termios(struct uart_port *port,
+ 	switch (pdata->pid) {
+ 	case CHIP_ID_F81216E:
+ 	case CHIP_ID_F81216H:
++	case CHIP_ID_F81214E:
+ 		reg = RS485;
+ 		break;
+ 	case CHIP_ID_F81966:
+@@ -354,6 +360,7 @@ static void fintek_8250_set_termios_handler(struct uart_8250_port *uart)
+ 	switch (pdata->pid) {
+ 	case CHIP_ID_F81216E:
+ 	case CHIP_ID_F81216H:
++	case CHIP_ID_F81214E:
+ 	case CHIP_ID_F81966:
+ 	case CHIP_ID_F81866:
+ 		uart->port.set_termios = fintek_8250_set_termios;
+@@ -446,6 +453,7 @@ static void fintek_8250_set_rs485_handler(struct uart_8250_port *uart)
+ 		break;
+ 
+ 	case CHIP_ID_F81216E: /* F81216E does not support RS485 delays */
++	case CHIP_ID_F81214E: /* F81214E does not support RS485 delays */
+ 		uart->port.rs485_config = fintek_8250_rs485_config;
+ 		uart->port.rs485_supported = fintek_8250_rs485_supported;
+ 		break;
+-- 
+2.50.1 (Apple Git-155)
 
--Daniel
