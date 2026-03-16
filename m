@@ -1,36 +1,52 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB58F1A9FBA;
-	Mon, 16 Mar 2026 11:22:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9ABB1ACEDE;
+	Mon, 16 Mar 2026 11:35:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773660141; cv=none; b=QrPLSAe2GsRQ6xobdiOU+nNqrR3KWCvxdGR5WMoHdferTVxvKzCGGjxooYYDVmmiTss4DHXrCPg/gkPoFEee4GEDWIM5/94DtJhm5Ss4bL3kMkU6A5cEIpcxInQ3MID3pSZFf2q9ehHweTIRGLfXJDIMuO96UORvOQOBDbRSHbw=
+	t=1773660954; cv=none; b=FhLQBV52sgyXuc9iGuxNvZYzl0ylxjWmOc9nRusgD8gR8c5YpV9fEwo7ihwo7/M5K05JQXzt4wm1v91krTejytuPr0H45XJj7FcMR6C/B2DQxPiwj102Frr+ZnORBlsk8lhpAfQm5LsCCy2IispbQXCpLPacSar/mqolBk2NZPM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773660141; c=relaxed/simple;
-	bh=hZ7HCxXZH+KCGvedYMF3TeE2GVqJXuozWkiILmg+dJE=;
+	s=arc-20240116; t=1773660954; c=relaxed/simple;
+	bh=yvednJVD+S92uidTlYwGeaVVG/EK1t6E2q4V/k1EYxQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RF4POcZYNkuqVtXW8OksYjpeiDX86IH38stmarYk/grdDeUbUBDGYjXTQ/hFX7ezcULPM2Q2f01aupGyffV24RlJZ2SqZVBpLIahqzF3Je8ntFAwYdwFH/3vIvz420rO64NX2QrMU7MTfGudA6rjCrmHZdmet9Jx7IXL3MJZKnE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LTLVCK+C; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=uuYkpDJ3bq8iOkn3pJvVX4pkxFcuk9Ly5FiRFRikcSAfcK/9i8MCsE2xCkcW21FDpHm+d6xq2Suvkm4AUhsxCTqBrY8W3UTvx011GWgl77bOObxcqjzTwkC+CUxhI7jbcIkuLN+lTzkm1Ol5HA8vF51IK35dxJx5LvKrj/1MW68=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SjU+jUm+; arc=none smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LTLVCK+C"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44A30C19421;
-	Mon, 16 Mar 2026 11:22:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773660141;
-	bh=hZ7HCxXZH+KCGvedYMF3TeE2GVqJXuozWkiILmg+dJE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=LTLVCK+CdnGJygYTinaAMAF+FIIYL1H+vkvjx8oYuQMjaVC+XjhnpZuf0TKwRPYnp
-	 EMQuwlvUtIOb2UNxDoZABKAQch6s07FeBfppJPxUZPmzGRqVpHKqGmTY1Rzuqk7Xpo
-	 uAjB17JcB4VVqReeg+d+nj2pQ2HWKBSSSMD9VFG7kqkwFxN3pniM7EsbGrWcegbw2/
-	 yJ7XW6MH65V4cSG+kN2ei+u2NoWi7l8ql/GGjh9KVbMftwNBvhCYMRHCXm1AUINn0J
-	 UW+8CozvVuszS0aKonYx7vohj6tRK/BnnPklcg2Ugjv+5JXh6pmbQrcrFPOWXAYSOA
-	 eG87AInFdt4lA==
-Date: Mon, 16 Mar 2026 11:22:16 +0000
-From: Conor Dooley <conor@kernel.org>
-To: Jia Wang <wangjia@ultrarisc.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SjU+jUm+"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1773660953; x=1805196953;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=yvednJVD+S92uidTlYwGeaVVG/EK1t6E2q4V/k1EYxQ=;
+  b=SjU+jUm+dXflOKnOX6rkjwlELfx+mRe9OdLoUlkCWiGVAUhp24g+MwLd
+   eZqmgtcJwBPzUQboe/WcFzsrjExKKOGgGhEvL9n7qK8WtKossiV2Swqle
+   fuD1t+BP0lRxSykbLvNHchpTKT4fvDDYkgKqVRQX0/Iyhako8I/UZCTCl
+   jj9rUI4sEpHJt1DT8pmJPmjorJ7ijVMic1Aa80FV8Gy6MmRVo4NSoB6N4
+   GUz1mquJ3WTwTqJqzsj3CDxsqrMEh6xh99ZQyJ3441cj2dkmJn17FcxQo
+   vHSAru7nipNP6M7R0k4z/HZNI8amzXYNULR4B8WQ26yE9o5/tsTt9b2tr
+   A==;
+X-CSE-ConnectionGUID: FKDKGyVdQbybVvG1jU8CzQ==
+X-CSE-MsgGUID: teityRToROS5T3S2Pm4/Rg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11730"; a="85374266"
+X-IronPort-AV: E=Sophos;i="6.23,124,1770624000"; 
+   d="scan'208";a="85374266"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2026 04:35:46 -0700
+X-CSE-ConnectionGUID: 9rp9XH9KR8yjZC4oTX02sA==
+X-CSE-MsgGUID: eKVTAUAVRvKpRNtiZbTfzQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,124,1770624000"; 
+   d="scan'208";a="218157295"
+Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.244.237])
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2026 04:35:42 -0700
+Date: Mon, 16 Mar 2026 13:35:40 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: wangjia@ultrarisc.com
 Cc: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>, Paul Walmsley <pjw@kernel.org>,
 	Palmer Dabbelt <palmer@dabbelt.com>,
@@ -41,118 +57,41 @@ Cc: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
 	linux-serial@vger.kernel.org, linux-riscv@lists.infradead.org,
 	devicetree@vger.kernel.org,
 	Zhang Xincheng <zhangxincheng@ultrarisc.com>
-Subject: Re: [PATCH 1/2] riscv: ultrarisc: 8250_dw: support DP1000 uart
-Message-ID: <20260316-frayed-pretended-eba059554dcc@spud>
-References: <20260316-ultrarisc-serial-v1-0-c464f3e933a5@ultrarisc.com>
- <20260316-ultrarisc-serial-v1-1-c464f3e933a5@ultrarisc.com>
+Subject: Re: [PATCH v2 2/2] riscv: ultrarisc: 8250_dw: support DP1000 uart
+Message-ID: <abfrDBeJrValJR9a@ashevche-desk.local>
+References: <20260316-ultrarisc-serial-v2-0-6ab3e7fa891c@ultrarisc.com>
+ <20260316-ultrarisc-serial-v2-2-6ab3e7fa891c@ultrarisc.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="1+Bm8qKmqRdbiva4"
-Content-Disposition: inline
-In-Reply-To: <20260316-ultrarisc-serial-v1-1-c464f3e933a5@ultrarisc.com>
-
-
---1+Bm8qKmqRdbiva4
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20260316-ultrarisc-serial-v2-2-6ab3e7fa891c@ultrarisc.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Mar 16, 2026 at 09:36:18AM +0800, Jia Wang wrote:
-> From: Zhang Xincheng <zhangxincheng@ultrarisc.com>
->=20
+On Mon, Mar 16, 2026 at 02:33:23PM +0800, Jia Wang via B4 Relay wrote:
+
 > The UART of DP1000 does not support automatic detection of
 > buffer size. skip_autocfg needs to be set to true
->=20
-> Signed-off-by: Zhang Xincheng <zhangxincheng@ultrarisc.com>
-> Signed-off-by: Jia Wang <wangjia@ultrarisc.com>
 
-$subject: riscv: ultrarisc: 8250_dw: support DP1000 uart
+Missed period at the end.
 
-Please update this to match other modifications to this file.
-"riscv: ultrariscv" doesn't belong at the start.
 
-> ---
->  drivers/tty/serial/8250/8250_dw.c | 12 ++++++++++++
->  1 file changed, 12 insertions(+)
->=20
-> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/=
-8250_dw.c
-> index db73b2ae17fa..6a2acf173331 100644
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -56,6 +56,7 @@
->  #define DW_UART_QUIRK_IS_DMA_FC		BIT(3)
->  #define DW_UART_QUIRK_APMC0D08		BIT(4)
->  #define DW_UART_QUIRK_CPR_VALUE		BIT(5)
+...
+
 > +#define DW_UART_QUIRK_FIXED_TYPE	BIT(6)
-> =20
->  struct dw8250_platform_data {
->  	u8 usr_reg;
-> @@ -514,6 +515,11 @@ static void dw8250_quirks(struct uart_port *p, struc=
-t dw8250_data *data)
->  		data->data.dma.prepare_tx_dma =3D dw8250_prepare_tx_dma;
->  		data->data.dma.prepare_rx_dma =3D dw8250_prepare_rx_dma;
->  	}
-> +	if (quirks & DW_UART_QUIRK_FIXED_TYPE) {
-> +		p->flags |=3D UPF_FIXED_TYPE;
-> +		p->type =3D PORT_16550A;
-> +		data->skip_autocfg =3D true;
-> +	}
->  	if (quirks & DW_UART_QUIRK_APMC0D08) {
->  		p->iotype =3D UPIO_MEM32;
->  		p->regshift =3D 2;
-> @@ -789,6 +795,11 @@ static const struct dw8250_platform_data dw8250_skip=
-_set_rate_data =3D {
->  	.quirks =3D DW_UART_QUIRK_SKIP_SET_RATE,
->  };
-> =20
-> +static const struct dw8250_platform_data dw8250_ultrarisc_dp1000_data =
-=3D {
-> +	.usr_reg =3D DW_UART_USR,
-> +	.quirks =3D DW_UART_QUIRK_FIXED_TYPE,
-> +};
-> +
->  static const struct of_device_id dw8250_of_match[] =3D {
->  	{ .compatible =3D "snps,dw-apb-uart", .data =3D &dw8250_dw_apb },
->  	{ .compatible =3D "cavium,octeon-3860-uart", .data =3D &dw8250_octeon_3=
-860_data },
-> @@ -796,6 +807,7 @@ static const struct of_device_id dw8250_of_match[] =
-=3D {
->  	{ .compatible =3D "renesas,rzn1-uart", .data =3D &dw8250_renesas_rzn1_d=
-ata },
->  	{ .compatible =3D "sophgo,sg2044-uart", .data =3D &dw8250_skip_set_rate=
-_data },
->  	{ .compatible =3D "starfive,jh7100-uart", .data =3D &dw8250_skip_set_ra=
-te_data },
-> +	{ .compatible =3D "ultrarisc,dp1000-uart", .data =3D &dw8250_ultrarisc_=
-dp1000_data },
->  	{ /* Sentinel */ }
->  };
->  MODULE_DEVICE_TABLE(of, dw8250_of_match);
->=20
-> --=20
-> 2.34.1
->=20
->=20
-> _______________________________________________
-> linux-riscv mailing list
-> linux-riscv@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-riscv
 
---1+Bm8qKmqRdbiva4
-Content-Type: application/pgp-signature; name="signature.asc"
+Seems unrequired.
 
------BEGIN PGP SIGNATURE-----
+But to make sure, can you elaborate what's going on here?
+What is the reads from UCV and CPR registers?
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCabfn5wAKCRB4tDGHoIJi
-0v45AQD3hFtUbi/xAvY2OzMR5EdszsS2CzI9H3nNfQnqWUuVywD8CJ+C7OenjQXS
-FCfdsrcoF8ZN3KYfs+EfK29lh/SHYgs=
-=8Hwm
------END PGP SIGNATURE-----
+-- 
+With Best Regards,
+Andy Shevchenko
 
---1+Bm8qKmqRdbiva4--
+
