@@ -1,132 +1,118 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f45.google.com (mail-pj1-f45.google.com [209.85.216.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F14D3A1D2
-	for <linux-serial@vger.kernel.org>; Mon, 16 Mar 2026 12:27:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92BE5202963
+	for <linux-serial@vger.kernel.org>; Mon, 16 Mar 2026 13:28:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773664023; cv=none; b=mrrI0MHTPi7duuhKWJwGhscfg37QHqoPlrzdHv4qbEribaQ8mHNj9NQ4H9zA23QBlE/GrXPVTThSGeRHRXTu1HK6t3uyuUxVId7ym/BLMBbIHXhBlSxsAu3IrS4PgToVuhiPh71LLhEfMLo4jLpqicXLmOtr0xWWlFHC8LGdZ0E=
+	t=1773667720; cv=none; b=WxfuCchoh5QldbQoviR6QXcr2RIN7lAAikhgbLR65Qt9qUYLKAj2BFCoZzH5hbAF1rirGRKmyq1ZG2ab8cT8takaceJ5xeOFehkDgDCp1LB2urkWGdMHalHyith8XzL/u7qH34nY94Kglwf/+gAo7tgEtxIFmnvK11g2atVo51Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773664023; c=relaxed/simple;
-	bh=cXPT4sfWAqX5SR6mqidTrwGUvj4q2YuWM62cB35mmek=;
-	h=Date:From:To:Cc:Subject:Message-ID; b=fwNCbIdCDn0J6B+cgS5YfwYkWurDcDkA3q4P5v7oaSJVBxS0/9s+RJ92KOFMtcmOFfUe4iSdv7huNyJAWxPfDzjKGEhr/770J3tY9VfHEk6H1ZT6V0xyZVMWE3BtrCKduggobEJbC1xFTzqiHzleS5lEWEq+v5so9fQlp2EXKgI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IGTbDfYv; arc=none smtp.client-ip=198.175.65.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1773667720; c=relaxed/simple;
+	bh=G/SLPghRo53Tg169Ly5NOqHYFY6F8ur9IKZ+lOWYtvI=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=C3Cst3qJ96dg4BsDIk/oXVQO4Lhv8QSE4XWQT0ya5oXbT54ZH3nrRQyWiBFY9hNOeLQCcQgRXfsh+YWX9YgMORKKDcN5sviR4FPe6KxIDgJJ4Lq5Nndnsvs5wDeBOhud6jch5rK7TaiL3gRO3EkadUo9RCR8RHppJyM3Fi6bg+I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kWLi0Vdc; arc=none smtp.client-ip=209.85.216.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IGTbDfYv"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773664022; x=1805200022;
-  h=date:from:to:cc:subject:message-id;
-  bh=cXPT4sfWAqX5SR6mqidTrwGUvj4q2YuWM62cB35mmek=;
-  b=IGTbDfYvvPdLFePHTE2rIa8v7ubr7ghL+o9LNnA/xRCs/zQ8z/X75n6T
-   hlloOkIkyoo8UW08sQaTqf/ZIqmfJz8RyDKsxtBCqrtG+dyHdzUfyKDoF
-   2e4yABB2J65StN6TQh3y3E7dJXeU0PEzEFs1lgQ/WfFzkKSRhJgAh2Cy5
-   uKKrAVcK1xndYLfCfU3lCaVPLEhCmyr5aWBOVP5Eh9lNbrEdp6x3XvCq0
-   Fyyb4R8yXangErB/PZx0CNw7MwY05aXB0eTbfEyhuTyQBvPdXd9HJUk+I
-   Gb/UX87Ry7rrj8RkHguHXUUAACI+/O6zXDaK5rXSBcgShP6RjqSxNPlYL
-   g==;
-X-CSE-ConnectionGUID: 80IAqn2vTEWH4x5FfjF8bw==
-X-CSE-MsgGUID: YxMFtti0TR2xVzcHTmhmjA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11730"; a="92059509"
-X-IronPort-AV: E=Sophos;i="6.23,124,1770624000"; 
-   d="scan'208";a="92059509"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2026 05:27:01 -0700
-X-CSE-ConnectionGUID: ZLoy7L58Svesx39Chc1upg==
-X-CSE-MsgGUID: LGsFJxCwTGa5ucRVyolgkQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,124,1770624000"; 
-   d="scan'208";a="221138799"
-Received: from lkp-server01.sh.intel.com (HELO 892944969b78) ([10.239.97.150])
-  by orviesa010.jf.intel.com with ESMTP; 16 Mar 2026 05:27:00 -0700
-Received: from kbuild by 892944969b78 with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1w2729-000000000ec-1Uw8;
-	Mon, 16 Mar 2026 12:26:57 +0000
-Date: Mon, 16 Mar 2026 20:26:14 +0800
-From: kernel test robot <lkp@intel.com>
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- eb3b0d92c9c39890592cca6647601fe5c631efea
-Message-ID: <202603162008.hdXr2h1O-lkp@intel.com>
-User-Agent: s-nail v14.9.25
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kWLi0Vdc"
+Received: by mail-pj1-f45.google.com with SMTP id 98e67ed59e1d1-35b982990aeso66220a91.2
+        for <linux-serial@vger.kernel.org>; Mon, 16 Mar 2026 06:28:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1773667719; x=1774272519; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=O3dKt2UPO2MLKISaClvkDDM2F7IRa7ud5ELpWtAwlBw=;
+        b=kWLi0Vdco7uvhlBVq00NSue43GZ4ZhUJt9lOTUkkopiBdEGLl26IUAkMvySRwPq88U
+         UHdVVEV0NrlvjK0QV2lTMzHP0YvzjW13a+Jg8kSGFsURzpzNGc955ykP5zT6k73nyPl0
+         jBJPrcgGfekARM+87Yas35V1TgUA+HGZ+iaBXv8FDlHuKFD+ZlFx9vxpt5N0Gg//Fd/+
+         i1+HXAP/8X+nengcSAMruu0YhQKMAUuuBonTwzCoPt/+oc6ltpXrYNn9T1cc9eu/3PrD
+         37SkxfVZC+AaXUHcLbdA77r0sDKs5QRzozlaXscQRFcHwGkYh7gZax4F5+RQuZZfjN0s
+         ydtw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1773667719; x=1774272519;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=O3dKt2UPO2MLKISaClvkDDM2F7IRa7ud5ELpWtAwlBw=;
+        b=ApM7e6IbNZElmg5dr73ZvFS4/ysW2aUPlpCJRi1PYg4yxqWB1pd6a2AcW/98YzfEvT
+         pywg02rhCyVFuEBZhMcvPgBpMT8ShRk7h/hUFFx16DlgGeA6KL5BfRABiJkBzBDKN7T6
+         JbnAPNi0+qAI4ZUYNDCRIyJGzfurdoaglmXlS6PB+jAZ1AG6e++5/J3qFCQ7WPuJdv8d
+         uUJyFxy1IN/eo/jLW9mSgjwuxuvUVf5jVosyba1JdWPnBx4Cf4ujZfkf5jjtIiZOYJfR
+         GeMtBthLdQnBG3JsJQNzJXxlJSrQM0cNl8ozW60rQEJobq7FMu6l3utArqfxETKsl8p2
+         UZdg==
+X-Forwarded-Encrypted: i=1; AJvYcCVgPWBAOKrqh0yCG7d6wLxr2Ha+C/9Mz5OUUUmtFCNNa79gmLUO0rVVcKfFQtJZbe9XpwRa8QOeg6001eA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YythwVPJhQuEX8JwChyck8xKTnsX/kCiNqdhIKVAb1pECXeMWL3
+	H2kaKhX1iXNFwObazkZMlkIzVvO9EyUDooQeaimn2UKCdOfiRLq3eNQq
+X-Gm-Gg: ATEYQzxG1WXputfMN8Iu6f/gj3BAmxe0UK5I//tHmwYo6STVG9YBKV5pipuPWlGxI22
+	/nl8P1Oq3NnEIe9McGI7Q3ogCW7c6yrjAGXeiklAgR0glUkt2K7M59g0fT68bUePA0m/vBvxKLa
+	eqc4e+RhtjS+Vq/guJ3hvIcQwZQA3wZmRGUN888bg8nBAgWREZzbX9RFqL1gwNSHDYTYZxvLUQ0
+	TJZCSmJmrMGlu6DESbFMjtm+ERhKpWly9qsmH2khNf69Y4hHgLp+wo/k9Am0z5XhbOHBRPRAnzk
+	5suD6qQGUuusGeRHpE1rjekIHk+23mZQ1IROG/mMMEyeKPalKO5RipjaCX+Uvu2IM4uN3rZaIZY
+	jsipEeGvITSsnh6rP8SqGRiZmnOt3v69gEyzlJJ4TUGxUCZ9Bv0GDyvUF1V4Er8dWQssE253Ncx
+	uORVAOxypFI9/GCEOToIx9eYBkQE3IiqlfpKZ3EDfz+SrqWj6w
+X-Received: by 2002:a17:90b:1845:b0:359:f825:570f with SMTP id 98e67ed59e1d1-35a220b4660mr8952217a91.5.1773667718762;
+        Mon, 16 Mar 2026 06:28:38 -0700 (PDT)
+Received: from localhost.localdomain ([36.112.120.43])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-35b8e1cb60esm3434666a91.2.2026.03.16.06.28.34
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Mon, 16 Mar 2026 06:28:38 -0700 (PDT)
+From: Ziyu Zhang <ziyuzhang201@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	baijiaju1990@gmail.com,
+	r33s3n6@gmail.com,
+	gality369@gmail.com,
+	zhenghaoran154@gmail.com,
+	hanguidong02@gmail.com,
+	zzzccc427@gmail.com,
+	Ziyu Zhang <ziyuzhang201@gmail.com>
+Subject: [PATCH] tty: n_tty: annotate lockless read of ldata->icanon in input_available_p()
+Date: Mon, 16 Mar 2026 21:28:27 +0800
+Message-Id: <20260316132827.17855-1-ziyuzhang201@gmail.com>
+X-Mailer: git-send-email 2.39.5 (Apple Git-154)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: eb3b0d92c9c39890592cca6647601fe5c631efea  tty: tty_port: add workqueue to flip TTY buffer
+n_tty_poll() calls input_available_p() without holding termios_rwsem to
+check input readiness for select()/poll(). input_available_p() reads
+ldata->icanon, which can be concurrently written by n_tty_set_termios()
+under down_write(termios_rwsem).
 
-elapsed time: 1030m
+This is a benign race: poll/select readiness is best-effort, and the
+actual n_tty_read() path re-checks icanon under down_read(termios_rwsem).
+A stale icanon value in poll only causes a transiently incorrect
+readiness result, which is permitted by POSIX poll/select semantics.
 
-configs tested: 55
-configs skipped: 0
+Since icanon is a bitfield, READ_ONCE()/WRITE_ONCE() cannot be used.
+Annotate the read with data_race() to document the intentional lockless
+access and suppress data race detector warnings.
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+Signed-off-by: Ziyu Zhang <ziyuzhang201@gmail.com>
+---
+ drivers/tty/n_tty.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-tested configs:
-alpha         allnoconfig    gcc-15.2.0
-alpha        allyesconfig    gcc-15.2.0
-arc          allmodconfig    gcc-15.2.0
-arc           allnoconfig    gcc-15.2.0
-arc          allyesconfig    gcc-15.2.0
-arm           allnoconfig    clang-23
-arm          allyesconfig    gcc-15.2.0
-arm64        allmodconfig    clang-19
-arm64         allnoconfig    gcc-15.2.0
-csky         allmodconfig    gcc-15.2.0
-csky          allnoconfig    gcc-15.2.0
-hexagon      allmodconfig    clang-17
-hexagon       allnoconfig    clang-23
-i386         allmodconfig    gcc-14
-i386          allnoconfig    gcc-14
-i386         allyesconfig    gcc-14
-loongarch    allmodconfig    clang-19
-loongarch     allnoconfig    clang-23
-m68k         allmodconfig    gcc-15.2.0
-m68k          allnoconfig    gcc-15.2.0
-m68k         allyesconfig    gcc-15.2.0
-microblaze    allnoconfig    gcc-15.2.0
-microblaze   allyesconfig    gcc-15.2.0
-mips         allmodconfig    gcc-15.2.0
-mips          allnoconfig    gcc-15.2.0
-mips         allyesconfig    gcc-15.2.0
-nios2        allmodconfig    gcc-11.5.0
-nios2         allnoconfig    gcc-11.5.0
-openrisc     allmodconfig    gcc-15.2.0
-openrisc      allnoconfig    gcc-15.2.0
-parisc       allmodconfig    gcc-15.2.0
-parisc        allnoconfig    gcc-15.2.0
-parisc       allyesconfig    gcc-15.2.0
-powerpc      allmodconfig    gcc-15.2.0
-powerpc       allnoconfig    gcc-15.2.0
-riscv        allmodconfig    clang-23
-riscv         allnoconfig    gcc-15.2.0
-riscv        allyesconfig    clang-16
-s390         allmodconfig    clang-18
-s390          allnoconfig    clang-23
-s390         allyesconfig    gcc-15.2.0
-sh           allmodconfig    gcc-15.2.0
-sh            allnoconfig    gcc-15.2.0
-sh           allyesconfig    gcc-15.2.0
-sparc         allnoconfig    gcc-15.2.0
-sparc64      allmodconfig    clang-23
-um           allmodconfig    clang-19
-um            allnoconfig    clang-23
-um           allyesconfig    gcc-14
-x86_64       allmodconfig    clang-20
-x86_64        allnoconfig    clang-20
-x86_64       allyesconfig    clang-20
-x86_64      rhel-9.4-rust    clang-20
-xtensa        allnoconfig    gcc-15.2.0
-xtensa       allyesconfig    gcc-15.2.0
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index e6a0f5b40..aa3c11623 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -1909,7 +1909,8 @@ static inline int input_available_p(const struct tty_struct *tty, int poll)
+ 	const struct n_tty_data *ldata = tty->disc_data;
+ 	int amt = poll && !TIME_CHAR(tty) && MIN_CHAR(tty) ? MIN_CHAR(tty) : 1;
+ 
+-	if (ldata->icanon && !L_EXTPROC(tty))
++	/* data_race: benign race, poll readiness is best-effort */
++	if (data_race(ldata->icanon) && !L_EXTPROC(tty))
+ 		return ldata->canon_head != ldata->read_tail;
+ 	else
+ 		return ldata->commit_head - ldata->read_tail >= amt;
+-- 
+2.39.5 (Apple Git-154)
 
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
