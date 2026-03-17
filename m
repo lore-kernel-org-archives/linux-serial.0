@@ -1,158 +1,200 @@
-Received: from fout-a4-smtp.messagingengine.com (fout-a4-smtp.messagingengine.com [103.168.172.147])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E9303A4F5C;
-	Tue, 17 Mar 2026 10:59:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.147
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773745178; cv=none; b=XQYliA22ZafRtcI2Vr76WsBw9IFPDfp6RUzeamIUbvEkFEMWMMfvdNnnumR8MXsQ6pGuL2RcqeTWVGQURS7Sx3vaxantuILkeoizcdfktDq+gNuYE5mv5GVCaVgWVUcAqiscWCDCPX2zSdWSNoATOpHAIdn4np8qv/jGEk0p/fM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773745178; c=relaxed/simple;
-	bh=+e8JfM71dQwYV+Ugz4DCHT434PKU18m81dafvJE81Xw=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=Sz8a9DMO3XHhzo0j9zV6AelXqvsgd2UW2tREmLs6DY6wflHzOQjvlXECiPeRFxOeutzknLG+s/7CAtjrc+rjOqY3TFxaDFMigOUwBa+TeKVtTDGlOhmjrSxVwXpzAMewVetoJdeCmzPK2xtGVsLxS81iHG0BoiI+OaKUAd+N+CM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=flygoat.com; spf=pass smtp.mailfrom=flygoat.com; dkim=pass (2048-bit key) header.d=flygoat.com header.i=@flygoat.com header.b=bpX3gXy4; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=Ud8CrpcH; arc=none smtp.client-ip=103.168.172.147
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=flygoat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flygoat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 063C33AEF4A
+	for <linux-serial@vger.kernel.org>; Tue, 17 Mar 2026 11:45:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.44
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773747959; cv=pass; b=FE0mJnRUhjx42PHEoHmtjAZNkCjyga6N5QCjkqQSsYP08SORufFYOKW1qZdEcNx4lehDp1k7e0naGRHSLDeU3TjVtJZEbolU1w3wgYUtods7oeC6Pr+gANNnfNR+8qu6USqJmpUQngsKDrPQ9ZkXVlD+7QVjSvOe0xlJUzjhDNQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773747959; c=relaxed/simple;
+	bh=/dZ8eemKmVtBY2mkzOsItLB1R+RVETssjP8jIwsEqsA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=AI80Sr0VuqjGKPtQe+crhkD+fOqvS1rFS5ayIOxHjwcQ9reUognHG30GYXRNLPc3kFTipkHn9QwQ9l6kkPvsqhqm0PnUPIVyHhw/xewU9q2MxGETokB+/dC6fS7ipdKv6RUuzVAhcYv29dRQ+rC/Wt0ze8DZI8DHiYswD1U/xSA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FH9Y/hAv; arc=pass smtp.client-ip=209.85.128.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=flygoat.com header.i=@flygoat.com header.b="bpX3gXy4";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="Ud8CrpcH"
-Received: from phl-compute-03.internal (phl-compute-03.internal [10.202.2.43])
-	by mailfout.phl.internal (Postfix) with ESMTP id AB2B7EC00CF;
-	Tue, 17 Mar 2026 06:59:36 -0400 (EDT)
-Received: from phl-imap-08 ([10.202.2.84])
-  by phl-compute-03.internal (MEProxy); Tue, 17 Mar 2026 06:59:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flygoat.com; h=
-	cc:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm2; t=1773745176;
-	 x=1773831576; bh=1Yc7uQk1TNITRG0SQZtaBpWL1O6m4P0+FIGGSDnrE+4=; b=
-	bpX3gXy4nR3DJz3hrVf7XAdjYuBRw9x7o9kj0IZeIYUC5Xk58QWNTxttkBJnSc5C
-	B6vwTRlintpHMqG25Nv/Edx+lN8/CZ5T/l3ea9Li3QqsyA39S1DhFsY4LAt6+OC0
-	yDH44y1B5s9GmF8F5fo1VnbjXcwfPKthqVtCSsMNle8uX8+RPHvHk+16qmGU3zaK
-	MqmtZzqj9m9oXPxobFw6nJaKHLhxYFLXFDwdFd4FotD30LnGk1mPzM9LP5LPwBwE
-	mLuNvz3FDiQDGA1b+399FEgcX1cHxxSng62O8nvIz+W6qUQ+hJM+ivXUi5uuX/CX
-	cPMEQJz7K8lV9wBoJ3eR3Q==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1773745176; x=
-	1773831576; bh=1Yc7uQk1TNITRG0SQZtaBpWL1O6m4P0+FIGGSDnrE+4=; b=U
-	d8CrpcHVzF44ytfNPw8VN40MI+1Fqg1AakHHvNeaT+DBpM5bqj3s02mvb4phNwc1
-	NIBVwVw5fgLS0DfqLfuMokM+lxJyhqRVO8QDhF1J7/kG7BJ/BCJFl9er9LV9AYAc
-	ls1fxHhLyocBHO2JwqIFYxyV+o8Mdo524m0CmovGDcXatQz8cP8ozQ1lKRCnOzcz
-	Rw6bskWpSrOANP4u2Qh7apAJxCdtq77ecZm+LRoZeV+AZKCCUwveKNA8WXUYWRrg
-	2s/QnOCDRvEfS4kokgHhg6bcHO81VFVwso3t0IACZgYYOoK9lsxaHpGDPYLwGADg
-	Dp5j+7YHT/Eylej6YubLg==
-X-ME-Sender: <xms:FzS5aUqMxLaKpMysvbx14jF5JPs9X6BLsJoERJKXZEtIzp9ZRZILyw>
-    <xme:FzS5aVcLgcOue-UxqqEfd6nM-okRuvtCjdnG-7oEJGCsS8Qmru2bQkfnM4ZeR2TnB
-    iSrReVTEsqigh-CIzBdddIpnfsaTHteOTaw7Z7ib5awmfOvqSbQaygH>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgdeftddutdejucetufdoteggodetrf
-    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
-    rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujf
-    gurhepofggfffhvfevkfgjfhfutgfgsehtjeertdertddtnecuhfhrohhmpedflfhirgig
-    uhhnucgjrghnghdfuceojhhirgiguhhnrdihrghnghesfhhlhihgohgrthdrtghomheqne
-    cuggftrfgrthhtvghrnhepgfduteegvdfhtdeffeetuddvieelgffgheelkeegffeiudej
-    heeiiefgvedvvdefnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvg
-    hrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehjihgrgihunhdrhigrnhhg
-    sehflhihghhorghtrdgtohhmpdhnsggprhgtphhtthhopeduhedpmhhouggvpehsmhhtph
-    houhhtpdhrtghpthhtohepthhssghoghgvnhgusegrlhhphhgrrdhfrhgrnhhkvghnrdgu
-    vgdprhgtphhtthhopehufihusehitggvnhhofiihrdhmvgdprhgtphhtthhopegtohhnoh
-    hrodgutheskhgvrhhnvghlrdhorhhgpdhrtghpthhtohepjhhirhhishhlrggshieskhgv
-    rhhnvghlrdhorhhgpdhrtghpthhtohepkhhriihkodgutheskhgvrhhnvghlrdhorhhgpd
-    hrtghpthhtoheprhhosghhsehkvghrnhgvlhdrohhrghdprhgtphhtthhopehgrhgvghhk
-    hheslhhinhhugihfohhunhgurghtihhonhdrohhrghdprhgtphhtthhopegthhgvnhhhuh
-    grtggriheslhhoohhnghhsohhnrdgtnhdprhgtphhtthhopehrohhnghhrohhnghesohhs
-    shdrtghiphhunhhithgvugdrtghomh
-X-ME-Proxy: <xmx:GDS5aWVK2Oi44C9qQ_RK3CY4_WpcvDoepOne0Erp_zHJ8fkaAkIrqQ>
-    <xmx:GDS5aRGpkIHjPAmnL4Ib23eU1rYINhPFZUu2lrKRPOeSndTwC0GQLg>
-    <xmx:GDS5aRNeJTLIANzrLvOkj0dUWKV5tGoQfSUPfJ61suPeEdeiSHgP3g>
-    <xmx:GDS5adVrWPEUsNCpVF1YYEXegh-ndVolK6kC3Djh7diIA-DubcQIIA>
-    <xmx:GDS5aXtgsAMd7vWHOyA5_Xb0E3WPEvaTZWDQePcHFfaBKVFADAeFKHTl>
-Feedback-ID: ifd894703:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id DC39A2CE0072; Tue, 17 Mar 2026 06:59:35 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FH9Y/hAv"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-4836d9d54f6so7056135e9.1
+        for <linux-serial@vger.kernel.org>; Tue, 17 Mar 2026 04:45:57 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1773747956; cv=none;
+        d=google.com; s=arc-20240605;
+        b=Myxbj5prsBq4x+DsfLkClMq6Fl18+Xc8eCyb7h6jD3AYtbSNOYSt5e8BES9Igd+pVC
+         l/GVGOMXYdySBAdAvW0X4UKBNNTfGsUjXVvrP4pRD0poQKcQQUhfsRTY4Cvoj+5gT4ND
+         ALSyMAUDUbHugFbDKX19MPX4zqZmNFFf2pmXxyJoG9L5ChO9FM4omy9BBqvrw3tBrO/a
+         ZN7ExJAWw0SVJCE6lY7c+aJNqULV/7+2z3J+NLUeLakUVoysGdRvV1qXPg++vW6DWdio
+         ma/biryL7l0+v5q3aGXQH0ttPfoxaeB/l04gzSwiZ2RW2KLUlRLUxc5AfdjAQkiIGMnO
+         tOsA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=BWkKD2fkibRW1P9sHEn0ViaxXUKwkoQK7XP3YmrFnQI=;
+        fh=OhouWgnvIE29Hyo+hh0slD5xaCGBhXiESHE6u/NYJqY=;
+        b=FO01Somj86w2gFEaIdW0CiWNgRb7SDlMou+x98HuEPuWisllGNtW4RCqcU5oHp6Bft
+         I7xS3wVEDlkAqvbIWd/Hg/zTqG8I3anMtsN565TZ06Z/o0YAb2ADoBohbgGH5PtoDIIt
+         52Yu5sjGOrrxTAL7HOS6qmWjRtXh66rpEHCKlSLRm7QXUEkw0+3A5/MKMzA5xPULPqWG
+         bGWeXwNvhrG0fr9SqzhneR8YjK7F+AgrdqTDaz3kFMtA0HlJiT+ZkGbxwgN3PWhRonVa
+         Al3wzuOD5Zif8AzF8bllzdwIFPVk+n5T1Wlb/t1Ar61IQegdFghYZuwkTwNJTYaId6lX
+         nJzA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1773747956; x=1774352756; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=BWkKD2fkibRW1P9sHEn0ViaxXUKwkoQK7XP3YmrFnQI=;
+        b=FH9Y/hAvhbWgeJW7qTudFrxWlFhCvNRgjbuNVsyU7qhnjyK+HM/DTdVwjgMZDduSTD
+         iBEl1R/VgsK+lfOYQ0Q7sp94LDPrr+xWR/IeUnhX7VPdDwuUkNpWV1f2LRwMeLUgtDxO
+         3iyQKJscgRnjQwJ4HAnK+z/Jv8y84H03bZEKFlckPIa+pF+weE7T/vAz/VtR6JzZ3xOH
+         PonoKZczuRJZ7XCXkC+PkZ+VnJqKOkzIn8BrKsxJs8znoyG8mEaZcNhwyB2YjcQvmyqH
+         /4lPT9J59PqPYOXWEtsT9tLWJlIwkI3G8ucj0WgVcyEILx9bQaUvN7+qFIRyZgOh+7Z5
+         39Ng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1773747956; x=1774352756;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=BWkKD2fkibRW1P9sHEn0ViaxXUKwkoQK7XP3YmrFnQI=;
+        b=r2A/xGTtJ0kTemuIEJWpPPcxGt3mx0ekNAL2UgcOUNW9f+4InHPTrKCOnrFlHB6YKD
+         MiU6t2JcRuBBZDJXwshfkkluwwrqB5979Xe0CKZni3ILQ88YmUGcxOYB+8IOlDSW/fu/
+         b1ZYFEA36N/mTLoTGS/IkD0OuoF3gHAVAMxmRzAWiYKxLZs6QIuGquayX+JuWTb6JILD
+         KlWcAjQbDhyPbx5VQl5FWWLbLhD0WMQelHcqDTQEz9ruOZpKTaJyTUYOGDoNnJYIqmU1
+         mI0BC82LSvwTQUTQn5BuWczs3K+fhTTo193FaGqeR2lNpUq4tl71L/Qv4AJEnm0SLtRf
+         Pdug==
+X-Forwarded-Encrypted: i=1; AJvYcCXn1he6EzrCWjIri9dPEUlEMe9IoZFCzmq0lgLN/803lPESZ3vmwkwZFnDQSUU5KZx8n+eTfddDCMpGlWw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwEfEEanh/Tezcl2hkLC++3Pg5Elrz3bdpQlcfmOUoikjgA94N/
+	i+MbDH45Ivao5MpWObCOiwFLK32dIU3PBczmfdswQy9iTvjD8EnhZL1TiqG2JkrmFL2JCRhPdgN
+	HJy2TDz9TsMEDuyyHRSo3qLCtrH5rbAo=
+X-Gm-Gg: ATEYQzzWEBpcDemJRxBXuQlkNlDtGGazxz6O7mZnCcywmMhIlFa/qGOS4eaIH6oWvlI
+	v7QzfYPShusNflFxbzxZbLbNYobct8tHcSvEgV41hmprB8wMG+/OglM3HkdPsiG4l8bNrqShuk0
+	itGDPpjh+EQ0jLL61HKOlkm8ldFBUK6l4AaracryaVtvPsV2lb0XgkMH4ZIF2J+gmNpKpG9u1fv
+	3eptiggqOli+CaVauVJWZsjvrw0sLFkLdOkKrpEXcSf9/0a6ikze72swe1O/Wl0szAIL45+EyAm
+	cUv3iVB0KQq6OsQb
+X-Received: by 2002:a05:600c:6007:b0:486:b967:5c9b with SMTP id
+ 5b1f17b1804b1-486b9675eeamr6153375e9.3.1773747956038; Tue, 17 Mar 2026
+ 04:45:56 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-ThreadId: AcMa5Labo19-
-Date: Tue, 17 Mar 2026 10:59:15 +0000
-From: "Jiaxun Yang" <jiaxun.yang@flygoat.com>
-To: "Rong Zhang" <rongrong@oss.cipunited.com>,
- "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
- "Jiri Slaby" <jirislaby@kernel.org>, "Rob Herring" <robh@kernel.org>,
- "Krzysztof Kozlowski" <krzk+dt@kernel.org>,
- "Conor Dooley" <conor+dt@kernel.org>,
- "Thomas Bogendoerfer" <tsbogend@alpha.franken.de>,
- "Huacai Chen" <chenhuacai@loongson.cn>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
- devicetree@vger.kernel.org, "Yao Zi" <me@ziyao.cc>,
- "Icenowy Zheng" <uwu@icenowy.me>, "Rong Zhang" <i@rong.moe>
-Message-Id: <f6887aca-9a79-442d-8f3a-e98ae45e488c@app.fastmail.com>
-In-Reply-To: <20260315184301.412844-1-rongrong@oss.cipunited.com>
-References: <20260315184301.412844-1-rongrong@oss.cipunited.com>
-Subject: Re: [PATCH v2 0/2] serial: 8250: loongson: Add support for MIPS-based Loongson
- 3A4000
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+References: <20260317081911.24390-1-ziyuzhang201@gmail.com> <2026031702-unsheathe-gizmo-6851@gregkh>
+In-Reply-To: <2026031702-unsheathe-gizmo-6851@gregkh>
+From: ziyu zhang <ziyuzhang201@gmail.com>
+Date: Tue, 17 Mar 2026 19:45:44 +0800
+X-Gm-Features: AaiRm53u7xxhRY5GX7aE8FaO1kqa5CD-ueAYTE9W-oItCyiUENgnYf642JvFew8
+Message-ID: <CACPoYJweQ8iKp+zKNZ1nre22rq4JGNn7xqJ2TSzDSLtKMPoybw@mail.gmail.com>
+Subject: Re: [PATCH v2] tty: n_tty: annotate lockless read of ldata->icanon in input_available_p()
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, baijiaju1990@gmail.com, 
+	kernel test robot <lkp@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 
+> No this robot did not report this issue :(
 
+Sorry, that was my mistake. It is my first time submitting a patch. I
+misunderstood what the robot meant.
+I will definitely drop this tag and be more careful with submission
+guidelines next time.
 
-On Sun, 15 Mar 2026, at 6:42 PM, Rong Zhang wrote:
-> This series targets the serial tree.
->
-> The UART controller on Loongson 3A4000 is compatible with Loongson
-> 2K1500, which is NS16550A-compatible with an additional fractional
-> frequency divisor register.
->
-> Patch 1 adds loongson,ls3a4000-uart as compatible with
-> loongson,ls2k1500-uart.
->
-> Patch 2 enables building 8250_loongson (loongson-uart) on MIPS
-> Loongson64.
->
-> Tested on Loongson-LS3A4000-7A1000-NUC-SE with a 25MHz UART clock.
-> Without fractional frequency divisor, the actual baud rate was 111607
-> (25MHz / 16 / 14, measured value: 111545) and some USB-to-UART
-> converters couldn't work with it at all. With fractional frequency
-> divisor, the measured baud rate becomes 115207, which is quite accurate.
->
-> The patch for the MIPS tree to update the compatible strings in the
-> loongson64g-package DTS is sent separately, as it's independant of this
-> series and can be applied in any order (the compatible strings there
-> still contain "ns16550a", so no regression will be introduced).
->
-> Changes in v2:
-> - Separated from v1 (patch 1,2): 
-> https://lore.kernel.org/r/20260314234143.651298-1-rongrong@oss.cipunited.com/
-> (thanks Krzysztof Kozlowski)
+> Given that the previous patch was not even tested, how was this found
+> and most importantly, tested?
 
-For the series:
+My apologies for sending the v1 patch without properly compile-testing
+it first.
+It is a data race found by our testing tool. The detailed report is
+showed below.
 
-Reviewed-by: Jiaxun Yang <jiaxun.yang@flygoat.com>
+Kernel panic: ============ DATARACE ============
+VarName 11902078599461647536, BlockLineNumber 36, IrLineNumber 3, is write 1
+Function: found_watchpoint kernel/kccwf/wp_checker.c:126 [inline]
+Function: watchpoints_monitor+0x1ac2/0x22a0 kernel/kccwf/wp_checker.c:217
+Function: kccwf_rec_mem_access+0x275e/0x2b70
+Function: n_tty_set_termios+0x5d1/0x37a0 drivers/tty/n_tty.c:1793
+Function: tty_set_termios+0x112d/0x1b80 drivers/tty/tty_ioctl.c:348
+Function: set_termios+0xc1b/0xca0 drivers/tty/tty_ioctl.c:512
+Function: tty_mode_ioctl+0x5e5/0x9d0
+Function: n_tty_ioctl_helper+0xe5/0x8f0 drivers/tty/tty_ioctl.c:982
+Function: n_tty_ioctl+0x253/0x730 drivers/tty/n_tty.c:2509
+Function: tty_ioctl+0x1cfb/0x3070 drivers/tty/tty_io.c:2801
+Function: vfs_ioctl fs/ioctl.c:51 [inline]
+Function: __do_sys_ioctl fs/ioctl.c:598 [inline]
+Function: __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:584
+Function: do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+Function: do_syscall_64+0xd2/0x200 arch/x86/entry/syscall_64.c:94
+Function: entry_SYSCALL_64_after_hwframe+0x77/0x7f
+Function: 0x0
+============OTHER_INFO============
+VarName 16560329611981062523, BlockLineNumber 32, IrLineNumber 1,
+watchpoint index 38236
+Function: set_report_info+0xbd/0x2c0 kernel/kccwf/report.c:57
+Function: setup_watchpoint kernel/kccwf/wp_checker.c:158 [inline]
+Function: watchpoints_monitor+0xe0e/0x22a0 kernel/kccwf/wp_checker.c:239
+Function: kccwf_rec_mem_access+0x275e/0x2b70
+Function: input_available_p drivers/tty/n_tty.c:1923 [inline]
+Function: n_tty_poll+0x3f5/0x16b0 drivers/tty/n_tty.c:2452
+Function: tty_poll+0x224/0x4a0 drivers/tty/tty_io.c:2199
+Function: vfs_poll include/linux/poll.h:82 [inline]
+Function: select_poll_one fs/select.c:480 [inline]
+Function: do_select+0xce7/0x13d0 fs/select.c:536
+Function: core_sys_select+0x3e8/0x5d0 fs/select.c:677
+Function: do_pselect fs/select.c:759 [inline]
+Function: __do_sys_pselect6 fs/select.c:802 [inline]
+Function: __se_sys_pselect6+0x1d8/0x240 fs/select.c:793
+Function: do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+Function: do_syscall_64+0xd2/0x200 arch/x86/entry/syscall_64.c:94
+Function: entry_SYSCALL_64_after_hwframe+0x77/0x7f
+=================END==============
 
-Thanks!
+> What error was reported that this now
+> fixes?
 
->
-> Rong Zhang (2):
->   dt-bindings: serial: 8250: Add Loongson 3A4000 uart compatible
->   serial: 8250: loongson: Enable building on MIPS Loongson64
->
->  Documentation/devicetree/bindings/serial/8250.yaml | 1 +
->  drivers/tty/serial/8250/Kconfig                    | 9 +++++----
->  2 files changed, 6 insertions(+), 4 deletions(-)
->
->
-> base-commit: 267594792a71018788af69e836c52e34bb8054af
-> -- 
-> 2.53.0
+Error: cannot pass bit-field as __auto_type initializer in C.
+The detailed error is showed below.
 
--- 
-- Jiaxun
+drivers/tty/n_tty.c:1913:6: error: cannot pass bit-field as
+__auto_type initializer in C
+    1913 |         if (data_race(ldata->icanon) && !L_EXTPROC(tty))
+         |             ^
+   include/linux/compiler.h:194:13: note: expanded from macro 'data_race'
+     194 |         auto __v = (expr);
+            \
+         |                    ^
+   1 error generated.
+
+vim +1913 drivers/tty/n_tty.c
+
+  1906
+  1907  static inline int input_available_p(const struct tty_struct
+*tty, int poll)
+  1908  {
+  1909          const struct n_tty_data *ldata = tty->disc_data;
+  1910          int amt = poll && !TIME_CHAR(tty) && MIN_CHAR(tty) ?
+MIN_CHAR(tty) : 1;
+  1911
+  1912          /* data_race: benign race, poll readiness is best-effort */
+> 1913          if (data_race(ldata->icanon) && !L_EXTPROC(tty))
+  1914                  return ldata->canon_head != ldata->read_tail;
+  1915          else
+  1916                  return ldata->commit_head - ldata->read_tail >= amt;
+  1917  }
+  1918
+
+> What changed to cause this to now be needed?
+
+In my initial v1 patch, I carelessly wrapped the bit-field directly in
+the data_race() macro without locally compile-testing it.
+The data_race(expr) macro internally utilizes __auto_type (or typeof).
+And the C standard strictly prohibits passing a bit-field directly as
+an initializer for __auto_type.
+Adding !! forces the bit-field to be evaluated as a standard
+boolean/integer expression, which bypasses this compiler restriction.
+I sincerely apologize for the oversight in my initial patch and any
+extra work it may have caused.
+Thank you for your time and patience. I will submit a v3 patch if necessary.
+
+Best regards,
+Ziyu Zhang
