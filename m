@@ -1,126 +1,159 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35E2D372666;
-	Mon, 16 Mar 2026 22:20:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 851F92EB874;
+	Tue, 17 Mar 2026 04:18:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773699656; cv=none; b=YHrBOJbDDl2PIqlHGQZmp4f6fqgI+wdUQn1rN2ll7emUgKZmdsIT27hcu8yKYFqkRTdl22WvR/by16wRdYdggi0mEjWIbmRJuqag17b5CJ4lJ8UQLxeUiPaQgnGOpiGfCncM+DrFUHnOIl4k2dEi/TGHDKo6fwGVYdi0/NMo+4g=
+	t=1773721137; cv=none; b=VEg6lHq4j/5G8mke8LC0w/lV8qX8P4x/rMl/ATz7QVxBmMSPNoNly4mwi5Ca1aPb5VdTq6DS9ZVPIj8EgLWjJkQsPU9BdYMFILQkBq3qnunkDM2TNCemOwA2tuRAdlH0lrM9aWG1f3aapwDOwetX/PwJHvYN9nqyybfUMW/Xu8Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773699656; c=relaxed/simple;
-	bh=+Sz+Brr7tbQWKUIQKSBZksMsdfRpXtvVoKbNC9XzoME=;
+	s=arc-20240116; t=1773721137; c=relaxed/simple;
+	bh=aAW7xmcPapo/bUAlT3a8Nv6ct0mWRHp2J/iY7SZTN+c=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TspSsxuItRy5yi0bCunTmUiLeF5lVXHYc4A28BmIZineIBwgvqfUd602ap5n46qvt5aF4BP68op1Qhx2e0fWPTxx02s5BvzmE/UFxcvi++fAK1Pk0lgJtkWKjeLTlhmJHhODztWG07w6G2/3HDDfrNn0PL4p8avHG28hmfMg3fs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XuvWNESE; arc=none smtp.client-ip=198.175.65.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZKfb+Mq8Z88ask6PWL9Q0UoTJ+4jMIdUbwG45ZI+BWRk+v1bjKY7QX5ziGHikWYAL3dWEGTgplD92SDrPdrUl/xAtK4eezpcHnD4b8RzOo0xn613arpuZCN5j1+f8XDu27GNtc/M2Dh5StCV8cs0jU63BixqCtSE0Q2wSMiqIio=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RonaWlGq; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XuvWNESE"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773699654; x=1805235654;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=+Sz+Brr7tbQWKUIQKSBZksMsdfRpXtvVoKbNC9XzoME=;
-  b=XuvWNESEZxjXacfDGBIHYezV0XmRlRDHSJ8AlCjBjVEzG4lJgsR8Ni2g
-   Qg3BG/VZ0zom802QNV0S3EKh2B/I3Ge8fX/pv95lIhDf7yXbiOW4ccSW8
-   htl/jmANILREHQYjeWtyhOgTD8KupRc/iokC+etiW4ddK3XwQ+i3o7AvX
-   EDSnsZc/z7E1TLMgsJ1JIm95wp5UNtBVxuQAwK4t8W+NXftvqrY8Td3o1
-   +KG8zaKCRoJJcnHTurKpVHswzsMT3c0J/QCjmAVEuxq77Ff7c5zizAmlD
-   BkrfmQIfh19xVryhZnnNSGPH1tz0g7TcMd1N3IlY8au3lMi0t4wUfAtxZ
-   Q==;
-X-CSE-ConnectionGUID: odmkrGMPQuGYiRZ4BHjXmg==
-X-CSE-MsgGUID: 87hSFmnhTBeachLDPmFLAQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11731"; a="74616448"
-X-IronPort-AV: E=Sophos;i="6.23,124,1770624000"; 
-   d="scan'208";a="74616448"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2026 15:20:53 -0700
-X-CSE-ConnectionGUID: j8tB4O6uR/CCxiMjTcujAA==
-X-CSE-MsgGUID: xSp5ygjoQhukk1pTyCHElw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,124,1770624000"; 
-   d="scan'208";a="259949405"
-Received: from igk-lkp-server01.igk.intel.com (HELO 9958d990ccf2) ([10.211.93.152])
-  by orviesa001.jf.intel.com with ESMTP; 16 Mar 2026 15:20:49 -0700
-Received: from kbuild by 9958d990ccf2 with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1w2GIo-000000004IH-2w6p;
-	Mon, 16 Mar 2026 22:20:46 +0000
-Date: Mon, 16 Mar 2026 23:20:00 +0100
-From: kernel test robot <lkp@intel.com>
-To: Ziyu Zhang <ziyuzhang201@gmail.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	baijiaju1990@gmail.com, r33s3n6@gmail.com, gality369@gmail.com,
-	zhenghaoran154@gmail.com, hanguidong02@gmail.com,
-	zzzccc427@gmail.com, Ziyu Zhang <ziyuzhang201@gmail.com>
-Subject: Re: [PATCH] tty: n_tty: annotate lockless read of ldata->icanon in
- input_available_p()
-Message-ID: <202603162328.vY9JOJWL-lkp@intel.com>
-References: <20260316132827.17855-1-ziyuzhang201@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RonaWlGq"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFBC1C4CEF7;
+	Tue, 17 Mar 2026 04:18:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1773721137;
+	bh=aAW7xmcPapo/bUAlT3a8Nv6ct0mWRHp2J/iY7SZTN+c=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=RonaWlGqdCAqdKJoPAT7n70KfSue7ZyHcB38BqGTjnPwp7XfAWj8yUL2HGmACfyaQ
+	 6qHE5XWcPYYH4knm6PiIHCBZqsSK0U6fsETRNIXB/IlzL25jTkZC9pvDBwjQmojkAH
+	 zMgSO4PR9ZAN3vo8aRHaj1ay97LYaJmA1QnJydbiLtagx9KvkJqAzxcpaRb10V0vx9
+	 h5HNRP7/xC3fQ53/n+dfKd/j+WCSFVQp9I5vlicZCfm9WOunp9TtUXFtxYrBD4Hdp0
+	 /3U9Dydg6DkSS+QsEIZg6d3KaGYGV8c4JAjVxMQYQNl1sH6Z7xMC73rc7Yaz0HSR2g
+	 l5hEdJ7aS57/Q==
+Date: Tue, 17 Mar 2026 09:48:43 +0530
+From: Manivannan Sadhasivam <mani@kernel.org>
+To: Bartosz Golaszewski <brgl@kernel.org>
+Cc: manivannan.sadhasivam@oss.qualcomm.com, linux-serial@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org, 
+	platform-driver-x86@vger.kernel.org, linux-pci@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org, linux-pm@vger.kernel.org, 
+	Stephan Gerhold <stephan.gerhold@linaro.org>, Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, 
+	linux-acpi@vger.kernel.org, Hans de Goede <johannes.goede@oss.qualcomm.com>, 
+	Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Nathan Chancellor <nathan@kernel.org>, 
+	Nicolas Schier <nicolas.schier@linux.dev>, Hans de Goede <hansg@kernel.org>, 
+	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Mark Pearson <mpearson-lenovo@squebb.ca>, 
+	"Derek J. Clark" <derekjohn.clark@gmail.com>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Marcel Holtmann <marcel@holtmann.org>, 
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>, Bartosz Golaszewski <brgl@bgdev.pl>, 
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+	Manivannan Sadhasivam via B4 Relay <devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org>
+Subject: Re: [PATCH v5 9/9] power: sequencing: pcie-m2: Create serdev device
+ for WCN7850 bluetooth
+Message-ID: <bsc57i43nvrstrgbtxgefcee2k25uua7cmyfy5riiglwww5xtl@vwfsuvflmmy3>
+References: <20260224-pci-m2-e-v5-0-dd9b9501d33c@oss.qualcomm.com>
+ <20260224-pci-m2-e-v5-9-dd9b9501d33c@oss.qualcomm.com>
+ <CAMRc=MeJP-BLf3_zM9b+nz1nMOGVzyUhXemejHkV+AJREGPz_w@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260316132827.17855-1-ziyuzhang201@gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAMRc=MeJP-BLf3_zM9b+nz1nMOGVzyUhXemejHkV+AJREGPz_w@mail.gmail.com>
 
-Hi Ziyu,
+On Wed, Feb 25, 2026 at 03:22:50AM -0800, Bartosz Golaszewski wrote:
+> On Tue, 24 Feb 2026 06:30:55 +0100, Manivannan Sadhasivam via B4 Relay
+> <devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org> said:
+> > From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+> >
+> > For supporting bluetooth over the non-discoverable UART interface of
+> > WCN7850, create the serdev device after enumerating the PCIe interface.
+> > This is mandatory since the device ID is only known after the PCIe
+> > enumeration and the ID is used for creating the serdev device.
+> >
+> > Since by default there is no OF or ACPI node for the created serdev,
+> > create a dynamic OF 'bluetooth' node with the 'compatible' property and
+> > attach it to the serdev device. This will allow the serdev device to bind
+> > to the existing bluetooth driver.
+> >
+> > Tested-by: Hans de Goede <johannes.goede@oss.qualcomm.com> # ThinkPad T14s gen6 (arm64)
+> > Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+> > ---
+> >
+> 
+> [snip]
+> 
+> > -static void pwrseq_pcie_m2_free_regulators(void *data)
+> > +static void pwrseq_pcie_m2_free_resources(void *data)
+> >  {
+> >  	struct pwrseq_pcie_m2_ctx *ctx = data;
+> >
+> > +	serdev_device_remove(ctx->serdev);
+> > +	bus_unregister_notifier(&pci_bus_type, &ctx->nb);
+> > +	of_changeset_revert(ctx->ocs);
+> > +	of_changeset_destroy(ctx->ocs);
+> >  	regulator_bulk_free(ctx->num_vregs, ctx->regs);
+> >  }
+> >
+> > +static int pwrseq_m2_pcie_create_bt_node(struct pwrseq_pcie_m2_ctx *ctx,
+> > +					struct device_node *parent)
+> > +{
+> > +	struct device *dev = ctx->dev;
+> > +	struct device_node *np;
+> > +	int ret;
+> > +
+> > +	ctx->ocs = devm_kzalloc(dev, sizeof(*ctx->ocs), GFP_KERNEL);
+> > +	if (!ctx->ocs)
+> > +		return -ENOMEM;
+> > +
+> > +	of_changeset_init(ctx->ocs);
+> > +
+> > +	np = of_changeset_create_node(ctx->ocs, parent, "bluetooth");
+> > +	if (!np) {
+> > +		dev_err(dev, "Failed to create bluetooth node\n");
+> > +		ret = -ENODEV;
+> > +		goto err_destroy_changeset;
+> > +	}
+> > +
+> > +	ret = of_changeset_add_prop_string(ctx->ocs, np, "compatible", "qcom,wcn7850-bt");
+> > +	if (ret) {
+> > +		dev_err(dev, "Failed to add bluetooth compatible: %d\n", ret);
+> > +		goto err_destroy_changeset;
+> > +	}
+> > +
+> > +	ret = of_changeset_apply(ctx->ocs);
+> > +	if (ret) {
+> > +		dev_err(dev, "Failed to apply changeset: %d\n", ret);
+> > +		goto err_destroy_changeset;
+> > +	}
+> > +
+> > +	ret = device_add_of_node(&ctx->serdev->dev, np);
+> > +	if (ret) {
+> > +		dev_err(dev, "Failed to add OF node: %d\n", ret);
+> > +		goto err_revert_changeset;
+> > +	}
+> > +
+> > +	return 0;
+> > +
+> > +err_revert_changeset:
+> > +	of_changeset_revert(ctx->ocs);
+> > +err_destroy_changeset:
+> > +	of_changeset_destroy(ctx->ocs);
+> > +
+> 
+> I would prefer pwrseq_pcie_m2_free_resources() to be split into separate
+> devm actions, otherwise it's not much different from simply having the
+> .remove() callback. With a split like that you'd avoid having these labels
+> here.
+> 
 
-kernel test robot noticed the following build errors:
+We do need these error labels since pwrseq_m2_pcie_create_bt_node() is called
+from notifier callback and a failure here doesn't cause the driver to fail. So
+the changeset will linger till the driver gets removed.
 
-[auto build test ERROR on tty/tty-testing]
-[also build test ERROR on tty/tty-next tty/tty-linus linus/master v6.16-rc1 next-20260316]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+So I don't see a real need to split pwrseq_pcie_m2_free_resources().
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Ziyu-Zhang/tty-n_tty-annotate-lockless-read-of-ldata-icanon-in-input_available_p/20260316-224221
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-patch link:    https://lore.kernel.org/r/20260316132827.17855-1-ziyuzhang201%40gmail.com
-patch subject: [PATCH] tty: n_tty: annotate lockless read of ldata->icanon in input_available_p()
-config: x86_64-kexec (https://download.01.org/0day-ci/archive/20260316/202603162328.vY9JOJWL-lkp@intel.com/config)
-compiler: clang version 20.1.8 (https://github.com/llvm/llvm-project 87f0227cb60147a26a1eeb4fb06e3b505e9c7261)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260316/202603162328.vY9JOJWL-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202603162328.vY9JOJWL-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
->> drivers/tty/n_tty.c:1913:6: error: cannot pass bit-field as __auto_type initializer in C
-    1913 |         if (data_race(ldata->icanon) && !L_EXTPROC(tty))
-         |             ^
-   include/linux/compiler.h:194:13: note: expanded from macro 'data_race'
-     194 |         auto __v = (expr);                                              \
-         |                    ^
-   1 error generated.
-
-
-vim +1913 drivers/tty/n_tty.c
-
-  1906	
-  1907	static inline int input_available_p(const struct tty_struct *tty, int poll)
-  1908	{
-  1909		const struct n_tty_data *ldata = tty->disc_data;
-  1910		int amt = poll && !TIME_CHAR(tty) && MIN_CHAR(tty) ? MIN_CHAR(tty) : 1;
-  1911	
-  1912		/* data_race: benign race, poll readiness is best-effort */
-> 1913		if (data_race(ldata->icanon) && !L_EXTPROC(tty))
-  1914			return ldata->canon_head != ldata->read_tail;
-  1915		else
-  1916			return ldata->commit_head - ldata->read_tail >= amt;
-  1917	}
-  1918	
+- Mani
 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+மணிவண்ணன் சதாசிவம்
