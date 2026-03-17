@@ -1,150 +1,82 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f171.google.com (mail-pf1-f171.google.com [209.85.210.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68D8F3B6C0F;
-	Tue, 17 Mar 2026 11:58:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C83EA3C6615
+	for <linux-serial@vger.kernel.org>; Tue, 17 Mar 2026 12:58:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773748708; cv=none; b=pmQdJEuG4jSkJdN9Gj6FQ0gUy5s4+evcoC7N+lC9qU9EOWFOBEd0G4b1K0hgJ5N3WcAqr2MkYDqyf+sdZbIHnlv4IkOyAyYB88IgF/qZWOcUWpJuJTJ/pggvfOhrCo+FURLU6pj0QZwNrdN0fL4891SLkm1RwvkWjp0X8orBeKY=
+	t=1773752338; cv=none; b=qHXE+ze7s5iPfOQikk9Yy7bhfV2D8WiPeRBlNvxTtGV755JMENUWyh9LLfYGyQMbsDk9KQNi3MwFt4wD67EqnPxpvDvAXXypegaL83Ac7d5ixff13BbipyQwqmoO5YAYjpBSOMoQ/pv8lcj0q8rhMSkm/gzs3n58PDMFFDeETsg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773748708; c=relaxed/simple;
-	bh=elXTYw/RtQD1/bel5xY7v/8nSloETnAG/Khw92+WYvU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SR1WgJBPQAGQEeykK24sBMlzM3g0vvoXXXd6mCPyu3VjEugCUdvNHStHn0ME0oyjbXsmNzahICXkgVSU7o3fAz16b8irIYTd6rbDeM62fSPet1eN2lMw5QFZmuAUuoxZLCK6U0IVFzeCHvhD4S/Zicfq/EX/t76tLgLPVpWZRNE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=0eezA0TP; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1773752338; c=relaxed/simple;
+	bh=c4xAwo5IW0e5wp1m6dG8x6LWc1bZ/a34JAzgjyVUPYc=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=fi5zjKbeZ5RoXLdaJuoTaB3TatqF157IpqJTDEjXLH8FQUtG0Fv60F6VP7sAYzUr0MVL2C5SZN8FU/SjPmqvpbvhkecGL5xhqhMb/zX+Yh22U6Syq2uPePDjn1HMEPxDusZ9iqzZkF31iG1yi1vGUsPcz90eLUqXzgWkwGyNFX0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DyPD2IEm; arc=none smtp.client-ip=209.85.210.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="0eezA0TP"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B65C0C4CEF7;
-	Tue, 17 Mar 2026 11:58:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1773748708;
-	bh=elXTYw/RtQD1/bel5xY7v/8nSloETnAG/Khw92+WYvU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=0eezA0TPdfGYTP9+GdH9++R7ebz5ho9fepZwwsLmGDIo8C/ClvM7UC9lmjeTcvhcn
-	 nz36/oajhZAziflYvO8rDRsJDh4VA9gpFTJg9XybZ2MUA4diPlrf4iY9d+csOa6kup
-	 oRDnkXFqO/hzvx71P+QZndGq78tcxNO/gC/FAEvk=
-Date: Tue, 17 Mar 2026 12:58:24 +0100
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: ziyu zhang <ziyuzhang201@gmail.com>
-Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, baijiaju1990@gmail.com,
-	kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH v2] tty: n_tty: annotate lockless read of ldata->icanon
- in input_available_p()
-Message-ID: <2026031709-stiffness-edging-8792@gregkh>
-References: <20260317081911.24390-1-ziyuzhang201@gmail.com>
- <2026031702-unsheathe-gizmo-6851@gregkh>
- <CACPoYJweQ8iKp+zKNZ1nre22rq4JGNn7xqJ2TSzDSLtKMPoybw@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DyPD2IEm"
+Received: by mail-pf1-f171.google.com with SMTP id d2e1a72fcca58-8296d553142so2647458b3a.3
+        for <linux-serial@vger.kernel.org>; Tue, 17 Mar 2026 05:58:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1773752337; x=1774357137; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=c4xAwo5IW0e5wp1m6dG8x6LWc1bZ/a34JAzgjyVUPYc=;
+        b=DyPD2IEmtnqFm21rbybnqEfAK2xvR5bOzx3FIXj2P53LxyYZPTbGeq159QE1XK9WwQ
+         i1pKRVYH97bLq2VchFvC+Azpy4fpSvm9ctcQHjMEMk4PGISVTyAPidaPU1edhL/gEmqr
+         6IeKfm2aGAXc8awVL1fzqKFtJhVEggJtsaCUKxSn/L+Iq/pRKTxZX3CH2QmUQ2FKz6A1
+         PB+lg5/cnnNubXUTGyt8p5cxctR3I5HJcp/E84YwAzp+JNzYHKH/kI88uPN1L2Bp6pi5
+         dLjjYzDVZ6xNrjyKTmQkfCpS7N7AeVZdxPL0KZbBc3GhIEgqG4rlRM3kmFE5VdDF+UMc
+         O8Qg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1773752337; x=1774357137;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=c4xAwo5IW0e5wp1m6dG8x6LWc1bZ/a34JAzgjyVUPYc=;
+        b=mt9zCwDWjl6Cc+xZ6D2KHY8OQgsWI/5m6ZIIvnqm6FoR+/eyzb0YBuDwRIJC5sa2WI
+         N6avuYrDzpejKLkhXsdqNyz/mJYTg7VGMtHMoHc+0Yrlm/d/0waKkPxY437QlRyiAo2W
+         zU5TeRp5Lq6GCcz5MGveYi8reTmPp12y+H1axiFrK0SpAb534iwd3lKEwqxyR7iTimDT
+         yM52wppmShiNNrblyZuT0Ea3jvQfxDWyD1QJUptuhRMHV9GLRoWfEbp5LuQHIgwXp45f
+         UbooVYoYRF33RfdGiC3eOC9K6M0Rw7ls+7nZyvrRNu9x2DvWYxXt3ryg9YGarRFZTdXp
+         K9Ng==
+X-Forwarded-Encrypted: i=1; AJvYcCVsZuARUSJ2wOZM6YWDwzB1C0buo3f++3+wtxMKtE9MEarrcPJ4P5CmbXiA8iBmwRYO1TZLdQtKieelk18=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz3WgVXrxD6rp++U+2pKsK1rysvp5q8g/+8MgGpb/1xL6+MU/Md
+	z13GrnOhRZeuFk3eBJy7TgMwBkwdcps0uvO2Esy6d1+jfhzvVUCy0/Mg
+X-Gm-Gg: ATEYQzylqfO4+3eEUMltH4VzaQni+vMjj5SJCj0ZmCnA6z4btLZUPs7PR56zVWgg3f+
+	8vJBccLy2IbD5xdgcGA9ZZ2vK8d4+50FnryWcpOjtsINN0NDxtNYPIm86Q676xB7IrnLI8zF0n4
+	2Ymt/NHKpvVuxGwt6oCj23Zj525A63zQw2hsi4/E3XZOmbVsU/d3adxe2LnK/k/H2lbo4oH29JA
+	VfU4kDXshvRD+BFqxlPT+myWSyYkFC4m5+WNx8k6pyPBQz+2ERqR2pzDO6K7MNDgiprr5axyvl9
+	tAgSte5QwjVcX9JG88+NoV6YDv2b4ui8U9F9AZSGsGn68UoICND9jOlb52yGjJcq3zIPh6weHzp
+	/qs+gA0dNc89YTOG3GB/i9zshJNr8enVzHqqPDJ3yeqUeHM/ijgUWL2IUrEr+Z40UesRxpY4KbP
+	A+sJ0vtGnUnFtTccdoYazG79igJx57FJxc18AyKkz+A4xndCrORLTHT7UOkg==
+X-Received: by 2002:aa7:88d3:0:b0:82a:fc5:fb81 with SMTP id d2e1a72fcca58-82a19702d5emr14986999b3a.5.1773752337122;
+        Tue, 17 Mar 2026 05:58:57 -0700 (PDT)
+Received: from localhost.localdomain ([2402:a00:163:2ce9:7027:b0d7:e473:38fd])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82a072418e9sm17574984b3a.3.2026.03.17.05.58.54
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Tue, 17 Mar 2026 05:58:56 -0700 (PDT)
+From: Ajit Singh <blfizzyy@gmail.com>
+To: quic_vdadhani@quicinc.com
+Cc: linux-arm-msm@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Ajit Singh <blfizzyy@gmail.com>
+Subject: Re: [PATCH v4 6/6] serial: qcom-geni: Load UART qup Firmware from linux side
+Date: Tue, 17 Mar 2026 18:28:49 +0530
+Message-ID: <20260317125849.5825-1-blfizzyy@gmail.com>
+X-Mailer: git-send-email 2.50.1
+In-Reply-To: <20250503111029.3583807-6-quic_vdadhani@quicinc.com>
+References: <20250503111029.3583807-6-quic_vdadhani@quicinc.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACPoYJweQ8iKp+zKNZ1nre22rq4JGNn7xqJ2TSzDSLtKMPoybw@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 
-On Tue, Mar 17, 2026 at 07:45:44PM +0800, ziyu zhang wrote:
-> > Given that the previous patch was not even tested, how was this found
-> > and most importantly, tested?
-> 
-> My apologies for sending the v1 patch without properly compile-testing
-> it first.
-> It is a data race found by our testing tool. The detailed report is
-> showed below.
-
-As per our documentation, you MUST document what type of tool you are
-using when you find stuff like this, so we can push back and say "hey,
-your tool is broken!"  :)
-
-And as you never actually tested this, I'm kind of thinking that your
-tool is broken...
-
-> Kernel panic: ============ DATARACE ============
-> VarName 11902078599461647536, BlockLineNumber 36, IrLineNumber 3, is write 1
-> Function: found_watchpoint kernel/kccwf/wp_checker.c:126 [inline]
-> Function: watchpoints_monitor+0x1ac2/0x22a0 kernel/kccwf/wp_checker.c:217
-> Function: kccwf_rec_mem_access+0x275e/0x2b70
-> Function: n_tty_set_termios+0x5d1/0x37a0 drivers/tty/n_tty.c:1793
-> Function: tty_set_termios+0x112d/0x1b80 drivers/tty/tty_ioctl.c:348
-> Function: set_termios+0xc1b/0xca0 drivers/tty/tty_ioctl.c:512
-> Function: tty_mode_ioctl+0x5e5/0x9d0
-> Function: n_tty_ioctl_helper+0xe5/0x8f0 drivers/tty/tty_ioctl.c:982
-> Function: n_tty_ioctl+0x253/0x730 drivers/tty/n_tty.c:2509
-> Function: tty_ioctl+0x1cfb/0x3070 drivers/tty/tty_io.c:2801
-> Function: vfs_ioctl fs/ioctl.c:51 [inline]
-> Function: __do_sys_ioctl fs/ioctl.c:598 [inline]
-> Function: __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:584
-> Function: do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
-> Function: do_syscall_64+0xd2/0x200 arch/x86/entry/syscall_64.c:94
-> Function: entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> Function: 0x0
-
-What is panicing here?
-
-> ============OTHER_INFO============
-> VarName 16560329611981062523, BlockLineNumber 32, IrLineNumber 1,
-> watchpoint index 38236
-> Function: set_report_info+0xbd/0x2c0 kernel/kccwf/report.c:57
-> Function: setup_watchpoint kernel/kccwf/wp_checker.c:158 [inline]
-> Function: watchpoints_monitor+0xe0e/0x22a0 kernel/kccwf/wp_checker.c:239
-> Function: kccwf_rec_mem_access+0x275e/0x2b70
-> Function: input_available_p drivers/tty/n_tty.c:1923 [inline]
-> Function: n_tty_poll+0x3f5/0x16b0 drivers/tty/n_tty.c:2452
-> Function: tty_poll+0x224/0x4a0 drivers/tty/tty_io.c:2199
-> Function: vfs_poll include/linux/poll.h:82 [inline]
-> Function: select_poll_one fs/select.c:480 [inline]
-> Function: do_select+0xce7/0x13d0 fs/select.c:536
-> Function: core_sys_select+0x3e8/0x5d0 fs/select.c:677
-> Function: do_pselect fs/select.c:759 [inline]
-> Function: __do_sys_pselect6 fs/select.c:802 [inline]
-> Function: __se_sys_pselect6+0x1d8/0x240 fs/select.c:793
-> Function: do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
-> Function: do_syscall_64+0xd2/0x200 arch/x86/entry/syscall_64.c:94
-> Function: entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> =================END==============
-> 
-> > What error was reported that this now
-> > fixes?
-> 
-> Error: cannot pass bit-field as __auto_type initializer in C.
-> The detailed error is showed below.
-> 
-> drivers/tty/n_tty.c:1913:6: error: cannot pass bit-field as
-> __auto_type initializer in C
->     1913 |         if (data_race(ldata->icanon) && !L_EXTPROC(tty))
->          |             ^
->    include/linux/compiler.h:194:13: note: expanded from macro 'data_race'
->      194 |         auto __v = (expr);
->             \
->          |                    ^
->    1 error generated.
-
-That is the error that the first version of your patch generated when
-you actually built it, which proves you never actually tested it!
-
-Always test your changes, ESPECIALLY for core portions of the kernel
-that everyone relies on.
-
-> > What changed to cause this to now be needed?
-> 
-> In my initial v1 patch, I carelessly wrapped the bit-field directly in
-> the data_race() macro without locally compile-testing it.
-> The data_race(expr) macro internally utilizes __auto_type (or typeof).
-> And the C standard strictly prohibits passing a bit-field directly as
-> an initializer for __auto_type.
-> Adding !! forces the bit-field to be evaluated as a standard
-> boolean/integer expression, which bypasses this compiler restriction.
-> I sincerely apologize for the oversight in my initial patch and any
-> extra work it may have caused.
-> Thank you for your time and patience. I will submit a v3 patch if necessary.
-
-Your v1 patch was wrong, and not tested, and I'm asking what changed to
-require any of this?  What is wrong with the original code, and what
-changed to cause it to suddenly be wrong as this is probably one of the
-oldest parts of the kernel still in active use today.
-
-thanks,
-
-greg k-h
+Hi,
+If Linux (HLOS) owns the SE, allowing it to change the protocol when needed seems like a better usability model than the current design.
