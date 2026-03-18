@@ -1,105 +1,182 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from SJ2PR03CU001.outbound.protection.outlook.com (mail-westusazon11012069.outbound.protection.outlook.com [52.101.43.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D0E739282B;
-	Wed, 18 Mar 2026 14:19:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773843561; cv=none; b=ctk7FqVfEbD2/RaJE91QkOVJE9lgKLANz4wIBEy5kK95MfaEWL00hK94SY/U6QeoDW5TzW96V00L/R33vg1whmn1C2fKjP0zr/pX8yidZZbdIz0Avqj7SVrRXGMFjMp+d/HltxUgKgddNyduoefp6UU80tYqDLE6y1iQyUEvUQ4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773843561; c=relaxed/simple;
-	bh=pL+9AgAL3F3wRdPCa1QHTuK609k/1f2ZWXG3gFuWVY4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VIBVRmYmBq2bYVS887JkKqdohttqUpHfp79FktadEY3QA0PjPQ3qC+Wf72ugUPBZNWXWq2JcgfnslAo3z5VyjRrcc5yW7zpqpCN2azV+Z18yOF09g1OuXI04xGbTC6L1zyjlupjcU12kJAZ4LszltwgojERljSwlE+m4Rh+zVE0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=ZhaMIifP; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 629DF3939A9;
+	Wed, 18 Mar 2026 23:50:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.43.69
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773877846; cv=fail; b=gqGq7apNc1BhA6kUZZKqo8kvfqIlEGl4Kied0ij9BjuZoay1WNJONYsecLFj7U/m+ikZ6NZ/Bgk92kPJ96vgNCwYLg6rq4kCmpg+jdllw9Vu2wDPY/1c4NuWAGmYDZN5yiKcdUoLUSmoV+Pd1ySwoTdGoclbjKJk094E7sqR1j4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773877846; c=relaxed/simple;
+	bh=ygIhSFAM6e+1c6n3qmf8eOBme+aAolmw02Xiut44zi0=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=beJ0tyevA6YJc0FMQ/zU3QlJonSjj9JWT49CGCCwlEVzgsYwhpBHewae4OK2oLIMxFX+zE+qX68nHmptyL+zz6u23N/0NyiCUY9IXinWmmT2baKCcPHHHgeY4UIRzJeNZYRZVFch4cDRYusUKrdEFWHFjmbrxw5cS+6XA3vY4Ok=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=wKpv8XDl; arc=fail smtp.client-ip=52.101.43.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="ZhaMIifP"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D06A3C19421;
-	Wed, 18 Mar 2026 14:19:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1773843561;
-	bh=pL+9AgAL3F3wRdPCa1QHTuK609k/1f2ZWXG3gFuWVY4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ZhaMIifPFwUHxTAEClEjhWsFQcrgE2R4GXTqotwrcKE6CEPnVIq49gX8JLo3S9uSd
-	 J5/G1kwmw74trSok0ANAT/+34bMR/39Lcrnrq2f7xWnz93cezeKVnAMI2MYC4tqmaR
-	 nJg2BffI1I/l4lRG3IF639GaCiUERhKaKl3E72JY=
-Date: Wed, 18 Mar 2026 15:19:16 +0100
-From: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-To: Zhiyong Tao =?utf-8?B?KOmZtuW/l+WLhyk=?= <Zhiyong.Tao@mediatek.com>
-Cc: Project_Global_Digits_Upstream_Group <Project_Global_Digits_Upstream_Group@mediatek.com>,
-	"fred2599@gmail.com" <fred2599@gmail.com>,
-	Yenchia Chen =?utf-8?B?KOmZs+W9peWYiSk=?= <Yenchia.Chen@mediatek.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Vasanth Reddy <Vasanth.Reddy@mediatek.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Liguo Zhang =?utf-8?B?KOW8oOeri+WbvSk=?= <Liguo.Zhang@mediatek.com>,
-	"jirislaby@kernel.org" <jirislaby@kernel.org>,
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	"linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
-	"matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH] MEDIATEK: serial: 8250_mtk: Add ACPI support
-Message-ID: <2026031837-slimness-playset-a62b@gregkh>
-References: <20260105024103.2027085-1-zhiyong.tao@mediatek.com>
- <20260105024103.2027085-2-zhiyong.tao@mediatek.com>
- <2026010643-ladybug-tiring-7f3c@gregkh>
- <434e34f05bb5f87b59402811012e3a2f56f2182e.camel@mediatek.com>
- <6478a71ffca65e58fa19a5edbc25eb5f51a8cc12.camel@mediatek.com>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="wKpv8XDl"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=hBzBtaG702yy45jke0ewfT8X7DiQeQVoXUt2JuY8ikUfhfTI3jXmRSfFHHoLRfe2cAy1tSNy08pCqkniTuRl0SfbpkMTSrdblUqL+hI6hOCMcR5UKfrKpAJLcO5vK9wJhJD9lrsGIlZ+4TM2Xes+e4EV3P+3ltbbYdLVsl7DfMCYmHQ1wRvYLXI+FEaC28lAwlT4OaefcC3IPJlQ3CAUrTannyelXfNHhVGYJYZs38uKSo4xNgDUAo3aJcxUnukJecSedlDb77i6mjYO1Xt8bKj+n0hf8OLpLsv7zyfxT4SFQNwOTZSWvKOjyVAMSSobfJKVbJ7IwrpeyFB2vCjJTQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=nLbg1HDH6l1jiTK+VlQOSblYz6M6mENO37elpcq0i8w=;
+ b=vXP4jftYwy+QIsCiGSlyXR96xHP4UFvWn4+im5iT6Ykq2EfQ8ul2gq/6JbcaE6NSnOlDISz18+meiroCRWKYvNqoEUKrCrHDd37Lp03Frd9SEYdWGCKaOnVr7ykLUYV7gdQavuoIRuxeLSespB61weCkYZQpcpthwgtlJoeh2jK0ImJ5VxG2T2jnUGmnCa/oKYmWEf4IMiq7v/s6MXmw2sGwla+qEGPFvWGU+l9xQ78iuZjaocwHhPNq0Y2ZXcEDUtquM546Crfeq7uNeJZ/nN+0XKmcjUvQH6OfOkZ3INNJ/jMz7zB3NB+yzBso1aYP4Bb5ooT3U6ck3J6Wx5ETdQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=linuxfoundation.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nLbg1HDH6l1jiTK+VlQOSblYz6M6mENO37elpcq0i8w=;
+ b=wKpv8XDlNd5MrHitoRRfdUbJ7/T0NCLSYao+CZFh92ssSdHBM8kTz+ae6RmhYzahF/+3owUR6jHwKuTfBgXVwZ/QZExc6/lXK57s/TZ2aKUm+cp899bhFIpbwnO8R08jdtnFsL8AJs2SHscsrBDMsjxn5Y9mqLlylNF/pK6yKmQ=
+Received: from BLAPR03CA0083.namprd03.prod.outlook.com (2603:10b6:208:329::28)
+ by MN2PR12MB4359.namprd12.prod.outlook.com (2603:10b6:208:265::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9745.9; Wed, 18 Mar
+ 2026 23:50:38 +0000
+Received: from MN1PEPF0000F0E2.namprd04.prod.outlook.com
+ (2603:10b6:208:329:cafe::7a) by BLAPR03CA0083.outlook.office365.com
+ (2603:10b6:208:329::28) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9700.27 via Frontend Transport; Wed,
+ 18 Mar 2026 23:50:30 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
+Received: from satlexmb07.amd.com (165.204.84.17) by
+ MN1PEPF0000F0E2.mail.protection.outlook.com (10.167.242.40) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9723.19 via Frontend Transport; Wed, 18 Mar 2026 23:50:37 +0000
+Received: from satlexmb08.amd.com (10.181.42.217) by satlexmb07.amd.com
+ (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17; Wed, 18 Mar
+ 2026 18:50:37 -0500
+Received: from amd-BIRMANPLUS.mshome.net (10.180.168.240) by
+ satlexmb08.amd.com (10.181.42.217) with Microsoft SMTP Server id 15.2.2562.17
+ via Frontend Transport; Wed, 18 Mar 2026 18:50:36 -0500
+From: Jason Andryuk <jason.andryuk@amd.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+	<jirislaby@kernel.org>, Juergen Gross <jgross@suse.com>, Stefano Stabellini
+	<sstabellini@kernel.org>, Oleksandr Tyshchenko
+	<oleksandr_tyshchenko@epam.com>
+CC: Jason Andryuk <jason.andryuk@amd.com>, <linuxppc-dev@lists.ozlabs.org>,
+	<linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+	<xen-devel@lists.xenproject.org>
+Subject: [PATCH v2] hvc/xen: Check console connection flag
+Date: Wed, 18 Mar 2026 19:53:26 -0400
+Message-ID: <20260318235326.14568-1-jason.andryuk@amd.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <6478a71ffca65e58fa19a5edbc25eb5f51a8cc12.camel@mediatek.com>
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MN1PEPF0000F0E2:EE_|MN2PR12MB4359:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1b892e22-8846-4191-c11f-08de854927bf
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|36860700016|376014|82310400026|1800799024|56012099003|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	JkpSHBDnsSk4aQuRibFmwQXefmYAh6y5Xn1e11gx4juQwNPfvxDVrn5/fmALEA4rhp95KsS4HR73G2/gtxikIZeBvXrE4I2tH+WrboeZnPUvokSTwQdllxEjJwrEIl31NeZm1MZgJ4kKkKpYJQBGPeGzSV0i3wZ5w2YB/VBF54OCPeQoKt/hS2X66M50emcTi2+oligKZAeDbX2ETviI98fATgQrsjag6iXoWtv4/vz3A6FYvalQ5wLi0g6yRN2MWh7pLNqjZTL7M9bDSdsk/GDJ77IHKEzZBlrwOJ6JtXOIxnMw3VffbyXvJZg/c/DF7TSQi4GTKfidCkOKaNuhs5o+F5rn0fQgFXPcfwIYaIB0BnhiFu44BNS49/jpsdpWL/vmdbdcK8lSe4eNmrSh/kMvpNsrK1NMUSERKhCT+ZCv9xtLngWD+OEEjvC+PyK62U9tnqtmUEw3LJyXqmhjcTMG5zD8CZVNaGlMbm0i1GroMHJ9qZeSzhtnxiwRSuqsuVQFr/R976a0jsgdfthhqU1JPFExXVBXhDpkJq1kn5czvZvCtsNUt3xaKIx2YTaCXsSgb9UEgHtL8sItqncw91Dz7FwokLIZBcwrtqviSE0R/tHpC0rIKOWxooXypwgOJhfKC/c+iGcnEI1UvqUAKTWI/ZRHHbtfjKMTAqHOuMxsX2nBGqwPE1yBuXZnw10oAHUoLZ+VOSIOejs1IE/tGBL7HMu0e8FCKSZkGhKHo/s7uBIa9gptvno3fbNJcHmq8MFkXldRhscT4Oh7TwyQXg==
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700016)(376014)(82310400026)(1800799024)(56012099003)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	re72hxWdptHIQ8P0TrugEA9BkVeKN6QYE49F6BlYwS38FuCoV+FnEbeNfWLmzCILrqnVDCDRtwTN5KDMI9eoM68Dbysezgyflkxt6qMw9u/9gCLxxeNkI1VixNFdJYpeC0FJ5D7TdgQzxgo77AauPFMAFSlPEca3ufcNboYbBXNRodihLoguxCbGIJq88uGjBBxRFfN+/k9HouYnJVUnUz4mUchYLrlFgsPRG1uNxyTTfhZxbRhhlUJa3WWhypnhgYH80bf+ZP4ImoZVJYC9KRr+1yzAA+y4YGuLuWgskIFgJx576w4HlrkHFmPGcHtbTaqM1Zs1kSD1cacQTbNHwkrYSUmdNLHvmh/HP5dHoJbktaoXHERrqqeU6Lq40KZfMkTVtGduh5mtRXPu8mPTrBpEGx2KSwVHNkSLdqNZAxNmFgyGZ6j1t4gpgIw2H4U2
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Mar 2026 23:50:37.8718
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1b892e22-8846-4191-c11f-08de854927bf
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	MN1PEPF0000F0E2.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4359
 
-On Wed, Mar 18, 2026 at 12:12:36PM +0000, Zhiyong Tao (陶志勇) wrote:
-> On Wed, 2026-01-21 at 14:23 +0800, Zhiyong Tao wrote:
-> > On Tue, 2026-01-06 at 11:02 +0100, Greg KH wrote:
-> > > On Mon, Jan 05, 2026 at 10:39:55AM +0800, Zhiyong Tao wrote:
-> > > > From: "Zhiyong.Tao" <zhiyong.tao@mediatek.com>
-> > > > 
-> > > > Add ACPI support to 8250_mtk driver. This makes it possible to
-> > > > use UART on ARM-based desktops with EDK2 UEFI firmware.
-> > > > 
-> > > > Signed-off-by: Yenchia Chen <yenchia.chen@mediatek.com>
-> > > > Signed-off-by: Zhiyong.Tao <zhiyong.tao@mediatek.com>
-> > > > ---
-> > > >  drivers/tty/serial/8250/8250_mtk.c | 23 +++++++++++++++++++----
-> > > >  1 file changed, 19 insertions(+), 4 deletions(-)
-> > > 
-> > > This is a resend of the previous version, right?  Or did something
-> > > change?
-> > > 
-> > > confused,
-> > > 
-> > > greg k-h
-> > 
-> > ==> Hi Greg,
-> > Yes, previously Yenchia Chen helped to send out a version. Currently,
-> > this solution is specifically for the GB10 project and was made to
-> > support Windows ACPI settings. 
-> > 
-> > In actual application scenarios, the apdma clk will not be turned off
-> > in normal mode. It is only turned off in the SSPM microprocessor
-> > after
-> > entering standby, and when resuming, the apdma clk is re-enabled by
-> > SSPM.
-> > 
-> > As for other Linux projects, apdma still uses the DTS node.
-> > 
-> > Thanks
-> > 
-> 
-> Hi Greg,
-> Do you have other suggestion for this?
+When the console out buffer is filled, __write_console() will return 0
+as it cannot send any data.  domU_write_console() will then spin in
+`while (len)` as len doesn't decrement until xenconsoled attaches.  This
+would block a domU and nullify the parallelism of Hyperlaunch until dom0
+userspace starts xenconsoled, which empties the buffer.
 
-You can't just resend something and not say why you are resending it.
-Also, the authorship information seems to be backwards.
+Xen 4.21 added a connection field to the xen console page.  This is set
+to XENCONSOLE_DISCONNECTED (1) when a domain is built, and xenconsoled
+will set it to XENCONSOLE_CONNECTED (0) when it connects.
 
-thanks,
+Update the hvc_xen driver to check the field.  When the field is
+disconnected, drop the write with -ENOTCONN.  We only drop the write
+when the field is XENCONSOLE_DISCONNECTED (1) to try for maximum
+compatibility.  The Xen toolstack has historically zero initialized the
+console, so it should see XENCONSOLE_CONNECTED (0) by default.  If an
+implemenation used uninitialized memory, only checking for
+XENCONSOLE_DISCONNECTED could have the lowest chance of not connecting.
 
-greg k-h
+This lets the hyperlaunched domU boot without stalling.  Once dom0
+starts xenconsoled, xl console can be used to access the domU's hvc0.
+
+Paritally sync console.h from xen.git to bring in the new field.
+
+Reviewed-by: Stefano Stabellini <sstabellini@kernel.org>
+Signed-off-by: Jason Andryuk <jason.andryuk@amd.com>
+---
+v2:
+s/XENCONSOLED/XENCONSOLE/ in commit message
+Mention sync from xen.git in commit message
+R-b: Stefano
+---
+ drivers/tty/hvc/hvc_xen.c          |  3 +++
+ include/xen/interface/io/console.h | 13 +++++++++++++
+ 2 files changed, 16 insertions(+)
+
+diff --git a/drivers/tty/hvc/hvc_xen.c b/drivers/tty/hvc/hvc_xen.c
+index 7f0b6262488c..c407592442cd 100644
+--- a/drivers/tty/hvc/hvc_xen.c
++++ b/drivers/tty/hvc/hvc_xen.c
+@@ -139,6 +139,9 @@ static ssize_t domU_write_console(uint32_t vtermno, const u8 *data, size_t len)
+ 	if (cons == NULL)
+ 		return -EINVAL;
+ 
++	if (cons->intf->connection == XENCONSOLE_DISCONNECTED)
++		return -ENOTCONN;
++
+ 	/*
+ 	 * Make sure the whole buffer is emitted, polling if
+ 	 * necessary.  We don't ever want to rely on the hvc daemon
+diff --git a/include/xen/interface/io/console.h b/include/xen/interface/io/console.h
+index cf17e89ed861..687949bdebb1 100644
+--- a/include/xen/interface/io/console.h
++++ b/include/xen/interface/io/console.h
+@@ -19,6 +19,19 @@ struct xencons_interface {
+     char out[2048];
+     XENCONS_RING_IDX in_cons, in_prod;
+     XENCONS_RING_IDX out_cons, out_prod;
++/*
++ * Flag values signaling from backend to frontend whether the console is
++ * connected.  i.e. Whether it will be serviced and emptied.
++ *
++ * The flag starts as disconnected.
++ */
++#define XENCONSOLE_DISCONNECTED 1
++/*
++ * The flag is set to connected when the backend connects and the console
++ * will be serviced.
++ */
++#define XENCONSOLE_CONNECTED    0
++    uint8_t connection;
+ };
+ 
+ #endif /* __XEN_PUBLIC_IO_CONSOLE_H__ */
+-- 
+2.34.1
+
