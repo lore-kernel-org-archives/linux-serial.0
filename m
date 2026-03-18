@@ -1,275 +1,197 @@
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BA93388E5C
-	for <linux-serial@vger.kernel.org>; Wed, 18 Mar 2026 08:41:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773823321; cv=none; b=eDTC80ob0fu1/RXqKPilCV/hHpaP/G4RnV0PAzhCE6wA8S9PRC9QrXwB21vYgVChp2HktYquWovNnXpHbn4LuwytlLpvP1Z/XBd02rWKGe1FVTUVuYoK86Su1l0DxSeO2/SpQE7cgaD23485bp0lQcKOfgSUsQy8pmmycAtLcY0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773823321; c=relaxed/simple;
-	bh=toFDugHOMIQiTVQq1LUTExgDMOB2O89mqxVccj4llno=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=qI+O3f7keBYCOCuS4aM3KNSFe3i55FjX6IPzy+sSIHtvXQMz2GjRy9piCNOMqPK1V9RZ/xdsBbxVI0rC3j/l/HE0VrGYAOIjGQxIu5vs+A4iEwZMVR0uktrrnpXCDxtkFEzS+atfiMv+oqsjpauw31DXqNeYq+sou6J5YzVYSzg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Pd3C+f4T; arc=none smtp.client-ip=209.85.221.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EFDD36B058;
+	Wed, 18 Mar 2026 12:12:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=210.61.82.184
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773835968; cv=fail; b=Q5l4fvGUB9t9XufUPNg63LMHn1IMbaLdMIVgf2Bsames62+7VuEeHDdG9xf07Bcf8UHHj/Ntx3z8UV8DV2eKD8lbFy2/DeBzu912IsgqWrNqfm/HTnKQ1bmExZ3rLen7DbfVjf4UDg0yh5KQNbKd6e2AIA4vHuO/lI8nTHqHICo=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773835968; c=relaxed/simple;
+	bh=I+Hco7vnU/3rdBHWtg0lkBJAvijt64o9KCJuN4YZ4dw=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=C9JuGKB/qFpa2xQOJuBsUUnRLi84fobM6UDphfQRSW46UIsvHigL4AMzuKB7TNbz7eXrtLwiPsMKH6K/fblu9hnd3KVrpZQk/gjotJuKtQv5LubErZYXhvWA+KP8oBIKnUaRynOt8BSM7fXpMySYCILRTEy33T2JoPCiSj98SSo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com; spf=pass smtp.mailfrom=mediatek.com; dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b=kZc+EhAl; dkim=pass (1024-bit key) header.d=mediateko365.onmicrosoft.com header.i=@mediateko365.onmicrosoft.com header.b=dBevi0VL; arc=fail smtp.client-ip=210.61.82.184
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mediatek.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Pd3C+f4T"
-Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-439cd6b0aedso5216665f8f.1
-        for <linux-serial@vger.kernel.org>; Wed, 18 Mar 2026 01:41:56 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="kZc+EhAl";
+	dkim=pass (1024-bit key) header.d=mediateko365.onmicrosoft.com header.i=@mediateko365.onmicrosoft.com header.b="dBevi0VL"
+X-UUID: c35102ba22c311f1a39cd589f645bc18-20260318
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+	h=MIME-Version:Content-Transfer-Encoding:Content-ID:Content-Type:In-Reply-To:References:Message-ID:Date:Subject:CC:To:From; bh=I+Hco7vnU/3rdBHWtg0lkBJAvijt64o9KCJuN4YZ4dw=;
+	b=kZc+EhAlshim9vT9Jbw8kgjOgbmSUW8CeekkclUhApD3jfyuJcDYfPu7csTnMFNTwSk4P8QF4Xc7spqVAPrbeMvqtmhUpHr1gc0DTRSeucq3a9baZZgjNbeN1RuKbo770dmlAFynXGwMbKPAAqI4CGyD0uxJCjVHlmIVWLvZEkg=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.3.12,REQID:957c1db5-4d6e-483c-9e4f-1596d4873dc3,IP:0,U
+	RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
+	release,TS:0
+X-CID-META: VersionHash:e7bac3a,CLOUDID:8feeddd4-060f-4ecc-9ee0-121eeeb4a682,B
+	ulkID:nil,BulkQuantity:0,Recheck:0,SF:80|81|82|83|102|110|111|836|888|898,
+	TC:-5,Content:0|15|50,EDM:-3,IP:nil,URL:0,File:130,RT:0,Bulk:nil,QS:nil,BE
+	C:-1,COL:0,OSI:0,OSA:0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
+X-CID-BVR: 2,SSN|SDN
+X-CID-BAS: 2,SSN|SDN,0,_
+X-CID-FACTOR: TF_CID_SPAM_SNR
+X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
+X-UUID: c35102ba22c311f1a39cd589f645bc18-20260318
+Received: from mtkmbs09n1.mediatek.inc [(172.21.101.35)] by mailgw02.mediatek.com
+	(envelope-from <zhiyong.tao@mediatek.com>)
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+	with ESMTP id 2092264601; Wed, 18 Mar 2026 20:12:41 +0800
+Received: from mtkmbs10n1.mediatek.inc (172.21.101.34) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.29; Wed, 18 Mar 2026 20:12:40 +0800
+Received: from SI4PR04CU002.outbound.protection.outlook.com (172.21.101.237)
+ by mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server id
+ 15.2.2562.29 via Frontend Transport; Wed, 18 Mar 2026 20:12:40 +0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=J45hE77jbqNeuRdopF7VQhpmlyEqi7ZAnRqMTPSX1g0TGSkMGruRp5KmAyQp9QY9rPk5s77v+/CgZZQqOVvJy/c/vu9co69fpTlZtQ2l4nt+C1WCCm94sv3l0mO/xc212CNcnhjUFaH90/maVOIQOV9YAPwUk7vljPbYvCVeIcVkIeTxkpqZQAU3OROf/Ltz7T8G+/neN8G/BOUBqKjHjw2L84oFCoGNb0xNspHypLSAXQp3ps9uWgA7X736Ild+WGzT4wkWilGXldjCkdeBBGAeOY8uW+3dO+wYXmzxqCvUwOLtfUazINbtlHHediDWiMfauKSgksMgzQzsO2Psuw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=I+Hco7vnU/3rdBHWtg0lkBJAvijt64o9KCJuN4YZ4dw=;
+ b=MpejeJyc7PrAWa/fdW1ZYd8feAZgG7DocxsR7VTGSNphb1Gfw4rQnfmL14s9uK5DAfZ72JIqPBgaIbKMyq3sawuqCwbL0qXyNUAeFFaNffMJCMWjYhmqLN3UTferArGDL5nUD5FZfp73R1QmnVnCph5MOgn0CcE/G6X+5nISfwZzQVxWPe/kIS6z54O8cvTRPXQrVAdZoqnvdxqXDktrpMDbRZWU+++KwQRTzMoQ1SqAbAJiJKF5XPq3GPiBkAUCWzRC88KqyW+mSwFfhTsTvS4ri0MXFLS8PYncJf4jipwyCncM8E++4lJ/YUxtX7D0ArdH1WI6q3vX6bSbA2jyxA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mediatek.com; dmarc=pass action=none header.from=mediatek.com;
+ dkim=pass header.d=mediatek.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773823315; x=1774428115; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=HlK3Ik/10clZmiRR40tUFJQE1y1bmIBWKTM6WkisgFc=;
-        b=Pd3C+f4TlFy6VccF2ZkT2uCM96a3k09ZZ7M9YhBxEvRkEJUnk322Y+1J57EQ398ZC0
-         LoW7aiRs6t6gzOZywrQK9CSSmdsjmJ/dp4FDFM5HW3H9nVb7TCKlyTxJYffQXAuu8xLg
-         10XwoG61OlEEZYHBfA81oBomFmcV5ORlE3SEkU4FEe6iuXz0H8FFTXzQEwVTu59UFPWe
-         kNZ/JmvBnRR/hb4AoBXuv1dcPEQrcjyQdMOzFZy0fZ8Y2kALZC02YF1WMzIgGlsHUZBa
-         EB+vuuyUWukDjtfN04F7pMpqRPDIEXPC5LXyGTjzBp0YOQNQvU1UizxC4VbBGeVUNIJh
-         s6/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773823315; x=1774428115;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=HlK3Ik/10clZmiRR40tUFJQE1y1bmIBWKTM6WkisgFc=;
-        b=ozzdj4Uj947GzcD9gk9ZOt8tpz8eOXLEbiZsOhpESON9TKeYULFSm7zYz4WZtDdoR6
-         WI0VHfqTXGwSYndN/oarwHlljU0KTs9ICa2mGHQC710bpobxw3pWHVt7yN6d6Pd4HMTI
-         jiukWN4Ssj5TvrcmbbmAy48aKbwD200s0NdhH5iywROLEYDUYVJC9v4sEXPeLQAYkPJh
-         dRPGeZYfQIPlslfZ1/8ZDQhP3ojccjvEqTxvBgdLfeXrppuV5DJ7afumbNQLETlpEZ79
-         8xlXyEB99vjwq/SelyNj3JxylX47gBuyA7JUchMKx24x7uC0WFqhFleXsTq+PqVKDaC/
-         eOJQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWIGMnXQ+kz0eeALr6E2ljqUQIsP+e6sHWHjmdDx27q+t2J3g+5CCM81jTkkdZaseaJhJztx2PJmHLl1TY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxUAKRcLOj3iFTfgOu3uFEl3JLlMJ7EIgXyQwo22KXJ6vf0k8iy
-	a4AG0FuZnzTnTCGdHF+M/dE4ZnbGZJ0e+C4GUVPVgFI5iEFrtv0cwwD6
-X-Gm-Gg: ATEYQzzmsSOgrwq8JAgn71I0d6b093usmHSejjUIjjruUPmZgixPBrAfMRQqDtoi9fm
-	JXkpYEIyPRUTMpjiJNT4yFjwAOgVgamcfmvorgj5U+UMpN5NYECMTTIXcG/Ha8vv3jI4+oj3lCI
-	d+K0ymGXslYQcS4yI1xyM05Y27gZO+U/q2iyrzZowyFg85a+de1hsG+NtaEiu+8rNG8YCoYlQyG
-	ziOjmHGRc25AxtmlrEP7EejnW9q7OSVskkm8JMbt+Oh5fGg+oM9Y78+JnYaxbCSOkFMAFdC+oUa
-	7AYBPwxglZ7krxX9pM6Pg96z7Ws7sRGQZ0//BNlx5FYKzslHOiDIBpwYjXaYQSBhTHc/hkl7oLM
-	nEzmwo3XcvTrCVR/kDA3ziLb7rRWU2zVimHtQo7w4PHIomgPBf0UZOyJs+DcBZUDI7cleBXUDMs
-	IF7cFD1UjoL1V0PE+lZcyH2Cj1MF6YiIg7n92J1ttRO8Sm+N8n
-X-Received: by 2002:a05:6000:400f:b0:43b:4d37:cd3b with SMTP id ffacd0b85a97d-43b527c20b2mr3656925f8f.26.1773823315041;
-        Wed, 18 Mar 2026 01:41:55 -0700 (PDT)
-Received: from localhost.localdomain ([2a00:23c4:a758:8a01:d643:4385:f93a:2085])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43b5184961csm6389350f8f.6.2026.03.18.01.41.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Mar 2026 01:41:54 -0700 (PDT)
-From: Biju <biju.das.au@gmail.com>
-X-Google-Original-From: Biju <biju.das.jz@bp.renesas.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Michael Turquette <mturquette@baylibre.com>,
-	Stephen Boyd <sboyd@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Magnus Damm <magnus.damm@gmail.com>
-Cc: Biju Das <biju.das.jz@bp.renesas.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-clk@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-	Biju Das <biju.das.au@gmail.com>
-Subject: [PATCH v5 0/9] Add support for Renesas RZ/G3L SoC and SMARC-EVK platform
-Date: Wed, 18 Mar 2026 08:41:35 +0000
-Message-ID: <20260318084151.122674-1-biju.das.jz@bp.renesas.com>
-X-Mailer: git-send-email 2.43.0
+ d=mediateko365.onmicrosoft.com; s=selector2-mediateko365-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=I+Hco7vnU/3rdBHWtg0lkBJAvijt64o9KCJuN4YZ4dw=;
+ b=dBevi0VLSFkUZBa/3io+tiKRmV31OExa8i7m9UDGH8+fjpov8RhEsoys6S9ezXbZA3gxY+qWC+nvS0B5ZPf9vbIhsLf1v3yp6LjklJzJbCThohMp0axXfqHr6sRrJpCvGpLUD11HME5CFrupg9gmNzj9K3fM5nCGEonlYOqukA4=
+Received: from SI2PR03MB5690.apcprd03.prod.outlook.com (2603:1096:4:15d::13)
+ by TYSPR03MB8110.apcprd03.prod.outlook.com (2603:1096:400:479::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9723.19; Wed, 18 Mar
+ 2026 12:12:36 +0000
+Received: from SI2PR03MB5690.apcprd03.prod.outlook.com
+ ([fe80::7361:3cf0:b441:7d0e]) by SI2PR03MB5690.apcprd03.prod.outlook.com
+ ([fe80::7361:3cf0:b441:7d0e%6]) with mapi id 15.20.9723.018; Wed, 18 Mar 2026
+ 12:12:36 +0000
+From: =?utf-8?B?WmhpeW9uZyBUYW8gKOmZtuW/l+WLhyk=?= <Zhiyong.Tao@mediatek.com>
+To: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+CC: Project_Global_Digits_Upstream_Group
+	<Project_Global_Digits_Upstream_Group@mediatek.com>, "fred2599@gmail.com"
+	<fred2599@gmail.com>, =?utf-8?B?WWVuY2hpYSBDaGVuICjpmbPlvaXlmIkp?=
+	<Yenchia.Chen@mediatek.com>, AngeloGioacchino Del Regno
+	<angelogioacchino.delregno@collabora.com>, Vasanth Reddy
+	<Vasanth.Reddy@mediatek.com>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, =?utf-8?B?TGlndW8gWmhhbmcgKOW8oOeri+WbvSk=?=
+	<Liguo.Zhang@mediatek.com>, "jirislaby@kernel.org" <jirislaby@kernel.org>,
+	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+	"linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
+	"matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH] MEDIATEK: serial: 8250_mtk: Add ACPI support
+Thread-Topic: [PATCH] MEDIATEK: serial: 8250_mtk: Add ACPI support
+Thread-Index: AQHcfey/SO6Kleh1dki/LWqHFZdmJbVE6yeAgBdV9YCAWGQMgA==
+Date: Wed, 18 Mar 2026 12:12:36 +0000
+Message-ID: <6478a71ffca65e58fa19a5edbc25eb5f51a8cc12.camel@mediatek.com>
+References: <20260105024103.2027085-1-zhiyong.tao@mediatek.com>
+	 <20260105024103.2027085-2-zhiyong.tao@mediatek.com>
+	 <2026010643-ladybug-tiring-7f3c@gregkh>
+	 <434e34f05bb5f87b59402811012e3a2f56f2182e.camel@mediatek.com>
+In-Reply-To: <434e34f05bb5f87b59402811012e3a2f56f2182e.camel@mediatek.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=mediatek.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SI2PR03MB5690:EE_|TYSPR03MB8110:EE_
+x-ms-office365-filtering-correlation-id: c20c5ac3-1f74-4cb9-5c33-08de84e7a445
+x-ld-processed: a7687ede-7a6b-4ef6-bace-642f677fbe31,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|376014|366016|1800799024|38070700021|18002099003|22082099003|56012099003;
+x-microsoft-antispam-message-info: B3PyhR1taQR4SVDgrLDsi5Y6MQkeHDC0jVO2wHgthMGw1hv8Ffi5Ht/yb/3Xu+os0Zs8HIYcZJNsrlB2l7K9Qdf80IHeGQiMspEXrCl7ZJ38FipIidE0fohX/nXx3viirBNwmbrNObP0InENPXeTm9GwbejneZynr9yziVldNnVcs5G3bNRx6NPyqrqIgcd8vwrgl8HU7/SWnynLylfgXJk5X+9SSqCU3vgJgkt00xYy2uXbaNUerGHB9a8CS6Ah/UX9LJwEMqq31pciXBIfUQDm/t6bR0fSPD2d4dVB0rltHnb0NWAAsaFG4hHO0rBTQVOoyiZIojWnog1GHccnftMxjOvT7z8PdwuVQVBLq2VfmV8HQ+6j0kscaCYtV6p1fNJZUkiJT1rK9l9rhPknm6dJ0/FKnWDHvy8GoUYxgXWvasY8txb8WBjo/V4ZaiN3GEEYB6lOMyWbCs4dbtQ2TuYVv98y1naSg5Zoxjyj52UR8HCkT/AkUOHocnG9H98y9wgWnjX+8y6ck3EucIKHNlcYeyAEL4CEqthxK6AUL7OZufeEjMLXPCPEC0bz/YG2ILrr6uxVjHAmTBqVqy8/VWwWOiAJJlpm4RtwSi6lfP5dH7dQYuXTB4xLhw6NLchB6MffNG/AwXb/4lIPzAhPxwct1c2Hxdjw7Yo6h+pqrp0StxPP3JW9hQa4bWG7yRfu1Z+UDK1DbGBF4qgjWjaga27ElaoPuLXMrU/dXFy7Oy9cDoKKFJzb2jgb0re3xO0g6P4G3b0OvhhIX9WBA08Y1EQ1uss/oDdNngOqcWKfuEU=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SI2PR03MB5690.apcprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(38070700021)(18002099003)(22082099003)(56012099003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?c1JkU2I1YU1ocVdveUN6WjBEVWZWSlJ1VlZ0TmlweGNobmh6K2hxMU0xTG9X?=
+ =?utf-8?B?cGtxUURpVUxQMzBKSlRWanNIdGNCelgyWDNmMGRRSUloQ3IyRXhFVlNyU3Zw?=
+ =?utf-8?B?emVodnFCRFFCaFNLYWdFanlHYU5yUEsxNDE0VUdONnlOVnZLcUx5Yll2WDhw?=
+ =?utf-8?B?Tmp2enAxWk5pWDhqeWpIa1FaV2hoa29vRk02SElJOEtOWHlTSlFIMVNKaEVm?=
+ =?utf-8?B?ZzZRem02KzErNW5VZlVTamNwZEFzNGEyOHM1MEk2Sjk2UFJiYlBDLzREbG01?=
+ =?utf-8?B?R1R2enMrNzJreHJKblk3amdoMTlhd05WZmM0eC9vWE9jelphLzRZQXNjVlZU?=
+ =?utf-8?B?Zy9nV2xDOHVybTJOOHZSQnVtNUtmOU9BTGl4M2RFVm4rSlB3ZVB1eWlNSjZ5?=
+ =?utf-8?B?TTNiTE5JbjNIODlxQjA4eTlKdzhrOEtmQkR0SFZOaW5zVDhQS3J6UTk0bTlL?=
+ =?utf-8?B?TVlIMTlnRUo3Y3JoV25odGFmR2FJbFZaSFVWYStlUE91QVE3aGY0RUkzUkI4?=
+ =?utf-8?B?M3R1c09PVXRlMDlMSXpMcTh3QTZ6TVRUNGgrWXpQaU9qK25aN1VHTGxxbkRu?=
+ =?utf-8?B?VzVaWDJwV1AyUG5oSmZSTDUxWmVaeGc2akZhRnJjOVlTQmlYb0RKTjlndmk4?=
+ =?utf-8?B?Q0plNGVDYTRyRUtTVHR3WEZSSE1ZOTY0RUc5U3hkOUdrTU8xNVpOWDdDa1dv?=
+ =?utf-8?B?Szk1dlNOWE5xandQM2xERDJMdi9YM1gyL1RoMWQxNXZZWS9yaUo3L3JiUERU?=
+ =?utf-8?B?NjdFQXc4UlkvazN5aEJDY0g3UW8yYkpjaEhiaUdZck81NzNsYjd3MERSck9L?=
+ =?utf-8?B?RHloamYxaGszRitSdlpQbkVQZ0FpM2ZCY0I0bm9rUjNQWkI0bUNmNVFtOFRK?=
+ =?utf-8?B?UEhqSU5KaHJXZ2ZLNjFkNS82ZDNBQ3hSSWpBZnlxckZGVFdaSHhoSlVSY3Q0?=
+ =?utf-8?B?UkhiR2lna0pvalZ2UmZwNXVpV3plUzU0c3NHWFJxUDZ0SlhjNlJkTC84dUNC?=
+ =?utf-8?B?ZTlEbFRSQ2p1bktXN0RMelcrVlZKRWJJNFd3QmdKSDArWTVFSU11dG9FMnkr?=
+ =?utf-8?B?NWhTYWpZN0JTUngzbjJ2VUo0a2Z3b1VaM0hQdzhBTi9lR2I0Sm5mcXB3djFu?=
+ =?utf-8?B?UjN2ZEZtWGxYc05TTmFJcjVOUzJhK1hJVkl5d29NSCtVOFRESU5YMkpYd011?=
+ =?utf-8?B?Nm5WM1hNaXJuQUUvK1A1ZlVXM09HUG9tQklyZEh2NTNDZGIvYU1Zb1hVNGRI?=
+ =?utf-8?B?ZVdDME0wOWV2czRURXlkemhpMzNuNTREeWFqdG9KK0xycHdZM2dZR3lCbHNW?=
+ =?utf-8?B?NEVUakVUcXMxa2RsalRVRE84U0dOY3pCUW4vYkp1bzB2T2hsTDJtb3U1eTdT?=
+ =?utf-8?B?U3FhM2d5K0ZHcXIvS2daamt4elc0WUluWlE5Yy9iQkEzYWtIYmVxODdpTzJq?=
+ =?utf-8?B?bnZsQzB3OWI5U3hOcXB0d2RFR3N0RGxDcEhKa1BncWprRm5GZVNONHIvWWl5?=
+ =?utf-8?B?cm1RZEVwZ0I5MHo1dVN6N3FSTTd2TDFYb3JDRlU1dSt4VTNWOXdweTM5TGZT?=
+ =?utf-8?B?V3VORjl6K044KzZUTE51bUVHNDFva2M2TmFWRGlZV0tCSnNDUlRHbmRnZXB3?=
+ =?utf-8?B?TktrRGRDTXVVL2pJWmVtaUxyK2tkbFpPcy9KQnRyS0dHUHdydjgwKzNHS1c0?=
+ =?utf-8?B?dWk0KzY4WnRIV2RKTWZDdkxsalRQMVh6cHgvQU0yUjVrZytVZlU2NGhkVmtP?=
+ =?utf-8?B?QmZyWXdrNXVSZmN4ZDNkVy9kNitjSDFRanpnZ3p1eTlQc1oyWkRqdHRBbFRI?=
+ =?utf-8?B?aGI1S1J1aC80YVErNGpOekJQMWVVdC9MYXRwdWdkZlZPNmQweFRTYkZ3U2R6?=
+ =?utf-8?B?RGtROXo0b1dMVi95Z3NSNk1Ic3JUd0R1aEwzT0RINitZc1doL0t6RlFYdERT?=
+ =?utf-8?B?L2hGY2VxNW56MktGT3Rxb3VlWkZjeGhxeXoxRmJTTnNGU2YzR1RhM3BtTXUx?=
+ =?utf-8?B?b2kzNVM2a2htVE4rL2RvZnd5YzhMMVN4MGNOVXVKWXRRQVI3TG5jQVZwVnM2?=
+ =?utf-8?B?UVFtbGhmUEtDOFhaOU9vTzFmNElUVEFBYzhTaGFvQzlkQ1hqZmhoUzFoUHRx?=
+ =?utf-8?B?Tjg0Z1NJRnRFUGRkeHcwWTJPekZUOGdiQUc2dGRkTmdudGJnWUZreFdzR2ZC?=
+ =?utf-8?B?empLVGFJbVhaamRESSt4cFE5M1N4NWJ2NGpiZXZ0VXRhd3hsWlBJakkxVUNr?=
+ =?utf-8?B?aFdPbU50eHRIaFNLYXgyUEk5VjdtM201OTVHSzBFMU14ZXU4SW05SncxTEps?=
+ =?utf-8?B?OTBvY0Jyd0dCWXJJbXZDTEZlMjhRblo3Vm93OVBmZnZ6TklGMlZra0FSZkJm?=
+ =?utf-8?Q?IT79ixboxsMXT73Q=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <5DAB0CF4227C9F42AEF846303DE5F1D6@apcprd03.prod.outlook.com>
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Exchange-RoutingPolicyChecked: g3MXuQ3akGvEv8GIUnPju5PBzwTYsikGd7RDS32gvW5gpij1EGHLZcvKXWHYsqSHRhsw2467jR71hNstaQWYJhAonu1Wby/yJf4d11AKMuL6tgqXx43nhubsxUder732IoWCh8WjpV7si9LooybiIOF/EdzClcqkDKXRR/T8CiSGUfDQ69L6UHs8cT4rpXLLmcFt7gM7GmUB7qXID9bGun4sXFd42Rhta7JxGJGynlIFtxl4OuY0BaeQjOUgmUC5jOObeOxcAKCwnVSIhzZE5D7cMbqR0m28RSLrxvPB7myGXAzSUNPJXQ4l2r4ZU0RtNJkBofAeSnbrBQPF3jrVlg==
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SI2PR03MB5690.apcprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c20c5ac3-1f74-4cb9-5c33-08de84e7a445
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Mar 2026 12:12:36.1385
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a7687ede-7a6b-4ef6-bace-642f677fbe31
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: pTt0T2sHyW8wFoN0/QJWHRQZ5rd4vfISmmZTgxqHaE1DKpmVSfaixGEyDLU5SSuTEDz4olvPcs9CZLGuIGfw518CnUFjO9SA0cRx4DTUkJU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYSPR03MB8110
+X-MTK: N
 
-From: Biju Das <biju.das.jz@bp.renesas.com>
-
-Hi all,
-
-This patch series adds initial support for the Renesas RZ/G3L SoC and
-RZ/G3L SMARC EVK platform. The RZ/G3L device is a general-purpose
-microprocessor with a quad-core CA-55, single core CM-33, Mali-G31
-3-D Graphics and other peripherals.
-
-Support for the below list of blocks is added in the SoC DTSI (r9a08g046.dtsi):
-
- - EXT CLK
- - 4X CA55
- - SCIF
- - CPG
- - GIC
- - ARMv8 Timer
-
-This series also adds SCIF support for the RZ/G3L SMARC EVK board (r9a08g046l48-smarc.dts).
-
-v4->v5:
- * Rebased to next-20260317.
-v3->v4:
- * Dropped SoC identification patches as it is accepted for renesas-devel.
- * Updated commit description related to core clocks section in the
-    hardware manual
- * Dropped CLK_P4_DIV2 from core clocks
- * Added MIPI_DSI_PLLCLK and USB_SCLK to core clocks
- * Dropped LVDS_PCLK  module clock
- * Added BSC_X_PRESET_BSC reset
- * Moved the patch series from [1] to here as it is boot-dependent.
- * Updated commit description
- * Updated LAST_DT_CORE_CLK with R9A08G046_USB_SCLK
- * Fixed typo 2->8 in dtable_4_128[].
- * Added critical reset table r9a08g046_critical_resets[]
- * Updated num_resets
- * Added crit_resets and num_crit_resets to r9a08g046_cpg_info.
- * Fixed typo R0A08G046L->R9A08G046L in commit description
- * Dropped R9A08G046L46 from commit description
- * Dropped unused audio_clk{1,2} andcan_clk device nodes
- * Reordered i2c device node and updated reg entries by using lower-case
-   hexadecimal number
- * Added placeholder in pinctrl node
- * Dropped unused DMAC device node
- * Added pcie node with placeholder
- * Collected the tags.
- * Updated commit description for patch#8
-
-[1] https://lore.kernel.org/all/20260306134228.871815-1-biju.das.jz@bp.renesas.com/
-v2->v3:
- * Added macros R9A08G046_ETH{0,1}_CLK_{TX,RX}_I_RMII in r9a08g046-cpg.h.
- * Keep the tag from Conor as it is trivial change for just adding macros.
-v1->v2:
- * Dropped scif bindings patch as it is accepted.
- * Collected tags.
- * Squashed the patch#3 and #4
- * Documented GE3D/VCP for all SoC variants
- * Documented external ethernet clocks as it is a clock source for MUX
-   inside CPG
- * Updated commit description for bindings.
- * Keep the tag from Conor as it is trivial change for adding more
-   clks.
- * Added CLK_ETH{0,1}_TXC_TX_CLK_IN and CLK_ETH{0,1}_RXC_RX_CLK_IN clocks
-   in clk table.
- * Dropped R9A08G046_IA55_PCLK from critical clock list.
- * Added external clocks eth{0,1}_txc_tx_clk and eth{0,1}_rxc_rx_clk
-   in soc dtsi as it needed for cpg as it is a clock source for mux.
- * Updated cpg node.
- * Dropped gpio.h header from SoM dtsi.
- * Dropped scif node as it is already included in common platform
-   file.
-
-Test logs:
-/ #  uname -r
-7.0.0-rc4-next-20260317-g8e0ac8206088
-/ # cat /proc/cpuinfo
-processor       : 0
-BogoMIPS        : 48.00
-Features        : fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp
-CPU implementer : 0x41
-CPU architecture: 8
-CPU variant     : 0x2
-CPU part        : 0xd05
-CPU revision    : 0
-
-processor       : 1
-BogoMIPS        : 48.00
-Features        : fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp
-CPU implementer : 0x41
-CPU architecture: 8
-CPU variant     : 0x2
-CPU part        : 0xd05
-CPU revision    : 0
-
-processor       : 2
-BogoMIPS        : 48.00
-Features        : fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp
-CPU implementer : 0x41
-CPU architecture: 8
-CPU variant     : 0x2
-CPU part        : 0xd05
-CPU revision    : 0
-
-processor       : 3
-BogoMIPS        : 48.00
-Features        : fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp
-CPU implementer : 0x41
-CPU architecture: 8
-CPU variant     : 0x2
-CPU part        : 0xd05
-CPU revision    : 0
-
-/ # cat /proc/interrupts
-           CPU0       CPU1       CPU2       CPU3
- 11:        104        191        429         62    GICv3  27 Level     arch_timer
- 14:          0          0          0          0    GICv3 418 Level     100ac000.serial:rx err
- 15:          4          0          0          0    GICv3 420 Level     100ac000.serial:rx full
- 16:        229          0          0          0    GICv3 421 Level     100ac000.serial:tx empty
- 17:          0          0          0          0    GICv3 419 Level     100ac000.serial:break
- 18:         17          0          0          0    GICv3 422 Level     100ac000.serial:rx ready
-IPI0:         3         16         13         21       Rescheduling interrupts
-IPI1:       315        240        180        217       Function call interrupts
-IPI2:         0          0          0          0       CPU stop interrupts
-IPI3:         0          0          0          0       CPU stop NMIs
-IPI4:         0          0          0          0       Timer broadcast interrupts
-IPI5:         0          0          0          0       IRQ work interrupts
-IPI6:         0          0          0          0       CPU backtrace interrupts
-IPI7:         0          0          0          0       KGDB roundup interrupts
-Err:          0
-/ # cat /proc/meminfo
-MemTotal:        1887304 kB
-MemFree:         1852164 kB
-MemAvailable:    1819524 kB
-/ # cat /sys/devices/soc0/family
-RZ/G3L
-/ # cat /sys/devices/soc0/machine
-Renesas SMARC EVK version 2 based on r9a08g046l48
-/ # cat /sys/devices/soc0/soc_id
-r9a08g046
-/ # cat /sys/devices/soc0/revision
-0
-dmesg | grep r9a
-[    0.000000] Machine model: Renesas SMARC EVK version 2 based on r9a08g046l48
-[    0.066480] renesas-rz-sysc 11020000.system-controller: Detected Renesas RZ/G3L r9a08g046 Rev 0
-
-Biju Das (9):
-  dt-bindings: clock: Document RZ/G3L SoC
-  clk: renesas: rzg2l-cpg: Add support for critical resets
-  clk: renesas: r9a07g04{3,4}/r9a08g045-cpg: Add critical reset entries
-  clk: renesas: rzg2l-cpg: Re-enable critical module clocks during
-    resume
-  clk: renesas: Add support for RZ/G3L SoC
-  arm64: dts: renesas: Add initial DTSI for RZ/G3L SoC
-  arm64: dts: renesas: Add initial support for RZ/G3L SMARC SoM
-  arm64: dts: renesas: renesas-smarc2: Move usb3 nodes to board DTS
-  arm64: dts: renesas: Add initial device tree for RZ/G3L SMARC EVK
-    board
-
- .../bindings/clock/renesas,rzg2l-cpg.yaml     |  40 +-
- arch/arm64/boot/dts/renesas/Makefile          |   2 +
- arch/arm64/boot/dts/renesas/r9a08g046.dtsi    | 215 +++++++++++
- .../boot/dts/renesas/r9a08g046l48-smarc.dts   |  37 ++
- arch/arm64/boot/dts/renesas/r9a08g046l48.dtsi |  13 +
- .../boot/dts/renesas/r9a09g047e57-smarc.dts   |   6 +
- .../boot/dts/renesas/renesas-smarc2.dtsi      |   8 -
- .../boot/dts/renesas/rzg3l-smarc-som.dtsi     |  20 +
- drivers/clk/renesas/Kconfig                   |   7 +-
- drivers/clk/renesas/Makefile                  |   1 +
- drivers/clk/renesas/r9a07g043-cpg.c           |   8 +
- drivers/clk/renesas/r9a07g044-cpg.c           |  13 +
- drivers/clk/renesas/r9a08g045-cpg.c           |   9 +
- drivers/clk/renesas/r9a08g046-cpg.c           | 153 ++++++++
- drivers/clk/renesas/rzg2l-cpg.c               |  80 ++++
- drivers/clk/renesas/rzg2l-cpg.h               |   8 +
- include/dt-bindings/clock/r9a08g046-cpg.h     | 342 ++++++++++++++++++
- 17 files changed, 948 insertions(+), 14 deletions(-)
- create mode 100644 arch/arm64/boot/dts/renesas/r9a08g046.dtsi
- create mode 100644 arch/arm64/boot/dts/renesas/r9a08g046l48-smarc.dts
- create mode 100644 arch/arm64/boot/dts/renesas/r9a08g046l48.dtsi
- create mode 100644 arch/arm64/boot/dts/renesas/rzg3l-smarc-som.dtsi
- create mode 100644 drivers/clk/renesas/r9a08g046-cpg.c
- create mode 100644 include/dt-bindings/clock/r9a08g046-cpg.h
-
--- 
-2.43.0
-
+T24gV2VkLCAyMDI2LTAxLTIxIGF0IDE0OjIzICswODAwLCBaaGl5b25nIFRhbyB3cm90ZToNCj4g
+T24gVHVlLCAyMDI2LTAxLTA2IGF0IDExOjAyICswMTAwLCBHcmVnIEtIIHdyb3RlOg0KPiA+IE9u
+IE1vbiwgSmFuIDA1LCAyMDI2IGF0IDEwOjM5OjU1QU0gKzA4MDAsIFpoaXlvbmcgVGFvIHdyb3Rl
+Og0KPiA+ID4gRnJvbTogIlpoaXlvbmcuVGFvIiA8emhpeW9uZy50YW9AbWVkaWF0ZWsuY29tPg0K
+PiA+ID4gDQo+ID4gPiBBZGQgQUNQSSBzdXBwb3J0IHRvIDgyNTBfbXRrIGRyaXZlci4gVGhpcyBt
+YWtlcyBpdCBwb3NzaWJsZSB0bw0KPiA+ID4gdXNlIFVBUlQgb24gQVJNLWJhc2VkIGRlc2t0b3Bz
+IHdpdGggRURLMiBVRUZJIGZpcm13YXJlLg0KPiA+ID4gDQo+ID4gPiBTaWduZWQtb2ZmLWJ5OiBZ
+ZW5jaGlhIENoZW4gPHllbmNoaWEuY2hlbkBtZWRpYXRlay5jb20+DQo+ID4gPiBTaWduZWQtb2Zm
+LWJ5OiBaaGl5b25nLlRhbyA8emhpeW9uZy50YW9AbWVkaWF0ZWsuY29tPg0KPiA+ID4gLS0tDQo+
+ID4gPiDCoGRyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTBfbXRrLmMgfCAyMyArKysrKysrKysr
+KysrKysrKysrLS0tLQ0KPiA+ID4gwqAxIGZpbGUgY2hhbmdlZCwgMTkgaW5zZXJ0aW9ucygrKSwg
+NCBkZWxldGlvbnMoLSkNCj4gPiANCj4gPiBUaGlzIGlzIGEgcmVzZW5kIG9mIHRoZSBwcmV2aW91
+cyB2ZXJzaW9uLCByaWdodD/CoCBPciBkaWQgc29tZXRoaW5nDQo+ID4gY2hhbmdlPw0KPiA+IA0K
+PiA+IGNvbmZ1c2VkLA0KPiA+IA0KPiA+IGdyZWcgay1oDQo+IA0KPiA9PT4gSGkgR3JlZywNCj4g
+WWVzLCBwcmV2aW91c2x5IFllbmNoaWEgQ2hlbiBoZWxwZWQgdG8gc2VuZCBvdXQgYSB2ZXJzaW9u
+LiBDdXJyZW50bHksDQo+IHRoaXMgc29sdXRpb24gaXMgc3BlY2lmaWNhbGx5IGZvciB0aGUgR0Ix
+MCBwcm9qZWN0IGFuZCB3YXMgbWFkZSB0bw0KPiBzdXBwb3J0IFdpbmRvd3MgQUNQSSBzZXR0aW5n
+cy4gDQo+IA0KPiBJbiBhY3R1YWwgYXBwbGljYXRpb24gc2NlbmFyaW9zLCB0aGUgYXBkbWEgY2xr
+IHdpbGwgbm90IGJlIHR1cm5lZCBvZmYNCj4gaW4gbm9ybWFsIG1vZGUuIEl0IGlzIG9ubHkgdHVy
+bmVkIG9mZiBpbiB0aGUgU1NQTSBtaWNyb3Byb2Nlc3Nvcg0KPiBhZnRlcg0KPiBlbnRlcmluZyBz
+dGFuZGJ5LCBhbmQgd2hlbiByZXN1bWluZywgdGhlIGFwZG1hIGNsayBpcyByZS1lbmFibGVkIGJ5
+DQo+IFNTUE0uDQo+IA0KPiBBcyBmb3Igb3RoZXIgTGludXggcHJvamVjdHMsIGFwZG1hIHN0aWxs
+IHVzZXMgdGhlIERUUyBub2RlLg0KPiANCj4gVGhhbmtzDQo+IA0KDQpIaSBHcmVnLA0KRG8geW91
+IGhhdmUgb3RoZXIgc3VnZ2VzdGlvbiBmb3IgdGhpcz8NCg0KVGhhbmtzDQoNCg0K
