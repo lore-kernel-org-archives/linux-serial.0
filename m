@@ -1,347 +1,103 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80D792AEF5;
-	Wed, 18 Mar 2026 03:34:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF90437474E
+	for <linux-serial@vger.kernel.org>; Wed, 18 Mar 2026 08:16:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773804877; cv=none; b=Q4IuCanYJv1fHlHyoycZY08YL6Lb/q22aFSFz0c+INMb1eAniGT7s5wMml1yLvrl4ory0jey5vrvbOu/pMTpdRmM6CQAdIgdltf3QDJaiyhgwbVSysywByPloRr0PETISyaZkXCwmZ6qaOdoBQO4fT1fGIVBoAyifZWpTp//q5g=
+	t=1773821812; cv=none; b=jX4jrB9EkwsrEih+4doPYl7tj2wroqEOnm04oQX2uzWu7AJ/GPEifijkXCpDBmzOntk54xNH93tJALUb7nXWNTKGjqu9COUw6k1V0fsJno7Pf+KPAMXe/DHzvG/EvffzhyxAXh4lHj7USLpBlf654aVIuQ3hawGeOyYRHezesFw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773804877; c=relaxed/simple;
-	bh=/2/SBIzIdR3PZ4M8jjOi91iS4jaETueAP3+eBIV8ysM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JcbO2COTLABQRCkXEJuedXwrjaVt4d6ijSwayESkiRcxc7tbEHaEGqGbRwbBHrAawq03GQYE+ZrMvtxzp0pBQGoo64TTxUqsa+cwx2A1y0/c+mIAeb7IIIt3h+mVQT7Z2t1jq/E68+sToDJGcejsqpx/EP/+YoCi8j+NvqLNq74=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZB9Q99Ul; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZB9Q99Ul"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C11DCC19421;
-	Wed, 18 Mar 2026 03:34:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773804877;
-	bh=/2/SBIzIdR3PZ4M8jjOi91iS4jaETueAP3+eBIV8ysM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ZB9Q99UlzL+AgiMYGkaJQYJc6Tsqk4VzkVmWkpanuHFytqx63D6uHxRXQjNk2r1fe
-	 o158Y+icpZPAk1WWAPebopTfXaDSl13TGoENld0PK4AIZUi8FhfyoMXD6FwsVCKXyt
-	 dJySRTaX8v19FFXj6K0TrRKI44LPalAwwAYnWJXdBjjhvKFugnfFm3uylVPgwXAB0/
-	 D5UHgDUpML1ykLNmD4tC2FrVIoJDMwBGJq87ad4y73t6ZYpMESdds2yYwUi8ivFFAx
-	 7zCkq4I+OgM5MpxT0MVjoEYItXK/wbxnb4bBHrPM3mPsLKF4basmwFjf5fDJkoVn4Q
-	 Fp67c+axrxPEA==
-Date: Wed, 18 Mar 2026 09:04:24 +0530
-From: Manivannan Sadhasivam <mani@kernel.org>
-To: Bartosz Golaszewski <brgl@kernel.org>
-Cc: manivannan.sadhasivam@oss.qualcomm.com, 
-	Manivannan Sadhasivam via B4 Relay <devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-kbuild@vger.kernel.org, platform-driver-x86@vger.kernel.org, linux-pci@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org, 
-	linux-pm@vger.kernel.org, Stephan Gerhold <stephan.gerhold@linaro.org>, 
-	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, linux-acpi@vger.kernel.org, 
-	Hans de Goede <johannes.goede@oss.qualcomm.com>, Rob Herring <robh@kernel.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Nathan Chancellor <nathan@kernel.org>, Nicolas Schier <nicolas.schier@linux.dev>, 
-	Hans de Goede <hansg@kernel.org>, Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, 
-	Mark Pearson <mpearson-lenovo@squebb.ca>, "Derek J. Clark" <derekjohn.clark@gmail.com>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Marcel Holtmann <marcel@holtmann.org>, Luiz Augusto von Dentz <luiz.dentz@gmail.com>, 
-	Bartosz Golaszewski <brgl@bgdev.pl>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v6 9/9] power: sequencing: pcie-m2: Create serdev device
- for WCN7850 bluetooth
-Message-ID: <aikoyhpzukxgiupdche55er4iddtdckc44kxkrqrzqid6hcptl@qtjbtg7drgpb>
-References: <20260317-pci-m2-e-v6-0-9c898f108d3d@oss.qualcomm.com>
- <20260317-pci-m2-e-v6-9-9c898f108d3d@oss.qualcomm.com>
- <CAMRc=MeNZGr=zDVQYd1YgeUNdaenpbDEgmT6h7CuU89sHQuMcA@mail.gmail.com>
+	s=arc-20240116; t=1773821812; c=relaxed/simple;
+	bh=KAICH7AyRNLHyx9na4VNik7GvrikW4tPpi3l7+AtXfk=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ZepNgOSyQL7F+ckK3l8UTfs69vUs8vveRWvLVoTUKMscKdEF+SgRn7EGfDKdJiIwMCUDz7gvZdx/mdEQWDeCij3GrdBVwznSqEstkNEFHQF9eLINkxEfZ+nmys23A+7f1v0AR5+fNXqREuk9hCEWp6F4jBJhxmIFr/PPVjIom48=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.160.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-qt1-f174.google.com with SMTP id d75a77b69052e-509149ab7d7so54436271cf.2
+        for <linux-serial@vger.kernel.org>; Wed, 18 Mar 2026 01:16:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1773821810; x=1774426610;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=yLFVo6AiXNHbx6lUNUpPWDsgWE1jK824gYrpCYtdfM0=;
+        b=CKbi3SmlBd13KZoURMxMvIxR/VxVnaz6yHc/a0GdgUlhj7o/R4jTjJxJqKmrWMaIgC
+         fOWjyq1FUbQHe2uAyGD5NB0byozYjXUIHd3pTKnm++8B9IMJFi3tWnr+THHptfrUnj6l
+         74TSXX8SQhntT2Xe4s3eYCPwdWugVr5/uBJACXt3jLx/XxBZwEd52NYXV71QbXjYP/a/
+         OfoP5mJxyTXBJd8qOAfu5wOJnX3pl/3qis5vgCFd8Ll3B+ck5KgUtLoE3XcCW5uwxxsk
+         uSiJ0S+U29o55bWUviHukdbTU9/ib8dP+F8fL0kYg51j//D2U6y3btB74J/4o6khjcTl
+         zP5g==
+X-Forwarded-Encrypted: i=1; AJvYcCUfwgWMldZFFG/fkU3yUxRNSSHaIYtxqNHQ9vOuePdlZj9xw0Y8ssuhRKNOLGI9V45Jz3QiS2X8kRvOkbc=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzsZc+R73m3D59eeDNlznKxS61ysJtCZEKaKGTiC7ClBvLtbfuH
+	SM5tvbd6rv7tXEIhVRvHViU9WNUKOGAdwP68lWuyJWf3qsoJYsF+LexRo4l+gI0wdeU=
+X-Gm-Gg: ATEYQzzvkVb5+yo9rCqcDdNxoX50xzZc5dud2GxWM8TbM3fG/XTD4nNPNIbTm8fas6t
+	U23eyGp09DjVD5uLwG3yiEh6wzNISMNaXAfDimgiZE5WieJhxE8u0JH94OHzyJmjq0+a9cUzQju
+	56LkGDIrizokq7UnuloBF6J3itrJiLzOvD99wt0un8ON4hZSd1dYNj4a5jUMn3xGBh8Zjvf4loU
+	UCGMWKW6D4Jx6sVMc5+e1MvaA/uODFCBz9hmKeHdRTxDEScPIJw9e7yz/RRMp2pjFcAdWzcYxV8
+	9ccQrq+uI8aM4e99qghcsrfma++xiqVch888Air+OR+bsDys/Vb211dU35zyaIqD6k+s1iIINpT
+	/SZ+qWNk/mX+wCCt++Vni6QIDcFrkILVXj/qLtTerk5ew4EJUJDiEkRquEoa1FIfLHBKFTaiQbN
+	RCp1NVqKKVpItUE8x5FCayYGC+WQTuH+KTANRlANG9EwE5xZde5uJpsgwN/IIlZ9+p
+X-Received: by 2002:ac8:5f82:0:b0:509:120d:4311 with SMTP id d75a77b69052e-50b148c5ebbmr29136511cf.60.1773821809701;
+        Wed, 18 Mar 2026 01:16:49 -0700 (PDT)
+Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com. [209.85.222.180])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-50b1348ae9dsm21005871cf.6.2026.03.18.01.16.49
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 Mar 2026 01:16:49 -0700 (PDT)
+Received: by mail-qk1-f180.google.com with SMTP id af79cd13be357-8cd767d2d70so156765385a.3
+        for <linux-serial@vger.kernel.org>; Wed, 18 Mar 2026 01:16:49 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCWJ/y5hwPdKoIzdJj3jyasQG+v3LhFEkm4NogRue0KGYhLUXGpj9SiOiEd8inG0StCyR0TnQcjTiaTeMqI=@vger.kernel.org
+X-Received: by 2002:a05:6102:945:b0:5f8:e323:580d with SMTP id
+ ada2fe7eead31-6027d1284cbmr1153417137.11.1773821475435; Wed, 18 Mar 2026
+ 01:11:15 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAMRc=MeNZGr=zDVQYd1YgeUNdaenpbDEgmT6h7CuU89sHQuMcA@mail.gmail.com>
+References: <20260317194442.468147-1-biju.das.jz@bp.renesas.com> <TY3PR01MB11346876072AAF91064B2700D8641A@TY3PR01MB11346.jpnprd01.prod.outlook.com>
+In-Reply-To: <TY3PR01MB11346876072AAF91064B2700D8641A@TY3PR01MB11346.jpnprd01.prod.outlook.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Wed, 18 Mar 2026 09:11:03 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdUiomf+6O5eDUBAt-41D-Lhvnda7w_bbdj-EQppapjdUg@mail.gmail.com>
+X-Gm-Features: AaiRm52dBzFdESjaYAuu__pn42Q-OWaaQ-EFK2jgv-IViv74in_nOyYaaSxkIRo
+Message-ID: <CAMuHMdUiomf+6O5eDUBAt-41D-Lhvnda7w_bbdj-EQppapjdUg@mail.gmail.com>
+Subject: Re: [PATCH v4 0/9] Add support for Renesas RZ/G3L SoC and SMARC-EVK platform
+To: Biju Das <biju.das.jz@bp.renesas.com>
+Cc: "biju.das.au" <biju.das.au@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Michael Turquette <mturquette@baylibre.com>, 
+	Stephen Boyd <sboyd@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Geert Uytterhoeven <geert+renesas@glider.be>, "magnus.damm" <magnus.damm@gmail.com>, 
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
+	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, 
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, 
+	"linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>, 
+	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>, 
+	Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Tue, Mar 17, 2026 at 09:06:20AM -0400, Bartosz Golaszewski wrote:
-> On Tue, 17 Mar 2026 05:29:59 +0100, Manivannan Sadhasivam via B4 Relay
-> <devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org> said:
-> > From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
-> >
-> > For supporting bluetooth over the non-discoverable UART interface of
-> > WCN7850, create the serdev device after enumerating the PCIe interface.
-> > This is mandatory since the device ID is only known after the PCIe
-> > enumeration and the ID is used for creating the serdev device.
-> >
-> > Since by default there is no OF or ACPI node for the created serdev,
-> > create a dynamic OF 'bluetooth' node with the 'compatible' property and
-> > attach it to the serdev device. This will allow the serdev device to bind
-> > to the existing bluetooth driver.
-> >
-> > Tested-by: Hans de Goede <johannes.goede@oss.qualcomm.com> # ThinkPad T14s gen6 (arm64)
-> > Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
-> > ---
-> >  drivers/power/sequencing/Kconfig          |   3 +-
-> >  drivers/power/sequencing/pwrseq-pcie-m2.c | 178 +++++++++++++++++++++++++++++-
-> >  2 files changed, 177 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/drivers/power/sequencing/Kconfig b/drivers/power/sequencing/Kconfig
-> > index f5fff84566ba..55aeef125e6f 100644
-> > --- a/drivers/power/sequencing/Kconfig
-> > +++ b/drivers/power/sequencing/Kconfig
-> > @@ -37,7 +37,8 @@ config POWER_SEQUENCING_TH1520_GPU
-> >
-> >  config POWER_SEQUENCING_PCIE_M2
-> >  	tristate "PCIe M.2 connector power sequencing driver"
-> > -	depends on OF || COMPILE_TEST
-> > +	depends on (PCI && OF) || COMPILE_TEST
-> > +	select OF_DYNAMIC
-> >  	help
-> >  	  Say Y here to enable the power sequencing driver for PCIe M.2
-> >  	  connectors. This driver handles the power sequencing for the M.2
-> > diff --git a/drivers/power/sequencing/pwrseq-pcie-m2.c b/drivers/power/sequencing/pwrseq-pcie-m2.c
-> > index 3507cdcb1e7b..77357439ba81 100644
-> > --- a/drivers/power/sequencing/pwrseq-pcie-m2.c
-> > +++ b/drivers/power/sequencing/pwrseq-pcie-m2.c
-> > @@ -12,9 +12,11 @@
-> >  #include <linux/of.h>
-> >  #include <linux/of_graph.h>
-> >  #include <linux/of_platform.h>
-> > +#include <linux/pci.h>
-> >  #include <linux/platform_device.h>
-> >  #include <linux/pwrseq/provider.h>
-> >  #include <linux/regulator/consumer.h>
-> > +#include <linux/serdev.h>
-> >  #include <linux/slab.h>
-> >
-> >  struct pwrseq_pcie_m2_pdata {
-> > @@ -30,6 +32,9 @@ struct pwrseq_pcie_m2_ctx {
-> >  	struct notifier_block nb;
-> >  	struct gpio_desc *w_disable1_gpio;
-> >  	struct gpio_desc *w_disable2_gpio;
-> > +	struct serdev_device *serdev;
-> > +	struct of_changeset *ocs;
-> > +	struct device *dev;
-> >  };
-> >
-> >  static int pwrseq_pcie_m2_vregs_enable(struct pwrseq_device *pwrseq)
-> > @@ -172,13 +177,176 @@ static int pwrseq_pcie_m2_match(struct pwrseq_device *pwrseq,
-> >  	return PWRSEQ_NO_MATCH;
-> >  }
-> >
-> > -static void pwrseq_pcie_m2_free_regulators(void *data)
-> > +static void pwrseq_pcie_m2_free_resources(void *data)
-> >  {
-> >  	struct pwrseq_pcie_m2_ctx *ctx = data;
-> >
-> > +	serdev_device_remove(ctx->serdev);
-> > +	bus_unregister_notifier(&pci_bus_type, &ctx->nb);
-> > +	of_changeset_revert(ctx->ocs);
-> > +	of_changeset_destroy(ctx->ocs);
-> >  	regulator_bulk_free(ctx->num_vregs, ctx->regs);
-> >  }
-> >
-> > +static int pwrseq_m2_pcie_create_bt_node(struct pwrseq_pcie_m2_ctx *ctx,
-> > +					struct device_node *parent)
-> > +{
-> > +	struct device *dev = ctx->dev;
-> > +	struct device_node *np;
-> > +	int ret;
-> > +
-> > +	ctx->ocs = devm_kzalloc(dev, sizeof(*ctx->ocs), GFP_KERNEL);
-> > +	if (!ctx->ocs)
-> > +		return -ENOMEM;
-> > +
-> > +	of_changeset_init(ctx->ocs);
-> > +
-> > +	np = of_changeset_create_node(ctx->ocs, parent, "bluetooth");
-> > +	if (!np) {
-> > +		dev_err(dev, "Failed to create bluetooth node\n");
-> > +		ret = -ENODEV;
-> > +		goto err_destroy_changeset;
-> > +	}
-> > +
-> > +	ret = of_changeset_add_prop_string(ctx->ocs, np, "compatible", "qcom,wcn7850-bt");
-> > +	if (ret) {
-> > +		dev_err(dev, "Failed to add bluetooth compatible: %d\n", ret);
-> > +		goto err_destroy_changeset;
-> > +	}
-> > +
-> > +	ret = of_changeset_apply(ctx->ocs);
-> > +	if (ret) {
-> > +		dev_err(dev, "Failed to apply changeset: %d\n", ret);
-> > +		goto err_destroy_changeset;
-> > +	}
-> > +
-> > +	ret = device_add_of_node(&ctx->serdev->dev, np);
-> > +	if (ret) {
-> > +		dev_err(dev, "Failed to add OF node: %d\n", ret);
-> > +		goto err_revert_changeset;
-> > +	}
-> > +
-> > +	return 0;
-> > +
-> > +err_revert_changeset:
-> > +	of_changeset_revert(ctx->ocs);
-> > +err_destroy_changeset:
-> > +	of_changeset_destroy(ctx->ocs);
-> > +
-> > +	return ret;
-> > +}
-> > +
-> > +static int pwrseq_m2_pcie_notify(struct notifier_block *nb, unsigned long action,
-> > +			      void *data)
-> > +{
-> > +	struct pwrseq_pcie_m2_ctx *ctx = container_of(nb, struct pwrseq_pcie_m2_ctx, nb);
-> > +	struct pci_dev *pdev = to_pci_dev(data);
-> > +	struct serdev_controller *serdev_ctrl;
-> > +	struct device *dev = ctx->dev;
-> > +	int ret;
-> > +
-> > +	/*
-> > +	 * Check whether the PCI device is associated with this M.2 connector or
-> > +	 * not, by comparing the OF node of the PCI device parent and the Port 0
-> > +	 * (PCIe) remote node parent OF node.
-> > +	 */
-> > +	struct device_node *pci_parent __free(device_node) =
-> > +			of_graph_get_remote_node(dev_of_node(ctx->dev), 0, 0);
-> > +	if (!pci_parent || (pci_parent != pdev->dev.parent->of_node))
-> > +		return NOTIFY_DONE;
-> > +
-> > +	switch (action) {
-> > +	case BUS_NOTIFY_ADD_DEVICE:
-> > +		/* Create serdev device for WCN7850 */
-> > +		if (pdev->vendor == PCI_VENDOR_ID_QCOM && pdev->device == 0x1107) {
-> > +			struct device_node *serdev_parent __free(device_node) =
-> > +				of_graph_get_remote_node(dev_of_node(ctx->dev), 1, 1);
-> > +			if (!serdev_parent)
-> > +				return NOTIFY_DONE;
-> > +
-> > +			serdev_ctrl = of_find_serdev_controller_by_node(serdev_parent);
-> > +			if (!serdev_ctrl)
-> > +				return NOTIFY_DONE;
-> > +
-> > +			/*
-> > +			 * Bail out if the device was already attached to this
-> > +			 * controller.
-> > +			 */
-> > +			if (serdev_ctrl->serdev)
-> > +				return NOTIFY_DONE;
-> > +
-> > +			ctx->serdev = serdev_device_alloc(serdev_ctrl);
-> > +			if (!ctx->serdev)
-> > +				return NOTIFY_BAD;
-> 
-> If you bail out here, on driver unbind you'll call serdev_device_remove() which
-> uncoditionally dereferences the serdev pointer.
-> 
-> > +
-> > +			ret = pwrseq_m2_pcie_create_bt_node(ctx, serdev_parent);
-> 
-> If this doesn't succeed, ctx->ocs remains set to NULL (correct me if I'm wrong)
-> and you end up calling of_changeset_revert() which will unconditionally
-> dereference the of_changeset pointer in __of_changeset_entry_invert().
-> 
-> > +			if (ret) {
-> > +				serdev_device_put(ctx->serdev);
-> > +				return notifier_from_errno(ret);
-> > +			}
-> > +
-> > +			ret = serdev_device_add(ctx->serdev);
-> > +			if (ret) {
-> > +				dev_err(dev, "Failed to add serdev for WCN7850: %d\n", ret);
-> > +				of_changeset_revert(ctx->ocs);
-> > +				of_changeset_destroy(ctx->ocs);
-> > +				serdev_device_put(ctx->serdev);
-> > +				return notifier_from_errno(ret);
-> > +			}
-> > +		}
-> > +		break;
-> > +	case BUS_NOTIFY_REMOVED_DEVICE:
-> > +		/* Destroy serdev device for WCN7850 */
-> > +		if (pdev->vendor == PCI_VENDOR_ID_QCOM && pdev->device == 0x1107) {
-> > +			serdev_device_remove(ctx->serdev);
-> > +			of_changeset_revert(ctx->ocs);
-> > +			of_changeset_destroy(ctx->ocs);
-> > +		}
-> > +		break;
-> > +	}
-> > +
-> > +	return NOTIFY_OK;
-> > +}
-> > +
-> > +static bool pwrseq_pcie_m2_check_remote_node(struct device *dev, u8 port, u8 endpoint,
-> > +					     const char *node)
-> > +{
-> > +	struct device_node *remote __free(device_node) =
-> > +			of_graph_get_remote_node(dev_of_node(dev), port, endpoint);
-> > +
-> > +	if (remote && of_node_name_eq(remote, node))
-> > +		return true;
-> > +
-> > +	return false;
-> > +}
-> > +
-> > +/*
-> > + * If the connector exposes a non-discoverable bus like UART, the respective
-> > + * protocol device needs to be created manually with the help of the notifier
-> > + * of the discoverable bus like PCIe.
-> > + */
-> > +static int pwrseq_pcie_m2_register_notifier(struct pwrseq_pcie_m2_ctx *ctx, struct device *dev)
-> > +{
-> > +	int ret;
-> > +
-> > +	/*
-> > +	 * Register a PCI notifier for Key E connector that has PCIe as Port
-> > +	 * 0/Endpoint 0 interface and Serial as Port 3/Endpoint 0 interface.
-> > +	 */
-> > +	if (pwrseq_pcie_m2_check_remote_node(dev, 3, 0, "serial")) {
-> > +		if (pwrseq_pcie_m2_check_remote_node(dev, 0, 0, "pcie")) {
-> > +			ctx->dev = dev;
-> > +			ctx->nb.notifier_call = pwrseq_m2_pcie_notify;
-> > +			ret = bus_register_notifier(&pci_bus_type, &ctx->nb);
-> > +			if (ret)
-> > +				return dev_err_probe(dev, ret,
-> > +						     "Failed to register notifier for serdev\n");
-> > +		}
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> > +
-> >  static int pwrseq_pcie_m2_probe(struct platform_device *pdev)
-> >  {
-> >  	struct device *dev = &pdev->dev;
-> > @@ -218,7 +386,7 @@ static int pwrseq_pcie_m2_probe(struct platform_device *pdev)
-> >
-> >  	ctx->num_vregs = ret;
-> >
-> > -	ret = devm_add_action_or_reset(dev, pwrseq_pcie_m2_free_regulators, ctx);
-> > +	ret = devm_add_action_or_reset(dev, pwrseq_pcie_m2_free_resources, ctx);
-> >  	if (ret)
-> >  		return ret;
-> >
-> > @@ -233,7 +401,11 @@ static int pwrseq_pcie_m2_probe(struct platform_device *pdev)
-> >  		return dev_err_probe(dev, PTR_ERR(ctx->pwrseq),
-> >  				     "Failed to register the power sequencer\n");
-> 
-> If you bail out here, you will call bus_unregister_notifier() before your
-> registered it. Kernel docs are not clear on whether that's a bug but it still
-> looks fishy to me.
-> 
-> Am I not seeing something or is the error path broken? I'm doubting myself
-> here. :)
-> 
+Hi Biju,
 
-No, it was me who has gone bonkers with the error path. I was so delusional to
-assume that these APIs handle NULL ptrs :/
+On Tue, 17 Mar 2026 at 20:59, Biju Das <biju.das.jz@bp.renesas.com> wrote:
+> Please ignore this series . I missed to addresses for Patch#4. I have sent a new
+> version[1] fixing it. Sorry for the noise.
+>
+> [1] https://lore.kernel.org/linux-renesas-soc/20260317195650.468330-1-biju.das.jz@bp.renesas.com/T/#t
 
-> This is why I advised to split pwrseq_pcie_m2_free_resources() and only schedule
-> individual devres actions after their allocation succeeds.
-> 
-> As it is now, you're better off providing a remove() callback with NULL checks.
-> 
+You have sent two "v4" versions with different Message-IDs,
+which are treated as different series by both b4 and lore.
+Please bump to v5 and resend.
 
-Makes sense. I'll fix them all in next version.
+Gr{oetje,eeting}s,
 
-- Mani
+                        Geert
 
 -- 
-மணிவண்ணன் சதாசிவம்
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
