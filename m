@@ -1,138 +1,288 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38A873BE627
-	for <linux-serial@vger.kernel.org>; Thu, 19 Mar 2026 10:19:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF5A134D383
+	for <linux-serial@vger.kernel.org>; Thu, 19 Mar 2026 12:51:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773915579; cv=none; b=HcZuvpwzmNlbWXuxKuCvcHaTN+6273dTVOuW5Ocf27SjB6SZYTaIXQBmcQtkkQyZcRUDZkunncX4CoioHdUMpfkBQyS4OTbeiCsLIesCkLfZ1lKJ5cza7IjJqhwdASgCpGvNngtX/u/J3BU/78fDdz+Gn6DlXhbvOJ6Z2m0MgWI=
+	t=1773924710; cv=none; b=cJJsIH0c4ucD55RYaFKaHzgvnZsRVUzU6WiSm0QARQfpnrjDQcTOk4RBKi4WlVBo/pInVsHDqymCiUN6rRhfOnepP9ZZkdNWmPJLflz7Vs5Haiw2fkWDcyhLhZmwKoGNAyk2SLTodzyqx+p/XXLqZjCg5MytxSJDDOpTQUKLaCo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773915579; c=relaxed/simple;
-	bh=ukykM17ynda0tSNsJoGRIO5G++N/U9yeZUlDGTGWX2A=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=oIdEa5cq30XsQjGB2an/BaYrIG/mTJsHOuBYijS2I7YZ76yOeAodiN3nxxa2sD8ur/uplbp8mTCScgRBJ+puMc+wF56u02ZfcAmjsoVNzjlM+1syqYDz3w0aPf2U2ddY3eMuaqa/gjTIcDekpUSI+rAP95Avy+z6VH6hau6RuxU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=oEkRwvdJ; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=ERCM1gEc; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1773924710; c=relaxed/simple;
+	bh=/l1bnVkGem4MqEzfBQblyxg6B14I7jMa74xvB9xjGGk=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=UrV0Xy21HFN5r/kkgQZ/ISRCji8UG94p8IUn19mzg/NbCwhh2oA8b+yVmSQPa/x7pPrlSe4fIdyf4S+ew+z4+Yx4lLnp/odIDMPPlwEw/VgO83yBJJFdGH/CNiMHWrctx7K73XUFaivWst+xcLUEzJbiST+mNfHusGPa9JvHCjQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AJf+ysW8; arc=none smtp.client-ip=209.85.128.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="oEkRwvdJ";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="ERCM1gEc"
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 62J73vvi1898563
-	for <linux-serial@vger.kernel.org>; Thu, 19 Mar 2026 10:19:36 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	aLHZwIDtv8ewF5rx26EvXB64u7e8seD0rj6DZNBLKzI=; b=oEkRwvdJmyYBSpsr
-	8YtY7Lp7ag+NLFUqNpLhe3gW8rekrr8gH2Nuw5OAdMTuV2MIr15FJcuvVhvJyGq9
-	eHEkvWrAbhZ3g+K11L+ZicYNjA5+vteNyPTWf/v2YYiXJKOImG8Xuv9lvV33jKtB
-	1FRQT9LC6RUYc4ezOYMZlqDbPfjziKa1Q1DNlemlhAVh4F+KjQOXzZR7a0ui4JAw
-	I+6DTZ1HE6qsJhi1tIrWOL9skrXat2tb2SrzYX1KCJGztIovTPIw/2q/+YY3VaJ4
-	+AWiiXipI7qj49rJj3Y0gKp547UQkIOcnhul3NBQHEjP3HzIoqbSUql4iOR9NaF6
-	Al+Afg==
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com [209.85.219.72])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4cyyhgb1ut-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-serial@vger.kernel.org>; Thu, 19 Mar 2026 10:19:36 +0000 (GMT)
-Received: by mail-qv1-f72.google.com with SMTP id 6a1803df08f44-89c4f6c45a7so5617366d6.1
-        for <linux-serial@vger.kernel.org>; Thu, 19 Mar 2026 03:19:36 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AJf+ysW8"
+Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-4853c1ca73aso7855875e9.2
+        for <linux-serial@vger.kernel.org>; Thu, 19 Mar 2026 05:51:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1773915575; x=1774520375; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=aLHZwIDtv8ewF5rx26EvXB64u7e8seD0rj6DZNBLKzI=;
-        b=ERCM1gEcbc8J37FyscMhe/0tk2LbTVdtWlXzlpNEiUdTM/V5z1RLL+5qJfC4g8R+B7
-         jWwXI7VY3Ag494VeV9YRs3y5XQX6pRrJYgW4xVUdFKyRseIRbeYqeCUZRKPtluz96xb5
-         w/aO0TXyn9BX5mWwp/rW+92CQPwcIC9ytAE44bLyEkSLD8FdH63jpZGejpYOoccm0Ywp
-         LMk4yQP1YHfcSSzEpfSx0VReZmDTkTbHO5rrtzVFG8E6AT/2StdkZM7eMS5aObWfYkB8
-         7KPTWTGWAkUsA8nV6gYQW0jWsZpCkj33Ft7eL1/S7xEXYdwUpBQFaOA1WetUwy+1OKZn
-         ho4w==
+        d=gmail.com; s=20230601; t=1773924706; x=1774529506; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=foXJbJoB4vuNc/wW0ZQIJuxNe/SnQleGWDy81kgaI84=;
+        b=AJf+ysW85VrNRFGlnHYFfxsHM4ZvN2Rl0qwxAUt6idxG78qrFqzJY3LC9CuEAvdMuH
+         7NuAGDVttfSH+xqQADDdTt4805yGI9EJkrH+iMcnwRWAVxJWd+ki9VOJrfpqXsJMnOZ4
+         P+1mO9nk2Rbepr4lFXy4Gfpoxh0sSov0kx64c9krB3Y1LoqfcuFK/5Tpu0o89m0VcWjR
+         BWHmqXpy3ZKOvH5EuoEWhX4ALXrHXXC7bDFhyQ4fGsQziJ7eAVmMWwstf4yC6zRl1lHy
+         O9H1HHHes2tYmYdUqSMzOY63EcWM56Zai2VBEYlx0FsGneGXp0WpxRCX7hfE9Dsb06MT
+         rQoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773915575; x=1774520375;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=aLHZwIDtv8ewF5rx26EvXB64u7e8seD0rj6DZNBLKzI=;
-        b=g/q4n7AQTerZpDT3tDgb9ebb1e7r9QbwtmZvA9Z6D4iNmXVRa8CLb1Gm72VT5KfksY
-         InS4u+PQKo5z3VlUWJ3MC7nxk5u37TTChf25MkOjODEuisSFzPXsYpriGdcx/NoaYacK
-         YwQybgUq+5sID1qE3J18dbRLARDEiRlcMu+VFs+BppqIKAoxxiThDUmNj9FSqUpHGk5v
-         TlNzRsTqAejdRulZeumTId64dIMiicDAlcWbpXYUFC9n36+X+bKVZSkG0Yj4q7ABklM4
-         zbapEnwtVLS8x4utKmd6roXhwhWw1BhL7nyFlVspYhL6SZXGpXRUEpmkL89MPvUU5Mh7
-         +Tmg==
-X-Forwarded-Encrypted: i=1; AJvYcCUGn9+Dh5U5GX+NldMGkllQMecHToxbF+Fvb1qPTCo+Fj9ImsQArDld5XoSyAoDGPo95tzJ76vQnYrlTm8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyigknOVSljFFWakJqpOD38kWos7xcqbCAX2OxKHxuIoGXA3g7/
-	kf7/PRfM2z8LuUbIejlt1jaL7aWYWWdcPpM1wcXt1gklKZYizn8pP76izGrWWES6i6grdUnI8kb
-	rOE8c81Voh/xuwZmvwyJ8nxomBYDk7J6hNwVd8v5U5LQkMAua3NgjXccNFow93jwmF+8=
-X-Gm-Gg: ATEYQzw9VtoI5klhuYTDDrLz2kSZ72D1ucYGHt7IttjwN2KI9wJV2yX+DTPS0iCsqL0
-	TbMEiJs/feoH8Z4wi9t6s8zKkoMuNhWwjvZWL9tQbtrodRPnJn9M6tRQuN71nfbmaAP01XysXgh
-	OvepPBMyW/P9+c/JSt8IpKqvtl3653JCF60UZaLq0Z8DTq1iHjC6t4qyCxNOnNG1BE/kkgYJ+5b
-	AV1xIk0yLjVscbIpw+nYnsLJAUJtrOzS71/OesR3I8FJxHVe1ZzqzeaSoBfFD5c2HYIKCO/7CV9
-	ZiyPfhMAYT7RoA36OhHSon5ZuJUFBpnERO6YiX41/ZN33RUUYRYYTtcIT85s4X9/+MAG4tiWVCF
-	cbjes39grSdwNXxe8MYo1BS/1vR6lND9DZeViMCia2jieGB6uCrK0pljZC1cjQtcIchVZnDu3g9
-	mcHug=
-X-Received: by 2002:ad4:5949:0:b0:89a:4f20:c1b0 with SMTP id 6a1803df08f44-89c6b499f93mr79607996d6.1.1773915575318;
-        Thu, 19 Mar 2026 03:19:35 -0700 (PDT)
-X-Received: by 2002:ad4:5949:0:b0:89a:4f20:c1b0 with SMTP id 6a1803df08f44-89c6b499f93mr79607716d6.1.1773915574838;
-        Thu, 19 Mar 2026 03:19:34 -0700 (PDT)
-Received: from [192.168.119.254] (078088045245.garwolin.vectranet.pl. [78.88.45.245])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b97f142b8efsm443372966b.17.2026.03.19.03.19.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 Mar 2026 03:19:34 -0700 (PDT)
-Message-ID: <1f0e47e2-67d1-4761-9a36-ddac062480f1@oss.qualcomm.com>
-Date: Thu, 19 Mar 2026 11:19:32 +0100
+        d=1e100.net; s=20251104; t=1773924706; x=1774529506;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=foXJbJoB4vuNc/wW0ZQIJuxNe/SnQleGWDy81kgaI84=;
+        b=NJOVN/bvHUK6Xa1hI3UJ0lyEdc/IoqYKHwkM2REUrgxUUQ/aFhdkxJc9yCW6W8elfm
+         E39bPSMmGlvEtK2Uhu6ggUq095BSK9yF8afvy4r6IoAwtIrRS6c9w+UYCOYh1De/H6/m
+         Wwird5tnn5TxcZOGt2tJy3eY3GzU89U7qoFVGhQyazHGBOsXXwpoYyJyXHyb9mR6lAaX
+         WBC1IvRIZfSK4GAD2A8MFGEg9JIfmqon4tjv58PBGKRzMuENFaVxkye7tDJzBKbeb+hq
+         wSyJIrBhsZ0azkyIyYLfqvt0R2LBYdd8milOFGLku81FHabXbepfxWvbJyabX4nRR4ad
+         5XfQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWcAqc10nawdrlbduZ85aFa57ifyj8Lbz08qUTDtjw2xn4SDQr/nNspGX6XtA4Zwc10zkFkgrM/svINc2E=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxSHOwHtBStGBNF5puQDp2vI5a9v/cYncox5UylASy7bU/dqoJP
+	sbCbkkaV33ncFkM4smL7fOBQMtOglO6q7KsUAV0gPYxsxSIK7wog6fAf
+X-Gm-Gg: ATEYQzy26INJkd7v0FPqYaHCiqgG97ycnk/bu88rOswGKYFkHfnvaT478sSHT2FjHe3
+	TEp33ytciWY4mmfZE5txZgpR2uuRWugh8/J9NxIQh3yxxMIT8gj44FQLhZ5Uc9I9fVNF33k4fZo
+	FZWbw8GZgFkLnOUNpbO5LPhXuB6d4emSP0V0+Lks13mHuaJY8o13XFuQyI75WVkGLegXATyF6SD
+	jGWUzzNoZyX0FpQeFG3q0lcKEhhI3TvHYTtjcsMiJ5QJCHT9Ov4IIQYZPgnjm3isTsXsTKtNy2q
+	uRwAq6Jx2tzcXJZU69+DHlwXCFlZfpjgCGSNJWT7HRgkMWBtc1oNV7GrG3lbj+jzxzkai+sZn8v
+	PQM2EI03/GQlQKKLCBLJcLkGBye6/3ctG1b0E4gBB7vvRnf/qVOT+U0wWvR++6iB1oQkFgGNUS3
+	fj4S3EWxYzyJZ2a2EgaiBePFPaSBOgv84=
+X-Received: by 2002:a05:600c:1d0c:b0:485:4278:24f0 with SMTP id 5b1f17b1804b1-486f4581e2bmr123234545e9.30.1773924705784;
+        Thu, 19 Mar 2026 05:51:45 -0700 (PDT)
+Received: from biju.lan ([2a00:23c4:a758:8a01:8326:7b31:bf82:d2d0])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-486f4bc96c6sm72382035e9.5.2026.03.19.05.51.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Mar 2026 05:51:45 -0700 (PDT)
+From: Biju <biju.das.au@gmail.com>
+X-Google-Original-From: Biju <biju.das.jz@bp.renesas.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Magnus Damm <magnus.damm@gmail.com>
+Cc: Biju Das <biju.das.jz@bp.renesas.com>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-clk@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+	Biju Das <biju.das.au@gmail.com>
+Subject: [PATCH v6 00/10] Add support for Renesas RZ/G3L SoC and SMARC-EVK platform
+Date: Thu, 19 Mar 2026 12:51:24 +0000
+Message-ID: <20260319125143.230377-1-biju.das.jz@bp.renesas.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: qcom-geni: drop stray newline format specifier
-To: Kathiravan Thirumoorthy <kathiravan.thirumoorthy@oss.qualcomm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-References: <20260319-drop_stray_n-v1-1-37fb619538bb@oss.qualcomm.com>
-Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-In-Reply-To: <20260319-drop_stray_n-v1-1-37fb619538bb@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzE5MDA4MiBTYWx0ZWRfXwNYu/jUfNhlV
- H8ibdspSP8ZZGgA1T26OcmvvPLiMxD7O5bU9lC+WVUIbd7UU0Ica5BnhGWFFMqo2d835q9sN6Z8
- XITvCHaWSprFLUjvVMRir02eXnAriTVbHrjCO+byol/VfeOJNAdftopJp9aqS+0yzgSSO7YfXfr
- UUTqwG8mqQBYB2JDDhixDRmRtwimPyTDmAV30vDl+FT6aciYi6xUl0emP2+RZuIelTCxk2meqHT
- BNyihOdFTQMKYvT0DTgC8s5ouQIucGW3O9CGpdrCEsP8HKgkLoGNoAM3NKZUMk3TaqGcUrdExpQ
- w/sRAni7g6Z4rsqff4Ov2MrXOTizbS+/hSRzIBatLNLMWLAyz1CtFnU1X514zBnXTzFk2uH2HDS
- RcD0OpBDc7V1S/aX96G2dvGyXlrTY9TgDKGYzvQbOvTVmhCwR7tH+GsCZpMnkDCJGVvc5iI4pzm
- b0vACZkFgUMGZwtOdXg==
-X-Proofpoint-ORIG-GUID: yytyO7H_xJ6ts1kabJ3-uqJsQ5CG8wWP
-X-Authority-Analysis: v=2.4 cv=IbSKmGqa c=1 sm=1 tr=0 ts=69bbcdb8 cx=c_pps
- a=7E5Bxpl4vBhpaufnMqZlrw==:117 a=FpWmc02/iXfjRdCD7H54yg==:17
- a=IkcTkHD0fZMA:10 a=Yq5XynenixoA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yOCtJkima9RkubShWh1s:22
- a=EUspDBNiAAAA:8 a=WhcIUqnqjzBuv6diJSIA:9 a=QEXdDO2ut3YA:10
- a=pJ04lnu7RYOZP9TFuWaZ:22
-X-Proofpoint-GUID: yytyO7H_xJ6ts1kabJ3-uqJsQ5CG8wWP
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-03-19_01,2026-03-17_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- bulkscore=0 suspectscore=0 lowpriorityscore=0 spamscore=0 impostorscore=0
- clxscore=1015 adultscore=0 malwarescore=0 phishscore=0 priorityscore=1501
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2603050001 definitions=main-2603190082
+Content-Transfer-Encoding: 8bit
 
-On 3/19/26 10:48 AM, Kathiravan Thirumoorthy wrote:
-> Drop the newline character from the middle of the printk message.
-> This avoids breaking the message into two lines unnecessarily.
-> 
-> Signed-off-by: Kathiravan Thirumoorthy <kathiravan.thirumoorthy@oss.qualcomm.com>
-> ---
+From: Biju Das <biju.das.jz@bp.renesas.com>
 
-Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+Hi all,
 
-Konrad
+This patch series adds initial support for the Renesas RZ/G3L SoC and
+RZ/G3L SMARC EVK platform. The RZ/G3L device is a general-purpose
+microprocessor with a quad-core CA-55, single core CM-33, Mali-G31
+3-D Graphics and other peripherals.
+
+Support for the below list of blocks is added in the SoC DTSI (r9a08g046.dtsi):
+
+ - EXT CLK
+ - 4X CA55
+ - SCIF
+ - CPG
+ - GIC
+ - ARMv8 Timer
+
+This series also adds SCIF support for the RZ/G3L SMARC EVK board (r9a08g046l48-smarc.dts).
+
+v5->v6:
+ * Collected tags
+ * Moved loop variable declaration inside for loops in
+   __rzg2l_cpg_assert() and rzg2l_cpg_deassert_crit_resets()
+ * Replaced r9a07g043_critical_resets[] -> r9a07g043_crit_resets[] for
+   consistency
+ * Introduced rzg2l_mod_clock_init_mstop_helper() for code reuse
+   in probe() and resume().
+ * Dropped the list implementation.
+ * Replaced  rzg2l_mod_clock_init_mstop->rzg2l_mod_enable_crit_clock_init_mstop()
+   for enabling critical clks and restoring mstop state during resume.
+ * Dropped dma-ranges, bus-range and comment from the pcie device node
+v4->v5:
+ * Rebased to next-20260317.
+v3->v4:
+ * Dropped SoC identification patches as it is accepted for renesas-devel.
+ * Updated commit description related to core clocks section in the
+    hardware manual
+ * Dropped CLK_P4_DIV2 from core clocks
+ * Added MIPI_DSI_PLLCLK and USB_SCLK to core clocks
+ * Dropped LVDS_PCLK  module clock
+ * Added BSC_X_PRESET_BSC reset
+ * Moved the patch series from [1] to here as it is boot-dependent.
+ * Updated commit description
+ * Updated LAST_DT_CORE_CLK with R9A08G046_USB_SCLK
+ * Fixed typo 2->8 in dtable_4_128[].
+ * Added critical reset table r9a08g046_critical_resets[]
+ * Updated num_resets
+ * Added crit_resets and num_crit_resets to r9a08g046_cpg_info.
+ * Fixed typo R0A08G046L->R9A08G046L in commit description
+ * Dropped R9A08G046L46 from commit description
+ * Dropped unused audio_clk{1,2} andcan_clk device nodes
+ * Reordered i2c device node and updated reg entries by using lower-case
+   hexadecimal number
+ * Added placeholder in pinctrl node
+ * Dropped unused DMAC device node
+ * Added pcie node with placeholder
+ * Collected the tags.
+ * Updated commit description for patch#8
+
+[1] https://lore.kernel.org/all/20260306134228.871815-1-biju.das.jz@bp.renesas.com/
+v2->v3:
+ * Added macros R9A08G046_ETH{0,1}_CLK_{TX,RX}_I_RMII in r9a08g046-cpg.h.
+ * Keep the tag from Conor as it is trivial change for just adding macros.
+v1->v2:
+ * Dropped scif bindings patch as it is accepted.
+ * Collected tags.
+ * Squashed the patch#3 and #4
+ * Documented GE3D/VCP for all SoC variants
+ * Documented external ethernet clocks as it is a clock source for MUX
+   inside CPG
+ * Updated commit description for bindings.
+ * Keep the tag from Conor as it is trivial change for adding more
+   clks.
+ * Added CLK_ETH{0,1}_TXC_TX_CLK_IN and CLK_ETH{0,1}_RXC_RX_CLK_IN clocks
+   in clk table.
+ * Dropped R9A08G046_IA55_PCLK from critical clock list.
+ * Added external clocks eth{0,1}_txc_tx_clk and eth{0,1}_rxc_rx_clk
+   in soc dtsi as it needed for cpg as it is a clock source for mux.
+ * Updated cpg node.
+ * Dropped gpio.h header from SoM dtsi.
+ * Dropped scif node as it is already included in common platform
+   file.
+
+Test logs:
+/ #  uname -r
+7.0.0-rc4-next-20260317-gb478da6183c1
+/ # cat /proc/cpuinfo
+processor       : 0
+BogoMIPS        : 48.00
+Features        : fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp
+CPU implementer : 0x41
+CPU architecture: 8
+CPU variant     : 0x2
+CPU part        : 0xd05
+CPU revision    : 0
+
+processor       : 1
+BogoMIPS        : 48.00
+Features        : fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp
+CPU implementer : 0x41
+CPU architecture: 8
+CPU variant     : 0x2
+CPU part        : 0xd05
+CPU revision    : 0
+
+processor       : 2
+BogoMIPS        : 48.00
+Features        : fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp
+CPU implementer : 0x41
+CPU architecture: 8
+CPU variant     : 0x2
+CPU part        : 0xd05
+CPU revision    : 0
+
+processor       : 3
+BogoMIPS        : 48.00
+Features        : fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp
+CPU implementer : 0x41
+CPU architecture: 8
+CPU variant     : 0x2
+CPU part        : 0xd05
+CPU revision    : 0
+
+/ # cat /proc/interrupts
+           CPU0       CPU1       CPU2       CPU3
+ 11:        104        191        429         62    GICv3  27 Level     arch_timer
+ 14:          0          0          0          0    GICv3 418 Level     100ac000.serial:rx err
+ 15:          4          0          0          0    GICv3 420 Level     100ac000.serial:rx full
+ 16:        229          0          0          0    GICv3 421 Level     100ac000.serial:tx empty
+ 17:          0          0          0          0    GICv3 419 Level     100ac000.serial:break
+ 18:         17          0          0          0    GICv3 422 Level     100ac000.serial:rx ready
+IPI0:         3         16         13         21       Rescheduling interrupts
+IPI1:       315        240        180        217       Function call interrupts
+IPI2:         0          0          0          0       CPU stop interrupts
+IPI3:         0          0          0          0       CPU stop NMIs
+IPI4:         0          0          0          0       Timer broadcast interrupts
+IPI5:         0          0          0          0       IRQ work interrupts
+IPI6:         0          0          0          0       CPU backtrace interrupts
+IPI7:         0          0          0          0       KGDB roundup interrupts
+Err:          0
+/ # cat /proc/meminfo
+MemTotal:        1887304 kB
+MemFree:         1852164 kB
+MemAvailable:    1819524 kB
+/ # cat /sys/devices/soc0/family
+RZ/G3L
+/ # cat /sys/devices/soc0/machine
+Renesas SMARC EVK version 2 based on r9a08g046l48
+/ # cat /sys/devices/soc0/soc_id
+r9a08g046
+/ # cat /sys/devices/soc0/revision
+0
+dmesg | grep r9a
+[    0.000000] Machine model: Renesas SMARC EVK version 2 based on r9a08g046l48
+[    0.066480] renesas-rz-sysc 11020000.system-controller: Detected Renesas RZ/G3L r9a08g046 Rev 0
+
+Biju Das (10):
+  dt-bindings: clock: Document RZ/G3L SoC
+  clk: renesas: rzg2l-cpg: Add support for critical resets
+  clk: renesas: r9a07g04{3,4}/r9a08g045-cpg: Add critical reset entries
+  clk: renesas: rzg2l-cpg: Add rzg2l_mod_clock_init_mstop_helper()
+  clk: renesas: rzg2l-cpg: Re-enable critical module clocks during
+    resume
+  clk: renesas: Add support for RZ/G3L SoC
+  arm64: dts: renesas: Add initial DTSI for RZ/G3L SoC
+  arm64: dts: renesas: Add initial support for RZ/G3L SMARC SoM
+  arm64: dts: renesas: renesas-smarc2: Move usb3 nodes to board DTS
+  arm64: dts: renesas: Add initial device tree for RZ/G3L SMARC EVK
+    board
+
+ .../bindings/clock/renesas,rzg2l-cpg.yaml     |  40 +-
+ arch/arm64/boot/dts/renesas/Makefile          |   2 +
+ arch/arm64/boot/dts/renesas/r9a08g046.dtsi    | 212 +++++++++++
+ .../boot/dts/renesas/r9a08g046l48-smarc.dts   |  37 ++
+ arch/arm64/boot/dts/renesas/r9a08g046l48.dtsi |  13 +
+ .../boot/dts/renesas/r9a09g047e57-smarc.dts   |   6 +
+ .../boot/dts/renesas/renesas-smarc2.dtsi      |   8 -
+ .../boot/dts/renesas/rzg3l-smarc-som.dtsi     |  20 +
+ drivers/clk/renesas/Kconfig                   |   7 +-
+ drivers/clk/renesas/Makefile                  |   1 +
+ drivers/clk/renesas/r9a07g043-cpg.c           |   8 +
+ drivers/clk/renesas/r9a07g044-cpg.c           |  13 +
+ drivers/clk/renesas/r9a08g045-cpg.c           |   9 +
+ drivers/clk/renesas/r9a08g046-cpg.c           | 153 ++++++++
+ drivers/clk/renesas/rzg2l-cpg.c               |  79 +++-
+ drivers/clk/renesas/rzg2l-cpg.h               |   8 +
+ include/dt-bindings/clock/r9a08g046-cpg.h     | 342 ++++++++++++++++++
+ 17 files changed, 934 insertions(+), 24 deletions(-)
+ create mode 100644 arch/arm64/boot/dts/renesas/r9a08g046.dtsi
+ create mode 100644 arch/arm64/boot/dts/renesas/r9a08g046l48-smarc.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/r9a08g046l48.dtsi
+ create mode 100644 arch/arm64/boot/dts/renesas/rzg3l-smarc-som.dtsi
+ create mode 100644 drivers/clk/renesas/r9a08g046-cpg.c
+ create mode 100644 include/dt-bindings/clock/r9a08g046-cpg.h
+
+-- 
+2.43.0
+
