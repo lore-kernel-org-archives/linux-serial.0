@@ -1,245 +1,108 @@
-Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9100D3D16F0
-	for <linux-serial@vger.kernel.org>; Fri, 20 Mar 2026 17:13:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.66
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CEC63D524E;
+	Fri, 20 Mar 2026 17:26:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774026812; cv=none; b=caWddh8fN3ONdVXwM4gzOQ7Y3T92r5edK2J9Qnr6vlANz+ddBDNZ0bIhNK8p/3nG5YgdqQTi77pZroqqOZhaxUk13vXtj+UggeEjt8XHHJZFNFIuePNLWrhMf6WbzczsjEGdkjoaxLOIGFR4mf2ZbOzt8CKrTlmxuLe3n/DLuUk=
+	t=1774027606; cv=none; b=fo6uteyoObzEzrAnayZS1V30yrEzTTx1c9Vv9dMJLQStVtTsrcqrp3c+WDR606i5VZAd3jqWPNr5Fax6G1lGFw3kcgOOOg9PCCq3mMOhCEI9sK3qaoWaw+U0cfO3iLYY1cQcpTITiSKfaqCvbhrTgcSUKg++ZkNq/NJF1S9R3O4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774026812; c=relaxed/simple;
-	bh=PAW+I/VkOcKB0Plto+s+x0QmEbI3yQtc3t6/t5GTNNE=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=PB4HFgQLulvJHyNFj7RbxYdVKi/gaHX9J5Ptn93tDfxmqEYu21nGjEDDRdLLChlw0AdoonBPD6ejvtaxi1j/wqnKYFKv4ts9DRwtUsGWoWMLbV0GUdSjNeOgKIPTnmpvX4vSHc+x/C69FOkpmJfgfUgtPn8ZUqZ52IUHcKwAblI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=oQWUp9by; arc=none smtp.client-ip=185.67.36.66
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
+	s=arc-20240116; t=1774027606; c=relaxed/simple;
+	bh=vtArZyMpXGFFMqsxDlf7GOdiwTaxsJ1G66hOx9CZdHk=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=YLji7jaGpPVVO6aNb7e6zl9d0uKqltZ//+ZLgvPj7Wz0D7hWeDlOaRxarP/PIhKahiTXSZ/0ysv6WGPRi26aY3EvLz03n7tq6W7ozDEfsyXJBL7tjKYq645ri5B3TS4aTgG6SA8qC+7CsHN46MA5Q5hafQDtD0lqiSeD2CmS6oQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=2F1XeJAn; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="oQWUp9by"
-Received: from submission (posteo.de [185.67.36.169]) 
-	by mout02.posteo.de (Postfix) with ESMTPS id 1306F240103
-	for <linux-serial@vger.kernel.org>; Fri, 20 Mar 2026 18:13:29 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de; s=2017;
-	t=1774026809; bh=SCKt0XH7B1B8aIgxXx4Wexd8qNNlHqBjbw6IpXzlzpE=;
-	h=Message-ID:Subject:From:To:Cc:Date:Autocrypt:Content-Type:
-	 MIME-Version:OpenPGP:From;
-	b=oQWUp9bydByMccnbBuFMAFHN9mJ4CGGgXbsLrV6s1cFmZBWDCSw1+XqTVPUXt6XtZ
-	 p00/s6EFsvcstgDT55L3tYP+3KLj3WrTiGGctpAFbl1YykOmhSB2957HMjobpPhNuB
-	 lAWKu0kbWCgZz90S8qCRyRv3UrsreJPGFZiO4O/eLWxrx+ckVyMBUqbn1bWPGuJ24J
-	 ndaI7qiC8KatNS+ZA6dkBYclpmYk2HnasSxhG7W12tLaJyPHnW4q9W/BwpLG+82h7G
-	 y5ut6FCQFF+GE5iexhkk+HyM5WQzzp+fy35P+TMKjslHIZA763x8t4yL47CceIF8FQ
-	 lKcWb4XFBt9gQ==
-Received: from customer (localhost [127.0.0.1])
-	by submission (posteo.de) with ESMTPSA id 4fcq052Jy4z9rxF;
-	Fri, 20 Mar 2026 18:13:25 +0100 (CET)
-Message-ID: <4f4c09d683023df9daef89ca634b17b5c16625f7.camel@posteo.de>
-Subject: Re: [PATCH v3 2/4] serdev: add rust private data to serdev_device
-From: Markus Probst <markus.probst@posteo.de>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Rob Herring <robh@kernel.org>, Jiri Slaby <jirislaby@kernel.org>, Miguel
- Ojeda <ojeda@kernel.org>, Gary Guo <gary@garyguo.net>,
- =?ISO-8859-1?Q?Bj=F6rn?= Roy Baron	 <bjorn3_gh@protonmail.com>, Benno
- Lossin <lossin@kernel.org>, Andreas Hindborg	 <a.hindborg@kernel.org>,
- Alice Ryhl <aliceryhl@google.com>, Trevor Gross	 <tmgross@umich.edu>,
- Danilo Krummrich <dakr@kernel.org>, Kari Argillander	
- <kari.argillander@gmail.com>, "Rafael J. Wysocki" <rafael@kernel.org>, 
- Viresh Kumar <viresh.kumar@linaro.org>, Boqun Feng <boqun@kernel.org>,
- David Airlie <airlied@gmail.com>,  Simona Vetter <simona@ffwll.ch>,
- linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	rust-for-linux@vger.kernel.org, linux-pm@vger.kernel.org, 
-	driver-core@lists.linux.dev, dri-devel@lists.freedesktop.org
-Date: Fri, 20 Mar 2026 17:13:28 +0000
-In-Reply-To: <2026032048-curtly-refold-e4df@gregkh>
-References: <20260313-rust_serdev-v3-0-c9a3af214f7f@posteo.de>
-	 <20260313-rust_serdev-v3-2-c9a3af214f7f@posteo.de>
-	 <2026031402-absence-graph-af5d@gregkh>
-	 <a9618d034bd48ec21bd26060573770a548619402.camel@posteo.de>
-	 <2026031422-shaded-matchbook-5078@gregkh>
-	 <fa25ed4ff4688a40bd601d695804def772e47af9.camel@posteo.de>
-	 <2026031447-margarita-untamed-e976@gregkh>
-	 <9e07a53053d1dd75a4ebe94aaa06e2279ef3701d.camel@posteo.de>
-	 <2026032048-curtly-refold-e4df@gregkh>
-Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
- keydata=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
- jfGillcaQOqFZ3WwVqyzG1BUfTow==
-Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-8uD0GBqw6AAVRTJIz0DF"
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="2F1XeJAn"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AD7EC19425;
+	Fri, 20 Mar 2026 17:26:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1774027606;
+	bh=vtArZyMpXGFFMqsxDlf7GOdiwTaxsJ1G66hOx9CZdHk=;
+	h=Date:From:To:Cc:Subject:From;
+	b=2F1XeJAnWNQBtcogqWPKI3FUxtTxEBhE8+O7IGQkrWvBH0YrmdlUrW77K+aVfo/I0
+	 V5FnaaJn5F5jhG7nGQc5h0BNw6z1aJYQjCbB+EmFwxh831tVV2CmhkJwWcdW4Fko7N
+	 DDc6kcBBctqxIEO5CkOEAEcajDSg7N84A4u84bHw=
+Date: Fri, 20 Mar 2026 18:26:02 +0100
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY/Serial driver fixes for 7.0-rc5
+Message-ID: <ab2DKnELM8LPfew8@kroah.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 
+The following changes since commit 1f318b96cc84d7c2ab792fcc0bfd42a7ca890681:
 
---=-8uD0GBqw6AAVRTJIz0DF
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+  Linux 7.0-rc3 (2026-03-08 16:56:54 -0700)
 
-On Fri, 2026-03-20 at 17:59 +0100, Greg Kroah-Hartman wrote:
-> On Fri, Mar 20, 2026 at 04:53:09PM +0000, Markus Probst wrote:
-> > On Sat, 2026-03-14 at 14:31 +0100, Greg Kroah-Hartman wrote:
-> > > On Sat, Mar 14, 2026 at 12:08:09PM +0000, Markus Probst wrote:
-> > > > On Sat, 2026-03-14 at 12:52 +0100, Greg Kroah-Hartman wrote:
-> > > > > On Sat, Mar 14, 2026 at 11:42:02AM +0000, Markus Probst wrote:
-> > > > > > On Sat, 2026-03-14 at 09:07 +0100, Greg Kroah-Hartman wrote:
-> > > > > > > On Fri, Mar 13, 2026 at 06:12:31PM +0000, Markus Probst wrote=
-:
-> > > > > > > > Add rust private data to `struct serdev_device`, as it is r=
-equired by the
-> > > > > > > > rust abstraction added in the following commit
-> > > > > > > > (rust: add basic serial device bus abstractions).
-> > > > > > >=20
-> > > > > > > why is rust "special" here?  What's wrong with the existing p=
-rivate
-> > > > > > > pointer in this structure?  Why must we add another one?
-> > > > > > Because in rust, the device drvdata will be set after probe has=
- run. In
-> > > > > > serdev, once the device has been opened, it can receive data. I=
-t must
-> > > > > > be opened either inside probe or before probe, because it can o=
-nly be
-> > > > > > configured (baudrate, flow control etc.) and data written to af=
-ter it
-> > > > > > has been opened. Because it can receive data before drvdata has=
- been
-> > > > > > set yet, we need to ensure it waits on data receival for the pr=
-obe to
-> > > > > > be finished. Otherwise this would be a null pointer dereference=
-. To do
-> > > > > > this, we need to store a `Completion` for it to wait and a `boo=
-l` in
-> > > > > > case the probe exits with an error. We cannot store this data i=
-n the
-> > > > > > device drvdata, because this is where the drivers drvdata goes.=
- We also
-> > > > > > cannot create a wrapper of the drivers drvdata, because
-> > > > > > `Device::drvdata::<T>()` would always fail in that case. That i=
-s why we
-> > > > > > need a "rust_private_data" for this abstraction to store the
-> > > > > > `Completion` and `bool`.
-> > > > >=20
-> > > > > So why is this any different from any other bus type?  I don't se=
-e the
-> > > > > "uniqueness" here that has not required this to happen for PCI or=
- USB or
-> > > > > anything else.
-> > > > >=20
-> > > > > What am I missing?
-> > > > In Short:
-> > > > In serdev, we have to handle incoming device data (serdev calls on =
-a
-> > > > function pointer we provide in advance), even in the case that the
-> > > > driver hasn't completed probe yet.
-> > >=20
-> > > But how is that any different from a USB or PCI driver doing the same
-> > > thing?  Why is serdev so unique here?=C2=A0
-> > >=20
-> > In PCI or USB we don't need to provide function pointers for callbacks
-> > in advance, which will be can be called any time (even while probe).
->=20
-> All class drivers are like this, once you register with them, the
-> function pointers you provide can be called before your probe call ends.
-> So this isn't unique as far as I can tell.
->=20
-> > > What specific serdev function
-> > > causes this
-> > >=20
-> > drivers/tty/serdev/serdev-ttyport.c basically only wraps the serdev
-> > calls to tty calls. This isn't directly caused by a serdev function,
-> > but by the tty part.
-> >=20
-> > > why isn't it an issue with the C api?
-> > >=20
-> > In C you can set the drvdata inside the probe and even with it not
-> > being fully initialized.
-> >=20
-> > With Rust the drvdata is only available after the probe.
-> > But there is the posibility of serdev calling the provided callback
-> > inside probe.
->=20
-> Other classes have this same issue, so why isn't this a problem for HID
-> and input and the like?
-This is unique for a bus device.
+are available in the Git repository at:
 
-A class device has its own Data (e. g. PwmOps), i. e. it will only be
-registered after this Data has been initialized by the driver.
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-7.0-rc5
 
-The receive_buf callback on the serdev device on the other hand must
-happen on the drvdata, as there is no place to store its own Data.
+for you to fetch changes up to 5eb608319bb56464674a71b4a66ea65c6c435d64:
 
-The drvdata is only available at the end of the probe in Rust.
+  vt: save/restore unicode screen buffer for alternate screen (2026-03-13 09:15:58 +0100)
 
-Thanks
-- Markus Probst
+----------------------------------------------------------------
+TTY/Serial fixes for 7.0-rc5
 
->=20
-> thanks,
->=20
-> greg k-h
+Here are some small tty/vt and serial driver fixes for 7.0-rc5.
+Included in here are:
+  - 8250 driver fixes for reported problems
+  - serial core lockup fix
+  - uartlite driver bugfix
+  - vt save/restore bugfix
 
---=-8uD0GBqw6AAVRTJIz0DF
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
+All of these have been in linux-next for over a week with no reported
+problems.
 
------BEGIN PGP SIGNATURE-----
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-iQJPBAABCAA5FiEEgnQYxPSsWOdyMMRzNHYf+OetQ9IFAmm9gDEbFIAAAAAABAAO
-bWFudTIsMi41KzEuMTEsMiwyAAoJEDR2H/jnrUPSIlkQALXlZoWwzPjZMy95xhqU
-7I6KvPLFlLzYRlxIIThOXDGEIOZ95ce7T96q9ZhBhpA3scxteCuxy8+EsBqveKSQ
-pcxhjMa0iKR4FYwMjDHmCQ8mRfZL3qJ2am1tHKOAVxl8ZiZk1s7yu4Wkhtz69pbG
-n4dT4atBfUGvIuoJAVSyw6h5qydyrL1B6MViYFoFj0GoyGqzCI1dQ+Qg/zMONgvu
-VHLP18oAF/BVjkK9RBp/WYVzh8gZv6/GkTPHN3O5NeFzzyf8d2uee4SjlFUXDros
-8qM2nVWxI8IabGJ3nyi4wqb6PVzBQBuDV0jK1bbQBEj++7ktlirR9hjL69W0GCmY
-OQBRWKrc73waYJ+s6FA8Ihuva8Jx25s7tfzvJno/2k7bcqZU90QNFleaN5L3MXmU
-8GrJ60Y7OPh3gG4aYHHbm6qhUFOJCXojQmxNz7kzIq2EqZf8VpLMdaEMCgsjaJaZ
-RYxgvTlgI0r5RxSlhuDMF/xrkiUup13b4JMbNRw4UCuDQbIWThuU5FXZq55A3AI4
-j4thJY/XwRz9Z1fyfu+mlh22mVuBVe1S0NlOFKxDyE5Y4TE3virmvkRoN9meRQi/
-cg2a7FRptqWcl2fuds3hqgAXNattBqV33B1+X+TcXHusT8udSvkjKwtM0bbYQJOq
-to1ro//wgixTwjmnTMunazcl
-=cBMA
------END PGP SIGNATURE-----
+----------------------------------------------------------------
+Ilpo Järvinen (7):
+      serial: 8250: Protect LCR write in shutdown
+      serial: 8250_dw: Avoid unnecessary LCR writes
+      serial: 8250: Add serial8250_handle_irq_locked()
+      serial: 8250_dw: Rework dw8250_handle_irq() locking and IIR handling
+      serial: 8250_dw: Rework IIR_NO_INT handling to stop interrupt storm
+      serial: 8250: Add late synchronize_irq() to shutdown to handle DW UART BUSY
+      serial: 8250_dw: Ensure BUSY is deasserted
 
---=-8uD0GBqw6AAVRTJIz0DF--
+Jiayuan Chen (1):
+      serial: core: fix infinite loop in handle_tx() for PORT_UNKNOWN
+
+Maciej Andrzejewski ICEYE (1):
+      serial: uartlite: fix PM runtime usage count underflow on probe
+
+Martin Roukala (né Peres) (1):
+      serial: 8250_pci: add support for the AX99100
+
+Nicolas Pitre (1):
+      vt: save/restore unicode screen buffer for alternate screen
+
+Peng Zhang (1):
+      serial: 8250: always disable IRQ during THRE test
+
+Raul E Rangel (1):
+      serial: 8250: Fix TX deadlock when using DMA
+
+ drivers/tty/serial/8250/8250.h      |  25 +++
+ drivers/tty/serial/8250/8250_dma.c  |  15 ++
+ drivers/tty/serial/8250/8250_dw.c   | 304 ++++++++++++++++++++++++++++--------
+ drivers/tty/serial/8250/8250_pci.c  |  17 ++
+ drivers/tty/serial/8250/8250_port.c |  75 +++++----
+ drivers/tty/serial/serial_core.c    |   5 +-
+ drivers/tty/serial/uartlite.c       |   1 +
+ drivers/tty/vt/vt.c                 |   8 +
+ include/linux/console_struct.h      |   1 +
+ include/linux/serial_8250.h         |   1 +
+ 10 files changed, 356 insertions(+), 96 deletions(-)
