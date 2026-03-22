@@ -1,164 +1,110 @@
-Received: from mail-qv1-f68.google.com (mail-qv1-f68.google.com [209.85.219.68])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82BE32472AA
-	for <linux-serial@vger.kernel.org>; Sun, 22 Mar 2026 07:32:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.219.68
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774164763; cv=pass; b=idg7LyoNPYOU9ulbTdrRUrb53Cfn+8uFaidfPH/S3NPhk92CUE7D7WUpKnXUBTbD+Xn8PJ/D0wLUz9HA2pK/QCNR8kwenTgwuUGcNgyKFWB8PJyDZZO6iSzHv8R8fUyvwz8FvLZ1eghiUO5jFmgsJEtfiB89Lxd5N0TNivkTXwA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774164763; c=relaxed/simple;
-	bh=5Qx2hgHzbpjpbk7V5p0sgMIub6qbeGS12bDrqjCfrs4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Oo6crmtPAvW+6OqGK/in/zpav6w6/gzUeWCBwGwg9pTdqKkPNGmyuGxfHpJqsfnbGWJT/Xzr286uvoO+2kCBMkvxGHpv0HfIEml7HWrb5b+B4PIXug0IJJ72XksqLwKXMvUbNHcGRfzdpLB1v9Em00/3eCEleUlibuhFab+u6Gw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ehuAJtaY; arc=pass smtp.client-ip=209.85.219.68
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9017C175A86;
+	Sun, 22 Mar 2026 23:37:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774222634; cv=none; b=mUOayxGd1ZfBUVeEbG1smemsrP4ZxUuWqzIUjATYxYmVukwcIf7M6dqSNqOH4tPLnYya4w+qiiH5HWbM3t0PBbBcbFvmcPOC1SgBoWOEr4XJjeqxKzGBPpO0afuvePpU3nsAeRSjptqiXvYm4UOb1WPk4Fkp3IYtguyVDoSBMTQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774222634; c=relaxed/simple;
+	bh=C+cpYEwtbl8C0q9C0mMalH+TLGhOE8srxZhSJuIwx+g=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=iaGyXhjXCr31IXVxEMo8f0u4qbwwuIAf23hP9TPvLT10MNX5r3Y/RBgJAvprp3/98dPFeLGPEDi3oi75/jbFbHrN7svRIlNkDovNnW1kMa9Q0+ZgbCuqbi9+9dmt6OoP3hQ3r6A8WGeL/XaXqN61HlZwJknAc5YO/UcBXN7lpGw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=d+7WSNmZ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ehuAJtaY"
-Received: by mail-qv1-f68.google.com with SMTP id 6a1803df08f44-89c5d795248so43900826d6.2
-        for <linux-serial@vger.kernel.org>; Sun, 22 Mar 2026 00:32:42 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1774164761; cv=none;
-        d=google.com; s=arc-20240605;
-        b=IoA71+rZYtbikMGDhGqzDUEbwmI5AqYzyM/o8MWULjcIGPZhJwoCAdkiWapIACzF6m
-         zl7iiz9c7vwCZjcxfOhUeqB9q7EcAm5GynGPvnmdRg1gfhGILk+lSJbHRuXxqIr9cgmD
-         LHWSXXc8AgkTqxepG9SCtLHeN5WWhKclaSHwjO5ya8HMXtgGFxWko/iH00nnEzRZkmcT
-         Vly1lWQdE6uPZ2MBLBHv7URaC6vZygW2yUlokhmtMnWAYPcsBw2Re7EEwrCiwIA5b0OX
-         rFFdqFpEJyNCNDx591UnQvI75EUc2iVtx8MGtOpo9kgMxnA+dmubfyFr62PIGdgBlbUn
-         xS1g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=2G5N2eT1Tm/wEMF99qtQUnZiqqScw1nqj5jePVwU4B8=;
-        fh=8KRxYGpatPj7n8Hux2jxdXsvPCClBNskSmQPHVL1JkA=;
-        b=Fl11sGdxvyqMfOlMjQ8xoOYHD4+/ItKy8JBwctxn7FSEFQbY1ajoHP6I3a7X6tcd6p
-         SXcfTYfkf1OUHO1v7K+Fhv5rTEEBXx1xqfY76Cobg8+fz5Nx1KBOy7+wLAg8Gse/465q
-         HybC7cFU4DUkTedG1XzCwrPw+4eI+pFSuAPINaeZD/OQYZDZXfQWpJYb0Rgm7KJqrdmG
-         ONQa7k9BNsvq7sP/dw9EEtObzJyhEEahHX2rvRcs6GimuYvMCeg5ATj8oyhsjFDy6HSr
-         xFjpB55HO/61cQyyYv6cTRK9yixZH4f5PjJLwyab49ixLiyG+0arfUNcR4mvFT3+Iek5
-         ZsBQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1774164761; x=1774769561; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=2G5N2eT1Tm/wEMF99qtQUnZiqqScw1nqj5jePVwU4B8=;
-        b=ehuAJtaYhazyFBKaLry+9cTMzv2+F5t7atbBAFG4SJpPk6h0iU8ss3vtNduopIqA/T
-         sZ2WZ935eTNDIR2GlanxZoslO9xflg9kvY1VE5cr0pcevCUwVPFt27Kwr0SfKaiU1oLN
-         f4aOBvR8E47tpQBoVEkA07n5mj0Mil1mxGdop2DrMwRxKUV2ZLbXRN8UK7oEm2gQk5xc
-         w4oxM9s+Kcy1Io3Ohi6XtQP2Oosag9VrAOdkw+NMQE/TjZ4B9xpzAYUN4kObmfTfrDa1
-         4nhKBha0K0SmVr0GyAOKRcK5liPeKY10jqATcqMV6zF/kqMPtEXM0b+5o80J9H1r8DeZ
-         y1UA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774164761; x=1774769561;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2G5N2eT1Tm/wEMF99qtQUnZiqqScw1nqj5jePVwU4B8=;
-        b=jFUaY5mITD9mCvb/nSdG0FhMGBdmm/yNBu5JhDjcTsfO38bJ+J34Mmu8r61mOrnxSy
-         3ZoX1i0ZgfEM5oDo+xc1Vb8XzWRvKXGTE5qyxmHt9dikJZLDgsINOR7llAYSQW8Ral0h
-         U+fQ4qhZChUsRmAkfOLuIuiIdYWUuMd6YI5qhaQgCCxiqP2GrjVONMIZCnzkuf61u3kO
-         IqON0n0CKgkU80WcPZT5iRiOlBCm0MKlOcwRwTOnfLxGoSvFIavk3SPeYRQHspdxOmvi
-         DVk8QlNnzWMHVzWcgH9wSnQre24csCiESrGluF0fl/77wa935+A/CXOF6qWOrdRZHJ+g
-         da7A==
-X-Forwarded-Encrypted: i=1; AJvYcCVkJzbd2ZtHvmJnbMW5jEvRTUaGb5NKfmx/Sf7/ONmtWpEyVswl34FIHQXRKtMkyQhkvWuRmWgEj3Eyzss=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyH6zPn2RY2w29+jxfj2B6NB0giV9KGOg/VIO1tBJ00rXLY5twA
-	Bf0RV3dzuxLgA4jBme3rhLo/jsJlz7DlP+vv2i25Mjwt62TRm5jUCmgthQYxNUzYc1E96x/iq4R
-	gmTXwO4IuLn38+90DheE1o3kyUQNCmTE=
-X-Gm-Gg: ATEYQzwAAeNIQOwuEu8YVfnRibYj7nto4PG8gr5KUMXO9yPV+fmFLMgnank1EZEzGZy
-	aMFR8QyosUml9ydW+wL1I1GExoOFM4ICLm5jhPe4eohCz346kRd7Zx6c9Bil90CivYGmPMAI0jc
-	bHYPPxHREadxY+aP5Z7eVQEeqWlf8zShYD0AsMcoNpQkmJJFnm8XmTcA0IF2ec7AbJUSH++/OY0
-	F9G91129Uzv7zwoQ1iFMYdo8TCGD5gTYOhLBP5EJtoHwFI3G/uquWtbDIuCWYLUpFNPy86yaE/T
-	IvqoIw==
-X-Received: by 2002:a05:6214:3d99:b0:89c:4ec3:5271 with SMTP id
- 6a1803df08f44-89c859d07b5mr135951406d6.4.1774164761449; Sun, 22 Mar 2026
- 00:32:41 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="d+7WSNmZ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E31D6C19424;
+	Sun, 22 Mar 2026 23:37:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1774222634;
+	bh=C+cpYEwtbl8C0q9C0mMalH+TLGhOE8srxZhSJuIwx+g=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=d+7WSNmZj4S8oSiXYk5eP5KyTbdNiEYggcm6Uj+B/1sYgR/Ce4pTRNKUoSr1Gf26q
+	 A5k+Ilqbqq7SdtpY1NBZzaCqeQZInLxHSsLlO3hj7yq8dEwlhGRo74lYFri8GjW/PT
+	 rSD9CwyrDne9Wza2FNGZtS30s8K30TxX5FaiDedQeVP7C9sP4NfWf47cD849Xp+CvZ
+	 6SXhpdtgnrmxguPMgp9+RUUJDWQyfeF4bYe7iFpkUuC/zauJtzFqqbRBXCEPPcX2Ay
+	 I9Dj54Lg86HRUtj2hxAJajZR2EN/AacRIqEx7dnNHhO6miQ1JvJuyiBA3xdXxNgH0u
+	 9R/zGQG+rUdIQ==
+Date: Sun, 22 Mar 2026 18:37:13 -0500
+From: Rob Herring <robh@kernel.org>
+To: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Nathan Chancellor <nathan@kernel.org>,
+	Nicolas Schier <nicolas.schier@linux.dev>,
+	Hans de Goede <hansg@kernel.org>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Mark Pearson <mpearson-lenovo@squebb.ca>,
+	"Derek J. Clark" <derekjohn.clark@gmail.com>,
+	Manivannan Sadhasivam <mani@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Marcel Holtmann <marcel@holtmann.org>,
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+	Bartosz Golaszewski <brgl@bgdev.pl>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Bartosz Golaszewski <brgl@kernel.org>, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
+	platform-driver-x86@vger.kernel.org, linux-pci@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+	linux-bluetooth@vger.kernel.org, linux-pm@vger.kernel.org,
+	Stephan Gerhold <stephan.gerhold@linaro.org>,
+	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+	linux-acpi@vger.kernel.org
+Subject: Re: [PATCH v6 6/9] dt-bindings: connector: m2: Add M.2 1620 LGA
+ soldered down connector
+Message-ID: <20260322233713.GA98177-robh@kernel.org>
+References: <20260317-pci-m2-e-v6-0-9c898f108d3d@oss.qualcomm.com>
+ <20260317-pci-m2-e-v6-6-9c898f108d3d@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260321062312.4290-1-yuhaocheng035@gmail.com> <2026032123-earplugs-stunning-0c6f@gregkh>
-In-Reply-To: <2026032123-earplugs-stunning-0c6f@gregkh>
-From: Haocheng Yu <yuhaocheng035@gmail.com>
-Date: Sun, 22 Mar 2026 15:32:29 +0800
-X-Gm-Features: AaiRm53rU6jztnfB1ILACGatKWeXBOyTSfhaoV5ckHWgfSZU3Y17bMP9oTLUkSQ
-Message-ID: <CAAoXzSrJMWqOt5phWxsJfVovXTnLEtT40k5wnFWGJP0z2YYm-w@mail.gmail.com>
-Subject: Re: [PATCH] tty: vt: Fix slab-out-of-bounds write in do_con_write
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>, Nicolas Pitre <npitre@baylibre.com>, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	Calixte Pernot <calixte.pernot@grenoble-inp.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260317-pci-m2-e-v6-6-9c898f108d3d@oss.qualcomm.com>
 
-I only ran my fuzzer on v6.18, so I'm unsure what commit caused the issue.
+On Tue, Mar 17, 2026 at 09:59:56AM +0530, Manivannan Sadhasivam wrote:
+> Lenovo Thinkpad T14s is found to have a soldered down version of M.2 1620
+> LGA connector. Though, there is no 1620 LGA form factor defined in the M.2
+> spec, it looks very similar to the M.2 Key E connector. So add the
+> "pcie-m2-1620-lga-connector" compatible with "pcie-m2-e-connector" fallback
+> to reuse the Key E binding.
 
-I tried analyzing the cause, but the crash report provided limited information.
-I tried directly analyzing the code, but a possible race condition
-with vc_do_resize()
-is unlikely due to the console_lock, and the state.x out-of-bounds
-issue is invalidated
-by the restrictions in gotoxy(). Furthermore, no reproducer were
-provided, making it
-difficult to verify some of my hypotheses.
+What is LGA?
 
-My initial thought was that although the specific cause was uncertain,
-since scr_writew()
-causes slab-out-of-bounds writes, adding a check before scr_writew()
-would solve the
-problem. After reading your explanation, I realize my thinking was
-quite naive. Therefore,
-I think I may not be able to provide a better patch at the moment.
-Please ignore this patch.
+If not in the spec, is it really something generic?
 
-BTW, I ran `./scripts/checkpatch.pl --strict` indeed, but it didn't
-warn me about the variable
-created. I'll pay attention next time.
-
-Anyway, thanks for reviewing my patch.
-
-Best regards,
-Haocheng
-
-> What commit caused this problem to show up?
->
-> And without more information, or a reproducer, I'm a bit loath to take
-> this change.
->
-> > ---
-> >  drivers/tty/vt/vt.c | 7 +++++++
-> >  1 file changed, 7 insertions(+)
-> >
-> > diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-> > index 6e0089b85c27..95d860f09837 100644
-> > --- a/drivers/tty/vt/vt.c
-> > +++ b/drivers/tty/vt/vt.c
-> > @@ -3138,6 +3138,13 @@ static int vc_con_write_normal(struct vc_data *vc, int tc, int c,
-> >                             (tc &  0xff);
-> >               tc |= (vc_attr << 8) & ~himask;
-> >
-> > +             unsigned long end = vc->vc_origin + vc->vc_screenbuf_size;
->
-> Ideally do not create new variables in the middle of a function,
-> checkpatch should have warned about this.
->
-> > +
-> > +             if (WARN_ON_ONCE(vc->vc_screenbuf_size < 2 ||
-> > +                              end < vc->vc_origin ||
-> > +                              vc->vc_pos < vc->vc_origin ||
-> > +                              vc->vc_pos > end - 2))
->
-> That's not good, if panic-on-warn is enabled, as it is in a few billion
-> Linux systems, you just rebooted the machine, turning a simple overwrite
-> into a denial-of-service, not fixing anything at all, but making it
-> worse :(
->
-> > +                     return -1;
->
-> Do not make up error numbers :(
->
-> thanks,
->
-> greg k-h
+> 
+> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+> ---
+>  .../devicetree/bindings/connector/pcie-m2-e-connector.yaml       | 9 ++++++++-
+>  1 file changed, 8 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/connector/pcie-m2-e-connector.yaml b/Documentation/devicetree/bindings/connector/pcie-m2-e-connector.yaml
+> index f7859aa9b634..d8cf9a9ec7d0 100644
+> --- a/Documentation/devicetree/bindings/connector/pcie-m2-e-connector.yaml
+> +++ b/Documentation/devicetree/bindings/connector/pcie-m2-e-connector.yaml
+> @@ -17,7 +17,14 @@ description:
+>  
+>  properties:
+>    compatible:
+> -    const: pcie-m2-e-connector
+> +    oneOf:
+> +      - items:
+> +          - enum:
+> +              - pcie-m2-1620-lga-connector
+> +          - const: pcie-m2-e-connector
+> +      - items:
+> +          - enum:
+> +              - pcie-m2-e-connector
+>  
+>    vpcie3v3-supply:
+>      description: A phandle to the regulator for 3.3v supply.
+> 
+> -- 
+> 2.51.0
+> 
