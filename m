@@ -1,110 +1,103 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from smtpout-02.galae.net (smtpout-02.galae.net [185.246.84.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9017C175A86;
-	Sun, 22 Mar 2026 23:37:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37D212FE056
+	for <linux-serial@vger.kernel.org>; Mon, 23 Mar 2026 09:29:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.246.84.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774222634; cv=none; b=mUOayxGd1ZfBUVeEbG1smemsrP4ZxUuWqzIUjATYxYmVukwcIf7M6dqSNqOH4tPLnYya4w+qiiH5HWbM3t0PBbBcbFvmcPOC1SgBoWOEr4XJjeqxKzGBPpO0afuvePpU3nsAeRSjptqiXvYm4UOb1WPk4Fkp3IYtguyVDoSBMTQ=
+	t=1774258173; cv=none; b=jqxe/UgUERq5WyJNeO9xOO8EQGLXNvpfcSM0H7CbkDK8JAjsdUO0EHikOFuQlDCbPORhS3l3R+iXeDpDb5/tGrFq2vBG5hdvFV8vCvRRGdkpUzFggKot09+eZJIYTayWqI5eUZpHwNam4Uo9GFf683zoLm5rh12OE6H2xgTtddA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774222634; c=relaxed/simple;
-	bh=C+cpYEwtbl8C0q9C0mMalH+TLGhOE8srxZhSJuIwx+g=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=iaGyXhjXCr31IXVxEMo8f0u4qbwwuIAf23hP9TPvLT10MNX5r3Y/RBgJAvprp3/98dPFeLGPEDi3oi75/jbFbHrN7svRIlNkDovNnW1kMa9Q0+ZgbCuqbi9+9dmt6OoP3hQ3r6A8WGeL/XaXqN61HlZwJknAc5YO/UcBXN7lpGw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=d+7WSNmZ; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1774258173; c=relaxed/simple;
+	bh=4lwhUNT9GXOVmm9cTFimd7JSHD0gkI5MbKrwplCgv0w=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=hOZVs96OJtyUiP2dXXTGdgVDZhSYJebgCdUrsw1L03hd7MWG00UyCNx2Qd4Bx2SCy3Zz7KLx4BDBVnBjSafg7ovmLAV8XK3+xQyvaSMOfccMb5mTnn1DOOqxOGmRVckBaaPPlw0EORyzHzrMMLHWBlx6t/sEUSP+lkWOeXR8Lqs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=SxboF6qz; arc=none smtp.client-ip=185.246.84.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="d+7WSNmZ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E31D6C19424;
-	Sun, 22 Mar 2026 23:37:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774222634;
-	bh=C+cpYEwtbl8C0q9C0mMalH+TLGhOE8srxZhSJuIwx+g=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=d+7WSNmZj4S8oSiXYk5eP5KyTbdNiEYggcm6Uj+B/1sYgR/Ce4pTRNKUoSr1Gf26q
-	 A5k+Ilqbqq7SdtpY1NBZzaCqeQZInLxHSsLlO3hj7yq8dEwlhGRo74lYFri8GjW/PT
-	 rSD9CwyrDne9Wza2FNGZtS30s8K30TxX5FaiDedQeVP7C9sP4NfWf47cD849Xp+CvZ
-	 6SXhpdtgnrmxguPMgp9+RUUJDWQyfeF4bYe7iFpkUuC/zauJtzFqqbRBXCEPPcX2Ay
-	 I9Dj54Lg86HRUtj2hxAJajZR2EN/AacRIqEx7dnNHhO6miQ1JvJuyiBA3xdXxNgH0u
-	 9R/zGQG+rUdIQ==
-Date: Sun, 22 Mar 2026 18:37:13 -0500
-From: Rob Herring <robh@kernel.org>
-To: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Nathan Chancellor <nathan@kernel.org>,
-	Nicolas Schier <nicolas.schier@linux.dev>,
-	Hans de Goede <hansg@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Mark Pearson <mpearson-lenovo@squebb.ca>,
-	"Derek J. Clark" <derekjohn.clark@gmail.com>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Marcel Holtmann <marcel@holtmann.org>,
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-	Bartosz Golaszewski <brgl@bgdev.pl>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Bartosz Golaszewski <brgl@kernel.org>, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
-	platform-driver-x86@vger.kernel.org, linux-pci@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-	linux-bluetooth@vger.kernel.org, linux-pm@vger.kernel.org,
-	Stephan Gerhold <stephan.gerhold@linaro.org>,
-	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
-	linux-acpi@vger.kernel.org
-Subject: Re: [PATCH v6 6/9] dt-bindings: connector: m2: Add M.2 1620 LGA
- soldered down connector
-Message-ID: <20260322233713.GA98177-robh@kernel.org>
-References: <20260317-pci-m2-e-v6-0-9c898f108d3d@oss.qualcomm.com>
- <20260317-pci-m2-e-v6-6-9c898f108d3d@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="SxboF6qz"
+Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
+	by smtpout-02.galae.net (Postfix) with ESMTPS id 57D2C1A2F92;
+	Mon, 23 Mar 2026 09:29:28 +0000 (UTC)
+Received: from mail.galae.net (mail.galae.net [212.83.136.155])
+	by smtpout-01.galae.net (Postfix) with ESMTPS id 21C285FEF6;
+	Mon, 23 Mar 2026 09:29:28 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 16B8A10371E62;
+	Mon, 23 Mar 2026 10:29:21 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
+	t=1774258167; h=from:subject:date:message-id:to:cc:mime-version:content-type:
+	 content-transfer-encoding:content-language:in-reply-to:references;
+	bh=HtFy15itLGzLwxNiNWI7+ij1bS2Q37ajrwG17A30oWo=;
+	b=SxboF6qzmWdCjfkaCQZfvJel6DR73V5hoEe/qvMCpeU+IoeNThHjEV+WwZvxXDY17O5Y2y
+	A1H2ur9iztf3+HIeWmtepeTU9z1oQFQ5qI/+S7X0P2SB2UlMSvVBzY8h1Z3SBQhXZOaPFi
+	JVHv4KVeb9HeFUYnbdGlJFE20Bo5CBJmYOHQtqMChikyUBWbf+wySXfUddzs1XQi9aRgQx
+	xGdLJylgHGKZn1E7zDydcimyp4BQ34XrmqWazX7RPvkEkRIM7l/ERHC92ya5m9/EgrM767
+	gzlqtzMoE7Jfi3MZBFYnOnzHelWXTHzDJ3Z1sqFwcijKf4Nhxc0/sH8Wfgr5XA==
+Message-ID: <3bd295ee-1607-49db-a12e-5a4d4fc81c5c@bootlin.com>
+Date: Mon, 23 Mar 2026 10:29:20 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260317-pci-m2-e-v6-6-9c898f108d3d@oss.qualcomm.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] tty: atmel_serial: update outdated reference to
+ atmel_tasklet_func()
+To: Kexin Sun <kexinsun@smail.nju.edu.cn>, gregkh@linuxfoundation.org,
+ jirislaby@kernel.org, nicolas.ferre@microchip.com,
+ alexandre.belloni@bootlin.com, claudiu.beznea@tuxon.dev,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org
+Cc: julia.lawall@inria.fr, xutong.ma@inria.fr, yunbolyu@smu.edu.sg,
+ ratnadiraw@smu.edu.sg
+References: <20260321105956.8401-1-kexinsun@smail.nju.edu.cn>
+From: Richard GENOUD <richard.genoud@bootlin.com>
+Content-Language: en-US, fr
+Organization: Bootlin
+In-Reply-To: <20260321105956.8401-1-kexinsun@smail.nju.edu.cn>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Last-TLS-Session-Version: TLSv1.3
 
-On Tue, Mar 17, 2026 at 09:59:56AM +0530, Manivannan Sadhasivam wrote:
-> Lenovo Thinkpad T14s is found to have a soldered down version of M.2 1620
-> LGA connector. Though, there is no 1620 LGA form factor defined in the M.2
-> spec, it looks very similar to the M.2 Key E connector. So add the
-> "pcie-m2-1620-lga-connector" compatible with "pcie-m2-e-connector" fallback
-> to reuse the Key E binding.
+Le 21/03/2026 à 11:59, Kexin Sun a écrit :
+> The modem-status comparison that used irq_status_prev was
+> moved from atmel_tasklet_func() into atmel_handle_status() in
+> commit 2c7af5ba65cf ("tty: serial: atmel: rework interrupt and
+> wakeup handling"). atmel_tasklet_func() itself was later split
+> into atmel_tasklet_rx_func() and atmel_tasklet_tx_func() in
+> commit 00e8e65870cc ("tty/serial: atmel: split tx and rx
+> paths").  Update the comment to reference
+> atmel_handle_status(), which now performs the comparison.
+Actually, it was in commit:
+d033e82db9a5 ("tty/serial: at91: handle IRQ status more safely")
+That irq_status prev/actual comparison was moved from 
+atmel_tasklet_func() to atmel_handle_status().
 
-What is LGA?
+And we don't need the rx/tx tasklet splitting history there.
 
-If not in the spec, is it really something generic?
+IHMO, only the last sentence should suffice, but now that I've done the 
+right commit research, you may add a reference to it :)
 
 > 
-> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+> Assisted-by: unnamed:deepseek-v3.2 coccinelle
+> Signed-off-by: Kexin Sun <kexinsun@smail.nju.edu.cn>
 > ---
->  .../devicetree/bindings/connector/pcie-m2-e-connector.yaml       | 9 ++++++++-
->  1 file changed, 8 insertions(+), 1 deletion(-)
+>   drivers/tty/serial/atmel_serial.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/connector/pcie-m2-e-connector.yaml b/Documentation/devicetree/bindings/connector/pcie-m2-e-connector.yaml
-> index f7859aa9b634..d8cf9a9ec7d0 100644
-> --- a/Documentation/devicetree/bindings/connector/pcie-m2-e-connector.yaml
-> +++ b/Documentation/devicetree/bindings/connector/pcie-m2-e-connector.yaml
-> @@ -17,7 +17,14 @@ description:
->  
->  properties:
->    compatible:
-> -    const: pcie-m2-e-connector
-> +    oneOf:
-> +      - items:
-> +          - enum:
-> +              - pcie-m2-1620-lga-connector
-> +          - const: pcie-m2-e-connector
-> +      - items:
-> +          - enum:
-> +              - pcie-m2-e-connector
->  
->    vpcie3v3-supply:
->      description: A phandle to the regulator for 3.3v supply.
-> 
-> -- 
-> 2.51.0
-> 
+> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+> index 08dd8f887956..5d8c1cfc1c60 100644
+> --- a/drivers/tty/serial/atmel_serial.c
+> +++ b/drivers/tty/serial/atmel_serial.c
+> @@ -1927,7 +1927,7 @@ static int atmel_startup(struct uart_port *port)
+>   		atmel_uart_writel(port, ATMEL_US_FMR, fmr);
+>   	}
+>   
+> -	/* Save current CSR for comparison in atmel_tasklet_func() */
+> +	/* Save current CSR for comparison in atmel_handle_status() */
+>   	atmel_port->irq_status_prev = atmel_uart_readl(port, ATMEL_US_CSR);
+>   
+>   	/*
+
+Thanks!
