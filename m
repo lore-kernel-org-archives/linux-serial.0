@@ -1,113 +1,50 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D68873BD633
-	for <linux-serial@vger.kernel.org>; Mon, 23 Mar 2026 16:45:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B9E53B2FC6;
+	Mon, 23 Mar 2026 16:52:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774284323; cv=none; b=Y9ihTqSfAmRbRVMn9IikGonw39kmc0Ovqltaqbok8bbFtoVhuVY3PAChjipVLpeWXGlO4IbNa2ILZo8ykVNZYwJ4otZA0nIQ/JdMHknfv7bcQu5B9U45iEKcQShaEQlCrAl69HkLDvx6m6P2pjhk/Dw8jM0Y9MZSraKdygJqsVI=
+	t=1774284771; cv=none; b=dnLBBXgZgCATGWnhdhQTtDbKDMlglcLJtFBXQXD/fjLnqAK9Q9nRa9JwDPRbtAjCxxcBlOsxsPApAsduICEIXUUr9zWrl9p/YC3JT9XHjNA2cPZZKNci4lKkgRsHMmCXvxzz/iGyiB3Ifvjs5UIC9xpQyeqPy/VspvAQmU+oWpw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774284323; c=relaxed/simple;
-	bh=0AXgh7r8UHMnA9Zqa/LXkVlVLU4WWT6w2XAUUJqorWk=;
+	s=arc-20240116; t=1774284771; c=relaxed/simple;
+	bh=Yuk6wk3lZC7gbzp4H6SpZqqgdfs+eRo7k0tXxPzD45k=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MSegrFJH1YBSnhRy+VN25lDhwKmubqI01Pq0V9ZFtlOtQgA5C1E3Ds0DPxsNtV0miYLuovqGp5gcPGS1vzMFqkv1lgJhDcMOGVb8CfaF4Tp7+iPGBFXKTwe2yoe5lYhNVzIp7wiKd6qGuulw6ABGZWB8uewvpGA2OITbfc7rYS0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=kXANH8GV; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=HSqn8Z2B; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=aaGC7iZtIt8x6+lUsHPOmhgMa2TueyPhF7QAbMV2uwEGS6x7VCz6DWZwy9TvED1NLSEjiTAZ79pmEJ/LJrKvY4n0K09XG1JoHPUMR4OytgQBNhlBsikSNBzPQu6ChrF6SPg0/FYpd8J8FaTpoA9FHkPFJl+Iy+c1aPlCZ9eP2s0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QJtVj+ex; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="kXANH8GV";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="HSqn8Z2B"
-Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 62NFGdDf3476329
-	for <linux-serial@vger.kernel.org>; Mon, 23 Mar 2026 16:45:21 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	Kj+XAZN1TFt3Nwfgt300eR0N4IQOJ3Hc9ynUXTnwTp0=; b=kXANH8GVsr8XcV38
-	dzEshEDfmAP+C2peT7j1blXg1V7Oao0GFS6owsA1AyuZs/SjUOiO19Y/tPnMwww7
-	6l7g8LhdE2p2qfNtKyJyKPx4G2XwgwI2tuGL0kwi0vDvl0hTwzcSJgH9WwaeNRiB
-	41jb3Xit3KmDv01llheLFRbNNzwtieZGlSsCqaOKhbEyw81L2qTwBh3KwIuM9t8F
-	MyzdLmeE2pIJ8jIyq6QLMt2Vb7OtgazJG0kCKSVLpCstvJZ2e8a2FWjaehBVwIFx
-	Fqsk/NKMd5J53d8nHXySy7yPNGBbleuex4CUfdKlp8X69aFdpupVV2iQd2VbaHzi
-	RGwBBg==
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com [209.85.160.200])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4d355w103u-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-serial@vger.kernel.org>; Mon, 23 Mar 2026 16:45:20 +0000 (GMT)
-Received: by mail-qt1-f200.google.com with SMTP id d75a77b69052e-509044f54aaso14305051cf.1
-        for <linux-serial@vger.kernel.org>; Mon, 23 Mar 2026 09:45:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1774284320; x=1774889120; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=Kj+XAZN1TFt3Nwfgt300eR0N4IQOJ3Hc9ynUXTnwTp0=;
-        b=HSqn8Z2BAg/zQRJ6O0AYQV20QJFZjpEAUw8dEU1x668N2oMY5WWfFDqRZ1ZMtdY5Pg
-         vGf9/AdkrGa3uT20/0vWIua4WoVGq5kvYC2KjXeXr3n5Eu4BfBYHg3vcQoGJ8XvF9dl3
-         JOrwqLyyx4be1VLNA9+zzKRZzbu1WRkP3iwYQ1ukWQSU191rgzGT/HJt5jwY4YBZqfkF
-         JAZgB7g3hEvs8KX/p/JudafHC5uo0FF/Pi5nrpiRUV73g62Q8jddpgxIwk2faxNH55eF
-         +aKMWkOp1pQ0GvUd4ExXWU3WEJs2sZDGVZLnHv7eGyZAlbQI1l+rBXrm+CLHZ/dzCr2p
-         XilA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774284320; x=1774889120;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Kj+XAZN1TFt3Nwfgt300eR0N4IQOJ3Hc9ynUXTnwTp0=;
-        b=oGTvngnK6/DnxjR/ZU7m+/BviWQLpTfRknsw0h8h9IiVgQCGeGkvritt5ICL8+qRPT
-         3BOAyizY4XXrg9JtyISbHwKtLsHagj8Um+k7peLvf1aWnHI04TA/Ph3pjicUdx4j62Wr
-         LxRQhUY5qMgsqWaWUoMOUeNgZKbCxpNgXxp6aLCa0Hr3UjOugf0CYvPNQwgjQktMgQGK
-         6ouuSSTqoqM/b7q9zK6YsFb3h7hi2K8WAQcvTHD1DmTL5dMFqQwAgJ5q9SzuFVi+kRDt
-         uog734UzO3o2FHJUDz8fCxaDx3C5UEoou5jr5OuchwdW0KN2sUzjDFwpgqUNBOn2crdc
-         sI9A==
-X-Forwarded-Encrypted: i=1; AJvYcCUl5Z7vCqZ+kt5hyFZdAGP0+u7IKndDccNeAGqWMZk0oiC/uQfpOrieZlc/Bn3PNytTOiVuJQgWZ+SSvU0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzNdaKFf/peURSG10Yb9djQTncMAE7FeUaAZ2ggVn5E4jUo/7qu
-	iUFiRgl3e71KCxEz4SVkMTVPi50p+KYwJz63IUTUnUFUdrd6BkqtYOFAt0sazozmMgN3gHPVMi/
-	twwD488BRN3e4elC60R2kdLP0xBRAkjdIyk03cP8jKaw3RxXACzfEcIEVPxgFWpUXEWA=
-X-Gm-Gg: ATEYQzwXoscKqSvHbx59J2tunmdwOfYrkchMzYjljq3jkg6o7oyFakSMeqNvv9OnXGh
-	/VGV9xnDmUhCcYHWQIlM6kQ3F/MxoepF5OySY60uIDkx5qHfUgtD5Nwg1zMZsDBgzET0H6aIEK0
-	cbdNLId4YC+SzZItN+Qy61ASujEOIRckZLePucD5xZHg29GdCADuvTTjigux4OhZ+Z/L2575AVC
-	i+BRuGWRNeKbjLhvioGFjle5rIGcGqgdPGSHnKCyb8AN+Bgvz9/nguMjm0UDUt3dy/c9ISri3m/
-	N6Wgi+ef59w3NcYRf/oX1TCgtKtVeb/nUQWUV5RjQwdzxdMdIBEmnnYEm3xVamrl5i2XWiYJ6fD
-	ZqpuIO3IMN5PxLnRhaJ06tBjCpnODjfWBkXszRLNdu7OyiIuRD+XZVrtxTBX0tZeiXYgof3GKkk
-	xmGyxiQzy0hMzqtSIoUA83zmPCLfxRoVnWWRY=
-X-Received: by 2002:a05:622a:4e93:b0:509:2822:670d with SMTP id d75a77b69052e-50b373eaec2mr187522091cf.27.1774284320065;
-        Mon, 23 Mar 2026 09:45:20 -0700 (PDT)
-X-Received: by 2002:a05:622a:4e93:b0:509:2822:670d with SMTP id d75a77b69052e-50b373eaec2mr187520941cf.27.1774284319458;
-        Mon, 23 Mar 2026 09:45:19 -0700 (PDT)
-Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5a285207500sm2667386e87.41.2026.03.23.09.45.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Mar 2026 09:45:17 -0700 (PDT)
-Date: Mon, 23 Mar 2026 18:45:15 +0200
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-To: Manivannan Sadhasivam <mani@kernel.org>
-Cc: Rob Herring <robh@kernel.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nicolas Schier <nicolas.schier@linux.dev>,
-        Hans de Goede <hansg@kernel.org>,
-        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-        Mark Pearson <mpearson-lenovo@squebb.ca>,
-        "Derek J. Clark" <derekjohn.clark@gmail.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Bartosz Golaszewski <brgl@kernel.org>, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, linux-pci@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-pm@vger.kernel.org,
-        Stephan Gerhold <stephan.gerhold@linaro.org>,
-        linux-acpi@vger.kernel.org
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QJtVj+ex"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AE87C4CEF7;
+	Mon, 23 Mar 2026 16:52:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1774284771;
+	bh=Yuk6wk3lZC7gbzp4H6SpZqqgdfs+eRo7k0tXxPzD45k=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=QJtVj+exPIBXiYtXCPaaLfcL7P97OgaSLNzI6lkB+NBESgVd7U+/6I7M0GqxSKchh
+	 z7SX8PSb/fBTY5bISNd7HVk4DCVKIYrv5sTtQJUWirx4ymxSBb7okLUGuMwyo/oCjk
+	 lQXlD6xmOsc4+IayQpxZjNvNIH6+sPKM/oU0n+ysK/z62IW2+5U3knnrF13M1FRJRd
+	 rGSvfsQ/FxANOT2I/vedMjC6zCMRS6iJtdJroPeAatGs4rbp/cRc3hXMEZrqsdcCU+
+	 HRBJrYec2VnfYFBuO1aIosea9vq/Dv+UnUtyZFp61SnVncNmBWSaBQGPZ3xwOv4pUs
+	 VLpIY9BJfOOww==
+Date: Mon, 23 Mar 2026 22:22:33 +0530
+From: Manivannan Sadhasivam <mani@kernel.org>
+To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Cc: Rob Herring <robh@kernel.org>, 
+	Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Nathan Chancellor <nathan@kernel.org>, 
+	Nicolas Schier <nicolas.schier@linux.dev>, Hans de Goede <hansg@kernel.org>, 
+	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Mark Pearson <mpearson-lenovo@squebb.ca>, 
+	"Derek J. Clark" <derekjohn.clark@gmail.com>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Marcel Holtmann <marcel@holtmann.org>, 
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>, Bartosz Golaszewski <brgl@bgdev.pl>, 
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Bartosz Golaszewski <brgl@kernel.org>, 
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org, 
+	platform-driver-x86@vger.kernel.org, linux-pci@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org, linux-pm@vger.kernel.org, 
+	Stephan Gerhold <stephan.gerhold@linaro.org>, linux-acpi@vger.kernel.org
 Subject: Re: [PATCH v6 6/9] dt-bindings: connector: m2: Add M.2 1620 LGA
  soldered down connector
-Message-ID: <blhm4csjyw6r667cleljgzd6rpwagttjo5rau7wjrlnjakq2qm@ekyhc4jvwmwf>
+Message-ID: <m44mupdmg7kgco62n4evcviagqo7wwgyt3gybugbxwesd4ekjz@o24r6v4tpezc>
 References: <20260317-pci-m2-e-v6-0-9c898f108d3d@oss.qualcomm.com>
  <20260317-pci-m2-e-v6-6-9c898f108d3d@oss.qualcomm.com>
  <20260322233713.GA98177-robh@kernel.org>
@@ -116,6 +53,7 @@ References: <20260317-pci-m2-e-v6-0-9c898f108d3d@oss.qualcomm.com>
  <6aef3xxjjd4nbgrfx6jc6jt6rpqmttoui6hil5zqgdpas2j6gj@ie6j72orenou>
  <fsvmmgoe5wslmxebhrrwmdg2ldcmhzvj53gjkdfnfg2m2rz2lw@dcfboaakz7ae>
  <bguhzabwryayyqkv4ilzwr3ixwv6bzxncblo3ircz2wm3fs52k@66zvcrfcb4oe>
+ <blhm4csjyw6r667cleljgzd6rpwagttjo5rau7wjrlnjakq2qm@ekyhc4jvwmwf>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -125,89 +63,72 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <bguhzabwryayyqkv4ilzwr3ixwv6bzxncblo3ircz2wm3fs52k@66zvcrfcb4oe>
-X-Authority-Analysis: v=2.4 cv=fq7RpV4f c=1 sm=1 tr=0 ts=69c16e20 cx=c_pps
- a=JbAStetqSzwMeJznSMzCyw==:117 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10
- a=Yq5XynenixoA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=u7WPNUs3qKkmUXheDGA7:22 a=yx91gb_oNiZeI1HMLzn7:22 a=VwQbUJbxAAAA:8
- a=dFseMu0FTdCp80lU-T0A:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
- a=uxP6HrT_eTzRwkO_Te1X:22
-X-Proofpoint-ORIG-GUID: giZUXAL286PIwTa3qrQ8xlRPx4C4SMbY
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzIzMDEyNCBTYWx0ZWRfX1UIETetIbrIn
- KCixtz6HaUrMl2zVmBP/w/VwQDYoba1iMXbdLHIyZZSJ4CuFDByp/hsbuxNCL8GziLIy5uQcc67
- YfabGpB41RCYM5IUjCoRxNQM5+z+iCnjG5mcfc+2mJ0kv1Q4F1EpoeJhnaPUrd5utA3rkuTnViN
- ZdnCmEiIIyY6a+gvK/zdwOdpduBgHJzPrrZjAbyuKSHTozk36wew1qBTECSBcn931/urNAE3PrN
- 1Bo+L7CLlmhKATuwuN9WKHOE8y24fmYm3qtNqLZ6mGyoT/nhiOGrDpnXmT9Gc7bt5whoY10+bIA
- FJe11ufV0uVIUD6uYZMeU+2hs2hS/8d515zxRcwcaBcx76pXX9J83MlM0SMi3Vt8sa506skOxXF
- j2Xi7uwc32oyllqvAJCTkpw5tdNydfdha+Zzw4gIm7CLkQT1vQEUjVYiFYQqcbZ2IIb+cZihbrw
- OYFmVECbf9UNWslf6IQ==
-X-Proofpoint-GUID: giZUXAL286PIwTa3qrQ8xlRPx4C4SMbY
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-03-23_04,2026-03-23_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 spamscore=0 adultscore=0 clxscore=1015 impostorscore=0
- lowpriorityscore=0 suspectscore=0 priorityscore=1501 bulkscore=0 phishscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2603050001 definitions=main-2603230124
+In-Reply-To: <blhm4csjyw6r667cleljgzd6rpwagttjo5rau7wjrlnjakq2qm@ekyhc4jvwmwf>
 
-On Mon, Mar 23, 2026 at 09:26:04PM +0530, Manivannan Sadhasivam wrote:
-> On Mon, Mar 23, 2026 at 05:14:30PM +0200, Dmitry Baryshkov wrote:
-> > On Mon, Mar 23, 2026 at 07:14:25PM +0530, Manivannan Sadhasivam wrote:
-> > > On Mon, Mar 23, 2026 at 08:39:55AM -0500, Rob Herring wrote:
-> > > > On Mon, Mar 23, 2026 at 7:16 AM Manivannan Sadhasivam <mani@kernel.org> wrote:
-> > > > >
-> > > > > On Sun, Mar 22, 2026 at 06:37:13PM -0500, Rob Herring wrote:
-> > > > > > On Tue, Mar 17, 2026 at 09:59:56AM +0530, Manivannan Sadhasivam wrote:
-> > > > > > > Lenovo Thinkpad T14s is found to have a soldered down version of M.2 1620
-> > > > > > > LGA connector. Though, there is no 1620 LGA form factor defined in the M.2
-> > > > > > > spec, it looks very similar to the M.2 Key E connector. So add the
-> > > > > > > "pcie-m2-1620-lga-connector" compatible with "pcie-m2-e-connector" fallback
-> > > > > > > to reuse the Key E binding.
+On Mon, Mar 23, 2026 at 06:45:15PM +0200, Dmitry Baryshkov wrote:
+> On Mon, Mar 23, 2026 at 09:26:04PM +0530, Manivannan Sadhasivam wrote:
+> > On Mon, Mar 23, 2026 at 05:14:30PM +0200, Dmitry Baryshkov wrote:
+> > > On Mon, Mar 23, 2026 at 07:14:25PM +0530, Manivannan Sadhasivam wrote:
+> > > > On Mon, Mar 23, 2026 at 08:39:55AM -0500, Rob Herring wrote:
+> > > > > On Mon, Mar 23, 2026 at 7:16 AM Manivannan Sadhasivam <mani@kernel.org> wrote:
 > > > > > >
-> > > > > > What is LGA?
+> > > > > > On Sun, Mar 22, 2026 at 06:37:13PM -0500, Rob Herring wrote:
+> > > > > > > On Tue, Mar 17, 2026 at 09:59:56AM +0530, Manivannan Sadhasivam wrote:
+> > > > > > > > Lenovo Thinkpad T14s is found to have a soldered down version of M.2 1620
+> > > > > > > > LGA connector. Though, there is no 1620 LGA form factor defined in the M.2
+> > > > > > > > spec, it looks very similar to the M.2 Key E connector. So add the
+> > > > > > > > "pcie-m2-1620-lga-connector" compatible with "pcie-m2-e-connector" fallback
+> > > > > > > > to reuse the Key E binding.
+> > > > > > >
+> > > > > > > What is LGA?
+> > > > > > >
 > > > > > >
-> > > > >
-> > > > > Land Grid Array
-> > > > >
-> > > > > > If not in the spec, is it really something generic?
+> > > > > > Land Grid Array
 > > > > > >
-> > > > >
-> > > > > Good question. Yes and No! LGA is not something that Lenovo only uses. Other
-> > > > > vendors may also use this form factor. PCIe connectors are full of innovation as
-> > > > > the spec gives room for hardware designers to be as innovative as possible to
-> > > > > save the BOM cost.
+> > > > > > > If not in the spec, is it really something generic?
+> > > > > > >
+> > > > > >
+> > > > > > Good question. Yes and No! LGA is not something that Lenovo only uses. Other
+> > > > > > vendors may also use this form factor. PCIe connectors are full of innovation as
+> > > > > > the spec gives room for hardware designers to be as innovative as possible to
+> > > > > > save the BOM cost.
+> > > > > 
+> > > > > innovation == incompatible changes
+> > > > > 
 > > > > 
-> > > > innovation == incompatible changes
+> > > > Yes, I was trying to sound nice :)
 > > > > 
+> > > > > > This is why I do not want to make it Lenovo specific. But if you prefer that, I
+> > > > > > can name it as "lenovo,pcie-m2-1620-lga-connector".
+> > > > > 
+> > > > > Depends if you think that s/w needs to know the differences. Hard to
+> > > > > say with a sample size of 1.
+> > > > > 
+> > > > 
+> > > > Sure. Will add the 'lenovo' prefix then.
 > > > 
-> > > Yes, I was trying to sound nice :)
+> > > Is it really Lenovo? Or is it some other module vendor, whose LGAs are
+> > > being used by Lenovo?
 > > > 
-> > > > > This is why I do not want to make it Lenovo specific. But if you prefer that, I
-> > > > > can name it as "lenovo,pcie-m2-1620-lga-connector".
-> > > > 
-> > > > Depends if you think that s/w needs to know the differences. Hard to
-> > > > say with a sample size of 1.
-> > > > 
+> > > I remember that DB820c also used some kind of a module for the WiFi card
+> > > (which might be M.2 compatible or might not, I can't find exact docs at
+> > > this point).
 > > > 
-> > > Sure. Will add the 'lenovo' prefix then.
 > > 
-> > Is it really Lenovo? Or is it some other module vendor, whose LGAs are
-> > being used by Lenovo?
-> > 
-> > I remember that DB820c also used some kind of a module for the WiFi card
-> > (which might be M.2 compatible or might not, I can't find exact docs at
-> > this point).
-> > 
+> > I don't know. These kind of designs might be reused by several vendors. But
+> > considering that we should not make it generic, I'd go with Lenovo as that's
+> > the only vendor we know as of now.
 > 
-> I don't know. These kind of designs might be reused by several vendors. But
-> considering that we should not make it generic, I'd go with Lenovo as that's
-> the only vendor we know as of now.
+> ... and later we learn that other vendors use the same idea /pinout,
+> then nothing stops us from still telling that it's a
+> "lenovo,pcie-m2-something-lga". 
+> 
 
-... and later we learn that other vendors use the same idea /pinout,
-then nothing stops us from still telling that it's a
-"lenovo,pcie-m2-something-lga". 
+How do you possibly know whether a single vendor has introduced this form factor
+or reused by multiple ones? Atleast, I don't have access to such a source to
+confirm.
+
+- Mani
 
 -- 
-With best wishes
-Dmitry
+மணிவண்ணன் சதாசிவம்
