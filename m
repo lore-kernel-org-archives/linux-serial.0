@@ -1,153 +1,154 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFEDB3CEB85;
-	Wed, 25 Mar 2026 12:06:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9951433ADAC;
+	Thu, 26 Mar 2026 08:06:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774440381; cv=none; b=enb83HUOEJZa7qJqcmMsAu/muV8oHgc+HeByi7eR8zC8lXG3FGUUXZsTWL+M8Ym2zbdBi3PpSis2hjS82zZIQDlTwi9A57XJhUkq3Lp2K89hZcy+6d87aJocv37lqwvAsblejTOx2ovwYuHN6CbKxqbUodfrMJxAjkkBEW9smMk=
+	t=1774512400; cv=none; b=pGopi+wxqmKjlpJtyxhQ/J+FOj5SVFwOd9935hkpHAdcjhxdv/hJ2JhDE3D4PO/6tCjk0Vw7Q7hTvbcToQVzMhWrWrCr+MOlveQMcdIUd+ghzJtmVupVJdp7eHIVJISnWPS+Uc54sbC4XXumMP2yMsyUvO3v4ZnIvGd8RApsqL4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774440381; c=relaxed/simple;
-	bh=ueF0hrvRluFMJ/+IsNDv2TY9qAQLpZVCChvf6GImWMk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UePQYMMHUF/w8im0JJRCGP8h++AX33oeb2sMfRAch2CTvkZnnX/RQjpaJe9ZCqUtZXTY0mBolr4AD1TseUHjJwYkCH6lLc9I1+/U2YuwnLyfOaxQY85cECeCrvYVBPxO38SFSHrowpm/K9TT9JRrjTml+7m9OlhyIieIf77S+dw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b64J3S/9; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1774512400; c=relaxed/simple;
+	bh=90rMoHNtpikEEOX4hxu7KxohYPZTjuhD8cCrdkwCho4=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=CJrNPvnsp9k4EW1l5pAZGjGUfb/VsViAAbGQWYCcBILAzN8DqVa7fZh5osQzWJsQfwtVvF7HsyZh1tIJyAxX8MeNydUOxZRr4hhatGOYli5oUqsBuDiqxC57HoGr4q0R7ntJTc2MRtlweBPalh0Bp0xKg+44yBFFnG4X3Y80ub4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VSUoMf7R; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b64J3S/9"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFB30C4CEF7;
-	Wed, 25 Mar 2026 12:06:12 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VSUoMf7R"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6C1F4C2BCB1;
+	Thu, 26 Mar 2026 08:06:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774440381;
-	bh=ueF0hrvRluFMJ/+IsNDv2TY9qAQLpZVCChvf6GImWMk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=b64J3S/9wMpdMbsb28lUju0wP16mAjZXdtTfStiNijzPEkHs1QwjQqNJn9Vm96m4G
-	 SesNnOOhFr1Av4MG+5BeUKnlWQbTn7LgkfIEGssQYGwMJXp7uc7C3mqUl+mJqux3Mz
-	 7GVqbaVqgjEGvz6Dkath/TBSnChu4Yci0FfgPm2vMcRNKaevXioRglINXVrTJZU9MW
-	 NstZ4onOipYfdbdsAS/lY7IdpfwvbAM5L8zb11Se6dTjuxRPVKptHkfpZpHB14zIix
-	 egtrB549HcgGNnuMLCUyzdeVWiCIdft3TDwdf/Teh6A6NpfuRpF0LvSmjfIaruYB8r
-	 /NaH//k6jNhlQ==
-Date: Wed, 25 Mar 2026 17:36:08 +0530
-From: Manivannan Sadhasivam <mani@kernel.org>
-To: Mark Pearson <mpearson-lenovo@squebb.ca>
-Cc: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, 
-	Rob Herring <robh@kernel.org>, Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>, 
-	Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Nathan Chancellor <nathan@kernel.org>, Nicolas Schier <nicolas.schier@linux.dev>, 
-	Hans de Goede <hansg@kernel.org>, Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, 
-	"Derek J . Clark" <derekjohn.clark@gmail.com>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Marcel Holtmann <marcel@holtmann.org>, 
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>, Bartosz Golaszewski <brgl@bgdev.pl>, 
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Bartosz Golaszewski <brgl@kernel.org>, 
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org, 
-	"platform-driver-x86@vger.kernel.org" <platform-driver-x86@vger.kernel.org>, linux-pci@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org, linux-pm@vger.kernel.org, 
-	Stephan Gerhold <stephan.gerhold@linaro.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>
-Subject: Re: [PATCH v6 6/9] dt-bindings: connector: m2: Add M.2 1620 LGA
- soldered down connector
-Message-ID: <cvqdbqnzjmzoowxkvz2lyv4avropu5jw7h2r6zng3ecf245hgg@fsysjqflqd35>
-References: <20260317-pci-m2-e-v6-6-9c898f108d3d@oss.qualcomm.com>
- <20260322233713.GA98177-robh@kernel.org>
- <to2mrizprc3hjufqbiplpqyek7f4uutqtn4hx4gkmdgv2rykbc@ybwwjhdec4nm>
- <CAL_JsqJXrHCJt770bJkMmAUhirSF3kHjYwSzkG7cXp7-eys8Rg@mail.gmail.com>
- <6aef3xxjjd4nbgrfx6jc6jt6rpqmttoui6hil5zqgdpas2j6gj@ie6j72orenou>
- <fsvmmgoe5wslmxebhrrwmdg2ldcmhzvj53gjkdfnfg2m2rz2lw@dcfboaakz7ae>
- <bguhzabwryayyqkv4ilzwr3ixwv6bzxncblo3ircz2wm3fs52k@66zvcrfcb4oe>
- <blhm4csjyw6r667cleljgzd6rpwagttjo5rau7wjrlnjakq2qm@ekyhc4jvwmwf>
- <m44mupdmg7kgco62n4evcviagqo7wwgyt3gybugbxwesd4ekjz@o24r6v4tpezc>
- <3faffec9-dc9d-4eec-a652-a84d30d85c96@app.fastmail.com>
+	s=k20201202; t=1774512400;
+	bh=90rMoHNtpikEEOX4hxu7KxohYPZTjuhD8cCrdkwCho4=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=VSUoMf7RhRL6XWXGd4mB8B+FTVTqYZfDUov0jI/YT+tcrFj+ZqPFSmCYkQgAij6od
+	 ZvMhHeQLKBsDKRVJ/VdKqApFKQegyaggZYQrqwTlSf4NsPyxfo+ReuW3afaP66NqYn
+	 fs1N2SReU+iI5+bblk1v0A2Qq395tYa2zA8oSVhmoCFDE2eL6NVANUmYQPXkrboUN4
+	 n/08EUj0c/EiET7vBeT1ptYl9DPCN9hD83CE/BfoGBZzNE1QNeUYZN8kxMkKbb8DUl
+	 L/pZOJ9by1ekkiAV5z0EL+hbPZlUhS4mmkl4yDUFZgbhwTBoPUAzYIsV7hhnIHPM8Z
+	 IAiHN910O4OoA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55653106F2F3;
+	Thu, 26 Mar 2026 08:06:40 +0000 (UTC)
+From: Manivannan Sadhasivam via B4 Relay <devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org>
+Date: Thu, 26 Mar 2026 13:36:30 +0530
+Subject: [PATCH v7 2/8] serdev: Add an API to find the serdev controller
+ associated with the devicetree node
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <3faffec9-dc9d-4eec-a652-a84d30d85c96@app.fastmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260326-pci-m2-e-v7-2-43324a7866e6@oss.qualcomm.com>
+References: <20260326-pci-m2-e-v7-0-43324a7866e6@oss.qualcomm.com>
+In-Reply-To: <20260326-pci-m2-e-v7-0-43324a7866e6@oss.qualcomm.com>
+To: Rob Herring <robh@kernel.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Nathan Chancellor <nathan@kernel.org>, 
+ Nicolas Schier <nicolas.schier@linux.dev>, Hans de Goede <hansg@kernel.org>, 
+ =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+ Mark Pearson <mpearson-lenovo@squebb.ca>, 
+ "Derek J. Clark" <derekjohn.clark@gmail.com>, 
+ Manivannan Sadhasivam <mani@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Marcel Holtmann <marcel@holtmann.org>, 
+ Luiz Augusto von Dentz <luiz.dentz@gmail.com>, 
+ Bartosz Golaszewski <brgl@bgdev.pl>, 
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+ Bartosz Golaszewski <brgl@kernel.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-kbuild@vger.kernel.org, platform-driver-x86@vger.kernel.org, 
+ linux-pci@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org, 
+ linux-pm@vger.kernel.org, Stephan Gerhold <stephan.gerhold@linaro.org>, 
+ Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, 
+ linux-acpi@vger.kernel.org, 
+ Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>, 
+ Hans de Goede <johannes.goede@oss.qualcomm.com>, 
+ Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+X-Mailer: b4 0.15.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2248;
+ i=manivannan.sadhasivam@oss.qualcomm.com; h=from:subject:message-id;
+ bh=rr2lmVP0IC6lUnB67NHw0qDXlaCs5LnvUTeOalg9qug=;
+ b=owEBbQGS/pANAwAKAVWfEeb+kc71AcsmYgBpxOkNFnPCY8rlImwmoav5x6RK0WOCh1k67UnkK
+ tWxcXlgZmSJATMEAAEKAB0WIQRnpUMqgUjL2KRYJ5dVnxHm/pHO9QUCacTpDQAKCRBVnxHm/pHO
+ 9XKQB/9CSXeRJwS5NhVSb4wiX3OflP1zFS299ahwT+wJ/WPmuWbeRd7xFOmfaCHyxHa3z7q4+Z4
+ uOwpqWolIy+p2mDbVuDufH1pTUjYCZ4V3z63MWM6tUB4cWaUqf0Bqv09LwOiaJ60fSvgGk3I8+3
+ /DhHBpnSID+mbL/nQxvlIqoWDvsi1RCHAl3TJzup7yyJq6507KDw3lXW2SesGmy1DnH3k96xt6i
+ u2KunrYZaUQZx47kXE8MdNR3dQKI6oDdWNK+IjhhoHYmJUErD7jTq8Mmd33VXoKteKBL+Knjh5v
+ RmR7FAslGJokUbE6ad1rbPmMnYzzLYQBQl2yY3iF+HY9GgYr
+X-Developer-Key: i=manivannan.sadhasivam@oss.qualcomm.com; a=openpgp;
+ fpr=C668AEC3C3188E4C611465E7488550E901166008
+X-Endpoint-Received: by B4 Relay for
+ manivannan.sadhasivam@oss.qualcomm.com/default with auth_id=461
+X-Original-From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+Reply-To: manivannan.sadhasivam@oss.qualcomm.com
 
-On Mon, Mar 23, 2026 at 01:23:07PM -0400, Mark Pearson wrote:
-> 
-> 
-> On Mon, Mar 23, 2026, at 12:52 PM, Manivannan Sadhasivam wrote:
-> > On Mon, Mar 23, 2026 at 06:45:15PM +0200, Dmitry Baryshkov wrote:
-> >> On Mon, Mar 23, 2026 at 09:26:04PM +0530, Manivannan Sadhasivam wrote:
-> >> > On Mon, Mar 23, 2026 at 05:14:30PM +0200, Dmitry Baryshkov wrote:
-> >> > > On Mon, Mar 23, 2026 at 07:14:25PM +0530, Manivannan Sadhasivam wrote:
-> >> > > > On Mon, Mar 23, 2026 at 08:39:55AM -0500, Rob Herring wrote:
-> >> > > > > On Mon, Mar 23, 2026 at 7:16 AM Manivannan Sadhasivam <mani@kernel.org> wrote:
-> >> > > > > >
-> >> > > > > > On Sun, Mar 22, 2026 at 06:37:13PM -0500, Rob Herring wrote:
-> >> > > > > > > On Tue, Mar 17, 2026 at 09:59:56AM +0530, Manivannan Sadhasivam wrote:
-> >> > > > > > > > Lenovo Thinkpad T14s is found to have a soldered down version of M.2 1620
-> >> > > > > > > > LGA connector. Though, there is no 1620 LGA form factor defined in the M.2
-> >> > > > > > > > spec, it looks very similar to the M.2 Key E connector. So add the
-> >> > > > > > > > "pcie-m2-1620-lga-connector" compatible with "pcie-m2-e-connector" fallback
-> >> > > > > > > > to reuse the Key E binding.
-> >> > > > > > >
-> >> > > > > > > What is LGA?
-> >> > > > > > >
-> >> > > > > >
-> >> > > > > > Land Grid Array
-> >> > > > > >
-> >> > > > > > > If not in the spec, is it really something generic?
-> >> > > > > > >
-> >> > > > > >
-> >> > > > > > Good question. Yes and No! LGA is not something that Lenovo only uses. Other
-> >> > > > > > vendors may also use this form factor. PCIe connectors are full of innovation as
-> >> > > > > > the spec gives room for hardware designers to be as innovative as possible to
-> >> > > > > > save the BOM cost.
-> >> > > > > 
-> >> > > > > innovation == incompatible changes
-> >> > > > > 
-> >> > > > 
-> >> > > > Yes, I was trying to sound nice :)
-> >> > > > 
-> >> > > > > > This is why I do not want to make it Lenovo specific. But if you prefer that, I
-> >> > > > > > can name it as "lenovo,pcie-m2-1620-lga-connector".
-> >> > > > > 
-> >> > > > > Depends if you think that s/w needs to know the differences. Hard to
-> >> > > > > say with a sample size of 1.
-> >> > > > > 
-> >> > > > 
-> >> > > > Sure. Will add the 'lenovo' prefix then.
-> >> > > 
-> >> > > Is it really Lenovo? Or is it some other module vendor, whose LGAs are
-> >> > > being used by Lenovo?
-> >> > > 
-> >> > > I remember that DB820c also used some kind of a module for the WiFi card
-> >> > > (which might be M.2 compatible or might not, I can't find exact docs at
-> >> > > this point).
-> >> > > 
-> >> > 
-> >> > I don't know. These kind of designs might be reused by several vendors. But
-> >> > considering that we should not make it generic, I'd go with Lenovo as that's
-> >> > the only vendor we know as of now.
-> >> 
-> >> ... and later we learn that other vendors use the same idea /pinout,
-> >> then nothing stops us from still telling that it's a
-> >> "lenovo,pcie-m2-something-lga". 
-> >> 
-> >
-> > How do you possibly know whether a single vendor has introduced this form factor
-> > or reused by multiple ones? Atleast, I don't have access to such a source to
-> > confirm.
-> >
-> I've not really been following this thread/patchset in detail; but want me to try and check with the T14s platform team if this device is specifically made for us (Lenovo) or not?
-> I doubt it is - we just don't do that usually, but I can go and ask the question if it will help resolve this (with the caveat that it could hold up the review for a bit and I may not be able to get a straight answer)
-> 
+From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
 
-I can drop this specific patch in the meantime.
+Add of_find_serdev_controller_by_node() API to find the serdev controller
+device associated with the devicetree node.
 
-> My vote (for what little it's worth) would be to make it non-Lenovo specific. Then when the same part causes issues on another vendors platform I won't get asked questions about why Lenovo is breaking <other vendor> :)
-> 
+Tested-by: Hans de Goede <johannes.goede@oss.qualcomm.com> # ThinkPad T14s gen6 (arm64)
+Reviewed-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+---
+ drivers/tty/serdev/core.c | 19 +++++++++++++++++++
+ include/linux/serdev.h    |  9 +++++++++
+ 2 files changed, 28 insertions(+)
 
-Even if Lenovo prefix is used, it won't break other vendors. Just that we will
-end up adding more compatibles.
-
-Anyhow, I'll wait for your reply and drop this patch for next revision.
-
-- Mani
+diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+index 8f25510f89b6..bf88b95f7458 100644
+--- a/drivers/tty/serdev/core.c
++++ b/drivers/tty/serdev/core.c
+@@ -514,6 +514,25 @@ struct serdev_controller *serdev_controller_alloc(struct device *host,
+ }
+ EXPORT_SYMBOL_GPL(serdev_controller_alloc);
+ 
++#ifdef CONFIG_OF
++/**
++ * of_find_serdev_controller_by_node() - Find the serdev controller associated
++ *					 with the devicetree node
++ * @node:	Devicetree node
++ *
++ * Return: Pointer to the serdev controller associated with the node. NULL if
++ * the controller is not found. Caller is responsible for calling
++ * serdev_controller_put() to drop the reference.
++ */
++struct serdev_controller *of_find_serdev_controller_by_node(struct device_node *node)
++{
++	struct device *dev = bus_find_device_by_of_node(&serdev_bus_type, node);
++
++	return (dev && dev->type == &serdev_ctrl_type) ? to_serdev_controller(dev) : NULL;
++}
++EXPORT_SYMBOL_GPL(of_find_serdev_controller_by_node);
++#endif
++
+ static int of_serdev_register_devices(struct serdev_controller *ctrl)
+ {
+ 	struct device_node *node;
+diff --git a/include/linux/serdev.h b/include/linux/serdev.h
+index 0c7d3c27d1f8..188c0ba62d50 100644
+--- a/include/linux/serdev.h
++++ b/include/linux/serdev.h
+@@ -334,4 +334,13 @@ static inline bool serdev_acpi_get_uart_resource(struct acpi_resource *ares,
+ }
+ #endif /* CONFIG_ACPI */
+ 
++#ifdef CONFIG_OF
++struct serdev_controller *of_find_serdev_controller_by_node(struct device_node *node);
++#else
++static inline struct serdev_controller *of_find_serdev_controller_by_node(struct device_node *node)
++{
++	return NULL;
++}
++#endif /* CONFIG_OF */
++
+ #endif /*_LINUX_SERDEV_H */
 
 -- 
-மணிவண்ணன் சதாசிவம்
+2.51.0
+
+
