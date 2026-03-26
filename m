@@ -1,59 +1,59 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E68E83C2769
-	for <linux-serial@vger.kernel.org>; Thu, 26 Mar 2026 08:48:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1997735F612
+	for <linux-serial@vger.kernel.org>; Thu, 26 Mar 2026 08:54:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774514913; cv=none; b=a9DEzQd+tu66q7VyZ4TlgK0qVN6NKtDFrGm3KPVwmfskWn+Fuur3hIodmcctSagOp4jIvqr4YoE63w5ZzGxAhgz6y6vTM2MPwCJznpCNuDQp8J1nt3bXVGVRyjFgfb0dEFtwS0ecoyJswW3ZGJ4V3X7ms6CiyszQFOq0zkgOHSc=
+	t=1774515287; cv=none; b=n0dPNaQslDa+xf5sCGJUKwqlFgLVSxAigcGILcpTs3uIDWwP36xLi23N5TTeyaDB10kXBmOdA7O8pRV3kJWbfAVLihk+WxXtH7pQuKtBF5seQGM/tTDoEp33vQcBwnC9VR2hRVgQYckacQMXNc63iCuW1x3zVHLpek0020wuf5M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774514913; c=relaxed/simple;
-	bh=xDpz5toXT9+YnrNMtuCC5O0FW4S4IE6N5NmMAjyruQI=;
+	s=arc-20240116; t=1774515287; c=relaxed/simple;
+	bh=pVOvWW6/8RbPMOuNt3in1cuWQXC6AAst+EwzEiwLSEg=;
 	h=From:In-Reply-To:MIME-Version:References:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=jKU3BabBRS7yA22rXJoUyRyZeuHNVNqbOQ50cS4ovh2rSZAkccBa/wLD1bcWJP95bzydf4sFUutUYO4GyPJ8X9Oc+PX2B88vLgWCXEECRRdKHLU3Jwf28Cngx9DOT41+MBk/f+5LhQWmVNco//dZaDGA4d0Ga4jngeIBlWcVhvs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ls/2dVtd; arc=none smtp.client-ip=10.30.226.201
+	 To:Cc:Content-Type; b=KfCQoXS68Jb87C/NWKAhi/SoEJ0qxDXp8jZUBYt4Kee1IqP0tbJvRzgfTyJuxgOglfihAfZgE18V+IpqHgxQqc4Ebzisoei1uVvSKTnR5eDcqVFgHBv4XfdOLY7YSKQ1zymLs4CqHSoabXy4smN6LDDIoOgGOOpRJVNtNDIfy5c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TV/SLegR; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ls/2dVtd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2191C2BCB4
-	for <linux-serial@vger.kernel.org>; Thu, 26 Mar 2026 08:48:32 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TV/SLegR"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2F59C2BCFC
+	for <linux-serial@vger.kernel.org>; Thu, 26 Mar 2026 08:54:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774514912;
-	bh=xDpz5toXT9+YnrNMtuCC5O0FW4S4IE6N5NmMAjyruQI=;
+	s=k20201202; t=1774515286;
+	bh=pVOvWW6/8RbPMOuNt3in1cuWQXC6AAst+EwzEiwLSEg=;
 	h=From:In-Reply-To:References:Date:Subject:To:Cc:From;
-	b=Ls/2dVtdnHLwYF3B4kiQyaJlXONuHLts6cQQ2mr0Co9Gd7w6hr3oBtUh9FXdCpEE6
-	 Dj381/ZxqtIOPm/DJCvMGnojS7YqXZEod4NbwHmQSkic7lpdCuoIUl2OXM9CXaj3JZ
-	 ugLAAGl/BZSvCm18UbxX6kBY9+4MtpC5ShgNgcm8eolJ9VOInYpscluQhuQ/U04M4X
-	 VzhdvUyg3zHF7Mdx/zsdQoA1m32bYH9MlCem+iPgAHU0x0c3ktkLVnjdET2uiJsjuS
-	 iG692SrWU+QRlwyhq/emAymNL5sodIdQbUS4RXjgP2RuH28Cht4Z+5orRn4rjsyFoN
-	 J2Xl2A5mj/sbg==
-Received: by mail-lj1-f172.google.com with SMTP id 38308e7fff4ca-38bcdda57b0so5032311fa.3
-        for <linux-serial@vger.kernel.org>; Thu, 26 Mar 2026 01:48:32 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCW9FfB5wx7MQ5vm+ytLXQ0La2199dLuBpG3Lmqe0tsn1KBHCYIfC6MKHgz0lO4ZOePFEHzZYXZhw6QVeuE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzdRix5bSbGxkQxHsl//3vbFFV36hlF+xcCJKqMgSwUWFzD+U+W
-	rMoDPNA9C9EJkP8VCLHfFdwAcwQPhlafKbi0vLhmaFDsp6+3WfAaGLOzZhBc+oaV3H3+BIW8p9H
-	6JX+SOwSOxytfyr7Rkz6OfHi/rVezXOmB5SPeNfidNA==
-X-Received: by 2002:a05:651c:1587:b0:38a:332c:777a with SMTP id
- 38308e7fff4ca-38c43206b02mr27254831fa.34.1774514911324; Thu, 26 Mar 2026
- 01:48:31 -0700 (PDT)
+	b=TV/SLegRcizv12x0IPKzeUfFQMf/dB5JF4rfekrIVqdFxc1pV3wJFX09vTg9axUIf
+	 HRmdBRmn/vr/bMZrXHq9PP1CwSpuBXn1xMa5MA6FApmSWD2WTTEO4pvtMjPcQoEFHY
+	 yT8wNkSsgjShxxZKrv43HGqPR/CYirdJnlCt+/Nr2zGXQI/du1BF42mbn3JSG5EHRV
+	 8BnD94NZlKhwewW8f0gI/fRQKvpToaiRfFN8q7la93cx3LB0fdwZJWIyfarmBIMZtU
+	 D7aM3iq0qJBwONhxvqF2/aXh0y94jrdJvjD941VUGT9FpNCMEMI9uBTphlpQ49esNn
+	 q9GyByiYDeJbQ==
+Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-5a27daa652fso933649e87.0
+        for <linux-serial@vger.kernel.org>; Thu, 26 Mar 2026 01:54:46 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCXMcNyTqCorN8Wv9S66apFPJJ0JrQGoTTJx/Zf5aqDk1Ov7YsV4hvSWz7GBp3VKEUbZS8nP257XFOcGfJY=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyr0hOYICdtt/sJcGjqsOlCZCPBoHrIZz1cbFJfgxcB4nfY4JED
+	/x1G3TLkXyAtgFt7f1WCABquie2YZvWZu4qG0aziTRUNGsuyi4xjkyQOJr2ZmWuo8urrm7U8Xs3
+	JgOuGeZ1pKompvSOcDhvbiwsMb7JiyzrwkqmvdRjA8g==
+X-Received: by 2002:ac2:46f4:0:b0:5a2:a024:e6c2 with SMTP id
+ 2adb3069b0e04-5a2a024e734mr805672e87.44.1774515285384; Thu, 26 Mar 2026
+ 01:54:45 -0700 (PDT)
 Received: from 969154062570 named unknown by gmailapi.google.com with
- HTTPREST; Thu, 26 Mar 2026 01:48:29 -0700
+ HTTPREST; Thu, 26 Mar 2026 01:54:44 -0700
 Received: from 969154062570 named unknown by gmailapi.google.com with
- HTTPREST; Thu, 26 Mar 2026 01:48:29 -0700
+ HTTPREST; Thu, 26 Mar 2026 01:54:44 -0700
 From: Bartosz Golaszewski <brgl@kernel.org>
-In-Reply-To: <20260326-pci-m2-e-v7-5-43324a7866e6@oss.qualcomm.com>
+In-Reply-To: <20260326-pci-m2-e-v7-0-43324a7866e6@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260326-pci-m2-e-v7-0-43324a7866e6@oss.qualcomm.com> <20260326-pci-m2-e-v7-5-43324a7866e6@oss.qualcomm.com>
-Date: Thu, 26 Mar 2026 01:48:29 -0700
-X-Gmail-Original-Message-ID: <CAMRc=MfcT2hLOQ6yVQrvdgimsA1oDzGM3e_7nAWyUAFoOyhH6A@mail.gmail.com>
-X-Gm-Features: AQROBzDDnGGEISO25bRpZEkvayXNWHPvGoERJaG_tDIkHVVI5jwB71NCISyV7hU
-Message-ID: <CAMRc=MfcT2hLOQ6yVQrvdgimsA1oDzGM3e_7nAWyUAFoOyhH6A@mail.gmail.com>
-Subject: Re: [PATCH v7 5/8] dt-bindings: connector: Add PCIe M.2 Mechanical
- Key E connector
+References: <20260326-pci-m2-e-v7-0-43324a7866e6@oss.qualcomm.com>
+Date: Thu, 26 Mar 2026 01:54:44 -0700
+X-Gmail-Original-Message-ID: <CAMRc=MeFPpO77ew4pbPjqo0E3fjos_B=t1AgooB7xrF5CWPeJA@mail.gmail.com>
+X-Gm-Features: AQROBzCb320XuFwbgeojakGVPIHtnFnx1cQ_VrqUrXaxSXRJoOgSnNC2mrU3j3w
+Message-ID: <CAMRc=MeFPpO77ew4pbPjqo0E3fjos_B=t1AgooB7xrF5CWPeJA@mail.gmail.com>
+Subject: Re: [PATCH v7 0/8] Add support for handling PCIe M.2 Key E connectors
+ in devicetree
 To: manivannan.sadhasivam@oss.qualcomm.com
 Cc: Manivannan Sadhasivam via B4 Relay <devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org>, 
 	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
@@ -62,37 +62,63 @@ Cc: Manivannan Sadhasivam via B4 Relay <devnull+manivannan.sadhasivam.oss.qualco
 	linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org, 
 	linux-pm@vger.kernel.org, Stephan Gerhold <stephan.gerhold@linaro.org>, 
 	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, linux-acpi@vger.kernel.org, 
-	Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Nathan Chancellor <nathan@kernel.org>, 
-	Nicolas Schier <nicolas.schier@linux.dev>, Hans de Goede <hansg@kernel.org>, 
-	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+	Hans de Goede <johannes.goede@oss.qualcomm.com>, 
+	Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>, 
+	Bartosz Golaszewski <brgl@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Nathan Chancellor <nathan@kernel.org>, Nicolas Schier <nicolas.schier@linux.dev>, 
+	Hans de Goede <hansg@kernel.org>, =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
 	Mark Pearson <mpearson-lenovo@squebb.ca>, "Derek J. Clark" <derekjohn.clark@gmail.com>, 
 	Manivannan Sadhasivam <mani@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
 	Marcel Holtmann <marcel@holtmann.org>, Luiz Augusto von Dentz <luiz.dentz@gmail.com>, 
-	Bartosz Golaszewski <brgl@bgdev.pl>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	Bartosz Golaszewski <brgl@kernel.org>
+	Bartosz Golaszewski <brgl@bgdev.pl>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Content-Type: text/plain; charset="UTF-8"
 
-On Thu, 26 Mar 2026 09:06:33 +0100, Manivannan Sadhasivam via B4 Relay
+On Thu, 26 Mar 2026 09:06:28 +0100, Manivannan Sadhasivam via B4 Relay
 <devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org> said:
-> From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+> Hi,
 >
-> Add the devicetree binding for PCIe M.2 Mechanical Key E connector defined
-> in the PCI Express M.2 Specification, r4.0, sec 5.1.2. This connector
-> provides interfaces like PCIe or SDIO to attach the WiFi devices to the
-> host machine, USB or UART+PCM interfaces to attach the Bluetooth (BT)
-> devices. Spec also provides an optional interface to connect the UIM card,
-> but that is not covered in this binding.
+> This series is the continuation of the series [1] that added the initial support
+> for the PCIe M.2 connectors. This series extends it by adding support for Key E
+> connectors. These connectors are used to connect the Wireless Connectivity
+> devices such as WiFi, BT, NFC and GNSS devices to the host machine over
+> interfaces such as PCIe/SDIO, USB/UART and NFC. This series adds support for
+> connectors that expose PCIe interface for WiFi and UART interface for BT. Other
+> interfaces are left for future improvements.
 >
-> The connector provides a primary power supply of 3.3v, along with an
-> optional 1.8v VIO supply for the Adapter I/O buffer circuitry operating at
-> 1.8v sideband signaling.
+> Serdev device support for BT
+> ============================
 >
-> The connector also supplies optional signals in the form of GPIOs for fine
-> grained power management.
+> Adding support for the PCIe interface was mostly straightforward and a lot
+> similar to the previous Key M connector. But adding UART interface has proved to
+> be tricky. This is mostly because of the fact UART is a non-discoverable bus,
+> unlike PCIe which is discoverable. So this series relied on the PCI notifier to
+> create the serdev device for UART/BT. This means the PCIe interface will be
+> brought up first and after the PCIe device enumeration, the serdev device will
+> be created by the pwrseq driver. This logic is necessary since the connector
+> driver and DT node don't describe the device, but just the connector. So to make
+> the connector interface Plug and Play, the connector driver uses the PCIe device
+> ID to identify the card and creates the serdev device. This logic could be
+> extended in the future to support more M.2 cards. Even if the M.2 card uses SDIO
+> interface for connecting WLAN, a SDIO notifier could be added to create the
+> serdev device.
 >
-> Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
-> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
-> ---
+> Testing
+> =======
+>
+> This series, together with the devicetree changes [2] was tested on the
+> Qualcomm X1e based Lenovo Thinkpad T14s Laptop which has the WCN7850 WLAN/BT
+> 1620 LGA card connected over PCIe and UART.
+>
+> Merge Strategy
+> ==============
+>
+> Due to the API dependency, both the serdev and pwrseq patches need to go through
+> a single tree, maybe through pwrseq tree. So the serdev patches need Ack from
+> Greg. But Bluetooth patch can be merged separately.
 
-Reviewed-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+I think Rob Herring is the man in charge here. The power sequencing parts look
+good to me now so with an Ack on the serdev changes I can queue them for v7.1.
+I can also put it on an immutable branch if needed.
+
+Bart
