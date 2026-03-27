@@ -1,100 +1,181 @@
-Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 738B33FE64F
-	for <linux-serial@vger.kernel.org>; Thu, 26 Mar 2026 14:49:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93FAA3E4C8C
+	for <linux-serial@vger.kernel.org>; Fri, 27 Mar 2026 13:04:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774536565; cv=none; b=EhclWKvq0PKr4rA0eFQXbiSY+UDGffJLCO9CLHpKC5P4o4AjgxyUOavL6lhkWjA0WI5bwg1r4p8cCevSyg3HxwZU8lbAo5ufbdoA4U3wtBTZ75N5vyhOxvE8sYRWmD96KsF1Qtb2dm+W4fuh6w6CywEK6Y7ukQMY5OwZjDZeVRY=
+	t=1774616679; cv=none; b=KZO2Mgpm9uEcgVg91Ywvd6DCvUawlxMTIBvWX8tBMIytQh//GwghrKzNMdJzcjiC2yPhzGCypMh+NL0GQVUD+Y1dr7AitH6SH363f43uvB8LO9SJD72SeSPGMpQiQw9o2VCsRbE1QkJ7ywjcJGazB6esdK2u3LxRYCNapoFPkh0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774536565; c=relaxed/simple;
-	bh=LAjDDjYLxBGBKYW9On9dS5WSAEqjQOfiLvmLec0y5VA=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=mnKaimiLEbE52dueVRKNat1+ihgzPVTa8VvracN+sCqXrB5dOAGQCQibeJx5/VziwEIOY7a+h+mC19BA0dEyXV2+UnRoan957DJTRkHSHqpSQQMS/5Ppv3PmCqwB9U+sKkHud2C7b8DmILlnPawnmipnvZJB2EAlMMJZu7sPJ1Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-6686697f578so1715522a12.0
-        for <linux-serial@vger.kernel.org>; Thu, 26 Mar 2026 07:49:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774536562; x=1775141362;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=6SfvDUd4xZdosPMkUZ31iKqQ7IrFxYHt5vMpaGx7N+g=;
-        b=je6JI1he2/jLItUy6s0gbxAiEqP6fupSPMY0dNuuRrZAK3DwJFvXSPJiFd8SEnb6d9
-         W//O45DeMN55fZ4Tj+63uDngcDAZid8UJCSDBInEMrifYMD/8cyG5bZpQdqJQiTq1tTD
-         yDgpfWWb0dqSoosU2fKIF99x5fOV8gFQYOaEIU/X7ZD5gKA4jR4u4uPXH1w5ZudYTV6p
-         TXCg9sVUJnoKSmjK8IkwrxIHVSIB6nDA/kV2CfX9AEzSDfjMBO+s47fm4GeV1JvaHEbc
-         LIHBoDrIGAaTq6pXCa1HJf1G4j8845fm3XFT5SyHPmu1JvpEGThjF67i2cQB7j9POWrs
-         LjJQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWx9ktrg3EqOWr7lVeUjSe8qqWzUhcERkAFLhaC2df8sCK+UhqoYaVkBHXjjmmhXUAfFnKOTDp4zk2TOC4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxahRpibXI1HhMztYfR2WfCH3SZamy3YQwoVIE9R4u31Mu/q/wD
-	TQh/fFs4SFn80jMsH1MWeTRvJo0LkuFEc+OVbrNJPyxNVDWBwEI5DRC79HlKaK0TeqI=
-X-Gm-Gg: ATEYQzzKAsylAqGzs5KSRXQXAiXLkHmz2S/zyfysEcrrRLrz5LTcn/CB+EPjMFPbIbD
-	L6zjMPDvdqvKfX6BQnPbM5UaoYLVobsQOI0zSOe2tR5sapFvkLdeeSR5Mt2UJdgICL6d7oKsu/W
-	LCITU6geSTti8bBCy4giQ0dsjKQ2ajsdp/tZlxOW9IiXK72SPo4Ev+nhK1WI4jNnxLoR2CHEZTw
-	99yfA3doGe89N/P4vCIJ+9TDys8CZtYcqcxdYbe8szflFtS0TyHmpFc0keoUkp5hviHYGdfUeXi
-	YGTQc/OL6/JvEinjGuifVhxro+Kgg0T+3L0WU1jHnFVc9FtNA7pLMImC2SbJhwRCpXGGZlHlIDe
-	XGcbUGU2BmyfWD7jcokReniSLJjYKpYNwJmEpsiU1IpeVbzVxlobsJhySGzR2z7jvtTZfhTKzt4
-	CyppzjppOxhxWG5Ll/Gs1f0nzoaV+O8fjZnfZln2+Eehwu4ow150VRwCLSiP+x
-X-Received: by 2002:a17:907:1b1f:b0:b98:8fa0:a1ec with SMTP id a640c23a62f3a-b9a542af9ddmr531940866b.54.1774536562320;
-        Thu, 26 Mar 2026 07:49:22 -0700 (PDT)
-Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com. [209.85.208.48])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b9b203ef910sm128948166b.53.2026.03.26.07.49.21
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 26 Mar 2026 07:49:21 -0700 (PDT)
-Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-6686697f578so1715372a12.0
-        for <linux-serial@vger.kernel.org>; Thu, 26 Mar 2026 07:49:21 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCVYz4epYx2ZJLh11IJsmun455EFoLyeH/2DEoT4Xlljz8/mOQZk0knc+Dbsuhiv7jsrq1V4PwupAVRq0ZI=@vger.kernel.org
-X-Received: by 2002:a17:907:7a89:b0:b98:3ffc:1c39 with SMTP id
- a640c23a62f3a-b9a542bc0ffmr559718266b.56.1774536561331; Thu, 26 Mar 2026
- 07:49:21 -0700 (PDT)
+	s=arc-20240116; t=1774616679; c=relaxed/simple;
+	bh=YLV6gpQdQgXCKIz4I78MKC+0kD6rTqN8263YJkHfzEo=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=qhXgrKzFr41yp4YbnX2o2b6QoQpR4L2qplYfuOTWqKOJcdCeJUrnHM8bX6j60W7WfiredDX4zNzGmIK6XZ4P+qeIGSdt8Zw3mlUn6PSn6hgVC2jdDv1jHdQH0fNd6uKoEsPkKxf6HJDlr+whzFxwPyubvtbCJgNkawpQTgsKDUE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=xyqYfqlW; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=lsBisbgK; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=xyqYfqlW; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=lsBisbgK; arc=none smtp.client-ip=195.135.223.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="xyqYfqlW";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="lsBisbgK";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="xyqYfqlW";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="lsBisbgK"
+Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id DD6A05BE04;
+	Fri, 27 Mar 2026 13:04:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1774616675; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=Z2C8hHMnUTYCA9akD32oKOSDh4tMrqaneJwSjLUM5rE=;
+	b=xyqYfqlWJjZ3ZHZ5vsbsmzPtpmn4aoXQJKGzMm7dszje9Z7mkwgEt4rpgXZLM1usIrn8Yc
+	WLdqiiPORw65XC92xZQcjMqGGuewXwzU/z9qMNiJXw/AqYKaQNLyK0wv311eP5kYIX9yHt
+	9HJPx6tB2VSqgco9IYKDr4HCCiOOw6g=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1774616675;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=Z2C8hHMnUTYCA9akD32oKOSDh4tMrqaneJwSjLUM5rE=;
+	b=lsBisbgK2CEvjQwP6F/HXVcSFVgQRxiqph6Bzx2z7ziLMYmrEfZtC6FcDbvZv9Qug8fuK0
+	sDkynJRsTiyAfeAQ==
+Authentication-Results: smtp-out2.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1774616675; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=Z2C8hHMnUTYCA9akD32oKOSDh4tMrqaneJwSjLUM5rE=;
+	b=xyqYfqlWJjZ3ZHZ5vsbsmzPtpmn4aoXQJKGzMm7dszje9Z7mkwgEt4rpgXZLM1usIrn8Yc
+	WLdqiiPORw65XC92xZQcjMqGGuewXwzU/z9qMNiJXw/AqYKaQNLyK0wv311eP5kYIX9yHt
+	9HJPx6tB2VSqgco9IYKDr4HCCiOOw6g=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1774616675;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=Z2C8hHMnUTYCA9akD32oKOSDh4tMrqaneJwSjLUM5rE=;
+	b=lsBisbgK2CEvjQwP6F/HXVcSFVgQRxiqph6Bzx2z7ziLMYmrEfZtC6FcDbvZv9Qug8fuK0
+	sDkynJRsTiyAfeAQ==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 9BEEB4A0A2;
+	Fri, 27 Mar 2026 13:04:35 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id vTXjJGOAxmmweQAAD6G6ig
+	(envelope-from <tzimmermann@suse.de>); Fri, 27 Mar 2026 13:04:35 +0000
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: deller@gmx.de,
+	gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	simona@ffwll.ch,
+	sam@ravnborg.org
+Cc: linux-fbdev@vger.kernel.org,
+	dri-devel@lists.freedesktop.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Thomas Zimmermann <tzimmermann@suse.de>
+Subject: [PATCH 00/10] fbcon,fonts: Refactor framebuffer console rotation
+Date: Fri, 27 Mar 2026 13:49:33 +0100
+Message-ID: <20260327130431.59481-1-tzimmermann@suse.de>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260312082708.98835-1-biju.das.jz@bp.renesas.com> <20260312082708.98835-3-biju.das.jz@bp.renesas.com>
-In-Reply-To: <20260312082708.98835-3-biju.das.jz@bp.renesas.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Thu, 26 Mar 2026 15:49:08 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXdxOFoHUqf_fNcj=4A9+EhXAKk2LgjYQGcpY4_-=TOVA@mail.gmail.com>
-X-Gm-Features: AQROBzCb1QcDxR_6QXsUfkI4LmWBih6e7SaYIqht2U4adElNYYtE0VKLraUtMyQ
-Message-ID: <CAMuHMdXdxOFoHUqf_fNcj=4A9+EhXAKk2LgjYQGcpY4_-=TOVA@mail.gmail.com>
-Subject: Re: [PATCH 2/2] serial: sh-sci: Add support for RZ/G3L RSCI
-To: Biju <biju.das.au@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Magnus Damm <magnus.damm@gmail.com>, Biju Das <biju.das.jz@bp.renesas.com>, 
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>, 
-	Wolfram Sang <wsa+renesas@sang-engineering.com>, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spamd-Result: default: False [-3.30 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	MID_CONTAINS_FROM(1.00)[];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	FREEMAIL_TO(0.00)[gmx.de,linuxfoundation.org,kernel.org,ffwll.ch,ravnborg.org];
+	FUZZY_RATELIMITED(0.00)[rspamd.com];
+	FREEMAIL_ENVRCPT(0.00)[gmx.de];
+	ARC_NA(0.00)[];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	RCPT_COUNT_SEVEN(0.00)[10];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	TO_DN_SOME(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	RCVD_TLS_ALL(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,suse.de:mid]
+X-Spam-Flag: NO
+X-Spam-Score: -3.30
+X-Spam-Level: 
 
-On Thu, 12 Mar 2026 at 09:27, Biju <biju.das.au@gmail.com> wrote:
-> From: Biju Das <biju.das.jz@bp.renesas.com>
->
-> Add support for RZ/G3L RSCI. The RSCI IP found on the RZ/G3L SoC is
-> similar to RZ/G3E, but it has 3 clocks (2 module clocks + 1 external
-> clock) instead of 6 clocks (5 module clocks + 1 external clock) on the
-> RZ/G3E. Both RZ/G3L and RZ/G3E have a 32-bit FIFO, but RZ/G3L has a
-> single TCLK with internal dividers, whereas the RZ/G3E has explicit
-> clocks for TCLK and its dividers. Add a new port type
-> RSCI_PORT_SCIF32_SINGLE_TCLK to handle this clock difference.
->
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Refactor the framebuffer console rotation into individual components
+for glyphs, fonts and the overall fbcon state. Right now this is mixed
+up in fbcon_rotate.{c,h}. Also build cursor rotation on top of the new
+interfaces.
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Start with an OOB fix in patch 1. If buffer allocation fails, fbcon
+currently uses a too-small glyph buffer for output. Avoid that.
 
-Gr{oetje,eeting}s,
+Patches 2 to 4 make a number of small improvements to the font library
+and its callers.
 
-                        Geert
+Patches 5 to 8 refactor the font rotation. Fbcon rotation rotates each
+individual glphy in a font buffer and uses the rotated buffer's glyphs
+for output. The result looks like the console buffer has been rotated
+as a whole. Split this into helpers that rotate individual glyphs and
+a helper that rotates the font buffer of these. Then reimplement fbcon
+rotation on top. Document the public font helpers.
+
+Patch 9 rebuilds cursor rotation on top of the new glyph helpers. The
+fbcon cursor is itself a glyph that has to be rotated in sync with the
+font.
+
+Patch 10 moves the state of fbcon rotation into a single place and makes
+is a build-time conditional.
+
+Tested with fbcon under bochs on Qemu.
+
+Built upon the fbcon changes at [1].
+
+[1] https://lore.kernel.org/linux-fbdev/20260309141723.137364-1-tzimmermann@suse.de/
+
+Thomas Zimmermann (10):
+  fbcon: Avoid OOB font access if console rotation fails
+  vt: Implement helpers for struct vc_font in source file
+  lib/fonts: Provide helpers for calculating glyph pitch and size
+  lib/fonts: Clean up Makefile
+  lib/fonts: Implement glyph rotation
+  lib/fonts: Refactor glyph-pattern helpers
+  lib/fonts: Refactor glyph-rotation helpers
+  lib/fonts: Implement font rotation
+  fbcon: Fill cursor mask in helper function
+  fbcon: Put font-rotation state into separate struct
+
+ drivers/tty/vt/vt.c                     |  34 +++
+ drivers/video/fbdev/core/bitblit.c      |  35 +--
+ drivers/video/fbdev/core/fbcon.c        |  48 ++++-
+ drivers/video/fbdev/core/fbcon.h        |  14 +-
+ drivers/video/fbdev/core/fbcon_ccw.c    |  70 ++----
+ drivers/video/fbdev/core/fbcon_cw.c     |  70 ++----
+ drivers/video/fbdev/core/fbcon_rotate.c |  88 ++------
+ drivers/video/fbdev/core/fbcon_rotate.h |  71 ------
+ drivers/video/fbdev/core/fbcon_ud.c     |  67 ++----
+ include/linux/console_struct.h          |  30 +--
+ include/linux/font.h                    |  51 +++++
+ lib/fonts/Makefile                      |  36 ++--
+ lib/fonts/font_rotate.c                 | 275 ++++++++++++++++++++++++
+ lib/fonts/fonts.c                       |   2 +-
+ 14 files changed, 525 insertions(+), 366 deletions(-)
+ create mode 100644 lib/fonts/font_rotate.c
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2.53.0
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
