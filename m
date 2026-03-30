@@ -1,168 +1,99 @@
-Received: from flow-a6-smtp.messagingengine.com (flow-a6-smtp.messagingengine.com [103.168.172.141])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D05BF21257F;
-	Sat, 28 Mar 2026 03:09:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.141
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EF1F362156;
+	Mon, 30 Mar 2026 15:32:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774667391; cv=none; b=f6prnUWXKjytsCzB2zx/to3rZS85ZJM/2Zedy5Joz+pE8NjQ6pv90ppj7BefMKXC7gl8TH0mVGMH4tEMR3ji6mkI6bRhDqaXktiWFROHC7BBe3oh5MMDcLc68un3SEDGXVMWbTPtwIj6vq+7Vw4Z0ANkiJ4+5zkQGmp5ZQObObo=
+	t=1774884762; cv=none; b=VsvYXO6O/xSXHHnp4paHpCTDGywJHXU5tPAuE+PXTzGUJTyNFa8FL3h9qPwC7mafRa9KgjB+kOcNvfVMwHdJBlUJ7vCYjt9c+GAXTvCa/242v+45hot4SwZhJ4mTbGxiPPifD5naF5PrKouFzppP5JB85ntZZ6qjxa/IRcnFb8M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774667391; c=relaxed/simple;
-	bh=1n7W0VIFDGhn7IS2NMHZdTmq7VR8tBT5LJynIpC9BlY=;
-	h=Date:From:To:cc:Subject:Message-ID:MIME-Version:Content-Type; b=Eh8A+rWVKDpYF3ViDF2X0kNXTraGBPu335N57p6bGBWKoCV3lKdWvf/PqP2tq3spG9LjyOEHwd5nDMOmz89U1QdJUnebS1U9R8C6RabDfMhUyD0XYiwCFaR/tfF5/sEivLwq7ZCMDXxVN5e1WwCBqmA7uBz/jIOqIiSVZZ7MS0c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net; spf=pass smtp.mailfrom=fluxnic.net; dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b=CCdMbhQP; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=EM/OboxI; arc=none smtp.client-ip=103.168.172.141
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fluxnic.net
+	s=arc-20240116; t=1774884762; c=relaxed/simple;
+	bh=r0IE8whf6JLUw7+2f+muBIwcGu1rn3rkPlR+JkEmAYA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=O2ooLVEjN2RezYQyMWV0LqO6UJilt/2xWWTkLtrgnSRuvZvp2CIHZcTstTOfh8TJdroBXzrrWq4OAdB99e0ymsp0MkWT0v0yYwui68Bowntuddeq7JqkARZcAIaKRUMGwokQQ/MmVOdOJJcakfNb05byhlvl1Zr41SVmsU4MDws=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=PGKHPTj7; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b="CCdMbhQP";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="EM/OboxI"
-Received: from phl-compute-02.internal (phl-compute-02.internal [10.202.2.42])
-	by mailflow.phl.internal (Postfix) with ESMTP id 1689C1380ABE;
-	Fri, 27 Mar 2026 23:09:49 -0400 (EDT)
-Received: from phl-frontend-02 ([10.202.2.161])
-  by phl-compute-02.internal (MEProxy); Fri, 27 Mar 2026 23:09:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fluxnic.net; h=
-	cc:cc:content-type:content-type:date:date:from:from:in-reply-to
-	:message-id:mime-version:reply-to:subject:subject:to:to; s=fm2;
-	 t=1774667389; x=1774674589; bh=PwA/MmsLbOk1QIbLSYIDIq+umf8LeZ5d
-	al0SSem/TDk=; b=CCdMbhQPr9dC2af+wXABIOQZwC23DUCgq6hf4/qtiNoq6dYW
-	H4c8Bqg2/4EMVS5LNLLVM/bu/9G3K41FatHWNL7Vi52Ni4t6z1J1pjjzEtvWoDZV
-	rHLQHfG92Mru7psdwj/tOsOCsIdF+ZjkqYn036Ujvq0j4jiLpblBq7FbSX5hzJ7V
-	xJTnLCQQ0wyInTL0/3s3Ln/sXeQq6eO51rYcMoH2quSGOCU9QAojRARl7oNPBnMt
-	DtP4xJFjXE35LDiwFPukiqvIMw1HsO//x2IHyq2L/akCxZIGv4dDUdZdBFDa7nHT
-	R+YefZsK5ByiMB5726zqo3gjSGAQW3ry6GpJIA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:content-type:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:message-id
-	:mime-version:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1774667389; x=
-	1774674589; bh=PwA/MmsLbOk1QIbLSYIDIq+umf8LeZ5dal0SSem/TDk=; b=E
-	M/OboxIz/g2Kz3eTEhxM67nr5F75vO9dTLDIGadl7feCCFWs3GNhp7GFt29CKxbx
-	0WdT9AgMHeyxfFNDrW9k/waFgOhXNHhD4E/ChaQ1QAz9MXczItMPe8W4Ed8K72oB
-	Z9rM78sDh6o8m09gQytK6js3L4MqEPB2HUWV72woWGCVf6drW1UQn+yksAOC9t30
-	bbs2Hv7s+zt/f29hqRXF+SQ7bC0JOXvOJoMOVzpRWdSzX/pB5mqLM0mxLc3tk9iM
-	F8awiePGoliwq0TsPo5jkDM8Smj/ikPvm2va6MVdurROQHJ8GGSGq6d1o/377500
-	f/drb7lZmNxNczVoze7Cw==
-X-ME-Sender: <xms:fEbHaWlNjsV6_crNEnreMJv1k9XNvnwuWP5LEkrr7NvNohUrKdTSjA>
-    <xme:fEbHaVnPuUqb6pDXisUh0WrvcLgkUyLhlbaFoDGNVwAfNAB5lVaefb0m8K9dmrcNg
-    90Rrnaaqkv38aZaKthjUGjNk61gDZZkZAkrTNEvk0hv8WgaQplAZeM>
-X-ME-Received: <xmr:fEbHaXu61H9unfa3o4jRx6x2zo8hDW3SDWJ5t9AqPrks9bgrCgCDC3D5MvVGIFw_oFpDoChr1ITFV7mRWw1YuR_HuyT50Mr1VE3-gB59>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgdeffedvtdegucetufdoteggodetrf
-    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
-    rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmneetug
-    hnkfguqdgfufdqffettdelucdlfedttddmnecujfgurhepfffhvfevuffkgggtsehttder
-    tddttddvnecuhfhrohhmpefpihgtohhlrghsucfrihhtrhgvuceonhhitghosehflhhugi
-    hnihgtrdhnvghtqeenucggtffrrghtthgvrhhnpeeigfeiteevgefgtdehhfegvedvvdfh
-    tedugeettdekveegteeifefgveeigeetvdenucffohhmrghinhepkhgvrhhnvghlrdhorh
-    hgnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepnhhi
-    tghosehflhhugihnihgtrdhnvghtpdhnsggprhgtphhtthhopeefpdhmohguvgepshhmth
-    hpohhuthdprhgtphhtthhopehgrhgvghhkhheslhhinhhugihfohhunhgurghtihhonhdr
-    ohhrghdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlh
-    drohhrghdprhgtphhtthhopehlihhnuhigqdhsvghrihgrlhesvhhgvghrrdhkvghrnhgv
-    lhdrohhrgh
-X-ME-Proxy: <xmx:fEbHaYlpEyv0hIiIswoIjc0j-Q_tGzXFZI0s2Ytv-S30jX7ENCDklQ>
-    <xmx:fEbHaSsPNE7O7tDlfF5c4rEFP9kMYsy3V8m5N3gZdhy9YuG5qNEkNw>
-    <xmx:fEbHaefXnbpJQ6_5D6VjAfFB3BdVpfOOQAl2pUJWMiftYdz6IpDGAw>
-    <xmx:fEbHaSyFDA5vXuZFeGWzRyowvTkhpL3nody7zmSM0xq55hh0PF7H9A>
-    <xmx:fUbHaWCjDM1FNQXq2wPudVyGpbFtdPWR92S0vw7arlBnhjDrJP8rX575>
-Feedback-ID: i58514971:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 27 Mar 2026 23:09:48 -0400 (EDT)
-Received: from xanadu (xanadu.lan [192.168.1.120])
-	by yoda.fluxnic.net (Postfix) with ESMTPSA id 1241415B1E3D;
-	Fri, 27 Mar 2026 23:09:48 -0400 (EDT)
-Date: Fri, 27 Mar 2026 23:09:47 -0400 (EDT)
-From: Nicolas Pitre <nico@fluxnic.net>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] vt: resize saved unicode buffer on alt screen exit after
- resize
-Message-ID: <3nsr334n-079q-125n-7807-n4nq818758ns@syhkavp.arg>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="PGKHPTj7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2962C4CEF7;
+	Mon, 30 Mar 2026 15:32:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1774884761;
+	bh=r0IE8whf6JLUw7+2f+muBIwcGu1rn3rkPlR+JkEmAYA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=PGKHPTj78PDyEVMG9S8U1h/QrqtOV6nLsULrCYE36V56MhGOiHSYsmPBfSBCz01iW
+	 4CoGACRwLIcLMSkYG9jLW1bMDFntwTPdHub4EWqTW9xPtwUjXnLo2cU0uLS58CKIv8
+	 hBDwrUBwu+Nlq+wQVFZWtkXYpGTCKI00iPyHUHjw=
+Date: Mon, 30 Mar 2026 17:32:38 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Daniel Hodges <daniel@danielhodges.dev>
+Cc: Daniel Hodges <git@danielhodges.dev>, Jiri Slaby <jirislaby@kernel.org>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	syzbot+c3693b491545af43db87@syzkaller.appspotmail.com,
+	syzbot+03f79366754268a0f20c@syzkaller.appspotmail.com
+Subject: Re: [PATCH] vt: keyboard: add NULL check for vc_cons[fg_console].d
+ in kbd_keycode and kbd_rawcode
+Message-ID: <2026033002-game-parsnip-955c@gregkh>
+References: <20260208003112.6040-1-git@danielhodges.dev>
+ <2026031236-unfold-repurpose-52e6@gregkh>
+ <zwtqyw3ztjbgjodwrnriex3plpr4akz3nz3aj7tvfeyflo4be3@mp4emzvcug6r>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <zwtqyw3ztjbgjodwrnriex3plpr4akz3nz3aj7tvfeyflo4be3@mp4emzvcug6r>
 
-Instead of discarding the saved unicode buffer when the console was
-resized while in the alternate screen, resize it to the current
-dimensions using vc_uniscr_copy_area() to preserve its content. This
-properly restores the unicode screen on alt screen exit rather than
-lazily rebuilding it from a lossy reverse glyph translation.
+On Fri, Mar 13, 2026 at 02:54:01PM -0400, Daniel Hodges wrote:
+> On Thu, Mar 12, 2026 at 03:22:09PM +0100, Greg Kroah-Hartman wrote:
+> > On Sat, Feb 07, 2026 at 07:31:12PM -0500, Daniel Hodges wrote:
+> > > kbd_keycode() and kbd_rawcode() dereference vc_cons[fg_console].d
+> > > without checking if it is NULL. The foreground console should normally
+> > > always be allocated, but there could be a time during console setup or
+> > > teardown where this pointer could be NULL, leading to a general
+> > > protection fault.
+> > > 
+> > > Syzkaller triggers this by injecting USB HID input events that reach
+> > > kbd_event() while the console state may not be fully consistent. The crash
+> > > manifests as a null-ptr-deref in __queue_work when put_queue() or
+> > > puts_queue() calls tty_flip_buffer_push() on the uninitialized vc port.
+> > > 
+> > > Add a NULL check for vc at the start of both kbd_rawcode() and
+> > > kbd_keycode() to bail out early if the foreground console is not allocated.
+> > > 
+> > > Reported-by: syzbot+c3693b491545af43db87@syzkaller.appspotmail.com
+> > > Closes: https://syzkaller.appspot.com/bug?extid=c3693b491545af43db87
+> > > Reported-by: syzbot+03f79366754268a0f20c@syzkaller.appspotmail.com
+> > > Closes: https://syzkaller.appspot.com/bug?extid=03f79366754268a0f20c
+> > > Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> > > Signed-off-by: Daniel Hodges <git@danielhodges.dev>
+> > > ---
+> > >  drivers/tty/vt/keyboard.c | 6 ++++++
+> > >  1 file changed, 6 insertions(+)
+> > > 
+> > > diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
+> > > index a2116e135a82..975830013d24 100644
+> > > --- a/drivers/tty/vt/keyboard.c
+> > > +++ b/drivers/tty/vt/keyboard.c
+> > > @@ -1389,6 +1389,9 @@ static void kbd_rawcode(unsigned char data)
+> > >  {
+> > >  	struct vc_data *vc = vc_cons[fg_console].d;
+> > >  
+> > > +	if (!vc)
+> > > +		return;
+> > > +
+> > 
+> > What prevents vc from being NULL right after checking this?
+> 
+> Yeah, your right about that. I spent a bit of time to make a reproducer
+> using a kernel module and I think if RCU is used on vc_cons[].d it
+> should then be properly protected. Let me know if that sounds like a
+> reasonable approach and I can send a v2.
 
-On allocation failure the stale buffer is freed and vc_uni_lines is
-set to NULL so it gets lazily rebuilt via vc_uniscr_check() when next
-needed.
+Maybe?  But can this really ever be hit on a non-syzkaller workload?
 
-Signed-off-by: Nicolas Pitre <nico@fluxnic.net>
----
+thanks,
 
-Liav Mordouch identified and fixed a bug of mine where the saved unicode 
-buffer would be blindly restored with stale dimensions after a console 
-resize during the alternate screen, causing out-of-bounds accesses:
-
-  https://lore.kernel.org/r/20260327170204.29706-1-liavmordouch@gmail.com
-
-His fix correctly discards the stale buffer and lets it be lazily 
-rebuilt. I don't want to simply replace his patch as he deserves credits 
-for investigating the bug and providing a good fix.
-
-This patch, which goes on top, improves on that by resizing the saved
-unicode buffer to the current dimensions instead of discarding it. This
-preserves the original unicode screen content rather than relying on a
-lossy reverse glyph translation to reconstruct it.
-
-It would be nice to have this in before v7.0 is released.
-
- drivers/tty/vt/vt.c | 24 +++++++++++++++---------
- 1 file changed, 15 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index 99f15b3e9544..b4b19157f05c 100644
---- a/drivers/tty/vt/vt.c
-+++ b/drivers/tty/vt/vt.c
-@@ -1901,7 +1901,6 @@ static void leave_alt_screen(struct vc_data *vc)
- 	unsigned int rows = min(vc->vc_saved_rows, vc->vc_rows);
- 	unsigned int cols = min(vc->vc_saved_cols, vc->vc_cols);
- 	u16 *src, *dest;
--	bool uni_lines_stale;
- 
- 	if (vc->vc_saved_screen == NULL)
- 		return; /* Not inside an alt-screen */
-@@ -1912,16 +1911,23 @@ static void leave_alt_screen(struct vc_data *vc)
- 	}
- 	/*
- 	 * If the console was resized while in the alternate screen,
--	 * vc_saved_uni_lines was allocated for the old dimensions.
--	 * Restoring it would cause out-of-bounds accesses. Discard it
--	 * and let the unicode screen be lazily rebuilt.
-+	 * resize the saved unicode buffer to the current dimensions.
-+	 * On allocation failure new_uniscr is NULL, causing the old
-+	 * buffer to be freed and vc_uni_lines to be lazily rebuilt
-+	 * via vc_uniscr_check() when next needed.
- 	 */
--	uni_lines_stale = vc->vc_saved_rows != vc->vc_rows ||
--			  vc->vc_saved_cols != vc->vc_cols;
--	if (uni_lines_stale)
-+	if (vc->vc_saved_uni_lines &&
-+	    (vc->vc_saved_rows != vc->vc_rows ||
-+	     vc->vc_saved_cols != vc->vc_cols)) {
-+		u32 **new_uniscr = vc_uniscr_alloc(vc->vc_cols, vc->vc_rows);
-+
-+		if (new_uniscr)
-+			vc_uniscr_copy_area(new_uniscr, vc->vc_cols, vc->vc_rows,
-+					    vc->vc_saved_uni_lines, cols, 0, rows);
- 		vc_uniscr_free(vc->vc_saved_uni_lines);
--	else
--		vc_uniscr_set(vc, vc->vc_saved_uni_lines);
-+		vc->vc_saved_uni_lines = new_uniscr;
-+	}
-+	vc_uniscr_set(vc, vc->vc_saved_uni_lines);
- 	vc->vc_saved_uni_lines = NULL;
- 	restore_cur(vc);
- 	/* Update the entire screen */
--- 
-2.53.0
-
+greg k-h
