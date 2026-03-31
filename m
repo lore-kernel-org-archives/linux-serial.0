@@ -1,247 +1,247 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EFEA2EA16A
-	for <linux-serial@vger.kernel.org>; Tue, 31 Mar 2026 13:14:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A30943E8C61;
+	Tue, 31 Mar 2026 14:15:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774962878; cv=none; b=gpqNIEfqnWum0kTZuXY/gyXAIYpwVijAgYuWfLKdHvOvof0utEVUfMx0eR97Lnck8E+8LMgxEAjMYwr3uI1/rMzpb5xy5cN+e2cCBbdoI8jSzfi+7TLXCgI+3TrN/HvieeCWaGbiyp0bh2x0Vv+km5D9rVVX2Dn4Wy04d9dKRew=
+	t=1774966507; cv=none; b=fD09ocLNJqGk3sTOphuuEt/W4+Nu01ERa3pD3qsaij1amnbDVPq7qj+NcmDgGUSVhgDp4fLMr3OEqWvM0qmTQJ1ly6cBq02o3ZwJjOtu7oVQ9glgrd5HchZJnCkPY9j0pjmJ+Y/hPfCTaRiF8n7DClc2+J793xVz8oi2w3DdRUo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774962878; c=relaxed/simple;
-	bh=XXOUIoFCH7Akk7XSYCtAIzRG+LgjgVak46eK/G2Wmi8=;
-	h=Date:From:To:Cc:Subject:Message-ID; b=mDJe37HWl4sof7u6ejqxun3aJiqbjasUoZ+0Dypeihcf7atkGYs+PTRtbLntUMaA20pGMY6EYwTkJJ1/SLqN3GP7lufkg9P9b4JOKqa5rMGPjskcDe+sv8T+e2oGh5VHciw4fE+Ysx8sRe4Pye3iiap9glS8Zqjw8x0T9xsTesI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hbJ5cL09; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1774966507; c=relaxed/simple;
+	bh=hurB+IT63Gjk8f/mZKMqq/3FPOlqLZLSy/FpWyDjWFc=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=RKfIOyBR6TWXU2xQsqyC37r3OmMgS6N3l8RkoRwVpyvvc3ecdx0VJZCueNVaDwzDMTNmHHetIpNfYr9CLdr9l2yPgwyQ2zpzXZuoe8BVWWLSMOBgk/u/G7hy/t3i5QwPJ2q2HWa4ygIOkqpKNq+hM/XpQVFAf/JigZNWHdsaEBM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=ko8KCFD1; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=KeXL0KK6; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hbJ5cL09"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1774962877; x=1806498877;
-  h=date:from:to:cc:subject:message-id;
-  bh=XXOUIoFCH7Akk7XSYCtAIzRG+LgjgVak46eK/G2Wmi8=;
-  b=hbJ5cL09cdqV9C7DyzgiS0YyAQqfSOqau7jbdepMjeigbtZmOcNnZg+w
-   v6OiDkAsvKa6L7xTowTMlonefsIW43p+ykkCWFt/aVbyuPSYbPBHg9zZw
-   CQDKnLbjEVCXsx2Q5BHmmHqVf8RZj1JrcZ7SJt/yRfJTN0y7PYTVSw3sg
-   kYLOGevJGb2xjmyUAkd/U2+WE7/TykD4X0ccF0xq/iQbqAoiB2Vyhxb0o
-   ItW0TJz9DuS0SobAZ25X6j7EWNdVeccBBN+/ts68yFcy0rUDiOo7nJMrA
-   N7BFIQcVm0psalzbDR21D3IfoIRY2D1DC2O0tbVSCPErGOLWChjz4Ue9K
-   A==;
-X-CSE-ConnectionGUID: hAh84O8oQfyZEJ7YSPn4gg==
-X-CSE-MsgGUID: DEhH9FRsSHurYjLEiqiJjQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11745"; a="75147610"
-X-IronPort-AV: E=Sophos;i="6.23,152,1770624000"; 
-   d="scan'208";a="75147610"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2026 06:14:36 -0700
-X-CSE-ConnectionGUID: xxUtt8ZsQneJbN4183WngQ==
-X-CSE-MsgGUID: sQTxkagKRi2U3mbWLaORgw==
-X-ExtLoop1: 1
-Received: from lkp-server01.sh.intel.com (HELO 283bf2e1b94a) ([10.239.97.150])
-  by fmviesa003.fm.intel.com with ESMTP; 31 Mar 2026 06:14:35 -0700
-Received: from kbuild by 283bf2e1b94a with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1w7YvQ-000000002fH-39yu;
-	Tue, 31 Mar 2026 13:14:32 +0000
-Date: Tue, 31 Mar 2026 21:14:05 +0800
-From: kernel test robot <lkp@intel.com>
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
-Subject: [tty:tty-linus] BUILD SUCCESS
- 3ddbea7542ae529c1a88ef9a8b1ce169126211f6
-Message-ID: <202603312156.vAnuInRV-lkp@intel.com>
-User-Agent: s-nail v14.9.25
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="ko8KCFD1";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="KeXL0KK6"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1774966503;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=qwbkcNVm6DsTKRo3QYBwenazzCiJkM5s05aeWj2+Aww=;
+	b=ko8KCFD1sBr9ZOkoTQz2+KohMmz6S39BC6p5rvF730+2kC/73UZziAHGCfb/HL2EumIy0h
+	mGFE+lgrU7XixVlAjLwuIAmT+Zo0iM7Xq3U5cfneiMz0IrKDD1aVpZnvCkKMjymCgrQmnU
+	j8bdQTaUivpkky6xsgyX3w0egtK4WJRoFwkb9Mhbqa4jZf3Gch+qAC3lvEnvlGZnWY1NuL
+	EAKAvYe1qaPiY5KyEcKtM5ahuwYt/buYnpDzz1D5QUEr7bWw6H0n+MkkXeo7XsdJhfT1sq
+	MKhQCuuhxwzI8I7ctNpajmg8VZknhgGkYatb2eEPZmc+SP7WNTMvEUfkmVUqRg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1774966503;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=qwbkcNVm6DsTKRo3QYBwenazzCiJkM5s05aeWj2+Aww=;
+	b=KeXL0KK6nY7mfZCwfcPN1oWTLQOBa9zKZRGLXy3TVwDhqtr8CZSn5ZIcr1GEdtcEXHLpaG
+	gFehax3MNvK10sAg==
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-kernel@vger.kernel.org,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Thomas Gleixner <tglx@kernel.org>,
+	Ingo Molnar <mingo@kernel.org>,
+	Xin Zhao <jackzxcui1989@163.com>,
+	Andy Shevchenko <andy.shevchenko@gmail.com>,
+	"Dr. David Alan Gilbert" <linux@treblig.org>,
+	Joseph Tilahun <jtilahun@astranis.com>,
+	linux-serial@vger.kernel.org
+Subject: [PATCH tty v1] serial: 8250: Add support for console hardware flow control
+Date: Tue, 31 Mar 2026 16:20:56 +0206
+Message-ID: <20260331141502.6233-1-john.ogness@linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-linus
-branch HEAD: 3ddbea7542ae529c1a88ef9a8b1ce169126211f6  vt: resize saved unicode buffer on alt screen exit after resize
+The kernel documentation specifies that the console option 'r' can
+be used to enable hardware flow control for console writes. The 8250
+driver does include code for hardware flow control on the console if
+the UPF_CONS_FLOW flag is set, but there is no code path that sets
+this flag. However, that is not the only issue. The problems are:
 
-elapsed time: 765m
+1. Specifying the console option 'r' does not lead to UPF_CONS_FLOW
+   being set.
 
-configs tested: 172
-configs skipped: 2
+2. Even if UPF_CONS_FLOW would be set, serial8250_register_8250_port()
+   clears it.
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+3. When the console option 'r' is specified, uart_set_options()
+   attempts to initialize the port for CRTSCTS. However, afterwards
+   it does not set the UPSTAT_CTS_ENABLE status bit and therefore on
+   boot, uart_cts_enabled() is always false. This policy bit is
+   important for console drivers as a criteria if they may poll CTS.
 
-tested configs:
-alpha                             allnoconfig    gcc-15.2.0
-alpha                            allyesconfig    gcc-15.2.0
-alpha                               defconfig    gcc-15.2.0
-arc                              allmodconfig    clang-16
-arc                               allnoconfig    gcc-15.2.0
-arc                              allyesconfig    clang-23
-arc                                 defconfig    gcc-15.2.0
-arc                   randconfig-001-20260331    clang-23
-arc                   randconfig-002-20260331    clang-23
-arm                               allnoconfig    gcc-15.2.0
-arm                              allyesconfig    clang-16
-arm                                 defconfig    gcc-15.2.0
-arm                   randconfig-001-20260331    clang-23
-arm                   randconfig-002-20260331    clang-23
-arm                   randconfig-003-20260331    clang-23
-arm                   randconfig-004-20260331    clang-23
-arm64                            allmodconfig    clang-23
-arm64                             allnoconfig    gcc-15.2.0
-arm64                               defconfig    gcc-15.2.0
-arm64                 randconfig-001-20260331    clang-18
-arm64                 randconfig-002-20260331    clang-18
-arm64                 randconfig-003-20260331    clang-18
-arm64                 randconfig-004-20260331    clang-18
-csky                             allmodconfig    gcc-15.2.0
-csky                              allnoconfig    gcc-15.2.0
-csky                                defconfig    gcc-15.2.0
-csky                  randconfig-001-20260331    clang-18
-csky                  randconfig-002-20260331    clang-18
-hexagon                          allmodconfig    gcc-15.2.0
-hexagon                           allnoconfig    gcc-15.2.0
-hexagon                             defconfig    gcc-15.2.0
-hexagon               randconfig-001-20260331    gcc-11.5.0
-hexagon               randconfig-002-20260331    gcc-11.5.0
-i386                             allmodconfig    clang-20
-i386                              allnoconfig    gcc-15.2.0
-i386                             allyesconfig    clang-20
-i386        buildonly-randconfig-001-20260331    clang-20
-i386        buildonly-randconfig-002-20260331    clang-20
-i386        buildonly-randconfig-003-20260331    clang-20
-i386        buildonly-randconfig-004-20260331    clang-20
-i386        buildonly-randconfig-005-20260331    clang-20
-i386        buildonly-randconfig-006-20260331    clang-20
-i386                                defconfig    gcc-15.2.0
-i386                  randconfig-001-20260331    gcc-14
-i386                  randconfig-002-20260331    gcc-14
-i386                  randconfig-003-20260331    gcc-14
-i386                  randconfig-004-20260331    gcc-14
-i386                  randconfig-005-20260331    gcc-14
-i386                  randconfig-006-20260331    gcc-14
-i386                  randconfig-007-20260331    gcc-14
-i386                  randconfig-011-20260331    clang-20
-i386                  randconfig-012-20260331    clang-20
-i386                  randconfig-013-20260331    clang-20
-i386                  randconfig-014-20260331    clang-20
-i386                  randconfig-015-20260331    clang-20
-i386                  randconfig-016-20260331    clang-20
-i386                  randconfig-017-20260331    clang-20
-loongarch                        allmodconfig    clang-23
-loongarch                         allnoconfig    gcc-15.2.0
-loongarch                           defconfig    clang-19
-loongarch             randconfig-001-20260331    gcc-11.5.0
-loongarch             randconfig-002-20260331    gcc-11.5.0
-m68k                             allmodconfig    gcc-15.2.0
-m68k                              allnoconfig    gcc-15.2.0
-m68k                             allyesconfig    clang-16
-m68k                                defconfig    clang-19
-microblaze                        allnoconfig    gcc-15.2.0
-microblaze                       allyesconfig    gcc-15.2.0
-microblaze                          defconfig    clang-19
-mips                             allmodconfig    gcc-15.2.0
-mips                              allnoconfig    gcc-15.2.0
-mips                             allyesconfig    gcc-15.2.0
-mips                           ip32_defconfig    clang-23
-nios2                            allmodconfig    clang-23
-nios2                             allnoconfig    clang-23
-nios2                               defconfig    clang-19
-nios2                 randconfig-001-20260331    gcc-11.5.0
-nios2                 randconfig-002-20260331    gcc-11.5.0
-openrisc                         allmodconfig    clang-23
-openrisc                          allnoconfig    clang-23
-openrisc                            defconfig    gcc-15.2.0
-parisc                           allmodconfig    gcc-15.2.0
-parisc                            allnoconfig    clang-23
-parisc                           allyesconfig    clang-19
-parisc                              defconfig    gcc-15.2.0
-parisc                randconfig-001-20260331    clang-23
-parisc                randconfig-002-20260331    clang-23
-parisc64                            defconfig    clang-19
-powerpc                          allmodconfig    gcc-15.2.0
-powerpc                           allnoconfig    clang-23
-powerpc                      pcm030_defconfig    clang-23
-powerpc               randconfig-001-20260331    clang-23
-powerpc               randconfig-002-20260331    clang-23
-powerpc64                        alldefconfig    clang-23
-powerpc64             randconfig-001-20260331    clang-23
-powerpc64             randconfig-002-20260331    clang-23
-riscv                            allmodconfig    clang-23
-riscv                             allnoconfig    clang-23
-riscv                            allyesconfig    clang-16
-riscv                               defconfig    gcc-15.2.0
-riscv                 randconfig-001-20260331    gcc-15.2.0
-riscv                 randconfig-002-20260331    gcc-15.2.0
-s390                             allmodconfig    clang-19
-s390                              allnoconfig    clang-23
-s390                             allyesconfig    gcc-15.2.0
-s390                                defconfig    gcc-15.2.0
-s390                  randconfig-001-20260331    gcc-15.2.0
-s390                  randconfig-002-20260331    gcc-15.2.0
-sh                               allmodconfig    gcc-15.2.0
-sh                                allnoconfig    clang-23
-sh                               allyesconfig    clang-19
-sh                                  defconfig    gcc-14
-sh                    randconfig-001-20260331    gcc-15.2.0
-sh                    randconfig-002-20260331    gcc-15.2.0
-sparc                             allnoconfig    clang-23
-sparc                               defconfig    gcc-15.2.0
-sparc                 randconfig-001-20260331    gcc-15.2.0
-sparc                 randconfig-002-20260331    gcc-15.2.0
-sparc64                          allmodconfig    clang-23
-sparc64                             defconfig    gcc-14
-sparc64               randconfig-001-20260331    gcc-15.2.0
-sparc64               randconfig-002-20260331    gcc-15.2.0
-um                               allmodconfig    clang-19
-um                                allnoconfig    clang-23
-um                               allyesconfig    gcc-15.2.0
-um                                  defconfig    gcc-14
-um                             i386_defconfig    gcc-14
-um                    randconfig-001-20260331    gcc-15.2.0
-um                    randconfig-002-20260331    gcc-15.2.0
-um                           x86_64_defconfig    gcc-14
-x86_64                           allmodconfig    clang-20
-x86_64                            allnoconfig    clang-23
-x86_64                           allyesconfig    clang-20
-x86_64      buildonly-randconfig-001-20260331    clang-20
-x86_64      buildonly-randconfig-002-20260331    clang-20
-x86_64      buildonly-randconfig-003-20260331    clang-20
-x86_64      buildonly-randconfig-004-20260331    clang-20
-x86_64      buildonly-randconfig-005-20260331    clang-20
-x86_64      buildonly-randconfig-006-20260331    clang-20
-x86_64                              defconfig    gcc-14
-x86_64                                  kexec    clang-20
-x86_64                randconfig-001-20260331    gcc-14
-x86_64                randconfig-002-20260331    gcc-14
-x86_64                randconfig-003-20260331    gcc-14
-x86_64                randconfig-004-20260331    gcc-14
-x86_64                randconfig-005-20260331    clang-20
-x86_64                randconfig-005-20260331    gcc-14
-x86_64                randconfig-006-20260331    clang-20
-x86_64                randconfig-006-20260331    gcc-14
-x86_64                randconfig-011-20260331    clang-20
-x86_64                randconfig-012-20260331    clang-20
-x86_64                randconfig-013-20260331    clang-20
-x86_64                randconfig-014-20260331    clang-20
-x86_64                randconfig-015-20260331    clang-20
-x86_64                randconfig-016-20260331    clang-20
-x86_64                randconfig-071-20260331    clang-20
-x86_64                randconfig-072-20260331    clang-20
-x86_64                randconfig-073-20260331    clang-20
-x86_64                randconfig-074-20260331    clang-20
-x86_64                randconfig-075-20260331    clang-20
-x86_64                randconfig-076-20260331    clang-20
-x86_64                               rhel-9.4    clang-20
-x86_64                           rhel-9.4-bpf    gcc-14
-x86_64                          rhel-9.4-func    clang-20
-x86_64                    rhel-9.4-kselftests    clang-20
-x86_64                         rhel-9.4-kunit    gcc-14
-x86_64                           rhel-9.4-ltp    gcc-14
-x86_64                          rhel-9.4-rust    clang-20
-xtensa                            allnoconfig    clang-23
-xtensa                           allyesconfig    clang-23
-xtensa                randconfig-001-20260331    gcc-15.2.0
-xtensa                randconfig-002-20260331    gcc-15.2.0
+4. Even though uart_set_options() attempts to initialized the port
+   for CRTSCTS, the 8250 set_termios() callback does not enable the
+   RTS signal (TIOCM_RTS) and thus the hardware is not properly
+   initialized for CTS polling.
 
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+5. Even if modem control was properly setup for CTS polling
+   (TIOCM_RTS), uart_configure_port() clears TIOCM_RTS, thus
+   breaking CTS polling.
+
+6. wait_for_xmitr() and serial8250_console_write() use the
+   UPF_CONS_FLOW bit to decide if CTS polling should occur. However,
+   the condition should also include a check that it is not in rs485
+   mode and CRTSCTS is actually enabled in the hardware.
+
+Address all these issues as conservatively as possible by gating them
+behind checks focussed on the user specifying console hardware flow
+control support and the hardware being configured for CTS polling
+at the time of the write to the uart.
+
+Since checking the UPSTAT_CTS_ENABLE status bit is a part of the new
+condition gate, these changes also support runtime termios updates to
+disable/enable CRTSCTS.
+
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+---
+ drivers/tty/serial/8250/8250_core.c |  7 +++++++
+ drivers/tty/serial/8250/8250_port.c | 14 ++++++++++++--
+ drivers/tty/serial/serial_core.c    | 18 +++++++++++++++++-
+ include/linux/serial_core.h         |  8 ++++++++
+ 4 files changed, 44 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index a428e88938eb7..fd3441dd9a559 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -693,6 +693,7 @@ static void serial_8250_overrun_backoff_work(struct work_struct *work)
+ int serial8250_register_8250_port(const struct uart_8250_port *up)
+ {
+ 	struct uart_8250_port *uart;
++	bool console_hwflow;
+ 	int ret;
+ 
+ 	if (up->port.uartclk == 0)
+@@ -716,6 +717,9 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
+ 	if (uart->port.type == PORT_8250_CIR)
+ 		return -ENODEV;
+ 
++	/* Preserve specified console hardware flow control. */
++	console_hwflow = uart->port.flags & UPF_CONS_FLOW;
++
+ 	if (uart->port.dev)
+ 		uart_remove_one_port(&serial8250_reg, &uart->port);
+ 
+@@ -757,6 +761,9 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
+ 			goto err;
+ 	}
+ 
++	if (console_hwflow)
++		uart->port.flags |= UPF_CONS_FLOW;
++
+ 	if (up->port.flags & UPF_FIXED_TYPE)
+ 		uart->port.type = up->port.type;
+ 
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index af78cc02f38e7..88f5309a940e9 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1988,7 +1988,7 @@ static void wait_for_xmitr(struct uart_8250_port *up, int bits)
+ 	wait_for_lsr(up, bits);
+ 
+ 	/* Wait up to 1s for flow control if necessary */
+-	if (up->port.flags & UPF_CONS_FLOW) {
++	if (uart_console_hwflow_active(&up->port)) {
+ 		for (tmout = 1000000; tmout; tmout--) {
+ 			unsigned int msr = serial_in(up, UART_MSR);
+ 			up->msr_saved_flags |= msr & MSR_SAVE_FLAGS;
+@@ -2782,6 +2782,12 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
+ 		serial8250_set_efr(port, termios);
+ 		serial8250_set_divisor(port, baud, quot, frac);
+ 		serial8250_set_fcr(port, termios);
++		/* Consoles manually poll CTS for hardware flow control. */
++		if (uart_console(port) &&
++		    !(port->rs485.flags & SER_RS485_ENABLED)
++		    && termios->c_cflag & CRTSCTS) {
++			port->mctrl |= TIOCM_RTS;
++		}
+ 		serial8250_set_mctrl(port, port->mctrl);
+ 	}
+ 
+@@ -3351,7 +3357,7 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
+ 		 * it regardless of the CTS state. Therefore, only use fifo
+ 		 * if we don't use control flow.
+ 		 */
+-		!(up->port.flags & UPF_CONS_FLOW);
++		!uart_console_hwflow_active(&up->port);
+ 
+ 	if (likely(use_fifo))
+ 		serial8250_console_fifo_write(up, s, count);
+@@ -3421,6 +3427,10 @@ int serial8250_console_setup(struct uart_port *port, char *options, bool probe)
+ 	if (ret)
+ 		return ret;
+ 
++	/* Allow user-specified hardware flow control. */
++	if (flow == 'r')
++		port->flags |= UPF_CONS_FLOW;
++
+ 	if (port->dev)
+ 		pm_runtime_get_sync(port->dev);
+ 
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 89cebdd278410..cce1fd728a1e4 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2235,6 +2235,15 @@ uart_set_options(struct uart_port *port, struct console *co,
+ 	port->mctrl |= TIOCM_DTR;
+ 
+ 	port->ops->set_termios(port, &termios, &dummy);
++
++	/*
++	 * If console hardware flow control was specified and is supported,
++	 * the related policy UPSTAT_CTS_ENABLE must be set to allow console
++	 * drivers to identify if CTS should be used for polling.
++	 */
++	if (flow == 'r' && (termios.c_cflag & CRTSCTS))
++		port->status |= UPSTAT_CTS_ENABLE;
++
+ 	/*
+ 	 * Allow the setting of the UART parameters with a NULL console
+ 	 * too:
+@@ -2541,7 +2550,14 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
+ 		 * We probably don't need a spinlock around this, but
+ 		 */
+ 		scoped_guard(uart_port_lock_irqsave, port) {
+-			port->mctrl &= TIOCM_DTR;
++			unsigned int mask = TIOCM_DTR;
++
++			/* Console hardware flow control polls CTS. */
++			if (uart_console_hwflow_active(port))
++				mask |= TIOCM_RTS;
++
++			port->mctrl &= mask;
++
+ 			if (!(port->rs485.flags & SER_RS485_ENABLED))
+ 				port->ops->set_mctrl(port, port->mctrl);
+ 		}
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 666430b478997..07bd3bd6c8355 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -1163,6 +1163,14 @@ static inline bool uart_softcts_mode(struct uart_port *uport)
+ 	return ((uport->status & mask) == UPSTAT_CTS_ENABLE);
+ }
+ 
++static inline bool uart_console_hwflow_active(struct uart_port *uport)
++{
++	return uart_console(uport) &&
++	       !(uport->rs485.flags & SER_RS485_ENABLED) &&
++	       (uport->flags & UPF_CONS_FLOW) &&
++	       uart_cts_enabled(uport);
++}
++
+ /*
+  * The following are helper functions for the low level drivers.
+  */
+
+base-commit: d50dd728ced93a1900ff0be924b6f273baf59fb2
+-- 
+2.47.3
+
