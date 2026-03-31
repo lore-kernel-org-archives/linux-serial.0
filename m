@@ -1,251 +1,215 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C6B24035CD
-	for <linux-serial@vger.kernel.org>; Tue, 31 Mar 2026 15:29:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEBA5425CC1
+	for <linux-serial@vger.kernel.org>; Tue, 31 Mar 2026 16:30:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774970976; cv=none; b=PnG84ZGLNPhGf+VRzOlrJ7hq/cGx4bS8AHajnk/Nr5SwIC5a75crZw/jgHA8G33TtDu3nNqsRz9llqfLO/5BUVBzlnrVmiM+Ps/L3f6pQHnbZ/xLvjaL8Mcbn2QWXe3yz5WuI+/nlU+2Y3N2BohGzW3/+EpYP4AH6kUoLiDSkWc=
+	t=1774974609; cv=none; b=KsaLPV1C1f1YyjxhPZ+VpbX3RKqsBg4bPTxYcNA3F64iwYTST4ymbNEgikaGuu2EXZ1ORWXoctL+xnwa4Q4faW8GSaTDAhwxjE0wJSHvLYAvONx1t6LdmlRDVd6LM/+g7OET03tV0vRrcQd85alRACTrSvrSz7J8Q1MdfMwcjWA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774970976; c=relaxed/simple;
-	bh=h6gg5rmmiDDY3PMfEnrLPhHLFUeU77Ypk93onGGgun4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=eG11ulzQNOtzhcbQvU6Ql90Q/5DZL58buVSudGxquhE3PohuyLHxUubTNWvhXoDlS0Z2fi41OewUz279S85ehwXzmEFXQO1SVD2ccF0uiSvbKQ9boJ4zMXFaJ4LtL84WOQNv3lXpQG9LNDz/P+cMqFF499txMivjiToTro1HcbU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=rKlZOLIQ; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=85WjaiIs; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=rKlZOLIQ; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=85WjaiIs; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
+	s=arc-20240116; t=1774974609; c=relaxed/simple;
+	bh=gRS3YG1pr3ibnZKjf/71FJl6wBB9Cgbl3KE/lAnEraw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=f8MAixFoPE/a4IDH4X1NnzO5iAAhTHNOLzukQ1TBMoer1sHP/6ujMXui6LhtvJ7iL/vAskJWNBenKaAHuaLLXRF8jBTXtjF8VbQaMsKlQerKditYwgbDxqt1fwbrJzizRtRsierhY+iW2uJDH4TOSNUZEIgZP/cjAz0rZBmedhY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=dTSD6t0c; arc=none smtp.client-ip=209.85.221.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="rKlZOLIQ";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="85WjaiIs";
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="rKlZOLIQ";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="85WjaiIs"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 7A0474D284;
-	Tue, 31 Mar 2026 15:29:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1774970971; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=6Y6e434JgzvENBkxqRYIvDtLicskkjZx/jSS6iqhEsM=;
-	b=rKlZOLIQvtYgg1BsUXjRQ3VSMGRs175D8LtJS1eFUhPWYFq6yaKO7sl4NPuaLsLquO9sDh
-	5uaCnWZrb8nioWKbXHexzTv9Iq0nwj1HI1lWhEOnKWRxjg1c99FUdWs52azo+PmoaSXFJ0
-	OFvSXzr+xbca/Hy0CnCyh0AzQIMzf/s=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1774970971;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=6Y6e434JgzvENBkxqRYIvDtLicskkjZx/jSS6iqhEsM=;
-	b=85WjaiIsjm4X+q8zqpgio1ggtJZ0qPO6zxdy47Hgj4mn+Jx2icb0hmNlmdpkyXODbS0KRY
-	Vp+jQCNknJFqNhDQ==
-Authentication-Results: smtp-out1.suse.de;
-	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=rKlZOLIQ;
-	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b=85WjaiIs
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1774970971; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=6Y6e434JgzvENBkxqRYIvDtLicskkjZx/jSS6iqhEsM=;
-	b=rKlZOLIQvtYgg1BsUXjRQ3VSMGRs175D8LtJS1eFUhPWYFq6yaKO7sl4NPuaLsLquO9sDh
-	5uaCnWZrb8nioWKbXHexzTv9Iq0nwj1HI1lWhEOnKWRxjg1c99FUdWs52azo+PmoaSXFJ0
-	OFvSXzr+xbca/Hy0CnCyh0AzQIMzf/s=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1774970971;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=6Y6e434JgzvENBkxqRYIvDtLicskkjZx/jSS6iqhEsM=;
-	b=85WjaiIsjm4X+q8zqpgio1ggtJZ0qPO6zxdy47Hgj4mn+Jx2icb0hmNlmdpkyXODbS0KRY
-	Vp+jQCNknJFqNhDQ==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 3F76C4A0B0;
-	Tue, 31 Mar 2026 15:29:31 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id TL1MDlvoy2naWQAAD6G6ig
-	(envelope-from <tzimmermann@suse.de>); Tue, 31 Mar 2026 15:29:31 +0000
-Message-ID: <87849268-89f9-4522-8472-af6840747266@suse.de>
-Date: Tue, 31 Mar 2026 17:29:30 +0200
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="dTSD6t0c"
+Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-43cf73bbfbdso1826430f8f.1
+        for <linux-serial@vger.kernel.org>; Tue, 31 Mar 2026 09:30:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1774974605; x=1775579405; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=05T17Gt7zJJTuhvPKMku3wBY947ddWSwqLLasltmOi4=;
+        b=dTSD6t0cNjOU5XQfbf0Gvdqi67J2ZS6/QRo4sGkOy57+ZGgiEuSmbS04k95w9AIL4U
+         9Ec1WbJSiYysFd7vBlIhZi+fFlm/p/kz7MThVLDSsJ9MdpSvcxlPCav9WCnrN+UVX6LX
+         gF+BysODJ7zsZ5HKLpOGEAnvPqc09UbSDvV3u/+9Bg/HBx1LKLZvoUKmADuwCSa0oydp
+         9J3BHroLTiXBm1+jV9K1opvczZjSnAfbC98+MjA3ayziorkbXV6KO/0EKWsylayrbkwE
+         VZxTW84SoVCgM/K6QZBta7bdXtm51nx/nltSglAtdqk6iwBv1YxhFris4Y8x6ohuZvcp
+         NRHw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1774974605; x=1775579405;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=05T17Gt7zJJTuhvPKMku3wBY947ddWSwqLLasltmOi4=;
+        b=PyTmLR4sx82qKwWzPcQ4lToMF/UT+7DffC39z/Xp4wmwSbp5Yc/1ag/vnyyGscdQtJ
+         /Aph34UmurxwEDjRjXwXSLYUchBv3wQQ1Ky9K78+8Ee/E5VYjiZ9t+LqlHnkl5opJFBe
+         JNNwCTpQS60qIcxa0IDAxLzdgnrvjTOj3vCJWbS4IZyuDiO6cCUfoz/6+An1lh+I+oOK
+         Kq4aEMwOuxEGN0l7ua7YcGP96REEt24KOej1gE0XxYeqpAdYNnz0NIXCRtdaxBqAciem
+         VbAuS0/VnEhBH7iVPrljXYETry6dP2Oi2loZWBpwkN03kdYhEzFScJ9bzzihNeaPSeiA
+         cM/w==
+X-Forwarded-Encrypted: i=1; AJvYcCURRkyuoExxzX3VW4rnWmlc6j/4aKOTcNLb2QS7S7mFC4yzSmQ8CvZj6rUEjWefM79od1XGsMTcQmkdjZk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyzExh8p8Ol2uq4nQrmRs6itjLYxF3hABOa6JAbJpD0cPLYWFLU
+	LFZQWQI1AjCNjQ1fiuuFiM48zNOkZyE8lObz0SBw7YZ36fCRhbf7vCK22Q6U3X59pqs=
+X-Gm-Gg: ATEYQzwyv4RgmDDHFOKE8qCLcEZAELNyvPKenxIesuyF5p5YOPi9eekfaGG+8BluFNv
+	hJ70Kzf5ZN+JKkCtPMklpZyanK7RvLAjREzfm/3kYBBCjpKfon+c47/x30IY4tXxuwlh/OBgbCp
+	zy800Ywu0S6sVY0eTYVAmBGdMZY60RP44Ulzb8yayj20rF5ajYqUOebz5w+ZyEZ6XF2GwyLOCHY
+	D8N41ekUeDf2LN9/DtpqYuSGVQztwdgQU014CoPq2DBCKHpM4T1x3PxL08+LJf7Y8nJJVyn6hBK
+	6Ssrbeuna4bW5SQIEkejlssHtc00sVJYms4V8VmBInDKlsbkU0oPLc6pCIdGoXDR5GGfZJbXvft
+	ZwIcB6vlXch8E1cA9wxWYcbN3RcXbsBDT/Gd9vBrTIlVR62GynSzY2d1GDFxX4Kelerl5W+FE8d
+	eTBI6zFWXfkyy/MGGO0G5JjJpZagVzvA==
+X-Received: by 2002:a5d:5f53:0:b0:43c:f66e:f31 with SMTP id ffacd0b85a97d-43d150ddb4bmr483415f8f.27.1774974604559;
+        Tue, 31 Mar 2026 09:30:04 -0700 (PDT)
+Received: from linaro.org ([92.206.122.171])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43cf21e9e24sm27279076f8f.10.2026.03.31.09.30.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 Mar 2026 09:30:03 -0700 (PDT)
+Date: Tue, 31 Mar 2026 18:29:51 +0200
+From: Stephan Gerhold <stephan.gerhold@linaro.org>
+To: Manivannan Sadhasivam <mani@kernel.org>
+Cc: Mark Pearson <mpearson-lenovo@squebb.ca>,
+	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+	Rob Herring <robh@kernel.org>,
+	Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>,
+	Greg KH <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Nathan Chancellor <nathan@kernel.org>,
+	Nicolas Schier <nicolas.schier@linux.dev>,
+	Hans de Goede <hansg@kernel.org>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	"Derek J . Clark" <derekjohn.clark@gmail.com>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Marcel Holtmann <marcel@holtmann.org>,
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+	Bartosz Golaszewski <brgl@bgdev.pl>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Bartosz Golaszewski <brgl@kernel.org>, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
+	"platform-driver-x86@vger.kernel.org" <platform-driver-x86@vger.kernel.org>,
+	linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+	linux-pm@vger.kernel.org,
+	"linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>
+Subject: Re: [PATCH v6 6/9] dt-bindings: connector: m2: Add M.2 1620 LGA
+ soldered down connector
+Message-ID: <acv2f1qbqu4PlSL1@linaro.org>
+References: <20260322233713.GA98177-robh@kernel.org>
+ <to2mrizprc3hjufqbiplpqyek7f4uutqtn4hx4gkmdgv2rykbc@ybwwjhdec4nm>
+ <CAL_JsqJXrHCJt770bJkMmAUhirSF3kHjYwSzkG7cXp7-eys8Rg@mail.gmail.com>
+ <6aef3xxjjd4nbgrfx6jc6jt6rpqmttoui6hil5zqgdpas2j6gj@ie6j72orenou>
+ <fsvmmgoe5wslmxebhrrwmdg2ldcmhzvj53gjkdfnfg2m2rz2lw@dcfboaakz7ae>
+ <bguhzabwryayyqkv4ilzwr3ixwv6bzxncblo3ircz2wm3fs52k@66zvcrfcb4oe>
+ <blhm4csjyw6r667cleljgzd6rpwagttjo5rau7wjrlnjakq2qm@ekyhc4jvwmwf>
+ <m44mupdmg7kgco62n4evcviagqo7wwgyt3gybugbxwesd4ekjz@o24r6v4tpezc>
+ <3faffec9-dc9d-4eec-a652-a84d30d85c96@app.fastmail.com>
+ <cvqdbqnzjmzoowxkvz2lyv4avropu5jw7h2r6zng3ecf245hgg@fsysjqflqd35>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 00/10] fbcon,fonts: Refactor framebuffer console rotation
-To: Helge Deller <deller@gmx.de>, gregkh@linuxfoundation.org,
- jirislaby@kernel.org, simona@ffwll.ch, sam@ravnborg.org
-Cc: linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20260327130431.59481-1-tzimmermann@suse.de>
- <7c963dce-7b39-4047-b0bb-548957852d65@gmx.de>
-Content-Language: en-US
-From: Thomas Zimmermann <tzimmermann@suse.de>
-Autocrypt: addr=tzimmermann@suse.de; keydata=
- xsBNBFs50uABCADEHPidWt974CaxBVbrIBwqcq/WURinJ3+2WlIrKWspiP83vfZKaXhFYsdg
- XH47fDVbPPj+d6tQrw5lPQCyqjwrCPYnq3WlIBnGPJ4/jreTL6V+qfKRDlGLWFjZcsrPJGE0
- BeB5BbqP5erN1qylK9i3gPoQjXGhpBpQYwRrEyQyjuvk+Ev0K1Jc5tVDeJAuau3TGNgah4Yc
- hdHm3bkPjz9EErV85RwvImQ1dptvx6s7xzwXTgGAsaYZsL8WCwDaTuqFa1d1jjlaxg6+tZsB
- 9GluwvIhSezPgnEmimZDkGnZRRSFiGP8yjqTjjWuf0bSj5rUnTGiyLyRZRNGcXmu6hjlABEB
- AAHNJ1Rob21hcyBaaW1tZXJtYW5uIDx0emltbWVybWFubkBzdXNlLmRlPsLAjgQTAQgAOAIb
- AwULCQgHAgYVCgkICwIEFgIDAQIeAQIXgBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftODH
- AAoJEGgNwR1TC3ojx1wH/0hKGWugiqDgLNXLRD/4TfHBEKmxIrmfu9Z5t7vwUKfwhFL6hqvo
- lXPJJKQpQ2z8+X2vZm/slsLn7J1yjrOsoJhKABDi+3QWWSGkaGwRJAdPVVyJMfJRNNNIKwVb
- U6B1BkX2XDKDGffF4TxlOpSQzdtNI/9gleOoUA8+jy8knnDYzjBNOZqLG2FuTdicBXblz0Mf
- vg41gd9kCwYXDnD91rJU8tzylXv03E75NCaTxTM+FBXPmsAVYQ4GYhhgFt8S2UWMoaaABLDe
- 7l5FdnLdDEcbmd8uLU2CaG4W2cLrUaI4jz2XbkcPQkqTQ3EB67hYkjiEE6Zy3ggOitiQGcqp
- j//OwE0EWznS4AEIAMYmP4M/V+T5RY5at/g7rUdNsLhWv1APYrh9RQefODYHrNRHUE9eosYb
- T6XMryR9hT8XlGOYRwKWwiQBoWSDiTMo/Xi29jUnn4BXfI2px2DTXwc22LKtLAgTRjP+qbU6
- 3Y0xnQN29UGDbYgyyK51DW3H0If2a3JNsheAAK+Xc9baj0LGIc8T9uiEWHBnCH+RdhgATnWW
- GKdDegUR5BkDfDg5O/FISymJBHx2Dyoklv5g4BzkgqTqwmaYzsl8UxZKvbaxq0zbehDda8lv
- hFXodNFMAgTLJlLuDYOGLK2AwbrS3Sp0AEbkpdJBb44qVlGm5bApZouHeJ/+n+7r12+lqdsA
- EQEAAcLAdgQYAQgAIAIbDBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftOH6AAoJEGgNwR1T
- C3ojVSkIALpAPkIJPQoURPb1VWjh34l0HlglmYHvZszJWTXYwavHR8+k6Baa6H7ufXNQtThR
- yIxJrQLW6rV5lm7TjhffEhxVCn37+cg0zZ3j7zIsSS0rx/aMwi6VhFJA5hfn3T0TtrijKP4A
- SAQO9xD1Zk9/61JWk8OysuIh7MXkl0fxbRKWE93XeQBhIJHQfnc+YBLprdnxR446Sh8Wn/2D
- Ya8cavuWf2zrB6cZurs048xe0UbSW5AOSo4V9M0jzYI4nZqTmPxYyXbm30Kvmz0rYVRaitYJ
- 4kyYYMhuULvrJDMjZRvaNe52tkKAvMevcGdt38H4KSVXAylqyQOW5zvPc4/sq9c=
-In-Reply-To: <7c963dce-7b39-4047-b0bb-548957852d65@gmx.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Rspamd-Action: no action
-X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
-X-Spamd-Result: default: False [-4.51 / 50.00];
-	BAYES_HAM(-3.00)[100.00%];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	MIME_GOOD(-0.10)[text/plain];
-	MX_GOOD(-0.01)[];
-	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	FREEMAIL_ENVRCPT(0.00)[gmx.de];
-	FREEMAIL_TO(0.00)[gmx.de,linuxfoundation.org,kernel.org,ffwll.ch,ravnborg.org];
-	FUZZY_RATELIMITED(0.00)[rspamd.com];
-	ARC_NA(0.00)[];
-	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	TO_DN_SOME(0.00)[];
-	MIME_TRACE(0.00)[0:+];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	RCVD_TLS_ALL(0.00)[];
-	DKIM_TRACE(0.00)[suse.de:+];
-	RCVD_COUNT_TWO(0.00)[2];
-	FROM_EQ_ENVFROM(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	MID_RHS_MATCH_FROM(0.00)[];
-	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
-	RCPT_COUNT_SEVEN(0.00)[9];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:url,imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns,suse.de:dkim,suse.de:mid]
-X-Rspamd-Queue-Id: 7A0474D284
-X-Spam-Flag: NO
-X-Spam-Score: -4.51
-X-Spam-Level: 
+In-Reply-To: <cvqdbqnzjmzoowxkvz2lyv4avropu5jw7h2r6zng3ecf245hgg@fsysjqflqd35>
 
-Hi
+On Wed, Mar 25, 2026 at 05:36:08PM +0530, Manivannan Sadhasivam wrote:
+> On Mon, Mar 23, 2026 at 01:23:07PM -0400, Mark Pearson wrote:
+> > On Mon, Mar 23, 2026, at 12:52 PM, Manivannan Sadhasivam wrote:
+> > > On Mon, Mar 23, 2026 at 06:45:15PM +0200, Dmitry Baryshkov wrote:
+> > >> On Mon, Mar 23, 2026 at 09:26:04PM +0530, Manivannan Sadhasivam wrote:
+> > >> > On Mon, Mar 23, 2026 at 05:14:30PM +0200, Dmitry Baryshkov wrote:
+> > >> > > On Mon, Mar 23, 2026 at 07:14:25PM +0530, Manivannan Sadhasivam wrote:
+> > >> > > > On Mon, Mar 23, 2026 at 08:39:55AM -0500, Rob Herring wrote:
+> > >> > > > > On Mon, Mar 23, 2026 at 7:16 AM Manivannan Sadhasivam <mani@kernel.org> wrote:
+> > >> > > > > >
+> > >> > > > > > On Sun, Mar 22, 2026 at 06:37:13PM -0500, Rob Herring wrote:
+> > >> > > > > > > On Tue, Mar 17, 2026 at 09:59:56AM +0530, Manivannan Sadhasivam wrote:
+> > >> > > > > > > > Lenovo Thinkpad T14s is found to have a soldered down version of M.2 1620
+> > >> > > > > > > > LGA connector. Though, there is no 1620 LGA form factor defined in the M.2
+> > >> > > > > > > > spec, it looks very similar to the M.2 Key E connector. So add the
+> > >> > > > > > > > "pcie-m2-1620-lga-connector" compatible with "pcie-m2-e-connector" fallback
+> > >> > > > > > > > to reuse the Key E binding.
+> > >> > > > > > >
+> > >> > > > > > > What is LGA?
+> > >> > > > > > >
+> > >> > > > > >
+> > >> > > > > > Land Grid Array
+> > >> > > > > >
+> > >> > > > > > > If not in the spec, is it really something generic?
+> > >> > > > > > >
+> > >> > > > > >
+> > >> > > > > > Good question. Yes and No! LGA is not something that Lenovo only uses. Other
+> > >> > > > > > vendors may also use this form factor. PCIe connectors are full of innovation as
+> > >> > > > > > the spec gives room for hardware designers to be as innovative as possible to
+> > >> > > > > > save the BOM cost.
+> > >> > > > > 
+> > >> > > > > innovation == incompatible changes
+> > >> > > > > 
+> > >> > > > 
+> > >> > > > Yes, I was trying to sound nice :)
+> > >> > > > 
+> > >> > > > > > This is why I do not want to make it Lenovo specific. But if you prefer that, I
+> > >> > > > > > can name it as "lenovo,pcie-m2-1620-lga-connector".
+> > >> > > > > 
+> > >> > > > > Depends if you think that s/w needs to know the differences. Hard to
+> > >> > > > > say with a sample size of 1.
+> > >> > > > > 
+> > >> > > > 
+> > >> > > > Sure. Will add the 'lenovo' prefix then.
+> > >> > > 
+> > >> > > Is it really Lenovo? Or is it some other module vendor, whose LGAs are
+> > >> > > being used by Lenovo?
+> > >> > > 
+> > >> > > I remember that DB820c also used some kind of a module for the WiFi card
+> > >> > > (which might be M.2 compatible or might not, I can't find exact docs at
+> > >> > > this point).
+> > >> > > 
+> > >> > 
+> > >> > I don't know. These kind of designs might be reused by several vendors. But
+> > >> > considering that we should not make it generic, I'd go with Lenovo as that's
+> > >> > the only vendor we know as of now.
+> > >> 
+> > >> ... and later we learn that other vendors use the same idea /pinout,
+> > >> then nothing stops us from still telling that it's a
+> > >> "lenovo,pcie-m2-something-lga". 
+> > >> 
+> > >
+> > > How do you possibly know whether a single vendor has introduced this form factor
+> > > or reused by multiple ones? Atleast, I don't have access to such a source to
+> > > confirm.
+> > >
+> > I've not really been following this thread/patchset in detail; but want me to try and check with the T14s platform team if this device is specifically made for us (Lenovo) or not?
+> > I doubt it is - we just don't do that usually, but I can go and ask the question if it will help resolve this (with the caveat that it could hold up the review for a bit and I may not be able to get a straight answer)
+> > 
+> 
+> I can drop this specific patch in the meantime.
+> 
+> > My vote (for what little it's worth) would be to make it non-Lenovo specific. Then when the same part causes issues on another vendors platform I won't get asked questions about why Lenovo is breaking <other vendor> :)
+> > 
+> 
+> Even if Lenovo prefix is used, it won't break other vendors. Just that we will
+> end up adding more compatibles.
+> 
+> Anyhow, I'll wait for your reply and drop this patch for next revision.
+> 
 
-Am 31.03.26 um 17:08 schrieb Helge Deller:
-> Hi Thomas,
->
-> On 3/27/26 13:49, Thomas Zimmermann wrote:
->> Refactor the framebuffer console rotation into individual components
->> for glyphs, fonts and the overall fbcon state. Right now this is mixed
->> up in fbcon_rotate.{c,h}. Also build cursor rotation on top of the new
->> interfaces.
->>
->> Start with an OOB fix in patch 1. If buffer allocation fails, fbcon
->> currently uses a too-small glyph buffer for output. Avoid that.
->>
->> Patches 2 to 4 make a number of small improvements to the font library
->> and its callers.
->>
->> Patches 5 to 8 refactor the font rotation. Fbcon rotation rotates each
->> individual glphy in a font buffer and uses the rotated buffer's glyphs
->> for output. The result looks like the console buffer has been rotated
->> as a whole. Split this into helpers that rotate individual glyphs and
->> a helper that rotates the font buffer of these. Then reimplement fbcon
->> rotation on top. Document the public font helpers.
->>
->> Patch 9 rebuilds cursor rotation on top of the new glyph helpers. The
->> fbcon cursor is itself a glyph that has to be rotated in sync with the
->> font.
->>
->> Patch 10 moves the state of fbcon rotation into a single place and makes
->> is a build-time conditional.
->>
->> Tested with fbcon under bochs on Qemu.
->>
->> Built upon the fbcon changes at [1].
->>
->> [1] 
->> https://lore.kernel.org/linux-fbdev/20260309141723.137364-1-tzimmermann@suse.de/
->
->
-> Thanks a lot for this cleanup work!
->
-> I've applied this series to the fbdev git tree.
+If you need a vendor prefix, I think "qcom," would be more appropriate
+than Lenovo. This form factor is used by most vendors for recent
+soldered Qualcomm-based wireless cards, not just Lenovo:
 
-Thanks a lot.
+ - Dell XPS 13 9345 has exactly the same soldered M.2 card, I assume
+   there are several other vendors as well.
 
-There's a small typo in patch 2 that I noticed when Greg gave his ack. 
-The commit description say <liux/math.h> instead of <linux/math.h>.  Let 
-me know whether you can fix it or if I should send an update.
+ - https://www.sparklan.com/product/wnsq-290be/ is a third-party
+   (Qualcomm-based) M.2 LGA 1620 card, in the block diagram the
+   pinout is called "QM.2 1620 LGA 168pin".
 
-Best regards
-Thomas
+ - If you press F9 while booting the ThinkPad T14s, you should get to a
+   screen with "Regulatory Information". For the T14s, this screen says
+   "Contains FCC ID: J9C-QCNCM825". This is the WiFi/BT module in the
+   soldered form factor. If you look that up on the FCC website, the
+   applicant for this module is "Qualcomm Technologies, Inc.". This
+   seems to be some kind of "modular certification" that vendors can
+   reuse/adapt without going through the whole process again.
 
->
-> Helge
->
->
->> Thomas Zimmermann (10):
->>    fbcon: Avoid OOB font access if console rotation fails
->>    vt: Implement helpers for struct vc_font in source file
->>    lib/fonts: Provide helpers for calculating glyph pitch and size
->>    lib/fonts: Clean up Makefile
->>    lib/fonts: Implement glyph rotation
->>    lib/fonts: Refactor glyph-pattern helpers
->>    lib/fonts: Refactor glyph-rotation helpers
->>    lib/fonts: Implement font rotation
->>    fbcon: Fill cursor mask in helper function
->>    fbcon: Put font-rotation state into separate struct
->>
->>   drivers/tty/vt/vt.c                     |  34 +++
->>   drivers/video/fbdev/core/bitblit.c      |  35 +--
->>   drivers/video/fbdev/core/fbcon.c        |  48 ++++-
->>   drivers/video/fbdev/core/fbcon.h        |  14 +-
->>   drivers/video/fbdev/core/fbcon_ccw.c    |  70 ++----
->>   drivers/video/fbdev/core/fbcon_cw.c     |  70 ++----
->>   drivers/video/fbdev/core/fbcon_rotate.c |  88 ++------
->>   drivers/video/fbdev/core/fbcon_rotate.h |  71 ------
->>   drivers/video/fbdev/core/fbcon_ud.c     |  67 ++----
->>   include/linux/console_struct.h          |  30 +--
->>   include/linux/font.h                    |  51 +++++
->>   lib/fonts/Makefile                      |  36 ++--
->>   lib/fonts/font_rotate.c                 | 275 ++++++++++++++++++++++++
->>   lib/fonts/fonts.c                       |   2 +-
->>   14 files changed, 525 insertions(+), 366 deletions(-)
->>   create mode 100644 lib/fonts/font_rotate.c
->>
->
+Perhaps you should ask around inside Qualcomm? :-)
 
--- 
---
-Thomas Zimmermann
-Graphics Driver Developer
-SUSE Software Solutions Germany GmbH
-Frankenstr. 146, 90461 Nürnberg, Germany, www.suse.com
-GF: Jochen Jaser, Andrew McDonald, Werner Knoblich, (HRB 36809, AG Nürnberg)
-
-
+Thanks,
+Stephan
