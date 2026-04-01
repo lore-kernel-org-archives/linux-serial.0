@@ -1,277 +1,143 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 334F5274650;
-	Tue, 31 Mar 2026 23:50:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E04AA35BDB7
+	for <linux-serial@vger.kernel.org>; Wed,  1 Apr 2026 07:07:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775001020; cv=none; b=OB637HaYtD/ZWhA68idtpJ0ar/RYH1us6PxE4ZmviIpxt3Ooq7DFMV09yoSsuhdevtnoVSevP7FrhPFmw1ASbYGeSNUXjTFMfz7QAMApyCZjeXTrh8T/3JzbTHMGL7b97lqXREWGr5rjzkRTVQWteqVgU+b3LbOraZbEwDSVDNE=
+	t=1775027271; cv=none; b=XxEl0hse8u9T4Z869SU3TxFd00MTmTWv/H4DsHRTxclfWlUnDqiKmj/RnmgplIZDuuvjnjnfPxIMldUFpzMTdub5cBSValogN8OlUCvxUBM4kaRnNtrwci9/V3zX/fPRj4nFxGdEMKZQN1GiRVLXOL97gQE52zebmd4MKwgc0Bc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775001020; c=relaxed/simple;
-	bh=drBWOmQ7byl8tjzcT4MXX66PuWhQklngBRBjbExaFaI=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=uLbUnrVhH1ExCtyhXKLR8lGtpWAebY9yGi3lLlp2J9pHnikEatvTH56A/+JTk5QXyKNAZl+oD0naH/fb5vxVEO9FznNt/FLKGyFYBxcbPpfOrJyWPDfDJ+74NjvJ7UnY/xWCrlYTgfCBUzzSU4NVgM49nioABp1hmFeszW0y6M0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=mEaduT/4; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=NgsPiMZo; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1775027271; c=relaxed/simple;
+	bh=2vEu0FMYjbU3hCQR7oBHMixia2zkpzxyg0rkOUGp7fs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=HBTQqXtdNcNtuMQctkmtO4h5Q2wxIGpKLCfuCKIkaBlUCZ9CFimhW+XBDn53v0Nz8IbUa+pIIVO4n1ypsw1LKQq5RfDW6peUTA5aHhVROnDzvRF1Aj+pVOE+9quVXY0yE2ZCNkrkbe9rzxlL4rB+WuseQ3wfdU3HsF7PfZdz4/w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=NxQCeHfe; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=Emo7kXVK; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="mEaduT/4";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="NgsPiMZo"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1775001017;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=J7g0QGKZA6HDO+SbBBI7E1aJ5E0ki/algL9M0b78iys=;
-	b=mEaduT/4OMEtGGJ7G19kD4FDX3LuIkX/yESQDTw1G+hvr0Mrjx4CZWnTfOWY2fnes63rMg
-	tlJnUAFSOoVwdoifB8+uvhDBqAq35ggqmAQFHIkREyRvRTOLG8GLVGTq27cVYr/XdSUpss
-	VlH3uK/U2AnQ4ScVGkUBozD0Zlmb9ehVx3OZx6sbNm/5wGsazBJwgqhjzcDK8lbEA4jdTF
-	lOTt+xp2A031V119CDlLWTQ45pN1BDr4ZMZhM2RjcH5O9KEXumnz+fk36F2pzNkEPQhteC
-	hAcEqxmCC4auKOHT/CZOy9U/UJJquaXkBuNwA+hHjtcDqZNlF8kXiLzwR8qg9w==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1775001017;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=J7g0QGKZA6HDO+SbBBI7E1aJ5E0ki/algL9M0b78iys=;
-	b=NgsPiMZoszQwD27/zVlkpvSULvuO/4w6HdeYSyplnB8CfO/j4OjYYMzRa6AXALOb6svzkN
-	a8Qt+Jp2kDwK/HCA==
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>
-Cc: linux-kernel@vger.kernel.org, Ilpo =?utf-8?Q?J=C3=A4rvinen?=
- <ilpo.jarvinen@linux.intel.com>, Thomas Gleixner <tglx@kernel.org>, Ingo
- Molnar <mingo@kernel.org>, Xin Zhao <jackzxcui1989@163.com>, Andy
- Shevchenko <andy.shevchenko@gmail.com>, "Dr. David Alan Gilbert"
- <linux@treblig.org>, Joseph Tilahun <jtilahun@astranis.com>,
- linux-serial@vger.kernel.org
-Subject: Re: [PATCH tty v1] serial: 8250: Add support for console hardware
- flow control
-In-Reply-To: <20260331141502.6233-1-john.ogness@linutronix.de>
-References: <20260331141502.6233-1-john.ogness@linutronix.de>
-Date: Wed, 01 Apr 2026 01:56:16 +0206
-Message-ID: <87pl4jtv7r.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="NxQCeHfe";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="Emo7kXVK"
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6311h6sm1578366
+	for <linux-serial@vger.kernel.org>; Wed, 1 Apr 2026 07:07:49 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:date:from:message-id:mime-version
+	:subject:to; s=qcppdkim1; bh=22A+Sj5chUc1iyVqke9i/KwfXM4BVovOzih
+	XMiqpqQI=; b=NxQCeHfeNLOCx9istPa04KOfV0L7++Z5drnpxa+rK4BKxN/bo8L
+	MdvhBKm7g7YIW9OrBZKF0BR9Ns5JhDmZthaJPrdZpRNrMqTlpNinCGfB7F8BXkt3
+	OTeosUc1hjaef7vOFG015DdKMbsCoHNhgasgjX+Qcdsg9kKY5O+AizQMU+Encrvz
+	/wJh+AJRkYipbyGjvzAIfwIP+/rnXspi7NPCCEC6qfifqB8hF5z1qTHVhWko6aZH
+	Y18R+jUrlpN3CG79JXt0UVWR3XzdH0sPtoomVgRRQk+LDfgmDprOxamLkJe1Nipm
+	vj7Nv76PULg8AEXv5lCkgQOsoECjts4iTvQ==
+Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com [209.85.216.69])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4d8k6ktt28-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-serial@vger.kernel.org>; Wed, 01 Apr 2026 07:07:48 +0000 (GMT)
+Received: by mail-pj1-f69.google.com with SMTP id 98e67ed59e1d1-35641c14663so7617267a91.2
+        for <linux-serial@vger.kernel.org>; Wed, 01 Apr 2026 00:07:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1775027268; x=1775632068; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=22A+Sj5chUc1iyVqke9i/KwfXM4BVovOzihXMiqpqQI=;
+        b=Emo7kXVKHfGIvuTymLrps6hca5bKSk69ZSbyJji3VX34sayeIRytZ+p9rBWiC9NKbk
+         oGXfOE950RjgBhSRuAIje9GwipCh31heEg/xtCOq0TKC5/IWmzNDy5jbfiZqhpjXo/ZQ
+         Hzysh8o66NPEFYmYMDgz+1qQwhcgJm1n7yN1G826youEebOYb6PcF1qc/pizjXU4YkpR
+         EoUR/oQYiAquZzU1OYTQDlmEzGiE7GvwSOoiqG0lUPpwsKjOjTAZImQqQZWWHTo1q9pd
+         +JHN9a7VrboEM6TiQVuJuJZGDFJj9YkO65ptBCav8hZ3N71tb3H5aCUUaFA0iy44QXe8
+         eDVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1775027268; x=1775632068;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=22A+Sj5chUc1iyVqke9i/KwfXM4BVovOzihXMiqpqQI=;
+        b=c9RQoGS4JksOK7SZQUDKf7mUM5Dz6QAfAbp++QnjSHnNuqLf7OhVXFR+Yg98ZfOlYD
+         aMswEYgO+RFPA4YAfx8bmLydhPmiYu4/2xSYsDQB0/29Xzy3X4Z1VmG/HKe36/EO4VFG
+         DYIGc6TRIOq5hO8eZoJUs36I2DDtICLf6vj+sOZ6kHeHuLOhWzffZq+vLiSJbe7prcqx
+         aqkvuDJKHr4kp9WRF2l6GP5TtphMEpWvmprbXgKUtUGquY3j9QR+WkTSqIyBSK9zQBjY
+         oQfYpLkEtqssgBmEEM9sc/SSBUmeWBZ+RVY3Bjm2jPl75B4d3BWTcuA7iLEvLd0cklHq
+         OH1g==
+X-Forwarded-Encrypted: i=1; AJvYcCXlbO1H96jHli7xSAh2BWzDqizaNhfwAbOt/2PNBjk9Eeysw3h11RK0aQO9Z0UlKZwfzTNjZTC1MJjZLjY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwcYKsMR2Gwqpr3n4BGJISrXFL0Udy8MENWSuZeyc0jCYWoxgrA
+	cZtVheXYtNYSt7+FXPC/rDonwN7VeDYnZWzBAXBOGOu5FW3bhTKFtQ4E5ywafEJkRluS1yrR/vc
+	O8OBI0j1Fp8vHucCHPi6PJGMclgXmR1NTpHYlXsKW2stMZ4QjKBx/C6hiWlRFRY0TUZw=
+X-Gm-Gg: ATEYQzyqeWAjF3UbHx8h8Ts9ryI5ocSxPfKKLoxM0adYNw1uMB/eNelRBflWuySguG3
+	4yDlVkpjWHyk4jl2UEbacGA6l2HTYOcncaCTLe8JhT7r2t6iZmdSjsn8zM82wbLJAUm9tJpav/a
+	PgGGKiRWfF1Wv7GTALU9uokwuRQjK/lmFjH4xK5S0yvSMG7eEHTRW9nXDilYF3ZuYGrp9ydJEyg
+	wtO97RqgHO1q2JQLE6/DNYdqgTRrVFCEhFCXXKKZ0C4gcM+slx7zlt/PzcscF03mjJomSvHEQFm
+	L9JPrJ/wIq5nfzcIGDSxZjbnHkHUCSlRcqFUjp/UMvbsq1PxPcOlWHLrEmxeiA78WnVb6ia8/Iy
+	K23h7WlY6OYDuqUkq3JJqED4FBdJz4ji5NV5N
+X-Received: by 2002:a17:90b:33d2:b0:35b:e4d8:bb10 with SMTP id 98e67ed59e1d1-35dc6fae012mr2416061a91.14.1775027267910;
+        Wed, 01 Apr 2026 00:07:47 -0700 (PDT)
+X-Received: by 2002:a17:90b:33d2:b0:35b:e4d8:bb10 with SMTP id 98e67ed59e1d1-35dc6fae012mr2416032a91.14.1775027267407;
+        Wed, 01 Apr 2026 00:07:47 -0700 (PDT)
+Received: from work ([120.60.63.102])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-35dbe6e2fc9sm3956464a91.15.2026.04.01.00.07.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Apr 2026 00:07:47 -0700 (PDT)
+From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+To: brgl@kernel.org, robh@kernel.org
+Cc: linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        mani@kernel.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+Subject: [PATCH 0/3] Pwrseq/serdev fixes
+Date: Wed,  1 Apr 2026 12:37:32 +0530
+Message-ID: <20260401070735.107162-1-manivannan.sadhasivam@oss.qualcomm.com>
+X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Authority-Analysis: v=2.4 cv=bfJmkePB c=1 sm=1 tr=0 ts=69ccc444 cx=c_pps
+ a=vVfyC5vLCtgYJKYeQD43oA==:117 a=zTATW481NYPnotdwU90osA==:17
+ a=A5OVakUREuEA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=u7WPNUs3qKkmUXheDGA7:22 a=ZpdpYltYx_vBUK5n70dp:22 a=fsC5vgmolQPFgTpzX2QA:9
+ a=rl5im9kqc5Lf4LNbBjHf:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDAxMDA2MSBTYWx0ZWRfX7RbNSEjBuPvE
+ zvsxDpeZS+fna/Eb9zbnOYEtX2/SfJwMtg9/NR/razAuEjlHPZQtNyHVyHZY8No+biTd2iXqnEg
+ 287hoB2cGVHnJzvucWqSSqfCi/FAO2ZtEvxPjeAv+CGQnCvXv8zBntWVy5zUN6PAM5QmhAFUmnG
+ AKKvsr7EhJwxtPMHSTWmNyvdfGQDpOHEfPPNGqmAkh9Fn/+IBikp1rRSrHXZNcYIKgrMMkEVfp0
+ +esB2dgfn/nVTNJdnvVaJ2EDYWt8SvKj3Lvn93zp5H6bJA21W7djOT3tdrU6PEG/647i4Ji77Wg
+ FoDwzwwP94Nhn7hI4fAo3masTTSJhcbgjxp8cBYtN0degS5LacIOjGugeJYWE5n1pC5dnhj140+
+ TVP3IDd64K3/CZxrVgAs/cVvZ0DarDcWauL8tnZi9gHVjkcMDFe3F8y773naIaTV/KLb7RL69OY
+ bIEdCfJhKgGOtXKpm5g==
+X-Proofpoint-GUID: S4zwONuFfMY8YhC0PDxHVHMK6JrXJt3W
+X-Proofpoint-ORIG-GUID: S4zwONuFfMY8YhC0PDxHVHMK6JrXJt3W
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-04-01_02,2026-03-31_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ malwarescore=0 clxscore=1011 lowpriorityscore=0 adultscore=0 suspectscore=0
+ impostorscore=0 phishscore=0 bulkscore=0 priorityscore=1501 spamscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2603050001 definitions=main-2604010061
 
-Hi,
+Hi Bartosz,
 
-Responding to Sashiko:
+This series fixes build issues reported by kernel test robot on the recently
+merged M.2 Key E pwrseq series.
 
-https://sashiko.dev/#/patchset/20260331141502.6233-1-john.ogness%40linutronix.de
+Patches 2 and 3 can be squashed with offending commits, while patch 1 should be
+applied separately.
 
-On 2026-03-31, Sashiko wrote:
-> This commit addresses issues with hardware flow control on the 8250 console.
-> It modifies the driver and serial core to properly initialize CTS polling
-> and handle the 'r' console option.
->
->> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
->> index d2e2c5dfef99..4ca7cac6b8a7 100644
->> --- a/drivers/tty/serial/8250/8250_core.c
->> +++ b/drivers/tty/serial/8250/8250_core.c
->> @@ -716,6 +717,9 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
->>  	if (uart->port.type == PORT_8250_CIR)
->>  		return -ENODEV;
->>  
->> +	/* Preserve specified console hardware flow control. */
->> +	console_hwflow = uart->port.flags & UPF_CONS_FLOW;
->> +
->>  	if (uart->port.dev)
->>  		uart_remove_one_port(&serial8250_reg, &uart->port);
->>  
->> @@ -757,6 +761,9 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
->>  			goto err;
->>  	}
->>  
->> +	if (console_hwflow)
->> +		uart->port.flags |= UPF_CONS_FLOW;
->> +
->
-> Can this create a race window where console flow control is temporarily
-> disabled? The UPF_CONS_FLOW flag is saved, but uart->port.flags is
-> overwritten earlier in this function. If an asynchronous printk (such as
-> from an NMI) triggers serial8250_console_write() before the flag is
-> restored, it seems uart_console_hwflow_active() will evaluate to false,
-> bypassing CTS polling and potentially dropping characters.
+- Mani 
 
-Correct. I missed that serial8250_register_8250_port() is called after
-the console is already registered via univ8250_console_init(). I can
-remove the window with something like the following alternative change
-to serial8250_register_8250_port():
+Manivannan Sadhasivam (3):
+  serdev: Add missing stubs for serdev APIs when CONFIG_SERIAL_DEV_BUS
+    is not selected
+  serdev: Add CONFIG_SERIAL_DEV_BUS guard for
+    of_find_serdev_controller_by_node() API
+  power: sequencing: pcie-m2: Guard the helper functions making use of
+    PCI bus notifier
 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index a428e88938eb7..ff4c9972d4576 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -693,6 +693,7 @@ static void serial_8250_overrun_backoff_work(struct work_struct *work)
- int serial8250_register_8250_port(const struct uart_8250_port *up)
- {
- 	struct uart_8250_port *uart;
-+	upf_t console_hwflow;
- 	int ret;
- 
- 	if (up->port.uartclk == 0)
-@@ -716,6 +717,9 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
- 	if (uart->port.type == PORT_8250_CIR)
- 		return -ENODEV;
- 
-+	/* Preserve specified console hardware flow control. */
-+	console_hwflow = uart->port.flags & UPF_CONS_FLOW;
-+
- 	if (uart->port.dev)
- 		uart_remove_one_port(&serial8250_reg, &uart->port);
- 
-@@ -729,7 +733,7 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
- 	uart->port.fifosize     = up->port.fifosize;
- 	uart->port.regshift     = up->port.regshift;
- 	uart->port.iotype       = up->port.iotype;
--	uart->port.flags        = up->port.flags | UPF_BOOT_AUTOCONF;
-+	uart->port.flags        = up->port.flags | UPF_BOOT_AUTOCONF | console_hwflow;
- 	uart->bugs		= up->bugs;
- 	uart->port.mapbase      = up->port.mapbase;
- 	uart->port.mapsize      = up->port.mapsize;
+ drivers/power/sequencing/pwrseq-pcie-m2.c |  9 +++++
+ include/linux/serdev.h                    | 46 +++++++++++++++++------
+ 2 files changed, 43 insertions(+), 12 deletions(-)
 
->> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
->> index 328711b5df1a..71edac12473e 100644
->> --- a/drivers/tty/serial/8250/8250_port.c
->> +++ b/drivers/tty/serial/8250/8250_port.c
->> @@ -1988,7 +1988,7 @@ static void wait_for_xmitr(struct uart_8250_port *up, int bits)
->>  	wait_for_lsr(up, bits);
->>  
->>  	/* Wait up to 1s for flow control if necessary */
->> -	if (up->port.flags & UPF_CONS_FLOW) {
->> +	if (uart_console_hwflow_active(&up->port)) {
->>  		for (tmout = 1000000; tmout; tmout--) {
->>  			unsigned int msr = serial_in(up, UART_MSR);
->>  			up->msr_saved_flags |= msr & MSR_SAVE_FLAGS;
->>  			if (msr & UART_MSR_CTS)
->>  				break;
->>  			udelay(1);
->>  			touch_nmi_watchdog();
->>  		}
->>  	}
->>  }
->
-> Does this sequence of checks cause data loss when CTS is deasserted?
-> If wait_for_lsr() times out because the UART halts transmission, the holding
-> register remains full. When CTS is subsequently asserted, the loop breaks
-> and the function returns immediately without waiting for the holding register
-> to actually empty. Will the next character overwrite the current one before it
-> can be shifted out?
+-- 
+2.51.0
 
-Correct. My patch does not address errors in the CTS polling, but
-perhaps it should (since I am activating CTS polling). In this case I
-suppose one final wait_for_lsr() is appropriate. Something like:
-
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 88f5309a940e9..18bc5600df181 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1984,16 +1984,20 @@ static bool wait_for_lsr(struct uart_8250_port *up, int bits)
- static void wait_for_xmitr(struct uart_8250_port *up, int bits)
- {
- 	unsigned int tmout;
-+	bool lsr_timeout;
- 
--	wait_for_lsr(up, bits);
-+	lsr_timeout = wait_for_lsr(up, bits);
- 
- 	/* Wait up to 1s for flow control if necessary */
- 	if (uart_console_hwflow_active(&up->port)) {
- 		for (tmout = 1000000; tmout; tmout--) {
- 			unsigned int msr = serial_in(up, UART_MSR);
- 			up->msr_saved_flags |= msr & MSR_SAVE_FLAGS;
--			if (msr & UART_MSR_CTS)
-+			if (msr & UART_MSR_CTS) {
-+				if (lsr_timeout)
-+					wait_for_lsr(up, bits);
- 				break;
-+			}
- 			udelay(1);
- 			touch_nmi_watchdog();
- 		}
-
-> Also, could this polling loop cause a system stall?
-> If the remote peer deasserts CTS (for example, if a terminal is disconnected),
-> wait_for_xmitr() will poll for 1,000,000 microseconds. Since this is called
-> for every single character during a printk, a standard 50-character printk
-> could potentially stall the entire system for 50 seconds while holding the
-> console lock.
-
-Yes, this is a problem (for !PREEMPT_RT). But that is how console
-hardware flow control is implemented. It is out of scope of my patch to
-completely re-implement the CTS polling mechanism. AFAICT the other
-serial drivers that already support console hardware flow control have
-the same problem. Does this need to be resolved as a pre-requisite to my
-patch?
-
->> @@ -3421,6 +3427,10 @@ int serial8250_console_setup(struct uart_port *port, char *options, bool probe)
->>  	if (ret)
->>  		return ret;
->>  
->> +	/* Allow user-specified hardware flow control. */
->> +	if (flow == 'r')
->> +		port->flags |= UPF_CONS_FLOW;
->> +
->>  	if (port->dev)
->>  		pm_runtime_get_sync(port->dev);
->
-> Should this flag be cleared if flow != 'r'? By only setting the flag, it
-> appears hardware flow control cannot be dynamically disabled once it has
-> been enabled.
-
-The flag comes from a boot argument. Boot arguments never change during
-runtime. The hardware flow control can still by dynamically disabled by
-disabling CRTSCTS via termios. For example:
-
-# stty -F /dev/ttyS0 -crtscts
-
->> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
->> index 89cebdd27841..cce1fd728a1e 100644
->> --- a/drivers/tty/serial/serial_core.c
->> +++ b/drivers/tty/serial/serial_core.c
->> @@ -2235,6 +2235,15 @@ uart_set_options(struct uart_port *port, struct console *co,
->>  	port->mctrl |= TIOCM_DTR;
->>  
->>  	port->ops->set_termios(port, &termios, &dummy);
->> +
->> +	/*
->> +	 * If console hardware flow control was specified and is supported,
->> +	 * the related policy UPSTAT_CTS_ENABLE must be set to allow console
->> +	 * drivers to identify if CTS should be used for polling.
->> +	 */
->> +	if (flow == 'r' && (termios.c_cflag & CRTSCTS))
->> +		port->status |= UPSTAT_CTS_ENABLE;
->> +
->
-> Similar to the previous question, should UPSTAT_CTS_ENABLE be cleared
-> if flow != 'r' to prevent the state from leaking?
-
-This is a valid question. My patch is trying to be maximally
-conservative and only make changes to allow CTS polling to become active
-when 'r' is specified. For all other cases I do not want behavior
-changes. Particularly since this is a function within serial_core.
-
-> Additionally, does port->status need to be protected by the port lock here?
-> Since this is a read-modify-write operation, and uart_set_options() can
-> be invoked dynamically (like from kgdboc via tty_find_polling_driver()),
-> could this race with concurrent modifications to port->status?
-
-Yes. I was only considering the boot case where the tty layer is not yet
-active. :-/ It seems some drivers are only taking the port lock for
-@status updates.
-
-The comments in serial_core.h say "Must hold termios_rwsem, port mutex
-and port lock to change" but AFAICT the main @status modifiers are only
-taking the last 2 locks. Still, the port mutex cannot be taken in
-uart_set_options().
-
-I would really like to leverage the UPSTAT_CTS_ENABLE policy bit. I will
-need to think about this some more...
-
-John Ogness
