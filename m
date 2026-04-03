@@ -1,100 +1,58 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f70.google.com (mail-oa1-f70.google.com [209.85.160.70])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FED43BC670;
-	Fri,  3 Apr 2026 11:56:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 914F938F62E
+	for <linux-serial@vger.kernel.org>; Fri,  3 Apr 2026 13:20:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775217394; cv=none; b=CiCqEXpelk2Z9MPCPydpkZ02E18pKImDvMk4Zl4CWkQRtFvfEsCqWgLBdQ4x1A6CcU4/tCIEJpjsKpMrRre2g70O5mOjIga20WxuY0h+NamJxqB0PX0DbS4WnVeFIXirbLXMbVDGcMX3HBNdG6ww5BRc8SHZzBlXj2+QELMWC8w=
+	t=1775222414; cv=none; b=tAc3CIt29RHF26sg21X4HGWJ/2uzJGfjPALs5usPoPbT3rnTFXb5Oep017jstHpdEOrf0TqaXV0OjUVms6o3pxUouwgDNfDeQaQPPLPt2/CIoImlzh64GYVcWoJ1iJ1qwOGx9VoF37ybPqrXMCzrheCYDToWY3j/UHiAWa7jO2A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775217394; c=relaxed/simple;
-	bh=9l7YRnXiJeaUSputbifksPPi0XaXtllvN3GOhiFO6oo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Wg7/uRao3z49jGQ4yyvZCYtmTLUnIJfj7gug1FVM+ceuL2rKXOvkk4j+ekE0Zaz+7zdc4XBy0f+UFQnMOlBDyaJbSaYvsPWUyxEZXOcF/2ngPZ0ZI35vWaWrMWZPM0/dfAM/CDuax6muNAuxcD9YByyLC7sfEGYY9SYs0d9xr/s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eLufVd3z; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eLufVd3z"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E3A6C4CEF7;
-	Fri,  3 Apr 2026 11:56:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1775217393;
-	bh=9l7YRnXiJeaUSputbifksPPi0XaXtllvN3GOhiFO6oo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=eLufVd3zXy9jubkTC9dwkw2QYzwtvaWjru+m4ZdRkawSNi9+nrDNC6gUO4mGVS6/R
-	 gkBybMRFcG6wp9frSh1UrnRTFmFAIWeWQ6JjhxrMtKfvi/L8jlqp4jSjvl7EXEDDzs
-	 ZtNPjIHE0ChL+R5ThH0m0bg+INk64ahwnxdcJwFR/q6vQTBSBkwaCRWtjZT24m2vTQ
-	 7MxtkfclOy/wmKMdP417H2f+HSQV3sLIh5VH4IlCqqK1iv9HKmpZHIBbN8ejL1uHof
-	 f/augOwXmiWn/yGSuidAzKcnlp7ywm1cPXBOrcNHhnI6tgb8ARqohzJKj7eqgaBFB+
-	 mw/4aiwR3j/hQ==
-Date: Fri, 3 Apr 2026 12:56:24 +0100
-From: Mark Brown <broonie@kernel.org>
-To: Douglas Anderson <dianders@chromium.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"Rafael J . Wysocki" <rafael@kernel.org>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Alan Stern <stern@rowland.harvard.edu>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Leon Romanovsky <leon@kernel.org>,
-	Paul Burton <paul.burton@mips.com>,
-	Saravana Kannan <saravanak@kernel.org>,
-	Alexander Lobakin <aleksander.lobakin@intel.com>,
-	Eric Dumazet <edumazet@google.com>, Toshi Kani <toshi.kani@hp.com>,
-	Christoph Hellwig <hch@lst.de>,
-	Alexey Kardashevskiy <aik@ozlabs.ru>,
-	Johan Hovold <johan@kernel.org>, alexander.stein@ew.tq-group.com,
-	andrew@codeconstruct.com.au, andrew@lunn.ch,
-	andriy.shevchenko@linux.intel.com, astewart@tektelic.com,
-	bhelgaas@google.com, brgl@kernel.org, davem@davemloft.net,
-	devicetree@vger.kernel.org, driver-core@lists.linux.dev,
-	hkallweit1@gmail.com, jirislaby@kernel.org, joel@jms.id.au,
-	kees@kernel.org, kuba@kernel.org, lgirdwood@gmail.com,
-	linux-arm-kernel@lists.infradead.org, linux-aspeed@lists.ozlabs.org,
-	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-	linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-	linux@armlinux.org.uk, mani@kernel.org, netdev@vger.kernel.org,
-	pabeni@redhat.com, robh@kernel.org
-Subject: Re: [PATCH v3 8/9] driver core: Replace dev->of_node_reused with
- DEV_FLAG_OF_NODE_REUSED
-Message-ID: <fdbe1d8b-d323-414d-a705-cf2dbafe2fcc@sirena.org.uk>
-References: <20260403005005.30424-1-dianders@chromium.org>
- <20260402174925.v3.8.I806b8636cd3724f6cd1f5e199318ab8694472d90@changeid>
+	s=arc-20240116; t=1775222414; c=relaxed/simple;
+	bh=fHKEKHdPjoZhYVJRZoCAKKckDq3mCm+7VXF61UEPMbE=;
+	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:
+	 Content-Type; b=ksIWNtZSt92sACKcF37zaux66vSFnsC5suWrX4e3ON5dX3XU2v4oGNYT2GC9Q6Oa/AZBgP/Ktyr/YIpxScSTxQCnxzBrSYlE5CCcwXnbgBmeh/XPpWXVuUKFnrRDScDeZjfjTjxUbLtTvuZP5c61ACYVllwzeTML5WjPIQSO06k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.160.70
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oa1-f70.google.com with SMTP id 586e51a60fabf-40efa542b8aso3581749fac.2
+        for <linux-serial@vger.kernel.org>; Fri, 03 Apr 2026 06:20:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1775222412; x=1775827212;
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=fHKEKHdPjoZhYVJRZoCAKKckDq3mCm+7VXF61UEPMbE=;
+        b=LQpmZ/o6ZJ5mkUKoVHNWpxB36M2NbmXgdzR9EyxBgW+6pMCc7UbFs57d8oifwr54/9
+         BZRgGP6xTbX3s5dGRjJOjLw2v8eknVPnLTB+VOaER/dP2dBDFI/RS6yH/3mW2AbmPBrC
+         JPpzHcCG6PH7staFJAVn3/7MR4HES6Uam+ci6x+qaIRPuJG6D/SEeFbB5hHkWovEBgIB
+         tO8qTpt1JXdjHdvYwH+WhKeyVwCBSYl7bXRQweDiyWRnrlmnxqhb2YrZb+zUbm4UFRhD
+         Ae7SgfBQFztqVe5vhDZhwVFhlJP3WYMj5YNAQml1TBBHtLRmV1mBLt7zNu2QX/RwMyeI
+         IeEg==
+X-Forwarded-Encrypted: i=1; AJvYcCVVvEwEB9cjLwzEz+SyD90KW/zNca/3si9uKAho/ipKsLBgSqq02WSMubEMu/8Y8Uhz7gTLkdIM+Nfl4ig=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwL0RNOzv5NDLWwOraWfnwMZuIL4emYdsnw6ltA4BQu3c1nfZUA
+	qgKYCLyqNfyNSLkGZ7YnwZqlciyl0sW0ihTFyrE4MXEDIIfoUIxaMXRFHwQ3zSJQGvGvNIonv5p
+	MqjaC4H5duRgn7YYI7fnvppXzhuy8L8WWAasXdW3N1NJuT+/OBvezBaGahGM=
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="7NZIk4CoO0re4Kx0"
-Content-Disposition: inline
-In-Reply-To: <20260402174925.v3.8.I806b8636cd3724f6cd1f5e199318ab8694472d90@changeid>
-X-Cookie: The Korean War must have been fun.
+X-Received: by 2002:a4a:ee87:0:b0:67f:aafb:ca86 with SMTP id
+ 006d021491bc7-6822024dee3mr1409608eaf.49.1775222412566; Fri, 03 Apr 2026
+ 06:20:12 -0700 (PDT)
+Date: Fri, 03 Apr 2026 06:20:12 -0700
+In-Reply-To: <6985ea97.050a0220.3b3015.003e.GAE@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <69cfbe8c.050a0220.182279.0011.GAE@google.com>
+Subject: Re: [moderation] KCSAN: data-race in n_tty_flush_buffer /
+ n_tty_lookahead_flow_ctrl (9)
+From: syzbot <syzbot+80806cf7508e92c7cc86@syzkaller.appspotmail.com>
+To: andy.shevchenko@gmail.com, gregkh@linuxfoundation.org, 
+	ilpo.jarvinen@linux.intel.com, jirislaby@kernel.org, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	osama.abdelkader@gmail.com, syzkaller-upstream-moderation@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 
-
---7NZIk4CoO0re4Kx0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-On Thu, Apr 02, 2026 at 05:49:54PM -0700, Douglas Anderson wrote:
-> In C, bitfields are not necessarily safe to modify from multiple
-> threads without locking. Switch "of_node_reused" over to the "flags"
-> field so modifications are safe.
-
-Acked-by: Mark Brown <broonie@kernel.org>
-
---7NZIk4CoO0re4Kx0
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmnPqucACgkQJNaLcl1U
-h9BRKQf+LiK4wJzBJvOcF8tPspBBv5slh1Rv07RAYfhsMajrfvb91fBup9erBnC7
-uop2lhbeef3E4GYUNM3af2BFUVTr6Q2yQsCgV5p3nED9j4EZmCsCSp3X0Hbcc+S1
-RmxEf3FESw5jl5dAifyRzEtHhqMmQoiJiWHstiX08tmRvb230IM4SoMj9/XTx/hJ
-qZLOPBhvbwfqLgqtzR6YbvKHy+eG/muzoWEC6sNgi5JBsNQEeCY0Dp4nSfxbN1i6
-VGMAgiL64FDOsOQ3BG7hFoQ0OFAsOB2CiaPDKh4qopTzS+avykiGQvxzCn4XfBfo
-8ZM+Nrnu/VYKm5P6K3uIcHF11UpYhg==
-=Rocu
------END PGP SIGNATURE-----
-
---7NZIk4CoO0re4Kx0--
+Auto-closing this bug as obsolete.
+Crashes did not happen for a while, no reproducer and no activity.
