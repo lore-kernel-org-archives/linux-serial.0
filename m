@@ -1,89 +1,63 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EB3123D7FF;
-	Sun,  5 Apr 2026 12:02:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DA943264F3;
+	Sun,  5 Apr 2026 17:14:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775390570; cv=none; b=Tiv4Eql/vzwchH3UTdgjl1SiHbDap3dYlXhYMNI/tFwCJCY/vb82+1mMxpBdtXZh96IXK7CI8i1zC1mhK7lPxfvXzFWn5OQDFtK4Jj96el+FY2dTqSfb5HsuUjQpCbZwZL9X1pXOMsGgRi3CyF8rOidKG75qN3tNGqjWPM+Qg9A=
+	t=1775409246; cv=none; b=ioWsxafgRhEIYPSKhUp3yJxFJLBuo67TU7dTBcsmIHrlTDT3p6USVu3bjS1Qwd2bJfCKCP4WDr6UpDZgIFAjHfEwkdyQ0Svay/pAMaAnmfg60tsDntQ7TUixVImbqKDkdSiK/b8zWH48pihAdzlT1dp1Z7VUk+elPxvgn1r9kbw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775390570; c=relaxed/simple;
-	bh=VwXIPBbp0EIzPNtpB2Kh8OUpJCymQVJw7CRWHLQnyH0=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:To:From:
-	 References:In-Reply-To; b=RqDOFt27ZNxrFENXuruO+Ekqfojuw3AoOrjtsYPmZIHOmk9qOLWGNFrMpIG3Vz6aL1uKf2naHhamaRhJoWZ0RLHscqargu0pP7lI9wWRnaY4f9EEfzApV6CUlMILuf6AuBUOk5Gyz/a690ghjPilDRrArpP1zg9nYqi6JLK+xOI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qQwwCeNj; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1775409246; c=relaxed/simple;
+	bh=tynozaNxpqh0bM9BN3Xjj667A1Jh08s1atZLTmqfScc=;
+	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=HOnA8h328mcnuJpw/KhWjbSQ9fMpd0mr0aFIaST2AyQ4zh/o2vCWAanzt0rLmIf7A9N8QYnQUfjtLB1Ef/OL9arP2hhde/GGT4kEUdLsdUhWkpkiibmktsUoZOIep1bDhITLfl77gORh5iM8kPkhf5XO+EdtfmMpfyUWq6Vg8RE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Wotd/FFU; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qQwwCeNj"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17E64C19424;
-	Sun,  5 Apr 2026 12:02:34 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Wotd/FFU"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F7C9C116C6;
+	Sun,  5 Apr 2026 17:14:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1775390569;
-	bh=VwXIPBbp0EIzPNtpB2Kh8OUpJCymQVJw7CRWHLQnyH0=;
-	h=Date:Subject:Cc:To:From:References:In-Reply-To:From;
-	b=qQwwCeNj+saJT57yAG47jboL8X78w4/j6WpBJ1RZ4sp8PWbMz7XsL9EDbWtj55Eiv
-	 28aGEHxX84zqCSRKzt5WxDYhK2mKne18FSkXEYY++OZ6+IBYaBKFZkA86MS9bLh9Oc
-	 BYyORiDakrz6RnLk4LVZHvUx8P1LQpa7pCp8fHnA1nA9F6ZvrAlepEALLMXhhTHNG5
-	 7JaVWay0RJB3NcEhdmqtS8VF3DnUGPXm4QkCgawXIaUT/QfRxlFCiXeEIfDZt6r6xg
-	 I3uj6fM0ROLbqxk5+qZJNhPISl9Q1iNQvp6vF94UFTOtVMPHy01bKsqbxAmGzThrrM
-	 mtqWeRGNpMg3w==
+	s=k20201202; t=1775409246;
+	bh=tynozaNxpqh0bM9BN3Xjj667A1Jh08s1atZLTmqfScc=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+	b=Wotd/FFUNjnvZDM2Seb1B5B/pDFku61lnVoJBgXtWW3iVrXVEYd+9w8WP6vvPJk32
+	 OT+xPIySWYX2RgYvyAYxmQRgd18sEELBzYYOqv9DZIn2WbM0Nz7GwUdWgbDlbu77cv
+	 GtbTEcWdaaFel6dWCprvU4PegRIhXikK3QywgDncLJQvOd6r4hWI9ZRZ7RQjgmSAkf
+	 Stb7qCcBtp/m0w9yvzrLHszc5ctKqzy7p3tXt/XqRTJWlmyft3xC1f9ViT0YcNXESS
+	 gRH0M6NhP/1zRSgm5OuYQ7BlsGVbjG371JyFHBDkpJ2YVyz0hX/xbLMSGV5/9xSGgw
+	 wOTpV/IEima0w==
+Received: from [10.30.226.235] (localhost [IPv6:::1])
+	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 3FC803809A22;
+	Sun,  5 Apr 2026 17:13:47 +0000 (UTC)
+Subject: Re: [GIT PULL] TTY driver fixes for 7.0-rc7
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <adId31g54PFsRJ_s@kroah.com>
+References: <adId31g54PFsRJ_s@kroah.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <adId31g54PFsRJ_s@kroah.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-7.0-rc7
+X-PR-Tracked-Commit-Id: 3ddbea7542ae529c1a88ef9a8b1ce169126211f6
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 7a60c79bd0547adba3cefde40ced4a1f376305be
+Message-Id: <177540922588.1998626.13511356825434672222.pr-tracker-bot@kernel.org>
+Date: Sun, 05 Apr 2026 17:13:45 +0000
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Sun, 05 Apr 2026 14:02:33 +0200
-Message-Id: <DHL7FCNQ20PA.2K03T8MNSO9TT@kernel.org>
-Subject: Re: [PATCH v4 0/9] driver core: Fix some race conditions
-Cc: "Douglas Anderson" <dianders@chromium.org>, "Rafael J . Wysocki"
- <rafael@kernel.org>, "Alan Stern" <stern@rowland.harvard.edu>, "Saravana
- Kannan" <saravanak@kernel.org>, "Christoph Hellwig" <hch@lst.de>, "Eric
- Dumazet" <edumazet@google.com>, "Johan Hovold" <johan@kernel.org>, "Leon
- Romanovsky" <leon@kernel.org>, "Alexander Lobakin"
- <aleksander.lobakin@intel.com>, "Alexey Kardashevskiy" <aik@ozlabs.ru>,
- "Robin Murphy" <robin.murphy@arm.com>, "Andrew Morton"
- <akpm@linux-foundation.org>, <Frank.Li@kernel.org>, "Jason Gunthorpe"
- <jgg@ziepe.ca>, <alex@ghiti.fr>, <alexander.stein@ew.tq-group.com>,
- <andre.przywara@arm.com>, <andrew@codeconstruct.com.au>, <andrew@lunn.ch>,
- <andriy.shevchenko@linux.intel.com>, <aou@eecs.berkeley.edu>,
- <ardb@kernel.org>, <bhelgaas@google.com>, <brgl@kernel.org>,
- <broonie@kernel.org>, <catalin.marinas@arm.com>, <chleroy@kernel.org>,
- <davem@davemloft.net>, <david@kernel.org>, <devicetree@vger.kernel.org>,
- <dmaengine@vger.kernel.org>, <driver-core@lists.linux.dev>,
- <gbatra@linux.ibm.com>, <gregory.clement@bootlin.com>,
- <hkallweit1@gmail.com>, <iommu@lists.linux.dev>, <jirislaby@kernel.org>,
- <joel@jms.id.au>, <joro@8bytes.org>, <kees@kernel.org>,
- <kevin.brodsky@arm.com>, <kuba@kernel.org>, <lenb@kernel.org>,
- <lgirdwood@gmail.com>, <linux-acpi@vger.kernel.org>,
- <linux-arm-kernel@lists.infradead.org>, <linux-aspeed@lists.ozlabs.org>,
- <linux-cxl@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
- <linux-mips@vger.kernel.org>, <linux-mm@kvack.org>,
- <linux-pci@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
- <linux-serial@vger.kernel.org>, <linux-snps-arc@lists.infradead.org>,
- <linux-usb@vger.kernel.org>, <linux@armlinux.org.uk>,
- <linuxppc-dev@lists.ozlabs.org>, <m.szyprowski@samsung.com>,
- <maddy@linux.ibm.com>, <mani@kernel.org>, <maz@kernel.org>,
- <miko.lenczewski@arm.com>, <mpe@ellerman.id.au>, <netdev@vger.kernel.org>,
- <npiggin@gmail.com>, <osalvador@suse.de>, <oupton@kernel.org>,
- <pabeni@redhat.com>, <palmer@dabbelt.com>, <peter.ujfalusi@gmail.com>,
- <peterz@infradead.org>, <pjw@kernel.org>, <robh@kernel.org>,
- <sebastian.hesselbarth@gmail.com>, <tglx@kernel.org>,
- <tsbogend@alpha.franken.de>, <vgupta@kernel.org>, <vkoul@kernel.org>,
- <will@kernel.org>, <willy@infradead.org>, <yangyicong@hisilicon.com>,
- <yeoreum.yun@arm.com>
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-From: "Danilo Krummrich" <dakr@kernel.org>
-References: <20260404000644.522677-1-dianders@chromium.org>
- <2026040539-sponge-publisher-2b42@gregkh>
-In-Reply-To: <2026040539-sponge-publisher-2b42@gregkh>
 
-On Sun Apr 5, 2026 at 7:27 AM CEST, Greg Kroah-Hartman wrote:
-> Anyway, this looks great, unless there are any objections, other than
-> the "needs to be undefined", which a follow-on patch can handle, I'll
-> queue them up next week for 7.1-rc1.
+The pull request you sent on Sun, 5 Apr 2026 10:31:27 +0200:
 
-Sounds good, for the series:
+> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-7.0-rc7
 
-Reviewed-by: Danilo Krummrich <dakr@kernel.org>
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/7a60c79bd0547adba3cefde40ced4a1f376305be
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
