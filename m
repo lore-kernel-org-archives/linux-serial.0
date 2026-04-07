@@ -1,132 +1,187 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26F5538E5D7;
-	Tue,  7 Apr 2026 09:07:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A3BE38B7AA
+	for <linux-serial@vger.kernel.org>; Tue,  7 Apr 2026 09:26:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775552824; cv=none; b=Fjqn5F3tvwdbpjlztTpPGuT06IHr/SKijnLgT5w9K/of2l5+7WHfUT8hj9LxMZMBmxvVbSwBDLoFrcKSGiJ0dH4492GZ01nhs8+FDajWkfnWKOUjdUxG+/NTHI4mo+G7B1NO3T+W7/EQp7NS8geTaDY0P1UhIzUlbro5/6ItaSw=
+	t=1775553964; cv=none; b=I5wLOjVlkOSRxJz4oQkkB48//pf7sZUnpfqFUt3HLeIAamHuFPDHK8RO9bFi+Oo7WNZkZRp6h7WgRVvJ4y5CGFV82jQvZ6mivONBzVpSIophh8jNtOvclNM6AEjgBAtYedPJXK7Oe6MJ1tIO9j+l09RRWlJqZwO7MRKiZp3u0v8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775552824; c=relaxed/simple;
-	bh=4NERHreOtOHtxPxrg9hJfCL0sb0Gtcuiwi8WJRXUxIs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GFtxhR/QJQxqgQ2dNubztVIMgRaO1lz/GLGxP1nkGZHOW58RH2sCnk5ZZ4cm5Ct4HgZpTnd5hVEUF5Ry1vat0sl3IoB/Kp2zL9j9kI9jpsY59u84CzShyeu1zkgkktC64z1TZ7Ec9Cl0XeL8RVufip268nRANd0iDKFDP89Hcyk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=stgpB9oZ; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1775553964; c=relaxed/simple;
+	bh=Tupz15X62z9wMWLvPlc7XFJflAo7Ct6U9BlMg/oUkQY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=UBaKzu2dSSuh10ZHI9zaUIaEqvI3swQCSFu6VnH8h9bwbaQg8F6XRrI4hPpFHYC6VFF6XpAd2oPEh6Iy6PzG9FcJ2SrUFyyYQFCDCho3xXoUpLyoT+wWlSpLSbpIDG3MX0a73R3+3qMs65LUXrPI1CNWyKoeJyI9SbJ/6cstYQ4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=H+41Ete4; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=Az44Td5M; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=H+41Ete4; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=Az44Td5M; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="stgpB9oZ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A41DDC116C6;
-	Tue,  7 Apr 2026 09:07:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1775552823;
-	bh=4NERHreOtOHtxPxrg9hJfCL0sb0Gtcuiwi8WJRXUxIs=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=stgpB9oZ+np9GYARlzUA9ZMs/QvN4KIBqwa1qRYDAwyfYPqyHDzuHCzXPSnlyzgtg
-	 EAHXWcSv4E0rrXHIwU/F9B+i1mivT8/hiuEewvUz63bUM7ytEH5SQzK2thj+lYKQTs
-	 o2tisu8aVFvQIZG+/d8iAyn9lfuaOQqIZdUeq7k3DZiLr0hgqrYjSRZ2PwzXfNPDL4
-	 eowKFIJwq3yekc5lX5NoSnG1UiqaPzINQrHDk6adQBuAm9YxWQDDa+YyftbK/zR8JS
-	 kxyiSzhZcnKMojNpglf1PuMqJl8hSj8Ux7HAXRlz/T13loQq/CWQfn1V+eHwkI8KMb
-	 5kNMKJjzp6Bvg==
-Received: from johan by xi.lan with local (Exim 4.98.2)
-	(envelope-from <johan@kernel.org>)
-	id 1wA2Oi-0000000AjGf-2EeN;
-	Tue, 07 Apr 2026 11:07:00 +0200
-Date: Tue, 7 Apr 2026 11:07:00 +0200
-From: Johan Hovold <johan@kernel.org>
-To: Douglas Anderson <dianders@chromium.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"Rafael J . Wysocki" <rafael@kernel.org>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Alan Stern <stern@rowland.harvard.edu>,
-	Alexey Kardashevskiy <aik@ozlabs.ru>,
-	Eric Dumazet <edumazet@google.com>,
-	Leon Romanovsky <leon@kernel.org>, Christoph Hellwig <hch@lst.de>,
-	Robin Murphy <robin.murphy@arm.com>, maz@kernel.org,
-	Alexander Lobakin <aleksander.lobakin@intel.com>,
-	Saravana Kannan <saravanak@kernel.org>,
-	Mark Brown <broonie@kernel.org>, alexander.stein@ew.tq-group.com,
-	andrew@codeconstruct.com.au, andrew@lunn.ch,
-	andriy.shevchenko@linux.intel.com, astewart@tektelic.com,
-	bhelgaas@google.com, brgl@kernel.org, davem@davemloft.net,
-	devicetree@vger.kernel.org, driver-core@lists.linux.dev,
-	hkallweit1@gmail.com, jirislaby@kernel.org, joel@jms.id.au,
-	kees@kernel.org, kuba@kernel.org, lgirdwood@gmail.com,
-	linux-arm-kernel@lists.infradead.org, linux-aspeed@lists.ozlabs.org,
-	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-	linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-	linux@armlinux.org.uk, mani@kernel.org, netdev@vger.kernel.org,
-	pabeni@redhat.com, robh@kernel.org
-Subject: Re: [PATCH v5 8/9] driver core: Replace dev->of_node_reused with
- dev_of_node_reused()
-Message-ID: <adTJNMhsghRs3qwy@hovoldconsulting.com>
-References: <20260406232444.3117516-1-dianders@chromium.org>
- <20260406162231.v5.8.I806b8636cd3724f6cd1f5e199318ab8694472d90@changeid>
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="H+41Ete4";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="Az44Td5M";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="H+41Ete4";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="Az44Td5M"
+Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 78CB14E39F;
+	Tue,  7 Apr 2026 09:26:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1775553960; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=UZZh6m9eAmL3QEIgOTi7qJiHlPvHfejMaPcq+0us21c=;
+	b=H+41Ete45hQJlmJqNyrQlRqqqEFoWT765dcABGv7TKU5VSh5DkSKKd44ggwbOTGQ7SwVtj
+	yKfA/IsmQk/1XDafv7q5uokNcQNvULd9lQXlqhFuNKq+YGVY6RkzVT+omlQ9ZfAhlBYBRE
+	DvZ7Gyfq8bpfv9I8sAo0rGgbumSGsaw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1775553960;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=UZZh6m9eAmL3QEIgOTi7qJiHlPvHfejMaPcq+0us21c=;
+	b=Az44Td5M68XkHubthspa98uLBONNf8XXp86rsd3Q7mfUMhQUbouo3qnoctX1zQxO6q56+7
+	gKIBRqSBcI7WeQAQ==
+Authentication-Results: smtp-out1.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1775553960; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=UZZh6m9eAmL3QEIgOTi7qJiHlPvHfejMaPcq+0us21c=;
+	b=H+41Ete45hQJlmJqNyrQlRqqqEFoWT765dcABGv7TKU5VSh5DkSKKd44ggwbOTGQ7SwVtj
+	yKfA/IsmQk/1XDafv7q5uokNcQNvULd9lQXlqhFuNKq+YGVY6RkzVT+omlQ9ZfAhlBYBRE
+	DvZ7Gyfq8bpfv9I8sAo0rGgbumSGsaw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1775553960;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=UZZh6m9eAmL3QEIgOTi7qJiHlPvHfejMaPcq+0us21c=;
+	b=Az44Td5M68XkHubthspa98uLBONNf8XXp86rsd3Q7mfUMhQUbouo3qnoctX1zQxO6q56+7
+	gKIBRqSBcI7WeQAQ==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 319974A0B1;
+	Tue,  7 Apr 2026 09:26:00 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id hHTrCqjN1GmDVwAAD6G6ig
+	(envelope-from <tzimmermann@suse.de>); Tue, 07 Apr 2026 09:26:00 +0000
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: deller@gmx.de,
+	gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	geert@linux-m68k.org,
+	simona@ffwll.ch,
+	sam@ravnborg.org
+Cc: linux-fbdev@vger.kernel.org,
+	dri-devel@lists.freedesktop.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Thomas Zimmermann <tzimmermann@suse.de>
+Subject: [PATCH v2 00/10] fbcon,fonts: Refactor framebuffer console rotation
+Date: Tue,  7 Apr 2026 11:23:11 +0200
+Message-ID: <20260407092555.58816-1-tzimmermann@suse.de>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260406162231.v5.8.I806b8636cd3724f6cd1f5e199318ab8694472d90@changeid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spamd-Result: default: False [-3.30 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	MID_CONTAINS_FROM(1.00)[];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	FREEMAIL_TO(0.00)[gmx.de,linuxfoundation.org,kernel.org,linux-m68k.org,ffwll.ch,ravnborg.org];
+	FUZZY_RATELIMITED(0.00)[rspamd.com];
+	FREEMAIL_ENVRCPT(0.00)[gmx.de];
+	ARC_NA(0.00)[];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	RCPT_COUNT_SEVEN(0.00)[11];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	TO_DN_SOME(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	RCVD_TLS_ALL(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,suse.de:mid]
+X-Spam-Flag: NO
+X-Spam-Score: -3.30
+X-Spam-Level: 
 
-On Mon, Apr 06, 2026 at 04:23:01PM -0700, Doug Anderson wrote:
-> In C, bitfields are not necessarily safe to modify from multiple
-> threads without locking. Switch "of_node_reused" over to the "flags"
-> field so modifications are safe.
+Refactor the framebuffer console rotation into individual components
+for glyphs, fonts and the overall fbcon state. Right now this is mixed
+up in fbcon_rotate.{c,h}. Also build cursor rotation on top of the new
+interfaces.
 
-This flag is only set before registering a device with driver core so
-there is no issue using the existing bitfield here (with the caveat that
-PCI pwrctrl may have gotten that wrong). I haven't checked the other
-flags, but I assume most of them work the same way.
+Start with an OOB fix in patch 1. If buffer allocation fails, fbcon
+currently uses a too-small glyph buffer for output. Avoid that.
 
-But apart from the commit message being misleading, switching to using
-atomic ops and accessors for consistency is fine.
+Patches 2 to 4 make a number of small improvements to the font library
+and its callers.
 
-> Cc: Johan Hovold <johan@kernel.org>
-> Acked-by: Mark Brown <broonie@kernel.org>
-> Reviewed-by: Rafael J. Wysocki (Intel) <rafael@kernel.org>
-> Reviewed-by: Danilo Krummrich <dakr@kernel.org>
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
-> ---
-> Not fixing any known bugs; problem is theoretical and found by code
-> inspection. Change is done somewhat manually and only lightly tested
-> (mostly compile-time tested).
- 
-> diff --git a/drivers/regulator/bq257xx-regulator.c b/drivers/regulator/bq257xx-regulator.c
-> index dab8f1ab4450..40e0f1a7ae81 100644
-> --- a/drivers/regulator/bq257xx-regulator.c
-> +++ b/drivers/regulator/bq257xx-regulator.c
-> @@ -143,7 +143,7 @@ static int bq257xx_regulator_probe(struct platform_device *pdev)
->  	struct regulator_config cfg = {};
->  
->  	pdev->dev.of_node = pdev->dev.parent->of_node;
-> -	pdev->dev.of_node_reused = true;
-> +	dev_set_of_node_reused(&pdev->dev);
->  
->  	pdata = devm_kzalloc(&pdev->dev, sizeof(struct bq257xx_reg_data), GFP_KERNEL);
->  	if (!pdata)
-> diff --git a/drivers/regulator/rk808-regulator.c b/drivers/regulator/rk808-regulator.c
-> index e66408f23bb6..8297d31cde9f 100644
-> --- a/drivers/regulator/rk808-regulator.c
-> +++ b/drivers/regulator/rk808-regulator.c
-> @@ -2115,7 +2115,7 @@ static int rk808_regulator_probe(struct platform_device *pdev)
->  	int ret, i, nregulators;
->  
->  	pdev->dev.of_node = pdev->dev.parent->of_node;
-> -	pdev->dev.of_node_reused = true;
-> +	dev_set_of_node_reused(&pdev->dev);
->  
->  	regmap = dev_get_regmap(pdev->dev.parent, NULL);
->  	if (!regmap)
+Patches 5 to 8 refactor the font rotation. Fbcon rotation rotates each
+individual glyph in a font buffer and uses the rotated buffer's glyphs
+for output. The result looks like the console buffer has been rotated
+as a whole. Split this into helpers that rotate individual glyphs and
+a helper that rotates the font buffer of these. Then reimplement fbcon
+rotation on top. Document the public font helpers.
 
-These two uses are broken currently though and should be using
-device_set_of_node_from_dev() so that an extra reference is taken to
-balance the one dropped by the platform bus code.
+Patch 9 rebuilds cursor rotation on top of the new glyph helpers. The
+fbcon cursor is itself a glyph that has to be rotated in sync with the
+font.
 
-I'll send two fixes to Mark, any merge conflict should be trivial to
-fixup.
+Patch 10 moves all state of fbcon rotation into a single place and makes
+it a build-time conditional.
 
-Reviewed-by: Johan Hovold <johan@kernel.org>
+Tested with fbcon under bochs on Qemu.
 
-Johan
+Built upon the fbcon changes at [1].
+
+v2:
+- fix sparse truncated-bits warning
+- improve font sorting in Makefile
+- fix typos
+
+[1] https://lore.kernel.org/linux-fbdev/20260309141723.137364-1-tzimmermann@suse.de/
+
+Thomas Zimmermann (10):
+  fbcon: Avoid OOB font access if console rotation fails
+  vt: Implement helpers for struct vc_font in source file
+  lib/fonts: Provide helpers for calculating glyph pitch and size
+  lib/fonts: Clean up Makefile
+  lib/fonts: Implement glyph rotation
+  lib/fonts: Refactor glyph-pattern helpers
+  lib/fonts: Refactor glyph-rotation helpers
+  lib/fonts: Implement font rotation
+  fbcon: Fill cursor mask in helper function
+  fbcon: Put font-rotation state into separate struct
+
+ drivers/tty/vt/vt.c                     |  34 +++
+ drivers/video/fbdev/core/bitblit.c      |  35 +--
+ drivers/video/fbdev/core/fbcon.c        |  48 ++++-
+ drivers/video/fbdev/core/fbcon.h        |  14 +-
+ drivers/video/fbdev/core/fbcon_ccw.c    |  70 ++----
+ drivers/video/fbdev/core/fbcon_cw.c     |  70 ++----
+ drivers/video/fbdev/core/fbcon_rotate.c |  88 ++------
+ drivers/video/fbdev/core/fbcon_rotate.h |  71 ------
+ drivers/video/fbdev/core/fbcon_ud.c     |  67 ++----
+ include/linux/console_struct.h          |  30 +--
+ include/linux/font.h                    |  51 +++++
+ lib/fonts/Makefile                      |  36 ++--
+ lib/fonts/font_rotate.c                 | 275 ++++++++++++++++++++++++
+ lib/fonts/fonts.c                       |   2 +-
+ 14 files changed, 525 insertions(+), 366 deletions(-)
+ create mode 100644 lib/fonts/font_rotate.c
+
+-- 
+2.53.0
+
