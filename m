@@ -1,100 +1,116 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23C5F37B02E;
-	Tue,  7 Apr 2026 22:58:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from zg8tmja5ljk3lje4mi4ymjia.icoremail.net (zg8tmja5ljk3lje4mi4ymjia.icoremail.net [209.97.182.222])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1756137B03A;
+	Wed,  8 Apr 2026 07:24:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.97.182.222
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775602726; cv=none; b=e+sI2uhKu2i/P7Z5BZNR0yR/oeOxB+SX6vGPcCc2bzdHMwLrxYb134U5MV5ks5sSOKOnxNuBvjKM2PZXlj17Hrd9wr3LSg8/AOf/19w/vl48l5Sk+QGebZiNIB1qDbU5mJaAh8JJk1uX5Zrh5KRNP0dPUFZU+81PZ0vdA9pqsbw=
+	t=1775633091; cv=none; b=F+xP4TWObk26g2Dq1tH+SXPfnJEZ4Yf+Pc7izaHV9ppH0xfEiBl5wJP+Z8PMTMYkLre9BzRQbR54A5ZJXEYzDVB/5dGTX+gg97rjzTr8wogQuaR85mDl1z9fXT0LojJU25cpCjZHL1qmCf2MHy4p553FHZoNawREYsxWlnzzwMg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775602726; c=relaxed/simple;
-	bh=ZxMhQkn/NMJTsfUq+eNI5wRqTDBwCQBg1cjTyGaGSzA=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:To:From:
-	 References:In-Reply-To; b=CAFvIFUcUCh0VIHYGjMrdQEU7mL056z+zfQGxWKN+y2EY4XuEQ+udsZzjBcgQZOMoNA+EQ4UDQruMAtfVoplvx+xf66OTsQffPw2Syll1ZFr/yBHxAY6sBNTcBP4WY2reidLOzXk6Re7rfFdF3Ro6CnEnIxr81bH/Ngj88si6qA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YxT4H0gM; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YxT4H0gM"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77C69C116C6;
-	Tue,  7 Apr 2026 22:58:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1775602726;
-	bh=ZxMhQkn/NMJTsfUq+eNI5wRqTDBwCQBg1cjTyGaGSzA=;
-	h=Date:Subject:Cc:To:From:References:In-Reply-To:From;
-	b=YxT4H0gMU1uiOeHwbtOxxGkfFWJBaCzthqg03Sftf8l9d186Y09INkfJ8VCpcsjUT
-	 Qfd/Qlw+XjxQGpsD/+wtJtFtyh3etr3/mtV9qhSmixByvSXfzBB7nBSEJNPsodmdHd
-	 n6aWnXLqcu6DDQCkFID7N0ab2dedIpF0ftmNXCcvehsYTzafVVvpTSGtJI0Yt78qAh
-	 7zcrBzbK4e2mGEgKbxfT4/RQOcj3aPhgKqv9IwN+ABisbMsvBq2hQAvVVGI9l26vIJ
-	 NOji8KIk0pikMh4DCWmZrmRQsTJnp7fjTB24k9B9hx+3b4Laf7gnEUw1IEsuOG28xo
-	 +wM+h43SmOleg==
+	s=arc-20240116; t=1775633091; c=relaxed/simple;
+	bh=ugSiQmeeShsf9MP1HOVc66DgYUbnxxgKkUUksMuObP4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=JTmHbWFXeZ2pqASg6aFI/9ImJQSZ6I3uVv3UomRZPy9XhuYwbAZE+FjA4DnYHGFWUJQ9FqyJh9WIDcOD5c8l6hELsmDwtP7gl/rXgi8moG1MClquA9QOCWKXWM2gY4patlfDmJoPWtMo7+D69TkT6tTY7O5wbPJSnm8HVoQp/wQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bjtu.edu.cn; spf=pass smtp.mailfrom=bjtu.edu.cn; arc=none smtp.client-ip=209.97.182.222
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bjtu.edu.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bjtu.edu.cn
+Received: from DESKTOP-3MH7KM4 (unknown [223.104.41.120])
+	by front_03 (Coremail) with SMTP id JTzCeUDwF7moAtZpRk6jAA--.53366S2;
+	Wed, 08 Apr 2026 15:24:25 +0800 (CST)
+From: Zhaoyang Yu <23120469@bjtu.edu.cn>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org
+Cc: andriy.shevchenko@linux.intel.com,
+	kees@kernel.org,
+	fourier.thomas@gmail.com,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	gszhai@bjtu.edu.cn,
+	2426767509@qq.com
+Subject: [PATCH] tty: serial: pch_uart: add check for dma_alloc_coherent()
+Date: Wed,  8 Apr 2026 15:24:21 +0800
+Message-ID: <20260408072421.831-1-23120469@bjtu.edu.cn>
+X-Mailer: git-send-email 2.53.0.windows.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Wed, 08 Apr 2026 00:58:28 +0200
-Message-Id: <DHNAMNISZJ9O.3B58NWX64GBGE@kernel.org>
-Subject: Re: [PATCH v5 0/9] driver core: Fix some race conditions
-Cc: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>, "Rafael J . Wysocki"
- <rafael@kernel.org>, "Alan Stern" <stern@rowland.harvard.edu>, "Alexey
- Kardashevskiy" <aik@ozlabs.ru>, "Johan Hovold" <johan@kernel.org>, "Eric
- Dumazet" <edumazet@google.com>, "Leon Romanovsky" <leon@kernel.org>,
- "Christoph Hellwig" <hch@lst.de>, <maz@kernel.org>, "Alexander Lobakin"
- <aleksander.lobakin@intel.com>, "Saravana Kannan" <saravanak@kernel.org>,
- "Andrew Morton" <akpm@linux-foundation.org>, <Frank.Li@kernel.org>, "Jason
- Gunthorpe" <jgg@ziepe.ca>, <alex@ghiti.fr>,
- <alexander.stein@ew.tq-group.com>, <andre.przywara@arm.com>,
- <andrew@codeconstruct.com.au>, <andrew@lunn.ch>,
- <andriy.shevchenko@linux.intel.com>, <aou@eecs.berkeley.edu>,
- <ardb@kernel.org>, <astewart@tektelic.com>, <bhelgaas@google.com>,
- <brgl@kernel.org>, <broonie@kernel.org>, <catalin.marinas@arm.com>,
- <chleroy@kernel.org>, <davem@davemloft.net>, <david@kernel.org>,
- <devicetree@vger.kernel.org>, <dmaengine@vger.kernel.org>,
- <driver-core@lists.linux.dev>, <gbatra@linux.ibm.com>,
- <gregory.clement@bootlin.com>, <hkallweit1@gmail.com>,
- <iommu@lists.linux.dev>, <jirislaby@kernel.org>, <joel@jms.id.au>,
- <joro@8bytes.org>, <kees@kernel.org>, <kevin.brodsky@arm.com>,
- <kuba@kernel.org>, <lenb@kernel.org>, <lgirdwood@gmail.com>,
- <linux-acpi@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
- <linux-aspeed@lists.ozlabs.org>, <linux-cxl@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, <linux-mips@vger.kernel.org>,
- <linux-mm@kvack.org>, <linux-pci@vger.kernel.org>,
- <linux-riscv@lists.infradead.org>, <linux-serial@vger.kernel.org>,
- <linux-snps-arc@lists.infradead.org>, <linux-usb@vger.kernel.org>,
- <linux@armlinux.org.uk>, <linuxppc-dev@lists.ozlabs.org>,
- <maddy@linux.ibm.com>, <mani@kernel.org>, <miko.lenczewski@arm.com>,
- <mpe@ellerman.id.au>, <netdev@vger.kernel.org>, <npiggin@gmail.com>,
- <osalvador@suse.de>, <oupton@kernel.org>, <pabeni@redhat.com>,
- <palmer@dabbelt.com>, <peter.ujfalusi@gmail.com>, <peterz@infradead.org>,
- <pjw@kernel.org>, <robh@kernel.org>, <sebastian.hesselbarth@gmail.com>,
- <tglx@kernel.org>, <tsbogend@alpha.franken.de>, <vgupta@kernel.org>,
- <vkoul@kernel.org>, <will@kernel.org>, <willy@infradead.org>,
- <yangyicong@hisilicon.com>, <yeoreum.yun@arm.com>
-To: "Douglas Anderson" <dianders@chromium.org>, <m.szyprowski@samsung.com>,
- "Robin Murphy" <robin.murphy@arm.com>
-From: "Danilo Krummrich" <dakr@kernel.org>
-References: <20260406232444.3117516-1-dianders@chromium.org>
-In-Reply-To: <20260406232444.3117516-1-dianders@chromium.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:JTzCeUDwF7moAtZpRk6jAA--.53366S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7WF4rCF1UZr4UZw4rtw1UWrg_yoW8Ww1kpa
+	9xZFWvyrW8t3Z3tF4rAw13Wr1rAan3Xa42grWUKw1ak342vrn7Kw15t34Fvr1rA3yxtwna
+	v390yFW5uF48taDanT9S1TB71UUUUjUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUBvb7Iv0xC_Cr1lb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I2
+	0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
+	A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xII
+	jxv20xvEc7CjxVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwV
+	C2z280aVCY1x0267AKxVW0oVCq3wAaw2AFwI0_Jrv_JF1lnxkEFVAIw20F6cxK64vIFxWl
+	e2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI
+	8IcVAFwI0_JF0_Jw1lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwAC
+	jcxG0xvY0x0EwIxGrwCY1x0262kKe7AKxVWUtVW8ZwCF04k20xvY0x0EwIxGrwCFx2IqxV
+	CFs4IE7xkEbVWUJVW8JwCFI7km07C267AKxVWUXVWUAwC20s026c02F40E14v26r1j6r18
+	MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr4
+	1lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1l
+	IxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4
+	A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x07jeFALUUUUU=
+X-CM-SenderInfo: astrjiauwzquxmwxhvlgxou0/
 
-On Tue Apr 7, 2026 at 1:22 AM CEST, Douglas Anderson wrote:
+From: Zhaoyang Yu <2426767509@qq.com>
 
-Applied to driver-core-testing, thanks!
+Add a check for dma_alloc_coherent() failure to prevent a potential
+NULL pointer dereference in dma_handle_rx(). Properly release DMA
+channels and the PCI device reference using a goto ladder if the
+allocation fails.
 
-> Douglas Anderson (9):
->   driver core: Don't let a device probe until it's ready
->   driver core: Replace dev->can_match with dev_can_match()
->   driver core: Replace dev->dma_iommu with dev_dma_iommu()
->   driver core: Replace dev->dma_skip_sync with dev_dma_skip_sync()
->   driver core: Replace dev->dma_ops_bypass with dev_dma_ops_bypass()
->   driver core: Replace dev->state_synced with dev_state_synced()
->   driver core: Replace dev->dma_coherent with dev_dma_coherent()
+Signed-off-by: Zhaoyang Yu <2426767509@qq.com>
+---
+ drivers/tty/serial/pch_uart.c | 19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
 
-    [ Since all DEV_FLAG_DMA_COHERENT accessors are exposed unconditionally=
-,
-      also drop the CONFIG guards around dev_assign_dma_coherent() in
-      device_initialize() to ensure a correct default value. - Danilo ]
+diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+index 6729d8e83c3c..ba1fcd663fe2 100644
+--- a/drivers/tty/serial/pch_uart.c
++++ b/drivers/tty/serial/pch_uart.c
+@@ -689,8 +689,7 @@ static void pch_request_dma(struct uart_port *port)
+ 	if (!chan) {
+ 		dev_err(priv->port.dev, "%s:dma_request_channel FAILS(Tx)\n",
+ 			__func__);
+-		pci_dev_put(dma_dev);
+-		return;
++		goto err_pci_get;
+ 	}
+ 	priv->chan_tx = chan;
+ 
+@@ -704,18 +703,26 @@ static void pch_request_dma(struct uart_port *port)
+ 	if (!chan) {
+ 		dev_err(priv->port.dev, "%s:dma_request_channel FAILS(Rx)\n",
+ 			__func__);
+-		dma_release_channel(priv->chan_tx);
+-		priv->chan_tx = NULL;
+-		pci_dev_put(dma_dev);
+-		return;
++		goto err_req_tx;
+ 	}
+ 
+ 	/* Get Consistent memory for DMA */
+ 	priv->rx_buf_virt = dma_alloc_coherent(port->dev, port->fifosize,
+ 				    &priv->rx_buf_dma, GFP_KERNEL);
++	if (!priv->rx_buf_virt)
++		goto err_req_rx;
+ 	priv->chan_rx = chan;
+ 
+ 	pci_dev_put(dma_dev);
++	return;
++
++err_req_rx:
++	dma_release_channel(chan);
++err_req_tx:
++	dma_release_channel(priv->chan_tx);
++	priv->chan_tx = NULL;
++err_pci_get:
++	pci_dev_put(dma_dev);
+ }
+ 
+ static void pch_dma_rx_complete(void *arg)
+-- 
+2.50.1
 
->   driver core: Replace dev->of_node_reused with dev_of_node_reused()
->   driver core: Replace dev->offline + ->offline_disabled with accessors
