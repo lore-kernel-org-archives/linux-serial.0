@@ -1,69 +1,70 @@
-Received: from mail-vs1-f41.google.com (mail-vs1-f41.google.com [209.85.217.41])
+Received: from mail-vs1-f49.google.com (mail-vs1-f49.google.com [209.85.217.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63C4F302163
-	for <linux-serial@vger.kernel.org>; Wed,  8 Apr 2026 15:46:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E65AB2BE7DB
+	for <linux-serial@vger.kernel.org>; Wed,  8 Apr 2026 15:53:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775663162; cv=none; b=VCV4PcVBLD3kI/7f+BtvfS+sb4w47dl/Xdm+mAq8i7dCbuJZm5CkorCogUwzWv8z24UQnFJRyaDRnLs6nH0tF0YtGLBOrDCGA9Juo42fE8jBzOO561b7kfM/+gOBoCiCUoqpw4/UL/R/44696gzJGTHuq/bLqDzabIrDfJ9kzII=
+	t=1775663606; cv=none; b=GSZmZGgDkuIsGu7+6sUydv+cfY2ysCjodsxbPMFcckCHaW3aUe5J5oRaF0APG8HCVKq3XGvV4+cNpqguuNNN1K2bwIR31aLZ+b6gA2unvpOLvHej6AZE/Mqlgq4UBnNL2MsQQQJI98flAIh+yxX+Wbi2NRPuvzv7Jb2zX0WaDTU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775663162; c=relaxed/simple;
-	bh=16j4upoT9sJfPzdH6X/+Xv5a+TcPUTpYanV6Lb/dLPY=;
+	s=arc-20240116; t=1775663606; c=relaxed/simple;
+	bh=c10W5ALCADJM1BWfUr7/O+YUC+18d/aUdsA2Gn//Un8=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=YU5bhPQLza4vfrW8xAbgnQHF8m8aoSSdmqdBMeqLpqNIcuqmu8j+6oJedIa4gXuE9jwHL8oplsMqw+2KRCGsCkOikIO9oK1V4G4XhwPhvKixHrjJe79tBvWDiApNVn1nu3s7BtuMDPyZR7z406J5tY0JZrYalp9B3Y+6AzgIdok=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.217.41
+	 To:Cc:Content-Type; b=diZkhmQopixEPNnuFCpJ7GeHcarQoWsKepfw6N3Pc5sEe4cRzBxdKWjodqd0Pl9/47XXcmVDFSFNspPJeh3KqtcGHkHj8v7ZvxcoM6vPjSQ95c+caLaaKWKRa1nSNjQBVHvUgqshG4b+nBMx1sm1BWaK/9S+Z47IB1DwvqlDb6o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.217.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-vs1-f41.google.com with SMTP id ada2fe7eead31-604fb44270aso8208137.2
-        for <linux-serial@vger.kernel.org>; Wed, 08 Apr 2026 08:46:01 -0700 (PDT)
+Received: by mail-vs1-f49.google.com with SMTP id ada2fe7eead31-60581b491a0so8905137.3
+        for <linux-serial@vger.kernel.org>; Wed, 08 Apr 2026 08:53:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775663160; x=1776267960;
+        d=1e100.net; s=20251104; t=1775663604; x=1776268404;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=vHFk0A5PiqyMvdhTllvamqBie3Dm7/U8ZhTI9V50sFc=;
-        b=CtPtWyuzWs5R28WHY2QF2FlqeOGy3f5d3wPc6wpGBo80NR6Ju2ES8CobS3MPY/oV1n
-         XF3x2wrWkAL0vyt1D/eYcfKEIZPhy4CilplpfQC6BzI+bI7bo0YeY6wwEHDuQkTWdkPb
-         oFB28bXyVc2P5lx4TyYzXufsLnrVh6tKVYKTCLnQpYLNxizu7xdWX36MVTHMl43+f4cx
-         qbtwQEQ4GGT4izHuolNQLZL8Vo+jMCTXRFVbsCwEA5NJqnfd9EPO0KM1NbMRkTMohHUI
-         cGuatYgEkHvOhsIem2aoQFpxCrdBOu6pctDkzQcmzyfSUNuGRbx6Z1E5tIb25D+8M21Z
-         Zx2g==
-X-Forwarded-Encrypted: i=1; AJvYcCU950ABG/nHHRmwm0obLL93x1vzziBOYXKXdVEKiSe8Vj4v4Z+cOv1T6B0Z8vIovo3qgFXYQi/av5Yqzng=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwzegWWYN7kfeS/sooYbkhT2Fk62w2+FlzMcyQ1OCASNW+DE7t3
-	1QUTpPK3GDyV2o+EiauZMRi9xLo0mn6TSVcr8JRzlb2tsNKNu/nnvLnwVxk9EJlR
-X-Gm-Gg: AeBDiesejvPKrle9Zl2z7YCi4OmEoHgP+u7SVPGlTDzCx0vdPuk0TGyauYMCDC1ghSj
-	RIYwYA7wvKOsPcePc8LMSDZogOoLWjt7OxfOMDR888bE1Z36s39eI6o1mYufbLDQyACAYrvQ1Hi
-	Ajpw3uGoBrbLPp7DPRE3Vsp01c+otZ1d2zvgpCHvPYGGqBJixC03OppVV6dbyU8YqGLsgQ0UA2u
-	7j3LGVzBmiJlrTZotw1HfMSYBuKFfSdzd3NE+RkbQmZFPCHmFa752pNCH3T1MFE0Rvw9FczkXxi
-	Y5PsyO+Hh/y4wyYPKgeBIKLoR/VsBL2dG4g4Q0yoK8ri/k5kx27OYWU8gR45npo2d7wpaMBQImY
-	k+ge1QrxrLIScR/UkRom4T2/Y/MXgc2RKx6w33PQ55vzngEp603aJ1dP4hhsl0Iox2AYLoDrjmC
-	M1+WBIWt6dZ2tFtic8SEGBpNoDKkPHrdL6kfBub5owbbeAUqtPVNeNO+xWwjn0hCyp
-X-Received: by 2002:a67:e70c:0:b0:608:2acf:cd19 with SMTP id ada2fe7eead31-6085df96fe1mr263822137.22.1775663160157;
-        Wed, 08 Apr 2026 08:46:00 -0700 (PDT)
-Received: from mail-vk1-f172.google.com (mail-vk1-f172.google.com. [209.85.221.172])
-        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-6058304a726sm21476170137.9.2026.04.08.08.45.58
+        bh=/744x+XjzJ75+fqhcq25ueyNm8LBC4TfdouHQzrR540=;
+        b=caha4HywaOKGuCuALr3pnLAhGtIX2/qQSorJUrbjoDEf22CLqwEMorawdIFkPv9zQz
+         6KbTxlUQ/mp+YKONGXebu5Yf5FZO50Zc5EEurtpxfNHZ3ks2tqtgjduIHP5eIEZFyc+F
+         BtoofREsw3fopSLCG3t03YzIYyxC0M6ND3oaUnGFQrcJ3HE/0j0bzlik2SPnkF1MwdDm
+         3Y7cKCIXYjkyZPOiTHhXeXWXk9RqpA35cRaGZYvnNiIOFlHSJkRUn46bwwFPVIL0VRn3
+         GUnANNdV11P9iu1OgeH9kczim3/BQ0fhJN740ACGf60CAXnxN3N3woQCF0H/pA9RUKY1
+         gbdQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXWDhnxDFXyHnEiBUQkYPOUH2n/c3STDXXQv5rzrklxMAA0Q1MDcfLATfi37S7b334lKDMxvPxcOmhAgKA=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywk5RtIkAnTDx+DZJmSxQV2o7EVwkcutiNm3swJIlULR8UMa6h9
+	ULm3GK/bkEam+dXAJf7MBuD0e14a0gnOuG8UZ45Kmk330uAVbvb+9USmO9ItW0P7
+X-Gm-Gg: AeBDieuZgp05UyhFX/QZbX6Afxc7L9q+BRoBF/3fiok3cs6qAiSIF8H9Ohep+5UyVSb
+	Fh6jLt9isQQgxfCizabt+z+VFuoikJrGTwKmU18guzw8Np5/OwAYJFBXvMlCnwyDwqU7hOXu0Pq
+	EVIHpCBMCccLMhWXm/eOFqdodiLTk/RNagzkb7f5aeMLCX2TH4zG4d+1hu0uaiLC/ODI71lWSJb
+	4BUhucMX/WvIdvWjOONo8UcdXvHygaOyWD7XYsHVIKpwKSD0PQmMTeg16yLxjh7nPTKroNL4MlJ
+	dXXvu1aczv8miPPI6+IPMwbjVZtHFd0RqzUSB+AwljAxL5Qb+Etm0O7Ov2ik3hn09STimlhnCf+
+	epSSC6UhCbavaa+dUvcUYEadImG7QcPM8L3pQVFQb79a9nPQxstgHyQKkC1sEBs3q0/YYlkaS0l
+	tjtDUOW/MLOTj73ZiKSg3yAMhHuj2fvbHL59V7P/FQlUN0K4/hcOJyyQHLYQQQ
+X-Received: by 2002:a05:6102:8557:10b0:607:5cd7:d7c0 with SMTP id ada2fe7eead31-6075cd7df12mr1713768137.19.1775663603676;
+        Wed, 08 Apr 2026 08:53:23 -0700 (PDT)
+Received: from mail-ua1-f52.google.com (mail-ua1-f52.google.com. [209.85.222.52])
+        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-6074fe8cbbasm1985198137.8.2026.04.08.08.53.23
         for <linux-serial@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Apr 2026 08:45:58 -0700 (PDT)
-Received: by mail-vk1-f172.google.com with SMTP id 71dfb90a1353d-56db63456d4so1685038e0c.1
-        for <linux-serial@vger.kernel.org>; Wed, 08 Apr 2026 08:45:58 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCX2FjVp1jj88VlX4LQQE0n7yxPJ7mI3M+KYkZiFhzl3uK4x6G3DvxEiEepvtt/x0EJQWjip2UK/tmgnQvo=@vger.kernel.org
-X-Received: by 2002:a05:6122:3221:b0:56b:814e:d35a with SMTP id
- 71dfb90a1353d-56f274c9dcdmr288556e0c.8.1775663158274; Wed, 08 Apr 2026
- 08:45:58 -0700 (PDT)
+        Wed, 08 Apr 2026 08:53:23 -0700 (PDT)
+Received: by mail-ua1-f52.google.com with SMTP id a1e0cc1a2514c-953b7d2c820so2027318241.3
+        for <linux-serial@vger.kernel.org>; Wed, 08 Apr 2026 08:53:23 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCUqTTKYHLXksh3Oker9j0eLaHEu2COfBX1y4Zxr9tbnzjNMNhbFYULcdIxzybWSP1Or1pej8TgK82R2FdQ=@vger.kernel.org
+X-Received: by 2002:a05:6102:6043:b0:5e8:1d93:921a with SMTP id
+ ada2fe7eead31-605a4dfad28mr6809315137.15.1775663603186; Wed, 08 Apr 2026
+ 08:53:23 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260408142105.310210-1-biju.das.jz@bp.renesas.com> <20260408142105.310210-3-biju.das.jz@bp.renesas.com>
-In-Reply-To: <20260408142105.310210-3-biju.das.jz@bp.renesas.com>
+References: <20260408142105.310210-1-biju.das.jz@bp.renesas.com>
+ <20260408142105.310210-3-biju.das.jz@bp.renesas.com> <CAMuHMdXVbWg=nz-E0VTet2YgCP-GvmVY_3MJeZbE0Thp-mMpHQ@mail.gmail.com>
+In-Reply-To: <CAMuHMdXVbWg=nz-E0VTet2YgCP-GvmVY_3MJeZbE0Thp-mMpHQ@mail.gmail.com>
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Wed, 8 Apr 2026 17:45:46 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXVbWg=nz-E0VTet2YgCP-GvmVY_3MJeZbE0Thp-mMpHQ@mail.gmail.com>
-X-Gm-Features: AQROBzBGldNv6VigTu3n3nywjLnQaTCy4GOqCagh4X2AkIWNe3fnNYY09g9NnsA
-Message-ID: <CAMuHMdXVbWg=nz-E0VTet2YgCP-GvmVY_3MJeZbE0Thp-mMpHQ@mail.gmail.com>
+Date: Wed, 8 Apr 2026 17:53:11 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdVnD7XxQood1qy7_7gz5nzFz7QDiCXP_Fo5s12zZ_qSCg@mail.gmail.com>
+X-Gm-Features: AQROBzA_Av2LUf2OVaQl-DbtKrMDxqlexE1J6D0bFc-L2X_SitOpW85jiR6Spjc
+Message-ID: <CAMuHMdVnD7XxQood1qy7_7gz5nzFz7QDiCXP_Fo5s12zZ_qSCg@mail.gmail.com>
 Subject: Re: [PATCH v2 2/2] serial: rsci: Remove goto and refactor baud rate
  clock selection
 To: Biju <biju.das.au@gmail.com>
@@ -76,39 +77,58 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kerne
 	Pavel Machek <pavel@nabladev.com>
 Content-Type: text/plain; charset="UTF-8"
 
-On Wed, 8 Apr 2026 at 16:21, Biju <biju.das.au@gmail.com> wrote:
-> From: Biju Das <biju.das.jz@bp.renesas.com>
->
-> Replace the goto done pattern in rsci_set_termios() with a positive
-> conditional block. When baud rate is zero, the clock selection logic
-> is now simply skipped rather than jumping to a 'done' label, eliminating
-> the goto entirely.
->
-> Since RSCI only uses a single clock source (SCI_FCK), the multi-clock
-> tracking variables (best_clk, min_err, brr1, srr1, cks1) are redundant
-> and removed. ccr0_val and ccr4_val are likewise dropped, replaced with
-> hardcoded 0 at their write sites, as they were never modified from their
-> initial zero values.
->
-> No functional change intended.
->
-> Reported-by: Pavel Machek <pavel@nabladev.com>
-> Closes: https://lore.kernel.org/all/abPpZULsXhRmXTX9@duo.ucw.cz/
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> ---
-> v1->v2:
->  * Dropped the check (abs(err) < abs(min_err) as it is always true.
->  * Dropped the check (abs(err) < abs(min_err) as it is always true.
->  * Dropped variables best_clk and min_err as they are no longer needed.
->  * Dropped intermediate variables brr1, cks1 and srr1; results are now
->    written directly into brr, cks and srr.
->  * Moved dev_dbg() inside the if (baud) block.
->  * Dropped ccr0_val and ccr4_val, replaced with hardcoded 0 at their
->    write sites, as they were never modified from their initial values.
->  * Scoped variables err and srr locally within the if (baud) block.
->  * Updated commit description.
+Hi Biju,
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+On Wed, 8 Apr 2026 at 17:45, Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> On Wed, 8 Apr 2026 at 16:21, Biju <biju.das.au@gmail.com> wrote:
+> > From: Biju Das <biju.das.jz@bp.renesas.com>
+> >
+> > Replace the goto done pattern in rsci_set_termios() with a positive
+> > conditional block. When baud rate is zero, the clock selection logic
+> > is now simply skipped rather than jumping to a 'done' label, eliminating
+> > the goto entirely.
+> >
+> > Since RSCI only uses a single clock source (SCI_FCK), the multi-clock
+> > tracking variables (best_clk, min_err, brr1, srr1, cks1) are redundant
+> > and removed. ccr0_val and ccr4_val are likewise dropped, replaced with
+> > hardcoded 0 at their write sites, as they were never modified from their
+> > initial zero values.
+> >
+> > No functional change intended.
+> >
+> > Reported-by: Pavel Machek <pavel@nabladev.com>
+> > Closes: https://lore.kernel.org/all/abPpZULsXhRmXTX9@duo.ucw.cz/
+> > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> > ---
+> > v1->v2:
+> >  * Dropped the check (abs(err) < abs(min_err) as it is always true.
+> >  * Dropped the check (abs(err) < abs(min_err) as it is always true.
+> >  * Dropped variables best_clk and min_err as they are no longer needed.
+> >  * Dropped intermediate variables brr1, cks1 and srr1; results are now
+> >    written directly into brr, cks and srr.
+> >  * Moved dev_dbg() inside the if (baud) block.
+> >  * Dropped ccr0_val and ccr4_val, replaced with hardcoded 0 at their
+> >    write sites, as they were never modified from their initial values.
+> >  * Scoped variables err and srr locally within the if (baud) block.
+> >  * Updated commit description.
+>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+I spoke too soon, you need one more change to make it build:
+
+--- a/drivers/tty/serial/rsci.c
++++ b/drivers/tty/serial/rsci.c
+@@ -308,8 +308,7 @@ static void rsci_set_termios(struct uart_port
+*port, struct ktermios *termios,
+        rsci_serial_out(port, CFCLR, CFCLR_CLRFLAG);
+        rsci_serial_out(port, FFCLR, FFCLR_DRC);
+
+-       ccr0_val |= CCR0_RE;
+-       rsci_serial_out(port, CCR0, ccr0_val);
++       rsci_serial_out(port, CCR0, CCR0_RE);
+
+        if ((termios->c_cflag & CREAD) != 0)
+                rsci_start_rx(port);
 
 Gr{oetje,eeting}s,
 
