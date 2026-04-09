@@ -1,85 +1,132 @@
-Received: from out162-62-57-252.mail.qq.com (out162-62-57-252.mail.qq.com [162.62.57.252])
+Received: from out162-62-58-211.mail.qq.com (out162-62-58-211.mail.qq.com [162.62.58.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A7C228E0;
-	Thu,  9 Apr 2026 05:48:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.62.57.252
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BF8B199FAC;
+	Thu,  9 Apr 2026 05:58:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.62.58.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775713689; cv=none; b=NvfbjWbXWKC1CBec+86VSrTTOa0ryrls50v9A6+rFjU+xe0w7khAJzmibI45IGqRqTo7T9dh0omCu6tvJ0ui1ehzOEhxra4CkWxdZAgDPx1uHECqQNeAlu8iPyd+XXLMTCvdFgeBCUc/fTfCDvhW2sO9sRd6l+Brf3EDRDZ5XgU=
+	t=1775714299; cv=none; b=RvhmEB2BzwE36r7+DmhlMZ6YE5iulRUVT/TVTMwfhlGV+6mOqNctPNigZF2kF5JT/vsGt7t0w1dh1DjJaSnlWtZ2m0A+rIagy8/qZKS5hGk19HUN92u3QMb5xDH4GI4DN/yiMLGVtGC9ie05fvYCbKnR12gV0LFtGavZM5pzU18=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775713689; c=relaxed/simple;
-	bh=NG13cdXqhW154r9VFSj2tddCyo9+eF7geiHfEuwKbnw=;
-	h=From:To:Cc:Subject:Mime-Version:Content-Type:Date:Message-ID:
-	 References:In-Reply-To; b=Lg7n+i+M/T3O6J4BLeHBYq2Np4r3o7ECdpwJ16njBmFJVWj6jNlunPN6imBAF9ihUIO/7EepEyqXUgYx4J6oO+z6jxv8OOPMrZJJPiylAF3ZmOgBgB+EYX2DWJ+Pt7diyWv0NwTDkt3NQMXaUXhZwSx9tbhuKt3aOaqwTiG5w78=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com; spf=pass smtp.mailfrom=qq.com; dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b=Yq5k+r5y; arc=none smtp.client-ip=162.62.57.252
+	s=arc-20240116; t=1775714299; c=relaxed/simple;
+	bh=hPSDNS2pmKnvE3EWyqx8L6sy8nlq54q5JSgI2/fJNQ0=;
+	h=Message-ID:From:To:Cc:Subject:Date:MIME-Version; b=pa74j4tSWVor39xAT5MGoHC+7HuQEZg3nZIJffQReS22c9d7s7+1J3RAahBS98JCgbmNiPFuNsOYcstIDfpHBc9YjG6mOwxQwhSMf8vb6giqWGRUy3s5Yvki9WTWXucP81kG9xrLRXRlx6zwstseoUZ2KtMN9ju//59e+QxKf3A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com; spf=pass smtp.mailfrom=qq.com; dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b=ux71kres; arc=none smtp.client-ip=162.62.58.211
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qq.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b="Yq5k+r5y"
+	dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b="ux71kres"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qq.com; s=s201512;
-	t=1775713682; bh=NG13cdXqhW154r9VFSj2tddCyo9+eF7geiHfEuwKbnw=;
-	h=From:To:Cc:Subject:Date:References:In-Reply-To;
-	b=Yq5k+r5y1BKJ7+PMBy/N3yPTFicaDaP738vC6T9ilqN2TESJnBxb/x+O+ym5n/G/l
-	 LK/gx3kzeSYDuNt+dusEzrEwih6nJRtPTnNyLqnw68NSh2+Nk00EN3MRL7m/rxH3qQ
-	 Jz93t4j36XFiuNww4VVFsrhSx60HhC1oAqd4RvRY=
-X-QQ-XMRINFO: NS+P29fieYNwqS3WCnRCOn9D1NpZuCnCRA==
-X-QQ-XMAILINFO: NB8AK7fcAs0K4ZQce5atX4P/9aIIRPZsReu8s9w+zczP9O4PAhrbqjvQKv5YqT
-	 LlX8FCl8u6hsngR7tSKZ86/7o1gXamWHh2C0ta/nsSBrQ9qjxic080irZLviKehnxZcEJvtnfD3dA
-	 sjItO4ds6o7E/EE/cJRPR/50fIUKb4UnlvwGfmAEVBhKBcMsAjM6ptm/jEs2lwNPWzPz4CeWMuCCT
-	 OfeMCnUEUnaBc74aCIcjnA+WxrU5WIZAXknGiTZWgG2A+UveRf/hCvUt9aPrdiYqTjWnmyHB5jNa1
-	 oHk2m1TSCRSh6opdW9iFZZdi3RPVMz4zKUB82zvdM8WWBLg7kjJzqgtqBF5alz0fuWLXFZABo2eW/
-	 mtnYSQmA26CGQJHkqG5nXWi6VoyOhnXaJXaX70UZ8cnYudp8ZuE5HOljvUbz5NLGdARL0z9Vm4Me/
-	 2ehAvcfiHDl9lmG1XmJYBkL8OVDz4uPeW5+fZh+5jkH045dUaxyiXU05W8GYzEdSr5AtXtUl01jai
-	 xWcn94Rio2MHoxBAYyPV2u4JNV9vV3nhjDGNxgzTrATiPSaqP8nfXuwY1v0upEkuyFu0NdUuqZmwt
-	 oJO5R8rBK/HE2ihT9zSkaClMBuV7bu55a7ld3IB3pPZldXLvvIRliYXRGNOOgA2qV4Dw37vcNrvKs
-	 4Z8ISTpBtP6dthvc9Gu6fxqEBwrMOzL2Jcan7cmPbQJZcRF/ED7K5jR+FzonQ4DE3FxWZH8u6XRJT
-	 wQNLx+23XNFOHauc5xUtFuQaL2K0SjTCdNZA7Sh/uGlZ74RXc7/UgvD1XXf6M+Z2qnw99PbUBC1fK
-	 iuLwm3gYi5kW1KaX7jECQVl1mGl7FZm89kRAYWuLZebEH1b9l0BBNpEYc97+5EMLaIKcA1RBjWR8n
-	 v31yGJrZy4e/e/fTXmJrfRcpvOr+RtwITYf+dhVEEM/0KLbL2JVJ5RtoKiyvRipBwCyT6FS8o5Njt
-	 BznLqjgBO6MkWw5mcDUzl1+owQIQSPWHG/q8ADFF9szGMzDl6yhx6//nP1PPHwPeXuujU3HCRz43s
-	 8M3gX
-From: "=?utf-8?B?5L+e5pyd6Ziz?=" <2426767509@qq.com>
-To: "=?utf-8?B?QW5keSBTaGV2Y2hlbmtv?=" <andriy.shevchenko@linux.intel.com>
-Cc: "=?utf-8?B?Z3JlZ2to?=" <gregkh@linuxfoundation.org>, "=?utf-8?B?amlyaXNsYWJ5?=" <jirislaby@kernel.org>, "=?utf-8?B?a2Vlcw==?=" <kees@kernel.org>, "=?utf-8?B?Zm91cmllci50aG9tYXM=?=" <fourier.thomas@gmail.com>, "=?utf-8?B?bGludXgtc2VyaWFs?=" <linux-serial@vger.kernel.org>, "=?utf-8?B?bGludXgta2VybmVs?=" <linux-kernel@vger.kernel.org>, "=?utf-8?B?Z3N6aGFp?=" <gszhai@bjtu.edu.cn>, "=?utf-8?B?Wmhhb3lhbmcgWXU=?=" <23120469@bjtu.edu.cn>
-Subject: Re: [PATCH] tty: serial: pch_uart: add check for dma_alloc_coherent()
+	t=1775714286; bh=saUzSOSLabVSqyIgKKzKGgKBGMnBOmvykPoGRA3J8Bw=;
+	h=From:To:Cc:Subject:Date;
+	b=ux71kresDE60aZxj42Z2qIbRprN2W9El/ubf09ByxbAz3AJ5XjLa2K/+XSZ5efTNO
+	 wEA58d0UHbFS0eFaiMXIf2RXnMhH2MwcaPkBcjyv9Mlh/ObwCE3gZZzwtthBt+qBgt
+	 V76zW/B14D8eHCdjEiiC/JCqqK5Xzn2SUx9CD7fA=
+Received: from qq.com ([123.121.145.161])
+	by newxmesmtplogicsvrszb51-0.qq.com (NewEsmtp) with SMTP
+	id A88B52ED; Thu, 09 Apr 2026 13:42:08 +0800
+X-QQ-mid: xmsmtpt1775713328tnu91yjf5
+Message-ID: <tencent_E328416B7CFD436F6029F2DF02AD7ED89C08@qq.com>
+X-QQ-XMAILINFO: MwOvDUWSFAlQxjprT6pL3qbMrvkpgun8Nr+ooi6FDCWXibDtA2kaLL2ABrp2/F
+	 Hntz+3tBAl+xCp6q0Urb3nr7yzt3RwyBhj3HOUph8JkMMM92D1KBeKE5UPS7CdsrC8/YH1yX+OsL
+	 ulseKiyV7vBFfvBpC3tVlf6Db3w7qpU2WFiTISoDMZn1WFMq1ZWoJcFm7SGv2IKrhLK3EybaoSYW
+	 rBrYDJfn+3RtNTG8Mo3TxRya5TgtsxCd++ieI8drVP2eNAkOrr/00I24lAyYd3sC0Cx9jyMpJfI1
+	 IBafI1E/8pNNIs9IxbbE1FXgqRW3j6FgYSsSELPBkf/KOOnJhSww+WO6yrZcakDPoufDI4nk7A/r
+	 mVXdCESkQaG1IS8pod/xV3WzIcFa8wP1esu2QMAikuitBtlf77noyqY7dRNsEXSJT8cT6ban97vR
+	 9nn/RJWl72gX6T8oPVKSYx7EZnIgo0+3p6yE5mfxJOmLVmwP312DxuBZcnYqQibIqtKV0A44pjFS
+	 cJ8zhYRUq2wo31u9dJjTATFCEcge9hTT5p0DIPQcNMtwvWXMfbD2wHlomxlPYAhkZd1pc82JOJb6
+	 ir3Xfp/cqQyL4iv7dw+ggHO+kXiVkAka1jMWmrr6m/k788bO9yDn/uJI+309pI/WzV6bohRlMid0
+	 AJmT07phSC0CKE2TGn4F+sZjuG3d1pIGDkgbuU6KVnkUvgT9Vv8Qp+FwGwubLUFg3gIcNq1W4uqR
+	 xR941YRvBQBtBw9a/6UQSXOwy6ImPaPSwJO05yaWNwmVZrJ03p4RKhY/NBDasluAHF27hhGxkxpj
+	 tiJocSeOwTaBW7mywGD4j1AFnTHSxsQo2/36JwRtxQDVr9qaHZ+0O7Fj2WfFS7cNgl90WnAm/iUn
+	 fyMhAK1VUZFYCQ0a26U/qmFs2WBSviXKasIc+q/GuyNgZba3K8rmPPOqk/E0KQeNr6tVpCPluOAi
+	 Z7V3p0bGCEI2nHuW0J8b/wiTzcpNfZYzldN/iQOcZtCjtKCCqu2PD+ySPnVh6hPX2Qp8whdWQpb1
+	 LGbIc4IyBxpVFiXYPrStLcCT1I3tJvOXVYzz1x/tTE2gv45yalKzrhze2/ZQB5iXmU6EoVbp0AKg
+	 NublnQGwlR9sTgbOaX0Tm5njA+dC6sZPCTF3NdxSDhqhV28ecFZs5CpKMSyA==
+X-QQ-XMRINFO: M/715EihBoGS47X28/vv4NpnfpeBLnr4Qg==
+From: Zhaoyang Yu <2426767509@qq.com>
+To: andriy.shevchenko@linux.intel.com
+Cc: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	kees@kernel.org,
+	fourier.thomas@gmail.com,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	gszhai@bjtu.edu.cn,
+	23120469@bjtu.edu.cn,
+	Zhaoyang Yu <2426767509@qq.com>,
+	stable@vger.kernel.org
+Subject: [PATCH v2] tty: serial: pch_uart: add check for dma_alloc_coherent()
+Date: Thu,  9 Apr 2026 13:41:58 +0800
+X-OQ-MSGID: <20260409054158.14418-1-2426767509@qq.com>
+X-Mailer: git-send-email 2.50.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="utf-8"
-Content-Transfer-Encoding: base64
-Date: Thu, 9 Apr 2026 13:46:50 +0800
-X-Priority: 3
-Message-ID: <tencent_7753BD5DA5FC7F7BB722609FA158ACC5F50A@qq.com>
-X-QQ-MIME: TCMime 1.0 by Tencent
-X-Mailer: QQMail 2.x
-X-QQ-Mailer: QQMail 2.x
-References: <20260408072421.831-1-23120469@bjtu.edu.cn>
-	<adZWm7GxCU_-T0zc@ashevche-desk.local>
-In-Reply-To: <adZWm7GxCU_-T0zc@ashevche-desk.local>
-X-QQ-mid: xmsezb51-0t1775713610t4euz07oj
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-SGkgQW5keSwKClRoYW5rIHlvdSBmb3IgdGhlIHJldmlldyBhbmQgdGhlIHN1Z2dlc3Rpb25z
-IQoKPiBMb29rcyBsaWtlIGl0IGRlc2VydmVzIGEgRml4ZXMgdGFnLgoKQWdyZWVkLiBJIHdp
-bGwgZmluZCB0aGUgb3JpZ2luYWwgY29tbWl0IHRoYXQgaW50cm9kdWNlZCB0aGlzIGlzc3Vl
-IGFuZCBhZGQgdGhlIHByb3BlciBGaXhlcyB0YWcgaW4gdGhlIHYyIHBhdGNoLiBJJ2xsIHNl
-bmQgaXQgb3V0IHNob3J0bHkuCgo+IEFsc28gaWRlYWxseSB0aGlzIGRyaXZlciBzaG91bGQg
-YmUgY29udmVydGVkIHRvIG9uZSBvZiA4MjUwIGNhc2VzLgo+IFRoZSBsYXR0ZXIgaGFzIGFs
-cmVhZHkgRE1BIHN1cHBvcnQuIE5vdGUsIGlmIHlvdSBhcmUgZ29pbmcgdGhpcwo+IGRpcmVj
-dGlvbiwgSSBoYXZlIHRoZSBoYXJkd2FyZSB0byB0ZXN0LgoKVGhhbmsgeW91IHZlcnkgbXVj
-aCBmb3Igb2ZmZXJpbmcgdG8gdGVzdCBvbiB0aGUgYWN0dWFsIGhhcmR3YXJlISBUaGF0IGlz
-IGluY3JlZGlibHkgaGVscGZ1bC4gCgpJIGFncmVlIHRoYXQgY29udmVydGluZyB0aGlzIGRy
-aXZlciB0byB0aGUgODI1MCBmcmFtZXdvcmsgaXMgdGhlIHJpZ2h0IGRpcmVjdGlvbi4gU2lu
-Y2UgdGhhdCB3b3VsZCBiZSBhIGxhcmdlciByZWZhY3RvcmluZyBlZmZvcnQsIEkgdGhpbmsg
-aXQgbWlnaHQgYmUgYmVzdCB0byBhcHBseSB0aGlzIHF1aWNrIE5VTEwgcG9pbnRlciBmaXgg
-Zmlyc3Qgc28gdGhhdCB0aGUgY3VycmVudCBkcml2ZXIgaXMgc2FmZS4gCgpBZnRlciB0aGlz
-IGZpeCBpcyBzZXR0bGVkLCBJIGFtIHZlcnkgaW50ZXJlc3RlZCBpbiB0YWtpbmcgYSBsb29r
-IGF0IHRoZSA4MjUwIGNvbnZlcnNpb24gYXMgYSBmb2xsb3ctdXAgcHJvamVjdC4gSSBtaWdo
-dCBuZWVkIHNvbWUgdGltZSB0byBzdHVkeSB0aGUgODI1MCBETUEgZnJhbWV3b3JrLCBidXQg
-SSB3aWxsIGRlZmluaXRlbHkgcmVhY2ggb3V0IHdpdGggYSBwYXRjaCBzZXJpZXMgZm9yIHlv
-dSB0byB0ZXN0IHdoZW4gSSBnZXQgdGhlcmUhCgpCZXN0IHJlZ2FyZHMsClpoYW95YW5nIFl1
+Add a check for dma_alloc_coherent() failure to prevent a potential
+NULL pointer dereference in dma_handle_rx(). Properly release DMA
+channels and the PCI device reference using a goto ladder if the
+allocation fails.
 
+Fixes: 3c6a483275f4 ("Serial: EG20T: add PCH_UART driver")
+Cc: stable@vger.kernel.org
+Signed-off-by: Zhaoyang Yu <2426767509@qq.com>
+---
+Changes in v2:
+- Added the Fixes tag for the initial PCH_UART driver commit, per Andy's review.
+
+ drivers/tty/serial/pch_uart.c | 19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+index 6729d8e83c3c..ba1fcd663fe2 100644
+--- a/drivers/tty/serial/pch_uart.c
++++ b/drivers/tty/serial/pch_uart.c
+@@ -689,8 +689,7 @@ static void pch_request_dma(struct uart_port *port)
+ 	if (!chan) {
+ 		dev_err(priv->port.dev, "%s:dma_request_channel FAILS(Tx)\n",
+ 			__func__);
+-		pci_dev_put(dma_dev);
+-		return;
++		goto err_pci_get;
+ 	}
+ 	priv->chan_tx = chan;
+ 
+@@ -704,18 +703,26 @@ static void pch_request_dma(struct uart_port *port)
+ 	if (!chan) {
+ 		dev_err(priv->port.dev, "%s:dma_request_channel FAILS(Rx)\n",
+ 			__func__);
+-		dma_release_channel(priv->chan_tx);
+-		priv->chan_tx = NULL;
+-		pci_dev_put(dma_dev);
+-		return;
++		goto err_req_tx;
+ 	}
+ 
+ 	/* Get Consistent memory for DMA */
+ 	priv->rx_buf_virt = dma_alloc_coherent(port->dev, port->fifosize,
+ 				    &priv->rx_buf_dma, GFP_KERNEL);
++	if (!priv->rx_buf_virt)
++		goto err_req_rx;
+ 	priv->chan_rx = chan;
+ 
+ 	pci_dev_put(dma_dev);
++	return;
++
++err_req_rx:
++	dma_release_channel(chan);
++err_req_tx:
++	dma_release_channel(priv->chan_tx);
++	priv->chan_tx = NULL;
++err_pci_get:
++	pci_dev_put(dma_dev);
+ }
+ 
+ static void pch_dma_rx_complete(void *arg)
+-- 
+2.50.1
 
