@@ -1,87 +1,62 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EBCD3E8C5B;
-	Fri, 10 Apr 2026 15:20:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 189F01DE8BF;
+	Fri, 10 Apr 2026 17:19:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775834449; cv=none; b=SgZwYRVn17xqiX4rsnW0Sjcfl3dUVZv31uaku6ZGcOXTwk1fzxWbCsw2aPPq7be3fUnWb+2f2dzI32NgxIfv4gbgYVwin91HKTVaE4Oo5fwQfTtv5oo4iqq6t/MoSq0WcQ+MPycxrJQcZ/ceTLq2zKVy5cDkMOidZBLvddD5lM4=
+	t=1775841575; cv=none; b=TygnAbVW9UYpdjx/uDzNlYUhTLYklYnx1Mgx1awK865QtI3D/HY+ChHSpIjaRwhkhBZbCD31VtoD2wbXzgF6W0ggx+G4BxiFRiD5sn3CYjnF0KncWqX8gavJAGFM4qyf5mTX6Riv0CEjZ+NOfFgEduvam1HGzgfwWIa8/Q9+Z3Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775834449; c=relaxed/simple;
-	bh=EmqzxCeH3+2cTIzPaxzH6HVZPgBKe3xmaPvy+SMJkNA=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ArpQzKvYnn0JtrAWiHIAEN8s0OtmOmOLXbw899LX/hZrgQ3M/nA3Ues5FbA56qyVfzF9Z4g5ItjxjkrisWFQg9lMIRvUdE688YHYMKxdrgib6iOaliboN80Yse6pKyhOHupancPNXmuVWELarZ08sMSa/w+3r063eo80L8WCP/Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=Sw2OLsWf; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="Sw2OLsWf"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=default; h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject
-	:Cc:To:From:subject:date:message-id:reply-to;
-	bh=nE+1kczXySniW6DFK8K0g6Io+rAOnMYlKgGQ6sCTGC4=; b=Sw2OLsWfvJiHGg7tTCgi9R6llI
-	+eBCGOM8Wm8vf+vwt4Y1umjSEMu3WnlQBNMeLTYcIOeYSJfYayoUOiSIhUtH7gzPI6wUi1zzriT5H
-	RozMaiC1UgG0JUi3nx5NIySBKozGU5+gjji7hxq6ZVAMpSn7fLeqngDsXMu3b+X4nyvQ=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168] helo=pettiford.lan)
-	by mail.hugovil.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.98.2)
-	(envelope-from <hugo@hugovil.com>)
-	id 1wBDez-000000008Ub-3UQp;
-	Fri, 10 Apr 2026 11:20:42 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org
-Cc: hugo@hugovil.com,
-	biju.das.jz@bp.renesas.com,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Subject: [PATCH 4/5] serial: core: simplify clipping logic in uart_get_baud_rate()
-Date: Fri, 10 Apr 2026 11:20:12 -0400
-Message-ID: <20260410152022.2146488-5-hugo@hugovil.com>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260410152022.2146488-1-hugo@hugovil.com>
-References: <20260410152022.2146488-1-hugo@hugovil.com>
+	s=arc-20240116; t=1775841575; c=relaxed/simple;
+	bh=kumy7wOjkxHYCHKKz2d0MJwqaC8a9gESxvN4PraC0YI=;
+	h=Date:From:To:cc:Subject:Message-ID:MIME-Version:Content-Type; b=kJEsP00e2wAJFXo+G7nvL+F38aVGLiBI8tgjnC9iayiBAbDvqYBFua97G7piU7N1BY8XFa/trQhEUfYkzwz1k1PNwkTa/YFW3Ofz12KdoJlHW6J8+Eo4pPHb2fiiRd3ry0jiT5WBUJ1NPIDDWIvm+H6E1UsKoqZVVtOvinarmDU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+	id 8115B92009C; Fri, 10 Apr 2026 19:19:31 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+	by angie.orcam.me.uk (Postfix) with ESMTP id 7C5AE92009B;
+	Fri, 10 Apr 2026 18:19:31 +0100 (BST)
+Date: Fri, 10 Apr 2026 18:19:31 +0100 (BST)
+From: "Maciej W. Rozycki" <macro@orcam.me.uk>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>
+cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] serial: zs: Fix swapped RI/DSR modem line transition
+ counting
+Message-ID: <alpine.DEB.2.21.2604101747110.29980@angie.orcam.me.uk>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam_score: -1.0
-X-Spam_bar: -
+Content-Type: text/plain; charset=US-ASCII
 
-From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Fix a thinko in the status interrupt handler that has caused counters 
+for the RI and DSR modem line transitions to be used for the other line 
+each.
 
-Simplify the clipping logic in uart_get_baud_rate() to improve code
-readability.
-
-Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Fixes: 8b4a40809e53 ("zs: move to the serial subsystem")
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
 ---
- drivers/tty/serial/serial_core.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/tty/serial/zs.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index e6a8ab40442d9..f89c0dc295163 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -543,11 +543,11 @@ uart_get_baud_rate(struct uart_port *port, struct ktermios *termios,
- 		 */
- 		if (!hung_up) {
- 			if (baud <= min)
--				tty_termios_encode_baud_rate(termios,
--							min + 1, min + 1);
-+				baud = min + 1;
- 			else
--				tty_termios_encode_baud_rate(termios,
--							max - 1, max - 1);
-+				baud = max - 1;
-+
-+			tty_termios_encode_baud_rate(termios, baud, baud);
- 		}
- 	}
- 	return 0;
--- 
-2.47.3
-
+linux-serial-zs-dsr-rng.diff
+Index: linux-macro/drivers/tty/serial/zs.c
+===================================================================
+--- linux-macro.orig/drivers/tty/serial/zs.c
++++ linux-macro/drivers/tty/serial/zs.c
+@@ -679,9 +679,9 @@ static void zs_status_handle(struct zs_p
+ 			uart_handle_dcd_change(uport,
+ 					       zport->mctrl & TIOCM_CAR);
+ 		if (delta & TIOCM_RNG)
+-			uport->icount.dsr++;
+-		if (delta & TIOCM_DSR)
+ 			uport->icount.rng++;
++		if (delta & TIOCM_DSR)
++			uport->icount.dsr++;
+ 
+ 		if (delta)
+ 			wake_up_interruptible(&uport->state->port.delta_msr_wait);
