@@ -1,174 +1,110 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com [209.85.128.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9AB5250C06;
-	Thu,  9 Apr 2026 14:16:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775744208; cv=none; b=P3jUVkMFXup6GiPREid0KcYd5D+K7mvmBS2v9JvROk4CIAuAISNeRBu3Dl2HhACFBLcT/7DCrcC1mzx9wykrP60kUi2kTNb8dZ35GjwHMM7LzXUuHVry+A3TmFEGj3Cc99V0es115uCi96mGuXe2d12MxASymQfD7jBGx0Np3d4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775744208; c=relaxed/simple;
-	bh=DYZzYAGWKLvR/rwy25S1u/xzYttZ5IhxkTqMemtevV0=;
-	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
-	 Mime-Version:Content-Type; b=pIXm+DzlUM1qtXxVpy41EpSNAGhNhHvNN003iyHhVxWyCgsY5KvKLd/ho2wLsxItNO2mg0zOFhK+iL9i4M7ihXgmlpvMY5xtenAQkMWwWn0ptwh5JB547zwMM4u4lCs+QlQ2RNauql1hADjayTR/qibTwVM4wVocipaNwUO9hUs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=pLWCu2G9; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DE3A17A305
+	for <linux-serial@vger.kernel.org>; Fri, 10 Apr 2026 04:01:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.169
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775793697; cv=pass; b=VTqACpxM5HMkKSlOHmCom7mNU9sFWdVysgee1CLJONXwSvcd0sCG/uhR3AlYHLYVmJNDrR2jyWKI1IWXb9Z0tm1P1weQp74+1H1pA1Bg9/fNGbAdkshhWs6H/3iCRWnDaQ5ZjEhgpXH9pI4bmRE9HM6giAA/D+U/S7MUomCN65s=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775793697; c=relaxed/simple;
+	bh=c81jlwkoT52ivgxBtLV/pUhTYbuYIuOCRdMEcqipB0s=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=sqB/pVI016mPoEafBo2KGVwByL/7ObTF/5eyCG85zenuGPz8aJ1d6Vx0ZqBKqOAbNNPqB6ywbez5Xt1dEatie5FtcPqdiTfYmIKcbX8oU5UM0uj0IpAe+1NA+Qqh7obVbvOx9oZwerHc0fEMa4m4NIeUovdAvwiV+RrrVhIp108=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=aWWhM5xf; arc=pass smtp.client-ip=209.85.128.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="pLWCu2G9"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=default; h=Content-Transfer-Encoding:Mime-Version:Message-Id:Subject:Cc:
-	To:From:Date:subject:date:message-id:reply-to;
-	bh=Hr6xXI3C/cIWqZzUGbR1Zy8YyypSIcz9d+o8IgWSUyc=; b=pLWCu2G9tNePBL5EvK8Au27Va4
-	/Kiv2ILs+Spj6EiOQCDLQl5+hNJyoB1xuL5z0kR5FeyBd7KhEXCcKBppwyTx0c3QqX2V1HY7pO0Pj
-	CvVl45kC13bKNy8u7zlWgii4M36ExQwc2rN6liKpQE0ozlqlVxdOoVlAxsfiFYampbes=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168] helo=pettiford.lan)
-	by mail.hugovil.com with esmtpa (Exim 4.98.2)
-	(envelope-from <hugo@hugovil.com>)
-	id 1wAqBV-000000000PU-1jAK;
-	Thu, 09 Apr 2026 10:16:42 -0400
-Date: Thu, 9 Apr 2026 10:16:41 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Biju Das <biju.das.jz@bp.renesas.com>
-Cc: biju.das.au <biju.das.au@gmail.com>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Geert
- Uytterhoeven <geert+renesas@glider.be>, Thierry Bultel
- <thierry.bultel.yh@bp.renesas.com>, wsa+renesas
- <wsa+renesas@sang-engineering.com>, Prabhakar Mahadev Lad
- <prabhakar.mahadev-lad.rj@bp.renesas.com>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org"
- <linux-serial@vger.kernel.org>, "linux-renesas-soc@vger.kernel.org"
- <linux-renesas-soc@vger.kernel.org>
-Subject: Re: [PATCH v2 1/2] serial: sh-sci: Avoid divide-by-zero fault
-Message-Id: <20260409101641.8121ddb0e795e4fb2b4cbb1e@hugovil.com>
-In-Reply-To: <TYCPR01MB113322203884106612468FB4286582@TYCPR01MB11332.jpnprd01.prod.outlook.com>
-References: <20260408142105.310210-1-biju.das.jz@bp.renesas.com>
-	<20260408142105.310210-2-biju.das.jz@bp.renesas.com>
-	<20260408123039.922a75327fd7672df3bd61da@hugovil.com>
-	<TYCPR01MB11332B594964DDF0763499184865B2@TYCPR01MB11332.jpnprd01.prod.outlook.com>
-	<20260408125142.24cd94f094ba3ca512e7f346@hugovil.com>
-	<TYCPR01MB11332859E901171C91C543061865B2@TYCPR01MB11332.jpnprd01.prod.outlook.com>
-	<20260408141515.fc210b4b3c86f7a61f680dd1@hugovil.com>
-	<TYCPR01MB113326DDA1FC854689CE34A6C865B2@TYCPR01MB11332.jpnprd01.prod.outlook.com>
-	<TYCPR01MB113322203884106612468FB4286582@TYCPR01MB11332.jpnprd01.prod.outlook.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aWWhM5xf"
+Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-79a46ebe2beso16918417b3.2
+        for <linux-serial@vger.kernel.org>; Thu, 09 Apr 2026 21:01:36 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1775793696; cv=none;
+        d=google.com; s=arc-20240605;
+        b=L+ZKyC3nREI0fM53T9DM7omkA0MUPo42A6vPJphd7784YSjOtNH8rf2Jnopwo6rMV7
+         ai2jo4Bl1EA1CohQlg7yjbT+voOFMNRrFjMaUcE5lnIkSdidNU/o9JlH0QoS4u4306wy
+         nZZkaTwlegcvqHLyAPtE8hEhESuzdG8zb5IhWmLDgLPLLnugmQH3PT2A8jDf0ofSM01W
+         zO6jVySdZBeTtoGDKo+Glpk3obvObXvBDXDfcQl4c5dIGAZCnhpJPFDxw79ukSbbnlug
+         YVi02xOxyhBv215ZQx1GTffsJ/Jt/4f7J82KQBwylw2nA+6ZxfSulLPVFwHlN1JIPqKD
+         5zHg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=c81jlwkoT52ivgxBtLV/pUhTYbuYIuOCRdMEcqipB0s=;
+        fh=HZrzIZH07V4WaX1SKVyKjVC2JHMoUvgzf4PaAfHMpWU=;
+        b=Za5nGCAXZNncELKihHW9zVFXlGeqE8rT7p0OhAsRNLAdxLAlqajV/8pUIHdtOnh9rP
+         jLRMfLNtYeY41Mz6jDjCRyexTtNimxzeN3pJ78haVS3VWRWhWaoiXgkY8vnbKh62/5sj
+         41Iw8N7AMLQZ+oJ1IGKVNKO07jzZdqH37LOXYN3tHh311ibWIfYO4fhzBp8lEARs6g32
+         IDr0+6wjHyGHobs646v+AbKAiXMqF05ft0Qi+d0n7twZqG3dtCEUepfZAhEgDVzmUR2V
+         yAZY5Z2G1dv3rUMMdRSNuM4WVUSw8rqruJ0mQBvZOhrTRad4l7DcbkIe76etCGSDknQp
+         CC7A==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1775793696; x=1776398496; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=c81jlwkoT52ivgxBtLV/pUhTYbuYIuOCRdMEcqipB0s=;
+        b=aWWhM5xf1jI0SHocgPbjo1V7+4WzGeYBQZdVuCZ0nKzdAk+OjA2fsygncCfoJFgjOo
+         CcFhTWdAk8pQ7id9H08BL816QQWrFPBdA6WWIloTZG3coP5tViB5j4UZ55htqILr+KDN
+         NfBMApKhgYp9CzMB6iak318Z8swPvtZ4JvuephOJo0JtRQSq1rtxZ7/BsGLTfUlkKfv5
+         rzRtKw5iy4+E4/mSWCJ7RGBoXlDF21kWP8SWo+75VUKhR3UXgbVjDOiQSHrW8YKDvDnU
+         9palGfMbG0NIN/lrOTOoSvSPeUeuJRVuR/XDC4aZHSn41yOac2lKVxfmgyDVgnSFMaFL
+         /+oQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1775793696; x=1776398496;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=c81jlwkoT52ivgxBtLV/pUhTYbuYIuOCRdMEcqipB0s=;
+        b=hyKF2BblxxHs1EZUix3ACXI19+ZzmuHXn3p0VTCnqFKV49kQgNJEOHEq7PxfROum/Y
+         phJ/hlRxUB89JtscjmG8ZY9TPq+/scRu6dqAMvN8YnNu34kuqmE+yL8zLt0VhEp0PqLg
+         DWyIIb/5aDZybCImo+w+D1W5K3Pqha4KLA94q2FS3PClTugjXL67txJ2FknDX6YsKZfe
+         WigWplHdos68xNmhskl9LK821dGTEbSO2i6uwdEPhcIKiza0Cq8ip5GDTltPr+/10mRv
+         e5ZEdRTF82deFHnSfaKli0Hh0DM+75oTzB4T9Q8cNsW9ftKGyqig7Ywad+tQLOJp5+jT
+         DeTg==
+X-Forwarded-Encrypted: i=1; AJvYcCUVpBUgh45HQvOyPeAlL/VQqxbNPuDe49SFwYF30xFnt5a7uQyfcUvlsXCD230FeWOMnuvzFU20VfSd9ig=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywqd1P/u3gjp05bbSpkj4O/nSFgd3DVgfL7Gsq7h3/oqeNxqH9W
+	gXcdEgInjbrAcVzmB92LPEOcvuhRJV8qQArzv3i5WA5bfl0J2quK2502miMN4LNmY7fz9Fxub0r
+	jyuSSHnf57rZhwUsczazh3VYfajkSvP4=
+X-Gm-Gg: AeBDiesR4whLtbhhh2sL9C3Yq1wCSiD8/2JGJOGFE638zVssChgmEU1GNq3oLAgUzuU
+	XwygMTfQX+K3VcquFhGK/hmudI2aM3cUchu14oYcSmTGsyeSNGEHINYvKhJNxSxfpuR0VLtoXDu
+	Nydrl8tr4ktqgz+2K1NrYIYJYSzkH0aOUWBNKvQlpqtugnAkQdHf3Ehs4PKF2Z5WA1vn+ShrnOq
+	FD+XcTqFcTSNd9eaZT7URKHEch17jrzl6CQLIMZecIgeBAd61qaqPOb+lEFI6+7hwQzSh6AKeAg
+	vL0cuklw+EM=
+X-Received: by 2002:a05:690c:7107:b0:79b:e24e:e2f8 with SMTP id
+ 00721157ae682-7af6ba5c131mr19081017b3.0.1775793695597; Thu, 09 Apr 2026
+ 21:01:35 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam_score: -2.0
-X-Spam_bar: --
+MIME-Version: 1.0
+References: <20260306034058.386747-1-dqfext@gmail.com> <20260312120036.GF5735@suse.cz>
+In-Reply-To: <20260312120036.GF5735@suse.cz>
+From: Qingfang Deng <dqfext@gmail.com>
+Date: Fri, 10 Apr 2026 12:01:23 +0800
+X-Gm-Features: AQROBzBNyIPd0i0SJNHwjTwparsm0ql4G8ebtjevqd-KI_EvSGYWLss5UzCUY78
+Message-ID: <CALW65jY1qjiLNd_viqgiXodwGe1VzQx_qKUU2rRHMUp8TK7j_g@mail.gmail.com>
+Subject: Re: [PATCH] tty: ipwireless: fix memory leak in do_go_offline()
+To: dsterba@suse.cz
+Cc: Jiri Kosina <jikos@kernel.org>, David Sterba <dsterba@suse.com>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Stephen Blackheath <stephen@symmetric.co.nz>, Ben Martel <benm@symmetric.co.nz>, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Biju,
+Hi, Greg and David,
 
-On Thu, 9 Apr 2026 07:40:02 +0000
-Biju Das <biju.das.jz@bp.renesas.com> wrote:
+On Thu, Mar 12, 2026 at 8:00=E2=80=AFPM David Sterba <dsterba@suse.cz> wrot=
+e:
+>
+> Thanks, but the driver is going to be deleted.
 
-> 
-> 
-> > -----Original Message-----
-> > From: Biju Das
-> > Sent: 08 April 2026 20:02
-> > To: Hugo Villeneuve <hugo@hugovil.com>
-> > Cc: biju.das.au <biju.das.au@gmail.com>; Greg Kroah-Hartman <gregkh@linuxfoundation.org>; Jiri Slaby
-> > <jirislaby@kernel.org>; Geert Uytterhoeven <geert+renesas@glider.be>; Thierry Bultel
-> > <thierry.bultel.yh@bp.renesas.com>; wsa+renesas <wsa+renesas@sang-engineering.com>; Prabhakar Mahadev
-> > Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>; linux-kernel@vger.kernel.org; linux-
-> > serial@vger.kernel.org; linux-renesas-soc@vger.kernel.org
-> > Subject: RE: [PATCH v2 1/2] serial: sh-sci: Avoid divide-by-zero fault
-> > 
-> > Hi Hugo,
-> > 
-> > > -----Original Message-----
-> > > From: Hugo Villeneuve <hugo@hugovil.com>
-> > > Sent: 08 April 2026 19:15
-> > > Subject: Re: [PATCH v2 1/2] serial: sh-sci: Avoid divide-by-zero fault
-> > >
-> > > Hi Biju,
-> > >
-> > > On Wed, 8 Apr 2026 17:25:19 +0000
-> > > Biju Das <biju.das.jz@bp.renesas.com> wrote:
-> > >
-> > > > Hi Hugo,
-> > > >
-> > > > > -----Original Message-----
-> > > > > From: Hugo Villeneuve <hugo@hugovil.com>
-> > > > > Sent: 08 April 2026 17:52
-> > > > > Subject: Re: [PATCH v2 1/2] serial: sh-sci: Avoid divide-by-zero
-> > > > > fault
-> > > > >
-> > > > > Hi Biju,
-> > > > >
-> > > > > On Wed, 8 Apr 2026 16:35:44 +0000
-> > > > > Biju Das <biju.das.jz@bp.renesas.com> wrote:
-> > > > >
-> > > > > > Hi Hugo,
-> > > > > >
-> > > > > > Thanks for the feedback.
-> > > > > >
-> > > > > > > -----Original Message-----
-> > > > > > > From: Hugo Villeneuve <hugo@hugovil.com>
-> > > > > > > Sent: 08 April 2026 17:31
-> > > > > > > Subject: Re: [PATCH v2 1/2] serial: sh-sci: Avoid
-> > > > > > > divide-by-zero fault
-> > > > > > >
-> > > > > > > Hi Biju,
-> > > > > > >
-> > > > > > > On Wed,  8 Apr 2026 15:20:58 +0100 Biju
-> > > > > > > <biju.das.au@gmail.com>
-> > > > > > > wrote:
-> > > > > > >
-> > > > > > > > From: Biju Das <biju.das.jz@bp.renesas.com>
-> > > > > > > >
-> > > > > > > > uart_update_timeout() computes a timeout value by dividing
-> > > > > > > > by the baud rate. If baud is zero — which can occur when the
-> > > > > > > > hardware returns an unsupported or invalid rate — this results in a divide-by-zero fault.
-> > > > > > >
-> > > > > > > baud is returned by uart_get_baud_rate(), so this is not returned by the hardware?
-> > > > > >
-> > > > > > You are tight, Will update commit description.
-> > > > >
-> > > > > How can uart_get_baud_rate() return a zero value? If I am not
-> > > > > mistaken even for the B0 case, it will return 9600?
-> > > >
-> > > > As per the comment and code, this API can return 0.
-> > > >
-> > > > * If the new baud rate is invalid, try the @old termios setting. If
-> > > > it's still
-> > > > * invalid, we try 9600 baud. If that is also invalid 0 is returned.
-> > > >
-> > > > In drives/tty currently only 1 driver is checking the return value
-> > > > and it calls panic
-> > > >
-> > > > https://elixir.bootlin.com/linux/v7.0-rc7/source/drivers/tty/serial/
-> > > > ap
-> > > > buart.c#L214
-> > >
-> > > Hmmm, more than 1:
-> > 
-> > >
-> > > icom.c:
-> > >     if (!baud)
-> > >          baud = 9600;    /* B0 transition handled in rs_set_termios */
-> > 
-> > A zero return from uart_get_baud_rate() is a normal, recoverable condition (unsupported rate requested
-> > by userspace) and must not crash the kernel.
-> > 
-> > Or drop the check like other tty drivers, as SCIF/RSCI IP support 9600 baud rate.
-> 
-> May be setting a buadrate 115200 is safe in this cas like earlyprintk??
-> I will send next version setting buad = 115200, if uart_get_baud_rate() returns 0.
+Even if this is being removed from tty-next, the fix should be applied
+and backported to -stable.
 
-Is it logical to proceed with configuration if it returned zero?
-
-Also we still pass 0 as a minimum value in uart_get_baud_rate(), so
-that a baud rate of 75, for example, would be valid, but would trigger a
-fault later (division by zero). Wouldn't it be a good idea to also set a
-proper minimum baud rate?
-
--- 
-Hugo Villeneuve
+Regards,
+Qingfang
