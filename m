@@ -1,62 +1,44 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 792473D7D88;
-	Fri, 10 Apr 2026 14:49:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F41073DE420;
+	Fri, 10 Apr 2026 15:20:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775832597; cv=none; b=tTZzPr5USEYByA7NNqLWTdZX75iBi3fwQ05IOPp+VLejoU/G+dQzgIKm+67eTbz0UEi8CtxgULMstd5iJyYMwPtrfix3q70EJmPJcvV81+W82y+/AtxvqFXh6097ES6nrSW9b8sZEVD+85A+N9OcAesaJ5ssjX+lY6osyVsxPOU=
+	t=1775834447; cv=none; b=UjLWYLA+p4hSj9ebJx+NmBOiluH77v71WspKTMsh/IGj09iyjFDEnOPyxqqgyhTvop0HI1cblpswk4Axr41rtTUKyS+ctjseZ8abbEiz1fWps95zYI+QsfXHNOeKcvdLsa4P78bQIYf7sebl50ZHPfIAx/urDX2MUw88D7VjuWc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775832597; c=relaxed/simple;
-	bh=L20PQPHDAUCoqeqfS+IgreE7sFseNO8PQUTBgINgq5k=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=IoQeEQOTXZ5bpQifpAMdRG1GtwPWheLPEpiLrvZ17f7olOmbjq4QUTLTqjA+hY1UEtBIaZuMrRNWlHVOl8gSCkmJ3Vs3i9MOj9Tb5qu6d5kfRzQ9pJqUwmYcZ6yh+WnIvwGz5hLmJ8AwDufG2JqRf30Y0d0UosiTrUykFOS3cPo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=lo3/4BBi; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=8NhIK3Bw; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1775834447; c=relaxed/simple;
+	bh=+tUCFtiBgAcE+OORO65M5mIN0BUl5p13VMNyEkoSCTg=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=W9fIzHD7niT85fxb6WB3UHxAXJwGppOl85w8f8bxxtQAL31Mn+jZxGZAze4MAw3x8wTGNX1BfroluFv8NlHySh2zbm3YeQKGtDjukpyuGNkZmviIkF3a2ByLQC3s0mehsG1w825EwXzcyWBw+VABtELZA1g1dgnYWxui8D0jvdk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=OlKD5q+k; arc=none smtp.client-ip=162.243.120.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="lo3/4BBi";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="8NhIK3Bw"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1775832591;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=xyuWJyzjSnSF967IFPj4UudcvoXdiqAvtROcbrTbqTg=;
-	b=lo3/4BBiPRZS4vMmprPdaOdV7+MvWJRG/LpxxQegknaQjVp/a1wAtfHqBaNjglfhVfbIFK
-	5qExr9E0z5tJNvVqeKOwsF4z7RzcTyyIAFMCCiwYn85lgb2r0jcnHXgQc7VYyx3gtkLoNn
-	hG7jlXvu0gkcyuQpTjQxcBqKAxn3/poaCrglBa9w5hZsmpkJA/kz1vnzfLsDKIFXNSi5F/
-	Zu4S4V7O8eaogzpkDvbL8u3I9E5NMAsek87bUIJsqX22hJIf/5veF8r5HIm6GbfDzVycNr
-	7MlQB6H4STyZqpbLiGMPgzyiknvQdrh3zcz33JghCw3ML0T8waIbd8bxJQg2Gg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1775832591;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=xyuWJyzjSnSF967IFPj4UudcvoXdiqAvtROcbrTbqTg=;
-	b=8NhIK3BwkU+sEl1ZHHaLG3V/IFv3EZMmGaXnHut2e3iPBdNzXJ6Ogt9wvO60HPjb7bQWWN
-	jbd9Q9gLPavqXIDQ==
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-kernel@vger.kernel.org,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Ingo Molnar <mingo@kernel.org>,
-	Thomas Gleixner <tglx@kernel.org>,
-	Osama Abdelkader <osama.abdelkader@gmail.com>,
-	Andy Shevchenko <andy.shevchenko@gmail.com>,
-	Jiayuan Chen <jiayuan.chen@shopee.com>,
-	Gerhard Engleder <eg@keba.com>,
-	"Dr. David Alan Gilbert" <linux@treblig.org>,
-	Joseph Tilahun <jtilahun@astranis.com>,
-	linux-serial@vger.kernel.org
-Subject: [PATCH tty v2 2/2] serial: 8250: Add support for console hardware flow control
-Date: Fri, 10 Apr 2026 16:54:34 +0206
-Message-ID: <20260410144949.16581-3-john.ogness@linutronix.de>
-In-Reply-To: <20260410144949.16581-1-john.ogness@linutronix.de>
-References: <20260410144949.16581-1-john.ogness@linutronix.de>
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="OlKD5q+k"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=default; h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject
+	:Cc:To:From:subject:date:message-id:reply-to;
+	bh=HsrGhb/qfd7RX1ZikAcyoUfsyUlHcbWdfebRh8QR00I=; b=OlKD5q+kvNv0VndONJMlnZq1VJ
+	ZaWDz7BrzjgvFSvaezuIeRaGPHSwnJUScJ4weoeTVxUhiDoVaxPw3z1qmlb8j+XWF3mT32SWnBj8y
+	GBnaYF0xz9JqtnqrblbArWB3byxTnMqEI7nBUzMFtnhVOJyRJFzUVaam997KKnyWZ1Ns=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168] helo=pettiford.lan)
+	by mail.hugovil.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.98.2)
+	(envelope-from <hugo@hugovil.com>)
+	id 1wBDew-000000008Ub-2BnM;
+	Fri, 10 Apr 2026 11:20:39 -0400
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org
+Cc: hugo@hugovil.com,
+	biju.das.jz@bp.renesas.com,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Subject: [PATCH 0/5] serial: core: improve safety of uart_get_baud_rate()
+Date: Fri, 10 Apr 2026 11:20:08 -0400
+Message-ID: <20260410152022.2146488-1-hugo@hugovil.com>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -64,191 +46,87 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Spam_score: -1.0
+X-Spam_bar: -
 
-The kernel documentation specifies that the console option 'r' can
-be used to enable hardware flow control for console writes. The 8250
-driver does include code for hardware flow control on the console if
-the UPF_CONS_FLOW flag is set, but there is no code path that sets
-this flag. However, that is not the only issue. The problems are:
+From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-1. Specifying the console option 'r' does not lead to UPF_CONS_FLOW
-   being set.
+serial: core: improve safety of uart_get_baud_rate()
 
-2. Even if UPF_CONS_FLOW would be set, serial8250_register_8250_port()
-   clears it.
+Hello,
+this patch series brings some improvements to uart_get_baud_rate() by
+making it safer.
 
-3. When the console option 'r' is specified, uart_set_options()
-   attempts to initialize the port for CRTSCTS. However, afterwards
-   it does not set the UPSTAT_CTS_ENABLE status bit and therefore on
-   boot, uart_cts_enabled() is always false. This policy bit is
-   important for console drivers as a criteria if they may poll CTS.
+This originate from a review and discussions of a patch by Biju Das [1] to
+fix a potential division by zero bug in the Renesas serial drivers
+sh-sci and rsci.
 
-4. Even though uart_set_options() attempts to initialize the port
-   for CRTSCTS, the 8250 set_termios() callback does not enable the
-   RTS signal (TIOCM_RTS) and thus the hardware is not properly
-   initialized for CTS polling.
+First the comments in uart_get_baud_rate() are extremely outdated and no
+longer match what the code does, which does not help when trying to fully
+understand what the function does. One of the patch in this series updates
+them.
 
-5. Even if modem control was properly setup for CTS polling
-   (TIOCM_RTS), uart_configure_port() clears TIOCM_RTS, thus
-   breaking CTS polling.
+All drivers, except apbuart and icom, call uart_get_baud_rate() and do not
+check the returned baud rate, because it is assumed that it cannot return a
+zero value. However, not all devices support a speed of 9600, and for these
+uart_get_baud_rate() could return zero for the B0 case. This in turn
+could trigger a "Division by zero in kernel" fault.
 
-6. wait_for_xmitr() and serial8250_console_write() use the
-   UPF_CONS_FLOW bit to decide if CTS polling should occur. However,
-   the condition should also include a check that it is not in RS485
-   mode and CRTSCTS is actually enabled in the hardware.
+To be clear, this doesn't originate from a crash report, but from analyzing
+the code during the above mentioned review. To test this potential bug, I
+simply modified the "min" baud rate passed as argument to
+uart_get_baud_rate() to 19200 for the sc16is7xx driver, and was able to
+trigger the fault with "stty /dev/ttySC0 0" set to a zero baud rate
+(hang up).
 
-Address all these issues as conservatively as possible by gating them
-behind checks focussed on the user specifying console hardware flow
-control support and the hardware being configured for CTS polling
-at the time of the write to the UART.
+Historically, there was commit 16ae2a877bf4 ("serial: Fix crash if the minimum rate of the device is > 9600 baud")
+in 2010 to try to prevent a zero value being returned, and added a warning
+to that effect.
 
-Since checking the UPSTAT_CTS_ENABLE status bit is a part of the new
-condition gate, these changes also support runtime termios updates to
-disable/enable CRTSCTS.
+Then commit 23bf72faaebd ("serial: core: tidy invalid baudrate handling in uart_get_baud_rate")
+in 2023 removed the warning:
 
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
----
- drivers/tty/serial/8250/8250_core.c |  6 +++++-
- drivers/tty/serial/8250/8250_port.c | 14 ++++++++++++--
- drivers/tty/serial/serial_core.c    | 21 ++++++++++++++++++++-
- include/linux/serial_core.h         |  8 ++++++++
- 4 files changed, 45 insertions(+), 4 deletions(-)
+  uart_get_baud_rate has input parameters 'min' and 'max' limiting the
+  range of acceptable baud rates from the caller's perspective. If neither
+  current or old termios structures have acceptable baud rate setting and
+  9600 is not in the min/max range either the function returns 0 and
+  issues a warning.
+  However for a UART that does not support speed of 9600 baud this is
+  expected behavior.
+  Clarify that 0 can be (and always could be) returned from the
+  uart_get_baud_rate. Don't issue a warning in that case.
 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index a428e88938eb7..ff4c9972d4576 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -693,6 +693,7 @@ static void serial_8250_overrun_backoff_work(struct work_struct *work)
- int serial8250_register_8250_port(const struct uart_8250_port *up)
- {
- 	struct uart_8250_port *uart;
-+	upf_t console_hwflow;
- 	int ret;
- 
- 	if (up->port.uartclk == 0)
-@@ -716,6 +717,9 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
- 	if (uart->port.type == PORT_8250_CIR)
- 		return -ENODEV;
- 
-+	/* Preserve specified console hardware flow control. */
-+	console_hwflow = uart->port.flags & UPF_CONS_FLOW;
-+
- 	if (uart->port.dev)
- 		uart_remove_one_port(&serial8250_reg, &uart->port);
- 
-@@ -729,7 +733,7 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
- 	uart->port.fifosize     = up->port.fifosize;
- 	uart->port.regshift     = up->port.regshift;
- 	uart->port.iotype       = up->port.iotype;
--	uart->port.flags        = up->port.flags | UPF_BOOT_AUTOCONF;
-+	uart->port.flags        = up->port.flags | UPF_BOOT_AUTOCONF | console_hwflow;
- 	uart->bugs		= up->bugs;
- 	uart->port.mapbase      = up->port.mapbase;
- 	uart->port.mapsize      = up->port.mapsize;
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index a739350e634f9..6c8830943b0c0 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1989,7 +1989,7 @@ static void wait_for_xmitr(struct uart_8250_port *up, int bits)
- 	tx_ready = wait_for_lsr(up, bits);
- 
- 	/* Wait up to 1s for flow control if necessary */
--	if (up->port.flags & UPF_CONS_FLOW) {
-+	if (uart_console_hwflow_active(&up->port)) {
- 		for (tmout = 1000000; tmout; tmout--) {
- 			unsigned int msr = serial_in(up, UART_MSR);
- 			up->msr_saved_flags |= msr & MSR_SAVE_FLAGS;
-@@ -2786,6 +2786,12 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
- 		serial8250_set_efr(port, termios);
- 		serial8250_set_divisor(port, baud, quot, frac);
- 		serial8250_set_fcr(port, termios);
-+		/* Consoles manually poll CTS for hardware flow control. */
-+		if (uart_console(port) &&
-+		    !(port->rs485.flags & SER_RS485_ENABLED)
-+		    && termios->c_cflag & CRTSCTS) {
-+			port->mctrl |= TIOCM_RTS;
-+		}
- 		serial8250_set_mctrl(port, port->mctrl);
- 	}
- 
-@@ -3355,7 +3361,7 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
- 		 * it regardless of the CTS state. Therefore, only use fifo
- 		 * if we don't use control flow.
- 		 */
--		!(up->port.flags & UPF_CONS_FLOW);
-+		!uart_console_hwflow_active(&up->port);
- 
- 	if (likely(use_fifo))
- 		serial8250_console_fifo_write(up, s, count);
-@@ -3425,6 +3431,10 @@ int serial8250_console_setup(struct uart_port *port, char *options, bool probe)
- 	if (ret)
- 		return ret;
- 
-+	/* Allow user-specified hardware flow control. */
-+	if (flow == 'r')
-+		port->flags |= UPF_CONS_FLOW;
-+
- 	if (port->dev)
- 		pm_runtime_get_sync(port->dev);
- 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 89cebdd278410..a9ea10df4fb8b 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2235,6 +2235,18 @@ uart_set_options(struct uart_port *port, struct console *co,
- 	port->mctrl |= TIOCM_DTR;
- 
- 	port->ops->set_termios(port, &termios, &dummy);
-+
-+	/*
-+	 * If console hardware flow control was specified and is supported,
-+	 * the related policy UPSTAT_CTS_ENABLE must be set to allow console
-+	 * drivers to identify if CTS should be used for polling.
-+	 */
-+	if (flow == 'r' && (termios.c_cflag & CRTSCTS)) {
-+		/* Synchronize @status RMW update against the console. */
-+		guard(uart_port_lock_irq)(port);
-+		port->status |= UPSTAT_CTS_ENABLE;
-+	}
-+
- 	/*
- 	 * Allow the setting of the UART parameters with a NULL console
- 	 * too:
-@@ -2541,7 +2553,14 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
- 		 * We probably don't need a spinlock around this, but
- 		 */
- 		scoped_guard(uart_port_lock_irqsave, port) {
--			port->mctrl &= TIOCM_DTR;
-+			unsigned int mask = TIOCM_DTR;
-+
-+			/* Console hardware flow control polls CTS. */
-+			if (uart_console_hwflow_active(port))
-+				mask |= TIOCM_RTS;
-+
-+			port->mctrl &= mask;
-+
- 			if (!(port->rs485.flags & SER_RS485_ENABLED))
- 				port->ops->set_mctrl(port, port->mctrl);
- 		}
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 666430b478997..07bd3bd6c8355 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -1163,6 +1163,14 @@ static inline bool uart_softcts_mode(struct uart_port *uport)
- 	return ((uport->status & mask) == UPSTAT_CTS_ENABLE);
- }
- 
-+static inline bool uart_console_hwflow_active(struct uart_port *uport)
-+{
-+	return uart_console(uport) &&
-+	       !(uport->rs485.flags & SER_RS485_ENABLED) &&
-+	       (uport->flags & UPF_CONS_FLOW) &&
-+	       uart_cts_enabled(uport);
-+}
-+
- /*
-  * The following are helper functions for the low level drivers.
-  */
+To remove any ambiguity, and to make sure all drivers handle the returned
+value the same, make sure uart_get_baud_rate() will always return a
+non-zero value in all scenarios.
+
+This ensures that for devices that do not support a speed of 9600, and B0
+is the desired baud rate specified in termios, then the returned value will
+be 9600 or the input parameters 'min', whichever is the greatest.
+
+Tested on a custom board with a VAR-SOM-6UL SOM and a sc16is752 DUART.
+
+Thank you.
+
+Link [1] https://lore.kernel.org/all/20260408142105.310210-1-biju.das.jz@bp.renesas.com/raw
+
+Hugo Villeneuve (5):
+  serial: icom: remove check for zero baud rate from
+    uart_get_baud_rate()
+  serial: apbuart: remove check for zero baud rate from
+    uart_get_baud_rate()
+  serial: core: update uart_get_baud_rate() obsolete comments
+  serial: core: simplify clipping logic in uart_get_baud_rate()
+  serial: core: prevent division by zero by always returning non-zero
+    baud rate
+
+ drivers/tty/serial/apbuart.c     |  2 --
+ drivers/tty/serial/icom.c        |  2 --
+ drivers/tty/serial/serial_core.c | 34 ++++++++++++++------------------
+ 3 files changed, 15 insertions(+), 23 deletions(-)
+
+
+base-commit: a1a81aef99e853dec84241d701fbf587d713eb5b
 -- 
 2.47.3
 
