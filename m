@@ -1,23 +1,23 @@
 Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 009AD37D101;
-	Mon, 13 Apr 2026 04:03:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2BA1A37D103;
+	Mon, 13 Apr 2026 04:03:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776052994; cv=none; b=IHQUGyBlHP0xWQyVKjYZH0SZD6CQimO+s49N10TBBY9mtgngY5x8hX2Hk65tYSUktWnWDdHerrTWZxAVhRFPLsRyR23ypbLTLpStNpra9fFBiE7OIc0Stt+Z/6phXVTb8JrevsT6810XYY+DRiiNOhTOP+BjPI9XETgU23EFlqc=
+	t=1776052999; cv=none; b=Ibg6Ux7FRytsSoTXJvNalyNKra+Rz7CCsvSmXrVLTAW1WqUwyDDfXAf7gW/fiehgFdrOr/S55qjipS0wf3k15v4tUjTPKj5O+MPPG5IMy0jJeML5lf78Ov0F18vY5wFUpsxBG3XZjcnfkeICPbBar+UHJoQop3PfMKKpqdPAqPg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776052994; c=relaxed/simple;
-	bh=4Lnx8HluMjZ8yAQ55GNVLYu5poJrEMFncXs/ypRFGoE=;
+	s=arc-20240116; t=1776052999; c=relaxed/simple;
+	bh=ztTP7ekzUD+gzGdGJ5s5PZ5uOhIr1QT0EknHRuIcCF0=;
 	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=tW3QewPzmnXWDu4SklFcTOQh48ArueZRtr/fBmybUIOsEEu25v3/Ct/TcK5vHooiIa7/fq4Ju4xcAhYyp5pOqhWgoMWXClCVNBkyr3eiQuizxGpLzAeFKJrQwv+h3Vz+dPUSNFmkxy0tmvFGAeDQkKpKvKaVfiQEioiGN6+MFxY=
+	 MIME-Version:Content-Type; b=vFYMTMYQCYw8ilOSb+QDjtgzHmmORp6ABRRf4GU1kO8Ir+gn/UXqx+5lys96HXKZKnCrWK6uSjcV3EXTvXVWRaGKQha/HigY8ajo8xFjcN4rt8O9bRZDXkCU4g6Jt/xYaJmUOlbxCG4LdPHqu2+A9633h95leWI5uRcR6vriwYA=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
 Received: by angie.orcam.me.uk (Postfix, from userid 500)
-	id 11FC992009E; Mon, 13 Apr 2026 06:03:12 +0200 (CEST)
+	id F151192009E; Mon, 13 Apr 2026 06:03:16 +0200 (CEST)
 Received: from localhost (localhost [127.0.0.1])
-	by angie.orcam.me.uk (Postfix) with ESMTP id 0B17492009D;
-	Mon, 13 Apr 2026 05:03:12 +0100 (BST)
-Date: Mon, 13 Apr 2026 05:03:11 +0100 (BST)
+	by angie.orcam.me.uk (Postfix) with ESMTP id EB32F92009D;
+	Mon, 13 Apr 2026 05:03:16 +0100 (BST)
+Date: Mon, 13 Apr 2026 05:03:16 +0100 (BST)
 From: "Maciej W. Rozycki" <macro@orcam.me.uk>
 To: Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
     Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
@@ -26,10 +26,9 @@ cc: Elena Reshetova <elena.reshetova@intel.com>,
     David Windsor <dwindsor@gmail.com>, Kees Cook <kees@kernel.org>, 
     Hans Liljestrand <ishkamiel@gmail.com>, linux-mips@vger.kernel.org, 
     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/4] MIPS: SiByte: Fix console message clobbering at
- channel resets
+Subject: [PATCH v2 2/4] MIPS: SiByte: Fix bootconsole handover lockup
 In-Reply-To: <alpine.DEB.2.21.2604130453400.29980@angie.orcam.me.uk>
-Message-ID: <alpine.DEB.2.21.2604130456140.29980@angie.orcam.me.uk>
+Message-ID: <alpine.DEB.2.21.2604130457490.29980@angie.orcam.me.uk>
 References: <alpine.DEB.2.21.2604130453400.29980@angie.orcam.me.uk>
 User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 Precedence: bulk
@@ -40,21 +39,17 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 
-Ensure any characters outstanding have been sent before issuing channel 
-resets so as to prevent messages issued to the bootconsole from getting 
-clobbered.
+Calling sbd_init_port() in the course of setting up the serial device 
+causes line parameters to be messed up and the transmitter disabled.  
+We've been lucky in that no message is usually produced to the kernel 
+log between this call and the later call to uart_set_options() in the 
+course of console setup done by sbd_serial_console_init(), or the system 
+would hang as the console output handler in CFE tried to access a port 
+whose transmitter has been disabled and line parameters messed up.
 
-Contrary to device documentation at the time the transmitter empty bit 
-is set only the transmit FIFO has been drained and there is still data 
-outstanding in the transmitter shift register, so wait an extra amount 
-of time for that register to drain too.  This also prevents subsequent 
-messages produced to the console from getting clobbered, owing to what
-seems a transmitter synchronisation issue.
-
-When called from sbd_serial_console_init() it is too early for fsleep() 
-to work and even before lpj has been calculated and therefore the delay 
-is actually not sufficient for the transmitter to drain and is merely a 
-placeholder now.  This will be addressed in a follow-up change.
+It'll change with the next change to the driver, so fix sbd_init_port() 
+such that line parameters are set for 115200n8 console operation as with 
+the CFE firmware and the transmitter re-enabled after reset.
 
 Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
 Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
@@ -62,40 +57,32 @@ Cc: stable@vger.kernel.org # v6.5+
 ---
 No change from v1.
 ---
- drivers/tty/serial/sb1250-duart.c |   22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+ drivers/tty/serial/sb1250-duart.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-linux-serial-sb1250-duart-reset-drain.diff
+linux-serial-sb1250-duart-prom-console.diff
 Index: linux-macro/drivers/tty/serial/sb1250-duart.c
 ===================================================================
 --- linux-macro.orig/drivers/tty/serial/sb1250-duart.c
 +++ linux-macro/drivers/tty/serial/sb1250-duart.c
-@@ -516,6 +516,28 @@ static void sbd_init_port(struct sbd_por
- 
- 	if (sport->initialised)
- 		return;
-+	/*
-+	 * Contrary to documentation, which says that the transmitter
-+	 * empty bit is set when "there are no characters to send and
-+	 * the transmitter is idle," the bit is already set by hardware
-+	 * once the transmit FIFO has been drained only and while the
-+	 * transmitter shift register still holds data being supplied
-+	 * to the line.  Consequently issuing a transmitter reset at
-+	 * this point causes the final character outstanding to be lost.
-+	 *
-+	 * Moreover, resetting the transmitter while transmission is
-+	 * in progress appears to make the transmitter go out of sync
-+	 * and subsequent characters issued after the transmitter has
-+	 * been reprogrammed and re-enabled are sent corrupted or with
-+	 * their bit patterns shifted.
-+	 *
-+	 * So once the transmitter empty bit has been set wait an extra
-+	 * amount of time, sufficient for the transmitter shift register
-+	 * to drain at 115200bps, which is the baud rate setting used by
-+	 * a standard CFE firmware compilation.
-+	 */
-+	sbd_line_drain(sport);
-+	udelay(100);
- 
+@@ -542,14 +542,19 @@ static void sbd_init_port(struct sbd_por
  	/* There is no DUART reset feature, so just set some sane defaults.  */
  	write_sbdchn(sport, R_DUART_CMD, V_DUART_MISC_CMD_RESET_TX);
+ 	write_sbdchn(sport, R_DUART_CMD, V_DUART_MISC_CMD_RESET_RX);
+-	write_sbdchn(sport, R_DUART_MODE_REG_1, V_DUART_BITS_PER_CHAR_8);
++	write_sbdchn(sport, R_DUART_MODE_REG_1,
++		     V_DUART_PARITY_MODE_NONE | V_DUART_BITS_PER_CHAR_8);
+ 	write_sbdchn(sport, R_DUART_MODE_REG_2, 0);
++	write_sbdchn(sport, R_DUART_CLK_SEL, V_DUART_BAUD_RATE(115200));
+ 	write_sbdchn(sport, R_DUART_FULL_CTL,
+ 		     V_DUART_INT_TIME(0) | V_DUART_SIG_FULL(15));
+ 	write_sbdchn(sport, R_DUART_OPCR_X, 0);
+ 	write_sbdchn(sport, R_DUART_AUXCTL_X, 0);
+ 	write_sbdshr(sport, R_DUART_IMRREG((uport->line) % 2), 0);
+ 
++	/* Re-enable transmission for the initial PROM-based console.  */
++	write_sbdchn(sport, R_DUART_CMD, M_DUART_TX_EN);
++
+ 	sport->initialised = 1;
+ }
+ 
