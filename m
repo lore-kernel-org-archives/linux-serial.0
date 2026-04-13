@@ -1,34 +1,32 @@
 Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8BE0423EAB0;
-	Mon, 13 Apr 2026 03:28:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CA4022E3FE;
+	Mon, 13 Apr 2026 03:28:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776050909; cv=none; b=KK+Keqay0/owhyorYccuJTG6Vr5V82phHr+zDScx1vK8xxma435Y9m4CWi2pJIUg6bzDbDzT+SaQ6cwTbzfWFa5IFM9pkxofAZN09GCzL0zObE0zZHj/6T8GpsNPxAOhJjx7ofMStyMpZGxsIKnfi8K5/yM1IDwhFyKVxaClKpw=
+	t=1776050915; cv=none; b=vBTPIN0WmZi2+tgO9Sk321+yPCMZ++DMGhV/70axz/cqDJvs2WWjNE3O7ssbWnggRcf8zpL5xFOxxJomIbsYSKJqoWT5+ETHF86xG0DAb4Uz0jkb4CB3BbWFmVhCs8LK500bHB7tkHbn0kF9GTT8dQnRBseKi25LcO8nUAITuoY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776050909; c=relaxed/simple;
-	bh=emvE8RlhhU0V86UPkLLqP5M9FSUDraGz9EwYVizFvpw=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=Qj82RLqFDdaRCXlcbcR183+vty2gQTRWo2LlVGHGipXxXTGoIRiNpPQgWEISQDee+/wSJlJScM8/aYKV2NXOAqSF5e3ICbPdoW7eicnZRajSQyXMiFuZtBZATvJS14HEgwc7IEFP0hCGQJABSjpskbOI3NnQuPIFxUNA4Z2syXw=
+	s=arc-20240116; t=1776050915; c=relaxed/simple;
+	bh=tdmIlm4xawZg9c91HigNM/ksIlEOvWt3Ih65ZDATfyc=;
+	h=Date:From:To:cc:Subject:Message-ID:MIME-Version:Content-Type; b=pL9+HfBFHibeLtxJtDnXgYeeP7CJJguUuYgaLh9OZaBK6GIGRvXgDBp/pBd1+1NSLNHhkcIdjnrM0Xze53VcXWNqNsAq31mZs5OpNN8V92BWFvn6yS+EQWJzkPeFOkhGpGvz56Y6kwmvj24gqora2m6I0lf6glnUcf+KcEvGs4M=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
 Received: by angie.orcam.me.uk (Postfix, from userid 500)
-	id A725B92009D; Mon, 13 Apr 2026 05:28:27 +0200 (CEST)
+	id 0B85992009D; Mon, 13 Apr 2026 05:28:33 +0200 (CEST)
 Received: from localhost (localhost [127.0.0.1])
-	by angie.orcam.me.uk (Postfix) with ESMTP id A181292009B;
-	Mon, 13 Apr 2026 04:28:27 +0100 (BST)
-Date: Mon, 13 Apr 2026 04:28:27 +0100 (BST)
+	by angie.orcam.me.uk (Postfix) with ESMTP id 05E1F92009B;
+	Mon, 13 Apr 2026 04:28:32 +0100 (BST)
+Date: Mon, 13 Apr 2026 04:28:32 +0100 (BST)
 From: "Maciej W. Rozycki" <macro@orcam.me.uk>
 To: Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
     Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
     Jiri Slaby <jirislaby@kernel.org>
-cc: linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, 
-    linux-serial@vger.kernel.org
-Subject: [PATCH 8/8] MIPS: DEC: Ensure RTC platform device deregistration
- upon failure
-In-Reply-To: <alpine.DEB.2.21.2604102250060.29980@angie.orcam.me.uk>
-Message-ID: <alpine.DEB.2.21.2604110042130.29980@angie.orcam.me.uk>
-References: <alpine.DEB.2.21.2604102250060.29980@angie.orcam.me.uk>
+cc: Elena Reshetova <elena.reshetova@intel.com>, 
+    David Windsor <dwindsor@gmail.com>, Kees Cook <kees@kernel.org>, 
+    Hans Liljestrand <ishkamiel@gmail.com>, linux-mips@vger.kernel.org, 
+    linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 0/4] MIPS: SiByte: Fix serial device regressions
+Message-ID: <alpine.DEB.2.21.2604130239560.29980@angie.orcam.me.uk>
 User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -38,38 +36,39 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 
-Switch RTC platform device registration from platform_device_register() 
-to platform_add_devices() so as to make sure any failure will result in 
-automatic device deregistration.
+Hi,
 
-Fixes: fae67ad43114 ("arch/mips/dec: switch DECstation systems to rtc-cmos")
-Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
----
- arch/mips/dec/platform.c |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ Starting from commit 84a9582fd203 ("serial: core: Start managing serial 
+controllers to enable runtime PM") the driver for the SiByte onchip DUART 
+has stopped working due to a null pointer dereference in the serial core, 
+which means a kernel crash at bootstrap if the driver has been enabled, as 
+is usually the case for the system console.
 
-linux-mips-dec-platform-rtc-unregister.diff
-Index: linux-macro/arch/mips/dec/platform.c
-===================================================================
---- linux-macro.orig/arch/mips/dec/platform.c
-+++ linux-macro/arch/mips/dec/platform.c
-@@ -38,6 +38,10 @@ static struct platform_device dec_rtc_de
- 	.num_resources = ARRAY_SIZE(dec_rtc_resources),
- };
- 
-+static struct platform_device *dec_rtc_devices[] __initdata = {
-+	&dec_rtc_device,
-+};
-+
- static struct resource dec_dz_resources[] = {
- 	{ .name = "dz", .flags = IORESOURCE_MEM, },
- 	{ .name = "dz", .flags = IORESOURCE_IRQ, },
-@@ -137,7 +141,7 @@ static int __init dec_add_devices(void)
- 	}
- 	num_zs = i;
- 
--	ret1 = platform_device_register(&dec_rtc_device);
-+	ret1 = platform_add_devices(dec_rtc_devices, 1);
- 	ret2 = IS_ENABLED(CONFIG_32BIT) ?
- 	       platform_add_devices(dec_dz_devices, num_dz) : 0;
- 	ret3 = platform_add_devices(dec_zs_devices, num_zs);
+ This patch series addresses the issue by switching the driver away from 
+legacy probing to using platform devices.  A notable consequence of this 
+is the serial console is only switched from the bootconsole handler that 
+uses firmware calls over to our serial driver at the time the driver is 
+being properly brought up.  This causes messages to be produced to the 
+console between the device reset and console setup, which in turn causes 
+the firmware still being called via the bootconsole handler to loop 
+forever owing to the transmitter having been disabled.
+
+ Therefore introductory change 2/4 is included to fix the issue by doing a 
+rudimentary device setup right after reset, using parameters compatible 
+with those used by the firmware (115200n8).  There is auxiliary change 1/4 
+included as well that prevents message corruption from happening at reset, 
+which becomes more prominent due to the change in timing, with the driver 
+switch to the platform device, of messages produced to the console.
+
+ Additionally there is a revert included as change 4/4 for a regression 
+introduced by an earlier change that caused previously good code to fail 
+requesting the control register resource shared between DUART channels, 
+and issue a warning to the kernel log.  Not to be backported as strictly 
+speaking the driver works just fine despite the missing reservation.
+
+ See individual change descriptions for details.  Verified with a SWARM
+(BCM91250A) system.
+
+ Please apply.
+
+  Maciej
