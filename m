@@ -1,134 +1,78 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44169391E73;
-	Sat, 11 Apr 2026 15:10:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0D2812E3FE;
+	Mon, 13 Apr 2026 03:28:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775920249; cv=none; b=YY6RNG+MoXevD38ODOOaQsneK9ECMo09r7EiTol++sSm1bs6jpTs1Mx5aVmXnEP5LECUpmxKz+wm1FVQLoB2Xk3PXt8o9P+QRa6YPhjxDSBB7ZTjpeT7P1EL/WcxBIJnVze3XoYLvFJJzilY3r5HYMSSeVgYs9ErkCc+tF13p3o=
+	t=1776050883; cv=none; b=Keu9krDpJaf/cYwIFzK0ItmV9PmwlIfdQcFTG2kpLT2CNf4x1PzIFlFu5WUKDCcSHkl7eCWNYGn2lAzOfVeZCmxPIV9hz8ZSMfDncn2CP8aPAcQb8um8NglYmeiXvlZhOkjVE9vfxg1sipfm9UMJUdgV5iHpqWDJA2uA1bf4Gbw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775920249; c=relaxed/simple;
-	bh=uSIsF7cpS82JnUoFXcvDfUEMG73KIwGnxGRJ1Ir5e58=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=dIyjcNe6Zx4TLabRpum8qcS6rqzuQMeuFduwoXYZZiSaj+BcDrIcACk2X/5WuPA05hPcfKENhsCatYDGjbA69TWxQONbwdB0NyCbCAevKrhVfJYt5m4oQB1jv2q10SVBRwjvXSHwWlTFwZ2H3u9pm+CEw0T8DlYsTZRZP30vdeg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=d9yUqXs/; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="d9yUqXs/"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AFC05C2BCB3;
-	Sat, 11 Apr 2026 15:10:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1775920248;
-	bh=uSIsF7cpS82JnUoFXcvDfUEMG73KIwGnxGRJ1Ir5e58=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=d9yUqXs/pMB3muNpiJJBOPukSSphWAqpWlFyxOA+jwOPRZ8JmslxtRWh9xZOAlhM5
-	 rg9upIJSvafQLvKI1MvYvclDVu7FhPejfHjcshDUs9+QV08+xFZpXes3ovaZkk9AnZ
-	 DY4jxkszvMa0aUwNYx6n5DQ723/vAN5RL99SHB2SQOC9t9Iwsi8GfFkkPKQydeAFd5
-	 lhTSKXYL+IMam1ym36PbfrpkVHlbSvUZ+zrWEIgF2g/k0DZ12mka12qd0TkL9YhXBF
-	 Y/aymVG/GsdtB+TwHFt/2lqsi1sZ0zgE+hOZYJFKNXeMjr9INocA8nRMFY9xP2CciY
-	 MNL/pBWAFr1HA==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F050F3ED57;
-	Sat, 11 Apr 2026 15:10:47 +0000 (UTC)
-From: Markus Probst via B4 Relay <devnull+markus.probst.posteo.de@kernel.org>
-Date: Sat, 11 Apr 2026 17:10:36 +0200
-Subject: [PATCH v4 2/4] serdev: add rust private data to serdev_device
+	s=arc-20240116; t=1776050883; c=relaxed/simple;
+	bh=8mofEHyiLeMCm+5yvmFofvywXpwuoenuZcMe+lYHv/g=;
+	h=Date:From:To:cc:Subject:Message-ID:MIME-Version:Content-Type; b=WoA99cdTzVUt4gSch2TwLoq3MDT/dBSUTwr2st/XD3TU+sALDJwp1aAl5V96fZiT6/ZI9Ua1jIllcuDbNwCih6HDjox+KxR1Edgl7huPkQZGWAydZDN53zzLfDn3sJR4y0KjfTTqWtk1KJKeCy9MP+ZAxo/lVJqYJHCifx7PgvQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+	id 0115692009C; Mon, 13 Apr 2026 05:27:52 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+	by angie.orcam.me.uk (Postfix) with ESMTP id E7CFF92009B;
+	Mon, 13 Apr 2026 04:27:52 +0100 (BST)
+Date: Mon, 13 Apr 2026 04:27:52 +0100 (BST)
+From: "Maciej W. Rozycki" <macro@orcam.me.uk>
+To: Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
+    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>
+cc: linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, 
+    linux-serial@vger.kernel.org
+Subject: [PATCH 0/8] MIPS: DEC: Fix serial device regressions + RTC cleanup
+Message-ID: <alpine.DEB.2.21.2604102250060.29980@angie.orcam.me.uk>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260411-rust_serdev-v4-2-845e960c6627@posteo.de>
-References: <20260411-rust_serdev-v4-0-845e960c6627@posteo.de>
-In-Reply-To: <20260411-rust_serdev-v4-0-845e960c6627@posteo.de>
-To: Rob Herring <robh@kernel.org>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, Miguel Ojeda <ojeda@kernel.org>, 
- Gary Guo <gary@garyguo.net>, 
- =?utf-8?q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
- Benno Lossin <lossin@kernel.org>, Andreas Hindborg <a.hindborg@kernel.org>, 
- Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>, 
- Danilo Krummrich <dakr@kernel.org>, 
- Kari Argillander <kari.argillander@gmail.com>, 
- "Rafael J. Wysocki" <rafael@kernel.org>, 
- Viresh Kumar <viresh.kumar@linaro.org>, Boqun Feng <boqun@kernel.org>, 
- David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
- Boqun Feng <boqun@kernel.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
- rust-for-linux@vger.kernel.org, linux-pm@vger.kernel.org, 
- driver-core@lists.linux.dev, dri-devel@lists.freedesktop.org, 
- Markus Probst <markus.probst@posteo.de>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1717;
- i=markus.probst@posteo.de; h=from:subject:message-id;
- bh=ECl35l4KVjDGQ1987vPeXlJAH328JZDbp6x8p1+V+Tw=;
- b=owEBiQJ2/ZANAwAIATR2H/jnrUPSAcsmYgBp2mR1/rC3QYG4lv8x7+e0BHsEaO6Kzftuyrn4x
- i7TZYRqvjOJAk8EAAEIADkWIQSCdBjE9KxY53IwxHM0dh/4561D0gUCadpkdRsUgAAAAAAEAA5t
- YW51MiwyLjUrMS4xMiwyLDIACgkQNHYf+OetQ9KcAg/9EvXGx8GdJdStcMtxvrNEM5CZHOVl3Lc
- NstwET4wP7IwuaA+tFIH3/sr9iA4nbjloefAA7PWihsomU9kmYOK5mz+WvIZugAjYt/85U/A7oy
- JqaVjNd/atsJTbMEK5yGQazTzSkBf4y3khdcSodR/HbLOa4T9rcDHez4xwViN6fNuStr+lxiCAK
- By/90NqzIuioqG9IcAjDdT5K9FQh+gm29QJErC3yJCvOiP0s2c5dnrRkz5iXfjQX11BiRz+I+q8
- PHWUHOTRMRYxnaPRYp4+KRKu6u39l/OBO7KyvtMOkXIV626+6Zck4rgJ6SVNwNOUYIIgatgPJ0F
- QMFElDMw8YKkV4Z7u7yTJoLyQsC2CtDW+8EjjzoAWUT9kV6CVaYIhXLOEDHxp3+da8depLa3YHL
- 7koqy2eZforhueezp0fjEijmTft53BVzAdupQ+loZGyfM1sNwnuEuu0ce9ljpZPmT+AzkxlCQRn
- RFg15B3sOTaN14kTbOJyqFoAkKlGyloJ/2l4te7VeicuzLVoOw3bpXanGN3LL3eXBF3IVn10fpK
- 7ZSQFGDv/L+JZSN8CrzUGCIbOjh7KdQSXG/tPLE47NjUhfkVskOScyvZIUvUm9g+B5XZwMS2U45
- eZBXC6NOVornad+0dwaHvgAph5a4E7xspX4Ez/jbomhXPDfmw3tU=
-X-Developer-Key: i=markus.probst@posteo.de; a=openpgp;
- fpr=827418C4F4AC58E77230C47334761FF8E7AD43D2
-X-Endpoint-Received: by B4 Relay for markus.probst@posteo.de/default with
- auth_id=680
-X-Original-From: Markus Probst <markus.probst@posteo.de>
-Reply-To: markus.probst@posteo.de
+Content-Type: text/plain; charset=US-ASCII
 
-From: Markus Probst <markus.probst@posteo.de>
+Hi,
 
-Add rust private data to `struct serdev_device`, as it is required by the
-rust abstraction added in the following commit
-(rust: add basic serial device bus abstractions).
+ Starting from commit 84a9582fd203 ("serial: core: Start managing serial 
+controllers to enable runtime PM") drivers for serial devices used with 
+the DEC platform have stopped working due to a null pointer dereference in 
+the serial core, which means a kernel crash at bootstrap if the relevant 
+driver has been enabled, as is usually the case for the system console.
 
-Signed-off-by: Markus Probst <markus.probst@posteo.de>
----
- include/linux/serdev.h | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+ This patch series addresses the issue by switching the drivers away from 
+legacy probing to using platform devices.  A notable consequence of this 
+is the serial console is only switched from the bootconsole handler that 
+uses firmware calls over to our serial driver at the time the driver is 
+being properly brought up.  This causes messages to be produced to the 
+console between the device reset and console setup, which in turn causes 
+the firmware still being called via the bootconsole handler to loop 
+forever owing to the transmitter having been disabled.
 
-diff --git a/include/linux/serdev.h b/include/linux/serdev.h
-index 5654c58eb73c..c74c345d60ae 100644
---- a/include/linux/serdev.h
-+++ b/include/linux/serdev.h
-@@ -33,12 +33,14 @@ struct serdev_device_ops {
- 
- /**
-  * struct serdev_device - Basic representation of an serdev device
-- * @dev:	Driver model representation of the device.
-- * @nr:		Device number on serdev bus.
-- * @ctrl:	serdev controller managing this device.
-- * @ops:	Device operations.
-- * @write_comp	Completion used by serdev_device_write() internally
-- * @write_lock	Lock to serialize access when writing data
-+ * @dev:	       Driver model representation of the device.
-+ * @nr:		       Device number on serdev bus.
-+ * @ctrl:	       serdev controller managing this device.
-+ * @ops:	       Device operations.
-+ * @write_comp:	       Completion used by serdev_device_write() internally
-+ * @write_lock:	       Lock to serialize access when writing data
-+ * @rust_private_data: Private data for the rust abstraction. This should
-+ *		       not be used by the C drivers.
-  */
- struct serdev_device {
- 	struct device dev;
-@@ -47,6 +49,7 @@ struct serdev_device {
- 	const struct serdev_device_ops *ops;
- 	struct completion write_comp;
- 	struct mutex write_lock;
-+	void *rust_private_data;
- };
- 
- static inline struct serdev_device *to_serdev_device(struct device *d)
+ Both drivers are affected and therefore introductory changes 2/8 and 3/8 
+are included to fix the issue by doing a rudimentary device setup right 
+after reset, using parameters compatible with those used by the firmware 
+(9600n8).  There are auxiliary changes 1/8 and 4/8 included as well, that 
+respectively prevent a message corruption regression from happening at 
+reset due to the change in timing of messages produced to the console with 
+the dz driver switch to the platform device, and simplify reset handling 
+in the zs driver by issuing a channel rather hardware reset.  Then 5/8 and 
+6/8 actually switch the respective drivers to use platform devices.
 
--- 
-2.52.0
+ A tiny update follows, 7/8, that enables modular build for the dz driver, 
+not to be backported as not a bug fix.
 
+ Finally 8/8 is a small cleanup for the existing RTC device, included in 
+the series and then last only, due to a mechanical dependency and neither 
+for backporting, as it only addresses a code quality issue for a failure 
+scenario that is not expected to trigger in reality.
 
+ See individual change descriptions for details.  Verified with a 5000/200 
+machine for the dz driver, and with 5000/150 and 5000/260 systems for the 
+zs driver.
+
+ Please apply.
+
+  Maciej
