@@ -1,216 +1,124 @@
-Received: from smtpout-02.galae.net (smtpout-02.galae.net [185.246.84.56])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f48.google.com (mail-pj1-f48.google.com [209.85.216.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0D512D0603;
-	Wed, 15 Apr 2026 14:57:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.246.84.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AA373603E9
+	for <linux-serial@vger.kernel.org>; Wed, 15 Apr 2026 18:34:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776265029; cv=none; b=nQ5jDbiiWlwgnap6aLET57e6sDd6rGRkd8dQtIgg6CT4JQ27CgwAuqEev5HXh8jGL52al2ICrq1rxrLRHtBgkTjnxJP6thJ5zP7MOEyjL9tvDitNhWa7XnYrH39tPOvazRxOT+iDg3wucdGlX9/NNgYLL8pdhWr557s8gEphx6Q=
+	t=1776278090; cv=none; b=GIxc0NC1XI1pjeJixqRFvJqpQIKnEgSNaTIutdLSXY/VDmru0bh2YOyy3LcAQqD41t1llDNxULX+coY9rHKw2gbYBbPM3IQOWPfTNbtSf7TV6h1Vkt3OkTFVdesbobCxxKIiiaacn+FfxXnYecr0qKm7dRBdtjM3ue+Yl4f4Ocw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776265029; c=relaxed/simple;
-	bh=1S2kdSoru/ifNvwgwwUu/EShTTtvBQkznTzuC20u86I=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=dKd6O9rUDcbdDc4wOwby9ZSxZ/4rBKBKFVqVwXF7FQ49NrLQK0wCZpn7Eeiqom/LVRJlYC5wuPfS4hAxA4VjfWHCh74fPnqB6k7OvoAarGOu4K0NlaE/j805XEbBzKQP+8U6LIeePkEDNjVjxZ6f2kzodDyZNh7lK/jO6Oo36W8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=odMVGQ2n; arc=none smtp.client-ip=185.246.84.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
+	s=arc-20240116; t=1776278090; c=relaxed/simple;
+	bh=EdXmTvb5iJMARAAgUZi6IM1Lzl1CxlswTvTQaFCjcZ8=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=TEuAidYjK4PNVw1XN+bSQISXIAs5gxdGDAqcx45pJ/DhlbmjNDrcuceWB3Gqj6+8Y+SnNWmxQ/KDzqkDWORHFG/pb9jN36VSFAlNA5RxhW1KHn1Ls3rUd+HwHMPz4Igaa5uToQ8xrDbV1YI3I3tVy96V2yylki/t6XATebAtxeE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IQET4FmE; arc=none smtp.client-ip=209.85.216.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="odMVGQ2n"
-Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
-	by smtpout-02.galae.net (Postfix) with ESMTPS id BF20B1A32D8;
-	Wed, 15 Apr 2026 14:57:05 +0000 (UTC)
-Received: from mail.galae.net (mail.galae.net [212.83.136.155])
-	by smtpout-01.galae.net (Postfix) with ESMTPS id 7D7B360420;
-	Wed, 15 Apr 2026 14:57:05 +0000 (UTC)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id A90DA10459FC4;
-	Wed, 15 Apr 2026 16:56:53 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
-	t=1776265023; h=from:subject:date:message-id:to:cc:mime-version:content-type:
-	 content-transfer-encoding:in-reply-to:references;
-	bh=wNrWnquhsR0dlE0WJjRS5Whb5Pw+B2YUuFT6hABZVPw=;
-	b=odMVGQ2nxDTLW1G3zgpTCupAd+WE2qFmsXEHoMqdccBJm6+seTVkYni4wkvFut2s/DTE9G
-	rQgJl0iu49WoTtlt1D/ZKPek9XtvZcEmNB9JnLU3j86MKSmxk0y1H4eOFoLP4pJQsWK0+w
-	LDUa2pRoeccJ5yO0iFUiIEbEnbUiIajUOclrFN+JeJ62x/Xy4nqUEFN9xkXGH+zLdqVXtx
-	kehs4bdgRvsag91OXjg4XIBY8DTEtrZvQr4puEi8w9yA6S832dhmPp7KfxTskDf4t6OHwQ
-	pnPSy6MjhtDRs2iRsgVjZI0ToOQtgYM1i8qxDLRKg3x0iefOJqJW241JPYnlmg==
-Date: Wed, 15 Apr 2026 16:56:51 +0200
-From: Herve Codina <herve.codina@bootlin.com>
-To: Chen-Yu Tsai <wenst@chromium.org>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Manivannan
- Sadhasivam <mani@kernel.org>, Manivannan Sadhasivam
- <manivannan.sadhasivam@oss.qualcomm.com>, Rob Herring <robh@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, Nathan Chancellor <nathan@kernel.org>, Nicolas
- Schier <nicolas.schier@linux.dev>, Hans de Goede <hansg@kernel.org>, Ilpo
- =?UTF-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Mark Pearson
- <mpearson-lenovo@squebb.ca>, "Derek J. Clark" <derekjohn.clark@gmail.com>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Marcel Holtmann <marcel@holtmann.org>, Luiz Augusto
- von Dentz <luiz.dentz@gmail.com>, Bartosz Golaszewski <brgl@bgdev.pl>,
- Bartosz Golaszewski <brgl@kernel.org>, linux-serial@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
- platform-driver-x86@vger.kernel.org, linux-pci@vger.kernel.org,
- devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- linux-bluetooth@vger.kernel.org, linux-pm@vger.kernel.org, Stephan Gerhold
- <stephan.gerhold@linaro.org>, Dmitry Baryshkov
- <dmitry.baryshkov@oss.qualcomm.com>, linux-acpi@vger.kernel.org, Hans de
- Goede <johannes.goede@oss.qualcomm.com>, Bartosz Golaszewski
- <bartosz.golaszewski@oss.qualcomm.com>, Luca Ceresoli
- <luca.ceresoli@bootlin.com>
-Subject: Re: [PATCH v7 0/8] Add support for handling PCIe M.2 Key E
- connectors in devicetree
-Message-ID: <20260415165651.153b573d@bootlin.com>
-In-Reply-To: <CAGXv+5EPA29G-fsH=wWOD8AK6TZFezFhsE0NHPYj_Pt3nT+d_w@mail.gmail.com>
-References: <20260326-pci-m2-e-v7-0-43324a7866e6@oss.qualcomm.com>
-	<20260413075459.GA2626902@google.com>
-	<fpcs4p62f35a5qyqwgm5ysa73stbysxcr62tkmmkrrcvsuf4t4@4ivukyqjey57>
-	<eeytuhqpgdz4do4tgtbmfntub2femtyq7bij7svhodpyjwaylx@j3gmvq2a2zqc>
-	<CAGXv+5E=tujhtZjwi6Qm7hk3Ks74UzTQHWq82NiTEw1+vYod5g@mail.gmail.com>
-	<ad36pIu-0dutL7Nk@ashevche-desk.local>
-	<CAGXv+5EGe59nJctLweEdZjb3MNmMvjuCHngGSfptzN985OiLdg@mail.gmail.com>
-	<ad4tJN27opdEooA7@ashevche-desk.local>
-	<CAGXv+5EPA29G-fsH=wWOD8AK6TZFezFhsE0NHPYj_Pt3nT+d_w@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.52; x86_64-redhat-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IQET4FmE"
+Received: by mail-pj1-f48.google.com with SMTP id 98e67ed59e1d1-358ed696623so3252352a91.0
+        for <linux-serial@vger.kernel.org>; Wed, 15 Apr 2026 11:34:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1776278088; x=1776882888; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=cipgUIxDH1EraQWdbgHFxKTYEd0SYP1EjujyQwqyAUw=;
+        b=IQET4FmEX+DjZLOuxYojPfLx4fO9M6adJYho9jgrwimvkWP/bemB2lXzMPVSjT9goT
+         lXor0h+GBGR8s6+Pa2Lf11eBlQrKDxNVtW6fKQOWen5Cf9gTFDRcJfsZUlUt9SDREq+Q
+         oJEumszdP09k3NPlp/QGBYf/YIQYZAo9VpfDg88C/0+cHfv66WeENctbhb3yqxj6au0G
+         LpFs2T8ImLuKeeJSbBSznGetYPwA1NBQOqCpbse5Ml0jEGIqPM447FOvsuBgM1rwrDMC
+         BsqRf6M1ym7heBLEzC0/jmNg6Z57yGVE+B8fpiv2xlO17GebHy8fRZjBkIMKxnmzgVEG
+         sl0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776278088; x=1776882888;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=cipgUIxDH1EraQWdbgHFxKTYEd0SYP1EjujyQwqyAUw=;
+        b=BnRwTba6jZ/mKsJ/qJE7GjaRsiYgtxW+i94Ui7Iix5blGpoVNnGqoAFbSnIZO3YO9F
+         H+i9xulcAuwacRYEAXjOhSGHSs2w/JTaOQKnFVUSOIs0CtnfFewSuzJ0KOeYADP4FADu
+         qPkGxpZgDvic8dFgDh4w5ts2+ug6hQHPx1BBaWFv0G8NOEFhhgLXeV/9agoYJneE/XGX
+         CHCFW51HXH6h87J/+NWkBlJBkMMAzkX+K0Q1hmrSX9cwlAtLjQaeEY0+I6Zz9H36CbsX
+         X/+e4739eNUzoyJtjuO0dlDCRR8m+uFb7cXFAfgVVK3pQcXWTfptuW/Ke2hSuRZg/jsV
+         uZvw==
+X-Forwarded-Encrypted: i=1; AFNElJ+snJLDOdJcHIShYcK/69jxhN+z7Su1l/J/4PgzQI8TKkk3LkweOCtqjx+GhML+Ne6sL02ygI6fnLmRxyo=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwxwGhj4PrI1JojEXU74Pbu0vNoaEPWJN8mKe5g8yEPNkCjHMck
+	iqMB8T2fdbRPfXvQq+G96O9RHydwOWKzBN5FsXrb6GgZIyQKtT+3HGJo
+X-Gm-Gg: AeBDies/eS9FWhgGJEwgcyJro4mKUuuxIv03yxlx/ySPQd1ZZRPH1csd8MzZvdqDQFn
+	lFwhUErCW6HVtMGJMU0QYrUC50PxjzbBv3qnXy5onnbnnOAIKqfvGKlZWFfUYANGwjiS++4cWRJ
+	9ziiNNUwXdefSewe1D5bbdX640o41JhHz/0eXYL/fUD+t3twq0lbHtWSxXrdVSzy0kG6jXASwpJ
+	6HrVvmW4oJYSG9UQLWgXgSTndZd/tNLsWEST88Nazwtm2d5OaV52KDMOoeuke0ylH1ox06dpC04
+	EiHFOb+mRWwyYfG+vshWlFL+znqttjz3kpfWnTc/5T6pVJm1oqrd9GMcpO31tSi0YWOpppAYUsb
+	wigmrQZaRJpZvbO4hr8ZazD7vXIJAuNEJTPV19BHnFOH3ZSiP6Yl5VGPsMvtnTP1Q+7VR+7OaRf
+	661sKE9XrtgtO5JatRyS9qLvDGrxbga0WX2uCckDX9Bfevdw==
+X-Received: by 2002:a17:90a:d4f:b0:35f:9ab2:a5bb with SMTP id 98e67ed59e1d1-35f9ab2a834mr9337216a91.10.1776278087627;
+        Wed, 15 Apr 2026 11:34:47 -0700 (PDT)
+Received: from lgs.. ([2409:893d:1171:10e2:93ee:194:b07d:a9b2])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-35fce6e8e06sm1695268a91.0.2026.04.15.11.34.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Apr 2026 11:34:47 -0700 (PDT)
+From: Guangshuo Li <lgs201920130244@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Guangshuo Li <lgs201920130244@gmail.com>,
+	Russell King <rmk@dyn-67.arm.linux.org.uk>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Cc: stable@vger.kernel.org
+Subject: [PATCH] serial: 8250_accent: fix reference leak on failed device registration
+Date: Thu, 16 Apr 2026 02:34:36 +0800
+Message-ID: <20260415183436.3763871-1-lgs201920130244@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Last-TLS-Session-Version: TLSv1.3
 
-Hi Chen, all,
+When platform_device_register() fails in accent_init(), the embedded
+struct device in accent_device has already been initialized by
+device_initialize(), but the failure path returns the error without
+dropping the device reference for the current platform device:
 
-...
+  accent_init()
+    -> platform_device_register(&accent_device)
+       -> device_initialize(&accent_device.dev)
+       -> setup_pdev_dma_masks(&accent_device)
+       -> platform_device_add(&accent_device)
+
+This leads to a reference leak when platform_device_register() fails.
+Fix this by calling platform_device_put() before returning the error.
+
+The issue was identified by a static analysis tool I developed and
+confirmed by manual review.
+
+Fixes: ec9f47cd6a14c ("[PATCH] Serial: Split 8250 port table")
+Cc: stable@vger.kernel.org
+Signed-off-by: Guangshuo Li <lgs201920130244@gmail.com>
+---
+ drivers/tty/serial/8250/8250_accent.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/8250/8250_accent.c b/drivers/tty/serial/8250/8250_accent.c
+index 1691f1a57f89..e9cf40268c0e 100644
+--- a/drivers/tty/serial/8250/8250_accent.c
++++ b/drivers/tty/serial/8250/8250_accent.c
+@@ -25,7 +25,13 @@ static struct platform_device accent_device = {
  
-> 
-> I'm not arguing for a even more generic "M.2" connector. The "key" is
-> already described in the compatible. I'm saying we should have some way
-> of describing the individual interfaces (PCIe, SDIO, USB, UART, I2S, I2C)
-> on the connector so further nodes or properties can be attached to them,
-> either with overlays or dynamically within the kernel. Right now the
-> are only described as individual ports, but we can't actually tie a
-> device to a OF graph port.
-> 
-> But maybe I'm overthinking the representation part. AFAICT for Qualcomm's
-> UART-based BT bit part, Mani just had the driver create a device node
-> under the UART (by traversing the OF graph to find the UART). If that's
-> the desired way then the connector binding should mention it. And that
-> works for me. But I think it's messier and also we're missing an
-> opportunity to make the M.2 connector a standardized attachment point
-> for overlays.
-> 
-> Mani, could you also chime in a bit on what you envisioned?
-> 
-> (Added Luca from Bootlin to CC, as I think there are parallels to the
->  "Hotplug of Non-discoverable Hardware" work)
->
-
-Related to "Hotplug of Non-discoverable Hardware",
-
-I would add entries for busses in the connector without using an OF graph.
-
-For I2C and later SPI, this was is done.
-
-You already have an i2c-parent property but no node where an i2c device
-can be added.
-
-The last discussion related to hotplug, connectors and DT led to the RFC
-series [1].
-
-It is a huge series. The last patch give a real example of representation:
-  https://lore.kernel.org/all/20260112142009.1006236-78-herve.codina@bootlin.com/
-
-In your case I would see some thing like:
-
-    connector {
-        compatible = "pcie-m2-e-connector";
-        vpcie3v3-supply = <&vreg_wcn_3p3>;
-        vpcie1v8-supply = <&vreg_l15b_1p8>;
-
-	/*
-	 * If those GPIOs have to be used by components available in
-	 * the connected board, a Nexus node should be used.
-         */
-        w-disable1-gpios = <&tlmm 115 GPIO_ACTIVE_LOW>;
-        w-disable2-gpios = <&tlmm 116 GPIO_ACTIVE_LOW>;
-        viocfg-gpios = <&tlmm 117 GPIO_ACTIVE_HIGH>;
-        uart-wake-gpios = <&tlmm 118 GPIO_ACTIVE_LOW>;
-        sdio-wake-gpios = <&tlmm 119 GPIO_ACTIVE_LOW>;
-        sdio-reset-gpios = <&tlmm 120 GPIO_ACTIVE_LOW>;
-
-	conn-i2c {
-		i2c-parent = <&i2c0>;
-
-		/*
- 		 * Here i2c devices available on the board
-		 * connected to the connector can be described.
-		 */
-	};
-
-	/* Same kind to description for other busses */
-	conn-pcie {
-		pci-parent = <&xxxxx>;
-
-		/*
-		 * The PCIe bus has abilities to discover devices.
-		 * Not sure this node is needed.
-		 *
-		 * If a PCI device need a DT description to describe
-		 * stuffs behind the device, what has been done for LAN966x
-		 * could be re-used [2] and [3]
-		 */
-	};
-
-	conn_uart {
-		uart-parent = <&uart-ctrl>;
-
-		/* uart child (maybe a serdes) should be describe here
-	};
-
-	...
-    };
-
-Of course, some DT symbols need to be exported in order to have them usable from
-the DT describing the connected board.
-
-This notion of exported symbol is not yet available upstream and is the purpose of
-the RFC series [1].
-
-[1] https://lore.kernel.org/all/20260112142009.1006236-1-herve.codina@bootlin.com/
-[2] https://elixir.bootlin.com/linux/v7.0/source/drivers/misc/lan966x_pci.c
-[3] https://elixir.bootlin.com/linux/v7.0/source/drivers/misc/lan966x_pci.dtso
-
-Feel free to ask for more specific question if needed.
-
-Best regards,
-Hervé
-
-> 
-> Thanks
-> ChenYu
-> 
-> 
-> > > The latter part is solvable, but we likely need child nodes under the
-> > > connector for the different interfaces. Properties that make sense for
-> > > one type might not make sense for another.
-> > >
-> > > P.S. We could also just add child device nodes under the controller to
-> > > put the generic properties, but that's splitting the description into
-> > > multiple parts. Let's not go there if at all possible.  
-> >
-> > --
-> > With Best Regards,
-> > Andy Shevchenko
-> >
-> >  
-
-
-
+ static int __init accent_init(void)
+ {
+-	return platform_device_register(&accent_device);
++	int ret;
++
++	ret = platform_device_register(&accent_device);
++	if (ret)
++		platform_device_put(&accent_device);
++
++	return ret;
+ }
+ 
+ module_init(accent_init);
 -- 
-Hervé Codina, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+2.43.0
+
