@@ -1,70 +1,74 @@
-Received: from mail-pj1-f50.google.com (mail-pj1-f50.google.com [209.85.216.50])
+Received: from mail-pf1-f178.google.com (mail-pf1-f178.google.com [209.85.210.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AE2A3128C6
-	for <linux-serial@vger.kernel.org>; Wed, 15 Apr 2026 02:48:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2471146B5
+	for <linux-serial@vger.kernel.org>; Wed, 15 Apr 2026 03:17:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776221340; cv=none; b=pzJUMzeUfrc6aix8clj6IsqzbF8Cja7tiawt7909JSP/bvnhcPDrhpS8MMmSu4aUfsrMYqTycUMbeHCuWR6XAPrNexoe8X5C7onZuKYLccX5BiaFXUbDwOCDbqE2aPtl3Bft+bR9sKxc2RPiJdgXa9Alqpk0DVoEw32pBKycK+4=
+	t=1776223075; cv=none; b=UCFZTrIyei0QBd8g1WTGjdDQe7kN6I5B+lhOh8eqgzQXcPqF5G2E9Ev8vRwK4o9blplgCwkgU8nUwMD7Lb89QJwlAUC1wZaDkjwFWmrKRGuxyPSg73d6dEfbzluGEhZwwNFtY8ID2VjROgY8qefL735O3S2/rZCUGPXKGRnSZc4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776221340; c=relaxed/simple;
-	bh=G3xuL8FKw+jWISAi0R0MJNOxevV7rT62xf/okzXkd4c=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=I+wXkhF+clNJNbq8Lfy/uRRk+rX8+Z3Hh0M73idCD5MVFpFpvDb6uB+AWMBiOIeaGY1K9na2F1ZClvPElSMc7EP2zq/gTJoHAadUvZ1EdsJW7k+hQSr4mDfSFKy6KZNwz9C/kyBPW+ZjVF1d541hEgclYkYKi8tpFt3RXldZnaI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TamwuCTU; arc=none smtp.client-ip=209.85.216.50
+	s=arc-20240116; t=1776223075; c=relaxed/simple;
+	bh=T4Ghe2c7fSFbmSl2w/hfc5FFF+awiXu3PdaD4faJT7g=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=uCBuTgw0tX2vDKw9x7FDH+f5TxLEukA10iBcMd5g32AfX20yEq3/utvu4HJaTWF43/o4Y7GANvDyMrKMRYJlaJ7n/oD0hqRqtf5qOcUaNtqtagJncjxAXw6AxQ9CJu5qFnYrdwHXXtkoRzBJ77O9w6Bbxc0ooF6EBZMp21DPVA0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MwDNx5so; arc=none smtp.client-ip=209.85.210.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TamwuCTU"
-Received: by mail-pj1-f50.google.com with SMTP id 98e67ed59e1d1-35dac556bb2so3634507a91.1
-        for <linux-serial@vger.kernel.org>; Tue, 14 Apr 2026 19:48:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MwDNx5so"
+Received: by mail-pf1-f178.google.com with SMTP id d2e1a72fcca58-82f22f6b0feso1743669b3a.0
+        for <linux-serial@vger.kernel.org>; Tue, 14 Apr 2026 20:17:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776221338; x=1776826138; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Ile0uMxJExfK9K7honJWpeyBlmJiO3c8q7kZ0+QNxMc=;
-        b=TamwuCTU/YkDEkX3jnnr4esQh27hgWkI9bDInusSd+H6NVj2V2gZqR4F0ZS9aOaA2l
-         f2EEogD0z65Os1BKV8ZJfCfmGQFwqpfSfR7lAw6+l3XQPRFA7cD3R0DUMW8Xgf9jPz2R
-         MLKFlA2nZ7S5wIrF/2A7HkQxTGBCvbxHCj5P8rdR1FmAK7/uExnqW26y3r7T9Sve/a+L
-         UUdepFdACgwgjmWl7OyKhI/1w6wiZqf9JjBIv5nsGHqCo20Ini3oGrAdZ2Re5opWDP37
-         KOaH+eJeJcMgqQme5pzsvfidqrgqpoYzyd7XRmmHgFawfmi2bQGIYVp07eVKK4nuu9dX
-         x53g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776221338; x=1776826138;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1776223072; x=1776827872; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Ile0uMxJExfK9K7honJWpeyBlmJiO3c8q7kZ0+QNxMc=;
-        b=nsiwvjH5HPMIkDxGrnxkagSjQtMppYo3U0r2dI1TT1SzwieVMv9ZPfbRLAW+hEtZb2
-         yQfcPIjGt5yjxULFLVJaZlJK0jHK3h1MCWcBLVBGffqYgt0CHiqJ7P7ifIBrqfK5cllS
-         h6t/t6h4iaaQ2/rj26n9r9DmTzptk2WeGqW8Tl10+Ph0XgaogZlPM9RDD7+jP0gt8hqR
-         iCSCIq+yOpNMjBsrayAHifD5xZtnxnIRctIdqiauLIsIOAe2NPCJWWPYYiC5eXIFczbi
-         2/9U7NjYOngTx/Lepm6CB8xU6+bvREgpwDlkpIPQPOO0tYU9r/P52DNqzJCQE4iaLIit
-         ZqfA==
-X-Gm-Message-State: AOJu0YxbhtK8WWvS0UeozcXqNfZCZZsgkvJp89jI+WGFt96XsBSGjzNB
-	+czTvSFX4qdTjw203EGWWMDpY2UQhMt96QncP1R0mooNVZ5FcfrTMev3gfghOEvPvmg=
-X-Gm-Gg: AeBDietYTM4ZEnOPTboZlDElwAljLpaaRGWf1tmy5joZQ60yov/aSX363gwbL/THuBc
-	Ec8rmwH9QzTxafS9WBHRoJngOuFF2otm3NIPwUhWRboyW+gb/sXJcFJgaxtGX4byhON4NrOPF4g
-	spD+v6byqrcS5q6PyF8re44Br1YXfaOISMv2k/Oh6I4+bC14Wst/wqNaeRdCCK4Ir/cZtO3sD7Z
-	SsIyoubAWM3GANbHigY3Gg1hG0pvyQqYnAmjlal8FCREgnxhV+t11W0vMsaK5aTDdAXhYTAdujX
-	sJqPrINNlHVEGCX8v2qKmnpD2sxG4c8sY3NZv/Yr6KWDsr1RxS9KwmsD/LK4zr2NsCwMer29Nqz
-	rNMD0Izd3LisswthgwDSRBLkKgVFkhaZDf/STojuC7LSx8kTUNN7aJk1O0s+bFpjlG8/nOQkymg
-	2Jx6ildlma2HFffpmRAaTm5EDXrZzNE7LS
-X-Received: by 2002:a17:90b:3c48:b0:35d:ac4d:3cb6 with SMTP id 98e67ed59e1d1-35e4254f8ffmr19960048a91.5.1776221338198;
-        Tue, 14 Apr 2026 19:48:58 -0700 (PDT)
-Received: from localhost.localdomain ([117.186.117.206])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-35fd0830459sm285550a91.6.2026.04.14.19.48.54
+        bh=Bw6zrmhzVgl0erKx0cVU8q8Z5LVFJZ2NKhxP0jYrwQM=;
+        b=MwDNx5soOkMqzlZ8mJ4VIyr3MeMR4FvG+wPhbXxHe68HaoIUwOsm4nlRj9tGJyNEb7
+         qExgijPUS0ArpZISSHrXB+AxVlQHIe5npWnkJgXBvEwebkojISpdaAfULFWvXnsP8ZT1
+         Uze1w5NWKc2RjSdY11UP7N8edY0UokgRRH32lXA64CghYAbm0gGipcnyw6NDdp4durxd
+         HWz9hAxN87d9CvNYsy3EfqDFO36cudnhqKY14lVYOJBxMTcqjAELssovMCszwFuL4UNC
+         /ZlHfWaFHoEjKtUifqA9Nzg3WogZZT8BoyUcyR0gVQkml6zCafEoK/oFTqdHQRPNOE5N
+         wkrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776223072; x=1776827872;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=Bw6zrmhzVgl0erKx0cVU8q8Z5LVFJZ2NKhxP0jYrwQM=;
+        b=S1bYVIm+saGgQDmR3rPRNtW5p9IvbpOMBO/s/o99CkZrppW/K5KC+37gfacdce9l2W
+         YwfG2y5hWUMSjHhlbZRVOW+KHXekot95MLSJdzUsYP1rhbfZM0CfPC+3R0Hr5rur555t
+         eOLvZLLE5vRoORZxbJYetrFj+admU8yDP5xjRpF7SESK0eSmwCW53/Buas7IHoxbhbjE
+         dMXQdXzFMd3CrDoHExcFqU6hcrXK3BH7Q8a0EOu0lPf0Hb9sWgvSJQ14ha+tl7DgXch8
+         7doDl5nTFS+SkJSnGWQ5UQ+1Wk0Yiarrlq+KHCnDcAahkQRBBa0sd4bBy5rEWUEYlqjL
+         blKg==
+X-Gm-Message-State: AOJu0Yz7rOw+D8E4tcGYtCsNCr+aKXHsVaOTrqrEOFG3sLNYRoKGFg78
+	/BwKtH++e6LGk2RtLiOZjh485Gcp2WHRfrqy3d2J7OfoeL0S5FWFkocK
+X-Gm-Gg: AeBDievJMkaoWc2rcXpBF0+8Oad60m4FACu0z69xTiT46adBitZXNSo9sM9m1EYa/FK
+	bLDLr/kjihdYluLfpOupOI9ZyZQBH6cS+c9O7ZOP/n9bkwSu2xF0mUzy9x06Vstot1pPkP2CsT3
+	DUsNDkqAAhzChdgL/cOA9AwKymye4Ed5UM5SNrk4+DLGkibE/xdMey030glfWLFXVaCDZuKqRIr
+	XXHLE58dA4T6d1mOPvMV+ku3GogQ+hBI55W93F4b4J9+IDIuVR8UmvZcJB/ICasnLXBMEyVpoQC
+	T4KihPSs/eKW1XS0N9huUb7G2IFGv1E3TVZ7pYm/X7UCearhiY5NuBAVDE+FZQp6hOHP0nhj06X
+	o0fv4OtRQ6iy2pRxKuictsW/i2cnjO/Bih5khCVJyEPos2Svan1UgIgx06yKG9N5eFWw3MoOgKM
+	2EAuDm9WbLg9sz/axJSVPTqJULILjMtcXuPV9Bsq4zCLWNq1Y=
+X-Received: by 2002:a05:6a00:3e07:b0:82f:33ed:88a7 with SMTP id d2e1a72fcca58-82f33ed8a79mr12518419b3a.2.1776223072281;
+        Tue, 14 Apr 2026 20:17:52 -0700 (PDT)
+Received: from home-hyperv.mshome.net ([103.136.124.6])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82f673e0ca3sm504273b3a.30.2026.04.14.20.17.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Apr 2026 19:48:57 -0700 (PDT)
+        Tue, 14 Apr 2026 20:17:51 -0700 (PDT)
 From: "Kito Xu (veritas501)" <hxzene@gmail.com>
 To: gregkh@linuxfoundation.org,
 	jirislaby@kernel.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	"Kito Xu (veritas501)" <hxzene@gmail.com>
-Subject: [RFC] tty: n_gsm: fix use-after-free in gsmtty_install
-Date: Wed, 15 Apr 2026 10:48:46 +0800
-Message-ID: <20260415024846.2918702-1-hxzene@gmail.com>
-X-Mailer: git-send-email 2.43.0
+Subject: [PATCH] tty: n_gsm: fix use-after-free in gsmtty_install
+Date: Wed, 15 Apr 2026 11:17:31 +0800
+Message-Id: <20260415031731.107667-1-hxzene@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20260415024846.2918702-1-hxzene@gmail.com>
+References: <20260415024846.2918702-1-hxzene@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -90,6 +94,39 @@ race condition:
                                         |    -> kfree(gsm)
     gsm->dead           // UAF!        |
     mutex_lock(&gsm->mutex) // UAF!    |
+
+KASAN report:
+
+ BUG: KASAN: slab-use-after-free in gsmtty_install+0x6cf/0x830
+ Read of size 1 at addr ffff88800fd440ac by task poc/170
+
+ CPU: 0 UID: 0 PID: 170 Comm: poc Not tainted 7.0.0-rc7-next-20260410+ #20
+ Call Trace:
+  <TASK>
+  dump_stack_lvl+0x64/0x80
+  print_report+0xd0/0x5e0
+  kasan_report+0xce/0x100
+  gsmtty_install+0x6cf/0x830
+  tty_init_dev.part.0+0x92/0x4a0
+  tty_open+0x8ab/0x1050
+  chrdev_open+0x1ec/0x5e0
+  do_dentry_open+0x419/0x1260
+  vfs_open+0x79/0x350
+  path_openat+0x212c/0x3a70
+  do_file_open+0x1d2/0x400
+  do_sys_openat2+0xdc/0x170
+  __x64_sys_openat+0x122/0x1e0
+  do_syscall_64+0x64/0x680
+  entry_SYSCALL_64_after_hwframe+0x76/0x7e
+  </TASK>
+
+ Allocated by task 169 on cpu 0 at 3.824684s:
+ Freed by task 169 on cpu 0 at 3.892012s:
+
+ The buggy address belongs to the object at ffff88800fd44000
+  which belongs to the cache kmalloc-1k of size 1024
+ The buggy address is located 172 bytes inside of
+  freed 1024-byte region [ffff88800fd44000, ffff88800fd44400)
 
 Acquire gsm_mux_lock before reading gsm_mux[] and take the refcount
 via kref_get() while still holding the lock, so the mux cannot be
