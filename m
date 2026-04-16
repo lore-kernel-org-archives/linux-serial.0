@@ -1,123 +1,100 @@
-Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out-181.mta0.migadu.com (out-181.mta0.migadu.com [91.218.175.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4EB639B95C
-	for <linux-serial@vger.kernel.org>; Thu, 16 Apr 2026 09:41:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.44
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776332473; cv=pass; b=WAO/A4HgxyP9WqN/cxCGyFFSDGZEDOJ8yfhb9Z0Ol0X2RZVg5rX9lXoaNs/nrKYsEmIdR4dTb8hRLflg9iBjvOaHcTW/v3SCie1WJNV5pCSfFVwu9pFN6zfS05FTU3TY9yu2KzgMU6dzDd5n42Cpdpwrzgxdk4/yXJhak7nY22c=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776332473; c=relaxed/simple;
-	bh=cG4548azMUJidAQp6NjVAMNvQq4FIjgWTNc8tKDbEh0=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=BJBdyrQ/yl8VIr96+6D7ilpqbch/TfTConc2cD4je27iPgOOA7SAHoIIgT9BOhmrQkZpml4LXY2jhXTsMeYKqXADuMc350y+woUJNGGfMAMAUybZzgwTFZL2YWsSdv2vQg/m8O0VlOODaWacbqMZK8DzP7LhZ/Ro/9550VWZ/nc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MiF586on; arc=pass smtp.client-ip=209.85.218.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D385C37C11C
+	for <linux-serial@vger.kernel.org>; Thu, 16 Apr 2026 10:03:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.181
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776333800; cv=none; b=aC/Pi/UNXp5Htf7STdVByOGHL6/LeNo6sqDUqM1kFrp8oMW5Z4jMEyhody/fPPcUv/Y3S725h+9amMbe7XrnF43+rVh1EIUGv1WVc5s3fj3p6XcsO0LBkyz40wICBEFhiQUa1EtBwDRr9MKUzUz1R6OlJby9wVegAAEGwwdxXg4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776333800; c=relaxed/simple;
+	bh=Esp682fhQROLW7Tl5GvuP0h1OWdaGoVocDFrMm4l+gc=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=lDWS5NBDol4Be0pJHIr2OH91tVZtbqfNoSnU4pxp2mSlRvsvwI9T5Lb9JxIMO+ssdCX0CFNZhl8Pl/TrOxlTdncLM7OiHlXm5JVhEWUOFxvllEdrSy4e24X5YoTglOTktZAjDgKZ8OM2DS4jyGpFdMDsbzCp1f8e9eAkzDIP+mQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=kmPHWVQd; arc=none smtp.client-ip=91.218.175.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MiF586on"
-Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-b79f8f7ea43so1350745066b.2
-        for <linux-serial@vger.kernel.org>; Thu, 16 Apr 2026 02:41:11 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1776332470; cv=none;
-        d=google.com; s=arc-20240605;
-        b=iHQBYV6eD1YE+HStX3DZY5v30s+4lOrse5IPSYytEKnmGkeOopyNnWrlZalMY/wWJr
-         +aO+gOHFHK1JNe6oqpwJyl0dGaUnpDgaXX0Wcw5Q2ZuSYcvD2tawzX/G6EKBhSHpp/Em
-         bri4kVobiDIEDm2PLhv3ggGs+gIVLyQQKtGe/Yi8hbyFJa2lALUOrJMRs+XOdTk6+uBY
-         ARVJR0VS9ABrDM6ueI2uW/Atk31CAct7+AY7VcoKyR8T8GSSNeSSQYs15ZnswfshHcp5
-         JHZvVznUdpLoTRP+MwTOLRJZdO9nA9hrMLv8BjVlCi9SSeW+rNrhOXvW+5LnJBP/V5Sr
-         8Ihg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=cG4548azMUJidAQp6NjVAMNvQq4FIjgWTNc8tKDbEh0=;
-        fh=g2recCASZ3cjfwl5EJZRP6bGBeMNHtxBTQfCQLEVRa4=;
-        b=Am5aVHyP0b6/lKIEuLebUJx2m6HY9dn4Svop83zpSEOlqRAdOXGs4Pqq8KTRgA9T3i
-         5bwl6rTiYUn7QupXHyb2huyEAcnbpcpYRiR2xf9wB769UIl0YtjWd9KHAqsHRYIQwSbF
-         QelTXjGp27RFVBEhXeTvEJqtjiv9nhozMzL1y91N58vNck3OuLDX11rjjsQtZfy4HISM
-         AGK2iwgRiEeC6baKNjKfkA+5Y+VvWeT9xHx6HGC4xsAvIMDmE7nSo0tpMuFmMS5+bD0K
-         DSP9x7q9xTn0Dyd7O6EtQQjhpzYkZFlMh7P4ORDEuo1WN6w8bKChVcE8a9IxjXe+fBnB
-         /wbA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776332470; x=1776937270; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=cG4548azMUJidAQp6NjVAMNvQq4FIjgWTNc8tKDbEh0=;
-        b=MiF586onq1Zm6pjf0JIlEDkU4LQc9pVhh+6STxT/ez8cSGHiLYqR9j/x3VT+4p9rdd
-         h2oqnMRKD2vZbj5XDLhXB1YvKIaYb6liARLZv5hOINaniB7pjRQXgfl7y9HmZprOvo+U
-         EPk337ES45hQUGduXqMGEtYlxFoWnmP2rhxAN2GdM4qb0+l934BF0tcrd4O41PmLn5xO
-         9ZWuFAG1zN7D67mbQSlpYMmDXle0N5/PL9pgnfRv0UwGyVY31Q4xr9eIA2ewRzk5GHns
-         /41RRQim/me2UEqrSfNvmElkfFIWdMZeUlHYHdSqhOtf/o2wbaJE6gOYttgHA5AIz6ed
-         nL8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776332470; x=1776937270;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=cG4548azMUJidAQp6NjVAMNvQq4FIjgWTNc8tKDbEh0=;
-        b=R5VzMcfCniwOJJHUL7uTFZPwL8rZK3SLxRjIvzsDoQLngHAtKq3n1yzPG2prjIVv2p
-         bGm7dryHu7KFeeuXpddvrHXlDIgdXTKZ80Xbzv4sj6wS0I+eAm/4jCyCeu17p3KOefjy
-         65CiYk0Jnt5iX88n3kBb4Yn9rPNcyghx2tOom36GTUWMJf86VRVuhrwkRIb79Nape51s
-         wSs54n233DhOamMyA1I8qinZjt8OMjJMc9wyk8dVGz8lwNuXrmUhlgrMZzxy8tde2lmB
-         DRnNCr9FMU//yLxUwvoXowyN5O88OcpbKdIpV71UEeOBsKGs0C9/FS9FccZLiIUd+rx8
-         9Ccw==
-X-Forwarded-Encrypted: i=1; AFNElJ+uKee2JwQw73GEwrG9BrSmmWakb7U/5Xv245PYrF+OJmIC0gUqq2+ecv3EIoir3rSHZGqa1SkIXtVl8cg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxUlkgC0v0GfchB6Q0AmDV99yBmuGK7jNR/08zj4ewJVs6GlqQw
-	3plmBgh4geJ5078OlrWY5mvohsdnxnY93dNIoACMvRbWaBMQR+OnESvp0IZhHrtmibAZ4GULy50
-	NHEDtNUTnDOYWsW2tddKMtkeYzXekV1k=
-X-Gm-Gg: AeBDietpyNVJzPEHwk9wIGLfbtVVwVIM5aqcojoRMY9SRewsHgqj0oJVH29fKfpKvA9
-	+MAc0UqptucbPLE6cnVstyXNYHjPS+IotyGrRVf+vk2X458LvrS11ZZ3wkd5KJTYENj/wo7foaq
-	jD7Eqk3wVG4az+IYYfNrmNSNTp5tEAWUnm9psyXvA28ArIqXihvRkhVNIdSZ1+QE6Ec5n4gdYHB
-	kIX3KrSTlZl39xfldWVCK+FfDdQMjCs5Z9FKgG4GQaxZdHKcADdlDpNZX9INF5Q3ikOinDdVCEq
-	nYa8h07eWHkourrYulmu/NAeMzT3vVaqFBYF5KOFAfkcX/4HA2xV4ejuEJRXUHjETlcNstgP5DI
-	mXAY8ap0dgniZm0xaBg==
-X-Received: by 2002:a17:907:c80e:b0:b9c:b475:90ff with SMTP id
- a640c23a62f3a-b9d7298086emr1515467966b.30.1776332469578; Thu, 16 Apr 2026
- 02:41:09 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="kmPHWVQd"
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1776333796;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=ES7FomgV3m+vLUS23YNm+x7cA2lc7YU+mz8wh6yoknw=;
+	b=kmPHWVQdFM8YV9i2B8aaTFjdHUa1UOcrRnystsf+n+afbarA3tIe2j1EoA+07cBPpzx3/7
+	H7tiVgNXHHpASqwvqSEESUkOHj6rtfzS4utfn7JQohkHGydh54z140YjkgD0zY+r6IW9nb
+	ch/k9eMGJDrD1fETIY5gkyan7sFPft0=
+From: Fushuai Wang <fushuai.wang@linux.dev>
+To: andy.shevchenko@gmail.com
+Cc: fushuai.wang@linux.dev,
+	gregkh@linuxfoundation.org,
+	ilpo.jarvinen@linux.intel.com,
+	jirislaby@kernel.org,
+	kees@kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	osama.abdelkader@gmail.com,
+	wangfushuai@baidu.com
+Subject: Re: [PATCH] serial: 8250: Clear CON_PRINTBUFFER on port re-registration 
+Date: Thu, 16 Apr 2026 18:02:54 +0800
+Message-Id: <20260416100254.30581-1-fushuai.wang@linux.dev>
+In-Reply-To: <CAHp75Vfrw6jLWOm6gC3gjMnUrvyd5nxvS16sJj5TP_JxaDSDNQ@mail.gmail.com>
+References: <CAHp75Vfrw6jLWOm6gC3gjMnUrvyd5nxvS16sJj5TP_JxaDSDNQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260416092917.27301-1-fushuai.wang@linux.dev>
-In-Reply-To: <20260416092917.27301-1-fushuai.wang@linux.dev>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Thu, 16 Apr 2026 12:40:33 +0300
-X-Gm-Features: AQROBzClv3-tECA0GUWuoch9Wk6VZN8qul1Q-EnS6OmgD5p8Lf72HFisXPx1M9E
-Message-ID: <CAHp75Vfrw6jLWOm6gC3gjMnUrvyd5nxvS16sJj5TP_JxaDSDNQ@mail.gmail.com>
-Subject: Re: [PATCH] serial: 8250: Clear CON_PRINTBUFFER on port re-registration
-To: Fushuai Wang <fushuai.wang@linux.dev>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	ilpo.jarvinen@linux.intel.com, osama.abdelkader@gmail.com, kees@kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	wangfushuai@baidu.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
 
-On Thu, Apr 16, 2026 at 12:29=E2=80=AFPM Fushuai Wang <fushuai.wang@linux.d=
-ev> wrote:
+>>
+>> From: Fushuai Wang <wangfushuai@baidu.com>
+>>
+>> When two PnP devices map to the same physical port, the serial8250 driver
+>> removes and re-registers the console structure for the same port.
 >
-> From: Fushuai Wang <wangfushuai@baidu.com>
+> Is it a real device out of there? Can you share what that is?
+
+Yes, it's a real device.
+In my Intel(R) Xeon(R) 6971P-C machine, the boot log shows:
+	[   17.242984] 00:04: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
+	[   17.251352] printk: console [ttyS0] disabled
+	[   17.257934] serial 00:04: Runtime PM usage count underflow!
+	[   17.258360] 00:05: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
+	[   17.258516] printk: console [ttyS0] enabled
+	[   29.643013] serial8250: ttyS1 at I/O 0x2f8 (irq = 3, base_baud = 115200) is a 16550A
+
+The issue occurs when BIOS "Serial Device" option is set to BMC:
+	  Setup Question  = Serial Device
+  	  Help String     = Sets the Serial Device used to output bios serial log
+  	  Token   = 9003   // Do NOT change this line
+  	  Offset  = 2F8
+  	  Width   = 01
+  	  BIOS Default =[01]BMC
+  	  Options = *[01]BMC       // Move "*" to desired Option
+            	    [02]S3M
+
+So 00:05 may be the BMC serial port device. From ACPI paths:
+	/sys/bus/pnp/devices/00:04/firmware_node/path: \_SB_.LPC0.UAR1
+	/sys/bus/pnp/devices/00:05/firmware_node/path: \_SB_.UAR1
+
+>> During re-registration, the console structure still has CON_PRINTBUFFER set
+>> from the initial registration, which causes console_init_seq() to set
+>> console->seq to syslog_seq. This results in re-printing the entire
+>> system log buffer, which may lead to RCU stall on slow serial consoles.
+>>
+>> Clear CON_PRINTBUFFER when re-registering a port to prevent duplicate
+>> log printing.
 >
-> When two PnP devices map to the same physical port, the serial8250 driver
-> removes and re-registers the console structure for the same port.
+>Seems like the Fixes tag is missing.
 
-Is it a real device out of there? Can you share what that is?
+Yes, I will add Fixes tag lately.
 
-> During re-registration, the console structure still has CON_PRINTBUFFER s=
-et
-> from the initial registration, which causes console_init_seq() to set
-> console->seq to syslog_seq. This results in re-printing the entire
-> system log buffer, which may lead to RCU stall on slow serial consoles.
->
-> Clear CON_PRINTBUFFER when re-registering a port to prevent duplicate
-> log printing.
-
-Seems like the Fixes tag is missing.
-
---=20
-With Best Regards,
-Andy Shevchenko
+-- 
+Regards,
+WANG
