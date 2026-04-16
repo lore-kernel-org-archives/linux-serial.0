@@ -1,108 +1,200 @@
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4475391854
-	for <linux-serial@vger.kernel.org>; Thu, 16 Apr 2026 08:33:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81E95391E75;
+	Thu, 16 Apr 2026 08:34:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776328385; cv=none; b=P/He6QqJ9IFYnelJF7og1y2oA5TGtChxgcGba3NyO041xPkZGZF2L1KaAgKNSffHcXb2PfEFpCHHvKD+g0vdRvE1WQNTUQVNZAfunJ5bwfng1Im8AnaN8LNHPMnqSNwKjvpUMHpKQ3a94A7e4xRzrWqibeXsimb2MLatCVhODIc=
+	t=1776328496; cv=none; b=dxYCSUZe+DZDDHhv4D5rZD7BjBUCrBGYmmC4wlD0MdsOruK/yMkqGlbfvDXvteC7AlOvDhQnp6pCvbOBNRRPNrapoQRKokp1GrywJtWiyWT8/IDI+UY9nEXqeXvXapCnNW7kQIR5iDcAzgWD3Tk3pPL9aUp3hWflQIQ4Jj2v/c0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776328385; c=relaxed/simple;
-	bh=A1fxQVZSsEx64SGWOmsIpHCEl3H8zC+buug9pDZnkOk=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Xs3p76B9/p6GUumjHBvzqQ3wKI92IShWRMiaFsY9KWAFTHKoAbF3CfcZxKq8AGM9poaA8hn0h86t/zvVYBb4x71ZWCjgMwd9t29ISpUhlIDvsYD8cHTWoQ1S7DnRAl8KyqwUw8gWMjrwD/fAmLLfQxk1fywsLo//Lm2t9g1xOSQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eWBPS1+J; arc=none smtp.client-ip=209.85.128.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1776328496; c=relaxed/simple;
+	bh=aM4+d7l5SobaIHWwosmsIax5/zWaIyefWpD4h8VccEg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=RfCi2DKV9pLA0D8ukdn0RngqAcPLWDRB/J1HPrAmJ9Y7TxpfHCbzgg5828TUv1KvGuwCBCaQs1F0MerKUvFHYtOjuZvhNlcjwY7iRhszjx61WB8CBK7IoUI0p/YqMGRsxM37jKFi1lzPODYGMsj9tAtOqiVUM+XHIsPwvgCryIM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EI2+kHOe; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eWBPS1+J"
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-482f454be5bso3756725e9.0
-        for <linux-serial@vger.kernel.org>; Thu, 16 Apr 2026 01:33:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776328382; x=1776933182; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=A8KwIRBAxcL/Nko4wwgY9WARhqxl2Sh933ZVC+mUoA4=;
-        b=eWBPS1+JpqSr5JBBovqdarFwURoJ35YWYAC6pccmzup5sUX4ooIt/L4TVsoTCp4jT/
-         ul14k88jNA7cM/cRE9fyOs1WiCz7z0no6Zq7XaaKxmSHGWflA++C+O4c8+zxFJeUvOig
-         JMsWXby6d8ibTm0Uaz/jNxtXfhy9jgXGsrXQ4ZiAq89kgL4beRbDoPkP+OG6WLxi+o1C
-         YYatYS5hxgPyP0OE5+eK7qpWwxGLFOpcAJzNHhJe/R1pUaQ4w7WNQ9qWrh82AH9kM0Gr
-         pF/qqYjluqqEVCwR0GnPsSjCwHqzjyzsCHZxCCEWL1rlQbeuWfYBdThe7uqAl6fa/Gvq
-         G4vw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776328382; x=1776933182;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=A8KwIRBAxcL/Nko4wwgY9WARhqxl2Sh933ZVC+mUoA4=;
-        b=gGm4Tns64D9MnPUnCCuqbOIttqWzcMnK36nJhtrgoGpMp45jsmY+7b40LYfBm+uS9W
-         OrpQw3CoC2NnBkpjegW8t4DFIft4SQN8gMp6d8mO7HbI9HFEIk917IFq4BP5TOnBXtNP
-         nTsTBcsrxkYquvItW7zdEgbatbLBnsjaE5Uq5IHcze9Iej88pAFgfQ8wkAtYd/wE+1bn
-         WOxo/xcy6kShn//ANRPDHAaXXQdBI5A1WVudE8G7w0xUnU7QcMIT2yU9mo0chvkRCXwQ
-         INaIyEMtaHsd2dQiYfF5vowSlr1Eudmu7UuRPz7ly3YhLkrGWcm2cHRdZc6+gavGNSfS
-         j8Tw==
-X-Forwarded-Encrypted: i=1; AFNElJ/12jk2l79/baIm7LMveRAHxnr0/lG3C2jIKn/NTJwiPAZ4zVsSTV9LFg4+Z3srpsLfA8PfjZsvC4jSD5w=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzTC0CiLga+6xWkvaxioZb0vyxXy1WbuYTbEXoP45lscytKDH9x
-	qJHit5pZFXmUAtuPVo/vScFPST44Y+MN8KdfscvuT+WoMN/vNbUd7WSA
-X-Gm-Gg: AeBDieusaxjhRk9IkKK0VoGC4drJwMredWuXgzti34VUlaYxTbuty6P/JQvQ8vjyjel
-	DHaHz7/SA/j+oWwawDTqg5rXKgU/lPmxXdVg3sN+EQNVs347HUiCaPaA20YN4KplJC+NpvNJSxL
-	hFaAiorH45mih5uJFg2COIZmdeiyqpOnorQzUTRTEu5cPzUh+r8d9etyoH8y1gdlTdZgQzB4gx7
-	WJ8MSm1N1ND8Is43ejc5/xQ+TzSLtT+XeU6GT+khk3KSZX9NeXuwCeajhUDGIpFf7PH6QFkODEA
-	ifVlEskPmxY5Y+sdbtb9xlWBfZkMXlwYmZjFv6xpPdQV569XCWWg2HflkiNwmvvSn1l9XjhW37V
-	rzWCoqUET5u2j2GXJuoIiM7HI3G+5DYQV/Rf1uGrNAhaVMw2hg2Se95XR0+Yo3e43f5ZkzEV6nv
-	a5v4uGfzweuWNXrzt4bbA7raNNrMyrNw==
-X-Received: by 2002:a05:600c:1549:b0:485:3cef:d6ea with SMTP id 5b1f17b1804b1-488f4823c3dmr34362705e9.13.1776328382058;
-        Thu, 16 Apr 2026 01:33:02 -0700 (PDT)
-Received: from fedora-dev ([46.10.223.24])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-488f5854097sm41107735e9.12.2026.04.16.01.33.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Apr 2026 01:33:01 -0700 (PDT)
-From: "Nikola Z. Ivanov" <zlatistiv@gmail.com>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	Frank.Li@nxp.com,
-	s.hauer@pengutronix.de,
-	kernel@pengutronix.de,
-	festevam@gmail.com
-Cc: linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	imx@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	"Nikola Z. Ivanov" <zlatistiv@gmail.com>
-Subject: [PATCH] serial: mxs-auart: Compare the return value of gpiod_get_direction against GPIO_LINE_DIRECTION_IN
-Date: Thu, 16 Apr 2026 11:32:54 +0300
-Message-ID: <20260416083254.1798-1-zlatistiv@gmail.com>
-X-Mailer: git-send-email 2.53.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EI2+kHOe"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A59AEC2BCB3;
+	Thu, 16 Apr 2026 08:34:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1776328496;
+	bh=aM4+d7l5SobaIHWwosmsIax5/zWaIyefWpD4h8VccEg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=EI2+kHOe/DSVW7CnFneR5MVopc93u+GXckFYs8+VSkPIcMFQWRZgP5q80n6iB1eiX
+	 aoNUEwlqhXD+o+H9Eh11VuiH+quE4tAbQTtlE80W7c2LYprKl/R7Qjni/yScZ14lDN
+	 Wvc1heA3ps2ph6X5y2R8R9fPI0wghozxYGHyPeDwvjLCQp0CS+CXJU7Cnh67pjqPQm
+	 xG53TF8arOZmLIP9mOWvsmIDxybYzZ+Lbj0Ug/slhEhOriwaIrC2pN0DQqauKZ7hdx
+	 MeMVb/IVzD9Jq2gRYN0O0zx/vHqqSqA30ro36X42rb6yE9cdu+ySyEC0vvg2SKuHBU
+	 FwYQLiWDwwJ8w==
+Date: Thu, 16 Apr 2026 14:04:38 +0530
+From: Manivannan Sadhasivam <mani@kernel.org>
+To: Chen-Yu Tsai <wenst@chromium.org>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+	Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>, Rob Herring <robh@kernel.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Nathan Chancellor <nathan@kernel.org>, Nicolas Schier <nicolas.schier@linux.dev>, 
+	Hans de Goede <hansg@kernel.org>, Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, 
+	Mark Pearson <mpearson-lenovo@squebb.ca>, "Derek J. Clark" <derekjohn.clark@gmail.com>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Marcel Holtmann <marcel@holtmann.org>, Luiz Augusto von Dentz <luiz.dentz@gmail.com>, 
+	Bartosz Golaszewski <brgl@bgdev.pl>, Bartosz Golaszewski <brgl@kernel.org>, 
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org, 
+	platform-driver-x86@vger.kernel.org, linux-pci@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org, linux-pm@vger.kernel.org, 
+	Stephan Gerhold <stephan.gerhold@linaro.org>, Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, 
+	linux-acpi@vger.kernel.org, Hans de Goede <johannes.goede@oss.qualcomm.com>, 
+	Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>, Luca Ceresoli <luca.ceresoli@bootlin.com>
+Subject: Re: [PATCH v7 0/8] Add support for handling PCIe M.2 Key E
+ connectors in devicetree
+Message-ID: <7kpwgrxgtrpavmm2aezv66csuumma6wzsqtwvmojwgrtiqasjf@gczv34l6pnma>
+References: <20260326-pci-m2-e-v7-0-43324a7866e6@oss.qualcomm.com>
+ <20260413075459.GA2626902@google.com>
+ <fpcs4p62f35a5qyqwgm5ysa73stbysxcr62tkmmkrrcvsuf4t4@4ivukyqjey57>
+ <eeytuhqpgdz4do4tgtbmfntub2femtyq7bij7svhodpyjwaylx@j3gmvq2a2zqc>
+ <CAGXv+5E=tujhtZjwi6Qm7hk3Ks74UzTQHWq82NiTEw1+vYod5g@mail.gmail.com>
+ <ad36pIu-0dutL7Nk@ashevche-desk.local>
+ <CAGXv+5EGe59nJctLweEdZjb3MNmMvjuCHngGSfptzN985OiLdg@mail.gmail.com>
+ <ad4tJN27opdEooA7@ashevche-desk.local>
+ <CAGXv+5EPA29G-fsH=wWOD8AK6TZFezFhsE0NHPYj_Pt3nT+d_w@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAGXv+5EPA29G-fsH=wWOD8AK6TZFezFhsE0NHPYj_Pt3nT+d_w@mail.gmail.com>
 
-The GPIO_LINE_DIRECTION_* definitions have just recently been exposed to
-gpio consumers.h by breaking them out in a separate defs.h file.
+On Wed, Apr 15, 2026 at 04:31:24PM +0800, Chen-Yu Tsai wrote:
+> On Tue, Apr 14, 2026 at 8:03 PM Andy Shevchenko
+> <andriy.shevchenko@linux.intel.com> wrote:
+> >
+> > On Tue, Apr 14, 2026 at 06:29:02PM +0800, Chen-Yu Tsai wrote:
+> > > On Tue, Apr 14, 2026 at 4:28 PM Andy Shevchenko
+> > > <andriy.shevchenko@linux.intel.com> wrote:
+> > > > On Tue, Apr 14, 2026 at 01:03:19PM +0800, Chen-Yu Tsai wrote:
+> > > > > On Tue, Apr 14, 2026 at 12:08 AM Manivannan Sadhasivam <mani@kernel.org> wrote:
+> > > > > > On Mon, Apr 13, 2026 at 07:33:12PM +0530, Manivannan Sadhasivam wrote:
+> > > > > > > On Mon, Apr 13, 2026 at 03:54:59PM +0800, Chen-Yu Tsai wrote:
+> > > > > > > > On Thu, Mar 26, 2026 at 01:36:28PM +0530, Manivannan Sadhasivam wrote:
+> >
+> > ...
+> >
+> > > > > > > > - Given that this connector actually represents two devices, how do I
+> > > > > > > >   say I want the BT part to be a wakeup source, but not the WiFi part?
+> > > > > > > >   Does wakeup-source even work at this point?
+> > > > > > >
+> > > > > > > You can't use the DT property since the devices are not described in DT
+> > > > > > > statically. But you can still use the per-device 'wakeup' sysfs knob to enable
+> > > > > > > wakeup.
+> > > > >
+> > > > > I see. I think not being able to specify generic properties for the devices
+> > > > > on the connector is going to be a bit problematic.
+> > > >
+> > > > This is nature of the open-connectors, especially on the busses that are
+> > > > hotpluggable, like PCIe. We never know what is connected there _ahead_.
+> > >
+> > > I believe what you mean by "hotpluggable" is "user replaceable".
+> >
+> > From the OS perspective it's the same. From platform perspective
+> > there is a difference, granted.
+> 
+> Yes. I just wanted to clarify.
+> 
+> > > > In other words you can't describe in DT something that may not exist.
+> > >
+> > > But this is actually doable with the PCIe slot representation. The
+> > > properties are put in the device node for the slot. If no card is
+> > > actually inserted in the slot, then no device is created, and the
+> > > device node is left as not associated with anything.
+> >
+> > But you need to list all devices in the world if you want to support this
+> 
+> Why would I need to? The PCIe slot representation just describes a
+> PCIe bridge. Granted this might not be entirely correct, but it's
+> what we currently have.
+> 
+> And even then, there are properties like memory-region or wakeup-source
+> that are generic and aren't tied to specific devices.
+> 
+> > somehow. Yes, probably many of them (or majority) will be enumerated as is,
+> > but some may need an assistance via (dynamic) properties or similar mechanisms.
+> 
+> Even if we wanted to add dynamic properties, there is currently no proper
+> device node to attach them to.
+> 
 
-Use this to validate the gpio direction instead of the hard-coded literal.
+There are dynamic device nodes that we need to create for hotpluggable devices,
+if we need to pass the DT properties to the driver. Like how we do it for PCIe,
+serdev. You cannot describe static device nodes in DT for devices attached to
+swappable cards like M.2.
 
-Signed-off-by: Nikola Z. Ivanov <zlatistiv@gmail.com>
----
- drivers/tty/serial/mxs-auart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> > > It's just that for this new M.2 E-key connector, there aren't separate
+> > > nodes for each interface. And the system doesn't associate the device
+> > > node with the device, because it's no longer a child node of the
+> > > controller or hierarchy, but connected over the OF graph.
+> > >
+> > > Moving over to the E-key connector representation seems like one step
+> > > forward and one step backward in descriptive ability. We gain proper
+> > > power sequencing, but lose generic properties.
+> >
+> > The "key" is property of the connector. Hence if you have an idea what can be
+> > common for ALL "key":s, that's probably can be abstracted. Note, I'm not
+> > familiar with the connector framework in the Linux kernel, perhaps it's already
+> > that kind of abstraction.
+> 
+> I'm not arguing for a even more generic "M.2" connector. The "key" is
+> already described in the compatible. I'm saying we should have some way
+> of describing the individual interfaces (PCIe, SDIO, USB, UART, I2S, I2C)
+> on the connector so further nodes or properties can be attached to them,
+> either with overlays or dynamically within the kernel. Right now the
+> are only described as individual ports, but we can't actually tie a
+> device to a OF graph port.
+> 
 
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index cc65c9fb6446..6c6df4d5c21f 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -1519,7 +1519,7 @@ static int mxs_auart_init_gpios(struct mxs_auart_port *s, struct device *dev)
- 
- 	for (i = 0; i < UART_GPIO_MAX; i++) {
- 		gpiod = mctrl_gpio_to_gpiod(s->gpios, i);
--		if (gpiod && (gpiod_get_direction(gpiod) == 1))
-+		if (gpiod && (gpiod_get_direction(gpiod) == GPIO_LINE_DIRECTION_IN))
- 			s->gpio_irq[i] = gpiod_to_irq(gpiod);
- 		else
- 			s->gpio_irq[i] = -EINVAL;
+If there are properties that apply to the interfaces, *not devices*, then you
+can add them to the relevant endpoint node:
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/devicetree/bindings/connector/pcie-m2-e-connector.yaml#n167
+
+> But maybe I'm overthinking the representation part. AFAICT for Qualcomm's
+> UART-based BT bit part, Mani just had the driver create a device node
+> under the UART (by traversing the OF graph to find the UART). If that's
+> the desired way then the connector binding should mention it.
+
+What do you mean by 'connector binding should mention it'? You cannot hardcode
+the device node in the connector binding, because it is not part of the
+connector binding itself. For example, the UART device node that is created for
+the WCN7850, already has a binding:
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/devicetree/bindings/net/bluetooth/qcom,wcn7850-bt.yaml
+
+What the driver does is, just creating that node under the serdev controller as
+if the device was described statically in the DT.
+
+For the wakeup property you asked earlier, it depends on the interface. If the
+interface supports "in-band" wakeup like USB/SDIO, you can add the property in
+the relevant controller node statically itself. For example, with USB XHCI
+controller, you would know that the controller will support wakeup or not
+statically. So you will add that property to the controller node. Then, if the
+user has enabled the wakeup for a specific USB device like keyboard/mouse
+through sysfs, then wakeup will just work. Here, we don't need to create the
+USB device node at all.
+
+But if the interface supports physical wakeup, like UART_WAKE# in M.2 SDIO Key
+E, then based on the presence of that property, you would configure wakeup in
+the connector driver itself. But this is not present as of now.
+
+> And that
+> works for me. But I think it's messier and also we're missing an
+> opportunity to make the M.2 connector a standardized attachment point
+> for overlays.
+> 
+
+I don't envision using overlays for the M.2 connectors. It is not strictly
+needed, unless the connector is non-standard.
+
+- Mani
+
 -- 
-2.53.0
-
+மணிவண்ணன் சதாசிவம்
