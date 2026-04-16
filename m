@@ -1,188 +1,200 @@
-Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CF57337BB0
-	for <linux-serial@vger.kernel.org>; Thu, 16 Apr 2026 18:31:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.44
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776364264; cv=pass; b=NNm9s0Ox+oMWRuAYQs7z7xxrV4IZH5v/BOoMujuHR93cvXFX1XR1qIk2IMXaumjN/uAKIZ8QrFcZlEZ1j3+S82EY7nnPu6TSq9UTSjW1gRZdN81WqDibtNitx9V3rciUgm51pbY3HnkuHHPOZejV/dgPJ/aAqsWsojok4Krn1Rw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776364264; c=relaxed/simple;
-	bh=9V/NgIDqmCWSet4JAHeO+a1W69OUhcxvhFFm3LJqtGE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=thmzsCZlTuQeShdU39PLF2Ezi1CBkOQNWSPOwI0Dr0jYbtNdceDjQYWcaCUeD54DPm+/w5FbTGvs5c2nON9UEo1L5HOu/Sj1X/HBdC5tZXIMZlbQ4tOGWTeO453JMGZPstrt6Rvp5gqXwWjPxpLjDiBt4T0OhB+l5U5wG0vqBg8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=N6BBGJjH; arc=pass smtp.client-ip=209.85.218.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF34130F927
+	for <linux-serial@vger.kernel.org>; Thu, 16 Apr 2026 20:19:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776370773; cv=none; b=HB8khZRLYofniZ5CxZNBwcGVHI9qCMB0M+sZky5ipB4e4wH+szQ/y/FCadqeRg6tWpUen4u/9VOIT0N3UYLMG+hVXySUS4HapnkKorxrXIGCx28GZ3drGEbLBsDJHtvzDaaHrltoh814Lg/MQeb0WQo2Xc2l5DHuY0uZ56C1PCc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776370773; c=relaxed/simple;
+	bh=7HAu9409XS2mSrrSyv0Alnlrsv+y0tOov9p9fjQcR0g=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=kafMtvUr2LQEaaG241adVRBZMPiw4Q4nYN9z6G8KYjkCclLwM+3Z965eNGo6XAqa0ptKTsyVCFh5P/E/i3FUcpR4fyxt4XRWvaVjn8/hN6656c9hsNwYNhFIyWoR6tDVnNhF3wF7WzXGHZwzHLEg9Jy7yVw5AVyqHhImzj9hbsE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SBr3pA4W; arc=none smtp.client-ip=209.85.221.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="N6BBGJjH"
-Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-b982b0889d8so1238654266b.2
-        for <linux-serial@vger.kernel.org>; Thu, 16 Apr 2026 11:31:03 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1776364262; cv=none;
-        d=google.com; s=arc-20240605;
-        b=g/8LgS2EgCpq6CqcpVSG7ot961+AtlGoXUBsDg6vwFWdlkCqh0AmWwvzZ60peJsFsj
-         NO70FZewcnWMMbIRzt3rBPmmcUDTE09hEkNEOoYHcQy8kaYszi7XvxkM4ipJXfIybTph
-         FFl0z7JN6AI8V7Pf2yPsGBF5ZaJSNWu3l2PPt69pPBBhdUc61LmsTjwvu5OxkFIrRUz5
-         LqXcAx8GvtK6YcmbwavUG2+u10JXN/0ErTnBfsoRu+5Z8an+3bH8FaPIcDeDTydYMVd8
-         UF0vJgX/1xwJVSzgXz1ZafJmjdBe3S1oXEcete/oM9A7hK/mPsqcVpnDvIFvbCL2BTYj
-         QHYA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=uSfq+N7c4C45PaJOL/Ig3bRso+t9UaVHLgxuUSqhJ1I=;
-        fh=B5B9kN+urLjMC1ap6EPWgtgxyPuRb8+wr4HehCKRArU=;
-        b=LPxZuEc3o9NxgDK9ex4Pv3411hUE3AYk7jbDV+IpaNVPSxgCkYr4wZNCVinYGjtsf0
-         fktI8WC583+ppVKIWQKZSfBX1rOF1PuI+NA2Zkfn0AhUz0RObA9fmeN/3xROuMEdWFpz
-         7Uon/jBvV7/wtsLafiCRYn70NqdOvZwIvlkfE2ikHHm8ZT23xeuEYIZhv3U/BxuHac82
-         Qk/RgMMBJCdbXR5AwK1YT6xkGyHZTVmloVyPcKC5FVyscQTCmgcczFm3wyFmwbnl0yQB
-         PvuY5XwW+9BSdk330xHF3upEX8SVXqCnYZmLqVl9k9FC0u4zgUejkNddYzg4eWejaaBX
-         5M+Q==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SBr3pA4W"
+Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-43d572f7437so5283239f8f.1
+        for <linux-serial@vger.kernel.org>; Thu, 16 Apr 2026 13:19:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776364262; x=1776969062; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=uSfq+N7c4C45PaJOL/Ig3bRso+t9UaVHLgxuUSqhJ1I=;
-        b=N6BBGJjHLKlkV8rHRZnosmdb/Pinlusht5StyFjePtVPoMheQPaclk8duUHmirxftt
-         qUc8u0GZ5UBNxy7FjImHY6d43ON2NWeEH7TuYz0UhQwxV3B4+K89it2uouu1xs1AhFrM
-         2X1ZOjQprgjdSpzaeEpI/37p42NPlyj+VIkKDFTNI+JJHV24HP9wqNBN53/z5BvuB1ce
-         fxCUdSJ9pxtEs2Nhe+TNDteIhFhdkvkIzwtH+pWpenMiRBJCGC+jyrB6Qbn0XyTKIobd
-         qERwtFsHZd66ISEatB1lRQ7IR6ZpeHUDP7abry3F/ds+6fZEPd07gZVmigQ1TSQq7KLG
-         D7PQ==
+        d=gmail.com; s=20251104; t=1776370768; x=1776975568; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=W8nZc0xy0duswt5stMQc278vwujXUsWzZTQDCqL9tXM=;
+        b=SBr3pA4WV/aglwfK7N06E2JiQAtYjbFBjNpzPXaxJ5AE1FtMiDDf3olCm4g73d6SaF
+         eXt/5GAiZQNKccnhflbMboC/LnyvgLk2eZRnyTbZmBGkItN/KO9ok1pprBYYLvBW7k7t
+         zwxybV8lMc2vTf72oeYvv8JMGzKXIFV/o0iW/UGXc5MH49xpYg0yOxYUfUde07Huqqb4
+         VAf6bVJ7BGqPbYxhRmlUAlZF6JgQez8xVs3qXWoxj+Y0D46dCTr8SHFTBsYm0JUCqFQe
+         lVtdrKn54uuN7rxH0PRgD4eXohlFw7jDSVDoSHKWmHmStsufJ1774UnCqlNWDYpjUgnq
+         0xww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776364262; x=1776969062;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=uSfq+N7c4C45PaJOL/Ig3bRso+t9UaVHLgxuUSqhJ1I=;
-        b=c9R7VX+GHoNrCeNPY8BKSNzyzq4qM4pNkL34lKILXp7qd0ziRYNZD1uMfehWms0TpA
-         zo0W3TZmW+kFBm48E9w2Lj/GZ4Q9Mqo5SMI+920vHI65kkA51GvmatWwXoE2C3o6/I0z
-         W+lobVEmLeKA/BK2zp1p2ojtN+80PwyhMiZRFgKrJ8Nf6Zk9QaIXGNhS7f1w4NcQH/GG
-         MiaJX3hnKuY56IS3R/pWFrV+nC5UfeYlT36IzABFdG1Ry3XwS8xr6CtcvbaG78Nser2K
-         wO/+mERmUB07RHXYoC+tiRa0JSqQSd69tF2KfR05XAsVUrvW1xbW27K8zDmaSCOZMtTS
-         DL5w==
-X-Forwarded-Encrypted: i=1; AFNElJ+K9MDAE9aeYPNREEnL4wfrij4v11XWJSGrlnlkkSGg6LIuu6l4/waXa0aownnSjqiaHYEFDBQLYk78HSg=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz9T2OcAXHzXSiS+5Qg7YtfKkdJvzhSpH4MaTXO6Y7rEb+qThSs
-	LdXVw7fz8/kOCbpN4ISi4aZZZun3CiJs8yLNYnqTjx8E4MV0MNq6VWGnKuyiMr2Yh34VlHmhjAP
-	2mGUMo9OAY9k2EQqi7DHurvB2r0le9fU=
-X-Gm-Gg: AeBDievtoNejnBIz4UGOFqv2u4G7DdYch/C8DLckuJoTgSeN2mzkL5wz77TZjmtzJCu
-	tzUQy5QWOxk8C2qA+ThJF6H2DLl6ZbpS+Rjd3TtlRqBR2cLMnKj1SCf+e46//vyU3228dbdJMcn
-	de1fxNltgCX1BbYBAXfvZavLy6w/L/ollQatCB40bYty2riHDwwYbOz7Yp/j25Cei4/VxFzUcLI
-	QnVr8phcGKQAZFB+UnaYdmr8wm7KccGwcySjQnnBxiqKichpEoSlDoAo8isuULkW5ShmD8vJej/
-	dVyyUG/4cs+jsZhLAqFScwBPJmA510Dk1or5IEp3Br/st80Olkc/D27SqSN4+BMpTaIua8MqW7W
-	zn8Wl68wRMlk3zQpp6Q==
-X-Received: by 2002:a17:907:8b95:b0:b9c:2c55:3384 with SMTP id
- a640c23a62f3a-ba3dd7a7032mr27712766b.31.1776364261722; Thu, 16 Apr 2026
- 11:31:01 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1776370768; x=1776975568;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=W8nZc0xy0duswt5stMQc278vwujXUsWzZTQDCqL9tXM=;
+        b=A6YxkPzwyzQTbLaYjwkNw/13Tl4i9MTUi47+IgLlHn899v6mr6j0Q5I8XCAOv4WPyP
+         v5Vr+uGGmImFeVCz+RWzb/fFI9t/P8m7Ll64BeywHTFvTXelAESZbYbcpXH/dUlSSTHh
+         xcUFGd2uI6Jg+btLzTLz0QcPb79pkxcmyLc5HQQfzoIKURhb+rfTilrKJcymttA34MZV
+         Itltwynsd7UYgIGHy12T0Clc4NTrewy5935w5qG7H75r7H4emy6Ig8VZf6eX6j5wc8WP
+         itdE1HJGh2tR9ewidd/o/g4WXIdGZEZnFhtvjijdk0zgbWpm1SithxQUQ8INyejWSSNu
+         XlPw==
+X-Forwarded-Encrypted: i=1; AFNElJ8zFXH9j3dcSlQ1UKq+6SCLN/d+dhnybGeXH4p6u3IUAw8M1TenfPO+rZvRSRJJTQBemcIG80PaB6O4+l8=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx3kZVjq/d/c7ySjueAntamyJ+ColfJnv8bUTHLJbG+Wn6UDzw0
+	RY/j1n4bLiFxJAD8R4XJK6XGTJCq1ZxitA6gm0H6vJpaY6PYNyd6iRxQ
+X-Gm-Gg: AeBDieuenp5DB6p52JksiB38+i8N/1AK7aW+RmoqfKQHJOJFyc7weuC/Mdyq8wSlm4W
+	XTFB0HYEhxVchBV8B5EUwPvNAVlPlEl0UhAM0TNJc+SyhwSaKzb6bc3dzOR3d4l6cCK2oSZVlkx
+	0bBDQ0KfGr/Xo70yQXB/H7rBNQX+VxLSMzC4lX82wneo8vaNyIVEQz2Q3LN6pRoj7bwUImXBpqU
+	0awIiD/kqH6D7/8Him2e3ceUQEAT/F/ojRKPkI/3APcyXFg2zmLNZFs9/tTJ9/LUEBI8dBPwKWN
+	h3qUVJsqoqILwObTJEK2iLHj74nKs+5+ANxcjjz+WiGfRDO43ZfeM+9vJtj5DtNdJOm+CP9w+o9
+	2yhUZen8lTRDYKZ+C71W2ymJS6FpaPejjnrUTaRawnRfFnRuhK3+ejd8ZNYovqZd9cUc/6Z5Pwq
+	SUGwS2kxwaXOXrTEhvrxZxCygCP9VHI9Wm2VJeUMLbsMCUvA==
+X-Received: by 2002:a05:6000:22c3:b0:43d:3004:5fef with SMTP id ffacd0b85a97d-43fe0ea3667mr1302338f8f.7.1776370767968;
+        Thu, 16 Apr 2026 13:19:27 -0700 (PDT)
+Received: from [192.168.0.2] ([197.250.227.196])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43ead35c026sm16180624f8f.15.2026.04.16.13.19.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Apr 2026 13:19:27 -0700 (PDT)
+From: =?utf-8?q?Stefan_D=C3=B6singer?= <stefandoesinger@gmail.com>
+Subject: [PATCH v4 0/8] Add support for ZTE zx297520v3
+Date: Thu, 16 Apr 2026 23:19:08 +0300
+Message-Id: <20260416-send-v4-0-e19d02b944ec@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <CAHp75Vc7sdDT+nWZX7u7aSsUhUquYNAiYo9HrxHhjXnGz5g55Q@mail.gmail.com>
- <20260416113200.38244-1-fushuai.wang@linux.dev>
-In-Reply-To: <20260416113200.38244-1-fushuai.wang@linux.dev>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Thu, 16 Apr 2026 21:30:25 +0300
-X-Gm-Features: AQROBzBq8G626U-dI8hSgPQ5GvJRB9HGPnluAuocrhQTXhKIW1aaqQq5dKOqtzM
-Message-ID: <CAHp75VfyArBYG6p17A__hASERs6-rAp9U_NV68u5OOCUU_qoxA@mail.gmail.com>
-Subject: Re: [PATCH] serial: 8250: Clear CON_PRINTBUFFER on port re-registration
-To: Fushuai Wang <fushuai.wang@linux.dev>
-Cc: gregkh@linuxfoundation.org, ilpo.jarvinen@linux.intel.com, 
-	jirislaby@kernel.org, kees@kernel.org, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, osama.abdelkader@gmail.com, 
-	wangfushuai@baidu.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIADxE4WkC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyTHQUlJIzE
+ vPSU3UzU4B8JSMDIzMDE0Mz3eLUvBRd02QDi1QDS9NU02RLJaDSgqLUtMwKsDHRsbW1APKUMK5
+ WAAAA
+X-Change-ID: 20260416-send-5c08e095e5c9
+To: Jonathan Corbet <corbet@lwn.net>, 
+ Shuah Khan <skhan@linuxfoundation.org>, 
+ Russell King <linux@armlinux.org.uk>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Arnd Bergmann <arnd@arndb.de>, 
+ Krzysztof Kozlowski <krzk@kernel.org>, 
+ Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+ Linus Walleij <linusw@kernel.org>, Drew Fustini <fustini@kernel.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, 
+ soc@lists.linux.dev, linux-serial@vger.kernel.org, 
+ =?utf-8?q?Stefan_D=C3=B6singer?= <stefandoesinger@gmail.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=openpgp-sha256; l=4069;
+ i=stefandoesinger@gmail.com; h=from:subject:message-id;
+ bh=7HAu9409XS2mSrrSyv0Alnlrsv+y0tOov9p9fjQcR0g=;
+ b=owEBiQJ2/ZANAwAIAT0TvMhUTxoiAcsmYgBp4URKrT6XMtZiyJrbaPR7qc/RFSCsMcn+h+B6/
+ JgQ1+HrddiJAk8EAAEIADkWIQRDFvS2qgVbJ5UyXWw9E7zIVE8aIgUCaeFEShsUgAAAAAAEAA5t
+ YW51MiwyLjUrMS4xMiwyLDIACgkQPRO8yFRPGiIu1BAAjlaJHP867qOApRxS4iItx61iEqXtDj6
+ UDOM4lTZjUjVTnDxtQvhePQRk58NIRDpDCFcoGau64b1+E0H6+Rtt4V409u5suYtD3PFmK8LDHJ
+ 6jPtYooFJ+VIcqfylazdeVELYKHYapukRAmsft7FykhxLSoOAf7hzebqqC4ZBjhM6C3wvat8V68
+ +bn4GJT11BYeFkZKfYaosuZ5W5ScLD8AiCJqNyEsrNfOXU2gm6nCT8hJoHhFd7xxJZtKBNySssv
+ 8r+7LC/jCTasqR/8uuA2s8uSly1LKJhJvqTIt2MGpFj+5rXyU9QYOa8ZeYewGje43HUSB31gcgm
+ blVjAWzBLyurMsqIcQnEW8cQN0Gsls78sYyv9LFyreYHGd3HYNxFeA1KeEBvl08Az4VYvHxY6lX
+ CXI0r/CsjWykTCKYoELJBaTCb7kvKbOMKeqBKEyyGsd/hUYy55oIfl8rkWhN6dhSws++b3S3qSj
+ av75J8cYPxxxw0m3gMB1I1niwcjFvIJoc2kQiSVDZ8icrQTebOc2rZuAeMHH9ffQTuR2ojSwRuE
+ dk5CZhW6WR5quSpi+M3RpJnzTKqWt4xlBpP+0o3On+XwtqfykvyE1dnWVBSr6rNNijmTSXE0JO4
+ jrRfmJBlifeFvGqUnmxqQYMq/fsfymG5KG8qh3jOLOpLC/b+acD8=
+X-Developer-Key: i=stefandoesinger@gmail.com; a=openpgp;
+ fpr=4F9C2C8728019633893EBBB98CB81F9A72BBA155
 
-On Thu, Apr 16, 2026 at 2:32=E2=80=AFPM Fushuai Wang <fushuai.wang@linux.de=
-v> wrote:
+Hi,
 
-> >> >> When two PnP devices map to the same physical port, the serial8250 =
-driver
-> >> >> removes and re-registers the console structure for the same port.
-> >> >
-> >> > Is it a real device out of there? Can you share what that is?
-> >>
-> >> Yes, it's a real device.
-> >> In my Intel(R) Xeon(R) 6971P-C machine, the boot log shows:
-> >>         [   17.242984] 00:04: ttyS0 at I/O 0x3f8 (irq =3D 4, base_baud=
- =3D 115200) is a 16550A
-> >>         [   17.251352] printk: console [ttyS0] disabled
-> >
-> >>         [   17.257934] serial 00:04: Runtime PM usage count underflow!
-> >
-> > This is strange, what kernel version is this?
->
-> Please ingore this. I just test the patch in kernel 6.6. And this log
-> has nothing to do with this problem. It was fixed in patch ed2761958ad7
-> ("tty: serial: 8250: Fix another runtime PM usage counter underflow").
+This is a follow-up on my RFC patches from January [0] for ZTE's 
+zx297520v3 chipset. This chipset is popular in cheap LTE-to-wifi routers 
+sold in developing countries. My goal is to run OpenWRT on them. I made 
+more progress in more work on this SoC and it is time to get serious 
+about code review and upstreaming.
 
-Thanks for clarification.
+Since my version in January I managed to get more hardware running: SPI, 
+I2C, PMIC with real time clock and voltage regulators, Watchdog. LTE is 
+not working yet, but I am able to start the coprocessor that handles it 
+and talk to it via mailbox + shared memory. Wifi is working on a few 
+more devices. Since WiFi, USB and Ethernet are working, the devices can 
+have actual use with OpenWRT even without LTE.
 
-> >>         [   17.258360] 00:05: ttyS0 at I/O 0x3f8 (irq =3D 4, base_baud=
- =3D 115200) is a 16550A
-> >>         [   17.258516] printk: console [ttyS0] enabled
-> >>         [   29.643013] serial8250: ttyS1 at I/O 0x2f8 (irq =3D 3, base=
-_baud =3D 115200) is a 16550A
-> >>
-> >> The issue occurs when BIOS "Serial Device" option is set to BMC:
-> >>           Setup Question  =3D Serial Device
-> >>           Help String     =3D Sets the Serial Device used to output bi=
-os serial log
-> >>           Token   =3D 9003   // Do NOT change this line
-> >>           Offset  =3D 2F8
-> >
-> > Is it an IO port?
->
-> No, Offset =3D 2F8 is the offset in BIOS configuration space, not the I/O=
- port.
->
-> >>           Width   =3D 01
-> >>           BIOS Default =3D[01]BMC
-> >>           Options =3D *[01]BMC       // Move "*" to desired Option
-> >>                     [02]S3M
-> >>
-> >> So 00:05 may be the BMC serial port device. From ACPI paths:
-> >>         /sys/bus/pnp/devices/00:04/firmware_node/path: \_SB_.LPC0.UAR1
-> >>         /sys/bus/pnp/devices/00:05/firmware_node/path: \_SB_.UAR1
-> >
-> > Do I understand correctly that both devices refer to the same physical
-> > device?! How on earth is it supposed to work?
->
-> Not exactly the same physical device, but they map to the same I/O port (=
-0x3f8).
-> They are different PnP devices with different ACPI paths:
->
->   00:04: \_SB_.LPC0.UAR1  (LPC COM1)
->   00:05: \_SB_.UAR1       (BMC serial port)
->
-> When BIOS "Serial Device" option is set to BMC, both 00:04 and 00:05 are =
-mapped to
-> the same physical I/O port 0x3f8. And then:
->
->   1.00:04 is probed first and registers the console for port 0x3f8
->   2.00:05 is detected and also needs to use port 0x3f8
+Another hacker created a free software program to talk to the USB loader 
+[1] and boot U-Boot and Linux without modifying the on disk files. At 
+the moment it needs a proprietary blob, so my documentation is 
+emphasising booting with the on-device U-Boot.
 
-This is simply wrong. Do we ever support such a FW configuration?
-Why on earth are there two devices for the same resource exposed to
-the OS? It smells like a bug in BIOS.
+This patchset here is mostly unmodified from the version I sent in 
+January. It is the bare minimum to get an interactive shell working on 
+the UART. Future patches can be found on my git repository [2] for those 
+curious to peek ahead. The first 30 patches are in reasonable shape, but 
+the further you go the more cleanup is necessary. I expect all of the 
+patches go require a few rounds of feedback though.
 
->   3.Since port 0x3f8 is already in use, the driver must remove 00:04 firs=
-t before
->     adding 00:05
->   4.This process involves console re-registration, which causes the entir=
-e
->     log buffer to be reprinted
->
-> Sorry if my explanation is not clear - I don't work with serial subsystem=
- often. :-)
+My plan for upstreaming is largly this:
 
-Now it's elaborated well enough.
+1) This bare minimum boot patchset
+2) Add clock and pinctrl drivers
+3) Add standard hardware to the device tree
+4) Add zx29 specific drivers one by one: Watchdog, spi, i2c, DMA, PMIC, 
+battery
+5) SDIO backend for rtl8xxxu
+6) rproc, mailbox and rpmsg
 
---=20
-With Best Regards,
-Andy Shevchenko
+I am willing to maintain support for the SoC within reason. My patches 
+add myself as maintainer. This is a hobby project for me though, keep 
+that in mind if you want to ship a commercial product with these SoCs 
+and upstreaming Linux.
+
+Cheers,
+Stefan
+
+0: https://lists.infradead.org/pipermail/linux-arm-kernel/2026-January/1099306.html
+1: https://github.com/zx297520v3-mainline/zx297520v3-loader
+2: https://gitlab.com/stefandoesinger/zx297520-kernel/
+
+Patch changelog:
+
+v4: rename zx29.yaml to zte.yaml and add board enums
+v3: Remove [RFC] tag, add defconfig
+v2: checkpatch.pl fixes
+
+Signed-off-by: Stefan Dösinger <stefandoesinger@gmail.com>
+---
+Stefan Dösinger (8):
+      ARM: zte: Add zx297520v3 platform support
+      dt-bindings: arm: Add zx297520v3 board binding
+      ARM: dts: Add D-Link DWR-932M support
+      ARM: zte: Add support for zx29 low level debug
+      ARM: dts: Add an armv7 timer for zx297520v3
+      ARM: zte: Bring back zx29 UART support
+      ARM: dts: Declare UART1 on zx297520v3 boards
+      ARM: defconfig: Add a zx29 defconfig file
+
+ Documentation/arch/arm/zte/zx297520v3.rst      | 158 +++++++++++++++++++++++++
+ Documentation/devicetree/bindings/arm/zte.yaml |  25 ++++
+ MAINTAINERS                                    |   6 +
+ arch/arm/Kconfig                               |   2 +
+ arch/arm/Kconfig.debug                         |  12 ++
+ arch/arm/Makefile                              |   1 +
+ arch/arm/boot/dts/Makefile                     |   1 +
+ arch/arm/boot/dts/zte/Makefile                 |   3 +
+ arch/arm/boot/dts/zte/dlink-dwr-932m.dts       |  21 ++++
+ arch/arm/boot/dts/zte/zx297520v3.dtsi          |  83 +++++++++++++
+ arch/arm/configs/zx29_defconfig                |  90 ++++++++++++++
+ arch/arm/include/debug/pl01x.S                 |   7 ++
+ arch/arm/mach-zte/Kconfig                      |  24 ++++
+ arch/arm/mach-zte/Makefile                     |   2 +
+ arch/arm/mach-zte/zx297520v3.c                 |  19 +++
+ drivers/tty/serial/amba-pl011.c                |  37 ++++++
+ include/linux/amba/bus.h                       |   6 +
+ 17 files changed, 497 insertions(+)
+---
+base-commit: 028ef9c96e96197026887c0f092424679298aae8
+change-id: 20260416-send-5c08e095e5c9
+
+Best regards,
+-- 
+Stefan Dösinger <stefandoesinger@gmail.com>
+
