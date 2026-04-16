@@ -1,109 +1,120 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from out-170.mta0.migadu.com (out-170.mta0.migadu.com [91.218.175.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3590B1C84D7;
-	Thu, 16 Apr 2026 10:43:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD7D63A6F18
+	for <linux-serial@vger.kernel.org>; Thu, 16 Apr 2026 11:32:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776336236; cv=none; b=ViUpC9x1lOLCu5f9ImkXq53i805zzER6WNaQrYLYt8980qnkdOhtNAXsNlgdZeJgU9YTRQ42vXST2jk/BuJCI3cCkXWYujrRt6iQds3SoNOnsGdHkNI2DkFaN3PgDrqGlRxfM2WPHZNcrpqru4ydHtSbNt0QEciFsVisLpcSyLk=
+	t=1776339141; cv=none; b=T5Xpudw0JZA3bt57pC1edd6GE30ubfg1+ThyaFvSuQYXLtFvQlyaP6LUn7GST8KXVleOHkTTs9UIoDBBhcPZlW/5KVZ3Dw/pZ94sQsii7xUQxYCL63rFUoq6pm2X0r90OWyIzw2kG3TxBVCMbJKhegAJoWHnxJCrxkh9cUiqXNw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776336236; c=relaxed/simple;
-	bh=D3LDWp/psMWoC67/odIik6PEKPqrilK5VK91KrBhLgI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=oQeK+T88z6IhT35VGD8dzBUjVJb6lZf7r5AtZQkBSCVkpuiS/2/Lg7Kn4s/h3oYA4tUlrhdaryPROJsw2qIGvN2vk5Kc0RY8XuRHJBQ1qyGgYc2avnBMEW0+jWiEcUrHRPp892nX/oBesoMWHDHhFp8MSIDTOjL5hqEbRxCIjeA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tOtBFF9S; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1776339141; c=relaxed/simple;
+	bh=6KsSLfAF+/mtxLZlpZ3CgURnBm3csVvYhe2jhhXXYz8=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=C7aBUZ87XYjAQvLjWfMH0D3MrxPwRPCdhEW7ZIG0ADe98bTIRxvwoiDc3HbL7wsUSc6vGgf3hRwhaNZ47S2S6zPPv+GYqrTfKbymcrwWXa4caOgF2ESQJXOD7oPauV7f5FKNmevKWEBkvG3/5YsRFL4a1v91PZ+yIpHiSacmgmo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=JiAZhmA5; arc=none smtp.client-ip=91.218.175.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tOtBFF9S"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 869F4C2BCAF;
-	Thu, 16 Apr 2026 10:43:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776336235;
-	bh=D3LDWp/psMWoC67/odIik6PEKPqrilK5VK91KrBhLgI=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=tOtBFF9SodSNCFo5LkJgugzifnLBrcwXwsqpvXaZUbSLldTFk1mw8ZW0oCLmBQQPc
-	 90MBeIoQJkC9HXjykJ4gsodI3j3FeFfvYo+SGnmXhUuansbrRxN0DZo147nvzOLLll
-	 yaeh0s2VtqdQdYv/IEwupa8lHuNr0Nt/WK194JMmZuruOkcUeAtPX5A333TwSote2h
-	 w8XoQ2EiQN6SOFagQFFvi+wW/hOo0ib5guX2jYp60UQSuHrvESm9LuBy1eEZzgnJKT
-	 VQeQq1XnqSRyyzQUd9anWMBFA718K4h+k3dplgycyumeb4jqUmb3XbUoeWy1UgPhha
-	 YDpfu+0E8Ndrg==
-Message-ID: <d37edba0-85df-438d-b54e-c933aae06c9b@kernel.org>
-Date: Thu, 16 Apr 2026 12:43:52 +0200
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="JiAZhmA5"
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1776339136;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=c5JpUD1ZX/0TUIEgZlqUk61qFWas8IanC2YUFCf7B3M=;
+	b=JiAZhmA57NiG/Za1hAjSk/D4eyv/X9O8YuZdh5UWvuBt/Zfw6Q04O6zG+z8Fkf4BjbkLrM
+	to16Gj0zsWkCN4YAg5pMQDokOh1+FsyBPz6Idndpk9g+OGQ5nIClI76O54m37z4PJAi9cJ
+	KN3a0/viDQ/MIaqWESeuZ7oZM4Fwh4Q=
+From: Fushuai Wang <fushuai.wang@linux.dev>
+To: andy.shevchenko@gmail.com
+Cc: fushuai.wang@linux.dev,
+	gregkh@linuxfoundation.org,
+	ilpo.jarvinen@linux.intel.com,
+	jirislaby@kernel.org,
+	kees@kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	osama.abdelkader@gmail.com,
+	wangfushuai@baidu.com
+Subject: Re: [PATCH] serial: 8250: Clear CON_PRINTBUFFER on port re-registration 
+Date: Thu, 16 Apr 2026 19:32:00 +0800
+Message-Id: <20260416113200.38244-1-fushuai.wang@linux.dev>
+In-Reply-To: <CAHp75Vc7sdDT+nWZX7u7aSsUhUquYNAiYo9HrxHhjXnGz5g55Q@mail.gmail.com>
+References: <CAHp75Vc7sdDT+nWZX7u7aSsUhUquYNAiYo9HrxHhjXnGz5g55Q@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: 8250_accent: fix reference leak on failed device
- registration
-To: Guangshuo Li <lgs201920130244@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Russell King <rmk@dyn-67.arm.linux.org.uk>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, stable@vger.kernel.org
-References: <20260415183436.3763871-1-lgs201920130244@gmail.com>
- <463cec4f-a038-4bd0-90df-76e0ef48381c@kernel.org>
- <CANUHTR9toK-PS8qrTd-=ATpSi8xbnXmF87sfRaMDp_jG_eiVMg@mail.gmail.com>
- <CANUHTR8Hje-pP=7=2hLwkhPMb6cMWosDzdY4oLneFpH5-hfS-Q@mail.gmail.com>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <CANUHTR8Hje-pP=7=2hLwkhPMb6cMWosDzdY4oLneFpH5-hfS-Q@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
 
-On 16. 04. 26, 12:23, Guangshuo Li wrote:
-> We are also discussing in another similar patch whether the
-> better fix, if any, should be in the API/core code rather than in
-> individual callers:
-> 
-> https://patchew.org/linux/20260415174159.3625777-1-lgs201920130244@gmail.com/
+>> >> When two PnP devices map to the same physical port, the serial8250 driver
+>> >> removes and re-registers the console structure for the same port.
+>> >
+>> > Is it a real device out of there? Can you share what that is?
+>>
+>> Yes, it's a real device.
+>> In my Intel(R) Xeon(R) 6971P-C machine, the boot log shows:
+>>         [   17.242984] 00:04: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
+>>         [   17.251352] printk: console [ttyS0] disabled
+>
+>>         [   17.257934] serial 00:04: Runtime PM usage count underflow!
+>
+> This is strange, what kernel version is this?
 
-Agreed, if anything needs a fix, it's platform_device_register() or the 
-functions underneath...
+Please ingore this. I just test the patch in kernel 6.6. And this log
+has nothing to do with this problem. It was fixed in patch ed2761958ad7
+("tty: serial: 8250: Fix another runtime PM usage counter underflow").
 
-thanks,
+>
+>>         [   17.258360] 00:05: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
+>>         [   17.258516] printk: console [ttyS0] enabled
+>>         [   29.643013] serial8250: ttyS1 at I/O 0x2f8 (irq = 3, base_baud = 115200) is a 16550A
+>>
+>> The issue occurs when BIOS "Serial Device" option is set to BMC:
+>>           Setup Question  = Serial Device
+>>           Help String     = Sets the Serial Device used to output bios serial log
+>>           Token   = 9003   // Do NOT change this line
+>>           Offset  = 2F8
+>
+> Is it an IO port?
+
+No, Offset = 2F8 is the offset in BIOS configuration space, not the I/O port.
+
+>>           Width   = 01
+>>           BIOS Default =[01]BMC
+>>           Options = *[01]BMC       // Move "*" to desired Option
+>>                     [02]S3M
+>>
+>> So 00:05 may be the BMC serial port device. From ACPI paths:
+>>         /sys/bus/pnp/devices/00:04/firmware_node/path: \_SB_.LPC0.UAR1
+>>         /sys/bus/pnp/devices/00:05/firmware_node/path: \_SB_.UAR1
+>
+> Do I understand correctly that both devices refer to the same physical
+> device?! How on earth is it supposed to work?
+
+Not exactly the same physical device, but they map to the same I/O port (0x3f8).
+They are different PnP devices with different ACPI paths:
+
+  00:04: \_SB_.LPC0.UAR1  (LPC COM1)
+  00:05: \_SB_.UAR1       (BMC serial port)
+
+When BIOS "Serial Device" option is set to BMC, both 00:04 and 00:05 are mapped to
+the same physical I/O port 0x3f8. And then:
+
+  1.00:04 is probed first and registers the console for port 0x3f8
+  2.00:05 is detected and also needs to use port 0x3f8
+  3.Since port 0x3f8 is already in use, the driver must remove 00:04 first before
+    adding 00:05
+  4.This process involves console re-registration, which causes the entire 
+    log buffer to be reprinted
+
+Sorry if my explanation is not clear - I don't work with serial subsystem often. :-)
+
 -- 
-js
-suse labs
+Regards,
+WANG
