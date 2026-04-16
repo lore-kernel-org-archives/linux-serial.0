@@ -1,149 +1,97 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail-106104.protonmail.ch (mail-106104.protonmail.ch [79.135.106.104])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B01D92FF672;
-	Thu, 16 Apr 2026 06:14:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67EA6389472
+	for <linux-serial@vger.kernel.org>; Thu, 16 Apr 2026 07:20:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.104
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776320043; cv=none; b=e6S/xgNvs/px6QNyPABoShXo9AvHV1w6j99ZUZYF7mkIGyqaec0RxxuqtMT+sI7gpT2yvRERINcUDGlCxnLJZgnG493oKcMZRndLd90KVb9L1191YmbC2BQr51Hmb6xkuAskP5lR0zeAFQlDUL+/jaqKLjPBvLCljrWWjt6zJyc=
+	t=1776324011; cv=none; b=Oq3d3xBhQ4yEjc5CIZ1qf/9CTM2OALW++VsWGUZ14xsRQXGcm4LdJAO3AzbKgb7l2SpfgdVDP3R9Q3EcY6wJZTie4/+aHH2+bP5Bg/s31tAQBl4y9pfbzQtTsbveJBNbTetn6rpgZoKPiN5+BFaWVtqjDVw0slcQabqnTnuvj4s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776320043; c=relaxed/simple;
-	bh=O0qZsKmrGfbZpaWF12Ph+8auZdfeqxCWG+kcnD4cptg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=rcmp7HN9YZA4UT9X89sCkhH0mCHw/uo0A/gw6oeI2gVGsPbwXr6lgyyR1V0fnKfVnNPm8wr2dPso8Ya2wRlAgZD1tJz/smS0SAe3YWOKYTDGuOcs353Q1YQb9CF2EK+ppQ+8v2CorLlHuZGmBK0yhWaAy0Y370Tm0LCQiNd8kdw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=O4Kjqurt; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1776324011; c=relaxed/simple;
+	bh=XyMy7lpp0vec+yjNGHgWw094HCmcOkJwG+6EQhtl8Gw=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=lrcZFUEY9ttstjSE1BxBbt9rR11IresHL7Wp+PlLB7rZH9ugR49WTAGVFtI51z2e59sVBtAMBvQAxJ6CExpeT8C41R/vf7u7MKtpWDKKT4Fe4yHMPuMi/+rtd4Xw4xwdZw3gsa8Ws2c1DAiRHhRlrrd6ZUtLwW+GoX/oevkXT24=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=proton.me; spf=pass smtp.mailfrom=proton.me; dkim=pass (2048-bit key) header.d=proton.me header.i=@proton.me header.b=nQWy/MtG; arc=none smtp.client-ip=79.135.106.104
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=proton.me
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=proton.me
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="O4Kjqurt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03DF2C2BCAF;
-	Thu, 16 Apr 2026 06:14:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776320043;
-	bh=O0qZsKmrGfbZpaWF12Ph+8auZdfeqxCWG+kcnD4cptg=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=O4KjqurtHN+CmLcZgKvgbzwlRAzP/eup4XdcQlk+wi3kl+XMwYu72ptnYedXfnP/t
-	 xoBrDj1A+qEv0Zzpoeq2L6QBjTV6CSolRyVVa+UhOLDxN0LIkCx5PTERMB7cxj4GTL
-	 5ulSMnq5i15A4E5urGlSqy4vJzvJ1bTZ2CmIdijjzAEN9BOXrVQHyu8/d/imMquNZ1
-	 ORvYtfsUbGtQila4kVoKRySN5ZCzAU874dhhhqUpt76LlJ+ikmzoc8QxTkuCvrLS76
-	 k0gNtfnMXbZs2Lp+YowcM0EgP+1VJ851Pj3FMD0pzqw4zAV9tUjDv3a7sqSHDtr/xY
-	 z/965mQod5n+A==
-Message-ID: <463cec4f-a038-4bd0-90df-76e0ef48381c@kernel.org>
-Date: Thu, 16 Apr 2026 08:13:59 +0200
+	dkim=pass (2048-bit key) header.d=proton.me header.i=@proton.me header.b="nQWy/MtG"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=proton.me;
+	s=jynqt7qzo5gwrcpkfzfwgdsyt4.protonmail; t=1776324000; x=1776583200;
+	bh=izzvQA5PYaT68YANwCXy6bN5n00IIX9Z0Gu65kVl6Vs=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
+	 Message-ID:BIMI-Selector;
+	b=nQWy/MtGYrHXUaKjk/RICj6IgSubE2K70x5YveNsAOMffAEzkp2eZHWrAs0eqzy4l
+	 cO4eVE4kJWGoUzr2eCPu7DPeA4gFogfSzHs0W1edVAj0oOXkO7BS6YBAR6i7N1bPl7
+	 EL2HGjhUZzTXT+llbHIBHmvpFjXKzBFjBzzR6w5sklaCjRod1h8Jvyjc9G2DOIZqwU
+	 PgPKuda5s1f4Qq23EtY4hCWZH3VcJRnD6Jozmthb2gnQs3S49gSRzzIwYcbop/gAjr
+	 b5pCTF7tEO2KTkj/iHft/p5J7JpGf8LAap85SQJwljlsCWV15s4U8XabaN/HgqFG8p
+	 +CvcP2daIyhfg==
+Date: Thu, 16 Apr 2026 07:19:56 +0000
+To: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jirislaby@kernel.org" <jirislaby@kernel.org>
+From: kpursoty@proton.me
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>, "tsbogend@alpha.franken.de" <tsbogend@alpha.franken.de>
+Subject: Re: [PATCH] serial: base: do not disable TX on hangup for console ports
+Message-ID: <rHcToILwx6aB9P0a5jBv5Xkuyu8LeRk9nEXX4FezpwlmzPVoKL3MFkw77E_u68Yz6twiE4C7sPLN3Knlw3rf9BL6ejgjqiqmOffgou6ziyQ=@proton.me>
+In-Reply-To: <1fpGAFo1KYyRDeGSGmaDWx6gXbV00C83qU_tep62Zu_cl9JfjpjWg8SKhw6z0owZ9eEMzXR2GnZ_U3V2PVi2R1fuGAmzgK43GYbWkCIBFf8=@proton.me>
+References: <1fpGAFo1KYyRDeGSGmaDWx6gXbV00C83qU_tep62Zu_cl9JfjpjWg8SKhw6z0owZ9eEMzXR2GnZ_U3V2PVi2R1fuGAmzgK43GYbWkCIBFf8=@proton.me>
+Feedback-ID: 133470881:user:proton
+X-Pm-Message-ID: d294ac24d99d74913ecec0028bac37a3d68497dc
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: 8250_accent: fix reference leak on failed device
- registration
-To: Guangshuo Li <lgs201920130244@gmail.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Russell King <rmk@dyn-67.arm.linux.org.uk>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org
-Cc: stable@vger.kernel.org
-References: <20260415183436.3763871-1-lgs201920130244@gmail.com>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20260415183436.3763871-1-lgs201920130244@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-Hi,
+Thanks for your notes. Patch withdrawn.
 
-On 15. 04. 26, 20:34, Guangshuo Li wrote:
-> When platform_device_register() fails in accent_init(), the embedded
-> struct device in accent_device has already been initialized by
-> device_initialize(), but the failure path returns the error without
-> dropping the device reference for the current platform device:
-> 
->    accent_init()
->      -> platform_device_register(&accent_device)
->         -> device_initialize(&accent_device.dev)
->         -> setup_pdev_dma_masks(&accent_device)
->         -> platform_device_add(&accent_device)
-> 
-> This leads to a reference leak when platform_device_register() fails.
+On Wednesday, 15 April 2026 at 09:01, kpursoty@proton.me <kpursoty@proton.m=
+e> wrote:
 
-What reference exactly?
-
-> Fix this by calling platform_device_put() before returning the error.
-> 
-> The issue was identified by a static analysis tool I developed and
-> confirmed by manual review.
-
-How did you verify you did the right change?
-
-> Fixes: ec9f47cd6a14c ("[PATCH] Serial: Split 8250 port table")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Guangshuo Li <lgs201920130244@gmail.com>
+> serial_base_port_shutdown() calls serial_base_port_set_tx(false)
+> unconditionally. When a TTY hangup occurs on a port that is also a
+> registered kernel console, this permanently disables the console
+> transmitter.
+>
+> uart_hangup() already guards against uart_change_pm(PM_OFF) for console
+> ports (see the uart_console() check in uart_hangup()). Apply the same
+> guard in serial_base_port_shutdown(): skip TX-disable if the port is a
+> registered console.
+>
+> Without this fix, any path that calls uart_shutdown() on a console port
+> - including TIOCSCTTY with force=3D1 (as used by init systems such as
+> procd) - permanently silences all subsequent kernel console output.
+>
+> Signed-off-by: Kervin Pursoty <kpursoty@proton.me>
 > ---
->   drivers/tty/serial/8250/8250_accent.c | 8 +++++++-
->   1 file changed, 7 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_accent.c b/drivers/tty/serial/8250/8250_accent.c
-> index 1691f1a57f89..e9cf40268c0e 100644
-> --- a/drivers/tty/serial/8250/8250_accent.c
-> +++ b/drivers/tty/serial/8250/8250_accent.c
-> @@ -25,7 +25,13 @@ static struct platform_device accent_device = {
->   
->   static int __init accent_init(void)
->   {
-> -	return platform_device_register(&accent_device);
-> +	int ret;
-> +
-> +	ret = platform_device_register(&accent_device);
-> +	if (ret)
-> +		platform_device_put(&accent_device);
-
-In particular, what does put_device() do on a static device, even 
-initialized, ie. with no device::release? Try it...
-
-IMO, all the patches are bogus.
-
-thanks,
--- 
-js
-suse labs
+>  drivers/tty/serial/serial_port.c | 11 ++++++++++-
+>  1 file changed, 10 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/tty/serial/serial_port.c b/drivers/tty/serial/serial=
+_port.c
+> --- a/drivers/tty/serial/serial_port.c
+> +++ b/drivers/tty/serial/serial_port.c
+> @@ -110,5 +110,14 @@
+>  {
+>  =09struct serial_port_device *port_dev =3D port->port_dev;
+>
+> -=09serial_base_port_set_tx(port, port_dev, false);
+> +=09/*
+> +=09 * Do not disable TX on a console port. When an init system calls
+> +=09 * TIOCSCTTY with force=3D1, the kernel hangs up the previous session=
+,
+> +=09 * triggering uart_hangup() -> uart_shutdown() -> here. Stopping TX
+> +=09 * kills all kernel console output permanently.
+> +=09 * uart_hangup() already skips uart_change_pm(PM_OFF) for consoles
+> +=09 * via uart_console(); apply the same guard here.
+> +=09 */
+> +=09if (!uart_console(port))
+> +=09=09serial_base_port_set_tx(port, port_dev, false);
+>  }
+>
+>  static DEFINE_RUNTIME_DEV_PM_OPS(serial_port_pm,
+>
