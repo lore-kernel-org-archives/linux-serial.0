@@ -1,143 +1,109 @@
-Received: from mail-yx1-f53.google.com (mail-yx1-f53.google.com [74.125.224.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05AB439DBF2
-	for <linux-serial@vger.kernel.org>; Thu, 16 Apr 2026 10:23:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.53
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776335013; cv=pass; b=Ot19jXwnK2Vx5aweWeMYiLnHw4TC2dOxSMuuJGk0ZwshlOLrci99Et2syB9eCNXojmzbKJhvFPae9CqHyJDbK0KFNVRaq01TrqZIMvyONzICEqbR/euT0QF6Exd31MYyBOwDxLDSDbE5MgXp/LrT5LiymVuPjKR68MK0XdBBzKo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776335013; c=relaxed/simple;
-	bh=LbTzRS7v1RQTEFBbLZEgMN4JOcHAPPaG3nlUPacsRSM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=MHGUdl9vBazFrZoYvIIQTByuOJ8pdQxICiFTq/09S5oBxxtzQoMpgun4MclFiBU3U8uUxRXNoXxye0YwVGpDLDNh9+99dAhmKKN5rpx8VrdfuiRXwP8JpOBcVra/aHnwKIYx2uPppLva1IFmmLlN4696JeEgVCzSgTBeNOe12/A=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=H9pFIaBS; arc=pass smtp.client-ip=74.125.224.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3590B1C84D7;
+	Thu, 16 Apr 2026 10:43:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776336236; cv=none; b=ViUpC9x1lOLCu5f9ImkXq53i805zzER6WNaQrYLYt8980qnkdOhtNAXsNlgdZeJgU9YTRQ42vXST2jk/BuJCI3cCkXWYujrRt6iQds3SoNOnsGdHkNI2DkFaN3PgDrqGlRxfM2WPHZNcrpqru4ydHtSbNt0QEciFsVisLpcSyLk=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776336236; c=relaxed/simple;
+	bh=D3LDWp/psMWoC67/odIik6PEKPqrilK5VK91KrBhLgI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=oQeK+T88z6IhT35VGD8dzBUjVJb6lZf7r5AtZQkBSCVkpuiS/2/Lg7Kn4s/h3oYA4tUlrhdaryPROJsw2qIGvN2vk5Kc0RY8XuRHJBQ1qyGgYc2avnBMEW0+jWiEcUrHRPp892nX/oBesoMWHDHhFp8MSIDTOjL5hqEbRxCIjeA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tOtBFF9S; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="H9pFIaBS"
-Received: by mail-yx1-f53.google.com with SMTP id 956f58d0204a3-651b0eb2564so5711999d50.3
-        for <linux-serial@vger.kernel.org>; Thu, 16 Apr 2026 03:23:31 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1776335011; cv=none;
-        d=google.com; s=arc-20240605;
-        b=Ey6zFXvngznfJLDVvGwQiugmF08COmMgWJqWyEy1i+hE2oi0bVKeXLmzmIX5U9OQlk
-         XahD5TudJOxBAeUQj8T4A7AvrhU+vbs/ZuXkQA/TRzDaGdGAolTY0BROG08TR69szbuc
-         m36OVO2cw56LkgqysM7Fcjzl6AyvyqLrkXQMAF9plGMVbFSTPS3wUql5ioZrfpfHx73W
-         mj/h9Fe9tAg0oBKFr2J7JQ/ocmOjhJkoCtVrK0GHMQxtwZD9lUfaVlRt9R3fW8yypJut
-         IeDTZPqZ21WbSkSlGCNEeK8OK0pU8sEuHoqqkSJaKbfKEcVsdRwlxMNyKql1MM2u07PS
-         Ugfg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=LbTzRS7v1RQTEFBbLZEgMN4JOcHAPPaG3nlUPacsRSM=;
-        fh=ti7CxfQwNY+XvIchcL46fx6txb7FxfyKPyKdighCo0A=;
-        b=RXbF2WM3T47pDxh7LmQGoQP7vfu20L7dZoFk60wUYHpkfU9Qnhc76KHbGpTyFxMMvZ
-         kqiiYCIxsTdR+lsaUNJlXRYkE5ZXhiH/Vy+IsT6ecNx41xGP5jGn+2AH0xuDxuLEAMPO
-         FPwBo/nXiFhAGowvi1CUakyRD29orwxd4Y/SF0/sn5O67wbM85M4Mx0qt++ju5hUMz5+
-         /VFlrjvp8f7sjBVtywpw88tCsdyS1ebHycEpS3gvMg5CVN0GwZnrBH29VSPiX9WxQNL6
-         uEN1nWrgvADBenByyNQ0rUK1rTn2x2205FPzwaSHiTqHfwsVBE9HWMzd1aqBAYEcogrf
-         MwDg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776335011; x=1776939811; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=LbTzRS7v1RQTEFBbLZEgMN4JOcHAPPaG3nlUPacsRSM=;
-        b=H9pFIaBSWUfwB9RidOxbGZMjFRrZ/3N3NGzJFirU7eXnhdwofkOpDo0m/3CylWwzDn
-         H6lrjwGi+0F9QzKMAUzMMsXtUKVpYa8nJSKb3xdJh71gS47aLZwpW+LxR/kpxLqwc3Cp
-         7Pn+r0wBMUysPTz7duEDGI17GuEVcfEBEfthH2xZeAcrdnUFchKI8vBO0NrONHYyipq9
-         l2v5u2XUSc53A4JHkQ4HIvXk5GLxJeOTdJFESJddXzS9csCeeQoK2tvp4i3t8nH4Gu7S
-         yg4GhZuCRaJ548Vogbs6HzwdfGiKUJRZSYwESKncXr5BL2O48+ieaxINxhSUiW32uj0E
-         jAsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776335011; x=1776939811;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=LbTzRS7v1RQTEFBbLZEgMN4JOcHAPPaG3nlUPacsRSM=;
-        b=bDykvRb9eUyqYsbHmHhDB5SxHFmhzVpmmmN5+ZfzUyj7CSJ4ayXpQjrlFnLkfWHAMo
-         b5QfM8HlX3zZI1BcDrVxMA32+y/MmouqWEFBBjEcdZKJmMxfOKhxm1UeBGQxloXCZxlO
-         3fRKSFxVvgjx7cl7GXjh+iQuhoUYpkxXljVhR8ZnyI/Ltp69sWmNzE55pwKJXkRxzVFE
-         8Xp3HYnblaK80iFMc4QhmZtvUJ6zlJZqhll0nrdPKva3AgTnFCpaWds5RObQICQQmjo9
-         IWsl40ksYBP0ja9LlLVPcqFuuhBGyemZB5V/1D1bDLSyP+wu5bV/P34Bx2S5q4iok/JZ
-         bBjg==
-X-Forwarded-Encrypted: i=1; AFNElJ91u3YfBzDX6gxN1Y9gogmflUnm7IqRdRsij2BxNEFLvPKvgzC32pZldxOU+dBWCUXdbrc3DZseza+PhlI=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywzl+2Ji4a0ZLsBJtdQt/UyrxjTe10b1EhfRS7u3hr/gEYDoAzS
-	zoIouGg/K3M3mbghmAE1t8WdsopRcmmfneaMgeqJIzSvDh1MkTbnGuxR/moqFHbhYCYG7UYoBcS
-	XiqUu45FVxqLtEMgkpREbfkVFtsAYg5o=
-X-Gm-Gg: AeBDietT4990kr2iYf1lP+QrllSpbSumSOntbvp5kaJ4OJuG3qBX3HuQdQr8/KuPzvm
-	sKLd3Ww9uRk6q+JQTfCQPIjKE523ehLQx8/g2SaV50oMZ+olzYiJOxXFGCeIPoPCpaVEJS+BQ8r
-	dIVcf+mQnJE58FziKdnz3cZYuTqLfNz8IyCmUVdxAeBuoZ1fmYWIdwIdaH4jlmCItOSF2f7qsyB
-	nQ0CmwBuvc3Pg6Z4D/8za1A/wquWMCBfhFBgU52y/WRzCrLckML2M8Ys7aQdJrYzAYZmld93ICH
-	Xo+UzkrZriu4Y7JRjktx
-X-Received: by 2002:a05:690e:4011:b0:651:c71d:8a74 with SMTP id
- 956f58d0204a3-651c71d9744mr14382278d50.46.1776335011072; Thu, 16 Apr 2026
- 03:23:31 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tOtBFF9S"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 869F4C2BCAF;
+	Thu, 16 Apr 2026 10:43:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1776336235;
+	bh=D3LDWp/psMWoC67/odIik6PEKPqrilK5VK91KrBhLgI=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=tOtBFF9SodSNCFo5LkJgugzifnLBrcwXwsqpvXaZUbSLldTFk1mw8ZW0oCLmBQQPc
+	 90MBeIoQJkC9HXjykJ4gsodI3j3FeFfvYo+SGnmXhUuansbrRxN0DZo147nvzOLLll
+	 yaeh0s2VtqdQdYv/IEwupa8lHuNr0Nt/WK194JMmZuruOkcUeAtPX5A333TwSote2h
+	 w8XoQ2EiQN6SOFagQFFvi+wW/hOo0ib5guX2jYp60UQSuHrvESm9LuBy1eEZzgnJKT
+	 VQeQq1XnqSRyyzQUd9anWMBFA718K4h+k3dplgycyumeb4jqUmb3XbUoeWy1UgPhha
+	 YDpfu+0E8Ndrg==
+Message-ID: <d37edba0-85df-438d-b54e-c933aae06c9b@kernel.org>
+Date: Thu, 16 Apr 2026 12:43:52 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] serial: 8250_accent: fix reference leak on failed device
+ registration
+To: Guangshuo Li <lgs201920130244@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Russell King <rmk@dyn-67.arm.linux.org.uk>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, stable@vger.kernel.org
 References: <20260415183436.3763871-1-lgs201920130244@gmail.com>
- <463cec4f-a038-4bd0-90df-76e0ef48381c@kernel.org> <CANUHTR9toK-PS8qrTd-=ATpSi8xbnXmF87sfRaMDp_jG_eiVMg@mail.gmail.com>
-In-Reply-To: <CANUHTR9toK-PS8qrTd-=ATpSi8xbnXmF87sfRaMDp_jG_eiVMg@mail.gmail.com>
-From: Guangshuo Li <lgs201920130244@gmail.com>
-Date: Thu, 16 Apr 2026 18:23:17 +0800
-X-Gm-Features: AQROBzDJwF5nR-YRaxJ0GiQSty_8vbImmxuQxj_nDAtrvfhqoyQZXUThlhF2q1Q
-Message-ID: <CANUHTR8Hje-pP=7=2hLwkhPMb6cMWosDzdY4oLneFpH5-hfS-Q@mail.gmail.com>
-Subject: Re: [PATCH] serial: 8250_accent: fix reference leak on failed device registration
-To: Jiri Slaby <jirislaby@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King <rmk@dyn-67.arm.linux.org.uk>, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+ <463cec4f-a038-4bd0-90df-76e0ef48381c@kernel.org>
+ <CANUHTR9toK-PS8qrTd-=ATpSi8xbnXmF87sfRaMDp_jG_eiVMg@mail.gmail.com>
+ <CANUHTR8Hje-pP=7=2hLwkhPMb6cMWosDzdY4oLneFpH5-hfS-Q@mail.gmail.com>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <CANUHTR8Hje-pP=7=2hLwkhPMb6cMWosDzdY4oLneFpH5-hfS-Q@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Jiri,
+On 16. 04. 26, 12:23, Guangshuo Li wrote:
+> We are also discussing in another similar patch whether the
+> better fix, if any, should be in the API/core code rather than in
+> individual callers:
+> 
+> https://patchew.org/linux/20260415174159.3625777-1-lgs201920130244@gmail.com/
 
-Thanks.
+Agreed, if anything needs a fix, it's platform_device_register() or the 
+functions underneath...
 
-On Thu, 16 Apr 2026 at 17:37, Guangshuo Li <lgs201920130244@gmail.com> wrote:
->
-> Hi Jiri,
->
-> Thanks for the review.
->
-> On Thu, 16 Apr 2026 at 14:14, Jiri Slaby <jirislaby@kernel.org> wrote:
-> >
-> > Hi,
-> >
-> >
-> > What reference exactly?
-> I was referring to the device reference initialized by
-> device_initialize() inside
-> platform_device_register(). My reasoning was that when
-> platform_device_add() fails, platform_device_register() returns the
-> error directly and does not drop that reference on the failure path.
->
-> >
-> > How did you verify you did the right change?
->
-> After my tool reported this case, I manually audited the relevant
-> source code and
-> checked the related core API definitions. However, I did miss the
-> special handling needed for a static device in this case.
->
-> > In particular, what does put_device() do on a static device, even
-> > initialized, ie. with no device::release? Try it...
->
-> Sorry, I should have considered and verified that
-> more carefully before sending the patch.
->
-> Thanks,
-> Guangshuo
-
-We are also discussing in another similar patch whether the
-better fix, if any, should be in the API/core code rather than in
-individual callers:
-
-https://patchew.org/linux/20260415174159.3625777-1-lgs201920130244@gmail.com/
-
-Thanks,
-Guangshuo
+thanks,
+-- 
+js
+suse labs
