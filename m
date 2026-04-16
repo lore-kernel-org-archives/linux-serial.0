@@ -1,120 +1,137 @@
-Received: from out-170.mta0.migadu.com (out-170.mta0.migadu.com [91.218.175.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vk1-f173.google.com (mail-vk1-f173.google.com [209.85.221.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD7D63A6F18
-	for <linux-serial@vger.kernel.org>; Thu, 16 Apr 2026 11:32:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E9C93B47F9
+	for <linux-serial@vger.kernel.org>; Thu, 16 Apr 2026 12:00:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776339141; cv=none; b=T5Xpudw0JZA3bt57pC1edd6GE30ubfg1+ThyaFvSuQYXLtFvQlyaP6LUn7GST8KXVleOHkTTs9UIoDBBhcPZlW/5KVZ3Dw/pZ94sQsii7xUQxYCL63rFUoq6pm2X0r90OWyIzw2kG3TxBVCMbJKhegAJoWHnxJCrxkh9cUiqXNw=
+	t=1776340808; cv=none; b=bO4pcQnGXuuv+6VxliqsLA+U7Wu8WC9VVVzsGz3p74/v2y/5Rn05iy5stFatqeKWjylslczks1ps2+CEK5WKLjocasgvwALyIrFX5CuplYcAt3cSDz21u3KkA1wI1qDhxPf7NFstCEJPGC5aU2BxD6yHJL+6Magj3v43xcQe0H0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776339141; c=relaxed/simple;
-	bh=6KsSLfAF+/mtxLZlpZ3CgURnBm3csVvYhe2jhhXXYz8=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=C7aBUZ87XYjAQvLjWfMH0D3MrxPwRPCdhEW7ZIG0ADe98bTIRxvwoiDc3HbL7wsUSc6vGgf3hRwhaNZ47S2S6zPPv+GYqrTfKbymcrwWXa4caOgF2ESQJXOD7oPauV7f5FKNmevKWEBkvG3/5YsRFL4a1v91PZ+yIpHiSacmgmo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=JiAZhmA5; arc=none smtp.client-ip=91.218.175.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="JiAZhmA5"
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1776339136;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=c5JpUD1ZX/0TUIEgZlqUk61qFWas8IanC2YUFCf7B3M=;
-	b=JiAZhmA57NiG/Za1hAjSk/D4eyv/X9O8YuZdh5UWvuBt/Zfw6Q04O6zG+z8Fkf4BjbkLrM
-	to16Gj0zsWkCN4YAg5pMQDokOh1+FsyBPz6Idndpk9g+OGQ5nIClI76O54m37z4PJAi9cJ
-	KN3a0/viDQ/MIaqWESeuZ7oZM4Fwh4Q=
-From: Fushuai Wang <fushuai.wang@linux.dev>
-To: andy.shevchenko@gmail.com
-Cc: fushuai.wang@linux.dev,
-	gregkh@linuxfoundation.org,
-	ilpo.jarvinen@linux.intel.com,
-	jirislaby@kernel.org,
-	kees@kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	osama.abdelkader@gmail.com,
-	wangfushuai@baidu.com
-Subject: Re: [PATCH] serial: 8250: Clear CON_PRINTBUFFER on port re-registration 
-Date: Thu, 16 Apr 2026 19:32:00 +0800
-Message-Id: <20260416113200.38244-1-fushuai.wang@linux.dev>
-In-Reply-To: <CAHp75Vc7sdDT+nWZX7u7aSsUhUquYNAiYo9HrxHhjXnGz5g55Q@mail.gmail.com>
-References: <CAHp75Vc7sdDT+nWZX7u7aSsUhUquYNAiYo9HrxHhjXnGz5g55Q@mail.gmail.com>
+	s=arc-20240116; t=1776340808; c=relaxed/simple;
+	bh=KmYdZxcdwgYmEk917iXqSBkndf7zVbCrBpuHdVwqfbI=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=kq9QcT2q/QFuwMoWIiicMMaT2Dpqt7fTvKsUu3BaT3RXdvUH5I0C5n58zEg8n6lZpd+2QwtZObNypLbDWYi4/tGxA7b4eRw3rjjuW2yQb0LBKvNkjo3BBm7Ym6/C8GwOoLKWmQwx6+QVaXHWFWjMNs0MBI62FEahOxJ/sV7o+RU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-vk1-f173.google.com with SMTP id 71dfb90a1353d-5673804da95so3204138e0c.0
+        for <linux-serial@vger.kernel.org>; Thu, 16 Apr 2026 05:00:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776340806; x=1776945606;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=dF47gy5v8W39QMxMPFAcvgyR6D05W/M2D8Oqivy/q84=;
+        b=sS1AXZUwNbYJ/S8SY2bG8ehK+/IhUV19sfNlqDRmFJZaKr5UsPzHNE2Ku9ITf5aEJW
+         CayitBar9HpSLMt/BAFz+tAtm5nyICQJQ0FnEHAl9gtnx8wC11MQXtRm+40n00OwgVLc
+         vgLsNiVuJQ0I8W2K1yWZNENETJ/NXZQMhFXs/8cJXCI11dFj2V8ex3znp7Wzoe4VHsRA
+         p83RaSAdIFtpy93C3YeDQXXmX2sKc0XfZ+8gYRfYPLGhMEPdepbnaYI+z2xUZLt4o8GK
+         p5V46ZQlPZwKgi4a+6axbnSQYZb67Hi20fYLK2/5g1aGr6UrX6x2+xGixlcvtFy/lvU8
+         kPPw==
+X-Forwarded-Encrypted: i=1; AFNElJ80ZDUuR70VEaTwXn9fFVD2GiXPovKOsWCgvR0F7R98AAulB4OLzgVYhaU7OKR3cg71lKiV3mSyuA2v5Ko=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwSphJ5UuHrbbeQa+1hjeGnKRzZGQY1fvu/HKY3/jN7FeMd58MZ
+	E7kGRpZTy3k0bVbbV+DzEfmxnQm+XhqBHwYSgT1m+fR3zWlNLuAAw3lvdTuHm5FZ
+X-Gm-Gg: AeBDieu0bB94fKmBm2FVnMcyQXgZwgrQ1430OEdEEzJKsQTIU9mr0ke44JL3BLycGH+
+	9I7OB/1XPGsTs5H8ybykNUyYaOUhvcZfV7AnErgDG6EF6KbHL7v9VlE0vGshDrjojs1vh45wIMA
+	tMEFFbWiVhdVlH3sWvwOCk9n9p9rpIrfyvD5F7EMWPegOsaNYuF438+3TfZA4NQrqdWjJ/qtibS
+	KqamX5HqRhBKoYFIjWSOH5xz7mWSkiT1EC0Lm1JaTa0f1WjO0gILKRYTK3SeoA88xyCToDqEfco
+	z3+DLP4TBj2Jx2aLgMv8avXuoNZPNGuTU+N0/6s/n0Ti3Xy4hbLy0UXJUfA6fRvArvkuU5AU0uf
+	Pztqd317TpL+wWTlTPgYYUnbwBd/OWCmRicJvKNZ+bM67UnxY1tSlb/22oBe7Xx1ieKdlZAs7UH
+	Kr/wMV3/AHJQWWNz6Iw3kOecl4ZeG11yI9ArhigqLeybm5s6lPwaNQjhx0CTxeNcVXAggKnnU=
+X-Received: by 2002:a05:6102:6e8a:b0:5ff:e769:44bb with SMTP id ada2fe7eead31-60a013658bemr8017182137.30.1776340806215;
+        Thu, 16 Apr 2026 05:00:06 -0700 (PDT)
+Received: from mail-ua1-f46.google.com (mail-ua1-f46.google.com. [209.85.222.46])
+        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-95864f494dasm2261202241.0.2026.04.16.05.00.04
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Apr 2026 05:00:05 -0700 (PDT)
+Received: by mail-ua1-f46.google.com with SMTP id a1e0cc1a2514c-94e2ad66abcso2113270241.1
+        for <linux-serial@vger.kernel.org>; Thu, 16 Apr 2026 05:00:04 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AFNElJ+R1UqnrXuPsne7v/li0DXlWXRbQ31SiUrcDIV37g0Iv0pOuVyI+0NZx04bTnrzPthviNxoqbqyANytG7o=@vger.kernel.org
+X-Received: by 2002:a05:6102:3050:b0:604:e063:4fa8 with SMTP id
+ ada2fe7eead31-60a00e430fbmr9729727137.26.1776340803703; Thu, 16 Apr 2026
+ 05:00:03 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
+References: <20260413040807.40546-1-zenghongling@kylinos.cn>
+In-Reply-To: <20260413040807.40546-1-zenghongling@kylinos.cn>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Thu, 16 Apr 2026 13:59:52 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdUOua7nRqf0g9BGhesQ7VHUZnJD-f9nynJTjfpW=DsQtg@mail.gmail.com>
+X-Gm-Features: AQROBzAkC2utjgevhSJzIOhx8DL8v-pNoiK8_7MJPyLo25tg1-YeHkhpKXIrd-Y
+Message-ID: <CAMuHMdUOua7nRqf0g9BGhesQ7VHUZnJD-f9nynJTjfpW=DsQtg@mail.gmail.com>
+Subject: Re: [PATCH v1] serial: sh-sci: fix memory region release in error path
+To: zenghongling <zenghongling@kylinos.cn>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
+	biju.das.jz@bp.renesas.com, wsa+renesas@sang-engineering.com, 
+	prabhakar.mahadev-lad.rj@bp.renesas.com, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, zhongling0719@126.com, 
+	kernel test robot <lkp@intel.com>, Dan Carpenter <error27@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 
->> >> When two PnP devices map to the same physical port, the serial8250 driver
->> >> removes and re-registers the console structure for the same port.
->> >
->> > Is it a real device out of there? Can you share what that is?
->>
->> Yes, it's a real device.
->> In my Intel(R) Xeon(R) 6971P-C machine, the boot log shows:
->>         [   17.242984] 00:04: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
->>         [   17.251352] printk: console [ttyS0] disabled
+Hi Zeng,
+
+On Mon, 13 Apr 2026 at 06:08, zenghongling <zenghongling@kylinos.cn> wrote:
+> From: Hongling Zeng <zenghongling@kylinos.cn>
 >
->>         [   17.257934] serial 00:04: Runtime PM usage count underflow!
+> The sci_request_port() function uses request_mem_region() to reserve
+> I/O memory, but in the error path when sci_remap_port() fails, it
+> incorrectly calls release_resource() instead of release_mem_region().
 >
-> This is strange, what kernel version is this?
+> This mismatch can cause resource accounting issues. Fix it by using
+> the correct release function, consistent with sci_release_port().
 
-Please ingore this. I just test the patch in kernel 6.6. And this log
-has nothing to do with this problem. It was fixed in patch ed2761958ad7
-("tty: serial: 8250: Fix another runtime PM usage counter underflow").
+Thanks for your patch!
 
+> Fixes: 2667bd6673eb ("serial: 8250_port: simplify serial8250_request_std_resource()")
+
+That commit does not touch the sh-sci driver.  Shouldn't that be
+Fixes: e2651647080930a1 ("serial: sh-sci: Handle port memory region
+reservations.")
+instead?
+
+"git log --follow" does a really bad job here, and doesn't even see the
+offending commit, due to the actual change happening in parallel with
+the move from drivers/serial to drivers/tty/serial.  Fortunately the
+"git blame"-style output in the linked report below does show the
+correct commit.
+
+> Reported-by: kernel test robot <lkp@intel.com>
+> Reported-by: Dan Carpenter <error27@gmail.com>
+> Closes: https://lore.kernel.org/r/202604032356.SzEjYkBC-lkp@intel.com/
+> Signed-off-by: Hongling Zeng <zenghongling@kylinos.cn>
+
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
+> @@ -3024,7 +3024,7 @@ int sci_request_port(struct uart_port *port)
 >
->>         [   17.258360] 00:05: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
->>         [   17.258516] printk: console [ttyS0] enabled
->>         [   29.643013] serial8250: ttyS1 at I/O 0x2f8 (irq = 3, base_baud = 115200) is a 16550A
->>
->> The issue occurs when BIOS "Serial Device" option is set to BMC:
->>           Setup Question  = Serial Device
->>           Help String     = Sets the Serial Device used to output bios serial log
->>           Token   = 9003   // Do NOT change this line
->>           Offset  = 2F8
+>         ret = sci_remap_port(port);
+>         if (unlikely(ret != 0)) {
+> -               release_resource(res);
+> +               release_mem_region(port->mapbase, sport->reg_size);
+>                 return ret;
+>         }
 >
-> Is it an IO port?
 
-No, Offset = 2F8 is the offset in BIOS configuration space, not the I/O port.
+My first thought was "Isn't release_resource() just a shorthand in
+case you already have a pointer to the resource?", but that indeed
+seems to leak the resource, as it doesn't call free_resource()
+(see __release_region()).
 
->>           Width   = 01
->>           BIOS Default =[01]BMC
->>           Options = *[01]BMC       // Move "*" to desired Option
->>                     [02]S3M
->>
->> So 00:05 may be the BMC serial port device. From ACPI paths:
->>         /sys/bus/pnp/devices/00:04/firmware_node/path: \_SB_.LPC0.UAR1
->>         /sys/bus/pnp/devices/00:05/firmware_node/path: \_SB_.UAR1
->
-> Do I understand correctly that both devices refer to the same physical
-> device?! How on earth is it supposed to work?
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Still, I'd like to see a second review opinion.
 
-Not exactly the same physical device, but they map to the same I/O port (0x3f8).
-They are different PnP devices with different ACPI paths:
+Gr{oetje,eeting}s,
 
-  00:04: \_SB_.LPC0.UAR1  (LPC COM1)
-  00:05: \_SB_.UAR1       (BMC serial port)
-
-When BIOS "Serial Device" option is set to BMC, both 00:04 and 00:05 are mapped to
-the same physical I/O port 0x3f8. And then:
-
-  1.00:04 is probed first and registers the console for port 0x3f8
-  2.00:05 is detected and also needs to use port 0x3f8
-  3.Since port 0x3f8 is already in use, the driver must remove 00:04 first before
-    adding 00:05
-  4.This process involves console re-registration, which causes the entire 
-    log buffer to be reprinted
-
-Sorry if my explanation is not clear - I don't work with serial subsystem often. :-)
+                        Geert
 
 -- 
-Regards,
-WANG
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
