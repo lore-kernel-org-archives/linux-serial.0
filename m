@@ -1,228 +1,189 @@
-Received: from smtpout-03.galae.net (smtpout-03.galae.net [185.246.85.4])
+Received: from OS0P286CU010.outbound.protection.outlook.com (mail-japanwestazon11011012.outbound.protection.outlook.com [40.107.74.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCD623947AC;
-	Thu, 16 Apr 2026 13:34:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.246.85.4
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776346477; cv=none; b=doszSaV/p5KCtGMihmDlkZnp1BuLfWP41ylh1eUv1VSW0ib0+x4h9ZKPeajQV4kByINW8gALFwALHXicsf5/GtWHsXMndQdXBRVcm3S1wH+tU4XMNUUMTlMt6F/KLs6ctZkugXwV4n7iFOdn+8SJUN50vzwo5PB8sLQm5eEFRAI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776346477; c=relaxed/simple;
-	bh=OdPGRiJ2OTAd0wN0VpIuzIvWe5D9n+gShs26W0B8xqs=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=KN4c0OSYumQWlsmEKCbOgyqyBvvegLoAiFahJmzTq9woCjwVBWA4CUjMhC3VEPLOCm9H44+COB5KEhTUiihz2Glc7ROO9WbbKoRiFQ4LCkRfBFaJzb0sXtpB84b6/C6Pna4aEAGD6v+TFq7bXHp3f+ypIQo7f3Bfjn8+xA64zVw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=EloIX9sM; arc=none smtp.client-ip=185.246.85.4
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D607C19E98D;
+	Thu, 16 Apr 2026 16:31:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.74.12
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776357086; cv=fail; b=mYbxTZMfp3oszipM0VSZ7v5ZIRkoJ981DFX2T9QeTBB7Et+ywLPUHLZMONEdMF9+CXu2EkmPkwVh5KYNW4CxLCdAUin+C/X2c3aVHRTQhf3S9v/FrFIoc+LBNHbdYGeGzr6rz3C0VQhqfeJ9LV/AAbdpF90h2RY/QnKSRkrrMWI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776357086; c=relaxed/simple;
+	bh=JYZSznhA93hKgBZo9vl7emlLo/zsOxJIDDheP+FdPIM=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=H3FMurqBEAUW+hStvR8RpNbN7eNrcl4nqgJZzTlyaxbixfzGyJRQXO2Ka/VHJvXUm0aDkUiqoC/nQJnI770vNbJ5v7UJVxJjViemoCacixth8v/DKG/Dq5v/xCUqTp//rvUtYQlaMpbl1aMKctihaF1lVCPnt1VI+u+eGyJ4BcI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com; spf=pass smtp.mailfrom=bp.renesas.com; dkim=pass (1024-bit key) header.d=bp.renesas.com header.i=@bp.renesas.com header.b=G9V099IW; arc=fail smtp.client-ip=40.107.74.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bp.renesas.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="EloIX9sM"
-Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
-	by smtpout-03.galae.net (Postfix) with ESMTPS id 47F3F4E42A1E;
-	Thu, 16 Apr 2026 13:34:34 +0000 (UTC)
-Received: from mail.galae.net (mail.galae.net [212.83.136.155])
-	by smtpout-01.galae.net (Postfix) with ESMTPS id 0867F60495;
-	Thu, 16 Apr 2026 13:34:34 +0000 (UTC)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 360BB10460880;
-	Thu, 16 Apr 2026 15:34:23 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
-	t=1776346472; h=from:subject:date:message-id:to:cc:mime-version:content-type:
-	 content-transfer-encoding:in-reply-to:references;
-	bh=3XpbdgVt+Cx8FP8MN9lmm4BPNvobbTQ5J2Ix6m+jMcE=;
-	b=EloIX9sM1QOhKmblue3jMDM5k8KpAKMHSGLQ8TanAuK7ENEV4CJPIMh2MskGhnhqAWn8Yw
-	kUAvaK1IF/Se+k3PBQG/MKIkBmVQpmTrY37v/4rJgCuO1y+r/1Gi1LkS705qt3VLfG8J/t
-	Xh6hvLhGANS4fiHpUfY431EjCRXdb9gafJMTVqrXQqnuY5IB80FZ7/DSZE6NczIytZJkU/
-	4zplh8emxfZOdpV5qrGtzBrEKS6pZZFh2AdjAIRSTDrK00XSpARNgEHfGzFQBwyefj3PSo
-	lEtKIt5lgvdG95GPo0kXJtjJ2O6cW+fsn6WroFDb1nkTBbUb0qISYKdg0D0cCg==
-Date: Thu, 16 Apr 2026 15:34:21 +0200
-From: Herve Codina <herve.codina@bootlin.com>
-To: Manivannan Sadhasivam <mani@kernel.org>
-Cc: Chen-Yu Tsai <wenst@chromium.org>, Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>, Manivannan Sadhasivam
- <manivannan.sadhasivam@oss.qualcomm.com>, Rob Herring <robh@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, Nathan Chancellor <nathan@kernel.org>, Nicolas
- Schier <nicolas.schier@linux.dev>, Hans de Goede <hansg@kernel.org>, Ilpo
- =?UTF-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Mark Pearson
- <mpearson-lenovo@squebb.ca>, "Derek J. Clark" <derekjohn.clark@gmail.com>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Marcel Holtmann <marcel@holtmann.org>, Luiz Augusto
- von Dentz <luiz.dentz@gmail.com>, Bartosz Golaszewski <brgl@bgdev.pl>,
- Bartosz Golaszewski <brgl@kernel.org>, linux-serial@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
- platform-driver-x86@vger.kernel.org, linux-pci@vger.kernel.org,
- devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- linux-bluetooth@vger.kernel.org, linux-pm@vger.kernel.org, Stephan Gerhold
- <stephan.gerhold@linaro.org>, Dmitry Baryshkov
- <dmitry.baryshkov@oss.qualcomm.com>, linux-acpi@vger.kernel.org, Hans de
- Goede <johannes.goede@oss.qualcomm.com>, Bartosz Golaszewski
- <bartosz.golaszewski@oss.qualcomm.com>, Luca Ceresoli
- <luca.ceresoli@bootlin.com>
-Subject: Re: [PATCH v7 0/8] Add support for handling PCIe M.2 Key E
- connectors in devicetree
-Message-ID: <20260416153421.1692848f@bootlin.com>
-In-Reply-To: <4yockfx5rjcvfh2n2excrgsknnhi72rv2w7wf7onks2ryt33sm@w7zkcxuc6vem>
-References: <20260326-pci-m2-e-v7-0-43324a7866e6@oss.qualcomm.com>
-	<20260413075459.GA2626902@google.com>
-	<fpcs4p62f35a5qyqwgm5ysa73stbysxcr62tkmmkrrcvsuf4t4@4ivukyqjey57>
-	<eeytuhqpgdz4do4tgtbmfntub2femtyq7bij7svhodpyjwaylx@j3gmvq2a2zqc>
-	<CAGXv+5E=tujhtZjwi6Qm7hk3Ks74UzTQHWq82NiTEw1+vYod5g@mail.gmail.com>
-	<ad36pIu-0dutL7Nk@ashevche-desk.local>
-	<CAGXv+5EGe59nJctLweEdZjb3MNmMvjuCHngGSfptzN985OiLdg@mail.gmail.com>
-	<ad4tJN27opdEooA7@ashevche-desk.local>
-	<CAGXv+5EPA29G-fsH=wWOD8AK6TZFezFhsE0NHPYj_Pt3nT+d_w@mail.gmail.com>
-	<20260415165651.153b573d@bootlin.com>
-	<4yockfx5rjcvfh2n2excrgsknnhi72rv2w7wf7onks2ryt33sm@w7zkcxuc6vem>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.52; x86_64-redhat-linux-gnu)
+	dkim=pass (1024-bit key) header.d=bp.renesas.com header.i=@bp.renesas.com header.b="G9V099IW"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=TEmk0fclhCl/v1Mow+X5lv8Rof9T/mZU+c5PRt24jWNb0Y/TasGv8hh/UiiDZkSCNXAp0haUB+Caz4EtxVxN4wG8IM6ny2B0UFiNLsbPuvI2ajigljZgjHFMtOC7ibyiWWOdlyXcejXZubChIWb+rH3fU8Fe05HiZy87P9QsJbyRmiUQLWGwn9nNJ7pdN2hlZiavTLl8diTr4SAe8prND2pzbSTAHIZkNIC5gNzE9Ljwv2Dg0XnBYEovPS9Ijy9jwPRET8zOf4aYLW9MCj8ibTYkXoJ2m1vM+ItKlqDGJegX80AuG0DLI1d4lCZ03IDeCKAc6kmZbstPiJmKwmmqHA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=JYZSznhA93hKgBZo9vl7emlLo/zsOxJIDDheP+FdPIM=;
+ b=phs7mPBneUE+sld08a1TSbmFE5eBk0zvPHXK/B3XqPOYKgj3kzNtwjnz67qQOT8qEvhms1BT/B3J8XEp31FlYJ9290pYr4d7CrtHK4JZYWSdy3PvluojpcaKzeC7+21tSYTlYHzhJm4V5dRbQ0UiDeg8RY7m7RyK391P6h82ZBIjwHrXykmcy4B8rRFMXjtKSxnJKE2TnUFMQqfFP2PuGwxwzKriI1U+4Gvx3XzttJF108TzY/fTTCUlFT+qOqwzouDX+pWih2LhcvS9j3HGJaRuanPda8jbhkxowQXYEMeB4zVUsbKZg+RV+WIGcpnei7LESqYs3kWbX0JVADiAUg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
+ header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JYZSznhA93hKgBZo9vl7emlLo/zsOxJIDDheP+FdPIM=;
+ b=G9V099IWwM7IiSL7Ef+PXx7fSCX+g4z6xwWZUwkI8piVZ2Tf3tzV0NAFnw4/63HAMYSHl+bGc3jo58gKokCxS7DQtgqNxshAIGkAFkzg/pkkfpwZ//sFsFj6eWzjeTDYkdKeHwZ+i45yJEi4yxSEt8yTDD9zN1bcud1Gd3hsBVU=
+Received: from TY3PR01MB11346.jpnprd01.prod.outlook.com (2603:1096:400:3d0::7)
+ by TYYPR01MB14048.jpnprd01.prod.outlook.com (2603:1096:405:214::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9818.25; Thu, 16 Apr
+ 2026 16:31:20 +0000
+Received: from TY3PR01MB11346.jpnprd01.prod.outlook.com
+ ([fe80::87d1:4928:d55:97de]) by TY3PR01MB11346.jpnprd01.prod.outlook.com
+ ([fe80::87d1:4928:d55:97de%4]) with mapi id 15.20.9818.023; Thu, 16 Apr 2026
+ 16:31:15 +0000
+From: Biju Das <biju.das.jz@bp.renesas.com>
+To: geert <geert@linux-m68k.org>
+CC: Hugo Villeneuve <hugo@hugovil.com>, biju.das.au <biju.das.au@gmail.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+	<jirislaby@kernel.org>, Thierry Bultel <thierry.bultel.yh@bp.renesas.com>,
+	wsa+renesas <wsa+renesas@sang-engineering.com>, Prabhakar Mahadev Lad
+	<prabhakar.mahadev-lad.rj@bp.renesas.com>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org"
+	<linux-serial@vger.kernel.org>, "linux-renesas-soc@vger.kernel.org"
+	<linux-renesas-soc@vger.kernel.org>
+Subject: RE: [PATCH v2 1/2] serial: sh-sci: Avoid divide-by-zero fault
+Thread-Topic: [PATCH v2 1/2] serial: sh-sci: Avoid divide-by-zero fault
+Thread-Index:
+ AQHcx2L1WxU/Wbm0ZkuvgJVMedankLXVW0yAgAAAwXCAAAUgAIAAAHbQgAdvCACABRxAsA==
+Date: Thu, 16 Apr 2026 16:31:15 +0000
+Message-ID:
+ <TY3PR01MB11346E163C0E4AD61C22A6FBF86232@TY3PR01MB11346.jpnprd01.prod.outlook.com>
+References: <20260408142105.310210-1-biju.das.jz@bp.renesas.com>
+ <20260408142105.310210-2-biju.das.jz@bp.renesas.com>
+ <20260408123039.922a75327fd7672df3bd61da@hugovil.com>
+ <TYCPR01MB11332B594964DDF0763499184865B2@TYCPR01MB11332.jpnprd01.prod.outlook.com>
+ <20260408125142.24cd94f094ba3ca512e7f346@hugovil.com>
+ <TYCPR01MB11332859E901171C91C543061865B2@TYCPR01MB11332.jpnprd01.prod.outlook.com>
+ <CAMuHMdW770zLQt5NiUZffhg3ztXzvM8iT=byBzKJEU9Gm8OykQ@mail.gmail.com>
+In-Reply-To:
+ <CAMuHMdW770zLQt5NiUZffhg3ztXzvM8iT=byBzKJEU9Gm8OykQ@mail.gmail.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=bp.renesas.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: TY3PR01MB11346:EE_|TYYPR01MB14048:EE_
+x-ms-office365-filtering-correlation-id: cc81e7c2-ef04-42d0-c4ea-08de9bd59486
+x-ld-processed: 53d82571-da19-47e4-9cb4-625a166a4a2a,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam:
+ BCL:0;ARA:13230040|1800799024|366016|376014|38070700021|18002099003|22082099003|56012099003;
+x-microsoft-antispam-message-info:
+ 2Sn12uQQdDiUrq3rfSLXk2RlPT+C+fLz6SeqfETN27CtFPGwdph62vF4MYbeJlSeOnPDwejEPYLn4NTRDIdLWXwPXtOkUcfKTJzcdKK2dr2nnPU8DKqVdvhpZw1eU48g3MZOXor9RHEc9BteyPCA0cah2Yr3WP3vDIS/NiHGDrl8LlDGFGqEc5ebgmpJPms7fqjCn+v22p26sVhfzCa/NvwFnjPiXtuTzj7l4ot7bEhqsgPPaCssNS3hnB1bXGINgKxXGMFx5JUwVk4FpvkHLai1wOXXiAm5La5Xk2uQRQIs/jtwhuZ3eJCVVaVab9OjOerycQ0NbHiaSfq3jP42gfy7q2nhQ1PGtxBsUILowCxVOVaDM6o6BxbGjdT/FUpJsYfsI1NsZcnjSFPY37YbBfgiGd23prq1dVkQovt3ISXezhyxKnKnBjtOVfldhgeNEWvSbuYTYqt8y/kIqYHjkveTYRo/S/q1xqNNEQTUujgFO2WsDfxrQ5BZ6Hp7KBfEwVaa7TBIceJfddg86ucHihDkc9ZjVDVCrd8M9SKOpRVshSaa0T6RzJIV2XrBT3ZiApalnbWsdfmZaUpSVIY1csRqqQF/yCcrw9tsUJOQ/UPYbeSlerB9/T6En5WsoCLD6u5vvk6JvQXQbr8O4zM8Sp4utkIvh5ldQ6ITCew4OXm/uWoVf39PQR/wDwx7KGYWqBM0gWITnV4GccCgIBXBNGTDClkHfmMzX58yoQmIoXPM8gGZc41rMGO6OoDcipti02PKwZ9lsLI6HJqxgGRRtLdRD+zOjBRJy6YH/sFH5ig=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TY3PR01MB11346.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(38070700021)(18002099003)(22082099003)(56012099003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?utf-8?B?NVE0VFNXQ1FBbGRwMWw1MUp6RWJURjRHL0JkUE5WUnNxZjZhZkVCUCtOK3lz?=
+ =?utf-8?B?YVB5ZjVDTDVUS0xuOUtNdG8rWHE4bjdXZmI2M2tkd29VTEpacktOYUU1Mmlv?=
+ =?utf-8?B?aDBvSzArTmRrWW1sUkpXOFEyWVk5ZkhNcFVTaWZWYWNMa2RZVEptUXdkYXlZ?=
+ =?utf-8?B?Zzc0MUJJcGQ0S1plMXZ4R1YwK01nUitaZVRsTHJmTTJuVXEwcmNocmVMNWZE?=
+ =?utf-8?B?alFiaElGZnJnYkc4UHcwalBSdFNqQ3JlQUhUdisrcm5aNFV6cUl3Sy9xL1RI?=
+ =?utf-8?B?Mnl2Y0ZjbVVMemI2Ynp4UWc1V0FiYytaSGZEM2JnWUlmOXVYUndPdEtTR1Av?=
+ =?utf-8?B?OGY4bThRaktxVndFQVBjWTBFR1hEMUd4YTVwbHQ5K2Rteno1UjhGc1padmZZ?=
+ =?utf-8?B?dTk5TzVzN0crbVI2cExBWW1ockt4L1E3c0ZOUjAvVHFSZVhVYmtVUmo2SWZy?=
+ =?utf-8?B?dTAvUnFmTHViOVZnNThISFhiQ2o5RWpZNnZpeEc5YlczNkFuMUtKNU90OXMy?=
+ =?utf-8?B?bGlUOTdmL2xuK1JEUm9BMmJCMDRuc09iNDRmS09RNHdEQVhiMTVFbWU2Nmpa?=
+ =?utf-8?B?VjU5cWwvSkw2NW45bmNlOHpERU5JSDlhNzhyckFpSWhEaWI4M1NYOGxQdk1L?=
+ =?utf-8?B?S3g2czBvanBPYkVyZ0tlb1VrNC94RTFxV3JTdS85OU9vZVNGdERDZlRmZGdE?=
+ =?utf-8?B?elRWejMvZ1pMa2VyTTNrOEx1REpNZHJmVGpmT0tQMnovbWVZV2pacEJrd0ZI?=
+ =?utf-8?B?aWQrSExrZXhYdzNjZk5qTmVhRkY2S05pd0ZrdnlJUEFvdEFOZld0M2lxd1E2?=
+ =?utf-8?B?N3VYMC84SFVWNlBMaWxHNEhqaU5nVkpUWDFiM2c5VGdWMGdkcVU0WVY4eWhh?=
+ =?utf-8?B?Unc4RXFlcC9mc1V4ejErVThvRlcwMmtHZ2htcUNWMjEyVHNBVnVxT2tBMjZK?=
+ =?utf-8?B?N0prbGlIMGpsR0pKT3p1MHdQbUU1UThKVTRPV1l4WWt1VmY1STkrZVZYME5M?=
+ =?utf-8?B?UUNHalpvRkp3KzdCL25UU3ZkTGFEbExLUm8xVTRBVUhwVXVHcHlkL1N4bkZy?=
+ =?utf-8?B?NllBNEFkTG85cCtaQWtiaFd4Nm5SOHMrZGRHT2IxN2JYaFZ1UE50L2p1Q3pj?=
+ =?utf-8?B?UkNJdVZGVmZ3Y0Z0Z1VSRndKWWtsZjRra25yaThzY2NYN2ViWUh3cGpyNzN6?=
+ =?utf-8?B?UGphNmc0VEhQZDM3N2NaZ0tuRGtnNVVOd2FsRG1lZFBHZzBpZ3hWeGFOZUgr?=
+ =?utf-8?B?M1A0b29FbnB0WDFjRngrMG9QTzVxelE1YW15djRSZDc2ZklMRnREZWhwcUZw?=
+ =?utf-8?B?OUxWSCtBaVkwVjJ0RTF2eHBDR0xIOXNkRnQvSFVqSkp0SzY0OCtTalhoOVli?=
+ =?utf-8?B?eUY1bW12aFhlZS9YUEdHY2VyWld6R2FCeDBBSGRPN2MzUS8zanA0WWYxSjRK?=
+ =?utf-8?B?SVlGVmlHcGtRM09HVEF0dndMZDArSXUrVlZBTkg3S1hHUC8xRVlnOGkzeE02?=
+ =?utf-8?B?OXVLN0toQW9RQjZEMzZUY3dud2x6M3FkUXFIZTl6TlVyUEcyNlU5UTFIb244?=
+ =?utf-8?B?Qkd2dmdZS2VyR2tDR0p0Rk42R3FlSXZaaFNpNmRDKzdsMnppVlN3K0IrNDRW?=
+ =?utf-8?B?Q2FVdnJScWdIaUFzWnFiUGl6eGVDV2w4c0JlUDVRSU1zYnVnU3NRellackM0?=
+ =?utf-8?B?clhndlU1YXVVbkhkTHFrVHAvaEZ4RWlZUGdncGtKVEc2Q3dUSU5Uci9kR3dD?=
+ =?utf-8?B?eHdzYzVCWjNhN1RqRlBNM3NkRzE2dXZuSUpLZWdaTm9oNjZMOGw5eTZCS0NS?=
+ =?utf-8?B?SjZlRS93MHlQd3JMWTVQMEtPRjdqbjlPZkJMbDRWYkFKeXdaejBZUHp5NmhY?=
+ =?utf-8?B?cnp1VDBuWWlta2IxRy9vSEx1RWU3NVQrcUw2aVhGMzhkOHFZT3VIc2xBTWMz?=
+ =?utf-8?B?Z1NCdUVwU1Y4SDVQSzJmdUFjQzE1T1h1R2Y1b1BMenJ6L2o3aDR0d3E4bjdH?=
+ =?utf-8?B?Sko0RGpSazF6QzN1dTRHdlF4NXlacFU2K243SUI0SEhNL1QyUlcvdXByRzh5?=
+ =?utf-8?B?eUV4SkU4ZzVsOWx5TndEcUluVXhoQVZZUlprQ05qWEdkYkF2SU9mNGxLaDEy?=
+ =?utf-8?B?SHUzYWREQnJ5YVcvTWVqRWN4dmdpYmdKanE2dDVScnJjb0syMkNxbHF1Ym9D?=
+ =?utf-8?B?TEJrc3NKZm5rbS9Yb2xOclM0aGN3MnVwUHo3b05tZHk0NHlTUzZPOHZqbTBK?=
+ =?utf-8?B?TmdCc3lpMFVaS0tSdG10RVVRcjVHNksxMHFkUkcyNlpWaTg1VjBHcEpKWGZi?=
+ =?utf-8?B?UXZDMnlGb3dDbUc0dkZSRzU1eXdQTnIyd1lsUzBleGxTS21MOEFNdz09?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Last-TLS-Session-Version: TLSv1.3
+X-OriginatorOrg: bp.renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TY3PR01MB11346.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cc81e7c2-ef04-42d0-c4ea-08de9bd59486
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Apr 2026 16:31:15.5107
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: J1lZOdF4hm4bZwFuapJ2kTnAavLoFG+eYv82rvsO6htFbk2wZ38V7zPujc7q2M1I51xgw8F+CaPYvPSRQtVRP2Dhz5Yz4e+/MXSENqvaczI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYYPR01MB14048
 
-Hi Manivannan,
-
-On Thu, 16 Apr 2026 14:25:39 +0530
-Manivannan Sadhasivam <mani@kernel.org> wrote:
-
-> On Wed, Apr 15, 2026 at 04:56:51PM +0200, Herve Codina wrote:
-> > Hi Chen, all,
-> > 
-> > ...
-> >    
-> > > 
-> > > I'm not arguing for a even more generic "M.2" connector. The "key" is
-> > > already described in the compatible. I'm saying we should have some way
-> > > of describing the individual interfaces (PCIe, SDIO, USB, UART, I2S, I2C)
-> > > on the connector so further nodes or properties can be attached to them,
-> > > either with overlays or dynamically within the kernel. Right now the
-> > > are only described as individual ports, but we can't actually tie a
-> > > device to a OF graph port.
-> > > 
-> > > But maybe I'm overthinking the representation part. AFAICT for Qualcomm's
-> > > UART-based BT bit part, Mani just had the driver create a device node
-> > > under the UART (by traversing the OF graph to find the UART). If that's
-> > > the desired way then the connector binding should mention it. And that
-> > > works for me. But I think it's messier and also we're missing an
-> > > opportunity to make the M.2 connector a standardized attachment point
-> > > for overlays.
-> > > 
-> > > Mani, could you also chime in a bit on what you envisioned?
-> > > 
-> > > (Added Luca from Bootlin to CC, as I think there are parallels to the
-> > >  "Hotplug of Non-discoverable Hardware" work)
-> > >  
-> > 
-> > Related to "Hotplug of Non-discoverable Hardware",
-> > 
-> > I would add entries for busses in the connector without using an OF graph.
-> >   
-> 
-> I don't think this is a correct representation. It is non-standard to describe
-> the device nodes in some other connectors. While it may work with your series in
-> the future, not something I would bet-on at this point.
-> 
-> Using OF graph to link the connector nodes look like the cleaner solution to me.
-
-In your DT binding, there is the i2c-parent property at connector level.
-
-How it is used or planned to be used in order to handle devices available on the
-board connected to the M2 connector ?
-
-> 
-> > For I2C and later SPI, this was is done.
-> > 
-> > You already have an i2c-parent property but no node where an i2c device
-> > can be added.
-> > 
-> > The last discussion related to hotplug, connectors and DT led to the RFC
-> > series [1].
-> > 
-> > It is a huge series. The last patch give a real example of representation:
-> >   https://lore.kernel.org/all/20260112142009.1006236-78-herve.codina@bootlin.com/
-> > 
-> > In your case I would see some thing like:
-> > 
-> >     connector {
-> >         compatible = "pcie-m2-e-connector";
-> >         vpcie3v3-supply = <&vreg_wcn_3p3>;
-> >         vpcie1v8-supply = <&vreg_l15b_1p8>;
-> > 
-> > 	/*
-> > 	 * If those GPIOs have to be used by components available in
-> > 	 * the connected board, a Nexus node should be used.
-> >          */
-> >         w-disable1-gpios = <&tlmm 115 GPIO_ACTIVE_LOW>;
-> >         w-disable2-gpios = <&tlmm 116 GPIO_ACTIVE_LOW>;
-> >         viocfg-gpios = <&tlmm 117 GPIO_ACTIVE_HIGH>;
-> >         uart-wake-gpios = <&tlmm 118 GPIO_ACTIVE_LOW>;
-> >         sdio-wake-gpios = <&tlmm 119 GPIO_ACTIVE_LOW>;
-> >         sdio-reset-gpios = <&tlmm 120 GPIO_ACTIVE_LOW>;
-> > 
-> > 	conn-i2c {
-> > 		i2c-parent = <&i2c0>;
-> > 
-> > 		/*
-> >  		 * Here i2c devices available on the board
-> > 		 * connected to the connector can be described.
-> > 		 */
-> > 	};
-> > 
-> > 	/* Same kind to description for other busses */
-> > 	conn-pcie {
-> > 		pci-parent = <&xxxxx>;
-> > 
-> > 		/*
-> > 		 * The PCIe bus has abilities to discover devices.
-> > 		 * Not sure this node is needed.
-> > 		 *
-> > 		 * If a PCI device need a DT description to describe
-> > 		 * stuffs behind the device, what has been done for LAN966x
-> > 		 * could be re-used [2] and [3]
-> > 		 */  
-> 
-> I don't think anyone would connect something like LAN966x to the M.2 connector.
-> M.2 cards have a defined purpose, like NVMe, WLAN etc... If anyone wants to
-> connect another SoC like LAN966x, they would use non-M.2 connectors.
-
-Hum, maybe yes, maybe not. I don't know what kind of hardware could be available
-on a M2 connector.
-
-One think sure is that a PCIe bus is available on the connector and so, potentially
-all PCI devices could be wired on a M2 form factor.
-
-LAN966x in PCI version is just a PCI device.
-
-Anyway, Is it allowed to have sub-nodes in a port node ?
-
-I mean, can we describe devices connected to a bus described by the port node ?
-
-For USB and PCI it is probably not needed for common use cases but having a DT
-description for devices on PCI and/or USB exists and is supported in the current
-kernel
-
-On SDIO, wireless devices can be described:
-  Documentation/devicetree/bindings/net/wireless/
-
-and so, sub-nodes will be needed.
-
-As those devices need an address (reg property), #address-cells and
-#size-cells will be needed.
-
-This will end in a mix of sub-nodes describing devices and a sub-node
-describing the endpoint connection.
-
-#address-cells and #size-cells will conflict at some points.
-
-Is a reg value for endpoints has the same characteristics as a reg value
-for a SDIO device ?
-
-How a BT devices is described under the UART available in the M2
-connector ?
-
-Best regards,
-Hervé
+SGkgR2VlcnQsDQoNClRoYW5rcyBmb3IgdGhlIGZlZWRiYWNrLg0KDQo+IC0tLS0tT3JpZ2luYWwg
+TWVzc2FnZS0tLS0tDQo+IEZyb206IEdlZXJ0IFV5dHRlcmhvZXZlbiA8Z2VlcnRAbGludXgtbTY4
+ay5vcmc+DQo+IFNlbnQ6IDEzIEFwcmlsIDIwMjYgMTE6MjUNCj4gU3ViamVjdDogUmU6IFtQQVRD
+SCB2MiAxLzJdIHNlcmlhbDogc2gtc2NpOiBBdm9pZCBkaXZpZGUtYnktemVybyBmYXVsdA0KPiAN
+Cj4gSGkgQmlqdSwNCj4gDQo+IE9uIFdlZCwgOCBBcHIgMjAyNiBhdCAxOToyNSwgQmlqdSBEYXMg
+PGJpanUuZGFzLmp6QGJwLnJlbmVzYXMuY29tPiB3cm90ZToNCj4gPiA+IEZyb206IEh1Z28gVmls
+bGVuZXV2ZSA8aHVnb0BodWdvdmlsLmNvbT4gT24gV2VkLCA4IEFwciAyMDI2IDE2OjM1OjQ0DQo+
+ID4gPiArMDAwMCBCaWp1IERhcyA8YmlqdS5kYXMuanpAYnAucmVuZXNhcy5jb20+IHdyb3RlOg0K
+PiA+ID4gPiA+IEZyb206IEh1Z28gVmlsbGVuZXV2ZSA8aHVnb0BodWdvdmlsLmNvbT4gQmlqdQ0K
+PiA+ID4gPiA+IDxiaWp1LmRhcy5hdUBnbWFpbC5jb20+IHdyb3RlOg0KPiA+ID4gPiA+ID4gRnJv
+bTogQmlqdSBEYXMgPGJpanUuZGFzLmp6QGJwLnJlbmVzYXMuY29tPg0KPiA+ID4gPiA+ID4NCj4g
+PiA+ID4gPiA+IHVhcnRfdXBkYXRlX3RpbWVvdXQoKSBjb21wdXRlcyBhIHRpbWVvdXQgdmFsdWUg
+YnkgZGl2aWRpbmcgYnkNCj4gPiA+ID4gPiA+IHRoZSBiYXVkIHJhdGUuIElmIGJhdWQgaXMgemVy
+byDigJQgd2hpY2ggY2FuIG9jY3VyIHdoZW4gdGhlDQo+ID4gPiA+ID4gPiBoYXJkd2FyZSByZXR1
+cm5zIGFuIHVuc3VwcG9ydGVkIG9yIGludmFsaWQgcmF0ZSDigJQgdGhpcyByZXN1bHRzIGluIGEg
+ZGl2aWRlLWJ5LXplcm8gZmF1bHQuDQo+ID4gPiA+ID4NCj4gPiA+ID4gPiBiYXVkIGlzIHJldHVy
+bmVkIGJ5IHVhcnRfZ2V0X2JhdWRfcmF0ZSgpLCBzbyB0aGlzIGlzIG5vdCByZXR1cm5lZCBieSB0
+aGUgaGFyZHdhcmU/DQo+ID4gPiA+DQo+ID4gPiA+IFlvdSBhcmUgdGlnaHQsIFdpbGwgdXBkYXRl
+IGNvbW1pdCBkZXNjcmlwdGlvbi4NCj4gPiA+DQo+ID4gPiBIb3cgY2FuIHVhcnRfZ2V0X2JhdWRf
+cmF0ZSgpIHJldHVybiBhIHplcm8gdmFsdWU/IElmIEkgYW0gbm90DQo+ID4gPiBtaXN0YWtlbiBl
+dmVuIGZvciB0aGUgQjAgY2FzZSwgaXQgd2lsbCByZXR1cm4gOTYwMD8NCj4gPg0KPiA+IEFzIHBl
+ciB0aGUgY29tbWVudCBhbmQgY29kZSwgdGhpcyBBUEkgY2FuIHJldHVybiAwLg0KPiA+DQo+ID4g
+KiBJZiB0aGUgbmV3IGJhdWQgcmF0ZSBpcyBpbnZhbGlkLCB0cnkgdGhlIEBvbGQgdGVybWlvcyBz
+ZXR0aW5nLiBJZg0KPiA+IGl0J3Mgc3RpbGwNCj4gPiAqIGludmFsaWQsIHdlIHRyeSA5NjAwIGJh
+dWQuIElmIHRoYXQgaXMgYWxzbyBpbnZhbGlkIDAgaXMgcmV0dXJuZWQuDQo+ID4NCj4gPiBJbiBk
+cml2ZXMvdHR5IGN1cnJlbnRseSBvbmx5IDEgZHJpdmVyIGlzIGNoZWNraW5nIHRoZSByZXR1cm4g
+dmFsdWUgYW5kDQo+ID4gaXQgY2FsbHMgcGFuaWMNCj4gPg0KPiA+IGh0dHBzOi8vZWxpeGlyLmJv
+b3RsaW4uY29tL2xpbnV4L3Y3LjAtcmM3L3NvdXJjZS9kcml2ZXJzL3R0eS9zZXJpYWwvYXANCj4g
+PiBidWFydC5jI0wyMTQNCj4gPg0KPiA+DQo+ID4gSSBiZWxpZXZlIHdlIHNob3VsZCBjYWxsIHBh
+bmljLCBpZiBiYXVkID0wLCBpbnN0ZWFkIG9mIHByb2NlZWRpbmcuDQo+ID4NCj4gPiBHZWVydCwg
+YW55IHRob3VnaHRzPz8NCj4gDQo+IElJUkMsIGJhdWQgPT0gMCBjYW4gKG9ubHk/KSBoYXBwZW4g
+d2hlbiB1c2luZyBlYXJseXByaW50ayBvbiBhIG5vbi1EVCBzeXN0ZW0sIHdoZXJlIHRoZSBzZXJp
+YWwgY29uc29sZQ0KPiBzaG91bGQganVzdCBrZWVwIG9uIHVzaW5nIHRoZSBzZXR0aW5ncyBwcm9n
+cmFtbWVkIGJ5IHRoZSBmaXJtd2FyZS4gIFNvIGFueSBjb25maWcgcmVnaXN0ZXIgd3JpdGVzDQo+
+IHNob3VsZCBiZSBza2lwcGVkLg0KPiANCj4gT24gRFQgc3lzdGVtcywgZXZlbiBlYXJseWNvbiB1
+c2VzIHRoZSBiaXRyYXRlIGZyb20gY2hvc2VuL3N0ZG91dC1wYXRoLg0KDQpJbiB0aGF0IGNhc2Us
+IEkgd2lsbCBkcm9wIHRoZSB6ZXJvIGJhdWQgY2hlY2suDQoNCkkgd2lsbCBhZGQgYSBuZXcgcGF0
+Y2ggd2l0aCBiZWxvdyBjaGFuZ2Ugd2hpY2ggaXMgYWxnZWJyYWljYWxseSBlcXVpdmFsZW50DQpi
+dXQgZWxpbWluYXRlcyB0aGUgaW50ZXJtZWRpYXRlIGRpdmlzaW9uLCBtYWtpbmcgYSB6ZXJvIGRp
+dmlzb3IgaW1wb3NzaWJsZQ0KZm9yIGFueSB2YWxpZCBiYXVkIHJhdGUuDQoNCi0Jcy0+cnhfZnJh
+bWUgPSAoMTAwMDAgKiBiaXRzKSAvIChiYXVkIC8gMTAwKTsNCisJcy0+cnhfZnJhbWUgPSAoMTAw
+MDAgKiBiaXRzKSAqIDEwMCAvIGJhdWQ7DQoNCkNoZWVycywNCkJpanUNCg==
