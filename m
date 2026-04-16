@@ -1,191 +1,228 @@
-Received: from mail-pg1-f170.google.com (mail-pg1-f170.google.com [209.85.215.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtpout-03.galae.net (smtpout-03.galae.net [185.246.85.4])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C9003B9D97
-	for <linux-serial@vger.kernel.org>; Thu, 16 Apr 2026 13:14:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCD623947AC;
+	Thu, 16 Apr 2026 13:34:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.246.85.4
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776345269; cv=none; b=D5OqHi9WOdR6j6TZwpNWmt1ei2RxWesLm65/aGjQa123DCIpO9EklEu0TaXKqOcemhgrWnO6VlNnGiibUtvmFhj+P9xgy/tdNFOpY44wR8WCp8qs2P1IuKdcn1HacjPbB8wetqXvXZgEUlebKNZqLsDU3L/sJT9UKSzQ0l+E8yA=
+	t=1776346477; cv=none; b=doszSaV/p5KCtGMihmDlkZnp1BuLfWP41ylh1eUv1VSW0ib0+x4h9ZKPeajQV4kByINW8gALFwALHXicsf5/GtWHsXMndQdXBRVcm3S1wH+tU4XMNUUMTlMt6F/KLs6ctZkugXwV4n7iFOdn+8SJUN50vzwo5PB8sLQm5eEFRAI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776345269; c=relaxed/simple;
-	bh=5AJsOgYaQnITGNqOqit9HwSaFnKSSLcZyF7ZFqvmlgs=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=f96y6lIL/K1gL8jZfbfNcwa97Bpxgcwx5sjrpMcA7rvv3KrdfrBfyfJnbAS93HnclrLpHiHroMHkmucwS+FipuOVIC5rUgP4qk9hdnXr7jcmLPjU21yW6Jv2+PqArdAVfFIqnbj5T89DODOiOfxKXVY0pvURTrE7ouiEJPJWvUc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=oFuaiIlC; arc=none smtp.client-ip=209.85.215.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1776346477; c=relaxed/simple;
+	bh=OdPGRiJ2OTAd0wN0VpIuzIvWe5D9n+gShs26W0B8xqs=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=KN4c0OSYumQWlsmEKCbOgyqyBvvegLoAiFahJmzTq9woCjwVBWA4CUjMhC3VEPLOCm9H44+COB5KEhTUiihz2Glc7ROO9WbbKoRiFQ4LCkRfBFaJzb0sXtpB84b6/C6Pna4aEAGD6v+TFq7bXHp3f+ypIQo7f3Bfjn8+xA64zVw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=EloIX9sM; arc=none smtp.client-ip=185.246.85.4
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="oFuaiIlC"
-Received: by mail-pg1-f170.google.com with SMTP id 41be03b00d2f7-c70f91776fcso3320394a12.0
-        for <linux-serial@vger.kernel.org>; Thu, 16 Apr 2026 06:14:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776345268; x=1776950068; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=xrdHztCp3KFh57kUoKZvj6n8RP0Ytj76L6PrWda2Ixw=;
-        b=oFuaiIlC05RZkgswANAiQzSRxne9NaW/x2hH0687bHlRg8I5xNwNIH9l/DTq1jg2QP
-         HOvZ50ZgVMKjwmi2UJyvoZFLDWODrPvqlXPeZN1xqgvrv3K56OOVXEpCig+peVlJQ1E0
-         K6wnRX/9pjTFiddLzsNlt7ZW3JIybfv3HxsRReO/ly35g1IpazkfwRrxyWqs3ZKN8gxW
-         36MMU6VClQYlHap/vvNa63tOKD9mUiXl2lFI4S4kOqgN5rYzImKxhOpmG6+xNsLvg06L
-         0NBFwaVfHYprrHx+SUmzpRK6ULQNDoHYr7+6vachlAmeBHlS9Z6PjJ9kNEA7VisZDMo6
-         gQWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776345268; x=1776950068;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=xrdHztCp3KFh57kUoKZvj6n8RP0Ytj76L6PrWda2Ixw=;
-        b=ZLSJQL/RzGM3jmi2yrqUdxQYXKybcJs0w9gJGO0Jn3LvmfbMa3cl4qBL2RIT4VAbhb
-         /1uajZ8Idh8EGcsBGfjPjh1UVKhljBSGSaGaszcoKcmGUaFzKL+1ZdTQdk6onQOgUggU
-         bD9WN4du2QgPATgOHp4f/rlSaq8cCjFchiUVVfb68ZXvFzomykgRLgjsEiLdt55HFBnV
-         1fJoRDRz2VL6Tfj6ssc2rh5cO5hKiG0Mk93+sNV6hwbDIde2r7EiEfZaOBOieMVxbln1
-         fMyRTMTBqZtdhK0ilkSLIzyuwPsNhqXJNioWnobVz0OJmSx4WAwQ9cqiVCIAcR9KpDbw
-         owdA==
-X-Forwarded-Encrypted: i=1; AFNElJ//j0hFcUZ4PI85ff+QJ9DLGhI1OaeFBiw7EmbaOsUw5s5FeQCNY47JZpSJCtpWR9dNhpJr3TJdxxak86E=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyXlXv9yXtwk2DBxhR9rkJcXIGDR64erChO2BPlhlt2y/lCI9VP
-	S5f0VyZJvyCGgqLSwsfq5CmJMbwqDZn7EHmevytQhH6bfTfQA150UJQy
-X-Gm-Gg: AeBDiespXKpYQhZV2ABfclrZyBTiqdAqvBM4awkejNRl83w309GgeJ6nINcSKsYHdOk
-	VXP3/T5wqO8sPvWc0KJdJeQOsX8pa21z1GsUVBv6xCBklTin2OSgh473P7euzRH32966uPRAmCP
-	bPcM6vLdi+l4O9fKQdhwdh3gED/nLYxcj0dVcJ4o3bftPjk7swJ9cv2QtWKMWMNYAcRVSys9XZK
-	AXxER6wX5DXEs4Mc62dwgEVHXAqtmcZxYKgGwOKptnxpxzPvxxS2gM0J6lKsq3TVoRDVulqADzJ
-	8/Et0+HLnprCDyRb4gcI3Ez5ayTOBBB7bEfIBetneIFxCUURz/KqE/QUSv9+Q58EEPdn5DkprnC
-	OPNjmkl3r3zA/IA/KfwTgVc1V5Vgcj0DemRjarcWvq9235YF4Y3NL5Lf4XhW+YUemL0N+ZtDly+
-	iFGnkLsn24U3EdjYE19o4jnohvv2mNEowm
-X-Received: by 2002:a17:90b:2689:b0:35f:b953:244c with SMTP id 98e67ed59e1d1-35fb953263bmr15728963a91.0.1776345267649;
-        Thu, 16 Apr 2026 06:14:27 -0700 (PDT)
-Received: from xiao.mioffice.cn ([43.224.245.230])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-36132cd52c3sm2483648a91.10.2026.04.16.06.14.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Apr 2026 06:14:26 -0700 (PDT)
-From: Xiang Gao <gxxa03070307@gmail.com>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org
-Cc: akpm@linux-foundation.org,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Xiang Gao <gaoxiang17@xiaomi.com>
-Subject: [PATCH] sysrq: add optional logging of caller info on /proc/sysrq-trigger write
-Date: Thu, 16 Apr 2026 21:14:19 +0800
-Message-Id: <20260416131419.1231012-1-gxxa03070307@gmail.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="EloIX9sM"
+Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
+	by smtpout-03.galae.net (Postfix) with ESMTPS id 47F3F4E42A1E;
+	Thu, 16 Apr 2026 13:34:34 +0000 (UTC)
+Received: from mail.galae.net (mail.galae.net [212.83.136.155])
+	by smtpout-01.galae.net (Postfix) with ESMTPS id 0867F60495;
+	Thu, 16 Apr 2026 13:34:34 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 360BB10460880;
+	Thu, 16 Apr 2026 15:34:23 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
+	t=1776346472; h=from:subject:date:message-id:to:cc:mime-version:content-type:
+	 content-transfer-encoding:in-reply-to:references;
+	bh=3XpbdgVt+Cx8FP8MN9lmm4BPNvobbTQ5J2Ix6m+jMcE=;
+	b=EloIX9sM1QOhKmblue3jMDM5k8KpAKMHSGLQ8TanAuK7ENEV4CJPIMh2MskGhnhqAWn8Yw
+	kUAvaK1IF/Se+k3PBQG/MKIkBmVQpmTrY37v/4rJgCuO1y+r/1Gi1LkS705qt3VLfG8J/t
+	Xh6hvLhGANS4fiHpUfY431EjCRXdb9gafJMTVqrXQqnuY5IB80FZ7/DSZE6NczIytZJkU/
+	4zplh8emxfZOdpV5qrGtzBrEKS6pZZFh2AdjAIRSTDrK00XSpARNgEHfGzFQBwyefj3PSo
+	lEtKIt5lgvdG95GPo0kXJtjJ2O6cW+fsn6WroFDb1nkTBbUb0qISYKdg0D0cCg==
+Date: Thu, 16 Apr 2026 15:34:21 +0200
+From: Herve Codina <herve.codina@bootlin.com>
+To: Manivannan Sadhasivam <mani@kernel.org>
+Cc: Chen-Yu Tsai <wenst@chromium.org>, Andy Shevchenko
+ <andriy.shevchenko@linux.intel.com>, Manivannan Sadhasivam
+ <manivannan.sadhasivam@oss.qualcomm.com>, Rob Herring <robh@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>, Nathan Chancellor <nathan@kernel.org>, Nicolas
+ Schier <nicolas.schier@linux.dev>, Hans de Goede <hansg@kernel.org>, Ilpo
+ =?UTF-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Mark Pearson
+ <mpearson-lenovo@squebb.ca>, "Derek J. Clark" <derekjohn.clark@gmail.com>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Marcel Holtmann <marcel@holtmann.org>, Luiz Augusto
+ von Dentz <luiz.dentz@gmail.com>, Bartosz Golaszewski <brgl@bgdev.pl>,
+ Bartosz Golaszewski <brgl@kernel.org>, linux-serial@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
+ platform-driver-x86@vger.kernel.org, linux-pci@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+ linux-bluetooth@vger.kernel.org, linux-pm@vger.kernel.org, Stephan Gerhold
+ <stephan.gerhold@linaro.org>, Dmitry Baryshkov
+ <dmitry.baryshkov@oss.qualcomm.com>, linux-acpi@vger.kernel.org, Hans de
+ Goede <johannes.goede@oss.qualcomm.com>, Bartosz Golaszewski
+ <bartosz.golaszewski@oss.qualcomm.com>, Luca Ceresoli
+ <luca.ceresoli@bootlin.com>
+Subject: Re: [PATCH v7 0/8] Add support for handling PCIe M.2 Key E
+ connectors in devicetree
+Message-ID: <20260416153421.1692848f@bootlin.com>
+In-Reply-To: <4yockfx5rjcvfh2n2excrgsknnhi72rv2w7wf7onks2ryt33sm@w7zkcxuc6vem>
+References: <20260326-pci-m2-e-v7-0-43324a7866e6@oss.qualcomm.com>
+	<20260413075459.GA2626902@google.com>
+	<fpcs4p62f35a5qyqwgm5ysa73stbysxcr62tkmmkrrcvsuf4t4@4ivukyqjey57>
+	<eeytuhqpgdz4do4tgtbmfntub2femtyq7bij7svhodpyjwaylx@j3gmvq2a2zqc>
+	<CAGXv+5E=tujhtZjwi6Qm7hk3Ks74UzTQHWq82NiTEw1+vYod5g@mail.gmail.com>
+	<ad36pIu-0dutL7Nk@ashevche-desk.local>
+	<CAGXv+5EGe59nJctLweEdZjb3MNmMvjuCHngGSfptzN985OiLdg@mail.gmail.com>
+	<ad4tJN27opdEooA7@ashevche-desk.local>
+	<CAGXv+5EPA29G-fsH=wWOD8AK6TZFezFhsE0NHPYj_Pt3nT+d_w@mail.gmail.com>
+	<20260415165651.153b573d@bootlin.com>
+	<4yockfx5rjcvfh2n2excrgsknnhi72rv2w7wf7onks2ryt33sm@w7zkcxuc6vem>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.52; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Last-TLS-Session-Version: TLSv1.3
 
-From: Xiang Gao <gaoxiang17@xiaomi.com>
+Hi Manivannan,
 
-When /proc/sysrq-trigger is written to, there is no record of which
-process triggered the sysrq operation. This makes it difficult to audit
-or debug who initiated a sysrq action, especially when the write comes
-from a shell spawned by system()/popen() where the immediate caller is
-"sh" rather than the originating application.
+On Thu, 16 Apr 2026 14:25:39 +0530
+Manivannan Sadhasivam <mani@kernel.org> wrote:
 
-Add CONFIG_MAGIC_SYSRQ_TRIGGER_LOG (default n) and a runtime toggle via
-module parameter sysrq.trigger_log (default off). When both are enabled,
-the kernel logs the triggering process's comm, pid, tgid, uid, and walks
-up to 5 levels of the parent process chain. This allows tracing the
-original initiator even through system()/popen()/fork+exec indirection.
+> On Wed, Apr 15, 2026 at 04:56:51PM +0200, Herve Codina wrote:
+> > Hi Chen, all,
+> > 
+> > ...
+> >    
+> > > 
+> > > I'm not arguing for a even more generic "M.2" connector. The "key" is
+> > > already described in the compatible. I'm saying we should have some way
+> > > of describing the individual interfaces (PCIe, SDIO, USB, UART, I2S, I2C)
+> > > on the connector so further nodes or properties can be attached to them,
+> > > either with overlays or dynamically within the kernel. Right now the
+> > > are only described as individual ports, but we can't actually tie a
+> > > device to a OF graph port.
+> > > 
+> > > But maybe I'm overthinking the representation part. AFAICT for Qualcomm's
+> > > UART-based BT bit part, Mani just had the driver create a device node
+> > > under the UART (by traversing the OF graph to find the UART). If that's
+> > > the desired way then the connector binding should mention it. And that
+> > > works for me. But I think it's messier and also we're missing an
+> > > opportunity to make the M.2 connector a standardized attachment point
+> > > for overlays.
+> > > 
+> > > Mani, could you also chime in a bit on what you envisioned?
+> > > 
+> > > (Added Luca from Bootlin to CC, as I think there are parallels to the
+> > >  "Hotplug of Non-discoverable Hardware" work)
+> > >  
+> > 
+> > Related to "Hotplug of Non-discoverable Hardware",
+> > 
+> > I would add entries for busses in the connector without using an OF graph.
+> >   
+> 
+> I don't think this is a correct representation. It is non-standard to describe
+> the device nodes in some other connectors. While it may work with your series in
+> the future, not something I would bet-on at this point.
+> 
+> Using OF graph to link the connector nodes look like the cleaner solution to me.
 
-Example output:
-  sysrq: proc trigger: comm=sh pid=68 tgid=68 uid=0
-  sysrq:   parent[0]: comm=my_app pid=67 tgid=67
-  sysrq:   parent[1]: comm=init pid=1 tgid=1
+In your DT binding, there is the i2c-parent property at connector level.
 
-Usage:
-  # Compile-time: enable CONFIG_MAGIC_SYSRQ_TRIGGER_LOG=y
-  # Runtime: echo 1 > /sys/module/sysrq/parameters/trigger_log
-  # Or boot parameter: sysrq.trigger_log=1
+How it is used or planned to be used in order to handle devices available on the
+board connected to the M2 connector ?
 
-Signed-off-by: Xiang Gao <gaoxiang17@xiaomi.com>
----
- drivers/tty/sysrq.c | 29 +++++++++++++++++++++++++++++
- lib/Kconfig.debug   | 16 ++++++++++++++++
- 2 files changed, 45 insertions(+)
+> 
+> > For I2C and later SPI, this was is done.
+> > 
+> > You already have an i2c-parent property but no node where an i2c device
+> > can be added.
+> > 
+> > The last discussion related to hotplug, connectors and DT led to the RFC
+> > series [1].
+> > 
+> > It is a huge series. The last patch give a real example of representation:
+> >   https://lore.kernel.org/all/20260112142009.1006236-78-herve.codina@bootlin.com/
+> > 
+> > In your case I would see some thing like:
+> > 
+> >     connector {
+> >         compatible = "pcie-m2-e-connector";
+> >         vpcie3v3-supply = <&vreg_wcn_3p3>;
+> >         vpcie1v8-supply = <&vreg_l15b_1p8>;
+> > 
+> > 	/*
+> > 	 * If those GPIOs have to be used by components available in
+> > 	 * the connected board, a Nexus node should be used.
+> >          */
+> >         w-disable1-gpios = <&tlmm 115 GPIO_ACTIVE_LOW>;
+> >         w-disable2-gpios = <&tlmm 116 GPIO_ACTIVE_LOW>;
+> >         viocfg-gpios = <&tlmm 117 GPIO_ACTIVE_HIGH>;
+> >         uart-wake-gpios = <&tlmm 118 GPIO_ACTIVE_LOW>;
+> >         sdio-wake-gpios = <&tlmm 119 GPIO_ACTIVE_LOW>;
+> >         sdio-reset-gpios = <&tlmm 120 GPIO_ACTIVE_LOW>;
+> > 
+> > 	conn-i2c {
+> > 		i2c-parent = <&i2c0>;
+> > 
+> > 		/*
+> >  		 * Here i2c devices available on the board
+> > 		 * connected to the connector can be described.
+> > 		 */
+> > 	};
+> > 
+> > 	/* Same kind to description for other busses */
+> > 	conn-pcie {
+> > 		pci-parent = <&xxxxx>;
+> > 
+> > 		/*
+> > 		 * The PCIe bus has abilities to discover devices.
+> > 		 * Not sure this node is needed.
+> > 		 *
+> > 		 * If a PCI device need a DT description to describe
+> > 		 * stuffs behind the device, what has been done for LAN966x
+> > 		 * could be re-used [2] and [3]
+> > 		 */  
+> 
+> I don't think anyone would connect something like LAN966x to the M.2 connector.
+> M.2 cards have a defined purpose, like NVMe, WLAN etc... If anyone wants to
+> connect another SoC like LAN966x, they would use non-M.2 connectors.
 
-diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
-index c2e4b31b699a..e9277e7de35b 100644
---- a/drivers/tty/sysrq.c
-+++ b/drivers/tty/sysrq.c
-@@ -48,6 +48,9 @@
- #include <linux/uaccess.h>
- #include <linux/moduleparam.h>
- #include <linux/jiffies.h>
-+#ifdef CONFIG_MAGIC_SYSRQ_TRIGGER_LOG
-+#include <linux/cred.h>
-+#endif
- #include <linux/syscalls.h>
- #include <linux/of.h>
- #include <linux/rcupdate.h>
-@@ -59,6 +62,12 @@
- static int __read_mostly sysrq_enabled = CONFIG_MAGIC_SYSRQ_DEFAULT_ENABLE;
- static bool __read_mostly sysrq_always_enabled;
- 
-+#ifdef CONFIG_MAGIC_SYSRQ_TRIGGER_LOG
-+static bool sysrq_trigger_log;
-+module_param_named(trigger_log, sysrq_trigger_log, bool, 0644);
-+MODULE_PARM_DESC(trigger_log, "Log caller info on /proc/sysrq-trigger write");
-+#endif
-+
- static bool sysrq_on(void)
- {
- 	return sysrq_enabled || sysrq_always_enabled;
-@@ -1209,6 +1218,26 @@ static ssize_t write_sysrq_trigger(struct file *file, const char __user *buf,
- 	bool bulk = false;
- 	size_t i;
- 
-+#ifdef CONFIG_MAGIC_SYSRQ_TRIGGER_LOG
-+	if (sysrq_trigger_log) {
-+		struct task_struct *task;
-+		int depth = 0;
-+
-+		pr_info("proc trigger: comm=%s pid=%d tgid=%d uid=%u\n",
-+			current->comm, current->pid, current->tgid,
-+			from_kuid(&init_user_ns, current_uid()));
-+
-+		rcu_read_lock();
-+		task = current;
-+		while (task->pid > 1 && depth < 5) {
-+			task = rcu_dereference(task->real_parent);
-+			pr_info("  parent[%d]: comm=%s pid=%d tgid=%d\n",
-+				depth++, task->comm, task->pid, task->tgid);
-+		}
-+		rcu_read_unlock();
-+	}
-+#endif
-+
- 	for (i = 0; i < count; i++) {
- 		char c;
- 
-diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index aac60b6cfa4b..46bd361decd0 100644
---- a/lib/Kconfig.debug
-+++ b/lib/Kconfig.debug
-@@ -705,6 +705,22 @@ config MAGIC_SYSRQ_SERIAL_SEQUENCE
- 
- 	  If unsure, leave an empty string and the option will not be enabled.
- 
-+config MAGIC_SYSRQ_TRIGGER_LOG
-+	bool "Log caller info on /proc/sysrq-trigger write"
-+	depends on MAGIC_SYSRQ
-+	default n
-+	help
-+	  If you say Y here, the kernel can log the process name, pid,
-+	  tgid, uid and parent process chain when /proc/sysrq-trigger
-+	  is written to. This is useful for auditing who triggered a
-+	  sysrq operation.
-+
-+	  The logging is controlled at runtime via module parameter
-+	  sysrq.trigger_log (default off). Enable it with:
-+	    echo 1 > /sys/module/sysrq/parameters/trigger_log
-+
-+	  If unsure, say N.
-+
- config DEBUG_FS
- 	bool "Debug Filesystem"
- 	help
--- 
-2.34.1
+Hum, maybe yes, maybe not. I don't know what kind of hardware could be available
+on a M2 connector.
 
+One think sure is that a PCIe bus is available on the connector and so, potentially
+all PCI devices could be wired on a M2 form factor.
+
+LAN966x in PCI version is just a PCI device.
+
+Anyway, Is it allowed to have sub-nodes in a port node ?
+
+I mean, can we describe devices connected to a bus described by the port node ?
+
+For USB and PCI it is probably not needed for common use cases but having a DT
+description for devices on PCI and/or USB exists and is supported in the current
+kernel
+
+On SDIO, wireless devices can be described:
+  Documentation/devicetree/bindings/net/wireless/
+
+and so, sub-nodes will be needed.
+
+As those devices need an address (reg property), #address-cells and
+#size-cells will be needed.
+
+This will end in a mix of sub-nodes describing devices and a sub-node
+describing the endpoint connection.
+
+#address-cells and #size-cells will conflict at some points.
+
+Is a reg value for endpoints has the same characteristics as a reg value
+for a SDIO device ?
+
+How a BT devices is described under the UART available in the M2
+connector ?
+
+Best regards,
+Hervé
