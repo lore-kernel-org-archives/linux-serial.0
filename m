@@ -1,137 +1,191 @@
-Received: from mail-vk1-f173.google.com (mail-vk1-f173.google.com [209.85.221.173])
+Received: from mail-pg1-f170.google.com (mail-pg1-f170.google.com [209.85.215.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E9C93B47F9
-	for <linux-serial@vger.kernel.org>; Thu, 16 Apr 2026 12:00:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C9003B9D97
+	for <linux-serial@vger.kernel.org>; Thu, 16 Apr 2026 13:14:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776340808; cv=none; b=bO4pcQnGXuuv+6VxliqsLA+U7Wu8WC9VVVzsGz3p74/v2y/5Rn05iy5stFatqeKWjylslczks1ps2+CEK5WKLjocasgvwALyIrFX5CuplYcAt3cSDz21u3KkA1wI1qDhxPf7NFstCEJPGC5aU2BxD6yHJL+6Magj3v43xcQe0H0=
+	t=1776345269; cv=none; b=D5OqHi9WOdR6j6TZwpNWmt1ei2RxWesLm65/aGjQa123DCIpO9EklEu0TaXKqOcemhgrWnO6VlNnGiibUtvmFhj+P9xgy/tdNFOpY44wR8WCp8qs2P1IuKdcn1HacjPbB8wetqXvXZgEUlebKNZqLsDU3L/sJT9UKSzQ0l+E8yA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776340808; c=relaxed/simple;
-	bh=KmYdZxcdwgYmEk917iXqSBkndf7zVbCrBpuHdVwqfbI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=kq9QcT2q/QFuwMoWIiicMMaT2Dpqt7fTvKsUu3BaT3RXdvUH5I0C5n58zEg8n6lZpd+2QwtZObNypLbDWYi4/tGxA7b4eRw3rjjuW2yQb0LBKvNkjo3BBm7Ym6/C8GwOoLKWmQwx6+QVaXHWFWjMNs0MBI62FEahOxJ/sV7o+RU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+	s=arc-20240116; t=1776345269; c=relaxed/simple;
+	bh=5AJsOgYaQnITGNqOqit9HwSaFnKSSLcZyF7ZFqvmlgs=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=f96y6lIL/K1gL8jZfbfNcwa97Bpxgcwx5sjrpMcA7rvv3KrdfrBfyfJnbAS93HnclrLpHiHroMHkmucwS+FipuOVIC5rUgP4qk9hdnXr7jcmLPjU21yW6Jv2+PqArdAVfFIqnbj5T89DODOiOfxKXVY0pvURTrE7ouiEJPJWvUc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=oFuaiIlC; arc=none smtp.client-ip=209.85.215.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-vk1-f173.google.com with SMTP id 71dfb90a1353d-5673804da95so3204138e0c.0
-        for <linux-serial@vger.kernel.org>; Thu, 16 Apr 2026 05:00:07 -0700 (PDT)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="oFuaiIlC"
+Received: by mail-pg1-f170.google.com with SMTP id 41be03b00d2f7-c70f91776fcso3320394a12.0
+        for <linux-serial@vger.kernel.org>; Thu, 16 Apr 2026 06:14:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1776345268; x=1776950068; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=xrdHztCp3KFh57kUoKZvj6n8RP0Ytj76L6PrWda2Ixw=;
+        b=oFuaiIlC05RZkgswANAiQzSRxne9NaW/x2hH0687bHlRg8I5xNwNIH9l/DTq1jg2QP
+         HOvZ50ZgVMKjwmi2UJyvoZFLDWODrPvqlXPeZN1xqgvrv3K56OOVXEpCig+peVlJQ1E0
+         K6wnRX/9pjTFiddLzsNlt7ZW3JIybfv3HxsRReO/ly35g1IpazkfwRrxyWqs3ZKN8gxW
+         36MMU6VClQYlHap/vvNa63tOKD9mUiXl2lFI4S4kOqgN5rYzImKxhOpmG6+xNsLvg06L
+         0NBFwaVfHYprrHx+SUmzpRK6ULQNDoHYr7+6vachlAmeBHlS9Z6PjJ9kNEA7VisZDMo6
+         gQWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776340806; x=1776945606;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=1e100.net; s=20251104; t=1776345268; x=1776950068;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=dF47gy5v8W39QMxMPFAcvgyR6D05W/M2D8Oqivy/q84=;
-        b=sS1AXZUwNbYJ/S8SY2bG8ehK+/IhUV19sfNlqDRmFJZaKr5UsPzHNE2Ku9ITf5aEJW
-         CayitBar9HpSLMt/BAFz+tAtm5nyICQJQ0FnEHAl9gtnx8wC11MQXtRm+40n00OwgVLc
-         vgLsNiVuJQ0I8W2K1yWZNENETJ/NXZQMhFXs/8cJXCI11dFj2V8ex3znp7Wzoe4VHsRA
-         p83RaSAdIFtpy93C3YeDQXXmX2sKc0XfZ+8gYRfYPLGhMEPdepbnaYI+z2xUZLt4o8GK
-         p5V46ZQlPZwKgi4a+6axbnSQYZb67Hi20fYLK2/5g1aGr6UrX6x2+xGixlcvtFy/lvU8
-         kPPw==
-X-Forwarded-Encrypted: i=1; AFNElJ80ZDUuR70VEaTwXn9fFVD2GiXPovKOsWCgvR0F7R98AAulB4OLzgVYhaU7OKR3cg71lKiV3mSyuA2v5Ko=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwSphJ5UuHrbbeQa+1hjeGnKRzZGQY1fvu/HKY3/jN7FeMd58MZ
-	E7kGRpZTy3k0bVbbV+DzEfmxnQm+XhqBHwYSgT1m+fR3zWlNLuAAw3lvdTuHm5FZ
-X-Gm-Gg: AeBDieu0bB94fKmBm2FVnMcyQXgZwgrQ1430OEdEEzJKsQTIU9mr0ke44JL3BLycGH+
-	9I7OB/1XPGsTs5H8ybykNUyYaOUhvcZfV7AnErgDG6EF6KbHL7v9VlE0vGshDrjojs1vh45wIMA
-	tMEFFbWiVhdVlH3sWvwOCk9n9p9rpIrfyvD5F7EMWPegOsaNYuF438+3TfZA4NQrqdWjJ/qtibS
-	KqamX5HqRhBKoYFIjWSOH5xz7mWSkiT1EC0Lm1JaTa0f1WjO0gILKRYTK3SeoA88xyCToDqEfco
-	z3+DLP4TBj2Jx2aLgMv8avXuoNZPNGuTU+N0/6s/n0Ti3Xy4hbLy0UXJUfA6fRvArvkuU5AU0uf
-	Pztqd317TpL+wWTlTPgYYUnbwBd/OWCmRicJvKNZ+bM67UnxY1tSlb/22oBe7Xx1ieKdlZAs7UH
-	Kr/wMV3/AHJQWWNz6Iw3kOecl4ZeG11yI9ArhigqLeybm5s6lPwaNQjhx0CTxeNcVXAggKnnU=
-X-Received: by 2002:a05:6102:6e8a:b0:5ff:e769:44bb with SMTP id ada2fe7eead31-60a013658bemr8017182137.30.1776340806215;
-        Thu, 16 Apr 2026 05:00:06 -0700 (PDT)
-Received: from mail-ua1-f46.google.com (mail-ua1-f46.google.com. [209.85.222.46])
-        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-95864f494dasm2261202241.0.2026.04.16.05.00.04
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Apr 2026 05:00:05 -0700 (PDT)
-Received: by mail-ua1-f46.google.com with SMTP id a1e0cc1a2514c-94e2ad66abcso2113270241.1
-        for <linux-serial@vger.kernel.org>; Thu, 16 Apr 2026 05:00:04 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AFNElJ+R1UqnrXuPsne7v/li0DXlWXRbQ31SiUrcDIV37g0Iv0pOuVyI+0NZx04bTnrzPthviNxoqbqyANytG7o=@vger.kernel.org
-X-Received: by 2002:a05:6102:3050:b0:604:e063:4fa8 with SMTP id
- ada2fe7eead31-60a00e430fbmr9729727137.26.1776340803703; Thu, 16 Apr 2026
- 05:00:03 -0700 (PDT)
+        bh=xrdHztCp3KFh57kUoKZvj6n8RP0Ytj76L6PrWda2Ixw=;
+        b=ZLSJQL/RzGM3jmi2yrqUdxQYXKybcJs0w9gJGO0Jn3LvmfbMa3cl4qBL2RIT4VAbhb
+         /1uajZ8Idh8EGcsBGfjPjh1UVKhljBSGSaGaszcoKcmGUaFzKL+1ZdTQdk6onQOgUggU
+         bD9WN4du2QgPATgOHp4f/rlSaq8cCjFchiUVVfb68ZXvFzomykgRLgjsEiLdt55HFBnV
+         1fJoRDRz2VL6Tfj6ssc2rh5cO5hKiG0Mk93+sNV6hwbDIde2r7EiEfZaOBOieMVxbln1
+         fMyRTMTBqZtdhK0ilkSLIzyuwPsNhqXJNioWnobVz0OJmSx4WAwQ9cqiVCIAcR9KpDbw
+         owdA==
+X-Forwarded-Encrypted: i=1; AFNElJ//j0hFcUZ4PI85ff+QJ9DLGhI1OaeFBiw7EmbaOsUw5s5FeQCNY47JZpSJCtpWR9dNhpJr3TJdxxak86E=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyXlXv9yXtwk2DBxhR9rkJcXIGDR64erChO2BPlhlt2y/lCI9VP
+	S5f0VyZJvyCGgqLSwsfq5CmJMbwqDZn7EHmevytQhH6bfTfQA150UJQy
+X-Gm-Gg: AeBDiespXKpYQhZV2ABfclrZyBTiqdAqvBM4awkejNRl83w309GgeJ6nINcSKsYHdOk
+	VXP3/T5wqO8sPvWc0KJdJeQOsX8pa21z1GsUVBv6xCBklTin2OSgh473P7euzRH32966uPRAmCP
+	bPcM6vLdi+l4O9fKQdhwdh3gED/nLYxcj0dVcJ4o3bftPjk7swJ9cv2QtWKMWMNYAcRVSys9XZK
+	AXxER6wX5DXEs4Mc62dwgEVHXAqtmcZxYKgGwOKptnxpxzPvxxS2gM0J6lKsq3TVoRDVulqADzJ
+	8/Et0+HLnprCDyRb4gcI3Ez5ayTOBBB7bEfIBetneIFxCUURz/KqE/QUSv9+Q58EEPdn5DkprnC
+	OPNjmkl3r3zA/IA/KfwTgVc1V5Vgcj0DemRjarcWvq9235YF4Y3NL5Lf4XhW+YUemL0N+ZtDly+
+	iFGnkLsn24U3EdjYE19o4jnohvv2mNEowm
+X-Received: by 2002:a17:90b:2689:b0:35f:b953:244c with SMTP id 98e67ed59e1d1-35fb953263bmr15728963a91.0.1776345267649;
+        Thu, 16 Apr 2026 06:14:27 -0700 (PDT)
+Received: from xiao.mioffice.cn ([43.224.245.230])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-36132cd52c3sm2483648a91.10.2026.04.16.06.14.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Apr 2026 06:14:26 -0700 (PDT)
+From: Xiang Gao <gxxa03070307@gmail.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org
+Cc: akpm@linux-foundation.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Xiang Gao <gaoxiang17@xiaomi.com>
+Subject: [PATCH] sysrq: add optional logging of caller info on /proc/sysrq-trigger write
+Date: Thu, 16 Apr 2026 21:14:19 +0800
+Message-Id: <20260416131419.1231012-1-gxxa03070307@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260413040807.40546-1-zenghongling@kylinos.cn>
-In-Reply-To: <20260413040807.40546-1-zenghongling@kylinos.cn>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Thu, 16 Apr 2026 13:59:52 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdUOua7nRqf0g9BGhesQ7VHUZnJD-f9nynJTjfpW=DsQtg@mail.gmail.com>
-X-Gm-Features: AQROBzAkC2utjgevhSJzIOhx8DL8v-pNoiK8_7MJPyLo25tg1-YeHkhpKXIrd-Y
-Message-ID: <CAMuHMdUOua7nRqf0g9BGhesQ7VHUZnJD-f9nynJTjfpW=DsQtg@mail.gmail.com>
-Subject: Re: [PATCH v1] serial: sh-sci: fix memory region release in error path
-To: zenghongling <zenghongling@kylinos.cn>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	biju.das.jz@bp.renesas.com, wsa+renesas@sang-engineering.com, 
-	prabhakar.mahadev-lad.rj@bp.renesas.com, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, zhongling0719@126.com, 
-	kernel test robot <lkp@intel.com>, Dan Carpenter <error27@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-Hi Zeng,
+From: Xiang Gao <gaoxiang17@xiaomi.com>
 
-On Mon, 13 Apr 2026 at 06:08, zenghongling <zenghongling@kylinos.cn> wrote:
-> From: Hongling Zeng <zenghongling@kylinos.cn>
->
-> The sci_request_port() function uses request_mem_region() to reserve
-> I/O memory, but in the error path when sci_remap_port() fails, it
-> incorrectly calls release_resource() instead of release_mem_region().
->
-> This mismatch can cause resource accounting issues. Fix it by using
-> the correct release function, consistent with sci_release_port().
+When /proc/sysrq-trigger is written to, there is no record of which
+process triggered the sysrq operation. This makes it difficult to audit
+or debug who initiated a sysrq action, especially when the write comes
+from a shell spawned by system()/popen() where the immediate caller is
+"sh" rather than the originating application.
 
-Thanks for your patch!
+Add CONFIG_MAGIC_SYSRQ_TRIGGER_LOG (default n) and a runtime toggle via
+module parameter sysrq.trigger_log (default off). When both are enabled,
+the kernel logs the triggering process's comm, pid, tgid, uid, and walks
+up to 5 levels of the parent process chain. This allows tracing the
+original initiator even through system()/popen()/fork+exec indirection.
 
-> Fixes: 2667bd6673eb ("serial: 8250_port: simplify serial8250_request_std_resource()")
+Example output:
+  sysrq: proc trigger: comm=sh pid=68 tgid=68 uid=0
+  sysrq:   parent[0]: comm=my_app pid=67 tgid=67
+  sysrq:   parent[1]: comm=init pid=1 tgid=1
 
-That commit does not touch the sh-sci driver.  Shouldn't that be
-Fixes: e2651647080930a1 ("serial: sh-sci: Handle port memory region
-reservations.")
-instead?
+Usage:
+  # Compile-time: enable CONFIG_MAGIC_SYSRQ_TRIGGER_LOG=y
+  # Runtime: echo 1 > /sys/module/sysrq/parameters/trigger_log
+  # Or boot parameter: sysrq.trigger_log=1
 
-"git log --follow" does a really bad job here, and doesn't even see the
-offending commit, due to the actual change happening in parallel with
-the move from drivers/serial to drivers/tty/serial.  Fortunately the
-"git blame"-style output in the linked report below does show the
-correct commit.
+Signed-off-by: Xiang Gao <gaoxiang17@xiaomi.com>
+---
+ drivers/tty/sysrq.c | 29 +++++++++++++++++++++++++++++
+ lib/Kconfig.debug   | 16 ++++++++++++++++
+ 2 files changed, 45 insertions(+)
 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Reported-by: Dan Carpenter <error27@gmail.com>
-> Closes: https://lore.kernel.org/r/202604032356.SzEjYkBC-lkp@intel.com/
-> Signed-off-by: Hongling Zeng <zenghongling@kylinos.cn>
-
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -3024,7 +3024,7 @@ int sci_request_port(struct uart_port *port)
->
->         ret = sci_remap_port(port);
->         if (unlikely(ret != 0)) {
-> -               release_resource(res);
-> +               release_mem_region(port->mapbase, sport->reg_size);
->                 return ret;
->         }
->
-
-My first thought was "Isn't release_resource() just a shorthand in
-case you already have a pointer to the resource?", but that indeed
-seems to leak the resource, as it doesn't call free_resource()
-(see __release_region()).
-
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Still, I'd like to see a second review opinion.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
+diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
+index c2e4b31b699a..e9277e7de35b 100644
+--- a/drivers/tty/sysrq.c
++++ b/drivers/tty/sysrq.c
+@@ -48,6 +48,9 @@
+ #include <linux/uaccess.h>
+ #include <linux/moduleparam.h>
+ #include <linux/jiffies.h>
++#ifdef CONFIG_MAGIC_SYSRQ_TRIGGER_LOG
++#include <linux/cred.h>
++#endif
+ #include <linux/syscalls.h>
+ #include <linux/of.h>
+ #include <linux/rcupdate.h>
+@@ -59,6 +62,12 @@
+ static int __read_mostly sysrq_enabled = CONFIG_MAGIC_SYSRQ_DEFAULT_ENABLE;
+ static bool __read_mostly sysrq_always_enabled;
+ 
++#ifdef CONFIG_MAGIC_SYSRQ_TRIGGER_LOG
++static bool sysrq_trigger_log;
++module_param_named(trigger_log, sysrq_trigger_log, bool, 0644);
++MODULE_PARM_DESC(trigger_log, "Log caller info on /proc/sysrq-trigger write");
++#endif
++
+ static bool sysrq_on(void)
+ {
+ 	return sysrq_enabled || sysrq_always_enabled;
+@@ -1209,6 +1218,26 @@ static ssize_t write_sysrq_trigger(struct file *file, const char __user *buf,
+ 	bool bulk = false;
+ 	size_t i;
+ 
++#ifdef CONFIG_MAGIC_SYSRQ_TRIGGER_LOG
++	if (sysrq_trigger_log) {
++		struct task_struct *task;
++		int depth = 0;
++
++		pr_info("proc trigger: comm=%s pid=%d tgid=%d uid=%u\n",
++			current->comm, current->pid, current->tgid,
++			from_kuid(&init_user_ns, current_uid()));
++
++		rcu_read_lock();
++		task = current;
++		while (task->pid > 1 && depth < 5) {
++			task = rcu_dereference(task->real_parent);
++			pr_info("  parent[%d]: comm=%s pid=%d tgid=%d\n",
++				depth++, task->comm, task->pid, task->tgid);
++		}
++		rcu_read_unlock();
++	}
++#endif
++
+ 	for (i = 0; i < count; i++) {
+ 		char c;
+ 
+diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+index aac60b6cfa4b..46bd361decd0 100644
+--- a/lib/Kconfig.debug
++++ b/lib/Kconfig.debug
+@@ -705,6 +705,22 @@ config MAGIC_SYSRQ_SERIAL_SEQUENCE
+ 
+ 	  If unsure, leave an empty string and the option will not be enabled.
+ 
++config MAGIC_SYSRQ_TRIGGER_LOG
++	bool "Log caller info on /proc/sysrq-trigger write"
++	depends on MAGIC_SYSRQ
++	default n
++	help
++	  If you say Y here, the kernel can log the process name, pid,
++	  tgid, uid and parent process chain when /proc/sysrq-trigger
++	  is written to. This is useful for auditing who triggered a
++	  sysrq operation.
++
++	  The logging is controlled at runtime via module parameter
++	  sysrq.trigger_log (default off). Enable it with:
++	    echo 1 > /sys/module/sysrq/parameters/trigger_log
++
++	  If unsure, say N.
++
+ config DEBUG_FS
+ 	bool "Debug Filesystem"
+ 	help
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2.34.1
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
