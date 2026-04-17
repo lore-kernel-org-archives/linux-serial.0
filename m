@@ -1,253 +1,133 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F08393B7B96;
-	Fri, 17 Apr 2026 10:24:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D2B73B636A
+	for <linux-serial@vger.kernel.org>; Fri, 17 Apr 2026 10:31:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776421479; cv=none; b=AoVEkZbB0ne70gYndUnmoJV7ygjcoMc1WFsAB37l165wZ26U2Wp7RfPW/oRcnkrZG9BDjy343ebcD46Pg91pY8qi/dz71OuYThIF/BlT2ufrsyLciVt5TjbCkOgs8lI6a+tfy7g7Z2Kggr/gv6zD7aVDSIHvyiNBP0zEu8sNEfw=
+	t=1776421916; cv=none; b=mFP/IkoacaqQH0Qx7PZeVwJcVQqlCrn1ay2SAVSwNyF1dI5SpAT0xkZMFHFreQrYAD3PNU35wTRJ25dm2jNXPGApqP4gio55cMbGwQB45iYUSZ57qELRdVPRnmDrt+zgGZxVy9+vHyBd5nogqmU6yDvZ8ivx/Wx1/G2YMjrEdAo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776421479; c=relaxed/simple;
-	bh=oAaaXXWYBEecliZw7EGA9JF0bbO6a8+N7fXnfXjT0tw=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=WrXpLBh5gLkkd3rvu4RJvo9pwmUJ1cLoy6MiLPwe+DwzzvgsOgrKnh/Ts6fOvFTLg/aBYRb/sN7Os5ah1lG+j6jxGK0RvtQ1+8So6oG5R2VKyqevrW1RFADjv2cmniwK+EOKN3MoXnL4MCU5AAXzIHQSwVkgK+Yk+TSLgvP9ZI8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=cHwoLhKK; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=qfj4f4jH; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1776421916; c=relaxed/simple;
+	bh=dMSa1ZYVHAXRfZPoqn3DEJ0kYY0h2KvNjupT0MmylvY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=qnjqavGf6ZUJXEmzIAcDJYgeg9u2MvgXd9a9zlz3dtKS606c1fOw7xZsAwYdlTgS09kHWKMYv8SEUtkJfSUOjSZUueWLuuoXpMe7jgqtetOihZF7qRTuykAia3rKJJMOnfPVnXYlxsM8QqxSQn35BjPu92NOwbqqo6JrtX+lFqg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YvvxRw5v; arc=none smtp.client-ip=209.85.221.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="cHwoLhKK";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="qfj4f4jH"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1776421466;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=6rBA1j0t+0AXQc6CwVomnArJ8ZNUDmgC5Q5lNAkjDRQ=;
-	b=cHwoLhKKCV4nfndoFZ4bSYVq5AGVNMVrQfMAePdDJ4PcYs+U0aUB7bKC3Fdddr4SdBPESS
-	KmPr9smu+UgsKTcG69hoJr04zxyzEu/dgTVhAoFJmEwkEFFtxvwI1+Ovzmh35tdtgeWJNb
-	EUI79dMRWcneosyp3pSjO5oNNKZhnGnR0j5GFd4MRDy6wmpXKLJywjujdHR5ZoOOrdrHRa
-	WPrHfDxvrCQlubHdqf5Vzd5KlagZxpEwdwIod38eJnYHwCiI8t7aJNMIqfyOX7Zm6JnGvC
-	yacQduIuCaQ9mWNh1O9b3Q84zRfQ6DCuOF4Jb17cLOEKzaLObxPJWznMpcrHKA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1776421466;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=6rBA1j0t+0AXQc6CwVomnArJ8ZNUDmgC5Q5lNAkjDRQ=;
-	b=qfj4f4jH+nDrzNGOHhegdVtQIdjczB6fpRqv/J/PxGczW7CmNDeI9CXxkf+vzHTwOeVkf0
-	pVzZ9RMdk5IBhMCw==
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-kernel@vger.kernel.org,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Ingo Molnar <mingo@kernel.org>,
-	Osama Abdelkader <osama.abdelkader@gmail.com>,
-	Andy Shevchenko <andy.shevchenko@gmail.com>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>,
-	Gerhard Engleder <eg@keba.com>,
-	Lukas Wunner <lukas@wunner.de>,
-	"Dr. David Alan Gilbert" <linux@treblig.org>,
-	Joseph Tilahun <jtilahun@astranis.com>,
-	linux-serial@vger.kernel.org
-Subject: [PATCH tty v3 6/6] serial: 8250: Add support for console flow control
-Date: Fri, 17 Apr 2026 12:30:19 +0206
-Message-ID: <20260417102423.40984-7-john.ogness@linutronix.de>
-In-Reply-To: <20260417102423.40984-1-john.ogness@linutronix.de>
-References: <20260417102423.40984-1-john.ogness@linutronix.de>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YvvxRw5v"
+Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-43d77f60944so380888f8f.3
+        for <linux-serial@vger.kernel.org>; Fri, 17 Apr 2026 03:31:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1776421914; x=1777026714; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=0D9fB9YPS5bWDOTVeNiq3WO6cAOHLgc4jMTJXbNx0ZY=;
+        b=YvvxRw5v1rtC5mI8Q94ah73K5qcyCR/1XdcNq/9SYmeLO6tLoISzG51eY5hMtY5GH8
+         wb/d/S+yWF3AWzjI4b1V8mLibyr3pD7GdcVqvojAN0C6gNcSzi3pt6c18GtxKnqZvLE/
+         3BR7aOte4/ox06kkRxQcX6un+rxLyEHbG3u7tw0zRBr7BZHWezUkUMYGuCJf5OS2WOEI
+         Hm2I8NdK5NPOLufPjLpZXtON4uJWA9YVWR0J2gllLQqAyF/QijydMW/0KJTSy89BD3sk
+         s4zob6wf9XPNTfrVn/ScMnwSW4vWZgt5t342tkyYKkxjQZ+83XFdRPDaTN2b2IWfPsMy
+         xPVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776421914; x=1777026714;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=0D9fB9YPS5bWDOTVeNiq3WO6cAOHLgc4jMTJXbNx0ZY=;
+        b=ic4QaIDre8F7MHdSJTc1Zkj6uBOdZmEX5giYUxP8egSoAZGzttELKFXjDF7P+o8Ydn
+         57hH3b10NwpBfTeumiPK/EzLIzRCLYrnmkD3V5GwrO5bMTC8yB+1DaK9TalSszREJ2f4
+         mKsIKBO7NYcWtlmTp7vQlfeeJVrZfN5T8qosuWtPi5VXAOnOPku2dr/1MOCN9DI4vRSj
+         5R3stlU+2MBP7oDVdGxI7LDe9CrJStGsEo25q99BU6Aeu7y+byF+5w4vr6uwswc0rFJ5
+         LvhrVh6KEblzhfarMDUCaGm1aLH1YWWX5JL/YojdlKR733TERtowvMfsD3w4shE+z+ru
+         gUHQ==
+X-Forwarded-Encrypted: i=1; AFNElJ+k338B+xAa7oA5REDtJA8knYqnFNxx5yo2Bs8a1i+OdR91UqpUybTwkbAAoinFYiy5+EMX0jXGujnoAq4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyttspEPBnST8z8LfSRPp+h6FkU8TvicXB63OY1pLZi1K6eG6eN
+	2lwpGk/sJx1ifvrfwB6Hd9Hwef+1igHR9K1hLm9DLGjgcRGjkpR6oD4B
+X-Gm-Gg: AeBDievJH8oemHpzNlTDGXwnqoU4HFmdo1zBB2WRu9bahwQ9+xn/BgJjEuO/xSfxvck
+	/Mbd5QSNE5fcmsoNeD5PCVpZTlmQKdaG75oxLK8VLMth0KrvETFS3rbw2SxF3hafVf1twnRtcdO
+	tRBVsi+6u08sEmgUZLwGg2vY2vWlN5ySoQ2Bw33xt9+SDXcTnD5ttRR5phvQsCWPu3DVL6foDzn
+	utT6RDhyr4XVa+xvmU0Cnh3sGGuzspzozGCjHKERmcsJaC1/Vy4SxDcbuMdvR5hxzHXh9omRHw0
+	eZ3GNXTwqCxB/6RYIdml0+m3xid1P9NW38q5mXN/tCsUKxDUoQ01MgmOfxFu6ZMfgTIZNWjMZfr
+	I4M0ij+cPK4MhmKnF8PVSlqFKBp+tJC75zd/KW31I4itvQ1HyymeFKkDp9vCH0VXwmeRx7LCI2T
+	achcIjSnqY3KF/DIc2bDrR8ez7XmNY76CWMYMfDdxakqeSFuc=
+X-Received: by 2002:a05:6000:22c5:b0:43d:6fb7:fedb with SMTP id ffacd0b85a97d-43fe3e1645emr3218314f8f.36.1776421913626;
+        Fri, 17 Apr 2026 03:31:53 -0700 (PDT)
+Received: from [192.168.1.169] ([46.10.223.24])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43fe4e46898sm3395465f8f.27.2026.04.17.03.31.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Apr 2026 03:31:53 -0700 (PDT)
+Message-ID: <26cd0656-ca76-4cb7-9f1e-b8c042a7e2cb@gmail.com>
+Date: Fri, 17 Apr 2026 13:31:52 +0300
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] serial: mxs-auart: Compare the return value of
+ gpiod_get_direction against GPIO_LINE_DIRECTION_IN
+To: Frank Li <Frank.li@nxp.com>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, s.hauer@pengutronix.de,
+ kernel@pengutronix.de, festevam@gmail.com, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, imx@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org
+References: <20260416083254.1798-1-zlatistiv@gmail.com>
+ <aeHt3c9Fqp6-WdLV@lizhi-Precision-Tower-5810>
+Content-Language: en-US
+From: "Nikola Z. Ivanov" <zlatistiv@gmail.com>
+In-Reply-To: <aeHt3c9Fqp6-WdLV@lizhi-Precision-Tower-5810>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-The kernel documentation specifies that the console option 'r' can
-be used to enable hardware flow control for console writes. The 8250
-driver does include code for hardware flow control on the console if
-cons_flow is set, but there is no code path that actually sets this.
-However, that is not the only issue. The problems are:
 
-1. Specifying the console option 'r' does not lead to cons_flow being
-   set.
 
-2. Even if cons_flow would be set, serial8250_register_8250_port()
-   clears it.
+On 4/17/26 11:22 AM, Frank Li wrote:
+> On Thu, Apr 16, 2026 at 11:32:54AM +0300, Nikola Z. Ivanov wrote:
+>
+> subjust suggest change to
+>
+> Replace hardcode 1 with predefined macro GPIO_LINE_DIRECTION_IN
+>
+> Frank
+Hello,
 
-3. When the console option 'r' is specified, uart_set_options()
-   attempts to initialize the port for CRTSCTS. However, afterwards
-   it does not set the UPSTAT_CTS_ENABLE status bit and therefore on
-   boot, uart_cts_enabled() is always false. This policy bit is
-   important for console drivers as a criteria if they may poll CTS.
+I suppose you are suggesting a subject change, in that case I will send v2.
+Also I can see that automated code review notes that this will not build
+on greg's tty tree as 7.0 is not yet merged into it. I will wait for 
+that to happen
+before mailing v2.
 
-4. Even though uart_set_options() attempts to initialize the port
-   for CRTSCTS, the 8250 set_termios() callback does not enable the
-   RTS signal (TIOCM_RTS) and thus the hardware is not properly
-   initialized for CTS polling.
-
-5. Even if modem control was properly setup for CTS polling
-   (TIOCM_RTS), uart_configure_port() clears TIOCM_RTS, thus
-   breaking CTS polling.
-
-6. wait_for_xmitr() and serial8250_console_write() use cons_flow
-   to decide if CTS polling should occur. However, the condition
-   should also include a check that it is not in RS485 mode and
-   CRTSCTS is actually enabled in the hardware.
-
-Address all these issues as conservatively as possible by gating them
-behind checks focussed on the user specifying console hardware flow
-control support and the hardware being configured for CTS polling
-at the time of the write to the UART.
-
-Since checking the UPSTAT_CTS_ENABLE status bit is a part of the new
-condition gate, these changes also support runtime termios updates to
-disable/enable CRTSCTS.
-
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
----
- drivers/tty/serial/8250/8250_core.c |  6 +++++-
- drivers/tty/serial/8250/8250_port.c | 13 +++++++++++--
- drivers/tty/serial/serial_core.c    | 21 ++++++++++++++++++++-
- include/linux/serial_core.h         |  8 ++++++++
- 4 files changed, 44 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 32b894ab26768..a19646e24d883 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -693,6 +693,7 @@ static void serial_8250_overrun_backoff_work(struct work_struct *work)
- int serial8250_register_8250_port(const struct uart_8250_port *up)
- {
- 	struct uart_8250_port *uart;
-+	bool cons_flow;
- 	int ret;
- 
- 	if (up->port.uartclk == 0)
-@@ -716,6 +717,9 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
- 	if (uart->port.type == PORT_8250_CIR)
- 		return -ENODEV;
- 
-+	/* Preserve specified console flow control. */
-+	cons_flow = uart_get_cons_flow(&uart->port);
-+
- 	if (uart->port.dev)
- 		uart_remove_one_port(&serial8250_reg, &uart->port);
- 
-@@ -746,7 +750,7 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
- 	uart->lsr_save_mask	= up->lsr_save_mask;
- 	uart->dma		= up->dma;
- 
--	uart_set_cons_flow(&uart->port, uart_get_cons_flow(&up->port));
-+	uart_set_cons_flow(&uart->port, uart_get_cons_flow(&up->port) | cons_flow);
- 
- 	/* Take tx_loadsz from fifosize if it wasn't set separately */
- 	if (uart->port.fifosize && !uart->tx_loadsz)
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index b3247c55eebd5..f585145a6211a 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1989,7 +1989,7 @@ static void wait_for_xmitr(struct uart_8250_port *up, int bits)
- 	tx_ready = wait_for_lsr(up, bits);
- 
- 	/* Wait up to 1s for flow control if necessary */
--	if (uart_get_cons_flow(&up->port)) {
-+	if (uart_console_hwflow_active(&up->port)) {
- 		for (tmout = 1000000; tmout; tmout--) {
- 			unsigned int msr = serial_in(up, UART_MSR);
- 			up->msr_saved_flags |= msr & MSR_SAVE_FLAGS;
-@@ -2786,6 +2786,12 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
- 		serial8250_set_efr(port, termios);
- 		serial8250_set_divisor(port, baud, quot, frac);
- 		serial8250_set_fcr(port, termios);
-+		/* Consoles manually poll CTS for hardware flow control. */
-+		if (uart_console(port) &&
-+		    !(port->rs485.flags & SER_RS485_ENABLED)
-+		    && termios->c_cflag & CRTSCTS) {
-+			port->mctrl |= TIOCM_RTS;
-+		}
- 		serial8250_set_mctrl(port, port->mctrl);
- 	}
- 
-@@ -3355,7 +3361,7 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
- 		 * it regardless of the CTS state. Therefore, only use fifo
- 		 * if we don't use control flow.
- 		 */
--		!uart_get_cons_flow(&up->port);
-+		!uart_console_hwflow_active(&up->port);
- 
- 	if (likely(use_fifo))
- 		serial8250_console_fifo_write(up, s, count);
-@@ -3425,6 +3431,9 @@ int serial8250_console_setup(struct uart_port *port, char *options, bool probe)
- 	if (ret)
- 		return ret;
- 
-+	/* Track user-specified console flow control. */
-+	uart_set_cons_flow(port, flow == 'r');
-+
- 	if (port->dev)
- 		pm_runtime_get_sync(port->dev);
- 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 89cebdd278410..840336f95c5f6 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2235,6 +2235,18 @@ uart_set_options(struct uart_port *port, struct console *co,
- 	port->mctrl |= TIOCM_DTR;
- 
- 	port->ops->set_termios(port, &termios, &dummy);
-+
-+	/*
-+	 * If console hardware flow control was specified and is supported,
-+	 * the related policy UPSTAT_CTS_ENABLE must be set to allow console
-+	 * drivers to identify if CTS should be used for polling.
-+	 */
-+	if (flow == 'r' && (termios.c_cflag & CRTSCTS)) {
-+		/* Synchronize @status RMW update against the console. */
-+		guard(uart_port_lock_irqsave)(port);
-+		port->status |= UPSTAT_CTS_ENABLE;
-+	}
-+
- 	/*
- 	 * Allow the setting of the UART parameters with a NULL console
- 	 * too:
-@@ -2541,7 +2553,14 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
- 		 * We probably don't need a spinlock around this, but
- 		 */
- 		scoped_guard(uart_port_lock_irqsave, port) {
--			port->mctrl &= TIOCM_DTR;
-+			unsigned int mask = TIOCM_DTR;
-+
-+			/* Console hardware flow control polls CTS. */
-+			if (uart_console_hwflow_active(port))
-+				mask |= TIOCM_RTS;
-+
-+			port->mctrl &= mask;
-+
- 			if (!(port->rs485.flags & SER_RS485_ENABLED))
- 				port->ops->set_mctrl(port, port->mctrl);
- 		}
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 2327a364ded16..ff1145e86088b 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -1175,6 +1175,14 @@ static inline bool uart_get_cons_flow(const struct uart_port *uport)
- 	return uport->cons_flow;
- }
- 
-+static inline bool uart_console_hwflow_active(struct uart_port *uport)
-+{
-+	return uart_console(uport) &&
-+	       !(uport->rs485.flags & SER_RS485_ENABLED) &&
-+	       uart_get_cons_flow(uport) &&
-+	       uart_cts_enabled(uport);
-+}
-+
- /*
-  * The following are helper functions for the low level drivers.
-  */
--- 
-2.47.3
+BR,
+Nikola
+>
+>> The GPIO_LINE_DIRECTION_* definitions have just recently been exposed to
+>> gpio consumers.h by breaking them out in a separate defs.h file.
+>>
+>> Use this to validate the gpio direction instead of the hard-coded literal.
+>>
+>> Signed-off-by: Nikola Z. Ivanov <zlatistiv@gmail.com>
+>> ---
+>>   drivers/tty/serial/mxs-auart.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+>> index cc65c9fb6446..6c6df4d5c21f 100644
+>> --- a/drivers/tty/serial/mxs-auart.c
+>> +++ b/drivers/tty/serial/mxs-auart.c
+>> @@ -1519,7 +1519,7 @@ static int mxs_auart_init_gpios(struct mxs_auart_port *s, struct device *dev)
+>>
+>>   	for (i = 0; i < UART_GPIO_MAX; i++) {
+>>   		gpiod = mctrl_gpio_to_gpiod(s->gpios, i);
+>> -		if (gpiod && (gpiod_get_direction(gpiod) == 1))
+>> +		if (gpiod && (gpiod_get_direction(gpiod) == GPIO_LINE_DIRECTION_IN))
+>>   			s->gpio_irq[i] = gpiod_to_irq(gpiod);
+>>   		else
+>>   			s->gpio_irq[i] = -EINVAL;
+>> --
+>> 2.53.0
+>>
 
