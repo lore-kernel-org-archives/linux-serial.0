@@ -1,51 +1,56 @@
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C09523B5846;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C07EE3B5843;
 	Fri, 17 Apr 2026 10:24:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776421475; cv=none; b=e3/XGs3gNsSa6SJHVn9dAmUjxJQVaX6JMauB8bteukeWWoW+R2m/EVXewYT6rHNkcarSYhiJqcOmmSm0C+pXxXmKPovPvsdyERlc9vkeXBJRkObaF+fSK4TTo3ik/VPpxXgdmfafOMSevaUfnnKUzc8OX7uUDpyszmLxxCu2Wto=
+	t=1776421477; cv=none; b=hjFWkBPWazyY7lgCgXJLoow7Gth52RcdXtChmeiyfCaPFhpjPBXxyqUypr16HtSlz2JTCEvnbfT8UuOIKifveSs4grTpB+15BnykKM0pXz9eXED0+N4BHiEMS//vY+m6rt8vSCvNsbS+S1cPaEF/rViJ8OawngZeP4bZv5NllWk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776421475; c=relaxed/simple;
-	bh=T0ZrDrOUya3oWk76FafMuetyc8sBId1vQHkE6ajtlN4=;
+	s=arc-20240116; t=1776421477; c=relaxed/simple;
+	bh=FBc35jOLYTmmpSOg0YwyTzm85KVf0EeX+eBqFKfNFyQ=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=nyhQgoRQagcWvY7eRX2Q2v5Nmpa0+7/87aAt2OYDgUdWlQbSomDe3izGdIEBZcxaqEvp6md54E7mD7XOof7Ltpbv2G9RuuE2aCq/4yGuEIANOiDOi8TlINq985kIvaOs+9Bx0WTEwcgpZvf8ANWGfJwMIaYikSDxMcereBpiocU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=hWk9eHLt; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=OhgACVqF; arc=none smtp.client-ip=193.142.43.55
+	 MIME-Version; b=Y65e5m+BRNORgcbuiAaR95vu3lAA0NlYsFhJ15hV+6mlEAuUdBW8X3GfEUbRKdoa/t2+pZq+/4dRWWAXzwBArjpqhCCXYjZtQANpNYDNdiaT8lZQ1lZWVO/Yi82weYukNAcLH+VWDZwbfnGaiGmDAUkZGGh4qXOlXVeFTKO1P/o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=CSLX3ZQY; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=1VryJevP; arc=none smtp.client-ip=193.142.43.55
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="hWk9eHLt";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="OhgACVqF"
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="CSLX3ZQY";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="1VryJevP"
 From: John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1776421464;
+	s=2020; t=1776421465;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=ZYcmU/kilVLmia4EQ1s3pMoP9RDTiRvnL/dWf1YvggE=;
-	b=hWk9eHLtP2IOq9lD8W6aoKEqZvEUvTXZPue2T9bhxRK6TJXsV3m+iZ/qSZWS/tVRUmW3eo
-	C2fXzG6pXrx9/uGLuaJZPxE3zGw+ZSsa1fhkiwmk1U4iRJOK6hYKue/2DjYhj8PZfJizWw
-	+uA6G+YP+WHFV0rcHACusUD+qvfLd7grSdsrv0yWoAeSWjP6lMCopy8sxDPHF1Udy87hoU
-	l4iy971HdXoEPBBiTMYeOjyx6c4j9PvgIev1JrbDW1dI9SFlnxn0dX65DO0yCE6lecyuYN
-	5gN7EY0qogSDYzoSLyaRAwsrjzxb2N8sM4mgmA/82VvbLUcbwhsIO+H3Ux1FrQ==
+	bh=hDCT9NWTKM7j7JKLQuSA1A60h0cYwjtf3icEnr1EbJQ=;
+	b=CSLX3ZQYG8BTpJshW6vbPQLMsS5k1xpmEGzzaB599xNYL8DnxsckIfSlupQEjpKH/j2Hax
+	kE0ufxG/luJAbLyizP+A/hsg4fr1JbzoeEC8O7Z1NJJRbbVceMRhVqp+Irr6Uxqqb+A5to
+	+5KySzgSyd9YMNVaBvBMJZIXGwQfsB/qeDQt0G2BHhD0ttUHoyEfiol0uOy8sgzSbcBiql
+	WXdB8CBUI86MRTdPl+muwcyVtnUjwLeRXluNE+WsTdOBg+nKJ2eKmrq14vcQIN/wlzqxw1
+	R/RMLAMpBUsOqDMW77oSvevhdbJ+hlkrO/Y878fGGoMMudsOurXYPyLKiHnGRw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1776421464;
+	s=2020e; t=1776421465;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=ZYcmU/kilVLmia4EQ1s3pMoP9RDTiRvnL/dWf1YvggE=;
-	b=OhgACVqFzgiMJWOdWk2luwKUifG72jplYcjQx5v42o99bi6ROrzC/TjKIkWm491yK55Wuc
-	bqdYQmlTlONWSkDA==
+	bh=hDCT9NWTKM7j7JKLQuSA1A60h0cYwjtf3icEnr1EbJQ=;
+	b=1VryJevPlcEbgb3C1ubxKN98BPXvQfYaKxAIk5R6oqdOXQFyyV49hiMg0yYL/kBRJopq3y
+	tbG/YFgGaXGS7xDQ==
 To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>
 Cc: linux-kernel@vger.kernel.org,
+	Biju Das <biju.das.jz@bp.renesas.com>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+	Wolfram Sang <wsa+renesas@sang-engineering.com>,
+	Thierry Bultel <thierry.bultel.yh@bp.renesas.com>,
 	linux-serial@vger.kernel.org
-Subject: [PATCH tty v3 1/6] serial: core: Add dedicated uart_port field for console flow
-Date: Fri, 17 Apr 2026 12:30:14 +0206
-Message-ID: <20260417102423.40984-2-john.ogness@linutronix.de>
+Subject: [PATCH tty v3 3/6] serial: sh-sci: Avoid deprecated UPF_CONS_FLOW
+Date: Fri, 17 Apr 2026 12:30:16 +0206
+Message-ID: <20260417102423.40984-4-john.ogness@linutronix.de>
 In-Reply-To: <20260417102423.40984-1-john.ogness@linutronix.de>
 References: <20260417102423.40984-1-john.ogness@linutronix.de>
 Precedence: bulk
@@ -56,75 +61,33 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Currently the UPF_CONS_FLOW bit in the uart_port.flags field is used
-by serial console drivers to identify if a user has configured flow
-control on the console. This policy is most commonly setup during
-early boot, but can be changed at runtime.
-
-The bits in uart_port.flags are either hardware and driver properties
-that are initialized before usage or are properties that can be
-changed via the tty layer.
-
-The UPF_CONS_FLOW is an exception because it is a console-only policy
-that can change at runtime and its setting and usage have nothing to
-do with the tty layer. This actually causes a problem for its usage
-because uart_port.flags is synchronized by a related tty_port.mutex,
-but a console has no relation to a tty (other than sharing the port).
-
-This is probably why console flow control is not properly available
-for most serial drivers. And it is hindering being able to provide a
-proper implementation. Commit d01f4d181c92 ("serial: core: Privatize
-tty->hw_stopped") addressed a similar issue to deal with software
-assisted CTS flow state tracking.
-
-Add a new uart_port boolean field "cons_flow" to store the user
-configuration for console flow control. Add get/set wrappers to allow
-for adding more policies later and/or locking constraint validation.
-
-Mark UPF_CONS_FLOW as deprecated.
+Avoid setting the uart_port.flags deprecated UPF_CONS_FLOW bit if it
+has been configured in the platform data. Use the new cons_flow
+wrappers instead.
 
 Signed-off-by: John Ogness <john.ogness@linutronix.de>
 ---
- include/linux/serial_core.h | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/tty/serial/sh-sci.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 666430b478997..2327a364ded16 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -533,6 +533,7 @@ struct uart_port {
- #define UPF_HARD_FLOW		((__force upf_t) (UPF_AUTO_CTS | UPF_AUTO_RTS))
- /* Port has hardware-assisted s/w flow control */
- #define UPF_SOFT_FLOW		((__force upf_t) BIT_ULL(22))
-+/* Deprecated: use uart_get_cons_flow()/uart_set_cons_flow() instead. */
- #define UPF_CONS_FLOW		((__force upf_t) BIT_ULL(23))
- #define UPF_SHARE_IRQ		((__force upf_t) BIT_ULL(24))
- #define UPF_EXAR_EFR		((__force upf_t) BIT_ULL(25))
-@@ -567,6 +568,7 @@ struct uart_port {
- #define UPSTAT_SYNC_FIFO	((__force upstat_t) (1 << 5))
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 6c819b6b24258..07d272dc4e74a 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -3369,9 +3369,12 @@ static int sci_init_single(struct platform_device *dev,
+ 	}
  
- 	bool			hw_stopped;		/* sw-assisted CTS flow state */
-+	bool			cons_flow;		/* user specified console flow control */
- 	unsigned int		mctrl;			/* current modem ctrl settings */
- 	unsigned int		frame_time;		/* frame timing in ns */
- 	unsigned int		type;			/* port type */
-@@ -1163,6 +1165,16 @@ static inline bool uart_softcts_mode(struct uart_port *uport)
- 	return ((uport->status & mask) == UPSTAT_CTS_ENABLE);
- }
+ 	port->type		= SCI_PUBLIC_PORT_ID(p->type);
+-	port->flags		= UPF_FIXED_PORT | UPF_BOOT_AUTOCONF | p->flags;
++	port->flags		= UPF_FIXED_PORT | UPF_BOOT_AUTOCONF |
++				  (p->flags & ~UPF_CONS_FLOW);
+ 	port->fifosize		= sci_port->params->fifosize;
  
-+static inline void uart_set_cons_flow(struct uart_port *uport, bool on)
-+{
-+	uport->cons_flow = on;
-+}
++	uart_set_cons_flow(port, p->flags & UPF_CONS_FLOW);
 +
-+static inline bool uart_get_cons_flow(const struct uart_port *uport)
-+{
-+	return uport->cons_flow;
-+}
-+
- /*
-  * The following are helper functions for the low level drivers.
-  */
+ 	if (p->type == PORT_SCI && !dev->dev.of_node) {
+ 		if (sci_port->reg_size >= 0x20)
+ 			port->regshift = 2;
 -- 
 2.47.3
 
