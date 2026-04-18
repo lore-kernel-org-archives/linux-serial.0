@@ -1,168 +1,149 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2C3C283FE6;
-	Sat, 18 Apr 2026 07:20:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4000614BF97;
+	Sat, 18 Apr 2026 14:39:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776496846; cv=none; b=fBvTNt14pJKvYR5bwoO/uIM8kktfNgc6NvBJZWYHvSygRoz/jEOuVmgT5Nejs7vuxd7F4DlixqLGSH9DvfH1niUKDc4Rhh0ddFdQjw/4QKPA5ZS623nGPnsym9kinYSFX9nKYZKbnxZ/buzxn1ZuwxnrSbek9NxCjl47rDmsW8g=
+	t=1776523184; cv=none; b=EtJfGmZd2DXiNi60wKfmg5s4wa1r5OjSjW4bcT8BO8CLb+TIsNO+xy1Z87I83Ld7ANHjF8EYCDuWaqhewH8IL022A/eKgF11qYEZT3E4nYW3HGFsmjooPtP9cbVhx6RQnYpc73fLXzobdL1TzzreUXrHa5U3ldNJxRBOKbPqUfk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776496846; c=relaxed/simple;
-	bh=HXn/tXx4Her6JOWy7/hI4hpd9CpVnkssdruoadF/Y9c=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UHWxjx6Dus2ucHXfH3H2JCtho2zB+SxfeZhMGfaUU8ClTIwHF2PhrGYpc/4ryxknjQdGv1FDaFqILL8SQrBkJuSe6XpycL1uBE1qYHSWOC9/AsLBSdI/c4n+Iy3LUBhoYUX5jmGK+bU2RHmRl4iO375Etyg/lP6EoaOPHRx54zY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=lXTDNUUy; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1776523184; c=relaxed/simple;
+	bh=4ube6dYtAJ3qFtEYRPWU26g0AgYVcaH96zgx5YHP1DE=;
+	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
+	 Mime-Version:Content-Type; b=UnYvKWueWiXRd65hrI+v5OBuXmZzMeIHPF9LrVM/MDqx1grVpxiZKe6/sH7RvInMGQHshuAmzRsM73TevC53JQ+kfKBKxZu5LwQgpwZVPiUubQdVj1CLO6SVGkstGSLlp2SYAq6vsvZKkf/uTbo1foZmq2xYY4YGfsdQe7FBDNY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=ENrG6NF3; arc=none smtp.client-ip=162.243.120.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="lXTDNUUy"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25E0DC19424;
-	Sat, 18 Apr 2026 07:20:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1776496846;
-	bh=HXn/tXx4Her6JOWy7/hI4hpd9CpVnkssdruoadF/Y9c=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=lXTDNUUyFyZLkh2imUzzMTjoZ9p1YIKC8WRYqlZW6RyjkMytv2af8+lfhub7FUj6O
-	 oW6BoCZo7QxvuIJGrgYoBmVq+60NfX9eNoaFp0hJKOqaxejYBFjLrRP6hHxgNR6gT9
-	 U6l7uwZ1niUydFWnAQMLaEqLzRM7j6l/PsZZVoDc=
-Date: Sat, 18 Apr 2026 09:20:14 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Xiang Gao <gxxa03070307@gmail.com>
-Cc: jirislaby@kernel.org, akpm@linux-foundation.org,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	Xiang Gao <gaoxiang17@xiaomi.com>
-Subject: Re: [PATCH] sysrq: add optional logging of caller info on
- /proc/sysrq-trigger write
-Message-ID: <2026041830-visibly-underpaid-6dc8@gregkh>
-References: <20260416131419.1231012-1-gxxa03070307@gmail.com>
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="ENrG6NF3"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=default; h=Content-Transfer-Encoding:Mime-Version:Message-Id:Subject:Cc:
+	To:From:Date:subject:date:message-id:reply-to;
+	bh=xm6KiDTIf200c7IEeA83LLsAMJlhRwRIpZZm2IgxSSA=; b=ENrG6NF3H8Z45WroVMMw7RBCfY
+	TuNBOXf93tbvhpvNKSJdTMhd/FI4IEPMFl1atd+HRDbt5MdzK36xJm9Zu7UyywA/4P+Nibvel6d3E
+	a0LgJQDBZJ8bhjNTpNA68upYSZ9RdVBLramvlQybTre0XnUc20q/ebEHHQeC3twNWGLs=;
+Received: from [70.80.174.168] (helo=pettiford.lan)
+	by mail.hugovil.com with esmtpa (Exim 4.98.2)
+	(envelope-from <hugo@hugovil.com>)
+	id 1wE6pc-0000000004u-3B2A;
+	Sat, 18 Apr 2026 10:39:37 -0400
+Date: Sat, 18 Apr 2026 10:39:36 -0400
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: Biju Das <biju.das.jz@bp.renesas.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Hugo
+ Villeneuve <hvilleneuve@dimonoff.com>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org"
+ <linux-serial@vger.kernel.org>
+Subject: Re: [PATCH] serial: sh-sci: optimize max_freq determination
+Message-Id: <20260418103936.a3651d1606db7178fa7ff854@hugovil.com>
+In-Reply-To: <TY3PR01MB1134667FC9A3920ADC444C21A86212@TY3PR01MB11346.jpnprd01.prod.outlook.com>
+References: <20260417193603.3906568-1-hugo@hugovil.com>
+	<TY3PR01MB1134667FC9A3920ADC444C21A86212@TY3PR01MB11346.jpnprd01.prod.outlook.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260416131419.1231012-1-gxxa03070307@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam_score: -2.0
+X-Spam_bar: --
 
-On Thu, Apr 16, 2026 at 09:14:19PM +0800, Xiang Gao wrote:
-> From: Xiang Gao <gaoxiang17@xiaomi.com>
+Hi Biju,
+
+On Sat, 18 Apr 2026 07:12:57 +0000
+Biju Das <biju.das.jz@bp.renesas.com> wrote:
+
+> Hi Hugo,
 > 
-> When /proc/sysrq-trigger is written to, there is no record of which
-> process triggered the sysrq operation. This makes it difficult to audit
-> or debug who initiated a sysrq action, especially when the write comes
-> from a shell spawned by system()/popen() where the immediate caller is
-> "sh" rather than the originating application.
+> > -----Original Message-----
+> > From: Hugo Villeneuve <hugo@hugovil.com>
+> > Sent: 17 April 2026 20:36
+> > Subject: [PATCH] serial: sh-sci: optimize max_freq determination
+> > 
+> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > 
+> > Follow example of rsci driver to avoid code duplication and useless max_freq search when port->uartclk
+> > is set to zero.
+> > 
+> > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > ---
+> > Cc: biju.das.jz@bp.renesas.com
+> > 
+> > Biju: if you want, feel free to pickup this patch when you resubmit your serie for "sh-sci/rsci: Fix
+> > divide by zero and clean up baud rate logic".
+> > ---
+> >  drivers/tty/serial/sh-sci.c | 13 +++++++------
+> >  1 file changed, 7 insertions(+), 6 deletions(-)
+> > 
+> > diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c index
+> > 6c819b6b24258..dcee8b69adab2 100644
+> > --- a/drivers/tty/serial/sh-sci.c
+> > +++ b/drivers/tty/serial/sh-sci.c
+> > @@ -2711,14 +2711,15 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+> >  	 * setup the baud rate generator hardware for us already.
+> >  	 */
+> >  	if (!port->uartclk) {
+> > -		baud = uart_get_baud_rate(port, termios, old, 0, 115200);
+> > -		goto done;
+> > +		max_freq = 115200;
 > 
-> Add CONFIG_MAGIC_SYSRQ_TRIGGER_LOG (default n) and a runtime toggle via
-> module parameter sysrq.trigger_log (default off). When both are enabled,
-> the kernel logs the triggering process's comm, pid, tgid, uid, and walks
-> up to 5 levels of the parent process chain. This allows tracing the
-> original initiator even through system()/popen()/fork+exec indirection.
+> I have thought about this change. but the below comment made me not to do this change.
 > 
-> Example output:
->   sysrq: proc trigger: comm=sh pid=68 tgid=68 uid=0
->   sysrq:   parent[0]: comm=my_app pid=67 tgid=67
->   sysrq:   parent[1]: comm=init pid=1 tgid=1
+> <snippet from Geert>
+> IIRC, baud == 0 can (only?) happen when using earlyprintk on a non-DT
+> system, where the serial console should just keep on using the settings
+> programmed by the firmware.  So any config register writes should
+> be skipped.
+> </snippet>
+
+I think Geert comments referred to the clock (port->uartclk) being zero,
+not the baud (the baud rate cannot be zero)...
+
+But I am not sure how it is relevant here because the modification is
+not changing the behavior of the existing code, it is an optimization
+and a simplification. In fact, it is exactly the change I proposed [1]
+when you submitted the rsci driver (and yoyu accepted), unless I am
+missing something?
+
+[1]
+https://lore.kernel.org/all/20251028112236.c832fb48ad9fafcd2cf34b57@hugovil.com/
+
+The goal of this patch is to have both rsci and sh-sci code to be the
+same for this specific section at least. If you modify it to take into
+account Geert's comments, then It think you need to do it both for rsci
+and sh-sci drivers, no?
+
+
 > 
-> Usage:
->   # Compile-time: enable CONFIG_MAGIC_SYSRQ_TRIGGER_LOG=y
->   # Runtime: echo 1 > /sys/module/sysrq/parameters/trigger_log
->   # Or boot parameter: sysrq.trigger_log=1
+> Cheers,
+> Biju
 > 
-> Signed-off-by: Xiang Gao <gaoxiang17@xiaomi.com>
-> ---
->  drivers/tty/sysrq.c | 29 +++++++++++++++++++++++++++++
->  lib/Kconfig.debug   | 16 ++++++++++++++++
->  2 files changed, 45 insertions(+)
+> > +	} else {
+> > +		for (i = 0; i < SCI_NUM_CLKS; i++)
+> > +			max_freq = max(max_freq, s->clk_rates[i]);
+> > +
+> > +		max_freq /= min_sr(s);
+> >  	}
+> > 
+> > -	for (i = 0; i < SCI_NUM_CLKS; i++)
+> > -		max_freq = max(max_freq, s->clk_rates[i]);
+> > -
+> > -	baud = uart_get_baud_rate(port, termios, old, 0, max_freq / min_sr(s));
+> > +	baud = uart_get_baud_rate(port, termios, old, 0, max_freq);
+> >  	if (!baud)
+> >  		goto done;
+> > 
+> > 
+> > base-commit: a1a81aef99e853dec84241d701fbf587d713eb5b
+> > --
+> > 2.47.3
 > 
-> diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
-> index c2e4b31b699a..e9277e7de35b 100644
-> --- a/drivers/tty/sysrq.c
-> +++ b/drivers/tty/sysrq.c
-> @@ -48,6 +48,9 @@
->  #include <linux/uaccess.h>
->  #include <linux/moduleparam.h>
->  #include <linux/jiffies.h>
-> +#ifdef CONFIG_MAGIC_SYSRQ_TRIGGER_LOG
-> +#include <linux/cred.h>
-> +#endif
-
-We really do not want or like #ifdef in .c files, and for stuff like
-this, it is not needed at all.
-
->  #include <linux/syscalls.h>
->  #include <linux/of.h>
->  #include <linux/rcupdate.h>
-> @@ -59,6 +62,12 @@
->  static int __read_mostly sysrq_enabled = CONFIG_MAGIC_SYSRQ_DEFAULT_ENABLE;
->  static bool __read_mostly sysrq_always_enabled;
->  
-> +#ifdef CONFIG_MAGIC_SYSRQ_TRIGGER_LOG
-> +static bool sysrq_trigger_log;
-> +module_param_named(trigger_log, sysrq_trigger_log, bool, 0644);
-> +MODULE_PARM_DESC(trigger_log, "Log caller info on /proc/sysrq-trigger write");
-> +#endif
-
-Module parameters are really not the way for stuff like this.  And why
-would such a "tiny" option need a config option at all?  If you don't
-use/need it, it's only a single bool being used?
+> 
 
 
-> +
->  static bool sysrq_on(void)
->  {
->  	return sysrq_enabled || sysrq_always_enabled;
-> @@ -1209,6 +1218,26 @@ static ssize_t write_sysrq_trigger(struct file *file, const char __user *buf,
->  	bool bulk = false;
->  	size_t i;
->  
-> +#ifdef CONFIG_MAGIC_SYSRQ_TRIGGER_LOG
-> +	if (sysrq_trigger_log) {
-> +		struct task_struct *task;
-> +		int depth = 0;
-> +
-> +		pr_info("proc trigger: comm=%s pid=%d tgid=%d uid=%u\n",
-> +			current->comm, current->pid, current->tgid,
-> +			from_kuid(&init_user_ns, current_uid()));
-
-The kernel log is not there for doing audits and the like, so is this
-just a debug option?  
-
-> +
-> +		rcu_read_lock();
-> +		task = current;
-> +		while (task->pid > 1 && depth < 5) {
-> +			task = rcu_dereference(task->real_parent);
-> +			pr_info("  parent[%d]: comm=%s pid=%d tgid=%d\n",
-> +				depth++, task->comm, task->pid, task->tgid);
-> +		}
-> +		rcu_read_unlock();
-
-This might cause problems for when the system is hung and sysrq is the
-only way to reboot the box.  Have you tried it in that situation?
-
-
-
-> +	}
-> +#endif
-> +
->  	for (i = 0; i < count; i++) {
->  		char c;
->  
-> diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-> index aac60b6cfa4b..46bd361decd0 100644
-> --- a/lib/Kconfig.debug
-> +++ b/lib/Kconfig.debug
-> @@ -705,6 +705,22 @@ config MAGIC_SYSRQ_SERIAL_SEQUENCE
->  
->  	  If unsure, leave an empty string and the option will not be enabled.
->  
-> +config MAGIC_SYSRQ_TRIGGER_LOG
-> +	bool "Log caller info on /proc/sysrq-trigger write"
-> +	depends on MAGIC_SYSRQ
-> +	default n
-
-n is always the default, no need to add it again.
-
-thanks,
-
-greg k-h
+-- 
+Hugo Villeneuve
