@@ -1,145 +1,209 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8619D4A23
-	for <linux-serial@vger.kernel.org>; Sun, 19 Apr 2026 08:30:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 077015478D;
+	Sun, 19 Apr 2026 13:54:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776587419; cv=none; b=TY42jpC2RShUwwKgNdPs/5F89Bjm4noTksM6x4NUQxBRb0sByR+sFpjTko2ll97SeHZTm/tXBl/s2FbmlTSmE+Apy50ss25iPIdLcQmV5L6Wx0KDEW7kdXhoy92EFibgy66O08XopfoyR+fDooxDJL01G9OU2fRZRKImyCUAHO0=
+	t=1776606881; cv=none; b=CWsIo3hEq4jpts3Rz8oVgEpQTFPbFDiHP9Yy2SnBUBCtUnzfGjJcEvAb/ADpIt9YRV3FNntCNbX2W6INWHJwSWXf7+jI0CjVReBXvWP0Swj1bWHfISd8CeqMuSgffLD9tsixI40Uhd1YpfrdYj/B1Mvxt5mhKrjroemIcVH/dbs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776587419; c=relaxed/simple;
-	bh=qtKOfm/PzOwBHxZdRJEmVpIhLYPKyAT3yRn4rvKbC8I=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=HY67FBD6k/zWpQQiQe5QY92/5h4PvsBvm33TIyIbB2+oU+xjM9+DEfOpBnjeVCngXYlQudUEiay/G84Xj+hseGc0rwrYC+JtwZ7bJIFapGvU1rNaiyJ0UfIrOFCTxwn9DYlh2MB5kEC/pDae6433G8kMJeT27DDT8u12/96lRDI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OFRV053y; arc=none smtp.client-ip=209.85.128.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1776606881; c=relaxed/simple;
+	bh=MFJekb5qPpRK7aw18HO5t0RI/5g38hnAcAmjXaJAlqk=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=mqm/4aEkf0WYWaezFRSzOnfRTVMBAgzdiZ5xr4rm0jrbYx+Ik522Q3o8IXGQ0RIrDZXlN+D+gqQ4fbThzARF2Zqp5ZlO+5fvVly8Z/zBgIgkQin1ImAcgUgDnSo0JT39zfmAI7AmUDNFMYNlJuExDPfnRzuTM06cvrTC3ARSWZE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=c/jOlLxS; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OFRV053y"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-48374014a77so25378635e9.3
-        for <linux-serial@vger.kernel.org>; Sun, 19 Apr 2026 01:30:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776587416; x=1777192216; darn=vger.kernel.org;
-        h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
-         :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=XwKzTLRiHs5eANohxZZBlyVS97g8sNagXG2LtuYayk8=;
-        b=OFRV053ybFwzWyLwga4u3ftRg0Kra8PG5tIhsnYxwUWprFtoOKuRq2FmXtpbs3h0/R
-         7n1lXk0KC0WqDzXSMFV/HVJkNwBcKewkGkCDAKyClaaZFl5EjMZQnsT6PaNRB3/blwbg
-         Zp/awDPhssDocF4/ZBHegbZuP27hfVnNQcHWjPTypt+CLjrWMnHVoKd2qZk5YzdQj8tz
-         g7xQ5txdhAAFQnCj6E+LK/D7Xc4GKT3Eh+6WK37JZ6fsKytfrloNcgdSiFQZBbVT0Niq
-         AvGf5ycUqbcfmZnpcvsMFJMoZRFLYSWWEDw9SrJZ7o/9ikE03AUGndANg4mFZX7kppgK
-         6SEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776587416; x=1777192216;
-        h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
-         :from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=XwKzTLRiHs5eANohxZZBlyVS97g8sNagXG2LtuYayk8=;
-        b=n3K2vOgKO9rHbuLOFRMivDRqQe7ZVxIzk2ZD8vNRqheap26OtdGw/dljwdly7JAy/r
-         G5t16XXlArxOCPVyld0RfaRb8M52spQohmL4wKuSFpZpwr3mKAbR2Tj73yzliS0hSZSs
-         gqaSuwPPw3ULUuU8qfHsOT5CtYoCMD/770v7VUrLdqztu1fVhnqr6dEvT1yUplRwEMVn
-         4Q2VOHnGRn0/i8ULldJQjXKx7ZxsgQE+PjuQ5AB7M1Dz2eQtnG6jwLSIvcv8blj7roL4
-         7j21T8vag3m2+4w29lXqT7TazzFKA/gloj2ZP9d1iICnXbZb0M7EImZloj+JYu6YnKas
-         QEBw==
-X-Forwarded-Encrypted: i=1; AFNElJ9Bwcc7+k/y64+sIcuMxMGjBo/8PmEx113Aeg1Sr2pgp1CwuHKwVCeO1i/KByRSNRj7LQ4HYRGOsGF3JW0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxMU7T5fuXigS+WJGVSV7hGB2T4RDg+iN2OKGHQDZAZF5r4wt+i
-	Xf6QqBUg/RbyJqupPemiPSxGKLtBkDezBvI3NjuNL76Qr5fNBVPg0TrJ
-X-Gm-Gg: AeBDieuh/ytkLMPhaCCKm37a1pABuj/A5YEhN6UmwbsrNM82gmhwz6LkSoBEQnaBXo6
-	sZZYv1HZwwgKpF9vkAusr0Bde0NrwUyx8b1GwwlhKlAIqvJ1RRKVa7rd7OuR1AMkYYugHR59R2C
-	Pad5z9Rii9Nqe+KH7cmeVLaXuIwvXmKw1ISx21uxnDjv5VdPSB2A4XwOW65B5bSRRvzsDOQ+ypR
-	i3OPpU5WW57p1bLCOv9/BtquQGGnjTEacFeB+yCGxfWEKxqd9ZtZk15sQVIg467KdN75LPx2Jzx
-	Q2PS0Tg+PzsyYO5VsK31gVw/3a23L3t54xHQj4/i9FvEH8/vMzPqzesEV/vRX3a1By4Mjkpe3Gg
-	I5Wza2K7cndx0zNsSu0arzuKdelSvddGGKNVLGmgHwf7oOEd2smnwBq5y0SGIicgsm/sJGQ2qkL
-	uYx3gK5+6N+BDSIEpl03ynN9JzU32bkyeat6fPZqfDMPoOrr3WOTUwURsV3w==
-X-Received: by 2002:a05:600c:a108:b0:488:a82f:bbb4 with SMTP id 5b1f17b1804b1-488fb78a0famr104158265e9.26.1776587415722;
-        Sun, 19 Apr 2026 01:30:15 -0700 (PDT)
-Received: from strix.localnet ([197.250.227.196])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-488fc11ced7sm183002605e9.0.2026.04.19.01.30.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 19 Apr 2026 01:30:14 -0700 (PDT)
-From: Stefan =?UTF-8?B?RMO2c2luZ2Vy?= <stefandoesinger@gmail.com>
-To: "Rob Herring (Arm)" <robh@kernel.org>
-Cc: linux-kernel@vger.kernel.org, Conor Dooley <conor+dt@kernel.org>,
- Jonathan Corbet <corbet@lwn.net>,
- Alexandre Belloni <alexandre.belloni@bootlin.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-doc@vger.kernel.org,
- devicetree@vger.kernel.org, Drew Fustini <fustini@kernel.org>,
- Linus Walleij <linusw@kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
- Russell King <linux@armlinux.org.uk>, soc@lists.linux.dev,
- Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>,
- linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
- Shuah Khan <skhan@linuxfoundation.org>
-Subject: Re: [PATCH v4 2/8] dt-bindings: arm: Add zx297520v3 board binding
-Date: Sun, 19 Apr 2026 11:30:04 +0300
-Message-ID: <6264667.lOV4Wx5bFT@strix>
-In-Reply-To: <177646012448.2165534.5760108355183774935.robh@kernel.org>
-References:
- <20260416-send-v4-0-e19d02b944ec@gmail.com>
- <20260416-send-v4-2-e19d02b944ec@gmail.com>
- <177646012448.2165534.5760108355183774935.robh@kernel.org>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="c/jOlLxS"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40EE7C2BCAF;
+	Sun, 19 Apr 2026 13:54:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1776606880;
+	bh=MFJekb5qPpRK7aw18HO5t0RI/5g38hnAcAmjXaJAlqk=;
+	h=Date:From:To:Cc:Subject:From;
+	b=c/jOlLxSmb+Obu1aWZtSc2x6u1F9x4OpIXhCddUAfFdvEE5hy1CbOrnD43BdnORjw
+	 Y1RQ/FyJizHzglEn6yGwL3TzutFxip/Vdd1C2WY7TZYf5eqDK5ocj+I1d49g2KQ5Fp
+	 zpA6a0MIFaK9X30Samqr7bz9MTztwKQr2OVFxxs8=
+Date: Sun, 19 Apr 2026 15:54:37 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY/Serial driver changes for 7.1-rc1
+Message-ID: <aeTena-xiaqaffDG@kroah.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart5099586.31r3eYUQgx";
- micalg="pgp-sha256"; protocol="application/pgp-signature"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
---nextPart5099586.31r3eYUQgx
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="utf-8"; protected-headers="v1"
-From: Stefan =?UTF-8?B?RMO2c2luZ2Vy?= <stefandoesinger@gmail.com>
-To: "Rob Herring (Arm)" <robh@kernel.org>
-Date: Sun, 19 Apr 2026 11:30:04 +0300
-Message-ID: <6264667.lOV4Wx5bFT@strix>
-MIME-Version: 1.0
+The following changes since commit c369299895a591d96745d6492d4888259b004a9e:
 
-Hi Rob,
+  Linux 7.0-rc5 (2026-03-22 14:42:17 -0700)
 
-Am Samstag, 18. April 2026, 00:08:44 Ostafrikanische Zeit schrieben Sie:
+are available in the Git repository at:
 
-> If you already ran 'make dt_binding_check' and didn't see the above
-> error(s), then make sure 'yamllint' is installed and dt-schema is up to
-> date:
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-7.1-rc1
 
-Here is a new PEBKAC issue for your mail template: I ran dt_binding_check, it 
-wrote the warning you pointed out, but I only checked the return value - which 
-indicated success. Which I guess makes sense for a warning, since there seem 
-to be a few preexisting ones. The warning itself was somewhere in the 
-scrollback because I let dt_binding_check check all the files.
+for you to fetch changes up to a1a81aef99e853dec84241d701fbf587d713eb5b:
 
-So I learned I have to actually look at the output to see if there are any 
-warnings.
+  tty: serial: ip22zilog: Fix section mispatch warning (2026-04-02 15:59:56 +0200)
 
-Cheers,
-Stefan
+----------------------------------------------------------------
+TTY/Serial changes for 7.1-rc1
 
---nextPart5099586.31r3eYUQgx
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
+Here is the set of tty and serial driver changes for 7.1-rc1.
 
------BEGIN PGP SIGNATURE-----
+Not much here this cycle, biggest thing is the removal of an old driver
+that never got any actual hardware support (esp32), and the second try
+to moving the tty ports to their own workqueues (first try was in
+7.0-rc1 but was reverted due to problems.)
 
-iQJPBAABCAA5FiEEQxb0tqoFWyeVMl1sPRO8yFRPGiIFAmnkkowbFIAAAAAABAAO
-bWFudTIsMi41KzEuMTIsMiwyAAoJED0TvMhUTxoiU8AP/33cFyCxCEyOMxTZRv29
-5Ypqo+NuvryxWrpo7I7s2VQvp5/q6NlSpNpmQXLcgkV9mGS6axv15mCZ6py1gJMc
-HSIKkTqWZjzxeHoLZ2oZQCyFbMcPwvGhNK0qP/ckwWkv/4g/UFB9ujycOTFXVERG
-RWQyIvROo7Lb9IN8ozKehzOvD7ga+AjD0i4RQLlaGS/TbHUcDZKWr6+WqJ8SicVV
-wbiQU3cr4lAG7uCbKiAt2Jpcw1Aeuyfyci1hX4jL6KrY+MK6yG39ksq84DPUOgLI
-xR+5Rxitj449eH0hPE20fkrE5UvivbYiCNzkrhyqWn42ahIj5DIBrSayWB0KUjff
-lm6wYdL+yh/9760hh92rYCeNFYOz+kEQECsAHhTwqX73gCWFL5rYXJzFpNudFqXi
-24Yx9+vZm7OhMi+lGJjM1Tn51ztC7MsP0ozz+PAMpuiEl6luLD3ybO3XO0eTEvhZ
-oSylCbtelCVkO3KnW44cSdAspNidQ5Mr1EEXtLxUXOSSFQrmAGXmqmph3vSws7vi
-X3G+z1WQ3VQkpUUfYyzV5AD1IORM+TfeZtFbKUrbr2Brk54ib7UxztFqfuizV2V4
-9FuBUwZE1uXCLz3m7cB5yp+2zNX1AtkF/5STPQJh2hUC+mpbA68beyv6lefWIOKC
-NohR6Eo79ZapFjltX76P8lbO
-=NAGE
------END PGP SIGNATURE-----
+Otherwise it's just a small set of driver updates and some vt modifier
+key enhancements.
 
---nextPart5099586.31r3eYUQgx--
+All have been in linux-next for a while with no reported issues.
 
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
+----------------------------------------------------------------
+Alyssa Milburn (1):
+      tty: serial: samsung_tty: avoid dev_dbg deadlock
 
+Andy Shevchenko (2):
+      serial: 8250_port: Drop duplicate NULL check
+      serial: xilinx_uartps: Drop unused include
+
+Anup Kulkarni (1):
+      serial: qcom-geni: Fix RTS behavior with flow control
+
+Biju Das (2):
+      dt-bindings: serial: renesas,rsci: Document RZ/G3L SoC
+      serial: sh-sci: Add support for RZ/G3L RSCI
+
+Brian Masney (1):
+      serial: pic32_uart: allow driver to be compiled on all architectures with COMPILE_TEST
+
+Fabio Estevam (1):
+      dt-bindings: serial: snps-dw-apb-uart: Add RV1103B compatible
+
+Francesco Lavra (1):
+      serial: tegra: remove Kconfig dependency on APB DMA controller
+
+Greg Kroah-Hartman (1):
+      Merge 7.0-rc5 into tty-next
+
+Jason Andryuk (1):
+      hvc/xen: Check console connection flag
+
+Julian Braha (1):
+      serial: remove drivers for espressif esp32
+
+Kartik Rajput (4):
+      serial: amba-pl011: Introduce skip_ibrd_fbrd vendor flag
+      serial: amba-pl011: Introduce set_uartclk_rate vendor flag
+      serial: amba-pl011: Add Tegra264 UART support
+      serial: amba-pl011: Respect DMA controller's copy_align requirement
+
+Kathiravan Thirumoorthy (1):
+      serial: qcom-geni: drop stray newline format specifier
+
+Kexin Sun (1):
+      tty: atmel_serial: update outdated reference to atmel_tasklet_func()
+
+Michael Walle (1):
+      tty: serial: 8250: Add SystemBase Multi I/O cards
+
+Nicolas Pitre (3):
+      vt: add modifier support to cursor keys
+      vt: add KT_CSI keysym type for modifier-aware CSI sequences
+      vt: add fallback to plain map for modifier-aware key types
+
+Peter Maydell (1):
+      serial: amba-pl011: Enable UART in earlycon setup
+
+Qingfang Deng (1):
+      tty: constify tty_ldisc_ops
+
+Randy Dunlap (2):
+      tty: hvc_iucv: fix off-by-one in number of supported devices
+      serdev: serdev.h: clean up kernel-doc comments
+
+Ravi Rama (1):
+      serial: 8250_fintek: Add support for F81214E
+
+Robert Marko (1):
+      dt-bindings: serial: atmel,at91-usart: add microchip,lan9691-usart
+
+Robin Gong (1):
+      tty: serial: imx: keep dma request disabled before dma transfer setup
+
+Ronan Pigott (1):
+      vt: support ITU-T T.416 color subparameters
+
+Rong Zhang (2):
+      dt-bindings: serial: 8250: Add Loongson 3A4000 uart compatible
+      serial: 8250: loongson: Enable building on MIPS Loongson64
+
+Thomas Bogendoerfer (1):
+      tty: serial: ip22zilog: Fix section mispatch warning
+
+Xianwei Zhao (1):
+      dt-bindings: serial: amlogic,meson-uart: Add compatible string for A9
+
+Xin Zhao (1):
+      tty: tty_port: add workqueue to flip TTY buffer
+
+Zhaoyang Yu (1):
+      serial: auart: check clk_enable() return in console write
+
+ Documentation/devicetree/bindings/serial/8250.yaml |   1 +
+ .../bindings/serial/amlogic,meson-uart.yaml        |   1 +
+ .../bindings/serial/atmel,at91-usart.yaml          |   1 +
+ .../devicetree/bindings/serial/renesas,rsci.yaml   |  26 +
+ .../bindings/serial/snps-dw-apb-uart.yaml          |   1 +
+ drivers/tty/hvc/hvc_iucv.c                         |   2 +-
+ drivers/tty/hvc/hvc_xen.c                          |   3 +
+ drivers/tty/pty.c                                  |  12 +-
+ drivers/tty/serial/8250/8250_core.c                |   2 +-
+ drivers/tty/serial/8250/8250_fintek.c              |  10 +-
+ drivers/tty/serial/8250/8250_pci.c                 |  51 ++
+ drivers/tty/serial/8250/8250_port.c                |   4 +-
+ drivers/tty/serial/8250/Kconfig                    |   9 +-
+ drivers/tty/serial/Kconfig                         |  33 +-
+ drivers/tty/serial/Makefile                        |   2 -
+ drivers/tty/serial/amba-pl011.c                    | 153 +++-
+ drivers/tty/serial/apbuart.c                       |   2 +-
+ drivers/tty/serial/atmel_serial.c                  |   2 +-
+ drivers/tty/serial/dz.c                            |   2 +-
+ drivers/tty/serial/esp32_acm.c                     | 459 ------------
+ drivers/tty/serial/esp32_uart.c                    | 779 ---------------------
+ drivers/tty/serial/imx.c                           |   7 +-
+ drivers/tty/serial/ip22zilog.c                     |   4 +-
+ drivers/tty/serial/mxs-auart.c                     |   3 +-
+ drivers/tty/serial/qcom_geni_serial.c              |  21 +-
+ drivers/tty/serial/rsci.c                          |  13 +
+ drivers/tty/serial/rsci.h                          |   1 +
+ drivers/tty/serial/samsung_tty.c                   |  10 +-
+ drivers/tty/serial/sh-sci-common.h                 |   1 +
+ drivers/tty/serial/sh-sci.c                        |  14 +-
+ drivers/tty/serial/xilinx_uartps.c                 |   1 -
+ drivers/tty/serial/zs.c                            |   2 +-
+ drivers/tty/tty_buffer.c                           |  15 +-
+ drivers/tty/tty_io.c                               |  25 +-
+ drivers/tty/tty_ldisc.c                            |  16 +-
+ drivers/tty/tty_port.c                             |  22 +
+ drivers/tty/vt/keyboard.c                          |  80 ++-
+ drivers/tty/vt/vt.c                                |  48 +-
+ include/linux/serdev.h                             |   9 +-
+ include/linux/tty_buffer.h                         |   1 +
+ include/linux/tty_driver.h                         |   7 +
+ include/linux/tty_ldisc.h                          |   6 +-
+ include/linux/tty_port.h                           |  13 +
+ include/uapi/linux/keyboard.h                      |  29 +
+ include/xen/interface/io/console.h                 |  13 +
+ 45 files changed, 550 insertions(+), 1366 deletions(-)
+ delete mode 100644 drivers/tty/serial/esp32_acm.c
+ delete mode 100644 drivers/tty/serial/esp32_uart.c
