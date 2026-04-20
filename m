@@ -1,83 +1,112 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 742533750BC;
-	Mon, 20 Apr 2026 13:00:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37271BE5E;
+	Mon, 20 Apr 2026 13:45:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776690043; cv=none; b=tNO1A3I24VOzm40af2Z9MSolUh8CWe0H4FRQWheGr399fzN4J2AZLw8Yo4MygK0IxtiJmAfw9RfqHIjs6n1QjEYQQ5Yr9FMbMT+Q5i5ygzvzuS2uTMK1gDSy4AOpM3vbnGaxha7mipZXLCunFkeicruNU8edPiKCigJvn1X1Aho=
+	t=1776692738; cv=none; b=Lhsml8KQy1pQT8yGgi7e+va3tmDgQRz4PnFMsFUT0F0NskEECTC9Bnw9VExCs8Z4KOqwr0fbqryf/ZybKtGcrd2YB6sPx2FhQ1O+BRXaapue6/4dll/nPw3ymWWfzhYv47jJrl4Itdqbr8AnL+LU34eHQR4/DpoS4yU/Gu3QIsg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776690043; c=relaxed/simple;
-	bh=tUC2t9kCbTutWnz6IuPE32rjpeccnNIrpMgaz4pD0xY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lBcDMRebU4+/48oQlWZ6W0sECtKC5wdFqV443NiHc0RsOOKmI5Uf26AO2KhhH66PAoSBL6uplOno6KWfgrKkMt6/rk9cBny6EecpJ1qHO3wPXsTrFUtptBJY53eELRjvwsLz+6VkPM13M+gJHXWTLrErVBIuqb4WXRxiZqRWGpM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YlVcalFz; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1776692738; c=relaxed/simple;
+	bh=ZrDEyjyrSCFU5cuIsgn7BLxTzC25zoqaZCEGINDSSAQ=;
+	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
+	 Mime-Version:Content-Type; b=DkToaSicKrMmuB5t3mR3so/qeDX8f4N2qxG3MvorbMol9his07WWq3h/BTqo4WPO11OH9hH0/zQ1Lb0D8P4tp3IsGYx6dUm1Sae6y0irSi2PALxYQF2kw+qAvPzMn/za+KzECHi4O9MtHjyeRKZiv1SMY1AiiRUhEldbfzPfWhY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=ueHxqujk; arc=none smtp.client-ip=162.243.120.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YlVcalFz"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BBE1C2BCB4;
-	Mon, 20 Apr 2026 13:00:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776690043;
-	bh=tUC2t9kCbTutWnz6IuPE32rjpeccnNIrpMgaz4pD0xY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=YlVcalFzn0PvL+6InUzgqSW+//qTjGG/EfiW0TS8x0zIGJ4uAz3KtlCEIdTY72YTy
-	 SATZbU4nIdedKAryE4IKUikbt2UpAV670DGv37zi22wOPDSq32Z0Zdb/vPQOAHhV7L
-	 R35f+tkpc9jcihD1qrfP0TKz+3uJDOYMmGiwmrFTnnSqiFNSetkcePBGG/xKu5LGnu
-	 asbzNN9TTZLZUbSEsaJ20Fz2H0Z2/jWZQogamuUR9uXs321B0epvjSiYn6Dvex523d
-	 fVOWm2enR6PxWJfmlCw2CuN/R6tbyJzFVc94nrBqhpt1kLO+3wVyNbmb/1ps8rY0Q1
-	 wlb+04KJisEeQ==
-Date: Mon, 20 Apr 2026 15:00:40 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Stefan =?utf-8?B?RMO2c2luZ2Vy?= <stefandoesinger@gmail.com>
-Cc: "Rob Herring (Arm)" <robh@kernel.org>, linux-kernel@vger.kernel.org, 
-	Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
-	Alexandre Belloni <alexandre.belloni@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	linux-doc@vger.kernel.org, devicetree@vger.kernel.org, Drew Fustini <fustini@kernel.org>, 
-	Linus Walleij <linusw@kernel.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Russell King <linux@armlinux.org.uk>, soc@lists.linux.dev, Arnd Bergmann <arnd@arndb.de>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, linux-arm-kernel@lists.infradead.org, 
-	linux-serial@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>
-Subject: Re: [PATCH v4 2/8] dt-bindings: arm: Add zx297520v3 board binding
-Message-ID: <20260420-blue-parrot-of-spirit-2b5f6a@quoll>
-References: <20260416-send-v4-0-e19d02b944ec@gmail.com>
- <20260416-send-v4-2-e19d02b944ec@gmail.com>
- <177646012448.2165534.5760108355183774935.robh@kernel.org>
- <6264667.lOV4Wx5bFT@strix>
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="ueHxqujk"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=default; h=Content-Transfer-Encoding:Mime-Version:Message-Id:Subject:Cc:
+	To:From:Date:subject:date:message-id:reply-to;
+	bh=SglhlW/h4d3cAD9x+5DzMycqfYiHe4iQWyOY9AnWZVw=; b=ueHxqujkZJPeNpTgFtXS1AEA8t
+	oFu7sGuWoNtDXOeTUlj68YS/mltcTZT1Y4IZ5kBewLTq398vi6uS6ZcPBaEYUraueMdtKogocKyUk
+	2uOgN1VFxjyDaxOeFk2fZxsLn93+XgWFhkXmWXmzJ0vl/G1oaMYmBfWXM4lM/2U80r94=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168] helo=pettiford.lan)
+	by mail.hugovil.com with esmtpa (Exim 4.98.2)
+	(envelope-from <hugo@hugovil.com>)
+	id 1wEowH-000000005AG-3So3;
+	Mon, 20 Apr 2026 09:45:26 -0400
+Date: Mon, 20 Apr 2026 09:45:25 -0400
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Biju Das <biju.das.jz@bp.renesas.com>, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Hugo
+ Villeneuve <hvilleneuve@dimonoff.com>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org"
+ <linux-serial@vger.kernel.org>
+Subject: Re: [PATCH] serial: sh-sci: optimize max_freq determination
+Message-Id: <20260420094525.f202b3e9a04d81b9049b718a@hugovil.com>
+In-Reply-To: <CAMuHMdXGR=YOLqBMSY_syvtYbAU216Q_+xC_f8gUujYhLjRWSQ@mail.gmail.com>
+References: <20260417193603.3906568-1-hugo@hugovil.com>
+	<TY3PR01MB1134667FC9A3920ADC444C21A86212@TY3PR01MB11346.jpnprd01.prod.outlook.com>
+	<20260418103936.a3651d1606db7178fa7ff854@hugovil.com>
+	<CAMuHMdXGR=YOLqBMSY_syvtYbAU216Q_+xC_f8gUujYhLjRWSQ@mail.gmail.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <6264667.lOV4Wx5bFT@strix>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam_score: -2.0
+X-Spam_bar: --
 
-On Sun, Apr 19, 2026 at 11:30:04AM +0300, Stefan D=C3=B6singer wrote:
-> Hi Rob,
->=20
-> Am Samstag, 18. April 2026, 00:08:44 Ostafrikanische Zeit schrieben Sie:
->=20
-> > If you already ran 'make dt_binding_check' and didn't see the above
-> > error(s), then make sure 'yamllint' is installed and dt-schema is up to
-> > date:
->=20
-> Here is a new PEBKAC issue for your mail template: I ran dt_binding_check=
-, it=20
-> wrote the warning you pointed out, but I only checked the return value - =
-which=20
-> indicated success. Which I guess makes sense for a warning, since there s=
-eem=20
-> to be a few preexisting ones. The warning itself was somewhere in the=20
-> scrollback because I let dt_binding_check check all the files.
->=20
-> So I learned I have to actually look at the output to see if there are an=
-y=20
-> warnings.
+Hi Geert,
 
-Same with every other tool warnings, like compiler warnings...
+On Mon, 20 Apr 2026 09:13:55 +0200
+Geert Uytterhoeven <geert@linux-m68k.org> wrote:
 
-Best regards,
-Krzysztof
+> Hi Hugo,
+> 
+> On Sat, 18 Apr 2026 at 16:39, Hugo Villeneuve <hugo@hugovil.com> wrote:
+> > On Sat, 18 Apr 2026 07:12:57 +0000
+> > Biju Das <biju.das.jz@bp.renesas.com> wrote:
+> > > > From: Hugo Villeneuve <hugo@hugovil.com>
+> > > > Follow example of rsci driver to avoid code duplication and useless max_freq search when port->uartclk
+> > > > is set to zero.
+> > > >
+> > > > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > > > ---
+> > > > Cc: biju.das.jz@bp.renesas.com
+> > > >
+> > > > Biju: if you want, feel free to pickup this patch when you resubmit your serie for "sh-sci/rsci: Fix
+> > > > divide by zero and clean up baud rate logic".
+> > > > ---
+> > > >  drivers/tty/serial/sh-sci.c | 13 +++++++------
+> > > >  1 file changed, 7 insertions(+), 6 deletions(-)
+> > > >
+> > > > diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c index
+> > > > 6c819b6b24258..dcee8b69adab2 100644
+> > > > --- a/drivers/tty/serial/sh-sci.c
+> > > > +++ b/drivers/tty/serial/sh-sci.c
+> > > > @@ -2711,14 +2711,15 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+> > > >      * setup the baud rate generator hardware for us already.
+> > > >      */
+> > > >     if (!port->uartclk) {
+> > > > -           baud = uart_get_baud_rate(port, termios, old, 0, 115200);
+> > > > -           goto done;
+> > > > +           max_freq = 115200;
+> > >
+> > > I have thought about this change. but the below comment made me not to do this change.
+> > >
+> > > <snippet from Geert>
+> > > IIRC, baud == 0 can (only?) happen when using earlyprintk on a non-DT
+> > > system, where the serial console should just keep on using the settings
+> > > programmed by the firmware.  So any config register writes should
+> > > be skipped.
+> > > </snippet>
+> >
+> > I think Geert comments referred to the clock (port->uartclk) being zero,
+> > not the baud (the baud rate cannot be zero)...
+> 
+> I did mean the baud variable being zero.
 
+uart_get_baud_rate() will not return zero. Even if the baud rate
+specified in termios (or the old) is set to 0 (hang up), it will return
+9600...
+
+-- 
+Hugo Villeneuve
