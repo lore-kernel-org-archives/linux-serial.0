@@ -1,79 +1,77 @@
-Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6063934251B
-	for <linux-serial@vger.kernel.org>; Mon, 20 Apr 2026 13:59:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B45F6363092
+	for <linux-serial@vger.kernel.org>; Mon, 20 Apr 2026 14:04:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776693600; cv=none; b=mpvvRVBZLkvtiGst2wYpkOpnYkATWKTvyl5F7NJdF2GcaVZ5EPqAapTkJP/KNCEdf67o9xKBq/b11C2ml07o/hLms8QB0n5ubW66dJ+qJIgkISS9uZ3sZuNJDz6ZHctQZdEbBw3egKUsfAOEGT545/qV2+OJ4xaTvtaAN1KRaKg=
+	t=1776693872; cv=none; b=cJjEGhSIwyeUpI58sDRIWv0SGTNEzBjsUTzVKnfoSDtgwFbS5MxYnFX+T1Oox7jkrlBVdbjdXHH0FMq+NqyDA20Na8kRTXYb0cClR+abUtcAUoeZURxzRxLk5ozLyucpw2iL6QSv8ekFj5xmCituCzNHUpvgpo2u4LAQifPKABw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776693600; c=relaxed/simple;
-	bh=SrgFMyROmHNBLrFbCgp+FteKbeTypwiuhwV7d4eZYLc=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=G4N9NP9zaJTe9BY6q1Jkzyh3NOxejk4zquWl449mSi5fPm8ohnj0S55pi8+tF6r6eWqiViFIkaJcPpGkbYXEy707U3rNET8vN4YcozOyXAfb5fda9JmXKS1hE9d3Gm8TRKaDn2kePenzPnb5xbweLBJcIVQcwk0UAl5+wh3dJc4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Dz0otMsN; arc=none smtp.client-ip=209.85.214.177
+	s=arc-20240116; t=1776693872; c=relaxed/simple;
+	bh=iIZjlaEpH3IaeaBP0OeSJtw3RsevAJcckKTLZcxEn5I=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=cPUYE6l3bpwWqUsl4mv7vp9HqfVXdy5mmalMakNiAXX/wxTfnXc53IJJqNqSXeAObjsQsBHvLoJJj2n4E3fh/PY9uJDirvb9US+nTX7p5hdRZk2yZXi9ORcMAzXYjvzdtNG5ho2j2ZSDMBeQ1dCs6bnAC0fwTnPJTzRbtWSLUDA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=l6rLKudc; arc=none smtp.client-ip=209.85.128.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Dz0otMsN"
-Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-2a7a9b8ed69so27271565ad.2
-        for <linux-serial@vger.kernel.org>; Mon, 20 Apr 2026 06:59:59 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="l6rLKudc"
+Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-4891b0786beso10118975e9.1
+        for <linux-serial@vger.kernel.org>; Mon, 20 Apr 2026 07:04:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776693599; x=1777298399; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1776693869; x=1777298669; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=PtA7XaAsBped8tzDKGVHSMvp1WbWNwbAvXQ8vkybz/I=;
-        b=Dz0otMsNBrkSCoftCpN6lgdJzZGySk2ML3Gi0iXbv4MCNDcOPEhpj+lzWWGNAlbTAI
-         hL2n4lmaRlU3GmtU8jNskPwEi6F2ovaH+6OAqlm9wCNLSS9HWwbkGzzUOHvE2j9iNhsQ
-         BR2EL2o/NDPHLoAax39Y6aqKBbvz7rymXPprPa4Y4gAFtnyI+VamwVwrYGzO4/Yi0O9v
-         uAczbASKykuQQhrzoG024NKStsrgEOkJEUNcrMANQ7x/2PVMxLAOHKrnY/uYGW1tEnba
-         B+7JrHXdFh2e6++zQpz9V54zoYVPhS1zuk73L4iSslChBoWx9nG07AJUvtONCg1LoVs3
-         FfLw==
+        bh=zCQTEi8y0iS44jkCVEZLALmk/wH8gE9Ak1V9UeMwaJs=;
+        b=l6rLKudcEKTevaybzudK2Zi3kjt5xLHwS4vhWMrbh7mKBXkzosF235P61EtyrRIYSA
+         EezOqZ59YyRpHzTAZgx/reXoBnwVdjJqJlRDpmiZ2XzNHzfecKzalqj0kgQ4RE1Q9gl9
+         5fwu8tCH58Q9jebzbIo2hM00e05ibAFtbg/dEYJBRUEdPvNhL59UcUwhoF4K4wECnu6i
+         rGfEa96pltenpc4QToQS7bJnE+2B9x7xe+WJOM3KNMbA3/SzmEQWUPk5xm85mfM7qVCd
+         oMaWtTwCp8H9uj9T3LjJpIISh8hG27sg0Mru0cyZj8dzJ6qJvwDU1eSDyK3CR3e/xkV3
+         /1eQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776693599; x=1777298399;
+        d=1e100.net; s=20251104; t=1776693869; x=1777298669;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=PtA7XaAsBped8tzDKGVHSMvp1WbWNwbAvXQ8vkybz/I=;
-        b=UKexvvRLMFsz2+zlXJrT/t+Nx+zQ6RruYErUw/Sprwpv/1DDEmrUE007DYmaZ/TJWH
-         T4HSVY+WiujcT4ZJs6XsfuSynuBMRurNhGJmwOGIWFoH6eI6IMLCPnP+gdkwhhHhHMnl
-         VBIugo4Sy/Dp3kQ3/9LW+QSMZp9lvRpS2a1wGkBysknaQi1TYOFwQ29JYKQEet0SeGQH
-         QtDBKxC6LOvRdS1IwCJ1i9LRBDR37PDaQmPCd1ag09R6KlBK1sPqfdVwgemmPTLhVv8B
-         BElhtpjuL4SJlzGSEzsq4I5qQrSa/ENL1LL3HP3+JVk9UMLg97/W3FkQ8md/8iaS0ndm
-         GKUw==
-X-Forwarded-Encrypted: i=1; AFNElJ95LhvrcaYdfdExLbb03J/6gFcxzOAGor3xfXN40zheQXEeWw6I05NaPldphu78s92pB8Z+9Zmsr3g9VKw=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy3vYFgIOSPKb2XLjhqJpn0mU4R+pkP0LecvQvas50Ssh9pD6SP
-	8K+E7cgtaeItENqzwFMWTti9YWbjbMfcbuvBHWyEIOT23NX7IQaCsyzr
-X-Gm-Gg: AeBDietiUyWUWVZAmMu2J8cL38I0FOc8InkPULZnFiMTFMMvirCoSzliXvtbIDndvEx
-	jbnSnidJrWcCvFKqpG3PjOb9sxMAz7tPwO8695m2Kq4ziyVw8kGBgCH18LZPE0TWqN8crzlARXN
-	y8xnvla+RIC+3D2PRTvjwOrnx7sdvinJLne+X9Y0Gg8DUyMmUPw1q6GYZMII5Rk0744mWzqPcsl
-	ZejhqqdwHI+FBBiPmbpZECKHqRXcjBd6htzXdSbGCbtNlAome1IZ8pJENszyoLDvrN2zeKQsA4h
-	WwlikNrmAzOSrIT+27MdQTsa0M//8fwsfe1dwkM6MnyZk3oWfLW5ydalcwt/dV+wz0ozD9UZEPa
-	Hisian/Vuxh2maGIaZLWfTEE4YZCS3hwDy6u8nrRIX2mT43fezxTgVy7ZQycfvsVVR9IojcPMiD
-	601FGroap9kZ3fJ/4f8SilE+a1lLcgk9vdq3a9SajrUFJEIu7/AGn/GNV/nJp0c7sOlTX+VQVs
-X-Received: by 2002:a17:902:ee84:b0:2b2:4697:78f4 with SMTP id d9443c01a7336-2b5f9fe094fmr113361365ad.31.1776693598648;
-        Mon, 20 Apr 2026 06:59:58 -0700 (PDT)
-Received: from localhost.localdomain ([115.110.225.242])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b5fab0cd18sm112575965ad.45.2026.04.20.06.59.54
+        bh=zCQTEi8y0iS44jkCVEZLALmk/wH8gE9Ak1V9UeMwaJs=;
+        b=plL9njI6z+4TPDrr1CB7o9+2bW5JKXqGTymw0BLBQaEzgPSo1Z3nbuDQIZJIfWeupa
+         yrjaV5FWoQlr/PgtkcyRGftfSjtIem6pqlDa3r7Hrhnlwvte7IHAyHK3R4B/oN23JqM7
+         YjntZSoMUtWMRdXkOretBdsT14zapNYrEz0BkXS2L4tnIIWP4daNreLQwCl+jwxOR+ba
+         FHH3UWwMFsAGcawjBH767UGqilg3nujuA9SvZIHnJBvnAyHzjdAVe+Xy4k2X4o5zHDzd
+         60CJlMnPv6lqTD4ZP84NVi8bd0a9C7OAxla/S+MbEjgn99z9W4xO6qGJbLejFxOyAY0u
+         T4wA==
+X-Forwarded-Encrypted: i=1; AFNElJ9mq6jMsQScRCEO5gfmiqSDqXRgLOSgzV6fs2986QfmlkUjBMNldEmr0SdUmHIgm4xbt6+/qiBHwIQ+INI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwugXXiKCP+h5ZMnV/P6SBlt0yLdbPRpL3dqldEc/ibEiozHR+9
+	OukQWr3tL1fe/w6pnTku3pI7sFzo4nADhXqFOpvy4dTa0S4kF2aIwLxw
+X-Gm-Gg: AeBDiet0bbQ5P5kv+ddjxyTm2cb4N42t6BMg0gPeDnIh99LJ+7jkESIHjTLL+QgsUzh
+	+fTDxgZvIiBRK2zj1Fe4dCA5FgkCNXRfs3Wmr+qRTYU16efKmxpr9kM71rYtt4t2J9n/D0budXv
+	Ux3jgiGXUwcQyzSqbMMNQVOKOW0HH5KFtz+CJbvK31FhToWu++M9DOZ8EZWlYpi2HuV3oryuIeO
+	cv3yorZuDWq1KgaK/05uvM0EGIgKsQJakkzEpvSRKGUPMnpt8zoyycjOi2Gx4wUuBz2+j5P0aP2
+	enJDSF8vtTaD9+TdK+FogCh/Ws9dz6zhZGuGX8xUPmZBTpb/1z6NXi/PkXKOJ4wMlStROlHiZPl
+	1LaGWLNdytU1GwPQQ61VEa+DmXJ63dDSM6qTrvMAIvU6R1i0sFcKKMQslgQZnZ4VqiVNujz2gk9
+	6pdmvy3QuX3P8NeJPWBQsv29CE6Nc0uJxiX6IyVNkaybdwffFQUui8WTIspmZuwerXQNNKHQ==
+X-Received: by 2002:a5d:5f47:0:b0:439:b55d:b0e5 with SMTP id ffacd0b85a97d-43fe3dfbfdfmr21692332f8f.28.1776693868847;
+        Mon, 20 Apr 2026 07:04:28 -0700 (PDT)
+Received: from localhost.localdomain ([2a00:23c4:a758:8a01:5f3e:f914:6f8c:72c3])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43fe4e4d525sm28377778f8f.31.2026.04.20.07.04.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Apr 2026 06:59:58 -0700 (PDT)
-From: Shitalkumar Gandhi <shital.gandhi45@gmail.com>
-X-Google-Original-From: Shitalkumar Gandhi <shitalkumar.gandhi@cambiumnetworks.com>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org
-Cc: bhuvanchandra.dv@toradex.com,
-	Frank.Li@nxp.com,
-	peng.fan@nxp.com,
-	sherry.sun@nxp.com,
-	linux-serial@vger.kernel.org,
-	imx@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
+        Mon, 20 Apr 2026 07:04:28 -0700 (PDT)
+From: Biju <biju.das.au@gmail.com>
+X-Google-Original-From: Biju <biju.das.jz@bp.renesas.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: Biju Das <biju.das.jz@bp.renesas.com>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+	Thierry Bultel <thierry.bultel.yh@bp.renesas.com>,
 	linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org,
-	Shitalkumar Gandhi <shitalkumar.gandhi@cambiumnetworks.com>
-Subject: [PATCH] serial: fsl_lpuart: fix rx buffer and DMA map leaks in start_rx_dma
-Date: Mon, 20 Apr 2026 19:29:03 +0530
-Message-Id: <20260420135903.2062024-1-shitalkumar.gandhi@cambiumnetworks.com>
-X-Mailer: git-send-email 2.25.1
+	linux-serial@vger.kernel.org,
+	Biju Das <biju.das.au@gmail.com>,
+	linux-renesas-soc@vger.kernel.org
+Subject: [PATCH v3 0/3] serial: sh-sci/rsci: Fix divide-by-zero and clean up baud rate handling
+Date: Mon, 20 Apr 2026 15:04:20 +0100
+Message-ID: <20260420140426.237865-1-biju.das.jz@bp.renesas.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -82,87 +80,59 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-lpuart_start_rx_dma() allocates sport->rx_ring.buf with kzalloc() and
-then maps a scatterlist via dma_map_sg().  On three subsequent error
-paths the function returns directly without releasing those resources:
+From: Biju Das <biju.das.jz@bp.renesas.com>
 
-  - when dma_map_sg() returns 0 (-EINVAL):
-      ring->buf is leaked.
-  - when dmaengine_slave_config() fails:
-      ring->buf and the DMA mapping are leaked.
-  - when dmaengine_prep_dma_cyclic() returns NULL:
-      ring->buf and the DMA mapping are leaked.
+This series fixes a divide-by-zero fault in the SH-SCI driver and cleans
+up dead code and redundant variables related to baud rate handling in both
+the SH-SCI and RSCI drivers.
 
-The sole cleanup path, lpuart_dma_rx_free(), is only reached when
-lpuart_dma_rx_use is set, and the caller lpuart_rx_dma_startup() clears
-that flag on failure of lpuart_start_rx_dma().  So these resources are
-permanently leaked on every failure in this function.  Repeated port
-open/close or termios changes under error conditions will slowly consume
-memory and leave stale streaming DMA mappings behind.
+Patch 1 fixes a divide-by-zero fault in sci_set_termios() where the
+expression (10000 * bits) / (baud / 100) could divide by zero if baud is
+less than 100. The expression is rewritten as (10000 * bits) * 100 / baud,
+which is algebraically equivalent but eliminates the intermediate
+division.
 
-Fix it by introducing two error labels that unmap the scatterlist and
-free the ring buffer as appropriate.  While here, replace the misleading
--EFAULT (bad userspace pointer) returned when dmaengine_prep_dma_cyclic()
-fails with the more accurate -ENOMEM, matching how other dmaengine users
-in the tree treat this failure.
+Patch 2 removes the dead zero baud rate guard from both sci_set_termios()
+and rsci_set_termios(). On DT systems, uart_get_baud_rate() never returns
+zero, making the if (!baud) goto done; check and its associated done label
+unreachable dead code.
 
-No functional change on the success path.
+Patch 3 refactors the baud rate clock selection in rsci_set_termios().
+Since RSCI only supports a single clock source (SCI_FCK), the multi-clock
+tracking variables are redundant and removed. ccr0_val and ccr4_val, which
+were never modified from their initial zero values, are replaced with
+hardcoded 0 at their write sites.
 
-Fixes: 5887ad43ee02 ("tty: serial: fsl_lpuart: Use cyclic DMA for Rx")
-Cc: stable@vger.kernel.org
+v2->v3:
+ * Added a patch to rewrite rx_frame calculation to avoid divide-by-zero.
+ * Added a patch to drop zero baud check from sh-sci and rsci drivers.
+ * Dropped reported by tag as the goto statement in rsci_set_termios()
+   removed in the previous patch.
+ * baud check removed by previous patch.
+ * Added missing macro CCR0_RE while dropping ccr0_val variable.
+ * Updated commit description for patch#3.
+v1->v2:
+ * Add a patch for avoiding divide-by-zero fault.
+ * Dropped the check (abs(err) < abs(min_err) as it is always true.
+ * Dropped variables best_clk and min_err as they are no longer needed.
+ * Dropped intermediate variables brr1, cks1 and srr1; results are now
+   written directly into brr, cks and srr.
+ * Moved dev_dbg() inside the if (baud) block.
+ * Dropped ccr0_val and ccr4_val, replaced with hardcoded 0 at their
+   write sites, as they were never modified from their initial values.
+ * Scoped variables err and srr locally within the if (baud) block.
+ * Updated commit description.
 
-Signed-off-by: Shitalkumar Gandhi <shitalkumar.gandhi@cambiumnetworks.com>
----
- drivers/tty/serial/fsl_lpuart.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+Biju Das (3):
+  serial: sh-sci: Avoid divide-by-zero fault
+  serial: sh-sci: Drop check for zero baud rate from
+    uart_get_baud_rate()
+  serial: rsci: Refactor baud rate clock selection
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index f36d50fe056f..296a096be351 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -1376,7 +1376,8 @@ static inline int lpuart_start_rx_dma(struct lpuart_port *sport)
- 
- 	if (!nent) {
- 		dev_err(sport->port.dev, "DMA Rx mapping error\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto err_free_buf;
- 	}
- 
- 	dma_rx_sconfig.src_addr = lpuart_dma_datareg_addr(sport);
-@@ -1388,7 +1389,7 @@ static inline int lpuart_start_rx_dma(struct lpuart_port *sport)
- 	if (ret < 0) {
- 		dev_err(sport->port.dev,
- 				"DMA Rx slave config failed, err = %d\n", ret);
--		return ret;
-+		goto err_unmap_sg;
- 	}
- 
- 	sport->dma_rx_desc = dmaengine_prep_dma_cyclic(chan,
-@@ -1399,7 +1400,8 @@ static inline int lpuart_start_rx_dma(struct lpuart_port *sport)
- 				 DMA_PREP_INTERRUPT);
- 	if (!sport->dma_rx_desc) {
- 		dev_err(sport->port.dev, "Cannot prepare cyclic DMA\n");
--		return -EFAULT;
-+		ret = -ENOMEM;
-+		goto err_unmap_sg;
- 	}
- 
- 	sport->dma_rx_desc->callback = lpuart_dma_rx_complete;
-@@ -1423,6 +1425,13 @@ static inline int lpuart_start_rx_dma(struct lpuart_port *sport)
- 	}
- 
- 	return 0;
-+
-+err_unmap_sg:
-+	dma_unmap_sg(chan->device->dev, &sport->rx_sgl, 1, DMA_FROM_DEVICE);
-+err_free_buf:
-+	kfree(ring->buf);
-+	ring->buf = NULL;
-+	return ret;
- }
- 
- static void lpuart_dma_rx_free(struct uart_port *port)
+ drivers/tty/serial/rsci.c   | 34 ++++++++++------------------------
+ drivers/tty/serial/sh-sci.c |  4 +---
+ 2 files changed, 11 insertions(+), 27 deletions(-)
+
 -- 
-2.25.1
+2.43.0
 
