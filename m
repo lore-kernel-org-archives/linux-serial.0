@@ -1,178 +1,132 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vk1-f178.google.com (mail-vk1-f178.google.com [209.85.221.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48AF63815E3
-	for <linux-serial@vger.kernel.org>; Mon, 20 Apr 2026 06:44:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D0B038423A
+	for <linux-serial@vger.kernel.org>; Mon, 20 Apr 2026 07:14:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776667457; cv=none; b=nCVQSfO4CSf1rQRyEkSeeUp89FtOtx2OnEiHkrE/brCRaXfoFAJkkrRgz8ncUVQefc21qVYbrcCzZMiYgSD4pzChhxKuBc/Rlpl9zgoksXdHttdMJoWSJ2GGKVk8d9tiZGSUgHJZZzRK1e0pLjh5eNQj4xyfTZOT5oVsKsS2BOg=
+	t=1776669251; cv=none; b=Ad79coSIn+y9vpSDlZLGWE5LLZJRsaYGVI8Gezz0OsRYEUIdX8VwYBa7EnVx870Q6QWBPdWVEddWo7H/LdPQWkoXRxtqEL0zzl5jDNsy71cwzAx2dTuOXAQRs23d8Dmz63aPkuX1bffJWQfVRdiTD6Cy1o8oaYuFWG3olmBKo6k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776667457; c=relaxed/simple;
-	bh=s6pdxHoI5hvCRhFDkqXtAgC7HtCveanbHrTod1f/yLE=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=DviNgYnD04jSAOisLiX8/+pEndbAPY/VFWCb/YovK/FPA8pC5kslJJTF2c/v58RwMeCugl5lEWsQ9dK0WDjftGDOH6Mu1Ada1jpMap2LBn2G7E7ki6So2G9hz76BOE+woyi9mENGjxd0OY792ndujmtIV8XJeRAFrAzR7ZxUvXw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=aQwdBXjS; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=c/J569I4; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="aQwdBXjS";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="c/J569I4"
-Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 63K6a4cX382691
-	for <linux-serial@vger.kernel.org>; Mon, 20 Apr 2026 06:44:14 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:date:from:message-id:mime-version
-	:subject:to; s=qcppdkim1; bh=D7K7654DJb4U5jc4p5qdGIOfHpVUN7aYFET
-	3b2LG/ok=; b=aQwdBXjSXkfr+kOhmVtzoe+vG1mV36ULNo6iltWCRtAtsr0d9yV
-	+l0B/SkB1DKB7dL7yT/C7mk33y0P9TX+r9naL+GTC+1zJg6xbk4gpFmc1Vk6N1Fz
-	HO3OzUYxJVxiTCIaONEthrbEWW8SHPGtBVMnLsvXPrTM9nV3m1MWyNf9nK6oaTTS
-	h1m1ers9emvTHG9Br79TSL2KU1/4LxmO1BxZQWNg9XLbdQozlyk9Ln6++WhGlBhE
-	jxhqBApAhk5jW9N6z5WbexGAJPX4dzyHXOcAKKxF8g8ChxjFFr3PyRFm4Z2R3423
-	D8UGuVZ1uQlb/fErKhbS5jOnBGeX69kzI4g==
-Received: from mail-dl1-f70.google.com (mail-dl1-f70.google.com [74.125.82.70])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4dm1hx4gfk-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-serial@vger.kernel.org>; Mon, 20 Apr 2026 06:44:14 +0000 (GMT)
-Received: by mail-dl1-f70.google.com with SMTP id a92af1059eb24-12c7169f3a9so4122107c88.1
-        for <linux-serial@vger.kernel.org>; Sun, 19 Apr 2026 23:44:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1776667453; x=1777272253; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=D7K7654DJb4U5jc4p5qdGIOfHpVUN7aYFET3b2LG/ok=;
-        b=c/J569I4owNeHUyfC6S8VhmpoCDiVLKEneQ2zXJrz6Hj4W3RPYqztJMvkeSyukk01H
-         p0INkh2L+kF/MGbpb9y93d/DPKSAHhOYLmjkJto+Iuou0oqSc2ykBDKw2aF+70k5IYnG
-         GDtkJ9Q+Ndh7QlhC8EUNoZsxQbZM5caH9JGyv/l4So45iyRzn11ciUPNJD8zrysMx+9m
-         rvePKhyDBUG83/CMw+F4l2KzGqGqoxM85049aXy4mr/AEhL67HWDDyih2D1jDEyXMJcj
-         ppS6uCzJkQ1H2CbgFkzRKh7i5VjjjWXPKMGKKs5LTYd7XrYLPB8/sreVM+mxn0q70at8
-         9tkw==
+	s=arc-20240116; t=1776669251; c=relaxed/simple;
+	bh=9YsYoFWZ5uVZIOAojkdoivYvL26fn7lMSExr6OaM0JY=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=XA1ZobQajq88eQ6zkwrlh8eZ4FG5o+l4Y9H/zgow1Yfih0xfotF9y0GOZtpGQGpihgpzkzLZwwA2p2vbOX+eny3mxxHa5D1kGa2bvFfL4KpvKlUNWjIapJtIaO+1LCUG3+Wwu/3+vFtywxj6hYsFvs1wAR8x/Qg+qndQBSHswT0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-vk1-f178.google.com with SMTP id 71dfb90a1353d-5637886c92aso1073188e0c.0
+        for <linux-serial@vger.kernel.org>; Mon, 20 Apr 2026 00:14:09 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776667453; x=1777272253;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=1e100.net; s=20251104; t=1776669248; x=1777274048;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=D7K7654DJb4U5jc4p5qdGIOfHpVUN7aYFET3b2LG/ok=;
-        b=ZGvs1jr4w/dWPBES50CuK7gNbiWWL0Dlq5xEMM7ZNBEGG8L7DwTbUj/b10sHms9uv7
-         HYSNWlr9SyqgzlT+e1z/EJGw0h/bWxHcpTGsJ2UMV82Tn2LDv2U8yMRdWE5toZ4MMCbG
-         17qkbjyWCiKdlTtKBzs4mUbgaiYl5/x1+aT7/YqS4rApwxnzJGduQjBRbg//TMSjCTt1
-         49zAACIOKgeESJN7ZpKhswtVSKPURh8dc0AuK3ffXP7mE6qrkrtsX4fVUiLKCHS83Tw6
-         NkddlxmoCe1f58L4AGYOvB1pnOkEdRc4jrtJD80ZXGa8aphi1GjFFB3VfgnKiWcJwxcH
-         p46A==
-X-Forwarded-Encrypted: i=1; AFNElJ/bCBZXc//BmxS9nhCJt60JqeWeCk8GrR0KnTAS+FXaNFjDHGJ6JfWLrZUz2INm52fLyjLhPJDhVZseW/A=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzrM6ZXGG8I4uh0QiftF44wO+Rx+s+N/okOPxfgxz3hum6eTrMC
-	bWmfXAa96uR2gWoOQAkPy/vnF6PzsPqYdvUtqedVUqMu+PvwKX9WEP6XIAOykudZeKuCciBrgAu
-	8y3I4l7IclTDBG4XHrL3KyhQqu2S1DUdgXb4HIUwFN+o1uOTcUq4SRZ5+ai5Mcgwgiao=
-X-Gm-Gg: AeBDievtQthhDQgRwofkGFJY5MGgdIAYND2RutW5nCc2ZATnSmSseAdYqaSECgrl4Pf
-	cxtmBPfb4IhabCn88p+rB+L3hftnXCU/0UxfjIGbCZCnS7ulYrvgOt7RFheXe0FxKepE+n+jXW/
-	5+MFCq6tvtHCcQJCaN+MlftKz/WZpSwiSKzBpvhM3DHudOeUhNT7zIHm64RJb9j57h0FxJMoZel
-	1hxpjGAcv9tj/tTLu0nWPaXirWWqHVhoBExP124kP7fplNA8rUGlDmlXDkTu2Eo+hc8jWjCkbQ5
-	VqDRqGJOF7zCYPD7iGuHUD5lc1ePfTgnDcFN4wZ/wINtgxl2jM+NvEcxvbwfVFOUAD55f0/tg2l
-	ujCAQa5Nzf2g2R29BrYAbQM+rFRosMo+F3703Qzgs2hrt/joJlS3GxWSsvoagjngiRY7gnpHRc+
-	ihWg+xW5F7NyEtvKbY
-X-Received: by 2002:a05:7022:eac5:b0:128:ca6f:adf0 with SMTP id a92af1059eb24-12c73f975aamr6675238c88.17.1776667453214;
-        Sun, 19 Apr 2026 23:44:13 -0700 (PDT)
-X-Received: by 2002:a05:7022:eac5:b0:128:ca6f:adf0 with SMTP id a92af1059eb24-12c73f975aamr6675216c88.17.1776667452659;
-        Sun, 19 Apr 2026 23:44:12 -0700 (PDT)
-Received: from QCOM-aGQu4IUr3Y.qualcomm.com (i-global052.qualcomm.com. [199.106.103.52])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-12c749d29cdsm13731352c88.6.2026.04.19.23.44.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 19 Apr 2026 23:44:11 -0700 (PDT)
-From: Shawn Guo <shengchao.guo@oss.qualcomm.com>
-To: Bjorn Andersson <andersson@kernel.org>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Praveen Talari <quic_ptalari@quicinc.com>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        Dmitry Baryshkov <lumag@kernel.org>,
-        Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>,
-        Deepti Jaggi <deepti.jaggi@oss.qualcomm.com>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Shawn Guo <shengchao.guo@oss.qualcomm.com>
-Subject: [PATCH] dt-bindings: qcom: geni-se-qup: Add compatible for Nord SoC
-Date: Mon, 20 Apr 2026 14:44:01 +0800
-Message-ID: <20260420064401.1248833-1-shengchao.guo@oss.qualcomm.com>
-X-Mailer: git-send-email 2.43.0
+        bh=uYMTBcfScSAP5MKdjyS5TGaWJxqpbr65TFOlEj0C5Is=;
+        b=fDw0Amwn0sOtGREXQXqceda9nfQYa4omIE29SboXJpygs8/qdI2JG2CoLJfBCiFXE6
+         mZdJL/QJpXhaBik5fPcp7p9xEXAhjl1FTPOkDRO9KbzahlcSmk73YBmsWHMqVqExaKZk
+         ZzIajTN4wCjCpt6LtTMbuhP5WrRCbrQsk0NdQSGyzqxj9ZKIJ6MoflG2a13t+71NrpHL
+         XOSeA5Ct+yHxag5NRmVMP0HXzQeVUwyKceZ4LJZFRFjDP2VN8ejn4zEDVS3NJ9AlidtV
+         1MPTYpjjEB5ZBX0hWJhywKaAz1U6uVo5TxjpiCyimWrB52djpL0GM2bOkxlrwn5X5hPo
+         bLjQ==
+X-Forwarded-Encrypted: i=1; AFNElJ9JNjkJ+c8ftfDIPKKuuW0j3m4A5Ikx9lkPaxBVjQJvqIqKwIXlbizRyEQxwwin7H+YN8waGwuJgmzoVO8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwTUO4cOHOIDZBGb9kfA875U0v68QBI0oYjjUjaG1U4bKJdkDNz
+	xbCUVlXJ9PMY6rf6Y1uc00DCQmN6+faA8gZbkr2+nWmLQzKuqdpfPDi06XKWA+68
+X-Gm-Gg: AeBDiesL2xjhugmLOl5O+ozGcHW/1Urm4kkCYKxBheMiXPngHUWPhdOhq4ZT8CM9wQo
+	eswrc52ZG5wfunJNo5YjFNOtVV2bBL3gxk1OqOqbIg6UyVPKAWPZYBg56NTKgvYXUWCBehOAzJJ
+	TEz/C9aH4AeowA7dEylh0qdXoMME4DkWmQnp8u57AVTuUuxz9bU2nLNNxJ4lNX+1GMhTIvEevkA
+	Tdl6jjB//xTUs1ANbm1uvEhxp0BTdI2Jk/HU4/toL1XWNHfeLTGaraHGtxmCT8E8Mj6euExKVXh
+	S4jzDUDBWdo78XY5LGthvD9R3J702zTxlgkFfHlzgkpGOW7rJXnMPS9kmtGJl2+vDwOnBOwRGVM
+	nCmRDDVJrX6mGF6YdrTfOrMUBrrfcuifUAMRYnETl89E4/m931H6zWh4NeT1Xu7mZttaLsvqeNU
+	fdVAkwZ/CJGV6SvVTstOZOEirRHxdONiIT5Sx6vVPIeEF49U9HzT8PHwe/brNyIFmpjoMrILFb6
+	2FrDBHpAA==
+X-Received: by 2002:a05:6123:10b:b0:56d:b4d1:3c3a with SMTP id 71dfb90a1353d-56fa55c512amr5898930e0c.0.1776669248289;
+        Mon, 20 Apr 2026 00:14:08 -0700 (PDT)
+Received: from mail-vs1-f48.google.com (mail-vs1-f48.google.com. [209.85.217.48])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-56fa92f22a4sm5825541e0c.12.2026.04.20.00.14.07
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Apr 2026 00:14:07 -0700 (PDT)
+Received: by mail-vs1-f48.google.com with SMTP id ada2fe7eead31-60fecdd1efaso629864137.3
+        for <linux-serial@vger.kernel.org>; Mon, 20 Apr 2026 00:14:07 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AFNElJ9unxi23e3gLR0/mlK+GXAqDpdesHXJqQ8/FX/J969oY8o+HEWXDlf+p64uiYimsaMKj7kdmyoU+QSNJVA=@vger.kernel.org
+X-Received: by 2002:a05:6102:3a09:b0:5ff:c5c8:2734 with SMTP id
+ ada2fe7eead31-616f8ab6b43mr4465894137.25.1776669246876; Mon, 20 Apr 2026
+ 00:14:06 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-ORIG-GUID: _kh15bfPWJ9MHJhkn_NnkZd62dVPXk1p
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDIwMDA2MyBTYWx0ZWRfX5zYHftijksC9
- 37NNRcYFqeqb/mUZU8AzKXePhWHeJrj9lawNW+LIJfWZhqv3HSsDh6SmqMz079Nbg0Kz7Vaj3r4
- VlmMxS7gX4ixcf8ucaMgPN77k/Qm4eygCbZtIQUstbZIc/np0jAsynG++uV8O9qyAku7icVeNKW
- vl8OUKq261FDopJNGyqMdwZ61jcPYW780G25hpJukQ8pBXZGuZrW3AudMsWBsZkt/c+a+du5WHp
- ip7BMTJMq1y3bnsn0zi3f1eXNGTjZTMGsoIYkSKwQOQytNmVJJQUk6jMpQPJT926slgLmc5W8u8
- AS0mgiOp6wjMc7HM3hQb5LGQAISCKYgHzWlvaU5cxuVKrS06Ka7gOkgirYNE4j3qwtM8n7EkGVy
- 05QADobiHWgnb0+/1OlzhU6BdNDmY8BNObB9l/5S3eGi5tQVCtU1V3RqyBEayA8nazUpcKSPv+g
- 3mz55YFedWP82Tz0iUA==
-X-Proofpoint-GUID: _kh15bfPWJ9MHJhkn_NnkZd62dVPXk1p
-X-Authority-Analysis: v=2.4 cv=RoX16imK c=1 sm=1 tr=0 ts=69e5cb3e cx=c_pps
- a=SvEPeNj+VMjHSW//kvnxuw==:117 a=b9+bayejhc3NMeqCNyeLQQ==:17
- a=A5OVakUREuEA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=u7WPNUs3qKkmUXheDGA7:22 a=3WHJM1ZQz_JShphwDgj5:22 a=EUspDBNiAAAA:8
- a=RtP18x_fKbAUknpFPucA:9 a=Kq8ClHjjuc5pcCNDwlU0:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-04-20_01,2026-04-17_04,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 malwarescore=0 adultscore=0 spamscore=0 phishscore=0
- clxscore=1015 bulkscore=0 lowpriorityscore=0 suspectscore=0
- priorityscore=1501 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2604070000
- definitions=main-2604200063
+References: <20260417193603.3906568-1-hugo@hugovil.com> <TY3PR01MB1134667FC9A3920ADC444C21A86212@TY3PR01MB11346.jpnprd01.prod.outlook.com>
+ <20260418103936.a3651d1606db7178fa7ff854@hugovil.com>
+In-Reply-To: <20260418103936.a3651d1606db7178fa7ff854@hugovil.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Mon, 20 Apr 2026 09:13:55 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXGR=YOLqBMSY_syvtYbAU216Q_+xC_f8gUujYhLjRWSQ@mail.gmail.com>
+X-Gm-Features: AQROBzAIXHknwo18YOtj59EYmd36fEYWeF-kJpR-eCc-KPCWd-Wcf8_Qp_edtgs
+Message-ID: <CAMuHMdXGR=YOLqBMSY_syvtYbAU216Q_+xC_f8gUujYhLjRWSQ@mail.gmail.com>
+Subject: Re: [PATCH] serial: sh-sci: optimize max_freq determination
+To: Hugo Villeneuve <hugo@hugovil.com>
+Cc: Biju Das <biju.das.jz@bp.renesas.com>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>, 
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
+	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 
-From: Deepti Jaggi <deepti.jaggi@oss.qualcomm.com>
+Hi Hugo,
 
-Add compatibles for GENI Serial Engine QUP Wrapper Controller on Nord SoC
-with fallback on SA8255P compatibles.
+On Sat, 18 Apr 2026 at 16:39, Hugo Villeneuve <hugo@hugovil.com> wrote:
+> On Sat, 18 Apr 2026 07:12:57 +0000
+> Biju Das <biju.das.jz@bp.renesas.com> wrote:
+> > > From: Hugo Villeneuve <hugo@hugovil.com>
+> > > Follow example of rsci driver to avoid code duplication and useless max_freq search when port->uartclk
+> > > is set to zero.
+> > >
+> > > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > > ---
+> > > Cc: biju.das.jz@bp.renesas.com
+> > >
+> > > Biju: if you want, feel free to pickup this patch when you resubmit your serie for "sh-sci/rsci: Fix
+> > > divide by zero and clean up baud rate logic".
+> > > ---
+> > >  drivers/tty/serial/sh-sci.c | 13 +++++++------
+> > >  1 file changed, 7 insertions(+), 6 deletions(-)
+> > >
+> > > diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c index
+> > > 6c819b6b24258..dcee8b69adab2 100644
+> > > --- a/drivers/tty/serial/sh-sci.c
+> > > +++ b/drivers/tty/serial/sh-sci.c
+> > > @@ -2711,14 +2711,15 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+> > >      * setup the baud rate generator hardware for us already.
+> > >      */
+> > >     if (!port->uartclk) {
+> > > -           baud = uart_get_baud_rate(port, termios, old, 0, 115200);
+> > > -           goto done;
+> > > +           max_freq = 115200;
+> >
+> > I have thought about this change. but the below comment made me not to do this change.
+> >
+> > <snippet from Geert>
+> > IIRC, baud == 0 can (only?) happen when using earlyprintk on a non-DT
+> > system, where the serial console should just keep on using the settings
+> > programmed by the firmware.  So any config register writes should
+> > be skipped.
+> > </snippet>
+>
+> I think Geert comments referred to the clock (port->uartclk) being zero,
+> not the baud (the baud rate cannot be zero)...
 
-Signed-off-by: Deepti Jaggi <deepti.jaggi@oss.qualcomm.com>
-Signed-off-by: Shawn Guo <shengchao.guo@oss.qualcomm.com>
----
- .../soc/qcom/qcom,sa8255p-geni-se-qup.yaml    | 20 +++++++++++++++----
- 1 file changed, 16 insertions(+), 4 deletions(-)
+I did mean the baud variable being zero.
 
-diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,sa8255p-geni-se-qup.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,sa8255p-geni-se-qup.yaml
-index 352af3426d34..d73f9edcbbdb 100644
---- a/Documentation/devicetree/bindings/soc/qcom/qcom,sa8255p-geni-se-qup.yaml
-+++ b/Documentation/devicetree/bindings/soc/qcom/qcom,sa8255p-geni-se-qup.yaml
-@@ -19,7 +19,12 @@ description:
- 
- properties:
-   compatible:
--    const: qcom,sa8255p-geni-se-qup
-+    oneOf:
-+      - enum:
-+          - qcom,sa8255p-geni-se-qup
-+      - items:
-+          - const: qcom,nord-auto-geni-se-qup
-+          - const: qcom,sa8255p-geni-se-qup
- 
-   reg:
-     description: QUP wrapper common register address and length.
-@@ -67,9 +72,16 @@ patternProperties:
- 
-     properties:
-       compatible:
--        enum:
--          - qcom,sa8255p-geni-uart
--          - qcom,sa8255p-geni-debug-uart
-+        oneOf:
-+          - enum:
-+            - qcom,sa8255p-geni-uart
-+            - qcom,sa8255p-geni-debug-uart
-+          - items:
-+            - const: qcom,nord-auto-geni-uart
-+            - const: qcom,sa8255p-geni-uart
-+          - items:
-+            - const: qcom,nord-auto-geni-debug-uart
-+            - const: qcom,sa8255p-geni-debug-uart
- 
- required:
-   - compatible
+Gr{oetje,eeting}s,
+
+                        Geert
+
 -- 
-2.43.0
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
