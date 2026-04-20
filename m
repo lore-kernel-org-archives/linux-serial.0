@@ -1,119 +1,188 @@
-Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
+Received: from mail-pj1-f44.google.com (mail-pj1-f44.google.com [209.85.216.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C77F396B77
-	for <linux-serial@vger.kernel.org>; Mon, 20 Apr 2026 10:17:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.53
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776680251; cv=pass; b=iVn0cuu2vFr9cv4rNq9dj2YT5jRcHhXe6/WG/PaKBV+xDqFbqxgVtAhP2AjorzpUT/UYQVql8xKxDXF2vZ8ut6pfzmyt7TnXN/Yzlu+E9V/aVpFouQPEKmmWyZbgKSnk5eaq/gPWjF+X18Ct6p9V951i1Tirehk+AoSnK2zzkvg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776680251; c=relaxed/simple;
-	bh=EKtOGuUsAk2ocNugxSmAHlHsvs650h3PEkOtSPfgiLY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=gXoEolmEln6qojA6JS5x4aNE1AfdZApFuKjh16SaUv9rnwIXWwmqNIbXRS/N6HzQt5K3Di7HHYJk2xH700yGF6gvFvooiyrjg/dD819ecjRhUHGmWAORixMG2D5NVRcqRN+oJ5VH3ssnFI4gJWUcHZaZKJDPORvDl2DqFhTu2a4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qDm+JKsH; arc=pass smtp.client-ip=209.85.218.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9614D38F957
+	for <linux-serial@vger.kernel.org>; Mon, 20 Apr 2026 12:03:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.44
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776686607; cv=none; b=E2Q0kxIcUcJ3ivZ/KBhwu3/UagtfWy0HGjdtzmknd/+lqwgnyp0y53AmYG8MLoK+nqB5Db+Vdi4yFTbSs5nJ5Nw+pQ0uFGYEcERevjInKxfd1nziZmdpbpmXZgrNZmUieRRXT7HI+9ENCWT34KURIh/7rQPfiLU1WPMSJTjge/8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776686607; c=relaxed/simple;
+	bh=RgQzxQwAcXHwMmn1GP6d9lKNQRGfA7OVpgfu8fgMC8I=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=QACcXaXdRxnDwwlck3nW3OLzQMCjnzZYVmihVDIr5WJ2cJKwPR7mHIDblAv9T1vI4KYT7EuK5nCTFNoOPWOWS0B7C2XaZcnAto3snALgxR0eTqmw5IZFcBxzb6QMLvzeBAEIKHiNTdjcqFgBTNqS67Ni1MKj2f38t9ILwJz14v0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BJmPdhXL; arc=none smtp.client-ip=209.85.216.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qDm+JKsH"
-Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-b9c3a9fe80fso353285766b.3
-        for <linux-serial@vger.kernel.org>; Mon, 20 Apr 2026 03:17:30 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1776680249; cv=none;
-        d=google.com; s=arc-20240605;
-        b=huJh01+g0CR0Oo/o1NYdEd2DSzN3/X59UROTUaBmXbnw/Xyl1roCeKVspP77t2YzRB
-         WNkP5wodgU/jAnxqcwkk8fyXY6GaRwoGSZwtkRVjJ6i790mU+7j0V7/H74T3nei1Ud7d
-         1DnVFrC7GJAt1I3Ks/y0q+JaodfZSoN/+hGnX9nlybzlN5hj3zefot2SsXmFVfKAohO8
-         qb7jmSfgwz+MzAKt5OQsqAonkc0QAm1o6dLvYTXNL3wxRpbpXx+F5P9vixWUn+OKTCw9
-         aqIenxHssKvK3uWD1o1oEX0eA3q0LEXb6ogp0eOmL+Bu8l/F/DCmCrGnFGx+bC/R/pHS
-         VvvQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=EKtOGuUsAk2ocNugxSmAHlHsvs650h3PEkOtSPfgiLY=;
-        fh=Fz0LKCjy/CNL/u6RBwWTHg2x9RTqEmg2V7lnl163zso=;
-        b=DY78o9/4npKRkhTcVvhryfpb6sdBFh9hypMStgrvLt5nIaC7J5jlpbdl6GypZGHQ9n
-         TEePX5xR9hI8cN8laXREpHX7dGLlzXaUriFdI1zeZxCd4uF3NgV1rEFIYNYuANUTOMmX
-         Yp5kvxq0bRzohuPS+suHWIpciXEUOW//GfpZSCoJ5AnzjNctsVbPSdfBMkDZg56MOlze
-         mpDW/unAsyVDh9+mmKu/jJ4dRhk4UEUlneR/E2ciqAYvm3mYCt3lpUE628gDCHZAQA20
-         /7ZlJRPP+w7OpMJP/0lwa/Q8eYDUq0uQu9g9I/Dm2WGvXbRc9vtuJD8bkXLAON2LANBM
-         aTpQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BJmPdhXL"
+Received: by mail-pj1-f44.google.com with SMTP id 98e67ed59e1d1-35fc258aaa4so1731491a91.2
+        for <linux-serial@vger.kernel.org>; Mon, 20 Apr 2026 05:03:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776680249; x=1777285049; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1776686606; x=1777291406; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=EKtOGuUsAk2ocNugxSmAHlHsvs650h3PEkOtSPfgiLY=;
-        b=qDm+JKsHmc+s5iaHQYSAlWB6sUsAloZAQkETELXHFpaOEWP2bLTkaaZ86IIsDuX690
-         WHeQYRoignUUQRU9+1vknxv1Qd/Rcgwa6TiJB45J1tFbrDwBkEKfQStn7izkzhDbdkYr
-         Oh/k2gsHK7RD6KDCdOXM8Ico9UPdVsXNVinqVx4kPNAroVdBE2/91swBafExPCgzxj8o
-         dDnp2FY9dLRO/lUxWT4XlSo8qOMafZH2+NvFKUg+j61bpo4JpjVOuE9w1hV38fh1rTz5
-         BA0afMVY7lbWkO4qzKI0srcsmg/Rp2iJ+fxiQYkgFDa6f8dzag7CDBzuMRBhycJ4IN0w
-         wHOg==
+        bh=nH+UDp63n0OMToyOF7805ju9M8WJlYdnyXHfyIl0SrE=;
+        b=BJmPdhXLS+BKYVAqyhTjyWt8Yp6YkpkPDmGv5i1GfdiGW1PiBZ59sDDzXJ8WZELoGx
+         D5ZhB21JzcXxZk5faD2ldn7x2OspMhIGhaXOFl4zUPE6Wv2QVSDH79Y7BuKiNubpgpd8
+         Zp/1F/hkKMcGVurehTgI8IR0mtGQW/2fUz4HJ7nMf8AdOrTMK7RDYrpdoMt3JFCR33qf
+         +Vbyf/ZlhsqRlOgLdzzzE5tb++1h2jo6E2JsC7YWvrDF/bcP+ucL26QlWLldceOKJCr6
+         WY/f+uQeZRzVKLt6emOK103Y/z2flUxmJCAwhR8nCd0JTuIXSr5+jRh04QSuZWRMGkJp
+         Ms8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776680249; x=1777285049;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+        d=1e100.net; s=20251104; t=1776686606; x=1777291406;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=EKtOGuUsAk2ocNugxSmAHlHsvs650h3PEkOtSPfgiLY=;
-        b=eXjYui9kcwBcoHxXF0e3fqd5f1uL0c0HDGdDWiTWegKVDTUBAVtbUCxE2uKwKXpdyU
-         4XmzKruWcNSpIKhbSFfwjb5FT/SDVkk+RNqE/ILob5QK7ZJnrslp2+lYVcd7I3VwUlyJ
-         5WSuojsbShcdQ9yz/7VGiXTQnj5SifmDBWfzTQMEV5ILFDLppQE7cBJvavOY3p8WgOAE
-         oKG+ziFjCDhVivptGGw/PfzMb28BQ374fbRAy/W7/LVs+Js2xf5DPzjc0jV1HdyvXyes
-         BP0fR56qlo91GnNS6IvZqrDsU8fz/iSkLVrjnNDhV4KpdovzgWtUYVYuKzte/LwFMYNX
-         EvGA==
-X-Forwarded-Encrypted: i=1; AFNElJ8cZ0nIvveR8cb59dkD690yCcQgapDnl4ZNwmqytcH7YRVq6F+8id0w9NCC7Mvf6NDtoNoxtO/hsEUP294=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxw2Z60FGWLuk+vrqPj1v8nTyRvo3A6sTjoAb+Z0kG5NtC7wp4h
-	okYOhctwZEjwS50GttPrU1IbNlLoisWX05PsZHM7aO7YzVdvzb8F1LeKdRU82c6/+33Bf5Xoerd
-	w5Q5UT97ljZN7U91QnfDA/NTR0tbZYUg=
-X-Gm-Gg: AeBDieuX3jKVy4HOM/BcrqXa780MwEhA5Ga8snMZY9Yzxy7HgiKKSOkD91SFSCgahxe
-	fQYFXrOCuZ1xFCP5uGDV2Zr3blsxpdCxWLyNfd4rl4LL8kieZKBGMDl6DFm3bfGdIILQjR0/CbI
-	BsUQ5ZUMdcaKtsnZV2eDVPb3yf/PNZUiC6D7zRkstNRy2ZmrG1nJOSvZqB+po8kO9DoW+WNUhnn
-	WY4VaAnq0BpoxDB+2DAlJZ9PLFF87O0dLfLFOqz0PQmo6/aGNKi9Ov2byJyene1pGsdmxIW+8rA
-	CMpOBwZnVQC4MIsRQN4jui3CkTscFjKRSR2lqw2lblB34PnMs2enmLe6Hv81NdnS1ooHc0yRaGn
-	p+DgGSsEQ+9CUSoUuNw==
-X-Received: by 2002:a17:907:c9a2:b0:b9c:ed9:50c8 with SMTP id
- a640c23a62f3a-ba41a91e1b9mr451634166b.26.1776680248462; Mon, 20 Apr 2026
- 03:17:28 -0700 (PDT)
+        bh=nH+UDp63n0OMToyOF7805ju9M8WJlYdnyXHfyIl0SrE=;
+        b=IlDkMduAiNU7q4gdvIhZ7Jb99pIUtnsqg0jHeGfC4+qEDnwus1WRU1N2zWi6ufYaCk
+         3yu0f3ifUv7SFSaIvyJavTW8OHwL/cmp9+aIUO1vARZrw+RHNJciTOlHbaah295sqTVm
+         /G2aOfhxJHsyMwpBBLRa7NrKochG2aJGO45lfNQJEaLITeFr7kO9UqNDen8iv6zQsgvs
+         b3vNy3kQWtyMndotXVpN2JBhvT5c3vvpR02zlfiGN89nwwpW8bJMKk+bsXOlO9Iad7ml
+         4+3RpcDu1qoQQrgw2G4dknd3sAuhBUPdVt1baQJ2m629YPUPwCJSWaiz/Hg/IoA9vQpF
+         LKPQ==
+X-Forwarded-Encrypted: i=1; AFNElJ+Y2EY/RnxnRSoFjCvxbkeJZQZ3xuR210Quw3nKgMqbN4KnbyhH7BMIiUsrWwBW3BOLx2vqkZJT/OAjYno=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwyrN9fKFEF1Cc5cMB1ihkHCNcblsZXsaGA4LlfRl4c8TinX6px
+	gRTwcxQ03p5sJzSpLfqtZRzKeLziZMoTb9/bw0afc6xAklrzw7CCQDRm
+X-Gm-Gg: AeBDietGUOPzi7l94HUz1yrhdLLfwgp0AB+HucrC9DSHGM+3pK8M57PGrrvwQjphAW5
+	25cps2yH7Tk7bHsqNR/3LjFZnXSDW5zscG9Mxupcki4EL3wKibuxwd6xPAw1d7sLxGvRB3mz+Qm
+	PST3Nnhlj6O8FCvkypzulU6e362ZhWSjp2/uKQniC4SjcWFkzHJXNo51V12D0W/qDjKi9ONckVU
+	uUuAd7WvVpTg8P7mNRsgIH1MhDOU4XJqVHsI9QR+YZjjDKOe6Pz1CbhyKiBDtpG4nqKZd8W+Ebm
+	0hXJUGoKnMcVsv/dI5ln9HWglflB9O4aK6GOkr1IzW5BCZJ44puvEB74yIaQ4Es6Wu0vw+dnNef
+	Ha5yKUCYlMYf3oOsQKriBsvNCZlO6I8y6hbhrU0fkv2pValQoO+lvZczUY1bBi1xBwPN6qGQQTl
+	M8CJwqK4CmxerFUipC0FoZo0xiQW0eKWRFxKIi3mNi7qA=
+X-Received: by 2002:a05:6a20:a12b:b0:3a2:d79c:414f with SMTP id adf61e73a8af0-3a2d79c440fmr2081566637.48.1776686605729;
+        Mon, 20 Apr 2026 05:03:25 -0700 (PDT)
+Received: from xiao.mioffice.cn ([43.224.245.230])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c7976f9da4esm7701481a12.11.2026.04.20.05.03.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Apr 2026 05:03:25 -0700 (PDT)
+From: Xiang Gao <gxxa03070307@gmail.com>
+To: gregkh@linuxfoundation.org
+Cc: jirislaby@kernel.org,
+	akpm@linux-foundation.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	gaoxiang17@xiaomi.com,
+	Xiang Gao <gxxa03070307@gmail.com>
+Subject: Re: [PATCH] sysrq: add optional logging of caller info on /proc/sysrq-trigger write
+Date: Mon, 20 Apr 2026 20:03:20 +0800
+Message-Id: <20260420120320.2137235-1-gxxa03070307@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <2026041830-visibly-underpaid-6dc8@gregkh>
+References: <20260416131419.1231012-1-gxxa03070307@gmail.com> <2026041830-visibly-underpaid-6dc8@gregkh>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260417102423.40984-1-john.ogness@linutronix.de>
- <20260417102423.40984-7-john.ogness@linutronix.de> <CAHp75Vf4YZVqXa7eH-RFeVsycdzoHijcWFnUbGv2PSmtPya1-w@mail.gmail.com>
- <87jyu20x9e.fsf@jogness.linutronix.de>
-In-Reply-To: <87jyu20x9e.fsf@jogness.linutronix.de>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Mon, 20 Apr 2026 13:16:52 +0300
-X-Gm-Features: AQROBzBpWB5UgUFegmYGcbYsIvZQk8syidEg_UNxjETHiGX2iOeoEwPwpkIdSUY
-Message-ID: <CAHp75Vcdu3vcPzgHhsdReMB=WK50wuTjy2PKC4gvEhW8i1Vhqw@mail.gmail.com>
-Subject: Re: [PATCH tty v3 6/6] serial: 8250: Add support for console flow control
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	linux-kernel@vger.kernel.org, 
-	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
-	Ingo Molnar <mingo@kernel.org>, Osama Abdelkader <osama.abdelkader@gmail.com>, 
-	Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>, Gerhard Engleder <eg@keba.com>, 
-	Lukas Wunner <lukas@wunner.de>, "Dr. David Alan Gilbert" <linux@treblig.org>, 
-	Joseph Tilahun <jtilahun@astranis.com>, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Mon, Apr 20, 2026 at 12:57=E2=80=AFPM John Ogness <john.ogness@linutroni=
-x.de> wrote:
-> On 2026-04-20, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+On Sat, Apr 18, 2026 at 09:20:14AM +0200, Greg Kroah-Hartman wrote:
+> We really do not want or like #ifdef in .c files, and for stuff like
+> this, it is not needed at all.
+[...]
+> Module parameters are really not the way for stuff like this.  And why
+> would such a "tiny" option need a config option at all?  If you don't
+> use/need it, it's only a single bool being used?
+[...]
+> n is always the default, no need to add it again.
 
-> Note that this comment actually applies to patch 1 of the series.
+Agreed on all of these. The #ifdef, the module_param, the Kconfig
+entry and the 'default n' all go away -- the feature will be
+unconditional.
 
-I only received this mail and cover letter. Also at work I saw your
-mails dropped into spam (by some corporate filters, not your fault
-:-), I don't see the content. In any case I can grab the mbox by using
-`b4`.
+Before respinning I would like to align on the approach, because
+your comments on the kernel log and the ancestry walk touch the
+core of what this patch should actually be. Let me describe the
+real use case first, since I do not think I made it clear in v1.
 
+Use case
 
---=20
-With Best Regards,
-Andy Shevchenko
+  - Userspace triggers are typically several processes deep:
+    some service -> library -> system("echo c > /proc/sysrq-trigger")
+    -> sh. The immediate writer is "sh", the actually responsible
+    component is several levels up.
+  - The sysrq character we care about is almost always 'c', 'b' or
+    'o' -- the machine panics, reboots, or powers off as a direct
+    result of the write.
+  - *After* the device has come back up, we need to identify which
+    userspace component issued the write. Otherwise there is no way
+    to debug why devices in the field are rebooting themselves.
+
+> The kernel log is not there for doing audits and the like, so is this
+> just a debug option?
+
+I agree that security audit belongs in the audit subsystem, not in
+printk. What this patch is trying to do is post-mortem diagnostic
+for crash/reboot triage, and audit_log() cannot deliver on that:
+
+  1. audit_log() is asynchronous -- the record is queued, then
+     delivered via kauditd -> netlink to a userspace subscriber.
+     For sysrq c/b/o the panic/reboot happens before kauditd gets
+     to run, so the record is never delivered.
+
+  2. In our deployment environment there is no userspace auditd
+     persisting records to disk, and audit records are not
+     preserved across reboot. The kernel ring buffer, via pstore /
+     ramoops, is the only channel whose contents survive the
+     reboot and are readable on the next boot. pr_info() is the
+     only mechanism that delivers into that persistent path.
+
+I would frame this not as audit but as post-mortem diagnostic,
+retitle the commit accordingly ("sysrq: log triggering task info
+for post-mortem diagnostics") and drop the audit framing from the
+changelog entirely.
+
+> This might cause problems for when the system is hung and sysrq is the
+> only way to reboot the box.  Have you tried it in that situation?
+
+Fair -- the while-loop walking 5 levels has to go. The reason it
+was there in v1 is the "sh from system()/popen()" case above: the
+writer's comm is "sh", and the information we actually want is one
+or more levels up the parent chain.
+
+On the hung-system concern specifically: /proc/sysrq-trigger only
+runs when userspace is alive enough to complete a write(), so the
+keyboard sysrq path via handle_sysrq() is not affected by this
+change -- my patch only touches write_sysrq_trigger(). Within that
+function, rcu_read_lock() / rcu_dereference() take no locks,
+allocate nothing, and are bounded-constant work, so on paper they
+should not introduce a new hang. I have not yet reproduced a
+partially-hung system to verify this empirically; I will do so
+before v2 and report back. Please correct me if I am misreading
+the concern.
+
+That said, two options I can see, would like your steer before I
+respin:
+
+  (a) One bounded rcu_dereference() of current->real_parent.
+      Logs current's pid/comm plus ppid + parent comm. One
+      level, no loop. Covers the direct case
+        app -> system("echo c > /proc/sysrq-trigger") -> sh
+      where sh's parent is the app.
+
+  (b) Two unrolled rcu_dereference()s -- current->real_parent
+      and that task's real_parent. Still no loop, just two
+      fixed dereferences. Covers the common indirect case
+        service -> library -> system(...) -> sh
+      where sh's parent is the thin library wrapper and the
+      grandparent is the originating service, which is what we
+      actually need to identify in the field.
+
+In both cases the RCU read is a fixed number of dereferences,
+not iteration over a data structure, so the total work is
+bounded and constant.
+
+I lean toward (b): one level is not enough to reach the
+originating service in the indirect pattern this patch was
+written for. If two dereferences in the sysrq path are still
+too much, I will fall back to (a).
+
+Which direction would you accept? I will respin based on your
+answer.
+
+Thanks,
+Xiang
