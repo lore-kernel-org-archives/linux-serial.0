@@ -1,269 +1,210 @@
-Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
+Received: from MRWPR03CU001.outbound.protection.outlook.com (mail-francesouthazon11011027.outbound.protection.outlook.com [40.107.130.27])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2C563CF054
-	for <linux-serial@vger.kernel.org>; Mon, 20 Apr 2026 20:07:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.66
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776715652; cv=none; b=CcLP6If0iHt8B3Mv9Wp7prSvIAId//V5vpyJzknyBUAj36FydPjDAe1EsA+w3e+9qU7oTrpQHwltrKpvNJ1rZa0PZrzoyAJ4mDGV5IDuCJE3O+G1gU3muaSkiDd6aiRNFkokLpWYY3bEvZUAWsNH0c0zHdSqNgW3Ik2Hansf+To=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776715652; c=relaxed/simple;
-	bh=JoXwbjqfgHTSQtenfdS4rDb9JH2Wzuoqzg2D6y353ys=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=BCAtpbOeDIYxUa6jx0+9pmKzBoRIDSICwRPbTHosw7cwi51IDWoxna//2OXxSPFu5fe1iwf0tyg+67KMtz4msm5tPoTvrjR0Dh5vsYM17xYixRim47mEygh6VH0rAG9dUTpnD7mDwJ8bTwKBDB6ZuFXMYM5xmLzMaSy9OrHHJtw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=is6LvDX9; arc=none smtp.client-ip=185.67.36.66
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A76215B0EC;
+	Tue, 21 Apr 2026 02:33:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.130.27
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776738823; cv=fail; b=dEJOsSOHk68vUXHvYjLeMIHWzZhJsQi6kAMTuyS+U+INKbEihtxIpfqoAvp/cjkKcp4khDYeLoRUJmawOGowDyyH31LVA9KGplALiNl3j7FQ8rVlGU4e/K0d4gIUY7SIOnV5Vu75PcrTOAzCSJzNXkHkpPg5p2cKVOw/cgHlD+k=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776738823; c=relaxed/simple;
+	bh=0gWS+RaGX5e5pI0putSmuvU9EPtmzEIlnpCJt6aDcDM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=tka+WMPKP0WVx++KuaBN8vaXdYYtL0lBeK/2z2m++5b9UgdJfduhsSuwiTQ4SgKcUSG6RJK8nH3yuUkyKkCER1c2r4woVuy60spHtfOqzVPgSQPVSgVRtPpzhWK4/iXWlowDJ5vU4P3Luvrgl8bev7KuVFIWNa0RjAMvstRmyOA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com; spf=pass smtp.mailfrom=nxp.com; dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b=Dz+Sz0GY; arc=fail smtp.client-ip=40.107.130.27
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="is6LvDX9"
-Received: from submission (posteo.de [185.67.36.169]) 
-	by mout02.posteo.de (Postfix) with ESMTPS id A1A35240103
-	for <linux-serial@vger.kernel.org>; Mon, 20 Apr 2026 22:07:27 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de; s=2017;
-	t=1776715647; bh=bMRsLKAHSAXz14Z4fiLu1qobuMPCKTYfrmGi0WB25P8=;
-	h=From:Date:Subject:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding:Message-Id:To:Cc:Autocrypt:OpenPGP:From;
-	b=is6LvDX94ijzx68h/xyd7Bg+E74Op93FflfFoOrcoJM80TFNWXGk3ADFjQLYp1B5a
-	 bDuOFYwT4ee5276m+uQMtGRPKiabUe7E9EqpSv+Fnv+K4gInYCK9uxVt3lhj/2R2Y/
-	 tbC2xllRLjJwySuEOaui3fpHOd1KC791g6SvMvlhgiilgN4eWFV5nfgBlsRBXA/pfe
-	 q0njqSDTftz3BHotNBG6mu6aWinFJge+CdlsNQTwEQ6GdoK2PDhkjV3tOdpP5eur4/
-	 7suJGLxYpywAckhRNBuPnJNUeVwSphHfYYE+xN2BhIV6AFV8kwom8FzNw2xIBXVORj
-	 Jd4Z7AUg53fog==
-Received: from customer (localhost [127.0.0.1])
-	by submission (posteo.de) with ESMTPSA id 4fzxNX59LGz9rxN;
-	Mon, 20 Apr 2026 22:07:24 +0200 (CEST)
-From: Markus Probst <markus.probst@posteo.de>
-Date: Mon, 20 Apr 2026 20:07:26 +0000
-Subject: [PATCH v5 4/4] samples: rust: add Rust serial device bus sample
- device driver
+	dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b="Dz+Sz0GY"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=NhgH1pQt7Qu5HuaZLFphZO099zR2WXxUD/KI0kPSSt1R5uJuVWuZJB03M6hmOIAxb3syqwrM/b6gF55LKBvG8KQ69pUa9rj+ACSGeRAvwxmUXCLjzpnTgDHOXXsWHuuMxK2H1VES3NoKHt+qdGtA8o/r8Rk7JZ2hZz/YXBqmTJWigd8SrjucJCexo9jhGGJt86GvjrU92t0Gb6Xuei0On4F2Mi3PDJCgYNtAWbZX/F+6QtUM5ECfHtI6DozyKYoqV/XNGA9Lsri0yAs4km634bzel09PYEuMVU5xBg4tN3+LJcSlrKMyp4kKnbisGQYVddvhf72zyxu4Kx/wqMQWpA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=So9pkkY9x6V0ERELFPbEZ72wKSkk3hQ8uRn6Wt7GMuE=;
+ b=pGiLjXtpakCCQ8GnVVFo3wHN8iCO1Y69PB5utCmyw2vNEIE5XpacPctYsWzq7OioicK5LpwE122b5bnAm/LLFboZf4vO3w5IBtRRbtAJFBgYffX+QNENUVvYD/dRnt7hYkZGfnR4QUEGWzcRK+oC6U7nWWJpvSoRtpusIXPwKRfEO9cZMmMAw+8DOVkx5/xAloIFtS7S2LPkl+lF377a2w9j9LfdDve//Rn6Xp2AzXs79ckKCRJZWmiRF/cQjYjc+Pt8C3PxVpw8/VfYZhk6IeVFMPnvFySYMy+qDuUQd7y9dCmiH2slv+wk7e5njQ0fNhYUNxQgiq7qNeRuMNLCjg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=So9pkkY9x6V0ERELFPbEZ72wKSkk3hQ8uRn6Wt7GMuE=;
+ b=Dz+Sz0GYU3PCddg8YTsUoFYWr9rF9BzAe3mlS1UmI981DsH2f0tczw2EIs0NTYfBpLn5VY9AclGdd+AQRjXzSqkRxph9uGTu5UpQoCX3xVf5pHJKYV55O7yoIaDVpZ0vxu3qCYqcFZ+ZNo5zrr2IYSBsRsMc10y4q/oRqf+SDWQXbC6G8J90J7mrvexE7nQ+D7Cv00bDx7nuDPwGzRxpQT6QFfgSckFXzsoGQc2b8iM84G5mI8jeKFJ5ZZocu4/UcbXhRZMXxg52bllBOsKHwFZHw3+/M/0khXAg8SR5TjUMY0rxz/P3GX7Bfb5CjDhYbFYjiaPAWSShUvAtw1220Q==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from PA4PR04MB9366.eurprd04.prod.outlook.com (2603:10a6:102:2a9::8)
+ by AMCPR04MB12622.eurprd04.prod.outlook.com (2603:10a6:20b:76f::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9818.33; Tue, 21 Apr
+ 2026 02:33:37 +0000
+Received: from PA4PR04MB9366.eurprd04.prod.outlook.com
+ ([fe80::75e4:8143:ddbc:6588]) by PA4PR04MB9366.eurprd04.prod.outlook.com
+ ([fe80::75e4:8143:ddbc:6588%6]) with mapi id 15.20.9846.016; Tue, 21 Apr 2026
+ 02:33:37 +0000
+Date: Mon, 20 Apr 2026 22:33:19 -0400
+From: Frank Li <Frank.li@nxp.com>
+To: Shitalkumar Gandhi <shital.gandhi45@gmail.com>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
+	bhuvanchandra.dv@toradex.com, peng.fan@nxp.com, sherry.sun@nxp.com,
+	linux-serial@vger.kernel.org, imx@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org,
+	Shitalkumar Gandhi <shitalkumar.gandhi@cambiumnetworks.com>
+Subject: Re: [PATCH] serial: fsl_lpuart: fix rx buffer and DMA map leaks in
+ start_rx_dma
+Message-ID: <aebh75Od_EfYhbal@lizhi-Precision-Tower-5810>
+References: <20260420135903.2062024-1-shitalkumar.gandhi@cambiumnetworks.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260420135903.2062024-1-shitalkumar.gandhi@cambiumnetworks.com>
+X-ClientProxiedBy: SA9PR11CA0016.namprd11.prod.outlook.com
+ (2603:10b6:806:6e::21) To DU0PR04MB9372.eurprd04.prod.outlook.com
+ (2603:10a6:10:35b::7)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260420-rust_serdev-v5-4-57e8ba0519f3@posteo.de>
-References: <20260420-rust_serdev-v5-0-57e8ba0519f3@posteo.de>
-In-Reply-To: <20260420-rust_serdev-v5-0-57e8ba0519f3@posteo.de>
-To: Rob Herring <robh@kernel.org>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, Miguel Ojeda <ojeda@kernel.org>, 
- Gary Guo <gary@garyguo.net>, 
- =?utf-8?q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
- Benno Lossin <lossin@kernel.org>, Andreas Hindborg <a.hindborg@kernel.org>, 
- Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>, 
- Danilo Krummrich <dakr@kernel.org>, 
- Kari Argillander <kari.argillander@gmail.com>, 
- "Rafael J. Wysocki" <rafael@kernel.org>, 
- Viresh Kumar <viresh.kumar@linaro.org>, Boqun Feng <boqun@kernel.org>, 
- David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
- Boqun Feng <boqun@kernel.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
- rust-for-linux@vger.kernel.org, linux-pm@vger.kernel.org, 
- driver-core@lists.linux.dev, dri-devel@lists.freedesktop.org, 
- Markus Probst <markus.probst@posteo.de>
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4237;
- i=markus.probst@posteo.de; h=from:subject:message-id;
- bh=JoXwbjqfgHTSQtenfdS4rDb9JH2Wzuoqzg2D6y353ys=;
- b=owEBiQJ2/ZANAwAIATR2H/jnrUPSAcsmYgBp5od235RAvbch31ND5xm6KkCIL9eSTpGnt1qIX
- bhK1T0wIv+JAk8EAAEIADkWIQSCdBjE9KxY53IwxHM0dh/4561D0gUCaeaHdhsUgAAAAAAEAA5t
- YW51MiwyLjUrMS4xMiwyLDIACgkQNHYf+OetQ9KSWBAAhcP3LBb6l9BsolX6qOEtRvt42F5eg9q
- ixouVRq87msm/NPNYNIEyC9XLYlCxcKSg+FbWnQU7rmAbwl4fUvYyzjYNa7rKhGkxFLCL7MHCM8
- 91gElbbiUk21i5IpR0MmvsjPPx2jgumJhoYEfXT66ZHuZKZEvoRUuCSzESRuNX5YdrnmtdEyI3P
- gedZg2gsu9rguMDTTKoIyR3NnsoCXN9PaHYyyrwLoPDojuLYjArmWsoYWVJNgeTYqF9h+zBx9KN
- /J5iydDlsm4j07ofOcNkU7r9mD2OC3FJ5YQaItQ/G/q5ius2In4ZhVYWeieEiyLDLb/iKdZkZ00
- pazfjbWdr8pygzi2fw6hBftKPQzDPIH5fcsGp5Ey0XBxAoKCzYXiwquZDiID0rxgqAUIfNFEKH5
- 5J86xKcJhDOqfEYThCrRBy7u9l9zl071335dpv0MOrIx/EWPO6Kx/fgtfdEgJJlRF06CnZijskI
- hKETo0lLH7/HQgX01YFLTT4Nn2TlIMPJ22RPdXW2sJMDdEUmGtQ9CgV3fLYCWSej1suc+dR1gcR
- qkmjiJ2DDQYbStUTpocK1aeqG3oMN95CET2AE+0FtleOMK1/9+niqlfuiOU/vCSbbReqlqGoW6k
- xXJN2yuNnxyQPqf7lvPlY76pRukxy96/QkiyMy/22CGANFj39xPQ=
-X-Developer-Key: i=markus.probst@posteo.de; a=openpgp;
- fpr=827418C4F4AC58E77230C47334761FF8E7AD43D2
-Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
-  keydata=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
-  aBeNN4ijKZchBXHPgVx+YtWRHfcm4l8=
-OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PA4PR04MB9366:EE_|AMCPR04MB12622:EE_
+X-MS-Office365-Filtering-Correlation-Id: b6cafcda-5f88-495f-35e7-08de9f4e6108
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|19092799006|366016|376014|7416014|52116014|1800799024|38350700014|56012099003|18002099003|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	TDltTECW8xyLUtDG4W4i2hoabD/wsA1drVZp+E2xAuBkCpSqGaRnG3EfwmtJmKRmGUd4knyJ/7pd+CHnEI8nCIMG6YWmdffWLTcrOF7QeczYGA4A5IvwFGQPjdUxHEXxmNCG/RpFXQg2UHhHOp+dv+KVc6nHO6GuK++0RcyDmAzLnMXxR1ZevFl96QSqPTKTOKsms8a4KZ2I66AOhRY9AMqouEsMmFsLZsXjfmPuhyFqBxicRQh3QqqcNMvvkdiU17iz8Fi8eg6dj+xFFs6KA27QvCUUg6DyhagD870ymPyXJZByt5/YMxNUcVK15dNSo4h3m57lrSgKeynj8QgoM9orc1H9bG9gXImSQzM1XWJXXbGfVNOixiSfEUtXzF2haN0HiLzfufLl7fcE5rhm4Rqb65kCJKQNKdaEyPTabgiCLaC+jPvhCctSagUGhhxh3PJXe+e0calbXe+R+yUpxBNM8jMiqo+DaV2meQV3TCtV+cUWJ5Zmuq2kLusq1OgLLIWGxEycLs9hVyopfz8SMR0++5WEBs4x14GtXfD7pj4qwe5qWaSuJqfkVPVhZZPlqmIQ80rrgheWUgSKQur1qpSBS3gG78BqUdA8MK8NHZVNYi2r0pjeyVFFyJ7gQefd9wSf+Ow+xFWV/aCP3OLxJoBcwdPzZ0WMtAtm4UCQ8xQb09SDWjL52o6ldJx55WqQqgbOPm05MRQZVpTyiVSfTI8qVd0zZXnAWh4/HauEFXNbtYJh8trAtPnj4VBpL3vHo+4CxhaXdiQuDNA5kAZw7FGX4QY+1fSEOhMZAb+oZXo=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PA4PR04MB9366.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(19092799006)(366016)(376014)(7416014)(52116014)(1800799024)(38350700014)(56012099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?npKhwNh0VxeZ/VMiR5MUfMzROB8ZEOJd1S4JBiRroNsSPW/cUxhvOUbsIrc3?=
+ =?us-ascii?Q?6ggDSQiKsWXYz6gPJOpA4qtVgslCDPqxmKIPobq+EIWkuqiBUVKmfYzUC0+B?=
+ =?us-ascii?Q?KJTAaMFMzE6912OEL5/pU5B6cA81tmmRrY2Me58HjuvPPEjRJOGQrzoqFSi/?=
+ =?us-ascii?Q?pvy6oqUwLkai7Fcj8B+8PKWdfc59DBwrYFgWV4z/m7vehl2+KIx0cVFputQv?=
+ =?us-ascii?Q?zoXIP62TMe1V2qPs/7XAyh/04OELUlSwokG09JMQ1oE3VUugN3xGco7dUhAa?=
+ =?us-ascii?Q?XuchnHci2rgKWayougsRZ62BiNsFy5E4ixnPwJMvcuU6qKta2jLS5KW0qQtK?=
+ =?us-ascii?Q?AV+8FKHm9bl13AzEiDh0DEG1ZqHC128wI4azMOiUhjSdYlPnkTJF61KN5i9n?=
+ =?us-ascii?Q?ZegJuEO02L/hYrkDba3AqAHICEwMOlHEuy9OSKekJ31D5JAhHjFwHEWsM4JI?=
+ =?us-ascii?Q?Lehnpla62Ke6vCvANQpSzdUWwr0Wp3aAsyACgylWlgOiXWv56OgHHrBG7Ege?=
+ =?us-ascii?Q?g3UW81a+rjfQS5tnjASUVo/Hy+FtGHs8C1qHLcbuzU1akis2LSNhsKueACVr?=
+ =?us-ascii?Q?LpzAkZpgqgPtR+g0rHtlbBEz3QbG88v7S/TaTLSP6Mw6qXWsbnakA9s2EZXq?=
+ =?us-ascii?Q?s5V4pyvT1OFxe9/y1KURiIXGbOQY44uhGgC7px0DtbVGPWjDEXLWSyp7XCLS?=
+ =?us-ascii?Q?UTD7s5hoOdEwZt1d1ZDVKERnrfMPqKigjKHlVSXLc+kmafb3keLeU/DJQ+wb?=
+ =?us-ascii?Q?j2Ug96DLaBYHVfPIjKhD49qBLRkccuqLhJDlQ/UI9qfwScSZtXeMUL9CKovh?=
+ =?us-ascii?Q?T2xqOKicbW2tfiTK0GbsuMLJ/BZ4KXibWRPxrLP9pwQpqg15Hfvc2UZEyPkF?=
+ =?us-ascii?Q?OeDyU3aBVk3sIr5K3x5vp5ByXfawor1q4w2fxULlombyxtOCB0K0k33ftFdf?=
+ =?us-ascii?Q?F9Y8fjE9q7aqjuu/TvqbEhCDj4wCkBf+CjoNhBRXzYW+fsx3n2axB9JM+R6x?=
+ =?us-ascii?Q?Jf9KqcZIOlAwAPfjtkQxKB4ndG6YLcDxi3vMZNZkbL/kKmRKyhZfssK1Uksy?=
+ =?us-ascii?Q?B0b1ndFIfthQ+JHb8XHCjy7eIWMCA0V+Scds+70zT08rsoY/eDmy/Klh51YA?=
+ =?us-ascii?Q?UtWjaAw5HVeiq3ab+A6g8SO7hwxEN/1nybBZ0PxPycYpxnKrqPgI6l5/I/cm?=
+ =?us-ascii?Q?Qt9GklCeZ/+7pIHuvGWqHoo8BSnt+TRbM+CNniyuFHkR29kVlIQDs4CngIA4?=
+ =?us-ascii?Q?E0rIMstbyLSQYWYLDiNd8Theejrn5OLKUZ/jP9WETNhTUEIkhgmPLcwPTa1h?=
+ =?us-ascii?Q?DsWyswQHzelansv/Al4PGnQ/z/1GjyjlteXIiW2mRPO6mQkt9FJ3EB3/1kdR?=
+ =?us-ascii?Q?PzzmDwSRI4ZPoRw+UIrku96Hh5PT9KO1K6SKD9C+IQflNwIlosQVcwtQ+LHL?=
+ =?us-ascii?Q?pp9l9E3qzDaVt1gvPhhZWaU62oE/43Goxr80HInUu+oBck1sX6vdK8xJfira?=
+ =?us-ascii?Q?L4Y9MswrolEOYTFAeG33alGbgARPjRlMufzWuapdkZ4dOLqWneh2Q6vf8zKz?=
+ =?us-ascii?Q?CLU/fqnkpNTck0RlIqkDXzu5D9l/rvKhw1Pb1uiSXdHzd6huNFvd/Q7LP4S2?=
+ =?us-ascii?Q?dT+7vCkD2Qo6aAnY/CFfMyU/oD9kbE7dlVQ3JvIGu40KpKMULeC7kjuPL2AV?=
+ =?us-ascii?Q?wcMjYPt4rzB0sBI9hp7rlxa7ynwKLW1ePPa89j1ClJQvVTUx?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b6cafcda-5f88-495f-35e7-08de9f4e6108
+X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9372.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Apr 2026 02:33:37.7494
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: A/i+fShVQrKrLKlLaNwXzIrwiGjEPzwpAl94xxYBeIvuhc5Qnw1D/egETGqh6v68f6Z7Rq9vl5b8cvaCSKup9Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AMCPR04MB12622
 
-Add a sample Rust serial device bus device driver illustrating the usage
-of the serial device bus abstractions.
+On Mon, Apr 20, 2026 at 07:29:03PM +0530, Shitalkumar Gandhi wrote:
+> lpuart_start_rx_dma() allocates sport->rx_ring.buf with kzalloc() and
+> then maps a scatterlist via dma_map_sg().  On three subsequent error
+> paths the function returns directly without releasing those resources:
+>
+>   - when dma_map_sg() returns 0 (-EINVAL):
+>       ring->buf is leaked.
+>   - when dmaengine_slave_config() fails:
+>       ring->buf and the DMA mapping are leaked.
+>   - when dmaengine_prep_dma_cyclic() returns NULL:
+>       ring->buf and the DMA mapping are leaked.
+>
+> The sole cleanup path, lpuart_dma_rx_free(), is only reached when
+> lpuart_dma_rx_use is set, and the caller lpuart_rx_dma_startup() clears
+> that flag on failure of lpuart_start_rx_dma().  So these resources are
+> permanently leaked on every failure in this function.  Repeated port
+> open/close or termios changes under error conditions will slowly consume
+> memory and leave stale streaming DMA mappings behind.
+>
+> Fix it by introducing two error labels that unmap the scatterlist and
+> free the ring buffer as appropriate.  While here, replace the misleading
+> -EFAULT (bad userspace pointer) returned when dmaengine_prep_dma_cyclic()
+> fails with the more accurate -ENOMEM, matching how other dmaengine users
+> in the tree treat this failure.
+>
+> No functional change on the success path.
+>
+> Fixes: 5887ad43ee02 ("tty: serial: fsl_lpuart: Use cyclic DMA for Rx")
+> Cc: stable@vger.kernel.org
+>
+> Signed-off-by: Shitalkumar Gandhi <shitalkumar.gandhi@cambiumnetworks.com>
+> ---
 
-This drivers probes through either a match of device / driver name or a
-match within the OF ID table.
+Reviewed-by: Frank Li <Frank.Li@nxp.com>
 
-Signed-off-by: Markus Probst <markus.probst@posteo.de>
----
- samples/rust/Kconfig               | 11 +++++
- samples/rust/Makefile              |  1 +
- samples/rust/rust_driver_serdev.rs | 86 ++++++++++++++++++++++++++++++++++++++
- 3 files changed, 98 insertions(+)
-
-diff --git a/samples/rust/Kconfig b/samples/rust/Kconfig
-index c49ab9106345..31d62533ef25 100644
---- a/samples/rust/Kconfig
-+++ b/samples/rust/Kconfig
-@@ -161,6 +161,17 @@ config SAMPLE_RUST_DRIVER_AUXILIARY
- 
- 	  If unsure, say N.
- 
-+config SAMPLE_RUST_DRIVER_SERDEV
-+	tristate "Serial Device Bus Device Driver"
-+	select RUST_SERIAL_DEV_BUS_ABSTRACTIONS
-+	help
-+	  This option builds the Rust serial device bus driver sample.
-+
-+	  To compile this as a module, choose M here:
-+	  the module will be called rust_driver_serdev.
-+
-+	  If unsure, say N.
-+
- config SAMPLE_RUST_SOC
- 	tristate "SoC Driver"
- 	select SOC_BUS
-diff --git a/samples/rust/Makefile b/samples/rust/Makefile
-index 6c0aaa58cccc..b986b681cde5 100644
---- a/samples/rust/Makefile
-+++ b/samples/rust/Makefile
-@@ -14,6 +14,7 @@ obj-$(CONFIG_SAMPLE_RUST_DRIVER_PLATFORM)	+= rust_driver_platform.o
- obj-$(CONFIG_SAMPLE_RUST_DRIVER_USB)		+= rust_driver_usb.o
- obj-$(CONFIG_SAMPLE_RUST_DRIVER_FAUX)		+= rust_driver_faux.o
- obj-$(CONFIG_SAMPLE_RUST_DRIVER_AUXILIARY)	+= rust_driver_auxiliary.o
-+obj-$(CONFIG_SAMPLE_RUST_DRIVER_SERDEV)		+= rust_driver_serdev.o
- obj-$(CONFIG_SAMPLE_RUST_CONFIGFS)		+= rust_configfs.o
- obj-$(CONFIG_SAMPLE_RUST_SOC)			+= rust_soc.o
- 
-diff --git a/samples/rust/rust_driver_serdev.rs b/samples/rust/rust_driver_serdev.rs
-new file mode 100644
-index 000000000000..8cf3fb451b22
---- /dev/null
-+++ b/samples/rust/rust_driver_serdev.rs
-@@ -0,0 +1,86 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Rust Serial device bus device driver sample.
-+
-+use kernel::{
-+    acpi,
-+    device::{
-+        Bound,
-+        Core, //
-+    },
-+    of,
-+    prelude::*,
-+    serdev,
-+    sync::aref::ARef, //
-+};
-+
-+struct SampleDriver {
-+    sdev: ARef<serdev::Device>,
-+}
-+
-+kernel::of_device_table!(
-+    OF_TABLE,
-+    MODULE_OF_TABLE,
-+    <SampleDriver as serdev::Driver>::IdInfo,
-+    [(of::DeviceId::new(c"test,rust_driver_serdev"), ())]
-+);
-+
-+kernel::acpi_device_table!(
-+    ACPI_TABLE,
-+    MODULE_ACPI_TABLE,
-+    <SampleDriver as serdev::Driver>::IdInfo,
-+    [(acpi::DeviceId::new(c"LNUXBEEF"), ())]
-+);
-+
-+#[vtable]
-+impl serdev::Driver for SampleDriver {
-+    type IdInfo = ();
-+    const OF_ID_TABLE: Option<of::IdTable<Self::IdInfo>> = Some(&OF_TABLE);
-+    const ACPI_ID_TABLE: Option<acpi::IdTable<Self::IdInfo>> = Some(&ACPI_TABLE);
-+
-+    fn probe(
-+        sdev: &serdev::Device<Core>,
-+        _info: Option<&Self::IdInfo>,
-+    ) -> impl PinInit<Self, Error> {
-+        let dev = sdev.as_ref();
-+
-+        dev_dbg!(dev, "Probe Rust Serial device bus device driver sample.\n");
-+
-+        if sdev
-+            .set_baudrate(
-+                dev.fwnode()
-+                    .and_then(|fwnode| fwnode.property_read(c"baudrate").optional())
-+                    .unwrap_or(115200),
-+            )
-+            .is_err()
-+        {
-+            return Err(EINVAL);
-+        }
-+        sdev.set_flow_control(false);
-+        sdev.set_parity(serdev::Parity::None)?;
-+
-+        Ok(Self { sdev: sdev.into() })
-+    }
-+
-+    fn receive(sdev: &serdev::Device<Bound>, _this: Pin<&Self>, data: &[u8]) -> usize {
-+        let _ = sdev.write_all(data, serdev::Timeout::Max);
-+        data.len()
-+    }
-+}
-+
-+impl Drop for SampleDriver {
-+    fn drop(&mut self) {
-+        dev_dbg!(
-+            self.sdev.as_ref(),
-+            "Remove Rust Serial device bus device driver sample.\n"
-+        );
-+    }
-+}
-+
-+kernel::module_serdev_device_driver! {
-+    type: SampleDriver,
-+    name: "rust_driver_serdev",
-+    authors: ["Markus Probst"],
-+    description: "Rust Serial device bus device driver",
-+    license: "GPL v2",
-+}
-
--- 
-2.52.0
-
+>  drivers/tty/serial/fsl_lpuart.c | 15 ++++++++++++---
+>  1 file changed, 12 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+> index f36d50fe056f..296a096be351 100644
+> --- a/drivers/tty/serial/fsl_lpuart.c
+> +++ b/drivers/tty/serial/fsl_lpuart.c
+> @@ -1376,7 +1376,8 @@ static inline int lpuart_start_rx_dma(struct lpuart_port *sport)
+>
+>  	if (!nent) {
+>  		dev_err(sport->port.dev, "DMA Rx mapping error\n");
+> -		return -EINVAL;
+> +		ret = -EINVAL;
+> +		goto err_free_buf;
+>  	}
+>
+>  	dma_rx_sconfig.src_addr = lpuart_dma_datareg_addr(sport);
+> @@ -1388,7 +1389,7 @@ static inline int lpuart_start_rx_dma(struct lpuart_port *sport)
+>  	if (ret < 0) {
+>  		dev_err(sport->port.dev,
+>  				"DMA Rx slave config failed, err = %d\n", ret);
+> -		return ret;
+> +		goto err_unmap_sg;
+>  	}
+>
+>  	sport->dma_rx_desc = dmaengine_prep_dma_cyclic(chan,
+> @@ -1399,7 +1400,8 @@ static inline int lpuart_start_rx_dma(struct lpuart_port *sport)
+>  				 DMA_PREP_INTERRUPT);
+>  	if (!sport->dma_rx_desc) {
+>  		dev_err(sport->port.dev, "Cannot prepare cyclic DMA\n");
+> -		return -EFAULT;
+> +		ret = -ENOMEM;
+> +		goto err_unmap_sg;
+>  	}
+>
+>  	sport->dma_rx_desc->callback = lpuart_dma_rx_complete;
+> @@ -1423,6 +1425,13 @@ static inline int lpuart_start_rx_dma(struct lpuart_port *sport)
+>  	}
+>
+>  	return 0;
+> +
+> +err_unmap_sg:
+> +	dma_unmap_sg(chan->device->dev, &sport->rx_sgl, 1, DMA_FROM_DEVICE);
+> +err_free_buf:
+> +	kfree(ring->buf);
+> +	ring->buf = NULL;
+> +	return ret;
+>  }
+>
+>  static void lpuart_dma_rx_free(struct uart_port *port)
+> --
+> 2.25.1
+>
