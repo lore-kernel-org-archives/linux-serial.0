@@ -1,66 +1,66 @@
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B795D3DD509
-	for <linux-serial@vger.kernel.org>; Tue, 21 Apr 2026 20:24:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B2D8378822
+	for <linux-serial@vger.kernel.org>; Tue, 21 Apr 2026 20:24:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776803050; cv=none; b=TdOlbbrkWWcXmvIcKPF6CrfNbp6egxOyvVoLKkwiciH0Atkj6/iehPmjapvQTERRTVjVQWffQzVSTnUzRI79v19i6i/1sUIZ+82MJmwc9I2bHk6dv8CYjqhs1j6cUJRMM0jBbVaOnEOqIXIReytyqVzzBb+wvXJ129BX7De/Jjw=
+	t=1776803054; cv=none; b=jo+3+Zcx6ZBZkQTZnZVCuEtrgqGtq1ckbWhBkYv6PanXNzcDViI0l9RamZxL7X2vprcuWJRCetlVU1laG6VHSFtK1ixV2aMH0tVsWSc5lnYY1NEjlW/lC30v3MDze/XxQwfznZvr87IwShVad6EUjQTifJHw/lhpzkUZ90oAItA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776803050; c=relaxed/simple;
-	bh=Jlye14C712QdplGoRodEKGWzEzg32X0cVK6hR6vA/kQ=;
+	s=arc-20240116; t=1776803054; c=relaxed/simple;
+	bh=2yHUR7vf/4pTVAeDqwUY/lONvxGcKw5B3T7ZR8edG+4=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=mxkET5HHKWpLJxarUrK/Cu8JVN55/enDMJDsq4F8UXN7siQ4+7vPEnH6WVHJ9IHoBe7YHuAvn100imLHKerr3G7zFNZG+1rHnWeLv9btpYN6Mg9IBKOGuruFYUjO+F1eyqvcChk4Ib1Cf12t702ClaUd2CZg/RtaJUZ84xuGmi0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PahTdiFP; arc=none smtp.client-ip=209.85.128.44
+	 In-Reply-To:To:Cc; b=qPjPb8P6lsTHLUg25jRwbvr/LXH7cFvqulJWyJSEgSQU5R7MD+/05F9zrbbcOicBcWNMJtTBpnNlD4cltkAjcwZwmYx8KsXqsQCgMPX9FE+h2xXlPpsU77Ea4gPhnd1bS+D5XOTCDB4VLfawp6o7Gy/3PHVV0fEQCF6c6pxP+E4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eGTGEbXL; arc=none smtp.client-ip=209.85.128.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PahTdiFP"
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-488b0e1b870so76196625e9.2
-        for <linux-serial@vger.kernel.org>; Tue, 21 Apr 2026 13:24:08 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eGTGEbXL"
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-48984d29fe3so33942555e9.0
+        for <linux-serial@vger.kernel.org>; Tue, 21 Apr 2026 13:24:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776803047; x=1777407847; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1776803051; x=1777407851; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=4tyq+WSIvSiZYRnXDISsoYSiwaAwPd9Py7g+QKilzzY=;
-        b=PahTdiFPXJOD7Uk/JghLdr1AuieYvkB6yg5FM5DZUhovZvcvLRqnQqEq+kltSTgVkU
-         4VhmU3/pel68geaSZf6exKC3MLyprVD3gw0KDCuCCUc2MYzVRNzIhqq69bgabAEmMLbT
-         JIBGrZ1EbSsTtS5tBGEeuY9oOi87f1rt51bXA0FnEJgzADK1AoflLAi3xJ7VsUmbfY+C
-         7m98jpeT8L4arNynXvKOgURTSU8Z8oR9X44IiMiEKIeRoqZdEFiYJjpBUYKholzDBZP8
-         kwB/7ogiifsawleO6Ru+J3qAODT8HGAaUwY8+RGNxwyp6LMGZn+sxDWjAMIutawpDwQd
-         CYRA==
+        bh=+WBbGaO308OrKoNoLYMLOL+P4wfBfZBUd8DmimKDQOY=;
+        b=eGTGEbXLgTyfaVDd3yOq57X5YIIy9wJ6Pvw9ZR09qrfztp1rP03iD8EjKH/3C4CZP+
+         Eq0Tqcu8ITjogCWjc5aHjqZOb2Q66XkJxpY1kmkSX6vjsgnzIF5ukMRTKG9AXjE5hKqc
+         4mbxpkYveueF/Wzjkps+7vLaGA1ywEQ+KHPp3k4MPFQSNScd9fG2/KBsoPtX+aZ3jSbJ
+         5o8nT5xQgnAyeSVC5ZRwlkrF4LZabzLQnx5GMgpe9BfHK/q/z7TDgH0zQH0FMsViuC4g
+         cqZWwpa7R7DQ9w5DuvpkIJc1LbcBQcBfq8lJxnJevISxqWshRlcYsNmP9j6cjbRY0Fid
+         0xzA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776803047; x=1777407847;
+        d=1e100.net; s=20251104; t=1776803051; x=1777407851;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=4tyq+WSIvSiZYRnXDISsoYSiwaAwPd9Py7g+QKilzzY=;
-        b=alPKOJKlbSfPqb6MnRFMLSgpBod0W+9QOIS3J4PXbYQyE06FgvkAo6KZt402lRPeoe
-         2sm+2ricsvC0Q2vE9dkB+p5X9EKXQX2V4xHwdaqus1stBWhx7/IhTGWqJyOMs0ll7gYD
-         +rSHpMYqfTTLtq7hPLQHw5qBSU7uHxjywVi/aYuEqKH0JYTQM2fwoT5CD6PPucD/NOiv
-         naWZXzMkU+kI7JlExdj2BJZlN0vdz88PABUa35AUWG0fuylNdEufDNTv6PfvSe/QQ9h0
-         gI9RDGh3pYqpu4IQGZQHiCGfA/vacWsJjf2NhBvYvZ+HyAVWEtIzQ13ffjGeSQPe85NC
-         ex2g==
-X-Forwarded-Encrypted: i=1; AFNElJ9xACfxsr3qPHJjdvHeXbYxGDeVgUQNttJ/J1xjQkDxCrpePbOwYfRbu91EfJO9YVoYcnUiRq/hOx2PuvE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyOelmeOOUJpeXhQjlpY7PqCJZuHx05VCkpRdwu9al/dGxULZ7V
-	1+yft4dFFSvhNhaoM32yNPO3iT578859m7KnNuEAvI+sHA94m7U9rzJ5
-X-Gm-Gg: AeBDietEQ2qGMxdxSYsGIRPGsm+wwp6/7vVgIJo1IOm4gajzwSCn379cP9lp14Me+sF
-	xUdCGseT8GEq4FNWzK1dCu+aq2RuslO63wZ1Ls2zf1w3M8dqiQrPfP3jCQ1xODup4icr+8bD3QT
-	TkKI2FmGeWFoB0Cd/ofbCJnA3H6s8x2As8Xw9/bNTZQCg3IbdJINPb0Q55oqQlKWKLmhaX5fO3P
-	uLpHvPEEVc/EnXmQiZcfOGy7bIl7nRIN52XMhYjSYFhMFAYPGCG+29R8IbnDwCAB1AvdNapnHWN
-	FituxHgQyV5Up7O5kR41Nnd3/tMIGwfyqYjwPYPlol8bqv4mGSiDazUe+pElfs5ZdHHC17icdFY
-	ks/QUlQWlUiVtB85Lu5K432uSi4iKSPo2TR02Ix0RST/jQAHgF/vpN4TJ2XW/UZnn7uT8nG2265
-	/JB6+Ua/rPk0ndtANoxMxCPVkwsbxEqdBgtX5ohWYDjWZA
-X-Received: by 2002:a05:600c:c4a1:b0:488:c014:34da with SMTP id 5b1f17b1804b1-488fb77ed1bmr266248505e9.26.1776803046853;
-        Tue, 21 Apr 2026 13:24:06 -0700 (PDT)
+        bh=+WBbGaO308OrKoNoLYMLOL+P4wfBfZBUd8DmimKDQOY=;
+        b=hKU2ouIITJMpEglnq7H8oEVffmipD6duqL8cM891CgVZF2F1pdXQz+kM1zxlHWt7gb
+         T4mJEBzFFQP0ZdTjRpNTIZwtQ0uZVh1t221kwnK2ElD+MLvzlsv2IFGOcJKabOOoO8Ic
+         9klDbVhpppOYIZL5rw8Mh7aISFEvQyceuwhj7yE3X2x6IiBFipZ19eR6TmTvkeVUgjcl
+         c9gilQpTjYT0qKYbNqviC/4bFA5F3G8vNsqH8VU+yfY3KF8jnqQrBq9P6Uwr2LbjWvRF
+         HBynClJgIWQFMEBmLj3MCFFwqeMGeE9ggP1d7kx0m8BQMGoWYgi9nIiap3cUjVm6l0tu
+         C1cA==
+X-Forwarded-Encrypted: i=1; AFNElJ9ofZITvftPnYJ9Tn7foffisbHu+kZsMfZ1Vp+GP7zOnt87Oi86Laxf2lnPN7KW/1xS9EH/UwPAJDXGgPM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyN/0SnhuStAdQsCpVpjJDGGKdEn+NlSe6HCwit0mkjj67/E0OX
+	ngNQkDHv6bv5HoJauKRCo8GvcZXudcEdhfnpa+ZjhUyzWVSNmLTbTlYC
+X-Gm-Gg: AeBDieuaxMXJr8Yz8HLdBfrjsnm+VYwI6r6ooVFq4M/uyGvjsTPd+3rDwEEZADD7UEY
+	kd7Hmb4cCjwvoxClTL6ElK4DTwdgytVv3mwHsqgI3/JI7ENzJLiJVzO6ARfN7dJX8mxXbEQaNSQ
+	Ysyxb74jhxMH2dZ2wZ0yDKzP4o6V9ej8MAuhWF08nURblYT/BbVzrwL1QYDpOF/Tsi/uXmsJuFt
+	b9rSIE22VW3GHPP/OMhB0B3e6Z/VTLkffP1funsg0PzX0HI1QH9PMiZCkHohn0Wqh9SiCJ9Fy2s
+	6ChuZfND8Ul8nkAA2pz/pPgJQ4joIhAm1opUrUxunst0hva8umThQobBk9eMvWB4mQELui+XMeZ
+	Jcy+Yfr39XuwDJt56BIk9qHHn8EPaiOH58g9lf1N63dljVSJ569egjeg+BaOA9MKtTmq2BrqxBW
+	/MDgg3ch3LtJQqYbNGZE9D6OVQDCdA/+vXgVAmxN46JfOY
+X-Received: by 2002:a05:600c:859a:b0:48a:53ea:13eb with SMTP id 5b1f17b1804b1-48a53ea15bdmr65740525e9.5.1776803051393;
+        Tue, 21 Apr 2026 13:24:11 -0700 (PDT)
 Received: from [192.168.0.2] ([197.250.227.85])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-488fc0f82bbsm655989805e9.3.2026.04.21.13.24.02
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-488fc0f82bbsm655989805e9.3.2026.04.21.13.24.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Apr 2026 13:24:06 -0700 (PDT)
+        Tue, 21 Apr 2026 13:24:10 -0700 (PDT)
 From: =?utf-8?q?Stefan_D=C3=B6singer?= <stefandoesinger@gmail.com>
-Date: Tue, 21 Apr 2026 23:23:10 +0300
-Subject: [PATCH v5 2/8] dt-bindings: arm: Add zx297520v3 board binding
+Date: Tue, 21 Apr 2026 23:23:11 +0300
+Subject: [PATCH v5 3/8] ARM: dts: Add D-Link DWR-932M support
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -69,7 +69,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20260421-send-v5-2-ace038e63515@gmail.com>
+Message-Id: <20260421-send-v5-3-ace038e63515@gmail.com>
 References: <20260421-send-v5-0-ace038e63515@gmail.com>
 In-Reply-To: <20260421-send-v5-0-ace038e63515@gmail.com>
 To: Jonathan Corbet <corbet@lwn.net>, 
@@ -87,82 +87,140 @@ Cc: linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
  soc@lists.linux.dev, linux-serial@vger.kernel.org, 
  =?utf-8?q?Stefan_D=C3=B6singer?= <stefandoesinger@gmail.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1772;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3265;
  i=stefandoesinger@gmail.com; h=from:subject:message-id;
- bh=Jlye14C712QdplGoRodEKGWzEzg32X0cVK6hR6vA/kQ=;
- b=owEBiQJ2/ZANAwAIAT0TvMhUTxoiAcsmYgBp59zXs1flcrAYTX8A8SSVmUw46VloONu4/yzoj
- DU2Ro3rJ+GJAk8EAAEIADkWIQRDFvS2qgVbJ5UyXWw9E7zIVE8aIgUCaefc1xsUgAAAAAAEAA5t
- YW51MiwyLjUrMS4xMiwyLDIACgkQPRO8yFRPGiJ0fg//dan3zyJHker3j2oB+GnI8v2RR/pj3Bb
- M5nD3DtLV7EeicFtPfD1AybCXLNNTvgSpI3LWEA3VdqjVb0GXv04GNe1nLfIfH+3uo0BAxuvsHb
- IF7eVJXsZPdQN+0CcUJbcLqPJdvCTF64DtM/fIzMROPOal5Fd6/swYwhiZ6bzxgWg/cN40LXUV/
- CuX2z2626rg54WbMYq2bjPLaU4L8dOK8Ud+I2/9amJ7xYCzgshcgR1A3N31wdG8M1OQfrW+vStt
- 5sdry84nsSzwAw4/EXryotOg0OwhZH2jLPhSTEfAiM6X8Uj16EGgaZg1k53ulcVQznOV1fK9ZkJ
- KUBnbuMTTcOwNSgg+q8Nk8H1i0nKktEKOIpDnuYYbUxVb4MVdzV06O+L1sVXPg6WcqtcUkVLLQf
- JJka3ti1qfZgxGYSZEyzleI13ZioREx6LM0eAzWPPfe2H8s07+TuCuAKxLnNKnN/ou59pxg1o6q
- bpTqL7KEpHPJHc94tHlwT/+Yn1/9sWJAH63fNcvm9Gn0NToAXNeYruFat/PLb0X2NNCHnN0j+QA
- 4zDEio5Z6xql+gm7sBmCMDQCgs+QyAP9C13DA2Oc/NUmJwkZGoTTpq0jxa6B+kzOX6pk18QqiCm
- K6izx/bEVkn3dCRPz8nhBw5ONrHoB0z07pw09GX/yd0a/n8Etjcg=
+ bh=2yHUR7vf/4pTVAeDqwUY/lONvxGcKw5B3T7ZR8edG+4=;
+ b=owEBiQJ2/ZANAwAIAT0TvMhUTxoiAcsmYgBp59zXRVl1Sw1Ld+3Q+2fSkkr6eCrCMpkH3vrj5
+ iws4Vy7k4SJAk8EAAEIADkWIQRDFvS2qgVbJ5UyXWw9E7zIVE8aIgUCaefc1xsUgAAAAAAEAA5t
+ YW51MiwyLjUrMS4xMiwyLDIACgkQPRO8yFRPGiIVcRAAqBZ6FU4uNLKpJxvNRTWai38+QRve6ja
+ /MNGEnjPG52ccLMGiQ88XJrzrJYJtoXoXgSOK77PjcMnqB/KnoWmUjg3Gp38WcUJk2JeRzPoBrU
+ Dll9uopylKWmzlgFOOpZ6OPaCyvUgVDUNIhpUM3/LMvaPaLgd5qGbwy0SEweSVDg4jv/IT7cfJE
+ slHiX3IVB5ieysWX/ifNF2WJ9LaxOXA6/x6naitX85TDKvQ/sLn6R5Cux5PZU2tWWl9+cwoFRdr
+ BtnjYpvG1mUpMNjX2aqZQvYpwh/VT2iSC5vdBdl9EG53KXjqA9vQhIqFO++IGcXTKo/CkjdfyV1
+ GDotOQzrl+hZCVFQ16BLpIkNWPQ2aDnvfQd/iJtoEUnAS7UpPvOwBJy1qmkhdCndgXQcRlE3tEg
+ 2KRjKoI9OMrx/pQrqYAF4m+1GXena6atYZtd5ri+8CKMOFfzb9Gw/WyzEAaCOobzbnLdrYuCZ6P
+ iO1eV9RvN1DhQdG4DVOPv+ttkx9WEjdEGQsB34vmLIKmhlvz/xO5SLUl1wgzgHvSpMdaCWUrIEY
+ zb5LNNZMzqw5stF/rEHGBxWlUBCSzP5qtIf+ZN4JU3md9M1uAawrjLbH1jRi+/wD6CROuwGY8nJ
+ buhQyLgbBJ8oUpFSrmLqlr+Usakph9Q79+TZ15Cn/B/6/mWjjcVY=
 X-Developer-Key: i=stefandoesinger@gmail.com; a=openpgp;
  fpr=4F9C2C8728019633893EBBB98CB81F9A72BBA155
 
-Add a compatible for boards based on the ZTE zx297520v3 SoC.
+This adds base DT definition for zx297520v3 and one board that consumes it.
 
 Signed-off-by: Stefan Dösinger <stefandoesinger@gmail.com>
 
 ---
 
-The list of devices is the devices I have access to for testing. There
-are many more devices based on this board and it is not always easy to
-identify them. Often they are sold without any branding ("4G home
-router") or with mobile carrier branding.
+Changes in v5:
+Prepend the SoC name in the device specific DTS filename.
 ---
- Documentation/devicetree/bindings/arm/zte.yaml | 25 +++++++++++++++++++++++++
- MAINTAINERS                                    |  1 +
- 2 files changed, 26 insertions(+)
+ MAINTAINERS                                        |  1 +
+ arch/arm/boot/dts/Makefile                         |  1 +
+ arch/arm/boot/dts/zte/Makefile                     |  3 ++
+ arch/arm/boot/dts/zte/zx297520v3-dlink-dwr932m.dts | 18 ++++++++++
+ arch/arm/boot/dts/zte/zx297520v3.dtsi              | 40 ++++++++++++++++++++++
+ 5 files changed, 63 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/arm/zte.yaml b/Documentation/devicetree/bindings/arm/zte.yaml
-new file mode 100644
-index 000000000000..4b0d6d53402b
---- /dev/null
-+++ b/Documentation/devicetree/bindings/arm/zte.yaml
-@@ -0,0 +1,25 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/arm/zte.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: ZTE zx29
-+
-+maintainers:
-+  - Stefan Dösinger <stefandoesinger@gmail.com>
-+
-+properties:
-+  $nodename:
-+    const: "/"
-+  compatible:
-+    oneOf:
-+      - items:
-+          - enum:
-+              - dlink,dwr932m
-+              - hgsd,r310
-+              - tecno,tr118
-+              - zte,k10
-+          - const: zte,zx297520v3
-+
-+additionalProperties: true
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 974d7a98956a..bcade90ca14e 100644
+index bcade90ca14e..f7ca0d478e81 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -29202,6 +29202,7 @@ F:	tools/testing/selftests/cgroup/test_zswap.c
- 
+@@ -29203,6 +29203,7 @@ F:	tools/testing/selftests/cgroup/test_zswap.c
  ZX29
  M:	Stefan Dösinger <stefandoesinger@gmail.com>
-+F:	Documentation/devicetree/bindings/arm/zte.yaml
+ F:	Documentation/devicetree/bindings/arm/zte.yaml
++F:	arch/arm/boot/dts/zte
  F:	arch/arm/mach-zte/
  
  SENARYTECH AUDIO CODEC DRIVER
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index efe38eb25301..28fba538d552 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -39,3 +39,4 @@ subdir-y += unisoc
+ subdir-y += vt8500
+ subdir-y += xen
+ subdir-y += xilinx
++subdir-y += zte
+diff --git a/arch/arm/boot/dts/zte/Makefile b/arch/arm/boot/dts/zte/Makefile
+new file mode 100644
+index 000000000000..f052cfbd636c
+--- /dev/null
++++ b/arch/arm/boot/dts/zte/Makefile
+@@ -0,0 +1,3 @@
++# SPDX-License-Identifier: GPL-2.0-only
++dtb-$(CONFIG_SOC_ZX297520V3) += \
++	zx297520v3-dlink-dwr932m.dtb
+diff --git a/arch/arm/boot/dts/zte/zx297520v3-dlink-dwr932m.dts b/arch/arm/boot/dts/zte/zx297520v3-dlink-dwr932m.dts
+new file mode 100644
+index 000000000000..ac20215fddef
+--- /dev/null
++++ b/arch/arm/boot/dts/zte/zx297520v3-dlink-dwr932m.dts
+@@ -0,0 +1,18 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright (c) 2026 Stefan Dösinger <stefandoesinger@gmail.com>
++ */
++
++/dts-v1/;
++
++#include "zx297520v3.dtsi"
++
++/ {
++	model = "D-Link DWR-932M";
++	compatible = "dlink,dwr932m", "zte,zx297520v3";
++
++	memory@20000000 {
++		device_type = "memory";
++		reg = <0x20000000 0x04000000>;
++	};
++};
+diff --git a/arch/arm/boot/dts/zte/zx297520v3.dtsi b/arch/arm/boot/dts/zte/zx297520v3.dtsi
+new file mode 100644
+index 000000000000..0fff00f910d6
+--- /dev/null
++++ b/arch/arm/boot/dts/zte/zx297520v3.dtsi
+@@ -0,0 +1,40 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright (c) 2026 Stefan Dösinger <stefandoesinger@gmail.com>
++ */
++
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++
++/ {
++	#address-cells = <1>;
++	#size-cells = <1>;
++
++	cpus {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		cpu@0 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a53";
++			reg = <0>;
++		};
++	};
++
++	soc {
++		#address-cells = <1>;
++		#size-cells = <1>;
++		compatible = "simple-bus";
++		interrupt-parent = <&gic>;
++		ranges;
++
++		gic: interrupt-controller@f2000000 {
++			compatible = "arm,gic-v3";
++			interrupt-controller;
++			#interrupt-cells = <3>;
++			#address-cells = <1>;
++			#size-cells = <1>;
++			reg = <0xf2000000 0x10000>,
++			      <0xf2040000 0x20000>;
++		};
++	};
++};
 
 -- 
 2.53.0
