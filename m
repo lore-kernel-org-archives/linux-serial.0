@@ -1,107 +1,100 @@
-Received: from ultrarisc.com (unknown [218.76.62.146])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A7DD836826E;
-	Tue, 21 Apr 2026 06:00:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=218.76.62.146
+Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4A8935F61A;
+	Tue, 21 Apr 2026 06:38:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=124.126.103.232
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776751205; cv=none; b=cbFF5Tj9fEcaFhu1SFqUmoPy90hjTkvxORewR4CD3s3062S2YxnnCiZ1YQWV5IAx/0nHP4RtSjpDRC1NkQWDddvuJBlXjyA2oTbmm9XZsJnux+D040tUBj2pJ1NAc8U7fohaEyiu58c1WEKivtv57+bILpaMB3AfxUkiJgKh37E=
+	t=1776753516; cv=none; b=S2vkb6sDRTzYtel3R90CGQaBDZQZfKLhPZOP20fVzwrGQPdhx0C1m+1U/r5IteYpJjLMjuokJRC3/oL3tYnSt/hcouxblHkMIAEDKs2JWQM1nVU9nyjwaDgK4XNKZH9vD0grHHBscKaRhTAZeUC4lrJ70Yb3ltbZPUzp9zl5ljI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776751205; c=relaxed/simple;
-	bh=o2vQ1mjY+s3E7+IwbbZ2cAFAkNUbi8J2kxnxCeejBCY=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=rYYuP8TP/OkSG9uhEvtIpyqBeQAA5iuyxBGppTASQxTxaU9maOYAOcaUIaguPC84dQk1LBzfSZaenbNERrlqUj45DWWVEL8O2a0TjUeleunODCX4yfr63GHnrXyV35+Lk4+wMW+C8Fjtep0m/BRPij2tV6mMdIOBiwQWZmL9L3g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ultrarisc.com; spf=none smtp.mailfrom=ultrarisc.com; dkim=pass (1024-bit key) header.d=ultrarisc.com header.i=@ultrarisc.com header.b=aZUZRa8n; arc=none smtp.client-ip=218.76.62.146
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ultrarisc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ultrarisc.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ultrarisc.com header.i=@ultrarisc.com header.b="aZUZRa8n"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=ultrarisc.com; s=dkim; h=Received:From:Date:Subject:
-	MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:
-	References:In-Reply-To:To:Cc; bh=pU4SxU5q9XltqS7pTAyz151B7uCmsjv
-	J67qMEH2aIS8=; b=aZUZRa8nfERHquJ1KPg7aOkO0+T6b66/kGoZRPHo4LYvDCy
-	L4T3pDhwJoULULWrzImA5UYIWm6hSfnhUm3MldpYkbPiknrCOebeVaVLMuZUqoTG
-	056perfi3Hby4eHCKk3vR+NG6xdWFDxNCOy5ML2rTbzW8Lp3jb0ZL53n705s=
-Received: from [127.0.0.1] (unknown [192.168.100.1])
-	by localhost.localdomain (Coremail) with SMTP id AQAAfwAnEkNyEudpn5ACAA--.1518S4;
-	Tue, 21 Apr 2026 14:00:24 +0800 (CST)
-From: Jia Wang <wangjia@ultrarisc.com>
-Date: Tue, 21 Apr 2026 13:58:52 +0800
-Subject: [PATCH v3 2/2] serial: 8250_dw: Use a fixed CPR value for
- UltraRISC DP1000 UART
+	s=arc-20240116; t=1776753516; c=relaxed/simple;
+	bh=h6OpIdARxc6oImkrwAQL3zG4AaSb6Sfecqfh6gfksfE=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Wxp/xq/ASHjxsGhg/6rA8OZWi73GTWx9tWUf0RWOuhoBo1yoVNpIMSyGeHSb8Ynl0ZC7+0yk/xlv7ur9zebNpW/p+znfPg1m3qcfyChEdldRA9FAb+7/vgZe1x9I2bBgvEDWUXz9csqSgVcuKLLDSzeA6GJdnYSojWV9Jhqpi7U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn; spf=pass smtp.mailfrom=kylinos.cn; arc=none smtp.client-ip=124.126.103.232
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
+X-UUID: b1f5b3c83d4c11f1aa26b74ffac11d73-20260421
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.3.12,REQID:8e0ff8ac-721d-42af-8ba0-369626c35284,IP:0,U
+	RL:0,TC:0,Content:-5,EDM:25,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTIO
+	N:release,TS:20
+X-CID-META: VersionHash:e7bac3a,CLOUDID:d54fe867438a4e4a53b2c0d874a38987,BulkI
+	D:nil,BulkQuantity:0,Recheck:0,SF:102|850|898,TC:nil,Content:0|15|50,EDM:5
+	,IP:nil,URL:99|1,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0
+	,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
+X-CID-BVR: 2,SSN|SDN
+X-CID-BAS: 2,SSN|SDN,0,_
+X-CID-FACTOR: TF_CID_SPAM_SNR,TF_CID_SPAM_ULS
+X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
+X-UUID: b1f5b3c83d4c11f1aa26b74ffac11d73-20260421
+X-User: zenghongling@kylinos.cn
+Received: from localhost.localdomain [(10.44.16.150)] by mailgw.kylinos.cn
+	(envelope-from <zenghongling@kylinos.cn>)
+	(Generic MTA with TLSv1.3 TLS_AES_256_GCM_SHA384 256/256)
+	with ESMTP id 2111556678; Tue, 21 Apr 2026 14:38:23 +0800
+From: Hongling Zeng <zenghongling@kylinos.cn>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	geert+renesas@glider.be,
+	biju.das.jz@bp.renesas.com,
+	wsa+renesas@sang-engineering.com,
+	thierry.bultel.yh@bp.renesas.com,
+	prabhakar.mahadev-lad.rj@bp.renesas.com
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	zhongling0719@126.com,
+	zenghongling <zenghongling@kylinos.cn>,
+	kernel test robot <lkp@intel.com>,
+	Dan Carpenter <error27@gmail.com>
+Subject: [PATCH v2] serial: sh-sci: fix memory region release in error path
+Date: Tue, 21 Apr 2026 14:38:19 +0800
+Message-Id: <20260421063819.715295-1-zenghongling@kylinos.cn>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260421-ultrarisc-serial-v3-2-3d7f09c2420e@ultrarisc.com>
-References: <20260421-ultrarisc-serial-v3-0-3d7f09c2420e@ultrarisc.com>
-In-Reply-To: <20260421-ultrarisc-serial-v3-0-3d7f09c2420e@ultrarisc.com>
-To: =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, Paul Walmsley <pjw@kernel.org>, 
- Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
- Alexandre Ghiti <alex@ghiti.fr>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
- linux-riscv@lists.infradead.org, devicetree@vger.kernel.org, 
- Jia Wang <wangjia@ultrarisc.com>
-X-Mailer: b4 0.15-dev
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1776751174; l=1571;
- i=wangjia@ultrarisc.com; s=20260309; h=from:subject:message-id;
- bh=o2vQ1mjY+s3E7+IwbbZ2cAFAkNUbi8J2kxnxCeejBCY=;
- b=gF8CwuBnMr4lURDDDwpznbbeJJQY59ELlnW8vpWfD7bhkk/Xx7L2JJUfJg7oXBO2309oNdzFf
- U2U18KcO2KtD7l1rC+cuZvMuPivRCC3fC6sEYJf8wPSDeIAiSKyHEqK
-X-Developer-Key: i=wangjia@ultrarisc.com; a=ed25519;
- pk=XvYkrelqJIIzobY7j+nIg8rsfv5kzaOzuc1UPhd087U=
-X-CM-TRANSID:AQAAfwAnEkNyEudpn5ACAA--.1518S4
-X-Coremail-Antispam: 1UD129KBjvJXoW7tw4UJFy3Kw43tFWrXFW5Wrg_yoW8WrW5pF
-	47Cr90vF9a9F4jg3W2ya1vvFZ3ua12vFy2k39rK347tFn8tFyUAF1SkrWay3ZFgry0qrnF
-	yF1Y9rW7Aa1xZa7anT9S1TB71UUUUUDqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnUUvcSsGvfC2KfnxnUUI43ZEXa7xR_UUUUUUUUU==
-X-CM-SenderInfo: pzdqwylld63zxwud2x1vfou0bp/1tbiAQADEWnlor4ACwAJsB
+Content-Transfer-Encoding: 8bit
 
-The UltraRISC DP1000 UART does not provide the standard CPR register used
-by 8250_dw to discover port capabilities.
+From: zenghongling <zenghongling@kylinos.cn>
 
-Provide a fixed CPR value for the DP1000-specific compatible so the
-driver can configure the port correctly.
+The sci_request_port() function uses request_mem_region() to reserve
+I/O memory, but in the error path when sci_remap_port() fails, it
+incorrectly calls release_resource() instead of release_mem_region().
 
-Signed-off-by: Jia Wang <wangjia@ultrarisc.com>
+This mismatch can cause resource accounting issues. Fix it by using
+the correct release function, consistent with sci_release_port().
+
+Fixes: e2651647080930a1 ("serial: sh-sci: Handle port memory region reservations.")
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <error27@gmail.com>
+Closes: https://lore.kernel.org/r/202604032356.SzEjYkBC-lkp@intel.com/
+Signed-off-by: Hongling Zeng <zenghongling@kylinos.cn>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
 ---
- drivers/tty/serial/8250/8250_dw.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+Change in v2:
+  - Per review, fix the commit message
+---
+---
+ drivers/tty/serial/sh-sci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 94beadb4024d..ca6dbdf75918 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -962,6 +962,12 @@ static const struct dw8250_platform_data dw8250_intc10ee = {
- 	.quirks = DW_UART_QUIRK_IER_KICK,
- };
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 6c819b6b2425..54db019a5bfc 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -3025,7 +3025,7 @@ int sci_request_port(struct uart_port *port)
  
-+static const struct dw8250_platform_data dw8250_ultrarisc_dp1000_data = {
-+	.usr_reg = DW_UART_USR,
-+	.cpr_value = 0x00022022,
-+	.quirks = DW_UART_QUIRK_CPR_VALUE,
-+};
-+
- static const struct of_device_id dw8250_of_match[] = {
- 	{ .compatible = "snps,dw-apb-uart", .data = &dw8250_dw_apb },
- 	{ .compatible = "cavium,octeon-3860-uart", .data = &dw8250_octeon_3860_data },
-@@ -969,6 +975,7 @@ static const struct of_device_id dw8250_of_match[] = {
- 	{ .compatible = "renesas,rzn1-uart", .data = &dw8250_renesas_rzn1_data },
- 	{ .compatible = "sophgo,sg2044-uart", .data = &dw8250_skip_set_rate_data },
- 	{ .compatible = "starfive,jh7100-uart", .data = &dw8250_skip_set_rate_data },
-+	{ .compatible = "ultrarisc,dp1000-uart", .data = &dw8250_ultrarisc_dp1000_data },
- 	{ /* Sentinel */ }
- };
- MODULE_DEVICE_TABLE(of, dw8250_of_match);
-
+ 	ret = sci_remap_port(port);
+ 	if (unlikely(ret != 0)) {
+-		release_resource(res);
++		release_mem_region(port->mapbase, sport->reg_size);
+ 		return ret;
+ 	}
+ 
 -- 
-2.34.1
+2.25.1
 
