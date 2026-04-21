@@ -1,174 +1,164 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A05DD301474
-	for <linux-serial@vger.kernel.org>; Tue, 21 Apr 2026 08:17:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A36039E6E4
+	for <linux-serial@vger.kernel.org>; Tue, 21 Apr 2026 08:53:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776759447; cv=none; b=qEsSCHMkOhKsRWCoyTPunzIIikPl/nJbEp/S3gOicjrjvP05UsdBDX67aI9+HAkE357TIVZ9EroA2pZOpyrekKArOYqyrrFy4+uALlfG2Ky0tLuln4puGZ5Wc0PeVAXNy0Rw9Bjz2da57h5Mhe1iHU1Qmy+2dzLZUCkhtDcl8CU=
+	t=1776761633; cv=none; b=MhnA/1be0xbsj2PYXQGnjAcePIZiFTU5KKaau9KwWhV8RkWE9Qx6AiOXeV+wyJkOpbfR0/T1aYtRN3tQ7o4we4r6BQbwYrSq0WAhyexhjraQky84yW5hF674x9IkgOJfK9xVYeiZSVQ2hXfxO9KwOR2OnyZQoBLaSKGe0zwvJiU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776759447; c=relaxed/simple;
-	bh=B+IlyedEhZNODOK1mSnA/Zegncl/8PN6pid22WrPik0=;
+	s=arc-20240116; t=1776761633; c=relaxed/simple;
+	bh=grKYggiaw46ooi6ImNXBLBDIyrYhWxvGg4Dyp8xFWeY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kbltjjPQ70M3aoyFCRNeFixWl0E0Yr2BjUCzHrVAgpyXgFQiMsFZ1tkemYRDJ26hJst6S4j1wK5OTYhKRJ+nexxWMUOMGV4bQ+yDSIEaZ75Ls+bk2mrrpPCYzW0TFZVeB1qrpWJuhwfR+YKfVcNGYFT6gVqDcdRWlKQ2RgZffNg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=gecQMdlp; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=GSk4Nqaj; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=QRf8HJeLVksf5Qt7D74GXjzrKpfnZbXPpSgoxjSBe1yLQWtTBen6TxZOJH80PZToJyCqYzK7Vktk084QLH6na2nAjsPeD8BGBk/FiM2npQAPt2kYC+aVcgFKvXsIFKFzslesy0dQEalpaNtKs9HKVUM19ZJIxHGJ0TKhe4x8Ggo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=nNRIas+W; arc=none smtp.client-ip=209.85.221.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="gecQMdlp";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="GSk4Nqaj"
-Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 63L8ECJZ2281651
-	for <linux-serial@vger.kernel.org>; Tue, 21 Apr 2026 08:17:24 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=pW4RvJ1J0WjZeebgyc1hyYHI
-	FUKi/UttC0Wl6Mb4bxo=; b=gecQMdlpFY0k7uTpdGCoOknDM23BJE4rmHMxiFKO
-	+iIjg9/Rn31epo6HUwOr/GlNEJCZ3Bh1SA+VULyJaNyNy950ff+YSwZnvZVowz54
-	JbNzY6Ynw70e7MXSBLgxLxnm77dAe0Psiw25NQfyfzhCrEJaHP/F3qa8ke8MK/BY
-	vxmTCs4d2lHMvPVnnoFRpt/gr62VkOIwc56S5ZO6xY0pyjwTxmYJiCTXgVtXGcL0
-	MupbnYJD+g2aUoeO4he5HXv9PU9pTIVYufekgRyH81uNwaV5v52RAO/UDdd2K4qV
-	ijXdCGI20rpTAs7x949sB9tvi8PMKuxi1PQ0h+1Tk0kUQA==
-Received: from mail-dy1-f199.google.com (mail-dy1-f199.google.com [74.125.82.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4dnh59cj34-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-serial@vger.kernel.org>; Tue, 21 Apr 2026 08:17:24 +0000 (GMT)
-Received: by mail-dy1-f199.google.com with SMTP id 5a478bee46e88-2c16233ee11so5349114eec.1
-        for <linux-serial@vger.kernel.org>; Tue, 21 Apr 2026 01:17:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="nNRIas+W"
+Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-43d76dd4ee8so3683895f8f.2
+        for <linux-serial@vger.kernel.org>; Tue, 21 Apr 2026 01:53:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1776759443; x=1777364243; darn=vger.kernel.org;
+        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1776761629; x=1777366429; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=pW4RvJ1J0WjZeebgyc1hyYHIFUKi/UttC0Wl6Mb4bxo=;
-        b=GSk4Nqaj4+h89mpf7T4jAbQl2wPLCBAgym4iJEazj2piFPRhN1QfBpjfOJygJT5sBJ
-         jqO5Fo6IxIF0ZyC0Z3/9HrdKKve3M0WjMgA0fwLbYpu3mT5A7jc0n2UxV7LPrm2c7DAn
-         EOnQ1Ni233Ph1b1ogJF7YRX56PS/rJ35Q2VSc9mTIMnKZc0cPCysQ1Z0SGxgpt6hiseF
-         jjLZHniwLvBIEIpI9Apaq3WvVSihzrVKnfqgo2WezRjNPP9EN/6XsL6QR/nl5wNbvBM4
-         YWt8/ITj0JS2vekHp0+551QiU/0hzHonka2aDmLJ9AxK2jwRiFUxZZmK5oNuL07tJBCv
-         nmTw==
+        bh=JZQQGWWSalMTDcCO8QOolY+y13f7Fz4iaePp1nDET7U=;
+        b=nNRIas+WyRz5xVdnv4TMewb5kPfRG7HFGN0l928KNgIoiyPZ6qQzJFIprwiz3kbgia
+         xpOxZuCaQQREaTTWcQ8/hxTNI2bPDtBSmp9Y3p+7qO0crWJeoSFLX8tGjGQSE9ZzQGVD
+         lt5nnu6HIzJjFY25YSQ1LDR0gZElg+ESLNKw3ZhBq194xhgc7bph3lP3871wpT/kvDvx
+         qte4/fZuW8HwI5zbfda0rjDF3pTW2ozqJYC8ODnUMba+95emKprASfFnAqoc4rDWPWjF
+         vKa7q3bRRpVlJfvkcR8M9BlDkt0MU5uHkSvyCgdnU5CUkB2jqhmG50hBibiKoqt1JY2b
+         iXIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776759443; x=1777364243;
+        d=1e100.net; s=20251104; t=1776761629; x=1777366429;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=pW4RvJ1J0WjZeebgyc1hyYHIFUKi/UttC0Wl6Mb4bxo=;
-        b=ju6rUH+VKPJEuOdkK/sHxO4cecrErxQajK8ERN457KZfU0Wdf8ViACKxCm3Qvz3s09
-         PGxziqbpaN/yp5KizYnP+z9JIZr1KFMMb5RcQLOODqnbfuWgg6A74EBiohwjhfhWwI9C
-         x+kn60AtYyQ7us70+nPc0odELirfEyBG+bucR2fOMiOi4vfJBqt/9dnQnOCRLLnPi2F3
-         A10FGWEKsKG2YfUcaDWS3oCVqQk2kiPVUJteMzo4fQ/yFT1r9RfdBbsWyCJgn5JcY5Yy
-         Xy35dTUVrYMBppIxrFYCn9XBA8KqKRqIF86Uui5wuDOSQD3tvUbTLkCZBRhiFWMKOnPl
-         JxrQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+/ieaVxvZkwliy+c5aYq4HhYYImcTpzKm8a3U9HR+hc4FC1UDutIiVFChA097/h08BmlIpvtXW2tQxlJ0=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy70EKpLWUDM/L7fT3/ZYr+1ghH1SAoZJE2cfmhTRC7dvxBNlvL
-	g17qOLtjQpwkZQEZHAG3DZ7VWiVCnNI8gaOv4wWH9CqCwhMwT8iiA/jfX6ogoqllhHFtjQk7CD5
-	VYkujjzz+zTkaWeJvLCWIM/OUL99m0BbLvvQ9Dok0MqGLthlGMp2oxkwpJro9OWnamQM=
-X-Gm-Gg: AeBDiev8/lc8aeygOfhEKudNLDUx64YgElyGczYih2FPBew033/FKwgdHWznpcjPorg
-	rWz4RilxvbN6VCgoy1Xe2FmI5coImlm8l7D2DmJP0dvntf/jFavf7tTMXorxbKUpQc+3/rjuMOV
-	RFuued+0xwXEW/LHLfH8ZZ1hAhg+IKemPLuipwSEUPAYuKyMnI9vS8DLEgiWFLP4Y2Oe7mZ5Cmb
-	emBKaeAK7m2DoWaRrOy0CSgVSUAmbDOfPleRXxoWvtS/SqqhBOcI+kZ1gTpudhM+F1MYlnvFl1N
-	4lFk/USj/G7fs104dyj/EnE7+YoAAlXvV/vTQz0ggZ/ETd8Tlp4p6Loe+l2i1DGSxd6VOa6uENm
-	0tHb4tjjqSdV4kxl78VKAz8jv5AtmWatkokbz0oHgsJcf3DKGWH3MGzPNRhfr9UGB8PI39IfJS5
-	k=
-X-Received: by 2002:a05:693c:3007:b0:2d9:6373:ad0a with SMTP id 5a478bee46e88-2e46538fd04mr8455843eec.11.1776759443506;
-        Tue, 21 Apr 2026 01:17:23 -0700 (PDT)
-X-Received: by 2002:a05:693c:3007:b0:2d9:6373:ad0a with SMTP id 5a478bee46e88-2e46538fd04mr8455826eec.11.1776759442926;
-        Tue, 21 Apr 2026 01:17:22 -0700 (PDT)
-Received: from QCOM-aGQu4IUr3Y (i-global052.qualcomm.com. [199.106.103.52])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2e539fa5c38sm17625182eec.5.2026.04.21.01.17.19
+        bh=JZQQGWWSalMTDcCO8QOolY+y13f7Fz4iaePp1nDET7U=;
+        b=c+p6NUB0yNvRurxnLcQ+RmqMRmaNa+OA7zeCpiYWmjfgKJd7/rsfueoB4ZmAi5OQ0h
+         hz7wd5WDyh9Pp/bk/9XUXtEX2iEgaryYaZhtnkfTZnr/q5vg5Q60ahkL/InXCdHQRSUk
+         TsnIKjCpkNvxN8NhPKCnLyvOIKWyBmnN1h535wtxRP3aSiZfk8Yv9dySY8oFtDecOlBy
+         8H7GAB6uFKvkiXNWCQP4/Y+ipO6e3vLKkGw2t9SqztcDykcSjOo13ZL4yI2rWqo6wjCD
+         sUR3jatDM37/tWftMFlG6Q+vWQR6eeGOco/PwQQFVOhRV1azwkhOG+FueW/BJjmGph+e
+         C+6A==
+X-Forwarded-Encrypted: i=1; AFNElJ+W36gTNHNjtQsgu4+6QTm8M2vuhp+LWXgbvMx+QFuk4vf7vY3zt5EZlicWI0w+4Ivn0WvW47gMT5hCnWU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzsdbDRt8+CCbS7Io8T6wURhFHmUWAiODgrL/yfOS00MnNtKAw5
+	AVYvT+elt7yewBlVYvMlzNKxtksRfTrr6I+jaSWiD0Otwu9SvwBGPOVqF020zwtqPd8=
+X-Gm-Gg: AeBDiesELuIK17V4RutXT2JU2jq4RWpftmHNu/iblR7Wl77gcatdTUfPrI0gWKLoOyv
+	7Wv+XBa2P8Wfaos1PSof7iegkk+7a+z2Klc5KUpdVqDOcBPNUBVyuNVxqeXYSFaPH+43aOeRW/P
+	3JHUvk5mo85AhJf6xo+vZ7ORQwlcEEKRxo7qXqpDGcJ2ITl3RfVCB0gkljKGO3k+1+KuApO7f+U
+	ZUFVnrSyT3Wl7EUXhlxtWL+UmViDq/Gid8K8Ij4yDZRBk9mE4ludD/0f7VNax2jaTdTOPiDbTQB
+	bzHyn8neCYEPXEdRVDbXSzUMwAcLkcQFTrUaLjMlQrqSTZRCEiHsBx5qLnj1O1yRImyO+h2gY+p
+	oKYWWVYLuVzzdTMQln6VS+wPCzPXaz1Xk7jYH3fjhvDnQoY9q499+eTSpPRih6aGFML6TAQaeZZ
+	AGEFfc4UB1VOWzNAq2Z6L0n2G/+71Z1hoEH3yi1IvDyBoVeVKQRaZXRZ5WSVsYlAYLZ+2KDcwve
+	/WF3GjrXI+dgw/Erooiz8LF4Q==
+X-Received: by 2002:a05:6000:4283:b0:43d:73ff:fd59 with SMTP id ffacd0b85a97d-43fe3db9bc9mr26406876f8f.10.1776761628838;
+        Tue, 21 Apr 2026 01:53:48 -0700 (PDT)
+Received: from localhost (p200300f65f114e0838b25d7f2f2f49cd.dip0.t-ipconnect.de. [2003:f6:5f11:4e08:38b2:5d7f:2f2f:49cd])
+        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-43fe4e4ffa8sm35441056f8f.35.2026.04.21.01.53.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Apr 2026 01:17:22 -0700 (PDT)
-Date: Tue, 21 Apr 2026 16:17:16 +0800
-From: Shawn Guo <shengchao.guo@oss.qualcomm.com>
-To: "Rob Herring (Arm)" <robh@kernel.org>
-Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        Deepti Jaggi <deepti.jaggi@oss.qualcomm.com>,
-        linux-kernel@vger.kernel.org,
-        Praveen Talari <quic_ptalari@quicinc.com>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Dmitry Baryshkov <lumag@kernel.org>,
-        Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
-Subject: Re: [PATCH] dt-bindings: qcom: geni-se-qup: Add compatible for Nord
- SoC
-Message-ID: <aecyjAkRes7hC1_G@QCOM-aGQu4IUr3Y>
-References: <20260420064401.1248833-1-shengchao.guo@oss.qualcomm.com>
- <177667402766.1199205.7736172019278854390.robh@kernel.org>
+        Tue, 21 Apr 2026 01:53:48 -0700 (PDT)
+Date: Tue, 21 Apr 2026 10:53:47 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Markus Schneider-Pargmann <msp@baylibre.com>, 
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH] serial: 8250_pci: Consistently define pci_device_ids
+ using named initializers
+Message-ID: <aec4Ft5HdkW_izjV@monoceros>
+References: <20260420175648.1709935-2-u.kleine-koenig@baylibre.com>
+ <aeZxWbZJSGHy_C_5@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="yatlx45kul7vd2ss"
 Content-Disposition: inline
-In-Reply-To: <177667402766.1199205.7736172019278854390.robh@kernel.org>
-X-Proofpoint-ORIG-GUID: JgTjmFsGSH44KaW0RXCj04rP3FjPHKsg
-X-Proofpoint-GUID: JgTjmFsGSH44KaW0RXCj04rP3FjPHKsg
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDIxMDA3OSBTYWx0ZWRfX+KgduuOkz+FI
- b9HZIQGfvcME3hSaFSyTD9Jy8XO1P0ZjFs3tOB8WITvfxrwB/+ZwTZ3A0/UqZuCXTC1lZJx6hR2
- 0QdcZOhABwO59eaUMsRto8bWKVWp0OQJ3ErsL+Sxan+TrOUft7RvDmRicS6ED8UpMI6SQL4QlzK
- UVuRHkbLI2BcD7tjkxaNt2hyP0nWAlV3cEoXr0Lc+vX8Wb4cpaHLkAbvWld9eLyK6PLfS+FBzsz
- r06ZEKbLtVUb1tMC5ZnKGNh0YegwO2yMQiX/5zq+ge0WVgw8Zh6kcPBu2+iegmyQ1JEptD77e7M
- Y5atXMLvBnaqf0gYQGICio7a8x2p9TkpYhgirA1PASkOWTrVmPbCMi97YgKdmPJbjAUkhzBwUK0
- TmvO9BNuAMKUC3nsIHTKumSrcLHDsCaHn4PF0KQ0CRglqpETjHuLd2illLeGgh5bE7sNZ184EQ1
- ayhgdYHHI4d7ZSoyZqg==
-X-Authority-Analysis: v=2.4 cv=HNrz0Itv c=1 sm=1 tr=0 ts=69e73294 cx=c_pps
- a=cFYjgdjTJScbgFmBucgdfQ==:117 a=b9+bayejhc3NMeqCNyeLQQ==:17
- a=kj9zAlcOel0A:10 a=A5OVakUREuEA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=3WHJM1ZQz_JShphwDgj5:22
- a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=SdGosrV6Qt3YffhYJa8A:9 a=CjuIK1q_8ugA:10
- a=scEy_gLbYbu1JhEsrz4S:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-04-21_01,2026-04-20_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 suspectscore=0 adultscore=0 spamscore=0 phishscore=0
- impostorscore=0 malwarescore=0 bulkscore=0 lowpriorityscore=0 clxscore=1015
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2604070000 definitions=main-2604210079
+In-Reply-To: <aeZxWbZJSGHy_C_5@ashevche-desk.local>
 
-On Mon, Apr 20, 2026 at 03:33:47AM -0500, Rob Herring (Arm) wrote:
-> 
-> On Mon, 20 Apr 2026 14:44:01 +0800, Shawn Guo wrote:
-> > From: Deepti Jaggi <deepti.jaggi@oss.qualcomm.com>
-> > 
-> > Add compatibles for GENI Serial Engine QUP Wrapper Controller on Nord SoC
-> > with fallback on SA8255P compatibles.
-> > 
-> > Signed-off-by: Deepti Jaggi <deepti.jaggi@oss.qualcomm.com>
-> > Signed-off-by: Shawn Guo <shengchao.guo@oss.qualcomm.com>
-> > ---
-> >  .../soc/qcom/qcom,sa8255p-geni-se-qup.yaml    | 20 +++++++++++++++----
-> >  1 file changed, 16 insertions(+), 4 deletions(-)
-> > 
-> 
-> My bot found errors running 'make dt_binding_check' on your patch:
-> 
-> yamllint warnings/errors:
-> ./Documentation/devicetree/bindings/soc/qcom/qcom,sa8255p-geni-se-qup.yaml:77:13: [warning] wrong indentation: expected 14 but found 12 (indentation)
-> ./Documentation/devicetree/bindings/soc/qcom/qcom,sa8255p-geni-se-qup.yaml:80:13: [warning] wrong indentation: expected 14 but found 12 (indentation)
-> ./Documentation/devicetree/bindings/soc/qcom/qcom,sa8255p-geni-se-qup.yaml:83:13: [warning] wrong indentation: expected 14 but found 12 (indentation)
 
-Will get them fixed.
+--yatlx45kul7vd2ss
+Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH] serial: 8250_pci: Consistently define pci_device_ids
+ using named initializers
+MIME-Version: 1.0
 
-> dtschema/dtc warnings/errors:
-> 
-> doc reference errors (make refcheckdocs):
-> 
-> See https://patchwork.kernel.org/project/devicetree/patch/20260420064401.1248833-1-shengchao.guo@oss.qualcomm.com
-> 
-> The base for the series is generally the latest rc1. A different dependency
-> should be noted in *this* patch.
-> 
-> If you already ran 'make dt_binding_check' and didn't see the above
-> error(s), then make sure 'yamllint' is installed and dt-schema is up to
-> date:
-> 
-> pip3 install dtschema --upgrade
+Hello Andy,
 
-I wonder why my dt_binding_check doesn't report the warnings, as I have
-yamllint installed and dt-schema upgraded.
+On Mon, Apr 20, 2026 at 09:32:57PM +0300, Andy Shevchenko wrote:
+> On Mon, Apr 20, 2026 at 07:56:48PM +0200, Uwe Kleine-K=F6nig (The Capable=
+ Hub) wrote:
+> > ... and PCI device helpers.
+> >=20
+> > The various struct pci_device_id were defined using a mixture of
+> > initialization by position and by name. Some use the PCI device helpers
+> > (like PCI_DEVICE and PCI_DEVICE_SUB) and others don't.
+> >=20
+> > Consistently use named initializers, drop assignments of 0 by position
+> > for .class and .class_mask and use the PCI device helpers. Also use
+> > consistent line-breaks and positioning for opening and closing curly
+> > braces.
+> >=20
+> > The secret plan is to make struct pci_device_id::driver_data an
+> > anonymous union (similar to
+> > https://lore.kernel.org/all/cover.1776579304.git.u.kleine-koenig@baylib=
+re.com/)
+> > and that requires named initializers. But it's also a nice cleanup on
+> > its own.
+>=20
+> Can we rather switch to PCI_DEVICE_DATA() and perhaps you would like to h=
+ave
+> PCI_DEVICE_SUB_DATA() implemented in the similar way.
+>=20
+> This will shorten a lot the lines, the
+>=20
+> 		PCI_DEVICE_SUB(PCI_VENDOR_ID_V3, PCI_DEVICE_ID_V3_V960,
+> 			       PCI_SUBVENDOR_ID_CONNECT_TECH, PCI_SUBDEVICE_ID_CONNECT_TECH_BH=
+8_232),
+> 		.driver_data =3D pbn_b1_8_1382400,
+>=20
+> to, for example,
+>=20
+> 		PCI_DEVICE_SUB_DATA(V3, V960, CONNECT_TECH, BH8_232, pbn_b1_8_1382400),
 
-Shawn
+Not sure I want to open that can. My gut feeling is that it's fine to
+group .vendor, .device, .subvendor and .subdevice in a macro as they are
+similar in spirit (hardware property, purpose of identifying the device)
+but .driver_data doesn't really match that. Also I really like the
+explicit mentioning of the member name for driver_data because while I
+think the suggested macro name is as good as it can be, in my opinion
+the first snippet is easier to grasp for someone who is not deep into
+pci and so I consider the additional line space it requires to be well
+spend.  Also prepending PCI_VENDOR_ID_ and PCI_VENDOR_ID_ ## vend ## _
+is nice to get a more compact representation and enforce consistency,
+which is both useful sometimes, it has the disadvantage that I cannot
+easily make my editor jump to the definition of PCI_VENDOR_ID_V3_V960.
+
+So in sum, while I see the advantages of your suggestion, I don't want
+to make this part of my current quest.
+
+Best regards
+Uwe
+
+--yatlx45kul7vd2ss
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmnnOxgACgkQj4D7WH0S
+/k54egf9EImNUMt+TS3ZLs0wiR5C5S8+0cggUhXKE/krY9bEGzWCKW1DIaSBWxuB
+Anjm5m+e6B28DQ0hKzH1c0LLwjqf1bxjkZ8JRpnyDMtBvlFp95vh3Ql1KMDRMTPY
+Yl8XPJlrcgvxjIIGNuzI9otTdSYTcSbnt2p7EChRphI1UGH/8deyK2TyIgAUWZXb
+OKjxhvQVRSxpVH/XC64vNmY0U/Wt4y1FL50W1IL7vYtishn2XVpM0fwhin/u6juY
+TsZ3Y2lesQuRvvBYQQ6bz15CzZ+rBp7Hhkem2HrbH8LtxF6YmLZaZsvUcJhDHjzV
+eT8iwLx97TPYHGlLi7Y7KEZ5Ba4M1g==
+=b/Rs
+-----END PGP SIGNATURE-----
+
+--yatlx45kul7vd2ss--
