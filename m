@@ -1,211 +1,115 @@
-Received: from OS0P286CU011.outbound.protection.outlook.com (mail-japanwestazon11010038.outbound.protection.outlook.com [52.101.228.38])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vk1-f178.google.com (mail-vk1-f178.google.com [209.85.221.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBAA617BA6;
-	Wed, 22 Apr 2026 06:26:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.228.38
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776839177; cv=fail; b=pTwVGr0qLbA5HT2YS4P/zvaPvhOhywKMR7vyUTlPLDv7eqptWctvjoEGxRd5ombgME5C94p9qXc8Y/XjuAHyHZXe+iaG1JRlwKKQ2beWZkZvy6TfXqauVddsqLHufA0/FPnNB0WTUX5wXLiZx5KQw0iBHdidsFgyXNZtp7EIr18=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776839177; c=relaxed/simple;
-	bh=5mOjWO8MPUyOF56ZteT9VsfpOcMFUU2+PVf0Zh9vSPc=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=PDqDEUWlKbxNBF31Bd83DPLNTl55lyOeiwlQSWVH/BYF9ZnWFvYAefLm5XYQH3Q9XJIGCht0uDYKU5Fq5WYxQZesHJ7Cv80rf6BzfJ26Jbqh/iFo8HaxPtLUKlrsZ/3d1ONFDitXHQj20N8zH22HDVLk2hTl2/AvwzaUUb9Iqos=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com; spf=pass smtp.mailfrom=bp.renesas.com; dkim=pass (1024-bit key) header.d=bp.renesas.com header.i=@bp.renesas.com header.b=sdf2Ksz4; arc=fail smtp.client-ip=52.101.228.38
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bp.renesas.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=bp.renesas.com header.i=@bp.renesas.com header.b="sdf2Ksz4"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=RnRbRlajieRbNYtFtmWRTS4xiaUPCVvz5GFX3KlNncJxLxEBd9zVpKqkrxwbKk05J81i6CnNZzXr0zAjub064yoDdJHnWzA8LycTYMh/FXYEvp9bsQWoO7S4diLbfx4NU0wTleTE8Lcltr9ruZnWJ0fozb9Zan1E8xDMgNWsFwAl0Ks1Tvm3WsEUKRWWt9GADIlO6K+spd9S2Q3Spj8BmNoFUe2lYK3F0gCCi1qBXojF6Z2ANM4ku5IVB1uRlmiiHLl1TOUCpSSXzJSNSc4pVuBAEkwFMmt5CS+1X9vpM3r4ZNbjdVg5Mwg4aZiNAs/oHx4J4M4jjEEUvxqb4hzMbQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=c54cc49Xwm8kd0VPbEmPC+RwqztmJap68P1YgkVUiSM=;
- b=fyavbJj305/qyCxsQToT4VI9qy/sn41ka6WwCREDJe38ZkIFXI/uaIzSK94T4ztzhTRYVOEoRcaOdj7XYd2/MdvNXYucs8sqQNXJ6hP5ZvDIu2V37kPtenFO08cVtXC/zztn0mIy/7/aSkEe85/TZ8uYxi+pF7ZuxLDiaNkfTJJQ7ptMramGKXMEnSLRzdq7opeaY9UP5V2Ku+BIJkO9upq/MJra78wLRbpjBZVpr8f9H+6jC+Y94gtMwYp6PFuu2sVxSbux+5i96PeNM7c1VhWpmSEkQHkNbP2JSoYA/65bnou6dBIJa1LbluI/agLJcbg3a630HYEmskPn52r3FQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
- header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=c54cc49Xwm8kd0VPbEmPC+RwqztmJap68P1YgkVUiSM=;
- b=sdf2Ksz4rzQq0cq7fVyo7G+VP79au57KjQu95nVbEZmdVLps+yUPgBrxiZfuXPLZFVuqCEw1grMGh6V8V8HtlQIN7DbiDKdjBpm/TE9a1BiuPQg19kCN3wJMoRyls6ipK9TK2HOIs1CyKnIpl/PryuhN5QGYDdIGcfDtfi6sGdo=
-Received: from TY3PR01MB11346.jpnprd01.prod.outlook.com (2603:1096:400:3d0::7)
- by TYCPR01MB6788.jpnprd01.prod.outlook.com (2603:1096:400:b3::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9846.18; Wed, 22 Apr
- 2026 06:26:13 +0000
-Received: from TY3PR01MB11346.jpnprd01.prod.outlook.com
- ([fe80::87d1:4928:d55:97de]) by TY3PR01MB11346.jpnprd01.prod.outlook.com
- ([fe80::87d1:4928:d55:97de%4]) with mapi id 15.20.9846.016; Wed, 22 Apr 2026
- 06:26:09 +0000
-From: Biju Das <biju.das.jz@bp.renesas.com>
-To: biju.das.au <biju.das.au@gmail.com>, Greg Kroah-Hartman
-	<gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
-CC: Geert Uytterhoeven <geert+renesas@glider.be>, Prabhakar Mahadev Lad
-	<prabhakar.mahadev-lad.rj@bp.renesas.com>, Thierry Bultel
-	<thierry.bultel.yh@bp.renesas.com>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org"
-	<linux-serial@vger.kernel.org>, biju.das.au <biju.das.au@gmail.com>,
-	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>
-Subject: RE: [PATCH v3 3/3] serial: rsci: Refactor baud rate clock selection
-Thread-Topic: [PATCH v3 3/3] serial: rsci: Refactor baud rate clock selection
-Thread-Index: AQHc0M6fxD+X2AJKlUClIYVQS3QtkbXqntPA
-Date: Wed, 22 Apr 2026 06:26:09 +0000
-Message-ID:
- <TY3PR01MB113461031F3FA4D576363E5AF862D2@TY3PR01MB11346.jpnprd01.prod.outlook.com>
-References: <20260420140426.237865-1-biju.das.jz@bp.renesas.com>
- <20260420140426.237865-4-biju.das.jz@bp.renesas.com>
-In-Reply-To: <20260420140426.237865-4-biju.das.jz@bp.renesas.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=bp.renesas.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: TY3PR01MB11346:EE_|TYCPR01MB6788:EE_
-x-ms-office365-filtering-correlation-id: ce1eb5a2-a0f4-4ce3-9861-08dea0380af1
-x-ld-processed: 53d82571-da19-47e4-9cb4-625a166a4a2a,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|376014|1800799024|366016|38070700021|56012099003|18002099003|22082099003;
-x-microsoft-antispam-message-info:
- rt1MH1WFV4mwdfdhru4W8eD7zFoz6JIgh2H1OvrmUclC3OL2c8z2AjKfl3xf9uHfnTA3fsD3PWhqPdLQkKZSArc2B4gU7dONXhuxZvMo8LbAz/GTw82j4U31BEWIk/55/XQCSszo7NfzV4mKQrOz1Kcva5QtqkhT175m2PCKWLr05jTL+xt6r7sJznWS3YVy838z7m+nqRkCOOnz6JCDWLmjEF3uZRF9/QcPyqm1fiwCc8v6yDpnPYOf6gZmBtmWThQOac+ljh8av0IqpgduiJlUSB1Krv8xlsgVJmJcC2Zbh6RGh87moq61mkdUgVKtvXmEIlWliWKzBenjAABc2HVAtRpIHGXmlzzf7pYBA2zY4K0DmNPW9lwrcwh+x0yVZONCXIWnfo1EeYpHuVxa0r8EZwUDvRr2xfr4o/QQDxPptExKN2g+bXqEo4TT8yreAkx62jOq6q2U7hg7CYO06cJ1Z2+H0NwRfxQlDZSZ8DB0oho8vkhp3yo8CKWqLzKa7Hy6APDgvqSIMTEc71LLZbIcsJvoa4lfJLsFgloT0yomSwni7iQsNOdA+Bg024/YaivXffz6pXZkgcEugVaCXmsr9hM8gU+ftr0ZVRf435x34woTOP9KMivLREbw7IYqjQDULH/3+ywmqnSNz+tvZiSvzn13U31tcOAkpGGtxX64AWj1Uv0z/nLYTg1QMqqzsumFmDKt5qcyShIlrpwtEJinbrZZYvhYptwcBb+r0ZXBWCn6eEJ44RBC9F15c0df6saxBBrQhivmc/5lYJAt3JalM/oNofYEtSyJDu+4CEE=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TY3PR01MB11346.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016)(38070700021)(56012099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?qHoY+G9S9zs/GJHbZSgvkMnM5aAAKDhLASv3jG7jJAHUNxNsr1tcFRKz9bhw?=
- =?us-ascii?Q?17yJAzVHLaaW/t486WT0giBq6duVyRobaVgJWhcfNtVuRCLyDrN6IOy5xGJc?=
- =?us-ascii?Q?3gR7d1GopZXA39sbDAWGbxLfvJwDGMRexAKajQIi2aHbWkM4SoHyUI4Mpq8J?=
- =?us-ascii?Q?UARUvuXed2YX/FlmHpAy0nKvm7ZM55qPgGcQUXscbgj2/2wu+bTsVSNY+2oo?=
- =?us-ascii?Q?gWGRiD0DmieDxE39eVMNmyq3F31F2i0LKv21nRHCUJDTRaPyEWF/LrSIuci6?=
- =?us-ascii?Q?Did7nqvv8f3nvdH/TYBYw3eBHuPFwzPHPMmyBNdssjXr4czTDtfYjq6mYk/a?=
- =?us-ascii?Q?/ronYl09giHAzfQmUvxWrfR36Lkg9ezZWyTGgY9W/u915x2ip8M0mn7jGRB5?=
- =?us-ascii?Q?9H4+KLoY0mipJ/zwFSQYahvfu4er6B4GereRaDW9jO72Z+ibP9CIagLaxdOn?=
- =?us-ascii?Q?wE1xXs8f0ACu6jKK4ocsxyJ+332NhRlKjvvE9hEgA4vEPVaD4M5bTrD7itOq?=
- =?us-ascii?Q?/W4h4M+oDVRMNO167nOslw0Jp9tsz4kLOiXG5SmgFTPmzAtTBo9GowGWhrzP?=
- =?us-ascii?Q?cwQxs8xyJovkRAirOhRrcwkC1vxUJ4HgzyhsouncvXiZPZl/sWb5+LHC8eWm?=
- =?us-ascii?Q?PGagXvIsRha5cFloYjXcCEyRnwpxhUGdWHQdRKyDiUvB323hB0ilGEup/293?=
- =?us-ascii?Q?nUM6K7rNjCGrENtpjxkE90Z3NmMDWCmfO/4Y4LyOY3RhKs81eioN7E5IXSw4?=
- =?us-ascii?Q?ppCDjU4l/BgwV63znQz4lZ4B3/i5G1K7vgNogP5TMG5PysHpS2WkwIBckZ9d?=
- =?us-ascii?Q?IFGtcOBro9fdt3ooiR4ZofqUKq9hNc+jBzQyxJIdhhUJPAuOF1pZaPjhfyfO?=
- =?us-ascii?Q?zECAs/YC8/E+6/HIwXOcv9ntGL6B6/1Rps9xppxC/dou6KVpd3QfSOprh0wb?=
- =?us-ascii?Q?R5uumtJQOPrs9ZKpR02vZb/bIifnqS9A3CcIw0rUC19G23WBS2snO9uPeafW?=
- =?us-ascii?Q?mWxoi4nlPoDeH6ENZWYI6XBW+vxB/iB1IlhiV+SmnriWyWGKgGm1Wcp//cjj?=
- =?us-ascii?Q?S8+S3Y1sX9xW/7wSy/NfGPKFVC/sab5RleZ1eL11wkeKhhl4lVK6TXj5PK64?=
- =?us-ascii?Q?hChYIxwOeDtnnQp87ii/s3RgT1lEoAB+9UW1V7TnihPOjJt2cTPwlGlBtWp0?=
- =?us-ascii?Q?QkSTHR8/EUR9y+k5+1waVEOwfJo5nvzUxEaMsMXwHfdm7QLYM5k4z+DkL0+R?=
- =?us-ascii?Q?pygBUA9GG5dgRaS1CXeyXV2Lixbk7rZIc0nAD3NOU54PfCruBvityfbv3yBM?=
- =?us-ascii?Q?s1z9Xga0JWb2hZ+o2eTxFz03zMxYnzP/27OcBEqvnxcj1zhUYoembbgiLc56?=
- =?us-ascii?Q?j/MuSC8HAX/XrjwKvZ1m1tP0jIEyEcuwmYqOI+NRjUL97ECsTmljlDwp0WkZ?=
- =?us-ascii?Q?DO1QmPsjjKU40xIaELpdOilhnU7SEHrbIKu7DaAA16SlbfwCVIDKY3Zc9Mxu?=
- =?us-ascii?Q?3pN+Qvn7/Zi4754x+JyY34NaJ2dAC76PQG7YL/b5kMMeI2rrMFGA6ClZGGWh?=
- =?us-ascii?Q?GPN3yh7d+HmdPt4arQ7wum1DZdFGRJ31VVAeOP9ytBQmFKct6Ss6iSPKVu++?=
- =?us-ascii?Q?ecYppOKvhsrbt26YjCLZn3J7EmbLubQo9DJiWc/YvFQ8rrCY+3rP0cCiOTbK?=
- =?us-ascii?Q?5oqLO1mm0AQ4Dvi3Wv/MzO8IPuKqybrDqdEPEGCs9SyteXUgusEoXszuyC9c?=
- =?us-ascii?Q?GEt5m+ogSg=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B83AE361647
+	for <linux-serial@vger.kernel.org>; Wed, 22 Apr 2026 07:04:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.178
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776841501; cv=none; b=AbQGUeWl5xk9xRGAhzlhIDIEtr1k+CdW5DsLVcIPfaL4Mdv3cI+pducmwoGL8BZz5izOSG3dvFifdib3YDqvpdZzsUYmuctlTG2EQ1rb5DnpzlmBhPPhzMszhnG5JAqSN3zsbgXTltpkgCduzDExjmsmryKXe2iy7T4VtNU3l3M=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776841501; c=relaxed/simple;
+	bh=caBlDfLl+UaWCXVT/wSjHkxNWroEBNiNYGlokbHXKFM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=GTqNHtnERoqQJzj/T0fNPQ28mGw81Fqa9rW1xfrHgN+H/+lqjxTJyBDjthWQUzRHonSsWl4n+8xHGptQBhxh0vkO+QgMeOKLKVNqdlqAZHcdVhLXuRj9dlPurA02MglFnsDMLMWNFmHeJXeyDNywUoT4Fh6QM1X6U370IZhY4U8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-vk1-f178.google.com with SMTP id 71dfb90a1353d-56739adfa1aso3647345e0c.0
+        for <linux-serial@vger.kernel.org>; Wed, 22 Apr 2026 00:04:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776841498; x=1777446298;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=liaRyWhpT9OCcw5airrCkAgKo3GVhO89vTayZKrLNrI=;
+        b=dWKnPNBo2QG4rMpBcQMeTNDeZmJ3jYP85Yph2RQDsFumF7q8xc39LwY31f9p5u4MaF
+         SZ+Ve9LCLH9lSeEKoskYg9tuCas6+xt7o+Uz7NKUrZ0RI6sK52QX4Vs4oWMddK7R1qk0
+         T0g3qB5oU8Y7Ozia9nw269u4ULP27kypwZjZK2CoyXfAeThnXNSTyRToosHANKBm9QUZ
+         0S2Gw25QkZKmXoFKYWXOZz5iqRggG3ruKvJ5bRG90P4oNvYMIDKr+JXc55GHPEyS5+VB
+         M5GdNZ8c1FHwNccSvNXKJOAQGGOCoo6f5Ilq6y34fhOZB4M7jGgemap8swFZtUEe/sZa
+         6bKA==
+X-Forwarded-Encrypted: i=1; AFNElJ+adqCQk+HoxIL6vagL+9SJdrEDJYISqA/rcpWKMkdWNz+sZw18xB1Sc1DClfAf48GcUBvCKU5BPDCNwVU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzngEkOtUTNzcZKYNpcIi/SnpS2U/KQc50kiXo34w0fFRK4/Kwd
+	d9AsL3sWWyew4LmhlDTdGZ6vSXwGQe+ByrncZ8zxur9UP7nS6/6z4p8nMhsFyeOXqw0=
+X-Gm-Gg: AeBDieuD3lPnefCHk5UcpNq5OZqsDN1dQKap9Mfjnl+aL9GjkDK8B+Ub2kuLYcIVd+e
+	0BxVEkOpzgHUW8lDdq8vtHgEn+FmejcegNuIC6ANFbve/XEqHZ6if/un0AxBj/x9ddF4V80u7qk
+	OfjwNXsej+PGylGQaN0XHS0Ja9pSwdLyBXMBqQbkth/2q+3ikWuT2D5JS3ZGvf+MYx4HbSG4HL2
+	oGM8HjZR7ilWP/DRn92cqR8XCJcVposfgmZGv6QuThI7/H7g/wUL2n7dSFpohywxlYDkRvh1lih
+	E/LgFpwM0YvmlYusru84R8wszHfyxxoHZ/+yHZgDC5sm3OfX9G8Iy5pGSikq6AOBM49tp1hK4XF
+	cLMSmMXk17vjLqzfj6PppDy8gLU5s3TJWBqXDA7NDYDrtF++l7qsoY/tIXsgLCEFgReqmXGyBd3
+	54cjHavCOLqHuwF79WSIBu3F89CpzWfXi8tGKHyqp7QHkl35q20TMqa1Y/IV7D6K1saZbPnHLUb
+	RslJCE9x3/eCA==
+X-Received: by 2002:a05:6122:4b82:b0:56d:451b:e4dd with SMTP id 71dfb90a1353d-56fa5a232c6mr10349254e0c.12.1776841498559;
+        Wed, 22 Apr 2026 00:04:58 -0700 (PDT)
+Received: from mail-vk1-f170.google.com (mail-vk1-f170.google.com. [209.85.221.170])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-56fa91bf120sm9783205e0c.3.2026.04.22.00.04.57
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Apr 2026 00:04:57 -0700 (PDT)
+Received: by mail-vk1-f170.google.com with SMTP id 71dfb90a1353d-56efdc96b05so3270440e0c.1
+        for <linux-serial@vger.kernel.org>; Wed, 22 Apr 2026 00:04:57 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AFNElJ8yCKO2lATsDFMxZiA12nxx6Q3eT723aOMXglfl2lAAD+MeaRQ43oNp5fEfM8Dnyf6LSoVJWEM3C3Sf9Yg=@vger.kernel.org
+X-Received: by 2002:a05:6122:1347:b0:56b:815c:961d with SMTP id
+ 71dfb90a1353d-56fa5861c00mr10444199e0c.5.1776841497439; Wed, 22 Apr 2026
+ 00:04:57 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: bp.renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TY3PR01MB11346.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ce1eb5a2-a0f4-4ce3-9861-08dea0380af1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Apr 2026 06:26:09.5324
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: LA/MN6rNVsJ68yGhvNQXxijF+8W8/JHS+eR3T2AeXVMyWquvKCboFZu6COnzWPVx36y8+Ttgh49zwoAZZDH/oHYUaPE+FnnSED/wm93DJ+g=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYCPR01MB6788
+References: <20260420140426.237865-1-biju.das.jz@bp.renesas.com> <20260420140426.237865-3-biju.das.jz@bp.renesas.com>
+In-Reply-To: <20260420140426.237865-3-biju.das.jz@bp.renesas.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Wed, 22 Apr 2026 09:04:46 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXQi7eSZg71=01dYjpmgHRXS+L9hXZMN_dR-mtM6sLKNw@mail.gmail.com>
+X-Gm-Features: AQROBzAmyxu2D2vKJPRl9CBrNtAxIhNRVSUNiYJ69sDUbK7osTPZ_P5v2qP_TKg
+Message-ID: <CAMuHMdXQi7eSZg71=01dYjpmgHRXS+L9hXZMN_dR-mtM6sLKNw@mail.gmail.com>
+Subject: Re: [PATCH v3 2/3] serial: sh-sci: Drop check for zero baud rate from uart_get_baud_rate()
+To: Biju <biju.das.au@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Biju Das <biju.das.jz@bp.renesas.com>, 
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>, 
+	Thierry Bultel <thierry.bultel.yh@bp.renesas.com>, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-Hi All,
+Hi Biju,
 
-> -----Original Message-----
-> From: Biju <biju.das.au@gmail.com>
-> Sent: 20 April 2026 15:04
-> Subject: [PATCH v3 3/3] serial: rsci: Refactor baud rate clock selection
->=20
+On Mon, 20 Apr 2026 at 16:04, Biju <biju.das.au@gmail.com> wrote:
 > From: Biju Das <biju.das.jz@bp.renesas.com>
->=20
-> Since RSCI only uses a single clock source (SCI_FCK), the multi-clock tra=
-cking variables (best_clk,
-> min_err, brr1, srr1, cks1) are redundant and removed. ccr0_val and ccr4_v=
-al are likewise dropped,
-> replaced with hardcoded 0 at their write sites, as they were never modifi=
-ed from their initial zero
-> values.
->=20
-> No functional change intended.
->=20
+>
+> On DT systems, a zero baud rate from uart_get_baud_rate() is not possible
+> even earlycon derives its bit rate from chosen/stdout-path. The zero baud
+> guard and its associated done label are therefore dead code. So remove it.
+>
+> Also drop the unused done label from rsci_set_termios().
+>
 > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> ---
-> v2->v3:
->  * Dropped reported by tag as the goto statement in rsci_set_termios()
->    removed in the previous patch.
->  * baud check removed by previous patch.
->  * Added missing macro CCR0_RE while dropping ccr0_val variable.
->  * Updated commit description.
-> v1->v2:
->  * Dropped the check (abs(err) < abs(min_err) as it is always true.
->  * Dropped the check (abs(err) < abs(min_err) as it is always true.
->  * Dropped variables best_clk and min_err as they are no longer needed.
->  * Dropped intermediate variables brr1, cks1 and srr1; results are now
->    written directly into brr, cks and srr.
->  * Moved dev_dbg() inside the if (baud) block.
->  * Dropped ccr0_val and ccr4_val, replaced with hardcoded 0 at their
->    write sites, as they were never modified from their initial values.
->  * Scoped variables err and srr locally within the if (baud) block.
->  * Updated commit description.
-> ---
->  drivers/tty/serial/rsci.c | 31 ++++++++++---------------------
->  1 file changed, 10 insertions(+), 21 deletions(-)
->=20
-> diff --git a/drivers/tty/serial/rsci.c b/drivers/tty/serial/rsci.c index =
-40db9daa4272..444e89696310
-> 100644
-> --- a/drivers/tty/serial/rsci.c
-> +++ b/drivers/tty/serial/rsci.c
-> @@ -217,16 +217,15 @@ static void rsci_set_termios(struct uart_port *port=
-, struct ktermios *termios,
->  			     const struct ktermios *old)
->  {
->  	unsigned int ccr2_val =3D CCR2_INIT, ccr3_val =3D CCR3_INIT;
-> -	unsigned int ccr0_val =3D 0, ccr1_val =3D 0, ccr4_val =3D 0;
-> -	unsigned int brr1 =3D 255, cks1 =3D 0, srr1 =3D 15;
->  	struct sci_port *s =3D to_sci_port(port);
->  	unsigned int brr =3D 255, cks =3D 0;
-> -	int min_err =3D INT_MAX, err;
-> -	unsigned long max_freq =3D 0;
-> +	unsigned int ccr1_val =3D 0;
-> +	unsigned long max_freq;
 
-This needs to be initialized to 0. Otherwise it will compare with=20
-uninitialized stack value on else path.
+Thanks for your patch!
 
-max_freq =3D max(max_freq, s->clk_rates[i]);
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
+> @@ -2719,8 +2719,6 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+>                 max_freq = max(max_freq, s->clk_rates[i]);
+>
+>         baud = uart_get_baud_rate(port, termios, old, 0, max_freq / min_sr(s));
+> -       if (!baud)
+> -               goto done;
+>
+>         /*
+>          * There can be multiple sources for the sampling clock.  Find the one
 
+I am afraid you are missing that sh-sci is also used on SH, without DT?
 
->  	unsigned int baud, i;
->  	unsigned long flags;
->  	unsigned int ctrl;
-> -	int best_clk =3D -1;
-> +	unsigned int srr;
+Gr{oetje,eeting}s,
 
-Also, looks this needs to be initialized to 15, when we drop srr1.
+                        Geert
 
-sci_scbrr_calc() fails, It will print uninitialized value
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Cheers,
-Biju
-
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
