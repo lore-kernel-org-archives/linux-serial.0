@@ -1,127 +1,123 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE42E3D16EB;
-	Wed, 22 Apr 2026 14:09:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41BA134AAF2;
+	Wed, 22 Apr 2026 16:13:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776866946; cv=none; b=EfLfBhRa1WqcKmcLsCeqh1HrcAlTI6/IiBQEJOu0cAYm0fhLM3sWFLbtqU/GjfWvM5h3QBK+IJCW+xXE0mdEOXXJfOIFYe1A5lsalyhrBLMLhhEdLBP0fperIkroQYNevmrJ2BE7HwSQuYEtDFR8a78LPF4yCS0Z0wPI3JOKF5A=
+	t=1776874383; cv=none; b=p60IBQxDFJ75xLufxlO8j6CKzV2W8YjC6Q3lRkRqK4TRniTo3ZoGM+BeTOj+298u+H9q9id6gTYWpOc3WPJ2cj1GxD67nDO/l66NldHjcylwGJckEefpM89qK59kgAXpzYRXQ/EJ74YOrjekXcVoVqrgu4aeq870qfRqA2UWjN4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776866946; c=relaxed/simple;
-	bh=vD/aNbZg4VpPLW+LqvzlkGiqlDibJiNK0l0zvMe2Kws=;
-	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
-	 Mime-Version:Content-Type; b=UquH7z7W2qKScCG4O6sWJPg7m1d0bFEn2JcvA0+/A+y43RA03w5wGQMQ3qvS3wiiw7TaGSHQZkG040uijuZ8EmZG+PovvS0324lDoqg7aosRcDxnMxw/hiAsqsVhoseWiaFyzRV2w9adLnSkwwGMnPk1O+8XIC2d6iKCGqa05j4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=JzG1ETk7; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	s=arc-20240116; t=1776874383; c=relaxed/simple;
+	bh=eJ0a36I7/j8FH5FHeOZEdq81Loo97lCpU4oi/Xdboy8=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=WG8uXsLiUrMQnnMuJXkf1hu13MdxrAvL63fPIxVQpspTSkzoBuUZY5WhtUUs/fn9HmqSuLbbLblOutQGmwT1+30Fzfw2TDU8dbBHhxYghfLep89IJ5KtuDC1fkwKKV/mQpCWgAC/sRSCLngeOKXigLMgmKMTB7Kl6qwSiOxDsqA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=q8iZbJs2; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="JzG1ETk7"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=default; h=Content-Transfer-Encoding:Mime-Version:Message-Id:Subject:Cc:
-	To:From:Date:subject:date:message-id:reply-to;
-	bh=El2siLR+nvzaIrn4iJtf4oIuuKbimmFYgW/9xtj4wJw=; b=JzG1ETk7PUio6vHUsP+LPMpPQr
-	4Fr/JETpnhvfzf7Y7ZFlH7dSbj99Mz+X241Rl6N37l6iovi9AtSvjZSoLT14IE9E4z9X+5qFRHA9S
-	lJXIgL11G8GmiVA+KqZyM/RS8ocQJDoOTKH3jxExHvaMhyGRyxpcw43nn3FagC6HkLdY=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168] helo=pettiford.lan)
-	by mail.hugovil.com with esmtpa (Exim 4.98.2)
-	(envelope-from <hugo@hugovil.com>)
-	id 1wFYGE-000000002p1-2FVY;
-	Wed, 22 Apr 2026 10:09:02 -0400
-Date: Wed, 22 Apr 2026 10:09:01 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Hugo Villeneuve <hugo@hugovil.com>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Hugo
- Villeneuve <hvilleneuve@dimonoff.com>, biju.das.jz@bp.renesas.com,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH] serial: sh-sci: optimize max_freq determination
-Message-Id: <20260422100901.c2168da12af0ec5aa8ed8c0b@hugovil.com>
-In-Reply-To: <20260420121205.f52ae2515cb9ff093c19c6e2@hugovil.com>
-References: <20260417193603.3906568-1-hugo@hugovil.com>
-	<CAMuHMdXpZjVctirMuH=n_PrK4nnEnWqjuCzRjc4y6kC1--99kQ@mail.gmail.com>
-	<20260420121205.f52ae2515cb9ff093c19c6e2@hugovil.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="q8iZbJs2"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D2116C19425;
+	Wed, 22 Apr 2026 16:13:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1776874382;
+	bh=eJ0a36I7/j8FH5FHeOZEdq81Loo97lCpU4oi/Xdboy8=;
+	h=From:Date:Subject:To:Cc:Reply-To:From;
+	b=q8iZbJs2Ez5eInbGV7KJ5mDvmwzgpkUpi1i8G7VXwrX55mteiuza+fgFfC9CIqewU
+	 EHUtg1pRcChLCFRbxX9HsSbb/95rD0tQNTDYHWzMKibHmRIMC1X88c4wlBD1XOKGdu
+	 3F6x6aF49iYIf/tSuUngTfkPN5zvrGNufQkfKPZpADL3AFZfnRz8/e/k+DCKnARkea
+	 om2DbsH466rytnPjZT1LtyMjXx+uIblRcEPztjYHmpLuZ2G4AyJCBhS3Ly4tX/bQMg
+	 ++itE15QjpmCr1CqE76fee6Qu4SpCFTGf0cuckd4WFCoh03mCH87u+b81mRd5Gv3e0
+	 wkUdHUniT6fsw==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C29D9FA1FCE;
+	Wed, 22 Apr 2026 16:13:02 +0000 (UTC)
+From: Vynnie Von Diktus via B4 Relay <devnull+vyndiktus.gmail.com@kernel.org>
+Date: Wed, 22 Apr 2026 16:13:03 +0000
+Subject: [PATCH] tty: serial: qcom-geni: re-arm RX DMA on spurious
+ zero-length interrupt
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam_score: -2.0
-X-Spam_bar: --
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Message-Id: <20260422-qcom-geni-uart-dma-rearm-v1-1-76d13aac7fdf@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAI7z6GkC/yXMQQrCMBBG4auUWTvQxlrEq4iLMflTR0iqk1aE0
+ rsbdfkt3lupwBSFTs1KhpcWnXJFt2vI3ySPYA3V5Fo3tL1z/PRT4hFZeRGbOSRhg1hiOYR43KM
+ b+hip5g9D1Pdvfb78XZbrHX7+/mjbPp6KJ8h8AAAA
+X-Change-ID: 20260422-qcom-geni-uart-dma-rearm-a5df83e164ff
+To: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Vynnie Von Diktus <vyndiktus@gmail.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2143;
+ i=vyndiktus@gmail.com; h=from:subject:message-id;
+ bh=UiY+149QujQXOfkQa2K1XQKMarABztpKQOeIf3A0aRM=;
+ b=owGbwMvMwCXGn2Ym8lOG8SzjabUkhswXn/tVj31W5uhs5Qw90y1oNbOg4mPNm77tK7KffQ+Q5
+ nzR0bW0o5SFQYyLQVZMkaXmSmfV/cQTbJY7ZiyAmcPKBDKEgYtTACZSk8jwhzs+b03joUNcAmvf
+ un1JrX9yeEf0oReC76xM6njKxH/osjP84Tg4rZN3Suys4uQNk9Vknljbh9+PrjoZpSUpEZNawMv
+ JBAA=
+X-Developer-Key: i=vyndiktus@gmail.com; a=openpgp;
+ fpr=7CD4897ADF61C80639B898A00F663614F91C01CD
+X-Endpoint-Received: by B4 Relay for vyndiktus@gmail.com/default with
+ auth_id=747
+X-Original-From: Vynnie Von Diktus <vyndiktus@gmail.com>
+Reply-To: vyndiktus@gmail.com
 
-On Mon, 20 Apr 2026 12:12:05 -0400
-Hugo Villeneuve <hugo@hugovil.com> wrote:
+From: Vynnie Von Diktus <vyndiktus@gmail.com>
 
-> Hi Geert,
-> 
-> On Mon, 20 Apr 2026 09:23:55 +0200
-> Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> 
-> > Hi Hugo,
-> > 
-> > On Sat, 18 Apr 2026 at 07:24, Hugo Villeneuve <hugo@hugovil.com> wrote:
-> > > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > >
-> > > Follow example of rsci driver to avoid code duplication and useless
-> > > max_freq search when port->uartclk is set to zero.
-> > >
-> > > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > 
-> > Thanks for your patch!
-> > 
-> > > --- a/drivers/tty/serial/sh-sci.c
-> > > +++ b/drivers/tty/serial/sh-sci.c
-> > > @@ -2711,14 +2711,15 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
-> > >          * setup the baud rate generator hardware for us already.
-> > >          */
-> > >         if (!port->uartclk) {
-> > > -               baud = uart_get_baud_rate(port, termios, old, 0, 115200);
-> > > -               goto done;
-> > 
-> > There was no "useless max_freq search", due to this goto?
-> 
-> You are right, this part of the comment is wrong.
-> 
-> > 
-> > > +               max_freq = 115200;
-> > > +       } else {
-> > > +               for (i = 0; i < SCI_NUM_CLKS; i++)
-> > > +                       max_freq = max(max_freq, s->clk_rates[i]);
-> > > +
-> > > +               max_freq /= min_sr(s);
-> > >         }
-> > >
-> > > -       for (i = 0; i < SCI_NUM_CLKS; i++)
-> > > -               max_freq = max(max_freq, s->clk_rates[i]);
-> > > -
-> > > -       baud = uart_get_baud_rate(port, termios, old, 0, max_freq / min_sr(s));
-> > > +       baud = uart_get_baud_rate(port, termios, old, 0, max_freq);
-> > >         if (!baud)
-> > >                 goto done;
-> > >
-> > 
-> > Due to removing the goto above (for the casual reader: this is the
-> > earlyprintk case, when port->uartclk is zero), the code will now
-> > continue here, calculating transmission parameters and setting best_clk,
-> > and overwriting the register configuration done by the bootloader.
-> 
-> Yes, I see it now for sh-sci where we have "if (best_clk >= 0) {"... to
-> not configure the registers.
-> 
-> However, for the rsci driver, I think that, even after Biju's cleanup
-> serie V3, we still overwrite the register configuration done by the
-> bootloader?
-> 
-> Maybe configure only "if (!port->uartclk) {" ?
+qcom_geni_serial_handle_rx_dma() returns early when SE_DMA_RX_LEN_IN
+reads as zero, interpreting it as a spurious interrupt. The early return
+skips geni_se_rx_dma_prep(), leaving the RX DMA descriptor permanently
+unarmed. All subsequently received bytes are silently dropped until the
+port is closed and reopened.
 
-Argh :) I meant configure only "if (port->uartclk) {" ?
+On cold boots, chip startup transients on the UART lines can produce a
+genuine spurious DMA interrupt with a zero-length count. The bug is
+invisible on warm reboots (the UART stays powered and stable, so no
+spurious interrupt fires), which makes it appear as an intermittent
+failure only on power-cycle reboots.
 
-Hugo.
+Fix by restructuring the zero-length check to fall through to
+geni_se_rx_dma_prep() in all cases. Only the data processing
+(handle_rx_uart) is skipped when no bytes arrived.
+
+Tested on SM8150 (Snapdragon 855) with a WCN3990 BT UART — Bluetooth
+firmware download now succeeds on every cold boot without
+"Frame reassembly failed" errors.
+
+The same GENI serial IP block is used across SDM845, SM8150, SM8250,
+SM8350 and many other Snapdragon SoCs; the bug and fix are expected to
+apply to all of them.
+
+Signed-off-by: Vynnie Von Diktus <vyndiktus@gmail.com>
+---
+ drivers/tty/serial/qcom_geni_serial.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 69a632fef..3c950bdc0 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -837,11 +837,9 @@ static void qcom_geni_serial_handle_rx_dma(struct uart_port *uport, bool drop)
+ 	rx_in = readl(uport->membase + SE_DMA_RX_LEN_IN);
+ 	if (!rx_in) {
+ 		dev_warn(uport->dev, "serial engine reports 0 RX bytes in!\n");
+-		return;
+-	}
+-
+-	if (!drop)
++	} else if (!drop) {
+ 		handle_rx_uart(uport, rx_in, drop);
++	}
+ 
+ 	ret = geni_se_rx_dma_prep(&port->se, port->rx_buf,
+ 				  DMA_RX_BUF_SIZE,
+
+---
+base-commit: 4a8d8848356e9e4c41e22de9b1ef1507ea21734a
+change-id: 20260422-qcom-geni-uart-dma-rearm-a5df83e164ff
+
+Best regards,
+--  
+Vynnie Von Diktus <vyndiktus@gmail.com>
 
 
-
--- 
-Hugo Villeneuve
