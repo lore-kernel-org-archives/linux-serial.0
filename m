@@ -1,108 +1,126 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A4BB27732;
-	Wed, 22 Apr 2026 08:46:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD6363B27F3
+	for <linux-serial@vger.kernel.org>; Wed, 22 Apr 2026 08:59:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776847619; cv=none; b=ujVVnV8H0VnBBAuZr5Kvu77wStZsUM7I67h+acV5Pw+7I25xgy4bNCj4qAEyHUJ2ntSaCWia8TvlTv1erWmT8flt6gpPuT+nsnLe3DEsrVZ8C4/zaz1yNWmQy4Q6FFY4yvXPfjfRbjzt3yqBRUeitkEtzaHXiPfj1ap6zAGDbLQ=
+	t=1776848383; cv=none; b=siTs0SLapZfkhezOejbNmr/oXY7eLlzRpnZPGy8XQyutETjixX8o4TeLkNQDkICvJeHyE725TbMTP8W8CDInkzwLdcTCAyxgAAbqF6kaBBz/p4B11k0EmEeYCZd9jdMTEieGXFVQv9LDbV7V+sMtVVzz/nqpm8Jj1fdt3MH0OX4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776847619; c=relaxed/simple;
-	bh=vM9sm12mnI72E842Q8bydmFKMswrt99MkGPaRQhHRH0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MRzAuJ43DvJV29EadufvUcTcRcerNDKzdmLEKIUDGk4oG+eFhuKPQXUebAxpWhNX1akgIniHvSW/+h8Fl8e5qfMtFoyEbBQBv6oESfuQPO8pjljuZk3tMZJqzQ4phzv9LuEE4qIOI5D3ItAmLnhyr1zXagFdCqjSNJ8ssWQ6q0s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jR91IguD; arc=none smtp.client-ip=192.198.163.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jR91IguD"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776847618; x=1808383618;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=vM9sm12mnI72E842Q8bydmFKMswrt99MkGPaRQhHRH0=;
-  b=jR91IguDOPt9YmIV2ySc3bxkgvNryNWpnDHLodJ5OI+C9VGLMGgL6qE8
-   as24z0F1i5YrI9eWAgymi6t0YFXsqxcMoynh/XQ3VUSX158A1Amzk528M
-   6re6XbHe1Vv757xpx6MDw/klk5si/wcvx0/yiBI928sbpeeDAqjpjZEoQ
-   Ls7NHFqV51oItRiZR1ddCJF62GO3N49ua7JrhEXf5fzAg987TA+xpLMXH
-   aMt7712M56dfkT48Psk0Ne8FcOoZsntQuJL57DAIH/y0P6Bqpp+zVjdtZ
-   CjsJIO6QufWYxACPdg4cVEJNYMQRh0pQRGZYQBH/7ggu7NRLwutYtTqCi
-   g==;
-X-CSE-ConnectionGUID: wjyQhf3RQ3yX/o9pB2K7TA==
-X-CSE-MsgGUID: DtIRg3xZTWmO1JNI/woJrA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11763"; a="77862003"
-X-IronPort-AV: E=Sophos;i="6.23,192,1770624000"; 
-   d="scan'208";a="77862003"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2026 01:46:58 -0700
-X-CSE-ConnectionGUID: 65oSOmPBSSis/42Og0oeyw==
-X-CSE-MsgGUID: o6aT+++ZQ2ijp07hj/FQ0Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,192,1770624000"; 
-   d="scan'208";a="231410362"
-Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.201])
-  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2026 01:46:54 -0700
-Date: Wed, 22 Apr 2026 11:46:51 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Jia Wang <wangjia@ultrarisc.com>
-Cc: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Paul Walmsley <pjw@kernel.org>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	linux-serial <linux-serial@vger.kernel.org>,
-	linux-riscv@lists.infradead.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] serial: 8250_dw: Use a fixed CPR value for
- UltraRISC DP1000 UART
-Message-ID: <aeiK-350Uozq3pVa@ashevche-desk.local>
-References: <20260421-ultrarisc-serial-v3-0-3d7f09c2420e@ultrarisc.com>
- <20260421-ultrarisc-serial-v3-2-3d7f09c2420e@ultrarisc.com>
- <979c9543-3ea0-25de-f97b-9c6d2fa3ac61@linux.intel.com>
- <177681947637.2697678.10937675549830278979.b4-reply@b4>
- <aeiKsv3bFPJ94InI@ashevche-desk.local>
+	s=arc-20240116; t=1776848383; c=relaxed/simple;
+	bh=cPJJcUlD/nNPMlKn2C5yR8KR/OVhhUUUAuL9RwYBgC0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=X4kGtcJAt3wt8+Tarp77cqhxfnECX0F9rSzlH5k4oStrgkq3YrEBiveIIltgFRI3gEFXazb/4iBazvUOUXJWxjCC45MxJLwKLgojHYPBNL+2Yxnw/BZ/TNjTrSMoFvjjhjBeZvS+0s7cjkwyZl01nWx6i7zrMoBsralp57YN8QM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-6729c6f0ca7so6178596a12.0
+        for <linux-serial@vger.kernel.org>; Wed, 22 Apr 2026 01:59:41 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776848380; x=1777453180;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=4dFcuwDFov74A6VmNy3taBtzKh9fgX5fvgWZ5cbJ/uU=;
+        b=mb5L7+OtbI4ldMgC2Mios3B6nhConhlU0yqEdCbnWV87yxn3TJqhOy0PEuUjBA2mei
+         uLt/6nveOiHTBhaFBasQGE0il6uRq/EOxRPCrcL/HfyLIbybx3ZlujyaDDEjej18uzWC
+         uSzJTnPSFFsMs+LPdgQ20y8Tq+z9pXazWCAc8kK93tihugTgoN7VArEyFCx3Z+lrxn+n
+         09fyarmY1VATtUjOlumLZ5K7rr9jS6ICCFM7vCXtSIiOWMrF8fY9/tXLSwLr8fuNvSF+
+         CvbzKJawMVV4hcUcgI99qgKyKAHVUqm/HfuKA6epIcBHcsK73GiiyBwRnjlrJvwG/jQp
+         bf7w==
+X-Forwarded-Encrypted: i=1; AFNElJ/nBcS+WHvt8wyeI2No5UEwygfkY6nCpvXGBMePiRc8qxP1WlC9oA6o7B5w6QXlodeD7GS3AtwLLWlCQCo=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw59xoZkMhni1uhffQlglh5pJjJd/71I4p1FZRxP8j5bk7w92bQ
+	QsZA/VJaAqZy4UFScFguyrzWa2RKVKJSV4pmTMz0GT5OGP6JUZ7y/SM8/YZFh8JSOUY=
+X-Gm-Gg: AeBDies48WXQQJgBo0SEaONk36Log7nOKU9RqPNZPYLU4bvpyBSt5eHYpsChVZ2vOFH
+	TxglCWRO347qfsD6Jzp+VxQJwPuZPmD69ujzO+3ZEe0tONGRdcLPt2hAnkA3BeYfEESDQ8RivA+
+	QKcv81IZrfXZiSngHPiRooaLAxuN19PGI3XZnho95oVu4y9U/xdiqKEUkX/PaazWd2rkQDL831j
+	LMXKWhNRO5PwKa4INDY/6QwJs2HqQoh4m8XOj3UYVCo7koWjrYqMwynvPj2XwoFtbP6lbuWROYr
+	cdbJZ/cY4GqVNWEzTxtwr0gkzRI4basIWAhAgfJLw9TRkGL6wUfPJTtGrJBxHg/eMsL6O+ASD5I
+	6obU6mvWscra+NYT9P5P1A96oWxZfLK0E2l3QXlIGuLP2psVIsLxiPQ4Nw8VD8gvOGZjlSKLCWH
+	zkB1Tf1dDXcBahL+FW5jrFCP9gufGBgbzYBtyu0Hek87e/y6DUNPWt4I/tG3+JCYvi/se2DYA=
+X-Received: by 2002:a17:906:fe04:b0:b97:c719:14d4 with SMTP id a640c23a62f3a-ba41adf9294mr1043298066b.29.1776848379902;
+        Wed, 22 Apr 2026 01:59:39 -0700 (PDT)
+Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com. [209.85.218.43])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ba451210e1bsm523227266b.3.2026.04.22.01.59.38
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Apr 2026 01:59:39 -0700 (PDT)
+Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-ba67b332bbaso515999866b.0
+        for <linux-serial@vger.kernel.org>; Wed, 22 Apr 2026 01:59:38 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AFNElJ8N3PS5cSxBGzzYQ4/a+S08qKFXzISiw3AikTh3d0Su5R03d+iSqnn8jhrQKx9EVA5XLZO4aBAs9C0ukS0=@vger.kernel.org
+X-Received: by 2002:a17:906:fe4c:b0:ba8:c717:7fdf with SMTP id
+ a640c23a62f3a-ba8c7178133mr500668466b.30.1776848378649; Wed, 22 Apr 2026
+ 01:59:38 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <aeiKsv3bFPJ94InI@ashevche-desk.local>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20260420140426.237865-1-biju.das.jz@bp.renesas.com>
+ <20260420140426.237865-3-biju.das.jz@bp.renesas.com> <CAMuHMdXQi7eSZg71=01dYjpmgHRXS+L9hXZMN_dR-mtM6sLKNw@mail.gmail.com>
+ <TY3PR01MB113464AE43A23A0B69BCC5675862D2@TY3PR01MB11346.jpnprd01.prod.outlook.com>
+In-Reply-To: <TY3PR01MB113464AE43A23A0B69BCC5675862D2@TY3PR01MB11346.jpnprd01.prod.outlook.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Wed, 22 Apr 2026 10:59:23 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdUfGY6VwW09zQX8T3_JkRHwKGRUyNGRXvQaD4e58OV8qA@mail.gmail.com>
+X-Gm-Features: AQROBzC_kTmn8EEDaA2iAwdpFOFCXdz6rO7qv7ivZoZvbZjpD2O1Ich5hX2xBW4
+Message-ID: <CAMuHMdUfGY6VwW09zQX8T3_JkRHwKGRUyNGRXvQaD4e58OV8qA@mail.gmail.com>
+Subject: Re: [PATCH v3 2/3] serial: sh-sci: Drop check for zero baud rate from uart_get_baud_rate()
+To: Biju Das <biju.das.jz@bp.renesas.com>
+Cc: "biju.das.au" <biju.das.au@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, 
+	Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>, 
+	Thierry Bultel <thierry.bultel.yh@bp.renesas.com>, 
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
+	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, 
+	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 
-On Wed, Apr 22, 2026 at 11:45:44AM +0300, Andy Shevchenko wrote:
-> On Wed, Apr 22, 2026 at 08:57:56AM +0800, Jia Wang wrote:
+Hi Biju,
 
-...
+On Wed, 22 Apr 2026 at 09:26, Biju Das <biju.das.jz@bp.renesas.com> wrote:
+> > From: Geert Uytterhoeven <geert@linux-m68k.org>
+> > On Mon, 20 Apr 2026 at 16:04, Biju <biju.das.au@gmail.com> wrote:
+> > > From: Biju Das <biju.das.jz@bp.renesas.com>
+> > >
+> > > On DT systems, a zero baud rate from uart_get_baud_rate() is not
+> > > possible even earlycon derives its bit rate from chosen/stdout-path.
+> > > The zero baud guard and its associated done label are therefore dead code. So remove it.
+> > >
+> > > Also drop the unused done label from rsci_set_termios().
+> > >
+> > > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> >
+> > > --- a/drivers/tty/serial/sh-sci.c
+> > > +++ b/drivers/tty/serial/sh-sci.c
+> > > @@ -2719,8 +2719,6 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+> > >                 max_freq = max(max_freq, s->clk_rates[i]);
+> > >
+> > >         baud = uart_get_baud_rate(port, termios, old, 0, max_freq / min_sr(s));
+> > > -       if (!baud)
+> > > -               goto done;
+> > >
+> > >         /*
+> > >          * There can be multiple sources for the sampling clock.  Find
+> > > the one
+> >
+> > I am afraid you are missing that sh-sci is also used on SH, without DT?
+>
+> Ok, please share your thoughts to handle divide_by_zero fault for
+> SH platforms on the code path after done label??
 
-> > Just to confirm: since you mentioned that the preparatory patch moving
-> > the DW_UART register defines is already in place, I don't need to move
-> > them again, correct?
-> > 
-> > I will update my patch to use the DW_UART_CPR_* macros and
-> > FIELD_PREP_CONST() accordingly, and I’m happy to add a separate patch in
-> > the next revision to convert the Renesas .cpr_value as well.
-> 
-> My understanding that you want to send a patch series of 3 patches:
-> - moving DW_UART_CPR_* values from C-file to h-file
-> - modify existing Renesas case
+Someone has to check on an SH platform (or qemu rts7751r2d) if
+this can happen. It might have been broken along the road, as people
+only use earlyprintk when debugging a problem that requires it.
 
-- DT binding for new HW (patch 1 of this series)
+Gr{oetje,eeting}s,
 
-> - add support for your HW (this patch in updated form)
-
-And I forgot that you have a DT binging one... So 4 patches after all.
+                        Geert
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
