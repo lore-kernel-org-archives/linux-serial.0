@@ -1,52 +1,45 @@
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 599AA3ECBF1;
-	Wed, 22 Apr 2026 14:05:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE42E3D16EB;
+	Wed, 22 Apr 2026 14:09:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776866750; cv=none; b=hpwfmTJ4+V+bRgqXOSq52KsUNeJNzo+XyamZBAQrtA+sRtv6neVMAWgp3pYRufxs0CyPp2XIMoH4F5XvbCqD/o2ko5+dde6Nj192t3liXJrV+C03+8vo/9MuAgHW6mF1tnv8LyhyeUhnDW2nf+djDeIeaN9qR9ThuOIXug3LlY0=
+	t=1776866946; cv=none; b=EfLfBhRa1WqcKmcLsCeqh1HrcAlTI6/IiBQEJOu0cAYm0fhLM3sWFLbtqU/GjfWvM5h3QBK+IJCW+xXE0mdEOXXJfOIFYe1A5lsalyhrBLMLhhEdLBP0fperIkroQYNevmrJ2BE7HwSQuYEtDFR8a78LPF4yCS0Z0wPI3JOKF5A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776866750; c=relaxed/simple;
-	bh=f1Ng/d4WwlQshVPNa+sETuoIN+hph/4UdqXt+9JEC6w=;
+	s=arc-20240116; t=1776866946; c=relaxed/simple;
+	bh=vD/aNbZg4VpPLW+LqvzlkGiqlDibJiNK0l0zvMe2Kws=;
 	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
-	 Mime-Version:Content-Type; b=f1cqAkXnXNVJus8uJ9zYwXcmE7fG6StcyOy5GvqIf3EGNc8KPlKBB9SFjqT0gYIxFeQIwb6znz7TYm2kfnL8dFfiJsjbGc8wM8t9givLb3bpYorGv98qLUMtrMzqNJDo5JzYrB4nzYxWmNl/QdgcmrLEvrSxJbiU/p1O9gAtbTY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=J1bOutV3; arc=none smtp.client-ip=162.243.120.170
+	 Mime-Version:Content-Type; b=UquH7z7W2qKScCG4O6sWJPg7m1d0bFEn2JcvA0+/A+y43RA03w5wGQMQ3qvS3wiiw7TaGSHQZkG040uijuZ8EmZG+PovvS0324lDoqg7aosRcDxnMxw/hiAsqsVhoseWiaFyzRV2w9adLnSkwwGMnPk1O+8XIC2d6iKCGqa05j4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=JzG1ETk7; arc=none smtp.client-ip=162.243.120.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="J1bOutV3"
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="JzG1ETk7"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
 	; s=default; h=Content-Transfer-Encoding:Mime-Version:Message-Id:Subject:Cc:
 	To:From:Date:subject:date:message-id:reply-to;
-	bh=KoyBoEZdYxOPiuUGWPWbQWQkDn08BLM63DVYlkrR4vM=; b=J1bOutV3pJULB7hdV7Kmv4XwZ5
-	AHk1eDXhfXPqHf9OicNi2y3L3XumKu92iWlWG15vg6s4DPP1JIIgDbdvhLFU/X9pv32lAR/DovENj
-	WZb0eyyhJ/m9+OBQex0enPuYulbufJaSPH1UwyJ92nskZVXoi0b4r9PGNHNWxSQCfxL0=;
-Received: from [70.80.174.168] (helo=pettiford.lan)
+	bh=El2siLR+nvzaIrn4iJtf4oIuuKbimmFYgW/9xtj4wJw=; b=JzG1ETk7PUio6vHUsP+LPMpPQr
+	4Fr/JETpnhvfzf7Y7ZFlH7dSbj99Mz+X241Rl6N37l6iovi9AtSvjZSoLT14IE9E4z9X+5qFRHA9S
+	lJXIgL11G8GmiVA+KqZyM/RS8ocQJDoOTKH3jxExHvaMhyGRyxpcw43nn3FagC6HkLdY=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168] helo=pettiford.lan)
 	by mail.hugovil.com with esmtpa (Exim 4.98.2)
 	(envelope-from <hugo@hugovil.com>)
-	id 1wFYCx-000000000dH-0aYu;
-	Wed, 22 Apr 2026 10:05:39 -0400
-Date: Wed, 22 Apr 2026 10:05:38 -0400
+	id 1wFYGE-000000002p1-2FVY;
+	Wed, 22 Apr 2026 10:09:02 -0400
+Date: Wed, 22 Apr 2026 10:09:01 -0400
 From: Hugo Villeneuve <hugo@hugovil.com>
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Biju Das <biju.das.jz@bp.renesas.com>, "biju.das.au"
- <biju.das.au@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Prabhakar Mahadev Lad
- <prabhakar.mahadev-lad.rj@bp.renesas.com>, Thierry Bultel
- <thierry.bultel.yh@bp.renesas.com>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org"
- <linux-serial@vger.kernel.org>, "linux-renesas-soc@vger.kernel.org"
- <linux-renesas-soc@vger.kernel.org>
-Subject: Re: [PATCH v3 2/3] serial: sh-sci: Drop check for zero baud rate
- from uart_get_baud_rate()
-Message-Id: <20260422100538.25c6a279ec46defecd8d9a4f@hugovil.com>
-In-Reply-To: <CAMuHMdUfGY6VwW09zQX8T3_JkRHwKGRUyNGRXvQaD4e58OV8qA@mail.gmail.com>
-References: <20260420140426.237865-1-biju.das.jz@bp.renesas.com>
-	<20260420140426.237865-3-biju.das.jz@bp.renesas.com>
-	<CAMuHMdXQi7eSZg71=01dYjpmgHRXS+L9hXZMN_dR-mtM6sLKNw@mail.gmail.com>
-	<TY3PR01MB113464AE43A23A0B69BCC5675862D2@TY3PR01MB11346.jpnprd01.prod.outlook.com>
-	<CAMuHMdUfGY6VwW09zQX8T3_JkRHwKGRUyNGRXvQaD4e58OV8qA@mail.gmail.com>
+To: Hugo Villeneuve <hugo@hugovil.com>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Hugo
+ Villeneuve <hvilleneuve@dimonoff.com>, biju.das.jz@bp.renesas.com,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH] serial: sh-sci: optimize max_freq determination
+Message-Id: <20260422100901.c2168da12af0ec5aa8ed8c0b@hugovil.com>
+In-Reply-To: <20260420121205.f52ae2515cb9ff093c19c6e2@hugovil.com>
+References: <20260417193603.3906568-1-hugo@hugovil.com>
+	<CAMuHMdXpZjVctirMuH=n_PrK4nnEnWqjuCzRjc4y6kC1--99kQ@mail.gmail.com>
+	<20260420121205.f52ae2515cb9ff093c19c6e2@hugovil.com>
 X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -59,55 +52,76 @@ Content-Transfer-Encoding: 7bit
 X-Spam_score: -2.0
 X-Spam_bar: --
 
-Hi,
+On Mon, 20 Apr 2026 12:12:05 -0400
+Hugo Villeneuve <hugo@hugovil.com> wrote:
 
-On Wed, 22 Apr 2026 10:59:23 +0200
-Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-
-> Hi Biju,
+> Hi Geert,
 > 
-> On Wed, 22 Apr 2026 at 09:26, Biju Das <biju.das.jz@bp.renesas.com> wrote:
-> > > From: Geert Uytterhoeven <geert@linux-m68k.org>
-> > > On Mon, 20 Apr 2026 at 16:04, Biju <biju.das.au@gmail.com> wrote:
-> > > > From: Biju Das <biju.das.jz@bp.renesas.com>
-> > > >
-> > > > On DT systems, a zero baud rate from uart_get_baud_rate() is not
-
-The fact that uart_get_baud_rate() cannot return zero is not related
-to the system using DT or not, so I would drop this "On DT systems, "
-from the commit message.
-
-> > > > possible even earlycon derives its bit rate from chosen/stdout-path.
-> > > > The zero baud guard and its associated done label are therefore dead code. So remove it.
-> > > >
-> > > > Also drop the unused done label from rsci_set_termios().
-> > > >
-> > > > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> > >
-> > > > --- a/drivers/tty/serial/sh-sci.c
-> > > > +++ b/drivers/tty/serial/sh-sci.c
-> > > > @@ -2719,8 +2719,6 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
-> > > >                 max_freq = max(max_freq, s->clk_rates[i]);
-> > > >
-> > > >         baud = uart_get_baud_rate(port, termios, old, 0, max_freq / min_sr(s));
-> > > > -       if (!baud)
-> > > > -               goto done;
-> > > >
-> > > >         /*
-> > > >          * There can be multiple sources for the sampling clock.  Find
-> > > > the one
-> > >
-> > > I am afraid you are missing that sh-sci is also used on SH, without DT?
-> >
-> > Ok, please share your thoughts to handle divide_by_zero fault for
-> > SH platforms on the code path after done label??
+> On Mon, 20 Apr 2026 09:23:55 +0200
+> Geert Uytterhoeven <geert@linux-m68k.org> wrote:
 > 
-> Someone has to check on an SH platform (or qemu rts7751r2d) if
-> this can happen. It might have been broken along the road, as people
-> only use earlyprintk when debugging a problem that requires it.
+> > Hi Hugo,
+> > 
+> > On Sat, 18 Apr 2026 at 07:24, Hugo Villeneuve <hugo@hugovil.com> wrote:
+> > > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > >
+> > > Follow example of rsci driver to avoid code duplication and useless
+> > > max_freq search when port->uartclk is set to zero.
+> > >
+> > > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > 
+> > Thanks for your patch!
+> > 
+> > > --- a/drivers/tty/serial/sh-sci.c
+> > > +++ b/drivers/tty/serial/sh-sci.c
+> > > @@ -2711,14 +2711,15 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+> > >          * setup the baud rate generator hardware for us already.
+> > >          */
+> > >         if (!port->uartclk) {
+> > > -               baud = uart_get_baud_rate(port, termios, old, 0, 115200);
+> > > -               goto done;
+> > 
+> > There was no "useless max_freq search", due to this goto?
+> 
+> You are right, this part of the comment is wrong.
+> 
+> > 
+> > > +               max_freq = 115200;
+> > > +       } else {
+> > > +               for (i = 0; i < SCI_NUM_CLKS; i++)
+> > > +                       max_freq = max(max_freq, s->clk_rates[i]);
+> > > +
+> > > +               max_freq /= min_sr(s);
+> > >         }
+> > >
+> > > -       for (i = 0; i < SCI_NUM_CLKS; i++)
+> > > -               max_freq = max(max_freq, s->clk_rates[i]);
+> > > -
+> > > -       baud = uart_get_baud_rate(port, termios, old, 0, max_freq / min_sr(s));
+> > > +       baud = uart_get_baud_rate(port, termios, old, 0, max_freq);
+> > >         if (!baud)
+> > >                 goto done;
+> > >
+> > 
+> > Due to removing the goto above (for the casual reader: this is the
+> > earlyprintk case, when port->uartclk is zero), the code will now
+> > continue here, calculating transmission parameters and setting best_clk,
+> > and overwriting the register configuration done by the bootloader.
+> 
+> Yes, I see it now for sh-sci where we have "if (best_clk >= 0) {"... to
+> not configure the registers.
+> 
+> However, for the rsci driver, I think that, even after Biju's cleanup
+> serie V3, we still overwrite the register configuration done by the
+> bootloader?
+> 
+> Maybe configure only "if (!port->uartclk) {" ?
 
-Geert: this "goto done" is not related to the earlyprintk block, which
-is untouched by this patch?
+Argh :) I meant configure only "if (port->uartclk) {" ?
+
+Hugo.
+
+
 
 -- 
 Hugo Villeneuve
