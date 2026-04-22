@@ -1,126 +1,172 @@
-Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD6363B27F3
-	for <linux-serial@vger.kernel.org>; Wed, 22 Apr 2026 08:59:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8A783C1417;
+	Wed, 22 Apr 2026 09:02:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776848383; cv=none; b=siTs0SLapZfkhezOejbNmr/oXY7eLlzRpnZPGy8XQyutETjixX8o4TeLkNQDkICvJeHyE725TbMTP8W8CDInkzwLdcTCAyxgAAbqF6kaBBz/p4B11k0EmEeYCZd9jdMTEieGXFVQv9LDbV7V+sMtVVzz/nqpm8Jj1fdt3MH0OX4=
+	t=1776848530; cv=none; b=apA3tBPCjrf7VcmAegYLpd1nqVAoBkRk6CC4spDZuRmzuYrudNWbHrVVelFwgZ4/sef01O2h2TZp6fiFqjcc4rJDkbBoqUIQBtLQ4J1EI0u5CQeLjGnz/Y2ivcVNwWI16E3XXOp/IZQ+x3dIBP64uK1eX10ZDZAPyQ91TudMJbg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776848383; c=relaxed/simple;
-	bh=cPJJcUlD/nNPMlKn2C5yR8KR/OVhhUUUAuL9RwYBgC0=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=X4kGtcJAt3wt8+Tarp77cqhxfnECX0F9rSzlH5k4oStrgkq3YrEBiveIIltgFRI3gEFXazb/4iBazvUOUXJWxjCC45MxJLwKLgojHYPBNL+2Yxnw/BZ/TNjTrSMoFvjjhjBeZvS+0s7cjkwyZl01nWx6i7zrMoBsralp57YN8QM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-6729c6f0ca7so6178596a12.0
-        for <linux-serial@vger.kernel.org>; Wed, 22 Apr 2026 01:59:41 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776848380; x=1777453180;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=4dFcuwDFov74A6VmNy3taBtzKh9fgX5fvgWZ5cbJ/uU=;
-        b=mb5L7+OtbI4ldMgC2Mios3B6nhConhlU0yqEdCbnWV87yxn3TJqhOy0PEuUjBA2mei
-         uLt/6nveOiHTBhaFBasQGE0il6uRq/EOxRPCrcL/HfyLIbybx3ZlujyaDDEjej18uzWC
-         uSzJTnPSFFsMs+LPdgQ20y8Tq+z9pXazWCAc8kK93tihugTgoN7VArEyFCx3Z+lrxn+n
-         09fyarmY1VATtUjOlumLZ5K7rr9jS6ICCFM7vCXtSIiOWMrF8fY9/tXLSwLr8fuNvSF+
-         CvbzKJawMVV4hcUcgI99qgKyKAHVUqm/HfuKA6epIcBHcsK73GiiyBwRnjlrJvwG/jQp
-         bf7w==
-X-Forwarded-Encrypted: i=1; AFNElJ/nBcS+WHvt8wyeI2No5UEwygfkY6nCpvXGBMePiRc8qxP1WlC9oA6o7B5w6QXlodeD7GS3AtwLLWlCQCo=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw59xoZkMhni1uhffQlglh5pJjJd/71I4p1FZRxP8j5bk7w92bQ
-	QsZA/VJaAqZy4UFScFguyrzWa2RKVKJSV4pmTMz0GT5OGP6JUZ7y/SM8/YZFh8JSOUY=
-X-Gm-Gg: AeBDies48WXQQJgBo0SEaONk36Log7nOKU9RqPNZPYLU4bvpyBSt5eHYpsChVZ2vOFH
-	TxglCWRO347qfsD6Jzp+VxQJwPuZPmD69ujzO+3ZEe0tONGRdcLPt2hAnkA3BeYfEESDQ8RivA+
-	QKcv81IZrfXZiSngHPiRooaLAxuN19PGI3XZnho95oVu4y9U/xdiqKEUkX/PaazWd2rkQDL831j
-	LMXKWhNRO5PwKa4INDY/6QwJs2HqQoh4m8XOj3UYVCo7koWjrYqMwynvPj2XwoFtbP6lbuWROYr
-	cdbJZ/cY4GqVNWEzTxtwr0gkzRI4basIWAhAgfJLw9TRkGL6wUfPJTtGrJBxHg/eMsL6O+ASD5I
-	6obU6mvWscra+NYT9P5P1A96oWxZfLK0E2l3QXlIGuLP2psVIsLxiPQ4Nw8VD8gvOGZjlSKLCWH
-	zkB1Tf1dDXcBahL+FW5jrFCP9gufGBgbzYBtyu0Hek87e/y6DUNPWt4I/tG3+JCYvi/se2DYA=
-X-Received: by 2002:a17:906:fe04:b0:b97:c719:14d4 with SMTP id a640c23a62f3a-ba41adf9294mr1043298066b.29.1776848379902;
-        Wed, 22 Apr 2026 01:59:39 -0700 (PDT)
-Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com. [209.85.218.43])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ba451210e1bsm523227266b.3.2026.04.22.01.59.38
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Apr 2026 01:59:39 -0700 (PDT)
-Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-ba67b332bbaso515999866b.0
-        for <linux-serial@vger.kernel.org>; Wed, 22 Apr 2026 01:59:38 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AFNElJ8N3PS5cSxBGzzYQ4/a+S08qKFXzISiw3AikTh3d0Su5R03d+iSqnn8jhrQKx9EVA5XLZO4aBAs9C0ukS0=@vger.kernel.org
-X-Received: by 2002:a17:906:fe4c:b0:ba8:c717:7fdf with SMTP id
- a640c23a62f3a-ba8c7178133mr500668466b.30.1776848378649; Wed, 22 Apr 2026
- 01:59:38 -0700 (PDT)
+	s=arc-20240116; t=1776848530; c=relaxed/simple;
+	bh=eFEpSTx513p917u/mqYfZYZIkWvyfz/QZhR2Ix0apS4=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=lb5yXyIkbtiRelOQtjzMpmVa0pZTxONYczEGfH2KXFtsLzjjiLdu1C2B/JcxTuJ7XyEOqSR8XBDFLtSks61Rb+vAyYWxZLfx8Ed76L1xvOF7FLskyCX129C543/zvKrPSoJsGPnpr/+gBvXfDeo5gWb219uyxAUnMeHLzZVQE8o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=B0Z1Y3oP; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="B0Z1Y3oP"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1776848528; x=1808384528;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version:content-id;
+  bh=eFEpSTx513p917u/mqYfZYZIkWvyfz/QZhR2Ix0apS4=;
+  b=B0Z1Y3oPrqYF/ogC6N/kj8hUwAK6/w8XZdITTNdd0LLFNcVlKUnGFaVf
+   AVFpVY8Ly9lmicfhEkgYatVmnF+hvM2NrSpNHa/KFhGLTLIH2poFnYsWO
+   c1u/hUpf4hxul+er9dgpygSYcncsRF0j3dg4po8/Mj7IL6j1Z6PGKqS8A
+   pCXH7JlmHZCydpBbL9jvWKMxhrkZLlgB3ItUBUNbVAww66Oz/TYoOf/9u
+   Me/ctDEgEQnO2kXCsHDsn/KvjOx3BgILe8uAdC030a3t4FsZPMTk4BZFD
+   noiOJ3ve+yGbW+DrR1pjYBRw8LrVn1CPAxrHvUitXUWVjTu5JLKMlPYVy
+   Q==;
+X-CSE-ConnectionGUID: pQctg3hTTkOPMxcswNa2Fw==
+X-CSE-MsgGUID: 3c2SpzIvR9ul+L0voChk2Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11763"; a="65332828"
+X-IronPort-AV: E=Sophos;i="6.23,192,1770624000"; 
+   d="scan'208";a="65332828"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2026 02:02:07 -0700
+X-CSE-ConnectionGUID: vrpzJcD3SBW0457Yk8KW3w==
+X-CSE-MsgGUID: KN4gIIbQR0q6cRF9UDr7xQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,192,1770624000"; 
+   d="scan'208";a="229128550"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.4])
+  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2026 02:02:02 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Wed, 22 Apr 2026 12:01:59 +0300 (EEST)
+To: Jia Wang <wangjia@ultrarisc.com>
+cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, Paul Walmsley <pjw@kernel.org>, 
+    Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
+    Alexandre Ghiti <alex@ghiti.fr>, Rob Herring <robh@kernel.org>, 
+    Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+    Conor Dooley <conor+dt@kernel.org>, LKML <linux-kernel@vger.kernel.org>, 
+    linux-serial <linux-serial@vger.kernel.org>, 
+    linux-riscv@lists.infradead.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 2/2] serial: 8250_dw: Use a fixed CPR value for
+ UltraRISC DP1000 UART
+In-Reply-To: <177681947637.2697678.10937675549830278979.b4-reply@b4>
+Message-ID: <446bf928-002a-456a-ae50-28220883dade@linux.intel.com>
+References: <20260421-ultrarisc-serial-v3-0-3d7f09c2420e@ultrarisc.com> <20260421-ultrarisc-serial-v3-2-3d7f09c2420e@ultrarisc.com> <979c9543-3ea0-25de-f97b-9c6d2fa3ac61@linux.intel.com> <177681947637.2697678.10937675549830278979.b4-reply@b4>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260420140426.237865-1-biju.das.jz@bp.renesas.com>
- <20260420140426.237865-3-biju.das.jz@bp.renesas.com> <CAMuHMdXQi7eSZg71=01dYjpmgHRXS+L9hXZMN_dR-mtM6sLKNw@mail.gmail.com>
- <TY3PR01MB113464AE43A23A0B69BCC5675862D2@TY3PR01MB11346.jpnprd01.prod.outlook.com>
-In-Reply-To: <TY3PR01MB113464AE43A23A0B69BCC5675862D2@TY3PR01MB11346.jpnprd01.prod.outlook.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Wed, 22 Apr 2026 10:59:23 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdUfGY6VwW09zQX8T3_JkRHwKGRUyNGRXvQaD4e58OV8qA@mail.gmail.com>
-X-Gm-Features: AQROBzC_kTmn8EEDaA2iAwdpFOFCXdz6rO7qv7ivZoZvbZjpD2O1Ich5hX2xBW4
-Message-ID: <CAMuHMdUfGY6VwW09zQX8T3_JkRHwKGRUyNGRXvQaD4e58OV8qA@mail.gmail.com>
-Subject: Re: [PATCH v3 2/3] serial: sh-sci: Drop check for zero baud rate from uart_get_baud_rate()
-To: Biju Das <biju.das.jz@bp.renesas.com>
-Cc: "biju.das.au" <biju.das.au@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, 
-	Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>, 
-	Thierry Bultel <thierry.bultel.yh@bp.renesas.com>, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, 
-	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/mixed; BOUNDARY="8323328-722053607-1776847501=:1863"
+Content-ID: <776e978f-a4db-fa9d-03fb-c7486575998e@linux.intel.com>
 
-Hi Biju,
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-On Wed, 22 Apr 2026 at 09:26, Biju Das <biju.das.jz@bp.renesas.com> wrote:
-> > From: Geert Uytterhoeven <geert@linux-m68k.org>
-> > On Mon, 20 Apr 2026 at 16:04, Biju <biju.das.au@gmail.com> wrote:
-> > > From: Biju Das <biju.das.jz@bp.renesas.com>
-> > >
-> > > On DT systems, a zero baud rate from uart_get_baud_rate() is not
-> > > possible even earlycon derives its bit rate from chosen/stdout-path.
-> > > The zero baud guard and its associated done label are therefore dead code. So remove it.
-> > >
-> > > Also drop the unused done label from rsci_set_termios().
-> > >
-> > > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+--8323328-722053607-1776847501=:1863
+Content-Type: text/plain; CHARSET=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-ID: <98a11172-7f21-a467-ee73-d3a2c91a5640@linux.intel.com>
+
+On Wed, 22 Apr 2026, Jia Wang wrote:
+
+> On 2026-04-21 15:18 +0300, Ilpo J=C3=A4rvinen wrote:
+> > On Tue, 21 Apr 2026, Jia Wang wrote:
+> >=20
+> > > The UltraRISC DP1000 UART does not provide the standard CPR register =
+used
+> > > by 8250_dw to discover port capabilities.
+> > >=20
+> > > Provide a fixed CPR value for the DP1000-specific compatible so the
+> > > driver can configure the port correctly.
+> > >=20
+> > > Signed-off-by: Jia Wang <wangjia@ultrarisc.com>
+> > > ---
+> > >  drivers/tty/serial/8250/8250_dw.c | 7 +++++++
+> > >  1 file changed, 7 insertions(+)
+> > >=20
+> > > diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8=
+250/8250_dw.c
+> > > index 94beadb4024d..ca6dbdf75918 100644
+> > > --- a/drivers/tty/serial/8250/8250_dw.c
+> > > +++ b/drivers/tty/serial/8250/8250_dw.c
+> > > @@ -962,6 +962,12 @@ static const struct dw8250_platform_data dw8250_=
+intc10ee =3D {
+> > >  =09.quirks =3D DW_UART_QUIRK_IER_KICK,
+> > >  };
+> > > =20
+> > > +static const struct dw8250_platform_data dw8250_ultrarisc_dp1000_dat=
+a =3D {
+> > > +=09.usr_reg =3D DW_UART_USR,
+> > > +=09.cpr_value =3D 0x00022022,
+> >=20
+> > Hi,
+> >=20
+> > Please construct the cpr_value by ORing DW_UART_CPR_* defines together.
+> > For fields, FIELD_PREP_CONST() may be useful.
+> >=20
+> > In order to be able to use the DW_UART_CPR_* defines, they need to be=
+=20
+> > moved into 8250_dwlib.h (I'd move all DW_UART register defines in a=20
+> > preparatory patch).
+> >=20
+> > I know the existing Renesas' .cpr_value doesn't follow this convention =
+but=20
+> > that could be converted as well (in another patch, or leave the Renesas=
+=20
+> > entry conversion to me if you don't want to do that).
 > >
-> > > --- a/drivers/tty/serial/sh-sci.c
-> > > +++ b/drivers/tty/serial/sh-sci.c
-> > > @@ -2719,8 +2719,6 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
-> > >                 max_freq = max(max_freq, s->clk_rates[i]);
-> > >
-> > >         baud = uart_get_baud_rate(port, termios, old, 0, max_freq / min_sr(s));
-> > > -       if (!baud)
-> > > -               goto done;
-> > >
-> > >         /*
-> > >          * There can be multiple sources for the sampling clock.  Find
-> > > the one
-> >
-> > I am afraid you are missing that sh-sci is also used on SH, without DT?
->
-> Ok, please share your thoughts to handle divide_by_zero fault for
-> SH platforms on the code path after done label??
+>=20
+> Thanks for the review.
+>=20
+> Just to confirm: since you mentioned that the preparatory patch moving
+> the DW_UART register defines is already in place, I don't need to move
+> them again, correct?
 
-Someone has to check on an SH platform (or qemu rts7751r2d) if
-this can happen. It might have been broken along the road, as people
-only use earlyprintk when debugging a problem that requires it.
+I'm not sure where that preparatory patch is. Those defines still appear=20
+in 8250_dwlib.c AFAICT.
 
-Gr{oetje,eeting}s,
+To be clear, DW_UART_CPR_* defines are in 8250_dwlib.c but you're=20
+modifying 8250_dw.c file here so you cannot use those pre-existing defines=
+=20
+as is in 8250_dw.c. To solve that, please add a preparatory patch into=20
+your series which relocates all those defines from 8250_dwlib.c to=20
+8250_dwlib.h. If there's a patch which does that already, it has missed my=
+=20
+radar.
 
-                        Geert
+And my suggestion is to move not just DW_UART_CPR_* defines into=20
+8250_dwlib.h but all DW UART specific register defines to keep them in=20
+the same place.
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Hopefully this clears up any misunderstanding.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+
+My main point all along is that do not do the define move in the same=20
+patch where you're adding UltraRISC DP1000 UART (which is a common pitfall=
+=20
+to many submitters so I try to give pro-active instructions while=20
+reviewing to avoid extra versions because of them).
+
+> I will update my patch to use the DW_UART_CPR_* macros and
+> FIELD_PREP_CONST() accordingly, and I=E2=80=99m happy to add a separate p=
+atch in
+> the next revision to convert the Renesas .cpr_value as well.
+
+Great, thanks.
+
+> > > +=09.quirks =3D DW_UART_QUIRK_CPR_VALUE,
+> > > +};
+
+--=20
+ i.
+--8323328-722053607-1776847501=:1863--
