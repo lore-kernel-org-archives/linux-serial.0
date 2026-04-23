@@ -1,162 +1,279 @@
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDBDC376496;
-	Thu, 23 Apr 2026 06:23:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.61.82.184
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9828E40DFB7;
+	Thu, 23 Apr 2026 09:21:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776925441; cv=none; b=ndkbFsRiPo+8JUUZIJhAbu4ZV8ptjDnvvTForkvRRmgO9FfqeFMUX70+HXymJPqPx9Y8Z0HnYcBJL2UA5QIsggw3K3w9v1vS2yT+vEXAEb3hZOp+lvDdRsn2TyEv3tG1wu0IigOZroZIf3kGjMtnxMb0N64vj2MRYFoi+dzgDuM=
+	t=1776936064; cv=none; b=PE+H2WQiv+FDYHOZC2QaCxRP7duUejZubIKkWpesqcf/tvP6woQ+sF/oTqo0NPFBysDFJXaSVd1NhLRpIfAC5csv2JAfKRMqS0DY03dNeNsaEkyAs9Su1prLDCwaUbn7Fkr0wLHGTINraYVhQG1S+xsTSMmQqVgHAv5GCN+S1GA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776925441; c=relaxed/simple;
-	bh=rfcgibu0c4SNaJIOPHTylvWuJbZHlSROZbCEeQYTDQI=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Om3AunXks/BY7KKw20zloirA0jnubfQZHoVMbLGyA8JxUwo7B/n2qHJ3lQ1r5lEwXl1vtN4fCQi8B+be52d1x8y4CLt3qyQbfnVEyFCBWWEqDYnNbCjNdthyK7qOn5byx4KHkhfKMRFm/kZwY9kBjRpmLeF/MSISYozR/RPFh7c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com; spf=pass smtp.mailfrom=mediatek.com; dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b=JVJNIgra; arc=none smtp.client-ip=210.61.82.184
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mediatek.com
+	s=arc-20240116; t=1776936064; c=relaxed/simple;
+	bh=PetUpnJx5C7+NhQMMFIkvmCTank2kIq6ZT/21ZuHbG8=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=rXplUCiXFD+k+X5iJBHpucLwsqTILShdISYTsXFwD//13uia+9VhrcG9YV9ouo2pRzkHDdelh9yI5iCyKJbOXA2/24sTviklBZDwCRmG3cBE/0LSZP2R4XOw9EZbWcDB8gfu3cES/0YBcyUK8Ig+smjvCfoP6H3iiRLGy39tEfk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=orREK/cw; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="JVJNIgra"
-X-UUID: fd416fde3edc11f19a16598d5ca7f8ec-20260423
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=kJAGLINp/Pud7AOgEdry/ygDJXpxw4I0iRZZy5NIKXY=;
-	b=JVJNIgraYtQvraC4r6eCDrv9Byqv/4MAnHDM2lTxTD5diH66CNOqRO+SpEGP6eMcQpTizg+UpyBebadpF3MUgGmKbstgiiWE6RbYkoHyjVXJYdEULxOw2696pavtulaPLp7e7zSlA2baXiLacetdHM13RdlTE2+jED7fGomPZEw=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.3.12,REQID:41437f65-f73e-44f7-a8fc-6485720d9d02,IP:0,U
-	RL:0,TC:0,Content:-25,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTIO
-	N:release,TS:-25
-X-CID-META: VersionHash:e7bac3a,CLOUDID:9363c88f-6df4-4a3d-a7a4-fbdc42d669ce,B
-	ulkID:nil,BulkQuantity:0,Recheck:0,SF:81|82|102|836|865|888|898,TC:-5,Cont
-	ent:0|15|50,EDM:-3,IP:nil,URL:0,File:130,RT:0,Bulk:nil,QS:nil,BEC:-1,COL:0
-	,OSI:0,OSA:0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
-X-CID-BVR: 2,SSN|SDN
-X-CID-BAS: 2,SSN|SDN,0,_
-X-CID-FACTOR: TF_CID_SPAM_SNR
-X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
-X-UUID: fd416fde3edc11f19a16598d5ca7f8ec-20260423
-Received: from mtkmbs14n2.mediatek.inc [(172.21.101.76)] by mailgw02.mediatek.com
-	(envelope-from <mtk07317@mediatek.com>)
-	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-	with ESMTP id 1131951406; Thu, 23 Apr 2026 14:23:48 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs13n2.mediatek.inc (172.21.101.108) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.29; Thu, 23 Apr 2026 14:23:47 +0800
-Received: from mediatek.com (10.233.130.16) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.2562.29 via Frontend
- Transport; Thu, 23 Apr 2026 14:23:47 +0800
-Received: by mediatek.com (Postfix, from userid 10007317)
-	id 7FD3B200C6; Thu, 23 Apr 2026 14:23:47 +0800 (CST)
-From: Zhiyong Tao <zhiyong.tao@mediatek.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
-	<jirislaby@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-CC: <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-mediatek@lists.infradead.org>,
-	<Project_Global_Digits_Upstream_Group@mediatek.com>,
-	<zhiyong.tao@mediatek.com>, <liguo.zhang@mediatek.com>,
-	<Vasanth.Reddy@mediatek.com>, Yenchia Chen <yenchia.chen@mediatek.com>
-Subject: [PATCH] MEDIATEK: serial: 8250_mtk: Add ACPI support
-Date: Thu, 23 Apr 2026 14:22:45 +0800
-Message-ID: <20260423062345.2473300-2-zhiyong.tao@mediatek.com>
-X-Mailer: git-send-email 2.45.2
-In-Reply-To: <20260423062345.2473300-1-zhiyong.tao@mediatek.com>
-References: <20260423062345.2473300-1-zhiyong.tao@mediatek.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="orREK/cw"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6E101C2BCB6;
+	Thu, 23 Apr 2026 09:21:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1776936064;
+	bh=PetUpnJx5C7+NhQMMFIkvmCTank2kIq6ZT/21ZuHbG8=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=orREK/cwBLWp2XIxgxqgyCasahjCn9q3SiN2sn9pkRMJjSStDrKw9L+IMN505iWUf
+	 0EBuhhuDNpzV3y6Ia5J9M31sLt0nKGPEgau2fldr0FP/s+WMC9rJOIJ6X+nhIAhZ3s
+	 USZh3FDfQ01fUpQ41wfSAH5P8vHARLUIUZoEjw569HVDbvpIV48ArDSJvy9tcrHrd0
+	 PNeOrwpyE2pBsprqcHWQVtbQVNSLh8DOZPK6ra29QG5ZCIkk3dXvoHyne03va+OeuB
+	 MENdXBf0MWX5r8AF+qnYDlYElEoUF2tUI6N7QEkSampfNW4MNqLni2VnsjL142ccye
+	 5ZL9TeTYjQO5Q==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62419F99360;
+	Thu, 23 Apr 2026 09:21:04 +0000 (UTC)
+From: Xianwei Zhao via B4 Relay <devnull+xianwei.zhao.amlogic.com@kernel.org>
+Date: Thu, 23 Apr 2026 09:20:55 +0000
+Subject: [PATCH v4 2/2] arm64: dts: add support for A9 based Amlogic BY401
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-MTK: N
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260423-a9-baisc-dts-v4-2-c26b480a068c@amlogic.com>
+References: <20260423-a9-baisc-dts-v4-0-c26b480a068c@amlogic.com>
+In-Reply-To: <20260423-a9-baisc-dts-v4-0-c26b480a068c@amlogic.com>
+To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Neil Armstrong <neil.armstrong@linaro.org>, 
+ Martin Blumenstingl <martin.blumenstingl@googlemail.com>, 
+ Jerome Brunet <jbrunet@baylibre.com>, Kevin Hilman <khilman@baylibre.com>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+ linux-amlogic@lists.infradead.org, Xianwei Zhao <xianwei.zhao@amlogic.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1776936062; l=5425;
+ i=xianwei.zhao@amlogic.com; s=20251216; h=from:subject:message-id;
+ bh=UuTkmx8jn/3yRfQMRPR12iPtUnMRCPmNyHYH+u1zHrw=;
+ b=fG6aoTn7zmaCP0aN8oqX6Rt0rgOMo7KkZnoBGHeaucOhc1/sC2m7oSlszmBzsZPLfsMHs4KH0
+ nLAlCnuw+MaAKN0POydxm5GsoAtcK1sJcsnv9aihvUuRUn8UWXAhMlB
+X-Developer-Key: i=xianwei.zhao@amlogic.com; a=ed25519;
+ pk=dWwxtWCxC6FHRurOmxEtr34SuBYU+WJowV/ZmRJ7H+k=
+X-Endpoint-Received: by B4 Relay for xianwei.zhao@amlogic.com/20251216 with
+ auth_id=578
+X-Original-From: Xianwei Zhao <xianwei.zhao@amlogic.com>
+Reply-To: xianwei.zhao@amlogic.com
 
-Add ACPI support to 8250_mtk driver. This makes it possible to
-use UART on ARM-based desktops with EDK2 UEFI firmware.
+From: Xianwei Zhao <xianwei.zhao@amlogic.com>
 
-Signed-off-by: Yenchia Chen <yenchia.chen@mediatek.com>
-Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
+Add basic support for the A9 based Amlogic BY401 board, which describes
+the following components: CPU, GIC, IRQ, Timer and UART.
+These are capable of booting up into the serial console.
+
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Xianwei Zhao <xianwei.zhao@amlogic.com>
 ---
- drivers/tty/serial/8250/8250_mtk.c | 23 +++++++++++++++++++----
- 1 file changed, 19 insertions(+), 4 deletions(-)
+ arch/arm64/boot/dts/amlogic/Makefile               |   1 +
+ .../boot/dts/amlogic/amlogic-a9-a311y3-by401.dts   |  40 +++++++
+ arch/arm64/boot/dts/amlogic/amlogic-a9.dtsi        | 128 +++++++++++++++++++++
+ 3 files changed, 169 insertions(+)
 
-diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-index 5875a7b9b4b10..e6a56cf54ae0c 100644
---- a/drivers/tty/serial/8250/8250_mtk.c
-+++ b/drivers/tty/serial/8250/8250_mtk.c
-@@ -19,6 +19,7 @@
- #include <linux/dma-mapping.h>
- #include <linux/tty.h>
- #include <linux/tty_flip.h>
-+#include <linux/units.h>
- 
- #include "8250.h"
- 
-@@ -521,6 +522,7 @@ static int mtk8250_probe(struct platform_device *pdev)
- 	struct mtk8250_data *data;
- 	struct resource *regs;
- 	int irq, err;
-+	struct fwnode_handle *fwnode = dev_fwnode(&pdev->dev);
- 
- 	irq = platform_get_irq(pdev, 0);
- 	if (irq < 0)
-@@ -543,12 +545,13 @@ static int mtk8250_probe(struct platform_device *pdev)
- 
- 	data->clk_count = 0;
- 
--	if (pdev->dev.of_node) {
-+	if (is_of_node(fwnode)) {
- 		err = mtk8250_probe_of(pdev, &uart.port, data);
- 		if (err)
- 			return err;
--	} else
-+	} else if (!fwnode) {
- 		return -ENODEV;
-+	}
- 
- 	spin_lock_init(&uart.port.lock);
- 	uart.port.mapbase = regs->start;
-@@ -564,14 +567,18 @@ static int mtk8250_probe(struct platform_device *pdev)
- 	uart.port.startup = mtk8250_startup;
- 	uart.port.set_termios = mtk8250_set_termios;
- 	uart.port.uartclk = clk_get_rate(data->uart_clk);
-+	if (!uart.port.uartclk)
-+		uart.port.uartclk = 26 * HZ_PER_MHZ;
- #ifdef CONFIG_SERIAL_8250_DMA
- 	if (data->dma)
- 		uart.dma = data->dma;
- #endif
- 
--	/* Disable Rate Fix function */
--	writel(0x0, uart.port.membase +
-+	if (is_of_node(fwnode)) {
-+		/* Disable Rate Fix function */
-+		writel(0x0, uart.port.membase +
- 			(MTK_UART_RATE_FIX << uart.port.regshift));
-+	}
- 
- 	platform_set_drvdata(pdev, data);
- 
-@@ -649,11 +656,19 @@ static const struct of_device_id mtk8250_of_match[] = {
- };
- MODULE_DEVICE_TABLE(of, mtk8250_of_match);
- 
-+static const struct acpi_device_id mtk8250_acpi_match[] = {
-+	{ "MTKI0511" },
-+	{ "NVDA0240" },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(acpi, mtk8250_acpi_match);
+diff --git a/arch/arm64/boot/dts/amlogic/Makefile b/arch/arm64/boot/dts/amlogic/Makefile
+index 15f9c817e502..57bc440fa55c 100644
+--- a/arch/arm64/boot/dts/amlogic/Makefile
++++ b/arch/arm64/boot/dts/amlogic/Makefile
+@@ -1,6 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0
+ dtb-$(CONFIG_ARCH_MESON) += amlogic-a4-a113l2-ba400.dtb
+ dtb-$(CONFIG_ARCH_MESON) += amlogic-a5-a113x2-av400.dtb
++dtb-$(CONFIG_ARCH_MESON) += amlogic-a9-a311y3-by401.dtb
+ dtb-$(CONFIG_ARCH_MESON) += amlogic-c3-c302x-aw409.dtb
+ dtb-$(CONFIG_ARCH_MESON) += amlogic-c3-c308l-aw419.dtb
+ dtb-$(CONFIG_ARCH_MESON) += amlogic-s6-s905x5-bl209.dtb
+diff --git a/arch/arm64/boot/dts/amlogic/amlogic-a9-a311y3-by401.dts b/arch/arm64/boot/dts/amlogic/amlogic-a9-a311y3-by401.dts
+new file mode 100644
+index 000000000000..a6b380ca47a5
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/amlogic-a9-a311y3-by401.dts
+@@ -0,0 +1,40 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright (c) 2026 Amlogic, Inc. All rights reserved.
++ */
 +
- static struct platform_driver mtk8250_platform_driver = {
- 	.driver = {
- 		.name		= "mt6577-uart",
- 		.pm		= &mtk8250_pm_ops,
- 		.of_match_table	= mtk8250_of_match,
-+		.acpi_match_table = mtk8250_acpi_match,
- 	},
- 	.probe			= mtk8250_probe,
- 	.remove			= mtk8250_remove,
++/dts-v1/;
++
++#include "amlogic-a9.dtsi"
++/ {
++	model = "Amlogic A311DY3 BY401 Development Board";
++	compatible = "amlogic,by401", "amlogic,a9";
++	#address-cells = <2>;
++	#size-cells = <2>;
++
++	aliases {
++		serial0 = &uart_b;
++	};
++
++	memory@0 {
++		device_type = "memory";
++		reg = <0x0 0x0 0x0 0x80000000>;
++	};
++
++	reserved-memory {
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges;
++
++		/* 35 MiB reserved for ARM Trusted Firmware */
++		secmon_reserved: secmon@5000000 {
++			compatible = "shared-dma-pool";
++			reg = <0x0 0x05000000 0x0 0x2300000>;
++			no-map;
++		};
++	};
++};
++
++&uart_b {
++	status = "okay";
++};
+diff --git a/arch/arm64/boot/dts/amlogic/amlogic-a9.dtsi b/arch/arm64/boot/dts/amlogic/amlogic-a9.dtsi
+new file mode 100644
+index 000000000000..660c8556a864
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/amlogic-a9.dtsi
+@@ -0,0 +1,128 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright (c) 2026 Amlogic, Inc. All rights reserved.
++ */
++
++#include <dt-bindings/interrupt-controller/irq.h>
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/gpio/gpio.h>
++
++/ {
++	interrupt-parent = <&gic>;
++
++	cpus {
++		#address-cells = <2>;
++		#size-cells = <0>;
++
++		cpu0: cpu@0 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a55";
++			reg = <0x0 0x0>;
++			enable-method = "psci";
++		};
++
++		cpu1: cpu@100 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a55";
++			reg = <0x0 0x100>;
++			enable-method = "psci";
++		};
++
++		cpu2: cpu@200 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a55";
++			reg = <0x0 0x200>;
++			enable-method = "psci";
++		};
++
++		cpu3: cpu@300 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a55";
++			reg = <0x0 0x300>;
++			enable-method = "psci";
++		};
++
++		cpu4: cpu@400 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a55";
++			reg = <0x0 0x400>;
++			enable-method = "psci";
++		};
++
++		cpu5: cpu@500 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a55";
++			reg = <0x0 0x500>;
++			enable-method = "psci";
++		};
++
++		cpu6: cpu@600 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a78";
++			reg = <0x0 0x600>;
++			enable-method = "psci";
++		};
++
++		cpu7: cpu@700 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a78";
++			reg = <0x0 0x700>;
++			enable-method = "psci";
++		};
++	};
++
++	timer {
++		compatible = "arm,armv8-timer";
++		interrupts = <GIC_PPI 13 IRQ_TYPE_LEVEL_LOW>,
++			     <GIC_PPI 14 IRQ_TYPE_LEVEL_LOW>,
++			     <GIC_PPI 11 IRQ_TYPE_LEVEL_LOW>,
++			     <GIC_PPI 10 IRQ_TYPE_LEVEL_LOW>;
++	};
++
++	psci {
++		compatible = "arm,psci-1.0";
++		method = "smc";
++	};
++
++	xtal: xtal-clk {
++		compatible = "fixed-clock";
++		clock-frequency = <24000000>;
++		clock-output-names = "xtal";
++		#clock-cells = <0>;
++	};
++
++	soc {
++		compatible = "simple-bus";
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges;
++
++		gic: interrupt-controller@ff800000 {
++			compatible = "arm,gic-v3";
++			#interrupt-cells = <3>;
++			#address-cells = <0>;
++			interrupt-controller;
++			reg = <0x0 0xff800000 0 0x10000>,
++			      <0x0 0xff840000 0 0x100000>;
++			interrupts = <GIC_PPI 9 0xf04>;
++		};
++
++		aobus: bus@ffa00000 {
++			compatible = "simple-bus";
++			reg = <0x0 0xffa00000 0x0 0x100000>;
++			#address-cells = <2>;
++			#size-cells = <2>;
++			ranges = <0x0 0x0 0x0 0xffa00000 0x0 0x100000>;
++
++			uart_b: serial@1e000 {
++				compatible = "amlogic,a9-uart",
++					     "amlogic,meson-s4-uart";
++				reg = <0x0 0x1e000 0x0 0x18>;
++				interrupts = <GIC_SPI 66 IRQ_TYPE_EDGE_RISING>;
++				clocks = <&xtal>, <&xtal>, <&xtal>;
++				clock-names = "xtal", "pclk", "baud";
++				status = "disabled";
++			};
++		};
++	};
++};
+
 -- 
-2.45.2
+2.52.0
+
 
