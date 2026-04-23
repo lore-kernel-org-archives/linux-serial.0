@@ -1,37 +1,36 @@
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2183C3290C8;
-	Thu, 23 Apr 2026 20:15:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CFDD32E6BC;
+	Thu, 23 Apr 2026 20:15:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776975318; cv=none; b=JQiU3lSVs0FXjomUYJQLbf9zbprNqLFDjxTGYxNyu5HjoWWVzkjATk5+XbfMh/TPqjpgUFruZaBVAN4dK7RGKms28SVM2awkzI6bYEt4/7KcpCboBBbZ3UoN6xhSWmpBmpfva+AlZtb3QaJSaH53Xn7BTkUZONkMrwpIQ+vaC1Q=
+	t=1776975319; cv=none; b=HUxn8duSgyEdJ3g/gC/nlcRpIS/NLwWeYfWgbI3eA6PpxY90+F793OeXUg2vt4JiHP5VJ0Ksaj95ANQwdFXSAfNq10TYitXaDfIIrqMVwKy/bLksdf4Gyd7Vtc+V4cE3SP1MxL20yBjyTr4h6ddSJztgTpsGMlm5BQ/ti6YmufE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776975318; c=relaxed/simple;
-	bh=V9uB+lAm3bpYHewGHiNGVsh8TBUikeNMKj4L/U2vLiw=;
+	s=arc-20240116; t=1776975319; c=relaxed/simple;
+	bh=iLLo/F+Zqk49oSOm6IOqU5eaDxZEgFxpY8X6Ei152tM=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=FRKR8IQX4hFrO5Hgg3rg+hz/48IRN1+hX0t17IucekcvYl1MxQcMSO2faH0Ljvpwsui34tW6N/GSmd2m7Astg+rEIeFb7K4lj0HK7tmN3GI5PePXxLqX+9i0i2/U6luL4CIkrdPkVWpLVpCZQ8daefmiV9nK+6T1AOxxi0tSNx4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=dq6KyReJ; arc=none smtp.client-ip=162.243.120.170
+	 In-Reply-To:To:Cc; b=q8pSiIpDJVRv0WT3sqrKrrQ1CR8sg/oQCXHBoblViKsX9PELWBlIb7CwCJJW7kfmYgqQb6weWebVdeGOh3c6NoKU8/n86c++0TR57yU9OZ+DCDZPiXJPco6iZ/FtxyD+UzhRwott4KLEq7Ds8yLKVcb48VWFez9i3N+5HvSWGW4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=yCm8sN9F; arc=none smtp.client-ip=162.243.120.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="dq6KyReJ"
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="yCm8sN9F"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
 	; s=default; h=Cc:To:Message-Id:Content-Transfer-Encoding:MIME-Version:
 	Subject:Date:From:subject:date:message-id:reply-to;
-	bh=AWdqm/qQhOGbJHPukefNOG+2wE25q4mEpmJr32atPhA=; b=dq6KyReJ3/4aOhUcPYKWEQU06O
-	dhhRU3aurDKmAWNMsBpwX97qa1I1IICV7ezgR/QpjelqPZGQfq7yocy4kQRsOpWKriYglMpNUzs/l
-	IZIXkl168VXZmomH3Ce/ebdvPXStVb2pCyy7Kx/2UgDsPcZiNjnm8tDybR51N8/qDJs0=;
+	bh=yzXpb/zzeucTfNpYVg6pG6UVGJTqJuRg/3w0Quig9hE=; b=yCm8sN9FDPIY3L9jZzgEa9xuBj
+	Kwwngh2PABM4KUL69Z12bEk2oFDkxFI5ZT8J8uAGzqtXnJ3x4gMU4R43AI5T3+rv7j9kI+t9mwBuV
+	KkMYVzBzvC/5Hi+ruaQ6uvo8q3qYBJDeBTVtv/dhINTiGopi5Q7tr6YKjs9NW6FlqGpg=;
 Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168] helo=pettiford.lan)
 	by mail.hugovil.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.98.2)
 	(envelope-from <hugo@hugovil.com>)
-	id 1wG0S3-000000002qN-3mNN;
-	Thu, 23 Apr 2026 16:15:07 -0400
+	id 1wG0S7-000000002qN-1kOS;
+	Thu, 23 Apr 2026 16:15:11 -0400
 From: Hugo Villeneuve <hugo@hugovil.com>
-Date: Thu, 23 Apr 2026 16:15:01 -0400
-Subject: [PATCH 1/9] serial: core: add uart_iotype_mmio/legacy_io helper
- functions
+Date: Thu, 23 Apr 2026 16:15:08 -0400
+Subject: [PATCH 8/9] serial: max310x: use new UPIO_BUS as iotype
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -40,7 +39,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260423-tty-upio-v1-1-baf82d3b86d1@dimonoff.com>
+Message-Id: <20260423-tty-upio-v1-8-baf82d3b86d1@dimonoff.com>
 References: <20260423-tty-upio-v1-0-baf82d3b86d1@dimonoff.com>
 In-Reply-To: <20260423-tty-upio-v1-0-baf82d3b86d1@dimonoff.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
@@ -54,68 +53,34 @@ X-Spam_bar: -
 
 From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-To help simplify code that check on the io type mode of the port.
+Now that we have a new UPIO_BUS I/O type, use it to register our serial
+port and remove obscure membase/iobase workaround.
 
 Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 ---
-Will also be used by future commit that add UPIO_BUS.
----
- drivers/tty/serial/serial_core.c | 28 ++++++++++++++++++++++++++++
- include/linux/serial_core.h      |  4 ++++
- 2 files changed, 32 insertions(+)
+ drivers/tty/serial/max310x.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 89cebdd278410a5a97f3f5ee1b9c171715145067..b1cf45a8fc854cd97e349ff077d83b42e3ef8b16 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1966,6 +1966,34 @@ static const char *uart_type(struct uart_port *port)
- 	return str;
- }
- 
-+bool uart_iotype_mmio(enum uart_iotype iotype)
-+{
-+	switch (iotype) {
-+	case UPIO_MEM:
-+	case UPIO_MEM32:
-+	case UPIO_AU:
-+	case UPIO_TSI:
-+	case UPIO_MEM32BE:
-+	case UPIO_MEM16:
-+		return true;
-+	default:
-+		return false;
-+	}
-+}
-+EXPORT_SYMBOL_GPL(uart_iotype_mmio);
-+
-+bool uart_iotype_legacy_io(enum uart_iotype iotype)
-+{
-+	switch (iotype) {
-+	case UPIO_PORT:
-+	case UPIO_HUB6:
-+		return true;
-+	default:
-+		return false;
-+	}
-+}
-+EXPORT_SYMBOL_GPL(uart_iotype_legacy_io);
-+
- #ifdef CONFIG_PROC_FS
- 
- static void uart_line_info(struct seq_file *m, struct uart_state *state)
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 666430b4789977ae19641442b369eb1c773233f4..fc3f5ebe389658c197ffc105ce4ac11cacef59bb 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -1306,4 +1306,8 @@ static inline int uart_handle_break(struct uart_port *port)
- 					 !((cflag) & CLOCAL))
- 
- int uart_get_rs485_mode(struct uart_port *port);
-+
-+bool uart_iotype_mmio(enum uart_iotype iotype);
-+bool uart_iotype_legacy_io(enum uart_iotype iotype);
-+
- #endif /* LINUX_SERIAL_CORE_H */
+diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+index ac7d3f197c3a5ce3531d5607f48e21a807314021..cd0496e307091dae1f53911abf86726f52d5770d 100644
+--- a/drivers/tty/serial/max310x.c
++++ b/drivers/tty/serial/max310x.c
+@@ -1380,14 +1380,7 @@ static int max310x_probe(struct device *dev, const struct max310x_devtype *devty
+ 		s->p[i].port.type	= PORT_MAX310X;
+ 		s->p[i].port.fifosize	= MAX310X_FIFO_SIZE;
+ 		s->p[i].port.flags	= UPF_FIXED_TYPE | UPF_LOW_LATENCY;
+-		s->p[i].port.iotype	= UPIO_PORT;
+-		s->p[i].port.iobase	= i;
+-		/*
+-		 * Use all ones as membase to make sure uart_configure_port() in
+-		 * serial_core.c does not abort for SPI/I2C devices where the
+-		 * membase address is not applicable.
+-		 */
+-		s->p[i].port.membase	= (void __iomem *)~0;
++		s->p[i].port.iotype	= UPIO_BUS;
+ 		s->p[i].port.uartclk	= uartclk;
+ 		s->p[i].port.rs485_config = max310x_rs485_config;
+ 		s->p[i].port.rs485_supported = max310x_rs485_supported;
 
 -- 
 2.47.3
