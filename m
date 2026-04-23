@@ -1,54 +1,63 @@
-Received: from cvsmtppost23.nm.naver.com (cvsmtppost23.nm.naver.com [114.111.35.161])
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC67F29ACF6
-	for <linux-serial@vger.kernel.org>; Wed, 22 Apr 2026 18:43:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=114.111.35.161
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 163C7311592;
+	Thu, 23 Apr 2026 06:23:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.244.123.138
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776883422; cv=none; b=BT3eN6zlxZm2SD46nxzExDi9oFBn8rSd9zzwFnCgY5qZjmDtog+d7GSqmQK8AEdZ2PbftPDGcQlReiDUaAzYkJt6XKfUtP8Wpq3qREid1BtEfMAbKDHFjLsXHp9XrI4Umocg+8urf0jzZt/xogdMUnC7sGtzO04V8Ckbn4rvuT0=
+	t=1776925433; cv=none; b=s9Uqi53Si7qlLAnbIBbmPnFzRCqvIGg1IkGsdodDm5vijuehvon3bEN8IPf47OVZvFNAkOCQ/E3I4myJl3V9m3ob+Vy/TXMpVWu1yqJsNX8WhDwW1aielLXOc4ZDwUJfa3YBbPCZEKmPfOmqAKWxP4ou6iNjOiZthgS8aUKAwmw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776883422; c=relaxed/simple;
-	bh=9XrIPgYRDo+W2usQFkeBYLACbA1KNyI8sLBUGQzR0Bs=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=PB3QQz2kj1oReh4sCVbYSFKsihn5zvVE/XMHENPfqOB47QdcOUkzwafkKTIGAnZ+E9tJHmQFarJifK+BlljaR91Vjw/LH0wN8JUkqLiFytCcbaaweDZX5d8gnH0lPAB+L4+3EnqhSe1Q68DVv+LBTpEyCPYoH0tM4UWhQqtG1qE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=naver.com; spf=pass smtp.mailfrom=naver.com; dkim=pass (2048-bit key) header.d=naver.com header.i=@naver.com header.b=jWijRy/C; arc=none smtp.client-ip=114.111.35.161
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=naver.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=naver.com
+	s=arc-20240116; t=1776925433; c=relaxed/simple;
+	bh=LXpOjLcBVGjSPoY/M5nH6CkzKGAFbVu83vo10DVJRg4=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=AGqonkezSiv5gouf86s77aC3LnFmBHdr+5qELdFhjlZmIfmGsrRoTwl8xwZvGvEzVsJF+5gIywHfKDw2UrzGRUoZZxrCiDaCQp9hChNooUIShH8sDEanWASlN18eJV/aShNxp7Qsap85ySI7jTqT1QhUm9t6MWXEizM5Orkg2mw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com; spf=pass smtp.mailfrom=mediatek.com; dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b=qRpw/Zt3; arc=none smtp.client-ip=60.244.123.138
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mediatek.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=naver.com header.i=@naver.com header.b="jWijRy/C"
-Received: from cvsendbo009.nm ([10.112.18.55])
-  by cvsmtppost23.nm.naver.com with ESMTP id 9y0g-jE4QEi3PolCvhNa0w
-  for <linux-serial@vger.kernel.org>;
-  Wed, 22 Apr 2026 18:33:31 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=naver.com; s=s20171208;
-	t=1776882811; bh=9XrIPgYRDo+W2usQFkeBYLACbA1KNyI8sLBUGQzR0Bs=;
-	h=From:To:Subject:Date:Message-ID:From:Subject:Feedback-ID:
-	 X-Works-Security;
-	b=jWijRy/CM1/0eAYyewrdNVIa0NkTTWpE7mPjNZDWWWfzeg1tz6VTdyaEqt+GLdLAz
-	 Q2r4lljEYOox9QMveLPGrKgmNp67X3Afbi8Fxoxr2ywSE19bHDKy0OHcxWJJpOshLB
-	 LcSUvALKzNTs0kPOz1DPT/Hc1sL20TvZpx4Yg/mF9+EB+XxI65fVxRvEzcru5KJwCt
-	 kLZ9vx/naTaCTdnXIH0nDm55ZMu2SaXpNMIJxU1vKiRfw156TV22Y5S30deZKUb44k
-	 5pkp2Ev49V5uO6F+VqKWJmJbXGICWELKD/IpAQNINEBFsyenkl1g/vvZthnSK67iU6
-	 /WQrb+NKt45Ig==
-X-Session-ID: 44z8U0u0Rb6xTqzhvo8sdw
-X-Works-Send-Opt: B/YrjAJYjHmwKo2qKqJYFquqFNwkx0eFjAJYKg==
-X-Works-Smtp-Source: Vmn9aAMXFqJZ+HmwKxtm+6E=
-Received: from JMW-Ubuntu.. ([14.38.141.199])
-  by cvnsmtp009.nm.naver.com with ESMTP id 44z8U0u0Rb6xTqzhvo8sdw
-  for <multiple recipients>
-  (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384);
-  Wed, 22 Apr 2026 18:33:31 -0000
-From: Minu Jin <s9430939@naver.com>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org
-Cc: daniel.starke@siemens.com,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Minu Jin <s9430939@naver.com>,
-	syzbot+b5d1f455d385b2c7da3c@syzkaller.appspotmail.com
-Subject: [PATCH] tty: n_gsm: fix memory leak in gsm_activate_mux
-Date: Thu, 23 Apr 2026 03:33:21 +0900
-Message-ID: <20260422183321.596414-1-s9430939@naver.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="qRpw/Zt3"
+X-UUID: fd1f14163edc11f19781c1a04af40193-20260423
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+	h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=BH47Z0hf+ClG7AafYvP2SIgZhj0LIH9kRTWMoKYWfe4=;
+	b=qRpw/Zt3OE/uvW+agtgx86pUTGnU/fN90Ef7YS94dKVOthNFQhzVOGTrYZ6VxX5W0Jvrr7hUN/fq0414/B4sbGpIMFKkvkPVNZDsN2vwKbfGPgtekWFkVXYoTq2LUOPwVD6fqLNJQXeIICm09x/spBd2xDLKyYbhSU5lefDBy4E=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.3.12,REQID:2bfa1f30-9a1f-4482-b3b5-eadc30c4cb82,IP:0,U
+	RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
+	release,TS:0
+X-CID-META: VersionHash:e7bac3a,CLOUDID:9163c88f-6df4-4a3d-a7a4-fbdc42d669ce,B
+	ulkID:nil,BulkQuantity:0,Recheck:0,SF:102|836|865|888|898,TC:-5,Content:0|
+	15|50,EDM:-3,IP:nil,URL:0,File:130,RT:0,Bulk:nil,QS:nil,BEC:-1,COL:0,OSI:0
+	,OSA:0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
+X-CID-BVR: 2,SSN|SDN
+X-CID-BAS: 2,SSN|SDN,0,_
+X-CID-FACTOR: TF_CID_SPAM_SNR
+X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
+X-UUID: fd1f14163edc11f19781c1a04af40193-20260423
+Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw01.mediatek.com
+	(envelope-from <mtk07317@mediatek.com>)
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+	with ESMTP id 643341762; Thu, 23 Apr 2026 14:23:48 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.29; Thu, 23 Apr 2026 14:23:47 +0800
+Received: from mediatek.com (10.233.130.16) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.2562.29 via Frontend
+ Transport; Thu, 23 Apr 2026 14:23:47 +0800
+Received: by mediatek.com (Postfix, from userid 10007317)
+	id 3C36E200C6; Thu, 23 Apr 2026 14:23:47 +0800 (CST)
+From: Zhiyong Tao <zhiyong.tao@mediatek.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+	<jirislaby@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+CC: <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-mediatek@lists.infradead.org>,
+	<Project_Global_Digits_Upstream_Group@mediatek.com>,
+	<zhiyong.tao@mediatek.com>, <liguo.zhang@mediatek.com>,
+	<Vasanth.Reddy@mediatek.com>
+Subject: [PATCH v2 0/1] Mediatek uart patch 
+Date: Thu, 23 Apr 2026 14:22:44 +0800
+Message-ID: <20260423062345.2473300-1-zhiyong.tao@mediatek.com>
+X-Mailer: git-send-email 2.45.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -56,60 +65,27 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK: N
 
-syzbot reported a memory leak in gsm_activate_mux().
-The root cause is a missing cleanup path when gsm_register_devices()
-fails. In this case, the previously allocated DLCI 0
-and its associated kfifo remain allocated, leading to a memory leak.
+This series includes 1 patch:
+Add ACPI support on 8250_mtk driver
 
-And gsm_dlci_alloc() does not check for already allocated DLCIs.
-Repeated calls to gsm_activate_mux() would overwrite the existing pointer
-in gsm->dlci[addr], causing the original memory to be lost.
+Changes in patch v2:
+1)Change pacth name from 'zhiyong.tao<zhiyong.tao@mediatek.com>'
+  to 'Zhiyong Tao <zhiyong.tao@mediatek.com>'.
+2)Resend the UART upstream patch based on the latest Linux
+  kernel version(from 'tag: next-20251118' to 'tag: next-20260417').
 
-Fix this by:
-1. Adding gsm_dlci_free() in the error path of gsm_activate_mux().
-2. Adding a check in gsm_dlci_alloc() to return the existing DLCI
-   if it is already allocated.
+There is no code change compare to v1.
 
-Reported-by: syzbot+b5d1f455d385b2c7da3c@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=b5d1f455d385b2c7da3c
-Tested-by: syzbot+b5d1f455d385b2c7da3c@syzkaller.appspotmail.com
-Fixes: 01aecd917114 ("tty: n_gsm: fix tty registration before control channel open")
-Signed-off-by: Minu Jin <s9430939@naver.com>
----
- drivers/tty/n_gsm.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+Zhiyong Tao (1):
+  MEDIATEK: serial: 8250_mtk: Add ACPI support
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index c13e050de83b..de3d30eac86e 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -2645,7 +2645,12 @@ static int gsm_dlci_config(struct gsm_dlci *dlci, struct gsm_dlci_config *dc, in
- 
- static struct gsm_dlci *gsm_dlci_alloc(struct gsm_mux *gsm, int addr)
- {
--	struct gsm_dlci *dlci = kzalloc_obj(struct gsm_dlci, GFP_ATOMIC);
-+	struct gsm_dlci *dlci;
-+
-+	if (gsm->dlci[addr])
-+		return gsm->dlci[addr];
-+
-+	dlci = kzalloc_obj(struct gsm_dlci, GFP_ATOMIC);
- 	if (dlci == NULL)
- 		return NULL;
- 	spin_lock_init(&dlci->lock);
-@@ -3196,8 +3201,10 @@ static int gsm_activate_mux(struct gsm_mux *gsm)
- 		gsm->receive = gsm1_receive;
- 
- 	ret = gsm_register_devices(gsm_tty_driver, gsm->num);
--	if (ret)
-+	if (ret) {
-+		gsm_dlci_free(&dlci->port);
- 		return ret;
-+	}
- 
- 	gsm->has_devices = true;
- 	gsm->dead = false;		/* Tty opens are now permissible */
--- 
-2.43.0
+ drivers/tty/serial/8250/8250_mtk.c | 23 +++++++++++++++++++----
+ 1 file changed, 19 insertions(+), 4 deletions(-)
+
+--
+2.45.2
+
 
