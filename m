@@ -1,179 +1,120 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C4123D524C;
-	Fri, 24 Apr 2026 14:24:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0492121A447;
+	Fri, 24 Apr 2026 15:16:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777040700; cv=none; b=HSI99R0L64nxmPmSAmmQluCb8TVj+F+xZYDZg85HgItOQCOR4n1gyazFPA/suB1P+pFOZwhk1rFj23zF852meSYAVNV7Ctc7PGeQM3oXl13LU50O8M+lwTYoDsmCQerB6OmzfdlZlr2gz0j1agloqt2nHESEakSfpjRuuUQa8Eg=
+	t=1777043796; cv=none; b=QXEKmwRGPtWDDdWpUjtO9jGeTCAgBXLdZfAzeO3iLpZtHuk7FB1ZtvI3mXW8fP9SDn6fxtT8pS71Th+zFwZL/VR6TjjXXpO4BGiyvCfHK9O4zdKw7CSI34ORXLlsbugPq5HDl5yGUiKshqIQkfJO9h9WKkUAUI97wXXX8v1nqBA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777040700; c=relaxed/simple;
-	bh=3tHaQlrRJzcCbsfyXKWFqdGmJHB7E+owM+IS00mnRBw=;
-	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
-	 Mime-Version:Content-Type; b=TCSHgjmk71DN7Ek98l5sV7/EoFfHeV1noVVSJO9zp21tXjxyJfBmz/9i1Hd1cVsHevF0VIwC+SzLGy2jiQ4Z0ZO7vdABXgiiatlU7lLFTPVIFxso0EWT7iv9OwcTHIEnMKWqGeyfc39mP2CgSueI7/xJoApb114VVqSLsHTfkfA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=HDmf/0sH; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	s=arc-20240116; t=1777043796; c=relaxed/simple;
+	bh=IChu/uXn2KIrqkBTPczQ+N31CwRbH1SiSkO5kUF/m3g=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZD1N6wTFo4ttbpk9lupZbgs6FVGuFqMbV6S5gECjLMsjnyAabmFF6H3g8TpbkpgFD1hHyxx13yw/HaeKJDE3fQG3jphlfXumTloO4lqLVQ5hEn+AO8V9u7GUyNX0mKZEVEmrSimVwHk9ADmy5rXhQd6P7HiFiOUR873PrxeVeiA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VEJKU/5c; arc=none smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="HDmf/0sH"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=default; h=Content-Transfer-Encoding:Mime-Version:Message-Id:Subject:Cc:
-	To:From:Date:subject:date:message-id:reply-to;
-	bh=MImHFePeKxiiJkzu43c6fNucMjdnzWcR7RTqMLyJy7w=; b=HDmf/0sHaEKW3XcPfLJa+K1Oqz
-	CWJTMlM3spmV8KZcrepjXQ8EwvT5jUyj750gFUUZdmb29cRRlFUfY+6wJ6eizhFPR/OqZ8JVPRO+V
-	amgRXdQou/lj9d66lZTqDWJOjL1VOqYd69/HZGZCcT/Wc0inT8YpbapRWKZvgjLWDPvI=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168] helo=pettiford.lan)
-	by mail.hugovil.com with esmtpa (Exim 4.98.2)
-	(envelope-from <hugo@hugovil.com>)
-	id 1wGHSi-000000006Qk-0j0h;
-	Fri, 24 Apr 2026 10:24:56 -0400
-Date: Fri, 24 Apr 2026 10:24:55 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Ilpo =?ISO-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, LKML <linux-kernel@vger.kernel.org>, linux-serial
- <linux-serial@vger.kernel.org>, Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Subject: Re: [PATCH 6/9] serial: core: prevent irrelevant I/O infos display
- for UPIO_BUS
-Message-Id: <20260424102455.9f1c60ba937c6899bc1b9056@hugovil.com>
-In-Reply-To: <96429741-16d0-3e4b-b42f-d273a2adfba7@linux.intel.com>
-References: <20260423-tty-upio-v1-0-baf82d3b86d1@dimonoff.com>
-	<20260423-tty-upio-v1-6-baf82d3b86d1@dimonoff.com>
-	<96429741-16d0-3e4b-b42f-d273a2adfba7@linux.intel.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VEJKU/5c"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1777043795; x=1808579795;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=IChu/uXn2KIrqkBTPczQ+N31CwRbH1SiSkO5kUF/m3g=;
+  b=VEJKU/5cMmuLULKgsDwdeaDE5nED2tE/tdHskIz8YLRVlxlGx3f4L6hW
+   9UEc4jFSRPbTu15YhzRB4K58PqtRbvefski661ODOLkIQ0dxZsySSwpk8
+   eptBCTZryVeeJ4AEzJLBFReIyBLmL8N9uhfNDcE29M+1a1VUjluCLxbna
+   k+Fj9uffHOaZPurd3qmxwuItuEqTW2EU++JRp7xVq9f6oD3KNXfBBWyHZ
+   NsOhVAxwOaGUQ8+K+B8mfRG/iofke0917KRpu9YIyLLJc+G5s33oRdJPT
+   1TqLyPilAeIQ3h1bIp921Bc2oi7QLUPMJC89ozzsh7x7MPka75L+KHej6
+   Q==;
+X-CSE-ConnectionGUID: IsJo7p+rQni+E8Fu/VekFA==
+X-CSE-MsgGUID: YGDdPI29TCuT475+t0f53A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11766"; a="100678667"
+X-IronPort-AV: E=Sophos;i="6.23,196,1770624000"; 
+   d="scan'208";a="100678667"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2026 08:16:34 -0700
+X-CSE-ConnectionGUID: Yvpr7tkGRTWVSuqnQ105Rw==
+X-CSE-MsgGUID: M2VX0kIvSmqcW43HYmcNyA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,196,1770624000"; 
+   d="scan'208";a="226448405"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.71])
+  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2026 08:16:31 -0700
+Date: Fri, 24 Apr 2026 18:16:28 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: Jia Wang <wangjia@ultrarisc.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Paul Walmsley <pjw@kernel.org>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	LKML <linux-kernel@vger.kernel.org>,
+	linux-serial <linux-serial@vger.kernel.org>,
+	linux-riscv@lists.infradead.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v4 2/4] serial: 8250_dw: build Renesas RZN1 CPR value
+ from DW_UART_CPR_* definitions
+Message-ID: <aeuJTMqADw8J0x0u@ashevche-desk.local>
+References: <20260424-ultrarisc-serial-v4-0-1765a0b4c4a0@ultrarisc.com>
+ <20260424-ultrarisc-serial-v4-2-1765a0b4c4a0@ultrarisc.com>
+ <4548483c-cbba-899e-6b1a-1290d36b59cd@linux.intel.com>
+ <aetv2ljDOpH_Hs4s@ashevche-desk.local>
+ <363a636d-f014-cc29-6be4-ec3041f43855@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-X-Spam_score: -2.0
-X-Spam_bar: --
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <363a636d-f014-cc29-6be4-ec3041f43855@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, 24 Apr 2026 13:51:52 +0300 (EEST)
-Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com> wrote:
+On Fri, Apr 24, 2026 at 05:09:46PM +0300, Ilpo Järvinen wrote:
+> On Fri, 24 Apr 2026, Andy Shevchenko wrote:
+> > On Fri, Apr 24, 2026 at 02:38:56PM +0300, Ilpo Järvinen wrote:
+> > > On Fri, 24 Apr 2026, Jia Wang wrote:
 
-> On Thu, 23 Apr 2026, Hugo Villeneuve wrote:
->=20
-> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> >=20
-> > It doesn't make sense to display irrelevant MMIO or legacy I/O informat=
-ion
-> > for serial devices on I2C or SPI busses. Now that we have a separate I/O
-> > type for these types of devices, prevent display of I/O information for
-> > them. Using uart_iotype_*() functions to do so also addresses the now
-> > invalid check for "iotype >=3D UPIO_MEM".
-> >=20
-> > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > ---
-> >  drivers/tty/serial/serial_core.c | 50 ++++++++++++++++++--------------=
---------
-> >  1 file changed, 22 insertions(+), 28 deletions(-)
-> >=20
-> > diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/seri=
-al_core.c
-> > index 0bfdb69817e4259681fbc4658c9a68200aa2b65f..42559eda6fc134de77c3a7b=
-850d565ebdc89e216 100644
-> > --- a/drivers/tty/serial/serial_core.c
-> > +++ b/drivers/tty/serial/serial_core.c
-> > @@ -2011,13 +2011,18 @@ static void uart_line_info(struct seq_file *m, =
-struct uart_state *state)
-> >  	if (!uport)
-> >  		return;
-> > =20
-> > -	mmio =3D uport->iotype >=3D UPIO_MEM;
-> > -	seq_printf(m, "%u: uart:%s %s%08llX irq:%u",
-> > -			uport->line, uart_type(uport),
-> > -			mmio ? "mmio:0x" : "port:",
-> > -			mmio ? (unsigned long long)uport->mapbase
-> > -			     : (unsigned long long)uport->iobase,
-> > -			uport->irq);
-> > +	seq_printf(m, "%u: uart:%s", uport->line, uart_type(uport));
-> > +
-> > +	mmio =3D uart_iotype_mmio(uport->iotype);
-> > +
-> > +	if (mmio || uart_iotype_legacy_io(uport->iotype)) {
-> > +		seq_printf(m, " %s%08llX",
-> > +			   mmio ? "mmio:0x" : "port:",
-> > +			   mmio ? (unsigned long long)uport->mapbase
-> > +			   : (unsigned long long)uport->iobase);
->=20
-> This should align to ?
+...
 
-Ok, my auto-indent is not working for that.
+> > > Hmm, maybe there should also be macro also for this one which takes the 
+> > > fifosize as input and converts it to CPR field vlaue (effectively, the 
+> > > macro is an inverse of DW_UART_CPR_FIFO_SIZE()). It would be more readable 
+> > > than the literal.
+> > 
+> > But this can be done separately, right?
+> 
+> It's logically part of the cpr_value literal to defines conversion (of 
+> course one could introduce it in own patch without users but I don't see 
+> much benefit from that).
 
-Will change it to:
-    seq_printf(m, " %s%08llX", mmio ? "mmio:0x" : "port:",
-               mmio ? (unsigned long long)uport->mapbase
-                    : (unsigned long long)uport->iobase);
+No objections.
 
->=20
-> > +	}
-> > +
-> > +	seq_printf(m, "irq:%u", uport->irq);
-> > =20
-> >  	if (uport->type =3D=3D PORT_UNKNOWN) {
-> >  		seq_putc(m, '\n');
-> > @@ -2482,31 +2487,20 @@ EXPORT_SYMBOL(uart_resume_port);
-> >  static inline void
-> >  uart_report_port(struct uart_driver *drv, struct uart_port *port)
-> >  {
-> > -	char address[64];
-> > +	char address[64] =3D "";
-> > =20
-> > -	switch (port->iotype) {
-> > -	case UPIO_PORT:
-> > -		snprintf(address, sizeof(address), "I/O 0x%lx", port->iobase);
-> > -		break;
-> > -	case UPIO_HUB6:
-> > +	if (uart_iotype_mmio(port->iotype))
-> >  		snprintf(address, sizeof(address),
-> > -			 "I/O 0x%lx offset 0x%x", port->iobase, port->hub6);
-> > -		break;
-> > -	case UPIO_MEM:
-> > -	case UPIO_MEM16:
-> > -	case UPIO_MEM32:
-> > -	case UPIO_MEM32BE:
-> > -	case UPIO_AU:
-> > -	case UPIO_TSI:
-> > -		snprintf(address, sizeof(address),
-> > -			 "MMIO 0x%llx", (unsigned long long)port->mapbase);
-> > -		break;
-> > -	default:
-> > -		strscpy(address, "*unknown*", sizeof(address));
-> > -		break;
-> > +			 " at MMIO 0x%llx", (unsigned long long)port->mapbase);
-> > +	else if (uart_iotype_legacy_io(port->iotype)) {
-> > +		if (port->iotype =3D=3D UPIO_PORT)
-> > +			snprintf(address, sizeof(address), " at I/O 0x%lx", port->iobase);
-> > +		else if (port->iotype =3D=3D UPIO_HUB6)
-> > +			snprintf(address, sizeof(address),
-> > +				 " at I/O 0x%lx offset 0x%x", port->iobase, port->hub6);
->=20
-> Please use scnprintf() so we could perhaps one day get rid of snprintf()=
-=20
-> entirely.
+> > > Also include BUILD_BUG_ON(!IS_ALIGNED(fifosize, 16) + bounds checks) 
+> > > inside that macro to catch invalid fifo sizes (+ don't forget the 
+> > > necessary headers for those two new things).
+> > 
+> > Hmm... Some devices may have FIFO = 8 or 4 bytes (Intel Quark IIRC has less
+> > than 16 and it's DW IP).
+> 
+> Perhaps but according the DW databook I've at hand, there are no values in 
+> FIFO_MODE field for such FIFO sizes. So what would CPR contain in those
+> cases for FIFO_MODE field?
 
-Ok will do.
+On real HW it returns 0s for all registers above 0x07 (multiplied by 4 as
+a stride). But I also checked the values of xmit_fifo_size and it shows 16.
+What 8 is it is the DMA max_burst. Hence the proposed assertion should work.
 
->=20
-> >  	}
-> > =20
-> > -	pr_info("%s%s%s at %s (irq =3D %u, base_baud =3D %u) is a %s\n",
-> > +	pr_info("%s%s%s%s (irq =3D %u, base_baud =3D %u) is a %s\n",
-> >  		port->dev ? dev_name(port->dev) : "",
-> >  		port->dev ? ": " : "",
-> >  		port->name,
-> >=20
-> >=20
->=20
-> --=20
->  i.
->=20
->=20
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
---=20
-Hugo Villeneuve
