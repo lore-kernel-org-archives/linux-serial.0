@@ -1,124 +1,162 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DBA531F98A;
-	Fri, 24 Apr 2026 11:13:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0B9A3AD50A
+	for <linux-serial@vger.kernel.org>; Fri, 24 Apr 2026 11:23:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777029189; cv=none; b=Ww6o49ue9w4/0V7Q7gmwZL4EB+X/nnO3kjuSjmTblMymxCS8hkbxC+Ott9MsNSdtvGS6dly+Xk70W06D6Vhv/bHvn8TvWKiDO/+ppkDfIeF1XUDBVet888fRdkSUE5Hj3Qf+sUQH80ZKX6o9RdV2hPDThPu7Xz2ML27T9ZGKcGc=
+	t=1777029831; cv=none; b=oOzF3rqVg52CvmPCsq4Ai8BZsqssZPm+zIyUSDL7l5lHs2gPRQ5/QvdTHIprp5kBdIqJiMwDluXCIiurQbtT5aUQtYoUzBaBGIqOkN5yTUjKkJPNG3xQSx/8PxWdSRb7xsWxrIqo01lj5/ykIU9ZzyNCDW0uDPLZRpBjOVCfaA8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777029189; c=relaxed/simple;
-	bh=FSJFGbvZjT6STWIkJ/8L2rFBb+CmXIHXXm9QMCB7Ytk=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=nHBzpu8mBlo9ja+UIPeswe/8WvYCGw2FXhVy4CaAcYWQuALmN04Cvhlx3WZoep0hMtLuXqPhI+ftrTdO8KAY26BJXq0Z60DYPqJdGCl+F3XUjMWmrChhw5utQRW357b8rrdRoidbQpEaAFC8A07dz6VnM8J+5/6rOVoG8ulMoaM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NzIaxYeQ; arc=none smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1777029831; c=relaxed/simple;
+	bh=CRAdYzX9+jNsTYs4h8ctNWZTdaCBBbrpEXxcu4w9zCQ=;
+	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
+	 Message-Id:References:To; b=GoAPLrys1r/EM7KolvZZx96+tGQ7BKjGzEZCs4buWkdyTzVP3OvkdIArrNpwOc7VO12852ELN1AQ+oys0tq5bAlEP3tj+Cfk65dXp/5YV5ZDMDpUjn2ouYKcRbCcjceCJXvGFb9FBCw1VNa3z6g/S8P29sug94fUFZOYnKDF190=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hobNOn+j; arc=none smtp.client-ip=209.85.221.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NzIaxYeQ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777029188; x=1808565188;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=FSJFGbvZjT6STWIkJ/8L2rFBb+CmXIHXXm9QMCB7Ytk=;
-  b=NzIaxYeQP7CoERIMiI7Bbcw9HOnGA0U0qi0SZWR4/11Cj1ohjawh6hdD
-   JgERAApKQgYiLSmx6qDulE4JOWk+DmJ+QF2z4NI6ZwxTW/v5HnhLon8ZA
-   /EHPEgKuUeaeJQ++Zdl7+PBgzfPfQEcQj/qNRxD4dciRzsF8yhvKJjGpW
-   Y/sNbOD/Ck6I4CNYH7PO5GJCEtTw1Y8fwqO9PFj0Ln35NyGHRHa2yJCPb
-   Edjjip1zGtgppsL+SORUX3h1PVk9FZEjOhzAhL/TVIfvDnqvHgPlllezr
-   OF6bi96tuE1qpKzBunVxjaqZDz8m/R8+3aZ5Y584/Hbq9S6ZnsoTqWCCt
-   w==;
-X-CSE-ConnectionGUID: gp+/C2/qSsykq48f4z65Sw==
-X-CSE-MsgGUID: imw/8NmhR0ezTt/3oPoFjQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11765"; a="89470396"
-X-IronPort-AV: E=Sophos;i="6.23,196,1770624000"; 
-   d="scan'208";a="89470396"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2026 04:13:07 -0700
-X-CSE-ConnectionGUID: E6nZn7E/RQquBITm7XsulA==
-X-CSE-MsgGUID: YaIyuxJ3Tmmeggy3gP89ow==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,196,1770624000"; 
-   d="scan'208";a="234720486"
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.120])
-  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2026 04:13:05 -0700
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Fri, 24 Apr 2026 14:13:02 +0300 (EEST)
-To: Hugo Villeneuve <hugo@hugovil.com>
-cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>, LKML <linux-kernel@vger.kernel.org>, 
-    linux-serial <linux-serial@vger.kernel.org>, 
-    Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Subject: Re: [PATCH 2/9] serial: core: use uart_iotype_*() to simplify code
-In-Reply-To: <20260423-tty-upio-v1-2-baf82d3b86d1@dimonoff.com>
-Message-ID: <716918cf-b240-43cc-a702-9b3d94dc75d2@linux.intel.com>
-References: <20260423-tty-upio-v1-0-baf82d3b86d1@dimonoff.com> <20260423-tty-upio-v1-2-baf82d3b86d1@dimonoff.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hobNOn+j"
+Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-43eada6d900so7537383f8f.0
+        for <linux-serial@vger.kernel.org>; Fri, 24 Apr 2026 04:23:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1777029828; x=1777634628; darn=vger.kernel.org;
+        h=to:references:message-id:cc:date:in-reply-to:from:subject
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=+t+DJdjmBiSqlx1/PpjPe0tKhCBDYlA3fqYW1n4w00o=;
+        b=hobNOn+jNnkILFM0B2lWuWoYhwhZrFxY9Geg77nhWKIxfnXfF8/kdCXUqF3IAH6N85
+         +MnXX+X/ryx3Bsb6GDGsnU+E7gsrj0IJK8lZwR8RlhREjSRMJ/+Qt3zcDdkIFIWaTjFD
+         2KBPkIHZyxjw8xEjD+3KFJm4otmxlu+Dn1hPLmAPSw7NNGBzdT7P3K0buEHgORui9RC5
+         fBO+PBMgPIhhQCJ8Yay1I9UptXXghC2VGHRzgaS9ncV7xSj+i+cSKniM8nvvEqnLqnDp
+         CxNPHUOaxAc63WJRXFxdlW/xuJ9/fDR33uXVXIiqCTPauSSSLmEoEGo/B+t28aL6Yc5r
+         zAaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777029828; x=1777634628;
+        h=to:references:message-id:cc:date:in-reply-to:from:subject
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+t+DJdjmBiSqlx1/PpjPe0tKhCBDYlA3fqYW1n4w00o=;
+        b=rhunWAvq9WBdMs+2BXCxdbZ7iSbCJqPU6Li6x0KdPYDIKniaD6bAVqGWrNMu0lhEVs
+         yrQRGh0wA6DwauuvKctTwHW+wX7E/+9j5D+244wbGUe8jFFWQnsCRL9coXfOPFJpqkkw
+         f9AtlBzehpGWec1dV6nlxkbMIvnwv2MM3hAy1Dx/n2F/6DEsQYCPgtb1bRJam6xeAvND
+         9x0mGYhK/A8OJRudBXalVzbBDE5u9a6TtDsPRIGhhPZReFQhZ76GeB4IZdPlJDBVAiQ5
+         MkXmMmCg1eMTNTY9Pnok7upWo87iAsflFsZKqFpC+VgUy7lDvwBxzoRF2KQadXshkn0x
+         Rsog==
+X-Forwarded-Encrypted: i=1; AFNElJ/fMMKGxop0zdZeH/75LvjnbaL1WoMKxmRg+J1confb7lv0kuNo90kGLxRUxBJ7kdpWX05Gj6BoR7v0ZQs=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzX/Kam/IQqq3egt1dK9RJJj+I2CapXzx1Pqu5F5dZROXQtkS07
+	67Zx3mdjaewXfacRdWGWwwSoaxODNbmx9gLtkj7tp1hv6aHuNw+zZ0g2
+X-Gm-Gg: AeBDiesUYGagm4Jgi8MqcYSDRC+aKSeQwpaBSDm3+Wy8wGhxgzzA7KOY9FKtbGvTK0v
+	wGMSYVgl6VWaNc2SKu74PB5qR6xc8lcgQYCear5sDzDozEVzfcxHturN7agvWpO60vOXEhdBJ5D
+	+V2zh4aZQrvtTWJYai9ucpTZ3pjwExTFbaM1iuBT96O1OAW/lixE1uH2Jk5YdZ7M89K0RtW+ScB
+	r1V0+h/RiQPV36ju9vOcSzhUUgg4RxbP2iMJiewplUAvgo+neJ1GDN8DPQI5GNmtCWF2PMru4DD
+	xl9DBp81vWKwzxjwRwAXGuBeOFP9i5NUelOCD7jXxDML2dM3wzqGPzMQ/qekkH6BAHU/C/qHJRD
+	iNEHtop2bZhteA+SD72C1V3KtmuuotOGQvuQlfMYnqKWwzMSCw0yaDIXcY7uVUpO8Zi6rMjnrEp
+	yujzI3Yf5TWt9JsVKCNFXAQdC2pTeUYUiGpJB06FO/w7Ov
+X-Received: by 2002:a05:6000:240e:b0:439:ae2a:755e with SMTP id ffacd0b85a97d-43fe3e0b606mr48159269f8f.23.1777029828055;
+        Fri, 24 Apr 2026 04:23:48 -0700 (PDT)
+Received: from smtpclient.apple ([197.250.51.46])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43fe4cb1365sm63645843f8f.7.2026.04.24.04.23.43
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 24 Apr 2026 04:23:47 -0700 (PDT)
+Content-Type: multipart/signed;
+	boundary="Apple-Mail=_EE2E18C8-0A52-4302-9DA1-BBDF2F1ACD26";
+	protocol="application/pgp-signature";
+	micalg=pgp-sha256
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3864.500.181\))
+Subject: Re: [PATCH v5 1/8] ARM: zte: Add zx297520v3 platform support
+From: =?utf-8?Q?Stefan_D=C3=B6singer?= <stefandoesinger@gmail.com>
+In-Reply-To: <CAD++jL=am0f+sgBSFYQCdcFOvFWgPETn_pSgVdzETJ3_yUNqgw@mail.gmail.com>
+Date: Fri, 24 Apr 2026 14:23:29 +0300
+Cc: Jonathan Corbet <corbet@lwn.net>,
+ Shuah Khan <skhan@linuxfoundation.org>,
+ Russell King <linux@armlinux.org.uk>,
+ Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>,
+ Arnd Bergmann <arnd@arndb.de>,
+ Krzysztof Kozlowski <krzk@kernel.org>,
+ Alexandre Belloni <alexandre.belloni@bootlin.com>,
+ Drew Fustini <fustini@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>,
+ linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org,
+ devicetree@vger.kernel.org,
+ soc@lists.linux.dev,
+ linux-serial@vger.kernel.org
+Message-Id: <BF5EABA2-3168-48A2-AE2D-D8EE2CF88E9F@gmail.com>
+References: <20260421-send-v5-0-ace038e63515@gmail.com>
+ <20260421-send-v5-1-ace038e63515@gmail.com>
+ <CAD++jL=am0f+sgBSFYQCdcFOvFWgPETn_pSgVdzETJ3_yUNqgw@mail.gmail.com>
+To: Linus Walleij <linusw@kernel.org>
+X-Mailer: Apple Mail (2.3864.500.181)
 
-On Thu, 23 Apr 2026, Hugo Villeneuve wrote:
 
-> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> 
-> Make use of new functions uart_iotype_mmio() and uart_iotype_legacy_io()
-> to simplify and improve code readability.
-> 
-> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> ---
->  drivers/tty/serial/serial_core.c | 24 +++++++++---------------
->  1 file changed, 9 insertions(+), 15 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index b1cf45a8fc854cd97e349ff077d83b42e3ef8b16..fc273f8f9e75de89dca1ac1aca3589567bcf8a18 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -3221,23 +3221,17 @@ bool uart_match_port(const struct uart_port *port1,
->  {
->  	if (port1->iotype != port2->iotype)
->  		return false;
-> -
-> -	switch (port1->iotype) {
-> -	case UPIO_PORT:
-> -		return port1->iobase == port2->iobase;
-> -	case UPIO_HUB6:
-> -		return port1->iobase == port2->iobase &&
-> -		       port1->hub6   == port2->hub6;
-> -	case UPIO_MEM:
-> -	case UPIO_MEM16:
-> -	case UPIO_MEM32:
-> -	case UPIO_MEM32BE:
-> -	case UPIO_AU:
-> -	case UPIO_TSI:
-> +	else if (uart_iotype_mmio(port1->iotype))
->  		return port1->mapbase == port2->mapbase;
-> -	default:
-> +	else if (uart_iotype_legacy_io(port1->iotype))
-> +		if (port1->iobase != port2->iobase)
-> +			return false;
-> +		else if (port1->iotype == UPIO_HUB6 && port1->hub6 != port2->hub6)
+--Apple-Mail=_EE2E18C8-0A52-4302-9DA1-BBDF2F1ACD26
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain;
+	charset=utf-8
 
-I suggest placing the entire hub6 related check (including the iobase 
-check) into own function in 8250_hub6.c and add a stub for the case when 
-hub6 code is not even built into kernel into 8250.h.
 
-> +			return false;
-> +		else
-> +			return true;
-> +	else
->  		return false;
-> -	}
->  }
->  EXPORT_SYMBOL(uart_match_port);
->  
-> 
-> 
 
--- 
- i.
+> Am 24.04.2026 um 10:06 schrieb Linus Walleij <linusw@kernel.org>:
+>=20
+> On Tue, Apr 21, 2026 at 10:24=E2=80=AFPM Stefan D=C3=B6singer
+> <stefandoesinger@gmail.com> wrote:
+>=20
+>> This SoC is used in low end LTE-to-WiFi routers, for example some =
+D-Link
+>> DWR 932 revisions, ZTE K10, ZLT S10 4G, but also models that are =
+branded
+>> and sold by ISPs themselves. They are widespread in Africa, China,
+>> Russia and Eastern Europe.
+>>=20
+>> This SoC is a relative of the zx296702 and zx296718 that had some
+>> upstream support until commit 89d4f98ae90d ("ARM: remove zte zx
+>> platform"). My eventual goal is to enable OpenWRT to run on these
+>> devices.
+>>=20
+>> Signed-off-by: Stefan D=C3=B6singer <stefandoesinger@gmail.com>
+>=20
+> Didn't I review this already? I don't remember, anyway:
+> Reviewed-by: Linus Walleij <linusw@kernel.org>
 
+Yes, you did, but the previous version, and after I sent this one.
+
+And if I understand the b4 docs correctly, the Reviewed-by tags are sort =
+of handled client side: I have to tell b4 to fetch trailers, and then it =
+will add it when I send my v6 with Krzysztof's request to squash =
+patches.
+
+
+--Apple-Mail=_EE2E18C8-0A52-4302-9DA1-BBDF2F1ACD26
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename=signature.asc
+Content-Type: application/pgp-signature;
+	name=signature.asc
+Content-Description: Message signed with OpenPGP
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEQxb0tqoFWyeVMl1sPRO8yFRPGiIFAmnrUrEACgkQPRO8yFRP
+GiKRrQ//d0i3JtN4eqnwGJS0KDoAetBNQXiNUwHJGszPaUlMzi1beDOdsTFk7Who
+t8GNv9VvwjuR7Agxy+B9vNltnZanU6djJKQhm1+Qd7AvlC86ueKD2tGZUxpmuipl
+37Poxi+E1zUTG68RTaJz1p0utLhaZkiCjVJzmTQgJJq3mAfYp8ycFI29IgdGHJCN
+612a3nSFm1l6vz8a+qSX9kQG1UnTYQjsavu1ACxQp9Kk1Xga1G+atLgfXTTY3Aav
+LjzHpAl+B0szQ84Zb05ZpJ1jiZYnMrDrIlNu1hv9/PTddXHyL2ISI+0um5OCvJ6n
+61iXnVpyJlrscV1Iqs23VwxKx+y3rnV1JIlf/j4n1nwkJ5LQLxRWuYUpmK71uwKt
+8WtiK3AD9VxnQvfVtAn2ltUaCLeeE+pZpSwnOvI31AOrwwZQ3ckSqkYRYVwnxVZZ
+hkYMk1IfqjRPdMgMjyAqKEPZ5hOqYC5eqd68uM0HAXpYnUT/FNxGw/+sV7oX3qyY
+eVho0WqhoeBEAezLTQ+GeCNlLirDpHwT2Y8NHYxSTlIQuwhwClwRPjdXCyS9adcF
+eCz32rEZFS75z0LG701LB+MlMhblYEkGiAm3DEsFo4778ft7kfWC5N3GJLbu31SX
+1/xC0sqkBY5zF5gvLXwtw0kEniW7PzEgc3oc2N3T37x4mk/WGfo=
+=+4QJ
+-----END PGP SIGNATURE-----
+
+--Apple-Mail=_EE2E18C8-0A52-4302-9DA1-BBDF2F1ACD26--
