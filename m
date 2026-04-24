@@ -1,162 +1,163 @@
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0B9A3AD50A
-	for <linux-serial@vger.kernel.org>; Fri, 24 Apr 2026 11:23:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AE143914EE;
+	Fri, 24 Apr 2026 11:25:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777029831; cv=none; b=oOzF3rqVg52CvmPCsq4Ai8BZsqssZPm+zIyUSDL7l5lHs2gPRQ5/QvdTHIprp5kBdIqJiMwDluXCIiurQbtT5aUQtYoUzBaBGIqOkN5yTUjKkJPNG3xQSx/8PxWdSRb7xsWxrIqo01lj5/ykIU9ZzyNCDW0uDPLZRpBjOVCfaA8=
+	t=1777029904; cv=none; b=kZ2tONJdSlQDEeh4dTpGhi1y42G8oW7V7D1dBPzRex2SCoHYfcGrtY0TRcPjFGxlITtCarlBd40GuF45ae9Js7B9dxK5BvJg1p+qGWJEbGMTaoiQyU75Ugkvjdg8cJTMmfK9HpZf1KwBwGQQ2JSlFH4IHHY8u39fs0tu/vWeGis=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777029831; c=relaxed/simple;
-	bh=CRAdYzX9+jNsTYs4h8ctNWZTdaCBBbrpEXxcu4w9zCQ=;
-	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Message-Id:References:To; b=GoAPLrys1r/EM7KolvZZx96+tGQ7BKjGzEZCs4buWkdyTzVP3OvkdIArrNpwOc7VO12852ELN1AQ+oys0tq5bAlEP3tj+Cfk65dXp/5YV5ZDMDpUjn2ouYKcRbCcjceCJXvGFb9FBCw1VNa3z6g/S8P29sug94fUFZOYnKDF190=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hobNOn+j; arc=none smtp.client-ip=209.85.221.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1777029904; c=relaxed/simple;
+	bh=EvVCgq2o+wtnzfrT7T2sZ9ngKIcZzp+62/TtTInqJRE=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=YQO9V/vSMCrZtNH4Q7hE4ZkvZcvXkaRQxFymXSqaqkikueQkHKyx3t93eovImi8c8yRrxiKPWoBuIe6EStSau1gg3MxEKHavEcIFa3WiSnQ7NR1hmzpBrdlpeHgoPQ76rWoTrhXpFqCiCO2T2othJmzp55pB0gq6gb+V4Dsqyvg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fgosXvzh; arc=none smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hobNOn+j"
-Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-43eada6d900so7537383f8f.0
-        for <linux-serial@vger.kernel.org>; Fri, 24 Apr 2026 04:23:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777029828; x=1777634628; darn=vger.kernel.org;
-        h=to:references:message-id:cc:date:in-reply-to:from:subject
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=+t+DJdjmBiSqlx1/PpjPe0tKhCBDYlA3fqYW1n4w00o=;
-        b=hobNOn+jNnkILFM0B2lWuWoYhwhZrFxY9Geg77nhWKIxfnXfF8/kdCXUqF3IAH6N85
-         +MnXX+X/ryx3Bsb6GDGsnU+E7gsrj0IJK8lZwR8RlhREjSRMJ/+Qt3zcDdkIFIWaTjFD
-         2KBPkIHZyxjw8xEjD+3KFJm4otmxlu+Dn1hPLmAPSw7NNGBzdT7P3K0buEHgORui9RC5
-         fBO+PBMgPIhhQCJ8Yay1I9UptXXghC2VGHRzgaS9ncV7xSj+i+cSKniM8nvvEqnLqnDp
-         CxNPHUOaxAc63WJRXFxdlW/xuJ9/fDR33uXVXIiqCTPauSSSLmEoEGo/B+t28aL6Yc5r
-         zAaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777029828; x=1777634628;
-        h=to:references:message-id:cc:date:in-reply-to:from:subject
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+t+DJdjmBiSqlx1/PpjPe0tKhCBDYlA3fqYW1n4w00o=;
-        b=rhunWAvq9WBdMs+2BXCxdbZ7iSbCJqPU6Li6x0KdPYDIKniaD6bAVqGWrNMu0lhEVs
-         yrQRGh0wA6DwauuvKctTwHW+wX7E/+9j5D+244wbGUe8jFFWQnsCRL9coXfOPFJpqkkw
-         f9AtlBzehpGWec1dV6nlxkbMIvnwv2MM3hAy1Dx/n2F/6DEsQYCPgtb1bRJam6xeAvND
-         9x0mGYhK/A8OJRudBXalVzbBDE5u9a6TtDsPRIGhhPZReFQhZ76GeB4IZdPlJDBVAiQ5
-         MkXmMmCg1eMTNTY9Pnok7upWo87iAsflFsZKqFpC+VgUy7lDvwBxzoRF2KQadXshkn0x
-         Rsog==
-X-Forwarded-Encrypted: i=1; AFNElJ/fMMKGxop0zdZeH/75LvjnbaL1WoMKxmRg+J1confb7lv0kuNo90kGLxRUxBJ7kdpWX05Gj6BoR7v0ZQs=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzX/Kam/IQqq3egt1dK9RJJj+I2CapXzx1Pqu5F5dZROXQtkS07
-	67Zx3mdjaewXfacRdWGWwwSoaxODNbmx9gLtkj7tp1hv6aHuNw+zZ0g2
-X-Gm-Gg: AeBDiesUYGagm4Jgi8MqcYSDRC+aKSeQwpaBSDm3+Wy8wGhxgzzA7KOY9FKtbGvTK0v
-	wGMSYVgl6VWaNc2SKu74PB5qR6xc8lcgQYCear5sDzDozEVzfcxHturN7agvWpO60vOXEhdBJ5D
-	+V2zh4aZQrvtTWJYai9ucpTZ3pjwExTFbaM1iuBT96O1OAW/lixE1uH2Jk5YdZ7M89K0RtW+ScB
-	r1V0+h/RiQPV36ju9vOcSzhUUgg4RxbP2iMJiewplUAvgo+neJ1GDN8DPQI5GNmtCWF2PMru4DD
-	xl9DBp81vWKwzxjwRwAXGuBeOFP9i5NUelOCD7jXxDML2dM3wzqGPzMQ/qekkH6BAHU/C/qHJRD
-	iNEHtop2bZhteA+SD72C1V3KtmuuotOGQvuQlfMYnqKWwzMSCw0yaDIXcY7uVUpO8Zi6rMjnrEp
-	yujzI3Yf5TWt9JsVKCNFXAQdC2pTeUYUiGpJB06FO/w7Ov
-X-Received: by 2002:a05:6000:240e:b0:439:ae2a:755e with SMTP id ffacd0b85a97d-43fe3e0b606mr48159269f8f.23.1777029828055;
-        Fri, 24 Apr 2026 04:23:48 -0700 (PDT)
-Received: from smtpclient.apple ([197.250.51.46])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43fe4cb1365sm63645843f8f.7.2026.04.24.04.23.43
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 24 Apr 2026 04:23:47 -0700 (PDT)
-Content-Type: multipart/signed;
-	boundary="Apple-Mail=_EE2E18C8-0A52-4302-9DA1-BBDF2F1ACD26";
-	protocol="application/pgp-signature";
-	micalg=pgp-sha256
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fgosXvzh"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1777029903; x=1808565903;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=EvVCgq2o+wtnzfrT7T2sZ9ngKIcZzp+62/TtTInqJRE=;
+  b=fgosXvzh6Ldw4MEBOXpuv6buw9WFOi/iLO+XqvpP/qrdWLTyytRfI5re
+   BsXvsPWF6oUevZ7lqsmr5HJ9UxEspiwjakOlyH2ADAFUO8HFXTX0VKzqp
+   WLrQX0I+ggQ4tYklfTQPYq2Mbz4QG/T3xZ1dz9HHxIZ7uzJm1lNWaQlak
+   XsFTZax/GFbmVDr0wqU/q5jP7TT6hqlQ3R2u2YmCIfp2QlEbPynlJGhI5
+   W2Ci8TQHRdRyz8oYkKO5L56HPd/umnL6Yhhd9KjJhmDqooCp3pnXWpExM
+   zqhqwkP45NiZxZvJqtbbfB72bKqwJS1OxD05YHv4KeJ8ZV/WxP1qElP6O
+   w==;
+X-CSE-ConnectionGUID: F5cqkgwhQ0WKj4au+EGlmQ==
+X-CSE-MsgGUID: GQ25U8PdT6iwCgG4lOb08Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11765"; a="81870016"
+X-IronPort-AV: E=Sophos;i="6.23,196,1770624000"; 
+   d="scan'208";a="81870016"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2026 04:25:02 -0700
+X-CSE-ConnectionGUID: M43y2bLkR2WrvapCQQDW9A==
+X-CSE-MsgGUID: vkJnjbhCTzikSXv9rh1fjg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,196,1770624000"; 
+   d="scan'208";a="232837947"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.120])
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2026 04:24:59 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Fri, 24 Apr 2026 14:24:57 +0300 (EEST)
+To: Hugo Villeneuve <hugo@hugovil.com>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, LKML <linux-kernel@vger.kernel.org>, 
+    linux-serial <linux-serial@vger.kernel.org>, 
+    Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Subject: Re: [PATCH 0/9] serial: add new I/O type for SPI and I2C bus
+ devices
+In-Reply-To: <20260423-tty-upio-v1-0-baf82d3b86d1@dimonoff.com>
+Message-ID: <43a17428-e5a4-41ad-a904-cd9ec6ad2962@linux.intel.com>
+References: <20260423-tty-upio-v1-0-baf82d3b86d1@dimonoff.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3864.500.181\))
-Subject: Re: [PATCH v5 1/8] ARM: zte: Add zx297520v3 platform support
-From: =?utf-8?Q?Stefan_D=C3=B6singer?= <stefandoesinger@gmail.com>
-In-Reply-To: <CAD++jL=am0f+sgBSFYQCdcFOvFWgPETn_pSgVdzETJ3_yUNqgw@mail.gmail.com>
-Date: Fri, 24 Apr 2026 14:23:29 +0300
-Cc: Jonathan Corbet <corbet@lwn.net>,
- Shuah Khan <skhan@linuxfoundation.org>,
- Russell King <linux@armlinux.org.uk>,
- Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>,
- Arnd Bergmann <arnd@arndb.de>,
- Krzysztof Kozlowski <krzk@kernel.org>,
- Alexandre Belloni <alexandre.belloni@bootlin.com>,
- Drew Fustini <fustini@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>,
- linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org,
- devicetree@vger.kernel.org,
- soc@lists.linux.dev,
- linux-serial@vger.kernel.org
-Message-Id: <BF5EABA2-3168-48A2-AE2D-D8EE2CF88E9F@gmail.com>
-References: <20260421-send-v5-0-ace038e63515@gmail.com>
- <20260421-send-v5-1-ace038e63515@gmail.com>
- <CAD++jL=am0f+sgBSFYQCdcFOvFWgPETn_pSgVdzETJ3_yUNqgw@mail.gmail.com>
-To: Linus Walleij <linusw@kernel.org>
-X-Mailer: Apple Mail (2.3864.500.181)
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="8323328-1498380334-1777029897=:958"
 
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
---Apple-Mail=_EE2E18C8-0A52-4302-9DA1-BBDF2F1ACD26
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain;
-	charset=utf-8
+--8323328-1498380334-1777029897=:958
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 
+On Thu, 23 Apr 2026, Hugo Villeneuve wrote:
 
-
-> Am 24.04.2026 um 10:06 schrieb Linus Walleij <linusw@kernel.org>:
+> Hello,
+> this patch series add a new I/O type for serial devices on a SPI/I2C bus.
 >=20
-> On Tue, Apr 21, 2026 at 10:24=E2=80=AFPM Stefan D=C3=B6singer
-> <stefandoesinger@gmail.com> wrote:
+> These changes are based on a suggestion [1] made by Ilpo J=C3=A4rvinen du=
+ring
+> past sc16is7xx driver patches review.
+
+Hehe, I didn't even recall suggesting this (nor why) :-).
+
+I like this series. Some, relatively minor, comments on the individual=20
+patches. Thanks for looking into solving this properly.
+
+--=20
+ i.
+
+> I decided to use UPIO_BUS/SERIAL_IO_BUS names but maybe other names would
+> be more appropriate:
+>    UPIO_SBUS   / SERIAL_IO_SBUS
+>    UPIO_SERBUS / SERIAL_IO_SERBUS
+>    UPIO_EXT    / SERIAL_IO_EXT
+>    UPIO_CUSTOM / SERIAL_IO_CUSTOM
+>    UPIO_REGMAP / SERIAL_IO_REGMAP  /* Maybe not always true in future? */
+>    ...
 >=20
->> This SoC is used in low end LTE-to-WiFi routers, for example some =
-D-Link
->> DWR 932 revisions, ZTE K10, ZLT S10 4G, but also models that are =
-branded
->> and sold by ISPs themselves. They are widespread in Africa, China,
->> Russia and Eastern Europe.
->>=20
->> This SoC is a relative of the zx296702 and zx296718 that had some
->> upstream support until commit 89d4f98ae90d ("ARM: remove zte zx
->> platform"). My eventual goal is to enable OpenWRT to run on these
->> devices.
->>=20
->> Signed-off-by: Stefan D=C3=B6singer <stefandoesinger@gmail.com>
+> Tested on a imx6 board with two SC16is752 using SPI mode, and a dummy
+> device-tree entry for a MAX3100:
+>   dmesg -t | grep "base_baud"
+>     2020000.serial: ttymxc0 at MMIO 0x2020000 (irq =3D 197, base_baud =3D=
+ 5000000) is a IMX
+>     21e8000.serial: ttymxc1 at MMIO 0x21e8000 (irq =3D 198, base_baud =3D=
+ 5000000) is a IMX
+>     spi1.0: ttySC0 (irq =3D 165, base_baud =3D 1500000) is a SC16IS752
+>     spi1.0: ttySC1 (irq =3D 165, base_baud =3D 1500000) is a SC16IS752
+>     spi3.0: ttySC2 (irq =3D 37, base_baud =3D 1500000) is a SC16IS752
+>     spi3.0: ttySC3 (irq =3D 37, base_baud =3D 1500000) is a SC16IS752
+>     spi3.1: ttyMAX0 (irq =3D 0, base_baud =3D 0) is a MAX3100
+> Note that before these patches, max3100 silently failed in uart_configure=
+_port()
+> because membase/iobase/mapbase were zero.
+>
+> For max310x and SC16is7xx in i2c mode, tested only that driver is properl=
+y
+> registered by using i2c-stub.
 >=20
-> Didn't I review this already? I don't remember, anyway:
-> Reviewed-by: Linus Walleij <linusw@kernel.org>
-
-Yes, you did, but the previous version, and after I sent this one.
-
-And if I understand the b4 docs correctly, the Reviewed-by tags are sort =
-of handled client side: I have to tell b4 to fetch trailers, and then it =
-will add it when I send my v6 with Krzysztof's request to squash =
-patches.
-
-
---Apple-Mail=_EE2E18C8-0A52-4302-9DA1-BBDF2F1ACD26
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename=signature.asc
-Content-Type: application/pgp-signature;
-	name=signature.asc
-Content-Description: Message signed with OpenPGP
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEQxb0tqoFWyeVMl1sPRO8yFRPGiIFAmnrUrEACgkQPRO8yFRP
-GiKRrQ//d0i3JtN4eqnwGJS0KDoAetBNQXiNUwHJGszPaUlMzi1beDOdsTFk7Who
-t8GNv9VvwjuR7Agxy+B9vNltnZanU6djJKQhm1+Qd7AvlC86ueKD2tGZUxpmuipl
-37Poxi+E1zUTG68RTaJz1p0utLhaZkiCjVJzmTQgJJq3mAfYp8ycFI29IgdGHJCN
-612a3nSFm1l6vz8a+qSX9kQG1UnTYQjsavu1ACxQp9Kk1Xga1G+atLgfXTTY3Aav
-LjzHpAl+B0szQ84Zb05ZpJ1jiZYnMrDrIlNu1hv9/PTddXHyL2ISI+0um5OCvJ6n
-61iXnVpyJlrscV1Iqs23VwxKx+y3rnV1JIlf/j4n1nwkJ5LQLxRWuYUpmK71uwKt
-8WtiK3AD9VxnQvfVtAn2ltUaCLeeE+pZpSwnOvI31AOrwwZQ3ckSqkYRYVwnxVZZ
-hkYMk1IfqjRPdMgMjyAqKEPZ5hOqYC5eqd68uM0HAXpYnUT/FNxGw/+sV7oX3qyY
-eVho0WqhoeBEAezLTQ+GeCNlLirDpHwT2Y8NHYxSTlIQuwhwClwRPjdXCyS9adcF
-eCz32rEZFS75z0LG701LB+MlMhblYEkGiAm3DEsFo4778ft7kfWC5N3GJLbu31SX
-1/xC0sqkBY5zF5gvLXwtw0kEniW7PzEgc3oc2N3T37x4mk/WGfo=
-=+4QJ
------END PGP SIGNATURE-----
-
---Apple-Mail=_EE2E18C8-0A52-4302-9DA1-BBDF2F1ACD26--
+> Also tested on a custom board with a Renesas RZ/G2L cpu (sh-sci driver) t=
+o
+> confirm there is no regression:
+>   dmesg -t | grep "base_baud"
+>     1004b800.serial: ttySC0 at MMIO 0x1004b800 (irq =3D 35, base_baud =3D=
+ 0) is a scif
+>     1004bc00.serial: ttySC1 at MMIO 0x1004bc00 (irq =3D 40, base_baud =3D=
+ 0) is a scif
+>=20
+> Maybe some of the patches could be merged together, but for now I decided
+> to keep them separate to help the review process.
+>=20
+> Thank you.
+>=20
+> [1] https://lore.kernel.org/lkml/2936e18f-44ea-faed-9fa0-2ddefe7c3194@lin=
+ux.intel.com/raw
+>=20
+> ---
+> Hugo Villeneuve (9):
+>       serial: core: add uart_iotype_mmio/legacy_io helper functions
+>       serial: core: use uart_iotype_*() to simplify code
+>       serial: 8250: use uart_iotype_*() to simplify code
+>       serial: core: fix indentation/alignment
+>       serial: core: add new I/O type for SPI and I2C bus devices
+>       serial: core: prevent irrelevant I/O infos display for UPIO_BUS
+>       serial: sc16is7xx: use new UPIO_BUS as iotype
+>       serial: max310x: use new UPIO_BUS as iotype
+>       serial: max3100: use new UPIO_BUS as iotype
+>=20
+>  drivers/tty/serial/8250/8250_port.c |  33 ++--------
+>  drivers/tty/serial/max3100.c        |   1 +
+>  drivers/tty/serial/max310x.c        |   9 +--
+>  drivers/tty/serial/sc16is7xx.c      |   9 +--
+>  drivers/tty/serial/serial_core.c    | 121 ++++++++++++++++++++----------=
+------
+>  include/linux/serial_core.h         |   5 ++
+>  include/uapi/linux/serial.h         |   1 +
+>  7 files changed, 83 insertions(+), 96 deletions(-)
+> ---
+> base-commit: 2e68039281932e6dc37718a1ea7cbb8e2cda42e6
+> change-id: 20260423-tty-upio-c8b66a0a593e
+>=20
+> Best regards,
+>=20
+--8323328-1498380334-1777029897=:958--
