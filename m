@@ -1,168 +1,158 @@
-Received: from mail-yx1-f52.google.com (mail-yx1-f52.google.com [74.125.224.52])
+Received: from mail-yx1-f49.google.com (mail-yx1-f49.google.com [74.125.224.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45B2F344DA0
-	for <linux-serial@vger.kernel.org>; Fri, 24 Apr 2026 08:49:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70C38357735
+	for <linux-serial@vger.kernel.org>; Fri, 24 Apr 2026 08:51:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.49
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777020588; cv=pass; b=mN2uJY975sCNWValW4Wp1CiqzPBpL1mmSck+Z/shST9ZGxtBUAcVJuwcP4f03WC/v58OX/COUTreL7d7Blib1VgaVPpPPNGZyMplrm4QgrvPaUnffhDr+J9VWIxvXQm5smtpzHs3rfca2nFZkF6y6QUi+pngQ+YsfEOTfRD0Zi4=
+	t=1777020663; cv=pass; b=uUGYvVYYsK7wDzdfLSrNThm0Aaa7IJqSttbV8U6ISg4f+pegICAjXjKBtuziYGKzLNsZ9FusYM6yMQxHKmtrPob+JFl2eIDdy7a6MNKd8TzVJ61UbfwSqxjBVOpyCffSOYoMHzEJBGUHAxy/ShKuXSQaAkBdIvARyxKTUAjZ0k0=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777020588; c=relaxed/simple;
-	bh=bp4CHkwtHm/yNe5ftwnGy+F9/hm5CgtWKfBVgAu3/Hc=;
+	s=arc-20240116; t=1777020663; c=relaxed/simple;
+	bh=fULNxiEb8ewDozWZ7wVgbDvqFQOPB1csfMaW1LC51/A=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=qDgDMw8D1W0VUUlBb/ETHLvLYuWmG8yhGiEG59daOBXp4U6IkG7tndjT6xbonjY1MXf2S4s2wcAWirkPnfgk1YFQklKZMRRLMB74Mv9G1u4Ln2+IujZVFa+wmRZ+hBbbxNVRn/09ra5Mgo6a8B9m8zfcuzsxBaJ9l7QuwqlXreg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TSReVLai; arc=pass smtp.client-ip=74.125.224.52
+	 To:Content-Type; b=ibWQzzVK5L80KmfDXAHGeIGqQso9AuE9kR2meRId/XEGAE9P4ACAMrhdFsdvL2ZpUl9WPxfoxrHJehkkyvzteas43kdgxJzLWlLl5LECT0j2D0gisv8awdDqm0dCaMXb3gdMuxgUlG5bbJ3RCnGLXfBlNMj+jdCoCojWv/JkZSA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hGAqK+2q; arc=pass smtp.client-ip=74.125.224.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TSReVLai"
-Received: by mail-yx1-f52.google.com with SMTP id 956f58d0204a3-6530dd51ccaso6961486d50.3
-        for <linux-serial@vger.kernel.org>; Fri, 24 Apr 2026 01:49:47 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777020586; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hGAqK+2q"
+Received: by mail-yx1-f49.google.com with SMTP id 956f58d0204a3-651b4d09141so10241286d50.1
+        for <linux-serial@vger.kernel.org>; Fri, 24 Apr 2026 01:51:02 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1777020661; cv=none;
         d=google.com; s=arc-20240605;
-        b=AixM/NXBWKZ8//HS/+0oFWOE8fJsl9dj17eXp/6+//ckKGUBbRcHLt10+e7Jeqpx2y
-         tMCmhmitQlPQw6+vCx1o80ONrT45A4JqSmhJWl8mKqcYxWeOBtPegOn7KiMIQTyE/1Y9
-         IhVYoTreYJnCscjZ3Aq+TgX9uB7nXjNXgofgaV4HbAL4/q/QKE4gxI6sz8yIN0DAkhK3
-         9v4xDMgjW56X+HrTTm0T9m+ZysQN5vU1RburXscCieWmAtXlwY3teaMGi3QA9KNZbshd
-         Fr8+PzG5cJrcXeGwIv7Yv9rynpwGIp22EpeS3SittylHAWK5Aen9ijyyImeBfZsXGxyO
-         PBKw==
+        b=i3JhL9xwaJUPgd9UDvkAxw/Lz/6uxTufJDxC8G9FcKoc93qxo0em3MvKkANMX2Pkmp
+         JQ0zDDyyHOjZNfILKSi0LDY1Pg5K8cyw9FlzLj6AEOtKluabLbWLTFRgOuwN8HGacoxh
+         kdNlNYyAoNOjC0BeXnglT7k33Q8cgFp/qQWtJ1aAR/7ptKvwzuMTmlmDIks7A+QaNln+
+         /RxCYdwUAlPA7Ulwbdl3oY5eFJU2KJDoziD6dan/2XE7QytdrLEovb9lVvCKUXm5/mQ9
+         LQnp0+ISJbvbqb8/XUm42IPPMv9BvE3JG0KMRuGuCEqUXGNPVlpt42SHSQCjDp3ENkB3
+         yKtg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=GQehjiJmR0uqm/keJWoGWadsPstIT7+2ouE9/A7a4oo=;
-        fh=0HcXq+ScGOpvakjViOIv2PzKdc8EujeWREM9Cm5kR8Q=;
-        b=DvAKGpj5/B1Jsu/r+SXheJ49Em0w5fUirkkR28g7lndppjjTJLqEQj2eMV16WFGw7K
-         duamcUBuY7At6HwAivuyDNZ38h4YToWUBRIkXdun0OxmjrI2O3hbKWs7evWEXVRcJM4K
-         toG+MgSs+k5Qivjp8yeifa0Ujx1yXBXgAOB5TbAfcWpNWI5vxIU8uTYacNXrAT0ggGKh
-         53GTM+bJxLIaWltEWGVdGRL4upUc7WuRSa9YBNZwbxz94n68SE3DRLiZ41kth0TNW36Y
-         A//FzDn8HkfLhXcF3QiRX0FiNKqAWeNk6MtIHLaGWurzNEjwMyzL0QKSSniTdDImyhg4
-         JsUQ==;
+        h=to:subject:message-id:date:from:in-reply-to:references:mime-version
+         :dkim-signature;
+        bh=HHGF3Q0AdvdA8fXH/S6yTywGaS6Rg3AgRr8vO+Wt8CQ=;
+        fh=1UnE3vDGQnffQaFdP1FwIlmAnrVw4vzq7GAUeyDOCsg=;
+        b=Kbp7cSrP9VFzUoZcJHeP/3V9Tc+WjUpc6rq67TNduBD3/qtOw56D4DhCgz3uHVd+vg
+         bjXMbzr1JjCS4gEClzCc5LjmKbcbuex3cyr0Fwlj9VgT8O/6KyecaRp/ZCeJb5MhoKze
+         cTHxehSJeKmgT4ClbSHLqQfJFESbcQA0305ZN7+6q4MA6uMbEyr7ZOiC7H1Mz++m1vih
+         RvEFRKJWo9ylyqyWIvEgyVLnnRUylXNIFLc4G9DAiXOZpUS03DbTQIlE/si6SPlT3UHo
+         1lK/gghzGkZSXoY6PLvWKp4rE5KlZAUJD5ebbvx78tmsipS3SHdMHJLLr70EqPIZs3+q
+         XEew==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777020586; x=1777625386; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=GQehjiJmR0uqm/keJWoGWadsPstIT7+2ouE9/A7a4oo=;
-        b=TSReVLaifvHXCBtS0r8EF1jVDnwKsC+mPkgaJi92LkvXmpxexxTFJkc/Lz6jxkoupZ
-         wBF+R/BQwxxqEENUVWXs1PRt4dYTwLxhuy+4G345xvZVkKPTd2Z3kysErrU6+HfFydp8
-         MKC38T0KAEHnqebkHyQ/wA0H/lCyoE8J0ti/39EkV10qNftsNa9xtXf1oMreaR6bmsH+
-         3SGBNj4rrTVcUU3o0TrSiExl5fkNp7eyZuS/KSD2KTgywJwZDWiO9bdZZkwwNqmXdohN
-         AGmEK2XOvAJuYAVjY64o4P+jmp+BtHXdu6IKhzc3rXSisgw82IXCP39Gd4k0f1Wzgjv7
-         WEmg==
+        d=gmail.com; s=20251104; t=1777020661; x=1777625461; darn=vger.kernel.org;
+        h=to:subject:message-id:date:from:in-reply-to:references:mime-version
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=HHGF3Q0AdvdA8fXH/S6yTywGaS6Rg3AgRr8vO+Wt8CQ=;
+        b=hGAqK+2qavNJ0HRl0NVKUQ29YY9qYZRmFXCbtwrY+q68+vBKND+2Lk4cRFi/3Yfa5Z
+         ybfT6zbKHqbncTKz2utSLoxhCVQhhklsqOihQ/6gPHX7nyaKyARscDNJeGXuwo49lZ3m
+         ONbORLYYBehJ+NsQBVv069voU0wzCmB/FxFpLgxIadHgac/EcHCMdwFmKCBD4cTo8YCg
+         sn5A2vCVc0hr6R/8pgHuVBt3NJtV3w79JkKEYv8GZyFFG7k7vJR9sNcGvqaMllve2c8A
+         4cYm6ihb2CIsfO59BidfAUyx9K2dVpFnXQkfKYrs3QDpuRP16St6Om7M7LHwDCfNyi3M
+         6ALA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777020586; x=1777625386;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=GQehjiJmR0uqm/keJWoGWadsPstIT7+2ouE9/A7a4oo=;
-        b=GPNDp4GG8ptadGQdI7Qg7YRb9kjBZkNGeLJQIMOAWAVlqPztqMUk7xsvSZRtbK67fx
-         fmKpOwCLPx8C2deTJ8g9h1xP3JxaSkB2+rsLBQHAtInV/l4yHRJFzXNprSR29UFH0S/K
-         UaQK0+mb1ZRsJOSvZ28wOLL6JaNmpdaUblQ518wpwV1xrv4kMMX9OMhO1svFflRCy4DN
-         in5/imGpnZ+2uhwkg5NowlxUFe6sQUZO4Br1/4Sd2EQOiMyGIwCCR19rKa21rOx1awEc
-         GThXAwC8mCQqIfMip95NE9nsfHGZAxNy9T/3yZxsNfa0MDnH2SZTeXppl82sYe9bJpDm
-         FNXg==
-X-Forwarded-Encrypted: i=1; AFNElJ8AfmwTmJTFVTJmAO4BcSSyQshMJTfm30jmaodY5QCkMpiv7X8aHznxrq4Uwob41UnGP19+TZvIfvDLoR8=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw7iRIpPiB33Wu8nXivuxOsoD1g+ZS4o5bP2T0Qz/9mG2PiUqER
-	SxGclwd6FSlmq88gp7lUTphkEjG+cKaD3FTajM/PvvEKDIqkq15ms3LddSwgfyp8tS21KM+x0ZH
-	p5kQzVt01EKfDVHUFE52QAK+v2MIa45Hi45zibz8=
-X-Gm-Gg: AeBDieuLBVrO54aBX+DX+f0IJAU/K59Wjl6MggXOxBzNLw36rcVEbJt44eDfIixrS5a
-	k08pbqqGjDAJnLkdPi1jwoP/8c6xe6CtlgHbtMXd8uJ6Zl6kKepynp9sFOi86TRVL9ZHA2ARcZY
-	wB3yB1klJrRbslaDJucyXXKyTuptAGpnIjK+5BtLgvyyruD6ivnUf0vyVO1bnEOdL9fa8YUK+Ih
-	uEeQqCRxUoAwb7C7YOEVXleNE0arU7gZ/CrI3wj6EnxxyOacmSnBQfCHP88kCkTfFzDvyjn1laS
-	6ctIM2JeMEXcsqAiXEC+
-X-Received: by 2002:a05:690e:b46:b0:654:5d65:9fe1 with SMTP id
- 956f58d0204a3-6545d65a50emr8674290d50.8.1777020586306; Fri, 24 Apr 2026
- 01:49:46 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1777020661; x=1777625461;
+        h=to:subject:message-id:date:from:in-reply-to:references:mime-version
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=HHGF3Q0AdvdA8fXH/S6yTywGaS6Rg3AgRr8vO+Wt8CQ=;
+        b=NWxsBvNqY0Xi3Eru2upthMiikXMJv7OodQ0Dc4nbZS0fbOA+dKnskk5Twvuyupe/3l
+         JZETlvnpG3RePMngBaPcha5bSybj5yabN1DVRGbbo6Y2rQ44sEh0TOPhN3LJ9mLOHKp/
+         2mNmBNqhPXiSeGrAsYG+zO/pJRY1WoHeX0QkoSl7+ItvLLFDDLPUaXnQCSP7ACdSZkfx
+         qlwlOFY73lA4HLakON0ah56hVOWdB8cyEAeIoO707+49f8hlkghZb4yHzzF9kvLQNu4T
+         nDTy1hBIWYNKhTYPJUNTvb0ByVENSjzcAZM2/b0ACbueBn/cEbghqAWCds+bfG9nPy75
+         jf7A==
+X-Forwarded-Encrypted: i=1; AFNElJ/xehOrEx3Y84ycw36bxMRQqp8xmbaZfv3ldzmPqLpUIypTj50fVXMu/VCuPAFxTPP/J2euB/hqpNtPlA0=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwfhUm+VmvsJf5timN1rXuCubSEKNTYYUsqo616zT6sTIR7Sbqy
+	JCjwfY0FJv2YQcAbwj+dqMCt6FgQD05cJCkkoVp7NimNQqU4jBSko79Fs9I05FWaM3VdDMeHmMc
+	fO1E8/zNYfoLJ7sTz8GA3sD/7r7eUBPE=
+X-Gm-Gg: AeBDievSTsA13uLTbTT1ldhr6GtCY8TFCeeHtVUa3kDlFIGxxsczG0d+U5GAQzTV15i
+	MGY5MHlKtEwryakTG5YlERGmiTOiyslnmNoxiQyfQ3kwRZGD5wxid4jFWXS2IsBkB/xzmryHPvw
+	Mw4455ETEBsW5Jh6ddsS4woX2HYL9Pp5iV9DAyyyEOk8vpzQ+P1hTbu+0DXcD7Eth8Dbsd5c7A8
+	8478V4CkhwP2/Tr+6aut/bC6fyNb9cNlUaBWDnUMzBBjG8FESGBbEcrDzrhlta7NQV8lIPBwZHr
+	nFcA0OBX2G/yzHsknMZz
+X-Received: by 2002:a05:690e:1285:b0:653:3ecd:cc3b with SMTP id
+ 956f58d0204a3-6533ece04f5mr19178886d50.41.1777020661476; Fri, 24 Apr 2026
+ 01:51:01 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260415183436.3763871-1-lgs201920130244@gmail.com> <463cec4f-a038-4bd0-90df-76e0ef48381c@kernel.org>
-In-Reply-To: <463cec4f-a038-4bd0-90df-76e0ef48381c@kernel.org>
+References: <20260415183756.3770073-1-lgs201920130244@gmail.com>
+In-Reply-To: <20260415183756.3770073-1-lgs201920130244@gmail.com>
 From: Guangshuo Li <lgs201920130244@gmail.com>
-Date: Fri, 24 Apr 2026 16:49:32 +0800
-X-Gm-Features: AQROBzDc9asseH5Q--_xHnSI-mK1kVwpFsYPD_rv0VNAvdsqutw3hyErl1PRuZo
-Message-ID: <CANUHTR-Oe3ztfvn-jUEarCKZa-74kmOQiNMQKtoiT58pCneaYg@mail.gmail.com>
-Subject: Re: [PATCH] serial: 8250_accent: fix reference leak on failed device registration
-To: Jiri Slaby <jirislaby@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King <rmk@dyn-67.arm.linux.org.uk>, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	stable@vger.kernel.org
+Date: Fri, 24 Apr 2026 16:50:47 +0800
+X-Gm-Features: AQROBzDtgAhZNJfwlnMiF1vQYDwYvJqJRfQ_cyqhdKjrZlvtK5jt5L-IBoJpUbk
+Message-ID: <CANUHTR-QWCMb4=9ErGF5cdvz0TPPtUXLXTNCSijL5KsPpY4XkA@mail.gmail.com>
+Subject: Re: [PATCH] serial: 8250_boca: fix reference leak on failed device registration
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Guangshuo Li <lgs201920130244@gmail.com>, Russell King <rmk@dyn-67.arm.linux.org.uk>, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
-Hi Jiri,
+Hi,
 
 Please disregard this patch.
 
-On Thu, 16 Apr 2026 at 14:14, Jiri Slaby <jirislaby@kernel.org> wrote:
+On Thu, 16 Apr 2026 at 02:38, Guangshuo Li <lgs201920130244@gmail.com> wrote:
 >
-> Hi,
+> When platform_device_register() fails in boca_init(), the embedded
+> struct device in boca_device has already been initialized by
+> device_initialize(), but the failure path returns the error without
+> dropping the device reference for the current platform device:
 >
-> On 15. 04. 26, 20:34, Guangshuo Li wrote:
-> > When platform_device_register() fails in accent_init(), the embedded
-> > struct device in accent_device has already been initialized by
-> > device_initialize(), but the failure path returns the error without
-> > dropping the device reference for the current platform device:
-> >
-> >    accent_init()
-> >      -> platform_device_register(&accent_device)
-> >         -> device_initialize(&accent_device.dev)
-> >         -> setup_pdev_dma_masks(&accent_device)
-> >         -> platform_device_add(&accent_device)
-> >
-> > This leads to a reference leak when platform_device_register() fails.
+>   boca_init()
+>     -> platform_device_register(&boca_device)
+>        -> device_initialize(&boca_device.dev)
+>        -> setup_pdev_dma_masks(&boca_device)
+>        -> platform_device_add(&boca_device)
 >
-> What reference exactly?
+> This leads to a reference leak when platform_device_register() fails.
+> Fix this by calling platform_device_put() before returning the error.
 >
-> > Fix this by calling platform_device_put() before returning the error.
-> >
-> > The issue was identified by a static analysis tool I developed and
-> > confirmed by manual review.
+> The issue was identified by a static analysis tool I developed and
+> confirmed by manual review.
 >
-> How did you verify you did the right change?
+> Fixes: ec9f47cd6a14c ("[PATCH] Serial: Split 8250 port table")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Guangshuo Li <lgs201920130244@gmail.com>
+> ---
+>  drivers/tty/serial/8250/8250_boca.c | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
 >
-> > Fixes: ec9f47cd6a14c ("[PATCH] Serial: Split 8250 port table")
-> > Cc: stable@vger.kernel.org
-> > Signed-off-by: Guangshuo Li <lgs201920130244@gmail.com>
-> > ---
-> >   drivers/tty/serial/8250/8250_accent.c | 8 +++++++-
-> >   1 file changed, 7 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/tty/serial/8250/8250_accent.c b/drivers/tty/serial/8250/8250_accent.c
-> > index 1691f1a57f89..e9cf40268c0e 100644
-> > --- a/drivers/tty/serial/8250/8250_accent.c
-> > +++ b/drivers/tty/serial/8250/8250_accent.c
-> > @@ -25,7 +25,13 @@ static struct platform_device accent_device = {
-> >
-> >   static int __init accent_init(void)
-> >   {
-> > -     return platform_device_register(&accent_device);
-> > +     int ret;
-> > +
-> > +     ret = platform_device_register(&accent_device);
-> > +     if (ret)
-> > +             platform_device_put(&accent_device);
+> diff --git a/drivers/tty/serial/8250/8250_boca.c b/drivers/tty/serial/8250/8250_boca.c
+> index a9b97c034653..70ea8e30ae80 100644
+> --- a/drivers/tty/serial/8250/8250_boca.c
+> +++ b/drivers/tty/serial/8250/8250_boca.c
+> @@ -39,7 +39,13 @@ static struct platform_device boca_device = {
 >
-> In particular, what does put_device() do on a static device, even
-> initialized, ie. with no device::release? Try it...
+>  static int __init boca_init(void)
+>  {
+> -       return platform_device_register(&boca_device);
+> +       int ret;
+> +
+> +       ret = platform_device_register(&boca_device);
+> +       if (ret)
+> +               platform_device_put(&boca_device);
+> +
+> +       return ret;
+>  }
 >
-> IMO, all the patches are bogus.
->
-> thanks,
+>  module_init(boca_init);
 > --
-> js
-> suse labs
+> 2.43.0
+>
 
-After re-checking it, accent_device is a static platform_device and it
-does not provide a dev.release callback, so calling platform_device_put()
-on the platform_device_register() failure path is not appropriate and can
-trigger the missing release callback warning.
+After re-checking it, boca_device is a static platform_device and it does
+not provide a dev.release callback. Therefore calling
+platform_device_put() on the platform_device_register() failure path is
+not appropriate here and can trigger the missing release callback
+warning.
 
-This falls into the same static platform_device pattern as the other
-patches, so I will drop it.
+This falls into the same static platform_device pattern pointed out in
+the other reviews, so I will drop this patch.
 
 Sorry for the noise.
 
