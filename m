@@ -1,36 +1,33 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 216A42F361F;
-	Thu, 23 Apr 2026 20:15:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+Received: from ultrarisc.com (unknown [218.76.62.146])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A9A3E18DB35;
+	Fri, 24 Apr 2026 05:40:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=218.76.62.146
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776975320; cv=none; b=lc4ULhvfDpG88vBI4GxJYe8+FD2FgsFdB42ssvZ512pLGGOwAYRx1MwRkmRSe5JEvXWOagHINg+xhvGFemklkVHnnjTWdy3Rcws2d2XiWjNuf9JadIp8P+AZYododjkgOIZrR77TjRDxItat9IOkNenYDYJ6SYqZW48D6WBJFdI=
+	t=1777009228; cv=none; b=WED6PS3p2xKVbzIRW5Z6HOkhyFUpy5qj0wq9N3Jfx3hHM03+SI5YAemPv0MpuY9bBfZYLTBSAs0zK7dLbsnvxNaOANYinCbZnK+fAPST+ASMa43PTcvdVa/p0cYbM3PB9k8d4SGramZxBD9thKD+/VsHGOI12bgks9mIm35NnmQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776975320; c=relaxed/simple;
-	bh=MhvCYHKuPkKoSIeyY+odOW/AC2uvnKrYsdnlcT81CJc=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=qWzpaQL1VH5qkGDzJP3IuINYCa9+g9d/mt8TqqHemG1Ezauohv6PARj9dYTEoDBz8OE5fSDMR6Mx66FmGA6PVY8kAoMPrCbTvr6wTJVW8klg6toEjPqmsj/gyA0qQTcq9H/IWP0LhKnEj7+KDHycxk+FWlkzniLZny7ZGSvv6LM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=aQvYEGTU; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	s=arc-20240116; t=1777009228; c=relaxed/simple;
+	bh=1EJ+15mmRD/oeHglBVGEUf+8kQPiJcsHUEUYYNgLwiA=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=d+0EhpN8aYKtULZ44FVneLxeZwObbEwfVGur0CzC536JtQABo8EU3rRN26c4PF/f2jDbFMI9R72kkmYzW0PzxoK9eVeZ4Z7Tg58fj5ZqQ3cXsN+gwSJnZUtYheDL1Zw8kMC/bY/l+g3Y32LnjRja1i/QQPIqRXJRj/5pxOBCjIk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ultrarisc.com; spf=pass smtp.mailfrom=ultrarisc.com; dkim=pass (1024-bit key) header.d=ultrarisc.com header.i=@ultrarisc.com header.b=Cq2lORS0; arc=none smtp.client-ip=218.76.62.146
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ultrarisc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ultrarisc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="aQvYEGTU"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=default; h=Cc:To:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:
-	Subject:From:subject:date:message-id:reply-to;
-	bh=264AxmAOvvaGpTcRs6WMaY79ManG4+FOWXRj3eQiNFE=; b=aQvYEGTUlP+a9SqK4i3Ty9C0bY
-	5CoqnG/kCOZWR6OKUrhaVFdXSWL6HxoPHZtnTd7i+rP0NIoA/b8M5G8ucCI53InbLMuyqvJvKCP1g
-	Ox9IKNXzT+M9IXcE482dwWRDy+P3I1LEji3NAuhH1cln0WYJjpEtytP/hEFNW6kKkGn4=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168] helo=pettiford.lan)
-	by mail.hugovil.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.98.2)
-	(envelope-from <hugo@hugovil.com>)
-	id 1wG0S3-000000002qN-1SKn;
-	Thu, 23 Apr 2026 16:15:07 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-Subject: [PATCH 0/9] serial: add new I/O type for SPI and I2C bus devices
-Date: Thu, 23 Apr 2026 16:15:00 -0400
-Message-Id: <20260423-tty-upio-v1-0-baf82d3b86d1@dimonoff.com>
+	dkim=pass (1024-bit key) header.d=ultrarisc.com header.i=@ultrarisc.com header.b="Cq2lORS0"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=ultrarisc.com; s=dkim; h=Received:From:Date:Subject:
+	MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:
+	References:In-Reply-To:To:Cc; bh=n+Mra1RI8A32LCU/hPXltc+TQ6Q646Q
+	yx9RcVRBugnk=; b=Cq2lORS0qBdbfGxNvoAgK2H9SP4QdVJFdoJ75LRMvIdIvAO
+	JunCLhx+ynyfQHl8oI8fZcuBGOhEKSdq47A3l0Qcc4O7vjLVWE89c05AXTZVSfn7
+	rgfX0trQt0eGSFUvVDuB9Sto43KvjHqked/b7PPcWZ/3fV1qDhF43XJhAaPg=
+Received: from [127.0.0.1] (unknown [192.168.100.1])
+	by localhost.localdomain (Coremail) with SMTP id AQAAfwAnYUJlAutpm8gCAA--.1607S3;
+	Fri, 24 Apr 2026 13:40:57 +0800 (CST)
+From: Jia Wang <wangjia@ultrarisc.com>
+Date: Fri, 24 Apr 2026 13:39:28 +0800
+Subject: [PATCH v4 1/4] serial: 8250_dwlib: move DesignWare register
+ definitions to header
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -38,89 +35,220 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIAMR96mkC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
- vPSU3UzU4B8JSMDIzMDEyNj3ZKSSt3Sgsx83WSLJDOzRINEU0vjVCWg8oKi1LTMCrBR0bG1tQB
- 2N/ldWgAAAA==
-X-Change-ID: 20260423-tty-upio-c8b66a0a593e
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>
-Cc: hugo@hugovil.com, ilpo.jarvinen@linux.intel.com, 
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
- Hugo Villeneuve <hvilleneuve@dimonoff.com>
-X-Mailer: b4 0.14.2
-X-Spam_score: -1.0
-X-Spam_bar: -
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260424-ultrarisc-serial-v4-1-1765a0b4c4a0@ultrarisc.com>
+References: <20260424-ultrarisc-serial-v4-0-1765a0b4c4a0@ultrarisc.com>
+In-Reply-To: <20260424-ultrarisc-serial-v4-0-1765a0b4c4a0@ultrarisc.com>
+To: =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Paul Walmsley <pjw@kernel.org>, 
+ Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
+ Alexandre Ghiti <alex@ghiti.fr>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ linux-riscv@lists.infradead.org, devicetree@vger.kernel.org, 
+ Jia Wang <wangjia@ultrarisc.com>
+X-Mailer: b4 0.15-dev
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777009209; l=7179;
+ i=wangjia@ultrarisc.com; s=20260309; h=from:subject:message-id;
+ bh=1EJ+15mmRD/oeHglBVGEUf+8kQPiJcsHUEUYYNgLwiA=;
+ b=tmMxvaIfQOKnIu7Q2yyAAL3YeamV0Bjy7J3CDnd9cB2kHTdmgTnh09LI3Y7Fej9DsKQO2lvOh
+ 2O2cwiX9WWmCqv1zCBH5fGWnR9j++1AFtAZ59BpIWDcrbtbJVyqZqXr
+X-Developer-Key: i=wangjia@ultrarisc.com; a=ed25519;
+ pk=XvYkrelqJIIzobY7j+nIg8rsfv5kzaOzuc1UPhd087U=
+X-CM-TRANSID:AQAAfwAnYUJlAutpm8gCAA--.1607S3
+X-Coremail-Antispam: 1UD129KBjvJXoW3WF48GFWfur4rZry8tr1rCrg_yoW3GF48pr
+	1FkFZ8tF1qya13W34xtFW3tr4xXFWxGw109ry3W3yDtFW8A34ktFyYvFW3tr4DXryrArWU
+	JF1UAw1Yga4I9r7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnUUvcSsGvfC2KfnxnUUI43ZEXa7xR_UUUUUUUUU==
+X-CM-SenderInfo: pzdqwylld63zxwud2x1vfou0bp/1tbiAQAHEWnq6L8ACQABsL
 
-Hello,
-this patch series add a new I/O type for serial devices on a SPI/I2C bus.
+Move the DW_UART_* register offsets and CPR bit/field definitions from
+8250_dwlib.c into 8250_dwlib.h so they can be shared by 8250_dw and
+8250_dwlib users.
 
-These changes are based on a suggestion [1] made by Ilpo Järvinen during
-past sc16is7xx driver patches review.
+Add an include guard for 8250_dwlib.h.
 
-I decided to use UPIO_BUS/SERIAL_IO_BUS names but maybe other names would
-be more appropriate:
-   UPIO_SBUS   / SERIAL_IO_SBUS
-   UPIO_SERBUS / SERIAL_IO_SERBUS
-   UPIO_EXT    / SERIAL_IO_EXT
-   UPIO_CUSTOM / SERIAL_IO_CUSTOM
-   UPIO_REGMAP / SERIAL_IO_REGMAP  /* Maybe not always true in future? */
-   ...
-
-Tested on a imx6 board with two SC16is752 using SPI mode, and a dummy
-device-tree entry for a MAX3100:
-  dmesg -t | grep "base_baud"
-    2020000.serial: ttymxc0 at MMIO 0x2020000 (irq = 197, base_baud = 5000000) is a IMX
-    21e8000.serial: ttymxc1 at MMIO 0x21e8000 (irq = 198, base_baud = 5000000) is a IMX
-    spi1.0: ttySC0 (irq = 165, base_baud = 1500000) is a SC16IS752
-    spi1.0: ttySC1 (irq = 165, base_baud = 1500000) is a SC16IS752
-    spi3.0: ttySC2 (irq = 37, base_baud = 1500000) is a SC16IS752
-    spi3.0: ttySC3 (irq = 37, base_baud = 1500000) is a SC16IS752
-    spi3.1: ttyMAX0 (irq = 0, base_baud = 0) is a MAX3100
-Note that before these patches, max3100 silently failed in uart_configure_port()
-because membase/iobase/mapbase were zero.
-
-For max310x and SC16is7xx in i2c mode, tested only that driver is properly
-registered by using i2c-stub.
-
-Also tested on a custom board with a Renesas RZ/G2L cpu (sh-sci driver) to
-confirm there is no regression:
-  dmesg -t | grep "base_baud"
-    1004b800.serial: ttySC0 at MMIO 0x1004b800 (irq = 35, base_baud = 0) is a scif
-    1004bc00.serial: ttySC1 at MMIO 0x1004bc00 (irq = 40, base_baud = 0) is a scif
-
-Maybe some of the patches could be merged together, but for now I decided
-to keep them separate to help the review process.
-
-Thank you.
-
-[1] https://lore.kernel.org/lkml/2936e18f-44ea-faed-9fa0-2ddefe7c3194@linux.intel.com/raw
-
+Signed-off-by: Jia Wang <wangjia@ultrarisc.com>
 ---
-Hugo Villeneuve (9):
-      serial: core: add uart_iotype_mmio/legacy_io helper functions
-      serial: core: use uart_iotype_*() to simplify code
-      serial: 8250: use uart_iotype_*() to simplify code
-      serial: core: fix indentation/alignment
-      serial: core: add new I/O type for SPI and I2C bus devices
-      serial: core: prevent irrelevant I/O infos display for UPIO_BUS
-      serial: sc16is7xx: use new UPIO_BUS as iotype
-      serial: max310x: use new UPIO_BUS as iotype
-      serial: max3100: use new UPIO_BUS as iotype
+ drivers/tty/serial/8250/8250_dw.c    | 11 -------
+ drivers/tty/serial/8250/8250_dwlib.c | 49 ----------------------------
+ drivers/tty/serial/8250/8250_dwlib.h | 63 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 63 insertions(+), 60 deletions(-)
 
- drivers/tty/serial/8250/8250_port.c |  33 ++--------
- drivers/tty/serial/max3100.c        |   1 +
- drivers/tty/serial/max310x.c        |   9 +--
- drivers/tty/serial/sc16is7xx.c      |   9 +--
- drivers/tty/serial/serial_core.c    | 121 ++++++++++++++++++++----------------
- include/linux/serial_core.h         |   5 ++
- include/uapi/linux/serial.h         |   1 +
- 7 files changed, 83 insertions(+), 96 deletions(-)
----
-base-commit: 2e68039281932e6dc37718a1ea7cbb8e2cda42e6
-change-id: 20260423-tty-upio-c8b66a0a593e
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index 94beadb4024d..467755bf0092 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -34,22 +34,11 @@
+ 
+ #include "8250_dwlib.h"
+ 
+-/* Offsets for the DesignWare specific registers */
+-#define DW_UART_USR	0x1f /* UART Status Register */
+-#define DW_UART_DMASA	0xa8 /* DMA Software Ack */
+-
+ #define OCTEON_UART_USR	0x27 /* UART Status Register */
+ 
+ #define RZN1_UART_TDMACR 0x10c /* DMA Control Register Transmit Mode */
+ #define RZN1_UART_RDMACR 0x110 /* DMA Control Register Receive Mode */
+ 
+-/* DesignWare specific register fields */
+-#define DW_UART_IIR_IID			GENMASK(3, 0)
+-
+-#define DW_UART_MCR_SIRE		BIT(6)
+-
+-#define DW_UART_USR_BUSY		BIT(0)
+-
+ /* Renesas specific register fields */
+ #define RZN1_UART_xDMACR_DMA_EN		BIT(0)
+ #define RZN1_UART_xDMACR_1_WORD_BURST	(0 << 1)
+diff --git a/drivers/tty/serial/8250/8250_dwlib.c b/drivers/tty/serial/8250/8250_dwlib.c
+index b055d89cfb39..8859e66d2d71 100644
+--- a/drivers/tty/serial/8250/8250_dwlib.c
++++ b/drivers/tty/serial/8250/8250_dwlib.c
+@@ -13,55 +13,6 @@
+ 
+ #include "8250_dwlib.h"
+ 
+-/* Offsets for the DesignWare specific registers */
+-#define DW_UART_TCR	0xac /* Transceiver Control Register (RS485) */
+-#define DW_UART_DE_EN	0xb0 /* Driver Output Enable Register */
+-#define DW_UART_RE_EN	0xb4 /* Receiver Output Enable Register */
+-#define DW_UART_DLF	0xc0 /* Divisor Latch Fraction Register */
+-#define DW_UART_RAR	0xc4 /* Receive Address Register */
+-#define DW_UART_TAR	0xc8 /* Transmit Address Register */
+-#define DW_UART_LCR_EXT	0xcc /* Line Extended Control Register */
+-#define DW_UART_CPR	0xf4 /* Component Parameter Register */
+-#define DW_UART_UCV	0xf8 /* UART Component Version */
+-
+-/* Receive / Transmit Address Register bits */
+-#define DW_UART_ADDR_MASK		GENMASK(7, 0)
+-
+-/* Line Status Register bits */
+-#define DW_UART_LSR_ADDR_RCVD		BIT(8)
+-
+-/* Transceiver Control Register bits */
+-#define DW_UART_TCR_RS485_EN		BIT(0)
+-#define DW_UART_TCR_RE_POL		BIT(1)
+-#define DW_UART_TCR_DE_POL		BIT(2)
+-#define DW_UART_TCR_XFER_MODE		GENMASK(4, 3)
+-#define DW_UART_TCR_XFER_MODE_DE_DURING_RE	FIELD_PREP(DW_UART_TCR_XFER_MODE, 0)
+-#define DW_UART_TCR_XFER_MODE_SW_DE_OR_RE	FIELD_PREP(DW_UART_TCR_XFER_MODE, 1)
+-#define DW_UART_TCR_XFER_MODE_DE_OR_RE		FIELD_PREP(DW_UART_TCR_XFER_MODE, 2)
+-
+-/* Line Extended Control Register bits */
+-#define DW_UART_LCR_EXT_DLS_E		BIT(0)
+-#define DW_UART_LCR_EXT_ADDR_MATCH	BIT(1)
+-#define DW_UART_LCR_EXT_SEND_ADDR	BIT(2)
+-#define DW_UART_LCR_EXT_TRANSMIT_MODE	BIT(3)
+-
+-/* Component Parameter Register bits */
+-#define DW_UART_CPR_ABP_DATA_WIDTH	GENMASK(1, 0)
+-#define DW_UART_CPR_AFCE_MODE		BIT(4)
+-#define DW_UART_CPR_THRE_MODE		BIT(5)
+-#define DW_UART_CPR_SIR_MODE		BIT(6)
+-#define DW_UART_CPR_SIR_LP_MODE		BIT(7)
+-#define DW_UART_CPR_ADDITIONAL_FEATURES	BIT(8)
+-#define DW_UART_CPR_FIFO_ACCESS		BIT(9)
+-#define DW_UART_CPR_FIFO_STAT		BIT(10)
+-#define DW_UART_CPR_SHADOW		BIT(11)
+-#define DW_UART_CPR_ENCODED_PARMS	BIT(12)
+-#define DW_UART_CPR_DMA_EXTRA		BIT(13)
+-#define DW_UART_CPR_FIFO_MODE		GENMASK(23, 16)
+-
+-/* Helper for FIFO size calculation */
+-#define DW_UART_CPR_FIFO_SIZE(a)	(FIELD_GET(DW_UART_CPR_FIFO_MODE, (a)) * 16)
+-
+ /*
+  * divisor = div(I) + div(F)
+  * "I" means integer, "F" means fractional
+diff --git a/drivers/tty/serial/8250/8250_dwlib.h b/drivers/tty/serial/8250/8250_dwlib.h
+index 7dd2a8e7b780..5026a123cf42 100644
+--- a/drivers/tty/serial/8250/8250_dwlib.h
++++ b/drivers/tty/serial/8250/8250_dwlib.h
+@@ -1,11 +1,72 @@
+ /* SPDX-License-Identifier: GPL-2.0+ */
+ /* Synopsys DesignWare 8250 library header file. */
+ 
++#ifndef _SERIAL_8250_DWLIB_H_
++#define _SERIAL_8250_DWLIB_H_
++
++#include <linux/bitfield.h>
++#include <linux/bits.h>
+ #include <linux/io.h>
+ #include <linux/types.h>
+ 
+ #include "8250.h"
+ 
++/* Offsets for the DesignWare specific registers */
++#define DW_UART_USR	0x1f /* UART Status Register */
++#define DW_UART_DMASA	0xa8 /* DMA Software Ack */
++#define DW_UART_TCR	0xac /* Transceiver Control Register (RS485) */
++#define DW_UART_DE_EN	0xb0 /* Driver Output Enable Register */
++#define DW_UART_RE_EN	0xb4 /* Receiver Output Enable Register */
++#define DW_UART_DLF	0xc0 /* Divisor Latch Fraction Register */
++#define DW_UART_RAR	0xc4 /* Receive Address Register */
++#define DW_UART_TAR	0xc8 /* Transmit Address Register */
++#define DW_UART_LCR_EXT	0xcc /* Line Extended Control Register */
++#define DW_UART_CPR	0xf4 /* Component Parameter Register */
++#define DW_UART_UCV	0xf8 /* UART Component Version */
++
++/* Receive / Transmit Address Register bits */
++#define DW_UART_ADDR_MASK		GENMASK(7, 0)
++
++/* Line Status Register bits */
++#define DW_UART_LSR_ADDR_RCVD		BIT(8)
++
++/* Transceiver Control Register bits */
++#define DW_UART_TCR_RS485_EN		BIT(0)
++#define DW_UART_TCR_RE_POL		BIT(1)
++#define DW_UART_TCR_DE_POL		BIT(2)
++#define DW_UART_TCR_XFER_MODE		GENMASK(4, 3)
++#define DW_UART_TCR_XFER_MODE_DE_DURING_RE	FIELD_PREP(DW_UART_TCR_XFER_MODE, 0)
++#define DW_UART_TCR_XFER_MODE_SW_DE_OR_RE	FIELD_PREP(DW_UART_TCR_XFER_MODE, 1)
++#define DW_UART_TCR_XFER_MODE_DE_OR_RE		FIELD_PREP(DW_UART_TCR_XFER_MODE, 2)
++
++/* Line Extended Control Register bits */
++#define DW_UART_LCR_EXT_DLS_E		BIT(0)
++#define DW_UART_LCR_EXT_ADDR_MATCH	BIT(1)
++#define DW_UART_LCR_EXT_SEND_ADDR	BIT(2)
++#define DW_UART_LCR_EXT_TRANSMIT_MODE	BIT(3)
++
++/* Component Parameter Register bits */
++#define DW_UART_CPR_ABP_DATA_WIDTH	GENMASK(1, 0)
++#define DW_UART_CPR_AFCE_MODE		BIT(4)
++#define DW_UART_CPR_THRE_MODE		BIT(5)
++#define DW_UART_CPR_SIR_MODE		BIT(6)
++#define DW_UART_CPR_SIR_LP_MODE		BIT(7)
++#define DW_UART_CPR_ADDITIONAL_FEATURES	BIT(8)
++#define DW_UART_CPR_FIFO_ACCESS		BIT(9)
++#define DW_UART_CPR_FIFO_STAT		BIT(10)
++#define DW_UART_CPR_SHADOW		BIT(11)
++#define DW_UART_CPR_ENCODED_PARMS	BIT(12)
++#define DW_UART_CPR_DMA_EXTRA		BIT(13)
++#define DW_UART_CPR_FIFO_MODE		GENMASK(23, 16)
++
++/* DesignWare specific register fields */
++#define DW_UART_IIR_IID			GENMASK(3, 0)
++#define DW_UART_MCR_SIRE		BIT(6)
++#define DW_UART_USR_BUSY		BIT(0)
++
++/* Helper for FIFO size calculation */
++#define DW_UART_CPR_FIFO_SIZE(a)	(FIELD_GET(DW_UART_CPR_FIFO_MODE, (a)) * 16)
++
+ struct dw8250_port_data {
+ 	/* Port properties */
+ 	int			line;
+@@ -38,3 +99,5 @@ static inline void dw8250_writel_ext(struct uart_port *p, int offset, u32 reg)
+ 	else
+ 		writel(reg, p->membase + offset);
+ }
++
++#endif /* _SERIAL_8250_DWLIB_H_ */
 
-Best regards,
 -- 
-Hugo Villeneuve <hvilleneuve@dimonoff.com>
+2.34.1
 
