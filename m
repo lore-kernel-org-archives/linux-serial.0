@@ -1,134 +1,109 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFD5A31E820;
-	Fri, 24 Apr 2026 15:30:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1081833ADBA;
+	Fri, 24 Apr 2026 16:12:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777044650; cv=none; b=SH+/vm6YeMuWvO7TLWq/pijufMWgsm+uiVuYzpNAOSoi07vvC+u9wGVp9/Jc1xCxBhEl8NbVS5JKvUjNJ1Fif+o1pVItSSkg6P0mlrLP6omVrCEVtofrjOoFGLVU5IjgbZ1GrUbJjdO9kBnb8M3RuzITbTL41ctgkcpC3ddAgso=
+	t=1777047140; cv=none; b=YOBTp8QNvUT3Bl3NzxQXswa9rddtUdvyT/aZoR1JXA9attGO/4c+4Gxi/7vT9u3CPTNLRlkaXcOePUvxQU1ffBRl8QsUhCr4FW2Fm54EIwLsZX1/dr8RFCOzvWqIucoeLkrRNF4co+pZ2S/TbWBuOl7xjh6vzIaEZov6hqC42s4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777044650; c=relaxed/simple;
-	bh=ByqMYAUG+OvDr+RYzgQj6WdcqFkXOs8j2KXJtNkAPDQ=;
-	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
-	 Mime-Version:Content-Type; b=tFxt9GAcAUl318OLY6KSp8P+UAQypbvBmRwsBGFQeEfAwiXxiqsRKJfF1KrpF5xQ9F3t9Qttm4nVx32iZn2j/vOL1+pp/dTOXDoCzqzgwVkrPNcNw3KGqbq5CyHrR45s+sVw+q1UirPqt4nv0j3yFc40cdDIH1qYJtGrFMUwYf8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=D/Hq1H/A; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	s=arc-20240116; t=1777047140; c=relaxed/simple;
+	bh=37MgdOcxO/GRSkLom2O1oT/IBUJoQxnAS61n2PD4oQY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=E1yN0EJtKuP33C90iR2fnz9zaBmAFyg54gacv9aGo12K/N1pDHg4wjt903SMVf82bMKNahdscyMMI74UQnNgmB0fhStPAGvwEiF5kk/NE9OjzQs/f4GZ7HxxKIL8WFQKJBN9z1kTu0OnyhX5cJpB7NdYpqPV9oBS8gnEVcRYvDs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b6q9MRks; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="D/Hq1H/A"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=default; h=Content-Transfer-Encoding:Mime-Version:Message-Id:Subject:Cc:
-	To:From:Date:subject:date:message-id:reply-to;
-	bh=dtA8WTFtXgGsxzP6LANnCD3/LSeQlhp9LEMuY0Z12NM=; b=D/Hq1H/AbgQGrG4iEEbdrtqFs+
-	Xrw1i0GgQi8qtPEY7uGxJmTA0ue4EM9RRdhn63EjSeoxN4ORQ7+rULEH5YzxrCOab1qQm4dacgDoK
-	Ki34wT4Dh7w/pXXGKABrV7AsviH/wIxAFx20zOmepwThWuze2YqSs8Cp3sgjgUzOZ/XA=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168] helo=pettiford.lan)
-	by mail.hugovil.com with esmtpa (Exim 4.98.2)
-	(envelope-from <hugo@hugovil.com>)
-	id 1wGIUQ-000000004MP-3sHt;
-	Fri, 24 Apr 2026 11:30:46 -0400
-Date: Fri, 24 Apr 2026 11:30:46 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Ilpo =?ISO-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, LKML <linux-kernel@vger.kernel.org>, linux-serial
- <linux-serial@vger.kernel.org>, Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Subject: Re: [PATCH 2/9] serial: core: use uart_iotype_*() to simplify code
-Message-Id: <20260424113046.f792a805ef0507638e95b963@hugovil.com>
-In-Reply-To: <716918cf-b240-43cc-a702-9b3d94dc75d2@linux.intel.com>
-References: <20260423-tty-upio-v1-0-baf82d3b86d1@dimonoff.com>
-	<20260423-tty-upio-v1-2-baf82d3b86d1@dimonoff.com>
-	<716918cf-b240-43cc-a702-9b3d94dc75d2@linux.intel.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b6q9MRks"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDC4DC19425;
+	Fri, 24 Apr 2026 16:12:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777047139;
+	bh=37MgdOcxO/GRSkLom2O1oT/IBUJoQxnAS61n2PD4oQY=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=b6q9MRksvMxiMXIRhqk4ZDEWDzX5K2iW+O+RXDjtKi4vorfhBRavWA7eWgn5eEeB8
+	 JGh7bkgMW92drOj2qWU2y14NYb8NWR2a3GdvlLVEDybt4rGYR2DQrG9r/L4X4ZptlC
+	 yVK09l6U9MMzmBWyyRLk1ZKBWcsgAhv216AyUcNQZPcUeA5y75HiB91RbPxsQyJuIy
+	 4YlD/FDdCDi7S6dbcslhzmC3SjNKU+H8Gb33ZsMFKoveO0M/rWyWPM1uJqnbgTgSk4
+	 Kj0XSX8GGUo5LJvgaJ+zCqzyOuD2PvYyOgAZHFqB9ZCviJbl3A86/6WVuZ4q+Lx3IW
+	 yk8hz2Q43yrVQ==
+Message-ID: <6916bf87-4c40-42c5-988f-92a57a6fc658@kernel.org>
+Date: Fri, 24 Apr 2026 18:12:15 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-X-Spam_score: -2.0
-X-Spam_bar: --
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] tty: serial: samsung: add dedicated compatible for
+ exynosauto SoCs
+To: Alim Akhtar <alim.akhtar@samsung.com>, gregkh@linuxfoundation.org,
+ jirislaby@kernel.org
+Cc: linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <CGME20260424100201epcas5p371dd69955076938ee41ed0d823433056@epcas5p3.samsung.com>
+ <20260424101835.2125970-1-alim.akhtar@samsung.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 a/A=
+In-Reply-To: <20260424101835.2125970-1-alim.akhtar@samsung.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Fri, 24 Apr 2026 14:13:02 +0300 (EEST)
-Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com> wrote:
+On 24/04/2026 12:18, Alim Akhtar wrote:
+> Currently Exynosautov-{9,920} getting probed based on exynos850
+> fallback. It is recommended to have a dedicated compatible for
+> proper driver binding.
 
-> On Thu, 23 Apr 2026, Hugo Villeneuve wrote:
->=20
-> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> >=20
-> > Make use of new functions uart_iotype_mmio() and uart_iotype_legacy_io()
-> > to simplify and improve code readability.
-> >=20
-> > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > ---
-> >  drivers/tty/serial/serial_core.c | 24 +++++++++---------------
-> >  1 file changed, 9 insertions(+), 15 deletions(-)
-> >=20
-> > diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/seri=
-al_core.c
-> > index b1cf45a8fc854cd97e349ff077d83b42e3ef8b16..fc273f8f9e75de89dca1ac1=
-aca3589567bcf8a18 100644
-> > --- a/drivers/tty/serial/serial_core.c
-> > +++ b/drivers/tty/serial/serial_core.c
-> > @@ -3221,23 +3221,17 @@ bool uart_match_port(const struct uart_port *po=
-rt1,
-> >  {
-> >  	if (port1->iotype !=3D port2->iotype)
-> >  		return false;
-> > -
-> > -	switch (port1->iotype) {
-> > -	case UPIO_PORT:
-> > -		return port1->iobase =3D=3D port2->iobase;
-> > -	case UPIO_HUB6:
-> > -		return port1->iobase =3D=3D port2->iobase &&
-> > -		       port1->hub6   =3D=3D port2->hub6;
-> > -	case UPIO_MEM:
-> > -	case UPIO_MEM16:
-> > -	case UPIO_MEM32:
-> > -	case UPIO_MEM32BE:
-> > -	case UPIO_AU:
-> > -	case UPIO_TSI:
-> > +	else if (uart_iotype_mmio(port1->iotype))
-> >  		return port1->mapbase =3D=3D port2->mapbase;
-> > -	default:
-> > +	else if (uart_iotype_legacy_io(port1->iotype))
-> > +		if (port1->iobase !=3D port2->iobase)
-> > +			return false;
-> > +		else if (port1->iotype =3D=3D UPIO_HUB6 && port1->hub6 !=3D port2->h=
-ub6)
->=20
-> I suggest placing the entire hub6 related check (including the iobase=20
-> check) into own function in 8250_hub6.c and add a stub for the case when=
-=20
-> hub6 code is not even built into kernel into 8250.h.
+Unfortunately it is not. Dedicated compatible you have. However you are
+not adding dedicated compatible. You added dedicated driver match entry
+and we, and especially me, gave reviews many times that it is *not
+recommended* to have dedicated driver match entry.
 
-Neat. I will make a separate commit for that in V2. This
-simplifies uart_match_port() even more...
+Entire reasoning for doing this patch is wrong. And patch itself is NOOP
+(at least by quick look).
 
-Thank you,
-Hugo.
-
-
->=20
-> > +			return false;
-> > +		else
-> > +			return true;
-> > +	else
-> >  		return false;
-> > -	}
-> >  }
-> >  EXPORT_SYMBOL(uart_match_port);
-> > =20
-> >=20
-> >=20
->=20
-> --=20
->  i.
->=20
->=20
-
-
---=20
-Hugo Villeneuve
+Best regards,
+Krzysztof
