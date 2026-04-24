@@ -1,113 +1,114 @@
-Received: from mail-yx1-f49.google.com (mail-yx1-f49.google.com [74.125.224.49])
+Received: from mail-yx1-f50.google.com (mail-yx1-f50.google.com [74.125.224.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70C38357735
-	for <linux-serial@vger.kernel.org>; Fri, 24 Apr 2026 08:51:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06F702874FA
+	for <linux-serial@vger.kernel.org>; Fri, 24 Apr 2026 08:52:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.50
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777020663; cv=pass; b=uUGYvVYYsK7wDzdfLSrNThm0Aaa7IJqSttbV8U6ISg4f+pegICAjXjKBtuziYGKzLNsZ9FusYM6yMQxHKmtrPob+JFl2eIDdy7a6MNKd8TzVJ61UbfwSqxjBVOpyCffSOYoMHzEJBGUHAxy/ShKuXSQaAkBdIvARyxKTUAjZ0k0=
+	t=1777020749; cv=pass; b=UMiXJUVbFekOGFjfoFYHHpX32GB1CeVNoazotmhq897YHHSChcVInOyA2x6eAvMUw50GkbYh+RxlA7aGQMi4FhPn1PX8Y8foPNolscWeY0OyDUCtceu29GX9P/9hWJWtL17UEUYd8vDjv8/y6ux+RZNCdiCBmjRXdXc1MuP77CI=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777020663; c=relaxed/simple;
-	bh=fULNxiEb8ewDozWZ7wVgbDvqFQOPB1csfMaW1LC51/A=;
+	s=arc-20240116; t=1777020749; c=relaxed/simple;
+	bh=adhxGrFmQ7Gmbb/LyyV1MtkjnZG5hgDXkgv+V8iZuvU=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Content-Type; b=ibWQzzVK5L80KmfDXAHGeIGqQso9AuE9kR2meRId/XEGAE9P4ACAMrhdFsdvL2ZpUl9WPxfoxrHJehkkyvzteas43kdgxJzLWlLl5LECT0j2D0gisv8awdDqm0dCaMXb3gdMuxgUlG5bbJ3RCnGLXfBlNMj+jdCoCojWv/JkZSA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hGAqK+2q; arc=pass smtp.client-ip=74.125.224.49
+	 To:Content-Type; b=ItyBoUZb9rW/QtElhitBeHBQAN70vdhSm2nvxjqoW47QmHuJqgR3u3n1QDzfVlHiW9Cgl9dAvKsorYQIoGSbgr+U/U8PUElzHXp0nHPWsr6OIzta09dseSHniu5o1IDXdiCXY8xsvk/HgteLmFpzmQfYlPwCCmnQ7CP5hpzIctU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Gvs8sF6P; arc=pass smtp.client-ip=74.125.224.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hGAqK+2q"
-Received: by mail-yx1-f49.google.com with SMTP id 956f58d0204a3-651b4d09141so10241286d50.1
-        for <linux-serial@vger.kernel.org>; Fri, 24 Apr 2026 01:51:02 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777020661; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Gvs8sF6P"
+Received: by mail-yx1-f50.google.com with SMTP id 956f58d0204a3-6501547d7edso6982632d50.0
+        for <linux-serial@vger.kernel.org>; Fri, 24 Apr 2026 01:52:27 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1777020747; cv=none;
         d=google.com; s=arc-20240605;
-        b=i3JhL9xwaJUPgd9UDvkAxw/Lz/6uxTufJDxC8G9FcKoc93qxo0em3MvKkANMX2Pkmp
-         JQ0zDDyyHOjZNfILKSi0LDY1Pg5K8cyw9FlzLj6AEOtKluabLbWLTFRgOuwN8HGacoxh
-         kdNlNYyAoNOjC0BeXnglT7k33Q8cgFp/qQWtJ1aAR/7ptKvwzuMTmlmDIks7A+QaNln+
-         /RxCYdwUAlPA7Ulwbdl3oY5eFJU2KJDoziD6dan/2XE7QytdrLEovb9lVvCKUXm5/mQ9
-         LQnp0+ISJbvbqb8/XUm42IPPMv9BvE3JG0KMRuGuCEqUXGNPVlpt42SHSQCjDp3ENkB3
-         yKtg==
+        b=bCze+NI+JDYU0T1fcxcrRKUqxtJH7xLW3GPf8w8tZduLMmxw1j517vQO+LC0xsKl8V
+         SXilhRFgjRBgUlURYRgDshBeYC1dYlgXqLJu3Qk8TBBpz1bhmRQXnLtmpwxGWmkS3ZbB
+         PuihkhyFzAdLkXpvpjwOJUsRcQReIdT90JkiK8z2VJpTFSvfGR80/wQwpjsDVThLmmHi
+         arMebTvjwW5+zxlYt6wpRpixE0wcR0b/HoRb0RkK83T8zS2GTsNe8/LTbZNQFW9gGC+E
+         lRcZuZYUjeq6jrJ7hKaZ9sR6O2JabR+6DLO+zGtsCWg2tMaxQ4kYNU/8j9zltcRqa/KM
+         ynQg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=to:subject:message-id:date:from:in-reply-to:references:mime-version
          :dkim-signature;
-        bh=HHGF3Q0AdvdA8fXH/S6yTywGaS6Rg3AgRr8vO+Wt8CQ=;
-        fh=1UnE3vDGQnffQaFdP1FwIlmAnrVw4vzq7GAUeyDOCsg=;
-        b=Kbp7cSrP9VFzUoZcJHeP/3V9Tc+WjUpc6rq67TNduBD3/qtOw56D4DhCgz3uHVd+vg
-         bjXMbzr1JjCS4gEClzCc5LjmKbcbuex3cyr0Fwlj9VgT8O/6KyecaRp/ZCeJb5MhoKze
-         cTHxehSJeKmgT4ClbSHLqQfJFESbcQA0305ZN7+6q4MA6uMbEyr7ZOiC7H1Mz++m1vih
-         RvEFRKJWo9ylyqyWIvEgyVLnnRUylXNIFLc4G9DAiXOZpUS03DbTQIlE/si6SPlT3UHo
-         1lK/gghzGkZSXoY6PLvWKp4rE5KlZAUJD5ebbvx78tmsipS3SHdMHJLLr70EqPIZs3+q
-         XEew==;
+        bh=FE1KkqqVj8aQlCojRJ0XxXhQr9/V1vEASpdjR9JcsnM=;
+        fh=wm0FED3PlWEh8t5iLC5mRqJjWK6rA+CaAFcMiv0VKH4=;
+        b=f1KN3dUBswaqoGVWQvMVTIYY5Kq19bXsC+jVdBN8TYRj9iMnaaLVYflqtWB+cIr7aU
+         qKIRCgW01FqBm3CBBAq5soiasmOxDE+5aen1rJ1RfN2OMd4+jimMVrf3LXBioMjkNdQI
+         F1UU9U+3ZBCTh64dNHO+dg5kID2HIN6gSZra4qlKbqCucau+UqOjhq2OuWwOQMM4ci8a
+         3o1m6QhxAbYFbNIaX/hssBBlxOcKU78g/Q52lZLp4WQRL7GzLTddwySxaGzzK1x6UfuU
+         T96tpOXuDQOaGvX+UaKpKnSvuNa7GiQuiUGoSGwMujc/Y1AXOe4ex8063U6cBfi06Lbv
+         zpmA==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777020661; x=1777625461; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1777020747; x=1777625547; darn=vger.kernel.org;
         h=to:subject:message-id:date:from:in-reply-to:references:mime-version
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=HHGF3Q0AdvdA8fXH/S6yTywGaS6Rg3AgRr8vO+Wt8CQ=;
-        b=hGAqK+2qavNJ0HRl0NVKUQ29YY9qYZRmFXCbtwrY+q68+vBKND+2Lk4cRFi/3Yfa5Z
-         ybfT6zbKHqbncTKz2utSLoxhCVQhhklsqOihQ/6gPHX7nyaKyARscDNJeGXuwo49lZ3m
-         ONbORLYYBehJ+NsQBVv069voU0wzCmB/FxFpLgxIadHgac/EcHCMdwFmKCBD4cTo8YCg
-         sn5A2vCVc0hr6R/8pgHuVBt3NJtV3w79JkKEYv8GZyFFG7k7vJR9sNcGvqaMllve2c8A
-         4cYm6ihb2CIsfO59BidfAUyx9K2dVpFnXQkfKYrs3QDpuRP16St6Om7M7LHwDCfNyi3M
-         6ALA==
+        bh=FE1KkqqVj8aQlCojRJ0XxXhQr9/V1vEASpdjR9JcsnM=;
+        b=Gvs8sF6P2aM5zzFjBlYc4awA3MpLip+ZRTJ+cmG20MAMSGF/0j+fzioIPAMVuREwRF
+         Nky6G/1kRMHnfR3hfTZUlpePb5uLfrC4oY4sARP246hiSlYdfHdkKB3bbyfg4LQij1Ji
+         43lYf9plZDAXi3zxFwPCqHFy09tG9kfJ2cAsWCntl/jqMdFFzlQCFFQUaIgH15zIMg9Z
+         lmIOH4DIDgcoRAajCxgTE/i8wKqkVrgo+gQuao2XGXYBoac9Tn+7W2I3q3QLH9dabFr2
+         CJtcs5DUm6vvyz73q1304Bg9tCa+UDpo0eO87rbB3yWGXeqqyEHb5hTJw9f43yuqssRe
+         zlgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777020661; x=1777625461;
+        d=1e100.net; s=20251104; t=1777020747; x=1777625547;
         h=to:subject:message-id:date:from:in-reply-to:references:mime-version
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=HHGF3Q0AdvdA8fXH/S6yTywGaS6Rg3AgRr8vO+Wt8CQ=;
-        b=NWxsBvNqY0Xi3Eru2upthMiikXMJv7OodQ0Dc4nbZS0fbOA+dKnskk5Twvuyupe/3l
-         JZETlvnpG3RePMngBaPcha5bSybj5yabN1DVRGbbo6Y2rQ44sEh0TOPhN3LJ9mLOHKp/
-         2mNmBNqhPXiSeGrAsYG+zO/pJRY1WoHeX0QkoSl7+ItvLLFDDLPUaXnQCSP7ACdSZkfx
-         qlwlOFY73lA4HLakON0ah56hVOWdB8cyEAeIoO707+49f8hlkghZb4yHzzF9kvLQNu4T
-         nDTy1hBIWYNKhTYPJUNTvb0ByVENSjzcAZM2/b0ACbueBn/cEbghqAWCds+bfG9nPy75
-         jf7A==
-X-Forwarded-Encrypted: i=1; AFNElJ/xehOrEx3Y84ycw36bxMRQqp8xmbaZfv3ldzmPqLpUIypTj50fVXMu/VCuPAFxTPP/J2euB/hqpNtPlA0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwfhUm+VmvsJf5timN1rXuCubSEKNTYYUsqo616zT6sTIR7Sbqy
-	JCjwfY0FJv2YQcAbwj+dqMCt6FgQD05cJCkkoVp7NimNQqU4jBSko79Fs9I05FWaM3VdDMeHmMc
-	fO1E8/zNYfoLJ7sTz8GA3sD/7r7eUBPE=
-X-Gm-Gg: AeBDievSTsA13uLTbTT1ldhr6GtCY8TFCeeHtVUa3kDlFIGxxsczG0d+U5GAQzTV15i
-	MGY5MHlKtEwryakTG5YlERGmiTOiyslnmNoxiQyfQ3kwRZGD5wxid4jFWXS2IsBkB/xzmryHPvw
-	Mw4455ETEBsW5Jh6ddsS4woX2HYL9Pp5iV9DAyyyEOk8vpzQ+P1hTbu+0DXcD7Eth8Dbsd5c7A8
-	8478V4CkhwP2/Tr+6aut/bC6fyNb9cNlUaBWDnUMzBBjG8FESGBbEcrDzrhlta7NQV8lIPBwZHr
-	nFcA0OBX2G/yzHsknMZz
-X-Received: by 2002:a05:690e:1285:b0:653:3ecd:cc3b with SMTP id
- 956f58d0204a3-6533ece04f5mr19178886d50.41.1777020661476; Fri, 24 Apr 2026
- 01:51:01 -0700 (PDT)
+        bh=FE1KkqqVj8aQlCojRJ0XxXhQr9/V1vEASpdjR9JcsnM=;
+        b=qogcJFDwrbupR+HmmijWEAvz/OzzxpwXgZOdJ/x2x7pWebyBZHCEAqS7VhaIbDbYck
+         5rqyj6isWDZ3mxpKQMZsxbtgd9ds0DaDL56/N/JBTc3RYFe2UON8cvGImQBlFaTqilKa
+         4s/CX+oe2/ULIlEasjhmzJhnjgluRLntMVTkjWuZDJbI2N/5h9ciYXHbILKhc/KHqCdL
+         tVbLujI5himy2x6/I/Fk/XlVzOHF5um3NkADLOXXWdzT403vmcnv97XmHnp1B6KdsbKq
+         J2nH8fPyYgTTmIgGeOsUMCNg0ADC+aqerCV0uGanZ954RuBmReST/u3XcTT5XX/T4ooN
+         iS0g==
+X-Forwarded-Encrypted: i=1; AFNElJ+tyAtoMf9W6k+MyUs7vv2MG0e3YYlB6ZEAHNjWWqdIMUWNiRtQUN2sx39mT83J5/gLbixYbPVlNy8t2Qs=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yya0VfgERyBiF6SlxKK0QKa4yVP8zBUQiFKejZDHCAKwK508TFZ
+	1EMtJYVmXxPjVdUqE4D+MAiOK0Kv4jRhuOeYoOTiStr4Y2tYU88gj7vcqXggNLkr2bNsEXYuOJw
+	rPK0R3D5lIO2BZ8aD1vYdJn6yDasf4aQ=
+X-Gm-Gg: AeBDietvkpUhuTV4vqtYx8gzNO9pi4Y37mebRgUv5CGcOKNDNphZ31PUkLLpOS5s9Rb
+	U+aXB/B+ZuH0eRa0ShEpSs/1ddzrvwv3Dpfec4ULduzn4coc3x/JP8szS3kGalhGvuJ2GIgNrB/
+	FFq815CBhFIHfujLEcipBr6mmkyqXrTj/KQOCZ14tq4kL4fZeiWW3z2xEHy664xJDLfrllDCejH
+	emn1CROsJxAFavpgj+b1+zbX0lVN5gzmFsJR3GRbVvfFdXl5yv/wTKHEYBXPjKo4N9NrmaR65x0
+	3XD1KzzmRTkRsWmfZhMM
+X-Received: by 2002:a53:acd1:0:20b0:651:ba8b:a950 with SMTP id
+ 956f58d0204a3-65310b57b32mr23200290d50.60.1777020747070; Fri, 24 Apr 2026
+ 01:52:27 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260415183756.3770073-1-lgs201920130244@gmail.com>
-In-Reply-To: <20260415183756.3770073-1-lgs201920130244@gmail.com>
+References: <20260415184032.3776292-1-lgs201920130244@gmail.com>
+In-Reply-To: <20260415184032.3776292-1-lgs201920130244@gmail.com>
 From: Guangshuo Li <lgs201920130244@gmail.com>
-Date: Fri, 24 Apr 2026 16:50:47 +0800
-X-Gm-Features: AQROBzDtgAhZNJfwlnMiF1vQYDwYvJqJRfQ_cyqhdKjrZlvtK5jt5L-IBoJpUbk
-Message-ID: <CANUHTR-QWCMb4=9ErGF5cdvz0TPPtUXLXTNCSijL5KsPpY4XkA@mail.gmail.com>
-Subject: Re: [PATCH] serial: 8250_boca: fix reference leak on failed device registration
+Date: Fri, 24 Apr 2026 16:52:13 +0800
+X-Gm-Features: AQROBzBkj4pl0bdCozMgtQV0phCtnPUCTED2bbuNK4MaKFWbfyEUKorSk1UBYFY
+Message-ID: <CANUHTR_9NGoL0rQa5swdqaheauoU5s7TBCeaGDYgiZ6PW_ociw@mail.gmail.com>
+Subject: Re: [PATCH] serial: 8250_exar_st16c554: fix reference leak on failed
+ device registration
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Guangshuo Li <lgs201920130244@gmail.com>, Russell King <rmk@dyn-67.arm.linux.org.uk>, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+	Guangshuo Li <lgs201920130244@gmail.com>, Paul B Schroeder <pschroeder@uplogix.com>, 
+	Andrew Morton <akpm@osdl.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
 Hi,
 
 Please disregard this patch.
 
-On Thu, 16 Apr 2026 at 02:38, Guangshuo Li <lgs201920130244@gmail.com> wrote:
+On Thu, 16 Apr 2026 at 02:40, Guangshuo Li <lgs201920130244@gmail.com> wrote:
 >
-> When platform_device_register() fails in boca_init(), the embedded
-> struct device in boca_device has already been initialized by
+> When platform_device_register() fails in exar_init(), the embedded
+> struct device in exar_device has already been initialized by
 > device_initialize(), but the failure path returns the error without
 > dropping the device reference for the current platform device:
 >
->   boca_init()
->     -> platform_device_register(&boca_device)
->        -> device_initialize(&boca_device.dev)
->        -> setup_pdev_dma_masks(&boca_device)
->        -> platform_device_add(&boca_device)
+>   exar_init()
+>     -> platform_device_register(&exar_device)
+>        -> device_initialize(&exar_device.dev)
+>        -> setup_pdev_dma_masks(&exar_device)
+>        -> platform_device_add(&exar_device)
 >
 > This leads to a reference leak when platform_device_register() fails.
 > Fix this by calling platform_device_put() before returning the error.
@@ -115,37 +116,37 @@ On Thu, 16 Apr 2026 at 02:38, Guangshuo Li <lgs201920130244@gmail.com> wrote:
 > The issue was identified by a static analysis tool I developed and
 > confirmed by manual review.
 >
-> Fixes: ec9f47cd6a14c ("[PATCH] Serial: Split 8250 port table")
+> Fixes: e0980dafa329d ("[PATCH] Exar quad port serial")
 > Cc: stable@vger.kernel.org
 > Signed-off-by: Guangshuo Li <lgs201920130244@gmail.com>
 > ---
->  drivers/tty/serial/8250/8250_boca.c | 8 +++++++-
+>  drivers/tty/serial/8250/8250_exar_st16c554.c | 8 +++++++-
 >  1 file changed, 7 insertions(+), 1 deletion(-)
 >
-> diff --git a/drivers/tty/serial/8250/8250_boca.c b/drivers/tty/serial/8250/8250_boca.c
-> index a9b97c034653..70ea8e30ae80 100644
-> --- a/drivers/tty/serial/8250/8250_boca.c
-> +++ b/drivers/tty/serial/8250/8250_boca.c
-> @@ -39,7 +39,13 @@ static struct platform_device boca_device = {
+> diff --git a/drivers/tty/serial/8250/8250_exar_st16c554.c b/drivers/tty/serial/8250/8250_exar_st16c554.c
+> index 933811ebfaac..b2c37f0c52aa 100644
+> --- a/drivers/tty/serial/8250/8250_exar_st16c554.c
+> +++ b/drivers/tty/serial/8250/8250_exar_st16c554.c
+> @@ -30,7 +30,13 @@ static struct platform_device exar_device = {
 >
->  static int __init boca_init(void)
+>  static int __init exar_init(void)
 >  {
-> -       return platform_device_register(&boca_device);
+> -       return platform_device_register(&exar_device);
 > +       int ret;
 > +
-> +       ret = platform_device_register(&boca_device);
+> +       ret = platform_device_register(&exar_device);
 > +       if (ret)
-> +               platform_device_put(&boca_device);
+> +               platform_device_put(&exar_device);
 > +
 > +       return ret;
 >  }
 >
->  module_init(boca_init);
+>  module_init(exar_init);
 > --
 > 2.43.0
 >
 
-After re-checking it, boca_device is a static platform_device and it does
+After re-checking it, exar_device is a static platform_device and it does
 not provide a dev.release callback. Therefore calling
 platform_device_put() on the platform_device_register() failure path is
 not appropriate here and can trigger the missing release callback
