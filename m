@@ -1,93 +1,156 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E92C35A938;
-	Fri, 24 Apr 2026 09:58:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C24AA1A8F97
+	for <linux-serial@vger.kernel.org>; Fri, 24 Apr 2026 10:02:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=203.254.224.24
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777024690; cv=none; b=nU2GpPbTxghXcFqjSrmAkm0QKhyK8pBb+idjL2AeIYJaL8uoL/IM7vpHXtXIX61JJ0Wg/tttmNImB8IY3DwaandoG9gWfdjkIz6qyeH0Lao+7VNSzGCG3SbPeO+lVVHP5eDGFy1oacXxJnk0FoqF6fq9vQ1Cr30pSoQYGZ1xf+0=
+	t=1777024928; cv=none; b=sCnEzagT1wJpg8Cz+NdXgov3Ho6OFMrAPXQRUIbePIvLs3bPMtJNXHM7tQO6KgzqVguJI33L5Yrl4l59h/dTPXHQ7CcG+5xIFIBkPO8DcNBu9zcawmA9kw2l6+jhdxuVenor6ELXTlO8dUQbgdwUHk4oscbsfR7PLpGylKYNmxE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777024690; c=relaxed/simple;
-	bh=aMzRaQGPcbJXEzShNriK1H0VOmBVn5aR4ZpHPSZRFXg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=obu9ZX8B9xn3W3YVgpNqbP6l7o5twNaF9rAlgdeowAkashbRX1zw3y1uTtNC3mX8FJCme9NHZ0xh8X/TcOv8wutdUFSWRxVlisxKI72ULFs29dAmXL8HDp4lUFRdleqP8BzcidDmQTYwDP3qUIhLQ1o4iGqDAPMuGBlghavUyyY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ClK+t9Ao; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1777024928; c=relaxed/simple;
+	bh=8OjXBOUx0f05cZLENr4Y3TK8cbaUmcac4eRNWrA1vAw=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type:
+	 References; b=AhYqLE/lF6T0qIGQiPLvg0/4maV2edS1UojAkETp0umZSxXs3n7tITwC90Po/2ZknSCTfp1kJJzRF84uGYsIIqtuZMd5pte4McUHGKUfc5aFkJNCYPuZYrYxb9Tdli+u657kZiDTYBFoue5dFeEbxJgjXLLPiV3U5yt0HS9yPfk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=QEBoxdjJ; arc=none smtp.client-ip=203.254.224.24
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ClK+t9Ao"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777024689; x=1808560689;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=aMzRaQGPcbJXEzShNriK1H0VOmBVn5aR4ZpHPSZRFXg=;
-  b=ClK+t9Ao8NJL8bbIsQLhMQxNYBxzgvFv9G/UcLlFZmm+U6QD5VPUHVUQ
-   7WyoCu26kK33mxbYbzjIEzemrUC/nfMRBRKn2YrO/oYc+t1NNx1YDlvLK
-   FCQmsK1XVETwvrxwkmYCmpf9r/8SHjU8wxhwfyqidryE9rlsM5niFnHrj
-   OA3q/iHtlGAT/ZKiUyWhgOHzcTsn7vSv7Kt3kED69hrL8Ex+hAVIYx31Y
-   QUcLhbPOK3TYvJJIXtU7t2XOwz5KJS4udLug6C0/XQkNCnd8FWEQm/O7w
-   zIZpc3JD3kzC0lFFMAmomjbwDr24t+E1wgI+gzuAMspS9iMS6Mxx5MfI3
-   Q==;
-X-CSE-ConnectionGUID: d2R5hod2QXyK2Gifd++5rw==
-X-CSE-MsgGUID: GuulNTcQQ0Gm8bUEgSSocA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11765"; a="81610187"
-X-IronPort-AV: E=Sophos;i="6.23,196,1770624000"; 
-   d="scan'208";a="81610187"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2026 02:58:08 -0700
-X-CSE-ConnectionGUID: OqNbak6vS+uSahwuqFslqA==
-X-CSE-MsgGUID: uGHSkmPrShy6N71Wm+mYzw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,196,1770624000"; 
-   d="scan'208";a="237969085"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.71])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2026 02:58:04 -0700
-Date: Fri, 24 Apr 2026 12:58:01 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Jia Wang <wangjia@ultrarisc.com>
-Cc: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Paul Walmsley <pjw@kernel.org>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, linux-riscv@lists.infradead.org,
-	devicetree@vger.kernel.org,
-	Conor Dooley <conor.dooley@microchip.com>
-Subject: Re: [PATCH v4 0/4] serial: 8250_dw: Add support for UltraRISC DP1000
- UART
-Message-ID: <aes-qdaT_9wMbTsm@ashevche-desk.local>
-References: <20260424-ultrarisc-serial-v4-0-1765a0b4c4a0@ultrarisc.com>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="QEBoxdjJ"
+Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
+	by mailout1.samsung.com (KnoxPortal) with ESMTP id 20260424100203epoutp0155537835c62e9aa97e24810689c179f6~pQsCm9zck1064210642epoutp01M
+	for <linux-serial@vger.kernel.org>; Fri, 24 Apr 2026 10:02:03 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20260424100203epoutp0155537835c62e9aa97e24810689c179f6~pQsCm9zck1064210642epoutp01M
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1777024923;
+	bh=xQbZBR0vcMfkcL0qLiKFtePlkHLiiXiaHsbOVpj2MhY=;
+	h=From:To:Cc:Subject:Date:References:From;
+	b=QEBoxdjJj9N808jXyo1DW1Wu2I15V4J1JzBg4JhuWWTa7VVcPo09XXHum9WLtar1H
+	 96TJu6zX3fQu8H5NnFK2MRPRSmUOCrZlt7Ld30s7Zqya19KvJdfpTk171E4iig5E8h
+	 PzQwDxVKpC+CXcJDCSzGtRAcb5290Fzubl6XZqxs=
+Received: from epsnrtp03.localdomain (unknown [182.195.42.155]) by
+	epcas5p2.samsung.com (KnoxPortal) with ESMTPS id
+	20260424100202epcas5p2fea86ef12b376a5469ced37ed505f434~pQsCLYnRq0299002990epcas5p2v;
+	Fri, 24 Apr 2026 10:02:02 +0000 (GMT)
+Received: from epcas5p4.samsung.com (unknown [182.195.38.90]) by
+	epsnrtp03.localdomain (Postfix) with ESMTP id 4g27m96VKYz3hhT3; Fri, 24 Apr
+	2026 10:02:01 +0000 (GMT)
+Received: from epsmtip1.samsung.com (unknown [182.195.34.30]) by
+	epcas5p3.samsung.com (KnoxPortal) with ESMTPA id
+	20260424100201epcas5p371dd69955076938ee41ed0d823433056~pQsA91Xsb2843628436epcas5p3y;
+	Fri, 24 Apr 2026 10:02:01 +0000 (GMT)
+Received: from bose.samsungds.net (unknown [107.108.83.9]) by
+	epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20260424100200epsmtip194a9725c822bdfeaa1bb1d55b9338331~pQr--u-mZ2777227772epsmtip1L;
+	Fri, 24 Apr 2026 10:02:00 +0000 (GMT)
+From: Alim Akhtar <alim.akhtar@samsung.com>
+To: krzk@kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc: linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Alim Akhtar <alim.akhtar@samsung.com>
+Subject: [PATCH] tty: serial: samsung: add dedicated compatible for
+ exynosauto SoCs
+Date: Fri, 24 Apr 2026 15:48:35 +0530
+Message-Id: <20260424101835.2125970-1-alim.akhtar@samsung.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260424-ultrarisc-serial-v4-0-1765a0b4c4a0@ultrarisc.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20260424100201epcas5p371dd69955076938ee41ed0d823433056
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+CMS-TYPE: 105P
+cpgsPolicy: CPGSC10-543,Y
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20260424100201epcas5p371dd69955076938ee41ed0d823433056
+References: <CGME20260424100201epcas5p371dd69955076938ee41ed0d823433056@epcas5p3.samsung.com>
 
-On Fri, Apr 24, 2026 at 01:39:27PM +0800, Jia Wang wrote:
-> This patch series adds support for the UltraRISC DP1000 UART controller.
-> 
-> The series includes four patches. The first two are preparatory cleanups;
-> the last two add the DP1000 compatible and fixed CPR handling.
-> 
-> The patches have been tested on an UltraRISC DP1000 development board with
-> Linux v7.0-rc7, verifying basic UART functionality.
+Currently Exynosautov-{9,920} getting probed based on exynos850
+fallback. It is recommended to have a dedicated compatible for
+proper driver binding.
 
-Now it looks good to me, thanks!
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-(except DT bindings, not an expert, no tag)
+Add specific platfrom_device_id and of_device_id for
+unique identification and proper driver binding.
 
+While at it, also declare earlycon for these SoC which is helpful
+in debugging early kernel crashes which might occures before
+serial driver initialization.
+
+Signed-off-by: Alim Akhtar <alim.akhtar@samsung.com>
+---
+ drivers/tty/serial/samsung_tty.c | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+
+diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+index e27806bf2cf3..49409cb6fd25 100644
+--- a/drivers/tty/serial/samsung_tty.c
++++ b/drivers/tty/serial/samsung_tty.c
+@@ -2500,6 +2500,12 @@ static const struct s3c24xx_serial_drv_data exynos8895_serial_drv_data = {
+ 	.fifosize = { 0 },
+ };
+ 
++static const struct s3c24xx_serial_drv_data exynosauto_serial_drv_data = {
++	EXYNOS_COMMON_SERIAL_DRV_DATA,
++	/* samsung,uart-fifosize must be specified in the device tree. */
++	.fifosize = { 0 },
++};
++
+ static const struct s3c24xx_serial_drv_data gs101_serial_drv_data = {
+ 	.info = {
+ 		.name		= "Google GS101 UART",
+@@ -2531,6 +2537,7 @@ static const struct s3c24xx_serial_drv_data gs101_serial_drv_data = {
+ #define EXYNOS5433_SERIAL_DRV_DATA (&exynos5433_serial_drv_data)
+ #define EXYNOS850_SERIAL_DRV_DATA (&exynos850_serial_drv_data)
+ #define EXYNOS8895_SERIAL_DRV_DATA (&exynos8895_serial_drv_data)
++#define EXYNOSAUTO_SERIAL_DRV_DATA (&exynosauto_serial_drv_data)
+ #define GS101_SERIAL_DRV_DATA (&gs101_serial_drv_data)
+ 
+ #else
+@@ -2538,6 +2545,7 @@ static const struct s3c24xx_serial_drv_data gs101_serial_drv_data = {
+ #define EXYNOS5433_SERIAL_DRV_DATA NULL
+ #define EXYNOS850_SERIAL_DRV_DATA NULL
+ #define EXYNOS8895_SERIAL_DRV_DATA NULL
++#define EXYNOSAUTO_SERIAL_DRV_DATA NULL
+ #define GS101_SERIAL_DRV_DATA NULL
+ #endif
+ 
+@@ -2621,6 +2629,12 @@ static const struct platform_device_id s3c24xx_serial_driver_ids[] = {
+ 	}, {
+ 		.name		= "exynos850-uart",
+ 		.driver_data	= (kernel_ulong_t)EXYNOS850_SERIAL_DRV_DATA,
++	}, {
++		.name		= "exynosautov9-uart",
++		.driver_data	= (kernel_ulong_t)EXYNOSAUTO_SERIAL_DRV_DATA,
++	}, {
++		.name		= "exynosautov920-uart",
++		.driver_data	= (kernel_ulong_t)EXYNOSAUTO_SERIAL_DRV_DATA,
+ 	}, {
+ 		.name		= "artpec8-uart",
+ 		.driver_data	= (kernel_ulong_t)ARTPEC8_SERIAL_DRV_DATA,
+@@ -2649,6 +2663,10 @@ static const struct of_device_id s3c24xx_uart_dt_match[] = {
+ 		.data = S5L_SERIAL_DRV_DATA },
+ 	{ .compatible = "samsung,exynos850-uart",
+ 		.data = EXYNOS850_SERIAL_DRV_DATA },
++	{ .compatible = "samsung,exynosautov9-uart",
++		.data = EXYNOSAUTO_SERIAL_DRV_DATA },
++	{ .compatible = "samsung,exynosautov920-uart",
++		.data = EXYNOSAUTO_SERIAL_DRV_DATA },
+ 	{ .compatible = "axis,artpec8-uart",
+ 		.data = ARTPEC8_SERIAL_DRV_DATA },
+ 	{ .compatible = "google,gs101-uart",
+@@ -2826,6 +2844,10 @@ OF_EARLYCON_DECLARE(artpec8, "axis,artpec8-uart",
+ 			s5pv210_early_console_setup);
+ OF_EARLYCON_DECLARE(exynos850, "samsung,exynos850-uart",
+ 			s5pv210_early_console_setup);
++OF_EARLYCON_DECLARE(exynosauto, "samsung,exynosautov9-uart",
++			s5pv210_early_console_setup);
++OF_EARLYCON_DECLARE(exynosauto, "samsung,exynosautov920-uart",
++			s5pv210_early_console_setup);
+ 
+ static int __init gs101_early_console_setup(struct earlycon_device *device,
+ 					    const char *opt)
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.34.1
 
