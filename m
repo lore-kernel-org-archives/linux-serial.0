@@ -1,161 +1,158 @@
-Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com [209.85.128.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from fhigh-b3-smtp.messagingengine.com (fhigh-b3-smtp.messagingengine.com [202.12.124.154])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6659D3596E3
-	for <linux-serial@vger.kernel.org>; Fri, 24 Apr 2026 08:53:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.180
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777020835; cv=pass; b=D9yw4mNMGHE28+8hphzeeq5wlHXtrxOZmlgdJOruQ4DxFeYGze/khZFvgr6gOGP8B+Z2ETSBHXhMyJeA1vZp75K6LWO+ifC1WaxSyYqVex//agoX1Mvs1i2bifkEz2O3maIqYbrWFgBqg1ZJgU4Fr8rvq/wdnig4kXbWDMFr2Ec=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777020835; c=relaxed/simple;
-	bh=03xMsqqyaWqJ0+5XzJF77FyfslQyAIC6yi8Rq8AsH1U=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Content-Type; b=pFzIWv56o0FgxiBhOkwg4KpIRVABXt7+RGY1gWnzYA0Gn3+EMCf3iqO0Jrq7sSVW7XZRQUmJ28wfmP8sOa/T5Lxmr5lLpolepUqIprHJbPXy8h3635w1In+/A91PbHPUtzivq1xMT6JuanBaMkzLTdCT6omm1rpKyYOWoiG3kng=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XxWR0Xd5; arc=pass smtp.client-ip=209.85.128.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A28F62E1F0E;
+	Fri, 24 Apr 2026 08:54:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.154
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777020896; cv=none; b=nazWpYDX0cwAck1/6WgfYIlwZ9nWTwrn7xyOMGoc1BMIpJw1G3GE5t9Hev3IA3KlOBqXh4hRSTY1BhmtIJf4ilS+tsDOYa/wCY4vsOLuycPSBsr2HOeDrRBa6Spxu0Y4O+y53Xa8X692RgMCrGwF2htc0zHjKCqFXMSwPTImZ4M=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777020896; c=relaxed/simple;
+	bh=Ut8QNhBBEel3DXviCPKsyQ47X/HsgXFi/0/Zh+EVM/0=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=Cqmzlc+HDkvxBfUcHy9eIecr8qO+HsNlEB371bfJXRwkNKaIaKwyVqv1w/g3P5YbTGJhefR8LNDWIQnrB8w4R9QzYjTVIAVQq0n60xSr+XLAYcElADuwGwyvvL983aRQmVLvAUnPQSV9gLInMRPSP/4zSJwPJgNfkU5Y6ErC5MA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=Vxhoj+jD; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=ucGkRF3d; arc=none smtp.client-ip=202.12.124.154
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XxWR0Xd5"
-Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-79ea87af213so121842447b3.0
-        for <linux-serial@vger.kernel.org>; Fri, 24 Apr 2026 01:53:54 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777020833; cv=none;
-        d=google.com; s=arc-20240605;
-        b=Vmw8noJRF5UlzsHeSR5nDeZWwOfCe7n582lY/cVVu6U1rMVu9VKPKSyVvhmuisUwLc
-         GK+XS4+0EH25WyeJOa4yxWtHMN81lMp/wCe7AUM8dXn1yIeGY/fQP0vC2SwY5KR0KIWN
-         eQtD/WtSTu9psxDIYtgdHYq/Or3xLW9X3WJ0rNplrg9BUfT942N9sdEhP2CjMT1Yjm73
-         /t4Ft/atvYGeEWLp8FIN08VcfheTbpBIrfkzk7cJPrIJAI8XSzQBUV1Y5SO0zkJaNVNV
-         3W8X2vhFcelyESdniPRqEPlh+hqAjBfxwPDZZ/417XM+PqKaBxfbB/jbSPhXelgcpY2k
-         Fisg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=to:subject:message-id:date:from:in-reply-to:references:mime-version
-         :dkim-signature;
-        bh=PbGOhMSZqO7dOzVDV97vevpCJxbqyhSKXtY9DHU4Dz4=;
-        fh=WC37Fn3A0Tt8HHq4XtByaFchWmpThVXVUAdTBMZLPqM=;
-        b=eQNTI/pryZMRVzIlIzZjF/Yyky8XKnNeAeCawcfDTxTUYkF6i0C//GAr5LUTqpLLjP
-         rY+ZnTvZ0eVz6CBFyRRRyM3p2dWPRWhfBQYgUo70DNKGh9LSTLA12fTJu58SmCcPzz7p
-         JeduuKlntHK3bVAkPiHFg9qfCEcTbz3j8c5HNgVzgl+bn2X2b7lyOECsmPnzjZBlrjaC
-         yois3URhwyhxzWaXQkHUjwqo1+ZRj+Ef2QPRPPGm0QzshQFVAd8VSZsb4P0teClKYWiv
-         APNPR04agHTUs5GSDn/G53qsCbDojG2TvWTSO/NFq/d/sHAvWniPII6FEJnB5cfyuAAu
-         97KA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777020833; x=1777625633; darn=vger.kernel.org;
-        h=to:subject:message-id:date:from:in-reply-to:references:mime-version
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=PbGOhMSZqO7dOzVDV97vevpCJxbqyhSKXtY9DHU4Dz4=;
-        b=XxWR0Xd5se2XBrS/cmjubIw7RQdVNv5EDMWZniPrtx17WPouViLpQYxWa7g/sMKVYb
-         z5sk9itWgAtx6aCWTD8g47rfNiOdg4r7AowcW3liKUEzYFUkhr18gCILieMsiK5Eh1m9
-         XjDrrd+61tgfNlJEqpHZZd/+xDeqpbfDm0b8cE7cm64KaVrR3r7SNUBZp18JsKe2XEcx
-         BbByhEj90wGWax30xEp8UwtfXjWXpx4MDctF5CEppCqe5nxWhFITRBYWe/EhJL3EaxRZ
-         RlXi+5EAvbNbO1UaW9QKmeVRfwcT+Y0lVyr/94EcxfZ1+XYSV+vp4L3B3aWMoM3zzLkH
-         OxPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777020833; x=1777625633;
-        h=to:subject:message-id:date:from:in-reply-to:references:mime-version
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=PbGOhMSZqO7dOzVDV97vevpCJxbqyhSKXtY9DHU4Dz4=;
-        b=h9lPxo9qvMo0zh/cfjqPiN+nYLe/9QSpsi/DVkiGgvs4A+RB/FootyAnkeVl9yidtE
-         BzHLruvNkuzd3oiEhUqrU5FbsI3gzJLVBrPbGF1qsPCxv1SAEXotx6oyu2gkO8cGU3Rt
-         uw6p6iVvq2Ro1Db/yLih9fidKqSRzRkbI0p1+RRlIbrdYBHvt6VA7fIssCcQVpJ6xXZ+
-         APCOVuBWbvAaUZBrqTHciiLjE4UKJXoqg0/tTM9E/eoe1uc6uJ4gEnr33zwcEc03tzSr
-         axQ5KiRbvrsfEXVgTbrV3BRxPwdCS0l/i6ShKNxM8ZdEwAGOJY2v+QSHWQA37HV7l6F4
-         /yjw==
-X-Forwarded-Encrypted: i=1; AFNElJ/SJLa5dKunMuH0AoBYTx6EHWdBmOAQUsxu2OMo3aT3oykCwNZcxPm4iK+KwWBdtjxirRauriWP/UFA7RY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwKhL9JzBRluRQ6E1EC4udxTFrFxkyQqcolWEgYmar5G2D6dN7M
-	I+N8YjA0PmtJafFNylGjOJMTTA2gzT+MYw1JWU1cKjR6y3vWLQFWibseBHnuqujl6iqs6kZPVMh
-	XONhGVWUMFrSq1Uqe0TN18RV2vFu+tSo=
-X-Gm-Gg: AeBDievYeH5zWnYY1ZK6n3gZBW2VvaQEs0ovsCyTDLM79cv+pNuhLCPiNbwCoF6RkIb
-	d8iv6xFT5rfNk1PP3LuZ5gpQ83Ea8rELC0/sUUqjrNEQAM6KASXIej8QJQ654cXZoTZafOqRhDT
-	Sd0tOs+hzrGumFDl8cdnFOe6fZqQ5ROEaAkYXu9l7aBjMiIgNWh5kHR/6F6MOQvENkdDo42kW0M
-	0/NLGSbOv4p/3+dDdaUskp7R5uz+bdMn6SA7A4AEX3I3FvuLVEl2sViupJweM/3oeWt5fx7mgFX
-	MA/ihpxOXc7qZ1DjFMKQ
-X-Received: by 2002:a05:690e:b4f:b0:651:878b:d819 with SMTP id
- 956f58d0204a3-65311aa2284mr21735444d50.17.1777020833458; Fri, 24 Apr 2026
- 01:53:53 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="Vxhoj+jD";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="ucGkRF3d"
+Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
+	by mailfhigh.stl.internal (Postfix) with ESMTP id 66AC47A0129;
+	Fri, 24 Apr 2026 04:54:52 -0400 (EDT)
+Received: from phl-imap-02 ([10.202.2.81])
+  by phl-compute-04.internal (MEProxy); Fri, 24 Apr 2026 04:54:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm2; t=1777020892;
+	 x=1777107292; bh=hDlP8y8oJfAzwiriWyNXaxF8PNjiFivBJXX2WXCxPWQ=; b=
+	Vxhoj+jDQThNaBN3A0wYJrBZQVfAvaeIBhrBatMkWC2/kkNDZ7eVboZribHL84Gk
+	Z2II62yW3Z154p5LcRS/EBPk6XYqESbvuxjTAE/JRGg2chHaWsou4YXt5gwd9akH
+	rg6g3+TE2uTRoKAbK7nP6YUj/Vb1B5Zru0tD7AWsrYcYN9jxjun7aui9T0pM9oO+
+	m4+67c4kKp8WAwmxoBJFJGvdhX+OF2tWKLeUfnXydOvJRvzbUPXJoXwLnUawtUrL
+	1ioe+Qq4H0cj8el4wvuck7AVBVIEWzDfJaTYgtFyxZ2Q/TiGpdMHjscJH+GBjI8L
+	GYkZftPgpcDVtrXn/A5W/w==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1777020892; x=
+	1777107292; bh=hDlP8y8oJfAzwiriWyNXaxF8PNjiFivBJXX2WXCxPWQ=; b=u
+	cGkRF3dtcivkq7R/h1UtsQ3V0Rd3zT5GxWqVEt5taeGENmTcXVAnDIo56Ss/A1Mt
+	svvOzZ8pPoMS4G00FDbRtXQEGvN5PNG9R+2DF/WIkCmORfsCxKtiG5AXDzeytdIS
+	i9qTgkHBFSRsaH1A+xB9lfEgVCufshADpXNnYE1vcAoxpZG0UpGntE1dRmKfWiMx
+	fpgTYFp9uUhepRfScqD6TqS2KBL96oRLiylytKMSXj/aADu6vROTAT/trTZqlEhS
+	/KV6uenyD5sWM8Qm9ObV/Fmqj2KsfoniWs8QOj6GksYlOI737av/jjuu/269x7i8
+	L/hlKKwdmYFUVoFJWSXrQ==
+X-ME-Sender: <xms:2y_raRexXU55OfgzDqZmFJV1vD2xyDg3RucKZLkm9J_JWf3CZD7rzA>
+    <xme:2y_raaDkwZkbg-xZglrjzJ-G4gY5RkomaWh6CQXornCtGwrJtoJDLnvalOZ6uguxH
+    tvO3BfeKxXQN4SfBH1R5vSBNJPmv2p-wFwccHMCmvKUQo15SIxmwZg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefhedrtddtgdeileeitdcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpuffrtefokffrpgfnqfghnecuuegr
+    ihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjug
+    hrpefoggffhffvvefkjghfufgtgfesthhqredtredtjeenucfhrhhomhepfdetrhhnugcu
+    uegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrghtthgvrh
+    hnpedvhfdvkeeuudevfffftefgvdevfedvleehvddvgeejvdefhedtgeegveehfeeljeen
+    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrrhhnug
+    esrghrnhgusgdruggvpdhnsggprhgtphhtthhopeduledpmhhouggvpehsmhhtphhouhht
+    pdhrtghpthhtoheplhhinhhugiesrghrmhhlihhnuhigrdhorhhgrdhukhdprhgtphhtth
+    hopegrlhgvgigrnhgurhgvrdgsvghllhhonhhisegsohhothhlihhnrdgtohhmpdhrtghp
+    thhtohepshhtvghfrghnughovghsihhnghgvrhesghhmrghilhdrtghomhdprhgtphhtth
+    hopegtohhnohhrodgutheskhgvrhhnvghlrdhorhhgpdhrtghpthhtohepfhhushhtihhn
+    iheskhgvrhhnvghlrdhorhhgpdhrtghpthhtohepjhhirhhishhlrggshieskhgvrhhnvg
+    hlrdhorhhgpdhrtghpthhtohepkhhriihkodgutheskhgvrhhnvghlrdhorhhgpdhrtghp
+    thhtohepkhhriihksehkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhhsfieskh
+    gvrhhnvghlrdhorhhg
+X-ME-Proxy: <xmx:2y_raTg-oLq7z23uFnT5LQ8pf2PQAxekJTje9QHXbtbBzrhHWGQ5fA>
+    <xmx:2y_raea3M60xVRBvsZG6KSm_KKZBupGnMZ8oOrGOYwaRinxEos785g>
+    <xmx:2y_rafGpsa3rbSAeUpGn0L6bd-FS74ff7OLTFz9cgYW-pTQ87ANG8g>
+    <xmx:2y_raTZ42_tE0JvdJpKYMgNPgJGxqfnwKLSVzb3ORsbfXhpGx8LCfw>
+    <xmx:3C_raXpkK6XsJJv4ahSNjJaaJcp19Z3-bcksbi1eu__DcapeCDOv1EOd>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.phl.internal (Postfix, from userid 501)
+	id 5F1AA700069; Fri, 24 Apr 2026 04:54:51 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260415184839.3796326-1-lgs201920130244@gmail.com>
-In-Reply-To: <20260415184839.3796326-1-lgs201920130244@gmail.com>
-From: Guangshuo Li <lgs201920130244@gmail.com>
-Date: Fri, 24 Apr 2026 16:53:39 +0800
-X-Gm-Features: AQROBzAdNSnJ2dpURFLzjX9uN2r_bB4Ew24iin-mkrxk7EKCbEPArNhqVZKwoNM
-Message-ID: <CANUHTR_MEMfzCq0XuVt4wBtL7ND+q5Wx5OE7eYa9xnvipLLrqw@mail.gmail.com>
-Subject: Re: [PATCH] serial: 8250_fourport: fix reference leak on failed
- device registration
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Guangshuo Li <lgs201920130244@gmail.com>, Russell King <rmk@dyn-67.arm.linux.org.uk>, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-ThreadId: Agn-P3jpxnXN
+Date: Fri, 24 Apr 2026 10:54:11 +0200
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Linus Walleij" <linusw@kernel.org>,
+ =?UTF-8?Q?Stefan_D=C3=B6singer?= <stefandoesinger@gmail.com>
+Cc: "Jonathan Corbet" <corbet@lwn.net>,
+ "Shuah Khan" <skhan@linuxfoundation.org>,
+ "Russell King" <linux@armlinux.org.uk>, "Rob Herring" <robh@kernel.org>,
+ "Krzysztof Kozlowski" <krzk+dt@kernel.org>,
+ "Conor Dooley" <conor+dt@kernel.org>,
+ "Krzysztof Kozlowski" <krzk@kernel.org>,
+ "Alexandre Belloni" <alexandre.belloni@bootlin.com>,
+ "Drew Fustini" <fustini@kernel.org>,
+ "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+ "Jiri Slaby" <jirislaby@kernel.org>, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ devicetree@vger.kernel.org, soc@lists.linux.dev, linux-serial@vger.kernel.org
+Message-Id: <30b96e0d-f296-4c31-8701-a15c568ebffc@app.fastmail.com>
+In-Reply-To: 
+ <CAD++jL=_eDY_mG_QBreSrZiho0hUrDSciedq=vrxXaTiMwrSyg@mail.gmail.com>
+References: <20260421-send-v5-0-ace038e63515@gmail.com>
+ <20260421-send-v5-8-ace038e63515@gmail.com>
+ <CAD++jL=_eDY_mG_QBreSrZiho0hUrDSciedq=vrxXaTiMwrSyg@mail.gmail.com>
+Subject: Re: [PATCH v5 8/8] ARM: defconfig: Add a zx29 defconfig file
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-Hi,
+On Fri, Apr 24, 2026, at 09:13, Linus Walleij wrote:
+> On Tue, Apr 21, 2026 at 10:24=E2=80=AFPM Stefan D=C3=B6singer
+> <stefandoesinger@gmail.com> wrote:
+>
+>> This enables existing drivers that already are (UART) or will be (USB,
+>> GPIO) necessary to operate this board even if they aren't declared in
+>> the DTS yet.
+>>
+>> Signed-off-by: Stefan D=C3=B6singer <stefandoesinger@gmail.com>
+>
+> *I* personally (as SoC maintainer) think that having a few more defcon=
+figs
+> is fine, even helpful.
+>
+> But I would defer this to the more senior SoC maintainers because I th=
+ink
+> their stance is something like:
+>
+> - We have multi_v7_defconfig for compile testing
+>
+> - We know that binary gets way to big for your system: it's for build
+>   testing and perhaps booting in QEMU or systems with many MB of
+>   RAM, not for actually running it on products.
+>
+> - You are encouraged to keep your own defconfig out-of-tree.
 
-Please disregard this patch.
+Right, we clearly need to do something better than what we are with
+the general defconfigs, as I'm sure many of the existing ones are
+never actually used for booting a machine, and are horribly out of
+date with the Kconfig options.
 
-On Thu, 16 Apr 2026 at 02:48, Guangshuo Li <lgs201920130244@gmail.com> wrote:
->
-> When platform_device_register() fails in fourport_init(), the embedded
-> struct device in fourport_device has already been initialized by
-> device_initialize(), but the failure path returns the error without
-> dropping the device reference for the current platform device:
->
->   fourport_init()
->     -> platform_device_register(&fourport_device)
->        -> device_initialize(&fourport_device.dev)
->        -> setup_pdev_dma_masks(&fourport_device)
->        -> platform_device_add(&fourport_device)
->
-> This leads to a reference leak when platform_device_register() fails.
-> Fix this by calling platform_device_put() before returning the error.
->
-> The issue was identified by a static analysis tool I developed and
-> confirmed by manual review.
->
-> Fixes: ec9f47cd6a14c ("[PATCH] Serial: Split 8250 port table")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Guangshuo Li <lgs201920130244@gmail.com>
-> ---
->  drivers/tty/serial/8250/8250_fourport.c | 8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/tty/serial/8250/8250_fourport.c b/drivers/tty/serial/8250/8250_fourport.c
-> index 3215b9b7afde..a65bc7316655 100644
-> --- a/drivers/tty/serial/8250/8250_fourport.c
-> +++ b/drivers/tty/serial/8250/8250_fourport.c
-> @@ -34,7 +34,13 @@ static struct platform_device fourport_device = {
->
->  static int __init fourport_init(void)
->  {
-> -       return platform_device_register(&fourport_device);
-> +       int ret;
-> +
-> +       ret = platform_device_register(&fourport_device);
-> +       if (ret)
-> +               platform_device_put(&fourport_device);
-> +
-> +       return ret;
->  }
->
->  module_init(fourport_init);
-> --
-> 2.43.0
->
+I wouldn't object to adding another defconfig for a new (or revived)
+soc family, but I don't want to have more per-board ones.
+Overall, we have about 70 defconfigs and 55 soc families that have their
+own mach-* directory (plus a few without code), and the number of
+defconfigs alone makes it hard to keep them up to date.=20
 
-After re-checking it, fourport_device is a static platform_device and it
-does not provide a dev.release callback. Therefore calling
-platform_device_put() on the platform_device_register() failure path is
-not appropriate here and can trigger the missing release callback
-warning.
+> However I even challenged this myself by adding a defconfig for memory
+> constrained Broadcoms a while back (NACKed/ignored ;) so if it was all
+> up to me I would merge this.
 
-This falls into the same static platform_device pattern pointed out in
-the other reviews, so I will drop this patch.
+I don't even remember that discussion ;-)
 
-Sorry for the noise.
+One idea might be to have a tiny base defconfig, plus platform
+specific fragments that add drivers. The problem is agreeing
+what bits are essential enough to still get enabled in the
+tiny config.
 
-Best regards,
-Guangshuo Li
+       Arnd
