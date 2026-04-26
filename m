@@ -1,161 +1,217 @@
-Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com [209.85.167.42])
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E082928B4FA
-	for <linux-serial@vger.kernel.org>; Fri, 24 Apr 2026 21:05:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D07B327204
+	for <linux-serial@vger.kernel.org>; Sun, 26 Apr 2026 11:54:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777064736; cv=none; b=ZjX/37+MhpBebt82DDB3ITKgpSfnjr6s2/KNWjkh5Sa70cyU3/86T+53otyiTgMtYIuId6sXM+RGM3FAFbNWB1p9FNA2kxUiZjFls8Rc91DM9Yr5+IlLu6JbVUeyOYsJJiZLptKCkCS4HG2/J0Pqk/w/AW3McL7mgo0Z38CHPq8=
+	t=1777204487; cv=none; b=POrvJXYwe1kGdDKb3SdrzLB1ayib0JEDwuTEwbei9WqjBeYPH6NmFak0v9yfN6WQZdItGPWTM8t339wobSTFKSnmx9vTvWQbwE9dvDGIC8dqjAGFuMm0H6GD3XU3j1UtGS5ZYxylvCganT1i83UdPLkue+obArbTjzuMVjwthfg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777064736; c=relaxed/simple;
-	bh=YlBcOTGkdAEX8Hb8Nsp6yCVp/3IlH3e/AnJneSIAzT0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=gPXgxfglDTUhifI49hgcTjtl/ePZd4wkj3jJ588p7xdgCNNpiwG+yKxPC97fimek6m1dJAWYdMro+bRUjMqLTStkMvfaNMs9X5Ih1UqDHiDGLyU0U9aNu0X6BGk4p1bJ6LGdqn8WlnFS5h6e/qra8IK7Y1h46ONm4v7vrBVqmNs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=I6s1bwa7; arc=none smtp.client-ip=209.85.167.42
+	s=arc-20240116; t=1777204487; c=relaxed/simple;
+	bh=177MnobEW4AW8zxVOoT5YiyKBdemluGYegbd8Mp3tz8=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=nyoJ9OD0OK1DIeSeTdu44UIp/2+IchdV1Caes092WA8jZaqB+XxHxZMl2W88v6xEPRD6ExC27EQfcUliBcyhQr1RjLwwSmZTAiyrzqcbhMN3Uefp63uPehauIH8qUS0+/IxzzOypsYdlFI5yz2QqNQXKGkXuu8LCwNAdl9lTYl0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Jm69J2k/; arc=none smtp.client-ip=209.85.128.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="I6s1bwa7"
-Received: by mail-lf1-f42.google.com with SMTP id 2adb3069b0e04-5a10d130b37so8248674e87.0
-        for <linux-serial@vger.kernel.org>; Fri, 24 Apr 2026 14:05:34 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Jm69J2k/"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-4891e86fabeso97387745e9.1
+        for <linux-serial@vger.kernel.org>; Sun, 26 Apr 2026 04:54:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777064733; x=1777669533; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=tCYOgbfLBl2ffEEwC7jRGzDfvZV5p4y0B5VEInrpIEk=;
-        b=I6s1bwa7a4WjiHjC2Rr4W6q09ubWwcfMv8sNdF9DW9nHjauggn+WeXaaIjLgZh6wGz
-         himlNIuyy93gRW8RRxqmK+w16UnivKDr0G5dzfYm2/yeU+3wIydutzgXf8/MiGNuNWz1
-         3MLXtF3Zo2H6TPjxY+aKC9aLAi9vs6Ga4Xh1s7M99PrcPd4cSGBrRhV/ktskE7PHkOJI
-         2Z3EE0V8XXw1nqyTNlv0WXihvjiH6d92eDv7/lI7vWqsfbWcKRlWVkcy8kd+zDTs5qWr
-         D2Nzq1EsBLPxCFLSfy6JJ0FOc9p3F33Tv/ag8+9og/hBSENQM4C5JOhFX0/aLzW0G4Wi
-         FJNA==
+        d=gmail.com; s=20251104; t=1777204484; x=1777809284; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Izl2nx9ZI1GiQgBb28dSYIy+N6GwTm8NILzzFVKNNVo=;
+        b=Jm69J2k/bmobPQHrve652/+Gy5PTAYWrtj1HAeMIPSV7oQz1Jk9EI5IdMGBD8zbAZy
+         0dBVx4NhLHJGD/AAJl347tf0ueDyzEZnb9UEamQxd4ynBR+nvlDp3X2GBZCJ4+ugU/em
+         wXB3Tgmpx5ukK1ijcdOl+WGtKAsEXXaC8xCSzLJYIFN9w21z0yiEfw3K9LxcISzVgTqL
+         JV+jRUfal6o4Z/CMEfIlAs/TXLUG7jv3xfhVb8HCLWT7IOC0Y1SeX0+RctjDRQLhOItf
+         I4e+D2lUi9zR5iC8AT6sSZKMrhzHaWEtgNtWInQwwRtMcNRhkQc2gQZReE1M0zsF0jRY
+         lMHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777064733; x=1777669533;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=1e100.net; s=20251104; t=1777204484; x=1777809284;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=tCYOgbfLBl2ffEEwC7jRGzDfvZV5p4y0B5VEInrpIEk=;
-        b=IoMng9WYNK7fducsWbqMvaOYjjIAtV+O/dJkt0sKbtS+NAxhqfw/Y3JdGwBnC5f5MZ
-         c6HQppJvZuENE0lVt6lw4Z+/yyS8lwoXxaQC9ozsFboQ5p88nodj6PNbnD45YlPnaha3
-         DAYOUhLqpO1bEb5BvT88SpIgHUScx0GgquaBbMRGGI8L7JFGI9z8MSPbP4xOp9OPyBxL
-         kKm0D6Yc2MDLiU+PgeG5ZCLnHVmhCzlLERd9Two3OCo/KkKRjRFK988Q9L2CsMdmImqf
-         9Zmbfme2H1hvKhpxdaJhTK+WqGPB6wxLCtnQJ9XWH3La6gb0chL2ZmW4ufpHfmuWym+V
-         Zwlg==
-X-Forwarded-Encrypted: i=1; AFNElJ9beKR0RDyVgTU0Rpc5lOVdmcTGRiAYSY4XdiA1YjjS82jimn1zJsP6Wz1yETkupwDbbkubj9A0omruSm4=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzta5EymuHBfHxba3YwjvnAR9/eWiBrhiwst1k/Tzb7rP1LHtfk
-	W1CctaL/iSQZbOOlO4/dBDoFBWyswUWvcSqZNC0fsuCsZmKJ3fbi9ERLmEQ5Ow==
-X-Gm-Gg: AeBDiet3PW9tSNS7P8D2WMQ2r/rqItkHVwS0xLt6rdKd6DMJwII3yJhb4zdDN6u7HbB
-	EHp6uD9uU/bJHGZmsprVsCpF4fGEBHUYu+367Qh7ZdM4jv8cfCK2hwP1ju/CkeIJv6L+l2agaok
-	b/YNJXeySWAhaB/HLops7K8C5gSJSNM/TevIY/LPZ9gBdLqDiMpez0xPWlFnMuHXy3HhPL987Yq
-	eVdQtUqKlSNsgmh4b2RcxaYc06QKzw45dPTHKmoTY1JdsffMNR0Zjaf42JXuxH08kICK3ppioei
-	qQGdDluDnyCOmAubnTAQ7tI5VaTdHn8Vf4dwowhwokaz5qAIqD7nV8+NRXx8pRnS6iL8rIzAXWj
-	d4g/MBrmbn7VVy7NZ3hSpl0MQOx2hHTFBAtbnKVcyuyOuO/+dsyfT/UatXqQKiNa8y2r8fBF+Pn
-	s7AnLBJ26EHty0Ye+fwQbwrKmBA51vdCC2Q9V6+mzAbLl72Hha04E=
-X-Received: by 2002:a05:6512:3b0c:b0:5a3:e87a:3ea8 with SMTP id 2adb3069b0e04-5a41716da76mr10666181e87.2.1777064732678;
-        Fri, 24 Apr 2026 14:05:32 -0700 (PDT)
-Received: from NB-6746.corp.yadro.com ([91.132.132.238])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5a4185ad12asm6379218e87.1.2026.04.24.14.05.30
+        bh=Izl2nx9ZI1GiQgBb28dSYIy+N6GwTm8NILzzFVKNNVo=;
+        b=rebeIhk45NBgweyGFc7B/OS4ptD9AUYnIJeUV7V6ZChLWgho+QGtjc6uQ5lJzw4GGm
+         c642WnmO5oIiKetFqY2/TBZZkvttbzM9yAAYv3ygHUzUq9n5nL4ZAwrRZpjZrchz0UPd
+         TXQXhHRsAZ1p03vxpqYvmx4nIrO7I7ng755Bhq4uIAQa7ukNBQgRjfvnDYDhYXbi5I09
+         redA4AnTUNqJRp58fIh8DSU1aYB7mecJ9uu7xV89+NDgQRL/3ycmPIGI/lBpfs45E2c2
+         MR0eM1Rm4LA+9QAIgbdBAaI0YTCcfEcaIJGUIvYbWUUWEpBTuz6ws/kZzDIb8KmS2kup
+         Ayag==
+X-Forwarded-Encrypted: i=1; AFNElJ9fMFeCPPrh8tDdADQyg9qNys0okVZcnpmBXDT15mNFjO5w6+Iud+RPhhGghdCpvSftM2ntG4dPaqophhI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwoyoN3RDN5Ap1vn3yD11A7Wdun10SU8Rb4aZji28ApS1iudf+e
+	wyvBYyo7/sJ8+qjXtQMw0sNf6IskIUG4NrrBU2cqZFgvjr4VkmmXzD8o
+X-Gm-Gg: AeBDiesraKRid3oPZ1vGiPN0hg1M1pvzS91HenycoTsGBmcjHNdl1NhuHlbUGs/4iwP
+	v2WKLZ7XMQqsYI3MDp5aW48qAMVE+dChacIJ2/ob/7GhtXAnNgdISoIkxeNyAepPoPxzYioMm3G
+	Ew3B0ugts/MswqjOvIvL7HaMNEHBfhQCtpDqtTGppCY712HwUUcZpf4rf8t/yHRrut/sbZD36pB
+	DVdy79EqV9NZA1DasisjmMsu3plfXIFVgypEf5iEBEfpb0HC4QFQYKzZ9ZGgSvFudFlOsNt+jU8
+	Zk8aSVvip3zJBTsuBEfrCll8zzjW0lIiw9wWv26K5y/zhcRbqVKYxn7nuJUEh/VmTHQ3vMYe/O1
+	sg29FM+/b3aAmcF8rvBMeBHu5Ivi4QK3egAvb0HTNjfm7yp+OdMrScLfUB5340DSe4dUlTByQZO
+	9BzpE//zC2NNr6R5i1uR8n7M6strXLrsw+AUJHvon9O07pP9yMcIw=
+X-Received: by 2002:a05:600c:1f83:b0:488:8840:e5ae with SMTP id 5b1f17b1804b1-488fb787afemr547647045e9.24.1777204483792;
+        Sun, 26 Apr 2026 04:54:43 -0700 (PDT)
+Received: from [192.168.0.2] ([197.250.51.46])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4891df9e50asm424018575e9.0.2026.04.26.04.54.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Apr 2026 14:05:32 -0700 (PDT)
-From: Artem Shimko <a.shimko.dev@gmail.com>
-To: sashal@kernel.org,
-	miquel.raynal@bootlin.com,
-	phil.edworthy@renesas.com,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: Artem Shimko <a.shimko.dev@gmail.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH] serial: 8250_dw: Clean up register macros and error handling
-Date: Sat, 25 Apr 2026 00:05:24 +0300
-Message-ID: <20260424210525.1574497-1-a.shimko.dev@gmail.com>
-X-Mailer: git-send-email 2.43.0
+        Sun, 26 Apr 2026 04:54:43 -0700 (PDT)
+From: =?utf-8?q?Stefan_D=C3=B6singer?= <stefandoesinger@gmail.com>
+Subject: [PATCH v6 0/6] Add support for ZTE zx297520v3
+Date: Sun, 26 Apr 2026 14:54:13 +0300
+Message-Id: <20260426-send-v6-0-d49efa72bb09@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIAOX87WkC/12MQQ6CMBBFr0Jmbc20tA115T2MC2xHmETAtKbRE
+ O5uIS6Iy/fz35shUWRKcKpmiJQ58TQWsIcKfN+OHQkOhUGhsqilFYnGIIzHhtAZMt5BuT4j3fm
+ 9ZS7Xwj2n1xQ/WzXrdf0LZC1QkHQB1c1pTf7cDS0/jn4aYA1ks5OU/EmmSK0nrBuytZFmLy3L8
+ gX2YWVzzQAAAA==
+X-Change-ID: 20260416-send-5c08e095e5c9
+To: Jonathan Corbet <corbet@lwn.net>, 
+ Shuah Khan <skhan@linuxfoundation.org>, 
+ Russell King <linux@armlinux.org.uk>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Arnd Bergmann <arnd@arndb.de>, 
+ Krzysztof Kozlowski <krzk@kernel.org>, 
+ Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+ Linus Walleij <linusw@kernel.org>, Drew Fustini <fustini@kernel.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, 
+ soc@lists.linux.dev, linux-serial@vger.kernel.org, 
+ =?utf-8?q?Stefan_D=C3=B6singer?= <stefandoesinger@gmail.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=openpgp-sha256; l=4719;
+ i=stefandoesinger@gmail.com; h=from:subject:message-id;
+ bh=177MnobEW4AW8zxVOoT5YiyKBdemluGYegbd8Mp3tz8=;
+ b=owEBiQJ2/ZANAwAIAT0TvMhUTxoiAcsmYgBp7fz+zJK87ZzFTWeE6ZPEmJKpc5rt9HdkrkwJn
+ cKb/Epf+nWJAk8EAAEIADkWIQRDFvS2qgVbJ5UyXWw9E7zIVE8aIgUCae38/hsUgAAAAAAEAA5t
+ YW51MiwyLjUrMS4xMiwyLDIACgkQPRO8yFRPGiI6HQ//V2CFvqcKUo8t2sbKt1+Udb0dTFGutWw
+ 6qPFskqk9n9FU5I46MswNt0vr/xH5AzLBcs0aY9ECAf7La1JBKkrMmi1byZfW0uIP+6EJSVNIik
+ PvOE8inm72tdmMbIUvIgVNBgbzRKmiLOQnd6owWDm9EeCcDI1BoBYl4Nxg/RWXcxLtZn099Ffle
+ Yj1Obf8hPu25jrcIyN2IqvtAZ9YDIP/WpO3WPE9YqZvpCyrUwdyE4ebrdreAStgLVqE/SnNbKp8
+ iBGLGoywv18GWY1dSmW/ElT1DvISt3XKa2cYap67qYC5UCak0AXL+++0bk5ci1LD9tFjVPE4JvW
+ +sRQfQZ2MJFy8/3X4611CtOWNyIIBdN6PJUclj/Vr7Q4CqMrMO/3JHmx7YoecdhiuAug0inyum9
+ iG13sUBMbQ5OyxLeElvUOTGuZpKQeBUIbSulpMzP+t9pvY2la2PbM8e5Zed82ea0vkITq19ymHg
+ M7sAulSk+4OiEDyhq0LrW2iHLmdnttFKXGGk+TA/IgBTLXwoHmm8svZrRdiphyMfs+i7dy7Zy01
+ hhRM+j2dT0qWnPYDdzVcFZF7x0vEhkC0h05wt9PRwltat7Q+zhfI8J8/ZUq6xyWvt9GNqVSlv+L
+ YeQoRyHXOWIllF3vBTgU1J7Pns/Gnn83bQCO/PmkJHb9wvVvgtGg=
+X-Developer-Key: i=stefandoesinger@gmail.com; a=openpgp;
+ fpr=4F9C2C8728019633893EBBB98CB81F9A72BBA155
 
-Align register offset definitions for DW_UART_USR, DW_UART_DMASA,
-OCTEON_UART_USR, RZN1_UART_TDMACR and RZN1_UART_RDMACR to improve
-readability. Replace raw shift with FIELD_PREP() and GENMASK() for
-RZN1_UART_xDMACR burst field definitions — this documents that the
-field occupies bits [2:1] and prevents accidental overflow when new
-burst values are added.
-
-Simplify ENXIO handling in dw8250_probe(): instead of explicitly
-zeroing 'err' and then checking it, use a single conditional that
-allows -ENXIO (no interrupt, fall back to polling) while treating
-any other error as fatal. No functional change intended.
-
-Signed-off-by: Artem Shimko <a.shimko.dev@gmail.com>
----
 Hi,
 
-This small cleanup patch addresses a few minor style and robustness
-issues I noticed while working with the driver.
+This is a follow-up on my RFC patches from January [0] for ZTE's 
+zx297520v3 chipset. This chipset is popular in cheap LTE-to-wifi routers
+sold in developing countries. My goal is to run OpenWRT on them. I made 
+more progress in more work on this SoC and it is time to get serious 
+about code review and upstreaming.
 
-Thank you.
+Since my version in January I managed to get more hardware running: SPI, 
+I2C, PMIC with real time clock and voltage regulators, Watchdog. LTE is 
+not working yet, but I am able to start the coprocessor that handles it 
+and talk to it via mailbox + shared memory. Wifi is working on a few 
+more devices. Since WiFi, USB and Ethernet are working, the devices can 
+have actual use with OpenWRT even without LTE.
 
---
-Regards,
-Artem
+Another hacker created a free software program to talk to the USB loader 
+[1] and boot U-Boot and Linux without modifying the on disk files. At 
+the moment it needs a proprietary blob, so my documentation is 
+emphasising booting with the on-device U-Boot.
 
- drivers/tty/serial/8250/8250_dw.c | 21 ++++++++++-----------
- 1 file changed, 10 insertions(+), 11 deletions(-)
+This patchset here is mostly unmodified from the version I sent in 
+January. It is the bare minimum to get an interactive shell working on 
+the UART. Future patches can be found on my git repository [2] for those 
+curious to peek ahead. The first 30 patches are in reasonable shape, but 
+the further you go the more cleanup is necessary. I expect all of the 
+patches go require a few rounds of feedback though.
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 94beadb4024d..3e7b79154d9d 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -35,13 +35,13 @@
- #include "8250_dwlib.h"
- 
- /* Offsets for the DesignWare specific registers */
--#define DW_UART_USR	0x1f /* UART Status Register */
--#define DW_UART_DMASA	0xa8 /* DMA Software Ack */
-+#define DW_UART_USR			0x1f /* UART Status Register */
-+#define DW_UART_DMASA			0xa8 /* DMA Software Ack */
- 
--#define OCTEON_UART_USR	0x27 /* UART Status Register */
-+#define OCTEON_UART_USR			0x27 /* UART Status Register */
- 
--#define RZN1_UART_TDMACR 0x10c /* DMA Control Register Transmit Mode */
--#define RZN1_UART_RDMACR 0x110 /* DMA Control Register Receive Mode */
-+#define RZN1_UART_TDMACR		0x10c /* DMA Control Register Transmit Mode */
-+#define RZN1_UART_RDMACR		0x110 /* DMA Control Register Receive Mode */
- 
- /* DesignWare specific register fields */
- #define DW_UART_IIR_IID			GENMASK(3, 0)
-@@ -52,9 +52,10 @@
- 
- /* Renesas specific register fields */
- #define RZN1_UART_xDMACR_DMA_EN		BIT(0)
--#define RZN1_UART_xDMACR_1_WORD_BURST	(0 << 1)
--#define RZN1_UART_xDMACR_4_WORD_BURST	(1 << 1)
--#define RZN1_UART_xDMACR_8_WORD_BURST	(2 << 1)
-+#define RZN1_UART_xDMACR_BURST_MASK	GENMASK(2, 1)
-+#define RZN1_UART_xDMACR_1_WORD_BURST	FIELD_PREP(RZN1_UART_xDMACR_BURST_MASK, 0)
-+#define RZN1_UART_xDMACR_4_WORD_BURST	FIELD_PREP(RZN1_UART_xDMACR_BURST_MASK, 1)
-+#define RZN1_UART_xDMACR_8_WORD_BURST	FIELD_PREP(RZN1_UART_xDMACR_BURST_MASK, 2)
- #define RZN1_UART_xDMACR_BLK_SZ(x)	((x) << 3)
- 
- /* Quirks */
-@@ -729,9 +730,7 @@ static int dw8250_probe(struct platform_device *pdev)
- 
- 	err = uart_read_port_properties(p);
- 	/* no interrupt -> fall back to polling */
--	if (err == -ENXIO)
--		err = 0;
--	if (err)
-+	if (err && err != -ENXIO)
- 		return err;
- 
- 	switch (p->iotype) {
+My plan for upstreaming is largly this:
+
+1) This bare minimum boot patchset
+2) Add clock and pinctrl drivers
+3) Add standard hardware to the device tree
+4) Add zx29 specific drivers one by one: Watchdog, spi, i2c, DMA, PMIC, 
+battery
+5) SDIO backend for rtl8xxxu
+6) rproc, mailbox and rpmsg
+
+I am willing to maintain support for the SoC within reason. My patches 
+add myself as maintainer. This is a hobby project for me though, keep 
+that in mind if you want to ship a commercial product with these SoCs 
+and upstreaming Linux.
+
+Cheers,
+Stefan
+
+0: https://lists.infradead.org/pipermail/linux-arm-kernel/2026-January/1099306.html
+1: https://github.com/zx297520v3-mainline/zx297520v3-loader
+2: https://gitlab.com/stefandoesinger/zx297520-kernel/
+
+Signed-off-by: Stefan Dösinger <stefandoesinger@gmail.com>
+---
+Patch changelog:
+
+Changes in v6:
+Squashed DT commits into one
+Removed for-now unused board DT bindings
+Add "zte" to DT patch subject
+Regenerate the defconfig with make savedefconfig
+- Link to v5: https://lore.kernel.org/r/20260421-send-v5-0-ace038e63515@gmail.com
+
+v5:
+Spelling fixes
+Renamed dlink-dwr-932m.dts to zx297520v3-dlink-dwr932m.dts
+DT binding indentation fixes
+Use a manufacturer 0x8b for the UART, fix patch prefix
+Declare all UARTs, remove uart aliases for now
+Consistent license declarations. I made every new file except the DT 
+binding GPL-2.0-only but I don't particularly mind GPL-2.0-or-later 
+either.
+- Link to v4: https://lore.kernel.org/r/20260416-send-v4-0-e19d02b944ec@gmail.com
+
+v4: rename zx29.yaml to zte.yaml and add board enums
+v3: Remove [RFC] tag, add defconfig
+v2: checkpatch.pl fixes
+
+---
+Stefan Dösinger (6):
+      dt-bindings: arm: zte: Add D-Link DWR932M board based on zx297520v3 SoC
+      ARM: zte: Add zx297520v3 platform support
+      ARM: zte: Add support for zx29 low level debug
+      amba/serial: amba-pl011: Bring back zx29 UART support
+      ARM: dts: zte: Add D-Link DWR-932M support
+      ARM: zte: defconfig: Add a zx29 defconfig file
+
+ Documentation/arch/arm/zte/zx297520v3.rst          | 158 +++++++++++++++++++++
+ Documentation/devicetree/bindings/arm/zte.yaml     |  26 ++++
+ MAINTAINERS                                        |   7 +
+ arch/arm/Kconfig                                   |   2 +
+ arch/arm/Kconfig.debug                             |  12 ++
+ arch/arm/Makefile                                  |   1 +
+ arch/arm/boot/dts/Makefile                         |   1 +
+ arch/arm/boot/dts/zte/Makefile                     |   3 +
+ arch/arm/boot/dts/zte/zx297520v3-dlink-dwr932m.dts |  22 +++
+ arch/arm/boot/dts/zte/zx297520v3.dtsi              | 103 ++++++++++++++
+ arch/arm/configs/zx29_defconfig                    |  54 +++++++
+ arch/arm/include/debug/pl01x.S                     |   7 +
+ arch/arm/mach-zte/Kconfig                          |  26 ++++
+ arch/arm/mach-zte/Makefile                         |   2 +
+ arch/arm/mach-zte/zx297520v3.c                     |  19 +++
+ drivers/tty/serial/amba-pl011.c                    |  42 ++++++
+ 16 files changed, 485 insertions(+)
+---
+base-commit: 028ef9c96e96197026887c0f092424679298aae8
+change-id: 20260416-send-5c08e095e5c9
+
+Best regards,
 -- 
-2.43.0
+Stefan Dösinger <stefandoesinger@gmail.com>
 
