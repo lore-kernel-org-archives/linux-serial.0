@@ -1,175 +1,103 @@
-Received: from ultrarisc.com (unknown [218.76.62.146])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0A5D3DF59;
-	Mon, 27 Apr 2026 02:31:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=218.76.62.146
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF50D371049;
+	Mon, 27 Apr 2026 03:51:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777257115; cv=none; b=uPbCvmMG/3tLYlwEQ2OaYYNWXCa3rFBInuA8zBlqtOIENt3ftEQCCQU5MakT2ZHpJcclONllxAigdTDJbAQwHSEj73uXHFSF9DzlpDqPlPpXGuYPkt2uy2vFAjO3FkrSU2OCYG85MW6z3tAI3V0S2nDcJCNOhxkgCUrvuY3j0ig=
+	t=1777261902; cv=none; b=Pn0y2CPo49QD+tIkN5OK7YekgVUhzD2y/1S+nkE+BqUWC1A1Hx5a2M7XGDo499AMLJwQWmYXePA1DXV4GMdsQj8+1o0TPJPnA1U69zPKQ+o7H01gRDDoKe/vrOvgbNa2Lb97qpt3mA0CaAukYkrF+iwlT5VxegUIZ9H/TmhsBXg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777257115; c=relaxed/simple;
-	bh=WmZ8rFbbC/cJ68Nvw+W0i3Fys8rvFt/pqzQym3PR+9s=;
-	h=MIME-Version:Content-Type:Subject:From:To:Cc:In-Reply-To:
-	 References:Date:Message-Id; b=nLgb0vliEigHXxHKh9d1a5FZpsw3SaseFl9Al53Nzn1hBT3PontCkZ9tar14drCWTIyP3X3LnHIB6ItBKYx9rgF/EyKDRvuGgOaMZ/74fWtIRvsmPIKByIGDs86Y8hprfJjq9U/VPfxNgLd1PWs44v7gWUsSwhRhWDB41p7aORY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ultrarisc.com; spf=pass smtp.mailfrom=ultrarisc.com; dkim=pass (1024-bit key) header.d=ultrarisc.com header.i=@ultrarisc.com header.b=E+zw+5eS; arc=none smtp.client-ip=218.76.62.146
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ultrarisc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ultrarisc.com
+	s=arc-20240116; t=1777261902; c=relaxed/simple;
+	bh=qfOWciOdj+AxDU1vozH6V2JW/zfXtz0rerqMJUQ6QNo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=IF7S8u22R+PcN46iLwVR3b6qeqEbYD4Lvwnhu0BoGcy9vd6LPPs2orvI5lz7dXVutolkCE10qnsB7X/HfSR2/9Ofp1PwnrT70lMhymkj0PBEJ/FFa5SQh67Vz66PQsZ7GkFNwoyaevytprRBkLmrnoXYbIoyfhLYYUvu9fiGmPE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=Y2A1vmxH; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ultrarisc.com header.i=@ultrarisc.com header.b="E+zw+5eS"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=ultrarisc.com; s=dkim; h=Received:MIME-Version:Content-Type:
-	Content-Transfer-Encoding:Subject:From:To:Cc:In-Reply-To:
-	References:Date:Message-Id; bh=oX3N68CM0wO9T+kbhhF9OQgbR+Z8QKW6l
-	lshw/JFnd0=; b=E+zw+5eSGz6R12mNTc1QJhO4Hwn5UxedfQBPWBGyQ7n14xYkk
-	TF+DA5zppkb0rNavzRnA8oU+IbCMJzazD5COspE/Rq7NMWL6BK4huqb/KcWuag/D
-	iUhpp7zV7KFwMxhLFsa74RW7z6aYcUiLvUSsXTf6ADIDxv+LE6jL6ddhJg=
-Received: from [127.0.0.1] (unknown [192.168.100.1])
-	by localhost.localdomain (Coremail) with SMTP id AQAAfwAnEkO1yu5pWv4CAA--.1685S2;
-	Mon, 27 Apr 2026 10:32:22 +0800 (CST)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="Y2A1vmxH"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55FAAC19425;
+	Mon, 27 Apr 2026 03:51:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1777261902;
+	bh=qfOWciOdj+AxDU1vozH6V2JW/zfXtz0rerqMJUQ6QNo=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Y2A1vmxHwpLDmtWzkIcHn4RL2q2l73mUiCLJFGlKnCmMkfihR7TpeoWwqqMqOrcMR
+	 P9neA699PPDHfJfCT/JvSxn+BH++su3d5omrSZHXs+pyGhuVwDDrIlRi60cMf0YNFu
+	 tAh7nu8zl/HUrV7KYg+8arKMphSSjHpqWbVPm6Rk=
+Date: Sun, 26 Apr 2026 22:45:06 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Elena Reshetova <elena.reshetova@intel.com>,
+	David Windsor <dwindsor@gmail.com>, Kees Cook <kees@kernel.org>,
+	Hans Liljestrand <ishkamiel@gmail.com>, linux-mips@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 4/4] Revert "drivers: convert sbd_duart.map_guard from
+ atomic_t to refcount_t"
+Message-ID: <2026042630-diaphragm-reactor-7cfe@gregkh>
+References: <alpine.DEB.2.21.2604130239560.29980@angie.orcam.me.uk>
+ <alpine.DEB.2.21.2604130416440.29980@angie.orcam.me.uk>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v4 1/4] serial: 8250_dwlib: move DesignWare register
- definitions to header
-From: Jia Wang <wangjia@ultrarisc.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Jia Wang <wangjia@ultrarisc.com>, 
- =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, Paul Walmsley <pjw@kernel.org>, 
- Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
- Alexandre Ghiti <alex@ghiti.fr>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, linux-kernel@vger.kernel.org, 
- linux-serial@vger.kernel.org, linux-riscv@lists.infradead.org, 
- devicetree@vger.kernel.org
-In-Reply-To: <aes_zx9GdaXnDNqG@ashevche-desk.local>
-References: <20260424-ultrarisc-serial-v4-0-1765a0b4c4a0@ultrarisc.com>
- <20260424-ultrarisc-serial-v4-1-1765a0b4c4a0@ultrarisc.com>
- <aes_zx9GdaXnDNqG@ashevche-desk.local>
-Date: Mon, 27 Apr 2026 10:31:37 +0800
-Message-Id: <177725709757.1303892.11056150858190690738.b4-reply@b4>
-X-Mailer: b4 0.15-dev
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1777257098; l=3809;
- i=wangjia@ultrarisc.com; s=20260309; h=from:subject:message-id;
- bh=WmZ8rFbbC/cJ68Nvw+W0i3Fys8rvFt/pqzQym3PR+9s=;
- b=aMw7phVsLJoQFmtsdyicHU+CjeYJwHnjDphId0LYq0zAsyGnbjr0Q4ahx8BSud1NKhjJDawX2
- 1lG4FURtJptCG2DGShE7KqUsJrkC2DcL+x/RvAqqttRyo73LGwbDHIa
-X-Developer-Key: i=wangjia@ultrarisc.com; a=ed25519;
- pk=XvYkrelqJIIzobY7j+nIg8rsfv5kzaOzuc1UPhd087U=
-X-CM-TRANSID:AQAAfwAnEkO1yu5pWv4CAA--.1685S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxGrWkGFy3Cr1fZr1fKFy8Zrb_yoWrJw1xpr
-	10gFWDtF1qya13W340qanxtr4IqFyxGw409ryFqrWDtFW8Cw1kKFZF9F43KrWUXrn5JrW8
-	ZF1UXw1Yga929rDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnUUvcSsGvfC2KfnxnUUI43ZEXa7xR_UUUUUUUUU==
-X-CM-SenderInfo: pzdqwylld63zxwud2x1vfou0bp/1tbiAQAKEWnti78ACwAEsl
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.21.2604130416440.29980@angie.orcam.me.uk>
 
-On 2026-04-24 13:02 +0300, Andy Shevchenko wrote:
-> On Fri, Apr 24, 2026 at 01:39:28PM +0800, Jia Wang wrote:
-> > Move the DW_UART_* register offsets and CPR bit/field definitions from
-> > 8250_dwlib.c into 8250_dwlib.h so they can be shared by 8250_dw and
-> > 8250_dwlib users.
-> > 
-> > Add an include guard for 8250_dwlib.h.
+On Mon, Apr 13, 2026 at 04:28:53AM +0100, Maciej W. Rozycki wrote:
+> Revert commit 22a33651a56f ("drivers: convert sbd_duart.map_guard from
+> atomic_t to refcount_t"), which broke perfectly valid code:
 > 
-> ...
+>   ------------[ cut here ]------------
+>   WARNING: CPU: 1 PID: 1 at lib/refcount.c:114 sbd_request_port+0x54/0x140
+>   refcount_t: increment on 0; use-after-free.
+>   CPU: 1 PID: 1 Comm: swapper/0 Not tainted 4.11.0-rc2+ #34
+>   Stack : 0000000014001fe0 0000000000000000 ffffffff80830000 0000000000000000
+>           ffffffff8127bc7a ffffffff8016fe08 ffffffff808d0000 ffffffff808d0000
+>           ffffffff807aa828 ffffffff80822337 ffffffff808ce188 a8000001860b0000
+>           0000000000000001 0000000000000001 00000000000001c8 ffffffff808a3090
+>           00000000000000bb ffffffff801b09d4 a80000018609bb68 ffffffff801231cc
+>           ffffffff812a0000 ffffffff80171388 0000000000001000 ffffffff807aa828
+>           0000000000000001 0000000000000001 0000000000000000 0000000000000000
+>           0000000000000000 a80000018609bab0 0000000000000000 ffffffff803c47cc
+>           0000000000000000 0000000000000000 0000000000000000 0000000000000000
+>           ffffffff807cb648 ffffffff8010bff8 0000000014001fe1 ffffffff803c47cc
+>           ...
+>   Call Trace:
+>   [<ffffffff8010bff8>] show_stack+0x28/0x88
+>   [<ffffffff803c47cc>] dump_stack+0x8c/0xc0
+>   [<ffffffff801aff5c>] __warn+0xe0/0x114
+>   [<ffffffff801233f0>] warn_slowpath_fmt+0x40/0x50
+>   [<ffffffff80455bcc>] sbd_request_port+0x54/0x140
+>   [<ffffffff804563a4>] sbd_config_port+0x2c/0x68
+>   ---[ end trace f666d696412caa3e ]---
 > 
-> > -/* DesignWare specific register fields */
-> > -#define DW_UART_IIR_IID			GENMASK(3, 0)
-> > -
-> > -#define DW_UART_MCR_SIRE		BIT(6)
-> > -
-> > -#define DW_UART_USR_BUSY		BIT(0)
-> > -
+> (report at the offending commit) -- sbd_request_port() is called twice
+> per DUART instance, to reserve a resource holding the control register
+> block shared between the two channels, so there's no slightest chance
+> for an overflow.  Also this doesn't stop the driver from working and
+> it's just the reservation that is missing as a result, i.e.:
 > 
-> One nit-pick, though, these three need the similar comments in the header and a
-> blank line between them.
+> 10060100-100601ff : sb1250-duart
+> 10060200-100602ff : sb1250-duart
 > 
+> as from the offending change, vs:
+> 
+> 10060100-100601ff : sb1250-duart
+> 10060200-100602ff : sb1250-duart
+> 10060300-100603ff : sb1250-duart
+> 
+> beforehand, which is surely why the breakage has gone so long unnoticed.
+> 
+> "If it ain't broke, don't fix it," so just revert the broken commit.
 
-Thanks.
+How about fix this up to work properly with a refcount?  having "open
+coded" atomic variables like this is ripe for problems, like it seems
+this driver is abusing.
 
-Will add comments and blank lines in v5.
+thanks,
 
-> ...
-> 
-> > +/* Offsets for the DesignWare specific registers */
-> > +#define DW_UART_USR	0x1f /* UART Status Register */
-> > +#define DW_UART_DMASA	0xa8 /* DMA Software Ack */
-> > +#define DW_UART_TCR	0xac /* Transceiver Control Register (RS485) */
-> > +#define DW_UART_DE_EN	0xb0 /* Driver Output Enable Register */
-> > +#define DW_UART_RE_EN	0xb4 /* Receiver Output Enable Register */
-> > +#define DW_UART_DLF	0xc0 /* Divisor Latch Fraction Register */
-> > +#define DW_UART_RAR	0xc4 /* Receive Address Register */
-> > +#define DW_UART_TAR	0xc8 /* Transmit Address Register */
-> > +#define DW_UART_LCR_EXT	0xcc /* Line Extended Control Register */
-> > +#define DW_UART_CPR	0xf4 /* Component Parameter Register */
-> > +#define DW_UART_UCV	0xf8 /* UART Component Version */
-> > +
-> > +/* Receive / Transmit Address Register bits */
-> > +#define DW_UART_ADDR_MASK		GENMASK(7, 0)
-> 
-> > +/* Line Status Register bits */
-> > +#define DW_UART_LSR_ADDR_RCVD		BIT(8)
-> 
-> Like this one, the IIR. MCR, and USR bits should be commented. Also preserve
-> the sorting by the register offset, so the groups of bits follow the above list
-> of registers, where USR bits, for example, should go before TCR.
-> 
-
-Will add comments to IIR, MCR, and USR bits and reorder the groups by
-register offset in v5.
-
-> > +/* Transceiver Control Register bits */
-> > +#define DW_UART_TCR_RS485_EN		BIT(0)
-> > +#define DW_UART_TCR_RE_POL		BIT(1)
-> > +#define DW_UART_TCR_DE_POL		BIT(2)
-> > +#define DW_UART_TCR_XFER_MODE		GENMASK(4, 3)
-> > +#define DW_UART_TCR_XFER_MODE_DE_DURING_RE	FIELD_PREP(DW_UART_TCR_XFER_MODE, 0)
-> > +#define DW_UART_TCR_XFER_MODE_SW_DE_OR_RE	FIELD_PREP(DW_UART_TCR_XFER_MODE, 1)
-> > +#define DW_UART_TCR_XFER_MODE_DE_OR_RE		FIELD_PREP(DW_UART_TCR_XFER_MODE, 2)
-> > +
-> > +/* Line Extended Control Register bits */
-> > +#define DW_UART_LCR_EXT_DLS_E		BIT(0)
-> > +#define DW_UART_LCR_EXT_ADDR_MATCH	BIT(1)
-> > +#define DW_UART_LCR_EXT_SEND_ADDR	BIT(2)
-> > +#define DW_UART_LCR_EXT_TRANSMIT_MODE	BIT(3)
-> > +
-> > +/* Component Parameter Register bits */
-> > +#define DW_UART_CPR_ABP_DATA_WIDTH	GENMASK(1, 0)
-> > +#define DW_UART_CPR_AFCE_MODE		BIT(4)
-> > +#define DW_UART_CPR_THRE_MODE		BIT(5)
-> > +#define DW_UART_CPR_SIR_MODE		BIT(6)
-> > +#define DW_UART_CPR_SIR_LP_MODE		BIT(7)
-> > +#define DW_UART_CPR_ADDITIONAL_FEATURES	BIT(8)
-> > +#define DW_UART_CPR_FIFO_ACCESS		BIT(9)
-> > +#define DW_UART_CPR_FIFO_STAT		BIT(10)
-> > +#define DW_UART_CPR_SHADOW		BIT(11)
-> > +#define DW_UART_CPR_ENCODED_PARMS	BIT(12)
-> > +#define DW_UART_CPR_DMA_EXTRA		BIT(13)
-> > +#define DW_UART_CPR_FIFO_MODE		GENMASK(23, 16)
-> 
-> > +/* DesignWare specific register fields */
-> > +#define DW_UART_IIR_IID			GENMASK(3, 0)
-> > +#define DW_UART_MCR_SIRE		BIT(6)
-> > +#define DW_UART_USR_BUSY		BIT(0)
-> 
-> I.o.w. uncouple these as per above.
->
-
-Will do in v5. I'll move them to their respective register-offset
-groups with comments and blank lines as suggested.
- 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
-> 
-> 
-> 
-
-Best Regards,
-Jia Wang
-
-
+greg k-h
