@@ -1,115 +1,112 @@
-Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C4EE221FBD
-	for <linux-serial@vger.kernel.org>; Sun, 26 Apr 2026 17:18:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=203.254.224.34
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE9D523E358
+	for <linux-serial@vger.kernel.org>; Sun, 26 Apr 2026 21:43:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777223900; cv=none; b=VKluh3fHFujke6z1UyC6yIX7g20mh9Y+smZBPQer0e2SfoFB0fI2YTWzSZvEgeO9SlJw3p10Xkk0loHC2ap2GkML1N+WrDHpliivf368LW2Em5zF2NKoNX+LpHbubJM9lQJgTKg0GkAnsQgSzjS8KtWRjCgzzOF62GfocE/cvho=
+	t=1777239784; cv=none; b=a4/PzcAqRPm42YcrdNYlZxQUsPydmWUcD/OUIiXzCZCklomwYeMLS0lkcKBqQPQ7G79y8EmB2FpjUF20+6akYzVOkgiVXOF161SaNAz3E/DW3GZYDdYHSzgtmK3Ny+T1K0kl7XokjlVQ/r7MyBs5reupL/BlXIkz4HMXZRANMZ4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777223900; c=relaxed/simple;
-	bh=1I0y4aYwf6Qb2fZ5USEX9HIcWwgsd6HyiI3kIOpRTcM=;
-	h=From:To:Cc:In-Reply-To:Subject:Date:Message-ID:MIME-Version:
-	 Content-Type:References; b=pWPT5T3lYqkJpuR2tHQS6nRBbQZBO3DLEr3zVRSmtExDcicRRPijs6UTSlU9UPU0PVZ/sXp/oIS/QZ+PMguLb00g5sJCY+jMm2mPNyTgmTWw8kr/ka6SBJxpzv45GBoWoIV8D81RfI9VJ6T7oVhuPaLTU31qw8QQ69/SrTfaYpw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=NCgMWOik; arc=none smtp.client-ip=203.254.224.34
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1777239784; c=relaxed/simple;
+	bh=+NDDl6FC/lFcy4ZJCUql720fhof7233AtLZRb2lm4Lk=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=SMuRyBKNOS/wgs0Q8D+xVSZIbDKLVmE9BMzJWtMJ9zbyLB1esu/+yNvR8PxlThtp9f/dr9ovizi0kIW714XkpYX9D0VFMk54pW04XyKJwyiCPw37yuOgDfsY4RRa5m6DT3XJWkrJUkhG6dlN0WBdt9S07Ky1t6FYVq0WG8Lq7LI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HqrDHMr8; arc=none smtp.client-ip=209.85.128.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="NCgMWOik"
-Received: from epcas5p1.samsung.com (unknown [182.195.41.39])
-	by mailout4.samsung.com (KnoxPortal) with ESMTP id 20260426171808epoutp04d7841c2ea1c329a57f631eb8e3ac40ea~p97Xo-_1m2774227742epoutp04R
-	for <linux-serial@vger.kernel.org>; Sun, 26 Apr 2026 17:18:08 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20260426171808epoutp04d7841c2ea1c329a57f631eb8e3ac40ea~p97Xo-_1m2774227742epoutp04R
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1777223888;
-	bh=1I0y4aYwf6Qb2fZ5USEX9HIcWwgsd6HyiI3kIOpRTcM=;
-	h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
-	b=NCgMWOikhlmZctZTVcgEi6g+LMuBnRzr9UwUSSiBcK+FrflcsEgdMQWhoydZV+xQp
-	 D0Y3idOzcIZFkbw3O1ZBTsg+Lunojz33MhjEYMMfGP0EpqMQym+5xrL5vWdhsXdg2y
-	 rqD4ns/2OB6Px3xiTg/hRYOQfXScfEYhRANnAmdc=
-Received: from epsnrtp03.localdomain (unknown [182.195.42.155]) by
-	epcas5p1.samsung.com (KnoxPortal) with ESMTPS id
-	20260426171808epcas5p1678ed9e51047c7db69b1f7c2a8952f59~p97XD6IuP2570725707epcas5p1c;
-	Sun, 26 Apr 2026 17:18:08 +0000 (GMT)
-Received: from epcas5p2.samsung.com (unknown [182.195.38.90]) by
-	epsnrtp03.localdomain (Postfix) with ESMTP id 4g3YLR2GSWz3hhT3; Sun, 26 Apr
-	2026 17:18:07 +0000 (GMT)
-Received: from epsmtip1.samsung.com (unknown [182.195.34.30]) by
-	epcas5p2.samsung.com (KnoxPortal) with ESMTPA id
-	20260426171806epcas5p28b819a6f30dcbd5f2ed3adc9756dc5b5~p97VNrL4d3212432124epcas5p2X;
-	Sun, 26 Apr 2026 17:18:06 +0000 (GMT)
-Received: from INBRO002756 (unknown [107.122.3.168]) by epsmtip1.samsung.com
-	(KnoxPortal) with ESMTPA id
-	20260426171804epsmtip1a62b13b47da590425bad92e3e22baed9~p97T9Nw4O2464024640epsmtip1j;
-	Sun, 26 Apr 2026 17:18:04 +0000 (GMT)
-From: "Alim Akhtar" <alim.akhtar@samsung.com>
-To: "'Krzysztof Kozlowski'" <krzk@kernel.org>, <gregkh@linuxfoundation.org>,
-	<jirislaby@kernel.org>
-Cc: <linux-serial@vger.kernel.org>, <linux-samsung-soc@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>
-In-Reply-To: <6916bf87-4c40-42c5-988f-92a57a6fc658@kernel.org>
-Subject: RE: [PATCH] tty: serial: samsung: add dedicated compatible for
- exynosauto SoCs
-Date: Sun, 26 Apr 2026 22:48:02 +0530
-Message-ID: <324e01dcd5a0$a53d3d90$efb7b8b0$@samsung.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HqrDHMr8"
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-4891c00e7aeso69310515e9.2
+        for <linux-serial@vger.kernel.org>; Sun, 26 Apr 2026 14:43:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1777239781; x=1777844581; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=pyO/fIf9mlptgfmwEFv0+iVbuqCap8jpTzF1uKuXdKk=;
+        b=HqrDHMr8xqQVhuBmThAfihjRhrBcLyrlxFV/mgZ9sQmTNZGSvk+sBKeCETXQCPfID6
+         SRo36cgrSJotI00m4ibdWzp+MZkBgLX+SKw9HJMl05f4Xk3SW3pDlLoHmKVH4e8t1BLq
+         I8H9OiCMs1jwS839Ig3LObvBjk96w7+7eTgGVpiDkB+YJYRUyuuVu1zNpJmDQPDZxCu9
+         DZMPwoduWFQrzSO95qMClsnZkgfO5wMofGeEiWeEo8LmLXT9IZysSOAd/E+LvPRbJIED
+         u9aSAQg37Nbk7QGbyyM6+Id1QVbXExS+YU5+z+iNODrhGFEuNkDCYbYRy+wH9I9KvJSa
+         J6lg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777239781; x=1777844581;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=pyO/fIf9mlptgfmwEFv0+iVbuqCap8jpTzF1uKuXdKk=;
+        b=VmZTQuQpUysVc0jWS4lwPW7WwyIymxIfl7rLtWhdDQ8lnNfYZBlFDSnrR3ev9H+l3s
+         vdDX6SB/FL84pi6NY9qYw7KvJglF/DMGVvMF7FLlWrCmHBxl8C8zu4s6SIoOyLNm22QO
+         JbmxLoieIJndClwoWDqiZzGZzqrX3TY6ty1lN5/xo5aRVu+ip+nGGQ2Lx+XSKINGMt9i
+         ee05YCbrKJR8rrL00xycPrwKjQ1+O19t+j5qwT2OX6dXoCqSmIhJ5c8tfQUtv8dlVQoZ
+         37QhbHREbEFJm5WvdqMHUQHdrY8PLcqtm9x6rH3723w58yFCd3lHSdOUj2qC9UmXHiuC
+         qquA==
+X-Forwarded-Encrypted: i=1; AFNElJ/y4T5vk/N6kMFFZDEwL0Tec1FCm3wANiwx/7uGrRu4WixGWNDrYysFSg5BZ4U5OSWebEB0hiNVeX+8xfQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyrBsPkXcfgGNoVToPOwemOT6rVmx5OwrjjtJR41QEIC4sMZx+F
+	SbFxoSei6SyD8kh6seuQiLnEIEth4evHpZeIiRvB7mbF03Yd8bdod0z/
+X-Gm-Gg: AeBDievKcYWMTVkIgSJdHsxtj2UpAfjFmi2WzVEa1wpSEYJZgnqOvFy+3vbHD49nFRu
+	uZN8bgoKcafWkohB3Ue9Z33rA4jfpHILBmN6Uy1nIx++ejeUnxrNR+0AGab3NnHRjkfu8lDkMIw
+	b+GnbwuXGHz0YZg9+KJQix+kCQGTN8/KciGNuKoyyTRnFcjzK7zz8Fla5tajHX8ps9piMmeYwI3
+	ZU05bqF0I/xkFTnB7bskYCZAQeXny7zhplCnv9qjHrH8K4XhCxdgTGmwBd5hDfgu9L4zG2dLJfe
+	r+aWgHdTBaX53duwKqzk+gGaT/T2bgOJGpm8yBBzzpA61io8a5VXF+uBCyf0xVVRxaYwKsf9CmP
+	EqHyIpj7mKp4nl/WrI85jju5a9xQ3A6mkbqG2mXakioTXZN+sNfaBExI8d9t2laScsUf9a3TeAL
+	8E4yZS3IX9u964bR5MvtppushFod34Lw==
+X-Received: by 2002:a05:600c:a31a:b0:488:b241:2c5f with SMTP id 5b1f17b1804b1-488fb785b7emr432470225e9.26.1777239781269;
+        Sun, 26 Apr 2026 14:43:01 -0700 (PDT)
+Received: from fedora-dev ([46.10.223.24])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-488fc1cfbf2sm782831725e9.15.2026.04.26.14.43.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 26 Apr 2026 14:43:00 -0700 (PDT)
+From: "Nikola Z. Ivanov" <zlatistiv@gmail.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	Frank.Li@nxp.com,
+	s.hauer@pengutronix.de,
+	kernel@pengutronix.de,
+	festevam@gmail.com
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	imx@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	"Nikola Z. Ivanov" <zlatistiv@gmail.com>
+Subject: [PATCH v2] serial: mxs-auart: replace hardcoded 1 with predefined macro GPIO_LINE_DIRECTION_IN
+Date: Mon, 27 Apr 2026 00:42:50 +0300
+Message-ID: <20260426214250.781151-1-zlatistiv@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQLHQDzJr9CcZPOPaqlFuI7tkfQ2vwEe/VafAdmTEHS0BPpcAA==
-Content-Language: en-us
-X-CMS-MailID: 20260426171806epcas5p28b819a6f30dcbd5f2ed3adc9756dc5b5
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-CMS-TYPE: 105P
-cpgsPolicy: CPGSC10-543,Y
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20260424100201epcas5p371dd69955076938ee41ed0d823433056
-References: <CGME20260424100201epcas5p371dd69955076938ee41ed0d823433056@epcas5p3.samsung.com>
-	<20260424101835.2125970-1-alim.akhtar@samsung.com>
-	<6916bf87-4c40-42c5-988f-92a57a6fc658@kernel.org>
+Content-Transfer-Encoding: 8bit
 
-Hi Krzysztof
+The GPIO_LINE_DIRECTION_* definitions have just recently been exposed to
+gpio consumers.h by breaking them out in a separate defs.h file.
 
-> -----Original Message-----
-> From: Krzysztof Kozlowski <krzk=40kernel.org>
-> Sent: Friday, April 24, 2026 9:42 PM
-> To: Alim Akhtar <alim.akhtar=40samsung.com>; gregkh=40linuxfoundation.org=
-;
-> jirislaby=40kernel.org
-> Cc: linux-serial=40vger.kernel.org; linux-samsung-soc=40vger.kernel.org; =
-linux-
-> kernel=40vger.kernel.org
-> Subject: Re: =5BPATCH=5D tty: serial: samsung: add dedicated compatible f=
-or
-> exynosauto SoCs
->=20
-> On 24/04/2026 12:18, Alim Akhtar wrote:
-> > Currently Exynosautov-=7B9,920=7D getting probed based on exynos850
-> > fallback. It is recommended to have a dedicated compatible for proper
-> > driver binding.
->=20
-> Unfortunately it is not. Dedicated compatible you have. However you are n=
-ot
-> adding dedicated compatible. You added dedicated driver match entry and
-> we, and especially me, gave reviews many times that it is *not
-> recommended* to have dedicated driver match entry.
->=20
-Ok, I might have missed your earlier comments on *not* having a dedicated d=
-river match entry, fair enough.
+Use this to validate the gpio direction instead of the hard-coded literal.
 
-> Entire reasoning for doing this patch is wrong. And patch itself is NOOP =
-(at
-> least by quick look).
-Thanks for a quick review, Can you please check the part of the patch which=
- adds OF_EARLYCON_DECLARE
-to add earlycon support?
+Signed-off-by: Nikola Z. Ivanov <zlatistiv@gmail.com>
+---
+Changes since v1:
+  - Commit title change
+  https://lore.kernel.org/all/26cd0656-ca76-4cb7-9f1e-b8c042a7e2cb@gmail.com/
 
->=20
-> Best regards,
-> Krzysztof
+ drivers/tty/serial/mxs-auart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+index 693b491f1e75..697318dbb146 100644
+--- a/drivers/tty/serial/mxs-auart.c
++++ b/drivers/tty/serial/mxs-auart.c
+@@ -1520,7 +1520,7 @@ static int mxs_auart_init_gpios(struct mxs_auart_port *s, struct device *dev)
+ 
+ 	for (i = 0; i < UART_GPIO_MAX; i++) {
+ 		gpiod = mctrl_gpio_to_gpiod(s->gpios, i);
+-		if (gpiod && (gpiod_get_direction(gpiod) == 1))
++		if (gpiod && (gpiod_get_direction(gpiod) == GPIO_LINE_DIRECTION_IN))
+ 			s->gpio_irq[i] = gpiod_to_irq(gpiod);
+ 		else
+ 			s->gpio_irq[i] = -EINVAL;
+-- 
+2.53.0
 
