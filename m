@@ -1,95 +1,126 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E76D711CBA;
-	Mon, 27 Apr 2026 07:02:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+Received: from ultrarisc.com (unknown [218.76.62.146])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 27BE12DB7BD;
+	Mon, 27 Apr 2026 07:32:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=218.76.62.146
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777273332; cv=none; b=gQ80BAQxyWWdTzY9935QkkMHahHKx/1xverGA4qiKH3ZYapX0qARdC9aZ8A3xpzvo2s0CPUvPnOjakm0oPDTMhRrh9qnjdNtHLg9CrGzDm5xSAJ40m1G24yF1tqDVHzLizBl1Pcf41uPOzNTvGf8NtfaZHFepbLp2mo1+UblUuE=
+	t=1777275139; cv=none; b=MIjAqhgmsGUCCUZvnT7j7AtQsn6mJx3luJh7jMasq3i1LjpmoHOhurnfAqRjl9Wm8i9vP6zu4MCTDH2iIb3XelQp9XomadutZ6lVSBn79b6KS85GEmKS1OkPWFBDukwh+Cj1CKMiLTODbjWNBPbv83Ax6dHjqYuY8S62puONgig=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777273332; c=relaxed/simple;
-	bh=TB6KDcA3Cua/GXZI2HVQJ21jKqLcEDobo7pCmTp35kM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ApcOa+eYhGDYdmvuYN79EupbG8zv2gE6B2MFmhXpLxVP6TkcsfF6BoV0e2++6X3oOs72uVB0czCibPz3BZBch8jAyBHPxSI46hDStm643dt0Ngy9fERoRto7upznVCA906rITLzfLaGmcttifqVKh0EKNhdrDkJorfAO7NTeUnU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HXyGSPpU; arc=none smtp.client-ip=192.198.163.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1777275139; c=relaxed/simple;
+	bh=z6STT3pmp/kQBgHhBzbeymcDt4gyan7Jmn4OwjXUfv8=;
+	h=MIME-Version:Content-Type:Subject:From:To:Cc:In-Reply-To:
+	 References:Date:Message-Id; b=jxwHjPhIGIE07UymaSj3bg21z4f0FcGS+xqKlMOvLf8cWbFPNMqSoSe9JaSTbzq7AHnA7oE6hH7hL7dJevk7tuBSqzvvmfQSWsR+Rg1gvc0HpIEPufUhJPUhLsY8cCkplydMZ97yZAN4QgrO5B+y1oYP4NaR7meYFgTQZq6/P5o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ultrarisc.com; spf=none smtp.mailfrom=ultrarisc.com; dkim=pass (1024-bit key) header.d=ultrarisc.com header.i=@ultrarisc.com header.b=N7sMJ2Qg; arc=none smtp.client-ip=218.76.62.146
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ultrarisc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ultrarisc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HXyGSPpU"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777273329; x=1808809329;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=TB6KDcA3Cua/GXZI2HVQJ21jKqLcEDobo7pCmTp35kM=;
-  b=HXyGSPpUMFfvy+5bVBma0k/IRy5nFvUrCLMylL5qu4hm3+3IZrKU+SHa
-   zeDAHwx6nBcO+h9LAyY2BbCoThA8FM6pFHlNhsHPHPOHcTh8Wi1WZhziR
-   dlVaJf2bTPZagwHDfBqRfwdK2kZr1Myk/DNbAfji6IXgSkZDyz2To8QfP
-   EDam7vl/3sPe+AKpHYsAqZ2QkCwRVP8ktN0qWF2jeOBnzs30dmYDSAcSi
-   pB4TkujvpXUZAuAjQn2lM9inawnY7Qw3ofWFSHWlMvOf7pJsBiu79UQTg
-   AfXMpNcz3g2GG8KRUszFlNSh1Oaz0iCmoFCReCmi0waNwtqBss2GTMkJ9
-   Q==;
-X-CSE-ConnectionGUID: twIQ0J1NRh6Ejm0APsPAMw==
-X-CSE-MsgGUID: QJ8jLZMeRR67ER97LC2eQg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11768"; a="88754276"
-X-IronPort-AV: E=Sophos;i="6.23,201,1770624000"; 
-   d="scan'208";a="88754276"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2026 00:02:07 -0700
-X-CSE-ConnectionGUID: 5bVxd8GhTyKENgNsQ96GoQ==
-X-CSE-MsgGUID: G2ve9QlbSRGyPNWSQF+dZg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,201,1770624000"; 
-   d="scan'208";a="237519973"
-Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.244.2])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2026 00:02:05 -0700
-Date: Mon, 27 Apr 2026 10:02:02 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Artem Shimko <a.shimko.dev@gmail.com>
-Cc: sashal@kernel.org, miquel.raynal@bootlin.com, phil.edworthy@renesas.com,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH] serial: 8250_dw: Clean up register macros and error
- handling
-Message-ID: <ae8J6uqgOarcduas@ashevche-desk.local>
-References: <20260424210525.1574497-1-a.shimko.dev@gmail.com>
+	dkim=pass (1024-bit key) header.d=ultrarisc.com header.i=@ultrarisc.com header.b="N7sMJ2Qg"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=ultrarisc.com; s=dkim; h=Received:MIME-Version:Content-Type:
+	Content-Transfer-Encoding:Subject:From:To:Cc:In-Reply-To:
+	References:Date:Message-Id; bh=9daiWUd7+mDFWppd/lLOASVmD/eZMAIDQ
+	fi0EwUbB8o=; b=N7sMJ2QgL6XBV0wtW5cpZ/1rA44oP2O5kQW3qtOPXgfkfKsSx
+	S2URw5PtkEw/GLM8DaBQbdzuEFHvZwM/CHROGElWD9aTstZzMlKAminWXNn9eSVo
+	nmjU3P0DqjyRjjvyUt5O34BimApD/WqcOvMhySMbTr0Dd39nW4yVJO+t/8=
+Received: from [127.0.0.1] (unknown [192.168.100.1])
+	by localhost.localdomain (Coremail) with SMTP id AQAAfwDXEEIcEe9pwwEDAA--.1554S2;
+	Mon, 27 Apr 2026 15:32:45 +0800 (CST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260424210525.1574497-1-a.shimko.dev@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Subject: Re: [PATCH v4 2/4] serial: 8250_dw: build Renesas RZN1 CPR value
+ from DW_UART_CPR_* definitions
+From: Jia Wang <wangjia@ultrarisc.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+ Jia Wang <wangjia@ultrarisc.com>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Paul Walmsley <pjw@kernel.org>, 
+ Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
+ Alexandre Ghiti <alex@ghiti.fr>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, LKML <linux-kernel@vger.kernel.org>, 
+ linux-serial <linux-serial@vger.kernel.org>, 
+ linux-riscv@lists.infradead.org, devicetree@vger.kernel.org
+In-Reply-To: <aeuJTMqADw8J0x0u@ashevche-desk.local>
+References: <20260424-ultrarisc-serial-v4-0-1765a0b4c4a0@ultrarisc.com>
+ <20260424-ultrarisc-serial-v4-2-1765a0b4c4a0@ultrarisc.com>
+ <4548483c-cbba-899e-6b1a-1290d36b59cd@linux.intel.com>
+ <aetv2ljDOpH_Hs4s@ashevche-desk.local>
+ <363a636d-f014-cc29-6be4-ec3041f43855@linux.intel.com>
+ <aeuJTMqADw8J0x0u@ashevche-desk.local>
+Date: Mon, 27 Apr 2026 15:32:00 +0800
+Message-Id: <177727512077.1796253.17951689513534549167.b4-reply@b4>
+X-Mailer: b4 0.15-dev
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777275121; l=1960;
+ i=wangjia@ultrarisc.com; s=20260309; h=from:subject:message-id;
+ bh=z6STT3pmp/kQBgHhBzbeymcDt4gyan7Jmn4OwjXUfv8=;
+ b=Zmk7cQzNqKX2aQZQQyrNt5HXRMNdjrAcbrEgt4ShlWIw9e2VNfgYrlj6XxHuyq4nBzzOfBOmT
+ rcay0btFWpBDRxDF7nT33gZad7L1/8UktLaSjW/pLS0coTWS7LZ0xcn
+X-Developer-Key: i=wangjia@ultrarisc.com; a=ed25519;
+ pk=XvYkrelqJIIzobY7j+nIg8rsfv5kzaOzuc1UPhd087U=
+X-CM-TRANSID:AQAAfwDXEEIcEe9pwwEDAA--.1554S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7trWxtw13GFW8XryDZryDAwb_yoW8Cr1Dpr
+	W3Wa4jqFZ7KrnrAr4kt3WFqF4rtFs8JFyDXrn8Xry8AFZF9r1agrW8tFWYkF9rZrn3Aw1U
+	Aa1UXa9xu34vvaDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnUUvcSsGvfC2KfnxnUUI43ZEXa7xR_UUUUUUUUU==
+X-CM-SenderInfo: pzdqwylld63zxwud2x1vfou0bp/1tbiAQAKEWnti78ACwAHsm
 
-On Sat, Apr 25, 2026 at 12:05:24AM +0300, Artem Shimko wrote:
-> Align register offset definitions for DW_UART_USR, DW_UART_DMASA,
-> OCTEON_UART_USR, RZN1_UART_TDMACR and RZN1_UART_RDMACR to improve
-> readability. Replace raw shift with FIELD_PREP() and GENMASK() for
-> RZN1_UART_xDMACR burst field definitions — this documents that the
-> field occupies bits [2:1] and prevents accidental overflow when new
-> burst values are added.
+On 2026-04-24 18:16 +0300, Andy Shevchenko wrote:
+> On Fri, Apr 24, 2026 at 05:09:46PM +0300, Ilpo Järvinen wrote:
+> > On Fri, 24 Apr 2026, Andy Shevchenko wrote:
+> > > On Fri, Apr 24, 2026 at 02:38:56PM +0300, Ilpo Järvinen wrote:
+> > > > On Fri, 24 Apr 2026, Jia Wang wrote:
 > 
-> Simplify ENXIO handling in dw8250_probe(): instead of explicitly
-> zeroing 'err' and then checking it, use a single conditional that
-> allows -ENXIO (no interrupt, fall back to polling) while treating
-> any other error as fatal. No functional change intended.
+> ...
+> 
+> > > > Hmm, maybe there should also be macro also for this one which takes the 
+> > > > fifosize as input and converts it to CPR field vlaue (effectively, the 
+> > > > macro is an inverse of DW_UART_CPR_FIFO_SIZE()). It would be more readable 
+> > > > than the literal.
+> > > 
+> > > But this can be done separately, right?
+> > 
+> > It's logically part of the cpr_value literal to defines conversion (of 
+> > course one could introduce it in own patch without users but I don't see 
+> > much benefit from that).
+> 
+> No objections.
+> 
+> > > > Also include BUILD_BUG_ON(!IS_ALIGNED(fifosize, 16) + bounds checks) 
+> > > > inside that macro to catch invalid fifo sizes (+ don't forget the 
+> > > > necessary headers for those two new things).
+> > > 
+> > > Hmm... Some devices may have FIFO = 8 or 4 bytes (Intel Quark IIRC has less
+> > > than 16 and it's DW IP).
+> > 
+> > Perhaps but according the DW databook I've at hand, there are no values in 
+> > FIFO_MODE field for such FIFO sizes. So what would CPR contain in those
+> > cases for FIFO_MODE field?
+> 
+> On real HW it returns 0s for all registers above 0x07 (multiplied by 4 as
+> a stride). But I also checked the values of xmit_fifo_size and it shows 16.
+> What 8 is it is the DMA max_burst. Hence the proposed assertion should work.
+> 
 
-There is real patch series in-flight which we want to apply.
+Thanks for the discussion and clarification. I'll add the macro
+DW_UART_CPR_FIFO_MODE_FROM_SIZE() in 8250_dwlib.h (in patch 2) with the
+suggested build‑time checks (using BUILD_BUG_ON_ZERO for bounds validation),
+ and update patch 4 to use it.
 
-This one may wait till that happen. You may also help reviewing that
-in a way that this patch won't be needed at all (or be minimal).
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
+> 
 
-https://lore.kernel.org/linux-serial/20260424-ultrarisc-serial-v4-0-1765a0b4c4a0@ultrarisc.com/
+Best Regards,
+Jia Wang
 
--- 
-With Best Regards,
-Andy Shevchenko
 
 
