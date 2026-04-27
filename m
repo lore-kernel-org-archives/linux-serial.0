@@ -1,232 +1,114 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f74.google.com (mail-wr1-f74.google.com [209.85.221.74])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0D0D3B9D97;
-	Mon, 27 Apr 2026 18:05:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EE3F3EB7E1
+	for <linux-serial@vger.kernel.org>; Mon, 27 Apr 2026 18:07:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777313151; cv=none; b=s899ETDBRCByNndw8s1DJsJiUf1IPgnoU46dWmuufF2NBJNfIGvoTnCWStoofVlkycQQvjs4IdPw8gHDStTSfYZ5e9fftJ10hVUVlrLXjWUrf95bEipP1x6XVhnBABjf021YauLYQ6i4NEd+u/+I0yUzN7v2IftVDBiGUj87GZg=
+	t=1777313255; cv=none; b=dq3awfxtkhRoFjGf5i1dNs3YNhLSoFBsE5zPE+DxToRAUpMrCjfg8SB4lRAycug1hqaJs9jVinUynkvnxr6c8kD+wd7TLXlfkEfvi22B3PVFXlZQNleaxTuDDuDJAxk9raJB4Kj+7wV/CETjUBCCO+vZ3zjppK7Hqew5BMBH8vI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777313151; c=relaxed/simple;
-	bh=g7dEQSlapKq6RGMjYWiDAE6F4/7WAy4mpD2ViWIE8lc=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=UekLY74gHGTqIvIz1IlZ6Up5gMBfR2+/arzTjJYnzaf+8r+xKNXqNmwvS1RnbekkWqJ4UxxwBtg41zmyc+uSg9jZzEVCLlGHABFATrIRVn6qLtuW0Ly7PFROIZavoas+balYPCH0SCTIB7lhmXs44HusOtXAkmvU6EEKEP0Om78=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=skW/v4/2; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1777313255; c=relaxed/simple;
+	bh=LJB/6F8gRS18jiwpo8qTgtmT08hQ2iYqeOWrm4IbRjM=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=AZRuVVgZal9hcMwttr8kqza1aM9JZcoRgw7w1iQYfZBmSZ5c4OGseCM8lRSdoLMaMJ/0WBAAUc6o954g04tkds7eCKdcD2t4XuVO4k26l7o9sBYAzUCc7q55XP7Zkhvr98NpD0qimuqpUXyv+u7tzrek3d/jK81T3oexk42LYCQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--aliceryhl.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=cPn+SATK; arc=none smtp.client-ip=209.85.221.74
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--aliceryhl.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="skW/v4/2"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AECF9C2BCF6;
-	Mon, 27 Apr 2026 18:05:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777313151;
-	bh=g7dEQSlapKq6RGMjYWiDAE6F4/7WAy4mpD2ViWIE8lc=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=skW/v4/2wrw6S+b+TinHxgWt1LUm0zq9kiVWfOTaOWDTi7/e7dj/kFX7yHVYFPpMZ
-	 sC4EdA14zbcBuFcvl4mj2yIq1NwneKSCxTLRadxSx9ST3u9F3lnKmZJkNUZRFS8GHa
-	 AJ6gM1ykLHBEPiVCasqAKBoZwjB2aVN5RFQcxDpwa3nccYc5uvJlVGUJy8XBadnrej
-	 0OF/I+5b9e4Nw0FQHCQZ0CzOEPguMMLaJygmwJdqJ3dMtR+912KZxfnJRXrqjGELfe
-	 DQovAr2SE6Xyl3zEoT7ye1SvPuVFGGNHzPhwlFRtckFU/oYPYyG03LxJtFVjRLzgNb
-	 WugQbMkdQuT3A==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4E4FFF8869;
-	Mon, 27 Apr 2026 18:05:51 +0000 (UTC)
-From: Markus Probst via B4 Relay <devnull+markus.probst.posteo.de@kernel.org>
-Date: Mon, 27 Apr 2026 20:05:44 +0200
-Subject: [PATCH v6 4/4] samples: rust: add Rust serial device bus sample
- device driver
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="cPn+SATK"
+Received: by mail-wr1-f74.google.com with SMTP id ffacd0b85a97d-43d789cebcfso7481146f8f.1
+        for <linux-serial@vger.kernel.org>; Mon, 27 Apr 2026 11:07:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1777313250; x=1777918050; darn=vger.kernel.org;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=HxkgeF4LNZGOlYkWj+Rbzgew6yzkspsu2lszfChr6II=;
+        b=cPn+SATKuQe+JOM/S0y9YehIYvugeCOq5rAxKMXfxKK+HYTUjsNnOR0yVrIzvX4r2g
+         DkCwv8WMJM0bFqL6Q1MTpaeN8Kzf/djGm/Z9E9tyzqUTSlefq/B1oqqWYHPq92z8599d
+         jSJ34C9mcPaflWs9Lkrsod+7aOZ7q7kzlW2NaRw9K+M4/LVBB5Paus9kqhXbvh5xbusq
+         6Zsgh/pkGT7LT1at8rk474twLKrJqcCWyaPawXIFA4F34mV6UVbAPFxd8BFU4K4U1vwG
+         VusBi9r03Y/j7QAjoasRoSju4+uGyRT8cdp1YRZxubLO2i+2GANpj53djrwGbhJHU2Yb
+         vaFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777313250; x=1777918050;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=HxkgeF4LNZGOlYkWj+Rbzgew6yzkspsu2lszfChr6II=;
+        b=hDuV73qP/QkwKAD8VkEp46Gb/DnIUVFbR3EF1Y3WgxNTkKYFsdTChbNwzJx5NJEyYr
+         1Pz8PmmdnmOZUvbY3sQYIOX8LS7J4f0T/kblH6IOOaURnnZnjvLzGu+CMik3OEbS8S2O
+         1LrBoZsybHRqk0IOVr+tA2+oG5Scruf7E2lUubWJ6TwQWYVw9T4GFvmzxmGl8/ViKsRV
+         wVrFPc5xIGKBcfDzXI433wm3vAnU5tP/5a23GWkeco8B6YB3O7iM7jLcaPRPHIzbTNwU
+         BW7Z6mHaUFdacgCUxXk1Tetnxd4fCMuc6q4ZZEfJroylPF1oReas3XfGDCzWrpVE9vle
+         y+yQ==
+X-Forwarded-Encrypted: i=1; AFNElJ+SuHoZQPnhN3W4DOrP2kJH4ehUaGogMqZG+IPf/O6NPS4CkHMS52BiDCcM+W+OtT7190HoQnRtjkAzOzc=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxkiDK9qxjGiGPu50lHpC4pLdFFXdp8xqpr0+kDRBewXVnA9rwo
+	F/4dSu2Z+4rizsfJOJRax80wPgSORZwX2PdO3z0ThdqvqFN576MBwsgZwIwSh9XZf9qTMAPmgI/
+	Ix2Omq7oZrv0+9WkudQ==
+X-Received: from wrmd3.prod.google.com ([2002:adf:e883:0:b0:43d:7940:a11b])
+ (user=aliceryhl job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a05:6000:41c7:b0:43d:799c:b2cb with SMTP id ffacd0b85a97d-44636a393e7mr256856f8f.24.1777313249648;
+ Mon, 27 Apr 2026 11:07:29 -0700 (PDT)
+Date: Mon, 27 Apr 2026 18:07:28 +0000
+In-Reply-To: <289b424e243ba2c4139ea04009cf8b9c448a87ff.1777306795.git.chleroy@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
+Mime-Version: 1.0
+References: <cover.1777306795.git.chleroy@kernel.org> <289b424e243ba2c4139ea04009cf8b9c448a87ff.1777306795.git.chleroy@kernel.org>
+Message-ID: <ae-l4FGDPLwBuDXM@google.com>
+Subject: Re: [RFC PATCH v1 5/9] uaccess: Switch to copy_{to/from}_user_partial()
+ when relevant
+From: Alice Ryhl <aliceryhl@google.com>
+To: "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>
+Cc: Yury Norov <ynorov@nvidia.com>, Andrew Morton <akpm@linux-foundation.org>, 
+	Linus Torvalds <torvalds@linux-foundation.org>, David Laight <david.laight.linux@gmail.com>, 
+	Thomas Gleixner <tglx@linutronix.de>, linux-alpha@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-snps-arc@lists.infradead.org, 
+	linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, 
+	linuxppc-dev@lists.ozlabs.org, kvm@vger.kernel.org, 
+	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, 
+	sparclinux@vger.kernel.org, linux-um@lists.infradead.org, 
+	dmaengine@vger.kernel.org, linux-efi@vger.kernel.org, 
+	linux-fsi@lists.ozlabs.org, amd-gfx@lists.freedesktop.org, 
+	dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org, 
+	linux-wpan@vger.kernel.org, netdev@vger.kernel.org, 
+	linux-wireless@vger.kernel.org, linux-spi@vger.kernel.org, 
+	linux-media@vger.kernel.org, linux-staging@lists.linux.dev, 
+	linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, 
+	xen-devel@lists.xenproject.org, linux-fsdevel@vger.kernel.org, 
+	ocfs2-devel@lists.linux.dev, bpf@vger.kernel.org, kasan-dev@googlegroups.com, 
+	linux-mm@kvack.org, linux-x25@vger.kernel.org, rust-for-linux@vger.kernel.org, 
+	linux-sound@vger.kernel.org, sound-open-firmware@alsa-project.org, 
+	linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org, 
+	loongarch@lists.linux.dev, linux-m68k@lists.linux-m68k.org, 
+	linux-openrisc@vger.kernel.org, linux-parisc@vger.kernel.org, 
+	linux-sh@vger.kernel.org, linux-arch@vger.kernel.org
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260427-rust_serdev-v6-4-173798d5e1a3@posteo.de>
-References: <20260427-rust_serdev-v6-0-173798d5e1a3@posteo.de>
-In-Reply-To: <20260427-rust_serdev-v6-0-173798d5e1a3@posteo.de>
-To: Rob Herring <robh@kernel.org>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, Miguel Ojeda <ojeda@kernel.org>, 
- Gary Guo <gary@garyguo.net>, 
- =?utf-8?q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
- Benno Lossin <lossin@kernel.org>, Andreas Hindborg <a.hindborg@kernel.org>, 
- Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>, 
- Danilo Krummrich <dakr@kernel.org>, 
- Kari Argillander <kari.argillander@gmail.com>, 
- "Rafael J. Wysocki" <rafael@kernel.org>, 
- Viresh Kumar <viresh.kumar@linaro.org>, Boqun Feng <boqun@kernel.org>, 
- David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
- Boqun Feng <boqun@kernel.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
- rust-for-linux@vger.kernel.org, linux-pm@vger.kernel.org, 
- driver-core@lists.linux.dev, dri-devel@lists.freedesktop.org, 
- Markus Probst <markus.probst@posteo.de>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4237;
- i=markus.probst@posteo.de; h=from:subject:message-id;
- bh=6TYBQ32OeKPXuo7r972A3rP9t8yQQXh727SZs49HwIY=;
- b=owEBiQJ2/ZANAwAIATR2H/jnrUPSAcsmYgBp76V9lghfqn38x2LQ2dfJy5nUjDLTxde7mWh7P
- KSxxSrKcaSJAk8EAAEIADkWIQSCdBjE9KxY53IwxHM0dh/4561D0gUCae+lfRsUgAAAAAAEAA5t
- YW51MiwyLjUrMS4xMiwyLDIACgkQNHYf+OetQ9LtNg//YOfRybt6cdFvPowzsGsib73kRTkQLGu
- /RQlyRQDW3VG9uwtcMo4tA42tZ+vJo5WPtKldfRSQEx3SQCW54ZzL9pjihtej7MAWUIHZMvAwzU
- 6n+mWojaLeeP5GQodk2bI2VsPipYJW9Qs+fzNDcG55cIPnIwZ5E03hb/FMPgkJEu9HNqcxDx6Xn
- tnx0anxZ5zMSEgikx2tXhDK/ZBLjXtS0vBUKgpeMFrFGSnmdIX8wMM/WLL5gxN8dzDW5SLEe2BD
- wOH6lwMWfxyQJSbfCE1VJ6A/jlHh/IIEa0VZhW7BxB7lnlu4zxb9uxsXe4C7ky+0uqH1h7XqUkV
- Xjlt3Vg5Yl+YEDVV2R+YTiSgP8w1HNebaoc2iraeUGkzJE+9Wb9ucbJbt4Rxb/80eGZZVxPOUJ6
- M4Gtpd4YLcPpqbfSdpnPqD1t75kQPmUwnUud0y32Z3zKU26iNXaUuvOEexEZ2QgG+8jH51neE3t
- COWGiCw2dL/rxHX3OnvQVlbA3cZU+yiCiHHUwgMHeLVdlcffTsYwLmuOvZwPIwVifeVWacP9fVe
- NucNHTn7BA6Ij+J42d5bGtFVgWRKvpEA5w/TONKadhax3VUoXlz3mXG6U8pThc6fppAm8GrRett
- JP9Vms+TsnDzucazyNFuKwm9Gv6VYCRIlLl2tFv7F1GVCUH2haz8=
-X-Developer-Key: i=markus.probst@posteo.de; a=openpgp;
- fpr=827418C4F4AC58E77230C47334761FF8E7AD43D2
-X-Endpoint-Received: by B4 Relay for markus.probst@posteo.de/default with
- auth_id=680
-X-Original-From: Markus Probst <markus.probst@posteo.de>
-Reply-To: markus.probst@posteo.de
 
-From: Markus Probst <markus.probst@posteo.de>
+On Mon, Apr 27, 2026 at 07:13:46PM +0200, Christophe Leroy (CS GROUP) wrote:
+> diff --git a/rust/helpers/uaccess.c b/rust/helpers/uaccess.c
+> index 01de4fbbcc84..710e07cd60ae 100644
+> --- a/rust/helpers/uaccess.c
+> +++ b/rust/helpers/uaccess.c
+> @@ -5,13 +5,13 @@
+>  __rust_helper unsigned long
+>  rust_helper_copy_from_user(void *to, const void __user *from, unsigned long n)
+>  {
+> -	return copy_from_user(to, from, n);
+> +	return copy_from_user_partial(to, from, n);
+>  }
+>  
+>  __rust_helper unsigned long
+>  rust_helper_copy_to_user(void __user *to, const void *from, unsigned long n)
+>  {
+> -	return copy_to_user(to, from, n);
+> +	return copy_to_user_partial(to, from, n);
+>  }
 
-Add a sample Rust serial device bus device driver illustrating the usage
-of the serial device bus abstractions.
+No Rust code uses the return value for anything other than comparing it
+with zero, so you can keep these as copy_[from|to]_user() without
+issues.
 
-This drivers probes through either a match of device / driver name or a
-match within the OF ID table.
-
-Signed-off-by: Markus Probst <markus.probst@posteo.de>
----
- samples/rust/Kconfig               | 11 +++++
- samples/rust/Makefile              |  1 +
- samples/rust/rust_driver_serdev.rs | 86 ++++++++++++++++++++++++++++++++++++++
- 3 files changed, 98 insertions(+)
-
-diff --git a/samples/rust/Kconfig b/samples/rust/Kconfig
-index c49ab9106345..31d62533ef25 100644
---- a/samples/rust/Kconfig
-+++ b/samples/rust/Kconfig
-@@ -161,6 +161,17 @@ config SAMPLE_RUST_DRIVER_AUXILIARY
- 
- 	  If unsure, say N.
- 
-+config SAMPLE_RUST_DRIVER_SERDEV
-+	tristate "Serial Device Bus Device Driver"
-+	select RUST_SERIAL_DEV_BUS_ABSTRACTIONS
-+	help
-+	  This option builds the Rust serial device bus driver sample.
-+
-+	  To compile this as a module, choose M here:
-+	  the module will be called rust_driver_serdev.
-+
-+	  If unsure, say N.
-+
- config SAMPLE_RUST_SOC
- 	tristate "SoC Driver"
- 	select SOC_BUS
-diff --git a/samples/rust/Makefile b/samples/rust/Makefile
-index 6c0aaa58cccc..b986b681cde5 100644
---- a/samples/rust/Makefile
-+++ b/samples/rust/Makefile
-@@ -14,6 +14,7 @@ obj-$(CONFIG_SAMPLE_RUST_DRIVER_PLATFORM)	+= rust_driver_platform.o
- obj-$(CONFIG_SAMPLE_RUST_DRIVER_USB)		+= rust_driver_usb.o
- obj-$(CONFIG_SAMPLE_RUST_DRIVER_FAUX)		+= rust_driver_faux.o
- obj-$(CONFIG_SAMPLE_RUST_DRIVER_AUXILIARY)	+= rust_driver_auxiliary.o
-+obj-$(CONFIG_SAMPLE_RUST_DRIVER_SERDEV)		+= rust_driver_serdev.o
- obj-$(CONFIG_SAMPLE_RUST_CONFIGFS)		+= rust_configfs.o
- obj-$(CONFIG_SAMPLE_RUST_SOC)			+= rust_soc.o
- 
-diff --git a/samples/rust/rust_driver_serdev.rs b/samples/rust/rust_driver_serdev.rs
-new file mode 100644
-index 000000000000..8cf3fb451b22
---- /dev/null
-+++ b/samples/rust/rust_driver_serdev.rs
-@@ -0,0 +1,86 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Rust Serial device bus device driver sample.
-+
-+use kernel::{
-+    acpi,
-+    device::{
-+        Bound,
-+        Core, //
-+    },
-+    of,
-+    prelude::*,
-+    serdev,
-+    sync::aref::ARef, //
-+};
-+
-+struct SampleDriver {
-+    sdev: ARef<serdev::Device>,
-+}
-+
-+kernel::of_device_table!(
-+    OF_TABLE,
-+    MODULE_OF_TABLE,
-+    <SampleDriver as serdev::Driver>::IdInfo,
-+    [(of::DeviceId::new(c"test,rust_driver_serdev"), ())]
-+);
-+
-+kernel::acpi_device_table!(
-+    ACPI_TABLE,
-+    MODULE_ACPI_TABLE,
-+    <SampleDriver as serdev::Driver>::IdInfo,
-+    [(acpi::DeviceId::new(c"LNUXBEEF"), ())]
-+);
-+
-+#[vtable]
-+impl serdev::Driver for SampleDriver {
-+    type IdInfo = ();
-+    const OF_ID_TABLE: Option<of::IdTable<Self::IdInfo>> = Some(&OF_TABLE);
-+    const ACPI_ID_TABLE: Option<acpi::IdTable<Self::IdInfo>> = Some(&ACPI_TABLE);
-+
-+    fn probe(
-+        sdev: &serdev::Device<Core>,
-+        _info: Option<&Self::IdInfo>,
-+    ) -> impl PinInit<Self, Error> {
-+        let dev = sdev.as_ref();
-+
-+        dev_dbg!(dev, "Probe Rust Serial device bus device driver sample.\n");
-+
-+        if sdev
-+            .set_baudrate(
-+                dev.fwnode()
-+                    .and_then(|fwnode| fwnode.property_read(c"baudrate").optional())
-+                    .unwrap_or(115200),
-+            )
-+            .is_err()
-+        {
-+            return Err(EINVAL);
-+        }
-+        sdev.set_flow_control(false);
-+        sdev.set_parity(serdev::Parity::None)?;
-+
-+        Ok(Self { sdev: sdev.into() })
-+    }
-+
-+    fn receive(sdev: &serdev::Device<Bound>, _this: Pin<&Self>, data: &[u8]) -> usize {
-+        let _ = sdev.write_all(data, serdev::Timeout::Max);
-+        data.len()
-+    }
-+}
-+
-+impl Drop for SampleDriver {
-+    fn drop(&mut self) {
-+        dev_dbg!(
-+            self.sdev.as_ref(),
-+            "Remove Rust Serial device bus device driver sample.\n"
-+        );
-+    }
-+}
-+
-+kernel::module_serdev_device_driver! {
-+    type: SampleDriver,
-+    name: "rust_driver_serdev",
-+    authors: ["Markus Probst"],
-+    description: "Rust Serial device bus device driver",
-+    license: "GPL v2",
-+}
-
--- 
-2.53.0
-
-
+Thanks, Alice
