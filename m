@@ -1,138 +1,127 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2FE23D333E;
-	Mon, 27 Apr 2026 14:18:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EEF730C62E;
+	Mon, 27 Apr 2026 16:32:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777299486; cv=none; b=P9QoO5fxur1WShlJAT1MWoFXrc1d2D03lLjNWh3tHwepmnMavjgOt+YxMG/dr0mWT2yVC1uOBepYhfyRqvVqRP9ABqGLWqn6DK3yBlhj22StzPmtdowotWGinAS/skjOQJzgQGAVd21sXdb/R3CeOFaxkckqXbxvI7mRjWmX9jo=
+	t=1777307533; cv=none; b=pgMCMKXrdAZbvdyeUOqT5pigOeGDY+I6kUhKWprurakHSs5dJCA2vaAiuWLR2HMV8iT25k7gn2j4O+FjLu1rMCFIeukZrMiH1kmy9JRl87jzL0btYIwkCLWDn89z2Q/7+aJP/6wMB238j63d1oa5nwCUb//scdM3dTzG79XyTxA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777299486; c=relaxed/simple;
-	bh=sgY5aEJJ3v5d+Mq0nCfd0fbMxXlwsVz9Ah3lGaHEXBY=;
-	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
-	 Mime-Version:Content-Type; b=Fi1NG+RH7+pOaDQA+HgXhC/jlfipPw8ojkogYaHqHhCSupyC+Ymmj4t33uT/EgPYiIfLihvLHlzensuOyLYRdtDFoMOwohB+iKxzF8INIzDpEX/i+rdwTzeooYZFW4wXvv1VIqRpvVjhGsYistC2XxAlSIm1cMR4Xfu7qZcuBkA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=W+SFCBIY; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	s=arc-20240116; t=1777307533; c=relaxed/simple;
+	bh=FCXcldL8BJZ2nu5b8/5wwHZpdENBNK9CMwBqO6dqbCs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=jkgsKkgMldzv/+ECoSkY+eAFA+F2D744cJzigIBRIPydVgZsu9Mt/Ux6TnxFvR3Vt+uYm/PMjIL0Uaes8XGf8m6WnpdGQn32vPZAfD2rZ+wXnOvMazCkUUacjq5ySx/NGHcUKTvPqiKilssF9NRFqoXzvd7js2JwNkHfl3W9G/4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=FnKAsJfy; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="W+SFCBIY"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=default; h=Content-Transfer-Encoding:Mime-Version:Message-Id:Subject:Cc:
-	To:From:Date:subject:date:message-id:reply-to;
-	bh=TY056H8mtdbDch+SCcPASDWVOy+uPCBnhCeT6u102UM=; b=W+SFCBIYV0T8adN3AWjMZULIjA
-	Cn1uHmQ6nYIr31jqolooxCdWEvN4DDc2aunATFnk/CoaWO7mAftAjfEtweR9F9dcTz0Z+e7OHLusI
-	mYJT7MpvPJDSKTIzHZrXdHnApkoKLGrPa4U6/5xZ40aqGjEBox0VAhCb3Xv5cdfjCfuo=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168] helo=pettiford.lan)
-	by mail.hugovil.com with esmtpa (Exim 4.98.2)
-	(envelope-from <hugo@hugovil.com>)
-	id 1wHMmh-000000002xe-19lN;
-	Mon, 27 Apr 2026 10:18:03 -0400
-Date: Mon, 27 Apr 2026 10:18:02 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Ilpo =?ISO-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, LKML <linux-kernel@vger.kernel.org>, linux-serial
- <linux-serial@vger.kernel.org>, Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Subject: Re: [PATCH 2/9] serial: core: use uart_iotype_*() to simplify code
-Message-Id: <20260427101802.fa669437afaa38619cde3ac2@hugovil.com>
-In-Reply-To: <abe6c6b3-7e9a-b9bc-80e9-2f5294f2095c@linux.intel.com>
-References: <20260423-tty-upio-v1-0-baf82d3b86d1@dimonoff.com>
-	<20260423-tty-upio-v1-2-baf82d3b86d1@dimonoff.com>
-	<716918cf-b240-43cc-a702-9b3d94dc75d2@linux.intel.com>
-	<20260424113046.f792a805ef0507638e95b963@hugovil.com>
-	<20260427094639.73a7e27709e466fda2356a4d@hugovil.com>
-	<abe6c6b3-7e9a-b9bc-80e9-2f5294f2095c@linux.intel.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="FnKAsJfy"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 602FFC2BCB4;
+	Mon, 27 Apr 2026 16:32:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1777307532;
+	bh=FCXcldL8BJZ2nu5b8/5wwHZpdENBNK9CMwBqO6dqbCs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=FnKAsJfyI5CUtP0gohxebhZbQMAJWQD7sxMm2Lvpf0GfIpEWzVj8aNNZmuX9WADkw
+	 /3JSuf6wzuw2ThMcUCQZOj5Tl8OPCjhk2JaF1NP5A0xOUlCQwmlwHunkXgcT3/Olnc
+	 NcaNpVfeMR1T8TQQiAPxQHeqSSL1rocFncP98rWk=
+Date: Mon, 27 Apr 2026 10:31:36 -0600
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Elena Reshetova <elena.reshetova@intel.com>,
+	David Windsor <dwindsor@gmail.com>, Kees Cook <kees@kernel.org>,
+	Hans Liljestrand <ishkamiel@gmail.com>, linux-mips@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 4/4] Revert "drivers: convert sbd_duart.map_guard from
+ atomic_t to refcount_t"
+Message-ID: <2026042737-siamese-cod-84c5@gregkh>
+References: <alpine.DEB.2.21.2604130239560.29980@angie.orcam.me.uk>
+ <alpine.DEB.2.21.2604130416440.29980@angie.orcam.me.uk>
+ <2026042630-diaphragm-reactor-7cfe@gregkh>
+ <alpine.DEB.2.21.2604271435070.28583@angie.orcam.me.uk>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-X-Spam_score: -2.0
-X-Spam_bar: --
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.21.2604271435070.28583@angie.orcam.me.uk>
 
-On Mon, 27 Apr 2026 17:16:11 +0300 (EEST)
-Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com> wrote:
+On Mon, Apr 27, 2026 at 03:13:55PM +0100, Maciej W. Rozycki wrote:
+> On Sun, 26 Apr 2026, Greg Kroah-Hartman wrote:
+> 
+> > > Revert commit 22a33651a56f ("drivers: convert sbd_duart.map_guard from
+> > > atomic_t to refcount_t"), which broke perfectly valid code:
+> > > 
+> > >   ------------[ cut here ]------------
+> > >   WARNING: CPU: 1 PID: 1 at lib/refcount.c:114 sbd_request_port+0x54/0x140
+> > >   refcount_t: increment on 0; use-after-free.
+> > >   CPU: 1 PID: 1 Comm: swapper/0 Not tainted 4.11.0-rc2+ #34
+> > >   Stack : 0000000014001fe0 0000000000000000 ffffffff80830000 0000000000000000
+> > >           ffffffff8127bc7a ffffffff8016fe08 ffffffff808d0000 ffffffff808d0000
+> > >           ffffffff807aa828 ffffffff80822337 ffffffff808ce188 a8000001860b0000
+> > >           0000000000000001 0000000000000001 00000000000001c8 ffffffff808a3090
+> > >           00000000000000bb ffffffff801b09d4 a80000018609bb68 ffffffff801231cc
+> > >           ffffffff812a0000 ffffffff80171388 0000000000001000 ffffffff807aa828
+> > >           0000000000000001 0000000000000001 0000000000000000 0000000000000000
+> > >           0000000000000000 a80000018609bab0 0000000000000000 ffffffff803c47cc
+> > >           0000000000000000 0000000000000000 0000000000000000 0000000000000000
+> > >           ffffffff807cb648 ffffffff8010bff8 0000000014001fe1 ffffffff803c47cc
+> > >           ...
+> > >   Call Trace:
+> > >   [<ffffffff8010bff8>] show_stack+0x28/0x88
+> > >   [<ffffffff803c47cc>] dump_stack+0x8c/0xc0
+> > >   [<ffffffff801aff5c>] __warn+0xe0/0x114
+> > >   [<ffffffff801233f0>] warn_slowpath_fmt+0x40/0x50
+> > >   [<ffffffff80455bcc>] sbd_request_port+0x54/0x140
+> > >   [<ffffffff804563a4>] sbd_config_port+0x2c/0x68
+> > >   ---[ end trace f666d696412caa3e ]---
+> > > 
+> > > (report at the offending commit) -- sbd_request_port() is called twice
+> > > per DUART instance, to reserve a resource holding the control register
+> > > block shared between the two channels, so there's no slightest chance
+> > > for an overflow.  Also this doesn't stop the driver from working and
+> > > it's just the reservation that is missing as a result, i.e.:
+> > > 
+> > > 10060100-100601ff : sb1250-duart
+> > > 10060200-100602ff : sb1250-duart
+> > > 
+> > > as from the offending change, vs:
+> > > 
+> > > 10060100-100601ff : sb1250-duart
+> > > 10060200-100602ff : sb1250-duart
+> > > 10060300-100603ff : sb1250-duart
+> > > 
+> > > beforehand, which is surely why the breakage has gone so long unnoticed.
+> > > 
+> > > "If it ain't broke, don't fix it," so just revert the broken commit.
+> > 
+> > How about fix this up to work properly with a refcount?  having "open
+> > coded" atomic variables like this is ripe for problems, like it seems
+> > this driver is abusing.
+> 
+>  Clearly refcount has odd semantics for this use case, as the failed 
+> attempt to "fix" this code has shown.
+> 
+>  The natural values for `map_guard' are 0 and 1 (FALSE and TRUE), for the 
+> resource not taken and taken respectively, however refcount code complains 
+> about this arrangement as indicated by the report quoted.
+> 
+>  I suppose I can bend backwards and adopt other values, which I'll have to 
+> figure out from the API somehow, but it's not clear to me how it would 
+> cause less confusion than original straightforward code, the whole point 
+> of which is to prevent the resource from being requested again for the 
+> second port in a DUART.
+> 
+>  Or I could use an ordinary variable, possibly of the `bool' type, guarded 
+> by a spinlock, but that would be even more of an overkill IMO.
 
-> On Mon, 27 Apr 2026, Hugo Villeneuve wrote:
->=20
-> > On Fri, 24 Apr 2026 11:30:46 -0400
-> > Hugo Villeneuve <hugo@hugovil.com> wrote:
-> >=20
-> > > On Fri, 24 Apr 2026 14:13:02 +0300 (EEST)
-> > > Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com> wrote:
-> > >=20
-> > > > On Thu, 23 Apr 2026, Hugo Villeneuve wrote:
-> > > >=20
-> > > > > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > > > >=20
-> > > > > Make use of new functions uart_iotype_mmio() and uart_iotype_lega=
-cy_io()
-> > > > > to simplify and improve code readability.
-> > > > >=20
-> > > > > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > > > > ---
-> > > > >  drivers/tty/serial/serial_core.c | 24 +++++++++---------------
-> > > > >  1 file changed, 9 insertions(+), 15 deletions(-)
-> > > > >=20
-> > > > > diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/seria=
-l/serial_core.c
-> > > > > index b1cf45a8fc854cd97e349ff077d83b42e3ef8b16..fc273f8f9e75de89d=
-ca1ac1aca3589567bcf8a18 100644
-> > > > > --- a/drivers/tty/serial/serial_core.c
-> > > > > +++ b/drivers/tty/serial/serial_core.c
-> > > > > @@ -3221,23 +3221,17 @@ bool uart_match_port(const struct uart_po=
-rt *port1,
-> > > > >  {
-> > > > >  	if (port1->iotype !=3D port2->iotype)
-> > > > >  		return false;
-> > > > > -
-> > > > > -	switch (port1->iotype) {
-> > > > > -	case UPIO_PORT:
-> > > > > -		return port1->iobase =3D=3D port2->iobase;
-> > > > > -	case UPIO_HUB6:
-> > > > > -		return port1->iobase =3D=3D port2->iobase &&
-> > > > > -		       port1->hub6   =3D=3D port2->hub6;
-> > > > > -	case UPIO_MEM:
-> > > > > -	case UPIO_MEM16:
-> > > > > -	case UPIO_MEM32:
-> > > > > -	case UPIO_MEM32BE:
-> > > > > -	case UPIO_AU:
-> > > > > -	case UPIO_TSI:
-> > > > > +	else if (uart_iotype_mmio(port1->iotype))
-> > > > >  		return port1->mapbase =3D=3D port2->mapbase;
-> > > > > -	default:
-> > > > > +	else if (uart_iotype_legacy_io(port1->iotype))
-> > > > > +		if (port1->iobase !=3D port2->iobase)
-> > > > > +			return false;
-> > > > > +		else if (port1->iotype =3D=3D UPIO_HUB6 && port1->hub6 !=3D po=
-rt2->hub6)
-> > > >=20
-> > > > I suggest placing the entire hub6 related check (including the ioba=
-se=20
-> > > > check) into own function in 8250_hub6.c and add a stub for the case=
- when=20
-> > > > hub6 code is not even built into kernel into 8250.h.
-> > >=20
-> > > Neat. I will make a separate commit for that in V2. This
-> > > simplifies uart_match_port() even more...
-> >=20
-> > I implemented it, the only thing I am not sure about is the include of
-> > "8250/8250.h" in serial_core.c?
->=20
-> I'd just include it and add comment before it that it's included because=
-=20
-> of UPIO_HUB6 port matching.
->=20
-> The more generic alternative would be to make the matcher a callback but=
-=20
-> that feels overkill for some legacy iotype trick, IMO.
+No, that would be best because using an atomic is the same end result,
+but it confuses us humans who are the ones responsible for maintaining
+the code over time.
 
-Great, I will submit v2 then with the include and the associated
-comment.
+So a bool would be great, thanks!
 
-Thank you,
-Hugo.
+greg k-h
