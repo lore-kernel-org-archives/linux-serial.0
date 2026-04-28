@@ -1,111 +1,163 @@
-Received: from out-183.mta1.migadu.com (out-183.mta1.migadu.com [95.215.58.183])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AABAB3D9DC7
-	for <linux-serial@vger.kernel.org>; Tue, 28 Apr 2026 09:04:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.183
+Received: from ultrarisc.com (unknown [218.76.62.146])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0460B3DA5BD;
+	Tue, 28 Apr 2026 09:08:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=218.76.62.146
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777367064; cv=none; b=oqiYtpVAcxHIi91OcMgqUMJPp4qYwp2QWsabl4H4VAktLYYm2pCvtqtzGcZ99HI2HFNw4dLJH2s2oIFkD7ZOyV1CSCA3H6di7DwVSktR2fBAf/Z6O1EMGQUR3ln6vt3V4//T5OiSyyYtWg5yoH6D9U8iXyAMyzbdDnSzoaJrb8s=
+	t=1777367319; cv=none; b=nku2aJUiR2dCaVDrGAD/NAeOhN9G2rp5NiekrLYMwJYPwTv4+xpBh+7otEThFqAHPNtOKPuRSXlq0cTSza4NcgaZf0gKoCF39RdWkz6c+h6BcaGzQ4kR9qOdk0yVU86YknmKnh36GvLpjvYsC5ahAowRHNOae8cKBpA2NvgW0l0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777367064; c=relaxed/simple;
-	bh=hvQOeOVC7EPibjtsdLgdgEyo4MCf/P3fweCx85yf0mA=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=WXP0DfTbAKnnig+OCCxcxt0W6g/SkA21Msbz8cdTauwvSt+OwMa2cBfrVKlYyF9WFvm1SY4zO6iB7nTmysv7EG1D3a7abnAJRXRLfiiQ+RiGx8xOxDBoHD9eRfQ0e3/vPGNfrS2O5A4vrqgf/S5apzKTzNUVDy0yKOxYOz7EXZI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=jFlRsBBh; arc=none smtp.client-ip=95.215.58.183
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1777367319; c=relaxed/simple;
+	bh=r57WeZxTj6pt4VOVxJMhJeP2CSBC7RAURv6QcqEOJxY=;
+	h=MIME-Version:Content-Type:Subject:From:To:Cc:In-Reply-To:
+	 References:Date:Message-Id; b=IDH7CDD4f9jFfgI8TrTm4lyqfnwKTnW/uqDvTLZ3hr/6eaOiLRo+dgIxNT7MjLMtSCkOlvyXlZw2n3pEAdNx3g6vK2WjLjf0ij1mJAGT6MS83sCIrk2DwsscYf8GBt6MJZMd3nO3/nCb8bpVxKJq6P6nHJd/OlSSv33gTD9qz0w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ultrarisc.com; spf=pass smtp.mailfrom=ultrarisc.com; dkim=pass (1024-bit key) header.d=ultrarisc.com header.i=@ultrarisc.com header.b=BprzMAnx; arc=none smtp.client-ip=218.76.62.146
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ultrarisc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ultrarisc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="jFlRsBBh"
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1777367050;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=/qOHDxjboZ5ndtg/n9XZ4IBSqZRJ44vTxZ3wqyQcTlg=;
-	b=jFlRsBBh/Pam73wBw10KnhNZckCUlW91F6sqotsGUVHdBCS6qSH3wiLi9hEjXeyIYau9/w
-	HnkzLapHnben93/5k3marios9/v8H7uBsXA2QqbMvb2eb3Lk93TKIlTBmd9PEy5KIiGqxS
-	t2tReDadGARxmhsP10vVJyqZQdC97ds=
-From: Fushuai Wang <fushuai.wang@linux.dev>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	ilpo.jarvinen@linux.intel.com,
-	osama.abdelkader@gmail.com,
-	andy.shevchenko@gmail.com,
-	kees@kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	wangfushuai@baidu.com
-Subject: [PATCH v2] serial: 8250: Clear CON_PRINTBUFFER on port re-registration
-Date: Tue, 28 Apr 2026 17:03:49 +0800
-Message-Id: <20260428090349.30047-1-fushuai.wang@linux.dev>
+	dkim=pass (1024-bit key) header.d=ultrarisc.com header.i=@ultrarisc.com header.b="BprzMAnx"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=ultrarisc.com; s=dkim; h=Received:MIME-Version:Content-Type:
+	Content-Transfer-Encoding:Subject:From:To:Cc:In-Reply-To:
+	References:Date:Message-Id; bh=HzVvXkjtHMlQP5m5OfYGE0prQLJfO2WXW
+	lW0bXC9e0o=; b=BprzMAnxHu8qpAQ60zB79QIzvsguVv0nazLSx1nLX2+04id0e
+	FUH3gZ0Oa576B1u4KcgZkt1g4OMV1vbu87tJeOEc6QhEPfivHB1U53HFkC2KFNEF
+	Lpm3nNmAut6F6pv7y1OG62ULfhwdiK6q6NcYY47sqRnzYFpvYOuIptMz2w=
+Received: from [127.0.0.1] (unknown [192.168.100.1])
+	by localhost.localdomain (Coremail) with SMTP id AQAAfwDXEEIRefBpaBUDAA--.1579S2;
+	Tue, 28 Apr 2026 17:08:33 +0800 (CST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
+Subject: Re: [PATCH v5 2/4] serial: 8250_dw: build Renesas RZN1 CPR value
+ from DW_UART_CPR_* definitions
+From: Jia Wang <wangjia@ultrarisc.com>
+To: =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+ Jia Wang <wangjia@ultrarisc.com>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Paul Walmsley <pjw@kernel.org>, 
+ Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
+ Alexandre Ghiti <alex@ghiti.fr>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, LKML <linux-kernel@vger.kernel.org>, 
+ linux-serial <linux-serial@vger.kernel.org>, 
+ linux-riscv@lists.infradead.org, devicetree@vger.kernel.org
+In-Reply-To: <23c80500-f2c1-0eb3-f640-00f7b108059b@linux.intel.com>
+References: <20260428-ultrarisc-serial-v5-0-97de63b1e3eb@ultrarisc.com>
+ <20260428-ultrarisc-serial-v5-2-97de63b1e3eb@ultrarisc.com>
+ <afBhkbGLsuqUitOl@ashevche-desk.local>
+ <23c80500-f2c1-0eb3-f640-00f7b108059b@linux.intel.com>
+Date: Tue, 28 Apr 2026 17:07:49 +0800
+Message-Id: <177736726936.2886867.7725295920724488690.b4-reply@b4>
+X-Mailer: b4 0.15-dev
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777367269; l=3351;
+ i=wangjia@ultrarisc.com; s=20260309; h=from:subject:message-id;
+ bh=r57WeZxTj6pt4VOVxJMhJeP2CSBC7RAURv6QcqEOJxY=;
+ b=oJkdrzOOf8Wb25XGDhMGiao3y9Xh8lMSkwBohAqxsvQOl1CRKqKHWrP+FmHIw7loxcZMK6LgY
+ nRoHiAv5p1uA9BlB9HLaakkU1FFmDDkawSvPH+sa0Z0CirPA6QVYM39
+X-Developer-Key: i=wangjia@ultrarisc.com; a=ed25519;
+ pk=XvYkrelqJIIzobY7j+nIg8rsfv5kzaOzuc1UPhd087U=
+X-CM-TRANSID:AQAAfwDXEEIRefBpaBUDAA--.1579S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxWF4xWFy8Ww13uF4kJFyxZrb_yoW5Zr15pF
+	yfKa1Uta18GF1kG340y3y2va1SqF1rGw10qFyUur1UAan0vrn2qw1qvFZIkrZ7ZFZ5CayY
+	gFsFqrnxu34rt3DanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnUUvcSsGvfC2KfnxnUUI43ZEXa7xR_UUUUUUUUU==
+X-CM-SenderInfo: pzdqwylld63zxwud2x1vfou0bp/1tbiAQAKEWnti78ACwA0sV
 
-From: Fushuai Wang <wangfushuai@baidu.com>
+On 2026-04-28 11:41 +0300, Ilpo Järvinen wrote:
+> On Tue, 28 Apr 2026, Andy Shevchenko wrote:
+> 
+> > On Tue, Apr 28, 2026 at 01:26:27PM +0800, Jia Wang wrote:
+> > > Replace the magic CPR value for Renesas RZ/N1 with a composition using
+> > > DW_UART_CPR_* bit/field definitions and FIELD_PREP_CONST().
+> > > 
+> > > Introduce a helper macro to convert a FIFO size (bytes) into the CPR
+> > > FIFO_MODE field value, with BUILD_BUG_ON_ZERO() checks for alignment and
+> > > bounds. Use it to replace the literal FIFO_MODE values in the RZN1.
+> > 
+> > A couple of nit-picks below. After addressing them you can add
+> > 
+> > Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > 
+> > ...
+> > 
+> > >  #include <linux/bitfield.h>
+> > >  #include <linux/bits.h>
+> > > +#include <linux/build_bug.h>
+> > > +#include <linux/align.h>
+> > 
+> > Preserve order, 'a' goes before 'b'.
+> > 
+> > >  #include <linux/io.h>
+> > >  #include <linux/types.h>
+> > 
+> > ...
+> > 
+> > >  /* Helper for FIFO size calculation */
+> > >  #define DW_UART_CPR_FIFO_SIZE(a)	(FIELD_GET(DW_UART_CPR_FIFO_MODE, (a)) * 16)
+> > 
+> > > +#define DW_UART_CPR_FIFO_MODE_MAX	0x80
+> > 
+> > You used decimal values elsewhere (id est 16), use upper limit in decimal
+> > as well.
+> > 
+> > > +#define DW_UART_CPR_FIFO_MODE_FROM_SIZE(size)				\
+> > > +	(BUILD_BUG_ON_ZERO(!IS_ALIGNED((size), 16)) +			\
+> > > +	 BUILD_BUG_ON_ZERO(((size) / 16) > DW_UART_CPR_FIFO_MODE_MAX) +	\
+> > > +	 ((size) / 16))
+> > 
+> > I don't see the need in having that maximum being defined separately (we don't
+> > have that for 16, no need to have it for 128.
+> > 
+> > Since some ISA:s have one assembly instruction to get both / and % divisions,
+> > it's better to use that instead of IS_ALIGNED(). Can you check code generation
+> > for x86_64 / x86?
+> 
+> Do those BUILD_BUGs even generate code, especially when they are expected 
+> to only appear in a struct initializer?
+> 
+> > #define DW_UART_CPR_FIFO_MODE_FROM_SIZE(size)				\
+> > 	(BUILD_BUG_ON_ZERO((size) > 2048) + BUILD_BUG_ON_ZERO((size) % 16) + ((size) / 16))
+> > 
+> > Note, I dropped first division in order to show the upper limit in a plain
+> > number since 16 is also FIFO size in bytes.
+> > 
+> > Also note, this evaluates (size) three times, which might be problematic,
+> > but I think we can leave with that for now.
+> 
+> I'd put also FIELD_PREP_CONST() into the macro itself as I don't see much 
+> value for this macro outside of those .cpr_value initializations.
+> 
+> IMO, the entire macro would be cleaner looking as a truly multi-line 
+> construct. Can we use static_assert()s in struct field initialization 
+> (I'm not sure), something along these lines:
+> 
+> #define DW_UART_CPR_FIFO_MODE_FROM_SIZE(size)			\
+> ({								\
+> 	typeof (size) __size = size;				\
+> 								\
+> 	static_assert(IS_ALIGNED((__size), 16));		\
+> 	static_assert(__size <= DW_UART_CPR_FIFO_MODE_MAX);	\
+> 								\
+> 	FIELD_PREP_CONST(DW_UART_CPR_FIFO_MODE, __size / 16);	\
+> })
+> 
 
-When two PnP devices map to the same physical port, the serial8250 driver
-removes and re-registers the console structure for the same port.
+Thanks. I tried that approach, but the statement-expression form does
+not work in this case because the helper is used in static initializers.
+So I'll keep it as a plain expression macro for now, and just rework it
+into a cleaner multi-line form.
 
-During re-registration, the console structure still has CON_PRINTBUFFER set
-from the initial registration, which causes console_init_seq() to set
-console->seq to syslog_seq. This results in re-printing the entire
-system log buffer, which may lead to RCU stall on slow serial consoles.
+> -- 
+>  i.
+> 
+>
 
-Clear CON_PRINTBUFFER when re-registering a port to prevent duplicate
-log printing.
+Best Regards,
+Jia Wang 
 
-Fixes: 835d844d1a28 ("8250_pnp: do pnp probe before legacy probe")
-Signed-off-by: Fushuai Wang <wangfushuai@baidu.com>
----
-V1->V2: Add Fixes tag
-previous discussion: https://lore.kernel.org/all/20260416092917.27301-1-fushuai.wang@linux.dev/T/#u
-
-Please ignore previous email if you received it before. There is something wrong with my email client.
-
- drivers/tty/serial/8250/8250_core.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index a428e88938eb..01b14392d9f7 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -694,6 +694,7 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
- {
- 	struct uart_8250_port *uart;
- 	int ret;
-+	bool was_removed = false;
- 
- 	if (up->port.uartclk == 0)
- 		return -EINVAL;
-@@ -716,8 +717,10 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
- 	if (uart->port.type == PORT_8250_CIR)
- 		return -ENODEV;
- 
--	if (uart->port.dev)
-+	if (uart->port.dev) {
- 		uart_remove_one_port(&serial8250_reg, &uart->port);
-+		was_removed = true;
-+	}
- 
- 	uart->port.ctrl_id	= up->port.ctrl_id;
- 	uart->port.port_id	= up->port.port_id;
-@@ -819,6 +822,10 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
- 					&uart->capabilities);
- 
- 		serial8250_apply_quirks(uart);
-+
-+		if (was_removed && uart_console(&uart->port))
-+			uart->port.cons->flags &= ~CON_PRINTBUFFER;
-+
- 		ret = uart_add_one_port(&serial8250_reg,
- 					&uart->port);
- 		if (ret)
--- 
-2.36.1
 
