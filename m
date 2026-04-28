@@ -1,258 +1,158 @@
-Received: from mail-vs1-f53.google.com (mail-vs1-f53.google.com [209.85.217.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1184A29B79B
-	for <linux-serial@vger.kernel.org>; Tue, 28 Apr 2026 08:26:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.217.53
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777364808; cv=pass; b=NK/8qD2S+kNqKUNZOxgiJZAdLZHF7qyfjgOCo6YT0dH3+4cZ/7d9/9bxpZaqyJi17eQvzb2QDwfcdYu7SGsYmfzZucmQ2Uqkx+hbOHmW3btwn77CThU03IzxDD07JzqYzjlZniLElbZ8UtM55JtH4IlYtA05EQYoJg62xzhDYVs=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777364808; c=relaxed/simple;
-	bh=wogiN08eHuYxeExGRcZE8Y4asKdVgUak9DxhplKJNBA=;
-	h=MIME-Version:From:Date:Message-ID:Subject:To:Cc:Content-Type; b=ooVjKaZ9akND3DC6mYDO1JxT1eMrogcTwJWJX8Y+dSuJFhH1akKegwPGkSUu8PYd6WQcUqGORgQS/45GjrcXdLxLtgOfJMEiypaR3mx9LDYBDx47ASvFhXwWyBd1QkFimZD2sFWRtKJgnzGSzn+eO6AUX5A+vaCWXTz3UIZmYMc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Dm1xpFlt; arc=pass smtp.client-ip=209.85.217.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: from ultrarisc.com (unknown [218.76.62.146])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D949A3D47AC;
+	Tue, 28 Apr 2026 08:36:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=218.76.62.146
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777365419; cv=none; b=I7Oyk6le6UvHQzZLGwSaF9QX6t/xRC3qDpcfvHxD64YFV5TfL0RfD5ABlj7AD9cAvsxbSOMd8Rs01aoiIHRr22kNrKetZchh5NtD+e/593Vvz1rQGaSy8URnyIAGSrrLhOvPzWgzG/L6/IKcie7IRq8FNLpkN2TRHMcDeMcCZkk=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777365419; c=relaxed/simple;
+	bh=BIhqOapgNnxmFfe3qKZl8GPilR7cf2rVzseYikZONhI=;
+	h=MIME-Version:Content-Type:Subject:From:To:Cc:In-Reply-To:
+	 References:Date:Message-Id; b=P47PORNJuKKaj9tZaCM6m4PZfOTwpj6NioT5IkpFR6ZcaRp+qwZrlqIbT3gUnkbWV/oq3zEPZmweDtMAWSF8ToKSLqmLlqQ2qWU8CGCr/5Fk0YrcO1GCVovQoAYoIJxx0qnRTUpvaS4jMR5OXCOGPoUYizLCfuvVzejwlriNBXM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ultrarisc.com; spf=none smtp.mailfrom=ultrarisc.com; dkim=pass (1024-bit key) header.d=ultrarisc.com header.i=@ultrarisc.com header.b=R6pxoPtV; arc=none smtp.client-ip=218.76.62.146
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ultrarisc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ultrarisc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Dm1xpFlt"
-Received: by mail-vs1-f53.google.com with SMTP id ada2fe7eead31-627126b0524so489406137.0
-        for <linux-serial@vger.kernel.org>; Tue, 28 Apr 2026 01:26:46 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777364805; cv=none;
-        d=google.com; s=arc-20240605;
-        b=IrIY0DFzEwef1nemU5ovyYnODAQ29tgsOaUGoCTST9UyUxhofmJMYyFJXjTQaYQjHV
-         GiMyN42OrpFQ8Uwu5Dl42juj3TK7B0xHkJqP8Z8avzPbZdRe93m86RZHqSK4koOssfuf
-         +pKCKvQZnQRRgq018IBszJVcSMcW5W+SAgH0UDMXqSxIPcHwrHjCYS4JFMgNwpTtsW2+
-         xLCnWhWewC13sON4v09fZk81yHU8Y2owFHg8wyxL3BnkK5f8ciERkEE4OoCAKCrrKdv0
-         oAJ4F7RGNOKcc/v193suH4zYRfW6ul2hEiT+3cwGhYC5qYm9w07wjeu05u9L8jYLYg65
-         gFpw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:mime-version:dkim-signature;
-        bh=HEFTgSUmlnkFyVpWcRJdD0EFT7L0hkUrQiYp5djHH68=;
-        fh=FcFSWfTLnHniMCbS3Y9kTRcu+kI3eYVciZuT8eDqzP8=;
-        b=HwQJt5w5WY7Vft9CW+FNCzC0vOZF+WgmoB1SQc7HTRVTlcH56ZGOvUZ3braPgK+02P
-         s7x1qANnbUEQbDzKESvO8LhaVCX7s3ErCNGojMZH8SGPQp17PPHCEajFzVXn1UAcRHhU
-         El1XhN5PGPqWN30XyaBBda2V1vynp76HVtlKWTS1TyAAPvFPX4sNQjp16Hjdt7ZRl8LQ
-         c87Wme3KDtn9qqKqkup5Dbm4WVmCB45mslhyeSfQcAobP2r3/R5zgXCcE5Y9QrLOcSVc
-         JSeH0knUEAXaUxZRBq/8cFFNIp1EEKuUG3rRU2VaZzdUac5Qw3Y0gmFifSCe0d0RKZ5A
-         aJxw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (1024-bit key) header.d=ultrarisc.com header.i=@ultrarisc.com header.b="R6pxoPtV"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777364805; x=1777969605; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=HEFTgSUmlnkFyVpWcRJdD0EFT7L0hkUrQiYp5djHH68=;
-        b=Dm1xpFltiej+q1vR31qQLzBL5AmyDtrlNhcpHGMGyAbZKdEc+HXL4vv8Hox62GhwSe
-         7VK2W9bbfBxpRaBmFUbHQQ1+/3A2w0+1F7+SEMSFPlrxiFgFEvJLHcom7pWsUt8DMuhc
-         Dn+cdzDJhBbSLm4KUgP5tzTpq8qV638W58HzUl4z7C7oNkyMbW/ZsU41eCwJcww9/nDU
-         WHullVg0j5rtCcm/ZxGDN7jiAlT4E6ituc/b2K0xpFObNBn/dgajjv6RpB0/CG8tg83H
-         hs7hwG5LT6iChmwtE942okGkYtvenSAkOkz1gTmCO1snLkpjejGNLKoiG6l+4tFQ1Rmw
-         EDpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777364805; x=1777969605;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=HEFTgSUmlnkFyVpWcRJdD0EFT7L0hkUrQiYp5djHH68=;
-        b=bQTtIks6XtXOsmMm8fYiXT7ByIoflXL6EJGQDg8Il2WpzAvRhHmHO7+ZCrCiMUcXjA
-         Z74S46RX6wXq2RzWlNA82MmbKeTM6cWgZDRZhB1bwiUAGl7hwKpnrFooXdYngVnoJqEY
-         3aEJBqBdEAPFlbkB3s4hTXL4Ho1JCwxLFsAoiBmSGgZQdyXevaN4cwFFOgGpBZWHnDhU
-         In/5IutPLEpyLUCL8fzPkcWkjt9RiPTuVOxpT+1t5Tfpo0e9zS5etfVTTI9aSriFLV21
-         SbXFJqHF/2N7zC+Np2q+yOD8rnB5uIc38dLBVp2nAu1J7UAjRnx/S4NpbOkE19o6ZgAd
-         2flA==
-X-Gm-Message-State: AOJu0Yw9QDQDz5hZRLJB4l1jYyrGDBdvylMM6sInCvaN/jMPMw6QOLoS
-	B8bqCCYQ7/FAUskz25M1RW32OtaZTT7idR+w0QQw0SPxTVoORqASPaQfR9IRdT/KIIHREz9xndd
-	I0gM2IQg93mQBvvGFGQFoPGm4O0VGwZH6r8rowbL5TYff
-X-Gm-Gg: AeBDieurhZLUXXYN7W9fQ+dqv36vF2xIb1pzCBV5aVVC+2Up4LE29HuiIa3WOsVKRbn
-	13en3AwpbClXWgZtOjliI4Mf/mz+N/3yyYW2xi3Gp6vxITehwvgbZtlGiWj6gGPP8h/+FI2P7dc
-	hs8fflaFEKf5Ozu522XMqKA3svG53Egv9FZ7oKpA8CUjgQB7ljvIn+yBV3PqIBdQUyn1ky26hwW
-	GYv17+vMKXSJWTWm3t7FFXu3pP67dCwGWKNfR2hsbjnKJz6SazEbuXnEHX7ENM8Tdx8e6vtiBax
-	fX5oxeJjvORkro9Z
-X-Received: by 2002:a05:6102:f9c:b0:607:97b7:c283 with SMTP id
- ada2fe7eead31-6280abb28a4mr626712137.14.1777364805246; Tue, 28 Apr 2026
- 01:26:45 -0700 (PDT)
+	d=ultrarisc.com; s=dkim; h=Received:MIME-Version:Content-Type:
+	Content-Transfer-Encoding:Subject:From:To:Cc:In-Reply-To:
+	References:Date:Message-Id; bh=KePaejAKmGTlKVZsIEne9HnS+XEQm8GEA
+	gV1azEh90Q=; b=R6pxoPtVizSzffiUatA+8a+DF2lQV1xkSXK+o/JvMXqrRD1Gb
+	IXeev0BfRHZZQyPJBqMOuywQSG36PeAQ0lh2SR0ylppJOaR99ucLeGCAcptOLpun
+	r4QBdVKxEyXL9wFdneBzLBtMACe4TqO67D9v+3Oy5veiS6AWkJ1ZWsnnp8=
+Received: from [127.0.0.1] (unknown [192.168.100.1])
+	by localhost.localdomain (Coremail) with SMTP id AQAAfwAnYUK5cfBpHBUDAA--.1706S2;
+	Tue, 28 Apr 2026 16:37:13 +0800 (CST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-From: Jiawei liu <liujiawei4419@gmail.com>
-Date: Tue, 28 Apr 2026 16:26:34 +0800
-X-Gm-Features: AVHnY4IN-3w0mY8ufUmkhc8DPi0k0E9AicfZO9gZ-Nmx8yaevoXuTaJ90ngKjoA
-Message-ID: <CAGDm1S3mCv_7usfP0dx9jqj+mt_vBD4z8gu5wVyPbXB2Kh-mgg@mail.gmail.com>
-Subject: [PATCH] serial: 8250_pci: skip WCH PCI serial devices
-To: linux-serial@vger.kernel.org
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: multipart/mixed; boundary="000000000000da79ff065080fdce"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v5 2/4] serial: 8250_dw: build Renesas RZN1 CPR value
+ from DW_UART_CPR_* definitions
+From: Jia Wang <wangjia@ultrarisc.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Jia Wang <wangjia@ultrarisc.com>, 
+ =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Paul Walmsley <pjw@kernel.org>, 
+ Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
+ Alexandre Ghiti <alex@ghiti.fr>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, linux-kernel@vger.kernel.org, 
+ linux-serial@vger.kernel.org, linux-riscv@lists.infradead.org, 
+ devicetree@vger.kernel.org
+In-Reply-To: <afBhkbGLsuqUitOl@ashevche-desk.local>
+References: <20260428-ultrarisc-serial-v5-0-97de63b1e3eb@ultrarisc.com>
+ <20260428-ultrarisc-serial-v5-2-97de63b1e3eb@ultrarisc.com>
+ <afBhkbGLsuqUitOl@ashevche-desk.local>
+Date: Tue, 28 Apr 2026 16:36:28 +0800
+Message-Id: <177736538896.2886867.15148210690849632028.b4-reply@b4>
+X-Mailer: b4 0.15-dev
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777365389; l=2751;
+ i=wangjia@ultrarisc.com; s=20260309; h=from:subject:message-id;
+ bh=BIhqOapgNnxmFfe3qKZl8GPilR7cf2rVzseYikZONhI=;
+ b=3Qkn6OIgn6PUC+UvtN8XqfDX/d/c+/bwCpge0C2foJyPdr1NP0/c0f13y7Vraca80xZhAfO1Q
+ az4DLZaWn6JBfnsAyumzrsf5+bZyYq1UYbj6IBktCBYkZMEa57KXpRK
+X-Developer-Key: i=wangjia@ultrarisc.com; a=ed25519;
+ pk=XvYkrelqJIIzobY7j+nIg8rsfv5kzaOzuc1UPhd087U=
+X-CM-TRANSID:AQAAfwAnYUK5cfBpHBUDAA--.1706S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxWF47AFyUXF48uw1xAFy7Wrg_yoW5GF4fpF
+	W5KF4UtF48Crn7C340yFy2yF4SqFWrGw1IgFyUuF1Dta15Xwn2gryvvFZxtr97ZwsYyayF
+	qFsrtFnxu34Fy3DanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnUUvcSsGvfC2KfnxnUUI43ZEXa7xR_UUUUUUUUU==
+X-CM-SenderInfo: pzdqwylld63zxwud2x1vfou0bp/1tbiAQAKEWnti78ACwAwsR
 
---000000000000da79ff065080fdce
-Content-Type: multipart/alternative; boundary="000000000000da79fd065080fdcc"
+On 2026-04-28 10:28 +0300, Andy Shevchenko wrote:
+> On Tue, Apr 28, 2026 at 01:26:27PM +0800, Jia Wang wrote:
+> > Replace the magic CPR value for Renesas RZ/N1 with a composition using
+> > DW_UART_CPR_* bit/field definitions and FIELD_PREP_CONST().
+> > 
+> > Introduce a helper macro to convert a FIFO size (bytes) into the CPR
+> > FIFO_MODE field value, with BUILD_BUG_ON_ZERO() checks for alignment and
+> > bounds. Use it to replace the literal FIFO_MODE values in the RZN1.
+> 
+> A couple of nit-picks below. After addressing them you can add
+> 
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+>
 
---000000000000da79fd065080fdcc
-Content-Type: text/plain; charset="UTF-8"
+Thanks for the review. I'll address them and add your Reviewed-by tag
+in v6.
+ 
+> ...
+> 
+> >  #include <linux/bitfield.h>
+> >  #include <linux/bits.h>
+> > +#include <linux/build_bug.h>
+> > +#include <linux/align.h>
+> 
+> Preserve order, 'a' goes before 'b'.
+> 
 
-    WCH PCI serial devices implement vendor-specific extensions
-    beyond the standard 16C550 UART. These are not supported by
-    the generic 8250 PCI driver, and binding them may lead to
-    incorrect or suboptimal operation.
+Will fix in v6.
 
-    Skip these devices during probe to avoid misbinding.
+> >  #include <linux/io.h>
+> >  #include <linux/types.h>
+> 
+> ...
+> 
+> >  /* Helper for FIFO size calculation */
+> >  #define DW_UART_CPR_FIFO_SIZE(a)	(FIELD_GET(DW_UART_CPR_FIFO_MODE, (a)) * 16)
+> 
+> > +#define DW_UART_CPR_FIFO_MODE_MAX	0x80
+> 
+> You used decimal values elsewhere (id est 16), use upper limit in decimal
+> as well.
+> 
 
-    Signed-off-by: Jiawei Liu <liujiawei4419@gmail.com>
+This define will be removed in v6.
 
---000000000000da79fd065080fdcc
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+> > +#define DW_UART_CPR_FIFO_MODE_FROM_SIZE(size)				\
+> > +	(BUILD_BUG_ON_ZERO(!IS_ALIGNED((size), 16)) +			\
+> > +	 BUILD_BUG_ON_ZERO(((size) / 16) > DW_UART_CPR_FIFO_MODE_MAX) +	\
+> > +	 ((size) / 16))
+> 
+> I don't see the need in having that maximum being defined separately (we don't
+> have that for 16, no need to have it for 128.
+> 
+> Since some ISA:s have one assembly instruction to get both / and % divisions,
+> it's better to use that instead of IS_ALIGNED(). Can you check code generation
+> for x86_64 / x86?
+> 
+> #define DW_UART_CPR_FIFO_MODE_FROM_SIZE(size)				\
+> 	(BUILD_BUG_ON_ZERO((size) > 2048) + BUILD_BUG_ON_ZERO((size) % 16) + ((size) / 16))
+> 
+> Note, I dropped first division in order to show the upper limit in a plain
+> number since 16 is also FIFO size in bytes.
+> 
+> Also note, this evaluates (size) three times, which might be problematic,
+> but I think we can leave with that for now.
+>
 
-<div dir=3D"ltr">=C2=A0 =C2=A0 WCH PCI serial devices implement vendor-spec=
-ific extensions<br>=C2=A0 =C2=A0 beyond the standard 16C550 UART. These are=
- not supported by<br>=C2=A0 =C2=A0 the generic 8250 PCI driver, and binding=
- them may lead to<br>=C2=A0 =C2=A0 incorrect or suboptimal operation.<br>=
-=C2=A0 =C2=A0 <br>=C2=A0 =C2=A0 Skip these devices during probe to avoid mi=
-sbinding.<br>=C2=A0 =C2=A0 <br>=C2=A0 =C2=A0 Signed-off-by: Jiawei Liu &lt;=
-<a href=3D"mailto:liujiawei4419@gmail.com">liujiawei4419@gmail.com</a>&gt;<=
-/div>
+Makes sense. I'll fold the upper limit into the macro and switch to
+(size) > 2048 and (size) % 16 checks for v6.
 
---000000000000da79fd065080fdcc--
---000000000000da79ff065080fdce
-Content-Type: application/octet-stream; 
-	name="0001-serial-8250-pci-skip-WCH-devices.patch"
-Content-Disposition: attachment; 
-	filename="0001-serial-8250-pci-skip-WCH-devices.patch"
-Content-Transfer-Encoding: base64
-Content-ID: <f_moid26rj0>
-X-Attachment-Id: f_moid26rj0
+In the driver, the macro is used only in static initializers, so the
+constants are fully resolved at compile time.
 
-RnJvbSA1ZTRkNjUyNzhiY2QzMGY5Zjg3N2ZlN2I3ZmZlYWFhZjljODQwOTgzIE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQpGcm9tOiBKaWF3ZWkgTGl1IDxsaXVqaWF3ZWk0NDE5QGdtYWlsLmNvbT4K
-RGF0ZTogVHVlLCAyOCBBcHIgMjAyNiAxNToxMjoyNyArMDgwMApTdWJqZWN0OiBbUEFUQ0ggMS8y
-XSBzZXJpYWw6IDgyNTA6IHBjaTogc2tpcCBXQ0ggZGV2aWNlcwoKV0NIIFBDSSBzZXJpYWwgZGV2
-aWNlcyBpbXBsZW1lbnQgdmVuZG9yLXNwZWNpZmljIGV4dGVuc2lvbnMKYmV5b25kIHRoZSBzdGFu
-ZGFyZCAxNkM1NTAgVUFSVC4gVGhlc2UgYXJlIG5vdCBzdXBwb3J0ZWQgYnkKdGhlIGdlbmVyaWMg
-ODI1MCBQQ0kgZHJpdmVyLCBhbmQgYmluZGluZyB0aGVtIG1heSBsZWFkIHRvCmluY29ycmVjdCBv
-ciBzdWJvcHRpbWFsIG9wZXJhdGlvbi4KClNraXAgdGhlc2UgZGV2aWNlcyBkdXJpbmcgcHJvYmUg
-dG8gYXZvaWQgbWlzYmluZGluZy4KClNpZ25lZC1vZmYtYnk6IEppYXdlaSBMaXUgPGxpdWppYXdl
-aTQ0MTlAZ21haWwuY29tPgotLS0KIGRyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTBfcGNpLmMg
-fCAyMTQgKy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIDEgZmlsZSBjaGFuZ2VkLCAyIGlu
-c2VydGlvbnMoKyksIDIxMiBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9z
-ZXJpYWwvODI1MC84MjUwX3BjaS5jIGIvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9wY2ku
-YwppbmRleCAyZmJkOGYyNjAzYjVmLi4yZDZkZTFjMzNkYWEyIDEwMDY0NAotLS0gYS9kcml2ZXJz
-L3R0eS9zZXJpYWwvODI1MC84MjUwX3BjaS5jCisrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC84MjUw
-LzgyNTBfcGNpLmMKQEAgLTE5MDAsODUgKzE5MDAsNiBAQCBzdGF0aWMgaW50IHBjaV9lZzIwdF9p
-bml0KHN0cnVjdCBwY2lfZGV2ICpkZXYpCiAjZW5kaWYKIH0KIAotc3RhdGljIGludAotcGNpX3dj
-aF9jaDM1M19zZXR1cChzdHJ1Y3Qgc2VyaWFsX3ByaXZhdGUgKnByaXYsCi0JCSAgICBjb25zdCBz
-dHJ1Y3QgcGNpc2VyaWFsX2JvYXJkICpib2FyZCwKLQkJICAgIHN0cnVjdCB1YXJ0XzgyNTBfcG9y
-dCAqcG9ydCwgaW50IGlkeCkKLXsKLQlpZiAoIUlTX0VOQUJMRUQoQ09ORklHX0hBU19JT1BPUlQp
-KQotCQlyZXR1cm4gc2VyaWFsXzgyNTBfd2Fybl9uZWVkX2lvcG9ydChwcml2LT5kZXYpOwotCi0J
-cG9ydC0+cG9ydC5mbGFncyB8PSBVUEZfRklYRURfVFlQRTsKLQlwb3J0LT5wb3J0LnR5cGUgPSBQ
-T1JUXzE2NTUwQTsKLQlyZXR1cm4gcGNpX2RlZmF1bHRfc2V0dXAocHJpdiwgYm9hcmQsIHBvcnQs
-IGlkeCk7Ci19Ci0KLXN0YXRpYyBpbnQKLXBjaV93Y2hfY2gzNTVfc2V0dXAoc3RydWN0IHNlcmlh
-bF9wcml2YXRlICpwcml2LAotCQljb25zdCBzdHJ1Y3QgcGNpc2VyaWFsX2JvYXJkICpib2FyZCwK
-LQkJc3RydWN0IHVhcnRfODI1MF9wb3J0ICpwb3J0LCBpbnQgaWR4KQotewotCWlmICghSVNfRU5B
-QkxFRChDT05GSUdfSEFTX0lPUE9SVCkpCi0JCXJldHVybiBzZXJpYWxfODI1MF93YXJuX25lZWRf
-aW9wb3J0KHByaXYtPmRldik7Ci0KLQlwb3J0LT5wb3J0LmZsYWdzIHw9IFVQRl9GSVhFRF9UWVBF
-OwotCXBvcnQtPnBvcnQudHlwZSA9IFBPUlRfMTY1NTBBOwotCXJldHVybiBwY2lfZGVmYXVsdF9z
-ZXR1cChwcml2LCBib2FyZCwgcG9ydCwgaWR4KTsKLX0KLQotc3RhdGljIGludAotcGNpX3djaF9j
-aDM4eF9zZXR1cChzdHJ1Y3Qgc2VyaWFsX3ByaXZhdGUgKnByaXYsCi0JCSAgICBjb25zdCBzdHJ1
-Y3QgcGNpc2VyaWFsX2JvYXJkICpib2FyZCwKLQkJICAgIHN0cnVjdCB1YXJ0XzgyNTBfcG9ydCAq
-cG9ydCwgaW50IGlkeCkKLXsKLQlpZiAoIUlTX0VOQUJMRUQoQ09ORklHX0hBU19JT1BPUlQpKQot
-CQlyZXR1cm4gc2VyaWFsXzgyNTBfd2Fybl9uZWVkX2lvcG9ydChwcml2LT5kZXYpOwotCi0JcG9y
-dC0+cG9ydC5mbGFncyB8PSBVUEZfRklYRURfVFlQRTsKLQlwb3J0LT5wb3J0LnR5cGUgPSBQT1JU
-XzE2ODUwOwotCXJldHVybiBwY2lfZGVmYXVsdF9zZXR1cChwcml2LCBib2FyZCwgcG9ydCwgaWR4
-KTsKLX0KLQotCi0jZGVmaW5lIENIMzg0X1hJTlRfRU5BQkxFX1JFRyAgIDB4RUIKLSNkZWZpbmUg
-Q0gzODRfWElOVF9FTkFCTEVfQklUICAgMHgwMgotCi1zdGF0aWMgaW50IHBjaV93Y2hfY2gzOHhf
-aW5pdChzdHJ1Y3QgcGNpX2RldiAqZGV2KQotewotCWludCBtYXhfcG9ydDsKLQl1bnNpZ25lZCBs
-b25nIGlvYmFzZTsKLQotCWlmICghSVNfRU5BQkxFRChDT05GSUdfSEFTX0lPUE9SVCkpCi0JCXJl
-dHVybiBzZXJpYWxfODI1MF93YXJuX25lZWRfaW9wb3J0KGRldik7Ci0KLQlzd2l0Y2ggKGRldi0+
-ZGV2aWNlKSB7Ci0JY2FzZSAweDM4NTM6IC8qIDggcG9ydHMgKi8KLQkJbWF4X3BvcnQgPSA4Owot
-CQlicmVhazsKLQlkZWZhdWx0OgotCQlyZXR1cm4gLUVJTlZBTDsKLQl9Ci0KLQlpb2Jhc2UgPSBw
-Y2lfcmVzb3VyY2Vfc3RhcnQoZGV2LCAwKTsKLQlvdXRiKENIMzg0X1hJTlRfRU5BQkxFX0JJVCwg
-aW9iYXNlICsgQ0gzODRfWElOVF9FTkFCTEVfUkVHKTsKLQotCXJldHVybiBtYXhfcG9ydDsKLX0K
-LQotc3RhdGljIHZvaWQgcGNpX3djaF9jaDM4eF9leGl0KHN0cnVjdCBwY2lfZGV2ICpkZXYpCi17
-Ci0JdW5zaWduZWQgbG9uZyBpb2Jhc2U7Ci0KLQlpZiAoIUlTX0VOQUJMRUQoQ09ORklHX0hBU19J
-T1BPUlQpKSB7Ci0JCXNlcmlhbF84MjUwX3dhcm5fbmVlZF9pb3BvcnQoZGV2KTsKLQkJcmV0dXJu
-OwotCX0KLQotCWlvYmFzZSA9IHBjaV9yZXNvdXJjZV9zdGFydChkZXYsIDApOwotCW91dGIoMHgw
-LCBpb2Jhc2UgKyBDSDM4NF9YSU5UX0VOQUJMRV9SRUcpOwotfQotCi0KIHN0YXRpYyBpbnQKIHBj
-aV9zdW5peF9zZXR1cChzdHJ1Y3Qgc2VyaWFsX3ByaXZhdGUgKnByaXYsCiAJCWNvbnN0IHN0cnVj
-dCBwY2lzZXJpYWxfYm9hcmQgKmJvYXJkLApAQCAtMjg4MSw4OCArMjgwMiw2IEBAIHN0YXRpYyBz
-dHJ1Y3QgcGNpX3NlcmlhbF9xdWlyayBwY2lfc2VyaWFsX3F1aXJrc1tdID0gewogCQkuc3ViZGV2
-aWNlCT0gUENJX0FOWV9JRCwKIAkJLnNldHVwCQk9IHBjaV9vbWVnYXBjaV9zZXR1cCwKIAl9LAot
-CS8qIFdDSCBDSDM1MyAxUzFQIGNhcmQgKDE2NTUwIGNsb25lKSAqLwotCXsKLQkJLnZlbmRvciAg
-ICAgICAgID0gUENJX1ZFTkRPUl9JRF9XQ0hDTiwKLQkJLmRldmljZSAgICAgICAgID0gUENJX0RF
-VklDRV9JRF9XQ0hDTl9DSDM1M18xUzFQLAotCQkuc3VidmVuZG9yICAgICAgPSBQQ0lfQU5ZX0lE
-LAotCQkuc3ViZGV2aWNlICAgICAgPSBQQ0lfQU5ZX0lELAotCQkuc2V0dXAgICAgICAgICAgPSBw
-Y2lfd2NoX2NoMzUzX3NldHVwLAotCX0sCi0JLyogV0NIIENIMzUzIDJTMVAgY2FyZCAoMTY1NTAg
-Y2xvbmUpICovCi0JewotCQkudmVuZG9yICAgICAgICAgPSBQQ0lfVkVORE9SX0lEX1dDSENOLAot
-CQkuZGV2aWNlICAgICAgICAgPSBQQ0lfREVWSUNFX0lEX1dDSENOX0NIMzUzXzJTMVAsCi0JCS5z
-dWJ2ZW5kb3IgICAgICA9IFBDSV9BTllfSUQsCi0JCS5zdWJkZXZpY2UgICAgICA9IFBDSV9BTllf
-SUQsCi0JCS5zZXR1cCAgICAgICAgICA9IHBjaV93Y2hfY2gzNTNfc2V0dXAsCi0JfSwKLQkvKiBX
-Q0ggQ0gzNTMgNFMgY2FyZCAoMTY1NTAgY2xvbmUpICovCi0JewotCQkudmVuZG9yICAgICAgICAg
-PSBQQ0lfVkVORE9SX0lEX1dDSENOLAotCQkuZGV2aWNlICAgICAgICAgPSBQQ0lfREVWSUNFX0lE
-X1dDSENOX0NIMzUzXzRTLAotCQkuc3VidmVuZG9yICAgICAgPSBQQ0lfQU5ZX0lELAotCQkuc3Vi
-ZGV2aWNlICAgICAgPSBQQ0lfQU5ZX0lELAotCQkuc2V0dXAgICAgICAgICAgPSBwY2lfd2NoX2No
-MzUzX3NldHVwLAotCX0sCi0JLyogV0NIIENIMzUzIDJTMVBGIGNhcmQgKDE2NTUwIGNsb25lKSAq
-LwotCXsKLQkJLnZlbmRvciAgICAgICAgID0gUENJX1ZFTkRPUl9JRF9XQ0hDTiwKLQkJLmRldmlj
-ZSAgICAgICAgID0gUENJX0RFVklDRV9JRF9XQ0hDTl9DSDM1M18yUzFQRiwKLQkJLnN1YnZlbmRv
-ciAgICAgID0gUENJX0FOWV9JRCwKLQkJLnN1YmRldmljZSAgICAgID0gUENJX0FOWV9JRCwKLQkJ
-LnNldHVwICAgICAgICAgID0gcGNpX3djaF9jaDM1M19zZXR1cCwKLQl9LAotCS8qIFdDSCBDSDM1
-MiAyUyBjYXJkICgxNjU1MCBjbG9uZSkgKi8KLQl7Ci0JCS52ZW5kb3IJCT0gUENJX1ZFTkRPUl9J
-RF9XQ0hDTiwKLQkJLmRldmljZQkJPSBQQ0lfREVWSUNFX0lEX1dDSENOX0NIMzUyXzJTLAotCQku
-c3VidmVuZG9yCT0gUENJX0FOWV9JRCwKLQkJLnN1YmRldmljZQk9IFBDSV9BTllfSUQsCi0JCS5z
-ZXR1cAkJPSBwY2lfd2NoX2NoMzUzX3NldHVwLAotCX0sCi0JLyogV0NIIENIMzU1IDRTIGNhcmQg
-KDE2NTUwIGNsb25lKSAqLwotCXsKLQkJLnZlbmRvcgkJPSBQQ0lfVkVORE9SX0lEX1dDSENOLAot
-CQkuZGV2aWNlCQk9IFBDSV9ERVZJQ0VfSURfV0NIQ05fQ0gzNTVfNFMsCi0JCS5zdWJ2ZW5kb3IJ
-PSBQQ0lfQU5ZX0lELAotCQkuc3ViZGV2aWNlCT0gUENJX0FOWV9JRCwKLQkJLnNldHVwCQk9IHBj
-aV93Y2hfY2gzNTVfc2V0dXAsCi0JfSwKLQkvKiBXQ0ggQ0gzODIgMlMgY2FyZCAoMTY4NTAgY2xv
-bmUpICovCi0JewotCQkudmVuZG9yICAgICAgICAgPSBQQ0lfVkVORE9SX0lEX1dDSElDLAotCQku
-ZGV2aWNlICAgICAgICAgPSBQQ0lfREVWSUNFX0lEX1dDSElDX0NIMzgyXzJTLAotCQkuc3VidmVu
-ZG9yICAgICAgPSBQQ0lfQU5ZX0lELAotCQkuc3ViZGV2aWNlICAgICAgPSBQQ0lfQU5ZX0lELAot
-CQkuc2V0dXAgICAgICAgICAgPSBwY2lfd2NoX2NoMzh4X3NldHVwLAotCX0sCi0JLyogV0NIIENI
-MzgyIDJTMVAgY2FyZCAoMTY4NTAgY2xvbmUpICovCi0JewotCQkudmVuZG9yICAgICAgICAgPSBQ
-Q0lfVkVORE9SX0lEX1dDSElDLAotCQkuZGV2aWNlICAgICAgICAgPSBQQ0lfREVWSUNFX0lEX1dD
-SElDX0NIMzgyXzJTMVAsCi0JCS5zdWJ2ZW5kb3IgICAgICA9IFBDSV9BTllfSUQsCi0JCS5zdWJk
-ZXZpY2UgICAgICA9IFBDSV9BTllfSUQsCi0JCS5zZXR1cCAgICAgICAgICA9IHBjaV93Y2hfY2gz
-OHhfc2V0dXAsCi0JfSwKLQkvKiBXQ0ggQ0gzODQgNFMgY2FyZCAoMTY4NTAgY2xvbmUpICovCi0J
-ewotCQkudmVuZG9yICAgICAgICAgPSBQQ0lfVkVORE9SX0lEX1dDSElDLAotCQkuZGV2aWNlICAg
-ICAgICAgPSBQQ0lfREVWSUNFX0lEX1dDSElDX0NIMzg0XzRTLAotCQkuc3VidmVuZG9yICAgICAg
-PSBQQ0lfQU5ZX0lELAotCQkuc3ViZGV2aWNlICAgICAgPSBQQ0lfQU5ZX0lELAotCQkuc2V0dXAg
-ICAgICAgICAgPSBwY2lfd2NoX2NoMzh4X3NldHVwLAotCX0sCi0JLyogV0NIIENIMzg0IDhTIGNh
-cmQgKDE2ODUwIGNsb25lKSAqLwotCXsKLQkJLnZlbmRvciAgICAgICAgID0gUENJX1ZFTkRPUl9J
-RF9XQ0hJQywKLQkJLmRldmljZSAgICAgICAgID0gUENJX0RFVklDRV9JRF9XQ0hJQ19DSDM4NF84
-UywKLQkJLnN1YnZlbmRvciAgICAgID0gUENJX0FOWV9JRCwKLQkJLnN1YmRldmljZSAgICAgID0g
-UENJX0FOWV9JRCwKLQkJLmluaXQgICAgICAgICAgID0gcGNpX3djaF9jaDM4eF9pbml0LAotCQku
-ZXhpdAkJPSBwY2lfd2NoX2NoMzh4X2V4aXQsCi0JCS5zZXR1cCAgICAgICAgICA9IHBjaV93Y2hf
-Y2gzOHhfc2V0dXAsCi0JfSwKIAkvKgogCSAqIEJyb2FkY29tIFRydU1hbmFnZSAoTmV0WHRyZW1l
-KQogCSAqLwpAQCAtMzIxNCw5ICszMDUzLDcgQEAgZW51bSBwY2lfYm9hcmRfbnVtX3QgewogCXBi
-bl9maW50ZWtfRjgxNTA0QSwKIAlwYm5fZmludGVrX0Y4MTUwOEEsCiAJcGJuX2ZpbnRla19GODE1
-MTJBLAotCXBibl93Y2gzODJfMiwKLQlwYm5fd2NoMzg0XzQsCi0JcGJuX3djaDM4NF84LAorCiAJ
-cGJuX3N1bml4X3BjaV8xcywKIAlwYm5fc3VuaXhfcGNpXzJzLAogCXBibl9zdW5peF9wY2lfNHMs
-CkBAIC0zOTMyLDI3ICszNzY5LDcgQEAgc3RhdGljIHN0cnVjdCBwY2lzZXJpYWxfYm9hcmQgcGNp
-X2JvYXJkc1tdID0gewogCQkudWFydF9vZmZzZXQJPSA4LAogCQkuYmFzZV9iYXVkCT0gMTE1MjAw
-LAogCX0sCi0JW3Bibl93Y2gzODJfMl0gPSB7Ci0JCS5mbGFncwkJPSBGTF9CQVNFMCwKLQkJLm51
-bV9wb3J0cwk9IDIsCi0JCS5iYXNlX2JhdWQJPSAxMTUyMDAsCi0JCS51YXJ0X29mZnNldAk9IDgs
-Ci0JCS5maXJzdF9vZmZzZXQJPSAweEMwLAotCX0sCi0JW3Bibl93Y2gzODRfNF0gPSB7Ci0JCS5m
-bGFncwkJPSBGTF9CQVNFMCwKLQkJLm51bV9wb3J0cwk9IDQsCi0JCS5iYXNlX2JhdWQgICAgICA9
-IDExNTIwMCwKLQkJLnVhcnRfb2Zmc2V0ICAgID0gOCwKLQkJLmZpcnN0X29mZnNldCAgID0gMHhD
-MCwKLQl9LAotCVtwYm5fd2NoMzg0XzhdID0gewotCQkuZmxhZ3MJCT0gRkxfQkFTRTAsCi0JCS5u
-dW1fcG9ydHMJPSA4LAotCQkuYmFzZV9iYXVkICAgICAgPSAxMTUyMDAsCi0JCS51YXJ0X29mZnNl
-dCAgICA9IDgsCi0JCS5maXJzdF9vZmZzZXQgICA9IDB4MDAsCi0JfSwKKwogCVtwYm5fc3VuaXhf
-cGNpXzFzXSA9IHsKIAkJLm51bV9wb3J0cwk9IDEsCiAJCS5iYXNlX2JhdWQgICAgICA9IDkyMTYw
-MCwKQEAgLTYxNzksMzMgKzU5OTYsNiBAQCBzdGF0aWMgY29uc3Qgc3RydWN0IHBjaV9kZXZpY2Vf
-aWQgc2VyaWFsX3BjaV90YmxbXSA9IHsKIAkJUENJX0FOWV9JRCwgUENJX0FOWV9JRCwKIAkJMCwg
-MCwgcGJuX2IwX2J0XzJfMTE1MjAwIH0sCiAKLQkvKgotCSAqIFdDSCBDSDM1MyBzZXJpZXMgZGV2
-aWNlczogVGhlIDJTMVAgaXMgaGFuZGxlZCBieSBwYXJwb3J0X3NlcmlhbAotCSAqIHNvIG5vdCBs
-aXN0ZWQgaGVyZS4KLQkgKi8KLQl7CVBDSV9WRU5ET1JfSURfV0NIQ04sIFBDSV9ERVZJQ0VfSURf
-V0NIQ05fQ0gzNTNfNFMsCi0JCVBDSV9BTllfSUQsIFBDSV9BTllfSUQsCi0JCTAsIDAsIHBibl9i
-MF9idF80XzExNTIwMCB9LAotCi0JewlQQ0lfVkVORE9SX0lEX1dDSENOLCBQQ0lfREVWSUNFX0lE
-X1dDSENOX0NIMzUzXzJTMVBGLAotCQlQQ0lfQU5ZX0lELCBQQ0lfQU5ZX0lELAotCQkwLCAwLCBw
-Ym5fYjBfYnRfMl8xMTUyMDAgfSwKLQotCXsJUENJX1ZFTkRPUl9JRF9XQ0hDTiwgUENJX0RFVklD
-RV9JRF9XQ0hDTl9DSDM1NV80UywKLQkJUENJX0FOWV9JRCwgUENJX0FOWV9JRCwKLQkJMCwgMCwg
-cGJuX2IwX2J0XzRfMTE1MjAwIH0sCi0KLQl7CVBDSV9WRU5ET1JfSURfV0NISUMsIFBDSV9ERVZJ
-Q0VfSURfV0NISUNfQ0gzODJfMlMsCi0JCVBDSV9BTllfSUQsIFBDSV9BTllfSUQsCi0JCTAsIDAs
-IHBibl93Y2gzODJfMiB9LAotCi0JewlQQ0lfVkVORE9SX0lEX1dDSElDLCBQQ0lfREVWSUNFX0lE
-X1dDSElDX0NIMzg0XzRTLAotCQlQQ0lfQU5ZX0lELCBQQ0lfQU5ZX0lELAotCQkwLCAwLCBwYm5f
-d2NoMzg0XzQgfSwKLQotCXsJUENJX1ZFTkRPUl9JRF9XQ0hJQywgUENJX0RFVklDRV9JRF9XQ0hJ
-Q19DSDM4NF84UywKLQkJUENJX0FOWV9JRCwgUENJX0FOWV9JRCwKLQkJMCwgMCwgcGJuX3djaDM4
-NF84IH0sCiAJLyoKIAkgKiBSZWFsdGVrIFJlYWxNYW5hZ2UKIAkgKi8KLS0gCjIuMzQuMQoK
---000000000000da79ff065080fdce--
+I also checked code generation on x86_64/x86: both IS_ALIGNED() and % 16
+produce identical instructions at -O2. I'll still switch to % 16 as you
+suggest for clarity.
+
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
+>
+
+Best Regards,
+Jia Wang 
+
+
