@@ -1,109 +1,108 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 726643F54C7;
-	Tue, 28 Apr 2026 10:58:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D44FE3E639B;
+	Tue, 28 Apr 2026 11:21:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=63.228.1.57
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777373939; cv=none; b=i82dEWh/zNajLy3+quJNW3F2F22aasyx2EeaNKDeOaKqtFTa5izDSkrHX9hWSiUb1BgiTu/0+1CHpu7fqW3XLSXdbdsNtYWEVGAcegiM8eNRyKZ+v5ti+gYmQO2EW0hY5amMBbx63mCtvZhV8EndJ6hiZpYmm8xNK09VnrLW+/o=
+	t=1777375287; cv=none; b=rsLv5ksg+pZccawDdmqPDJtrde+qLU4mI+UjlpegBcAMMWRV+pcpyRQdnHPCcQR4zxv9unPXU9QkuPaQjm7B8GoMYylO7ATav9HNfdZZLS3ZV2quCKKN36PvemkmRjlawVOQjlR6tHRs3rWhre5HFI2q9XrRRcFu0VMUyBaPZMw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777373939; c=relaxed/simple;
-	bh=MGoeypASKD4rtePXz/VKClp1Ph4phRySb1UqKEwoHIs=;
+	s=arc-20240116; t=1777375287; c=relaxed/simple;
+	bh=5DkX/L9B3d/cRrLHprvgAdk9AfWqqBG9xKTQLL8w4bk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QAPEdFzcy29XvB+Qns2e4QPxozk8K+DEXwFAS7pHUlNPwuwwOWvL83LvFT+MImATYfpfFUFCwra0ClAKNxChMU36K31JGZfJB06FG9CHK/QTS9g6fr0QBDB+RtZaPIaM/2J8226F/5ycpODy+uSuLhPfbqfluWfzuUKT4BI+Na8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bV2HyjaQ; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bV2HyjaQ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777373939; x=1808909939;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=MGoeypASKD4rtePXz/VKClp1Ph4phRySb1UqKEwoHIs=;
-  b=bV2HyjaQEqvrwmOzoUlVZ9YJ9UUBudOnPSxUY5cU/Q7FYVABgOqi7fTI
-   SSIgEcl+BLQtqPiWGzXwgRGWZio/oGV5+TkCTQteOs7LYwKD1wocD3xUy
-   27HMvTyV8ZxUJdy2SeTRF3gOKsvqWj8hTq2THFX1jsOFAG4EouO94C50c
-   ZN/vTeI7A1UE1c8kaTWiP9uRBY0v8rgfwPjKT8WQ4nCDyu6VXw/JaZRY6
-   OLygnOc3TQewGNMnCb8hLVWLsV6W3k/Iw6hgrTy4Ax2hN9Er5H0E70JUs
-   PWVr3g6Xi6n6lkEXfLMAhuS7g1MUFqqWmJ2PrXg+umj0NQpwia7VcXxI0
-   A==;
-X-CSE-ConnectionGUID: N37+bIkIR9SozKyHPwRckg==
-X-CSE-MsgGUID: wzocW7Y6QVuFMDasLI1Xbg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11769"; a="81883651"
-X-IronPort-AV: E=Sophos;i="6.23,204,1770624000"; 
-   d="scan'208";a="81883651"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2026 03:58:59 -0700
-X-CSE-ConnectionGUID: +MQNRSAzTpyEIDA78i1obA==
-X-CSE-MsgGUID: JyjeK03hQvy4AyL355vWuQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,204,1770624000"; 
-   d="scan'208";a="232914395"
-Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.213])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2026 03:58:55 -0700
-Date: Tue, 28 Apr 2026 13:58:52 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Jia Wang <wangjia@ultrarisc.com>
-Cc: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Paul Walmsley <pjw@kernel.org>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	linux-serial <linux-serial@vger.kernel.org>,
-	linux-riscv@lists.infradead.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v5 2/4] serial: 8250_dw: build Renesas RZN1 CPR value
- from DW_UART_CPR_* definitions
-Message-ID: <afCS7GEG7gtyC7RH@ashevche-desk.local>
-References: <20260428-ultrarisc-serial-v5-0-97de63b1e3eb@ultrarisc.com>
- <20260428-ultrarisc-serial-v5-2-97de63b1e3eb@ultrarisc.com>
- <afBhkbGLsuqUitOl@ashevche-desk.local>
- <23c80500-f2c1-0eb3-f640-00f7b108059b@linux.intel.com>
- <177736726936.2886867.7725295920724488690.b4-reply@b4>
+	 Content-Type:Content-Disposition:In-Reply-To; b=ifTVo8zGagZ/MdjS/wuYsnorXKSpevC5JrwBnXijCGbLDkP4n0uhlrMnDm5YbFML5zbc/ed6U1ZpueaIm5J+BoI9Q68K4BirJZ1cHKBEdd09J0VmkeuTJuvVmAyjq1vl2EUPTwOpOaF/9cyCGZ3sr9duv3ZqHA/bN7RVjE4yzSQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kernel.crashing.org; spf=pass smtp.mailfrom=kernel.crashing.org; arc=none smtp.client-ip=63.228.1.57
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kernel.crashing.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kernel.crashing.org
+Received: from gate.crashing.org (localhost [127.0.0.1])
+	by gate.crashing.org (8.18.1/8.18.1/Debian-2) with ESMTP id 63SBKIxF1057213;
+	Tue, 28 Apr 2026 06:20:18 -0500
+Received: (from segher@localhost)
+	by gate.crashing.org (8.18.1/8.18.1/Submit) id 63SBKHXo1057211;
+	Tue, 28 Apr 2026 06:20:17 -0500
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date: Tue, 28 Apr 2026 06:20:17 -0500
+From: Segher Boessenkool <segher@kernel.crashing.org>
+To: Yury Norov <ynorov@nvidia.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>,
+        "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Laight <david.laight.linux@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>, linux-alpha@vger.kernel.org,
+        Yury Norov <yury.norov@gmail.com>, linux-kernel@vger.kernel.org,
+        linux-snps-arc@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, kvm@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+        sparclinux@vger.kernel.org, linux-um@lists.infradead.org,
+        dmaengine@vger.kernel.org, linux-efi@vger.kernel.org,
+        linux-fsi@lists.ozlabs.org, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+        xen-devel@lists.xenproject.org, linux-fsdevel@vger.kernel.org,
+        ocfs2-devel@lists.linux.dev, bpf@vger.kernel.org,
+        kasan-dev@googlegroups.com, linux-mm@kvack.org,
+        linux-x25@vger.kernel.org, rust-for-linux@vger.kernel.org,
+        linux-sound@vger.kernel.org, sound-open-firmware@alsa-project.org,
+        linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org,
+        loongarch@lists.linux.dev, linux-m68k@vger.kernel.org,
+        linux-openrisc@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-sh@vger.kernel.org, linux-arch@vger.kernel.org
+Subject: Re: [RFC PATCH v1 7/9] x86: Add unsafe_copy_from_user()
+Message-ID: <afCX8WlnEFUei1y6@gate>
+References: <cover.1777306795.git.chleroy@kernel.org>
+ <0ee46bb228d97163fbdc14f2a7c52b93d8bc34ce.1777306795.git.chleroy@kernel.org>
+ <ae-j2_QirCySZD02@yury>
+ <63a4d0f6-0eb3-48cd-9f98-bf7b223b2606@kernel.org>
+ <ae-2yLWSGnfeTvh1@yury>
+ <CAHk-=wgPrLy0FR3sEWBYQuNAac1axDASYMnTuPuxEU0WytzL7w@mail.gmail.com>
+ <ae_jeJLlVWjJ4sOY@yury>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <177736726936.2886867.7725295920724488690.b4-reply@b4>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <ae_jeJLlVWjJ4sOY@yury>
 
-On Tue, Apr 28, 2026 at 05:07:49PM +0800, Jia Wang wrote:
-> On 2026-04-28 11:41 +0300, Ilpo Järvinen wrote:
-> > On Tue, 28 Apr 2026, Andy Shevchenko wrote:
-> > > On Tue, Apr 28, 2026 at 01:26:27PM +0800, Jia Wang wrote:
+Hi!
 
-...
-
-> > #define DW_UART_CPR_FIFO_MODE_FROM_SIZE(size)			\
-> > ({								\
-> > 	typeof (size) __size = size;				\
-> > 								\
-> > 	static_assert(IS_ALIGNED((__size), 16));		\
-> > 	static_assert(__size <= DW_UART_CPR_FIFO_MODE_MAX);	\
-> > 								\
-> > 	FIELD_PREP_CONST(DW_UART_CPR_FIFO_MODE, __size / 16);	\
-> > })
+On Mon, Apr 27, 2026 at 06:30:16PM -0400, Yury Norov wrote:
+> On Mon, Apr 27, 2026 at 02:52:05PM -0700, Linus Torvalds wrote:
+> > On Mon, 27 Apr 2026 at 12:19, Yury Norov <ynorov@nvidia.com> wrote:
+> > >
+> > > This is what Linus said when added x86 implementation for copy_from_user()
+> > > in c512c69187197:
+> > 
+> > Note that some things have happily changed in the six+ years since...
+> > 
+> > >   That's partly because we have no current users of it, but also partly
+> > >   because the copy_from_user() case is slightly different and cannot
+> > >   efficiently be implemented in terms of a unsafe_get_user() loop (because
+> > >   gcc can't do asm goto with outputs).
+> > 
+> > now everybody can do asm goto with outputs.
+> > 
+> > Yes, it's disabled on older versions, so it's not *always* available,
+> > but all modern versions do it. And if you care about performance, you
+> > won't be using an old compiler.
 > 
-> Thanks. I tried that approach, but the statement-expression form does
-> not work in this case because the helper is used in static initializers.
-> So I'll keep it as a plain expression macro for now, and just rework it
-> into a cleaner multi-line form.
+> The minimal GCC version is 8.1, and asm goto with outputs is supported
+> since GCC-11. That would brake the build, if we just switch to using it
+> without "CC_IS_GCC && (GCC_VERSION >= 110100)" guard.
+> 
+> Is it worth to maintain 2 version of the function? I don't know...
 
-Still you can move FIELD_PREP_CONST() into it.
+GCC 11 was released five years and a day ago.  The last GCC 11 release
+(that of 11.5) is not even two years ago though (but there will be no
+more!)
 
--- 
-With Best Regards,
-Andy Shevchenko
+So it would be not conservative at all to require GCC 11 as minimum now,
+some people might even call it a bit aggressive.  But in a year (or
+maybe two) the lay of the land will be rather different.
 
 
+Segher
