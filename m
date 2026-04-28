@@ -1,36 +1,36 @@
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06FF6450915;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 711A744DB6B;
 	Tue, 28 Apr 2026 17:54:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777398877; cv=none; b=u9QFwhV41A2weV1i/tKF6nA8HH9z1s3W7T1yvqNQjus9GiCVgxdkGrzZVrwV85h9QpEpuuf2aJ7wP+zPYr5DyhB23BOmkq7Ovwm+0igRsG86cQ9PZR6+YJf0iP4rM7j74OSNa/8lOE1uaCb/4ZXUOk6hLc4Jxstw2AqhjeaPxds=
+	t=1777398878; cv=none; b=XX2wLdKESdmo5Yvai7NmxjwiJmGhpP9uc7MwgoBzklGgU8baVYMx2Mt4o9Tj8JyCUNIyy2o0NL7PQn78bSKoxzad0DuD/GWWZPlGQUZhlfY6TtcCqhnRxNoFXOEtLk6ThSsiYKjNAMzrLrNFYXI0r2NQen5Kprmwki4eXxIxTbU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777398877; c=relaxed/simple;
-	bh=JiOdqUzOqSvFzaiuy1yqf6MtmcBEiohcgPOVOP4/lB4=;
+	s=arc-20240116; t=1777398878; c=relaxed/simple;
+	bh=TLYDd+Yy/gHnM4LTrPqLjWEuY3pH1D3wpPYh7GiMDZE=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=enKPsyTrhZRZtFvJk9HR0NpqLyn5dl3PJNfbRwXhnupteQkF2fBD1ir1KjXDo8lE6WuwZbJb5xYZgPSGNzxMlV8TtwYS6+yq6hnyzf4HQ9NSklUvVB45Z6mu/vzSiVqZIEMU0a7NOxe/w8kvaOfE8bHz/9W/GswptqndJCGf7cQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=GudmAl+e; arc=none smtp.client-ip=162.243.120.170
+	 In-Reply-To:To:Cc; b=kY6xbyf8FhD6JGQbg73JiLBXyi0LSvTTdYSxW2t00eNYYJKKVY8TkhYvxqAnjS1A4wee7YoTOzBJsTcyOUgoRBRuj9LEofimibab+aPpZnAmwZKpHrMjaHeQkgEO2x5FgbK7tDluR/7ufvx1v2PHW3CFsV65wFFbaAtoyC1436k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=f3hxVY/W; arc=none smtp.client-ip=162.243.120.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="GudmAl+e"
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="f3hxVY/W"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
 	; s=default; h=Cc:To:Message-Id:Content-Transfer-Encoding:MIME-Version:
 	Subject:Date:From:subject:date:message-id:reply-to;
-	bh=YZYiDWbW457QwQKFpo4Etol5I2BYhCkR5UyGIELMXRI=; b=GudmAl+ec3J4J/x5EQMpQcOdUm
-	3TthZD/tgKOaWuc7aE5HmIJOZhMVsbgrHWl65vxuFqNnUQzcg+4Rvy4OSjRqESPGiXue/On05EO87
-	3otcE6TiKAkFsW5zlMxdL668iS/sHh+Vp2cOcBYqbw+2shnWyF+LvuqcEvaHIjbcghG8=;
+	bh=NTgU9JuUtBjg1NMLiyaOg4aZowwK2cJ1L0NIxrv2fdY=; b=f3hxVY/WdUdrEI7K8Ld1T+9TJ7
+	XkaWA9sDmJzgVmr76XDLck/JL7tn2nSVv0z8ueVMg4dDbTROifU2/ly4AOaoY6tOOm7lfcgNz4MO8
+	/0kUcMegMae/0d6sHBxVlfWIcy22CyCqa8z22Z610tenv+GzAVUUDeWSc/cdCRKfa+iw=;
 Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168] helo=pettiford.lan)
 	by mail.hugovil.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.98.2)
 	(envelope-from <hugo@hugovil.com>)
-	id 1wHmdm-000000004cz-3BC1;
-	Tue, 28 Apr 2026 13:54:34 -0400
+	id 1wHmdg-000000004cz-0ZeR;
+	Tue, 28 Apr 2026 13:54:28 -0400
 From: Hugo Villeneuve <hugo@hugovil.com>
-Date: Tue, 28 Apr 2026 13:54:01 -0400
-Subject: [PATCH v2 15/15] serial: uniformize serial port I/O infos display
+Date: Tue, 28 Apr 2026 13:53:47 -0400
+Subject: [PATCH v2 01/15] serial: 8250_hub6: add hub6_match_port()
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -38,8 +38,8 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260428-tty-upio-v2-15-01c1857cf761@dimonoff.com>
+Content-Transfer-Encoding: 8bit
+Message-Id: <20260428-tty-upio-v2-1-01c1857cf761@dimonoff.com>
 References: <20260428-tty-upio-v2-0-01c1857cf761@dimonoff.com>
 In-Reply-To: <20260428-tty-upio-v2-0-01c1857cf761@dimonoff.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
@@ -53,143 +53,75 @@ X-Spam_bar: -
 
 From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Uniformize serial port I/O infos display from three different functions
-that display mostly the same information, but with some variations, by
-adding a common function.
+Move the entire hub6 related match port check into its own function in
+8250_hub6.c and add a stub for the case when hub6 code is not even built
+into kernel.
 
+Suggested-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 ---
-Maybe the width information could be dropped entirely?
----
- drivers/tty/serial/earlycon.c    | 13 +++-------
- drivers/tty/serial/serial_core.c | 52 +++++++++++++++++++++++++++-------------
- include/linux/serial_core.h      |  1 +
- 3 files changed, 40 insertions(+), 26 deletions(-)
+ drivers/tty/serial/8250/8250.h      | 7 +++++++
+ drivers/tty/serial/8250/8250_hub6.c | 6 ++++++
+ drivers/tty/serial/serial_core.c    | 4 ++--
+ 3 files changed, 15 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-index e799feaa14bf1ac7c1a5677cd84490e7c486449b..ce740cdc7cebffca0b4f6be98b8bca66540af72d 100644
---- a/drivers/tty/serial/earlycon.c
-+++ b/drivers/tty/serial/earlycon.c
-@@ -75,19 +75,12 @@ static void __init earlycon_print_info(struct earlycon_device *device)
+diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+index 77fe0588fd6bd5c5baac0fa03b7c466742aa9432..9d1068d0489dc4285b1d30489926bd676bcbe60e 100644
+--- a/drivers/tty/serial/8250/8250.h
++++ b/drivers/tty/serial/8250/8250.h
+@@ -334,6 +334,13 @@ int fintek_8250_probe(struct uart_8250_port *uart);
+ static inline int fintek_8250_probe(struct uart_8250_port *uart) { return 0; }
+ #endif
+ 
++#ifdef CONFIG_SERIAL_8250_HUB6
++bool hub6_match_port(const struct uart_port *port1, const struct uart_port *port2);
++#else
++static inline bool hub6_match_port(const struct uart_port *port1, const struct uart_port *port2)
++{ return false; }
++#endif
++
+ #ifdef CONFIG_ARCH_OMAP1
+ #include <linux/soc/ti/omap1-soc.h>
+ static inline int is_omap1_8250(struct uart_8250_port *pt)
+diff --git a/drivers/tty/serial/8250/8250_hub6.c b/drivers/tty/serial/8250/8250_hub6.c
+index 273f59b9bca555e9fb035005d3df2089c5b0a039..eae32c924e29bcaf608d66988aca461b9a53dc91 100644
+--- a/drivers/tty/serial/8250/8250_hub6.c
++++ b/drivers/tty/serial/8250/8250_hub6.c
+@@ -41,6 +41,12 @@ static struct platform_device hub6_device = {
+ 	},
+ };
+ 
++bool hub6_match_port(const struct uart_port *port1, const struct uart_port *port2)
++{
++	return port1->iobase == port2->iobase && port1->hub6 == port2->hub6;
++}
++EXPORT_SYMBOL_GPL(hub6_match_port);
++
+ static int __init hub6_init(void)
  {
- 	struct console *earlycon = device->con;
- 	struct uart_port *port = &device->port;
--	char address[64] = "";
-+	char ioinfos[64];
- 
--	if (uart_iotype_mmio(port->iotype))
--		scnprintf(address, sizeof(address), " at MMIO%s %pa",
--			  (port->iotype == UPIO_MEM) ? "" :
--			  (port->iotype == UPIO_MEM16) ? "16" :
--			  (port->iotype == UPIO_MEM32) ? "32" : "32be",
--			  &port->mapbase);
--	else if (uart_iotype_legacy_io(port->iotype))
--		scnprintf(address, sizeof(address), " at I/O port 0x%lx", port->iobase);
-+	uart_get_ioinfos(port, ioinfos, sizeof(ioinfos));
- 
- 	pr_info("%s%d%s (options '%s')\n", earlycon->name, earlycon->index,
--		address, device->options);
-+		ioinfos, device->options);
- }
- 
- static int __init parse_options(struct earlycon_device *device, char *options)
+ 	return platform_device_register(&hub6_device);
 diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 0e015477848504e37afb34c8088957083f1662c7..b9a9225d99b616a7f691a8f990fd77ab02609012 100644
+index 89cebdd278410a5a97f3f5ee1b9c171715145067..7354f8af4853d34e5e819c2887f287970c653b69 100644
 --- a/drivers/tty/serial/serial_core.c
 +++ b/drivers/tty/serial/serial_core.c
-@@ -2002,6 +2002,7 @@ static void uart_line_info(struct seq_file *m, struct uart_state *state)
- 	struct tty_port *port = &state->port;
- 	enum uart_pm_state pm_state;
- 	struct uart_port *uport;
-+	char ioinfos[64];
- 	char stat_buf[32];
- 	unsigned int status;
+@@ -33,6 +33,7 @@
+ #include <linux/uaccess.h>
  
-@@ -2013,10 +2014,8 @@ static void uart_line_info(struct seq_file *m, struct uart_state *state)
+ #include "serial_base.h"
++#include "8250/8250.h" /* For hub6_match_port() */
  
- 	seq_printf(m, "%u: uart:%s", uport->line, uart_type(uport));
- 
--	if (uart_iotype_mmio(uport->iotype))
--		seq_printf(m, " mmio:%pa", &uport->mapbase);
--	else if (uart_iotype_legacy_io(uport->iotype))
--		seq_printf(m, " port:%08lX", uport->iobase);
-+	uart_get_ioinfos(uport, ioinfos, sizeof(ioinfos));
-+	seq_printf(m, "%s", ioinfos);
- 
- 	seq_printf(m, " irq:%u", uport->irq);
- 
-@@ -2480,26 +2479,47 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
- }
- EXPORT_SYMBOL(uart_resume_port);
- 
-+static const char *uart_get_mmio_width(struct uart_port *port)
-+{
-+	switch (port->iotype) {
-+	case UPIO_MEM16:
-+		return "16";
-+	case UPIO_MEM32:
-+	case UPIO_MEM32BE:
-+		return "32be";
-+	case UPIO_AU:
-+	case UPIO_MEM:
-+	default:
-+		return "";
-+	}
-+}
-+
-+void uart_get_ioinfos(struct uart_port *port, char *buf, size_t size)
-+{
-+	buf[0] = '\0';
-+
-+	if (uart_iotype_mmio(port->iotype)) {
-+		scnprintf(buf, size, " MMIO%s:%pa", uart_get_mmio_width(port), &port->mapbase);
-+	} else if (uart_iotype_legacy_io(port->iotype)) {
-+		if (port->iotype == UPIO_PORT)
-+			scnprintf(buf, size, " I/O:0x%lx", port->iobase);
-+		else if (port->iotype == UPIO_HUB6)
-+			scnprintf(buf, size, " I/O:0x%lx, offset 0x%x", port->iobase, port->hub6);
-+	}
-+}
-+EXPORT_SYMBOL(uart_get_ioinfos);
-+
- static inline void
- uart_report_port(struct uart_driver *drv, struct uart_port *port)
- {
--	char address[64] = "";
-+	char ioinfos[64];
- 
--	if (uart_iotype_mmio(port->iotype))
--		scnprintf(address, sizeof(address), " at MMIO %pa", &port->mapbase);
--	else if (uart_iotype_legacy_io(port->iotype)) {
--		if (port->iotype == UPIO_PORT)
--			scnprintf(address, sizeof(address), " at I/O 0x%lx", port->iobase);
--		else if (port->iotype == UPIO_HUB6)
--			scnprintf(address, sizeof(address), " at I/O 0x%lx offset 0x%x",
--				  port->iobase, port->hub6);
--	}
-+	uart_get_ioinfos(port, ioinfos, sizeof(ioinfos));
- 
- 	pr_info("%s%s%s%s (irq = %u, base_baud = %u) is a %s\n",
- 		port->dev ? dev_name(port->dev) : "",
- 		port->dev ? ": " : "",
--		port->name,
--		address, port->irq, port->uartclk / 16, uart_type(port));
-+		port->name, ioinfos, port->irq, port->uartclk / 16, uart_type(port));
- 
- 	/* The magic multiplier feature is a bit obscure, so report it too.  */
- 	if (port->flags & UPF_MAGIC_MULTIPLIER)
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 626dd939c53c9f920d71aadd360ec0ea0bacce0d..1289e812b40f3d7b7a02ff1a87eaf649e71e0d2f 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -1308,6 +1308,7 @@ static inline int uart_handle_break(struct uart_port *port)
- 
- int uart_get_rs485_mode(struct uart_port *port);
- 
-+void uart_get_ioinfos(struct uart_port *port, char *buf, size_t size);
- bool uart_iotype_mmio(enum uart_iotype iotype);
- bool uart_iotype_legacy_io(enum uart_iotype iotype);
- 
+ /*
+  * This is used to lock changes in serial line configuration.
+@@ -3198,8 +3199,7 @@ bool uart_match_port(const struct uart_port *port1,
+ 	case UPIO_PORT:
+ 		return port1->iobase == port2->iobase;
+ 	case UPIO_HUB6:
+-		return port1->iobase == port2->iobase &&
+-		       port1->hub6   == port2->hub6;
++		return hub6_match_port(port1, port2);
+ 	case UPIO_MEM:
+ 	case UPIO_MEM16:
+ 	case UPIO_MEM32:
 
 -- 
 2.47.3
