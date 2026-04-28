@@ -1,36 +1,33 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E74857E105;
-	Tue, 28 Apr 2026 04:26:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from ultrarisc.com (unknown [218.76.62.146])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E0A353128B6;
+	Tue, 28 Apr 2026 05:26:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=218.76.62.146
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777350376; cv=none; b=T4BiJIePJaRxEaKGqqO2kMc+mNEaRoOmJvlJKc1Xio6K0Fl0XMQdX32rdjvKpUb+1x9V32HQUK+bA45UCwgqOy4o2RBT+h5FdyWOzxM5uL6M+LjODyC7P+/fAYLpCHU4wc/l0wTv+MswVvjSy/jhNCG281ou/tyM0yLuPwgxEcA=
+	t=1777354016; cv=none; b=AKMlVMlgUHrXYPKh/zyy6ntjPx0A+lhEoM6SHubFerjjbZ0VCduRJaA8YZdIfTQwy7Fm54Keua+EMiVUfmZIpDGaJbdf5L3kCDN8a80F+5y0qALifP9I/ffGRIMhAmHZYQ3djpazIaxXyuA/2qjHbNsJYLLq3XRmFlnmlcXKj2A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777350376; c=relaxed/simple;
-	bh=a+xsFHmLNY9C3gUwlJuvhvaffSIkdXuSXtQYPaAYGJY=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=Za7FTyHiRyS2H8BFELM1UdJZNoMcr4wBnH9v184UfaWoqTi3q3UZgQQjT3Zlx0P68XsM0gGzGqY47pAqPeQ6Epf630f+kDLnR3RlMbxRPxo9DlK94RAVOfXsoMJiz0cjfR1ehUTTiT6h7qybGqJHyqKnR1wTtn/93r/Kw+ZvFkk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HUSPYKAv; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1777354016; c=relaxed/simple;
+	bh=Fkiul2iLEVZ+3kLemmQNOMQEqokZ8eD0O6yeEXTTgPQ=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=NpA/Ui7NDWI2HLtMLFUo/d2G94N55EOxS0OSyAKvmeG9StdK7Il1wW9g0UZtbvXa4vwpQzA2p6yBAgteSC95CX5Gx+zu90wkhyRcs/MAzfvZUMJorb4rXPWxC/W3hrfpBdjv1SPRvw1fFxcR1HrIezO3Mc1uT2BL0m8Lpfs3HCs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ultrarisc.com; spf=none smtp.mailfrom=ultrarisc.com; dkim=pass (1024-bit key) header.d=ultrarisc.com header.i=@ultrarisc.com header.b=pXJigaJV; arc=none smtp.client-ip=218.76.62.146
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ultrarisc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ultrarisc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HUSPYKAv"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 89CE2C2BCAF;
-	Tue, 28 Apr 2026 04:26:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777350375;
-	bh=a+xsFHmLNY9C3gUwlJuvhvaffSIkdXuSXtQYPaAYGJY=;
-	h=From:Date:Subject:To:Cc:Reply-To:From;
-	b=HUSPYKAvMHvm4nMqUHOWPLWwUwvADoV9oekPXx7P4sTW76IGeGX30BHwBTBTOL7wA
-	 SDVM72aZBvNMOlKA4jl15VPCLud6K91rVXkD0Onui1Tprwpul/icdIlUu5P/LRg2zR
-	 RqSeuVF0rPR5H1g6rpvqRwtdVixSCbGu2lxNKg5MGD1LdpSaQY0tQzGvxXhFUCVmYX
-	 zWiVB5jTFqKIwvTrwaoOGGhNb8s4GN+mOgqtN2TroP9eA1JXppKdOKrV9bByIQ28+K
-	 Gr/tfCmjY+1VZ14EVpL1632jQPq+QOspxuXZXsXx/93PPL9lfn33JBOc7Y8VDU6d7u
-	 EzG1I45PAiKHA==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F669FF886F;
-	Tue, 28 Apr 2026 04:26:15 +0000 (UTC)
-From: Prasanna S via B4 Relay <devnull+prasanna.s.oss.qualcomm.com@kernel.org>
-Date: Tue, 28 Apr 2026 09:56:13 +0530
-Subject: [PATCH v1] serial: qcom-geni: fix UART_RX_PAR_EN bit position
+	dkim=pass (1024-bit key) header.d=ultrarisc.com header.i=@ultrarisc.com header.b="pXJigaJV"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=ultrarisc.com; s=dkim; h=Received:From:Date:Subject:
+	MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:
+	References:In-Reply-To:To:Cc; bh=Tocwkc4VYot/GoL8fVUOvCYHQKZ2C28
+	eNYcOYHfHk2E=; b=pXJigaJVEFEwEsHzBWShthxdVruzsFZ4kjYezcAr7ogJAGi
+	RymWj23zFGXKv2EQYe1NDNddrlnJ2jJ/+Ssv0gCuyvxdSKbEq1XZe0WEbrI6o1Kl
+	SxUJyw/vEStH6CkLIaTiIjtV6YN1iZE3PTWWnPHsu7NBwXY/7ZCXoBx7NbHs=
+Received: from [127.0.0.1] (unknown [192.168.100.1])
+	by localhost.localdomain (Coremail) with SMTP id AQAAfwA3cUIxRfBpJRMDAA--.1785S3;
+	Tue, 28 Apr 2026 13:27:15 +0800 (CST)
+From: Jia Wang <wangjia@ultrarisc.com>
+Date: Tue, 28 Apr 2026 13:26:26 +0800
+Subject: [PATCH v5 1/4] serial: 8250_dwlib: move DesignWare register
+ definitions to header
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -39,68 +36,223 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260428-serial-bit-correct-v1-1-9131ad5b97d8@oss.qualcomm.com>
-X-B4-Tracking: v=1; b=H4sIAOQ28GkC/x2MSQqAMAwAvyI5G7C1LvgV8aA1akBaSaUI4t+tH
- gdm5oZAwhSgy24QihzYuwQqz8Buo1sJeU4MutB1YbTBzx93nPhE60XInrhUpTJTrZtGtZDCQ2j
- h65/2EBUMz/MCME1V9mgAAAA=
-X-Change-ID: 20260424-serial-bit-correct-f5314b627718
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, Sagar Dharia <sdharia@codeaurora.org>, 
- Girish Mahadevan <girishm@codeaurora.org>, 
- Karthikeyan Ramasubramanian <kramasub@codeaurora.org>, 
- Doug Anderson <dianders@google.com>
-Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-serial@vger.kernel.org, stable@vger.kernel.org, 
- Prasanna S <prasanna.s@oss.qualcomm.com>
-X-Mailer: b4 0.16-dev
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1777350374; l=1216;
- i=prasanna.s@oss.qualcomm.com; s=20260428; h=from:subject:message-id;
- bh=92DZEPQq9gzbYu7wxhkrplbhyodAhccJZR/6Ys8Jr0E=;
- b=DF47/MZOJAkYmbFDkpCZ6t2dylwkyIF5j4bIvczMVo4KyYsJNj6KNfuEMpzXss606rJZzzhSG
- S0SN8xMx2SLAqD39rCyJMDR1wjYT7CE36RGrZiwcm4TIdVZOlgMU+FF
-X-Developer-Key: i=prasanna.s@oss.qualcomm.com; a=ed25519;
- pk=ECtn3EnrN+3RY2I0/e72LjFYKGNLhhH+6UU2lBNO4+k=
-X-Endpoint-Received: by B4 Relay for prasanna.s@oss.qualcomm.com/20260428
- with auth_id=758
-X-Original-From: Prasanna S <prasanna.s@oss.qualcomm.com>
-Reply-To: prasanna.s@oss.qualcomm.com
+Message-Id: <20260428-ultrarisc-serial-v5-1-97de63b1e3eb@ultrarisc.com>
+References: <20260428-ultrarisc-serial-v5-0-97de63b1e3eb@ultrarisc.com>
+In-Reply-To: <20260428-ultrarisc-serial-v5-0-97de63b1e3eb@ultrarisc.com>
+To: =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Paul Walmsley <pjw@kernel.org>, 
+ Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
+ Alexandre Ghiti <alex@ghiti.fr>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ linux-riscv@lists.infradead.org, devicetree@vger.kernel.org, 
+ Jia Wang <wangjia@ultrarisc.com>
+X-Mailer: b4 0.15-dev
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777353989; l=7244;
+ i=wangjia@ultrarisc.com; s=20260309; h=from:subject:message-id;
+ bh=Fkiul2iLEVZ+3kLemmQNOMQEqokZ8eD0O6yeEXTTgPQ=;
+ b=Vx37BdtzdbWEMSjPuMv93rRYoALJkJiPSCxjPGNckNGgwaaGyB19aifBDbdbDt7VPVHX9E3Ro
+ xJULVGeKY2uCuTLFOzwSqFXP4l5+J5JikfOUE00hh4Emiu9jc0IeCmj
+X-Developer-Key: i=wangjia@ultrarisc.com; a=ed25519;
+ pk=XvYkrelqJIIzobY7j+nIg8rsfv5kzaOzuc1UPhd087U=
+X-CM-TRANSID:AQAAfwA3cUIxRfBpJRMDAA--.1785S3
+X-Coremail-Antispam: 1UD129KBjvJXoW3WF48Gw1UCr1Dur45JF1UKFg_yoW3Gw4DpF
+	1FkFZ8tF1qya13W34xtFW3tr4xXFWfGw1I9ry3W3yDtFW8A34ktFyYvFW3tr4DXryrArWU
+	XF1UAw4Y9a4I9r7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnUUvcSsGvfC2KfnxnUUI43ZEXa7xR_UUUUUUUUU==
+X-CM-SenderInfo: pzdqwylld63zxwud2x1vfou0bp/1tbiAQAKEWnti78ACwAgsB
 
-From: Prasanna S <prasanna.s@oss.qualcomm.com>
+Move the DW_UART_* register offsets and CPR bit/field definitions from
+8250_dwlib.c into 8250_dwlib.h so they can be shared by 8250_dw and
+8250_dwlib users.
 
-UART_RX_PAR_EN is incorrectly defined as bit 3, which triggers false
-framing errors (S_GP_IRQ_1_EN) and causes received data to be dropped
-when parity is enabled and the parity bit is 0.
+Add an include guard for 8250_dwlib.h.
 
-Define UART_RX_PAR_EN as bit 4 of the SE_UART_RX_TRANS_CFG register, as
-specified in the reference manual.
-
-Fixes: c4f528795d1a ("tty: serial: msm_geni_serial: Add serial driver support for GENI based QUP")
-Cc: stable@vger.kernel.org
-Signed-off-by: Prasanna S <prasanna.s@oss.qualcomm.com>
+Signed-off-by: Jia Wang <wangjia@ultrarisc.com>
 ---
- drivers/tty/serial/qcom_geni_serial.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_dw.c    | 11 ------
+ drivers/tty/serial/8250/8250_dwlib.c | 49 --------------------------
+ drivers/tty/serial/8250/8250_dwlib.h | 67 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 67 insertions(+), 60 deletions(-)
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index b365dd5da3cb..5139a9d21b2b 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -50,7 +50,7 @@
- #define TX_STOP_BIT_LEN_2		2
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index 94beadb4024d..467755bf0092 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -34,22 +34,11 @@
  
- /* SE_UART_RX_TRANS_CFG */
--#define UART_RX_PAR_EN			BIT(3)
-+#define UART_RX_PAR_EN			BIT(4)
+ #include "8250_dwlib.h"
  
- /* SE_UART_RX_WORD_LEN */
- #define RX_WORD_LEN_MASK		GENMASK(9, 0)
+-/* Offsets for the DesignWare specific registers */
+-#define DW_UART_USR	0x1f /* UART Status Register */
+-#define DW_UART_DMASA	0xa8 /* DMA Software Ack */
+-
+ #define OCTEON_UART_USR	0x27 /* UART Status Register */
+ 
+ #define RZN1_UART_TDMACR 0x10c /* DMA Control Register Transmit Mode */
+ #define RZN1_UART_RDMACR 0x110 /* DMA Control Register Receive Mode */
+ 
+-/* DesignWare specific register fields */
+-#define DW_UART_IIR_IID			GENMASK(3, 0)
+-
+-#define DW_UART_MCR_SIRE		BIT(6)
+-
+-#define DW_UART_USR_BUSY		BIT(0)
+-
+ /* Renesas specific register fields */
+ #define RZN1_UART_xDMACR_DMA_EN		BIT(0)
+ #define RZN1_UART_xDMACR_1_WORD_BURST	(0 << 1)
+diff --git a/drivers/tty/serial/8250/8250_dwlib.c b/drivers/tty/serial/8250/8250_dwlib.c
+index b055d89cfb39..8859e66d2d71 100644
+--- a/drivers/tty/serial/8250/8250_dwlib.c
++++ b/drivers/tty/serial/8250/8250_dwlib.c
+@@ -13,55 +13,6 @@
+ 
+ #include "8250_dwlib.h"
+ 
+-/* Offsets for the DesignWare specific registers */
+-#define DW_UART_TCR	0xac /* Transceiver Control Register (RS485) */
+-#define DW_UART_DE_EN	0xb0 /* Driver Output Enable Register */
+-#define DW_UART_RE_EN	0xb4 /* Receiver Output Enable Register */
+-#define DW_UART_DLF	0xc0 /* Divisor Latch Fraction Register */
+-#define DW_UART_RAR	0xc4 /* Receive Address Register */
+-#define DW_UART_TAR	0xc8 /* Transmit Address Register */
+-#define DW_UART_LCR_EXT	0xcc /* Line Extended Control Register */
+-#define DW_UART_CPR	0xf4 /* Component Parameter Register */
+-#define DW_UART_UCV	0xf8 /* UART Component Version */
+-
+-/* Receive / Transmit Address Register bits */
+-#define DW_UART_ADDR_MASK		GENMASK(7, 0)
+-
+-/* Line Status Register bits */
+-#define DW_UART_LSR_ADDR_RCVD		BIT(8)
+-
+-/* Transceiver Control Register bits */
+-#define DW_UART_TCR_RS485_EN		BIT(0)
+-#define DW_UART_TCR_RE_POL		BIT(1)
+-#define DW_UART_TCR_DE_POL		BIT(2)
+-#define DW_UART_TCR_XFER_MODE		GENMASK(4, 3)
+-#define DW_UART_TCR_XFER_MODE_DE_DURING_RE	FIELD_PREP(DW_UART_TCR_XFER_MODE, 0)
+-#define DW_UART_TCR_XFER_MODE_SW_DE_OR_RE	FIELD_PREP(DW_UART_TCR_XFER_MODE, 1)
+-#define DW_UART_TCR_XFER_MODE_DE_OR_RE		FIELD_PREP(DW_UART_TCR_XFER_MODE, 2)
+-
+-/* Line Extended Control Register bits */
+-#define DW_UART_LCR_EXT_DLS_E		BIT(0)
+-#define DW_UART_LCR_EXT_ADDR_MATCH	BIT(1)
+-#define DW_UART_LCR_EXT_SEND_ADDR	BIT(2)
+-#define DW_UART_LCR_EXT_TRANSMIT_MODE	BIT(3)
+-
+-/* Component Parameter Register bits */
+-#define DW_UART_CPR_ABP_DATA_WIDTH	GENMASK(1, 0)
+-#define DW_UART_CPR_AFCE_MODE		BIT(4)
+-#define DW_UART_CPR_THRE_MODE		BIT(5)
+-#define DW_UART_CPR_SIR_MODE		BIT(6)
+-#define DW_UART_CPR_SIR_LP_MODE		BIT(7)
+-#define DW_UART_CPR_ADDITIONAL_FEATURES	BIT(8)
+-#define DW_UART_CPR_FIFO_ACCESS		BIT(9)
+-#define DW_UART_CPR_FIFO_STAT		BIT(10)
+-#define DW_UART_CPR_SHADOW		BIT(11)
+-#define DW_UART_CPR_ENCODED_PARMS	BIT(12)
+-#define DW_UART_CPR_DMA_EXTRA		BIT(13)
+-#define DW_UART_CPR_FIFO_MODE		GENMASK(23, 16)
+-
+-/* Helper for FIFO size calculation */
+-#define DW_UART_CPR_FIFO_SIZE(a)	(FIELD_GET(DW_UART_CPR_FIFO_MODE, (a)) * 16)
+-
+ /*
+  * divisor = div(I) + div(F)
+  * "I" means integer, "F" means fractional
+diff --git a/drivers/tty/serial/8250/8250_dwlib.h b/drivers/tty/serial/8250/8250_dwlib.h
+index 7dd2a8e7b780..2f26f9ecacbe 100644
+--- a/drivers/tty/serial/8250/8250_dwlib.h
++++ b/drivers/tty/serial/8250/8250_dwlib.h
+@@ -1,11 +1,76 @@
+ /* SPDX-License-Identifier: GPL-2.0+ */
+ /* Synopsys DesignWare 8250 library header file. */
+ 
++#ifndef _SERIAL_8250_DWLIB_H_
++#define _SERIAL_8250_DWLIB_H_
++
++#include <linux/bitfield.h>
++#include <linux/bits.h>
+ #include <linux/io.h>
+ #include <linux/types.h>
+ 
+ #include "8250.h"
+ 
++/* Offsets for the DesignWare specific registers */
++#define DW_UART_USR	0x1f /* UART Status Register */
++#define DW_UART_DMASA	0xa8 /* DMA Software Ack */
++#define DW_UART_TCR	0xac /* Transceiver Control Register (RS485) */
++#define DW_UART_DE_EN	0xb0 /* Driver Output Enable Register */
++#define DW_UART_RE_EN	0xb4 /* Receiver Output Enable Register */
++#define DW_UART_DLF	0xc0 /* Divisor Latch Fraction Register */
++#define DW_UART_RAR	0xc4 /* Receive Address Register */
++#define DW_UART_TAR	0xc8 /* Transmit Address Register */
++#define DW_UART_LCR_EXT	0xcc /* Line Extended Control Register */
++#define DW_UART_CPR	0xf4 /* Component Parameter Register */
++#define DW_UART_UCV	0xf8 /* UART Component Version */
++
++/* Interrupt ID Register bits */
++#define DW_UART_IIR_IID			GENMASK(3, 0)
++
++/* Modem Control Register bits */
++#define DW_UART_MCR_SIRE		BIT(6)
++
++/* Line Status Register bits */
++#define DW_UART_LSR_ADDR_RCVD		BIT(8)
++
++/* UART Status Register bits */
++#define DW_UART_USR_BUSY		BIT(0)
++
++/* Transceiver Control Register bits */
++#define DW_UART_TCR_RS485_EN		BIT(0)
++#define DW_UART_TCR_RE_POL		BIT(1)
++#define DW_UART_TCR_DE_POL		BIT(2)
++#define DW_UART_TCR_XFER_MODE		GENMASK(4, 3)
++#define DW_UART_TCR_XFER_MODE_DE_DURING_RE	FIELD_PREP(DW_UART_TCR_XFER_MODE, 0)
++#define DW_UART_TCR_XFER_MODE_SW_DE_OR_RE	FIELD_PREP(DW_UART_TCR_XFER_MODE, 1)
++#define DW_UART_TCR_XFER_MODE_DE_OR_RE		FIELD_PREP(DW_UART_TCR_XFER_MODE, 2)
++
++/* Receive / Transmit Address Register bits */
++#define DW_UART_ADDR_MASK		GENMASK(7, 0)
++
++/* Line Extended Control Register bits */
++#define DW_UART_LCR_EXT_DLS_E		BIT(0)
++#define DW_UART_LCR_EXT_ADDR_MATCH	BIT(1)
++#define DW_UART_LCR_EXT_SEND_ADDR	BIT(2)
++#define DW_UART_LCR_EXT_TRANSMIT_MODE	BIT(3)
++
++/* Component Parameter Register bits */
++#define DW_UART_CPR_ABP_DATA_WIDTH	GENMASK(1, 0)
++#define DW_UART_CPR_AFCE_MODE		BIT(4)
++#define DW_UART_CPR_THRE_MODE		BIT(5)
++#define DW_UART_CPR_SIR_MODE		BIT(6)
++#define DW_UART_CPR_SIR_LP_MODE		BIT(7)
++#define DW_UART_CPR_ADDITIONAL_FEATURES	BIT(8)
++#define DW_UART_CPR_FIFO_ACCESS		BIT(9)
++#define DW_UART_CPR_FIFO_STAT		BIT(10)
++#define DW_UART_CPR_SHADOW		BIT(11)
++#define DW_UART_CPR_ENCODED_PARMS	BIT(12)
++#define DW_UART_CPR_DMA_EXTRA		BIT(13)
++#define DW_UART_CPR_FIFO_MODE		GENMASK(23, 16)
++
++/* Helper for FIFO size calculation */
++#define DW_UART_CPR_FIFO_SIZE(a)	(FIELD_GET(DW_UART_CPR_FIFO_MODE, (a)) * 16)
++
+ struct dw8250_port_data {
+ 	/* Port properties */
+ 	int			line;
+@@ -38,3 +103,5 @@ static inline void dw8250_writel_ext(struct uart_port *p, int offset, u32 reg)
+ 	else
+ 		writel(reg, p->membase + offset);
+ }
++
++#endif /* _SERIAL_8250_DWLIB_H_ */
 
----
-base-commit: dd6c438c3e64a5ff0b5d7e78f7f9be547803ef1b
-change-id: 20260424-serial-bit-correct-f5314b627718
-
-Best regards,
---  
-Prasanna S <prasanna.s@oss.qualcomm.com>
-
+-- 
+2.34.1
 
