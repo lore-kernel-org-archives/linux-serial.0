@@ -1,91 +1,81 @@
-Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E0EAF3914E8;
-	Tue, 28 Apr 2026 11:34:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=63.228.1.57
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D4D0340FDA4;
+	Tue, 28 Apr 2026 13:49:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777376082; cv=none; b=gFEykjUwBqBHr8Ht2WmfT1dJJrIY8qYeBOCIzrPJU6rncOpGCdZS1EWdzY8VTJbpi67Gu7Dh36rz5sy6fgV8ZNatQeMjUh3ON7gl490+Jv12QAXQFv8qS6eyMMxYgKsA0WNnZYKKtQTJ1ml/NIm86ZUi9IwOm/G3PkE/OkLUwJM=
+	t=1777384202; cv=none; b=dzdQmrTNs2sIrIAXSmc7YrYgkD7aHOvF9rsP1o1isV9X18XmpDjYpsIM4S1U6avNWldeEdbYGg0fcxmRhK9q8k47E6yKjLfwl+4mDf3PH1apEd9w3+zrwUI5kzyYB1EyTjp5+NTjNGXtRqf3WSTHRFRFQ9Vub6EyZ3IiX+KDulk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777376082; c=relaxed/simple;
-	bh=hyfrXCz4cakoGqEZMfZnxEs8TTQzFbHPgNHVJxhRWN4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jnn94cM/o0HiOSruXStCQtUYg2jtlOmYJTM+tMLMcDXRMCG+lK2UjENZt0PgtAWSKkxIjSc56uYeacZaWuX69xh+JCg0ohPoDxo3fIKM21CBEpXwkQ7xjGlH9Sbtp57SQZhwuO6NpnD08s9unbu/usyuuOlnKbT+Bhy2gAKyZgY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kernel.crashing.org; spf=pass smtp.mailfrom=kernel.crashing.org; arc=none smtp.client-ip=63.228.1.57
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kernel.crashing.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kernel.crashing.org
-Received: from gate.crashing.org (localhost [127.0.0.1])
-	by gate.crashing.org (8.18.1/8.18.1/Debian-2) with ESMTP id 63SBY0U31059939;
-	Tue, 28 Apr 2026 06:34:00 -0500
-Received: (from segher@localhost)
-	by gate.crashing.org (8.18.1/8.18.1/Submit) id 63SBY0B51059937;
-	Tue, 28 Apr 2026 06:34:00 -0500
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date: Tue, 28 Apr 2026 06:34:00 -0500
-From: Segher Boessenkool <segher@kernel.crashing.org>
-To: Andrew Cooper <andrew.cooper3@citrix.com>
-Cc: Yury Norov <ynorov@nvidia.com>,
-        "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Laight <david.laight.linux@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>, linux-alpha@vger.kernel.org,
-        Yury Norov <yury.norov@gmail.com>, linux-kernel@vger.kernel.org,
-        linux-snps-arc@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, kvm@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-        sparclinux@vger.kernel.org, linux-um@lists.infradead.org,
-        dmaengine@vger.kernel.org, linux-efi@vger.kernel.org,
-        linux-fsi@lists.ozlabs.org, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-        xen-devel@lists.xenproject.org, linux-fsdevel@vger.kernel.org,
-        ocfs2-devel@lists.linux.dev, bpf@vger.kernel.org,
-        kasan-dev@googlegroups.com, linux-mm@kvack.org,
-        linux-x25@vger.kernel.org, rust-for-linux@vger.kernel.org,
-        linux-sound@vger.kernel.org, sound-open-firmware@alsa-project.org,
-        linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org,
-        loongarch@lists.linux.dev, linux-m68k@vger.kernel.org,
-        linux-openrisc@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-sh@vger.kernel.org, linux-arch@vger.kernel.org
-Subject: Re: [RFC PATCH v1 2/9] uaccess: Convert INLINE_COPY_{TO/FROM}_USER
- to kconfig and reduce ifdefery
-Message-ID: <afCbKJg_Cq7yNO9j@gate>
-References: <cover.1777306795.git.chleroy@kernel.org>
- <9fe875d2f55af59c12708336c571a46038528678.1777306795.git.chleroy@kernel.org>
- <ae-tVFVfx72oCC_i@yury>
- <f54c3c2b-33da-42a0-80b7-0f6615d930ce@citrix.com>
+	s=arc-20240116; t=1777384202; c=relaxed/simple;
+	bh=Yul00JZr3xk9/sL+/4OeGpEpvQSal9RZ2J5klF+bOxs=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=cQ6LWNa/szbnuShVNnquTIdT3DC6ifnwo9nx/uyjQJi+Q+dE2stTfZDXyQPckMeHtCDMngwq4wpIG5//9tW2ofEVEshbk5OH1WRlIwrDbIJ1YBNknUXu2sneUaHMN3swrUUBAS4C0xtOE/OyynP25NyFrQiatA9vsxVUE/ugqiw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+	id CFF3A9200B4; Tue, 28 Apr 2026 15:49:51 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+	by angie.orcam.me.uk (Postfix) with ESMTP id C98D292009D;
+	Tue, 28 Apr 2026 14:49:51 +0100 (BST)
+Date: Tue, 28 Apr 2026 14:49:51 +0100 (BST)
+From: "Maciej W. Rozycki" <macro@orcam.me.uk>
+To: Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
+    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>
+cc: linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, 
+    linux-serial@vger.kernel.org
+Subject: Re: [PATCH 6/8] serial: zs: Convert to use a platform device
+In-Reply-To: <alpine.DEB.2.21.2604110034160.29980@angie.orcam.me.uk>
+Message-ID: <alpine.DEB.2.21.2604281415030.38805@angie.orcam.me.uk>
+References: <alpine.DEB.2.21.2604102250060.29980@angie.orcam.me.uk> <alpine.DEB.2.21.2604110034160.29980@angie.orcam.me.uk>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <f54c3c2b-33da-42a0-80b7-0f6615d930ce@citrix.com>
+Content-Type: text/plain; charset=US-ASCII
 
-On Mon, Apr 27, 2026 at 09:39:33PM +0100, Andrew Cooper wrote:
-> On 27/04/2026 7:39 pm, Yury Norov wrote:
-> > On Mon, Apr 27, 2026 at 07:13:43PM +0200, Christophe Leroy (CS GROUP) wrote:
-> >> Among the 21 architectures supported by the kernel, 16 define both
-> >> INLINE_COPY_TO_USER and INLINE_COPY_FROM_USER while the 5 other ones
-> >> don't define any of the two.
-> >>
-> >> To simplify and reduce risk of mistakes, convert them to a single
-> >> kconfig item named CONFIG_ARCH_WANTS_NOINLINE_COPY which will be
-> > We've got a special word for it: outline. Can you name it
-> > CONFIG_OUTLINE_USERCOPY, or similar?
-> 
-> You can't swap the "in" for "out" like this.  "out of line" is the
-> opposite of "inline" in this context, while "outline" means something
-> different and unrelated.
+On Mon, 13 Apr 2026, Maciej W. Rozycki wrote:
 
-Yeah.  Technically much more correct for it is inline vs. functional.
-Not that that term won't be misunderstood as well :-)
+> An unfortunate consequence of the switch to a platform device is we now
+> hand the console over from the bootconsole much later in the bootstrap.
+> The firmware console handler appears good enough though to work so late
+> and in particular with interrupts enabled.
 
+ Additional verification revealed actual fallout from this postponement of 
+console switching, where the kernel hangs in the 64-bit configuration at:
 
-Segher
+pid_max: default: 32768 minimum: 301
+
+or somewhat later, but always before:
+
+cblist_init_generic: Setting adjustable number of callback queues.
+
+I have tracked down the cause to be the initial console output handler now 
+being called from other kernel threads beyond the initial one, and unlike 
+the latter they have their stack allocated in 64-bit XKPHYS segment rather 
+than 32-bit compatibility CKSEG0 segment.
+
+ Consequently the stack pointer is no longer a 32-bit value and when the 
+firmware console output handler being called uses 32-bit ALU operations to 
+manipulate the stack pointer, the calculated result is incorrect (in fact 
+in the 64-bit MIPS ISA it is UB for almost all 32-bit ALU operations to 
+execute on 64-bit data) and control goes astray.
+
+ We already have code in the generic call_o32() 32-bit firmware call stub 
+for 64-bit code to do optional stack switching, so all that has to be done 
+is making the platform supply the stub with a pointer to an alternative 
+stack located in CKSEG0, such as to a chunk of initdata space.  This will 
+be straightforward to implement; I'll yet think whether to arrange for the 
+stack to be switched every time or only when the incoming stack pointer is 
+outside the 32-bit space.
+
+ In any case I'll respin the series shortly so as to include the platform 
+update required and prevent an unnecessary maintenance complication from 
+happening that a standalone fix would cause.
+
+ The other driver never runs on 64-bit hardware, so it causes no issue.
+
+  Maciej
