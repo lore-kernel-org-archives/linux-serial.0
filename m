@@ -1,161 +1,285 @@
-Received: from out-170.mta1.migadu.com (out-170.mta1.migadu.com [95.215.58.170])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 755543D1701;
-	Wed, 29 Apr 2026 10:25:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 595722EBB99;
+	Wed, 29 Apr 2026 10:39:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777458347; cv=none; b=RelfzZHj03xavB4uvk5geiNZ9t/XH4Yu21ICgXlGfT/qL76wAco9tl+X6ALsJX6bIK+Pvpu+YuvO0BDir6GZzBXfEcJvnD+fNNHLZ5EjmIzSd82UBk96lOpHIP2wdMCTx+CEGDSwhTMl04c5cCDEszCWDWNVFU9lCwU07fe8bLo=
+	t=1777459145; cv=none; b=nPXCE3MBFtuNH9PX00dgKsgHoK4qDXxhfEGrfLyE/f/LUCY7pUWHhZ8LDkykGLD52lz4TJu8/Ttc/fywfx0JAgA2aX3IWvFmAw4QQsbYebY9E5o++27wwKfBkgyHFj38Uly9NZG6NiaU7CBvd+RwbHiU/3LN3S8xEzIvvg5xMxs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777458347; c=relaxed/simple;
-	bh=uKx2BLK4SWtORQ3Y1X9QU+u3JmhryAfpmr007sf8OrM=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Okk7xSo1DqiJWQ4y5ORbmodxvUqt3z7zCtusOnpvcI6F+PKzYOfkQFTyBq3bN+8mArFQu4WO1DwLu+GdJknoq6ExMfWw+ey3SzI8ikmr2WKk5gRRAHG4shfZhm7eYpkB/Od0XNzPxS+ybyprXAmLoGJxmb/B8NXg7JdOVW6Hp/0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=syDuJ2eb; arc=none smtp.client-ip=95.215.58.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1777459145; c=relaxed/simple;
+	bh=wS2y88poNh8+M4OaCoMUd1vy4JEzXBX0q9rVHEytoM0=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=Wh7cK0OciYnytvRbavBFSQrhsafXEBINY84wHrstOR1ZesEPO9ehZpdIJs7KG/+3WCJ2mNqsQhZsxdB5i8nKYZE4h2Rwb11fjGIHjsVZ7BmMCvESYHn+2YYCrS03Sb3IBPC3wTt94ZoRYs4yru+1jX7scKbFDTgS+pzUhxHxG6U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=naSzJRMe; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="syDuJ2eb"
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1777458333;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=0ubnPqyEuUH+bb9tWP9+TOUp+n6C5onOR58LCuBDEiw=;
-	b=syDuJ2ebh9z2sjffREH58o0aT6Ajjew8W5I8ReEUtvp2EQkdghmYv8iT9JcU1iX87oMIbX
-	D+xmbMoFNHgWVKDoL6XEe6kPFjJgAeA5FQrv1tK/6uUbSyjmFqItMdxDS/n3eJA5ihtrWC
-	pDy1LXDxeyfrSgRVjezaD0bM6Fa+Scc=
-From: Usama Arif <usama.arif@linux.dev>
-To: "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>
-Cc: Usama Arif <usama.arif@linux.dev>,
-	Yury Norov <ynorov@nvidia.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Linus Torvalds <torvalds@linux-foundation.org>,
-	David Laight <david.laight.linux@gmail.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	linux-alpha@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-snps-arc@lists.infradead.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mips@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org,
-	kvm@vger.kernel.org,
-	linux-riscv@lists.infradead.org,
-	linux-s390@vger.kernel.org,
-	sparclinux@vger.kernel.org,
-	linux-um@lists.infradead.org,
-	dmaengine@vger.kernel.org,
-	linux-efi@vger.kernel.org,
-	linux-fsi@lists.ozlabs.org,
-	amd-gfx@lists.freedesktop.org,
-	dri-devel@lists.freedesktop.org,
-	intel-gfx@lists.freedesktop.org,
-	linux-wpan@vger.kernel.org,
-	netdev@vger.kernel.org,
-	linux-wireless@vger.kernel.org,
-	linux-spi@vger.kernel.org,
-	linux-media@vger.kernel.org,
-	linux-staging@lists.linux.dev,
-	linux-serial@vger.kernel.org,
-	linux-usb@vger.kernel.org,
-	xen-devel@lists.xenproject.org,
-	linux-fsdevel@vger.kernel.org,
-	ocfs2-devel@lists.linux.dev,
-	bpf@vger.kernel.org,
-	kasan-dev@googlegroups.com,
-	linux-mm@kvack.org,
-	linux-x25@vger.kernel.org,
-	rust-for-linux@vger.kernel.org,
-	linux-sound@vger.kernel.org,
-	sound-open-firmware@alsa-project.org,
-	linux-csky@vger.kernel.org,
-	linux-hexagon@vger.kernel.org,
-	loongarch@lists.linux.dev,
-	linux-m68k@lists.linux-m68k.org,
-	linux-openrisc@vger.kernel.org,
-	linux-parisc@vger.kernel.org,
-	linux-sh@vger.kernel.org,
-	linux-arch@vger.kernel.org
-Subject: Re: [RFC PATCH v1 7/9] x86: Add unsafe_copy_from_user()
-Date: Wed, 29 Apr 2026 03:25:19 -0700
-Message-ID: <20260429102520.1617327-1-usama.arif@linux.dev>
-In-Reply-To: <0ee46bb228d97163fbdc14f2a7c52b93d8bc34ce.1777306795.git.chleroy@kernel.org>
-References: 
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="naSzJRMe"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1777459144; x=1808995144;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=wS2y88poNh8+M4OaCoMUd1vy4JEzXBX0q9rVHEytoM0=;
+  b=naSzJRMeHeBwvmT/Hje4yQs/VH29j95NQ/ZkH6+5KrFvMBFayK90gP//
+   8ZwZcVJmXbeyG1aaSU3Di2cwdZvVz81K/9NmUcS+BtDZHkMHlVRYtP5me
+   b/Z9wqAhVjTMLMcEArMXkZMT8pzR7ouJLzY847NwXFC3vdsEo5klg1beU
+   Lw75cTCFxlWi25dqsrddPb95f39lkoTx5v2Eahb1pIYghiuUqn+X2Zdx0
+   trtDDCpIXDZcM59IDMyzH3pqI84ybKtu5JbrYg3QfiI1a/fROun6gVVlA
+   G+Ootj/m2bf6l68yaIeZuyxoWqbat4C8uZRi+Nd6ZO1QDpx5C8SgMqZ2P
+   A==;
+X-CSE-ConnectionGUID: /zVEhDKgTNyeevQcf/lQ7g==
+X-CSE-MsgGUID: KXuxG6P+SPutUzWcZhh1lA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11770"; a="95803897"
+X-IronPort-AV: E=Sophos;i="6.23,206,1770624000"; 
+   d="scan'208";a="95803897"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2026 03:39:03 -0700
+X-CSE-ConnectionGUID: Vg9DE7BVQtiBTtBDea3/Uw==
+X-CSE-MsgGUID: Ti4RqAGnQv6MTrfg31swsw==
+X-ExtLoop1: 1
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.212])
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2026 03:38:55 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Wed, 29 Apr 2026 13:38:44 +0300 (EEST)
+To: Jia Wang <wangjia@ultrarisc.com>
+cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, Paul Walmsley <pjw@kernel.org>, 
+    Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
+    Alexandre Ghiti <alex@ghiti.fr>, Rob Herring <robh@kernel.org>, 
+    Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+    Conor Dooley <conor+dt@kernel.org>, LKML <linux-kernel@vger.kernel.org>, 
+    linux-serial <linux-serial@vger.kernel.org>, 
+    linux-riscv@lists.infradead.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v6 1/4] serial: 8250_dwlib: move DesignWare register
+ definitions to header
+In-Reply-To: <20260429-ultrarisc-serial-v6-1-b2c852e0c4c3@ultrarisc.com>
+Message-ID: <36efd2f5-d050-c613-77bf-dc651a94a586@linux.intel.com>
+References: <20260429-ultrarisc-serial-v6-0-b2c852e0c4c3@ultrarisc.com> <20260429-ultrarisc-serial-v6-1-b2c852e0c4c3@ultrarisc.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
+Content-Type: multipart/mixed; boundary="8323328-1401029749-1777459124=:966"
 
-On Mon, 27 Apr 2026 19:13:48 +0200 "Christophe Leroy (CS GROUP)" <chleroy@kernel.org> wrote:
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-> At the time being, x86 and arm64 are missing unsafe_copy_from_user().
-> 
-> Add it.
-> 
-> Signed-off-by: Christophe Leroy (CS GROUP) <chleroy@kernel.org>
+--8323328-1401029749-1777459124=:966
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+
+On Wed, 29 Apr 2026, Jia Wang wrote:
+
+> Move the DW_UART_* register offsets and CPR bit/field definitions from
+> 8250_dwlib.c into 8250_dwlib.h so they can be shared by 8250_dw and
+> 8250_dwlib users.
+>=20
+> Add an include guard for 8250_dwlib.h.
+>=20
+> Signed-off-by: Jia Wang <wangjia@ultrarisc.com>
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 > ---
->  arch/x86/include/asm/uaccess.h | 29 ++++++++++++++++++++++++-----
->  1 file changed, 24 insertions(+), 5 deletions(-)
-> 
-> diff --git a/arch/x86/include/asm/uaccess.h b/arch/x86/include/asm/uaccess.h
-> index 3a0dd3c2b233..10c458ffa399 100644
-> --- a/arch/x86/include/asm/uaccess.h
-> +++ b/arch/x86/include/asm/uaccess.h
-> @@ -598,7 +598,7 @@ _label:									\
->   * We want the unsafe accessors to always be inlined and use
->   * the error labels - thus the macro games.
->   */
-> -#define unsafe_copy_loop(dst, src, len, type, label)				\
-> +#define unsafe_put_loop(dst, src, len, type, label)				\
->  	while (len >= sizeof(type)) {						\
->  		unsafe_put_user(*(type *)(src),(type __user *)(dst),label);	\
->  		dst += sizeof(type);						\
-> @@ -611,10 +611,29 @@ do {									\
->  	char __user *__ucu_dst = (_dst);				\
->  	const char *__ucu_src = (_src);					\
->  	size_t __ucu_len = (_len);					\
-> -	unsafe_copy_loop(__ucu_dst, __ucu_src, __ucu_len, u64, label);	\
-> -	unsafe_copy_loop(__ucu_dst, __ucu_src, __ucu_len, u32, label);	\
-> -	unsafe_copy_loop(__ucu_dst, __ucu_src, __ucu_len, u16, label);	\
-> -	unsafe_copy_loop(__ucu_dst, __ucu_src, __ucu_len, u8, label);	\
-> +	unsafe_put_loop(__ucu_dst, __ucu_src, __ucu_len, u64, label);	\
-> +	unsafe_put_loop(__ucu_dst, __ucu_src, __ucu_len, u32, label);	\
-> +	unsafe_put_loop(__ucu_dst, __ucu_src, __ucu_len, u16, label);	\
-> +	unsafe_put_loop(__ucu_dst, __ucu_src, __ucu_len, u8, label);	\
-> +} while (0)
+>  drivers/tty/serial/8250/8250_dw.c    | 11 ------
+>  drivers/tty/serial/8250/8250_dwlib.c | 49 --------------------------
+>  drivers/tty/serial/8250/8250_dwlib.h | 67 ++++++++++++++++++++++++++++++=
+++++++
+>  3 files changed, 67 insertions(+), 60 deletions(-)
+>=20
+> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/=
+8250_dw.c
+> index 94beadb4024d..467755bf0092 100644
+> --- a/drivers/tty/serial/8250/8250_dw.c
+> +++ b/drivers/tty/serial/8250/8250_dw.c
+> @@ -34,22 +34,11 @@
+> =20
+>  #include "8250_dwlib.h"
+> =20
+> -/* Offsets for the DesignWare specific registers */
+> -#define DW_UART_USR=090x1f /* UART Status Register */
+> -#define DW_UART_DMASA=090xa8 /* DMA Software Ack */
+> -
+>  #define OCTEON_UART_USR=090x27 /* UART Status Register */
+> =20
+>  #define RZN1_UART_TDMACR 0x10c /* DMA Control Register Transmit Mode */
+>  #define RZN1_UART_RDMACR 0x110 /* DMA Control Register Receive Mode */
+> =20
+> -/* DesignWare specific register fields */
+> -#define DW_UART_IIR_IID=09=09=09GENMASK(3, 0)
+> -
+> -#define DW_UART_MCR_SIRE=09=09BIT(6)
+> -
+> -#define DW_UART_USR_BUSY=09=09BIT(0)
+> -
+>  /* Renesas specific register fields */
+>  #define RZN1_UART_xDMACR_DMA_EN=09=09BIT(0)
+>  #define RZN1_UART_xDMACR_1_WORD_BURST=09(0 << 1)
+> diff --git a/drivers/tty/serial/8250/8250_dwlib.c b/drivers/tty/serial/82=
+50/8250_dwlib.c
+> index b055d89cfb39..8859e66d2d71 100644
+> --- a/drivers/tty/serial/8250/8250_dwlib.c
+> +++ b/drivers/tty/serial/8250/8250_dwlib.c
+> @@ -13,55 +13,6 @@
+> =20
+>  #include "8250_dwlib.h"
+> =20
+> -/* Offsets for the DesignWare specific registers */
+> -#define DW_UART_TCR=090xac /* Transceiver Control Register (RS485) */
+> -#define DW_UART_DE_EN=090xb0 /* Driver Output Enable Register */
+> -#define DW_UART_RE_EN=090xb4 /* Receiver Output Enable Register */
+> -#define DW_UART_DLF=090xc0 /* Divisor Latch Fraction Register */
+> -#define DW_UART_RAR=090xc4 /* Receive Address Register */
+> -#define DW_UART_TAR=090xc8 /* Transmit Address Register */
+> -#define DW_UART_LCR_EXT=090xcc /* Line Extended Control Register */
+> -#define DW_UART_CPR=090xf4 /* Component Parameter Register */
+> -#define DW_UART_UCV=090xf8 /* UART Component Version */
+> -
+> -/* Receive / Transmit Address Register bits */
+> -#define DW_UART_ADDR_MASK=09=09GENMASK(7, 0)
+> -
+> -/* Line Status Register bits */
+> -#define DW_UART_LSR_ADDR_RCVD=09=09BIT(8)
+> -
+> -/* Transceiver Control Register bits */
+> -#define DW_UART_TCR_RS485_EN=09=09BIT(0)
+> -#define DW_UART_TCR_RE_POL=09=09BIT(1)
+> -#define DW_UART_TCR_DE_POL=09=09BIT(2)
+> -#define DW_UART_TCR_XFER_MODE=09=09GENMASK(4, 3)
+> -#define DW_UART_TCR_XFER_MODE_DE_DURING_RE=09FIELD_PREP(DW_UART_TCR_XFER=
+_MODE, 0)
+> -#define DW_UART_TCR_XFER_MODE_SW_DE_OR_RE=09FIELD_PREP(DW_UART_TCR_XFER_=
+MODE, 1)
+> -#define DW_UART_TCR_XFER_MODE_DE_OR_RE=09=09FIELD_PREP(DW_UART_TCR_XFER_=
+MODE, 2)
+> -
+> -/* Line Extended Control Register bits */
+> -#define DW_UART_LCR_EXT_DLS_E=09=09BIT(0)
+> -#define DW_UART_LCR_EXT_ADDR_MATCH=09BIT(1)
+> -#define DW_UART_LCR_EXT_SEND_ADDR=09BIT(2)
+> -#define DW_UART_LCR_EXT_TRANSMIT_MODE=09BIT(3)
+> -
+> -/* Component Parameter Register bits */
+> -#define DW_UART_CPR_ABP_DATA_WIDTH=09GENMASK(1, 0)
+> -#define DW_UART_CPR_AFCE_MODE=09=09BIT(4)
+> -#define DW_UART_CPR_THRE_MODE=09=09BIT(5)
+> -#define DW_UART_CPR_SIR_MODE=09=09BIT(6)
+> -#define DW_UART_CPR_SIR_LP_MODE=09=09BIT(7)
+> -#define DW_UART_CPR_ADDITIONAL_FEATURES=09BIT(8)
+> -#define DW_UART_CPR_FIFO_ACCESS=09=09BIT(9)
+> -#define DW_UART_CPR_FIFO_STAT=09=09BIT(10)
+> -#define DW_UART_CPR_SHADOW=09=09BIT(11)
+> -#define DW_UART_CPR_ENCODED_PARMS=09BIT(12)
+> -#define DW_UART_CPR_DMA_EXTRA=09=09BIT(13)
+> -#define DW_UART_CPR_FIFO_MODE=09=09GENMASK(23, 16)
+> -
+> -/* Helper for FIFO size calculation */
+> -#define DW_UART_CPR_FIFO_SIZE(a)=09(FIELD_GET(DW_UART_CPR_FIFO_MODE, (a)=
+) * 16)
+> -
+>  /*
+>   * divisor =3D div(I) + div(F)
+>   * "I" means integer, "F" means fractional
+> diff --git a/drivers/tty/serial/8250/8250_dwlib.h b/drivers/tty/serial/82=
+50/8250_dwlib.h
+> index 7dd2a8e7b780..2f26f9ecacbe 100644
+> --- a/drivers/tty/serial/8250/8250_dwlib.h
+> +++ b/drivers/tty/serial/8250/8250_dwlib.h
+> @@ -1,11 +1,76 @@
+>  /* SPDX-License-Identifier: GPL-2.0+ */
+>  /* Synopsys DesignWare 8250 library header file. */
+> =20
+> +#ifndef _SERIAL_8250_DWLIB_H_
+> +#define _SERIAL_8250_DWLIB_H_
 > +
-> +#define unsafe_get_loop(dst, src, len, type, label)				\
-> +	while (len >= sizeof(type)) {						\
-> +		unsafe_get_user(*(type __user *)(src),(type *)(dst),label);	\
-
-Hi,
-
-Just wanted to check if src and dst need to be swapped? Same for arm64 patch.
-
-> +		dst += sizeof(type);						\
-> +		src += sizeof(type);						\
-> +		len -= sizeof(type);						\
-> +	}
+> +#include <linux/bitfield.h>
+> +#include <linux/bits.h>
+>  #include <linux/io.h>
+>  #include <linux/types.h>
+> =20
+>  #include "8250.h"
+> =20
+> +/* Offsets for the DesignWare specific registers */
+> +#define DW_UART_USR=090x1f /* UART Status Register */
+> +#define DW_UART_DMASA=090xa8 /* DMA Software Ack */
+> +#define DW_UART_TCR=090xac /* Transceiver Control Register (RS485) */
+> +#define DW_UART_DE_EN=090xb0 /* Driver Output Enable Register */
+> +#define DW_UART_RE_EN=090xb4 /* Receiver Output Enable Register */
+> +#define DW_UART_DLF=090xc0 /* Divisor Latch Fraction Register */
+> +#define DW_UART_RAR=090xc4 /* Receive Address Register */
+> +#define DW_UART_TAR=090xc8 /* Transmit Address Register */
+> +#define DW_UART_LCR_EXT=090xcc /* Line Extended Control Register */
+> +#define DW_UART_CPR=090xf4 /* Component Parameter Register */
+> +#define DW_UART_UCV=090xf8 /* UART Component Version */
 > +
-> +#define unsafe_copy_from_user(_dst,_src,_len,label)			\
-> +do {									\
-> +	char *__ucu_dst = (_dst);					\
-> +	const char __user *__ucu_src = (_src);				\
-> +	size_t __ucu_len = (_len);					\
-> +	unsafe_get_loop(__ucu_dst, __ucu_src, __ucu_len, u64, label);	\
-> +	unsafe_get_loop(__ucu_dst, __ucu_src, __ucu_len, u32, label);	\
-> +	unsafe_get_loop(__ucu_dst, __ucu_src, __ucu_len, u16, label);	\
-> +	unsafe_get_loop(__ucu_dst, __ucu_src, __ucu_len, u8, label);	\
->  } while (0)
->  
->  #ifdef CONFIG_CC_HAS_ASM_GOTO_OUTPUT
-> -- 
-> 2.49.0
-> 
-> 
+> +/* Interrupt ID Register bits */
+> +#define DW_UART_IIR_IID=09=09=09GENMASK(3, 0)
+> +
+> +/* Modem Control Register bits */
+> +#define DW_UART_MCR_SIRE=09=09BIT(6)
+> +
+> +/* Line Status Register bits */
+> +#define DW_UART_LSR_ADDR_RCVD=09=09BIT(8)
+> +
+> +/* UART Status Register bits */
+> +#define DW_UART_USR_BUSY=09=09BIT(0)
+> +
+> +/* Transceiver Control Register bits */
+> +#define DW_UART_TCR_RS485_EN=09=09BIT(0)
+> +#define DW_UART_TCR_RE_POL=09=09BIT(1)
+> +#define DW_UART_TCR_DE_POL=09=09BIT(2)
+> +#define DW_UART_TCR_XFER_MODE=09=09GENMASK(4, 3)
+> +#define DW_UART_TCR_XFER_MODE_DE_DURING_RE=09FIELD_PREP(DW_UART_TCR_XFER=
+_MODE, 0)
+> +#define DW_UART_TCR_XFER_MODE_SW_DE_OR_RE=09FIELD_PREP(DW_UART_TCR_XFER_=
+MODE, 1)
+> +#define DW_UART_TCR_XFER_MODE_DE_OR_RE=09=09FIELD_PREP(DW_UART_TCR_XFER_=
+MODE, 2)
+> +
+> +/* Receive / Transmit Address Register bits */
+> +#define DW_UART_ADDR_MASK=09=09GENMASK(7, 0)
+> +
+> +/* Line Extended Control Register bits */
+> +#define DW_UART_LCR_EXT_DLS_E=09=09BIT(0)
+> +#define DW_UART_LCR_EXT_ADDR_MATCH=09BIT(1)
+> +#define DW_UART_LCR_EXT_SEND_ADDR=09BIT(2)
+> +#define DW_UART_LCR_EXT_TRANSMIT_MODE=09BIT(3)
+> +
+> +/* Component Parameter Register bits */
+> +#define DW_UART_CPR_ABP_DATA_WIDTH=09GENMASK(1, 0)
+> +#define DW_UART_CPR_AFCE_MODE=09=09BIT(4)
+> +#define DW_UART_CPR_THRE_MODE=09=09BIT(5)
+> +#define DW_UART_CPR_SIR_MODE=09=09BIT(6)
+> +#define DW_UART_CPR_SIR_LP_MODE=09=09BIT(7)
+> +#define DW_UART_CPR_ADDITIONAL_FEATURES=09BIT(8)
+> +#define DW_UART_CPR_FIFO_ACCESS=09=09BIT(9)
+> +#define DW_UART_CPR_FIFO_STAT=09=09BIT(10)
+> +#define DW_UART_CPR_SHADOW=09=09BIT(11)
+> +#define DW_UART_CPR_ENCODED_PARMS=09BIT(12)
+> +#define DW_UART_CPR_DMA_EXTRA=09=09BIT(13)
+> +#define DW_UART_CPR_FIFO_MODE=09=09GENMASK(23, 16)
+> +
+> +/* Helper for FIFO size calculation */
+> +#define DW_UART_CPR_FIFO_SIZE(a)=09(FIELD_GET(DW_UART_CPR_FIFO_MODE, (a)=
+) * 16)
+> +
+>  struct dw8250_port_data {
+>  =09/* Port properties */
+>  =09int=09=09=09line;
+> @@ -38,3 +103,5 @@ static inline void dw8250_writel_ext(struct uart_port =
+*p, int offset, u32 reg)
+>  =09else
+>  =09=09writel(reg, p->membase + offset);
+>  }
+> +
+> +#endif /* _SERIAL_8250_DWLIB_H_ */
+
+Reviewed-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+
+--=20
+ i.
+
+--8323328-1401029749-1777459124=:966--
