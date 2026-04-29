@@ -1,36 +1,29 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CC12451052;
-	Tue, 28 Apr 2026 17:54:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+Received: from ultrarisc.com (unknown [218.76.62.146])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D58BE1A682C;
+	Wed, 29 Apr 2026 00:57:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=218.76.62.146
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777398882; cv=none; b=rkW0gILhoGt009T0JI/U8Z68ep16JkLdRVWDqf5ijxxfiwe3fTUfzujCGIGO/wNmfMipnLFSZ9+CLlR4XhTlhU1ltbtlyMZNn/qmkZ81mwaxkJtENmdWw7Fplr/UIQDYXbz40CQGKB/bjawZ7ldlAbeXphLcmsn/7tTLFl6Y+jA=
+	t=1777424224; cv=none; b=kXcAEwavPbJRMmB18mCXksImR4oPYpDqyMW228HR0MNK6/KkXNjskjpoQlXGI0/hSKkWjKKdHkSDfw+GhGq/PDo9KCoXadIGnWCSIUxqUZXZg1ZrTzYg13cTtrzmallP6Q3dMCN4G+zksBGkG4tzxFLthwKb1i6DMC1/egqp2Jg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777398882; c=relaxed/simple;
-	bh=LTUpd3TmgtJfdNwrIKLkibUpsbTlF2k8wljPMrLkzgY=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=cnhhMH8WvxQekNPrds1a1b34H5mZ+H/eomttdBKKA8wGw2mLoZeAOU/8mRS6iIGjlJj+abJs4642QSCzxo5Ltw+IVAOaOiFGBK44nicHHWgUl7+PoDRJEXiSYAjePpUqMFblsubAPN16bhrygBCNOBYmLZiGsLno/z3RmaH/EGA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=DVrqwXZU; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	s=arc-20240116; t=1777424224; c=relaxed/simple;
+	bh=4czbswj4ht+A87lTkdcd08crGu9AEPernCdFv5ThrwI=;
+	h=MIME-Version:Content-Type:Subject:From:To:Cc:In-Reply-To:
+	 References:Date:Message-Id; b=YGqiAGsOQtpUb5sWA8QwWDz0RtuocTl4biZfBr4dwldb/XWlfZqIzQWEn1KMwUbc0/fUAaKqzk4veISy6KV2OBL64Cn1ssCw/RYA0KqSaj1sBj76RuW04oS8lIDl0AWvkj+skmmuNSw/ffnwdKgWoycFXdjU7p1EiTNak5oQPoI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ultrarisc.com; spf=pass smtp.mailfrom=ultrarisc.com; dkim=pass (1024-bit key) header.d=ultrarisc.com header.i=@ultrarisc.com header.b=lkwrEdAV; arc=none smtp.client-ip=218.76.62.146
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ultrarisc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ultrarisc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="DVrqwXZU"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=default; h=Cc:To:Message-Id:Content-Transfer-Encoding:MIME-Version:
-	Subject:Date:From:subject:date:message-id:reply-to;
-	bh=6bJXCPaRHdWGSrG/PwXfrp8LFCOjxN3HY3yqJS4aCtw=; b=DVrqwXZUyqi6Ldh+I2xuUCL7rE
-	9wGV+8Mr6bRJ95Xg3MQgZSk3Y8VKy3Z+5eMOAi6Hy3Hf+NQcCheIqodcoI8pmzmgXsiBpNnyGXjwd
-	3dC1b58Gq4sx6L2K3n8WyXahyhJyi/OOPdqFWHjJrHl6+o2vekGatXp+m7QSODxuS3oA=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168] helo=pettiford.lan)
-	by mail.hugovil.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.98.2)
-	(envelope-from <hugo@hugovil.com>)
-	id 1wHmdl-000000004cz-0v8B;
-	Tue, 28 Apr 2026 13:54:33 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-Date: Tue, 28 Apr 2026 13:53:58 -0400
-Subject: [PATCH v2 12/15] serial: sc16is7xx: use new UPIO_BUS as iotype
+	dkim=pass (1024-bit key) header.d=ultrarisc.com header.i=@ultrarisc.com header.b="lkwrEdAV"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=ultrarisc.com; s=dkim; h=Received:MIME-Version:Content-Type:
+	Content-Transfer-Encoding:Subject:From:To:Cc:In-Reply-To:
+	References:Date:Message-Id; bh=KMl/DXyKt0CwRNL4eOdNzXil5p4m9/51p
+	alhvFtb1Jk=; b=lkwrEdAVJ3T33HJmbKZ8FbOsYr7gxijC3om73VoICJecU+gRD
+	fx6AIw2ycIdUDBYNXaLyQ2bRPVd0KLT3Z3E6+lBXo6dRo4dVHC2lYtPvlTPqpab/
+	Xc2PogI4t7kkANU6nXW37oGq8rMsEIW1Qjg16K1szgulRBnMlkPHaPJEvY=
+Received: from [127.0.0.1] (unknown [192.168.100.1])
+	by localhost.localdomain (Coremail) with SMTP id AQAAfwA3cUJ5V_Fp_B4DAA--.1799S2;
+	Wed, 29 Apr 2026 08:57:29 +0800 (CST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -38,72 +31,82 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260428-tty-upio-v2-12-01c1857cf761@dimonoff.com>
-References: <20260428-tty-upio-v2-0-01c1857cf761@dimonoff.com>
-In-Reply-To: <20260428-tty-upio-v2-0-01c1857cf761@dimonoff.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>
-Cc: hugo@hugovil.com, ilpo.jarvinen@linux.intel.com, 
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
- Hugo Villeneuve <hvilleneuve@dimonoff.com>
-X-Mailer: b4 0.14.2
-X-Spam_score: -1.0
-X-Spam_bar: -
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v5 2/4] serial: 8250_dw: build Renesas RZN1 CPR value
+ from DW_UART_CPR_* definitions
+From: Jia Wang <wangjia@ultrarisc.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Jia Wang <wangjia@ultrarisc.com>, 
+ =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Paul Walmsley <pjw@kernel.org>, 
+ Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
+ Alexandre Ghiti <alex@ghiti.fr>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, LKML <linux-kernel@vger.kernel.org>, 
+ linux-serial <linux-serial@vger.kernel.org>, 
+ linux-riscv@lists.infradead.org, devicetree@vger.kernel.org
+In-Reply-To: <afCS7GEG7gtyC7RH@ashevche-desk.local>
+References: <20260428-ultrarisc-serial-v5-0-97de63b1e3eb@ultrarisc.com>
+ <20260428-ultrarisc-serial-v5-2-97de63b1e3eb@ultrarisc.com>
+ <afBhkbGLsuqUitOl@ashevche-desk.local>
+ <23c80500-f2c1-0eb3-f640-00f7b108059b@linux.intel.com>
+ <177736726936.2886867.7725295920724488690.b4-reply@b4>
+ <afCS7GEG7gtyC7RH@ashevche-desk.local>
+Date: Wed, 29 Apr 2026 08:56:45 +0800
+Message-Id: <177742420562.3222151.9689419292413018986.b4-reply@b4>
+X-Mailer: b4 0.15-dev
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777424206; l=1149;
+ i=wangjia@ultrarisc.com; s=20260309; h=from:subject:message-id;
+ bh=4czbswj4ht+A87lTkdcd08crGu9AEPernCdFv5ThrwI=;
+ b=aleoixAjfRCIOq4JvlJdssuNfQRSsaLUgal5WrjqOTgcvlwjcpvsyS6aVVeeZSRyDQLO2GjPq
+ FHF8Ra0GbLxDxcUS8OtHSaYRbFpqmV2H9q6SyPpx0Vc/piOJ0/gNUHC
+X-Developer-Key: i=wangjia@ultrarisc.com; a=ed25519;
+ pk=XvYkrelqJIIzobY7j+nIg8rsfv5kzaOzuc1UPhd087U=
+X-CM-TRANSID:AQAAfwA3cUJ5V_Fp_B4DAA--.1799S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7XrykAF4fZr1rur18uF4fAFb_yoWDZrX_Ar
+	W0kr4kua1kC39Fvw4DK3sIkws0krW7Zw4YqryrWF12kr9rX3s8Xwn5uasYgFnav3yIkr92
+	93WYqryF9F4qgjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+	9fnUUIcSsGvfJ3UbIYCTnIWIevJa73UjIFyTuYvj4RJUUUUUUUU
+X-CM-SenderInfo: pzdqwylld63zxwud2x1vfou0bp/1tbiAQAKEWnti78ACwA6sb
 
-From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+On 2026-04-28 13:58 +0300, Andy Shevchenko wrote:
+> On Tue, Apr 28, 2026 at 05:07:49PM +0800, Jia Wang wrote:
+> > On 2026-04-28 11:41 +0300, Ilpo Järvinen wrote:
+> > > On Tue, 28 Apr 2026, Andy Shevchenko wrote:
+> > > > On Tue, Apr 28, 2026 at 01:26:27PM +0800, Jia Wang wrote:
+> 
+> ...
+> 
+> > > #define DW_UART_CPR_FIFO_MODE_FROM_SIZE(size)			\
+> > > ({								\
+> > > 	typeof (size) __size = size;				\
+> > > 								\
+> > > 	static_assert(IS_ALIGNED((__size), 16));		\
+> > > 	static_assert(__size <= DW_UART_CPR_FIFO_MODE_MAX);	\
+> > > 								\
+> > > 	FIELD_PREP_CONST(DW_UART_CPR_FIFO_MODE, __size / 16);	\
+> > > })
+> > 
+> > Thanks. I tried that approach, but the statement-expression form does
+> > not work in this case because the helper is used in static initializers.
+> > So I'll keep it as a plain expression macro for now, and just rework it
+> > into a cleaner multi-line form.
+> 
+> Still you can move FIELD_PREP_CONST() into it.
+>
 
-Now that we have a new UPIO_BUS I/O type, use it to register our serial
-port and remove ambiguous membase/iobase workaround.
+Right, I'll move FIELD_PREP_CONST() in. By the way, does your Reviewed-by
+still hold?
+ 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
+> 
 
-Note that commit 5da6b1c079e6 ("sc16is7xx: Set iobase to device index")
-used the iobase field as an index within the device to allow infering
-the order through sysfs, but this is no longer needed since
-commit 1ef2c2df1199 ("serial: core: Fix serial core controller port name
-to show controller id").
+Best Regards,
+Jia Wang
 
-Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
----
-This means that displaying iomem_base will now always be zero:
-
-cat /sys/class/tty/ttySC0/iomem_base
-0x0
-cat /sys/class/tty/ttySC1/iomem_base
-0x0
-...
-
-But the index can be properly displayed with this instead (example with two
-sc16is7xx devices):
-$> ls -al /sys/class/tty/ttySC*/device
-... /sys/class/tty/ttySC0/device -> ../../../spi1.0:0.0
-... /sys/class/tty/ttySC1/device -> ../../../spi1.0:0.1
-... /sys/class/tty/ttySC2/device -> ../../../spi3.0:0.0
-... /sys/class/tty/ttySC3/device -> ../../../spi3.0:0.1
----
- drivers/tty/serial/sc16is7xx.c | 9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
-
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 1fd64a47341d8263c82fcadd90a4c2e549193e19..4b638e69f36f2d20253d8de31f52ecfe349aa39f 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1472,14 +1472,7 @@ static int sc16is7xx_setup_channel(struct sc16is7xx_one *one, int i,
- 	port->type	= PORT_SC16IS7XX;
- 	port->fifosize	= SC16IS7XX_FIFO_SIZE;
- 	port->flags	= UPF_FIXED_TYPE | UPF_LOW_LATENCY;
--	port->iobase	= i;
--	/*
--	 * Use all ones as membase to make sure uart_configure_port() in
--	 * serial_core.c does not abort for SPI/I2C devices where the
--	 * membase address is not applicable.
--	 */
--	port->membase	= (void __iomem *)~0;
--	port->iotype	= UPIO_PORT;
-+	port->iotype	= UPIO_BUS;
- 	port->rs485_config = sc16is7xx_config_rs485;
- 	port->rs485_supported = sc16is7xx_rs485_supported;
- 	port->ops	= &sc16is7xx_ops;
-
--- 
-2.47.3
 
