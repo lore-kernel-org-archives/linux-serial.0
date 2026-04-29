@@ -1,33 +1,33 @@
 Received: from ultrarisc.com (unknown [218.76.62.146])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EF4EE3BC693;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6181E3BC69D;
 	Wed, 29 Apr 2026 09:13:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=218.76.62.146
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777454019; cv=none; b=CyTbtkvebiULxUr8u1nygxwT0576jo50l9ecrg/J40sqEJETs+d27ChK+ioQ07+hNBRHwSNH0hXZUsxBqscCsPj7rN2zFSt+BKyQ27R4kbwrZvAecWdE8IZENVXwtsztbhBBwsFSjamLF4YpTWDPBZgkph5Ee2A48nJRg7y4GRk=
+	t=1777454019; cv=none; b=n7B//iKD8Ns8FVvEGb1Dk0DkIzEy+SseGGRmPAyXu1L2l0oQT5e3nnwngd8nRkDrxTtNyeBMTvtsb6tcCZGgmyRJza96Y/XWQMWLHQNXENyOqq9X0bbxisjJT6NpHa1nvMG1BMCAg/2jIbHhy+2rii+L4hpL4SYKdI+Pe1S0Aw0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1777454019; c=relaxed/simple;
-	bh=+dtQ3f+XBoxv3HZDucz50ukJ2U/SQ+5U7lcx9cpy2/w=;
+	bh=WjU2AbG/UNZElfP5fOb5TngitEhS+RvlYopZbCL9xXY=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=tpHWHw5hg+6pNZBUOoDdjhOWpeNZywWwu+XlYvA8mtLiN7WIP3d/91XNlWY13RVl1++OcvlyOjdFajAGaaH/sbk13t9S+pOcIOHdpXsPzu7ACvWrFsHWz8noKc9LTg/kjPqPvjBnAseHX7wqPym3U9Inzj/9jUtouIURk3NEt0g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ultrarisc.com; spf=pass smtp.mailfrom=ultrarisc.com; dkim=pass (1024-bit key) header.d=ultrarisc.com header.i=@ultrarisc.com header.b=A+NwNV1k; arc=none smtp.client-ip=218.76.62.146
+	 In-Reply-To:To:Cc; b=YqzaXHxOMfRsi+MdkcPFF0jBAcl1lkkQq7b7BrzfcDPg2zaeBL6u3x/dknJPehTjwKV8JWVUDtH/ShgyEnIbcvzhvuVQ/8VX5SxUlKoJZPNPxIu8lRNEnOYzA+38wD+D/dEYwBAls+pRBUHyHFru7Sf46YuocQVqeLX0dmvS8tk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ultrarisc.com; spf=pass smtp.mailfrom=ultrarisc.com; dkim=pass (1024-bit key) header.d=ultrarisc.com header.i=@ultrarisc.com header.b=bXjp0fIw; arc=none smtp.client-ip=218.76.62.146
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ultrarisc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ultrarisc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ultrarisc.com header.i=@ultrarisc.com header.b="A+NwNV1k"
+	dkim=pass (1024-bit key) header.d=ultrarisc.com header.i=@ultrarisc.com header.b="bXjp0fIw"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=ultrarisc.com; s=dkim; h=Received:From:Date:Subject:
 	MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:
-	References:In-Reply-To:To:Cc; bh=W6qFc8IOjX0c5M+yiuQoc29Iohko0me
-	7jng1y1x4BCM=; b=A+NwNV1k4NPQTKIfGOwBv8LBYrMyUE9hyuYdOfkG1Z2gRmn
-	b53Q6VEYpzbLBIYFB0e1uOKU/FgN7x+z2uTS4wfeRX913O1sosINBLz4OyWL8kz5
-	DROBZQXKtfM2UpgI5M4yQmmLsDhOMmzdVoGVkS0QS7zH8IdWcNcMwLbtjF88=
+	References:In-Reply-To:To:Cc; bh=UdMs010C5F0YX3vHI4Kv9XgCU5Baql8
+	ZWhWSA778QWE=; b=bXjp0fIwuhG/1riqlA+6vdwn5I1bAiwFgppVayFml2hFyEM
+	cOqtpWuQKFgporundVXnsV43ntVNkkuMsj97g/TEPrkZm1VkR9Ag1c8opPBLV8zg
+	jSejhsJa3S9eFiTdidaudvZszwTJttNXvAgVZQ6WbdjddACN60ukJU+PdrO8=
 Received: from [127.0.0.1] (unknown [192.168.100.1])
-	by localhost.localdomain (Coremail) with SMTP id AQAAfwA3cULgy_FpFiUDAA--.1811S6;
+	by localhost.localdomain (Coremail) with SMTP id AQAAfwA3cULgy_FpFiUDAA--.1811S4;
 	Wed, 29 Apr 2026 17:14:11 +0800 (CST)
 From: Jia Wang <wangjia@ultrarisc.com>
-Date: Wed, 29 Apr 2026 17:13:28 +0800
-Subject: [PATCH v7 4/4] serial: 8250_dw: Use a fixed CPR value for
- UltraRISC DP1000 UART
+Date: Wed, 29 Apr 2026 17:13:26 +0800
+Subject: [PATCH v7 2/4] serial: 8250_dw: build Renesas RZN1 CPR value from
+ DW_UART_CPR_* definitions
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -36,7 +36,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260429-ultrarisc-serial-v7-4-e475cce9e274@ultrarisc.com>
+Message-Id: <20260429-ultrarisc-serial-v7-2-e475cce9e274@ultrarisc.com>
 References: <20260429-ultrarisc-serial-v7-0-e475cce9e274@ultrarisc.com>
 In-Reply-To: <20260429-ultrarisc-serial-v7-0-e475cce9e274@ultrarisc.com>
 To: =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
@@ -51,60 +51,81 @@ Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
  linux-riscv@lists.infradead.org, devicetree@vger.kernel.org, 
  Jia Wang <wangjia@ultrarisc.com>
 X-Mailer: b4 0.15-dev
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1777454005; l=1792;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1777454005; l=2352;
  i=wangjia@ultrarisc.com; s=20260309; h=from:subject:message-id;
- bh=+dtQ3f+XBoxv3HZDucz50ukJ2U/SQ+5U7lcx9cpy2/w=;
- b=nmerw0ArdTWMMQFMZSuME4C0AJnXNs0ypTI1gfzcje9qI2TXhHpB7t9chdK9vLktGmCITfZg0
- WR1yoMKYkBcCvGxo3WPqYm1vQFQGZCHi5fl5eBJFIMhcMl1iYh9g1EB
+ bh=WjU2AbG/UNZElfP5fOb5TngitEhS+RvlYopZbCL9xXY=;
+ b=pXZUyBhbEF+Kbgi8VaJ2MAn/3ZlhJpiSvRPGWpuC327nYc0DfeuXWKL2DIVbmlRj6zHE/gb5u
+ NpsbXThPptqBjz10533RFGhcY4w8k7yYSf3dljImBm+JGaWbeG1+/mV
 X-Developer-Key: i=wangjia@ultrarisc.com; a=ed25519;
  pk=XvYkrelqJIIzobY7j+nIg8rsfv5kzaOzuc1UPhd087U=
-X-CM-TRANSID:AQAAfwA3cULgy_FpFiUDAA--.1811S6
-X-Coremail-Antispam: 1UD129KBjvJXoW7tw1kXw4fWry5Gw18AryfXrb_yoW8Cr4fpF
-	47GrZ0vFySgF4Yg3WIy3WvvFZ7ua17Zry2k3srK347tFn8tFyUJrnakrWay3ZIgFySqw1a
-	yF1Y9rW7Aa18Za7anT9S1TB71UUUUUDqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+X-CM-TRANSID:AQAAfwA3cULgy_FpFiUDAA--.1811S4
+X-Coremail-Antispam: 1UD129KBjvJXoW7KF17ur43AF13KFWxKr4DJwb_yoW8KF47pr
+	s0kr4qvr1Y93WfW34IkrWjvFWSqa15Ga4IkF9rG3sxt3ZIyr1ktrs0vFy3trZrJFWFvr45
+	GF17Zw15ua4jkr7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
 	9KBjDU0xBIdaVrnUUvcSsGvfC2KfnxnUUI43ZEXa7xR_UUUUUUUUU==
-X-CM-SenderInfo: pzdqwylld63zxwud2x1vfou0bp/1tbiAQAKEWnti78ACwBVs0
+X-CM-SenderInfo: pzdqwylld63zxwud2x1vfou0bp/1tbiAQAKEWnti78ACwBRsw
 
-The UltraRISC DP1000 UART does not provide the standard CPR register used
-by 8250_dw to discover port capabilities.
+Replace the magic CPR value for Renesas RZ/N1 with a composition using
+DW_UART_CPR_* bit/field definitions and FIELD_PREP_CONST().
 
-Provide a fixed CPR value for the DP1000-specific compatible so the
-driver can configure the port correctly.
+Introduce a helper macro to convert a FIFO size (bytes) into the CPR
+FIFO_MODE field value, with BUILD_BUG_ON_ZERO() checks for alignment and
+bounds. Use it to replace the literal FIFO_MODE values in the RZN1.
 
 Signed-off-by: Jia Wang <wangjia@ultrarisc.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_dw.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/tty/serial/8250/8250_dw.c    | 10 +++++++++-
+ drivers/tty/serial/8250/8250_dwlib.h |  8 +++++++-
+ 2 files changed, 16 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 480f82d89856..55e40c10f46a 100644
+index 467755bf0092..480f82d89856 100644
 --- a/drivers/tty/serial/8250/8250_dw.c
 +++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -959,6 +959,15 @@ static const struct dw8250_platform_data dw8250_intc10ee = {
- 	.quirks = DW_UART_QUIRK_IER_KICK,
+@@ -937,7 +937,15 @@ static const struct dw8250_platform_data dw8250_armada_38x_data = {
+ 
+ static const struct dw8250_platform_data dw8250_renesas_rzn1_data = {
+ 	.usr_reg = DW_UART_USR,
+-	.cpr_value = 0x00012f32,
++	.cpr_value = FIELD_PREP_CONST(DW_UART_CPR_ABP_DATA_WIDTH, 2) |
++		     DW_UART_CPR_AFCE_MODE |
++		     DW_UART_CPR_THRE_MODE |
++		     DW_UART_CPR_ADDITIONAL_FEATURES |
++		     DW_UART_CPR_FIFO_ACCESS |
++		     DW_UART_CPR_FIFO_STAT |
++		     DW_UART_CPR_SHADOW |
++		     DW_UART_CPR_DMA_EXTRA |
++		     DW_UART_CPR_FIFO_MODE_FROM_SIZE(16),
+ 	.quirks = DW_UART_QUIRK_CPR_VALUE | DW_UART_QUIRK_IS_DMA_FC,
  };
  
-+static const struct dw8250_platform_data dw8250_ultrarisc_dp1000_data = {
-+	.usr_reg = DW_UART_USR,
-+	.cpr_value = FIELD_PREP_CONST(DW_UART_CPR_ABP_DATA_WIDTH, 2) |
-+		     DW_UART_CPR_THRE_MODE |
-+		     DW_UART_CPR_DMA_EXTRA |
-+		     DW_UART_CPR_FIFO_MODE_FROM_SIZE(32),
-+	.quirks = DW_UART_QUIRK_CPR_VALUE,
-+};
-+
- static const struct of_device_id dw8250_of_match[] = {
- 	{ .compatible = "snps,dw-apb-uart", .data = &dw8250_dw_apb },
- 	{ .compatible = "cavium,octeon-3860-uart", .data = &dw8250_octeon_3860_data },
-@@ -966,6 +975,7 @@ static const struct of_device_id dw8250_of_match[] = {
- 	{ .compatible = "renesas,rzn1-uart", .data = &dw8250_renesas_rzn1_data },
- 	{ .compatible = "sophgo,sg2044-uart", .data = &dw8250_skip_set_rate_data },
- 	{ .compatible = "starfive,jh7100-uart", .data = &dw8250_skip_set_rate_data },
-+	{ .compatible = "ultrarisc,dp1000-uart", .data = &dw8250_ultrarisc_dp1000_data },
- 	{ /* Sentinel */ }
- };
- MODULE_DEVICE_TABLE(of, dw8250_of_match);
+diff --git a/drivers/tty/serial/8250/8250_dwlib.h b/drivers/tty/serial/8250/8250_dwlib.h
+index 2f26f9ecacbe..1fe52332e774 100644
+--- a/drivers/tty/serial/8250/8250_dwlib.h
++++ b/drivers/tty/serial/8250/8250_dwlib.h
+@@ -6,6 +6,7 @@
+ 
+ #include <linux/bitfield.h>
+ #include <linux/bits.h>
++#include <linux/build_bug.h>
+ #include <linux/io.h>
+ #include <linux/types.h>
+ 
+@@ -68,8 +69,13 @@
+ #define DW_UART_CPR_DMA_EXTRA		BIT(13)
+ #define DW_UART_CPR_FIFO_MODE		GENMASK(23, 16)
+ 
+-/* Helper for FIFO size calculation */
++/* Helpers for FIFO size calculation */
+ #define DW_UART_CPR_FIFO_SIZE(a)	(FIELD_GET(DW_UART_CPR_FIFO_MODE, (a)) * 16)
++#define DW_UART_CPR_FIFO_MODE_FROM_SIZE(size)			\
++	(FIELD_PREP_CONST(DW_UART_CPR_FIFO_MODE,		\
++			  BUILD_BUG_ON_ZERO((size) > 2048) +	\
++			  BUILD_BUG_ON_ZERO((size) % 16) +	\
++			  ((size) / 16)))
+ 
+ struct dw8250_port_data {
+ 	/* Port properties */
 
 -- 
 2.34.1
