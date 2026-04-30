@@ -1,76 +1,84 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E2C8317144;
-	Thu, 30 Apr 2026 15:30:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B843382367;
+	Thu, 30 Apr 2026 19:59:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777563024; cv=none; b=BlG3KFlfjGzubn3IK7Ale+Bu5kYytGXHxXpm9u04uNxF9ILUNiHIK34byqxjMs08X8qusmk6PSBCqHNTyperSMMwYwE+k0dRoTtXBqWfvstnQcG/Qs5T21Zso/PKTR1bCa3PcczFhYIHj4WGLPnI5UggQ13pBrIf4jcu98CqgAw=
+	t=1777579141; cv=none; b=jt2dPgSgrf9lT9d02LuRpIbOTEFkmzhzcqboWHjuiAMB8dc4UGMVA7ztvhzoEsB26GQu7ofI/2c7RY+32F7UcMVLhe4um1BcLpRhVCTid4YJLBoklWiqXlAwTqRWH1Wl+yX8RuTv2UJztxCiiK/+GRP1Q5wjs1Alm7JIbnugKe0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777563024; c=relaxed/simple;
-	bh=gpKAXXPe6oullD3WlpTgp+i5zf+0IrABP8G15qJ6g5k=;
-	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
-	 Mime-Version:Content-Type; b=LWmo/u8mJMlWgtnMWEa2PqIMKbXj8qTJr6WTN+2NNH3LKcve/di3xFFwKlLfnxR3Vp0Y3JE5vMYGe/jr/I310+7jzGBe8e13oJnZNYOBDZi43Wfsj6eF9qtqHzOzlvI1qnsvbpSpAVD/xyvPYsh8ZiKvkj0WvpsdXuzSiRyJoAE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=QVFYW9xB; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	s=arc-20240116; t=1777579141; c=relaxed/simple;
+	bh=LBnU4AivRmdyKTS0Xcm7sAN9nbgjFQEu0IgaPDtNX8A=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=KeLyqgR5Vk6CQRVcRRPPEeVHXt+CDu/irFg5WOYym7Zny8M/Q7hpABn0KyETgCdT1m8vqyl0vOywD3LiMIlwdHhVWfvD4nwxTS6rRXaK2nO/Aa7ke0u0GLDzlOrj1wCB1c4i/rfIBTcRAx95hPjQQdDnj8VntMGtJe3et1H8Fx8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=D37FyE44; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="QVFYW9xB"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=default; h=Content-Transfer-Encoding:Mime-Version:Message-Id:Subject:Cc:
-	To:From:Date:subject:date:message-id:reply-to;
-	bh=LhIOnfV1KALYVahRWhhfn7jdwiwNyXlcXR/SMGys04Q=; b=QVFYW9xB2Iweurje7xHVbhFLpi
-	KA/II06sXwvx6WdNLenU7ZLN0Nd7hZkZaZ64uWZqo2BPr8ZXdp4xzBFlc8fKJaykRl0B6J/GY3UZG
-	JE7x7mCTluVaS1ze78deA2lF9pKfYvmXhvZAOMDx/gMxpnykteP10RvF08j88Dm+QmHQ=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168] helo=pettiford.lan)
-	by mail.hugovil.com with esmtpa (Exim 4.98.2)
-	(envelope-from <hugo@hugovil.com>)
-	id 1wITL9-000000006SZ-2ZEq;
-	Thu, 30 Apr 2026 11:30:12 -0400
-Date: Thu, 30 Apr 2026 11:30:11 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, ilpo.jarvinen@linux.intel.com,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Hugo Villeneuve
- <hvilleneuve@dimonoff.com>
-Subject: Re: [PATCH v2 02/15] serial: core: add uart_iotype_mmio/legacy_io
- helper functions
-Message-Id: <20260430113011.fea8a6edca8d864429a63fd5@hugovil.com>
-In-Reply-To: <afNwaUf8esqaqxUe@black.igk.intel.com>
-References: <20260428-tty-upio-v2-0-01c1857cf761@dimonoff.com>
-	<20260428-tty-upio-v2-2-01c1857cf761@dimonoff.com>
-	<afNwaUf8esqaqxUe@black.igk.intel.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="D37FyE44"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83A84C2BCB3;
+	Thu, 30 Apr 2026 19:59:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1777579140;
+	bh=LBnU4AivRmdyKTS0Xcm7sAN9nbgjFQEu0IgaPDtNX8A=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=D37FyE44Yvvn2cExwQ3DmwgarHkzu8WUVgaowMhD+LmI77+KXzdBK44lKtn+fFUgO
+	 bDSpV9CoNJi+BNPgdd0UKnu4ogxf1eb7bKc3aQbAkOGlv1S0uL1gaj47H4jPYZGD6F
+	 ELGMa2Wzsk/mtTY92+5Ti3XPzZXWHt9gxb3Qe/WyFzeVbTCM6GeA+HIN1/HGJ5L3OL
+	 jAMGMxkf/Y5mCzAdwHsIGTNRCYNHpJi/prLhuFyMoP3cAGZI83iFkM8L7ZClWRXRz2
+	 W2CedreT/+hzZYdFf/jLgPz08IQck7uK1kQPtbXn8J0GMY1oTCQv1ZhHnUPsntX0hj
+	 iUkbOn6Q6Y2wA==
+Date: Thu, 30 Apr 2026 14:58:58 -0500
+From: Rob Herring <robh@kernel.org>
+To: Markus Probst <markus.probst@posteo.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Miguel Ojeda <ojeda@kernel.org>,
+	Gary Guo <gary@garyguo.net>,
+	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Benno Lossin <lossin@kernel.org>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Kari Argillander <kari.argillander@gmail.com>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Viresh Kumar <viresh.kumar@linaro.org>,
+	Boqun Feng <boqun@kernel.org>, David Airlie <airlied@gmail.com>,
+	Simona Vetter <simona@ffwll.ch>, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org, rust-for-linux@vger.kernel.org,
+	linux-pm@vger.kernel.org, driver-core@lists.linux.dev,
+	dri-devel@lists.freedesktop.org
+Subject: Re: [PATCH v7 0/4] rust: add basic serial device bus abstractions
+Message-ID: <20260430195858.GA1650658-robh@kernel.org>
+References: <20260429-rust_serdev-v7-0-0d89c791b5c8@posteo.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam_score: -2.0
-X-Spam_bar: --
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260429-rust_serdev-v7-0-0d89c791b5c8@posteo.de>
 
-On Thu, 30 Apr 2026 17:08:25 +0200
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
-
-> On Tue, Apr 28, 2026 at 01:53:48PM -0400, Hugo Villeneuve wrote:
+On Wed, Apr 29, 2026 at 08:21:30PM +0200, Markus Probst wrote:
+> This patch series adds the serdev device bus rust abstraction into the
+> kernel.
 > 
-> > To help simplify code that check on the io type mode of the port.
+> This abstraction will be used by a driver,
+> which targets the MCU devices in Synology devices.
 > 
-> ...
+> Kari Argillander also messaged me, stating that he wants to write a
+> watchdog driver with this abstraction (needing initial device data).
 > 
-> > +bool uart_iotype_legacy_io(enum uart_iotype iotype)
-> 
-> Why do we use 'legacy'? Still in use in modern CPUs...
+> @Rob: Are you willing to maintain these rust abstractions yourself,
+> as you are the expert on this subsystem, otherwise I would take care of
+> it with a "SERIAL DEVICE BUS [RUST]" section in the MAINTAINERS file. In
+> the second case, I assume you are going to pick those patches as-is into
+> your tree, after they have been reviewed?
 
-TBH I do not remember exactly where i got this, but what would you
-suggest?
+Well I can ignore the Rust part as much as I ignore the C serdev part... 
+Honestly, I need to find someone else to maintain all of it as I don't 
+really have the bandwidth. I don't think we should split it though.
 
-Maybe:
-  uart_iotype_io()
+And I don't have a tree for serdev. Greg picks up the serdev patches. If 
+the Rust folks are fine with them, then I am.
 
-
-Hugo.
+Rob
