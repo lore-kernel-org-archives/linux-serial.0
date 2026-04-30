@@ -1,141 +1,268 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3828242DFF9;
-	Thu, 30 Apr 2026 14:40:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 705D042DFF9
+	for <linux-serial@vger.kernel.org>; Thu, 30 Apr 2026 14:43:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777560040; cv=none; b=b0SjXQUcvOFz5jiB/bnEa1vkK+yUY5yU9OrjsHNUb+wPgpYH5kIhnGml9D5r1M0y+IIk/LY8sl9aQuAzPw/LhimfLxTBR7QJDsbzzbDQY+15rQhmeQG6ilwahP5X1MGg+XLsAnjbi+NyUlnig0LzIweZKxUhws1Sakp21gilWLA=
+	t=1777560215; cv=none; b=E5qB8Un+Ji/eASXJqudspgbYlC4iVHGywNAFFTmPhQHXwet5sXXb6wOwlLomc1eNLi8eVz3CPFnUDhd9eqHQzSAbUGK0NvDNjUBNRis6keU7Z2RqQ/zjJuoMimnF94EB7lSue2CKndQK3zKqeOwEpn9oUgLXGksdkwL93A0L0Jc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777560040; c=relaxed/simple;
-	bh=Uxkhn9DD+DFJbMY9C+14AqkwrejCU5kbMiN3ov30ERA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=grfqMOiFLS2d7uO4VDRGEAU2e8OhE2rTEo3fpHDAeiNvbbx82MZ2lPxlf0a19wrLR/Vb4YjfYnisEajiMVP32Z3P1IhsRXoAfFWMC1P/9kRGXV62ro/XH+gFPxel6sr5SvQE1ZuaFq0/DzQhSgf3+uX5SsERql16DQiu2PbrwxU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Pu9rvbR0; arc=none smtp.client-ip=192.198.163.16
+	s=arc-20240116; t=1777560215; c=relaxed/simple;
+	bh=pXSMCkprxpn3dtxysFPqO5Vd1fe6EMawKaaW96b8mik=;
+	h=Date:From:To:Cc:Subject:Message-ID; b=TkTGWhBIQh4AAEexPrVV+aEk+KEAWYXt0MK7Itx+CncgtoRt9r4lYicALmlCLDxK5vlZupDAqBx4R9AP10qxTw53m9DU2PySbRE8AIyIrjc496N2pA/wy+Yt8M3ox1OGCBjQVNNBuxYG5aZxVEKOfK05aDUzIxVpNfAE9Vw1UVs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RnbZifnj; arc=none smtp.client-ip=198.175.65.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Pu9rvbR0"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RnbZifnj"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777560038; x=1809096038;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Uxkhn9DD+DFJbMY9C+14AqkwrejCU5kbMiN3ov30ERA=;
-  b=Pu9rvbR0NO6IxwN3GO9unMBBGIQTFpsJvBAKoipmoGR497wwAt6IXITo
-   81oqCqVRG/pfXDZfV5gVH2JmDLQfTfIqXTMkm1IY1MSi3N83I9cKrhWja
-   vUiPS076lUlU4EYJXv7NHhM7av6irbmcgQu/PYCYEq4L7kra3fW/3xUHY
-   qjVyZhrDTCvLHCEOeq7uPvnJiI8Y6LnDLWX+z0DLW1K/Cv6vitd7qYb9k
-   FfUPVDyTPuKDdfTRcwTUXgQ3OgDwoZYrXu/rVWwsPRC44fGmZoeasiBRy
-   Ziw6KqGsWIZKoG3y9zC6vGO9ahj16nzpFvwYRJOnoEdIpUCtZUNflDn+P
+  t=1777560215; x=1809096215;
+  h=date:from:to:cc:subject:message-id;
+  bh=pXSMCkprxpn3dtxysFPqO5Vd1fe6EMawKaaW96b8mik=;
+  b=RnbZifnj+thOOiW+CUz0y29bW+Dato/ZnSkLLKtNQ/5JAMsbyMexf650
+   4UDFNuhXH/u5i1WFOvgwcqw8o3gKl7DK9tj+/+7YmtIstE/dKeA8EfSP4
+   r1/Sn8Lyqu8vzpvUYNmQX1JHGLJ0qP9TM4sOGOufbw5bGgS9f0peUxhMZ
+   2p0WHXRmrq1sUNkDni3wGWKuGuVIeAicb9p8Z6Oytpc63qXJKx8tTizlT
+   tlDOpYgBPRpkeaU75dqH352oVz4Xu9idIKmrJvNlxwENXwlWjY5Bsqi8j
+   aQtsAjXRQ6RwxRQ0UxW5duZKapuzHVedkcEcz0SKbNxFfcnpPN0xSbguI
    g==;
-X-CSE-ConnectionGUID: G+ftVxCNQnCn4PCua11Ftg==
-X-CSE-MsgGUID: HKKWv8UeSzmLocRU+P3o1w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11772"; a="66042199"
+X-CSE-ConnectionGUID: 9yzU/xD1Qm2zf2Nt2ydr3g==
+X-CSE-MsgGUID: 7T1KeYYXTkO1EnYTr4sJIQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11772"; a="78498773"
 X-IronPort-AV: E=Sophos;i="6.23,208,1770624000"; 
-   d="scan'208";a="66042199"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Apr 2026 07:40:38 -0700
-X-CSE-ConnectionGUID: wKgL+zH6SWmdeqfLlX3gJQ==
-X-CSE-MsgGUID: DD4FyhGeQseHCmG5ZsRvjg==
+   d="scan'208";a="78498773"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Apr 2026 07:43:34 -0700
+X-CSE-ConnectionGUID: RK1gFX5dQrGgjqgwFdhblQ==
+X-CSE-MsgGUID: AGG3ntq2St+mSci8g71ybg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,208,1770624000"; 
-   d="scan'208";a="228091586"
+   d="scan'208";a="239581944"
 Received: from lkp-server01.sh.intel.com (HELO aa799cca880d) ([10.239.97.150])
-  by fmviesa009.fm.intel.com with ESMTP; 30 Apr 2026 07:40:34 -0700
+  by fmviesa005.fm.intel.com with ESMTP; 30 Apr 2026 07:43:33 -0700
 Received: from kbuild by aa799cca880d with local (Exim 4.98.2)
 	(envelope-from <lkp@intel.com>)
-	id 1wISZ4-00000000CU4-0bpl;
-	Thu, 30 Apr 2026 14:40:30 +0000
-Date: Thu, 30 Apr 2026 22:40:21 +0800
+	id 1wISby-00000000CUQ-1XKU;
+	Thu, 30 Apr 2026 14:43:30 +0000
+Date: Thu, 30 Apr 2026 22:42:53 +0800
 From: kernel test robot <lkp@intel.com>
-To: Aniket Randive <aniket.randive@oss.qualcomm.com>,
-	gregkh@linuxfoundation.org, jirislaby@kernel.org,
-	linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, praveen.talari@oss.qualcomm.com,
-	anup.kulkarni@oss.qualcomm.com, dmitry.baryshkov@oss.qualcomm.com,
-	viken.dadhaniya@oss.qualcomm.com
-Cc: oe-kbuild-all@lists.linux.dev,
-	Aniket Randive <aniket.randive@oss.qualcomm.com>
-Subject: Re: [PATCH v1] serial: qcom-geni: Avoid probing debug console UART
- without console support
-Message-ID: <202604302204.1qhU6zO5-lkp@intel.com>
-References: <20260413072501.263871-1-aniket.randive@oss.qualcomm.com>
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ a2083fd1fa7aa0ef5cd8fd92396da0de2d0654b0
+Message-ID: <202604302243.tE9iE4FF-lkp@intel.com>
+User-Agent: s-nail v14.9.25
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260413072501.263871-1-aniket.randive@oss.qualcomm.com>
 
-Hi Aniket,
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: a2083fd1fa7aa0ef5cd8fd92396da0de2d0654b0  serial: qcom: Unify user-visible "Qualcomm" name
 
-kernel test robot noticed the following build warnings:
+elapsed time: 4137m
 
-[auto build test WARNING on tty/tty-testing]
-[also build test WARNING on tty/tty-next tty/tty-linus usb/usb-testing usb/usb-next usb/usb-linus linus/master v7.1-rc1 next-20260429]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+configs tested: 191
+configs skipped: 2
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Aniket-Randive/serial-qcom-geni-Avoid-probing-debug-console-UART-without-console-support/20260423-150710
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-patch link:    https://lore.kernel.org/r/20260413072501.263871-1-aniket.randive%40oss.qualcomm.com
-patch subject: [PATCH v1] serial: qcom-geni: Avoid probing debug console UART without console support
-config: csky-randconfig-001-20260430 (https://download.01.org/0day-ci/archive/20260430/202604302204.1qhU6zO5-lkp@intel.com/config)
-compiler: csky-linux-gcc (GCC) 15.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260430/202604302204.1qhU6zO5-lkp@intel.com/reproduce)
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202604302204.1qhU6zO5-lkp@intel.com/
+tested configs:
+alpha                             allnoconfig    gcc-15.2.0
+alpha                            allyesconfig    gcc-15.2.0
+alpha                               defconfig    gcc-15.2.0
+arc                              allmodconfig    clang-16
+arc                               allnoconfig    gcc-15.2.0
+arc                              allyesconfig    clang-23
+arc                                 defconfig    gcc-15.2.0
+arc                            randconfig-001    gcc-8.5.0
+arc                   randconfig-001-20260430    gcc-8.5.0
+arc                            randconfig-002    gcc-8.5.0
+arc                   randconfig-002-20260430    gcc-8.5.0
+arm                               allnoconfig    gcc-15.2.0
+arm                              allyesconfig    clang-16
+arm                                 defconfig    gcc-15.2.0
+arm                            randconfig-001    gcc-8.5.0
+arm                   randconfig-001-20260430    gcc-8.5.0
+arm                            randconfig-002    gcc-8.5.0
+arm                   randconfig-002-20260430    gcc-8.5.0
+arm                            randconfig-003    gcc-8.5.0
+arm                   randconfig-003-20260430    gcc-8.5.0
+arm                            randconfig-004    gcc-8.5.0
+arm                   randconfig-004-20260430    gcc-8.5.0
+arm64                            allmodconfig    clang-23
+arm64                             allnoconfig    gcc-15.2.0
+arm64                               defconfig    gcc-15.2.0
+arm64                          randconfig-001    clang-23
+arm64                 randconfig-001-20260430    clang-23
+arm64                          randconfig-002    clang-23
+arm64                 randconfig-002-20260430    clang-23
+arm64                          randconfig-003    clang-23
+arm64                 randconfig-003-20260430    clang-23
+arm64                          randconfig-004    clang-23
+arm64                 randconfig-004-20260430    clang-23
+csky                             allmodconfig    gcc-15.2.0
+csky                              allnoconfig    gcc-15.2.0
+csky                                defconfig    gcc-15.2.0
+csky                           randconfig-001    clang-23
+csky                  randconfig-001-20260430    clang-23
+csky                           randconfig-002    clang-23
+csky                  randconfig-002-20260430    clang-23
+hexagon                          allmodconfig    gcc-15.2.0
+hexagon                           allnoconfig    gcc-15.2.0
+hexagon                             defconfig    gcc-15.2.0
+hexagon               randconfig-001-20260430    gcc-14.3.0
+hexagon               randconfig-002-20260430    gcc-14.3.0
+i386                             allmodconfig    clang-20
+i386                              allnoconfig    gcc-15.2.0
+i386                             allyesconfig    clang-20
+i386        buildonly-randconfig-001-20260430    gcc-14
+i386        buildonly-randconfig-002-20260430    gcc-14
+i386        buildonly-randconfig-003-20260430    gcc-14
+i386        buildonly-randconfig-004-20260430    gcc-14
+i386        buildonly-randconfig-005-20260430    gcc-14
+i386        buildonly-randconfig-006-20260430    gcc-14
+i386                                defconfig    gcc-15.2.0
+i386                  randconfig-001-20260430    clang-20
+i386                  randconfig-002-20260430    clang-20
+i386                  randconfig-003-20260430    clang-20
+i386                  randconfig-004-20260430    clang-20
+i386                  randconfig-005-20260430    clang-20
+i386                  randconfig-006-20260430    clang-20
+i386                  randconfig-007-20260430    clang-20
+i386                           randconfig-011    clang-20
+i386                  randconfig-011-20260430    clang-20
+i386                           randconfig-012    clang-20
+i386                  randconfig-012-20260430    clang-20
+i386                           randconfig-013    clang-20
+i386                  randconfig-013-20260430    clang-20
+i386                           randconfig-014    clang-20
+i386                  randconfig-014-20260430    clang-20
+i386                           randconfig-015    clang-20
+i386                  randconfig-015-20260430    clang-20
+i386                           randconfig-016    clang-20
+i386                  randconfig-016-20260430    clang-20
+i386                           randconfig-017    clang-20
+i386                  randconfig-017-20260430    clang-20
+loongarch                        allmodconfig    clang-23
+loongarch                         allnoconfig    gcc-15.2.0
+loongarch                           defconfig    clang-19
+loongarch             randconfig-001-20260430    gcc-14.3.0
+loongarch             randconfig-002-20260430    gcc-14.3.0
+m68k                             allmodconfig    gcc-15.2.0
+m68k                              allnoconfig    gcc-15.2.0
+m68k                             allyesconfig    clang-16
+m68k                                defconfig    clang-19
+microblaze                        allnoconfig    gcc-15.2.0
+microblaze                       allyesconfig    gcc-15.2.0
+microblaze                          defconfig    clang-19
+mips                             allmodconfig    gcc-15.2.0
+mips                              allnoconfig    gcc-15.2.0
+mips                             allyesconfig    gcc-15.2.0
+mips                           xway_defconfig    clang-23
+nios2                            allmodconfig    clang-23
+nios2                             allnoconfig    clang-23
+nios2                               defconfig    clang-19
+nios2                 randconfig-001-20260430    gcc-14.3.0
+nios2                 randconfig-002-20260430    gcc-14.3.0
+openrisc                         allmodconfig    clang-23
+openrisc                          allnoconfig    clang-23
+openrisc                            defconfig    gcc-15.2.0
+openrisc                 simple_smp_defconfig    gcc-15.2.0
+parisc                           allmodconfig    gcc-15.2.0
+parisc                            allnoconfig    clang-23
+parisc                           allyesconfig    clang-19
+parisc                              defconfig    gcc-15.2.0
+parisc                randconfig-001-20260430    gcc-13.4.0
+parisc                randconfig-002-20260430    gcc-13.4.0
+parisc64                            defconfig    clang-19
+powerpc                          allmodconfig    gcc-15.2.0
+powerpc                           allnoconfig    clang-23
+powerpc                    mvme5100_defconfig    gcc-15.2.0
+powerpc                      pasemi_defconfig    clang-23
+powerpc               randconfig-001-20260430    gcc-13.4.0
+powerpc               randconfig-002-20260430    gcc-13.4.0
+powerpc64             randconfig-001-20260430    gcc-13.4.0
+powerpc64             randconfig-002-20260430    gcc-13.4.0
+riscv                            allmodconfig    clang-23
+riscv                             allnoconfig    clang-23
+riscv                            allyesconfig    clang-16
+riscv                               defconfig    gcc-15.2.0
+riscv                          randconfig-001    clang-23
+riscv                 randconfig-001-20260430    clang-23
+riscv                          randconfig-002    clang-23
+riscv                 randconfig-002-20260430    clang-23
+s390                             allmodconfig    clang-19
+s390                              allnoconfig    clang-23
+s390                             allyesconfig    gcc-15.2.0
+s390                                defconfig    gcc-15.2.0
+s390                           randconfig-001    clang-23
+s390                  randconfig-001-20260430    clang-23
+s390                           randconfig-002    clang-23
+s390                  randconfig-002-20260430    clang-23
+sh                               allmodconfig    gcc-15.2.0
+sh                                allnoconfig    clang-23
+sh                               allyesconfig    clang-19
+sh                                  defconfig    gcc-14
+sh                             randconfig-001    clang-23
+sh                    randconfig-001-20260430    clang-23
+sh                             randconfig-002    clang-23
+sh                    randconfig-002-20260430    clang-23
+sh                           se7206_defconfig    gcc-15.2.0
+sparc                             allnoconfig    clang-23
+sparc                               defconfig    gcc-15.2.0
+sparc                 randconfig-001-20260430    gcc-12.5.0
+sparc                 randconfig-002-20260430    gcc-12.5.0
+sparc64                          allmodconfig    clang-23
+sparc64                             defconfig    gcc-14
+sparc64               randconfig-001-20260430    gcc-12.5.0
+sparc64               randconfig-002-20260430    gcc-12.5.0
+um                               allmodconfig    clang-19
+um                                allnoconfig    clang-23
+um                               allyesconfig    gcc-15.2.0
+um                                  defconfig    gcc-14
+um                             i386_defconfig    gcc-14
+um                    randconfig-001-20260430    gcc-12.5.0
+um                    randconfig-002-20260430    gcc-12.5.0
+um                           x86_64_defconfig    gcc-14
+x86_64                           allmodconfig    clang-20
+x86_64                            allnoconfig    clang-23
+x86_64                           allyesconfig    clang-20
+x86_64      buildonly-randconfig-001-20260430    gcc-14
+x86_64      buildonly-randconfig-002-20260430    gcc-14
+x86_64      buildonly-randconfig-003-20260430    gcc-14
+x86_64      buildonly-randconfig-004-20260430    gcc-14
+x86_64      buildonly-randconfig-005-20260430    gcc-14
+x86_64      buildonly-randconfig-006-20260430    gcc-14
+x86_64                              defconfig    gcc-14
+x86_64                                  kexec    clang-20
+x86_64                randconfig-011-20260430    clang-20
+x86_64                randconfig-012-20260430    clang-20
+x86_64                randconfig-013-20260430    clang-20
+x86_64                randconfig-014-20260430    clang-20
+x86_64                randconfig-015-20260430    clang-20
+x86_64                randconfig-016-20260430    clang-20
+x86_64                randconfig-071-20260430    gcc-14
+x86_64                randconfig-072-20260430    gcc-14
+x86_64                randconfig-073-20260430    gcc-14
+x86_64                randconfig-074-20260430    gcc-14
+x86_64                randconfig-075-20260430    gcc-14
+x86_64                randconfig-076-20260430    gcc-14
+x86_64                               rhel-9.4    clang-20
+x86_64                           rhel-9.4-bpf    gcc-14
+x86_64                          rhel-9.4-func    clang-20
+x86_64                    rhel-9.4-kselftests    clang-20
+x86_64                         rhel-9.4-kunit    gcc-14
+x86_64                           rhel-9.4-ltp    gcc-14
+x86_64                          rhel-9.4-rust    clang-20
+xtensa                            allnoconfig    clang-23
+xtensa                           allyesconfig    clang-23
+xtensa                randconfig-001-20260430    gcc-12.5.0
+xtensa                randconfig-002-20260430    gcc-12.5.0
 
-All warnings (new ones prefixed by >>):
-
->> drivers/tty/serial/qcom_geni_serial.c:2011:43: warning: 'sa8255p_qcom_geni_console_data' defined but not used [-Wunused-const-variable=]
-    2011 | static const struct qcom_geni_device_data sa8255p_qcom_geni_console_data = {
-         |                                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->> drivers/tty/serial/qcom_geni_serial.c:1995:43: warning: 'qcom_geni_console_data' defined but not used [-Wunused-const-variable=]
-    1995 | static const struct qcom_geni_device_data qcom_geni_console_data = {
-         |                                           ^~~~~~~~~~~~~~~~~~~~~~
-
-
-vim +/sa8255p_qcom_geni_console_data +2011 drivers/tty/serial/qcom_geni_serial.c
-
-c4f528795d1add Karthikeyan Ramasubramanian 2018-03-14  1994  
-40ec6d41c841e2 Bartosz Golaszewski         2022-12-29 @1995  static const struct qcom_geni_device_data qcom_geni_console_data = {
-40ec6d41c841e2 Bartosz Golaszewski         2022-12-29  1996  	.console = true,
-2aaa43c7077833 Bartosz Golaszewski         2022-12-29  1997  	.mode = GENI_SE_FIFO,
-abffd1e6c4f1c9 Praveen Talari              2025-11-10  1998  	.resources_init = geni_serial_resource_init,
-abffd1e6c4f1c9 Praveen Talari              2025-11-10  1999  	.set_rate = geni_serial_set_rate,
-abffd1e6c4f1c9 Praveen Talari              2025-11-10  2000  	.power_state = geni_serial_resource_state,
-40ec6d41c841e2 Bartosz Golaszewski         2022-12-29  2001  };
-40ec6d41c841e2 Bartosz Golaszewski         2022-12-29  2002  
-40ec6d41c841e2 Bartosz Golaszewski         2022-12-29  2003  static const struct qcom_geni_device_data qcom_geni_uart_data = {
-40ec6d41c841e2 Bartosz Golaszewski         2022-12-29  2004  	.console = false,
-2aaa43c7077833 Bartosz Golaszewski         2022-12-29  2005  	.mode = GENI_SE_DMA,
-abffd1e6c4f1c9 Praveen Talari              2025-11-10  2006  	.resources_init = geni_serial_resource_init,
-abffd1e6c4f1c9 Praveen Talari              2025-11-10  2007  	.set_rate = geni_serial_set_rate,
-abffd1e6c4f1c9 Praveen Talari              2025-11-10  2008  	.power_state = geni_serial_resource_state,
-abffd1e6c4f1c9 Praveen Talari              2025-11-10  2009  };
-abffd1e6c4f1c9 Praveen Talari              2025-11-10  2010  
-abffd1e6c4f1c9 Praveen Talari              2025-11-10 @2011  static const struct qcom_geni_device_data sa8255p_qcom_geni_console_data = {
-abffd1e6c4f1c9 Praveen Talari              2025-11-10  2012  	.console = true,
-abffd1e6c4f1c9 Praveen Talari              2025-11-10  2013  	.mode = GENI_SE_FIFO,
-abffd1e6c4f1c9 Praveen Talari              2025-11-10  2014  	.pd_data = {
-abffd1e6c4f1c9 Praveen Talari              2025-11-10  2015  		.pd_flags = PD_FLAG_DEV_LINK_ON,
-abffd1e6c4f1c9 Praveen Talari              2025-11-10  2016  		.pd_names = (const char*[]) { "power", "perf" },
-abffd1e6c4f1c9 Praveen Talari              2025-11-10  2017  		.num_pd_names = 2,
-abffd1e6c4f1c9 Praveen Talari              2025-11-10  2018  	},
-abffd1e6c4f1c9 Praveen Talari              2025-11-10  2019  	.resources_init = geni_serial_pwr_init,
-abffd1e6c4f1c9 Praveen Talari              2025-11-10  2020  	.set_rate = geni_serial_set_level,
-abffd1e6c4f1c9 Praveen Talari              2025-11-10  2021  };
-abffd1e6c4f1c9 Praveen Talari              2025-11-10  2022  
-
--- 
+--
 0-DAY CI Kernel Test Service
 https://github.com/intel/lkp-tests/wiki
