@@ -1,213 +1,203 @@
-Received: from TYDPR03CU002.outbound.protection.outlook.com (mail-japaneastazon11013061.outbound.protection.outlook.com [52.101.127.61])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68F3B347FD7;
-	Mon,  4 May 2026 08:51:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.127.61
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777884675; cv=fail; b=rGiqbpAkZq1hAHyOJolLegOTKgD8Qi6g0XtLnq5qZonZNwwXVOq59BBv/FzwWmzUN34WZWfb9EitQ5TADWCCX4GlDFrg/NGlIQZewgFjMcSStyHS/TzPRqiql02lC4wCJipF6jb62yMnQrcJUDc6LBR3j3vW5fPqQw3KYSi/WVI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777884675; c=relaxed/simple;
-	bh=42RoFVsnDttgVf/A0/X5fKwKztD3f4fhqT+E4Fe/z+c=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=tO14tq4Zlce1Dwc0aSykqqc7IJ1fXKPIviwio8NxSoY+vNF0CAeCCPDHaxO52LwYUCPBsxNcAmq56iQBzynW8BqDIqsizTmJgcPSmVd5mcPmyX5jCK8O3hXV5Rocgxm6mx004UcptCk7phlUT6ZElxBzCvNbCKdI2Irel8qiocM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=moxa.com; spf=pass smtp.mailfrom=moxa.com; dkim=pass (1024-bit key) header.d=moxa.com header.i=@moxa.com header.b=OFKKGYIi; arc=fail smtp.client-ip=52.101.127.61
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=moxa.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=moxa.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70F7C37CD49
+	for <linux-serial@vger.kernel.org>; Mon,  4 May 2026 10:10:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777889456; cv=none; b=uipBJi6r69lZiYNnPA6X1j0DssMgZF5/WByl5ftPhQflsf9oX+jnFXhGsL+prkDbfPXuQvaPDBR0ZzMU+2x7m/sa3RBO8oJcM5VT7dMucIFE9iOmBcQUV0tY7gP6eE7iBD2GvHo+89YAm19FBjNGNuPC4JveO1bv3sMEDCe2h9s=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777889456; c=relaxed/simple;
+	bh=GqKdSI51f1em7M39oQYLwVmjIooU0kDc3AYhR8hdk0M=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=cCWl9LJaP9VC/SwdY7V0knH+ldEsV7CEmZdQrkAPupGk9dYlf0jw0fezVZ/dYE5qLJFGpdcTkvygwDwC8gdO8pICYzuBWiLeAskjgUKFxncaXpaq5Aq6EFq4YHkfJICcZmYyjaG88ojNk1LWHSsQjCmNJyUSKK2Y2MAe6pG/Sz8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=EhbFlrHB; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=VUtywDKS; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=moxa.com header.i=@moxa.com header.b="OFKKGYIi"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=p5QjYZkL+Y0g1HujYRNjslkLl6mdrrKDGaQ6YX+K7XHHOI28tBx+enZfDlJPciIlIcXu1C6nkqjoEm3DvTKQZZHZUnuSnYXxg3vzJGpqZm+poxTksNG8z8yeJRD6lBKkQC2/VVQWqV/gZASVGeLda+8sNIu0eZEaNHz9yV6OfWf3BVePw6JdPub05Ei1z8XNFADVFpDri34mtnt1ewAvsoeojWPDb0A6UNXTHzUiUI7w9zkrpiVioAwvvZNTE4Dfug9EL1xm04tb+Hat1Dx80buLhqv0AuxWY5xq4tcKMrXEEs6hnDB8TqY35xC0l6c8sBVc1eTIy1V7jFOFKH8xrQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=R85jyQjRNxgp6RNhj1uj9en5fRweVeTVwGMg7E7DlvQ=;
- b=Lzwe/4QYv5fHSyvNlBHkOoXZxVugqhhL0WWxkmiVjwAZ4bxSQjehNFRwPsPCL/vmSQj9xKrfh3RhUpofbimuO8UhJ2ycyFwQ8mEwt8vSerLtIg8YCg43BDFbHzKrIF0ukP/dDBounesJJF00MNEW8Hgg52Riwzq6pTjJEDzmXKxU2WdXCCKEWHpQW6+K1FPrrqGsLfULWApRCClE8GRthDGdMHssepjdui4iQWigfKCvcRUn+ay8wZTCqIkf0pW4W+TPfsb7KfZyhDRyJJPE4oP3WK4eT2anoJ5Re2pZ3PPwtym+KeHtD3t/DDEr8FkTK1c1L8bhXN2zpyyWYFjvTQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=moxa.com; dmarc=pass action=none header.from=moxa.com;
- dkim=pass header.d=moxa.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=moxa.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=R85jyQjRNxgp6RNhj1uj9en5fRweVeTVwGMg7E7DlvQ=;
- b=OFKKGYIiA0ddlEPnlwl8LgTJuwt3Z23ajdmG0H51f3TVfg1J+o93Uw5YlqYRV2yYwTRAsmyc3zsNvvUH2flv0oJwLsygLMMiemzKCLatPVbMHO3EiOg7Lmqx/CKlfwsjKVzHqx1oGwqAcMgtROA645iwvNIcrn89cvQ2zyaiUgY=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=moxa.com;
-Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
- (2603:1096:301:115::14) by OSQPR01MB7823.apcprd01.prod.exchangelabs.com
- (2603:1096:604:425::6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9870.25; Mon, 4 May
- 2026 08:51:12 +0000
-Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
- ([fe80::ae38:e821:cf7d:3717]) by PUZPR01MB5405.apcprd01.prod.exchangelabs.com
- ([fe80::ae38:e821:cf7d:3717%4]) with mapi id 15.20.9870.023; Mon, 4 May 2026
- 08:51:12 +0000
-From: Crescent Hsieh <crescentcy.hsieh@moxa.com>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	ilpo.jarvinen@linux.intel.com,
-	andy.shevchenko@gmail.com
-Cc: crescentcy.hsieh@moxa.com,
-	fangpingfp.cheng@moxa.com,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH 15/15] serial: 8250_mxpcie: implement rx_trig_bytes callbacks via MUEx50 RTL
-Date: Mon,  4 May 2026 16:49:00 +0800
-Message-ID: <20260504084900.22380-16-crescentcy.hsieh@moxa.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260504084900.22380-1-crescentcy.hsieh@moxa.com>
-References: <20260504084900.22380-1-crescentcy.hsieh@moxa.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: TP0P295CA0040.TWNP295.PROD.OUTLOOK.COM
- (2603:1096:910:4::13) To PUZPR01MB5405.apcprd01.prod.exchangelabs.com
- (2603:1096:301:115::14)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="EhbFlrHB";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="VUtywDKS"
+Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6448fci52539551
+	for <linux-serial@vger.kernel.org>; Mon, 4 May 2026 10:10:54 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:date:from:message-id:mime-version
+	:subject:to; s=qcppdkim1; bh=PzBWqmaWx3NGD/Y6Y+6Ly+aWxbhG1VBBgUk
+	9Lgibhrc=; b=EhbFlrHBm50qfs6nzI061a5gu49e2e4Y1W3zoyJ6bozG6IfWNck
+	ZEeF1nPo3mfQ4AIRJZFHmfVyX/2m5/tQvscCDkpDJEB8VjwhCunQTvndU3tJXQWl
+	H7KSHHNQ2+ph/ZtbGMB1Ngnb5m+kbcXzELPONpN18bhNcDFAg1ONK0Ueus7XCC6Y
+	Lf57p5IpJBWERCRFCs6kfrnln4X7Fbp+A0Pju/eQ3fpSXAkFq5XJiC4vol5//dPN
+	5Rkscj5RQXgVm31vnPAFGBjoM3/PRLycOtpeG7uKUjOFUdKGrFsw9RjysntH830T
+	AqE0BCtxZwEsS04P2MWmRw+qZJ1SzOc9tKg==
+Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com [209.85.216.72])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4dwxk1b32j-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-serial@vger.kernel.org>; Mon, 04 May 2026 10:10:54 +0000 (GMT)
+Received: by mail-pj1-f72.google.com with SMTP id 98e67ed59e1d1-358df8fbd1cso4823826a91.0
+        for <linux-serial@vger.kernel.org>; Mon, 04 May 2026 03:10:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1777889453; x=1778494253; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=PzBWqmaWx3NGD/Y6Y+6Ly+aWxbhG1VBBgUk9Lgibhrc=;
+        b=VUtywDKSpSxsJ/qlEncgW+ddb7JS5QJbqlGvx/mGOmNm3P+0mFZvU0F0bChP7uk6AC
+         zedEPS4i18Mr8NsS0hbNqoubr8YoQ59656c8bi311z53qLBXpCEBXMbHTlc4FUx+x4B5
+         DpLv9dgqB6GLSUyN/6kE5EsH79q8mP18c8uY0Fr19qWcm413ECrO+bkgVaS09Zuwz046
+         fg1HKBnDLBy4V4XYK2w4McLJokm28qwtnzK8VJ/njADi9jeXgzJQ/FW+haZZF+MXzedm
+         L0/NipMGMxxlpS6d6KQecwi8VXSZOYQXYrcwQoN1SZQQf8m5BJaqVUqqggfQKoKxt0R6
+         nxpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777889453; x=1778494253;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=PzBWqmaWx3NGD/Y6Y+6Ly+aWxbhG1VBBgUk9Lgibhrc=;
+        b=tNGzNIg+VzCDguq12k+Kb2yNOgkxt4eksl3qtidIHh1u9Y/dLKkYbdZJEWwf57VSmi
+         ngbuP7mkBGqNqOEqkzVAaGeasiIRBPFLlhEhYaK+dlanpU8BwPuz4FsgaQJUeKo+39y7
+         e3FmkBUBA6lLu/+7jAEm5FFVug0SD8ib9B4snUQc58QY/4tsTNzq0J7CaJ2Hia+EGNRm
+         0UbETApizLJqzNaBat1svkYqjnbaTJFb3YfFepun8jCkcWKIsRgItG/Rp+DvMz/1i5Hp
+         G9GTQR2ItCCCh3vCMiOsl5OvID+VjNElfYM1fZCsSRlt6GQvuzUhn+bOo7ZHje4vVsUt
+         sCGw==
+X-Forwarded-Encrypted: i=1; AFNElJ9l5sqAAqks1adznHfSXmB6jZi8/I36mHPMTkbU7OXAKts2AQDn1dKKJLrPnOSPYuhBiIjybOom8xCWIUk=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzre+tCw0bNxSQLX3r5Mb3vvKYKSlraJ4s1OsvByk2XGDPJqKFd
+	OYmwi/mGsOvUVDSh9E0ucZkzfTsnsU5ShavTKS+06/72dV5zlTfF4dAcyU4+SBNGYz01Owmby0k
+	ic1nNHdt/n9PBmzVpT71ZpWiHJMfzs/TqseleQ0GGrZ247khv2yrgC5QGJhGhxMXSfhU=
+X-Gm-Gg: AeBDiesgzXlQ9FTLN8+02GByWrgXU1YpY7kmyEMP5XTAxDUTnNd0A8iAU7pwmH09W4T
+	OMPV/bYHFajyMNCHKSG8BWVUjoQD1i/EMcjlQrG9hVakGOMet95MbBAZjM7k/sOH2kD9Sis9PMD
+	Zz/ux0ZmBKyb/bY1CTY0bpRpvI8GMNkKOJFM0g5ZKHHvcLdVIu1Usejc2wphnuh4g74RtWyKxhZ
+	Y7GpMu6ONgFPURnaGPwIlL8TYpKmMyLwzL4Pf5FBbjjRJ9FEi59yCb0gvDnWd9dfi/uFSg6W4/x
+	8AZ75iqwLCE7sWHJftyoj8ncXVx0VXjxk2atOz3a3lETngDQKQLb9jIFzTwMYsKHuTB2XQN2xtS
+	uyqdpHeIFsjiC4Njh+qE6WgNeVSQElkbNrsuYfYcRxUVM4AzdYF6+2L17mx/wyWTPTrU=
+X-Received: by 2002:a17:90b:3850:b0:35f:d56d:1c45 with SMTP id 98e67ed59e1d1-3650cd7ce74mr9551598a91.12.1777889453358;
+        Mon, 04 May 2026 03:10:53 -0700 (PDT)
+X-Received: by 2002:a17:90b:3850:b0:35f:d56d:1c45 with SMTP id 98e67ed59e1d1-3650cd7ce74mr9551558a91.12.1777889452817;
+        Mon, 04 May 2026 03:10:52 -0700 (PDT)
+Received: from hu-arandive-hyd.qualcomm.com ([202.46.22.19])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-364bdf54419sm14516503a91.8.2026.05.04.03.10.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 May 2026 03:10:52 -0700 (PDT)
+From: Aniket Randive <aniket.randive@oss.qualcomm.com>
+To: gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, praveen.talari@oss.qualcomm.com,
+        anup.kulkarni@oss.qualcomm.com, dmitry.baryshkov@oss.qualcomm.com,
+        viken.dadhaniya@oss.qualcomm.com
+Cc: Aniket Randive <aniket.randive@oss.qualcomm.com>
+Subject: [PATCH V2] serial: qcom-geni: Avoid probing debug console UART without console support
+Date: Mon,  4 May 2026 15:40:45 +0530
+Message-Id: <20260504101045.1084672-1-aniket.randive@oss.qualcomm.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PUZPR01MB5405:EE_|OSQPR01MB7823:EE_
-X-MS-Office365-Filtering-Correlation-Id: 213db57f-9198-47e4-13d3-08dea9ba4b09
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|366016|52116014|376014|56012099003|22082099003|18002099003|38350700014;
-X-Microsoft-Antispam-Message-Info:
-	HRSETyUgwLV/JxxvrKaFjngfaEKSRwF7UhgSAzWWgA1iT4is6de4h0sbysL2ToPh0gWd/Xs/K+fgaWs9HYgclPNN2wqqk/TxLcawTe2xbhs+xRi/PJdFqxmOfVYh9XNY779FVzcAyzEEnJhZONhlpWiLV4t4TN8JV08NMRQHUNL6BaVAcBjVCugUmTpSPOs+mL17CnPibxKVuz2kycM2X+q/AHFehre0drk1ub2wmSAG8EKrMt0B/PZL1c7Vp266Sv+TtnrVg4iaIjTIB7Lcp0Qb8qbDwhjbLbmt3QZN8DFI8WlPMtW8sJY55HKpTh//RKi6nwDxG1SWgSMv6LDfxBoZd0TQgn8eh/w4DqFhF+fGX+jshYIH/qjGoQBmbRIPqbQDJZZN9d+k0jQuoaGvSikTWTLGHw+sLReic+RAxyYsjNsEIAFCExlum1yjG5KP3YIMuoNFk2zEY0fboIXKO4kxzjNtb0I+IN5l3LJH3pzQ2+31c4aCL0UuHbIF8BDbxgKBCQZsY53Nk8MOPbylm5iRst35d2y0k7y0hKd3x4gfPv2bVHYqq5mIPEPWALnTySbFjYiqIDgWDA7CH/GaBHWlzbq3jiDSUUn5JrYbnjYVeacvQdDHFCoGdTT7ZufwQ6inUdvYwNgXYldFlrRLT7scqYE2Nlxf6RR6JKB/GMPTrxog0BYLpbGG45TOcsGYK1gyq8nDehXm4dmEy6bB+v0m7qUcERYMBw6FeJ4eKO0hNXy64GLhgGyIp38WHdo4
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PUZPR01MB5405.apcprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(52116014)(376014)(56012099003)(22082099003)(18002099003)(38350700014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?AC6jpOUdlWS13GqradB3c0qnU9+dONfArYN+jshn9M3exC/N76uzA5OrseSa?=
- =?us-ascii?Q?kRUry8McPj/2P+EqMWa1WwZhStnRWufT3HOsfprnZdqLR9BaXXfk24uc/2DT?=
- =?us-ascii?Q?UUqV7UHx3X2iyzFdirCIWPB76MKBeVTis4h5VPMwHKglcRvG0R8S3pzvPMbT?=
- =?us-ascii?Q?keTh9d0ykpkn33NOsG972pz1ugIrBfX2RHyjC0f8jBtjWzS4F/y39iMQoT5o?=
- =?us-ascii?Q?7JxcqzUo/bF7GlLFWlKVeSS05O0H9HmeSnVf1A00kMa0VBmxbjM1tuXGXIYA?=
- =?us-ascii?Q?LvtCfdiR/lQFFG4RTlZ0aARyAC4AibWVVnBVooPjlsbRcAEB/hFygv/3BDHm?=
- =?us-ascii?Q?OcaqC8xC5T7J7qURerK2h+4wK/2sDEdbiWXbCMYRsPOPh2D5yyf0Z6XjKjnf?=
- =?us-ascii?Q?KQaskHTrc/4LZCESkvAiif5gbulpsMB3KxoiJ05CDQw2cVWVfiGsb1IoxfKf?=
- =?us-ascii?Q?+kmVeBt2oUfiputg4u6HbQ5IHF07IPUpL8HdwJUfVCRUz6HlN5mLvh3qI9jj?=
- =?us-ascii?Q?Xpd61M7euas0zgAjLWfMB5zHZHen+6NBwr5yJtD5yrhyK5VyUoDx47xHbv2g?=
- =?us-ascii?Q?Rq4jdFSW7yf3zj65MuqeKbZHzIGiyi3QWDwah1A+7vyk2mGGn3Bi59aNcE3g?=
- =?us-ascii?Q?s8vDOnHUt42Zgherh8dtN2s/nwMxzRJjtGemGXMHqTWanL+OulxgkeV0C0Uh?=
- =?us-ascii?Q?C1jtkYGB9JZZirVKEhcpJxY/E+bfHx8rF1eH9z1sglTrWYoiEZbFEseHSApK?=
- =?us-ascii?Q?ke31Hjcjk7TZ01fk0+KjU+/t95DxMd2O9LbP/W5+PzhDdGAsZggue1+j2qky?=
- =?us-ascii?Q?bu0UoZLuCKiQulgJZXIRS2pueerM2SdfDs/ubB49bEBlrzUsRDA5jwPrbefQ?=
- =?us-ascii?Q?dfda0h2ia2cMsiTYIbZSslkzTYpm8Mg1QeW7OZdkfoNmyP7u6XvMKLCF16nr?=
- =?us-ascii?Q?S6NBH2IlbjntXEMF5Gzz6M1v/4ZDfuoez48B9+ZRmsJ95/XpN5tjUSCqMwP9?=
- =?us-ascii?Q?FxOryB6vNQ78URqgVEz0+O2Zty3yHhTRu0l37zlojJa7aRwPTJ61i6goDyPx?=
- =?us-ascii?Q?j2y+NTc85uxRj8Jhis2HQJ8d3pq6gAIFEs8rNGYF6pnpNvpDPmSAFfLz9w59?=
- =?us-ascii?Q?TvevUQkx7fbsnHlBq3r+WulfiK9gTXlOq4c6M1PzuV2JeJ7VYajuOli1L8uY?=
- =?us-ascii?Q?zQexYK8mIdEmKAspeo5EOlGl7EHU+IpK6CD84r502CJvuLZAPT2R3BcfEC1j?=
- =?us-ascii?Q?YOZ8oATVkIr7NfgSINege9hUZGXuNABuZ+RSuhkEUDg5ayD7I13IO94ovILA?=
- =?us-ascii?Q?xmS/1QCWoYVEW8ipKobIv3RSLi1C05n5aFxtOQQk7m2Rx8vfYzELMfhVz6sP?=
- =?us-ascii?Q?vRyewTFBxYMywUu99bqxOwzteyUr17fIG4q5Z/h8Ee/GteU2N1xOm3S/9Slh?=
- =?us-ascii?Q?z4O4Lhi+D7KhVYxPGgTjShQ5qHKMU7WzKA9Y31I4W/MwM6OLoZNpwas9WwZI?=
- =?us-ascii?Q?mRT6fLtR6tL7w5WKw6VQZ6z6bB7PZNyPu8if7Amq/lg+SN1OZ3zY/j7hq/y8?=
- =?us-ascii?Q?28NVU9CBHh0QOQe/n+asceyBK7AAV3hXz0GAUqFLdVsgYb5HTj/tU6FBK6oI?=
- =?us-ascii?Q?jG973vZUYhJLD8BnC6/dDInsY/1sX42SlJ01HRbpK7QCToQrPFoSdJuCIBnI?=
- =?us-ascii?Q?fdqZs4CIVdRrkhVoNpwhf2S+ew4fQXNhF1GuYdfcIBE8JrNNR9FDSCpy540o?=
- =?us-ascii?Q?pAQIXOuTyhlSkX+kgtk0oEUWUOVlucU=3D?=
-X-OriginatorOrg: moxa.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 213db57f-9198-47e4-13d3-08dea9ba4b09
-X-MS-Exchange-CrossTenant-AuthSource: PUZPR01MB5405.apcprd01.prod.exchangelabs.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2026 08:51:12.2877
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 5571c7d4-286b-47f6-9dd5-0aa688773c8e
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: e1++Dyp9JSvj2NRbR8EGNL661x7ZEJJGwF8P4oB/l3NetuxSps/OsWbwZtfUuRGg1aRTBlawNF+CVrxdZ/vQfewrm8H2jHPDwy9bFG7aCzg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSQPR01MB7823
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTA0MDEwOCBTYWx0ZWRfXx9qrsuM9+Q12
+ +r1ZLswWSA9XdqL2YqT/dr68kcW8YAjZj2jEf5WdG2MSsnE5WjAAc4t4iw5ewssxm1I9NVSG6Ri
+ Rm6H7p0cVZ6bpfiesuKc4IzJ4cnGX1mvV7vTh4XxmzMrjTb53v8qFD1OrJPXDnVIN8BQFYM5rls
+ 2mJRBC7iOWLvQsiyurbMX+R9lw8+wW5Gr/wafEnnZvk2p0shfhBUbXQWxHOF7Lj9wRTwIemA3/b
+ o2puS5YBC4OwBzEgMjflvYV4kqfVJsvBQ8bBX3NqbHUJKfvpJWsl0j9NZn+MgvuirMOPH6pki+R
+ gOJofqKLfuv6Ce0RVQzBz4+cQNSS2FZT9oiIcZI/YbOj2mI372M+PY9jkcZLDBWfYniaZP97rhl
+ hDi56aylt2m9usGZf/YLiwtnqqOQPx/Y924DFZ4+03U8nHKzIHBNQBXSYcRHr1VaZDaeTsgnBE8
+ L54gTAdVmts8CJqvEAQ==
+X-Proofpoint-GUID: A5p_w6wQs8QU24KWItJWl-R5YTcfB_yn
+X-Authority-Analysis: v=2.4 cv=bb5bluPB c=1 sm=1 tr=0 ts=69f870ae cx=c_pps
+ a=RP+M6JBNLl+fLTcSJhASfg==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
+ a=NGcC8JguVDcA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=u7WPNUs3qKkmUXheDGA7:22 a=_glEPmIy2e8OvE2BGh3C:22 a=EUspDBNiAAAA:8
+ a=MZVvZoSPHoyeMB40_KMA:9 a=iS9zxrgQBfv6-_F4QbHw:22
+X-Proofpoint-ORIG-GUID: A5p_w6wQs8QU24KWItJWl-R5YTcfB_yn
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-05-04_03,2026-04-30_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ malwarescore=0 suspectscore=0 priorityscore=1501 bulkscore=0 adultscore=0
+ spamscore=0 clxscore=1015 lowpriorityscore=0 phishscore=0 impostorscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2604200000 definitions=main-2605040108
 
-The MUEx50 UART exposes a programmable RX trigger level via the RTL
-register.
+When CONFIG_SERIAL_QCOM_GENI_CONSOLE is disabled, the driver still
+advertises the debug UART compatible strings ("qcom,geni-debug-uart"
+and "qcom,sa8255p-geni-debug-uart") in its of_match table. This lets the
+driver match and probe console UART DT nodes even though console
+support is not built. As a result, the console port is never registered
+with the UART core and uart_add_one_port() fails with -EINVAL.
 
-Implement uart_port RX trigger set/get callbacks for the mxpcie driver
-and wire them up to the generic rx_trig_bytes sysfs interface. Store the
-configured trigger level in the per-port private data.
+Fix this by only including the debug UART compatible entries in the
+match table when CONFIG_SERIAL_QCOM_GENI_CONSOLE is enabled, preventing
+the driver from probing console UART nodes when console support is
+absent.
 
-Signed-off-by: Crescent Hsieh <crescentcy.hsieh@moxa.com>
+Reviewed-by: Praveen Talari <praveen.talari@oss.qualcomm.com>
+Signed-off-by: Aniket Randive <aniket.randive@oss.qualcomm.com>
 ---
- drivers/tty/serial/8250/8250_mxpcie.c | 28 ++++++++++++++++++++++++++-
- 1 file changed, 27 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/8250/8250_mxpcie.c b/drivers/tty/serial/8250/8250_mxpcie.c
-index 5bf15ca78228..cc317202b658 100644
---- a/drivers/tty/serial/8250/8250_mxpcie.c
-+++ b/drivers/tty/serial/8250/8250_mxpcie.c
-@@ -111,6 +111,7 @@
- 
- struct mxpcie8250_port {
- 	int line;
-+	u8 rx_trig_level;
- 	unsigned long event_flags;
- 	struct uart_port *port;
- 	struct work_struct work;
-@@ -262,6 +263,7 @@ static void mxpcie8250_set_termios(struct uart_port *port,
- 
- static int mxpcie8250_startup(struct uart_port *port)
- {
-+	struct mxpcie8250 *priv = dev_get_drvdata(port->dev);
- 	struct uart_8250_port *up = up_to_u8250p(port);
- 	unsigned int i;
- 	int ret;
-@@ -277,7 +279,7 @@ static int mxpcie8250_startup(struct uart_port *port)
- 	serial_out(up, MOXA_PUART_SFR, MOXA_PUART_SFR_950);
- 
- 	serial_out(up, MOXA_PUART_TTL, 0);
--	serial_out(up, MOXA_PUART_RTL, 96);
-+	serial_out(up, MOXA_PUART_RTL, priv->port[port->port_id].rx_trig_level);
- 	serial_out(up, MOXA_PUART_FCL, 16);
- 	serial_out(up, MOXA_PUART_FCH, 110);
- 
-@@ -477,6 +479,27 @@ static void mxpcie8250_break_ctl(struct uart_port *port, int break_state)
- 		serial8250_do_break_ctl(port, break_state);
+Changes in v2: 
+  - Fixed kernel test robot warning (no functional change).
+
+ drivers/tty/serial/qcom_geni_serial.c | 20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 9854bb2406e3..d2287a8b1d54 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -1992,6 +1992,7 @@ static int qcom_geni_serial_resume(struct device *dev)
+ 	return ret;
  }
  
-+static int mxpcie8250_set_rxtrig(struct uart_port *port, unsigned char bytes)
-+{
-+	struct mxpcie8250 *priv = dev_get_drvdata(port->dev);
-+	struct uart_8250_port *up = up_to_u8250p(port);
-+
-+	if (bytes > 128)
-+		return -EINVAL;
-+
-+	serial_out(up, MOXA_PUART_RTL, bytes);
-+	priv->port[port->port_id].rx_trig_level = bytes;
-+
-+	return 0;
-+}
-+
-+static int mxpcie8250_get_rxtrig(struct uart_port *port)
-+{
-+	struct uart_8250_port *up = up_to_u8250p(port);
-+
-+	return serial_in(up, MOXA_PUART_RTL);
-+}
-+
- static void mxpcie8250_work_handler(struct work_struct *work)
- {
- 	struct mxpcie8250_port *priv_port = container_of(work, struct mxpcie8250_port, work);
-@@ -591,6 +614,8 @@ static int mxpcie8250_probe(struct pci_dev *pdev, const struct pci_device_id *id
- 	up.port.unthrottle = mxpcie8250_unthrottle;
- 	up.port.handle_irq = mxpcie8250_handle_irq;
- 	up.port.break_ctl = mxpcie8250_break_ctl;
-+	up.port.set_rxtrig = mxpcie8250_set_rxtrig;
-+	up.port.get_rxtrig = mxpcie8250_get_rxtrig;
++#if IS_ENABLED(CONFIG_SERIAL_QCOM_GENI_CONSOLE)
+ static const struct qcom_geni_device_data qcom_geni_console_data = {
+ 	.console = true,
+ 	.mode = GENI_SE_FIFO,
+@@ -2000,14 +2001,6 @@ static const struct qcom_geni_device_data qcom_geni_console_data = {
+ 	.power_state = geni_serial_resource_state,
+ };
  
- 	for (i = 0; i < num_ports; i++) {
- 		mxpcie8250_setup_port(pdev, priv, &up, i);
-@@ -608,6 +633,7 @@ static int mxpcie8250_probe(struct pci_dev *pdev, const struct pci_device_id *id
- 		}
- 		new_port = serial8250_get_port(priv->port[i].line);
+-static const struct qcom_geni_device_data qcom_geni_uart_data = {
+-	.console = false,
+-	.mode = GENI_SE_DMA,
+-	.resources_init = geni_serial_resource_init,
+-	.set_rate = geni_serial_set_rate,
+-	.power_state = geni_serial_resource_state,
+-};
+-
+ static const struct qcom_geni_device_data sa8255p_qcom_geni_console_data = {
+ 	.console = true,
+ 	.mode = GENI_SE_FIFO,
+@@ -2019,6 +2012,15 @@ static const struct qcom_geni_device_data sa8255p_qcom_geni_console_data = {
+ 	.resources_init = geni_serial_pwr_init,
+ 	.set_rate = geni_serial_set_level,
+ };
++#endif
++
++static const struct qcom_geni_device_data qcom_geni_uart_data = {
++	.console = false,
++	.mode = GENI_SE_DMA,
++	.resources_init = geni_serial_resource_init,
++	.set_rate = geni_serial_set_rate,
++	.power_state = geni_serial_resource_state,
++};
  
-+		priv->port[i].rx_trig_level = 96;
- 		priv->port[i].port = &new_port->port;
+ static const struct qcom_geni_device_data sa8255p_qcom_geni_uart_data = {
+ 	.console = false,
+@@ -2039,6 +2041,7 @@ static const struct dev_pm_ops qcom_geni_serial_pm_ops = {
+ };
  
- 		INIT_WORK(&priv->port[i].work, mxpcie8250_work_handler);
+ static const struct of_device_id qcom_geni_serial_match_table[] = {
++#if IS_ENABLED(CONFIG_SERIAL_QCOM_GENI_CONSOLE)
+ 	{
+ 		.compatible = "qcom,geni-debug-uart",
+ 		.data = &qcom_geni_console_data,
+@@ -2047,6 +2050,7 @@ static const struct of_device_id qcom_geni_serial_match_table[] = {
+ 		.compatible = "qcom,sa8255p-geni-debug-uart",
+ 		.data = &sa8255p_qcom_geni_console_data,
+ 	},
++#endif
+ 	{
+ 		.compatible = "qcom,geni-uart",
+ 		.data = &qcom_geni_uart_data,
 -- 
-2.43.0
+2.34.1
 
