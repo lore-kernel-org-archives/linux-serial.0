@@ -1,96 +1,146 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D5D03B28D;
-	Mon,  4 May 2026 15:13:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777907584; cv=none; b=uO9j9IhLai0FkobvYUfEmHU1FQEIIne0GkgpHw1sxkwWhCwQJtooBa82469kKIlGZjvK73pHkaoRS+f07PmmYhI7lE2GL4z5ZxQhOjWSU/7QEdjMF+oyaQpYQ+0PodXCHCXd6YiuDPDfYXnB52DYzUqRigjMitcYNNoF9aXNHxU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777907584; c=relaxed/simple;
-	bh=mFxTyYCCqcaLXsUguLJJSxq9TPOtldydAdfVl74XMjo=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=C0UdXQ7qzKjwwA0LNoKyA99+6rQdKTtPvD9JALiSRa+i1W0/gqSUKrp2uyR1fZKmnocrZPouTLy3loZmvdweg6Hx5soW9ygRS6JhZc253SakFZ1mDqDGlb8RFmGoSY/3LxOOHy43/ZY0igecSrJ+UngCYRjXfgi+FzlGxBuZBmE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IUS0oeam; arc=none smtp.client-ip=198.175.65.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 899303DEFFF
+	for <linux-serial@vger.kernel.org>; Mon,  4 May 2026 15:19:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.43
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777907953; cv=pass; b=tcFj3u8i/9KhyWXtlOX1tqC9ZadKQYBMULDTzafUY0T0oL7ZLGHS/0ssEAJ9j3iVfC1eZD16hTMRy4hEO3VWoO4pOKo/LL3xrbPHqAMP/hU0Z/87phGRZANzLgSEP0TwqlV4+LGanJAo7kCsp0qEgnmXOxWNGW1oHvE7iH9N2wk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777907953; c=relaxed/simple;
+	bh=ZMbHpig7HFhIFNfY2C37/rHi/H14u42MxiWPKpv0Eyc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=S8i5dtxVPjIr/L4AzBw9opAYbdxiT9tx8c3iYjhzOSRxrtgteFuliwpND1LaUcipjPhJERjlWa+uwG6pwvkkOlsKWCh11Y8kcNLGjeiYR358gyCjOORgppgJN896LMkz2NargS924kfQfOP57zKj8WtyDRG6vOFeGM21if11Vdg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SMuNuHC0; arc=pass smtp.client-ip=209.85.218.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IUS0oeam"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777907583; x=1809443583;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=mFxTyYCCqcaLXsUguLJJSxq9TPOtldydAdfVl74XMjo=;
-  b=IUS0oeamCCYo2GK3suiq+gXwYVdUctf3l/Gr/Blu3KwwiBzzKVG7NcIA
-   Bx8x0WzruksJjxWJPgYzLmb5499LW3flPInTic0KgZ4hBWcUW7GTexSY7
-   Pm8LT1wnhYQntMXKixXzKLhemYH1gFkmu/T3si32IBBQDv08JWxdMjkp8
-   fi0eGeHBpm+qEM4VHAhGTNH9Nipy0gq5soIVuaDEXenBJWwdwb3AKQ8gU
-   Wg9zEBLi+puVda4uuCR1K5EQc9es53L4T1jlTBo0IBOVXk9bjCg0iuX8R
-   NRBDBtPZAKpwDI2W9uH4BwR1tenWcDS7buiyp8eien2ccumD8wr5wRGq2
-   g==;
-X-CSE-ConnectionGUID: 8tKpeOr3RaK/Y5vMzoBAFw==
-X-CSE-MsgGUID: twG4gB8xT36xgDAcKEP8oQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11776"; a="78666100"
-X-IronPort-AV: E=Sophos;i="6.23,215,1770624000"; 
-   d="scan'208";a="78666100"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2026 08:13:02 -0700
-X-CSE-ConnectionGUID: /cfLz0zdSr2Ag97Sn7HwUw==
-X-CSE-MsgGUID: wx32CZo8RYyhl+vzVrqraQ==
-X-ExtLoop1: 1
-Received: from black.igk.intel.com ([10.91.253.5])
-  by fmviesa003.fm.intel.com with ESMTP; 04 May 2026 08:13:00 -0700
-Received: by black.igk.intel.com (Postfix, from userid 1003)
-	id C37F698; Mon, 04 May 2026 17:12:59 +0200 (CEST)
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH v1 1/1] serial: 8250_fsl: Export fsl8250_handle_irq() conditionally
-Date: Mon,  4 May 2026 17:12:58 +0200
-Message-ID: <20260504151259.483924-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.50.1
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SMuNuHC0"
+Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-ba699316b42so596696666b.3
+        for <linux-serial@vger.kernel.org>; Mon, 04 May 2026 08:19:12 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1777907951; cv=none;
+        d=google.com; s=arc-20240605;
+        b=X3pNIVCtYEphNtDeTwH32vRr56Z6ARJ8/wov+xhukKvCz/ieYuwPpEyjmnG9M9xiQB
+         IXryHcGUQ3OJ3Of3FO0DKjD0HBgQ/OaFMab4OE6PGPgBtaTZf93RR0atTFFy+w5LSHfu
+         H8HNtilRgKkK/1aEOWvt7/X0hjzRrXdfVCgEiNqTGma+iegi1bZeAqcl7d38kqRm3Jzn
+         689k2C0vZxrGTnZ7e15XFoxpatRz7tVp3cZl7xqYYpExlL0Ln+h5mcfEmtReK+IA9kTE
+         gLxchrdiTfdqTkMssNT+QKwocUdAstM65uz7MXnbZfipmTZsD+lTtYBb4rpdSvHfzEaK
+         B3SQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=sR6s6xje1I8uKwoMEEkBMIAQrYnQftw10FZMdgwBaCY=;
+        fh=DrCbyMMiI7QLpKZzY+MyL8KE1tyMqeIsZEm7QlFda4Y=;
+        b=eNx1D9r7u+3l9nrxdcntEufvNSW8CzMDo6R9EUo7wZKEghOZlmZX8cxPZ18l5XIqUF
+         mepdqTyOgW5k/rXZR75h3u87Tzq/741P6w70aj3Bh6dfPFjrqXUb3eiRWS40wKRLaeb+
+         HJanXyAXq8UR3XSuofRnZdndMAHZPbs8/oc7lly8Fdmi0GahD/HhTwtK0vXfN97mG10Y
+         rUeue1Wn7x5x/ajD6DBUve8fqNtghohYsxnLOzLb1qHrcuh0FSCXKavmS4FbRhJcfXdc
+         RrGw1ehrAmk25eT7LB/oWBmYBWRFaaQk9rzSX+QncEVcBQ0Mo+HB1DXrmcGWAtF+WAeX
+         IPyg==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1777907951; x=1778512751; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=sR6s6xje1I8uKwoMEEkBMIAQrYnQftw10FZMdgwBaCY=;
+        b=SMuNuHC0IecLovydhzr3zDYUlJBei/Mm0JOzBvKLWfiAZGHuYZxdsfBXiEXmP92PHv
+         Kw0xcis9DbSvEwU9e423lvxuX5o+0/tyb8OV/1DA9GP5l7igutLbVWQSw3ogWPrZBhep
+         Nym+H45DM1dVTbOx5v45GnUeNuvWnC99E8MRt4uRKwkuSRhUxInazVGjtq0wQhmJAjL1
+         ch1bYBqsk9l3S9Gl3r3eMmX2SogOdfySw+vz3+p1GBtwMB00PAlCflLEKU/LI4rQGWzE
+         AtEcKF547Po/c7RUh7WOKEjI5iXSpYwoKld4BL0FbgwMUrxFH5beneod5p7XwuxN9dkH
+         1iZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777907951; x=1778512751;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=sR6s6xje1I8uKwoMEEkBMIAQrYnQftw10FZMdgwBaCY=;
+        b=Y15qhWMH/IZDyx4kShNSbcR5x22boJU+vuEmkcOmL/PNHAf2x+smHxkM/RATsiPafa
+         i8bmRsWvJjpkSpuhv7Ig7CmJvPErV/Djk99x2aCGgtvlFo3VlQ4+iY0/kggUj23rr4s6
+         CabFTZK1L1S0WAJleQUfcL6P+zo55u53/v/6hpQN2hgJoxYYF42lcEiOWp0n0wAjCtR3
+         pxR4gbIXni6gre0hnWtxnl+Cpaaql3PqJs1KKbdORJxMutk6QFlbR0EEIuNYSHh4DIUx
+         WdJq7nZ9ZTp922py8W1g3A3KqTbdKbutjE6oHSQ56qANtwiJjTk97/BlAy3Zz/7jFJzL
+         z6yA==
+X-Forwarded-Encrypted: i=1; AFNElJ/TrbOb7G+SwYoAFeQ23HqniqU/UO1ZU37vaYGZZarxqSenTqz57YPQR3vZaq44zVWsr8Wc9PV8WjgB7ic=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx46vDEZ/b3UdnsYKYGtAMZFrArxxwwl/V1Fmdt6f5/EFEgAByi
+	7r0rSueNGIbwTAtDyiDsllgq5e38rPTnudysMgBgrPA7HTCdLa/GBVGKn9+2sk7UyoYrHud4Y3S
+	d2LvHRW3a9oAlvf8TRM6/PtX5MAYrmCs=
+X-Gm-Gg: AeBDietn1+YFfIBaczaKqnpspIXZXrRE25I2PKmLoPxQuJ7B3k7U/WFgFx9JcqxP9WL
+	XdMRuW7rQUe3h5mG45pR4Nww8wTwfdSD99EKXH/K54c2oWCh/WBRgG/yt+N0TP85X8o+KuvySXN
+	tIdloLMLxejHTi4BLgiKMczrZjvjOpnix6l9VtBizaEsb+ioEYbwhKjIRYOfH3T6XEgTLcqEyAM
+	CSN+IWlC8+hXJeV2ZYcLj0y9gfGD7S/n8jB4bTqM8o/73RlMexTi/8tNo8JTOnwd1QKsru7hFC6
+	hsN4M3RS3hiBAG0D5/PDEsXyzVKy37XjHEXx+xwGM8jaeWMdU9sQ5ycsDPD/t8RxoXJTfTqIVOC
+	9gAB0RcQ4FXyhf96JKg==
+X-Received: by 2002:a17:906:6a07:b0:bb8:b593:edba with SMTP id
+ a640c23a62f3a-bbffbc69271mr544293966b.38.1777907950542; Mon, 04 May 2026
+ 08:19:10 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260504084900.22380-1-crescentcy.hsieh@moxa.com> <20260504084900.22380-4-crescentcy.hsieh@moxa.com>
+In-Reply-To: <20260504084900.22380-4-crescentcy.hsieh@moxa.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Mon, 4 May 2026 18:18:33 +0300
+X-Gm-Features: AVHnY4JbnauNXZ7xFtJMmaJeyamgc09kMeUZKF36tDX_Nrf9a2djpsbLe8Ldkfg
+Message-ID: <CAHp75Ve1u+kE+Xky6QRwgsWXoG4sU8ekNPVEXhieROi4vUhqzw@mail.gmail.com>
+Subject: Re: [PATCH 03/15] serial: 8250_mxpcie: enable enhanced mode and
+ program FIFO trigger levels
+To: Crescent Hsieh <crescentcy.hsieh@moxa.com>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
+	ilpo.jarvinen@linux.intel.com, fangpingfp.cheng@moxa.com, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Move fsl8250_handle_irq() prototype out of the rest of 8250 generic APIs
-in the header and export it conditionally when CONFIG_SERIAL_8250_FSL
-is provided.
+On Mon, May 4, 2026 at 11:49=E2=80=AFAM Crescent Hsieh
+<crescentcy.hsieh@moxa.com> wrote:
+>
+> The MUEx50 UART provides an enhanced register set and programmable FIFO
+> trigger levels for RX, TX, and flow control.
+>
+> Enable enhanced mode during port startup and program the MUEx50 FIFO
+> trigger registers according to the configured port settings. Clear the
+> programmed state again during shutdown to restore the default UART
+> configuration.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- include/linux/serial_8250.h | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+...
 
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index 1be007225b0e..43eb0d15012f 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -197,7 +197,6 @@ void serial8250_do_pm(struct uart_port *port, unsigned int state,
- void serial8250_do_set_mctrl(struct uart_port *port, unsigned int mctrl);
- void serial8250_do_set_divisor(struct uart_port *port, unsigned int baud,
- 			       unsigned int quot);
--int fsl8250_handle_irq(struct uart_port *port);
- void serial8250_handle_irq_locked(struct uart_port *port, unsigned int iir);
- int serial8250_handle_irq(struct uart_port *port, unsigned int iir);
- u16 serial8250_rx_chars(struct uart_8250_port *up, u16 lsr);
-@@ -220,6 +219,10 @@ extern int hp300_setup_serial_console(void) __init;
- static inline int hp300_setup_serial_console(void) { return 0; }
- #endif
- 
-+#if IS_REACHABLE(CONFIG_SERIAL_8250_FSL)
-+int fsl8250_handle_irq(struct uart_port *port);
-+#endif
-+
- #ifdef CONFIG_SERIAL_8250_RT288X
- int rt288x_setup(struct uart_port *p);
- int au_platform_setup(struct plat_serial8250_port *p);
--- 
-2.50.1
+> +static int mxpcie8250_startup(struct uart_port *port)
+> +{
+> +       struct uart_8250_port *up =3D up_to_u8250p(port);
+> +       unsigned int i;
+> +       int ret;
+> +
+> +       ret =3D serial8250_do_startup(port);
+> +       if (ret)
+> +               return ret;
 
+This needs a good comment explaining the retry logic. Why do we even need t=
+his?
+
+> +       for (i =3D 0; i < 5; ++i)
+
+for (unsigned int i ...)
+
+> +               serial_out(up, UART_FCR, UART_FCR_CLEAR_RCVR | UART_FCR_C=
+LEAR_XMIT);
+> +
+> +       serial_out(up, MOXA_PUART_EFR, MOXA_PUART_EFR_ENHANCED);
+> +       serial_out(up, MOXA_PUART_SFR, MOXA_PUART_SFR_950);
+> +
+> +       serial_out(up, MOXA_PUART_TTL, 0);
+> +       serial_out(up, MOXA_PUART_RTL, 96);
+> +       serial_out(up, MOXA_PUART_FCL, 16);
+> +       serial_out(up, MOXA_PUART_FCH, 110);
+> +
+> +       return 0;
+> +}
+
+--=20
+With Best Regards,
+Andy Shevchenko
