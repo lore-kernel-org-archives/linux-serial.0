@@ -1,127 +1,129 @@
-Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 625D03D9DB4
-	for <linux-serial@vger.kernel.org>; Mon,  4 May 2026 13:30:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.50
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777901403; cv=pass; b=jxbrU6BZMocjg8BX1cQmwgoYRuukcKjhHUdwBtbgD58ECo9seLloKzHdcUthL0SJlynYpY358Zbncp3F9QtQylFaMOWxFoLAcuXGrd71qJT8lQJ/2yrIsfPFKWYiytGXwN2ij2gAnfzHUQGvkX61yuD4q/WRI7MuDmiafZ2/k3w=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777901403; c=relaxed/simple;
-	bh=QvYQedenftzFSiBfI8D402Mr+31ucAaq/Y18AUMSkIU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Eq0AA7EhLTQYZj5vHcPkHqgGKcrQBrB3XFxB1MIheFs+M0xcGTlvQf8hdGOPg6MWMQLO3rEV8/c3KB0q5/Xv0KBmA8l8gMlWLWzTUTfcrGqsz16+t3wzA0PVfBAHU4UqFp0Lz44LbUMLC51zcHmWNFIQDEqsAyfSNMrA67Wp/SI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Aev9BrJO; arc=pass smtp.client-ip=209.85.218.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78C29202963;
+	Mon,  4 May 2026 14:30:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777905030; cv=none; b=TpwbrBj7Qli6wUTaxOcBNhUQfC5Q8ZdnRcxH5MAH6AJOFyXIgrHFwAyJktoDZjhZt7huwVDmvqpSip+2FWElwVdTIlPEeaMU1TlsGqmPgEkSK6fAc073tbNL0ufKOlH224JTLR3FgVF2a/zsQ5gBn2KoWHaTw1mLlSUU7/WXvU4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777905030; c=relaxed/simple;
+	bh=F4rZ+uQVyd6JQS5wvPp8JCWnCbWL3daQQ02JJCbu71s=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=rSTMQAIDEpUU2sgZHtBMTQ4OFhOtnjykfhVixamomxEg5dWauNuYTsAdCpdiYrulUMBCwW3S6gSfCzMcEh52R9claEnS9zy9gJRi/thnIpu1zO4IivPeegBuTXqN9HLCPaBGSloPRFHv/AE0iAD+Xu1gbaja6dsw2npgCqaNekA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FK//KCr1; arc=none smtp.client-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Aev9BrJO"
-Received: by mail-ej1-f50.google.com with SMTP id a640c23a62f3a-ba699316b42so576393166b.3
-        for <linux-serial@vger.kernel.org>; Mon, 04 May 2026 06:30:00 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777901398; cv=none;
-        d=google.com; s=arc-20240605;
-        b=UrWjzmweNTsemP1CqpnfVOPBf6UIAcy2h7x33NO1JzpSQWWh6dtJIilj6/N9brApj+
-         eBeDvUW/qARBEsOh4teeONCc8a/F7fMDk8Fgd/UogplImNPfhn0pkzbBAeBiuO1i7iuZ
-         hQhEwZC5H6+dkEQ0gdWUbfVP0ZIWY7ledSW/ozSuuuvl1/l5hYKdXebOWVbmzHB/cnkH
-         /emR0qHEgkH5mnV8ZCaveZ5rGuDBVesJ6t3dUr1Ib2i4Bm2Dw0RZwRJgJZBH4aiOTGiw
-         tpvdusOXZG2KJoDAREAU/w1Ct7cdZtlRobh7q/VXSLiSVu+l5RJBra5bthHWgAkn+3Nq
-         uvTg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=qB0D5Pkcl2d9MlgYt0C7O3ULtSATNMl36JLMHXHyhbo=;
-        fh=yW4FSZ6Frq1pxOUmwNdzKEqZBaqmebevsEk0K2Y+J6I=;
-        b=UALtnWl//qkpo3SlSOfn5M7wbNDGKdHLLal2awesoBoS45FvJA/1u9oNXoEvR2Rn8g
-         54nQ08Zk3jXiguH1jR9+u9v7x2MZ6maV14yN3HpvUlE6Nn0Y8/qalwJJnE6yKNIjkgx7
-         jmQGl6UU7AekWu18ownijdvHFpEMRj9YNhgsaHkR/7cYqPJGUAsqeGcCjN/XLax3YLmE
-         05u6iMMT99BagbSbWP4ceCnJp0+Ga3qVD3OPByHeZdckjbLwm68V8xLxN4Xvhtk8VJfp
-         IAQ+e/upE0bif6sLcKkdfA6PHg+Z63sBkJKJMl9lKA7U7OpUomnnpPd3Z1E0jPBHN/ad
-         rNOg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777901398; x=1778506198; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=qB0D5Pkcl2d9MlgYt0C7O3ULtSATNMl36JLMHXHyhbo=;
-        b=Aev9BrJO1F8Yfr/kgtITv/CN49o1he7YLeKLy6Rlm5yxHd+gkauXbi1kWBgjp2w3fh
-         0ziyK8D3eH/b+lHtNu8YKtgnn7vXHbkcswYoZarl15tDDFI6lorSohE7nL4Hh1Eveqae
-         UKPerOLgfyy+TQz7YaiIClMnHvKzEFFBY+uuZ0QJL3dTjTu+GRQaE+Ulx4RnxpliLOhO
-         8gimyBUi1Fw+7+ox7lAZZMz8YNdCndDncQOVbpW/p5sPQFaQWqTKjtZz6esqoAuGqwpU
-         Eez0pNqANt5RtMLgJrHBustaIKH411pcYLxkd8yCxbl6x4aOBYWWK1qWam3Ce/UBV1ce
-         nW3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777901398; x=1778506198;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=qB0D5Pkcl2d9MlgYt0C7O3ULtSATNMl36JLMHXHyhbo=;
-        b=Z4ut/vpAs5oL7TldAC6vhKn8i5vo9ZxoDKfYdWwhczTCrOZoHiCLYPkU4YZaER3YOW
-         UJMcuM3nXROoZzcnlbrjLnRoZXFl3v6Ysz9wfBSh/92yRkHtu0KAdPZfPP4Z2HBDz9tm
-         dyED29hLicVxWgrjhiYfIRH6Bm5ZwLp25i5YVwSL+9GsQWmcD2uriY2phRbDlPXxEgnZ
-         +M2EaRu/ZVFAXzoMAU2F/jmAp7X489qYDfloyC8ABWS+FCMbOYSA7e9PNPztWxx+1U9d
-         JzG9aRM6gr/sgePDr8TVfpkbOhW8nlP4HJ3J1kyu3myoE901juFoQwv36ZMc08QEcXFC
-         iNEg==
-X-Forwarded-Encrypted: i=1; AFNElJ98ZIAcfxxxYfj5bYu1ZTntHTxxNmnFXQPAQVJbR3++pTUCJ2zTCHOZh7P/+YMfKqBjp9eeGLRdhj+0/4c=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwW16oncHGWYgmLIqJYn4zssdd/tqj9nsbtIuBtfsjKJ3H+79X8
-	U3yoYZRKLhSlCw2tdvopqrvWVePj56Y7A/DqXm/mWN1IDqh9rbzkiWDFEbbux/Ry9zaiD0MHbZN
-	toFYgYzUhf/DPTHgOGf50mCus/yp8//c=
-X-Gm-Gg: AeBDieuE46dueuwYEkFpVJUzuerz1POk9QJovNwG+65BdcFoyku4/zODlIjeYdq4ZAO
-	3YK5nHxGGJwHJ8TTrExyJKilQGVmVCOUlKSFat2OjxMVKSgbWtUYd8CyG4JYONkdsiJs8WJxSkF
-	gckFhCrMTGMDV47i4q+rn0cI/HxIvwovYVxf4Mg6S3CbhX7s4W7gGKeCLVTJ5ul6CwQ+ugPF7U5
-	e5R1jSy9dMpFeU0t3fJHf9z7zOL6ErMQFJkcbyc8befd9dym3U1WWx4WfDYwrOJIxRTUf309CZi
-	pW4Eu8tGgotBxLa/BV0oN4fzDs6RTnN3Iiay7e+OGRfOBvSAMtTKI6XmK78FlW4P+VP0wzOE9/k
-	KKSbAbHMwsUbSCrsCbw==
-X-Received: by 2002:a17:906:fe03:b0:b97:c719:14d4 with SMTP id
- a640c23a62f3a-bbffb747b39mr554777966b.29.1777901397942; Mon, 04 May 2026
- 06:29:57 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FK//KCr1"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1777905029; x=1809441029;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=F4rZ+uQVyd6JQS5wvPp8JCWnCbWL3daQQ02JJCbu71s=;
+  b=FK//KCr1qfpbBJx5w8nWBFDKrKFmUgi2CCyjuCr0JL46cKTnHHjQ6rsZ
+   YCblw6Q8rZXqqPtKWpHTTf+9JFJkliH6/GmtBdHa1kwRRPQXU9Yme1kLh
+   PZzoEa1/8EBCyXdSu0myp+/pmwnadmMTzuQ2w4lGS/6nVA27HESQg9xR4
+   sx0ZXfKUrOTEiZZfpLjnGNn+Nv2nrnQla2rsTOj66HaaUqf9HXu6ORaoY
+   SOT/s9CQg0S/TbU56evbB9OljZHxzxKHkJH1enzsTxWvaCbBkL2bGvT+z
+   oOHzm7gLbB9/38m7/5UzO3d0lDvy3kLVK747nxbRduoiwgv+fpElDNizn
+   A==;
+X-CSE-ConnectionGUID: gsoZAEvETQ2/LXrLn6+OAw==
+X-CSE-MsgGUID: w/G/ZsuUQqaI5AAkamF7Xw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11776"; a="78466241"
+X-IronPort-AV: E=Sophos;i="6.23,215,1770624000"; 
+   d="scan'208";a="78466241"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2026 07:30:28 -0700
+X-CSE-ConnectionGUID: sE1Jb56eSfm0oj7HVpS4kQ==
+X-CSE-MsgGUID: AXmao/6UQS6v22/4AoWO/w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,215,1770624000"; 
+   d="scan'208";a="229032080"
+Received: from ettammin-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.198])
+  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2026 07:30:26 -0700
+Date: Mon, 4 May 2026 17:30:23 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc: Hugo Villeneuve <hugo@hugovil.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Subject: Re: [PATCH v2 02/15] serial: core: add uart_iotype_mmio/legacy_io
+ helper functions
+Message-ID: <afitf0I1izLup5TR@ashevche-desk.local>
+References: <20260428-tty-upio-v2-0-01c1857cf761@dimonoff.com>
+ <20260428-tty-upio-v2-2-01c1857cf761@dimonoff.com>
+ <afNwaUf8esqaqxUe@black.igk.intel.com>
+ <alpine.DEB.2.21.2605030016120.23161@angie.orcam.me.uk>
+ <afhdTI_jAQrIsPSZ@ashevche-desk.local>
+ <alpine.DEB.2.21.2605041220540.23161@angie.orcam.me.uk>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260504084900.22380-1-crescentcy.hsieh@moxa.com>
- <20260504084900.22380-2-crescentcy.hsieh@moxa.com> <CAHp75VfFMLnLDP0V3U=4zG4Ayj71-ZgVkJsVtgNE=52tGQ963w@mail.gmail.com>
-In-Reply-To: <CAHp75VfFMLnLDP0V3U=4zG4Ayj71-ZgVkJsVtgNE=52tGQ963w@mail.gmail.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Mon, 4 May 2026 16:29:21 +0300
-X-Gm-Features: AVHnY4IcJoiCmmPpXxaJzS_aZ6LdeYFWnac1hicsCOltXK3gqWALm-k8sZlGa9o
-Message-ID: <CAHp75Vet5nj-njOyrDoYvBVRbCu0nn0ZW_H8DpzDFz0xq17s+w@mail.gmail.com>
-Subject: Re: [PATCH 01/15] serial: 8250: split Moxa PCIe serial board support
- out of 8250_pci
-To: Crescent Hsieh <crescentcy.hsieh@moxa.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	ilpo.jarvinen@linux.intel.com, fangpingfp.cheng@moxa.com, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.21.2605041220540.23161@angie.orcam.me.uk>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, May 4, 2026 at 4:27=E2=80=AFPM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
-> On Mon, May 4, 2026 at 11:49=E2=80=AFAM Crescent Hsieh
-> <crescentcy.hsieh@moxa.com> wrote:
+On Mon, May 04, 2026 at 12:44:41PM +0100, Maciej W. Rozycki wrote:
+> On Mon, 4 May 2026, Andy Shevchenko wrote:
 
 ...
 
-> > +static void mxpcie8250_remove(struct pci_dev *pdev)
-> > +{
-> > +       struct mxpcie8250 *priv =3D dev_get_drvdata(&pdev->dev);
->
-> platform_get_drvdata() IIRC
+> > > > Why do we use 'legacy'? Still in use in modern CPUs...
+> > > 
+> > >  Deprecated in PCIe and not available in numerous systems.  Also actually 
+> > > called "legacy" in some serial port datasheets aged ~20 years now.  While 
+> > > some contemporary CPUs indeed retain the port I/O address space, it's for 
+> > > legacy use anyway, you don't want to rely on it in new designs.
+> > 
+> > For the holder of the new (modern) CPU which supports the IO ports, this is
+> > definitely not a legacy interface despite on whatever PCIe or other datasheets
+> > call it.
+> 
+>  I appreciate your point of view, however I disagree that the presence of an
+>  interface in a contemporary chip makes the interface modern.
 
-Note, for the sake of consistency the probe may use platform_set_drvdata().
+I appreciate a bike shedding.
 
-> > +       unsigned int i;
-> > +
-> > +       for (i =3D 0; i < priv->num_ports; i++)
->
-> As per above.
->
-> > +               serial8250_unregister_port(priv->line[i]);
-> > +}
+>  I see the port I/O space so much legacy as say the PC/AT DMA controller 
+> (8237 pair), which is similarly present in current x86 chipsets.  If this 
+> stuff was not present, such as say the PC/AT interrupt controller (8259A 
+> pair), which I believe has been removed from some x86 system designs, then 
+> it would be obsolete/removed rather than legacy.
+> 
+>  It is analogous to PCI/e systems that lack a southbridge and are called 
+> "legacy-free", as the whole southbridge stuff, the main consumer of the 
+> port I/O space still remaining in use, is legacy nowadays (the other one I 
+> know of being the 8255-based PC parallel port, which has been considered a 
+> legacy interface as well, even though you can still buy and plug one into 
+> a modern PCIe system).
+> 
+>  NB I have a couple of modern x86 CPUs around too that support the port 
+> I/O space, but it doesn't change my view as to the nomenclature.
 
---=20
+Is the regular user assumed to go to dig to the mailing list (at best) or drawn
+into the search of the documentation for all this? In their perspective they
+possess modern CPU with support of that technology. If the same user possesses
+the HW uses that ("legacy") technology, it doesn't make so in their eyes.
+
+On top of that the additional word occupies more space in the code, making it
+harder to read. It's just a redundant word. I see no value at all of using it.
+
+P.S.
+I see no value in this discussion. And I see no point to add a word where it's
+not needed at all.
+
+-- 
 With Best Regards,
 Andy Shevchenko
+
+
