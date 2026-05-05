@@ -1,64 +1,64 @@
 Received: from mail-dy1-f193.google.com (mail-dy1-f193.google.com [74.125.82.193])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87E283033FB
-	for <linux-serial@vger.kernel.org>; Tue,  5 May 2026 01:21:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACE4435AC07
+	for <linux-serial@vger.kernel.org>; Tue,  5 May 2026 01:21:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.193
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777944080; cv=none; b=IfvL3LzDAeptqHKenIjTj+qDQjkczQ+4K2HpxPfVlZ1vnY7YBwiC7z0P+n7qI4RzJ19sXmCgkugoK3ME7ZdsOzvtVwWcacwgF6lr0tGUJ3v8wuSXV0DrswSy7vujm16hBAyZB0wBUemRbIjT5twyF/LY7ygFer8GbrKP7abgRWA=
+	t=1777944087; cv=none; b=BBf1+mjgYAiuo0lJaMtPB2gQYoxVy9L1M6hnIG9ioYbNVmN+7ED/tK+uTiaRPSelm6+uskMtgNK2ES3HU1PJjekpz31v3PCYr/3y8FO6UzocCvWhB1bf1g8AFqtwfy8SGNwv6JZVG3uinEo+zK6XrcZj5uE8zH4lwDiX+JgtPGc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777944080; c=relaxed/simple;
-	bh=D+GWBUsJHrvzMPbMoj2hFUURjtG3vXfq/UASGXzw3Rg=;
+	s=arc-20240116; t=1777944087; c=relaxed/simple;
+	bh=XP5HZDn42Ha4kD9bDHw0YACkP+oRj9KR8xJbO2j1ark=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=XgGTZyldfrXEhh7QRQ/xxbiqcbCWAyv1FyJtCdumr7R70h+burGoqM8DyUhvqXJGClyQtuP00cbVyJ91MRqeI9YshmJ+2tYUIupIMj/cncVMr2zIm03mYtVqxWy5Bqi/XX8jsnEzSh8+MI8wyx/U9t50mxC2yXnz730uRseBwsc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XW7xp9io; arc=none smtp.client-ip=74.125.82.193
+	 MIME-Version; b=Duxn8IMW/5KLzLuCPV8iDiYrgyJxv5H0l5pqe5OgihDbzSk7qWaF3x6bZQCC8s6Ku1+zyO5v58LjtYAh7nEWTo1Xla+nhD2oeZWkbzNFy4AvrmozCkLJLuS7Q0gxYVXuOIb11mvOv0ZuUxs8UOk41mxD+eehvRkQLITDDJj2ETg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nnJHd35L; arc=none smtp.client-ip=74.125.82.193
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XW7xp9io"
-Received: by mail-dy1-f193.google.com with SMTP id 5a478bee46e88-2ef38cf04f0so4252409eec.1
-        for <linux-serial@vger.kernel.org>; Mon, 04 May 2026 18:21:18 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nnJHd35L"
+Received: by mail-dy1-f193.google.com with SMTP id 5a478bee46e88-2f36da5c8fbso1057257eec.0
+        for <linux-serial@vger.kernel.org>; Mon, 04 May 2026 18:21:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777944078; x=1778548878; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1777944085; x=1778548885; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=bY8FtTvsOkRG27RzbqzYbmmwJrVSnVWLSNXkY1HB1O0=;
-        b=XW7xp9ioa7zier1Nc31pC79C7Iy0W7NsuZQwHKqai6NwHR0teFp0HwoaazDFzIfH+s
-         B4iI/GX69sVE4NSBphPV989MX1G5jiYJZThrldGXDt/7tKJL98/aNjrc0u+LbbOHGxrg
-         ZEl0KfZxAJO0XzfVNZRGUBwtY7J7EtHj4Sp+rHY742Wq5axk2gnrkaVok7ZLyhAbDrcc
-         AZMl2pafr0kCQg46dTJm5fTOFhTja/Dc1QMk1gBGyWNJejkDh/+It/8mFylEbHkY6eQL
-         EWosEy4drOI9fNNek/MVCm2+uSuse2ae9UEx6XJDic/34pTBKgm3u7t0034Zggl+Y2s/
-         Kvmg==
+        bh=FQwsxbcGcs3is/KSucD9xztTzPVRhYIYFQ8Q48Zx6Gw=;
+        b=nnJHd35LjmwZ5znyvpVjf1ORM/xtAf4d0vpZUqSsOwM77D6S3G+fly0gpTGNPaaa+5
+         bHpbNQMufsc3dCv8VEoG1gVWEH9DphtoAVl6ez5VtcFeNltYP2YMno6WR5Pyyqn4LDHJ
+         ZShpxW9CWccBYj+a51ZAdti8nvSa7459fRgHb1UNlK2O2FcskOSm2cUENlr+Nf0WCBzh
+         8s5z1+yzDDYD4vxM/SJJSjjQCa7ggvr38ovbfoArr9twnYjyaXkY1B219Nc5LrulvXZA
+         DG2dbeGvKYFuRax6aJJUgITbMw3Omm3iULqcjpH+ABfYa/PeJ4C0VbANPdBHjJfSkeCD
+         JgBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777944078; x=1778548878;
+        d=1e100.net; s=20251104; t=1777944085; x=1778548885;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=bY8FtTvsOkRG27RzbqzYbmmwJrVSnVWLSNXkY1HB1O0=;
-        b=ouWapgRzx3+Uz+5FOhdaUKiBN43rb1PnnW5KYVPL+M2xsw2p91SHBMl572R90+zDK3
-         xP0vIk+msXOeuMFrJQpTaNvt4InjHmClzrZU87YZHdytquQt02b9rrOFtlbo8M7YOMyW
-         GX4nLzutX6MDmoSSfFUmeycGsI6Elalyjcbjho6IhcUwgZK5b/81AL9sjFWiEvpWNlpn
-         7nVGd/R9vCBtSFD/IoLP0SQb4sk1tl9tpDEEv6sgcjohrjdLzGLT3aDqLPiYjAMW9tAB
-         KPTP+7d4oqel3nngebdY5XIuQPS9eNV7rEnw0MF2t04DzG0cTX7mvQrqsyBn0HXKdej3
-         MRgw==
-X-Gm-Message-State: AOJu0YyZiGr14XwjRuse/D3FHn5mTwane1cAKWBT2e2MsaXv8N0UWYSN
-	G/OQdWAQw+IO3yo95bDpZ2D8MYCC+l7zf8nyhssCwu9lT13k3t1oE4bZZhogsUdr
-X-Gm-Gg: AeBDieuy2rzFllQr0Vlh26PPhsGO/ySpRfoyC00Qip2CGe8SAvhM55cbEGDkpHdree4
-	QgAEntt1yeSmZEU6vCrItkmnaKzJvU3uIVXdFpNB7SO5ngSZ1apiaYjA0u2HIZ4dsBrFzGHcgfs
-	mKpdH4nS7BYrCQAFC6S2UWeqMI2aFPGX1/NdadmvE1qLMcm1Jik77ij+/O6YCMm/w6wiwfjaC29
-	CT64j4O5XYligs6Kx456jkuwQtFidRddhcV8oq+OZs0C0qhs4SKTGwC078s4uQ0V53YAKbmvw59
-	aL1n0YTqOIJv8Np3QoiFdAA+OYK1rEoDgUj/d2kLo2RYgFsoPyVTn3XcyQZhYSQSLAFOWpp9q7E
-	Tr9Y1WSiSauxVJIVysdYr+JRYoj1FysQRDIvoqtIDbYH8KNiMmi6vkPCPbIsvAxk7CyabcsVCFA
-	DiojGyiE3jryPS4kVeo1q5ejJm50owk5bHNf0h8wryKDrvoE3iCuYdf2kW4eqZ5npyDi1dwjPSS
-	hwn7P+USVlSNgqSTiBbZ0hkAYb8dkv3S2r1LB528/aYsiqhX1V8HlqNw6blqJoauoaDAFzdGuCv
-	RYsoYY0s2TQ3jloK9F495+8BKWie
-X-Received: by 2002:a05:7300:7490:b0:2d9:6373:ad10 with SMTP id 5a478bee46e88-2efb7dca3cdmr5035040eec.7.1777944077386;
-        Mon, 04 May 2026 18:21:17 -0700 (PDT)
+        bh=FQwsxbcGcs3is/KSucD9xztTzPVRhYIYFQ8Q48Zx6Gw=;
+        b=jQ02XnQIslHmbSHJEved7zce6h3F/nwNOTzq+XvIB+88wxP58znBbLFafsVXXFkeC5
+         TT9OTMR0U6b7Zg/JpRAtUtqp4arI+AQsx4E1Wos4m/BGdP1YC0bYtJOcdDXzU+j1fTr7
+         jacYOoXvHE+bKcPCeJ6btUUdiDOl+IikVan8dUxuprrEAewqcKpfl5GbK9WlGmbP/tvP
+         CEXEiEacJEkvZfgsaOVr2k0rEyD0Evzran9ePWxvd5aeUcccjX/PlO9wnDcihOz3wgOX
+         Hm7K1J2gBRA903d2wqB56rcvDgnPJh+Px5fsjIYV3kAEOCeiBM3oSeAGgRjyUq8f5jNC
+         KkuA==
+X-Gm-Message-State: AOJu0YzcV0zo9dEl/xu+NWkuumXVkfmLF2sth+R+hiyBSExoNhhC8WUE
+	7bWozMn6SnxydarAQqyRKL2V8f8cmVM/XdsZfW3sCbvgewoCLXU7PmEj9fR0OcL7
+X-Gm-Gg: AeBDieuhlWbexpisP0gxzBrcs7CoC6vi31cFm6hrDSGjLQ2cryx2jb/uSDTqBFDKnHv
+	y5iedab0FHWOjECW0dSHojU1xN3bpahY7gw7rwxAimDS/i4EheURSd5NyB/oLPN4KPq0I2uzSzt
+	vVl3SdooN2fmvKRykPkwqu5icwBXpfF7iuKHA360YEJmEE6MP1T45iV5Cx7bEpzF90lYhOXvCWl
+	0vHb40HVLcupT0u24mwgCZcLwThicAqsbHSDzMpxbZ12u0J5i0DXQW7X2wtijqAYtl2eM4ovHyx
+	cvf76aFbWKaxVGZ7y4CJS1pv4AU2CrRNRJRI9TWm5f1bjs2kkwtKrH+YrW9PBOIMiabtiC9loKc
+	mZT09o3OPj9LTTAPhYtkcK9K4BkbnonMA/WURL1eESR7gTFGGF5U/ba+b2xnPd01t7HdEL1ZmOG
+	B8y/Axy1wAA6/QlSH/+k/00YqAQPYqLgjZDbABqB6VcsxEwfe27xAIefdve0Zw84QgQNeEMxhmt
+	3lSvnmV8oJ+B8ypRhhHJhhWig2Uaelx2GRn/cjQjPXO7eXXPDZui9+O7r91fcPc7IYwA6kNgItM
+	04EqIzppOoI9GTlF3rAMEAq3HGnP
+X-Received: by 2002:a05:7300:fe07:b0:2e2:4979:ec7 with SMTP id 5a478bee46e88-2efb80ba167mr5128692eec.10.1777944084655;
+        Mon, 04 May 2026 18:21:24 -0700 (PDT)
 Received: from ethan-latitude5420.. (host-127-24.cafrjco.fresno.ca.us.clients.pavlovmedia.net. [68.180.127.24])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2ee3889d611sm24060034eec.1.2026.05.04.18.21.16
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2ee3889d611sm24060034eec.1.2026.05.04.18.21.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 May 2026 18:21:17 -0700 (PDT)
+        Mon, 04 May 2026 18:21:24 -0700 (PDT)
 From: Ethan Nelson-Moore <enelsonmoore@gmail.com>
 To: linux-serial@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -66,9 +66,9 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	Ethan Nelson-Moore <enelsonmoore@gmail.com>
-Subject: [PATCH 2/3] tty: remove unnecessary SERIAL_NONSTANDARD config option
-Date: Mon,  4 May 2026 18:20:35 -0700
-Message-ID: <2cefa6ee9b6bf13d367e15dd74093a0ef9ad81db.1777943090.git.enelsonmoore@gmail.com>
+Subject: [PATCH 3/3] docs: driver-api/tty/index.rst: copy-editing; improve organization
+Date: Mon,  4 May 2026 18:20:36 -0700
+Message-ID: <31fe93b480b4ca157086af3bebb21326d0fbe983.1777943090.git.enelsonmoore@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1777943090.git.enelsonmoore@gmail.com>
 References: <cover.1777943090.git.enelsonmoore@gmail.com>
@@ -80,331 +80,105 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The SERIAL_NONSTANDARD config option currently only guards the
-selection of two Moxa multiport serial card drivers and the HDLC line
-discipline, so it does not significantly simplify configuration. Make
-the configuration process more straightforward by dropping this option
-and dependencies on it.
+The TTY driver API intro document contains a number of grammar and
+capitalization issues. Fix them.
+
+Now that the MOXA Smartio driver documentation is in the serial/
+directory, the "Other Documentation" section only contains TTY line
+disciplines. Rename it to reflect that.
 
 Signed-off-by: Ethan Nelson-Moore <enelsonmoore@gmail.com>
 ---
- arch/arm/configs/footbridge_defconfig       |  1 -
- arch/arm/configs/lpc18xx_defconfig          |  1 -
- arch/arm/configs/mps2_defconfig             |  1 -
- arch/arm/configs/neponset_defconfig         |  1 -
- arch/arm/configs/stm32_defconfig            |  1 -
- arch/csky/configs/defconfig                 |  1 -
- arch/loongarch/configs/loongson32_defconfig |  1 -
- arch/loongarch/configs/loongson64_defconfig |  1 -
- arch/mips/configs/bigsur_defconfig          |  1 -
- arch/mips/configs/lemote2f_defconfig        |  1 -
- arch/mips/configs/loongson2k_defconfig      |  1 -
- arch/mips/configs/loongson3_defconfig       |  1 -
- arch/powerpc/configs/cell_defconfig         |  1 -
- arch/powerpc/configs/microwatt_defconfig    |  1 -
- arch/powerpc/configs/ppc6xx_defconfig       |  1 -
- arch/sh/configs/polaris_defconfig           |  1 -
- arch/x86/configs/i386_defconfig             |  1 -
- arch/x86/configs/x86_64_defconfig           |  1 -
- drivers/tty/Kconfig                         | 18 ------------------
- drivers/tty/serial/Kconfig                  |  4 ++--
- tools/testing/selftests/bpf/config.x86_64   |  1 -
- tools/testing/selftests/hid/config.common   |  1 -
- 22 files changed, 2 insertions(+), 40 deletions(-)
+ Documentation/driver-api/tty/index.rst | 46 +++++++++++++-------------
+ 1 file changed, 23 insertions(+), 23 deletions(-)
 
-diff --git a/arch/arm/configs/footbridge_defconfig b/arch/arm/configs/footbridge_defconfig
-index 5f6963687ee4..58234fd3af4b 100644
---- a/arch/arm/configs/footbridge_defconfig
-+++ b/arch/arm/configs/footbridge_defconfig
-@@ -70,7 +70,6 @@ CONFIG_SLIP_SMART=y
- CONFIG_SLIP_MODE_SLIP6=y
- CONFIG_SERIAL_21285=y
- CONFIG_SERIAL_21285_CONSOLE=y
--CONFIG_SERIAL_NONSTANDARD=y
- CONFIG_PRINTER=m
- CONFIG_DS1620=y
- CONFIG_NWBUTTON=y
-diff --git a/arch/arm/configs/lpc18xx_defconfig b/arch/arm/configs/lpc18xx_defconfig
-index f142a6637ede..9ca18939b82a 100644
---- a/arch/arm/configs/lpc18xx_defconfig
-+++ b/arch/arm/configs/lpc18xx_defconfig
-@@ -92,7 +92,6 @@ CONFIG_KEYBOARD_GPIO_POLLED=y
- CONFIG_SERIAL_8250=y
- CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_OF_PLATFORM=y
--CONFIG_SERIAL_NONSTANDARD=y
- # CONFIG_HW_RANDOM is not set
- CONFIG_I2C_LPC2K=y
- CONFIG_SPI=y
-diff --git a/arch/arm/configs/mps2_defconfig b/arch/arm/configs/mps2_defconfig
-index e995e50537ef..a1045dee7e8a 100644
---- a/arch/arm/configs/mps2_defconfig
-+++ b/arch/arm/configs/mps2_defconfig
-@@ -66,7 +66,6 @@ CONFIG_SMSC911X=y
- # CONFIG_LEGACY_PTYS is not set
- CONFIG_SERIAL_MPS2_UART_CONSOLE=y
- CONFIG_SERIAL_MPS2_UART=y
--CONFIG_SERIAL_NONSTANDARD=y
- # CONFIG_HW_RANDOM is not set
- # CONFIG_HWMON is not set
- CONFIG_WATCHDOG=y
-diff --git a/arch/arm/configs/neponset_defconfig b/arch/arm/configs/neponset_defconfig
-index 8a5dcca743fc..2080e4dfdd6c 100644
---- a/arch/arm/configs/neponset_defconfig
-+++ b/arch/arm/configs/neponset_defconfig
-@@ -51,7 +51,6 @@ CONFIG_SERIAL_8250=y
- CONFIG_SERIAL_8250_CS=y
- CONFIG_SERIAL_SA1100=y
- CONFIG_SERIAL_SA1100_CONSOLE=y
--CONFIG_SERIAL_NONSTANDARD=y
- CONFIG_I2C=y
- CONFIG_I2C_CHARDEV=y
- CONFIG_WATCHDOG=y
-diff --git a/arch/arm/configs/stm32_defconfig b/arch/arm/configs/stm32_defconfig
-index 82190b155b14..919c70107371 100644
---- a/arch/arm/configs/stm32_defconfig
-+++ b/arch/arm/configs/stm32_defconfig
-@@ -39,7 +39,6 @@ CONFIG_KEYBOARD_GPIO=y
- # CONFIG_LEGACY_PTYS is not set
- CONFIG_SERIAL_STM32=y
- CONFIG_SERIAL_STM32_CONSOLE=y
--CONFIG_SERIAL_NONSTANDARD=y
- # CONFIG_HW_RANDOM is not set
- CONFIG_I2C=y
- CONFIG_I2C_CHARDEV=y
-diff --git a/arch/csky/configs/defconfig b/arch/csky/configs/defconfig
-index ff559e5162aa..481b51eadf41 100644
---- a/arch/csky/configs/defconfig
-+++ b/arch/csky/configs/defconfig
-@@ -20,7 +20,6 @@ CONFIG_BLK_DEV_LOOP=y
- CONFIG_BLK_DEV_RAM=y
- CONFIG_BLK_DEV_RAM_SIZE=65536
- CONFIG_VT_HW_CONSOLE_BINDING=y
--CONFIG_SERIAL_NONSTANDARD=y
- CONFIG_SERIAL_8250=y
- CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_OF_PLATFORM=y
-diff --git a/arch/loongarch/configs/loongson32_defconfig b/arch/loongarch/configs/loongson32_defconfig
-index d5ef396dffe3..5dd7b8cb8957 100644
---- a/arch/loongarch/configs/loongson32_defconfig
-+++ b/arch/loongarch/configs/loongson32_defconfig
-@@ -723,7 +723,6 @@ CONFIG_SERIAL_8250_SHARE_IRQ=y
- CONFIG_SERIAL_8250_RSA=y
- CONFIG_SERIAL_8250_LOONGSON=y
- CONFIG_SERIAL_OF_PLATFORM=y
--CONFIG_SERIAL_NONSTANDARD=y
- CONFIG_PRINTER=m
- CONFIG_VIRTIO_CONSOLE=y
- CONFIG_HW_RANDOM=y
-diff --git a/arch/loongarch/configs/loongson64_defconfig b/arch/loongarch/configs/loongson64_defconfig
-index cba4cdff5acd..80396cd61755 100644
---- a/arch/loongarch/configs/loongson64_defconfig
-+++ b/arch/loongarch/configs/loongson64_defconfig
-@@ -739,7 +739,6 @@ CONFIG_SERIAL_8250_SHARE_IRQ=y
- CONFIG_SERIAL_8250_RSA=y
- CONFIG_SERIAL_8250_LOONGSON=y
- CONFIG_SERIAL_OF_PLATFORM=y
--CONFIG_SERIAL_NONSTANDARD=y
- CONFIG_PRINTER=m
- CONFIG_VIRTIO_CONSOLE=y
- CONFIG_IPMI_HANDLER=m
-diff --git a/arch/mips/configs/bigsur_defconfig b/arch/mips/configs/bigsur_defconfig
-index aa63ada62e28..602795e2659c 100644
---- a/arch/mips/configs/bigsur_defconfig
-+++ b/arch/mips/configs/bigsur_defconfig
-@@ -121,7 +121,6 @@ CONFIG_SLIP_MODE_SLIP6=y
- # CONFIG_INPUT is not set
- CONFIG_SERIO_RAW=m
- # CONFIG_VT is not set
--CONFIG_SERIAL_NONSTANDARD=y
- # CONFIG_HW_RANDOM is not set
- CONFIG_I2C=y
- CONFIG_I2C_CHARDEV=y
-diff --git a/arch/mips/configs/lemote2f_defconfig b/arch/mips/configs/lemote2f_defconfig
-index b9f3e1641105..084b569cf8d8 100644
---- a/arch/mips/configs/lemote2f_defconfig
-+++ b/arch/mips/configs/lemote2f_defconfig
-@@ -125,7 +125,6 @@ CONFIG_SERIAL_8250_NR_UARTS=16
- CONFIG_SERIAL_8250_EXTENDED=y
- CONFIG_SERIAL_8250_MANY_PORTS=y
- CONFIG_SERIAL_8250_FOURPORT=y
--CONFIG_SERIAL_NONSTANDARD=y
- CONFIG_HW_RANDOM=y
- CONFIG_GPIO_LOONGSON=y
- CONFIG_THERMAL=y
-diff --git a/arch/mips/configs/loongson2k_defconfig b/arch/mips/configs/loongson2k_defconfig
-index ca534a6b66de..0b29ad43b62b 100644
---- a/arch/mips/configs/loongson2k_defconfig
-+++ b/arch/mips/configs/loongson2k_defconfig
-@@ -222,7 +222,6 @@ CONFIG_SERIAL_8250_MANY_PORTS=y
- CONFIG_SERIAL_8250_SHARE_IRQ=y
- CONFIG_SERIAL_8250_RSA=y
- CONFIG_SERIAL_OF_PLATFORM=y
--CONFIG_SERIAL_NONSTANDARD=y
- CONFIG_HW_RANDOM=y
- CONFIG_I2C_CHARDEV=y
- CONFIG_I2C_PIIX4=y
-diff --git a/arch/mips/configs/loongson3_defconfig b/arch/mips/configs/loongson3_defconfig
-index 12cb1a6a1360..00bf6358357f 100644
---- a/arch/mips/configs/loongson3_defconfig
-+++ b/arch/mips/configs/loongson3_defconfig
-@@ -254,7 +254,6 @@ CONFIG_SERIAL_8250_MANY_PORTS=y
- CONFIG_SERIAL_8250_SHARE_IRQ=y
- CONFIG_SERIAL_8250_RSA=y
- CONFIG_SERIAL_OF_PLATFORM=y
--CONFIG_SERIAL_NONSTANDARD=y
- CONFIG_VIRTIO_CONSOLE=y
- CONFIG_HW_RANDOM=y
- CONFIG_I2C_CHARDEV=y
-diff --git a/arch/powerpc/configs/cell_defconfig b/arch/powerpc/configs/cell_defconfig
-index 7a31b52e92e1..439c03172deb 100644
---- a/arch/powerpc/configs/cell_defconfig
-+++ b/arch/powerpc/configs/cell_defconfig
-@@ -135,7 +135,6 @@ CONFIG_GELIC_WIRELESS=y
- # CONFIG_INPUT_MOUSE is not set
- # CONFIG_SERIO_I8042 is not set
- # CONFIG_LEGACY_PTYS is not set
--CONFIG_SERIAL_NONSTANDARD=y
- CONFIG_SERIAL_8250=y
- CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_OF_PLATFORM=y
-diff --git a/arch/powerpc/configs/microwatt_defconfig b/arch/powerpc/configs/microwatt_defconfig
-index d81989a6f59b..60dce8b41f97 100644
---- a/arch/powerpc/configs/microwatt_defconfig
-+++ b/arch/powerpc/configs/microwatt_defconfig
-@@ -64,7 +64,6 @@ CONFIG_LITEX_LITEETH=y
- CONFIG_SERIAL_8250=y
- CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_OF_PLATFORM=y
--CONFIG_SERIAL_NONSTANDARD=y
- # CONFIG_NVRAM is not set
- CONFIG_SPI=y
- CONFIG_SPI_DEBUG=y
-diff --git a/arch/powerpc/configs/ppc6xx_defconfig b/arch/powerpc/configs/ppc6xx_defconfig
-index 4ddd2c01b8b7..b745965c5215 100644
---- a/arch/powerpc/configs/ppc6xx_defconfig
-+++ b/arch/powerpc/configs/ppc6xx_defconfig
-@@ -550,7 +550,6 @@ CONFIG_GAMEPORT_L4=m
- CONFIG_GAMEPORT_EMU10K1=m
- CONFIG_GAMEPORT_FM801=m
- # CONFIG_LEGACY_PTYS is not set
--CONFIG_SERIAL_NONSTANDARD=y
- CONFIG_NOZOMI=m
- CONFIG_N_HDLC=m
- CONFIG_SERIAL_8250=y
-diff --git a/arch/sh/configs/polaris_defconfig b/arch/sh/configs/polaris_defconfig
-index 4f0396c2ac79..0b51a85300a6 100644
---- a/arch/sh/configs/polaris_defconfig
-+++ b/arch/sh/configs/polaris_defconfig
-@@ -54,7 +54,6 @@ CONFIG_SMSC911X=y
- # CONFIG_INPUT_MOUSE is not set
- # CONFIG_SERIO is not set
- CONFIG_VT_HW_CONSOLE_BINDING=y
--CONFIG_SERIAL_NONSTANDARD=y
- CONFIG_SERIAL_SH_SCI=y
- CONFIG_SERIAL_SH_SCI_NR_UARTS=3
- CONFIG_SERIAL_SH_SCI_CONSOLE=y
-diff --git a/arch/x86/configs/i386_defconfig b/arch/x86/configs/i386_defconfig
-index 79fa38ca954d..b67e7073da10 100644
---- a/arch/x86/configs/i386_defconfig
-+++ b/arch/x86/configs/i386_defconfig
-@@ -182,7 +182,6 @@ CONFIG_SERIAL_8250_MANY_PORTS=y
- CONFIG_SERIAL_8250_SHARE_IRQ=y
- CONFIG_SERIAL_8250_DETECT_IRQ=y
- CONFIG_SERIAL_8250_RSA=y
--CONFIG_SERIAL_NONSTANDARD=y
- CONFIG_VIRTIO_CONSOLE=y
- CONFIG_HW_RANDOM=y
- CONFIG_NVRAM=y
-diff --git a/arch/x86/configs/x86_64_defconfig b/arch/x86/configs/x86_64_defconfig
-index 269f7d808be4..5db8acec1e37 100644
---- a/arch/x86/configs/x86_64_defconfig
-+++ b/arch/x86/configs/x86_64_defconfig
-@@ -177,7 +177,6 @@ CONFIG_SERIAL_8250_MANY_PORTS=y
- CONFIG_SERIAL_8250_SHARE_IRQ=y
- CONFIG_SERIAL_8250_DETECT_IRQ=y
- CONFIG_SERIAL_8250_RSA=y
--CONFIG_SERIAL_NONSTANDARD=y
- CONFIG_VIRTIO_CONSOLE=y
- CONFIG_HW_RANDOM=y
- # CONFIG_HW_RANDOM_INTEL is not set
-diff --git a/drivers/tty/Kconfig b/drivers/tty/Kconfig
-index 63b378e44a59..a9ade8bc88b2 100644
---- a/drivers/tty/Kconfig
-+++ b/drivers/tty/Kconfig
-@@ -191,26 +191,8 @@ config LDISC_AUTOLOAD
+diff --git a/Documentation/driver-api/tty/index.rst b/Documentation/driver-api/tty/index.rst
+index 6a08aebbc47c..eb5d602450f8 100644
+--- a/Documentation/driver-api/tty/index.rst
++++ b/Documentation/driver-api/tty/index.rst
+@@ -4,29 +4,30 @@
+ TTY
+ ===
  
- source "drivers/tty/serial/Kconfig"
+-Teletypewriter (TTY) layer takes care of all those serial devices. Including
+-the virtual ones like pseudoterminal (PTY).
++The teletypewriter (TTY) layer handles all serial devices, including
++virtual ones like pseudoterminals (PTYs).
  
--config SERIAL_NONSTANDARD
--	bool "Non-standard serial port support"
--	depends on HAS_IOMEM
--	help
--	  Say Y here if you have any non-standard serial boards -- boards
--	  which aren't supported using the standard "dumb" serial driver.
--	  This includes intelligent serial boards such as
--	  Digiboards, etc. These are usually used for systems that need many
--	  serial ports because they serve many terminals or dial-in
--	  connections.
--
--	  Note that the answer to this question won't directly affect the
--	  kernel: saying N will just cause the configurator to skip all
--	  the questions about non-standard serial boards.
--
--	  Most people can say N here.
--
- config N_HDLC
- 	tristate "HDLC line discipline support"
--	depends on SERIAL_NONSTANDARD
- 	help
- 	  Allows synchronous HDLC communications with tty device drivers that
- 	  support synchronous HDLC.
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 999f56307445..6e448a6f1020 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1594,7 +1594,7 @@ config SERIAL_NUVOTON_MA35D1_CONSOLE
+-TTY structures
++TTY Structures
+ ==============
  
- config MOXA_INTELLIO
- 	tristate "Moxa Intellio support"
--	depends on SERIAL_NONSTANDARD && PCI
-+	depends on PCI
- 	select FW_LOADER
- 	help
- 	  Say Y here if you have a Moxa Intellio multiport serial card.
-@@ -1604,7 +1604,7 @@ config MOXA_INTELLIO
+ There are several major TTY structures. Every TTY device in a system has a
+ corresponding struct tty_port. These devices are maintained by a TTY driver
+-which is struct tty_driver. This structure describes the driver but also
+-contains a reference to operations which could be performed on the TTYs. It is
+-struct tty_operations. Then, upon open, a struct tty_struct is allocated and
++defined by struct tty_driver. This structure describes the driver but also
++contains a reference to struct tty_operations, which defines operations which
++can be performed on the TTY. Upon open, a struct tty_struct is allocated and
+ lives until the final close. During this time, several callbacks from struct
+ tty_operations are invoked by the TTY layer.
  
- config MOXA_SMARTIO
- 	tristate "Moxa SmartIO support v. 2.0"
--	depends on SERIAL_NONSTANDARD && PCI && HAS_IOPORT
-+	depends on PCI && HAS_IOPORT
- 	help
- 	  Say Y here if you have a Moxa SmartIO multiport serial card and/or
- 	  want to help develop a new version of this driver.
-diff --git a/tools/testing/selftests/bpf/config.x86_64 b/tools/testing/selftests/bpf/config.x86_64
-index 42ad817b00ae..2fc3e7e6ae5e 100644
---- a/tools/testing/selftests/bpf/config.x86_64
-+++ b/tools/testing/selftests/bpf/config.x86_64
-@@ -189,7 +189,6 @@ CONFIG_SERIAL_8250_MANY_PORTS=y
- CONFIG_SERIAL_8250_NR_UARTS=32
- CONFIG_SERIAL_8250_RSA=y
- CONFIG_SERIAL_8250_SHARE_IRQ=y
--CONFIG_SERIAL_NONSTANDARD=y
- CONFIG_SERIO_LIBPS2=y
- CONFIG_SGI_PARTITION=y
- CONFIG_SMP=y
-diff --git a/tools/testing/selftests/hid/config.common b/tools/testing/selftests/hid/config.common
-index 38c51158adf8..89a83cda737b 100644
---- a/tools/testing/selftests/hid/config.common
-+++ b/tools/testing/selftests/hid/config.common
-@@ -201,7 +201,6 @@ CONFIG_SERIAL_8250_NR_UARTS=32
- CONFIG_SERIAL_8250_RSA=y
- CONFIG_SERIAL_8250_SHARE_IRQ=y
- CONFIG_SERIAL_8250=y
--CONFIG_SERIAL_NONSTANDARD=y
- CONFIG_SERIO_LIBPS2=y
- CONFIG_SGI_PARTITION=y
- CONFIG_SMP=y
+-Every character received by the kernel (both from devices and users) is passed
++Every character received by the kernel (from both devices and users) is passed
+ through a preselected :doc:`tty_ldisc` (in
+ short ldisc; in C, struct tty_ldisc_ops). Its task is to transform characters
+-as defined by a particular ldisc or by user too. The default one is n_tty,
+-implementing echoes, signal handling, jobs control, special characters
+-processing, and more. The transformed characters are passed further to
+-user/device, depending on the source.
++as defined by a particular ldisc or by the user. The default one is n_tty,
++which implements echoes, signal handling, jobs control, special characters
++processing, and more. The transformed characters are passed on further to the
++user or device, depending on the source.
+ 
+-In-detail description of the named TTY structures is in separate documents:
++A detailed description of the named TTY structures is contained in separate
++documents:
+ 
+ .. toctree::
+    :maxdepth: 2
+@@ -40,14 +41,14 @@ In-detail description of the named TTY structures is in separate documents:
+    tty_internals
+    console
+ 
+-Writing TTY Driver
+-==================
++Writing TTY Drivers
++===================
+ 
+-Before one starts writing a TTY driver, they must consider
+-:doc:`Serial <../serial/driver>` and :doc:`USB Serial <../../usb/usb-serial>`
++Before you start writing a TTY driver, you should consider using the
++:doc:`serial <../serial/driver>` and :doc:`USB serial <../../usb/usb-serial>`
+ layers first. Drivers for serial devices can often use one of these specific
+ layers to implement a serial driver. Only special devices should be handled
+-directly by the TTY Layer. If you are about to write such a driver, read on.
++directly by the TTY layer. If you are about to write such a driver, read on.
+ 
+ A *typical* sequence a TTY driver performs is as follows:
+ 
+@@ -58,14 +59,13 @@ A *typical* sequence a TTY driver performs is as follows:
+ #. Remove devices as they are going away (remove function)
+ #. Unregister and free the TTY driver (module exit)
+ 
+-Steps regarding driver, i.e. 1., 3., and 5. are described in detail in
+-:doc:`tty_driver`. For the other two (devices handling), look into
+-:doc:`tty_port`.
++Steps regarding the driver, i.e., steps 1, 3, and 5, are described in detail in
++:doc:`tty_driver`. For the other two (device handling), see :doc:`tty_port`.
+ 
+-Other Documentation
+-===================
++Line Disciplines
++================
+ 
+-Miscellaneous documentation can be further found in these documents:
++Documentation for TTY line disciplines can be found in the following documents:
+ 
+ .. toctree::
+    :maxdepth: 2
 -- 
 2.43.0
 
