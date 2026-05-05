@@ -1,180 +1,163 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 286703E6DF5;
-	Tue,  5 May 2026 07:46:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC4243A6B82
+	for <linux-serial@vger.kernel.org>; Tue,  5 May 2026 08:47:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777967182; cv=none; b=osbI+cLDSAe9sbDldE+eag7XxzNHbbIdznh0m92eAMFM3r51J29fh9ijc1prnYtdCrqOeutL3t7r0f9Dx5erUNEI+/hZnpBb+Zj1XqRkdaJTaX0qw5uESE1MOQz5Y8u95j+JPLgFG2vT4RmUcIfK2N5oCJ6urRaG3Q5TtQeP1OE=
+	t=1777970882; cv=none; b=M1Ri7p2FlukBXqKydIZ+E4ii6syEKkcaK+v8Y74jez1m41YOb9++Qfh0nmXzZ7cHcfb90KVBHef0FE85D3Re0otFClT71U1q05Usf4OHsWW+Ff3QqKMvgpdR0YxjxiaJzhNAmrCla2+d5Dei0KuSbNWcgb1rYWI/s0Y5T6YOkWc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777967182; c=relaxed/simple;
-	bh=yM7ixh23hTt915v65jWVvesGDMzqA5Q4LFsS6XYpggE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Dnyxnb/TunrBVcs6Dqx4UTf/ItVGrGnDCM1jx4C0hYCo9OlcngObnNbjzPp3bwNvTsqqTWv06bAJ1FhDWQ73hry2U86TiqZk/2Y7bXpoQ7FtohZK4O06p9YQ4TF9uAVnWQOq5VRSwSi36SkytR3f+0982q8X0COvhL39YPLY49A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gqokWP1/; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1777970882; c=relaxed/simple;
+	bh=1NVEGhQHLQ24V5uO8GejoHvvDxyflIwwSUWdcZiGgDo=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=D9KDTaLuXsxs9qMl6Aj9ncyw6d5AztHW+kN2uZKTw+vQc/Ht5K1NjYUemEvCQto9N+s5pu4r6zOPYKVKJbudWHB6lz1hXdNtVAc83z7UtIojYyg5SlrU67PpFWiqYR+RfJBsLIT/XZl1gl9UfDSKYHYAqmh1i2Hrw59+VIai8XQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b=TZt+O7HY; arc=none smtp.client-ip=209.85.128.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gqokWP1/"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 632F8C2BCFB;
-	Tue,  5 May 2026 07:46:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777967181;
-	bh=yM7ixh23hTt915v65jWVvesGDMzqA5Q4LFsS6XYpggE=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=gqokWP1/BwjPN/i5hfMbT48Qir87vQojYGx61A9eEv+76YwoGLY4b/+n6yg3V+xyr
-	 wnpCSMVlAbokyFNwXJv1lOp0EHu0MKG576qLYNZnVsLWSSestKExplpWf2qM6hBjpE
-	 i4PqSNH6i14WHpO3V+M2n/rOjTM8lyxAT7cAODwVGJ9Zc3kTa0Z60NtTYLii7oU7Gl
-	 RII1tskB8jWPL+CU7dxHQo11zAGDXu5HUtV1maMQQWze37j8mgMTFEFBy4xJPPxqAY
-	 YAvDNtEIr+ZzvdNQBL07MIkWM4GE1Q3FcmUsQjHIgUN3X269k/WveeRFxppsqOw3To
-	 pyq08ENtFbN0g==
-Message-ID: <b72aac86-7572-467e-9a9e-6611f3820413@kernel.org>
-Date: Tue, 5 May 2026 09:46:17 +0200
+	dkim=pass (2048-bit key) header.d=baylibre-com.20251104.gappssmtp.com header.i=@baylibre-com.20251104.gappssmtp.com header.b="TZt+O7HY"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-4891e5b9c1fso47464185e9.2
+        for <linux-serial@vger.kernel.org>; Tue, 05 May 2026 01:47:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20251104.gappssmtp.com; s=20251104; t=1777970875; x=1778575675; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=k/HV+PJyPvR5SXo7b65roOSJJNehPyaCGIWDGwqA+Qc=;
+        b=TZt+O7HYVZZ+1SOL+96OskdaHTnAJXlzLOUA881W4IPzwMZceuiv5ctymGRiayo1b4
+         EFA52PDbtclGgIrKPM/D4pi8ccxQ5Q7SvUvhpnun1vjz5jsWFh0ySGrQMIkgAsELs7is
+         zW8pmYFdgrs9MSzHWgJ8XCwwM0F8Sr/Vamt0JVnEopbd6QOqT2qf4n5ZU5XpTILb2X9y
+         JAAHiNhT/qH7KiBOCt/1KQ7eq0TKKYe0pK5B8r36XHd3Rv6PAE2DFmxuV2niQLoFbSAn
+         NAOXB6710D0quqfpwUf0J7K21QkwIUyidLcSbMP7Jq4im4J+ms44fhvTwVPfyuFtcJA8
+         AFDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777970875; x=1778575675;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=k/HV+PJyPvR5SXo7b65roOSJJNehPyaCGIWDGwqA+Qc=;
+        b=rGAQ3u68p60P/ATRlkQucKKNa5A8JRCFA6HyUtzILN3adasApsKsQok7fn+f16sbYD
+         hDExmyfFtVlUKAJM/HqgQdytKZBS+Hut0Mj7d6s90ectiqAKqWn4FUoWKEwiVGRmsGPK
+         76xtPt5KL7UgjhJ9jYWD9soeU1yErXQmRT7Nn6c8LfhjHz/0Mp+no/HzWIbrIFSYj8A8
+         /2kuxekDLbpV4+ARAk0t6NWF1d8DtDfWRqvkOQQrC++NJBu6WmbozIX0LoJbl6pAFD9B
+         8UU9CaxnMrYVIR92JRCxB5GCi2Rw7ejUGw9eMSiQZmp+I289va3fNxtM+N/eBCCSIMlk
+         G5zg==
+X-Gm-Message-State: AOJu0Yw/0XY6DRetmsT1qKc3Zf3NfAVE7Q+8IWuOQeUpBDsvPjqnc9oq
+	bMBdhP2Rmcb4YE3lyNpiYCq0t17myVWxKzBaukmYC9vkT0OwS+QJDl4SZWy4b5NW9m4=
+X-Gm-Gg: AeBDies/qb6wbquDjcQiTFSwY7eNNaB/894sdO8PHr5QpKEkL/wl6xpr2Jbbu/yUT0m
+	dkHGJwu/wc6LpiIpjY3GpLZAvUW2eO1jUlND9gQ7KdveUWhCD7huhkaJ4gIFM0JxIVYh/7eIcaH
+	SJl8vnKDGvsgym4wClRTk30rJGvAh5S0l3ZGewhcesFDIZ0QqK4RNWhs4ShGcgOEQSXEdfbq7t5
+	JRnOn1DgfH+VgJ0US0LtWPE2MovdKgbR4yi89CVOrkRJ2JORfHiaFC9yAnvnp1a3Dh7HLDOe293
+	Ywer+Xrg0wV0KfkuyJ0BEqY/Uq7QnJK9Lp/lnJNi1nGW5ulETnaQ/stLeRwlM+ZEU98vOnLFc5T
+	95+T8DgEQV6H/iN93Yn6SKTIcxuT7+ccZGQKXRhsyCYEz7CSg5kKIJD6pGLbEQNpD0fIFD9+X1j
+	nkHC26wg3iUs2dmMWvCGDq4JWYMzOi3YyboLOxNi1gNtHKd4NSAX8nC+BiLlhH9I9onSp+78Eio
+	zYyQ7u7DyL2K9KJ4jo4Wv1Z59H+SwiXqPdc
+X-Received: by 2002:a05:600c:628c:b0:485:9a50:3370 with SMTP id 5b1f17b1804b1-48d187d9124mr28927915e9.8.1777970875124;
+        Tue, 05 May 2026 01:47:55 -0700 (PDT)
+Received: from localhost (p200300f65f114e082236c6257eff72a1.dip0.t-ipconnect.de. [2003:f6:5f11:4e08:2236:c625:7eff:72a1])
+        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-48a81ed6b89sm382848935e9.1.2026.05.05.01.47.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 May 2026 01:47:54 -0700 (PDT)
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig=20=28The=20Capable=20Hub=29?= <u.kleine-koenig@baylibre.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Lukas Wunner <lukas@wunner.de>,
+	Dave Jiang <dave.jiang@intel.com>,
+	Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+	Kees Cook <kees@kernel.org>
+Cc: linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Markus Schneider-Pargmann <msp@baylibre.com>
+Subject: [PATCH v2] serial: jsm: Drop unused driver_data assigment and redundant zeros
+Date: Tue,  5 May 2026 10:47:49 +0200
+Message-ID: <20260505084749.2304121-2-u.kleine-koenig@baylibre.com>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: jsm: Use named initializers for struct
- pci_device_id
-To: =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig_=28The_Capable_Hub=29?=
- <u.kleine-koenig@baylibre.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Lukas Wunner <lukas@wunner.de>, Dave Jiang <dave.jiang@intel.com>,
- Giovanni Cabiddu <giovanni.cabiddu@intel.com>, Kees Cook <kees@kernel.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
- Markus Schneider-Pargmann <msp@baylibre.com>
-References: <20260505073044.2258674-2-u.kleine-koenig@baylibre.com>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20260505073044.2258674-2-u.kleine-koenig@baylibre.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3695; i=u.kleine-koenig@baylibre.com; h=from:subject; bh=1NVEGhQHLQ24V5uO8GejoHvvDxyflIwwSUWdcZiGgDo=; b=owEBbAGT/pANAwAKAY+A+1h9Ev5OAcsmYgBp+a612hlhLL87K3OgO/IqaweZZlZ3Hk2A7zSly FHA9cAMKseJATIEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCafmutQAKCRCPgPtYfRL+ TjvVB/jjfy9eJ8XTEGBHR9fjAInnl16glODxzFfWdnvHayDw14zfWfaIjTqmWWIwI6CuFWZRVRh cDzceZifk2MiePxS9pcmGWuKnroqkvAeqs1us7lG/2t4UzRB0VS75IB8OysCyGJ8xdukAeoj33f Zifkk28V8OGfa0RsdhB4BTxtW+/uaF5TSKxVcaNfRJhcxIcovLLBMe7TdUDfEqGyJBW/eMhW4Ls iu+leaVMArQOfCPeUtDg06CPxy3a6rfmONbLAxxkVzCR7XDS2HOihMao1wKCOg0RFrt+7MfdaS6 D/adpRhEYZqdhkbfNCQFJyGbIuXsgyns9fPONvaXZLameJg=
+X-Developer-Key: i=u.kleine-koenig@baylibre.com; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 
-On 05. 05. 26, 9:30, Uwe Kleine-König (The Capable Hub) wrote:
-> Initializing structures using list initializers is harder to read than
-> using named initializers. Seeing the member name is more ideomatic and
-> easier to understand.
-> 
-> Use named initializers for the driver's pci_device_id array. While at it
-> also drop an explicit zero in the terminating array entry.
-> 
-> There are no changes to the compiled result of the array; verified with
-> builds for x86 and arm64.
-> 
-> Signed-off-by: Uwe Kleine-König (The Capable Hub) <u.kleine-koenig@baylibre.com>
-> ---
-> Hello,
-> 
-> this is a preparing change for making struct pci_device_id::driver_data an
-> anonymous union (similar to
-> https://lore.kernel.org/all/cover.1776579304.git.u.kleine-koenig@baylibre.com/).
-> This requires named initializers for .driver_data. But even without that
-> this is a nice cleanup making the array better readable.
-> 
-> Having said that I didn't find where .driver_data is used, so unless I
-> missed something the assignments can just go away???
-> 
-> For earlier patches of this type against other drivers I got the
-> feedback to use PCI_DEVICE_DATA() but I don't like that as it mixes
-> hardware properties (.vendor and .device) with driver specific software
-> properties (.driver_data) and thus I prefer the explicit listing
-> (involving more repetition) over the shorter variant (being more opaque
-> and harder to read).
-> 
-> Best regards
-> Uwe
-> 
->   drivers/tty/serial/jsm/jsm_driver.c | 75 +++++++++++++++++++++--------
->   1 file changed, 56 insertions(+), 19 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/jsm/jsm_driver.c b/drivers/tty/serial/jsm/jsm_driver.c
-> index 4b73e51f83fb..422cac8d8d71 100644
-> --- a/drivers/tty/serial/jsm/jsm_driver.c
-> +++ b/drivers/tty/serial/jsm/jsm_driver.c
-> @@ -296,25 +296,62 @@ static void jsm_remove_one(struct pci_dev *pdev)
->   }
->   
->   static const struct pci_device_id jsm_pci_tbl[] = {
-> -	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_2DB9), 0, 0, 0 },
-> -	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_2DB9PRI), 0, 0, 1 },
-> -	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_2RJ45), 0, 0, 2 },
-> -	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_2RJ45PRI), 0, 0, 3 },
-> -	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCIE_DEVICE_ID_NEO_4_IBM), 0, 0, 4 },
-> -	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_DIGI_NEO_8), 0, 0, 5 },
-> -	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_4), 0, 0, 6 },
-> -	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_1_422), 0, 0, 7 },
-> -	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_1_422_485), 0, 0, 8 },
-> -	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_2_422_485), 0, 0, 9 },
-> -	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCIE_DEVICE_ID_NEO_8), 0, 0, 10 },
-> -	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCIE_DEVICE_ID_NEO_4), 0, 0, 11 },
-> -	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCIE_DEVICE_ID_NEO_4RJ45), 0, 0, 12 },
-> -	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCIE_DEVICE_ID_NEO_8RJ45), 0, 0, 13 },
-> -	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_CLASSIC_4), 0, 0, 14 },
-> -	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_CLASSIC_4_422), 0, 0, 15 },
-> -	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_CLASSIC_8), 0, 0, 16 },
-> -	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_CLASSIC_8_422), 0, 0, 17 },
-> -	{ 0, }
-> +	{
-> +		PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_2DB9),
-> +		.driver_data = 0,
-> +	}, {
+The driver doesn't use the driver_data field, so drop the assigment
+together with the then redundant zero assigment for .class and
+.class_mask. Also drop the zero in the list terminator.
 
-Sorry, but this is definitely NOT "making the array better readable". 
-Esp. due to the split to multiple lines. PCI_DEVICE_DATA() would be far 
-better IMO. Or PCI_VDEVICE() + .driver_data on a single line...
+While at it also use PCI_VDEVICE() to allow dropping "PCI_VENDOR_ID_".
 
-Anyway, you're right, pci_device_id is not currently used at all. 
-Instead, there are big switches in the probe doing the casing. This 
-should be rewritten to actually use driver_data and drop the whole 
-switch-case stuff from probe.
+Signed-off-by: Uwe Kleine-König (The Capable Hub) <u.kleine-koenig@baylibre.com>
+---
+Hello,
 
-So you can likely drop driver_data completely for now. It won't/can't be 
-used in the current form anyway.
+(implicit) v1 is available at
+https://lore.kernel.org/linux-serial/20260505073044.2258674-2-u.kleine-koenig@baylibre.com
+.
 
-thanks,
+In the v1 discussion I mentioned that I don't spot a usage of
+.driver_data and Jiri confirmed these are unused. So this v2 just drops
+the respective assignments and thus circumvents the subjective
+discussion if my v1 really made the array better readable. Also the
+usage of PCI_VDEVICE() is new.
+
+Best regards
+Uwe
+
+ drivers/tty/serial/jsm/jsm_driver.c | 38 ++++++++++++++---------------
+ 1 file changed, 19 insertions(+), 19 deletions(-)
+
+diff --git a/drivers/tty/serial/jsm/jsm_driver.c b/drivers/tty/serial/jsm/jsm_driver.c
+index 4b73e51f83fb..8cd9b981bf20 100644
+--- a/drivers/tty/serial/jsm/jsm_driver.c
++++ b/drivers/tty/serial/jsm/jsm_driver.c
+@@ -296,25 +296,25 @@ static void jsm_remove_one(struct pci_dev *pdev)
+ }
+ 
+ static const struct pci_device_id jsm_pci_tbl[] = {
+-	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_2DB9), 0, 0, 0 },
+-	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_2DB9PRI), 0, 0, 1 },
+-	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_2RJ45), 0, 0, 2 },
+-	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_2RJ45PRI), 0, 0, 3 },
+-	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCIE_DEVICE_ID_NEO_4_IBM), 0, 0, 4 },
+-	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_DIGI_NEO_8), 0, 0, 5 },
+-	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_4), 0, 0, 6 },
+-	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_1_422), 0, 0, 7 },
+-	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_1_422_485), 0, 0, 8 },
+-	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_NEO_2_422_485), 0, 0, 9 },
+-	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCIE_DEVICE_ID_NEO_8), 0, 0, 10 },
+-	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCIE_DEVICE_ID_NEO_4), 0, 0, 11 },
+-	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCIE_DEVICE_ID_NEO_4RJ45), 0, 0, 12 },
+-	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCIE_DEVICE_ID_NEO_8RJ45), 0, 0, 13 },
+-	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_CLASSIC_4), 0, 0, 14 },
+-	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_CLASSIC_4_422), 0, 0, 15 },
+-	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_CLASSIC_8), 0, 0, 16 },
+-	{ PCI_DEVICE(PCI_VENDOR_ID_DIGI, PCI_DEVICE_ID_CLASSIC_8_422), 0, 0, 17 },
+-	{ 0, }
++	{ PCI_VDEVICE(DIGI, PCI_DEVICE_ID_NEO_2DB9) },
++	{ PCI_VDEVICE(DIGI, PCI_DEVICE_ID_NEO_2DB9PRI) },
++	{ PCI_VDEVICE(DIGI, PCI_DEVICE_ID_NEO_2RJ45) },
++	{ PCI_VDEVICE(DIGI, PCI_DEVICE_ID_NEO_2RJ45PRI) },
++	{ PCI_VDEVICE(DIGI, PCIE_DEVICE_ID_NEO_4_IBM) },
++	{ PCI_VDEVICE(DIGI, PCI_DEVICE_ID_DIGI_NEO_8) },
++	{ PCI_VDEVICE(DIGI, PCI_DEVICE_ID_NEO_4) },
++	{ PCI_VDEVICE(DIGI, PCI_DEVICE_ID_NEO_1_422) },
++	{ PCI_VDEVICE(DIGI, PCI_DEVICE_ID_NEO_1_422_485) },
++	{ PCI_VDEVICE(DIGI, PCI_DEVICE_ID_NEO_2_422_485) },
++	{ PCI_VDEVICE(DIGI, PCIE_DEVICE_ID_NEO_8) },
++	{ PCI_VDEVICE(DIGI, PCIE_DEVICE_ID_NEO_4) },
++	{ PCI_VDEVICE(DIGI, PCIE_DEVICE_ID_NEO_4RJ45) },
++	{ PCI_VDEVICE(DIGI, PCIE_DEVICE_ID_NEO_8RJ45) },
++	{ PCI_VDEVICE(DIGI, PCI_DEVICE_ID_CLASSIC_4) },
++	{ PCI_VDEVICE(DIGI, PCI_DEVICE_ID_CLASSIC_4_422) },
++	{ PCI_VDEVICE(DIGI, PCI_DEVICE_ID_CLASSIC_8) },
++	{ PCI_VDEVICE(DIGI, PCI_DEVICE_ID_CLASSIC_8_422) },
++	{ }
+ };
+ MODULE_DEVICE_TABLE(pci, jsm_pci_tbl);
+ 
+
+base-commit: 254f49634ee16a731174d2ae34bc50bd5f45e731
 -- 
-js
-suse labs
+2.47.3
+
