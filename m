@@ -1,33 +1,33 @@
 Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BDFAD372B23;
-	Wed,  6 May 2026 22:42:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 20CE337268B;
+	Wed,  6 May 2026 22:42:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778107353; cv=none; b=djt9DkXrJcDlVFST8Hro8FB3feitsd7yUiL5KfNO7S5u4zm40FQyaXTm1vm4uJ7n9dsb4IlvRNT79JoYJ1RBvNITEJlV5kNQxkloqT4O2BWSAnDADVPoX9AI2hbXGwVQrmBb9FpsZdRySGw7Gzphdwv2AsxoYEnq1HFSVGyjG0U=
+	t=1778107355; cv=none; b=u9acUxIR1zO5NQdZVYRNyTlS/IrkFroqvtvTgRkuPzQxbIhmlhIttSgKcboBwJdA1HS+aZ5F7wv+lR8yW0PGfNXmcU5ZW2sslJsWW0Tkz+rJjS8ZI+8lZGJVWdxT0TXviMhSMPQ1TNkz2dy9txDiHidsKs7QmlujiH5Y9l+/wiY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778107353; c=relaxed/simple;
-	bh=8phs6SjJNrZL0aaH0XIS/m+gNso2G9ewsE1O2A7hQ4E=;
+	s=arc-20240116; t=1778107355; c=relaxed/simple;
+	bh=7XlAV3ZcfpsRTUCp8zaBjPMviCsEt0o8iKd/7XRi+b8=;
 	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=lls5L4WfINk4B8Zt61f8XfcX8XuoL71YC3H/NCzJ98tOnT8kPUCKiuO/et1nkWsaJ+pXa6unWjDmnH/uL1HBL7No1IpH+Cnf5dnoDlCaaQB6+kEacgc/VFeDrqu9b7M+lzG9Em4CiPgrqEmoQ99PjKRRdXbBp6CkYBPI96UMp9w=
+	 MIME-Version:Content-Type; b=pmV0ckH4lbR0rlNfw3/N8MrxR5pvQsB6sU5cMuONqfz24if+3fuhAvgTNdjgEw+AF9zBFm9KVrUVj38xm0KHlLd8lbz6xo8cdL3GetRn389sywVuOPmCOQoELcO40yuSsv/eTGkUdHBTCrZrkOxO45+GNnhQrmgJwWf8qXVqm0M=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
 Received: by angie.orcam.me.uk (Postfix, from userid 500)
-	id E6C1892009D; Thu,  7 May 2026 00:42:23 +0200 (CEST)
+	id BC09592009E; Thu,  7 May 2026 00:42:31 +0200 (CEST)
 Received: from localhost (localhost [127.0.0.1])
-	by angie.orcam.me.uk (Postfix) with ESMTP id E0C0192009B;
-	Wed,  6 May 2026 23:42:23 +0100 (BST)
-Date: Wed, 6 May 2026 23:42:23 +0100 (BST)
+	by angie.orcam.me.uk (Postfix) with ESMTP id B662E92009C;
+	Wed,  6 May 2026 23:42:31 +0100 (BST)
+Date: Wed, 6 May 2026 23:42:31 +0100 (BST)
 From: "Maciej W. Rozycki" <macro@orcam.me.uk>
 To: Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
     Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
     Jiri Slaby <jirislaby@kernel.org>
 cc: linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, 
     linux-serial@vger.kernel.org
-Subject: [PATCH v3 01/10] MIPS: DEC: Ensure 32-bit stack location for o32
- prom_printf()
+Subject: [PATCH v3 03/10] serial: dz: Fix bootconsole message clobbering at
+ chip reset
 In-Reply-To: <alpine.DEB.2.21.2605062240290.46195@angie.orcam.me.uk>
-Message-ID: <alpine.DEB.2.21.2605062249160.46195@angie.orcam.me.uk>
+Message-ID: <alpine.DEB.2.21.2605062259080.46195@angie.orcam.me.uk>
 References: <alpine.DEB.2.21.2605062240290.46195@angie.orcam.me.uk>
 User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 Precedence: bulk
@@ -38,125 +38,72 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 
-In 64-bit configurations calling any firmware entry points from a kernel 
-thread other than the initial one will result in a situation where the 
-stack has been placed in the XKPHYS 64-bit memory segment.
+In the DZ interface as implemented by the DC7085 gate array the serial 
+transmitters are double buffered, meaning that at the time a transmitter 
+is ready to accept the next character there is one in the transmit shift 
+register still being sent to the line.  Issuing a master clear at this 
+time causes this character to be lost, so wait an extra amount of time 
+sufficient for the transmit shift register to drain at 9600bps, which is 
+the baud rate setting used by the firmware console.
 
-Consequently the stack pointer is no longer a 32-bit value and when the 
-32-bit firmware code called uses 32-bit ALU operations to manipulate the 
-stack pointer, the calculated result is incorrect (in fact in the 64-bit 
-MIPS ISA almost all 32-bit ALU operations will produce an unpredictable 
-result when executed on 64-bit data) and control goes astray.
+Mind the specified 1.4us TRDY recovery time in the course and continue 
+using iob() as the completion barrier, since the platforms involved use 
+a write buffer that can delay and combine writes, and reorder them with 
+respect to reads regardless of the MMIO locations accessed and we still 
+lack a platform-independent handler for that.
 
-This may happen when no final console driver has been enabled in the
-configuration and consequently the initial console continues being used
-late into bootstrap, or with an upcoming change that will switch the zs
-driver to use a platform device, which in turn will make the console
-handover happen only after other kernel threads have already been
-started, and the kernel will hang at:
+When called from dz_serial_console_init() this is too early for fsleep() 
+to work and even before lpj has been calculated and therefore the delay 
+is actually not sufficient for the transmitter to drain and is merely a 
+placeholder now.  This will be addressed in a follow-up change.
 
-  pid_max: default: 32768 minimum: 301
-
-or somewhat later, but always before:
-
-  cblist_init_generic: Setting adjustable number of callback queues.
-
-has been printed.
-
-It seems that only the prom_printf() entry point is affected.  Of all 
-the other entry points wired only rex_slot_address() and rex_gettcinfo() 
-are called from a kernel thread other than the initial one, specifically 
-kernel_init(), and they are leaf functions that do no business with the 
-stack, having worked with no issue ever since 64-bit support was added 
-for the platform back in 2002.
-
-To address this issue then, arrange for the stack to be switched in the 
-o32 wrapper as required for prom_printf() only, by supplying call_o32() 
-with a pointer to a chunk of initdata space, which is placed in the 
-CKSEG0 32-bit compatibility segment, observing that prom_printf() is 
-only called from console output handler and therefore with the console 
-lock held, implying no need for this code to be reentrant.
-
-Other firmware entry points may be called with interrupts enabled and no 
-lock held, and may therefore require that call_o32() be reentrant.  They 
-trigger no issue at this point and "if it ain't broke, don't fix it," so 
-just leave them alone.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Fixes: e6ee512f5a77 ("dz.c: Resource management")
 Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Cc: stable@vger.kernel.org # v2.6.12+
+Cc: stable@vger.kernel.org # v2.6.25+
 ---
-No change from v2, 
-<https://lore.kernel.org/r/alpine.DEB.2.21.2605010132340.38805@angie.orcam.me.uk/>.
+No change from v2,
+<https://lore.kernel.org/r/alpine.DEB.2.21.2605011617300.60398@angie.orcam.me.uk/>.
 
-New change in v2.
+No change from v1 (1/8),
+<https://lore.kernel.org/r/alpine.DEB.2.21.2604121508060.29980@angie.orcam.me.uk/>.
 ---
- arch/mips/dec/prom/init.c        |    6 +++++-
- arch/mips/include/asm/dec/prom.h |   15 +++++++++++++--
- 2 files changed, 18 insertions(+), 3 deletions(-)
+ drivers/tty/serial/dz.c |   21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-linux-mips-dec-call-o32-stack.diff
-Index: linux-macro/arch/mips/dec/prom/init.c
+linux-serial-dz-reset-drain.diff
+Index: linux-macro/drivers/tty/serial/dz.c
 ===================================================================
---- linux-macro.orig/arch/mips/dec/prom/init.c
-+++ linux-macro/arch/mips/dec/prom/init.c
-@@ -3,7 +3,7 @@
-  * init.c: PROM library initialisation code.
-  *
-  * Copyright (C) 1998 Harald Koerfgen
-- * Copyright (C) 2002, 2004  Maciej W. Rozycki
-+ * Copyright (C) 2002, 2004, 2026  Maciej W. Rozycki
-  */
- #include <linux/init.h>
- #include <linux/kernel.h>
-@@ -20,6 +20,10 @@
- #include <asm/dec/prom.h>
+--- linux-macro.orig/drivers/tty/serial/dz.c
++++ linux-macro/drivers/tty/serial/dz.c
+@@ -542,10 +542,31 @@ static int dz_encode_baud_rate(unsigned
+ static void dz_reset(struct dz_port *dport)
+ {
+ 	struct dz_mux *mux = dport->mux;
++	unsigned short tcr;
++	int loops = 10000;
  
+ 	if (mux->initialised)
+ 		return;
  
-+#ifdef CONFIG_64BIT
-+unsigned long o32_stk[O32_STK_SIZE] __initdata = { 0 };
-+#endif
++	tcr = dz_in(dport, DZ_TCR);
 +
- int (*__rex_bootinit)(void);
- int (*__rex_bootread)(void);
- int (*__rex_getbitmap)(memmap *);
-Index: linux-macro/arch/mips/include/asm/dec/prom.h
-===================================================================
---- linux-macro.orig/arch/mips/include/asm/dec/prom.h
-+++ linux-macro/arch/mips/include/asm/dec/prom.h
-@@ -4,7 +4,7 @@
-  *
-  *	DECstation PROM interface.
-  *
-- *	Copyright (C) 2002  Maciej W. Rozycki
-+ *	Copyright (C) 2002, 2026  Maciej W. Rozycki
-  *
-  *	Based on arch/mips/dec/prom/prom.h by the Anonymous.
-  */
-@@ -97,6 +97,17 @@ extern int (*__pmax_close)(int);
- 
- #ifdef CONFIG_64BIT
- 
-+#define O32_STK_SIZE 512
-+extern unsigned long o32_stk[];
++	/* Do not disturb any ongoing transmissions.  */
++	if (dz_in(dport, DZ_CSR) & DZ_MSE) {
++		unsigned short csr, mask;
 +
-+/* Switch the stack if outside the 32-bit address space.  */
-+static inline unsigned long *o32_get_stk(void)
-+{
-+	long fp = (long)__builtin_frame_address(0);
++		mask = tcr;
++		while ((mask & DZ_LNENB) && loops--) {
++			csr = dz_in(dport, DZ_CSR);
++			if (!(csr & DZ_TRDY))
++				continue;
++			mask &= ~(1 << ((csr & DZ_TLINE) >> 8));
++			dz_out(dport, DZ_TCR, mask);
++			iob();
++			udelay(2);		/* 1.4us TRDY recovery.  */
++		}
++		udelay(1200);			/* Transmitter drain.  */
++	}
 +
-+	return fp != (int)fp ? o32_stk + O32_STK_SIZE : NULL;
-+}
-+
- /*
-  * On MIPS64 we have to call PROM functions via a helper
-  * dispatcher to accommodate ABI incompatibilities.
-@@ -128,7 +139,7 @@ int __DEC_PROM_O32(_prom_printf, (int (*
- 
- #define prom_getchar()		_prom_getchar(__prom_getchar, NULL)
- #define prom_getenv(x)		_prom_getenv(__prom_getenv, NULL, x)
--#define prom_printf(x...)	_prom_printf(__prom_printf, NULL, x)
-+#define prom_printf(x...)	_prom_printf(__prom_printf, o32_get_stk(), x)
- 
- #else /* !CONFIG_64BIT */
- 
+ 	dz_out(dport, DZ_CSR, DZ_CLR);
+ 	while (dz_in(dport, DZ_CSR) & DZ_CLR);
+ 	iob();
