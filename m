@@ -1,31 +1,34 @@
 Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 983AC370D75;
-	Wed,  6 May 2026 22:42:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 436F3361DDC;
+	Wed,  6 May 2026 22:42:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778107350; cv=none; b=E9eUm44ua6Jq+r5tR4NP7QAkoB4MAOYStA731Dz8cOnydKAi74gaeLjhEhaoJ/5CTatMgduGiioZ4Kfz6k2zAuUOwaKfeElTUbGw/p0rWjh63xPgEnxccbMv4irwS1b6xq3z/xRjWRy/oQzpZsP0SkI/kxy4RIVE6wOF9B+LtiE=
+	t=1778107351; cv=none; b=QKR+AvAD1/WliVRxnN2MPwBo8TvvgXjzHzsd2ij+Os8M1tJgQ4/cEVF2GVZ13F9+PNmvbfSorH8EnfiiK1n7h/6cq3J+cz9MMZzyuX+6M+V8098tALGylPv3QYe6HVJFWnmypA+IYNVgIRjdwm0OsLNInBu55KKebMITfoWU0zk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778107350; c=relaxed/simple;
-	bh=K/b5JlkplZquGEvTJp3gKlIadFD1bW/PIn35C6xs6iA=;
-	h=Date:From:To:cc:Subject:Message-ID:MIME-Version:Content-Type; b=Ap95W4i32vGeh9nCJd21QXPEcUqwkNlr7YZ8NIn1k8rn1UnjWHnsPA0Ebb/Cg7y79evgPXIiof+ihpSh/TgG2WaEflLwJLdGPL/o3CGOS1PpOj+YFGvt5mpA1Ia96MC9DAr28fhMCmd53zvCuG1PxKI9b05iSuQIM83ucEJnUPc=
+	s=arc-20240116; t=1778107351; c=relaxed/simple;
+	bh=amUZJWReVasLJGK8c8tLFrgBtVIIu30nyPri4vhxOrU=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=mk5v4jBPg1SHyLBqwa8OPdbfxOT+EwbQEYVODxuPyh99EqU3S/lLDpz92M7+8uguF5jFececZQjs2XUf3qwkUZml4/+TFHXwGtwCiITrO8IIZ5mAQG3htNiE4JN+THn+2Z4Jz5lERMCRCfIPa5QNAG9HBkdYfxoampEjrB74BEo=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
 Received: by angie.orcam.me.uk (Postfix, from userid 500)
-	id 0219692009E; Thu,  7 May 2026 00:42:18 +0200 (CEST)
+	id A20919200B3; Thu,  7 May 2026 00:42:27 +0200 (CEST)
 Received: from localhost (localhost [127.0.0.1])
-	by angie.orcam.me.uk (Postfix) with ESMTP id F048292009D;
-	Wed,  6 May 2026 23:42:18 +0100 (BST)
-Date: Wed, 6 May 2026 23:42:18 +0100 (BST)
+	by angie.orcam.me.uk (Postfix) with ESMTP id 9C07992009B;
+	Wed,  6 May 2026 23:42:27 +0100 (BST)
+Date: Wed, 6 May 2026 23:42:27 +0100 (BST)
 From: "Maciej W. Rozycki" <macro@orcam.me.uk>
 To: Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
     Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
     Jiri Slaby <jirislaby@kernel.org>
 cc: linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, 
     linux-serial@vger.kernel.org
-Subject: [PATCH v3 00/10] MIPS: DEC: Fix serial device regressions + RTC
- cleanup
-Message-ID: <alpine.DEB.2.21.2605062240290.46195@angie.orcam.me.uk>
+Subject: [PATCH v3 02/10] MIPS: DEC: Prevent initial console buffer from
+ landing in XKPHYS
+In-Reply-To: <alpine.DEB.2.21.2605062240290.46195@angie.orcam.me.uk>
+Message-ID: <alpine.DEB.2.21.2605062253010.46195@angie.orcam.me.uk>
+References: <alpine.DEB.2.21.2605062240290.46195@angie.orcam.me.uk>
 User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -35,68 +38,129 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 
-Hi,
+In 64-bit configurations calling the initial console output handler from 
+a kernel thread other than the initial one will result in a situation 
+where the stack has been placed in the XKPHYS 64-bit memory segment and 
+consequently so has been the buffer allocated there that is used as the 
+argument corresponding to the `%s' output conversion specifier for the 
+firmware's printf() entry point.
 
- This is v3 of the series, addressing a compilation warning discovered in 
-the course of unrelated experimentation in 02/10 where a 64-bit->32-bit 
-cast was directly made from a pointer to integer and missed owing to 
-`-Wno-error' needed due to an unrelated issue, a fix for which has been 
-posted already.  No change to code produced.
+This 64-bit address will then be truncated by 32-bit firmware, resulting 
+in an attempt to access the wrong memory location, which in turn will 
+cause all kinds of unpredictable behaviour, such as a kernel crash:
 
- In v2 fallout for 64-bit configurations has been fixed where the initial 
-console output handler that uses calls into 32-bit firmware has to ensure 
-no register input including the stack pointer is outside the 32-bit range, 
-now that the handler is now also called from kernel threads other beyond 
-the initial one.
+  Console: colour dummy device 160x64
+  Calibrating delay loop... 49.36 BogoMIPS (lpj=192512)
+  pid_max: default: 32768 minimum: 301
+  CPU 0 Unable to handle kernel paging request at virtual address 000000000203bd00, epc == ffffffffbfc08364, ra == ffffffffbfc08800
+  Oops[#1]:
+  CPU: 0 PID: 0 Comm: swapper Not tainted 5.18.0-rc2-00254-gfb649bda6f56-dirty #121
+  $ 0   : 0000000000000000 0000000000000001 0000000000000023 ffffffff80684ba0
+  $ 4   : 000000000203bd00 ffffffffbfc0f3b4 ffffffffffffffff 0000000000000073
+  $ 8   : 0a303d7469000000 0000000000000000 0000000000000073 ffffffffbfc0f473
+  $12   : 0000000000000002 0000000000000000 ffffffff80684c1c 0000000000000000
+  $16   : 0000000000000000 ffffffff80596dc9 0000000000000000 ffffffffbfc09240
+  $20   : ffffffff80684c40 ffffffffbfc0f400 000000000000002d 000000000000002b
+  $24   : ffffffffffffffbf 000000000203bd00                                  
+  $28   : ffffffff805f0000 ffffffff80684b58 0000000000000030 ffffffffbfc08800
+  Hi    : 0000000000000000
+  Lo    : 0000000000000aa8
+  epc   : ffffffffbfc08364 0xffffffffbfc08364
+  ra    : ffffffffbfc08800 0xffffffffbfc08800
+  Status: 140120e2        KX SX UX KERNEL EXL 
+  Cause : 00000008 (ExcCode 02)
+  BadVA : 000000000203bd00
+  PrId  : 00000430 (R4000SC)
+  Modules linked in:
+  Process swapper (pid: 0, threadinfo=(____ptrval____), task=(____ptrval____), tls=0000000000000000)
+  Stack : 0000000000000000 0000000000000000 0000000000000000 0000004d0000004d
+          80684cc0806a2a40 80596dc80000004d 8061000000000000 bfc0850c80684c38
+          0000000000000000 000000000203bd00 0000000000000000 0000000000000000
+          0000000000000000 00000000bfc0f3b4 0000000000000000 0000000000000000
+          0000000000000000 0000000000000000 0000000000000000 0000000000000000
+          0000000000000000 0000000000000000 0000000000000000 0000000000000000
+          0000002500000000 0000000000000000 0000000000000000 802c1a7400000000
+          0203bd0080596dc8 0203bd4d69000000 6c61632000000018 5f746567646e6172
+          6c616320625f6d6f 5f736e5f6d6f7266 206361323778302b 303d74696e726320
+          806a0a38806b0000 806a0a38806b0000 00000000806b0000 80683c58806b0000
+          ...
+  Call Trace:
+  
+  
+  Code: a082ffff  03e00008  00601021 <80820000> 00001821  10400005  24840001  80820000  24630001 
+  
+  ---[ end trace 0000000000000000 ]---
+  Kernel panic - not syncing: Fatal exception in interrupt
+  
+  KN04 V2.1k    (PC: 0xa0026768, SP: 0x806848e8)
+  >>
 
- Two extra introductory changes, 01/10 and 02/10 have now been added to 
-platform code.  No modification has been made to original changes.  The 
-original description follows, updated for patch renumbering.
+In this case the pointer in $4 was truncated from 0x980000000203bd00 to 
+0x000000000203bd00.
 
- Starting from commit 84a9582fd203 ("serial: core: Start managing serial 
-controllers to enable runtime PM") drivers for serial devices used with 
-the DEC platform have stopped working due to a null pointer dereference in 
-the serial core, which means a kernel crash at bootstrap if the relevant 
-driver has been enabled, as is usually the case for the system console.
+This may happen when no final console driver has been enabled in the 
+configuration and consequently the initial console continues being used 
+late into bootstrap or with an upcoming change that will switch the zs 
+driver to use a platform device, which in turn will make the console 
+handover happen only after other kernel threads have already been 
+started.
 
- This patch series addresses the issue by switching the drivers away from 
-legacy probing to using platform devices.  A notable consequence of this 
-is the serial console is only switched from the bootconsole handler that 
-uses firmware calls over to our serial driver at the time the driver is 
-being properly brought up.  This causes messages to be produced to the 
-console between the device reset and console setup, which in turn causes 
-the firmware still being called via the bootconsole handler to loop 
-forever owing to the transmitter having been disabled.
+Fix the issue by making the buffer static and initdata, and therefore 
+placed in the CKSEG0 32-bit compatibility segment, observing that the 
+console output handler is called with the console lock held, implying 
+no need for this code to be reentrant.  Add an assertion to verify the 
+buffer actually has been placed in a compatibility segment.
 
- Both drivers are affected and therefore introductory changes 04/10 and 
-05/10 are included to fix the issue by doing a rudimentary device setup 
-right after reset, using parameters compatible with those used by the 
-firmware (9600n8).  There are auxiliary changes 03/10 and 06/10 included 
-as well, that respectively prevent a message corruption regression from 
-happening at reset due to the change in timing of messages produced to the 
-console with the dz driver switch to the platform device, and simplify 
-reset handling in the zs driver by issuing a channel rather hardware 
-reset.  Then 07/10 and 08/10 actually switch the respective drivers to use 
-platform devices.
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Cc: stable@vger.kernel.org # v2.6.12+
+---
+Changes from v2, 
+<https://lore.kernel.org/r/alpine.DEB.2.21.2605010059310.38805@angie.orcam.me.uk/>:
 
- A tiny update follows, 09/10, that enables modular build for the dz 
-driver, not to be backported as not a bug fix.
+- Cast `buf' to `long' before casting to `int', fixing:
 
- Finally 10/10 is a small cleanup for the existing RTC device, included in 
-the series and then last only, due to a mechanical dependency and neither 
-for backporting, as it only addresses a code quality issue for a failure 
-scenario that is not expected to trigger in reality.
+  In file included from ./include/linux/bug.h:5,
+                   from arch/mips/dec/prom/console.c:7:
+  arch/mips/dec/prom/console.c: In function 'prom_console_write':
+  arch/mips/dec/prom/console.c:21:29: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+     21 |         BUG_ON((long)buf != (int)buf);
+        |                             ^
+  ./arch/mips/include/asm/bug.h:34:44: note: in definition of macro 'BUG_ON'
+     34 | #define BUG_ON(C) __BUG_ON((unsigned long)(C))
+        |                                            ^
 
- See individual change descriptions for details.  Verified with a 5000/200 
-machine for the dz driver, and with 5000/150 and 5000/260 systems for the 
-zs driver.
+New change in v2.
+---
+ arch/mips/dec/prom/console.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
- Please apply.
-
- Previous iterations:
-
-- v2 at: <https://lore.kernel.org/r/alpine.DEB.2.21.2604302336260.38805@angie.orcam.me.uk/>,
-
-- v1 at: <https://lore.kernel.org/r/alpine.DEB.2.21.2604102250060.29980@angie.orcam.me.uk/>.
-
-  Maciej
+linux-mips-dec-prom-console-xkphys.diff
+Index: linux-macro/arch/mips/dec/prom/console.c
+===================================================================
+--- linux-macro.orig/arch/mips/dec/prom/console.c
++++ linux-macro/arch/mips/dec/prom/console.c
+@@ -2,8 +2,9 @@
+ /*
+  *	DECstation PROM-based early console support.
+  *
+- *	Copyright (C) 2004, 2007  Maciej W. Rozycki
++ *	Copyright (C) 2004, 2007, 2026  Maciej W. Rozycki
+  */
++#include <linux/bug.h>
+ #include <linux/console.h>
+ #include <linux/init.h>
+ #include <linux/kernel.h>
+@@ -14,9 +15,11 @@
+ static void __init prom_console_write(struct console *con, const char *s,
+ 				      unsigned int c)
+ {
+-	char buf[81];
++	static char buf[81] __initdata = { 0 };
+ 	unsigned int chunk = sizeof(buf) - 1;
+ 
++	BUG_ON((long)buf != (int)(long)buf);
++
+ 	while (c > 0) {
+ 		if (chunk > c)
+ 			chunk = c;
