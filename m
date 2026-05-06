@@ -1,56 +1,54 @@
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF9184418E3;
-	Wed,  6 May 2026 12:16:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42A1B44D020;
+	Wed,  6 May 2026 12:16:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778069772; cv=none; b=UFfAzikttPn/TCqrCdSNmyHQ5qxS2wET+VTlW0A4NV2Yqmt7MzCkeI+0GbHHPQ8RG6AOWsZVFfWbykFfF2El0s6fbgJj1JDbgGpI5+FhnRqQoI/sA6K0jMbezXtK26jFonXG/9BrZeehSsfExthzQIi6K5RjbA6+rlvyef0Rl9E=
+	t=1778069773; cv=none; b=egZPYSRua3hAAil5KxWpfXB0kAS2JAVEgI/SU6TO9ULjgp23UcXcjtoLtz+2QJ3wbJgBpVFsAhwXi5SLjDNtpwCbPdR06dvrB72VhM4hVrdnckTKNKGZ+Wr1TebdxXvRa5LkeO2kOwNQxIqxEz/CRJ7MvQ6RYMxahjHX3Y/ttMc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778069772; c=relaxed/simple;
-	bh=HqK9WI/4RERvi25TuZkJmKmoMaOvZ4CUokoGM8wn3Yw=;
+	s=arc-20240116; t=1778069773; c=relaxed/simple;
+	bh=SB34X/ZdUpzR6E7fbHBweup02Nl2fDDJs+9DMnt2sOw=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=cBSWa0DVrDlaTC2C4vv/q9Wg8GRTUoUqzrnduX3GnTtLC5KKIhdAtvorys8JcfWxmU9UGIyz8Feya9Ko0s7HhTjspwRGrlQWD5VPEyYTKSNorbvYqlFoeTbNeCvIdhLZjDYe0ZKeqJB4ARa5CXYtokRyniQF2VEunLuGE/2dZh8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=XTtN0F9b; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=rQf/Z1Uh; arc=none smtp.client-ip=193.142.43.55
+	 MIME-Version; b=hDUfup323FU950qNdNNC76PCjMsmQsoMMhI5hCXfutkDQx+GT/HDeVXxp+n25c7hCkdjLU/QHkn/dfen7jL6EJlH09x16duKq+KJ0wPh+gL4uRhchX/jKBNyufguzBJi7zk4Iugco3q5A6B7LXaZ/dzDMSpEoIzLj0I4VEF4o+M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=vmx4N+4Z; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=YhRd+XBI; arc=none smtp.client-ip=193.142.43.55
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="XTtN0F9b";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="rQf/Z1Uh"
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="vmx4N+4Z";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="YhRd+XBI"
 From: John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1778069768;
+	s=2020; t=1778069769;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=SrOyFhVPontbzgEAbyb/2JFaAOM/AqtJ/5aPb0vTYtY=;
-	b=XTtN0F9btUC8YasjBJhOye0iwPO+dbwbp/eOOolW3QOjE9rNmdQXkIVebs0Hw6tBOk2yj4
-	rCf60YOg7oPmy80cMYoDTND+4tloB1XHRjGd+4HNBl7CBUNnZU6iRVIs+SMrYv1xvtLmpl
-	VQmJI7czLtsRJ9QUhi4Uonm8Io+kfNh5ZaX8gjTC1NcjRCL7wKpNzJ3+4qq1P9qinqdC7e
-	daBIDdwAZr8+Tao7AKqn1Jrh0nC1KfoaKNXeJEyQ1m0XTj6OINtmnpLEM8bP5wZI5jO73C
-	eTxz2SPfSSbtzqIHTbZqJ6QBl9Wipzt8YjF19FfM7gyROaghyoUJSmYWElt1jg==
+	bh=AHAqtTbvwO8xcfrhhVzAqkOIkaPCLZmg1OdSKQBShJY=;
+	b=vmx4N+4ZD8ZtCecZ3/fS+PVChHQ6FkU6NZPXuVpZ48fZPB2e9wILqgifq4f0NkzTqd8jCg
+	JgdEAy8fJi3t7WMpHixD5hlPs61ECqztD/AzNFA34Y0aELAgDCDHCRZSDCw8140MLwYown
+	GzbMmSEM4X6ZxSoyiiAjxYTu4rvfuJHjCu8Ayz33LJo+P83jnBDPytEcZZi6R3i+Wnl4jC
+	0w42e5G63kODdlgCo5XSTlHt0MawCQzvviIm2cXqBscXLgsKMCCC31oXFXYhNvO+Fl0BX9
+	bifSeaIEyX/heZLeHwAPgido1wUNifzb+6r/mLVmzjJ554Qdd0gbBCM/j7uT/Q==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1778069768;
+	s=2020e; t=1778069769;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=SrOyFhVPontbzgEAbyb/2JFaAOM/AqtJ/5aPb0vTYtY=;
-	b=rQf/Z1Uhmgn3jow7oP5aWU2mRJyRGhfJkbEeZDV4hB7QLigd1sN5ZbM2IfWGm5DAY4HvLc
-	IeMgtiy0QLAT5cAA==
+	bh=AHAqtTbvwO8xcfrhhVzAqkOIkaPCLZmg1OdSKQBShJY=;
+	b=YhRd+XBI4sxmJsa98D1SN3IWbItEqGq735CxSRCZq3OOk8Sm8IlCBuXXOwLfn6x88e/n8u
+	2NeQM70luCZHJuDg==
 To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>
 Cc: Andy Shevchenko <andy.shevchenko@gmail.com>,
 	linux-kernel@vger.kernel.org,
 	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Osama Abdelkader <osama.abdelkader@gmail.com>,
-	Kees Cook <kees@kernel.org>,
-	Ingo Molnar <mingo@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	linux-serial@vger.kernel.org
-Subject: [PATCH tty v4 4/6] serial: 8250: Set cons_flow on port registration
-Date: Wed,  6 May 2026 14:21:59 +0206
-Message-ID: <20260506121606.5805-5-john.ogness@linutronix.de>
+Subject: [PATCH tty v4 5/6] serial: 8250: Check LSR timeout on console flow control
+Date: Wed,  6 May 2026 14:22:00 +0206
+Message-ID: <20260506121606.5805-6-john.ogness@linutronix.de>
 In-Reply-To: <20260506121606.5805-1-john.ogness@linutronix.de>
 References: <20260506121606.5805-1-john.ogness@linutronix.de>
 Precedence: bulk
@@ -61,27 +59,55 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Since console flow control policy is no longer part of uart_port.flags,
-explicitly set the policy for the port.
+wait_for_xmitr() calls wait_for_lsr() to wait for the transmission
+registers to be empty. wait_for_lsr() can timeout after a reasonable
+amount of time.
+
+When console flow control is active, wait_for_xmitr() additionally
+polls CTS, waiting for the peer to signal that it is ready to receive
+more data.
+
+If hardware flow control is enabled (auto CTS) and the peer deasserts
+CTS, wait_for_lsr() will timeout. If additionally console flow
+control is active and while polling CTS the peer asserts CTS, the
+console will assume it can immediately transmit, even though the
+transmission registers may not be empty. This can lead to data loss.
+
+Avoid this problem by performing an extra wait_for_lsr() upon CTS
+assertion if wait_for_lsr() previously timed out.
 
 Signed-off-by: John Ogness <john.ogness@linutronix.de>
 ---
- drivers/tty/serial/8250/8250_core.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/tty/serial/8250/8250_port.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index a428e88938eb7..b0275204e1167 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -746,6 +746,8 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
- 	uart->lsr_save_mask	= up->lsr_save_mask;
- 	uart->dma		= up->dma;
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index dbed5e5767541..719789013f6df 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1984,16 +1984,20 @@ static bool wait_for_lsr(struct uart_8250_port *up, int bits)
+ static void wait_for_xmitr(struct uart_8250_port *up, int bits)
+ {
+ 	unsigned int tmout;
++	bool tx_ready;
  
-+	uart_set_cons_flow_enabled(&uart->port, uart_cons_flow_enabled(&up->port));
-+
- 	/* Take tx_loadsz from fifosize if it wasn't set separately */
- 	if (uart->port.fifosize && !uart->tx_loadsz)
- 		uart->tx_loadsz = uart->port.fifosize;
+-	wait_for_lsr(up, bits);
++	tx_ready = wait_for_lsr(up, bits);
+ 
+ 	/* Wait up to 1s for flow control if necessary */
+ 	if (uart_cons_flow_enabled(&up->port)) {
+ 		for (tmout = 1000000; tmout; tmout--) {
+ 			unsigned int msr = serial_in(up, UART_MSR);
+ 			up->msr_saved_flags |= msr & MSR_SAVE_FLAGS;
+-			if (msr & UART_MSR_CTS)
++			if (msr & UART_MSR_CTS) {
++				if (!tx_ready)
++					wait_for_lsr(up, bits);
+ 				break;
++			}
+ 			udelay(1);
+ 			touch_nmi_watchdog();
+ 		}
 -- 
 2.47.3
 
