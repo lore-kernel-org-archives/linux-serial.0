@@ -1,32 +1,32 @@
 Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CDE6737268B;
-	Wed,  6 May 2026 22:42:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 174FC379ED7;
+	Wed,  6 May 2026 22:42:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778107358; cv=none; b=YpoX0Yiof0DL2bvejbhR6tpc1qc9y3NpEmzMaHjgq3qGM8xxv2mobwHEqLhzUXdMWyMmZVpmpXdkdQQM6fsaZmnVLxEtSDLWLADOlnJfwtMj20tp5Lq2RN460OMAUHJGXp9/V4hlS9qn07UxqL3SS5ikv6rg8DiOzD2pw91cHNU=
+	t=1778107363; cv=none; b=hwAH1K8lZFY7bD4w+HDDFcXwn5J+ae8+xpR+jGx/asRwL888V5u615kkzdUMsIX0PEPKNnKipvXMNBYOFa2aPhTASpcc1WfraSJSwZPuGxlpDEgs2aEu0Sp/axvF5LG/WrRKvN/yRfI2v8pGPpiJeC5V7NurWHg+1qiBToJ64gM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778107358; c=relaxed/simple;
-	bh=uBY0ucS+WIrfpnuujUcvFCRYQChJMsGRGQ1jtmlHK9s=;
+	s=arc-20240116; t=1778107363; c=relaxed/simple;
+	bh=sFahleBkqXHHSvCVg/LmoolKVcjSuwuP8AVGQjKXJPA=;
 	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=MWsU0hpw6wjUhcskyjZucSIbwkuklzhW5Y5B9Nrmp7clkQj9f8cjEGY38zk/mbj1z1QXGXWAMvvWWPwIckWmFlsRoTwld5pLnE3P6wxR4Hk2j1fa8iG9jTZcn9TbcAH7ijXjK/sBMUVvVIRbbcD2mttgArJnE4huM11yynhGtPI=
+	 MIME-Version:Content-Type; b=eE66N4PHExPFaPGvjQUQLvIRJtGdf9Pv3bgtA/q3QGK77J3fzE35H09wlmgQdBAE+egsfG+wNxpgzWoA+68v8Pc4Ab+3YSiBxfUzV+mWWUQwRDRXUsAJxpnf0918Iobk0JoMhucPD0K6ac4TtReZRBDUO49rzUXzixImJzCK/bE=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
 Received: by angie.orcam.me.uk (Postfix, from userid 500)
-	id 5FF1D92009D; Thu,  7 May 2026 00:42:35 +0200 (CEST)
+	id C13309200B3; Thu,  7 May 2026 00:42:39 +0200 (CEST)
 Received: from localhost (localhost [127.0.0.1])
-	by angie.orcam.me.uk (Postfix) with ESMTP id 5B06192009C;
-	Wed,  6 May 2026 23:42:35 +0100 (BST)
-Date: Wed, 6 May 2026 23:42:35 +0100 (BST)
+	by angie.orcam.me.uk (Postfix) with ESMTP id BFC4792009D;
+	Wed,  6 May 2026 23:42:39 +0100 (BST)
+Date: Wed, 6 May 2026 23:42:39 +0100 (BST)
 From: "Maciej W. Rozycki" <macro@orcam.me.uk>
 To: Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
     Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
     Jiri Slaby <jirislaby@kernel.org>
 cc: linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, 
     linux-serial@vger.kernel.org
-Subject: [PATCH v3 04/10] serial: dz: Fix bootconsole handover lockup
+Subject: [PATCH v3 05/10] serial: zs: Fix bootconsole handover lockup
 In-Reply-To: <alpine.DEB.2.21.2605062240290.46195@angie.orcam.me.uk>
-Message-ID: <alpine.DEB.2.21.2605062302010.46195@angie.orcam.me.uk>
+Message-ID: <alpine.DEB.2.21.2605062308040.46195@angie.orcam.me.uk>
 References: <alpine.DEB.2.21.2605062240290.46195@angie.orcam.me.uk>
 User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 Precedence: bulk
@@ -37,60 +37,70 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 
-Calling dz_reset() in the course of setting up the serial device causes 
+Calling zs_reset() in the course of setting up the serial device causes 
 line parameters to be reset and the transmitter disabled.  We've been 
 lucky in that no message is usually produced to the kernel log between 
 this call and the later call to uart_set_options() in the course of 
-console setup done by dz_serial_console_init(), or the system would hang 
-as the console output handler in the firmware tried to access a port the 
+console setup done by zs_serial_console_init(), or the system would hang 
+as the console output handler in the firmware tried to access a port the
 transmitter of which has been disabled and line parameters messed up.
 
-This will change with the next change to the driver, so fix dz_reset() 
+This will change with the next change to the driver, so fix zs_reset() 
 such that line parameters are set for 9600n8 console operation as with 
 the system firmware and the transmitter re-enabled after reset.  This 
-also means dz_pm() serves no purpose anymore, so drop it.
+also means zs_pm() serves no purpose anymore, so drop it.
 
-Fixes: e6ee512f5a77 ("dz.c: Resource management")
+Fixes: 8b4a40809e53 ("zs: move to the serial subsystem")
 Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Cc: stable@vger.kernel.org # v2.6.25+
+Cc: stable@vger.kernel.org # v2.6.23+
 ---
 Changes from v2,
-<https://lore.kernel.org/r/alpine.DEB.2.21.2605012013410.11074@angie.orcam.me.uk/>:
+<https://lore.kernel.org/r/alpine.DEB.2.21.2605012016460.11074@angie.orcam.me.uk/>:
 
 - Make a minor style improvement to the commit description.
 
-No change from v1 (2/8),
-<https://lore.kernel.org/r/alpine.DEB.2.21.2604102338300.29980@angie.orcam.me.uk/>.
----
- drivers/tty/serial/dz.c |   36 ++++++++++++------------------------
- 1 file changed, 12 insertions(+), 24 deletions(-)
+- Drop a leftover paragraph in the commit description (doh!).
 
-linux-serial-dz-prom-console.diff
-Index: linux-macro/drivers/tty/serial/dz.c
+No change from v1 (3/8),
+<https://lore.kernel.org/r/alpine.DEB.2.21.2604102346290.29980@angie.orcam.me.uk/>.
+---
+ drivers/tty/serial/zs.c |   29 ++++++++---------------------
+ 1 file changed, 8 insertions(+), 21 deletions(-)
+
+linux-serial-zs-prom-console.diff
+Index: linux-macro/drivers/tty/serial/zs.c
 ===================================================================
---- linux-macro.orig/drivers/tty/serial/dz.c
-+++ linux-macro/drivers/tty/serial/dz.c
-@@ -571,6 +571,18 @@ static void dz_reset(struct dz_port *dpo
- 	while (dz_in(dport, DZ_CSR) & DZ_CLR);
- 	iob();
+--- linux-macro.orig/drivers/tty/serial/zs.c
++++ linux-macro/drivers/tty/serial/zs.c
+@@ -105,18 +105,24 @@ struct zs_parms {
  
-+	/*
-+	 * Set parameters across all lines such as not to interfere
-+	 * with the initial PROM-based console.  Otherwise any output
-+	 * produced before the console handover would cause the system
-+	 * firmware to produce rubbish.
-+	 */
-+	for (int line = 0; line < DZ_NB_PORT; line++)
-+		dz_out(dport, DZ_LPR, DZ_B9600 | DZ_CS8 | line);
-+
-+	/* Re-enable transmission for the initial PROM-based console.  */
-+	dz_out(dport, DZ_TCR, tcr);
-+
- 	/* Enable scanning.  */
- 	dz_out(dport, DZ_CSR, DZ_MSE);
+ static struct zs_scc zs_sccs[ZS_NUM_SCCS];
  
-@@ -654,26 +666,6 @@ static void dz_set_termios(struct uart_p
- 	uart_port_unlock_irqrestore(&dport->port, flags);
++/*
++ * Set parameters in WR5, WR12, WR13 such as not to interfere
++ * with the initial PROM-based console.  Otherwise any output
++ * produced before the console handover would cause the system
++ * firmware to hang (TxENAB) or produce rubbish (Tx8, B9600).
++ */
+ static u8 zs_init_regs[ZS_NUM_REGS] __initdata = {
+ 	0,				/* write 0 */
+ 	PAR_SPEC,			/* write 1 */
+ 	0,				/* write 2 */
+ 	0,				/* write 3 */
+ 	X16CLK | SB1,			/* write 4 */
+-	0,				/* write 5 */
++	Tx8 | TxENAB,			/* write 5 */
+ 	0, 0, 0,			/* write 6, 7, 8 */
+ 	MIE | DLC | NV,			/* write 9 */
+ 	NRZ,				/* write 10 */
+ 	TCBR | RCBR,			/* write 11 */
+-	0, 0,				/* BRG time constant, write 12 + 13 */
++	0x16, 0x00,			/* BRG time constant, write 12 + 13 */
+ 	BRSRC | BRENABL,		/* write 14 */
+ 	0,				/* write 15 */
+ };
+@@ -956,23 +962,6 @@ static void zs_set_termios(struct uart_p
+ 	spin_unlock_irqrestore(&scc->zlock, flags);
  }
  
 -/*
@@ -98,40 +108,34 @@ Index: linux-macro/drivers/tty/serial/dz.c
 - * Required solely so that the initial PROM-based console
 - * works undisturbed in parallel with this one.
 - */
--static void dz_pm(struct uart_port *uport, unsigned int state,
+-static void zs_pm(struct uart_port *uport, unsigned int state,
 -		  unsigned int oldstate)
 -{
--	struct dz_port *dport = to_dport(uport);
--	unsigned long flags;
+-	struct zs_port *zport = to_zport(uport);
 -
--	uart_port_lock_irqsave(&dport->port, &flags);
 -	if (state < 3)
--		dz_start_tx(&dport->port);
+-		zport->regs[5] |= TxENAB;
 -	else
--		dz_stop_tx(&dport->port);
--	uart_port_unlock_irqrestore(&dport->port, flags);
+-		zport->regs[5] &= ~TxENAB;
+-	write_zsreg(zport, R5, zport->regs[5]);
 -}
 -
--
- static const char *dz_type(struct uart_port *uport)
+ 
+ static const char *zs_type(struct uart_port *uport)
  {
- 	return "DZ";
-@@ -769,7 +761,6 @@ static const struct uart_ops dz_ops = {
- 	.startup	= dz_startup,
- 	.shutdown	= dz_shutdown,
- 	.set_termios	= dz_set_termios,
--	.pm		= dz_pm,
- 	.type		= dz_type,
- 	.release_port	= dz_release_port,
- 	.request_port	= dz_request_port,
-@@ -894,10 +885,7 @@ static int __init dz_console_setup(struc
- 	if (ret)
+@@ -1055,7 +1044,6 @@ static const struct uart_ops zs_ops = {
+ 	.startup	= zs_startup,
+ 	.shutdown	= zs_shutdown,
+ 	.set_termios	= zs_set_termios,
+-	.pm		= zs_pm,
+ 	.type		= zs_type,
+ 	.release_port	= zs_release_port,
+ 	.request_port	= zs_request_port,
+@@ -1210,7 +1198,6 @@ static int __init zs_console_setup(struc
  		return ret;
  
--	spin_lock_init(&dport->port.lock);	/* For dz_pm().  */
--
- 	dz_reset(dport);
--	dz_pm(uport, 0, -1);
+ 	zs_reset(zport);
+-	zs_pm(uport, 0, -1);
  
  	if (options)
  		uart_parse_options(options, &baud, &parity, &bits, &flow);
