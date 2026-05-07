@@ -1,83 +1,108 @@
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7FE163B47E6;
-	Wed,  6 May 2026 22:43:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
+Received: from out-189.mta0.migadu.com (out-189.mta0.migadu.com [91.218.175.189])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 564B1330B0B
+	for <linux-serial@vger.kernel.org>; Thu,  7 May 2026 05:53:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.189
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778107387; cv=none; b=gf9yUTcI/VsPKWkkvDs+dt0kk4k/qlPnhsZY32SgNvgNX92TqMljgxAIIitSzyH6wxT+uw6NOewRpdf6i54pBl0H9DSQdGVs3pbelQ3ey6opJBd90/T6QlZ5cW+xqE3MFmjJTspTBc8juD7TptbnetLuzv+8SB/VLbcKkbGYcG4=
+	t=1778133240; cv=none; b=JgEG7JMZftAtPbO3rxhhHppl8gT1zIHMh6qApW+0avcVNNPBw93PQkmZQeo8N5XSqJMYE+smvNQx+dM97E0/KEoT1GZe7rY0BIKCcdow5d7cW+FZZ4LJTNyQGrBNvVpMFySA8d3vrir34nIGbsEeHUpyVDiNv3U9oylXEinKcFY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778107387; c=relaxed/simple;
-	bh=RwaMJl7bXPHQnWvjyFeT54TQav5FxHUrDX3wMQmq+KQ=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=gYOvP0i0lgRI5hIuoolUEeAAbwOOeqkji2aunbTbYiQ77oJQD54qAB3No1gUH9YzqmOm6LWKpOQaRAW5J29Xt+M6CMmreom9B05U9cKSTZJ6xWToGCTtKWlJindSms/ktLPmN0swSj17fNEJCxKoDcKLp8ZYh85nDqisP6KW41Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-	id 65A219200C3; Thu,  7 May 2026 00:43:00 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-	by angie.orcam.me.uk (Postfix) with ESMTP id 644A79200BB;
-	Wed,  6 May 2026 23:43:00 +0100 (BST)
-Date: Wed, 6 May 2026 23:43:00 +0100 (BST)
-From: "Maciej W. Rozycki" <macro@orcam.me.uk>
-To: Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
-    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>
-cc: linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, 
-    linux-serial@vger.kernel.org
-Subject: [PATCH v3 10/10] MIPS: DEC: Ensure RTC platform device deregistration
- upon failure
-In-Reply-To: <alpine.DEB.2.21.2605062240290.46195@angie.orcam.me.uk>
-Message-ID: <alpine.DEB.2.21.2605062333190.46195@angie.orcam.me.uk>
-References: <alpine.DEB.2.21.2605062240290.46195@angie.orcam.me.uk>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+	s=arc-20240116; t=1778133240; c=relaxed/simple;
+	bh=1LrW5qCIbYeb/bX6ybBGiV+9rPWAOJqaKbnrQSaIt9A=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=p7c7eXIHN5/CpLgNWOB30PXoTEElywtLIyvZpIbA9+JV0/X0SpvcrALft0J0jykuHr4mkkpvBRxhJ41VH0E2NiaPkk7GrJLevECtBgWT1auScecMtMD0qU28rAPKZP/YauEmyRvigTOPojmT1ZXlji1r0VeCG5fsFPon+wDK4SA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=Vgr/HUtB; arc=none smtp.client-ip=91.218.175.189
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="Vgr/HUtB"
+Message-ID: <c9993ee6-4023-4331-a1c1-4e30952146fe@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1778133225;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=VbGSu/85g0XblWRuECFeslO9kenoVrjTmkH45UYo96U=;
+	b=Vgr/HUtB+VnkFQX0dQtT03258riDXLlIM9m/PeTvG3tf1tRlGkqkkuu0qewifW6W/hABie
+	yJESxF+JatKhHcsZbl7utDYkhuEBB4/Li+Tn8KWQc6cIAOvILsmQtsBXgEsMMx1LyBo7k6
+	J95Oa8iIXKmPJJu8cCe5YBss+U9bqEc=
+Date: Thu, 7 May 2026 13:53:30 +0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Subject: Re: [PATCH net-next 2/3] ppp: unify two channel structs
+To: Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew+netdev@lunn.ch>,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Jiri Kosina <jikos@kernel.org>,
+ David Sterba <dsterba@suse.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Mitchell Blank Jr <mitch@sfgoth.com>,
+ Chas Williams <3chas3@gmail.com>, Simon Horman <horms@kernel.org>,
+ James Chapman <jchapman@katalix.com>, Kees Cook <kees@kernel.org>,
+ Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+ Taegu Ha <hataegu0826@gmail.com>, Guillaume Nault <gnault@redhat.com>,
+ Eric Woudstra <ericwouds@gmail.com>, Arnd Bergmann <arnd@arndb.de>,
+ Dawid Osuchowski <dawid.osuchowski@linux.intel.com>,
+ Breno Leitao <leitao@debian.org>, linux-ppp@vger.kernel.org,
+ netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, linux-atm-general@lists.sourceforge.net
+References: <20260430090532.244758-1-qingfang.deng@linux.dev>
+ <20260430090532.244758-2-qingfang.deng@linux.dev>
+ <590d7931-02b0-45d6-8f43-ef909c9bde89@redhat.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Qingfang Deng <qingfang.deng@linux.dev>
+In-Reply-To: <590d7931-02b0-45d6-8f43-ef909c9bde89@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
 
-Switch RTC platform device registration from platform_device_register() 
-to platform_add_devices() so as to make sure any failure will result in 
-automatic device unregistration.
-
-Fixes: fae67ad43114 ("arch/mips/dec: switch DECstation systems to rtc-cmos")
-Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
----
-Change from v2,
-<https://lore.kernel.org/r/alpine.DEB.2.21.2605012105320.11074@angie.orcam.me.uk/>:
-
-- Fix a minor style issue in the commit description.
-
-No change from v1 (8/8),
-<https://lore.kernel.org/r/alpine.DEB.2.21.2604110042130.29980@angie.orcam.me.uk/>.
----
- arch/mips/dec/platform.c |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
-
-linux-mips-dec-platform-rtc-unregister.diff
-Index: linux-macro/arch/mips/dec/platform.c
-===================================================================
---- linux-macro.orig/arch/mips/dec/platform.c
-+++ linux-macro/arch/mips/dec/platform.c
-@@ -38,6 +38,10 @@ static struct platform_device dec_rtc_de
- 	.num_resources = ARRAY_SIZE(dec_rtc_resources),
- };
- 
-+static struct platform_device *dec_rtc_devices[] __initdata = {
-+	&dec_rtc_device,
-+};
-+
- static struct resource dec_dz_resources[] = {
- 	{ .name = "dz", .flags = IORESOURCE_MEM, },
- 	{ .name = "dz", .flags = IORESOURCE_IRQ, },
-@@ -137,7 +141,7 @@ static int __init dec_add_devices(void)
- 	}
- 	num_zs = i;
- 
--	ret1 = platform_device_register(&dec_rtc_device);
-+	ret1 = platform_add_devices(dec_rtc_devices, 1);
- 	ret2 = IS_ENABLED(CONFIG_32BIT) ?
- 	       platform_add_devices(dec_dz_devices, num_dz) : 0;
- 	ret3 = platform_add_devices(dec_zs_devices, num_zs);
+On 2026/5/5 19:16, Paolo Abeni wrote:
+> On 4/30/26 11:05 AM, Qingfang Deng wrote:
+>> Historically, PPP maintained two separate structures for a channel:
+>> 'struct channel' was internal to ppp_generic.c, while 'struct ppp_channel'
+>> was the public interface that drivers were required to embed. This
+>> duplication was redundant and forced drivers to manage the lifecycle of
+>> the public structure.
+>>
+>> Unify these two structures into a single 'struct ppp_channel', which is
+>> now internal to ppp_generic.c. Drivers now use a 'ppp_channel_conf'
+>> structure to specify registration parameters and receive an opaque
+>> pointer to the allocated channel.
+>>
+>> Key changes:
+>> - ppp_register_channel() and ppp_register_net_channel() now return
+>>    a 'struct ppp_channel *' instead of taking a pointer to a driver-
+>>    embedded structure.
+>> - 'struct ppp_channel_ops' methods now take the driver's 'private'
+>>    pointer directly as their first argument, simplifying driver logic.
+>> - ppp_unregister_channel() now takes the opaque pointer.
+>> - Multilink-specific fields are unified and handled via the new
+>>    configuration structure.
+>>
+>> This cleanup simplifies the driver interface and makes the channel
+>> lifecycle management more robust by centralizing allocation in the PPP
+>> generic layer.
+>>
+>> Assisted-by: Gemini:gemini-3-flash
+>> Signed-off-by: Qingfang Deng <qingfang.deng@linux.dev>
+>> ---
+>>   drivers/net/ppp/ppp_async.c      |  51 +++++-----
+>>   drivers/net/ppp/ppp_generic.c    | 161 +++++++++++++++----------------
+>>   drivers/net/ppp/ppp_synctty.c    |  51 +++++-----
+>>   drivers/net/ppp/pppoe.c          |  34 ++++---
+>>   drivers/net/ppp/pppox.c          |   4 +-
+>>   drivers/net/ppp/pptp.c           |  40 ++++----
+>>   drivers/tty/ipwireless/network.c |  30 +++---
+>>   include/linux/if_pppox.h         |   2 +-
+>>   include/linux/ppp_channel.h      |  49 ++++++----
+>>   net/atm/pppoatm.c                |  61 ++++++------
+>>   net/l2tp/l2tp_ppp.c              |  34 ++++---
+>>   11 files changed, 271 insertions(+), 246 deletions(-)
+> This patch is IMHO a bit too big and should be split. Also this kind of
+> refactor looks very invasive and potentially regression prone. I think
+> it should include a signficant self-test coverage increase.
+This is indeed too big. But how do I split it without breaking the build?
