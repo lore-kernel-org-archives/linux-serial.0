@@ -1,142 +1,87 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97F4B19992C;
-	Thu,  7 May 2026 09:50:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 931523C6A5F
+	for <linux-serial@vger.kernel.org>; Thu,  7 May 2026 12:24:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778147451; cv=none; b=gX5ff4EBeKaQNbP0+yYSXvXG9oiKiNZNBJO+h6HHd/mXUMyNJGrtk9viS7gHsVoyZLR7LGjmT68Grr9PJK17vosDNVN8+b4BnFnF1F1jWH7+Ok83v3qRzAJs7UyYBLf15bF3oIxJm7UnkLYxg6leTN7Gz4AcJAplfgz9xQfQ7Ls=
+	t=1778156691; cv=none; b=afom7xtimmizU+PWG5PyaNb3z0GL4Q/cvMvX2meffA4x6guEuElnHAw2U/IIqv/5DcRHEHW/yYMjf0lY4HaBSIedX8+JxgFDi5T1uvTflJY5JccCm8pPraFbLgJhcynC8wLRYqsEXZpa/G88W5DrR9xHE2YpGjh6NU2aN7K774s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778147451; c=relaxed/simple;
-	bh=6/O4g5sKOzC1QkhFRj0XV8eT+wsdg3hxXAqmP1cUrkw=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=aK0WwUYIfNboo2tFVHzKUwTpRGumG5daSKkymYg3gkAf1e/MaC8asdlhrvo5giPojaOppK34xhAd0keFw4r38AznyW/tbTTi2EGyz2MjqhBduzmWLfzvIKAFQh6SFzIZrp6pJrlZ5HFZ3/rQcvk40pPYQpIc5Bg30njPn8A8YHw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=leWMdPdy; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=Tq2nphDt; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1778156691; c=relaxed/simple;
+	bh=QIql3ABFxBxfhPdKS/rwS+nEJrZPiQL67AN4+VOVMso=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=s3DsFOpdtCLFArh+yTFBTmv8gr8zCPeeF5MRKqzN57h0r5KjXcLzokHclgHaDStZ2hGYWzguBBO5LJ6S/ZDawNJtEvw7Begp/k+lrqF8Zj99cwp8HAHM9L5gBQ3IcoFEh3J4xlF1d1H4Gx5SIH8C+Av8pa5YU0EiPII10sO6QXQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RKv5nDNm; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="leWMdPdy";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="Tq2nphDt"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1778147447;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=NBH0jyNZrOzmMWTTXswtxOpylKAjIZZm3k5vmlmFTBY=;
-	b=leWMdPdyfke1PG9kBHkhG5M8+CkYZqJLTLAqeCjYiODinG+/j5IfywZS4BLtwSeOnAhR6D
-	pw/eSfCLzgoMv61xYkcFltHJt75Aj5NL592c/QId6geF4NJndJWESdEbRgVpzZJaKCAEAk
-	S46RxvcRAIZA9ahHYcTAxrtRU+Lc+i248yF5/kVapuIJ8z3dVEqbikVTF3jyXqEuOI+x3T
-	3bevzAN4DzkSVknLp5v6SvQ6O8TC9Rp1nxTnpME2Yz+kDQdJ86k1KXyx7rg0SDmJQCUrew
-	Jl0XoiQVfdJ919Xfgwb85G6jo2BOn+QjO9UZmH6nOsM9NQzLPu3et2OdyeeYug==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1778147447;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=NBH0jyNZrOzmMWTTXswtxOpylKAjIZZm3k5vmlmFTBY=;
-	b=Tq2nphDtcvBpFn3zxihLGoMnyKDvoUWprRrJufVzWFnDKGTEAFUEQ7hCJcHsFd6FLZEOal
-	HAqr18N14WAjRFBg==
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Alim Akhtar <alim.akhtar@samsung.com>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>,
-	linux-kernel@vger.kernel.org,
-	"David S. Miller" <davem@davemloft.net>,
-	Ilpo =?utf-8?Q?J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Thomas Fourier <fourier.thomas@gmail.com>,
-	Kees Cook <kees@kernel.org>, linux-serial@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-samsung-soc@vger.kernel.org, sparclinux@vger.kernel.org
-Subject: Re: [PATCH tty v4 2/6] serial: Replace driver usage of UPF_CONS_FLOW
-In-Reply-To: <20260506121606.5805-3-john.ogness@linutronix.de>
-References: <20260506121606.5805-1-john.ogness@linutronix.de>
- <20260506121606.5805-3-john.ogness@linutronix.de>
-Date: Thu, 07 May 2026 11:56:46 +0206
-Message-ID: <87lddvy2dl.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RKv5nDNm"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53AB4C2BCFC
+	for <linux-serial@vger.kernel.org>; Thu,  7 May 2026 12:24:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778156691;
+	bh=QIql3ABFxBxfhPdKS/rwS+nEJrZPiQL67AN4+VOVMso=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=RKv5nDNm8HFBZ/inumudOz8bq/9D0RjWYEYvjZAonv+XeRXE/imJ8Qqy8AMlTq2/3
+	 hiTSyhuBXJEe1/W4ad2WCVpo4YydHtCpkviJfrU6xwIFA0JwyxqjujRuYf9M3mFfgZ
+	 7lIZdnr+Z9aOWGtutXOFLo+ub4pk0mUe+JTqNPeyDm3eQ0h0l3/SSNBuMpfIGRw2AZ
+	 6y6nh+Yf/G0uWxYfAZHMB0VBhBoP2DzpehNT3YjR87Ei7luHPc5avzFuwBUeFTcsPc
+	 /kJgYH0QDk4OdOX+6ZDX7xLOdrnY8yxTOwqZz+ezUcEyuj0XEXfELugJSPs4IQyjWK
+	 5chGoE6TbBt+g==
+Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-5a742b8b72eso735834e87.1
+        for <linux-serial@vger.kernel.org>; Thu, 07 May 2026 05:24:51 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AFNElJ+F2w6sRC1JpTAz/r2si1C8BGzX01vbLUDUMCgwiMxAZrc/oCbxrh8sCoPVYNN5BIQSBAKB4pQTxtMEVWk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzAT8mWcw6nhvq2moMZ/ybkx0c92A7q2SzQBX8bkJffcAl/5FgX
+	qTFGN+DmHHjO9xZSoY+Y/XgKYX/vOEi38+riWfdqL2tlQPwelo0Rt1g3sBOC8anVVAmp9Zbqhqf
+	+hTQSCBoEJOv3mxEFXtNQQE8iZ10u2jk=
+X-Received: by 2002:a05:6512:3c81:b0:5a7:4783:a13a with SMTP id
+ 2adb3069b0e04-5a887adfe0cmr2797785e87.6.1778156689988; Thu, 07 May 2026
+ 05:24:49 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20260429-send-v7-0-b432e00d2db8@gmail.com> <20260429-send-v7-6-b432e00d2db8@gmail.com>
+ <CAD++jL=S6DSOuC-PXFn76SA7e-Lgueu9Z2wuF7icXCVX7MBpJw@mail.gmail.com> <5379905.31r3eYUQgx@strix>
+In-Reply-To: <5379905.31r3eYUQgx@strix>
+From: Linus Walleij <linusw@kernel.org>
+Date: Thu, 7 May 2026 14:24:38 +0200
+X-Gmail-Original-Message-ID: <CAD++jLk02QnkXYwJ0b6x=qw9stR4nPrjD3sYPOvWAQz8t9OsUA@mail.gmail.com>
+X-Gm-Features: AVHnY4KG1i7F86ysxgeSAop-bGeT8IWW7pLynGDyGg64qsvOgzwotjy6zksXjl4
+Message-ID: <CAD++jLk02QnkXYwJ0b6x=qw9stR4nPrjD3sYPOvWAQz8t9OsUA@mail.gmail.com>
+Subject: Re: [PATCH v7 6/6] ARM: zte: defconfig: Add a zx29 defconfig file
+To: =?UTF-8?Q?Stefan_D=C3=B6singer?= <stefandoesinger@gmail.com>
+Cc: Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, 
+	Russell King <linux@armlinux.org.uk>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Arnd Bergmann <arnd@arndb.de>, 
+	Krzysztof Kozlowski <krzk@kernel.org>, Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+	Drew Fustini <fustini@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, linux-doc@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	devicetree@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi,
+Hi Stefan,
 
-(This email is particularly directed at the Samsung folks.)
+On Wed, May 6, 2026 at 7:39=E2=80=AFPM Stefan D=C3=B6singer
+<stefandoesinger@gmail.com> wrote:
 
-Responding to Sashiko:
+> I'll send a v8 with some of Sashiko's (very impressive)
+> findings but keep the defconfig.
 
-https://sashiko.dev/#/patchset/20260506121606.5805-1-john.ogness%40linutronix.de
+Maybe not send all patches to soc@kernel.org right now because they
+end up in the patch tracker.
 
-On 2026-05-06, Sashiko wrote:
->> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
->> index e27806bf2cf3e..2f94fc798cffb 100644
->> --- a/drivers/tty/serial/samsung_tty.c
->> +++ b/drivers/tty/serial/samsung_tty.c
->> @@ -319,7 +319,7 @@ static void s3c24xx_serial_stop_tx(struct uart_port *port)
->>  	ourport->tx_enabled = 0;
->>  	ourport->tx_in_progress = 0;
->>  
->> -	if (port->flags & UPF_CONS_FLOW)
->> +	if (uart_cons_flow_enabled(port))
->>  		s3c24xx_serial_rx_enable(port);
->
-> This isn't a new bug introduced by this patch, but does this code
-> result in a recursive spinlock acquisition and deadlock when console
-> flow control is enabled?
->
-> The serial core framework calls port->ops->stop_tx() with the
-> port->lock spinlock already held. When uart_cons_flow_enabled(port)
-> evaluates to true, s3c24xx_serial_stop_tx() invokes
-> s3c24xx_serial_rx_enable().
->
-> Looking at s3c24xx_serial_rx_enable(), it unconditionally attempts to
-> acquire the exact same lock again:
->
-> static void s3c24xx_serial_rx_enable(struct uart_port *port)
-> {
-> 	struct s3c24xx_uart_port *ourport = to_ourport(port);
-> 	unsigned long flags;
-> 	...
-> 	uart_port_lock_irqsave(port, &flags);
-> 	...
-> }
->
-> Because spinlocks are not recursive in the kernel, it appears this
-> sequence would cause an immediate deadlock on the same CPU.
+For a new platform that may be OK though...
 
-Although out of scope for my series, the reported issue is real. Perhaps
-something for Krzysztof or Alim to look into.
+Nominall it should be three pull requests:
+1. Platform
+2. DTS files
+3. Defconfig
 
->> @@ -493,7 +493,7 @@ static void s3c24xx_serial_start_tx(struct uart_port *port)
->>  	struct tty_port *tport = &port->state->port;
->>  
->>  	if (!ourport->tx_enabled) {
->> -		if (port->flags & UPF_CONS_FLOW)
->> +		if (uart_cons_flow_enabled(port))
->>  			s3c24xx_serial_rx_disable(port);
->
-> Similarly here, s3c24xx_serial_start_tx() is also called with
-> port->lock held, and s3c24xx_serial_rx_disable() will attempt to
-> acquire port->lock again:
->
-> static void s3c24xx_serial_rx_disable(struct uart_port *port)
-> {
-> 	struct s3c24xx_uart_port *ourport = to_ourport(port);
-> 	unsigned long flags;
-> 	...
-> 	uart_port_lock_irqsave(port, &flags);
-> 	...
-> }
->
-> Could this pre-existing locking issue in the samsung_tty driver be
-> addressed so that the rx enable/disable helpers do not try to take the
-> port lock when it is already held by the caller?
+But in this case maybe it is better if we cherry-pick them to the
+SoC tree.
 
-Also legitimate. But out of scope for my series.
-
-John Ogness
+Yours,
+Linus Walleij
