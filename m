@@ -1,87 +1,152 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 931523C6A5F
-	for <linux-serial@vger.kernel.org>; Thu,  7 May 2026 12:24:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778156691; cv=none; b=afom7xtimmizU+PWG5PyaNb3z0GL4Q/cvMvX2meffA4x6guEuElnHAw2U/IIqv/5DcRHEHW/yYMjf0lY4HaBSIedX8+JxgFDi5T1uvTflJY5JccCm8pPraFbLgJhcynC8wLRYqsEXZpa/G88W5DrR9xHE2YpGjh6NU2aN7K774s=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778156691; c=relaxed/simple;
-	bh=QIql3ABFxBxfhPdKS/rwS+nEJrZPiQL67AN4+VOVMso=;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E48D53F166D
+	for <linux-serial@vger.kernel.org>; Thu,  7 May 2026 15:56:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.49
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778169372; cv=pass; b=rFHzb5GPDHK5bFSw9mkCvlSDj6qXVp3CqZoErkczHNPG10K6X77H0UHZHYdG1ABr2uGm81wlIw35xpcZHcEb+XyI8etFOptgR+Xc/I31fHueGzEbzS14a/g8oLsvGjMTFF0EdiuQh6jlTT1nODvO/frPvId5TJVQo5d/Bsb9COE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778169372; c=relaxed/simple;
+	bh=pzVUaiZiI462LSeAjzmpXCABHbm2I68wOvx3INAMRKA=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=s3DsFOpdtCLFArh+yTFBTmv8gr8zCPeeF5MRKqzN57h0r5KjXcLzokHclgHaDStZ2hGYWzguBBO5LJ6S/ZDawNJtEvw7Begp/k+lrqF8Zj99cwp8HAHM9L5gBQ3IcoFEh3J4xlF1d1H4Gx5SIH8C+Av8pa5YU0EiPII10sO6QXQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RKv5nDNm; arc=none smtp.client-ip=10.30.226.201
+	 To:Cc:Content-Type; b=YweTWxBG9pWO0qayggaS6nh26MvdverqNZwFjUAOPEOyKVR2kxrEhXeMkrZCtfr8K484ajiHqvkAUjxbyrrIKtsAbeCLkOScdV6MoX48msx4IzArf9Fjo+6Li3YAp8d9mWKf6iEoI+5i/Pt21GBMVhVxOLys5D2Q28b4A1mFW2M=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JpPOEKhk; arc=pass smtp.client-ip=209.85.218.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RKv5nDNm"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53AB4C2BCFC
-	for <linux-serial@vger.kernel.org>; Thu,  7 May 2026 12:24:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778156691;
-	bh=QIql3ABFxBxfhPdKS/rwS+nEJrZPiQL67AN4+VOVMso=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=RKv5nDNm8HFBZ/inumudOz8bq/9D0RjWYEYvjZAonv+XeRXE/imJ8Qqy8AMlTq2/3
-	 hiTSyhuBXJEe1/W4ad2WCVpo4YydHtCpkviJfrU6xwIFA0JwyxqjujRuYf9M3mFfgZ
-	 7lIZdnr+Z9aOWGtutXOFLo+ub4pk0mUe+JTqNPeyDm3eQ0h0l3/SSNBuMpfIGRw2AZ
-	 6y6nh+Yf/G0uWxYfAZHMB0VBhBoP2DzpehNT3YjR87Ei7luHPc5avzFuwBUeFTcsPc
-	 /kJgYH0QDk4OdOX+6ZDX7xLOdrnY8yxTOwqZz+ezUcEyuj0XEXfELugJSPs4IQyjWK
-	 5chGoE6TbBt+g==
-Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-5a742b8b72eso735834e87.1
-        for <linux-serial@vger.kernel.org>; Thu, 07 May 2026 05:24:51 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AFNElJ+F2w6sRC1JpTAz/r2si1C8BGzX01vbLUDUMCgwiMxAZrc/oCbxrh8sCoPVYNN5BIQSBAKB4pQTxtMEVWk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzAT8mWcw6nhvq2moMZ/ybkx0c92A7q2SzQBX8bkJffcAl/5FgX
-	qTFGN+DmHHjO9xZSoY+Y/XgKYX/vOEi38+riWfdqL2tlQPwelo0Rt1g3sBOC8anVVAmp9Zbqhqf
-	+hTQSCBoEJOv3mxEFXtNQQE8iZ10u2jk=
-X-Received: by 2002:a05:6512:3c81:b0:5a7:4783:a13a with SMTP id
- 2adb3069b0e04-5a887adfe0cmr2797785e87.6.1778156689988; Thu, 07 May 2026
- 05:24:49 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JpPOEKhk"
+Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-b9358dd7f79so174582066b.1
+        for <linux-serial@vger.kernel.org>; Thu, 07 May 2026 08:56:10 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1778169369; cv=none;
+        d=google.com; s=arc-20240605;
+        b=Z32sUwo3YFIwWi8M+GEi6y4NwK61ruJtOeVGFtJ084C1ciFuvCuaHFWbn8fiCcIHeR
+         cS+G918EVimLF4d0KFv82PrMaabZexUhHIOEJrB7CecjcuTBbi8I3rP74fQqFYeW0PXT
+         psZwM/j0UkuMr8IbQ0Ro0nq7XQOSp9Nl6k78/TXQUT3a3HW/uKRTmFhj7AUlBcJ+vCUt
+         cx/Ud1fwMKqUyX3mOwFj8aij+AKKFuGHtdO+4NIYlQdeN7Oo/8f8jaCVjmzOocm9yigE
+         R3lFXOBcUVbcdW07mHxOZVrnZqlPI7UKldJ1wKnK9cOYPDgYF+JOoxb1abKemou+DLQS
+         70ew==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=tZnLb1HQGSLjbJmS8evDaKXMNv8pyjgwaBOs2Nqrmp0=;
+        fh=TwpSndFb28GJvBx6vIAq2u7EREhFTEHmyLN5vb/M4N4=;
+        b=Ep3uGD1f6JNFbYjeYK9rpBHrPO4DW5v/bpBMBHTKkpQCa1DiUq0Z93DD1jE5O5OdUZ
+         N7OzK299LYaTiiZCWzrXLVuooyTIq572ff6EtEPuPCskeNxNHzqzpjFQPVeyvmCJ0HkJ
+         JHqA+KhNS1rS/tNO7jazYd5ezo59Nv8rdo44gGMqzpSV6gFaVH3UWSrf0nLZUR6WiUIJ
+         sGg/K8/uV2qjyQCHR8oCzS3WJAxB8x0TfL6ur6TG22dv7oOw/jQOwCHYdkMWX8QHJmWr
+         UK9ZjyLf03eoOH9/E5EZbgbhp4gwykm8zEEj+frMu4z+QBb2Qqa/NW/leMTy84mIEJXo
+         /VXA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778169369; x=1778774169; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=tZnLb1HQGSLjbJmS8evDaKXMNv8pyjgwaBOs2Nqrmp0=;
+        b=JpPOEKhkJThWK+T/4GtR3HqRYy+3d8Yn49pi79Afi3Nmi6CJ2cRklk4YCbCoFbAH9k
+         QSTWKEihHHx7pqR9vCmf+tB8fEJ8ILPBLIzLjdlEFxFVomqyQH8p5l/EQLh56gZh3NSH
+         kwB/NTjRbCuDCKAh9npf9SN5g4+pobJB0j+AK4cXGHAWkA8T2IyRg6JUbi8ny1CYiCrC
+         qKhcJTwKim067Z8FcLuojlmVrCTramYvA/MgLawg9XKkUwralCwzeNIdtUwmhKv9IH9e
+         Pz/g3YJVB4TYdUnjHM2lKtX1ve8lEAH6wtG0bKWxN3vh8tWDQikI00O/XXIHdmXrHhov
+         3Jig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778169369; x=1778774169;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=tZnLb1HQGSLjbJmS8evDaKXMNv8pyjgwaBOs2Nqrmp0=;
+        b=RmuQM+i6Dho43ldyOXfy4vayK1CZRGrnB1jDi0tByhCVajOjklKAgqwtMxf3/7SjUj
+         6wBj6JuoM2qarb+4JgRD76ETNtXblOBlGrcT1wzf01dWnC37WiK/H2i9ofUSd1LnbMQy
+         7ZGXWpBaKtXk7ZY3DxWwiDc435CfjQR8NrCWvPSsgmImAifZyjOXDywYRLAYyimqTs0A
+         4UWfTnEMaf740jHX/HSZR/awp91Bbq1hHJFinSYpmyzNk4Jzg0EhIDGeVVds1iTH8f2K
+         1WRwi4c2JcvafNpQ3OWLtaUFfrAC7xa2Uw/2hcFpyucur16SMCtABXSvAM9QdnBFsSQi
+         1puA==
+X-Forwarded-Encrypted: i=1; AFNElJ9yN9Gj27HZWmoNgd1BAlzton/zQLL6syxrl2QG0gO8eIhCXtSD30xM9l7cLcQeBx/uEk8X64R/SVxGcdo=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyXz6Ds4DMYuxQTgRvZAghOa5VXZZoqBoHdH+2DpNJ6nkJlxoA+
+	1WrlW78krlbDMYDXGM3Ljw/DLtKG3lwKQtUXU2UVv27epWqOi3e0O4uokk6Z5iLLl0p4C37XhmB
+	66ZVBQbt/2Pn3O9JEVFB7xdfmJLy3s0M=
+X-Gm-Gg: AeBDieszLyy9EEHTdnMjX1E6J5i+nz3uJX5mjx1JSeswCc5UBJHVyB4VXi5h4iRR13L
+	+aJR90s6zhD/nzyDfnH69m1v7okQY6BkdRISNoL7AcKvWKFUdBW/aUtPTOKQwe1J4Pv/6hqeXSa
+	DGJi5dKeZ1UvxfCyjziDbhlRtFitJSeKDLRLzLZOCJp094OkuiEvDDoDZut158Y8M7EoDxkuyF9
+	Mzyt42d2CXU+ESfgPF8uQr+JDIQflmZyualZ+U691BQNbb+qg8GpQB97wLXRirqS5QYFnI6zIpS
+	rZk9rLYrByW9iXFth2RIgsrwnaafPg1uJTqbU/Wfe4J2N5YaLI/4dGO52nTHH7UjF6rHwA==
+X-Received: by 2002:a17:907:26c1:b0:bc9:ef67:3ea9 with SMTP id
+ a640c23a62f3a-bc9ef673eeemr134499366b.37.1778169368665; Thu, 07 May 2026
+ 08:56:08 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260429-send-v7-0-b432e00d2db8@gmail.com> <20260429-send-v7-6-b432e00d2db8@gmail.com>
- <CAD++jL=S6DSOuC-PXFn76SA7e-Lgueu9Z2wuF7icXCVX7MBpJw@mail.gmail.com> <5379905.31r3eYUQgx@strix>
-In-Reply-To: <5379905.31r3eYUQgx@strix>
-From: Linus Walleij <linusw@kernel.org>
-Date: Thu, 7 May 2026 14:24:38 +0200
-X-Gmail-Original-Message-ID: <CAD++jLk02QnkXYwJ0b6x=qw9stR4nPrjD3sYPOvWAQz8t9OsUA@mail.gmail.com>
-X-Gm-Features: AVHnY4KG1i7F86ysxgeSAop-bGeT8IWW7pLynGDyGg64qsvOgzwotjy6zksXjl4
-Message-ID: <CAD++jLk02QnkXYwJ0b6x=qw9stR4nPrjD3sYPOvWAQz8t9OsUA@mail.gmail.com>
-Subject: Re: [PATCH v7 6/6] ARM: zte: defconfig: Add a zx29 defconfig file
-To: =?UTF-8?Q?Stefan_D=C3=B6singer?= <stefandoesinger@gmail.com>
-Cc: Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, 
-	Russell King <linux@armlinux.org.uk>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Arnd Bergmann <arnd@arndb.de>, 
-	Krzysztof Kozlowski <krzk@kernel.org>, Alexandre Belloni <alexandre.belloni@bootlin.com>, 
-	Drew Fustini <fustini@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, linux-doc@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	devicetree@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20260506124643.128021-1-geert+renesas@glider.be>
+In-Reply-To: <20260506124643.128021-1-geert+renesas@glider.be>
+From: "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date: Thu, 7 May 2026 16:55:41 +0100
+X-Gm-Features: AVHnY4J3gSuHJu_9IGGrqCXhoyZ3XPxDCslG6bnaa_Q7FaNolHXC1lQvxolbGqU
+Message-ID: <CA+V-a8uO2L-Ha49+PxRV49Y5RWzvaVA1PGwigtcwPQS51u=+hA@mail.gmail.com>
+Subject: Re: [PATCH] serial: sh-sci: Remove plat_sci_port.flags
+To: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: John Ogness <john.ogness@linutronix.de>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Biju Das <biju.das.jz@bp.renesas.com>, 
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>, 
+	Wolfram Sang <wsa+renesas@sang-engineering.com>, linux-serial@vger.kernel.org, 
+	linux-renesas-soc@vger.kernel.org, linux-sh@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi Stefan,
+On Wed, May 6, 2026 at 1:52=E2=80=AFPM Geert Uytterhoeven
+<geert+renesas@glider.be> wrote:
+>
+> The last setter of p->flags was removed in commit 37744feebc086908
+> ("sh: remove sh5 support") in v5.8.
+>
+> Link: https://lore.kernel.org/CAMuHMdXs94k3-7YD-yO7p2=3D+u8waYGAz8mpP5LDb=
+Mf3szt4V-w@mail.gmail.com
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+>  drivers/tty/serial/sh-sci.c | 2 +-
+>  include/linux/serial_sci.h  | 1 -
+>  2 files changed, 1 insertion(+), 2 deletions(-)
+>
+Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-On Wed, May 6, 2026 at 7:39=E2=80=AFPM Stefan D=C3=B6singer
-<stefandoesinger@gmail.com> wrote:
+Cheers,
+Prabhakar
 
-> I'll send a v8 with some of Sashiko's (very impressive)
-> findings but keep the defconfig.
-
-Maybe not send all patches to soc@kernel.org right now because they
-end up in the patch tracker.
-
-For a new platform that may be OK though...
-
-Nominall it should be three pull requests:
-1. Platform
-2. DTS files
-3. Defconfig
-
-But in this case maybe it is better if we cherry-pick them to the
-SoC tree.
-
-Yours,
-Linus Walleij
+> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+> index 6c819b6b24258d36..a35230d57540384c 100644
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
+> @@ -3369,7 +3369,7 @@ static int sci_init_single(struct platform_device *=
+dev,
+>         }
+>
+>         port->type              =3D SCI_PUBLIC_PORT_ID(p->type);
+> -       port->flags             =3D UPF_FIXED_PORT | UPF_BOOT_AUTOCONF | =
+p->flags;
+> +       port->flags             =3D UPF_FIXED_PORT | UPF_BOOT_AUTOCONF;
+>         port->fifosize          =3D sci_port->params->fifosize;
+>
+>         if (p->type =3D=3D PORT_SCI && !dev->dev.of_node) {
+> diff --git a/include/linux/serial_sci.h b/include/linux/serial_sci.h
+> index 0f2f50b8d28e2743..36c795d61f7e8457 100644
+> --- a/include/linux/serial_sci.h
+> +++ b/include/linux/serial_sci.h
+> @@ -51,7 +51,6 @@ struct plat_sci_port_ops {
+>   */
+>  struct plat_sci_port {
+>         unsigned int    type;                   /* SCI / SCIF / IRDA / HS=
+CIF */
+> -       upf_t           flags;                  /* UPF_* flags */
+>
+>         unsigned int    sampling_rate;
+>         unsigned int    scscr;                  /* SCSCR initialization *=
+/
+> --
+> 2.43.0
+>
+>
