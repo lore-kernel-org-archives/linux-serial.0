@@ -1,185 +1,131 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA6142F1FC9
-	for <linux-serial@vger.kernel.org>; Thu,  7 May 2026 22:09:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AFE21397
+	for <linux-serial@vger.kernel.org>; Fri,  8 May 2026 00:14:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778191743; cv=none; b=hGxPzZ8xxQj8CsN/UZdGkP8L7bM2/pFcqZyQaesllfTgcGe7rFuRrnQlVb04OQmColxAxRY3t4h1I4oL/U0QPxGS0KY7BMyukBt1cudAODUJ276V9ZZ0sIk9NBB+/2m1VmbgZeL5aa0lthiq/J3azGkzKXvCDnjoDxRT3n/Jr00=
+	t=1778199297; cv=none; b=YK5sl08DdsX1WG8n2UiqtURmFxSQA4P9slnzV68VOGMKfQ4r0g+1VzBevkuiVueHSaKn3Qujuf+tkxqhqjZ+xD1pbe72leNdPD3BhaNMB00IzFo0Vk6d9IdD6qrgUjCjkqkRCza/0qT2AJ4Ns6IzJ8eExeLA88lUDXmYCV54gTk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778191743; c=relaxed/simple;
-	bh=trZCIv4VUbmZsT+tqtZK8MjDiIjWO57JQfjXqAJtZwc=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=IOiXSDIwmbW66H5KW4kyXbk3cD+uxXCGrOY+0YUZ9NUPugr4v3N2Mn1RKc4zCxGESLHXBbP+qw4rqMgWeAlKawGFphJyFMyrR4pRxThsDlzpKpScuPHLsSvP0CzKOw3qcLnnmOvVdqntD82d3KBFdeWSMddjAcCivJLlFF4Dtd4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TS8RMX/r; arc=none smtp.client-ip=209.85.128.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1778199297; c=relaxed/simple;
+	bh=4Dymq0aHXKstQfNw3MMgrRZ40676wieOk4z72GZ551Q=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=nDYQpQcFY7XomkDbNVkhfWcnJ1LcZVIM7ShVq9Qn32QkhX0+DpDu6ymMIXnZODJGt6GkAxaOtSv7QOPxfT8g7m7jM4u6kT+4JDUNeTzWBPx6g7j7XfWzulmhN9lW6+M8pCqlriINDlzhsg+OotyHOznPUuaN6xJKt3wRsPKlKFY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=BRle0ws4; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TS8RMX/r"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-488ba840146so12172775e9.1
-        for <linux-serial@vger.kernel.org>; Thu, 07 May 2026 15:09:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778191740; x=1778796540; darn=vger.kernel.org;
-        h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
-         :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=trZCIv4VUbmZsT+tqtZK8MjDiIjWO57JQfjXqAJtZwc=;
-        b=TS8RMX/r6PH+MkBNNRfyXf5BvgXb5OkjCBwOOajaDb4vSQLyFCmZviVLdgHj7Fhq7n
-         f86xDcMvdrqvB3fdXWI30Giz8t8XSFpbcSZsEqhyOXxESkjEtorlY5IC7j+IYEiZXDkJ
-         Fhaxhntecj14ga0ZbccIAB3qYDm61ygrZ7N5dGYw7Tgvrv/FkBix/G5b3USGwZjNNnKv
-         I+w2H1MOSfAvO6bfi9YwwdwKqa0yCDQEkSOZg8pD5R/P97/FUFPEwhF4ChUcaw+B4BN3
-         RgVvz4NqxSGvB33yNOzrxbA1VJfzyGXd+v+3Ac8RsQ7DBBoHz9/pq4hzHAmTi4JDGnWq
-         VWtw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778191740; x=1778796540;
-        h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
-         :from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=trZCIv4VUbmZsT+tqtZK8MjDiIjWO57JQfjXqAJtZwc=;
-        b=pStgMoC5NbIp1NaVRv0gnCifSqRi2okrm7e2Mxn0tnWURc/fit8P3MURycevJqPnl2
-         82+rYVK6bdOZYRfg4GhhwqDa1Kq8F57P1CsZ8AAxTV0RDRyA2u6OjnVswpK0UQlSg5MR
-         zDCV2JJzxUX8aKkYS2hCBd/Bq+s/tVNgs/4t5zasaSjD/OZD4dcjX18C3KEwnhv14h0r
-         s60mY0Z5VkQvcPJXqMO+J/SVSHNW6Cvm2Lc9ob+59APsw1XQ04Gb2/ExU5cf7xpS99PX
-         h+EFWpBXntZU1Wp3T7e1j+Uuke+w5xaYDOtnwBcdUkx3LkpxfmQROwre8duNOKc9ZMUL
-         0iPw==
-X-Forwarded-Encrypted: i=1; AFNElJ/uFZHj2NiLpd1iQ9HOf1oByMrE0CKG0L9rw4YtMYAiC3Imlm0D3zqP9vp+6NMbnZe8plQ2ZE7z0KX+6mY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwzCPDnDu1iGgAliHzZGGEeMdjKjMXZjLtjzcHbnZlGga6YN5yN
-	21nDnMynxoNz/SlFW5/39RBJ3c6reqkC6QZIwCBrSQ90UO34M5dVSxPI
-X-Gm-Gg: AeBDiesk4zq3A9aerfc98lo529EGQ64LkFx3uEz9rFbTzTQTjo4841Z23ef3jgmHO+k
-	wu96Ch1SpOoKiJ9JeCHkSmr6MYUax5EENZf5RsyZgadcFCB1a3jubmiw38W8gqliVNB5BKF6GRB
-	gYfaeY9uY6xhhmytRZIfLiFOA59LKhmThrYbK1xyyIuUCQnexmsjd/Bx10sDJ75Bbkff39iV0Xn
-	132dnCsFlL69wFd7pcPwr75FqtS9T1h/2Q2Ty7YahGGY0RV+UtjUG2sbTFFvAjqMazksqrxhoHB
-	No5jHd5A3oTO4SipLjDFzzMKtMRLCj4BbhMAzKALhcjQRwztXP2DfUYmUe659hFXQGnaMvv8ZEK
-	LU/bvin0P9fVhicAFBKjOtEAG+jd44c8pGfynHYvLqqJdCE4emWXjlo3b1N8DijyrKc9+JRBSZ1
-	UcR8JtNNrygYRfxQAfba0liNir1b3ISC9qXALYZmFsLXfCkmbz
-X-Received: by 2002:a05:600c:3548:b0:487:1108:48b8 with SMTP id 5b1f17b1804b1-48e51e0a60fmr153507315e9.2.1778191740007;
-        Thu, 07 May 2026 15:09:00 -0700 (PDT)
-Received: from silicon.doe.home ([197.250.51.203])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45412de445csm1834705f8f.14.2026.05.07.15.08.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 May 2026 15:08:59 -0700 (PDT)
-From: Stefan =?UTF-8?B?RMO2c2luZ2Vy?= <stefandoesinger@gmail.com>
-To: Linus Walleij <linusw@kernel.org>
-Cc: Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
- Russell King <linux@armlinux.org.uk>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
- Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>,
- Alexandre Belloni <alexandre.belloni@bootlin.com>,
- Drew Fustini <fustini@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- devicetree@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v7 6/6] ARM: zte: defconfig: Add a zx29 defconfig file
-Date: Fri, 08 May 2026 01:08:49 +0300
-Message-ID: <23095518.EfDdHjke4D@silicon.doe.home>
-In-Reply-To:
- <CAD++jLk02QnkXYwJ0b6x=qw9stR4nPrjD3sYPOvWAQz8t9OsUA@mail.gmail.com>
-References:
- <20260429-send-v7-0-b432e00d2db8@gmail.com> <5379905.31r3eYUQgx@strix>
- <CAD++jLk02QnkXYwJ0b6x=qw9stR4nPrjD3sYPOvWAQz8t9OsUA@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="BRle0ws4"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+	bh=m9JpZUwZ5ByUKtcAnZrL3/UwLFRZOXKeDj3ktlYy7sk=; b=BRle0ws4rVKhwgEpIRCMaEab0s
+	9adOL8a6xtbGXp+/iD4wqLI9I/sDHlwyxUfdoncSXQ6Kr3KPTBhi6Hk/lDfFLFtx+JZSf5/Qvd4gH
+	QIJHBzK6vS36VV3sTCqu9xl+8vIZ8neyGmYnul9CzssXcG/gUxe5ku0YdnF3DxVwJ/FneST8a/LGF
+	oIF/fy4Gk4Aj4EhK/JlNHa8Kx52kHeu1bwQCz9P7VTBxOx13ThguR/aTJ/C1SEaub0UQ72gMnUtFp
+	5rXtOOF1K790IsnAupSr8U4AzUvTJd0F3FeetVEgXzFTQ39JgrzSaXYSkgZofU0HeaUK54MO5VaEv
+	5AlmdlyQ==;
+Received: from [50.53.43.113] (helo=[192.168.254.34])
+	by bombadil.infradead.org with esmtpsa (Exim 4.99.1 #2 (Red Hat Linux))
+	id 1wL8rd-00000005CiA-21t3;
+	Fri, 08 May 2026 00:14:45 +0000
+Message-ID: <7aeadaf3-3b0a-4a19-904e-26d5aaf9b76e@infradead.org>
+Date: Thu, 7 May 2026 17:14:44 -0700
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart7940474.EvYhyI6sBW";
- micalg="pgp-sha256"; protocol="application/pgp-signature"
-
---nextPart7940474.EvYhyI6sBW
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"; protected-headers="v1"
-From: Stefan =?UTF-8?B?RMO2c2luZ2Vy?= <stefandoesinger@gmail.com>
-To: Linus Walleij <linusw@kernel.org>
-Date: Fri, 08 May 2026 01:08:49 +0300
-Message-ID: <23095518.EfDdHjke4D@silicon.doe.home>
-MIME-Version: 1.0
-
-Hi Linus,
-
-Am Donnerstag, 7. Mai 2026, 15:24:38 Ostafrikanische Zeit schrieb Linus=20
-Walleij:
-> Hi Stefan,
->=20
-> On Wed, May 6, 2026 at 7:39=E2=80=AFPM Stefan D=C3=B6singer
->=20
-> <stefandoesinger@gmail.com> wrote:
-> > I'll send a v8 with some of Sashiko's (very impressive)
-> > findings but keep the defconfig.
->=20
-> Maybe not send all patches to soc@kernel.org right now because they
-> end up in the patch tracker.
-
-I meant send them to linux-arm-kernel@, not soc@ just yet.
-
-I propose to hold off on adding the new SoC upstream until the clk and pinc=
-trl=20
-drivers had at least an initial review. They are more complicated than this=
-=20
-current patchset and they will be necessary to do anything useful with this=
-=20
-SoC. I expect to send a first version of the clock driver over the weekend.
-
-The important thing with the submission to this mailing list was to get=20
-feedback, so I avoid building a long set of patches on a shaky foundation.
-
-> For a new platform that may be OK though...
->=20
-> Nominall it should be three pull requests:
-> 1. Platform
-> 2. DTS files
-> 3. Defconfig
-
-So I read https://docs.kernel.org/process/maintainer-soc.html a few times. =
-If=20
-I understand it correctly at this point "pull request" still means emails s=
-ent=20
-with p4, correct? Or does someone create a git repository on git.kernel.org=
-=20
-for me that I can use to send actual pull requests?
-
-As I understand it, my 6 patches then go to the 4 corners of the kernel:
-
-Patch 1 (dt binding) to devicetree@vger.kernel.org
-Patches 2 (platform), 5 (DTS) and 6 (defconfig) to soc@kernel.org, but not =
-in=20
-one series but 3 independent ones
-Patches 3 and 4 (UART) to linux-serial@vger.kernel.org. I think this can an=
-d=20
-should be a series of both patches belonging together
-
-It might make sense to send the DT binding on its way so it is in place whe=
-n=20
-the SoC maintainers look at the patch that adds the new platform.
-
-Do I understand the mechanics correctly?
-
-Thanks,
-Stefan
---nextPart7940474.EvYhyI6sBW
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
-
------BEGIN PGP SIGNATURE-----
-
-iQJPBAABCAA5FiEEQxb0tqoFWyeVMl1sPRO8yFRPGiIFAmn9DXEbFIAAAAAABAAO
-bWFudTIsMi41KzEuMTIsMywyAAoJED0TvMhUTxoixokQAJhmmO8EPvppOjAKiU0j
-VdiM0KDUx5XdfQy6Y3qibMHrfltre+BU1sXBALudR/Cu6eVqbRG7LnTS/SnW1HJV
-nikfjKT1fNHMgbObi7u6cg/h7vAN8nH5GLgB+cXLO6WO+227c1rusLbDW7ofc3NW
-5B6vIjy7FcGfNv2vLHucbdANPdwqrJWN/Ls5qHMUPmOo6Dqyp4t6KUUdlIHte5QZ
-TwKse0rRM0gc3qkeiL1tAWyDGAsx3l0nkWY8Dbrv38rhF/GbnSo58wv8QGUKEwoj
-7JEmr/4EKArvnpz2Hw3Kstgj2E9e2OUqV0Ba6LCKGhq5oV/+YQ0PPIrepFFznmCf
-dOs0Ek838VCedQ7tTNr689DQiQqcfc9xaU9BZWOBx8c6neW6dqlLXb+Z+PzmcAMc
-qwIMk7D+ryNHp8zKF5zc2P4GXwpeH5W87wU8y/pAscTqkBHe0lJqmqAemRqR5GQ1
-JrpbZ9+q19rh43uWQJDc/gpBm+CqzfFRIpPHpZvgqC+C6tc+IfERZPVzp/qjG6Ee
-QKks/Sw6Ppz24RhR696N1fOadSZpEBM2982UXlpTmBE6SbdMpIwycjtlakyx+qmY
-31Vt8syR+uK7HDGzKaGdXU/IouS4tJ43mfi1uIPAy7OUWlFq+3foENXKECN+E9kQ
-caBl+NzhrviDrlkehVYTcNkx
-=U1tW
------END PGP SIGNATURE-----
-
---nextPart7940474.EvYhyI6sBW--
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/3] tty: remove unnecessary SERIAL_NONSTANDARD config
+ option
+To: Ethan Nelson-Moore <enelsonmoore@gmail.com>, linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+References: <cover.1777943090.git.enelsonmoore@gmail.com>
+ <2cefa6ee9b6bf13d367e15dd74093a0ef9ad81db.1777943090.git.enelsonmoore@gmail.com>
+Content-Language: en-US
+From: Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <2cefa6ee9b6bf13d367e15dd74093a0ef9ad81db.1777943090.git.enelsonmoore@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
 
+
+On 5/4/26 6:20 PM, Ethan Nelson-Moore wrote:
+> The SERIAL_NONSTANDARD config option currently only guards the
+> selection of two Moxa multiport serial card drivers and the HDLC line
+> discipline, so it does not significantly simplify configuration. Make
+> the configuration process more straightforward by dropping this option
+> and dependencies on it.
+> 
+> Signed-off-by: Ethan Nelson-Moore <enelsonmoore@gmail.com>
+> ---
+>  arch/arm/configs/footbridge_defconfig       |  1 -
+>  arch/arm/configs/lpc18xx_defconfig          |  1 -
+>  arch/arm/configs/mps2_defconfig             |  1 -
+>  arch/arm/configs/neponset_defconfig         |  1 -
+>  arch/arm/configs/stm32_defconfig            |  1 -
+>  arch/csky/configs/defconfig                 |  1 -
+>  arch/loongarch/configs/loongson32_defconfig |  1 -
+>  arch/loongarch/configs/loongson64_defconfig |  1 -
+>  arch/mips/configs/bigsur_defconfig          |  1 -
+>  arch/mips/configs/lemote2f_defconfig        |  1 -
+>  arch/mips/configs/loongson2k_defconfig      |  1 -
+>  arch/mips/configs/loongson3_defconfig       |  1 -
+>  arch/powerpc/configs/cell_defconfig         |  1 -
+>  arch/powerpc/configs/microwatt_defconfig    |  1 -
+>  arch/powerpc/configs/ppc6xx_defconfig       |  1 -
+>  arch/sh/configs/polaris_defconfig           |  1 -
+>  arch/x86/configs/i386_defconfig             |  1 -
+>  arch/x86/configs/x86_64_defconfig           |  1 -
+>  drivers/tty/Kconfig                         | 18 ------------------
+>  drivers/tty/serial/Kconfig                  |  4 ++--
+>  tools/testing/selftests/bpf/config.x86_64   |  1 -
+>  tools/testing/selftests/hid/config.common   |  1 -
+>  22 files changed, 2 insertions(+), 40 deletions(-)
+> 
+
+
+> diff --git a/drivers/tty/Kconfig b/drivers/tty/Kconfig
+> index 63b378e44a59..a9ade8bc88b2 100644
+> --- a/drivers/tty/Kconfig
+> +++ b/drivers/tty/Kconfig
+> @@ -191,26 +191,8 @@ config LDISC_AUTOLOAD
+>  
+>  source "drivers/tty/serial/Kconfig"
+>  
+> -config SERIAL_NONSTANDARD
+> -	bool "Non-standard serial port support"
+> -	depends on HAS_IOMEM
+> -	help
+> -	  Say Y here if you have any non-standard serial boards -- boards
+> -	  which aren't supported using the standard "dumb" serial driver.
+> -	  This includes intelligent serial boards such as
+> -	  Digiboards, etc. These are usually used for systems that need many
+> -	  serial ports because they serve many terminals or dial-in
+> -	  connections.
+> -
+> -	  Note that the answer to this question won't directly affect the
+> -	  kernel: saying N will just cause the configurator to skip all
+> -	  the questions about non-standard serial boards.
+> -
+> -	  Most people can say N here.
+> -
+>  config N_HDLC
+>  	tristate "HDLC line discipline support"
+> -	depends on SERIAL_NONSTANDARD
+
+Here, N_HDLC used to depend on HAS_IOMEM (due to SERIAL_NONSTANDARD).
+It no longer depends on HAS_IOMEM so it can be built for ARCH=um with
+no build errors.
+
+Just FYI/FWIW. Maybe add that to the commit message.
+
+-- 
+~Randy
 
