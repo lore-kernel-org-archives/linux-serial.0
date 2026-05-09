@@ -1,128 +1,204 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FD8A233721
-	for <linux-serial@vger.kernel.org>; Fri,  8 May 2026 19:13:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8AB41A6828
+	for <linux-serial@vger.kernel.org>; Sat,  9 May 2026 01:19:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778267599; cv=none; b=lfPIr8itifNmyeU8Bw6RUVqKAilXXch9Kme916+iUOJPz7rNFHxKPpCKeosXwUIv6vm9KEP7ItFM2TbjkaDiWs6T99uITsfMlsxceNCPWz4JVzW3/mfHIQhQX+1ezu+4BKquRdF70uSgeq8IRXmkHD6fj/KgnPQZEyfJpg098G0=
+	t=1778289560; cv=none; b=XKGE3POdwNTR/ZaAtnTcFjdy5TG+DuW6QjNyYhgI21+TlnkBJ+fWPCavrT4mUupmLzzf3ovK2o7zINOUn6Cc6fAiElwY4gbAtO+64xBI2ZGu2PgDt0H8bk5hLeUVarzavY5wGNCJuumYo9HksUFDXP6tMX30K1clb9d3YaX+APg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778267599; c=relaxed/simple;
-	bh=m+PNYt/eWysm9k+FR9iBvcdxWi6AKRQIzayYMpLkT6k=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=t4kahCliXM4ikJzm44TfWESeKIwYuau2A4B/Fy5rHmPRLSXJYZ8BKVitf65o8tAXrhsqb0Yysd4eVJiFWfjBq17Tsq5czIaUN+jf9Q+R6TGuhkaF98Y/Zf6q3MtV33wv5nHxGVIe2WG4ikN9Nvk4R/1w3ciRumq1QsaRk71fPb0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=pKDjQX5+; arc=none smtp.client-ip=209.85.128.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1778289560; c=relaxed/simple;
+	bh=akDT+lYONcbq4fIHNXiYeOOokqqF1TABlkQo5wHmVvc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=FdbE6w8a632Xtdq0Mtuz+Tm9+IMGr4/BLPK499qT2tUuffspLNDoQ3CwoDXLfFAJwXxPs1+Ria60ZxvjWwe0op/kC87K7pn7wj862+DpERtNbDvpJsME+9j3Ul1nAxRjQjdgRVIu/ukwzWYvoR0Q+sQzvg9VGa608h0K8+ZlqXM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=L/NuR0Uf; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=RMCxCkkT; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pKDjQX5+"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-4891c569cb1so1774945e9.2
-        for <linux-serial@vger.kernel.org>; Fri, 08 May 2026 12:13:17 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="L/NuR0Uf";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="RMCxCkkT"
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 648K1OpM852412
+	for <linux-serial@vger.kernel.org>; Sat, 9 May 2026 01:19:18 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	6CBYMEKKTRjFBCxhabXLvqdNhN84ux2TWjRDod/XXIQ=; b=L/NuR0UfsTpy473e
+	mAveDI6EKxjmjbtZuaXprazRlbgBrvz/5j5arv9uRawLTF5kSWSzOo6SXuuB50bT
+	lNGPlrHs4PoHvuksBjwNsLsRcJUKwSEd4mtP/hNIemwk7V9G6ABPDYM5hqqRNTmf
+	/OoBi6aL+p1P9iGbFmr8LJ8pn8fWEcTMmRwySDXfEKqkTwmnR8Jb0mQCgeSU7DZV
+	qQWuc+O4vsQ3paK/LEkKBOZblEsSSlLX4XbrFfsUhwq+ISENWluwmSDvyJiHvvAy
+	EHZupNChhLpZHf29TghBTpaJ6wwDcNHzUssdxAU8EXx1UM2GSyFYwj8gaKmEsW/l
+	KWKlIA==
+Received: from mail-dy1-f199.google.com (mail-dy1-f199.google.com [74.125.82.199])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4e1fptjfp2-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-serial@vger.kernel.org>; Sat, 09 May 2026 01:19:17 +0000 (GMT)
+Received: by mail-dy1-f199.google.com with SMTP id 5a478bee46e88-2b81ff82e3cso2014035eec.0
+        for <linux-serial@vger.kernel.org>; Fri, 08 May 2026 18:19:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778267596; x=1778872396; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Ss2dNfL6Ott2JQyZMGJaHzME4Ht5awruV2D2eXagSaA=;
-        b=pKDjQX5+qWTk26476bUO0x2YWtQLxK2f0Qfo9Ds42eZPIiX8I/5JzH6XYtR4pVhHda
-         vxbDGQhI1Rtjju2stU4SrKxoisQDn+pES3dvYCM0+WNFjsx/MY3GnHvo+LDniVRZswq0
-         MEnWCkY6EwIns5s0Fo9p5zNyJ0UGDnjndJNGolccCDn/7Kt+K3M5Hg6oC+d4B5mB1PJV
-         +ibi9kfHGO61F37k2fGtMJ43m6iDdOjTdk3l6nNlQxe011S6k7VGoJHi6ivOU20iDaOx
-         ZG3alHfEmVkWuh+bGA/5eCnN5nLLSlFens11Obk+BG0gCpEFAoa9e2LEe3dUTdsr02+E
-         /U2w==
+        d=oss.qualcomm.com; s=google; t=1778289557; x=1778894357; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=6CBYMEKKTRjFBCxhabXLvqdNhN84ux2TWjRDod/XXIQ=;
+        b=RMCxCkkT3L7FEPRWmUhymlQ1Y7914etXW83vhGXwiYHcK/p4evSLa+0uwZBwBmo9TK
+         zlieESMHaB0nIULgBaYdV5bEx/1gt6r/053sxPf7gok/qEwGQj73TDvnvx5tD7KglhpV
+         iaR87TB9H71/XleBQunt6cfXOULvcC91ZHNqdFoxJx3f+YFAnHGYs/+fE/a/NUhPnZzD
+         +20Gx8tj9ix1MPKZND6Y0nNNqa3pqliuy+mPIFKGkhR5S575HTXU1lSGhqZePCCPFgW9
+         6fByGpYErAPP7N3nyeI60DDOsxuJYjZcTAdZrmo5zPOEZvT0SyCqye8SQ0PdY9+z1W9g
+         Ik9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778267596; x=1778872396;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Ss2dNfL6Ott2JQyZMGJaHzME4Ht5awruV2D2eXagSaA=;
-        b=jWP27KBVRfpxpF+bdYwhUNqqFajs7dpkKcbecLOUFZyT3N78bnM/2UQLavT9SlvWOJ
-         s5S8OrP8UkeanPBtjn1UL7cBSSb97w+EpAC7a675YeJZkNRcGKBwfU2JBNWfNocYRFp+
-         1MxDnI9Ox2exHFgtj7Hnv8DPGCGVMpKUN3+0UAKZnd29fVMcFrXKzR3moazZ2vW3h4Mk
-         jS2vNtj7p5K1xP5D5KAiqy5bvdMlW3BO4lLmhlcYj3mlVUPUlfoae4FErygW3sbVOW6Y
-         3vlBbQGXNZIY1cfMMSDj6MgzEFLqFikRQ5k4Mvq3ri/lXcsu6OpCmPW/WDQzbpSSSvlC
-         BFRQ==
-X-Forwarded-Encrypted: i=1; AFNElJ/4NxovU0BuhXut0tKe8vOhpm1ZsPg3BnHc8ZBJa/X9MF7Efp5cylWE9Dcjry1Z62FcOIowHRlg/pXz5PY=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy9QW24uFdyTx+Ps/63SjAp1Rxfs+EokItuKaQsDD7QTnRVQXeF
-	8dWXrANSAs1ZzfuT4HyVuSLLk885NT1gbbGO3jI76O7zTCMbydFJ1QZMgxhDHWzAHVJlfg==
-X-Gm-Gg: AeBDieuVZ7Zm5pKpWFy6C+x/QTsnhrBdvJX6C9Yoq+ej4WXUVrnZrCJJQf8uMNVjxYB
-	y9BVMf+GXR7dYwb3NOuzXzFy6sPDxhbOnqQOlCoYaRkFW3KS/Ce86IhYpDdtHi5kNBpbDn3kZ3/
-	v9KYJoCjfTWNYIq6rIOwsxCAyXjriC4CcJAxbSNXrwRO5xaGSRBZBF71iBNfyd7nV1kcIQFGMAN
-	LJiQc2geNcOER0rHgGS8wxsUYmxvHx01XVoukbCw+9s/DR4nOQ+QPbQ75pkJliu3aCU4JdaB+sj
-	MZp7ntV9OB+yOB8O87XqBan7B+a6+GoUB+hglLnELt/gAOsvD0zsTmoj8vwJ4f/ytSauEgc+qEV
-	E3F0zlNLetYGLBfcewHvpjkwqX2Jo3F09BlnofvU+rIYv6xNmzpXpJUzEzZmJh6myWqC/C9IBdn
-	fF+1ZzTntY+6ftSrHlBEKgNXV1/EwhgT8J9bVgknRtum8=
-X-Received: by 2002:a05:600c:46d2:b0:488:7e7b:dbc2 with SMTP id 5b1f17b1804b1-48e51f4539cmr107036435e9.3.1778267595629;
-        Fri, 08 May 2026 12:13:15 -0700 (PDT)
-Received: from localhost.localdomain ([94.158.58.43])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48e6d8946a5sm13333695e9.0.2026.05.08.12.13.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 May 2026 12:13:15 -0700 (PDT)
-From: Stepan Ionichev <sozdayvek@gmail.com>
-To: gregkh@linuxfoundation.org
-Cc: jirislaby@kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Stepan Ionichev <sozdayvek@gmail.com>
-Subject: [PATCH] tty: serial: 8250: protect against NULL uart->port.dev in register
-Date: Fri,  8 May 2026 23:12:37 +0500
-Message-Id: <20260508181237.11146-1-sozdayvek@gmail.com>
-X-Mailer: git-send-email 2.33.0.windows.2
+        d=1e100.net; s=20251104; t=1778289557; x=1778894357;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=6CBYMEKKTRjFBCxhabXLvqdNhN84ux2TWjRDod/XXIQ=;
+        b=LAz2ZcpYchYBMIcdEuD9OYdNFWtGFAJuw+TvAsrU5KwLdJ3DweqNjn1xDE2h8y3igm
+         necHMj4I8SFU2BuFI4mUhbl+jy7cPjpkHDVxMWd6fz6fml81G/XDgtRpMqK1NWX3nJqs
+         Pa1hh5s5luYS7VO+XsbH5d49H+tWGXVJQIQ0U39nYc+SF0XHVnkv1Aj1BpBM33zi4oe3
+         J2WWAZgonavApr9hBPv1wewqY5iG+m0SLeOK+DIEK9zT/cq6qQXgEOno/bzJ92TRXI8t
+         vpH+Gffa5f26FWomimZj7Hv+CzJfXvHn4rjweTYjjHq0ofYbmdiSMSdyEeZQhaE9voo5
+         +Lxw==
+X-Forwarded-Encrypted: i=1; AFNElJ83/45zd0frGGLU6Z0yvQ93oZm7kf5UHOn/hsadZU4TjLvcXQCXsi10jDePKRfmEsEDlIH+c2X+65GzJ2w=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwtJTlog6AB71266e3B13gjox0IU3Uao3WH6eLPBNnMSQCd3y4W
+	UJcSd9jr76SFEVilhE0ik4Tgd8bx5AL7G1YgbU+b2dJYdTij9t+9d+TjIscgGOtoTEHHh1Ukvq4
+	9QJ/L4TDStUHdxLac+abj9WjJcEXO12ayUbqBEysmw3dtO1R7i6o7UA6NDft0J10xbVE=
+X-Gm-Gg: AeBDietPktDT4IMFul2TWbB728DWXz4Vj/FVTTNeLkQyKnTm5FSUGDqdsN1uoApSARX
+	edM9dyIc/c6UTYsIB0RIVdgUYTYjW/JvumrzVumEXsBvZBla/hihPw0+yBzvuGo+v3NgqjsfgB/
+	chBuvgcLsd0uNTrsD6chncGdnW1G5jJroGflPq7FGiShMSmQ6XfaSzpZZ/lnr01swIBYGnzcV67
+	QYzoncFabjFrzw/o/YD8kZndA9EAmtfOwcHvInj0lvsCpr3Bitg6cZ+02D67C6BgNxS7CicwKY+
+	t7lOzox6DYoWdQAZ9hqvxTrsNw+rpEW2e75AdATtfggPED9OFR+RXfFuTZE+Hi1bxuYRKu2Uvaz
+	7eCWeAuONj2rcTV3K7+ImEnHj8mJZ+bEjn3nssH6l+fWph7ym3XgKtA==
+X-Received: by 2002:a05:701a:c94e:b0:119:e569:f86d with SMTP id a92af1059eb24-1323ae991aamr4128641c88.10.1778289556629;
+        Fri, 08 May 2026 18:19:16 -0700 (PDT)
+X-Received: by 2002:a05:701a:c94e:b0:119:e569:f86d with SMTP id a92af1059eb24-1323ae991aamr4128628c88.10.1778289555965;
+        Fri, 08 May 2026 18:19:15 -0700 (PDT)
+Received: from [192.168.1.6] ([49.204.109.195])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1327821fd00sm5674706c88.8.2026.05.08.18.19.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 May 2026 18:19:15 -0700 (PDT)
+Message-ID: <2e694c95-83af-4548-b453-19904d24d924@oss.qualcomm.com>
+Date: Sat, 9 May 2026 06:49:09 +0530
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1 1/2] serial: qcom-geni: trace: Add tracepoint support
+ for Qualcomm GENI serial
+To: Steven Rostedt <rostedt@goodmis.org>
+Cc: Masami Hiramatsu <mhiramat@kernel.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+        linux-kernel@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        Mukesh Kumar Savaliya <mukesh.savaliya@oss.qualcomm.com>,
+        Aniket Randive <aniket.randive@oss.qualcomm.com>,
+        chandana.chiluveru@oss.qualcomm.com, jyothi.seerapu@oss.qualcomm.com
+References: <20260506-add-tracepoints-for-qcom-geni-serial-v1-0-544b22612e08@oss.qualcomm.com>
+ <20260506-add-tracepoints-for-qcom-geni-serial-v1-1-544b22612e08@oss.qualcomm.com>
+ <20260508132543.4f100ae0@gandalf.local.home>
+Content-Language: en-US
+From: Praveen Talari <praveen.talari@oss.qualcomm.com>
+In-Reply-To: <20260508132543.4f100ae0@gandalf.local.home>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-ORIG-GUID: 3j4APSnWbkWRhXvResKNWQmbD5k9-9kr
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTA5MDAxMSBTYWx0ZWRfX9vibzL2SAnSK
+ MFb5gpccc4rU6Lfb2dH6NzobkuxBSZgBgYTdisZIgWH9aWW6XaxUliqm2yYGKNZhpO19/dZGNHk
+ AIg8Gm9fwPo6emEPK6rYOVK20l1ggP1NOQQ9ZDAyZ408iSBCliEvx0q34uQLKiADVGMLsi55qvh
+ MPFq46HJ8w6LVXe5eUFV6+vj36HO07igaVQAsFeT7Ejtc5bBvkHkYInqQGtaXTJ7dufsJ03BsiG
+ mOtOFI4KzgT5jtFWZKvHOEkbMFxLKRHnOG5olcnEjhD95RhPRcPAX7wH98Y7eARNniIRQ/8FA6l
+ 4lrBgfie0d4Z8GMmH/UAJKn8vNCteIEgiXDb1prMrO6PNlFznJ2GrtunHKOcdNtBTwy6Dv8uOjP
+ oAc7Oz87g97HhUJdYf32kfbSgcmHxE3kMJTcPhua98i9DM6J8zUg83pIgFwAz7Nr45uFWE7XeCF
+ aH3XTGF488daHVf+yrg==
+X-Proofpoint-GUID: 3j4APSnWbkWRhXvResKNWQmbD5k9-9kr
+X-Authority-Analysis: v=2.4 cv=IYi3n2qa c=1 sm=1 tr=0 ts=69fe8b95 cx=c_pps
+ a=cFYjgdjTJScbgFmBucgdfQ==:117 a=TOgzk8GLwxQW6KRttr6vHg==:17
+ a=IkcTkHD0fZMA:10 a=NGcC8JguVDcA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yx91gb_oNiZeI1HMLzn7:22
+ a=EUspDBNiAAAA:8 a=_ZtuFXLZ6xHUn8lUtBkA:9 a=QEXdDO2ut3YA:10
+ a=scEy_gLbYbu1JhEsrz4S:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-05-09_01,2026-05-08_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ spamscore=0 adultscore=0 suspectscore=0 impostorscore=0 lowpriorityscore=0
+ priorityscore=1501 clxscore=1015 bulkscore=0 malwarescore=0 phishscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2604200000 definitions=main-2605090011
 
-serial8250_register_8250_port() conditionally copies uart->port.dev
-from up->port.dev only when up->port.dev is non-NULL:
 
-	if (up->port.dev) {
-		uart->port.dev = up->port.dev;
-		...
-	}
+On 08-05-2026 22:55, Steven Rostedt wrote:
+> On Wed, 06 May 2026 22:54:44 +0530
+> Praveen Talari <praveen.talari@oss.qualcomm.com> wrote:
+>
+>> +TRACE_EVENT(geni_serial_tx_data,
+>> +	    TP_PROTO(struct device *dev, const u8 *buf, unsigned int len),
+>> +	    TP_ARGS(dev, buf, len),
+>> +
+>> +	    TP_STRUCT__entry(__string(name, dev_name(dev))
+>> +			     __field(unsigned int, len)
+>> +			     __dynamic_array(u8, data, len)
+>> +	    ),
+>> +
+>> +	    TP_fast_assign(__assign_str(name);
+>> +			   __entry->len = len;
+>> +			   memcpy(__get_dynamic_array(data), buf, len);
+>> +	    ),
+>> +
+>> +	    TP_printk("%s: tx_len=%u data=%s",
+>> +		      __get_str(name), __entry->len,
+>> +		      __print_hex(__get_dynamic_array(data), __entry->len))
+>> +);
+>> +
+>> +TRACE_EVENT(geni_serial_rx_data,
+>> +	    TP_PROTO(struct device *dev, const u8 *buf, unsigned int len),
+>> +	    TP_ARGS(dev, buf, len),
+>> +
+>> +	    TP_STRUCT__entry(__string(name, dev_name(dev))
+>> +			     __field(unsigned int, len)
+>> +			     __dynamic_array(u8, data, len)
+>> +	    ),
+>> +
+>> +	    TP_fast_assign(__assign_str(name);
+>> +			   __entry->len = len;
+>> +			   memcpy(__get_dynamic_array(data), buf, len);
+>> +	    ),
+>> +
+>> +	    TP_printk("%s: rx_len=%u data=%s",
+> Do you really need to say "tx_len" and "rx_len", could it just be "len" and
+> have the name of the tracepoint show what it is?
+Sure. I will review and update next patch.
+>
+> Each TRACE_EVENT() is really just a:
+>
+>    DECLARE_EVENT_CLASS() followed by a DEFINE_EVENT()
+>
+> underneath.
+>
+> And each TRACE_EVENT() costs around 5K in size, where most of that is in
+> the DECLARE_EVENT_CLASS() portion. Thus, you can save some memory by using
+> DECLARE_EVENT_CLASS() and then define the above two events with
+> DEFINE_EVENT().
 
-So if both the existing uart slot and up have a NULL ->dev,
-uart->port.dev remains NULL. The very next ACPI companion check
-then dereferences it unconditionally:
+Thank you for suggestion and will update in next patch.
 
-	if (!has_acpi_companion(uart->port.dev)) {
+Thanks,
 
-has_acpi_companion() reads dev->fwnode without a NULL guard
-(include/linux/acpi.h), so this NULL-derefs the kernel for the
-remaining no-dev case rather than just skipping the
-mctrl_gpio_init() initialisation as intended.
+Praveen Talari
 
-smatch flags the inconsistency:
-
-  drivers/tty/serial/8250/8250_core.c:767
-  serial8250_register_8250_port() error: 'uart->port.dev' could be
-  null (see line 719)
-
-Guard the call with a NULL check so register continues to work
-for callers that legitimately have no parent device (legacy
-non-OF/non-ACPI registrations).
-
-No functional change for callers that pass a non-NULL ->dev.
-
-Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
----
- drivers/tty/serial/8250/8250_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index a428e8893..e136cec0c 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -764,7 +764,7 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
- 	 * Only call mctrl_gpio_init(), if the device has no ACPI
- 	 * companion device
- 	 */
--	if (!has_acpi_companion(uart->port.dev)) {
-+	if (uart->port.dev && !has_acpi_companion(uart->port.dev)) {
- 		struct mctrl_gpios *gpios = mctrl_gpio_init(&uart->port, 0);
- 		if (IS_ERR(gpios)) {
- 			ret = PTR_ERR(gpios);
--- 
-2.43.0
-
+>
+> -- Steve
+>
+>
+>> +		      __get_str(name), __entry->len,
+>> +		      __print_hex(__get_dynamic_array(data), __entry->len))
+>> +);
+>> +
