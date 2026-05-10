@@ -1,72 +1,85 @@
-Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41])
+Received: from mail-dy1-f195.google.com (mail-dy1-f195.google.com [74.125.82.195])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C617E256C6C
-	for <linux-serial@vger.kernel.org>; Sun, 10 May 2026 03:14:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 007C3313551
+	for <linux-serial@vger.kernel.org>; Sun, 10 May 2026 05:21:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.195
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778382856; cv=none; b=V6CkN5Pyj3Z5GpnYh00vxYusA+CGSvpW6yJoM8yDY4LL0nvL7gtUYuBZ/+ZQ1E6KzKMaeY2htbdjsh9EZqYkIGI5QJf4KapFEU7LPHHPxBP9ET3eo1dZLxP61WcvlUie0sis5at4lk5dHKk4ka9k8dLd1k51gQuf/Q/ejMaFjpc=
+	t=1778390501; cv=none; b=knPx9gDZmjg9AtuWR3hyzfwuX00fWLaxA9U605CvtpCBNRtvM/VzS9Uj8FLa8kwbB4+Izlz2YzgsFOykbfvgZTDTodnWb0i6G9eMuE3hN/MP+Zx/tBxX4MrOrX7GsN8fMHAdzbnbOd7VpLyBiJ77+LsZUpPJ1FH4RuZQqmCC7Xw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778382856; c=relaxed/simple;
-	bh=//I/6EMQ3rl40MxAjia93Ci3CX4B9b1McuAHLpTfpAA=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=P7zQTFgcTWZId7pJmniUWzRGWXxOUYXEAZAQ7peHUKNAT0JfMXXSNFb67FIeJclicO74k8ImHgdpoWw+42mSzZu6d6pTuDCbXxciKiSOOtrQ2ws86TYRW33pcuHp2Q8kjAhP7kptILqMKha+TUK23u2YzcJLefX8kVVVarsBTU0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iuQXk7XB; arc=none smtp.client-ip=209.85.216.41
+	s=arc-20240116; t=1778390501; c=relaxed/simple;
+	bh=iyfgSATq+jlurSkwX0XjsG0MidymjoDXh1Dg0XL0i60=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=AGwkXz1buJan7+WfUB8+vy8hXLJAWta440G4y7srjWFAOoz/1gvaw70umrX7cRNoyPYRWSh/TX4H1X/F0m2wBzYUWqlybHlnVyovplR1vFbacR9s77LKZGmWMbp+0yhBwwCh3p2wc9aAnCvNI14AISl4GTHnfOlqbj8y9j53tjY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=G5ByJJtU; arc=none smtp.client-ip=74.125.82.195
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iuQXk7XB"
-Received: by mail-pj1-f41.google.com with SMTP id 98e67ed59e1d1-365e20fe3b8so1826852a91.3
-        for <linux-serial@vger.kernel.org>; Sat, 09 May 2026 20:14:14 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="G5ByJJtU"
+Received: by mail-dy1-f195.google.com with SMTP id 5a478bee46e88-2ecf9e398f4so8768758eec.1
+        for <linux-serial@vger.kernel.org>; Sat, 09 May 2026 22:21:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778382854; x=1778987654; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1778390499; x=1778995299; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=pTQn2s211z3JcOYJ6bPA9wHHQAfjgFTJm5bQ3cUbOwA=;
-        b=iuQXk7XBQNXT2PCFwDBybumnwVyX4PaAtABlYFOdmBWYhdq313moE71YVKxYBhnOXw
-         luGv/DyAKwJtY0b2j28yHp/TcnAMEmsLTjPVKfcpIPFOS2HtF/oRIxKFy4JiQDem7sxl
-         N03R8EPXFDjmgC3qDbfImTdXLCllcH6MSRsIbtuw7sqnxy7KwIIkLYYcTCXca3vsFlbZ
-         Ozbs6JnmZhJIF6iys7F7YM/H+io/rLpLtihp8EEkgn+e9H0jhC9cEuyV32zSjEfOUhrf
-         ofLf3vBMsnNVDzmLLjuXvfMCkYtEvxvDtG9TjjgVsmrnOs+UsalCcRhSEl9+08tWzSho
-         Z+OQ==
+        bh=ByD/C9lLdqNb5sEC4Ll4SpfSx43c4fiEK3gBugZ/0MQ=;
+        b=G5ByJJtU6fzeIpeX1Y3ul3tMQ7eM5e9YXANyFZy1bC91eqckFJD4ECzkulv9uz70/u
+         /YieCODTTVFzDIyi6QRlrOHw1SYAnETGMBlWEcHy4DVOwoX0sQ3OqDPCjoEIliUHRQc/
+         LwKa2uI8KE+0TFnccN7x9nWPajI/yQUGtS8UKFbYGWq5PAD6NbjC658cwhkUsEZlIv3b
+         3EQQq+5PMQ3fiAci39RIjrSie+45kkpP9GAes0IdgNKShfmEitN1BmNtueptSJqzHLUi
+         xRLMKMNaZnqn+eexOJq/vWKRwlwgv08xFUFaImRipI7vQyOnb4AZjcm6ztpaITpYOU69
+         JOmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778382854; x=1778987654;
+        d=1e100.net; s=20251104; t=1778390499; x=1778995299;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=pTQn2s211z3JcOYJ6bPA9wHHQAfjgFTJm5bQ3cUbOwA=;
-        b=Rx74UD3MACLcVopFp5NumggXpatCVBIKixitXqfpU6m7LdQg52zGodZeSDHRbwEidw
-         9Iw28fJKt+k8pKUSUwJ+MYjsYkkL2C1Uu5CC2mYT3EVF1yxl4EYaX/8nma2HRD+UiruT
-         XZWT5dY0qdwfrcZvFxASjrSOBkgfc94sxiNfrVwgMRu9EDpQv6yDkHYxXmJECPI8qLWE
-         8t0TOWxu/dox1i7M0BP+AXani0ssz855bco6oXT7Iga+KDXjEHFuK/2cP3T2IwXWDToE
-         e51Mz+W972p2cPhtwXDSrnMojacrshm7km+UVDZ0M14AAedLsn9oGTrOoBjiP1YCk/BY
-         EAhw==
-X-Forwarded-Encrypted: i=1; AFNElJ9kZzrnm1GuLPYEt3uQFMlup7T7tpTfEamzjb4Rca667B/PkeDw1hbdLSYZTuwIGbI5X2Mmy0q1weyp7xI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzP2Pizx1LwMr9XvO0syAbUIN58ZgvaDyueV9kn70F4mQcihQLM
-	asfEkSPfyS8lFtA06zRTHpwsTp3hLKCWhdgn218VMkHoeseDs9EwqsZ4
-X-Gm-Gg: Acq92OEs1Gbc5LpxCBLMN8RxQKym1SPrqL7xL/8BkGWO2M4OoBaUC2Kq9pokpg59t2G
-	5UNJqzOM+GqlQxDmGdk2VNor2D0Le1NgeVfGAlMJQ3Dy06mh9/wemRT1WlhxguL56K5yCkB6lHW
-	G41xXpnt9hZvU4eaA766Fj2g1o0ZC5zSXNRB2icJYnyN8U2HM/TUh1Ym3R6n3RfR3913ZYxZ1Ot
-	z8pyheAsQ5NN3TPIqEnEspTY/Mpyy4w0rCQj9q3bOuvTUktsv6SENoRIMNABtEyc1dK+aHhCGRs
-	zPffujWMtJX9tsDawXK3ODuTk8mRhdm72uZfWIKLOgJ8PlfIbe639OJu/sJTdTXs6+M7qInLHv4
-	kAhgVP3OevF+9B6s3aHwsf7mMLNBnZ+4GRfG6lLvmgxmxtXbfJA+ICAHQBjYDWTZfvjN+Qe1yh0
-	KdrDOoeVQCyIdfA29XrhWyRgXEv4vf
-X-Received: by 2002:a17:90b:1c0a:b0:366:527:3c9a with SMTP id 98e67ed59e1d1-3664ccca7b0mr8887873a91.15.1778382854366;
-        Sat, 09 May 2026 20:14:14 -0700 (PDT)
-Received: from localhost ([111.228.63.84])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-367d625ee39sm3644658a91.4.2026.05.09.20.14.01
+        bh=ByD/C9lLdqNb5sEC4Ll4SpfSx43c4fiEK3gBugZ/0MQ=;
+        b=rzzNRh+39iiiHVw+iBiBHxhjFiVB3fmorjBENsZHDiEpI7MxU278m3tIiC/EN1J77Q
+         QqS7hSrv5eSCl0NIjtejHzxrDLgwSyHvsACxdFnLPQHRC9cGLkgWb9dyS/j3NRO7d4aX
+         /C3kCrso5wsUsJ1v6zNk8pomht5wrf6AkcyjYzCDBX2cmHjpY6h9cQhhitqmlnFJOp2K
+         1vlJ0pSqlY2r6FX0uZqmrKFH6+JFsuDl6PaR967Gm+l9fteLaP6BkyYE3YjBTumd2oTz
+         qozCd0TigytgqWNAsJUjPh8f8lOwkJPHDQTEO8xKOq/pDvver+/1n88sO7ihyLGCXYUJ
+         w5ZA==
+X-Forwarded-Encrypted: i=1; AFNElJ/N7GYzdVhTIMVYUCKHyYs+Jf3HYDe4RkjYb2W64lTM8pAJgK26iNIVK+REjL85qUxiJO6Esmm0bcV7ziE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxP8omI/bpomNZwLCj7Q/GhWw1n+koTUNtcCZ8Eu0HvGjO0uG4z
+	SlVnTlo3sI34v2AQxgaRaeUr1Jk4jO/iTBqP8Pn2trhR9azuMfqD/QnD
+X-Gm-Gg: Acq92OFu2EXSwiyshp1MySmRCN81HoHTeXJyd0rXTNqPY4ldMaIJwPH6Bkr4o7a1/M4
+	PhA9WUI3M6BJ0VkDnSvatJSDQNjXNeohwxkWp6ooJ9Mho4wBJg+I2rlWjISGrl4zVfsFBXXt+IH
+	2oCRD3fWxplORFDiJbMetycm+7iql+7G9l0sSKGvP+yQeBDZaTn+Yhic9rdswp6195bAFxobvXp
+	bwpPmLzcAaSRt3405+5mjVqjNeLm5xVHIqsq6oN4HOXwg0FbsBhLIi66es58DMrHBDmgdU/hUl0
+	j3GgDaaQr30abZv4Tb7uiSj7sbyy2zS3H7WHCrkSepsqOP4pmat4NPMbsO2voh6pa8rM+Y3WlbP
+	ZXUtPWgXmAK6xf8yf6i8YbOPnnJNwuBfdfQGH/8Vgw5eLoMJe7Si9TFf8DaalsJDMRosqvt+w+K
+	R1KBz7/WZaeKsUwhcES81xZ4Lu79MkA7iVob22ncRxASth5rbFNDZqZed3vy4XQxV0aBr6Ynvh7
+	+qouEts5Wgfd+OyhPGQQWxHmzcJmFu4gKA0YoyIgU0GAg8gux6Zf+TfDO/lWqqqrxaAxdqbkwxv
+	CdjTYPYxvL6PHrtPAw==
+X-Received: by 2002:a05:7301:7c12:b0:2d8:df01:d9f7 with SMTP id 5a478bee46e88-2f54b891fd0mr10659278eec.15.1778390498897;
+        Sat, 09 May 2026 22:21:38 -0700 (PDT)
+Received: from ethan-latitude5420.. (host-127-24.cafrjco.fresno.ca.us.clients.pavlovmedia.net. [68.180.127.24])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2f888c469b6sm8749587eec.24.2026.05.09.22.21.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 May 2026 20:14:14 -0700 (PDT)
-From: Cen Zhang <zzzccc427@gmail.com>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	baijiaju1990@gmail.com,
-	Cen Zhang <zzzccc427@gmail.com>
-Subject: [PATCH] vt: keyboard: serialize KDGETLED with keyboard_tasklet
-Date: Sun, 10 May 2026 11:13:48 +0800
-Message-Id: <20260510031348.1922157-1-zzzccc427@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        Sat, 09 May 2026 22:21:38 -0700 (PDT)
+From: Ethan Nelson-Moore <enelsonmoore@gmail.com>
+To: linux-arm-kernel@lists.infradead.org,
+	linux-input@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Cc: Ethan Nelson-Moore <enelsonmoore@gmail.com>,
+	Russell King <linux@armlinux.org.uk>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	"Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+	Linus Walleij <linusw@kernel.org>,
+	Kees Cook <kees@kernel.org>,
+	Nathan Chancellor <nathan@kernel.org>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Thomas Weissschuh <thomas.weissschuh@linutronix.de>,
+	Peter Zijlstra <peterz@infradead.org>
+Subject: [PATCH] ARM: footbridge: convert to sparse IRQs
+Date: Sat,  9 May 2026 22:20:49 -0700
+Message-ID: <20260510052107.555825-1-enelsonmoore@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -75,42 +88,269 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-KDGETLED reaches getledstate() and samples ledstate without serializing
-against keyboard_tasklet.
+To improve future maintainability, change the interrupt handling for
+mach-footbridge to use sparse IRQs.
 
-That is problematic because kbd_bh() temporarily stores ~leds into
-ledstate during a VT switch to force LED propagation before committing
-the final value.  An unlocked KDGETLED can therefore observe that
-internal sentinel instead of the last committed LED state.
+Since the number of possible interrupts is already fixed and relatively
+small, just make it use all legacy interrupts preallocated using the
+.nr_irqs field in the machine descriptor, rather than actually
+allocating domains on the fly.
 
-Other ledstate readers in this file already quiesce keyboard_tasklet
-before sampling the value.  Do the same in getledstate() so the ioctl
-only returns a stable snapshot.
+Many files had to be adjusted to include <mach/irqs.h>
+explicitly because it is no longer implicitly included with sparse
+IRQs.
 
-Signed-off-by: Cen Zhang <zzzccc427@gmail.com>
+Description adapted from commit c78a41fc04f0 ("ARM: s3c24xx: convert
+to sparse-irq").
+
+Signed-off-by: Ethan Nelson-Moore <enelsonmoore@gmail.com>
 ---
- drivers/tty/vt/keyboard.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+This commit depends on my previous submission "ARM: <asm/floppy.h>: fix
+build with sparse IRQs".
 
-diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
-index 13bc048f45e86..671ad4a5cb64c 100644
---- a/drivers/tty/vt/keyboard.c
-+++ b/drivers/tty/vt/keyboard.c
-@@ -1127,7 +1127,13 @@ static void kbd_init_leds(void)
-  */
- static unsigned char getledstate(void)
- {
--	return ledstate & 0xff;
-+	unsigned char leds;
-+
-+	tasklet_disable(&keyboard_tasklet);
-+	leds = ledstate & 0xff;
-+	tasklet_enable(&keyboard_tasklet);
-+
-+	return leds;
- }
+ arch/arm/Kconfig                             | 2 +-
+ arch/arm/include/asm/irq.h                   | 4 +++-
+ arch/arm/mach-footbridge/dc21285-timer.c     | 2 +-
+ arch/arm/mach-footbridge/dc21285.c           | 2 +-
+ arch/arm/mach-footbridge/ebsa285-pci.c       | 2 +-
+ arch/arm/mach-footbridge/ebsa285.c           | 2 ++
+ arch/arm/mach-footbridge/include/mach/irqs.h | 4 +---
+ arch/arm/mach-footbridge/isa-irq.c           | 2 +-
+ arch/arm/mach-footbridge/isa-timer.c         | 2 +-
+ arch/arm/mach-footbridge/isa.c               | 2 +-
+ arch/arm/mach-footbridge/netwinder-hw.c      | 2 ++
+ arch/arm/mach-footbridge/netwinder-pci.c     | 2 +-
+ drivers/char/nwbutton.c                      | 2 +-
+ drivers/input/serio/i8042-io.h               | 6 +++---
+ drivers/tty/serial/21285.c                   | 2 +-
+ 15 files changed, 21 insertions(+), 17 deletions(-)
+
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index 09b2767fee0f..1155c78bb6aa 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -153,7 +153,7 @@ config ARM
+ 	select PCI_SYSCALL if PCI
+ 	select PERF_USE_VMALLOC
+ 	select RTC_LIB
+-	select SPARSE_IRQ if !ARCH_FOOTBRIDGE
++	select SPARSE_IRQ
+ 	select SYS_SUPPORTS_APM_EMULATION
+ 	select THREAD_INFO_IN_TASK
+ 	select TIMER_OF if OF
+diff --git a/arch/arm/include/asm/irq.h b/arch/arm/include/asm/irq.h
+index 26c1d2ced4ce..08589b88c3b9 100644
+--- a/arch/arm/include/asm/irq.h
++++ b/arch/arm/include/asm/irq.h
+@@ -10,7 +10,9 @@
+ #define NR_IRQS NR_IRQS_LEGACY
+ #endif
  
- void setledstate(struct kbd_struct *kb, unsigned int led)
+-#ifndef irq_canonicalize
++#ifdef CONFIG_ARCH_FOOTBRIDGE
++#define irq_canonicalize(i)	(((i) == 2) ? 9 : i)
++#else
+ #define irq_canonicalize(i)	(i)
+ #endif
+ 
+diff --git a/arch/arm/mach-footbridge/dc21285-timer.c b/arch/arm/mach-footbridge/dc21285-timer.c
+index 2908c9ef3c9b..7d7ad1c1ef3f 100644
+--- a/arch/arm/mach-footbridge/dc21285-timer.c
++++ b/arch/arm/mach-footbridge/dc21285-timer.c
+@@ -12,7 +12,7 @@
+ #include <linux/irq.h>
+ #include <linux/sched_clock.h>
+ 
+-#include <asm/irq.h>
++#include <mach/irqs.h>
+ 
+ #include <asm/hardware/dec21285.h>
+ #include <asm/mach/time.h>
+diff --git a/arch/arm/mach-footbridge/dc21285.c b/arch/arm/mach-footbridge/dc21285.c
+index e1b336624883..ffdecfadc9e2 100644
+--- a/arch/arm/mach-footbridge/dc21285.c
++++ b/arch/arm/mach-footbridge/dc21285.c
+@@ -17,7 +17,7 @@
+ #include <linux/io.h>
+ #include <linux/spinlock.h>
+ 
+-#include <asm/irq.h>
++#include <mach/irqs.h>
+ #include <asm/mach/pci.h>
+ #include <asm/hardware/dec21285.h>
+ 
+diff --git a/arch/arm/mach-footbridge/ebsa285-pci.c b/arch/arm/mach-footbridge/ebsa285-pci.c
+index c3f280d08fa7..d2168660dd01 100644
+--- a/arch/arm/mach-footbridge/ebsa285-pci.c
++++ b/arch/arm/mach-footbridge/ebsa285-pci.c
+@@ -10,7 +10,7 @@
+ #include <linux/pci.h>
+ #include <linux/init.h>
+ 
+-#include <asm/irq.h>
++#include <mach/irqs.h>
+ #include <asm/mach/pci.h>
+ #include <asm/mach-types.h>
+ 
+diff --git a/arch/arm/mach-footbridge/ebsa285.c b/arch/arm/mach-footbridge/ebsa285.c
+index 1cb7d674bc81..a820f7467468 100644
+--- a/arch/arm/mach-footbridge/ebsa285.c
++++ b/arch/arm/mach-footbridge/ebsa285.c
+@@ -10,6 +10,7 @@
+ #include <linux/slab.h>
+ #include <linux/leds.h>
+ 
++#include <mach/irqs.h>
+ #include <asm/hardware/dec21285.h>
+ #include <asm/mach-types.h>
+ 
+@@ -117,6 +118,7 @@ MACHINE_START(EBSA285, "EBSA285")
+ 	.video_end	= 0x000bffff,
+ 	.map_io		= footbridge_map_io,
+ 	.init_early	= footbridge_sched_clock,
++	.nr_irqs	= FOOTBRIDGE_NR_IRQS,
+ 	.init_irq	= footbridge_init_irq,
+ 	.init_time	= footbridge_timer_init,
+ 	.restart	= footbridge_restart,
+diff --git a/arch/arm/mach-footbridge/include/mach/irqs.h b/arch/arm/mach-footbridge/include/mach/irqs.h
+index a5f41846ab9c..10f1fbc24012 100644
+--- a/arch/arm/mach-footbridge/include/mach/irqs.h
++++ b/arch/arm/mach-footbridge/include/mach/irqs.h
+@@ -11,7 +11,7 @@
+  */
+ #include <asm/mach-types.h>
+ 
+-#define NR_IRQS			36
++#define FOOTBRIDGE_NR_IRQS	36
+ #define NR_DC21285_IRQS		16
+ 
+ #define _ISA_IRQ(x)		(0 + (x))
+@@ -93,5 +93,3 @@
+ #define I8042_KBD_IRQ	IRQ_ISA_KEYBOARD
+ #define I8042_AUX_IRQ	(machine_is_netwinder() ? IRQ_NETWINDER_PS2MOUSE : IRQ_ISA_PS2MOUSE)
+ #define IRQ_FLOPPYDISK	IRQ_ISA_FLOPPY
+-
+-#define irq_canonicalize(_i)	(((_i) == IRQ_ISA_CASCADE) ? IRQ_ISA_2 : _i)
+diff --git a/arch/arm/mach-footbridge/isa-irq.c b/arch/arm/mach-footbridge/isa-irq.c
+index 842ddb4121ef..e4e71bdf1dc7 100644
+--- a/arch/arm/mach-footbridge/isa-irq.c
++++ b/arch/arm/mach-footbridge/isa-irq.c
+@@ -21,8 +21,8 @@
+ #include <asm/mach/irq.h>
+ 
+ #include <mach/hardware.h>
++#include <mach/irqs.h>
+ #include <asm/hardware/dec21285.h>
+-#include <asm/irq.h>
+ #include <asm/mach-types.h>
+ 
+ #include "common.h"
+diff --git a/arch/arm/mach-footbridge/isa-timer.c b/arch/arm/mach-footbridge/isa-timer.c
+index 723e3eae995d..07dee61b0b03 100644
+--- a/arch/arm/mach-footbridge/isa-timer.c
++++ b/arch/arm/mach-footbridge/isa-timer.c
+@@ -13,7 +13,7 @@
+ #include <linux/spinlock.h>
+ #include <linux/timex.h>
+ 
+-#include <asm/irq.h>
++#include <mach/irqs.h>
+ #include <asm/mach/time.h>
+ 
+ #include "common.h"
+diff --git a/arch/arm/mach-footbridge/isa.c b/arch/arm/mach-footbridge/isa.c
+index 84caccddce44..1e7b0f5fb111 100644
+--- a/arch/arm/mach-footbridge/isa.c
++++ b/arch/arm/mach-footbridge/isa.c
+@@ -7,7 +7,7 @@
+ #include <linux/init.h>
+ #include <linux/serial_8250.h>
+ 
+-#include <asm/irq.h>
++#include <mach/irqs.h>
+ #include <asm/hardware/dec21285.h>
+ 
+ #include "common.h"
+diff --git a/arch/arm/mach-footbridge/netwinder-hw.c b/arch/arm/mach-footbridge/netwinder-hw.c
+index c024eefd4978..ab17ba916d47 100644
+--- a/arch/arm/mach-footbridge/netwinder-hw.c
++++ b/arch/arm/mach-footbridge/netwinder-hw.c
+@@ -16,6 +16,7 @@
+ #include <linux/slab.h>
+ #include <linux/leds.h>
+ 
++#include <mach/irqs.h>
+ #include <asm/hardware/dec21285.h>
+ #include <asm/mach-types.h>
+ #include <asm/setup.h>
+@@ -766,6 +767,7 @@ MACHINE_START(NETWINDER, "Rebel-NetWinder")
+ 	.reserve_lp2	= 1,
+ 	.fixup		= fixup_netwinder,
+ 	.map_io		= footbridge_map_io,
++	.nr_irqs	= FOOTBRIDGE_NR_IRQS,
+ 	.init_irq	= footbridge_init_irq,
+ 	.init_time	= isa_timer_init,
+ 	.restart	= netwinder_restart,
+diff --git a/arch/arm/mach-footbridge/netwinder-pci.c b/arch/arm/mach-footbridge/netwinder-pci.c
+index e8304392074b..bfd5c0606c71 100644
+--- a/arch/arm/mach-footbridge/netwinder-pci.c
++++ b/arch/arm/mach-footbridge/netwinder-pci.c
+@@ -10,7 +10,7 @@
+ #include <linux/pci.h>
+ #include <linux/init.h>
+ 
+-#include <asm/irq.h>
++#include <mach/irqs.h>
+ #include <asm/mach/pci.h>
+ #include <asm/mach-types.h>
+ 
+diff --git a/drivers/char/nwbutton.c b/drivers/char/nwbutton.c
+index 92cee5717237..99819b184aac 100644
+--- a/drivers/char/nwbutton.c
++++ b/drivers/char/nwbutton.c
+@@ -18,7 +18,7 @@
+ #include <linux/init.h>
+ 
+ #include <linux/uaccess.h>
+-#include <asm/irq.h>
++#include <mach/irqs.h>
+ #include <asm/mach-types.h>
+ 
+ #define __NWBUTTON_C		/* Tell the header file who we are */
+diff --git a/drivers/input/serio/i8042-io.h b/drivers/input/serio/i8042-io.h
+index a8f4b2d70e59..cea72bd888af 100644
+--- a/drivers/input/serio/i8042-io.h
++++ b/drivers/input/serio/i8042-io.h
+@@ -15,9 +15,9 @@
+  * IRQs.
+  */
+ 
+-#if defined(__arm__)
+-/* defined in include/asm-arm/arch-xxx/irqs.h */
+-#include <asm/irq.h>
++#ifdef CONFIG_ARCH_FOOTBRIDGE
++/* defined in arch/arm/mach-footbridge/include/mach/irqs.h */
++#include <mach/irqs.h>
+ #elif defined(CONFIG_PPC)
+ extern int of_i8042_kbd_irq;
+ extern int of_i8042_aux_irq;
+diff --git a/drivers/tty/serial/21285.c b/drivers/tty/serial/21285.c
+index 4de0c975ebdc..f0c63875912e 100644
+--- a/drivers/tty/serial/21285.c
++++ b/drivers/tty/serial/21285.c
+@@ -15,11 +15,11 @@
+ #include <linux/serial.h>
+ #include <linux/io.h>
+ 
+-#include <asm/irq.h>
+ #include <asm/mach-types.h>
+ #include <asm/system_info.h>
+ #include <asm/hardware/dec21285.h>
+ #include <mach/hardware.h>
++#include <mach/irqs.h>
+ 
+ #define BAUD_BASE		(mem_fclk_21285/64)
+ 
 -- 
 2.43.0
 
