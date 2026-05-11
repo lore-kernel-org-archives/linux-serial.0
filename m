@@ -1,111 +1,150 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A0F43C3C12
-	for <linux-serial@vger.kernel.org>; Mon, 11 May 2026 09:00:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from ultrarisc.com (unknown [218.76.62.146])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6308925F7A9;
+	Mon, 11 May 2026 09:50:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=218.76.62.146
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778490024; cv=none; b=suBYrvT4Zm5kVnI/fE5xGeoV4rLxTHt7uWj7o/ijumXFFx7+pFccCNi7472FJR9yqXD+V81zKOn5Q8L+3VGngDeRGL4pDVIy8CFgg2xH726BYcOjHjOo7000C+gxGSR6AHcjM2qUpzSdw/GJXEntcKUihiRbYPpsgAISUceATl4=
+	t=1778493039; cv=none; b=W7vuxoRikeFSP6o7Wj34yHZ1anwDSfpKhqaC5lBKEB7t7otItqGeO4A9ax/P/UPQoztcfYYRsn2HHvxQyimGTxY8cWVXZzme3+Cm7lWf75dE36WlBcWRuAjnO9iMo3Hwg9kG02W1DHy8XlEwXgzPzFcReYskj3EroTVYYqjEeek=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778490024; c=relaxed/simple;
-	bh=CFVno9Nsq/hvsU0eZZtsglitWo5gwSvgnKfW0LBnyoY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=CZORP3T0B6FS2NICNV50kOo/E3zZq3YhvRp2zkpo3vQ45Iy6vIIesyvXfoHrX5ZOe1vB6hwPwMBbkW4CQrfbyEj7dbneqooYPaoF2yEvdxkOUZ+hg4Z7lXzsaxO4fc0KP5uW14uN0QQdrEGc31e15MfumQUOv+li9z4nOZIKJek=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=adBQELrj; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778493039; c=relaxed/simple;
+	bh=Z4f8Be3tvf+DeFSTMlalpRJHUnyRF5MgEUMBJBp4awk=;
+	h=MIME-Version:Content-Type:Subject:From:To:Cc:In-Reply-To:
+	 References:Date:Message-Id; b=nYxqC3RhCx1jxoURpwCD5pY1vbvjZQuOVal0J58scB5YXZHxZH5UAsGUzLunFEYCZlriaY5uZKInDDFleMuCZdyaEi7GeX2R0jxrt49i5VLc9T4gUdRZvA3swXS8nacLEnF5ym9fYdxMc48sKW1qwbKHczU979PWqYLOBXOzrnU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ultrarisc.com; spf=pass smtp.mailfrom=ultrarisc.com; dkim=pass (1024-bit key) header.d=ultrarisc.com header.i=@ultrarisc.com header.b=JyBmQRNU; arc=none smtp.client-ip=218.76.62.146
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ultrarisc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ultrarisc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="adBQELrj"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BF92C32781
-	for <linux-serial@vger.kernel.org>; Mon, 11 May 2026 09:00:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778490024;
-	bh=CFVno9Nsq/hvsU0eZZtsglitWo5gwSvgnKfW0LBnyoY=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=adBQELrjXkDuujWs40KxsrFPAbdty+DWYgu39WdyuJG4GC7oVoivxsJh6+6T9uyUG
-	 sMHKYx9RR0GTBuqVzz4QiFCR2/pIYTQI1ojDAZ/ayjTiE7y2JgPqN5QFcqpUfWNMx5
-	 pKEtGRvH5xmgYxaNRiPVnM0bp2Z8obBpkSbCOMdZ+/j+Z9uromqBoJGYIg1SyD4dB5
-	 3FXoxyeXanWVmIFvQdBROjRPHuPJGETkDaOLBiyDqnIqtps98BPJLMRaoi2DnZ6f9y
-	 Vg68VW5w5KR7GO3O3fGMT17IQqIuwg2ZA9lxTq3b4KxjD/PfWzMUzSUg6Y01++2rIV
-	 r+nW/BO136GNQ==
-Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-5a86bfa2a4eso4672702e87.1
-        for <linux-serial@vger.kernel.org>; Mon, 11 May 2026 02:00:24 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AFNElJ9k96993Mb0dSY9gfSYFqpx+oSy69PDWzapB2iAZJQnrYpW3Y2gAd+tqALvKcyFv5oC2T2/DId8mT8m3PM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxtZsGLTzNLrj0Hg+5G7k/xojAskdT2URaS3i3UmOZP+kNeJlTe
-	CH3k3BDNvj98Go/Y1HDPRfYrRhL1QAkCqEf/uzqUZw9fATFeO11/nq9uhI0bE2Ow554aWwKwl8f
-	S4mipMO/ULN0hieHsJKrXWf94lHwMcoI=
-X-Received: by 2002:a05:6512:6181:b0:5a8:d1f3:4f8 with SMTP id
- 2adb3069b0e04-5a8d1f30770mr777984e87.26.1778490022755; Mon, 11 May 2026
- 02:00:22 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=ultrarisc.com header.i=@ultrarisc.com header.b="JyBmQRNU"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=ultrarisc.com; s=dkim; h=Received:MIME-Version:Content-Type:
+	Content-Transfer-Encoding:Subject:From:To:Cc:In-Reply-To:
+	References:Date:Message-Id; bh=pXp0B+DtFOhFG5oHIfyHHz0VpIQInvWd4
+	5+4nuEQISQ=; b=JyBmQRNUIT+K1L054Eo3UZdxiRCKj/KBl1ECoFwe1r/SAcQkv
+	YA8o5O7hP0E4IjLCtrnv8C/CCMIw7LJ+vi+xOrxyjB0BLKuNBMhFYqpx3nW5lcsO
+	PrVVsBv+h6U+XQh1A1im7lwVXbTrcbrw36calT93QWeti01RuohMxAKYzg=
+Received: from [127.0.0.1] (unknown [192.168.100.1])
+	by localhost.localdomain (Coremail) with SMTP id AQAAfwAnYUJ3pgFqlwMEAA--.3534S2;
+	Mon, 11 May 2026 17:50:48 +0800 (CST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260429-send-v7-0-b432e00d2db8@gmail.com> <5379905.31r3eYUQgx@strix>
- <CAD++jLk02QnkXYwJ0b6x=qw9stR4nPrjD3sYPOvWAQz8t9OsUA@mail.gmail.com> <23095518.EfDdHjke4D@silicon.doe.home>
-In-Reply-To: <23095518.EfDdHjke4D@silicon.doe.home>
-From: Linus Walleij <linusw@kernel.org>
-Date: Mon, 11 May 2026 11:00:10 +0200
-X-Gmail-Original-Message-ID: <CAD++jLniQfWXGe3dK=StOGv62mi_3fEHVdipUavsFGSrNm6cLw@mail.gmail.com>
-X-Gm-Features: AVHnY4KhmRCq90-NzUXRaDHZYtk0xNB10BVaq7CG7fH-NLC_5K23qELlHwCuUpk
-Message-ID: <CAD++jLniQfWXGe3dK=StOGv62mi_3fEHVdipUavsFGSrNm6cLw@mail.gmail.com>
-Subject: Re: [PATCH v7 6/6] ARM: zte: defconfig: Add a zx29 defconfig file
-To: =?UTF-8?Q?Stefan_D=C3=B6singer?= <stefandoesinger@gmail.com>
-Cc: Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, 
-	Russell King <linux@armlinux.org.uk>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Arnd Bergmann <arnd@arndb.de>, 
-	Krzysztof Kozlowski <krzk@kernel.org>, Alexandre Belloni <alexandre.belloni@bootlin.com>, 
-	Drew Fustini <fustini@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, linux-doc@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	devicetree@vger.kernel.org, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v7 4/4] serial: 8250_dw: Use a fixed CPR value for
+ UltraRISC DP1000 UART
+From: Jia Wang <wangjia@ultrarisc.com>
+To: =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: Jia Wang <wangjia@ultrarisc.com>, 
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Paul Walmsley <pjw@kernel.org>, 
+ Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
+ Alexandre Ghiti <alex@ghiti.fr>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, LKML <linux-kernel@vger.kernel.org>, 
+ linux-serial <linux-serial@vger.kernel.org>, 
+ linux-riscv@lists.infradead.org, devicetree@vger.kernel.org
+In-Reply-To: <66f322a7-70c5-13f9-3e97-6d0b18193f91@linux.intel.com>
+References: <20260429-ultrarisc-serial-v7-0-e475cce9e274@ultrarisc.com>
+ <20260429-ultrarisc-serial-v7-4-e475cce9e274@ultrarisc.com>
+ <66f322a7-70c5-13f9-3e97-6d0b18193f91@linux.intel.com>
+Date: Mon, 11 May 2026 17:50:05 +0800
+Message-Id: <177849300569.62727.6686772792675107792.b4-reply@b4>
+X-Mailer: b4 0.15-dev
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1778493005; l=2656;
+ i=wangjia@ultrarisc.com; s=20260309; h=from:subject:message-id;
+ bh=Z4f8Be3tvf+DeFSTMlalpRJHUnyRF5MgEUMBJBp4awk=;
+ b=vfCokh6bFqZ+ax0cWnwoM+VdZGWYQ0/P0aQZlubUa1RX5FmYEMav3Og4jjfuFYnCCnyAf769m
+ Xb64k1dcNjGCFNK6uczeyPiIjCLdoUqrvCldL/z2Ql8ovPdrWD0Lhef
+X-Developer-Key: i=wangjia@ultrarisc.com; a=ed25519;
+ pk=XvYkrelqJIIzobY7j+nIg8rsfv5kzaOzuc1UPhd087U=
+X-CM-TRANSID:AQAAfwAnYUJ3pgFqlwMEAA--.3534S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxJF4fJrWDtF1Uur43urW3Jrb_yoW5GrWfpF
+	4UGFWYyF9agF13u3Z2v3WvyFZaqa129342kwsrK347tFn0kryDJFnakrWfC3Zruryjgw1a
+	yF1j93y7Ca1UuFDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUU9l14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+	1l84ACjcxK6xIIjxv20xvE14v26r1j6r1xM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+	6F4UM28EF7xvwVC2z280aVAFwI0_Jr0_Gr1l84ACjcxK6I8E87Iv6xkF7I0E14v26r4j6r
+	4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+	I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+	4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
+	n2kIc2xKxwCY1x0262kKe7AKxVWUtVW8ZwCY02Avz4vE-syl42xK82IYc2Ij64vIr41l4I
+	8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AK
+	xVWUGVWUWwC2zVAF1VAY17CE14v26r4a6rW5MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcV
+	AFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8I
+	cIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r
+	4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUonmRUUUUU
+X-CM-SenderInfo: pzdqwylld63zxwud2x1vfou0bp/1tbiAQAEEWoBUkIAAwAEso
 
-On Fri, May 8, 2026 at 12:09=E2=80=AFAM Stefan D=C3=B6singer
-<stefandoesinger@gmail.com> wrote:
+On 2026-04-29 13:55 +0300, Ilpo Järvinen wrote:
+> On Wed, 29 Apr 2026, Jia Wang wrote:
+> 
+> > The UltraRISC DP1000 UART does not provide the standard CPR register used
+> > by 8250_dw to discover port capabilities.
+> > 
+> > Provide a fixed CPR value for the DP1000-specific compatible so the
+> > driver can configure the port correctly.
+> > 
+> > Signed-off-by: Jia Wang <wangjia@ultrarisc.com>
+> > Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > ---
+> >  drivers/tty/serial/8250/8250_dw.c | 10 ++++++++++
+> >  1 file changed, 10 insertions(+)
+> > 
+> > diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+> > index 480f82d89856..55e40c10f46a 100644
+> > --- a/drivers/tty/serial/8250/8250_dw.c
+> > +++ b/drivers/tty/serial/8250/8250_dw.c
+> > @@ -959,6 +959,15 @@ static const struct dw8250_platform_data dw8250_intc10ee = {
+> >  	.quirks = DW_UART_QUIRK_IER_KICK,
+> >  };
+> >  
+> > +static const struct dw8250_platform_data dw8250_ultrarisc_dp1000_data = {
+> > +	.usr_reg = DW_UART_USR,
+> > +	.cpr_value = FIELD_PREP_CONST(DW_UART_CPR_ABP_DATA_WIDTH, 2) |
+> > +		     DW_UART_CPR_THRE_MODE |
+> > +		     DW_UART_CPR_DMA_EXTRA |
+> > +		     DW_UART_CPR_FIFO_MODE_FROM_SIZE(32),
+> > +	.quirks = DW_UART_QUIRK_CPR_VALUE,
+> 
+> Thanks for all the effort you put to this series,
+> 
+> Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> 
+> Unrelated to this patch, I suppose we wouldn't strictly need to have 
+> DW_UART_QUIRK_CPR_VALUE in this driver as non-zero .cpr_value should be 
+> enough to decide if the CPR quirk should be used or not (if the code is 
+> adapted, obviously).
+> 
 
-> So I read https://docs.kernel.org/process/maintainer-soc.html a few times=
-. If
-> I understand it correctly at this point "pull request" still means emails=
- sent
-> with p4, correct?
+Thanks for the review and the tag, Ilpo.
 
-No it's the contents of an
-git request-pull v7.1-rc1 git://..... tags/my-soc
+The idea of dropping the quirk flag sounds reasonable to me. I'll keep
+it in mind for a future cleanup patch once this series is merged.
 
-put into a regular email and sent to soc@kernel.org.
+> > +};
+> > +
+> >  static const struct of_device_id dw8250_of_match[] = {
+> >  	{ .compatible = "snps,dw-apb-uart", .data = &dw8250_dw_apb },
+> >  	{ .compatible = "cavium,octeon-3860-uart", .data = &dw8250_octeon_3860_data },
+> > @@ -966,6 +975,7 @@ static const struct of_device_id dw8250_of_match[] = {
+> >  	{ .compatible = "renesas,rzn1-uart", .data = &dw8250_renesas_rzn1_data },
+> >  	{ .compatible = "sophgo,sg2044-uart", .data = &dw8250_skip_set_rate_data },
+> >  	{ .compatible = "starfive,jh7100-uart", .data = &dw8250_skip_set_rate_data },
+> > +	{ .compatible = "ultrarisc,dp1000-uart", .data = &dw8250_ultrarisc_dp1000_data },
+> >  	{ /* Sentinel */ }
+> >  };
+> >  MODULE_DEVICE_TABLE(of, dw8250_of_match);
+> > 
+> > 
+> 
+> -- 
+>  i.
 
-I'm sorry if the terminology isn't always clear on what a pull request
-actually is in the kernel world (as opposed to e.g. github). It's just
-an email with request-pull contents and some cover letter.
+Best Regards,
+Jia Wang
 
-> Or does someone create a git repository on git.kernel.org
-> for me that I can use to send actual pull requests?
 
-We can pull from wherever as long as you can sign your tag
-with a GPG key that we can (in best cases) trust. We can also
-just inspect the result of a pull request from a branch (no tag)
-if we wanna, it just involves more inspection and trust.
-
-> As I understand it, my 6 patches then go to the 4 corners of the kernel:
->
-> Patch 1 (dt binding) to devicetree@vger.kernel.org
-
-Nah as long as the DT maintianers ACK it (i.e. Reviewed-by) we
-can merge that to the SoC tree.
-
-> Patches 2 (platform), 5 (DTS) and 6 (defconfig) to soc@kernel.org, but no=
-t in
-> one series but 3 independent ones
-
-In an ideal world.
-
-> Patches 3 and 4 (UART) to linux-serial@vger.kernel.org. I think this can =
-and
-> should be a series of both patches belonging together
-
-Yups. Greg merges those.
-
-Yours,
-Linus Walleij
