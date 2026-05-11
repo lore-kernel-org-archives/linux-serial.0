@@ -1,107 +1,111 @@
-Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com [209.85.128.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC50A19D8AC
-	for <linux-serial@vger.kernel.org>; Sun, 10 May 2026 17:01:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.177
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778432488; cv=pass; b=nYzg1/+wU3/3rzaXDSccNjB36fG6nfXiEAyy3zcnkmk3lOjJ48NSfApRz8402qjp0S3ZkcoItUJcxUdXHSMiF0I2+aINw9wMNGDXDhH3CLtFc7UisiM/6nCCOsDMTm47KC4EVGR9omD3VA8CjA9IcnXTIHe78bWGl6LUu0rvRYk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778432488; c=relaxed/simple;
-	bh=2PYFNq5+hbLb4cWtD2+d/qyPEucjcKXGCm0hT5Z1tKE=;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A0F43C3C12
+	for <linux-serial@vger.kernel.org>; Mon, 11 May 2026 09:00:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778490024; cv=none; b=suBYrvT4Zm5kVnI/fE5xGeoV4rLxTHt7uWj7o/ijumXFFx7+pFccCNi7472FJR9yqXD+V81zKOn5Q8L+3VGngDeRGL4pDVIy8CFgg2xH726BYcOjHjOo7000C+gxGSR6AHcjM2qUpzSdw/GJXEntcKUihiRbYPpsgAISUceATl4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778490024; c=relaxed/simple;
+	bh=CFVno9Nsq/hvsU0eZZtsglitWo5gwSvgnKfW0LBnyoY=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=sUWiB/KFcGlDGoEnrdM5rDURm28dSektrWMXXCwShjH4daOfh/HEILhbsX4IRbqNVo1JiuWLOCdYZeH+f1feeErveFNTRRvkP7f0q71XG09XqcDtyhUWJFN/X3scCBi+ISEoCuk3eo3QLJBsMdTP7GQ2g3ni8s0JtH4eqhWm3hU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=M4F3DeM6; arc=pass smtp.client-ip=209.85.128.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 To:Cc:Content-Type; b=CZORP3T0B6FS2NICNV50kOo/E3zZq3YhvRp2zkpo3vQ45Iy6vIIesyvXfoHrX5ZOe1vB6hwPwMBbkW4CQrfbyEj7dbneqooYPaoF2yEvdxkOUZ+hg4Z7lXzsaxO4fc0KP5uW14uN0QQdrEGc31e15MfumQUOv+li9z4nOZIKJek=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=adBQELrj; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="M4F3DeM6"
-Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-7bf1433b80cso21924197b3.1
-        for <linux-serial@vger.kernel.org>; Sun, 10 May 2026 10:01:26 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778432486; cv=none;
-        d=google.com; s=arc-20240605;
-        b=IO56cKr03VddwkhJ7/+PzlJ5RMpYRa3O3Yl/rZustDMVjgzmR7INRhhgJacmEMiLbO
-         84MjwIz+QPtDt6avAtc5TmfF5bXPyxPYD6XheWhfohswn4zYCBrtdl+eCpGNX23Yne2A
-         pyBvRDvU2YcGWcrSrLCjpdhdPUoyBm1NeiVSgksELABwA9Qaacu9MmoA8C6J7qTjHM92
-         4UcyrRgyFFA9H1n4urxC77v3K2rRdxBb4OtHeMhpUXkkLFynShKmufZsl6PyeznvuTuy
-         X+ies6ppULuiKVhbOzAy/d3NyI6a7ho66NU0eCHk/1qwBgxW8Q2zaXKMlQzml9W0SaH7
-         O+Yg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=noPLUh0YcRTRvJHIPXrK6Y6k2fug3h3WbzaW49mLwoc=;
-        fh=FWRCAEq2aokY3+DzKKQFwESDYxS8WL2thTk4CRu/v4Q=;
-        b=Amkugr4cMMAiVIcZMejC6f60vXmIzlDwkYuT0kZylBOAukmna5AUj7WrQuoFNAGIe8
-         dJ1ni0WoHc3ToKLIMp9nI2IntFOfatW/UcxXPJIUlrWPxUXgQFfIpqj5vI1iSUpiGicn
-         sS+VOXBq3K3bo+5nIkQUNvW4LelL6b2ubBrfz2DUTmoVY6BF6IFaYOKniJ00x+8MyuKA
-         qx2BbDmGij9/iZer8K+e8N2BRgGyZre6/mSzD+boALTmcQxiop5X2Rhjfp1SjDjOIdUX
-         axZxqcb50kzMfnpnRxK9QBwwMNz9O2g9vK1xAAX2AfgvEz8yTnDbUrnrobeJcaqB5H3e
-         dJOg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778432486; x=1779037286; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=noPLUh0YcRTRvJHIPXrK6Y6k2fug3h3WbzaW49mLwoc=;
-        b=M4F3DeM6hb3rTzLxjDM3UvGHOwoeojZG2n6q04r/33h5bLlbcAzOwiTqKLDmpg/6Ts
-         ZaSEkzTua9fMxiI7kx45jeED73u8bvDjeyGnGSMJ+DiuZpVa+D6GTyP0if+0sT21pRv+
-         49/cvb/hQ5ddkxL78I9yopfM73RBsXV2GHtsv5+eaaX68HJvYAl1/UxUcDoIHPN8ZdBc
-         hQgsznE3WlSqR2Rd3aLRDl8OYRnWKU4ZYvd9QPOVPcRrubq7soQg3QwiGHiYA0DArrgl
-         uLvyAgu71/RCZQNfpjgAQTFtOFojOeE2/QjBQ8yaQPnb4djsaKHmqo4+jmEsha2VGEOd
-         owmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778432486; x=1779037286;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=noPLUh0YcRTRvJHIPXrK6Y6k2fug3h3WbzaW49mLwoc=;
-        b=ijoXHOdK5ox927KkTGqDTTyUOg5bV424Zmt41tEvkpg8Vd/UlJFtXbKXSTlEyGy8a1
-         udMaR5eCyjKCJOnog67fmnf8SO6E1YGcM9VLwvXzdW275lp0b5Qh1d7AjiXVK1YgZ4i5
-         zc7gcWdQX6m9sQsjqI8mo6k76VH1SLGynLY1lvqvZTBu9C7yZVnKj0PF9Iq2dzDD0Jvk
-         jK5w4ift/AA5OPJgmvEZNf/Cm1j+N6eBqyC17aPBOfvprfOJwiFoiy0B4EFRaOc7jua0
-         ja/V+a4/ZYCQBoJQEKOzRBcKadiU6q1ibzYYUgoCWRft2vDptfBecUPEGFHfJ2Gruk33
-         uUiQ==
-X-Forwarded-Encrypted: i=1; AFNElJ9xDmWbrlCDJZxttzlXv71h4uWpdvxbjvkafAjRlTcpjuQ5QbsnoBhuUAkKJ3fSxdeZTTZASLzfujXPN/8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YySZaK/DF4mWI3IRKQQ8pxA6ZRxIdKaTRPRPNiXVoezJY77tfEZ
-	n2myOdKxBYl/xuH9EmJBBcO+mUcLmxlfYiQERZTsOPgANRYjGYRkH/c+HR/AA8ypcrlScPMRLUM
-	QvGAhtoLcchpJAMjRqWKrtl9/GB0R7Dg=
-X-Gm-Gg: Acq92OFG/edl+M8IPUQERO+fj5pZm16Ph8FRHifTLZKKgxrEZPt1wSA0j227IROj031
-	q4G0LZbCrfbiM5PeuGk52K1P+0lgFnH1/Zl+U9dB7TvGbIAhjouVAVO0FpuR8uzwtf5kP+Kt07s
-	ZA/k6Tfo/PH37cQQsDGKWAQHJ74207m3co9C/2ApNLEdgjvmc1MsHlbWm3yLHTV01VZMcwdeI+f
-	oaIG4wGiN2Qn9cI9mMVA7rLL+XREZc91Aap9gplcBtep9m08OQ2D4mz0mNoQSV0HUU5+mnDdw19
-	JSkjUwp0
-X-Received: by 2002:a05:690c:3589:b0:7bd:5cc4:1961 with SMTP id
- 00721157ae682-7c10596403amr65084327b3.37.1778432485777; Sun, 10 May 2026
- 10:01:25 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="adBQELrj"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BF92C32781
+	for <linux-serial@vger.kernel.org>; Mon, 11 May 2026 09:00:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778490024;
+	bh=CFVno9Nsq/hvsU0eZZtsglitWo5gwSvgnKfW0LBnyoY=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=adBQELrjXkDuujWs40KxsrFPAbdty+DWYgu39WdyuJG4GC7oVoivxsJh6+6T9uyUG
+	 sMHKYx9RR0GTBuqVzz4QiFCR2/pIYTQI1ojDAZ/ayjTiE7y2JgPqN5QFcqpUfWNMx5
+	 pKEtGRvH5xmgYxaNRiPVnM0bp2Z8obBpkSbCOMdZ+/j+Z9uromqBoJGYIg1SyD4dB5
+	 3FXoxyeXanWVmIFvQdBROjRPHuPJGETkDaOLBiyDqnIqtps98BPJLMRaoi2DnZ6f9y
+	 Vg68VW5w5KR7GO3O3fGMT17IQqIuwg2ZA9lxTq3b4KxjD/PfWzMUzSUg6Y01++2rIV
+	 r+nW/BO136GNQ==
+Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-5a86bfa2a4eso4672702e87.1
+        for <linux-serial@vger.kernel.org>; Mon, 11 May 2026 02:00:24 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AFNElJ9k96993Mb0dSY9gfSYFqpx+oSy69PDWzapB2iAZJQnrYpW3Y2gAd+tqALvKcyFv5oC2T2/DId8mT8m3PM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxtZsGLTzNLrj0Hg+5G7k/xojAskdT2URaS3i3UmOZP+kNeJlTe
+	CH3k3BDNvj98Go/Y1HDPRfYrRhL1QAkCqEf/uzqUZw9fATFeO11/nq9uhI0bE2Ow554aWwKwl8f
+	S4mipMO/ULN0hieHsJKrXWf94lHwMcoI=
+X-Received: by 2002:a05:6512:6181:b0:5a8:d1f3:4f8 with SMTP id
+ 2adb3069b0e04-5a8d1f30770mr777984e87.26.1778490022755; Mon, 11 May 2026
+ 02:00:22 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260510031348.1922157-1-zzzccc427@gmail.com> <2026051001-peso-enamel-2e62@gregkh>
- <CAFRLqsUeat=rUj7aCSAku=A9NBNj3Wxd+xi8xzzBtRWqCxp18Q@mail.gmail.com> <2026051039-snitch-attitude-a67d@gregkh>
-In-Reply-To: <2026051039-snitch-attitude-a67d@gregkh>
-From: Cen Zhang <zzzccc427@gmail.com>
-Date: Mon, 11 May 2026 01:01:12 +0800
-X-Gm-Features: AVHnY4IHtNdZQSG8UKEed4o4jinP4nMPzFeZr0vGqaNAlXd01mf3LVSy6KHnrM0
-Message-ID: <CAFRLqsWDbKsRJuLmUQhLg0AxCwGY6Nhe=Zim3YXk+yWP7x8nEA@mail.gmail.com>
-Subject: Re: [PATCH] vt: keyboard: serialize KDGETLED with keyboard_tasklet
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: jirislaby@kernel.org, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, baijiaju1990@gmail.com
+References: <20260429-send-v7-0-b432e00d2db8@gmail.com> <5379905.31r3eYUQgx@strix>
+ <CAD++jLk02QnkXYwJ0b6x=qw9stR4nPrjD3sYPOvWAQz8t9OsUA@mail.gmail.com> <23095518.EfDdHjke4D@silicon.doe.home>
+In-Reply-To: <23095518.EfDdHjke4D@silicon.doe.home>
+From: Linus Walleij <linusw@kernel.org>
+Date: Mon, 11 May 2026 11:00:10 +0200
+X-Gmail-Original-Message-ID: <CAD++jLniQfWXGe3dK=StOGv62mi_3fEHVdipUavsFGSrNm6cLw@mail.gmail.com>
+X-Gm-Features: AVHnY4KhmRCq90-NzUXRaDHZYtk0xNB10BVaq7CG7fH-NLC_5K23qELlHwCuUpk
+Message-ID: <CAD++jLniQfWXGe3dK=StOGv62mi_3fEHVdipUavsFGSrNm6cLw@mail.gmail.com>
+Subject: Re: [PATCH v7 6/6] ARM: zte: defconfig: Add a zx29 defconfig file
+To: =?UTF-8?Q?Stefan_D=C3=B6singer?= <stefandoesinger@gmail.com>
+Cc: Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, 
+	Russell King <linux@armlinux.org.uk>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Arnd Bergmann <arnd@arndb.de>, 
+	Krzysztof Kozlowski <krzk@kernel.org>, Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+	Drew Fustini <fustini@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, linux-doc@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	devicetree@vger.kernel.org, linux-serial@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Greg,
+On Fri, May 8, 2026 at 12:09=E2=80=AFAM Stefan D=C3=B6singer
+<stefandoesinger@gmail.com> wrote:
 
-> In the past decades of use, has anyone every noticed or complained about
-> this consitency issue?  If not, I would recommend not worrying about it :)
+> So I read https://docs.kernel.org/process/maintainer-soc.html a few times=
+. If
+> I understand it correctly at this point "pull request" still means emails=
+ sent
+> with p4, correct?
+
+No it's the contents of an
+git request-pull v7.1-rc1 git://..... tags/my-soc
+
+put into a regular email and sent to soc@kernel.org.
+
+I'm sorry if the terminology isn't always clear on what a pull request
+actually is in the kernel world (as opposed to e.g. github). It's just
+an email with request-pull contents and some cover letter.
+
+> Or does someone create a git repository on git.kernel.org
+> for me that I can use to send actual pull requests?
+
+We can pull from wherever as long as you can sign your tag
+with a GPG key that we can (in best cases) trust. We can also
+just inspect the result of a pull request from a branch (no tag)
+if we wanna, it just involves more inspection and trust.
+
+> As I understand it, my 6 patches then go to the 4 corners of the kernel:
 >
+> Patch 1 (dt binding) to devicetree@vger.kernel.org
 
-Understood, thanks. I will drop this patch.
+Nah as long as the DT maintianers ACK it (i.e. Reviewed-by) we
+can merge that to the SoC tree.
 
-Thank you for the review and guidance.
+> Patches 2 (platform), 5 (DTS) and 6 (defconfig) to soc@kernel.org, but no=
+t in
+> one series but 3 independent ones
 
-Best regards,
-Cen
+In an ideal world.
+
+> Patches 3 and 4 (UART) to linux-serial@vger.kernel.org. I think this can =
+and
+> should be a series of both patches belonging together
+
+Yups. Greg merges those.
+
+Yours,
+Linus Walleij
