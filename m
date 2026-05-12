@@ -1,117 +1,123 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 600B239FCC6;
-	Tue, 12 May 2026 09:29:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79ED33A6F08
+	for <linux-serial@vger.kernel.org>; Tue, 12 May 2026 10:59:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778578152; cv=none; b=CnCBvJ+0eXd0fxwOAURjRBDqi+Vz8ymQFmxTRCYFJEOB4w1EYA8pkDkjrqnVrrWzsW+ZzURqDAcYY0x5oYxR4pUu9lLfXr61F81ajHVadKXA351LB3tQs7LpkE+MztobRihLmvoYpJNbK1m/1jFt9XJ783hr42fdgo2ksCbVI50=
+	t=1778583579; cv=none; b=mPJqCaAMVy8d+W9YZCcuPsPUhwuNXwWIZnGSDVX1qqEr/GEZRPWdMD43Tmk1iaZrrCz6qKQq6E2F6kmNgfIjiHGXUp1JHT1wHTUpYfDz3rllOA7Qb7Xci3zqB2RK0zfKSvJEj+hEXHwvDV/7eITRp+duOzfWZm9qDJMCv+D3eDM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778578152; c=relaxed/simple;
-	bh=7zvcKlQqTCRISlQVI7hiHCz0CNLeemKncLFgLYMC9vg=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=SUnJplECmals/JtcnxWzerDoc2VCJuYvifrTTpMBacgEjyqvOpBMEY76cFUMNkG+p16j0VYRA/kCDZ1C3GU/oxHtZ000SlIsYsc7vihpFX2vhBvmLhx/LxmD40JvU+hj3DAzghH/noi9TH3p9wggyBe3jmgiqvKePDmARkjr+DA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=jXBrrjm2; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=gqGTUojt; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1778583579; c=relaxed/simple;
+	bh=8qR93Org775h7ioY+6uQva9HQiZ3wEkg6xOkjULi3Jg=;
+	h=Date:From:To:Cc:Subject:Message-ID; b=SdpDZhD5LxmLriDovrGsVd68DCO9aDNiYkMShxwBtm1rWHjDvAfV8hd5HE8QxhToN4yWV+S2XOhM4vBA/Mp1+P5MkX3zQQVGmGWBES26eKI6VhuWcA5gKOqmLi8SjsK7XjAIeGEcQFDEFZEfVnb3eM0TJfx+2KAHZlkyB1/6eAw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IJSFXJ7K; arc=none smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="jXBrrjm2";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="gqGTUojt"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1778578147;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=pHOmfgO8r/I+CGZKgsM9byfulgauMqanZrmQDWsmI+c=;
-	b=jXBrrjm2f6KmF2Iguf/jhTcgh/iBv2R/gREAPlhKabsiGwI5zZ4UaznFiJPBUR1nuTnECB
-	b5X2Fj4HRol8SyjaKsQqs5gCgqzftZRydFN/VlWb7nWQURrJmPhIzx20o2njjisnRUP94T
-	QHAuu5RUr6Eubhs/TKJ8TyK8G/uf38bLi6iZyM1D2jWyymQC9vImFAmOx1HeZAh69vrmR7
-	rHHlVjCFG9t5fLRODjGnOhQ9eQOXPAAGtHEZboVB5vN6ScQrzpvcn5i0q9IJOzCz4RqTmw
-	AK1LfNhI4zGMzEUt4LdGg4IfmApt3+4gfyKvqEVYc77jc2mb0xv44nQ3f/qJDA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1778578147;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=pHOmfgO8r/I+CGZKgsM9byfulgauMqanZrmQDWsmI+c=;
-	b=gqGTUojtr4wsSDP1mbVm9FvBt1e/rCKaB/rPpqrmPGCG2D3uJTRt2zLsyaMoMaz70N3ghH
-	bU2zThAeiTgJmJBg==
-To: Ilpo =?utf-8?Q?J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, Andy
- Shevchenko
- <andy.shevchenko@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, LKML
- <linux-kernel@vger.kernel.org>, Ilpo =?utf-8?Q?J=C3=A4rvinen?=
- <ilpo.jarvinen@linux.intel.com>, Thomas Gleixner <tglx@kernel.org>, Ingo
- Molnar <mingo@kernel.org>, Kees Cook <kees@kernel.org>, Osama Abdelkader
- <osama.abdelkader@gmail.com>, Randy Dunlap <rdunlap@infradead.org>, Joseph
- Tilahun <jtilahun@astranis.com>, Krzysztof Kozlowski
- <krzysztof.kozlowski@oss.qualcomm.com>, "Dr. David Alan Gilbert"
- <linux@treblig.org>, linux-serial <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH tty v5 3/3] serial: 8250: Add support for console flow
- control
-In-Reply-To: <f9f408c5-72f5-4be8-7471-e9aee2935a5b@linux.intel.com>
-References: <20260511152706.151498-1-john.ogness@linutronix.de>
- <20260511152706.151498-4-john.ogness@linutronix.de>
- <f9f408c5-72f5-4be8-7471-e9aee2935a5b@linux.intel.com>
-Date: Tue, 12 May 2026 11:35:06 +0206
-Message-ID: <87h5od9dst.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IJSFXJ7K"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1778583577; x=1810119577;
+  h=date:from:to:cc:subject:message-id;
+  bh=8qR93Org775h7ioY+6uQva9HQiZ3wEkg6xOkjULi3Jg=;
+  b=IJSFXJ7KStlLEZ+pyK61LYIyBSMWFNFOo1bM5sotXoEXByCtX5+ds/Zq
+   fgzIN2eG3lKhegMyiq5J6GV8iGMxAYVNPT4BFUxTPzqmrkRcv/4s6cSOO
+   pW3vmEuOaF1PJpK2uFadqTQsIXjxUTyFhSVdcxpDMyk/vHCMYrHSOHpzu
+   7kdK49x5xfq/eY7TtOs5ztGTShfXg/RsPKFKIbddzdS9B5ARtqMGmG0y6
+   tKM7As0R2pTfNDvaqRffo+jk6/ZMaK3RaXaX5RtK6hCismjJyh8LPUmhd
+   AQoRNz6vXnjVR6Wjsg7jvhBcEFPXbtXYb3ULqClI86+4am++R2OFMiXG5
+   A==;
+X-CSE-ConnectionGUID: f2XXUA0YS6SxWp7XG7PG1A==
+X-CSE-MsgGUID: +ZrLu9qzSrafYRFPnkjQKA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11783"; a="90871688"
+X-IronPort-AV: E=Sophos;i="6.23,230,1770624000"; 
+   d="scan'208";a="90871688"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 03:59:36 -0700
+X-CSE-ConnectionGUID: TbE87D6UQHWkSRKg2kZAWA==
+X-CSE-MsgGUID: cHDq0IE4TbGVPbWqBumfQQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,230,1770624000"; 
+   d="scan'208";a="237675385"
+Received: from lkp-server01.sh.intel.com (HELO dca79079c3eb) ([10.239.97.150])
+  by orviesa008.jf.intel.com with ESMTP; 12 May 2026 03:59:35 -0700
+Received: from kbuild by dca79079c3eb with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1wMkpo-00000000210-0sti;
+	Tue, 12 May 2026 10:59:32 +0000
+Date: Tue, 12 May 2026 18:59:17 +0800
+From: kernel test robot <lkp@intel.com>
+To: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Cc: oe-kbuild-all@lists.linux.dev, linux-serial@vger.kernel.org,
+ "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Subject: [tty:tty-next 28/31] drivers/tty/serial/max310x.c:1727:32:
+ error: 'max310x_spi_driver' undeclared; did you mean 'max310x_i2c_driver'?
+Message-ID: <202605121847.N9DVLNg2-lkp@intel.com>
+User-Agent: s-nail v14.9.25
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
 
-On 2026-05-11, Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com> wrote:
->> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
->> index 4f7bbdd900176..17fcff466e301 100644
->> --- a/include/linux/serial_core.h
->> +++ b/include/linux/serial_core.h
->> @@ -1175,6 +1175,14 @@ static inline bool uart_cons_flow_enabled(const s=
-truct uart_port *uport)
->>  	return uport->cons_flow;
->>  }
->>=20=20
->> +static inline bool uart_console_hwflow_active(struct uart_port *uport)
->> +{
->> +	return uart_console(uport) &&
->> +	       !(uport->rs485.flags & SER_RS485_ENABLED) &&
->> +	       uart_cons_flow_enabled(uport) &&
->> +	       uart_cts_enabled(uport);
->> +}
->> +
->>  /*
->>   * The following are helper functions for the low level drivers.
->>   */
->
-> Did you miss Andy's comments or choose to not act on them?
+Hi Hugo,
 
-You mean these [0]? For the getter, yes. (Although I left the "is_" off
-so that it matches other existing flag checking functions.)
+First bad commit (maybe != root cause):
 
-For the setter, Andy suggested explicit enable/disable
-variants. However, all the users enable/disable based on some
-condition. That would mean that there would be a repeated pattern of:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-next
+head:   16e95bfb79b5d9d01dc7651d98caf3c2ace331cd
+commit: 20ffe4b3330a8bde9e933e9ba2323d5e9386caa5 [28/31] serial: max310x: allow driver to be built with SPI or I2C
+config: um-randconfig-r112-20260512 (https://download.01.org/0day-ci/archive/20260512/202605121847.N9DVLNg2-lkp@intel.com/config)
+compiler: gcc-14 (Debian 14.2.0-19) 14.2.0
+sparse: v0.6.5-rc1
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260512/202605121847.N9DVLNg2-lkp@intel.com/reproduce)
 
-	if (condition)
-		uart_cons_flow_enable();
-	else
-		uart_cons_flow_disable();
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202605121847.N9DVLNg2-lkp@intel.com/
 
-So I decided to keep a single setter.
+All error/warnings (new ones prefixed by >>):
 
-	uart_set_cons_flow_enabled(condition);
+   drivers/tty/serial/max310x.c: In function 'max310x_uart_init':
+>> drivers/tty/serial/max310x.c:1727:32: error: 'max310x_spi_driver' undeclared (first use in this function); did you mean 'max310x_i2c_driver'?
+    1727 |         spi_unregister_driver(&max310x_spi_driver);
+         |                                ^~~~~~~~~~~~~~~~~~
+         |                                max310x_i2c_driver
+   drivers/tty/serial/max310x.c:1727:32: note: each undeclared identifier is reported only once for each function it appears in
+>> drivers/tty/serial/max310x.c:1730:1: warning: label 'err_spi_register' defined but not used [-Wunused-label]
+    1730 | err_spi_register:
+         | ^~~~~~~~~~~~~~~~
+   drivers/tty/serial/max310x.c: At top level:
+>> drivers/tty/serial/max310x.c:1492:29: warning: 'regcfg' defined but not used [-Wunused-variable]
+    1492 | static struct regmap_config regcfg = {
+         |                             ^~~~~~
 
-I renamed the setter so that it is clearer that only the enabled flag is
-being set and not any other special procedures.
 
-John Ogness
+vim +1727 drivers/tty/serial/max310x.c
 
-[0] https://lore.kernel.org/lkml/CAHp75Vf4YZVqXa7eH-RFeVsycdzoHijcWFnUbGv2P=
-SmtPya1-w@mail.gmail.com
+6286767ad3afc88 Alexander Shiyan 2016-06-07  1722  
+2e1f2d9a9bdbe12 Cosmin Tanislav  2022-06-05  1723  	return 0;
+2e1f2d9a9bdbe12 Cosmin Tanislav  2022-06-05  1724  
+2e1f2d9a9bdbe12 Cosmin Tanislav  2022-06-05  1725  #ifdef CONFIG_I2C
+2e1f2d9a9bdbe12 Cosmin Tanislav  2022-06-05  1726  err_i2c_register:
+2e1f2d9a9bdbe12 Cosmin Tanislav  2022-06-05 @1727  	spi_unregister_driver(&max310x_spi_driver);
+2e1f2d9a9bdbe12 Cosmin Tanislav  2022-06-05  1728  #endif
+2e1f2d9a9bdbe12 Cosmin Tanislav  2022-06-05  1729  
+2e1f2d9a9bdbe12 Cosmin Tanislav  2022-06-05 @1730  err_spi_register:
+2e1f2d9a9bdbe12 Cosmin Tanislav  2022-06-05  1731  	uart_unregister_driver(&max310x_uart);
+2e1f2d9a9bdbe12 Cosmin Tanislav  2022-06-05  1732  
+51f689cc1133394 Kangjie Lu       2018-12-25  1733  	return ret;
+6286767ad3afc88 Alexander Shiyan 2016-06-07  1734  }
+6286767ad3afc88 Alexander Shiyan 2016-06-07  1735  module_init(max310x_uart_init);
+6286767ad3afc88 Alexander Shiyan 2016-06-07  1736  
+
+:::::: The code at line 1727 was first introduced by commit
+:::::: 2e1f2d9a9bdbe12ee475c82a45ac46a278e8049a serial: max310x: implement I2C support
+
+:::::: TO: Cosmin Tanislav <cosmin.tanislav@analog.com>
+:::::: CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
