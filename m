@@ -1,177 +1,93 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from smtp6-g21.free.fr (smtp6-g21.free.fr [212.27.42.6])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DCA52DEA61;
-	Tue, 12 May 2026 13:22:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48F9E394EAF;
+	Tue, 12 May 2026 13:46:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.27.42.6
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778592126; cv=none; b=HsUjUvD2rRylmtJ66zt2nNX2KZKC54Tw18HBBJNeVtR8d/GBFsmg5S5Trx7MSz68sc+wce9Em4H+t8CBrpiUdl9WSY+Nhdy5sfdblJEAsyinSEVzKqEXTrRB0gchDF2GSXW0xNF0+mxRfAKUUrYCOss/ZIMZ2++sCWPH0OheV8Q=
+	t=1778593588; cv=none; b=fBqNGDuUJz33coorKCYrcbcyWdU5jLhpcl7h5oJARe+gGVh/4J6kPjH+r3FgkudDsw8Q6BOvfHfYFwkYtuGV/uh7phT3Tv7RQ+kb7Rp8A0N82tFxWzAa2x/hHzanqn8q+vHoaQtidYPy+oBxjVAzREdCFSxC8jb2amRyq3eIEmg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778592126; c=relaxed/simple;
-	bh=8pfMuktM6igAp0Dtdc56j/or9Ff5xZTJLQJGUZ9pOPI=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=k9ZMDiz7pnzBT/1q93X+VixF30VeHVXY8+aKUz+vMclqXid52X3ag67Ro+ZJftaXgSBVi8PM4bXbI41XF/1svU61BSM9kBXh1tiuTmKC6pekozS51Vrw2U33t5q5J6GKyg6jArtsvQ4M6B8LIvyjyG4pjT5gD1wetDdGvsrDZAI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=H8ivhipG; arc=none smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1778593588; c=relaxed/simple;
+	bh=Bgl9FN/2EDTlJS/1ikgYLhdCePIba5SUCt2U/no841k=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=jpcv8dSg1avPngVCdG0w0e0PXmhjZkPyN+0GYjCLnZQOX5yvy/34DvzuhxMTlsOpElFNWLvtP0iNqLdrqMp2Zv7AxqrqJTIcJzU2OHwzyix5JTFbVsNIoj9OlYB8IXHiiHCCMxQy8TyOyQ707I28BOblbkIvf0sCbsa0fZp8kdw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=free.fr; spf=pass smtp.mailfrom=free.fr; dkim=pass (2048-bit key) header.d=free.fr header.i=@free.fr header.b=HXiVaEFD; arc=none smtp.client-ip=212.27.42.6
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=free.fr
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=free.fr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="H8ivhipG"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778592125; x=1810128125;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=8pfMuktM6igAp0Dtdc56j/or9Ff5xZTJLQJGUZ9pOPI=;
-  b=H8ivhipG0WkrFYDcsWN7u8Seon5yaIF4PB5/LyzXnr7YXscBYLaUseFv
-   xSN50vccVeTK7uQHWt2lN+STTfqjGO8wt8wCse5dloHrG4PftCozBSg2m
-   YBqVWB3M75Lh/VwaXyfh3eGhccNyk40Xa8fjoJ4w2wJ1+Y4muVl099k5w
-   E2wUFSw1FGHN4OCEqMq1vNEDHYwVO2DTFmWtfwSZhT6snxEkV1/XYH239
-   dFnaFA/V/XsANlBMFD5tZ5/SIKn00plneSwc65/dlJnJ/3RSruRnkSM+k
-   xR20aRxlgTS8182TpUm0RRi6asDDQBgQeoT+EAVGotcwVwTGswg/Ujcvs
-   g==;
-X-CSE-ConnectionGUID: 1TAbNr0ATPqQvtiFZaYUuw==
-X-CSE-MsgGUID: Xnm7s0TXSqae818My+Wcnw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11783"; a="67028286"
-X-IronPort-AV: E=Sophos;i="6.23,231,1770624000"; 
-   d="scan'208";a="67028286"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 06:22:04 -0700
-X-CSE-ConnectionGUID: KQpthfC6TQSVma7i6DixUQ==
-X-CSE-MsgGUID: Asm/Qn45ScuM1znnNCTEhA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,231,1770624000"; 
-   d="scan'208";a="235101162"
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.190])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 06:22:02 -0700
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Tue, 12 May 2026 16:21:59 +0300 (EEST)
-To: Jacques Nilo <jnilo@free.fr>
-cc: =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
-    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>, 
-    linux-serial <linux-serial@vger.kernel.org>, 
-    LKML <linux-kernel@vger.kernel.org>, Johan Hovold <johan@kernel.org>
-Subject: Re: [REPORT] serial: 8250: BREAK + SysRq dispatch silently broken
- since 8324a54f604d
-In-Reply-To: <122f6431-2241-4367-be28-bfd3b31f5333@free.fr>
-Message-ID: <efc4fd93-9b0f-dee6-9725-ef7a09c4214f@linux.intel.com>
-References: <5efe9e03-4d86-43a0-9ec2-e610ff31095d@free.fr> <4bab4248-1c49-3f68-d327-fc00a4d7114b@linux.intel.com> <122f6431-2241-4367-be28-bfd3b31f5333@free.fr>
+	dkim=pass (2048-bit key) header.d=free.fr header.i=@free.fr header.b="HXiVaEFD"
+Received: from Gigabyte.tail209581.ts.net (unknown [IPv6:2a02:8428:7df0:ac01:fbfd:168d:553c:3eec])
+	(Authenticated sender: jnilo@free.fr)
+	by smtp6-g21.free.fr (Postfix) with ESMTPSA id BFDB7780389;
+	Tue, 12 May 2026 15:46:18 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=free.fr;
+	s=smtp-20201208; t=1778593585;
+	bh=Bgl9FN/2EDTlJS/1ikgYLhdCePIba5SUCt2U/no841k=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=HXiVaEFD1LxUmPrF8odKjzuIWXM32C8avv79RaMxXxRkQdWXdL1EQN4m1EvtvDUqQ
+	 m96tfdO1WYL1cJdss8oS+YCoJY7pu452NY56dsnjhLIZXlRHjN1crgWHJxk3Wqv+MC
+	 tN/+srRzNoMT5D3zIYACoei3NEQqZPWIeWmZ52DVFd1pEyi5hH9T/OZBsC1NNNOUuZ
+	 cNFnwgETbe2XRbrQKggQ5lhbcgCAMTeKzdEikhjoAmPsGFnnHyFG/XEVVidIY7grt6
+	 ChyYb0qoGiUgUwPQUzVRFdrdvfx/R2FiRoi80mqETQXdOPaheyE7Erlsx/YiVi3V4B
+	 15vwjsli0qaWQ==
+From: Jacques Nilo <jnilo@free.fr>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Johan Hovold <johan@kernel.org>,
+	Jacques Nilo <jnilo@free.fr>
+Subject: [PATCH 0/3] serial: 8250: fix BREAK+SysRq dispatch on guard()-locked IRQ handlers
+Date: Tue, 12 May 2026 15:46:11 +0200
+Message-ID: <cover.1778592805.git.jnilo@free.fr>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <5efe9e03-4d86-43a0-9ec2-e610ff31095d@free.fr>
+References: <5efe9e03-4d86-43a0-9ec2-e610ff31095d@free.fr>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-1601201666-1778592119=:11125"
+Content-Transfer-Encoding: 8bit
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+This series fixes a silent regression where a SysRq character entered as
+BREAK + key on the serial console is consumed by the kernel but never
+dispatched to handle_sysrq().
 
---8323328-1601201666-1778592119=:11125
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+The root cause and two fix candidates were discussed in [1]. Following
+Ilpo's suggestion, this series adds a dedicated lock-guard variant whose
+destructor is the sysrq-aware unlock helper, and switches the two
+affected IRQ handlers (serial8250_handle_irq and dw8250_handle_irq) to
+use it. The plain guard(uart_port_lock_irqsave) keeps its current
+semantics for the many callers that do not process RX.
 
-On Tue, 12 May 2026, Jacques Nilo wrote:
+Patch 1 introduces guard(uart_port_lock_sysrq_irqsave) in serial_core.h.
+Patch 2 switches serial8250_handle_irq() and updates the Context comment
+        on serial8250_handle_irq_locked() so future HW-specific 8250
+        wrappers know which unlock variant is required.
+Patch 3 switches dw8250_handle_irq() to the same guard.
 
-> On Tue, 12 May 2026, Ilpo J=C3=A4rvinen wrote:
->=20
-> > I seem to have come blind to the (unlock function) names. I'm sorry
-> > about breaking this.
->=20
-> No problem at all -- the asymmetry between the lock and unlock helper
-> names is exactly the kind of thing that's easy to miss in a refactor.
->=20
-> > 8250_dw's handle_irq also uses guard() which was the reason for this
-> > change in the first place so it should be fixed as well.
->=20
-> Confirmed -- dw8250_handle_irq() at drivers/tty/serial/8250/8250_dw.c:421
-> does the same guard(uart_port_lock_irqsave)(p) before
-> serial8250_handle_irq_locked(). Same bug.
->=20
-> > > Option B -- fix the guard destructor in serial_core.h:
-> >
-> > There will be many such sites so this doesn't sound a great idea.
-> >
-> > I wonder why we couldn't instead do another DEFINE_GUARD() for the
-> > sysrq case?
->=20
-> Agreed, that's cleaner. The lock side is identical -- only the unlock
-> needs the sysrq-aware variant -- so a second lock-guard macro keyed off
-> the unlock destructor fits well:
->=20
-> =C2=A0 DEFINE_LOCK_GUARD_1(uart_port_lock_irqsave_sysrq, struct uart_port=
-,
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 uart_port_lock_irqsave(_T->lock, &_T->flags),
-> uart_unlock_and_check_sysrq_irqrestore(_T->lock,
-> =C2=A0_T->flags),
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 unsigned long flags);
->=20
-> Callers that may capture sysrq_ch (currently serial8250_handle_irq and
-> dw8250_handle_irq) opt in by using guard(uart_port_lock_irqsave_sysrq);
-> the existing guard(uart_port_lock_irqsave) keeps its current plain-unlock
-> semantics for everyone else.
->=20
-> Naming-wise I'm not attached to "_sysrq" -- if you'd prefer something
-> shorter (e.g. uart_port_rx_lock_irqsave) or aligned with another
-> convention in the tree, happy to take direction.
+Verified on RTL8196E with CONFIG_MAGIC_SYSRQ_SERIAL=y: BREAK + 'h' on
+the console UART now produces the SysRq help dump in dmesg; the brk
+counter in /proc/tty/driver/serial increments per BREAK as expected.
+Build tested on tty-next (base 16e95bfb79b5).
 
-I don't have strong preferences (I'm usually not good with names
-anyway :-)). Somebody might object not placing _irqsave as last in the=20
-name (and reversing the word order would be a bit inconsistent compared=20
-with the unlock name).
+[1] https://lore.kernel.org/linux-serial/5efe9e03-4d86-43a0-9ec2-e610ff31095d@free.fr/
 
-> > I suppose thought the lockdep assert in serial8250_handle_irq_locked()
-> > cannot discern that the correct one of them is being used by the
-> > caller. But at least it's context comment should mention that the
-> > correct guard/unlock variant should be used.
->=20
-> Right -- both guards take port->lock so lockdep can't distinguish them.
-> I'll update the Context: line on serial8250_handle_irq_locked() to spell
-> out the requirement, e.g.:
->=20
-> =C2=A0 /*
-> =C2=A0 =C2=A0* Context: port's lock must be held by the caller, and must =
-be released
-> =C2=A0 =C2=A0* via guard(uart_port_lock_irqsave_sysrq) or
-> =C2=A0 =C2=A0* uart_unlock_and_check_sysrq_irqrestore()
+Jacques Nilo (3):
+  serial: core: introduce guard(uart_port_lock_sysrq_irqsave)
+  serial: 8250: dispatch SysRq character in serial8250_handle_irq()
+  serial: 8250_dw: dispatch SysRq character in dw8250_handle_irq()
 
-> so a SysRq character
-> =C2=A0 =C2=A0* captured by serial8250_read_char() is dispatched on unlock=
-=2E
-
-This would be less words to the same effect:
-
-which captures SysRq character on unlock.
-
-?
-
-> =C2=A0 =C2=A0*/
->=20
-> Plan, then, for a v1 patch series against tty-next:
->=20
-> =C2=A0 1. include/linux/serial_core.h: add the new lock-guard macro.
-> =C2=A0 2. drivers/tty/serial/8250/8250_port.c: switch serial8250_handle_i=
-rq()
-> =C2=A0 =C2=A0 =C2=A0to guard(uart_port_lock_irqsave_sysrq); update the Co=
-ntext comment
-> =C2=A0 =C2=A0 =C2=A0on serial8250_handle_irq_locked().
-> =C2=A0 3. drivers/tty/serial/8250/8250_dw.c: switch dw8250_handle_irq() t=
-o
-> =C2=A0 =C2=A0 =C2=A0the same guard.
->=20
-> I'll mark it with Fixes: 8324a54f604d and Cc: stable for the kernels
-> that carry the regression. Let me know if the naming or the Context
-> wording wants adjusting before I send.
-
-+
-
-Fixes: 883c5a2bc934 ("serial: 8250_dw: Rework dw8250_handle_irq() locking a=
-nd IIR handling")
+ drivers/tty/serial/8250/8250_dw.c   |  2 +-
+ drivers/tty/serial/8250/8250_port.c |  7 +++++--
+ include/linux/serial_core.h         | 13 +++++++++++++
+ 3 files changed, 19 insertions(+), 3 deletions(-)
 
 
---=20
- i.
+base-commit: 16e95bfb79b5d9d01dc7651d98caf3c2ace331cd
+-- 
+2.43.0
 
---8323328-1601201666-1778592119=:11125--
