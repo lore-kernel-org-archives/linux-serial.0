@@ -1,129 +1,123 @@
-Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B144345752
-	for <linux-serial@vger.kernel.org>; Tue, 12 May 2026 07:02:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B349F258CE5;
+	Tue, 12 May 2026 07:38:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778569336; cv=none; b=MReeks+tKcNTtp7Fa5H83N4tSzABsMadFLJvfxqZ5wZuGFXZpk8CE4ZQKmLSegyLsUtoRzJuKNARIAZ73oEz37HTqtF2VlvUrAe0G16HkAZnnhNzLr4rtn2LZ+PDtwQuifltnY7AihSOVQqhudhzfbJ8WBLh4TLfgf1sU/HcJ64=
+	t=1778571504; cv=none; b=h63t0PpwXur7W4IFjq74XcImZr+1OIluDoZV0ItazWUMMm5u2JAzBFJrS+ABKUpqTd4nP9YbB7/OBuCXRTTLfqTgME3Ix7dXZhEkM5f4cMDFNZ3xN19AqaF4NlxeWeK1fKUro6W4chw4FicVVfKeaqzfnjyMbAogEYoCxDZjjH4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778569336; c=relaxed/simple;
-	bh=zt0B7Jo7Lvmb5XTSLfP5bdnMkYALGEm2GSCOl0p8A4E=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=PD3/V9N+XlO3c0vLnwGv8SOIS91aO5FxTmhtrb0nWTe2DsF5mnKBOYQXxD1DXQLXsl16H1keOk4mnYC5srhxJep5uRn6GYsL/Fegpg+0sZ6BfempNTAfSwjfS+xN0D5Eo7Lm34siAeN/VcKZTuPgCHg1I+y6+U1y7x7jwAkaiOU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nyMb6y0W; arc=none smtp.client-ip=209.85.214.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1778571504; c=relaxed/simple;
+	bh=Jv9TaO2hjTbCqZRz8ettFr/wuhIOEDMTUYhHzvA0e0U=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=lAdNj50t/CJPWHc78QkJO2d2fRbjDGkChzXv5VJQnuIyfjZcfV6puNGOSXHEt51ZlQfhFBjGYgKIYwQRP5qqxbUQYEewhFJlWM7xOH9NxBrOQhVSD1+ECtWjGsdT6bRYXTyivSe1A3/iQVazRbT4BcTFXjEMHWMyoov5taSXV9w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=fpU3TJ5F; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nyMb6y0W"
-Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-2aaed195901so25167995ad.0
-        for <linux-serial@vger.kernel.org>; Tue, 12 May 2026 00:02:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778569325; x=1779174125; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=x3qKjhd1X6fafQ8IlizL6dqyB99X77F8kgo/x1i07BU=;
-        b=nyMb6y0WIrb0a/Bke/CvMo/aWn0ReTMevtDlGCp2QmlBfoDmLzTYF51FGtP91poSpg
-         DYeBMIhwnTbuW0EhxUk9x2+aJ1mp/ZIMoX2W533CLHNt43xnQ6X+ggAC7wavvo00CHi2
-         CTqTo9Okc9ALQ9o8Y78M1xtpgezN/RQPPiPQLEQdBkVMQ43GctduC4oSqYosJ1Vyk7Q3
-         RRjIlJ+QkE61A/G495Uk0uvQsmzMGQivBMxG+y6S1fQNyB7AVaIrmpGqYf0M7ZEE/phI
-         RZamUgbSPgeR0Z+LeZiMduGgdV+4ti+6cpgMqAkA9kwIykBX20GFgVCCsxE52RXIkImW
-         CAuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778569325; x=1779174125;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=x3qKjhd1X6fafQ8IlizL6dqyB99X77F8kgo/x1i07BU=;
-        b=tVMFMUwHxqTtXNiZw4rtGg6Y3p9sBZ2Xjy43Mzq9FogY8XW8dCR5brdF8JUquy5SHG
-         Ub91APDAd/lEIu0A/oZFOV6AQf4J2Lf8T2sTn735T/cSxCh99KOGhyMQ/S46P+bvUqTp
-         mF+S6809IWqmR257bnbHcbwxsindocItE2KcmCKw7ImDMPS+dU/Z4MRP1JEWRkxrT+nz
-         9yOtMXOGYHsyLs/8RncI7aSP4pICxXkxvbJUjdHSrhnp1T2ve++zdbe7wcBzrtPrntkJ
-         oyh6faaOAGI6LL63mBwJnJ6Hi1JWJyLDKZXhBx3WYyWrLiwt6X4C/XL+OAqod+pC6U8x
-         kVmA==
-X-Forwarded-Encrypted: i=1; AFNElJ8Pqas3XNb4MfyWESG7jdJsQWe1zR9fTI6Kv6fZ/lSoF6XKSdnp74jDM0cyBTj5POMUyRJMjhx+o0FZjHg=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy0q9p+67hOzeUsZ1/9uhXSGJpq8AewXVX+7P30Ezm+HzyLlBL3
-	ISAiLfLmOR2am9vU226oNiwklpQIAdEEqHxtfCLacHmvW/psMT6p0cw=
-X-Gm-Gg: Acq92OHMKtvogVp+NefqS0XlmjVDUKIEjCToibhzZXlpHwcyTQnJBvVznJbaja848rG
-	kHQAfMaoKWyvFZJjd4rxSqQPQjHUSw8EeR1i6Xuzv6CfjinKDtXw3OlX5x1QK+Hr6fRcqIltjRT
-	PCuoaly6iBZePaqbgBX837Umemg9kYBCYE9TkcQt44S5U6d9CtJWwE0xCMSEhujkfO3DMw+XlVV
-	JlRS9xqVYojgDxLiASkCFC/TvNAGwpY27opmoCTtmfTaPdlQdN6DfPj+ugOf2tjBpvSTy/QGZij
-	Uk4XORujL0Upy1Wl9rk5RTitXLB88J9EPGhj++1CcG7p09+F0pZfoe+dUDs+QTmnsXc3WFpowRF
-	jDq6qYjze5KT8qtKikzOBDX8gqEAlFwzPftav2YrY3dh+cCQ61jr+gxFqR1dSZSOr+meamz/RYg
-	uYA/hx1mQEfgF+PV1Y/0arVQZCwiDiFGo55/53WgvQY4KCIkyhXT8h/94rOSjC7A5j/TKOV4WST
-	g==
-X-Received: by 2002:a17:903:283:b0:2b2:4b4e:e4d2 with SMTP id d9443c01a7336-2bc7a9c7762mr131236155ad.15.1778569324707;
-        Tue, 12 May 2026 00:02:04 -0700 (PDT)
-Received: from localhost.localdomain ([211.198.234.66])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2baf1d27254sm123293635ad.4.2026.05.12.00.02.02
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Tue, 12 May 2026 00:02:04 -0700 (PDT)
-From: Myeonghun Pak <mhun512@gmail.com>
-To: Tobias Klauser <tklauser@distanz.ch>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: Myeonghun Pak <mhun512@gmail.com>,
-	linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Ijae Kim <ae878000@gmail.com>
-Subject: [PATCH v2] serial: altera_jtaguart: handle uart_add_one_port() failures
-Date: Tue, 12 May 2026 15:56:57 +0900
-Message-ID: <20260512065837.79528-1-mhun512@gmail.com>
-X-Mailer: git-send-email 2.47.1
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="fpU3TJ5F"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAF9BC2BCB0;
+	Tue, 12 May 2026 07:38:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1778571504;
+	bh=Jv9TaO2hjTbCqZRz8ettFr/wuhIOEDMTUYhHzvA0e0U=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=fpU3TJ5FZTBVUBfkMFFM9BHUYHUUUX+RmuvcYsrc5lp8O5QM7bc8vC/upYuo6DiSV
+	 DPGlPS75A76Yxb8QbqgBEO2iRpL1fzkCWo04QXT4kpUzHr8QbZDA1IXEWNXappogft
+	 uKXzedgzXHS0S6Q95menZl2lKOi8pTIuI5o31lOA=
+Date: Tue, 12 May 2026 09:38:21 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Shubhrajyoti Datta <shubhrajyoti.datta@amd.com>
+Cc: linux-kernel@vger.kernel.org, git@amd.com, shubhrajyoti.datta@gmail.com,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Michal Simek <michal.simek@amd.com>, linux-serial@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [LINUX PATCH] serial: xilinx_uartps: fix runtime PM race during
+ probe
+Message-ID: <2026051211-ladylike-dormitory-76b6@gregkh>
+References: <176bdb50948e99c40f8baaeaac9ffc5eaf10816f.1778567817.git.shubhrajyoti.datta@amd.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <176bdb50948e99c40f8baaeaac9ffc5eaf10816f.1778567817.git.shubhrajyoti.datta@amd.com>
 
-altera_jtaguart_probe() maps the register window before registering the
-UART port, but it ignores failures from uart_add_one_port(). If port
-registration fails, probe still returns success and the mapping remains
-live until a later remove path that is not part of probe failure cleanup.
+On Tue, May 12, 2026 at 12:11:33PM +0530, Shubhrajyoti Datta wrote:
+> pm_runtime_enable() was called with usage_count=0, allowing the PM
+> core to immediately queue a deferred suspend via pm_runtime_work.
+> This raced with console write, causing cdns_runtime_suspend to
+> fire before the port was fully registered.
+> 
+> Hold a reference with pm_runtime_get_noresume() before enabling
+> runtime PM.
+> 
+> Fixes: d62100f1aac2 ("serial: xilinx_uartps: Add pm runtime support")
+> Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@amd.com>
+> ---
+>  drivers/tty/serial/xilinx_uartps.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+> index a072b75dbaf2..e316cac4f35b 100644
+> --- a/drivers/tty/serial/xilinx_uartps.c
+> +++ b/drivers/tty/serial/xilinx_uartps.c
+> @@ -1800,6 +1800,7 @@ static int cdns_uart_probe(struct platform_device *pdev)
+>  	pm_runtime_use_autosuspend(&pdev->dev);
+>  	pm_runtime_set_autosuspend_delay(&pdev->dev, UART_AUTOSUSPEND_TIMEOUT);
+>  	pm_runtime_set_active(&pdev->dev);
+> +	pm_runtime_get_noresume(&pdev->dev);
+>  	pm_runtime_enable(&pdev->dev);
+>  	device_init_wakeup(port->dev, true);
+>  
+> @@ -1824,6 +1825,8 @@ static int cdns_uart_probe(struct platform_device *pdev)
+>  			"uart_add_one_port() failed; err=%i\n", rc);
+>  		goto err_out_pm_disable;
+>  	}
+> +	pm_runtime_mark_last_busy(&pdev->dev);
+> +	pm_runtime_put_autosuspend(&pdev->dev);
+>  
+>  #ifdef CONFIG_SERIAL_XILINX_PS_UART_CONSOLE
+>  	/* This is not port which is used for console that's why clean it up */
+> @@ -1842,6 +1845,7 @@ static int cdns_uart_probe(struct platform_device *pdev)
+>  	return 0;
+>  
+>  err_out_pm_disable:
+> +	pm_runtime_put_noidle(&pdev->dev);
+>  	pm_runtime_disable(&pdev->dev);
+>  	pm_runtime_set_suspended(&pdev->dev);
+>  	pm_runtime_dont_use_autosuspend(&pdev->dev);
+> -- 
+> 2.49.1
+> 
 
-Return the uart_add_one_port() error and unmap the register window on
-that failure path.
+Hi,
 
-This issue was identified during our ongoing static-analysis research while
-reviewing kernel code.
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
 
-Fixes: 5bcd601049c6 ("serial: Add driver for the Altera JTAG UART")
-Co-developed-by: Ijae Kim <ae878000@gmail.com>
-Signed-off-by: Ijae Kim <ae878000@gmail.com>
-Signed-off-by: Myeonghun Pak <mhun512@gmail.com>
----
-Changes in v2:
-- Drop the unnecessary port->membase = NULL assignment.
+You are receiving this message because of the following common error(s)
+as indicated below:
 
- drivers/tty/serial/altera_jtaguart.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+- You have marked a patch with a "Fixes:" tag for a commit that is in an
+  older released kernel, yet you do not have a cc: stable line in the
+  signed-off-by area at all, which means that the patch will not be
+  applied to any older kernel releases.  To properly fix this, please
+  follow the documented rules in the
+  Documentation/process/stable-kernel-rules.rst file for how to resolve
+  this.
 
-diff --git a/drivers/tty/serial/altera_jtaguart.c b/drivers/tty/serial/altera_jtaguart.c
-index d47a62d1c9..20f079fe11 100644
---- a/drivers/tty/serial/altera_jtaguart.c
-+++ b/drivers/tty/serial/altera_jtaguart.c
-@@ -379,6 +379,7 @@ static int altera_jtaguart_probe(struct platform_device *pdev)
- 	struct resource *res_mem;
- 	int i = pdev->id;
- 	int irq;
-+	int ret;
- 
- 	/* -1 emphasizes that the platform must have one port, no .N suffix */
- 	if (i == -1)
-@@ -418,7 +419,11 @@ static int altera_jtaguart_probe(struct platform_device *pdev)
- 	port->flags = UPF_BOOT_AUTOCONF;
- 	port->dev = &pdev->dev;
- 
--	uart_add_one_port(&altera_jtaguart_driver, port);
-+	ret = uart_add_one_port(&altera_jtaguart_driver, port);
-+	if (ret) {
-+		iounmap(port->membase);
-+		return ret;
-+	}
- 
- 	return 0;
- }
--- 
-2.47.1
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
 
+thanks,
+
+greg k-h's patch email bot
