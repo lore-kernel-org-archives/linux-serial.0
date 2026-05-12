@@ -1,121 +1,186 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5D29349CD5
-	for <linux-serial@vger.kernel.org>; Tue, 12 May 2026 11:53:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+Received: from smtpfb1-g21.free.fr (smtpfb1-g21.free.fr [212.27.42.9])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4A36F3911C4;
+	Tue, 12 May 2026 12:48:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.27.42.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778586800; cv=none; b=od8DRUZdGkzr8rI3HrLbOfH6Mw9uDv4LRImlUra//nqocDY0yuLb+d+5waatIs2Q4zp50oBWJtay9lZxbd6YLLYlpoRwXKDK9Nmjngr4qaeh8Mkn0Onf7zH8iUa7EBh7Zw8nA8pABBi6q8GbIHeRAQG+pYcX//9NfnOc6EJnsMc=
+	t=1778590113; cv=none; b=Z7BdMi0Rz2TNP5zGjuKj8Wwz6dPTx18CNEniPaHxYg2zaglc0AjVmAfsKxnXBP/0/5XFFhRKQhhnJ3wGWh0A5tb51w4jW4801iNAp7K6IZdGel7tD1Rw91Eqrzyn5LCD62d0dr1+C9nvV5+yUWC6U7rGD76/IuL0DRaHB9OHMeY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778586800; c=relaxed/simple;
-	bh=Ae0kvDEEdkoRInjRNHCCFi9CDJrwpt+SeKm9WveINIQ=;
-	h=Date:From:To:Cc:Subject:Message-ID; b=bkx3vYL2JAWcqCw+qBXZZxOGA5fhTo6HDn8EuIqabaQBObAMoQo0+E8vzaLrDrHArXN9qLTsV16Q2LYjV2HZa9MlLx3pTq3gvbM2zCpjGg5PkCIFYyhbUyfQPNf3K1hiAreMmGdtzcgWP6xhN0ezBEpVSA1hdqdRC+BVLMKJ/rc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Lc+9HEYQ; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1778590113; c=relaxed/simple;
+	bh=OGZopb/UzQad9GkgZFw0DFo2GpuLeud99o6wUX/DRxc=;
+	h=Message-ID:Date:MIME-Version:To:Cc:From:Subject:Content-Type; b=nUsjhAqNzkazSqqLxkpJSe2RtxzmiVLeRTr59u20CKsx2PcCFTDSn7a/lCR6NlBRHjeq2g1nx/UW3w7dlahk5hQUqWQo5IKvW4jQIhX6hbvhKbTi0IHSQ7+virD/RshtrUS/YuQ7pd2S+dtbEsec5ddKk0ApIKYwcjib+wODdj4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=free.fr; spf=pass smtp.mailfrom=free.fr; dkim=pass (2048-bit key) header.d=free.fr header.i=@free.fr header.b=fHZ1KnPe; arc=none smtp.client-ip=212.27.42.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=free.fr
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=free.fr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Lc+9HEYQ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778586797; x=1810122797;
-  h=date:from:to:cc:subject:message-id;
-  bh=Ae0kvDEEdkoRInjRNHCCFi9CDJrwpt+SeKm9WveINIQ=;
-  b=Lc+9HEYQmp1oDwXYCqIqslOHOxcO8WAwVDD2TYTBkXRyE6XUFUzGIBlo
-   gLurqlDvuy3LP82qzKZX9Ts6N66MUOMm/Tn8qk2VJjGHYOAHgTNEluvJl
-   TM3MK5ICEy9u2L6U2iWGkp7KmOYdcLFJSlUv99leHADCbZSYiQq6T1KQ5
-   dGIqIa1ugxkJnpqkD78UVJuoupgMjAaufFALVZdpyj9FHOTHMphRB4lz5
-   zu7crJvWpqDlGuFAsmjn7lcfEI2Jy/Zbj3UKuwIXfZzwWcpAp8e2JkxnT
-   EoU7fgKCcyfJ8eY0zc0SJ6EwFnRXLO3l8S+Cyzp5cOOXDMwQSoB5CS68f
-   g==;
-X-CSE-ConnectionGUID: xG+1UIjnSnOmhAzTnqbtSg==
-X-CSE-MsgGUID: fWic5nEpSaaPJrejmJ3kTQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11783"; a="79603175"
-X-IronPort-AV: E=Sophos;i="6.23,230,1770624000"; 
-   d="scan'208";a="79603175"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2026 04:53:16 -0700
-X-CSE-ConnectionGUID: xKH5qLOIRn2/pXK579cwzw==
-X-CSE-MsgGUID: nU/i4E/wQJCk/rN7rQrK5Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,230,1770624000"; 
-   d="scan'208";a="242742608"
-Received: from lkp-server01.sh.intel.com (HELO dca79079c3eb) ([10.239.97.150])
-  by orviesa005.jf.intel.com with ESMTP; 12 May 2026 04:53:15 -0700
-Received: from kbuild by dca79079c3eb with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1wMlfj-00000000255-2Sye;
-	Tue, 12 May 2026 11:53:11 +0000
-Date: Tue, 12 May 2026 19:52:54 +0800
-From: kernel test robot <lkp@intel.com>
-To: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Cc: oe-kbuild-all@lists.linux.dev, linux-serial@vger.kernel.org,
- "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Subject: [tty:tty-next 28/31] drivers/tty/serial/max310x.c:1727:25:
- error: use of undeclared identifier 'max310x_spi_driver'; did you mean
- 'max310x_i2c_driver'?
-Message-ID: <202605121900.SP8ZoaTw-lkp@intel.com>
-User-Agent: s-nail v14.9.25
+	dkim=pass (2048-bit key) header.d=free.fr header.i=@free.fr header.b="fHZ1KnPe"
+Received: from smtp6-g21.free.fr (smtp6-g21.free.fr [212.27.42.6])
+	by smtpfb1-g21.free.fr (Postfix) with ESMTP id 9FACCDF87A7;
+	Tue, 12 May 2026 14:38:38 +0200 (CEST)
+Received: from [IPV6:2a02:8428:7df0:ac01:fbfd:168d:553c:3eec] (unknown [IPv6:2a02:8428:7df0:ac01:fbfd:168d:553c:3eec])
+	(Authenticated sender: jnilo@free.fr)
+	by smtp6-g21.free.fr (Postfix) with ESMTPSA id 209C4780333;
+	Tue, 12 May 2026 14:38:24 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=free.fr;
+	s=smtp-20201208; t=1778589511;
+	bh=OGZopb/UzQad9GkgZFw0DFo2GpuLeud99o6wUX/DRxc=;
+	h=Date:To:Cc:From:Subject:From;
+	b=fHZ1KnPehuVHxKu3TFpsMFhNs2VsaKQ+SB6Z3cA8xvOIvl8BwCKACqPbJurVYADl7
+	 WZcxMYzgVqPt0bQYJdYR8/Imr4HsDKIaxTy7p0jwLt8awhlJOG5Q1ujdXpcSMk7Hvh
+	 /DszLrY+bw4HQABL+S1XOAlWhwIRvp5MhQNkXgmjsRsD1hQCOI+TdY9HQHnSPfRuLH
+	 05UoVfCMFg6IMiGwKMtB5Gj6sCN//L+DO6MnwYRlAi+n+WzpYt0OrpZh7wSlcL7YRl
+	 ERgwz3iok3pHi/DRoL3D5yPyMyUqCoKHOcclqAJ9BKkKqyNxVwSXmOITqqYb3p4kgk
+	 GtX3OTgLvCMiw==
+Message-ID: <5efe9e03-4d86-43a0-9ec2-e610ff31095d@free.fr>
+Date: Tue, 12 May 2026 14:38:24 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Content-Language: en-US
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ Johan Hovold <johan@kernel.org>
+From: Jacques Nilo <jnilo@free.fr>
+Subject: [REPORT] serial: 8250: BREAK + SysRq dispatch silently broken since
+ 8324a54f604d
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-next
-head:   16e95bfb79b5d9d01dc7651d98caf3c2ace331cd
-commit: 20ffe4b3330a8bde9e933e9ba2323d5e9386caa5 [28/31] serial: max310x: allow driver to be built with SPI or I2C
-config: sparc64-randconfig-r122-20260512 (https://download.01.org/0day-ci/archive/20260512/202605121900.SP8ZoaTw-lkp@intel.com/config)
-compiler: clang version 23.0.0git (https://github.com/llvm/llvm-project 5bac06718f502014fade905512f1d26d578a18f3)
-sparse: v0.6.5-rc1
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260512/202605121900.SP8ZoaTw-lkp@intel.com/reproduce)
+Hi,
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202605121900.SP8ZoaTw-lkp@intel.com/
+We hit what looks like a silent SysRq-over-serial regression on a 6.18
+build of the 8250 driver. Posting as a report rather than a patch because
+there are at least two reasonable fixes and I'd like a maintainer call
+before sending one.
 
-All errors (new ones prefixed by >>):
+Symptom
+=======
 
->> drivers/tty/serial/max310x.c:1727:25: error: use of undeclared identifier 'max310x_spi_driver'; did you mean 'max310x_i2c_driver'?
-    1727 |         spi_unregister_driver(&max310x_spi_driver);
-         |                                ^~~~~~~~~~~~~~~~~~
-         |                                max310x_i2c_driver
-   drivers/tty/serial/max310x.c:1689:26: note: 'max310x_i2c_driver' declared here
-    1689 | static struct i2c_driver max310x_i2c_driver = {
-         |                          ^
->> drivers/tty/serial/max310x.c:1727:24: error: incompatible pointer types passing 'struct i2c_driver *' to parameter of type 'struct spi_driver *' [-Wincompatible-pointer-types]
-    1727 |         spi_unregister_driver(&max310x_spi_driver);
-         |                               ^~~~~~~~~~~~~~~~~~~
-   include/linux/spi/spi.h:378:61: note: passing argument to parameter 'sdrv' here
-     378 | static inline void spi_unregister_driver(struct spi_driver *sdrv)
-         |                                                             ^
-   2 errors generated.
+CONFIG_MAGIC_SYSRQ=y, CONFIG_MAGIC_SYSRQ_SERIAL=y,
+CONFIG_SERIAL_8250_CONSOLE=y.
 
+A BREAK followed by a SysRq key on the console UART is consumed by the
+kernel (BREAK counter in /proc/tty/driver/serial increments correctly)
+but is never dispatched to handle_sysrq(). dmesg shows no "sysrq: ..."
+line.
 
-vim +1727 drivers/tty/serial/max310x.c
+`echo h > /proc/sysrq-trigger` still works, isolating the regression to
+the serial input path. Verified end-to-end on an RTL8196E MIPS board
+running 6.18.24; the affected code is in the generic 8250 core, so the
+issue is not platform-specific.
 
-6286767ad3afc88 Alexander Shiyan 2016-06-07  1722  
-2e1f2d9a9bdbe12 Cosmin Tanislav  2022-06-05  1723  	return 0;
-2e1f2d9a9bdbe12 Cosmin Tanislav  2022-06-05  1724  
-2e1f2d9a9bdbe12 Cosmin Tanislav  2022-06-05  1725  #ifdef CONFIG_I2C
-2e1f2d9a9bdbe12 Cosmin Tanislav  2022-06-05  1726  err_i2c_register:
-2e1f2d9a9bdbe12 Cosmin Tanislav  2022-06-05 @1727  	spi_unregister_driver(&max310x_spi_driver);
-2e1f2d9a9bdbe12 Cosmin Tanislav  2022-06-05  1728  #endif
-2e1f2d9a9bdbe12 Cosmin Tanislav  2022-06-05  1729  
-2e1f2d9a9bdbe12 Cosmin Tanislav  2022-06-05  1730  err_spi_register:
-2e1f2d9a9bdbe12 Cosmin Tanislav  2022-06-05  1731  	uart_unregister_driver(&max310x_uart);
-2e1f2d9a9bdbe12 Cosmin Tanislav  2022-06-05  1732  
-51f689cc1133394 Kangjie Lu       2018-12-25  1733  	return ret;
-6286767ad3afc88 Alexander Shiyan 2016-06-07  1734  }
-6286767ad3afc88 Alexander Shiyan 2016-06-07  1735  module_init(max310x_uart_init);
-6286767ad3afc88 Alexander Shiyan 2016-06-07  1736  
+Path
+====
 
-:::::: The code at line 1727 was first introduced by commit
-:::::: 2e1f2d9a9bdbe12ee475c82a45ac46a278e8049a serial: max310x: implement I2C support
+   serial8250_default_handle_irq()
+     -> serial8250_handle_irq() [8250_port.c:1835]
+          guard(uart_port_lock_irqsave)(port);  [8250_port.c:1840]
+          serial8250_handle_irq_locked()
+            -> serial8250_rx_chars()
+               -> serial8250_read_char()
+                  -> uart_handle_break()                 -- arms port->sysrq
+                  -> uart_prepare_sysrq_char(port, ch)   -- captures 
+sysrq_ch
+          /* guard scope ends -> port unlock */
 
-:::::: TO: Cosmin Tanislav <cosmin.tanislav@analog.com>
-:::::: CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The captured port->sysrq_ch is dispatched to handle_sysrq() at unlock
+time -- but only by uart_unlock_and_check_sysrq[_irqrestore]() (see
+include/linux/serial_core.h:1239). The scope guard's destructor at
+serial_core.h:797 is plain uart_port_unlock_irqrestore(), which skips
+the dispatch:
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+   DEFINE_LOCK_GUARD_1(uart_port_lock_irqsave, struct uart_port,
+                       uart_port_lock_irqsave(_T->lock, &_T->flags),
+                       uart_port_unlock_irqrestore(_T->lock, _T->flags),
+                       unsigned long flags);
+
+So sysrq_ch stays in the struct until the next BREAK clears it.
+
+Bisection
+=========
+
+   commit 8324a54f604d ("serial: 8250: Add serial8250_handle_irq_locked()")
+
+Pre-split serial8250_handle_irq() used explicit uart_port_lock_irqsave()
++ uart_unlock_and_check_sysrq_irqrestore(). The split moved the body into
+_locked() and replaced the explicit lock pair with
+guard(uart_port_lock_irqsave), losing the sysrq-aware unlock.
+
+This was the very condition Johan Hovold's 853a9ae29e978 ("serial: 8250:
+fix handle_irq locking", 2021) introduced
+uart_unlock_and_check_sysrq_irqrestore() to address -- the new helper was
+deliberately the sysrq-aware variant. The guard() conversion undoes that
+intent.
+
+Reproducer
+==========
+
+On any 8250-driven console with CONFIG_MAGIC_SYSRQ_SERIAL=y:
+
+   # On the host side:
+   python3 -c 'import os,fcntl,termios,time
+   fd=os.open("/dev/ttyUSB0",os.O_RDWR|os.O_NOCTTY)
+   fcntl.ioctl(fd,0x5427); time.sleep(0.3); fcntl.ioctl(fd,0x5428)
+   time.sleep(0.05); os.write(fd,b"h"); time.sleep(0.3)'
+
+   # On the gateway:
+   grep brk /proc/tty/driver/serial      # counter increments
+   dmesg | grep sysrq:                   # empty -- no dispatch
+
+Two ways to fix
+===============
+
+Option A -- surgical, only fix serial8250_handle_irq():
+
+   int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
+   {
+           unsigned long flags;
+
+           if (iir & UART_IIR_NO_INT)
+                   return 0;
+
+           uart_port_lock_irqsave(port, &flags);
+           serial8250_handle_irq_locked(port, iir);
+           uart_unlock_and_check_sysrq_irqrestore(port, flags);
+
+           return 1;
+   }
+
+Restores the pre-split behaviour. Doesn't touch the guard infrastructure.
+Drawback: leaves uart_port_lock_irqsave() as a generic primitive that
+silently swallows pending sysrq_ch in any other call site that processes
+RX under the guard. There are no such sites today in 8250_port.c
+(uart_prepare_sysrq_char is only reachable through serial8250_handle_irq),
+but the trap remains.
+
+Option B -- fix the guard destructor in serial_core.h:
+
+   DEFINE_LOCK_GUARD_1(uart_port_lock_irqsave, struct uart_port,
+                       uart_port_lock_irqsave(_T->lock, &_T->flags),
+uart_unlock_and_check_sysrq_irqrestore(_T->lock,
+  _T->flags),
+                       unsigned long flags);
+
+uart_unlock_and_check_sysrq_irqrestore() short-circuits to plain unlock
+when !port->has_sysrq, so no overhead on non-sysrq ports. Fixes all
+current and future guard(uart_port_lock_irqsave) users in one place.
+Drawback: changes the semantics of a shared serial primitive. Some
+callers in 8250_port.c run under that guard from non-RX contexts
+(serial8250_set_mctrl, wait_for_xmitr, etc.); the only observable effect
+there would be a one-time handle_sysrq() call if a previous BREAK left
+sysrq_ch set -- functionally desirable, but a behaviour change worth
+documenting.
+
+I have a tested Option A patch against 6.18.24 (verified the dispatch
+fires and produces the SysRq help dump). Happy to send it formally, or
+to retarget to Option B if that's the preferred direction.
+
+Thanks,
+
+Jacques
+
