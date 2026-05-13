@@ -1,66 +1,66 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE6083BFAE2
-	for <linux-serial@vger.kernel.org>; Wed, 13 May 2026 21:35:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 152183BFAF2
+	for <linux-serial@vger.kernel.org>; Wed, 13 May 2026 21:35:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778708111; cv=none; b=RNQOZiYz0fq4UG+Q0iTV471ygzFnN/jslZ//uDxDauvUdlVKmhS+SaFlVwe0Eoz/SEOmySOL/eYRMO4ckkF5eXXjt2KXJ8+U/JhNzYJBurgOV0K/OfYuBUmJ85T+g3v29OUABkzU/Bq7oiHTIgHJ1kdFwrmqwh3W3wqoUmA4tx0=
+	t=1778708114; cv=none; b=OnfPnBhcsgHlRVieGly7Ae+zNMW61SnD+v9nXx+HWKtaESQ3Jx1wWrrHT5uiRFahf1kDfFlO9Ld3bX5SjN45ZrGvbyvoQUebuq5YEkjDGxx9qRKwakcf7LB2J94823Jrw1KW1dHT67zOer1xcdseXIdvGTgl5xLAK1/ImL2PLGs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778708111; c=relaxed/simple;
-	bh=fcg5dGJNBAQyU4b2cL0nA3wqgVJTqz/EfkeGsaL9qZo=;
+	s=arc-20240116; t=1778708114; c=relaxed/simple;
+	bh=6jLv9uRwNNN8SJgSF9nQymP0EEzhFiRyXMtCm0W4pdQ=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=HmodNhRP2SbZIVRT56jBclkY8pX07MekSLCfAPT55qd3l1OGOSoQPILx5w6ExNs31HRqH5+Hl0alJVSagpJLWg7Gw6ee2kOjL/8Lkt5G4xL67VFVVddsXM71cYLFGtHWq58/cQKR/ROB1oEhnBF46+EWPAi3CelCQb/S5YGXeQs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QcSK/TOw; arc=none smtp.client-ip=209.85.128.42
+	 In-Reply-To:To:Cc; b=sIneDayQ0fzy8sDmMsfmobePhDcH7Bf0vCQfMj2s1sXx+3+qYzLJFa4rdiAXITiUxiKXt6o0etrbh8mr7lWuSXxAgWKcQd+bpCFPVoIjgDydRKyuAVUfYagT3SvDxHdi30+kF67rhQKU8ECwOTl84Jk2Zq7Mpc3E68pAjtF2rm0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=s9sWzEFG; arc=none smtp.client-ip=209.85.128.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QcSK/TOw"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-488af96f6b2so86583565e9.0
-        for <linux-serial@vger.kernel.org>; Wed, 13 May 2026 14:35:06 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="s9sWzEFG"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-488d2079582so75248555e9.2
+        for <linux-serial@vger.kernel.org>; Wed, 13 May 2026 14:35:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778708105; x=1779312905; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1778708107; x=1779312907; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=ilUL26n1rjGYeNrOGQ28D9s1uztNCB3AEwbB2W2pXWM=;
-        b=QcSK/TOwj+vFz6gW3iV15mckfT4BSKXGaYPkctagMNZOyUhdUBkYiGvridRlCqtaZl
-         OqZGtILhBadOgCFVTekt/G17rs/6yIIpaaNLVVcurJn8PMhcUuz0LN5zb+qkuZt+pszv
-         23kKjmBX3rG0eVaOTAdUFeUjUm0iiSgeho26usMO8RsEoNlPxKSF0wcRyQlJrvdyZPF+
-         mg8iP3GOTZ+pAHddoSCcZ7dPcS6axNyo/lmtMFZcvTUbAT4pY3pl2Bq17opeariXD1nE
-         Va9kEDS1OIXMDZB9CqL8uhO8KXfawFlGjb/FLNei0oR+5QaLqywXq9T1rOuW4wlWLMva
-         dNzQ==
+        bh=Ub44tcHR3rZ07I0PG7j4tYlcseLLTdK0dv8xseUhhuM=;
+        b=s9sWzEFGzAbqkY7TTzWUWEDcVVWgWpQDAnbpaSxk4dtimZQ0n8lpfnsVHsuD0TbeQY
+         tkSvukidSI5CnvQ7Z+G0l+XTycR+iyzoV1mUIBvnnfgJsCRB50yXlZ43IJKbeMHiiuVm
+         hEvEB9En8TjL6VXjArEwAOv2jEgHkqb8izrzGMnr/tVzh0uNtTdfbqg/eiPyeDU/OO87
+         sMaEz0zY6Apzo2HNBpwsQjSaAUxLFEjramUHQJJrHf2D+P2lS1myRIMOhQTEO2hIdPNl
+         g4gM6QEjavx5c/cx79yJiOszGW3+1+9gUiTlJXqKPtSwLmg5vSBOVU+Ane63IWil62bh
+         4Cqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778708105; x=1779312905;
+        d=1e100.net; s=20251104; t=1778708107; x=1779312907;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=ilUL26n1rjGYeNrOGQ28D9s1uztNCB3AEwbB2W2pXWM=;
-        b=QWq+v2xljLqYJSsBahjmFzw+7TxD5jV+fZurc/YvE7pWU2Eq8U1aTp8dBZtiMMPAhQ
-         ZgUmB3Hc1nnPJGvt3h4VhD4EbORLTuhwCDWeST4FoaOfCbB+q+oz+v57BNMkhKErdwHk
-         yv2hPAxh/uOm0UWh4E0I7OwXx4zWaRC+N3uuW8cCnoReerDH+tt8nZve6GSkQM8qTDEN
-         PolwV0Azomu2l91laWashMd6DzLm93qynt9WhC3MFZSJLv/b1TTa1uck7qbCb+co1UBC
-         Fb2uHKElLEq4LI44zYM2rCH47dH7lXbnrbaiXWO6KwNpVO/18ny+KDbz/mmacn1clLvW
-         HRaQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+lrk7HGx4v71dSTTtvjW1BV8zthSDjfHVycsETDc60oK+IGSfUm3KSd9qJNGFzWayDRjl4+wbh97KzrA8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzlpAIlGbwTVtEVhz/0Ebpnr7bEnE/yx+0ijC3xnu7THgUwTm7c
-	4l6LQqFDTdQUXlqQlKZNvf9qJwpK52KNTj2ZbaKjQ2EAPwimRC8TQqyb
-X-Gm-Gg: Acq92OGK5n6s1Q/AzHhDstXUYnnSHk40FviP1qonF3t90AKfhj95J5z2zcBS3rFU086
-	SLDLYoeivneLAwB3cXcl2HvLrrhYeoHm/327af5sLegztIB7ueuIhSDNizaYhoChv/NVsfg2YTP
-	5JeG5VwW12cWLrC/bvTNc23ioWwst/WODS1JftY8bVq11rIoepP86a2wREzxA7iT+LfOPuWpto1
-	3uk8IoP9OQxVmTx7Ph6SUhy5ZURwxkYzCb/WouNworhiYscoWJohl+ejDARQlbJu1y9qh8nZZjQ
-	9LPyQatS8UjkuxVLRSVcG2oyP2tSB8Z+FBK3H5j7rmJb8dmXJlOkhNeKzkTdkn+0qeAaXpFpQLi
-	VwnTdLFvy3pWTAjPStRHWJHClvH8ffnoDR5Gxo7tftK/VnVBOXn2ieY63Iq+OUsl+bRYNzBYRdh
-	yFNub8Ns3LNRdS7R+3KkddMzSH0bFOh5DvqJHq+DQcdls=
-X-Received: by 2002:a05:600c:4fcb:b0:48e:5d91:cffb with SMTP id 5b1f17b1804b1-48fc9a0f637mr70497135e9.10.1778708104526;
-        Wed, 13 May 2026 14:35:04 -0700 (PDT)
+        bh=Ub44tcHR3rZ07I0PG7j4tYlcseLLTdK0dv8xseUhhuM=;
+        b=Tw9/tkcoWNH4oTKPS2K7BZHfQ1G1+eLATTzkjwhW/IexMWSSAVfzSU+4P7JtRGIot0
+         yloWnO7kdIDmr8VgM5tDEBuEGRNmNoYUDgkRRiHx8k+TYWMCEuIa4BYoB932ky8CH/y8
+         ZpVLb09OJia+RXwtJFTRC0v+XKSbyOaspMZ5GqGeYmoBDiEZVXZtCIh38tqb4/ergs9B
+         nPDfXbNeSu+wR9xMCHqutNLHqb4wBC/KMnupHqEzILTGPRsMrjI5KaFjy+FjdTbj9yCB
+         XXr+7LSLAZ1vcMxo9Y1O1+Xb2VCjxgvzScbI4QcnH90KhUMDQf+F0UVGZcqAQNUWzjCF
+         sVaQ==
+X-Forwarded-Encrypted: i=1; AFNElJ+InTWQ2nDZq+EYCcDsK1DgJiEbeqT7Y92pQppkw4f1+XNUXGFA6fTgc4M/oYrVjHix2DgArovWuJNC4iw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyY+Rl8bnDW84V5b3IwTCsjA/3CaRaNurWWkEyAnnXDwiW+lISI
+	xLe4o3jltXXegtj91JHIjGdQgN7NztwxX9xJVTFrcsIp2lSzouHxU6S3
+X-Gm-Gg: Acq92OGuwx6PQ9ozOuhhds30VvlDFHxmb/5sGpMOZ22ZmWfz7lPONGUR4h7C4KKrqIq
+	iHENzGILTrRTYjc4RrDLorYA5jJZuyR9T0fI2/f8fXyvPDJ3hQt4K9j5YFBBzMzu/4A+aO4FyQS
+	+46Ja767HFmr16s5XEH+tPQIvXdluwRY0I4B9rW768E1EUoeXDYYWgrzg1oKdLPHzjPnExnJD6I
+	gQWzZDWv7p0miIEHPpl4IQtjJ0lAD9/Vnlt1fbtLk49G12c6O2clL5DUHgM35ISzYd9G4k5cwQi
+	LVhSAXv6+KgV7/Hia83zZfDAszRB7vVVL1WDJJkPKHGOKkdUq8PzQTmmnrldC+e+65QMY/NAr2T
+	C9oiasFZjbR5eIAEQ7mWZID1H5qzihOopkfFmZE5Z2L9GWO22zMhS2p3s0Exd0ibH2GOYkkgCK/
+	WvvbprMtHfcRAK4wyq7KqHwS1dLTpFqRC+1izd4RyJoXE=
+X-Received: by 2002:a05:600c:1d09:b0:48f:99a9:bbd6 with SMTP id 5b1f17b1804b1-48fce9f74f6mr69685145e9.24.1778708107012;
+        Wed, 13 May 2026 14:35:07 -0700 (PDT)
 Received: from [192.168.0.2] ([197.250.51.99])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48fdb1fee9csm2553055e9.0.2026.05.13.14.35.02
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48fdb1fee9csm2553055e9.0.2026.05.13.14.35.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 May 2026 14:35:04 -0700 (PDT)
+        Wed, 13 May 2026 14:35:06 -0700 (PDT)
 From: =?utf-8?q?Stefan_D=C3=B6singer?= <stefandoesinger@gmail.com>
-Date: Thu, 14 May 2026 00:34:56 +0300
-Subject: [PATCH 1/2] ARM: zte: Add support for zx29 low level debug
+Date: Thu, 14 May 2026 00:34:57 +0300
+Subject: [PATCH 2/2] amba/serial: amba-pl011: Bring back zx29 UART support
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -69,7 +69,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20260514-zx29uart-v1-1-68470ecc3977@gmail.com>
+Message-Id: <20260514-zx29uart-v1-2-68470ecc3977@gmail.com>
 References: <20260514-zx29uart-v1-0-68470ecc3977@gmail.com>
 In-Reply-To: <20260514-zx29uart-v1-0-68470ecc3977@gmail.com>
 To: Russell King <linux@armlinux.org.uk>, 
@@ -80,103 +80,98 @@ Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
  =?utf-8?q?Stefan_D=C3=B6singer?= <stefandoesinger@gmail.com>, 
  Linus Walleij <linusw@kernel.org>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2902;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2259;
  i=stefandoesinger@gmail.com; h=from:subject:message-id;
- bh=fcg5dGJNBAQyU4b2cL0nA3wqgVJTqz/EfkeGsaL9qZo=;
- b=owEBiQJ2/ZANAwAIAT0TvMhUTxoiAcsmYgBqBO6DHrxaXkARBemDDkrBXpRS3oDZcwST0k/6L
- QLZOUY6KB+JAk8EAAEIADkWIQRDFvS2qgVbJ5UyXWw9E7zIVE8aIgUCagTugxsUgAAAAAAEAA5t
- YW51MiwyLjUrMS4xMiwyLDIACgkQPRO8yFRPGiJwjg//XTrdw6+H+63UW2tqzNvWFZC4aWlyYUj
- gjO5KfX3MtxNMlzZPWOaHkRmJ6iIfTMtSzw0HVwWP8qpWmyauwAyXiVkiSb/cYBR+zTDOCKh8ct
- 2O4/xKK/IxkSkqRJpZFZKUVxPHj96SwxDRx+XljqC2wPPlG2otentnHSTQBnME/vCXr21QqlX2d
- oMn/b3jzcNV5QL5RnBowJT0eG54v7ImmhvtP7D/NmVYP341gctaRixem8tVc5VNDcLZQCTUX6/Z
- jBZg7B5gOsBAe9367QIzSIYsIQ8mGWggHslNjUVnnCHF1wFVJBcfKFiGDa0davUavrGKwpmvLpf
- i93Rj1OnEPKMqp1LVXhgehpD4nXBFgXUSLaHSggtnRK5IdIfm9VHSX5VTGM/Gy4gSTxy70APCTX
- z0OpWcnd+RoFpWF0R2G7l07WtpRE/f1KdpogeWPz93/gK1+q9l5j6/1ar51/DFaS/ILJeQuokEV
- 3uoOf4WZF24/O3/nm3WcdjLRalLqAKvDj4UWFnHVoZ7juBtaOIaP+7NMAyVduI9WJ0GnCHyHUC9
- tqjHKhEVWLebrkNuv4zFtLz5BmtgBbTyRhhGbMTJKIgdRDuMbNWq2Hy8XR7ZQpPXWwKx+VM2Jaj
- o1YS12nYo9yXnK3LtuDuvApaJ3Bb7g9H555OERinTF5PknMfisFk=
+ bh=6jLv9uRwNNN8SJgSF9nQymP0EEzhFiRyXMtCm0W4pdQ=;
+ b=owEBiQJ2/ZANAwAIAT0TvMhUTxoiAcsmYgBqBO6DGgjg1pmMCmXfe0b2mXxO2Y8S1PUj7OB1T
+ EVseGuTDNaJAk8EAAEIADkWIQRDFvS2qgVbJ5UyXWw9E7zIVE8aIgUCagTugxsUgAAAAAAEAA5t
+ YW51MiwyLjUrMS4xMiwyLDIACgkQPRO8yFRPGiJhGw//URVWivsSPit9lucIR3mmnK9TcanFuu5
+ elxMLlXanP9eg8sPaRKspxh5/x2PAyYZBnQH4z+enLCz5T4Y7ITkrjVSEucTIqqTYtEmiChhuLH
+ DbjpjLfGOnn5/Ew+9PISZVxhkXYejmQArMUtMrXodpadKU8RmHCnYGtwea4fmBaBNdPh1drJ4dN
+ pQWSsCaoK6G1kdXUmvexrmeseetSKwb//WgWwU6Dgurzmr1J5H3VLWt4AMOz41nEgWTiFvUKN3l
+ VcJ26w5v8CTTzkC6tLatNo7B2l/UwL8SZLKXKQ64Fo5SAsV5TuFzcE5mG1IxzkeOf+tyYlaC0PF
+ WsEwkWXsJz6pgi9++ozgbFWXhYkyhbOuIrrSPCZeGNk3lCdEF9N8BBsRlE58cEWnYXTgrEF8w+I
+ iv/VfaNCP66C+7aYg+0Q0te20+5yit8tBfz6Z3LM3hzFvNGFi/1nXlUDHDXxkYWmpjS6LgZ8fuW
+ SOMB3jIpWpRw3yv/zin/0Q6jigrzTqb5F8vKsfbSLfxP2DqhtjSLv62LP69vAZ1e5vy/E0x7/bS
+ 8PFyBXCTlj32UrFu6lViT+ZvodU4bSBYIep0pLMP8EVJqOa76sdjCXbwMFE42O0ZJMFaTnHT5Xo
+ rna3J9r0ar6T8aOGAHs3J7p1A4bbDNHCCq6oTH7EhQbj2w8Ft1io=
 X-Developer-Key: i=stefandoesinger@gmail.com; a=openpgp;
  fpr=4F9C2C8728019633893EBBB98CB81F9A72BBA155
 
-This is based on the removed zx29 code. A separate (more complicated)
-patch will re-add the register map to the pl011 serial driver.
+This is based on code removed in commit 89d4f98ae90d ("ARM: remove zte
+zx platform"). I did not bring back the zx29-uart .compatible as the
+arm,primecell-periphid does the job.
 
 Reviewed-by: Linus Walleij <linusw@kernel.org>
 Signed-off-by: Stefan Dösinger <stefandoesinger@gmail.com>
-
 ---
 
-Patch changelog:
-v8: Adjust UART01x_FR_BUSY to match the different ZX UART registers
-(Sashiko). I am unsure about UART01x_FR_TXFF and my boards do not expose
-flow control pins to allow me to test if it works.
-
-I am unsure about the virtual address. It doesn't seem to matter, as
-long as it is a valid address. This address is based on the old removed
-code. Is there a rule-of-thumb physical to virtual mapping I can use to
-give a sensible default value?
+Changes since v4:
+Use ZTE's JEDEC ID instead of 0xfe for the DT-Provided AMBA ID.
 ---
- arch/arm/Kconfig.debug         | 12 ++++++++++++
- arch/arm/include/debug/pl01x.S |  9 +++++++++
- 2 files changed, 21 insertions(+)
+ drivers/tty/serial/amba-pl011.c | 42 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 42 insertions(+)
 
-diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
-index 366f162e147d..98d8a5a60048 100644
---- a/arch/arm/Kconfig.debug
-+++ b/arch/arm/Kconfig.debug
-@@ -1331,6 +1331,16 @@ choice
- 		  This option selects UART0 on VIA/Wondermedia System-on-a-chip
- 		  devices, including VT8500, WM8505, WM8650 and WM8850.
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 028e37ad8d79..8ed91e1da22b 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -240,6 +240,38 @@ static struct vendor_data vendor_nvidia = {
+ 	.get_fifosize		= get_fifosize_nvidia,
+ };
  
-+	config DEBUG_ZTE_ZX
-+		bool "Kernel low-level debugging via zx29 UART"
-+		select DEBUG_UART_PL01X
-+		depends on ARCH_ZTE
-+		help
-+		  Say Y here if you are enabling ZTE zx297520v3 SOC and need
-+		  debug UART support. This UART is a PL011 with different
-+		  register addresses. The UART for boot messages on zx29 boards
-+		  is usually UART1 and is operating at 921600 8N1.
++static const u16 pl011_zte_offsets[REG_ARRAY_SIZE] = {
++	[REG_DR] = ZX_UART011_DR,
++	[REG_FR] = ZX_UART011_FR,
++	[REG_LCRH_RX] = ZX_UART011_LCRH,
++	[REG_LCRH_TX] = ZX_UART011_LCRH,
++	[REG_IBRD] = ZX_UART011_IBRD,
++	[REG_FBRD] = ZX_UART011_FBRD,
++	[REG_CR] = ZX_UART011_CR,
++	[REG_IFLS] = ZX_UART011_IFLS,
++	[REG_IMSC] = ZX_UART011_IMSC,
++	[REG_RIS] = ZX_UART011_RIS,
++	[REG_MIS] = ZX_UART011_MIS,
++	[REG_ICR] = ZX_UART011_ICR,
++	[REG_DMACR] = ZX_UART011_DMACR,
++};
 +
- 	config DEBUG_ZYNQ_UART0
- 		bool "Kernel low-level debugging on Xilinx Zynq using UART0"
- 		depends on ARCH_ZYNQ
-@@ -1545,6 +1555,7 @@ config DEBUG_UART_8250
- 
- config DEBUG_UART_PHYS
- 	hex "Physical base address of debug UART"
-+	default 0x01408000 if DEBUG_ZTE_ZX
- 	default 0x01c28000 if DEBUG_SUNXI_UART0
- 	default 0x01c28400 if DEBUG_SUNXI_UART1
- 	default 0x01d0c000 if DEBUG_DAVINCI_DA8XX_UART1
-@@ -1701,6 +1712,7 @@ config DEBUG_UART_VIRT
- 	default 0xf31004c0 if DEBUG_MESON_UARTAO
- 	default 0xf4090000 if DEBUG_LPC32XX
- 	default 0xf4200000 if DEBUG_GEMINI
-+	default 0xf4708000 if DEBUG_ZTE_ZX
- 	default 0xf6200000 if DEBUG_PXA_UART1
- 	default 0xf7000000 if DEBUG_SUN9I_UART0
- 	default 0xf7000000 if DEBUG_S3C64XX_UART && DEBUG_S3C_UART0
-diff --git a/arch/arm/include/debug/pl01x.S b/arch/arm/include/debug/pl01x.S
-index c7e02d0628bf..9dcdeed2357d 100644
---- a/arch/arm/include/debug/pl01x.S
-+++ b/arch/arm/include/debug/pl01x.S
-@@ -8,6 +8,15 @@
- */
- #include <linux/amba/serial.h>
- 
-+#ifdef CONFIG_DEBUG_ZTE_ZX
-+#undef UART01x_DR
-+#undef UART01x_FR
-+#undef UART01x_FR_BUSY
-+#define UART01x_DR		0x04
-+#define UART01x_FR		0x14
-+#define UART01x_FR_BUSY		(1<<8)
-+#endif
++static unsigned int get_fifosize_zte(struct amba_device *dev)
++{
++	return 16;
++}
 +
- #ifdef CONFIG_DEBUG_UART_PHYS
- 		.macro	addruart, rp, rv, tmp
- 		ldr	\rp, =CONFIG_DEBUG_UART_PHYS
++static struct vendor_data vendor_zte = {
++	.reg_offset		= pl011_zte_offsets,
++	.access_32b		= true,
++	.ifls			= UART011_IFLS_RX4_8 | UART011_IFLS_TX4_8,
++	.fr_busy		= ZX_UART01x_FR_BUSY,
++	.fr_dsr			= ZX_UART01x_FR_DSR,
++	.fr_cts			= ZX_UART01x_FR_CTS,
++	.fr_ri			= ZX_UART011_FR_RI,
++	.get_fifosize		= get_fifosize_zte,
++};
++
+ /* Deals with DMA transactions */
+ 
+ struct pl011_dmabuf {
+@@ -3180,6 +3212,16 @@ static const struct amba_id pl011_ids[] = {
+ 		.mask	= 0x000fffff,
+ 		.data	= &vendor_nvidia,
+ 	},
++	{
++		/* This is an invented ID. The actual hardware that contains
++		 * these ZTE UARTs (zx29 boards) has no AMBA PIDs stored. ZTE
++		 * JEDEC ID (ignoring banks) and the "011" part number as used
++		 * by ARM.
++		 */
++		.id	= 0x0008c011,
++		.mask	= 0x000fffff,
++		.data	= &vendor_zte,
++	},
+ 	{ 0, 0 },
+ };
+ 
 
 -- 
 2.53.0
