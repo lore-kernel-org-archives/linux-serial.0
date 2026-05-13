@@ -1,213 +1,127 @@
-Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [160.30.148.35])
+Received: from mx3.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAE2E3DD868;
-	Wed, 13 May 2026 08:53:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=160.30.148.35
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C605C3D47A0;
+	Wed, 13 May 2026 09:04:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=141.14.17.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778662390; cv=none; b=oZGIWH2GXvsRoMWAtboT0AvNhOj6uLXbACzVPD/qFwC0WlJZJMOt5ozLSVLkX7RKNJSov3uuGLxW5Tcz5u5+tT6eGoqyxczp+OrO53c4TF7FMT7X8pHoSkaW+BcNpw19muhnfEij7a6HQnbkIfTgjLuOGscS9Omv7jddea+Aopw=
+	t=1778663081; cv=none; b=IJiiFX/RX1ygEqgUNjHgurxQ3O19YICiUE+H2Ng85wgghHm9tvsaEo8JThiWt+aIYL3XYaBBoImh/nDUzPHJPg65q1SDadI76oNGelrKgsS8WCILM7R+W0etcISrSRggrQYcC8MW9t9g0YdfFnq+lIMZOZaMrqC/zEd6aNcPaNc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778662390; c=relaxed/simple;
-	bh=whMHt/Mh/Tx38JTL+Vhv1TzvaNrNNWRqYHuR4N/i17k=;
-	h=Message-Id:References:Date:Mime-Version:From:To:Cc:Subject:
-	 Content-Type; b=STrI0cwhR2mYrJ/50e4zaUB3zNXXAhI2vXHU+CHgWnxgy6rqhjAlDSG5ABit3TqL1FhREKB1W8B4gMlQ5g7qkk1wHj4bDlDgcm2v7E1hEOMJF+q0YWBK2NoXFSLpEgJK5jkC2Z6NaeRax5OeqjXcwLfTJlMESKzONjQ8pZjpkco=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zte.com.cn; spf=pass smtp.mailfrom=zte.com.cn; arc=none smtp.client-ip=160.30.148.35
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zte.com.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zte.com.cn
-Received: from mse-fl2.zte.com.cn (unknown [10.5.228.133])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange x25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	s=arc-20240116; t=1778663081; c=relaxed/simple;
+	bh=xU2etr7CxsV/jfciNYvXWrg04Ty/Jj2JiMaDD3j/rQw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=PO/AOeSkmGAY9ZhQG2s0XECj8hw5o2PQNLlt9o9iTYchCSrAfjK7R+ELxnSS/7V1lflTbyhHJFyXLr5BczGXNY//gtUOKDuZXJfPXdH+0Fl68shiKObRBsRGwe1LTOCb2Dv4uGlXaTo6CG8xTmR3X9WW/VGNUoam9hHqa6GMVJo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=molgen.mpg.de; spf=pass smtp.mailfrom=molgen.mpg.de; arc=none smtp.client-ip=141.14.17.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=molgen.mpg.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=molgen.mpg.de
+Received: from [141.14.220.42] (g42.guest.molgen.mpg.de [141.14.220.42])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mxhk.zte.com.cn (FangMail) with ESMTPS id 4gFnKv3DD1z8Xs79;
-	Wed, 13 May 2026 16:53:07 +0800 (CST)
-Received: (from root@localhost)
-	by mse-fl2.zte.com.cn id 64D8r4bc045011;
-	Wed, 13 May 2026 16:53:04 +0800 (+08)
-	(envelope-from liu.qingtao2@zte.com.cn)
-Message-Id: <202605130853.64D8r4bc045011@mse-fl2.zte.com.cn>
-Received: from njb2app07.zte.com.cn ([10.55.22.95])
-	by mse-fl1.zte.com.cn with SMTP id 64D8hURw067028;
-	Wed, 13 May 2026 16:43:30 +0800 (+08)
-	(envelope-from liu.qingtao2@zte.com.cn)
-Received: from mapi (njy2app03[null])
-	by mapi (Zmail) with MAPI id mid204;
-	Wed, 13 May 2026 16:43:32 +0800 (CST)
-X-Zmail-TransId: 2afb6a0439b49a7-f3b0c
-X-Mailer: Zmail v1.0
-References: 20260213093334.9217-1-qtliu@mail.ustc.edu.cn,20260213093334.9217-2-qtliu@mail.ustc.edu.cn,6ba2a916-739c-4c4a-92a6-951707aaa212@kernel.org,20260428212336808bXjbShOLllb6pYKXa129p@zte.com.cn,20260428231045453wLt2Gv66dV7Noa4l7ATlD@zte.com.cn,20260430171839401JJ1qBY9RPFfFISK8d2gVZ@zte.com.cn
-Date: Wed, 13 May 2026 16:43:32 +0800 (CST)
+	(Authenticated sender: pmenzel)
+	by mx.molgen.mpg.de (Postfix) with ESMTPSA id 568CF4C2C37D56;
+	Wed, 13 May 2026 11:04:04 +0200 (CEST)
+Message-ID: <505b56bd-e5fd-4feb-a6e3-1d8269609277@molgen.mpg.de>
+Date: Wed, 13 May 2026 11:04:03 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-From: <liu.qingtao2@zte.com.cn>
-To: <krzk@kernel.org>
-Cc: <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>, <robh@kernel.org>,
-        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <marex@nabladev.com>,
-        <pjw@kernel.org>, <palmer@dabbelt.com>, <aou@eecs.berkeley.edu>,
-        <alex@ghiti.fr>, <rdunlap@infradead.org>, <geert+renesas@glider.be>,
-        <quic_zongjian@quicinc.com>, <arturs.artamonovs@analog.com>,
-        <robert.marko@sartura.hr>, <hvilleneuve@dimonoff.com>,
-        <thierry.bultel.yh@bp.renesas.com>, <julianbraha@gmail.com>,
-        <flavra@baylibre.com>, <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
-        <liu.wenhong35@zte.com.cn>, <dai.hualiang@zte.com.cn>,
-        <deng.weixian@zte.com.cn>, <jia.yunxiang@zte.com.cn>,
-        <bai.lu5@zte.com.cn>, <yang.susheng@zte.com.cn>,
-        <shen.lin1@zte.com.cn>, <zuo.jiang@zte.com.cn>,
-        <hu.shengming@zte.com.cn>, <gao.rui@zte.com.cn>, <tan.hu@zte.com.cn>,
-        <liu.qingtao2@zte.com.cn>
-Subject: =?UTF-8?B?UmU6IFtQQVRDSCB2MSAxLzJdIExSVyBVQVJUOiBkdC1iaW5kaW5nczogQWRkIGJpbmRpbmcgZm9yIExSVyBVQVJU?=
-Content-Type: text/plain;
-	charset="UTF-8"
-X-MAIL:mse-fl2.zte.com.cn 64D8r4bc045011
-X-MSS: AUDITRELEASE@mse-fl2.zte.com.cn
-X-TLS: YES
-X-SPF-DOMAIN: zte.com.cn
-X-ENVELOPE-SENDER: liu.qingtao2@zte.com.cn
-X-SPF: None
-X-SOURCE-IP: 10.5.228.133 unknown Wed, 13 May 2026 16:53:07 +0800
-X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 6A043BF3.000/4gFnKv3DD1z8Xs79
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] Bluetooth: hci_uart: fix UAF in hci_uart_tty_close()
+To: Mingyu Wang <w15303746062@163.com>,
+ Mingyu Wang <25181214217@stu.xidian.edu.cn>
+Cc: marcel@holtmann.org, luiz.dentz@gmail.com,
+ linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20260513064547.352601-1-w15303746062@163.com>
+Content-Language: en-US
+From: Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <20260513064547.352601-1-w15303746062@163.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Thanks for your kindly review. Sorry for the delay.
-
-> On 13/02/2026 10:33, LiuQingtao wrote:
-> > From: Wenhong Liu <liu.wenhong35@zte.com.cn>
-> >
-> > Add documentation for LRW UART devicetree bindings.
-> >
-> > Signed-off-by: Wenhong Liu <liu.wenhong35@zte.com.cn>
-> > Signed-off-by: Qingtao Liu <liu.qingtao2@zte.com.cn>
->
-> Please use subject prefixes matching the subsystem. You can get them for
-> example with `git log --oneline -- DIRECTORY_OR_FILE` on the directory
-> your patch is touching. For bindings, the preferred subjects are
-> explained here:
-> https://www.kernel.org/doc/html/latest/devicetree/bindings/submitting-patches.html#i-for-patch-submitters
->
->
-> A nit, subject: drop second/last, redundant "bindings". The
-> "dt-bindings" prefix is already stating that these are bindings.
-> See also:
-> https://elixir.bootlin.com/linux/v6.17-rc3/source/Documentation/devicetree/bindings/submitting-patches.rst#L18
-
-Thanks for the notice. I will change the subject to "Add devicetree binding for ZTE LRX UART controller"
-in the v2 patch series.
+Dear Mingyu,
 
 
-> > ---
-> >  .../bindings/serial/lrw,lrw-uart.yaml         | 49 +++++++++++++++++++
-> >  .../devicetree/bindings/vendor-prefixes.yaml  |  2 +
-> >  MAINTAINERS                                   |  7 +++
-> >  3 files changed, 58 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/serial/lrw,lrw-uart.yaml
-> >
-> > diff --git a/Documentation/devicetree/bindings/serial/lrw,lrw-uart.yaml b/Documentation/devicetree/bindings/> serial/lrw,lrw-uart.yaml
-> > new file mode 100644
-> > index 000000000000..a2d41c278c4f
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/serial/lrw,lrw-uart.yaml
-> > @@ -0,0 +1,49 @@
-> > +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> > +
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/serial/lrw-uart.yaml#
->
-> Never tested, NAK. There are several other issues here, but I am not
-> going through rest of review if you did not bother to even build test
-> it. Please open any other recent binding and apply same style here
-> (filename, descriptions etc), so you won't be repeating SAME mistakes.
->
->
+Thank you for the patch, and your work on the Linux kernel.
 
-Sorry, i tested on an older version kernel.
-No errors or warnings ever showed up running the command
-"make dt_binding_check DT_SCHEMA_FILES=Documentation/devicetree/bindings/serial/zte,lrx-uart.yaml".
+Am 13.05.26 um 08:45 schrieb w15303746062@163.com:
+> From: Mingyu Wang <25181214217@stu.xidian.edu.cn>
+> 
+> A Use-After-Free (UAF) vulnerability and a subsequent General Protection
+> Fault (GPF) were observed in h5_recv() due to a race condition between
+> the initialization of the HCI UART line discipline and concurrent TTY
+> hangup via TIOCVHANGUP.
 
-Log from v2 patch:
+Please elaborate, in what setup it was observed, and please add an 
+excerpt of the trace.
 
-$ make dt_binding_check DT_SCHEMA_FILES=Documentation/devicetree/bindings/serial/zte,lrx-uart.yaml
- SCHEMA  Documentation/devicetree/bindings/processed-schema.json
- CHKDT   ./Documentation/devicetree/bindings
- LINT    ./Documentation/devicetree/bindings
- DTEX    Documentation/devicetree/bindings/serial/zte,lrx-uart.example.dts
- DTC [C] Documentation/devicetree/bindings/serial/zte,lrx-uart.example.dtb
+> The issue arises because the workqueues (init_ready and write_work) are
+> only cancelled if the HCI_UART_PROTO_READY flag is set. However, during
+> the protocol initialization phase (HCI_UART_PROTO_INIT), the underlying
+> protocol (e.g., H5) may schedule work (such as sending sync/config
+> packets). If a hangup occurs before the setup completes and the READY
+> flag is set, hci_uart_tty_close() skips the cancel_work_sync() calls
+> and proceeds to free the `hu` struct.
+> 
+> When the delayed workqueue finally executes, it blindly dereferences
+> the freed `hu` struct, causing ODEBUG warnings and kernel panics.
+> 
+> Fix this by moving the cancel_work_sync() calls outside the
+> HCI_UART_PROTO_READY check, ensuring that any pending works are
+> unconditionally cancelled before the hci_uart structure is freed.
 
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: LRW serial UART
-> > +
-> > +maintainers:
-> > +  - Wenhong Liu <liu.wenhong35@zte.com.cn>
-> > +  - Qingtao Liu <liu.qingtao2@zte.com.cn>
-> > +
-> > +description: |
-> > +  Should be something similar to "lrw,<chip>-uart"
-> > +  for the UART as integrated on a particular chip, It supports
-> > +  multiple CPU architectures, currently including e.g. RISC-V and ARM.
-> > +
-> > +properties:
-> > +  compatible:
-> > +    const: lrw,lrw-uart
->
-> No way lrw is a chip if this is a company.
+Please add a Fixes: tag, so it gets backported.
 
-Sorry for the name problem. lrw is a subsidiary of ZTE.
-We will use ZTE as company name and lrx as chip name in the v2 patches.
-lrx is a chip that will be comming up soon.
+Also, please add a Link: tag with a URL to the test case, or include it 
+in the commit message.
 
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> > +  interrupts:
-> > +    maxItems: 1
-> > +
-> > +  clocks:
-> > +    maxItems: 1
-> > +
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +  - current-speed
-> > +  - clocks
-> > +
-> > +additionalProperties: false
-> > +
-> > +examples:
-> > +  - |
-> > +    uart0: serial@e0001800 {
-> > +      compatible = "lrw,lrw-uart";
-> > +      interrupt-parent = <&aplic0>;
-> > +      interrupts = <0x12 0x4>;
-> > +      reg = <0xe0001800 0x100>;
-> > +      clocks = <&bar_clk>;
-> > +      current-speed = <115200>;
-> > +    };
-> > diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/> vendor-prefixes.yaml
-> > index ee7fd3cfe203..ec9bf262f466 100644
-> > --- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> > +++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> > @@ -961,6 +961,8 @@ patternProperties:
-> >      description: Loongson Technology Corporation Limited
-> >    "^loongmasses,.*":
-> >      description: Nanjing Loongmasses Ltd.
-> > +  "^lrw,.*":
-> > +    description: LRW Corp.
->
-> What is the website/domain address?
->
->
-> Best regards,
-> Krzysztof
+> Signed-off-by: Mingyu Wang <25181214217@stu.xidian.edu.cn>
+> ---
+>   drivers/bluetooth/hci_ldisc.c | 10 +++++++---
+>   1 file changed, 7 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/bluetooth/hci_ldisc.c b/drivers/bluetooth/hci_ldisc.c
+> index 275ea865bc29..566e1c525ee2 100644
+> --- a/drivers/bluetooth/hci_ldisc.c
+> +++ b/drivers/bluetooth/hci_ldisc.c
+> @@ -544,14 +544,18 @@ static void hci_uart_tty_close(struct tty_struct *tty)
+>   	if (hdev)
+>   		hci_uart_close(hdev);
+>   
+> +	/*
+> +	 * Always cancel workqueues unconditionally before freeing the hu
+> +	 * struct, as they might be active during the PROTO_INIT phase.
+> +	 */
+> +	cancel_work_sync(&hu->init_ready);
+> +	cancel_work_sync(&hu->write_work);
+> +
+>   	if (test_bit(HCI_UART_PROTO_READY, &hu->flags)) {
+>   		percpu_down_write(&hu->proto_lock);
+>   		clear_bit(HCI_UART_PROTO_READY, &hu->flags);
+>   		percpu_up_write(&hu->proto_lock);
+>   
+> -		cancel_work_sync(&hu->init_ready);
+> -		cancel_work_sync(&hu->write_work);
+> -
+>   		if (hdev) {
+>   			if (test_bit(HCI_UART_REGISTERED, &hu->flags))
+>   				hci_unregister_dev(hdev);
 
-There won't be such problem since we use ZTE as company name.
-ZTE was described in Documentation/devicetree/bindings/vendor-prefixes.yaml already.
 
-Thanks,
-Qingtao Liu
+Kind regards,
+
+Paul
+
+
+PS: If you resend, and don’t know yet (you have commits in the Linux 
+kernel already), please add v2 to the tag. (`git format-patch -2 …` or 
+an equivalent option to your tooling.
+
+PPS: sashiko.dev did not pick this patch up yet [1].
+
+
+[1]: https://sashiko.dev/#/?list=org.kernel.vger.linux-bluetooth
