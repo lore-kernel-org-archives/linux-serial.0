@@ -1,45 +1,45 @@
 Received: from mx0a-0064b401.pphosted.com (mx0a-0064b401.pphosted.com [205.220.166.238])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26C6F3D47AC
-	for <linux-serial@vger.kernel.org>; Wed, 13 May 2026 06:51:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 258903D525E
+	for <linux-serial@vger.kernel.org>; Wed, 13 May 2026 06:51:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.166.238
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778655073; cv=fail; b=ZbQF0CT5+ztWwiYJW+39av1kz5KL2Pu7MX22pZ1xxXiaA2jYYaUbTDjCEpxFJUck3oHpBLOQtu5gVudXUZYOF2dzoD8sjONSXBl9ayWy2IHaPIfZiIwGDSYTZL6a3qEKY98V9CCbYYFztjRhb5Gqj0lA+AR6NGrTuQP4DYN/Ptw=
+	t=1778655077; cv=fail; b=kW/Ch2G/PPB1ITuFrGd72kHo1r+AQIfzesMYdIVCN4W4YCVyxNSfbBBuejfreDGnTSaYDYdpipjzZfxLh2l8jgYwc9YRj7pOUNdMJ8iQNcCtKREDAd1FMyvw/aXLNgQongnRGWvMwrPeLymZ82MoXzDy+ydEtWJDdSJkgYql3RM=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778655073; c=relaxed/simple;
-	bh=y8ZW2C56nF/yGjVmQ3y5EWEmfvAcKxVmca7eifjv8n8=;
+	s=arc-20240116; t=1778655077; c=relaxed/simple;
+	bh=h2rdCY4X0CYZGPwBENZlUSo0+XXMLPUIwcH2UJNA8qI=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=WIFxROWgp6+n1SvWEuJbNzJuYmHNOXC+9ZnUwTw7h0PrZlzMzW8u4atZGLf6+Q8NsQQE/yx6LkEQRJNXzMV8izWPiDQLUl8tDwZ2922wOO9tifNw1GsKhwEQm9BWMI8YB1HqiQDoRYKkOJezSql4mFn+7ydzUBT42uY/IECY/Ls=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=windriver.com; spf=pass smtp.mailfrom=windriver.com; dkim=pass (2048-bit key) header.d=windriver.com header.i=@windriver.com header.b=XFkmfYSY; arc=fail smtp.client-ip=205.220.166.238
+	 Content-Type:MIME-Version; b=IzHqjUqMBCJ4Wkd/N5hQ/nB6yb4KPoOhxMqq+ruFekDqNLEjbMmqRFZGrAwMbnGHjYgvJSTl+ns5Z48q6NnpI/SRZV01+MDMgq7WW3Stj0hkZMz3SQmplsUerrajP/PNGaa6gWCgnDfgZYeo0PK4dzRhdFi7nfyP2l7uNfQNCYc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=windriver.com; spf=fail smtp.mailfrom=windriver.com; dkim=pass (2048-bit key) header.d=windriver.com header.i=@windriver.com header.b=iyAAReZC; arc=fail smtp.client-ip=205.220.166.238
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=windriver.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=windriver.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=windriver.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=windriver.com header.i=@windriver.com header.b="XFkmfYSY"
+	dkim=pass (2048-bit key) header.d=windriver.com header.i=@windriver.com header.b="iyAAReZC"
 Received: from pps.filterd (m0250810.ppops.net [127.0.0.1])
-	by mx0a-0064b401.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64D1bveu009107;
-	Tue, 12 May 2026 23:51:05 -0700
+	by mx0a-0064b401.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64D3t2iu243653;
+	Tue, 12 May 2026 23:51:07 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=windriver.com;
 	 h=cc:content-transfer-encoding:content-type:date:from
 	:in-reply-to:message-id:mime-version:references:subject:to; s=
-	PPS06212021; bh=YVK/O9vSO+ydruKdA3xkWB1Q0O4F6yjHhNpdSvmrvZc=; b=
-	XFkmfYSY9Ajz0TyKBsW+e2VZYnsLhD5fpWbUw5KdkHDgp+XxBfECsigdADyFCOEm
-	88i3gdKwnbzsBQA4eyd0MsV2aSawyBU+Zfcm1btYD8crHdnYVSrxAUaRuJNQ/XzC
-	+RSaQydfeJ2+5RwA60gRAJOaZCH8FC8pSEw+vM5ZKsTSrNuqrZ3RV2twaItKMvk7
-	zqf20SbPuX8xm6htiGgfLTjTY98NDvHvnoq0wwo8mJD+2znVAkKAI+UKFDsMoWQh
-	vQi+KWy5Ep09F2J0oW8K4sSYdHvpHb+iuswhop+UTiw/NePRqxibKhu9xU6or3QM
-	dE3csFb8Rt7TMZv+GDbncA==
-Received: from sa9pr02cu001.outbound.protection.outlook.com (mail-southcentralusazon11013013.outbound.protection.outlook.com [40.93.196.13])
-	by mx0a-0064b401.pphosted.com (PPS) with ESMTPS id 4e4ftb8a21-1
+	PPS06212021; bh=ma6LARVqn5M/hLA6RnXH3d0fovNQEWzDrHi1hU/7MEo=; b=
+	iyAAReZC1XGZGZbOqAxJk1PtAEed5zZnbgBIZydl7+dKhWPT7HSkg0R6eJq2Uxfx
+	kE2IybFGe5SV0si8lkz2KuFRsGRUfTU97er3JF7Vo+FHYG7VuWa5vjGNXvHRLh1m
+	SkI2G61PYhlWz1MHb7sppNkwYhKO/BMD1g8IV7mLRJkwzOrqDlBkH372JD65e8Ni
+	xNiQushFD+jvfEEHV1EZvdQPdR3sdZvMxztVCcCFcojg3u6RT8dP6X1ANB51wGie
+	/7S8Js0omJ6r6Ksv4EVH4nJifELPwzKqAOHtpo1KqDDEdSiiYc3tyjk0iFqcGQEl
+	3pUjYybAgSvnAaKiOSw0mQ==
+Received: from sa9pr02cu001.outbound.protection.outlook.com (mail-southcentralusazon11013007.outbound.protection.outlook.com [40.93.196.7])
+	by mx0a-0064b401.pphosted.com (PPS) with ESMTPS id 4e4ftb8a24-1
 	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-	Tue, 12 May 2026 23:51:05 -0700 (PDT)
+	Tue, 12 May 2026 23:51:07 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=aTmG4kMesDosZWtaVerlGACeSiFTjxYEkyRdG3r3Tut3dYnemF4KZr69bPHcji6AQlopv/Tl9t25FfkLGbIcAVBvEyzG9HFFtcNkkPO/lG6DbYatWAlY/bEuCp+Gw1GcxU5V936WF4mHNpFqsn/dAXM0mrLN8KrcYo2HGKJOhHw9uF23rsYzl3ZHZFs33xDVLffEU6IBrsC14UVfPzBrc1fJeYWFDLBffZ0O2BQbNeRKs3/JFgLh2N84MaYRyiOxvy2GrhN5kF1m6vtcK+vIh3xds+tbc9GYHOM8lJlren2YTlPz7hVYxg7O/2k91jCcEOfTTaTZ7FQwBeA7Smo6NQ==
+ b=Jvwm8V4/gwY6DBuSxbhlfdEsnPupgaZA57yMJB/y4k7z8By5qkOLmeNt1Tx73q3/IfqSeu0SzTsE5BQzI7ZLdjehCXw08UmGLae43SKk7bYgXOhMhb0SQoezd3afDVkDD2aUk+uyhU9clgIYzsYFtr9ip8RHCGzs4PUu77Hr+0uYz890LvqVo3+GTj+l7+E0hxH8oOMxAwikCYiLkj/UnRwEhrUXInVkNi0wsM8mr51ZT3zHabztlZ54BaXh5NcxEDwyUNuDuf9dkcGJq9R2v/2p12Yj0tfcmMXcZoPjhzcuAEVE6pob7XNd1DVaPKHUKb/T6GNfZDg5BYntYq1QpQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YVK/O9vSO+ydruKdA3xkWB1Q0O4F6yjHhNpdSvmrvZc=;
- b=kixA2tVoj8VVDlSiWwJc21ndwWYgVuPrRFpf4SkT2ARcpO/18KZy1dUitXn6e+xOqSrp9GJ7zD5AIYatPu/orZ1SZkCFTHvAG6BUw8wW3+StUnfr8/d8OEcn6oYVSxgce5uPTLpFLPC1nAp6q0WiKcW74UmiDc65dhkbCrbsjRHrjdZ710so8sgh5DBDQRqFjy3mMMwNTY68qlPq8pyxA9bIfrTfG6ANd/qHHYBqosD2f5QjHcVkt6svMSBterkL0bXxf1wZ4D13xsVQg734sd2tqZPR4tylWlJBCZilpxThAZpu+iaizJe2+47JeT2w38jsXJBhmvwsmb5DqvAIow==
+ bh=ma6LARVqn5M/hLA6RnXH3d0fovNQEWzDrHi1hU/7MEo=;
+ b=MmQhC7R0XHL18itN7eLL0J2Cu5l3O4Sw5TfxYNnb1ww2dqL5bBC7HLU4saOnEe7MqrQGNM48qdxiFoVWRRUzPvOKOb9haC2mISfG3mREyQYLiyn/r7nDW5B8N9CMqZoE3X6mHZWYu65a9Wq34tKQ8OYJ8OYvKRlPWCw9EOSUlFF52Yll5PgQoM7Y+ex1cOuLsXzjY8fV3NI/Pw2l1/HHl2RGTlIkGtEF7rPHpGL5O/22hLs2CadlAZJvSlLoXSobtw5eOTEXsIka7Z4Fj7hA0BWSdBWGy5PNeTpro3/sm0Ie+2opO2Yh1NgbkJfv+GzsG87QjEOegNF2fo0lg//Abg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=windriver.com; dmarc=pass action=none
  header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
@@ -47,11 +47,11 @@ Received: from SJ2PR11MB7546.namprd11.prod.outlook.com (2603:10b6:a03:4cc::8)
  by BN9PR11MB5289.namprd11.prod.outlook.com (2603:10b6:408:136::10) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9913.12; Wed, 13 May
- 2026 06:50:59 +0000
+ 2026 06:51:05 +0000
 Received: from SJ2PR11MB7546.namprd11.prod.outlook.com
  ([fe80::ca9b:dcf:8881:bced]) by SJ2PR11MB7546.namprd11.prod.outlook.com
  ([fe80::ca9b:dcf:8881:bced%4]) with mapi id 15.20.9913.009; Wed, 13 May 2026
- 06:50:59 +0000
+ 06:51:05 +0000
 From: "Ionut Nechita (Wind River)" <ionut.nechita@windriver.com>
 To: ilpo.jarvinen@linux.intel.com, gregkh@linuxfoundation.org
 Cc: stable@kernel.org, andriy.shevchenko@linux.intel.com, wander@redhat.com,
@@ -59,9 +59,9 @@ Cc: stable@kernel.org, andriy.shevchenko@linux.intel.com, wander@redhat.com,
         "Bandal, Shankar" <shankar.bandal@intel.com>,
         "Murthy, Shanth" <shanth.murthy@intel.com>,
         Ionut Nechita <ionut.nechita@windriver.com>
-Subject: [PATCH v2 6.12.y 06/10] serial: 8250_dw: Avoid unnecessary LCR writes
-Date: Wed, 13 May 2026 09:50:24 +0300
-Message-ID: <20260513065028.112468-7-ionut.nechita@windriver.com>
+Subject: [PATCH v2 6.12.y 08/10] serial: 8250_dw: Rework dw8250_handle_irq() locking and IIR handling
+Date: Wed, 13 May 2026 09:50:26 +0300
+Message-ID: <20260513065028.112468-9-ionut.nechita@windriver.com>
 X-Mailer: git-send-email 2.54.0
 In-Reply-To: <20260513065028.112468-1-ionut.nechita@windriver.com>
 References: <20260513065028.112468-1-ionut.nechita@windriver.com>
@@ -78,89 +78,89 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: SJ2PR11MB7546:EE_|BN9PR11MB5289:EE_
-X-MS-Office365-Filtering-Correlation-Id: ced2e111-4481-44e6-4e8a-08deb0bbfda3
+X-MS-Office365-Filtering-Correlation-Id: 096474e6-9c56-4ab3-2936-08deb0bc011e
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
 	BCL:0;ARA:13230040|366016|376014|1800799024|52116014|10070799003|11063799003|22082099003|18002099003|56012099003;
 X-Microsoft-Antispam-Message-Info:
-	i5NHLb+qKE6DiaEqv0cmBvJLBu0WVdsjf3bNF2g+e742HvGYjT9CpFBm+yq1qP9prCqx/M5npnUOKfzeQ0ts6b28ATZut5hQ6ks4btD50Ans6TkTezicU3HWwNjCdu/Nse2EYFoAoznGccQuCuz5Zej/7rpUkHVWbNZhxpn4+BtEH/7W2eCKJJyYcwzmfKbl1dqvn+963bEtEPgjBAUz1AZ9/VEsPVUVwDw6moPCXaiKjGQk3E90NigUkFmK6yc7/31LsqPxE+SUMX0XrkxAO7auQLkDwLi66V8cZIa8UybdpvmqNixuPVwLp46mn8DGni2BbQYTslz93UGl3a/2Q+tK48fhgWLgFdYFL/KIAmdRMPhfTuprQiFn+BpqzhB/sx7u2zkL0bFLRuhRY08NvJxhfrnByUjBuFBKhm1DIcECKvsUHGcQd0p1mhVadWvL3arumzPypsMyKltpo5UKgy81S2SWdnsZxnInQtqeiaPSFB8ldTG8yhkSMjEuR66650pMIRgxpNP2eLS0bt1OgVbBml4MsSXuYeUGj99Bu3o+loHTIAFqhDIE2G+QfO54PgWJNmGeQn4ev2i/VlDMg6AbpT02mAwHckodbRnAa8jpiWke09fce0kJ7koONByldl3mk5lRZftGLWeUdsjLWw==
+	08D5rzPZwJ3tzQyWBYCZ0pD+BIIHMUgvTsHf41Qd6vwsd2913qwR0wFLzLVEXo+dan2ouz2Vl8y97hyGO0z9Bi0LB6lv0QtM9kny7e0kRyR2cTNX5vMNRB9Z3VtGbunNLvfK09qXMPLWtefzuxhjzvDHcNrvl2tamHqc7LgJKqgaeVBcgaelItT5U+hV516QHYPcT7rPaW7Rl9anBorK9ErbrUmSb5EP0YCWLCF8Ml7EGO5T2TKhxFoI7U8HQJTW65l4/CkF1r1UdME+fLdUjTkVq++Pn21vwSs+x/nv1jlqtNPDwpqUFPalt/QZITL3ZqrqPsNImlb5SLNoBhjwi0lvhtxtvJq+zwzrUBY5zaKIdsP03al6eOVEimyKsLWBuqJ/KrJoR+sGSZvC+b4BinpL3EcjRa7j1ayd1r47AokAdFnF7Pi7Ib5nkTVH3BMteHG1MtbPjjjAHh1zYqRBdU+0wnIhbeDOFIRik6VtkK9/UgdwVliVB1h0HlvpRnhI+HAVJNXg/EGntfj7dbR2Mf1E9+8UjRSMpmXfbwNo8de1B8Cy/nugWAGq+OdU2zFjsDFmXhBdhNdTCCEHlFqbgn4foeEsW/Y5LHc8U+G5NGLxjLdtr6Zxn+bL9pQdqXrErvaJbmP3sc5rYHue6MSlGg==
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ2PR11MB7546.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(52116014)(10070799003)(11063799003)(22082099003)(18002099003)(56012099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?dHVVTW85ejJvdVM1Wm9Hc3pvTTliTFJ6U25OcEs0V0xIMGY4dHhzYUd0ODd3?=
- =?utf-8?B?NGdlVllCZWNZNjEvT2JHbDc0aE5IYVJjVzM3ZnhkQ0YyeTZocTNmSU1odmhH?=
- =?utf-8?B?NFpOVEV1b3NZYStFbGVzUk5xaUl1SlBDbTRlanpENG13eFUzVHlBS29rRGta?=
- =?utf-8?B?OEducE80ajlnY1NoTGlXZ3pmcXk5cDJLUVVtdU1MY0RVcUN1OVN0MHl4Vjlv?=
- =?utf-8?B?dE5naDIvSDd4clZlc0Nyd2FMeGo2OS9mWW5MMG8zQkwwTVAydzd2TjhaVEow?=
- =?utf-8?B?U1dQOU50VkR2U3FFZGFsZ2FHN0FuZCtXVmtYREo1Q3NaRnAwdWhiY1FBK2xj?=
- =?utf-8?B?WDNURHJRM3JjTE1lU3UveXc5cCt1SnNjeVJFa0pQZWpOb2FSUWJQdU4vRFlk?=
- =?utf-8?B?b1kwSDUwcTl1N05MaGJNY2tlQThvTGRETFNoTG5ZcmFGRHpvaGxwcDVLVjBk?=
- =?utf-8?B?M21nUndOSzNvODhoUy84dU55Nk9iWWhvcmZ2RmxOdDRXaU1pZFJxT0s1Q2gw?=
- =?utf-8?B?V1NZOEcxUXNDbUJaaTNlTmlCR0hTRFhPVkk2elJ1akpGWWpRaGYydU5pYVl3?=
- =?utf-8?B?TjkwM1hvUG9oWS81emw4Rnd0dG02S3ptVFVSQlNmbUZqblhTS3FTUC9QV1Ar?=
- =?utf-8?B?aXh4RWpBQUJpcU1XVEorMUdpaGhlSStyT0dValcycWVVclI2OEJUcE5kNHp6?=
- =?utf-8?B?ZEhCalFXRkNBWGRzOGFHQkV3ZmNMbUY0a1Nia1dkQ0kvaXdOSDhNajZiSTBI?=
- =?utf-8?B?TnAvdGFMS0lUcjZzRkJmMk4xSUJSNU9VY3JYTTFKcC9FdTVkdlQ2YnJKaGds?=
- =?utf-8?B?WjdlUGZ0Y3BGMlFPS2h4NXI4aEZWUnFWVGU1eXlReGRQUTQvTHIrODd6S2lS?=
- =?utf-8?B?ZGs0RHRVOGc3UnhlZGRQODhyT09DS2ZOSXlyaDRReEZ2YzB1ekdmdVl5bHhF?=
- =?utf-8?B?dTk5SlNmOUR5MlNyNDhuOTlvUHRyTmpPeUNJMEJJNlhDR3dSMkE5eGwxOGRt?=
- =?utf-8?B?TlJqTDdKeEFxUUxKZ29UQmt2SUhPZjVoekticzJUTURwSFVnSkIxT0F6NVpv?=
- =?utf-8?B?Z3dwS3gvb3BhR3lyNnNrd1RrK1Z4UGpUUE9EYzFxdEc2aVhQTzl4V1ZZSzlF?=
- =?utf-8?B?MWVTY251Vkdzd1FDeHYraGFYYjRJeDlOUHJHRHVHQzh1MnQzYUk1UVRValh1?=
- =?utf-8?B?NjEvUmM3OHY0UHVtdUprb21RTnBTT0Q2dzVtdkRVU2RFZVljV25TU2dDeHFl?=
- =?utf-8?B?N0krQ2s5em5YUDBWT0JhK3VqeDhrUEgvaXZjRXE3dWFGL0xIbHp4OGZKRTNv?=
- =?utf-8?B?MmswTytMZ0dqdVJBMi9FY3FvK2tnS01WaHhoZEhxREFOYmphek5OMlBhN2Iy?=
- =?utf-8?B?Y2h0MlBtbVo1eVQ4bnVEYlVrSW00NXA3YzI4Z0VDaTBQa1JnNFJEOWhQTDFE?=
- =?utf-8?B?WmVaSWJnZWFNWDJzOHFwL1drMHFIYy9sQzZETWsxaHY5UnVEYXdhR1FPVVRq?=
- =?utf-8?B?QXJ0YTZ3cjcwbk1qNnVGajFVRmRvS1JJdzJsekxqeW04ZFBWcno1cmo2Y3la?=
- =?utf-8?B?dmNxR0RYdThzZmx1cko4NlZXd0FPQlFoU2Z0clNPRjA1K2FDL21idzQ0RGdw?=
- =?utf-8?B?UUNvYU1lbFR5OTZmbmtDUmorL1RJNjRIZEU5eXZlR1hzdnYvUzhQbVQvbUpG?=
- =?utf-8?B?THh6dGxpZUNQMTNIZWtNclVncERldWk3MnhwZE9MU2Z4MEdqVXFRbXcySjEr?=
- =?utf-8?B?VjQ4NzBMZ0tCTGI2dlZwYWZQbVJYbWhwbzI1UEg4NjFyK2V0MXVEbkpBdkp6?=
- =?utf-8?B?OWIybk96SDJsaHUrYnpkejJJV3E1S1ZXRnpNdC82eVA1eElRZkxscTl4bVp1?=
- =?utf-8?B?MVlXTHV6TWhXdnZKVEwxczFxT2laeE9yL1dPZEk2N0RPaXp0UTQwaWdhb3V1?=
- =?utf-8?B?eGREYlBFYUNkVjd1dHNmeTJqaGY4UDM3RDI1cG9HSkcvWVdjd0tTN04wRmhC?=
- =?utf-8?B?NjhUK29jNWhtVUZqUjR4bE1TWmJvVW9sTWQrYVY3aDhrZmRZc2JWMGpJanR2?=
- =?utf-8?B?TWNZdFUxRWFZSHVaVDU0YTBueVp1L3ArM0w3bkM1VGhkOXpmbE9FZFNGd3FC?=
- =?utf-8?B?alNsRlBBbXdGRWxSaXBRVi9hS1Q2ZXhWdzdzQjJmaXVWYmlHRkhlSDlBMm9q?=
- =?utf-8?B?RlVXOVNUdWl4SWlPRkFXMDBld2FyUDNSL2hCUEl4TEFDZERWUzNlSWpVWVp3?=
- =?utf-8?B?MzdPbVQvcTZwZFhvVEZQL2gzY2hnZGZpazRwNHFGUG9uVUpPVm55MjE1eUth?=
- =?utf-8?B?U0lSTGtyNjVnY0g5SFVFVnY2VHBYS3hZNjJJbFVvc1prUHdNVE1MM2V0dU1h?=
- =?utf-8?Q?cMc4a12/RW84P0TOWS8UHpSNpbZD9oJ6q79UDc11MBqP1?=
-X-MS-Exchange-AntiSpam-MessageData-1: shokhZMASwbPapxN1iMLoIcjooEyNBV1MF0=
+	=?utf-8?B?UzRzNmlJTHQrVlF5Z1BYRWg5dm5WZWpTWkM3WHVQNUpqMXFneWlhUFp2bjZr?=
+ =?utf-8?B?SC9aRDVRUVMzRm9kMVJQbDUzTEprbEFRb1l3dlRneEFobkVud2k5N0xnRS82?=
+ =?utf-8?B?WURmRUNjRjZWVDFOWFUzMHdNOFRPbW05ckJqZDAxTXVEWWZVZ3gyNXpEWEhk?=
+ =?utf-8?B?UWYvTWdRc1d3cjNacEFLVXZ0ZlE5bi81RUI0N2lEUmJ2SXJlT0s0MjNRVzN3?=
+ =?utf-8?B?NGtSYnlaMERmaWlsdzVRNW8xZFA0aHA1dDlTRzJaYlhhaWVROVVVUlFucFVY?=
+ =?utf-8?B?ODgva0dFaWY1R3N2SWRqUzNPUUk4cDBtR0ZybGlWT0VMVG9yOGJQMnlpSGpw?=
+ =?utf-8?B?ajc5RDJPb2I1TDJLZFVVQkZ6Zm9hUW8rQUt4UUZxQUh6eWxaZ3RHMk9yNFRM?=
+ =?utf-8?B?V2ZiOW5NTWVVcGFsUlVoQzhheCtuS0Rjem85dEo1MHZZUFhaUWN0Myt4VmdQ?=
+ =?utf-8?B?RzcrT1NXVlA1Ym1mU0NGRzBjcjdYeWU2bHl0MXpJMC9kd0xpNnZKT0tpcEhy?=
+ =?utf-8?B?MXpIVkZoWTdXaW5qNm9pQ1lHTWJnL3oxS2xKOC9lV1dBT2o1bFpWRDVoYjJr?=
+ =?utf-8?B?SWc5OG1RTW9TMGdLbG11Y1ZtZG91b3owN3EzWTNqcjg3cE8xazQyYUFGNDM0?=
+ =?utf-8?B?SXBJMGFqTlJ5WVlHdTFucFJvM2Iyd3dqSVlqdlJRZ1A0TkVSaUtBN1ptd083?=
+ =?utf-8?B?OGMwTXpDU0lHVG9TUHdCcFJ0S1Q4WmgxNGtheHpYNzRmNFZqYVRRY3NuOXFF?=
+ =?utf-8?B?ckgvb0hQeEdNZVMzcnN6RG9HSFJNdjJGcm5TZmxERzJjdENwUkwybTd4dW9k?=
+ =?utf-8?B?RCtUaUVvVXljSW5sM2RMdDZrRE5aQm40OWV0R1pyWFpnU1pWUGhYenpRVDlj?=
+ =?utf-8?B?b0VvTUJxdUVpdWNpOEhUeHRsV2ExNURWL2RNNmRQNHcvNnpEaFhpbVdSTHl2?=
+ =?utf-8?B?ZXNWRnRVaTNPVG1wNWVKdzB4M3I3enpSYlBTSE5wdENsOVdFU1A0M1VwbEtw?=
+ =?utf-8?B?M0V1b2VuY0pWZlhVK1hubmNCdE1hWnhKc21TalN2RDBIa2RxZFA5b0RxaEZQ?=
+ =?utf-8?B?NnAvSjIwaWk5VHluT3hZMXlPaDBSQXA0Q3dGMDRQYjQ5OUsvYlRMeWxxSTJx?=
+ =?utf-8?B?b2w2UVFVOUwyUGlrQi9jUm9lOWhqSW16SjZNRnNuOHVYVHFmTDFVZFBaMGcv?=
+ =?utf-8?B?a0gxQzFXdmlZdWJMZ1Ivd1o0b3dtTTlIZDVVd1BKSWdSM0ZNZzZiU1cxWTla?=
+ =?utf-8?B?L1k5Ty81MUFLOEVCb0RqV1YzS0dNY2NIelpteFVBM2VWSkd1eXM5VUtKNHVK?=
+ =?utf-8?B?YkluSkx0djFLaS9pMWM3cHFYSnQ0dnhxU3o3OVYwMGlWM1JkNm4vbm8rVUtq?=
+ =?utf-8?B?NW95SUxYYWhZVzBLK1NHRTZRbzdJN05DL0x6RzhmYW1peGsrbDZwTUJRZUxP?=
+ =?utf-8?B?RTBpRFRHdUpvVUhYekFaaS9MdndESGZ2ZkM4ME8wdTFQcElhZGVYZXR4SmJv?=
+ =?utf-8?B?dnExZlN5aFBzOC9MRHdNQlQrRm1FM1FwZUQ0cWZlV25yM1M4anBPUStCOVdC?=
+ =?utf-8?B?OFA2clltVmJ0WTFtRmw1bENJdzBmNmZaTEYrWlhMSlJNRjJCY0Y0MG8yOEx3?=
+ =?utf-8?B?VWZxSHVhVUF3YjNTWXFycVB0NHFFSWZISDU5b1hzaXBnV2I2dEJGOC9Qa0dW?=
+ =?utf-8?B?S3Q0UGwya3ZidnBVZzJMWnFjOG1YV0RUc3NtOGlMalR2M042TDhRMG05L1lz?=
+ =?utf-8?B?dlhEMytnOEtFVVVKS1Y4TTQzSHU1Q1JCWW9oSDIvUEN3SGpWd0VlOHJkVytY?=
+ =?utf-8?B?R2N6ZlZKY2REQ0VBMDJqelZOYVRUWXJMM3drdjFUcjFVeFhubk1IZWlVOWhj?=
+ =?utf-8?B?clNPWkpHQUxrbDhVTi9CWDNOUHlxOGEzYVY2Wi80TEZxMVlYdEVpU2VoTzdr?=
+ =?utf-8?B?Q3dQeElDaDRpT3FEaFdSQ21hSEhjL3FCOUI4Smg3VjE4TS90MUdPSTlIcHIz?=
+ =?utf-8?B?N1BhdHhiZ2FDQk11VldkYjRqa3U3R2k1UXZtT216cmF2eDdaRXhFdGFuZ0Q1?=
+ =?utf-8?B?Y2ZCc2IxZ2h3ZTl1ODA3aWMzYWwxVnluUnBOUndFVXhNa1VWOWxjREk2RkVF?=
+ =?utf-8?B?eUVYQ3hSaEVUSGorN2REU1FkZVY0TmZoM1JidTMzMHQreVpHaWVMUWNpem93?=
+ =?utf-8?B?QW4wNjZFcGYvT0xQaWE5Y3hDMkprazlIU3lyT01QM3lSbytxVkx4N2VEQnpk?=
+ =?utf-8?B?WFI3Um1aa1dwTUlPbnhBQ1kxNi93OUl2enlySmkzVjBsSk1HaWhkNk1RS3hv?=
+ =?utf-8?B?Y3VWNVluU3hlSWdyTUVVZzlvZHBPVFh3dmNrTXBVNXFMOVBHa2xQek56VGtN?=
+ =?utf-8?Q?M4sgeTBRQjx/U+NRX2GULKGj0nVAjSC9dpWhjPGFEo/vL?=
+X-MS-Exchange-AntiSpam-MessageData-1: Dtc8DroSiigJ0NhPZWCvcComWaLQIVeaPYM=
 X-Exchange-RoutingPolicyChecked:
-	bj8h8/sO9KdQTYmAv6b8v+hwmMNokcCwxPEbP8cnGxQBSpVmouCbiY+HwCPrvi/usiAp8I6mHOTGgTjeDm+VpRfFVsFCiIuYBUEItAXhoopygyqk+3+zxRFi0szy8OwbzfPUYRsulZlx3CEgBN1PmKeD+rTRhFSsmEPsW+7qa7oRqCv22nE7SUGkY3Cuz8dr0sJ4djP5mAjtNuMBuslakXHe0XqEF1yJoweNKZe/3fc/6NW1lh8imiZlDN+hBHWE6ak1Tvz3O0HafjpgcV74cSOno6jTC66eBiQ22lC7v8T7KsT27151oQ60LuPgLihMwMMNGM3L9D3vNLEn3EEujA==
+	NdrkJif2yKdN+buSnmeL1QBH1HMgwZ1WUiL3stoBirTJlumTzq4qJDM4EirSZ0R4ZpYbCLgP5hWzTRvksgT2EBo4hfn4GMslwg90MYVUoXbzvfV2Lgoul+QjNDyR7XPjL2/kPlQPYNr9T7IVz5/Mh/VP8xw7v+BIYsm3vgUJbg6+PZFjJH2BtZ+JqBW2TlHlthuY5ipAmd89ZW4ZKwhPjIvq7SfBGXw+CyCapvN7AWJ6cJkFdv2GRCujr7FrPkdvIV9FuhArlVrRDLfecCnlVnkqd2WKgRHFQyQVyYcqDGJuvY9qOXHmPZp09Hm1UTE5So2q97U0C9NycdI/bWj/kg==
 X-OriginatorOrg: windriver.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ced2e111-4481-44e6-4e8a-08deb0bbfda3
+X-MS-Exchange-CrossTenant-Network-Message-Id: 096474e6-9c56-4ab3-2936-08deb0bc011e
 X-MS-Exchange-CrossTenant-AuthSource: SJ2PR11MB7546.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 May 2026 06:50:59.5224
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 May 2026 06:51:05.4157
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: VOQaWouupw+snZGd+w7i7sJauyVo0Dsyc1LsLZ2V/BydT2p/56WEgt0PzQp3VjLdwqOkMTefd2P0H6UZLPwWq402RXubaQCuMw6wLZpwQrI=
+X-MS-Exchange-CrossTenant-UserPrincipalName: tio2b9JApUhpNfK946oe2RVPz9hfGnX9LRidZ5SWow1mKlXS2zyWlctD68VMpOVj70hQHnwA4FOA5rpKbTKTqK8L7xo44xS47T6qpxfhNeQ=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR11MB5289
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTEzMDA2OCBTYWx0ZWRfX6EaF+3agkQO2
- fe+t7VTpDHyrJZ8NCbIbwaP7DJEzvmUWTWuVTw5tjubxneIH/57SOaq+jFPGuovE9O35j/8fuc1
- IR4Aeg7+0f5M23mbq5qmMykw0OKgxNcs18q/OE+n5NRInA3oVnmBQTajfhsWR64DvUq8TzXjX9H
- wFnHWx5bF2ZrVbI7UjE/cEDsDopCVoM63Qn2dDJ8FtgFkXs9M4Qk46HbV4tuokpHYo7+o7/l7lD
- BOuFYZXc3qId6FbYPy1sCoxEY/Sisc0/vgV6cYWdRRVu+/WgteROG+JY5PMp4mz9JlwZ9Z2PKTq
- SvlFUN+AdyqmiLuw14lGSW8V2axn7YLuVMev375uoMbc+f0ZI/i3ZQNUuGzkHxx+o/Us4OgWJUj
- FEi1CV3pSotIM+KzHVbr+sA8r/2b1/dtsvy7Ytkqc9/iPc3p58sJn6D3C9DQRicwzAd/m9HMza1
- uaVpqk3niFv7D64AAkg==
-X-Proofpoint-GUID: msru6wZaw2rAz17NtKdwN4JU_LHbp1LN
-X-Authority-Analysis: v=2.4 cv=du/rzVg4 c=1 sm=1 tr=0 ts=6a041f59 cx=c_pps
- a=fOo0+MOGfjr111H4QC4BGg==:117 a=6eWqkTHjU83fiwn7nKZWdM+Sl24=:19
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTEzMDA2OCBTYWx0ZWRfX52qu4sZawdJ0
+ SpuWmdlKD9R0zdsjb+LoILDQvUntqXjEB/SuZdGGgAWtAasjhD65PRef79MPjEGac63Dsi1sp+I
+ OA6pJpYDsojcOGbNL8uQgIrOLCdvOKdWTY7gDzmyuKsx5pmVPWkFHIcoXLF/7OzISIPf75Na7xf
+ 1ocHZ0E0rllQF9Ap5dtBsBZ2tuN3fLx/w5K6iAAQulwz9t1wcePBJ+hQBXiO4Li59PKs6W1d7CY
+ I7tSwXzowISFZhox+91hkFygzBuHcXzWM9qdMeUKYUAuXAWmGwPMNVp5PEns6Bf3Z2iaJAEuIyI
+ l3DNGDSVFqkiNHAKUDWaysRz7kVbcvNTsc+moGsTilFYMwCQBKh0MEO5uwA1ihUoYIINLWLLn0I
+ fRqOwSLOQ0Yx0aI/bChNIosaMUgyPp6fFlQ5CIkirw6i1yFhQnoVeHZ2dUl2ri+p848UFiuqLEV
+ hkldQP3k3oINMtvPuCw==
+X-Proofpoint-GUID: VYbeZPeIZ5Pgt_LBRdt1vcEVjATEVC9x
+X-Authority-Analysis: v=2.4 cv=du/rzVg4 c=1 sm=1 tr=0 ts=6a041f5b cx=c_pps
+ a=B1kIKGfTVomdQYahC0fm5g==:117 a=6eWqkTHjU83fiwn7nKZWdM+Sl24=:19
  a=z/mQ4Ysz8XfWz/Q5cLBRGdckG28=:19 a=lCpzRmAYbLLaTzLvsPZ7Mbvzbb8=:19
  a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10 a=NGcC8JguVDcA:10
  a=VkNPw1HP01LnGYTKEx00:22 a=bi6dqmuHe4P4UrxVR6um:22 a=HK-ge7EqtdluswH-FwHe:22
  a=bC-a23v3AAAA:8 a=QyXUC8HyAAAA:8 a=VwQbUJbxAAAA:8 a=ag1SF4gXAAAA:8
- a=t7CeM3EgAAAA:8 a=FexixdgSPsgHR1urB5AA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=t7CeM3EgAAAA:8 a=FuLT1wuRHgro8dZZ4aEA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
  a=FO4_E8m0qiDe52t0p3_H:22 a=Yupwre4RP9_Eg_Bd0iYG:22 a=FdTzh2GWekK77mhwV6Dw:22
-X-Proofpoint-ORIG-GUID: msru6wZaw2rAz17NtKdwN4JU_LHbp1LN
+X-Proofpoint-ORIG-GUID: VYbeZPeIZ5Pgt_LBRdt1vcEVjATEVC9x
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
  definitions=2026-05-11_05,2026-05-08_02,2025-10-01_01
@@ -172,106 +172,133 @@ X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
 
 From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-commit 8002d6d6d0d8a36a7d6ca523b17a51cb0fa7c3c3 upstream.
+commit 883c5a2bc934c165c4491d1ef7da0ac4e9765077 upstream.
 
-When DW UART is configured with BUSY flag, LCR writes may not always
-succeed which can make any LCR write complex and very expensive.
-Performing write directly can trigger IRQ and the driver has to perform
-complex and distruptive sequence while retrying the write.
+dw8250_handle_irq() takes port's lock multiple times with no good
+reason to release it in between and calls serial8250_handle_irq()
+that also takes port's lock.
 
-Therefore, it's better to avoid doing LCR write that would not change
-the value of the LCR register. Add LCR write avoidance code into the
-8250_dw driver's .serial_out() functions.
+Take port's lock only once in dw8250_handle_irq() and use
+serial8250_handle_irq_locked() to avoid releasing port's lock in
+between.
 
-Reported-by: Bandal, Shankar <shankar.bandal@intel.com>
+As IIR_NO_INT check in serial8250_handle_irq() was outside of port's
+lock, it has to be done already in dw8250_handle_irq().
+
+DW UART can, in addition to IIR_NO_INT, report BUSY_DETECT (0x7) which
+collided with the IIR_NO_INT (0x1) check in serial8250_handle_irq()
+(because & is used instead of ==) meaning that no other work is done by
+serial8250_handle_irq() during an BUSY_DETECT interrupt.
+
+This allows reorganizing code in dw8250_handle_irq() to do both
+IIR_NO_INT and BUSY_DETECT handling right at the start simplifying
+the logic.
+
 Tested-by: Bandal, Shankar <shankar.bandal@intel.com>
 Tested-by: Murthy, Shanth <shanth.murthy@intel.com>
 Cc: stable <stable@kernel.org>
 Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Link: https://patch.msgid.link/20260203171049.4353-3-ilpo.jarvinen@linux.intel.com
+Link: https://patch.msgid.link/20260203171049.4353-5-ilpo.jarvinen@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Ionut Nechita <ionut.nechita@windriver.com>
 ---
- drivers/tty/serial/8250/8250_dw.c | 31 +++++++++++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
+ drivers/tty/serial/8250/8250_dw.c | 37 ++++++++++++++++++-------------
+ 1 file changed, 21 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 88c55336d50f..05e45b63e5f5 100644
+index 05e45b63e5f5..1460eaf2a3a3 100644
 --- a/drivers/tty/serial/8250/8250_dw.c
 +++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -181,6 +181,22 @@ static void dw8250_check_lcr(struct uart_port *p, int offset, int value)
+@@ -9,6 +9,9 @@
+  * LCR is written whilst busy.  If it is, then a busy detect interrupt is
+  * raised, the LCR needs to be rewritten and the uart status register read.
+  */
++#include <linux/bitfield.h>
++#include <linux/bits.h>
++#include <linux/cleanup.h>
+ #include <linux/clk.h>
+ #include <linux/delay.h>
+ #include <linux/device.h>
+@@ -40,6 +43,8 @@
+ #define RZN1_UART_RDMACR 0x110 /* DMA Control Register Receive Mode */
+ 
+ /* DesignWare specific register fields */
++#define DW_UART_IIR_IID			GENMASK(3, 0)
++
+ #define DW_UART_MCR_SIRE		BIT(6)
+ 
+ /* Renesas specific register fields */
+@@ -312,7 +317,19 @@ static int dw8250_handle_irq(struct uart_port *p)
+ 	bool rx_timeout = (iir & 0x3f) == UART_IIR_RX_TIMEOUT;
+ 	unsigned int quirks = d->pdata->quirks;
+ 	unsigned int status;
+-	unsigned long flags;
++
++	switch (FIELD_GET(DW_UART_IIR_IID, iir)) {
++	case UART_IIR_NO_INT:
++		return 0;
++
++	case UART_IIR_BUSY:
++		/* Clear the USR */
++		serial_port_in(p, d->pdata->usr_reg);
++
++		return 1;
++	}
++
++	guard(uart_port_lock_irqsave)(p);
+ 
+ 	/*
+ 	 * There are ways to get Designware-based UARTs into a state where
+@@ -325,20 +342,15 @@ static int dw8250_handle_irq(struct uart_port *p)
+ 	 * so we limit the workaround only to non-DMA mode.
  	 */
+ 	if (!up->dma && rx_timeout) {
+-		uart_port_lock_irqsave(p, &flags);
+ 		status = serial_lsr_in(up);
+ 
+ 		if (!(status & (UART_LSR_DR | UART_LSR_BI)))
+ 			serial_port_in(p, UART_RX);
+-
+-		uart_port_unlock_irqrestore(p, flags);
+ 	}
+ 
+ 	/* Manually stop the Rx DMA transfer when acting as flow controller */
+ 	if (quirks & DW_UART_QUIRK_IS_DMA_FC && up->dma && up->dma->rx_running && rx_timeout) {
+-		uart_port_lock_irqsave(p, &flags);
+ 		status = serial_lsr_in(up);
+-		uart_port_unlock_irqrestore(p, flags);
+ 
+ 		if (status & (UART_LSR_DR | UART_LSR_BI)) {
+ 			dw8250_writel_ext(p, RZN1_UART_RDMACR, 0);
+@@ -346,17 +358,9 @@ static int dw8250_handle_irq(struct uart_port *p)
+ 		}
+ 	}
+ 
+-	if (serial8250_handle_irq(p, iir))
+-		return 1;
+-
+-	if ((iir & UART_IIR_BUSY) == UART_IIR_BUSY) {
+-		/* Clear the USR */
+-		serial_port_in(p, d->pdata->usr_reg);
++	serial8250_handle_irq_locked(p, iir);
+ 
+-		return 1;
+-	}
+-
+-	return 0;
++	return 1;
  }
  
-+/*
-+ * With BUSY, LCR writes can be very expensive (IRQ + complex retry logic).
-+ * If the write does not change the value of the LCR register, skip it entirely.
-+ */
-+static bool dw8250_can_skip_reg_write(struct uart_port *p, unsigned int offset, u32 value)
-+{
-+	struct dw8250_data *d = to_dw8250_data(p->private_data);
-+	u32 lcr;
-+
-+	if (offset != UART_LCR || d->uart_16550_compatible)
-+		return false;
-+
-+	lcr = serial_port_in(p, offset);
-+	return lcr == value;
-+}
-+
- /* Returns once the transmitter is empty or we run out of retries */
- static void dw8250_tx_wait_empty(struct uart_port *p)
- {
-@@ -207,12 +223,18 @@ static void dw8250_tx_wait_empty(struct uart_port *p)
+ static void dw8250_clk_work_cb(struct work_struct *work)
+@@ -859,6 +863,7 @@ static struct platform_driver dw8250_platform_driver = {
  
- static void dw8250_serial_out(struct uart_port *p, int offset, int value)
- {
-+	if (dw8250_can_skip_reg_write(p, offset, value))
-+		return;
-+
- 	writeb(value, p->membase + (offset << p->regshift));
- 	dw8250_check_lcr(p, offset, value);
- }
+ module_platform_driver(dw8250_platform_driver);
  
- static void dw8250_serial_out38x(struct uart_port *p, int offset, int value)
- {
-+	if (dw8250_can_skip_reg_write(p, offset, value))
-+		return;
-+
- 	/* Allow the TX to drain before we reconfigure */
- 	if (offset == UART_LCR)
- 		dw8250_tx_wait_empty(p);
-@@ -237,6 +259,9 @@ static unsigned int dw8250_serial_inq(struct uart_port *p, int offset)
- 
- static void dw8250_serial_outq(struct uart_port *p, int offset, int value)
- {
-+	if (dw8250_can_skip_reg_write(p, offset, value))
-+		return;
-+
- 	value &= 0xff;
- 	__raw_writeq(value, p->membase + (offset << p->regshift));
- 	/* Read back to ensure register write ordering. */
-@@ -248,6 +273,9 @@ static void dw8250_serial_outq(struct uart_port *p, int offset, int value)
- 
- static void dw8250_serial_out32(struct uart_port *p, int offset, int value)
- {
-+	if (dw8250_can_skip_reg_write(p, offset, value))
-+		return;
-+
- 	writel(value, p->membase + (offset << p->regshift));
- 	dw8250_check_lcr(p, offset, value);
- }
-@@ -261,6 +289,9 @@ static unsigned int dw8250_serial_in32(struct uart_port *p, int offset)
- 
- static void dw8250_serial_out32be(struct uart_port *p, int offset, int value)
- {
-+	if (dw8250_can_skip_reg_write(p, offset, value))
-+		return;
-+
- 	iowrite32be(value, p->membase + (offset << p->regshift));
- 	dw8250_check_lcr(p, offset, value);
- }
++MODULE_IMPORT_NS("SERIAL_8250");
+ MODULE_AUTHOR("Jamie Iles");
+ MODULE_LICENSE("GPL");
+ MODULE_DESCRIPTION("Synopsys DesignWare 8250 serial port driver");
 -- 
 2.54.0
 
