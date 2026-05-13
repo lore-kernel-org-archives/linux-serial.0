@@ -1,72 +1,105 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAF383D7D76;
-	Tue, 12 May 2026 20:23:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from zg8tmtyylji0my4xnjqumte4.icoremail.net (zg8tmtyylji0my4xnjqumte4.icoremail.net [162.243.164.118])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B35D77083C;
+	Wed, 13 May 2026 02:54:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.164.118
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778617438; cv=none; b=dmXtnQ53gsYVcWflXdv3kayM4A+0iDi9B5/bZgGaGvYqlwMNSzr+rgCwEbf5lBu+VdoF7oXzf64JZqxq8q7iKQYUIKKdeHmPkfVZeWIiApgh5/c5s7N/ISr0w9fzCRYLPyzHsqMdYr3vv3TeyVjRk0yhIRjuBCJetlxsswhYFns=
+	t=1778640896; cv=none; b=eyBnXafci3huLeg3ypkcS5cAufYdRnfjW2kNqHLksUauLhAk1c6w0PHAKVO1C7iwF2pRW2uBuyrKjcBTPXeIu+qfKVdNjZTyTFBtT6WCQGxdpmWVD4oVm+v9nYyhKshtati05Yo1KDAu+HNG0VLHeO21f2f4krJ7ViSv3ynaiBM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778617438; c=relaxed/simple;
-	bh=V5pxRavQXhQiieBOCZ+r7S051a3NAJpBgPWkNOf6QJM=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=bz0VagghAHy2Kd/X7AnMJA6qZKAX5NFknsK86s01RY/ztKVt0J+d2T7MmmcdA7PGICktUC5k+Efhx5GOqanVA+AI+kP4hSBSvnbbC5XEG56l2O3M8/KaeUdjJC1a8WOVzm7LGVrOmDywg7lDSfCcV8vE9Rz7obiP5gh4pKbbfQc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jwhI2IP5; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778640896; c=relaxed/simple;
+	bh=xBTToRtLbFsWRe/CjaOfqkgZRWur/hO+jRG3mmJeA0k=;
+	h=Date:From:To:Cc:Subject:Content-Type:MIME-Version:Message-ID; b=cpMxGPJDaMqjMmY97V9t2Wl3m9XttmfEZPDJYwRUJQxcUlqonnLdxWx0g2z71JgPBK6rn4WxiJ5s7s9GRhJFpHP+L7UgnoioxZen/mZomSbbGnva+rliZVQznodtyIORmqEQR9uQIYW+tyeoRpRvX9PNwKxCngeJGBylN2cwF7w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=stu.xidian.edu.cn; spf=pass smtp.mailfrom=stu.xidian.edu.cn; dkim=fail (0-bit key) header.d=stu.xidian.edu.cn header.i=@stu.xidian.edu.cn header.b=zg1SAIQv reason="key not found in DNS"; arc=none smtp.client-ip=162.243.164.118
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=stu.xidian.edu.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=stu.xidian.edu.cn
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jwhI2IP5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6979C2BCF6;
-	Tue, 12 May 2026 20:23:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778617437;
-	bh=V5pxRavQXhQiieBOCZ+r7S051a3NAJpBgPWkNOf6QJM=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=jwhI2IP5Lrr/mpaRyEwlyEyUo2bhoo0nQ8vJX5sNvX7CIxthKb5qHqYavhLrUApwj
-	 zLGGYQTYG+bfEdA4WffbfYia+lhOL3PaU8CKgpQP+4H+1JxNsf6iIgPkHLmyhsi3RY
-	 2kngULM47qCAswQFq8keo+w7ia+6NLnjEBfdKDhEdUhr9IEm9y9Vl8LT6nPxLjzNBB
-	 PSxIRaK7z5sXiGOB1M3XLBs+ujfM+Hs31Pw1YWZIPz+iqVt7PhENTuOFhMDYDujKh5
-	 Y+2CHyYCYO+nciMdVXe3N8gekTEU/Z/UW6IKcuugQNZ1+fdxG19qh1E4G/Eu6j0JMR
-	 HzBHGvRalNu7w==
-From: Bjorn Andersson <andersson@kernel.org>
-To: Shawn Guo <shengchao.guo@oss.qualcomm.com>
-Cc: Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Praveen Talari <quic_ptalari@quicinc.com>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	Dmitry Baryshkov <lumag@kernel.org>,
-	Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>,
-	Deepti Jaggi <deepti.jaggi@oss.qualcomm.com>,
-	linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] dt-bindings: qcom: geni-se-qup: Add compatible for SA8797P SoC
-Date: Tue, 12 May 2026 15:23:10 -0500
-Message-ID: <177861739377.1242344.15173839569832124812.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20260427005901.230237-1-shengchao.guo@oss.qualcomm.com>
-References: <20260427005901.230237-1-shengchao.guo@oss.qualcomm.com>
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=stu.xidian.edu.cn header.i=@stu.xidian.edu.cn header.b="zg1SAIQv"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=stu.xidian.edu.cn; s=dkim; h=Received:Date:From:To:Cc:Subject:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Message-ID;
+	bh=pZFsEvJIfMgA5ozNv8+8p5qlEdoOXE/kvIsZHRyzL+E=; b=zg1SAIQvyw7Ky
+	Qlb1K4cJVBEeTGBP9N5Go4w7V9swm+lx9DJju5uVbP5F8tmYj6XrtdHc7bqRA+we
+	93TRzBtZd+t+v0yFNKKmCGLyHZFhvM0EKG12kbQQssOI4vucN74kyrD7tuZuy9U4
+	JFc+7TyoPsaUF2lUf7FQYHr9F0g4oU=
+Received: from 25181214217$stu.xidian.edu.cn ( [113.200.174.80] ) by
+ ajax-webmail-hzbj-edu-front-4.icoremail.net (Coremail) ; Wed, 13 May 2026
+ 10:54:41 +0800 (GMT+08:00)
+Date: Wed, 13 May 2026 10:54:41 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From: =?UTF-8?B?546L5piO54Wc?= <25181214217@stu.xidian.edu.cn>
+To: "Marcel Holtmann" <marcel@holtmann.org>,
+	"Luiz Augusto von Dentz" <luiz.dentz@gmail.com>
+Cc: linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: BUG: General Protection Fault in h5_recv due to TTY line discipline
+ race condition (TIOCSTI)
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version 2024.3-cmXT6 build
+ 20250410(2f5ccd7f) Copyright (c) 2002-2026 www.mailtech.cn
+ mispb-8dfce572-2f24-404d-b59d-0dd2e304114c-icoremail.cn
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Message-ID: <6f2b8e36.f987.19e1f420686.Coremail.25181214217@stu.xidian.edu.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID:BrQMCkC2Xbnx5wNqw1wNAg--.53789W
+X-CM-SenderInfo: qsvrmiqsrujiux6v33wo0lvxldqovvfxof0/1tbiAQULEWoDRF0ja
+	QACsm
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWkCw
+	CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+	daVFxhVjvjDU=
 
-
-On Mon, 27 Apr 2026 08:59:01 +0800, Shawn Guo wrote:
-> Document GENI Serial Engine QUP Wrapper Controller on Nord SA8797P SoC
-> which is compatible with SA8255P one.
-> 
-> 
-
-Applied, thanks!
-
-[1/1] dt-bindings: qcom: geni-se-qup: Add compatible for SA8797P SoC
-      commit: 35466ef5db1fbdff49c4142026c4c56514d5ff47
-
-Best regards,
--- 
-Bjorn Andersson <andersson@kernel.org>
+CkhpIGFsbCwKCldlIGhhdmUgZGlzY292ZXJlZCBhIHNldmVyZSBOVUxMIHBvaW50ZXIgZGVyZWZl
+cmVuY2UgYW5kIHN1YnNlcXVlbnQgR2VuZXJhbCBQcm90ZWN0aW9uIEZhdWx0IGluIGBoNV9yZWN2
+KClgIHdpdGhpbiBgZHJpdmVycy9ibHVldG9vdGgvaGNpX2g1LmNgLiBUaGlzIGNyYXNoIGlzIHRy
+aWdnZXJlZCBieSBhIHJhY2UgY29uZGl0aW9uIGJldHdlZW4gdGhlIGluaXRpYWxpemF0aW9uIG9m
+IHRoZSBIQ0kgVUFSVCBsaW5lIGRpc2NpcGxpbmUgYW5kIGNvbmN1cnJlbnQgZGF0YSBpbmplY3Rp
+b24gdmlhIHRoZSBgVElPQ1NUSWAgaW9jdGwuCgpUaGlzIGlzc3VlIHdhcyBmb3VuZCBkdXJpbmcg
+ZnV6emluZyB3aXRoIGEgY3VzdG9tIExMTS1hc3Npc3RlZCBkZXZpY2UgbW9kZWxpbmcgZnJhbWV3
+b3JrLgoKIyMjIENyYXNoIFRyYWNlIChLQVNBTikKCk9vcHM6IGdlbmVyYWwgcHJvdGVjdGlvbiBm
+YXVsdCwgcHJvYmFibHkgZm9yIG5vbi1jYW5vbmljYWwgYWRkcmVzcyAweGRmZmZmYzAwMDAwMDAw
+NWY6IDAwMDAgWyMxXSBTTVAgS0FTQU4gUFRJCktBU0FOOiBudWxsLXB0ci1kZXJlZiBpbiByYW5n
+ZSBbMHgwMDAwMDAwMDAwMDAwMmY4LTB4MDAwMDAwMDAwMDAwMDJmZl0KQ1BVOiAzIFVJRDogMCBQ
+SUQ6IDc1ODMzIENvbW06IHN5ei4wLjU2MDUgTm90IHRhaW50ZWQgNi4xOC4wICMxIFBSRUVNUFQo
+ZnVsbCkgClJJUDogMDAxMDpoNV9yZWN2KzB4ZmMvMHg4ZjAgZHJpdmVycy9ibHVldG9vdGgvaGNp
+X2g1LmM6NTcyCi4uLgpDYWxsIFRyYWNlOgogPFRBU0s+CiBoY2lfdWFydF90dHlfcmVjZWl2ZSsw
+eDI1Yi8weDgwMCBkcml2ZXJzL2JsdWV0b290aC9oY2lfbGRpc2MuYzo2MjcKIHRpb2NzdGkgZHJp
+dmVycy90dHkvdHR5X2lvLmM6MjI5MCBbaW5saW5lXQogdHR5X2lvY3RsKzB4NTAyLzB4MTY5MCBk
+cml2ZXJzL3R0eS90dHlfaW8uYzoyNzA2CiBfX3g2NF9zeXNfaW9jdGwrMHgxOGYvMHgyMTAgZnMv
+aW9jdGwuYzo1ODMKIGRvX3N5c2NhbGxfNjQrMHhjYi8weGZhMCBhcmNoL3g4Ni9lbnRyeS9zeXNj
+YWxsXzY0LmM6OTQKLi4uCgojIyMgVnVsbmVyYWJpbGl0eSBBbmFseXNpcwoKVGhlIGNyYXNoIG9j
+Y3VycyBkdWUgdG8gYW4gYXJjaGl0ZWN0dXJhbCByYWNlIHdpbmRvdyBkdXJpbmcgdGhlIGxpbmUg
+ZGlzY2lwbGluZSBzZXR1cDoKCjEuIFRocmVhZCBBIGV4ZWN1dGVzIGBpb2N0bChIQ0lVQVJUU0VU
+UFJPVE8pYCB0byBzZXQgdGhlIGxpbmUgZGlzY2lwbGluZSB0byBIQ0lfVUFSVF9INS4gVGhlIGtl
+cm5lbCBzZXRzIHRoZSBgSENJX1VBUlRfUFJPVE9fSU5JVGAgYml0IGluIGBodS0+ZmxhZ3NgIGFu
+ZCBwcm9jZWVkcyB0byBjYWxsIGBoY2lfdWFydF9yZWdpc3Rlcl9kZXYoKWAsIHdoaWNoIGV2ZW50
+dWFsbHkgaW52b2tlcyBgaDVfb3BlbigpYC4KMi4gQmVmb3JlIGBoNV9vcGVuKClgIGZpbmlzaGVz
+IGV4ZWN1dGluZyBhbmQgYWxsb2NhdGVzIG1lbW9yeSBmb3IgYGh1LT5wcml2YCAoaS5lLiwgYmVm
+b3JlIGBodS0+cHJpdiA9IGg1O2AgaXMgZXhlY3V0ZWQpLCBUaHJlYWQgQiBjb25jdXJyZW50bHkg
+ZXhlY3V0ZXMgYGlvY3RsKFRJT0NTVEkpYC4KMy4gVGhlIGBUSU9DU1RJYCBjb21tYW5kIGZvcmNl
+cyBkYXRhIGludG8gdGhlIFRUWSByZWNlaXZlIHBhdGgsIGNhbGxpbmcgYGhjaV91YXJ0X3R0eV9y
+ZWNlaXZlKClgLgo0LiBJbnNpZGUgYGhjaV91YXJ0X3R0eV9yZWNlaXZlKClgLCB0aGUgY29uZGl0
+aW9uIGAhdGVzdF9iaXQoSENJX1VBUlRfUFJPVE9fSU5JVCwgJmh1LT5mbGFncylgIGV2YWx1YXRl
+cyB0byBGQUxTRSAoYmVjYXVzZSBUaHJlYWQgQSBzZXQgaXQpLCBhbGxvd2luZyB0aGUgZXhlY3V0
+aW9uIHRvIHByb2NlZWQgd2l0aG91dCBkcm9wcGluZyB0aGUgZGF0YS4KNS4gVGhlIGV4ZWN1dGlv
+biBmbG93cyBpbnRvIGBodS0+cHJvdG8tPnJlY3YoKWAgLT4gYGg1X3JlY3YoKWAuCjYuIGBoNV9y
+ZWN2KClgIGJsaW5kbHkgZGVyZWZlcmVuY2VzIGBodS0+cHJpdmAgKHdoaWNoIGlzIHN0aWxsIE5V
+TEwpLCBsZWFkaW5nIHRvIHRoZSBHUEYgd2hlbiBhY2Nlc3NpbmcgYGg1LT5yeF9wZW5kaW5nYCBv
+biBsaW5lIDU3MjogYEJUX0RCRygiLi4uICV6dSAuLi4iLCAuLi4sIGg1LT5yeF9wZW5kaW5nLCAu
+Li4pO2AuCgojIyMgUHJvcG9zZWQgRml4IERpcmVjdGlvbgoKV2hpbGUgYWRkaW5nIGEgc2ltcGxl
+IGBpZiAoIWg1KSByZXR1cm4gMDtgIGF0IHRoZSBiZWdpbm5pbmcgb2YgYGg1X3JlY3YoKWAgcHJl
+dmVudHMgdGhlIGNyYXNoLCBpdCBzZWVtcyB0aGUgcm9vdCBjYXVzZSBsaWVzIGluIHRoZSBwZXJt
+aXNzaXZlbmVzcyBvZiB0aGUgYEhDSV9VQVJUX1BST1RPX0lOSVRgIHN0YXRlIGluIGBoY2lfdWFy
+dF90dHlfcmVjZWl2ZSgpYCwgb3IgdGhlIGxhY2sgb2YgcHJvcGVyIHN5bmNocm9uaXphdGlvbiBi
+ZXR3ZWVuIHRoZSBgb3BlbmAgY2FsbGJhY2sgYW5kIHRoZSBgcmVjdmAgcGF0aCBkdXJpbmcgaW5p
+dGlhbGl6YXRpb24uCgpTaW5jZSB3ZSBhcmUgbm90IGVudGlyZWx5IGZhbWlsaWFyIHdpdGggdGhl
+IHNwZWNpZmljIGhhbmRzaGFrZSByZXF1aXJlbWVudHMgb2YgdGhlIEg1IHByb3RvY29sIGR1cmlu
+ZyB0aGUgYFBST1RPX0lOSVRgIHBoYXNlLCB3ZSBhcmUgcmVwb3J0aW5nIHRoaXMgdnVsbmVyYWJp
+bGl0eSBoZXJlIHJhdGhlciB0aGFuIHN1Ym1pdHRpbmcgYSBwb3RlbnRpYWxseSBmbGF3ZWQgcGF0
+Y2guCgpQbGVhc2UgbGV0IHVzIGtub3cgaWYgeW91IG5lZWQgbW9yZSBpbmZvcm1hdGlvbiBvciB0
+aGUgZnVsbCByZXByb2R1Y2VyLgoKUmVwb3J0ZWQtYnk6IE1pbmd5dSBXYW5nIDwyNTE4MTIxNDIx
+N0BzdHUueGlkaWFuLmVkdS5jbj4KCkJlc3QgcmVnYXJkcywKTWluZ3l1IFdhbmc=
