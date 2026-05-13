@@ -1,146 +1,128 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A883A3F4135;
-	Wed, 13 May 2026 13:35:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB089478875
+	for <linux-serial@vger.kernel.org>; Wed, 13 May 2026 15:05:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778679338; cv=none; b=biMGYaqkVUVA7VKAeigXCepjYof84Xjs7nuonMhIBFX4k6OAFZcAM4a3VOyzzbdmrYsE5N8eNHF6WvpNzj0k68aCxB3VsLW03Pb71p/o7r7sVqrAFugdrSxfhQcMSfiRqsKQZFAlQgZyt19KSAlpL/jXdkRHTBMSESVD97jes/k=
+	t=1778684725; cv=none; b=SD1eQ49oydm5rpzxV/nkDZb5XFvNsOsmfjj0f2GtXmBnv+8CINQsRiVPD/Y/hoVOolePWmog0FbgpC+c6qJtnLn2b/g1aKytpezcOPIKOvppvSBl53PXOIiE4owPt7zPrOyt/h6pjIjHhXl6JFTojzi1HERBRxsTQrq4BdytSUM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778679338; c=relaxed/simple;
-	bh=KjbblYiiEBif+Niwo4suUNP8LpP9G0670n6uJ0JMzlM=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=Fg2GGtO9+a4f4fBT24jIMnP/awFUnBUlEse/K0j4SmTJHcuAKljyZ0o6Bkn3tH38qxjfzv4bXzTQd9uSfjeU0RiYIZsjW1enDsNPzaSrAW650aWBk4qfl8weOpygnn6uwlfq2sAwBASgCWQ+JUMJrBJzqjC5v753tQKsZeqOV3E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ArKW+53H; arc=none smtp.client-ip=192.198.163.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1778684725; c=relaxed/simple;
+	bh=TY5LAW5T0Q46o3F/BrwLU+uTPiuSwGLPqe9gXyroDN8=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=TwrNde3z7Lk4BvyUBH/jTMqn2Oo4sDgAURtLeDpFKQ9poJOvG+vu44Q/31gRcOJH6W/yCj7MNi7EnaYMyKE4z8EFP/eR4P0JEQX/zxogXIxzDLavJq2QNCBN9AUiSyP80okzPY60I7AInPRXl58PHEQB8hZNz7u3wcIgxgBGRlg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hyNEaex2; arc=none smtp.client-ip=209.85.128.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ArKW+53H"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778679336; x=1810215336;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=KjbblYiiEBif+Niwo4suUNP8LpP9G0670n6uJ0JMzlM=;
-  b=ArKW+53H8D2Dwv9UhUPCH9BVO84kfgWPxCNFAvW9wHrKbvMx55Fmq0TB
-   tq4oygNp0WIEMWItv9BTk0gCGVyqWoyVgBeK/PVuyebZwGmAALHZYxFDy
-   bKXpZA1Imcg9zj/NBW/FufdUIeCGOHlQlilMFTH6fo0aDShm1oDvMlnnG
-   x0PiyAOkYedqq8ez6jUaizjBFlUTiXsmYdkHzIBqnCln53p3FAanp6saf
-   a2FDJfFoDrdJfXBOvftMC3CaZmAUdf0WI11VMiPmFWkASJ4RvKVAqzzQa
-   YBF4VGIKejtMpJ+oZr04lp2nm8b3rIqWbbsQ5cc77csDgcUkBzIBbGFjY
-   g==;
-X-CSE-ConnectionGUID: oJZKGnCdQ+SUWDk7ZrIqbg==
-X-CSE-MsgGUID: d3dvbuHzT0ynikND7tGCBw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11784"; a="78633498"
-X-IronPort-AV: E=Sophos;i="6.23,232,1770624000"; 
-   d="scan'208";a="78633498"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2026 06:35:36 -0700
-X-CSE-ConnectionGUID: d+83l/PiQWmwrmP25dMqBQ==
-X-CSE-MsgGUID: ff2iNg6YQrC0b8/7a5zDPg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,232,1770624000"; 
-   d="scan'208";a="233820935"
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.110])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2026 06:35:33 -0700
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Wed, 13 May 2026 16:35:30 +0300 (EEST)
-To: Jacques Nilo <jnilo@free.fr>
-cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>, 
-    Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-    linux-serial <linux-serial@vger.kernel.org>, 
-    LKML <linux-kernel@vger.kernel.org>, stable@vger.kernel.org
-Subject: Re: [PATCH v2 1/3] serial: core: introduce
- guard(uart_port_lock_check_sysrq_irqsave)
-In-Reply-To: <3849af4bc55d5d2a424fa850844e94d641b2f8a6.1778675349.git.jnilo@free.fr>
-Message-ID: <4c63e55e-6208-8955-c01a-8a1198a0f485@linux.intel.com>
-References: <cover.1778592805.git.jnilo@free.fr> <cover.1778675349.git.jnilo@free.fr> <3849af4bc55d5d2a424fa850844e94d641b2f8a6.1778675349.git.jnilo@free.fr>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hyNEaex2"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-48e7b0208ebso1659795e9.3
+        for <linux-serial@vger.kernel.org>; Wed, 13 May 2026 08:05:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1778684722; x=1779289522; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=DNKpWb2v7e1+HtXK95De7TC/an+HY3mrnyponhhlU8M=;
+        b=hyNEaex2dpKip9hm5qrYoFLz+OAbnokyVqm0849XseAUZb04Xj6a+z/Dh1oDxi4KCx
+         rj5iyUcMUwl5yggGGDS/sRFbo+HmIC/4mxLYN61WD0XPi6E32baY5zazD4eCVGRCbLL1
+         sfqKJcd892yDgRlDqSxpd8WhHzx7EWz2D3oLuad4crzqW2KUfJ9abdZHtV4HgjErRxNK
+         cYhBMVPJ616KY8kHCV8TXo4n7LJM+kPFIwPax4Y1G3cCgaw3fAaiCaehRHU1w7uAKUWz
+         sqjgtF/6TvD61lVpymcHHTj2dh8p70Z90T4L+rbdmfL71IOdFRxtRcHTmfPaukL2bHr3
+         tkzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1778684722; x=1779289522;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=DNKpWb2v7e1+HtXK95De7TC/an+HY3mrnyponhhlU8M=;
+        b=pdYGExzeC2I0IesrHN31BbNjkxWo74O6E1Q8WqC73EYKKZbiqvgvM1hY1JB0W8VSxG
+         l3c4r8Dxqy0meOadyNp69SVdhBZoJJZ2tVz6U0dxcBateYCs1vIN09kX3oy3tpBT3VtR
+         RZplhMQrJXgzKdq9yAC8ij4o6Nzn8cNtaqre+HmZXsOKLIpEu0uArdPex/dcFIq4us7c
+         n6qh+E376tnxdBveiPv0QQ+Q4FqWaJ983C7rpYO27LCZiyA/nTfN/0TxPyyDV8WqKJZH
+         eS8WAqfOvde5unRhpONKd7/CSvAhzavyOWajnXSF/nmPQFuWWXsbblwpIYUVrrATQv+9
+         bX8g==
+X-Forwarded-Encrypted: i=1; AFNElJ8ZxOoHOaBw9e/eBlAX5ICSgXT5RFfspqrvBoetu01rwn/Z9qxOM1OX4DNpYGrNfqcBj2rJXM7tyEqrEj0=@vger.kernel.org
+X-Gm-Message-State: AOJu0YydfIIEPDfbxR++vk+ACh4oKLFJeJKMHZXuVew6sX6/ccnbgYH3
+	VhQh0nWhCUeH2/IKuKAtqxSPWQDW4gujrbny2Lf+p2MvVRcp8vQS426z
+X-Gm-Gg: Acq92OGYm28JgnX7vuhIuKCKr6EzIueOlbeAfgrg3oLIEiL30Lz0Rn5P61LqZErTQZv
+	2g+XxoBYwBaIIpb0qymfpi93xsKzm6CTI6Ir/JDk1QaNPDavPDFdwlYZg/LzYghZUdQczOrUmx3
+	IPrPUFnj+UvlfjkZeFGzVRagjLpTRoZSu3wMf0244/CKKR32xOjtGu5YFJl/LuKwAjoEL730U6M
+	X+jDjZO0OzRq+ypmxqJBtDrv8l0Z8wTK996kTQoAmF9CFIxQsy9HV+opIajhMfNS+WwMjhpWFog
+	H5SB01pX6vzBf5GjB/TZu2wQ0ayJsOgHxCarl5hTpfVO38e08ntzr0ydygytH6/XHwx5IE21Dt/
+	w/w+h+hMoTI3ku4myRI/KTuSNjIbAjSpJ1D16fUhuCnd5foMkD4o+chMWcyv9rtPQ1chXMCXvay
+	XhU6syxr7XBuGrDWzc1dRrhsXOJQK6HwW01f+Iu0hjItVX
+X-Received: by 2002:a05:600c:3042:b0:48f:d410:605e with SMTP id 5b1f17b1804b1-48fd4106119mr6816645e9.7.1778684721908;
+        Wed, 13 May 2026 08:05:21 -0700 (PDT)
+Received: from localhost.localdomain ([82.215.118.79])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48fd62792f6sm91365e9.14.2026.05.13.08.05.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 May 2026 08:05:21 -0700 (PDT)
+From: Stepan Ionichev <sozdayvek@gmail.com>
+To: ilpo.jarvinen@linux.intel.com
+Cc: andriy.shevchenko@linux.intel.com,
+	gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	sozdayvek@gmail.com
+Subject: [PATCH] serial: 8250-dw: unregister 8250 port if clk_notifier_register() fails
+Date: Wed, 13 May 2026 20:05:03 +0500
+Message-Id: <20260513150503.11037-1-sozdayvek@gmail.com>
+X-Mailer: git-send-email 2.33.0.windows.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-1209508298-1778679330=:12534"
+Content-Transfer-Encoding: 8bit
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+dw8250_probe() registers the 8250 port via serial8250_register_8250_port()
+and then, if the device has a clock, registers a clock notifier:
 
---8323328-1209508298-1778679330=:12534
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+	data->data.line = serial8250_register_8250_port(up);
+	if (data->data.line < 0)
+		return data->data.line;
+	...
+	if (data->clk) {
+		err = clk_notifier_register(data->clk, &data->clk_notifier);
+		if (err)
+			return dev_err_probe(dev, err,
+					     "Failed to set the clock notifier\n");
+		...
+	}
 
-On Wed, 13 May 2026, Jacques Nilo wrote:
+If clk_notifier_register() fails, probe returns the error but leaves
+the 8250 port registered. The matching serial8250_unregister_port()
+lives in dw8250_remove(), which is not called when probe fails, so
+the port slot in the serial8250 array stays occupied until the
+device is rebound or the system is rebooted. The devm-allocated
+driver data is freed while the port still references it (via the
+saved private_data and serial_in/serial_out callbacks), so any
+access to that port slot before a rebind would be a use-after-free.
 
-> uart_handle_break() and uart_prepare_sysrq_char() (in
-> include/linux/serial_core.h) capture a SysRq character into
-> port->sysrq_ch while the port lock is held and rely on the unlock
-> helper -- uart_unlock_and_check_sysrq_irqrestore() -- to dispatch the
-> captured character to handle_sysrq() on scope exit.
->=20
-> The existing guard(uart_port_lock_irqsave) cannot be used by IRQ
-> handlers that process RX, because its destructor calls plain
-> uart_port_unlock_irqrestore() and silently drops port->sysrq_ch.
->=20
-> Add a dedicated guard(uart_port_lock_check_sysrq_irqsave) variant
-> whose destructor is the sysrq-aware unlock helper. The lock side is
-> identical to uart_port_lock_irqsave -- only the unlock-time behaviour
-> differs. Callers that may capture SysRq characters must use
-> guard(uart_port_lock_check_sysrq_irqsave); the existing
-> guard(uart_port_lock_irqsave) keeps its current plain-unlock semantics
-> for the many callers that do not process RX.
->=20
-> The new macro is placed after the CONFIG_MAGIC_SYSRQ_SERIAL block so
-> both definitions of uart_unlock_and_check_sysrq_irqrestore() (sysrq
-> enabled and disabled) are visible at expansion time. When
-> CONFIG_MAGIC_SYSRQ_SERIAL=3Dn the destructor degenerates to plain
-> uart_port_unlock_irqrestore(), so there is no overhead.
->=20
-> No functional change on its own; users are converted in the following
-> patches.
->=20
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Jacques Nilo <jnilo@free.fr>
-> ---
->  include/linux/serial_core.h | 12 ++++++++++++
->  1 file changed, 12 insertions(+)
->=20
-> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> index 4f7bbdd90..d1404c97d 100644
-> --- a/include/linux/serial_core.h
-> +++ b/include/linux/serial_core.h
-> @@ -1286,6 +1286,18 @@ static inline void uart_unlock_and_check_sysrq_irq=
-restore(struct uart_port *port
->  }
->  #endif=09/* CONFIG_MAGIC_SYSRQ_SERIAL */
-> =20
-> +/*
-> + * Variant of guard(uart_port_lock_irqsave) for IRQ handlers that may ca=
-pture
-> + * a SysRq character via uart_prepare_sysrq_char(). The destructor uses =
-the
-> + * sysrq-aware unlock helper so that a captured port->sysrq_ch is dispat=
-ched
-> + * to handle_sysrq() on scope exit. The plain guard variant silently dro=
-ps
-> + * sysrq_ch and must not be used by callers that process RX.
-> + */
-> +DEFINE_LOCK_GUARD_1(uart_port_lock_check_sysrq_irqsave, struct uart_port=
-,
-> +                    uart_port_lock_irqsave(_T->lock, &_T->flags),
-> +                    uart_unlock_and_check_sysrq_irqrestore(_T->lock, _T-=
->flags),
-> +                    unsigned long flags);
-> +
->  /*
->   * We do the SysRQ and SAK checking like this...
->   */
->=20
+Unregister the port on the clk_notifier_register() error path.
 
-Reviewed-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
+Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
+---
+ drivers/tty/serial/8250/8250_dw.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---=20
- i.
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index 94beadb40..7dbd79a91 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -850,8 +850,10 @@ static int dw8250_probe(struct platform_device *pdev)
+ 	 */
+ 	if (data->clk) {
+ 		err = clk_notifier_register(data->clk, &data->clk_notifier);
+-		if (err)
++		if (err) {
++			serial8250_unregister_port(data->data.line);
+ 			return dev_err_probe(dev, err, "Failed to set the clock notifier\n");
++		}
+ 		queue_work(system_dfl_wq, &data->clk_work);
+ 	}
+ 
+-- 
+2.43.0
 
---8323328-1209508298-1778679330=:12534--
