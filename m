@@ -1,284 +1,146 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A7873EDAA3;
-	Wed, 13 May 2026 10:35:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DA7137F72F;
+	Wed, 13 May 2026 11:49:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778668521; cv=none; b=neUQQ1iUY+zvr1k6lN4MF0pZBzqqYuQ7bLvmeRtbwL739dtiQ/c3ItC4Udv3P2Bocvyf2I6EZs+bV+tim6WYxx/HtXqFUF1Xx1ruqpw23rcTiAdwuZ9Toe5NWssU6QBgKJnwLt3GheyLzdX39sYI9exR02cfayeIB5lWjqAvDoQ=
+	t=1778673001; cv=none; b=K5C3zZuIKrVCXUlLglm4xjeV8/nLkvZcC43de7BBa2o6q6nUgx2KBNEkidSJx8LfZUknKhCZ3jFgsz6IWV8eNuwJFELAgdA+MnwZMj1aS0brJydAAc7cxcosqoyBZrzTldzTiiZKQ+0y3IZDjlzj00XHjCfV1tIt1R11186CMB0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778668521; c=relaxed/simple;
-	bh=vFc/0varpnBF15KLeuIScQbsvyHGDQlnFW3oq0QgzkU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=EqqlcaH8T7A9QQU51GwUpB22q3g9AK5DaQXgQkMICAa28WFaa+c54EXDEyLeVttU0iO0M3OAAvp2Ge9GWI3eMs8ydDDBcjZ/wDEhrrnmrEre736HpdQpllFKFamRY9nBPm0+DL5H/cAsolH4bIL+sZFOxMQEvlhKTWdvSiyS7/E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=KwNSc5i8; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778673001; c=relaxed/simple;
+	bh=y7YTdDNOgPWmZ8e7kGA0uKrl3g7cfC6t3Ce8lQyE80k=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=OXDXxp/xf8xNsW0S7Vf5/yiPaEytyHNOA0iS6Kh8bmENLogXaRVU/lPtn2/Pooi6zdLlY2ObuHdoTd+H+AUw/YMQOmMBLWXSt1vlu3tY11nkXQD86wVo460/34ZWKPyEcm3Gdlk4oJ5wmvT9dxLP4RFZbuRR+3b0zd6/424zV4M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MSICViyB; arc=none smtp.client-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="KwNSc5i8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EA88C2BCB8;
-	Wed, 13 May 2026 10:35:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1778668520;
-	bh=vFc/0varpnBF15KLeuIScQbsvyHGDQlnFW3oq0QgzkU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=KwNSc5i8H0zhtr7etEdEyXLasBoIx+Uq4MNV+e75qi4pg9mZH1PsqkiQjXslXjV7d
-	 Z6e2GQr/PDwrqybuwKn1IyJ1pNw+I1ERLODwBsqtDqgl3UX3HlsNeif4csjI9T3t0w
-	 E9YsJIr1Vit1OYXgxXZpiJn0ls7N86tWA1Iie1Yc=
-Date: Wed, 13 May 2026 12:11:46 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: liu.qingtao2@zte.com.cn
-Cc: krzk@kernel.org, jirislaby@kernel.org, robh@kernel.org,
-	krzk+dt@kernel.org, conor+dt@kernel.org, marex@nabladev.com,
-	pjw@kernel.org, palmer@dabbelt.com, aou@eecs.berkeley.edu,
-	alex@ghiti.fr, rdunlap@infradead.org, geert+renesas@glider.be,
-	quic_zongjian@quicinc.com, arturs.artamonovs@analog.com,
-	robert.marko@sartura.hr, hvilleneuve@dimonoff.com,
-	thierry.bultel.yh@bp.renesas.com, julianbraha@gmail.com,
-	flavra@baylibre.com, prabhakar.mahadev-lad.rj@bp.renesas.com,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-riscv@lists.infradead.org,
-	liu.wenhong35@zte.com.cn, liu.fei16@zte.com.cn,
-	dai.hualiang@zte.com.cn, deng.weixian@zte.com.cn,
-	jia.yunxiang@zte.com.cn, he.yilin@zte.com.cn, bai.lu5@zte.com.cn,
-	yang.susheng@zte.com.cn, shen.lin1@zte.com.cn, zuo.jiang@zte.com.cn,
-	hu.shengming@zte.com.cn, gao.rui@zte.com.cn, tan.hu@zte.com.cn
-Subject: Re: [PATCH v2 2/2] tty: serial: Add LRX UART driver
-Message-ID: <2026051316-stellar-enunciate-e2f8@gregkh>
-References: <202605130852.64D8qEux084060@mse-fl1.zte.com.cn>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MSICViyB"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1778672999; x=1810208999;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=y7YTdDNOgPWmZ8e7kGA0uKrl3g7cfC6t3Ce8lQyE80k=;
+  b=MSICViyBLc8eAcgyttKS3k2sKhd1kVrkCj87ULHH/SHAo6Cc7kZOicmY
+   ttQpa9f9UV/m+bRGxJ5aFmM6ZVNmjjFiNWDaqrndWiifJR/sE0VGo213X
+   +9ViPtpP9hug5jym7PngLIbTt1yfJO2a8dhjywK2nBNig5Hf+3auoL9pZ
+   hMBPxtzauuSOw/y60VvJbn9sC4MDFxEhFdKr2EdsLyQrLmfeDiqlYcWKr
+   rblwwVu+oRCQwbU7PjWrultjR7X4NpA49WsabLUALX+q3jQMeHlNcZBtr
+   VldeJw1m5/7ZPQ/MX2kcJm8X9mKUYCIPuSj6mYE4hbiZJRGluSX0+hNYp
+   Q==;
+X-CSE-ConnectionGUID: JAPATyl/Tj+JmtTKOQCC7Q==
+X-CSE-MsgGUID: acMWjL0NQwaJZwXz/NHVbg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11784"; a="79455059"
+X-IronPort-AV: E=Sophos;i="6.23,232,1770624000"; 
+   d="scan'208";a="79455059"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2026 04:49:58 -0700
+X-CSE-ConnectionGUID: EipZDLHcQM2FXOkV95eq+g==
+X-CSE-MsgGUID: GVCCyDd1Sze8aaDyfYZH+g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,232,1770624000"; 
+   d="scan'208";a="242078877"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.110])
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2026 04:49:57 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Wed, 13 May 2026 14:49:53 +0300 (EEST)
+To: Jacques Nilo <jnilo@free.fr>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, 
+    linux-serial <linux-serial@vger.kernel.org>, 
+    LKML <linux-kernel@vger.kernel.org>, Johan Hovold <johan@kernel.org>, 
+    stable@vger.kernel.org
+Subject: Re: [PATCH 2/3] serial: 8250: dispatch SysRq character in
+ serial8250_handle_irq()
+In-Reply-To: <5d6d693aa9e92f05412d0f9395872d41e1b8e444.1778592805.git.jnilo@free.fr>
+Message-ID: <8e222497-313e-6322-609b-547a3c87c165@linux.intel.com>
+References: <5efe9e03-4d86-43a0-9ec2-e610ff31095d@free.fr> <cover.1778592805.git.jnilo@free.fr> <5d6d693aa9e92f05412d0f9395872d41e1b8e444.1778592805.git.jnilo@free.fr>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202605130852.64D8qEux084060@mse-fl1.zte.com.cn>
+Content-Type: multipart/mixed; boundary="8323328-1798024874-1778672993=:12534"
 
-On Wed, May 13, 2026 at 04:46:57PM +0800, liu.qingtao2@zte.com.cn wrote:
-> >From 9eba3be2e9b4d5c77956258e3c5db95049c3a895 Mon Sep 17 00:00:00 2001
-> From: Wenhong Liu <liu.wenhong35@zte.com.cn>
-> Date: Tue, 28 Apr 2026 22:30:40 +0800
-> Subject: [PATCH v2 2/2] tty: serial: Add LRX UART driver
-> 
-> Add support for the ZTE LRX UART controller with the following features:
-> - Support for FIFO mode (16-byte depth)
-> - Baud rate configuration
-> - Standard asynchronous communication formats:
-> * Data bits: 5, 6, 7, 8, 9 bits
-> * Parity: odd, even, fixed, none
-> * Stop bits: 1 or 2 bits
-> - Hardware flow control (RTS/CTS)
-> - Multiple interrupt reporting mechanisms
-> - DMA support for improved performance
-> 
-> | Reported-by: kernel test robot <lkp@intel.com>
-> | Closes: https://lore.kernel.org/oe-kbuild-all/202602140029.NXkDToZ7-lkp@intel.com/
-> | Reported-by: kernel test robot <lkp@intel.com>
-> | Closes: https://lore.kernel.org/oe-kbuild-all/202602140108.kLMOYbwS-lkp@intel.com/
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Why are these 4 lines here?  The kernel test robot found bugs in your
-previous versions, so fix that, but no need to list that here, right?
+--8323328-1798024874-1778672993=:12534
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 
-> --- /dev/null
-> +++ b/drivers/tty/serial/lrx_uart.c
-> @@ -0,0 +1,2822 @@
-> +// SPDX-License-Identifier: GPL-2.0+
-> +/*
-> + *  Serial Port driver for ZTE LRX
-> + *
-> + *  Copyright (c) 2025, ZTE Corporation. All rights reserved.
-> + */
-> +
-> +#include <linux/module.h>
-> +#include <linux/ioport.h>
-> +#include <linux/init.h>
-> +#include <linux/console.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/sysrq.h>
-> +#include <linux/device.h>
-> +#include <linux/tty.h>
-> +#include <linux/tty_flip.h>
-> +#include <linux/serial_core.h>
-> +#include <linux/serial.h>
-> +#include <linux/bitfield.h>
-> +#include <linux/bits.h>
-> +#include <linux/clk.h>
-> +#include <linux/slab.h>
-> +#include <linux/dmaengine.h>
-> +#include <linux/dma-mapping.h>
-> +#include <linux/scatterlist.h>
-> +#include <linux/delay.h>
-> +#include <linux/types.h>
-> +#include <linux/of.h>
-> +#include <linux/pinctrl/consumer.h>
-> +#include <linux/sizes.h>
-> +#include <linux/io.h>
-> +#include <linux/acpi.h>
-> +
-> +#define UART_NR			14
+On Tue, 12 May 2026, Jacques Nilo wrote:
 
-Why 14?  Why limit yourself at all?
+> serial8250_handle_irq() captures a SysRq character into port->sysrq_ch
+> inside serial8250_handle_irq_locked() via uart_prepare_sysrq_char()
+> (reached from serial8250_read_char()). Dispatch of that captured
+> character to handle_sysrq() is expected to happen at port-unlock time,
+> through uart_unlock_and_check_sysrq[_irqrestore]().
+>=20
+> After commit 8324a54f604d ("serial: 8250: Add
+> serial8250_handle_irq_locked()") the function was reduced to a wrapper
+> that takes the port lock via guard(uart_port_lock_irqsave) whose
+> destructor is plain uart_port_unlock_irqrestore(). The sysrq-aware
+> unlock helper is no longer called, so port->sysrq_ch is captured but
+> never dispatched: BREAK + SysRq key is consumed silently.
+>=20
+> This was the very condition Johan Hovold's 853a9ae29e978 ("serial:
+> 8250: fix handle_irq locking", 2021) introduced
+> uart_unlock_and_check_sysrq_irqrestore() to address.
+>=20
+> Switch to the new guard(uart_port_lock_sysrq_irqsave), whose destructor
+> is the sysrq-aware unlock helper, restoring the pre-split behaviour.
+> Update the Context: comment on serial8250_handle_irq_locked() so future
+> HW-specific 8250 wrappers know to use the same guard or the explicit
+> sysrq-aware unlock.
+>=20
+> Verified on RTL8196E with CONFIG_MAGIC_SYSRQ_SERIAL=3Dy: BREAK + 'h' on
+> the console UART produces the SysRq help dump in dmesg and the brk
+> counter in /proc/tty/driver/serial increments correctly.
+>=20
+> Fixes: 8324a54f604d ("serial: 8250: Add serial8250_handle_irq_locked()")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Jacques Nilo <jnilo@free.fr>
+> ---
+>  drivers/tty/serial/8250/8250_port.c | 7 +++++--
+>  1 file changed, 5 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/825=
+0/8250_port.c
+> index e4e6a53eb..64f3487e8 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -1786,7 +1786,10 @@ static bool handle_rx_dma(struct uart_8250_port *u=
+p, unsigned int iir)
+>  }
+> =20
+>  /*
+> - * Context: port's lock must be held by the caller.
+> + * Context: port's lock must be held by the caller. The caller must
+> + * release it via guard(uart_port_lock_sysrq_irqsave) or
+> + * uart_unlock_and_check_sysrq_irqrestore(), which captures SysRq
+> + * character on unlock.
+>   */
+>  void serial8250_handle_irq_locked(struct uart_port *port, unsigned int i=
+ir)
+>  {
+> @@ -1839,7 +1842,7 @@ int serial8250_handle_irq(struct uart_port *port, u=
+nsigned int iir)
+>  =09if (iir & UART_IIR_NO_INT)
+>  =09=09return 0;
+> =20
+> -=09guard(uart_port_lock_irqsave)(port);
+> +=09guard(uart_port_lock_sysrq_irqsave)(port);
+>  =09serial8250_handle_irq_locked(port, iir);
+> =20
+>  =09return 1;
+>=20
 
-> +
-> +#define ISR_PASS_LIMIT		256
-> +
-> +#define LRX_UART_NAME		"lrx-uart"
+Reviewed-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
 
-KBUILD_MODNAME?
+--=20
+ i.
 
-> +#define LRX_UART_TTY_PREFIX	"ttyLRX"
-
-Why are you using a new name and not the existing ones?  Why is this not
-just a variant of the existing 8250 serial driver?  Surely this is not a
-totally new UART that looks nothing like that one, right?
-
-> +/* There is by now at least one vendor with differing details, so handle it */
-
-So a new UART already has conflicting implementations?  How can that
-happen?
-
-> +/* Deals with DMA transactions */
-> +
-> +struct lrx_uart_dmabuf {
-> +	dma_addr_t		dma;
-> +	size_t			len;
-> +	char			*buf;
-
-u8?
-
-> +/*
-> + * We wrap our port structure around the generic uart_port.
-> + */
-> +struct lrx_uart_port {
-> +	struct uart_port	port;
-> +	const u16		*reg_offset;
-> +	struct clk		*clk;
-> +	const struct vendor_data *vendor;
-> +	unsigned int		im;		/* interrupt mask */
-> +	unsigned int		old_status;
-> +	unsigned int		fifosize;	/* vendor-specific */
-> +	unsigned int		fixed_baud;	/* vendor-set fixed baud rate */
-> +	char			type[16];
-> +	bool			rs485_tx_started;
-> +	unsigned int		rs485_tx_drain_interval; /* usecs */
-> +#ifdef CONFIG_DMA_ENGINE
-
-Why would this UART not use the DMA engine?  When would that ever be
-disabled?
-
-> +/*
-> + * Reads up to 256 characters from the FIFO or until it&apos;s empty and
-
-This implies that some tool wrote this code.  Please always properly
-document that and where it copied the information from in order to write
-this code.
-
-> +/*
-> + * All the DMA operation mode stuff goes inside this ifdef.
-> + * This assumes that you have a generic DMA device interface,
-> + * no custom DMA interfaces are supported.
-> + */
-> +#ifdef CONFIG_DMA_ENGINE
-> +
-> +#define LRX_UART_DMA_BUFFER_SIZE PAGE_SIZE
-
-Why not just use PAGE_SIZE?  And how do you know the dma buffer is the
-same size always?  When using 16k pages, the hardware knows this?
-
-> +/*
-> + * Try to refill the TX DMA buffer.
-> + * Locking: called with port lock held and IRQs disabled.
-> + * Returns:
-> + *   1 if we queued up a TX DMA buffer.
-> + *   0 if we didn&apos;t want to handle this by DMA
-
-Again, fix your tooling :(
-
-> +/*
-> + * Flush the transmit buffer.
-> + * Locking: called with port lock held and IRQs disabled.
-> + */
-> +static void lrx_uart_dma_flush_buffer(struct uart_port *port)
-> +__releases(&sup->port.lock)
-> +__acquires(&sup->port.lock)
-
-Ok, but:
-
-> +{
-> +	struct lrx_uart_port *sup =
-> +	    container_of(port, struct lrx_uart_port, port);
-> +
-> +	if (!sup->using_tx_dma)
-> +		return;
-> +
-> +	dmaengine_terminate_async(sup->dmatx.chan);
-> +
-> +	if (sup->dmatx.queued) {
-> +		dma_unmap_single(sup->dmatx.chan->device->dev, sup->dmatx.dma,
-> +				 sup->dmatx.len, DMA_TO_DEVICE);
-> +		sup->dmatx.queued = false;
-> +		sup->dmacr &= ~UARTFCCR_TXDMAE;
-> +		lrx_uart_write(sup->dmacr, sup, REG_FCCR);
-> +	}
-> +}
-
-I don't see those locks being touched, where did that happen?
-
-> +static irqreturn_t lrx_uart_int(int irq, void *dev_id)
-> +{
-> +	struct lrx_uart_port *sup = dev_id;
-> +	unsigned int status, pass_counter = ISR_PASS_LIMIT;
-> +	int handled = 0;
-
-bool?
-
-> +static int lrx_uart_hwinit(struct uart_port *port)
-> +{
-> +	struct lrx_uart_port *sup =
-> +	    container_of(port, struct lrx_uart_port, port);
-
-You do this "container_of()" everywhere, why not write a simple macro
-for it to make it more obvious like to_lxr_uart_port()?
-
-And why not use container_of_const()?
-
-> +static int lrx_uart_allocate_irq(struct lrx_uart_port *sup)
-> +{
-> +	lrx_uart_write(sup->im, sup, REG_IMSC);
-> +
-> +	return request_irq(sup->port.irq, lrx_uart_int, IRQF_SHARED, "lrx-uart", sup);
-
-You had a driver name way above, why not use that instead of this string
-here?
-
-> +	/* Set baud rate */
-> +	lrx_uart_write(quot & 0x3f, sup, REG_FD);
-> +	lrx_uart_write(quot >> 6, sup, REG_IND);
-> +
-> +	/*
-> +	 * ----------v----------v----------v----------v-----
-> +	 * NOTE: REG_FRCR MUST BE WRITTEN AFTER REG_FD & REG_IND.
-> +	 * ----------^----------^----------^----------^-----
-> +	 */
-
-Why the odd comment style?
-
-> +	lrx_uart_write(frcr, sup, REG_FRCR);
-> +
-> +	lrx_uart_write(fccr, sup, REG_FCCR);
-
-Why the blank line between these?
-
-> +static struct lrx_uart_port *lrx_uart_console_ports[UART_NR];
-
-Why isn't this a dynamic list?
-
-> +/*
-> + * While this can be a module, if builtin it&apos;s most likely the console
-> + * So let&apos;s leave module_exit but move module_init to an earlier place
-
-Again, your tooling is broken :(
-
-thanks,
-
-greg k-h
+--8323328-1798024874-1778672993=:12534--
