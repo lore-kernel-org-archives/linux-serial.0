@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CCBD4E376E;
-	Wed, 13 May 2026 18:13:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 552663B776C;
+	Wed, 13 May 2026 19:50:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778695997; cv=none; b=Wj0+IgiKrm9azsQQzqGwFXVG3HTDIgH8ZSTMf1no++UY5uL3dsxwotLOioR+nteeefzrq0jUcEnFerpAZ4F4W5M+iHYZQATHTqLycAZ+BJjXuNKA2vUc2w/4RoBocTiYHKBkFLNEznI8nVPRoel58YuuH6UPu7SDhwq83a+m668=
+	t=1778701848; cv=none; b=SkKsfu9kF/BUb7GQC+j6ySIJ70nzC+Zi9Bp9yZ8V3rME6xPtUljt0pS9NtwlBxrRJeN4O2ecB9gbXbfKd/a3FvkRZYoSHCkY0/EO0aFpkxbzb1rn4KKlMnww+YNNuhsrNvDI9fguQS/Ox9jxK8w5X4PPgfk4oQPoZH/rEeus1Xc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778695997; c=relaxed/simple;
-	bh=LJ+1xGds7udPxsEMOj+ewVJ7oPqXZF5W0NFuczX8UVM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=lzJ6X67zd0ZitTdFiGZtueC7PyRnu6+FlsUmddYaa4caaOz3kys2Wh3mBRI/bcYgs/qHVCx50VquocibMWi3aYMB0G302JEcPzL2xy1/W670zMpcws5XJXaVUAioJNT9ZB5/yyVeFBjQvrzP0cvX2XLWd/yFdbBjOJcIIQ5QdbE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sY0++9o5; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1778701848; c=relaxed/simple;
+	bh=DUyitwcj2pqGB9DvTz8dhmsbk8ZH1JOgKGFr5wFe24s=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=q62eLw3tp6Is35pCB1JVdCN5F9DbIMo30vuW6rlOZMFS+aaFlXaN+BuEnsE+TZ4sJcQp2pxYlGuF9xuIK/myZD7LMnPQCL8Gy/3l2tee+ASJX1hTojCLDtmPwzAvy3l5ISJRkQlUiqprcBz3MiiImQB0hRcDiM/nQtJEfXO1fSY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=W4xkVuoZ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sY0++9o5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5E33C2BCC6;
-	Wed, 13 May 2026 18:13:08 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="W4xkVuoZ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFD33C19425;
+	Wed, 13 May 2026 19:50:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778695996;
-	bh=LJ+1xGds7udPxsEMOj+ewVJ7oPqXZF5W0NFuczX8UVM=;
-	h=Date:Subject:To:References:From:In-Reply-To:From;
-	b=sY0++9o5xROOMaavP5V8NySPjyxtF9FZAlIy+t4Ommq1xdXbjGk9MmUsRlkacVIGc
-	 rCBxoySP3eu+n4UDpdC9jneZSSspY3yR3bbhwnyA/eEK1O4ocPU0TCqm1vnP7HaLhS
-	 RZ9BOjFzQXJ5Oe5EIQjFJSm3kONkQeK8FIRQ6mliRAKiiP6NAQ1uEMwSUEJoWFqGMQ
-	 Beb27v0yngoWBJkILU0yZkw1SLlaZLd3GbQWI2KgiB5PadyFhgqme05mnKH2bH/TfI
-	 Hj/2jWG6rmM8v2o8AFfmscJHkI7ZtFg2kgD84Maut6n+VATVHKs/6ElsacjW9brw9h
-	 JMRpc7OfoBBmg==
-Message-ID: <c1e483e4-5cb3-43e7-8af4-a46992215d43@kernel.org>
-Date: Wed, 13 May 2026 20:13:07 +0200
+	s=k20201202; t=1778701848;
+	bh=DUyitwcj2pqGB9DvTz8dhmsbk8ZH1JOgKGFr5wFe24s=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=W4xkVuoZtpqwljl1IJw98+ExgePhhSGwfgR5puXpO22uMy+CUH/gGXLVFPWf+QNxC
+	 WATz4gIt6B5+d1BhgFI5QKk3KRsGRV5BCPkahkz1OBGhG/TYVE0L3CkEz9l8FnSE++
+	 VC3eHwHtrm/kNEGHSuNLBOqUAzf1B79imGShcRIsbfDLTD/AW+O8Kgs7Q+XROZ3Su0
+	 6E7Gaeu6kJ4iZOeeKwA2tCEKFOUcsoWp8c6wrbJCqYCgvf7iZtGLLEhxBHOx2SJs79
+	 IwyEpaNd3tY97rrvpsVcauOoY0Oy9Nas0+1EwhYqdnQ+po7nTr5sSJxmMV35yReq8a
+	 R25xr/k/Lwrqg==
+Message-ID: <1a5abd2e-e9ab-4a48-94c2-5e082f57adde@kernel.org>
+Date: Wed, 13 May 2026 21:50:42 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,23 +35,24 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/2] Add ZTE LRX UART driver
-To: liu.qingtao2@zte.com.cn, gregkh@linuxfoundation.org,
- jirislaby@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, marex@nabladev.com, pjw@kernel.org, palmer@dabbelt.com,
- aou@eecs.berkeley.edu, alex@ghiti.fr, rdunlap@infradead.org,
- geert+renesas@glider.be, quic_zongjian@quicinc.com,
- arturs.artamonovs@analog.com, robert.marko@sartura.hr,
- hvilleneuve@dimonoff.com, thierry.bultel.yh@bp.renesas.com,
- julianbraha@gmail.com, flavra@baylibre.com,
- prabhakar.mahadev-lad.rj@bp.renesas.com, linux-serial@vger.kernel.org,
- linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
- linux-riscv@lists.infradead.org, liu.wenhong35@zte.com.cn,
- liu.fei16@zte.com.cn, dai.hualiang@zte.com.cn, deng.weixian@zte.com.cn,
- jia.yunxiang@zte.com.cn, he.yilin@zte.com.cn, bai.lu5@zte.com.cn,
- yang.susheng@zte.com.cn, shen.lin1@zte.com.cn, zuo.jiang@zte.com.cn,
- hu.shengming@zte.com.cn, gao.rui@zte.com.cn, tan.hu@zte.com.cn
-References: <202605130851.64D8prqc083672@mse-fl1.zte.com.cn>
+Subject: Re: [PATCH tty v4 2/6] serial: Replace driver usage of UPF_CONS_FLOW
+To: John Ogness <john.ogness@linutronix.de>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Alim Akhtar <alim.akhtar@samsung.com>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>,
+ linux-kernel@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Thomas Fourier <fourier.thomas@gmail.com>, Kees Cook <kees@kernel.org>,
+ linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-samsung-soc@vger.kernel.org, sparclinux@vger.kernel.org,
+ Peter Griffin <peter.griffin@linaro.org>,
+ Tudor Ambarus <tudor.ambarus@linaro.org>,
+ =?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>,
+ Alexey Klimov <alexey.klimov@linaro.org>
+References: <20260506121606.5805-1-john.ogness@linutronix.de>
+ <20260506121606.5805-3-john.ogness@linutronix.de>
+ <87lddvy2dl.fsf@jogness.linutronix.de>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -97,25 +98,93 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  jWt87ecuHlpL3uuQ0ZZNWqHgZoQLXoqC2ZV5KrtKWb/jyiFX/sxSrodALf0zf+tfHv0FZWT2
  zHjUqd0t4njD/UOsuIMOQn4Ig0SdivYPfZukb5cdasKJukG1NOpbW7yRNivaCnfZz6dTawXw
  XRIV/KDsHQiyVxKvN73bThKhONkcX2LWuD928tAR6XMM2G5ovxLe09vuOzzfTWQDsm++9UKF a/A=
-In-Reply-To: <202605130851.64D8prqc083672@mse-fl1.zte.com.cn>
+In-Reply-To: <87lddvy2dl.fsf@jogness.linutronix.de>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 13/05/2026 10:46, liu.qingtao2@zte.com.cn wrote:
-> From 08610be731b6fc3919d5eebfd2ff9d67f38a094c Mon Sep 17 00:00:00 2001
-> From: Wenhong Liu <liu.wenhong35@zte.com.cn>
-> Date: Tue, 28 Apr 2026 22:30:31 +0800
-> Subject: [PATCH v2 1/2] dt-bindings: serial: Add zte,lrx-uart
+On 07/05/2026 11:50, John Ogness wrote:
+> Hi,
 > 
-> Add devicetree binding for ZTE LRX UART controller.
+> (This email is particularly directed at the Samsung folks.)
 > 
-> Co-developed-by: Qingtao Liu <liu.qingtao2@zte.com.cn>
-> Signed-off-by: Qingtao Liu <liu.qingtao2@zte.com.cn>
-> Signed-off-by: Wenhong Liu <liu.wenhong35@zte.com.cn>
+> Responding to Sashiko:
+> 
+> https://sashiko.dev/#/patchset/20260506121606.5805-1-john.ogness%40linutronix.de
+> 
+> On 2026-05-06, Sashiko wrote:
+>>> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+>>> index e27806bf2cf3e..2f94fc798cffb 100644
+>>> --- a/drivers/tty/serial/samsung_tty.c
+>>> +++ b/drivers/tty/serial/samsung_tty.c
+>>> @@ -319,7 +319,7 @@ static void s3c24xx_serial_stop_tx(struct uart_port *port)
+>>>  	ourport->tx_enabled = 0;
+>>>  	ourport->tx_in_progress = 0;
+>>>  
+>>> -	if (port->flags & UPF_CONS_FLOW)
+>>> +	if (uart_cons_flow_enabled(port))
+>>>  		s3c24xx_serial_rx_enable(port);
+>>
+>> This isn't a new bug introduced by this patch, but does this code
+>> result in a recursive spinlock acquisition and deadlock when console
+>> flow control is enabled?
+>>
+>> The serial core framework calls port->ops->stop_tx() with the
+>> port->lock spinlock already held. When uart_cons_flow_enabled(port)
+>> evaluates to true, s3c24xx_serial_stop_tx() invokes
+>> s3c24xx_serial_rx_enable().
+>>
+>> Looking at s3c24xx_serial_rx_enable(), it unconditionally attempts to
+>> acquire the exact same lock again:
+>>
+>> static void s3c24xx_serial_rx_enable(struct uart_port *port)
+>> {
+>> 	struct s3c24xx_uart_port *ourport = to_ourport(port);
+>> 	unsigned long flags;
+>> 	...
+>> 	uart_port_lock_irqsave(port, &flags);
+>> 	...
+>> }
+>>
+>> Because spinlocks are not recursive in the kernel, it appears this
+>> sequence would cause an immediate deadlock on the same CPU.
+> 
+> Although out of scope for my series, the reported issue is real. Perhaps
+> something for Krzysztof or Alim to look into.
+> 
+>>> @@ -493,7 +493,7 @@ static void s3c24xx_serial_start_tx(struct uart_port *port)
+>>>  	struct tty_port *tport = &port->state->port;
+>>>  
+>>>  	if (!ourport->tx_enabled) {
+>>> -		if (port->flags & UPF_CONS_FLOW)
+>>> +		if (uart_cons_flow_enabled(port))
+>>>  			s3c24xx_serial_rx_disable(port);
+>>
+>> Similarly here, s3c24xx_serial_start_tx() is also called with
+>> port->lock held, and s3c24xx_serial_rx_disable() will attempt to
+>> acquire port->lock again:
+>>
+>> static void s3c24xx_serial_rx_disable(struct uart_port *port)
+>> {
+>> 	struct s3c24xx_uart_port *ourport = to_ourport(port);
+>> 	unsigned long flags;
+>> 	...
+>> 	uart_port_lock_irqsave(port, &flags);
+>> 	...
+>> }
+>>
+>> Could this pre-existing locking issue in the samsung_tty driver be
+>> addressed so that the rx enable/disable helpers do not try to take the
+>> port lock when it is already held by the caller?
+> 
+> Also legitimate. But out of scope for my series.
 
 
-This is pretty broken posting. Also, several previous comments stay
-valid. What is LRX?
+Thanks for letting us know. Deadlock did not happen so far, so something
+is missing in Sashiko's report. :)
+
+I am just back from vacation, so I won't have time to dig into this, but
+I will keep your email in the inbox. Cc-ing also a few Linaro folks
+which are using this platform and might be able to help us here.
 
 Best regards,
 Krzysztof
