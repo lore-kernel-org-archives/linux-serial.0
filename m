@@ -1,107 +1,177 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FE4F39E6F5
-	for <linux-serial@vger.kernel.org>; Fri, 15 May 2026 09:29:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FF0F3D300A;
+	Fri, 15 May 2026 10:09:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778837359; cv=none; b=An+sr9NPhKFot2hBKPv4tl8GpQjhITittDQSWnQg9CwQibEzv/Lg7Sn/FYcbrtxRRgXVX9Rej2qmcKFYdQNyxmiZqtNNreg9Inh2Iw1I2uZ74U+OxbZreRHAjUDf7d0rhH+eBwkyt5QchkankJHDcMBJB0o6s65d+IW8DoCE4OQ=
+	t=1778839756; cv=none; b=EkfUc2qLNLWTpe58XPIWOx43HfjizIcrrlNUiQSHwyoESmEZZsGFpeHKIvDLU2Wxw3y94/52yNueHj29Sc5vxCUTqAaLYgvv7Zv0nmgt4KmlbDONif4m6Itm5Vg/Hk77vKmF2mVytZoKgcBtJp90HXVK9qxy/bWnBalSTLBAAos=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778837359; c=relaxed/simple;
-	bh=v+pupytczKAjPJGodDLVEr1rO2j5I2ZpqEZPCdYnJ8c=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=qiBWY7dnHGRTYwX714zpvwQ7gdvkTh0eSJMyTzaKe+ZkshSdvZR02/iUfcry3pkN6qyg270uNMmWzbAIcZYyXDg6iBCJLglpi7ECIBowMG+sFk5F7w2pxdDK5GuEtzPWySeUyY9cV6nixbjVO0n1YvKWo/+bIEEFAuf4GRoNhFY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=Ax00u2zJ; arc=none smtp.client-ip=209.85.128.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1778839756; c=relaxed/simple;
+	bh=i6YFF1i3pMGju9ciPXiva6Il9wQ3uoNXpWZF28Ki2+Y=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=myJKDZIfZxomW4+qaZB4d6wqcWCBhKJ8WuuezKdUZmA1lYZ4JMs9CMVSRwcC9xV3xq7SnVwAYuVofKtW0a5NW2pq3GXWFXyBabVnxM2ii9UXI22ZTk6Y+hpe6bBmsQuPT37tkhpd5VJL8M6zCwcmy8OL6Mg7WO2vzNvp1cvS6HI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QHmmwWxv; arc=none smtp.client-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Ax00u2zJ"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-48a7fe4f40bso102503025e9.0
-        for <linux-serial@vger.kernel.org>; Fri, 15 May 2026 02:29:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1778837356; x=1779442156; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=v+pupytczKAjPJGodDLVEr1rO2j5I2ZpqEZPCdYnJ8c=;
-        b=Ax00u2zJfOWhpd5bb+/hdVew9ViKdCrtQSJPeKXOAGlUZ2pqI9o9k6N5lVdaaIi7TU
-         W1zdDCe8ndoTqFV3ckv74DUW26LDO3fnDv/o1VOa3Uiml8Z8oebED7WQ8dKRYlhzKprD
-         QaSvUzHHXkIJaDlSOsJTVKYM9Yj0d3cQa8iclJJiAPJuFGJ3pYXmroIYeXEupHbjBxHI
-         vlC9SugWfw/kutEYAi8qgFEkcTyMdbhDasC5LTbzGrRbKWnNB7Eq6uFyptiHaIfXLRQc
-         k5s2Pe2Ph5R6cCbJOxuTqNNa5gPZRIiRTSAYzSZsulaNLnBar41MbF2hrgSPa/muFxMX
-         Oayw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778837356; x=1779442156;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=v+pupytczKAjPJGodDLVEr1rO2j5I2ZpqEZPCdYnJ8c=;
-        b=mr5eN2PVHcQXxfSHwAdlAaZ33BaMkpDlwVD+rinBBoWsNBDcG/qaSsG/3rz4gZWnU0
-         Oh4HSVLkqbTMOz8rjLYUpHm+Vd72OSq8Zj7RHJcWKFOB/E3f1Bfi5QoJYqN2wqkzgvw0
-         bJ58urzjo2AbX+GooZ+1GMXQEap58fzAv8LuMJZePJjYLaaUNDbjZVoAmQdHaW5JnG6g
-         /b2CvrvHgAZR8sWkrnJQ8OCBB2RrVzKbstIxml1Vrx8yIB1kKJwG7C6hE1IOyPgvujxl
-         5+PyB5Evjf0SXbnCSHJ96MkXkALwd91fX4S2ergn76dOes1UKgywGTR9Z2hsazrlgQo5
-         XJfA==
-X-Forwarded-Encrypted: i=1; AFNElJ+Z7PYEonQAUwBAtPKFnzQ9R1xaZN0lkivyiV/Rn8HVZvNDSoAtNxaUOyyhvDwu4ufD4+4lgxR8xKl1/1M=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwSTQUp9clZq/PIshh/uMOurbQztNo8cXM15gegGqV3CPpCPYMe
-	z3ewhmf1piQL+deXC0T1WfOD++cSy9hSF0HO2UFo+ZiEvF4mUoXuyKeyksfAn7NaI7Q=
-X-Gm-Gg: Acq92OF+m0GZAePxqcPgPYAs3p8ft/DdRrO47NfF3fWyADuwu3j4o0A3ovLGsAK6zD9
-	YafrttUPKJagrbdK3q39dTHBV26ZvOYnEpOav51LRWRBE0t23KdfO6bsbfCM42hMRYSMzft7cPs
-	SlKCzrveEhHt9J1Tq6vilYsgG5J5hQ8rg2LVkwpSbsc2OnpW8iLN6lrprmgDR3dQZlva3oeq/+l
-	xm21zNM36PQaTKQ7EOLaTZJN+dYOi1uY9GGHI0/xpxkFE2GEiaENqzw4oF0rIu2hFu5J2bIxXje
-	PpOlMqJDiApNoYTDl+crJiSKAKPXuItUPlIfOIN5WVDNuSPplXYh55Askpp5OQMVLUmFKLaA/s7
-	c/BMMckxogEU7FMY4pPIL4x5qAfklb1Sc0kP6t6y8BsiQ3sWccaRc8krYYXYS1J5TOoKJt7A7vM
-	g7Bp4G8BPa7MQs4OB6QZurci3yM3lNMpIp
-X-Received: by 2002:a05:600c:4455:b0:48e:8dec:19ad with SMTP id 5b1f17b1804b1-48fe60ea94emr41434695e9.12.1778837356485;
-        Fri, 15 May 2026 02:29:16 -0700 (PDT)
-Received: from [10.11.12.109] ([79.115.63.228])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48febe66544sm9672215e9.23.2026.05.15.02.29.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 May 2026 02:29:16 -0700 (PDT)
-Message-ID: <f15efac1-0df0-467b-8d75-18383d284be2@linaro.org>
-Date: Fri, 15 May 2026 12:29:11 +0300
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QHmmwWxv"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1778839754; x=1810375754;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=i6YFF1i3pMGju9ciPXiva6Il9wQ3uoNXpWZF28Ki2+Y=;
+  b=QHmmwWxvvyaUUr7WVr5uQ8KWDdBUfB0Pu4UxA5wSOazBtEZygS9Yqfp2
+   oSNq6p4Jz2L0/4B99lP0aVrx2VpVJoA9jWPe/J8lGqExYP5hXFcc/3Mm1
+   o6hTokqHDdCNB4GFiX76/q03f3KV4RgvyqRi0Eg9H39U3+MMDuRSYI2xg
+   QMDTc8ncoXEZIyUyxme+RPLCoKhatdZK+mxMUWMtkBIPX0HEnJ0mgxjbU
+   P6UxVOzlk2CtHd0kPzNGLAOzTrM6isBAA1/Lt91x1tyCnvmvwU86y6B87
+   4s/9ncvSmp7GOfJSLxcerAr+qh2tW1MWZfkRKs3b/jY+e92z66rzyPWKl
+   w==;
+X-CSE-ConnectionGUID: 9HqIzxLWQ7a6tqH9NrcKiQ==
+X-CSE-MsgGUID: QwY7vmlSRTyN/rgTbRMFXA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11786"; a="83408530"
+X-IronPort-AV: E=Sophos;i="6.23,236,1770624000"; 
+   d="scan'208";a="83408530"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2026 03:09:14 -0700
+X-CSE-ConnectionGUID: C0SvFc0USAaAUHzX0vh+6g==
+X-CSE-MsgGUID: 6P7Dvx8vQmq1oSZitC6THQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,236,1770624000"; 
+   d="scan'208";a="238536691"
+Received: from lkp-server02.sh.intel.com (HELO 7a33ad3e7d27) ([10.239.97.151])
+  by orviesa008.jf.intel.com with ESMTP; 15 May 2026 03:09:12 -0700
+Received: from kbuild by 7a33ad3e7d27 with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1wNpT1-000000001Jr-2EAO;
+	Fri, 15 May 2026 10:08:39 +0000
+Date: Fri, 15 May 2026 18:05:29 +0800
+From: kernel test robot <lkp@intel.com>
+To: Hugo Villeneuve <hugo@hugovil.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Cc: oe-kbuild-all@lists.linux.dev, hugo@hugovil.com,
+	linux-serial@vger.kernel.org, kernel test robot <lkp@intel.com>,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] serial: max310x: fix compile errors if CONFIG_SPI_MASTER
+ is disabled
+Message-ID: <202605151854.fLunCPPN-lkp@intel.com>
+References: <20260512152749.1767622-1-hugo@hugovil.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH tty v4 2/6] serial: Replace driver usage of UPF_CONS_FLOW
-To: Krzysztof Kozlowski <krzk@kernel.org>,
- John Ogness <john.ogness@linutronix.de>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Alim Akhtar <alim.akhtar@samsung.com>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>,
- linux-kernel@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Thomas Fourier <fourier.thomas@gmail.com>, Kees Cook <kees@kernel.org>,
- linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-samsung-soc@vger.kernel.org, sparclinux@vger.kernel.org,
- Peter Griffin <peter.griffin@linaro.org>,
- =?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>,
- Alexey Klimov <alexey.klimov@linaro.org>
-References: <20260506121606.5805-1-john.ogness@linutronix.de>
- <20260506121606.5805-3-john.ogness@linutronix.de>
- <87lddvy2dl.fsf@jogness.linutronix.de>
- <1a5abd2e-e9ab-4a48-94c2-5e082f57adde@kernel.org>
-Content-Language: en-US
-From: Tudor Ambarus <tudor.ambarus@linaro.org>
-In-Reply-To: <1a5abd2e-e9ab-4a48-94c2-5e082f57adde@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260512152749.1767622-1-hugo@hugovil.com>
+
+Hi Hugo,
+
+kernel test robot noticed the following build warnings:
+
+[auto build test WARNING on 16e95bfb79b5d9d01dc7651d98caf3c2ace331cd]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Hugo-Villeneuve/serial-max310x-fix-compile-errors-if-CONFIG_SPI_MASTER-is-disabled/20260515-014130
+base:   16e95bfb79b5d9d01dc7651d98caf3c2ace331cd
+patch link:    https://lore.kernel.org/r/20260512152749.1767622-1-hugo%40hugovil.com
+patch subject: [PATCH] serial: max310x: fix compile errors if CONFIG_SPI_MASTER is disabled
+config: alpha-randconfig-r063-20260515 (https://download.01.org/0day-ci/archive/20260515/202605151854.fLunCPPN-lkp@intel.com/config)
+compiler: alpha-linux-gcc (GCC) 14.3.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260515/202605151854.fLunCPPN-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202605151854.fLunCPPN-lkp@intel.com/
+
+All warnings (new ones prefixed by >>):
+
+   drivers/tty/serial/max310x.c:1510:20: warning: 'max310x_regmap_name' defined but not used [-Wunused-function]
+    1510 | static const char *max310x_regmap_name(u8 port_id)
+         |                    ^~~~~~~~~~~~~~~~~~~
+   drivers/tty/serial/max310x.c:1482:13: warning: 'max310x_remove' defined but not used [-Wunused-function]
+    1482 | static void max310x_remove(struct device *dev)
+         |             ^~~~~~~~~~~~~~
+   drivers/tty/serial/max310x.c:1298:12: warning: 'max310x_probe' defined but not used [-Wunused-function]
+    1298 | static int max310x_probe(struct device *dev, const struct max310x_devtype *devtype,
+         |            ^~~~~~~~~~~~~
+>> drivers/tty/serial/max310x.c:515:13: warning: 'max310x_reg_noinc' defined but not used [-Wunused-function]
+     515 | static bool max310x_reg_noinc(struct device *dev, unsigned int reg)
+         |             ^~~~~~~~~~~~~~~~~
+>> drivers/tty/serial/max310x.c:502:13: warning: 'max310x_reg_precious' defined but not used [-Wunused-function]
+     502 | static bool max310x_reg_precious(struct device *dev, unsigned int reg)
+         |             ^~~~~~~~~~~~~~~~~~~~
+>> drivers/tty/serial/max310x.c:482:13: warning: 'max310x_reg_volatile' defined but not used [-Wunused-function]
+     482 | static bool max310x_reg_volatile(struct device *dev, unsigned int reg)
+         |             ^~~~~~~~~~~~~~~~~~~~
+>> drivers/tty/serial/max310x.c:467:13: warning: 'max310x_reg_writeable' defined but not used [-Wunused-function]
+     467 | static bool max310x_reg_writeable(struct device *dev, unsigned int reg)
+         |             ^~~~~~~~~~~~~~~~~~~~~
 
 
+vim +/max310x_reg_noinc +515 drivers/tty/serial/max310x.c
 
-On 5/13/26 10:50 PM, Krzysztof Kozlowski wrote:
-> Cc-ing also a few Linaro folks
-> which are using this platform and might be able to help us here.
+003236d9ac4d027 Alexander Shiyan 2013-06-29  466  
+10d8b34a421716d Alexander Shiyan 2013-06-29 @467  static bool max310x_reg_writeable(struct device *dev, unsigned int reg)
+f65444187a66bf5 Alexander Shiyan 2012-08-06  468  {
+6ef281daf020592 Cosmin Tanislav  2022-06-05  469  	switch (reg) {
+f65444187a66bf5 Alexander Shiyan 2012-08-06  470  	case MAX310X_IRQSTS_REG:
+f65444187a66bf5 Alexander Shiyan 2012-08-06  471  	case MAX310X_LSR_IRQSTS_REG:
+f65444187a66bf5 Alexander Shiyan 2012-08-06  472  	case MAX310X_SPCHR_IRQSTS_REG:
+f65444187a66bf5 Alexander Shiyan 2012-08-06  473  	case MAX310X_STS_IRQSTS_REG:
+f65444187a66bf5 Alexander Shiyan 2012-08-06  474  	case MAX310X_TXFIFOLVL_REG:
+f65444187a66bf5 Alexander Shiyan 2012-08-06  475  	case MAX310X_RXFIFOLVL_REG:
+f65444187a66bf5 Alexander Shiyan 2012-08-06  476  		return false;
+f65444187a66bf5 Alexander Shiyan 2012-08-06  477  	default:
+f65444187a66bf5 Alexander Shiyan 2012-08-06  478  		return true;
+f65444187a66bf5 Alexander Shiyan 2012-08-06  479  	}
+d5dd265cda8083c Hugo Villeneuve  2024-01-18  480  }
+f65444187a66bf5 Alexander Shiyan 2012-08-06  481  
+f65444187a66bf5 Alexander Shiyan 2012-08-06 @482  static bool max310x_reg_volatile(struct device *dev, unsigned int reg)
+f65444187a66bf5 Alexander Shiyan 2012-08-06  483  {
+6ef281daf020592 Cosmin Tanislav  2022-06-05  484  	switch (reg) {
+f65444187a66bf5 Alexander Shiyan 2012-08-06  485  	case MAX310X_RHR_REG:
+f65444187a66bf5 Alexander Shiyan 2012-08-06  486  	case MAX310X_IRQSTS_REG:
+f65444187a66bf5 Alexander Shiyan 2012-08-06  487  	case MAX310X_LSR_IRQSTS_REG:
+f65444187a66bf5 Alexander Shiyan 2012-08-06  488  	case MAX310X_SPCHR_IRQSTS_REG:
+f65444187a66bf5 Alexander Shiyan 2012-08-06  489  	case MAX310X_STS_IRQSTS_REG:
+f65444187a66bf5 Alexander Shiyan 2012-08-06  490  	case MAX310X_TXFIFOLVL_REG:
+f65444187a66bf5 Alexander Shiyan 2012-08-06  491  	case MAX310X_RXFIFOLVL_REG:
+f65444187a66bf5 Alexander Shiyan 2012-08-06  492  	case MAX310X_GPIODATA_REG:
+10d8b34a421716d Alexander Shiyan 2013-06-29  493  	case MAX310X_BRGDIVLSB_REG:
+10d8b34a421716d Alexander Shiyan 2013-06-29  494  	case MAX310X_REG_05:
+10d8b34a421716d Alexander Shiyan 2013-06-29  495  	case MAX310X_REG_1F:
+f65444187a66bf5 Alexander Shiyan 2012-08-06  496  		return true;
+f65444187a66bf5 Alexander Shiyan 2012-08-06  497  	default:
+f65444187a66bf5 Alexander Shiyan 2012-08-06  498  		return false;
+f65444187a66bf5 Alexander Shiyan 2012-08-06  499  	}
+d5dd265cda8083c Hugo Villeneuve  2024-01-18  500  }
+f65444187a66bf5 Alexander Shiyan 2012-08-06  501  
+f65444187a66bf5 Alexander Shiyan 2012-08-06 @502  static bool max310x_reg_precious(struct device *dev, unsigned int reg)
+f65444187a66bf5 Alexander Shiyan 2012-08-06  503  {
+6ef281daf020592 Cosmin Tanislav  2022-06-05  504  	switch (reg) {
+f65444187a66bf5 Alexander Shiyan 2012-08-06  505  	case MAX310X_RHR_REG:
+f65444187a66bf5 Alexander Shiyan 2012-08-06  506  	case MAX310X_IRQSTS_REG:
+f65444187a66bf5 Alexander Shiyan 2012-08-06  507  	case MAX310X_SPCHR_IRQSTS_REG:
+f65444187a66bf5 Alexander Shiyan 2012-08-06  508  	case MAX310X_STS_IRQSTS_REG:
+f65444187a66bf5 Alexander Shiyan 2012-08-06  509  		return true;
+f65444187a66bf5 Alexander Shiyan 2012-08-06  510  	default:
+f65444187a66bf5 Alexander Shiyan 2012-08-06  511  		return false;
+f65444187a66bf5 Alexander Shiyan 2012-08-06  512  	}
+d5dd265cda8083c Hugo Villeneuve  2024-01-18  513  }
+f65444187a66bf5 Alexander Shiyan 2012-08-06  514  
+3f42b142ea11719 Jan Kundrát      2023-04-05 @515  static bool max310x_reg_noinc(struct device *dev, unsigned int reg)
+3f42b142ea11719 Jan Kundrát      2023-04-05  516  {
+3f42b142ea11719 Jan Kundrát      2023-04-05  517  	return reg == MAX310X_RHR_REG;
+3f42b142ea11719 Jan Kundrát      2023-04-05  518  }
+3f42b142ea11719 Jan Kundrát      2023-04-05  519  
 
-I think that will be me as I worked with the serial.
-I'm a little bit busy right now, but I'm adding this to my todo
-list in case no else is taking care about it before I get to it.
-
-Cheers,
-ta
+--
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
