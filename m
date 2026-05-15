@@ -1,115 +1,154 @@
-Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.5])
+Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.4])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CF9739B963;
-	Fri, 15 May 2026 13:39:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.5
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BA3248BD48;
+	Fri, 15 May 2026 14:06:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.4
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778852360; cv=none; b=jiUbpe2R4H3meGuqjjpAb+NQfqKLYbeMfYoznEZDc2oEPHchpAaWcxVbg6nbci4fDkEn9o4pdLn2PobSBwxkqrNfWiQUhHXGq193eR94CnUO0muPoaHMIoKbLVxkACDb6WxNLCs1C/6f8YUAGHJ8e292zv9nbjFZFvJiLZKzxGE=
+	t=1778853999; cv=none; b=cuE0U6YjDjmLJax7yRNc7eVrmS9x3Gs8+9nQrBAcBvOmb0gDP/7CgKnrkTP4hYaKNvALssG0rSXVF/53YPRP/16+3wB3JE6KbQgat4iqjv1atW+yaxcxvm/kXx8vGQqxAaCmFAHSx+H32724U8eHs+dvKrEFoxE8E1UV+gWrxGg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778852360; c=relaxed/simple;
-	bh=2oRuN8n7wH9u26zO5PQ/mm+dItngZaKfZ7S4w+FNkiQ=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
-	 MIME-Version:Message-ID; b=PatgvLK5DEHzLMdkxYFlPTmtfuDSoUABUtMxoRDa6b11VIJe9bJ6JMn3MmHndu9J5IS8YfN84PnxRcYkd8ZYRbJOLbYq+P2t/vNSi+aKnNMdBa+VxPQpsOHdrj5eOoBFnu8MbTIoKb5Ry7NTmQxC4ZGe8XOqp92MVX2Veu++VJc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=ksnFSlh1; arc=none smtp.client-ip=117.135.210.5
+	s=arc-20240116; t=1778853999; c=relaxed/simple;
+	bh=k+83qw1aBVDXTHI3o0EJipdXbePWlFTgXyIEgtF1wPE=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=QbRtZ5Ab9HDYJphjipO1KLlDOydt6M+H75kImV3QHK4cAyx0xsoxLrRh4Dv7Q8CI+v3TnpQ5qDr6s/VRpUj+ZsTi5SOsbHYHsEtisIrrNsdiNuVS+8pN5JQwhoNrMAZr2S4KMXOybaStiunT1Mjz8qMIkZBBz+z0j3KdSYScafI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=T3c7MisN; arc=none smtp.client-ip=117.135.210.4
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="ksnFSlh1"
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="T3c7MisN"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=Date:From:To:Subject:Content-Type:MIME-Version:
-	Message-ID; bh=2oRuN8n7wH9u26zO5PQ/mm+dItngZaKfZ7S4w+FNkiQ=; b=k
-	snFSlh1QY88N7D0ayZhMB+37cZ5owbuLpbWXi82Zt40Sg3EInVdie0O+2RTQgWKa
-	Xu1IzPp5mUo+xzjvpb8mwXU+Rbs1Yrz7YIxEZ5jQ+smdC4Fx4WIgW0zwJU1DVDXr
-	Hf05WVjKVnmo7OnTcd0xH5pzbhTx1NZj7xPIXtCf9g=
-Received: from w15303746062$163.com ( [113.200.174.80] ) by
- ajax-webmail-wmsvr-40-139 (Coremail) ; Fri, 15 May 2026 21:39:05 +0800
- (CST)
-Date: Fri, 15 May 2026 21:39:05 +0800 (CST)
-From: w15303746062  <w15303746062@163.com>
-To: "Luiz Augusto von Dentz" <luiz.dentz@gmail.com>
-Cc: marcel@holtmann.org, linux-bluetooth@vger.kernel.org,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-	"Mingyu Wang" <25181214217@stu.xidian.edu.cn>
-Subject: Re:Re: [PATCH] Bluetooth: hci_uart: fix UAF in hci_uart_tty_close()
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version 2023.4-cmXT build
- 20260403(27802f6d) Copyright (c) 2002-2026 www.mailtech.cn 163com
+	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=En
+	OKvtLKxGfFtXrnKl47IbY8wmgcrys1YAusjT/5P6A=; b=T3c7MisN4PwQOUSiYt
+	M8Fxmt7OnjrKyq4S6U/L3RTD5m0YyioLrKOnkFYcCzmO6iox3tsGkbP3vqq8uMBf
+	MhSV1R8hZ8+1JDZKmUsAapITjnf5JL7rJNLdifjpVG2gqai03hyEliUxeiwaAmlg
+	9XMcsTyMahQ6SXGaoCWlS4bXs=
+Received: from 163.com (unknown [])
+	by gzsmtp2 (Coremail) with SMTP id PSgvCgCH1RY9KAdqHenOEg--.16120S2;
+	Fri, 15 May 2026 22:06:01 +0800 (CST)
+From: <w15303746062@163.com>
+To: luiz.dentz@gmail.com,
+	pmenzel@molgen.mpg.de,
+	marcel@holtmann.org,
+	linux-bluetooth@vger.kernel.org
+Cc: linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	greg@kroah.com,
+	stable@vger.kernel.org,
+	Mingyu Wang <25181214217@stu.xidian.edu.cn>
+Subject: [PATCH v4] Bluetooth: hci_uart: fix UAF in hci_uart_tty_close()
+Date: Fri, 15 May 2026 22:05:48 +0800
+Message-Id: <20260515140548.393865-1-w15303746062@163.com>
+X-Mailer: git-send-email 2.34.1
 In-Reply-To: <CABBYNZLjreYY_BczAQr2G6L=iJjBYKksFp53CairG-6V0Cb0EA@mail.gmail.com>
-References: <20260513064547.352601-1-w15303746062@163.com>
- <CABBYNZLjreYY_BczAQr2G6L=iJjBYKksFp53CairG-6V0Cb0EA@mail.gmail.com>
-X-NTES-SC: AL_Qu2cCvSevUsv4yiZZukfmU0Qguw9Xcq5uPkj34FWN5t8jBHo+iMCY21dDEHt1f+dEA6Vshepbj5i7sVbcbVpTakuS7C9rEwykFm2JjJ8cj3oLw==
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+References: <CABBYNZLjreYY_BczAQr2G6L=iJjBYKksFp53CairG-6V0Cb0EA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Message-ID: <370fa2b5.a147.19e2bdcb7e0.Coremail.w15303746062@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID:iygvCgD3H4n5IQdqE+ykAA--.9933W
-X-CM-SenderInfo: jzrvjiatxuliiws6il2tof0z/xtbDABnixmoHIfnJxAAA3F
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:PSgvCgCH1RY9KAdqHenOEg--.16120S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxJw43Kr1DZFyDZF13JFWfAFb_yoWrXw1kpF
+	ZxKF90yF4vqFWjkFyDZa1xJFyrKr4ag3y2k34fW3y5Xas8tr4jk3WIyFWIgF1UArs3Cr1S
+	vFWDX3y5WryUZ3DanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UQAw3UUUUU=
+X-CM-SenderInfo: jzrvjiatxuliiws6il2tof0z/xtbC-wl4XGoHKEm-FAAA31
 
-CkhpIEx1aXosCgpUaGFuayB5b3UgZm9yIHRoZSByZXZpZXcuCgpUaGF0IGlzIGFuIGV4Y2VsbGVu
-dCBzdWdnZXN0aW9uLiBZb3UgYXJlIGFic29sdXRlbHkgcmlnaHQuIFNpbmNlIHRoZQpgaHVgIHN0
-cnVjdHVyZSBpcyBiZWluZyB0b3JuIGRvd24gYW5kIGZyZWVkIGltbWVkaWF0ZWx5IGFmdGVyd2Fy
-ZCwgCnVzaW5nIGBkaXNhYmxlX3dvcmtfc3luYygpYCBwcm92aWRlcyBhIG11Y2ggc3Ryb25nZXIg
-Z3VhcmFudGVlIGJ5IApwcmV2ZW50aW5nIGFueSBjb25jdXJyZW50IHRocmVhZHMgZnJvbSByZS1x
-dWV1aW5nIHRoZSB3b3JrcywgdGh1cyAKZWxpbWluYXRpbmcgdGhlIHJpc2sgb2YgYSBsaW5nZXJp
-bmcgVUFGLgoKQm90aCBgaW5pdF9yZWFkeWAgYW5kIGB3cml0ZV93b3JrYCBhcmUgc3RhbmRhcmQg
-YHN0cnVjdCB3b3JrX3N0cnVjdGAsCnNvIGBkaXNhYmxlX3dvcmtfc3luYygpYCBhcHBsaWVzIHBl
-cmZlY3RseSBoZXJlLgoKSSB3aWxsIHNlbmQgb3V0IGEgdjQgcGF0Y2ggc2hvcnRseSBhZG9wdGlu
-ZyB0aGlzIGNoYW5nZS4gClRoYW5rIHlvdSBmb3IgcG9pbnRpbmcgdGhpcyBvdXQhCgpCZXN0IHJl
-Z2FyZHMsCk1pbmd5dQoKCkF0IDIwMjYtMDUtMTUgMjA6Mzc6NTcsICJMdWl6IEF1Z3VzdG8gdm9u
-IERlbnR6IiA8bHVpei5kZW50ekBnbWFpbC5jb20+IHdyb3RlOgo+SGksCj4KPk9uIFdlZCwgTWF5
-IDEzLCAyMDI2IGF0IDI6NDbigK9BTSA8dzE1MzAzNzQ2MDYyQDE2My5jb20+IHdyb3RlOgo+Pgo+
-PiBGcm9tOiBNaW5neXUgV2FuZyA8MjUxODEyMTQyMTdAc3R1LnhpZGlhbi5lZHUuY24+Cj4+Cj4+
-IEEgVXNlLUFmdGVyLUZyZWUgKFVBRikgdnVsbmVyYWJpbGl0eSBhbmQgYSBzdWJzZXF1ZW50IEdl
-bmVyYWwgUHJvdGVjdGlvbgo+PiBGYXVsdCAoR1BGKSB3ZXJlIG9ic2VydmVkIGluIGg1X3JlY3Yo
-KSBkdWUgdG8gYSByYWNlIGNvbmRpdGlvbiBiZXR3ZWVuCj4+IHRoZSBpbml0aWFsaXphdGlvbiBv
-ZiB0aGUgSENJIFVBUlQgbGluZSBkaXNjaXBsaW5lIGFuZCBjb25jdXJyZW50IFRUWQo+PiBoYW5n
-dXAgdmlhIFRJT0NWSEFOR1VQLgo+Pgo+PiBUaGUgaXNzdWUgYXJpc2VzIGJlY2F1c2UgdGhlIHdv
-cmtxdWV1ZXMgKGluaXRfcmVhZHkgYW5kIHdyaXRlX3dvcmspIGFyZQo+PiBvbmx5IGNhbmNlbGxl
-ZCBpZiB0aGUgSENJX1VBUlRfUFJPVE9fUkVBRFkgZmxhZyBpcyBzZXQuIEhvd2V2ZXIsIGR1cmlu
-Zwo+PiB0aGUgcHJvdG9jb2wgaW5pdGlhbGl6YXRpb24gcGhhc2UgKEhDSV9VQVJUX1BST1RPX0lO
-SVQpLCB0aGUgdW5kZXJseWluZwo+PiBwcm90b2NvbCAoZS5nLiwgSDUpIG1heSBzY2hlZHVsZSB3
-b3JrIChzdWNoIGFzIHNlbmRpbmcgc3luYy9jb25maWcKPj4gcGFja2V0cykuIElmIGEgaGFuZ3Vw
-IG9jY3VycyBiZWZvcmUgdGhlIHNldHVwIGNvbXBsZXRlcyBhbmQgdGhlIFJFQURZCj4+IGZsYWcg
-aXMgc2V0LCBoY2lfdWFydF90dHlfY2xvc2UoKSBza2lwcyB0aGUgY2FuY2VsX3dvcmtfc3luYygp
-IGNhbGxzCj4+IGFuZCBwcm9jZWVkcyB0byBmcmVlIHRoZSBgaHVgIHN0cnVjdC4KPj4KPj4gV2hl
-biB0aGUgZGVsYXllZCB3b3JrcXVldWUgZmluYWxseSBleGVjdXRlcywgaXQgYmxpbmRseSBkZXJl
-ZmVyZW5jZXMKPj4gdGhlIGZyZWVkIGBodWAgc3RydWN0LCBjYXVzaW5nIE9ERUJVRyB3YXJuaW5n
-cyBhbmQga2VybmVsIHBhbmljcy4KPj4KPj4gRml4IHRoaXMgYnkgbW92aW5nIHRoZSBjYW5jZWxf
-d29ya19zeW5jKCkgY2FsbHMgb3V0c2lkZSB0aGUKPj4gSENJX1VBUlRfUFJPVE9fUkVBRFkgY2hl
-Y2ssIGVuc3VyaW5nIHRoYXQgYW55IHBlbmRpbmcgd29ya3MgYXJlCj4+IHVuY29uZGl0aW9uYWxs
-eSBjYW5jZWxsZWQgYmVmb3JlIHRoZSBoY2lfdWFydCBzdHJ1Y3R1cmUgaXMgZnJlZWQuCj4+Cj4+
-IFNpZ25lZC1vZmYtYnk6IE1pbmd5dSBXYW5nIDwyNTE4MTIxNDIxN0BzdHUueGlkaWFuLmVkdS5j
-bj4KPj4gLS0tCj4+ICBkcml2ZXJzL2JsdWV0b290aC9oY2lfbGRpc2MuYyB8IDEwICsrKysrKyst
-LS0KPj4gIDEgZmlsZSBjaGFuZ2VkLCA3IGluc2VydGlvbnMoKyksIDMgZGVsZXRpb25zKC0pCj4+
-Cj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2JsdWV0b290aC9oY2lfbGRpc2MuYyBiL2RyaXZlcnMv
-Ymx1ZXRvb3RoL2hjaV9sZGlzYy5jCj4+IGluZGV4IDI3NWVhODY1YmMyOS4uNTY2ZTFjNTI1ZWUy
-IDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL2JsdWV0b290aC9oY2lfbGRpc2MuYwo+PiArKysgYi9k
-cml2ZXJzL2JsdWV0b290aC9oY2lfbGRpc2MuYwo+PiBAQCAtNTQ0LDE0ICs1NDQsMTggQEAgc3Rh
-dGljIHZvaWQgaGNpX3VhcnRfdHR5X2Nsb3NlKHN0cnVjdCB0dHlfc3RydWN0ICp0dHkpCj4+ICAg
-ICAgICAgaWYgKGhkZXYpCj4+ICAgICAgICAgICAgICAgICBoY2lfdWFydF9jbG9zZShoZGV2KTsK
-Pj4KPj4gKyAgICAgICAvKgo+PiArICAgICAgICAqIEFsd2F5cyBjYW5jZWwgd29ya3F1ZXVlcyB1
-bmNvbmRpdGlvbmFsbHkgYmVmb3JlIGZyZWVpbmcgdGhlIGh1Cj4+ICsgICAgICAgICogc3RydWN0
-LCBhcyB0aGV5IG1pZ2h0IGJlIGFjdGl2ZSBkdXJpbmcgdGhlIFBST1RPX0lOSVQgcGhhc2UuCj4+
-ICsgICAgICAgICovCj4+ICsgICAgICAgY2FuY2VsX3dvcmtfc3luYygmaHUtPmluaXRfcmVhZHkp
-Owo+PiArICAgICAgIGNhbmNlbF93b3JrX3N5bmMoJmh1LT53cml0ZV93b3JrKTsKPgo+Q2FuJ3Qg
-d2UgdXNlIGRpc2FibGVfd29ya19zeW5jPyBJZiBpdCBmcmVlcyB1cCBhdCB0aGUgZW5kLCBpdCdz
-Cj5wcm9iYWJseSBiZXN0IHRvIGRpc2FibGUgaXQgc28gaXQgZG9lc24ndCBhbGxvdyBuZXcgc3Vi
-bWlzc2lvbnMuCj4KPj4gICAgICAgICBpZiAodGVzdF9iaXQoSENJX1VBUlRfUFJPVE9fUkVBRFks
-ICZodS0+ZmxhZ3MpKSB7Cj4+ICAgICAgICAgICAgICAgICBwZXJjcHVfZG93bl93cml0ZSgmaHUt
-PnByb3RvX2xvY2spOwo+PiAgICAgICAgICAgICAgICAgY2xlYXJfYml0KEhDSV9VQVJUX1BST1RP
-X1JFQURZLCAmaHUtPmZsYWdzKTsKPj4gICAgICAgICAgICAgICAgIHBlcmNwdV91cF93cml0ZSgm
-aHUtPnByb3RvX2xvY2spOwo+Pgo+PiAtICAgICAgICAgICAgICAgY2FuY2VsX3dvcmtfc3luYygm
-aHUtPmluaXRfcmVhZHkpOwo+PiAtICAgICAgICAgICAgICAgY2FuY2VsX3dvcmtfc3luYygmaHUt
-PndyaXRlX3dvcmspOwo+PiAtCj4+ICAgICAgICAgICAgICAgICBpZiAoaGRldikgewo+PiAgICAg
-ICAgICAgICAgICAgICAgICAgICBpZiAodGVzdF9iaXQoSENJX1VBUlRfUkVHSVNURVJFRCwgJmh1
-LT5mbGFncykpCj4+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgaGNpX3VucmVnaXN0
-ZXJfZGV2KGhkZXYpOwo+PiAtLQo+PiAyLjM0LjEKPj4KPj4KPgo+Cj4tLSAKPkx1aXogQXVndXN0
-byB2b24gRGVudHoK
+From: Mingyu Wang <25181214217@stu.xidian.edu.cn>
+
+A Use-After-Free (UAF) vulnerability and a subsequent kernel panic were
+observed in hci_uart_write_work() due to a race condition between the
+initialization of the HCI UART line discipline and concurrent TTY hangup.
+
+This issue was triggered by our custom device emulation and fuzzing
+framework (DevGen) on the v6.18 kernel. Due to the highly timing-dependent
+nature of this race condition (requiring a precise interleaving of
+TIOCVHANGUP and protocol setup), Syzkaller failed to extract a reliable
+standalone C reproducer (reproducer is too unreliable: 0.00).
+
+The crash trace is as follows:
+  ODEBUG: free active (active state 0) object: ffff88804024e870 object type: work_struct hint: hci_uart_write_work+0x0/0x940
+  WARNING: CPU: 0 PID: 338273 at lib/debugobjects.c:612 debug_print_object+0x1a2/0x2b0
+  ...
+  Call Trace:
+   <TASK>
+   debug_check_no_obj_freed+0x3ec/0x520
+   kfree+0x3f0/0x6c0
+   hci_uart_tty_close+0x127/0x2a0
+   tty_ldisc_close+0x113/0x1a0
+   tty_ldisc_kill+0x8e/0x150
+   tty_ldisc_hangup+0x3c1/0x730
+   __tty_hangup.part.0+0x3fd/0x8a0
+   tty_ioctl+0x120f/0x1690
+   __x64_sys_ioctl+0x18f/0x210
+   do_syscall_64+0xcb/0xfa0
+   entry_SYSCALL_64_after_hwframe+0x77/0x7f
+   </TASK>
+
+The issue arises because the workqueues (init_ready and write_work) are
+only flushed/cancelled if the HCI_UART_PROTO_READY flag is set. However,
+during the protocol initialization phase (HCI_UART_PROTO_INIT), the
+underlying protocol may schedule work. If a hangup occurs before the setup
+completes and the READY flag is set, hci_uart_tty_close() skips the
+teardown of these workqueues and proceeds to free the `hu` struct. When
+the scheduled work executes later, it blindly dereferences the freed `hu`
+struct.
+
+Fix this by moving the workqueue teardown outside the HCI_UART_PROTO_READY
+check. Furthermore, use disable_work_sync() instead of cancel_work_sync()
+to unconditionally disable the works. This ensures that any pending works
+are cancelled and no new submissions can occur before the hci_uart
+structure is freed. Note that hu->init_ready and hu->write_work are
+initialized in hci_uart_tty_open(), so it is always safe to call
+disable_work_sync() on them in hci_uart_tty_close(), even if the protocol
+was never fully attached.
+
+Fixes: 3b799254cf6f ("Bluetooth: hci_uart: Cancel init work before unregistering")
+Cc: stable@vger.kernel.org
+Signed-off-by: Mingyu Wang <25181214217@stu.xidian.edu.cn>
+---
+Changes in v4:
+- Adopted Luiz's suggestion to use disable_work_sync() instead of 
+  cancel_work_sync() to prevent new work submissions during teardown.
+
+Changes in v3:
+- Added 'Cc: stable' tag as requested by the stable bot.
+
+Changes in v2:
+- Added KASAN/ODEBUG crash trace.
+
+ drivers/bluetooth/hci_ldisc.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/bluetooth/hci_ldisc.c b/drivers/bluetooth/hci_ldisc.c
+index 275ea865bc29..333c1e1503e8 100644
+--- a/drivers/bluetooth/hci_ldisc.c
++++ b/drivers/bluetooth/hci_ldisc.c
+@@ -544,14 +544,20 @@ static void hci_uart_tty_close(struct tty_struct *tty)
+ 	if (hdev)
+ 		hci_uart_close(hdev);
+ 
++	/*
++	 * Disable workqueues unconditionally before freeing the hu
++	 * struct, as they might be active during the PROTO_INIT phase.
++	 * Using disable_work_sync() instead of cancel_work_sync()
++	 * ensures no new submissions can occur.
++	 */
++	disable_work_sync(&hu->init_ready);
++	disable_work_sync(&hu->write_work);
++
+ 	if (test_bit(HCI_UART_PROTO_READY, &hu->flags)) {
+ 		percpu_down_write(&hu->proto_lock);
+ 		clear_bit(HCI_UART_PROTO_READY, &hu->flags);
+ 		percpu_up_write(&hu->proto_lock);
+ 
+-		cancel_work_sync(&hu->init_ready);
+-		cancel_work_sync(&hu->write_work);
+-
+ 		if (hdev) {
+ 			if (test_bit(HCI_UART_REGISTERED, &hu->flags))
+ 				hci_unregister_dev(hdev);
+-- 
+2.34.1
+
