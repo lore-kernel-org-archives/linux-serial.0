@@ -1,246 +1,92 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02A833CEB89
-	for <linux-serial@vger.kernel.org>; Fri, 15 May 2026 10:21:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3D033D3490;
+	Fri, 15 May 2026 10:55:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778840482; cv=none; b=jQOo1L5Uizp930grJvfXDLnpfODPXEBajBcxGAU1Kv5i3hWtRCtANmsD5dchG1o6bWvsAPr8c9v5rNc5RyVLL7DoVNW7lZObj9VXxYQCZDD7PkZ/urtJkSe9sr5xSsTIWmsgcr0BOWxdwci2Qj+OoLdZmWeTDWQC77VG06nFWAg=
+	t=1778842559; cv=none; b=pX0ROhds/qjfL6+vCEOInhOaPleC1xbId3ojqvh5dz0tQne/uFd+yL53HBhMP9tL1oeKm1CqdFFdIqc0chDYKNJiG9+rjgpShYmTsElVB/3J4GU/HjngBH6kq1dpFIwsjnQ4oBN2uTS+B0LAVjZuKYF8orRhssXWkd/bmqw6mQk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778840482; c=relaxed/simple;
-	bh=EsfVrBZrJsQs/Tx4mfI8R8eRm6q5uajg1tGl9pwd0JM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=BsU8Buyk0Bx8jloYjeeMWkQOVAAt0DECIxPYFw8h9b+mEuvZl7lfgYJkIH1Hoyow7Y785e0Fh44JTv1eYE6wsYPtC95DJbawtRxpEj8rFqsBkrNVSvNmJf7YbydKc/GWzfe5j8MaiYqBDIbPXE7NscQopSv7hR9iSbx3kOpJ/Vw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=W8SRfXK/; arc=none smtp.client-ip=209.85.128.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1778842559; c=relaxed/simple;
+	bh=EiIFCEPpFnxGY7rw8rti+bu6oljP97APvDXgG2A0A7Y=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=utK4t2hF4+ZYDGPCXZ1OkSdlKrx4wut42mbSn/ji+d7TXcVZV3eZ891cL5sDrGZrULapANuOiB5p2KlWY3vbB209eoCVGRNWR3LhWRtsbLxo6xu2vyixiYY4ityved/UHg4HzDzMP4UvY64XUZ9yUCThrr/8lgfRJAAb08VDUiA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=J1q9Ccd4; arc=none smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="W8SRfXK/"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-48374014a77so78225955e9.3
-        for <linux-serial@vger.kernel.org>; Fri, 15 May 2026 03:21:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1778840479; x=1779445279; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=HkvhJ/9wP8zr+IJruUAJhSjjyH2HxiZyy6n7D1GMZRw=;
-        b=W8SRfXK/Kgq8GrQxYKwInjZCMRtWX3qIIyuOU/TIduZrBVlynZkhp5ZU+blJ/qI02T
-         z3PGRwTdWZKlwo79lWPPPJ3Ydm5O+MIexA/CBKOs5qm+GUDR+2YiyULKXdVDlIXvEqcI
-         Ku+zyVGq5V8hViIboN3xLKPhkYIProkyGwcnH0rvPeSsS1HHoIztaCdT3W9h5i2SMs6B
-         fqE3zI5CYj6QlipmoMqxuQQ5C6m8cDOg1W0wZleZsDikm/p6naXhM4+UJxbCCvcMul3O
-         GWKEi9EWeIAUgFrbZyuDnT++yIt0N1NNHf8xY7AiWLy1XmXmnSH/E7MKziF92edtNcDV
-         OQAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778840479; x=1779445279;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=HkvhJ/9wP8zr+IJruUAJhSjjyH2HxiZyy6n7D1GMZRw=;
-        b=q0OScTe51jaDDajnGSGHbfekvY51CHac7iLyFGGcNKRzcxShrfI/Diq23qdPjIsDPB
-         z7KXtgQocC90gME7hDWVF8aeL4SNRoCDxqTf4Fuu3pwRB+tsj+sdE2AwpzUa/bzRoc6u
-         yGRzhjPh4Y7dR52rlrxj4ROcDzp7Jf8vGWodKnPWm4fpwZXsupE0dlhBocFhekhCNsAP
-         q8dQtPZUK4b5vciQXvherkdLgXh+neU7UAcHDFgsIWI3ACWsGSPIdE6wfTuATAc1OQtS
-         wUgiAcet72FrT7Vz5fsKBtIzdeAcIOnQIXwKljVAbbBSHCC6g2bgv/filWfNCKSRc9da
-         vgRQ==
-X-Forwarded-Encrypted: i=1; AFNElJ8PFETwQzju+RambVVFiyS7ZIZTrFBQGT/ez7IUOyox+/tizFebiyaZcBvExVfZMS4uHtSMUQnNma7Ya5I=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywob2hb7bmKmWk/DItbm89ghrkovH3bXRuQkdMHgONn81OQrIY9
-	42+MQsr33gf9wpr4mcNgU0Mlf4jBtWHGGi6A/bN230BMlGCECTQ43E2gYCIxO7idtIw=
-X-Gm-Gg: Acq92OG1HctCIxuWn/deKMVpUhsfAhS0JESrXU8PjEf7XXHEO4b8tEkx0tPyll5hFD5
-	B+gduDhyzIgGbN2DPn0MO9kE7WcPQ4q4qC4XQn3dOHmaVfiMp+N/wrkMg46IId+RcMlwTKqzH7g
-	+nvrMr8z0U6n9axSaghSU47R8JxpGQuNvRDVXlcu5kaVAFDhzg4GkyIREjC8OkXUtz/PMFg8p7r
-	OwTyn2njEMtetlA5UxwSO3+HvHU+1EDbL4CpZTdYbJaofsiIY+nz7UQkak1JOvZQD3kkT1FOpsT
-	pU22A0r73TYrVsRFpRMRdMPvuaSv5psHDXu/lk/QnlAOBfKK6dbUzgZCDoWRk1cmiI7qlObQvfJ
-	xIZWSjRFsAFs80dmH81zUbyG+KQ7vlb18tn6m5SDVGJfxCQGLySUXJTTGbNLZ6JtNG/4wtetmcO
-	IYdh5zXf1to7p9OEwDD+8F6n83eB3S5wIx
-X-Received: by 2002:a05:600c:46cf:b0:48e:8974:c377 with SMTP id 5b1f17b1804b1-48fe6626ba1mr44036975e9.29.1778840479456;
-        Fri, 15 May 2026 03:21:19 -0700 (PDT)
-Received: from [10.11.12.109] ([79.115.63.228])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48fe4c834besm52284855e9.3.2026.05.15.03.21.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 May 2026 03:21:19 -0700 (PDT)
-Message-ID: <ae8fdfa0-d910-432c-b5fc-f11b997a4bce@linaro.org>
-Date: Fri, 15 May 2026 13:21:15 +0300
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="J1q9Ccd4"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1778842558; x=1810378558;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=EiIFCEPpFnxGY7rw8rti+bu6oljP97APvDXgG2A0A7Y=;
+  b=J1q9Ccd4Xp6l1cFlOuqQOqOqu72uY6dz+UZVoqZksXpIzskeKJgZoqON
+   cqgnLfwAxQNyxuCu9NH4vz9Zf06gIfdwVEGWpVH5m1ml7Bm8YB9Mdu0g/
+   gQ5KH1fQlsjHzVD7KkYIpc2470mv3Tio2u6w45aNp0mcxeFUHSPD4Iiu5
+   5AuexxFRz46CHEkKGE79CYL8h+WXC8es3FdrhImM3/fTjlOClcNAj7yE+
+   Sj4vu/guGEuKPQVPKhdLyWFKX7F8grJV/T+9EB3ZV1NwVe1iu18MjKDq1
+   RM/eO/HHYq9+/d6y5XLbhtiJRgXvZdiZi2WZ4bUi4/k8K0xuBGaW3YOaQ
+   w==;
+X-CSE-ConnectionGUID: u2pzZTcaR1ysE2Lr8L4tnw==
+X-CSE-MsgGUID: H8PnB1QESmCxauFcNUElng==
+X-IronPort-AV: E=McAfee;i="6800,10657,11786"; a="79916246"
+X-IronPort-AV: E=Sophos;i="6.23,236,1770624000"; 
+   d="scan'208";a="79916246"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2026 03:55:57 -0700
+X-CSE-ConnectionGUID: aB6CS2f8QMCP45tCGOcDbQ==
+X-CSE-MsgGUID: Mqu57DvIQUCRNljFSDjDOg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,236,1770624000"; 
+   d="scan'208";a="234228212"
+Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.245.33])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2026 03:55:55 -0700
+Date: Fri, 15 May 2026 13:55:52 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Stepan Ionichev <sozdayvek@gmail.com>
+Cc: ilpo.jarvinen@linux.intel.com, gregkh@linuxfoundation.org,
+	jirislaby@kernel.org, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH 0/2] serial: 8250_dw: clock-notifier cleanup
+Message-ID: <agb7uAZBqylmaX37@ashevche-desk.local>
+References: <20260514143746.23671-1-sozdayvek@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH tty v4 2/6] serial: Replace driver usage of UPF_CONS_FLOW
-To: John Ogness <john.ogness@linutronix.de>,
- Krzysztof Kozlowski <krzk@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Alim Akhtar <alim.akhtar@samsung.com>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>,
- linux-kernel@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Thomas Fourier <fourier.thomas@gmail.com>, Kees Cook <kees@kernel.org>,
- linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-samsung-soc@vger.kernel.org, sparclinux@vger.kernel.org,
- Peter Griffin <peter.griffin@linaro.org>,
- =?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>,
- Alexey Klimov <alexey.klimov@linaro.org>, Juan Yescas <jyescas@google.com>
-References: <20260506121606.5805-1-john.ogness@linutronix.de>
- <20260506121606.5805-3-john.ogness@linutronix.de>
- <87lddvy2dl.fsf@jogness.linutronix.de>
- <1a5abd2e-e9ab-4a48-94c2-5e082f57adde@kernel.org>
- <87wlx56rcc.fsf@jogness.linutronix.de>
-Content-Language: en-US
-From: Tudor Ambarus <tudor.ambarus@linaro.org>
-In-Reply-To: <87wlx56rcc.fsf@jogness.linutronix.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260514143746.23671-1-sozdayvek@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-
-
-On 5/15/26 10:53 AM, John Ogness wrote:
-> On 2026-05-13, Krzysztof Kozlowski <krzk@kernel.org> wrote:
->>> (This email is particularly directed at the Samsung folks.)
->>>
->>> Responding to Sashiko:
->>>
->>> https://sashiko.dev/#/patchset/20260506121606.5805-1-john.ogness%40linutronix.de
->>>
->>> On 2026-05-06, Sashiko wrote:
->>>>> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
->>>>> index e27806bf2cf3e..2f94fc798cffb 100644
->>>>> --- a/drivers/tty/serial/samsung_tty.c
->>>>> +++ b/drivers/tty/serial/samsung_tty.c
->>>>> @@ -319,7 +319,7 @@ static void s3c24xx_serial_stop_tx(struct uart_port *port)
->>>>>  	ourport->tx_enabled = 0;
->>>>>  	ourport->tx_in_progress = 0;
->>>>>  
->>>>> -	if (port->flags & UPF_CONS_FLOW)
->>>>> +	if (uart_cons_flow_enabled(port))
->>>>>  		s3c24xx_serial_rx_enable(port);
->>>>
->>>> This isn't a new bug introduced by this patch, but does this code
->>>> result in a recursive spinlock acquisition and deadlock when console
->>>> flow control is enabled?
->>>>
->>>> The serial core framework calls port->ops->stop_tx() with the
->>>> port->lock spinlock already held. When uart_cons_flow_enabled(port)
->>>> evaluates to true, s3c24xx_serial_stop_tx() invokes
->>>> s3c24xx_serial_rx_enable().
->>>>
->>>> Looking at s3c24xx_serial_rx_enable(), it unconditionally attempts to
->>>> acquire the exact same lock again:
->>>>
->>>> static void s3c24xx_serial_rx_enable(struct uart_port *port)
->>>> {
->>>> 	struct s3c24xx_uart_port *ourport = to_ourport(port);
->>>> 	unsigned long flags;
->>>> 	...
->>>> 	uart_port_lock_irqsave(port, &flags);
->>>> 	...
->>>> }
->>>>
->>>> Because spinlocks are not recursive in the kernel, it appears this
->>>> sequence would cause an immediate deadlock on the same CPU.
->>>
->>> Although out of scope for my series, the reported issue is real. Perhaps
->>> something for Krzysztof or Alim to look into.
->>>
->>>>> @@ -493,7 +493,7 @@ static void s3c24xx_serial_start_tx(struct uart_port *port)
->>>>>  	struct tty_port *tport = &port->state->port;
->>>>>  
->>>>>  	if (!ourport->tx_enabled) {
->>>>> -		if (port->flags & UPF_CONS_FLOW)
->>>>> +		if (uart_cons_flow_enabled(port))
->>>>>  			s3c24xx_serial_rx_disable(port);
->>>>
->>>> Similarly here, s3c24xx_serial_start_tx() is also called with
->>>> port->lock held, and s3c24xx_serial_rx_disable() will attempt to
->>>> acquire port->lock again:
->>>>
->>>> static void s3c24xx_serial_rx_disable(struct uart_port *port)
->>>> {
->>>> 	struct s3c24xx_uart_port *ourport = to_ourport(port);
->>>> 	unsigned long flags;
->>>> 	...
->>>> 	uart_port_lock_irqsave(port, &flags);
->>>> 	...
->>>> }
->>>>
->>>> Could this pre-existing locking issue in the samsung_tty driver be
->>>> addressed so that the rx enable/disable helpers do not try to take the
->>>> port lock when it is already held by the caller?
->>>
->>> Also legitimate. But out of scope for my series.
->>
->>
->> Thanks for letting us know. Deadlock did not happen so far, so something
->> is missing in Sashiko's report. :)
+On Thu, May 14, 2026 at 07:37:44PM +0500, Stepan Ionichev wrote:
+> Two-patch series addressing Andy's review of the leak-fix on v1.
 > 
-> Nothing is missing. I am guessing you never use console flow
-> control. The deadlock is clearly visible:
+> Patch 1 keeps the same single-line leak fix as v1, but with:
+> - the correct "serial: 8250_dw:" prefix (underscore),
+> - a Fixes: tag pointing at the original clk_notifier introduction,
+> - Cc: stable@ so the fix gets picked up by stable branches that
+>   still carry the notifier code.
 > 
-> ->stop_tx() (always called with the port locked)
->   s3c24xx_serial_stop_tx()
->     s3c24xx_serial_rx_enable()
->       uart_port_lock_irqsave() (DEADLOCK!)
+> Patch 2 drops the clock-notifier infrastructure entirely from
+> mainline, as suggested by Andy. The notifier was introduced for the
+> Baikal-T1 SoC (shared baudclk between UART ports) and has no other
+> in-tree user; Baikal-T1 support has been removed from the kernel.
 > 
+> If a future platform needs the cross-device baudclk-rate notification
+> pattern again, it can be reintroduced in a more general form.
 
-Right.
+Seems legit, especially the second patch.
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-The lock acquisitions in the rx helper functions are redundant and shall be
-removed.
 
-The serial core framework invokes the .stop_tx() and .start_tx() callbacks
-with the port->lock spinlock already held. Furthermore, all internal driver
-paths that invoke stop_tx/start_tx also acquire port->lock prior to calling
-them.
-    
-However, s3c24xx_serial_rx_enable() and s3c24xx_serial_rx_disable()
-unconditionally attempt to acquire port->lock again using
-uart_port_lock_irqsave(). Since kernel spinlocks are not recursive, this
-causes a deadlock on the same CPU when console flow control is engaged.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-Just removing the redundant lock acquisitions shall fix it. I'll prepare
-a patch.
 
-diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index e27806bf2cf3..17cd5bb100b1 100644
---- a/drivers/tty/serial/samsung_tty.c
-+++ b/drivers/tty/serial/samsung_tty.c
-+++ b/drivers/tty/serial/samsung_tty.c
-@@ -245,12 +245,9 @@ static bool s3c24xx_serial_txempty_nofifo(const struct uart_port *port)
- static void s3c24xx_serial_rx_enable(struct uart_port *port)
- {
-        struct s3c24xx_uart_port *ourport = to_ourport(port);
--       unsigned long flags;
-        int count = 10000;
-        u32 ucon, ufcon;
- 
--       uart_port_lock_irqsave(port, &flags);
--
-        while (--count && !s3c24xx_serial_txempty_nofifo(port))
-                udelay(100);
- 
-@@ -263,23 +260,18 @@ static void s3c24xx_serial_rx_enable(struct uart_port *port)
-        wr_regl(port, S3C2410_UCON, ucon);
- 
-        ourport->rx_enabled = 1;
--       uart_port_unlock_irqrestore(port, flags);
- }
- 
- static void s3c24xx_serial_rx_disable(struct uart_port *port)
- {
-        struct s3c24xx_uart_port *ourport = to_ourport(port);
--       unsigned long flags;
-        u32 ucon;
- 
--       uart_port_lock_irqsave(port, &flags);
--
-        ucon = rd_regl(port, S3C2410_UCON);
-        ucon &= ~S3C2410_UCON_RXIRQMODE;
-        wr_regl(port, S3C2410_UCON, ucon);
- 
-        ourport->rx_enabled = 0;
--       uart_port_unlock_irqrestore(port, flags);
- }
- 
- static void s3c24xx_serial_stop_tx(struct uart_port *port)
