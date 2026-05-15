@@ -1,168 +1,175 @@
-Received: from mail-yx1-f41.google.com (mail-yx1-f41.google.com [74.125.224.41])
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A38A83D25D8
-	for <linux-serial@vger.kernel.org>; Fri, 15 May 2026 12:38:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.41
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778848692; cv=pass; b=kwGJOFgIh6TqEDkzt7o30fvWfl0/Dut816h/Um1zCk2NwYOH1HL9fTxXhueH7nB5XYrGRIMgqbiuCE7lgp9ZFpvJyDwW/iRon5V+9vkTgIyrLdbuyPou2FnbwszBwUIQALtUGiMF1Xj+ZuvvPNbHTtx1qfnHNCCvbdNjadw0eDc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778848692; c=relaxed/simple;
-	bh=uUm1+vPKAawVjOiJgNJ7LCFjNddZhopNdukMhxVFjMk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Cs0BdNP2UROZLwfgo9Y7YEITcqqqFzr9o6G56FF+ZiouZsPSrPVAadBlQAaeq0f57y1qnKkiWzf9Kh81/U3808hPPav0sN7bFSkqyqqasVftHg0mg81IbMO5Uw8+RjotTVDTpbIPxuzRjthi2GecFaHNYrHtQVpOCKGtTkOQaMg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qlJArw/k; arc=pass smtp.client-ip=74.125.224.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45F3444E047
+	for <linux-serial@vger.kernel.org>; Fri, 15 May 2026 12:41:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778848886; cv=none; b=Wh614ldbt3UnKuwmlo4xz6Bmk5sZH2T5F1YnsEyhOQInfBg4bWvuBCxvwozNTP/+WuBPzlL+vo0OEyxQVqoKVhO6We8bVJI4UuqVhuKhMBmmSWe7xDZAx79nGYKwwQ2lmrMcpLO2qSsVvD7V6s7vKrMrN0upvklO1KVBnm3/n78=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778848886; c=relaxed/simple;
+	bh=7TZ5vcA+GLdk6E7fGnm5v0lehUpocwQ4ZVzCnZFOHkU=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=XjSsgvQJOEtWERRO3+dvs/wgKTJ7KZx32j1PwGO5wQwYsF0No1cKscob3yrF27l7EntMmP7tRgxQUf+u4Nba2uqlUDBu72d1d2bqFudMwfzhutC0SieG/f6cSiwYfKuVXYQpSrqrc33uaLgXrGvdmKcYdugRdNM2rPOPYWg917o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=sGFycZSK; arc=none smtp.client-ip=209.85.128.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qlJArw/k"
-Received: by mail-yx1-f41.google.com with SMTP id 956f58d0204a3-65c3ea2ebf7so12350814d50.0
-        for <linux-serial@vger.kernel.org>; Fri, 15 May 2026 05:38:09 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778848689; cv=none;
-        d=google.com; s=arc-20240605;
-        b=ZRW79bpwluchz5+fPm1jZyzL/zrjmD/4CCSc6aZRsAa3/L5Z6RHZMAdpRSIg0yAHRA
-         y00gS5aspdX/v7d0N6ahkg5iVU4rRvNCcFvyaVxhRBWrUIxRo+YEpt9JoXuQ2Wm2668b
-         06w9+R8u1xcqPv6nrVIK/RdtMeHME0guMQsm8SsAewoPbP0seI8Z1lNWbjSu4KwBxYkZ
-         tV8E/Iy6X4m8V/zbyDVGQB+QZWN1C76eN55xYOkqFSva6I1Et8Tl+9lHrySGLS5gUmTO
-         XcMcU+g+pOBzUiMOlY1mUcPnI16cXRmcNzAZUpP0ZiDONYO4d6wGgQG/iOxXHMusrEoV
-         bMmg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=VP5YCpspQORwjSvDQCKN487lTY4JiFEf6+8HukEzf0U=;
-        fh=HhMdgeV7b/+d6225Mh3EQANIKN2L7XlUEu1MyEB1wrs=;
-        b=J4ktZmpFfSuhxDHrL8Bro4YyB3xPNyuYIUBVQPCWSUWvGvE66nXt/cBdJbrZmb6jOj
-         RevXIdpCxf3K/UoSbQhUBJbZyEXQRWOvdEZh+NtQ57jhPQr8Uw+OsxfFP+DAmqx9ahpW
-         ppJshcGoZ6KdsOV+xgAUYb/FawcOeDkfc4wb05OsPMhqt7lBemiQGETff9GVAXT0UKPe
-         YwynaEDdih5f0GQcu/5IuNsiMAfsPNe5EpNRozOMmqadeT2lG+khW6Z8wY4nFFrKgA3B
-         3+xofpFHuOqX8fuHqcC5RkInc2N29VyA+hw4My+tTr18Fb9wVGSohULVi2VFkSLKnYyZ
-         fV7w==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="sGFycZSK"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-488d2079582so91980175e9.2
+        for <linux-serial@vger.kernel.org>; Fri, 15 May 2026 05:41:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778848689; x=1779453489; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=VP5YCpspQORwjSvDQCKN487lTY4JiFEf6+8HukEzf0U=;
-        b=qlJArw/kMR1FCUGHI5BNTmj/e9MRsDxxiNcB1qO/V3BHJU2QbYAaB0Ujn2zH9Asyag
-         f5gyfMlsQHg6Ixixnr70+2TPNWTkJxsWkLqDHNwCcNUAI112D0focfYhE/IQGZ0k4KKq
-         KK1f5M9wS22I/cTbzIxcEpRKJlWF6IxrxzYcs3dVuPWSCpAW/nSmJSpHy7/B1o6JNLvD
-         Y9bAzVKyHsJszFVwK0kGBklspknU+KEjr3JJ3JMDqfHR33rmcO3yuPeHTtrefODvVawY
-         YKy3u/E19bjPPVnMSmxAGckqb1bNq43Og6GJL19vuHzfXXETUSRLAJeqqmsLwIUvyBYc
-         hc6Q==
+        d=linaro.org; s=google; t=1778848884; x=1779453684; darn=vger.kernel.org;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=fFHLfFog5+tJEOD6z3uXuJEqumNcdwRPWU/fZudPyJE=;
+        b=sGFycZSK/yj9Ii47pbKAxiJsXnlz0zISKj5li3Qr0KJnBPVc8qVGTcRmnms051ZMfL
+         xQe0eIux31D5e4lPG/ab9DWOCTUutJud16sFMFeAw2FGAil8X5c1azQLaN3GEtqVtGEz
+         mTYoZhnLbQ+fJHVb7SR1B4PgjJudK2JDVC5PVFOhP3vmXDrXOKhJpb1BwL9rZEXaBt3F
+         gg98IIim+FHn8ZFNbFzaNK0co9KNvvsVWYBTAAQ8wMsUu/gDdcIwZnzynRnQyPEC6sPF
+         Db7Wm7d3ZNuopSiPkcFHHYrRT/rPRrZZMakywjnnVbZTQWzSbfWO78zLb3WA5YVJXLpK
+         8VqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778848689; x=1779453489;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=VP5YCpspQORwjSvDQCKN487lTY4JiFEf6+8HukEzf0U=;
-        b=r+HdPmysh21FhggbFkOKIpWceMDoTxA+cwFdv/kZOSBW1jmVkNqGXR+pC5Q6SissKy
-         Gm4fgVhFHXQFLu8FR/cMyyDR8mHQMMvj2rko0+j5QCe/BlL8tpjBbEWgzhb/BKnt3tDn
-         hY5NEOCgMe4RZg7Xcku7sQNZpEHIoaQLIwpU35FV28X5scmTyvBqYAJtq8O8uQHp/gOP
-         MJRaCousm5TCrMXHEDphIIlWRxSdR93xdcDvGWKGGof2UFDglHhqta9wXU89i+wJUXKF
-         xXGAWx7/QBdvLfoyOEK0XkRtiZB0EGUK3Poz7Y4luilCfgP1KQCg6vS0inuC81i0bExT
-         J61A==
-X-Forwarded-Encrypted: i=1; AFNElJ+dBHlBaxyHukJuHhLIycQZGu6zd3j6/Q4gx4H5nzIpTA/1cSsrEMMubstjlTk/4L8sC0VDZ6dr7iTL+3U=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxoT4D2WwNd8YNsxf3IAGhsjbIFlYU+CSXmmvj9PM2rWeq/ae3S
-	1ghHenKWzMDQq4ekNJdTWwwY1hnIXZKa2x0EReokS8b83qyx64xqmm4+wOVgxvOEvaXRDZ5waZ4
-	88sql0oMO8HplTgy/Xij1ch5Uo3FO2y4=
-X-Gm-Gg: Acq92OG31CHUwTDG2DmcoqbH/ZUMJFmW75HKX/64vDzN2GmZg6yM2sU54sO88mdc+aw
-	Ren8P+bu3Ed1KgqFbrzlHjr3f1k8IVdDvvhm8SH3cX8uIlOTqg2CgOvgWYIKz/WXcfDDmLatz4C
-	+PwBgpu6mtFe1xwdZAWRW7YBcP3J9Vu7rO0tqdlmafWpxu4OnpzoaE+8ggHUSY3rLnbuZj12+uP
-	KAPbitMaxKEioRSD1WfSSG3TXSceaXU/HH7Cum151LRhsU2pcQZZWZ1qHqj1qA7X9NAor13VCb6
-	FIeFik7LgFAd0xr1U0xT6p8C/znqzqHQGBkuHjVQLb2zxkGxtSCMjO1/YGYhf4KxwrfqNRxmhr+
-	R2AS8
-X-Received: by 2002:a05:690e:429c:10b0:65c:5fdb:e97e with SMTP id
- 956f58d0204a3-65e226688d4mr3129213d50.11.1778848688513; Fri, 15 May 2026
- 05:38:08 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1778848884; x=1779453684;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=fFHLfFog5+tJEOD6z3uXuJEqumNcdwRPWU/fZudPyJE=;
+        b=Yurm5OjIMw+nOPnKAHIGt8+bgccx9YNIFHLSUNBEUWicYfcMB+FNuUtXYNHGx4TAML
+         ZoXiHyMcZAQpA2KoNKAivrYYXkxmKiStkqM71lAo7xRNAVdoSH3k8da1ZSeb2xzWapN/
+         Dxj8HXQpMz1wYkR3nRIdyF0cGdcPBc/GTvGPEfxkvJmgB7ddG2kHBvW2IJrH/4ZjzZO6
+         0SzaVjCM31+JbLYWShQNlkJMpY+NzaVvj8PbOR3g79k1/2buET64TaTOJ/0q/zqElLAg
+         LIBOrsJ4UIzFLjKAClFcfCCXew7HDz3PEM1dLznD01lhIACwB4/m2BjeKGIwodBeEuG/
+         gzZA==
+X-Forwarded-Encrypted: i=1; AFNElJ9koPzKpR2oxXkBRJcaDuOxb9EZla6YiEJAJNnFxkLS++dGot5at+NHISYutwxxITAzwHbaSQ9g/WoqT2M=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz+uy++Pf8w0SP51Ql2WiA8u7r2bDnbJTHb8taThUXK3NtXdQk0
+	tOx0XunUvxls+VCcABwBT55B0gHPB6yDDUuQcBIpzDOOI/V37NkbE/YD69C4nC1M0I8=
+X-Gm-Gg: Acq92OEDg4PH7pjG/GeZ2zDRz2jfKG9YsBhwhsxPbPpIfZDK5ByVPI45SgFS2JtDIoR
+	KGxvTOd9NkH84YYZnMjotaErywEJWtvQNmbmUUS8YR0n1DpYITaDVf8fmRjI5XTea9MyE6K2Rti
+	SmisiBwYI/y6yBLmKN7sb9Vt58vWGN0Z8rGMzYysW43Xa36onhAFVxudFKnRIryA5Nrg+7WC27I
+	O/kl36RrsH7P3uz5AW8C51PJIGF08o0LtQ6UJkYNy3HxZNLqcKuT7FBBjC2ayf7f5J7E6w/yltU
+	VJSoUHxf00ySFey5ucrYeMPKoFZ/xR4A66Dym2aZnfJVRIZjYocJBVFGsUpdhkh/ECAGfWiNhLZ
+	J5N4f4tkKE617tP1Ao5MVQBvZfbIu9jp0kZytRopxNxJWXkEWjIw7Glft9Z7z5MgFGCGru5zl4a
+	o/JkVVW3BhxZ5or/sENG2aCmMUWGUdBFH7bnOOAr2SyMrpIQ5XkmU+VSj6uiEFaOthJLI4xxd8v
+	/H1J4mzWc+vovozkA==
+X-Received: by 2002:a05:600c:a309:b0:486:fba7:b150 with SMTP id 5b1f17b1804b1-48fe61f20a7mr44622645e9.15.1778848883620;
+        Fri, 15 May 2026 05:41:23 -0700 (PDT)
+Received: from ta2.c.googlers.com (17.83.155.104.bc.googleusercontent.com. [104.155.83.17])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45da15a5653sm15154969f8f.35.2026.05.15.05.41.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 May 2026 05:41:23 -0700 (PDT)
+From: Tudor Ambarus <tudor.ambarus@linaro.org>
+Date: Fri, 15 May 2026 12:41:21 +0000
+Subject: [PATCH] tty: serial: samsung: Remove redundant port lock
+ acquisition in rx helpers
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260513064547.352601-1-w15303746062@163.com>
-In-Reply-To: <20260513064547.352601-1-w15303746062@163.com>
-From: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date: Fri, 15 May 2026 08:37:57 -0400
-X-Gm-Features: AVHnY4LFlpopLYzSmAZHruAtmz5zLKfogXDk37fsSmI8BfYu6KcukqYXViunKCY
-Message-ID: <CABBYNZLjreYY_BczAQr2G6L=iJjBYKksFp53CairG-6V0Cb0EA@mail.gmail.com>
-Subject: Re: [PATCH] Bluetooth: hci_uart: fix UAF in hci_uart_tty_close()
-To: w15303746062@163.com
-Cc: marcel@holtmann.org, linux-bluetooth@vger.kernel.org, 
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	Mingyu Wang <25181214217@stu.xidian.edu.cn>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260515-samsung-tty-flow-control-deadlock-v1-1-93255edbc9bc@linaro.org>
+X-B4-Tracking: v=1; b=H4sIAHAUB2oC/x3NQQrCMBBA0auUWTvQCW0FryIuYjKpwZiRTKqW0
+ rs3uHyb/zdQLpEVLt0GhT9Ro+QGOnXgHjbPjNE3g+nN1I80otqXLnnGWlcMSb7oJNciCT1bn8Q
+ 9kfxgJjrTPQwErfMuHOLv/7je9v0Am3DCl3MAAAA=
+X-Change-ID: 20260515-samsung-tty-flow-control-deadlock-1d426171bf41
+To: Krzysztof Kozlowski <krzk@kernel.org>, 
+ Alim Akhtar <alim.akhtar@samsung.com>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Ben Dooks <ben-linux@fluff.org>
+Cc: linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ john.ogness@linutronix.d, peter.griffin@linaro.org, 
+ andre.draszik@linaro.org, jyescas@google.com, kernel-team@android.com, 
+ stable@vger.kernel.org, John Ogness <john.ogness@linutronix.de>, 
+ Tudor Ambarus <tudor.ambarus@linaro.org>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1778848883; l=2912;
+ i=tudor.ambarus@linaro.org; s=20241212; h=from:subject:message-id;
+ bh=7TZ5vcA+GLdk6E7fGnm5v0lehUpocwQ4ZVzCnZFOHkU=;
+ b=HSB610k4svdM7RKtaunGgLw3+2VSD01p4S4EygS9OUnKmnC03b2/KyWCaywVndUgAybnnLZpV
+ Iy911zmNlEdB3AXvSJIjtzoXHQPpTK2gU4xSiY6C6ROJ3/zU5kryg5R
+X-Developer-Key: i=tudor.ambarus@linaro.org; a=ed25519;
+ pk=uQzE0NXo3dIjeowMTOPCpIiPHEz12IA/MbyzrZVh9WI=
 
-Hi,
+Sashiko identified a deadlock when the console flow is engaged [1].
 
-On Wed, May 13, 2026 at 2:46=E2=80=AFAM <w15303746062@163.com> wrote:
->
-> From: Mingyu Wang <25181214217@stu.xidian.edu.cn>
->
-> A Use-After-Free (UAF) vulnerability and a subsequent General Protection
-> Fault (GPF) were observed in h5_recv() due to a race condition between
-> the initialization of the HCI UART line discipline and concurrent TTY
-> hangup via TIOCVHANGUP.
->
-> The issue arises because the workqueues (init_ready and write_work) are
-> only cancelled if the HCI_UART_PROTO_READY flag is set. However, during
-> the protocol initialization phase (HCI_UART_PROTO_INIT), the underlying
-> protocol (e.g., H5) may schedule work (such as sending sync/config
-> packets). If a hangup occurs before the setup completes and the READY
-> flag is set, hci_uart_tty_close() skips the cancel_work_sync() calls
-> and proceeds to free the `hu` struct.
->
-> When the delayed workqueue finally executes, it blindly dereferences
-> the freed `hu` struct, causing ODEBUG warnings and kernel panics.
->
-> Fix this by moving the cancel_work_sync() calls outside the
-> HCI_UART_PROTO_READY check, ensuring that any pending works are
-> unconditionally cancelled before the hci_uart structure is freed.
->
-> Signed-off-by: Mingyu Wang <25181214217@stu.xidian.edu.cn>
-> ---
->  drivers/bluetooth/hci_ldisc.c | 10 +++++++---
->  1 file changed, 7 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/bluetooth/hci_ldisc.c b/drivers/bluetooth/hci_ldisc.=
-c
-> index 275ea865bc29..566e1c525ee2 100644
-> --- a/drivers/bluetooth/hci_ldisc.c
-> +++ b/drivers/bluetooth/hci_ldisc.c
-> @@ -544,14 +544,18 @@ static void hci_uart_tty_close(struct tty_struct *t=
-ty)
->         if (hdev)
->                 hci_uart_close(hdev);
->
-> +       /*
-> +        * Always cancel workqueues unconditionally before freeing the hu
-> +        * struct, as they might be active during the PROTO_INIT phase.
-> +        */
-> +       cancel_work_sync(&hu->init_ready);
-> +       cancel_work_sync(&hu->write_work);
+When console flow control is enabled (UPF_CONS_FLOW),
+s3c24xx_serial_stop_tx() calls s3c24xx_serial_rx_enable() and
+s3c24xx_serial_start_tx() calls s3c24xx_serial_rx_disable().
 
-Can't we use disable_work_sync? If it frees up at the end, it's
-probably best to disable it so it doesn't allow new submissions.
+The serial core framework invokes the .stop_tx() and .start_tx()
+callbacks with the port->lock spinlock already held. Furthermore, all
+internal driver paths that invoke stop_tx (such as the DMA TX
+completion handler s3c24xx_serial_tx_dma_complete() or the PIO TX IRQ
+handler s3c24xx_serial_tx_irq()) also acquire port->lock prior to
+calling it. (Note that s3c24xx_serial_start_tx() is only invoked by the
+serial core).
 
->         if (test_bit(HCI_UART_PROTO_READY, &hu->flags)) {
->                 percpu_down_write(&hu->proto_lock);
->                 clear_bit(HCI_UART_PROTO_READY, &hu->flags);
->                 percpu_up_write(&hu->proto_lock);
->
-> -               cancel_work_sync(&hu->init_ready);
-> -               cancel_work_sync(&hu->write_work);
-> -
->                 if (hdev) {
->                         if (test_bit(HCI_UART_REGISTERED, &hu->flags))
->                                 hci_unregister_dev(hdev);
-> --
-> 2.34.1
->
->
+However, s3c24xx_serial_rx_enable() and s3c24xx_serial_rx_disable()
+unconditionally attempt to acquire port->lock again using
+uart_port_lock_irqsave(). Since spinlocks are not recursive, this
+causes a deadlock on the same CPU when console flow control is engaged.
 
+Remove the redundant lock acquisition from both rx helper functions.
 
---=20
-Luiz Augusto von Dentz
+Cc: stable@vger.kernel.org
+Fixes: b497549a035c ("[ARM] S3C24XX: Split serial driver into core and per-cpu drivers")
+Reported-by: John Ogness <john.ogness@linutronix.de>
+Closes: https://sashiko.dev/#/patchset/20260506121606.5805-1-john.ogness%40linutronix.de [1]
+Signed-off-by: Tudor Ambarus <tudor.ambarus@linaro.org>
+---
+ drivers/tty/serial/samsung_tty.c | 8 --------
+ 1 file changed, 8 deletions(-)
+
+diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+index 2f94fc798cff..63d0232dffc2 100644
+--- a/drivers/tty/serial/samsung_tty.c
++++ b/drivers/tty/serial/samsung_tty.c
+@@ -245,12 +245,9 @@ static bool s3c24xx_serial_txempty_nofifo(const struct uart_port *port)
+ static void s3c24xx_serial_rx_enable(struct uart_port *port)
+ {
+ 	struct s3c24xx_uart_port *ourport = to_ourport(port);
+-	unsigned long flags;
+ 	int count = 10000;
+ 	u32 ucon, ufcon;
+ 
+-	uart_port_lock_irqsave(port, &flags);
+-
+ 	while (--count && !s3c24xx_serial_txempty_nofifo(port))
+ 		udelay(100);
+ 
+@@ -263,23 +260,18 @@ static void s3c24xx_serial_rx_enable(struct uart_port *port)
+ 	wr_regl(port, S3C2410_UCON, ucon);
+ 
+ 	ourport->rx_enabled = 1;
+-	uart_port_unlock_irqrestore(port, flags);
+ }
+ 
+ static void s3c24xx_serial_rx_disable(struct uart_port *port)
+ {
+ 	struct s3c24xx_uart_port *ourport = to_ourport(port);
+-	unsigned long flags;
+ 	u32 ucon;
+ 
+-	uart_port_lock_irqsave(port, &flags);
+-
+ 	ucon = rd_regl(port, S3C2410_UCON);
+ 	ucon &= ~S3C2410_UCON_RXIRQMODE;
+ 	wr_regl(port, S3C2410_UCON, ucon);
+ 
+ 	ourport->rx_enabled = 0;
+-	uart_port_unlock_irqrestore(port, flags);
+ }
+ 
+ static void s3c24xx_serial_stop_tx(struct uart_port *port)
+
+---
+base-commit: 16e95bfb79b5d9d01dc7651d98caf3c2ace331cd
+change-id: 20260515-samsung-tty-flow-control-deadlock-1d426171bf41
+
+Best regards,
+-- 
+Tudor Ambarus <tudor.ambarus@linaro.org>
+
