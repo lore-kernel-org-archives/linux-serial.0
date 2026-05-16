@@ -1,202 +1,151 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A008A3E16AF;
-	Fri, 15 May 2026 18:32:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFCEC405C53;
+	Sat, 16 May 2026 01:41:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.2
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778869953; cv=none; b=iBRfQG3qFO6mmsCoRlB4a4Mx9M9O6LV3CduRyGYLLrBYHRaKPwkrbz8XI1Q4uBuNWh5WBCZtJWZcAi3CoDThUc3uPtvUAmz95G9cUb0+mDNa+833ydLFbtW3ASQqn+/0Y0LrLTuSZWpyO9HLBqNw0gXYuqpPjEPqEAILgsv4i5w=
+	t=1778895718; cv=none; b=NzVrXNlLIL1yGnE01W18aVpNqW5OIwTfRg+5xEWXPC0Eqtpo1tL8qOB2Ay/LnlBTJxRXheMVYxtrPvbbRfrPfykk6jMhtg4QSHoGnr/y1OK3cxV1lr/3VOP20Q109KPvdfPX6nCFH6pp9tF9oYKkyBdwM7kqrfZyToiiWh6tcFM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778869953; c=relaxed/simple;
-	bh=Mi5/TRu4Afi9KPgy0POhztDSq/pXN2DaIZqNIV/Bwc4=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=fLlVzSYLWF8xJDoWOFZTb/qOB3Vcby+fnW3Jk19AGsVyJdn3AAM/S2Jebd7abmWwNSN4fGRKbnunfCryCIv2KAlfq1gyfKMpbt7Ht2T14p6Sj0XD+5C5WqVsY8/O1Hsdm+pWdIxctAVn5TiwB888wnSZ3R1ltSABS2O6q9rZIHA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=xMxP5Tdy; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	s=arc-20240116; t=1778895718; c=relaxed/simple;
+	bh=KDi9SfdqS9I9PezTeXpSpUOwHBibeB5jFFYuVLSujiw=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
+	 MIME-Version:Message-ID; b=XYd46I7VFu+PeLKETbhCsYNfLdgqyeLEBUtPl1uBoj+5WoTELpCHR4Lz7r+U77Zis7tLDlbE/u1DEeDjjbjCBIl5kb6U85Uc+2naSEbC6dk8WCQ8XYYqun7z2t2w+nIeDQMAp5Vn6qMFMDVq62FLuJ43xeqVrFnkcci2am9DMe0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=ma7eL60e; arc=none smtp.client-ip=117.135.210.2
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="xMxP5Tdy"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=default; h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject
-	:Cc:To:From:subject:date:message-id:reply-to;
-	bh=ACzJMNCGYpDw6iLolP6eUBc4xbXZlDvQUoci6qsRFf0=; b=xMxP5TdyLVYHNv8TXCwHh3ZVbl
-	FrTJi3tmiLOnNfk6zxx7HUOnJjJ5S4RjI5OGlIg3K5vZhXqRfgesDNra2Mg2DpXfs8cLrS8rBzvoR
-	vzF+2Tup1u+wWgCZavOBr9y5/hrQv+6tFl7ieK4oBhbEXeythKXN6ZucYrt85V/BoIRQ=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168] helo=pettiford.lan)
-	by mail.hugovil.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.98.2)
-	(envelope-from <hugo@hugovil.com>)
-	id 1wNxKe-000000006pe-0NSY;
-	Fri, 15 May 2026 14:32:20 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Cc: hugo@hugovil.com,
-	kernel test robot <lkp@intel.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH v2] serial: max310x: fix compile errors if CONFIG_SPI_MASTER is disabled
-Date: Fri, 15 May 2026 14:30:58 -0400
-Message-ID: <20260515183217.3554037-1-hugo@hugovil.com>
-X-Mailer: git-send-email 2.47.3
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="ma7eL60e"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=Date:From:To:Subject:Content-Type:MIME-Version:
+	Message-ID; bh=KDi9SfdqS9I9PezTeXpSpUOwHBibeB5jFFYuVLSujiw=; b=m
+	a7eL60eqFWO5mlRIlFW+tK2ei3X2OLDQT8q628VEXhS+I5+RRK+6w+KUSHg08P6k
+	CUXCFi9XWEXQRZU98XjVpZTVOifJl1V3oj6vCtjwa3bt5y3b8J1OKO85yFUxBzFx
+	71cD0zxRXah3wma/x49PCqnfnQ98t6UKfrsVGdVKz8=
+Received: from w15303746062$163.com ( [113.200.174.80] ) by
+ ajax-webmail-wmsvr-40-106 (Coremail) ; Sat, 16 May 2026 09:41:18 +0800
+ (CST)
+Date: Sat, 16 May 2026 09:41:18 +0800 (CST)
+From: w15303746062  <w15303746062@163.com>
+To: "Luiz Augusto von Dentz" <luiz.dentz@gmail.com>
+Cc: pmenzel@molgen.mpg.de, marcel@holtmann.org,
+	linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org, greg@kroah.com, stable@vger.kernel.org,
+	"Mingyu Wang" <25181214217@stu.xidian.edu.cn>
+Subject: Re:Re: [PATCH v4] Bluetooth: hci_uart: fix UAF in
+ hci_uart_tty_close()
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version 2023.4-cmXT build
+ 20260403(27802f6d) Copyright (c) 2002-2026 www.mailtech.cn 163com
+In-Reply-To: <CABBYNZ+r3gm37FW5WqE79bRp+x9UZsaCtyvfz_FdixqEucAxGw@mail.gmail.com>
+References: <CABBYNZLjreYY_BczAQr2G6L=iJjBYKksFp53CairG-6V0Cb0EA@mail.gmail.com>
+ <20260515140548.393865-1-w15303746062@163.com>
+ <CABBYNZ+r3gm37FW5WqE79bRp+x9UZsaCtyvfz_FdixqEucAxGw@mail.gmail.com>
+X-NTES-SC: AL_Qu2cCvSSuk4s7iebbekfmU0Qguw9Xcq5uPkj34FWN5t8jCDp6AkFeXhTAFnX++eoFB6+mRKZdCV3+PhceaBDXJgs7rlVqWod9PqHg2h4PmBuwQ==
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam_score: -1.0
-X-Spam_bar: -
+Message-ID: <485d0dd5.660.19e2e71ed1e.Coremail.w15303746062@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID:aigvCgD3n2o_ywdqrQ6kAA--.196W
+X-CM-SenderInfo: jzrvjiatxuliiws6il2tof0z/xtbDAB9eQmoHyz9qZgAA3W
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 
-From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-
-Since commit 20ffe4b3330a8 ("serial: max310x: allow driver to be built with
-SPI or I2C"), if I2C is enabled and SPI_MASTER is disabled, we have these
-compile errors:
-
-  drivers/tty/serial/max310x.c: In function 'max310x_uart_init':
-  drivers/tty/serial/max310x.c: error: 'max310x_spi_driver' undeclared...
-  drivers/tty/serial/max310x.c: In function ‘max310x_uart_init’:
-  drivers/tty/serial/max310x.c: error: label ‘err_spi_register’
-  defined but not used...
-  drivers/tty/serial/max310x.c: error: ‘regcfg’ defined but not used
-
-Fix by properly encapsulating i2c/spi code/variables in their respective
-context with IS_ENABLED() macros for CONFIG_I2C and CONFIG_SPI_MASTER.
-
-Fixes: 20ffe4b3330a8 ("serial: max310x: allow driver to be built with SPI or I2C")
-Reported-by: kernel test robot <lkp@intel.com>
-Closes: https://lore.kernel.org/oe-kbuild-all/202605121847.N9DVLNg2-lkp@intel.com/
-Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
----
-note: not Cc-ing stable as the commit is still in tty-next, and even if the
-errors originate from original commit that added I2C support, they were not
-trigerred because the driver could not be selected/compiled if
-CONFIG_SPI_MASTER was disabled.
-
-Changes for v2:
-- replace #ifdef with #if IS_ENABLED() to suppoirt both built-in and modules
-  options
----
- drivers/tty/serial/max310x.c | 48 +++++++++++++++++++-----------------
- 1 file changed, 26 insertions(+), 22 deletions(-)
-
-diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-index 9f423b3b4201d..bad5329a0c84c 100644
---- a/drivers/tty/serial/max310x.c
-+++ b/drivers/tty/serial/max310x.c
-@@ -16,6 +16,7 @@
- #include <linux/device.h>
- #include <linux/gpio/driver.h>
- #include <linux/i2c.h>
-+#include <linux/kconfig.h>
- #include <linux/module.h>
- #include <linux/mod_devicetable.h>
- #include <linux/property.h>
-@@ -1507,6 +1508,21 @@ static const struct of_device_id __maybe_unused max310x_dt_ids[] = {
- };
- MODULE_DEVICE_TABLE(of, max310x_dt_ids);
- 
-+static const char *max310x_regmap_name(u8 port_id)
-+{
-+	switch (port_id) {
-+	case 0:	return "port0";
-+	case 1:	return "port1";
-+	case 2:	return "port2";
-+	case 3:	return "port3";
-+	default:
-+		WARN_ON(true);
-+		return NULL;
-+	}
-+}
-+
-+#if IS_ENABLED(CONFIG_SPI_MASTER)
-+
- static struct regmap_config regcfg = {
- 	.reg_bits = 8,
- 	.val_bits = 8,
-@@ -1522,20 +1538,6 @@ static struct regmap_config regcfg = {
- 	.max_raw_write = MAX310X_FIFO_SIZE,
- };
- 
--static const char *max310x_regmap_name(u8 port_id)
--{
--	switch (port_id) {
--	case 0:	return "port0";
--	case 1:	return "port1";
--	case 2:	return "port2";
--	case 3:	return "port3";
--	default:
--		WARN_ON(true);
--		return NULL;
--	}
--}
--
--#ifdef CONFIG_SPI_MASTER
- static int max310x_spi_extended_reg_enable(struct device *dev, bool enable)
- {
- 	struct max310x_port *s = dev_get_drvdata(dev);
-@@ -1606,7 +1608,8 @@ static struct spi_driver max310x_spi_driver = {
- };
- #endif
- 
--#ifdef CONFIG_I2C
-+#if IS_ENABLED(CONFIG_I2C)
-+
- static int max310x_i2c_extended_reg_enable(struct device *dev, bool enable)
- {
- 	return 0;
-@@ -1726,13 +1729,13 @@ static int __init max310x_uart_init(void)
- 	if (ret)
- 		return ret;
- 
--#ifdef CONFIG_SPI_MASTER
-+#if IS_ENABLED(CONFIG_SPI_MASTER)
- 	ret = spi_register_driver(&max310x_spi_driver);
- 	if (ret)
- 		goto err_spi_register;
- #endif
- 
--#ifdef CONFIG_I2C
-+#if IS_ENABLED(CONFIG_I2C)
- 	ret = i2c_add_driver(&max310x_i2c_driver);
- 	if (ret)
- 		goto err_i2c_register;
-@@ -1740,12 +1743,13 @@ static int __init max310x_uart_init(void)
- 
- 	return 0;
- 
--#ifdef CONFIG_I2C
-+#if IS_ENABLED(CONFIG_I2C)
- err_i2c_register:
--	spi_unregister_driver(&max310x_spi_driver);
- #endif
--
-+#if IS_ENABLED(CONFIG_SPI_MASTER)
-+	spi_unregister_driver(&max310x_spi_driver);
- err_spi_register:
-+#endif
- 	uart_unregister_driver(&max310x_uart);
- 
- 	return ret;
-@@ -1754,11 +1758,11 @@ module_init(max310x_uart_init);
- 
- static void __exit max310x_uart_exit(void)
- {
--#ifdef CONFIG_I2C
-+#if IS_ENABLED(CONFIG_I2C)
- 	i2c_del_driver(&max310x_i2c_driver);
- #endif
- 
--#ifdef CONFIG_SPI_MASTER
-+#if IS_ENABLED(CONFIG_SPI_MASTER)
- 	spi_unregister_driver(&max310x_spi_driver);
- #endif
- 
-
-base-commit: 16e95bfb79b5d9d01dc7651d98caf3c2ace331cd
--- 
-2.47.3
-
+CkhpIEx1aXosCgpUaGFuayB5b3UgZm9yIGNoZWNraW5nIGl0IHdpdGggU2FzaGlrby4KCgpBdCAy
+MDI2LTA1LTE2IDAwOjA4OjA1LCAiTHVpeiBBdWd1c3RvIHZvbiBEZW50eiIgPGx1aXouZGVudHpA
+Z21haWwuY29tPiB3cm90ZToKPkhpLAo+Cj5PbiBGcmksIE1heSAxNSwgMjAyNiBhdCAxMDowNuKA
+r0FNIDx3MTUzMDM3NDYwNjJAMTYzLmNvbT4gd3JvdGU6Cj4+Cj4+IEZyb206IE1pbmd5dSBXYW5n
+IDwyNTE4MTIxNDIxN0BzdHUueGlkaWFuLmVkdS5jbj4KPj4KPj4gQSBVc2UtQWZ0ZXItRnJlZSAo
+VUFGKSB2dWxuZXJhYmlsaXR5IGFuZCBhIHN1YnNlcXVlbnQga2VybmVsIHBhbmljIHdlcmUKPj4g
+b2JzZXJ2ZWQgaW4gaGNpX3VhcnRfd3JpdGVfd29yaygpIGR1ZSB0byBhIHJhY2UgY29uZGl0aW9u
+IGJldHdlZW4gdGhlCj4+IGluaXRpYWxpemF0aW9uIG9mIHRoZSBIQ0kgVUFSVCBsaW5lIGRpc2Np
+cGxpbmUgYW5kIGNvbmN1cnJlbnQgVFRZIGhhbmd1cC4KPj4KPj4gVGhpcyBpc3N1ZSB3YXMgdHJp
+Z2dlcmVkIGJ5IG91ciBjdXN0b20gZGV2aWNlIGVtdWxhdGlvbiBhbmQgZnV6emluZwo+PiBmcmFt
+ZXdvcmsgKERldkdlbikgb24gdGhlIHY2LjE4IGtlcm5lbC4gRHVlIHRvIHRoZSBoaWdobHkgdGlt
+aW5nLWRlcGVuZGVudAo+PiBuYXR1cmUgb2YgdGhpcyByYWNlIGNvbmRpdGlvbiAocmVxdWlyaW5n
+IGEgcHJlY2lzZSBpbnRlcmxlYXZpbmcgb2YKPj4gVElPQ1ZIQU5HVVAgYW5kIHByb3RvY29sIHNl
+dHVwKSwgU3l6a2FsbGVyIGZhaWxlZCB0byBleHRyYWN0IGEgcmVsaWFibGUKPj4gc3RhbmRhbG9u
+ZSBDIHJlcHJvZHVjZXIgKHJlcHJvZHVjZXIgaXMgdG9vIHVucmVsaWFibGU6IDAuMDApLgo+Pgo+
+PiBUaGUgY3Jhc2ggdHJhY2UgaXMgYXMgZm9sbG93czoKPj4gICBPREVCVUc6IGZyZWUgYWN0aXZl
+IChhY3RpdmUgc3RhdGUgMCkgb2JqZWN0OiBmZmZmODg4MDQwMjRlODcwIG9iamVjdCB0eXBlOiB3
+b3JrX3N0cnVjdCBoaW50OiBoY2lfdWFydF93cml0ZV93b3JrKzB4MC8weDk0MAo+PiAgIFdBUk5J
+Tkc6IENQVTogMCBQSUQ6IDMzODI3MyBhdCBsaWIvZGVidWdvYmplY3RzLmM6NjEyIGRlYnVnX3By
+aW50X29iamVjdCsweDFhMi8weDJiMAo+PiAgIC4uLgo+PiAgIENhbGwgVHJhY2U6Cj4+ICAgIDxU
+QVNLPgo+PiAgICBkZWJ1Z19jaGVja19ub19vYmpfZnJlZWQrMHgzZWMvMHg1MjAKPj4gICAga2Zy
+ZWUrMHgzZjAvMHg2YzAKPj4gICAgaGNpX3VhcnRfdHR5X2Nsb3NlKzB4MTI3LzB4MmEwCj4+ICAg
+IHR0eV9sZGlzY19jbG9zZSsweDExMy8weDFhMAo+PiAgICB0dHlfbGRpc2Nfa2lsbCsweDhlLzB4
+MTUwCj4+ICAgIHR0eV9sZGlzY19oYW5ndXArMHgzYzEvMHg3MzAKPj4gICAgX190dHlfaGFuZ3Vw
+LnBhcnQuMCsweDNmZC8weDhhMAo+PiAgICB0dHlfaW9jdGwrMHgxMjBmLzB4MTY5MAo+PiAgICBf
+X3g2NF9zeXNfaW9jdGwrMHgxOGYvMHgyMTAKPj4gICAgZG9fc3lzY2FsbF82NCsweGNiLzB4ZmEw
+Cj4+ICAgIGVudHJ5X1NZU0NBTExfNjRfYWZ0ZXJfaHdmcmFtZSsweDc3LzB4N2YKPj4gICAgPC9U
+QVNLPgo+Pgo+PiBUaGUgaXNzdWUgYXJpc2VzIGJlY2F1c2UgdGhlIHdvcmtxdWV1ZXMgKGluaXRf
+cmVhZHkgYW5kIHdyaXRlX3dvcmspIGFyZQo+PiBvbmx5IGZsdXNoZWQvY2FuY2VsbGVkIGlmIHRo
+ZSBIQ0lfVUFSVF9QUk9UT19SRUFEWSBmbGFnIGlzIHNldC4gSG93ZXZlciwKPj4gZHVyaW5nIHRo
+ZSBwcm90b2NvbCBpbml0aWFsaXphdGlvbiBwaGFzZSAoSENJX1VBUlRfUFJPVE9fSU5JVCksIHRo
+ZQo+PiB1bmRlcmx5aW5nIHByb3RvY29sIG1heSBzY2hlZHVsZSB3b3JrLiBJZiBhIGhhbmd1cCBv
+Y2N1cnMgYmVmb3JlIHRoZSBzZXR1cAo+PiBjb21wbGV0ZXMgYW5kIHRoZSBSRUFEWSBmbGFnIGlz
+IHNldCwgaGNpX3VhcnRfdHR5X2Nsb3NlKCkgc2tpcHMgdGhlCj4+IHRlYXJkb3duIG9mIHRoZXNl
+IHdvcmtxdWV1ZXMgYW5kIHByb2NlZWRzIHRvIGZyZWUgdGhlIGBodWAgc3RydWN0LiBXaGVuCj4+
+IHRoZSBzY2hlZHVsZWQgd29yayBleGVjdXRlcyBsYXRlciwgaXQgYmxpbmRseSBkZXJlZmVyZW5j
+ZXMgdGhlIGZyZWVkIGBodWAKPj4gc3RydWN0Lgo+Pgo+PiBGaXggdGhpcyBieSBtb3ZpbmcgdGhl
+IHdvcmtxdWV1ZSB0ZWFyZG93biBvdXRzaWRlIHRoZSBIQ0lfVUFSVF9QUk9UT19SRUFEWQo+PiBj
+aGVjay4gRnVydGhlcm1vcmUsIHVzZSBkaXNhYmxlX3dvcmtfc3luYygpIGluc3RlYWQgb2YgY2Fu
+Y2VsX3dvcmtfc3luYygpCj4+IHRvIHVuY29uZGl0aW9uYWxseSBkaXNhYmxlIHRoZSB3b3Jrcy4g
+VGhpcyBlbnN1cmVzIHRoYXQgYW55IHBlbmRpbmcgd29ya3MKPj4gYXJlIGNhbmNlbGxlZCBhbmQg
+bm8gbmV3IHN1Ym1pc3Npb25zIGNhbiBvY2N1ciBiZWZvcmUgdGhlIGhjaV91YXJ0Cj4+IHN0cnVj
+dHVyZSBpcyBmcmVlZC4gTm90ZSB0aGF0IGh1LT5pbml0X3JlYWR5IGFuZCBodS0+d3JpdGVfd29y
+ayBhcmUKPj4gaW5pdGlhbGl6ZWQgaW4gaGNpX3VhcnRfdHR5X29wZW4oKSwgc28gaXQgaXMgYWx3
+YXlzIHNhZmUgdG8gY2FsbAo+PiBkaXNhYmxlX3dvcmtfc3luYygpIG9uIHRoZW0gaW4gaGNpX3Vh
+cnRfdHR5X2Nsb3NlKCksIGV2ZW4gaWYgdGhlIHByb3RvY29sCj4+IHdhcyBuZXZlciBmdWxseSBh
+dHRhY2hlZC4KPj4KPj4gRml4ZXM6IDNiNzk5MjU0Y2Y2ZiAoIkJsdWV0b290aDogaGNpX3VhcnQ6
+IENhbmNlbCBpbml0IHdvcmsgYmVmb3JlIHVucmVnaXN0ZXJpbmciKQo+PiBDYzogc3RhYmxlQHZn
+ZXIua2VybmVsLm9yZwo+PiBTaWduZWQtb2ZmLWJ5OiBNaW5neXUgV2FuZyA8MjUxODEyMTQyMTdA
+c3R1LnhpZGlhbi5lZHUuY24+Cj4+IC0tLQo+PiBDaGFuZ2VzIGluIHY0Ogo+PiAtIEFkb3B0ZWQg
+THVpeidzIHN1Z2dlc3Rpb24gdG8gdXNlIGRpc2FibGVfd29ya19zeW5jKCkgaW5zdGVhZCBvZgo+
+PiAgIGNhbmNlbF93b3JrX3N5bmMoKSB0byBwcmV2ZW50IG5ldyB3b3JrIHN1Ym1pc3Npb25zIGR1
+cmluZyB0ZWFyZG93bi4KPj4KPj4gQ2hhbmdlcyBpbiB2MzoKPj4gLSBBZGRlZCAnQ2M6IHN0YWJs
+ZScgdGFnIGFzIHJlcXVlc3RlZCBieSB0aGUgc3RhYmxlIGJvdC4KPj4KPj4gQ2hhbmdlcyBpbiB2
+MjoKPj4gLSBBZGRlZCBLQVNBTi9PREVCVUcgY3Jhc2ggdHJhY2UuCj4+Cj4+ICBkcml2ZXJzL2Js
+dWV0b290aC9oY2lfbGRpc2MuYyB8IDEyICsrKysrKysrKy0tLQo+PiAgMSBmaWxlIGNoYW5nZWQs
+IDkgaW5zZXJ0aW9ucygrKSwgMyBkZWxldGlvbnMoLSkKPj4KPj4gZGlmZiAtLWdpdCBhL2RyaXZl
+cnMvYmx1ZXRvb3RoL2hjaV9sZGlzYy5jIGIvZHJpdmVycy9ibHVldG9vdGgvaGNpX2xkaXNjLmMK
+Pj4gaW5kZXggMjc1ZWE4NjViYzI5Li4zMzNjMWUxNTAzZTggMTAwNjQ0Cj4+IC0tLSBhL2RyaXZl
+cnMvYmx1ZXRvb3RoL2hjaV9sZGlzYy5jCj4+ICsrKyBiL2RyaXZlcnMvYmx1ZXRvb3RoL2hjaV9s
+ZGlzYy5jCj4+IEBAIC01NDQsMTQgKzU0NCwyMCBAQCBzdGF0aWMgdm9pZCBoY2lfdWFydF90dHlf
+Y2xvc2Uoc3RydWN0IHR0eV9zdHJ1Y3QgKnR0eSkKPj4gICAgICAgICBpZiAoaGRldikKPj4gICAg
+ICAgICAgICAgICAgIGhjaV91YXJ0X2Nsb3NlKGhkZXYpOwo+Pgo+PiArICAgICAgIC8qCj4+ICsg
+ICAgICAgICogRGlzYWJsZSB3b3JrcXVldWVzIHVuY29uZGl0aW9uYWxseSBiZWZvcmUgZnJlZWlu
+ZyB0aGUgaHUKPj4gKyAgICAgICAgKiBzdHJ1Y3QsIGFzIHRoZXkgbWlnaHQgYmUgYWN0aXZlIGR1
+cmluZyB0aGUgUFJPVE9fSU5JVCBwaGFzZS4KPj4gKyAgICAgICAgKiBVc2luZyBkaXNhYmxlX3dv
+cmtfc3luYygpIGluc3RlYWQgb2YgY2FuY2VsX3dvcmtfc3luYygpCj4+ICsgICAgICAgICogZW5z
+dXJlcyBubyBuZXcgc3VibWlzc2lvbnMgY2FuIG9jY3VyLgo+PiArICAgICAgICAqLwo+PiArICAg
+ICAgIGRpc2FibGVfd29ya19zeW5jKCZodS0+aW5pdF9yZWFkeSk7Cj4+ICsgICAgICAgZGlzYWJs
+ZV93b3JrX3N5bmMoJmh1LT53cml0ZV93b3JrKTsKPgo+TG9va3MgbGlrZSBzYXNoaWtvIGhhcyBh
+IHByb2JsZW0gd2l0aCB0aGVzZSBiZWluZyBhZnRlciBoY2lfdWFydF9jbG9zZToKCkkgc2VlIHRo
+ZSBpc3N1ZSBub3cuIFBsYWNpbmcgYGRpc2FibGVfd29ya19zeW5jKClgIGFmdGVyIGBoY2lfdWFy
+dF9jbG9zZSgpYApjb3VsZCBzdGlsbCBsZWF2ZSBhIHRpbnkgd2luZG93IHdoZXJlIHRoZSB3b3Jr
+cXVldWVzIG1pZ2h0IHJhY2Ugd2l0aCB0aGUgCnRlYXJkb3duIG9mIHRoZSBgaGRldmAgc3RydWN0
+dXJlLiAKClRoZSBzYWZlc3QgYW5kIG1vc3QgbG9naWNhbCBhcHByb2FjaCBpcyB0byBwdWxsIHRo
+ZSBgZGlzYWJsZV93b3JrX3N5bmMoKWAKY2FsbHMgdG8gdGhlIHZlcnkgdG9wIG9mIGBoY2lfdWFy
+dF90dHlfY2xvc2UoKWAsIGJlZm9yZSBgaGNpX3VhcnRfY2xvc2UoKWAgCm9yIGFueSBvdGhlciB0
+ZWFyZG93biBsb2dpYyBiZWdpbnMuIFRoaXMgd2lsbCBjb21wbGV0ZWx5IGNob2tlIG9mZiBhbnkg
+CmFzeW5jaHJvbm91cyBvcGVyYXRpb25zIGJlZm9yZSB3ZSB0b3VjaCB0aGUgY29ubmVjdGlvbiBz
+dGF0ZSBvciBoYXJkd2FyZS4KCkkgd2lsbCB1cGRhdGUgdGhlIHBhdGNoIGFuZCBzZW5kIG91dCB2
+NSBpbW1lZGlhdGVseS4KCj4KPmh0dHBzOi8vc2FzaGlrby5kZXYvIy9wYXRjaHNldC8yMDI2MDUx
+NTE0MDU0OC4zOTM4NjUtMS13MTUzMDM3NDYwNjIlNDAxNjMuY29tCj4KPj4gICAgICAgICBpZiAo
+dGVzdF9iaXQoSENJX1VBUlRfUFJPVE9fUkVBRFksICZodS0+ZmxhZ3MpKSB7Cj4+ICAgICAgICAg
+ICAgICAgICBwZXJjcHVfZG93bl93cml0ZSgmaHUtPnByb3RvX2xvY2spOwo+PiAgICAgICAgICAg
+ICAgICAgY2xlYXJfYml0KEhDSV9VQVJUX1BST1RPX1JFQURZLCAmaHUtPmZsYWdzKTsKPj4gICAg
+ICAgICAgICAgICAgIHBlcmNwdV91cF93cml0ZSgmaHUtPnByb3RvX2xvY2spOwo+Pgo+PiAtICAg
+ICAgICAgICAgICAgY2FuY2VsX3dvcmtfc3luYygmaHUtPmluaXRfcmVhZHkpOwo+PiAtICAgICAg
+ICAgICAgICAgY2FuY2VsX3dvcmtfc3luYygmaHUtPndyaXRlX3dvcmspOwo+PiAtCj4+ICAgICAg
+ICAgICAgICAgICBpZiAoaGRldikgewo+PiAgICAgICAgICAgICAgICAgICAgICAgICBpZiAodGVz
+dF9iaXQoSENJX1VBUlRfUkVHSVNURVJFRCwgJmh1LT5mbGFncykpCj4+ICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgaGNpX3VucmVnaXN0ZXJfZGV2KGhkZXYpOwo+PiAtLQo+PiAyLjM0
+LjEKPj4KPgo+Cj4tLSAKPkx1aXogQXVndXN0byB2b24gRGVudHoKCkJlc3QgcmVnYXJkcywKTWlu
+Z3l1Cg==
