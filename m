@@ -1,30 +1,30 @@
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.3])
+Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.4])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30FC91CFBA;
-	Sat, 16 May 2026 02:22:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.3
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13B5B12FF69;
+	Sat, 16 May 2026 05:31:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.4
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778898181; cv=none; b=HOFic4CY3oROxgAQY99DTabEvkQtJE2H78/ypnVnhlxK3peBTpf3AcP1vZdXSrJ+G76y7Opns9/pO+whxR0JrSpW/f9X+85F2HQpOl+nKeXE7o2VsfJCzubqQK0Kg9xg/UdXc16Z6m4+V0H5EkoNC8vYToKjxggRqgZR3kzfusw=
+	t=1778909491; cv=none; b=M7s2vUlsbQX/B9SpjwxUu3uod18hCr6pGVxcRZrDJZe8zJ5Dnr53Wkmz5RRhuUaeTWzgAfjemwTM5z3ii4qhk1XOmvhgxpFou6qxasrbrKoH1ILcUz6JIZzL9jK8y9Lc3lBd5/TGX7bSvlrHmIM0Ex9Ly4qEhdV166E2Y6kb2dk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778898181; c=relaxed/simple;
-	bh=vZ8HI72OFbthSBJEsoHa2z/u4GgfSwQeyQsy/GOGEXY=;
+	s=arc-20240116; t=1778909491; c=relaxed/simple;
+	bh=viFVbCTUEGZlCx/T/JjdBigT2zl5htwyg4XSF9v/S2w=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=eGU6PITCWrRKWL4GtwBptUzrSHInGdFTqCH1EtZm+YzGweOoFlysq4qgPj37jSpmr/okzk0YomWpG+napEKbee99y0PDyxx5t6EpSQAbaK7tcBXWSfixqmwE+EBsoIJBnRg62US9Y3MqwBgUBaRGRCAA5YASq3zRIUt5cAZxBRg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=VrQQQOYT; arc=none smtp.client-ip=220.197.31.3
+	 MIME-Version; b=G3MucToHpixt3s5HCwE/enCOhxtTzOJkwhRDH3OppHvxZRbuBtL/l/pK1qA6ywc8w+MpsumL3PkZ4JsY2iuctdLmMuw6IoHEtgHvBj1Yd4Jjo8Bik2o7Dxkw1uDYh6zDl3PNIyHVxa5j/2YPrkodKhgXq9y2oymnk2F2gTECox4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=Sk+JemyJ; arc=none smtp.client-ip=117.135.210.4
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="VrQQQOYT"
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="Sk+JemyJ"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=o8
-	Z/FOlH+CBwFDIxdt/BJ/uYRlERnR/Hp8g+li8D4z8=; b=VrQQQOYT2D/sBVieqQ
-	5pYNcoA55AtWkEPn68KYtgm8wdwfO4PM6fXWrf71YE/mGq+6FZxr7Obxp2CpUhp4
-	v5Ir34BEG+ZL37zKwJ8ypgYSpfZ5Ucqqe28+zlRk5JYKka9qqr6XX94KnPLmjXyQ
-	lA55Z0kqYUhwNn8gIxheNc3P4=
+	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=V+
+	jmmf2+0iPvY5sybQeNTfbjIrV4zPW2sciKzAA1t6k=; b=Sk+JemyJ1Jf531qNIR
+	YEtkC3yzaPc62dse6ClH9TVxhz12UqMd9JsqLfna7CWP5YNtC/JsiORxA30rYvVb
+	BlW123DBuasBQgLhFwGPp2Tw9AgJA08MIiQnPsCfqEh5HOFWSBj2x5t6Xn8hZsUx
+	lxhhYVOlnnNraUfrafvoUt5LI=
 Received: from 163.com (unknown [])
-	by gzsmtp3 (Coremail) with SMTP id PigvCgD3Vy_K1Adq3dBFDg--.212S2;
-	Sat, 16 May 2026 10:22:15 +0800 (CST)
+	by gzsmtp5 (Coremail) with SMTP id QCgvCgA3hbP+AAhqSd3aDw--.5S2;
+	Sat, 16 May 2026 13:30:49 +0800 (CST)
 From: <w15303746062@163.com>
 To: luiz.dentz@gmail.com,
 	pmenzel@molgen.mpg.de,
@@ -35,9 +35,9 @@ Cc: linux-serial@vger.kernel.org,
 	greg@kroah.com,
 	stable@vger.kernel.org,
 	Mingyu Wang <25181214217@stu.xidian.edu.cn>
-Subject: [PATCH v5] Bluetooth: hci_uart: fix UAF in hci_uart_tty_close()
-Date: Sat, 16 May 2026 10:22:00 +0800
-Message-Id: <20260516022200.396369-1-w15303746062@163.com>
+Subject: [PATCH v6] Bluetooth: hci_uart: fix UAFs and race conditions in close and init paths
+Date: Sat, 16 May 2026 13:30:36 +0800
+Message-Id: <20260516053036.399005-1-w15303746062@163.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <CABBYNZ+r3gm37FW5WqE79bRp+x9UZsaCtyvfz_FdixqEucAxGw@mail.gmail.com>
 References: <CABBYNZ+r3gm37FW5WqE79bRp+x9UZsaCtyvfz_FdixqEucAxGw@mail.gmail.com>
@@ -48,24 +48,26 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:PigvCgD3Vy_K1Adq3dBFDg--.212S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxJw43Kr1DZFyDZF13JFWfAFb_yoWrCw18pF
-	9xKF90ya1DJFWjkFyDZa1xAFyrKFs2g3y2y34fW3y5Xwn8tr1jy3WIyFWI93WUAr95Cr1S
-	vFWqq3y5WFyUZ3DanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UlQ6XUUUUU=
-X-CM-SenderInfo: jzrvjiatxuliiws6il2tof0z/xtbC-xfGqmoH1NcPIQAA3E
+X-CM-TRANSID:QCgvCgA3hbP+AAhqSd3aDw--.5S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW3Xr1fZw13Zr4rJF18WFWktFb_yoWxGr1fpF
+	W5KF90yw4UWFW29FsrZF1xAF1rKF4SgFW3C34fG345X398tryYk3WIkaya9F1UGr97AryS
+	vFWUX3y5WFyUAw7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07j5_-PUUUUU=
+X-CM-SenderInfo: jzrvjiatxuliiws6il2tof0z/xtbDAAnewmoIAQlXUwAA37
 
 From: Mingyu Wang <25181214217@stu.xidian.edu.cn>
 
-A Use-After-Free (UAF) vulnerability and a subsequent kernel panic were
-observed in hci_uart_write_work() due to a race condition between the
-initialization of the HCI UART line discipline and concurrent TTY hangup.
+Vulnerabilities leading to Use-After-Free (UAF) and Null Pointer
+Dereference (NPD) conditions were observed in the lifecycle management
+of hci_uart.
 
-This issue was triggered by our custom device emulation and fuzzing
-framework (DevGen) on the v6.18 kernel. Due to the highly timing-dependent
-nature of this race condition (requiring a precise interleaving of
-TIOCVHANGUP and protocol setup), Syzkaller failed to extract a reliable
-standalone C reproducer (reproducer is too unreliable: 0.00).
+The primary issue arises because the workqueues (init_ready and write_work)
+are only flushed/cancelled if the HCI_UART_PROTO_READY flag is set during
+TTY close. If a hangup occurs before setup completes, hci_uart_tty_close()
+skips the teardown of these workqueues and proceeds to free the `hu` struct.
+When the scheduled work executes later, it blindly dereferences the freed
+`hu` struct. This issue was triggered by our custom device emulation and
+fuzzing framework (DevGen) on the v6.18 kernel.
 
 The crash trace is as follows:
   ODEBUG: free active (active state 0) object: ffff88804024e870 object type: work_struct hint: hci_uart_write_work+0x0/0x940
@@ -86,37 +88,46 @@ The crash trace is as follows:
    entry_SYSCALL_64_after_hwframe+0x77/0x7f
    </TASK>
 
-The issue arises because the workqueues (init_ready and write_work) are
-only flushed/cancelled if the HCI_UART_PROTO_READY flag is set. However,
-during the protocol initialization phase (HCI_UART_PROTO_INIT), the
-underlying protocol may schedule work. If a hangup occurs before the setup
-completes and the READY flag is set, hci_uart_tty_close() skips the
-teardown of these workqueues and proceeds to free the `hu` struct. When
-the scheduled work executes later, it blindly dereferences the freed `hu`
-struct.
+Additionally, sister bugs exist in the device registration error paths
+within hci_uart_init_work() and hci_uart_register_dev(). If
+hci_register_dev() fails, the code frees hdev and sets hu->hdev to NULL,
+but leaves hu->write_work active if it was already scheduled during early
+protocol setup phase. When the work executes later, it blindly fetches and
+dereferences the NULL hu->hdev pointer, triggering an unconditioned kernel
+panic.
 
-Fix this by moving the workqueue teardown to the very beginning of
-hci_uart_tty_close(), outside the HCI_UART_PROTO_READY check and prior to
-calling hci_uart_close(). Furthermore, use disable_work_sync() instead of
-cancel_work_sync() to unconditionally disable the works. This ensures that
-any pending works are cancelled and no new submissions can occur before or
-during the teardown of the device connection. Note that hu->init_ready and
-hu->write_work are initialized in hci_uart_tty_open(), so it is always safe
-to call disable_work_sync() on them in hci_uart_tty_close(), even if the
-protocol was never fully attached.
+Furthermore, the error path in hci_uart_init_work() clears the
+HCI_UART_PROTO_READY flag and invokes hu->proto->close(hu) without
+acquiring the hu->proto_lock write lock. Since concurrent callbacks like
+hci_uart_tty_receive() execute under the read lock, this missing
+synchronization allows the protocol state to be destroyed while active
+readers are accessing it.
+
+Fix these synchronization and lifecycle issues by:
+1. Moving the workqueue teardown to the very beginning of
+   hci_uart_tty_close() and using disable_work_sync() to unconditionally
+   prevent new work submissions.
+2. Wrapping the clearance of HCI_UART_PROTO_READY in hci_uart_init_work()
+   with percpu_down_write/percpu_up_write of hu->proto_lock.
+3. Explicitly invoking disable_work_sync(&hu->write_work) before resetting
+   hu->hdev to NULL in both initialization error paths to safely prevent
+   any concurrent re-queuing issues.
 
 Fixes: 3b799254cf6f ("Bluetooth: hci_uart: Cancel init work before unregistering")
 Cc: stable@vger.kernel.org
 Signed-off-by: Mingyu Wang <25181214217@stu.xidian.edu.cn>
 ---
+Changes in v6:
+- Fixed missing `hu->proto_lock` write lock in hci_uart_init_work() error path to prevent race with readers (reported by Sashiko).
+- Added disable_work_sync() instead of cancel_work_sync() for `hu->write_work` in hci_uart_init_work() and hci_uart_register_dev() error paths to completely block any concurrent re-queuing window before hdev is freed (reported by Sashiko).
+
 Changes in v5:
-- Moved disable_work_sync() to the very top of hci_uart_tty_close(), 
-  before hci_uart_close(), to prevent any concurrent re-queuing 
-  during device shutdown and resolve Sashiko static analysis warnings.
+- Relocated disable_work_sync() to the very top of hci_uart_tty_close(), 
+  before hci_uart_close(), to ensure no new work is submitted during device teardown.
 
 Changes in v4:
 - Adopted Luiz's suggestion to use disable_work_sync() instead of 
-  cancel_work_sync() to prevent new work submissions during teardown.
+  cancel_work_sync() in close path to prevent new work submissions.
 
 Changes in v3:
 - Added 'Cc: stable' tag as requested by the stable bot.
@@ -124,14 +135,37 @@ Changes in v3:
 Changes in v2:
 - Added KASAN/ODEBUG crash trace.
 
- drivers/bluetooth/hci_ldisc.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ drivers/bluetooth/hci_ldisc.c | 35 ++++++++++++++++++++++++++++++++---
+ 1 file changed, 32 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/bluetooth/hci_ldisc.c b/drivers/bluetooth/hci_ldisc.c
-index 275ea865bc29..ebdbcd567cd2 100644
+index 275ea865bc29..612fa2890cec 100644
 --- a/drivers/bluetooth/hci_ldisc.c
 +++ b/drivers/bluetooth/hci_ldisc.c
-@@ -540,6 +540,15 @@ static void hci_uart_tty_close(struct tty_struct *tty)
+@@ -194,7 +194,22 @@ void hci_uart_init_work(struct work_struct *work)
+ 	err = hci_register_dev(hu->hdev);
+ 	if (err < 0) {
+ 		BT_ERR("Can't register HCI device");
++
++		/*
++		 * Acquire proto_lock before clearing PROTO_READY and closing
++		 * the protocol to synchronize with active readers.
++		 */
++		percpu_down_write(&hu->proto_lock);
+ 		clear_bit(HCI_UART_PROTO_READY, &hu->flags);
++		percpu_up_write(&hu->proto_lock);
++
++		/*
++		 * Disable any pending write_work that may have been queued
++		 * during the PROTO_INIT phase to prevent UAF/NPD when hdev
++		 * is freed.
++		 */
++		disable_work_sync(&hu->write_work);
++
+ 		hu->proto->close(hu);
+ 		hdev = hu->hdev;
+ 		hu->hdev = NULL;
+@@ -540,6 +555,15 @@ static void hci_uart_tty_close(struct tty_struct *tty)
  	if (!hu)
  		return;
  
@@ -147,7 +181,7 @@ index 275ea865bc29..ebdbcd567cd2 100644
  	hdev = hu->hdev;
  	if (hdev)
  		hci_uart_close(hdev);
-@@ -549,9 +558,6 @@ static void hci_uart_tty_close(struct tty_struct *tty)
+@@ -549,9 +573,6 @@ static void hci_uart_tty_close(struct tty_struct *tty)
  		clear_bit(HCI_UART_PROTO_READY, &hu->flags);
  		percpu_up_write(&hu->proto_lock);
  
@@ -157,6 +191,21 @@ index 275ea865bc29..ebdbcd567cd2 100644
  		if (hdev) {
  			if (test_bit(HCI_UART_REGISTERED, &hu->flags))
  				hci_unregister_dev(hdev);
+@@ -692,6 +713,14 @@ static int hci_uart_register_dev(struct hci_uart *hu)
+ 
+ 	if (hci_register_dev(hdev) < 0) {
+ 		BT_ERR("Can't register HCI device");
++
++		/*
++		 * Disable any pending write_work that may have been queued
++		 * during the proto->open() phase to prevent UAF/NPD when
++		 * hdev is freed.
++		 */
++		disable_work_sync(&hu->write_work);
++
+ 		percpu_down_write(&hu->proto_lock);
+ 		clear_bit(HCI_UART_PROTO_INIT, &hu->flags);
+ 		percpu_up_write(&hu->proto_lock);
 -- 
 2.34.1
 
