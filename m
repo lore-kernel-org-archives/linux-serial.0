@@ -1,166 +1,170 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C1073EBF06
-	for <linux-serial@vger.kernel.org>; Mon, 18 May 2026 13:48:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39ACD1FBEA8
+	for <linux-serial@vger.kernel.org>; Mon, 18 May 2026 14:14:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779112101; cv=none; b=lA+cl3LrRoZiC1E5OsBj1IhnAy0cHrXhQcC4Wze4qTTKZWRUFm362nPp5drLZMVUH1tFqwfuPdqGydPv2tO55tOYN/v/obRi7rI4i9BKMHrfXA8wMTQ1hzmFZ/Fn3G9lZsPIlPDB1YjRUEsve0DbWOJwIp1s4NnwsrvBDqAMWDk=
+	t=1779113661; cv=none; b=Z5HUQq3CLsB2yfIvPakh2GphOmxqpJt3VCr1FcJGs8jzzDF5GUS5dFAmw/OR7CO9sJG6K4UY+gUfhlb59HWH0Lhrm5zP0gkazTG3uenOYWAaPBzrUjxDVhgTVOv9Dt8qyH+bn4zAA9Ln5FefckqhWT7AZjh9N3OgeKxvR0TrfrE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779112101; c=relaxed/simple;
-	bh=TsPTaLl4zd51BWfkw9BwNOjMimnL7v0jxxsg0D/DV0Y=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=XeK6nNKCey6110Qa9WoQZak48jH2vD5bYAGtzs60cyOEkfYBqbhIHjcgHSrXrh2QVN5MQs8aLGGXsZn1TkrDj3I/mgmDC+6vCkzVav5eySuE59KCZubaeQwyS6KrqWZsNQMm2KPHEZc8k+fighXAw7DgeAz1wYkYkXLAUDKwkhg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=gavHswAi; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=FL3D02Co; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1779113661; c=relaxed/simple;
+	bh=5qDpVkMt4wmJAuvajXr0K3vaIjTuOXwvJrhqj7SsGUU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ZtPh0LxjDcZXOgYuXgJShfZmTpjHlcy3mBozbf92xbcOKCpbdUp8BFf2dMHIv0xMgWO78Rb22xZGqIWR2t5pJ/0D/ay19uKQybQ2kW/t9RMiNrMpjLND2dZ3T/wpavvsg66Oj4BkFIZ/EnMwGjYmku8drwdUryEdeOnHLn+cXZg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=i6QG2BYX; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="gavHswAi";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="FL3D02Co"
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64IBwQpd1252027
-	for <linux-serial@vger.kernel.org>; Mon, 18 May 2026 13:48:19 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	N2Nbk6ywjfh6gS17Rx9fkMwIvBKLSedRDvKHTRiJg+Y=; b=gavHswAiwzXoxRxn
-	rIOK7IzhysX5RfBgzYPgWnU6GzQxm+uLrW9rf9pVM4c8ncRjpCJbKckp5TfX2Xfn
-	3q254r7zf7e/t04lnZ7pSjPE4Ep/Ep8pSxKl2INR5i57AIn4K/X2uKdEoVgj2VZQ
-	G4hxOkUCdlPkMPziwXsgWALE6HGbnXaxVwRcoETNQPEyA3Q8HcX/WtXpZLJuLlSC
-	U1pLJjiCIZ/VMIIuvL3B2eCcypIZmLxc78ki6NWpFAbUNVmAqI5dxwGHXXH1/do+
-	mBzWvFUpe4tyGHQ4Wg3RfeSgHDRcx94TKVUpYNa/b+hXiRVVELBLtIWejVEv7U3u
-	ChUC8w==
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com [209.85.160.197])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4e82c0gdr8-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-serial@vger.kernel.org>; Mon, 18 May 2026 13:48:19 +0000 (GMT)
-Received: by mail-qt1-f197.google.com with SMTP id d75a77b69052e-50d8c183c2eso15735601cf.0
-        for <linux-serial@vger.kernel.org>; Mon, 18 May 2026 06:48:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1779112099; x=1779716899; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=N2Nbk6ywjfh6gS17Rx9fkMwIvBKLSedRDvKHTRiJg+Y=;
-        b=FL3D02CoSROZFPllDTFmXauRTzLxMXIz9YB+NrFjNnIpoMP2whiYj55xHPp8O4jycP
-         1Y2CoYtSCKXi0N9DWL5noIfHlpNtQFr8mofYLqMhzCH7Be95FtfQhlpgmnbYrKv39LSo
-         EKgrRUehEIU8HgQ8aexG9IUn/X4ka70wu5oH+0sVPjUhmcKaoTPYArOnJiflGjjLTn0p
-         TEAsQvH46ed4wGaZLxSwBOTqwGX/9LHwLAtJKrmSxBDAqbMtpMq7lAjcrRa1WnTmqclr
-         f58OetHs4YTZYqSvWX9kzaJJoN/0LgPYZIJVNlK3ZqwP8YLVW7Qleir1bjAQzKSCAuvx
-         TxzQ==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="i6QG2BYX"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1779113659;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=X0PKPpLFUcJ5PNICdj+fODP+ieu23TytLui2uhS6hnY=;
+	b=i6QG2BYXKj09OPLAk3GnVux+ExBCGks4czXI+zrCTICAPPNl2O0GRZoetW2lsWe1GbKU22
+	mNLmFVMYvIHF2V+npB/e9qzhiIwtWg1lc5glBOfZcGFPuA0NXx4b/Ihz98rozgvRA/oGlZ
+	sMnPNWSKRjoHp5sS+I5mCSZ8eMj/log=
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
+ [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-636-CAHuDEX2P7CGFIUjBvvn4A-1; Mon, 18 May 2026 10:14:18 -0400
+X-MC-Unique: CAHuDEX2P7CGFIUjBvvn4A-1
+X-Mimecast-MFC-AGG-ID: CAHuDEX2P7CGFIUjBvvn4A_1779113656
+Received: by mail-lf1-f69.google.com with SMTP id 2adb3069b0e04-5a870f93c99so207037e87.0
+        for <linux-serial@vger.kernel.org>; Mon, 18 May 2026 07:14:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779112099; x=1779716899;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=N2Nbk6ywjfh6gS17Rx9fkMwIvBKLSedRDvKHTRiJg+Y=;
-        b=HuDi+BJCNoH+COsnQsgPtuJtcv6NE4EGBgnXkBBsCY+6mwLeQaEjf9M/pTFFXtY/sP
-         TtNpNIsAn2yCV7Y8Z7g/CA58K5AL5+MEgNc7NXG7V6UOkX+uPs28X2Y5d1GBWBlyH0vI
-         HAlyi8no3YqaxXDCKEQKcmsCXI3EpZobE5y+AuHgcngaogHzoZpDGmZ5xkeQIOClyLvv
-         5XZHCGFRIu5xI85MzYCoFxPK5MyydIGCMUKBhc8EHHIkxg3LLpI9JxLEwsRD3L/ytQVw
-         ih+U1JiZzBvg9o9Ala8fX6EQvFE1PVo6UfAXzcHb14yUD20iJnp/MaSjOWea+hKUHoVQ
-         KEiw==
-X-Forwarded-Encrypted: i=1; AFNElJ9uyXopykQPl/NDFXbSemeudYqsiyOTPrEE4HSrfT9z3IS9c/MWrmnYXGuFjslehB0PwGsj5JufvxTzewk=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz8Wfm7YIZGwn42u2HiLE8TFNjCwP0/Ds4hO3QvVTgaGA3DW8vL
-	XmNGfNsDc8xbPFjl2cpJ7wdPhVVqRhI5Dq9H7rnDZtwaFJfQ3naUbplmdg8gteaoBN1jM3n/mMm
-	YZbBR5iHjHXSjDcci7T8PyaV+IOUsaEqy36VntxlAp5muRNhapON1o8MsajPCUKeX//8=
-X-Gm-Gg: Acq92OEbV7GX0Wsp0VNO/jOyg637bdchWym4ywsWJ2p4D0Q7nMBIIrC6/cle8nkRaPR
-	nk/ZOgZEsU6wmQ5/ozJJ3BBv9FcCQ7tLyHRLioBMLecwu7qVxQZPaDHZON31pvZE/UcNpL//oSI
-	RwZ7xPMZ9u1kGartZrkIVhsEOrT4vEbTI2MIZEJevHO+8JLf6sFaWw1JwNeZiOmuzHLzqiMixMX
-	KUgiTgfTXdvT7VSNZgAXFDBzQoqO7KwU5kJSECxcAo/PyAHbkZSBJZfdxmtenfV9ENIvGmUgW/3
-	NlYvpSA7BXYe5NqmhHrWTyf0s+yN62o2L7ePnHZipa6zk1D2nBqiDWOvf/Sg9KCI2w+EJh+hrTZ
-	rme5Wbm8BOpF2bhU0K+CJPSTKxrjoWGga/GANyYslz3rqrwmGx4q7yyRuYOAy7PmUo6uWzmvWF6
-	PpzHo=
-X-Received: by 2002:ac8:5945:0:b0:509:2b5a:808 with SMTP id d75a77b69052e-51659ffa7abmr160058261cf.2.1779112098408;
-        Mon, 18 May 2026 06:48:18 -0700 (PDT)
-X-Received: by 2002:ac8:5945:0:b0:509:2b5a:808 with SMTP id d75a77b69052e-51659ffa7abmr160057791cf.2.1779112097727;
-        Mon, 18 May 2026 06:48:17 -0700 (PDT)
-Received: from [192.168.119.254] (078088045245.garwolin.vectranet.pl. [78.88.45.245])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bd4f4e2d75bsm561146166b.45.2026.05.18.06.48.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 May 2026 06:48:16 -0700 (PDT)
-Message-ID: <f8ce8518-8a4d-4ad4-a948-70e133c91b05@oss.qualcomm.com>
-Date: Mon, 18 May 2026 15:48:14 +0200
+        d=1e100.net; s=20251104; t=1779113656; x=1779718456;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=X0PKPpLFUcJ5PNICdj+fODP+ieu23TytLui2uhS6hnY=;
+        b=TFDG2SBGsRjsD29E++ZfBS0at/ANPCvjUox4F4AFOSQK+DDMz14pJw4VHBppUMC9+8
+         zPmIOauyI+FXkxJmyKxZmRhgHVeWedBDnI1doJvB4siMnplmZSmXSsQS2u2asdb/+Kgc
+         7YeMXFaeVTCdnLslqtBL+JSOnB95iTyWWreTfkT21i4SJnWVwFSlLeoFgBMncXzG/vzo
+         Y8HSRBO5nGsQDy45Nps3TSDkhCKJ3u8fvIkV39bqzKpRh2BUStK4yVqOj11vYywS/P8m
+         aWO6AB+USCBdV5sIpPNrIGAqScMywBaIwznMO87YmwHa1ZVqza2ZpwwFqN9XX7L8TiKf
+         cmkQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/HfllP+EnzthN+Lznxv1xr1mVtWtLFkLC7Kp0IhEs3H0nCFILjtj8mIrDEkAeKpx/2s9/G3ySJj1D3fak=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwCaJl/Q+IUdlrQrPV+qTid/HN5zVMYkaztKBEfR4IB+oWYRODr
+	1VHJgKW3qJNBVP0nQ6aTNNlOAFWQFOsBl4mI+ftdnIEMXfx+K/SnbY5C3lTVVpjVxzUNGxlo+kA
+	W4NhgqNMgtpwnu5zbXA8T2dLx1zEv2GbrDFw2/2GX3ETUDtPpYu07TpZTu3AYroUeLynT3MEMYn
+	Mpzl+QjJFWwCX/qnj7duvd3ZkYC9PUBy4tCrpccMkl
+X-Gm-Gg: Acq92OEvt4Hw3QWRNyRLsJHA+UUWv8H233Vp28Y/FKxWPNfZs2ReTMGYYdpGRmBBkqm
+	g4HOmwSvfhtHoQEU+c33oWyxF1irRG4lBhzZkD+yFRY5vego2HQ3FBcbqeQZM5wbBVmuUGSUmcg
+	O7z2uAWqKIZFUk7h+OoHrhzlaheLPMoIi8kFliZlQXEcKxWUfLQDWYEMy9c/QrDaAMu1ohCSRe5
+	IhxHQ==
+X-Received: by 2002:a05:651c:410e:b0:38f:f6a2:a61d with SMTP id 38308e7fff4ca-39561f2f883mr11802491fa.4.1779113656353;
+        Mon, 18 May 2026 07:14:16 -0700 (PDT)
+X-Received: by 2002:a05:651c:410e:b0:38f:f6a2:a61d with SMTP id
+ 38308e7fff4ca-39561f2f883mr11802281fa.4.1779113655655; Mon, 18 May 2026
+ 07:14:15 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/2] serial: qcom-geni: trace: Add tracepoint support
- for Qualcomm GENI serial
-To: Praveen Talari <praveen.talari@oss.qualcomm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu
- <mhiramat@kernel.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-kernel@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        Mukesh Kumar Savaliya <mukesh.savaliya@oss.qualcomm.com>,
-        Aniket Randive <aniket.randive@oss.qualcomm.com>,
-        chandana.chiluveru@oss.qualcomm.com, jyothi.seerapu@oss.qualcomm.com
-References: <20260512-add-tracepoints-for-qcom-geni-serial-v2-0-a5726421b3af@oss.qualcomm.com>
- <20260512-add-tracepoints-for-qcom-geni-serial-v2-1-a5726421b3af@oss.qualcomm.com>
-Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-In-Reply-To: <20260512-add-tracepoints-for-qcom-geni-serial-v2-1-a5726421b3af@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTE4MDEzNSBTYWx0ZWRfX3uRADbBDn2eM
- mlP0g+wnOlID46ZKkXLhtSdweL9Zabe6UBNAuNvMfAWMOf29hlk/nV6WAsh1Jyksyn28CjCfI64
- TmHbmcpIFs1yxIij9KVe9hbxGfRHm5kQZ/kQuUThaVFbgQRKG7pOdJm91WkUtDz3nRzvLQYJv9s
- Mjgp1KnAatndCKB9Gyo8Hb31A1I1vmg8rKVm+WJetK3mL7PBBnY7MgHNDFV1bojFXj0K3hHDgiT
- GNWteJY9qxHJCeFAj3ACx7yIXsiDS8Jfi6JqOHBNhdmOWn797j3LRvOljxMJ9JMuJiH1jACgGuU
- +bt3PWPq7Qs/gEsTbAWFRrtomDIWMmuRHtf75vw952N/qXEPwzCIN2G+e/7SaEknvNzyuqjUDZc
- nIEFqtGG9tcrX+eK0cDWIKThmyC0JQqJtBmnxrvzxkpWA5seVq6rOLS7I+uvwp/cuVbBn4/BB3E
- EwAN7XXodsOYOruBDQQ==
-X-Authority-Analysis: v=2.4 cv=A5Jc+aWG c=1 sm=1 tr=0 ts=6a0b18a3 cx=c_pps
- a=EVbN6Ke/fEF3bsl7X48z0g==:117 a=FpWmc02/iXfjRdCD7H54yg==:17
- a=IkcTkHD0fZMA:10 a=NGcC8JguVDcA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=YMgV9FUhrdKAYTUUvYB2:22
- a=EUspDBNiAAAA:8 a=zro_ik8Ip6B-mArceiMA:9 a=QEXdDO2ut3YA:10
- a=a_PwQJl-kcHnX1M80qC6:22
-X-Proofpoint-GUID: cj-wRhMM-4c9ZIn1l9CyY8FP2YRsap_U
-X-Proofpoint-ORIG-GUID: cj-wRhMM-4c9ZIn1l9CyY8FP2YRsap_U
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-05-18_03,2026-05-15_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- suspectscore=0 phishscore=0 spamscore=0 malwarescore=0 impostorscore=0
- clxscore=1011 adultscore=0 lowpriorityscore=0 priorityscore=1501 bulkscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2605130000 definitions=main-2605180135
+References: <20260216150205.212318-1-larisa.grigore@oss.nxp.com> <aaGkGwbk-sh0YJqj@jkangas-thinkpadp1gen3.rmtuswa.csb>
+In-Reply-To: <aaGkGwbk-sh0YJqj@jkangas-thinkpadp1gen3.rmtuswa.csb>
+From: Enric Balletbo i Serra <eballetb@redhat.com>
+Date: Mon, 18 May 2026 16:14:02 +0200
+X-Gm-Features: AVHnY4JRP0kGP-z42K5FI0qcb3gAysvgY6dzw7kUR8X3jOVZKVkXLna2nVCi7XY
+Message-ID: <CALE0LRuahJy2EKa7YUukGRq1w9iws6kDvjZ7o33ahJUGc2JSsw@mail.gmail.com>
+Subject: Re: [PATCH 00/13] Add DMA support for LINFlexD UART driver
+To: Jared Kangas <jkangas@redhat.com>
+Cc: Larisa Grigore <larisa.grigore@oss.nxp.com>, gregkh@linuxfoundation.org, 
+	jirislaby@kernel.org, robh@kernel.org, krzk+dt@kernel.org, 
+	conor+dt@kernel.org, sumit.semwal@linaro.org, christian.koenig@amd.com, 
+	chester62515@gmail.com, cosmin.stoica@nxp.com, adrian.nitu@freescale.com, 
+	stefan-gabriel.mirea@nxp.com, Mihaela.Martinas@freescale.com, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-media@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, s32@nxp.com, 
+	imx@lists.linux.dev, clizzi@redhat.com, aruizrui@redhat.com, 
+	echanude@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: -vY20KVEVrZphEKZ5fpNRWdNNd_pSI1PvtnSLtBJO5I_1779113656
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 5/12/26 7:14 PM, Praveen Talari wrote:
-> Add tracepoint support to the Qualcomm GENI serial driver to provide
-> runtime visibility into driver behavior without requiring invasive debug
-> patches.
-> 
-> The trace events cover UART termios configuration, clock setup, modem
-> control state, interrupt status, and TX/RX data, making it easier to
-> diagnose communication issues in the field.
-> 
-> Signed-off-by: Praveen Talari <praveen.talari@oss.qualcomm.com>
-> ---
-> v1->v2:
-> - Removed multiple TX/RX trace events, instead used
->   DECLARE_EVENT_CLASS and DEFINE_EVENT.
-> ---
->  include/trace/events/qcom_geni_serial.h | 172 ++++++++++++++++++++++++++++++++
->  1 file changed, 172 insertions(+)
-> 
-> diff --git a/include/trace/events/qcom_geni_serial.h b/include/trace/events/qcom_geni_serial.h
-> new file mode 100644
-> index 000000000000..5e23827881d0
-> --- /dev/null
-> +++ b/include/trace/events/qcom_geni_serial.h
+Hi all,
 
-Oh, I only noticed now that this isn't in a subsystem/driver-
-local directory.. I suppose it's up to the other maintainers
-whether they like that
+Any chance these series can be considered? They still apply on top of
+the mainline kernel.
 
-Konrad
+On Fri, Feb 27, 2026 at 3:03=E2=80=AFPM Jared Kangas <jkangas@redhat.com> w=
+rote:
+>
+> Hi Larisa,
+>
+> On Mon, Feb 16, 2026 at 04:01:52PM +0100, Larisa Grigore wrote:
+> > This patchset enhances the LINFlexD UART driver and its device tree bin=
+dings to
+> > support DMA transfers, configurable clock inputs, dynamic baudrate chan=
+ges, and
+> > termios features. It also includes a series of fixes and improvements t=
+o ensure
+> > reliable operation across various modes and configurations.
+> >
+> > The changes added can be summarized as follows:
+> > 1. Fixes with respect to FIFO handling, locking, interrupt related regi=
+sters and
+> > INITM mode transition.
+>
+> Tested this series with the default devicetree configuration by booting
+> the board to a login prompt about 200 times. Without the series applied,
+> I was seeing a bug roughly every 30-50 boots where the kernel would
+> would hang in linflex_console_putchar() waiting for DTFTFF. In my tests
+> with the series applied, I didn't see any regressions and the bug no
+> longer appeared. Thanks for the fix!
+>
+> Tested-by: Jared Kangas <jkangas@redhat.com> # S32G3, interrupt-driven
+>
+
+FWIW I also reproduced the issue Jared faced. Current state of the
+LinFLEX serial driver in mainline seems a bit buggy and I can confirm
+that these fix the problem.
+
+Tested-by: Enric Balletbo i Serra <eballetb@redhat.com>
+
+> > 2. Removal of the earlycon workaround, as proper FIFO handling and INIT=
+M
+> > transitions now ensure stable behavior.
+> > 3. Support for configurable stop bits and dynamic baudrate changes base=
+d on
+> > clock inputs and termios settings.
+> > 4. Optional DMA support for RX and TX paths, preventing character loss =
+during
+> > high-throughput operations like copy-paste. Cyclic DMA is used for RX t=
+o avoid
+> > gaps between transactions.
+> >
+> > Larisa Grigore (8):
+> >   serial: linflexuart: Clean SLEEP bit in LINCR1 after suspend
+> >   serial: linflexuart: Check FIFO full before writing
+> >   serial: linflexuart: Correctly clear UARTSR in buffer mode
+> >   serial: linflexuart: Update RXEN/TXEN outside INITM mode
+> >   serial: linflexuart: Ensure FIFO is empty when entering INITM
+> >   serial: linflexuart: Revert earlycon workaround
+> >   serial: linflexuart: Add support for configurable stop bits
+> >   serial: linflexuart: Add DMA support
+> >
+> > Radu Pirea (5):
+> >   serial: linflexuart: Fix locking in set_termios
+> >   dt-bindings: serial: fsl-linflexuart: add clock input properties
+> >   dt-bindings: serial: fsl-linflexuart: add dma properties
+> >   serial: linflexuart: Add support for changing baudrate
+> >   serial: linflexuart: Avoid stopping DMA during receive operations
+> >
+> >  .../bindings/serial/fsl,s32-linflexuart.yaml  |  31 +
+> >  drivers/tty/serial/fsl_linflexuart.c          | 972 +++++++++++++++---
+> >  2 files changed, 846 insertions(+), 157 deletions(-)
+> >
+> > --
+> > 2.47.0
+> >
+>
+
