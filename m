@@ -1,139 +1,203 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4395830B53C;
-	Thu, 21 May 2026 16:49:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A7423E316F;
+	Thu, 21 May 2026 17:45:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779382142; cv=none; b=gLbWO0lO/uk5E9vTUeKLs0O3ygMZ9TQ5WOok2Ry1wGSvOgXzBrk0OCeIrXA6OUYGfGmoLWL6K+83ZC5qaPxBUwtA0FHVYqZl+EKeQp6C9/OgojO3lBQr2JY/VjxtqsQYqCRKnNCKHwILh2EqZliTsjQwvmG6aZXNlqBKYgMMQ/8=
+	t=1779385511; cv=none; b=GNtIVJx6BEryH7o0QxHw2xDcIdEmI2ln/G6C69DJQi97hjAlPZswGcYbGJtl5EcGMrNryzMlN6F7Rj+mjNXHYIE9o896G2KILf415BP86HO40TFvMVq5vnXymYB7o+nkfI9uGwsd80tIwY8xM8N8WvWLUVTtaAobtcL2X4Zd0yU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779382142; c=relaxed/simple;
-	bh=DVFvk9aAUJ7j9VYz4u9t48egEPUZJ0k0RU7un6BH5Xo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=feysJmW1u5/SxwsvmK2ONjal8p8edvxkVxG5Y5ZXDrbJQmX+3oQ31XZGcf9lEXEdeJ8XBY4nPATiOtRIjF06lAM6V8i4U8voJj4OH7bj75U046iIQi0kJBThJ9dfy630aFxyuXevoppFgF1/L4zHvGSVwed2Hxp0T6SrkM/UoZE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=m51NEWIL; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1779385511; c=relaxed/simple;
+	bh=sU3q4ei5VqXFeemg2pdBcbpXy8Z2qTRY4hHBwMHyr+A=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=I5VemjC8tNPsOFG/yt8vxNVmvKftc53qZd2Mr9eCU/OJUeqHL7x0cOR3FXdtpNul2f2z4WGi3cvLXFTY3X2ILV/dU4AaKtxgstfXrS7EVosx5UKQNO2oi6ZV3MIl2DOcN4RYGpep8j2DEXNK3qHHzF9mRkQMSWi3hiqWeJ4acys=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eBU4r6q/; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="m51NEWIL"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9290E1F000E9;
-	Thu, 21 May 2026 16:48:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779382141;
-	bh=TK/PmbG7Gqeh7gUNbHnh10+sGFRgBRtv46SR1if5nuE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=m51NEWIL+tOUNeE+GB8C7iAZOPUWYhpqA17s1dsrGddvfwNHzXYbSHF26GdLcOMtG
-	 VseAJnoOke5WQ8uGGsQORSVoYUEXGi96Y4IYESbRN2v/dvUGx4ZIMLyBMeoidkshur
-	 Pev3FwbXMbEe8gXa0pMlz2rWn/seIcF37pB8gaQtobLknEhnIC0lWWFqFmaPvuz/6a
-	 fUUOj1PWzSiY2A4xSabMSnVRnUhYxBtoDhkSwF5R5sBbwNJqcOVHHyzCMZmuEDNB7d
-	 2nKiyMfEHji6Rj6kJ3SQi7fWmALb6a9UgoYpDGeLnlTAEsMFiXy8kXy/hTZ4lDBO6H
-	 Usd57Vl0rlqVA==
-Date: Thu, 21 May 2026 17:48:56 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Akash Sukhavasi <akash.sukhavasi@gmail.com>
-Cc: krzk+dt@kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-doc@vger.kernel.org
-Subject: Re: [PATCH v2] dt-bindings: serial: rs485: remove deprecated .txt
- binding stub
-Message-ID: <20260521-ragged-ultra-9970fd9e8495@spud>
-References: <20260521162137.6325-1-akash.sukhavasi@gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eBU4r6q/"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1779385510; x=1810921510;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version;
+  bh=sU3q4ei5VqXFeemg2pdBcbpXy8Z2qTRY4hHBwMHyr+A=;
+  b=eBU4r6q/Pfly7X1yJqCLEHmyhpQJlV2crbXifUpUKCUV7dlTkEqmae1a
+   AKceYkxuO1zsrSOCHkjdDFGmvavXdwKnO5at9Ha77MIU+4AQNzCNl91t3
+   gn/G98vXvWp3nOTNJa5kS7jQCy7kdG5BgwPqzrtr5jAam2wVSnH/ecHI4
+   GxTC6OsY/Gte2p/rlOIc+UMKrRW/k2kpLoDax7m+oSw1fpBccCyzualiP
+   Sn6OUbc5OrTCm6t/8e2kHMIcl3aWYHH6VE2JhwXCsGbyIMLanNaefDSrT
+   3Fx6S9FQEF/3FNAkW3k8tLsaFhlaDR13eozETdv3PTBgoc/MLi7Gw7BPq
+   g==;
+X-CSE-ConnectionGUID: 9yrXBPapSeugoewNSa8U/g==
+X-CSE-MsgGUID: Jeaco58dQ0KT6LTcn38xnw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11793"; a="105773552"
+X-IronPort-AV: E=Sophos;i="6.24,160,1774335600"; 
+   d="scan'208";a="105773552"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2026 10:45:08 -0700
+X-CSE-ConnectionGUID: sVvxl8W3QX2Yx8AK13BLJw==
+X-CSE-MsgGUID: XZM0S5M8QcaTj4wM3UKoHA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,160,1774335600"; 
+   d="scan'208";a="236347421"
+Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.167])
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2026 10:44:41 -0700
+From: Jani Nikula <jani.nikula@linux.intel.com>
+To: Kees Cook <kees@kernel.org>, Luis Chamberlain <mcgrof@kernel.org>
+Cc: Kees Cook <kees@kernel.org>, Pengpeng Hou <pengpeng@iscas.ac.cn>, Petr
+ Pavlu <petr.pavlu@suse.com>, Richard Weinberger <richard@nod.at>, Anton
+ Ivanov <anton.ivanov@cambridgegreys.com>, Johannes Berg
+ <johannes@sipsolutions.net>, "Rafael J. Wysocki" <rafael@kernel.org>, Len
+ Brown <lenb@kernel.org>, Corey Minyard <corey@minyard.net>, Gabriel Somlo
+ <somlo@cmu.edu>, "Michael S. Tsirkin" <mst@redhat.com>, Joonas Lahtinen
+ <joonas.lahtinen@linux.intel.com>, Rodrigo Vivi <rodrigo.vivi@intel.com>,
+ Tvrtko Ursulin <tursulin@ursulin.net>, David Airlie <airlied@gmail.com>,
+ Simona Vetter <simona@ffwll.ch>, Bart Van Assche <bvanassche@acm.org>,
+ Jason Gunthorpe <jgg@ziepe.ca>, Leon Romanovsky <leon@kernel.org>, Laurent
+ Pinchart <laurent.pinchart@ideasonboard.com>, Hans de Goede
+ <hansg@kernel.org>, Mauro Carvalho Chehab <mchehab@kernel.org>, Bjorn
+ Helgaas <bhelgaas@google.com>, Hannes Reinecke <hare@suse.de>, "James E.J.
+ Bottomley" <James.Bottomley@HansenPartnership.com>, "Martin K. Petersen"
+ <martin.petersen@oracle.com>, Daniel Lezcano <daniel.lezcano@kernel.org>,
+ Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>, Greg
+ Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>, Alan Stern <stern@rowland.harvard.edu>, Jason Wang
+ <jasowang@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>, Eugenio
+ =?utf-8?Q?P=C3=A9rez?= <eperezma@redhat.com>, Jason Baron
+ <jbaron@akamai.com>, Jim Cromie
+ <jim.cromie@gmail.com>, Tiwei Bie <tiwei.btw@antgroup.com>, Benjamin Berg
+ <benjamin.berg@intel.com>, Ilpo =?utf-8?Q?J=C3=A4rvinen?=
+ <ilpo.jarvinen@linux.intel.com>,
+ "David E. Box" <david.e.box@linux.intel.com>, "Maciej W. Rozycki"
+ <macro@orcam.me.uk>, Srinivas Pandruvada
+ <srinivas.pandruvada@linux.intel.com>, Peter Zijlstra
+ <peterz@infradead.org>, Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik
+ <gor@linux.ibm.com>, Sean Christopherson <seanjc@google.com>, Paolo
+ Bonzini <pbonzini@redhat.com>, Thomas Gleixner <tglx@kernel.org>, Ingo
+ Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen
+ <dave.hansen@linux.intel.com>, x86@kernel.org, "H. Peter Anvin"
+ <hpa@zytor.com>, Vinod Koul <vkoul@kernel.org>, Frank Li
+ <Frank.Li@kernel.org>, Daniel Gomez <da.gomez@kernel.org>, Sami Tolvanen
+ <samitolvanen@google.com>, Aaron Tomlin <atomlin@atomlin.com>, Alexander
+ Potapenko <glider@google.com>, Marco Elver <elver@google.com>, Dmitry
+ Vyukov <dvyukov@google.com>, Andrew Morton <akpm@linux-foundation.org>,
+ John Johansen <john.johansen@canonical.com>, Paul Moore
+ <paul@paul-moore.com>, James Morris <jmorris@namei.org>, "Serge E. Hallyn"
+ <serge@hallyn.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Georgia Garcia <georgia.garcia@canonical.com>, kvm@vger.kernel.org,
+ dmaengine@vger.kernel.org, linux-modules@vger.kernel.org,
+ kasan-dev@googlegroups.com, linux-mm@kvack.org, apparmor@lists.ubuntu.com,
+ linux-security-module@vger.kernel.org, linux-um@lists.infradead.org,
+ linux-acpi@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
+ qemu-devel@nongnu.org, intel-gfx@lists.freedesktop.org,
+ dri-devel@lists.freedesktop.org, linux-rdma@vger.kernel.org,
+ linux-media@vger.kernel.org, linux-pci@vger.kernel.org,
+ linux-scsi@vger.kernel.org, linux-pm@vger.kernel.org,
+ linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org,
+ linux-usb@vger.kernel.org, usb-storage@lists.one-eyed-alien.net,
+ virtualization@lists.linux.dev, linux-kernel@vger.kernel.org,
+ linux-arch@vger.kernel.org, netdev@vger.kernel.org,
+ linux-fsdevel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH 10/11] treewide: Manually convert custom
+ kernel_param_ops .get callbacks
+In-Reply-To: <20260521133326.2465264-10-kees@kernel.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park,
+ 6 krs Bertel Jungin Aukio 5, 02600 Espoo, Finland
+References: <20260521133315.work.845-kees@kernel.org>
+ <20260521133326.2465264-10-kees@kernel.org>
+Date: Thu, 21 May 2026 20:44:37 +0300
+Message-ID: <5cd0c8dde3687d0aea765f2f21f5e1cd8ba83028@intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="9T5GZpc4FKRZfLvC"
-Content-Disposition: inline
-In-Reply-To: <20260521162137.6325-1-akash.sukhavasi@gmail.com>
+Content-Type: text/plain
 
-
---9T5GZpc4FKRZfLvC
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Thu, May 21, 2026 at 11:21:35AM -0500, Akash Sukhavasi wrote:
-> The plain text binding file was superseded by the YAML schema in
-> commit d50f974c4f7f ("dt-bindings: serial: Convert rs485 bindings
-> to json-schema"). The file now contains only a redirect notice.
-> Remove it, and update references in serial_core.c and
-> serial-rs485.rst to point to the YAML schema.
->=20
-> Signed-off-by: Akash Sukhavasi <akash.sukhavasi@gmail.com>
-
-Unless I am missing something about how docs.kernel.org redirects
-magically work or something along those lines,
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
-pw-bot: not-applicable
-
-Cheers,
-Conor.
-
-> ---
-> Changes in v2:
-> - Update references in serial_core.c and serial-rs485.rst to point
->   to rs485.yaml (Sashiko review).
->=20
-> v1: https://lore.kernel.org/all/20260521150748.4816-1-akash.sukhavasi@gma=
-il.com/
->=20
->  Documentation/devicetree/bindings/serial/rs485.txt | 1 -
->  Documentation/driver-api/serial/serial-rs485.rst   | 2 +-
->  drivers/tty/serial/serial_core.c                   | 2 +-
->  3 files changed, 2 insertions(+), 3 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/serial/rs485.txt
->=20
-> diff --git a/Documentation/devicetree/bindings/serial/rs485.txt b/Documen=
-tation/devicetree/bindings/serial/rs485.txt
-> deleted file mode 100644
-> index a7fe93efc..000000000
-> --- a/Documentation/devicetree/bindings/serial/rs485.txt
-> +++ /dev/null
-> @@ -1 +0,0 @@
-> -See rs485.yaml
-> diff --git a/Documentation/driver-api/serial/serial-rs485.rst b/Documenta=
-tion/driver-api/serial/serial-rs485.rst
-> index dce061ef7..f53043d21 100644
-> --- a/Documentation/driver-api/serial/serial-rs485.rst
-> +++ b/Documentation/driver-api/serial/serial-rs485.rst
-> @@ -132,4 +132,4 @@ RS485 Serial Communications
->  6. References
->  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> =20
-> -.. [#DT-bindings]	Documentation/devicetree/bindings/serial/rs485.txt
-> +.. [#DT-bindings]	Documentation/devicetree/bindings/serial/rs485.yaml
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial=
-_core.c
-> index 89cebdd27..df4589880 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -3496,7 +3496,7 @@ EXPORT_SYMBOL_GPL(uart_try_toggle_sysrq);
->   * @port: uart device's target port
->   *
->   * This function implements the device tree binding described in
-> - * Documentation/devicetree/bindings/serial/rs485.txt.
-> + * Documentation/devicetree/bindings/serial/rs485.yaml.
->   */
->  int uart_get_rs485_mode(struct uart_port *port)
+On Thu, 21 May 2026, Kees Cook <kees@kernel.org> wrote:
+> diff --git a/drivers/gpu/drm/i915/i915_mitigations.c b/drivers/gpu/drm/i915/i915_mitigations.c
+> index 6061eae84e9c..99cb38f355b6 100644
+> --- a/drivers/gpu/drm/i915/i915_mitigations.c
+> +++ b/drivers/gpu/drm/i915/i915_mitigations.c
+> @@ -95,33 +95,37 @@ static int mitigations_set(const char *val, const struct kernel_param *kp)
+>  	return 0;
+>  }
+>  
+> -static int mitigations_get(char *buffer, const struct kernel_param *kp)
+> +static int mitigations_get(struct seq_buf *buffer,
+> +			   const struct kernel_param *kp)
 >  {
-> --=20
-> 2.54.0
->=20
+>  	unsigned long local = READ_ONCE(mitigations);
+> -	int count, i;
+>  	bool enable;
+> +	int i;
 
---9T5GZpc4FKRZfLvC
-Content-Type: application/pgp-signature; name="signature.asc"
+I'm fine with what you have, and I can do these as a follow-up later if
+it's too much trouble, but I suggest something like this:
 
------BEGIN PGP SIGNATURE-----
+	const char *sep = "";
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCag83eAAKCRB4tDGHoIJi
-0qRwAP45vGLSukw/aHHHypp+5Z43TSGFtTTuBAmqeT+0a7PMjwEAx/dYKdq/xZbK
-TB9BIBcIOG64v/rGq0jOuhsi2EfzJwQ=
-=gmIc
------END PGP SIGNATURE-----
+>  
+> -	if (!local)
+> -		return scnprintf(buffer, PAGE_SIZE, "%s\n", "off");
+> +	if (!local) {
+> +		seq_buf_printf(buffer, "%s\n", "off");
+> +		return 0;
+> +	}
+>  
+>  	if (local & BIT(BITS_PER_LONG - 1)) {
+> -		count = scnprintf(buffer, PAGE_SIZE, "%s,", "auto");
+> +		seq_buf_printf(buffer, "%s,", "auto");
 
---9T5GZpc4FKRZfLvC--
+		seq_buf_printf(buffer, "%s%s", sep, "auto");
+		sep = ",";
+
+(In the printf the sep is just for future expansion, though I don't
+expect one.)
+
+>  		enable = false;
+>  	} else {
+>  		enable = true;
+> -		count = 0;
+>  	}
+>  
+>  	for (i = 0; i < ARRAY_SIZE(names); i++) {
+>  		if ((local & BIT(i)) != enable)
+>  			continue;
+> -
+> -		count += scnprintf(buffer + count, PAGE_SIZE - count,
+> -				   "%s%s,", enable ? "" : "!", names[i]);
+> +		seq_buf_printf(buffer, "%s%s,", enable ? "" : "!", names[i]);
+
+		seq_buf_printf(buffer, "%s%s%s", sep, enable ? "" : "!", names[i]);
+		sep = ",";
+
+>  	}
+
+	seq_buf_puts(buffer, "\n");
+
+>  
+> -	buffer[count - 1] = '\n';
+> -	return count;
+> +	/* Replace the trailing comma with a newline. */
+> +	if (!seq_buf_has_overflowed(buffer) && buffer->len > 0 &&
+> +	    buffer->buffer[buffer->len - 1] == ',')
+> +		buffer->buffer[buffer->len - 1] = '\n';
+
+Drop the above.
+
+I.e. keep track of sep while printing to avoid removing it later.
+
+BR,
+Jani.
+
+> +
+> +	return 0;
+>  }
+>  
+>  static DEFINE_KERNEL_PARAM_OPS(ops, mitigations_set, mitigations_get);
+
+-- 
+Jani Nikula, Intel
