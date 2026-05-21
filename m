@@ -1,222 +1,135 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yx1-f45.google.com (mail-yx1-f45.google.com [74.125.224.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E65563806A1;
-	Thu, 21 May 2026 15:33:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAB2E37D133
+	for <linux-serial@vger.kernel.org>; Thu, 21 May 2026 16:21:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779377631; cv=none; b=sD+lcXAfrghKrf3GOM6bPQHSCkCOO7PuUYYSQqcnGiyRUEtYIcPZq27vsyNuaPBFwamYE0DQo+pif2qRTWYttDMiXCE4Cag2r0ojW9nqIIuzbFSk4QVi67MaQphI0y+mrdqdm024VsRmgRlkX3nZAWG5YUdTYPZUd6PpZk+wh1A=
+	t=1779380502; cv=none; b=FVH17iqrKEd3uNWvaQG6E8pztvrobjcOKsRLY2+/YCvJNFNRVnq+IIed6jSYdGns7EWSYMyY04N8kNgkF4LNRTl2Itqhz8qadaQNY9Rdt5dW3QNupL05+yH55cmnKlFP8KLVSLF23qPrKe2ZbESkBlbtcbCPUUf8JMzkHvHFhL0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779377631; c=relaxed/simple;
-	bh=V8mssCa6B2H7gbxf3NdF5TiDoNSvHSyKMCLv0C0Gc1c=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=uZjETlqotkuQlre/lzJqqCgoYWF7Ds2qenpex7tJXb2JI46Vd9u+S1hpYpQgJDuh0HtCrqNxTALMTWAu4+uzQJS+Ttd91KYEguFGf2ixvM0iGcByw50hj2XHHJR0Aru/7Pil23m2uNiN3bOe/LZe1yT5PfQ3xXk/jlYDyWxF6NY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=ztuANXj5; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	s=arc-20240116; t=1779380502; c=relaxed/simple;
+	bh=DgWFXLtzfponnnypUw4/tj4fR2zGxcUlWHS/gPBJB8o=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=V+kdqVMEthmQSyEiIrkS2hyQb7gVD+wGz/0PsiWOLZrYD2j36d8ONVpHtQpsSkckaCGEoX/Q/zK1TAvAVbgELIBnBXrH9SOIsrnTaZUp68kx/cAMPmGU8TToA4TvOrqcO7K2rWaSYYKkVAMlrBdKAlmcglruVGm9y5mSNXiQos4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SZPHR5tM; arc=none smtp.client-ip=74.125.224.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="ztuANXj5"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=default; h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject
-	:Cc:To:From:subject:date:message-id:reply-to;
-	bh=JVJJsbuC0NVA1dp6yk1AJj/5rBFtcOSY1MtDq77fQM8=; b=ztuANXj5B/pjji+B+JIw7JA+wj
-	5VYSRJWh0k1EQVtK7FASMBgjuUu4qIOfsCBZ7c8WXZ9ptSlHo+tIS+8uRhoQwqtQ/O42fQjDUgsbX
-	0n2N2/NJNgVaLU4eKp6w6sVjFlgRchJbz0t/wA7NhtD1GQefIoVOtLe/ix97tddIv3YA=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168] helo=pettiford.lan)
-	by mail.hugovil.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.98.2)
-	(envelope-from <hugo@hugovil.com>)
-	id 1wQ5P2-000000001XZ-2tTu;
-	Thu, 21 May 2026 11:33:41 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SZPHR5tM"
+Received: by mail-yx1-f45.google.com with SMTP id 956f58d0204a3-65c7a459105so6777666d50.0
+        for <linux-serial@vger.kernel.org>; Thu, 21 May 2026 09:21:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1779380499; x=1779985299; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=cL1sPLr5+ydzzDiEyMNfe2AK4DMdgM92vvCAubLu19U=;
+        b=SZPHR5tMugU3d8IAO3yOMt0TdcJcv454xd8dCsiOGXZDCOkvS3QdR38CyRsRsxmmez
+         lc7Dbw+xyMbnNv/qUozqhcpWq8je5QJt6QKVnSGfXh7/ulsFIrd4boLbgpBGZRJJxha9
+         b+qIrE0Kvro7KG4J7jGa7jH9BW694dLpTMbhSXO71ixWQ7v3UG0vzljX0ejILAlptUJq
+         Rne/CccigFxomC9t2Jw6dpJHLN8L5LfMsRvS8uAGaJ4wSCCn74Sz2R+g59pD7pSQqCDk
+         gwoWH9w82JQo8RRsrUrJ18z3SFxr5oQilBJywyFqnQydU+D4x6R5TDuxmf1HEJ8DqoVw
+         IMQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779380499; x=1779985299;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=cL1sPLr5+ydzzDiEyMNfe2AK4DMdgM92vvCAubLu19U=;
+        b=dVrUYen5SZckGSlurREmcYuwEY/f5zwObBEAVPYPrVyK1DWRW3UAydDgkOIpXHCPq3
+         cYvLh8v3XCOC5oJlts9qJOY/NLjMKho7kqbju3P6fsbWhaGu9LVuql8ya+d3YQz+OPLO
+         hi4awdNYYKH/1e5mHncet5Z5GpsTTLdsjDALmhc7LncPenkyHvDTiP+iUpS5BVWA8vVj
+         K+8vLFffmuFARi6skSsQAU5H2lIIC04jrLysAagj47khrbjGdXrjPvSnqwgJ1Ockxmw9
+         +dR/I4M5sM9lx/kJvIW+FDDe9g17hu5hN8ztLhVwmfVR7DRaMGPW9qhvcyLMdQvI5Oi/
+         PFwg==
+X-Forwarded-Encrypted: i=1; AFNElJ8sVcd/zU56F5oLJNiO/evq/gKALU8wVfC9WNXFZp/H641DiEIhaDJlZHJ+TITMZJPAOqpXDEtDBFnx93s=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxw8UzaJ2xOgw/ej84OkAs6QThMxVhoN3vWj8PRf9ZhIvnIGhFD
+	RApwU6DkAH71HUy0MwTlR7uTVdZHTracXETzZIDMnj5dH9sN0HAQXmF+
+X-Gm-Gg: Acq92OE267JFOrnoCZeD53JSLf5fjZiyO0XDJ97avcwJVjSpD8aj/lx5GkHckJGADGp
+	a1b2meeAomvGyFHzIrTKN9hZLtIENH0XBAwteICDUAc8YTRVK61+bxOO4uRzTHdBA2i7kWZwrs4
+	mLQAvwXjXLUU5QZZrpkM1y9TKSfouyozA3MUKWgjRmCMtC9I+awJI10nMAg8Isb4GacUSj423ly
+	4PyBflgGyYh1IBv6f1Y3362DlwZk08uX6YRPzwK1Mu5Qgii4NJgwy8DeAavhqPpsxG2yRkOYHxK
+	beGW0LJZb7Cg1QV3m1JYWY6ghoD45LG0Qiny2FTgSNnuFHMYQe5N38BwsZZOe+kOjPNBxUGaWP1
+	9zbEWRUIbwXkiZ5V0lys/0FW2BNH+pSKQHmoHmdwn/hV+yQwknvkGOBxlZAZnX9exsOSu1yw7pG
+	FNjVTQ316znoGBjDueMZRCyotWZFBxqvTl+yb1Tcj/2g==
+X-Received: by 2002:a05:690e:bcf:b0:65d:29e1:970b with SMTP id 956f58d0204a3-65eacd52f6bmr3179382d50.14.1779380498797;
+        Thu, 21 May 2026 09:21:38 -0700 (PDT)
+Received: from fsh.attlocal.net ([2600:1702:56e9:4b40:ed8c:6b8b:1fa3:d14b])
+        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-65ec1beb3f8sm391186d50.7.2026.05.21.09.21.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 May 2026 09:21:38 -0700 (PDT)
+From: Akash Sukhavasi <akash.sukhavasi@gmail.com>
+To: krzk+dt@kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Cc: hugo@hugovil.com,
-	kernel test robot <lkp@intel.com>,
+	Rob Herring <robh@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
 	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH v3] serial: max310x: fix compile errors if CONFIG_SPI_MASTER is disabled
-Date: Thu, 21 May 2026 11:33:29 -0400
-Message-ID: <20260521153333.2336642-1-hugo@hugovil.com>
-X-Mailer: git-send-email 2.47.3
+	linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-doc@vger.kernel.org
+Subject: [PATCH v2] dt-bindings: serial: rs485: remove deprecated .txt binding stub
+Date: Thu, 21 May 2026 11:21:35 -0500
+Message-ID: <20260521162137.6325-1-akash.sukhavasi@gmail.com>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam_score: -1.0
-X-Spam_bar: -
 
-From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+The plain text binding file was superseded by the YAML schema in
+commit d50f974c4f7f ("dt-bindings: serial: Convert rs485 bindings
+to json-schema"). The file now contains only a redirect notice.
+Remove it, and update references in serial_core.c and
+serial-rs485.rst to point to the YAML schema.
 
-Since commit 20ffe4b3330a8 ("serial: max310x: allow driver to be built with
-SPI or I2C"), if I2C is enabled and SPI_MASTER is disabled, we have these
-compile errors:
-
-  drivers/tty/serial/max310x.c: In function 'max310x_uart_init':
-  drivers/tty/serial/max310x.c: error: 'max310x_spi_driver' undeclared...
-  drivers/tty/serial/max310x.c: In function ‘max310x_uart_init’:
-  drivers/tty/serial/max310x.c: error: label ‘err_spi_register’
-  defined but not used...
-  drivers/tty/serial/max310x.c: error: ‘regcfg’ defined but not used
-
-Fix by properly encapsulating i2c/spi code/variables in their respective
-context with IS_ENABLED() macros for CONFIG_I2C and CONFIG_SPI_MASTER.
-
-Also fix link failure with SERIAL_MAX310X=y and I2C=m by modifying Kconfig
-depends.
-
-Fixes: 20ffe4b3330a8 ("serial: max310x: allow driver to be built with SPI or I2C")
-Reported-by: kernel test robot <lkp@intel.com>
-Closes: https://lore.kernel.org/oe-kbuild-all/202605121847.N9DVLNg2-lkp@intel.com/
-Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Signed-off-by: Akash Sukhavasi <akash.sukhavasi@gmail.com>
 ---
-note: not Cc-ing stable as the commit is still in tty-next, and even if the
-errors originate from original commit that added I2C support, they were not
-trigerred because the driver could not be selected/compiled if
-CONFIG_SPI_MASTER was disabled.
+Changes in v2:
+- Update references in serial_core.c and serial-rs485.rst to point
+  to rs485.yaml (Sashiko review).
 
-Changes for v3:
-- Fix link failure with SERIAL_MAX310X=y and I2C=m (Arnd Bergmann)
+v1: https://lore.kernel.org/all/20260521150748.4816-1-akash.sukhavasi@gmail.com/
 
-Changes for v2:
-- replace #ifdef with #if IS_ENABLED() to suppoirt both built-in and modules
-  options
----
- drivers/tty/serial/Kconfig   |  2 +-
- drivers/tty/serial/max310x.c | 48 +++++++++++++++++++-----------------
- 2 files changed, 27 insertions(+), 23 deletions(-)
+ Documentation/devicetree/bindings/serial/rs485.txt | 1 -
+ Documentation/driver-api/serial/serial-rs485.rst   | 2 +-
+ drivers/tty/serial/serial_core.c                   | 2 +-
+ 3 files changed, 2 insertions(+), 3 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/serial/rs485.txt
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index f834e5d292fd7..4accbfa75074c 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -321,7 +321,7 @@ config SERIAL_MAX3100
+diff --git a/Documentation/devicetree/bindings/serial/rs485.txt b/Documentation/devicetree/bindings/serial/rs485.txt
+deleted file mode 100644
+index a7fe93efc..000000000
+--- a/Documentation/devicetree/bindings/serial/rs485.txt
++++ /dev/null
+@@ -1 +0,0 @@
+-See rs485.yaml
+diff --git a/Documentation/driver-api/serial/serial-rs485.rst b/Documentation/driver-api/serial/serial-rs485.rst
+index dce061ef7..f53043d21 100644
+--- a/Documentation/driver-api/serial/serial-rs485.rst
++++ b/Documentation/driver-api/serial/serial-rs485.rst
+@@ -132,4 +132,4 @@ RS485 Serial Communications
+ 6. References
+ =============
  
- config SERIAL_MAX310X
- 	tristate "MAX310X support"
--	depends on SPI_MASTER || I2C
-+	depends on (SPI_MASTER && !I2C) || I2C
- 	select SERIAL_CORE
- 	select REGMAP_SPI if SPI_MASTER
- 	select REGMAP_I2C if I2C
-diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-index 9f423b3b4201d..bad5329a0c84c 100644
---- a/drivers/tty/serial/max310x.c
-+++ b/drivers/tty/serial/max310x.c
-@@ -16,6 +16,7 @@
- #include <linux/device.h>
- #include <linux/gpio/driver.h>
- #include <linux/i2c.h>
-+#include <linux/kconfig.h>
- #include <linux/module.h>
- #include <linux/mod_devicetable.h>
- #include <linux/property.h>
-@@ -1507,6 +1508,21 @@ static const struct of_device_id __maybe_unused max310x_dt_ids[] = {
- };
- MODULE_DEVICE_TABLE(of, max310x_dt_ids);
- 
-+static const char *max310x_regmap_name(u8 port_id)
-+{
-+	switch (port_id) {
-+	case 0:	return "port0";
-+	case 1:	return "port1";
-+	case 2:	return "port2";
-+	case 3:	return "port3";
-+	default:
-+		WARN_ON(true);
-+		return NULL;
-+	}
-+}
-+
-+#if IS_ENABLED(CONFIG_SPI_MASTER)
-+
- static struct regmap_config regcfg = {
- 	.reg_bits = 8,
- 	.val_bits = 8,
-@@ -1522,20 +1538,6 @@ static struct regmap_config regcfg = {
- 	.max_raw_write = MAX310X_FIFO_SIZE,
- };
- 
--static const char *max310x_regmap_name(u8 port_id)
--{
--	switch (port_id) {
--	case 0:	return "port0";
--	case 1:	return "port1";
--	case 2:	return "port2";
--	case 3:	return "port3";
--	default:
--		WARN_ON(true);
--		return NULL;
--	}
--}
--
--#ifdef CONFIG_SPI_MASTER
- static int max310x_spi_extended_reg_enable(struct device *dev, bool enable)
+-.. [#DT-bindings]	Documentation/devicetree/bindings/serial/rs485.txt
++.. [#DT-bindings]	Documentation/devicetree/bindings/serial/rs485.yaml
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 89cebdd27..df4589880 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -3496,7 +3496,7 @@ EXPORT_SYMBOL_GPL(uart_try_toggle_sysrq);
+  * @port: uart device's target port
+  *
+  * This function implements the device tree binding described in
+- * Documentation/devicetree/bindings/serial/rs485.txt.
++ * Documentation/devicetree/bindings/serial/rs485.yaml.
+  */
+ int uart_get_rs485_mode(struct uart_port *port)
  {
- 	struct max310x_port *s = dev_get_drvdata(dev);
-@@ -1606,7 +1608,8 @@ static struct spi_driver max310x_spi_driver = {
- };
- #endif
- 
--#ifdef CONFIG_I2C
-+#if IS_ENABLED(CONFIG_I2C)
-+
- static int max310x_i2c_extended_reg_enable(struct device *dev, bool enable)
- {
- 	return 0;
-@@ -1726,13 +1729,13 @@ static int __init max310x_uart_init(void)
- 	if (ret)
- 		return ret;
- 
--#ifdef CONFIG_SPI_MASTER
-+#if IS_ENABLED(CONFIG_SPI_MASTER)
- 	ret = spi_register_driver(&max310x_spi_driver);
- 	if (ret)
- 		goto err_spi_register;
- #endif
- 
--#ifdef CONFIG_I2C
-+#if IS_ENABLED(CONFIG_I2C)
- 	ret = i2c_add_driver(&max310x_i2c_driver);
- 	if (ret)
- 		goto err_i2c_register;
-@@ -1740,12 +1743,13 @@ static int __init max310x_uart_init(void)
- 
- 	return 0;
- 
--#ifdef CONFIG_I2C
-+#if IS_ENABLED(CONFIG_I2C)
- err_i2c_register:
--	spi_unregister_driver(&max310x_spi_driver);
- #endif
--
-+#if IS_ENABLED(CONFIG_SPI_MASTER)
-+	spi_unregister_driver(&max310x_spi_driver);
- err_spi_register:
-+#endif
- 	uart_unregister_driver(&max310x_uart);
- 
- 	return ret;
-@@ -1754,11 +1758,11 @@ module_init(max310x_uart_init);
- 
- static void __exit max310x_uart_exit(void)
- {
--#ifdef CONFIG_I2C
-+#if IS_ENABLED(CONFIG_I2C)
- 	i2c_del_driver(&max310x_i2c_driver);
- #endif
- 
--#ifdef CONFIG_SPI_MASTER
-+#if IS_ENABLED(CONFIG_SPI_MASTER)
- 	spi_unregister_driver(&max310x_spi_driver);
- #endif
- 
-
-base-commit: 16e95bfb79b5d9d01dc7651d98caf3c2ace331cd
 -- 
-2.47.3
+2.54.0
 
