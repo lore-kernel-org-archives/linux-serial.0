@@ -1,135 +1,212 @@
-Received: from mail-yx1-f45.google.com (mail-yx1-f45.google.com [74.125.224.45])
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAB2E37D133
-	for <linux-serial@vger.kernel.org>; Thu, 21 May 2026 16:21:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7500383316
+	for <linux-serial@vger.kernel.org>; Thu, 21 May 2026 16:46:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779380502; cv=none; b=FVH17iqrKEd3uNWvaQG6E8pztvrobjcOKsRLY2+/YCvJNFNRVnq+IIed6jSYdGns7EWSYMyY04N8kNgkF4LNRTl2Itqhz8qadaQNY9Rdt5dW3QNupL05+yH55cmnKlFP8KLVSLF23qPrKe2ZbESkBlbtcbCPUUf8JMzkHvHFhL0=
+	t=1779382000; cv=none; b=tOzthfonNqRBvNsxS3vfQOJvW5DkiZH2xKOklSm3bj4NE1faHZDSUXxpP9fVtlwhfglTAceQxExLoA/LWM6ppCNCX1ZY4Vw/kWzMTzxAlWNW8H72OxOsDls7DSiVC+d8UB1iPW/2ak1Pca4PxaA1Bu09mCoqwlEWyHZFgC2etPU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779380502; c=relaxed/simple;
-	bh=DgWFXLtzfponnnypUw4/tj4fR2zGxcUlWHS/gPBJB8o=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=V+kdqVMEthmQSyEiIrkS2hyQb7gVD+wGz/0PsiWOLZrYD2j36d8ONVpHtQpsSkckaCGEoX/Q/zK1TAvAVbgELIBnBXrH9SOIsrnTaZUp68kx/cAMPmGU8TToA4TvOrqcO7K2rWaSYYKkVAMlrBdKAlmcglruVGm9y5mSNXiQos4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SZPHR5tM; arc=none smtp.client-ip=74.125.224.45
+	s=arc-20240116; t=1779382000; c=relaxed/simple;
+	bh=55HpdrZ1XWqM3uwC+a47+vakAvshOA/Toys7NpGVJzc=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=LP3Yop5iXcI+xc/vYXgK/hCBa7PAWdOQLPE2JAcibmkws/H+TWIJHQjV7MhOITPljVAGMGtNG3e1mPrwiCs4+kcOJrPVoKRAkFAp14xxhnwWId8Qx4zwLayvLSvZMQNtpc++0t0muNgfCFnvuRZgCCOHCKqBUA8jAu+5X0OYOhY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hAiFXflX; arc=none smtp.client-ip=209.85.128.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SZPHR5tM"
-Received: by mail-yx1-f45.google.com with SMTP id 956f58d0204a3-65c7a459105so6777666d50.0
-        for <linux-serial@vger.kernel.org>; Thu, 21 May 2026 09:21:39 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hAiFXflX"
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-490388fd0dbso8750445e9.0
+        for <linux-serial@vger.kernel.org>; Thu, 21 May 2026 09:46:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779380499; x=1779985299; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=cL1sPLr5+ydzzDiEyMNfe2AK4DMdgM92vvCAubLu19U=;
-        b=SZPHR5tMugU3d8IAO3yOMt0TdcJcv454xd8dCsiOGXZDCOkvS3QdR38CyRsRsxmmez
-         lc7Dbw+xyMbnNv/qUozqhcpWq8je5QJt6QKVnSGfXh7/ulsFIrd4boLbgpBGZRJJxha9
-         b+qIrE0Kvro7KG4J7jGa7jH9BW694dLpTMbhSXO71ixWQ7v3UG0vzljX0ejILAlptUJq
-         Rne/CccigFxomC9t2Jw6dpJHLN8L5LfMsRvS8uAGaJ4wSCCn74Sz2R+g59pD7pSQqCDk
-         gwoWH9w82JQo8RRsrUrJ18z3SFxr5oQilBJywyFqnQydU+D4x6R5TDuxmf1HEJ8DqoVw
-         IMQw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779380499; x=1779985299;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1779381995; x=1779986795; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=cL1sPLr5+ydzzDiEyMNfe2AK4DMdgM92vvCAubLu19U=;
-        b=dVrUYen5SZckGSlurREmcYuwEY/f5zwObBEAVPYPrVyK1DWRW3UAydDgkOIpXHCPq3
-         cYvLh8v3XCOC5oJlts9qJOY/NLjMKho7kqbju3P6fsbWhaGu9LVuql8ya+d3YQz+OPLO
-         hi4awdNYYKH/1e5mHncet5Z5GpsTTLdsjDALmhc7LncPenkyHvDTiP+iUpS5BVWA8vVj
-         K+8vLFffmuFARi6skSsQAU5H2lIIC04jrLysAagj47khrbjGdXrjPvSnqwgJ1Ockxmw9
-         +dR/I4M5sM9lx/kJvIW+FDDe9g17hu5hN8ztLhVwmfVR7DRaMGPW9qhvcyLMdQvI5Oi/
-         PFwg==
-X-Forwarded-Encrypted: i=1; AFNElJ8sVcd/zU56F5oLJNiO/evq/gKALU8wVfC9WNXFZp/H641DiEIhaDJlZHJ+TITMZJPAOqpXDEtDBFnx93s=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxw8UzaJ2xOgw/ej84OkAs6QThMxVhoN3vWj8PRf9ZhIvnIGhFD
-	RApwU6DkAH71HUy0MwTlR7uTVdZHTracXETzZIDMnj5dH9sN0HAQXmF+
-X-Gm-Gg: Acq92OE267JFOrnoCZeD53JSLf5fjZiyO0XDJ97avcwJVjSpD8aj/lx5GkHckJGADGp
-	a1b2meeAomvGyFHzIrTKN9hZLtIENH0XBAwteICDUAc8YTRVK61+bxOO4uRzTHdBA2i7kWZwrs4
-	mLQAvwXjXLUU5QZZrpkM1y9TKSfouyozA3MUKWgjRmCMtC9I+awJI10nMAg8Isb4GacUSj423ly
-	4PyBflgGyYh1IBv6f1Y3362DlwZk08uX6YRPzwK1Mu5Qgii4NJgwy8DeAavhqPpsxG2yRkOYHxK
-	beGW0LJZb7Cg1QV3m1JYWY6ghoD45LG0Qiny2FTgSNnuFHMYQe5N38BwsZZOe+kOjPNBxUGaWP1
-	9zbEWRUIbwXkiZ5V0lys/0FW2BNH+pSKQHmoHmdwn/hV+yQwknvkGOBxlZAZnX9exsOSu1yw7pG
-	FNjVTQ316znoGBjDueMZRCyotWZFBxqvTl+yb1Tcj/2g==
-X-Received: by 2002:a05:690e:bcf:b0:65d:29e1:970b with SMTP id 956f58d0204a3-65eacd52f6bmr3179382d50.14.1779380498797;
-        Thu, 21 May 2026 09:21:38 -0700 (PDT)
-Received: from fsh.attlocal.net ([2600:1702:56e9:4b40:ed8c:6b8b:1fa3:d14b])
-        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-65ec1beb3f8sm391186d50.7.2026.05.21.09.21.37
+        bh=NA/nM16UoxaTsk3A7SWQL7q3HkgK647mNtY2rDcRyyc=;
+        b=hAiFXflXTEbRl6U5Air/vBGryJ1P7DUwv5y5hFcBfrvyOOjvwLAPWk6boHEMfrP+03
+         djrSF/MmhRRc4oKAARffcHojm9lrMfH/yxDwEmaCsT4BFCL3flmfjoZXGq6TFSC3TeHl
+         JsiTufiR6et1mz+pI8XV2U+9x+ymMfxMCAW0bX+y+95+67AVxLZvt8B0iLXkU9d/aiqe
+         9TLZTYgekPiyf54s88p+J1C3j1Lc4MyofWrYIv5jQC1MQsWTxKDTJulTH9sW3bkKM6Er
+         8ENfEnS8Rye+RBlr7U5dk7H7qISkWK2Sz6IRcVfJFcdljcS2gaAHhL/dDTECxI2slWnI
+         yang==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779381995; x=1779986795;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=NA/nM16UoxaTsk3A7SWQL7q3HkgK647mNtY2rDcRyyc=;
+        b=AKjt/UMHNXLWD1WgZaPbE5nsUm9H1ZJWodRB7biRnx8y6sepYh8Jey9mRVaCVZ4yTm
+         ZNFyrINFnvUgd2UY3lX4VB+LQcY9SOd3S2ua7ZvDYlN7JcqErPVIbzrnjTsFhHCX4MGz
+         S9l/zNmHRQsQEIraWCl8FifCEQht0E735wOLJ/poHjwRjeCffh++qDzSIh0jt+9OHufs
+         Jlb5WM5kFGsVnI7yxBrYhTt5Wg+Lwr00UT2asgv/2d1fcNVl6addBSJ/bf8pMZNxI3hb
+         uK8n1+1LsZ3NehaVOvzulIVgen34A2pAYVVGlR5hppSkMiAx/TX+rS3YTgt4s8wneIWS
+         quZQ==
+X-Forwarded-Encrypted: i=1; AFNElJ9QoEL5LkVrsY0VyMrq1RlTYfLD85BPZsFmHIUszAIW/ocySEb5ZXpWAV+BTwYbaIg0Zlr90eQV2EXVAKg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwTKshZoa5WfOLA+Z46HBIGxEIRlUo1Ie/F73PIGMuvYenPoPFl
+	BNa058avMO7Hxdxn1u6j8rH/Ngy9+J28VC8AtMcs68kRaUhuM058yhXP
+X-Gm-Gg: Acq92OE25Na5h7yE8rhZ/LIzoUgdz/MiE/F7jeWwrHV95fw4fYlaMEhC/XlEh0og/A5
+	JM4YFHde6p1XQc4SpJEEsRYaGuOZ4NC35Lz4X1O0cS9G3TZPaUv4rPzXFUQb6D4v2SVbfdveK/K
+	5R66PdyKKBwmhb5wuzO/uwAWKGhvB7y5fKi5pbOCS5D4HcHlmGEiNVIgYz5UqDKjMIn84Nj/3FK
+	vYunUuNX5BfAfEkZmqzybVH8GDYhup4cCZS8AQLc7qEbxDpgN4TpLnQpFbf8t2QgKS5qxUSUCSw
+	Kjg4yJySYNvLXLqXIKoLM4Nk9nmkud4TlCX3EVs7qOHMFx0ZfMjrDd3uZmUwvSQ5PSWuh+Pc80X
+	RhGF3zmYJAqjdnz7mbhI+9gIrgLTtUezedB5O1gLZaq9sCId2u/X4qU3l89toZZfWZAU8CWvVbc
+	QZhMVj2JqaAXBoJaLNb1tqbiYu3kbaCIgKGFxe6pOQWh+WcXCOZqa9DQB0I2JX5kgo
+X-Received: by 2002:a05:600c:45c6:b0:488:ac01:72de with SMTP id 5b1f17b1804b1-49036033502mr53623425e9.5.1779381994891;
+        Thu, 21 May 2026 09:46:34 -0700 (PDT)
+Received: from pumpkin (82-69-66-36.dsl.in-addr.zen.co.uk. [82.69.66.36])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49035ecac15sm31613075e9.6.2026.05.21.09.46.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 May 2026 09:21:38 -0700 (PDT)
-From: Akash Sukhavasi <akash.sukhavasi@gmail.com>
-To: krzk+dt@kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-doc@vger.kernel.org
-Subject: [PATCH v2] dt-bindings: serial: rs485: remove deprecated .txt binding stub
-Date: Thu, 21 May 2026 11:21:35 -0500
-Message-ID: <20260521162137.6325-1-akash.sukhavasi@gmail.com>
-X-Mailer: git-send-email 2.54.0
+        Thu, 21 May 2026 09:46:34 -0700 (PDT)
+Date: Thu, 21 May 2026 17:46:31 +0100
+From: David Laight <david.laight.linux@gmail.com>
+To: Kees Cook <kees@kernel.org>
+Cc: Luis Chamberlain <mcgrof@kernel.org>, Pengpeng Hou
+ <pengpeng@iscas.ac.cn>, stable@vger.kernel.org, Petr Pavlu
+ <petr.pavlu@suse.com>, Richard Weinberger <richard@nod.at>, Anton Ivanov
+ <anton.ivanov@cambridgegreys.com>, Johannes Berg
+ <johannes@sipsolutions.net>, "Rafael J. Wysocki" <rafael@kernel.org>, Len
+ Brown <lenb@kernel.org>, Corey Minyard <corey@minyard.net>, Gabriel Somlo
+ <somlo@cmu.edu>, "Michael S. Tsirkin" <mst@redhat.com>, Jani Nikula
+ <jani.nikula@linux.intel.com>, Joonas Lahtinen
+ <joonas.lahtinen@linux.intel.com>, Rodrigo Vivi <rodrigo.vivi@intel.com>,
+ Tvrtko Ursulin <tursulin@ursulin.net>, David Airlie <airlied@gmail.com>,
+ Simona Vetter <simona@ffwll.ch>, Bart Van Assche <bvanassche@acm.org>,
+ Jason Gunthorpe <jgg@ziepe.ca>, Leon Romanovsky <leon@kernel.org>, Laurent
+ Pinchart <laurent.pinchart@ideasonboard.com>, Hans de Goede
+ <hansg@kernel.org>, Mauro Carvalho Chehab <mchehab@kernel.org>, Bjorn
+ Helgaas <bhelgaas@google.com>, Hannes Reinecke <hare@suse.de>, "James E.J.
+ Bottomley" <James.Bottomley@HansenPartnership.com>, "Martin K. Petersen"
+ <martin.petersen@oracle.com>, Daniel Lezcano <daniel.lezcano@kernel.org>,
+ Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>, Greg
+ Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>, Alan Stern <stern@rowland.harvard.edu>, Jason Wang
+ <jasowang@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>, Eugenio
+ =?UTF-8?B?UMOpcmV6?= <eperezma@redhat.com>, Jason Baron
+ <jbaron@akamai.com>, Jim Cromie <jim.cromie@gmail.com>, Tiwei Bie
+ <tiwei.btw@antgroup.com>, Benjamin Berg <benjamin.berg@intel.com>, Ilpo
+ =?UTF-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, "David E. Box"
+ <david.e.box@linux.intel.com>, "Maciej W. Rozycki" <macro@orcam.me.uk>,
+ Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, Peter Zijlstra
+ <peterz@infradead.org>, Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik
+ <gor@linux.ibm.com>, Sean Christopherson <seanjc@google.com>, Paolo Bonzini
+ <pbonzini@redhat.com>, Thomas Gleixner <tglx@kernel.org>, Ingo Molnar
+ <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen
+ <dave.hansen@linux.intel.com>, x86@kernel.org, "H. Peter Anvin"
+ <hpa@zytor.com>, Vinod Koul <vkoul@kernel.org>, Frank Li
+ <Frank.Li@kernel.org>, Daniel Gomez <da.gomez@kernel.org>, Sami Tolvanen
+ <samitolvanen@google.com>, Aaron Tomlin <atomlin@atomlin.com>, Alexander
+ Potapenko <glider@google.com>, Marco Elver <elver@google.com>, Dmitry
+ Vyukov <dvyukov@google.com>, Andrew Morton <akpm@linux-foundation.org>,
+ John Johansen <john.johansen@canonical.com>, Paul Moore
+ <paul@paul-moore.com>, James Morris <jmorris@namei.org>, "Serge E. Hallyn"
+ <serge@hallyn.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Georgia Garcia <georgia.garcia@canonical.com>, kvm@vger.kernel.org,
+ dmaengine@vger.kernel.org, linux-modules@vger.kernel.org,
+ kasan-dev@googlegroups.com, linux-mm@kvack.org, apparmor@lists.ubuntu.com,
+ linux-security-module@vger.kernel.org, linux-um@lists.infradead.org,
+ linux-acpi@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
+ qemu-devel@nongnu.org, intel-gfx@lists.freedesktop.org,
+ dri-devel@lists.freedesktop.org, linux-rdma@vger.kernel.org,
+ linux-media@vger.kernel.org, linux-pci@vger.kernel.org,
+ linux-scsi@vger.kernel.org, linux-pm@vger.kernel.org,
+ linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org,
+ linux-usb@vger.kernel.org, usb-storage@lists.one-eyed-alien.net,
+ virtualization@lists.linux.dev, linux-kernel@vger.kernel.org,
+ linux-arch@vger.kernel.org, netdev@vger.kernel.org,
+ linux-fsdevel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH 01/11] params: bound array element output to the
+ caller's page buffer
+Message-ID: <20260521174631.71a06440@pumpkin>
+In-Reply-To: <20260521133326.2465264-1-kees@kernel.org>
+References: <20260521133315.work.845-kees@kernel.org>
+	<20260521133326.2465264-1-kees@kernel.org>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-The plain text binding file was superseded by the YAML schema in
-commit d50f974c4f7f ("dt-bindings: serial: Convert rs485 bindings
-to json-schema"). The file now contains only a redirect notice.
-Remove it, and update references in serial_core.c and
-serial-rs485.rst to point to the YAML schema.
+On Thu, 21 May 2026 06:33:14 -0700
+Kees Cook <kees@kernel.org> wrote:
 
-Signed-off-by: Akash Sukhavasi <akash.sukhavasi@gmail.com>
----
-Changes in v2:
-- Update references in serial_core.c and serial-rs485.rst to point
-  to rs485.yaml (Sashiko review).
+> From: Pengpeng Hou <pengpeng@iscas.ac.cn>
+> 
+> param_array_get() appends each element's string representation into the
+> shared sysfs page buffer by passing buffer + off to the element getter.
+> 
+> That works for getters that only write a small bounded string, but
+> param_get_charp() and similar helpers format against PAGE_SIZE from the
+> pointer they receive. Once off is non-zero, an element getter can
+> therefore write past the end of the original sysfs page buffer.
+> 
+> Collect each element into a temporary PAGE_SIZE buffer first and then
+> copy only the remaining space into the caller's page buffer.
 
-v1: https://lore.kernel.org/all/20260521150748.4816-1-akash.sukhavasi@gmail.com/
+Should this be using a 4k buffer on all architectures?
+Initially perhaps just using a different name for the constant until
+all the associated PAGE_SIZE limits have been removed.
 
- Documentation/devicetree/bindings/serial/rs485.txt | 1 -
- Documentation/driver-api/serial/serial-rs485.rst   | 2 +-
- drivers/tty/serial/serial_core.c                   | 2 +-
- 3 files changed, 2 insertions(+), 3 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/serial/rs485.txt
+-- David
 
-diff --git a/Documentation/devicetree/bindings/serial/rs485.txt b/Documentation/devicetree/bindings/serial/rs485.txt
-deleted file mode 100644
-index a7fe93efc..000000000
---- a/Documentation/devicetree/bindings/serial/rs485.txt
-+++ /dev/null
-@@ -1 +0,0 @@
--See rs485.yaml
-diff --git a/Documentation/driver-api/serial/serial-rs485.rst b/Documentation/driver-api/serial/serial-rs485.rst
-index dce061ef7..f53043d21 100644
---- a/Documentation/driver-api/serial/serial-rs485.rst
-+++ b/Documentation/driver-api/serial/serial-rs485.rst
-@@ -132,4 +132,4 @@ RS485 Serial Communications
- 6. References
- =============
- 
--.. [#DT-bindings]	Documentation/devicetree/bindings/serial/rs485.txt
-+.. [#DT-bindings]	Documentation/devicetree/bindings/serial/rs485.yaml
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 89cebdd27..df4589880 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -3496,7 +3496,7 @@ EXPORT_SYMBOL_GPL(uart_try_toggle_sysrq);
-  * @port: uart device's target port
-  *
-  * This function implements the device tree binding described in
-- * Documentation/devicetree/bindings/serial/rs485.txt.
-+ * Documentation/devicetree/bindings/serial/rs485.yaml.
-  */
- int uart_get_rs485_mode(struct uart_port *port)
- {
--- 
-2.54.0
+> 
+> Cc: stable@vger.kernel.org
+> Reviewed-by: Petr Pavlu <petr.pavlu@suse.com>
+> Signed-off-by: Pengpeng Hou <pengpeng@iscas.ac.cn>
+> Signed-off-by: Kees Cook <kees@kernel.org>
+> ---
+>  kernel/params.c | 26 ++++++++++++++++++++------
+>  1 file changed, 20 insertions(+), 6 deletions(-)
+> 
+> diff --git a/kernel/params.c b/kernel/params.c
+> index 74d620bc2521..752721922a15 100644
+> --- a/kernel/params.c
+> +++ b/kernel/params.c
+> @@ -475,22 +475,36 @@ static int param_array_set(const char *val, const struct kernel_param *kp)
+>  static int param_array_get(char *buffer, const struct kernel_param *kp)
+>  {
+>  	int i, off, ret;
+> +	char *elem_buf;
+>  	const struct kparam_array *arr = kp->arr;
+>  	struct kernel_param p = *kp;
+>  
+> +	elem_buf = kmalloc(PAGE_SIZE, GFP_KERNEL);
+> +	if (!elem_buf)
+> +		return -ENOMEM;
+> +
+>  	for (i = off = 0; i < (arr->num ? *arr->num : arr->max); i++) {
+> -		/* Replace \n with comma */
+> -		if (i)
+> -			buffer[off - 1] = ',';
+>  		p.arg = arr->elem + arr->elemsize * i;
+>  		check_kparam_locked(p.mod);
+> -		ret = arr->ops->get(buffer + off, &p);
+> +		ret = arr->ops->get(elem_buf, &p);
+>  		if (ret < 0)
+> -			return ret;
+> +			goto out;
+> +		ret = min(ret, (int)(PAGE_SIZE - 1 - off));
+> +		if (!ret)
+> +			break;
+> +		/* Replace the previous element's trailing newline with a comma. */
+> +		if (i)
+> +			buffer[off - 1] = ',';
+> +		memcpy(buffer + off, elem_buf, ret);
+>  		off += ret;
+> +		if (off == PAGE_SIZE - 1)
+> +			break;
+>  	}
+>  	buffer[off] = '\0';
+> -	return off;
+> +	ret = off;
+> +out:
+> +	kfree(elem_buf);
+> +	return ret;
+>  }
+>  
+>  static void param_array_free(void *arg)
 
