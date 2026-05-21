@@ -1,36 +1,36 @@
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 604C43911D6;
-	Thu, 21 May 2026 18:17:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBD5B3C342B;
+	Thu, 21 May 2026 18:17:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779387429; cv=none; b=sibOCbuYltULh29VGNHXa20EwI79R3C4kHLOAmFWCJqmJY0Xspn2Fl96tOheM0vaGXRBtsYW2XLBgWFxrbn49VwGO6diSZmVdMuyiTqCpAk+ViBjMYCqsVRYH/bnEYJszHgAg7ms61kgEiKdeT74CXAF6e3IcucMzojlNvqgfNw=
+	t=1779387430; cv=none; b=FaR2/Y9Ho9LIHaqqw8IjIyv6z6ZFzHOuUEE0C6IchQU7R37MDKM56W6XbAgKnpsk1aq9U7/WzNbRV4dM4o83kAP7hwK3iqlsBZ9+vitb/+ygUuV015LPjNVBQo5mF94wD+ZazAE9Vj8/I1VXxUMvd9Hd8zOD6Febai0o6ReHuyA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779387429; c=relaxed/simple;
-	bh=iLToBsHpSohULFc0EP+qWYer9ijRiHwJ3pqwmHWsAZQ=;
+	s=arc-20240116; t=1779387430; c=relaxed/simple;
+	bh=E9e1Yqrrnnpe3+dDHZNvFehP1OfM/mxITrGq5WxusfQ=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=KD9pwZoFpbmIPgFacioc33XFmqePvr6uW1DiJm/H6hSg5tx8hni9kzy54yFs2/5np6MSx3D3d/kQvclaL+dM/Y1gt2fEm1lfVXw+v/hG827x+upJpF4GlZABT7oWcWPV3DxdE+tdfFlk7ZOl3//hw7szVgym0VvG2iGolNx91BE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=j8LOtY+j; arc=none smtp.client-ip=162.243.120.170
+	 In-Reply-To:To:Cc; b=mBfTcry1LlXVKedOQd6wHVWoUa3iaSkH3RrOPFuryeLz1FxxbDDjvG18zz6eYTYNC+z880eTQZ5kBASIsH4RDgnrSTAJO4PYNwkxoill3gTJtJzQn01oYPsJdgDVB4HA/c2FerF0Pb9l2j6lVrfQoL18804MdcrZisBDSqo/qyg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=gwTCZVMv; arc=none smtp.client-ip=162.243.120.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="j8LOtY+j"
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="gwTCZVMv"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
 	; s=default; h=Cc:To:Message-Id:Content-Transfer-Encoding:MIME-Version:
 	Subject:Date:From:subject:date:message-id:reply-to;
-	bh=HDad8tre8cgLM6lKAS7gv2w3ffbeq2s30zMYuiKT/gM=; b=j8LOtY+j3BdxUyRw+a8xmzZ4Up
-	lvYy9vDabmgHWdoK4cLbiCXAGKs1VKArOI/zGOCFq+J3qFYR74zP8HeD1sOPAkt3IgfFY2JyQa3Il
-	dmDtPsoBr7CNGQHzEC0DhW0ovYkchGzo/w30Qaj+K9roensbDBpN+K/+aEC9c/L5Pjf0=;
+	bh=yeSaF9njE5GuFf1Tu4uSm5WErkZGfD4UUUQSnZJxD34=; b=gwTCZVMvoZmC5Ljiqa838LtUYe
+	Ng5R5k6apFu6IDdnFhplBfek4Wb5oJG1mCXks0Kc/nKZqmsEwLe8+qbbn+bccugilTwyhuwPxQrHY
+	256/RUnt/89wBN4oFWn0/NroShiRqaCH+6D6AQEvYuWE4KJjOWOl0vQGhgzn+7evexjg=;
 Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168] helo=pettiford.lan)
 	by mail.hugovil.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.98.2)
 	(envelope-from <hugo@hugovil.com>)
-	id 1wQ7x6-000000001yA-49S1;
-	Thu, 21 May 2026 14:17:01 -0400
+	id 1wQ7x7-000000001yA-2olS;
+	Thu, 21 May 2026 14:17:02 -0400
 From: Hugo Villeneuve <hugo@hugovil.com>
-Date: Thu, 21 May 2026 14:16:51 -0400
-Subject: [PATCH v3 05/10] serial: 8250: use uart_iotype_*() to simplify
+Date: Thu, 21 May 2026 14:16:52 -0400
+Subject: [PATCH v3 06/10] serial: 8250_rsa: use uart_iotype_*() to simplify
  code
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260521-tty-upio-v3-5-bf74567994a0@dimonoff.com>
+Message-Id: <20260521-tty-upio-v3-6-bf74567994a0@dimonoff.com>
 References: <20260521-tty-upio-v3-0-bf74567994a0@dimonoff.com>
 In-Reply-To: <20260521-tty-upio-v3-0-bf74567994a0@dimonoff.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
@@ -55,101 +55,73 @@ X-Spam_bar: -
 From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
 Make use of new functions uart_iotype_mmio() and uart_iotype_legacy_io()
-to simplify and improve code readability.
+to simplify and improve code readability, as well as avoid some variables
+init if the iotype is not valid.
 
 Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 ---
- drivers/tty/serial/8250/8250_port.c | 43 ++++++-------------------------------
- 1 file changed, 7 insertions(+), 36 deletions(-)
+ drivers/tty/serial/8250/8250_rsa.c | 40 ++++++++++++++++++--------------------
+ 1 file changed, 19 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index e4e6a53ebea39c376162690219347c1d2729c349..b36341c53f29025fec8787d3446ca95b27d60fea 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -474,16 +474,10 @@ static void set_io_from_upio(struct uart_port *p)
- static void
- serial_port_out_sync(struct uart_port *p, int offset, int value)
+diff --git a/drivers/tty/serial/8250/8250_rsa.c b/drivers/tty/serial/8250/8250_rsa.c
+index fff9395948e33be6b08355bace70275b7515b608..da971437e89c16f718cab71c0d64acd61ed9c436 100644
+--- a/drivers/tty/serial/8250/8250_rsa.c
++++ b/drivers/tty/serial/8250/8250_rsa.c
+@@ -19,35 +19,33 @@ static const struct uart_ops *core_port_base_ops;
+ static int rsa8250_request_resource(struct uart_8250_port *up)
  {
--	switch (p->iotype) {
--	case UPIO_MEM:
--	case UPIO_MEM16:
--	case UPIO_MEM32:
--	case UPIO_MEM32BE:
--	case UPIO_AU:
-+	if (uart_iotype_mmio(p->iotype)) {
- 		p->serial_out(p, offset, value);
- 		p->serial_in(p, UART_LCR);	/* safe, no side-effects */
+ 	struct uart_port *port = &up->port;
+-	unsigned long start = UART_RSA_BASE << port->regshift;
+-	unsigned int size = 8 << port->regshift;
++	unsigned long start;
++	unsigned int size;
+ 
+-	switch (port->iotype) {
+-	case UPIO_HUB6:
+-	case UPIO_PORT:
+-		start += port->iobase;
+-		if (!request_region(start, size, "serial-rsa"))
+-			return -EBUSY;
+-		return 0;
+-	default:
++	if (!uart_iotype_io(port->iotype))
+ 		return -EINVAL;
+-	}
++
++	start = UART_RSA_BASE << port->regshift;
++	start += port->iobase;
++	size = 8 << port->regshift;
++
++	if (!request_region(start, size, "serial-rsa"))
++		return -EBUSY;
++	return 0;
+ }
+ 
+ static void rsa8250_release_resource(struct uart_8250_port *up)
+ {
+ 	struct uart_port *port = &up->port;
+-	unsigned long offset = UART_RSA_BASE << port->regshift;
+-	unsigned int size = 8 << port->regshift;
++	unsigned long offset;
++	unsigned int size;
+ 
+-	switch (port->iotype) {
+-	case UPIO_HUB6:
+-	case UPIO_PORT:
+-		release_region(port->iobase + offset, size);
 -		break;
 -	default:
-+	} else {
- 		p->serial_out(p, offset, value);
- 	}
- }
-@@ -2865,13 +2859,7 @@ static int serial8250_request_std_resource(struct uart_8250_port *up)
- 	unsigned int size = serial8250_port_size(up);
- 	struct uart_port *port = &up->port;
- 
--	switch (port->iotype) {
--	case UPIO_AU:
--	case UPIO_TSI:
--	case UPIO_MEM32:
--	case UPIO_MEM32BE:
--	case UPIO_MEM16:
--	case UPIO_MEM:
-+	if (uart_iotype_mmio(port->iotype)) {
- 		if (!port->mapbase)
- 			return -EINVAL;
- 
-@@ -2885,14 +2873,9 @@ static int serial8250_request_std_resource(struct uart_8250_port *up)
- 				return -ENOMEM;
- 			}
- 		}
--		return 0;
--	case UPIO_HUB6:
--	case UPIO_PORT:
-+	} else if (uart_iotype_io(port->iotype)) {
- 		if (!request_region(port->iobase, size, "serial"))
- 			return -EBUSY;
--		return 0;
--	case UPIO_UNKNOWN:
 -		break;
- 	}
- 
- 	return 0;
-@@ -2903,15 +2886,9 @@ static void serial8250_release_std_resource(struct uart_8250_port *up)
- 	unsigned int size = serial8250_port_size(up);
- 	struct uart_port *port = &up->port;
- 
--	switch (port->iotype) {
--	case UPIO_AU:
--	case UPIO_TSI:
--	case UPIO_MEM32:
--	case UPIO_MEM32BE:
--	case UPIO_MEM16:
--	case UPIO_MEM:
-+	if (uart_iotype_mmio(port->iotype)) {
- 		if (!port->mapbase)
--			break;
-+			return;
- 
- 		if (port->flags & UPF_IOREMAP) {
- 			iounmap(port->membase);
-@@ -2919,14 +2896,8 @@ static void serial8250_release_std_resource(struct uart_8250_port *up)
- 		}
- 
- 		release_mem_region(port->mapbase, size);
--		break;
--
--	case UPIO_HUB6:
--	case UPIO_PORT:
-+	} else if (uart_iotype_io(port->iotype)) {
- 		release_region(port->iobase, size);
--		break;
--	case UPIO_UNKNOWN:
--		break;
- 	}
+-	}
++	if (!uart_iotype_io(port->iotype))
++		return;
++
++	offset = UART_RSA_BASE << port->regshift;
++	size = 8 << port->regshift;
++	release_region(port->iobase + offset, size);
  }
  
+ static void univ8250_config_port(struct uart_port *port, int flags)
 
 -- 
 2.47.3
