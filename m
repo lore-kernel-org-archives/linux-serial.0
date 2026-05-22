@@ -1,126 +1,166 @@
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D5233A9856
-	for <linux-serial@vger.kernel.org>; Fri, 22 May 2026 13:29:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED06A40FD98
+	for <linux-serial@vger.kernel.org>; Fri, 22 May 2026 14:01:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779456549; cv=none; b=dF1kPqiqeyFK5yGpQoJ3OxiH+mBQqT1YkFETpcNjVm2Q2um2ajr945YD55KjrcMZ8Hf0MLZ0lA7+cgba5GpaAhc6lw1HhPlr10/i/7hl02AR2vNxeL3tfNeEUXXMnyHuxB0dXKFSlUZJXLfgWPxiwU2k6BhN6R8dIl2rJIIZ/OI=
+	t=1779458488; cv=none; b=mGTL9r3CiDG0hSP/7cMKVt+4MHSbkjxqelin3KqOhnjSTwdKvEJ74dQi+eLEQZbcTaip0XpT6o++++ZzV4WwmduI+tfeq2nDacp4xy+tI32rvreoL0TmgagujM/Z30wZD09sEvODKI51sP4pVkx8ka3+To2iXv6e6rKagFR1IwU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779456549; c=relaxed/simple;
-	bh=uA5XK7hUcVBDK1TQ5IhMdTQ3KKamgRn7wWw7Lc9tdmY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=r7KpOPHS0TUuxlt7/WJH4u/bus0x5MP9649js2PL3A5oiaOSXAI080R91vKXRkUHmilHgEbmFMRs2uZz/njoEQ+tDJNLk+UPJvBxuwmwLLW/xcPvBeCK36vyH4owkgNSCP20MFpfMVkbbZD812vi93a1ltqglqLNSC+pc4NUboI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=nINf4MVk; arc=none smtp.client-ip=209.85.221.43
+	s=arc-20240116; t=1779458488; c=relaxed/simple;
+	bh=auClZft7VdNRE+QTLNJrHUjk+O/0nGgODOAHYjA9MXg=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=QwUCNI027puWbqjNF5275tn95WmhPYjGiqbc/car1pccXB442vJDnWSQ7KYSvkA+JwqkZFJCrVssrckthiwcIPnHsDlt6ANa0cJiRK1J+DESCIFCZaJtSMolv+8/eQNMfChzDUE88SvCR+E3SXtFn4YfZAhDrmuMKFnr+EOruW8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=MRRmgZrT; arc=none smtp.client-ip=209.85.128.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="nINf4MVk"
-Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-45d96d21e82so4209857f8f.0
-        for <linux-serial@vger.kernel.org>; Fri, 22 May 2026 06:29:04 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="MRRmgZrT"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-49041e84237so7727925e9.1
+        for <linux-serial@vger.kernel.org>; Fri, 22 May 2026 07:01:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1779456543; x=1780061343; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=htNYCJqAv5Kn4qWeRy9oacU9mjKWIUf7MYgoPGtubds=;
-        b=nINf4MVkr+odyz0TaKW+pKlpATO8A7tAf0HFm2ZtS5vcAKc5O/WH4ZyxNcpHQPBDKm
-         MGpAYgQZ1TEgnEzKye9hTdjhQ4qyE3JuKWj9+ew+SVJd0nKaEowGTsbIIr/OK6iLJRn+
-         tYsblPkRlgaA1aZcVZ/lWciJsMzQ9SxUebnJhkmDc74R1TTHxCblKnYPIydEs0SiMes8
-         NOlvzg6t2q+pLLOBd0kP3DTd+7025pVdEOoeMGPqbUcWWlZm9O6fJO6a2CU9zDVg7tuY
-         nbAo+K0PngL7zh3jxiYS8vHe5cmiLjB+Br9DmZbmnYKRN75Sg2mK6cJWFjfQU6A6VkcP
-         qJMA==
+        d=baylibre.com; s=google; t=1779458476; x=1780063276; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=yc5bJxLqrJjZCtVBZCib+tWdN1ETOFhinbVuxikn2Hw=;
+        b=MRRmgZrTHsPAN1Xb5Jr8oX/U8ecNIT+Av5k+dC+HGzCpplsXheV+XznAmikwQbL6Hb
+         Id4XhZVMhCQWfX+Yd2si6UfHxZ47tMMyhP5FP10Xs4gS4S9VcotROMpOEOt79+AtCwjR
+         8wtBek7ea0z9mo1p75955HP5asrOKXffV4NhBPx4XMefNH4auVBSa15q4vn0I0og5s6H
+         yil43wZwWumSBJ5XDOsx/xGNKWXG6CSsyIA8bRbRmxQRSrNQenWKw3bH+oIqowEyRu7G
+         F1Ki63aLNo4nHSW6MPj3DAU7wXSClvRs272FYM78P8nub/4Mo0IWMGoCN99JrC3LmJMt
+         +a8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779456543; x=1780061343;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=htNYCJqAv5Kn4qWeRy9oacU9mjKWIUf7MYgoPGtubds=;
-        b=gnlhS3/XVp0b1wYBY/Gi7pyxOsZLxLpurFKvINPZyg1qQfnXiZDD5Fw6Yr1NazLwon
-         ni+Lh0gW2tDqJsBedcbt2vnrQqIgEhSDWCUB1EXySIJW/p77srCj93DJXDYR9B0V2XMN
-         hli/fATkv1WG9QDry9V7QMj0Ofsa1IhruGaVQYd4H9Mu4F4GIFWlyFYrgG9q09WZ2h49
-         rkFblV56RsjyA8Ea0laMz2k3cz8Dfx9l9nb/Lvnh0W1lWVMAvcdCXCTzzZkWybJK8LjT
-         8sG9bwLgP7vnHwXwQuYfHbPYHBaqhaHDADwlxxMSOatyG6E0s48rx7btFwY7bB8joCRz
-         NrfQ==
-X-Forwarded-Encrypted: i=1; AFNElJ97v2k2E5lCMTJiu3JkoGV/j7NIQgi4/AtYMMubblELzTHQKzC568PViT9DF5Mi8JpWPdmxxjKSr+R9pUc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxynSs83LU2R1t6infbvmIo2IjKlvrWebRbgsgE/vSNPio05eNZ
-	j7Pw24HXt+nvDECFqLttT1t0+vDAHBfOtcEbDxgWCJYn8GAclzZnbQnQlAinuSAvqXM=
-X-Gm-Gg: Acq92OEj3EfyV2P1X90xPmK5lhtsEn+U5FQurJpuK5u2flZjRbwkbAmKnYvhcpHdS1w
-	sBil+6mt1NdYcEsgeXmqcOPtEAWlw6OMOdYu8U94Wq95bRMbfhVyj3iDUGaIsN2HZr6AmenGr4D
-	pIHjbUUK9ZrUm45Wfa/HpBD1wAosMSH8jPb4/IUtw1vj3VWGenvCUnPkLh+Z646r6kNfiIjZ73o
-	/NpoX5Jwp6cwt0b5mMWFpcHLGYEBUAkGLaLFEPkwWJ2qF/yhX/NeVtO374FBDwmwpJl+bcVtEQB
-	Mt8F+xbiPdFajGZjGE70JaTxjjLDxCHLji8bCRZBR/cYymIiOKMKv3MuhhNoEWrbxwO7H4wUim4
-	BCnMAY/cn+snyYdQldAczW8rKWhls5BDAcOOjj7cqbuPzVLKnu24qjquqyQgwbZocALaBBA+9K5
-	QzpXXE6itE8fIoMb82w2jMp9UNeU5E
-X-Received: by 2002:a05:6000:388:b0:43e:a9ba:b194 with SMTP id ffacd0b85a97d-45eb38acbc6mr4543931f8f.34.1779456543197;
-        Fri, 22 May 2026 06:29:03 -0700 (PDT)
-Received: from localhost ([2a02:8071:56d1:2de0:1d24:d58d:2b65:c291])
-        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-45eb6c9f598sm4400739f8f.6.2026.05.22.06.29.01
+        d=1e100.net; s=20251104; t=1779458476; x=1780063276;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=yc5bJxLqrJjZCtVBZCib+tWdN1ETOFhinbVuxikn2Hw=;
+        b=oSZxUhwpxjiER1SwWEEDmaq0SwnYvNMhhj8bDL+XtD0H3kUJoQ/msdHdVUx89XbiHp
+         PERIEMH0T2+U4kpWPAJxTw+J48CcblI6g28ujrElIJpEFq4gCffz1YP/j7pJGhGSAPQ+
+         PLwjkX3C7S9Y96ZisaQTXTSlTy8tH6W1EB71OcBeMqzlfUeTjPhEng9uISeGeTfQbXC6
+         T3BdmrR7zhnTvJDFPj6Me+oCaZFyQgHYREy2+WL2MHDuKPIXvdSvM5ZD9oqbd0S4UKvV
+         SteXitWQUXqTQc3TAWJtjXalr2xnAtlGvTXHimjluFTA1+LLcQ5N6njc6Mnb0aJRvbgG
+         F8+w==
+X-Forwarded-Encrypted: i=1; AFNElJ/SDGqKwAcjBRY9UwsxtzgAPiLyyuxN/XwGyA9LJo/dH/V+qZHrGvQgQCKx8ApR+2VPiN048vHhv0aqKjQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxAJ4yVIrY4KeU48JvzumGZ+UluvqtKlBU8FFqSDUsWbKGRe7KQ
+	MaLlzWdj03OA+U5pesYyHRn5Ev+gUUV0MONbdpNZoVw2/ZkZ6Jpdd1rRMqNCC6dnu3Q=
+X-Gm-Gg: Acq92OHQLbdMy3SEqKT/H41AgIU90sW+TfZTz9VrsKJwvjBq44WJJgc20LMieOpVX0l
+	mD+KwdsIxI1UJ2/exw1zu4rQ+MYPDBlAn4PNsgfEftsuayBiWfGhFuTEvxYi3LJ63okudP+1Kah
+	2THYWCy2PbBR7hBULcqSezm+yhBMtdIEb8fh9xb1tHTnAtmTln3QL09ruF+ddJ/Ta9dFoVjVYi0
+	J2bu/knKuQX1kFx1RbL+uagTl63OiWqUo4I93uPH4TnH/w3I659W7livOFtZGcOhzVfn+H2h7OU
+	UoBCMcrBYTXXPHxn/e6njyJ4pBEzFqeaMzq6BldqzwpZKYE2m2Co+IGB0hQ1r4IGhCsfiZ1EjU/
+	Gu7T8r8CfWFZoPfODKWOq96cr3Kd36pt8lo4BWMIEMgasAjL2ygYW8wrklGgO97pjpDI7bgX86y
+	R9Y3vmT9qwD4ooCpVYSSE8Ikp0LGC7nqHPeu+//s7VQJVeWgd8aZvn7X1GTDuCcvKz1eFrA0oxn
+	rE89JOzws2YHDNDjVVIvKRT7Q==
+X-Received: by 2002:a7b:c7ca:0:b0:490:4b89:5372 with SMTP id 5b1f17b1804b1-4904b8956c5mr3635125e9.11.1779458476216;
+        Fri, 22 May 2026 07:01:16 -0700 (PDT)
+Received: from localhost (p200300f65f47db04fdedbb26b9ad100d.dip0.t-ipconnect.de. [2003:f6:5f47:db04:fded:bb26:b9ad:100d])
+        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-490428d4d8asm16740125e9.16.2026.05.22.07.01.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 May 2026 06:29:02 -0700 (PDT)
-Date: Fri, 22 May 2026 15:29:00 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>, 
-	Tapio Reijonen <tapio.reijonen@vaisala.com>, Dan Carpenter <error27@gmail.com>, 
-	Xichao Zhao <zhao.xichao@vivo.com>, Bartosz Golaszewski <brgl@kernel.org>, 
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH] drm: Use named initializers for arrays of i2c_device_data
-Message-ID: <ahBZ2Nz4WsLteszV@monoceros>
-References: <20260518101456.632410-2-u.kleine-koenig@baylibre.com>
- <agrybgEu5PT7orKA@monoceros>
- <2026052243-phrasing-oblivious-cb15@gregkh>
+        Fri, 22 May 2026 07:01:15 -0700 (PDT)
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig=20=28The=20Capable=20Hub=29?= <u.kleine-koenig@baylibre.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: Florian Eckert <fe@dev.tdt.de>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: [PATCH v1] serial: 8250_exar: Consistently define pci_device_ids using named initializers
+Date: Fri, 22 May 2026 16:01:03 +0200
+Message-ID: <20260522140103.769262-2-u.kleine-koenig@baylibre.com>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="3cssjjmdjo6efmsu"
-Content-Disposition: inline
-In-Reply-To: <2026052243-phrasing-oblivious-cb15@gregkh>
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3038; i=u.kleine-koenig@baylibre.com; h=from:subject; bh=auClZft7VdNRE+QTLNJrHUjk+O/0nGgODOAHYjA9MXg=; b=owGbwMvMwMXY3/A7olbonx/jabUkhiyBxPk1gWIMhTdX5Zcu3uumtvz+s0dabl4cy0U7nNZ4K i1Tnze/k9GYhYGRi0FWTJHFvnFNplWVXGTn2n+XYQaxMoFMYeDiFICJOLtyMCx0XbrH/jnfh3nb 1wnmvQjRnJVh0OFRZu/yuvixotvWtRnmO+zWBd+ZUJN7V2SWXbaSRdfEu/8cXrRXhVyJr/QLFBE v1ekRKolQvnaJ61RS5Wll7mj9fy8cwq/m6H+V3G8i4FjiHrlI/2PonRlK9507by59oZd5Uzl0gS zTHpl17aWWkWUFczb/UuH61zj3m+X5NNMVOkdkp6ZKJR0994DbVGBeC6u52UTbxhSem6EKSmp2C X0rwnaWxTVoum84Xe+WdL+TP7X4ejgbL493vORi16hfSR2pM7bdYs36/jkjaFvoId0Vdk9UPNil TrIpVDQfey/oU317ZrP6+SMl7grcKtPsZSz+mpvb3wYA
+X-Developer-Key: i=u.kleine-koenig@baylibre.com; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
 
+The .driver_data member of the struct pci_device_id array were
+initialized by list expressions. This isn't easily readable if you're
+not into PCI, still more given that it's hidden in macros. Using named
+initializers is more explicit and thus easier to parse for a human. And
+it's also more robust against changes to the struct definition.
 
---3cssjjmdjo6efmsu
-Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH] drm: Use named initializers for arrays of i2c_device_data
-MIME-Version: 1.0
+The mentioned robustness is relevant for a planned change to struct
+pci_device_id that replaces .driver_data by an anonymous union.
 
-On Fri, May 22, 2026 at 11:41:48AM +0200, Greg Kroah-Hartman wrote:
-> On Mon, May 18, 2026 at 01:07:00PM +0200, Uwe Kleine-K=F6nig (The Capable=
- Hub) wrote:
-> > Hello,
-> >=20
-> > I messed up the Subject, of course this should have been:
-> >=20
-> > 	[PATCH] tty: serial: Use named initializers for arrays of i2c_device_d=
-ata
-> >=20
-> > please fix up accordingly iff you apply this version. If I should resend
-> > for this reason, please tell me.
->=20
-> I'll fix it up.
+Also drop a few explicit zeros that are not needed and improve
+indention.
 
-I see the fixup made it into the automatic notification that you picked
-up the patch, so that worked fine. Thanks!
+This change doesn't introduce changes to the compiled pci_device_id
+array. Tested on x86 and arm64.
 
-Uwe
+Signed-off-by: Uwe Kleine-König (The Capable Hub) <u.kleine-koenig@baylibre.com>
+---
+ drivers/tty/serial/8250/8250_exar.c | 30 ++++++++++++++---------------
+ 1 file changed, 15 insertions(+), 15 deletions(-)
 
---3cssjjmdjo6efmsu
-Content-Type: application/pgp-signature; name="signature.asc"
+diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
+index c682c0d0dffa..f9a14eaa13cb 100644
+--- a/drivers/tty/serial/8250/8250_exar.c
++++ b/drivers/tty/serial/8250/8250_exar.c
+@@ -1642,14 +1642,14 @@ static const struct exar8250_board pbn_exar_XR17V8358 = {
+ 	.exit		= pci_xr17v35x_exit,
+ };
+ 
+-#define CTI_EXAR_DEVICE(devid, bd) {                    \
+-	PCI_DEVICE_SUB(                                 \
+-		PCI_VENDOR_ID_EXAR,                     \
+-		PCI_DEVICE_ID_EXAR_##devid,             \
+-		PCI_SUBVENDOR_ID_CONNECT_TECH,          \
+-		PCI_ANY_ID), 0, 0,                      \
+-		(kernel_ulong_t)&bd                     \
+-	}
++#define CTI_EXAR_DEVICE(devid, bd) {			\
++	PCI_DEVICE_SUB(					\
++		PCI_VENDOR_ID_EXAR,			\
++		PCI_DEVICE_ID_EXAR_##devid,		\
++		PCI_SUBVENDOR_ID_CONNECT_TECH,		\
++		PCI_ANY_ID),				\
++	.driver_data = (kernel_ulong_t)&bd		\
++}
+ 
+ #define EXAR_DEVICE(vend, devid, bd) { PCI_DEVICE_DATA(vend, devid, &bd) }
+ 
+@@ -1658,18 +1658,18 @@ static const struct exar8250_board pbn_exar_XR17V8358 = {
+ 		PCI_VENDOR_ID_EXAR,			\
+ 		PCI_DEVICE_ID_EXAR_##devid,		\
+ 		PCI_SUBVENDOR_ID_IBM,			\
+-		PCI_SUBDEVICE_ID_IBM_##sdevid), 0, 0,	\
+-		(kernel_ulong_t)&bd			\
+-	}
++		PCI_SUBDEVICE_ID_IBM_##sdevid),		\
++	.driver_data = (kernel_ulong_t)&bd		\
++}
+ 
+ #define USR_DEVICE(devid, sdevid, bd) {			\
+ 	PCI_DEVICE_SUB(					\
+ 		PCI_VENDOR_ID_USR,			\
+ 		PCI_DEVICE_ID_EXAR_##devid,		\
+ 		PCI_VENDOR_ID_EXAR,			\
+-		PCI_SUBDEVICE_ID_USR_##sdevid), 0, 0,	\
+-		(kernel_ulong_t)&bd			\
+-	}
++		PCI_SUBDEVICE_ID_USR_##sdevid),		\
++	.driver_data = (kernel_ulong_t)&bd		\
++}
+ 
+ static const struct pci_device_id exar_pci_tbl[] = {
+ 	EXAR_DEVICE(ACCESSIO, COM_2S, pbn_exar_XR17C15x),
+@@ -1726,7 +1726,7 @@ static const struct pci_device_id exar_pci_tbl[] = {
+ 	EXAR_DEVICE(COMMTECH, 4224PCI335, pbn_fastcom335_4),
+ 	EXAR_DEVICE(COMMTECH, 2324PCI335, pbn_fastcom335_4),
+ 	EXAR_DEVICE(COMMTECH, 2328PCI335, pbn_fastcom335_8),
+-	{ 0, }
++	{ }
+ };
+ MODULE_DEVICE_TABLE(pci, exar_pci_tbl);
+ 
 
------BEGIN PGP SIGNATURE-----
+base-commit: 254f49634ee16a731174d2ae34bc50bd5f45e731
+-- 
+2.47.3
 
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmoQWhMACgkQj4D7WH0S
-/k6rgwgAtPeTYUENGpnCQ+9Nu55uuaWO+Caa5aeVMhK+q13Z8P/rJJ14Oaw1d+ur
-AFj2tSJ4igokizK1dSOdoSUiSvT0/GdA1F3ipbY7kAQo67kH+w+rQ+7HqtVh8u8r
-yV2+se+2wm0p1LTCxzUFAbZagMTNrpbe7bMw7PAKQ3rXNcaMEg1jbgqbapNFYYSd
-uG89+cjferyqFroTeNBeC1pb4FeZSRcbZ56awo5CCLtke8UqpLoU6k88nxoSZSTs
-gSur7uTdwTXQf3/cUyEu/CmUfGRV73NnvtYiScnxleOztMWY8AznHA7s/FNIXQ1Q
-Ex/O+ZxndmTvhx9tGDfsDrFIjFtIdA==
-=2n0R
------END PGP SIGNATURE-----
-
---3cssjjmdjo6efmsu--
