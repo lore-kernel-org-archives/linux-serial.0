@@ -1,23 +1,22 @@
 Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 645322F8E81;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 645C03033CC;
 	Sun, 24 May 2026 23:20:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779664846; cv=none; b=YUZ0t5jwmxMoC6aHwZx6WOmZ1aQ60XSZmFsSWqXyx2pDnaulaBv9Mxz74cOX/84cOk7E+dEAhHpg6w5j6uzRJ2W1CFSbgFksly5rj4BhDRVMfUeC35raGV9yMhiDWbjQHolxhRroBd0SnjfaQXohmbN5B1qIae7zaAG9EYHfKwg=
+	t=1779664846; cv=none; b=JU01idJjKIbfuvVfwa7zaqq90ZwV4wzTJu6ITjyUoxi/N0n3+IcvbrO3TGffILnzwIcdpXQGkMO05ZV6SjoqZ32QHIpN4ZdIABE2Cf34lsNupN7wlxqIetdP3JVaIT6NVgn020X4djVatQkxrrQ6aDbcjScCMCKCxW/A0SzcW3k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1779664846; c=relaxed/simple;
-	bh=dSpqvWLcenTGsHm74xZ1Rh/tXi1MqGz3aSfLvUUxsjE=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=WcDFhd1d+6N9gkboKcKYNgb1SC4cgIJdbXwPAUjablBryckcYJxwXMzQ2A5nllJE1go9HiRWvhLZIsKa003L5Iqq15miJ7/+DHs4QiLV256RbDdqtJ7TCI8Z8fP1Y9XS0QMw8AF+ViOLi8b9KR0IlQopQehi2Gij0ACoCQAbzq4=
+	bh=nzzxquScANU0vNmN00+dLvYrgvxIHh/UGP/IMxDlrWo=;
+	h=Date:From:To:cc:Subject:Message-ID:MIME-Version:Content-Type; b=E/7h1rCVNbjkC2A+Mc7Id9m/aNLIdh3GosYboxKWBO+ovMUWaf1kWjhj2QXbiIbS9QGwPyXrhBGkhsZnTG1hJogrycW47rGy/FAAam1N/E7562sn7K0Nduphlqip2nAuwCHMV56LXKZQDvjEgE0OHsxZ2Llr8LFznusI939W404=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
 Received: by angie.orcam.me.uk (Postfix, from userid 500)
-	id 0EC649200B3; Mon, 25 May 2026 01:12:06 +0200 (CEST)
+	id 67A8792009C; Mon, 25 May 2026 01:12:00 +0200 (CEST)
 Received: from localhost (localhost [127.0.0.1])
-	by angie.orcam.me.uk (Postfix) with ESMTP id 07D7992009E;
-	Mon, 25 May 2026 00:12:06 +0100 (BST)
-Date: Mon, 25 May 2026 00:12:05 +0100 (BST)
+	by angie.orcam.me.uk (Postfix) with ESMTP id 6012C92009B;
+	Mon, 25 May 2026 00:12:00 +0100 (BST)
+Date: Mon, 25 May 2026 00:12:00 +0100 (BST)
 From: "Maciej W. Rozycki" <macro@orcam.me.uk>
 To: Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
     Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
@@ -26,11 +25,8 @@ cc: Elena Reshetova <elena.reshetova@intel.com>,
     David Windsor <dwindsor@gmail.com>, Kees Cook <kees@kernel.org>, 
     Hans Liljestrand <ishkamiel@gmail.com>, linux-mips@vger.kernel.org, 
     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/6] serial: sb1250-duart: Fix console message clobbering
- at channel resets
-In-Reply-To: <alpine.DEB.2.21.2605241602220.1450@angie.orcam.me.uk>
-Message-ID: <alpine.DEB.2.21.2605241620470.1450@angie.orcam.me.uk>
-References: <alpine.DEB.2.21.2605241602220.1450@angie.orcam.me.uk>
+Subject: [PATCH v2 0/6] MIPS: SiByte: Fix serial device regressions
+Message-ID: <alpine.DEB.2.21.2605241602220.1450@angie.orcam.me.uk>
 User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -40,65 +36,64 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 
-Ensure any characters outstanding have been sent before issuing channel 
-resets so as to prevent messages issued to the bootconsole from getting 
-clobbered.
+Hi,
 
-Contrary to device documentation at the time the transmitter empty bit 
-is set only the transmit FIFO has been drained and there is still data 
-outstanding in the transmitter shift register, so wait an extra amount 
-of time for that register to drain too.  This also prevents subsequent 
-messages produced to the console from getting clobbered, owing to what
-seems a transmitter synchronisation issue.
+ This is v2 of the series addressing feedback to original 4/4 where the 
+plain revert was questioned.
 
-When called from sbd_serial_console_init() it is too early for fsleep() 
-to work and even before lpj has been calculated and therefore the delay 
-is actually not sufficient for the transmitter to drain and is merely a 
-placeholder now.  This will be addressed in a follow-up change.
+ I proposed using a spinlock instead of the atomic counter, which was then 
+agreed upon.  In the course of making the change I have realised that from 
+the algorithm's correctness point of view the request and release of the 
+resource in question needs to be done under the spinlock as well, because 
+in particular setserial(8) can cause port resources to be released and 
+requested in parallel for individual channels of a single DUART.  It makes
+that change a fix rather than a cleanup.
 
-Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
-Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Cc: stable@vger.kernel.org # v6.5+
----
-Changes from v1 (1/4),
-<https://lore.kernel.org/r/alpine.DEB.2.21.2604130321540.29980@angie.orcam.me.uk/>:
+ I chose to keep the revert anyway as it's a regression that oughtn't to 
+have happened in the first place, and it's a self-contained change, as is 
+the newly-added fix.  This will help backporting the new fix too, should 
+someone wish to, although I don't think we need to rush pushing it to 
+-stable.
 
-- Sanitise the change heading.
----
- drivers/tty/serial/sb1250-duart.c |   22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+ I've added a MAINTAINERS entry on top too, as previously stated.  No 
+change except for the patch headings to patches 1/4 through 4/4, which 
+have become 1/6 through 4/6 now.  The original cover letter follows.
 
-linux-serial-sb1250-duart-reset-drain.diff
-Index: linux-macro/drivers/tty/serial/sb1250-duart.c
-===================================================================
---- linux-macro.orig/drivers/tty/serial/sb1250-duart.c
-+++ linux-macro/drivers/tty/serial/sb1250-duart.c
-@@ -516,6 +516,28 @@ static void sbd_init_port(struct sbd_por
- 
- 	if (sport->initialised)
- 		return;
-+	/*
-+	 * Contrary to documentation, which says that the transmitter
-+	 * empty bit is set when "there are no characters to send and
-+	 * the transmitter is idle," the bit is already set by hardware
-+	 * once the transmit FIFO has been drained only and while the
-+	 * transmitter shift register still holds data being supplied
-+	 * to the line.  Consequently issuing a transmitter reset at
-+	 * this point causes the final character outstanding to be lost.
-+	 *
-+	 * Moreover, resetting the transmitter while transmission is
-+	 * in progress appears to make the transmitter go out of sync
-+	 * and subsequent characters issued after the transmitter has
-+	 * been reprogrammed and re-enabled are sent corrupted or with
-+	 * their bit patterns shifted.
-+	 *
-+	 * So once the transmitter empty bit has been set wait an extra
-+	 * amount of time, sufficient for the transmitter shift register
-+	 * to drain at 115200bps, which is the baud rate setting used by
-+	 * a standard CFE firmware compilation.
-+	 */
-+	sbd_line_drain(sport);
-+	udelay(100);
- 
- 	/* There is no DUART reset feature, so just set some sane defaults.  */
- 	write_sbdchn(sport, R_DUART_CMD, V_DUART_MISC_CMD_RESET_TX);
+ Starting from commit 84a9582fd203 ("serial: core: Start managing serial 
+controllers to enable runtime PM") the driver for the SiByte onchip DUART 
+has stopped working due to a null pointer dereference in the serial core, 
+which means a kernel crash at bootstrap if the driver has been enabled, as 
+is usually the case for the system console.
+
+ This patch series addresses the issue by switching the driver away from 
+legacy probing to using platform devices.  A notable consequence of this 
+is the serial console is only switched from the bootconsole handler that 
+uses firmware calls over to our serial driver at the time the driver is 
+being properly brought up.  This causes messages to be produced to the 
+console between the device reset and console setup, which in turn causes 
+the firmware still being called via the bootconsole handler to loop 
+forever owing to the transmitter having been disabled.
+
+ Therefore introductory change 2/4 is included to fix the issue by doing a 
+rudimentary device setup right after reset, using parameters compatible 
+with those used by the firmware (115200n8).  There is auxiliary change 1/4 
+included as well that prevents message corruption from happening at reset, 
+which becomes more prominent due to the change in timing, with the driver 
+switch to the platform device, of messages produced to the console.
+
+ Additionally there is a revert included as change 4/4 for a regression 
+introduced by an earlier change that caused previously good code to fail 
+requesting the control register resource shared between DUART channels, 
+and issue a warning to the kernel log.  Not to be backported as strictly 
+speaking the driver works just fine despite the missing reservation.
+
+ See individual change descriptions for details.  Verified with a SWARM
+(BCM91250A) system.
+
+ Please apply.
+
+ Previous iterations:
+
+- v1 at: <https://lore.kernel.org/r/alpine.DEB.2.21.2604130239560.29980@angie.orcam.me.uk/>.
+
+  Maciej
