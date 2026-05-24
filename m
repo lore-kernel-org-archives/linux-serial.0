@@ -1,112 +1,125 @@
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E9BB481B1
-	for <linux-serial@vger.kernel.org>; Sun, 24 May 2026 13:19:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C33651F4180;
+	Sun, 24 May 2026 19:42:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779628760; cv=none; b=GOqlp+cP9+SPABAsXF57a7oqVBLgPT3ZntF7UrnwPb2dcxsOQ4sC1qKU22NZjowRyE+3KSHaWSlStd9785+5brjKXPlHtrV/mtDiPHuwY5nAxprMThsA0ORJuV62Fd26t0uZHs93NavgoA964XPqyQdF7YeIw7n1Twb3DJNIZ+k=
+	t=1779651734; cv=none; b=V2rash17izNGsmMu5LUz2Zl6oB9p0S3cvRjmU6DWik55ip+Kak0/gRLdGxKcJBfPQR8JKHvn3VaieJxUTTQdbMEKhAqzyCiLYoF2sUwBicDIkyPAQS6LA96julaz7ximkQBxKrRfGhmZyyZiECbvN+PcqACPIjuxq0XlUvXaLPw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779628760; c=relaxed/simple;
-	bh=axSRCVq18VKWIMh72f2wdBX29zYFYXgTiaCYH7DwIUM=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=EuAXd5hm887Onp1aZN9lp2ZffeEEMvrg8ksRB735ujP4TJph5CzdnlB/dWH6KdYkOh6/8ACGuQxK23JmYhLpAv4rTnPpVD6ig1HEwBGzios5hBRop5681KdaicAx1Ys+EkDWDLD2T4l4d4GfUE64rheL2rd7XlPC8xJKZFOCo+s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=KrnrqzKj; arc=none smtp.client-ip=209.85.221.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1779651734; c=relaxed/simple;
+	bh=lthXzUytBGGEZEbaMRp/d7G3sIqZTOorIRP0QYBN0Cw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=hqfzkX46mm/Lg0y2miXinJImLgz0/CgE807EYJ/shy9vnobwZJqYyFooYEqJ6fJmDE0r9hvS6ZgGa4ajsE4iIw+k22Z1etFdMK+2ScQKy4H6DVJeSCMUr1WqGb0tKmEhtbruIe3X07DN8HScgOx1LL6N2hqzWbyIzktTnIhk3MA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iZb2Qfml; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="KrnrqzKj"
-Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-44dd5cb0f81so6498067f8f.0
-        for <linux-serial@vger.kernel.org>; Sun, 24 May 2026 06:19:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1779628757; x=1780233557; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=idimiKIonfIQbKigvQUX6MkId+nxqolp1vsjE2JrpzU=;
-        b=KrnrqzKj7CBEzwxz5wPQqo68R//rudjb6i5kWbIjNnYYn6Khg502HsHRjPUaDcSjBR
-         yakIGml8Fnfuer6Bll5gORIQW7OKL5RXWIANDZo5aIn87PBN4bxdFJ3oQhQ8EdY4cWUw
-         M0otnI1HdcIXr1QSqm99qStW14GReEZljPM4J6lGVpUtm/faJ2L5TO/w02Yedu4lrlFo
-         VulGOQRwrwZ17oIUlKpx4Rf4luoexWDz7sp2DOcfgMWi1GidHVJruo+4t1WVEm7Nq9ov
-         uyb6a63Pqn++g5TQ958VfikD7NNPwmdO8EW+k9o2APtL5rm9K2FlpyXW6oSPaUCIGy2v
-         1zbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779628757; x=1780233557;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=idimiKIonfIQbKigvQUX6MkId+nxqolp1vsjE2JrpzU=;
-        b=KwrDHruX9cmAFtpyf/IAczio9Y1SJ/Ubch2j1b3QG02+kcRaK7/PKdbep/NUO4zcoW
-         8QUOxVPRAVhdyFVROssQIKPkPU3nyES+A6QBuPq9GQZ3kUn8Nhm4uFGU/itm1Lwlxo0s
-         auxsyo8dyCoMRH0lj3lrKo0pYXfKpKh+oLxSgCOVIitO08gXc7HJE8zHxGBfv7PsxuH3
-         Z8vKYkIFwup6nyqH4eMJZoQ4EV4S1Wh7mLfyV1XeUbEx0hi17sQzdh7WKOtl4ZTWNPrD
-         7anfFBKFnx6VGNuLUXXRAbUNkBtji0/4WlQ4e+Q9qhBypvU6majS9Vg/itN+LmTaHitP
-         8QyQ==
-X-Gm-Message-State: AOJu0YzPZJa7ayt8hAFaVfwy0ZFb0tmPfF4QWu2POpgqIBG5k7FQoQ3m
-	08DHIb50pTKWOalu2iATOTgJWxe5mQEBjfnhaTFbXwVgimqkwGRSCbyBrOsVHhNZ4hg=
-X-Gm-Gg: Acq92OGOyTH70vgTZpOyV0sNHqCInJYyUu7I44r2ysqt9iMrJErTtZ30G/Pomdxe1YK
-	cJTTnkpXcOJRtgTc/CFgiCkVN7umHiyPdsdN4f4JjF0IljzyrDpUMH1BvXyMjzKYWDT1S54gmax
-	d9eKFsrp5ACqwvenqb9WtHDp5YKhViBrBoWL8JJQ+shC5Ltags5pPBFzsY5l9+EsdBjbmevSf5r
-	uRl0xpnMnA68esRrsj+h3aDI3yzFENU9djRqpG6FUtYwexVqN8eRhYUYptPVZd4nQc8SO6UirWe
-	z1eyVCLPdg4hKUoat9RYIAgOYzIE0U9/3K5xL6lQqeG9oa4xrnlJkNgu9iZupdprzT+UaPYZlyN
-	eylQFDtjHTee12L/wWAKPdv82w42069uQvE2a1HQ+OS0muZOe+aIhBh9/aEp3doNxW3xJOczHiF
-	0+7FvE43e7uJuw43LU5o3waKDRp1HG
-X-Received: by 2002:a05:600c:46cb:b0:48f:e044:927d with SMTP id 5b1f17b1804b1-49042480f2dmr146393555e9.10.1779628756730;
-        Sun, 24 May 2026 06:19:16 -0700 (PDT)
-Received: from localhost ([2a02:8071:56d1:2de0:1d24:d58d:2b65:c291])
-        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-4904561f682sm193150815e9.13.2026.05.24.06.19.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 May 2026 06:19:16 -0700 (PDT)
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig=20=28The=20Capable=20Hub=29?= <u.kleine-koenig@baylibre.com>
-To: Kevin Cernekee <cernekee@gmail.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v1] tty: serial: rp2: Use named initializer for pci_device_id::driver_data
-Date: Sun, 24 May 2026 15:19:05 +0200
-Message-ID: <20260524131905.871222-2-u.kleine-koenig@baylibre.com>
-X-Mailer: git-send-email 2.47.3
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iZb2Qfml"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32B3E1F000E9;
+	Sun, 24 May 2026 19:42:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1779651733;
+	bh=5Qbk2Js+U5TVltxF7DmfkdpZCQrfZY8VcWdcdlf8tJQ=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=iZb2Qfmltboafv45n9a51F+qDWhaK733kQGT2ABAw9GJv0WPs4sYPWJMkYBrMpW76
+	 84bfCmBxjpODVz4HcUDEpWrhSkXvW/D1by+hOZyX1DJaOqHhCLJxyhaYy3ZS30sDZR
+	 doJES/dfPScYEE85hYtIjEOpT6tG5WvwgwKORpvTKKPeSA6jvxFO8TlPj4qyic62Ea
+	 bzD/f5f6tcd4OnajOVxK95QqB2DR+mg2ebPTSeCXtVUUuLmDMax85rzaK+hTzG/B8E
+	 ifhiwn6cOs7ODHGxJk9ltYtrAK0KsRojltv92B7OydVVEY191AcRu0/5BmLSuDGsh3
+	 9VbImlmVHvx5w==
+Message-ID: <e9c5e57c-25d8-45f1-bc3e-696393cab4dd@kernel.org>
+Date: Sun, 24 May 2026 21:42:08 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] tty: serial: samsung: Remove redundant port lock
+ acquisition in rx helpers
+To: Tudor Ambarus <tudor.ambarus@linaro.org>,
+ Alim Akhtar <alim.akhtar@samsung.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Ben Dooks <ben-linux@fluff.org>
+Cc: linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ john.ogness@linutronix.d, peter.griffin@linaro.org,
+ andre.draszik@linaro.org, jyescas@google.com, kernel-team@android.com,
+ stable@vger.kernel.org, John Ogness <john.ogness@linutronix.de>
+References: <20260515-samsung-tty-flow-control-deadlock-v1-1-93255edbc9bc@linaro.org>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 a/A=
+In-Reply-To: <20260515-samsung-tty-flow-control-deadlock-v1-1-93255edbc9bc@linaro.org>
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1225; i=u.kleine-koenig@baylibre.com; h=from:subject; bh=axSRCVq18VKWIMh72f2wdBX29zYFYXgTiaCYH7DwIUM=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBqEvrJFSgB+A5iqm+vKBecDqgP9GBV/LWdjaEtT Ijz40qRsv6JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCahL6yQAKCRCPgPtYfRL+ Tv7zCACcgqXFY86w5fdAK7BTIrKPMuIrdnAdjaSANYubbSsQx2CbzWJXU3JOny/yT5/T7mVvuZl VqJfg4b733G9jIjQJFbbQzbvS0nXgiNWVn/pmK3ynopqZNB9+rC+AaQCYyWrQaQiT89s6u3M1gO ZFVsXxxjKmcNoo2KduQkdLqVc34mOekjirabe0KBCjK4srCc8iw0DZaG/iMLmQcbMYIkutW91Tz YuYAAEdLwUvW+AmQujV9kWz4aMMOdgN8u3Eql0xLbvRYHXmY/HYq0Hz9tHTIMUkcaGlhHyL3Vhx YI+EXcegWAMyv4z9xchJco3ejheMxPagqUyeCqwUWXRfjELr
-X-Developer-Key: i=u.kleine-koenig@baylibre.com; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-The .driver_data member of the struct pci_device_id array were
-initialized by list expressions relying on hidden assignment of .class
-and .class_mask in PCI_VDEVICE().
+On 15/05/2026 14:41, Tudor Ambarus wrote:
+> Sashiko identified a deadlock when the console flow is engaged [1].
+> 
+> When console flow control is enabled (UPF_CONS_FLOW),
+> s3c24xx_serial_stop_tx() calls s3c24xx_serial_rx_enable() and
+> s3c24xx_serial_start_tx() calls s3c24xx_serial_rx_disable().
+> 
+> The serial core framework invokes the .stop_tx() and .start_tx()
+> callbacks with the port->lock spinlock already held. Furthermore, all
+> internal driver paths that invoke stop_tx (such as the DMA TX
+> completion handler s3c24xx_serial_tx_dma_complete() or the PIO TX IRQ
+> handler s3c24xx_serial_tx_irq()) also acquire port->lock prior to
+> calling it. (Note that s3c24xx_serial_start_tx() is only invoked by the
+> serial core).
+> 
+> However, s3c24xx_serial_rx_enable() and s3c24xx_serial_rx_disable()
+> unconditionally attempt to acquire port->lock again using
+> uart_port_lock_irqsave(). Since spinlocks are not recursive, this
+> causes a deadlock on the same CPU when console flow control is engaged.
+> 
+> Remove the redundant lock acquisition from both rx helper functions.
+> 
 
-Make the initialization more robust by using a named initializer. This
-robustness is relevant for a planned change to struct pci_device_id that
-replaces .driver_data by an anonymous union.
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 
-This change doesn't introduce changes to the compiled pci_device_id
-array. Tested on x86 and arm64.
-
-Signed-off-by: Uwe Kleine-König (The Capable Hub) <u.kleine-koenig@baylibre.com>
----
- drivers/tty/serial/rp2.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/rp2.c b/drivers/tty/serial/rp2.c
-index 6d99a02dd439..51e81ec0ffdb 100644
---- a/drivers/tty/serial/rp2.c
-+++ b/drivers/tty/serial/rp2.c
-@@ -197,7 +197,7 @@ struct rp2_card {
- };
- 
- #define RP_ID(prod) PCI_VDEVICE(RP, (prod))
--#define RP_CAP(ports, smpte) (((ports) << 8) | ((smpte) << 0))
-+#define RP_CAP(ports, smpte) .driver_data = (((ports) << 8) | ((smpte) << 0))
- 
- static inline void rp2_decode_cap(const struct pci_device_id *id,
- 				  int *ports, int *smpte)
-
-base-commit: 254f49634ee16a731174d2ae34bc50bd5f45e731
--- 
-2.47.3
-
+Best regards,
+Krzysztof
