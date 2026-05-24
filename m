@@ -1,147 +1,92 @@
-Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCCF437B3E1
-	for <linux-serial@vger.kernel.org>; Sun, 24 May 2026 22:35:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.66
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 375FE3812C2;
+	Sun, 24 May 2026 23:12:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779662126; cv=none; b=KGmAGlSxyvnrv20Toa+yRmH/rf1KesZBIAug60QIf4eeNWQyt62bDYyTwZRYbL1AP6cz1kHaB4WSO8YI2fxkHyqI/FesTRmowYLyxlnTox+Jl8dDhSed5hsph9UL5VvFoC8gKAzGU4DUrmLkpMtyLqLGNgro8lDKLtAUb1eJBsU=
+	t=1779664335; cv=none; b=Z0oGd6ZcAHGnJzxVwAxUDONkuT25/MNwQf3vHl7KRWBuVk70Uj+lL4F+wu3aVTd/42u/mAQcm5Dqs2yECInVMUtZ13qbqj+3HF+eiV65/PRqdPjrcSCjPmB0MFE6q1zriHMSVS/Ndh9mEPFlP8PviW08bbZGb90rrvWuniICJxM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779662126; c=relaxed/simple;
-	bh=r1UOA6QDMVbLt10TpU5riUnUKzso2VHkTZeHu02qA0E=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=nCSXGhn0Ol6rlr/X+I0plHuv1AuhGj9Q2W/s6u6e7QLfDQzkG/FHWvSAhAK3Eak3q6PJsWEb0+X6Xw/v4r4mapCMEGDMqW3SbOxq1tkVmpD3eOj2amTVgki460UIXoGhsSHp+Fr5758qiV12iRUUBBTVftymljRNf2VaBYMBmv8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=kmKKGbl7; arc=none smtp.client-ip=185.67.36.66
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="kmKKGbl7"
-Received: from submission (posteo.de [185.67.36.169]) 
-	by mout02.posteo.de (Postfix) with ESMTPS id BFD0E240105
-	for <linux-serial@vger.kernel.org>; Mon, 25 May 2026 00:35:15 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de; s=2017;
-	t=1779662115; bh=21o/xwwmDVfuFXFMoGsY/mGvvY5gAZ5X0zqmGuYe3QU=;
-	h=From:Date:Subject:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding:Message-Id:To:Cc:Autocrypt:OpenPGP:From;
-	b=kmKKGbl796le6XQKyxazsuiiu46rwE10xlWpl3DAbc6jpMR5UEQ5GnQiwDqRoPXhJ
-	 xdXs+FNoRuMzAMpeAw51+B6fIw2MA7TOlR6foJtKRmwDffNWApcE/h3l/gTBZeyVS4
-	 yM54Zb4NF+XfVITMuOhKAe1uAsP+Xgxbaxpve1w/rcZKjLAOR2q5VKuOdb+HZy8wT7
-	 cS1pIa0xiRI3LeoCEYaJKHd8nB7AaDyiL2UnuOnyVDC9w3zGEUMiVtvA+payODE0oF
-	 aUyj0vr6T0OMjkYz0wk1/mUbzrJ3C0Cmp5B//+Ur4I+NOlUH73KQXgxFVKGxaly0Tw
-	 Mv47bYzokYqLQ==
-Received: from customer (localhost [127.0.0.1])
-	by submission (posteo.de) with ESMTPSA id 4gNv3P53smz6twQ;
-	Mon, 25 May 2026 00:35:13 +0200 (CEST)
-From: Markus Probst <markus.probst@posteo.de>
-Date: Sun, 24 May 2026 22:35:15 +0000
-Subject: [PATCH v2 2/2] ACPI: SPCR: Support UART clock frequency field
+	s=arc-20240116; t=1779664335; c=relaxed/simple;
+	bh=y5JBd1z+ULSIeYgXT46gRAHtBNNNvc2Lumv/sFpaZXU=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=AfnSWlXLUBgrWqS1JJopotuWKm+xcUqL+7XEd5yrM7Y1XvhA6HaqHmGtJhspCzufQqukSJDpcuYNQFsK1w0bcOF3311JkW+TDM7BqeVqEVWb6BBo7RLMNniTRdTKDc3Na+IX3PTmvpM0Kr5CfzDBN8hvu503n75MSx31Rs97/Ds=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+	id 77E049200B4; Mon, 25 May 2026 01:12:11 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+	by angie.orcam.me.uk (Postfix) with ESMTP id 75A0392009B;
+	Mon, 25 May 2026 00:12:11 +0100 (BST)
+Date: Mon, 25 May 2026 00:12:11 +0100 (BST)
+From: "Maciej W. Rozycki" <macro@orcam.me.uk>
+To: Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
+    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>
+cc: Elena Reshetova <elena.reshetova@intel.com>, 
+    David Windsor <dwindsor@gmail.com>, Kees Cook <kees@kernel.org>, 
+    Hans Liljestrand <ishkamiel@gmail.com>, linux-mips@vger.kernel.org, 
+    linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 2/6] serial: sb1250-duart: Fix bootconsole handover
+ lockup
+In-Reply-To: <alpine.DEB.2.21.2605241602220.1450@angie.orcam.me.uk>
+Message-ID: <alpine.DEB.2.21.2605241623110.1450@angie.orcam.me.uk>
+References: <alpine.DEB.2.21.2605241602220.1450@angie.orcam.me.uk>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260525-acpi_spcr-v2-2-c042089d73ca@posteo.de>
-References: <20260525-acpi_spcr-v2-0-c042089d73ca@posteo.de>
-In-Reply-To: <20260525-acpi_spcr-v2-0-c042089d73ca@posteo.de>
-To: "Rafael J. Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>, 
- Geert Uytterhoeven <geert@linux-m68k.org>, 
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
- Ard Biesheuvel <ardb@kernel.org>, 
- Ilias Apalodimas <ilias.apalodimas@linaro.org>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, 
- linux-efi@vger.kernel.org, linux-serial@vger.kernel.org, 
- Markus Probst <markus.probst@posteo.de>
-X-Developer-Signature: v=1; a=openpgp-sha256; l=994;
- i=markus.probst@posteo.de; h=from:subject:message-id;
- bh=r1UOA6QDMVbLt10TpU5riUnUKzso2VHkTZeHu02qA0E=;
- b=owEBiQJ2/ZANAwAIATR2H/jnrUPSAcsmYgBqE30d/Ky535kkEs+jKKn8OQQkNdVumjA0gDnkP
- gQRdkNXGcOJAk8EAAEIADkWIQSCdBjE9KxY53IwxHM0dh/4561D0gUCahN9HRsUgAAAAAAEAA5t
- YW51MiwyLjUrMS4xMiwyLDIACgkQNHYf+OetQ9LWgRAAvdrM4XZHCaojJl1n3pJlb87437N7Ysl
- cNkiSgsUT45gB6Eh9s+7sx02CKP4udH4Xd4oUHA1y4qPfoEsoaULCTmr7xhB9GxUQrxdjumhQpv
- 0P5dh8/m2fOEDanPTKIabSUOB8dwywtABfg8AoZMQLN1XMrwgh7HrFZqOVjYmwv0pcWzDY9KqkQ
- iZ7e3pW6P2ZNmo2KMbGAYVVSRUIn+u0+qx2r4opkHThg/UCLXQxyhPtudXlMLW0lMByUd9XlmVz
- fsnaNuro4fWVZiRiuqeEL5BJ7OmYiK/LjJchgX2WJZJUJDEwbSG99IDP+86735QCcLZtc0HRrs0
- 6jPy0YzCL6BznKvT30IvuK3o+cz036XXCa7dgfkPt5pUBD0Az/Q5vDCWnidSh9uYm0RM2p/yBAp
- WzEfolY0wxFGjJui5maHYcac91qgVEmJDJDH0iXltBe9VoTerHKmSUl+dU7fecJ1n/x+YWcFNRC
- aeTlXwnseN7mCc76bxLnc7IuJHf0BoWgb7b9Yw+C/+59u5qb7ejArucymV7sF8cJX6ZHixQjPSQ
- QS02GYsjcWWWsK5PeJISbt+Tceu5OiQ0lSVMntbLzlti6x3OfQ2qaLtAymEtMtMx57a+YNcRdWB
- fzBf1iHIImPl8CZ2ZX96MVW2VsWVsLR3RghguBCp1Bm0BGyDYODM=
-X-Developer-Key: i=markus.probst@posteo.de; a=openpgp;
- fpr=827418C4F4AC58E77230C47334761FF8E7AD43D2
-Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
-  keydata=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
-  aBeNN4ijKZchBXHPgVx+YtWRHfcm4l8=
-OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
+Content-Type: text/plain; charset=US-ASCII
 
-The Microsoft Serial Port Console Redirection (SPCR) specification
-revision 1.08 comprises additional field: UART Clock Frequency [1].
+Calling sbd_init_port() in the course of setting up the serial device 
+causes line parameters to be messed up and the transmitter disabled.  
+We've been lucky in that no message is usually produced to the kernel 
+log between this call and the later call to uart_set_options() in the 
+course of console setup done by sbd_serial_console_init(), or the system 
+would hang as the console output handler in CFE tried to access a port 
+whose transmitter has been disabled and line parameters messed up.
 
-It contains a non-zero value indicating the UART clock frequency in Hz.
+It'll change with the next change to the driver, so fix sbd_init_port() 
+such that line parameters are set for 115200n8 console operation as with 
+the CFE firmware and the transmitter re-enabled after reset.
 
-Link: https://learn.microsoft.com/en-us/windows-hardware/drivers/serports/serial-port-console-redirection-table [1]
-Signed-off-by: Markus Probst <markus.probst@posteo.de>
+Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Cc: stable@vger.kernel.org # v6.5+
 ---
- drivers/acpi/spcr.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Changes from v1 (2/4),
+<https://lore.kernel.org/r/alpine.DEB.2.21.2604130338210.29980@angie.orcam.me.uk/>:
 
-diff --git a/drivers/acpi/spcr.c b/drivers/acpi/spcr.c
-index cfacbe53f279..16f94073fde6 100644
---- a/drivers/acpi/spcr.c
-+++ b/drivers/acpi/spcr.c
-@@ -228,7 +228,7 @@ int __init acpi_parse_spcr(bool enable_earlycon, bool enable_console)
- 	pr_info("console: %s\n", opts);
+- Sanitise the change heading.
+---
+ drivers/tty/serial/sb1250-duart.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+linux-serial-sb1250-duart-prom-console.diff
+Index: linux-macro/drivers/tty/serial/sb1250-duart.c
+===================================================================
+--- linux-macro.orig/drivers/tty/serial/sb1250-duart.c
++++ linux-macro/drivers/tty/serial/sb1250-duart.c
+@@ -542,14 +542,19 @@ static void sbd_init_port(struct sbd_por
+ 	/* There is no DUART reset feature, so just set some sane defaults.  */
+ 	write_sbdchn(sport, R_DUART_CMD, V_DUART_MISC_CMD_RESET_TX);
+ 	write_sbdchn(sport, R_DUART_CMD, V_DUART_MISC_CMD_RESET_RX);
+-	write_sbdchn(sport, R_DUART_MODE_REG_1, V_DUART_BITS_PER_CHAR_8);
++	write_sbdchn(sport, R_DUART_MODE_REG_1,
++		     V_DUART_PARITY_MODE_NONE | V_DUART_BITS_PER_CHAR_8);
+ 	write_sbdchn(sport, R_DUART_MODE_REG_2, 0);
++	write_sbdchn(sport, R_DUART_CLK_SEL, V_DUART_BAUD_RATE(115200));
+ 	write_sbdchn(sport, R_DUART_FULL_CTL,
+ 		     V_DUART_INT_TIME(0) | V_DUART_SIG_FULL(15));
+ 	write_sbdchn(sport, R_DUART_OPCR_X, 0);
+ 	write_sbdchn(sport, R_DUART_AUXCTL_X, 0);
+ 	write_sbdshr(sport, R_DUART_IMRREG((uport->line) % 2), 0);
  
- 	if (enable_earlycon)
--		setup_earlycon(opts, 0);
-+		setup_earlycon(opts, table->header.revision >= 3 ? table->uart_clk_freq : 0);
++	/* Re-enable transmission for the initial PROM-based console.  */
++	write_sbdchn(sport, R_DUART_CMD, M_DUART_TX_EN);
++
+ 	sport->initialised = 1;
+ }
  
- 	if (enable_console)
- 		err = add_preferred_console(uart, 0, opts + strlen(uart) + 1);
-
--- 
-2.53.0
-
