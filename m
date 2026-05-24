@@ -1,85 +1,112 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 413BD3438B5;
-	Sat, 23 May 2026 05:47:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E9BB481B1
+	for <linux-serial@vger.kernel.org>; Sun, 24 May 2026 13:19:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779515231; cv=none; b=MTAwblVlXOYxxtpYPp2/T47mzwvNc4iL4wA2Iu6az6oTCPvpf3cWPhsfsnst59WpT2IRn6VdFmiPoVOU8zxwF8Zty4PHTogbY0g5EFVvSya9Zvz+rp4Ucd1L9RdYnAvloe6GQJ0f+QtL5MibOMfhmgIUCdA5u3SxrbY27CAlMnE=
+	t=1779628760; cv=none; b=GOqlp+cP9+SPABAsXF57a7oqVBLgPT3ZntF7UrnwPb2dcxsOQ4sC1qKU22NZjowRyE+3KSHaWSlStd9785+5brjKXPlHtrV/mtDiPHuwY5nAxprMThsA0ORJuV62Fd26t0uZHs93NavgoA964XPqyQdF7YeIw7n1Twb3DJNIZ+k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779515231; c=relaxed/simple;
-	bh=MXIY6l97tR55QyeX2VEz2DQUUhL3kSBh9Wd5y+y1ngc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gfu2xXdhIFUE5z7jqAK0SQkYBtjIvhIW3VntroloANSlvZdVSgqiXUmLPWSvDHyfncE5W/7wmQ94pDzV+LdKLRKMkETlXGc4oAXv7ZtZHW8GXzfSsBu+eZ2KkM1oLVOIkbB0J2OJvrGHAV8MiaxhL3u5wTx6muFfHSp+rQpZl/4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=qdhn4eD6; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1779628760; c=relaxed/simple;
+	bh=axSRCVq18VKWIMh72f2wdBX29zYFYXgTiaCYH7DwIUM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=EuAXd5hm887Onp1aZN9lp2ZffeEEMvrg8ksRB735ujP4TJph5CzdnlB/dWH6KdYkOh6/8ACGuQxK23JmYhLpAv4rTnPpVD6ig1HEwBGzios5hBRop5681KdaicAx1Ys+EkDWDLD2T4l4d4GfUE64rheL2rd7XlPC8xJKZFOCo+s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=KrnrqzKj; arc=none smtp.client-ip=209.85.221.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="qdhn4eD6"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53A0A1F000E9;
-	Sat, 23 May 2026 05:47:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1779515229;
-	bh=y/1aL6buhhJBjhbquNQM//2DOfH+rUk/z6aU7VoDjNY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=qdhn4eD6W7oUiZepqLS7xPGjcH5WAHMeC++P64B6zffuMgSHDbRhaZTdjymgzKGBa
-	 hHX/QCphw1FeCIiAtT9V/qK/cVO/L4ptJRgSoU76Jbg+2BgfOaETIXxEBHp0lBvm5F
-	 kyZzCF9tbSD62YyYIkNzCsXZNa4FKwCeoy9/hBQo=
-Date: Sat, 23 May 2026 07:47:12 +0200
-From: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-To: Matthias Feser <mfe@kbsgmbhfr.onmicrosoft.com>
-Cc: Moteen Shah <m-shah@ti.com>,
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	"jirislaby@kernel.org" <jirislaby@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"k-willis@ti.com" <k-willis@ti.com>,
-	"msp@baylibre.com" <msp@baylibre.com>,
-	"andriy.shevchenko@linux.intel.com" <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v4] serial: 8250_omap: clear rx_running on zero-length
- DMA completes
-Message-ID: <2026052316-drown-guidable-0e7f@gregkh>
-References: <BE3P281MB5515563BFB5DE5E093ADAD9DEE0E2@BE3P281MB5515.DEUP281.PROD.OUTLOOK.COM>
- <4b8c59fe-c6a1-47cb-ab3b-855b1edddde2@ti.com>
- <BE3P281MB55153573889A8124C06291F1EE0F2@BE3P281MB5515.DEUP281.PROD.OUTLOOK.COM>
- <ab76b900-6d1c-4218-a14a-59541b92f2c6@ti.com>
- <BE3P281MB5515A937D47F610974FAEFA7EE0F2@BE3P281MB5515.DEUP281.PROD.OUTLOOK.COM>
- <ede98ffc-9e34-46a5-8d8f-87894fbf9d12@ti.com>
- <BE3P281MB55154E3A7B5BF556B6020ADFEE0F2@BE3P281MB5515.DEUP281.PROD.OUTLOOK.COM>
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="KrnrqzKj"
+Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-44dd5cb0f81so6498067f8f.0
+        for <linux-serial@vger.kernel.org>; Sun, 24 May 2026 06:19:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1779628757; x=1780233557; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=idimiKIonfIQbKigvQUX6MkId+nxqolp1vsjE2JrpzU=;
+        b=KrnrqzKj7CBEzwxz5wPQqo68R//rudjb6i5kWbIjNnYYn6Khg502HsHRjPUaDcSjBR
+         yakIGml8Fnfuer6Bll5gORIQW7OKL5RXWIANDZo5aIn87PBN4bxdFJ3oQhQ8EdY4cWUw
+         M0otnI1HdcIXr1QSqm99qStW14GReEZljPM4J6lGVpUtm/faJ2L5TO/w02Yedu4lrlFo
+         VulGOQRwrwZ17oIUlKpx4Rf4luoexWDz7sp2DOcfgMWi1GidHVJruo+4t1WVEm7Nq9ov
+         uyb6a63Pqn++g5TQ958VfikD7NNPwmdO8EW+k9o2APtL5rm9K2FlpyXW6oSPaUCIGy2v
+         1zbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779628757; x=1780233557;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=idimiKIonfIQbKigvQUX6MkId+nxqolp1vsjE2JrpzU=;
+        b=KwrDHruX9cmAFtpyf/IAczio9Y1SJ/Ubch2j1b3QG02+kcRaK7/PKdbep/NUO4zcoW
+         8QUOxVPRAVhdyFVROssQIKPkPU3nyES+A6QBuPq9GQZ3kUn8Nhm4uFGU/itm1Lwlxo0s
+         auxsyo8dyCoMRH0lj3lrKo0pYXfKpKh+oLxSgCOVIitO08gXc7HJE8zHxGBfv7PsxuH3
+         Z8vKYkIFwup6nyqH4eMJZoQ4EV4S1Wh7mLfyV1XeUbEx0hi17sQzdh7WKOtl4ZTWNPrD
+         7anfFBKFnx6VGNuLUXXRAbUNkBtji0/4WlQ4e+Q9qhBypvU6majS9Vg/itN+LmTaHitP
+         8QyQ==
+X-Gm-Message-State: AOJu0YzPZJa7ayt8hAFaVfwy0ZFb0tmPfF4QWu2POpgqIBG5k7FQoQ3m
+	08DHIb50pTKWOalu2iATOTgJWxe5mQEBjfnhaTFbXwVgimqkwGRSCbyBrOsVHhNZ4hg=
+X-Gm-Gg: Acq92OGOyTH70vgTZpOyV0sNHqCInJYyUu7I44r2ysqt9iMrJErTtZ30G/Pomdxe1YK
+	cJTTnkpXcOJRtgTc/CFgiCkVN7umHiyPdsdN4f4JjF0IljzyrDpUMH1BvXyMjzKYWDT1S54gmax
+	d9eKFsrp5ACqwvenqb9WtHDp5YKhViBrBoWL8JJQ+shC5Ltags5pPBFzsY5l9+EsdBjbmevSf5r
+	uRl0xpnMnA68esRrsj+h3aDI3yzFENU9djRqpG6FUtYwexVqN8eRhYUYptPVZd4nQc8SO6UirWe
+	z1eyVCLPdg4hKUoat9RYIAgOYzIE0U9/3K5xL6lQqeG9oa4xrnlJkNgu9iZupdprzT+UaPYZlyN
+	eylQFDtjHTee12L/wWAKPdv82w42069uQvE2a1HQ+OS0muZOe+aIhBh9/aEp3doNxW3xJOczHiF
+	0+7FvE43e7uJuw43LU5o3waKDRp1HG
+X-Received: by 2002:a05:600c:46cb:b0:48f:e044:927d with SMTP id 5b1f17b1804b1-49042480f2dmr146393555e9.10.1779628756730;
+        Sun, 24 May 2026 06:19:16 -0700 (PDT)
+Received: from localhost ([2a02:8071:56d1:2de0:1d24:d58d:2b65:c291])
+        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-4904561f682sm193150815e9.13.2026.05.24.06.19.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 May 2026 06:19:16 -0700 (PDT)
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig=20=28The=20Capable=20Hub=29?= <u.kleine-koenig@baylibre.com>
+To: Kevin Cernekee <cernekee@gmail.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v1] tty: serial: rp2: Use named initializer for pci_device_id::driver_data
+Date: Sun, 24 May 2026 15:19:05 +0200
+Message-ID: <20260524131905.871222-2-u.kleine-koenig@baylibre.com>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BE3P281MB55154E3A7B5BF556B6020ADFEE0F2@BE3P281MB5515.DEUP281.PROD.OUTLOOK.COM>
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1225; i=u.kleine-koenig@baylibre.com; h=from:subject; bh=axSRCVq18VKWIMh72f2wdBX29zYFYXgTiaCYH7DwIUM=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBqEvrJFSgB+A5iqm+vKBecDqgP9GBV/LWdjaEtT Ijz40qRsv6JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCahL6yQAKCRCPgPtYfRL+ Tv7zCACcgqXFY86w5fdAK7BTIrKPMuIrdnAdjaSANYubbSsQx2CbzWJXU3JOny/yT5/T7mVvuZl VqJfg4b733G9jIjQJFbbQzbvS0nXgiNWVn/pmK3ynopqZNB9+rC+AaQCYyWrQaQiT89s6u3M1gO ZFVsXxxjKmcNoo2KduQkdLqVc34mOekjirabe0KBCjK4srCc8iw0DZaG/iMLmQcbMYIkutW91Tz YuYAAEdLwUvW+AmQujV9kWz4aMMOdgN8u3Eql0xLbvRYHXmY/HYq0Hz9tHTIMUkcaGlhHyL3Vhx YI+EXcegWAMyv4z9xchJco3ejheMxPagqUyeCqwUWXRfjELr
+X-Developer-Key: i=u.kleine-koenig@baylibre.com; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
 
-On Fri, May 22, 2026 at 12:37:25PM +0000, Matthias Feser wrote:
-> On AM33xx RX DMA only triggers when the FIFO reaches the
-> configured threshold (typically 48 bytes). For smaller bursts
-> no DMA request is issued and the FIFO is drained by RX timeout.
-> 
-> In this case __dma_rx_do_complete() can legitimately see count == 0.
-> 
-> The current code exits early in this case and does not clear
-> dma->rx_running, leaving the DMA state inconsistent. This can
-> prevent RX DMA from restarting and may cause
-> omap_8250_rx_dma_flush() to fail, marking DMA as broken.
-> 
-> Fix this by clearing dma->rx_running once the DMA transfer has
-> completed or been terminated, even if no data was transferred.
-> 
-> Signed-off-by: Matthias Feser <mfe@KBSgmbhfr.onmicrosoft.com>
-> Reviewed-by: Moteen Shah <m-shah@ti.com>
-> ---
-> Changes in v4:
-> - Add blank line before dma->rx_running as suggested
+The .driver_data member of the struct pci_device_id array were
+initialized by list expressions relying on hidden assignment of .class
+and .class_mask in PCI_VDEVICE().
 
-Please properly start a new thread, don't have this patch be in reply to
-another one, the "Re:" in it is a bit odd, don't you think?
+Make the initialization more robust by using a named initializer. This
+robustness is relevant for a planned change to struct pci_device_id that
+replaces .driver_data by an anonymous union.
 
-And what commit id does this fix?  Should it be backported to stable
-kernels?  If so, how far back?
+This change doesn't introduce changes to the compiled pci_device_id
+array. Tested on x86 and arm64.
 
-thanks,
+Signed-off-by: Uwe Kleine-König (The Capable Hub) <u.kleine-koenig@baylibre.com>
+---
+ drivers/tty/serial/rp2.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-greg k-h
+diff --git a/drivers/tty/serial/rp2.c b/drivers/tty/serial/rp2.c
+index 6d99a02dd439..51e81ec0ffdb 100644
+--- a/drivers/tty/serial/rp2.c
++++ b/drivers/tty/serial/rp2.c
+@@ -197,7 +197,7 @@ struct rp2_card {
+ };
+ 
+ #define RP_ID(prod) PCI_VDEVICE(RP, (prod))
+-#define RP_CAP(ports, smpte) (((ports) << 8) | ((smpte) << 0))
++#define RP_CAP(ports, smpte) .driver_data = (((ports) << 8) | ((smpte) << 0))
+ 
+ static inline void rp2_decode_cap(const struct pci_device_id *id,
+ 				  int *ports, int *smpte)
+
+base-commit: 254f49634ee16a731174d2ae34bc50bd5f45e731
+-- 
+2.47.3
+
