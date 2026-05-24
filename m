@@ -1,35 +1,36 @@
 Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 305093B0ADD;
-	Sun, 24 May 2026 23:14:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 645322F8E81;
+	Sun, 24 May 2026 23:20:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779664445; cv=none; b=uOxBNq5dpLE7vWB+sj0iMrs3jZkxEtYxyn7tRrTQh5PR3ndTM1w3+P3MrQIkMFy0wrnh8tbsDshCjBONRkPMsdoUaIIXhH6abJjcfFQ1kvfzahEEXn2s9n71cO3j42BZmVuOOACTpSBmXzsMqT9R91h7BgxYZmrS1zohxfuvWVc=
+	t=1779664846; cv=none; b=YUZ0t5jwmxMoC6aHwZx6WOmZ1aQ60XSZmFsSWqXyx2pDnaulaBv9Mxz74cOX/84cOk7E+dEAhHpg6w5j6uzRJ2W1CFSbgFksly5rj4BhDRVMfUeC35raGV9yMhiDWbjQHolxhRroBd0SnjfaQXohmbN5B1qIae7zaAG9EYHfKwg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779664445; c=relaxed/simple;
-	bh=igMRMhnmLDTDdk8D6ZH+LpSFtnjsvSHpLYDUjQekxu8=;
-	h=Date:From:To:cc:Subject:Message-ID:MIME-Version:Content-Type; b=jevHz55+IDtrIoJWcRgrmfOu1Noax4ETiLi3z/hCOWxmgDPvzCWd3unmjjB9J9Fqm5ci3FmxfD0ztNj8F4h67ry/NkfABOEPcWugl3eBgmOOjzB+AMmnvG02q0N/8KBzyw5v1tqo7KgYOWknZ/808s4L2dOGeiAnzdsWDIWRuEI=
+	s=arc-20240116; t=1779664846; c=relaxed/simple;
+	bh=dSpqvWLcenTGsHm74xZ1Rh/tXi1MqGz3aSfLvUUxsjE=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=WcDFhd1d+6N9gkboKcKYNgb1SC4cgIJdbXwPAUjablBryckcYJxwXMzQ2A5nllJE1go9HiRWvhLZIsKa003L5Iqq15miJ7/+DHs4QiLV256RbDdqtJ7TCI8Z8fP1Y9XS0QMw8AF+ViOLi8b9KR0IlQopQehi2Gij0ACoCQAbzq4=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
 Received: by angie.orcam.me.uk (Postfix, from userid 500)
-	id 3222E92009D; Mon, 25 May 2026 01:14:03 +0200 (CEST)
+	id 0EC649200B3; Mon, 25 May 2026 01:12:06 +0200 (CEST)
 Received: from localhost (localhost [127.0.0.1])
-	by angie.orcam.me.uk (Postfix) with ESMTP id 2B48292009B;
-	Mon, 25 May 2026 00:14:03 +0100 (BST)
-Date: Mon, 25 May 2026 00:14:03 +0100 (BST)
+	by angie.orcam.me.uk (Postfix) with ESMTP id 07D7992009E;
+	Mon, 25 May 2026 00:12:06 +0100 (BST)
+Date: Mon, 25 May 2026 00:12:05 +0100 (BST)
 From: "Maciej W. Rozycki" <macro@orcam.me.uk>
-To: Theodore Tso <tytso@mit.edu>, 
+To: Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
     Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
     Jiri Slaby <jirislaby@kernel.org>
-cc: Randy Dunlap <rdunlap@infradead.org>, 
-    "Dr. David Alan Gilbert" <linux@treblig.org>, 
-    Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>, 
-    Gerhard Engleder <eg@keba.com>, Jiayuan Chen <jiayuan.chen@shopee.com>, 
-    Joseph Tilahun <jtilahun@astranis.com>, linux-serial@vger.kernel.org, 
-    linux-kernel@vger.kernel.org
-Subject: [PATCH RFC] serial: core: Don't clobber the baud rate on hangup via
- B0
-Message-ID: <alpine.DEB.2.21.2605242242330.1450@angie.orcam.me.uk>
+cc: Elena Reshetova <elena.reshetova@intel.com>, 
+    David Windsor <dwindsor@gmail.com>, Kees Cook <kees@kernel.org>, 
+    Hans Liljestrand <ishkamiel@gmail.com>, linux-mips@vger.kernel.org, 
+    linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 1/6] serial: sb1250-duart: Fix console message clobbering
+ at channel resets
+In-Reply-To: <alpine.DEB.2.21.2605241602220.1450@angie.orcam.me.uk>
+Message-ID: <alpine.DEB.2.21.2605241620470.1450@angie.orcam.me.uk>
+References: <alpine.DEB.2.21.2605241602220.1450@angie.orcam.me.uk>
 User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -39,76 +40,65 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 
-Requesting hangup via the B0 baud rate has this nasty side effect of 
-clobbering the previously set rate for the port unless it happens to be 
-9600bps.  Consequently if there's a consumer still active at the other 
-end, then it receives garbled data from any other producers outputting 
-messages to the port, such as init(8) or the kernel console.
+Ensure any characters outstanding have been sent before issuing channel 
+resets so as to prevent messages issued to the bootconsole from getting 
+clobbered.
 
-There doesn't appear to be any particular reason for this clobbering 
-other than that we have been doing it since 2.1.131, so take a saner 
-approach and try to retain the old baud rate where available before 
-resorting to 9600bps.
+Contrary to device documentation at the time the transmitter empty bit 
+is set only the transmit FIFO has been drained and there is still data 
+outstanding in the transmitter shift register, so wait an extra amount 
+of time for that register to drain too.  This also prevents subsequent 
+messages produced to the console from getting clobbered, owing to what
+seems a transmitter synchronisation issue.
 
+When called from sbd_serial_console_init() it is too early for fsleep() 
+to work and even before lpj has been calculated and therefore the delay 
+is actually not sufficient for the transmitter to drain and is merely a 
+placeholder now.  This will be addressed in a follow-up change.
+
+Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
 Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Cc: stable@vger.kernel.org # v6.5+
 ---
-Ted,
+Changes from v1 (1/4),
+<https://lore.kernel.org/r/alpine.DEB.2.21.2604130321540.29980@angie.orcam.me.uk/>:
 
- This code ultimately evolved from a patch of yours[1], so would you be 
-able by any chance to recreate your rationale beyond resetting the baud 
-rate to 9600bps rather than just keeping the old one for B0?
-
- Otherwise, does anyone know or can come up with any actual use case for 
-this baud rate setting?  There seems no sensible way to restore the baud 
-rate required by init(8) and the kernel console other than by hand, while 
-I can't see a way for software that actually issued a hangup request via 
-the B0 artificial baud rate to withdraw the request other than by choosing 
-another explicit baud rate.  So there appears to me to be no usable way 
-there of relying on the implicit 9600bps baud rate set via the B0 baud 
-rate.
-
- Have I missed anything?
-
- I have dug into this having been irritated by the occasional clobbering 
-of init(8)/console output observed and now finding a reproducible way to 
-clobber the port in the course of working on a recent set of changes for 
-the sb1250-duart driver.  This change has made messages get through with 
-no damage.  Many of my systems in the lab actually use the baud rate of 
-9600bps, which covers the issue, but the CFE firmware sets the baud rate 
-to 115200bps for systems that use the sb1250-duart driver.
-
-  Maciej
-
-References:
-
-[1] "Was: patch to drivers/char/serial.c to fix kernel lock-up", 
-    <https://lkml.org/lkml/1998/12/5/126>
+- Sanitise the change heading.
 ---
- drivers/tty/serial/serial_core.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/tty/serial/sb1250-duart.c |   22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
 
-linux-serial-uart-get-baud-rate-hup.diff
-Index: linux-macro/drivers/tty/serial/serial_core.c
+linux-serial-sb1250-duart-reset-drain.diff
+Index: linux-macro/drivers/tty/serial/sb1250-duart.c
 ===================================================================
---- linux-macro.orig/drivers/tty/serial/serial_core.c
-+++ linux-macro/drivers/tty/serial/serial_core.c
-@@ -461,8 +461,8 @@ EXPORT_SYMBOL(uart_update_timeout);
-  * @max: maximum acceptable baud rate
-  *
-  * Decode the termios structure into a numeric baud rate, taking account of the
-- * magic 38400 baud rate (with spd_* flags), and mapping the %B0 rate to 9600
-- * baud.
-+ * magic 38400 baud rate (with spd_* flags), and mapping the %B0 rate to the
-+ * rate provided by the @old termios setting if available, otherwise 9600 baud.
-  *
-  * If the new baud rate is invalid, try the @old termios setting. If it's still
-  * invalid, we try 9600 baud. If that is also invalid 0 is returned.
-@@ -516,7 +516,7 @@ uart_get_baud_rate(struct uart_port *por
- 		 */
- 		if (baud == 0) {
- 			hung_up = 1;
--			baud = 9600;
-+			baud = old ? tty_termios_baud_rate(old) : 9600;
- 		}
+--- linux-macro.orig/drivers/tty/serial/sb1250-duart.c
++++ linux-macro/drivers/tty/serial/sb1250-duart.c
+@@ -516,6 +516,28 @@ static void sbd_init_port(struct sbd_por
  
- 		if (baud >= min && baud <= max)
+ 	if (sport->initialised)
+ 		return;
++	/*
++	 * Contrary to documentation, which says that the transmitter
++	 * empty bit is set when "there are no characters to send and
++	 * the transmitter is idle," the bit is already set by hardware
++	 * once the transmit FIFO has been drained only and while the
++	 * transmitter shift register still holds data being supplied
++	 * to the line.  Consequently issuing a transmitter reset at
++	 * this point causes the final character outstanding to be lost.
++	 *
++	 * Moreover, resetting the transmitter while transmission is
++	 * in progress appears to make the transmitter go out of sync
++	 * and subsequent characters issued after the transmitter has
++	 * been reprogrammed and re-enabled are sent corrupted or with
++	 * their bit patterns shifted.
++	 *
++	 * So once the transmitter empty bit has been set wait an extra
++	 * amount of time, sufficient for the transmitter shift register
++	 * to drain at 115200bps, which is the baud rate setting used by
++	 * a standard CFE firmware compilation.
++	 */
++	sbd_line_drain(sport);
++	udelay(100);
+ 
+ 	/* There is no DUART reset feature, so just set some sane defaults.  */
+ 	write_sbdchn(sport, R_DUART_CMD, V_DUART_MISC_CMD_RESET_TX);
