@@ -1,222 +1,204 @@
-Received: from DB3PR0202CU003.outbound.protection.outlook.com (mail-northeuropeazon11020092.outbound.protection.outlook.com [52.101.84.92])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 620903E8331;
-	Mon, 25 May 2026 09:44:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.84.92
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779702253; cv=fail; b=oLPEweEUPDCpEf4kBa4QAbN+gAhimgLx6P2NzOFZHyKBZ0Atl3xFqqaLE6gxexWh+k5X2LjPuswGayzplThogARaFlPSEm8pqG72Ow+KOkCZ5I73VYrk3w5r8mzmuI+ARqQZDPJxZazrq+dRIcDWsG6HTEdu8mWhGnv3DOaDdAE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779702253; c=relaxed/simple;
-	bh=Jb0kxdJyG1UrpdSkUvdAsI/xelm6UTv5JvmVG5dDbWE=;
-	h=From:Date:Subject:Content-Type:Message-Id:References:In-Reply-To:
-	 To:Cc:MIME-Version; b=CF+ZNfDgYO7FRjH5bAXSSKSIrzJGoq5BDMDClgSYPNmGGOXeWsXjFrrJZTBdJnOELYXkUyPm5Be7aABmlTr7Y+70Up8s4htQmUNGUl1cFbbEv8RpvV7Bd76h+3Vn6nstjoW4YA6c2hr3Jfu9nhKl0czAzlQ+m/XAi53FIQg2pYU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com; spf=pass smtp.mailfrom=vaisala.com; dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b=ux+DtYQB; arc=fail smtp.client-ip=52.101.84.92
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vaisala.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1B783859D2
+	for <linux-serial@vger.kernel.org>; Mon, 25 May 2026 13:27:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779715642; cv=none; b=HIoWT281RZ+TQ3oZx1ZevHYcbY2We+vJ8mzzW8he0a1/XibJ3mz9YhWu0RWNjsVUN5G1cRkq0f1g6C6/k3TddPoPTI1fIGTWLOuKh/XI+UbSmSapbDcqo3kjGRLVF0FzE1+9E9/Z4Y+uO0gsan5D5SM6I9N09oMgdae6pii6BjM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779715642; c=relaxed/simple;
+	bh=C94U0R51pf0+NwK55ZN6EU/K9cssUS28krlgs1NAXvo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=WHnG0v1+wyJIEEFA1EPxoV6q7Ty5ulcU4awsDUZSf+LyLw7w0efZhDW8LB7G+h0IaWAjll/gj0eVi1TJQs1H1g62GWhWXEZ0mBhs1oLtcAGVbM7aDOYIsyQFw3EwRbhuX14k9sRGWF3Ly5x+1V8LFL3a/DmCdGqQAUBXcrwiBV4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=aQ7LUXtW; arc=none smtp.client-ip=209.85.128.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b="ux+DtYQB"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=WEiDD1/dG8RsxlxTDw/0JIlsk8b7kabODjq+W7hVjqJrZjDGBRf9qpNrN5fLsgure4Y2O7KsX9yx0Q3TjLtdnHMKThaUSzQXQk7OpH0wsoX7lZhA/OnE6ihGAy+WQd7FalGJTblH99neSG6Ln2pNv43ROTiWn+fGWqzHKy8yhblrXiznSVhgd85zLeiYCU1/ksfPFua2PSUQ45QqtN2IphotS2yi4aHop8byKL03XubWRAzuhY13klTovXdMZqFHiGrQ+fiJOSIgjrb2Yh52/m6BNl7RX2VbrnOvcAx1x7rU02vF3E8edxnItHHeL+P32Gu2NSHbEt6WMHXj7S4BmQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZwwCXNaaoMASbDMPH0u+AvfsicVuqNtvMsaO8I1qxzw=;
- b=BvS7VWdZBMfTE2qYSxRtOxNqbbgcewwgGwMxV6Ir8CCqGGvLnktemu231VZrjrrrG/wJbdBtq6dGiJ7Mx2jZn8Iu95mQ/7cbwAj1NvqAgbZYKdZefgo5EsMxsr1pL/3fKhkzZD65+i3hiJKNpbaH9PT8T2NRf/6q/V6rxaQHPAo/FRhKUqVods+8b16GopyyIs+sLBSX+dwx+q8vw4kxgqaTcQUVD8PAYJ+dLBkkXkHZgRkhVF8LPqTworICfOkCvpLpBjVzWyA2GT/eM5X6YJbkn3nqzyVclsDZbMOe/27iNJN6x93KFVE8I8BmkuGLULayqqFphLQg7sqwk2mpvw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vaisala.com; dmarc=pass action=none header.from=vaisala.com;
- dkim=pass header.d=vaisala.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vaisala.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZwwCXNaaoMASbDMPH0u+AvfsicVuqNtvMsaO8I1qxzw=;
- b=ux+DtYQBRbWInHnxCu83OV0YivwBu93Peooh3a6/ueK4kGnWE3ZEuxJMCwf+F7V3cfGqK1XkxVe4GRdERNbC6Oa4LuEx4f5cxCSEubPp22A1S3Qf0BS2XknGmWHxZFeMdTyh7eya4KEXaif3RvNHR0Nhb6T1M3ZqD+Nsl75k9iQY2MpSBQg3vShhGl2NxACN3WFGNpV9QbJ0067Nl2NS0zbIVc6ZAW+iioPhZuouNz+o0F2N8l7A+w9fXr+RdPZNJRrhVu/Ui5Pv26hbtIJVuF8wMhr6eF+V0tbSRnd6piqoIdCqjZ+owO2djM7tx+/02zs5RFCmVHcxnxLRXpRM/g==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vaisala.com;
-Received: from AS5PR06MB9040.eurprd06.prod.outlook.com (2603:10a6:20b:676::22)
- by AS8PR06MB7608.eurprd06.prod.outlook.com (2603:10a6:20b:337::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.48.19; Mon, 25 May
- 2026 09:43:53 +0000
-Received: from AS5PR06MB9040.eurprd06.prod.outlook.com
- ([fe80::923e:d30b:98c0:c69]) by AS5PR06MB9040.eurprd06.prod.outlook.com
- ([fe80::923e:d30b:98c0:c69%7]) with mapi id 15.21.0048.016; Mon, 25 May 2026
- 09:43:53 +0000
-From: Tapio Reijonen <tapio.reijonen@vaisala.com>
-Date: Mon, 25 May 2026 09:43:39 +0000
-Subject: [PATCH 3/3] serial: max310x: honour rs485 properties from per-port
- DT subnode
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260525-b4-max310x-rs485-dt-v1-3-e6c19b4d5592@vaisala.com>
-References: <20260525-b4-max310x-rs485-dt-v1-0-e6c19b4d5592@vaisala.com>
-In-Reply-To: <20260525-b4-max310x-rs485-dt-v1-0-e6c19b4d5592@vaisala.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
- devicetree@vger.kernel.org, Tapio Reijonen <tapio.reijonen@vaisala.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1779702230; l=2877;
- i=tapio.reijonen@vaisala.com; s=20250903; h=from:subject:message-id;
- bh=Jb0kxdJyG1UrpdSkUvdAsI/xelm6UTv5JvmVG5dDbWE=;
- b=qEIFzDEXFgIz/fAeXgV+CrSGEinURsR6cC/EInmytyx+JK8BHOwCJ+o+4jY6jKRmKNBulC37g
- cctPpHJWK98A/sMfUfkpI47RiglLIVE6ht5BQl8AE1hjXkOxUTat2WS
-X-Developer-Key: i=tapio.reijonen@vaisala.com; a=ed25519;
- pk=jWBz3VD84WbWgfEgIqB5iFFiyVIHZr52zVBPOm7qiGo=
-X-ClientProxiedBy: GVX0EPF0004F082.SWEP280.PROD.OUTLOOK.COM
- (2603:10a6:158:401::626) To AS5PR06MB9040.eurprd06.prod.outlook.com
- (2603:10a6:20b:676::22)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="aQ7LUXtW"
+Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-49050bfe053so23454025e9.3
+        for <linux-serial@vger.kernel.org>; Mon, 25 May 2026 06:27:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1779715637; x=1780320437; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Ij+l12dR+ISDUAaA9eJOw0SDQ47xwS4UQDqlRXMB76c=;
+        b=aQ7LUXtW5bxOb+tWWbnJ9LI9Hu4ho2cWZv/3AUVlb7neykv3e+8w6/VBaL6Xr0dGge
+         z1KK2LMTAA72OCAu5AxD12Qy5s1M0/sw9ULxv7vFq7+upKOnBYr2wRR1ZvodcmgkysM4
+         sWabOR3Ubm2vqDtISC9F8a7yRMxFSNpxL+BvdxucPoZsLwmwpi+VqhZI8mUejTHqAsHt
+         us9KcbeyES8MwfL9wN5iAnDDh83sw6VahdIZeophjTkDCT9NWqrub1WwEH9gCU2y0gYZ
+         Rh2ajrWgiGd+BqSe3mipr5Mst8DS1o2/LF66I805h9zC41cP2I0l1MO9ZLDfwi8MxZFB
+         EZDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779715637; x=1780320437;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Ij+l12dR+ISDUAaA9eJOw0SDQ47xwS4UQDqlRXMB76c=;
+        b=kPbC0w+FZ55mxgIkwna5EMZ3s/yprlGz2icJ2lebXJqeSdzYb9yatOsYho0XZvMID/
+         8soFj1vvbRjF9lBqOVX6L245W+JWn28/FgbQ4VXeDcgH7DSN1Hv0r4RtlhQK1LT6cIvM
+         bXBjQSkN6UaSlnmglIZWPfhZvgVXIDsGVqBoAgvI96pxw6k4uBDNeO5Ixq01mdoAND5B
+         XoJ9lqC5j9y9K+KjDpfs2vreoUUchKO1/0HL5xFZu4doJL4DJUFAKZZRC6oiN7FqDQTe
+         y4FJizs60N2Or7r3JWf40zXVM0+yilG5qxj9FL8DjSH0I2da2qL5gJopU4mI+EZxnQ6z
+         ol1g==
+X-Forwarded-Encrypted: i=1; AFNElJ/4d19vOnEjhOqBZa43KRsFlT0YHFepz+weQn+NmMWU5m9yT+9SAAOX72b9fx+d3OvS8sEu+m+5sVcW8wA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwghgDY62S0OAIkj525U2998L8pki95nZYpw4SPdDDya5nalDLa
+	mqzNzCqIC2fnwawo7VywD/6yDP+xVv//ZuZN4OMbrou41M7ssQJ6sxGeaQnDxg79YGo=
+X-Gm-Gg: Acq92OH/xk9LV1dM6pPknzjvv583c5yqZl72aQ1EEiCyIZ/JHkVgEqaX/0hgFyQo1wA
+	lPtB00I9/971fyIP8C+lHEWrT9e+IFRZuyDcZw7MXL1x8YnWZ48b4Kbx6g3cLx3svFvVEai9QuZ
+	9tRIT491MRyPGRy/M0Q849YwDo7kG2tNuEKgc/W2mBpLxdNz5ldHQAmUJhvPQiWoOB/4fTqDv7X
+	Alda2zQQaYcZMG52iZ1hMiwXszd/ctWiDJxSnOxDjGcR8O726TzhUU/kDnlElSZ/qsRGiwllDYy
+	dVuftrTsg7k9Glzho7V0uAHXyMHjKJbg1LlY2Stu3od1Je6ES2qwWwUT193+q6eNA/hC3lTBGTV
+	+pXhQhIfwGahvXohagWePdW0IBf1pWk2VqaJlrlhOUUn5S1iQtxJUc+3lB1j38V3ogNHsrtwmQA
+	NGdPZSXF6MROQBW4pL8ihT1yIkIRp4HpdCuQOqtdxzBrl36Cjxsz7o8Pat7xlHZf/YrfQyvlANR
+	l7lFVuWFPk3xwGxEo4nKlJl897aUumhJgUU5fiH5JtbO0Rb0Bhy6MW8RNYmrPcdIfOZc8YbN7aO
+	oxhf
+X-Received: by 2002:a05:600c:3b02:b0:48f:e1ac:c94f with SMTP id 5b1f17b1804b1-490424b3938mr247672645e9.10.1779715636631;
+        Mon, 25 May 2026 06:27:16 -0700 (PDT)
+Received: from ?IPV6:2a00:1028:838d:271e:8e3b:4aff:fe4c:a100? (dynamic-2a00-1028-838d-271e-8e3b-4aff-fe4c-a100.ipv6.o2.cz. [2a00:1028:838d:271e:8e3b:4aff:fe4c:a100])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-490454b1ab3sm284841905e9.14.2026.05.25.06.27.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 May 2026 06:27:16 -0700 (PDT)
+Message-ID: <1c21f66f-0d0f-4a8b-835b-23408242cff1@suse.com>
+Date: Mon, 25 May 2026 15:27:13 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS5PR06MB9040:EE_|AS8PR06MB7608:EE_
-X-MS-Office365-Filtering-Correlation-Id: d3ce7356-83b4-4a8c-1935-08deba4221af
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|52116014|376014|1800799024|366016|38350700014|3023799007|11063799006|18002099003|22082099003|56012099003;
-X-Microsoft-Antispam-Message-Info:
-	MIY3b2iLWCqV1vENYiX2k/dJotbqbzvdfYnwPlq0KDOvEl2LwnGSpmms5t8BUZqryOCill4t4oo56URVDCGFerQXjQ3USMJswkfgWR0LRLwubWhwEYgvnttEMRsF6/K1xkI7vYQkXIkOymhuWlhYrc3/EhwdBD13xWNi7tDcK1pFAaUI7D1W2Yorv3hUeRl6YtVSVtvvzwS1ltjHROmeyVjljEvyTZSN0EavqBF6tcurwspvI0hEowYbliSNyfz+X68CM9llwv7wsu75oq2YbdvRHH9GexlI++otAFo1UrJl1VoCS6dMC9+Xnm8fPhuyeCK39LpcixmYiR+SFjoec2LQ+J/M4b/Op6kxrrZgSqMIXYuieqlyLD/DB5W/3nLIxZ7L0q3AqJT64ipV4YZdkA+ZwvVyNIqXhu5TzIQdZcoWnwqUoIhXxAuxMtOOylyORcKN/RGYGz6HO7+RG43qxseZ4NIsr5y0GoY4nRhUz6tl6HgOWRVbDcnp6PTobn2c80AN9oHmAFcecqpho3vPdJhDKuZEIbTkGOCv9t6uLGsY/21YXb9iyPVnTIjnDp+GaQi67gW/Q6hQT5WHDTrw9CgBrh0DXtDLE28zLyNe1hog9uesG5SgScrBO3YDZrZk8vm+mirR4X7q5Bpwlyq4P3u28j7AOrN9FFpSeUAy9pKagYA3Iu1pWE5V06o600MbKL0rrxOLHxfI65LVEHtZK+ujy6r9GeiNNJv6erm3Gz3bkK153osk1d6o0HnqdtCC
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS5PR06MB9040.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(52116014)(376014)(1800799024)(366016)(38350700014)(3023799007)(11063799006)(18002099003)(22082099003)(56012099003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?NGcvVzBKcjJEQ09JSDVmMUg5TU1DaWJTNUh3STg4eDBvNVBneGRydlBBL2Fp?=
- =?utf-8?B?RXBON2lmNEsxOXlNdGJKakJMN29OcjZXYlQxK0lOTUVQaWd4Z3VIZU1leFNk?=
- =?utf-8?B?bFVUcWVvVHQySUtDdE9HaWtzMVBlUVhwUU5ueXVFcUd1N2gvdEFKc05MUHR5?=
- =?utf-8?B?Mk9XYVdCWnU3SWk0VE5pTzJWYk5ucVNmZ1ByYjdxNmRablJkcFlXWE1OeGZ3?=
- =?utf-8?B?MGhaQnowYWhDS3MwQnhJUDFQSmpLSThWbGd2YUlwakN5UkhLOFZ1RGpmMmIx?=
- =?utf-8?B?U0x6cUVyZlNkZjhzdmVERzNIaWxxdTIzdEV4VEc5blF5MEtkUHdrVlFpR1V0?=
- =?utf-8?B?L3BTUGI3S2ZWZllZeGZZQWdoQ2lRWG1BTXA4eTBGRVdaODQ1U0NLTk44Umw0?=
- =?utf-8?B?dWIzRTFtNnFFWGJEZ2lhTTYweWk0a2doQmg1UEExOUVxWnkrbGo0RWkrMlN1?=
- =?utf-8?B?cnlnUDNzRWNQTG0wUWc2ZzRFajkyeUdwWnlZMEI1ZXM4WFJaNFhONWVFZTg5?=
- =?utf-8?B?TXJQeG9Lc1MxZmNUV3JWcGZHbDh0UHFpRVVZVGhKNTVtRkF1QkVWS2lNamUy?=
- =?utf-8?B?NEpKYU04QkJHamRuL3dZVzVNRlJTWmhSVWdaaGlkbThuK1lMRDlrbWZicGR6?=
- =?utf-8?B?V1dLbjZ4a0FUMTBtQlBKNmFuWDFndDgyVHZRbTVMVWtRdWVSM0xKQ0hZc1FI?=
- =?utf-8?B?ZEJtWm56YzE0RGdjZjM5dXZqajFNRzRCd2tkTTcvREN1WDRwcTZhbDBMNWRv?=
- =?utf-8?B?a2xXTWMvNHJDeEcvQ2JuVU0ycW9sY2NidExoR05kSU1yMW5nbnBoRjhYUUx2?=
- =?utf-8?B?Y1R0Q1EvYmJWelJYK3hZeGRUaURKbE5pN3pRTm5EckdPRy96b2YzK3hwM09p?=
- =?utf-8?B?NmtDWFlZam4xaHRpTVoxeGwvZUlXT1JQa0hhemgxWm1zTFlhcHgya3lKVWJS?=
- =?utf-8?B?a2tyS2hmNjFDVmEzd0h6a3VwakxWTWIrd3JCSjFkdHBGVVlrTXBTYnZmdW5C?=
- =?utf-8?B?cFhkeVlMbk8zcWpLYVRIaFlUbEJOTlhnY1JHTzdqZ0tveHFXQ3YzYmVnL0x6?=
- =?utf-8?B?c1FLVVZtSjRUVHNxR1pUZzJkU2Vsa1FaYkZoWGFONERWMGtRSTdWVERFbEI4?=
- =?utf-8?B?VlVHTTJUUmtNYXJGQkoyTXp5cFZQSldKSGVIekx2Q3JMY3ZPc1RXT1k4WFZv?=
- =?utf-8?B?R1VVMnJieE14dk1mSFo2WjFod1R4M1VDOHRzbGNVUUZDbkhocEJmeUFVV2Jt?=
- =?utf-8?B?NWxxd1RzenJ0UTNBV25vRG1QUVRma2VuM3VXZlo3cG9ES2hMRm5sc1Q1U2lj?=
- =?utf-8?B?WHFEUm1FV3ZlQllsNGN0ZlFkMkZLSXhSR1RRdmVCS2Y1cHpGQVA3azZXZkVz?=
- =?utf-8?B?YTFHc0oyeEJlQ0ltUmlRRktYSTdUWVVGRkhVNXZDV3hvR2JaelAxelNTL0hi?=
- =?utf-8?B?VW9JL2JRZHFCNEc0bmRWUTl5ZVptVU1UVGtiVVA1ZkdLSmpqUlUxYXhMVVFF?=
- =?utf-8?B?YmVBZm40d1NRQnIrS0tWWDNJY1ArU1VWNFVBSVNlaGxCQm1kQVJwVG5xc3Rw?=
- =?utf-8?B?aGhmUmk5aDJDN25jMTUrM0p6cE16d3Y3ZTIwbHRYay94Rmh2YWl4ME5iQzRy?=
- =?utf-8?B?cHBYMnlIbEw0NjJkYk1yWEpKYk5iTUdMdzMvNWcrK09Nc1ZuUnFhZHVCd0NT?=
- =?utf-8?B?d0ZPZ3F0bFpPOFQ3R3FnbmFVNXZma1FTdWZCN2V0VlE3UUZoVVVUbmY2aHpU?=
- =?utf-8?B?TWVkSTZMaWZldG9rQVVZM1dyUGpoODN6U3h5aDZQQzFPY3M4T3BWekJZeFN1?=
- =?utf-8?B?UTRTQlJrVWp3cVFhV2JLN3VWRWdSeWtFRUwrWjBKQng5NllnWHNHdUtLc2tT?=
- =?utf-8?B?VzRjdjBJY1o4dmFibzcwSkhjNjJJdkVkSGREK3NPMitPemlROFhsNStCTjkw?=
- =?utf-8?B?ZDBYSzBhWGE5cHhPeGxkVXA1dlYrREVvNWVtUG4yT1c5RS8veE1zOG5qTGhP?=
- =?utf-8?B?US9LU2pSSlBiOCtjTjBWR1dkUks4dG1XR3VHQU5zUEcyeGFWVitmekVTRVAz?=
- =?utf-8?B?UGVjelZlek1qM0lCbDJSdDJLc2pNTCswLy9rdjY5V0pXeWFrTkpKWnZCbG5E?=
- =?utf-8?B?ZVdHK3A2cTk2ckRCMURUd3NlQ0IrNHExemlEWUpJSktwd2QweldHOStlc1hQ?=
- =?utf-8?B?dHVVNWlEUGx2SFNtN3I0bkQwUDA1eno3N0tLdlhWYnE5Qzc0dDdYMDcyenZN?=
- =?utf-8?B?RHFobWhxek1HaklLbFE2Y29Na0xVVU9nWEZEL0ttd2I1T1VPN1Nxb0xYWi9F?=
- =?utf-8?B?YUpieDZWSEl6TGNRN2gyeGdERk5RV1lMYThBVS95eDlCaUo5R3R4VXIyYzVp?=
- =?utf-8?Q?ClgIWQx7mNUewbog=3D?=
-X-OriginatorOrg: vaisala.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d3ce7356-83b4-4a8c-1935-08deba4221af
-X-MS-Exchange-CrossTenant-AuthSource: AS5PR06MB9040.eurprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 May 2026 09:43:52.9904
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 6d7393e0-41f5-4c2e-9b12-4c2be5da5c57
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Rz1qPnPyg+SQAymcl8ZPWIukITPg5Jo51Ev9x2eoy2sQVd/ZBCwHmqNveysUD94C0jRWXX/QijmjfHPtCzFoLmxbtTbSRXsNgAOuuKXWnfQ=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR06MB7608
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 03/11] moduleparam: Add DEFINE_KERNEL_PARAM_OPS macro
+ family
+To: Kees Cook <kees@kernel.org>
+Cc: Luis Chamberlain <mcgrof@kernel.org>, Pengpeng Hou
+ <pengpeng@iscas.ac.cn>, Richard Weinberger <richard@nod.at>,
+ Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+ Johannes Berg <johannes@sipsolutions.net>,
+ "Rafael J. Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>,
+ Corey Minyard <corey@minyard.net>, Gabriel Somlo <somlo@cmu.edu>,
+ "Michael S. Tsirkin" <mst@redhat.com>,
+ Jani Nikula <jani.nikula@linux.intel.com>,
+ Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+ Rodrigo Vivi <rodrigo.vivi@intel.com>, Tvrtko Ursulin
+ <tursulin@ursulin.net>, David Airlie <airlied@gmail.com>,
+ Simona Vetter <simona@ffwll.ch>, Bart Van Assche <bvanassche@acm.org>,
+ Jason Gunthorpe <jgg@ziepe.ca>, Leon Romanovsky <leon@kernel.org>,
+ Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+ Hans de Goede <hansg@kernel.org>, Mauro Carvalho Chehab
+ <mchehab@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
+ Hannes Reinecke <hare@suse.de>,
+ "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+ "Martin K. Petersen" <martin.petersen@oracle.com>,
+ Daniel Lezcano <daniel.lezcano@kernel.org>, Zhang Rui <rui.zhang@intel.com>,
+ Lukasz Luba <lukasz.luba@arm.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Alan Stern <stern@rowland.harvard.edu>,
+ Jason Wang <jasowang@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+ =?UTF-8?Q?Eugenio_P=C3=A9rez?= <eperezma@redhat.com>,
+ Jason Baron <jbaron@akamai.com>, Jim Cromie <jim.cromie@gmail.com>,
+ Tiwei Bie <tiwei.btw@antgroup.com>, Benjamin Berg <benjamin.berg@intel.com>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ "David E. Box" <david.e.box@linux.intel.com>,
+ "Maciej W. Rozycki" <macro@orcam.me.uk>,
+ Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+ Peter Zijlstra <peterz@infradead.org>, Heiko Carstens <hca@linux.ibm.com>,
+ Vasily Gorbik <gor@linux.ibm.com>, Sean Christopherson <seanjc@google.com>,
+ Paolo Bonzini <pbonzini@redhat.com>, Thomas Gleixner <tglx@kernel.org>,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+ "H. Peter Anvin" <hpa@zytor.com>, Vinod Koul <vkoul@kernel.org>,
+ Frank Li <Frank.Li@kernel.org>, Daniel Gomez <da.gomez@kernel.org>,
+ Sami Tolvanen <samitolvanen@google.com>, Aaron Tomlin <atomlin@atomlin.com>,
+ Alexander Potapenko <glider@google.com>, Marco Elver <elver@google.com>,
+ Dmitry Vyukov <dvyukov@google.com>, Andrew Morton
+ <akpm@linux-foundation.org>, John Johansen <john.johansen@canonical.com>,
+ Paul Moore <paul@paul-moore.com>, James Morris <jmorris@namei.org>,
+ "Serge E. Hallyn" <serge@hallyn.com>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Georgia Garcia <georgia.garcia@canonical.com>, kvm@vger.kernel.org,
+ dmaengine@vger.kernel.org, linux-modules@vger.kernel.org,
+ kasan-dev@googlegroups.com, linux-mm@kvack.org, apparmor@lists.ubuntu.com,
+ linux-security-module@vger.kernel.org, linux-um@lists.infradead.org,
+ linux-acpi@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
+ qemu-devel@nongnu.org, intel-gfx@lists.freedesktop.org,
+ dri-devel@lists.freedesktop.org, linux-rdma@vger.kernel.org,
+ linux-media@vger.kernel.org, linux-pci@vger.kernel.org,
+ linux-scsi@vger.kernel.org, linux-pm@vger.kernel.org,
+ linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org,
+ linux-usb@vger.kernel.org, usb-storage@lists.one-eyed-alien.net,
+ virtualization@lists.linux.dev, linux-kernel@vger.kernel.org,
+ linux-arch@vger.kernel.org, netdev@vger.kernel.org,
+ linux-fsdevel@vger.kernel.org, linux-hardening@vger.kernel.org
+References: <20260521133315.work.845-kees@kernel.org>
+ <20260521133326.2465264-3-kees@kernel.org>
+Content-Language: en-US
+From: Petr Pavlu <petr.pavlu@suse.com>
+In-Reply-To: <20260521133326.2465264-3-kees@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-The MAX310x DT binding pulls in /schemas/serial/rs485.yaml via its
-allOf list, advertising the rs485-* properties defined there - none
-of which were honoured at runtime, because the driver never called
-uart_get_rs485_mode().
+On 5/21/26 3:33 PM, Kees Cook wrote:
+> Add macros that define a struct kernel_param_ops initializer through a
+> macro so the underlying field layout can evolve without touching every
+> call site. Three variants cover the three cases:
+> 
+>  DEFINE_KERNEL_PARAM_OPS(name, set, get) // basic
+>  DEFINE_KERNEL_PARAM_OPS_NOARG(name, set, get) // set KERNEL_PARAM_OPS_FL_NOARG
+>  DEFINE_KERNEL_PARAM_OPS_FREE(name, set, get, free) // also set .free
+> 
+> Callers prefix their own visibility qualifiers, e.g.:
+> 
+>   static DEFINE_KERNEL_PARAM_OPS(my_ops, my_set, my_get);
+> 
+> Also update module_param_call() and STANDARD_PARAM_DEF() to use
+> DEFINE_KERNEL_PARAM_OPS internally so the generated ops table will go
+> through the same macro as everything else.
+> 
+> Subsequent commits convert all open-coded struct kernel_param_ops
+> definitions to use these macros, in preparation for migrating to a
+> seq_buf .get API.
+> 
+> Signed-off-by: Kees Cook <kees@kernel.org>
+> ---
+>  include/linux/moduleparam.h | 36 ++++++++++++++++++++++++++++++++++--
+>  kernel/params.c             |  6 ++----
+>  2 files changed, 36 insertions(+), 6 deletions(-)
+> 
+> diff --git a/include/linux/moduleparam.h b/include/linux/moduleparam.h
+> index 075f28585074..26bf45b36d02 100644
+> --- a/include/linux/moduleparam.h
+> +++ b/include/linux/moduleparam.h
+> @@ -68,6 +68,39 @@ struct kernel_param_ops {
+>  	void (*free)(void *arg);
+>  };
+>  
+> +/*
+> + * Define a const struct kernel_param_ops initializer. Callers prefix with
+> + * any required visibility qualifiers (typically "static"):
+> + *
+> + *   static DEFINE_KERNEL_PARAM_OPS(my_ops, my_set, my_get);
+> + *
+> + * Routing the @_set and @_get function pointers through the macro
+> + * (rather than naming the struct fields at every call site) lets the
+> + * field layout change in one place when callbacks are migrated to a
+> + * new signature.
+> + */
 
-All ports share the parent SPI/I2C device, so uart_get_rs485_mode()
-called directly on each port would read the same chip-level fwnode
-for every call. Walk dev->of_node's children for the one named "port"
-with matching reg, and temporarily retarget the parent device's
-fwnode while uart_get_rs485_mode() runs, so each port picks up its
-own subnode's properties. Probe is serialised, so the swap is safe.
+Nit: The newly introduced DEFINE_KERNEL_PARAM_OPS*() macros remain in
+place at the end of the series after the migration is complete and this
+comment is removed in patch 7. It would be helpful to describe in the
+commit message why these macros are generally preferable to defining
+kernel_param_ops instances directly.
 
-For single-port variants (max3107, max3108), fall back to the chip's
-own fwnode when no port@0 subnode is present, so existing DTs that
-declare rs485 properties at the top level keep working.
-
-Signed-off-by: Tapio Reijonen <tapio.reijonen@vaisala.com>
----
- drivers/tty/serial/max310x.c | 37 +++++++++++++++++++++++++++++++++++++
- 1 file changed, 37 insertions(+)
-
-diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-index 5cb7d01e404663dc25b88bc7b4f8df61be2135ec..745498034293cf74c8b4d25b45739e787f1843de 100644
---- a/drivers/tty/serial/max310x.c
-+++ b/drivers/tty/serial/max310x.c
-@@ -1426,6 +1426,9 @@ static int max310x_probe(struct device *dev, const struct max310x_devtype *devty
- #endif
- 
- 	for (i = 0; i < devtype->nr; i++) {
-+		struct fwnode_handle *saved_fwnode = dev_fwnode(dev);
-+		struct device_node *port_np = NULL;
-+		struct device_node *child;
- 		unsigned int line;
- 
- 		line = find_first_zero_bit(max310x_lines, MAX310X_UART_NRMAX);
-@@ -1435,6 +1438,40 @@ static int max310x_probe(struct device *dev, const struct max310x_devtype *devty
- 		}
- 		s->p[i].port.line = line;
- 
-+		/* Locate the matching "port@i" DT subnode, if any. */
-+		for_each_available_child_of_node(dev->of_node, child) {
-+			u32 reg;
-+
-+			if (!of_node_name_eq(child, "port"))
-+				continue;
-+			if (of_property_read_u32(child, "reg", &reg))
-+				continue;
-+			if (reg == i) {
-+				port_np = child;
-+				break;
-+			}
-+		}
-+
-+		/*
-+		 * Temporarily retarget dev's fwnode to the per-port subnode
-+		 * so uart_get_rs485_mode() picks up the per-port properties.
-+		 * For single-port variants, fall back to the chip's own
-+		 * fwnode so legacy DTs that declare rs485 properties at the
-+		 * top level keep working.
-+		 */
-+		if (port_np) {
-+			device_set_node(dev, of_fwnode_handle(port_np));
-+			ret = uart_get_rs485_mode(&s->p[i].port);
-+			device_set_node(dev, saved_fwnode);
-+			of_node_put(port_np);
-+			if (ret)
-+				goto out_uart;
-+		} else if (devtype->nr == 1) {
-+			ret = uart_get_rs485_mode(&s->p[i].port);
-+			if (ret)
-+				goto out_uart;
-+		}
-+
- 		/* Register port */
- 		ret = uart_add_one_port(&max310x_uart, &s->p[i].port);
- 		if (ret)
+I assume the motivation is that the structure is simple enough and using
+macros then makes defining kernel_param_ops instances a bit more
+concise. A minor disadvantage is that some analysis tools, such as
+ctags, may no longer see the generated definition, but that is also the
+case for DEFINE_MUTEX() and other similar macros.
 
 -- 
-2.47.3
-
+Thanks,
+Petr
