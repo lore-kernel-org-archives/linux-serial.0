@@ -1,86 +1,87 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B704403147
-	for <linux-serial@vger.kernel.org>; Tue, 26 May 2026 17:37:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCB7141B36A
+	for <linux-serial@vger.kernel.org>; Tue, 26 May 2026 17:37:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779817073; cv=none; b=q9l2le0x3vnAcR/zw9yPjNWOMRn09VAj8HPeAv5/nyIbUYuYUg2wDOsN4wHnCbxAtnkFdUvuTK+Q+kIBwWyRkJPBdaAy4cYo4YJzFm+ILapD/AN2uISyWsZiMh+Cd7qZ1EpFinuLBwjfzuOE4nMFYuFEgdcwEjvUrfHnxoSCT2A=
+	t=1779817081; cv=none; b=dzQuc9caO4+kmyovId1zCug9uqhV/2sVKktxGyIFKgHlzs44S9nwDjROMUFkgHUy0jF4XnU2oFC7t8r4/Vv6DeTusBiGA3McQdUFvTe93MpeNUYfitC2G1cHf9tCagWftc/vhdCzneZFokmvfzF1bUFNJC8OO2ve/emlctMqDFY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779817073; c=relaxed/simple;
-	bh=kO3PS+8vM+Y1cVJMEsnWbnLSJAXWqhiPW0FIU1IObx4=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=lJCpD3O/Pps10ZilGRcKv2EfrndbGbLndJ978Z1/MR0IJu/h7MOQPfejlgzLNXle/xv7zRKHa9YgvrW4xCB5n7o5pp/8iSwKCW9b+sryJX5IzrnuqjbOfJN3llQ1efgZtNaHg+UV1+1j/VzdlK4LNJDEd06Xh11wEw/HJP5V6pk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=MszJtreq; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=SyuQmJMY; arc=none smtp.client-ip=205.220.180.131
+	s=arc-20240116; t=1779817081; c=relaxed/simple;
+	bh=UK0w8cVX6HonoLLMdXc+3FVa/9hg3gdhTjqWi4T6mns=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=brUtTX5CBKBoazUAGoi+U2sLwpdCBfPumUQ93ZqGjhK+szpDTFxhR0RIpSWKdjNZ4byu5H+Tzekhx1GPQJ91haIwiuYryOceLIncz/Mv8pAJusnMSnX24x2BeHy38Qz2D1EhtqyQPpPKq8Nc3u6SVxkZZu+f5WF5jRWvWdfckSM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=UH/ftc1G; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=jL/grDhG; arc=none smtp.client-ip=205.220.168.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="MszJtreq";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="SyuQmJMY"
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64QH1ccP3147049
-	for <linux-serial@vger.kernel.org>; Tue, 26 May 2026 17:37:50 GMT
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="UH/ftc1G";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="jL/grDhG"
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64QH0qXw195353
+	for <linux-serial@vger.kernel.org>; Tue, 26 May 2026 17:37:59 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=qcppdkim1; bh=+8y1ULO/S42l3Qk21MCc9B
-	/F3Sk3QdLI8zKZezL1FvI=; b=MszJtreq0sZpv3cEJSb9Br9HjNN7vc4pjSv16y
-	gl2thm4Q8JVMlyFsP9PnJceuaWmKMvzy4KskwdxO2b32f1ml7IyxACRaRrwN56B9
-	YcFOXxgJe3y4vgLR5rPRmVDXxk2ZxaO+7d58FIHzV3qXifLxhCtjdamHyw/4ZyV4
-	5/LGdCFQWJFkS7pDsGBKA5stF4dZW0WAqjqMeiC/xuldNR2iE5ObmyF+kUp9ZPQu
-	Lghp3lfhbcnUzDNEZ2RyLwqOHExqPsHKqL0KWqOASAyjFUyfbJO4OidACd03ixzb
-	ntU30JimXluGHF13tgx0yxOQ2xahfPKL+RVOEDufVqbaqz7A==
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	xxStlaNB4x9Mu659Ds+9UQmpLOGQ5xsUav0PKNZl0Yw=; b=UH/ftc1Go6WNiRG7
+	P8ZitGD+wHJFBCNIrhG93ShLh4eYvKATklbEHd7i6ogf2pp7kjDcPIHvJmnNwhcA
+	pSal/sXJMId2vvSFN0e3OOwuH0qTFJTnQPiYPpmI+9zioiyRUGJ7l689J0wjFpOC
+	Z5H6DvjPqwMI/Rz/ke8OS7mZ34Q9ZLBDgLfAtr9VeM5aZzuEerp7g4/Ob51ObSP3
+	uvmI8I9bWWrVG1b6bW6eMpk9F7/X+7KRps+nBHCRCWN+w96juaRbp0DjbndxYtUC
+	GqdZt0BLlDkmEvr05Arf0CTBqMoXzPkGz9GoTfSNmpZbnSWspYKjQ13Blh3xvKKq
+	mwKgfw==
 Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com [209.85.215.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4ed5v3u842-1
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4eddd7rwgp-1
 	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-serial@vger.kernel.org>; Tue, 26 May 2026 17:37:50 +0000 (GMT)
-Received: by mail-pg1-f199.google.com with SMTP id 41be03b00d2f7-c82751074c8so15645264a12.0
-        for <linux-serial@vger.kernel.org>; Tue, 26 May 2026 10:37:50 -0700 (PDT)
+	for <linux-serial@vger.kernel.org>; Tue, 26 May 2026 17:37:59 +0000 (GMT)
+Received: by mail-pg1-f199.google.com with SMTP id 41be03b00d2f7-c8525f0807aso5269531a12.3
+        for <linux-serial@vger.kernel.org>; Tue, 26 May 2026 10:37:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1779817069; x=1780421869; darn=vger.kernel.org;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=+8y1ULO/S42l3Qk21MCc9B/F3Sk3QdLI8zKZezL1FvI=;
-        b=SyuQmJMYE5+EY0tOjYbvWrpgyRTdKCnPMIsW5ceWko9+Wyp9rpZ/a6gDkj8g5/7KBD
-         EyFYmLwT2RagrZIwjOaT4zRS/ajkrMCryumim/UY9uK6ZIGBGAPbY+4XD2ZJRrujJZNa
-         xnrxhhuRHyd4EnVSqqQKGjVpdWzR0IjIe9xtWL9EL26kDM+BaoDXRrixjeuNmKMNdPH1
-         nDtn0n7x7r6EOXZ2gkFt3s4DUFLV8ogARTVZvYvA3JtKAJSokgMYg5MQtc6ndHq1kn91
-         t4Me19j3Lgty/MYsCV52l08ajdy7SazaTryAeXWPQwMZvuqUlX/tOE9ZYDLlTTwkA5BK
-         Jm+g==
+        d=oss.qualcomm.com; s=google; t=1779817078; x=1780421878; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=xxStlaNB4x9Mu659Ds+9UQmpLOGQ5xsUav0PKNZl0Yw=;
+        b=jL/grDhGC4us7AvtnILb5rGlguwotK2gBLYTZzOHALLhgc2raWouRzlOTU7Selki7E
+         9/Vv2XsYatZTwW1nIiGk/ScRQzJwqeufqw7YWTLjhTrmFrDl7jhnN1mw9QE4xNYp8AxO
+         WMkAjureVpPLwEjkYDJHdR8xB1+ONKvE/hgG9Mm6RTPaB+tmIWsMzSGENsiBjVmfQvOe
+         6Emv7/+LkExzCRYE90Ere7/diA65k7jmu3R7RNXeQ2xnbtOIap2uaVUio28TCANYNhoo
+         3YRRCCxtpuwBNnMC0UUNdzpSWxE7voAUoafCrFcrZaKaGdLmL3Gx2DV0ubjHm0i6iKmH
+         q8qg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779817069; x=1780421869;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+8y1ULO/S42l3Qk21MCc9B/F3Sk3QdLI8zKZezL1FvI=;
-        b=oM9SKY+X8cDmYBa1vQcG96mS9m85WNVSdy88KsaQPMp7Ru2bj6zOqNaTn1AMgA2xzy
-         QnwRlDjLdLjUK2PRfTzWgow3NhHbJ8/k2biA+qVL3NwXgnSGgmdsMlZtqLUoN5z0LXTt
-         dOCGMAYRZ552ByIgjw1JGfM5Ki3tPjgEJgaRmNZmawy6d3B4r0g04T48stmpJLLDHOTS
-         EI2Amerl/mluY84nUBeqfH6E5ARZ259uov8PWqDr2N0QTeLSZbFU6DwPtIkRXe5zcoLR
-         5Iyd1rEPmn6dBsPGNInv9mhQtstEOvZSRN9TmRZXgFk6qS0esnmZDjum8qNOmmMStg63
-         ZO6g==
-X-Forwarded-Encrypted: i=1; AFNElJ9TnOCvsJ3m4N8NpOXwTaej0fxngnSKFzVGg0izOvNkt+v20T9mNDEsUg7JMaGLK86lD4yONMXjjojuWqg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxcXSIJ+7a8eXM59YTbQLKW8gZdeUS0I7fejO5EZ3jePZY5pPxT
-	+fjRLysqVI9C5kj6V6z56FlhsLlC1tFssVaYYNXDGOWYnXCEa3NeHQ8lHUJbgE55AmT9kGlT73h
-	vF1ro/E/LlmfuXFnglWslZ69U49NGq2TdS1WOW3HeBog64ry1mHFAQbZL2RoB75gBBM+MzkhaRV
-	M=
-X-Gm-Gg: Acq92OHKZ5XoBUStKoLMgl964X3A2ef+YG5o06Ka+29p2FVpEk2eVNRi5sCt8lPpM5h
-	n01pbPsha9AecwX5RovSgXiu5IQ1FyP+WWEFqSkBqYZu/ZUXWx/rtXAQ10gxVJqRRLIHR8OTk/5
-	HiIdNCRADHg2TAJRSSeyHQr4FQIKGqSIleNpeAL/mKXOJDib6I+v2rbjS6DMSY1d88B4LfCbZ7y
-	5GlP66CgwHki9CljstmhVsmP6T3KteDZwx2WVBsyapZKzLwbJaF9LaXIoNLWfYJY12ZK66M0mqw
-	t4vhOqyeO/nftdsyqvevUIfodUAsRCVTmHRW2YoDFp/HRsvnoOTri4ywS/hJLtVVRGW00+BB/Rx
-	pU7czdQ21gihlo/vm9zjOsQKtrVehxdnTFGgvRKmwiW+d8/oJgb0VM2Kk2Sw+l1Z1tg==
-X-Received: by 2002:a05:6a20:a121:b0:3b2:86e8:a819 with SMTP id adf61e73a8af0-3b328ecdb1amr19699633637.25.1779817069427;
-        Tue, 26 May 2026 10:37:49 -0700 (PDT)
-X-Received: by 2002:a05:6a20:a121:b0:3b2:86e8:a819 with SMTP id adf61e73a8af0-3b328ecdb1amr19699583637.25.1779817068770;
-        Tue, 26 May 2026 10:37:48 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1779817078; x=1780421878;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=xxStlaNB4x9Mu659Ds+9UQmpLOGQ5xsUav0PKNZl0Yw=;
+        b=Xv+Gv5qGzZS6yC12zAlG8ahmglf940uXWJw74VBx9hdsWVO1qtg7/GZXUh1wypeA3K
+         hZbpxXVqnu8tU2a3GHdrbMyHREMLmuUXYZayxz98W5hhHca9buKSVu5Sp4H9QukDjOcM
+         QIFHR/TXw5KiN72k7Tu8GVWZRIlZXJ3U0kOuft3bHzBNyLJ3gj/qqPrGPdBJwgrtvw5W
+         SbX+vLOPaWr/S3jw6uEbPTAv/GBacMnHmV1sIKeChAKsbjmYg0cOBTFg7chmofLXLFAs
+         biBcaOxl6qbK4HMSc3QwKb/Yi7NKSeVfTKJ3SX0J0xCQr24Hjrhie92NhlKHSxRJQO9L
+         wMCA==
+X-Forwarded-Encrypted: i=1; AFNElJ9stYxiBiX43eGJqYfhWPTwHIu7v6UCML15kY6OGSUfFG7sm9xwp47tHiauHzBmrY5+vDONmnswMiyCGPA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzSygKaguAsceLz6z6UpnVGp5FDUpKXUYlA1bdRyTxBPoC99ISf
+	Uj6JEj4VwAS3dKSNszZZfsR1obyRqOD2wf5GL6ucSDCZUHI7Q5vLC+I+xTxZa9h4KQWsZrGFvXA
+	Pl4Y1mI7gri37LwJD1lQ/TPMnBq4jOHkMqJjCjepZDSD+dXACAy4kk0g1WdAuYhd2Lz8=
+X-Gm-Gg: Acq92OFseqdiXyW2fx8S234uDS2Ss3tR1Ivw2t5Bl1xZrvvrotyhSOkx1+dffZIj/HJ
+	WXj+GpAWupNZi9h39e06vu7rYZOCaDyweJBGOV+McMPBjW+mw2y5sb/hGLeacoBPoxXMxiFm2Sr
+	fojBsZ0oj/yo/eG826kI2P2rZbCo3VxX2BjmGEU0ydIjFBlmZraXDgpd8Pypi00R+GRfN1RUd4g
+	H0Ncipib3+P0lH9px751dLzJV9zd8YoxxbJto23m5+ma7ohgTI37xCrDeOkuXIOfiDGbHRNggKQ
+	1B1rn5gXiCpEQHzZOKPLwllcNH5dkdvUyVS8i/V+FSJNpu6Rs3Eq4ok21eqippVFi/mM2r8qj0S
+	Iu1Q7JfAE8S+IQdF36dCKi7KlcRcr/hOfIvDtD1V4BkVjcBMPewkhRCA=
+X-Received: by 2002:a05:6a00:887:b0:83a:7516:5be0 with SMTP id d2e1a72fcca58-8415f3f197amr18011090b3a.50.1779817078477;
+        Tue, 26 May 2026 10:37:58 -0700 (PDT)
+X-Received: by 2002:a05:6a00:887:b0:83a:7516:5be0 with SMTP id d2e1a72fcca58-8415f3f197amr18011061b3a.50.1779817077812;
+        Tue, 26 May 2026 10:37:57 -0700 (PDT)
 Received: from hu-ptalari-hyd.qualcomm.com ([202.46.22.19])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-841c32b511dsm3260461b3a.48.2026.05.26.10.37.44
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-841c32b511dsm3260461b3a.48.2026.05.26.10.37.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 May 2026 10:37:48 -0700 (PDT)
+        Tue, 26 May 2026 10:37:57 -0700 (PDT)
 From: Praveen Talari <praveen.talari@oss.qualcomm.com>
-Subject: [PATCH v4 0/2] Add tracepoints support for Qualcomm GENI Serial
- drivers
-Date: Tue, 26 May 2026 23:07:38 +0530
-Message-Id: <20260526-add-tracepoints-for-qcom-geni-serial-v4-0-e94fbaec0232@oss.qualcomm.com>
+Date: Tue, 26 May 2026 23:07:40 +0530
+Subject: [PATCH v4 2/2] serial: qcom-geni: Add tracepoints for Qualcomm
+ GENI serial driver
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -89,11 +90,9 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAGLaFWoC/42NQQ6CMBBFr0K6dkg7lhZdeQ/jokCBJkChxUZDu
- LsFNy5csJnkTX7eW4jXzmhPrslCnA7GGztE4KeElK0aGg2mikyQoqAcJaiqgtmpUo/WDLOH2jq
- YSttDowcDm011cOG5lBJZXsiCRNXodG1ee+b+iNwaP1v33quBbd9vIKPiWCAwoJBxXiAKhprmN
- +t9Oj1VF5d9Gg/ZOgF/3AwPujG6VSZRcGTFWdV/3Ou6fgCa1nx3OwEAAA==
-X-Change-ID: 20260427-add-tracepoints-for-qcom-geni-serial-948777218b7b
+Message-Id: <20260526-add-tracepoints-for-qcom-geni-serial-v4-2-e94fbaec0232@oss.qualcomm.com>
+References: <20260526-add-tracepoints-for-qcom-geni-serial-v4-0-e94fbaec0232@oss.qualcomm.com>
+In-Reply-To: <20260526-add-tracepoints-for-qcom-geni-serial-v4-0-e94fbaec0232@oss.qualcomm.com>
 To: Steven Rostedt <rostedt@goodmis.org>,
         Masami Hiramatsu <mhiramat@kernel.org>,
         Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
@@ -105,125 +104,151 @@ Cc: Praveen Talari <praveen.talari@oss.qualcomm.com>,
         mukesh.savaliya@oss.qualcomm.com, aniket.randive@oss.qualcomm.com,
         chandana.chiluveru@oss.qualcomm.com
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1779817064; l=3687;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1779817064; l=4256;
  i=praveen.talari@oss.qualcomm.com; s=20251114; h=from:subject:message-id;
- bh=kO3PS+8vM+Y1cVJMEsnWbnLSJAXWqhiPW0FIU1IObx4=;
- b=faXztxcLxDwYimpPKNMRU6Z1BWVnGfTxoTnn/P4uPACUYxAHbQgBuBVpF+uILLFyNMFbg5eY+
- 6udtByJn8c6CNVHZc7K0AI+9UxG/5Alw1tBtdeycE1ow+A/Wz0O//gV
+ bh=UK0w8cVX6HonoLLMdXc+3FVa/9hg3gdhTjqWi4T6mns=;
+ b=B+01FdhrNr8H2zS6hZLDVdozovxGugFAYbEnpRfGUk2mrlnH3CoqferFlm3DfPXRabC8h9zWA
+ 319EjkjFMRxCu6AuiQJkRJ+vXYD3MveQrlKjWrs1Vq2HBfl2ZCkbV7H
 X-Developer-Key: i=praveen.talari@oss.qualcomm.com; a=ed25519;
  pk=NGK/88fjyHXgfhIKwag7+uIytOmyOypvZ/hDFaYPEss=
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTI2MDE1MyBTYWx0ZWRfX0ynigYEqFOYf
- Sp5m0DTYiQ99XJs/O7U18lpPCklzyKBdi51buhT406i24qfIj1PATgAjgXovbMXR0IdtPkzrdGZ
- iixPDN41scjOCdRUX/8Qwg5ISzdWU+fVPa93rx50gZhTK55UF0oPxLPiH9WBWOGEO2x9xVDAs+t
- GQHCcSViEi7q+GcgIpDa8tbbxxVQR4Tpjf1lDreStkxyNB1H+o6qx1xT1r1eixxKxO42fpVR0Fs
- OTOolJpgYpV20wG8aUnMmUqpjrs3zz2w0d9PIs1By/mkCz5wTv/YXWEpjMRg+MglBzNScdvxEBk
- rzB0FTMVGNPTI+XmMFEOen9CuwebckiS0cjGTaz3cVIp7wi7M2d48or2GJiDmeT86Ngn1UBY1Yq
- ZVnX15zbwcTpF2cV66+6xYg2bGVtdpy8eX+/51kPneE4UQW5rQB4dUivIB1ontrIyT2gxCOG4kp
- EF2sVPRs7lrxexcnY1Q==
-X-Authority-Analysis: v=2.4 cv=Zc4t8MVA c=1 sm=1 tr=0 ts=6a15da6e cx=c_pps
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTI2MDE1MyBTYWx0ZWRfX7NzoiklBH1dO
+ hKHYui3viM+Pug7H8dgFrKFbzLtrqI6NJRnD4PyeVADCiF6I/5AjcJfyea8YopECmAECo9rzzOw
+ hDbZtNbaiKeLaMObEO+NmO6kW06I5nkL9o1E+jLSIVpXXLdqKFRv913tPkyfxTje5m8fN0STrMq
+ yLMvgv6IXcgL9Ax6qDyXS0LFJLTKPLJyFbOcI97AnI/UDHZtWLW7oJYJmOKgipDwRVGmZWJbs05
+ n6XlSkyd5ZSTUK6cVd+KSkeAEUzHLWiwTdbyqy9OoJArwMoS0kiuaoGZ3dlfQ5zs1+hCWGes4b7
+ J/xF2zir4a+PiBhyTGDrYruPmPwCxLEgM5JYknagjnkDivIxyrl0YJhnE6Govuk6OPktggByzVn
+ Z51sf4jH0+MCfe6QroIiJIJYHxTDya6+4zibhv6ek9EH8yRy2hoDBNWiATBc3yzupAcZZg6XEQj
+ 9hkY/HlI58QKy2ccUUg==
+X-Proofpoint-GUID: 9W7F-gryPt4nR9RU2NcwO8Kl_LONohZu
+X-Authority-Analysis: v=2.4 cv=fKsJG5ae c=1 sm=1 tr=0 ts=6a15da77 cx=c_pps
  a=Oh5Dbbf/trHjhBongsHeRQ==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
  a=IkcTkHD0fZMA:10 a=NGcC8JguVDcA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=gowsoOTTUOVcmtlkKump:22
- a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=meVymXHHAAAA:8 a=7d_E57ReAAAA:8
- a=ag1SF4gXAAAA:8 a=xnuwXrIFmXssz-iuO0kA:9 a=QEXdDO2ut3YA:10
- a=_Vgx9l1VpLgwpw_dHYaR:22 a=2JgSa4NbpEOStq-L5dxp:22 a=jhqOcbufqs7Y1TYCrUUU:22
- a=Yupwre4RP9_Eg_Bd0iYG:22
-X-Proofpoint-ORIG-GUID: lQd7oIyw5PcproddSaeCmVblDx8UUwdZ
-X-Proofpoint-GUID: lQd7oIyw5PcproddSaeCmVblDx8UUwdZ
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=Um2Pa8k9VHT-vaBCBUpS:22
+ a=EUspDBNiAAAA:8 a=KXSloCXmEunfo-Xy6rIA:9 a=+jEqtf1s3R9VXZ0wqowq2kgwd+I=:19
+ a=QEXdDO2ut3YA:10 a=_Vgx9l1VpLgwpw_dHYaR:22
+X-Proofpoint-ORIG-GUID: 9W7F-gryPt4nR9RU2NcwO8Kl_LONohZu
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
  definitions=2026-05-26_04,2026-05-26_03,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 spamscore=0 impostorscore=0 bulkscore=0 adultscore=0
- phishscore=0 clxscore=1015 priorityscore=1501 lowpriorityscore=0
- suspectscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2605130000
- definitions=main-2605260153
+ spamscore=0 bulkscore=0 lowpriorityscore=0 suspectscore=0 impostorscore=0
+ clxscore=1015 adultscore=0 priorityscore=1501 malwarescore=0 phishscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2605130000 definitions=main-2605260153
 
-Add tracepoints to the Qualcomm GENI (Generic Interface) serial driver.
-These trace events enable runtime debugging and performance analysis of
-UART operations.
+Add tracing to the Qualcomm GENI serial driver to improve runtime
+observability.
 
-The trace events cover UART termios configuration, clock setup, manual
-control state, interrupt status, and actual transmitted/received data in
-hexadecimal format.
+Trace hooks are added at key points including termios and clock
+configuration, manual control get/set, interrupt handling, and data
+TX/RX paths.
 
-Usage examples:
-
-Enable all serial traces:
-  echo 1 > /sys/kernel/debug/tracing/events/qcom_geni_serial/enable
-  cat /sys/kernel/debug/tracing/trace_pipe
-
-Example trace output:
-
-2517.938432: geni_serial_clk_cfg: a94000.serial: desired_rate=1843200
-     clk_rate=7372800 clk_div=4 clk_idx=0
-2517.938753: geni_serial_irq: a94000.serial: m_irq=0x88800000
-     s_irq=0x08000111 dma_tx=0x00000000 dma_rx=0x00000000
-2517.938803: geni_serial_set_termios: a94000.serial: baud=115200 bpc=8
-     tx_trans=0x00000002 tx_par=0x00000000 rx_trans=0x00000000
-rx_par=0x00000000 stop=0
-2517.938807: geni_serial_set_mctrl: a94000.serial: mctrl=0x8006
-     uart_manual_rfr=0x00000000
-2517.938818: geni_serial_get_mctrl: a94000.serial: mctrl=0x0160
-     geni_ios=0x00000001
-2517.939165: geni_serial_irq: a94000.serial: m_irq=0x00400000
-     s_irq=0x00000000 dma_tx=0x00000000 dma_rx=0x00000000
-2517.939592: geni_serial_tx_data: a94000.serial: tx_len=8 data=61 62 63
-     64 65 66 67 68
-2517.940610: geni_serial_irq: a94000.serial: m_irq=0x00000001
-     s_irq=0x00000000 dma_tx=0x00000003 dma_rx=0x00000000
-2517.942174: geni_serial_irq: a94000.serial: m_irq=0x08000000
-     s_irq=0x08000100 dma_tx=0x00000000 dma_rx=0x00000003
-2517.942323: geni_serial_rx_data: a94000.serial: rx_len=8 data=61 62 63
-     64 65 66 67 68
-2517.942680: geni_serial_set_mctrl: a94000.serial: mctrl=0x8000
-     uart_manual_rfr=0x80000002
-
+Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
 Signed-off-by: Praveen Talari <praveen.talari@oss.qualcomm.com>
 ---
-Changes in v4:
-- Rebased patch(02/02) on latest linux-next.
-- Link to v3: https://lore.kernel.org/all/20260518-add-tracepoints-for-qcom-geni-serial-v3-0-b4addb151376@oss.qualcomm.com
-
-Changes in v3:
-- Removed \n from geni_serial_tx_data and geni_serial_rx_data events.
-- Resolved aligment issues in geni_serial_data, geni_serial_tx_data and
-  geni_serial_rx_data events.
-- Link to v2: https://lore.kernel.org/r/20260512-add-tracepoints-for-qcom-geni-serial-v2-0-a5726421b3af@oss.qualcomm.com
-
-Changes in v2:
-- removed multiple trace events for TX/RX events, instead used
-  DECLARE_EVENT_CLASS and DEFINE_EVENT.
-- Link to v1: https://lore.kernel.org/r/20260506-add-tracepoints-for-qcom-geni-serial-v1-0-544b22612e08@oss.qualcomm.com
-
-To: Steven Rostedt <rostedt@goodmis.org>
-To: Masami Hiramatsu <mhiramat@kernel.org>
-To: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Jiri Slaby <jirislaby@kernel.org>
-To: konrad.dybcio@oss.qualcomm.com
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-trace-kernel@vger.kernel.org
-Cc: linux-arm-msm@vger.kernel.org
-Cc: linux-serial@vger.kernel.org
-Cc: mukesh.savaliya@oss.qualcomm.com
-Cc: aniket.randive@oss.qualcomm.com
-Cc: chandana.chiluveru@oss.qualcomm.com
-
+v2->v3:
+- Updated commit text(removed example as it was available on cover
+  letter).
 ---
-Praveen Talari (2):
-      serial: qcom-geni: trace: Add tracepoint support for Qualcomm GENI serial
-      serial: qcom-geni: Add tracepoints for Qualcomm GENI serial driver
+ drivers/tty/serial/qcom_geni_serial.c | 27 +++++++++++++++++++++++----
+ 1 file changed, 23 insertions(+), 4 deletions(-)
 
- drivers/tty/serial/qcom_geni_serial.c   |  27 +++++-
- include/trace/events/qcom_geni_serial.h | 164 ++++++++++++++++++++++++++++++++
- 2 files changed, 187 insertions(+), 4 deletions(-)
----
-base-commit: d387b06f7c15b4639244ad66b4b0900c6a02b430
-change-id: 20260427-add-tracepoints-for-qcom-geni-serial-948777218b7b
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index d81b539cff7f..4b62e58d4918 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -7,6 +7,9 @@
+ /* Disable MMIO tracing to prevent excessive logging of unwanted MMIO traces */
+ #define __DISABLE_TRACE_MMIO__
+ 
++#define CREATE_TRACE_POINTS
++#include <trace/events/qcom_geni_serial.h>
++
+ #include <linux/clk.h>
+ #include <linux/console.h>
+ #include <linux/io.h>
+@@ -226,7 +229,7 @@ static void qcom_geni_serial_config_port(struct uart_port *uport, int cfg_flags)
+ static unsigned int qcom_geni_serial_get_mctrl(struct uart_port *uport)
+ {
+ 	unsigned int mctrl = TIOCM_DSR | TIOCM_CAR;
+-	u32 geni_ios;
++	u32 geni_ios = 0;
+ 
+ 	if (uart_console(uport)) {
+ 		mctrl |= TIOCM_CTS;
+@@ -236,6 +239,8 @@ static unsigned int qcom_geni_serial_get_mctrl(struct uart_port *uport)
+ 			mctrl |= TIOCM_CTS;
+ 	}
+ 
++	trace_geni_serial_get_mctrl(uport->dev, mctrl, geni_ios);
++
+ 	return mctrl;
+ }
+ 
+@@ -254,6 +259,8 @@ static void qcom_geni_serial_set_mctrl(struct uart_port *uport,
+ 	if (port->manual_flow && !(mctrl & TIOCM_RTS) && !uport->suspended)
+ 		uart_manual_rfr = UART_MANUAL_RFR_EN | UART_RFR_NOT_READY;
+ 	writel(uart_manual_rfr, uport->membase + SE_UART_MANUAL_RFR);
++
++	trace_geni_serial_set_mctrl(uport->dev, mctrl, uart_manual_rfr);
+ }
+ 
+ static const char *qcom_geni_serial_get_type(struct uart_port *uport)
+@@ -684,6 +691,8 @@ static void qcom_geni_serial_start_tx_dma(struct uart_port *uport)
+ 	xmit_size = kfifo_out_linear_ptr(&tport->xmit_fifo, &tail,
+ 			UART_XMIT_SIZE);
+ 
++	trace_geni_serial_tx_data(uport->dev, tail, xmit_size);
++
+ 	qcom_geni_set_rs485_mode(uport, SER_RS485_RTS_ON_SEND);
+ 
+ 	qcom_geni_serial_setup_tx(uport, xmit_size);
+@@ -910,8 +919,10 @@ static void qcom_geni_serial_handle_rx_dma(struct uart_port *uport, bool drop)
+ 		return;
+ 	}
+ 
+-	if (!drop)
++	if (!drop) {
++		trace_geni_serial_rx_data(uport->dev, port->rx_buf, rx_in);
+ 		handle_rx_uart(uport, rx_in);
++	}
+ 
+ 	ret = geni_se_rx_dma_prep(&port->se, port->rx_buf,
+ 				  DMA_RX_BUF_SIZE,
+@@ -1082,6 +1093,10 @@ static irqreturn_t qcom_geni_serial_isr(int isr, void *dev)
+ 	geni_status = readl(uport->membase + SE_GENI_STATUS);
+ 	dma = readl(uport->membase + SE_GENI_DMA_MODE_EN);
+ 	m_irq_en = readl(uport->membase + SE_GENI_M_IRQ_EN);
++
++	trace_geni_serial_irq(uport->dev, m_irq_status, s_irq_status,
++			      dma_tx_status, dma_rx_status);
++
+ 	writel(m_irq_status, uport->membase + SE_GENI_M_IRQ_CLEAR);
+ 	writel(s_irq_status, uport->membase + SE_GENI_S_IRQ_CLEAR);
+ 	writel(dma_tx_status, uport->membase + SE_DMA_TX_IRQ_CLR);
+@@ -1294,8 +1309,8 @@ static int geni_serial_set_rate(struct uart_port *uport, unsigned int baud)
+ 		return -EINVAL;
+ 	}
+ 
+-	dev_dbg(port->se.dev, "desired_rate = %u, clk_rate = %lu, clk_div = %u, clk_idx = %u\n",
+-		baud * sampling_rate, clk_rate, clk_div, clk_idx);
++	trace_geni_serial_clk_cfg(uport->dev, baud * sampling_rate, clk_rate,
++				  clk_div, clk_idx);
+ 
+ 	uport->uartclk = clk_rate;
+ 	port->clk_rate = clk_rate;
+@@ -1455,6 +1470,10 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+ 	writel(bits_per_char, uport->membase + SE_UART_TX_WORD_LEN);
+ 	writel(bits_per_char, uport->membase + SE_UART_RX_WORD_LEN);
+ 	writel(stop_bit_len, uport->membase + SE_UART_TX_STOP_BIT_LEN);
++
++	trace_geni_serial_set_termios(uport->dev, baud, bits_per_char,
++				      tx_trans_cfg, tx_parity_cfg, rx_trans_cfg,
++				      rx_parity_cfg, stop_bit_len);
+ }
+ 
+ #ifdef CONFIG_SERIAL_QCOM_GENI_CONSOLE
 
-Best regards,
---  
-Praveen Talari <praveen.talari@oss.qualcomm.com>
+-- 
+2.34.1
 
