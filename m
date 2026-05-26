@@ -1,186 +1,135 @@
-Received: from BEUP281CU002.outbound.protection.outlook.com (mail-germanynorthazon11020093.outbound.protection.outlook.com [52.101.169.93])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f68.google.com (mail-pj1-f68.google.com [209.85.216.68])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E2A63CB2D2;
-	Tue, 26 May 2026 07:35:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.169.93
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779780914; cv=fail; b=ZjlWLIva31clIrIvReKSE8+fvjqUbWtVme6KZ4OqukA7seycxXe9sSPoKVfuEei+mNJor+/Cu8FRIn91SJE/D737FaCKREkcUuLgZhDf+wWpTagHxUgajWWwnmJQy3n5IL4iybeMC3TacvxDGZN87WViBYAjRt+h1DbPpX/sUgo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779780914; c=relaxed/simple;
-	bh=I3FZseircM32mZn17FmYvTHTgyDg6Y7bAtU3pwJA9f4=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=XDIC8tXkX5IgGb9lvSABDDevIffHB+oqdrweQVnxrDu+oOr1prL2KgJ4V78BlBAp6O7M4s+5o8fdVpiO9opp+Qy92V7E1ArQMDf7kj9909ECLJQoG+QNaDiDUbTX2Jk5lVkOi9SK5ytPnAoQtZSdCxvrhjujLPuc5DDTcLGLo70=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=KBSgmbhfr.onmicrosoft.com; spf=pass smtp.mailfrom=KBSgmbhfr.onmicrosoft.com; arc=fail smtp.client-ip=52.101.169.93
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=KBSgmbhfr.onmicrosoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=KBSgmbhfr.onmicrosoft.com
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=WI4Yi5GL82V8MjPtCbW+Bqaq+5xjYVPuOLbeKHjfuBsj2zZARY8t4LlJzjIkM786UgDeny5cIZKF/0KjCaVMxOjtGc79JtcpvTBfG+qJFGp4hoAWONsF7khU6UudbNoQLqzj/nuCNofwtqzAZS1nklrPNpMcrz+c/H2CHUGNLrisKmpD3LGlJjXApczkJW83g3RQ/7RXhlEONN4Wd7vXbQsjginWqiHH/s3CYbSE1F1mvcBIyu0KaWIwZB2gSa38XoxmpMhPOr7umCshfTFLWIKxmHCWJ91DeoZ2m+7urER3q9B2o4N2TflcrFdW24eRHaVbERAcKhzluSWG1xrtUw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XWgo7oQe92flGx1l91r2PBnxbo5fBFQ8uRBLcVJdlow=;
- b=DAmBkUDHfo+QKQn6SfUK7g8Tt4cCEaQZTwPpCewTV7Aw0Av1s88/WzabaEI7VHqMzNs5hv5UTBtrXDbyv3qq4Rxxj6mwk8vb+4ciBnGwC1t8bgwc+XGGOmoynEM/RwVHN/1QnZ4yqyJKIFoAd/FDdI7iFeJc4JxrdCsfVhoZocYNR/yGUZWw2YFQdXIg0ueeoicO8WWdtK6NNODCj0QK51wl39Sg+Qgnbjyfws2wmMRveAbD+HVPHuTuFoOsLmm+As9jRoRVCvHjeTmyMeJfDkfozzurLI9Z2r9MyDbd/F7j638C+TK8nGzTA0lQorh5qWrwcfmIrmGonm/YiBHAiA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=kbsgmbhfr.onmicrosoft.com; dmarc=pass action=none
- header.from=kbsgmbhfr.onmicrosoft.com; dkim=pass
- header.d=kbsgmbhfr.onmicrosoft.com; arc=none
-Received: from BE3P281MB5515.DEUP281.PROD.OUTLOOK.COM (2603:10a6:b10:de::17)
- by BE1P281MB2274.DEUP281.PROD.OUTLOOK.COM (2603:10a6:b10:3a::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.71.11; Tue, 26 May
- 2026 07:35:09 +0000
-Received: from BE3P281MB5515.DEUP281.PROD.OUTLOOK.COM
- ([fe80::fce2:69d7:2d84:7d9e]) by BE3P281MB5515.DEUP281.PROD.OUTLOOK.COM
- ([fe80::fce2:69d7:2d84:7d9e%3]) with mapi id 15.21.0048.019; Tue, 26 May 2026
- 07:35:09 +0000
-From: Matthias Feser <mfe@KBSgmbhfr.onmicrosoft.com>
-To: Moteen Shah <m-shah@ti.com>, "linux-serial@vger.kernel.org"
-	<linux-serial@vger.kernel.org>, "gregkh@linuxfoundation.org"
-	<gregkh@linuxfoundation.org>, "jirislaby@kernel.org" <jirislaby@kernel.org>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"k-willis@ti.com" <k-willis@ti.com>, "msp@baylibre.com" <msp@baylibre.com>,
-	"andriy.shevchenko@linux.intel.com" <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v5] serial: 8250_omap: clear rx_running on zero-length DMA
- completes
-Thread-Topic: [PATCH v5] serial: 8250_omap: clear rx_running on zero-length
- DMA completes
-Thread-Index: AQHc7OItt2o2LMDBtEueXc02m0/NXw==
-Date: Tue, 26 May 2026 07:35:09 +0000
-Message-ID:
- <BE3P281MB55155F2F5795E411F5A65282EE0B2@BE3P281MB5515.DEUP281.PROD.OUTLOOK.COM>
-References:
- <BE3P281MB5515563BFB5DE5E093ADAD9DEE0E2@BE3P281MB5515.DEUP281.PROD.OUTLOOK.COM>
- <4b8c59fe-c6a1-47cb-ab3b-855b1edddde2@ti.com>
- <BE3P281MB55153573889A8124C06291F1EE0F2@BE3P281MB5515.DEUP281.PROD.OUTLOOK.COM>
- <ab76b900-6d1c-4218-a14a-59541b92f2c6@ti.com>
- <BE3P281MB5515A937D47F610974FAEFA7EE0F2@BE3P281MB5515.DEUP281.PROD.OUTLOOK.COM>
- <ede98ffc-9e34-46a5-8d8f-87894fbf9d12@ti.com>
-In-Reply-To: <ede98ffc-9e34-46a5-8d8f-87894fbf9d12@ti.com>
-Accept-Language: de-DE, en-US
-Content-Language: de-DE
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=KBSgmbhfr.onmicrosoft.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BE3P281MB5515:EE_|BE1P281MB2274:EE_
-x-ms-office365-filtering-correlation-id: 529fb454-d1ca-4c79-355b-08debaf9507a
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|1800799024|376014|366016|38070700021|4143699003|6133799003|18002099003|56012099003|22082099003;
-x-microsoft-antispam-message-info:
- 9anQUJySBt8NoOVXNB79ii5YO82afRhS7/yhZrBO6I82rrVBhE68K688hHCBqXybdB83WOLdenmUybx+SUIl9Z4gBXAfc9JplYMTj4vBOOAj8x7Gyr3/XbL9d7/b1IA9t/Jgsob7eHHKp759Fs3L1GdMWghyKBEWCTNyVHssAQmHACd5imQ2ztPXc/Jw0iI4s4jsx2p+za0h/l2yCKOGWMGIXsKbNtdNDpR40Rh6lopahxu4r69Lby2ETANK8cOiO7+7cf+sxG499o2hyJpPaWbcs1PBxHBaAfrkIfs1li7lJPNGSotm73m82HvejHHtNO+JpaMK1wHsuUt0qi+nkaADy97u54Ju4COS1yv+AicVi4FTfLX1vR/7m25cSvicoS1XN+LLjrwfPpw4sTK8rVM61ZLYWgmLkcQWTtoqp/roCQ/Y5t7s49tCEM42ZJUxEWdoUFMk5ApUnoFlfOQ/ZBuLHkhK5BsOaMqpvT82pRHs1d2sOBy2cfIoSB2AcQLcIQ7QBjQYVohhm/FisfEYhdp7iYvI3b7bmY8o+rRf5F+3agkuh9c1lX2sVAooX3BFJNCb4195ftqT8upzIQVe7j29Z68Q+Hgb7bdspO+DMKO4Z9zy0kNMPGdJcJHPoeBelwBEw17oXxKf0pixRhV6PwYZDvf5a47ft/+SPcpzjLPi/dIHfICB9eLul1atkpn0j5nawJNd4jcPfCR9758iUVxryar/FJ8VmpIyuczIsVQeAX0LyHNSdqdZGPtRHBEu
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BE3P281MB5515.DEUP281.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016)(38070700021)(4143699003)(6133799003)(18002099003)(56012099003)(22082099003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?LAeeitmz78QYHWBZYSELRvPDeKeDhD5fi/oYS9jbobBf8dqg6FdUP0GSs7kE?=
- =?us-ascii?Q?2SK6TGPRuYWJC3WANLuVtzvjCUwBikBaxe5WMgGMiNlNGlkzVGghsqlJo1F+?=
- =?us-ascii?Q?wwhrkWS9zOkLCQz7xb2qZUhhETltxvKqbuMoxnTnv1hhAyjOri9Bjwi0zc/f?=
- =?us-ascii?Q?PntpTqZHegaDdPoHdTpAaqKeSkzfV6lpRwNedIv3SNIeH06h5xgatEyz8BFW?=
- =?us-ascii?Q?pMyWtCCzK5Iip3RmxVAq63C+1ULlXfKcqu4g4tJGsKWJ8aEXS+MRa7ZpET50?=
- =?us-ascii?Q?fq1fqn3hftTtAvlpI6z2UqbPeZ1IMgMOSDYfBsHhsUSVPVHvzu1mw9wOpi1t?=
- =?us-ascii?Q?d8qAEtZh0mFJhjkleQu7DmFqZLdqdsscwR8NZTi9niJCtMReQbYbwpXXrIUQ?=
- =?us-ascii?Q?goSasFyBxJRgDY3ope0iHEaQFJ1K7d8MEUb9zAjnL3KBDkbM4vGGUlEUImHb?=
- =?us-ascii?Q?HvTv+ZpZ7IW5+XPDvmTN+U0D8CWXIUaXYxdrWlc4SAv+jpSYK1VEBT5iVLbB?=
- =?us-ascii?Q?8iVx5/5/zOjQY2JgLk7DgIKEhbDZt1LzXhcFNR1NwIR4fvF9P4TlwiYsDmwB?=
- =?us-ascii?Q?j/hZ1jr6P9QUMpvK6m9SISjKwyTgcvAQlPz77GJWAxBX0Q7R1h2tL7K5/SKG?=
- =?us-ascii?Q?1r7iadFKFKdFQLZhKG6cuPBovyMnhkw1bhhzXP3V6HrFo4TERbYocDhbJhW9?=
- =?us-ascii?Q?XC+WABJL0/ggfQexFmvjamLtQm11FIle1uc2u3qFPhfPyKwnWpuuryI7t9mT?=
- =?us-ascii?Q?fuXuRppfzg0aT0NunGtNVdjk7r7y3u3SWyYarBN1e7oWEt5KRpYY+PYn0eP3?=
- =?us-ascii?Q?gvZR7Y85BN2YVayCE5Ehinetdg2tHtH7WFcvBnQIuvQQw0jQBJnylP0+vH0B?=
- =?us-ascii?Q?z496q5fCXZ/XzVe4ma/GQCBkxT8K2vje1WvxzwIAymECtmdcQWQb5E8CTGlE?=
- =?us-ascii?Q?+2R14HPD+KO+XdKp3OvubgkU87lwVeb+sxallbVyMiZW4lNwx+tD7Zc6vYwJ?=
- =?us-ascii?Q?F/AXrKuaurBc+qyM1MydEQPa64cZ+Utd4Ssk4He9aNINFa1xYrkSH6ecoiSG?=
- =?us-ascii?Q?vhJbAh0APG5NCXyF3sIyr3/xFV/pVra9My/Y6OWap7gmm4GpZv2fKbcktFDa?=
- =?us-ascii?Q?KneJzXkGACM50DEkhbeAdazgfRWuPjdDIrFPZQvRFsU12zgWGR9vnjYU3Sbh?=
- =?us-ascii?Q?rHRpdxFVjN+uCjSMWLqIiJGPQYZSM4pkoq6mUOV8yRO8zPVCGwDDLa//BwzI?=
- =?us-ascii?Q?Qwj9cdJMg8qNYAYtlYu4hlyTVitgd6I1G1NfJ1XFsDYh0l9Himp19Q7yf0Jo?=
- =?us-ascii?Q?FowXZ7FFD/6Syk+ZHE/RHq4HVrOc7Fd5Yw05WBUfPK2CmN7CQqQiFkW2/jHw?=
- =?us-ascii?Q?R88b0F3Z9lx+ixoQwVF63wZzwqn9vaPAnYAPUyl+Wr5sD6NMkcEYfN80R/6T?=
- =?us-ascii?Q?Gv9MRBOjRRjQAkafz/H6P7ZCdzeuLFQ/b5p3mHRhOXqad67ypTYKhtMQWijr?=
- =?us-ascii?Q?PviVc7lCx3Fa+f2+dYG7myMd9H0hh7bBsGeYwsKZ1pamxXocAqvMH0iyiBOD?=
- =?us-ascii?Q?NDDrKQieeDppEuGMHSDrHf5HMddQElQctcz2MqydV4Fd9+WvgUGf1sP5fWyq?=
- =?us-ascii?Q?zD8L2Z2R+0NFD/m2W6D9iWE8Daoog2GijRKzPsWxkXmIphkgW4cqiKzo5dmt?=
- =?us-ascii?Q?wB3PTbREqiroNGLUMeiS/95rzAZSkf2RAAPDr8XFebOMFlS5d88BR5YQz4mQ?=
- =?us-ascii?Q?thI2qTSXBMP7gG/q00OBwoGpTwbghi4=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FE1B3CF699
+	for <linux-serial@vger.kernel.org>; Tue, 26 May 2026 10:29:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.68
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779791371; cv=none; b=THF5uvDz+GfkaHmA2Sm34bTdYk3J8Cierfyn4W+/SI2wIT7PPtAf10vJQJIPqXy8UxyqlzP7eOqIgjEwb4Qs4lCods9g5shAy+R/DbEAoLLNEpS7fzjlkpKNcsns6k5v9705JYvJL2lLKrizvlreKOcG1v1Ojt+8HZf/GB8JGas=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779791371; c=relaxed/simple;
+	bh=mHtmgigyJN//tHGQx9aqwwlcUisCAtjn+8tR49/ZPUc=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=lppF6b1DJ41pFqhNlqpePNiJFA8DPqFUrtYty5pkuU0Vw7dk0jHNfyNWfoXe3Ogw4tmtD9RFApk4pvni1L1RVL3O26vDExQXf8GaJCBId5vw7HHK1arsIcwJj8x1w1y11UQrGU/lhgtJ+ez7xPax7iwNhKaPlz8/S929pd6D38A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JJcUphU5; arc=none smtp.client-ip=209.85.216.68
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JJcUphU5"
+Received: by mail-pj1-f68.google.com with SMTP id 98e67ed59e1d1-3660ab73adbso7475155a91.1
+        for <linux-serial@vger.kernel.org>; Tue, 26 May 2026 03:29:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1779791369; x=1780396169; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Z5A30EzvmaHkqzi3qHH6wov2FtrUPyQbO2x3ZrkFeGs=;
+        b=JJcUphU52Ucs35z/D2MS1SL0E9SN1Q1piCS7TctBeQ/4RvBhjwbZSR8oLBxbN6m/eq
+         R8SbAqpk5yT4vexUP5DlYloJFEbOOwHD6ZH9FeXruvvEQz5X3Tr7zWV9MM3ZP2al/h2R
+         A3wEDgMZpZJ4UjctEr2yCt2z9vaq35yiZ4gdxqhe0ssskyf9XgYvJlktoZPA/YOzXj8g
+         4kbIyfQgUfUdGjyXqe9sDoxr2MNcgP8nP/jsECPirz1Euh74cVVX3COAERgkAz+GaUG7
+         8am3yHKICO76SwHnetMPy3bCuVJWcujlDbmH3U0R4Ql6VMHyk7+cfVvFhKGCxQUbJCf1
+         i2rw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779791369; x=1780396169;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Z5A30EzvmaHkqzi3qHH6wov2FtrUPyQbO2x3ZrkFeGs=;
+        b=q/Wke+IXI+uclHerYN0hHM/+/q/XWeNmwwrIYwZOJJPfrN4RLMRUsX3IJMFoBUlxeq
+         jrFD1ZZ8S5EBvSeWpc0OtEfyj/uBXDbj/1qsAngz4ApivcANSTxOPFzIaOQSRt04QDmk
+         3/3jy3UWjdPy1k7e8LqhOYmtQa6Miv08c5KAznVuXPEzGG2fEFf/y9fKWITTLjtNevIV
+         Ji4YjCK8zVwLeGrXY809OdN0cgJKI5wwMwL1liUTug54ZgSI/8De916JH6VBl5z+KTos
+         wo0AcwAfCjvkrBmV0anJmlU/utiPA9YuVvibLwI9nFoU6CkUbgUWLkMnqhaaub7X2GGY
+         VWjQ==
+X-Gm-Message-State: AOJu0Ywx/TfTMoOd5k7pNo6zu76ImI6lGpxV1PhMSXzPMRweDDEdfFyi
+	/3FL2vyp3maENuuhz9McCjcI6PB8HV/TH1biP7Gv1RWLiORxlPUt2HvNUH80aUgqBT/UtPsC
+X-Gm-Gg: Acq92OF7lVP7tOU8GMIbwFRQXG//6KwAMn582nIstveEu6qUU0eRIsbnDJJJ04Gjole
+	ZmNdh5egSL2C2wehqygmqhomvh9qzZvB4HXiWqf6yL2wjlHL+MOAzO3hZ+QLHBQIsbSHIhrhdsT
+	IwPO2yovCGSkUYNOJEt50GhlVRq9igQYJNsVeoKG57Qd3xoOl1gadDeOerrXE8eB2hS3N3ENhIP
+	Y0l+7+DIjAk5hZz1ayycniJlLtUG0o72qeDO6YHa1MCf2xMxtDsbh61GPhaBo7IPIRMesl2A3sr
+	R+j/Ecvqunl2ndkhnwu03jpAX6l4iATIvyHHUuJIBGbAPne+K6wHNOqdt9dMb4P1awBy5d8HPF8
+	N+uDOxEPW85XDlQO1i0fbXN7R1ZMABtILVJ7XoZdLAwsapbuLf0E/JRR/4IWYmWVzUbVByXHg5Y
+	e7t3plAfx6fOumAv83Ro9jZJbcqxJaP3l+8ex2GNgp1PujTk5kptleQkib5KIVkGuW1vN5t28=
+X-Received: by 2002:a17:90b:164e:b0:369:e9a2:6b with SMTP id 98e67ed59e1d1-36a6c7bdd25mr13270383a91.13.1779791369414;
+        Tue, 26 May 2026 03:29:29 -0700 (PDT)
+Received: from KIPREYXIAO-MC2.tencent.com ([43.132.141.25])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-36a721c7cf9sm12262469a91.10.2026.05.26.03.29.27
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Tue, 26 May 2026 03:29:29 -0700 (PDT)
+From: Zhenghang Xiao <kipreyyy@gmail.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org
+Cc: linux-serial@vger.kernel.org,
+	Zhenghang Xiao <kipreyyy@gmail.com>
+Subject: [PATCH tty] tty: n_gsm: fix use-after-free in gsm_queue vs gsm_cleanup_mux race
+Date: Tue, 26 May 2026 18:29:24 +0800
+Message-ID: <20260526102924.3174-1-kipreyyy@gmail.com>
+X-Mailer: git-send-email 2.50.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: KBSgmbhfr.onmicrosoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BE3P281MB5515.DEUP281.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 529fb454-d1ca-4c79-355b-08debaf9507a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 May 2026 07:35:09.2862
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 9f174257-ca3b-4127-8fed-91fa39cecdd6
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ICaz6mavgxy9QamTRnEX2dpYh0xPgZTs5Cxcukw5DglbvTOKxHdugTTLWxITkZWp6enHsPD/csOpgZyz8TwPPkxZFLBy5ZgsdXmCiMsMha0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BE1P281MB2274
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On AM33xx RX DMA only triggers when the FIFO reaches the
-configured threshold (typically 48 bytes). For smaller bursts
-no DMA request is issued and the FIFO is drained by RX timeout.
+gsm_queue() reads gsm->dlci[address] into a local pointer in the
+flush_to_ldisc workqueue without any lock. Concurrently,
+gsm_cleanup_mux() (triggered by GSMIOC_SETCONF ioctl) frees DLCIs under
+gsm->mutex — which the receive path never holds. The cached pointer in
+gsm_queue() becomes dangling, and the subsequent dlci->data() call
+dereferences freed memory.
 
-In this case __dma_rx_do_complete() can legitimately see count =3D=3D 0.
+Fix this by:
+1. Checking gsm->dead at the start of gsmld_receive_buf() to reject
+   frame processing after cleanup has begun.
+2. Moving tty_ldisc_flush() before the DLCI release loop in
+   gsm_cleanup_mux(). tty_ldisc_flush() acquires the tty buffer lock
+   (buf->lock), which serializes against any in-flight flush_to_ldisc
+   work. After it returns, in-flight receive processing has completed,
+   and subsequent calls see gsm->dead and return early.
 
-The current code exits early in this case and does not clear
-dma->rx_running, leaving the DMA state inconsistent. This can
-prevent RX DMA from restarting and may cause
-omap_8250_rx_dma_flush() to fail, marking DMA as broken.
-
-Fix this by clearing dma->rx_running once the DMA transfer has
-completed or been terminated, even if no data was transferred.
-
-Fixes: a5fd8945a478 ("serial: 8250: 8250_omap.c: Clear DMA RX running statu=
-s only after DMA termination is done")
-Cc: stable@vger.kernel.org
-Signed-off-by: Matthias Feser <mfe@KBSgmbhfr.onmicrosoft.com>
-Reviewed-by: Moteen Shah <m-shah@ti.com>
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Signed-off-by: Zhenghang Xiao <kipreyyy@gmail.com>
 ---
-Changes in v5:
-- Add missing metadata (Fixes tag and Cc: stable)
+ drivers/tty/n_gsm.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-Changes in v4:
-- Add blank line before dma->rx_running as suggested
-
-Changes in v3:
-- Move "Changes in v2" below the tear line as suggested
-
-Changes in v2:
-- Move dma->rx_running clear before the count check
-
- drivers/tty/serial/8250/8250_omap.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/=
-8250_omap.c
-index c552c6b9a037..3c7775df27ef 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -944,11 +944,12 @@ static void __dma_rx_do_complete(struct uart_8250_por=
-t *p)
- 				dev_err(p->port.dev, "teardown incomplete\n");
- 		}
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index c13e050de83b..8322fffbaeba 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -3156,12 +3156,18 @@ static void gsm_cleanup_mux(struct gsm_mux *gsm, bool disc)
+ 		gsm_unregister_devices(gsm_tty_driver, gsm->num);
+ 		gsm->has_devices = false;
  	}
++	/*
++	 * Flush the ldisc before releasing DLCIs. tty_ldisc_flush() waits
++	 * for any in-flight flush_to_ldisc work to complete via buf->lock,
++	 * and the gsm->dead check added to gsmld_receive_buf() rejects any
++	 * future receive processing. This ensures gsm_queue() cannot access
++	 * a DLCI being freed.
++	 */
++	tty_ldisc_flush(gsm->tty);
+ 	for (i = NUM_DLCI - 1; i >= 0; i--)
+ 		if (gsm->dlci[i])
+ 			gsm_dlci_release(gsm->dlci[i]);
+ 	mutex_unlock(&gsm->mutex);
+-	/* Now wipe the queues */
+-	tty_ldisc_flush(gsm->tty);
+ 
+ 	guard(spinlock_irqsave)(&gsm->tx_lock);
+ 	list_for_each_entry_safe(txq, ntxq, &gsm->tx_ctrl_list, list)
+@@ -3604,6 +3610,9 @@ static void gsmld_receive_buf(struct tty_struct *tty, const u8 *cp,
+ 	struct gsm_mux *gsm = tty->disc_data;
+ 	u8 flags = TTY_NORMAL;
+ 
++	if (gsm->dead)
++		return;
 +
-+	dma->rx_running =3D 0;
- 	if (!count)
- 		goto out;
- 	ret =3D tty_insert_flip_string(tty_port, dma->rx_buf, count);
-=20
--	dma->rx_running =3D 0;
- 	p->port.icount.rx +=3D ret;
- 	p->port.icount.buf_overrun +=3D count - ret;
- out:
---=20
-2.39.5
+ 	if (debug & DBG_DATA)
+ 		gsm_hex_dump_bytes(__func__, cp, count);
+ 
+-- 
+2.50.1 (Apple Git-155)
 
