@@ -1,135 +1,135 @@
-Received: from mail-pj1-f68.google.com (mail-pj1-f68.google.com [209.85.216.68])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FE1B3CF699
-	for <linux-serial@vger.kernel.org>; Tue, 26 May 2026 10:29:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.68
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 870E13E0750;
+	Tue, 26 May 2026 13:34:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779791371; cv=none; b=THF5uvDz+GfkaHmA2Sm34bTdYk3J8Cierfyn4W+/SI2wIT7PPtAf10vJQJIPqXy8UxyqlzP7eOqIgjEwb4Qs4lCods9g5shAy+R/DbEAoLLNEpS7fzjlkpKNcsns6k5v9705JYvJL2lLKrizvlreKOcG1v1Ojt+8HZf/GB8JGas=
+	t=1779802464; cv=none; b=u5f1tmopF19sdwkW96n7EmSDflUs9m/CcoNxAIWf04NrKtepxw3o4gPpB9hpwNY9wr/u9PMv0MSVsgHx/oopBZ1b/JQXHxRmJK5snb1E4F0D3K435OmVb3vIN4+yYb1Iw74utM0b15usLjS04DiVqUJN090t1qETz4KHXk0bo8E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779791371; c=relaxed/simple;
-	bh=mHtmgigyJN//tHGQx9aqwwlcUisCAtjn+8tR49/ZPUc=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=lppF6b1DJ41pFqhNlqpePNiJFA8DPqFUrtYty5pkuU0Vw7dk0jHNfyNWfoXe3Ogw4tmtD9RFApk4pvni1L1RVL3O26vDExQXf8GaJCBId5vw7HHK1arsIcwJj8x1w1y11UQrGU/lhgtJ+ez7xPax7iwNhKaPlz8/S929pd6D38A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JJcUphU5; arc=none smtp.client-ip=209.85.216.68
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1779802464; c=relaxed/simple;
+	bh=ZwHajdgjYGEag/wqmwGjod4oVWCV/+UfYsIoZES6H+8=;
+	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
+	 Mime-Version:Content-Type; b=pLCWiROlTDDzvF7pnuSYe+GvlyBceyEK19CtSndC09YxorLnsSkYnMyzU73odDl4zQ6uXW/HtAXmEgw2aZVgyRjqi+mtoUx7nnFEYye5wyxhcIag95k5a0ORToglQOdLak6wdDthxgtmJ8XQop3sS5KeL/LmPsaWSHZAohNLC0Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=ze9Dgv0D; arc=none smtp.client-ip=162.243.120.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JJcUphU5"
-Received: by mail-pj1-f68.google.com with SMTP id 98e67ed59e1d1-3660ab73adbso7475155a91.1
-        for <linux-serial@vger.kernel.org>; Tue, 26 May 2026 03:29:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779791369; x=1780396169; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Z5A30EzvmaHkqzi3qHH6wov2FtrUPyQbO2x3ZrkFeGs=;
-        b=JJcUphU52Ucs35z/D2MS1SL0E9SN1Q1piCS7TctBeQ/4RvBhjwbZSR8oLBxbN6m/eq
-         R8SbAqpk5yT4vexUP5DlYloJFEbOOwHD6ZH9FeXruvvEQz5X3Tr7zWV9MM3ZP2al/h2R
-         A3wEDgMZpZJ4UjctEr2yCt2z9vaq35yiZ4gdxqhe0ssskyf9XgYvJlktoZPA/YOzXj8g
-         4kbIyfQgUfUdGjyXqe9sDoxr2MNcgP8nP/jsECPirz1Euh74cVVX3COAERgkAz+GaUG7
-         8am3yHKICO76SwHnetMPy3bCuVJWcujlDbmH3U0R4Ql6VMHyk7+cfVvFhKGCxQUbJCf1
-         i2rw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779791369; x=1780396169;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Z5A30EzvmaHkqzi3qHH6wov2FtrUPyQbO2x3ZrkFeGs=;
-        b=q/Wke+IXI+uclHerYN0hHM/+/q/XWeNmwwrIYwZOJJPfrN4RLMRUsX3IJMFoBUlxeq
-         jrFD1ZZ8S5EBvSeWpc0OtEfyj/uBXDbj/1qsAngz4ApivcANSTxOPFzIaOQSRt04QDmk
-         3/3jy3UWjdPy1k7e8LqhOYmtQa6Miv08c5KAznVuXPEzGG2fEFf/y9fKWITTLjtNevIV
-         Ji4YjCK8zVwLeGrXY809OdN0cgJKI5wwMwL1liUTug54ZgSI/8De916JH6VBl5z+KTos
-         wo0AcwAfCjvkrBmV0anJmlU/utiPA9YuVvibLwI9nFoU6CkUbgUWLkMnqhaaub7X2GGY
-         VWjQ==
-X-Gm-Message-State: AOJu0Ywx/TfTMoOd5k7pNo6zu76ImI6lGpxV1PhMSXzPMRweDDEdfFyi
-	/3FL2vyp3maENuuhz9McCjcI6PB8HV/TH1biP7Gv1RWLiORxlPUt2HvNUH80aUgqBT/UtPsC
-X-Gm-Gg: Acq92OF7lVP7tOU8GMIbwFRQXG//6KwAMn582nIstveEu6qUU0eRIsbnDJJJ04Gjole
-	ZmNdh5egSL2C2wehqygmqhomvh9qzZvB4HXiWqf6yL2wjlHL+MOAzO3hZ+QLHBQIsbSHIhrhdsT
-	IwPO2yovCGSkUYNOJEt50GhlVRq9igQYJNsVeoKG57Qd3xoOl1gadDeOerrXE8eB2hS3N3ENhIP
-	Y0l+7+DIjAk5hZz1ayycniJlLtUG0o72qeDO6YHa1MCf2xMxtDsbh61GPhaBo7IPIRMesl2A3sr
-	R+j/Ecvqunl2ndkhnwu03jpAX6l4iATIvyHHUuJIBGbAPne+K6wHNOqdt9dMb4P1awBy5d8HPF8
-	N+uDOxEPW85XDlQO1i0fbXN7R1ZMABtILVJ7XoZdLAwsapbuLf0E/JRR/4IWYmWVzUbVByXHg5Y
-	e7t3plAfx6fOumAv83Ro9jZJbcqxJaP3l+8ex2GNgp1PujTk5kptleQkib5KIVkGuW1vN5t28=
-X-Received: by 2002:a17:90b:164e:b0:369:e9a2:6b with SMTP id 98e67ed59e1d1-36a6c7bdd25mr13270383a91.13.1779791369414;
-        Tue, 26 May 2026 03:29:29 -0700 (PDT)
-Received: from KIPREYXIAO-MC2.tencent.com ([43.132.141.25])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-36a721c7cf9sm12262469a91.10.2026.05.26.03.29.27
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Tue, 26 May 2026 03:29:29 -0700 (PDT)
-From: Zhenghang Xiao <kipreyyy@gmail.com>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org
-Cc: linux-serial@vger.kernel.org,
-	Zhenghang Xiao <kipreyyy@gmail.com>
-Subject: [PATCH tty] tty: n_gsm: fix use-after-free in gsm_queue vs gsm_cleanup_mux race
-Date: Tue, 26 May 2026 18:29:24 +0800
-Message-ID: <20260526102924.3174-1-kipreyyy@gmail.com>
-X-Mailer: git-send-email 2.50.1
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="ze9Dgv0D"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=default; h=Content-Transfer-Encoding:Mime-Version:Message-Id:Subject:Cc:
+	To:From:Date:subject:date:message-id:reply-to;
+	bh=q7o+iQ1w9G1UiqEz7hJaJd1CaNPkTBiBvOdPIXnXgYw=; b=ze9Dgv0DqZ62Lq8IpF3VeSlR/W
+	xXNfy2n240l4XkLCKY0giJvB2vrTI60jqaM+Kobk9oDWsCriEAdEdjPBqwCqJJnaDpycj0XgQZevv
+	3lvX6t0p6cBghi7gzTsAMY0mfiUetE/xfBiqv49J34fN04ohza1KmzB7lPCqnNnEctX0=;
+Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61] helo=pettiford.lan)
+	by mail.hugovil.com with esmtpa (Exim 4.98.2)
+	(envelope-from <hugo@hugovil.com>)
+	id 1wRrv9-0000000012L-1kn5;
+	Tue, 26 May 2026 09:34:11 -0400
+Date: Tue, 26 May 2026 09:34:10 -0400
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: Randy Dunlap <rdunlap@infradead.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>, Hugo Villeneuve <hvilleneuve@dimonoff.com>, kernel
+ test robot <lkp@intel.com>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org
+Subject: Re: [PATCH v3] serial: max310x: fix compile errors if
+ CONFIG_SPI_MASTER is disabled
+Message-Id: <20260526093410.6162be940a20372bf766db46@hugovil.com>
+In-Reply-To: <48b0e694-e75c-4d0a-8698-b0848ccaefeb@infradead.org>
+References: <20260521153333.2336642-1-hugo@hugovil.com>
+	<48b0e694-e75c-4d0a-8698-b0848ccaefeb@infradead.org>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
+Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Spam_score: -2.0
+X-Spam_bar: --
 
-gsm_queue() reads gsm->dlci[address] into a local pointer in the
-flush_to_ldisc workqueue without any lock. Concurrently,
-gsm_cleanup_mux() (triggered by GSMIOC_SETCONF ioctl) frees DLCIs under
-gsm->mutex — which the receive path never holds. The cached pointer in
-gsm_queue() becomes dangling, and the subsequent dlci->data() call
-dereferences freed memory.
+On Mon, 25 May 2026 10:43:40 -0700
+Randy Dunlap <rdunlap@infradead.org> wrote:
 
-Fix this by:
-1. Checking gsm->dead at the start of gsmld_receive_buf() to reject
-   frame processing after cleanup has begun.
-2. Moving tty_ldisc_flush() before the DLCI release loop in
-   gsm_cleanup_mux(). tty_ldisc_flush() acquires the tty buffer lock
-   (buf->lock), which serializes against any in-flight flush_to_ldisc
-   work. After it returns, in-flight receive processing has completed,
-   and subsequent calls see gsm->dead and return early.
+> 
+> 
+> On 5/21/26 8:33 AM, Hugo Villeneuve wrote:
+> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > 
+> > Since commit 20ffe4b3330a8 ("serial: max310x: allow driver to be built with
+> > SPI or I2C"), if I2C is enabled and SPI_MASTER is disabled, we have these
+> > compile errors:
+> > 
+> >   drivers/tty/serial/max310x.c: In function 'max310x_uart_init':
+> >   drivers/tty/serial/max310x.c: error: 'max310x_spi_driver' undeclared...
+> >   drivers/tty/serial/max310x.c: In function ‘max310x_uart_init’:
+> >   drivers/tty/serial/max310x.c: error: label ‘err_spi_register’
+> >   defined but not used...
+> >   drivers/tty/serial/max310x.c: error: ‘regcfg’ defined but not used
+> > 
+> > Fix by properly encapsulating i2c/spi code/variables in their respective
+> > context with IS_ENABLED() macros for CONFIG_I2C and CONFIG_SPI_MASTER.
+> > 
+> > Also fix link failure with SERIAL_MAX310X=y and I2C=m by modifying Kconfig
+> > depends.
+> > 
+> > Fixes: 20ffe4b3330a8 ("serial: max310x: allow driver to be built with SPI or I2C")
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > Closes: https://lore.kernel.org/oe-kbuild-all/202605121847.N9DVLNg2-lkp@intel.com/
+> > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > ---
+> > note: not Cc-ing stable as the commit is still in tty-next, and even if the
+> > errors originate from original commit that added I2C support, they were not
+> > trigerred because the driver could not be selected/compiled if
+> > CONFIG_SPI_MASTER was disabled.
+> > 
+> > Changes for v3:
+> > - Fix link failure with SERIAL_MAX310X=y and I2C=m (Arnd Bergmann)
+> > 
+> > Changes for v2:
+> > - replace #ifdef with #if IS_ENABLED() to suppoirt both built-in and modules
+> >   options
+> > ---
+> >  drivers/tty/serial/Kconfig   |  2 +-
+> >  drivers/tty/serial/max310x.c | 48 +++++++++++++++++++-----------------
+> >  2 files changed, 27 insertions(+), 23 deletions(-)
+> > 
+> > diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> > index f834e5d292fd7..4accbfa75074c 100644
+> > --- a/drivers/tty/serial/Kconfig
+> > +++ b/drivers/tty/serial/Kconfig
+> > @@ -321,7 +321,7 @@ config SERIAL_MAX3100
+> >  
+> >  config SERIAL_MAX310X
+> >  	tristate "MAX310X support"
+> > -	depends on SPI_MASTER || I2C
+> > +	depends on (SPI_MASTER && !I2C) || I2C
+> >  	select SERIAL_CORE
+> >  	select REGMAP_SPI if SPI_MASTER
+> >  	select REGMAP_I2C if I2C
+> 
+> Other than preferring Arnd's Kconfig dependencies (easier to
+> read/understand IMO), this is all good.
+> Thanks.
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Signed-off-by: Zhenghang Xiao <kipreyyy@gmail.com>
----
- drivers/tty/n_gsm.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+Hi Randy,
+thank you for testing this.
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index c13e050de83b..8322fffbaeba 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -3156,12 +3156,18 @@ static void gsm_cleanup_mux(struct gsm_mux *gsm, bool disc)
- 		gsm_unregister_devices(gsm_tty_driver, gsm->num);
- 		gsm->has_devices = false;
- 	}
-+	/*
-+	 * Flush the ldisc before releasing DLCIs. tty_ldisc_flush() waits
-+	 * for any in-flight flush_to_ldisc work to complete via buf->lock,
-+	 * and the gsm->dead check added to gsmld_receive_buf() rejects any
-+	 * future receive processing. This ensures gsm_queue() cannot access
-+	 * a DLCI being freed.
-+	 */
-+	tty_ldisc_flush(gsm->tty);
- 	for (i = NUM_DLCI - 1; i >= 0; i--)
- 		if (gsm->dlci[i])
- 			gsm_dlci_release(gsm->dlci[i]);
- 	mutex_unlock(&gsm->mutex);
--	/* Now wipe the queues */
--	tty_ldisc_flush(gsm->tty);
- 
- 	guard(spinlock_irqsave)(&gsm->tx_lock);
- 	list_for_each_entry_safe(txq, ntxq, &gsm->tx_ctrl_list, list)
-@@ -3604,6 +3610,9 @@ static void gsmld_receive_buf(struct tty_struct *tty, const u8 *cp,
- 	struct gsm_mux *gsm = tty->disc_data;
- 	u8 flags = TTY_NORMAL;
- 
-+	if (gsm->dead)
-+		return;
-+
- 	if (debug & DBG_DATA)
- 		gsm_hex_dump_bytes(__func__, cp, count);
- 
--- 
-2.50.1 (Apple Git-155)
+I personnaly think both syntaxes are confusing :)
 
+I have a long term goal of converting this driver to core and
+I2C/SPI parts eventually, like I did for the sc16is7xx...
+
+Hugo.
+
+
+> 
+> Acked-by: Randy Dunlap <rdunlap@infradead.org>
+> Tested-by: Randy Dunlap <rdunlap@infradead.org> # build-tested
+> 
+> -- 
+> ~Randy
