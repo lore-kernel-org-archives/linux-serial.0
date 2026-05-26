@@ -1,86 +1,68 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55D071DED40
-	for <linux-serial@vger.kernel.org>; Tue, 26 May 2026 05:06:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 205293C4164
+	for <linux-serial@vger.kernel.org>; Tue, 26 May 2026 06:53:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779771991; cv=none; b=u1vU7FFguFhgRyOm5RLOvQLDJms+bAE1nPTlk2yF2p5oYAauNkMqNmdQmxOOtMVlWZ4eUaf3pUq7NjOGKQnvDQsvFLm9fEp+KRMULwWLE9V+MtgFrDiwVay4I4y0opTPb8zlRUwHtLhw9kX6FHqugPwyCK3bl6u/8ZU22yvPLK0=
+	t=1779778394; cv=none; b=Z47Tc9fLezz3C+HikDjtkHCSw1JTn25yqRXZZ9tra6WClX6/h1d2UrzlCVJpPPiR5BMTaQBxEIHnx/B5pa0ojDnGTCYR/NSfTB2bCZBgujC3GS8SCEEyzPc0s27b9qu3JUU6e7ryuPMzyKehy7UiINLw4V1ebjp8gXsS+ipwkpw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779771991; c=relaxed/simple;
-	bh=CNyn68J5G4M9q4KLWttx8rNk0/rLkzFbuBx79srQ3mQ=;
+	s=arc-20240116; t=1779778394; c=relaxed/simple;
+	bh=lI94k3K5Kcc20pekEfGAOaAomJ1QgkYtP6G74MUe9gk=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=L7L+JdC2UHE8ndiE7vPwwN/3/tS6ER8OlYvaRH6IbCGCI6o09/VRIovvPCVMBV//uOAq0LM3rQ+WDfOukCxpHzJqPhK9a6HrX//E2c/vfXeTuRkf6V0lqp37cXSUUHzcGV1tBsr2tm2V9lXAhM8sLUcySArKFMtlF/DP+uh/YlY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Mb67mpL/; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=Bb1O73cR; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	 In-Reply-To:Content-Type; b=QlMMXgdXAIflrYZOpk0qlh13zPfPAx9zc/J0435IU5r3QSS6GNw82craNubKQNa7dBcIiI12eVgj/1JGk2quup+W+m3aTDDcjTtMCIb6o7jzuXb7HWtQl6edBkVQ7n+znZrSTSZEQKuTEYE+Eo34l+h60yHtwM2RJ0YfQrVkBrs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=TR/s+dSF; arc=none smtp.client-ip=209.85.221.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Mb67mpL/";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="Bb1O73cR"
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64PGW0oV080260
-	for <linux-serial@vger.kernel.org>; Tue, 26 May 2026 05:06:25 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	vyeclYrLbQjRr+lJ6lGO9a+S8wl5YIcUP6BYDVwCF68=; b=Mb67mpL/fX44Hpiu
-	KHzcgtZjLMYk/mD+nL8xBrliSGTKWAOy/EZYMIlIrMa5zLQs1GoqsE691QBRnMrh
-	n30by6FDs2zxW2xIrDEdnpn5oZzgZyFuvzlWDrjs+ZuMnK+ooVNML4OfhtbaMrlW
-	he5/H6d9SO3kXp2KxbvfBM2S/b5QUWrbUKPIz2Toxy+YkSEkxd294BmViZofwdNq
-	bXRWBftBqWSk2lITtIDOYmpjafL0f2KhojTyaa5SAE7ipc9OUFVhEoetXYgYOUU0
-	2+LASQN8fWvd89xJV5Vg7Ix59H4Qlc2V0SPr5BShfdQLLNTHuKErN5pSSG5alyQG
-	ysX6Kg==
-Received: from mail-dl1-f70.google.com (mail-dl1-f70.google.com [74.125.82.70])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4eckmab11b-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-serial@vger.kernel.org>; Tue, 26 May 2026 05:06:25 +0000 (GMT)
-Received: by mail-dl1-f70.google.com with SMTP id a92af1059eb24-135de949041so8980895c88.0
-        for <linux-serial@vger.kernel.org>; Mon, 25 May 2026 22:06:25 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="TR/s+dSF"
+Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-45ea19f412aso2824962f8f.3
+        for <linux-serial@vger.kernel.org>; Mon, 25 May 2026 23:53:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1779771985; x=1780376785; darn=vger.kernel.org;
+        d=suse.com; s=google; t=1779778389; x=1780383189; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=vyeclYrLbQjRr+lJ6lGO9a+S8wl5YIcUP6BYDVwCF68=;
-        b=Bb1O73cRat3sEYtD/HoSjvyyisKgdE6a8j3jA0JuzwfGOr8lQmSyNrUt4Y8VED9k5b
-         3kZm1xvjFbc8CuhqSnUBc3WOnoHtqoMxNWHgwx7tQ2q3qvKbKe2sq6e0HtNwHBxBV7sy
-         4DfoCoNJodtXVvyMvvkgs6pOZDtXB7mS2jk9vHZrKIQTirx6eI3mkpaDbkIKUScfrQju
-         jn5JV/ctKqwaM+FzesqLjZN92XsqhwGe/ASajjwLDcsUUpAxpP9mWg7D2UM5tMH8yRi3
-         aEN6SingtslL4ac7RnALN47EXYji1PUah4dMVrquOIFvRyiuifQalzrRk2HTQtNDBh2Z
-         QG8Q==
+        bh=yXWASYjT/jE4WzpKhE8nVhHkzGwmPlTITkkcMF0D8BI=;
+        b=TR/s+dSFI2Vk05JY9oKvhTkUPLyGjERphtpAPMGuiQxvuv3fbFSbN1th4lK+bttysm
+         cFb/iWCpkNb08kRUbTcn9WjfJUaB3xcjwa8CXEuHNu8ztYYWGwWQbD8loHo0HuyuciOC
+         0TwcL+CxgU01vXU93n3aCg4f5dmgC1/3cis8o9d493p1B0tb+ArlTCB5LaW6RVOHuZSe
+         xFgNBY2Ddet/gPdHUxjFVULwbZSkZetwjzSKlyv7KFRavsith7RHUAc5uHnKUJqDu/G4
+         H3+i6q7GH893mbCE8FjnHXqiv6/6t+5ocWoYo60XT6575r8A+rywJ8KG4tumaLrCo8Ff
+         W8Eg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779771985; x=1780376785;
+        d=1e100.net; s=20251104; t=1779778389; x=1780383189;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=vyeclYrLbQjRr+lJ6lGO9a+S8wl5YIcUP6BYDVwCF68=;
-        b=c0inP/jn/Z2LFhq3QY6JoNrOivu01dO2EoKlILbDSaFSrXFok/6LQFIg5nYA8F1z8Y
-         Pf9ElrYUILJn2Ev9L3RkBz2jo++TXmOvZH+TpV2rICYKxPirAE6+d2/L5Wo84EXiKovk
-         t0LsZxx5BYQG/uBq6eqUpuhUm9aAu8TFlASIAYJYqI7pytj+F3WfPOQCdB1iVAl3uqtM
-         ucv2pi1PiP+HBOzidJNrDQ+6nThWHEmv06lGqodiieDy5TaNhaqO9v/ZiaZ76NsOK5JZ
-         kqUTq+rbFk88jTgYuKdkzr/79spJURnWPKIUQJNWlYxuk1KVtZEZwO9Mk7x5f0w0UPdq
-         GywA==
-X-Forwarded-Encrypted: i=1; AFNElJ/ZuJnsVn6/Wuu3eGv6aOjpNwcCJbvh3M6wEtVfS4gopjMDm0Z6bBsf8WKVwFAdOCPnLQTDn/X2WVwuRsk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzrtbtKnLqB01j2JD4wKR+lyG5OF6O3QfDFaqf6dOLVLoqum1CW
-	g3F/iibho4fgqX8yMLnSQMmJYvEUZBFqQmZnbS3XTYd+jCXXoYZQ2eD4UC1P7rV/HYl8Npybs6p
-	PZR7oA4DvZjMu/Xh9mMZ//pMvgJXR6HWDEZsb406N2Q//864RiCzkNUTizJozvqjlHE0=
-X-Gm-Gg: Acq92OExRA2FoXtffLqdPM45zJAMeHqivsB4VRxSsfzUaZ4DtkCfg2YB/BtAVtfYEp4
-	owP4LKfyE2fL/v5U45CSuTxPEMaQd6EpejPqdXIYpk3ybJOCqvT1hyOPbEx6Rec8MxQp/NT16pe
-	J6sLkh3PfRxIePISmF1mFCdHZtzTkUHFkQMbnZou5/fbaoox5os54nw8oAXANzuHnoCZpS6oAP+
-	5DJasLgabsImlXcVqccIFJ5hVx3CU5jPe9AAIYojM9vrJxeNk08Fz99KGdRuzmvI7je9A9N7N7K
-	ZWdkuQ5kammiEj6Z73cDY8UHaFL4iaIREQ3PCYy2eBpsERYPWgiHA6NEIKXnFnAMf3RdcSwHTvL
-	45nFrVVzs1LxbkDAQKGsUiUW5e/GKXRPSm2OoBdC7RCO50U5BaOM3gw==
-X-Received: by 2002:a05:7022:4b:b0:127:3f2a:af21 with SMTP id a92af1059eb24-1365f715d57mr5333414c88.15.1779771984825;
-        Mon, 25 May 2026 22:06:24 -0700 (PDT)
-X-Received: by 2002:a05:7022:4b:b0:127:3f2a:af21 with SMTP id a92af1059eb24-1365f715d57mr5333399c88.15.1779771984083;
-        Mon, 25 May 2026 22:06:24 -0700 (PDT)
-Received: from [192.168.0.6] ([49.204.106.123])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1366aa88c7esm7477591c88.10.2026.05.25.22.06.19
+        bh=yXWASYjT/jE4WzpKhE8nVhHkzGwmPlTITkkcMF0D8BI=;
+        b=aJF7hGcbLDYVQnZLuHEJ/j+GSrlLovVD9gL4mmpV+Y1kwGQ3lpy6UPPv0mONFfyYkz
+         pfKvTXeezIyZ1uF8UM/gRdBIwbSZcA/3HeI7y41fRGAGb0wvmv0nBfPpVaEbklnLhaCY
+         G07DRSWbLcFKdirypNpjfi7dHmTENFhLchRlgzlT4AjnZaD/9Us5I6trNumTf3IsGD5M
+         1wXG0lvpX5DX4Xx0g9M3kTWKlFYMG+IZRc27pvRhDsBBVWsAQGM/Hv8+BDPZNf1It1KH
+         PfV1XlnJnwzWu1c9QdY8HUC+Yk/q+FyHtIEZUmD2N+pO2YSzkwA4JhVvycdZjK1coxui
+         2rzw==
+X-Forwarded-Encrypted: i=1; AFNElJ+k5clsSr/sVKDgdbe4naA6+sxTn6oqnS6AuuWGy6/iC4AxC/P8pivHQGLf6+4qoYnGTX78Uos9JHrt6zM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyRfhYcOP8w9mg5xz38hNVcSDuEVfj8tMOPOLtEEYlVrzEvJjxs
+	/4tZ/RKpP0+bUCiTnU/WNZXu4X9lLKIe0jVph3Pkg5v4cEJLbipphVihoOwdvzRM1vM=
+X-Gm-Gg: Acq92OHSMjybGaHuHnkLr9SGRFhTowXlfs0rfToMGwWM7xJJFzVIL1lRZK+QuQW1v5W
+	hVlJjmZ87HyRsnnuErCWx/uGvsLriGK/TF/3wwvz3MkKIJ6NjHKaS7UMVPbi7e3ulwKuPjIVY2W
+	d3hwSMf/Tzx2lXhTvMfdZP9kRnd3TFkAv/aU6POnJpxK7ORIH+gKONJPzz8gS2nnUsrzv27fwAz
+	sKj0X7Bd93iyQvuhD5jc//vr+Ykz04HmkXEhYW4z+A420R9f5EZ7X+o8ONSoYyxyJ6S7A0oeft1
+	Qb6pCrspXIKBrMoh9BHgtHAiLDuU7DMMoR5wX7kFVBUXzFa/m3BLvvWrNQ87ct5TsUKKFuxorv7
+	oRK45dQ7NfC/rsi8KWanCVuCuhGJF7S3fLeDThAWEajDjDDFNAXu7i0agOUZ7PJ+EjSQ+w/MZqE
+	1oKZNvM+5TaR+/4Z/K0TAeQ/nN5VqK1PLoHHrzHnKDDU5/UPVNtPqz4rIA5hzOBj2CmIMPNIN5k
+	GBirf+iSpk4IpN9J46Bhc8RHfqR1cYmHQ86d5Etfe+v3/CPviHo3PfQ8tfrCmCt5OKr/TVVeWhb
+	mP00
+X-Received: by 2002:a05:6000:2003:b0:43b:4136:1e6f with SMTP id ffacd0b85a97d-45eb38e4b46mr29516257f8f.38.1779778389230;
+        Mon, 25 May 2026 23:53:09 -0700 (PDT)
+Received: from ?IPV6:2a00:1028:838d:271e:8e3b:4aff:fe4c:a100? (dynamic-2a00-1028-838d-271e-8e3b-4aff-fe4c-a100.ipv6.o2.cz. [2a00:1028:838d:271e:8e3b:4aff:fe4c:a100])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45eb6c9ba2esm33848641f8f.8.2026.05.25.23.53.06
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 May 2026 22:06:23 -0700 (PDT)
-Message-ID: <c0daeac3-1c13-4389-b48d-92f3c3a1643c@oss.qualcomm.com>
-Date: Tue, 26 May 2026 10:36:18 +0530
+        Mon, 25 May 2026 23:53:08 -0700 (PDT)
+Message-ID: <88c5ca1d-eeda-4023-bc7a-397b92780db9@suse.com>
+Date: Tue, 26 May 2026 08:53:06 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -88,78 +70,102 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 2/2] serial: qcom-geni: Add tracepoints for Qualcomm
- GENI serial driver
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
-        linux-kernel@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        Mukesh Kumar Savaliya <mukesh.savaliya@oss.qualcomm.com>,
-        Aniket Randive <aniket.randive@oss.qualcomm.com>,
-        chandana.chiluveru@oss.qualcomm.com, jyothi.seerapu@oss.qualcomm.com
-References: <20260518-add-tracepoints-for-qcom-geni-serial-v3-0-b4addb151376@oss.qualcomm.com>
- <20260518-add-tracepoints-for-qcom-geni-serial-v3-2-b4addb151376@oss.qualcomm.com>
- <2026052258-scrooge-friction-fe21@gregkh>
+Subject: Re: [PATCH 00/11] Convert moduleparams to seq_buf
+To: Kees Cook <kees@kernel.org>
+Cc: Luis Chamberlain <mcgrof@kernel.org>, Pengpeng Hou
+ <pengpeng@iscas.ac.cn>, Richard Weinberger <richard@nod.at>,
+ Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+ Johannes Berg <johannes@sipsolutions.net>,
+ "Rafael J. Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>,
+ Corey Minyard <corey@minyard.net>, Gabriel Somlo <somlo@cmu.edu>,
+ "Michael S. Tsirkin" <mst@redhat.com>,
+ Jani Nikula <jani.nikula@linux.intel.com>,
+ Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+ Rodrigo Vivi <rodrigo.vivi@intel.com>, Tvrtko Ursulin
+ <tursulin@ursulin.net>, David Airlie <airlied@gmail.com>,
+ Simona Vetter <simona@ffwll.ch>, Bart Van Assche <bvanassche@acm.org>,
+ Jason Gunthorpe <jgg@ziepe.ca>, Leon Romanovsky <leon@kernel.org>,
+ Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+ Hans de Goede <hansg@kernel.org>, Mauro Carvalho Chehab
+ <mchehab@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
+ Hannes Reinecke <hare@suse.de>,
+ "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+ "Martin K. Petersen" <martin.petersen@oracle.com>,
+ Daniel Lezcano <daniel.lezcano@kernel.org>, Zhang Rui <rui.zhang@intel.com>,
+ Lukasz Luba <lukasz.luba@arm.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Alan Stern <stern@rowland.harvard.edu>,
+ Jason Wang <jasowang@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+ =?UTF-8?Q?Eugenio_P=C3=A9rez?= <eperezma@redhat.com>,
+ Jason Baron <jbaron@akamai.com>, Jim Cromie <jim.cromie@gmail.com>,
+ Tiwei Bie <tiwei.btw@antgroup.com>, Benjamin Berg <benjamin.berg@intel.com>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ "David E. Box" <david.e.box@linux.intel.com>,
+ "Maciej W. Rozycki" <macro@orcam.me.uk>,
+ Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+ Peter Zijlstra <peterz@infradead.org>, Heiko Carstens <hca@linux.ibm.com>,
+ Vasily Gorbik <gor@linux.ibm.com>, Sean Christopherson <seanjc@google.com>,
+ Paolo Bonzini <pbonzini@redhat.com>, Thomas Gleixner <tglx@kernel.org>,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+ "H. Peter Anvin" <hpa@zytor.com>, Vinod Koul <vkoul@kernel.org>,
+ Frank Li <Frank.Li@kernel.org>, Daniel Gomez <da.gomez@kernel.org>,
+ Sami Tolvanen <samitolvanen@google.com>, Aaron Tomlin <atomlin@atomlin.com>,
+ Alexander Potapenko <glider@google.com>, Marco Elver <elver@google.com>,
+ Dmitry Vyukov <dvyukov@google.com>, Andrew Morton
+ <akpm@linux-foundation.org>, John Johansen <john.johansen@canonical.com>,
+ Paul Moore <paul@paul-moore.com>, James Morris <jmorris@namei.org>,
+ "Serge E. Hallyn" <serge@hallyn.com>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Georgia Garcia <georgia.garcia@canonical.com>, kvm@vger.kernel.org,
+ dmaengine@vger.kernel.org, linux-modules@vger.kernel.org,
+ kasan-dev@googlegroups.com, linux-mm@kvack.org, apparmor@lists.ubuntu.com,
+ linux-security-module@vger.kernel.org, linux-um@lists.infradead.org,
+ linux-acpi@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
+ qemu-devel@nongnu.org, intel-gfx@lists.freedesktop.org,
+ dri-devel@lists.freedesktop.org, linux-rdma@vger.kernel.org,
+ linux-media@vger.kernel.org, linux-pci@vger.kernel.org,
+ linux-scsi@vger.kernel.org, linux-pm@vger.kernel.org,
+ linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org,
+ linux-usb@vger.kernel.org, usb-storage@lists.one-eyed-alien.net,
+ virtualization@lists.linux.dev, linux-kernel@vger.kernel.org,
+ linux-arch@vger.kernel.org, netdev@vger.kernel.org,
+ linux-fsdevel@vger.kernel.org, linux-hardening@vger.kernel.org
+References: <20260521133315.work.845-kees@kernel.org>
 Content-Language: en-US
-From: Praveen Talari <praveen.talari@oss.qualcomm.com>
-In-Reply-To: <2026052258-scrooge-friction-fe21@gregkh>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+From: Petr Pavlu <petr.pavlu@suse.com>
+In-Reply-To: <20260521133315.work.845-kees@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Authority-Analysis: v=2.4 cv=cL3QdFeN c=1 sm=1 tr=0 ts=6a152a51 cx=c_pps
- a=SvEPeNj+VMjHSW//kvnxuw==:117 a=RqynvdPmTcCa9fdhPO8jTQ==:17
- a=IkcTkHD0fZMA:10 a=NGcC8JguVDcA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=_K5XuSEh1TEqbUxoQ0s3:22
- a=EUspDBNiAAAA:8 a=reC4vt8OQQWefjZzLvgA:9 a=QEXdDO2ut3YA:10
- a=Kq8ClHjjuc5pcCNDwlU0:22
-X-Proofpoint-ORIG-GUID: 1cyJOMC0i20aPJ3LveBFzdko1egnUcvn
-X-Proofpoint-GUID: 1cyJOMC0i20aPJ3LveBFzdko1egnUcvn
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTI2MDA0MSBTYWx0ZWRfX9sy3dJuNV6Fc
- pNH+zRMxDEZarHoLBqint2QW6I4Zjzeh7kFrjN24zO5QjnCA2ADUhp2aaXy/TkOncTfgSRpxctA
- +og1ZBMKrj+wUIFVcu3lNJvdTr181NrW2B4vbm+SahyR1q8l4hw0dnDx6kNwZQNzWX8Gpyl/oXa
- wrS6JOuBF1C1IJBJxMVw2OExmJLfVsK0oYpupA/vqwRfA4Gj9iM+FMJ+Q7o+NArkjrRraZHWjUp
- HZKEYWrl1ohBXWWpfKi9QwLgtI1t8oGREMCQX0zMBWBImU5zbYQriMzsZBLcX5y0QNKoc313Aoe
- X+8mRiZjZVvcxBC9ebH4PbNm5hwYCwMiHf5URQvEYO1Gsf8pSAXki062V0vkxsmgN1Fz2FOdxeS
- PrVKmhiBeaDIZVTqlJoMtTFSbbAF4Sy2YPOaM4HdUAW203XaDjhbdH6e9p/YRh99XyM232xKKYt
- VkdZQAcQ048ZBGRYfHA==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-05-26_01,2026-05-18_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 bulkscore=0 priorityscore=1501 phishscore=0 adultscore=0
- lowpriorityscore=0 spamscore=0 suspectscore=0 clxscore=1015 impostorscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2605130000 definitions=main-2605260041
 
-Hi
+On 5/21/26 3:33 PM, Kees Cook wrote:
+> Hi,
+> 
+> I tried to trim the CC list here, but it's still pretty huge...
+> 
+> We've had a long-standing issue with "write to a string pointer" callbacks
+> that don't bounds check the destination (and for which the bounds is
+> also not part of the callback prototype, even if it is "known" to be
+> PAGE_SIZE, which sysfs_emit() depends on). Both moduleparams and sysfs
+> use this pattern. As a first step, and to test the migration method,
+> migrate moduleparams first.
+> 
+> There are 2 "mechanical" treewide patches that are handled by Coccinelle:
+> - treewide: Convert struct kernel_param_ops initializers to DEFINE_KERNEL_PARAM_OPS
+> - treewide: Convert custom kernel_param_ops .get callbacks to seq_buf via cocci
+> 
+> The last treewide patch is manual, and may need to be broken up into
+> per-subsystem patches, though I'd prefer to avoid this, as it would
+> extend the migration from 1 relase to at least 2 releases. (1 to
+> release the migration infrastructure, then 1 release to collect all the
+> subsystem changes, and possibly 1 more release to remove the migration
+> infrastructure.)
+> 
+> Thoughts, questions?
 
-On 22-05-2026 15:17, Greg Kroah-Hartman wrote:
-> On Mon, May 18, 2026 at 11:26:56PM +0530, Praveen Talari wrote:
->> Add tracing to the Qualcomm GENI serial driver to improve runtime
->> observability.
->>
->> Trace hooks are added at key points including termios and clock
->> configuration, manual control get/set, interrupt handling, and data
->> TX/RX paths.
->>
->> Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
->> Signed-off-by: Praveen Talari <praveen.talari@oss.qualcomm.com>
->> ---
->> v2->v3:
->> - Updated commit text(removed example as it was available on cover
->>    letter).
->> ---
->>   drivers/tty/serial/qcom_geni_serial.c | 27 +++++++++++++++++++++++----
->>   1 file changed, 23 insertions(+), 4 deletions(-)
-> This patch did not apply to my tree :(
-Do you mean these patches are not applied cleanly?If yes, i will push on 
-linux-next tip.
+This looks reasonable to me. I added a few minor comments on the patches
+but they already look solid.
 
-
+-- 
 Thanks,
-
-Praveen Talari
-
+Petr
