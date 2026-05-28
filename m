@@ -1,126 +1,76 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB266329367;
-	Thu, 28 May 2026 07:29:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F8FD3ADB9A;
+	Thu, 28 May 2026 10:24:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779953375; cv=none; b=lFwacXfLJB95FJ8LQ2FGvd8ErtN19A4JOxzF++P2i4CI1JIUWQLo98XXKZy96DYcWGpTanwMeYdXSyqgL0TLWdsD/ln8Y7aNNE4P3clah1fuda30If8HsWAQUz0Zvu2xlGCGIL7TCDMZrMu7YhwiQdCztqrP/7SSdoVs8a0Q0cU=
+	t=1779963869; cv=none; b=mCtAxkE6bCxWdtxe60xCrIFcPE5PYyGMiCQGpA+UDNKhk7Iflb+FoXeYlnE014IfVY1jCmBsOzizGw1DdRHsFlnjVFJGGgDxLueWzDm3S5oNq/oU0IVH/A0IA0aTvDPR1P75YLiDkDAB6E5kbBDO7/5pZ3IMaY+2lgnjPW0eMRQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779953375; c=relaxed/simple;
-	bh=KmQ0XZxaTbyjFg1yUK8sp1y/ixUIIL+GpWAPLfS2Zhk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uC7DPIuZHvkBV1pQD6+QYlxk9prq5IrTwjPBJEQRHHFpoWpfNo9EV3+pEjbvqElGDXt28Ia5V8jqDDPfTfa30tpgbocYxBJigB5sSLEvrq5yVZzxjS3KCuDh1yQssl6ama8HFPRyxsnvtClf+WkT9PCSSTrgX9ANbSm/N1msWIs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=St1G+sTO; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1779963869; c=relaxed/simple;
+	bh=aGQ/VA+ZIchjc00PGmctorPs80OgTmwWDy/YPjhTt0c=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=g5awt9myAyvpzU5TVAblWMbKNs09bLpRTh5f4kSTGK9i9wuji2jqUVxD+4hD0MuTmJ/MsWRFmQ08ZjYLuYGWVlu6YwR9f0H1NNA9Vf6Sgds02R83kyZNZzavBfizUHCRNibiN8VPT7XXXQScszoSmCExQrVRV13K9NbO182M62E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bDt7TvPp; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="St1G+sTO"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FFAC1F000E9;
-	Thu, 28 May 2026 07:29:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1779953373;
-	bh=GHZyGYHMyKQickmK4QoVlrCkLUsmhXtTTTSKdOBNJ+s=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=St1G+sTO11fgzCtIXUhSD0db6Xw+ncHlXGKslvPo7C3Yfz/E5HzqXPKy6fEN7YdoJ
-	 9q7aeiGPAMEPWauyA20dOx1smou/wf+wdcHV+XcorhNMXDoTlEn+SIaeK6hSzZTP1H
-	 YtmFhhFm8o81UhV277I1QnFKSQPdr/mYQ5rkRBgA=
-Date: Thu, 28 May 2026 09:28:41 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Viken Dadhaniya <viken.dadhaniya@oss.qualcomm.com>
-Cc: Jiri Slaby <jirislaby@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH v1] serial: qcom_geni: Fix RX DMA stall when
- SE_DMA_RX_LEN_IN is zero
-Message-ID: <2026052832-roving-armless-423d@gregkh>
-References: <20260528-serial-rx-0-byte-fix-v1-1-dc4e876c7368@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bDt7TvPp"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CD3B1F000E9;
+	Thu, 28 May 2026 10:24:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1779963867;
+	bh=slIwflm/+XwBSB+Sc00rEqpqi43gBVcoe+YhIqLQhvU=;
+	h=From:Subject:Date:To:Cc;
+	b=bDt7TvPpY+qDGLo9EVpQWjBAPY0sn4yUYXH+UbHw0hPA1fQcBVcKVCwzoljW1C3e5
+	 nvDnjRBsUWmk9KZUgF85Eis35xdFqaZsxEoeUmSQ7MGVvh8/0OkVkyViVcpNvIPc+F
+	 v4ZX/sys+O3MFtL0E1q5wcgrEyFLsNUIKIWaoYzfjSJavj7ny8wqzEW+rjQSF3zmbN
+	 v1QbmGF2vx4qvwdlBf2qf+aePAP61hh4Q+bQw1P3b510pxYvz4rom/nK/DuTPMi5uJ
+	 K1r1z2OgYW0+3MWW2yJc0SBwNb7474dDZDPvk7yr6xwu+sJtTE0r5D+a+z+/MdOY7O
+	 XfGRNlY7nRQmA==
+From: "Mike Rapoport (Microsoft)" <rppt@kernel.org>
+Subject: [PATCH 0/4] tty: replace __get_free_pages() with kmalloc()
+Date: Thu, 28 May 2026 13:24:16 +0300
+Message-Id: <20260528-b4-tty-v1-0-9da9f7aec5f2@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260528-serial-rx-0-byte-fix-v1-1-dc4e876c7368@oss.qualcomm.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIANAXGGoC/yWMSw7CMAwFr1J5jaWklPK5CmKRj0PNIiA7rUBV7
+ 04Cy3maeSsoCZPCpVtBaGHlZ65gdx2EyeU7IcfK0Jt+NIf+hH7AUj54DCOdTRpstHuo8kso8ft
+ 3dL39WWf/oFBa3QzvlNCLy2FqUxReSBT9nBIJbNsXIfJF6osAAAA=
+X-Change-ID: 20260528-b4-tty-7c6e90f41d13
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: Mike Rapoport <rppt@kernel.org>, linux-kernel@vger.kernel.org, 
+ linux-mm@kvack.org, linux-serial@vger.kernel.org
+X-Mailer: b4 0.15.2
 
-On Thu, May 28, 2026 at 12:35:43PM +0530, Viken Dadhaniya wrote:
-> In qcom_geni_serial_handle_rx_dma(), geni_se_rx_dma_unprep() clears
-> port->rx_dma_addr before SE_DMA_RX_LEN_IN is read. If the register is zero,
-> for example when the RX stale counter fires on an idle line, the handler
-> returns without calling geni_se_rx_dma_prep().
-> 
-> The next RX DMA interrupt then hits the !port->rx_dma_addr guard and
-> returns immediately, so the RX DMA buffer is never rearmed and later input
-> is lost.
-> 
-> Keep the handler on the rearm path when rx_in is zero. Warn about the
-> unexpected zero-length DMA completion, skip received-data handling, and
-> always call geni_se_rx_dma_prep().
-> 
-> Fixes: 2aaa43c70778 ("tty: serial: qcom-geni-serial: add support for serial engine DMA")
-> Signed-off-by: Viken Dadhaniya <viken.dadhaniya@oss.qualcomm.com>
-> ---
->  drivers/tty/serial/qcom_geni_serial.c | 9 +++------
->  1 file changed, 3 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> index d81b539cff7f..7ead87b4eb65 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -905,12 +905,9 @@ static void qcom_geni_serial_handle_rx_dma(struct uart_port *uport, bool drop)
->  	port->rx_dma_addr = 0;
->  
->  	rx_in = readl(uport->membase + SE_DMA_RX_LEN_IN);
-> -	if (!rx_in) {
-> -		dev_warn(uport->dev, "serial engine reports 0 RX bytes in!\n");
-> -		return;
-> -	}
-> -
-> -	if (!drop)
-> +	if (!rx_in)
-> +		dev_warn_ratelimited(uport->dev, "serial engine reports 0 RX bytes in!\n");
-> +	else if (!drop)
->  		handle_rx_uart(uport, rx_in);
->  
->  	ret = geni_se_rx_dma_prep(&port->se, port->rx_buf,
-> 
-> ---
-> base-commit: e7d700e14934e68f86338c5610cf2ae76798b663
-> change-id: 20260528-serial-rx-0-byte-fix-ec9d08cfe78e
-> 
-> Best regards,
-> --  
-> Viken Dadhaniya <viken.dadhaniya@oss.qualcomm.com>
-> 
-> 
+This is a (tiny) part of larger work of replacing page allocator calls
+with kmalloc.
 
-Hi,
+Nowadays the right way to say "I need a buffer" is kmalloc() rather than
+ancient and ugly __get_free_pages().
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
+---
+Mike Rapoport (Microsoft) (4):
+      serial: pch: replace __get_free_page() with kmalloc()
+      tty: amiserial: replace get_zeroed_page() with kzalloc()
+      tty: serial: men_z135_uart: replace __get_free_page() with kmalloc()
+      vc_screen: replace __get_free_pages() with kmalloc()
 
-You are receiving this message because of the following common error(s)
-as indicated below:
+ drivers/tty/amiserial.c            | 14 +++++++-------
+ drivers/tty/serial/men_z135_uart.c |  7 ++++---
+ drivers/tty/serial/pch_uart.c      |  6 +++---
+ drivers/tty/vt/vc_screen.c         |  6 ++----
+ 4 files changed, 16 insertions(+), 17 deletions(-)
+---
+base-commit: 5d6919055dec134de3c40167a490f33c74c12581
+change-id: 20260528-b4-tty-7c6e90f41d13
 
-- You have marked a patch with a "Fixes:" tag for a commit that is in an
-  older released kernel, yet you do not have a cc: stable line in the
-  signed-off-by area at all, which means that the patch will not be
-  applied to any older kernel releases.  To properly fix this, please
-  follow the documented rules in the
-  Documentation/process/stable-kernel-rules.rst file for how to resolve
-  this.
+Best regards,
+--  
+Sincerely yours,
+Mike.
 
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
