@@ -1,35 +1,34 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E26E53B895F;
-	Thu, 28 May 2026 10:24:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF0E33B9DAD;
+	Thu, 28 May 2026 10:24:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779963875; cv=none; b=Xi7PPfD0sLgPJctrl96vD1q55VZRXiXzDb21W+T9HWPIxqcSZvDImU7+XmyBGwyb9OpSauUv/uKU/UQm8NWun8wdwU8SfDhNwlFovFGp1iBKAnsr4ri5nCv52cvdcjIW2E3FYLdZxB+NOtACYEi2VX/0qCBN7OBNfmTb1z7V4+I=
+	t=1779963878; cv=none; b=DG7r3eIXN0byEoPswSLX3xa81sykO98vdMYupdhILXuz9yokPqwjEKGLdJBUyBYk+FajakDJrwwfhLeXJ8aJ0wbfE87AYsKLiVr2OonPxSoPsyDGrDpA2s7Weiz3Fl2pHgoRSIUyE8kYMsBkImUXIvmx2QU8F4lRgVrlVWz66+I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779963875; c=relaxed/simple;
-	bh=TD9dqz1KlLDHtnCU5rXCGzTLbngGmrWaIOq73qhB628=;
+	s=arc-20240116; t=1779963878; c=relaxed/simple;
+	bh=26jMB7BQtNy710o0MhospMkViyaBA5bEsLVotCFqd2E=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=hLM0fgqPB7XBj5KvMfJ9GtUg2go/gh9Qt23GFRi11BshbXxZnp7C0nIjrH+2B/FQNYMYDfzvQKHNieISivgDQsdXf+ujk1CxUOyRZizG51J8AEjxxO0e1Gp+ySS2GZ+e5Co755uvjodz0PbJVak8nF2F3gQd9gzRU8GUNtpdvbc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eceMgPWs; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:To:Cc; b=NPHPzHWl4h08jCJ0kIz3/zJ77a71BfD3oQyslyz40joXqE/j2o5EjHooZ436HQvoE9cJQHmQunyXEsTHeXCjYsuGcgA61vXQQJ1iwe7AEjUgtmoFOmijwnR4Qk7slW/UK8xb+1e8Vkd9Zapo8PVTQ0W3I2m46rIWj52ADxzvhng=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jDLFSNtp; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eceMgPWs"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 340D41F00A3C;
-	Thu, 28 May 2026 10:24:32 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jDLFSNtp"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2049C1F000E9;
+	Thu, 28 May 2026 10:24:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779963873;
-	bh=kp8FNXKpfIDXxy/obg2faB0r2hMuUh4kHDljPd1Q9rE=;
+	s=k20260515; t=1779963875;
+	bh=d+AhWlAChbSoPeU9eNoAX+z4q2Nry8L3D0tILMGrjBs=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc;
-	b=eceMgPWsU4Oc5vFuawnPCveJrzbCB+0tKN7hwo77PWnuwIDWdwAHQW15i8rQxXFLf
-	 0VV0hnTQx1m89G8N+mk8PGg+SZLqD2YjumWnvoOp9SONohaxubtLyK+z7lpzpQEjEu
-	 2pFPFqB0OD/Hx5i5elYXthvWtrxrwQUwuqx2WTInASpP/f6tUIN+tKrZzJ5ZHyoATu
-	 U2dpfWJsEUof2EzHCLWebkPnvWLitxizyrxLvmdZ7Nf7dCpGhVHwzj4cTb/VWO46aq
-	 rGRLfTyHvPjT2MPn8rJdnnxKy0k4YwMDEyz7Z94/wRAuy/U9CYeNlLfs2gkjQaKoJm
-	 vVpMSdE4W92iw==
+	b=jDLFSNtpWZ4SFcdq99qvcWECTH5S6J0WzXpd+KaYIl/yvHuKNiW3aEio9nYC9+2RK
+	 4x4JWGPm+LvHELdJtX30I/kqk2y4PeDX9Ki9+JljaVcJ39Ai6WaElHwymwfd2codid
+	 UcL04/DHTGnP5xbgzH9HquhxgUra/Fo7vAyIaS+Jy40mY6StyQDvbw0grM5SeHpSSi
+	 CvI2iQSYk66M9SxrrUrDE6dbqxjJO/n7WtGTtrp4XQK3Tw2EC86lnmILQf8b2OGU0c
+	 hXK7vagS6/sY0DL5nVWKo6dnl/u0On2wLsBckqDx194Wifl95S2QxFm24qwABEfa+l
+	 bRWrVnE2bpnxg==
 From: "Mike Rapoport (Microsoft)" <rppt@kernel.org>
-Date: Thu, 28 May 2026 13:24:19 +0300
-Subject: [PATCH 3/4] tty: serial: men_z135_uart: replace __get_free_page()
- with kmalloc()
+Date: Thu, 28 May 2026 13:24:20 +0300
+Subject: [PATCH 4/4] vc_screen: replace __get_free_pages() with kmalloc()
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -38,7 +37,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260528-b4-tty-v1-3-9da9f7aec5f2@kernel.org>
+Message-Id: <20260528-b4-tty-v1-4-9da9f7aec5f2@kernel.org>
 References: <20260528-b4-tty-v1-0-9da9f7aec5f2@kernel.org>
 In-Reply-To: <20260528-b4-tty-v1-0-9da9f7aec5f2@kernel.org>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
@@ -47,63 +46,56 @@ Cc: Mike Rapoport <rppt@kernel.org>, linux-kernel@vger.kernel.org,
  linux-mm@kvack.org, linux-serial@vger.kernel.org
 X-Mailer: b4 0.15.2
 
-men_z135_probe() allocates a receive staging buffer filled by the
-CPU via memcpy_fromio() from the device MMIO region.
+vcs_read() and vcs_write() allocate staging buffers with
+__get_free_pages().
 
-This buffer can be allocated with kmalloc() as there's nothing special
-about it to go directly to the page allocator.
+These buffers can be allocated with kmalloc() as there's nothing special
+about them to go directly to the page allocator.
 
-kmalloc() provides a better API that does not require ugly casts and
-kfree() does not need to know the size of the freed object.
+kmalloc() provides a better API that does not require ugly casts and it's a
+modern way of saying "I need a page-sized buffer"
 
-Replace use of __get_free_page() with kmalloc() and free_page() with
-kfree().
+Replace use of __get_free_page() with kmalloc() and drop unused now
+DEFINE_FREE(free_page_ptr ...)
 
+Link: https://lore.kernel.org/all/700c5a5f-3128-4671-99aa-827ca73f5cdf@kernel.org
 Link: https://lore.kernel.org/all/635405e4-9423-4a25-a6e7-e03c8ea0bcbe@redhat.com
 Signed-off-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
 ---
- drivers/tty/serial/men_z135_uart.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/tty/vt/vc_screen.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/men_z135_uart.c b/drivers/tty/serial/men_z135_uart.c
-index 6fad57fee912..9c32b01edc9e 100644
---- a/drivers/tty/serial/men_z135_uart.c
-+++ b/drivers/tty/serial/men_z135_uart.c
-@@ -17,6 +17,7 @@
- #include <linux/bitops.h>
- #include <linux/mcb.h>
+diff --git a/drivers/tty/vt/vc_screen.c b/drivers/tty/vt/vc_screen.c
+index 4d2d46c95fef..386c80efc672 100644
+--- a/drivers/tty/vt/vc_screen.c
++++ b/drivers/tty/vt/vc_screen.c
+@@ -53,8 +53,6 @@
+ #define HEADER_SIZE	4u
+ #define CON_BUF_SIZE (IS_ENABLED(CONFIG_BASE_SMALL) ? 256 : PAGE_SIZE)
  
-+#include <linux/slab.h>
- #define MEN_Z135_MAX_PORTS		12
- #define MEN_Z135_BASECLK		29491200
- #define MEN_Z135_FIFO_SIZE		1024
-@@ -811,7 +812,7 @@ static int men_z135_probe(struct mcb_device *mdev,
- 	if (!uart)
+-DEFINE_FREE(free_page_ptr, void *, if (_T) free_page((unsigned long)_T));
+-
+ /*
+  * Our minor space:
+  *
+@@ -371,7 +369,7 @@ vcs_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
+ 	loff_t pos;
+ 	bool viewed, attr, uni_mode;
+ 
+-	char *con_buf __free(free_page_ptr) = (char *)__get_free_page(GFP_KERNEL);
++	char *con_buf __free(kfree) = kmalloc(PAGE_SIZE, GFP_KERNEL);
+ 	if (!con_buf)
  		return -ENOMEM;
  
--	uart->rxbuf = (unsigned char *)__get_free_page(GFP_KERNEL);
-+	uart->rxbuf = kmalloc(PAGE_SIZE, GFP_KERNEL);
- 	if (!uart->rxbuf)
+@@ -596,7 +594,7 @@ vcs_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
+ 	if (use_unicode(inode))
+ 		return -EOPNOTSUPP;
+ 
+-	char *con_buf __free(free_page_ptr) = (char *)__get_free_page(GFP_KERNEL);
++	char *con_buf __free(kfree) = kmalloc(PAGE_SIZE, GFP_KERNEL);
+ 	if (!con_buf)
  		return -ENOMEM;
  
-@@ -841,7 +842,7 @@ static int men_z135_probe(struct mcb_device *mdev,
- 	return 0;
- 
- err:
--	free_page((unsigned long) uart->rxbuf);
-+	kfree(uart->rxbuf);
- 	dev_err(dev, "Failed to add UART: %d\n", err);
- 
- 	return err;
-@@ -858,7 +859,7 @@ static void men_z135_remove(struct mcb_device *mdev)
- 
- 	line--;
- 	uart_remove_one_port(&men_z135_driver, &uart->port);
--	free_page((unsigned long) uart->rxbuf);
-+	kfree(uart->rxbuf);
- }
- 
- static const struct mcb_device_id men_z135_ids[] = {
 
 -- 
 2.53.0
