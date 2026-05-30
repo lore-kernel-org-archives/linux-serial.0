@@ -1,75 +1,126 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9C1D3A8743;
-	Sat, 30 May 2026 11:26:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FE5430FC1C;
+	Sat, 30 May 2026 11:30:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780140417; cv=none; b=G+qspKQ4tO+IdL4qhlYLJecr/3OZ+f2dr3/iHAus+olOmgOCwu7r0A1Sdkvy0Nf9qsZzz4Y6TTAhSwzD1KG6zdyCDmCsbhoQ0E7c3G8IvbftuiA71kgfdUhPS5ZUmRfcm9N4GUTQg8Hp9M6TDVmFAO8a0qlo6UseCoVrT7K+lRc=
+	t=1780140619; cv=none; b=RUvSYYBTCtqPHQWSnZPPYVyEQpcrIT17EXvRtSuWu5ffafE9R5lZoL2Jyex9wKyrCO01DFm/ot/Ft1Jlv82nMFEKI/tS4+nmlB/rnStwGD78VhJhJPmDChLzx8qe9IrBAzPm4hdUNC3aNxsJckYN/8ADpLRF/4nYmEVbciWUuFE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780140417; c=relaxed/simple;
-	bh=KCbFhJAEk8KcQO9/73KPnfZwTp341BcjN9sfnu2ZngI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=S0AcX0CbgRdudolv+rpNhWeNW58eIXm1VPI9ZTpuVJdVKr0Y0l1nBS8Hh71afHK7R0sQJNRLDDQXCQ+2822YeGaEaS+B5Bah5yatEJ9SNXevzfULFKtybAMp4t3wFARHfpxIVXNnfIo8EJ6R1UiMALyCrLXJ0t+H2+NhEas9/Sw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lam4DaPK; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1780140619; c=relaxed/simple;
+	bh=7HRYOYPxDM7j1kWcXAui8q5mcCpIFm8acKjiuwLtkEU=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=p72pM+VIyqEu4wJ2kv9HTQf2W2OJH7C934KcV7OgiilruTjnS8Z7sg21rkBQxpF3+D7+W9vf7i3v2mYhbrLvQvafpcgO8pbFI6xDQ7XIoHFD7BhIMDDAk0WDgqqcPdx3ws8rqSB0x6DXoKD0jqESilTbqhVLRQT3Z/UEZ6m371g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=zzFjlfo1; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lam4DaPK"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 381301F00893;
-	Sat, 30 May 2026 11:26:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780140415;
-	bh=IVwpw2eRABk9+ylDgRtDjSZqliuoEKt3Edcy4orUwLY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=lam4DaPKN35I/BQOfL0hrgXSXs0gSfS8hbmtvHTfbxS8EN3M9iGT8lPhebJm6LWaM
-	 wdMEUp+JQpYnU43nvQLMskXcAqX0xelbJzAZ4v8IzuNIJaUfSJlMyQWhPbdUieHAzO
-	 8TilAR++psJ4jDXjpZrjKu0WBl36lpeU8sOx12t5SGX1cWVsBPOMB1B5RERmmFyOfF
-	 GuQYL7+fS6zgQp4iFOTUyLTPyLBAwKZjdNm6EKo5mnzCBBXYlQTcNVzLsWTEfcDuPd
-	 ZTmFxrWrFErfJZFjKzOQ0UR6bQJScwk0s5HM1+HAvoeUt367q8SIsHQoTWiQUpWWc4
-	 sixny9plr6otw==
-Date: Sat, 30 May 2026 13:26:53 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Tapio Reijonen <tapio.reijonen@vaisala.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH 2/3] dt-bindings: serial: maxim,max310x: allow per-port
- subnodes for rs485
-Message-ID: <20260530-witty-snail-of-correction-a0a6f3@quoll>
-References: <20260525-b4-max310x-rs485-dt-v1-0-e6c19b4d5592@vaisala.com>
- <20260525-b4-max310x-rs485-dt-v1-2-e6c19b4d5592@vaisala.com>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="zzFjlfo1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF0481F00893;
+	Sat, 30 May 2026 11:30:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
+	s=korg; t=1780140618;
+	bh=lHxASgQmM9Knrt6CK0sxo6WG/MJes8qAM9NakiCgwLU=;
+	h=Date:From:To:Cc:Subject;
+	b=zzFjlfo1P8WdKPgF4mXLa8NzXCeJ0YQxKm6gok5wqMdhFSIvHshI1kezoW3DyHTli
+	 c20InZHe/gXDgciKMPR/uc3RPGa9YuSwMv/Csxl95x4AJ8P/BM2sWZz5QB8jpG4Bmo
+	 L2dMfSOSaeUcbCzpE0THtSUBrIsrHF70cwSdVR/Y=
+Date: Sat, 30 May 2026 13:29:22 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY/Serial driver fixes for 7.1-rc6
+Message-ID: <ahrKEkbnYwF5TrRT@kroah.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260525-b4-max310x-rs485-dt-v1-2-e6c19b4d5592@vaisala.com>
 
-On Mon, May 25, 2026 at 09:43:38AM +0000, Tapio Reijonen wrote:
-> The MAX310x is a multi-port UART (up to four ports). The existing
-> binding pulls in /schemas/serial/rs485.yaml at the top level, which
-> only describes a single port - sufficient for max3107 but ambiguous
-> for max14830 where each port can have its own RS485 wiring.
-> 
-> Add a "port@N" pattern (N = 0..3) carrying rs485 properties on a
-> per-port basis. When port@N subnodes are present, the chip node also
-> needs #address-cells = <1> and #size-cells = <0>; allow both. Top-
-> level rs485 properties remain accepted for compatibility.
-> 
-> Signed-off-by: Tapio Reijonen <tapio.reijonen@vaisala.com>
-> ---
->  .../devicetree/bindings/serial/maxim,max310x.yaml  | 60 ++++++++++++++++++++++
->  1 file changed, 60 insertions(+)
+The following changes since commit 254f49634ee16a731174d2ae34bc50bd5f45e731:
 
-That's a total mess now in the binding.
-1. maxim,max3107 does not have ports, but you add there. You need to
-constrain (see writing bindings) or split.
-2. So where do you place serial devices? Did you validate any of this?
+  Linux 7.1-rc1 (2026-04-26 14:19:00 -0700)
 
-Best regards,
-Krzysztof
+are available in the Git repository at:
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-7.1-rc6
+
+for you to fetch changes up to e4240d8845445d58b4b96f7066adfe175a61bd0c:
+
+  serial: dz: Enable modular build (2026-05-22 11:52:34 +0200)
+
+----------------------------------------------------------------
+TTY/Serial driver fixes for 7.1-rc6
+
+Here are some small serial driver fixes for 7.1-rc6.  Included in here
+are:
+  - mips serial driver fixes to resolve some long-standing issues with
+    how they interacted with the console.  That's the "majority" of the
+    changes in this merge request
+  - sh-sci driver regression fix
+  - 8250 driver regression fixes
+  - other small serial driver fixes for reported problems.
+
+All of these have been in linux-next for over a week with no reported
+issues.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Hongling Zeng (1):
+      serial: sh-sci: fix memory region release in error path
+
+Jacques Nilo (3):
+      serial: core: introduce guard(uart_port_lock_check_sysrq_irqsave)
+      serial: 8250: dispatch SysRq character in serial8250_handle_irq()
+      serial: 8250_dw: dispatch SysRq character in dw8250_handle_irq()
+
+Johan Hovold (1):
+      tty: add missing tty_driver include to tty_port.h
+
+Maciej W. Rozycki (8):
+      serial: zs: Fix swapped RI/DSR modem line transition counting
+      serial: dz: Fix bootconsole message clobbering at chip reset
+      serial: dz: Fix bootconsole handover lockup
+      serial: zs: Fix bootconsole handover lockup
+      serial: zs: Switch to using channel reset
+      serial: dz: Convert to use a platform device
+      serial: zs: Convert to use a platform device
+      serial: dz: Enable modular build
+
+Myeonghun Pak (1):
+      serial: altera_jtaguart: handle uart_add_one_port() failures
+
+Prasanna S (1):
+      serial: qcom-geni: fix UART_RX_PAR_EN bit position
+
+Shitalkumar Gandhi (1):
+      serial: fsl_lpuart: fix rx buffer and DMA map leaks in start_rx_dma
+
+Tudor Ambarus (1):
+      tty: serial: samsung: Remove redundant port lock acquisition in rx helpers
+
+Viken Dadhaniya (1):
+      serial: qcom_geni: fix kfifo underflow when flush precedes DMA completion IRQ
+
+Zhaoyang Yu (1):
+      tty: serial: pch_uart: add check for dma_alloc_coherent()
+
+ arch/mips/dec/platform.c              | 109 ++++++++++++++++-
+ drivers/tty/serial/8250/8250_dw.c     |   2 +-
+ drivers/tty/serial/8250/8250_port.c   |   7 +-
+ drivers/tty/serial/Kconfig            |   2 +-
+ drivers/tty/serial/altera_jtaguart.c  |   7 +-
+ drivers/tty/serial/dz.c               | 171 +++++++++++++-------------
+ drivers/tty/serial/fsl_lpuart.c       |  15 ++-
+ drivers/tty/serial/pch_uart.c         |  19 ++-
+ drivers/tty/serial/qcom_geni_serial.c |  16 ++-
+ drivers/tty/serial/samsung_tty.c      |   8 --
+ drivers/tty/serial/sh-sci.c           |   2 +-
+ drivers/tty/serial/zs.c               | 218 ++++++++++++----------------------
+ drivers/tty/serial/zs.h               |   1 -
+ include/linux/serial_core.h           |  12 ++
+ include/linux/tty_port.h              |   2 +-
+ 15 files changed, 341 insertions(+), 250 deletions(-)
