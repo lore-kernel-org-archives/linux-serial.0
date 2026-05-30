@@ -1,60 +1,57 @@
 Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D80A34389F
-	for <linux-serial@vger.kernel.org>; Sat, 30 May 2026 17:37:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C86A3AEB5C
+	for <linux-serial@vger.kernel.org>; Sat, 30 May 2026 18:00:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.66
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780162669; cv=none; b=GAG3ZqhERqWmgqoMZDkED7e5uAfmJZ90JgJhLZhbUT9p39cZqQdcE81Rwrmj/7L8Iu92ZhZjFejuroZJ4icDasCI0mCUXKi3rOF1QQUSjnSQ+jzx6nnCPOeq3127LcZT/8uW+RhXXlhF3+2meYYHSuTTY7uGfq7bcthPJyMLSJs=
+	t=1780164005; cv=none; b=ti42hbjFtyChvz77PMxRBme/gLFP0lR8Har8ah7DT6Rw3o4s9QMbT14RS9n9Ag8kDHoHPUP1P2ok6vK/V3S/cl5ucZXPC422sQgE8dtSo6kPuZBaKCu17NOH5eV41u/QogzrTUXgxTVGkVUAiy71Hwqt4mW9POpaMaLspa2Rudg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780162669; c=relaxed/simple;
-	bh=I9dHrQ7Rc3XErpRzI6Oi2nDfezCG3HUIDnem2tab4nA=;
+	s=arc-20240116; t=1780164005; c=relaxed/simple;
+	bh=ld6v9KtJzzWT1+D0eL6RHWGuC0WgYHy7UXBZlKa+iMg=;
 	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=QGrj4qooQo8uNb16pdhZS+4xBqgfJNjwHkfEFGsJYCya1Ze5MrGxkib0SWFM/4rXTyedhRb0VJ5HH7NvSdfFEi5i8h52TYvlxMBapLsjVse13fgFfj1e9pblmIW3XNoVWl+HXS0AWk+RHOL1zHW/LtYm2iA0RJ2Gjb1ZFpfbVeU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=GTlXoWvN; arc=none smtp.client-ip=185.67.36.66
+	 Content-Type:MIME-Version; b=nohvHSNXegkFK2P4vwJt1Bq+3vjZ0yHR5bhdFC3qA5/OXhRAcnt1bywrbi3dpRhVQ/b1h+kIPPkenUhTPR+jxBShkVfAJoLy7vOGxS7TUGR/o71rSbKhZceNEyxnI5wOe+BCdzCFNLNRUSpTeyR8bhJoaZtDOddQB5ff8GSJeyc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=XRZskBUd; arc=none smtp.client-ip=185.67.36.66
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="GTlXoWvN"
+	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="XRZskBUd"
 Received: from submission (posteo.de [185.67.36.169]) 
-	by mout02.posteo.de (Postfix) with ESMTPS id EF399240103
-	for <linux-serial@vger.kernel.org>; Sat, 30 May 2026 19:37:43 +0200 (CEST)
+	by mout02.posteo.de (Postfix) with ESMTPS id 97C99240105
+	for <linux-serial@vger.kernel.org>; Sat, 30 May 2026 20:00:01 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de; s=2017;
-	t=1780162663; bh=I9dHrQ7Rc3XErpRzI6Oi2nDfezCG3HUIDnem2tab4nA=;
+	t=1780164001; bh=aMme/b7aJrnbG+SKubX74OAuyLaZdkWD0dg31B6c8YA=;
 	h=Message-ID:Subject:From:To:Cc:Date:Autocrypt:Content-Type:
 	 MIME-Version:OpenPGP:From;
-	b=GTlXoWvNminSy9Hx0l7m9kWX7/Pk0fob1ct9a5y8W6FtzrncJVfCQTtlLlOhQeUvn
-	 KkH1oYIWTt+FRO3ZETYkoYA5jINUZrhB/1sTOOekbPYhJHsWW7iDYBT5X7HttKwhYm
-	 Jiuxpw2jECtU/DwyQX6UQG7MiISqZ0UCvAt7SNCGzhzNsZ7KRNMDKgy8Gr0ZvVJY4F
-	 YUJPIgPROL+RNGGG5TCBRGiAc731Lm6A/ZhdcVNubRxrCZrnBKrDeJEgEx9iyJui1r
-	 EroHM0EpiORup3sV6bwz1PFw39Muib1M0f9oW1c4/Cuehkk6sz9KWc3CK0nRdbdhcX
-	 T53749KyEwayQ==
+	b=XRZskBUdXcKsKI/jEoGaHkIm1o98nPlxTpdDwWMRknfw0EnRAOT2lyzeFBpTIewnX
+	 cOcZl/3/Pqnh5j+rVljeQKCT5iQ4ClQIIMf8QEoHjbmUyfDQf0iJRqoOplTWIrc2L3
+	 jDzUH/3ImDxNuIIoYwkFuyZUcjR1rMXx4clVWIXGTNPkNmNWpUbxYDoDSnevyIp4Wi
+	 /VDPfTjz8xLSxo28JO2TxBPHLyP715XRIIMX1C11RvAeqq2ZLKX0aBBqIJPJjjlO3g
+	 lJ2RGFrdc4KbX2vo/ETpojySGFj7MEgFQ7srh0SQ/xuMUGDMyzZRxPborY460yMv4k
+	 EsnjwpwAZ+wGQ==
 Received: from customer (localhost [127.0.0.1])
-	by submission (posteo.de) with ESMTPSA id 4gSS9K3rPrz6tsg;
-	Sat, 30 May 2026 19:37:41 +0200 (CEST)
-Message-ID: <471c6cc43213d47578a77e421f06648615ec8e9a.camel@posteo.de>
-Subject: Re: [PATCH v8 1/5] rust: devres: return reference in
- `devres::register`
+	by submission (posteo.de) with ESMTPSA id 4gSSg30SNsz6trs;
+	Sat, 30 May 2026 19:59:59 +0200 (CEST)
+Message-ID: <fa841fad5493953f7932cde83d7a1b2e3356faa6.camel@posteo.de>
+Subject: Re: [PATCH v9 1/3] rust: add basic serial device bus abstractions
 From: Markus Probst <markus.probst@posteo.de>
-To: Danilo Krummrich <dakr@kernel.org>, Markus Probst via B4 Relay
-	 <devnull+markus.probst.posteo.de@kernel.org>
-Cc: Rob Herring <robh@kernel.org>, Greg Kroah-Hartman	
+To: Rob Herring <robh@kernel.org>, Greg Kroah-Hartman	
  <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Miguel
  Ojeda	 <ojeda@kernel.org>, Gary Guo <gary@garyguo.net>,
  =?ISO-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>, Benno Lossin
  <lossin@kernel.org>, Andreas Hindborg	 <a.hindborg@kernel.org>, Alice Ryhl
- <aliceryhl@google.com>, Trevor Gross	 <tmgross@umich.edu>, Kari Argillander
- <kari.argillander@gmail.com>, "Rafael J. Wysocki" <rafael@kernel.org>,
- Viresh Kumar <viresh.kumar@linaro.org>, Boqun Feng <boqun@kernel.org>, 
- David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
- linux-serial@vger.kernel.org, 	linux-kernel@vger.kernel.org,
- rust-for-linux@vger.kernel.org, 	linux-pm@vger.kernel.org,
- driver-core@lists.linux.dev, 	dri-devel@lists.freedesktop.org
-Date: Sat, 30 May 2026 17:37:42 +0000
-In-Reply-To: <DIVZPIJYZ244.26RVUD86YHX1N@kernel.org>
-References: <20260530-rust_serdev-v8-0-2a95f1da22a7@posteo.de>
-	 <20260530-rust_serdev-v8-1-2a95f1da22a7@posteo.de>
-	 <DIVZPIJYZ244.26RVUD86YHX1N@kernel.org>
+ <aliceryhl@google.com>, Trevor Gross	 <tmgross@umich.edu>, Danilo Krummrich
+ <dakr@kernel.org>, Kari Argillander	 <kari.argillander@gmail.com>, "Rafael
+ J. Wysocki" <rafael@kernel.org>,  Viresh Kumar <viresh.kumar@linaro.org>,
+ Boqun Feng <boqun@kernel.org>, David Airlie <airlied@gmail.com>,  Simona
+ Vetter <simona@ffwll.ch>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	rust-for-linux@vger.kernel.org, linux-pm@vger.kernel.org, 
+	driver-core@lists.linux.dev, dri-devel@lists.freedesktop.org
+Date: Sat, 30 May 2026 18:00:00 +0000
+In-Reply-To: <20260530-rust_serdev-v9-1-f8b5fccb49c3@posteo.de>
+References: <20260530-rust_serdev-v9-0-f8b5fccb49c3@posteo.de>
+	 <20260530-rust_serdev-v9-1-f8b5fccb49c3@posteo.de>
 Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
  keydata=mQINBGiDvXgBEADAXUceKafpl46S35UmDh2wRvvx+UfZbcTjeQOlSwKP7YVJ4JOZrVs93
  qReNLkOWguIqPBxR9blQ4nyYrqSCV+MMw/3ifyXIm6Pw2YRUDg+WTEOjTixRCoWDgUj1nOsvJ9tVA
@@ -100,7 +97,7 @@ Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
  dQNGrZ91M9nlIBKw8Y7c7xZ4098qX2b8JX/CxD+gC1r4C8vuA3GkhFLx+KlkON7LyiJPkrePp6Qky
  jfGillcaQOqFZ3WwVqyzG1BUfTow==
 Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-9OBkUSJ/Jd1TG2ob7uZa"
+	protocol="application/pgp-signature"; boundary="=-YD5z8kaBMv6Utdv9eVyT"
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -110,58 +107,69 @@ MIME-Version: 1.0
 OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
 
 
---=-9OBkUSJ/Jd1TG2ob7uZa
+--=-YD5z8kaBMv6Utdv9eVyT
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, 2026-05-30 at 13:54 +0200, Danilo Krummrich wrote:
-> On Sat May 30, 2026 at 3:13 AM CEST, Markus Probst via B4 Relay wrote:
-> > From: Markus Probst <markus.probst@posteo.de>
-> >=20
-> > Return the reference to the initialized data in the `devres::register`
-> > function.
-> >=20
-> > This is needed in a following commit (rust: add basic serial device bus
-> > abstractions).
-> >=20
-> > Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
-> > Signed-off-by: Markus Probst <markus.probst@posteo.de>
+On Sat, 2026-05-30 at 17:36 +0000, Markus Probst wrote:
 >=20
-> For driver-core and DRM,
->=20
-> Acked-by: Danilo Krummrich <dakr@kernel.org>
->=20
-> This is useful in the context of the HRT work in general, should this ser=
-ies not
-> make it this cycle, please let me know, then I'm going to pick this throu=
-gh the
-> driver-core tree.
-As discussed, rust_private_data is not needed anymore thus this patch
-has been dropped. Feel free to pick it.
+> +#[doc(hidden)]
+> +#[pin_data(PinnedDrop)]
+> +pub struct PrivateData<'bound, T: Driver> {
+> +    sdev: &'bound Device<device::Bound>,
+> +    #[pin]
+> +    driver: UnsafeCell<MaybeUninit<T::Data<'bound>>>,
+> +    #[pin]
+> +    probe_complete: Completion,
+> +    error: UnsafeCell<bool>,
+> +}
+> +
+> +#[pinned_drop]
+> +impl<T: Driver> PinnedDrop for PrivateData<'_, T> {
+> +    fn drop(self: Pin<&mut Self>) {
+> +        // SAFETY: No one has exclusive access to `self.error`.
+> +        if !unsafe { *self.error.get() } {
+> +            // SAFETY:
+> +            // - We have exclusive access to `self.driver`.
+> +            // - `self.driver` is guaranteed to be initialized.
+> +            unsafe { (*self.driver.get()).assume_init_drop() };
+> +        }
+> +
+> +        // SAFETY: `self.sdev.as_raw()` is guaranteed to be a pointer to=
+ a valid
+> +        // `struct serdev_device`.
+> +        unsafe { bindings::serdev_device_close(self.sdev.as_raw()) };
+Ok, I might have sent this too early.
+
+ignore for now. This is unsound.
 
 Thanks
 - Markus Probst
 
---=-9OBkUSJ/Jd1TG2ob7uZa
+> +    }
+> +}
+> +
+
+--=-YD5z8kaBMv6Utdv9eVyT
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: This is a digitally signed message part
 
 -----BEGIN PGP SIGNATURE-----
 
-iQJPBAABCAA5FiEEgnQYxPSsWOdyMMRzNHYf+OetQ9IFAmobIGUbFIAAAAAABAAO
-bWFudTIsMi41KzEuMTIsMiwyAAoJEDR2H/jnrUPSVI4P/jV1mRfcdTMEpRsvTDwa
-B4eGd3WMfgHeIZ35HiBVWy/pMHBmW5dLcQwQ7nTvSH80dZOt9frHEAWIpDN2jcCM
-PpxFI1cksJ+d3v6s6X3T7XchlTlSC/Rln/XGAOaENVoiPkQpiAJPl/uKJon9U8Px
-SfO2+1ygqeyeXYQC4SSc0EeCI07tCHvEtYUJiO8zUcfvHAkzfbyevVdP/KCg93gx
-Be044Awho+kOebnbfXXWAukDVXTbxpK5jQOCoVxyN5l5UZ0YUWJkThSlMQ8zAkbV
-a7j+YW8AV3SCun4ufhMiIgq21q4BtGZx0VBZNGN1zNyX0XP7hDn3PC109Y06/LOx
-7hq7ewLF/L6yFY3EnFVk7gHFdi/4iS0Gkord8lIx/AARy1MJhH2rMyqkpVa3M0CU
-he/19ohfuQZ+D+XLydgNi61KFBlw2xoMt9fEUcAQChc2RtBF6YbahH2Ps7eHuO1p
-Eyv3QaN56P3p5q1I9PNECDqI0REczp84qGnlwh1JRV1eD3w6VCBB+OQ9/7LNYI4W
-S1woek9K8+bNWIE78N4QEFXv/piwxLClL2cH7/o0lhZM3IeEFzX6ZcOwq7EOJDxo
-JMtrcy/usMRIRC5BRE7EY5pfaW+Ko0HnE+g/KCFwDgQHXZwjBykaCAaX5i3sVkmr
-+GEyCPyXvpFS91VqloRYsd91
-=PCBE
+iQJPBAABCAA5FiEEgnQYxPSsWOdyMMRzNHYf+OetQ9IFAmobJZ4bFIAAAAAABAAO
+bWFudTIsMi41KzEuMTIsMiwyAAoJEDR2H/jnrUPSf5sP/A6J/lvVI7uxowdg6WiV
+tnnsrCN/G10ZUfcHUUrVWDNAmzYReB42SLmLYZsvo24QHdH4LIj5JSU1W72Fp+dY
+UJSZYdw/GlJuskU2iizV6l1rm0g4HkBoUex9M7ELzDN9JPUiy50k9I6TVV7jW6zj
+/575K4cq+JCmJ9OCG/Bmf6hP93SQUYgRQWOowXQMpk4G/IX4aL3ocU8WnstlbPAI
+F58CDeXkxZyHmXYr265PSdZoWo8bdDdyZmWsMpg0nu+OECAr6bOKfPipE61ZkdCA
+uYRvrc9aSJcLwEYDDp4evm2WyZnJ+X7VMYhpgkwlazGqormyHnValJo8yE+XGq4O
+K3g4k/ip85KcaCCgX5qW8b8dzs3qD+bE+fHILPUl6BFjQwuifiX6T5rVQTVVhTZZ
+GrNnXSgdUpMWBeN64LXerjuHxNhoQWPzhJwYoH1b1d/AsKqpoWG30sHhC9GKo8A4
+T3A37gsx26XZY45pqMnGT/Z752oqYiEn3fMMPRPKND5GWZaJHP5fBvRx6sYsJ8Ly
+x2ZkVCUqGz7CCDbN8jlnRjiDlmbFdSwy7wcjcvmXQMdzUb2pI0bDU5XXDwUNSlfY
+Wr1WMfCSgO/Er+lBc3WeS+zFEh2pn4/qqrhnYWzPfCLMw7O6OVfhVoo5puEyBxZo
+ekgS6qe0+XH3HWq2q99CV8tD
+=CqxB
 -----END PGP SIGNATURE-----
 
---=-9OBkUSJ/Jd1TG2ob7uZa--
+--=-YD5z8kaBMv6Utdv9eVyT--
