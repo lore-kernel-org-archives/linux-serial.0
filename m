@@ -1,126 +1,81 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FE5430FC1C;
-	Sat, 30 May 2026 11:30:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D34E21ABC9;
+	Sat, 30 May 2026 11:55:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780140619; cv=none; b=RUvSYYBTCtqPHQWSnZPPYVyEQpcrIT17EXvRtSuWu5ffafE9R5lZoL2Jyex9wKyrCO01DFm/ot/Ft1Jlv82nMFEKI/tS4+nmlB/rnStwGD78VhJhJPmDChLzx8qe9IrBAzPm4hdUNC3aNxsJckYN/8ADpLRF/4nYmEVbciWUuFE=
+	t=1780142106; cv=none; b=iGs84eRFDjAaKNJ89ETy7R6Cl8NC6upD7z6baH3wmRZEcsxuZ2MmaALy/KZzdDimXTKiB56EgXkLBWZR6cVLzFafrDZuFUrXpBMb6a5VqQTu48VoUcS22FUPUShbFDQvrRv6rz27JZrwsDPT5kff24hakAumGrWzjbAQdcnUBfo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780140619; c=relaxed/simple;
-	bh=7HRYOYPxDM7j1kWcXAui8q5mcCpIFm8acKjiuwLtkEU=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=p72pM+VIyqEu4wJ2kv9HTQf2W2OJH7C934KcV7OgiilruTjnS8Z7sg21rkBQxpF3+D7+W9vf7i3v2mYhbrLvQvafpcgO8pbFI6xDQ7XIoHFD7BhIMDDAk0WDgqqcPdx3ws8rqSB0x6DXoKD0jqESilTbqhVLRQT3Z/UEZ6m371g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=zzFjlfo1; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1780142106; c=relaxed/simple;
+	bh=jm8hdmAkEvJcbwS7hgydGF1qmrnzoDP4FHKn0i/2TXc=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:To:From:
+	 References:In-Reply-To; b=CWuwJ3pR9W5qlaHOuDK3IY1vG2yjXud4fhgjDvNxASktxQFwakrQQHS2Zm05EOnRxwc9ZqkiB1HNWFutpfqBAYXXOn+fE4qk0DL3LQoLbvQYNgRWqL1L5aFstyUKpB4jXMv3FvLR7M0twbJUn0ve7IF7tnhSPs/ZdPVcf1gJh1E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XCqCaQI3; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="zzFjlfo1"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF0481F00893;
-	Sat, 30 May 2026 11:30:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1780140618;
-	bh=lHxASgQmM9Knrt6CK0sxo6WG/MJes8qAM9NakiCgwLU=;
-	h=Date:From:To:Cc:Subject;
-	b=zzFjlfo1P8WdKPgF4mXLa8NzXCeJ0YQxKm6gok5wqMdhFSIvHshI1kezoW3DyHTli
-	 c20InZHe/gXDgciKMPR/uc3RPGa9YuSwMv/Csxl95x4AJ8P/BM2sWZz5QB8jpG4Bmo
-	 L2dMfSOSaeUcbCzpE0THtSUBrIsrHF70cwSdVR/Y=
-Date: Sat, 30 May 2026 13:29:22 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [GIT PULL] TTY/Serial driver fixes for 7.1-rc6
-Message-ID: <ahrKEkbnYwF5TrRT@kroah.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XCqCaQI3"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97D1A1F00893;
+	Sat, 30 May 2026 11:55:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1780142105;
+	bh=jm8hdmAkEvJcbwS7hgydGF1qmrnzoDP4FHKn0i/2TXc=;
+	h=Date:Subject:Cc:To:From:References:In-Reply-To;
+	b=XCqCaQI3wTaiEpjHV+goSY6qoZCDZ8DaWIgGBul+wGjAgZWvz1L2AvWDURbUbLHXL
+	 bOrBQqdGXVTtfC/wxJjKkhtbb9ecGvyvFErDQRz0kxTggLdFYwwi1WOLmu3ED+3cHd
+	 pu9PoeZwr/zJ8Ntt4tyEuaVJPISqI6sPubXdr1vPp0N8QYwCdpQ1Zv/IPpKuttT3U0
+	 1pU7LdDg9ePcx09dnPQFzY39KIPQ6ywI1Dk1grBW6IEv6DXLZ+WKdnEfqBi7SsN6os
+	 P/1rNqCr62Fm1MdM5XT+rvEnUtKHMSkYV5FFl6BbURT0ht23Eb592jDlQ+w+HS9pYE
+	 eWHTdoMkOr4Fg==
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Sat, 30 May 2026 13:54:58 +0200
+Message-Id: <DIVZPIJYZ244.26RVUD86YHX1N@kernel.org>
+Subject: Re: [PATCH v8 1/5] rust: devres: return reference in
+ `devres::register`
+Cc: <markus.probst@posteo.de>, "Rob Herring" <robh@kernel.org>, "Greg
+ Kroah-Hartman" <gregkh@linuxfoundation.org>, "Jiri Slaby"
+ <jirislaby@kernel.org>, "Miguel Ojeda" <ojeda@kernel.org>, "Gary Guo"
+ <gary@garyguo.net>, =?utf-8?q?Bj=C3=B6rn_Roy_Baron?=
+ <bjorn3_gh@protonmail.com>, "Benno Lossin" <lossin@kernel.org>, "Andreas
+ Hindborg" <a.hindborg@kernel.org>, "Alice Ryhl" <aliceryhl@google.com>,
+ "Trevor Gross" <tmgross@umich.edu>, "Kari Argillander"
+ <kari.argillander@gmail.com>, "Rafael J. Wysocki" <rafael@kernel.org>,
+ "Viresh Kumar" <viresh.kumar@linaro.org>, "Boqun Feng" <boqun@kernel.org>,
+ "David Airlie" <airlied@gmail.com>, "Simona Vetter" <simona@ffwll.ch>,
+ <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+ <rust-for-linux@vger.kernel.org>, <linux-pm@vger.kernel.org>,
+ <driver-core@lists.linux.dev>, <dri-devel@lists.freedesktop.org>
+To: "Markus Probst via B4 Relay"
+ <devnull+markus.probst.posteo.de@kernel.org>
+From: "Danilo Krummrich" <dakr@kernel.org>
+References: <20260530-rust_serdev-v8-0-2a95f1da22a7@posteo.de>
+ <20260530-rust_serdev-v8-1-2a95f1da22a7@posteo.de>
+In-Reply-To: <20260530-rust_serdev-v8-1-2a95f1da22a7@posteo.de>
 
-The following changes since commit 254f49634ee16a731174d2ae34bc50bd5f45e731:
+On Sat May 30, 2026 at 3:13 AM CEST, Markus Probst via B4 Relay wrote:
+> From: Markus Probst <markus.probst@posteo.de>
+>
+> Return the reference to the initialized data in the `devres::register`
+> function.
+>
+> This is needed in a following commit (rust: add basic serial device bus
+> abstractions).
+>
+> Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
+> Signed-off-by: Markus Probst <markus.probst@posteo.de>
 
-  Linux 7.1-rc1 (2026-04-26 14:19:00 -0700)
+For driver-core and DRM,
 
-are available in the Git repository at:
+Acked-by: Danilo Krummrich <dakr@kernel.org>
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-7.1-rc6
-
-for you to fetch changes up to e4240d8845445d58b4b96f7066adfe175a61bd0c:
-
-  serial: dz: Enable modular build (2026-05-22 11:52:34 +0200)
-
-----------------------------------------------------------------
-TTY/Serial driver fixes for 7.1-rc6
-
-Here are some small serial driver fixes for 7.1-rc6.  Included in here
-are:
-  - mips serial driver fixes to resolve some long-standing issues with
-    how they interacted with the console.  That's the "majority" of the
-    changes in this merge request
-  - sh-sci driver regression fix
-  - 8250 driver regression fixes
-  - other small serial driver fixes for reported problems.
-
-All of these have been in linux-next for over a week with no reported
-issues.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Hongling Zeng (1):
-      serial: sh-sci: fix memory region release in error path
-
-Jacques Nilo (3):
-      serial: core: introduce guard(uart_port_lock_check_sysrq_irqsave)
-      serial: 8250: dispatch SysRq character in serial8250_handle_irq()
-      serial: 8250_dw: dispatch SysRq character in dw8250_handle_irq()
-
-Johan Hovold (1):
-      tty: add missing tty_driver include to tty_port.h
-
-Maciej W. Rozycki (8):
-      serial: zs: Fix swapped RI/DSR modem line transition counting
-      serial: dz: Fix bootconsole message clobbering at chip reset
-      serial: dz: Fix bootconsole handover lockup
-      serial: zs: Fix bootconsole handover lockup
-      serial: zs: Switch to using channel reset
-      serial: dz: Convert to use a platform device
-      serial: zs: Convert to use a platform device
-      serial: dz: Enable modular build
-
-Myeonghun Pak (1):
-      serial: altera_jtaguart: handle uart_add_one_port() failures
-
-Prasanna S (1):
-      serial: qcom-geni: fix UART_RX_PAR_EN bit position
-
-Shitalkumar Gandhi (1):
-      serial: fsl_lpuart: fix rx buffer and DMA map leaks in start_rx_dma
-
-Tudor Ambarus (1):
-      tty: serial: samsung: Remove redundant port lock acquisition in rx helpers
-
-Viken Dadhaniya (1):
-      serial: qcom_geni: fix kfifo underflow when flush precedes DMA completion IRQ
-
-Zhaoyang Yu (1):
-      tty: serial: pch_uart: add check for dma_alloc_coherent()
-
- arch/mips/dec/platform.c              | 109 ++++++++++++++++-
- drivers/tty/serial/8250/8250_dw.c     |   2 +-
- drivers/tty/serial/8250/8250_port.c   |   7 +-
- drivers/tty/serial/Kconfig            |   2 +-
- drivers/tty/serial/altera_jtaguart.c  |   7 +-
- drivers/tty/serial/dz.c               | 171 +++++++++++++-------------
- drivers/tty/serial/fsl_lpuart.c       |  15 ++-
- drivers/tty/serial/pch_uart.c         |  19 ++-
- drivers/tty/serial/qcom_geni_serial.c |  16 ++-
- drivers/tty/serial/samsung_tty.c      |   8 --
- drivers/tty/serial/sh-sci.c           |   2 +-
- drivers/tty/serial/zs.c               | 218 ++++++++++++----------------------
- drivers/tty/serial/zs.h               |   1 -
- include/linux/serial_core.h           |  12 ++
- include/linux/tty_port.h              |   2 +-
- 15 files changed, 341 insertions(+), 250 deletions(-)
+This is useful in the context of the HRT work in general, should this serie=
+s not
+make it this cycle, please let me know, then I'm going to pick this through=
+ the
+driver-core tree.
