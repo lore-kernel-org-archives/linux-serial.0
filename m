@@ -1,194 +1,205 @@
-Received: from mout01.posteo.de (mout01.posteo.de [185.67.36.65])
+Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC7CE2571A9
-	for <linux-serial@vger.kernel.org>; Sat, 30 May 2026 18:55:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.65
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F040229ACF7
+	for <linux-serial@vger.kernel.org>; Sat, 30 May 2026 19:25:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.66
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780167343; cv=none; b=k5aPQnptzvY5w4YMZ+WkNIQiFqvIKzVfy3yDwflPbxiM0r6sX6s4ZIi8itlGycSyX4cIIhbC8esLS81GmHF2OnYMMC3QPs8U1RZ8xdqcHO1x45TXTPOPNpEcbjY6HBpwIo7NTZw0koEc9cVMJGuAzWSi+q136976ygfGYHHQC/g=
+	t=1780169123; cv=none; b=nFaSNJsgE7VgoSvcfvR0H+Uv4RWhhwmIBxb8lg23gNh2A/Vkr6aAh6lM2l3jDK5QcXFPJY2HQK8ye82q5rHaAr0AsU7aBpvKTUfcdWnwZ9nUiBiJQ2Qdp5hudYHma4/iYsqxN1pyoFpMoAqedsi6D6M3NyH7XOsGvvYbMT0lZKw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780167343; c=relaxed/simple;
-	bh=7liBuoUJTQfvwd86ABlHP9P2JYcIto0EGU7InnY/XZE=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=OGhuyy8Xuo1xJL22zrG+qqX412uVVJTQgD1qV8pQNIPKl/drLHr13DRDG9i6ItdwYcXVk60ZGOGXjlocc1SlxPhexOLJIN6bwydoqF1N/fD4iRE3faG5Av2dCi7Sj54TGALH/efCiChOIODcjSo7zl3PsuftMZgH6Q6tcd/zeK8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=AQzQ81Jg; arc=none smtp.client-ip=185.67.36.65
+	s=arc-20240116; t=1780169123; c=relaxed/simple;
+	bh=040JEx0DJs+3yI1YzAd4eTxo71xnuIqutPJWJv523rI=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=ZV98YVDIkttCfXbVGuOjCGCbFxqc7QYhY+loYxYmBEvtlr0DmnbLmTcxdknPDFCU6/IIf1jNvKIusJl2T9/ArvuY2cz7nPt6CB9LE7ZZ5gaPFGuyeDE/2h5gBG6hP8HYDWtN2NqtM2yUs9+WQb72Q8VPWlldugut1kLaiLRB65A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=g7WTnEJm; arc=none smtp.client-ip=185.67.36.66
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="AQzQ81Jg"
+	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="g7WTnEJm"
 Received: from submission (posteo.de [185.67.36.169]) 
-	by mout01.posteo.de (Postfix) with ESMTPS id 38103240029
-	for <linux-serial@vger.kernel.org>; Sat, 30 May 2026 20:55:40 +0200 (CEST)
+	by mout02.posteo.de (Postfix) with ESMTPS id 90AC1240106
+	for <linux-serial@vger.kernel.org>; Sat, 30 May 2026 21:25:20 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de; s=2017;
-	t=1780167340; bh=7liBuoUJTQfvwd86ABlHP9P2JYcIto0EGU7InnY/XZE=;
-	h=Message-ID:Subject:From:To:Cc:Date:Autocrypt:Content-Type:
-	 MIME-Version:OpenPGP:From;
-	b=AQzQ81JgcCAk3BTpUjk0I4TLHSFS80/+mtyz2ZZOY7GM2xGYhUCj70T0ddlGXO/Zs
-	 MJ42QTZomfzuu6DrUSYqD8aXKpZlxpQIXaywBuwh0IrViSU/61+DwNSIgH4PEMVLuh
-	 0cvVIcGk+kr3YHoZxV1UD9sBWu7c1Hkt8EbXZaeCXC0q6oXX2yr9b9gc7n3JjXUe5l
-	 9WPyI36EAsdQTlgdF/xd6tosqx6yqhUDcT3E0LKmNwVIbN+RWlbh7kJESNS2lDMrLJ
-	 ChRHCmkDizMg4x0XpJQ2mXWxQ6RrCAWKSzbuBuULDEFWR2+CqSg4Odk6g4pE8LTWeA
-	 bDJtvsE7kaNuw==
+	t=1780169120; bh=5S8rho5A6Dt7BGRL5FLXbChqBM/VdMSD7eXGH1LcP30=;
+	h=From:Date:Subject:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:Message-Id:To:Cc:Autocrypt:OpenPGP:From;
+	b=g7WTnEJm33wgbhk4xMpbd9hCLddiimsGzaot9q4NmddfyV0FQ2WnIGHejwjoBpvyU
+	 kXt9G5qfHz703AjVdXc/9nkAiYcu/jSdEACDoCaGaAQO4es8dPI7MPXufZNFqSM3xw
+	 up2k5kMfi8gO6GligHMRFRkMPWzYBFMdvZoloSuDpkMD/GNrY7l/i8Qikr34TZm2DP
+	 O8/DaWvjs8zsGoL3URTmSXRpEuMn7CmPw5OFlyiZDJqNigb+wTml6n07rLel6OGRev
+	 6RDwBWwgiVLYVJ1fkpZp3HuYNq5yhHOns0px6EVoQrmP+HFC4rLxxleCOaTKY+g2W2
+	 fE9bOhUyKHLyA==
 Received: from customer (localhost [127.0.0.1])
-	by submission (posteo.de) with ESMTPSA id 4gSTvF0TB4z6tw4;
-	Sat, 30 May 2026 20:55:37 +0200 (CEST)
-Message-ID: <01e20401845ce5eab5731698ca8a0f8f44ed3eb9.camel@posteo.de>
-Subject: Re: [PATCH v8 3/5] rust: add basic serial device bus abstractions
+	by submission (posteo.de) with ESMTPSA id 4gSVYV4dlQz6tx8;
+	Sat, 30 May 2026 21:25:18 +0200 (CEST)
 From: Markus Probst <markus.probst@posteo.de>
-To: Danilo Krummrich <dakr@kernel.org>
-Cc: Markus Probst via B4 Relay <devnull+markus.probst.posteo.de@kernel.org>,
-  Rob Herring <robh@kernel.org>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby	 <jirislaby@kernel.org>, Miguel
- Ojeda <ojeda@kernel.org>, Gary Guo	 <gary@garyguo.net>,
- =?ISO-8859-1?Q?Bj=F6rn?= Roy Baron	 <bjorn3_gh@protonmail.com>, Benno
- Lossin <lossin@kernel.org>, Andreas Hindborg	 <a.hindborg@kernel.org>,
- Alice Ryhl <aliceryhl@google.com>, Trevor Gross	 <tmgross@umich.edu>, Kari
- Argillander <kari.argillander@gmail.com>, "Rafael J. Wysocki"
- <rafael@kernel.org>, Viresh Kumar <viresh.kumar@linaro.org>, Boqun Feng
- <boqun@kernel.org>,  David Airlie <airlied@gmail.com>, Simona Vetter
- <simona@ffwll.ch>, linux-serial@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, rust-for-linux@vger.kernel.org, 
-	linux-pm@vger.kernel.org, driver-core@lists.linux.dev, 
-	dri-devel@lists.freedesktop.org
-Date: Sat, 30 May 2026 18:55:39 +0000
-In-Reply-To: <DIW587AGXYCS.39MR1B4TVSO9@kernel.org>
-References: <20260530-rust_serdev-v8-0-2a95f1da22a7@posteo.de>
-	 <20260530-rust_serdev-v8-3-2a95f1da22a7@posteo.de>
-	 <DIW1B4FUIXO7.28GSUA0CEA4EV@kernel.org>
-	 <4638946fc49a38797b716ea173c93327eb751479.camel@posteo.de>
-	 <ad98dfb1d8469022519d37364e8a068bed3b5687.camel@posteo.de>
-	 <888dc39c52bb6ddac1a1eed7876c4573bdbef002.camel@posteo.de>
-	 <DIW2JUUL6A6J.96VI4IQN6HYU@kernel.org>
-	 <55eae11ea68f129508d0f7e30ac457ba919812b2.camel@posteo.de>
-	 <DIW34DX6BSUS.ANXBOP9687B0@kernel.org>
-	 <25dc9a4bbde0b542abf608be1b3305f1421a4502.camel@posteo.de>
-	 <DIW587AGXYCS.39MR1B4TVSO9@kernel.org>
-Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
- keydata=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
- jfGillcaQOqFZ3WwVqyzG1BUfTow==
-Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-KF9YFnMuz2Ii19euSWzF"
+Date: Sat, 30 May 2026 19:25:19 +0000
+Subject: [PATCH v10 1/5] rust: devres: return reference in
+ `devres::register`
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260530-rust_serdev-v10-1-65d1d5db876c@posteo.de>
+References: <20260530-rust_serdev-v10-0-65d1d5db876c@posteo.de>
+In-Reply-To: <20260530-rust_serdev-v10-0-65d1d5db876c@posteo.de>
+To: Rob Herring <robh@kernel.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Miguel Ojeda <ojeda@kernel.org>, 
+ Gary Guo <gary@garyguo.net>, 
+ =?utf-8?q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
+ Benno Lossin <lossin@kernel.org>, Andreas Hindborg <a.hindborg@kernel.org>, 
+ Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>, 
+ Danilo Krummrich <dakr@kernel.org>, 
+ Kari Argillander <kari.argillander@gmail.com>, 
+ "Rafael J. Wysocki" <rafael@kernel.org>, 
+ Viresh Kumar <viresh.kumar@linaro.org>, Boqun Feng <boqun@kernel.org>, 
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+ Boqun Feng <boqun@kernel.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ rust-for-linux@vger.kernel.org, linux-pm@vger.kernel.org, 
+ driver-core@lists.linux.dev, dri-devel@lists.freedesktop.org, 
+ Markus Probst <markus.probst@posteo.de>
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2621;
+ i=markus.probst@posteo.de; h=from:subject:message-id;
+ bh=040JEx0DJs+3yI1YzAd4eTxo71xnuIqutPJWJv523rI=;
+ b=owEBiQJ2/ZANAwAIATR2H/jnrUPSAcsmYgBqGzmcFURuTFUPacm3542R8nhAzPcOXv4bH9/Yu
+ N0hZZ1PlJOJAk8EAAEIADkWIQSCdBjE9KxY53IwxHM0dh/4561D0gUCahs5nBsUgAAAAAAEAA5t
+ YW51MiwyLjUrMS4xMiwyLDIACgkQNHYf+OetQ9JObw/+NXT3GN4pA29I+JU3W8uxFim7UskCs0b
+ xcqz8Gql8YEX4c6JTwG+kk0Z0ZTsogVLVxBK1KCU1bTkeVKAaPeNjf1WSeMaup7SohfhWu3bDE5
+ 2ZfeUuOWi9xX7F9mb4oII+uBLrr7XQ7HzovYNHIq7mX1IN4SUQ8WOVQ1o0/JyQ8ned9kDp87iol
+ 1UnBn5LWk9prMBpgmbZ1M4IuW0GXNlGSaRj+hvNY6pkLW0DT4jOGOoDfOeIxshEIh17ru5l4ygn
+ 8g+EEtw5VR2JU20NXTKIWzsc44ZwvjksQsHPIHrfuX8UudRIiXwvLs7uIbKj3v4FrdAH8Bdmltz
+ GxGdxg5DvD4flk8twk2YH7jJjfIFHEMZhAdSsJNh1p9I9PNDh+9f8Um4PpOMcYKFmUTINDg/tq8
+ TcxXTMB2KYKxc2fHi//tlyA6vBnJE5HU/utkNVPGk68xk+uC2UTwBcHQhl42ECD/E+GFJlgF27D
+ PUzZpJno5MYqz19SVtBOeo/9lDZ1Qi6CCBC4xyfHU3Vyp/MFSUCYpuUiW/DqmNDsCYJz3eR9CN6
+ XA0x9baHibGVibqL6krXqNgD9bGYAh2TDCils89d2D4SaajqGIb8GnKO5kNg0HXi2OXcFxuLJcH
+ 4jX3au7SVIBC3XGBIUZLsvaeKW76CcmTh+MohCPV0hbdVkLhYERw=
+X-Developer-Key: i=markus.probst@posteo.de; a=openpgp;
+ fpr=827418C4F4AC58E77230C47334761FF8E7AD43D2
+Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
+  keydata=xsFNBGiDvXgBEADAXUceKafpl46S35UmDh2wRvvx+UfZbcTjeQOlSwKP7YVJ4JOZrVs93qReNLkO
+  WguIqPBxR9blQ4nyYrqSCV+MMw/3ifyXIm6Pw2YRUDg+WTEOjTixRCoWDgUj1nOsvJ9tVAm76Ww+
+  /pAnepVRafMID0rqEfD9oGv1YrfpeFJhyE2zUw3SyyNLIKWD6QeLRhKQRbSnsXhGLFBXCqt9k5JA
+  RhgQof9zvztcCVlT5KVvuyfC4H+HzeGmu9201BVyihJwKdcKPq+n/aY5FUVxNTgtI9f8wIbmfAja
+  oT1pjXSp+dszakA98fhONM98pOq723o/1ZGMZukyXFfsDGtA3BB79HoopHKujLGWAGskzClwTjRQ
+  xBqxh/U/lL1pc+0xPWikTNCmtziCOvv0KA0arDOMQlyFvImzX6oGVgE4ksKQYbMZ3Ikw6L1Rv1J+
+  FvN0aNwOKgL2ztBRYscUGcQvA0Zo1fGCAn/BLEJvQYShWKeKqjyncVGoXFsz2AcuFKe1pwETSsN6
+  OZncjy32e4ktgs07cWBfx0v62b8md36jau+B6RVnnodaA8++oXl3FRwiEW8XfXWIjy4umIv93tb8
+  8ekYsfOfWkTSewZYXGoqe4RtK80ulMHb/dh2FZQIFyRdN4HOmB4FYO5sEYFr9YjHLmDkrUgNodJC
+  XCeMe4BO4iaxUQARAQABzRdtYXJrdXMucHJvYnN0QHBvc3Rlby5kZcLBkQQTAQgAOxYhBIJ0GMT0
+  rFjncjDEczR2H/jnrUPSBQJog714AhsDBQsJCAcCAiICBhUKCQgLAgQWAgMBAh4HAheAAAoJEDR2
+  H/jnrUPSgdkQAISaTk2D345ehXEkn5z2yUEjaVjHIE7ziqRaOgn/QanCgeTUinIv6L6QXUFvvIfH
+  1OLPwQ1hfvEg9NnNLyFezWSy6jvoVBTIPqicD/r3FkithnQ1IDkdSjrarPMxJkvuh3l7XZHo49GV
+  HQ8i5zh5w4YISrcEtE99lJisvni2Jqx7we5tey9voQFDyM8jxlSWv3pmoUTCtBkX/eKHJXosgsuS
+  B4TGDCVPOjla/emI5c9MhMG7O4WEEmoSdPbmraPw66YZD6uLyhV4DPHbiDWRzXWnClHSyjB9rky9
+  lausFxogvu4l9H+KDsXIadNDWdLdu1/enS/wDd9zh5S78rY2jeXaG4mnf4seEKamZ7KQ6FIHrcyP
+  ezdDzssPQcTQcGRMQzCn6wP3tlGk7rsfmyHMlFqdRoNNv+ZER/OkmZFPW655zRfbMi0vtrqK2Awm
+  9ggobb1oktfd9PPNXMUY+DNVlgR2G7jLnenSoQausLUm0pHoNE8TWFv851Y6SOYnvn488sP1Tki5
+  F3rKwclawQFHUXTCQw+QSh9ay8xgnNZfH+u9NY7w3gPoeKBOAFcBc2BtzcgekeWS8qgEmm2/oNFV
+  G0ivPQbRx8FjRKbuF7g3YhgNZZ0ac8FneuUtJ2PkSIFTZhaAiC0utvxk0ndmWFiW4acEkMZGrLaM
+  L2zWNjrqwsD2zsFNBGiDvXgBEADCXQy1n7wjRxG12DOVADawjghKcG+5LtEf31WftHKLFbp/HArj
+  BhkT6mj+CCI1ClqY+FYU5CK/s0ScMfLxRGLZ0Ktzawb78vOgBVFT3yB1yWBTewsAXdqNqRooaUNo
+  8cG/NNJLjhccH/7PO/FWX5qftOVUJ/AIsAhKQJ18Tc8Ik73v427EDxuKb9mTAnYQFA3Ev3hAiVbO
+  6Rv39amVOfJ8sqwiSUGidj2Fctg2aB5JbeMln0KCUbTD1LhEFepeKypfofAXQbGwaCjAhmkWy/q3
+  IT1mUrPxOngbxdRoOx1tGUC0HCMUW1sFaJgQPMmDcR0JGPOpgsKnitsSnN7ShcCr1buel7vLnUMD
+  +TAZ5opdoF6HjAvAnBQaijtK6minkrM0seNXnCg0KkV8xhMNa6zCs1rq4GgjNLJue2EmuyHooHA4
+  7JMoLVHcxVeuNTp6K2+XRx0Pk4e2Lj8IVy9yEYyrywEOC5XRW37KJjsiOAsumi1rkvM7QREWgUDe
+  Xs0+RpxI3QrrANh71fLMRo7LKRF3Gvw13NVCCC9ea20P4PwhgWKStkwO2NO+YJsAoS1QycMi/vKu
+  0EHhknYXamaSV50oZzHKmX56vEeJHTcngrM8R1SwJCYopCx9gkz90bTVYlitJa5hloWTYeMD7FNj
+  Y6jfVSzgM/K4gMgUNDW/PPGeMwARAQABwsF2BBgBCAAgFiEEgnQYxPSsWOdyMMRzNHYf+OetQ9IF
+  AmiDvXgCGwwACgkQNHYf+OetQ9LHDBAAhk+ab8+WrbS/b1/gYW3q1KDiXU719nCtfkUVXKidW5Ec
+  Idlr5HGt8ilLoxSWT2Zi368iHCXS0WenGgPwlv8ifvB7TOZiiTDZROZkXjEBmU4nYjJ7GymawpWv
+  oQwjMsPuq6ysbzWtOZ7eILx7cI0FjQeJ/Q2baRJub0uAZNwBOxCkAS6lpk5Fntd2u8CWmDQo4SYp
+  xeuQ+pwkp0yEP30RhN2BO2DXiBEGSZSYh+ioGbCHQPIV3iVj0h6lcCPOqopZqyeCfigeacBI0nvN
+  jHWz/spzF3+4OS+3RJvoHtAQmProxyGib8iVsTxgZO3UUi4TSODeEt0i0kHSPY4sCciOyXfAyYoD
+  DFqhRjOEwBBxhr+scU4C1T2AflozvDwq3VSONjrKJUkhd8+WsdXxMdPFgBQuiKKwUy11mz6KQfcR
+  wmDehF3UaUoxa+YIhWPbKmycxuX/D8SvnqavzAeAL1OcRbEI/HsoroVlEFbBRNBZLJUlnTPs8ZcU
+  4+8rq5YX1GUrJL3jf6SAfSgO7UdkEET3PdcKFYtS+ruV1Cp5V0q4kCfI5jk25iiz8grM2wOzVSsc
+  l1mEkhiEPH87HP0whhb544iioSnumd3HJKL7dzhRegsMizatupp8D65A2JziW0WKopa1iw9fti3A
+  aBeNN4ijKZchBXHPgVx+YtWRHfcm4l8=
 OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
 
+Return the reference to the initialized data in the `devres::register`
+function.
 
---=-KF9YFnMuz2Ii19euSWzF
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This is needed in a following commit (rust: add basic serial device bus
+abstractions).
 
-On Sat, 2026-05-30 at 18:14 +0200, Danilo Krummrich wrote:
-> On Sat May 30, 2026 at 4:51 PM CEST, Markus Probst wrote:
-> > On Sat, 2026-05-30 at 16:35 +0200, Danilo Krummrich wrote:
-> > > On Sat May 30, 2026 at 4:27 PM CEST, Markus Probst wrote:
-> > > > This would work, but I don't see how it would get rid of rust_priva=
-te_data in
-> > > > this way. The device private data will but the private bus abstract=
-ion data
-> > > > needs to outlive the devres callbacks (which is done by rust_privat=
-e_data).
-> > >=20
-> > > Why? You only ever use it in the receive callback, which won't be cal=
-led after
-> > > device unbind anymore.
-> > Because the possibility exists that some classdev ops or Drop calls
-> > e.g. sdev.set_baudrate. This is a null pointer dereference after
-> > serdev_device_close has been called. I interpreted it to add a state to
-> > the abstraction private data which would prevent those calls (early
-> > return with error) after serdev_device_close has been called, but this
-> > would only work if it outlives these calls.
-> >=20
-> > But it seems you were refering to something else with the state?
->=20
-> Yes, but I just notice that I'm a step ahead. With the lifetime model cla=
-ss
-> device registrations shouldn't be guarded with Devres anymore, but with a
-> lifetime.
-That might be an issue. pin-init doesn't have enum support yet, so at
-least in my driver devres is still required for now.
+Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
+Signed-off-by: Markus Probst <markus.probst@posteo.de>
+---
+ rust/kernel/cpufreq.rs    |  3 ++-
+ rust/kernel/devres.rs     | 15 +++++++++++++--
+ rust/kernel/drm/driver.rs |  3 ++-
+ 3 files changed, 17 insertions(+), 4 deletions(-)
 
-I will readd the rust_private_data field.
+diff --git a/rust/kernel/cpufreq.rs b/rust/kernel/cpufreq.rs
+index d94c6cdbc45a..bbbd4f54218a 100644
+--- a/rust/kernel/cpufreq.rs
++++ b/rust/kernel/cpufreq.rs
+@@ -1053,7 +1053,8 @@ pub fn new_foreign_owned(dev: &Device<Bound>) -> Result
+     where
+         T: 'static,
+     {
+-        devres::register(dev, Self::new()?, GFP_KERNEL)
++        devres::register(dev, Self::new()?, GFP_KERNEL)?;
++        Ok(())
+     }
+ }
+ 
+diff --git a/rust/kernel/devres.rs b/rust/kernel/devres.rs
+index 82cbd8b969fb..e3e954478caa 100644
+--- a/rust/kernel/devres.rs
++++ b/rust/kernel/devres.rs
+@@ -419,15 +419,26 @@ fn register_foreign<P>(dev: &Device<Bound>, data: P) -> Result
+ /// }
+ ///
+ /// fn from_bound_context(dev: &Device<Bound>) -> Result {
+-///     devres::register(dev, Registration::new(), GFP_KERNEL)
++///     devres::register(dev, Registration::new(), GFP_KERNEL)?;
++///     Ok(())
+ /// }
+ /// ```
+-pub fn register<T, E>(dev: &Device<Bound>, data: impl PinInit<T, E>, flags: Flags) -> Result
++pub fn register<'a, T, E>(
++    dev: &'a Device<Bound>,
++    data: impl PinInit<T, E>,
++    flags: Flags,
++) -> Result<&'a T>
+ where
+     T: Send + 'static,
+     Error: From<E>,
+ {
+     let data = KBox::pin_init(data, flags)?;
+ 
++    let data_ptr = &raw const *data;
++
+     register_foreign(dev, data)
++        // SAFETY: `dev` is valid for the lifetime of 'a. As long as there is a reference to
++        // `Device<Bound>`, it is guaranteed that the device is not unbound and data has not been
++        // dropped. Thus `data_ptr` is also valid for the lifetime of 'a.
++        .map(|()| unsafe { &*data_ptr })
+ }
+diff --git a/rust/kernel/drm/driver.rs b/rust/kernel/drm/driver.rs
+index 5233bdebc9fc..1edfd7bacddb 100644
+--- a/rust/kernel/drm/driver.rs
++++ b/rust/kernel/drm/driver.rs
+@@ -147,7 +147,8 @@ pub fn new_foreign_owned(
+ 
+         let reg = Registration::<T>::new(drm, flags)?;
+ 
+-        devres::register(dev, reg, GFP_KERNEL)
++        devres::register(dev, reg, GFP_KERNEL)?;
++        Ok(())
+     }
+ 
+     /// Returns a reference to the `Device` instance for this registration.
 
-Thanks
-- Markus Probst
+-- 
+2.53.0
 
->=20
-> (This also entirely eliminates the need for having different devres stage=
-s to
-> prevent drivers from smuggling a newly created Devres object into an exis=
-ting
-> Devres<Registration<T>>'s data, which would be unsound for obvious reason=
-s.)
->=20
-> With this there is no way there are still class device callbacks after th=
-e bus
-> device private data has been dropped in the first place.
-
---=-KF9YFnMuz2Ii19euSWzF
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-
------BEGIN PGP SIGNATURE-----
-
-iQJPBAABCAA5FiEEgnQYxPSsWOdyMMRzNHYf+OetQ9IFAmobMqgbFIAAAAAABAAO
-bWFudTIsMi41KzEuMTIsMiwyAAoJEDR2H/jnrUPSsP4QAJvgDX/oBlDfYv2tZ9/k
-iqvykK+GkeeYAJsEMKKFHnbChReKuA8Ot+MHfe3ZXFFbUaQ9CuGWH0IH3Ve5aBrw
-/LVBWhhD9oGFkZiTl6d/JxBBEWw6d4diLm+G4hmD2E05opEe+lH/16V5ZQ+7nTgP
-0N7TCKrRudJIFg9gX31C1hJSDdUV/q1S4LBue2EOg67YX2nUVuVGyl4pxLoIZ5oM
-p7C+3Fr0EtetHiJEx5YLjNg56LybwCYIY2r1r9roln/Gh02CeoFOGeTAf7YZErbP
-4qUp6oQDfNZhBWWrjiCAKyeK7054GVyXL+Js+ECe+2EsK6eecj9vPjpPkGSlJCMW
-na564sEOpKt8IbPB65E+h8qqroFns2GPsoGLq7QX07DrUMoXRI8KdxemjpmjfjL7
-SUNDAKLCKRWC6q9WLyOWgTvr2xjFq12wf85rwFSJ02e1ibXMH4XkCzfkT/BGZSBb
-I8GmSQuaEb0+ht12v/86Iy5xwqdNITJMvE+gGSvvFVVOf7tUzinkA2fRjNzDuER7
-XkeESS26C36GmbI5924+gCiAYGP+Z1CfOLZWIVIyL2vsfl8koo2ox3cJOJVFmj3Y
-aWUces/kyUVV4jDpSvJD/th6XTpEY35vxtTcHWSlTJAq+ujhl58RWsxAw9VI/FxJ
-sZU2iF3gffqVfJX3mmzDz1KZ
-=ujLv
------END PGP SIGNATURE-----
-
---=-KF9YFnMuz2Ii19euSWzF--
