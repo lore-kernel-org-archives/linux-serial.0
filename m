@@ -1,40 +1,40 @@
-Received: from mout01.posteo.de (mout01.posteo.de [185.67.36.65])
+Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4DAE3BF66D
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01B313AB26B
 	for <linux-serial@vger.kernel.org>; Sat, 30 May 2026 17:36:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.65
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.66
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780162611; cv=none; b=HQ9JX+KNXNeYbL3ChA8HwXl/h0c46Ak8Io9iv3KdLDZ5WcbB9io2F8+U1Vsvackmlo6WAyhkhaXjKCiH1sYt/Lm1FFiMoJaQpiplQ3p4wrx0k6/9Z4/Tvw86ZCwa1vPptaxIxfjINF57OkFbIHs78JuFZkFoDoQvbksZ+511RV4=
+	t=1780162612; cv=none; b=j1p8sRKTKgT/OqKVj+72nLGPdnYP+I7ejIsEHIDgZkjIOawrNCKDgzNmr4EOHBHGLw5nwWHc7VVJYnPTigNCcwUV4hHTqAIyldMisRytlMCsEF2kJntWEpIm1e3gdd/K0if+exZIbeDOFnLgW0/07DsA0ScrpDXvw8L/FVZ+gqM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780162611; c=relaxed/simple;
-	bh=P+qqzzRwhI8B2ZhOfr+PVqRWtfVtS9KesBahL8YX4uk=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=LHkr2yLxsbMmGvA194mjn1zNAz761w7kX49XgtSmz9ftUUpKafSGnT7SAWct3dTCGxlBe+aMSVlY23+WhjIbYB5wbRE12SV6AR4pq+iu79DO0knVGC+R5AJ5MYeIcikjc1yPZBw4t86TuISL8T3yzZCO5Rogsp6S4ZTjHFoU83E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=r+2Jebq1; arc=none smtp.client-ip=185.67.36.65
+	s=arc-20240116; t=1780162612; c=relaxed/simple;
+	bh=kRO4NH3VMxsI9hmNuUJEFuA+TdZxr2QG4aut3DO0ULk=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=WFqnRPkaRJEVkA/Bb/ZlRZ14M9cNlWmg4IcqsAcnEMQtNTLCzAlXX1BBL2KGmDFnbLU8uPvWrkN7RMl6sc8LrRUIkURNPOlTpW7nllTJpbce9bh1TUCVFm2KOR2ATuQNh2B8P3py+YSSLGFYoypL0hrJbbJ37deQH1XG1A+Zo00=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=CmAwHLWU; arc=none smtp.client-ip=185.67.36.66
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="r+2Jebq1"
+	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="CmAwHLWU"
 Received: from submission (posteo.de [185.67.36.169]) 
-	by mout01.posteo.de (Postfix) with ESMTPS id C808224002D
-	for <linux-serial@vger.kernel.org>; Sat, 30 May 2026 19:36:47 +0200 (CEST)
+	by mout02.posteo.de (Postfix) with ESMTPS id 75838240108
+	for <linux-serial@vger.kernel.org>; Sat, 30 May 2026 19:36:43 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de; s=2017;
-	t=1780162607; bh=SqEDsvTehTsmlHRK3kcALX6aeWf55kfJ4Kqinm0z8bs=;
-	h=From:Date:Subject:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding:Message-Id:To:Cc:Autocrypt:OpenPGP:From;
-	b=r+2Jebq1Q39gri7G7hsVWTCYlXvsmiMaiAmIaE0YvQCN/U/uZBM7JnLS9rVwK0t0b
-	 l27Sq6ps66SrbDEfPLmNkyPlm9axOXlHcAUXE1XnxtiP+mj3D8XUcOhF83rLNvgcqc
-	 xqoqm2DP3HK0h9ggCHnQT8G+eDtevfHCVntSe6jQ0tXF7M5pNWHr0RV3H2nUCdLgji
-	 7uzWkK4MWBIklnLSYiFkqMpzLuNZ/9q9c7dW+tYIYENXLyqJn4OZUfHA4H5Af69ApP
-	 M82/xJPgLVFkrdLuHC42a7nmwsbRkeLHfeODO16wGkxTP3zBXrKVhfFLoJ/HmvypD1
-	 fDfHqmyc6f6fA==
+	t=1780162603; bh=2e2O/8b5NRtHio85i8yYWzntgvUhu+5ong2pxaqR0kw=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:To:Cc:Autocrypt:OpenPGP:From;
+	b=CmAwHLWUA99yF1UYjDxjd2nJSt5X3jYJM/q5CdMzXwstNMQbIyAFt21ioigwU9Hqv
+	 sF+Y2LI4/DERx5IboegAbakJ89UBCWHPrDNuh/X8ekTnPtLOezsp/Qyd5V6f73zbJl
+	 m+/UCWJrr7FGvp1GhwGc7SaYzRQ8OYkfymmgaWbn9pFLFBsTgbh3kGX9ImlN8LBh5R
+	 2KOrZ1KoVwBRQLbleJdyYSWAcnp32wkGwVoFq4msNEvK/bqTdvtsVLCiBQjfmuN270
+	 ebww60Te4aDYhcCzOl022nf7GX4IMgn3z/TUxd+7xw+vdyzOdkMbgjAwtz7d9KxpOq
+	 /KVXKNnjyKa9Q==
 Received: from customer (localhost [127.0.0.1])
-	by submission (posteo.de) with ESMTPSA id 4gSS8F3zcQz6v0W;
-	Sat, 30 May 2026 19:36:45 +0200 (CEST)
+	by submission (posteo.de) with ESMTPSA id 4gSS882hfKz6twx;
+	Sat, 30 May 2026 19:36:40 +0200 (CEST)
 From: Markus Probst <markus.probst@posteo.de>
-Date: Sat, 30 May 2026 17:36:46 +0000
-Subject: [PATCH v9 3/3] MAINTAINERS: serdev: Add self for serdev
+Subject: [PATCH v9 0/3] rust: add basic serial device bus abstractions
+Date: Sat, 30 May 2026 17:36:42 +0000
+Message-Id: <20260530-rust_serdev-v9-0-f8b5fccb49c3@posteo.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -43,9 +43,14 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260530-rust_serdev-v9-3-f8b5fccb49c3@posteo.de>
-References: <20260530-rust_serdev-v9-0-f8b5fccb49c3@posteo.de>
-In-Reply-To: <20260530-rust_serdev-v9-0-f8b5fccb49c3@posteo.de>
+X-B4-Tracking: v=1; b=H4sIAAEgG2oC/43SwU7kMAwG4FcZ9bytYidO4jnxHqsVSlsXKnamk
+ JQKhHh3PDMgpmUPe4oc6fsVx36riuRRSrXfvVVZlrGM01EL/rWruvt0vJN67LWu0CABQqjzc5l
+ vFfWy1CLkIgibSF2l4jHLML6c037/0fp+LPOUX8/hC5xuP3PQrHIWqE0tznlHwQePcPM4lVmmp
+ pfqlLPgl/XGGr+2eLLcom0dtki0tfbKgl1bq7bjZNOA4IYwbK37tg5gbZ3a6EjYm857DFtLV3b
+ bL6mlILFNhoAHu7X+2q7/fPFqIdjAsSeB9MOGa8trG9SaPnIXGFrq4tbGb0t28+aoFhPTAH1CT
+ Kt+3y/Dz/L0rBs0XzagOkgp6bxB+90lU7sldMY0lrVgX0Pdp4d88yD5KH+bKd+d1uinQ9KTERp
+ A5zn+L7MGLAbrG4scyfG/XZuK1N10OIzzfreERufckfb0/gGITJKrHQMAAA==
+X-Change-ID: 20251217-rust_serdev-ee5481e9085c
 To: Rob Herring <robh@kernel.org>, 
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
  Jiri Slaby <jirislaby@kernel.org>, Miguel Ojeda <ojeda@kernel.org>, 
@@ -63,21 +68,21 @@ Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
  rust-for-linux@vger.kernel.org, linux-pm@vger.kernel.org, 
  driver-core@lists.linux.dev, dri-devel@lists.freedesktop.org, 
  Markus Probst <markus.probst@posteo.de>
-X-Developer-Signature: v=1; a=openpgp-sha256; l=838;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=5698;
  i=markus.probst@posteo.de; h=from:subject:message-id;
- bh=P+qqzzRwhI8B2ZhOfr+PVqRWtfVtS9KesBahL8YX4uk=;
- b=owEBiQJ2/ZANAwAIATR2H/jnrUPSAcsmYgBqGyAoIhcUAaSlDU2MlqRCuJT00LUPuu+MYG0LM
- TM7Soucq4WJAk8EAAEIADkWIQSCdBjE9KxY53IwxHM0dh/4561D0gUCahsgKBsUgAAAAAAEAA5t
- YW51MiwyLjUrMS4xMiwyLDIACgkQNHYf+OetQ9KybxAAopWipcmgIHW1ywDTnzBJoXkVvvDO6kO
- E0Pl/VlkFAx+6LUyHPscLhoF8OX7H706N+UDTC7gLfeXmK77gwM3VVaQpfqhpOKyUgbFfXNg3wM
- mcn2Tr1S0HX8mbE/DB3xdOHAW3acSi4CjvWewQbTIsAKvtIDE7PlKi1LkulAA04Ja7HKTYGtvj3
- mjiOqN8U7p6Atic/VQxhDKwcXfNDhzMaSBSYvsAU/mgSS6gbWHnpaMkHPocz8SZcr6kT9+n8Z/O
- fj05eLe+Y+AzKSl3VjBTVAHRzxRV1xaJ1sZYCR4Xa61yIekwCP6OwGd6B+Psc5GiA+vdBlXnepy
- R0jQ0kwDLAS5xEFJUpfmg3A3o24ZHHLgTHvvWes0WsYpRL5b1bPgs8HGCwX4dH280kwoXYvqavW
- 04UHzPGkT/2MZhgcNySEZoDlULZ2NGz2Yy+VaYtqA3DStGrp4Omf6FVfj6O042awJZljYrzvUV6
- ONTRBTgrly99Ylr1CCbmXCSXEL1+xt0xy8Y54r+8dXKXVOgAryh/r59H8sFTMjPcSiF/fvH9Z4m
- EbkYmtz7VF5Oh/Zp+EJUwdJcahJrSa5lQJlc9dmb6s3SBNuLN84aeR/OWPSnGds9sn+TtLuqk8i
- QU3nMUdoOx4BaK7sMSokDnwUfm2LQG91Y5jF6MUlWJoQPwQf6/Cc=
+ bh=kRO4NH3VMxsI9hmNuUJEFuA+TdZxr2QG4aut3DO0ULk=;
+ b=owEBiQJ2/ZANAwAIATR2H/jnrUPSAcsmYgBqGyAnvlACq3CZi+ZGChqDAcrBCXcRktDhYI/aj
+ B75iuEPoyuJAk8EAAEIADkWIQSCdBjE9KxY53IwxHM0dh/4561D0gUCahsgJxsUgAAAAAAEAA5t
+ YW51MiwyLjUrMS4xMiwyLDIACgkQNHYf+OetQ9IjQRAAvA3qj9+STtwINeUuarKni9DmixDYAnq
+ Dc7Xh/hpbZx3c7RbJSNSdBUGZBSdRH5hDhqMlHsByAiKYCgf/rumim6TPaSNGtHlN6tW/QQ8lDP
+ eXroE+v8iQkDwAzZy9xRCY8MZLJ9zREaQgve1b5s0dylOsJRrDdTJGJni3LmH2ycT4/vd+BV9JJ
+ KczQdrgP8wisg4JdUrwXNxmsdmXPYLNIg4kgi6kA932vszm5ur2SBGAJKEjF3WNNVPUXZMBw6Af
+ S9xvF4ZmpD4Mio+ebkucLpltmqNIMYjA3IwQytrCI/L+NAWCJSpc+xa6hE1+kpDRyIxwnXrTjQY
+ oo4Bf/HaOYV34DKjUvgocsZbdGEpXGq0Q6/ITtfVeByNJIDmJeJundN/7vAM671kVx+UbCaCtYa
+ b71niUAtpNFKwpHJg0Bwm6mGXaljctoKUxIgncUUlXdiIrwVxG4UpKqK55t4grN1RTG/MGDuK+i
+ PjoC6+oH/DCDEo9kNL31sUgbwyjzE9CHuoPKiBjtjo30llmHHNu2EcsXjZheRR1tXq1mHwgn8Fw
+ ORW7G4SUPdqMEl2iGBZ1tXTwJy3zVACsoY7B5Y2+WjUogU5EUNWn6M82SeqQfVO93Xr1Wica1sE
+ KDoND5XNYdYqPrHMp5PLXBgNH9i7UPm4DXl632nywyNFSm17+A6w=
 X-Developer-Key: i=markus.probst@posteo.de; a=openpgp;
  fpr=827418C4F4AC58E77230C47334761FF8E7AD43D2
 Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
@@ -123,29 +128,128 @@ Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
   aBeNN4ijKZchBXHPgVx+YtWRHfcm4l8=
 OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
 
-Rob mentioned he needs to find someone else to maintain serdev.
+This patch series adds the serdev device bus rust abstraction into the
+kernel.
 
-Link: https://lore.kernel.org/rust-for-linux/20260430195858.GA1650658-robh@kernel.org/
-Link: https://lore.kernel.org/rust-for-linux/da85ceb81f51079d4a8248a1ffde6a27d2ef24ad.camel@posteo.de/
+This abstraction will be used by a driver,
+which targets the MCU devices in Synology devices.
+
+Kari Argillander also messaged me, stating that he wants to write a
+watchdog driver with this abstraction (needing initial device data).
+
+This series depends on [1] and [2].
+
+[1]
+https://lore.kernel.org/rust-for-linux/20260525202921.124698-1-dakr@kernel.org/
+[2] https://lore.kernel.org/rust-for-linux/20260530132736.3298549-1-dakr@kernel.org/
+
 Signed-off-by: Markus Probst <markus.probst@posteo.de>
 ---
- MAINTAINERS | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Changes in v9:
+- make use of BoundInternal
+- use PrivateData wrapper and drop rust_private_data field
+- use non-devm version of serdev_device_open
+- Link to v8: https://patch.msgid.link/20260530-rust_serdev-v8-0-2a95f1da22a7@posteo.de
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index fa3f20f0cc4f..58db6aedf45a 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -24270,7 +24270,7 @@ F:	drivers/iio/chemical/sps30_i2c.c
- F:	drivers/iio/chemical/sps30_serial.c
- 
- SERIAL DEVICE BUS
--M:	Rob Herring <robh@kernel.org>
-+M:	Markus Probst <markus.probst@posteo.de>
- L:	linux-serial@vger.kernel.org
- S:	Maintained
- F:	Documentation/devicetree/bindings/serial/serial.yaml
+Changes in v8:
+- adapted to driver-lifetime v5 patch series
+- add MAINTAINERS file patch
+- Link to v7: https://patch.msgid.link/20260429-rust_serdev-v7-0-0d89c791b5c8@posteo.de
 
--- 
-2.53.0
+Changes in v7:
+- adapted to driver-lifetime patch series
+- Link to v6: https://patch.msgid.link/20260427-rust_serdev-v6-0-173798d5e1a3@posteo.de
+
+Changes in v6:
+- rebased onto v7.1-rc1
+- Link to v5: https://patch.msgid.link/20260420-rust_serdev-v5-0-57e8ba0519f3@posteo.de
+
+Changes in v5:
+- fix typo in documentation
+- Link to v4: https://lore.kernel.org/r/20260411-rust_serdev-v4-0-845e960c6627@posteo.de
+
+Changes in v4:
+- fixed not selecting rust serdev abstraction in sample
+- Link to v3: https://lore.kernel.org/r/20260313-rust_serdev-v3-0-c9a3af214f7f@posteo.de
+
+Changes in v3:
+- fix vertical import style
+- add Kconfig entry for the rust abstraction
+- fix documentation in include/linux/serdev.h
+- rename private_data to rust_private_data
+- fix `complete_all` <-> `wait_for_completion` typo
+- move drvdata_borrow call after the completion
+- Link to v2: https://lore.kernel.org/r/20260306-rust_serdev-v2-0-e9b23b42b255@posteo.de
+
+Changes in v2:
+- fix documentation in `serdev::Driver::write` and
+  `serdev::Driver::write_all`
+- remove use of `dev_info` in probe from the sample
+- remove `properties_parse` from the sample
+- add optional `baudrate` property to the sample
+- remove 1. patch
+- remove `TryFrom<&device::Device<Ctx>> for &serdev::Device<Ctx>`
+  implementation
+- fix import style
+- add patch to return reference in `devres::register` to fix safety
+  issue
+- add patch to add private data to serdev_device, to fix
+  `Device.drvdata()` from failing
+- simplify abstraction by removing ability to receive the initial
+  transmission. It may be added later in a separate patch series if
+  needed.
+- Link to v1: https://lore.kernel.org/r/20251220-rust_serdev-v1-0-e44645767621@posteo.de
+
+---
+Markus Probst (3):
+      rust: add basic serial device bus abstractions
+      samples: rust: add Rust serial device bus sample device driver
+      MAINTAINERS: serdev: Add self for serdev
+
+ MAINTAINERS                        |   5 +-
+ drivers/tty/serdev/Kconfig         |   7 +
+ rust/bindings/bindings_helper.h    |   1 +
+ rust/helpers/helpers.c             |   1 +
+ rust/helpers/serdev.c              |  22 ++
+ rust/kernel/lib.rs                 |   2 +
+ rust/kernel/serdev.rs              | 574 +++++++++++++++++++++++++++++++++++++
+ samples/rust/Kconfig               |  11 +
+ samples/rust/Makefile              |   1 +
+ samples/rust/rust_driver_serdev.rs |  91 ++++++
+ 10 files changed, 714 insertions(+), 1 deletion(-)
+---
+base-commit: 9e171fc1d7d7ab847a750c03571c87ac3c17bd84
+change-id: 20251217-rust_serdev-ee5481e9085c
+prerequisite-message-id: 20260505152400.3905096-1-dakr@kernel.org
+prerequisite-patch-id: d2aebf69b153c039bbed1d0ed26906708fd22534
+prerequisite-patch-id: 84b28da2f5de20fc1785095c647b2ffc35d969a5
+prerequisite-patch-id: 67318671a5eed5fb4ad23a450f1cf0e442bf8ca2
+prerequisite-message-id: 20260525202921.124698-1-dakr@kernel.org
+prerequisite-patch-id: b84db329d4372a175cb8d49e4e88c3eecf7eb228
+prerequisite-patch-id: 2c30303f409cc8288cc87e241920219f5ddd8390
+prerequisite-patch-id: 4e4f0ad370d763ad00b0f75b91fa216f2cc95953
+prerequisite-patch-id: 5bcd6b37f3498feebda275dfef78136eba34004e
+prerequisite-patch-id: 872b0982f3e5e7d1698d9df3b325e4cd27b27789
+prerequisite-patch-id: 3a3c7749e017d9335f58497404d1350e96caf471
+prerequisite-patch-id: 3526c9154f581497a11465b936d83ef61a875454
+prerequisite-patch-id: 65d8c757b52475c2acc7d22ddc92cd3f0152b55d
+prerequisite-patch-id: 4bd31f1414d5248dc080884caadf5f21684a8427
+prerequisite-patch-id: 7beadbb0da3e589ed86d12f512d1c83427dd82b4
+prerequisite-patch-id: 12cd0f67ffd27347f90c065db491945908206b7f
+prerequisite-patch-id: 4642e31f66331f6c3b579377111ea733dbb3a11c
+prerequisite-patch-id: 52d67b40b4396c741e2222d6a5bc7927abcb77aa
+prerequisite-patch-id: 74ca82ff26cf9c7a993757c87db8be62006e820f
+prerequisite-patch-id: 466fb9fa7febbffd8ef51b311c7d9893c11fc0f0
+prerequisite-patch-id: e515cd98b06e26721cbbe6a4fbacd251d0073b63
+prerequisite-patch-id: 8dc8e75d9f6499a554ef7e474bbacdbf3660a9f2
+prerequisite-patch-id: 5fdb9f71dca2f44dd293760a60db125b770f1f55
+prerequisite-patch-id: c766a24c2d5064f5ec09daada0b8e8fba862d3aa
+prerequisite-patch-id: b768f6456d35fa7a80c015e34bbdba6082dbd593
+prerequisite-patch-id: 6a8b17234f12f7084e6e2ce843a7031b0a891ce4
+prerequisite-patch-id: 98b2deb9e60c1f28f90c5ee34fd608aaa9fd9420
+prerequisite-patch-id: 774b29be66e641ee50cedb4704cf49d8b9fabf50
+prerequisite-patch-id: cf95dc936cfc4b3a7a363435a51a48d9009645b3
+prerequisite-message-id: 20260530132736.3298549-1-dakr@kernel.org
+prerequisite-patch-id: 310c6bee038ca3909a8e5e58ec12b74f7189b869
+prerequisite-patch-id: 92812c3d42b29504838e6dc66c307ff5c035bb5e
 
