@@ -1,78 +1,75 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1C0A39E9CF;
-	Sat, 30 May 2026 10:25:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9C1D3A8743;
+	Sat, 30 May 2026 11:26:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780136745; cv=none; b=Fy5YhDPhGLpiQMk4nVjurKmUzyEn+a3rVsDtObiGoLM7p2n+/c/X6hBglIMubemq69P/tmzBkYi0zOtoRC32GdAD5NnIhjsHBXyRKjEqRqt6ZzakRQDabB0UvCNMe8Nd0AR7+/XAPI/U2gpYY2CCmPvL7n4Pi9sZ3ayKX6bE37Q=
+	t=1780140417; cv=none; b=G+qspKQ4tO+IdL4qhlYLJecr/3OZ+f2dr3/iHAus+olOmgOCwu7r0A1Sdkvy0Nf9qsZzz4Y6TTAhSwzD1KG6zdyCDmCsbhoQ0E7c3G8IvbftuiA71kgfdUhPS5ZUmRfcm9N4GUTQg8Hp9M6TDVmFAO8a0qlo6UseCoVrT7K+lRc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780136745; c=relaxed/simple;
-	bh=3rNocUaeG/vh3hn+sDDfL+yXYgSl+tVYHm5nJDpA8qc=;
+	s=arc-20240116; t=1780140417; c=relaxed/simple;
+	bh=KCbFhJAEk8KcQO9/73KPnfZwTp341BcjN9sfnu2ZngI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qfAHeEYOlxr2OKPZ+ODiYdM+YaX+jNHv8+EizPFQ4P4tCZxzfNZ2oDUtWXU0PhkSW8IWMzzlHfdTqC5hEjcDQyGDrp32ykN7SSXon0vJqf8BoPes4ip3aQFV+NrTkAKw/UpDMGgKb8me4X5iwJx+ukJ3V+0x7uxipOCoKGXQ/L8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=TdX7ATjL; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=S0AcX0CbgRdudolv+rpNhWeNW58eIXm1VPI9ZTpuVJdVKr0Y0l1nBS8Hh71afHK7R0sQJNRLDDQXCQ+2822YeGaEaS+B5Bah5yatEJ9SNXevzfULFKtybAMp4t3wFARHfpxIVXNnfIo8EJ6R1UiMALyCrLXJ0t+H2+NhEas9/Sw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lam4DaPK; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="TdX7ATjL"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1C141F00893;
-	Sat, 30 May 2026 10:25:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1780136744;
-	bh=cFeS5ZghyqtLcvpjiqm8Lf4ksDZz0Ai1X1bJYSK/WDw=;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lam4DaPK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 381301F00893;
+	Sat, 30 May 2026 11:26:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1780140415;
+	bh=IVwpw2eRABk9+ylDgRtDjSZqliuoEKt3Edcy4orUwLY=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=TdX7ATjL+JjHILUuCxvkBh0D90EOmmzLV8D/d4Wwvxp1EEdipUcU95CCk0lpoWa0o
-	 mdIoV/6qOldP0BT0rASI6N80Fu+bzrCstE0Y3qQRlRhAc58YZfz+6vgfc6kFvOgu5r
-	 8/39CUZ6W+KOjOHkP8FZNXMpCEJet/78yKghk6qk=
-Date: Sat, 30 May 2026 07:21:52 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Rosen Penev <rosenp@gmail.com>
-Cc: linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-	Frank Li <Frank.Li@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>,
-	"open list:TTY LAYER AND SERIAL DRIVERS" <linux-kernel@vger.kernel.org>,
-	"open list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <imx@lists.linux.dev>,
-	"moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH] serial: mxs-auart: fix probe error paths and clock
- handling
-Message-ID: <2026053046-bonanza-bobcat-6ed1@gregkh>
-References: <20260528230616.186792-1-rosenp@gmail.com>
+	b=lam4DaPKN35I/BQOfL0hrgXSXs0gSfS8hbmtvHTfbxS8EN3M9iGT8lPhebJm6LWaM
+	 wdMEUp+JQpYnU43nvQLMskXcAqX0xelbJzAZ4v8IzuNIJaUfSJlMyQWhPbdUieHAzO
+	 8TilAR++psJ4jDXjpZrjKu0WBl36lpeU8sOx12t5SGX1cWVsBPOMB1B5RERmmFyOfF
+	 GuQYL7+fS6zgQp4iFOTUyLTPyLBAwKZjdNm6EKo5mnzCBBXYlQTcNVzLsWTEfcDuPd
+	 ZTmFxrWrFErfJZFjKzOQ0UR6bQJScwk0s5HM1+HAvoeUt367q8SIsHQoTWiQUpWWc4
+	 sixny9plr6otw==
+Date: Sat, 30 May 2026 13:26:53 +0200
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Tapio Reijonen <tapio.reijonen@vaisala.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	devicetree@vger.kernel.org
+Subject: Re: [PATCH 2/3] dt-bindings: serial: maxim,max310x: allow per-port
+ subnodes for rs485
+Message-ID: <20260530-witty-snail-of-correction-a0a6f3@quoll>
+References: <20260525-b4-max310x-rs485-dt-v1-0-e6c19b4d5592@vaisala.com>
+ <20260525-b4-max310x-rs485-dt-v1-2-e6c19b4d5592@vaisala.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260528230616.186792-1-rosenp@gmail.com>
+In-Reply-To: <20260525-b4-max310x-rs485-dt-v1-2-e6c19b4d5592@vaisala.com>
 
-On Thu, May 28, 2026 at 04:06:16PM -0700, Rosen Penev wrote:
-> Sashiko reported three pre-existing bugs in the mxs-auart driver:
+On Mon, May 25, 2026 at 09:43:38AM +0000, Tapio Reijonen wrote:
+> The MAX310x is a multi-port UART (up to four ports). The existing
+> binding pulls in /schemas/serial/rs485.yaml at the top level, which
+> only describes a single port - sufficient for max3107 but ambiguous
+> for max14830 where each port can have its own RS485 wiring.
 > 
-> - For non-ASM9260 variants, mxs_get_clks() obtained the clock but never
->   prepared/enabled it, leaving register accesses in probe at risk of
->   faulting if the bootloader had gated the clock.
-> - The error path and remove function used pdev->id instead of
->   s->port.line to clear the auart_port[] slot.  For DT-probed devices
->   pdev->id is -1, causing an out-of-bounds write and leaving a dangling
->   pointer in the array.
-
-This feels like it should be a different patch, and not burried in this
-change, right?
-
-> - The probe error path called iounmap() while the IRQ was still
->   registered. An interrupt during that window would dereference the
->   unmapped membase.
+> Add a "port@N" pattern (N = 0..3) carrying rs485 properties on a
+> per-port basis. When port@N subnodes are present, the chip node also
+> needs #address-cells = <1> and #size-cells = <0>; allow both. Top-
+> level rs485 properties remain accepted for compatibility.
 > 
-> All of this is a consequence of using mixed devm and non devm. Instead
-> of working around these issues, go full devm so that everything can be
-> cleaned up properly.
+> Signed-off-by: Tapio Reijonen <tapio.reijonen@vaisala.com>
+> ---
+>  .../devicetree/bindings/serial/maxim,max310x.yaml  | 60 ++++++++++++++++++++++
+>  1 file changed, 60 insertions(+)
 
-Are you sure that devm and irq code is going to work properly?  That's
-always a very tricky code path, was this tested with the hardware to
-ensure it still works on teardown correctly?
+That's a total mess now in the binding.
+1. maxim,max3107 does not have ports, but you add there. You need to
+constrain (see writing bindings) or split.
+2. So where do you place serial devices? Did you validate any of this?
 
-thanks,
+Best regards,
+Krzysztof
 
-greg k-h
