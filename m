@@ -1,133 +1,77 @@
-Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CCD220125F
-	for <linux-serial@vger.kernel.org>; Sat, 30 May 2026 19:33:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.44
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780169626; cv=pass; b=Y0vzr0ewUPcy5jWh3ixEFwKOXl9hfMuEJTI2y9sd9/9gqXRSy+OP0EULn+PzELEutT2TXOogDYrKOdxWqQzSm4hZUf3n1GscsnHsgsTsd71NkQhREsm032fy80ciGhQx2F+XtqiBHHKpFQEbIq4f+PWjnYIX/cSotisLUtlBHRw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780169626; c=relaxed/simple;
-	bh=Ii9QhGYH8Ddx4p+nDmph5Vh8dMNnUCvxNxmYJVM6HU4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=MhknUrMp7m8gH9MT+OcRhom3xBr4aEFAITMURDM2idQ8gfyfmbN0PaLwn+WAWZcPnn07/hzDApytBGvVgP/Cudsf1jsSldabZRCxLjxzCUm01XIdy5erUMK2c6Pu4GngjatGXspRI4mKDxIgd73n+Cdr7ATHm4+FcjnAKLERMJ8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=glSzQNfz; arc=pass smtp.client-ip=209.85.208.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 652F11A5B9D;
+	Sat, 30 May 2026 19:46:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780170367; cv=none; b=lEVuz2jcHddI9ApozuXxA+xoFa44XgfNDNWOTUzJNgv3+mvWCDKe5u481OpzCFa8r773Ghwk/a23Ko6K4TVEwxuPd6hHWZkqpfreAEJVj9Q658uGZUxR+F6ov6joPs+hCGi0DhxWb63awgO7aE7U+0M+z76DRfuE4O/threN9/4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780170367; c=relaxed/simple;
+	bh=srBCy/zdErG7s9yoPUyWO9/eyzhiARnTTF7Wgqa2KHI=;
+	h=Mime-Version:Content-Type:Date:Message-Id:From:Subject:Cc:To:
+	 References:In-Reply-To; b=QWNt4FPMd4gxjhZndFZabc9AiPZK9jiuUbQzG2MmqQbscC5h/7FTsRxPb6nMl1G2g59ITy1D3wXB0cv1VhyMOjzP0R+WKD+sPPsKTbg2fACaMzV3S/tf4ZHiJexRUIuyN5j8566vjITw26mUgWkcjgjt16qNKndFfu6HwCxLkoU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dBN/B1+Q; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="glSzQNfz"
-Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-68c5eecdd56so1758617a12.3
-        for <linux-serial@vger.kernel.org>; Sat, 30 May 2026 12:33:45 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1780169624; cv=none;
-        d=google.com; s=arc-20240605;
-        b=QeBLUA5VDvI6eLMTfC1fFTlfkuNdTBicZQY0qvnEiAS0J2rWrqiNWbNuanHfLQBWKZ
-         pKcQW7puAsiO4AxkDPspG54q9VRaAa2L1oikNeR9NsEEvQ4ldJRLKvvBmSOFfsZiz06p
-         wsIM4ADVkQtaBJl10s1oG8EIvPbljsvYAyOFVPyP5fkHDHO/JCpw9hJoO1wrOrjdvpVk
-         6CXSx2E97QNG6OASghEAHrxKwdDCE9wLt8ABNZr6vVC4NabaEed394f7gQRTRMS2b/63
-         UlCw72fAd+vST3saNL0yeVJZTG5j7cohgsheTz6grr5SWZaSPlpPBKLx+j6E4WusY1mm
-         PQmQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=DekgsxuMi51WS5zY41eRSoIAsmckrInSkJh0VriOufM=;
-        fh=O9wYL0kJZOzGTjTpARDvzMwwq062vuKldWOpKyzeTbA=;
-        b=bqvboLfl88qEmiHDRvQw86JaYtO0pM8CHjHdayd7SRqfbuDtz39WILonAox25z9L5p
-         BHsR2qo+2DDWze77tvjKMUssoS43fNMdzI1EAgr60acOVIRzQUGd7O4VGEeaj0eOnOps
-         y/G6c1UA6/tKkeK7z8TY+L+ooRALcAKd1a36RuWcWV/fksxE5F99vOxxTlZO36PFlF0V
-         ReHsOIOYk6foO63t5SJO/LKIhwR4LQG/iWjI7r32u3DAey+Bs3CVZoKm2mE3w4DdKnvk
-         OxBWd+THjcHQ/c5smpQwpLu7ufvSl9r4eWwf8nIrENEUYce8mKHyc08ul1qvsfTQ7lQy
-         I+bA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780169624; x=1780774424; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=DekgsxuMi51WS5zY41eRSoIAsmckrInSkJh0VriOufM=;
-        b=glSzQNfzPPgJB+Pl5MrvjrXXH9wIZXMiUT6KxYDpXhiZi0xcDq/1NtoWjB52qVZD2J
-         7RfCty0yZE0iYme0vjcYqOBCO3AdfcbNcqml85JYPdsg01/GjFpbKS+mRrXjkigmpODr
-         ot/wNmZ7BUdlgxaDCiA6Ul611WudEdip1e18W5xtyg0EJLqXwivljCQcFqHS5WNIoZmD
-         HPTUwWMXkxG/TAJMcML2nDYcJ8jatEZSU0TNSP87dEWbgsq4poI+dfSMKFihcfveuYl2
-         KVsABJgXQj1m6RhAtc5MaeLsdnKD2XS0WQ5zdgHfwIym0VyVePriDIVVmzpRhk6oy+bG
-         lMdg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780169624; x=1780774424;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=DekgsxuMi51WS5zY41eRSoIAsmckrInSkJh0VriOufM=;
-        b=cYuXazWuyEVUOkoEmfG4N7ZrNcU5LwYuXbvb3xNIORG/Ux4vHlHQWnpMlc7tgndFcd
-         aoXHNPsPfn2oIm08AhKG6XPjfq7v9yIODbexhwjWvrBamcAMqLB6KEJ0429cs3ZPTZJJ
-         F7SMjvcljKV0zgpSFOlxIbfiScmN8DMx178s7pAsDmcPI6NNInx69/DsN7pHXrH2re2W
-         PhbgPJzfzUpix4Fe1F7IE09f1owvWQH5WKSP/UTI1dczWUSuI9WPTR4Val7u69n67wT1
-         4ZiQ4OYRwPXSe4rptxkGtw13Y8VeQf4JtgZV1pr2YvNeZyx0v8tg//C9MuJiIj9qPKtG
-         uz7A==
-X-Gm-Message-State: AOJu0YxWYE7JbPrD82My/QRAtezvMFF326yIsRYni5f+yEQ3et7Zu4GE
-	P5/hDpvhtmIQ3AjLE+hvXRBK9pUF3NgxVahpO9wft9JmZUUTWEcl7YQii3e0iHAcu81hBbYCVhS
-	88CluOT7GCwTgVPM4BQhu7XGHCuiqFP0=
-X-Gm-Gg: Acq92OFKPuKHBSFEKUWXXQouckgU5FVAQ6YVbunEk8a5v/swVPMNF5I/SScVkbMK5FS
-	amJQC9gu8I6ISeBXrTjubavSWLM1hquFFMnPDhjKuUlLGYh/3I6RU8N/jE1xxMcMfJOiegP6BE7
-	dDYSaK56UhnkDPtltw6UdW/dhjkrmtVGLLA66/zcYuB3G991XdEhpXp402GLK8cZmOvBSBYBcK/
-	MP855plwqRo/nR3VwgldNTCxpMzlb8BizKUGlhUf9rv5/wPc9wWAJvDwoBkWPkscW/P0nwuIcPc
-	HEz0idQW7ndZ5NwC24RlANNHVs4aUZJQ6+5BDNw+2yJRxptgKoi9PGaT0hpLg+GHRcWIq95bemj
-	yHYvEJkqfq57zL60fVFbg38tpxADx7bEts0w3RZp/RFfwodwq8AQXthtdtlOGe2YPkpUg
-X-Received: by 2002:a05:6402:a50e:b0:676:9c6d:7448 with SMTP id
- 4fb4d7f45d1cf-68c8d008593mr1310597a12.22.1780169623588; Sat, 30 May 2026
- 12:33:43 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dBN/B1+Q"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B2451F00893;
+	Sat, 30 May 2026 19:46:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1780170366;
+	bh=srBCy/zdErG7s9yoPUyWO9/eyzhiARnTTF7Wgqa2KHI=;
+	h=Date:From:Subject:Cc:To:References:In-Reply-To;
+	b=dBN/B1+QhwvG/s7vUQWrXB2MAfJ/CfV1cQ91HSJBXyEKyMfZqpO/BTKiUViC6kRyI
+	 XKpms9IW1BTjFjnQBN52Ukx0tIEXJJsCXzhL0lemL7OlqwLkNZ/qNIvnafAYO38w5y
+	 XGjMdcEZv9v3W73qpFMZvPv9SaM7lLWg9r16XLFN1rt9kFHE/tX11qdTdHXVaWCy6Y
+	 fnpbm4E1GJKZhfFgasaTTq+095fuf8JY+XtL81WdSi63BZ5LZgmNtDHdf8FDm2pNTd
+	 Ei8pc4QkW3n4xY10yTC5TyJVoAJQdk6NBb6zzrZVrmoGJq34E2XQLR9kb0Cn+cFU4y
+	 9Krwv9FftSh4A==
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <20260528230616.186792-1-rosenp@gmail.com> <2026053046-bonanza-bobcat-6ed1@gregkh>
-In-Reply-To: <2026053046-bonanza-bobcat-6ed1@gregkh>
-From: Rosen Penev <rosenp@gmail.com>
-Date: Sat, 30 May 2026 12:33:32 -0700
-X-Gm-Features: AVHnY4K79MARsE55gPXS-mt6AcSVjDoRJ17LhtVUNVWG0hsymJZR1HNJqMyC57E
-Message-ID: <CAKxU2N8Nq1hdG-C4xrbpr2OCiQuf-dZRC1GebuPu9PUE1jProA@mail.gmail.com>
-Subject: Re: [PATCH] serial: mxs-auart: fix probe error paths and clock handling
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>, 
-	Frank Li <Frank.Li@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>, 
-	Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, 
-	"open list:TTY LAYER AND SERIAL DRIVERS" <linux-kernel@vger.kernel.org>, 
-	"open list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <imx@lists.linux.dev>, 
-	"moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Sat, 30 May 2026 21:45:59 +0200
+Message-Id: <DIW9Q5GVC0H2.2BEOWKL02AMWA@kernel.org>
+From: "Danilo Krummrich" <dakr@kernel.org>
+Subject: Re: [PATCH v8 3/5] rust: add basic serial device bus abstractions
+Cc: "Markus Probst via B4 Relay"
+ <devnull+markus.probst.posteo.de@kernel.org>, "Rob Herring"
+ <robh@kernel.org>, "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>, "Jiri
+ Slaby" <jirislaby@kernel.org>, "Miguel Ojeda" <ojeda@kernel.org>, "Gary
+ Guo" <gary@garyguo.net>, =?utf-8?q?Bj=C3=B6rn_Roy_Baron?=
+ <bjorn3_gh@protonmail.com>, "Benno Lossin" <lossin@kernel.org>, "Andreas
+ Hindborg" <a.hindborg@kernel.org>, "Alice Ryhl" <aliceryhl@google.com>,
+ "Trevor Gross" <tmgross@umich.edu>, "Kari Argillander"
+ <kari.argillander@gmail.com>, "Rafael J. Wysocki" <rafael@kernel.org>,
+ "Viresh Kumar" <viresh.kumar@linaro.org>, "Boqun Feng" <boqun@kernel.org>,
+ "David Airlie" <airlied@gmail.com>, "Simona Vetter" <simona@ffwll.ch>,
+ <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+ <rust-for-linux@vger.kernel.org>, <linux-pm@vger.kernel.org>,
+ <driver-core@lists.linux.dev>, <dri-devel@lists.freedesktop.org>
+To: "Markus Probst" <markus.probst@posteo.de>
+References: <20260530-rust_serdev-v8-0-2a95f1da22a7@posteo.de>
+ <20260530-rust_serdev-v8-3-2a95f1da22a7@posteo.de>
+ <DIW1B4FUIXO7.28GSUA0CEA4EV@kernel.org>
+ <4638946fc49a38797b716ea173c93327eb751479.camel@posteo.de>
+ <ad98dfb1d8469022519d37364e8a068bed3b5687.camel@posteo.de>
+ <888dc39c52bb6ddac1a1eed7876c4573bdbef002.camel@posteo.de>
+ <DIW2JUUL6A6J.96VI4IQN6HYU@kernel.org>
+ <55eae11ea68f129508d0f7e30ac457ba919812b2.camel@posteo.de>
+ <DIW34DX6BSUS.ANXBOP9687B0@kernel.org>
+ <25dc9a4bbde0b542abf608be1b3305f1421a4502.camel@posteo.de>
+ <DIW587AGXYCS.39MR1B4TVSO9@kernel.org>
+ <01e20401845ce5eab5731698ca8a0f8f44ed3eb9.camel@posteo.de>
+In-Reply-To: <01e20401845ce5eab5731698ca8a0f8f44ed3eb9.camel@posteo.de>
 
-On Sat, May 30, 2026 at 3:25=E2=80=AFAM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Thu, May 28, 2026 at 04:06:16PM -0700, Rosen Penev wrote:
-> > Sashiko reported three pre-existing bugs in the mxs-auart driver:
-> >
-> > - For non-ASM9260 variants, mxs_get_clks() obtained the clock but never
-> >   prepared/enabled it, leaving register accesses in probe at risk of
-> >   faulting if the bootloader had gated the clock.
-> > - The error path and remove function used pdev->id instead of
-> >   s->port.line to clear the auart_port[] slot.  For DT-probed devices
-> >   pdev->id is -1, causing an out-of-bounds write and leaving a dangling
-> >   pointer in the array.
->
-> This feels like it should be a different patch, and not burried in this
-> change, right?
->
-> > - The probe error path called iounmap() while the IRQ was still
-> >   registered. An interrupt during that window would dereference the
-> >   unmapped membase.
-> >
-> > All of this is a consequence of using mixed devm and non devm. Instead
-> > of working around these issues, go full devm so that everything can be
-> > cleaned up properly.
->
-> Are you sure that devm and irq code is going to work properly?  That's
-> always a very tricky code path, was this tested with the hardware to
-> ensure it still works on teardown correctly?
-Nope. v2 incoming.
->
-> thanks,
->
-> greg k-h
+On Sat May 30, 2026 at 8:55 PM CEST, Markus Probst wrote:
+> pin-init doesn't have enum support yet, so at least in my driver devres i=
+s
+> still required for now.
+
+Hm...how is this related to having a registration type that takes a lifetim=
+e
+rather than a registration type being wrapped in Devres?
