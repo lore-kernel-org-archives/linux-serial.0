@@ -1,329 +1,166 @@
-Received: from mail-pj1-f49.google.com (mail-pj1-f49.google.com [209.85.216.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B2B12DA75C
-	for <linux-serial@vger.kernel.org>; Sat, 30 May 2026 19:55:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18FBE344DBD
+	for <linux-serial@vger.kernel.org>; Sat, 30 May 2026 20:31:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.66
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780170945; cv=none; b=sWmqny6C0W/gSWlhdmA7fQidILJU+EWGEQj3TOMdR6w3nm4CXYESAfu1CmM8fm/Nu4JqOk4Kk1Z+NWgMm9aKg4vy26pA+BH6A6Gg4nnGzslfpd9Qfn+KU1HT1HMdDhbLi6o2NGGBsqFmpAIp9qFifzdFcdqOjn5lE7qXponQTwg=
+	t=1780173099; cv=none; b=pkXOiM5Yf9nxOx50SoCi6ARfyqWrHuUG/c6gvuxM7tJ+9KPEwjIZXcRwb5RqZrCWfBJkQlV/wV3cgsME6svWNTcgTjhxC63Lh69j4YIM7rWs2YZ8b9Tjz/cxey1UIIelRgnLnyyPHrA/eJVO2h9VaLUsGQDlTJmRHs9CcginFG0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780170945; c=relaxed/simple;
-	bh=0e6oWsAqwA6Yr7Q3BRMhN0pQGfqxUUBdCSENWtkE9v0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=rIGVZ9aAa7XQNt7Dx3MXvJx9UB5UIv+Ay1CTWwbZn7fF5fxhCRy7bwIFVf6mTlc5wk7wGvYsbsu7Qk+boYTX90e0yN/LWt4X8hHCQaMNuMRzp4jSEY2zQbHNFVjD8Dd4yLS66oqXJYfWFkHRDz5BUn2nKBstUKrLFDincPnRy8w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WchOw21I; arc=none smtp.client-ip=209.85.216.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1780173099; c=relaxed/simple;
+	bh=AG9aR9Ik9FEYjKL2E/CM0XsegQw4UuybAOzFvpg+07Y=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=t7eTt0rIzRFWvoE0XfHfG/ZpZzmWn0FZAcmH2jWACepOHg0RHHfb21Nbb3uqQNAlJQS/Gx63ZzEefQQMjt8fNUiihTwGh+NXAjFXPAm/Si6WV0gVhdwI6TWODOSrwZOfoy2iQSQeKiA8iVb0HwYgyNwFpDLuTLHaRse5IUjCVvc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=gl2ZZlrX; arc=none smtp.client-ip=185.67.36.66
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WchOw21I"
-Received: by mail-pj1-f49.google.com with SMTP id 98e67ed59e1d1-36b903567fdso2622284a91.1
-        for <linux-serial@vger.kernel.org>; Sat, 30 May 2026 12:55:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780170943; x=1780775743; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=JFbb87WXannbZgAKQJkoODZG0moYWhbBBJifO3Eihyw=;
-        b=WchOw21Itz+G/4cPFLPVIL9aBz2ejBzn2Owu4YMXQOCNHoXK6rTxL9bbIMDnbItHMi
-         IMQcrbUm2R+FgUgODZCGa73lGSykuKQCgf6WFrq5DWXB9Nn1xpB6Oz+CqHfhzx7IO8K/
-         Fze/J5WKMRIWOy6NOaa49eqaOcVsbhN3EjRQOqaZNuNNqn6xpbxVnSw7T6Mfpbf54cLl
-         1P7AWY+kBw/faK4N5x/wsVtIk6TLzc2xnw70JZrqfk6SvCv19+11eqQXTVdfz1pX4QGV
-         8beJTNl/0JBWDW7vebxfHixzpm4slqQWyYiVJdlBvkd3bTcbnxecGWgaA35r4I7FRDDL
-         nTAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780170943; x=1780775743;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=JFbb87WXannbZgAKQJkoODZG0moYWhbBBJifO3Eihyw=;
-        b=NtLpXitByJdbQUbpXpn4u54NSkXaPRYI0IPe+CxuhLnhO5G1AulQD5f0oxy6Qwx72W
-         fErasyhi+ADLp/aZLPhGWjCQz1GW1wt+uq3+zrFbT1Kvp8D94oPuLnOquSrYA3wRoyvi
-         VEbTWxl1cvW97L7YxAQDFdmAepNqAfeOkoIzusB1eMnDPv0xkQwHZEcc/sQq2/1sZGft
-         f+UT6GimpkVUz5ILOWEPdFdcEBT/usbJ4bVJ6z3FF4g3Y6dUBQVOqrbb76XaSMEfn34G
-         ML1FQCkfTr1/PnFDPdbLUH924TP810SgVHNQRC5QwGZQPtw8xwg3bwY4O6HAD1/jai1q
-         dlAw==
-X-Gm-Message-State: AOJu0Yxr3wRFKC+nn6BMnl82T9wCzIIWu/P9HEJVeXQ7gRZkge9gIKU+
-	Zil+DT/P0vPliglIp/stxkVmp3uuLzIVdZ0pAaFclY8xK2dEYlznJC5LQ6Z2dx5f
-X-Gm-Gg: Acq92OE/7g7POMeNGHddczU/RAxfgLvXxrWqOSJwVVVFZuITTxq/Mvzz3v8ypLdrTX1
-	XgWpADM9FZEq9Tdl5x0wMDulNbVWqe4weU2hodQO4hbs8wm4rYjrwX37bIz7QxdQM+ZS3IzQo7J
-	P6zEDu4slPXv9xSX9dA1382ZIbbKXnwGrT/A6PkV4Tyk2B68TaHyDRAoSmjBAx92N6LtPREzOpO
-	Wgx6fbMK3UGTKfX49WvtPpVEVQMTw8rvfq8L5PqYcYaB3y32G/8CmIHW7JXDIYIVcellv36LFXl
-	XQ4jnLFCGrO7O7bK1MIixeWRfrhYKHoSCrHeHF/LtbLASf8CtsRgsiTLmte5SaBHqnyXK0cB+NQ
-	0rNBLW8e3O3wENEvdPkOsFjCxHIqTK9V1kDEAc4vqD0vvHQTGyfjV9SmE54+KcEs+3C0+mqV0So
-	y+m9/qzSbblTcOHK+nnxRq2rqWn6gpMMn7Tyf0LzGyzw7z3ky1COQSV5NcfFmAOosE7Ri4dFdTF
-	7LO/C0Vd+eh0G3Gbwunj/lYHoRXSnXCAn9nxJHQCtk7ng==
-X-Received: by 2002:a17:90b:3f88:b0:36b:ba97:419d with SMTP id 98e67ed59e1d1-36c501cdd5dmr4347411a91.13.1780170943254;
-        Sat, 30 May 2026 12:55:43 -0700 (PDT)
-Received: from ryzen ([2601:644:8000:5b5d:7285:c2ff:fe45:8a32])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-36bc6a34ca9sm5503001a91.9.2026.05.30.12.55.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 May 2026 12:55:42 -0700 (PDT)
-From: Rosen Penev <rosenp@gmail.com>
-To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Frank Li <Frank.Li@nxp.com>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>,
-	linux-kernel@vger.kernel.org (open list:TTY LAYER AND SERIAL DRIVERS),
-	imx@lists.linux.dev (open list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE),
-	linux-arm-kernel@lists.infradead.org (moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE)
-Subject: [PATCHv2] serial: mxs-auart: fix probe error paths and clock handling
-Date: Sat, 30 May 2026 12:55:03 -0700
-Message-ID: <20260530195525.5059-1-rosenp@gmail.com>
-X-Mailer: git-send-email 2.54.0
+	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="gl2ZZlrX"
+Received: from submission (posteo.de [185.67.36.169]) 
+	by mout02.posteo.de (Postfix) with ESMTPS id EBADB240103
+	for <linux-serial@vger.kernel.org>; Sat, 30 May 2026 22:31:33 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de; s=2017;
+	t=1780173093; bh=AG9aR9Ik9FEYjKL2E/CM0XsegQw4UuybAOzFvpg+07Y=;
+	h=Message-ID:Subject:From:To:Cc:Date:Autocrypt:Content-Type:
+	 MIME-Version:OpenPGP:From;
+	b=gl2ZZlrXxWUFFLC62LJzlD+PtJ7IHTynsmdTgIVkaBwVHPNa2abvP66WT/kiO5nbH
+	 TTJqgoAlWiIk928rjgVK8gwpq0eRaAF9m290ggzwcmDcBZhBMebSyE6ZN1zAl28maX
+	 aL/3h+zytvo8ft5mFCQJMm4/CcLkA3emL0bTUEZhuZKWV9DLXlAdVyMHiXAmY5ceTN
+	 mrBpHVI+f+4WpJ/zmknYMF/J8S7K/aChg6+Zopq1DP1Ru20i2v27Y++QQp9c7iWiRO
+	 +NDVmHerKJwTP7/cx8nkxSq5552n9A93T/G/bEDO5kFHxUp26Iq/OEcCP7QMllO+2F
+	 9tlXHudTN0OMQ==
+Received: from customer (localhost [127.0.0.1])
+	by submission (posteo.de) with ESMTPSA id 4gSX1t5TSCz9rxD;
+	Sat, 30 May 2026 22:31:30 +0200 (CEST)
+Message-ID: <aaf88d7fc2168c3ef893713b0643c4132bec1da3.camel@posteo.de>
+Subject: Re: [PATCH v8 3/5] rust: add basic serial device bus abstractions
+From: Markus Probst <markus.probst@posteo.de>
+To: Danilo Krummrich <dakr@kernel.org>
+Cc: Markus Probst via B4 Relay <devnull+markus.probst.posteo.de@kernel.org>,
+  Rob Herring <robh@kernel.org>, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Jiri Slaby	 <jirislaby@kernel.org>, Miguel
+ Ojeda <ojeda@kernel.org>, Gary Guo	 <gary@garyguo.net>,
+ =?ISO-8859-1?Q?Bj=F6rn?= Roy Baron	 <bjorn3_gh@protonmail.com>, Benno
+ Lossin <lossin@kernel.org>, Andreas Hindborg	 <a.hindborg@kernel.org>,
+ Alice Ryhl <aliceryhl@google.com>, Trevor Gross	 <tmgross@umich.edu>, Kari
+ Argillander <kari.argillander@gmail.com>, "Rafael J. Wysocki"
+ <rafael@kernel.org>, Viresh Kumar <viresh.kumar@linaro.org>, Boqun Feng
+ <boqun@kernel.org>,  David Airlie <airlied@gmail.com>, Simona Vetter
+ <simona@ffwll.ch>, linux-serial@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, rust-for-linux@vger.kernel.org, 
+	linux-pm@vger.kernel.org, driver-core@lists.linux.dev, 
+	dri-devel@lists.freedesktop.org
+Date: Sat, 30 May 2026 20:31:33 +0000
+In-Reply-To: <DIW9Q5GVC0H2.2BEOWKL02AMWA@kernel.org>
+References: <20260530-rust_serdev-v8-0-2a95f1da22a7@posteo.de>
+	 <20260530-rust_serdev-v8-3-2a95f1da22a7@posteo.de>
+	 <DIW1B4FUIXO7.28GSUA0CEA4EV@kernel.org>
+	 <4638946fc49a38797b716ea173c93327eb751479.camel@posteo.de>
+	 <ad98dfb1d8469022519d37364e8a068bed3b5687.camel@posteo.de>
+	 <888dc39c52bb6ddac1a1eed7876c4573bdbef002.camel@posteo.de>
+	 <DIW2JUUL6A6J.96VI4IQN6HYU@kernel.org>
+	 <55eae11ea68f129508d0f7e30ac457ba919812b2.camel@posteo.de>
+	 <DIW34DX6BSUS.ANXBOP9687B0@kernel.org>
+	 <25dc9a4bbde0b542abf608be1b3305f1421a4502.camel@posteo.de>
+	 <DIW587AGXYCS.39MR1B4TVSO9@kernel.org>
+	 <01e20401845ce5eab5731698ca8a0f8f44ed3eb9.camel@posteo.de>
+	 <DIW9Q5GVC0H2.2BEOWKL02AMWA@kernel.org>
+Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
+ keydata=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
+ jfGillcaQOqFZ3WwVqyzG1BUfTow==
+Content-Type: multipart/signed; micalg="pgp-sha256";
+	protocol="application/pgp-signature"; boundary="=-J3TBuACv418SR6WDzXVz"
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
 
-Sashiko reported three pre-existing bugs in the mxs-auart driver:
 
-- For non-ASM9260 variants, mxs_get_clks() obtained the clock but never
-  prepared/enabled it, leaving register accesses in probe at risk of
-  faulting if the bootloader had gated the clock.
-- The error path and remove function used pdev->id instead of
-  s->port.line to clear the auart_port[] slot.  For DT-probed devices
-  pdev->id is -1, causing an out-of-bounds write and leaving a dangling
-  pointer in the array.
-- The probe error path called iounmap() while the IRQ was still
-  registered. An interrupt during that window would dereference the
-  unmapped membase.
+--=-J3TBuACv418SR6WDzXVz
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Assisted-by: Opencode:Big-pickle
-Signed-off-by: Rosen Penev <rosenp@gmail.com>
----
- v2: reduce overly zealous devm conversions
- drivers/tty/serial/mxs-auart.c | 127 +++++++++++++--------------------
- 1 file changed, 49 insertions(+), 78 deletions(-)
+On Sat, 2026-05-30 at 21:45 +0200, Danilo Krummrich wrote:
+> On Sat May 30, 2026 at 8:55 PM CEST, Markus Probst wrote:
+> > pin-init doesn't have enum support yet, so at least in my driver devres=
+ is
+> > still required for now.
+>=20
+> Hm...how is this related to having a registration type that takes a lifet=
+ime
+> rather than a registration type being wrapped in Devres?
+In order to register "optional" devices, the driver currently uses
+devres::register.
 
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index 697318dbb146..bbe30841ce2d 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -1470,34 +1470,22 @@ static int mxs_get_clks(struct mxs_auart_port *s,
- 		return PTR_ERR(s->clk);
- 	}
- 
--	s->clk_ahb = devm_clk_get(s->dev, "ahb");
-+	s->clk_ahb = devm_clk_get_enabled(s->dev, "ahb");
- 	if (IS_ERR(s->clk_ahb)) {
- 		dev_err(s->dev, "Failed to get \"ahb\" clk\n");
- 		return PTR_ERR(s->clk_ahb);
- 	}
- 
--	err = clk_prepare_enable(s->clk_ahb);
--	if (err) {
--		dev_err(s->dev, "Failed to enable ahb_clk!\n");
--		return err;
--	}
--
-+	/*
-+	 * Set mod clock rate while it is still disabled so
-+	 * CLK_SET_RATE_GATE does not cause clk_set_rate to fail.
-+	 * The mod clock will be enabled in mxs_auart_startup()
-+	 * and in probe after mxs_get_clks returns.
-+	 */
- 	err = clk_set_rate(s->clk, clk_get_rate(s->clk_ahb));
--	if (err) {
-+	if (err)
- 		dev_err(s->dev, "Failed to set rate!\n");
--		goto disable_clk_ahb;
--	}
--
--	err = clk_prepare_enable(s->clk);
--	if (err) {
--		dev_err(s->dev, "Failed to enable clk!\n");
--		goto disable_clk_ahb;
--	}
--
--	return 0;
- 
--disable_clk_ahb:
--	clk_disable_unprepare(s->clk_ahb);
- 	return err;
- }
- 
-@@ -1529,15 +1517,6 @@ static int mxs_auart_init_gpios(struct mxs_auart_port *s, struct device *dev)
- 	return 0;
- }
- 
--static void mxs_auart_free_gpio_irq(struct mxs_auart_port *s)
--{
--	enum mctrl_gpio_idx i;
--
--	for (i = 0; i < UART_GPIO_MAX; i++)
--		if (s->gpio_irq[i] >= 0)
--			free_irq(s->gpio_irq[i], s);
--}
--
- static int mxs_auart_request_gpio_irq(struct mxs_auart_port *s)
- {
- 	int *irq = s->gpio_irq;
-@@ -1549,21 +1528,13 @@ static int mxs_auart_request_gpio_irq(struct mxs_auart_port *s)
- 			continue;
- 
- 		irq_set_status_flags(irq[i], IRQ_NOAUTOEN);
--		err = request_irq(irq[i], mxs_auart_irq_handle,
--				IRQ_TYPE_EDGE_BOTH, dev_name(s->dev), s);
-+		err = devm_request_irq(s->dev, irq[i], mxs_auart_irq_handle, IRQ_TYPE_EDGE_BOTH,
-+				       dev_name(s->dev), s);
- 		if (err)
- 			dev_err(s->dev, "%s - Can't get %d irq\n",
- 				__func__, irq[i]);
- 	}
- 
--	/*
--	 * If something went wrong, rollback.
--	 * Be careful: i may be unsigned.
--	 */
--	while (err && (i-- > 0))
--		if (irq[i] >= 0)
--			free_irq(irq[i], s);
--
- 	return err;
- }
- 
-@@ -1598,24 +1569,22 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 		return -EINVAL;
- 	}
- 
--	s->devtype = (enum mxs_auart_type)of_device_get_match_data(&pdev->dev);
-+	s->devtype = (unsigned long)of_device_get_match_data(&pdev->dev);
- 
- 	ret = mxs_get_clks(s, pdev);
- 	if (ret)
- 		return ret;
- 
--	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	if (!r) {
--		ret = -ENXIO;
--		goto out_disable_clks;
--	}
-+	ret = clk_prepare_enable(s->clk);
-+	if (ret)
-+		return ret;
- 
--	s->port.mapbase = r->start;
--	s->port.membase = ioremap(r->start, resource_size(r));
--	if (!s->port.membase) {
--		ret = -ENOMEM;
--		goto out_disable_clks;
-+	s->port.membase = devm_platform_get_and_ioremap_resource(pdev, 0, &r);
-+	if (IS_ERR(s->port.membase)) {
-+		ret = PTR_ERR(s->port.membase);
-+		goto out_disable_clk;
- 	}
-+	s->port.mapbase = r->start;
- 	s->port.ops = &mxs_auart_ops;
- 	s->port.iotype = UPIO_MEM;
- 	s->port.fifosize = MXS_AUART_FIFO_SIZE;
-@@ -1630,21 +1599,17 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 	irq = platform_get_irq(pdev, 0);
- 	if (irq < 0) {
- 		ret = irq;
--		goto out_iounmap;
-+		goto out_disable_clk;
- 	}
- 
- 	s->port.irq = irq;
--	ret = devm_request_irq(&pdev->dev, irq, mxs_auart_irq_handle, 0,
--			       dev_name(&pdev->dev), s);
--	if (ret)
--		goto out_iounmap;
- 
- 	platform_set_drvdata(pdev, s);
- 
- 	ret = mxs_auart_init_gpios(s, &pdev->dev);
- 	if (ret) {
- 		dev_err(&pdev->dev, "Failed to initialize GPIOs.\n");
--		goto out_iounmap;
-+		goto out_disable_clk;
- 	}
- 
- 	/*
-@@ -1652,15 +1617,34 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 	 */
- 	ret = mxs_auart_request_gpio_irq(s);
- 	if (ret)
--		goto out_iounmap;
-+		goto out_disable_clk;
- 
- 	auart_port[s->port.line] = s;
- 
- 	mxs_auart_reset_deassert(s);
- 
-+	/* Mask all UART interrupts to prevent spurious IRQs from bootloader */
-+	mxs_write(0, s, REG_INTR);
-+
- 	ret = uart_add_one_port(&auart_driver, &s->port);
--	if (ret)
--		goto out_free_qpio_irq;
-+	if (ret) {
-+		auart_port[s->port.line] = NULL;
-+		goto out_disable_clk;
-+	}
-+
-+	/*
-+	 * Request the main IRQ after uart_add_one_port so that
-+	 * s->port.state and s->port.lock are initialized before
-+	 * the handler can run in response to a bootloader-left
-+	 * interrupt.
-+	 */
-+	ret = devm_request_irq(&pdev->dev, irq, mxs_auart_irq_handle, 0,
-+			       dev_name(&pdev->dev), s);
-+	if (ret) {
-+		uart_remove_one_port(&auart_driver, &s->port);
-+		auart_port[s->port.line] = NULL;
-+		goto out_disable_clk;
-+	}
- 
- 	/* ASM9260 don't have version reg */
- 	if (is_asm9260_auart(s)) {
-@@ -1672,20 +1656,13 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 			 (version >> 16) & 0xff, version & 0xffff);
- 	}
- 
--	return 0;
--
--out_free_qpio_irq:
--	mxs_auart_free_gpio_irq(s);
--	auart_port[pdev->id] = NULL;
-+	/* Disable clock – startup will re-enable when the port is opened */
-+	clk_disable_unprepare(s->clk);
- 
--out_iounmap:
--	iounmap(s->port.membase);
-+	return 0;
- 
--out_disable_clks:
--	if (is_asm9260_auart(s)) {
--		clk_disable_unprepare(s->clk);
--		clk_disable_unprepare(s->clk_ahb);
--	}
-+out_disable_clk:
-+	clk_disable_unprepare(s->clk);
- 	return ret;
- }
- 
-@@ -1694,13 +1671,7 @@ static void mxs_auart_remove(struct platform_device *pdev)
- 	struct mxs_auart_port *s = platform_get_drvdata(pdev);
- 
- 	uart_remove_one_port(&auart_driver, &s->port);
--	auart_port[pdev->id] = NULL;
--	mxs_auart_free_gpio_irq(s);
--	iounmap(s->port.membase);
--	if (is_asm9260_auart(s)) {
--		clk_disable_unprepare(s->clk);
--		clk_disable_unprepare(s->clk_ahb);
--	}
-+	auart_port[s->port.line] = NULL;
- }
- 
- static struct platform_driver mxs_auart_driver = {
--- 
-2.54.0
+I just released I could use KBox for this.
 
+Thanks
+- Markus Probst
+
+--=-J3TBuACv418SR6WDzXVz
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+
+-----BEGIN PGP SIGNATURE-----
+
+iQJPBAABCAA5FiEEgnQYxPSsWOdyMMRzNHYf+OetQ9IFAmobSSIbFIAAAAAABAAO
+bWFudTIsMi41KzEuMTIsMiwyAAoJEDR2H/jnrUPSt5UP/2PmXPIgSpVqQB/no6Fz
+p/Iagp0FLXfZ3ySm55ul1b0mbJ2APGd1BpYmFesZ15UNxcRT1qxPN0S/FIbcA7l1
+antRg1GsUDGhZq10vZHGu0WzkSSsarXDPPSMTuUyNRDKW5QpeHPFaW8tnh00YLWE
+lyHc2I2zufDaUYgasDzGGYkdoLJju2CUvxveor53NRadOR0oeucWJBdbYbaoLu/8
+0712ydGGYVhYm59oDy/PDSj5+z4u32x6ZWzlE1mNn+i2hlbbqilv/2NgjSRpOWpG
+trYW5Xx/QLwRTti0vq6yOQL+EUJoPrSLpuYWYR+0F07cgwHvPYXZ7UqRXO7loCF+
+IdF+4cD2UlVA/9disdoaHJHo1OD7mB4mWSh9gj0FXU3CBZqOnyD5jfrsPdA6mg8q
+Zd993cDLWgfb6Q5q2cm5lPvDFhDfFabUbNX84e9n+jLztu64U863ulywOENyFEWK
+OssV59alQL+Lp9/gZetN/uUzSfN3ygJnm89uDICvDNkHaOTihjBTzUnRWqjzpf1Y
+O2aAQceHHp6doheK4/k2/aLvxNDLNVgfi1kK4dVHRc5lENC3RABpGibCGHkYZ211
+OxzpKve03QPyXtZK8PRy5tYK7vytMQ35BmOUa70rb4CsJkoWdSrL8o7ekO53Z3Z3
+IxTXi+fNX+zoYVu3VUSczwAE
+=Ev/m
+-----END PGP SIGNATURE-----
+
+--=-J3TBuACv418SR6WDzXVz--
