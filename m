@@ -1,41 +1,40 @@
-Received: from mout01.posteo.de (mout01.posteo.de [185.67.36.65])
+Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE1CD311C36
-	for <linux-serial@vger.kernel.org>; Sat, 30 May 2026 19:25:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.65
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21A163242BE
+	for <linux-serial@vger.kernel.org>; Sat, 30 May 2026 19:25:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.66
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780169129; cv=none; b=rG4TYn0cmFB+oAa94yAJH8tOUHUiBgfcnJgEBAGl8Ysea1U8OKv4m1I8vlVgJB/n20ISRQ6msfwnlY9BuyQP5F6nIeANezD/DApxqTvtXIS32UQl3TI3kEF0SeRBd/0MvkMfu5QU4l9n3UJepnDU88CRYAVBWpkXSwCpo8Hx8Go=
+	t=1780169131; cv=none; b=k0LPYYCqyAtDsE2lNSj5STXhcETESq4ZmJDeg6SQ5RdnhU7Ob9rUwmDzF4zf+yGPTx6pLarDKhuU8K5bdh9v/pnS8mr+KBMG9Ol5TGdTSUwxBOa5lXTYqpigftWDXW0x+ucGyX/Iztq9sZwvtaXTaE0rAuWrsu2DjcpiCVWEAZM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780169129; c=relaxed/simple;
-	bh=kWHqDqopsoLEzI8G/1jRCL4n/V6ei1IvSJlqCr5mfNY=;
+	s=arc-20240116; t=1780169131; c=relaxed/simple;
+	bh=P+qqzzRwhI8B2ZhOfr+PVqRWtfVtS9KesBahL8YX4uk=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=rRHB6CoWggVDTBIx2Zlaubt+WFxJpqkwJgWrq/zCFcC7TOxvmuwr1tR48Vtm6U/oyrZfSr/sy3ZC9ut7r3U6hSpsfA5xuSefp0uQola/y4Qv8gVNwyVAK4N3i0Hb8fxccC2cab+eAAIGDC2WqhhoUkIc9QRZ9jqUlyRe8kWCjbQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=McpZff2W; arc=none smtp.client-ip=185.67.36.65
+	 In-Reply-To:To:Cc; b=lCi0V+p9g7cq+q406SckFPirNv/oIS/8zVV3VHrRjDcL2X+Zo5EQFPWyhhGFYVhtargis4+LxX5Cr7ZofmtXg/oGcf5adt4cMRWsMYg7gML/f9bdbSagiPV+wGjnASqE/pgHoFpu0k7hJEIcGkglbKcx7AWfzI6WBBwyWecfwPc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=owSIzHJK; arc=none smtp.client-ip=185.67.36.66
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="McpZff2W"
+	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="owSIzHJK"
 Received: from submission (posteo.de [185.67.36.169]) 
-	by mout01.posteo.de (Postfix) with ESMTPS id 71ACC240027
-	for <linux-serial@vger.kernel.org>; Sat, 30 May 2026 21:25:25 +0200 (CEST)
+	by mout02.posteo.de (Postfix) with ESMTPS id B88FF240101
+	for <linux-serial@vger.kernel.org>; Sat, 30 May 2026 21:25:26 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de; s=2017;
-	t=1780169125; bh=42VT4Web8p97shcBKx9x37MHs8bYsHswj1i8r6Hcv5s=;
+	t=1780169126; bh=SqEDsvTehTsmlHRK3kcALX6aeWf55kfJ4Kqinm0z8bs=;
 	h=From:Date:Subject:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding:Message-Id:To:Cc:Autocrypt:OpenPGP:From;
-	b=McpZff2W1YrYQEBF8au0n3Dw3R1W8Gu5uA89g20jjKm4mA23w27VvOrns8Ixj462A
-	 N475o/ackMftFwnKiwYRNae0FrHYwhiMsUSl5O3Kj6Wik17AWm/WWY942Aku4w033e
-	 9iEz8qhceACIbNqHaB6eTpO69PmLfqS+yeJ+xvCHrkqyUuzp+BANGnyGgNWLw4trzz
-	 Q8HlpJ3VBDi8uJRRVI8KV/rmpfWTsM4ay6MfG1ZWTx0B9/webGKhqgsFi191otj6vG
-	 6+MittqHwVKX6sLOkNohD4zY/ji5W/SoD4QoVZ1Ft6hehm7zYBr7kjszB4qNL0rn1I
-	 aAa2F5e4Z/eOw==
+	b=owSIzHJKnIo6oScOVQz74wV2YgLlsIK4jd/jXMVPSaRIDA7rD1+uwmN0SubnnF9Vv
+	 Rl9sf7pq266ulUShFQuI61xaCdBr22q2metnscFY0Hrb7h/9JSBnSOMpZKpB0sJL8A
+	 opmxjrGSx27mEjv9w9H/ZsJKMm3rvsxWexaLqxFMOzrhUS+B01vgATJMJPx7d7cWMp
+	 mUtc1NCKfKEreoWx+45WmxcRo0PyjH9MALWu29rzT1XZwySy5ub4OHoBBba0EIhnGQ
+	 LBG7cSR4hf2AAT2i19i7RD4MJ5Ku6B4S2TXruwqdqh2hFewAG4qneLmfE+O4s3CtKV
+	 ndkxLK8Mr/z1g==
 Received: from customer (localhost [127.0.0.1])
-	by submission (posteo.de) with ESMTPSA id 4gSVYZ6prZz6twY;
-	Sat, 30 May 2026 21:25:22 +0200 (CEST)
+	by submission (posteo.de) with ESMTPSA id 4gSVYc2Lt4z6twS;
+	Sat, 30 May 2026 21:25:24 +0200 (CEST)
 From: Markus Probst <markus.probst@posteo.de>
-Date: Sat, 30 May 2026 19:25:24 +0000
-Subject: [PATCH v10 4/5] samples: rust: add Rust serial device bus sample
- device driver
+Date: Sat, 30 May 2026 19:25:25 +0000
+Subject: [PATCH v10 5/5] MAINTAINERS: serdev: Add self for serdev
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -44,7 +43,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260530-rust_serdev-v10-4-65d1d5db876c@posteo.de>
+Message-Id: <20260530-rust_serdev-v10-5-65d1d5db876c@posteo.de>
 References: <20260530-rust_serdev-v10-0-65d1d5db876c@posteo.de>
 In-Reply-To: <20260530-rust_serdev-v10-0-65d1d5db876c@posteo.de>
 To: Rob Herring <robh@kernel.org>, 
@@ -64,21 +63,21 @@ Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
  rust-for-linux@vger.kernel.org, linux-pm@vger.kernel.org, 
  driver-core@lists.linux.dev, dri-devel@lists.freedesktop.org, 
  Markus Probst <markus.probst@posteo.de>
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4748;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=838;
  i=markus.probst@posteo.de; h=from:subject:message-id;
- bh=kWHqDqopsoLEzI8G/1jRCL4n/V6ei1IvSJlqCr5mfNY=;
- b=owEBiQJ2/ZANAwAIATR2H/jnrUPSAcsmYgBqGzmcU/cyu2oqvylsxAjZwDoEXAHXUla1qNma7
- vuXU3E0ctaJAk8EAAEIADkWIQSCdBjE9KxY53IwxHM0dh/4561D0gUCahs5nBsUgAAAAAAEAA5t
- YW51MiwyLjUrMS4xMiwyLDIACgkQNHYf+OetQ9JsTBAAiZ9KJiUuV7spKjOxb+ePnUW9BnUpesF
- PLvPC1ZuLBlOt+gTRkPPTlGksdHzfa2dLOGoSJ4jQ9y3e4Lq48cjGAgQHfUVJ/kEsTKR52FH406
- ia75jBDnenSK5pP9JU1BdGDb0fLmLR0Xob1KyPYgbvE8eP3vaB7EWzYAhFLZ+K0XoKf6OQNkqes
- i1yslrmlv92Lg5EwV9ijQA3YMEbf1dXOvBvNzhXdxJHuBF9UldREUc8EJ9GxJu5mzxwP9b3NF7p
- Vx5cemm8B0X4XKq84MExgZRiea2aWc4LCvbveaVU2tsideAZa9hAb+runAahv+ijToKvc1zYDFZ
- dZvoW1u5HQXn1WTRPoek6H4c0rHiMuEhnTv2GxR5K18vOdLxvRMOEUsmYOfCHEAvDe3+X1AnwQ1
- ngppD1xiIAWOEcYSdIAPXeM/tqcWaZxVmP9Z1hgRjMBORi2ADEGD0F5VNhlZNQ2rTb+4EBynLdx
- dAyFVXjX3Ls7ouyWINTQPx9NFtxsV2MNqSLln/PXz780rFn79GlclM0lNuNs3SHCTEKY9C6pO8U
- yfiKhqAx0gCHJOsYPDXFrTrs2nCYakBhqGckRQnA2TJwqhMgzzEY2itWtE4mcKsJKXlZvgGX8cc
- UnV4E9aNs/2mrLYC8b+sMackt37W64bLJX/tFVG4rMKRMOII4z70=
+ bh=P+qqzzRwhI8B2ZhOfr+PVqRWtfVtS9KesBahL8YX4uk=;
+ b=owEBiQJ2/ZANAwAIATR2H/jnrUPSAcsmYgBqGzmczOcVeRxR9VEJ4K+lErvgwmakc5mHb4JOS
+ x/BBhK3EtWJAk8EAAEIADkWIQSCdBjE9KxY53IwxHM0dh/4561D0gUCahs5nBsUgAAAAAAEAA5t
+ YW51MiwyLjUrMS4xMiwyLDIACgkQNHYf+OetQ9LbUg//Wq1mMxwl2+4mLTvvkSnrGq0n1EF4ybc
+ WUKYBteC8IG8gGBs3rGMJKRjYL7iaH3US+J1UKzGdzLnjesFHUoRp1rbPk7BX/JYU75EVLoetFL
+ AtbGsg9Sca5mGFFut8X4e1ohVe5qBNUf7IqvtYocwrySeTkO2l29koyyhaO0NeFvDU2kscC9u6Y
+ eya4dfnO6M3Eox+EZBqc+/q8F5vTq8TxsH6K0eQo28UZaudn4OXv9YW+2uhGgRBmLBFqemPeBGX
+ TQQAkzvReH5+D27WlKJ1nHsuYLM9ni3B2wO6FWQT1jotxTQ3KGrvr4LVykxMJJC2xNl3ZZDfY29
+ 64OOIPWmeece/YFy/LZYU4wJo8kqnM4vBljf6XHTG/a1l7H+JT2nlJu74J9pL3o6NzQBa+MBPOd
+ QXjDr2tNVszljhuHY/KcCaVhKAZjLrTI9jbTFsRpMAf+z5CUGO35lCtUkOaJbAhCRqZ4yaUfoXB
+ uMYWIycck3lY7quhiC/frP4cmIcEwJO1cG7EijZs2Y2YajVfbPm9qVxxCZdcuxXLnw4xGLK5OW+
+ Hiee2aTJ/64fzB7P7mvrV1IHwqB3uFbw2odNOhhyA/XlWmj+KjeIQN/wYqISrMhITZWUT4kXaO4
+ MPGVCmf2ER8n3Iig6FJ0umktHaVFTmTp1l7mX+AYbFqq0WSFMVoo=
 X-Developer-Key: i=markus.probst@posteo.de; a=openpgp;
  fpr=827418C4F4AC58E77230C47334761FF8E7AD43D2
 Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
@@ -124,163 +123,28 @@ Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
   aBeNN4ijKZchBXHPgVx+YtWRHfcm4l8=
 OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
 
-Add a sample Rust serial device bus device driver illustrating the usage
-of the serial device bus abstractions.
+Rob mentioned he needs to find someone else to maintain serdev.
 
-This drivers probes through either a match of device / driver name or a
-match within the OF ID table.
-
+Link: https://lore.kernel.org/rust-for-linux/20260430195858.GA1650658-robh@kernel.org/
+Link: https://lore.kernel.org/rust-for-linux/da85ceb81f51079d4a8248a1ffde6a27d2ef24ad.camel@posteo.de/
 Signed-off-by: Markus Probst <markus.probst@posteo.de>
 ---
- MAINTAINERS                        |  1 +
- samples/rust/Kconfig               | 11 +++++
- samples/rust/Makefile              |  1 +
- samples/rust/rust_driver_serdev.rs | 91 ++++++++++++++++++++++++++++++++++++++
- 4 files changed, 104 insertions(+)
+ MAINTAINERS | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/MAINTAINERS b/MAINTAINERS
-index d2f608ff8ca0..fa3f20f0cc4f 100644
+index fa3f20f0cc4f..58db6aedf45a 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -24278,6 +24278,7 @@ F:	drivers/tty/serdev/
- F:	include/linux/serdev.h
- F:	rust/helpers/serdev.c
- F:	rust/kernel/serdev.rs
-+F:	samples/rust/rust_driver_serdev.rs
+@@ -24270,7 +24270,7 @@ F:	drivers/iio/chemical/sps30_i2c.c
+ F:	drivers/iio/chemical/sps30_serial.c
  
- SERIAL IR RECEIVER
- M:	Sean Young <sean@mess.org>
-diff --git a/samples/rust/Kconfig b/samples/rust/Kconfig
-index c49ab9106345..31d62533ef25 100644
---- a/samples/rust/Kconfig
-+++ b/samples/rust/Kconfig
-@@ -161,6 +161,17 @@ config SAMPLE_RUST_DRIVER_AUXILIARY
- 
- 	  If unsure, say N.
- 
-+config SAMPLE_RUST_DRIVER_SERDEV
-+	tristate "Serial Device Bus Device Driver"
-+	select RUST_SERIAL_DEV_BUS_ABSTRACTIONS
-+	help
-+	  This option builds the Rust serial device bus driver sample.
-+
-+	  To compile this as a module, choose M here:
-+	  the module will be called rust_driver_serdev.
-+
-+	  If unsure, say N.
-+
- config SAMPLE_RUST_SOC
- 	tristate "SoC Driver"
- 	select SOC_BUS
-diff --git a/samples/rust/Makefile b/samples/rust/Makefile
-index 6c0aaa58cccc..b986b681cde5 100644
---- a/samples/rust/Makefile
-+++ b/samples/rust/Makefile
-@@ -14,6 +14,7 @@ obj-$(CONFIG_SAMPLE_RUST_DRIVER_PLATFORM)	+= rust_driver_platform.o
- obj-$(CONFIG_SAMPLE_RUST_DRIVER_USB)		+= rust_driver_usb.o
- obj-$(CONFIG_SAMPLE_RUST_DRIVER_FAUX)		+= rust_driver_faux.o
- obj-$(CONFIG_SAMPLE_RUST_DRIVER_AUXILIARY)	+= rust_driver_auxiliary.o
-+obj-$(CONFIG_SAMPLE_RUST_DRIVER_SERDEV)		+= rust_driver_serdev.o
- obj-$(CONFIG_SAMPLE_RUST_CONFIGFS)		+= rust_configfs.o
- obj-$(CONFIG_SAMPLE_RUST_SOC)			+= rust_soc.o
- 
-diff --git a/samples/rust/rust_driver_serdev.rs b/samples/rust/rust_driver_serdev.rs
-new file mode 100644
-index 000000000000..824affbf6593
---- /dev/null
-+++ b/samples/rust/rust_driver_serdev.rs
-@@ -0,0 +1,91 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Rust Serial device bus device driver sample.
-+
-+use kernel::{
-+    acpi,
-+    device::{
-+        Bound,
-+        Core, //
-+    },
-+    of,
-+    prelude::*,
-+    serdev,
-+    sync::aref::ARef, //
-+};
-+
-+struct SampleDriver {
-+    sdev: ARef<serdev::Device>,
-+}
-+
-+kernel::of_device_table!(
-+    OF_TABLE,
-+    MODULE_OF_TABLE,
-+    <SampleDriver as serdev::Driver>::IdInfo,
-+    [(of::DeviceId::new(c"test,rust_driver_serdev"), ())]
-+);
-+
-+kernel::acpi_device_table!(
-+    ACPI_TABLE,
-+    MODULE_ACPI_TABLE,
-+    <SampleDriver as serdev::Driver>::IdInfo,
-+    [(acpi::DeviceId::new(c"LNUXBEEF"), ())]
-+);
-+
-+#[vtable]
-+impl serdev::Driver for SampleDriver {
-+    type IdInfo = ();
-+    type Data<'bound> = Self;
-+    const OF_ID_TABLE: Option<of::IdTable<Self::IdInfo>> = Some(&OF_TABLE);
-+    const ACPI_ID_TABLE: Option<acpi::IdTable<Self::IdInfo>> = Some(&ACPI_TABLE);
-+
-+    fn probe<'bound>(
-+        sdev: &'bound serdev::Device<Core<'_>>,
-+        _info: Option<&'bound Self::IdInfo>,
-+    ) -> impl PinInit<Self, Error> + 'bound {
-+        let dev = sdev.as_ref();
-+
-+        dev_dbg!(dev, "Probe Rust Serial device bus device driver sample.\n");
-+
-+        if sdev
-+            .set_baudrate(
-+                dev.fwnode()
-+                    .and_then(|fwnode| fwnode.property_read(c"baudrate").optional())
-+                    .unwrap_or(115200),
-+            )
-+            .is_err()
-+        {
-+            return Err(EINVAL);
-+        }
-+        sdev.set_flow_control(false);
-+        sdev.set_parity(serdev::Parity::None)?;
-+
-+        Ok(Self { sdev: sdev.into() })
-+    }
-+
-+    fn receive<'bound>(
-+        sdev: &'bound serdev::Device<Bound>,
-+        _this: Pin<&Self>,
-+        data: &[u8],
-+    ) -> usize {
-+        let _ = sdev.write_all(data, serdev::Timeout::Max);
-+        data.len()
-+    }
-+}
-+
-+impl Drop for SampleDriver {
-+    fn drop(&mut self) {
-+        dev_dbg!(
-+            self.sdev.as_ref(),
-+            "Remove Rust Serial device bus device driver sample.\n"
-+        );
-+    }
-+}
-+
-+kernel::module_serdev_device_driver! {
-+    type: SampleDriver,
-+    name: "rust_driver_serdev",
-+    authors: ["Markus Probst"],
-+    description: "Rust Serial device bus device driver",
-+    license: "GPL v2",
-+}
+ SERIAL DEVICE BUS
+-M:	Rob Herring <robh@kernel.org>
++M:	Markus Probst <markus.probst@posteo.de>
+ L:	linux-serial@vger.kernel.org
+ S:	Maintained
+ F:	Documentation/devicetree/bindings/serial/serial.yaml
 
 -- 
 2.53.0
