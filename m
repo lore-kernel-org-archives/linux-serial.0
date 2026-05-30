@@ -1,103 +1,63 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9103B334695;
-	Sat, 30 May 2026 16:14:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1D65349AF5;
+	Sat, 30 May 2026 16:23:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780157678; cv=none; b=ugPutfByu1hkQpAkaP6D9rvlYnUZat0Y8nAoNEgs8xv3krWZAqTa5RzsbyYq6STlKmBlLaTYwsq7a3mVI52ffaGS+fZgio+fjK2+ocBHtGfajVqcjxpWhY7xByLMK1Nz4A8CjvO0xv+Y9hnKdrEzAx8GJozCrVyYEXZqreIU2nA=
+	t=1780158217; cv=none; b=kFaMNw3hhWnTp6ucwaOpdyocRx4eU8fb/gSQp2XFAPMOp7HkBF0dkMRzTGS0Tw0UaOAhFutp2i+tMVcf6+yjpgq9Pc70BZMSLbuvRq1uQS0In5my9zX4Wf6jnkNLE3hS9DINsq1riWZy6Sj8U88aVTr5oX4zldw0KdiLLX0x8Uw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780157678; c=relaxed/simple;
-	bh=a1HJb7wM7dbrPtrdf2u0hQIT9klNUXKK9GONYcrJZ5U=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Cc:To:From:Subject:
-	 References:In-Reply-To; b=UFpiE3soKE7D0kfoK9z7DloxKKJRgIs60cWQ3QRin+7QCfHVA2H1bBGZV/GKmQS3IVMM8XR1C2hoWjm4/+fg8lm4G0ycvEfwAsY10fgZRc+9xi2sLYnDUDxy2vCcE6sxILthOx4aRGXojhSHxM2WNmdRIuk4mIuirvBrnJNdKuc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZzINa+ig; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1780158217; c=relaxed/simple;
+	bh=H80q2/AIV/eYPLv9U/gOALNdM2clgJPFyRgelHd4ktU=;
+	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=gvNRBZeBAiZVI+vUzSHTVgOUvR7nJ4gSFx2A3Qa5ok4TLA9IIMkB4rz9pZVFsOrTO80SuU53EQc00A0ebMxfPR02aSfR3R56TMTZGmgvCYKXMicTIT7GOoKVOWinwExlYLWVScX8gUoLo5oSoFqTSk5BMx64b/vUeuKQgqRDPMQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BNdcNnzI; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZzINa+ig"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76F061F00893;
-	Sat, 30 May 2026 16:14:32 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BNdcNnzI"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3F001F00A03;
+	Sat, 30 May 2026 16:16:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780157677;
-	bh=a1HJb7wM7dbrPtrdf2u0hQIT9klNUXKK9GONYcrJZ5U=;
-	h=Date:Cc:To:From:Subject:References:In-Reply-To;
-	b=ZzINa+iguSKy5ptBu0K8zr01QzrekpsQEKMK9bwYi/o+eoydvuSChjmASxWo4TaAa
-	 lk2/CUWeM5DKzXYXBIjs3gRAT/O7Fffh0YjuoAr6WuAJyv/q5hyTS2dqBc80T5831+
-	 Bjs5StxZnh4+euTg/AGkxMSCWZ6Ud5vfVCS/PWkkq2bgzWppEyUmKho4tO6VnszErG
-	 AYpljMjadlXtHyli2PlfP2590MtcMep0Y9Q/8RVT3TvRknneCXg/Ie4euzCoGV83jY
-	 a3kT0kVpXm1mq2HnysvUG+SecQKOUQBhfki0OtdevNkcGo2XCZhsnYVA6XvdCdQY6N
-	 o/OnzP8fMXFng==
+	s=k20260515; t=1780157817;
+	bh=Hv88rvomQlCp58XwNToIsUPtPDjFBnqOXSFxwdr98wY=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc;
+	b=BNdcNnzIuK9QEwyhvV7FhVxae1cSfq/PcnfkhFZZ7ldEPYqj5kK4OrYX376Tb7l3x
+	 D+A95Uo74j+EQaQk+SI5lzhobAWrowRmhyEgiOstYu6ISg6nnK0MdHYulLfQC8BhjQ
+	 m489hIrUv4CGKuqwjH9KlOP1CqKrMclvl1svfHr1K4WEKB71wDr7SiDBcOgBzetamJ
+	 ZuT1iPyKwmrIM6Hk51jZSeF0TJMWsfTWY7yGI2jWxfXrNc9NznV2KRSSn4PEDgImZH
+	 R2q53PC/kux/ud1ViKsl8HQXNODXkMgWne0uL5zY6ScuFfXbEjak/UcYZWGYWjhrKv
+	 GXJ7H1szHgMsw==
+Received: from [10.30.226.235] (localhost [IPv6:::1])
+	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 569D1393021E;
+	Sat, 30 May 2026 16:17:02 +0000 (UTC)
+Subject: Re: [GIT PULL] TTY/Serial driver fixes for 7.1-rc6
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <ahrKEkbnYwF5TrRT@kroah.com>
+References: <ahrKEkbnYwF5TrRT@kroah.com>
+X-PR-Tracked-List-Id: <linux-serial.vger.kernel.org>
+X-PR-Tracked-Message-Id: <ahrKEkbnYwF5TrRT@kroah.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-7.1-rc6
+X-PR-Tracked-Commit-Id: e4240d8845445d58b4b96f7066adfe175a61bd0c
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 495fb8dd7f1da991c5325f4a0a50d0b042f19523
+Message-Id: <178015782092.2653560.2406984582081253789.pr-tracker-bot@kernel.org>
+Date: Sat, 30 May 2026 16:17:00 +0000
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Sat, 30 May 2026 18:14:28 +0200
-Message-Id: <DIW587AGXYCS.39MR1B4TVSO9@kernel.org>
-Cc: "Markus Probst via B4 Relay"
- <devnull+markus.probst.posteo.de@kernel.org>, "Rob Herring"
- <robh@kernel.org>, "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>, "Jiri
- Slaby" <jirislaby@kernel.org>, "Miguel Ojeda" <ojeda@kernel.org>, "Gary
- Guo" <gary@garyguo.net>, =?utf-8?q?Bj=C3=B6rn_Roy_Baron?=
- <bjorn3_gh@protonmail.com>, "Benno Lossin" <lossin@kernel.org>, "Andreas
- Hindborg" <a.hindborg@kernel.org>, "Alice Ryhl" <aliceryhl@google.com>,
- "Trevor Gross" <tmgross@umich.edu>, "Kari Argillander"
- <kari.argillander@gmail.com>, "Rafael J. Wysocki" <rafael@kernel.org>,
- "Viresh Kumar" <viresh.kumar@linaro.org>, "Boqun Feng" <boqun@kernel.org>,
- "David Airlie" <airlied@gmail.com>, "Simona Vetter" <simona@ffwll.ch>,
- <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
- <rust-for-linux@vger.kernel.org>, <linux-pm@vger.kernel.org>,
- <driver-core@lists.linux.dev>, <dri-devel@lists.freedesktop.org>
-To: "Markus Probst" <markus.probst@posteo.de>
-From: "Danilo Krummrich" <dakr@kernel.org>
-Subject: Re: [PATCH v8 3/5] rust: add basic serial device bus abstractions
-References: <20260530-rust_serdev-v8-0-2a95f1da22a7@posteo.de>
- <20260530-rust_serdev-v8-3-2a95f1da22a7@posteo.de>
- <DIW1B4FUIXO7.28GSUA0CEA4EV@kernel.org>
- <4638946fc49a38797b716ea173c93327eb751479.camel@posteo.de>
- <ad98dfb1d8469022519d37364e8a068bed3b5687.camel@posteo.de>
- <888dc39c52bb6ddac1a1eed7876c4573bdbef002.camel@posteo.de>
- <DIW2JUUL6A6J.96VI4IQN6HYU@kernel.org>
- <55eae11ea68f129508d0f7e30ac457ba919812b2.camel@posteo.de>
- <DIW34DX6BSUS.ANXBOP9687B0@kernel.org>
- <25dc9a4bbde0b542abf608be1b3305f1421a4502.camel@posteo.de>
-In-Reply-To: <25dc9a4bbde0b542abf608be1b3305f1421a4502.camel@posteo.de>
 
-On Sat May 30, 2026 at 4:51 PM CEST, Markus Probst wrote:
-> On Sat, 2026-05-30 at 16:35 +0200, Danilo Krummrich wrote:
->> On Sat May 30, 2026 at 4:27 PM CEST, Markus Probst wrote:
->> > This would work, but I don't see how it would get rid of rust_private_=
-data in
->> > this way. The device private data will but the private bus abstraction=
- data
->> > needs to outlive the devres callbacks (which is done by rust_private_d=
-ata).
->>=20
->> Why? You only ever use it in the receive callback, which won't be called=
- after
->> device unbind anymore.
-> Because the possibility exists that some classdev ops or Drop calls
-> e.g. sdev.set_baudrate. This is a null pointer dereference after
-> serdev_device_close has been called. I interpreted it to add a state to
-> the abstraction private data which would prevent those calls (early
-> return with error) after serdev_device_close has been called, but this
-> would only work if it outlives these calls.
->
-> But it seems you were refering to something else with the state?
+The pull request you sent on Sat, 30 May 2026 13:29:22 +0200:
 
-Yes, but I just notice that I'm a step ahead. With the lifetime model class
-device registrations shouldn't be guarded with Devres anymore, but with a
-lifetime.
+> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-7.1-rc6
 
-(This also entirely eliminates the need for having different devres stages =
-to
-prevent drivers from smuggling a newly created Devres object into an existi=
-ng
-Devres<Registration<T>>'s data, which would be unsound for obvious reasons.=
-)
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/495fb8dd7f1da991c5325f4a0a50d0b042f19523
 
-With this there is no way there are still class device callbacks after the =
-bus
-device private data has been dropped in the first place.
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
