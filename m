@@ -1,209 +1,205 @@
-Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
+Received: from OSPPR02CU001.outbound.protection.outlook.com (mail-norwayeastazon11023109.outbound.protection.outlook.com [40.107.159.109])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D18AB640
-	for <linux-serial@vger.kernel.org>; Mon,  1 Jun 2026 00:13:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.66
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780272830; cv=none; b=mBgcEi54Kw881NJeV+U7jM6f5OqfpVMpQXjG2f2Yw0+2wjDicLQNlJdkrO/5uANjB9tkM/JAzQW9Tc56nKqJQR4n2Aa5dakgKgv7vJBoBnX/5EmNb/J3KGFXx4Kc6CsM2nA7NI1iPmxALYGCAJjuQ/SGNP35QsaBd3lqvIdPHmQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780272830; c=relaxed/simple;
-	bh=58DM2kFGXRR5SmndG7V65q0M9IaBZ64o8CgjV+M6VW4=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=k+TbR9Fx2ejjLIovIehznp8gxM6IEaLRGHX5c1c1vVtdonzd5lgbv0Ku8X0ro62Vd95ygfqjl6cSEpP+yRLd5mF5XL7kHOMrDTE439guJ816Orq/GL9ORRS3EeQpERziW3RuCpV1JOHwPOTXaX5PaRsXgch4SttBQRhEH9q5aW8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=rGX3uobs; arc=none smtp.client-ip=185.67.36.66
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45E9233D6FC;
+	Mon,  1 Jun 2026 05:30:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.159.109
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780291865; cv=fail; b=ToJkvTCqD03uNvaiPp9kmaOV+ROEUC8nah3EC0HfazWTV1Ofkh+iEbhsV4jBcbj+bYRJJLn7q82QpS1vASlKKkc125O7ncIjK40HQ9xRpH6WGyt5NB2oOK9if8qrV431bFKKW5HmmopsJoM6aA5nE2O+QmnSe/dwBDtDLnO8NAE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780291865; c=relaxed/simple;
+	bh=tBxL/nsF3D0ekdNPr48/2G2tMAZ079l3EvEULj9yXGA=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=PB/rzzSffO3IqQfXEI0xq1Sf1DrIytsy8mVH+D6T1K2+86qn9e/SKuBnHSq51FYmNphQhHHBz9H/uBitp32X9AkupUqiwWNrIx33NKkm5Q/xcdX7gepEVJmHmUZU185syassHPGqfeCOCXRXp1SKCAmHR13J6fKndqAw6JdOvyk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com; spf=pass smtp.mailfrom=vaisala.com; dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b=FwqPRYQs; arc=fail smtp.client-ip=40.107.159.109
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vaisala.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="rGX3uobs"
-Received: from submission (posteo.de [185.67.36.169]) 
-	by mout02.posteo.de (Postfix) with ESMTPS id B93FF240103
-	for <linux-serial@vger.kernel.org>; Mon,  1 Jun 2026 02:13:46 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de; s=2017;
-	t=1780272826; bh=58DM2kFGXRR5SmndG7V65q0M9IaBZ64o8CgjV+M6VW4=;
-	h=Message-ID:Subject:From:To:Cc:Date:Autocrypt:Content-Type:
-	 MIME-Version:OpenPGP:From;
-	b=rGX3uobsJNPgjuOz2UMw14IrjFLfcBVZ5BqPQqTYw7daSKrrOx4cNGsZfO/Ip7yjq
-	 VbNtvt4wXslom4Rw9FmdGt6xvXOhqAFtnxZk4YcPvoHBRGhm/r3d6V1MhyWtc+rGlO
-	 oDOblvKAlza/5J2vLNJxQ6CeV6XhPHuvH7jGG5PwqBWzO9ZixEb4zVC3RDiKJcxz9b
-	 j0+P1m2patrY2OtMmwLWo7YDMSXlrc3J/BtYRaI1fzBnNeqq3wZVIS/QbDyXFRHMp9
-	 L7X2wAiIWGQV1nz4a99ORAF347NJCsF05d6BDdEyLU5N/3yc0doy3vtGMqk1LQtn8J
-	 273iMW/a4l+SA==
-Received: from customer (localhost [127.0.0.1])
-	by submission (posteo.de) with ESMTPSA id 4gTDvq6Y2sz6trs;
-	Mon,  1 Jun 2026 02:13:43 +0200 (CEST)
-Message-ID: <fda7602dc453231580be8fd7f8b56c7984b1efd1.camel@posteo.de>
-Subject: Re: [PATCH v11 1/3] rust: add basic serial device bus abstractions
-From: Markus Probst <markus.probst@posteo.de>
-To: Danilo Krummrich <dakr@kernel.org>
-Cc: Markus Probst via B4 Relay <devnull+markus.probst.posteo.de@kernel.org>,
-  Rob Herring <robh@kernel.org>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby	 <jirislaby@kernel.org>, Miguel
- Ojeda <ojeda@kernel.org>, Gary Guo	 <gary@garyguo.net>,
- =?ISO-8859-1?Q?Bj=F6rn?= Roy Baron	 <bjorn3_gh@protonmail.com>, Benno
- Lossin <lossin@kernel.org>, Andreas Hindborg	 <a.hindborg@kernel.org>,
- Alice Ryhl <aliceryhl@google.com>, Trevor Gross	 <tmgross@umich.edu>, Kari
- Argillander <kari.argillander@gmail.com>, "Rafael J. Wysocki"
- <rafael@kernel.org>, Viresh Kumar <viresh.kumar@linaro.org>, Boqun Feng
- <boqun@kernel.org>,  David Airlie <airlied@gmail.com>, Simona Vetter
- <simona@ffwll.ch>, linux-serial@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, rust-for-linux@vger.kernel.org, 
-	linux-pm@vger.kernel.org, driver-core@lists.linux.dev, 
-	dri-devel@lists.freedesktop.org
-Date: Mon, 01 Jun 2026 00:13:45 +0000
-In-Reply-To: <DIX7W3C7F1UZ.3P1LHOQSD5VMR@kernel.org>
-References: <20260531-rust_serdev-v11-0-dee8e0d830f1@posteo.de>
-	 <20260531-rust_serdev-v11-1-dee8e0d830f1@posteo.de>
-	 <DIWEXUCNLURG.136XXDBHSBNVR@kernel.org>
-	 <12fa6237168ecf6dc65ebf46118beeb5c51f3d1c.camel@posteo.de>
-	 <DIX6YVWRDL67.3TXDMTAMASCVZ@kernel.org>
-	 <7c30276759aaba8127275e602cb78783ec33bbe9.camel@posteo.de>
-	 <DIX7W3C7F1UZ.3P1LHOQSD5VMR@kernel.org>
-Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
- keydata=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
- jfGillcaQOqFZ3WwVqyzG1BUfTow==
-Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-bug7M99IW+HdQKCtqoS/"
+	dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b="FwqPRYQs"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=pFW6ggp5Im2fevAGi/w+tUBPXFrWST5Ye45j0RLr9+OPIao0yMc1/C882M5XcUZDIq6kGpBTkxHqwBeKvJVa/UN173KWlUmphUOFebDwZxr7zlnL0hnNT9GZzGWgwTWO0BftckOaLo9ghfYg8E3vPfduXXBfxgi3BwCZr2DC6LPprpaX8HZcmhuq41VOMrYE7W7ujj7/FWrE9eKaLVa2tXYyHcaKpkaNZhN092j836ZnxhoJPKsmCgyFxCgG6HEEoohRTUfT/X2r5Dmw6XdGslPahF+2Wvft2IJJ07ZGSrZfnMD35Oqdcy7oVnHGKUJXqDHAqV8ZnzNfVangBK/Kkg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=dJXPfHo0QXaefRosSrPser6fiYh9CmSsAi1hfAghps0=;
+ b=AqoZg3vQCsK9MKJqpFJn65K1l5tbRq8SVub8RmiC3XskN+2t14Db+/NV3CUvpX/szRgqrPaDnytP9Bdl1SlJszVxycyeWcNmZRDu50b8rICTw/7JBziXOhAeH30F5adE27ae4WPBk6/oHhLcZ1HD8jlXFp/bU4xFsc6U59cSk5XbSiRTC+Erkx/NBrnDBUswa4kK21/sTB/Hl2gjZKWsULrFqN44/GT3W8VgTx408iqT+z5aOAW7npNpWt16GHAezE05QC6AkC9G9GpjQu0FpGq9qpCePgfziXw8T8yKqGrRiN/Qe9hXJAJysj8WJ9tEOvTyCcpgU3RRemoQCXaUZw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vaisala.com; dmarc=pass action=none header.from=vaisala.com;
+ dkim=pass header.d=vaisala.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vaisala.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dJXPfHo0QXaefRosSrPser6fiYh9CmSsAi1hfAghps0=;
+ b=FwqPRYQsILvqdRC+a7T3e1a/lSG1W6Hsjf1TAty9ZYMulzhsrkgRzSKto57YxrW3QwJXQZpGUUst3KStgRti+TtV6YQ8queiwEfZ7ZNU8ChIzEqj6niDO7iu/Lc6oi3VyEPPyV6th9iH7lK4kvCL5if/EugQZHd1hO1JAk1jo8ycBp7oF5kTRAvc73jI69P05k3lYSU8FLYjBPw/7ZXBwPn2Q0Arm5PxTwX1I5SQiwdMuZ5yU/YWhwiPCYvfRTqPwwqExYWUTBhhOAUCdcrXG5tyvaC1VdrbJUH+zhrTeCOS/xIZ1RcZFnALkFeApCXAu8PyWifJ6mQwxOD+wRKh2g==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vaisala.com;
+Received: from AS5PR06MB9040.eurprd06.prod.outlook.com (2603:10a6:20b:676::22)
+ by PAXPR06MB7518.eurprd06.prod.outlook.com (2603:10a6:102:df::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.71.16; Mon, 1 Jun 2026
+ 05:30:54 +0000
+Received: from AS5PR06MB9040.eurprd06.prod.outlook.com
+ ([fe80::923e:d30b:98c0:c69]) by AS5PR06MB9040.eurprd06.prod.outlook.com
+ ([fe80::923e:d30b:98c0:c69%7]) with mapi id 15.21.0071.011; Mon, 1 Jun 2026
+ 05:30:54 +0000
+Message-ID: <a03a93a7-9d56-417d-b6c6-2640f913f948@vaisala.com>
+Date: Mon, 1 Jun 2026 08:30:52 +0300
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/3] dt-bindings: serial: maxim,max310x: allow per-port
+ subnodes for rs485
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ devicetree@vger.kernel.org
+References: <20260525-b4-max310x-rs485-dt-v1-0-e6c19b4d5592@vaisala.com>
+ <20260525-b4-max310x-rs485-dt-v1-2-e6c19b4d5592@vaisala.com>
+ <20260530-witty-snail-of-correction-a0a6f3@quoll>
+Content-Language: en-US
+From: Tapio Reijonen <tapio.reijonen@vaisala.com>
+In-Reply-To: <20260530-witty-snail-of-correction-a0a6f3@quoll>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: GVX0EPF0005F71A.SWEP280.PROD.OUTLOOK.COM
+ (2603:10a6:158:400::391) To AS5PR06MB9040.eurprd06.prod.outlook.com
+ (2603:10a6:20b:676::22)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS5PR06MB9040:EE_|PAXPR06MB7518:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2307aa75-a761-44cd-d065-08debf9ef35f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|1800799024|376014|7416014|22082099003|18002099003|3023799007|11063799006|4143699003|56012099006;
+X-Microsoft-Antispam-Message-Info:
+	4AKzYstfynoB15UCrJCvplWZOn/fDiNNZ5seXAKXUfTICeYLbIGS1tXzLuoU6mZzskW7xVcvgMoyue/UWSGdMz5Rd8SarxCoF9UmbiszdOc0C/91tTYRjYe/PhzJ9hAU5yYOqPFB+VX42VFndjsPGzzkSFnHtMpIinLuxNrNy3vNuzlFWdUahGDtC3ejLnrQRX/C/xz9Gy28eMWFCoXzKRSYd1I7HRjBXBv4TuY58bIqVN3a4Xw9iMJKexBzg9mRECpjlA/6nehTJdf3LA7oLFZJHvdkPmPD6JLPlynGil0KVCQ+PBDtkG1cvhAJLivLsWSlWAlu6qGeumVLIRNle3ethuZ+KCvCm76njkT3x+VV16SFAtVAKXbeyg9cvddZMAr2AhPCGCVP3/eg+ejkCQy25HO0JLYBgFjVhoCzPggXdP5kz29tUCwuYpvn+DBzDqHllihhSOFLZS79XBsmEKCwbqBzoq5zMoacN8G8GCG4rDBwUf0a6fcCgyPuGY6DDQ5aQ41vO8yT5GwZV6vnIpa2ZiBseME4y+fw7YxZQqo+B5uf4+hOgH45u2KkIZjB0xNqnM3CRu5v2iB4so34QB2Rspfr2aG0BFtrmyd5GkwyDP7KNvljanYFer6IcquQ49qgmnQ7H95m6wW6NZ+AfPkHkWqDTk6PZWhhcUGL2z9FFBcyoA4/XhlH7j2D3MeJFWWEKre43CMPvA5dRUFHpQ==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS5PR06MB9040.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(7416014)(22082099003)(18002099003)(3023799007)(11063799006)(4143699003)(56012099006);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?Q1dqTWRPR3BoTVNoSks3MWZyUVFPQ215TEptRkluWDlDRTJPYnVLaVk1eDkx?=
+ =?utf-8?B?TGRpd2VuRzh3TDN4UmJvYzU2K1I5OWE5bnRoMXg5QjA2UzFtZ0hydTV1T2dw?=
+ =?utf-8?B?TlMrK3FTazVPZlUwT05CWkdsYmxNVi9aUE5iY3ZMT0g5djZSVC9JczNENWMx?=
+ =?utf-8?B?bTFhS0JyNC9IZXhyQ1JDdWljT0U5cnNZNDZxMHJ4ZC9uQ3gzTitPY3pIRVlW?=
+ =?utf-8?B?UFBoYUw5a3hENnJYdGIybTF1cHlsaGs3ZlZzVDFsWEs5ckFYaEhOemp1Rjg3?=
+ =?utf-8?B?N0FxN2tHMDNtM2twcURtZ2Y3TzFlV1l6Z2ptRjJhakV6dHozanJsZlRWWjBQ?=
+ =?utf-8?B?QzJSUDd3d0tITjIyODhwRzI3ZWdETTlObHoyQlBDb2FQZ21TQUxSbEIycEl5?=
+ =?utf-8?B?bnFJNnBEeFBXRTZzZEppQzJ3UzBQSFM3dVpRWWx3RWZmSTVDbnYwdUdqWmpa?=
+ =?utf-8?B?RHZnMC91MitpOEpSOFFSQzNxUXBoU25seE5EYzRmYURDS3ZTcHpKODkzUExD?=
+ =?utf-8?B?SnZzSXZtU1I0VlJ4M0VLWVVHZjBMUnpTMW5OZnpkTzdkVE4wTEpLUWFiK2xJ?=
+ =?utf-8?B?OWRpQTVwZDhWZnhJY0JzZTQ0UzV6THJucGs5Mk1RUnBXTnNrWDlIL0dESjVo?=
+ =?utf-8?B?RC9vekN0NW1sYXhsZllzbDluNnFORDV4c1JOSTQycnZlQnpZV2JodGZKNUhI?=
+ =?utf-8?B?dUY5Nk42a2pobDJvcjVrcnErMEU0cmxiRWMvYkl1Mk0ySlByK3g5b3J2MjI5?=
+ =?utf-8?B?OVFxSkw0MVFEUWhoeUREdU1JdXMwbGRxb2hEclp1blA0cDZWMnVZV01pSEtT?=
+ =?utf-8?B?Rk8zR29SUGJlTXpsY29HVkJnRVR6N0ZCY1I2aEFqc08wa1owTS9LYW5kdDk3?=
+ =?utf-8?B?ZzdTSzJlSEZtdHczTmRMVmY1ZWNMQ2tDSlcvWk1EclU3ZGZsdHhmeW13K3Vk?=
+ =?utf-8?B?UlZJV3AwR05RcHhvVVZrRmFVVGVpRkdSRWpXbEY3UitjTTcvQk9Lb2lDanVx?=
+ =?utf-8?B?QW9JYmdZN0JzVHErQkFjU3JZSDNwR2xSWkxUSXlrSUltS1BIbU1uVHBaTGgx?=
+ =?utf-8?B?UWR6WVZST2RnUi9GRlRYNFU3ZlNDbkFoREtzWlNuREhCZVdrcmgrSXlnMi9q?=
+ =?utf-8?B?Z2M1N0xWeEhEdENmb1JnYm9NTDRqSkNqNHd6R05zWWtNSVA5TmVuYS80aE9m?=
+ =?utf-8?B?a3BaS3Y0UjhkRStjQThGbnUyMFdIM3UvWmRkY1FRTXBiRVhwRHVVL2lCa1F3?=
+ =?utf-8?B?cjMxY0ZPYWhDcng0S0o0NGZxK2kyVUdGeVZvRi8wYmJhZXBvNGNmT0FodEpV?=
+ =?utf-8?B?Y2xCQTB4S0JOTDZIWFMzSzgxblRMenFDYWd0dnZ4bktiaEtGemRmY2FZRkhS?=
+ =?utf-8?B?andvakszSUVYZUxDaWoxSkl4c3ZZQUd1U2NEODBhZmRMVkpkMWZDQ0g5R1Bw?=
+ =?utf-8?B?YzNXZlM1Y2l6RUg1WjNvTXYxSzhSM3lzdnFGUTNKM3Y2MVVOUGVadmhWVnhx?=
+ =?utf-8?B?MTd4MFRSWDNoTTJ5ZkxVajQ2cHM2V1hsQTZ2b1JDQ1VFM1F4cWtQb0o0TTBQ?=
+ =?utf-8?B?VGRsaFl1cTlkekJNcVp5SEc2UlpGT1Z3bGorditpWlZubWhRdlhXQTRQLzFW?=
+ =?utf-8?B?WDRybzNuc0k2dW1wRCtOdDE4bWo0VWorM2UvWnBoKzJZS01VMzBIUkMxelps?=
+ =?utf-8?B?WTVhdU10TGJZVnlIOXBUaHUyWjNqN0xqSGgzdHVRc09JOUlwOTFJSG4zMnlD?=
+ =?utf-8?B?Z0ptcmNQYXJqeXZzenNDZFMva2J1YVpFajZXUFRzQXJMVTNONGJ2aFZpZno5?=
+ =?utf-8?B?WkdzZnpXZHV0THAzZ1FMTHgxWlF3VUZzTkZlQTBYTUI4N2cvSDJ5aTBkSWlt?=
+ =?utf-8?B?dlJVRGcvYTJDUFBvazA2S0tTUXkvYzVSTElNQThONnJvZVdva2xvcWNqMzZi?=
+ =?utf-8?B?eHZMbEJlbndjVnBaZE9ndHdnaDBXUlE2dDJNM1VlQkM2Um9DUDN3YzZqTmJ2?=
+ =?utf-8?B?Qy9hYk1RbENWaHJUdktsbDhUTm92eWRKTFkvS3JIUXROVFJBNkRBcmVVMjU4?=
+ =?utf-8?B?Y0ZvT1JVYTVZTmEzY3g5SnFUNjcydFNmbGVRVC9MV2xzenQ4d0IwemdsTTNW?=
+ =?utf-8?B?b3UvNUk1YkpXQW56R0F6VW1lNmVBVUI1K3ZaV1ljV1U1KzJaVVYwb2RrZ0tU?=
+ =?utf-8?B?eWNEWWsrTExsdEhZOWx2RXBYNEF2aEw4UkhINUZqUkZDZTc5MXNobEVNU2tn?=
+ =?utf-8?B?ZVAraGw3ZURCMTRVaWY3OU9Pc0U5eVJWa3JNOVRSUjJ0K2ZRRjExU0lnOEov?=
+ =?utf-8?B?TWU1RklRTDFkVG5STEgybUwvMXhTVVpJSTlxUmhkL0FsejJjNWlmMW9zR3ZE?=
+ =?utf-8?Q?T4yv054ZHmw27ZyI=3D?=
+X-OriginatorOrg: vaisala.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2307aa75-a761-44cd-d065-08debf9ef35f
+X-MS-Exchange-CrossTenant-AuthSource: AS5PR06MB9040.eurprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jun 2026 05:30:54.3253
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 6d7393e0-41f5-4c2e-9b12-4c2be5da5c57
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: nw/krONvs6eLkWcOeFLKkxaY6JcWTQFjtb97cJ+Mpxu1gavoxuILzK9luU7dGFGAJwQ4GQQqmxSKSPLgn3W5W/sJ/E9idFKoVYyEFg80bzQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR06MB7518
 
 
---=-bug7M99IW+HdQKCtqoS/
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Hi,
+On 5/30/26 14:26, Krzysztof Kozlowski wrote:
+> On Mon, May 25, 2026 at 09:43:38AM +0000, Tapio Reijonen wrote:
+>> The MAX310x is a multi-port UART (up to four ports). The existing
+>> binding pulls in /schemas/serial/rs485.yaml at the top level, which
+>> only describes a single port - sufficient for max3107 but ambiguous
+>> for max14830 where each port can have its own RS485 wiring.
+>>
+>> Add a "port@N" pattern (N = 0..3) carrying rs485 properties on a
+>> per-port basis. When port@N subnodes are present, the chip node also
+>> needs #address-cells = <1> and #size-cells = <0>; allow both. Top-
+>> level rs485 properties remain accepted for compatibility.
+>>
+>> Signed-off-by: Tapio Reijonen <tapio.reijonen@vaisala.com>
+>> ---
+>>   .../devicetree/bindings/serial/maxim,max310x.yaml  | 60 ++++++++++++++++++++++
+>>   1 file changed, 60 insertions(+)
+> 
+> That's a total mess now in the binding.
+> 1. maxim,max3107 does not have ports, but you add there. You need to
+> constrain (see writing bindings) or split.
 
-On Mon, 2026-06-01 at 00:32 +0200, Danilo Krummrich wrote:
-> On Mon Jun 1, 2026 at 12:00 AM CEST, Markus Probst wrote:
-> > On Sun, 2026-05-31 at 23:49 +0200, Danilo Krummrich wrote:
-> > > On Sun May 31, 2026 at 9:42 PM CEST, Markus Probst wrote:
-> > > > I just noticed, is it even possible to use SRCU here? Currently the=
- mutex not
-> > > > only ensures that no drvdata access happens after drvdata drop, but=
- also that
-> > > > the receive_buf waits for the probe to complete, as the drvdata has=
-n't been
-> > > > initialized yet.
-> > >=20
-> > > Yeah, if you drop the completion, you need the mutex.
-> > Is the performance impact on an mutex or on srcu + completion higher?
->=20
-> Weighing in the completion, the mutex probably wins as it will always be
-> uncontested under normal operation.
->=20
-> > >=20
-> > > (In case it wasn't discussed in previous versions already, there is a=
-lso the
-> > > option to just attach separate private data to the receive callback, =
-which would
-> > > avoid this synchonization problem in the first place.
-> > >=20
-> > > You could have serdev::Device<Core>::open(), which takes its own priv=
-ate data
-> > > and a corresponding close(), this way you'd allow drivers to control =
-whether
-> > > they want the serial line "open" or not. You just need to make sure i=
-t is closed
-> > > eventually.)
-> > This would add complexity with types, as we need to ensure that write,
-> > set_baudrate, set_parity etc. does not run when closed.
->=20
-> Right, but looking at a few serdev drivers, there seem to be a few cases =
-where
-> drivers need to close and re-open.
-That is something we could consider once there is a user.
+You're right, the port count is part of the ABI and I left it
+unconstrained. In v2 I'll constrain the subnodes per-compatible with
+allOf/if-then in the one file: max3107 and max3108 are single-port and
+take only the top-level rs485 properties (no subnodes); max3109 allows
+indices 0-1 and max14830 allows 0-3. An out-of-range port will then
+fail validation instead of being silently accepted.
 
-I am certain it would make it more complex, not less.
->=20
-> > > That said, I don't know what turns out to be the better approach. And=
- maybe it
-> > > simply isn't something this initial series has to tackle? I think you=
-r driver
-> > > does not implement the receive callback?
-> > The initial driver with only leds: no.
-> >=20
-> > That changes once the driver also takes care of hwmon (ADC sensor and
-> > fan failure) and input (power button and possibly other buttons).
->=20
-> Maybe drop it from this initial series then and revisit with the first us=
-er?
-I would prefer it with this series.
+> 2. So where do you place serial devices? Did you validate any of this?
 
-Except for probe and remove there should be no overhead if receive_buf
-is not implemented.
+Good point, and it made me reconsider the node name. I'll rename the
+subnodes from "port@N" to "serial@N" so each channel is a proper serial
+node per serial.yaml -- that matches the device class, frees the "port"
+name reserved for the graph binding, and gives an attached serial slave
+device a place to live under the correct channel, which "port@N" did
+not. The driver match in patch 3 changes to of_node_name_eq(np,
+"serial") accordingly.
 
-As it will be needed eventually and it is basic serdev functionality, I
-don't see a reason to not include it now.
+I also looked at whether subnodes are the right shape at all, since the
+sibling sc16is7xx (dual-UART, same driver author) does per-port config
+with top-level index arrays (irda-mode-ports,
+nxp,modem-control-line-ports) rather than child nodes. That idiom works
+for simple per-port flags, but it doesn't extend to RS485: rs485.yaml is
+a rich standard schema (several flags, the rts delays, rs485-term-gpios)
+and flattening it into vendor index-arrays would mean redefining common
+properties instead of referencing them. So a per-channel node that
+$refs rs485.yaml seems the only clean carrier; I just had the node name
+and the per-compatible constraints wrong.
 
-Thanks
-- Markus Probst
+On validation: the schema and the example do pass
+   make dt_binding_check DT_SCHEMA_FILES=.../serial/maxim,max310x.yaml
+and the series was tested on max14830 hardware with per-port rs485 and
+termination GPIOs sourced from the chip's own gpio-controller. But I
+take the structural point -- passing the check didn't make the layout
+right. I'll respin patch 2 (constraints + serial@N) and the patch 3
+match for v2, with an example that exercises a multi-port variant.
 
+> 
+> Best regards,
+> Krzysztof
+> 
 
---=-bug7M99IW+HdQKCtqoS/
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
+Thanks for the review.
 
------BEGIN PGP SIGNATURE-----
-
-iQJPBAABCAA5FiEEgnQYxPSsWOdyMMRzNHYf+OetQ9IFAmoczq8bFIAAAAAABAAO
-bWFudTIsMi41KzEuMTIsMiwyAAoJEDR2H/jnrUPSZ+0P/2ylwrHvfHKKiTVBl/XF
-UL+HU/pmQkc3qwxSFyW3P7DLtY10V0r8kzPH2o35AC24avXePqjgo8hW2A5zAGqO
-u2gh9IV2XNBUKsF1CpV6bGaw/xCd3iUdmS8R8sIJfoNQJFj/EjDpL0SecHKz0iVd
-ARYzYY+xPCHLPGz8dxtGLgHq1pU4kIafkJ0K2+TYmSDVA9PRPlqhKgxDsWtFWVMb
-MnK6e+4HAqJaVNpITF7YmojKKIObqCmv8RnQWon6MaSQp1QK7F9b7Szyz1jN6435
-iXMUcatC+McjLHNTvnRJgn0G50CNFX+/ETmnGHH6VVt/Mf4M+55B6HV9ziq72RD0
-jnczWTHHTZwDgNjPgqQgRjeOOWHuKu4T9QKpJclOlcg6F3dmP7SYNTKX6iYYk1QQ
-1cjwkUShY8HfcdcyWBf2ME3+D2fj73z/f59y/gFgIfKcMZGNuUHdbMTgGpUm9tcj
-GDgupxz7qS+CKzEBHzySTp9gKg6xzvA4gTcvzjoAk+3RrLhtFL/kFa8jvB5pvwlh
-CO1GwHsgiR6pPzqj4pAFI/JDF2/gcIMeOERTNAuAz1In8LpLCRzJuMFkmXXJ/XRy
-NYZyHMUT0PzUmfA1869YY2zN+FIRV0ykMAp0aKV4HhWm5qQpb3HYmGRMOhOJriVI
-sTK0zERHauHUMCm8i58Nnlf1
-=TScp
------END PGP SIGNATURE-----
-
---=-bug7M99IW+HdQKCtqoS/--
+Tapio
