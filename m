@@ -1,107 +1,89 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com [209.85.161.71])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 611A6364EAA;
-	Tue,  2 Jun 2026 20:20:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 446623016E3
+	for <linux-serial@vger.kernel.org>; Tue,  2 Jun 2026 20:32:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780431660; cv=none; b=lAQj19U8C8upntwIKNG8M9CMkGP7HvRTyaqobl0zk7be5HhjoZvS7BzOLxFTcUJm7y70m7eLqcIBStI2usRfyKhN1osVfiQD/6G1/L9flHQbTwIK3DS1w1luqAQdrkLmgVEsybJO8QFTAR0DT15wLPZB8f95qFj84yuMmBgR5fc=
+	t=1780432349; cv=none; b=Nle9N7vVA35D/x+53mo4h2el/Dzkjt7tRI6cLMsYMWSH3kCb7D1M4aujiQby9fW1tlRtz6gSaT0IyfoZkWVKd7DAUNrmudF/rg8KA6vyzlIBd2sVBNHWoVJKyHSuTdEwKLnMmQBIPPm+3noXqX0HrRer54J7YiTRYOqrfOXti20=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780431660; c=relaxed/simple;
-	bh=CdikHq43MH5fg9/sOKV6gFLArZkeniXGW/8IqrhgMRQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rWMGSHbpp9eYT90VhcWJiZ2o1CaAnpxYakfoBc1it5P29vTl/qpAJ/0R3eh2NZiO4VVqtibyyPGzyZ9iZUUb7vx9md6Ed59NDRarDA59y6Xh/JIEglWmpXWdvuRcCHB/QvD0+DLos08KYb1D3CNTw5PKRH5IkAX+C0M5yfvqbdc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Lmbata44; arc=none smtp.client-ip=192.198.163.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Lmbata44"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780431660; x=1811967660;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=CdikHq43MH5fg9/sOKV6gFLArZkeniXGW/8IqrhgMRQ=;
-  b=Lmbata44/6xaIWpjQ2FLM+TMHKcp/g4QY+x5uadsMeqQHWTrzFkW6BcC
-   nhhoF4w/u+aBXz7fz99UWm0pYJ5WwUpbZtFksIqtkrzjBh76rXHDLEz5l
-   /BOZFDq+3usnajzL8VhZMIcbXHtepb/V4KslzRHTuO9/S/npdK03b55f3
-   kVct4VESEn+aC7iWfpRuHbum4UxUHYTWN9VTCcPKQNrLXyXwHh0VW3545
-   UUvELDEFXCAlhP6VlJ0tqnfOCNGeLiGldpTZP1CB0qYDsmsGZyjHuNtW+
-   VJyRZf36zifqTcaNuH+vp2zzShhbVVz2GG1Ddd7QcznXL/Flzg245dIKG
-   w==;
-X-CSE-ConnectionGUID: /lWEYqY5TZGBlV/GOSpzPg==
-X-CSE-MsgGUID: NPBWaqG9TUOPUG+nhWpB8g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11805"; a="81089513"
-X-IronPort-AV: E=Sophos;i="6.24,183,1774335600"; 
-   d="scan'208";a="81089513"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 13:20:59 -0700
-X-CSE-ConnectionGUID: 7wAwoq4WR9GfWn1gnsgTXQ==
-X-CSE-MsgGUID: tf9IJ+BMTZufuk56wyM69w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,183,1774335600"; 
-   d="scan'208";a="245822834"
-Received: from black.igk.intel.com ([10.91.253.5])
-  by fmviesa004.fm.intel.com with ESMTP; 02 Jun 2026 13:20:57 -0700
-Received: by black.igk.intel.com (Postfix, from userid 1003)
-	id 7D8F295; Tue, 02 Jun 2026 22:20:56 +0200 (CEST)
-Date: Tue, 2 Jun 2026 22:20:56 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Markus Schneider-Pargmann <msp@baylibre.com>,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] serial: 8250_pci: Consistently define pci_device_ids
- using named initializers
-Message-ID: <ah87KOm0nfAyvr4c@black.igk.intel.com>
-References: <20260428144033.1037617-2-u.kleine-koenig@baylibre.com>
+	s=arc-20240116; t=1780432349; c=relaxed/simple;
+	bh=H2gkJR24pry5U4LjfE9+pFHWEyrXWujhLtUcny7ZOLA=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=s1gw9fVgfN3tndfRTxV0UBYWwzNnmPytJ4v27I7toHgEm3QvTWEH3jJBc9JihWr8N/4H1C3LJY278B63+lazX8Y4rtWazCK74wQ+ZLwJDmVsrqBOfHlLbweI7hI/C9znYPS6af0zzVv48rEEDqrU2i1Miyvcr+BjVZAKiEJoen0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.71
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oo1-f71.google.com with SMTP id 006d021491bc7-69d6b83becaso15334162eaf.2
+        for <linux-serial@vger.kernel.org>; Tue, 02 Jun 2026 13:32:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780432347; x=1781037147;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=0VsFzeDjTwAUyw0QkQexIXGaMwUsKu5Ktl1KgQY4+EA=;
+        b=m/RooLG52UFgcZpLLobAYOkLiZJeAohJlhSH5ofK73e/tFu4BesBu5QMtgKNyRXh5k
+         OCq7KoDu4aLvQU/6KUiyeTcUKWCROXbAnt2zHZVAHpKzKbDLGI5lKD+zZjwJOPk40YAK
+         MQ4nFfvZoyY/RXVyRkfUKjQNXx+OekQzJBzKurOAVg7ZT7enBLzClpsgPgQvFDvEzKRY
+         LpT/uVcwy0YDok2RhbbJXzm9vAb2YC3iZqEwnaw8H6z7CSOGgG/TtH0FPiykLDzD+aq/
+         TZNghmPOS+tyul5f2V5lgu7rQhE5tpoOGxCdhYdyZxBDC/+gJc0el1O/guIsSJ979pY2
+         w/Tw==
+X-Forwarded-Encrypted: i=1; AFNElJ+SUIDUpT8wGA2+jePnJpsM6Y6p1h6EBQ8eIZaP4p7vIF45rZydC644q3KHZL/BxiRe/Dh13LoyLtJEAWY=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzt4J/oG8xQR14KjxiX97ELoFbnD6IOpuCQw2sGvL2Rxsd/7Xua
+	sOb/WVOZ+zUCmhruth0yFLZfSRejYcYk3/IS/Qj5yRIRxrwVygcZVwQb/N3wLfcJWd9W8L/5Fra
+	UJQgmuLFzYPFSdCx7K2irfc1G74zF+wozrkE4H3bU4KTqqAJ+gfvcpnjVYAo=
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260428144033.1037617-2-u.kleine-koenig@baylibre.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Received: by 2002:a05:6820:61c:b0:69d:82e6:69d6 with SMTP id
+ 006d021491bc7-69e47ec335amr483722eaf.21.1780432347445; Tue, 02 Jun 2026
+ 13:32:27 -0700 (PDT)
+Date: Tue, 02 Jun 2026 13:32:27 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6a1f3ddb.7b89b7e1.205e57.0009.GAE@google.com>
+Subject: [syzbot] Monthly serial report (Jun 2026)
+From: syzbot <syzbot+listf633da172023c35927ca@syzkaller.appspotmail.com>
+To: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 
-On Tue, Apr 28, 2026 at 04:40:33PM +0200, Uwe Kleine-König (The Capable Hub) wrote:
-> ... and PCI device helpers.
-> 
-> The various struct pci_device_id were defined using a mixture of
-> initialization by position and by name. Some use the PCI device helpers
-> (like PCI_DEVICE and PCI_DEVICE_SUB) and others don't.
-> 
-> Consistently use named initializers, drop assignments of 0 by position
-> for .class and .class_mask and use the PCI device helpers. Also use
-> consistent line-breaks and positioning for opening and closing curly
-> braces.
-> 
-> The secret plan is to make struct pci_device_id::driver_data an
-> anonymous union (similar to
-> https://lore.kernel.org/all/cover.1776579304.git.u.kleine-koenig@baylibre.com/)
-> and that requires named initializers. But it's also a nice cleanup on
-> its own.
-> 
-> This patch doesn't change the compiled result; this was verified using
-> an allmodconfig with several things disabled that make reproducible
-> builds harder on x86 and arm64.
+Hello serial maintainers/developers,
 
-This patch broke the build.
+This is a 31-day syzbot report for the serial subsystem.
+All related reports/information can be found at:
+https://syzkaller.appspot.com/upstream/s/serial
 
-drivers/tty/serial/8250/8250_pci.c:5398:12: error: initializer overrides prior initialization of this subobject [-Werror,-Winitializer-overrides]
- 5398 |                 .class = PCI_CLASS_COMMUNICATION_MULTISERIAL << 8,
-      |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-include/linux/pci_ids.h:74:45: note: expanded from macro 'PCI_CLASS_COMMUNICATION_MULTISERIAL'
-   74 | #define PCI_CLASS_COMMUNICATION_MULTISERIAL 0x0702
+During the period, 1 new issues were detected and 0 were fixed.
+In total, 16 issues are still open and 48 have already been fixed.
+There are also 3 low-priority issues.
 
-and so on...
+Some of the still happening issues:
 
--- 
-With Best Regards,
-Andy Shevchenko
+Ref Crashes Repro Title
+<1> 196     No    possible deadlock in kbd_event
+                  https://syzkaller.appspot.com/bug?extid=781c8bb5e4d62cc883d3
+<2> 62      No    KMSAN: uninit-value in n_tty_lookahead_flow_ctrl (2)
+                  https://syzkaller.appspot.com/bug?extid=290abdcd4f509377a0eb
+<3> 10      No    KASAN: slab-use-after-free Read in kbd_event (2)
+                  https://syzkaller.appspot.com/bug?extid=098cefc0911c68db5dab
+<4> 3701    Yes   KMSAN: uninit-value in n_tty_receive_buf_standard
+                  https://syzkaller.appspot.com/bug?extid=559c7fe4b8bac56d38c2
+<5> 359     Yes   KMSAN: uninit-value in n_tty_receive_buf_closing (3)
+                  https://syzkaller.appspot.com/bug?extid=dd514b5f0cf048aec256
+<6> 137     Yes   possible deadlock in tty_buffer_flush (3)
+                  https://syzkaller.appspot.com/bug?extid=52cf91760dcb1dac6376
 
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
+To disable reminders for individual bugs, reply with the following command:
+#syz set <Ref> no-reminders
+
+To change bug's subsystems, reply with:
+#syz set <Ref> subsystems: new-subsystem
+
+You may send multiple commands in a single email message.
