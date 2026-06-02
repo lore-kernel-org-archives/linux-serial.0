@@ -1,201 +1,200 @@
-Received: from AM0PR02CU008.outbound.protection.outlook.com (mail-westeuropeazon11023121.outbound.protection.outlook.com [52.101.72.121])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB867366831;
-	Tue,  2 Jun 2026 10:02:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.72.121
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780394576; cv=fail; b=XW+6Fgk1kY1dISNob9kp7P/x5L/wr9aQe27N8xVTrXybe9T/e8PmTOXYfh6+kMjJwcrIqj1jKptN6xj+ZA4+/kbvlwy3sk2oJLVrWn/2Yj1K8w7wy5yxn7jR76vNHosl2VVZsrQxltv66dXygl6f2bABQTu4/mxfyp5cx34Kc8g=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780394576; c=relaxed/simple;
-	bh=SfokXHTQ+tD6NPsEKIdZf+UApwyv/PghP8ZmxYLvvsc=;
-	h=From:Date:Subject:Content-Type:Message-Id:To:Cc:MIME-Version; b=Nf4niLxY+Y+NCzzXXWWW9H2IZWe0AGG0kxBHRWzUKxcJRd5Qq1mMx7wL4ixQTjAuwVjy5njcKaBx2481XyeI+70bPKKTnLGwNxHmrx2pm/ELO4NJuoZu3nhOltHifrB4lhrRdf2BTUNeXXhECqEvrQOtkmlB4vxT6cZ4gEqB208=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com; spf=pass smtp.mailfrom=vaisala.com; dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b=ZGvq/cnM; arc=fail smtp.client-ip=52.101.72.121
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vaisala.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68C4B36A03A;
+	Tue,  2 Jun 2026 11:27:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780399631; cv=none; b=YGSKUDZVmOvrSjOK37t8/orP7PGEimetOYIVjhZTXRwprO81+zT5ZhH+pEsysVq8bF/O76rMGd+JJKO8h6mc1yopRItik2yxTvHO7MVqf6/iESuWJV/oEFiI5/P0bI8+B34GlQNSg85fYw5jlDv8Oe9lMiCB4XPWDgryfyKnKFc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780399631; c=relaxed/simple;
+	bh=vFe0YHJbZeLES+sUauMUh5hZ46dD8ew9Ej6lDFLoT9Q=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Rr6jO1fByXYRx+tKEK7oTG4goSfF7waXcXdlLuctriRPjvmmYXgrxRRMfeZmLjnhcsB26z04C5zk7rXis6u4wOAZSP+LWrbDBXU493YwRtXD1OrEKJ9qdFg/28FfxBFreuc3DLPZS1xXWQ44/bD7tNJ5VtEr6kS4PNen2nqbcK8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OpuvB+TC; arc=none smtp.client-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b="ZGvq/cnM"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=YSp5JZIwNBYPPvAJkBXmPtnduHknQKlWzTsFAgy6DiYBNJ9oVvx3ee2PIwHq2cQo/R3oOX6xVgJ25xpxMyfEWGc06Su4LFD8+hEb3SCAx04G6LhOF3+apdjzFVE+XLI1DS+RWMurdZstmKkELRDz0iSYlUihvmwR/DPfRKGxO9iEnpUtubV9sScral5iPg5+gJEFO0xdqsy9kv6P2D9n1M1Rnqop7XEtxekpLgZtQDKoxldDTtOCHr2CQ4vkwyMYrKxLz4+Y+RZTv9D2oZTTxIyFIamvtFH+IiwJq/7XEHP9vC944HmacHAxgBMKhigL/0TdcMKJgm4QmJKvkYFMkA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=H1mWYNEhdWt91c01crR2drCFoLOFMBR7gf6DJjxSUB0=;
- b=Ht6KaRCi+iKrF2tEKtjVUCHHPHf+Sd5+9906DVVsOON6tzv8DJ8leLpsn4r7xCYdlzzsDxhxsVaO9roJEDsazkJi424eYRvOedGEW/gJB9Yt/KLIeDaGVqyP5+exwL9n+nbw5OikKFO14zvuJyGWWaHFCQ4/SADMgPmOn56ahFoSbSoIK/Czm+1O8Jflew6znsx2Q+KpfAN0s+arot7Sg6oKsEd2ZpNzWp8ykguzZCpuPN2R7trLDfdh5RB28LtmRC+L/lkwk9H5rPEflHApCE0UuJfNJV9tFOeslyH9dJDi61UjyRMX0xueCMQryOSJpGtCHAEAf5RFsx+5Y8gQvA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vaisala.com; dmarc=pass action=none header.from=vaisala.com;
- dkim=pass header.d=vaisala.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vaisala.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=H1mWYNEhdWt91c01crR2drCFoLOFMBR7gf6DJjxSUB0=;
- b=ZGvq/cnMnbqHKpGAh31O9PJRh4KugTqDSfWfl7ZMFCmVdExiEREhUf4P/X/y1EflwhBNjWVCRl6VuOGwJq54Cs6uA1n+1D0L5/nJtLfJQaWF3D38RorgREJq0ShKr3tJjrhpTQCvswPXwZ3Ko+cF2Esrveze4+q7xaNZ8XLJkwnfA01UTkfCwOMG/W7iSNS+bTsu+SCFp0BUCDgqk7fQCnZ/J25Rhi7YlhrZx37zzkZ8+mdFC+53wHV9tnzO4Ey3worm08P3S5OXbu8WSDOD43un8Ugj8mrkBD704Xle4h2+f6WaE9aHTSC5+Xr7QeRcWxOagFoaK+yfHaaD7jMgtA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vaisala.com;
-Received: from AS5PR06MB9040.eurprd06.prod.outlook.com (2603:10a6:20b:676::22)
- by AS8PR06MB7480.eurprd06.prod.outlook.com (2603:10a6:20b:332::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.71.17; Tue, 2 Jun 2026
- 10:02:44 +0000
-Received: from AS5PR06MB9040.eurprd06.prod.outlook.com
- ([fe80::923e:d30b:98c0:c69]) by AS5PR06MB9040.eurprd06.prod.outlook.com
- ([fe80::923e:d30b:98c0:c69%7]) with mapi id 15.21.0071.011; Tue, 2 Jun 2026
- 10:02:44 +0000
-From: Tapio Reijonen <tapio.reijonen@vaisala.com>
-Date: Tue, 02 Jun 2026 10:02:35 +0000
-Subject: [PATCH] serial: max310x: implement gpio_chip::get_direction()
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260602-b4-serial-max310x-gpio-get-direction-v1-1-23bf84e8ee14@vaisala.com>
-X-B4-Tracking: v=1; b=H4sIADqqHmoC/x2NwQqDMBAFf0X27MImTT34K+Ih0We60KokIgHx3
- 5v2OIeZuSgjKTL1zUUJp2bd1gqmbWh6+TWCda5MVmwnnVgOjn+Kf/PHl4eRwnHXjSMOnjVhOmq
- AgxHgGeAW66im9oRFy38zjPf9BVTKTCt2AAAA
-X-Change-ID: 20260602-b4-serial-max310x-gpio-get-direction-b10ee5be4f24
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, Linus Walleij <linusw@kernel.org>, 
- Bartosz Golaszewski <brgl@kernel.org>, Alexander Shiyan <shc_work@mail.ru>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
- linux-gpio@vger.kernel.org, Tapio Reijonen <tapio.reijonen@vaisala.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1780394563; l=2498;
- i=tapio.reijonen@vaisala.com; s=20250903; h=from:subject:message-id;
- bh=SfokXHTQ+tD6NPsEKIdZf+UApwyv/PghP8ZmxYLvvsc=;
- b=+Zif7m+9657dCBcJ8lMJJ5sFME+bUU+vgHxNSR+hpZKWbeXS7iV7jZMnLxJcTjlF38YbQ+WOn
- pdpiLuwyz3SBPceymUMY8PIlzVKNF7gL6chz1cL71+b4NPQBIOnF58q
-X-Developer-Key: i=tapio.reijonen@vaisala.com; a=ed25519;
- pk=jWBz3VD84WbWgfEgIqB5iFFiyVIHZr52zVBPOm7qiGo=
-X-ClientProxiedBy: GVYP280CA0023.SWEP280.PROD.OUTLOOK.COM
- (2603:10a6:150:fa::26) To AS5PR06MB9040.eurprd06.prod.outlook.com
- (2603:10a6:20b:676::22)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OpuvB+TC"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1780399630; x=1811935630;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=vFe0YHJbZeLES+sUauMUh5hZ46dD8ew9Ej6lDFLoT9Q=;
+  b=OpuvB+TCFOlrTj1dTsQq4IO6bT0RYvhdqKiNi7guAfItcI40qmxJuR+2
+   JxfSI7H8Vs0pb6lSzui2MNNzEWzxhK2dqWRYpbiEiVo05UowkhP/brLIc
+   ZVeqrXsY/GHqe3VM+ZWp1v4ClJFL3WOZdAoNffJszSxQymB3W2SmL0kdn
+   EoTQOQCHyRV6IH4CmL1hEzveBQPF06YlAMtiXnjfxI7VYYLoSP3+xGnlr
+   LFm/IXvUvXoEkVqVbja68afnmQGU98K68zOP52EZcPPPHvMGyw+ljzTra
+   1vViH6ezFD00NvPoMZN+e9EIaC8+Q8JOgg1j4bdpBSO6q8EyVZiF5BWXP
+   A==;
+X-CSE-ConnectionGUID: oIlO4b2fRxuCw2x5D/ONOg==
+X-CSE-MsgGUID: uezSZkyoSk+dL6kVsxakLg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11804"; a="84804995"
+X-IronPort-AV: E=Sophos;i="6.24,183,1774335600"; 
+   d="scan'208";a="84804995"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 04:27:07 -0700
+X-CSE-ConnectionGUID: 57WJuzJhQk+bJIT4F8AZnw==
+X-CSE-MsgGUID: InV+5AxmRSKrEz4WoNh7bQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,183,1774335600"; 
+   d="scan'208";a="240879149"
+Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.229])
+  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 04:26:48 -0700
+Date: Tue, 2 Jun 2026 14:26:46 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Kees Cook <kees@kernel.org>
+Cc: Luis Chamberlain <mcgrof@kernel.org>,
+	Pengpeng Hou <pengpeng@iscas.ac.cn>, stable@vger.kernel.org,
+	Petr Pavlu <petr.pavlu@suse.com>,
+	Richard Weinberger <richard@nod.at>,
+	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Len Brown <lenb@kernel.org>, Corey Minyard <corey@minyard.net>,
+	Gabriel Somlo <somlo@cmu.edu>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Jani Nikula <jani.nikula@linux.intel.com>,
+	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Tvrtko Ursulin <tursulin@ursulin.net>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Bart Van Assche <bvanassche@acm.org>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Leon Romanovsky <leon@kernel.org>,
+	Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+	Hans de Goede <hansg@kernel.org>,
+	Mauro Carvalho Chehab <mchehab@kernel.org>,
+	Bjorn Helgaas <bhelgaas@google.com>, Hannes Reinecke <hare@suse.de>,
+	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+	"Martin K. Petersen" <martin.petersen@oracle.com>,
+	Daniel Lezcano <daniel.lezcano@kernel.org>,
+	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Alan Stern <stern@rowland.harvard.edu>,
+	Jason Wang <jasowang@redhat.com>,
+	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+	Eugenio =?iso-8859-1?Q?P=E9rez?= <eperezma@redhat.com>,
+	Jason Baron <jbaron@akamai.com>, Jim Cromie <jim.cromie@gmail.com>,
+	Tiwei Bie <tiwei.btw@antgroup.com>,
+	Benjamin Berg <benjamin.berg@intel.com>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	"David E. Box" <david.e.box@linux.intel.com>,
+	"Maciej W. Rozycki" <macro@orcam.me.uk>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Sean Christopherson <seanjc@google.com>,
+	Paolo Bonzini <pbonzini@redhat.com>,
+	Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+	"H. Peter Anvin" <hpa@zytor.com>, Vinod Koul <vkoul@kernel.org>,
+	Frank Li <Frank.Li@kernel.org>, Daniel Gomez <da.gomez@kernel.org>,
+	Sami Tolvanen <samitolvanen@google.com>,
+	Aaron Tomlin <atomlin@atomlin.com>,
+	Alexander Potapenko <glider@google.com>,
+	Marco Elver <elver@google.com>, Dmitry Vyukov <dvyukov@google.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	John Johansen <john.johansen@canonical.com>,
+	Paul Moore <paul@paul-moore.com>, James Morris <jmorris@namei.org>,
+	"Serge E. Hallyn" <serge@hallyn.com>,
+	Georgia Garcia <georgia.garcia@canonical.com>, kvm@vger.kernel.org,
+	dmaengine@vger.kernel.org, linux-modules@vger.kernel.org,
+	kasan-dev@googlegroups.com, linux-mm@kvack.org,
+	apparmor@lists.ubuntu.com, linux-security-module@vger.kernel.org,
+	linux-um@lists.infradead.org, linux-acpi@vger.kernel.org,
+	openipmi-developer@lists.sourceforge.net, qemu-devel@nongnu.org,
+	intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+	linux-rdma@vger.kernel.org, linux-media@vger.kernel.org,
+	linux-pci@vger.kernel.org, linux-scsi@vger.kernel.org,
+	linux-pm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+	linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+	usb-storage@lists.one-eyed-alien.net,
+	virtualization@lists.linux.dev, linux-kernel@vger.kernel.org,
+	linux-arch@vger.kernel.org, netdev@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH 01/11] params: bound array element output to the caller's
+ page buffer
+Message-ID: <ah699hwLxIIOZ0-7@ashevche-desk.local>
+References: <20260521133315.work.845-kees@kernel.org>
+ <20260521133326.2465264-1-kees@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS5PR06MB9040:EE_|AS8PR06MB7480:EE_
-X-MS-Office365-Filtering-Correlation-Id: 128093ae-ca03-42dc-1e2b-08dec08e1786
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|52116014|376014|366016|6133799003|3023799007|18002099003|11063799006|56012099006|38350700014;
-X-Microsoft-Antispam-Message-Info:
-	8ZIylF2F4HhoGTXWiQlp0VaI95ul7DiUEdQG4n93ECSZnSuFC2MIV0LsSExQuiRMGrfxuR+/3KFuQ/BPGjvM7nVP9V0LfG0I6rNAknuPH7vPnhIOQt84ljJSq/OVD/9rlGrDEx2KZgvnRM6dZBrWGFgfMBzY8470RgAwcZBP7boDAHunNjj1ivyCFU6bM0U/O+jfxyfkSbEguovWfJywQ2EJTxIF8VJc9tG0DNE2OQzu1nHHvAOXnu8oC9osiVdrWJHqhIzjIQx3aacI3YrGhR2TsTkIyK6w3EJ2sFCLZJZ1oEIuXEygUHZqsP8O7/Q1eX71geb8tybslAEthedApfJqgR4BlGhPKK9TzvJuDiBS+gGrHEaay1yLQpx6ug4zrA7J473OGQH8Pea5VDapgfWQsgFrHNds1rbs9iFJqelon8TbJJ3cJX8uiKdeFYscZVQm1xoJySL+b0NEeVFGSj84ZbAtqyNZqHUg0thbdeyRXY9+HatUNvhKOmzqBJpUDKFkr/x+bbQsbug/Zd+gMTIbJED5h6xrMHCCADVN1/snUjrioOMSWnXKDx/ZN6zWDloi/+xdeOzKxzM1OelHiabA/9oGiU/REczeGfbiese0QE9+m9zzu41n5XY0cgR6GQjwAjwr9NykvsoQwTUAL4YZDk/AfFDyZaDMU0eR3vy1Ujam/48mFmnh5r3eznoFQByapIDbapcpS8gf+04Z3XXgqqYxqDJlBjatxyT1BtpXlZH9kjoWNDLIGbu0XMHD
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS5PR06MB9040.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(52116014)(376014)(366016)(6133799003)(3023799007)(18002099003)(11063799006)(56012099006)(38350700014);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?a0xQblRiYlR2RmxIbklCWlpoWWo2V0oyVnJBczlxeU9SSlI3d3pxUmpIVkdI?=
- =?utf-8?B?bkl4cGFwSnRIMEpJUWZLV1A2S2tPNnIrN0pyLzEwR1JDU1hZVDZqZE1tNWxD?=
- =?utf-8?B?cCtsY2RLdmNNS0x6K3ZYZkNtVWRQZHUxMlhQbVdPOEFzWHZvalAxVGJId2VG?=
- =?utf-8?B?QWxJNFJ1cktDYnJqTmZpeS9LSXp3akJON2U0ZUZpY1VKR29qdFc1Mys2b0s0?=
- =?utf-8?B?N0ZGN1JTMWpMeE9ERmRZQkJSMlZlczl2Y3BVMTVqMno4bFRkcDVTZ0xxVXdB?=
- =?utf-8?B?MjhSbVRmVEhIWms0eGY0bU04TFVrUzVVSXBtcnY0T3dLd0hBRGlkekZuRi8y?=
- =?utf-8?B?U0hQcnQzbkxSTWFoM0tVOXdaTUg2cFRXT0FIUklXeTNvc0xlQ3ZCdGtLc3ZO?=
- =?utf-8?B?VE5rK0lSRUFKdWtLNzQyMnl1NE5hYUU0bEo1MVBOTVNYL3NiVGlzMmYrN2xF?=
- =?utf-8?B?YzQrRDlYbzFTa0FYZEJNTnN6WDJ0UVFiMHdkNWlLVzRuTGNBVEJlb1dFcjVG?=
- =?utf-8?B?SUhkQktCeDFZRjNLWDgwWWRIUktRSzZtT3pmOGpIRG9aQ0pUdHNpWSs5Mjh6?=
- =?utf-8?B?YWJPWXBobTlDRHViRzlTZWZ4RjhxRnQ0WFVZQmVRMUNNZ0hDRno2Y1BPalhi?=
- =?utf-8?B?RnpKUnlucC9KbHhXeTYyVmcxN1I1bVh3alR5Q3NXeEdFTjhHN2YvamxQaDh3?=
- =?utf-8?B?UlFpcUhYMDhEN3dRNlAxcy9EZ0xyUEI1Q2Rsb3lFYzZ0Y3g0RERiK2huNTJ2?=
- =?utf-8?B?dC9IOE1xcmp2bnUrYTRKZFNxYzFDRDQ0bFNqaitpUzJ1Y2l6U0tPcDdxbGZV?=
- =?utf-8?B?RUlJUFQ1NFpJOHU2Y3hvemgyb00yYzFKSm1BM3dGMWRBMDNvZ1JSWk1pMHd4?=
- =?utf-8?B?UGVPQWY4ekpzVEZ2aTRFRkZIUU1YeVNqSThkd01MZ2p3WFExVHE2UHdYcUJp?=
- =?utf-8?B?bU9Cdk1KbUJONElJSkE2WG9oTmpJNnNVMUtPb2Y5SVJRLzZCenZpRGZjZ1Bn?=
- =?utf-8?B?eU5keSttREJTeGEzdWoxNWwzSzNmM3U2eWhqQnFNeVpvZzhUZ0tMT3k3Y0d2?=
- =?utf-8?B?U1dnQnp4SGZhL3BMVk5qWUpzdHlIeFl5NWhJakVZbFVTd2JEWFo1M09PUGdp?=
- =?utf-8?B?ZUg2aE9hSmhYS2JFbGJRb2VXZnAvSEpkK0hLV25INHJkZkt0T085MTRablY1?=
- =?utf-8?B?M2Z2UWN5Y3FIcVdZejh2MFBtUUtZQzd6NDYraGVBRXIzSFEvSXhNcjd4WDEy?=
- =?utf-8?B?ZDhBSmFFTDNwdGdybTFaTmM0TVZpbGZoZ1dFQ2kweFMwbDUyVjExZkwvcE5u?=
- =?utf-8?B?OVpqcEJ3dytsdm1MQkpmMlJpd0pLcHFlZ0w4R2FNSHpIOGQ0dFVwS1MyNEU2?=
- =?utf-8?B?SnQ5RmYvUnBGdGNoV2pMTjdNcE1wS0tSSURWOFZWelh1MGhZMFFxOVJDcjF1?=
- =?utf-8?B?YWVQbVVPOERCK3h3cmVJQXg5T2RXK0k0bDlqL2lvTzBRQ0t6Y1ZsRVpSZS9k?=
- =?utf-8?B?R1B3Rll4WFk2dGJydjFEU3JOcTgvQ2tMRmxIRjRXQ2MzZHJXTkNFWDdEQ3Zi?=
- =?utf-8?B?NnB5UG5UOEp0WmY3OTRhVDJzNU1HOHMyR01IWGVRR3B4YlJGcVFlQ1d6bnE5?=
- =?utf-8?B?UW41K2g4TnhrTU5rY3JtSGtGODVpTFNZd2RoNDR6OFVvYTJVMjNySFp5OFNs?=
- =?utf-8?B?ayt3U204bUl5Z3JUOCtleFg2TFdSWW4wc1ZhUjVNOTZPL0t0U0hwbG5vNDFK?=
- =?utf-8?B?cnpQUnYvMmlMUEN2SGo1MWl4MnlVcXN3bWJqLzhBQU4rQ054TmgyVjZJUUdF?=
- =?utf-8?B?aURHcitnS25DMUVoc1RrRGg2NTYrTDA1eUJSaDJjZFJ0Rzl0SkkrZEc2K3Y3?=
- =?utf-8?B?Mlc4K2FrdUZGVlRhZWs3M2RKa2dNalh2UEFPYUlzckFvQnNWVmdiOTdFbDBG?=
- =?utf-8?B?OXF2bnljaHZVYy9CMTQxRWlQelJqdUlla2RjS2pPY0x3eUNjWXpsMU9kaUxY?=
- =?utf-8?B?Q1Q3MTJWdHN6clIrUmRzdG84Wk8vYUlad1JsSU9IN3Q4dktXR0c4bFpqNm81?=
- =?utf-8?B?MUFoMVhEWTJKVlE2Yy9obTlpdTZSTHBFYVdqNHU2Z3laZzA3U3o0T21GK0lp?=
- =?utf-8?B?aTJMTDBOMVord1RYZW9KSWZMRTNIZUFSbW9GV2t2Y1k2YkVvVHBjRjdKcjdO?=
- =?utf-8?B?MFpIT1RLNExZckZEejFQdFQ2a3JVVEZVYUJaVHhMY3VyWDJXemFjRXpDY1hr?=
- =?utf-8?B?M3VST21QcS9pS2lWZzB4TjE4NFpFTlRSbHRsL281S1RFNEZ3WGZzMmM0WnpC?=
- =?utf-8?B?OFd4RXlTRHROYmI1UktpNWxaVHZxSzQ4NVJwdUljYUVKcDM4R2k5Y0I3QzVh?=
- =?utf-8?Q?li4mFNLB7vyyO5oU=3D?=
-X-OriginatorOrg: vaisala.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 128093ae-ca03-42dc-1e2b-08dec08e1786
-X-MS-Exchange-CrossTenant-AuthSource: AS5PR06MB9040.eurprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2026 10:02:44.6809
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 6d7393e0-41f5-4c2e-9b12-4c2be5da5c57
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zgWmuf0iqiXDD3u0SX78Gu2x7jnctOEUipzILlulYoNk8TCAZXCFwb+TiD2f5oSE9BZ+gmwcgaQOErxbI0OrUTw9rmvT4EsumgVHYkKzzsM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR06MB7480
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260521133326.2465264-1-kees@kernel.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-It's strongly recommended for GPIO drivers to always implement the
-.get_direction() callback - even when the direction is tracked in
-software. The GPIO core emits a warning when the callback is missing
-and a user reads the direction of a line, e.g. via
-/sys/kernel/debug/gpio.
+On Thu, May 21, 2026 at 06:33:14AM -0700, Kees Cook wrote:
+> 
+> param_array_get() appends each element's string representation into the
+> shared sysfs page buffer by passing buffer + off to the element getter.
+> 
+> That works for getters that only write a small bounded string, but
+> param_get_charp() and similar helpers format against PAGE_SIZE from the
+> pointer they receive. Once off is non-zero, an element getter can
+> therefore write past the end of the original sysfs page buffer.
+> 
+> Collect each element into a temporary PAGE_SIZE buffer first and then
+> copy only the remaining space into the caller's page buffer.
 
-The MAX310X keeps the GPIO direction in the GPIOCFG register (a set bit
-selects output), which the existing direction_input/output callbacks
-already program, so the current direction can be read back directly.
+...
 
-Fixes: f65444187a66 ("serial: New serial driver MAX310X")
-Signed-off-by: Tapio Reijonen <tapio.reijonen@vaisala.com>
----
-Found and HW-tested on an i.MX6 SoloX board with a MAX14830 over SPI:
-without this, "cat /sys/kernel/debug/gpio" triggers the gpiolib.c:429
-WARNING (tainting the kernel W) on each queried MAX14830 line; with it
-applied the lines report their in/out direction and the WARNING is gone.
----
- drivers/tty/serial/max310x.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+> +	elem_buf = kmalloc(PAGE_SIZE, GFP_KERNEL);
 
-diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-index ac7d3f197c3a5ce3531d5607f48e21a807314021..96df54a90b009d1b547f7a639b0b9a4281daf073 100644
---- a/drivers/tty/serial/max310x.c
-+++ b/drivers/tty/serial/max310x.c
-@@ -1212,6 +1212,18 @@ static int max310x_gpio_set(struct gpio_chip *chip, unsigned int offset,
- 	return 0;
- }
- 
-+static int max310x_gpio_get_direction(struct gpio_chip *chip, unsigned int offset)
-+{
-+	struct max310x_port *s = gpiochip_get_data(chip);
-+	struct uart_port *port = &s->p[offset / 4].port;
-+	unsigned int val;
-+
-+	val = max310x_port_read(port, MAX310X_GPIOCFG_REG);
-+
-+	return (val & (1 << (offset % 4))) ? GPIO_LINE_DIRECTION_OUT
-+					   : GPIO_LINE_DIRECTION_IN;
-+}
-+
- static int max310x_gpio_direction_input(struct gpio_chip *chip, unsigned int offset)
- {
- 	struct max310x_port *s = gpiochip_get_data(chip);
-@@ -1421,6 +1433,7 @@ static int max310x_probe(struct device *dev, const struct max310x_devtype *devty
- 	s->gpio.owner		= THIS_MODULE;
- 	s->gpio.parent		= dev;
- 	s->gpio.label		= devtype->name;
-+	s->gpio.get_direction	= max310x_gpio_get_direction;
- 	s->gpio.direction_input	= max310x_gpio_direction_input;
- 	s->gpio.get		= max310x_gpio_get;
- 	s->gpio.direction_output= max310x_gpio_direction_output;
+get_free_page() (or how it is called)?
 
----
-base-commit: e7ae89a0c97ce2b68b0983cd01eda67cf373517d
-change-id: 20260602-b4-serial-max310x-gpio-get-direction-b10ee5be4f24
+> +	if (!elem_buf)
+> +		return -ENOMEM;
+> +
+>  	for (i = off = 0; i < (arr->num ? *arr->num : arr->max); i++) {
+> -		/* Replace \n with comma */
+> -		if (i)
+> -			buffer[off - 1] = ',';
+>  		p.arg = arr->elem + arr->elemsize * i;
+>  		check_kparam_locked(p.mod);
+> -		ret = arr->ops->get(buffer + off, &p);
+> +		ret = arr->ops->get(elem_buf, &p);
+>  		if (ret < 0)
+> -			return ret;
+> +			goto out;
+> +		ret = min(ret, (int)(PAGE_SIZE - 1 - off));
 
-Best regards,
+It's usually discouraged to use castings in min/max/clamp. Can we make ret long
+or do something different here?
+
+> +		if (!ret)
+> +			break;
+
+> +		/* Replace the previous element's trailing newline with a comma. */
+> +		if (i)
+> +			buffer[off - 1] = ',';
+
+Can't we do this after with help of strreplace()?
+
+> +		memcpy(buffer + off, elem_buf, ret);
+>  		off += ret;
+> +		if (off == PAGE_SIZE - 1)
+> +			break;
+>  	}
+>  	buffer[off] = '\0';
+> -	return off;
+> +	ret = off;
+> +out:
+> +	kfree(elem_buf);
+> +	return ret;
+
 -- 
-Tapio Reijonen <tapio.reijonen@vaisala.com>
+With Best Regards,
+Andy Shevchenko
+
 
