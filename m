@@ -1,209 +1,84 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22AB43E2747
-	for <linux-serial@vger.kernel.org>; Tue,  2 Jun 2026 13:04:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B277B2F3C07
+	for <linux-serial@vger.kernel.org>; Tue,  2 Jun 2026 16:19:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780405500; cv=none; b=CVQ5+xbyus4HtoCWAMDE+vavKrVCHJRSMOtBEloNAJYd/bnuaXsKLqhAyXosi1Pat7Op1aMQ4czinhmpKp2J27kRv+q7nPD2kF9fT0RLq9qB1XMQV5jlG19rgoiz6GJQz9jpITsCN8hWA09PsBdIoukpiMbdI2/yqZMF6JiC9XU=
+	t=1780417144; cv=none; b=iaHSGFV+I7B5wzJKwqIAGaOb425WbTotdJdDKH1eYchu2P/4LTsXER1MRsAI5c2aLGqwb6nQ7J6rcEyfWymaQlkGWdSv7HqCIn4cV0X6XgUSt5EmevpZuD34hRaTI0UWtztT6XliZSrdRejV/yIQEMrxGK+wglsNzwui/WNWtFk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780405500; c=relaxed/simple;
-	bh=Lv88enNvVjptEHx4RPDpSYkoiYl4NHCAht/k1YwYRy4=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=esmECfRY21hpRgQl2shzZ27+VwBC+FgXmRb4qUy0OCS0E2EqsN6uVhbBNaV8Yxhr4V/kv35fyfjQz5Etwc1Na9LLKsB0FzptSM17F6ma+/3HEyU69iLHlD/8B2oUtoEcf2RBsyxTgXL1sai6husMeKSN2qgjYBylYVjd8YuDBpY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=oYCy8oWL; arc=none smtp.client-ip=209.85.128.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1780417144; c=relaxed/simple;
+	bh=BPbTvHpkT/+atMHfAn83Ogy4KZjiKb1VCoyZTifM4YA=;
+	h=From:In-Reply-To:MIME-Version:References:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=bqRU/jvfXGNfxk4htHaSmJ2Llcyl+gxcFhzhVKGK42J4pnOkR8mErOJI4wiWrd5kUAE3gEur143gwZOgfjCfp6CMWOkTp0ZIZZqM2hvFYetHZMWerNcn3obMuWDG6dtAICPzhRCgUrUzIc1Ei4Gm8JH9QbBL8LjpDwxsH+MP+VI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Dwtw1pne; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="oYCy8oWL"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-4908b92904fso60989785e9.0
-        for <linux-serial@vger.kernel.org>; Tue, 02 Jun 2026 06:04:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780405496; x=1781010296; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=H/8nMdqnIqVIuE86ZCCEmz0EQ1iXOszPXfKX9VZoGH4=;
-        b=oYCy8oWLEOXs3ZZpnQ8VOQHoNFjKZT62/QUyW3df6kxvDecqCOK07UnU98cT9bih7d
-         QifFlcWIr+EJiA3Y4YekpYVbMWMA0XqQZb9m0aNzEy+n6CZ9KNJxUBct5gbgm0d6jBJX
-         4RYm7cSM4Fa+MgP775wpjzUTJB2NacljxFREy0lFq+bJunDJIYp2ZV4sTIDkO+Vc1xr7
-         FpcRQcE1R3qM6zq5aytz97WBpu5zXpd39pgEA0GnDnl2ujkjmEdAdRZhqHjKWr+k4Lc4
-         ry5o67NwkoWSsT9Lap7TwhGHQwNn20aUpkBNKTwaaKQ1kQ2Jb1T0oTaxOfTVux7BZHHQ
-         5nZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780405496; x=1781010296;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=H/8nMdqnIqVIuE86ZCCEmz0EQ1iXOszPXfKX9VZoGH4=;
-        b=eQWzIb05ak2RjZfwAPy19QgzQwW7ZHvR400FBjxDRGb4Xcubwr4An/8bZCNEPqwV12
-         1gFntUlE3teqrUxftyAUi6McCsJKSMptWN6YnycZmTo5ssVdoxI2C0czYOWgUiOf95Wh
-         OijNcg4+c7zEyz4TN0vxxWzrhnbtJpcOtU6kV1ZtN5zIiqoaPFWITnnhsGtMfei7uLl0
-         lV9kJJXoiqrTvv6boG9K/OSfdBIBr6IYerLS4/0X5gpafTZR34dK46YEKHC3m9MkRXCd
-         3alw5KcI2PLCP3LW+kWBWxd9nYviKOOwmMta1QGkVOpusOnAZlTKuV1vqulmzWRw1Y4S
-         8edA==
-X-Forwarded-Encrypted: i=1; AFNElJ8lJA6X1jIYqDRoco6k1CEgSeHREDSD5vRu0C/lOpi2dMOAhDBQyqH3knIYHDar9szmbHdbkn7HFrDt0d8=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy/a55k0zPP/jmH1FH1sHZXi4YOHbZsvvIVbIQcAUUtICGJmPvd
-	FRV0qsN32jN7v/jviiQM7uLPGYqHWEgrUW/grNhi32Iq28QRenNCtFZP
-X-Gm-Gg: Acq92OHMAhBb06Ek+EVu33GzPiPGYqQRWLy1zBWnvmZUIgU3brkHhpdeafHiaQBfWcO
-	Vv5F9VHD2Toa84tuXyAdt+BeTwtETRtGoKNNe9TqcERmhjBCpOl6sFF/0ZVZvEq12e7YVwnuvLB
-	24WqtADKgBIm7QTX20OK8dHd/2wyH0njFAU6KsABjhUuxqPxudeH9+TilmZeadplWigSfmnpEcb
-	0hZkiTw4jWhwvRWNOk3vIMqFcbq1fhh07HzjPhsu+qEEfJ2bj8+SBFwcW8y7w29SRXCD0W6zCvD
-	qjdyu9PrTGet5+MhIAiLQ7Ai2+NM7YEVs7XH2LmwL65AV9bhUIkil+TXnwHRFEYWGOTHC6LE8/2
-	TYA5dkud/yeyGi8gLQ4wphkAk0L3g5Q8idq4jDoZYKzErWoxs8w2RHdoaDseiCTfmAFxZgVspgV
-	pYkjszuUOjPOi2elNh3078f/puDDNWK2vDH2MHgrvwB7C5vbp1y/9XW16qz5tH7Ug95NVYAncKh
-	aMV335yjw==
-X-Received: by 2002:a05:600c:8105:b0:490:b072:1be6 with SMTP id 5b1f17b1804b1-490b0721e0amr76565325e9.25.1780405495119;
-        Tue, 02 Jun 2026 06:04:55 -0700 (PDT)
-Received: from pumpkin (82-69-66-36.dsl.in-addr.zen.co.uk. [82.69.66.36])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45ef34b834esm33184301f8f.11.2026.06.02.06.04.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Jun 2026 06:04:54 -0700 (PDT)
-Date: Tue, 2 Jun 2026 14:04:51 +0100
-From: David Laight <david.laight.linux@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Kees Cook <kees@kernel.org>, Luis Chamberlain <mcgrof@kernel.org>,
- Pengpeng Hou <pengpeng@iscas.ac.cn>, stable@vger.kernel.org, Petr Pavlu
- <petr.pavlu@suse.com>, Richard Weinberger <richard@nod.at>, Anton Ivanov
- <anton.ivanov@cambridgegreys.com>, Johannes Berg
- <johannes@sipsolutions.net>, "Rafael J. Wysocki" <rafael@kernel.org>, Len
- Brown <lenb@kernel.org>, Corey Minyard <corey@minyard.net>, Gabriel Somlo
- <somlo@cmu.edu>, "Michael S. Tsirkin" <mst@redhat.com>, Jani Nikula
- <jani.nikula@linux.intel.com>, Joonas Lahtinen
- <joonas.lahtinen@linux.intel.com>, Rodrigo Vivi <rodrigo.vivi@intel.com>,
- Tvrtko Ursulin <tursulin@ursulin.net>, David Airlie <airlied@gmail.com>,
- Simona Vetter <simona@ffwll.ch>, Bart Van Assche <bvanassche@acm.org>,
- Jason Gunthorpe <jgg@ziepe.ca>, Leon Romanovsky <leon@kernel.org>, Laurent
- Pinchart <laurent.pinchart@ideasonboard.com>, Hans de Goede
- <hansg@kernel.org>, Mauro Carvalho Chehab <mchehab@kernel.org>, Bjorn
- Helgaas <bhelgaas@google.com>, Hannes Reinecke <hare@suse.de>, "James E.J.
- Bottomley" <James.Bottomley@hansenpartnership.com>, "Martin K. Petersen"
- <martin.petersen@oracle.com>, Daniel Lezcano <daniel.lezcano@kernel.org>,
- Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>, Greg
- Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, Alan Stern <stern@rowland.harvard.edu>, Jason Wang
- <jasowang@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>, Eugenio
- =?UTF-8?B?UMOpcmV6?= <eperezma@redhat.com>, Jason Baron
- <jbaron@akamai.com>, Jim Cromie <jim.cromie@gmail.com>, Tiwei Bie
- <tiwei.btw@antgroup.com>, Benjamin Berg <benjamin.berg@intel.com>, Ilpo
- =?UTF-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, "David E. Box"
- <david.e.box@linux.intel.com>, "Maciej W. Rozycki" <macro@orcam.me.uk>,
- Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, Peter Zijlstra
- <peterz@infradead.org>, Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik
- <gor@linux.ibm.com>, Sean Christopherson <seanjc@google.com>, Paolo Bonzini
- <pbonzini@redhat.com>, Thomas Gleixner <tglx@kernel.org>, Ingo Molnar
- <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen
- <dave.hansen@linux.intel.com>, x86@kernel.org, "H. Peter Anvin"
- <hpa@zytor.com>, Vinod Koul <vkoul@kernel.org>, Frank Li
- <Frank.Li@kernel.org>, Daniel Gomez <da.gomez@kernel.org>, Sami Tolvanen
- <samitolvanen@google.com>, Aaron Tomlin <atomlin@atomlin.com>, Alexander
- Potapenko <glider@google.com>, Marco Elver <elver@google.com>, Dmitry
- Vyukov <dvyukov@google.com>, Andrew Morton <akpm@linux-foundation.org>,
- John Johansen <john.johansen@canonical.com>, Paul Moore
- <paul@paul-moore.com>, James Morris <jmorris@namei.org>, "Serge E. Hallyn"
- <serge@hallyn.com>, Georgia Garcia <georgia.garcia@canonical.com>,
- kvm@vger.kernel.org, dmaengine@vger.kernel.org,
- linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
- linux-mm@kvack.org, apparmor@lists.ubuntu.com,
- linux-security-module@vger.kernel.org, linux-um@lists.infradead.org,
- linux-acpi@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
- qemu-devel@nongnu.org, intel-gfx@lists.freedesktop.org,
- dri-devel@lists.freedesktop.org, linux-rdma@vger.kernel.org,
- linux-media@vger.kernel.org, linux-pci@vger.kernel.org,
- linux-scsi@vger.kernel.org, linux-pm@vger.kernel.org,
- linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org,
- linux-usb@vger.kernel.org, usb-storage@lists.one-eyed-alien.net,
- virtualization@lists.linux.dev, linux-kernel@vger.kernel.org,
- linux-arch@vger.kernel.org, netdev@vger.kernel.org,
- linux-fsdevel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH 01/11] params: bound array element output to the
- caller's page buffer
-Message-ID: <20260602140451.2e3e6622@pumpkin>
-In-Reply-To: <ah699hwLxIIOZ0-7@ashevche-desk.local>
-References: <20260521133315.work.845-kees@kernel.org>
-	<20260521133326.2465264-1-kees@kernel.org>
-	<ah699hwLxIIOZ0-7@ashevche-desk.local>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Dwtw1pne"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B5701F0089A
+	for <linux-serial@vger.kernel.org>; Tue,  2 Jun 2026 16:19:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1780417142;
+	bh=BPbTvHpkT/+atMHfAn83Ogy4KZjiKb1VCoyZTifM4YA=;
+	h=From:In-Reply-To:References:Date:Subject:To:Cc;
+	b=Dwtw1pneN91J12PMkaxGO1CMKagCvWg/EPs/mkBH7uGuLxN9b2QAMPXFDWIYZpGOd
+	 rdJc1SGshSGuGvO700BuGHmsTZyKJgKx67rSYJQmWV4tjXRzfNcBle6mDExJVGjB/C
+	 VPJ6GdESA1DRFgBwX0BvMGUvXeZlgY4l6BbY8ZtFJkNQ1seJrCW50XpfCDyyNNeOUp
+	 KY+sgfvNOuXg1O5a7GF7zghpQ7AGwV3cOF9xVw/sOK0KiN3f4Cp8PCJR8puC3HinKC
+	 aIyhqICjsIpnKHwEXbU83dqANndYcud9eLXK6c/v2m9tV2I9km0QDhHMJCSonzmO5S
+	 ZfbLY3Dzwk6vQ==
+Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-3966c3dbf10so30633641fa.0
+        for <linux-serial@vger.kernel.org>; Tue, 02 Jun 2026 09:19:02 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AFNElJ/S4E9G4BZoNF/vuUCFNB186HMwIEsnVaM0YJ6iDO5l/p9nLrhO3exbiz3x9mg6bkPjj2lsEKeDFOyE9kM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwzpOzmk2s4rgIb98sORfl5ZIj+VfO2mgHFe8P3ZpqOLewNyq62
+	+xmL+ScePaz9juzpY5dZkVUQxJFfbwoVI4bJMme9+gqSg0gl4azZ+4cUWhSOQuuFshqH6UsQ4Y7
+	0dFxksbDZYxd2MVvTJvLrCjkvzA7cr0K1YnlRLcb2xQ==
+X-Received: by 2002:a2e:a90d:0:b0:396:75ac:457a with SMTP id
+ 38308e7fff4ca-396ac2bf8f1mr1234431fa.8.1780417141042; Tue, 02 Jun 2026
+ 09:19:01 -0700 (PDT)
+Received: from 969154062570 named unknown by gmailapi.google.com with
+ HTTPREST; Tue, 2 Jun 2026 11:18:59 -0500
+Received: from 969154062570 named unknown by gmailapi.google.com with
+ HTTPREST; Tue, 2 Jun 2026 11:18:59 -0500
+From: Bartosz Golaszewski <brgl@kernel.org>
+In-Reply-To: <20260602-b4-serial-max310x-gpio-get-direction-v1-1-23bf84e8ee14@vaisala.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20260602-b4-serial-max310x-gpio-get-direction-v1-1-23bf84e8ee14@vaisala.com>
+Date: Tue, 2 Jun 2026 11:18:59 -0500
+X-Gmail-Original-Message-ID: <CAMRc=MePduXLREX+X6mLF5qusfjvp6=TZC6RJcQb7vm7=KAixQ@mail.gmail.com>
+X-Gm-Features: AVHnY4ISA-VZS8ud-UYiHr-qhu-EM_kTyWlK8MV1UlB9AJNiwyCX_g3JEU1YW-k
+Message-ID: <CAMRc=MePduXLREX+X6mLF5qusfjvp6=TZC6RJcQb7vm7=KAixQ@mail.gmail.com>
+Subject: Re: [PATCH] serial: max310x: implement gpio_chip::get_direction()
+To: Tapio Reijonen <tapio.reijonen@vaisala.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	linux-gpio@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Linus Walleij <linusw@kernel.org>, 
+	Bartosz Golaszewski <brgl@kernel.org>, Alexander Shiyan <shc_work@mail.ru>
+Content-Type: text/plain; charset="UTF-8"
 
-On Tue, 2 Jun 2026 14:26:46 +0300
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+On Tue, 2 Jun 2026 12:02:35 +0200, Tapio Reijonen
+<tapio.reijonen@vaisala.com> said:
+> It's strongly recommended for GPIO drivers to always implement the
+> .get_direction() callback - even when the direction is tracked in
+> software. The GPIO core emits a warning when the callback is missing
+> and a user reads the direction of a line, e.g. via
+> /sys/kernel/debug/gpio.
+>
+> The MAX310X keeps the GPIO direction in the GPIOCFG register (a set bit
+> selects output), which the existing direction_input/output callbacks
+> already program, so the current direction can be read back directly.
+>
+> Fixes: f65444187a66 ("serial: New serial driver MAX310X")
+> Signed-off-by: Tapio Reijonen <tapio.reijonen@vaisala.com>
+> ---
+> Found and HW-tested on an i.MX6 SoloX board with a MAX14830 over SPI:
+> without this, "cat /sys/kernel/debug/gpio" triggers the gpiolib.c:429
+> WARNING (tainting the kernel W) on each queried MAX14830 line; with it
+> applied the lines report their in/out direction and the WARNING is gone.
+> ---
 
-> On Thu, May 21, 2026 at 06:33:14AM -0700, Kees Cook wrote:
-> > 
-> > param_array_get() appends each element's string representation into the
-> > shared sysfs page buffer by passing buffer + off to the element getter.
-> > 
-> > That works for getters that only write a small bounded string, but
-> > param_get_charp() and similar helpers format against PAGE_SIZE from the
-> > pointer they receive. Once off is non-zero, an element getter can
-> > therefore write past the end of the original sysfs page buffer.
-> > 
-> > Collect each element into a temporary PAGE_SIZE buffer first and then
-> > copy only the remaining space into the caller's page buffer.  
-> 
-> ...
-> 
-> > +	elem_buf = kmalloc(PAGE_SIZE, GFP_KERNEL);  
-> 
-> get_free_page() (or how it is called)?
-
-The kmalloc() should be faster and I think has to be aligned.
-There is another patch set to replace get_free_pages() with kmalloc().
-
-Although all these 'show' functions should really head to using a safer
-interface.
-Although, at the moment, it is really difficult to find the ones that
-are guaranteed to be passed a page aligned buffer.
-
--- David
-
-> 
-> > +	if (!elem_buf)
-> > +		return -ENOMEM;
-> > +
-> >  	for (i = off = 0; i < (arr->num ? *arr->num : arr->max); i++) {
-> > -		/* Replace \n with comma */
-> > -		if (i)
-> > -			buffer[off - 1] = ',';
-> >  		p.arg = arr->elem + arr->elemsize * i;
-> >  		check_kparam_locked(p.mod);
-> > -		ret = arr->ops->get(buffer + off, &p);
-> > +		ret = arr->ops->get(elem_buf, &p);
-> >  		if (ret < 0)
-> > -			return ret;
-> > +			goto out;
-> > +		ret = min(ret, (int)(PAGE_SIZE - 1 - off));  
-> 
-> It's usually discouraged to use castings in min/max/clamp. Can we make ret long
-> or do something different here?
-> 
-> > +		if (!ret)
-> > +			break;  
-> 
-> > +		/* Replace the previous element's trailing newline with a comma. */
-> > +		if (i)
-> > +			buffer[off - 1] = ',';  
-> 
-> Can't we do this after with help of strreplace()?
-> 
-> > +		memcpy(buffer + off, elem_buf, ret);
-> >  		off += ret;
-> > +		if (off == PAGE_SIZE - 1)
-> > +			break;
-> >  	}
-> >  	buffer[off] = '\0';
-> > -	return off;
-> > +	ret = off;
-> > +out:
-> > +	kfree(elem_buf);
-> > +	return ret;  
-> 
-
+Reviewed-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
