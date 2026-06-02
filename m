@@ -1,84 +1,110 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B277B2F3C07
-	for <linux-serial@vger.kernel.org>; Tue,  2 Jun 2026 16:19:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 454573955F5;
+	Tue,  2 Jun 2026 18:37:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780417144; cv=none; b=iaHSGFV+I7B5wzJKwqIAGaOb425WbTotdJdDKH1eYchu2P/4LTsXER1MRsAI5c2aLGqwb6nQ7J6rcEyfWymaQlkGWdSv7HqCIn4cV0X6XgUSt5EmevpZuD34hRaTI0UWtztT6XliZSrdRejV/yIQEMrxGK+wglsNzwui/WNWtFk=
+	t=1780425471; cv=none; b=mqx8f0i6mHUpFK88X7vS/E1ji4rI9ghX6FUr67KKCHjsShJb7QDFP0EFQUuYc95O1CgoVls0bNZTGfZGnne47HufxhML4fVZB+K5WRYhi5FH4B/p3y0iyEXUh0myuWKokT2hqpDUMrDow2BC99yL0xm4oPFkditbqdUZiPwR658=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780417144; c=relaxed/simple;
-	bh=BPbTvHpkT/+atMHfAn83Ogy4KZjiKb1VCoyZTifM4YA=;
-	h=From:In-Reply-To:MIME-Version:References:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=bqRU/jvfXGNfxk4htHaSmJ2Llcyl+gxcFhzhVKGK42J4pnOkR8mErOJI4wiWrd5kUAE3gEur143gwZOgfjCfp6CMWOkTp0ZIZZqM2hvFYetHZMWerNcn3obMuWDG6dtAICPzhRCgUrUzIc1Ei4Gm8JH9QbBL8LjpDwxsH+MP+VI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Dwtw1pne; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1780425471; c=relaxed/simple;
+	bh=oSlzuNRxLCw96L0gRiYu/TEh/Dvys+uVFiJOCzOE3II=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=b0Hz1DKZitsx4sDQkk3rNipAfNuvCYNbAssBRtSZMp+0sczfvHAhaSAPQIuxDjKZLITWKn+7sAqA9ozbVQgl5VmdS/1gSVmtN/TpsjIxAxVFCNUxPNP6ldHtJcs3NWmvdTR1cBsQgNFoqTDY4V9U3gJzTQkwVQScwPe7isi+q8U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=efsznNMi; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Dwtw1pne"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B5701F0089A
-	for <linux-serial@vger.kernel.org>; Tue,  2 Jun 2026 16:19:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780417142;
-	bh=BPbTvHpkT/+atMHfAn83Ogy4KZjiKb1VCoyZTifM4YA=;
-	h=From:In-Reply-To:References:Date:Subject:To:Cc;
-	b=Dwtw1pneN91J12PMkaxGO1CMKagCvWg/EPs/mkBH7uGuLxN9b2QAMPXFDWIYZpGOd
-	 rdJc1SGshSGuGvO700BuGHmsTZyKJgKx67rSYJQmWV4tjXRzfNcBle6mDExJVGjB/C
-	 VPJ6GdESA1DRFgBwX0BvMGUvXeZlgY4l6BbY8ZtFJkNQ1seJrCW50XpfCDyyNNeOUp
-	 KY+sgfvNOuXg1O5a7GF7zghpQ7AGwV3cOF9xVw/sOK0KiN3f4Cp8PCJR8puC3HinKC
-	 aIyhqICjsIpnKHwEXbU83dqANndYcud9eLXK6c/v2m9tV2I9km0QDhHMJCSonzmO5S
-	 ZfbLY3Dzwk6vQ==
-Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-3966c3dbf10so30633641fa.0
-        for <linux-serial@vger.kernel.org>; Tue, 02 Jun 2026 09:19:02 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AFNElJ/S4E9G4BZoNF/vuUCFNB186HMwIEsnVaM0YJ6iDO5l/p9nLrhO3exbiz3x9mg6bkPjj2lsEKeDFOyE9kM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwzpOzmk2s4rgIb98sORfl5ZIj+VfO2mgHFe8P3ZpqOLewNyq62
-	+xmL+ScePaz9juzpY5dZkVUQxJFfbwoVI4bJMme9+gqSg0gl4azZ+4cUWhSOQuuFshqH6UsQ4Y7
-	0dFxksbDZYxd2MVvTJvLrCjkvzA7cr0K1YnlRLcb2xQ==
-X-Received: by 2002:a2e:a90d:0:b0:396:75ac:457a with SMTP id
- 38308e7fff4ca-396ac2bf8f1mr1234431fa.8.1780417141042; Tue, 02 Jun 2026
- 09:19:01 -0700 (PDT)
-Received: from 969154062570 named unknown by gmailapi.google.com with
- HTTPREST; Tue, 2 Jun 2026 11:18:59 -0500
-Received: from 969154062570 named unknown by gmailapi.google.com with
- HTTPREST; Tue, 2 Jun 2026 11:18:59 -0500
-From: Bartosz Golaszewski <brgl@kernel.org>
-In-Reply-To: <20260602-b4-serial-max310x-gpio-get-direction-v1-1-23bf84e8ee14@vaisala.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="efsznNMi"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1780425470; x=1811961470;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=oSlzuNRxLCw96L0gRiYu/TEh/Dvys+uVFiJOCzOE3II=;
+  b=efsznNMitQFE5HE7izzZufTWzhGmUfPUQ89/jhO9blvB+AkJvak2TIyo
+   wYC3LHc8McpRi+sl/Vj8g87GylSICZl1bJgQOX8m8SsZ6X8zYoTn5ga9q
+   f03ddE1S8R3zFBTDbPKVCJGsvkguvPYqiQ2DOVw9rRALtQw++W/jcvboo
+   wgPl/yxyKIfNeRPSoSQ5F340+QyiFsOu5S+SHax6RFlp2bvsfHWY1RqRn
+   NKqRrNh4RxsEqegw61sGhTVJpjPGztbuvFEzFFVr1xCR7GDxee1mqUyay
+   34oow1j9U8K4mvYIVFEsAu8i9luq4eWtzQlgzyx3T9ZMQupNdQH7rlkUN
+   Q==;
+X-CSE-ConnectionGUID: 6doq9cfyS3W+Dn4tFEQhIg==
+X-CSE-MsgGUID: lRp8uf68RmyjoespQ5Uj+A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11805"; a="98642167"
+X-IronPort-AV: E=Sophos;i="6.24,183,1774335600"; 
+   d="scan'208";a="98642167"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 11:37:50 -0700
+X-CSE-ConnectionGUID: GAMrsk+BSx66MvFLuDcHvg==
+X-CSE-MsgGUID: spRxZUHVSF6S+BoMGd0RJA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,183,1774335600"; 
+   d="scan'208";a="249058482"
+Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.229])
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 11:37:47 -0700
+Date: Tue, 2 Jun 2026 21:37:45 +0300
+From: "andriy.shevchenko@linux.intel.com" <andriy.shevchenko@linux.intel.com>
+To: Matthias Feser <mfe@kbsgmbhfr.onmicrosoft.com>
+Cc: Moteen Shah <m-shah@ti.com>,
+	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+	"gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+	"jirislaby@kernel.org" <jirislaby@kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"k-willis@ti.com" <k-willis@ti.com>,
+	"msp@baylibre.com" <msp@baylibre.com>
+Subject: Re: [PATCH v5] serial: 8250_omap: clear rx_running on zero-length
+ DMA completes
+Message-ID: <ah8i-aGuHTKcRpaA@ashevche-desk.local>
+References: <BE3P281MB5515563BFB5DE5E093ADAD9DEE0E2@BE3P281MB5515.DEUP281.PROD.OUTLOOK.COM>
+ <4b8c59fe-c6a1-47cb-ab3b-855b1edddde2@ti.com>
+ <BE3P281MB55153573889A8124C06291F1EE0F2@BE3P281MB5515.DEUP281.PROD.OUTLOOK.COM>
+ <ab76b900-6d1c-4218-a14a-59541b92f2c6@ti.com>
+ <BE3P281MB5515A937D47F610974FAEFA7EE0F2@BE3P281MB5515.DEUP281.PROD.OUTLOOK.COM>
+ <ede98ffc-9e34-46a5-8d8f-87894fbf9d12@ti.com>
+ <BE3P281MB55155F2F5795E411F5A65282EE0B2@BE3P281MB5515.DEUP281.PROD.OUTLOOK.COM>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260602-b4-serial-max310x-gpio-get-direction-v1-1-23bf84e8ee14@vaisala.com>
-Date: Tue, 2 Jun 2026 11:18:59 -0500
-X-Gmail-Original-Message-ID: <CAMRc=MePduXLREX+X6mLF5qusfjvp6=TZC6RJcQb7vm7=KAixQ@mail.gmail.com>
-X-Gm-Features: AVHnY4ISA-VZS8ud-UYiHr-qhu-EM_kTyWlK8MV1UlB9AJNiwyCX_g3JEU1YW-k
-Message-ID: <CAMRc=MePduXLREX+X6mLF5qusfjvp6=TZC6RJcQb7vm7=KAixQ@mail.gmail.com>
-Subject: Re: [PATCH] serial: max310x: implement gpio_chip::get_direction()
-To: Tapio Reijonen <tapio.reijonen@vaisala.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-gpio@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Linus Walleij <linusw@kernel.org>, 
-	Bartosz Golaszewski <brgl@kernel.org>, Alexander Shiyan <shc_work@mail.ru>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BE3P281MB55155F2F5795E411F5A65282EE0B2@BE3P281MB5515.DEUP281.PROD.OUTLOOK.COM>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, 2 Jun 2026 12:02:35 +0200, Tapio Reijonen
-<tapio.reijonen@vaisala.com> said:
-> It's strongly recommended for GPIO drivers to always implement the
-> .get_direction() callback - even when the direction is tracked in
-> software. The GPIO core emits a warning when the callback is missing
-> and a user reads the direction of a line, e.g. via
-> /sys/kernel/debug/gpio.
->
-> The MAX310X keeps the GPIO direction in the GPIOCFG register (a set bit
-> selects output), which the existing direction_input/output callbacks
-> already program, so the current direction can be read back directly.
->
-> Fixes: f65444187a66 ("serial: New serial driver MAX310X")
-> Signed-off-by: Tapio Reijonen <tapio.reijonen@vaisala.com>
-> ---
-> Found and HW-tested on an i.MX6 SoloX board with a MAX14830 over SPI:
-> without this, "cat /sys/kernel/debug/gpio" triggers the gpiolib.c:429
-> WARNING (tainting the kernel W) on each queried MAX14830 line; with it
-> applied the lines report their in/out direction and the WARNING is gone.
-> ---
+On Tue, May 26, 2026 at 07:35:09AM +0000, Matthias Feser wrote:
+> On AM33xx RX DMA only triggers when the FIFO reaches the
+> configured threshold (typically 48 bytes). For smaller bursts
+> no DMA request is issued and the FIFO is drained by RX timeout.
+> 
+> In this case __dma_rx_do_complete() can legitimately see count == 0.
+> 
+> The current code exits early in this case and does not clear
+> dma->rx_running, leaving the DMA state inconsistent. This can
+> prevent RX DMA from restarting and may cause
+> omap_8250_rx_dma_flush() to fail, marking DMA as broken.
+> 
+> Fix this by clearing dma->rx_running once the DMA transfer has
+> completed or been terminated, even if no data was transferred.
 
-Reviewed-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+...
+
+> +	dma->rx_running = 0;
+>  	if (!count)
+>  		goto out;
+>  	ret = tty_insert_flip_string(tty_port, dma->rx_buf, count);
+>  
+> -	dma->rx_running = 0;
+
+I'm wondering if this opens a window when dma->rx_buf may be rewritten (or
+unmapped or something else) before tty layer has a chance to insert bytes to
+its ring buffer. I.o.w. is this change synchronous to other threads?
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
