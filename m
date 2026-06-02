@@ -1,52 +1,71 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68C4B36A03A;
-	Tue,  2 Jun 2026 11:27:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDBF12E285C
+	for <linux-serial@vger.kernel.org>; Tue,  2 Jun 2026 12:33:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780399631; cv=none; b=YGSKUDZVmOvrSjOK37t8/orP7PGEimetOYIVjhZTXRwprO81+zT5ZhH+pEsysVq8bF/O76rMGd+JJKO8h6mc1yopRItik2yxTvHO7MVqf6/iESuWJV/oEFiI5/P0bI8+B34GlQNSg85fYw5jlDv8Oe9lMiCB4XPWDgryfyKnKFc=
+	t=1780403629; cv=none; b=qrPNhaSwD+wQ7CHWenypheLfPNrc//+ESC6Ek+lt011pvpb+N7CzyCRYhGv7NuHN4R8yWb6LZJfgJ57A34+HmbMkbXZt1FXtxncg2Oqu3rqxqdSjS8djCRvEr9yJ6oVKieERNu1PQyT9KuY9HZy04xKt0czteMvAKmNFAoElx+Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780399631; c=relaxed/simple;
-	bh=vFe0YHJbZeLES+sUauMUh5hZ46dD8ew9Ej6lDFLoT9Q=;
+	s=arc-20240116; t=1780403629; c=relaxed/simple;
+	bh=Dt7ynl7RjMDm10IwkFbV7yaqQ3XCHkv1Jhl7dMLZbl4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Rr6jO1fByXYRx+tKEK7oTG4goSfF7waXcXdlLuctriRPjvmmYXgrxRRMfeZmLjnhcsB26z04C5zk7rXis6u4wOAZSP+LWrbDBXU493YwRtXD1OrEKJ9qdFg/28FfxBFreuc3DLPZS1xXWQ44/bD7tNJ5VtEr6kS4PNen2nqbcK8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OpuvB+TC; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=WH4MJl8VhXz7pY4lZZVcsfzjkEetCUmdElbsBDhgLjvoV15Xk7aEQ3OxUwlEzSqDc5PGDNpfSm+1xrnyKCHmDDgdJVraCaPosWgB2a30XfPpIlPrZQSi7MJRHvHCsLcHypyIbzTWAll1bikWOdX74qmgsF8wNii0uZmZDCljzfc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Mjg0KMTz; arc=none smtp.client-ip=209.85.160.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OpuvB+TC"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780399630; x=1811935630;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=vFe0YHJbZeLES+sUauMUh5hZ46dD8ew9Ej6lDFLoT9Q=;
-  b=OpuvB+TCFOlrTj1dTsQq4IO6bT0RYvhdqKiNi7guAfItcI40qmxJuR+2
-   JxfSI7H8Vs0pb6lSzui2MNNzEWzxhK2dqWRYpbiEiVo05UowkhP/brLIc
-   ZVeqrXsY/GHqe3VM+ZWp1v4ClJFL3WOZdAoNffJszSxQymB3W2SmL0kdn
-   EoTQOQCHyRV6IH4CmL1hEzveBQPF06YlAMtiXnjfxI7VYYLoSP3+xGnlr
-   LFm/IXvUvXoEkVqVbja68afnmQGU98K68zOP52EZcPPPHvMGyw+ljzTra
-   1vViH6ezFD00NvPoMZN+e9EIaC8+Q8JOgg1j4bdpBSO6q8EyVZiF5BWXP
-   A==;
-X-CSE-ConnectionGUID: oIlO4b2fRxuCw2x5D/ONOg==
-X-CSE-MsgGUID: uezSZkyoSk+dL6kVsxakLg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11804"; a="84804995"
-X-IronPort-AV: E=Sophos;i="6.24,183,1774335600"; 
-   d="scan'208";a="84804995"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 04:27:07 -0700
-X-CSE-ConnectionGUID: 57WJuzJhQk+bJIT4F8AZnw==
-X-CSE-MsgGUID: InV+5AxmRSKrEz4WoNh7bQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,183,1774335600"; 
-   d="scan'208";a="240879149"
-Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.229])
-  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 04:26:48 -0700
-Date: Tue, 2 Jun 2026 14:26:46 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Kees Cook <kees@kernel.org>
-Cc: Luis Chamberlain <mcgrof@kernel.org>,
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Mjg0KMTz"
+Received: by mail-qt1-f181.google.com with SMTP id d75a77b69052e-5176fc0cc72so3903121cf.1
+        for <linux-serial@vger.kernel.org>; Tue, 02 Jun 2026 05:33:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1780403626; x=1781008426; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=3fuMy8ZTlB4sZmM4SRNfS45Rtpr0e2y/Uhs3uZMD108=;
+        b=Mjg0KMTzNzeCi7FV4Cglipctnd4qTRNJBs44FcFTysdYrVy+WlGmP/0GDFu0J+wJ7m
+         R/AuPEohevy1QNUE+WUDGubmJcDZZnffsV7i/Zze94JkqRPhbPdy15Qk6yh0s9q2hu1/
+         bI7dm1G26H7om23e5xJModDeVrIOi0meO3NUWse+J5lk5WegiPpkj76Qz79IXx4wghAH
+         J1I3OvFvwHvZLYWvaUMDTJFwu8CeiZpFpTAa6VbXuL1p2SxsoyL2H/fX/865+UB4pvvq
+         PhJR1KIiS2V1O2Xw5dcvwmRIXL5LbfWF9nRanp+5gjV4eMn6+GEiDs6cHaCPjs+09FpH
+         tsZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780403626; x=1781008426;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=3fuMy8ZTlB4sZmM4SRNfS45Rtpr0e2y/Uhs3uZMD108=;
+        b=InPVneENWrrQKswYaSrat2Lg+iqC8TO3rhWMxqrPXBV1ojNzIDuOjKP5mj5FJ8HB0p
+         SNuU+0Dd0shyHvmCre6L31IydwkSwpWoxWgVsnNOEeVlqK1UJhizDsZ/q54h5jKy8FpV
+         0dUpzraopNFdY+4wO7mTw5MtqKnGGmyioHfiuQq8SvdxtNQUryuv6jQE7ArCA4V5QuxM
+         RK6ym2q9xQMeBM3pNpqSQCJOiSu5+PElouHFAfXjbz2tsm085DP6jeWLJS9CxbpiobSI
+         hIh6sTRR7q+ZuySWGSa6lrZI8gpKxg33H2KocRXNfkogq41EQiM1GVjnK0qvcIXFcvbc
+         +rRA==
+X-Forwarded-Encrypted: i=1; AFNElJ+4ER3AbHdqKWbIM1OV44faTdSQuosvyj/Q1QhH05nUlytrb7Gk4YsiUH1cXmFtB6QiYV7Y+xh0fvS3wQI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YybrzkdLv93PBXgN17CMJrRiBTo4iBLAkHD82WiO4rsaI5sTQ3Y
+	GvLzkJTcGPzuYYQOolVvOFltc41SC/4YyZ0lvqjDT7vW7zFr7RxlB4l4rN1HSh7nsRs=
+X-Gm-Gg: Acq92OEuBLiS+v/YHey1sCi3tg573JooKYzHS6P+2bW0GqRfBVeLjviR2mHbD/JiqDH
+	v4OJ/3IkP5twNgqAehJ1bIOIrt/8K6cCxc7Mp05V+h6jt7pluC62g+C1hvZYv5zH6boefO3ZA8A
+	8n1piJ3nh/cWJtTb75ZvlBXyikN6HRpaWCCiStdaboaAE57rHzPmHVeTnVkyUmxdXsKTst+Z9Yh
+	H9DGOAxzvWuXnfXQolZe/+OHdGoEGWTc31DlLFfCsb2ArEQDntfc+fUw15JpC/FaY5oM48pgvtN
+	fpypb94wCZM48qEjq4ZhgNA1jheWbenbFz4A83Em9oTkQIv/6qDLAe6RVnwFjW6rg+pCmZljAug
+	x4DTmhdWbnW6YnCm4KyL/YD9E7L1zcEqQ9+48+yOQ96MzlMYJDXoN7iuiW0Zd34gP9HPbmRd+Yp
+	0YDGYSO62gwgNaQjzwF0qRfsu2gTjVV2OGwLNk+4GA+89Z2erQc1xfDv3POZlMmZLgW5AwmH+Rt
+	JSwLdc9YIWDUSg8
+X-Received: by 2002:a05:622a:190a:b0:509:2527:d789 with SMTP id d75a77b69052e-5173a5c05ecmr228232631cf.6.1780403625864;
+        Tue, 02 Jun 2026 05:33:45 -0700 (PDT)
+Received: from ziepe.ca (crbknf0213w-47-54-130-67.pppoe-dynamic.high-speed.nl.bellaliant.net. [47.54.130.67])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-51741d6a240sm78686221cf.18.2026.06.02.05.33.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Jun 2026 05:33:45 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1wUOJU-00000003m5x-3DKO;
+	Tue, 02 Jun 2026 09:33:44 -0300
+Date: Tue, 2 Jun 2026 09:33:44 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Kees Cook <kees@kernel.org>, Luis Chamberlain <mcgrof@kernel.org>,
 	Pengpeng Hou <pengpeng@iscas.ac.cn>, stable@vger.kernel.org,
 	Petr Pavlu <petr.pavlu@suse.com>,
 	Richard Weinberger <richard@nod.at>,
@@ -62,7 +81,7 @@ Cc: Luis Chamberlain <mcgrof@kernel.org>,
 	Tvrtko Ursulin <tursulin@ursulin.net>,
 	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
 	Bart Van Assche <bvanassche@acm.org>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Leon Romanovsky <leon@kernel.org>,
+	Leon Romanovsky <leon@kernel.org>,
 	Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
 	Hans de Goede <hansg@kernel.org>,
 	Mauro Carvalho Chehab <mchehab@kernel.org>,
@@ -76,11 +95,11 @@ Cc: Luis Chamberlain <mcgrof@kernel.org>,
 	Alan Stern <stern@rowland.harvard.edu>,
 	Jason Wang <jasowang@redhat.com>,
 	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-	Eugenio =?iso-8859-1?Q?P=E9rez?= <eperezma@redhat.com>,
+	Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>,
 	Jason Baron <jbaron@akamai.com>, Jim Cromie <jim.cromie@gmail.com>,
 	Tiwei Bie <tiwei.btw@antgroup.com>,
 	Benjamin Berg <benjamin.berg@intel.com>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
 	"David E. Box" <david.e.box@linux.intel.com>,
 	"Maciej W. Rozycki" <macro@orcam.me.uk>,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
@@ -119,9 +138,10 @@ Cc: Luis Chamberlain <mcgrof@kernel.org>,
 	linux-fsdevel@vger.kernel.org, linux-hardening@vger.kernel.org
 Subject: Re: [PATCH 01/11] params: bound array element output to the caller's
  page buffer
-Message-ID: <ah699hwLxIIOZ0-7@ashevche-desk.local>
+Message-ID: <20260602123344.GG2487554@ziepe.ca>
 References: <20260521133315.work.845-kees@kernel.org>
  <20260521133326.2465264-1-kees@kernel.org>
+ <ah699hwLxIIOZ0-7@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -130,71 +150,29 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260521133326.2465264-1-kees@kernel.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <ah699hwLxIIOZ0-7@ashevche-desk.local>
 
-On Thu, May 21, 2026 at 06:33:14AM -0700, Kees Cook wrote:
+On Tue, Jun 02, 2026 at 02:26:46PM +0300, Andy Shevchenko wrote:
+> On Thu, May 21, 2026 at 06:33:14AM -0700, Kees Cook wrote:
+> > 
+> > param_array_get() appends each element's string representation into the
+> > shared sysfs page buffer by passing buffer + off to the element getter.
+> > 
+> > That works for getters that only write a small bounded string, but
+> > param_get_charp() and similar helpers format against PAGE_SIZE from the
+> > pointer they receive. Once off is non-zero, an element getter can
+> > therefore write past the end of the original sysfs page buffer.
+> > 
+> > Collect each element into a temporary PAGE_SIZE buffer first and then
+> > copy only the remaining space into the caller's page buffer.
 > 
-> param_array_get() appends each element's string representation into the
-> shared sysfs page buffer by passing buffer + off to the element getter.
+> ...
 > 
-> That works for getters that only write a small bounded string, but
-> param_get_charp() and similar helpers format against PAGE_SIZE from the
-> pointer they receive. Once off is non-zero, an element getter can
-> therefore write past the end of the original sysfs page buffer.
+> > +	elem_buf = kmalloc(PAGE_SIZE, GFP_KERNEL);
 > 
-> Collect each element into a temporary PAGE_SIZE buffer first and then
-> copy only the remaining space into the caller's page buffer.
+> get_free_page() (or how it is called)?
 
-...
+I thought modern mm guidance was to use kmalloc whenever possible and
+not use get_free_page() unless you intend to use the struct page bits?
 
-> +	elem_buf = kmalloc(PAGE_SIZE, GFP_KERNEL);
-
-get_free_page() (or how it is called)?
-
-> +	if (!elem_buf)
-> +		return -ENOMEM;
-> +
->  	for (i = off = 0; i < (arr->num ? *arr->num : arr->max); i++) {
-> -		/* Replace \n with comma */
-> -		if (i)
-> -			buffer[off - 1] = ',';
->  		p.arg = arr->elem + arr->elemsize * i;
->  		check_kparam_locked(p.mod);
-> -		ret = arr->ops->get(buffer + off, &p);
-> +		ret = arr->ops->get(elem_buf, &p);
->  		if (ret < 0)
-> -			return ret;
-> +			goto out;
-> +		ret = min(ret, (int)(PAGE_SIZE - 1 - off));
-
-It's usually discouraged to use castings in min/max/clamp. Can we make ret long
-or do something different here?
-
-> +		if (!ret)
-> +			break;
-
-> +		/* Replace the previous element's trailing newline with a comma. */
-> +		if (i)
-> +			buffer[off - 1] = ',';
-
-Can't we do this after with help of strreplace()?
-
-> +		memcpy(buffer + off, elem_buf, ret);
->  		off += ret;
-> +		if (off == PAGE_SIZE - 1)
-> +			break;
->  	}
->  	buffer[off] = '\0';
-> -	return off;
-> +	ret = off;
-> +out:
-> +	kfree(elem_buf);
-> +	return ret;
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Jason
