@@ -1,140 +1,160 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C795939185A;
-	Wed,  3 Jun 2026 06:12:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E16C3DD51C
+	for <linux-serial@vger.kernel.org>; Wed,  3 Jun 2026 06:12:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780467149; cv=none; b=CgzZk+NwcK0WYiTy0nwlFEOAEOI7oahDsa/wsR+Cq3jVUhQqE9YkndVmGqCglOIBGO8ZNjN+HA/2/4WhzV0jR1lkfmjxnasuJ863siwAIkfcn2ZZ+p1RH8NILX6lUFlZYJxZdmV171jqiO8Pj4dsMPi8ioe6UaJyt1VfS5XSEqM=
+	t=1780467165; cv=none; b=u2dcE38KjW5aJgvvQorzpECuHkMIwtMAjabaZPUND8Sp43wUpwzOjn1R2f+FnO8GnntQDh9RDs6d4H8BGcJggm3UnwhgiagECV4ORVcH1yxVPHQjqUhnFU5pnI3D3SuBarH1IwoeQp6KIOeV6QFXWL6P7/ogr4RAHs+zNVxysPo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780467149; c=relaxed/simple;
-	bh=lWua7L1jv5UtNvdc6yeGGeYTxb77zzMx5sRkHDfVUgw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=lC2OE+p1KwDy9TSn+rMz4Bxc8BvC1eGVVVrXlQfvL4hwCcAEvlu8jQCZyLFRQxNXen9pqtvuW2h4DvzPItcRY9NaakKoAvP8u5d/yniEv92V9Qj8arssW3tVHHtznrDnus4dzTsGUt49AvSHZ8TBXwCxd4L3Pe+dX6YP+MPcTNw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fnaPve3u; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1780467165; c=relaxed/simple;
+	bh=67TOdBDK9HIeLAv4kEUcUJ5q4In9gBjUL94U49pu/w0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=OEgNSLFQxNn9xEmL1WeO9qETQl7p4wvvTUa+2f1VUkqerZffVKGBYqxT3BM6K/GbMH6U9vj2m2H6pzOnucv0dCW/c31WzS5z+eK2k7Jps+LsjPuSYh9GDa+MpGrELefRydDcGX1nwuFmFZkGRz/2x3HGjodWVGJMpxnvFjSY41w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=lni9LCYP; arc=none smtp.client-ip=209.85.128.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fnaPve3u"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E6911F00893;
-	Wed,  3 Jun 2026 06:12:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780467148;
-	bh=xblQ9U4dvtYKZ4bHc3qWJV+1Pl6Dr159OoqxR5Vhjfk=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=fnaPve3ubog03IU7GfDdY5x164tyQON11uSlB5+rMmYMAJKs8ynvEM0nYwL/dykl9
-	 JV2oGm60IqG0mUDIyxCCqYnK5cGZKXkCsrzbxoKJWl4KwDidRTXa7vxCpU/WewZsNt
-	 00PuTtHPFqPNiAgA4bYXVosGn7U/fNMgP8zLVovDpGXUqD7mlBKRhRZAmXLIFx16Jj
-	 EeptElYp794Ni8OVMtFcBrLiMpTuhyu5Y8u6nFUxpqJsTQFKtwQS/C8VeKFF4EKALf
-	 17vc1d4mn1ETDZgGiLau6HIPoBOpuFWwrVGCfIMG3Jr/F+mYYQ199Liq6SRvmqa028
-	 nOsKbw8Lg3Z6g==
-Message-ID: <fb50984b-b2c1-4a79-8644-db761f85a7f2@kernel.org>
-Date: Wed, 3 Jun 2026 08:12:24 +0200
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="lni9LCYP"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-490388fd0dbso121063835e9.0
+        for <linux-serial@vger.kernel.org>; Tue, 02 Jun 2026 23:12:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1780467162; x=1781071962; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=SeHjJpOX5iItAoNBdoCEh/ep58mKCyjW9XCZ7Do+vR4=;
+        b=lni9LCYP0rt8bh3YJhs+5cpAEAsMaFBWzwekWr/M1jSTdWslmVnOMxVGu2wnw7nbVF
+         DcqDogn0R4o20XebYp1nv0wTTO1YJlTQRqAf326suiwkBOXvqEsGRS1+KV305r4pxPtN
+         DWdW1fBlKXZzJz3mjfXFb46bp+H+ZKhWy48JFWxnv0FQPx+OT+IUEZoF7euGXO/yOIqM
+         yYNZVFEnBUC0BrmTGDbMWW047uA3AAfLZ0FVTH2xzcbIFzPGZxMblT8z1EDl2ffcJfvk
+         q8jk6aOlczilm53ePhkgxBwhetMCHVto6f1IT1NKaMmTEUvLJXukHMLgI50R7PE9Liyq
+         KFcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780467162; x=1781071962;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=SeHjJpOX5iItAoNBdoCEh/ep58mKCyjW9XCZ7Do+vR4=;
+        b=hs1lgISxpM78i3yKV1mgx9nwTODnaH8fjVH7VsywYY4Vll0GUYD/G8uh7oDgfiCcBK
+         8nlbxpleiwnNn88ZByv5pTaacDw8a4brBUuniDSCZdsMLin7aKKVXbmZtkDzpBg7tetq
+         HSVMMRJdMEtwpQPy88t8VuwkkrDbKbLqB6dAVtvzVMe8l/NNGxqeXEzdH8Xq53siAktR
+         TB6Lh3l8KyDNXMyOsSUJuswWSzEDSkM9b05sMqpfi8ZE4+J8AqZJIpbrLEa5MqfpDP2J
+         gTMysVjjDYtDsfo2zsBIWWchozc+PM0WnnzTd5+mQjrfjJVMcncmazW+AztKCoyKL0S0
+         go3w==
+X-Forwarded-Encrypted: i=1; AFNElJ9dSxpmXYa1DKqXBr3Ku8QN28sDDjRii3F2G4Z2fw1vx4yhT+6rc0qwW10i0CUetGBybgh4IBk5ok2AQvs=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw4wQW4+Jsg1JHqfH7JXeRjgc4KUkzxkcZUvqcPhW8zFyxXvyEu
+	3V7RxuweRsCN6wvc1+RRqy7awa8tYy/0d7ik7IALFE9HEHSzHIaJAsjT7GrXo45Oznc=
+X-Gm-Gg: Acq92OFNsJoeWAhkyfEoQxMIUZpruZLb0kykG6B9aIoa0zF/Q75IsuCC0GbR1LWhCY1
+	ppbZLJ34xCw5b9dqQ0GVgy+bevnNyMeRNpRtxbGKF/QFBRqZjYk4KYGkpvocjeIb9BpXd+kjjfk
+	L4m7hg5J4ApR2AoonmYMMvMCH0opH4l9KvjMHQLSid8XrkiIbnqorABogBNt2OMjK3FzikKTTnu
+	nRRjK9MoDlyST7/r/FbutFg0z5FA19BQ6uGZZt6OcVMAKdoG1kzPyA4vzYzGMFMuZD7v/rCBx2x
+	bsMN2YoV8+t9VNOTjea4Fy5siWznpbAu1sRYr4Pmn9BgqKye/GLYmailfMH5dEvO23yRB1U9GAh
+	9kPtIuMtp251PPGHWKGHF8Y4cD9IL8mvR0A80TNAMc4dxYMw8RlIibTTjzrg7CkNOtfx+nzxUAa
+	T+TcS6OTqNYXE+aTsWN84K+y5M3XMjIPTg/3qMxHfFCuc=
+X-Received: by 2002:a05:600c:810c:b0:490:afc5:f95d with SMTP id 5b1f17b1804b1-490b5e82e89mr29711625e9.29.1780467161989;
+        Tue, 02 Jun 2026 23:12:41 -0700 (PDT)
+Received: from localhost ([90.85.134.233])
+        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-490b6d16f0csm28732765e9.15.2026.06.02.23.12.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Jun 2026 23:12:40 -0700 (PDT)
+Date: Wed, 3 Jun 2026 08:12:38 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Markus Schneider-Pargmann <msp@baylibre.com>, 
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] serial: 8250_pci: Consistently define pci_device_ids
+ using named initializers
+Message-ID: <ah_DFCQH9e47qBp7@monoceros>
+References: <20260428144033.1037617-2-u.kleine-koenig@baylibre.com>
+ <ah87KOm0nfAyvr4c@black.igk.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] tty: vt: hold tty reference for keyboard callbacks
-To: Morduan Zang <zhangdandan@uniontech.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- syzkaller-bugs@googlegroups.com,
- syzbot+2932e8970a6398db95c3@syzkaller.appspotmail.com,
- Zhan Jun <zhanjun@uniontech.com>
-References: <5186FF3C10B2F8A0+20260602061539.1500845-1-zhangdandan@uniontech.com>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <5186FF3C10B2F8A0+20260602061539.1500845-1-zhangdandan@uniontech.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="lzawbrcz4xcmfx2j"
+Content-Disposition: inline
+In-Reply-To: <ah87KOm0nfAyvr4c@black.igk.intel.com>
 
-On 02. 06. 26, 8:15, Morduan Zang wrote:
-> From: Zhan Jun <zhanjun@uniontech.com>
-> 
-> syzbot reported a use-after-free in stop_tty() when the VT
-> keyboard path handles the hold key.
-> 
-> The keyboard event path reads vc->port.tty under kbd_event_lock,
-> but con_shutdown() clears the pointer under console_lock and the tty
-> can be released after the final close. The keyboard lock therefore
-> does not protect the tty lifetime.
-> 
-> Let the VT port own a tty reference by using tty_port_tty_set() when
-> installing and shutting down the console tty. Use tty_port_tty_get()
-> in the keyboard paths before dereferencing vc->port.tty and drop the
-> reference after the last use.
-> 
-> Reported-by: syzbot+2932e8970a6398db95c3@syzkaller.appspotmail.com
-> Closes: https://lore.kernel.org/all/6a1dde0d.bd48a97d.14881d.0005.GAE@google.com/
-> Signed-off-by: Zhan Jun <zhanjun@uniontech.com>
-> ---
->   drivers/tty/vt/keyboard.c | 17 ++++++++++++-----
->   drivers/tty/vt/vt.c       |  4 ++--
->   2 files changed, 14 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
-> index dfdea0842149..19f8df9706ee 100644
-> --- a/drivers/tty/vt/keyboard.c
-> +++ b/drivers/tty/vt/keyboard.c
-> @@ -509,9 +509,13 @@ static void fn_show_ptregs(struct vc_data *vc)
->   
->   static void fn_hold(struct vc_data *vc)
->   {
-> -	struct tty_struct *tty = vc->port.tty;
-> +	struct tty_struct *tty;
-> +
-> +	if (rep)
-> +		return;
->   
-> -	if (rep || !tty)
-> +	tty = tty_port_tty_get(&vc->port);
 
-We have guards (tty_port_tty) and you should use those.
+--lzawbrcz4xcmfx2j
+Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v3] serial: 8250_pci: Consistently define pci_device_ids
+ using named initializers
+MIME-Version: 1.0
 
-thanks,
--- 
-js
-suse labs
+On Tue, Jun 02, 2026 at 10:20:56PM +0200, Andy Shevchenko wrote:
+> On Tue, Apr 28, 2026 at 04:40:33PM +0200, Uwe Kleine-K=F6nig (The Capable=
+ Hub) wrote:
+> > ... and PCI device helpers.
+> >=20
+> > The various struct pci_device_id were defined using a mixture of
+> > initialization by position and by name. Some use the PCI device helpers
+> > (like PCI_DEVICE and PCI_DEVICE_SUB) and others don't.
+> >=20
+> > Consistently use named initializers, drop assignments of 0 by position
+> > for .class and .class_mask and use the PCI device helpers. Also use
+> > consistent line-breaks and positioning for opening and closing curly
+> > braces.
+> >=20
+> > The secret plan is to make struct pci_device_id::driver_data an
+> > anonymous union (similar to
+> > https://lore.kernel.org/all/cover.1776579304.git.u.kleine-koenig@baylib=
+re.com/)
+> > and that requires named initializers. But it's also a nice cleanup on
+> > its own.
+> >=20
+> > This patch doesn't change the compiled result; this was verified using
+> > an allmodconfig with several things disabled that make reproducible
+> > builds harder on x86 and arm64.
+>=20
+> This patch broke the build.
+>=20
+> drivers/tty/serial/8250/8250_pci.c:5398:12: error: initializer overrides =
+prior initialization of this subobject [-Werror,-Winitializer-overrides]
+>  5398 |                 .class =3D PCI_CLASS_COMMUNICATION_MULTISERIAL <<=
+ 8,
+>       |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> include/linux/pci_ids.h:74:45: note: expanded from macro 'PCI_CLASS_COMMU=
+NICATION_MULTISERIAL'
+>    74 | #define PCI_CLASS_COMMUNICATION_MULTISERIAL 0x0702
+>=20
+> and so on...
+
+Oh, it works fine for me with clang 19.1.7, gcc 11.3.0, gcc 12.4.0, gcc
+13.3.0, gcc 14.2.0 and gcc 15.2.0, but I agree it's a bit obscure
+because .class and .class_mask are specified twice; once by PCI_VDEVICE
+and once explicitly.
+
+Which compiler are you using that breaks here? I guess I might have
+broken more drivers this way, so it would be great to have a setup to
+reproduce your issue.
+
+Once all the initializer are converted to named initialisation, we
+should definitively drop the assignment to .class and .class_mask in
+PCI_VDEVICE, but that doesn't work yet.
+
+Best regards
+Uwe
+
+--lzawbrcz4xcmfx2j
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmofxdQACgkQj4D7WH0S
+/k700QgAlRtvzCIb+0k9xcRIMXHN1U7DkTYASRyk/6nQfcrCuiYy7RRXEvl/0Esl
+tdLT5A1h8QawVPBIQWNH6bdwAR0fcMy1RoFklG2laZlfG9ONXTF+03O6cBwTs7oN
+KS7LCH1L5d1nlqQqcFLZ2RblHcsZL0ITWKN0lkF1Rs3c++LMTkMvb61IbOfPWHkY
+WVlocswX37I2/vTMNNKdRb2WQXU/hDoMgM7Jm/4cS9DPgJ0wLU9TllpvA7ukEYmP
+KajH8G/JTUpQK29jfciXW63WhvZhpRKg/S9+BE8dTSahBCGW3WTKrDpO9NBuSxjz
+beQSuvHqhF+U4dcqs39Gy7pLSiRwdQ==
+=NYhb
+-----END PGP SIGNATURE-----
+
+--lzawbrcz4xcmfx2j--
