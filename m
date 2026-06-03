@@ -1,89 +1,108 @@
-Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com [209.85.161.71])
+Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 446623016E3
-	for <linux-serial@vger.kernel.org>; Tue,  2 Jun 2026 20:32:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.71
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07A513DCDB0
+	for <linux-serial@vger.kernel.org>; Wed,  3 Jun 2026 02:59:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780432349; cv=none; b=Nle9N7vVA35D/x+53mo4h2el/Dzkjt7tRI6cLMsYMWSH3kCb7D1M4aujiQby9fW1tlRtz6gSaT0IyfoZkWVKd7DAUNrmudF/rg8KA6vyzlIBd2sVBNHWoVJKyHSuTdEwKLnMmQBIPPm+3noXqX0HrRer54J7YiTRYOqrfOXti20=
+	t=1780455557; cv=none; b=IMn2azMdeOJxLKUuNV9phWfRtxKkBfdEhXKuCFAWOJoxYxA7xEs3ZUmbs5vBztaKepMuwFBtBm5G3lIMTfs/Xp0HAFWE3+4G6kXXPXaDD9CHY9LQprJng0KCCzC4c5mmqt3hEhycLG6njcYrtTFMsUSlc8iBHaTSJdNOuqrjrb8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780432349; c=relaxed/simple;
-	bh=H2gkJR24pry5U4LjfE9+pFHWEyrXWujhLtUcny7ZOLA=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=s1gw9fVgfN3tndfRTxV0UBYWwzNnmPytJ4v27I7toHgEm3QvTWEH3jJBc9JihWr8N/4H1C3LJY278B63+lazX8Y4rtWazCK74wQ+ZLwJDmVsrqBOfHlLbweI7hI/C9znYPS6af0zzVv48rEEDqrU2i1Miyvcr+BjVZAKiEJoen0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.71
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f71.google.com with SMTP id 006d021491bc7-69d6b83becaso15334162eaf.2
-        for <linux-serial@vger.kernel.org>; Tue, 02 Jun 2026 13:32:28 -0700 (PDT)
+	s=arc-20240116; t=1780455557; c=relaxed/simple;
+	bh=gX6a4+NLwKi7rV6ZInPZFYyjhB+ssYjt8EtCqQtXz7s=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Ltlf5BIY4Q4okJ7TS+Q/EF1gQw3o9sBMnNU0zTYpbQLikR5Ju70pCBbxi0tZabYlbHrZyyq6kYXusL7w5TGMaFT8pEeqXHUO884CCF/qguQFRzpRryisMeYS15Ie8YUpYvwYKpbbqNIS+7f/jKa773YweMzKfIBsM/9Kes/ytJk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DsKLhw+j; arc=none smtp.client-ip=209.85.214.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DsKLhw+j"
+Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-2c168baac83so978705ad.2
+        for <linux-serial@vger.kernel.org>; Tue, 02 Jun 2026 19:59:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1780455555; x=1781060355; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=3USj/+ztE88i2k2s18GnugDmZKrDU3UbbzkTJE6QuT8=;
+        b=DsKLhw+jhZPi6C7UUahqXtPtj8MWGrWFDA5Cdj3cHD6tWS8seqe9k98Ub6AKe5ndJY
+         h71QmsJGP6L1tUOFxf/n98n6UUyGDfpuBQbNTCIbh/VBwIRZ429KF8dbZ1qL99a9ysaR
+         nekZEjtZUUUD2vruLIU2+K+UJhkTNK/yvjHtIBsmtEF8DF4TQj40AJCiC4MEDwFFACmo
+         jQp5DMSG3/Ftipvhe5gAZrePX9uBEYkf9PVwp2R00+k4q9JVt0kdd8ZLTXmX5ciQZmcv
+         0LkJUFva0FZ1JEhcmybMmafN3/YsyvkEM643Km0mcKMzrwnqTHyJHGDcbuCyu/LtiUk8
+         WhZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780432347; x=1781037147;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=0VsFzeDjTwAUyw0QkQexIXGaMwUsKu5Ktl1KgQY4+EA=;
-        b=m/RooLG52UFgcZpLLobAYOkLiZJeAohJlhSH5ofK73e/tFu4BesBu5QMtgKNyRXh5k
-         OCq7KoDu4aLvQU/6KUiyeTcUKWCROXbAnt2zHZVAHpKzKbDLGI5lKD+zZjwJOPk40YAK
-         MQ4nFfvZoyY/RXVyRkfUKjQNXx+OekQzJBzKurOAVg7ZT7enBLzClpsgPgQvFDvEzKRY
-         LpT/uVcwy0YDok2RhbbJXzm9vAb2YC3iZqEwnaw8H6z7CSOGgG/TtH0FPiykLDzD+aq/
-         TZNghmPOS+tyul5f2V5lgu7rQhE5tpoOGxCdhYdyZxBDC/+gJc0el1O/guIsSJ979pY2
-         w/Tw==
-X-Forwarded-Encrypted: i=1; AFNElJ+SUIDUpT8wGA2+jePnJpsM6Y6p1h6EBQ8eIZaP4p7vIF45rZydC644q3KHZL/BxiRe/Dh13LoyLtJEAWY=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzt4J/oG8xQR14KjxiX97ELoFbnD6IOpuCQw2sGvL2Rxsd/7Xua
-	sOb/WVOZ+zUCmhruth0yFLZfSRejYcYk3/IS/Qj5yRIRxrwVygcZVwQb/N3wLfcJWd9W8L/5Fra
-	UJQgmuLFzYPFSdCx7K2irfc1G74zF+wozrkE4H3bU4KTqqAJ+gfvcpnjVYAo=
+        d=1e100.net; s=20251104; t=1780455555; x=1781060355;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3USj/+ztE88i2k2s18GnugDmZKrDU3UbbzkTJE6QuT8=;
+        b=ZSqhC4o1Y2wqGRHcy6FB3ExdIszsmxvkjXZ2GfS4+cuCPqE2qgsaEzf6CQShsh2Kyr
+         cb9WNpYKpp9i5cik8K+05dAHGrbpfLKs4yzsPu/dJ0PsuaXX0yQkPNqF0a6J+s8KJPX8
+         h5D86769Bt1gS1TQtwaTqGg8bZUnLot558N8QLmYLTlAtr3gyobgZm7LUOxjheOKdDJU
+         j952UCFMplq4O60rFRY3KbA6Mk0/hOW1ffDQDr9TgyYzsFu+pNj1hDqiFNKgExRpdzex
+         bib75uXTjhg+tKCy8fMb9QEbtpPsMH9p7IGIWe0UoFRB4nt8rG5+esJ0tzmoOoREoGcG
+         P4Aw==
+X-Gm-Message-State: AOJu0YzCUS26InbTTEupvNEHGu3Jd+2mrKkIXLOkN9mOBDf97lmRPxii
+	4rhRpr4P/Tm2TLD/meoZVVchahARUlevLmuG1llUTpqFVhSQWr28/DRj8XrN6WOW
+X-Gm-Gg: Acq92OGhNkI9aBEheW2//7TzHrOHKao4vmxjcUHqaxEe+EFu4I0531WAmDFPQREhrTv
+	CuHMIDhcs8NG0fa/tkqzjuJCzMgBMTefgFVRiWZqDKZVyKH87YKcaul2DWuRsCSqk0Inrcz9hjv
+	2zVprpH6C705qibIQabSQoHduL+c/9/sAW6051phdBvKx6Rlirp/tH0BaEPzVFzLsaZBRXkM0jR
+	37kuJKV3t/++75m2FhELWomimJKyg2dbNchaIlEs0eI973A67JCpZV/i5PiQluh/2902Ww9EYrj
+	g7jlWWGWFToDgKeE4336T7wwHvJfpiKdq1dqt0aKwbRhIJZnzY40C5ZV0ogrDGGxrQ/kcifNom+
+	g/G6X2bHbFOkLLdZDvIA0FufQLuw0mjC4QloayorYtiP98HSZOsmVF2CL/8aluzQ8j0OmSaIClS
+	8NBHl6DciVQP4NL555LB2G1EreH9Vjp0XFCujs51YkLgIqXutC//l6y3zVTS9izf1NxTWI17Bzp
+	qIJBtrZp0udeA8tkBPv/OlvMguqTCDgWexGDDehnCp6zQ==
+X-Received: by 2002:a17:903:2410:b0:2c0:b6c7:2273 with SMTP id d9443c01a7336-2c163a257e8mr14341345ad.3.1780455555160;
+        Tue, 02 Jun 2026 19:59:15 -0700 (PDT)
+Received: from ryzen ([2601:644:8000:5b5d:7285:c2ff:fe45:8a32])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c164f6d395sm8093805ad.17.2026.06.02.19.59.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Jun 2026 19:59:14 -0700 (PDT)
+From: Rosen Penev <rosenp@gmail.com>
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Frank Li <Frank.Li@nxp.com>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	linux-kernel@vger.kernel.org (open list:TTY LAYER AND SERIAL DRIVERS),
+	imx@lists.linux.dev (open list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE),
+	linux-arm-kernel@lists.infradead.org (moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE)
+Subject: [PATCH 0/3] serial: mxs-auart: devm conversion, clock rework, and IRQ ordering fixes
+Date: Tue,  2 Jun 2026 19:58:54 -0700
+Message-ID: <20260603025857.287148-1-rosenp@gmail.com>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:61c:b0:69d:82e6:69d6 with SMTP id
- 006d021491bc7-69e47ec335amr483722eaf.21.1780432347445; Tue, 02 Jun 2026
- 13:32:27 -0700 (PDT)
-Date: Tue, 02 Jun 2026 13:32:27 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a1f3ddb.7b89b7e1.205e57.0009.GAE@google.com>
-Subject: [syzbot] Monthly serial report (Jun 2026)
-From: syzbot <syzbot+listf633da172023c35927ca@syzkaller.appspotmail.com>
-To: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-Hello serial maintainers/developers,
+This series cleans up the mxs-auart driver by converting to devm-managed
+resources, fixing clock prepare/enable ordering, and addressing IRQ
+registration races.
 
-This is a 31-day syzbot report for the serial subsystem.
-All related reports/information can be found at:
-https://syzkaller.appspot.com/upstream/s/serial
+Patch 1 reworks the clock handling to use devm_clk_get_enabled and
+reorders clk_prepare_enable after clk_set_rate to avoid
+CLK_SET_RATE_GATE failures.
 
-During the period, 1 new issues were detected and 0 were fixed.
-In total, 16 issues are still open and 48 have already been fixed.
-There are also 3 low-priority issues.
+Patch 2 converts iomem mapping and GPIO IRQ requests to devm,
+removing the manual cleanup paths.
 
-Some of the still happening issues:
+Patch 3 moves the main UART IRQ registration after uart_add_one_port
+so the port state is initialized before the handler can run, and
+manages the module clock for console vs non-console ports correctly.
 
-Ref Crashes Repro Title
-<1> 196     No    possible deadlock in kbd_event
-                  https://syzkaller.appspot.com/bug?extid=781c8bb5e4d62cc883d3
-<2> 62      No    KMSAN: uninit-value in n_tty_lookahead_flow_ctrl (2)
-                  https://syzkaller.appspot.com/bug?extid=290abdcd4f509377a0eb
-<3> 10      No    KASAN: slab-use-after-free Read in kbd_event (2)
-                  https://syzkaller.appspot.com/bug?extid=098cefc0911c68db5dab
-<4> 3701    Yes   KMSAN: uninit-value in n_tty_receive_buf_standard
-                  https://syzkaller.appspot.com/bug?extid=559c7fe4b8bac56d38c2
-<5> 359     Yes   KMSAN: uninit-value in n_tty_receive_buf_closing (3)
-                  https://syzkaller.appspot.com/bug?extid=dd514b5f0cf048aec256
-<6> 137     Yes   possible deadlock in tty_buffer_flush (3)
-                  https://syzkaller.appspot.com/bug?extid=52cf91760dcb1dac6376
+Rosen Penev (3):
+  serial: mxs-auart: rework clock handling in mxs_get_clks and probe
+  serial: mxs-auart: use devm resources for iomem and GPIO IRQs
+  serial: mxs-auart: fix IRQ registration ordering and manage console
+    clock
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ drivers/tty/serial/mxs-auart.c | 133 ++++++++++++++-------------------
+ 1 file changed, 55 insertions(+), 78 deletions(-)
 
-To disable reminders for individual bugs, reply with the following command:
-#syz set <Ref> no-reminders
+-- 
+2.54.0
 
-To change bug's subsystems, reply with:
-#syz set <Ref> subsystems: new-subsystem
-
-You may send multiple commands in a single email message.
