@@ -1,170 +1,140 @@
-Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D5073DDDD4
-	for <linux-serial@vger.kernel.org>; Wed,  3 Jun 2026 02:59:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C795939185A;
+	Wed,  3 Jun 2026 06:12:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780455565; cv=none; b=hFZVqXIrPcnSWGDN+31TB02r3tkGdNtEvKWFwk4sQMF6FtN8o/vPKN7DJpGTl82z4oQwIAyiPR6yuUHHKb8Ta4L1F0oxW4eGAO6X+XviGNHnEamGpN9qUc5kGlnU8IW4+CZVuztiIDupS3fwVWRNNF1wmYiCp6ZtsaZelN+GeJU=
+	t=1780467149; cv=none; b=CgzZk+NwcK0WYiTy0nwlFEOAEOI7oahDsa/wsR+Cq3jVUhQqE9YkndVmGqCglOIBGO8ZNjN+HA/2/4WhzV0jR1lkfmjxnasuJ863siwAIkfcn2ZZ+p1RH8NILX6lUFlZYJxZdmV171jqiO8Pj4dsMPi8ioe6UaJyt1VfS5XSEqM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780455565; c=relaxed/simple;
-	bh=FvzXCTxllUlReWFN1nSFe7p5Rlpa73XzrCT7b2L5aBM=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=BiWEHbEXg92wQg32PKnb/IL/BlLTxQ/oz1YW19NNkalmUoYPD5g6ufshR5ZMlSM84o7+pqFrJK66CDTvaP/YtHbyWwb4tWE3o9Ze3NRf1obwx0Cojov4H0tEX5TpRiJ5R+oWsz5yb2TuvquPkVpKi4dCa+z2+s74UBkm5kksuRw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Znd+I2PA; arc=none smtp.client-ip=209.85.214.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1780467149; c=relaxed/simple;
+	bh=lWua7L1jv5UtNvdc6yeGGeYTxb77zzMx5sRkHDfVUgw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=lC2OE+p1KwDy9TSn+rMz4Bxc8BvC1eGVVVrXlQfvL4hwCcAEvlu8jQCZyLFRQxNXen9pqtvuW2h4DvzPItcRY9NaakKoAvP8u5d/yniEv92V9Qj8arssW3tVHHtznrDnus4dzTsGUt49AvSHZ8TBXwCxd4L3Pe+dX6YP+MPcTNw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fnaPve3u; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Znd+I2PA"
-Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-2c0c32f6ce1so21480885ad.2
-        for <linux-serial@vger.kernel.org>; Tue, 02 Jun 2026 19:59:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780455559; x=1781060359; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=CQM8/bXLwnHI0Nwp6B/mbCtcMHwqmZBefz4Rf3Ov6Bg=;
-        b=Znd+I2PAUjLF896gtUB5FqH8pEHWwb8vmMdAgrCPL/3yjl9ehaqiw/E31OoPCOsQ7m
-         f2ZXPWQ4VhqDV1tQ4lIf17buzTN+Jh4wcw6FrfzrGuRr84bt6qxQMN/41PAKsPXbCoeu
-         KRIYWLb1Dy6XiT5eEK1Kx4NYTuDWYb2BDNPoXLLP7Kd9DKcwWmScGXLsvb5O466X62Rw
-         pnMFJELAjW8hQOQlKxzZOtArn7fhmis1cJw7+IJG5/QZ07mu2/up9+AUnI/EKsPP+76a
-         M41Mp8eUmms2MET8TalBhfwaBG+gSfty4DRNP+Chl3CujSh8S5emCRO2/YqhBLPkARtR
-         0iQw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780455559; x=1781060359;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=CQM8/bXLwnHI0Nwp6B/mbCtcMHwqmZBefz4Rf3Ov6Bg=;
-        b=oiIs8dr05S1so0LyCGTK64C9dM+BKkipY9oGZvMB8FzA0wiRUnkDoqoAJnSIuXOSx+
-         /JYzjKIpgjnmVdXjQ86Z8MQuH3dSES+zc++MiM3PyLVjVk2BH9xrnsfbL3ME9o+cAnjR
-         4PDL0EPqjkS2SIgvxAP5JoFx2dTuDdj+OU0cBkQwkA5VzxNmvTu6Qgeq10I7ae+7S4q7
-         UZHqW9aqO//J80COC2vD4EC9rONYUn9BQCPqQbAzBXa3YfFhOcLX2YanrECcjGYsNYcc
-         Q78o7XOD0lQlM0svvPZqEOE2bllR3t2MupMDzCg927OoV2ORzUAprfm+j2C0coyv3Rxa
-         D0Uw==
-X-Gm-Message-State: AOJu0Yx/d5qyQhoo78O5TdzbOj1TRwutYYG4AaF5OpxVIzjtm3+9jETl
-	KZKN5E40D4QvVJnQCE8VVT+26GrhXpY16w3NkExQqE9F9bWEDaI+0H+m+knz+sX5
-X-Gm-Gg: Acq92OEFVHK7p1JKWO7vnSnT3EINRTo/HqMEy3aMHPcVEHUIE4Yv23LagfKwQzOLZDn
-	BV6MMzI3TfbkqdjTSIB+WEMz+RvzKH70Me9KZppGTS4bS39+YG2m2LYxo8WF/TOVBHW2/HpeuUW
-	CLGAR98h7q4D//nx/buLkfJKsSrNLh/w+XniHToopetGDqlSb2wvmxDMWLeuNCMhb7oB7dOMLp/
-	r91HJbJspababo3XyeigQtZy+yNd5fFoevqtz7MvimzV1ivSJxExpDEjYe8+0RgVnctaVUzyHn0
-	PIVQQhDR63JxMgVT/dTyt8o2181xYcWmXdYI0nHwayJN2IpTrLO1oXlXF+nQgQNTlb5bGU+mNHo
-	g/wl2rY4SBvyALK1fEy3KEnmJQYRKh6bM9pFAVnCIgGdp4MeEFFMthD1w6qk4PxQoYa4hHUmTPt
-	xKjE5UqqUxgbEUCeyq/CThDTfIovusG0pm4ArkaPHXZL0X7+eck+wHdrmiEkDFvaqvqyuqg5Yrw
-	qlQGkmnJ6bl9KDq3EdZsJMYbYmBvNohIiENwpG5GAJCmQ==
-X-Received: by 2002:a17:903:948:b0:2bf:23ad:8595 with SMTP id d9443c01a7336-2c1639ec888mr14025245ad.4.1780455559275;
-        Tue, 02 Jun 2026 19:59:19 -0700 (PDT)
-Received: from ryzen ([2601:644:8000:5b5d:7285:c2ff:fe45:8a32])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c164f6d395sm8093805ad.17.2026.06.02.19.59.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Jun 2026 19:59:18 -0700 (PDT)
-From: Rosen Penev <rosenp@gmail.com>
-To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Frank Li <Frank.Li@nxp.com>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>,
-	linux-kernel@vger.kernel.org (open list:TTY LAYER AND SERIAL DRIVERS),
-	imx@lists.linux.dev (open list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE),
-	linux-arm-kernel@lists.infradead.org (moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE)
-Subject: [PATCH 3/3] serial: mxs-auart: fix IRQ registration ordering and manage console clock
-Date: Tue,  2 Jun 2026 19:58:57 -0700
-Message-ID: <20260603025857.287148-4-rosenp@gmail.com>
-X-Mailer: git-send-email 2.54.0
-In-Reply-To: <20260603025857.287148-1-rosenp@gmail.com>
-References: <20260603025857.287148-1-rosenp@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fnaPve3u"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E6911F00893;
+	Wed,  3 Jun 2026 06:12:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1780467148;
+	bh=xblQ9U4dvtYKZ4bHc3qWJV+1Pl6Dr159OoqxR5Vhjfk=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=fnaPve3ubog03IU7GfDdY5x164tyQON11uSlB5+rMmYMAJKs8ynvEM0nYwL/dykl9
+	 JV2oGm60IqG0mUDIyxCCqYnK5cGZKXkCsrzbxoKJWl4KwDidRTXa7vxCpU/WewZsNt
+	 00PuTtHPFqPNiAgA4bYXVosGn7U/fNMgP8zLVovDpGXUqD7mlBKRhRZAmXLIFx16Jj
+	 EeptElYp794Ni8OVMtFcBrLiMpTuhyu5Y8u6nFUxpqJsTQFKtwQS/C8VeKFF4EKALf
+	 17vc1d4mn1ETDZgGiLau6HIPoBOpuFWwrVGCfIMG3Jr/F+mYYQ199Liq6SRvmqa028
+	 nOsKbw8Lg3Z6g==
+Message-ID: <fb50984b-b2c1-4a79-8644-db761f85a7f2@kernel.org>
+Date: Wed, 3 Jun 2026 08:12:24 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] tty: vt: hold tty reference for keyboard callbacks
+To: Morduan Zang <zhangdandan@uniontech.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ syzkaller-bugs@googlegroups.com,
+ syzbot+2932e8970a6398db95c3@syzkaller.appspotmail.com,
+ Zhan Jun <zhanjun@uniontech.com>
+References: <5186FF3C10B2F8A0+20260602061539.1500845-1-zhangdandan@uniontech.com>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <5186FF3C10B2F8A0+20260602061539.1500845-1-zhangdandan@uniontech.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Move the main UART IRQ registration after uart_add_one_port so that
-s->port.state and s->port.lock are initialized before the interrupt
-handler can run. Mask all UART interrupts before adding the port to
-prevent spurious IRQs left by the bootloader.
+On 02. 06. 26, 8:15, Morduan Zang wrote:
+> From: Zhan Jun <zhanjun@uniontech.com>
+> 
+> syzbot reported a use-after-free in stop_tty() when the VT
+> keyboard path handles the hold key.
+> 
+> The keyboard event path reads vc->port.tty under kbd_event_lock,
+> but con_shutdown() clears the pointer under console_lock and the tty
+> can be released after the final close. The keyboard lock therefore
+> does not protect the tty lifetime.
+> 
+> Let the VT port own a tty reference by using tty_port_tty_set() when
+> installing and shutting down the console tty. Use tty_port_tty_get()
+> in the keyboard paths before dereferencing vc->port.tty and drop the
+> reference after the last use.
+> 
+> Reported-by: syzbot+2932e8970a6398db95c3@syzkaller.appspotmail.com
+> Closes: https://lore.kernel.org/all/6a1dde0d.bd48a97d.14881d.0005.GAE@google.com/
+> Signed-off-by: Zhan Jun <zhanjun@uniontech.com>
+> ---
+>   drivers/tty/vt/keyboard.c | 17 ++++++++++++-----
+>   drivers/tty/vt/vt.c       |  4 ++--
+>   2 files changed, 14 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
+> index dfdea0842149..19f8df9706ee 100644
+> --- a/drivers/tty/vt/keyboard.c
+> +++ b/drivers/tty/vt/keyboard.c
+> @@ -509,9 +509,13 @@ static void fn_show_ptregs(struct vc_data *vc)
+>   
+>   static void fn_hold(struct vc_data *vc)
+>   {
+> -	struct tty_struct *tty = vc->port.tty;
+> +	struct tty_struct *tty;
+> +
+> +	if (rep)
+> +		return;
+>   
+> -	if (rep || !tty)
+> +	tty = tty_port_tty_get(&vc->port);
 
-After probe succeeds, disable the module clock for non-console ports
-since startup will re-enable it on port open. For console ports, keep
-the clock prepared so auart_console_write() can safely call
-clk_enable() from atomic context.
+We have guards (tty_port_tty) and you should use those.
 
-Assisted-by: opencode:big-pickle
-Signed-off-by: Rosen Penev <rosenp@gmail.com>
----
- drivers/tty/serial/mxs-auart.c | 39 ++++++++++++++++++++++++++--------
- 1 file changed, 30 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index 4499e3206e85..d40d82f112c0 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -1603,10 +1603,6 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 	}
-
- 	s->port.irq = irq;
--	ret = devm_request_irq(&pdev->dev, irq, mxs_auart_irq_handle, 0,
--			       dev_name(&pdev->dev), s);
--	if (ret)
--		goto out_disable_clk;
-
- 	platform_set_drvdata(pdev, s);
-
-@@ -1627,9 +1623,28 @@ static int mxs_auart_probe(struct platform_device *pdev)
-
- 	mxs_auart_reset_deassert(s);
-
-+	/* Mask all UART interrupts to prevent spurious IRQs from bootloader */
-+	mxs_write(0, s, REG_INTR);
-+
- 	ret = uart_add_one_port(&auart_driver, &s->port);
--	if (ret)
--		goto out_free_qpio_irq;
-+	if (ret) {
-+		auart_port[s->port.line] = NULL;
-+		goto out_disable_clk;
-+	}
-+
-+	/*
-+	 * Request the main IRQ after uart_add_one_port so that
-+	 * s->port.state and s->port.lock are initialized before
-+	 * the handler can run in response to a bootloader-left
-+	 * interrupt.
-+	 */
-+	ret = devm_request_irq(&pdev->dev, irq, mxs_auart_irq_handle, 0,
-+			       dev_name(&pdev->dev), s);
-+	if (ret) {
-+		uart_remove_one_port(&auart_driver, &s->port);
-+		auart_port[s->port.line] = NULL;
-+		goto out_disable_clk;
-+	}
-
- 	/* ASM9260 don't have version reg */
- 	if (is_asm9260_auart(s)) {
-@@ -1641,10 +1656,16 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 			 (version >> 16) & 0xff, version & 0xffff);
- 	}
-
--	return 0;
-+	/*
-+	 * Disable clock - startup will re-enable when the port is opened.
-+	 * For the console port the clock must stay prepared so that
-+	 * auart_console_write() can safely call clk_enable() from
-+	 * atomic context.
-+	 */
-+	if (!uart_console(&s->port))
-+		clk_disable_unprepare(s->clk);
-
--out_free_qpio_irq:
--	auart_port[s->port.line] = NULL;
-+	return 0;
-
- out_disable_clk:
- 	clk_disable_unprepare(s->clk);
---
-2.54.0
-
+thanks,
+-- 
+js
+suse labs
