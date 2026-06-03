@@ -1,76 +1,75 @@
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74C703B3C10
-	for <linux-serial@vger.kernel.org>; Wed,  3 Jun 2026 11:21:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8553544B695
+	for <linux-serial@vger.kernel.org>; Wed,  3 Jun 2026 11:22:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780485706; cv=none; b=UybPp7uxHE9r0TRg8GBAbIRk5ka2y5McKact0VVmfFIRG8AnYt6etYnG386xtpNskMC9W5IP9WMKoYJ1pjopPN8XHowty/ed8pEVzox3O0dHrX8RY9ibZ2E4bhUs0QSFa6bj8BAUQGx5RC8wWAbVE1p28oef7OdZDwCxSSDDRhw=
+	t=1780485773; cv=none; b=LRsVqwJmrgeHii/Nag+2RJ3BRxOXt2qrijWs6IFnLERIGKaV7743KUpHqUV0xrF9mY7Hw+012utXskpUnWfXVxSN9MblYTWT/VQt/ML11hGn2YPmZAg3eaCfryDZKnmcHKxx/jU1DhhGWR+GUFBiCIMGjHTWx/Y6keqRiUK9Byc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780485706; c=relaxed/simple;
-	bh=nIqkF5ASL5Z8tthKaaIt53wSzJu7hBKPa+tYBbtxx80=;
+	s=arc-20240116; t=1780485773; c=relaxed/simple;
+	bh=Q4DKFnKTkXnH2MRSHvTJDU1ApcN24yLZrIQOnYqNs4I=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GhgE+qGeRCK/66rem/OcndUjzdqA2SgNaJ0anZb0AQP9cGhXNN8S0P74Ud1Ijv02gZ91qqdlx5B+yOcmh1EXd6MbF0tjZHXrxvSPICp/pxWB1h65/EvasknfnIKc383/xILY/iYAtb7CGEgeolw9w9xcWvQZmR6ASmb9gQpqZIE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=R9gm9u8K; arc=none smtp.client-ip=209.85.128.43
+	 Content-Type:Content-Disposition:In-Reply-To; b=jYiRGOWhCdFz19HveW3zb8uTAj6afZFT/EnOojU0XHnrTjs1oxpeNqfpCWVkxdjdk+batv+JLOrsCtN9rRdOOA5jreahe01vnCiHKA+lBgt70dUqPX8ttIVPIKNnB/Bjk43nSok2ZyOA7EVGG3KC8weLOVOIPsGlXCBRCf1KWrA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=FqCJEFSk; arc=none smtp.client-ip=209.85.221.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="R9gm9u8K"
-Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-49050ff7cbdso117340405e9.2
-        for <linux-serial@vger.kernel.org>; Wed, 03 Jun 2026 04:21:44 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="FqCJEFSk"
+Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-45ef616daf6so5118482f8f.3
+        for <linux-serial@vger.kernel.org>; Wed, 03 Jun 2026 04:22:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1780485703; x=1781090503; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1780485769; x=1781090569; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=jS6SynuX5go4hQ+C8XBPVB+2hr5QcfLOE/mAwESXrFA=;
-        b=R9gm9u8KZiMpgC39/GVqe/7GpVsZFM5tAuIz6iJng44NAFZzPyDppmop6tcCdEd5M1
-         CLDn2As5Ff6Ifk4mTr2+vtx0Utbr3NLlRdCagJ8M4msjdb3ejzZF3+97uF/MKR54Z9Kr
-         E9exedm0HbNA7zzJVNjhue+IDDPnfR1hlUNkXqN4/FRgkEw1RmXt4Fv7FfBMuQTdg1b7
-         DDWTZS9wHCaba2BKDs05Tk/hX0Z0+CIK858Q/0rBdfP2ay5Hoc/0+dt8WEqlWASkoNO4
-         Y7zDgZaYu60G7L/xTocqRfC9GWsoDuRNkBDERuykhfgVO4gNWEvjKkXRumaPjuiCH1x9
-         QhwQ==
+        bh=J8ClaSNt3nVsD3hSnn8Q1Kd+bnUOa5drJtgOVLhyR2Q=;
+        b=FqCJEFSk3hhR/q3dgI/InqN8VHjOShdUrJ+XffU7i1Jovi4XzIaJdcpoW4XxRfCbaY
+         acw57XitvxCxMZQht/UxuF93tF66fFwfv0RP3IQ+oDcVjDU1AZYo88/G5P2r5FuRWYKu
+         HtOCqndpy2sXAzyo0QED2XZWbuDYEv3/9+RyeB/Fbtg0ARRsT2Xr1/lLQuLVfrbt/Qib
+         Ln4L90HlGiUs1eE7ghnxmnv45/9wGCADQgA2R16BawxFZEpb2DK7A6QRYmFMHz34vhtF
+         hbGe6d1ASIXGWoWebS08RyIPSrgMN4stn/0JOeCXHShmi+pnJ5pMzIe5mTkQXM/E4Sli
+         pG5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780485703; x=1781090503;
+        d=1e100.net; s=20251104; t=1780485769; x=1781090569;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=jS6SynuX5go4hQ+C8XBPVB+2hr5QcfLOE/mAwESXrFA=;
-        b=pH0TaSEVP0nRu9Km35lTFTVura5DHurtd3G76mwTmow3ddi5NfnTdcjnradMWrMDHA
-         QIgjebc9+7u8UdVNpV8HXNyOOV+jfkcI6vvAxZmpN+7r0F+ZjTlhWhcGM9HAF6rwiz+G
-         9kNGmbNOWCbO7h17kbu14ZgjeAGzLcnEa6DTEM9eBUCnG/CicH1ZFqbJjNPHu3kiI8SL
-         +pKc31fzUdgXEa9tJUVBnQ6DRuhurenYfNgQxWENBaDnxdi3+mMr2fNU2sIh2gA6cSdo
-         /hfJoEnGRZQXror7YNPl/6wko7Li/t8fe/ynPLQuUOkGcguoYrUtkoHgrroUAXQdZo81
-         3yKw==
-X-Forwarded-Encrypted: i=1; AFNElJ8wUngUNBC7TWNNoRbn8VvMxKpemlLgw56eOEDOG17sZAK0ATrytZNNx0IAGQWXa0Dft/e28B+5lREUhjs=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz/ybkby34LysTAmIRE8DJRClFsIikI7mbZPjqjpLbbh4Sxfb+F
-	EpZrVbSFHeGqlEzKTdRgS/j14SxbfSLkWmd30oiPynkvQRyp3nznQZZ/3//CF6vfVq0=
-X-Gm-Gg: Acq92OH/BuohWy6o3VI7rqBdr1oC9wQ/3HRnmfiyXFMk/922CCQvBZTn1jqxdsR8QuP
-	31zv0YnAQmnsGmgKf5wFMpyEJ2ZMzG4AgFqzr7qRJJJzAhVfZSUHDI1J0Sr2Oefw/68i9tGTbDF
-	yIXPCPCAlXiG9Tzj7DySajgfZVyJYMaQ784as0FwiuxQYogrS4YwabBYCC3xtN8cPDYvk7as0fH
-	U4T1zsoyQpP9tEyHg1wHGVjg36Wbp9KLdapFI4etxRjY8/XJ0l0L3Wv+GwFL3O4yTqF5oniAEZy
-	cAIEqvjvm007+2u9zV9elEsuEucagmOm/3oUEIjvvE5VWstG79NKZPbXddrSiHR7ElEk8QA2BFV
-	rQIwJx0tt8tYYzJkBmNVXCLCkzbsjd0ZbO1zggg0CvNCGFiwq37KNgc8wl/gPiA4+S65DBrbHDy
-	oLFKusi3segnPJagv6uYHTyQq/Gvvw1UYe
-X-Received: by 2002:a05:600c:5394:b0:490:b65f:8b1 with SMTP id 5b1f17b1804b1-490b65f09c4mr49953065e9.5.1780485703014;
-        Wed, 03 Jun 2026 04:21:43 -0700 (PDT)
+        bh=J8ClaSNt3nVsD3hSnn8Q1Kd+bnUOa5drJtgOVLhyR2Q=;
+        b=Oa3FN87Cvv8XRQmq6CQ0N8fgaN1SiXED4eGgVGC4c8iG4njdB3vDTak7Hmq6e0s9lb
+         ET7pDBFld/ZANUXSLUTix+mW8p8112S6nM01Vte+QjOXppRkg42NR/vTvDJ9shkTP1n2
+         gCKtykSBojHcfjz4XGXFM+eNrm32p5RVgf4goWzQJvVKVWUzsSBGE0aIIWIav2fuoWpe
+         CiFFDn6qtDxNTUFe1W1LO71P3+OZvJVwvZrjJmvhg8bfu6gVCKwOlGRSYNbNKDdZ2dug
+         rDYzMAc3LKXZaBQsVGAQ/Q7nSTsOa/651eISfhj5WDZilpaaQHL4RLfIuHU3bRiATkqY
+         HIFw==
+X-Forwarded-Encrypted: i=1; AFNElJ+Yk9CUlnaG6kPG+3l+e2wCxzO9yiAy2XAUh2fO+jdzjdYrta1FQjrSIkEwZr/B0RDXPRkwlntRoENx9Gg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YykKNcw24X56ASWLvX5qwPKGFZNnjrf+GjnGGa/eLQuT1h5wSCK
+	ekJLmD586Abfo3co1qV/qKWO8BZ/NW12/TWW+RdseR139YpWxPZ2Nljlw0uNjlxUOSM=
+X-Gm-Gg: Acq92OEcFGGBCbq10HZuY+YuRW3vMS4RdhWe2EvOT/YyU4wn9IgaxZpDr43B3/zgG1k
+	5kKoXp2s4VKd/hyimcKwEx4ZeCzGrYd59tPsZI45kJmOcW7m12DZfdson3XOKbZff77bEMQPXQ2
+	ywepujZCBcd2F8JkqXu9wGVr9x6c0PdTREIpbM87h4kbhDE60mc8+WHdWEaKERt0F/8YjBxc56V
+	4WccKnv4DkOUrjc02MhGxlgdbPSKPpOmagc8T7ZmvQQRrNpLmg2qQgptMJY7iWsAh5KDMj3R+03
+	rltHWY7AJXNdCEytYd6hrL8qPkpNIolp5/HSURAI3nEkRTG0aCgYWOGujQRXhe3Ud4w7UnsSgjf
+	92T72NKfXciytxMUrXpCHBYQ0ptpbN3qdVfI080qc9hIUZCWN53pnXu2eCqoN7jhWKXLuLrlW1V
+	Z/zDpyQKJ0Kt62t9kD8jYUVlIyJsrYhwTU
+X-Received: by 2002:a05:600c:19d2:b0:490:7136:ad02 with SMTP id 5b1f17b1804b1-490b5e94d63mr47004625e9.7.1780485768988;
+        Wed, 03 Jun 2026 04:22:48 -0700 (PDT)
 Received: from localhost ([90.85.134.233])
-        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-490b6162289sm51754535e9.6.2026.06.03.04.21.41
+        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-490b63e63d7sm56975025e9.12.2026.06.03.04.22.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Jun 2026 04:21:42 -0700 (PDT)
-Date: Wed, 3 Jun 2026 13:21:40 +0200
+        Wed, 03 Jun 2026 04:22:48 -0700 (PDT)
+Date: Wed, 3 Jun 2026 13:22:46 +0200
 From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>
 To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Markus Schneider-Pargmann <msp@baylibre.com>, 
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] serial: 8250_pci: Consistently define pci_device_ids
- using named initializers
-Message-ID: <aiANetMk3rkR0SyW@monoceros>
-References: <20260428144033.1037617-2-u.kleine-koenig@baylibre.com>
- <ah87KOm0nfAyvr4c@black.igk.intel.com>
- <ah_DFCQH9e47qBp7@monoceros>
- <ah_Iovpb8N2OTucV@ashevche-desk.local>
- <ah_2rD9UPEYu78mv@monoceros>
+	Jiri Slaby <jirislaby@kernel.org>, Florian Eckert <fe@dev.tdt.de>, 
+	Martin Roukala =?utf-8?B?KG7DqSBQZXJlcyk=?= <martin.roukala@mupuf.org>, Kees Cook <kees@kernel.org>, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH] serial: 8250_pci: Don't specify conflicting values to
+ pci_device_id members
+Message-ID: <aiAOUgufC0psz8qJ@monoceros>
+References: <20260603095616.937968-2-u.kleine-koenig@baylibre.com>
+ <aiAFzfU4jsB2iAXi@ashevche-desk.local>
+ <aiAHR3y3RZtl7L_p@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -78,86 +77,79 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="m2pthcughyzn7cc5"
+	protocol="application/pgp-signature"; boundary="nadutpmwmhyvgz6h"
 Content-Disposition: inline
-In-Reply-To: <ah_2rD9UPEYu78mv@monoceros>
+In-Reply-To: <aiAHR3y3RZtl7L_p@ashevche-desk.local>
 
 
---m2pthcughyzn7cc5
+--nadutpmwmhyvgz6h
 Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v3] serial: 8250_pci: Consistently define pci_device_ids
- using named initializers
+Subject: Re: [PATCH] serial: 8250_pci: Don't specify conflicting values to
+ pci_device_id members
 MIME-Version: 1.0
 
 Hello Andy,
 
-On Wed, Jun 03, 2026 at 11:43:14AM +0200, Uwe Kleine-K=F6nig (The Capable H=
-ub) wrote:
-> On Wed, Jun 03, 2026 at 09:24:34AM +0300, Andy Shevchenko wrote:
-> > On Wed, Jun 03, 2026 at 08:12:38AM +0200, Uwe Kleine-K=F6nig (The Capab=
+On Wed, Jun 03, 2026 at 01:51:51PM +0300, Andy Shevchenko wrote:
+> On Wed, Jun 03, 2026 at 01:45:37PM +0300, Andy Shevchenko wrote:
+> > On Wed, Jun 03, 2026 at 11:56:16AM +0200, Uwe Kleine-K=F6nig (The Capab=
 le Hub) wrote:
-> > > On Tue, Jun 02, 2026 at 10:20:56PM +0200, Andy Shevchenko wrote:
-> > > > This patch broke the build.
-> > > >=20
-> > > > drivers/tty/serial/8250/8250_pci.c:5398:12: error: initializer over=
-rides prior initialization of this subobject [-Werror,-Winitializer-overrid=
-es]
-> > > >  5398 |                 .class =3D PCI_CLASS_COMMUNICATION_MULTISER=
-IAL << 8,
-> > > >       |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
-~~~~~~
-> > > > include/linux/pci_ids.h:74:45: note: expanded from macro 'PCI_CLASS=
-_COMMUNICATION_MULTISERIAL'
-> > > >    74 | #define PCI_CLASS_COMMUNICATION_MULTISERIAL 0x0702
-> > > >=20
-> > > > and so on...
+> > > The PCI_VDEVICE macro assigns 0 to .class and .class_mask to allow the
+> > > next value in the initializer to define the value for .driver_data.
 > > >=20
-> > > Oh, it works fine for me with clang 19.1.7, gcc 11.3.0, gcc 12.4.0, g=
-cc
-> > > 13.3.0, gcc 14.2.0 and gcc 15.2.0, but I agree it's a bit obscure
-> > > because .class and .class_mask are specified twice; once by PCI_VDEVI=
-CE
-> > > and once explicitly.
+> > > So the construct
+> > >=20
+> > > 	{
+> > > 		PCI_VDEVICE(INTASHIELD, 0x0D21),
+> > > 		.class =3D PCI_CLASS_COMMUNICATION_MULTISERIAL << 8,
+> > > 		.class_mask =3D 0xffff00,
+> > > 		.driver_data =3D pbn_b2_4_115200,
+> > > 	},
+> > >=20
+> > > introduced in commit 44e55f1f3088 ("serial: 8250_pci: Consistently
+> > > define pci_device_ids using named initializers") has conflicting
+> > > assignments. In only some configurations (i.e. W=3D1 for me) that mak=
+es
+> > > the compiler unhappy.
+> > >=20
+> > > So convert the two affected items to PCI_DEVICE which doesn't have th=
+at
+> > > hidden assigment to .class and .class_mask.
 > >=20
-> > > Which compiler are you using that breaks here? I guess I might have
-> > > broken more drivers this way, so it would be great to have a setup to
-> > > reproduce your issue.
+> > Reported-by? Closes?
 > >=20
-> > My make command:
+> > > Fixes: 44e55f1f3088 ("serial: 8250_pci: Consistently define pci_devic=
+e_ids using named initializers")
+> > > Signed-off-by: Uwe Kleine-K=F6nig (The Capable Hub) <u.kleine-koenig@=
+baylibre.com>
 > >=20
-> > 	make LLVM=3D-19 W=3D1 C=3D1 CF=3D-D__CHECK_ENDIAN__ ...
-> >=20
-> > The line the above error is from is from your patch.
+> > I will test it right away.
 >=20
-> OK, I can reproduce with that cmdline, thanks. Expect a patch in a
-> moment.
+> Reported-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Closes: https://lore.kernel.org/linux-serial/ah_5qVKOf8LXG1Xo@ashevche-de=
+sk.local/T/#ma6eab90ca801b4292639f5c255a89b4033b33d21
+> Tested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-The pity is that an x86 allmodconfig fails to build for different
-reasons with W=3D1, so I cannot easily use that to check for other drivers
-that got that same clash between PCI_VDEVICE + explicit .class assignment :=
--\
+Thanks for the quick confirmation and also for providing the footers
+that I should have added already.
 
-I'll experiment a bit about how to identify those, maybe I'll have grep
-over all my patches ...
-
-Best regards
 Uwe
 
---m2pthcughyzn7cc5
+--nadutpmwmhyvgz6h
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmogDkIACgkQj4D7WH0S
-/k7HtQgAnOesES942UIO2uoPm0wa6h2SdMgEDPjFv9FJsZW6UWUw1tStsKkAxi/L
-H8H8vOEvqQ2bd5XMJFImNXvdRmFl7VEsXWi2jc0wZzaV7vsBhpV3yOlWSnWjHhBk
-ODf1eRbGzVhf/bHyYUNOoUodMWtd+zeDwvB6Ev6eK04basmonY+8mvdCTkWxStcE
-4KdTgi6a4ig+n+a0PujetPaLqIr4mX8ey6SuyaxUjdobadjECBXW9C3cyvjNGqLX
-S1PvuWS5DefRuESkTUPFuNVacmOB6e4QNiF6XuGVrp73MF3ya86TBOEj9HQtOg3d
-KwpkItvKUOElfGTuUW7RYxh5P1AwyA==
-=ZoKu
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmogDoQACgkQj4D7WH0S
+/k4PQQf/UcvFTkUSamGGlPhBXSJxmdBJSiNE575NXB7eckVW22KUDN1TEYvhQziI
+b3P+jD8zq/WBxw/WCzBzX0x9asQ1kflPOG1pTOh8dzgwtuTqE1+G4kCJfJkaTP/O
+V3DtTe76FB7cOKt1DwQveCAcc0AJkdkmv90wFjhmX8WeTSOFAPxqoDaVxJb/xxIA
+8vqdVckO22lgj3uMtCL4mFlqqvdbY3P5mdWj4z0YXTTZbsFm7amyzqJaEHCNi0t1
+6UG9IywGP9QGZSXWOL7gsCJsYaVZ9R2U3FgdTKTqLndJyvfuuiF/a2C4SfQC6fxj
+I/PfQufyooljAHRav0+x5WNGriaBfQ==
+=cQHt
 -----END PGP SIGNATURE-----
 
---m2pthcughyzn7cc5--
+--nadutpmwmhyvgz6h--
