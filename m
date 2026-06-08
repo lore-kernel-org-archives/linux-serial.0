@@ -1,107 +1,115 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ua1-f68.google.com (mail-ua1-f68.google.com [209.85.222.68])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32084322B72;
-	Mon,  8 Jun 2026 11:35:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780918527; cv=none; b=NvbDCuK8jUEIMSXeZbJMTlZx3DLjeOutjTmaFCJdmgfR47jA6KfqMgoK/DSnT0cro4QwmrN8oUsHk1YSZTbYP4+xHbOaf88943U7bRU7o6CgnVMKSw1+x9dC3Yq7++d31UEdNt9uNxumzzqLuNW9j7E4Zkufy8mmvCmSvZLi4Ps=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780918527; c=relaxed/simple;
-	bh=Qw8fXZ0vajUc2OiursIodvtf/o6TMPUXHTngha4cC1k=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mDm65YpgsfD4nFBDyszc60EuLYiiMl3Ij/+BGcJjMMHsfmTJz3F+NUX+euJCf/yX943mjCf3urKhf1QV5mHOxgTfBTdao2nJ+TTLAtATDoDvHAuS/TmnEH4YZ7TXRnax95wUbwQXvPpkvhgnSqHPZdfLx4yyhMUYwlqc+0+M9+k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XYIaQGbl; arc=none smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 782213CA487
+	for <linux-serial@vger.kernel.org>; Mon,  8 Jun 2026 16:40:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.222.68
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780936853; cv=pass; b=k3Dt8AYw+mo48gwCr7GMv2FCBz9xNQAqF3xHMaXM4EXJLuN8I99kCoJKBKsM8SDJLGsRvFK4b6MY+bqgSEa48FXizPhKJ0AIgHqqQqE9ZDgr+P9xVvggLWGZJ2YKmEuqnmVEGyWNq3I26rlVdRLWlzpk2I2fHwUjE9RBvnt/uT0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780936853; c=relaxed/simple;
+	bh=rx5DadAO67UpdbFbKqO4wfxzyxKs/HiVe57B5TgYgWY=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=FxbkbzgmHtdRC/j2pqcdYKeJuokkc/ZwO64Btua6G0js+UtQAlWUk53tCBhS6zD444tQuzXg9hhwPaUrXeY2DOiug3X0yo5XSisEQFJDOTGEtQTf7K2ojHggolcFTOR9iNIDjghe/C6+l2WnAJtt1LTrYpRtb/Y3R3XmJovh8BE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RbTyU0BS; arc=pass smtp.client-ip=209.85.222.68
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XYIaQGbl"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780918525; x=1812454525;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Qw8fXZ0vajUc2OiursIodvtf/o6TMPUXHTngha4cC1k=;
-  b=XYIaQGblIQYLmXKMohK6d6RZYs9d9jjb8jZ0ED/6DZNlbrxcOHKcdr2J
-   dkLWWNzHJKgUInfJdKs2NzD9A9s0H/80wDV3epJmsBz6ycoZzZQvf052J
-   2S7rafYUHuAGKpg3JPbC+wJKRVo8QOBqSO6iZPUPn/6xZWdiwAdFe/oLD
-   T/WSRO4iBtNMGB/BeaI+xbzFSgIKM44vJah+Z3ZBKK/GadKop/8hXxPZT
-   HNYNPbDICwRv6tjtu2nqVi5V6yB/GpPB62QZxdsqiP1G8nDSYz2CsY2AV
-   Rjh1+KIIlZgZBoGY/17QQfSSWaRSlR7ztUsH+XTpXvV5Fa/xW+3vCixY5
-   A==;
-X-CSE-ConnectionGUID: ssmqC4tGT1e2HwTR0YcxBA==
-X-CSE-MsgGUID: 3wcEm8ctQ9abYffG23Go9g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11810"; a="93136778"
-X-IronPort-AV: E=Sophos;i="6.24,194,1774335600"; 
-   d="scan'208";a="93136778"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2026 04:35:25 -0700
-X-CSE-ConnectionGUID: AyRP7u2nTFG1l2xi9Cue5w==
-X-CSE-MsgGUID: n8VpTXe8STmTZiG3T16PFg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,194,1774335600"; 
-   d="scan'208";a="244672757"
-Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.110])
-  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2026 04:35:23 -0700
-Date: Mon, 8 Jun 2026 14:35:19 +0300
-From: "andriy.shevchenko@linux.intel.com" <andriy.shevchenko@linux.intel.com>
-To: Matthias Feser <mfe@kbsgmbhfr.onmicrosoft.com>
-Cc: Moteen Shah <m-shah@ti.com>,
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	"gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-	"jirislaby@kernel.org" <jirislaby@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"k-willis@ti.com" <k-willis@ti.com>,
-	"msp@baylibre.com" <msp@baylibre.com>
-Subject: Re: [PATCH v5] serial: 8250_omap: clear rx_running on zero-length
- DMA completes
-Message-ID: <aiao9z_rDqJlgu4G@ashevche-desk.local>
-References: <BE3P281MB5515563BFB5DE5E093ADAD9DEE0E2@BE3P281MB5515.DEUP281.PROD.OUTLOOK.COM>
- <4b8c59fe-c6a1-47cb-ab3b-855b1edddde2@ti.com>
- <BE3P281MB55153573889A8124C06291F1EE0F2@BE3P281MB5515.DEUP281.PROD.OUTLOOK.COM>
- <ab76b900-6d1c-4218-a14a-59541b92f2c6@ti.com>
- <BE3P281MB5515A937D47F610974FAEFA7EE0F2@BE3P281MB5515.DEUP281.PROD.OUTLOOK.COM>
- <ede98ffc-9e34-46a5-8d8f-87894fbf9d12@ti.com>
- <BE3P281MB55155F2F5795E411F5A65282EE0B2@BE3P281MB5515.DEUP281.PROD.OUTLOOK.COM>
- <ah8i-aGuHTKcRpaA@ashevche-desk.local>
- <BE3P281MB5515D220F1679A21D35D9619EE1C2@BE3P281MB5515.DEUP281.PROD.OUTLOOK.COM>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RbTyU0BS"
+Received: by mail-ua1-f68.google.com with SMTP id a1e0cc1a2514c-9640111c168so1548784241.2
+        for <linux-serial@vger.kernel.org>; Mon, 08 Jun 2026 09:40:52 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1780936851; cv=none;
+        d=google.com; s=arc-20240605;
+        b=VfL27VFCqGfNtFWhNEHdoPRdXqOuCtQx0gRjxgBoUoPYnmd+5wHqz8v9IG9C248urt
+         erzy0PZ7z6/7BSt1hkHpNnDgn0q8ieHRJkehKwXVUiOo/gh4u7BifowJJFjj+nEk87gn
+         DoRmnb6VdN9CUnmUcd6Q7aUPhoq0fi6NgV5ou2k8eEfD6c4hgPQn17oZO4z7LHdl7xsN
+         HUbJeqwYUyCxfgs7+UvrnxdcsrQn0wSGqBmfrWEtxM3icOsR96r+vi8nNMaT6SG540Vk
+         sMwmiup5e4vAv7tZ8nWzDDCwE6Sl47ES4+TMRc9s8hx0j86MBYNUn6/XiYLhRWM8PhTV
+         y4XQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=rx5DadAO67UpdbFbKqO4wfxzyxKs/HiVe57B5TgYgWY=;
+        fh=m0xDAUJ8vwyC4QdHSgeprThCUNPwpD+gbyCiDrNkLYM=;
+        b=UuBzBAXbX6abY4/nXi6p1NlcttyTN2tFvSi89p4iTE2m9jymKQmVEuTfaAQaD+4rNC
+         i4imNCRQz7LAMlwDYT4NMguQ7aeaIsOcNMq519NqZO0BzjkcFk9KCPhI5GjpfHFgX85C
+         iMaTQNebRwQkxuSv5+A6uUxBfPKATHx83O1gVkRjKHklcjX+py+0Hgw2FeZE4Ti0XzF2
+         enIba1hdHVuZGxVycSF+i/j6kWyzucMsm6IuXcZvWmUZGQvALpYfqQXMcgwKMHnImpxZ
+         wz/hnIJoLZtJCPlrC+vN8z929yxuyuCVcOHzALLrMpobalVlzrrAOd9o+cHMKY0dpiBs
+         elkg==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1780936851; x=1781541651; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=rx5DadAO67UpdbFbKqO4wfxzyxKs/HiVe57B5TgYgWY=;
+        b=RbTyU0BShHTU+KT9tAqrgsehEw9vlCIxxcgWC5lkKPNJ2WNaq14odqI2b7owWKiPOR
+         +/JMAOf+1OtcPmdXlaz278QwJpw99E5rOpMcOTLvZSGM/s8+Fm1KDrKX0obxFCG2KQnP
+         VXtQgvCTzwF9RcgmH1fgpieZAXRpCpKVlS9jZldxkeI97A9NN5Hral6c01CHexdxiLgo
+         s0puiRH4V4pzolW76cAgmV1CwWZUicqS5PUn9SdolFLV3CqOT6fJBw8DehGBWwOspmRf
+         2UKOfl+Y7oQAwjPR2UaDpy4+9NS2+eaVL6u1prVogVlqiBUnZZ29B1eZLuExxobztndC
+         miew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780936851; x=1781541651;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=rx5DadAO67UpdbFbKqO4wfxzyxKs/HiVe57B5TgYgWY=;
+        b=TG8w9nQQidV8DUL//dZnRCNMsHjU81pO0c+h14symsx6TjIS5c6jgxdsTReR+vmx0c
+         USLcCK+ovhOUA1nXwEcS0phipXQYBoXrBObj9hmt5+/eDfPgwZ/jXnxIqSK3EMfVo1pC
+         bPOJR6MGOCNSeM23yoysqNdoA913QlOZ+A4BUItJ729DlVIFea2709APADGPqhuWZ27z
+         hhAD4rk6oBOJe22Wts6U0k/a7fZDhjspdZiwtogk84TXKWIascf6KvzRFUr8I34EmRVB
+         oMUESbVtiqOqIGsb5OezmX4VC+8uSixxRTec9fMkpQDFgD/ATyyw4UjncP+RL0u5H/la
+         AJZw==
+X-Forwarded-Encrypted: i=1; AFNElJ8jHnVIiAEIdA6uB5oA+zBUJKbPrW8ZHaE67vzvWcuMDF/8CprSbUTOpul+VTwu3aAh6eqeRZY8R64EnrM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxHiDrPmZphBUwYOputdVT1sFi+tKDQmighCbS7O0hC4mEQjr23
+	28UjCtAOOlgJ0fue0Ivu5dabmgvxuPGCBw2sKA2D/kUx4dYm7p+G7lI6REwdeGd/ZJ0yoWpuLV1
+	3QtZz7BCmdQG6lY10VEWPRXPeKCFqsNA=
+X-Gm-Gg: Acq92OGLT7mGRTAxB4QX+CSHF58CZ/ZSi51YmIkvN1TvYitkntcLvsY2/2cBMc8NYcK
+	kXXUrdgUmCMBS2hB3xE3AhCcObHlmIS+UmiWj+piP4HNr+F4f9wp2j25J2qE34qhnG/2KWa28Pm
+	wV+vvwUOixxldRM+gQhggIjuNzYrCQrC8bgDPogZGE3LFL9ctQSlFFPm9i98XaS42HwU066fjV5
+	u5yd3vgK0lkRepoH0iap1RKhceN0H3z9/RfOe86WSteWu2/fMlh7iR7VrmNvRzsO/fdgYRJ62kf
+	ettVBgak6+5g9/AEtO9QYcrVl+mWKYWYrvza7a5RrCKsEPGgcRl45Xsvgcdl+jj7F3u90JuDEOe
+	cUb8=
+X-Received: by 2002:a05:6102:5490:b0:607:4fde:1921 with SMTP id
+ ada2fe7eead31-6fefddf2777mr7527961137.24.1780936851466; Mon, 08 Jun 2026
+ 09:40:51 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BE3P281MB5515D220F1679A21D35D9619EE1C2@BE3P281MB5515.DEUP281.PROD.OUTLOOK.COM>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20260510052107.555825-1-enelsonmoore@gmail.com> <CAD++jLmUW4KjxEjwv7_an_dEMTSOtvG=q2MjhqKvnuGrWaaCsQ@mail.gmail.com>
+In-Reply-To: <CAD++jLmUW4KjxEjwv7_an_dEMTSOtvG=q2MjhqKvnuGrWaaCsQ@mail.gmail.com>
+From: Ethan Nelson-Moore <enelsonmoore@gmail.com>
+Date: Mon, 8 Jun 2026 09:40:39 -0700
+X-Gm-Features: AVVi8CckAHRTjPznUi9TSdmF40ARXCb9sYaYjHsEIjd_pzo-q6SLDDWWJhkDXvc
+Message-ID: <CADkSEUirvwVzdmGh0bS++cy8coOiMyuHNYQrC599eyVmWMh_Hw@mail.gmail.com>
+Subject: Re: [PATCH] ARM: footbridge: convert to sparse IRQs
+To: Linus Walleij <linusw@kernel.org>
+Cc: linux-arm-kernel@lists.infradead.org, linux-input@vger.kernel.org, 
+	linux-serial@vger.kernel.org, Russell King <linux@armlinux.org.uk>, 
+	Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>, Jiri Slaby <jirislaby@kernel.org>, 
+	"Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>, Kees Cook <kees@kernel.org>, 
+	Nathan Chancellor <nathan@kernel.org>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, 
+	Steven Rostedt <rostedt@goodmis.org>, Thomas Weissschuh <thomas.weissschuh@linutronix.de>, 
+	Peter Zijlstra <peterz@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jun 08, 2026 at 11:00:44AM +0000, Matthias Feser wrote:
-> On Tue, Jun 02, 2026, Andy Shevchenko wrote:
-> > I'm wondering if this opens a window when dma->rx_buf may be
-> > rewritten (or unmapped or something else) before tty layer has
-> > a chance to insert bytes to its ring buffer. I.o.w. is this
-> > change synchronous to other threads?
-> 
-> Good point.
-> 
-> RX DMA can be started from the DMA callback, the IRQ path, and
-> runtime resume. These paths appear to be protected by the same
-> driver locking.
-> 
-> At the point where rx_running is cleared, DMA has already been
-> terminated.
-> 
-> So I don't see a window where rx_buf could be overwritten, but
-> please let me know if there is a path where this could happen.
+Hi, Linus,
 
-I don't see either, that's why I was wondering. Btw, does AI notice
-anything of a such? I haven't checked Sashiko myself, others may
-have also run some other AI tools for that.
+On Mon, Jun 8, 2026 at 1:50=E2=80=AFAM Linus Walleij <linusw@kernel.org> wr=
+ote:
+> Have you tested this on real hardware?
+> The commit doesn't really say.
 
--- 
-With Best Regards,
-Andy Shevchenko
+No, I haven't. I can try to test it in GXemul, but I'm not sure if it
+can boot Linux. The developer only lists it as capable of booting
+NetBSD.
 
-
+Ethan
