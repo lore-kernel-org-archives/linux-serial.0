@@ -1,115 +1,118 @@
-Received: from mail-ua1-f68.google.com (mail-ua1-f68.google.com [209.85.222.68])
+Received: from mail-dy1-f170.google.com (mail-dy1-f170.google.com [74.125.82.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 782213CA487
-	for <linux-serial@vger.kernel.org>; Mon,  8 Jun 2026 16:40:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.222.68
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780936853; cv=pass; b=k3Dt8AYw+mo48gwCr7GMv2FCBz9xNQAqF3xHMaXM4EXJLuN8I99kCoJKBKsM8SDJLGsRvFK4b6MY+bqgSEa48FXizPhKJ0AIgHqqQqE9ZDgr+P9xVvggLWGZJ2YKmEuqnmVEGyWNq3I26rlVdRLWlzpk2I2fHwUjE9RBvnt/uT0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780936853; c=relaxed/simple;
-	bh=rx5DadAO67UpdbFbKqO4wfxzyxKs/HiVe57B5TgYgWY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=FxbkbzgmHtdRC/j2pqcdYKeJuokkc/ZwO64Btua6G0js+UtQAlWUk53tCBhS6zD444tQuzXg9hhwPaUrXeY2DOiug3X0yo5XSisEQFJDOTGEtQTf7K2ojHggolcFTOR9iNIDjghe/C6+l2WnAJtt1LTrYpRtb/Y3R3XmJovh8BE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RbTyU0BS; arc=pass smtp.client-ip=209.85.222.68
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B8E133CEB0
+	for <linux-serial@vger.kernel.org>; Mon,  8 Jun 2026 16:52:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.170
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780937567; cv=none; b=j29mxjEVnqjB21qnaQxBu89zcl0B7X9dX1lRKoTdboVj8e3LW2PS5qtyM5E3/uzQOv+qJFFh1DL1SFm+3xsL0ynoXAviQj10LPsd4xcFHqTbvFd9vu1M1Fgpr38KCvyPVEU3PYamUovEgncIAv0EHkEw/id8wRjeofGe6uG+MEo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780937567; c=relaxed/simple;
+	bh=gp1bLWk0W4SSinC4th4QfuO65u5aGtMyIzGqq8LfSDA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=sXtKWLfT0LCkFpsLa/ABm0HPW6iet3DRs/pFjGqo8UZ47OZbcCr78uJIpmCj/xIKnJES7vzSECMNl5H8SIXyaE3eqsOoK1xRvjZy7i7G5Y/Ss2VPqugQNoP6f1akGwqrrl3YR5k1UbKXzc9lfEWSEmWsyidIPFLwZ6v0rVpa7Gs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=q9Wvy2aD; arc=none smtp.client-ip=74.125.82.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RbTyU0BS"
-Received: by mail-ua1-f68.google.com with SMTP id a1e0cc1a2514c-9640111c168so1548784241.2
-        for <linux-serial@vger.kernel.org>; Mon, 08 Jun 2026 09:40:52 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1780936851; cv=none;
-        d=google.com; s=arc-20240605;
-        b=VfL27VFCqGfNtFWhNEHdoPRdXqOuCtQx0gRjxgBoUoPYnmd+5wHqz8v9IG9C248urt
-         erzy0PZ7z6/7BSt1hkHpNnDgn0q8ieHRJkehKwXVUiOo/gh4u7BifowJJFjj+nEk87gn
-         DoRmnb6VdN9CUnmUcd6Q7aUPhoq0fi6NgV5ou2k8eEfD6c4hgPQn17oZO4z7LHdl7xsN
-         HUbJeqwYUyCxfgs7+UvrnxdcsrQn0wSGqBmfrWEtxM3icOsR96r+vi8nNMaT6SG540Vk
-         sMwmiup5e4vAv7tZ8nWzDDCwE6Sl47ES4+TMRc9s8hx0j86MBYNUn6/XiYLhRWM8PhTV
-         y4XQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=rx5DadAO67UpdbFbKqO4wfxzyxKs/HiVe57B5TgYgWY=;
-        fh=m0xDAUJ8vwyC4QdHSgeprThCUNPwpD+gbyCiDrNkLYM=;
-        b=UuBzBAXbX6abY4/nXi6p1NlcttyTN2tFvSi89p4iTE2m9jymKQmVEuTfaAQaD+4rNC
-         i4imNCRQz7LAMlwDYT4NMguQ7aeaIsOcNMq519NqZO0BzjkcFk9KCPhI5GjpfHFgX85C
-         iMaTQNebRwQkxuSv5+A6uUxBfPKATHx83O1gVkRjKHklcjX+py+0Hgw2FeZE4Ti0XzF2
-         enIba1hdHVuZGxVycSF+i/j6kWyzucMsm6IuXcZvWmUZGQvALpYfqQXMcgwKMHnImpxZ
-         wz/hnIJoLZtJCPlrC+vN8z929yxuyuCVcOHzALLrMpobalVlzrrAOd9o+cHMKY0dpiBs
-         elkg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="q9Wvy2aD"
+Received: by mail-dy1-f170.google.com with SMTP id 5a478bee46e88-304cf518c9dso5545150eec.1
+        for <linux-serial@vger.kernel.org>; Mon, 08 Jun 2026 09:52:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780936851; x=1781541651; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=rx5DadAO67UpdbFbKqO4wfxzyxKs/HiVe57B5TgYgWY=;
-        b=RbTyU0BShHTU+KT9tAqrgsehEw9vlCIxxcgWC5lkKPNJ2WNaq14odqI2b7owWKiPOR
-         +/JMAOf+1OtcPmdXlaz278QwJpw99E5rOpMcOTLvZSGM/s8+Fm1KDrKX0obxFCG2KQnP
-         VXtQgvCTzwF9RcgmH1fgpieZAXRpCpKVlS9jZldxkeI97A9NN5Hral6c01CHexdxiLgo
-         s0puiRH4V4pzolW76cAgmV1CwWZUicqS5PUn9SdolFLV3CqOT6fJBw8DehGBWwOspmRf
-         2UKOfl+Y7oQAwjPR2UaDpy4+9NS2+eaVL6u1prVogVlqiBUnZZ29B1eZLuExxobztndC
-         miew==
+        d=gmail.com; s=20251104; t=1780937564; x=1781542364; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=omAGU0C3MD/oOe7cVIVwpjk2GpA2qrqblld/4zNfBb4=;
+        b=q9Wvy2aDa1qVVg3OFHEBQMkHcTXCgkrO8IwG9Vt2An39ftjBXb5lvdNg5IS6WOqcSO
+         ISURR4YUCDPmpp8/WbPxq+G/EpTfJDv7EsDAujt5bDABdj6DPV7RrjNkkKWV6kYVj2di
+         rPfbeCi9LGVQjtx81R9LGP62UrtxRRd/s7XCJu1DMnFQ0cDPdiMFbrSx2AGU045bjqOQ
+         hs6AG6fP70eoLsA1VfjRcL5YwTi1Q8JPYeOjLc6j8/sb9GLuy6btg+vWO6IhAHAkpBIS
+         uQbkJ3aJ1JK8FuyjA2nNeAXo9lzoU8TvSuxeErNk2NotTeVtgOf8wi/yYV2oieysD/i8
+         tMLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780936851; x=1781541651;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=rx5DadAO67UpdbFbKqO4wfxzyxKs/HiVe57B5TgYgWY=;
-        b=TG8w9nQQidV8DUL//dZnRCNMsHjU81pO0c+h14symsx6TjIS5c6jgxdsTReR+vmx0c
-         USLcCK+ovhOUA1nXwEcS0phipXQYBoXrBObj9hmt5+/eDfPgwZ/jXnxIqSK3EMfVo1pC
-         bPOJR6MGOCNSeM23yoysqNdoA913QlOZ+A4BUItJ729DlVIFea2709APADGPqhuWZ27z
-         hhAD4rk6oBOJe22Wts6U0k/a7fZDhjspdZiwtogk84TXKWIascf6KvzRFUr8I34EmRVB
-         oMUESbVtiqOqIGsb5OezmX4VC+8uSixxRTec9fMkpQDFgD/ATyyw4UjncP+RL0u5H/la
-         AJZw==
-X-Forwarded-Encrypted: i=1; AFNElJ8jHnVIiAEIdA6uB5oA+zBUJKbPrW8ZHaE67vzvWcuMDF/8CprSbUTOpul+VTwu3aAh6eqeRZY8R64EnrM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxHiDrPmZphBUwYOputdVT1sFi+tKDQmighCbS7O0hC4mEQjr23
-	28UjCtAOOlgJ0fue0Ivu5dabmgvxuPGCBw2sKA2D/kUx4dYm7p+G7lI6REwdeGd/ZJ0yoWpuLV1
-	3QtZz7BCmdQG6lY10VEWPRXPeKCFqsNA=
-X-Gm-Gg: Acq92OGLT7mGRTAxB4QX+CSHF58CZ/ZSi51YmIkvN1TvYitkntcLvsY2/2cBMc8NYcK
-	kXXUrdgUmCMBS2hB3xE3AhCcObHlmIS+UmiWj+piP4HNr+F4f9wp2j25J2qE34qhnG/2KWa28Pm
-	wV+vvwUOixxldRM+gQhggIjuNzYrCQrC8bgDPogZGE3LFL9ctQSlFFPm9i98XaS42HwU066fjV5
-	u5yd3vgK0lkRepoH0iap1RKhceN0H3z9/RfOe86WSteWu2/fMlh7iR7VrmNvRzsO/fdgYRJ62kf
-	ettVBgak6+5g9/AEtO9QYcrVl+mWKYWYrvza7a5RrCKsEPGgcRl45Xsvgcdl+jj7F3u90JuDEOe
-	cUb8=
-X-Received: by 2002:a05:6102:5490:b0:607:4fde:1921 with SMTP id
- ada2fe7eead31-6fefddf2777mr7527961137.24.1780936851466; Mon, 08 Jun 2026
- 09:40:51 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1780937564; x=1781542364;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=omAGU0C3MD/oOe7cVIVwpjk2GpA2qrqblld/4zNfBb4=;
+        b=hBH+rCnkZdiBeYcDVKuAG+wYdoywUvPzU3xAIB0faonjz7U0/oaVawsps/qwlLSuqc
+         W3PFFk6fmWM1OWg1D/3/rCOqtGHMnLbdsWWjbwhVLZU3gq2uyuFl9Uf4YNfypS+nJ8Jq
+         i8kq/AsiugnifEHRHDtNXr+4R2q65z9nRC0olAl9mvnaDUho3Fd90pdKvlRp149ekSk/
+         vYsiRGIJx9p6FhK/bUk7jqWy6dAVrkJPqzOfqE8zqaA+3UbJ83iDOc5RoHqejyP0a8U+
+         61moC9t0k2KEmP3XbbfGjPwGAmeNf/HzGIfCK0pUbL+WeJd6W5dxUDJt4nA9/uGI4AO1
+         LPzg==
+X-Forwarded-Encrypted: i=1; AFNElJ99QXahAA+UlggESDBQsBycH9+xY/BQKznp5w12omipuc9suxSeCdzUlp7WoQB4DXfSVTtaUcOHw58vUd8=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyxt5J3RJSYow6bSlB+deX9w9D2MzALSI3g5lQGBcrH+YZhlNGu
+	wwFemq4hbmS6TeSZPv8Bltlf7DKq0drNNG/yf4rBhrpGVTKEMSyU2zpn
+X-Gm-Gg: Acq92OEDnS8nlJbbPfnTxEMjmEsJkFnun5otntJ2UFlZ574RVHMyvT1dvyHiprFDQdS
+	LtdxJmjgfWzHYlo+CX3x30Z3SIKakrbdQEcY3oX8+kjftCCzdVl8bLkiN0FgDm7RkeKsCIctT6Q
+	D57CJApF9ELKLjbrlvgysuoIfsS+TB5Vvg2WKrAXCToXhQR65St21E0Vr58BmmXe7Y5HyFG1cYQ
+	4sJHq8LmdVxM9Yq86T6PwCKEIPvoi66YtraC9418ajznTaYZnfde2tfmQwZ1T2KHWG4BG1MoMOZ
+	T6hoOoKgiXe0j0TvK9baqLsZTjtjN2B0PK6xkTjlLZLM2wbGePkLU7GekYkgpMx9shEDSKDXOuf
+	gK2jxD2V7Rt0M/0eibl2ilD0qre9QX8XuDR3fD6uG3eA4X650EBnXVB230Nhx1yXFbenox/Pnz2
+	Ck5ApjkhxWyJsY9K4uYonkUAEMYx6ohXWQOGwmsAppOMP/0hLIGym7fAAW54ioKiADBn5Bi5uvf
+	lIFSVk=
+X-Received: by 2002:a05:7300:7313:b0:307:26a3:75d2 with SMTP id 5a478bee46e88-3077ae86b6emr8240147eec.7.1780937564310;
+        Mon, 08 Jun 2026 09:52:44 -0700 (PDT)
+Received: from fx.tailc0aff1.ts.net ([206.206.192.132])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3074dba046esm15973532eec.9.2026.06.08.09.52.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Jun 2026 09:52:43 -0700 (PDT)
+From: Weiming Shi <bestswngs@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Xiang Mei <xmei5@asu.edu>
+Subject: [PATCH] tty: serial: core: fix NULL pointer deref in uart_resume_port()
+Date: Mon,  8 Jun 2026 09:52:17 -0700
+Message-ID: <20260608165223.70148-1-bestswngs@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260510052107.555825-1-enelsonmoore@gmail.com> <CAD++jLmUW4KjxEjwv7_an_dEMTSOtvG=q2MjhqKvnuGrWaaCsQ@mail.gmail.com>
-In-Reply-To: <CAD++jLmUW4KjxEjwv7_an_dEMTSOtvG=q2MjhqKvnuGrWaaCsQ@mail.gmail.com>
-From: Ethan Nelson-Moore <enelsonmoore@gmail.com>
-Date: Mon, 8 Jun 2026 09:40:39 -0700
-X-Gm-Features: AVVi8CckAHRTjPznUi9TSdmF40ARXCb9sYaYjHsEIjd_pzo-q6SLDDWWJhkDXvc
-Message-ID: <CADkSEUirvwVzdmGh0bS++cy8coOiMyuHNYQrC599eyVmWMh_Hw@mail.gmail.com>
-Subject: Re: [PATCH] ARM: footbridge: convert to sparse IRQs
-To: Linus Walleij <linusw@kernel.org>
-Cc: linux-arm-kernel@lists.infradead.org, linux-input@vger.kernel.org, 
-	linux-serial@vger.kernel.org, Russell King <linux@armlinux.org.uk>, 
-	Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>, Jiri Slaby <jirislaby@kernel.org>, 
-	"Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>, Kees Cook <kees@kernel.org>, 
-	Nathan Chancellor <nathan@kernel.org>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, 
-	Steven Rostedt <rostedt@goodmis.org>, Thomas Weissschuh <thomas.weissschuh@linutronix.de>, 
-	Peter Zijlstra <peterz@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-Hi, Linus,
+uart_resume_port() looks up the tty device child with device_find_child()
+and passes the result straight to device_may_wakeup(). device_find_child()
+returns NULL when the port has no matching tty device child, and
+device_may_wakeup() dereferences dev->power.can_wakeup, so a NULL tty_dev
+faults. uart_suspend_port() already guards the same call with
+"tty_dev && device_may_wakeup(tty_dev)"; the resume path does not.
 
-On Mon, Jun 8, 2026 at 1:50=E2=80=AFAM Linus Walleij <linusw@kernel.org> wr=
-ote:
-> Have you tested this on real hardware?
-> The commit doesn't really say.
+ Oops: general protection fault, probably for non-canonical address
+ KASAN: null-ptr-deref in range [0x148-0x14f]
+ RIP: 0010:uart_resume_port (pm_wakeup.h:84 serial_core.c:2477)
+  serial_pnp_resume (8250/8250_pnp.c:522)
+  pnp_bus_resume (drivers/pnp/driver.c:234)
 
-No, I haven't. I can try to test it in GXemul, but I'm not sure if it
-can boot Linux. The developer only lists it as capable of booting
-NetBSD.
+Mirror the NULL guard from uart_suspend_port(). put_device(tty_dev)
+already tolerates a NULL argument, so only the device_may_wakeup() call
+needs the check; the non-NULL path is unchanged.
 
-Ethan
+Fixes: b3b708fa2780 ("wake up from a serial port")
+Reported-by: Xiang Mei <xmei5@asu.edu>
+Assisted-by: Claude:claude-opus-4-8
+Signed-off-by: Weiming Shi <bestswngs@gmail.com>
+---
+ drivers/tty/serial/serial_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 89cebdd278410..7dd3ec3dea438 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2373,7 +2373,7 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
+ 	guard(mutex)(&port->mutex);
+ 
+ 	tty_dev = device_find_child(&uport->port_dev->dev, &match, serial_match_port);
+-	if (!uport->suspended && device_may_wakeup(tty_dev)) {
++	if (!uport->suspended && tty_dev && device_may_wakeup(tty_dev)) {
+ 		if (irqd_is_wakeup_set(irq_get_irq_data((uport->irq))))
+ 			disable_irq_wake(uport->irq);
+ 		put_device(tty_dev);
+-- 
+2.43.0
+
