@@ -1,120 +1,65 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6791236F438;
-	Tue,  9 Jun 2026 04:33:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B79622689C;
+	Tue,  9 Jun 2026 05:31:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780979612; cv=none; b=KVNP7nWBrA4s++8pARer23KRfVGh37ij31vDA9tM3oCDENomU0cWpznyW5/VBOsSkpW/DcIE4EmjCq/qnB6z1KLfRx2i8tuScP2BnXXYp/SO5TPMn4v0cz394YoqgDBaZc5VfuZI1iPltOFt0NdgPUINE5reYNpNKYBn1NoqI/4=
+	t=1780983111; cv=none; b=ra+Pw10baXpmw96PpXWzK5JpEcN6VEjgEWO6WaH/5ASR9LxiI1Z8L2s6fFemOKY7foOeXSxDxlGs3A+G+ynZP3rPYzG1S7HziSfdLXt5sTH8ljwOEsExOMIiI1dlxALhFM6F9qrGGVFJuY1E0jz042HdxsmryhYKZ9M96vQtycE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780979612; c=relaxed/simple;
-	bh=bx21yO3lN+jvgl8lkGLi3x7A8XR6gFnv2GFpXm34ViY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Ed9ogumYbC1kvo5z2ARyigiAUrzZ2/HZqgnKp99heytFCN3xTzYCEiH5uh0kQAI+Jnk73sGJfAJOTcnUg/339nDm0Vmn5UfS7q0cB2MhqyzcyTlms3JM4/TEWiFUFh39MWtyljsTE7mtEl7qg8suZ22rTp4YbaqVR9+EMsz7GA4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cxRqmc6/; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1780983111; c=relaxed/simple;
+	bh=N1tSz0WfDaCJhOS0IGgSj9qi0hu8FB5rtygEVzNePOg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=uJ8bEemvhMSCz/I2OQxRFY77ml+daAmus4dZ0TgzOc1APdBpSbxlb5p9Tj2fn6XuXGRxecVSX3AtL4w2dFY9U5CjoPcrOBTFFJdhWq2yk8bPf3dRptXqZCAn4GIW32BI5HdfP4xOS+3l8SoduArmgXWKBGS3yUds9Dzsr+mL1/M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=HUojIW4+; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cxRqmc6/"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21EEA1F00893;
-	Tue,  9 Jun 2026 04:33:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780979611;
-	bh=jlxDgmS9BuiRGDybkQ3TSKIOT0PGqP2uApPI7sofzBM=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=cxRqmc6/agSOTc5NS+yeVW1QwNwgpXV+kEdohxng0kOGxQoLPEEqh/6AGq2WHcqZ3
-	 qJL51naXAmF2OCvnUAjyzueGhlcOG2GZ1WjoPsOkzIfKpPWle9PlINxHtVLVxHsRzJ
-	 kTuI4JQLmRku9bXgkjFIeUQHaoSfO8TqA5zFLDLAw1t2Jl1V958j3acaueb7d7ghTU
-	 22BTyuY+aE42g8MVA2w+qnoP0K6zcQlxbRGVRmnxYZuWnhMxFQzk37cTdDuyaJmTVM
-	 21XjY28UTCznh4rsask+LIWZ3JFZDgjkt7GhUzdoafWgyRaktbeJG5ctw9Fb3qk5h3
-	 WAZ01SUpHylLQ==
-Message-ID: <fd9576ec-0dbc-4ecf-bc5d-2630c7df637e@kernel.org>
-Date: Tue, 9 Jun 2026 06:33:28 +0200
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="HUojIW4+"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20D771F00893;
+	Tue,  9 Jun 2026 05:31:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
+	s=korg; t=1780983109;
+	bh=4nHhNOei7QNfUzNrgd6b9zKAHktqrjJSs2tQI7XWv90=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=HUojIW4+spXliS/WJ9e0L7NRKhF43nwz9aw6NUlkgYwKcPTg2maOoeUcdMDkZXrl3
+	 EAecWoTuok6//TMhj/wDkVEsx6wjgJGqGaAS09ejhEghuKdQy80zYGvv5CT8tXBo61
+	 vR69FojFHwv32I3+mgvzzPXqixHjLsWV4DNdSQQ8=
+Date: Tue, 9 Jun 2026 07:30:51 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Markus Probst <markus.probst@posteo.de>
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Ard Biesheuvel <ardb@kernel.org>,
+	Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+	Jiri Slaby <jirislaby@kernel.org>, linux-acpi@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+	linux-mips@vger.kernel.org, linux-efi@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH RESEND v2 1/2] serial: earlycon: add uart_clk_freq
+ parameter
+Message-ID: <2026060957-chaperone-tarot-d548@gregkh>
+References: <20260609-acpi_spcr-v2-0-3cd9a3bda727@posteo.de>
+ <20260609-acpi_spcr-v2-1-3cd9a3bda727@posteo.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: 8250_pnp: Drop unused assignments from
- pnp_device_id arrays
-To: =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig_=28The_Capable_Hub=29?=
- <u.kleine-koenig@baylibre.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <dfc218a0e9265e9459df1c5bf621db12be5c551e.1780937987.git.ukleinek@kernel.org>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <dfc218a0e9265e9459df1c5bf621db12be5c551e.1780937987.git.ukleinek@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260609-acpi_spcr-v2-1-3cd9a3bda727@posteo.de>
 
-On 08. 06. 26, 19:00, Uwe Kleine-König (The Capable Hub) wrote:
-> Explicitly assigning .driver_data in drivers that don't use this member
-> is silly and a bit irritating. Drop these.
+On Mon, Jun 08, 2026 at 10:40:21PM +0000, Markus Probst wrote:
+> Add `uart_clk_freq` parameter to `setup_earlycon`. This allows the
+> options string to be reused with `add_preferred_console`, while still
+> allowing to set the uart clock frequency. This will be used in the
+> following commit ("ACPI: SPCR: Support UART clock frequency field").
 
-You do not do that in the patch though.
+Ick, this is bad, now you need to look up what this 0 is as a parameter
+every time you see this call.  Please just add a new function that takes
+the new paramter, don't abuse the old one for this.
 
-> Signed-off-by: Uwe Kleine-König (The Capable Hub) <u.kleine-koenig@baylibre.com>
-> ---
->   drivers/tty/serial/8250/8250_pnp.c | 308 ++++++++++++++---------------
->   1 file changed, 154 insertions(+), 154 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_pnp.c b/drivers/tty/serial/8250/8250_pnp.c
-> index 7a837fdf9df1..850709bb4a73 100644
-> --- a/drivers/tty/serial/8250/8250_pnp.c
-> +++ b/drivers/tty/serial/8250/8250_pnp.c
-> @@ -28,351 +28,351 @@
->   static const struct pnp_device_id pnp_dev_table[] = {
->   	/* Archtek America Corp. */
->   	/* Archtek SmartLink Modem 3334BT Plug & Play */
-> -	{	"AAC000F",		0	},
-> +	{ .id = "AAC000F", .driver_data = 0 },
->   	/* Anchor Datacomm BV */
+thanks,
 
-...
-
--- 
-js
-suse labs
+greg k-h
