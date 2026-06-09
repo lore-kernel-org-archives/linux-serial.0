@@ -1,133 +1,113 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5AD2A331ED8;
-	Tue,  9 Jun 2026 19:47:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B5143A6EEB
+	for <linux-serial@vger.kernel.org>; Tue,  9 Jun 2026 22:37:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781034477; cv=none; b=qAbUKMTNo9qJenjSH7lGbblwuZR9INwEnWX2CDcM6LviBtkljR0dCor2rFN6NHll9gl1FTjlSdxSc75iOFme/0h6NZZcegnSKnSWuGrjhG5H9jqeSlyPCnYwlcB2608+Xy4wDudQ8AikBuxuYX7blL6lb8Ed+VVgyLgM0e0LvCY=
+	t=1781044656; cv=none; b=kFBeZPJiajyUaXAKd/WmDf6IjZFqA0UtqJJsKRbNW8oa8uqCrQCuIQyfjKmVxGmN5lLAfQoUNqcY740RQu/JXoELj/86SvB3sdhqwDFzJiUkOR8ZTBSq+pFJ+L3L5g3On4cQ9GN3FLAdU/eGTnP4+2iWL7wlmhJVN60IJaQqumU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781034477; c=relaxed/simple;
-	bh=nYyS3RzSJGOfPRHnTA2wHTvE7bU6gPvkZGl3I/1xt9U=;
-	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
-	 Mime-Version:Content-Type; b=T933RjZOW3kIx77ofFEMIUeDETRBZ3+63P4tDocNh4026AEXyS09Cq6jIlxFjkoJoYAoBZnC2rZ4azM6fEy/9N/im0N/zXtOjHPH2c2qrFDQ8Ieo4Q6GNH+JVFmWGqu5t29ajBmnshd88u/r7JCPcHDZWhHtO3hNXu2bk8SKacw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=Gmw6wZ/w; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	s=arc-20240116; t=1781044656; c=relaxed/simple;
+	bh=v1YU80TyDjrf/JHPL91vspsLFYxHtHImDi2ezqOw4BM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ryWn7TFNmS7sGauBy1eBaW5j24OlwAKlJDZ75tMgBRpGCEFGTCbJe0avoe2nd+B7xOVJ9j8Yzk/OYE8rctC5HifSL3faPj60O5j9lhsiiOgGwwYKJkoRc73OKEV/sl3OdHGsJ+HRHLxU/e/doMbAoJeA3BQ3yV6R7XxqXWusYmA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WQHB83sM; arc=none smtp.client-ip=209.85.214.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="Gmw6wZ/w"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=default; h=Content-Transfer-Encoding:Mime-Version:Message-Id:Subject:Cc:
-	To:From:Date:subject:date:message-id:reply-to;
-	bh=Hf/rB+HgY4vWBr3NANOYB5hatqPMTZsXKlQZXX83OzE=; b=Gmw6wZ/wqz/7dWb2R3qD3hMX7e
-	vTLOa/0OFe9D9ZAFSpnQZahV3PWOtU3vlPKv7X71AhpvQXgmZ//KgIu7EYLxaZl7TyGzaCsZhZvMp
-	KUiMXut3n04WtRqnmQQALF6UiJpmxZu4Syza8EBLUguyKZZYYt3xgj7EJrPPjaSVUHZw=;
-Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61] helo=pettiford.lan)
-	by mail.hugovil.com with esmtpa (Exim 4.98.2)
-	(envelope-from <hugo@hugovil.com>)
-	id 1wX2QH-000000000uj-3e2I;
-	Tue, 09 Jun 2026 15:47:42 -0400
-Date: Tue, 9 Jun 2026 15:47:41 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Tapio Reijonen <tapio.reijonen@vaisala.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, Linus Walleij <linusw@kernel.org>, Bartosz
- Golaszewski <brgl@kernel.org>, Alexander Shiyan <shc_work@mail.ru>,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-gpio@vger.kernel.org
-Subject: Re: [PATCH] serial: max310x: implement gpio_chip::get_direction()
-Message-Id: <20260609154741.b7a6f7517c74046a6acfe711@hugovil.com>
-In-Reply-To: <20260602-b4-serial-max310x-gpio-get-direction-v1-1-23bf84e8ee14@vaisala.com>
-References: <20260602-b4-serial-max310x-gpio-get-direction-v1-1-23bf84e8ee14@vaisala.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WQHB83sM"
+Received: by mail-pl1-f169.google.com with SMTP id d9443c01a7336-2c0c2c7e0c5so41281035ad.1
+        for <linux-serial@vger.kernel.org>; Tue, 09 Jun 2026 15:37:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1781044655; x=1781649455; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=kO2t5PyjdfFMvsUWeszR7GAdmLCj2iCqR/ekO1AQQMc=;
+        b=WQHB83sMakgkJn7+Rw8hT2QqZQPJLUW/ydS7L195ooZhsNGRAt62fr+yWaiL46gDux
+         i5xCEprudVaDSucwb0JXPbwn5wD6XtQZ/QlVlHS8IyDc67cfvsqrgyZxqoENmTD+/2ZF
+         tUNiP+SE/3Y5KVhd2HPoT2A/qh8e46PdOnn1SfEdQZi9mgyC+wTCn5gyuxc0T+5om+sE
+         YL5nIOpJj9x0ciBhlsZIATDwOMUFoaIXKatUdmHGu4V5IYkMZKRnmEMfC8ane9LiBSP9
+         +MhrHNfsEzKjpvqTMTMDJnXj630DRSaPMZq9VikE2x3nKhYgpSratc2AKC/rawmZBIoA
+         qtng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781044655; x=1781649455;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=kO2t5PyjdfFMvsUWeszR7GAdmLCj2iCqR/ekO1AQQMc=;
+        b=JdlAzdS3XHJK5KU9TomM0bF7VY0hsOWBpPaXYl6egy92rPZluLF2HN4Uu1pYKfooXQ
+         ZVfEUYjlfh6L5Qs67k5ksryXKT5r3kW+HDaEozw32zuZzNptrZPQxGCSHyY3G5rz8PjK
+         r7gsTGSeGf653r7oUJbUWqznCwIC5l0NR5vYqyZObi5D5BpXK7oyRkClcyGsUUIZLGfA
+         KGcv22ucqH+AsD69b+IMnAXNkSpsC8YMMJqG7esboeWI8KmAJawyqYxxYXEsl4Bn+3Lr
+         7m+U8ox/UDsaZ55a1hlI3SVbBKTt7TTNweHGULA6Wl8jhVqA/lxi6WZtUMR8gNKT9kKn
+         Zp1A==
+X-Gm-Message-State: AOJu0Yw5Pblhq73I+oDTq56fzw6LU63bMNM2mxd5gXotkE0R6DA4GcOI
+	HwdVy8NpJgiKph3iJjSa6eFz0IWlqFdOIhf7jWLT9eOD4d4KntyMk+JLjNaB4OFO
+X-Gm-Gg: Acq92OFpD80xNLkp+lfc6NYAs85/WzJzBUmfgk4ZP4YWVqd9ZSKibNvdwoXq8sAYuL1
+	qZ0kxDwW8PPZIFsyqyZVhtN5xcp9lL2mRk+2SYLX42vRKQzFPwINfzpd+hGxU6EPcFzQp6WnsOi
+	xyI81sYXY/437IMUQD1GbtBenh5D+f0nt2QmwvXifVHo4WNFwTt2jt2l2cTU9IgsVONTxm/YzAs
+	jmRzOiq9VK++98yVdnkt0EmNI0fCmeMj1gyjga9tTp0FZKTSrEEN0amz5hOfMp8u/vsTq8Fo7aW
+	X0sawGYrxGe5LE+S4YlL+kOrJBEz//aMBAoHC+3IPMaY7PdnPL4cEjDFbKjtmskf2dSGwiMX6y1
+	Mw7ySCXZmhnfx8gBk4KcgmOmecyAWI7KnbKYOtlUHhYRbm+SkJ0zj+Z5C6BHC03AiIrFkLRzZtr
+	z1t4riuBCI9d2uqNOYN87I0hErdOTaguQuXo77q7nx0PmTZmmnfOXFoHCPSAcIABoaK9Mg/9TkJ
+	f5Vq7qd6y8X40NN9YLbgkS294Calga7AShmDj9a6IAUmg==
+X-Received: by 2002:a17:902:cecc:b0:2c2:9254:4c22 with SMTP id d9443c01a7336-2c2a1c66cbcmr59800935ad.17.1781044654694;
+        Tue, 09 Jun 2026 15:37:34 -0700 (PDT)
+Received: from ryzen ([2601:644:8000:5b5d:7285:c2ff:fe45:8a32])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c164f6d37esm293750655ad.9.2026.06.09.15.37.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Jun 2026 15:37:34 -0700 (PDT)
+From: Rosen Penev <rosenp@gmail.com>
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Frank Li <Frank.Li@nxp.com>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	linux-kernel@vger.kernel.org (open list:TTY LAYER AND SERIAL DRIVERS),
+	imx@lists.linux.dev (open list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE),
+	linux-arm-kernel@lists.infradead.org (moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE)
+Subject: [PATCHv2 0/4] serial: mxs-auart: devm conversion, clock rework, and IRQ ordering fixes
+Date: Tue,  9 Jun 2026 15:37:13 -0700
+Message-ID: <20260609223717.41670-1-rosenp@gmail.com>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam_score: -2.0
-X-Spam_bar: --
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-Hi Tapio,
+This series cleans up the mxs-auart driver by converting to devm-managed
+resources, fixing clock prepare/enable ordering, and addressing IRQ
+registration races.
 
-On Tue, 02 Jun 2026 10:02:35 +0000
-Tapio Reijonen <tapio.reijonen@vaisala.com> wrote:
+Patch 1 fixes compilation on 64-bit build with W=1
 
-> It's strongly recommended for GPIO drivers to always implement the
-> .get_direction() callback - even when the direction is tracked in
-> software. The GPIO core emits a warning when the callback is missing
-> and a user reads the direction of a line, e.g. via
-> /sys/kernel/debug/gpio.
-> 
-> The MAX310X keeps the GPIO direction in the GPIOCFG register (a set bit
-> selects output), which the existing direction_input/output callbacks
-> already program, so the current direction can be read back directly.
-> 
-> Fixes: f65444187a66 ("serial: New serial driver MAX310X")
-> Signed-off-by: Tapio Reijonen <tapio.reijonen@vaisala.com>
-> ---
-> Found and HW-tested on an i.MX6 SoloX board with a MAX14830 over SPI:
-> without this, "cat /sys/kernel/debug/gpio" triggers the gpiolib.c:429
-> WARNING (tainting the kernel W) on each queried MAX14830 line; with it
-> applied the lines report their in/out direction and the WARNING is gone.
-> ---
->  drivers/tty/serial/max310x.c | 13 +++++++++++++
->  1 file changed, 13 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-> index ac7d3f197c3a5ce3531d5607f48e21a807314021..96df54a90b009d1b547f7a639b0b9a4281daf073 100644
-> --- a/drivers/tty/serial/max310x.c
-> +++ b/drivers/tty/serial/max310x.c
-> @@ -1212,6 +1212,18 @@ static int max310x_gpio_set(struct gpio_chip *chip, unsigned int offset,
->  	return 0;
->  }
->  
-> +static int max310x_gpio_get_direction(struct gpio_chip *chip, unsigned int offset)
-> +{
-> +	struct max310x_port *s = gpiochip_get_data(chip);
-> +	struct uart_port *port = &s->p[offset / 4].port;
-> +	unsigned int val;
-> +
-> +	val = max310x_port_read(port, MAX310X_GPIOCFG_REG);
-> +
-> +	return (val & (1 << (offset % 4))) ? GPIO_LINE_DIRECTION_OUT
-> +					   : GPIO_LINE_DIRECTION_IN;
+Patch 2 reworks the clock handling to use devm_clk_get_enabled and
+reorders clk_prepare_enable after clk_set_rate to avoid
+CLK_SET_RATE_GATE failures.
 
-Small nit to improve readability:
+Patch 3 converts iomem mapping and GPIO IRQ requests to devm,
+removing the manual cleanup paths.
 
-... val & BIT(offset % 4) ...
+Patch 4 moves the main UART IRQ registration after uart_add_one_port
+so the port state is initialized before the handler can run, and
+manages the module clock for console vs non-console ports correctly.
 
-you could also put this return statement on a single line (less than
-100 columns).
+v2: split off of_device_get_match_data change.
 
+Rosen Penev (4):
+  serial: mxs-auart: fix cast type for of_device_get_match_data
+  serial: mxs-auart: rework clock handling in mxs_get_clks and probe
+  serial: mxs-auart: use devm resources for iomem and GPIO IRQs
+  serial: mxs-auart: fix IRQ registration ordering and manage console
+    clock
 
-> +}
-> +
->  static int max310x_gpio_direction_input(struct gpio_chip *chip, unsigned int offset)
->  {
->  	struct max310x_port *s = gpiochip_get_data(chip);
-> @@ -1421,6 +1433,7 @@ static int max310x_probe(struct device *dev, const struct max310x_devtype *devty
->  	s->gpio.owner		= THIS_MODULE;
->  	s->gpio.parent		= dev;
->  	s->gpio.label		= devtype->name;
-> +	s->gpio.get_direction	= max310x_gpio_get_direction;
->  	s->gpio.direction_input	= max310x_gpio_direction_input;
->  	s->gpio.get		= max310x_gpio_get;
->  	s->gpio.direction_output= max310x_gpio_direction_output;
-> 
-> ---
-> base-commit: e7ae89a0c97ce2b68b0983cd01eda67cf373517d
-> change-id: 20260602-b4-serial-max310x-gpio-get-direction-b10ee5be4f24
-> 
-> Best regards,
-> -- 
-> Tapio Reijonen <tapio.reijonen@vaisala.com>
-> 
-> 
+ drivers/tty/serial/mxs-auart.c | 141 +++++++++++++++------------------
+ 1 file changed, 63 insertions(+), 78 deletions(-)
 
+--
+2.54.0
 
--- 
-Hugo Villeneuve
