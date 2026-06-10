@@ -1,48 +1,48 @@
-Received: from DU2PR03CU002.outbound.protection.outlook.com (mail-northeuropeazon11011021.outbound.protection.outlook.com [52.101.65.21])
+Received: from AM0PR83CU005.outbound.protection.outlook.com (mail-westeuropeazon11010069.outbound.protection.outlook.com [52.101.69.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9211510785;
-	Wed, 10 Jun 2026 01:26:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.65.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1B5F25333F;
+	Wed, 10 Jun 2026 01:33:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.69.69
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781054804; cv=fail; b=iJyK4pewYa0m4X2AKgefH4Oiiw8YmNHyeWQY3xbR7rbmpeQfmimrkl60SpmGtdy7mC+JxXE5Hg/GbI288sdlz1mwH3Xsmld9rdOH+r+3JwKvHFML3NSUnF87012EVB6JrHd5rTPMG8CgyfWaduOBklz5OgToZXNig9+pidLxvy4=
+	t=1781055182; cv=fail; b=Nu4k9wd1ZQcdI8Ue2Y39rl3Kzthciit6ODzC45drTRBiqVDFD0ZpSQuwbUCKC27wHCy4Fo8nMvKRTKERXoMsc/2TfjAAeCKNH6Rc6DwDFJHwqTehVx2IeJfQPyK4+Cs+d39XiCIOBmInwQbeykAQG2/e/JmHHxEP8OdgVhLALdo=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781054804; c=relaxed/simple;
-	bh=tB0SB5bscB3xJy+pBw9Y0VtlIdTYB8jMnIVyZ3K2N1Y=;
+	s=arc-20240116; t=1781055182; c=relaxed/simple;
+	bh=o09weMp5CZ47bs6JWomhkyAzO/eItoQeIyEDsl07M8c=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=izx4E+LphIzLLI3A62MF+Pzic9RhVVxYUxzzwO9MtkzzQGV9Fgtgtti7fxl9KvxO0C9LUrdF0N3v7/cYyqRpyKePJTFmsRLR5NRf21kbFgFbhKAnHRfiF6RRt0gaUP08qqOaA+QOmSE++ZW6pt7ANiEWwvtwNxiV8OmMsWiBmSA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com; spf=pass smtp.mailfrom=oss.nxp.com; dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b=LhSM4J73; arc=fail smtp.client-ip=52.101.65.21
+	 Content-Disposition:In-Reply-To:MIME-Version; b=tKsNCspquU8ZT+UdoBojZnIUK1V7taOyn9OGUr4P/NypJSddcDo1yDTGkB44PvBw5qVYPabWU/5i5be3QJ961jrsvm/plaWLsyoQHz616zTiCdT8qt3qEidW6W9sWMUoiWrCWvlqO0+ybCQYxuXi//JUQCVj2j7v4+KS87Z0h28=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com; spf=pass smtp.mailfrom=oss.nxp.com; dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b=Sc0OCvBp; arc=fail smtp.client-ip=52.101.69.69
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b="LhSM4J73"
+	dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b="Sc0OCvBp"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=j/VT9zXrWuX/IBs798tE4vt2de57RYSQgl9S0YY6Z+Bfvtar+xcJ1ZgwZpLA/bismKFpF8e40TtJIb1DlXFOCIdlDJwy+CNeFkJ6/6lSxCR5wvt/Eakj2njz1cQ4GPXQLZum/9wlcIgnJAQyy7ii3A3LSw0kTjEl92Mz3oibUxI5OjKArQh40qF4cN2PFGvCNbfr6mFDWcvMQ0wf/faS+jUhXS3lItxMGl8G/7B+F9Hv2P94ogw7/p1xxBTnwF1TnHccXA8LKa6h7WJTQGSDseWwBZas/7kh1t37VHl33X5i4/R48DuuJce0UQ4OhRQaDh4JhqtY/J0NuresHbGFng==
+ b=flEc+4o8iot0ZKSjioFd43kRjV4/YujOgnjPdqlUvxGKcy9t4tM1cAX21tx7txJxfZhfIsgSaFHPsqBPuN/sePvJ1YSBI77+JMLc2bP5AVI/pjidpKNxH5JtUjqEt+SHQlRWjO1ewkXF/kZBweSMXBi3Xl0Dy0YkNrLybBIgzTPzM4oSRitpagIPNELFTBBCQXOdpkjCkRmxYYDFpiIuwHV9wVJlo6sevb0Lco6eVdUmQjAHb+oSu3ajVDIUJuaOtHhOg8b+SUypp669sOasUQyCHWoWGRkav+54vfCVK01ZRZcMUj2uCOgn00F8WAZqX55W//cZq0IxA/mSFW3CQg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NOxT/l00+P1Rsb7jyFMaY52l9emjYbX5sD+Cp+rdKx8=;
- b=y1yOtfb3H72NCok6D2jl5aU5vgBBEZbOfwqgvfb7fzX5enpsNZGKq2YCQCn50anty3vkMu7/uI81VuFcwdosepUFVrTa9TnLMK3L3l7Yb672Co2AyTVbZ8za6o2q9ZXbbGtDHaFEhv+1KK0pP/l7wBZfS7Ve7bEZz96qEIlglgIleJbwXdlMXX/5zZ2B3oIU+D4v9Qg20ipX1V2P96TT3+T+dn17uEebKRK8vu+8xJvaAXf1em0MANCIOniM5q3FNd2Im7laVU3g4jlOMo5JP7DNZXCn/58e+GUd1f6ZnmjmT6TveMZXV0iJcysTev15So9cecxne02LhTHErRKe0g==
+ bh=wCn3IyooSA3jsjMlZ6/+PXYCW2Jy/3rcegUc0UFBpRc=;
+ b=IJBhXQ+KUBFUJiRTSELX7NlOr5/CHsw7LiCo7LUFjpq0QqpflkY0mPS7MA/Pqoll8jm1/V7TDFujaI9rEpLtVYWzmUUYoHTuHJY8DQNdGO30F1uTDn8NkH3AAHVzytDVE/UO5B95AHFDsWE9OCA/R9zcKiBPpMlKhRbzCHhDShvOCLRIHuugQVSDN9Xxl8KOkbpG0+BKk1vFm1vuPJbckLdu0a1MKiwaBWhselIHPPrwVeV55sz4KT5lTJAT8eAZpoQgA4diU05a7PYUi1KV5S/PdV2ucACFr4MI/gOOd+AckgIy6GJ3iLLNwqwe8hgrR9cpTsIKuh4sOvgVi3sobQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
  dkim=pass header.d=oss.nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
  s=selector1-NXP1-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NOxT/l00+P1Rsb7jyFMaY52l9emjYbX5sD+Cp+rdKx8=;
- b=LhSM4J73iJAdBTMCf0/coEbXeKnKlrau9ewm8y6GxRXwyyqJaSKfM9EVmFxiwxZNGZQVHbnmHlY9fDiqLxxSdzZS9/sJ5GkOcUU/iFE8vZ3k93MMz0mzzOJ3ypyAgVCgsIsLOblTdZWeUMd8k13tPD46rC0ADfj7kdqmVE/E+D4wYMFQ7JAOg4B03FxLVfzDZFRIpy8R956V+6h8rQhQtn2LLTsElMe5jPCgwH7YXif6HcM08R7WsVUulrNRnoBDhJKugt2zkHStYjXCgVZM1teSCvBrDZb0q1O9Ovr20Kf1tKMWXEgfTpSwsCnrL1VcFQHUKpM214hsbp1scevVPw==
+ bh=wCn3IyooSA3jsjMlZ6/+PXYCW2Jy/3rcegUc0UFBpRc=;
+ b=Sc0OCvBpks7Nim4iTdR6nxpNYkjW/R8VbjioNdhlarNmNCvyQX2E0jR7cTC6SXgz8yLclkE3jRIzsJnYONs9Z9GAlykg1/IuRBB5rvw1QEIdb1mJuRtsULlH0QUrLbGI77r+6CdJ2RVYD8OPMWcn9Vp7uZ186MbbXVAXpIiGj5ySw4Az/+xoNnrYoEXfueQ3gjDAlkL4NorCzFX0nTGJNlUTWyDACDQC9Nm1KM2K95jnotmGKp2ItjaBHzVe8ncx04wvkTpZqrI7BYL1C2iVxIj+TwyPu9Vd5F56pOmmXGeVDqKtjv5/93HvNbWU2KQ0NWkoGAHshBCHgFqIIPH6Rg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=oss.nxp.com;
 Received: from GV2PR04MB11799.eurprd04.prod.outlook.com (2603:10a6:150:2cf::9)
- by VI0PR04MB11574.eurprd04.prod.outlook.com (2603:10a6:800:302::8) with
+ by GVXPR04MB10564.eurprd04.prod.outlook.com (2603:10a6:150:215::9) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.113.11; Wed, 10 Jun
- 2026 01:26:39 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.92.14; Wed, 10 Jun
+ 2026 01:32:52 +0000
 Received: from GV2PR04MB11799.eurprd04.prod.outlook.com
  ([fe80::2146:83a2:5329:b7c]) by GV2PR04MB11799.eurprd04.prod.outlook.com
  ([fe80::2146:83a2:5329:b7c%6]) with mapi id 15.21.0092.011; Wed, 10 Jun 2026
- 01:26:39 +0000
-Date: Tue, 9 Jun 2026 20:26:30 -0500
+ 01:32:52 +0000
+Date: Tue, 9 Jun 2026 20:32:43 -0500
 From: Frank Li <Frank.li@oss.nxp.com>
 To: Rosen Penev <rosenp@gmail.com>
 Cc: linux-serial@vger.kernel.org,
@@ -54,16 +54,16 @@ Cc: linux-serial@vger.kernel.org,
 	"open list:TTY LAYER AND SERIAL DRIVERS" <linux-kernel@vger.kernel.org>,
 	"open list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <imx@lists.linux.dev>,
 	"moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCHv2 3/4] serial: mxs-auart: use devm resources for iomem
- and GPIO IRQs
-Message-ID: <aii9Ro3pPeaHjNU1@SMW015318>
+Subject: Re: [PATCHv2 4/4] serial: mxs-auart: fix IRQ registration ordering
+ and manage console clock
+Message-ID: <aii-uz01bYGETJC8@SMW015318>
 References: <20260609223717.41670-1-rosenp@gmail.com>
- <20260609223717.41670-4-rosenp@gmail.com>
+ <20260609223717.41670-5-rosenp@gmail.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260609223717.41670-4-rosenp@gmail.com>
-X-ClientProxiedBy: SA1P222CA0177.NAMP222.PROD.OUTLOOK.COM
- (2603:10b6:806:3c4::25) To GV2PR04MB11799.eurprd04.prod.outlook.com
+In-Reply-To: <20260609223717.41670-5-rosenp@gmail.com>
+X-ClientProxiedBy: SA9PR13CA0144.namprd13.prod.outlook.com
+ (2603:10b6:806:27::29) To GV2PR04MB11799.eurprd04.prod.outlook.com
  (2603:10a6:150:2cf::9)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -72,200 +72,191 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: GV2PR04MB11799:EE_|VI0PR04MB11574:EE_
-X-MS-Office365-Filtering-Correlation-Id: 39b4f0f2-02b1-4a74-1afe-08dec68f51c4
+X-MS-TrafficTypeDiagnostic: GV2PR04MB11799:EE_|GVXPR04MB10564:EE_
+X-MS-Office365-Filtering-Correlation-Id: 207819da-c0db-4c32-7eb5-08dec6903083
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|366016|7416014|376014|19092799006|1800799024|4143699003|56012099006|11063799006|22082099003|18002099003;
+	BCL:0;ARA:13230040|23010399003|376014|7416014|1800799024|366016|19092799006|18002099003|22082099003|4143699003|11063799006|56012099006;
 X-Microsoft-Antispam-Message-Info:
-	rj1Dr19WsdcwqEf5mZlqfv1r8e9ubF8RyugcMQyUT2F2Jk82NIJZfG04Yse6Z7GnyPO4tZ1T/vRP9eQ4mH2j87AERd1U1iZvx6zjKXakmetAmSj4yIJaTA0mPy1xn5Y6BCtvLKF6wpXT+1wYHlYbdaOb9cHDGcnteFEiMb8+YXh9VNznmb0E1PE6nM2VHwhImwHCCFLiiz/EhNaLCC1XJ5K7IIc2QxwnLnUkpgOHhZkxs496YwxceusX+w4GJhvtFxIA2plki8/Z5d7cwhvjyo1zfYoeKyGU/mqGO+Yevit26bMbOdT0aXFe1INxscYVtM/XIfyaXwddIRf+Xz+Oog/Z896FvygPixLweGrk5axBcwyIIGZGIAVb8RiqerUUNCyYMf6pZsN+Chp8MyMV9DEXMh76NQgRM5bunAjoStv44Url/KMZh/k+b1hl4hWsZBq5X8ciGMNaSrei4jqeZ+oCtIKv6S4+oTLg9b8Myx6r4itAmV17fe7gC1AYx6oS0i6d9WuLwuGwbMzImMIxpASlDQjmP/rgBSnunh5WPV2kfGwcoDPfaq2X0f1c3wOHpfHxDz/8u1Ejxv5O8TuNRXn23cj+JNNQQKEAOCv4tFxNJeXegHy9jjtF9lxPZf0OO3IkIPFa5jaiWPeOvo+tYokybnUrFXgxU8qOuPvQQFWYz+pMyD50W9tyl0OWCCZu
+	vIdqDQbULFHRAUeIP8MnvrHEQLO8HWQR86xDPMat7HO4pcrT6zlWU4HbxOoc4rOcSV0S/+YTovUF2t6MeMspoXZ+HNx/viATlChYDNjY62+ruy2BW7NGeMrprtDvfwYipj6eQFeQwVVzh3ugcmwf9G0LWke0lcCugaAuG3TgllKIgG/fhsNeU1OG8EClGdvxJmK9kJLXRPzT+IdT5ljS/NybedhBf6DVqRSEc+iWHiOQOA5TONfe4p+9oQ4OEvmJztBWJ3bp5BhmaHrcnkMPc/HIAOnfA7mrYDaTT6zOFtsUWBXCQ9ExfWwXAj9Gs6JiAAV89CmtXusZ+fQyUa5Pdt5r4UGewiRaT9feYh1s3Ui8no3KIFlq2s61aHstWdU87KxOpr4X3p8+TKGrbtytk0drW6Zm88X+eEnTgI6sLC1NfL69inYF9c3VZ7Fjw7ycn1N7UTOdQegaVF4GLXstt9LTzsi6TWapO6bFgcm9OEBpa/YfZlXOCPyQrM/WTd4UfD4/rD6+49hJx4yCLIYCYdjsfm7Tky45t6WY8KnSGSuPtNVyMR9IjqQz9JHM8An7qWVOxrqWqpXnxp2dQme1KYUjc4FOaAfroS6yGVw5ukod0UZVxi/LPedOsBU+H848/dKfHmwQz5LZ5A4BZY/+3I3H6sdnkm6PGjJUgeVUBf3B8fO6EtZoCmbmAmkK5Li2
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV2PR04MB11799.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(366016)(7416014)(376014)(19092799006)(1800799024)(4143699003)(56012099006)(11063799006)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV2PR04MB11799.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(376014)(7416014)(1800799024)(366016)(19092799006)(18002099003)(22082099003)(4143699003)(11063799006)(56012099006);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?ETYgLA1rlpESlFy+MS80ZROw8LBCwbkbdOlV8IFAdjlOyZ7CgHLdjEbIvzTh?=
- =?us-ascii?Q?Q+fEFvQtpZuCllhHp8sGhoGxVKK91kAVHzDP2tmzy6f4QY5FENdYS1a+H3zT?=
- =?us-ascii?Q?UZsHCitHUXeML3FB3dAQeJc+RuKR22Ua2m497Wf/k15NNTauDFWvG7Vg5PHq?=
- =?us-ascii?Q?tOz9GmBBJ8Kdz3dTofq37/MDfiByV7r8E9fxp6Q5dYSPEIXy3U2v3TC9JcfG?=
- =?us-ascii?Q?zTVvqcZYkycIWw+gsQ89HYm/hGlZX1zoyTUGaHPq7Ph0C1kLo98l5+8AhjN5?=
- =?us-ascii?Q?F53+XrFOob/QTTUk4QILC6y21RE+EVSTqL6TW8iNwIuWidtMw1QK6okzdrhM?=
- =?us-ascii?Q?pLrv3KmjIUe+es5dvFywUjBvivROjeD5b3ORMpdXDjKp0ea52xvhKPIzN7Cv?=
- =?us-ascii?Q?YOvVoG/Pz4hT944OWl9VJsaLg1+UOF3VjXt4hJ+KqNz3G9m37YEdM77xrH2z?=
- =?us-ascii?Q?QE06Df871bdGKaK2rBx+ATzcCE16SYsKTWORrnJoWXyTbyhPd/dZ5/plyVXf?=
- =?us-ascii?Q?8xIvqmKcrJELgSFM09OqBp6kCLdvtNFmOvmxDjZ0/1m1H3O7gteCu0rHaitI?=
- =?us-ascii?Q?q2n652M9s6uK9MnM46nEqOsAcC9mn4zj9u+z09nyTgvjr3FYNhRBmXhlRbfJ?=
- =?us-ascii?Q?wbQu05SMxj/NzFzKdVGWRG8JiYmY8TSYwfIDjDfqtIQiC3WJfd2TqZXLOl4C?=
- =?us-ascii?Q?kHDWkgCh9WGyvjW+75PD4ZoS96DyRtOS0/Dmx6NZIxN4BaH/fDBEnwnCSRI3?=
- =?us-ascii?Q?7dPHhyo3RXntkBdFFxTGZFM7I3VSibYk0XFCRvyKPkq6+dyPnavXECTNPWE2?=
- =?us-ascii?Q?o1IxZa0RH0Mozwb5EAvQAYXtjRMdtp0Q2q9JolXSiKeJSqA5LpN8C9A6oPqe?=
- =?us-ascii?Q?d1j1PRMPJ9+dJtea4sQ+KbchaUlaU37m/g74jQ0QznKq2TyOmFqQ2aex0+zw?=
- =?us-ascii?Q?I3TI1uahxb9kdcCI9M3Yucmgfqn8I2t7hJO331Cum72GK7aNvZSviwOZL7f6?=
- =?us-ascii?Q?hsXEtgOS4BeX90FtxJkhwt8XmNH+E7uM1lu/UvsoHvGZ1AE4idWPyR7G0Al2?=
- =?us-ascii?Q?joTfMCesM/0QGnl9K4StDQSaAU3ByI0HHpQB0bDN8FgwRg1rIGxgQX12szUz?=
- =?us-ascii?Q?QdPISbGOgxHIvLlNKm2BqNJtQrLZm0TazHWW3GtbzyNon1NAZCC5JPROVM4X?=
- =?us-ascii?Q?Iy7y16Bl/5K4ZUSpJoTDna1CDwGXL0q4IAQn/Gh0Iuf7/m9wv58NUhVgFEiB?=
- =?us-ascii?Q?dONvPEtSShK9WIUsYFBYW1ULVMJ0WF8k5n+ZK2Woowh1wOpFEMc3JdT4t+HK?=
- =?us-ascii?Q?ZdKRYa0sdlMYY15aM3nDKBxgwB5jYxt6K1Z9LcJMluhIKN/gB9xN7bUFaWIr?=
- =?us-ascii?Q?5b5kpGiQarFx+7umb7ebBWmIdJsvUqsQg5aE3/B+DnIyPsuBpk35iqnZEkkE?=
- =?us-ascii?Q?+2jYu8/zkrUohMlFlkKvCB8L8+O1yi+2f29SE2NgE5s4awuxLhmz2BKlXv/W?=
- =?us-ascii?Q?+kYaSeq5frUdeRAP7h4YofVKv64NBUU2i6c6A9HQeyQ/QwUeCCXIXO7gZlre?=
- =?us-ascii?Q?Apn5ylbLv1hrqhgsdrKMRu4kYpt2haMrHno13X1O6JDXV927m7/LtQRMu+UP?=
- =?us-ascii?Q?oAA9ZanjdC/2lXrKemrR2gXLyp7Xjz49m1gkpBX5epu/5euCuyyOpXx1p66N?=
- =?us-ascii?Q?T8t/ARDbB+B67hE+wMuiiibIw/Lmytmo2gbMnchwq/GkDVcVZoy4FXXg1ZYG?=
- =?us-ascii?Q?xst63TCp1+a/+9gL97viGGtWW0ItQ/YW4xUd0Hq7pP854VGnLKzY?=
+	=?us-ascii?Q?ko+tMLV8StCsFlF0DWlOZwMitYdSTLtoUkX9TT5i5eh/rbDnaCFjV6F5I31m?=
+ =?us-ascii?Q?3wq29icWI68bqZ3l9PAyg5FwDyF0W2vTJPWEpH8r7yHOSOusWZdDydqTBCGV?=
+ =?us-ascii?Q?flOupAmZVlqOnkuqttyNC1Z2hwwNb4+3iS0xWZ9VkouNi2WzaomR4lf5sYof?=
+ =?us-ascii?Q?pyDMZWOg4w4p+4gLZvcDmukLvVf90LFE2R6TJnts+Paz6TBnzRhhqruODI+1?=
+ =?us-ascii?Q?dLUJkscNKbLk4U0xkuJ5jBiYYrTtl8OZRcxrWtMkcnPwHJR7YwN3jRUv44xh?=
+ =?us-ascii?Q?2g3xxdLVDJc+oKNFjmAuwmnDj0YipcEkn8lHfdjd6wfcMWxp/pFcYCxYm1ua?=
+ =?us-ascii?Q?mPsZhp8RW/uCFUwYurmvJ9gGAmguRMxI4Up3hYvUbc+H2RuC2KUnrPb5ICyQ?=
+ =?us-ascii?Q?yUTBUmJon3a68v77jSTfwrxVs7x5YZW28YPR27OfFKmw+mUqYL2btzL73N/P?=
+ =?us-ascii?Q?XRFoKANMybtpqyYLE9/dtzoLOxweg0cjw4JWiUyvCKmf4s2qW+5tf8dFpbHe?=
+ =?us-ascii?Q?xFEIlVFmCe4KxxURi4x3+HeGwFxxSFnbF22rhkZP8OH8pLuSaJoxC8OHw4PG?=
+ =?us-ascii?Q?IrPFEWR/tSFVlDfPo0pFc+jC2WKGBK71RN71dt48gMQ4WsY1z6clxDwtl24p?=
+ =?us-ascii?Q?xNlQkHi7Fy7egiLBQ0/BXTfUf+d+lSFRGryA9Ol4A3ASquQUcbFps/svkcBe?=
+ =?us-ascii?Q?I2dct31e/VY064zsXNXyIlGHJWTvyYFKzyzKZaMNBBpHk6LSLfLY3z1/jE2O?=
+ =?us-ascii?Q?MqNnROqJZAj/ZthrAHNrqh9qx+WEU2RS0MtpOIX5SVAzF7+0raEHkdTPx3rQ?=
+ =?us-ascii?Q?/gFa0bKL1dS3t4LA0J5tVZa2Kn884b9AD4cuzMGxwmHF/GCckHAMUqgaeGT3?=
+ =?us-ascii?Q?dTurDNkCFwuJWcz2oz2PByG4O8UZgcGMQfufDdFQtKN57NTTSvpYeEBPC8m5?=
+ =?us-ascii?Q?1EXYAJqMHQvjsKgr26lms63vIq6UeW382ZIoperEyZcM/gsXa/X0nkK3iSpJ?=
+ =?us-ascii?Q?UipffGhPs7tpbdemJziv05C9WDprRtKtYs3ZDaKWGkRGfwSPq3UxSK9GmPlX?=
+ =?us-ascii?Q?LxfkxVjy7YFUk/rVKtZ5nGSi49yqPsbU0rfSQlt9DgwNfauviU7Hb9o/v2Bn?=
+ =?us-ascii?Q?vu2rVmbEThcRq5vOQenYlDt7dkm+672H9HRyuT6ed/s0SSGdpUtRvF8T8NNb?=
+ =?us-ascii?Q?ros39spovbKydOkGYWYC+ZHIsWL1xHwd8sYiOJYHnXECjdn2fXAOBw37NpVB?=
+ =?us-ascii?Q?wdCRKTYy1YgQUFkoWND6DuXMcwI4QfdbSVhNS0NjR/9WCRuMh6lO1Pg/Rr3b?=
+ =?us-ascii?Q?toLHddj6rGutqyWQPNy2/EtqyMWSg9kDIMyetxL2OcpkyOGXpKSlggogPtZ3?=
+ =?us-ascii?Q?w6jZ7Y5JPTePbNrguqshc2ZLJwkYlhjSnprwC7Ju3DeJ5OgWrK8TfS4qWXN/?=
+ =?us-ascii?Q?CidzCPKPdD4Oc7beF1FSLvlaG29fcyoqbkyAT650bn0ROYxq2J0vuhGGV2od?=
+ =?us-ascii?Q?7cCl0lDLTXGExJTEdt5rAPDIWLWof4qyLrxohhXb5fRd2X53so0XwG2c6t1R?=
+ =?us-ascii?Q?lmqH3VoJ7Suviwn7syz1pX63oVDazeBwGVo3g1dmo6MHYpC1H5fS7d45wCIb?=
+ =?us-ascii?Q?On8vFrd5gJu7dHsHG3Rkueb+goUWn8XjhFxXSilJzL95dyBsOih7Ah03fKEy?=
+ =?us-ascii?Q?PBjYzgFfvBJ/mqPLxNnhGy61t7HzgrpW6TubEdchJNj+LH8Lh46TMqy2aHtt?=
+ =?us-ascii?Q?oXCBJ8tna4CP0yAMWJgsTQ7Bb5lJMB+47l1gJeOl8RtgPAIDuLLW?=
 X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 39b4f0f2-02b1-4a74-1afe-08dec68f51c4
+X-MS-Exchange-CrossTenant-Network-Message-Id: 207819da-c0db-4c32-7eb5-08dec6903083
 X-MS-Exchange-CrossTenant-AuthSource: GV2PR04MB11799.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jun 2026 01:26:39.0294
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jun 2026 01:32:52.6915
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: XEjNHVmeJFLoOjhxDH5lUubFSQwvxhG8+rPyobQA8m97mx1naHokNYLHX6MMysz336Fqsi8LNYuuTHCkQQZ82b6QmAkDWW0TdYTsEmWXz1uLqVnjgdRSj5hEIYBToYLz
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI0PR04MB11574
+X-MS-Exchange-CrossTenant-UserPrincipalName: LQ5/c7Ny/yOlwkZkHQuo3zx2eIPeSds/8mJQ1x/Yb3nR6b7RA7T+2fqjsU+iXmJ7m7PGAZvjLBGPNVIXhTqvOcYTLPh2UuoDEcO/qG52ywyvKqCHryLQ+fGQt6XLgeIW
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVXPR04MB10564
 
-On Tue, Jun 09, 2026 at 03:37:16PM -0700, Rosen Penev wrote:
-> Replace platform_get_resource + ioremap with
-> devm_platform_get_and_ioremap_resource and convert GPIO IRQ
-> request_irq/free_irq to devm_request_irq. This eliminates the
-> mxs_auart_free_gpio_irq function and its call sites, and the
-> out_iounmap error label. Simplify the remove function accordingly.
+On Tue, Jun 09, 2026 at 03:37:17PM -0700, Rosen Penev wrote:
+> Move the main UART IRQ registration after uart_add_one_port so that
+> s->port.state and s->port.lock are initialized before the interrupt
+> handler can run. Mask all UART interrupts before adding the port to
+> prevent spurious IRQs left by the bootloader.
 
-as my said before, all function need add ()
+Please use seperate patch to this problem only.
 
 Frank
+
+>
+> After probe succeeds, disable the module clock for non-console ports
+> since startup will re-enable it on port open. For console ports, keep
+> the clock prepared so auart_console_write() can safely call
+> clk_enable() from atomic context.
+>
+> Guard the IRQ handler and get_mctrl with clk_enable/clk_disable since
+> GPIO IRQs and serial-core status queries can fire while the clock is
+> disabled for non-console ports.
+>
+> In remove, disable the clock for console ports to balance the enable
+> done in probe, preventing a clock leak on unbind.
 >
 > Assisted-by: opencode:big-pickle
-> Signed-off-by: Rosen Penev <rosenp@gmail.com>
 > ---
->  drivers/tty/serial/mxs-auart.c | 53 +++++++---------------------------
->  1 file changed, 11 insertions(+), 42 deletions(-)
+>  drivers/tty/serial/mxs-auart.c | 49 +++++++++++++++++++++++++++-------
+>  1 file changed, 39 insertions(+), 10 deletions(-)
 >
 > diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-> index aa59a48bfad7..4499e3206e85 100644
+> index 4499e3206e85..e2b656638ab3 100644
 > --- a/drivers/tty/serial/mxs-auart.c
 > +++ b/drivers/tty/serial/mxs-auart.c
-> @@ -1517,15 +1517,6 @@ static int mxs_auart_init_gpios(struct mxs_auart_port *s, struct device *dev)
->  	return 0;
->  }
->
-> -static void mxs_auart_free_gpio_irq(struct mxs_auart_port *s)
-> -{
-> -	enum mctrl_gpio_idx i;
-> -
-> -	for (i = 0; i < UART_GPIO_MAX; i++)
-> -		if (s->gpio_irq[i] >= 0)
-> -			free_irq(s->gpio_irq[i], s);
-> -}
-> -
->  static int mxs_auart_request_gpio_irq(struct mxs_auart_port *s)
+> @@ -738,9 +738,13 @@ static u32 mxs_auart_modem_status(struct mxs_auart_port *s, u32 mctrl)
+>  static u32 mxs_auart_get_mctrl(struct uart_port *u)
 >  {
->  	int *irq = s->gpio_irq;
-> @@ -1537,21 +1528,13 @@ static int mxs_auart_request_gpio_irq(struct mxs_auart_port *s)
->  			continue;
+>  	struct mxs_auart_port *s = to_auart_port(u);
+> -	u32 stat = mxs_read(s, REG_STAT);
+> +	u32 stat;
+>  	u32 mctrl = 0;
 >
->  		irq_set_status_flags(irq[i], IRQ_NOAUTOEN);
-> -		err = request_irq(irq[i], mxs_auart_irq_handle,
-> -				IRQ_TYPE_EDGE_BOTH, dev_name(s->dev), s);
-> +		err = devm_request_irq(s->dev, irq[i], mxs_auart_irq_handle,
-> +				       IRQ_TYPE_EDGE_BOTH, dev_name(s->dev), s);
->  		if (err)
->  			dev_err(s->dev, "%s - Can't get %d irq\n",
->  				__func__, irq[i]);
+> +	clk_enable(s->clk);
+> +	stat = mxs_read(s, REG_STAT);
+> +	clk_disable(s->clk);
+> +
+>  	if (stat & AUART_STAT_CTS)
+>  		mctrl |= TIOCM_CTS;
+>
+> @@ -1079,6 +1083,7 @@ static irqreturn_t mxs_auart_irq_handle(int irq, void *context)
+>  	struct mxs_auart_port *s = context;
+>  	u32 mctrl_temp = s->mctrl_prev;
+>
+> +	clk_enable(s->clk);
+>  	uart_port_lock(&s->port);
+>
+>  	stat = mxs_read(s, REG_STAT);
+> @@ -1118,6 +1123,7 @@ static irqreturn_t mxs_auart_irq_handle(int irq, void *context)
 >  	}
 >
-> -	/*
-> -	 * If something went wrong, rollback.
-> -	 * Be careful: i may be unsigned.
-> -	 */
-> -	while (err && (i-- > 0))
-> -		if (irq[i] >= 0)
-> -			free_irq(irq[i], s);
-> -
->  	return err;
+>  	uart_port_unlock(&s->port);
+> +	clk_disable(s->clk);
+>
+>  	return IRQ_HANDLED;
 >  }
->
-> @@ -1596,18 +1579,12 @@ static int mxs_auart_probe(struct platform_device *pdev)
->  	if (ret)
->  		return ret;
->
-> -	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> -	if (!r) {
-> -		ret = -ENXIO;
-> +	s->port.membase = devm_platform_get_and_ioremap_resource(pdev, 0, &r);
-> +	if (IS_ERR(s->port.membase)) {
-> +		ret = PTR_ERR(s->port.membase);
->  		goto out_disable_clk;
->  	}
-> -
->  	s->port.mapbase = r->start;
-> -	s->port.membase = ioremap(r->start, resource_size(r));
-> -	if (!s->port.membase) {
-> -		ret = -ENOMEM;
-> -		goto out_disable_clk;
-> -	}
->  	s->port.ops = &mxs_auart_ops;
->  	s->port.iotype = UPIO_MEM;
->  	s->port.fifosize = MXS_AUART_FIFO_SIZE;
-> @@ -1622,21 +1599,21 @@ static int mxs_auart_probe(struct platform_device *pdev)
->  	irq = platform_get_irq(pdev, 0);
->  	if (irq < 0) {
->  		ret = irq;
-> -		goto out_iounmap;
-> +		goto out_disable_clk;
+> @@ -1603,10 +1609,6 @@ static int mxs_auart_probe(struct platform_device *pdev)
 >  	}
 >
 >  	s->port.irq = irq;
->  	ret = devm_request_irq(&pdev->dev, irq, mxs_auart_irq_handle, 0,
->  			       dev_name(&pdev->dev), s);
->  	if (ret)
-> -		goto out_iounmap;
-> +		goto out_disable_clk;
+> -	ret = devm_request_irq(&pdev->dev, irq, mxs_auart_irq_handle, 0,
+> -			       dev_name(&pdev->dev), s);
+> -	if (ret)
+> -		goto out_disable_clk;
 >
 >  	platform_set_drvdata(pdev, s);
 >
->  	ret = mxs_auart_init_gpios(s, &pdev->dev);
->  	if (ret) {
->  		dev_err(&pdev->dev, "Failed to initialize GPIOs.\n");
-> -		goto out_iounmap;
+> @@ -1627,9 +1629,28 @@ static int mxs_auart_probe(struct platform_device *pdev)
+>
+>  	mxs_auart_reset_deassert(s);
+>
+> +	/* Mask all UART interrupts to prevent spurious IRQs from bootloader */
+> +	mxs_write(0, s, REG_INTR);
+> +
+>  	ret = uart_add_one_port(&auart_driver, &s->port);
+> -	if (ret)
+> -		goto out_free_qpio_irq;
+> +	if (ret) {
+> +		auart_port[s->port.line] = NULL;
 > +		goto out_disable_clk;
+> +	}
+> +
+> +	/*
+> +	 * Request the main IRQ after uart_add_one_port so that
+> +	 * s->port.state and s->port.lock are initialized before
+> +	 * the handler can run in response to a bootloader-left
+> +	 * interrupt.
+> +	 */
+> +	ret = devm_request_irq(&pdev->dev, irq, mxs_auart_irq_handle, 0,
+> +			       dev_name(&pdev->dev), s);
+> +	if (ret) {
+> +		uart_remove_one_port(&auart_driver, &s->port);
+> +		auart_port[s->port.line] = NULL;
+> +		goto out_disable_clk;
+> +	}
+>
+>  	/* ASM9260 don't have version reg */
+>  	if (is_asm9260_auart(s)) {
+> @@ -1641,10 +1662,16 @@ static int mxs_auart_probe(struct platform_device *pdev)
+>  			 (version >> 16) & 0xff, version & 0xffff);
 >  	}
 >
->  	/*
-> @@ -1644,7 +1621,7 @@ static int mxs_auart_probe(struct platform_device *pdev)
->  	 */
->  	ret = mxs_auart_request_gpio_irq(s);
->  	if (ret)
-> -		goto out_iounmap;
-> +		goto out_disable_clk;
+> -	return 0;
+> +	/*
+> +	 * Disable clock -- startup will re-enable when the port is opened.
+> +	 * For the console port the clock must stay prepared so that
+> +	 * auart_console_write() can safely call clk_enable() from
+> +	 * atomic context.
+> +	 */
+> +	if (!uart_console(&s->port))
+> +		clk_disable_unprepare(s->clk);
 >
->  	auart_port[s->port.line] = s;
->
-> @@ -1667,11 +1644,7 @@ static int mxs_auart_probe(struct platform_device *pdev)
->  	return 0;
->
->  out_free_qpio_irq:
-> -	mxs_auart_free_gpio_irq(s);
-> -	auart_port[pdev->id] = NULL;
-> -
-> -out_iounmap:
-> -	iounmap(s->port.membase);
-> +	auart_port[s->port.line] = NULL;
+> -out_free_qpio_irq:
+> -	auart_port[s->port.line] = NULL;
+> +	return 0;
 >
 >  out_disable_clk:
 >  	clk_disable_unprepare(s->clk);
-> @@ -1683,11 +1656,7 @@ static void mxs_auart_remove(struct platform_device *pdev)
->  	struct mxs_auart_port *s = platform_get_drvdata(pdev);
+> @@ -1657,6 +1684,8 @@ static void mxs_auart_remove(struct platform_device *pdev)
 >
 >  	uart_remove_one_port(&auart_driver, &s->port);
-> -	auart_port[pdev->id] = NULL;
-> -	mxs_auart_free_gpio_irq(s);
-> -	iounmap(s->port.membase);
-> -	if (is_asm9260_auart(s))
-> -		clk_disable_unprepare(s->clk);
-> +	auart_port[s->port.line] = NULL;
+>  	auart_port[s->port.line] = NULL;
+> +	if (uart_console(&s->port))
+> +		clk_disable_unprepare(s->clk);
 >  }
 >
 >  static struct platform_driver mxs_auart_driver = {
