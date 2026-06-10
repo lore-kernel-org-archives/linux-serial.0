@@ -1,61 +1,63 @@
-Received: from mail-pj1-f42.google.com (mail-pj1-f42.google.com [209.85.216.42])
+Received: from mail-pj1-f49.google.com (mail-pj1-f49.google.com [209.85.216.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 145243D88E5
-	for <linux-serial@vger.kernel.org>; Wed, 10 Jun 2026 11:28:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22F6B3E3172
+	for <linux-serial@vger.kernel.org>; Wed, 10 Jun 2026 11:28:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781090935; cv=none; b=oAUTHkglUL68TP7eHsI2K8jUz0u31yRy1k9XosmCU0aIulItL8YsF5ZHiLXj3qbqm8Mv2kzlcPDdK0gfRaXVMXxp+V4XNVHfU7//iKDL6deJVuCD2KSIZ/a6oNHS1R6pvrulyWs4GKnnqdOodzquEr1gt/S9Q+gVsaYf/iWUMzg=
+	t=1781090939; cv=none; b=Zg6hbuDU8fvyTFrHrwzzgqqYXo2+6XIhB5JkKZ9afhudHNKJNPto0Sh+iVenj197wkDfiN2nS5vamN247HEy7EhwEQ94ewr5/bD3dSS6oS2zJtFqOPKZtWGbN0UBAUaVWKfVy20rshSiIqjm1sSxG31uoXqwa4ET7BMoWaiiwQ4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781090935; c=relaxed/simple;
-	bh=CQocN7n6EL1m7QmHcuY9oAbnmAD3Rs3OWnENrXQGuEc=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=ToOUCa2peHmOpCWOuqjp34zlepVLiQKPiPn3/FhrHwAwu7R08STvUBFQs9BJjoY2e4i8qe03RIJEzgmfDEz54FS3DEeZmScr1SEyszfw5A1S5OMIH2mqguk5OzhdJmHczXEcmkQ+/iLDzoaW83G8jWnt0gYZ28LQfJMZB4do8G4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cECNW5yM; arc=none smtp.client-ip=209.85.216.42
+	s=arc-20240116; t=1781090939; c=relaxed/simple;
+	bh=LgdbPNP0ihMSKvD35dVdCR1EjeRMx3oEv6r7a45UVcw=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=LaOMg6WvcrwoffsQ6NSicbBtP+Fpn0HIFKQxJwUlofQwbGZz3RchM/MqbYdwKd2LfuWk6pcnjNRj7f7qezrjq8J/KfJG5r8+cUnvpB383cjx1CxRET/09k+CqEOflQiGK+W0gpY5DWEhUdrGrLQz4L9Q1UO6KNFxDg9vlduLBl0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=M4Bt1Gsq; arc=none smtp.client-ip=209.85.216.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cECNW5yM"
-Received: by mail-pj1-f42.google.com with SMTP id 98e67ed59e1d1-36d630c0e35so7168393a91.3
-        for <linux-serial@vger.kernel.org>; Wed, 10 Jun 2026 04:28:52 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="M4Bt1Gsq"
+Received: by mail-pj1-f49.google.com with SMTP id 98e67ed59e1d1-36bba9a1089so3988387a91.3
+        for <linux-serial@vger.kernel.org>; Wed, 10 Jun 2026 04:28:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781090932; x=1781695732; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=f7CoPC71NMmToN6IqHyZ2J7Av/IeasabCIzNKilALHc=;
-        b=cECNW5yMf7yavulApIaQCZjJKbLYbSoWGlAGhfFOK7qYKe3Pq1ezpN/2NBiMpaCkiy
-         F+GTfxC63JaqyoqmMLqc+7LQV30DRgyIaM6bo2AB4Fx6tYKXymK0k2SiU2p0B6LtI/RS
-         QtMhFFW4YdFx158MAa8mCY1xuMF2PkDv0qNg3yyywpfhJCWA/F/rOKsQpeduy7lGe2f2
-         FVmInokNalp/O9MmrNsk0wDnS2cGhkZUfKrJZDb47jg+XnjXIebjCtDfS7aWMLYlTSS4
-         S02bOfTaou8Vum3a3hLDyqABgpL5O2spHxM/5ytRbrSymQkhpVfC+9rrvA+jcjT0xpER
-         5cyw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781090932; x=1781695732;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1781090937; x=1781695737; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=f7CoPC71NMmToN6IqHyZ2J7Av/IeasabCIzNKilALHc=;
-        b=jnRPI2G0sacyDPB/uhCijBMGP7TMgtdVx5hxtSzKp51D6q+RmF/W5G86JUiK+v6JUf
-         /lt9bv0WhW4LX03U5xQk/1Fdla/QmbgMm/UeFcjKUM0KC7lzVHLGGOUD6zc3YZSiBBkN
-         prACMU/6c8HAiU34osWEVAeT94Llq/s3+9AbMZjRiN53YL9IvmQYjCtjxcjqSYbj/xET
-         omCtfqadY3wQJQwWM1CeJRqSfPePHnokXStbAQ+SDn8brV1AejMPIt8+2M4PBtcqGFyH
-         /3QVN8H5rhWcNk5p3BmSrRHy6mBTytgT8w1xzf1tgpKKY3OFoLDmvtpw+eo2ZoYf58wa
-         pYgw==
-X-Forwarded-Encrypted: i=1; AFNElJ8hjAoyi7bKEkIsDJ/NQKrqOOtFwq/1eiDDmFYfOql+wFzqW5YFX1nXQsNQJwiQHCcdYfutrbWW3iIjkUI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzRx0E8xcBzik/FSEsOQTFpHxlnCKuLCY4EsRD6THsKyp9+z7ST
-	SuihN9tmT0HD9/nIZPC6aCtbczgsDVw8zlyS8SzPDJJ4B0dVnHiuV4R8
-X-Gm-Gg: Acq92OHuSsNpyG440uieJ64nBNUT448L+wiBUAw0S+1ntg63jxc5W3ZIOXxWIwM2Dux
-	UEktrqLUYQ/NLTLXf8hFH4qofNAJwcJABe+d1I2EiqdMikCVELaAud4DlwW+Eb9Tsx9pRGGZq7k
-	M82hCNXjkAsZOhyUw6VKFi6zpuMkfWmhIMjvoKTJGHR1S+SteKhWcvj3liSV6rx9ZHj8fywzN3d
-	N6ysQGiRsQTm7A++qzncKa1dJvZItiDZy2/zUhgq0+bz8H2cIFVsERoz04Ru6BOo0muruXI/X7X
-	WwKwDe05DR+67QQ4Sv2W/bTqNTWidg90c/8EgoJ5VjtT/hTSO7cIQlIOE8MvA2oBFgV4spCGUBF
-	YuVqnXG85M0t1+lJTWgk3/z43Yi/DTRKdAWPE47iYL8gtaz39trwDFqHq9AxJRUaQk6mh/GR2qL
-	wo68jL0kz+GvGUMt2M5Z4etydrPOSyST6jX1mTOneQt+gu+ZvbYljBDw==
-X-Received: by 2002:a17:90b:2741:b0:366:10f1:3d86 with SMTP id 98e67ed59e1d1-370f0b55ebbmr27067763a91.22.1781090932289;
-        Wed, 10 Jun 2026 04:28:52 -0700 (PDT)
+        bh=bwi1GK1b6kFMqMMmZP+3rXcQIfq6dBSGPyXYvtvQ7e8=;
+        b=M4Bt1GsqxV5bcKq8mCun5wtJu+s4wf4VWTifu7rkph8KKvfxxpSKC4xdYo1R89CR+9
+         aYDxxUUkak/HSrWBthqT7ptYzlXsQRS+K8azlEQrhzigatFb6KCyexHsAiv2bYZs9tOH
+         k6XBdoNS220pjbQ9Db4SCELEI6fIJ/g/cQsbHTTixbKl3iRVCpvgd3LFUAb3qXISLTgX
+         7STL2mJ62KjRsem0RxyD71BmUFPglpjauLleRpYvpsMvPgh4O3HMV5OP6fO1tDZvBWk0
+         gqbzePm1cvFP8HGiI9F8ZPXVpwXKkvR9Hx7gqmktkgbGbgkOdOYUHpR8m/Cipu3oVqTC
+         CCeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781090937; x=1781695737;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=bwi1GK1b6kFMqMMmZP+3rXcQIfq6dBSGPyXYvtvQ7e8=;
+        b=XF1ka10nqWHT75Cz3On6pDNJ9XUyxmRuDO+9kaUVkNqLPxylFRpkN8FvKsSzS9pKn7
+         CVsCjqn016y3JOqmafXGmsm+CQLIf5tUKuBocuOp1zIN0suXpt76buABmPGLOYSAJ2w8
+         ZLBvSy2G4EnH7aS6tN3QT8XRo+xKprZ8PbmPvgVcs1vij/ScFCbb4vKnGJFrDhGVll4H
+         m7xkx6pXc6GWLQZ0ZrGFnBkdHq75915W9sPsjkdvNwah5JvAGz8D578mj4vP1kqokUgz
+         KASdjsMPWQ8K/K8wu2tijTSR0FbgZXP8Ji9KhoVdzn59pFN9ROJU/ttlzpS4k03clWob
+         5WcA==
+X-Forwarded-Encrypted: i=1; AFNElJ/1xHiNlmg5qjtWKnfFuisHb49PXuMxsGkbpTv71ME/6+Mj8SGJPJukLH+6wFggJCmQd9IezQvaxOaHC+E=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxV5G9EvIml5GJV57XLeYh+O8CclCj6nVgSS620JUCMh9mKYwQK
+	3u4wtdoEHMWAbAjB7MY7x2glgj5j6enftd/6y031qHhADy6qkdy53MEp
+X-Gm-Gg: Acq92OEr0ZsLG8YW21cKGbdQty25BIQvxcaFbQ/CxJe1Vq2nhGGfAlvH1ofPCz9n2TS
+	atHlP3sUhXP03uF6dEF91nKLJ/Hz8dwBctHNm9gg5kU/BQMa3gqYdH/0Dy6uYBXQvNdZM0RwiWr
+	VC2KWGDqLyB/SBTGC23TAf4sYZRnGRnzAZbiZRR3omdrdUf2bQnxC2ZE76MN4ZEEdMmKyG71Vnr
+	gXYgekyV4zWoOZIc1VGUhDcceMPaZhholT5QCLb30XmhU/czzpjE3wsbJBHSu19J6R7kBt35d70
+	x6FFt70KEANCLSbZN5QEJpwVdP8rQw05QbFW/Jxud7bk0Z0OeQzzMR3rnjKzZFiXBWgpAxF6gNG
+	FHVyuMcybMzGxvxs+yvtPR6US13O0mwGSLKk9sjC4KnEAfmxAPVzDX4mp27sWFPpSzKPCt84OLh
+	72gcnoi7sZVENf+M7GAymFZpZhx+EJjTBKGkYc0JgHe75Z8lh3+xaWoQ==
+X-Received: by 2002:a17:90b:580e:b0:36c:e254:4db with SMTP id 98e67ed59e1d1-370ee544633mr25082162a91.6.1781090937473;
+        Wed, 10 Jun 2026 04:28:57 -0700 (PDT)
 Received: from hc-pb-01.realtek.com ([123.51.179.67])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-376460ee14fsm2027651a91.1.2026.06.10.04.28.49
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-376460ee14fsm2027651a91.1.2026.06.10.04.28.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Jun 2026 04:28:51 -0700 (PDT)
+        Wed, 10 Jun 2026 04:28:57 -0700 (PDT)
 From: Jason Li <jason.lee651024@gmail.com>
 X-Google-Original-From: Jason Li <jason.li@cortina-access.com>
 To: jason.li@cortina-access.com,
@@ -72,9 +74,11 @@ Cc: Rob Herring <robh@kernel.org>,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
 Subject: [PATCH 0/3] tty: serial: Add Cortina-Access UART driver and platform support
-Date: Wed, 10 Jun 2026 19:28:17 +0800
-Message-Id: <20260610112821.3030099-1-jason.li@cortina-access.com>
+Date: Wed, 10 Jun 2026 19:28:18 +0800
+Message-Id: <20260610112821.3030099-2-jason.li@cortina-access.com>
 X-Mailer: git-send-email 2.39.5
+In-Reply-To: <20260610112821.3030099-1-jason.li@cortina-access.com>
+References: <20260610112821.3030099-1-jason.li@cortina-access.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -82,6 +86,9 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+
+This series adds Linux kernel support for the UART controller integrated
+in Cortina-Access SoCs, with CA8289 (Venus) as the first supported device.
 
 Patch 1 adds the DT binding schema for the UART controller and the
 top-level ARM board binding document for the Cortina-Access SoC family,
@@ -101,8 +108,6 @@ boot a kernel with an INITRD rootfs.
 
 Tested on CA8289 engineering board; console and earlycon both verified
 at 115200 baud.
-
-Any feedback or comments are highly appreciated.
 
 Jason Li (3):
   dt-bindings: serial: Add binding for Cortina-Access UART
