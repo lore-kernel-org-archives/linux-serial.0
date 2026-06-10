@@ -1,179 +1,100 @@
-Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com [209.85.128.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42BD73ACF0E
-	for <linux-serial@vger.kernel.org>; Wed, 10 Jun 2026 21:06:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.174
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781125592; cv=pass; b=dR7CLqhnAwn/fGAa+DvtPq9njyQ9ZETj2S55zPMk3sT8zvZUbG3ILw4X3xye9Z0CSdB2btR/HePDOgaxBwLxUyH9mRR9j0UStpJitUt7yO5x8pxyqM48QGGO/yRbMxwkATS03qkB0tDN+6uZJLZLKg371dKvYxRN2AW1/kv99+c=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781125592; c=relaxed/simple;
-	bh=8SPk+9kPUL0DQYsfiU6U+3rhy9CmKqHE6O0qDp+jLZI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=JE+infZQo0e7XqEX1cMLlgnkeQY3HiYjkkMARWm0RG6sJawm52XbUEbvksKqoSYGLE0TE8i1yewhSqqWdQqLaU1SIz7yPRtgT3W1/b+M4jMHSDwSLoRqY0ycL5fwtUIFZb9t8R/DM/XQqvSXXfVeUqFE2e+xDosPoISqZWASVII=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jWOwKwlS; arc=pass smtp.client-ip=209.85.128.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48A1531282C;
+	Wed, 10 Jun 2026 22:49:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781131776; cv=none; b=mW3gv1CeKQS6p1hEzDMpnHJce2YQTnECVq2te4LsrYyd1Qa8SHr31lJUeDgSM6k+8h676+LBE5wtCvQFgrmk2rl1LYjfB4ts5JyRKbRMEKLw+OclY8Ys2MlGHx8EfaoHOa8bHlm+WhNYlBzu2HcbRjTf2s0UVP40imkP/C4CnE4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781131776; c=relaxed/simple;
+	bh=XGZQwfm3Zw/+L+OsXTadXn5Irim5PMFROfL3UWOfN70=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=GgWeWsYnd5z3pGGO/wtMM+MUraMj8bP5uulWgFRXK+r1q1GFSi4DUagYeTKP4058HHRaUhNYkIfoYPjYm5oS8daLliUrKKDipTCZobDoPGmVLcEXHs2kIU1JJq3BjBUvh28vfvJJ9d+1HI3/rCyRFbctWp1f5wP9SIb+KBnL7kE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=pass smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=z0z2sCNY; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jWOwKwlS"
-Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-7dfe7712572so67398747b3.1
-        for <linux-serial@vger.kernel.org>; Wed, 10 Jun 2026 14:06:30 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1781125589; cv=none;
-        d=google.com; s=arc-20240605;
-        b=UpqZNsIXyv+mzOLrkZy3Aqr01SgoIy7NoEjQVlDJD723/zMsQhcQLBszXkwiKj8tr1
-         wAHwcZhm8a2gyqOFk0qiaxSqomZIan7zhR0Ip/L/D9hWEeL14EUT8vydngWGsbL5HWzV
-         xqR8mpI55u3JLOQNMJevksY+kv/WTIaw9RM1BPqxbeFVIS6YDAMeEqL/EXRJpG8BjGLi
-         r95sDYQXnftDrW9qfpaZwqcBrs5nPxR3J1CiSaoFujaBH7EqeR+HOI9aocFmvzm9ObyG
-         Tn96y/41NKj5tO3/EbDj8VyeT3V26x6xUDwR7NtrfQvEkVITmIdr3yN7/cVwmqFZAkA5
-         gmmw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=96czj6yri6D29TEjjpnrX0Ms962E0G1MVyGNh2o55HQ=;
-        fh=NcS67ddfnwVdHE/gS39SmaOPO+NNRf3CpSzh5dA6xLA=;
-        b=gZvrl5Si06aHumo8ABF1XKJlRjIykhe6TlyIZcHzsu/rQz8IoMjOWbEOkQds7bxKg4
-         GCrjl2wkVpIbYZIPcY/Z3mtrMBSthuBzyQOEgb9uXLybB1v/8IUmlhQ6tQVAN93MUG2u
-         yMB+tUQLTdOU70RUoPQbk73XtjwGrKhBH2hi0MRa0wCAdg5W16pGPbJmyOauWCkrit6Z
-         bkHZkkSWdp1HcYidh9+RR4Rcpg/ahGqgK5lfnFK8Ut7Osk0SJ2FG9CmF3L7ZjAxY0/gw
-         Q6JvtYD/7xEIN4r28ADUtFF5etQiJDW7WQWlU1QJrNiPmL8Iskxdm+W4wO9ioJYZEy60
-         TCVQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781125589; x=1781730389; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=96czj6yri6D29TEjjpnrX0Ms962E0G1MVyGNh2o55HQ=;
-        b=jWOwKwlStXwGgUAXfngBzfebepF/l+Iz4nUi1RY4ZFUDUceLV7UGbSPy/9QVHif4B8
-         ZPz1O75qxMy7MzdeNnHDuLBQRANDqdgtNr4gpz1YjTbGBhWiD5oYWhkIc+R75zzFDCkO
-         Meumk/PL2hxGiDTi1EoFtI5Rjo6hDtBgNs4khoSmLMvoD3D6m4fDnyZeU2/SVa8Rl3Nq
-         Np8qgXa+5CNjzN4wJqgw9w2Dk9ZrR505dzxMLNWm5lQRAcJlwSMMAmfpaaFKXCI38Fkc
-         kL00/uRMaIP0VLi90TJNN5Ph1pRYS3cFKXlldKH1fiRvxQ998TEqxSQ9HgBoZT5xJce+
-         N+TQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781125589; x=1781730389;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=96czj6yri6D29TEjjpnrX0Ms962E0G1MVyGNh2o55HQ=;
-        b=bnIU92FEKejaLQ0V8F+YeQliYzSwLppVsBnxW3PeULk9AcaWYfL02RFTtZVTDc16WE
-         QBEmdyqRzR5mxRmLqtrk16gtIsYpzoJ4qqhuKrbopzy0vM46Pw6YoJZQfvda1f11+oFJ
-         tAWETpN327GqayIdnV8uSY7oSgHW3jSNYy1jL0svZnOCuldDvP/B/C2H5tfAYG1u2KAk
-         53Qn6F9f+hyNDzzYfo7y4UULbhx5s48LPdX+iDDCk5cFyrmxzOo8QkJLxr1K6EnlfpKo
-         JLTlffVDwY2giwO6unAlZA4roKRg9XkAovUz+UBok/rc10Za9S86476tUZG6YgI+rjPu
-         G4GA==
-X-Forwarded-Encrypted: i=1; AFNElJ+lkHCJh2cxqj5P8T/mQhX2ycGXcyTyGeDxzsY9YOyjzibGnOE0BgZv+tY0bFthIQSHYv7qoJXgIKCee9A=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxcvC+7HaNCCZmkSHhSqDWyC4edoyS8/LPV4Vp1OwMKJSwAuBEg
-	QEfFqTu4GE47Yr6tWwS7Y8tuHrb/wjBMPshTye+FI09uyTiK2TX5jlSBd6dMEmRxVMykbS5bhRD
-	rwjubnWfy2KdgizkX3tFu1FPAI46fY9g=
-X-Gm-Gg: Acq92OFbnYinzYICX1wH2DSYMIXAoV5UOuEIBxSfhN1sSgq6lQUj17R2lSOemUrhxEE
-	5Ihi3ptRzWEVFdhZXZpK5ZgMQq5CZupm5qM+LRdzO5ZsVhTe9VC242LfMy3gNXl71mmaFcHgY7M
-	Pa95sOCx0o/bnmg3QeSW/e9RlPAqPkKfUoIenxOS2WS2GyRvWvGyVz4r4eTBPAuqNM3why6fBsQ
-	tq6DNayBtbcs+EzDkmw3ScrpDl1eEbqcLs2dnqa7aaOKeU5AcD9M4Sbtu+gG6YPfihDasVr6VEd
-	nFRGHlA43GPAcUr+8cE3U2CKWA==
-X-Received: by 2002:a05:690c:45c5:b0:7e9:ab56:3c99 with SMTP id
- 00721157ae682-7ed0adbb616mr276188567b3.6.1781125589039; Wed, 10 Jun 2026
- 14:06:29 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="z0z2sCNY"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+	bh=epk83XHTGPqCs40eb3YUi50QD9q370QPRDNXcn99T0k=; b=z0z2sCNY8au5G0VMfBG8AmWZYB
+	MVF9wp40ED74oFu7+XAAhFM1uZckqdKg+45ABqBKHLH8tRPldJtSlPyTXRfL7UESbvt8c5ZNSQ5lk
+	Q7chlG3IaiWzh/dBoq5eAYqTuqGqSKkFvDYvaAn9QPjATC5pzTZQpPhSqA0yj5FUGku4AgH2tA2Yb
+	Boa2XeiCUAO4v/dqKtbYY807d2ulR8bwQSsJwnIyajdhCq04msbs5yammMZpPHBzYsJu9c8R9w4YA
+	rthGDqbmrbVAzNeECz1l+8a+PoQiBhSi2mK6p2R2L6jyum9Idr7s7RypFbklRiahF6x29ZJlbbyVt
+	fQ1tY58w==;
+Received: from [50.53.43.113] (helo=[192.168.254.34])
+	by bombadil.infradead.org with esmtpsa (Exim 4.99.1 #2 (Red Hat Linux))
+	id 1wXRjl-00000008QUp-3nom;
+	Wed, 10 Jun 2026 22:49:29 +0000
+Message-ID: <30ecb791-a9dd-4146-8d8c-b77f1fb31dde@infradead.org>
+Date: Wed, 10 Jun 2026 15:49:29 -0700
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260521133315.work.845-kees@kernel.org> <20260521133326.2465264-4-kees@kernel.org>
- <da358ae1-91b4-4a16-ac76-ffab99c230b9@suse.com>
-In-Reply-To: <da358ae1-91b4-4a16-ac76-ffab99c230b9@suse.com>
-From: jim.cromie@gmail.com
-Date: Wed, 10 Jun 2026 15:06:02 -0600
-X-Gm-Features: AVVi8CcLXClq9Fijm8VjZF47hQWmos5q_iXrehNZDw9kSOby-E_cMxEQI0SK-hU
-Message-ID: <CAJfuBxwRuT1K=rjPX+sdNyYurEJ=OjqbJaSa_S6JnY6yzTwTvQ@mail.gmail.com>
-Subject: Re: [PATCH 04/11] treewide: Convert struct kernel_param_ops
- initializers to DEFINE_KERNEL_PARAM_OPS
-To: Petr Pavlu <petr.pavlu@suse.com>
-Cc: Kees Cook <kees@kernel.org>, Luis Chamberlain <mcgrof@kernel.org>, 
-	Pengpeng Hou <pengpeng@iscas.ac.cn>, Richard Weinberger <richard@nod.at>, 
-	Anton Ivanov <anton.ivanov@cambridgegreys.com>, Johannes Berg <johannes@sipsolutions.net>, 
-	"Rafael J. Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>, Corey Minyard <corey@minyard.net>, 
-	Gabriel Somlo <somlo@cmu.edu>, "Michael S. Tsirkin" <mst@redhat.com>, 
-	Jani Nikula <jani.nikula@linux.intel.com>, 
-	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, Rodrigo Vivi <rodrigo.vivi@intel.com>, 
-	Tvrtko Ursulin <tursulin@ursulin.net>, David Airlie <airlied@gmail.com>, 
-	Simona Vetter <simona@ffwll.ch>, Bart Van Assche <bvanassche@acm.org>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	Leon Romanovsky <leon@kernel.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, 
-	Hans de Goede <hansg@kernel.org>, Mauro Carvalho Chehab <mchehab@kernel.org>, 
-	Bjorn Helgaas <bhelgaas@google.com>, Hannes Reinecke <hare@suse.de>, 
-	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, 
-	"Martin K. Petersen" <martin.petersen@oracle.com>, Daniel Lezcano <daniel.lezcano@kernel.org>, 
-	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Alan Stern <stern@rowland.harvard.edu>, Jason Wang <jasowang@redhat.com>, 
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>, =?UTF-8?Q?Eugenio_P=C3=A9rez?= <eperezma@redhat.com>, 
-	Jason Baron <jbaron@akamai.com>, Tiwei Bie <tiwei.btw@antgroup.com>, 
-	Benjamin Berg <benjamin.berg@intel.com>, =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
-	"David E. Box" <david.e.box@linux.intel.com>, "Maciej W. Rozycki" <macro@orcam.me.uk>, 
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, Peter Zijlstra <peterz@infradead.org>, 
-	Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, 
-	Sean Christopherson <seanjc@google.com>, Paolo Bonzini <pbonzini@redhat.com>, 
-	Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, 
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, 
-	"H. Peter Anvin" <hpa@zytor.com>, Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>, 
-	Daniel Gomez <da.gomez@kernel.org>, Sami Tolvanen <samitolvanen@google.com>, 
-	Aaron Tomlin <atomlin@atomlin.com>, Alexander Potapenko <glider@google.com>, Marco Elver <elver@google.com>, 
-	Dmitry Vyukov <dvyukov@google.com>, Andrew Morton <akpm@linux-foundation.org>, 
-	John Johansen <john.johansen@canonical.com>, Paul Moore <paul@paul-moore.com>, 
-	James Morris <jmorris@namei.org>, "Serge E. Hallyn" <serge@hallyn.com>, 
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	Georgia Garcia <georgia.garcia@canonical.com>, kvm@vger.kernel.org, 
-	dmaengine@vger.kernel.org, linux-modules@vger.kernel.org, 
-	kasan-dev@googlegroups.com, linux-mm@kvack.org, apparmor@lists.ubuntu.com, 
-	linux-security-module@vger.kernel.org, linux-um@lists.infradead.org, 
-	linux-acpi@vger.kernel.org, openipmi-developer@lists.sourceforge.net, 
-	qemu-devel@nongnu.org, intel-gfx@lists.freedesktop.org, 
-	dri-devel@lists.freedesktop.org, linux-rdma@vger.kernel.org, 
-	linux-media@vger.kernel.org, linux-pci@vger.kernel.org, 
-	linux-scsi@vger.kernel.org, linux-pm@vger.kernel.org, 
-	linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org, 
-	linux-usb@vger.kernel.org, usb-storage@lists.one-eyed-alien.net, 
-	virtualization@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	linux-arch@vger.kernel.org, netdev@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, linux-hardening@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/3] tty: serial: Add UART driver for Cortina-Access
+ platform
+To: Jason Li <jason.lee651024@gmail.com>, jason.li@cortina-access.com,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Catalin Marinas
+ <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
+ Arnd Bergmann <arnd@arndb.de>, linux-serial@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20260610112821.3030099-1-jason.li@cortina-access.com>
+ <20260610112821.3030099-4-jason.li@cortina-access.com>
+Content-Language: en-US
+From: Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20260610112821.3030099-4-jason.li@cortina-access.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Mon, May 25, 2026 at 7:35=E2=80=AFAM Petr Pavlu <petr.pavlu@suse.com> wr=
-ote:
->
-> On 5/21/26 3:33 PM, Kees Cook wrote:
-> > Using Coccinelle, rewrite every struct kernel_param_ops initializer tha=
-t
-> > sets .get into a DEFINE_KERNEL_PARAM_OPS-family macro invocation,
-> > for example:
-> >
-> > @@
-> > declarer name DEFINE_KERNEL_PARAM_OPS;
-> > identifier OPS;
-> > expression SET, GET;
-> > @@
-> > - const struct kernel_param_ops OPS =3D {
-> > -       .set =3D SET,
-> > -       .get =3D GET,
-> > - };
-> > + DEFINE_KERNEL_PARAM_OPS(OPS, SET, GET);
-> >
-> > Using the macro for initialization means future changes can manipulate
-> > the struct layout and callback prototypes without having to change ever=
-y
-> > initializer.
->
-> Nit: For consistency, I suggest also converting the few remaining
-> kernel_param_ops instances that specify only .set and no .get, such as
-> simdisk_param_ops_filename.
->
-> --
-> Thanks,
-> Petr
 
-for the dynamic-debug changes
 
-Reviewed-by: Jim Cromie <jim.cromie@gmail.com>
+On 6/10/26 4:28 AM, Jason Li wrote:
+> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> index cf7dba473b20..99a1c9308395 100644
+> --- a/drivers/tty/serial/Kconfig
+> +++ b/drivers/tty/serial/Kconfig
+> @@ -1592,6 +1592,27 @@ config SERIAL_NUVOTON_MA35D1_CONSOLE
+>  	  but you can alter that using a kernel command line option such as
+>  	  "console=ttyNVTx".
+>  
+> +config SERIAL_CORTINA_ACCESS
+> +	tristate "Cortina-Access serial port support"
+> +	depends on OF
+> +	select SERIAL_CORE
+> +	help
+> +	  This driver is for the Cortina-Access SoC UART, present in the
+> +	  CA8289 (Venus) and related CAXXXX family of SoCs. If you have a
+> +	  machine based on the Cortina-Access SoC and wish to use the serial
+> +	  port, say 'Y' here. Otherwise, say 'N'.
+
+It could also be 'm' since the kconfig symbol is tristate.
+
+> +
+> +config SERIAL_CORTINA_ACCESS_CONSOLE
+> +	bool "Console on Cortina-Access serial port"
+> +	depends on SERIAL_CORTINA_ACCESS=y
+> +	select SERIAL_CORE_CONSOLE
+> +	select SERIAL_EARLYCON
+> +	help
+> +	  Say 'Y' here if you wish to use the Cortina-Access UART as the system
+> +	  console (the device which receives all kernel messages and warnings
+> +	  and which allows logins in single user mode).
+> +	  /dev/ttyS* is the default device node.
+> +
+>  endmenu
+
+-- 
+~Randy
+
