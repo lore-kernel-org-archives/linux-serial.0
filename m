@@ -1,63 +1,63 @@
-Received: from mail-pj1-f49.google.com (mail-pj1-f49.google.com [209.85.216.49])
+Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com [209.85.216.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22F6B3E3172
-	for <linux-serial@vger.kernel.org>; Wed, 10 Jun 2026 11:28:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D19BE3D79FB
+	for <linux-serial@vger.kernel.org>; Wed, 10 Jun 2026 11:29:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781090939; cv=none; b=Zg6hbuDU8fvyTFrHrwzzgqqYXo2+6XIhB5JkKZ9afhudHNKJNPto0Sh+iVenj197wkDfiN2nS5vamN247HEy7EhwEQ94ewr5/bD3dSS6oS2zJtFqOPKZtWGbN0UBAUaVWKfVy20rshSiIqjm1sSxG31uoXqwa4ET7BMoWaiiwQ4=
+	t=1781090947; cv=none; b=geyBrhOQJDStf8F01AzOqEINAg0nQXL6zuMC9aibMiEj/J+TXYMIzoVBDxXVPpCxkdJ7m+pLHVpGBYB7h2eAAZbytB90g6izl+T+UzpQo+gcj4A7lcJl9faXC3vir336XoKd+iASr6sYMTbvTeJgXEK+K4gePBsvO4DdCuktRjQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781090939; c=relaxed/simple;
-	bh=LgdbPNP0ihMSKvD35dVdCR1EjeRMx3oEv6r7a45UVcw=;
+	s=arc-20240116; t=1781090947; c=relaxed/simple;
+	bh=fJ/X2iMoUiRd4gZpRf8wNUnMn9HbcgDtYX8aA5wPIMc=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=LaOMg6WvcrwoffsQ6NSicbBtP+Fpn0HIFKQxJwUlofQwbGZz3RchM/MqbYdwKd2LfuWk6pcnjNRj7f7qezrjq8J/KfJG5r8+cUnvpB383cjx1CxRET/09k+CqEOflQiGK+W0gpY5DWEhUdrGrLQz4L9Q1UO6KNFxDg9vlduLBl0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=M4Bt1Gsq; arc=none smtp.client-ip=209.85.216.49
+	 MIME-Version; b=kllElKH7dCiOUngFoBL/uFRTmefpahW5Cd8zFddrKS4UuM4kBSpcBziC6wOqAL7PXt3649X8JFqTcjQwDdS5jOJUw/77ekqEztc09XXJevNiHjB/JiKx4JtabU3M7YNmzhplXGnD+DHH66DnZ77bvQgp2LeVyhYkIPPOc5U4+HY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bibuHV0U; arc=none smtp.client-ip=209.85.216.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="M4Bt1Gsq"
-Received: by mail-pj1-f49.google.com with SMTP id 98e67ed59e1d1-36bba9a1089so3988387a91.3
-        for <linux-serial@vger.kernel.org>; Wed, 10 Jun 2026 04:28:57 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bibuHV0U"
+Received: by mail-pj1-f47.google.com with SMTP id 98e67ed59e1d1-36b903567fdso6675881a91.1
+        for <linux-serial@vger.kernel.org>; Wed, 10 Jun 2026 04:29:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781090937; x=1781695737; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1781090944; x=1781695744; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=bwi1GK1b6kFMqMMmZP+3rXcQIfq6dBSGPyXYvtvQ7e8=;
-        b=M4Bt1GsqxV5bcKq8mCun5wtJu+s4wf4VWTifu7rkph8KKvfxxpSKC4xdYo1R89CR+9
-         aYDxxUUkak/HSrWBthqT7ptYzlXsQRS+K8azlEQrhzigatFb6KCyexHsAiv2bYZs9tOH
-         k6XBdoNS220pjbQ9Db4SCELEI6fIJ/g/cQsbHTTixbKl3iRVCpvgd3LFUAb3qXISLTgX
-         7STL2mJ62KjRsem0RxyD71BmUFPglpjauLleRpYvpsMvPgh4O3HMV5OP6fO1tDZvBWk0
-         gqbzePm1cvFP8HGiI9F8ZPXVpwXKkvR9Hx7gqmktkgbGbgkOdOYUHpR8m/Cipu3oVqTC
-         CCeg==
+        bh=WA6ihoM1lqsXloyq8orrS5aE2lQH5FPEqZNihMpid8o=;
+        b=bibuHV0UsfcXyutMNZyHkGE6QOYfC0gxv23qr2wK2QQeZxiqneFsq6YagsrHeMAPJ6
+         OG+JSI9pNtHKXhdHHoWyM3SDAzX6YdNkjMACYPYMxJCVuXy4gYpzCzJdFe3w0mh8ETEp
+         FPwpruzS1znb5hVBfN8HTwvk0ymqv9jJfBeph6Z0fTDp1I0WIxno0SouY3pJ74aAgNJO
+         OZiOhg39QbqXC/Sd8OZpeZdEz4X4eVmeIU8fHfg8+mqIkrpFX5MzKI531IKdlDL1R/lg
+         DW460hVv9rvxJNW4yTL64Oz/fbA8fm3JVbneqUMVVfSEYYbO0IJRfHkaWLatb2cc9BLk
+         5jYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781090937; x=1781695737;
+        d=1e100.net; s=20251104; t=1781090944; x=1781695744;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=bwi1GK1b6kFMqMMmZP+3rXcQIfq6dBSGPyXYvtvQ7e8=;
-        b=XF1ka10nqWHT75Cz3On6pDNJ9XUyxmRuDO+9kaUVkNqLPxylFRpkN8FvKsSzS9pKn7
-         CVsCjqn016y3JOqmafXGmsm+CQLIf5tUKuBocuOp1zIN0suXpt76buABmPGLOYSAJ2w8
-         ZLBvSy2G4EnH7aS6tN3QT8XRo+xKprZ8PbmPvgVcs1vij/ScFCbb4vKnGJFrDhGVll4H
-         m7xkx6pXc6GWLQZ0ZrGFnBkdHq75915W9sPsjkdvNwah5JvAGz8D578mj4vP1kqokUgz
-         KASdjsMPWQ8K/K8wu2tijTSR0FbgZXP8Ji9KhoVdzn59pFN9ROJU/ttlzpS4k03clWob
-         5WcA==
-X-Forwarded-Encrypted: i=1; AFNElJ/1xHiNlmg5qjtWKnfFuisHb49PXuMxsGkbpTv71ME/6+Mj8SGJPJukLH+6wFggJCmQd9IezQvaxOaHC+E=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxV5G9EvIml5GJV57XLeYh+O8CclCj6nVgSS620JUCMh9mKYwQK
-	3u4wtdoEHMWAbAjB7MY7x2glgj5j6enftd/6y031qHhADy6qkdy53MEp
-X-Gm-Gg: Acq92OEr0ZsLG8YW21cKGbdQty25BIQvxcaFbQ/CxJe1Vq2nhGGfAlvH1ofPCz9n2TS
-	atHlP3sUhXP03uF6dEF91nKLJ/Hz8dwBctHNm9gg5kU/BQMa3gqYdH/0Dy6uYBXQvNdZM0RwiWr
-	VC2KWGDqLyB/SBTGC23TAf4sYZRnGRnzAZbiZRR3omdrdUf2bQnxC2ZE76MN4ZEEdMmKyG71Vnr
-	gXYgekyV4zWoOZIc1VGUhDcceMPaZhholT5QCLb30XmhU/czzpjE3wsbJBHSu19J6R7kBt35d70
-	x6FFt70KEANCLSbZN5QEJpwVdP8rQw05QbFW/Jxud7bk0Z0OeQzzMR3rnjKzZFiXBWgpAxF6gNG
-	FHVyuMcybMzGxvxs+yvtPR6US13O0mwGSLKk9sjC4KnEAfmxAPVzDX4mp27sWFPpSzKPCt84OLh
-	72gcnoi7sZVENf+M7GAymFZpZhx+EJjTBKGkYc0JgHe75Z8lh3+xaWoQ==
-X-Received: by 2002:a17:90b:580e:b0:36c:e254:4db with SMTP id 98e67ed59e1d1-370ee544633mr25082162a91.6.1781090937473;
-        Wed, 10 Jun 2026 04:28:57 -0700 (PDT)
+        bh=WA6ihoM1lqsXloyq8orrS5aE2lQH5FPEqZNihMpid8o=;
+        b=sOdReNagVjumIhRESoWQ3uGMmtzuWi7TzVyN5ys+RDFWP+oD6vAXZM5l6QDE+zOc9V
+         kP9gXQ7mXMhh7dA32tkJhrJujXX2pCyrk98Iq1MfkJQfQK5yplYbhoLejpBZ6kX2Ow/b
+         mlOFazdK6szByJ7n3cWwFdEyRdsB/rDYsvLlKqHDQamo4EE/Fj+pCH3hmHMFvXne2j9D
+         MBzD+H8p96GjJEI5v6Gxtb4ERjhYQcw4SiQ++Sl0JZ2Hh/XeijSA/OY09bxvXozu51DZ
+         lhypBHI5MPBAqawfipkucGNf9E6/4o+CSKrGFuGiQNFZezGgZo865mgQEuKOcC15Lhb3
+         4ZLA==
+X-Forwarded-Encrypted: i=1; AFNElJ8CnHiEKAN7zSl7rIb8sDbkNLac6/0d9ChPosImvNqN+vz+EnPbd8+fXKgLXePX1Htyn89bBkwdC1gEcag=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyIJu4+zE/aO6TIIQ5+oVqC61acPsVvs2MqpXEDj7F8lnqqMhBP
+	Ti6D84Xm8NX6VHsrgbxugXM6qe3BUCEow736rTwK2sb8eSV1M8BvSYDA
+X-Gm-Gg: Acq92OGvgLiVUlzI4hChb+Uc06gNA1ncLi0LmvgxgumcPugeXh18lYsqLusQeyAynoP
+	U6a6LCRPSDLAsdwj4DgE+Uth2Gy7en7Hl1G8J5oS5PpAIp9CfJo3IWiifNqYaNC0JyGBZcgXOCm
+	YNhZ6LHpc/r8g9HesqzyWDydEeE5tCtMrOodz5x/oknNlspa9bUfDCEpBeU420AYfRPcj6vpxq1
+	HKB5O1Oc29OIzJjBnFJRPgg0wa3/sXFoNAtCrYKy9npnRpb8T63ISdMQr8uDNXOaN4c2muWDpPN
+	8ba0lnvclwflYXp79ffmXFNbeBJnJ1BJBVZq5359xvd7heLJkkzxGmJF6aoG2aeKcR2sOoIL5xE
+	q9Oq94LzNh7nxCEDfB/BZjO6IZw3HuwG4jztqXpaHXgpaT9eTzvl9tof9OFYN+eoPkT7lX+5bmV
+	oMfJbEpY2/CBwP9gmkDKz97HLNRKKupgbPBbO8rQfN/xTQOEFJJjBPDA==
+X-Received: by 2002:a17:90b:5783:b0:36d:ae6a:22ed with SMTP id 98e67ed59e1d1-370f0f43e72mr27042985a91.22.1781090944288;
+        Wed, 10 Jun 2026 04:29:04 -0700 (PDT)
 Received: from hc-pb-01.realtek.com ([123.51.179.67])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-376460ee14fsm2027651a91.1.2026.06.10.04.28.54
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-376460ee14fsm2027651a91.1.2026.06.10.04.29.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Jun 2026 04:28:57 -0700 (PDT)
+        Wed, 10 Jun 2026 04:29:03 -0700 (PDT)
 From: Jason Li <jason.lee651024@gmail.com>
 X-Google-Original-From: Jason Li <jason.li@cortina-access.com>
 To: jason.li@cortina-access.com,
@@ -73,9 +73,9 @@ Cc: Rob Herring <robh@kernel.org>,
 	linux-arm-kernel@lists.infradead.org,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 0/3] tty: serial: Add Cortina-Access UART driver and platform support
-Date: Wed, 10 Jun 2026 19:28:18 +0800
-Message-Id: <20260610112821.3030099-2-jason.li@cortina-access.com>
+Subject: [PATCH 1/3] dt-bindings: serial: Add binding for Cortina-Access UART
+Date: Wed, 10 Jun 2026 19:28:19 +0800
+Message-Id: <20260610112821.3030099-3-jason.li@cortina-access.com>
 X-Mailer: git-send-email 2.39.5
 In-Reply-To: <20260610112821.3030099-1-jason.li@cortina-access.com>
 References: <20260610112821.3030099-1-jason.li@cortina-access.com>
@@ -87,53 +87,141 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This series adds Linux kernel support for the UART controller integrated
-in Cortina-Access SoCs, with CA8289 (Venus) as the first supported device.
+Add DT binding schema for the Cortina-Access UART controller.
+This IP is integrated into most CAXXXX SoC family members.
 
-Patch 1 adds the DT binding schema for the UART controller and the
-top-level ARM board binding document for the Cortina-Access SoC family,
-along with the vendor prefix.
+Also add the vendor prefix for Cortina Access, Inc. and the
+top-level ARM board binding document for the CA8289 (Venus) SoC.
 
-Patch 2 introduces the serial driver (serial_cortina-access.c).  The
-UART IP has a simple FIFO-based design with a single interrupt line.
-The driver uses uart_port_tx() for TX, handles earlycon initialisation
-when the bootloader leaves the UART disabled, and provides a TX FIFO
-kick-start in start_tx() to work around edge-triggered interrupt
-behaviour.  Clock frequency is obtained exclusively via the clk
-framework.
-
-Patch 3 adds the device tree sources for the CA8289 SoC and its
-engineering board, covering the minimal hardware description needed to
-boot a kernel with an INITRD rootfs.
-
-Tested on CA8289 engineering board; console and earlycon both verified
-at 115200 baud.
-
-Jason Li (3):
-  dt-bindings: serial: Add binding for Cortina-Access UART
-  tty: serial: Add UART driver for Cortina-Access platform
-  arm64: dts: cortina-access: Add DTS for CA8289 SoC and Venus board
-
- .../bindings/arm/cortina-access.yaml          |  29 +
- .../serial/cortina-access,serial.yaml         |  46 ++
- .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
- MAINTAINERS                                   |  14 +
- arch/arm64/Kconfig.platforms                  |  10 +
- arch/arm64/boot/dts/Makefile                  |   1 +
- arch/arm64/boot/dts/cortina-access/Makefile   |   2 +
- .../dts/cortina-access/ca8289-engboard.dts    |  31 +
- .../boot/dts/cortina-access/ca8289-soc.dtsi   | 118 +++
- drivers/tty/serial/Kconfig                    |  21 +
- drivers/tty/serial/Makefile                   |   1 +
- drivers/tty/serial/serial_cortina-access.c    | 755 ++++++++++++++++++
- 12 files changed, 1030 insertions(+)
+Signed-off-by: Jason Li <jason.li@cortina-access.com>
+Assisted-by: Claude:claude-opus-4-8
+---
+ .../bindings/arm/cortina-access.yaml          | 29 ++++++++++++
+ .../serial/cortina-access,serial.yaml         | 46 +++++++++++++++++++
+ .../devicetree/bindings/vendor-prefixes.yaml  |  2 +
+ MAINTAINERS                                   |  7 +++
+ 4 files changed, 84 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/arm/cortina-access.yaml
  create mode 100644 Documentation/devicetree/bindings/serial/cortina-access,serial.yaml
- create mode 100644 arch/arm64/boot/dts/cortina-access/Makefile
- create mode 100644 arch/arm64/boot/dts/cortina-access/ca8289-engboard.dts
- create mode 100644 arch/arm64/boot/dts/cortina-access/ca8289-soc.dtsi
- create mode 100644 drivers/tty/serial/serial_cortina-access.c
 
+diff --git a/Documentation/devicetree/bindings/arm/cortina-access.yaml b/Documentation/devicetree/bindings/arm/cortina-access.yaml
+new file mode 100644
+index 000000000000..ec0320ed0c0b
+--- /dev/null
++++ b/Documentation/devicetree/bindings/arm/cortina-access.yaml
+@@ -0,0 +1,29 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/arm/cortina-access.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Cortina-Access SoC boards
++
++maintainers:
++  - Jason Li <jason.li@cortina-access.com>
++
++description:
++  Boards based on Cortina-Access ARMv8 SoCs targeting networking and
++  access applications.
++
++properties:
++  $nodename:
++    const: /
++  compatible:
++    oneOf:
++      - description: Cortina-Access CA8289 (Venus) engineering board
++        const: cortina-access,ca8289-engboard
++
++      - description: Cortina-Access CA8289 (Venus) reference board
++        const: cortina-access,ca8289-refboard
++
++additionalProperties: true
++
++...
+diff --git a/Documentation/devicetree/bindings/serial/cortina-access,serial.yaml b/Documentation/devicetree/bindings/serial/cortina-access,serial.yaml
+new file mode 100644
+index 000000000000..5d7fdd954491
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/cortina-access,serial.yaml
+@@ -0,0 +1,46 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/serial/cortina-access,serial.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Cortina-Access UART controller
++
++maintainers:
++  - Jason Li <jason.li@cortina-access.com>
++
++allOf:
++  - $ref: serial.yaml#
++
++properties:
++  compatible:
++    const: cortina-access,serial
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++
++    serial@f4329188 {
++        compatible = "cortina-access,serial";
++        reg = <0 0xf4329188 0 0x30>;
++        interrupts = <GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>;
++        clocks = <&apb_pclk>;
++    };
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+index dd94c50e97f9..837e2a92e7e8 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
++++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+@@ -367,6 +367,8 @@ patternProperties:
+     description: Chengdu Corpro Technology Co., Ltd.
+   "^corechips,.*":
+     description: Shenzhen Corechips Microelectronics Co., Ltd.
++  "^cortina-access,.*":
++    description: Cortina Access, Inc.
+   "^cortina,.*":
+     description: Cortina Systems, Inc.
+   "^cosmic,.*":
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 20bd55913b2d..cc261888fae0 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2820,6 +2820,13 @@ F:	tools/perf/tests/shell/lib/*coresight*
+ F:	tools/perf/util/cs-etm-decoder/*
+ F:	tools/perf/util/cs-etm.*
+ 
++ARM/CORTINA-ACCESS VENUS ARM ARCHITECTURE
++M:	Jason Li <jason.li@cortina-access.com>
++L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
++S:	Maintained
++F:	Documentation/devicetree/bindings/arm/cortina-access.yaml
++F:	Documentation/devicetree/bindings/serial/cortina-access,serial.yaml
++
+ ARM/CORTINA SYSTEMS GEMINI ARM ARCHITECTURE
+ M:	Hans Ulli Kroll <ulli.kroll@googlemail.com>
+ M:	Linus Walleij <linusw@kernel.org>
 -- 
 2.39.5
 
