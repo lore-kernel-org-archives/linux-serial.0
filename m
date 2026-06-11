@@ -1,63 +1,63 @@
-Received: from mail-pf1-f182.google.com (mail-pf1-f182.google.com [209.85.210.182])
+Received: from mail-pg1-f171.google.com (mail-pg1-f171.google.com [209.85.215.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B1D933B975
-	for <linux-serial@vger.kernel.org>; Thu, 11 Jun 2026 03:39:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A41EE33B6FB
+	for <linux-serial@vger.kernel.org>; Thu, 11 Jun 2026 03:39:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781149161; cv=none; b=OpMhr8NiYogj+6L85qCLZ3wJHs+A3ho6sqQxFjQVRs1cb3jmjifFFhxK61HGlQYrUGty0JbdAvT6N3aKul1Ncba9RFUILq96bikmT/Ncu4PTJUWbrMdSJ58uVblikxIRs+DOF6+S17uYPEvWTkO/Dj4AOGSHS8/J3jAn4pGNSRM=
+	t=1781149164; cv=none; b=c/E3xSicWj94OUqOWIqfrXD41uAPKTdqrPo7iVM02XB71DYqsymin0+jyI7CpGLl1OqjdrPTWgt0FeMimBOyXjmpHioEqVCVHqu8v+KcWL0vx4ej3QPF0sCVsdLyLXPvSEpT2cL59z9xukf0hKFgp+WQd2dtJOoI7FVNUKFG3Eo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781149161; c=relaxed/simple;
-	bh=VuqAk7fmE2Ltz5WBlY6dQwYowm3411vf/6KNWP2/3e0=;
+	s=arc-20240116; t=1781149164; c=relaxed/simple;
+	bh=KHFBKElH1lggN2sZB5oI+hYuA6tBhm4+ZNyZCHF4qaU=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=kgzZhB2iy81yp9oIKa7XjDKPzHQMjNBzHwgnkhWkvfuteamFgMnsALNiDYpS1Su+lMOeZZGmcCKVLTKGqKLhHRWLvE/fP0Kad13fHxus25TRVC03x0jU7KuNs1/SwTB8dufOnU2eDwr7luND7jHBRvuZ4uh4CBd2FRlbaO4bJK0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EBK4J1GX; arc=none smtp.client-ip=209.85.210.182
+	 MIME-Version; b=USFNpnvIhsIBaCRx5xF5mdLRN9FQcqVbdMOy+resXdyw5YuAB3Wyayj9Z18iNFA2y80xZOk3QyJUsU5B+rfyHGlpJJ2XIjhPUUSpCYfnGOktgWg/Igu2A+TWm94MhfN+G8St93N4qyJO5Dr7J/wAmUPTln+hhCWsx6e+/tuACDM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TqV6TPuU; arc=none smtp.client-ip=209.85.215.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EBK4J1GX"
-Received: by mail-pf1-f182.google.com with SMTP id d2e1a72fcca58-842319576d5so4205287b3a.1
-        for <linux-serial@vger.kernel.org>; Wed, 10 Jun 2026 20:39:18 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TqV6TPuU"
+Received: by mail-pg1-f171.google.com with SMTP id 41be03b00d2f7-c85a297d2d2so4462420a12.0
+        for <linux-serial@vger.kernel.org>; Wed, 10 Jun 2026 20:39:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781149158; x=1781753958; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1781149159; x=1781753959; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=jagaY783ZQexk/NjgnRY09dQ8WqyYDUPOGhKANIhzfg=;
-        b=EBK4J1GX1aBiMD5oh4L/Ab0D+Ubk1GZ6ZMHuqctGK8hQJkSR0TPjgvx1zkeFDMALrY
-         W2QrW4xmmtNOVRvZx/eecADvqiYDS0hi45QLOB+xwM5087cdQdIbHRe8Bvxb3lGe/B3S
-         U87lmDFcw59WKCrQunSd2+PElEk6Hg4b6GHNVG92PzLxtYkjELDZHW1BBVn2fPLgk3wx
-         Fu2t9HBjtV8RMiMwe9la3jMgthwDL4tCGZdPcyfeop0L3DiJv/6Qvq1oTzIHRWfSwdt5
-         esav2sevGKSIY2hOX4iqet0ts/o7JD2ESn/ry9h+gSDMOwnHAtinxTTiROEN3/I40BkX
-         +aIQ==
+        bh=Enn6naQw+wLmV0GhfZ0seolUzIj1ObU+9VW8J0DyP44=;
+        b=TqV6TPuUbgT7qmDT9jHv/gtDGhskne4WdiC/YMANwWjRXUzxPY5JDFpm+rcy4O2ZOM
+         0eDdFy56sXY6qDzsOpAYAtCPhmuntbXKqm/x/YT63vxloKCGtB8nZz0FTbxoiByeg/06
+         G297/lVsDU8uF1evMa5/54qtahg+BaHaDjLWsR4dV6sLplIUeYgJgWhJXqShGbWwqXqT
+         BOyPjHYHFWZEahxA3ntddgyx0pY/Ksoy/BtaOAmckRNP+3wCSGAkE9KietrIqe/S3WuC
+         TMIbjeDZboQVxISWpv2sZrKuWrqEbA0OmfE1Hil/zJQFThz2BG/wh1XNZ2ueK6N73SwT
+         V5QA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781149158; x=1781753958;
+        d=1e100.net; s=20251104; t=1781149159; x=1781753959;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=jagaY783ZQexk/NjgnRY09dQ8WqyYDUPOGhKANIhzfg=;
-        b=fXo1c8JS7e2oIX7wT/3Gmb15QAG0oYxE7UbIHpzQXjAZUhixksLLETs6wqzXUMq4n3
-         OfFO1PG6THmNcpL63QpzerMzxiXvaX+PfIsSASdkSqfrj7hRMTvPM6l2zbkATH+aRmqx
-         MYwtHAPWLyNLCUCGIC8+yGco9Z7Mds5c9A4t42qb/LhohsI7oRmG6MC1mnDDP/wiT2UN
-         nlIjtOHIzYFLMTxVrj9XDWZgOLEC6dgQgvnq46uaSMBiVBv64YpAhXY4pTM1joSidXz3
-         Jc9XhRq2DQOqfOafi5oAXy3tY9RH6cCof9+Jhy8wQTygqxbDM5wJzi1iSVVk1FrRU/kx
-         vV0w==
-X-Gm-Message-State: AOJu0YxwpfTPVySFcDgGwxumDpB699GmWLuaOKrqnD7ghKgLb97f5aGY
-	Ke2KgT/0d+iCAk/VaCWkh+ubClqgZTBRRJ+0UFIVNi+OEO0oFxjleZFy/ZgNmQ==
-X-Gm-Gg: Acq92OHJLLm9S+mBwxZtXcClXcU1q3UdDhrPJY2uW6sInwgIuZJhqvgO7gVl7cQjf0K
-	SviAUNPXMGlLm4WS8Hq+tVCTv1ZN61m1vmuaGlM8fDjCxzgptxEeakoEOWXnxXiIn1Jr/4YKlj9
-	hkS+MdgajuneTy9SYFxDOe+qSKlGfL1MD7BvAzMYGowLwMIJaOsjEGOBw5L7T2rjVuNMIBvoTSK
-	p4D7VMcQpfC8Wp/f4o4AbhMSxyh5mpQQ06IODRpCNGWm8v5ZDWvBZ92d4PYGfIkK/zxJ+oHeBCz
-	psRVaXwyYKGnGYZ01/xulCEnQCcaxXtno5NHyRGDh2oEyypUKlp+0aFmFSmV8HOLFfYqdjR2nEf
-	zSb2UjV7QYdZ734W2OV+/m18UXaz3sgfatPt385kJI382r3A5oQTiZ3SdhjyS0gCfJySoqnId0H
-	D3cjsAzGprdx0OJkd31hgQ+mciUz42ITeorH1ChSUioZNBah4Ik2KB1G3EvI4dsPGvt9+cghvMl
-	3QL6+eqVBRe7jAR1UjxmRiZua/6TyJmWterqliIakOekKgz1rzgvPD3
-X-Received: by 2002:a05:6a00:88e:b0:842:48ae:1d56 with SMTP id d2e1a72fcca58-84336b9dc4amr1007360b3a.35.1781149157745;
-        Wed, 10 Jun 2026 20:39:17 -0700 (PDT)
+        bh=Enn6naQw+wLmV0GhfZ0seolUzIj1ObU+9VW8J0DyP44=;
+        b=tW0il0vSjOSZleU/BDn2kFeJ8hzqFsjOdM/X+SvC/ww4OWHyKrpAkpMMvdpRH1/xTB
+         WONAQRsTXnTuHj0p9K/sOMlB3HGkkdKXG6ydjDFKOkBO3iZ9NqVrVlqaeOFO+n5roWac
+         9sHM3B8IHzs9jvJDT3UkW+MjR9fBiKGbTAuxoIcf3FX3Duhd9+JE5BWDKf7Mhl8XY0G6
+         +JyiUg6ijYedZWvWHctcEkSKUJHsTMG1KCefSid6npzqe7qPJZ4bMh5rcwG6Ez9AUEMa
+         NB8CANNKzaaBqNtq7WrHp9+I47Sy9jLGfZYmnTQJeVjVPF3ppSVfNWYWseXwrs2b5Slv
+         7XGA==
+X-Gm-Message-State: AOJu0YyZAwcikZ++sEya9dVu/zjrT/ZskTf493ZS8pbpm7tZLj4/3rou
+	Dj2ZWMTAWxUzbraxXnBiwJrF26wtDxzXh2nPq1MUbZR7LgkW4HABnTBAg4vYWw==
+X-Gm-Gg: Acq92OHHiIxlS6xPzrRLf7tN2Lu+vgASjf6fxUNwZBK2OfVK9oYdw+UZUDxuSsHKDaQ
+	g/QwroPei5yhxfensavhhxDI0tgqmdYzN4ApuuMBaWGMHGacZEPoNHQJiScoW2E4dXQZbB55m0Q
+	IGXWlb+YNBn2YsFc1+8hoXJ1nLJzQIMax/2f6HF5mfPHTpIMQtg2gAiakJiphaJHS3OI5+mi5Dk
+	qfMxn+fuv4BchX81AumQ4Wa0jwEFJXWePBrfv2IzqhVW6s5Zp4ko75l2SAtNlxSD5nT5GKCqNj0
+	D5Ol/pFXMWMSvBVBYasv/E6YiLcaDKXJlxaZ2TuSx9NPVUb33hZ0a2M73YT6FcQ+B7kOESFNJcZ
+	LE3eBZqrlCaFrQnvahfYLSyyYmbjQouITTc1bq1wOwGEFewCETk1XNDDdI8H2afFugkU9SmS/GC
+	d40k6+2SPbrvphJsjzvyhkmQAWc20n/kVH+7GfHnSQWMbn9KN4AlU6D/Zw8GTXRu5hWYlck+vwO
+	58ibvKo6QNFgQDBTTfCiL5tinrLz/rNreXVQsYKnUwu41dqWvNKJSE3
+X-Received: by 2002:a05:6a00:1812:b0:842:3801:47b with SMTP id d2e1a72fcca58-84336a29db5mr1024457b3a.18.1781149158983;
+        Wed, 10 Jun 2026 20:39:18 -0700 (PDT)
 Received: from ryzen ([2601:644:8000:5b5d:7285:c2ff:fe45:8a32])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-84337bb47eesm334548b3a.13.2026.06.10.20.39.16
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-84337bb47eesm334548b3a.13.2026.06.10.20.39.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Jun 2026 20:39:17 -0700 (PDT)
+        Wed, 10 Jun 2026 20:39:18 -0700 (PDT)
 From: Rosen Penev <rosenp@gmail.com>
 To: linux-serial@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -69,9 +69,9 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	linux-kernel@vger.kernel.org (open list:TTY LAYER AND SERIAL DRIVERS),
 	imx@lists.linux.dev (open list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE),
 	linux-arm-kernel@lists.infradead.org (moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE)
-Subject: [PATCHv3 3/6] serial: mxs-auart: use devm resources for iomem and GPIO IRQs
-Date: Wed, 10 Jun 2026 20:38:53 -0700
-Message-ID: <20260611033856.6476-4-rosenp@gmail.com>
+Subject: [PATCHv3 4/6] serial: mxs-auart: fix IRQ registration ordering and manage console clock
+Date: Wed, 10 Jun 2026 20:38:54 -0700
+Message-ID: <20260611033856.6476-5-rosenp@gmail.com>
 X-Mailer: git-send-email 2.54.0
 In-Reply-To: <20260611033856.6476-1-rosenp@gmail.com>
 References: <20260611033856.6476-1-rosenp@gmail.com>
@@ -83,141 +83,131 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Replace platform_get_resource + ioremap with
-devm_platform_get_and_ioremap_resource and convert GPIO IRQ
-request_irq/free_irq to devm_request_irq. This eliminates the
-mxs_auart_free_gpio_irq function and its call sites, and the
-out_iounmap error label. Simplify the remove function accordingly.
+Move the main UART IRQ registration after uart_add_one_port so that
+s->port.state and s->port.lock are initialized before the interrupt
+handler can run. Mask all UART interrupts before adding the port to
+prevent spurious IRQs left by the bootloader.
+
+After probe succeeds, disable the module clock for non-console ports
+since startup will re-enable it on port open. For console ports, keep
+the clock prepared so auart_console_write() can safely call
+clk_enable() from atomic context.
+
+Guard the IRQ handler and get_mctrl with clk_enable/clk_disable since
+GPIO IRQs and serial-core status queries can fire while the clock is
+disabled for non-console ports.
+
+In remove, disable the clock for console ports to balance the enable
+done in probe, preventing a clock leak on unbind.
 
 Assisted-by: opencode:big-pickle
-Signed-off-by: Rosen Penev <rosenp@gmail.com>
 ---
- drivers/tty/serial/mxs-auart.c | 53 +++++++---------------------------
- 1 file changed, 11 insertions(+), 42 deletions(-)
+ drivers/tty/serial/mxs-auart.c | 49 +++++++++++++++++++++++++++-------
+ 1 file changed, 39 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index aa59a48bfad7..4499e3206e85 100644
+index 4499e3206e85..e2b656638ab3 100644
 --- a/drivers/tty/serial/mxs-auart.c
 +++ b/drivers/tty/serial/mxs-auart.c
-@@ -1517,15 +1517,6 @@ static int mxs_auart_init_gpios(struct mxs_auart_port *s, struct device *dev)
- 	return 0;
- }
- 
--static void mxs_auart_free_gpio_irq(struct mxs_auart_port *s)
--{
--	enum mctrl_gpio_idx i;
--
--	for (i = 0; i < UART_GPIO_MAX; i++)
--		if (s->gpio_irq[i] >= 0)
--			free_irq(s->gpio_irq[i], s);
--}
--
- static int mxs_auart_request_gpio_irq(struct mxs_auart_port *s)
+@@ -738,9 +738,13 @@ static u32 mxs_auart_modem_status(struct mxs_auart_port *s, u32 mctrl)
+ static u32 mxs_auart_get_mctrl(struct uart_port *u)
  {
- 	int *irq = s->gpio_irq;
-@@ -1537,21 +1528,13 @@ static int mxs_auart_request_gpio_irq(struct mxs_auart_port *s)
- 			continue;
+ 	struct mxs_auart_port *s = to_auart_port(u);
+-	u32 stat = mxs_read(s, REG_STAT);
++	u32 stat;
+ 	u32 mctrl = 0;
  
- 		irq_set_status_flags(irq[i], IRQ_NOAUTOEN);
--		err = request_irq(irq[i], mxs_auart_irq_handle,
--				IRQ_TYPE_EDGE_BOTH, dev_name(s->dev), s);
-+		err = devm_request_irq(s->dev, irq[i], mxs_auart_irq_handle,
-+				       IRQ_TYPE_EDGE_BOTH, dev_name(s->dev), s);
- 		if (err)
- 			dev_err(s->dev, "%s - Can't get %d irq\n",
- 				__func__, irq[i]);
++	clk_enable(s->clk);
++	stat = mxs_read(s, REG_STAT);
++	clk_disable(s->clk);
++
+ 	if (stat & AUART_STAT_CTS)
+ 		mctrl |= TIOCM_CTS;
+ 
+@@ -1079,6 +1083,7 @@ static irqreturn_t mxs_auart_irq_handle(int irq, void *context)
+ 	struct mxs_auart_port *s = context;
+ 	u32 mctrl_temp = s->mctrl_prev;
+ 
++	clk_enable(s->clk);
+ 	uart_port_lock(&s->port);
+ 
+ 	stat = mxs_read(s, REG_STAT);
+@@ -1118,6 +1123,7 @@ static irqreturn_t mxs_auart_irq_handle(int irq, void *context)
  	}
  
--	/*
--	 * If something went wrong, rollback.
--	 * Be careful: i may be unsigned.
--	 */
--	while (err && (i-- > 0))
--		if (irq[i] >= 0)
--			free_irq(irq[i], s);
--
- 	return err;
+ 	uart_port_unlock(&s->port);
++	clk_disable(s->clk);
+ 
+ 	return IRQ_HANDLED;
  }
- 
-@@ -1596,18 +1579,12 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
--	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	if (!r) {
--		ret = -ENXIO;
-+	s->port.membase = devm_platform_get_and_ioremap_resource(pdev, 0, &r);
-+	if (IS_ERR(s->port.membase)) {
-+		ret = PTR_ERR(s->port.membase);
- 		goto out_disable_clk;
- 	}
--
- 	s->port.mapbase = r->start;
--	s->port.membase = ioremap(r->start, resource_size(r));
--	if (!s->port.membase) {
--		ret = -ENOMEM;
--		goto out_disable_clk;
--	}
- 	s->port.ops = &mxs_auart_ops;
- 	s->port.iotype = UPIO_MEM;
- 	s->port.fifosize = MXS_AUART_FIFO_SIZE;
-@@ -1622,21 +1599,21 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 	irq = platform_get_irq(pdev, 0);
- 	if (irq < 0) {
- 		ret = irq;
--		goto out_iounmap;
-+		goto out_disable_clk;
+@@ -1603,10 +1609,6 @@ static int mxs_auart_probe(struct platform_device *pdev)
  	}
  
  	s->port.irq = irq;
- 	ret = devm_request_irq(&pdev->dev, irq, mxs_auart_irq_handle, 0,
- 			       dev_name(&pdev->dev), s);
- 	if (ret)
--		goto out_iounmap;
-+		goto out_disable_clk;
+-	ret = devm_request_irq(&pdev->dev, irq, mxs_auart_irq_handle, 0,
+-			       dev_name(&pdev->dev), s);
+-	if (ret)
+-		goto out_disable_clk;
  
  	platform_set_drvdata(pdev, s);
  
- 	ret = mxs_auart_init_gpios(s, &pdev->dev);
- 	if (ret) {
- 		dev_err(&pdev->dev, "Failed to initialize GPIOs.\n");
--		goto out_iounmap;
+@@ -1627,9 +1629,28 @@ static int mxs_auart_probe(struct platform_device *pdev)
+ 
+ 	mxs_auart_reset_deassert(s);
+ 
++	/* Mask all UART interrupts to prevent spurious IRQs from bootloader */
++	mxs_write(0, s, REG_INTR);
++
+ 	ret = uart_add_one_port(&auart_driver, &s->port);
+-	if (ret)
+-		goto out_free_qpio_irq;
++	if (ret) {
++		auart_port[s->port.line] = NULL;
 +		goto out_disable_clk;
++	}
++
++	/*
++	 * Request the main IRQ after uart_add_one_port so that
++	 * s->port.state and s->port.lock are initialized before
++	 * the handler can run in response to a bootloader-left
++	 * interrupt.
++	 */
++	ret = devm_request_irq(&pdev->dev, irq, mxs_auart_irq_handle, 0,
++			       dev_name(&pdev->dev), s);
++	if (ret) {
++		uart_remove_one_port(&auart_driver, &s->port);
++		auart_port[s->port.line] = NULL;
++		goto out_disable_clk;
++	}
+ 
+ 	/* ASM9260 don't have version reg */
+ 	if (is_asm9260_auart(s)) {
+@@ -1641,10 +1662,16 @@ static int mxs_auart_probe(struct platform_device *pdev)
+ 			 (version >> 16) & 0xff, version & 0xffff);
  	}
  
- 	/*
-@@ -1644,7 +1621,7 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 	 */
- 	ret = mxs_auart_request_gpio_irq(s);
- 	if (ret)
--		goto out_iounmap;
-+		goto out_disable_clk;
+-	return 0;
++	/*
++	 * Disable clock -- startup will re-enable when the port is opened.
++	 * For the console port the clock must stay prepared so that
++	 * auart_console_write() can safely call clk_enable() from
++	 * atomic context.
++	 */
++	if (!uart_console(&s->port))
++		clk_disable_unprepare(s->clk);
  
- 	auart_port[s->port.line] = s;
- 
-@@ -1667,11 +1644,7 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 	return 0;
- 
- out_free_qpio_irq:
--	mxs_auart_free_gpio_irq(s);
--	auart_port[pdev->id] = NULL;
--
--out_iounmap:
--	iounmap(s->port.membase);
-+	auart_port[s->port.line] = NULL;
+-out_free_qpio_irq:
+-	auart_port[s->port.line] = NULL;
++	return 0;
  
  out_disable_clk:
  	clk_disable_unprepare(s->clk);
-@@ -1683,11 +1656,7 @@ static void mxs_auart_remove(struct platform_device *pdev)
- 	struct mxs_auart_port *s = platform_get_drvdata(pdev);
+@@ -1657,6 +1684,8 @@ static void mxs_auart_remove(struct platform_device *pdev)
  
  	uart_remove_one_port(&auart_driver, &s->port);
--	auart_port[pdev->id] = NULL;
--	mxs_auart_free_gpio_irq(s);
--	iounmap(s->port.membase);
--	if (is_asm9260_auart(s))
--		clk_disable_unprepare(s->clk);
-+	auart_port[s->port.line] = NULL;
+ 	auart_port[s->port.line] = NULL;
++	if (uart_console(&s->port))
++		clk_disable_unprepare(s->clk);
  }
  
  static struct platform_driver mxs_auart_driver = {
