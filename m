@@ -1,130 +1,155 @@
-Received: from fout-a5-smtp.messagingengine.com (fout-a5-smtp.messagingengine.com [103.168.172.148])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dy1-f176.google.com (mail-dy1-f176.google.com [74.125.82.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDE0833ADB3;
-	Thu, 11 Jun 2026 08:35:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.148
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B77A148A2D0
+	for <linux-serial@vger.kernel.org>; Thu, 11 Jun 2026 18:32:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781166942; cv=none; b=Mlw0kReOZsmDrMP/tcuCAUZEzYU+5r0dyyGV9oK8SDJmlkNJ1J54G8BGgUQLecss2Rjf58M/ho4OFbSzBtcVd8YxnjjY1fdQXdNnrCrylNppuYbNF0hhPfJMa+fuUFSCuer5W52xYP/JUXz3eP/PwphCWk4jCf8lwh5X/6xd/mM=
+	t=1781202762; cv=none; b=heSw4QZiaKrE7FyO0AWOGx3WxEQACatB/IkxtYg915JZBXlcvy/B26XEfb7mebZ2+gm/rA8ldvSIIIifUlbuch4ROq4JkppHAG2EMKeLfY+DOToHFd5gwlbdkrFDxH407QWA7M1KQgb8s1vwEPxI1S/SrX6JRSKYHWpEuZCo2FM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781166942; c=relaxed/simple;
-	bh=55GMxwWe/EDOGVQsOBSXMfN0tKbpsnGov84slGU0vcI=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=gcIgt/PYOyNQGwPFG4AKVTaqygTOHQMTYnX0HCjTY5IiAxfneDEauAp9ayAcbUm5B/CtNkU3vibQG8zK9zJdkyz2FnVRSGeTrv+P153HXN26EMxQjgSTkFEDCRMCLti9hLhtZu6aPgz7GGt02ka5y4TMnFXzuh8iFCzJAFRXB2k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=QpAudo+d; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=jhgP7tVG; arc=none smtp.client-ip=103.168.172.148
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
+	s=arc-20240116; t=1781202762; c=relaxed/simple;
+	bh=JxjFLmGSkxL2QK9NhTjVfz9A73V5jJkELyAVzeREtkk=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=khiPdjt6av7BBNqsWLX/BEqncsn1Ad/fEyePugPM9+ZoO592Kda2WDmynKnmRyv+01jvaLdF+vsML9p9Sop86O+KDRkFIr7MP1WqVe7NunR8gFSZx3vQ7zOTKmT5USbRn8mbiRfYuInQpoP/bIrqrQMebTfqbflpsyUz2iEubpw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SF7/aDvF; arc=none smtp.client-ip=74.125.82.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="QpAudo+d";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="jhgP7tVG"
-Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
-	by mailfout.phl.internal (Postfix) with ESMTP id 01C17EC01CF;
-	Thu, 11 Jun 2026 04:35:40 -0400 (EDT)
-Received: from phl-imap-05 ([10.202.2.95])
-  by phl-compute-04.internal (MEProxy); Thu, 11 Jun 2026 04:35:40 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm3; t=1781166939;
-	 x=1781253339; bh=7BodSLv+bcZ9wOA2IVcLisAPbv5be0Uv9Ah/rLATO3o=; b=
-	QpAudo+dZlasRHhV6TfhHiPyMGmUkSvbcZMOT9WD5P//5h9TeZPgUt7UXIuu8MIz
-	+nEJF9CkkyuuEC8vWM9yiX8aAB3tTL4NOITa1/Q3JAK0eCCGhKyGVgQrqHGU4uvC
-	486GTmF39+E6w1li2srV+owcUS+U+c4SjgaFZi2kKCkk/o5QR4XlHFAHkTR7++sJ
-	U9c1pa2n2oclTjGjWSuFNCJ7sH9jijauue+VPHDdAGRchCZGBetqZqGms1u6UPde
-	xJ8AWnqifNHSkgu4tsAzm7R4tGLLwdv6bw+heZfWHidiw8FFVbVXzH0GcBpZsIvx
-	cXIzCjnr4Kna+pr5xC8JEw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1781166939; x=
-	1781253339; bh=7BodSLv+bcZ9wOA2IVcLisAPbv5be0Uv9Ah/rLATO3o=; b=j
-	hgP7tVGp1qwdg3dnmcpyQ5Pa0LJgGn46vkG1Zr1LS38cChprECsDNnoyOInVcrw2
-	gyjpSuI6ImG8ZKUXdI/TqmKD+Q5JfWcqpr/G9VTEQPHsDOCrOAfcO8r/d4gV06S9
-	XvPXLXwMBiL4zKe0VHhwFdBweSV5cHQJGh4YiA60UYqJJ7H00vNOG8B1dvpsoN4c
-	OP2S9/i8EE3uA8eqLxQlRZ67AT89k2QRB2DukqcXhjjrB2elgC/cBp4vL6J3uZJW
-	J6EdO8XEEEQJpW1YHVDvD03nQsVBQo1NoQyH3c6XJHyxsGeRfSaOTDfcw52MZUqW
-	kia3/5AX7Yd3xKRp+vIHA==
-X-ME-Sender: <xms:W3MqaiEHCvhgQD7R-k5bw32aCRCXtPyBlVmc6qjL-xKrZUYkQ_a-TQ>
-    <xme:W3MqauKCp6qObdt8UTw-d-utiIvYOlsz1-7NFmBMHMY315vn6-h08QZ6AQVlxGFwx
-    t5g4B87GHeoJm7S-BlK3sxMf2t6KuzBxeadethnl34Lqnsss2IfcSA>
-X-ME-Proxy-Cause: dmFkZTFRxnniak2f8bd9bHlEGEKJqMwWFJelaf+rUBctwzckTZ+EcLfJGYpieiGl5N38KU
-    m5+oqH86Qup/U8ETE7kKwx1+NrCs/eopjBUnJh5Om6EBJaYv8oAIO2fXikquLFTwSKSgiX
-    Oj2oXa96YxHNsXtYkZ+d4j3Uhfpu7RLcAfMDXq6/mS9IQTjj3IMENqG+6lpKxZQBQWIOy+
-    ep83Uf6RA5R7mRp9JtsrZk+1NOL1T/txcWsr2x8lT2tLltKdV3rSCZQ/nd29vpKjXwrRPI
-    kMWalDx1S+wtHiEa6LAlMPmRGOaFuICh1Cmm5nrOSBHr5wSgo8vimlEVOsxiQqFt8wZPmD
-    2TPj6zcQzkocAlfe9Olac4ophjMrZHT0eP1xGar2q+tEyu+SFpgWo8jEXxi9PVI8UjeGcI
-    fXKz6M6dqO47CUuQv4qK4QBKJlvRqFxz4qneS4qIWvzRDLLaiPHydc9FXwPA8qQNG+31un
-    aBEdQH3+gcCYWGTv4s+BrTSf9y9BbGvMFyP2M/Lyn2xWjxVoLSlp5GLf1lPN65dH1b/V30
-    RSiIEVcDSBiKJqnoJDaShAQQWTnJEUfS0s5aOsUIRRd1sHq6y4fBRwEjfo9SrKFjrZq2QA
-    mABk702B02M0tqrnu4HvgMmvZStSNeSfoYWkS6N7Zcf7sdKwE0qTx4pZP54Q
-X-ME-Proxy: <xmx:W3MqavCNXa2Qs6YQAMreSbT8nRieztJ0JYdmMj2JoFKL7Xx0lGsTWg>
-    <xmx:W3MqaqtWGwgtpwYW5G31CCHv_70cNjLw0aKO0Vc1cIC39TmXGEFjRA>
-    <xmx:W3Mqat8QkFIu5VDtxxXDf1eObyHQygraIUNuWN79NHsp4BSHUUz5rg>
-    <xmx:W3MqahTIMSQQ4ooIgaEFRGYmNQYoJO1fIiIcbP485TLjzZBL5jfj9A>
-    <xmx:W3MqaixlyCBr9E5-5P6pO39JYfsPi0AaPnqsS5UA2NVVicc3QP0hIfcf>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id 55E6B182007E; Thu, 11 Jun 2026 04:35:39 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SF7/aDvF"
+Received: by mail-dy1-f176.google.com with SMTP id 5a478bee46e88-306f36df4feso174902eec.0
+        for <linux-serial@vger.kernel.org>; Thu, 11 Jun 2026 11:32:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1781202760; x=1781807560; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=/OYIv5jkNLJF0xrYSzTRgn/p5XiUqFbMQyOiAXKQiOQ=;
+        b=SF7/aDvFP7M8/D89ObZitvIc6o76StkHpLJ/73cyfbSgHYYGJoIi4gWcLzMPee394Z
+         p8pL/FHWh9fmLRTiGrK53NHU4VlZcdk+P2cNyAuIXM60/vmCh5ILySq8upXHtLrCsaqm
+         +cB7Kl0ywiVjN92inCJpoJfa9H8KjVDPBgV9d1+OT2L1EmD9rGsOu0sf26TOeiI8NYV+
+         jYw6mBOENJT93YTkAQGNugCbM8KDAjrxh7g7T7B/+VtSN7zn46JXatSnfTXqGz5dpMdh
+         wdNeFRdwkXro/i/OQR7M+6BFw8nTCrXdio+es04FD1QCUzwu7KAkeG0nyQKRs5z2DmiO
+         itNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781202760; x=1781807560;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=/OYIv5jkNLJF0xrYSzTRgn/p5XiUqFbMQyOiAXKQiOQ=;
+        b=Pu1z8uIzQw2cHLL6TWESWyaVuSruFjmCbx4qAzbfhSXkHyZhAG/sNYsl73BnqkYce0
+         10ROLzBBfAonylTtge6RPoW1I+SlQi+vSUHBXPw3JSXjzEYGj2Qi5rsJGejsvQeGT4PV
+         JepDyddcfYIEvIEGX+TMzi6O1dY4QXklIMONm5PXmJb9ufEcVk/mQZoll/+gRKzQ3UcC
+         pL/if4hk8zwxixaJpNBVkLiwD89Um0Z9QcYPVKeNB911pRnZFszx4BREcnsTrs1owpcC
+         s2iCLQZ6zsxXBM2JlmQZvvK/jCIxqyAE7sT+CSVdp+Du6irCzLc6uMFv6ATOZrDQ7lcg
+         /yWA==
+X-Forwarded-Encrypted: i=1; AFNElJ9bySLnyNEBf6CsHsrtgRw+vqHO0Sswc5lJcc6V3hthw5EH8KQPIrbtCRwUOGuQ1QqhS+yXGccd6SbG8ac=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx+DEa7FgL5PdikP7IvVk0dwCns0I9q+iiUwb2QcvGEaNPoMc0I
+	8mGYSet94QNT7N1zTJ8J6nycRmSBKu9re6QhWsfLSgcK/vlf+iMMKYMbucZH+Xa0
+X-Gm-Gg: Acq92OEK+dnEnhaYMc1gIcf6Wk1hkAVQThWahIpgOG9ZwogUP6d3aRPXw7jmNyHjyfF
+	rIdozgcNg1c6Er3msO28tFCeezcRvD4/mDbU3/35ITk5USZ5GXixonev3Bo1euRvJNOIyN1rkNX
+	fcv8ycsxG/+Cdwr3MGhgpzZzVbLDe5OdFv8oyOT0XZdGLPintdwwcBx0MWvzfrKnH2YovG0eo0B
+	XmFoWgCHEn3jLI/ca0kJQvNcmUfyLPfPuXZXqsjXrhDH8UGGovu7EuOAjQcBu6A8W+z0hKk3JuF
+	2aRwlAu+AgcmII1vSVMgguQwZ6+pfQiLYOlwE+PM4Qjji6iuuJ1YQnPeCG3YqqWZdUYmZlgzR/L
+	29FzL1DOvToaNbVw6WZAuhP2Q2O32U9burrhjU0jb23UQCKCm6SWbZqG5idZpyi8Yv/BDDcokMP
+	7B2y/JZZeoBjKczI1RDq0dAe28hZX2vemFgnPmGIPvusqeOOixrPNvixRwFt7Uxf6lH6jZ
+X-Received: by 2002:a05:7300:b0c:b0:304:e587:50b8 with SMTP id 5a478bee46e88-30805b954b6mr1578003eec.18.1781202759763;
+        Thu, 11 Jun 2026 11:32:39 -0700 (PDT)
+Received: from fx.tailc0aff1.ts.net ([206.206.192.132])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30806e8a402sm3058073eec.17.2026.06.11.11.32.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Jun 2026 11:32:39 -0700 (PDT)
+From: Weiming Shi <bestswngs@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: Daniel Starke <daniel.starke@siemens.com>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Xiang Mei <xmei5@asu.edu>,
+	Weiming Shi <bestswngs@gmail.com>
+Subject: [PATCH] tty: n_gsm: fix NULL deref of gsm->dlci[0] in control message handlers
+Date: Thu, 11 Jun 2026 11:32:18 -0700
+Message-ID: <20260611183217.2488508-2-bestswngs@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-ThreadId: APCtYiT4KAZo
-Date: Thu, 11 Jun 2026 10:35:09 +0200
-From: "Arnd Bergmann" <arnd@arndb.de>
-To: "Jason Li" <jason.li@cortina-access.com>,
- "Jason Li" <jason.lee651024@gmail.com>,
- "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
- "Jiri Slaby" <jirislaby@kernel.org>
-Cc: "Rob Herring" <robh@kernel.org>,
- "Krzysztof Kozlowski" <krzk+dt@kernel.org>,
- "Conor Dooley" <conor+dt@kernel.org>,
- "Catalin Marinas" <catalin.marinas@arm.com>, "Will Deacon" <will@kernel.org>,
- "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Message-Id: <d62541fd-36bb-4c67-a81b-a8e66887a2cc@app.fastmail.com>
-In-Reply-To: 
- <JH0PR01MB5777B84BE8D9987329ABA54BA21B2@JH0PR01MB5777.apcprd01.prod.exchangelabs.com>
-References: <20260610112821.3030099-1-jason.li@cortina-access.com>
- <20260610112821.3030099-2-jason.li@cortina-access.com>
- <7dcc8386-a0e0-4c79-a9f7-f63188bb997e@app.fastmail.com>
- <JH0PR01MB5777B84BE8D9987329ABA54BA21B2@JH0PR01MB5777.apcprd01.prod.exchangelabs.com>
-Subject: Re: [PATCH 0/3] tty: serial: Add Cortina-Access UART driver and platform
- support
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Thu, Jun 11, 2026, at 07:27, Jason Li wrote:
-> Hi Arnd,
->
-> Your memory is truly amazing; you even remember a submission from a few 
-> years ago.
+gsm_control_command() and gsm_control_reply() load gsm->dlci[0] and
+immediately dereference dlci->ftype without checking it for NULL.
 
-No, I just looked up your previous submissions when I saw the new one,
-lore.kernel.org never forgets anything ;-)
+On the receive path, gsm_queue() validates that gsm->dlci[0] is non-NULL
+and DLCI_OPEN before invoking the control handler, but the value is not
+held across that check: the receive worker runs from flush_to_ldisc()
+without taking gsm->mutex, while a concurrent GSMIOC_SETCONF ioctl can
+enter gsm_cleanup_mux(), which takes gsm->mutex, releases gsm->dlci[0]
+and sets it to NULL. If the mux is torn down between gsm_queue()'s check
+and the re-load inside gsm_control_command()/gsm_control_reply(), the
+handler dereferences a NULL dlci.
 
-> Yes, we expect actual end-user products based on these SoCs, and our 
-> intention is to provide complete upstream support over time. The UART 
-> driver and DTS support submitted in this series are the first step in 
-> that effort.
->
-> Cortina-System and Cortina-Access are now totally different company.
-> Current aarch64 chipset are totally different with legacy gemini 
-> processor.
-> Realtek has many business unit, different BU may have upstream plan but 
-> they are individual.
-> Although Cortina-Access is a wholly-owned subsidiary of Realtek, our 
-> product development is entirely independent.
+A peer that drives DLCI 0 control frames (e.g. CMD_TEST) while the mux
+owner reconfigures the line discipline can therefore crash the kernel
+(line numbers from decode_stacktrace.sh against the crashing build):
 
-Thanks for the information. Please make sure to add something along
-these into the changeset text for the initial arm64 patch, along
-with a brief description of what type of chip this is
+ Oops: general protection fault, probably for non-canonical address
+ KASAN: null-ptr-deref in range [0x0000000000000208-0x000000000000020f]
+ RIP: 0010:gsm_control_reply (drivers/tty/n_gsm.c:1497)
+ Call Trace:
+  gsm_dlci_command (drivers/tty/n_gsm.c:2482)
+  gsm_queue.part.0 (drivers/tty/n_gsm.c:2852)
+  gsm0_receive (drivers/tty/n_gsm.c:2972)
+  gsmld_receive_buf (drivers/tty/n_gsm.c:3629)
+  tty_ldisc_receive_buf (drivers/tty/tty_buffer.c:391)
+  tty_port_default_receive_buf (drivers/tty/tty_port.c:39)
+  flush_to_ldisc (drivers/tty/tty_buffer.c:495)
+  process_one_work
+  worker_thread
+  kthread
 
-       Arnd
+The other callers of these helpers (the keep-alive and negotiation timer
+paths) already guard the gsm->dlci[0] access; only the receive path is
+unguarded. The CMD_CLD handler in the same switch already checks the
+loaded dlci for NULL for the very same reason. Bail out early when
+gsm->dlci[0] has been cleared instead of dereferencing it.
+
+Triggering this requires CAP_NET_ADMIN to attach the n_gsm line
+discipline (gsmld_open() uses capable(), not ns_capable()), so it is a
+local denial of service for a privileged mux owner racing its own
+control channel; harden the handlers regardless.
+
+Fixes: 5767712668b8 ("tty: n_gsm: cleanup gsm_control_command and gsm_control_reply")
+Reported-by: Xiang Mei <xmei5@asu.edu>
+Assisted-by: Claude:claude-opus-4-8
+Signed-off-by: Weiming Shi <bestswngs@gmail.com>
+---
+ drivers/tty/n_gsm.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 214abeb89aaa..860cfb91d510 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1457,6 +1457,9 @@ static int gsm_control_command(struct gsm_mux *gsm, int cmd, const u8 *data,
+ 	struct gsm_msg *msg;
+ 	struct gsm_dlci *dlci = gsm->dlci[0];
+ 
++	if (!dlci)
++		return -EINVAL;
++
+ 	msg = gsm_data_alloc(gsm, 0, dlen + 2, dlci->ftype);
+ 	if (msg == NULL)
+ 		return -ENOMEM;
+@@ -1485,6 +1488,9 @@ static void gsm_control_reply(struct gsm_mux *gsm, int cmd, const u8 *data,
+ 	struct gsm_msg *msg;
+ 	struct gsm_dlci *dlci = gsm->dlci[0];
+ 
++	if (!dlci)
++		return;
++
+ 	msg = gsm_data_alloc(gsm, 0, dlen + 2, dlci->ftype);
+ 	if (msg == NULL)
+ 		return;
+-- 
+2.43.0
+
