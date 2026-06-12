@@ -1,113 +1,69 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from sender4-op-o12.zoho.com (sender4-op-o12.zoho.com [136.143.188.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CE6E27FB05;
-	Thu, 11 Jun 2026 18:51:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781203886; cv=none; b=o49fDXKrIp4t7apMIuauBaQZdX5a/OVhltwJQGCrVCTGPolArja7/X3159vaePJ1Y9k0cK23r+0xQ2wMxgQ7+9Wh54GaIWY/yrwgTVotuiJ25xPZ7Io8AFVs7kAUisZ0BEEsImsQOh+qOF+3IyncXhn4SQIkEqNbsBuQJtz9asc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781203886; c=relaxed/simple;
-	bh=r2G3YG79Xb3F44hii48c5gETtj1K85tfM40g953gcsE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LofTuML4gl5WcCPTsEPF2pb9kglRiJCdA1u+CellvithHEQR/Bbe0SXyHxCvZGCY0N8mhKixFJu1UKqrpvC0N2gwX8L7SZt3uCcLSrEAZCa4vR97PgeEHmBeEHVnEOMLoZgd1glXc2xKKdxv2e9ADOA/JhnhFa4ZXXhmMEmkW1U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=1dp4+04h; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A60A25C804
+	for <linux-serial@vger.kernel.org>; Fri, 12 Jun 2026 05:38:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.12
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781242696; cv=pass; b=aRSnH5rfyx8NQ1Pdu0EbRE2/ou0W3k54puOT7mPJJ+A0SeA+QbdVE/fMtuSDfoTUfHSVJV7T4OfNKlG85a3yW23E5JJCtrZ5zHT4r0A7ep+rVIUodF7o0A1seISnUPPc45k0FAkSq35QFtkoIW2Xa5I6x6OIaSjySSSRSBGpR60=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781242696; c=relaxed/simple;
+	bh=4TU4sONWrdHoDPC03h+Nvl2Z+eN3Oklq8XxlxcZsyHo=;
+	h=Date:From:To:Message-ID:In-Reply-To:Subject:MIME-Version:
+	 Content-Type; b=XdQa8PFxZBWogg/0h3qwA4+zS9j0Bu83sAmR1TGJYJRjbMisma8iAytNouxLU+F0jpYC5R+8NWrIqqIxKG+fiUIWDVM07hXwuaXwVCmfQDDmn1shjFe4SZ/wiMm7WD1Ri6vrNDzxHP3mao3U0JZGQ94WezFtIHO1lgy/V6ARhoU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=mcqueen.au; spf=pass smtp.mailfrom=mcqueen.au; dkim=pass (1024-bit key) header.d=mcqueen.au header.i=craig@mcqueen.au header.b=HR6gBFi7; arc=pass smtp.client-ip=136.143.188.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=mcqueen.au
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mcqueen.au
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="1dp4+04h"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B0631F000E9;
-	Thu, 11 Jun 2026 18:51:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1781203883;
-	bh=YH76WOlvI2uavK3vmC5UVxGlMNTBRcqqvEOMiFiEKmw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=1dp4+04h4V/1d05FqpNoH8fNNgtZsjLk4mrSqgJpAvIMBzzZV69L/lUPMge3+rTYC
-	 sJlCzIYhECYW2MH2ujpIHy7bdCwiCRWUnwfOQWps0Zuk/zN2hrM+s0IFEyDoNkHnDf
-	 JPrFUeG2IFOIAv3aYUmk5J17GqSkStJw4NZQ0YXk=
-Date: Thu, 11 Jun 2026 20:50:24 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Weiming Shi <bestswngs@gmail.com>
-Cc: Jiri Slaby <jirislaby@kernel.org>,
-	Daniel Starke <daniel.starke@siemens.com>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	Xiang Mei <xmei5@asu.edu>
-Subject: Re: [PATCH] tty: n_gsm: fix NULL deref of gsm->dlci[0] in control
- message handlers
-Message-ID: <2026061101-hanky-uninstall-da53@gregkh>
-References: <20260611183217.2488508-2-bestswngs@gmail.com>
+	dkim=pass (1024-bit key) header.d=mcqueen.au header.i=craig@mcqueen.au header.b="HR6gBFi7"
+ARC-Seal: i=1; a=rsa-sha256; t=1781242692; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=J09De6zkW1Hc/tQmUpLAShrw5fnmfec155qfVSow0VnsLs3RyCXGZYSxVdneaIz/Ufpgd9cu71AtSKdPb+jNGzYsjhH8768cXK24RF/TImjWxLsKv0xMFdrIIl5ienVluoIfQ3MbisFenYHuchNBdnfMyowAo7B1jF3rJiKH760=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1781242692; h=Content-Type:Content-Transfer-Encoding:Date:Date:From:From:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To:Cc; 
+	bh=9ZGvCOB2OVVMbxTK9wSbQk9PGpwHzsW3CfTsbi4lAh4=; 
+	b=hZdGCPocmqbS9gHSoINZkoBabWlY3dH95h7qPtQJT5yDt/vnR3uQHBrN1womyJHmIpBfmv9yt8ymDXDx9J4Fwq69BhA4b6EJoH2WJZq7Ce7eWDZbJ10vRD+lv+SCjgG+CB7wg4rP/iEVDuVE2IZNEUXAFFw6Przn6hj0x4wyD2w=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=mcqueen.au;
+	spf=pass  smtp.mailfrom=craig@mcqueen.au;
+	dmarc=pass header.from=<craig@mcqueen.au>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1781242692;
+	s=zmail; d=mcqueen.au; i=craig@mcqueen.au;
+	h=Date:Date:From:From:To:To:Message-ID:In-Reply-To:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To:Cc;
+	bh=9ZGvCOB2OVVMbxTK9wSbQk9PGpwHzsW3CfTsbi4lAh4=;
+	b=HR6gBFi72CUOzpiieaTTuoXmwMRWQeDTIkn+AlQ/w5aMRaAnTkdFWv0mtfUxVsFU
+	9OCXErJrJIfLYwjxbpEywv9h6tFz3n9o4CQXA+M+J+aAGYiV/FopCLPj1wMESG1H1vt
+	cO/ufJYMTmBWyCus1Lsjy2ldCLL0QKv7J7SMhfmo=
+Received: from mail.zoho.com by mx.zohomail.com
+	with SMTP id 1781242691029715.2769171812067; Thu, 11 Jun 2026 22:38:11 -0700 (PDT)
+Date: Fri, 12 Jun 2026 15:38:10 +1000
+From: Craig McQueen <craig@mcqueen.au>
+To: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Message-ID: <19eba567d94.1f5854744141363.4614464714670279886@mcqueen.au>
+In-Reply-To: 
+Subject: 8250_dw system pause due to IRQ load
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260611183217.2488508-2-bestswngs@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Importance: Medium
+User-Agent: Zoho Mail
+X-Mailer: Zoho Mail
 
-On Thu, Jun 11, 2026 at 11:32:18AM -0700, Weiming Shi wrote:
-> gsm_control_command() and gsm_control_reply() load gsm->dlci[0] and
-> immediately dereference dlci->ftype without checking it for NULL.
-> 
-> On the receive path, gsm_queue() validates that gsm->dlci[0] is non-NULL
-> and DLCI_OPEN before invoking the control handler, but the value is not
-> held across that check: the receive worker runs from flush_to_ldisc()
-> without taking gsm->mutex, while a concurrent GSMIOC_SETCONF ioctl can
-> enter gsm_cleanup_mux(), which takes gsm->mutex, releases gsm->dlci[0]
-> and sets it to NULL. If the mux is torn down between gsm_queue()'s check
-> and the re-load inside gsm_control_command()/gsm_control_reply(), the
-> handler dereferences a NULL dlci.
-> 
-> A peer that drives DLCI 0 control frames (e.g. CMD_TEST) while the mux
-> owner reconfigures the line discipline can therefore crash the kernel
-> (line numbers from decode_stacktrace.sh against the crashing build):
-> 
->  Oops: general protection fault, probably for non-canonical address
->  KASAN: null-ptr-deref in range [0x0000000000000208-0x000000000000020f]
->  RIP: 0010:gsm_control_reply (drivers/tty/n_gsm.c:1497)
->  Call Trace:
->   gsm_dlci_command (drivers/tty/n_gsm.c:2482)
->   gsm_queue.part.0 (drivers/tty/n_gsm.c:2852)
->   gsm0_receive (drivers/tty/n_gsm.c:2972)
->   gsmld_receive_buf (drivers/tty/n_gsm.c:3629)
->   tty_ldisc_receive_buf (drivers/tty/tty_buffer.c:391)
->   tty_port_default_receive_buf (drivers/tty/tty_port.c:39)
->   flush_to_ldisc (drivers/tty/tty_buffer.c:495)
->   process_one_work
->   worker_thread
->   kthread
-> 
-> The other callers of these helpers (the keep-alive and negotiation timer
-> paths) already guard the gsm->dlci[0] access; only the receive path is
-> unguarded. The CMD_CLD handler in the same switch already checks the
-> loaded dlci for NULL for the very same reason. Bail out early when
-> gsm->dlci[0] has been cleared instead of dereferencing it.
-> 
-> Triggering this requires CAP_NET_ADMIN to attach the n_gsm line
-> discipline (gsmld_open() uses capable(), not ns_capable()), so it is a
-> local denial of service for a privileged mux owner racing its own
-> control channel; harden the handlers regardless.
-> 
-> Fixes: 5767712668b8 ("tty: n_gsm: cleanup gsm_control_command and gsm_control_reply")
-> Reported-by: Xiang Mei <xmei5@asu.edu>
-> Assisted-by: Claude:claude-opus-4-8
-> Signed-off-by: Weiming Shi <bestswngs@gmail.com>
-> ---
->  drivers/tty/n_gsm.c | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-> index 214abeb89aaa..860cfb91d510 100644
-> --- a/drivers/tty/n_gsm.c
-> +++ b/drivers/tty/n_gsm.c
-> @@ -1457,6 +1457,9 @@ static int gsm_control_command(struct gsm_mux *gsm, int cmd, const u8 *data,
->  	struct gsm_msg *msg;
->  	struct gsm_dlci *dlci = gsm->dlci[0];
->  
-> +	if (!dlci)
-> +		return -EINVAL;
+I have a Rockchip RK3328 based embedded Linux system, using the 8250_dw driver (device tree "snps,dw-apb-uart") for serial console and other serial ports. I'm using Yocto scarthgap with kernel v6.6.123.
 
-What precents dlci from being NULL right after you check this?
+It is talking to a microprocessor via a serial protocol at 921600 bps. Multiple times per hour, I see the serial protocol TX pause for 100 to 4500 ms. Usually the whole Linux system pauses during this time (realtime and monotonic clocks don't tick). mpstat shows high irq load. /proc/interrupts shows the 8250_dw interrupt count is going significantly higher during this time.
 
-thanks,
+I'm also seeing complete system lock-ups occur every 1 to 72 hours, with no diagnostic information shown in the kernel serial console output.
 
-greg k-h
+Are there any known issues with the 8250_dw interrupt handler causing high CPU load, that I should try backporting to kernel v6.6?
+
+I've written some kernel drivers, but I have no experience debugging interrupt handler issues, especially when it's an issue that prevents the kernel doing console output. I would appreciate any advice on kernel facilities that are suitable to debug this type of bug.
+
+-- 
+Craig McQueen
+
