@@ -1,170 +1,207 @@
-Received: from AS8PR04CU009.outbound.protection.outlook.com (mail-westeuropeazon11011051.outbound.protection.outlook.com [52.101.70.51])
+Received: from PA4PR04CU001.outbound.protection.outlook.com (mail-francecentralazon11023085.outbound.protection.outlook.com [40.107.162.85])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1A8438422E;
-	Mon, 15 Jun 2026 05:49:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.70.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C1783A0E80;
+	Mon, 15 Jun 2026 06:38:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.162.85
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781502579; cv=fail; b=NDMNlRuK+8KYaGnWIyKHQt40nacndOH+GkjnC7EkLOX+noxZBbDdoBPJA5yx4lDb3B2crma49UZc1Fngs8x6QHu+pAd26b6bUosXzjAAlc6UQCCPmVk9I3aCYznZrk+xKy+sSLrRuB7GkE4mZb954mQrrcMDaRw6uUV80Kox11w=
+	t=1781505541; cv=fail; b=ZQte8PBc6zkN0mtcx/2sNd8yiasoieR4d7tyXYNHXNgjD8MezBA9j/WrLY7D8OvBqwGoekCcBJr5G1oRGAeUUJB8HEjnYCqOatdnZ5nJFA7RZOxhyzqz0vHBo1hUYUDFsCxWXIjTrfkDxS35w28YNp1C0+uK3Mpe5CODAY+lf3U=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781502579; c=relaxed/simple;
-	bh=9zGe1Yfpm8AgfwGiLBHaWwETkCdVeTqwD/XAUUWF5QI=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=fqi5zF5La9+IWQzex9PVeWihpBHXMYlqS8uwDK4f3PsQNh3LzSAUg8qHKctSnaDvvXC6Sj4tQXb3O0M8VyimctUPsG2zMibJQ/xuvrPJhXoPRr6mWOPqF2bB4vo8jQaWZ/aOLcBx+GyOR2PpoVAIzpHdp6FZOKjmWPMdqsvf5BY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=fVoGP6af; arc=fail smtp.client-ip=52.101.70.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
+	s=arc-20240116; t=1781505541; c=relaxed/simple;
+	bh=KZnniEw5tU6ZusKFxe0aX7n6qMkVkA54ZAHGH2QpH6Y=;
+	h=From:Date:Subject:Content-Type:Message-Id:To:Cc:MIME-Version; b=owPB2LEoFAyf+s7xlH9OH7ongAK3wo4I5ZG+SZPsp6ld9nOGvN9A2lFSSGsBKwT8mPR8vy8v9sSWPzgX2kHcC4ejUMXPklT+0q1TSddFeBEjSVPFythiEv9j4nYka4cywVgxAbZzhZqVw8Ppxjqhdc0kq74engC5gpXG8XuhoAU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com; spf=pass smtp.mailfrom=vaisala.com; dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b=2qHMdqxx; arc=fail smtp.client-ip=40.107.162.85
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vaisala.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="fVoGP6af"
+	dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b="2qHMdqxx"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=k7Ul9jfKTSsXxWeum12dCV7cnrgbFTVeMSumzSaQSLth1SFROdEFL7OcUiV2X5gzmr3w6MtBnk9dfLYVvN8AFZMEXL798Ql+bjvAihMrcS8LQqcPYwmCsh2BVszfRxZ3ndxcYMJhjBkWQYCSwBjo4Wl6tE4rud/MBHm/TL7M67/20zJfuGPQnd3BifFK0ZeiyI5Osh0J+BPgD36D8o1F8oKIsQPGOOqwMA1x9b+HlNzY19pZl7QCQRjOHY7cUpn7ew3555Jqa/ZjGoEC9i8XJFtVcUg2JK5oAaB7cG6vB2cUqZJOsimP1YSfXF2HfbfDU+y69ML267k34hIjhkxmMw==
+ b=Sj9Zs5gtB9I8RWjrZMNJANshDVraEKdX/gjCvbRRQ1eNK+VhtxP93mGh75To5QlMLUWQiCnIpn09TTRrXu7vIlxgZusA12mh+jBX17KlFsx8/8eVg3ICcfMjWRnaVTtBnxDEgtDrm3Fm39Xu8Ewb4Ti4kWw6nD1Z+FCsnBXe5ACQ0e7DPciuW5Yx6Cmv3l9xGy2tiW6LA+FmJUWv9t/aKyZo+zN4Uy+hHT15ZXVe2Gm/yqtZgNjZztwwrSNLtoCxnredewM/WD5ao/EmyhYc/xJeuaYqrynJljZApHWRMnHhtipjPX1qlHvhMPg8QYHu0uH1s2K+wMP+AgCjdiXd2Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=r/jx6+yglVVyHgdcesSq4zkvbI4pIVvsNfeaT4YQJ4U=;
- b=yW0KwgR7SYZZ+ov+CkNAEaT6r8/uxK9pnYHe7HERftojEh8k3aPLaA+WbAUBmWNIciszv8YbJzmJmoRwZ/Zshe/sqqRrftaHkznjyZppm4F4RT9vyU79V0eHDCHPL2x5Hpbm01UQ2J+y/1G/WPunrhz6aLY/14eY0QXebz/jdOH+c5hbdB2kh54aax9ILjrQn554N19MumJF7SHhQ8sHWgOYl8jaP1Ph5R4HERfKNbcmZfyqsz2TfRCPXLBywcUjBZCXGc94+zwpmLTKIoPz4f/ZhaF3AExyneau+FVv52cfTdUt2bt8SMl1ddnXuFagJJ4psXGXjnnV2P0/f4jAKw==
+ bh=t9u9jUjvi/bZENBAtebeuiy0HtZfS3AlJqFYiUN8n6U=;
+ b=cZxZMsT4sdeZ3P8n+YktObJawxUqrqPV50X7LTLORhx84ducMEKNaOD/FSpqP7mGlFdVtjKqcG0PMFvUDyuOcuKVuBBmWPUilBT9rurv0Gi6vaX4WpiYp89s6xntsm9TtgQBHe1jMjlNVVxj8fbXwAAal8FOP+JhxIh+ChehtBpLxaron/3VhT3IThAf6vOuvKvlcjnvaolIJB5iWxJJ+2TvR1Que1aKjPxMwUEeQh5yz3jbLwj+bS9B5hEMkZDEXq9BV5RqF+tMlpQrIsNXr//nnTP/gPjZFSpXWzDXZ/LhJutY7AXqNBWXojf4NNjImXSIesEluuMMKU4EjAp7BQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
+ smtp.mailfrom=vaisala.com; dmarc=pass action=none header.from=vaisala.com;
+ dkim=pass header.d=vaisala.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vaisala.com;
+ s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=r/jx6+yglVVyHgdcesSq4zkvbI4pIVvsNfeaT4YQJ4U=;
- b=fVoGP6afAtTN0bHhwn2iTTfMcTmQ/xg/MlZLYANb017diZMdeVF5KiRHHhTiKJpJBnkvqcHOm2Ag86XGQWIA+lSsLZa866O10P1Cls8bPfkKpmZTeoscns+mvyQApQiehP5RdNYwrWIimPucSm3SbHCNRTStxhT0vMfTNjXcFREtfidhdic8RBghCPJ4xSiegf6xA0C8g86sILNfQnz9ZIZ9Hw1Vs6c7GlJr2RF+SZcraw8J6DcMmrMMmXeo+w0flypIsn9o3StydxX8a7VT9cSq26xiOteSbQXUQADQKa8bL4xuroxn6ukd30dxRCbdbUpgqxpx5RpImKD7TU+55g==
-Received: from DU0PR10MB5387.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:329::14)
- by AM0PR10MB3571.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:155::24) with
+ bh=t9u9jUjvi/bZENBAtebeuiy0HtZfS3AlJqFYiUN8n6U=;
+ b=2qHMdqxxbdx2rhyuMOSn+9+sjFOuQA+PP0zg1vvJoY+w63bl0NnFwdW7aQcBKVNcWQpY96PUghDSphfyyxLpVsgsm94+uq0evFUTjzBYMAptkgWzeBIG43RMSbTOL9r8aorFMQZ3TV39EUKPkVMoqyTp+wqzMHNjQBXaVDfafatEpDt07nFwpbLWD+7BJFEbPipY9FdSVMok+6s2HqGii0XIKcLYVV0T/55C0UAqhDPbvEA3tkDxwJn3SmUpb/VcQW08SSyu2mkHYU+IF4veytTCdzctiNJXlfpe4xGjo+2DV1PSKcjD5ueORJgTqDy1M3dB6EwQlmVv73snUvUD7g==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vaisala.com;
+Received: from AS5PR06MB9040.eurprd06.prod.outlook.com (2603:10a6:20b:676::22)
+ by DB9PR06MB11064.eurprd06.prod.outlook.com (2603:10a6:10:614::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.113.18; Mon, 15 Jun
- 2026 05:49:35 +0000
-Received: from DU0PR10MB5387.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::de46:63f0:fed4:cdef]) by DU0PR10MB5387.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::de46:63f0:fed4:cdef%6]) with mapi id 15.21.0113.015; Mon, 15 Jun 2026
- 05:49:35 +0000
-From: "Starke, Daniel" <daniel.starke@siemens.com>
-To: Weiming Shi <bestswngs@gmail.com>
-CC: Jiri Slaby <jirislaby@kernel.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org"
-	<linux-serial@vger.kernel.org>, Xiang Mei <xmei5@asu.edu>, Greg Kroah-Hartman
-	<gregkh@linuxfoundation.org>
-Subject: RE: [PATCH] tty: n_gsm: fix NULL deref of gsm->dlci[0] in control
- message handlers
-Thread-Topic: [PATCH] tty: n_gsm: fix NULL deref of gsm->dlci[0] in control
- message handlers
-Thread-Index: Adz8iBq8O/I2zobuR/2fEq6NEFMaeA==
-Date: Mon, 15 Jun 2026 05:49:34 +0000
-Message-ID:
- <DU0PR10MB5387DBED6B4DDFF66F1A57B2E0E62@DU0PR10MB5387.EURPRD10.PROD.OUTLOOK.COM>
-References: <20260611183217.2488508-2-bestswngs@gmail.com>
- <2026061101-hanky-uninstall-da53@gregkh>
- <DJ74X3U3L9DZ.3RMWZCB0O5ZCE@gmail.com>
- <2026061228-scrubber-cosmetics-c77a@gregkh>
-In-Reply-To: <2026061228-scrubber-cosmetics-c77a@gregkh>
-Accept-Language: de-DE, en-US
-Content-Language: de-DE
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-msip_labels:
- MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_ActionId=8520ff68-fd97-42e9-afa0-6a3bc7eb06ee;MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_ContentBits=0;MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_Enabled=true;MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_Method=Standard;MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_Name=restricted;MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_SetDate=2026-06-15T05:30:29Z;MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_SiteId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_Tag=10,
- 3, 0, 1;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siemens.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DU0PR10MB5387:EE_|AM0PR10MB3571:EE_
-x-ms-office365-filtering-correlation-id: c5285e03-4537-4ea1-e00e-08decaa1e136
-x-ms-exchange-atpmessageproperties: SA
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|1800799024|366016|376014|23010399003|55112099003|38070700021|3023799007|22082099003|18002099003|4143699003|11063799006|56012099006|6133799003;
-x-microsoft-antispam-message-info:
- qVwdEeJVVriAlpLWgYREt27hrG5gnfxQ9umpOoWMH1YsUcYZlJDEMKcpOXeYG4D5bgKKrnOvNO/d/CHuCMSl+bL1RmuL6s9zvz8OLfzYHnIWirIVSh4c9UVVootDzsTMROQeWDpgAViT1McTgxGO7/m9kINm+c2zMhyBtaqjzsnORDHTuC9rUq7fNZKLxxeGOJtdZdyh+AIpSVQW2R9dsfCI6aQ/0WSGKqFUevo8TqMBPwJXAYAwX0AEwVo4a/WrDqHj5KjPPV38pj8SDI8pWZsT9RvdiocWjf1kG2mdth6v/SAkulzW1FFjrJ6vojjDydIt+g/VNY9zWoCMpbrRyKwNrkwzZ5qWdRwvCt+2B4O9UzmBCTSCSJ2EuVGQHJd77QvChmqUqSnuZ1UrEr3ivT9Hpv+AC1JrcZD8KRq4j+0KYpFUrBitfwwBXa8Enlh4uRsZ7kayPHtoJDip2lQt1efZpE/berW/xhmgHQavHVPDVdhHuDpJCGqSrVUcUleY81fDm11QY/9tFws0LSNnHsoBw8Lf1AO52bYBo/1Rl8qIQZBFtCkp5NeWOEIByfAWq/Mq6ssfjPZ0HyS/+G5tRGN13xjyK/yicPKxKwsugns4fhzW6+3v4tZBhS6GcagrtmXI8sRA+bNppdTW03cJviKSzzDv3oaPp8ygZMHoAqKWR4QdKv1ICVE1i4K69kGuPPMxfhDl3VrW7MyuArsrr4kWiSeynrRP2RvlyqeYZcbwRgz+gVeizXvdBB1tXpWc
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR10MB5387.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(23010399003)(55112099003)(38070700021)(3023799007)(22082099003)(18002099003)(4143699003)(11063799006)(56012099006)(6133799003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?qZqbQkKcon51oNLScl6joGamen3RLmfMtFrD/M1eKZGd1CkYHT7c72Gy1l5i?=
- =?us-ascii?Q?pKeohKYTDk/jo8doiyLgZCfxSHLDUR4GivQXi5pT5usf7B1j/85lIWa3IJyh?=
- =?us-ascii?Q?JGN4q9n3AgNW+zcaQwl4ipAe7oOwkwFbLnVOmPQeZPmidAfm2JLb9fH3hWkb?=
- =?us-ascii?Q?s8ymAL/YH2me/sFavCiH9qnUXjXTlwITv46xd1NkigPqWVA4FF20v/XtCeYK?=
- =?us-ascii?Q?/MG7Ck30bdYbo8xzVql+1tG6ZylDhyuCL5vnVK05iLBZMmhXBQNEsvYizGpP?=
- =?us-ascii?Q?kx+J+z5pwh3HN1m6pURhKgGcEvqx1JHQbwMHH/FYnz1FW+HWWBVfWbXFwwGZ?=
- =?us-ascii?Q?++jLWtWXUthGSBA5hDCfC4H7KwUQYvKElsPgbF+9IeSt8zN1asTY2RkorKEY?=
- =?us-ascii?Q?q5pLLQyNn1jclzYIg//bKd11jgRMRuLhcqKTcweZxEPmbV/w5z8z7to7cAme?=
- =?us-ascii?Q?D+m1zi5/FUW2NwebJ9zTdp9GTBru+TPIyaT3xV1GebcCATLe4zYHj5pdx1Lk?=
- =?us-ascii?Q?iPpZlpUWwtlHDp7/MrkmZMfmq4xXsGi2n6euU6L6Gq6xZTHjjZlZKkiWO+J7?=
- =?us-ascii?Q?3Wv+2/ByPYI/s9wXR9HoIAR7950qpgSUhm2hAIvKKXsdJ5VWeCsPCLCCwWbf?=
- =?us-ascii?Q?xI6vWTZn2qhIs+05zs62n4lkp4y5+UgLB//PCIvB0+Ty3Tjw/oyA3KV+Y8fa?=
- =?us-ascii?Q?DhCs5uucI5lC3EC6/IwSzMYe2S13Ahu0Oll964CLNE7cvmZSO7bjFavM7Yie?=
- =?us-ascii?Q?r7XEO2imUZzAK2o3d3//tU0dxn5sCVBKUv7BnhdoOVmu62mRvxxtamC8HsF1?=
- =?us-ascii?Q?xJlBoov2m9St6oMUUZja3n8DBeYRX0AR4+gbyBm64ReL3bPI+Jdq9QqDWdze?=
- =?us-ascii?Q?8Yf+c+NdhxtXt+Ec06wRSdjE/fwfINpN5Gk3FfhbPdPyjndfv5+q4bN+uQh8?=
- =?us-ascii?Q?bWddaJBj9pUgm5nBobX8Yjlf1cmNebVfhTMJEb2LQYcDnk6vggVGUskX/fK1?=
- =?us-ascii?Q?oqAbDLwPgC0DzOEjK60t6EmSyXTr+jzrh+CE0BsgJxoFdiVOjZpNg+fGauFI?=
- =?us-ascii?Q?FniXF4J7mJz7zvASBNRKY1KfAQ4Dpdpbkg+UDJXrV7gAImPri97UyfIx3ir6?=
- =?us-ascii?Q?XhB4o7RWlc9oeLO9IsfylkvHXt4Y6MCCTDAa/xLG2a/cSF3zUHchgqdPsqS9?=
- =?us-ascii?Q?DROHoUR7rumJTSqAyTyN8JcyGhx6n2q16d1N52wGApjxnj0lNExiBVYz21wU?=
- =?us-ascii?Q?W/FVAaE8itrpE+lMuel9MV2g87uKkjO/8R0w0sZnCIsoYe4vqiIA7vj1Fl2f?=
- =?us-ascii?Q?8Lum+RI/0a/8O9K8qOEG3G+ne78ZyhJruO61ja4yuPv6wS5FSzoKRWA9UB0q?=
- =?us-ascii?Q?84qUlUuKuEM2P1w5uMe9nrnQQ/FGbcGVtWl7vTugXwi8Yn+pY2ksMqFHkPns?=
- =?us-ascii?Q?9SPdQRY1JI++/F0Bj9SUDAnUm6fNdMtMU/SpjSYeL7+x4CZATYV5HNs82BAJ?=
- =?us-ascii?Q?z8yUQGv2xxO/zZLlSIHo7bH8AwKP6je3g0rxxUHuIhR5NtkhTdKfnSHoECcp?=
- =?us-ascii?Q?RD4BNkD9YT1aLu7EXXqxhhjrPyr+yVP2Vk7kRUjY/pLv6Uy1TWbvcAr9IIbh?=
- =?us-ascii?Q?leVe8dZ8fV0C4eQD9bKlbHTZqAqnpzeaefOuIu0pF7hn67iWmrFiu6LJTx3t?=
- =?us-ascii?Q?D1G/4Ut8+5tEFUWuD5bkR+8kF/uC3GLoiRBrAMQGTM8aMQFeLfj5sGwXSmlU?=
- =?us-ascii?Q?sNvSeO82gA=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ 2026 06:38:49 +0000
+Received: from AS5PR06MB9040.eurprd06.prod.outlook.com
+ ([fe80::923e:d30b:98c0:c69]) by AS5PR06MB9040.eurprd06.prod.outlook.com
+ ([fe80::923e:d30b:98c0:c69%7]) with mapi id 15.21.0113.015; Mon, 15 Jun 2026
+ 06:38:49 +0000
+From: Tapio Reijonen <tapio.reijonen@vaisala.com>
+Date: Mon, 15 Jun 2026 06:38:40 +0000
+Subject: [PATCH v2] serial: max310x: implement gpio_chip::get_direction()
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260615-b4-serial-max310x-gpio-get-direction-v2-1-4704ba2b181a@vaisala.com>
+X-B4-Tracking: v=1; b=H4sIAO+dL2oC/5WNQQqDMBBFryKz7pQkpiJd9R7iItFRB9RIEoJFv
+ HujN+jyffjvHRDIMwV4Fwd4ShzYrRnUo4BuMutIyH1mUEJVohIKrcbrYmZczF5KseO4scORIvb
+ sqYtZgFYKopclPSgNWbV5Gni/M02beeIQnf/e1SSv9c9AkihRlXaoNdVEUn+S4WBm8+zcAu15n
+ j+liIVp2gAAAA==
+X-Change-ID: 20260602-b4-serial-max310x-gpio-get-direction-b10ee5be4f24
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Linus Walleij <linusw@kernel.org>, 
+ Bartosz Golaszewski <brgl@kernel.org>, Alexander Shiyan <shc_work@mail.ru>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ linux-gpio@vger.kernel.org, Tapio Reijonen <tapio.reijonen@vaisala.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1781505528; l=2751;
+ i=tapio.reijonen@vaisala.com; s=20250903; h=from:subject:message-id;
+ bh=KZnniEw5tU6ZusKFxe0aX7n6qMkVkA54ZAHGH2QpH6Y=;
+ b=OTqSu+BCvhioUtSXiR0WDRtLAm3yPgxDMh0p860PadPzkR4zRLpI1DVtNsFCfQi5iZmHyz0AO
+ IHyWvA2n+/aBGbVDMPsXULZ8EaDBclUeZLblui7NJsi1UMbVDDhvUKL
+X-Developer-Key: i=tapio.reijonen@vaisala.com; a=ed25519;
+ pk=jWBz3VD84WbWgfEgIqB5iFFiyVIHZr52zVBPOm7qiGo=
+X-ClientProxiedBy: GV3PEPF0001DBC4.SWEP280.PROD.OUTLOOK.COM
+ (2603:10a6:158:401::6a8) To AS5PR06MB9040.eurprd06.prod.outlook.com
+ (2603:10a6:20b:676::22)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: siemens.com
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS5PR06MB9040:EE_|DB9PR06MB11064:EE_
+X-MS-Office365-Filtering-Correlation-Id: c99d11cc-3109-49ea-1f6c-08decaa8c22d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|376014|52116014|23010399003|1800799024|56012099006|11063799006|18002099003|3023799007|6133799003|38350700014;
+X-Microsoft-Antispam-Message-Info:
+	SHwWwHznAW4nK6U/PRpVEr5dkrzy9sLmoOA9vc7y4d012a1zBqmWLSwBLmnlRL+AruOKPCSpXyKBvGkmO2OdMKBlouvC1gMorGH/Q/jrsRXu3X7mO+zTZUWgP90beOut6uSfr0haz14mLc3D/pUbvCU9sq4jYVjtN/cVTVod0TOqbv7/6s3OocGHB5T9Y6bEL4g/C4Zbu/lznLD3HHeuZOpUe+IpFSSSK1sKoZOXmeN5DtlNwtush0geMWMVux1jRGiJiNsM5FQWJYRCjJiCWmH7PaEf1nYggsw8S8LNYng2Jpzg5Hs/2vSH8PM/U7daZ03YnW4bPJEGp3BEEyV/MryVQkWxr5cWjPYltxJ8JlwoPYxTXm2rrMlxJJbHU5mHBvoBnzHOCYkhWKXRArWu2pdNi1NCfuDc9vFapQktzExu3WcevfHVt2K4X5GSPGUYp4KDlgteaWgc7tM1VK05GYCvNmnJ+ryVcV9NK11MA08aE9+SmotVOiOp2H8y+OVilgISBWWg+t1ZpnWO8rs3LLMDxoh1uKZe0sVN/bQhtSh6QIBRvHfjBSrnSQU/zczuhKNKEAkIdioStcEgIsDNrjMudKdU4ZZZapfPDQx3fI0jlZgg2jLi83XDTc3EiwABQh94nbsCrzCqcI2D1YbhzUdqfTnZ/NprTAh3mhJ3+PNIFwjmtN43CWfuZ2yQxvxkkH2Nsg8Ybt/JNjXMivtNDM0AHAfcUPqg5v++B+XxVQr/x/0SWhgxoeXR22J2nVXY
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS5PR06MB9040.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(52116014)(23010399003)(1800799024)(56012099006)(11063799006)(18002099003)(3023799007)(6133799003)(38350700014);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?dDd4N3UwV2xRVnlOQUovbWpnT2YrS2plbkh3WFlPZmthVnhsQXVEakh5YXJY?=
+ =?utf-8?B?MG5qYmxnRE9sZ0ZnZFovTXI4RFY0ZWFtV0NadUIxUnVId2RVeXh4MkRoMjNp?=
+ =?utf-8?B?NEN1dVA2S3JIN2lGbjJHM0lPU1oyanhQT2NVUVJmY0tvSEpaZ0FHdkxjU1g0?=
+ =?utf-8?B?blFlK2NINkNrZDBERVVyZldCMitLRkJzSVlmcVM4R3RFdVg1T0pnWkNXcFpy?=
+ =?utf-8?B?dUI1ZUErdk5oTFVRTnVFVXFTMmpweldYQWNMWWt5ay9WMHJEZy9KMXMydDJw?=
+ =?utf-8?B?eEhndyt1TXdFdlBZNWxvUkpjRGJWdjRzOG1laXh2eWFDTjVNWGI3aUZaZE9a?=
+ =?utf-8?B?QS8wbUtKenh0U256enJnU2ZCajdOcjJTZWhuRnhzR20zdCtYNnYyRlZKUXJE?=
+ =?utf-8?B?Ymd3aEcxNjRXbUhLVnJIc2ltZTlvWnZpZkxGS1JEaUdmWk9OVHJuNU93VDFY?=
+ =?utf-8?B?Mk5seHUwTjVURENrc0dOaHVySzNyblZuSGwwRk1oOE5zaGl3Z0huODNkMThU?=
+ =?utf-8?B?TWJNTk9nTW9iQ1lteDdCMUpNbWFOWmlZa0IvYjZwVUhVMExGc0MvZWw2b2p4?=
+ =?utf-8?B?T0duTm9LSHJ3KzRsUGRHUktjKzU5UmhhejNZL09XbVJUcjN1eU9FbUlpcFNN?=
+ =?utf-8?B?VEtHaUhNYnBJU1FKT3RMMDRkQUowT3hydkVwWmdJYUVBVkNmNnRUZ2JPQmpy?=
+ =?utf-8?B?YzRlNUdwbU5NbXRZSGpmd203WEJRUVBSeUlsWTZCdzRrZFJnYkFDQnZ2T2Y2?=
+ =?utf-8?B?ZnZpZE13M2lObVFhNjk2Szc3RStDdk02MWtwNjlrV3RmOGluWlV1NXpXMzkw?=
+ =?utf-8?B?d0YwZkNLaktmWWt6bXJGSHkvV09tZHYwODNxdzhXdVdGN2gwQVg0eFRrdG9I?=
+ =?utf-8?B?Vmk0TVZoZDVXaUprZG9iWXd5eTZPdWozNHBsMk9Ick1FeHpQSHU2SS84OExl?=
+ =?utf-8?B?VkdMamp0dUFlZkhhQ29YSVRkQTcrMTJJMkhEelZGMmFUbG1iTXJWVWhEMHE4?=
+ =?utf-8?B?VGtaazYrMGM4dVBqS2FWTW9BYU9hUXU5aDB1dTM3Z0J5Zk1OZmZwcmpqSkZW?=
+ =?utf-8?B?dmhlZ3M0dS9ycmpzTW5HR3NmdWlWYXhKR2RjRUJHWFA0djcyUVpVUk5PTDBN?=
+ =?utf-8?B?L0I4OGpTb0tUazNNOXFzTHFrbDRVcmsxZjFWRUZpeTlnbjJkL2dPUTcxOHZ3?=
+ =?utf-8?B?VmNRM0tJSTdlQzh3dkJYZWxhWmwrNVFSM3RKOVhaM3pseXNJT1ZSUU1xNFox?=
+ =?utf-8?B?V0pBY1VNa1I2cnBxM0RXVkdtSnp2WjZzN3NSdTVmUm5OcDQzLzJKQUZsbG1Q?=
+ =?utf-8?B?QWxHRjVtS29BazhtWUhSK0dzbWRXay93dVljODdkSkQvWFZzNWxTR0x1S3dW?=
+ =?utf-8?B?OHdKMzlRWnhMN1ZPOFN1RzE4QTNaUUZ3R1VuVzN5eGxVdnowVm5KYzdnRjgw?=
+ =?utf-8?B?TmFkcVdmT1FEeEEwemlKeDhtQSs4U1RzU0EzWHk0NzBLckxMNjRTR1lna0xQ?=
+ =?utf-8?B?V0tMRTlrQXd2OGJETDJDV1ZjMUFqcGtoVGhML1pNQmZPWkcya0lkWjZIV0Ux?=
+ =?utf-8?B?TFcyazNiREhwYkZFKy9KdWFEdGMvUUp4a3U1L0hMUU9Ub2JQRG5nYmQ5b2pa?=
+ =?utf-8?B?dFJiNjZJNjJvUXF5WU1VVTRDaFRzWlZxV0hZNXFEbExpZ2Z1dW0rc2UvcVZX?=
+ =?utf-8?B?cmpvMDdML3ZPdWxkeXFzeDI5czZ5MlBudWtMdnF0ZVkvM0ZpT3FPellkSlQ1?=
+ =?utf-8?B?ZmY3czIxRmwwcC9DNk01Y1V1SlkxekRvTTNFbWdSS2IxSDQ2YUcxRkdTWEFr?=
+ =?utf-8?B?eVpMV0g3ZlJPanRxWkhMcHJuS0taVTI3RDJpVUZqenpVRWxnb0dsV2ZXRWw1?=
+ =?utf-8?B?VlJOM0l3ZzVHWUtsKzhlUy9MS29PT2psV1BuTjk5RXVQT3BNZjVKZkdOREU0?=
+ =?utf-8?B?UVhJcmMza0N6OGFORkRxdkJSUWx4Qkc0SVRKVjFnYUsvSTltTGhYNDNrejla?=
+ =?utf-8?B?d3FaV0ZLbmpRaFU1cmQ4SXJjYVhvUnFYZlltZVlHcUpYYy9oT3MvOElpQVov?=
+ =?utf-8?B?TVBpK0N0dWxndHpNcGlsS0hYeGF3TlRKU2ZINmx0dmJsNmVKUUlTQzdzd216?=
+ =?utf-8?B?dUxYYWhvUUIzUld0UGtrU3BoSmxWRjVLK3pvYm45YXJXN2wvdVdTSEtNY0Ji?=
+ =?utf-8?B?QjAvMURjV3U5VlArdmoyQnV1M3ZDWFdIRVJNazZ0Tkh3Zi85NWhTQmwzU1R6?=
+ =?utf-8?B?L2FsMUw4RmllUXB5TDMydHZsZUpnOEhBL2o4S21xbis0YUdXUlpkRkkzY1Bs?=
+ =?utf-8?B?Ri9GVU9NZWhZS3ZMYUduRzNuRi9QUXlMMmZoWU5CZzNIbEVhWVZFUVhQcE4x?=
+ =?utf-8?Q?dpV0O1SG8BteBRLY=3D?=
+X-OriginatorOrg: vaisala.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c99d11cc-3109-49ea-1f6c-08decaa8c22d
+X-MS-Exchange-CrossTenant-AuthSource: AS5PR06MB9040.eurprd06.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DU0PR10MB5387.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: c5285e03-4537-4ea1-e00e-08decaa1e136
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jun 2026 05:49:34.9636
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jun 2026 06:38:49.5372
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: YarSyStOiy8NsDS5cuHHKWHWNEKFTylmHNzoZx1MNypeqBXMnQUw7olAeuX86ASnuDzsKUNIGs0mmJopfNqfv5uSjF7W5xBjNzk/3rckhig=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR10MB3571
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 6d7393e0-41f5-4c2e-9b12-4c2be5da5c57
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Ga0cHMpAmu2uXhBFQg5fhIs9vflUyZFG4u4NshMiEtZrB24tyTEv/BTQeovj9JqP6POJldPfMtCNjL9n/27DXywGjfgV/t2NhjAintEyMao=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR06MB11064
 
-> > I think the fix should serialize the receive side against
-> > gsm_cleanup_mux() instead of checking in the handlers. Two ways I can s=
-ee:
-> >=20
-> >   1. take gsm->mutex around the dlci lookup and dispatch in gsm_queue()=
-, or
-> >   2. pin the dlci across the dispatch using its existing tty_port ref
-> >     (dlci_get/dlci_put), so gsm_dlci_free() can't run while it's in use=
-.
-> >=20
-> > Do you have a preference, or is there a pattern in n_gsm you'd rather=20
-> > I use? I'll respin v2 once I know which way to go.
->=20
-> The bigger issue here is that almost no one has this hardware.  And those=
- that do, don't care about these types of issues as they do not have untrus=
-ted data or untrusted users, so be careful when changing things that you ar=
-en't able to test.
->=20
-> I think that option 2 would probably be best, as that should not affect a=
-ny fast code paths, right?
+It's strongly recommended for GPIO drivers to always implement the
+.get_direction() callback - even when the direction is tracked in
+software. The GPIO core emits a warning when the callback is missing
+and a user reads the direction of a line, e.g. via
+/sys/kernel/debug/gpio.
 
-A side note from my side: Using mutex instead of spinlock within the data
-transmission path has been tested in the past with a huge performance
-regression as a result. This made the protocol unreliable in production due
-to its tight timing requirements. Hence, I also vote for option 2. I just
-wonder how you plan to implement this. The racing GSMIOC_SETCONF ioctl,
-which triggers the gsm_cleanup_mux(), does so in order to re-create the
-virtual ttys. It can only do so by a full teardown. If you prevent the
-teardown there, the new devices will fail to register in the next step or
-the interface will be left with an unpredictable configuration.
+The MAX310X keeps the GPIO direction in the GPIOCFG register (a set bit
+selects output), which the existing direction_input/output callbacks
+already program, so the current direction can be read back directly.
 
-See related mail from the past:
-https://lore.kernel.org/linux-serial/Zh+iROsYkqoRsJQj@libra05/
+Fixes: f65444187a66 ("serial: New serial driver MAX310X")
+Signed-off-by: Tapio Reijonen <tapio.reijonen@vaisala.com>
+---
+Found and HW-tested on an i.MX6 SoloX board with a MAX14830 over SPI:
+without this, "cat /sys/kernel/debug/gpio" triggers the gpiolib.c:429
+WARNING (tainting the kernel W) on each queried MAX14830 line; with it
+applied the lines report their in/out direction and the WARNING is gone.
+---
+Changes in v2:
+- Address Hugo Villeneuve's review: use BIT(offset % 4) and put the
+  return statement on a single line.
+- Rebase onto v7.1-rc7.
+- Link to v1: https://lore.kernel.org/r/20260602-b4-serial-max310x-gpio-get-direction-v1-1-23bf84e8ee14@vaisala.com
+---
+ drivers/tty/serial/max310x.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+index ac7d3f197c3a5ce3531d5607f48e21a807314021..09b9ab57d2b4479da90fba178b093008f4b57bb9 100644
+--- a/drivers/tty/serial/max310x.c
++++ b/drivers/tty/serial/max310x.c
+@@ -1212,6 +1212,17 @@ static int max310x_gpio_set(struct gpio_chip *chip, unsigned int offset,
+ 	return 0;
+ }
+ 
++static int max310x_gpio_get_direction(struct gpio_chip *chip, unsigned int offset)
++{
++	struct max310x_port *s = gpiochip_get_data(chip);
++	struct uart_port *port = &s->p[offset / 4].port;
++	unsigned int val;
++
++	val = max310x_port_read(port, MAX310X_GPIOCFG_REG);
++
++	return val & BIT(offset % 4) ? GPIO_LINE_DIRECTION_OUT : GPIO_LINE_DIRECTION_IN;
++}
++
+ static int max310x_gpio_direction_input(struct gpio_chip *chip, unsigned int offset)
+ {
+ 	struct max310x_port *s = gpiochip_get_data(chip);
+@@ -1421,6 +1432,7 @@ static int max310x_probe(struct device *dev, const struct max310x_devtype *devty
+ 	s->gpio.owner		= THIS_MODULE;
+ 	s->gpio.parent		= dev;
+ 	s->gpio.label		= devtype->name;
++	s->gpio.get_direction	= max310x_gpio_get_direction;
+ 	s->gpio.direction_input	= max310x_gpio_direction_input;
+ 	s->gpio.get		= max310x_gpio_get;
+ 	s->gpio.direction_output= max310x_gpio_direction_output;
+
+---
+base-commit: 4549871118cf616eecdd2d939f78e3b9e1dddc48
+change-id: 20260602-b4-serial-max310x-gpio-get-direction-b10ee5be4f24
 
 Best regards,
-Daniel Starke
+-- 
+Tapio Reijonen <tapio.reijonen@vaisala.com>
+
