@@ -1,142 +1,170 @@
-Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
+Received: from AS8PR04CU009.outbound.protection.outlook.com (mail-westeuropeazon11011051.outbound.protection.outlook.com [52.101.70.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5442A1C861D
-	for <linux-serial@vger.kernel.org>; Mon, 15 Jun 2026 00:40:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.66
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781484031; cv=none; b=LbD/iIxcgQBYXMd6PrP6Y8knYU2o6JDoNyV4B9CgY8zhfv3aI88EhdG1ArLj0tk01hujcCrk/X/n8g7ebzFTGoFx9uKGr4FwfPm+B2DgQUqZ6B0hwonVKynjvgYccOD35FxbWBk3Pm8efpU2blVWVBF4oX9QudCWBzbX80qqEjk=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781484031; c=relaxed/simple;
-	bh=D/a7GLwP9RCZ87p4FGNNSBIQmAsgLi2QemlLiAUnZdE=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=SxGRDUbeGXYRF6RdceF9ztntaK8qqgMtWYAW0+Ll5ciu4xtlcNHWvbD+S2KUsvO2wViLWDCi9ZBUbh1LOSpK4lT8FJfHb8GMfErW5R6yj8nnR3G/vMoCxbMV3IL2JaT7lPD1aZd2pA+00zx+hUhX7DGo/psMkWnjoD4Jamx7f9c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=HcvW1N39; arc=none smtp.client-ip=185.67.36.66
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1A8438422E;
+	Mon, 15 Jun 2026 05:49:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.70.51
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781502579; cv=fail; b=NDMNlRuK+8KYaGnWIyKHQt40nacndOH+GkjnC7EkLOX+noxZBbDdoBPJA5yx4lDb3B2crma49UZc1Fngs8x6QHu+pAd26b6bUosXzjAAlc6UQCCPmVk9I3aCYznZrk+xKy+sSLrRuB7GkE4mZb954mQrrcMDaRw6uUV80Kox11w=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781502579; c=relaxed/simple;
+	bh=9zGe1Yfpm8AgfwGiLBHaWwETkCdVeTqwD/XAUUWF5QI=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=fqi5zF5La9+IWQzex9PVeWihpBHXMYlqS8uwDK4f3PsQNh3LzSAUg8qHKctSnaDvvXC6Sj4tQXb3O0M8VyimctUPsG2zMibJQ/xuvrPJhXoPRr6mWOPqF2bB4vo8jQaWZ/aOLcBx+GyOR2PpoVAIzpHdp6FZOKjmWPMdqsvf5BY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=fVoGP6af; arc=fail smtp.client-ip=52.101.70.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="HcvW1N39"
-Received: from submission (posteo.de [185.67.36.169]) 
-	by mout02.posteo.de (Postfix) with ESMTPS id D2343240101
-	for <linux-serial@vger.kernel.org>; Mon, 15 Jun 2026 02:40:22 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de; s=2017;
-	t=1781484022; bh=SFw/cV4xrZFmVY2n9Jv3ao6mzSO+0cbe1qwtPHSZl60=;
-	h=From:Date:Subject:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding:Message-Id:To:Cc:Autocrypt:OpenPGP:From;
-	b=HcvW1N39AOz9J4Lef18/FP39Wme8T89OkyUhJdHr9jnNw0mh3+fs8qdLijASI3LTo
-	 P/CIpSVp4WrP1TWyc7X/PzH8HGUaehzxm1SLKozQxbdBwKoSUsgkVIC3R9j/yo5qx4
-	 0Wd29tmcmPDm07+JNS6FMpmgdSlNDroL+pNQUodZwQXq8GSVb1SqK572AbCBCIZThp
-	 pYArgUtG3//z67nUiyA5nRSGbT0BSZybs8+daAmEav0kqISwfvUW//OaCyLJgy1Sqv
-	 N9ZwSdQcTccVtxfLqpNkLzvW8Q++j5qP0Sf0RQAeBmFNTsQZXL6rtDKwnNLUX92Eno
-	 MXsFp0LOMkUmw==
-Received: from customer (localhost [127.0.0.1])
-	by submission (posteo.de) with ESMTPSA id 4gdrr53ffzz6tsb;
-	Mon, 15 Jun 2026 02:40:21 +0200 (CEST)
-From: Markus Probst <markus.probst@posteo.de>
-Date: Mon, 15 Jun 2026 00:40:22 +0000
-Subject: [PATCH v3 2/2] ACPI: SPCR: Support UART clock frequency field
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="fVoGP6af"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=k7Ul9jfKTSsXxWeum12dCV7cnrgbFTVeMSumzSaQSLth1SFROdEFL7OcUiV2X5gzmr3w6MtBnk9dfLYVvN8AFZMEXL798Ql+bjvAihMrcS8LQqcPYwmCsh2BVszfRxZ3ndxcYMJhjBkWQYCSwBjo4Wl6tE4rud/MBHm/TL7M67/20zJfuGPQnd3BifFK0ZeiyI5Osh0J+BPgD36D8o1F8oKIsQPGOOqwMA1x9b+HlNzY19pZl7QCQRjOHY7cUpn7ew3555Jqa/ZjGoEC9i8XJFtVcUg2JK5oAaB7cG6vB2cUqZJOsimP1YSfXF2HfbfDU+y69ML267k34hIjhkxmMw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=r/jx6+yglVVyHgdcesSq4zkvbI4pIVvsNfeaT4YQJ4U=;
+ b=yW0KwgR7SYZZ+ov+CkNAEaT6r8/uxK9pnYHe7HERftojEh8k3aPLaA+WbAUBmWNIciszv8YbJzmJmoRwZ/Zshe/sqqRrftaHkznjyZppm4F4RT9vyU79V0eHDCHPL2x5Hpbm01UQ2J+y/1G/WPunrhz6aLY/14eY0QXebz/jdOH+c5hbdB2kh54aax9ILjrQn554N19MumJF7SHhQ8sHWgOYl8jaP1Ph5R4HERfKNbcmZfyqsz2TfRCPXLBywcUjBZCXGc94+zwpmLTKIoPz4f/ZhaF3AExyneau+FVv52cfTdUt2bt8SMl1ddnXuFagJJ4psXGXjnnV2P0/f4jAKw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=r/jx6+yglVVyHgdcesSq4zkvbI4pIVvsNfeaT4YQJ4U=;
+ b=fVoGP6afAtTN0bHhwn2iTTfMcTmQ/xg/MlZLYANb017diZMdeVF5KiRHHhTiKJpJBnkvqcHOm2Ag86XGQWIA+lSsLZa866O10P1Cls8bPfkKpmZTeoscns+mvyQApQiehP5RdNYwrWIimPucSm3SbHCNRTStxhT0vMfTNjXcFREtfidhdic8RBghCPJ4xSiegf6xA0C8g86sILNfQnz9ZIZ9Hw1Vs6c7GlJr2RF+SZcraw8J6DcMmrMMmXeo+w0flypIsn9o3StydxX8a7VT9cSq26xiOteSbQXUQADQKa8bL4xuroxn6ukd30dxRCbdbUpgqxpx5RpImKD7TU+55g==
+Received: from DU0PR10MB5387.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:329::14)
+ by AM0PR10MB3571.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:155::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.113.18; Mon, 15 Jun
+ 2026 05:49:35 +0000
+Received: from DU0PR10MB5387.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::de46:63f0:fed4:cdef]) by DU0PR10MB5387.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::de46:63f0:fed4:cdef%6]) with mapi id 15.21.0113.015; Mon, 15 Jun 2026
+ 05:49:35 +0000
+From: "Starke, Daniel" <daniel.starke@siemens.com>
+To: Weiming Shi <bestswngs@gmail.com>
+CC: Jiri Slaby <jirislaby@kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org"
+	<linux-serial@vger.kernel.org>, Xiang Mei <xmei5@asu.edu>, Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>
+Subject: RE: [PATCH] tty: n_gsm: fix NULL deref of gsm->dlci[0] in control
+ message handlers
+Thread-Topic: [PATCH] tty: n_gsm: fix NULL deref of gsm->dlci[0] in control
+ message handlers
+Thread-Index: Adz8iBq8O/I2zobuR/2fEq6NEFMaeA==
+Date: Mon, 15 Jun 2026 05:49:34 +0000
+Message-ID:
+ <DU0PR10MB5387DBED6B4DDFF66F1A57B2E0E62@DU0PR10MB5387.EURPRD10.PROD.OUTLOOK.COM>
+References: <20260611183217.2488508-2-bestswngs@gmail.com>
+ <2026061101-hanky-uninstall-da53@gregkh>
+ <DJ74X3U3L9DZ.3RMWZCB0O5ZCE@gmail.com>
+ <2026061228-scrubber-cosmetics-c77a@gregkh>
+In-Reply-To: <2026061228-scrubber-cosmetics-c77a@gregkh>
+Accept-Language: de-DE, en-US
+Content-Language: de-DE
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+msip_labels:
+ MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_ActionId=8520ff68-fd97-42e9-afa0-6a3bc7eb06ee;MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_ContentBits=0;MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_Enabled=true;MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_Method=Standard;MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_Name=restricted;MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_SetDate=2026-06-15T05:30:29Z;MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_SiteId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_Tag=10,
+ 3, 0, 1;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DU0PR10MB5387:EE_|AM0PR10MB3571:EE_
+x-ms-office365-filtering-correlation-id: c5285e03-4537-4ea1-e00e-08decaa1e136
+x-ms-exchange-atpmessageproperties: SA
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam:
+ BCL:0;ARA:13230040|1800799024|366016|376014|23010399003|55112099003|38070700021|3023799007|22082099003|18002099003|4143699003|11063799006|56012099006|6133799003;
+x-microsoft-antispam-message-info:
+ qVwdEeJVVriAlpLWgYREt27hrG5gnfxQ9umpOoWMH1YsUcYZlJDEMKcpOXeYG4D5bgKKrnOvNO/d/CHuCMSl+bL1RmuL6s9zvz8OLfzYHnIWirIVSh4c9UVVootDzsTMROQeWDpgAViT1McTgxGO7/m9kINm+c2zMhyBtaqjzsnORDHTuC9rUq7fNZKLxxeGOJtdZdyh+AIpSVQW2R9dsfCI6aQ/0WSGKqFUevo8TqMBPwJXAYAwX0AEwVo4a/WrDqHj5KjPPV38pj8SDI8pWZsT9RvdiocWjf1kG2mdth6v/SAkulzW1FFjrJ6vojjDydIt+g/VNY9zWoCMpbrRyKwNrkwzZ5qWdRwvCt+2B4O9UzmBCTSCSJ2EuVGQHJd77QvChmqUqSnuZ1UrEr3ivT9Hpv+AC1JrcZD8KRq4j+0KYpFUrBitfwwBXa8Enlh4uRsZ7kayPHtoJDip2lQt1efZpE/berW/xhmgHQavHVPDVdhHuDpJCGqSrVUcUleY81fDm11QY/9tFws0LSNnHsoBw8Lf1AO52bYBo/1Rl8qIQZBFtCkp5NeWOEIByfAWq/Mq6ssfjPZ0HyS/+G5tRGN13xjyK/yicPKxKwsugns4fhzW6+3v4tZBhS6GcagrtmXI8sRA+bNppdTW03cJviKSzzDv3oaPp8ygZMHoAqKWR4QdKv1ICVE1i4K69kGuPPMxfhDl3VrW7MyuArsrr4kWiSeynrRP2RvlyqeYZcbwRgz+gVeizXvdBB1tXpWc
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR10MB5387.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(23010399003)(55112099003)(38070700021)(3023799007)(22082099003)(18002099003)(4143699003)(11063799006)(56012099006)(6133799003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?qZqbQkKcon51oNLScl6joGamen3RLmfMtFrD/M1eKZGd1CkYHT7c72Gy1l5i?=
+ =?us-ascii?Q?pKeohKYTDk/jo8doiyLgZCfxSHLDUR4GivQXi5pT5usf7B1j/85lIWa3IJyh?=
+ =?us-ascii?Q?JGN4q9n3AgNW+zcaQwl4ipAe7oOwkwFbLnVOmPQeZPmidAfm2JLb9fH3hWkb?=
+ =?us-ascii?Q?s8ymAL/YH2me/sFavCiH9qnUXjXTlwITv46xd1NkigPqWVA4FF20v/XtCeYK?=
+ =?us-ascii?Q?/MG7Ck30bdYbo8xzVql+1tG6ZylDhyuCL5vnVK05iLBZMmhXBQNEsvYizGpP?=
+ =?us-ascii?Q?kx+J+z5pwh3HN1m6pURhKgGcEvqx1JHQbwMHH/FYnz1FW+HWWBVfWbXFwwGZ?=
+ =?us-ascii?Q?++jLWtWXUthGSBA5hDCfC4H7KwUQYvKElsPgbF+9IeSt8zN1asTY2RkorKEY?=
+ =?us-ascii?Q?q5pLLQyNn1jclzYIg//bKd11jgRMRuLhcqKTcweZxEPmbV/w5z8z7to7cAme?=
+ =?us-ascii?Q?D+m1zi5/FUW2NwebJ9zTdp9GTBru+TPIyaT3xV1GebcCATLe4zYHj5pdx1Lk?=
+ =?us-ascii?Q?iPpZlpUWwtlHDp7/MrkmZMfmq4xXsGi2n6euU6L6Gq6xZTHjjZlZKkiWO+J7?=
+ =?us-ascii?Q?3Wv+2/ByPYI/s9wXR9HoIAR7950qpgSUhm2hAIvKKXsdJ5VWeCsPCLCCwWbf?=
+ =?us-ascii?Q?xI6vWTZn2qhIs+05zs62n4lkp4y5+UgLB//PCIvB0+Ty3Tjw/oyA3KV+Y8fa?=
+ =?us-ascii?Q?DhCs5uucI5lC3EC6/IwSzMYe2S13Ahu0Oll964CLNE7cvmZSO7bjFavM7Yie?=
+ =?us-ascii?Q?r7XEO2imUZzAK2o3d3//tU0dxn5sCVBKUv7BnhdoOVmu62mRvxxtamC8HsF1?=
+ =?us-ascii?Q?xJlBoov2m9St6oMUUZja3n8DBeYRX0AR4+gbyBm64ReL3bPI+Jdq9QqDWdze?=
+ =?us-ascii?Q?8Yf+c+NdhxtXt+Ec06wRSdjE/fwfINpN5Gk3FfhbPdPyjndfv5+q4bN+uQh8?=
+ =?us-ascii?Q?bWddaJBj9pUgm5nBobX8Yjlf1cmNebVfhTMJEb2LQYcDnk6vggVGUskX/fK1?=
+ =?us-ascii?Q?oqAbDLwPgC0DzOEjK60t6EmSyXTr+jzrh+CE0BsgJxoFdiVOjZpNg+fGauFI?=
+ =?us-ascii?Q?FniXF4J7mJz7zvASBNRKY1KfAQ4Dpdpbkg+UDJXrV7gAImPri97UyfIx3ir6?=
+ =?us-ascii?Q?XhB4o7RWlc9oeLO9IsfylkvHXt4Y6MCCTDAa/xLG2a/cSF3zUHchgqdPsqS9?=
+ =?us-ascii?Q?DROHoUR7rumJTSqAyTyN8JcyGhx6n2q16d1N52wGApjxnj0lNExiBVYz21wU?=
+ =?us-ascii?Q?W/FVAaE8itrpE+lMuel9MV2g87uKkjO/8R0w0sZnCIsoYe4vqiIA7vj1Fl2f?=
+ =?us-ascii?Q?8Lum+RI/0a/8O9K8qOEG3G+ne78ZyhJruO61ja4yuPv6wS5FSzoKRWA9UB0q?=
+ =?us-ascii?Q?84qUlUuKuEM2P1w5uMe9nrnQQ/FGbcGVtWl7vTugXwi8Yn+pY2ksMqFHkPns?=
+ =?us-ascii?Q?9SPdQRY1JI++/F0Bj9SUDAnUm6fNdMtMU/SpjSYeL7+x4CZATYV5HNs82BAJ?=
+ =?us-ascii?Q?z8yUQGv2xxO/zZLlSIHo7bH8AwKP6je3g0rxxUHuIhR5NtkhTdKfnSHoECcp?=
+ =?us-ascii?Q?RD4BNkD9YT1aLu7EXXqxhhjrPyr+yVP2Vk7kRUjY/pLv6Uy1TWbvcAr9IIbh?=
+ =?us-ascii?Q?leVe8dZ8fV0C4eQD9bKlbHTZqAqnpzeaefOuIu0pF7hn67iWmrFiu6LJTx3t?=
+ =?us-ascii?Q?D1G/4Ut8+5tEFUWuD5bkR+8kF/uC3GLoiRBrAMQGTM8aMQFeLfj5sGwXSmlU?=
+ =?us-ascii?Q?sNvSeO82gA=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260615-acpi_spcr-v3-2-9a59ebad74ea@posteo.de>
-References: <20260615-acpi_spcr-v3-0-9a59ebad74ea@posteo.de>
-In-Reply-To: <20260615-acpi_spcr-v3-0-9a59ebad74ea@posteo.de>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, 
- Len Brown <lenb@kernel.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
- linux-acpi@vger.kernel.org, Markus Probst <markus.probst@posteo.de>
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1017;
- i=markus.probst@posteo.de; h=from:subject:message-id;
- bh=D/a7GLwP9RCZ87p4FGNNSBIQmAsgLi2QemlLiAUnZdE=;
- b=owEBiQJ2/ZANAwAIATR2H/jnrUPSAcsmYgBqL0nz7jORAdHB4SxDPhiz8vbmYF9wiqgK5x+N9
- 2bIuCYl9UCJAk8EAAEIADkWIQSCdBjE9KxY53IwxHM0dh/4561D0gUCai9J8xsUgAAAAAAEAA5t
- YW51MiwyLjUrMS4xMiwyLDIACgkQNHYf+OetQ9I5+Q//dMx746B8MjxrK0Db30vYOZYJtH/U8Rw
- y1j+kGcAIYrV8JusA98CHLTe6At8Ht9k6pzkpUZqu/dTT86tbz1pB6xYa6gFKM1aNuBNFA5MxWz
- zOE7MDJi2UcKvVnQQ1//ly/JI2vTqel4dIf/ugUTUEtYj9XXuPUGw8k3ku1PsSROX0mMlQrPWc+
- P/Wq+S2t5rOWsykUQNsIgegg76y82/zDdmtEQphV60icwlH2Y/k+YICe4RiC8fJeEcWi9GMaJ1b
- LNyvTTMzTxDOO1MjFm7Pf5b7X4nq/9NPZMieoxGbzW9XyLjjlwkL7FB0mPrm6KVeTdjNbD4ZpSX
- idnoP1O/NR5dwxSSmyoFgbhKmgf14yIzTsVsATbeOZ3spTbBnJIKguXBM2Quf5/E69konidHvZq
- Z2JLPkS5Jww2DzyMzrBNdYHUZVXR7SF5MfDu8sXAt7EtiZHKaQiJNPUwKggdeXzR/GGJsP1qs/z
- PkMT+9rWbAvNPIA+ZTvRdDmbMewxSy1wFnahxG077Q1sKymr/e7Ns9+LPUq5QL6jSZdS3Q8Yb+W
- brQLN1Jp20kWTUkvm1gyj7UiOdmqQgUHxeROhnxQ4H2sODS3AR2RdVWJcEYBSF9MGgvUo91YL6E
- 7uoxR5Uy3cRQk0J5Rxs2YyesO/QHcai3Mj02vVoiSvuH+s8bT7Bs=
-X-Developer-Key: i=markus.probst@posteo.de; a=openpgp;
- fpr=827418C4F4AC58E77230C47334761FF8E7AD43D2
-Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
-  keydata=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
-  aBeNN4ijKZchBXHPgVx+YtWRHfcm4l8=
-OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DU0PR10MB5387.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: c5285e03-4537-4ea1-e00e-08decaa1e136
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jun 2026 05:49:34.9636
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: YarSyStOiy8NsDS5cuHHKWHWNEKFTylmHNzoZx1MNypeqBXMnQUw7olAeuX86ASnuDzsKUNIGs0mmJopfNqfv5uSjF7W5xBjNzk/3rckhig=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR10MB3571
 
-The Microsoft Serial Port Console Redirection (SPCR) specification
-revision 1.08 comprises additional field: UART Clock Frequency [1].
+> > I think the fix should serialize the receive side against
+> > gsm_cleanup_mux() instead of checking in the handlers. Two ways I can s=
+ee:
+> >=20
+> >   1. take gsm->mutex around the dlci lookup and dispatch in gsm_queue()=
+, or
+> >   2. pin the dlci across the dispatch using its existing tty_port ref
+> >     (dlci_get/dlci_put), so gsm_dlci_free() can't run while it's in use=
+.
+> >=20
+> > Do you have a preference, or is there a pattern in n_gsm you'd rather=20
+> > I use? I'll respin v2 once I know which way to go.
+>=20
+> The bigger issue here is that almost no one has this hardware.  And those=
+ that do, don't care about these types of issues as they do not have untrus=
+ted data or untrusted users, so be careful when changing things that you ar=
+en't able to test.
+>=20
+> I think that option 2 would probably be best, as that should not affect a=
+ny fast code paths, right?
 
-It contains a non-zero value indicating the UART clock frequency in Hz.
+A side note from my side: Using mutex instead of spinlock within the data
+transmission path has been tested in the past with a huge performance
+regression as a result. This made the protocol unreliable in production due
+to its tight timing requirements. Hence, I also vote for option 2. I just
+wonder how you plan to implement this. The racing GSMIOC_SETCONF ioctl,
+which triggers the gsm_cleanup_mux(), does so in order to re-create the
+virtual ttys. It can only do so by a full teardown. If you prevent the
+teardown there, the new devices will fail to register in the next step or
+the interface will be left with an unpredictable configuration.
 
-Link: https://learn.microsoft.com/en-us/windows-hardware/drivers/serports/serial-port-console-redirection-table [1]
-Signed-off-by: Markus Probst <markus.probst@posteo.de>
----
- drivers/acpi/spcr.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+See related mail from the past:
+https://lore.kernel.org/linux-serial/Zh+iROsYkqoRsJQj@libra05/
 
-diff --git a/drivers/acpi/spcr.c b/drivers/acpi/spcr.c
-index 73cb933fdc89..c79c809f49d4 100644
---- a/drivers/acpi/spcr.c
-+++ b/drivers/acpi/spcr.c
-@@ -228,7 +228,8 @@ int __init acpi_parse_spcr(bool enable_earlycon, bool enable_console)
- 	pr_info("console: %s\n", opts);
- 
- 	if (enable_earlycon)
--		setup_earlycon(opts);
-+		setup_earlycon_with_uartclk(opts,
-+					    table->header.revision >= 3 ? table->uart_clk_freq : 0);
- 
- 	if (enable_console)
- 		err = add_preferred_console(uart, 0, opts + strlen(uart) + 1);
-
--- 
-2.53.0
-
+Best regards,
+Daniel Starke
