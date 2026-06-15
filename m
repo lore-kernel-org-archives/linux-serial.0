@@ -1,88 +1,87 @@
 Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6D943F9F4B
-	for <linux-serial@vger.kernel.org>; Mon, 15 Jun 2026 14:17:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E297E3F9F50
+	for <linux-serial@vger.kernel.org>; Mon, 15 Jun 2026 14:17:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781533034; cv=none; b=kA3p2p8dzqgVuyL+fHCEVvDBBHQbje/SaVMAXGP1QRdIWPGszjCOVYVDxLuLYStLtC42+IBwvyLtKHQETg6S2ba2NIdPaKG73M9qbATwlXSBG0bJub2AFmePwGW0vdp4WABpeF/aPR4PjtSvfqZUBemfuq8vx25Qz4p3uutICk8=
+	t=1781533038; cv=none; b=iXUaqo6SFaSJ6FkE4JNi02fnPcpLo54jjYXYVjSupC4D3NG3RXJ8OrrknccwKt+ZkT1OZ1T1WSPNR0mACxog33o2dxnWona0W9QD5xkFHRsTLso8v/zPhVMR1b7eBd/sYZJgWxT3L63BymbIumky0areXPMIZyqW5J20Vg4/A7o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781533034; c=relaxed/simple;
-	bh=QHuJbNfZclwAUqET6A1WfhO2/jqOdVEs9Fpda71LKyc=;
+	s=arc-20240116; t=1781533038; c=relaxed/simple;
+	bh=UK0w8cVX6HonoLLMdXc+3FVa/9hg3gdhTjqWi4T6mns=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=DQOd+lPyw/UkjIt8fb2xTKq2Wf0/2+M8swhRI296wBbcqsWQRm+yPSZW26JwqXymo4hu1bhMg/7wtGmAEK2ZrUdmKR4EI5SqgXC6ZT7D1w/PHZCfGnsYHi4nC9Fh4wyzMnvwOA+8g5JkQxLUUkmPSUgDB2dbacJjwmo+ea+IftA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=RdxzjBx3; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=R5epxaYz; arc=none smtp.client-ip=205.220.168.131
+	 In-Reply-To:To:Cc; b=jF/gkj22WeGAZztIaaf6vnMGcMF9+D6DLuBO0qVvVaySkaFV+6NUqWb5UagyxwM/xdf1FaqWAddwF++JoN5PpcncOa2dN7BI2f9FYWNW3gTD1N9rUr2L3s3NEJq+ka+3QRu1O2CVzsGOxGynxSTfN4njpSC213Zu2bZkB0GdhIU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=UJmt6HOi; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=A4vAyvgW; arc=none smtp.client-ip=205.220.168.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="RdxzjBx3";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="R5epxaYz"
-Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 65FCZGZ0022294
-	for <linux-serial@vger.kernel.org>; Mon, 15 Jun 2026 14:17:11 GMT
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="UJmt6HOi";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="A4vAyvgW"
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 65FCZa3s4116605
+	for <linux-serial@vger.kernel.org>; Mon, 15 Jun 2026 14:17:16 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	8uZNp+VwhVSjExHeT5LvpX51VbIe9sjYP4PbK25Inpk=; b=RdxzjBx3vPSj+4Fk
-	O35DdkAQivu0MDI4s114/uZR73tLeO83J7kWQRaZHoDsGMu/s3AAQ47PCbXNb3R5
-	J9cKCet35nYh3DS1hF/C+/wPAK3BTFKQXOao3yjV/LqwDM3ngWiZ/BqqQAcgxeGB
-	3NbZazocOJsCvFX64vLjy2vn89JTHc+PqrhJjyaa6GQrT3bqNTv1nm3ff9Ih5mDM
-	dA0uP8P2iNNYXujqpMTDIVdpfW2GTYz1ogziayDvbckS9Z+2CfnGIgvAOiFWe2lm
-	YQHBR4Yq1KGCkPJh5JS6A1kydnx95EIt404FO+CAV8rmcjhAABvmfyUbOAwblvXI
-	cjA9ug==
-Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com [209.85.216.72])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4etfa70y8t-1
+	xxStlaNB4x9Mu659Ds+9UQmpLOGQ5xsUav0PKNZl0Yw=; b=UJmt6HOi/rwRra3t
+	l8sp3S4SBw4CBG7/oogEe0jOCglWUD9Wyay1ePvVTVrC4m4S9C+3QPQEiYk2C1Bh
+	7acHVV2/bed6PEr7p4DsTv6sRHj1olZCdd585/6Rzui7TLXj6wkNp7iA7LMCZUMK
+	QXbstIGi+U+8thXf68JzSaxUlBl50rYxap72vUxwabEsFnXzbZCjAYXrTNxBl1U5
+	+jxFsBVC31EE/fEdEjxjw/jASWeEBv6a77EnNE+P5qLJmnC4bbcXeeSYCCpuM4ov
+	0858wR1WVJs+iQbelDa8WSvl/6Xwshud2VfoOvDL8uRMev+REPj/Ac2kE+S1Mowe
+	DYPHvQ==
+Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com [209.85.214.198])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4etetjs4eg-1
 	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-serial@vger.kernel.org>; Mon, 15 Jun 2026 14:17:11 +0000 (GMT)
-Received: by mail-pj1-f72.google.com with SMTP id 98e67ed59e1d1-36d985df4cfso3988129a91.1
-        for <linux-serial@vger.kernel.org>; Mon, 15 Jun 2026 07:17:11 -0700 (PDT)
+	for <linux-serial@vger.kernel.org>; Mon, 15 Jun 2026 14:17:16 +0000 (GMT)
+Received: by mail-pl1-f198.google.com with SMTP id d9443c01a7336-2bf08c2a24bso34189215ad.2
+        for <linux-serial@vger.kernel.org>; Mon, 15 Jun 2026 07:17:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1781533030; x=1782137830; darn=vger.kernel.org;
+        d=oss.qualcomm.com; s=google; t=1781533035; x=1782137835; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=8uZNp+VwhVSjExHeT5LvpX51VbIe9sjYP4PbK25Inpk=;
-        b=R5epxaYzHXJ6zVCrvYdwBM5X91xWdgQ8bzATIvo1Nmp2fkS6Va1MxY8sMInrh/3dsI
-         BuFoqkA6WptDASu/M1BdOvbo7Hr/DXdNBGDYrYCk6om5/l7abC5wiac+lY625xT4XWwj
-         77+CromcPBWRuc7o9bW/Oa1RKbh40BFaSmfXK8fPWsVa1WvaDFN9yV3ciVgv3AdfCe1C
-         7cRNwULl/HK3W82MzYX1/FFn8xEMPSrQjvgmD+tOdz5ajL2TQ33eDyrrhS1jK7MTqSIP
-         q9ohA/R1ikubUWBZCEJQLycj39kDISYMxbQGWRObFay6FjD8GqvQX7bwdWQ2ndKUs1rR
-         qOdw==
+        bh=xxStlaNB4x9Mu659Ds+9UQmpLOGQ5xsUav0PKNZl0Yw=;
+        b=A4vAyvgW8d4tSA1qG9WHBJKH2rDZtVdyRVCJV0ZTbCM725BxdSaCpuGPqsbhbLJM9c
+         gyO7/oBgc0mSKyGNlUmspys6DPw2dA0b/h0L/yLuzwczaeNtYBAwgcWmipDeoTjHH6t6
+         eSZ6z8TDJ6E/0jEOWOMx3omQEGVVQlc3p7Rv4qNfGvsm1vJZWV691EdyvuC5nBgNVOf9
+         coV28PYhqNko0J4ujE0G+EiOiAiD6yPpzoHyvcM9FXeZGqvqOr/A2HzQDVAioI1vaX/P
+         AS+YUGziPWSkAUJoqMxGDDw+Sk1c9x6Xti4OtW+NKksDj4HMYt1fHdkPIsa4PPT34rjI
+         VAPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781533030; x=1782137830;
+        d=1e100.net; s=20251104; t=1781533035; x=1782137835;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=8uZNp+VwhVSjExHeT5LvpX51VbIe9sjYP4PbK25Inpk=;
-        b=CQjDbAwjyPhEKX9TJHHIcbVcMkabNlVNgvWZpKf3MVSZ4M/PyAMSqkdjp+7OM26xdD
-         eJTB7L8JZ0CIGjb4OOQn2kIjQaoRpqfJbomYAmGmwsVOO0i2tb2q11PyBaPCtuDfPU/K
-         VWrCmi+q6gzOp0E+LB1DMFZzP7lWi2uw6Auh+wknvLh01W8BqF/yRO2skyNS7D71Y8Ft
-         jmit0kehhwr89tcjnXKmbYYjv9iE0/L2VT4opJvD9ToxWujb/3qRnWwyCeLbx6C1uZSv
-         QIRbnswAXeAEywFMro2wIkXd6JXUK2yM5rM/VlV2YAEbOdNQacfgAOjkoW+wG+O3gZ+n
-         DVEg==
-X-Forwarded-Encrypted: i=1; AFNElJ8+0TTYjuraX7JH3FZu+EBkRHxxw1RafsQCEZavst105O+nlztY6dXwaVe4oWq6HehfPNOPmdp9lnwzA7Y=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzXyiOPRQW3wj4OrOH52rGw6ACKI3W6ETzZLUtu2Rdtz6MaBXit
-	MY76nIyIlyiwRCyhbc7uCH7n25EmnWx03TMN+NeFMmyxnIz3eYqczVIhjgTQ0RhHzMdoJQtB+mD
-	PWjIe0zehYNo2vtTDikCKjNoTEBLBOk4OlCkfLQX2YKkWoevfkqF8bbyOSYZb/Yp1QZtS5JTHnI
-	Q=
-X-Gm-Gg: Acq92OHUvWuBXeF7mDkImWaOSRpCI5dljJ86CTB3X4p3VTiqVdvFULwev7T2RBNKtU5
-	gTxXEGCsDkk1VKCgO25RcCGD1EmtwdsZi3/FP38PjDxhzjfJVn97hXbXlnS1lKahTWvFr/dqaUa
-	FFlAH4o+mTMM60CeXu9cFKrN84y9mlZEG5RQLlihNwIZqpUzqHZcWYg0mZMxN5Nfb21UM1UfIJE
-	ePfntWl+SKqb86tmwkj+BkhTaI8M7+okvQJVOA67Be9XdhjxBwL15Hu0dC4u2qTu/8Mc+m0AJQA
-	HtVHoC9vgceDrXZpRJh4cXeLdYU6WkJ/r8rP+9pzbagjEH7+aPDsTEGZcSlMzPenyprL65sL0E8
-	VnSyQ6kVpkX1kcIFq7rTzmBWZRRoRZKiHDbfJbaJyhl0wOCUdnhljNbs=
-X-Received: by 2002:a17:90b:57eb:b0:36b:ba9b:7efb with SMTP id 98e67ed59e1d1-37a01a3bfa9mr14972752a91.5.1781533030399;
-        Mon, 15 Jun 2026 07:17:10 -0700 (PDT)
-X-Received: by 2002:a17:90b:57eb:b0:36b:ba9b:7efb with SMTP id 98e67ed59e1d1-37a01a3bfa9mr14972697a91.5.1781533029836;
-        Mon, 15 Jun 2026 07:17:09 -0700 (PDT)
+        bh=xxStlaNB4x9Mu659Ds+9UQmpLOGQ5xsUav0PKNZl0Yw=;
+        b=n3qbYeiuRcV34jgIJMz0zh8bPajuBm4gxkFxCoJq+DEDNICyUw/rzu6tPyfcGV5Vha
+         BxOHgpqbRHW8KienAMFrLXW68dyRw4CWO+MLKQGB2ezJ7gJ93ar3x2G1Eg1mHEtO5i/L
+         R8dt/p/YIQXzVEdWXE/kQLujo6oFvqtW/2Jj942MbLd2BNLICHl3va41KDMAf1/z3BDZ
+         6N4N08rOlQpePTw9D5M4mF7Zckm6BfuZInUhG3onV/jETnMH2rRZdvWR7vhl5sab9OzH
+         7PPfEeDRrpBusfpBeMCmYFjLm+twNaOmku8/9MoqSUTVJasyTQwJcPy1eUy4fYgSGeP1
+         15Kg==
+X-Forwarded-Encrypted: i=1; AFNElJ8uDmrQkHTVwvUOFFxMo023q8Hgn3MZ00BzOMzE6qjgzo1gJ6a/Z9fq6zjI8CzvXv4yY4Isd5a6tSFqYXo=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxLO6WKDYBMoCcRCGxolZRsWutWa2B3jz8t8XLyrqnJa1j/wm90
+	apWlpOITaG9G1sdvsGlHZ4iWxBxjSP8Xv5kMWTb95T9UkEm7QlpuqJsgdM+rRsJ/jqDsHvpp0k9
+	mFy7nS95xpoUZekgFB6DKVYsrkzYQS8kXNY6NrcZq5ZAiir73JWCxI3Gcqec7ZUD3sUc=
+X-Gm-Gg: Acq92OEdZ3dSi5nmaGedR2fZ9KxzdcDVYvtOnKIzfaLd2Hh/Pyl5rvXCwlRYCSPmKD0
+	JOsuimTXvo12q2rPwNb5dp87dMagzK6QAnr3csf+4WYiS9BNhmQN2MbuRd82Hcc0oi7GgfM3Lz4
+	QG1CRD2o7O7uEgOO8TYZmPeU2btBIlihehJrPLu02giXcNi1v7UphZ2nYeCkcbqNnUu5lgQ3Rhq
+	mJW4ipexKTWBncTfssNF25wxwYKqLvr6EREnXHLD5iLc07SweKpsl/we6SMCHoob/wSuYUqj159
+	M4A083Uf6qgRBBMlTqk9CpnvC18pr0e3GU4iXQLQoVS991m49qlFKTSrJvBBwM3cHXl65IIQ2qq
+	0GSi9nsRvb62xauwfbBVOO8rxu7jiMecz4xSb9lkK5FrYrykctHSDSTs=
+X-Received: by 2002:a17:90b:514f:b0:35a:189b:43db with SMTP id 98e67ed59e1d1-37a0184a3bemr15713046a91.4.1781533035414;
+        Mon, 15 Jun 2026 07:17:15 -0700 (PDT)
+X-Received: by 2002:a17:90b:514f:b0:35a:189b:43db with SMTP id 98e67ed59e1d1-37a0184a3bemr15712968a91.4.1781533034731;
+        Mon, 15 Jun 2026 07:17:14 -0700 (PDT)
 Received: from hu-ptalari-hyd.qualcomm.com ([202.46.22.19])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-379e8cc467csm7172476a91.2.2026.06.15.07.17.05
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-379e8cc467csm7172476a91.2.2026.06.15.07.17.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Jun 2026 07:17:09 -0700 (PDT)
+        Mon, 15 Jun 2026 07:17:14 -0700 (PDT)
 From: Praveen Talari <praveen.talari@oss.qualcomm.com>
-Date: Mon, 15 Jun 2026 19:46:52 +0530
-Subject: [PATCH v5 1/2] serial: qcom-geni: trace: Drop redundant len field
- from geni_serial_data
+Date: Mon, 15 Jun 2026 19:46:53 +0530
+Subject: [PATCH v5 2/2] serial: qcom-geni: Add tracepoints for Qualcomm
+ GENI serial driver
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -91,7 +90,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260615-add-tracepoints-for-qcom-geni-serial-v5-1-2efa4c97e0e2@oss.qualcomm.com>
+Message-Id: <20260615-add-tracepoints-for-qcom-geni-serial-v5-2-2efa4c97e0e2@oss.qualcomm.com>
 References: <20260615-add-tracepoints-for-qcom-geni-serial-v5-0-2efa4c97e0e2@oss.qualcomm.com>
 In-Reply-To: <20260615-add-tracepoints-for-qcom-geni-serial-v5-0-2efa4c97e0e2@oss.qualcomm.com>
 To: Steven Rostedt <rostedt@goodmis.org>,
@@ -105,81 +104,153 @@ Cc: Praveen Talari <praveen.talari@oss.qualcomm.com>,
         mukesh.savaliya@oss.qualcomm.com, aniket.randive@oss.qualcomm.com,
         chandana.chiluveru@oss.qualcomm.com
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1781533020; l=1611;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1781533020; l=4256;
  i=praveen.talari@oss.qualcomm.com; s=20251114; h=from:subject:message-id;
- bh=QHuJbNfZclwAUqET6A1WfhO2/jqOdVEs9Fpda71LKyc=;
- b=LwNaeHXnoABG3t/pEhTPPctahozCFsxBP/IKBq8jFegkPwyzPiCxL7Yo7rTJOBH3ODTmsdmzd
- FmB9mHxSnI+BXmKaBGOvcbCvfn8r9msx+EOYbf0Ftnnq1DKmQmbQyCB
+ bh=UK0w8cVX6HonoLLMdXc+3FVa/9hg3gdhTjqWi4T6mns=;
+ b=qTbvMsUOC65Bt7ZLTkLfW54/qFSjUxfHmp6BMI0qwDqiP42Ml3uTZGq2DsyEV+gNq55q3IPdH
+ e6PCr/CrgyGCOLA+sYrx/D/Rywd9phNURw0u2ZI1ocRUpjEirRPcvKo
 X-Developer-Key: i=praveen.talari@oss.qualcomm.com; a=ed25519;
  pk=NGK/88fjyHXgfhIKwag7+uIytOmyOypvZ/hDFaYPEss=
-X-Proofpoint-ORIG-GUID: BHKmJd6gYKmSMmhb8QCsZ9gvqQ-oExI8
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNjE1MDE1MCBTYWx0ZWRfX57kjASU5ITdz
- MlOVgx5BtM8XuTxYATtODcTt7eQDOxo1BuASvB4VcZJfUnVSnkUMgSy3WJ+pnZa+Tzu2GNmutnl
- mQRoFXTkb5CXewX87IFclVsvKcHnlRQ=
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjE1MDE1MCBTYWx0ZWRfXzWF61QI3yiYG
- UowGv4w+sBCaMp7T4vlR+WBK8XqH+oaHHXCHrQVxFl+ZNsY+d8Do6W3I+fSghDbyKJt1tJAhRF+
- W0moIT7SOaFQMoY+NJ74szQ54ldc/DYkHMBPmIgBOrCSc/dp1dGBPTRyyXsqZiHNHiCaELSoWMQ
- 4sivC7m4hLioagxvYIxSjEJNGiRfEER3/1GeVLbqPnJlYpHV7BTs2Epjj6uv4l65lPg6lGd9RQh
- 9pKOKPbZXpK+Plml4S9FlJKdqOZD1lyBDcHQonqyxH6QCKH3OEenZ+vVvns/oVCTF2ljrAPy8wt
- IsQteCTodZpi5DcUQdZzDPOTL+JCeJ8m85veXPSYmI/IhwV5KeXt/8Fpy/9T38HivOKnXotdUT5
- UPOX+KUZjngOA9QGO81twsoBWi318A7zh9S8dJYceYp+9mNc52D/S9Zif2N+ZgJw90U2Uhf82zC
- QTLGf2ivorWPilsV8Jw==
-X-Proofpoint-GUID: BHKmJd6gYKmSMmhb8QCsZ9gvqQ-oExI8
-X-Authority-Analysis: v=2.4 cv=AN2yTM5Z c=1 sm=1 tr=0 ts=6a300967 cx=c_pps
- a=RP+M6JBNLl+fLTcSJhASfg==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjE1MDE1MCBTYWx0ZWRfX4TdTHaeFgWPT
+ SewsrS+vbwuQxET0DVagoZ+1Hpt9YeufVH9RMVyh2ZqOf5r+eYTO6sW9dK3ZYRcqCuVhC7ZTeOZ
+ khegml9Y88JJCE7pRp5yrdriEVJBlSAAmT+iNcMeWVLrf8zMG/7phAagsR61i2S9VFvTsbPNfg6
+ FtgetTgIlewk3V7GtdvS4KinPq5O9h1kiF9q5OFLviETedRO7SwUSQU87lgyEWPwMHBc8o0xdbm
+ gStfl04oq5bnKlulW16DKY83J99uFWZx3eS5rPqFWoW9OxygR7SCspYzkOu/Gnq/+U5ByssfELG
+ hv/JMOHZcCmOxKrlWi7sPcbVpEBAONsfORpbfo84GagG3gGINM99yqN0oFAdYVCSUOwBxOlbipg
+ lI/Oey9o0MKcpfeoUv4V/76fjWAaX84wX2JxNjjuLWmsQIc4G2eqx+3dm2hNoVHW+CCfDNaYY0r
+ J+GWsyrdzc6zARnMlwA==
+X-Proofpoint-ORIG-GUID: jAaj27krGXkKh13soTZIop3FSBLSXw6M
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNjE1MDE1MCBTYWx0ZWRfXx1HAK3aJQUgQ
+ eaHk06BF/GUro2OhCRsIoEZwyUEJFNjoMEhaoZAfDiP1V2kNhTRFSQHhOkgz0kDbntP7lLfyhGI
+ WHxWk2NXjOkFFvrLshuTsSBC+kfHVPI=
+X-Authority-Analysis: v=2.4 cv=HttG3UTS c=1 sm=1 tr=0 ts=6a30096c cx=c_pps
+ a=MTSHoo12Qbhz2p7MsH1ifg==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
  a=IkcTkHD0fZMA:10 a=FelO9ux0wxsA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=eoimf2acIAo5FJnRuUoq:22
- a=EUspDBNiAAAA:8 a=lKnyCkGSJWauGj82uDsA:9 a=QEXdDO2ut3YA:10
- a=iS9zxrgQBfv6-_F4QbHw:22
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=_K5XuSEh1TEqbUxoQ0s3:22
+ a=EUspDBNiAAAA:8 a=KXSloCXmEunfo-Xy6rIA:9 a=+jEqtf1s3R9VXZ0wqowq2kgwd+I=:19
+ a=QEXdDO2ut3YA:10 a=GvdueXVYPmCkWapjIL-Q:22
+X-Proofpoint-GUID: jAaj27krGXkKh13soTZIop3FSBLSXw6M
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
  definitions=2026-06-15_03,2026-06-15_02,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 priorityscore=1501 phishscore=0 adultscore=0 malwarescore=0
- clxscore=1015 suspectscore=0 lowpriorityscore=0 bulkscore=0 spamscore=0
+ adultscore=0 spamscore=0 suspectscore=0 clxscore=1015 impostorscore=0
+ malwarescore=0 bulkscore=0 priorityscore=1501 lowpriorityscore=0 phishscore=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.22.0-2606040000 definitions=main-2606150150
 
-The dynamic array stored in the ring buffer already carries its own
-length in the array metadata. There is no need to also store it as a
-separate scalar field in the entry struct.
+Add tracing to the Qualcomm GENI serial driver to improve runtime
+observability.
 
-Drop __field(unsigned int, len) and the corresponding __entry->len
-assignment, and use __get_dynamic_array_len(data) in the TP_printk for
-both the len=%u format argument and the __print_hex() size argument.
-This saves 4 bytes per event on the ring buffer.
+Trace hooks are added at key points including termios and clock
+configuration, manual control get/set, interrupt handling, and data
+TX/RX paths.
 
+Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
 Signed-off-by: Praveen Talari <praveen.talari@oss.qualcomm.com>
 ---
- include/trace/events/qcom_geni_serial.h | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+v2->v3:
+- Updated commit text(removed example as it was available on cover
+  letter).
+---
+ drivers/tty/serial/qcom_geni_serial.c | 27 +++++++++++++++++++++++----
+ 1 file changed, 23 insertions(+), 4 deletions(-)
 
-diff --git a/include/trace/events/qcom_geni_serial.h b/include/trace/events/qcom_geni_serial.h
-index 417ec01f9fc8..e1aa551d525e 100644
---- a/include/trace/events/qcom_geni_serial.h
-+++ b/include/trace/events/qcom_geni_serial.h
-@@ -97,18 +97,17 @@ DECLARE_EVENT_CLASS(geni_serial_data,
- 		    TP_ARGS(dev, buf, len),
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index d81b539cff7f..4b62e58d4918 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -7,6 +7,9 @@
+ /* Disable MMIO tracing to prevent excessive logging of unwanted MMIO traces */
+ #define __DISABLE_TRACE_MMIO__
  
- 		    TP_STRUCT__entry(__string(name, dev_name(dev))
--				     __field(unsigned int, len)
- 				     __dynamic_array(u8, data, len)
- 		    ),
++#define CREATE_TRACE_POINTS
++#include <trace/events/qcom_geni_serial.h>
++
+ #include <linux/clk.h>
+ #include <linux/console.h>
+ #include <linux/io.h>
+@@ -226,7 +229,7 @@ static void qcom_geni_serial_config_port(struct uart_port *uport, int cfg_flags)
+ static unsigned int qcom_geni_serial_get_mctrl(struct uart_port *uport)
+ {
+ 	unsigned int mctrl = TIOCM_DSR | TIOCM_CAR;
+-	u32 geni_ios;
++	u32 geni_ios = 0;
  
- 		    TP_fast_assign(__assign_str(name);
--				   __entry->len = len;
- 				   memcpy(__get_dynamic_array(data), buf, len);
- 		    ),
+ 	if (uart_console(uport)) {
+ 		mctrl |= TIOCM_CTS;
+@@ -236,6 +239,8 @@ static unsigned int qcom_geni_serial_get_mctrl(struct uart_port *uport)
+ 			mctrl |= TIOCM_CTS;
+ 	}
  
- 		    TP_printk("%s: len=%u data=%s",
--			      __get_str(name), __entry->len,
--			      __print_hex(__get_dynamic_array(data), __entry->len))
-+			      __get_str(name), __get_dynamic_array_len(data),
-+			      __print_hex(__get_dynamic_array(data),
-+					  __get_dynamic_array_len(data)))
- );
++	trace_geni_serial_get_mctrl(uport->dev, mctrl, geni_ios);
++
+ 	return mctrl;
+ }
  
- DEFINE_EVENT(geni_serial_data, geni_serial_tx_data,
+@@ -254,6 +259,8 @@ static void qcom_geni_serial_set_mctrl(struct uart_port *uport,
+ 	if (port->manual_flow && !(mctrl & TIOCM_RTS) && !uport->suspended)
+ 		uart_manual_rfr = UART_MANUAL_RFR_EN | UART_RFR_NOT_READY;
+ 	writel(uart_manual_rfr, uport->membase + SE_UART_MANUAL_RFR);
++
++	trace_geni_serial_set_mctrl(uport->dev, mctrl, uart_manual_rfr);
+ }
+ 
+ static const char *qcom_geni_serial_get_type(struct uart_port *uport)
+@@ -684,6 +691,8 @@ static void qcom_geni_serial_start_tx_dma(struct uart_port *uport)
+ 	xmit_size = kfifo_out_linear_ptr(&tport->xmit_fifo, &tail,
+ 			UART_XMIT_SIZE);
+ 
++	trace_geni_serial_tx_data(uport->dev, tail, xmit_size);
++
+ 	qcom_geni_set_rs485_mode(uport, SER_RS485_RTS_ON_SEND);
+ 
+ 	qcom_geni_serial_setup_tx(uport, xmit_size);
+@@ -910,8 +919,10 @@ static void qcom_geni_serial_handle_rx_dma(struct uart_port *uport, bool drop)
+ 		return;
+ 	}
+ 
+-	if (!drop)
++	if (!drop) {
++		trace_geni_serial_rx_data(uport->dev, port->rx_buf, rx_in);
+ 		handle_rx_uart(uport, rx_in);
++	}
+ 
+ 	ret = geni_se_rx_dma_prep(&port->se, port->rx_buf,
+ 				  DMA_RX_BUF_SIZE,
+@@ -1082,6 +1093,10 @@ static irqreturn_t qcom_geni_serial_isr(int isr, void *dev)
+ 	geni_status = readl(uport->membase + SE_GENI_STATUS);
+ 	dma = readl(uport->membase + SE_GENI_DMA_MODE_EN);
+ 	m_irq_en = readl(uport->membase + SE_GENI_M_IRQ_EN);
++
++	trace_geni_serial_irq(uport->dev, m_irq_status, s_irq_status,
++			      dma_tx_status, dma_rx_status);
++
+ 	writel(m_irq_status, uport->membase + SE_GENI_M_IRQ_CLEAR);
+ 	writel(s_irq_status, uport->membase + SE_GENI_S_IRQ_CLEAR);
+ 	writel(dma_tx_status, uport->membase + SE_DMA_TX_IRQ_CLR);
+@@ -1294,8 +1309,8 @@ static int geni_serial_set_rate(struct uart_port *uport, unsigned int baud)
+ 		return -EINVAL;
+ 	}
+ 
+-	dev_dbg(port->se.dev, "desired_rate = %u, clk_rate = %lu, clk_div = %u, clk_idx = %u\n",
+-		baud * sampling_rate, clk_rate, clk_div, clk_idx);
++	trace_geni_serial_clk_cfg(uport->dev, baud * sampling_rate, clk_rate,
++				  clk_div, clk_idx);
+ 
+ 	uport->uartclk = clk_rate;
+ 	port->clk_rate = clk_rate;
+@@ -1455,6 +1470,10 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+ 	writel(bits_per_char, uport->membase + SE_UART_TX_WORD_LEN);
+ 	writel(bits_per_char, uport->membase + SE_UART_RX_WORD_LEN);
+ 	writel(stop_bit_len, uport->membase + SE_UART_TX_STOP_BIT_LEN);
++
++	trace_geni_serial_set_termios(uport->dev, baud, bits_per_char,
++				      tx_trans_cfg, tx_parity_cfg, rx_trans_cfg,
++				      rx_parity_cfg, stop_bit_len);
+ }
+ 
+ #ifdef CONFIG_SERIAL_QCOM_GENI_CONSOLE
 
 -- 
 2.34.1
