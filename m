@@ -1,94 +1,71 @@
-Received: from mail-pg1-f201.google.com (mail-pg1-f201.google.com [209.85.215.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 875B63FBEAC
-	for <linux-serial@vger.kernel.org>; Mon, 15 Jun 2026 14:26:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FBCE3C4B81
+	for <linux-serial@vger.kernel.org>; Tue, 16 Jun 2026 03:44:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781533573; cv=none; b=cclbnQBf5iEbRQaEdLT/Z4q5EG0f5B8dvQH3dNZX2cIiEk/cnaLYJBXN6SxKXN9mMvmiX9kODzwCxjEvaWQOGnaqq5kb+kHrVw9Ad9yliuVpJuSZBvkJrEEj2cTU53t7pQkq977k9TjDiHIPUeQ+3xoirW/sQA2k3Uo0Hk9hnBQ=
+	t=1781581479; cv=none; b=tyGA03dPRXxhRAbMNVBMPP+FItxG8nor5Ux8vHXGvJlYD/c6t5mChjHlz5wa58MI0aksWGuQewInSN07kmmRoUcaH31+CpLHyKIMNCtRfj6WCy2RrXZ7iE/sPTpOhayaZyfdE6WaOczYMEspQyZUaObGMl632+hPPjzDUlvp7jI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781533573; c=relaxed/simple;
-	bh=464aCXfvZzsZqwNbj4vr4SPbBTTx/rFyjRChfgFLlts=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=laqPkAiVUgCVkzp/D6O4Ky1t0oVYGhvo5ORncHsU/yyTYLd2EMpFKY1QcAomEe/TA0AU5QKVS8hGVYmYsKyukGnjieoqQfFa/wfQ8a09CrZX4T95wICa4bkTMs5cKq2cOXFX8sjFsmrm4PG7WUs0asM1wgBt7PoZcR8uuV/p4Fo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--himanshubatra.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=KvujyCLt; arc=none smtp.client-ip=209.85.215.201
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--himanshubatra.bounces.google.com
+	s=arc-20240116; t=1781581479; c=relaxed/simple;
+	bh=dDHTNKZOwnE3CNHCeVtY1wit/6kzjJ5yOkt6faLtcOA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=dMuu0MeC51YxPObPt1j34g9oogg5cwUj8YiEGP7Q1/ikpj74zBC4A+ugc9tbMKnTqQLSDY0fqta1FSzsMNhz8+XQzS4IBXvM5EfSg4itU6Mwl+RKVNoa7TYFjUQ4qZDVvu0z2j4XlvFneDPfYf3v/FHJFtBGJs1FlH5dr330NJE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=Y3UpWRP8; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="KvujyCLt"
-Received: by mail-pg1-f201.google.com with SMTP id 41be03b00d2f7-c860544c077so4365012a12.3
-        for <linux-serial@vger.kernel.org>; Mon, 15 Jun 2026 07:26:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1781533570; x=1782138370; darn=vger.kernel.org;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=YEF2OMYK714HCc6CoMTDE62CnJ76NkStyu/hySqrREc=;
-        b=KvujyCLtMhQIWYaATafUOYnjK4B9utybyu8YpaL/R6FqW0vrRk7o+mJ6Dx+Mvjcy1x
-         QdARbhkWqETcp8j23cqr6+0XziHl+RodK3k6HJSmVdC5rnx2xYWGweShDczBhVaBSpJu
-         QBeXwk6J6AhYU8MsxSMY3CQbYuYLt2eMN8D0v3+634FaPgaJIsSbKcQ+gPNK4bYfwo0z
-         nwxht+x3arpiCkNH4yqVcomBwG+hF99cmYAsgELr+bXjSwft/u81bYdwTXkF7PyOhX/w
-         6Eo9y9RYiZi04qT0ZTt7ICsFd370SRe1wz0hDeDUIX4IdV9eoZl2mjY5IXl69b+VkSrG
-         j4YQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781533570; x=1782138370;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=YEF2OMYK714HCc6CoMTDE62CnJ76NkStyu/hySqrREc=;
-        b=BhtvHdbiA75sAcVEAICl7VW4UfM25roL8fouZo/0TbVsAe0oLOgCIUZkWZLib/hThK
-         mK0C9t11HddNBxHgZzB0s6mlaNArtDTZhC7/a7bL4FdFGjPzpk7mrbVz1v+zOwiCQOHw
-         xaj+pX6fU4DpBo6wiyMuu8PN4A8om8lYsd6AXNiL9oN4e8NGabwLhE4cO2m2Z2Cj63dz
-         NSMnIiGlF3N0P1x2cgAZ3THhWz8uABwXaFAtUulpTKiN+T0TWACiupDhxUsT+SlTKyM2
-         qXkIwHjZif/GUimT7pgmXEhc9dJjbRm9SGOlDK8b7/5Fw0VV4RcQA4ehGdFB9IfmclWX
-         itSw==
-X-Forwarded-Encrypted: i=1; AFNElJ+WjVRdlhVfhuVjm+Ye89GqZqp/z9LUQMq4AwYhpvrAHe+Ohz+uNQ7GIiKMuZGwSh3tIFGrQM82i6gFHcE=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxuj7EmJPbaB5/iz4Uyr3I2EY/8xh1HHw9rS5jOPCNUL+fei7ET
-	QD3lTOYamMT8ViT0qVdTcLK4yGn6jxzj5OH4B+14Yke3lu1JoswulE/l4ipO1OvlwUk/MzyuL5W
-	+2tN7dUtzUTqNbBH2gYDMO/iRnsOJYuQLCg==
-X-Received: from pgbcp3.prod.google.com ([2002:a05:6a02:4003:b0:c85:1159:ffbd])
- (user=himanshubatra job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6300:220d:b0:3b4:7aae:1ef4 with SMTP id adf61e73a8af0-3b783b4269cmr16496594637.9.1781533569483;
- Mon, 15 Jun 2026 07:26:09 -0700 (PDT)
-Date: Mon, 15 Jun 2026 19:56:05 +0530
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="Y3UpWRP8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B474B1F00A3A;
+	Tue, 16 Jun 2026 03:44:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
+	s=korg; t=1781581477;
+	bh=aH+x2q1OmkZMQzSooQ3QhyG6CxtQQtl+8Xz6k8T0aR8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=Y3UpWRP80+q6equkBld5DP1HSK8Dl0Gweec1+V9B+5In0I8FKkgN7k49UwXo3SLMt
+	 ucWYkvdlCnq1ORmndmACHpbEcyz3z5x/MlaY3qVIxoH0DVrxDXbd6H2bY4E8wrjwMm
+	 DLGUB5RtNnaBJBa7lVAnz4rUtNSHcUUmn5V2FMVk=
+Date: Tue, 16 Jun 2026 09:13:33 +0530
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: "Ionut Nechita (Wind River)" <ionut.nechita@windriver.com>,
+	stable@kernel.org,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	wander@redhat.com, chris.friesen@windriver.com,
+	linux-serial <linux-serial@vger.kernel.org>
+Subject: Re: [PATCH v2 6.12.y 00/10] serial: 8250_dw: backport BUSY deassert
+ series
+Message-ID: <2026061641-cozy-creatable-9a9e@gregkh>
+References: <20260513065028.112468-1-ionut.nechita@windriver.com>
+ <c9f3545f-4522-4b78-7398-b364a4033a77@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.54.0.1189.g8c84645362-goog
-Message-ID: <20260615142605.2795757-1-himanshubatra@google.com>
-Subject: [PATCH] ufs: Add HS_GEAR6 string in power_info/gear sysfs output
-From: himanshubatra <himanshubatra@google.com>
-To: Alim Akhtar <alim.akhtar@samsung.com>, Avri Altman <avri.altman@wdc.com>, 
-	Bart Van Assche <bvanassche@acm.org>
-Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, 
-	"Martin K. Petersen" <martin.petersen@oracle.com>, linux-scsi@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	vamshigajjela@google.com, manugautam@google.com, 
-	himanshubatra <himanshubatra@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <c9f3545f-4522-4b78-7398-b364a4033a77@linux.intel.com>
 
-In power_info/gear sysfs, currently it supports output only till gear 5.
-If operating mode is gear 6, it is giving output as "UNKNOWN".
-Add support for HS_GEAR6 string in sysfs output when operating mode
-is gear 6.
+On Wed, May 13, 2026 at 01:16:31PM +0300, Ilpo Järvinen wrote:
+> On Wed, 13 May 2026, Ionut Nechita (Wind River) wrote:
+> 
+> > From: Ionut Nechita <ionut.nechita@windriver.com>
+> > 
+> > Hi Greg, Ilpo,
+> > 
+> > This is v2 of the 8250_dw BUSY deassert backport to 6.12.y,
+> > addressing Ilpo's review feedback on v1.
+> 
+> FYI, this came up yesterday related to guard()s vs unlock variants:
+> 
+> https://lore.kernel.org/linux-serial/cover.1778592805.git.jnilo@free.fr/
 
-Signed-off-by: himanshubatra <himanshubatra@google.com>
----
- drivers/ufs/core/ufs-sysfs.c | 1 +
- 1 file changed, 1 insertion(+)
+Yeah, I'm not going to take these now, I'd like to see a lot more
+testing and some actual reasons why this is needed in this tree.  So far
+windriver's track-record for backports is really low/bad so I'll just
+drop them from my review queue right now.
 
-diff --git a/drivers/ufs/core/ufs-sysfs.c b/drivers/ufs/core/ufs-sysfs.c
-index 99af3c73f1af..d1f5041fc3c8 100644
---- a/drivers/ufs/core/ufs-sysfs.c
-+++ b/drivers/ufs/core/ufs-sysfs.c
-@@ -54,6 +54,7 @@ static const char *ufs_hs_gear_to_string(enum ufs_hs_gear_tag gear)
- 	case UFS_HS_G3:	return "HS_GEAR3";
- 	case UFS_HS_G4:	return "HS_GEAR4";
- 	case UFS_HS_G5:	return "HS_GEAR5";
-+	case UFS_HS_G6:	return "HS_GEAR6";
- 	default:	return "UNKNOWN";
- 	}
- }
--- 
-2.54.0.1189.g8c84645362-goog
+thanks,
 
+greg k-h
