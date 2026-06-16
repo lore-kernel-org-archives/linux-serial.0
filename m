@@ -1,70 +1,109 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EB7240BCCE
-	for <linux-serial@vger.kernel.org>; Tue, 16 Jun 2026 07:53:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46C1835F180
+	for <linux-serial@vger.kernel.org>; Tue, 16 Jun 2026 07:57:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781596387; cv=none; b=sgvwm+mSCqCo+w5mXoK0eJFm6Pz9a8rvtVhHTYCYnqjvpruwJ4dqqW7xUod4QRbdp0AmFnlMHsA53vkhk48+hdyJeByBeSr7qdpY/Trn90MwBqC3k94E+AkKdtWMp87Ke0AwHNZCmKN7uFlu3QVRE8DYLIZgbZ9+DECuOLNJ+Pw=
+	t=1781596645; cv=none; b=uCk734yMhItFRUjzeD/PLABvasgvBJt+Ki39c6WeNhYzNZRnlsrjchBtWAGeq+/q2+M2nJ3dD7q4IVu50vChZzbIwp0yyKgADEqRNBc+09Q/X97PyY0gzUL20QGcg+pZ7nHYMr/PNzr/ILQ6/Ivqh34XlFIvUt1Bt3YFIBed/xg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781596387; c=relaxed/simple;
-	bh=2N5U4VR48x+ICZ/epXJr7ST4+COUb0jAIFnFK0cVD40=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ls/7X5kRcHHkIvuEybo8bjUwXibYJISSY2Yquu+9Q/ak8hTFSPp1oL6bv1Hf07kKvAAJB7pn78mm1daOKyvVCoIgSnvCpTV6CFUJD+ffezhPb9zMLl6uokbSA9ZLC3TT8UtEqllCSoG8+h+HV9VfAUp/+bQuEELtDlnXiw8EVsA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=OB/P3RxM; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1781596645; c=relaxed/simple;
+	bh=UqRqC3Q+2H8XCIOuyq/QEVDq69PyqjwHUo+h3eZzEXo=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=uAbYJnbmq/oK0Zzmqx6i9DQD3BUNJXb3PuQwwjQRVjTgZKEen8NLJwAGQkLN7GYF/JsjfOsZ22lCTJZcQYdJsFPJN8S4SqpcuiRWFkaJH+uJhbNjl+HurdqifWOtRZly2aBsVOB4N/NDGD3J7jDQ41/OGwP3LBlXPm39KGVxraA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jd/Xvh54; arc=none smtp.client-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="OB/P3RxM"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 065171F00A3A;
-	Tue, 16 Jun 2026 07:53:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1781596385;
-	bh=0oBpqwzzJqQw8juymF4MW/C4m6TlvwbgiV/XQjptyRI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=OB/P3RxMfbS3noDglftWyquRH1ZmHTzdo7RgZidvcEW7PLY6OBvIpwSatw0ZJNMRH
-	 gpybfsxzTSTA5Z04QDdaUJO6/UgzxiAbFNwtMIMpnYQIsJTTlwYp2DqD3QPaG9TtMw
-	 ynti6ZQQaP8iHkc+c/2s3Ejfa0zIdsfT/KtDOOn0=
-Date: Tue, 16 Jun 2026 13:22:01 +0530
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Craig McQueen <craig@mcqueen.au>
-Cc: linux-serial <linux-serial@vger.kernel.org>
-Subject: Re: 8250_dw system pause due to IRQ load
-Message-ID: <2026061634-phonics-carpenter-3ba1@gregkh>
-References: <19eba567d94.1f5854744141363.4614464714670279886@mcqueen.au>
- <19ecf63b8bf.3059f90c1678338.4949518025835217958@mcqueen.au>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jd/Xvh54"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1781596645; x=1813132645;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=UqRqC3Q+2H8XCIOuyq/QEVDq69PyqjwHUo+h3eZzEXo=;
+  b=jd/Xvh54PiGxb+mngw+rj0+9JTSTjONikwdSGCa2/c5W0ZQjFeeb1I2Q
+   XPeTYZFC5WDWycJFgW9ZDP0vEJJJmR4m2NtaWrnUwtkv2tLaWKBA5nJ5F
+   w4+YHG8wCzXvtEoaNIGTtqCgebAb/bEKGLbiWpb/AsI6gpuFEdOSVX6gu
+   PMDnXz1zdwAOlVTMHsReGoaSS/crufSwgHYmqkXmEhLyIQmhXnfho0sYF
+   pnSwWDyv4qaJMEOfWPdFK3CKR577+bn1ur0XbjRyybkpvbCKw7ZE1JRC4
+   JBR3ns8EjqSeNHgtcZISgyszlrnYKst9WpsdnxTJTo30BDULFmbeY239S
+   Q==;
+X-CSE-ConnectionGUID: ljSPregnQTGyjBWTTXHG+A==
+X-CSE-MsgGUID: 8CZWcsFnSgqJqz3HkNYFPQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11818"; a="85989428"
+X-IronPort-AV: E=Sophos;i="6.24,207,1774335600"; 
+   d="scan'208";a="85989428"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2026 00:57:24 -0700
+X-CSE-ConnectionGUID: vivHlCdyQ2yraadEmToEQg==
+X-CSE-MsgGUID: /5L/djnTTlS0FcJSbMypMw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,207,1774335600"; 
+   d="scan'208";a="252675988"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.171])
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2026 00:57:21 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Tue, 16 Jun 2026 10:57:17 +0300 (EEST)
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+cc: "Ionut Nechita (Wind River)" <ionut.nechita@windriver.com>, 
+    stable@kernel.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+    wander@redhat.com, chris.friesen@windriver.com, 
+    linux-serial <linux-serial@vger.kernel.org>
+Subject: Re: [PATCH v2 6.12.y 00/10] serial: 8250_dw: backport BUSY deassert
+ series
+In-Reply-To: <2026061641-cozy-creatable-9a9e@gregkh>
+Message-ID: <6f3f1c55-be29-7b37-32d3-fab59ea6474c@linux.intel.com>
+References: <20260513065028.112468-1-ionut.nechita@windriver.com> <c9f3545f-4522-4b78-7398-b364a4033a77@linux.intel.com> <2026061641-cozy-creatable-9a9e@gregkh>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <19ecf63b8bf.3059f90c1678338.4949518025835217958@mcqueen.au>
+Content-Type: multipart/mixed; boundary="8323328-778637447-1781596637=:1303"
 
-On Tue, Jun 16, 2026 at 05:44:39PM +1000, Craig McQueen wrote:
-> I previously wrote:
-> 
->  > I have a Rockchip RK3328 based embedded Linux system, using the 8250_dw driver (device tree "snps,dw-apb-uart") for serial console and other serial ports. I'm using Yocto scarthgap with kernel v6.6.123. 
->  >  
->  > It is talking to a microprocessor via a serial protocol at 921600 bps. Multiple times per hour, I see the serial protocol TX pause for 100 to 4500 ms. Usually the whole Linux system pauses during this time (realtime and monotonic clocks don't tick). mpstat shows high irq load. /proc/interrupts shows the 8250_dw interrupt count is going significantly higher during this time. 
->  >  
->  > I'm also seeing complete system lock-ups occur every 1 to 72 hours, with no diagnostic information shown in the kernel serial console output. 
->  >  
->  > Are there any known issues with the 8250_dw interrupt handler causing high CPU load, that I should try backporting to kernel v6.6? 
->  >  
->  > I've written some kernel drivers, but I have no experience debugging interrupt handler issues, especially when it's an issue that prevents the kernel doing console output. I would appreciate any advice on kernel facilities that are suitable to debug this type of bug. 
-> 
-> I have been able to diagnose serial TX pauses, using trace_printk() in the interrupt handler. The cause of TX pauses is many repeated `UART_IIR_RX_TIMEOUT` interrupts. The serial device appears to randomly get out of this state.
-> 
-> I see the 8250_dw interrupt handler has a work-around to stop these `UART_IIR_RX_TIMEOUT` interrupts when the FIFO is empty. But it has only been enabled for non-DMA mode. But for the Rockchip RK3328, the serial device is configured for DMA mode. But in our usage, we're still seeing this issue randomly appear.
-> 
-> I have modified the 8250_dw interrupt handler to do the work-around even in DMA mode. This seems to resolve the repeated `UART_IIR_RX_TIMEOUT` interrupts, and eliminate the TX pauses.
-> 
-> My testing shows that this doesn't fix my other problem, of complete system lock-ups. I don't yet know if that is also 8250_dw related.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Note, many changes have happened in this driver since 6.6.y, can you try
-the 7.1 release to see if it has been resolved there?
+--8323328-778637447-1781596637=:1303
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 
-thanks,
+On Tue, 16 Jun 2026, Greg Kroah-Hartman wrote:
 
-greg k-h
+> On Wed, May 13, 2026 at 01:16:31PM +0300, Ilpo J=E4rvinen wrote:
+> > On Wed, 13 May 2026, Ionut Nechita (Wind River) wrote:
+> >=20
+> > > From: Ionut Nechita <ionut.nechita@windriver.com>
+> > >=20
+> > > Hi Greg, Ilpo,
+> > >=20
+> > > This is v2 of the 8250_dw BUSY deassert backport to 6.12.y,
+> > > addressing Ilpo's review feedback on v1.
+> >=20
+> > FYI, this came up yesterday related to guard()s vs unlock variants:
+> >=20
+> > https://lore.kernel.org/linux-serial/cover.1778592805.git.jnilo@free.fr=
+/
+>=20
+> Yeah, I'm not going to take these now, I'd like to see a lot more
+> testing and some actual reasons why this is needed in this tree.  So far
+> windriver's track-record for backports is really low/bad so I'll just
+> drop them from my review queue right now.
+
+To be fair, it was me who strongly suggested that the backport should do=20
+the guard() conversion as well, which contained the bug linked above (and=
+=20
+the cause there too, was my handiwork), while they initially kept using=20
+open-coded lock/unlock variants which would not have been subject to that=
+=20
+problem.
+
+But yes, you guys are the stable maintainers so what to take is your=20
+decision.
+
+--=20
+ i.
+
+--8323328-778637447-1781596637=:1303--
