@@ -1,106 +1,88 @@
-Received: from mail-pl1-f201.google.com (mail-pl1-f201.google.com [209.85.214.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from 013.lax.mailroute.net (013.lax.mailroute.net [199.89.1.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5909425CD9
-	for <linux-serial@vger.kernel.org>; Tue, 16 Jun 2026 10:01:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC71F30B529;
+	Tue, 16 Jun 2026 13:38:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=199.89.1.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781604087; cv=none; b=DyqQyMvKCSpjzPNuA3B9pR+eCqbh0TwxLM/DpahkvMRoNUEornXSIV3ZyjfaFKk4X3WYxvgvg3RLuob5aK0ElfeRgWP1Y5S5GTtW6wKUekz9HXWyiBuOOL6lJQ+Oir2xHEAP54h3KT/mNKmH8rz7tl/HF3KkslNcB4F4Npjg7nM=
+	t=1781617084; cv=none; b=FRCYWd1kwG6SXfIThV9QW6tuzzd9DDHMnGo2b5M5QYUXamWzp+g+cHmq5eZXBXZIUiJRNle2iNs0uQCNgC0Hya9GtN1Dnau7UW5McoqQgbjJ4yYzDBaQZDe5bMVG/uI4Lv5/yfVq4488P8pkld75iADmhdx7JTTpw++k3IqAA0Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781604087; c=relaxed/simple;
-	bh=5YPRfJtwZLRFV0Jul74SWkiWszu9PKIMTqshqX3gRC4=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=MPaI8HJ0fJdG602gQj1fiFdKWbP4xdSscH9auKl4CBqobpB7aFVVB/KATPT8PUUdJWypP5v6BUZaNeUlGyL4mstBXBH49/04e/Cw2ySyDLZdN5zzWu/IQBua107/jYtNDfGsrBD0gsKpZAvsiAN21RhO+1jZUyvZUFp4P3mtaok=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--himanshubatra.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=qBIbsy/U; arc=none smtp.client-ip=209.85.214.201
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--himanshubatra.bounces.google.com
+	s=arc-20240116; t=1781617084; c=relaxed/simple;
+	bh=LiMLrj4cuFPiOK244lJKnP5Ht3rcEBebE5gLFRG4qLA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ZnTgGaHbSmRiGVqaP2NLWZQOZT6VEZY4gAi9xqwFEgJqdr31i1zFn+efnXB5ku8EErBD93/iFFrC0AFxkL6fexbTDfy7CdIVKEOelZ2FYOhbW5Bv9vH7WS+dpwKtt5N2CYtLyRMQJjiffls+qDWdI6fxmBRW5XpNKb1MbJ2Pobo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=acm.org; spf=pass smtp.mailfrom=acm.org; dkim=pass (2048-bit key) header.d=acm.org header.i=@acm.org header.b=Mj662X1Y; arc=none smtp.client-ip=199.89.1.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=acm.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=acm.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="qBIbsy/U"
-Received: by mail-pl1-f201.google.com with SMTP id d9443c01a7336-2c0a99db8dfso42222985ad.3
-        for <linux-serial@vger.kernel.org>; Tue, 16 Jun 2026 03:01:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1781604086; x=1782208886; darn=vger.kernel.org;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=21NwLBUNehqApSlGBHg1TEkC78aGT7ZEdik5YJarQwI=;
-        b=qBIbsy/UqjPJLydHZeh7Zalb+Yjd8JUvOPoMqwpWBptnstR6DahX9ekvbqWTkgnw+m
-         RF1v72XCMGvC6LkXtf4rE3q9QjfW+J6kcq7ETjrTNXJQLwmDPE5mZTodmlMhF+jbntF5
-         QhxDge5eI1NDRl7+6rXjJ3g0506Hk96ncRVPnrezVObUGfkYsLTcvLESL5hEKi+0PcQw
-         BrXEulus9YW4KYkIoS/9L49mYkMff1tU8+rwJx6ep7Y/+a1I5MMVW+4oY5v4M7qpTFy2
-         gSKwM1jvuKO8DlhVi9X3UqtYSoJw7yaoTbYFojQ2YFwUtgmc2ySjtvSH4HNq+rWeEpWL
-         vLbg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781604086; x=1782208886;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=21NwLBUNehqApSlGBHg1TEkC78aGT7ZEdik5YJarQwI=;
-        b=Gd155LYlNkwPuVPiAVEj0h5uY19oK5Xa+udbOpksmJQwIeyWb5NZGJBYD/B9bjqZgI
-         it3Xj1i2JvDQjvAP2QmHVZj4sMxXVjKTM48rykZEf1DaLTxq+B+3P79gt8txj8UfJ0MO
-         daWQF58jprkUSNTsjMxJE2BhwzueAdj04rx1j6UI6xt1mSTUXl1B2JmdK8xoyLoTwsVc
-         tzu0+U18+ciVlVLgr4Yxa8nbhpFoEo8pIr1HYlE6mlpUnv/0friV/C2O8hwAJSIUc67g
-         v1mcVf+jPJxw1fsRgmYuokmvGlOeX5XyrgbIFFd0eqFrvJKiFRtKjkLJeMjvyPLB+mDW
-         6MYg==
-X-Forwarded-Encrypted: i=1; AFNElJ95Jdpb8q6vWpXwQ2scx0zgqy1HLOCxSbYWMPWzmj1FLI+MvxqFhzXv1ddtUUXh8jqrG2rVoiDZE0PaJm0=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yws5L+mTzncl9l2RCwU8fGK7YmQ0NcZSv3Bp2RLA1ew6HSJR2Qv
-	3q/eM9EbRgPRg6zeT9pMxgYNFhZsFgrWlFEoJ+XzIgHlSLaB1t1Edojb/uTNRmXd6/Oc8zV8Om9
-	XMTpYmQmNkVog5u5RICJ9KnWJQ7ps3iNiyQ==
-X-Received: from pgao66.prod.google.com ([2002:a63:4145:0:b0:c86:1337:acfe])
- (user=himanshubatra job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6a20:c6ca:b0:3a2:f75f:73ef with SMTP id adf61e73a8af0-3b7e4d4fdf1mr3252491637.37.1781604085919;
- Tue, 16 Jun 2026 03:01:25 -0700 (PDT)
-Date: Tue, 16 Jun 2026 15:31:21 +0530
-In-Reply-To: <2026061659-enjoyer-boogeyman-25c0@gregkh>
+	dkim=pass (2048-bit key) header.d=acm.org header.i=@acm.org header.b="Mj662X1Y"
+Received: from localhost (localhost [127.0.0.1])
+	by 013.lax.mailroute.net (Postfix) with ESMTP id 4gfp2s6g49zlfvq8;
+	Tue, 16 Jun 2026 13:37:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=acm.org; h=
+	content-transfer-encoding:content-type:content-type:in-reply-to
+	:from:from:content-language:references:subject:subject
+	:user-agent:mime-version:date:date:message-id:received:received;
+	 s=mr01; t=1781617073; x=1784209074; bh=qzdnOS/8bKYKFDfK3PT3Mo5H
+	mZfwIr6BF2MF+JM/FUY=; b=Mj662X1YTWfQYs0OV5XZRf5ZJIQJDxmkbKleC87o
+	3+N6hYODcASR4VECI7FDe8L4OHuAmsWjHEPaYCjXEsxDh0N8KhzmMLnyQp61s70w
+	TDbesq7K+9wO74YE60Yk+nUSaS5iayb8FuFyBuujPVl+yA07Kl6ekK8h/jbu2duN
+	66fBI3bXqW2rJrIHrw7WcpcTuoy8/hHoErd948uNGIcAYRNv81yMj7umBPC7msuy
+	7kDjzYvbs54BdwlaiA5wkzTt09mL+RI1QqzyQ+YkqEBTphUy0Nfe5eBxK9vUPr1Q
+	0s939g0jPlZhDT4a+AY2j4HR1weR6r6q8wqa1sd23RNMIw==
+X-Virus-Scanned: by MailRoute
+Received: from 013.lax.mailroute.net ([127.0.0.1])
+ by localhost (013.lax [127.0.0.1]) (mroute_mailscanner, port 10029) with LMTP
+ id GDooQ5cB0UZF; Tue, 16 Jun 2026 13:37:53 +0000 (UTC)
+Received: from [192.168.51.14] (c-73-231-117-72.hsd1.ca.comcast.net [73.231.117.72])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: bvanassche@acm.org)
+	by 013.lax.mailroute.net (Postfix) with ESMTPSA id 4gfp2j3pTyzlgwNJ;
+	Tue, 16 Jun 2026 13:37:49 +0000 (UTC)
+Message-ID: <c040d167-8747-43f7-ac30-2f5c5bcfbc02@acm.org>
+Date: Tue, 16 Jun 2026 06:37:43 -0700
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3] scsi: ufs: sysfs: Add HS_GEAR6 string in
+ power_info/gear sysfs output
+To: Himanshu Batra <himanshubatra@google.com>,
+ Alim Akhtar <alim.akhtar@samsung.com>, Avri Altman <avri.altman@wdc.com>
+Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+ "Martin K. Petersen" <martin.petersen@oracle.com>,
+ linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, vamshigajjela@google.com, manugautam@google.com
 References: <2026061659-enjoyer-boogeyman-25c0@gregkh>
-X-Mailer: git-send-email 2.54.0.1189.g8c84645362-goog
-Message-ID: <20260616100121.548759-1-himanshubatra@google.com>
-Subject: [PATCH v3] scsi: ufs: sysfs: Add HS_GEAR6 string in power_info/gear
- sysfs output
-From: Himanshu Batra <himanshubatra@google.com>
-To: Alim Akhtar <alim.akhtar@samsung.com>, Avri Altman <avri.altman@wdc.com>, 
-	Bart Van Assche <bvanassche@acm.org>
-Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, 
-	"Martin K. Petersen" <martin.petersen@oracle.com>, linux-scsi@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	vamshigajjela@google.com, manugautam@google.com, 
-	Himanshu Batra <himanshubatra@google.com>
-Content-Type: text/plain; charset="UTF-8"
+ <20260616100121.548759-1-himanshubatra@google.com>
+Content-Language: en-US
+From: Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <20260616100121.548759-1-himanshubatra@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-In power_info/gear sysfs, currently it supports output only till gear 5.
-If operating mode is gear 6, it outputs "UNKNOWN".
-Add support for HS_GEAR6 string in sysfs output when operating mode
-is gear 6.
+On 6/16/26 3:01 AM, Himanshu Batra wrote:
+> In power_info/gear sysfs, currently it supports output only till gear 5.
+> If operating mode is gear 6, it outputs "UNKNOWN".
+> Add support for HS_GEAR6 string in sysfs output when operating mode
+> is gear 6.
 
-Signed-off-by: Himanshu Batra <himanshubatra@google.com>
----
+Some general advice:
+- New versions of a patch should be posted as a new email thread instead
+   of as a reply to an existing email conversation. Replies to an
+   existing email conversation tend to get overlooked.
+- At least 24 hours should elapse before a new version of a patch is
+   posted. Otherwise reviewers who are in another time zone don't have
+   the chance to reply. For large patch series, more time should elapse
+   between reposts (e.g. one week).
+- The "scsi:" prefix is no longer used for UFS kernel patches.
 
-Changes in v3:
-- Fixed the identity alignment issue: updated both the 'From:' line 
-  and 'Signed-off-by:' tag to use my full real name ("Himanshu Batra")
+Since the code changes look good to me:
 
-Changes in v2:
-- A slightly better comment.
-
- drivers/ufs/core/ufs-sysfs.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/ufs/core/ufs-sysfs.c b/drivers/ufs/core/ufs-sysfs.c
-index 99af3c73f1af..d1f5041fc3c8 100644
---- a/drivers/ufs/core/ufs-sysfs.c
-+++ b/drivers/ufs/core/ufs-sysfs.c
-@@ -54,6 +54,7 @@ static const char *ufs_hs_gear_to_string(enum ufs_hs_gear_tag gear)
- 	case UFS_HS_G3:	return "HS_GEAR3";
- 	case UFS_HS_G4:	return "HS_GEAR4";
- 	case UFS_HS_G5:	return "HS_GEAR5";
-+	case UFS_HS_G6:	return "HS_GEAR6";
- 	default:	return "UNKNOWN";
- 	}
- }
--- 
-2.54.0.1189.g8c84645362-goog
+Reviewed-by: Bart Van Assche <bvanassche@acm.org>
 
