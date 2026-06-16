@@ -1,132 +1,80 @@
-Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from sender4-op-o12.zoho.com (sender4-op-o12.zoho.com [136.143.188.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BE9A3C3C16
-	for <linux-serial@vger.kernel.org>; Tue, 16 Jun 2026 04:22:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E82AA27281D
+	for <linux-serial@vger.kernel.org>; Tue, 16 Jun 2026 07:44:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.12
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781583741; cv=pass; b=ii2GzBO7PWVdqac9+AQP7Q10F9/lGnaNuHvaj+G21Pu9zY3tMHJL9tTlCkauAr039WN/4IYsphlQLZK+MEEBlH+xNBz+ZDs4y39R8Dyg/YKDFIdeblkPbGMv2D1UP1ruy3dJQeT0HrD7B/UJEU2a3KSIIxqTl5toG1RmHwCm46E=
+	t=1781595885; cv=pass; b=pP+nLlRKfmLJ4KyiX0SjNmqPNtcI+KWhIrdtokAdjDSsK+ZOqciyhZhok07mk0Goe58PHs5UwSU/vUnbCWAoYOiKoi5NIkxgtmYq5KEsrZYNcGyVZgAaISXNpTRZmB7rpvaGWT5lKpKJU5Xw3cUq/5OTcrLlbAw5FI2EF6fFjl4=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781583741; c=relaxed/simple;
-	bh=dra/zZ5km3G29j+KitrrAM8pW8NVH10i4w0w0qc8jaI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Cf0GleyThPE/3eB0q841FBnzKCxP11KGb0lCsNPhOVIc267QI7hUuCko4nl9G1blEv30GUcA9q6Rlq46f28i2AcJt8lwhFAUuATyhzzvxFHK1BFgDtymu+kQ/QC3LgbOuB+oRpMEoNzQIJZRAH4KqvU6JVDTbXHQrnMTyTKlAyw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=N07oIaQn; arc=pass smtp.client-ip=209.85.160.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1781595885; c=relaxed/simple;
+	bh=EKKgLEUBytZZKMzwou9LmfldsnehMEcL8Z4xHKPj3Yw=;
+	h=Date:From:To:Message-ID:In-Reply-To:References:Subject:
+	 MIME-Version:Content-Type; b=WWeKjkHglfdNpxEdyW7kRa5WkvsHv91Rsruo/zOGSNGFsM9ZjY6x7Xpr4raaQgu2bDZkBANr9ydm4GUYuZf5ZoRAvP6OY/78I9jrfIrCSGCv/tlvjwggHOh+op0ZLDp4tTl32LfOycoy5sx4awPCHzVGtEgJgUBmG04rP7bWL1Q=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=mcqueen.au; spf=pass smtp.mailfrom=mcqueen.au; dkim=pass (1024-bit key) header.d=mcqueen.au header.i=craig@mcqueen.au header.b=GMQaTUSO; arc=pass smtp.client-ip=136.143.188.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=mcqueen.au
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mcqueen.au
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="N07oIaQn"
-Received: by mail-qt1-f181.google.com with SMTP id d75a77b69052e-5177d1ff061so90071cf.1
-        for <linux-serial@vger.kernel.org>; Mon, 15 Jun 2026 21:22:19 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1781583739; cv=none;
-        d=google.com; s=arc-20240605;
-        b=aHT7Ho3dK4H1xDLejpnN2mwNI8IWSFFYBZLILzzpJdM9NAPOPY1n06S1153eqc+JLg
-         kxXAoi29lv4JU4kBTr9lemOuGfxfqiBNeQSjkWBtYoG3yWguX7RlGOe7VdGbkCkYAy5y
-         bMj+E0wwibC+7H5NPSTO+CqZt9UCCvuoPvpxNqVnRoBEDqoAssDeHBx4XAvVDAweJL/P
-         If+2i6mfiYGeT6LMLRlDpLHfbNax6FXcDo9bkymLpVnH6uNXWA0WUhyM9GkA24/nnDN1
-         +nSVOEo0RWi2FSbAt1ncH3ua8dc1G3jBdg0Av9e3wWN8psvVkPwoinuTV77Mq9/dWJUd
-         qH7Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=lA0yH24+Cezyn773tJy1ut9HT5Wj3zCnOg1wQgKUTog=;
-        fh=2L31D09Ge08e5Avh6ssw2pzXgh+/1VYC13M9wyCp9q8=;
-        b=RoBOwfaAK0mjMrekeu4BYOJ48goXHmI7O1/Yekaj3o8TW/zQdRXjcyxCkVsFpd8dh5
-         5QRb23ud15GosAIZyu3XODRyajqupzapQmo/eZ/bfKOB0E5nKF4rOQxd4u7lu7lBlNQY
-         GDUeXW7vcgzES+KQ/vxlqoGPRtYTGj8/dSaV1sPx9v2ResUVtKd9RfxwSnOJUfoHnRHQ
-         l/X00NZDuvgXdo2A6hw+NcFK1kmsH0vm5fo3UHSb9SzVqs47m6pMvgQPHcxuT+uX82Bd
-         tjyH51DZZbc+JDhKaNSZbVZ/2FqLFZ274fl6MrPNJ1IB5XGGR8t6/vMPxn/tLSDZextK
-         dsjw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1781583739; x=1782188539; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=lA0yH24+Cezyn773tJy1ut9HT5Wj3zCnOg1wQgKUTog=;
-        b=N07oIaQneR6d5DIukOgVdpj6UkVcE8hRwNnB3Uv0JsRQ9HaMrIEwc3NysLikPTm9TJ
-         PXh39AX1YzDp8fDSOZ96gbgx2q53lDzvUk59BHc/g280H09RqFshUdSDGOoHZKQ8jMKb
-         KsUML/39Wpk2OqJ8AYRNR/onysTlIqXoDXlOIz2MIUmp6AKPzmcdI70WjrAnPgzID0Ud
-         k8Mrek2FJ+sZLj64nZRP886LsmOFxFl/NFxz9PX8fzOdTLo/ufuG7kXkbxX/rKAwXzi2
-         QrMprHgtYvahLHRKKp+26zzmEcvJQCWFLBv5yZRf+po65FOmL8KYiDLR4r29+DFeoEx3
-         EvsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781583739; x=1782188539;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=lA0yH24+Cezyn773tJy1ut9HT5Wj3zCnOg1wQgKUTog=;
-        b=OgYWg35fw4JmhR8tx/BeOhHnCWh/Pf+jatOZhhAkVuqd26+GD7aDAAIPqDpAvg5cP4
-         qyN6TJV33AX8Owe0bjd9wokQ0HFqbSuV5wDy0bdkGfbAvM3d94OPp337VXIvMbYNnZS1
-         o0IrLRSNxV21P5IIXT/wO/KlzFQZdGn89+HfW3B3dwGLUbRqspepfZ0Hrj6HPvpD5Eqp
-         j40o+kSs412ceRuDuHfSaRlTAD5+gQrIFUe845j4RNIanugObGMewf1hCHAGlgBsqtGE
-         Z2TbtQCjRR35FjFbzlEX6AfsfZOLOw604Aa6L0pxy7yY0Qec5N1WEfTX8h8utEVudyoo
-         hLsw==
-X-Forwarded-Encrypted: i=1; AFNElJ9tdVJLhf99ElvMUr1tXv8n3n/Gj7vmMruREiiwvGDXoSjJxBJrdK49Eem/MMpKi4IohjOfKijLE+W4Eh4=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx/cgaFWvze7ghpWL2GolNeebbhkKOikOi4cW/my37xdLYdM2hI
-	4H+lOTiKft1lqdqy8VD5MMFCZu6N/ETUF4KtbbFQoO4JD9sWzVMktPsP/3AsAUVUARM/KwmkG9z
-	/mJmiY7azf0YLsBEey3BnjxZpUohLy7pm2yvGjD6J
-X-Gm-Gg: Acq92OEkye62KcWk+zDw+PBzzI8sJ4ZJNsXPxS26jZ/npAXArSTCJU0agZZ9e2a9x46
-	Ba4AfNhU/AS3Gjq3yX9F0eu+uLDDD7tGDLuTQ2EeiPCPgWjQ+8Fa869dMBG6Blh/nmlsRxHmRL8
-	BIfE1jYDLAwov59eRqdzNnznKsh3LBadr0MyFw3IMdb3sDzGxcFL+IAYPyVBzMgii68ZG7qDRw8
-	JFLc01v1zgjDBisqEUFb4ajybSIxKp6EKE3F5LRza7z4NVnAii0IqJ2ek/q6GGok/PAZEWDZF+V
-	QxaoFqGzQG0UirxnGqaesGDcOq4l26o9OG8VAQ==
-X-Received: by 2002:ac8:7f83:0:b0:510:f9b:fb5f with SMTP id
- d75a77b69052e-519904708a9mr5607221cf.16.1781583738356; Mon, 15 Jun 2026
- 21:22:18 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=mcqueen.au header.i=craig@mcqueen.au header.b="GMQaTUSO"
+ARC-Seal: i=1; a=rsa-sha256; t=1781595881; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=NDq/43ZYsENnyKUwe6/00sI/hAMmzsBVKNDh9p65CjTFVnl+U10BZi+Fr3uEw5sskKTpTYTZsEcOOtZnowvzKze7Bf+cSC1btLdqgC4U+1s467V0kxGmmP5S9mOO5IMJJiXW4hIl/Zu8o9LquuYAUuGSq3oBgiB9cPkyXfWENiY=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1781595881; h=Content-Type:Content-Transfer-Encoding:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To:Cc; 
+	bh=qfkD8TgfTyLb2KIzLohBaCnVsFkNNHHaAxZJkYj37GU=; 
+	b=hsP+6H6CmGt0VUILLwouSKjaMU7dm2StP81ptHS/+y8TEl5iWHU+7re/gHG/scibbWV5o7ekJ6b23FS+YW51sYVXdJf3UtkkTl9wKxCTcW2neDr40k8Ic9ZDC81UkaPySLPd8E5PusDtXw9LjugjK4UUscA0VkaUTMvVmHilDZg=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=mcqueen.au;
+	spf=pass  smtp.mailfrom=craig@mcqueen.au;
+	dmarc=pass header.from=<craig@mcqueen.au>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1781595881;
+	s=zmail; d=mcqueen.au; i=craig@mcqueen.au;
+	h=Date:Date:From:From:To:To:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To:Cc;
+	bh=qfkD8TgfTyLb2KIzLohBaCnVsFkNNHHaAxZJkYj37GU=;
+	b=GMQaTUSO0f9cNunYnEHM/lpdxGGtdguariihMd8G17kC0i3q3ivo5T0q7PQX+P5f
+	5PMrdA5dEgybwU470KNHTMVn2CfMTpqnY2TnqOo7ar8cdNJIlbMSGIKUO5J8Rld87AC
+	HYAF1uR368CL1pEKEeS3PaHvov9vWqg4WnnAfkFI=
+Received: from mail.zoho.com by mx.zohomail.com
+	with SMTP id 1781595879631723.809067637318; Tue, 16 Jun 2026 00:44:39 -0700 (PDT)
+Date: Tue, 16 Jun 2026 17:44:39 +1000
+From: Craig McQueen <craig@mcqueen.au>
+To: "linux-serial" <linux-serial@vger.kernel.org>
+Message-ID: <19ecf63b8bf.3059f90c1678338.4949518025835217958@mcqueen.au>
+In-Reply-To: <19eba567d94.1f5854744141363.4614464714670279886@mcqueen.au>
+References: <19eba567d94.1f5854744141363.4614464714670279886@mcqueen.au>
+Subject: Re:8250_dw system pause due to IRQ load
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260615142605.2795757-1-himanshubatra@google.com>
-In-Reply-To: <20260615142605.2795757-1-himanshubatra@google.com>
-From: VAMSHI GAJJELA <vamshigajjela@google.com>
-Date: Tue, 16 Jun 2026 09:52:06 +0530
-X-Gm-Features: AVVi8CfudAAoXZ1vjq5ljvzCudhnb0iul2FENa9nlP6SO9vtHlrgOdFbKFQbIOo
-Message-ID: <CAMTSyjpR455jn8pMFe43ozp1b0Jj9Vy9dKuD8LrcbMCY-cT+zA@mail.gmail.com>
-Subject: Re: [PATCH] ufs: Add HS_GEAR6 string in power_info/gear sysfs output
-To: himanshubatra <himanshubatra@google.com>
-Cc: Alim Akhtar <alim.akhtar@samsung.com>, Avri Altman <avri.altman@wdc.com>, 
-	Bart Van Assche <bvanassche@acm.org>, 
-	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, 
-	"Martin K. Petersen" <martin.petersen@oracle.com>, linux-scsi@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	manugautam@google.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+Importance: Medium
+User-Agent: Zoho Mail
+X-Mailer: Zoho Mail
 
-scsi: ufs: sysfs: Add ....
+I previously wrote:
 
-On Mon, Jun 15, 2026 at 7:56=E2=80=AFPM himanshubatra <himanshubatra@google=
-.com> wrote:
->
-> In power_info/gear sysfs, currently it supports output only till gear 5.
-> If operating mode is gear 6, it is giving output as "UNKNOWN".
-it outputs "UNKNOWN"
-> Add support for HS_GEAR6 string in sysfs output when operating mode
-> is gear 6.
->
-> Signed-off-by: himanshubatra <himanshubatra@google.com>
-> ---
->  drivers/ufs/core/ufs-sysfs.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/ufs/core/ufs-sysfs.c b/drivers/ufs/core/ufs-sysfs.c
-> index 99af3c73f1af..d1f5041fc3c8 100644
-> --- a/drivers/ufs/core/ufs-sysfs.c
-> +++ b/drivers/ufs/core/ufs-sysfs.c
-> @@ -54,6 +54,7 @@ static const char *ufs_hs_gear_to_string(enum ufs_hs_ge=
-ar_tag gear)
->         case UFS_HS_G3: return "HS_GEAR3";
->         case UFS_HS_G4: return "HS_GEAR4";
->         case UFS_HS_G5: return "HS_GEAR5";
-> +       case UFS_HS_G6: return "HS_GEAR6";
->         default:        return "UNKNOWN";
->         }
->  }
-> --
-> 2.54.0.1189.g8c84645362-goog
->
+ > I have a Rockchip RK3328 based embedded Linux system, using the 8250_dw driver (device tree "snps,dw-apb-uart") for serial console and other serial ports. I'm using Yocto scarthgap with kernel v6.6.123. 
+ >  
+ > It is talking to a microprocessor via a serial protocol at 921600 bps. Multiple times per hour, I see the serial protocol TX pause for 100 to 4500 ms. Usually the whole Linux system pauses during this time (realtime and monotonic clocks don't tick). mpstat shows high irq load. /proc/interrupts shows the 8250_dw interrupt count is going significantly higher during this time. 
+ >  
+ > I'm also seeing complete system lock-ups occur every 1 to 72 hours, with no diagnostic information shown in the kernel serial console output. 
+ >  
+ > Are there any known issues with the 8250_dw interrupt handler causing high CPU load, that I should try backporting to kernel v6.6? 
+ >  
+ > I've written some kernel drivers, but I have no experience debugging interrupt handler issues, especially when it's an issue that prevents the kernel doing console output. I would appreciate any advice on kernel facilities that are suitable to debug this type of bug. 
+
+I have been able to diagnose serial TX pauses, using trace_printk() in the interrupt handler. The cause of TX pauses is many repeated `UART_IIR_RX_TIMEOUT` interrupts. The serial device appears to randomly get out of this state.
+
+I see the 8250_dw interrupt handler has a work-around to stop these `UART_IIR_RX_TIMEOUT` interrupts when the FIFO is empty. But it has only been enabled for non-DMA mode. But for the Rockchip RK3328, the serial device is configured for DMA mode. But in our usage, we're still seeing this issue randomly appear.
+
+I have modified the 8250_dw interrupt handler to do the work-around even in DMA mode. This seems to resolve the repeated `UART_IIR_RX_TIMEOUT` interrupts, and eliminate the TX pauses.
+
+My testing shows that this doesn't fix my other problem, of complete system lock-ups. I don't yet know if that is also 8250_dw related.
+
+-- 
+Craig McQueen
+
