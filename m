@@ -1,86 +1,87 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A41BE3EEAD3
-	for <linux-serial@vger.kernel.org>; Wed, 17 Jun 2026 11:56:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 118D63AA518
+	for <linux-serial@vger.kernel.org>; Wed, 17 Jun 2026 11:59:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781697396; cv=none; b=geH6aEThOWegJc5fbPqcNSBtc+LZDYRS7+PeGc2PKTiENjzGvweIFkR3PDCmBsC5+toD7fGZp/1wSvpP2AOm+adtDsVuYhxKjHEV/r852aCzMftJZWz0JNWEOJCXUJNDZ8UMoM+/1Oouf0a0EarX2NyFooQXc2fRPY1sj64qsvQ=
+	t=1781697575; cv=none; b=ICG/YjvWvKLyqXRheWOVa66gEcjZcClc1xMnV+qzx3fmvYlO3izq8W+1QAdqAub3sAn2JM9UjHVYYOKRj833ELkwiNE8epWxMes5BtBs26fav6R53aPzXRRNnz7v0NZzTFN+RsvhuQWlfHPNPfp2Y2UiHHhcX+7ZH8HtTmgYdjA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781697396; c=relaxed/simple;
-	bh=XlFMuI0tt1TzDCK08s/K5IKS2ZygzFZODioUk7NidTI=;
+	s=arc-20240116; t=1781697575; c=relaxed/simple;
+	bh=bsBdAJSSfzQdXVnZgwbkNcPQGRwa1KT8A24+fq9mJ4Y=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=eHcytJV0D2Rme9hQ38znGJ67W47k/0/rmNcmN2es3SfcY7xla8dXwmnIqdr/w9MzO9cAoP8Z9S3NyAGIIn7et36QnfRiU9nv8qiLV9wWb+M67DRNhjKG4aGkv2p+Hve9t9VgpNTtQnppD+8XVz03Xh4xTZ31HfErtLXrMMBcSIw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=FlhueFIq; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=ElA97vCe; arc=none smtp.client-ip=205.220.168.131
+	 In-Reply-To:Content-Type; b=BkR/W95vJqQ438JgykL/WF9/XJywFD9iUIa1afU5tca287sNWRkI0yT5ZEGmQsFhdQG/s0JZ7XH0892QQku7r9CPyNR+bSgZEpKdcXb6fXDsVCQuD2AvSp8GmbFPWqijxMWYxf6BOXz9GbN1suoOePB7I2BLT1OoA1BS+auGeSE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=C3jMZgcC; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=CSyog5W6; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="FlhueFIq";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="ElA97vCe"
-Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 65H8UD261734952
-	for <linux-serial@vger.kernel.org>; Wed, 17 Jun 2026 11:56:35 GMT
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="C3jMZgcC";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="CSyog5W6"
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 65H8VZpI2190769
+	for <linux-serial@vger.kernel.org>; Wed, 17 Jun 2026 11:59:33 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	p3p8UZiQiYzgvHo8G5UaQP1hOS/PcyfF1lP3Eug0wko=; b=FlhueFIqYLtzq8Zj
-	m97jXvggJttBsfT11thstLgAGmrD8ejPn4UQufDOFWizEZP28WT1Knfe22V/UK25
-	ITd01OReoXRuwbnObrHTVl+UAN5bspy9PgyNnXVlkXNoxYSxVP8VsifU+7jNQMA4
-	Z7/8xOGIMOseWMUP+H/4u+1eqwIlGnT87Cr8Yn4rbX1FZXXoBlD5W2hZql7NiBZ+
-	LCGWBrb9BT5e6ERNtorPYKtQER8cUqjZZ+5UDyuJnMry4IpQ84k5/io1b+0oY6TE
-	blNzrNICxkVH/1jxrhBSQvHLN0Q6DAtWko4tOupFt+7uPgZl/FpOE54TFFKWtqYe
-	xes1uw==
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com [209.85.222.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4eueemjyvg-1
+	yZ1B3IAw4oJQ2vLZXJ7tczm7eJQgSGAReWX6mfVUAoM=; b=C3jMZgcCDWKJE643
+	x6sF0cE80c4MWoghm9kWbc8QoKIkvfQRWoUvHV+xOYs8MRmxSfzm2xPkxFIamvwN
+	4lmD/18DfMFxlWb1mA7b0h15Vt/fuwDUoGMXbkpvt8TdQJEvm6OorFTluv6zl+jm
+	TP4xTzqIrpt+RRq0cZ7bdmiS3YSpcROONCC+m4u+YFW+NixiGyiqlGw8u7vm3TU0
+	9uHrSh1AMxdipsMmuO6Akrq4HfVM7imqrKwysGInSPBXp6i9dbxVg5eiOkzZyLMZ
+	hbEJyAea5gb0upvUDUXzVcDujvVsq2hJflZ7kAnCDbOGBbSnLlCYWDPS7qLRpoCR
+	tMl5ug==
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com [209.85.222.199])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4eueesk0fk-1
 	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-serial@vger.kernel.org>; Wed, 17 Jun 2026 11:56:34 +0000 (GMT)
-Received: by mail-qk1-f198.google.com with SMTP id af79cd13be357-91598af506cso562205085a.0
-        for <linux-serial@vger.kernel.org>; Wed, 17 Jun 2026 04:56:34 -0700 (PDT)
+	for <linux-serial@vger.kernel.org>; Wed, 17 Jun 2026 11:59:32 +0000 (GMT)
+Received: by mail-qk1-f199.google.com with SMTP id af79cd13be357-915b6b63056so1098835185a.1
+        for <linux-serial@vger.kernel.org>; Wed, 17 Jun 2026 04:59:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1781697394; x=1782302194; darn=vger.kernel.org;
+        d=oss.qualcomm.com; s=google; t=1781697572; x=1782302372; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=p3p8UZiQiYzgvHo8G5UaQP1hOS/PcyfF1lP3Eug0wko=;
-        b=ElA97vCeQT6jSZE/E/JcR7vONl1oirt/TF0V9GxIVMvSoGiuZLUZHPdRb52394BiJd
-         wKX334765vsJdoEohp8ys1fZLuXIPMazjzXkKYLZ44Oo1lg6RxuuVIZ9dHol3bkErybr
-         3db9Bc67IPtYGpgVpd+0s7ivnGzJ4hKjD8DL/HLCqGmH/3ybxWn4Ef6xKhHKZB5pBl2g
-         SQIPJwZy1I4k2eu0o1o2NoHS5hGyQR/hDRh4OSx8wYfvN6zgI6YdzN+5KWNtfhAVkS+4
-         mGUW5xerkbaDlMIKTj7iBTtPNZLGi4PUq67bAC5iJo+RMPF3P7SvMbMISzIJnlnM6FBM
-         NDKQ==
+        bh=yZ1B3IAw4oJQ2vLZXJ7tczm7eJQgSGAReWX6mfVUAoM=;
+        b=CSyog5W63gL9Mvh1uewcAubpni6klVnyWlI4LPDlXHFgQTN45X85jcfKrTta88DzDf
+         71xz2QbrCUpEtwTzBzgSbLrnt/VP5gXnSecZ+frL/zcbtrZGD6XfVESxNvRwAmZvFQiv
+         mXDdMgXrRK02Yu3Wij4bopc0a5eAXskMneuxcln9fgB6BS9oyZkm3baRdow2ryW3rD6W
+         zuft2TUSJ0mjKqsampp9RLzrjAN6ZA8+IhzBprlYT+/rZX3Vy5ZijGETCvK+621k8FdE
+         9lXnu3q5sv8ZcFwcAfZXQFO2lxSc/xvamRzMYwoN6t6eEETvbp0w520FbDQuOTd2Hs4u
+         1i7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781697394; x=1782302194;
+        d=1e100.net; s=20251104; t=1781697572; x=1782302372;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=p3p8UZiQiYzgvHo8G5UaQP1hOS/PcyfF1lP3Eug0wko=;
-        b=pki8Us1Jp63ygJ9wAnf72FjcF5KGq/cqZ/OdkH7OR2xqpruyz+40h0W1VWlmJKF7S+
-         kCn+rfilQ1AB5riU/vFXSJTjuKyBKidhHLzdC7oQEzaBcGeyU16lIVlqthaxuyWP0e49
-         st90QHikMaHBKFrj0N63zxrOah/GVlsCg79R3NmW2BTUlblOtMFAuRpRMbv96eG7yurW
-         a2oplXupY5ryMnrwSjRekWF+MTqt8ImaW8T2JQCZzv8VGbiMgZ8Ibp1YZ3HUiji1QjG8
-         4Lrm96pORMtHtYHpSV23g86yybw+4ifXPa+Y7fUY28FF8qsUWXwkwTMvYkoOt3G2RKml
-         KC/Q==
-X-Forwarded-Encrypted: i=1; AFNElJ/qoORGGN04QMMZ/66xqEnZX52KFByaNUclrnFJMdTbd8aWl0qFbDU7NnxoWJ5zmeSbYyQPbshgfGcSnKo=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw0wCf2X+EEgSfL9//VJU+gLDccybmlLFFb9E2MHuk0q7Yskp1L
-	Pj/wx8mqXxpitAs5+VCDLoXaAM1YpichseMBeyXfiEYyCMJa+1fGo0uA5PX/Bqt/pT9Lp1iQiV5
-	3clgepkw8MTzVeQFYsrAREN6hKyKpcoiD4+HBAEUdoMU6vCQvRn+XBLbzguP0uXMpZ34=
-X-Gm-Gg: Acq92OHN8TkDzuvr6H+WVKm8nkATJ1+MWOVgcTLBhaTNLL7ySdaBQgMhnPs/2W8fmxg
-	/gAKX3ExICm/360XQbqqmbpzCXQnKcV+K1jLak5pRS9gL/VKKkVR3LSQ+u90gBDRjc2c/0jt5wx
-	BJDZ97WAK9XnyKthLUHXuiaFbQ/8wFscifjH8wA9HYDbTmbZAee1EqHpmLPF4ga6rhg8SrXvov3
-	ksEYG7J94WF7zQ/NJTsQ+BGKIaXqUonTjwYJXOupB3KMO8QzcxDgMoZaM+0eXKveG2DVfN9+Lgj
-	OPKkcsmu5Uln8NXlAkPlaXUfrlkF0ybfNwceHmG4DKa9/NmXLUFU6LBjFRZ3OduEUF/OPKD8Y9d
-	pGrF/WK5VQ5plQx3bQ2EcGMU470Cw9wX1hY2YijGlc7kJ6cKpxPDsfrw0O5acpQ==
-X-Received: by 2002:a05:620a:d8b:b0:8f0:f1a5:680c with SMTP id af79cd13be357-91d8ccb5ecemr635313885a.29.1781697393858;
-        Wed, 17 Jun 2026 04:56:33 -0700 (PDT)
-X-Received: by 2002:a05:620a:d8b:b0:8f0:f1a5:680c with SMTP id af79cd13be357-91d8ccb5ecemr635310385a.29.1781697393384;
-        Wed, 17 Jun 2026 04:56:33 -0700 (PDT)
+        bh=yZ1B3IAw4oJQ2vLZXJ7tczm7eJQgSGAReWX6mfVUAoM=;
+        b=M/r1vDmw42c0g29MOP7fuXxjdz/cV4vrndikrT3exUd2gP8PSnxE+dVAZybmIDGdra
+         qHS9GtLyN6LKYEU+DUHi2amc8ckf9nY0VJ6uFv4t3aQwQCDZz+n3iTjWBwesPjFwy73R
+         vZA8uD3fqOzWImkXnmYOkrwsyX5sRijduxFg7y0giSPBEgNtFWNoalPy1SZPtGUE0yTH
+         klvzc5tAmw7tztBl7RUREDIZuhWs0ehfKPEAJsiqdhy9l+ND1b+w+E2k/Nh09xAXtQ85
+         QVSGfxOvzQWnmnfRIgabFDCAAQIS3TCkiCw11lPyiLkQw70A0jbFMB7KsPoGcidjJhHo
+         p8Fw==
+X-Forwarded-Encrypted: i=1; AFNElJ+orbqlkvPTBGovMSlp5qfMb3yShsPdVtgdLryvY+wucFv7LPtVwlgL4/aS4cpxvPI8nGQZa1Daw7hQsTI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwRLDMLgnHkQu9EKePVHAy0GkDbWdp15DifkcjKXxYZjVoXKtE/
+	kaWUdDpjyPHyMoOdfKkdL42vkrqefg64eCbhkWfcYHhphsevRrDungeP2L6tafkW5VI075LEhZ7
+	jA7Ab1ztrapLoysK4P4bC8R72DWdBVcK2gSZyKJ2XckgsUJ9aV4UEzPqgAUNn0LQyAl6cKNNq1Z
+	4=
+X-Gm-Gg: Acq92OGo6pnOGfIvuOj9VFx+bgWp1I8oAy6NvSbMn2ctftdWmYMljSlSPc/daLBXQky
+	cA5P0D0JR9twOQvolJLTcATFjnsEKYaXx7M7ORABvGo3rCgj7JU6tjxHTeLduWzQgYwxJqifYnj
+	L8oweOUUbX3DaDO/7FoheoYS/kaoNa2JcCeOvCnVJ4MfLOPy/piHSTUKDiVm6E0vKuo+q8XIZqs
+	3BiSXJLa+kWrfTUVUa8Bi2HEniBjtP3RVlsJxzD/HZJTpiZy2h48DJsKfKUhhQhm/GrX9RCcCJp
+	KgBkiVCZZ4gHT69506b1vI8i3BctiVatIw1Jvtx5uMhtoSzFhFlLLW0ZsxWCjD1GfXmtqdKxMGR
+	cteSIS7JAlU8NgU2j425+7yTjjci2gmay1JUyMch62jcLEaVoaoCJGdoT10+U5Q==
+X-Received: by 2002:a05:620a:2907:b0:915:7f9e:a407 with SMTP id af79cd13be357-91d879a3ef8mr560664185a.0.1781697572334;
+        Wed, 17 Jun 2026 04:59:32 -0700 (PDT)
+X-Received: by 2002:a05:620a:2907:b0:915:7f9e:a407 with SMTP id af79cd13be357-91d879a3ef8mr560660385a.0.1781697571741;
+        Wed, 17 Jun 2026 04:59:31 -0700 (PDT)
 Received: from [192.168.69.208] (88-187-86-199.subs.proxad.net. [88.187.86.199])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4922fa3a4easm172487285e9.3.2026.06.17.04.56.32
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49230a8ebe3sm124137425e9.11.2026.06.17.04.59.30
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 17 Jun 2026 04:56:32 -0700 (PDT)
-Message-ID: <c8de9338-534b-49fc-a3f5-f135eb000900@oss.qualcomm.com>
-Date: Wed, 17 Jun 2026 13:56:31 +0200
+        Wed, 17 Jun 2026 04:59:31 -0700 (PDT)
+Message-ID: <6b6651b2-cd06-482d-b075-79266874d2a6@oss.qualcomm.com>
+Date: Wed, 17 Jun 2026 13:59:30 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -88,8 +89,8 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/6] serial: sb1250-duart: Fix bootconsole handover
- lockup
+Subject: Re: [PATCH v2 4/6] Revert "drivers: convert sbd_duart.map_guard from
+ atomic_t to refcount_t"
 Content-Language: en-US
 To: "Maciej W. Rozycki" <macro@orcam.me.uk>,
         Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
@@ -100,63 +101,94 @@ Cc: Elena Reshetova <elena.reshetova@intel.com>,
         Hans Liljestrand <ishkamiel@gmail.com>, linux-mips@vger.kernel.org,
         linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <alpine.DEB.2.21.2605241602220.1450@angie.orcam.me.uk>
- <alpine.DEB.2.21.2605241623110.1450@angie.orcam.me.uk>
+ <alpine.DEB.2.21.2605241628110.1450@angie.orcam.me.uk>
 From: =?UTF-8?Q?Philippe_Mathieu-Daud=C3=A9?= <philmd@oss.qualcomm.com>
-In-Reply-To: <alpine.DEB.2.21.2605241623110.1450@angie.orcam.me.uk>
+In-Reply-To: <alpine.DEB.2.21.2605241628110.1450@angie.orcam.me.uk>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNjE3MDExMyBTYWx0ZWRfXxBt6gPNLxLly
- wMvqPd8IsDBit6E46dFm3RmN7uWqjQgXc8qS30cwebdtitvAO1iYwCD07zEjKKD2lSbwlmx9xs3
- aKWR/JHla5QpQ9sgzzkqoTdtLHcOoLc=
-X-Authority-Analysis: v=2.4 cv=D4d37PRj c=1 sm=1 tr=0 ts=6a328b72 cx=c_pps
- a=qKBjSQ1v91RyAK45QCPf5w==:117 a=4s3hRJSeHn4rkQlkrse1kQ==:17
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjE3MDExNCBTYWx0ZWRfX4FTBipf2ry6/
+ Gcem5HJ/tEjQQNbItUJIe+lGB3WVzvPHis2mBcakwKJ0hqtZ8myKZWvuxzmC2FfPdDNnx+udJCq
+ MzGs0v5U13rx2k5lwnjwpcgxSChQBOnOvmOzySq13Ugf73u9WvyseIMI2l1LTugvOmJpaNohaPT
+ BTtmOAqtpoY+rnz8nZROXVxg+xPxjW4/HIsH3vrvDzECLYdpf82+V7LV4If0E84qbm6GVrg6FAN
+ l7xgiGksajvR/WZYE//lv8DP5i62bc2ZZqtoeD2jTxu9yCNwBxJAC/rSm7uXzi73b4fEr+5cXxj
+ 04L8GjGIHvVrFWwfHLqkjhTsqQCb6/mDfI0P+88B5mu4EFqMzvtks8TibEwq7wAzmKL+KWmqtPa
+ uHCsF76p3F5PNsjTmRxJhRpmyrjajmFWuxDI3fqEYvD4aJoFlRZLoA6sCl3dbNYNDcOxJaPbCMh
+ V4amW7uWgs6PSvVYTRQ==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNjE3MDExNCBTYWx0ZWRfX0cqjZzCQnnIu
+ pSACDYNSSje2K1Gi29vsfzFUtMj7KMX/W7ndTzHZZUseHcmSS2ntUCeqoSxez1uKu3tj9xNW9LH
+ sSSyr+uS7bl7S1aPhFzrsl7mt/m/nBc=
+X-Proofpoint-ORIG-GUID: YhQeJlEogLZ09JCNVyVwrrnp6cS66yN-
+X-Proofpoint-GUID: YhQeJlEogLZ09JCNVyVwrrnp6cS66yN-
+X-Authority-Analysis: v=2.4 cv=ePojSnp1 c=1 sm=1 tr=0 ts=6a328c25 cx=c_pps
+ a=HLyN3IcIa5EE8TELMZ618Q==:117 a=4s3hRJSeHn4rkQlkrse1kQ==:17
  a=IkcTkHD0fZMA:10 a=FelO9ux0wxsA:10 a=M51BFTxLslgA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=eoimf2acIAo5FJnRuUoq:22
- a=VwQbUJbxAAAA:8 a=BcPKCTjPAAAA:8 a=EUspDBNiAAAA:8 a=LfsA7Cq2GQzuzbZ-N0YA:9
- a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10 a=NFOGd7dJGGMPyQGDc5-O:22
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=3WHJM1ZQz_JShphwDgj5:22
+ a=VwQbUJbxAAAA:8 a=BcPKCTjPAAAA:8 a=EUspDBNiAAAA:8 a=kD1aHXNoiUmW-fgF_RsA:9
+ a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10 a=bTQJ7kPSJx9SKPbeHEYW:22
  a=MNXww67FyIVnWKX2fotq:22
-X-Proofpoint-GUID: SuIseOV1mA0G2OKFPH5DlvEZeq3g5lwB
-X-Proofpoint-ORIG-GUID: SuIseOV1mA0G2OKFPH5DlvEZeq3g5lwB
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjE3MDExMyBTYWx0ZWRfX/WLgiWeue3EX
- 30FLNdAiYy+9YQp+ev81O5onJtjhxej8ZT0PwBAF7pDUbjdJyzNbTDZWZ11ZP+XFUVJlEH6sA24
- RE8z3FbSRdonqVyvpcwyXyDt0a57mZKqQSujc2SDA6iU7s3vcnF7ogRXALOx29xIZf0wYFhNLGG
- tkPA1cNCCm23R4jTLdIbkADCL21TD3ITcwQNug1HxcmXHJ70HzqauqR+3kgOjfIsHrIZ5h0BcVl
- Cy9tErd7inYqm08LPyayFU4CB83iInKwTNHjkxnOhhB1NoChIuLsjHATesAZ5yqUCCnyotfUWtV
- RQK9bZ6/OyCv6bDNYA70A0tYbUuIqCt3JNOTshGOL7mAugd9UQN5i/+bEE6xhG0jg2bL92u4+Nb
- NTXr2SyE5vcB7c7plF75lVQdsEnuoI1V7DEHTsl2RSuWboLjVT92W/IzApEcysph6hHNkKIto+T
- CLO1E78Fsu5DBpwyECw==
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
  definitions=2026-06-17_01,2026-06-16_02,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- phishscore=0 bulkscore=0 spamscore=0 adultscore=0 clxscore=1011
- impostorscore=0 malwarescore=0 lowpriorityscore=0 suspectscore=0
- priorityscore=1501 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
- definitions=main-2606170113
+ phishscore=0 spamscore=0 adultscore=0 priorityscore=1501 lowpriorityscore=0
+ malwarescore=0 bulkscore=0 clxscore=1015 impostorscore=0 suspectscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2606170114
 
 On 25/5/26 01:12, Maciej W. Rozycki wrote:
-> Calling sbd_init_port() in the course of setting up the serial device
-> causes line parameters to be messed up and the transmitter disabled.
-> We've been lucky in that no message is usually produced to the kernel
-> log between this call and the later call to uart_set_options() in the
-> course of console setup done by sbd_serial_console_init(), or the system
-> would hang as the console output handler in CFE tried to access a port
-> whose transmitter has been disabled and line parameters messed up.
+> Revert commit 22a33651a56f ("drivers: convert sbd_duart.map_guard from
+> atomic_t to refcount_t"), which broke perfectly valid code:
 > 
-> It'll change with the next change to the driver, so fix sbd_init_port()
-> such that line parameters are set for 115200n8 console operation as with
-> the CFE firmware and the transmitter re-enabled after reset.
+>    ------------[ cut here ]------------
+>    WARNING: CPU: 1 PID: 1 at lib/refcount.c:114 sbd_request_port+0x54/0x140
+>    refcount_t: increment on 0; use-after-free.
+>    CPU: 1 PID: 1 Comm: swapper/0 Not tainted 4.11.0-rc2+ #34
+>    Stack : 0000000014001fe0 0000000000000000 ffffffff80830000 0000000000000000
+>            ffffffff8127bc7a ffffffff8016fe08 ffffffff808d0000 ffffffff808d0000
+>            ffffffff807aa828 ffffffff80822337 ffffffff808ce188 a8000001860b0000
+>            0000000000000001 0000000000000001 00000000000001c8 ffffffff808a3090
+>            00000000000000bb ffffffff801b09d4 a80000018609bb68 ffffffff801231cc
+>            ffffffff812a0000 ffffffff80171388 0000000000001000 ffffffff807aa828
+>            0000000000000001 0000000000000001 0000000000000000 0000000000000000
+>            0000000000000000 a80000018609bab0 0000000000000000 ffffffff803c47cc
+>            0000000000000000 0000000000000000 0000000000000000 0000000000000000
+>            ffffffff807cb648 ffffffff8010bff8 0000000014001fe1 ffffffff803c47cc
+>            ...
+>    Call Trace:
+>    [<ffffffff8010bff8>] show_stack+0x28/0x88
+>    [<ffffffff803c47cc>] dump_stack+0x8c/0xc0
+>    [<ffffffff801aff5c>] __warn+0xe0/0x114
+>    [<ffffffff801233f0>] warn_slowpath_fmt+0x40/0x50
+>    [<ffffffff80455bcc>] sbd_request_port+0x54/0x140
+>    [<ffffffff804563a4>] sbd_config_port+0x2c/0x68
+>    ---[ end trace f666d696412caa3e ]---
 > 
-> Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
+> (report at the offending commit) -- sbd_request_port() is called twice
+> per DUART instance, to reserve a resource holding the control register
+> block shared between the two channels, so there's no slightest chance
+> for an overflow.  Also this doesn't stop the driver from working and
+> it's just the reservation that is missing as a result, i.e.:
+> 
+> 10060100-100601ff : sb1250-duart
+> 10060200-100602ff : sb1250-duart
+> 
+> as from the offending change, vs:
+> 
+> 10060100-100601ff : sb1250-duart
+> 10060200-100602ff : sb1250-duart
+> 10060300-100603ff : sb1250-duart
+> 
+> beforehand, which is surely why the breakage has gone so long unnoticed.
+> 
+> "If it ain't broke, don't fix it," so just revert the broken commit.
+> 
+> Fixes: 22a33651a56f ("drivers: convert sbd_duart.map_guard from atomic_t to refcount_t")
 > Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-> Cc: stable@vger.kernel.org # v6.5+
 > ---
-> Changes from v1 (2/4),
-> <https://lore.kernel.org/r/alpine.DEB.2.21.2604130338210.29980@angie.orcam.me.uk/>:
-> 
-> - Sanitise the change heading.
+> No change from v1 (4/4),
+> <https://lore.kernel.org/r/alpine.DEB.2.21.2604130416440.29980@angie.orcam.me.uk/>.
 > ---
->   drivers/tty/serial/sb1250-duart.c |    7 ++++++-
->   1 file changed, 6 insertions(+), 1 deletion(-)
+>   drivers/tty/serial/sb1250-duart.c |   20 ++++++++++++--------
+>   1 file changed, 12 insertions(+), 8 deletions(-)
+
 Reviewed-by: Philippe Mathieu-Daudé <philmd@oss.qualcomm.com>
