@@ -1,131 +1,195 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CCC429AB1A;
-	Thu, 18 Jun 2026 14:56:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781794619; cv=none; b=N6+1qkyLdEC/2uX8bgNfggcN+OztgQwG57unrpF2VkyLDaAjB/iFpIEWEAnd9ZHvai8b2NxRBINZhxOpKkHIKSu49Af8k9U6vJAzHm5lYlo0eWbpK5BWQjJgcxpAaienJVM6eQvXK/CurQos1X038s50MX4vNCVgnffri55ju1w=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781794619; c=relaxed/simple;
-	bh=SE7v8SiyBZABnoZXOdmIMkkUOW5Kkfss8LLCB0b6K7g=;
-	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
-	 Mime-Version:Content-Type; b=abbiPRPlWV7lBvjDsC+Ah94/1o0Seg6RcO3pfrY0IICdQHtNSVv9ik5Ix3I+HFplxKGTPIcgEuR8KCINBsQHEwWGUg70ZC5B0dJldsMmrdP35JSFWNumW5PEdlXxoFzjm+Ck13xzNaEX6Q8E/lPCeC7IpW4NukPPGyyU/G3Pz/o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=GezNigp7; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A802930C153
+	for <linux-serial@vger.kernel.org>; Thu, 18 Jun 2026 16:40:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.45
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781800802; cv=pass; b=kUdooPuRZcxPjBNoxxbNYpWHpe2OLrc5hd/sTrRI8CLezPdPxEMxyaFL2yAHUQNOuctzl1KjqEr3o+gWq1GoV8977D/LtkZF3ltBinB99XX4OsehqOv7RoEPxMIfkX8l1zZNkoMPYvBuidXQXhlC84z64cwZRslwg65hznvylRQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781800802; c=relaxed/simple;
+	bh=ZWeYY5EsOw054i6YP8butqMMDZMCJ6MTBzBqPzct8FM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=osBFwBJQBlp+A7Z+PrpVaVNIT9dWMSAt4IoeenVC/SdTjZ2UASgiHLfbJeEBF9qot9FY3IdFpcEqsinWyx8q2RF6QH/HfhtgWkwpMCz7Rv0xd7J6t3GOi7zVBZk6Jgt0x9qWJBATRQLmOjiHbAFbP+mgzd0EaP1FTxRUdD89EGA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OIEYXuLB; arc=pass smtp.client-ip=209.85.218.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="GezNigp7"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=default; h=Content-Transfer-Encoding:Mime-Version:Message-Id:Subject:Cc:
-	To:From:Date:subject:date:message-id:reply-to;
-	bh=Fh1kudYK8zj1d5zm6swhKy85DjK9P4tOG87I7xIQdJY=; b=GezNigp7/wMsDkbbmBPjKzVHz8
-	ETxVryMSSeLYw9Pqe5skMOL97SQEnTpZDkXaHHN7KUrujplBJF+Usfd3Qe2Gv96+zgmNGB7PmTeZo
-	KU1EIy1loBeyVLLU0sw9nhBJmrjDBrWTO4Kxb+XN7loXZFx0v6yKxkbQQAdP9EkuGSss=;
-Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61] helo=pettiford.lan)
-	by mail.hugovil.com with esmtpa (Exim 4.98.2)
-	(envelope-from <hugo@hugovil.com>)
-	id 1waEAg-000000004Un-23Na;
-	Thu, 18 Jun 2026 10:56:46 -0400
-Date: Thu, 18 Jun 2026 10:56:45 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Tapio Reijonen <tapio.reijonen@vaisala.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, Linus Walleij <linusw@kernel.org>, Bartosz
- Golaszewski <brgl@kernel.org>, Alexander Shiyan <shc_work@mail.ru>,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-gpio@vger.kernel.org
-Subject: Re: [PATCH v2] serial: max310x: implement
- gpio_chip::get_direction()
-Message-Id: <20260618105645.e2a1a4d5243fc6dda0554c1d@hugovil.com>
-In-Reply-To: <20260615-b4-serial-max310x-gpio-get-direction-v2-1-4704ba2b181a@vaisala.com>
-References: <20260615-b4-serial-max310x-gpio-get-direction-v2-1-4704ba2b181a@vaisala.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OIEYXuLB"
+Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-bf84a2b2077so147861766b.2
+        for <linux-serial@vger.kernel.org>; Thu, 18 Jun 2026 09:40:00 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1781800799; cv=none;
+        d=google.com; s=arc-20240605;
+        b=f2uiguG0tZtEDySN7ZJS1GT59PNVIEReQBkUoF1Zlx52CeavJmPMRV4wrgfD0PYLLT
+         lxIknpgv1cp17wDoKSHjFcMBmVINaZBbwjLrn0dpGYPXPQRVt+GjUCnLRhxADzK+pYfY
+         yTqxg7u8o7UBK/wxohpRA79RR4tedS0TGzE9rYY3Ti3uexqYmpcuq1arvDnqmZl23286
+         QUkdjFJ4rT3Y2I9XBxWJ/eP8HHDExVgUvP1c0TwWlHaA1uwE0u4ED94o/HH0h+BsESa9
+         M0D3CKq6HwBhX9rzGyOX/U05ANOAbv3FSoGZr/2KOMCUHeEH0xMalVBeWYrjIVjyYtk1
+         cdQg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=3ylNEn1iXKNRmHKldiN/3uxktuPUhP+JK50i2MvPfZc=;
+        fh=0yKNLOPeCGPNqcBSbLUCI0ketEwyPmwLPQ20XleiKpw=;
+        b=KoRY3AQoXgjCLBMpf5R+ugloDAtDJ+0he9W3W1PIq5ytjBwvseomEAM+xA8jccfBpd
+         qNgzQksGXTc86xy2ndSmHj15TB8hOAa1P0iW67HHVj/xtt0xkPnesDc3z55tMM/yTtfZ
+         Itqh/9jNb7czn4WDFjY32tBPKSOC1QeIoNN+sOuHubdVJ7zFSqKlBUqCu3xw3bgYT4+z
+         DpJYeSbEzt706G4TpW4MkjE0zkK07FadC5jqZ6O899ZNN63NXca63u1uQK87fT+Q3kDK
+         WoM5x+tDQWnIXBJdpFNkx0XxSYyfyxyuFogBLFD3e90h/xIxnZEaoLhFG3Kozg7jNofQ
+         KRdQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1781800799; x=1782405599; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3ylNEn1iXKNRmHKldiN/3uxktuPUhP+JK50i2MvPfZc=;
+        b=OIEYXuLBn9OH+WzDdtCldsuCe5vlWnaCMxv2VU7f4Ksqu+CHEsqaYq/NquzC/OG1SP
+         p+Wqdp0d38j3FDwxksRV8e6w0UO9iCCeeLo+h6n6qXApvlkxnPmDOmZIuAvJSXCjyeMN
+         YYD8tt7eCT7dttuaDAu725sWZY5BMHlPcQOjUr59W6dlV2RnYjmW/XBp2QWMRBR3htTs
+         pQYga3WpTt09UEOKXMCPW4jN4CwGQYuFD0+XTE+6tPRWS0GN99H08XYk5NAAcuEH77fy
+         /zXjeWJomJon6boDE4Kr6mTKlvK4/SrMeXQUd/nxgovgPfklahi/VNKci3F5Imsxiuqt
+         XHSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781800799; x=1782405599;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=3ylNEn1iXKNRmHKldiN/3uxktuPUhP+JK50i2MvPfZc=;
+        b=W6E1VYeSsJg/H+VXaXqE0aWSVDBjxDCZQgS6cCL3mPhwWW6Xx0rzuPLecqmXbAA3e/
+         ue00/CPCkrH598h1jvC2ehHVXoj1EcIJRNJizMHam6qzqcYajpSo1xRzPmc3zL6Gh0KP
+         m5ZlAXR+ZnAMYnGEQTRGPp8sLf2f3ElLHZ82fY2LjfRJ2Z0kMIPNMq+mjeCbX5Yo6+5p
+         Qoeay97yak1ipJEI4koDFz9Lq+TH5oSEzNwqfHP5V3Oc0hiwAYO9QEd8I4sK+4Viqg4Z
+         Nd//SLEVAOPSy7h/xhgathkYn5dKgWj2EhITqk9gXNYDmeLpkEoAfkFgo3hngrC9UsFK
+         qbJw==
+X-Forwarded-Encrypted: i=1; AFNElJ/e7Feu/KTg9ZeydI1gaQzvCz3Aktp+7HwcB+jzMNwgCPqdKMdK8tU36RV8xUXcCFmyKs33oZZlkTiB8mw=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy9+zt+33c3Y47Wb+UnpeQ27Pdh55XxUTojUsIHYJZ4iL5hesAB
+	rAgPeqL6utWLa05WlE+evrQTRScTNNb9bAGco220XCEIUBg6LYoC5xOUnenNIKn0q/J7ERqBvga
+	yRgTPAympONTFeW6lXqg3Q3pOewuQB28=
+X-Gm-Gg: AfdE7ckEsWUXZExwlZfYgP+8uCHPHW7Bb7Xypz5ix9zhW4h3malGyg3ejAOz9yeXD0B
+	aH4ACX8FG/vOG7r0JwaV8iNKCgbbalcoO1j9ehO1tRiAmmJ9FTFPiUjSXVPWKQyn5BZEytvpgGw
+	CoKCm4mEX51GyLPpnxgwSeDOW3BAsULA1Oy1tG1N88hvaAG5cEfSZmY+XwS6cmdgRwQukprp2Q2
+	2HPGyn0CRBYjEK/VanPqlF4WjRE/9hKDqFgQE9pPT+ShuGRLu4kWAV5h4VpBVnnst2RGlEa0gIN
+	/DZKoeOr+MUjoqBqtwxiXWaS3RWiHajk3BaUTuvt
+X-Received: by 2002:a17:907:981:b0:bf8:b1ed:43e0 with SMTP id
+ a640c23a62f3a-c05a4f0705dmr601383266b.18.1781800798876; Thu, 18 Jun 2026
+ 09:39:58 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam_score: -2.0
-X-Spam_bar: --
+MIME-Version: 1.0
+References: <20260616173240.3665059-1-bestswngs@gmail.com> <DU0PR10MB538744C92335756B7F125867E0E42@DU0PR10MB5387.EURPRD10.PROD.OUTLOOK.COM>
+In-Reply-To: <DU0PR10MB538744C92335756B7F125867E0E42@DU0PR10MB5387.EURPRD10.PROD.OUTLOOK.COM>
+From: Weiming Shi <bestswngs@gmail.com>
+Date: Fri, 19 Jun 2026 00:39:21 +0800
+X-Gm-Features: AVVi8Ce0NUYYVksQhe4auyimCwK5nbJIygcAYXk976ZZ9WY7yLA2_V9yD9NVioM
+Message-ID: <CANgPUi24wvQ4CLMozb3EBAC-5QKWiMHWpoCQgsBHkG+vZjHALg@mail.gmail.com>
+Subject: Re: [PATCH v2 0/2] tty: n_gsm: fix gsm_queue() UAF and add a base
+ regression test
+To: "Starke, Daniel" <daniel.starke@siemens.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Shuah Khan <shuah@kernel.org>, Xiang Mei <xmei5@asu.edu>, 
+	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, 
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, 
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, 15 Jun 2026 06:38:40 +0000
-Tapio Reijonen <tapio.reijonen@vaisala.com> wrote:
+Starke, Daniel <daniel.starke@siemens.com> =E4=BA=8E2026=E5=B9=B46=E6=9C=88=
+17=E6=97=A5=E5=91=A8=E4=B8=89 15:26=E5=86=99=E9=81=93=EF=BC=9A
+>
+> > The receive worker walks gsm->dlci[] without gsm->mutex while a
+> > concurrent GSMIOC_SETCONF -> gsm_cleanup_mux() frees the DLCIs, so the
+> > control handlers can dereference a freed gsm_dlci. v1's NULL check only
+> > narrowed the window; v2 fixes the use-after-free itself.
+> >
+> > The fix pins each DLCI the dispatch dereferences with its existing
+> > tty_port reference (option 2), so the data path stays lock-free. See th=
+e
+> > patch 1 commit message for details, including why the late destructor
+> > uses cmpxchg() so it cannot wipe a re-created mux (Daniel's teardown
+> > concern).
+> >
+> > Changes since v1:
+> >  - Fix the UAF by reference-pinning instead of a NULL check in the
+> >    handlers; no gsm->mutex in the data path (Greg, Daniel).
+> >  - Pin every DLCI the dispatch touches, not just the addressed one:
+> >    MSC/RLS/PN operate on gsm->dlci[k] named in the payload.
+> >  - Add a base selftest (patch 2), as Greg asked.
+> >
+> > Verification (KASAN, panic_on_warn=3D1): the originally reported splat =
+is
+> > the gsm_control_reply() / CMD_TEST path (see the Link in patch 1). A
+> > reproducer targeting the MSC handler crashes the unpatched kernel and
+> > survives 270 race rounds on v2. The selftest passes on both the clean
+> > and patched kernel (pass:3 fail:0 skip:0).
+> >
+> > Weiming Shi (2):
+> >   tty: n_gsm: fix use-after-free in gsm_queue() control frame dispatch
+> >   selftests: tty: add base regression test for n_gsm line discipline
+>
+> So now there is a race on device node level. We have the old virtual
+> gsmttys still waiting for the current pending operations to finish while
+> the reconfiguration of the ldisc triggers a recreation of these. How is
+> this handled?
+>
+A pending gsmtty operation stays bound to the old object. gsmtty_install()
+takes a dlci_get() and the gsmtty ops use tty->driver_data, not gsm->dlci[]=
+,
+so an open fd keeps its own reference and never reaches the recreated dlci
+(a fresh gsm_dlci_alloc()). On teardown gsm_dlci_release() does
+tty_vhangup(), which unblocks the pending ops, and sets DLCI_CLOSED, which
+every gsmtty op checks first.
 
-> It's strongly recommended for GPIO drivers to always implement the
-> .get_direction() callback - even when the direction is tracked in
-> software. The GPIO core emits a warning when the callback is missing
-> and a user reads the direction of a line, e.g. via
-> /sys/kernel/debug/gpio.
-> 
-> The MAX310X keeps the GPIO direction in the GPIOCFG register (a set bit
-> selects output), which the existing direction_input/output callbacks
-> already program, so the current direction can be read back directly.
-> 
-> Fixes: f65444187a66 ("serial: New serial driver MAX310X")
-> Signed-off-by: Tapio Reijonen <tapio.reijonen@vaisala.com>
-> ---
-> Found and HW-tested on an i.MX6 SoloX board with a MAX14830 over SPI:
-> without this, "cat /sys/kernel/debug/gpio" triggers the gpiolib.c:429
-> WARNING (tainting the kernel W) on each queried MAX14830 line; with it
-> applied the lines report their in/out direction and the WARNING is gone.
-> ---
-> Changes in v2:
-> - Address Hugo Villeneuve's review: use BIT(offset % 4) and put the
->   return statement on a single line.
-> - Rebase onto v7.1-rc7.
-> - Link to v1: https://lore.kernel.org/r/20260602-b4-serial-max310x-gpio-get-direction-v1-1-23bf84e8ee14@vaisala.com
-> ---
+This is the existing tty_port refcount, and the receive path here uses the
+same dlci_get/put, so I don't think the pin adds a device-node race. But
+you know this hardware better than I do; if there's a path I'm missing,
+point me at it.
 
-Reviewed-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> PATCH 1/2:
+>
+> > -     if (addr =3D=3D 0 || addr >=3D NUM_DLCI || gsm->dlci[addr] =3D=3D=
+ NULL)
+> > +     if (addr =3D=3D 0)
+> >               return;
+> > -     dlci =3D gsm->dlci[addr];
+>
+> Control octets can be transmitted on non-control DLCIs in convergence lay=
+er
+> type 2. You do not guard against invalid DLCIs anymore. Same for paramete=
+r
+> negotiation and RLS.
+>
 
->  drivers/tty/serial/max310x.c | 12 ++++++++++++
->  1 file changed, 12 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-> index ac7d3f197c3a5ce3531d5607f48e21a807314021..09b9ab57d2b4479da90fba178b093008f4b57bb9 100644
-> --- a/drivers/tty/serial/max310x.c
-> +++ b/drivers/tty/serial/max310x.c
-> @@ -1212,6 +1212,17 @@ static int max310x_gpio_set(struct gpio_chip *chip, unsigned int offset,
->  	return 0;
->  }
->  
-> +static int max310x_gpio_get_direction(struct gpio_chip *chip, unsigned int offset)
-> +{
-> +	struct max310x_port *s = gpiochip_get_data(chip);
-> +	struct uart_port *port = &s->p[offset / 4].port;
-> +	unsigned int val;
-> +
-> +	val = max310x_port_read(port, MAX310X_GPIOCFG_REG);
-> +
-> +	return val & BIT(offset % 4) ? GPIO_LINE_DIRECTION_OUT : GPIO_LINE_DIRECTION_IN;
-> +}
-> +
->  static int max310x_gpio_direction_input(struct gpio_chip *chip, unsigned int offset)
->  {
->  	struct max310x_port *s = gpiochip_get_data(chip);
-> @@ -1421,6 +1432,7 @@ static int max310x_probe(struct device *dev, const struct max310x_devtype *devty
->  	s->gpio.owner		= THIS_MODULE;
->  	s->gpio.parent		= dev;
->  	s->gpio.label		= devtype->name;
-> +	s->gpio.get_direction	= max310x_gpio_get_direction;
->  	s->gpio.direction_input	= max310x_gpio_direction_input;
->  	s->gpio.get		= max310x_gpio_get;
->  	s->gpio.direction_output= max310x_gpio_direction_output;
-> 
-> ---
-> base-commit: 4549871118cf616eecdd2d939f78e3b9e1dddc48
-> change-id: 20260602-b4-serial-max310x-gpio-get-direction-b10ee5be4f24
-> 
+The checks aren't dropped, just folded into gsm_dlci_open_get(), which
+returns NULL for addr >=3D NUM_DLCI and for an empty slot. But hiding them
+in the lookup makes the diff read like the guard is gone, which was a bad
+call. For v4, maybe we should keep the addr checks at the call sites and
+et the helper only do the locked lookup and pin, so the guard stays
+visible where the DLCI is used? Does that match what you'd expect?
+
+> > Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+> > Cc: stable@vger.kernel.org
+> > Reported-by: Xiang Mei <xmei5@asu.edu>
+> > Link: https://lore.kernel.org/all/DJ7OKN8EMAK8.22CE0B8NZXD73@gmail.com/
+> > Signed-off-by: Weiming Shi <bestswngs@gmail.com>
+>
+> This whole worker separation was added later, not in e1eaea46bb40. Maybe
+> worth updating to the corresponding commit.
+
+I'll find the commit that moved the eceive side onto the worker and
+point Fixes: at that.
+
+> Also, the code comments have a strong AI flavor but AI use was only
+> disclosed for PATCH 2/2.
+
+Sorry, I missed that tag. v4 will add
+
+Thanks for the careful review.
+
+>
 > Best regards,
-> -- 
-> Tapio Reijonen <tapio.reijonen@vaisala.com>
-> 
-> 
-
-
--- 
-Hugo Villeneuve
+> Daniel Starke
