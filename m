@@ -1,102 +1,165 @@
-Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67743175A9D
-	for <linux-serial@vger.kernel.org>; Tue, 23 Jun 2026 14:32:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3A6B3D75C7
+	for <linux-serial@vger.kernel.org>; Tue, 23 Jun 2026 15:08:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782225149; cv=none; b=pamLHZ0szq9FQs5GdPqRhFk/Tbrr451hF62IZM0FUQorhzMU8LS6kbKU3umtUWcS8Zn/+A1113kjfIblyPz2/MYkQp75f9SPQqyup+7KGu9zdT7UtKbnjC20PRynkWjHmO39CosI2U7FZ5Ybe8lvTxdhUnwTWQp32b/uxedimxo=
+	t=1782227285; cv=none; b=KMViBXY87xjKIWfSlvCllFFWxaVE+hM1Wo609uqrSJ97xCIXoEJMznOwJ4vechaXcWdXnoMPnrRZ1OCKOt4FZoS4AI+/EUNaNmMPgzmrpzYneUaQHRewJyX5dJ/CAiKrFQEd8wjq5e+dRxi5OCsAzaZ7ypcEWQ2zS3HTA2elL6w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782225149; c=relaxed/simple;
-	bh=3mG39iHCZNsXxuzctgS4ljx3FJbNgfE7+EfdkoW77lE=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=YY6OVllhDrMQG3yD231mb/bWxcYtTv2ITx01Dl1c2ewn1pqGFJ5gqD1MAitcyvqzqP0y6e6JRQ7noY28PxCYNk6ciKXzcPBI4kxenxGY3mT5Ks1cLMZSWGVevRMK710i5MjN092UyyXUXsuZytNQtha12zP88xxM/Vs6kOjYo2E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GV4a1JDP; arc=none smtp.client-ip=209.85.214.176
+	s=arc-20240116; t=1782227285; c=relaxed/simple;
+	bh=SlP3OuYEBzuGdMMIjS1qmezcAULyg5X1I7qTIwQCuBk=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=TR/DlTcma1PYAAfSvKUbwIfmfDlUWPCam3kpUymxmb+ye28R0AfkMroCo9iTHQUjzQcXbwf5Wih3QCL6PccGv4j5nEqfQvoSt00L0d9yUtZuaCVZhzA20PAZpugiwBDQEyIkvOOLglRpihJQXjZk2mT+Mgv+wWOyEAXDNNcAdhU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LQLnqMVm; arc=none smtp.client-ip=209.85.128.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GV4a1JDP"
-Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-2c6b3f71648so62687045ad.2
-        for <linux-serial@vger.kernel.org>; Tue, 23 Jun 2026 07:32:28 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LQLnqMVm"
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-490a76757e5so36454175e9.2
+        for <linux-serial@vger.kernel.org>; Tue, 23 Jun 2026 08:08:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782225148; x=1782829948; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1782227282; x=1782832082; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=wcdDEOHP11KOemg3W2Imt3ngTY3JQturNvk8u+a077k=;
-        b=GV4a1JDPloALdbNmfqbyXdbISVi1RYNJxzBL2a/hzXEWWxxIC2DtFTB9qZempgODSJ
-         KS331OA4mjKrfuy6L4tnash8CuCHB1+xIgWoQmieGwHzwC8+Q3nON9Hm/xDIqinR/tQ3
-         HsVIqut2tB3V/pjn6zwOKj+wrM4pnVwsXIVCOp6qWVJApF7rMoxqIkXR6W05fNDRuA0M
-         Jg/B6WTH6+XcjWtxzIg/DMyqh1bCrQgddMgmFxQVGlLhsxGgoKIZ2ZFcwS19MUfbgLLk
-         NlM5IcU3zOD0AuGDE14gtp7d4/PC8Xvrs2Ek6UfI5LAVkc4s4LK4JfWoq8P7z3pD8FE8
-         FA4g==
+        bh=v+TAOPYwpBx1xjEypw6OnbYeTT5cz9GLufF0SvVZoFU=;
+        b=LQLnqMVmnyM5miywLEvdP936u26uVAt1JfTLHo8tir0KvncWE+3JeOFXD6cuYYbk+3
+         pnQyswNPC/a74VVuJRbpXv1I61zs/9YGM6fJjslzyhORMlJt95+sClwYtDY6M4yUQm17
+         eeL5h0MyFMiaSjAHP2CAykmp/W1ben+MTjgnczdp0IYAYnPAN52GaAXT7HVbpqDLJ97Y
+         r6sfLVwRGOr1IYDt0Wl7AaQkI+E3TBGwWsu6U+PQA9G4iHIpeB5ecHCoHZYwjvwhRJ86
+         aM4SpX5BgZutaxwVHbYQL/2xd6QwCiabkHf00jeXf3QnAJ1y9LDqqAjjKnTQcVMrUX40
+         dUxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782225148; x=1782829948;
+        d=1e100.net; s=20251104; t=1782227282; x=1782832082;
         h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=wcdDEOHP11KOemg3W2Imt3ngTY3JQturNvk8u+a077k=;
-        b=mGHixq8GWX4Q8lM2SeXWSoLS/pvajxVWRhWuHXwSu38QUgBon8NNwNJwhPQul48wKF
-         PvJ416l04x4G/1G3L91uAZXxg/5Yp57UXS2DZeNIWFTCyzy3AyfJbUJjf/5kkms8+IRW
-         7gafbRQlntWVHl80vjAKNVyFBlEY9hNPCLOR8h+4mcXXngpyltUt/v12csBO+j3V34bg
-         t6riGtAXWWESa/TqICfMjtYcjkWgdM+WnctufZAphrnyZuV3Nipe5r0n9XvTcryjUgz8
-         A3fwd0jPNdIP2P75/hyr3ArHB8uqfrI+LuBkvGK1hDTiS4oqXxpGoIlTS7Mm9PRnD8OZ
-         c/7A==
-X-Forwarded-Encrypted: i=1; AHgh+RrAe/M1ax3QzFhXqUxKuOCxk6dbQHwwyKz94aVB9RJwfGMN1NK8MI/9DFaPRYWqrdsnx8m0DJFhZcu6TPs=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz3jxwbeek+V+4xjEM5aRpw2XOAFgasT36cHHRGo1Z4bHo6TZam
-	nYMWkKTe35wP4eiSfHIQF1nNc0aKKWbLy2ZHUH9ipLX7y1bWBrMmfvOt
-X-Gm-Gg: AfdE7clBnqRz8NATtLOHgg64SWUEgfKZ67DHhlnyzjNWN1OnW5LkWHTUXZ2AMmW3sjs
-	4qscG8o4ccUn4OrspEDeMJ7PFq9U+OLm8mBj7SbtI3qbHZXmG4W+8zbgWdhC0zhm5bX6yOHVZUg
-	c4P+6YwcStWZ646Q+HdGUYTfqA5GmSFfE864ZAmpkcuH6S/MV+wLfcdpH/8BcapaXHY46M59kP9
-	q9k9T3xVhy2SI8gmEKHcw4mhiL1aEo1M0GAlcEfKCwP2SBk3YQahT2nlxOcaw9ZMNhgYliOK8YA
-	I6iGKLU+nXTuNUu1572iYXSymk4PmrjTaqS46+9rZOb5rtaZdIGhUYnWvSg8cbcO4zQpZAP9EJ2
-	nwzIY0DHgbsZ2RNGxG4ePpoWIwGo8/3J+D3kU0pOd0y2Za1iKqRybQjM+FMbNZ+q01eufhDt2TL
-	xdRhyoAq7TSkKpD2pKZw==
-X-Received: by 2002:a17:903:2f87:b0:2c0:c262:b91f with SMTP id d9443c01a7336-2c718cb08b0mr212161755ad.8.1782225147522;
-        Tue, 23 Jun 2026 07:32:27 -0700 (PDT)
-Received: from ubuntu.. ([138.199.21.246])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c743bfe8aasm104014885ad.68.2026.06.23.07.32.24
+        bh=v+TAOPYwpBx1xjEypw6OnbYeTT5cz9GLufF0SvVZoFU=;
+        b=a5NkkMX2XObgxHv/yfvGoQqIzSzHOqwxbUqg+zRA+383YdYxnLWeg4+lQkjPpXnecK
+         IvBPwq89+htzQYgHPs+dt4uQAcoYF6gz3vSfwgLq+wV3RX72Z3526dmAofcb2R8jEvUz
+         wLWVAhrMGPjX7kiJ3zOONBHjgJmZO00shUhcyLZxJHVKr6vfUY078URs0OFlAGW1tuT1
+         qpFW6/EG+fD9b4ikorcoNQY32zMKKRNIT/PSb6CSf09Y0vlgRVUZxDOyqY78MEsV921U
+         anPOuz6Y+9dWY0BHkjcXpDr4Co7VavDQ2cgxUv2iRUKsPnjngXucbitQgmeMPjb79qP0
+         1+oQ==
+X-Gm-Message-State: AOJu0YxTelK+vfLDqJUpvmoOgq7Cx4CAOJINgsLPYHciu40Ykgn3a8/K
+	bFBe7KvynQbLPzXTrg2NW0wJ5VhX/Zbbp50RUqptXZK72LDrHHrYR9+T
+X-Gm-Gg: AfdE7clCYuvHjcJLvAPcQyP6j7tXBvLucm1XUSzXakmzrZm4FAdcXg0lc8odCDxj8sG
+	UgDxuIsM4DHD12JXYPuqn5ZbHgIW188P2ZrsnMKWOjTsmr9E9ICNUct1EFsfyRSDOmuPzHGNjoj
+	Hi2ISYMfDCywIZtSamv43CHdn9vtu5kd4BK3jRsbfs6NpakSBMN7tWlH7rrALjlQ/PAe0ZElPX1
+	coO2RHzbjYVDzBuTF5CErH1qcYBaYLzozgS0AR9F+7QR28+g3LuNyIPpP7HjlnsNB0CcL+LqxZw
+	AarWQ/JeR0x+I2/g5mNThy0LIT7ERAKliEy2QtMsPnZaC+ph4gwB+tqWzBq28VnZR+LY0MBNsGw
+	i6GqVzOC2SaeDCvtVuqFZpx0mM4fdMzPiRYvl2TksB+db/NgKFzmMuQCh6MYRqEZBhJlNkRxwVk
+	aEdxfql3/u+75UFgqwuvRIbzLcEo2zW7e8e84YPFltO/Qd+00ivQ==
+X-Received: by 2002:a05:600c:46d4:b0:492:348:ba08 with SMTP id 5b1f17b1804b1-4925b3940e2mr51736015e9.16.1782227281802;
+        Tue, 23 Jun 2026 08:08:01 -0700 (PDT)
+Received: from pumpkin (82-69-66-36.dsl.in-addr.zen.co.uk. [82.69.66.36])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49240f054e3sm383554275e9.2.2026.06.23.08.08.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Jun 2026 07:32:26 -0700 (PDT)
-From: Jing Wu <realwujing@gmail.com>
-To: gregkh@linuxfoundation.org
-Cc: jirislaby@kernel.org,
-	avorontsov@ru.mvista.com,
-	alan@redhat.com,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	wangzhaolong@fnnas.com
-Subject: Re: [PATCH v4] serial: 8250: fix use-after-free in IRQ chain handling
-Date: Tue, 23 Jun 2026 22:32:20 +0800
-Message-ID: <20260623143220.432877-1-realwujing@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <2026061213-blinker-portable-a198@gregkh>
-References: <20260529-bug-221579-8250-shared-irq-race-v4-1-cfda63b4420f@gmail.com> <2026061213-blinker-portable-a198@gregkh>
+        Tue, 23 Jun 2026 08:08:00 -0700 (PDT)
+Date: Tue, 23 Jun 2026 16:07:59 +0100
+From: David Laight <david.laight.linux@gmail.com>
+To: Paul Mbewe <paultyson.mbewe@ziehl-abegg.de>
+Cc: <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+ <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+ <hvilleneuve@dimonoff.com>, <stable@vger.kernel.org>,
+ <tobias.gannert@ziehl-abegg.de>, <joachim.knorr@ziehl-abegg.de>
+Subject: Re: [PATCH 2/2] serial: sc16is7xx: set TX FIFO trigger level to
+ half FIFO to prevent underruns
+Message-ID: <20260623160759.506f456e@pumpkin>
+In-Reply-To: <20260623140155.13258-1-paultyson.mbewe@ziehl-abegg.de>
+References: <20260623134536.24dca506@pumpkin>
+	<418f9ae5-8827-475c-b465-1271a784fbf1.bc56e27e-ecd8-43ae-bb87-75bfd472a28d.6a1433c9-1357-466c-bc0d-bc945bfc6062@emailsignatures365.codetwo.com>
+	<20260623140155.13258-1-paultyson.mbewe@ziehl-abegg.de>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-From: Qiliang Yuan <realwujing@gmail.com>
+On Tue, 23 Jun 2026 16:01:55 +0200
+Paul Mbewe <paultyson.mbewe@ziehl-abegg.de> wrote:
 
-On Fri, Jun 12, 2026 at 11:49:51AM +0200, Greg Kroah-Hartman wrote:
-> What real systems causes this to happen?  How are you triggering this
-> warning to happen?  How was this tested?
+> Hi David,
+>=20
+> Thanks for the detailed review.
+>=20
+> According to the SC16IS7xx datasheet, the TX trigger level is defined
+> in terms of free FIFO spaces, not remaining data. So with the default
+> configuration (FCR[5:4] =3D 00), the THRI interrupt fires when the FIFO
+> has 8 free entries, i.e. when it still contains 56 bytes.
+>=20
+> While this in theory leaves enough data in the FIFO, in practice the
+> system has to service many small refill cycles (~8 bytes per interrupt).
+> On slow SPI hosts, each cycle involves threaded interrupt handling and
+> multiple SPI transactions, and the cumulative latency plus scheduling
+> jitter can exceed the available margin between refills under load.
 
-The original report is Bugzilla #221579 from Wang Zhaolong.  The bug
-triggers on systems with multiple 8250 serial ports sharing an IRQ
-(e.g. NAS-like devices).  It can be reproduced by probing/removing
-8250 serial ports that share an IRQ.  Wang confirmed off-list that v3
-fixes the reproducer on his setup.
+But that cost/time is much the same regardless of the trigger level.
+Changing the level from 8 to 32 significantly reduces the allowable
+latency.
 
-> Shouldn't the function be marked as requiring this lock to be held?
-> Just putting in this lockdep_assert will not catch the static analysis
-> tools :(
+> Increasing the trigger level to 32 free spaces reduces the number of
+> refill cycles significantly (from ~8 per FIFO load to ~2), and increases
+> the amount of data written per cycle. This reduces scheduling pressure
+> and, in practice, avoids the FIFO draining to empty between bursts.
 
-Agreed, will add __must_hold(&hash_mutex) in v5.
+But shouldn't it should all catch up.
+The isr thread should start finding more than 8 bytes space in the fifo,
+write enough bytes to fill it and the next interrupt should happen about
+8 byte times after the previous one finishes.
+That does rely on nothing 'going wrong' between the hardware interrupt
+and the isr thread.
 
-Thanks,
-Qiliang
+What priority does the isr thread run at?
+If it isn't running at an RT priority then the scheduler might decide
+to reduce its priority which could easily generate what you are seeing.
+
+I'll agree that changing the threshold reduces system load - so should
+give extra time for 'other work'.
+But I don't really see why it be the correct way to stop underruns.
+
+	David
+
+>=20
+> The current commit message focuses too much on the "refill window" and
+> does not explain this aspect clearly. I can rephrase it to better
+> describe the interaction between trigger level, refill granularity and
+> system latency.
+>=20
+> Thanks,
+> Paul
+>=20
+> _______________________________________=C2=A0
+>=20
+> ZIEHL-ABEGG=C2=A0
+>=20
+> Executive Board: Joachim Ley (Chairman), Marco Altherr, Wolfgang Mayer
+> Supervisory Board: Dennis Ziehl (Chairman)=C2=A0
+>=20
+> Court of Registry: District Court Stuttgart HRB 746188
+> Company Seat: K=C3=BCnzelsau, Germany=C2=A0
+>=20
+> Der Inhalt dieser E-Mail und/oder jegliche Anh=C3=A4nge k=C3=B6nnen vertr=
+auliche Mitteilungen enthalten und sind ausschlie=C3=9Flich f=C3=BCr den be=
+zeichneten Adressaten bestimmt.
+> Wenn Sie nicht der vorgesehene Adressat dieser E-Mail oder dessen Vertret=
+er sein sollten, so beachten Sie bitte, dass jede Form der Kenntnisnahme, V=
+er=C3=B6ffentlichung,
+> Vervielf=C3=A4ltigung oder Weitergabe des Inhalts dieser E-Mail einschlie=
+=C3=9Flich Anh=C3=A4ngen unzul=C3=A4ssig ist.
+> Wir bitten Sie, sich in diesem Fall mit dem Absender der E-Mail in Verbin=
+dung zu setzen.=C2=A0
+>=20
+> The content of this e-mail and/or attachments may contain confidential in=
+formation and is intended solely for the named recipient.
+> If you are not the intended recipient of this e-mail or on its distributi=
+on list, please note that any type of disclosure, publication,
+> copying or distribution of the content of this e-mail including attachmen=
+ts is strictly forbidden.
+> In this case, we would kindly ask you to notify the sender of the e-mail.
+
