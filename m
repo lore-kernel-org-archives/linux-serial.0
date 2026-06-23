@@ -1,235 +1,257 @@
-Received: from DUZPR83CU001.outbound.protection.outlook.com (mail-northeuropeazon11022109.outbound.protection.outlook.com [52.101.66.109])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B58003D3CEA;
-	Tue, 23 Jun 2026 11:23:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.66.109
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782213837; cv=fail; b=UHzigdjF+C0wasivDNOUu0EOC5o5c2hQX6r8PRhcWEAg+wuWYut8y6vatL2FRVIFtHhZHX9YOAYcnUA7EVxDgl4OFZ2pzlAq7QpRl1DXa1km8b11vDTBMUiUz4DByxcKBcMQ0wEwk8J/Bl4c5r2Klg1ahDQfYRzgGguFzmJwoec=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782213837; c=relaxed/simple;
-	bh=Q0hmXLQEj/kmGWT0/bLPgfxY+1n+BLXkySRSEsh3S7g=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=B5059X2UqvSZL5k9xz+cTFYdTLoZc3RnRodnQ3SnX6DcP89OAmK6jTUL88dlqVcOD0tfG3A9kbk0B+JarU3xADN9t1vrCPa+m+EwiAeAyf+Wgbq2xBO/ObJw9Rwi1aHi2rXJM8AXxyDU4N5Pbp3wG+uDtY3FzwV57oC2c+8KqPw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ziehl-abegg.de; spf=pass smtp.mailfrom=ziehl-abegg.de; dkim=pass (1024-bit key) header.d=ziehl-abegg.de header.i=@ziehl-abegg.de header.b=RlZkGNSa; arc=fail smtp.client-ip=52.101.66.109
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ziehl-abegg.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziehl-abegg.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8D883D5222
+	for <linux-serial@vger.kernel.org>; Tue, 23 Jun 2026 11:46:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1782215167; cv=none; b=CoEI6MhoRZn4TCk1gKV0IyyMTS1x14Zayw+OBx3AaEAC1TxXoRj/33pVb6oyQQ3iIP4Su9IdV0ydWVLL6u1tQTFUCOSZKdA9bPvh9VKAomZIFhariVAK08Nb564sXv84NHuVdH4gtpECvmadDGKyclhOdYV1SHLLzzwuUZo/5lw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1782215167; c=relaxed/simple;
+	bh=Hso0a6UrliQE5puSOMxPFIsfnb5JdMwIZP9scKQqL2c=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=C70GMaUYzUAq5w/rcf/769ii5TDCLxxObHwd9p0ff3mcdVb4kPy4fWQKiim0G33W/J4bRzGJqPLDMA7wigP7WeEUziiXpXDEg3WpS06CUGVBehP0OTRq4bD4X10bCyud5P2UIiNllvw0jfghnXZFn/ummuV0zMgD4JdCRLQ+ubI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=exUMlBsl; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=BvcnztHI; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ziehl-abegg.de header.i=@ziehl-abegg.de header.b="RlZkGNSa"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=gnl2hPmlPgHDyEIy2MflL0CNuojXk4W5emtAMzTLmp2uMB4+7zXWmuWT83OAubUJaUOL9TMtZojRf9StKs5nNSSvAEmzIH/SQ7GPCKo3JABDAWzavZLX7W1dgagHirxn1WSvL5S2vrZtBi9ZlnLJ9w5haw3V8LvQVRrCzrs3nwpZs6CbeskQR5rSmzS4Fgv11/ykcVtfC0oT+5IQTJ9I+NOmHIZ+YV7DC4C4tCSmSW2sOD7uc1FczHSzGWTI/OYM2ct4ymUpC9+t6YjAFCsrl4aYbO17btstd9Ly7BnvR8aobPsNzM+8gGulD8apzjcjbCnxXB7MAb2y0xHP9B9nbg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=eaZAMQMHyAqLlHABN23P+XeQj+DmC7/C9UYdZFOWjxE=;
- b=xJ6OiYJGRy7YSiZxFdz+c+YgyRqW7XsFnOl2/ty8ol56xKpfwwca8yIDRg3eFJHjUtd8ecakwKe4m7nXxqaPLCUV2hRufhAhOk3xsNm8icm2nmHxhTWqw57G4EsVEJKuC9r6Ggq6tdMvUz34FxTOuCmONvmbIYrJ7VuKfSod6yoYFaTQRY+NQycWqIZvoRsosL1UEstjrs8lohE5TTgcPThmeI3HbCwfykY7OmTcYibOIqEgZAjtg+GuTtVuREU/B2ovM/iExfUx1bbCVoZtTaLWIyTQZyG/Ixw3BOFCjHvrEe/9YofSXbh7lQuJHieZdeAzqC3dlxGt/tLquSmVbw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 52.138.216.130) smtp.rcpttodomain=vger.kernel.org
- smtp.mailfrom=ziehl-abegg.de; dmarc=pass (p=quarantine sp=quarantine pct=100)
- action=none header.from=ziehl-abegg.de; dkim=none (message not signed);
- arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ziehl-abegg.de;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=eaZAMQMHyAqLlHABN23P+XeQj+DmC7/C9UYdZFOWjxE=;
- b=RlZkGNSaE+bq0Ip5ofZaTzUhwyRlGSR1sTH143kgJ4bNmuTKAfD1QvXkOidssfDhg7ElDDVhC3s3eEsmXClZ/0Xnm1zBHJPQoD79Zank1bTqT7ElYt2SC9PMKy3V87kSY+2HVVFf7TiDpWTYORDZGQyFLrHHy/wt7bVuEyRB918=
-Received: from DU7P189CA0006.EURP189.PROD.OUTLOOK.COM (2603:10a6:10:552::6) by
- GV2PR02MB11852.eurprd02.prod.outlook.com (2603:10a6:150:351::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.139.19; Tue, 23 Jun
- 2026 11:23:49 +0000
-Received: from DU2PEPF0001E9C3.eurprd03.prod.outlook.com
- (2603:10a6:10:552:cafe::41) by DU7P189CA0006.outlook.office365.com
- (2603:10a6:10:552::6) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.139.20 via Frontend Transport; Tue,
- 23 Jun 2026 11:23:49 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 52.138.216.130)
- smtp.mailfrom=ziehl-abegg.de; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=ziehl-abegg.de;
-Received-SPF: Pass (protection.outlook.com: domain of ziehl-abegg.de
- designates 52.138.216.130 as permitted sender)
- receiver=protection.outlook.com; client-ip=52.138.216.130;
- helo=eu22-emailsignatures-cloud.codetwo.com; pr=C
-Received: from eu22-emailsignatures-cloud.codetwo.com (52.138.216.130) by
- DU2PEPF0001E9C3.mail.protection.outlook.com (10.167.8.72) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.159.10 via Frontend Transport; Tue, 23 Jun 2026 11:23:49 +0000
-Received: from GV1PR07CU001.outbound.protection.outlook.com (40.93.214.97) by eu22-emailsignatures-cloud.codetwo.com with CodeTwo SMTP Server (TLS12) via SMTP; Tue, 23 Jun 2026 11:23:48 +0000
-Received: from PR1P264CA0072.FRAP264.PROD.OUTLOOK.COM (2603:10a6:102:2cc::14)
- by PA1PPFF94441E0E.eurprd02.prod.outlook.com (2603:10a6:108:1::266) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.139.19; Tue, 23 Jun
- 2026 11:23:41 +0000
-Received: from AM4PEPF00025F97.EURPRD83.prod.outlook.com
- (2603:10a6:102:2cc:cafe::92) by PR1P264CA0072.outlook.office365.com
- (2603:10a6:102:2cc::14) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.139.20 via Frontend Transport; Tue,
- 23 Jun 2026 11:23:41 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 217.6.247.99)
- smtp.mailfrom=ziehl-abegg.de; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=ziehl-abegg.de;
-Received-SPF: Pass (protection.outlook.com: domain of ziehl-abegg.de
- designates 217.6.247.99 as permitted sender) receiver=protection.outlook.com;
- client-ip=217.6.247.99; helo=mail.za.ziehl-abegg.de; pr=C
-Received: from mail.za.ziehl-abegg.de (217.6.247.99) by
- AM4PEPF00025F97.mail.protection.outlook.com (10.167.16.6) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.21.181.0 via Frontend Transport; Tue, 23 Jun 2026 11:23:41 +0000
-Received: from localhost (10.1.201.87) by vEX02.za.ziehl-abegg.de
- (10.1.201.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.61; Tue, 23 Jun
- 2026 13:23:40 +0200
-From: Paul Mbewe <paultyson.mbewe@ziehl-abegg.de>
-To: <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC: <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
-	<hvilleneuve@dimonoff.com>, Paul Mbewe <paultyson.mbewe@ziehl-abegg.de>,
-	<stable@vger.kernel.org>, Tobias Gannert <tobias.gannert@ziehl-abegg.de>,
-	Joachim Knorr <joachim.knorr@ziehl-abegg.de>
-Subject: [PATCH 2/2] serial: sc16is7xx: set TX FIFO trigger level to half FIFO to prevent underruns
-Date: Tue, 23 Jun 2026 13:22:25 +0200
-Message-ID: <20260623112225.82386-3-paultyson.mbewe@ziehl-abegg.de>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260623112225.82386-1-paultyson.mbewe@ziehl-abegg.de>
-References: <20260623112225.82386-1-paultyson.mbewe@ziehl-abegg.de>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="exUMlBsl";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="BvcnztHI"
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 65NBY2jj1156160
+	for <linux-serial@vger.kernel.org>; Tue, 23 Jun 2026 11:46:05 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	m5U5jjEW9F6IsBKiOyKcfNkewQXQpsrvSh1PrEY+JBU=; b=exUMlBslb0malfKz
+	wCVTsgbL6sHO2bs58FC2dSO2vcOdObXhisMaudGZqA+tvxqLVcxYMqo53yM5ZR3k
+	XgaFyf1xh5KgV/PPy3y70NVXa1uNxhmxw94+fRE5kzc861jjNTEkp8qJDvUWoR6K
+	rDO5jMbVYXVvf1I3jovyjDvZPXW+MH4biNZK3cbEceK9vZN4EZC304yp8g+n68sx
+	TbW5Sgatnbk8GjPZq4FkVYvsrOiIeJJyG9AyJpWJkmjeU+4evg7ol9N4Qb8sRU6Y
+	oR5lhUn7boKNCCKY7S/c+dL5/L+QKMpvL32nAU1kri1Ox2Sulta97j8lScjbM9h8
+	9+z2Gg==
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com [209.85.222.200])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4eyr28rc74-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-serial@vger.kernel.org>; Tue, 23 Jun 2026 11:46:05 +0000 (GMT)
+Received: by mail-qk1-f200.google.com with SMTP id af79cd13be357-91598ab3a1aso687510185a.3
+        for <linux-serial@vger.kernel.org>; Tue, 23 Jun 2026 04:46:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1782215164; x=1782819964; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:to:subject:user-agent:mime-version:date:message-id:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=m5U5jjEW9F6IsBKiOyKcfNkewQXQpsrvSh1PrEY+JBU=;
+        b=BvcnztHIDBzosmQ82QmQ2MMbQuqs6E3OokPRoy5EOrmxzSa87gk6eE4UTvN4yFO+3n
+         WEStobcZSvMpZLHUzGu7V5CUuRzkqLXyFWP4NBa3+eR0vY+OnXxzZXOzHLZqERqB8tex
+         H19TVV+Moc/Kb30M44bJz9D/sLWaRL2lTX+benm6riMk/8nfe/dSCv1qcFy5OwNyaIGm
+         SIjKQyVbdNyvNgorDMWffcZd68ipVw8DQ4GDm8XAzVxQu1sAI94/Iv7VVrK9fxlqqW9h
+         Uwwp8oN2PjKjsaLp271UfkYJbLJiHCci+1IXVkiRRJSqqchatwBJXtoIzSnkbaoDlX7O
+         +qwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782215164; x=1782819964;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=m5U5jjEW9F6IsBKiOyKcfNkewQXQpsrvSh1PrEY+JBU=;
+        b=EhSfyoT+f+M4XVcu1G3ULiOWZrzJd6R6b7EVPnTpRGGMH9qAirCbc62iAi22SsWkcW
+         Jsp0EUWYDDS/IxV5EXuTaJgzcq4H34MUzCRaTpS8hYBMNanmCaMWFNqni1h//+hPqqJF
+         NI+Cs2siYcXCCnobGx34PcgkXDzuNOaa2A79x9j6sHxExJ4aF4r34ObgbUT9Zh5FnAAG
+         4UVzC7h7DNHCuWloNoqdv192QbpJSIem9e4zh7eXEg0ifgM8tpM6bUY1WNi4pxBF+Lks
+         g/8RFT99I7/qUx1s4e4e2MHvqqVhiAMMLApI87CpGuuwuFYry4094OVb4AtwImw5G+ts
+         +s/g==
+X-Forwarded-Encrypted: i=1; AFNElJ8XrxnXnm69d0gsARQMVqw1lQ3jU2Kk/J6FQbhAsHW1vR7gx9zBD3U0BxCIXrV1X0len4ZkauiBKqLkhec=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxHQJSiHR8uYWX+VPq7xYfBCAIPE0bRXXQPyWG+4K94hVavani1
+	zOI5yCCddiINwDHNlI1JAhYClBqH0o8uYW76Y6pIAthPRCVyzrFOq9wOUH7oxunOAAK+vIRS/iE
+	k74rj6Hm8thtmYkvedCma4NOHHVfWG7qdfJ6juvx0Jfdt8X6d2j17LvPqvCbahmvnL/s=
+X-Gm-Gg: AfdE7cmovVD4YThwolUgtYCLF7PS9JimLr5+d5g5J2myyN1m5WvmMDjN/0ghjQpo5I9
+	OkhjyEM96oY3tj+l2pYlD3QNkMIhKKPmssAJU6G41gRQ2ex+DFbhgpU8aMfqO46vL0HiHaOEInb
+	lBG+r/g6TyDI4CcqwaOcIOJewWZSNmvHfkEJQijBvYYNnwJ1Lkc365a7P2dvssYG34vja5fdm5+
+	xGzeGePmrthf9DzRC56r+K1nOCDDokO9EyyI3iTwUS1qJhJoW9HtQV35o4Zr7xY933fOuaV96Pt
+	rubu2hRLFXPzgC8fqZ+WXjODPD3CYOvcvVMA0EBGnKNUsjOzW/46VAgaVabkpw26MzrYZsfMFrn
+	9ZAC+C+bOgI2uNiW5OxHE6jMsAMKIrf+N7oCIkmR5OlTzZDzi0nf198a79swUTz0NO2LOaBrnFA
+	==
+X-Received: by 2002:a05:620a:4625:b0:915:d322:c47b with SMTP id af79cd13be357-92645aa5b4dmr405210785a.13.1782215163935;
+        Tue, 23 Jun 2026 04:46:03 -0700 (PDT)
+X-Received: by 2002:a05:620a:4625:b0:915:d322:c47b with SMTP id af79cd13be357-92645aa5b4dmr405194985a.13.1782215163149;
+        Tue, 23 Jun 2026 04:46:03 -0700 (PDT)
+Received: from ?IPV6:2a05:6e02:1041:c10:21db:9254:19d9:645e? ([2a05:6e02:1041:c10:21db:9254:19d9:645e])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4923fe7ba08sm370702135e9.11.2026.06.23.04.46.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Jun 2026 04:46:02 -0700 (PDT)
+Message-ID: <b35abbd7-f06e-4794-91a1-bdaccd63af50@oss.qualcomm.com>
+Date: Tue, 23 Jun 2026 13:45:59 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-X-ClientProxiedBy: vEX01.za.ziehl-abegg.de (10.1.201.105) To
- vEX02.za.ziehl-abegg.de (10.1.201.106)
-X-TM-AS-Product-Ver: SMEX-14.0.0.3239-9.1.2019-30024.005
-X-TM-AS-Result: No-10--4.312200-8.000000
-X-TMASE-MatchedRID: q5UJ2wehuDckDlvy+ffZUzZ4NKr/TszH7814D0cDbtDKAd0YkM9ab5j2
-	vOXaN4CszPfm3fNtqgKn580SYyFa2PS+I4N0lniB7yR/hLt1y2hBqFX02wvtDzJl3k9vFQK8lD+
-	GIBs9iQepD+/GDBR8n9akduhEokwBo91Bfe4M/hNch/PYekr/BJQLKJadRcalLgvRN6KVzVH7WV
-	YxF/s3BHFv5c46i5n2F3jricVIA+fHmKc8+sjQVFJTtM6CHKVOgdXztqOEBnBRCkSxJRCOByAtO
-	k0TFyJTl/ETfolbQGB2AlnmjIjYf9vUNTm/lfkGsB15x1ZALMW9lzVGWamWgOH7RHkgEpGyv9rS
-	d36EgULQoHBWslVIiAe98bp28iq6V93NVRFdgSdDxHBP9yEsTZFFWyA10lpHJQrjMEMuzZp7suh
-	/AKf/E3DLHVQqp8D4H//4RiQO7F0oFPancsWKldnNPL8uqbTpqqX6uXlOMLLzxM9/7084CIf4l3
-	W0tVe7u49q1sWEC7dHBp5ZT1n34TddPuHwt7TAxYVzI3UCCaY=
-X-TM-AS-User-Approved-Sender: No
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--4.312200-8.000000
-X-TMASE-Version: SMEX-14.0.0.3239-9.1.2019-30024.005
-X-TM-SNTS-SMTP: 053DDB8CDFC445236748F2C390F8A0893967896AABD8A6E27DDC1B18A7F2C7772000:8
-X-EOPAttributedMessage: 1
-X-MS-TrafficTypeDiagnostic:
-	AM4PEPF00025F97:EE_|PA1PPFF94441E0E:EE_|DU2PEPF0001E9C3:EE_|GV2PR02MB11852:EE_
-X-MS-Office365-Filtering-Correlation-Id: cc3ba97e-3987-48a5-bbe4-08ded119e603
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam-Untrusted:
- BCL:0;ARA:13230040|82310400026|1800799024|36860700016|376014|23010399003|22082099003|18002099003|11063799006|56012099006|6133799003;
-X-Microsoft-Antispam-Message-Info-Original:
- ur2YwWt1IMTX5u0IOp5B4uyRhDkEaiye6nh10cxKNH8mDY/lJ9gW2eY2wvq8wrOZJBu9d/FI6s4Hb8ajYL8/g7mwGodXIPjS8Za8m5U//sMu7pOWfoqNb6XGUNuarsiZOPhDTLaQGxBj1BQyKqh/pdRrhHU7JR4h2UuT0cxJPaY/ERkRLsBzhoa/W4M8g3pMsDGMcmjTD/gbNFWNr2GsgAWgE85BEwv3dX7ao474SYk6i96TwODmzozUCW2ScwvUE5tXLgpz4fRLKm52uTS5DSjVFnmd0JeOvhhczexrHG2tlv2e+ntm7o9VgdTU6Z3Yk2D6nWycv1sXpkC/DRG5B1J3WOEmtHpiwXUjFk3O+8T4i172CSf9qKawKOJOU029u+W1F30s2DsGcBE0dZQdlyCfM4ocUYxv4rlW3E6pVJYnTbvq3aFVVGQdKKePMLXEJws5sqDoOh2SE5Z8ZkQC7nwJIKH2JIM1W3XTUceJCc39Ezhy51TcDFHOFP+qKUHoflI7dipGtrRWO8MwTsqoDb0rSfeeYKdr7fDqDv+E/K6qUKkO7ttBtV+YTLr/vDUezRGZMWfYRKGKAmn942ISLgtqi4Q+qbPiWmvNeiOf/PijeCY/dlM7CpxhHlGixCOYc5jjQ6uxMn9oqOhlBrX0S75FxE87pC88IiUY1/P9+XsbKn/yIYUezx3w2Aj2QYTbWf3O5ZUct5+rPVSNBuAFUw==
-X-Forefront-Antispam-Report-Untrusted:
- CIP:217.6.247.99;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.za.ziehl-abegg.de;PTR:nix.ziehl-abegg.de;CAT:NONE;SFS:(13230040)(82310400026)(1800799024)(36860700016)(376014)(23010399003)(22082099003)(18002099003)(11063799006)(56012099006)(6133799003);DIR:OUT;SFP:1102;
-X-Exchange-RoutingPolicyChecked: RwhqzAd1NdFplAICPeJoSs5yzRJWe5PZloMLar5WFfQdfEp/rLGKj8qvPXdTfBb/+ISyuNgk68SdZWDKdSojRhzboL5ybt+pb9Oz6n8VpwfQCLDmEMc/u/JEVMIjIU/OJLtpiaQXVkf67asi4UisFR4EwcFBCaAcZmzIheHAz3yonGU5f+4+82wMV+05+inYon6y1m5cIROef8tBG+iCw9fZazR+dw20SvVVXwjcXNt0knGMNDP0pJeDuDPkF8s5QHyMO/icxUrQF45me5+Iioy+sQFPsb0fZBZfYLSBSBqrPCA1mgV7XCtzgQaICwo+soHn485X1+bgF1dol3tVKQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA1PPFF94441E0E
-X-CodeTwo-MessageID: 7f96e497-eb27-49da-a459-7e4e6d72fe6e.20260623112348@eu22-emailsignatures-cloud.codetwo.com
-X-CodeTwoProcessed: true
-X-MS-Exchange-Transport-CrossTenantHeadersStripped:
- DU2PEPF0001E9C3.eurprd03.prod.outlook.com
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id-Prvs:
-	f851a209-4f5b-4ca2-c5dc-08ded119e151
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700016|82310400026|23010399003|14060799003|35042699022|1800799024|376014|18002099003|22082099003|56012099006|11063799006|6133799003;
-X-Microsoft-Antispam-Message-Info:
-	0BW+psEpnRyj9X2BKxxZ4+3NnjVCUO0GS6qgx6HbM/mnWWbHfCVKhh31IFgN3yrO9Hkp0N2RDW6ZsCyTlDS4rDw3Oq81SsbVvyxwTSBOwbHF5yJaFxUFaP8Pvx4/mxB1rcHMSY+fIkmBc+HXWmAnGIPODd6oPWCyZSWK+chBfp+PAEtw3YxwHg3BM3xbaM8qkwJngifwbXUnYHHevYs5jCEWTQbr8Vlt4zYESPgVNsW/rqI9NwZQb9dNAKKL/OvfU1h3upnGlQAr8fMGAhHPz6Cq2u3y6cxxnXjalLot3u6V0y8buqX/s9A+W82BKr/MAvGBLGGuwJz1xP9zkqPq9NGZahPy26FpOeOwYu4GR84cCl2E5LHFb1VOo+vnE1co3CZwQYx77nN8nSr8RaFGunhHwSI3bBULS0LQCIDoJS7Rp9Jyy6GE4Wy01dqOTxQDfZmMfdIg/RUnAF1fi0x0iehdYRN689MzeNhntmYxpD3NapR3iFE51HK8rnsi4xJecPZshdkyrjcrF3Y3PU+UyNtayTkqFyRuePTAQfqj15HEEuV10mEUxIsEtZId22wKofhWh7crlBPQ9SSvwdbboCAUOrXxSQFNFBpuGwkdaG6Yzq3Qk6WlcQwXSeBYBYa+9OjMOBf8Ebr5ytkfqrGA5uE+LT0RM0UiNC7AF4LYx3A02X5Cz5vU+Dip+uA4I1T408kR10eL5xtyJGptmAuIgw==
-X-Forefront-Antispam-Report:
-	CIP:52.138.216.130;CTRY:IE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:eu22-emailsignatures-cloud.codetwo.com;PTR:eu22-emailsignatures-cloud.codetwo.com;CAT:NONE;SFS:(13230040)(36860700016)(82310400026)(23010399003)(14060799003)(35042699022)(1800799024)(376014)(18002099003)(22082099003)(56012099006)(11063799006)(6133799003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	LYIgG8He2PzKfhJcUYH9mD7IfyHKzx1z70tnI6vKzgL+0PsqvrbjgUQ1ja5wNuuLE/UK9DVegfN1GiCkJyF7/CQAjSXhGTzLV52VQl5dbeQ4h/oK+ICDakg5QXWfbNc4aXqQNMvPliHQa9t/lR7/K7wo6UQtWW5QIRTuJCiSB0xdAxmVuQ7S/Zw2efroU50sbpVFQGIuDfQpu6FDNx2688GZmpjcYZ5Upa2GHNnsPj4QOkbGFI1yKe/EGH9AIhE673bTzTMv66ZVwANilYg+YIjH+ZCWJ9HG0MQqIhkA2bCR3QI+cLnLWylOB2DDMqmNYpBzFEhnHObxzJvcSz3Fes1ysUB1tBmL9w1PeTD2z92huUglBEY30OwJAMpyHfqxeODh3+M1fvPww3qscx+rvBnxX17ScUQUCLIGH1pwnplh0+XiUxAIUd5RExUtT7mV
-X-OriginatorOrg: ziehl-abegg.de
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jun 2026 11:23:49.6466
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: cc3ba97e-3987-48a5-bbe4-08ded119e603
-X-MS-Exchange-CrossTenant-Id: 11a5c065-3ef5-41f0-92f9-a77cbf208c03
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=11a5c065-3ef5-41f0-92f9-a77cbf208c03;Ip=[52.138.216.130];Helo=[eu22-emailsignatures-cloud.codetwo.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DU2PEPF0001E9C3.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV2PR02MB11852
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/2] dt-bindings: Drop incorrect usage of double '::'
+To: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+ <conor+dt@kernel.org>,
+        Peter Griffin <peter.griffin@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd
+ <sboyd@kernel.org>, Brian Masney <bmasney@redhat.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Sam Protsenko <semen.protsenko@linaro.org>,
+        Rob Clark <robin.clark@oss.qualcomm.com>,
+        Dmitry Baryshkov
+ <lumag@kernel.org>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Jessica Zhang <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Inki Dae <inki.dae@samsung.com>,
+        Seung-Woo Kim <sw0312.kim@samsung.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Andi Shyti
+ <andi.shyti@kernel.org>, Georgi Djakov <djakov@kernel.org>,
+        Lee Jones <lee@kernel.org>, Pavel Machek <pavel@kernel.org>,
+        Hans Verkuil <hverkuil@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Ulf Hansson <ulfh@kernel.org>, Peter Rosin <peda@lysator.liu.se>,
+        Vinod Koul <vkoul@kernel.org>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Linus Walleij
+ <linusw@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Javier Martinez Canillas <javier@dowhile0.org>,
+        Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Srinivas Kandagatla <srini@kernel.org>,
+        Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
+        Jonathan Marek <jonathan@marek.ca>, Taniya Das <quic_tdas@quicinc.com>,
+        Robert Marko <robimarko@gmail.com>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        Adam Skladowski <a_skl39@protonmail.com>,
+        Sireesh Kodali <sireeshkodali@protonmail.com>,
+        Barnabas Czeman <barnabas.czeman@mainlining.org>,
+        Imran Shaik <quic_imrashai@quicinc.com>,
+        Sricharan Ramabadhran <quic_srichara@quicinc.com>,
+        Anusha Rao <quic_anusha@quicinc.com>, Luo Jie <quic_luoj@quicinc.com>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Chanho Park
+ <chanho61.park@samsung.com>,
+        Sunyeal Hong <sunyeal.hong@samsung.com>,
+        Shin Son <shin.son@samsung.com>,
+        Krishna Manikandan <quic_mkrishn@quicinc.com>,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        Jaehoon Chung <jh80.chung@samsung.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Alina Yu
+ <alina_yu@richtek.com>, Andy Gross <agross@kernel.org>,
+        =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
+        Wesley Cheng <quic_wcheng@quicinc.com>, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        linux-i2c@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-gpio@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-sound@vger.kernel.org,
+        linux-usb@vger.kernel.org
+References: <20260622101606.485961-3-krzysztof.kozlowski@oss.qualcomm.com>
+ <20260622101606.485961-4-krzysztof.kozlowski@oss.qualcomm.com>
+Content-Language: en-US
+From: Daniel Lezcano <daniel.lezcano@oss.qualcomm.com>
+In-Reply-To: <20260622101606.485961-4-krzysztof.kozlowski@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNjIzMDA5NiBTYWx0ZWRfX+iMxYI6TyN23
+ MYL4KWtEDznCvwM+6WeXAvq1/uAmTcSKM69rxiga1j1uR6U9y7JCcyMPZdcU7QT9q9LqthOdVBd
+ kma/C+305KBsiLPbjOnBMsb08rjnypQ=
+X-Authority-Analysis: v=2.4 cv=b4KCJNGx c=1 sm=1 tr=0 ts=6a3a71fd cx=c_pps
+ a=hnmNkyzTK/kJ09Xio7VxxA==:117 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10
+ a=FelO9ux0wxsA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=u7WPNUs3qKkmUXheDGA7:22 a=yOCtJkima9RkubShWh1s:22 a=fqWYVyBuAAAA:8
+ a=EUspDBNiAAAA:8 a=p1VIHm5NO6eVjb5xVX8A:9 a=QEXdDO2ut3YA:10
+ a=PEH46H7Ffwr30OY-TuGO:22 a=3EkFFxAVN7Xjp7FSp-fE:22
+X-Proofpoint-GUID: Z8B1BknndzTVaI8UYdktURqFI4FNFl7K
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjIzMDA5NiBTYWx0ZWRfX4UX7/RjC5rRY
+ mWO12y6yoQfWTCAnIyBhiBVmlEwbtFAx0X0mJvN+7q2s4XSoNv5YfZCySNw8IC3vO3yZjDTe5zf
+ B/bzTJhaA8TrlPLGu4Jqbh0bOd9Vhy3rQbSDIq4R18x8nE55YtObTZpV8vnE+AdwKvrEZJ7p6qg
+ MMSQ1T0f2fT1nLTf1u40Vn7ijAvprvwfwmTVgdgJlYoynrMUQ9G2FZo1BjJfT0kmt94DlkcylSc
+ bhXWfEj/Yx14kSq5g97J/B1gQi+MfhyjYKyp6L1P28wAEVCyTQYo5r3DeWGKGjLcB/0wETduNe4
+ auNPOvxyq3MsxrQIufZO3IfMDt/aMKLYkqGZ14pHnJOJafxaGQ20oLiUrBbBZi3tINZWPQIX+Vc
+ O61v/7sO+oDQg5dFz7BIDqYqyIL1PGJJl76gvGIY2pZjzfyvba62IMIWsJmrLJZVPIxskfxMmRl
+ OnrjIdsaFE50Zy58iyQ==
+X-Proofpoint-ORIG-GUID: Z8B1BknndzTVaI8UYdktURqFI4FNFl7K
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
+ definitions=2026-06-23_03,2026-06-23_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ lowpriorityscore=0 bulkscore=0 adultscore=0 impostorscore=0 spamscore=0
+ suspectscore=0 phishscore=0 priorityscore=1501 clxscore=1011 malwarescore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2606230096
 
-The THRI interrupt (IER[1]) fires when the TX FIFO free space reaches the
-configured threshold. With the reset default (TLR=3D0), the chip falls back
-to the FCR TX trigger of 8 free spaces (FCR[5:4]=3D00), causing THRI to
-assert after every 8 bytes drain from the FIFO.
+On 6/22/26 12:16, Krzysztof Kozlowski wrote:
+> There is no use of double colon '::' in YAML. OTOH, the literal style
+> block, e.g. using '|' treats all characters as content [1] therefore
+> single use of ':' in descriptions is perfectly fine, whenever '|' is
+> used.
+> 
+> Cleanup existing code, so the confusing style won't be re-used in new
+> contributions.
+> 
+> Link: https://yaml.org/spec/1.2.2/#literal-style [1]
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+> 
+> ---
+> 
+> Intention for this patch is to go via Rob's tree.
+> ---
+>   .../devicetree/bindings/arm/qcom-soc.yaml     |  4 ++--
+>   .../devicetree/bindings/arm/qcom.yaml         |  4 ++--
+>   .../bindings/arm/samsung/samsung-soc.yaml     |  4 ++--
+>   .../display/msm/dsi-controller-main.yaml      | 20 +++++++++----------
+>   .../display/samsung/samsung,fimd.yaml         |  4 ++--
+>   .../bindings/i2c/samsung,s3c2410-i2c.yaml     |  2 +-
+>   .../interconnect/qcom,msm8998-bwmon.yaml      |  2 +-
+>   .../interconnect/samsung,exynos-bus.yaml      | 14 ++++++-------
+>   .../bindings/leds/qcom,pm8058-led.yaml        |  4 ++--
+>   .../bindings/leds/skyworks,aat1290.yaml       |  6 +++---
+>   .../bindings/media/cec/cec-gpio.yaml          |  2 +-
+>   .../bindings/mmc/samsung,exynos-dw-mshc.yaml  |  2 +-
+>   .../devicetree/bindings/mux/mux-consumer.yaml |  4 ++--
+>   .../bindings/phy/samsung,mipi-video-phy.yaml  |  4 ++--
+>   .../bindings/phy/samsung,usb2-phy.yaml        |  2 +-
+>   .../bindings/phy/samsung,usb3-drd-phy.yaml    |  2 +-
+>   .../bindings/pinctrl/samsung,pinctrl.yaml     |  2 +-
+>   .../bindings/power/renesas,rcar-sysc.yaml     |  2 +-
+>   .../bindings/power/reset/restart-handler.yaml |  8 ++++----
+>   .../bindings/regulator/maxim,max77802.yaml    |  4 ++--
+>   .../bindings/regulator/richtek,rtq2208.yaml   |  2 +-
+>   .../bindings/serial/qcom,msm-uartdm.yaml      |  2 +-
+>   .../devicetree/bindings/slimbus/slimbus.yaml  |  4 ++--
+>   .../bindings/soc/qcom/qcom,apr-services.yaml  |  2 +-
+>   .../bindings/soc/qcom/qcom,rpmh-rsc.yaml      |  8 ++++----
+>   .../bindings/soc/qcom/qcom,wcnss.yaml         |  2 +-
+>   .../bindings/soc/renesas/renesas-soc.yaml     |  4 ++--
+>   .../bindings/sound/qcom,q6asm-dais.yaml       |  2 +-
+>   .../thermal/samsung,exynos-thermal.yaml       |  4 ++--
 
-At 115200 baud 8N1, 8 bytes drain in 694 us. On slow single-core SPI
-hosts, the combined latency of an SPI IIR read, TXLVL read, and 8-byte
-THR write per interrupt, plus kthread scheduling jitter, can exceed this
-window on a loaded system. When the kthread cannot refill the FIFO within
-694 us, the FIFO empties and produces an idle gap on the TX line.
-
-This violates the Modbus RTU specification, which treats any intra-frame
-silence longer than 1.5 character times (~130 us at 115200 baud) as a
-frame boundary, causing receivers to fragment frames and report CRC errors.
-Oscilloscope measurements confirmed a 757 us inter-burst gap during
-continuous transmission without this fix.
-
-Setting the TX trigger to 32 free spaces (half FIFO) via TLR[3:0]=3D8
-widens the refill window to 2778 us at 115200 baud, reducing THRI events
-per 256-byte frame from ~32 to ~8 and eliminating the underrun.
-
-Only TLR[3:0] is written; TLR[7:4] is left at zero, so the RX trigger
-retains its FCR default. Only TX interrupt timing is affected.
-
-While increasing the SPI clock would also reduce per-round-trip latency,
-the driver should work correctly regardless of SPI speed. The fix belongs
-in the driver.
-
-Tested on i.MX6ULL (ARM Cortex-A7, single-core) with SC16IS752IBS over
-SPI at 1 MHz, 115200 baud 8N1, 256-byte Modbus RTU frames under production
-load:
-
-  IRQ thread (irq/134-spi2.0):  ~15-17%  ->  ~5%    (~67% reduction)
-  sys CPU:                       ~51-61%  ->  ~19-28% (~55% reduction)
-  load average:                  ~2.0-2.2 ->  ~0.65-1.3
-
-No mid-frame gaps observed after fix. Without fix, oscilloscope confirmed
-757 us inter-burst gaps causing Modbus frame fragmentation.
-
-Cc: stable@vger.kernel.org
-Reported-by: Tobias Gannert <tobias.gannert@ziehl-abegg.de>
-Tested-by: Tobias Gannert <tobias.gannert@ziehl-abegg.de>
-Reviewed-by: Joachim Knorr <joachim.knorr@ziehl-abegg.de>
-Signed-off-by: Paul Mbewe <paultyson.mbewe@ziehl-abegg.de>
----
- drivers/tty/serial/sc16is7xx.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
-
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.=
-c
-index 395a219280be..476e0dd3fa7f 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1196,6 +1196,16 @@ static int sc16is7xx_startup(struct uart_port *port)
- 			     SC16IS7XX_TCR_RX_RESUME(24) |
- 			     SC16IS7XX_TCR_RX_HALT(48));
-=20
-+	/*
-+	 * Set TX FIFO trigger level to 32 spaces (half FIFO) via TLR. The reset
-+	 * default (TLR=3D0) falls back to the FCR TX trigger of 8 free spaces,
-+	 * requiring ~8 SPI round-trips per 64-byte FIFO load. On slow single-cor=
-e
-+	 * SPI hosts, this accumulated latency can cause a TX FIFO underrun gap
-+	 * between bursts.
-+	 */
-+	sc16is7xx_port_write(port, SC16IS7XX_TLR_REG,
-+			     SC16IS7XX_TLR_TX_TRIGGER(32));
-+
- 	/* Disable TCR/TLR access */
- 	sc16is7xx_port_update(port, SC16IS7XX_MCR_REG, SC16IS7XX_MCR_TCRTLR_BIT, =
-0);
-=20
---=20
-2.43.0
+Acked-by: Daniel Lezcano <daniel.lezcano@oss.qualcomm.com> # thermal
 
