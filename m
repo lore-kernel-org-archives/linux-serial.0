@@ -1,872 +1,183 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from MRWPR03CU001.outbound.protection.outlook.com (mail-francesouthazon11021115.outbound.protection.outlook.com [40.107.130.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDBF63446A7
-	for <linux-serial@vger.kernel.org>; Tue, 23 Jun 2026 05:49:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782193753; cv=none; b=skdoHbKM0SfjogBnzqW05NA4qB2dmV4VGtwwgzunwWDQTeYS3K11jyjhvaAHukxAFmWZoA4zlUjpB+0n1D1sEb56AqX4t2wnH+XeLhDjHtPcUyxZQO912bkDuBIE6jLvl97DmaXw5TaFA7mTbajZULWSYIJXXJiCwyQmNY5yXiY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782193753; c=relaxed/simple;
-	bh=Vm8XlvRcgjz05PgRySDfUm9lFHZJO0uf5woeuXrLjew=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=jLCk/WzmgMJIdlLMYAJT2pofOeaIE2hUq9f3xaYDht+/On0pGCP06lHAeEsN0hK6EXUQx5NAL7WAsDBZiM+HetUlxyf/gmkJ6PuWmcao2VrgGG+p7XcCDDtlzE1bjqzzpSM148UsUKxZFersxmWm52i0UibeyoDUXnbuXITgnCo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=NW/6UN83; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=IWmQmVvd; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B09273D3CE3;
+	Tue, 23 Jun 2026 11:23:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.130.115
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1782213820; cv=fail; b=CEqmEWVDw35suv9Tk65ia19V/Br1EjgdrRX1QmgjUUAJeMIZgmlQS8L1dTXLrwuEWtAi3YH3capUbeLsm7CUa827xC3ovzrNPfAIMV8pbwdsdgiPs+Jm5nDz95L4SQr7Q903YSBEsP9o9bkcdujaznrn9Ye4i6KF5I8d4EtrlMc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1782213820; c=relaxed/simple;
+	bh=PhKJWT2T/4JUO1YO1cpz1P8Zr7cVivdi8+ffl0x9prI=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=oIWSmJWjbrcKcLzTnpp94swbxx9g0EBXDMKVbMD6rwgIpV0xzRP3CIFwv8ncFXMnNuGpWoJM8lo1qefUj81NfExRfracf2kf49qtSXuJF7tXUAh+pVmuxaSS6bronew0E2NwQgwj6HdoY8IL0d352Z06i6ZHVT0TkcksCwILmsU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ziehl-abegg.de; spf=pass smtp.mailfrom=ziehl-abegg.de; dkim=pass (1024-bit key) header.d=ziehl-abegg.de header.i=@ziehl-abegg.de header.b=SiUB6TJ1; arc=fail smtp.client-ip=40.107.130.115
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ziehl-abegg.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziehl-abegg.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="NW/6UN83";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="IWmQmVvd"
-Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 65N1Y3pu2672605
-	for <linux-serial@vger.kernel.org>; Tue, 23 Jun 2026 05:49:08 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	JVEyJPEKd+xfdNe50U6LLMuP6LB9ZfnvXc7jr9pkP9A=; b=NW/6UN83Tvl+J1G1
-	wBqIrsaxZBw2QnMk/w0AQtf7JGebl5I2vK+13758BaSy4ut22nT88OMLE4LhcDn8
-	cLoOAOoZ+VJ2lpvjOfvD1A7fl1Oz1K7cLswhW9EJfxUFEkIxQ6vjIKVo+T3LZPgA
-	qL64+vGQ9oQKdgafRY2OBgAGnFOsrUqD3MpXjvAAozxCHh3IgUizf247ya5hAHBz
-	+CU95Q2NzQSCCjyKevqFNcs12oz3xwUjv9wjLDiT538JoE6hHFGazy5pzF5DNFtf
-	OwbqU/a5lzaASFBCGx5SvLm+FY901G9/gbjmwtw7v/9Izpiu/1XD2gJN3CxKIeoi
-	5mGu0Q==
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com [209.85.222.200])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4eygkjgr5v-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-serial@vger.kernel.org>; Tue, 23 Jun 2026 05:49:07 +0000 (GMT)
-Received: by mail-qk1-f200.google.com with SMTP id af79cd13be357-921ed86ddeaso573577785a.3
-        for <linux-serial@vger.kernel.org>; Mon, 22 Jun 2026 22:49:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1782193747; x=1782798547; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=JVEyJPEKd+xfdNe50U6LLMuP6LB9ZfnvXc7jr9pkP9A=;
-        b=IWmQmVvdDatByxLnlaEfV3REDN/Q66iI9Btu8BVCy5JPA8BfkIZXO9vrbPLJOel5YI
-         Xjd2VI/HyiJgLg6YJDHRdjOVLcfqrAk40LXeewMb31grB9LowhKxakZ1OyIqcitP7DZY
-         4UHPKCOhd111AQE5Pz9H1e2FhTKun2aeva59DrmKCHh9BaweCoY7rnySS+zpP5kuS3v+
-         kmVSuQkU+w6t/TK2H9EoWhuiUbo3BB40on74HjqP42BTXwkD6WYtXlVQtn2DOqO9NRqH
-         0L214sbMAbMEqNTkNxdInHfhTV9SYSkDbWOfRJhvRRx6Zu6vWJnLLMQ9ATo6eUcpVJbb
-         w3Ow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782193747; x=1782798547;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=JVEyJPEKd+xfdNe50U6LLMuP6LB9ZfnvXc7jr9pkP9A=;
-        b=dEzkNTFoGfYx3lSrh14STosifEI38ovKCuX1Lkuo+N1MHIkAIY4bAlDWqKDtyun/dt
-         eaAtSVsaZdWZSZQ2ffC7lKQVIFpeSTiktOnemtMQeeWO1Be60vsIE5iZHVzb0n9yqXiX
-         xpSPMs2mHRsTWnOdsQwsthwq9DnBWuZZQkzXyYQ9qF93fnX/n75TtqIRe1T2TzlHqsEC
-         FVOQ4WgkpK+9s5ujESrf+TMIsvF19dWHfIiZ3mVHEq/+VB4TAnZB6lAPaUYp7Zahs8hT
-         eEFAzrv6epuxxixfU7FEDiVsORRlgsTBz7kmkt/mqQZb4SVtKgh1x3zk3ftfYJrfrYFJ
-         Bi/w==
-X-Forwarded-Encrypted: i=1; AFNElJ8+7OzkbT+fa0lt5xu6OhI9rEZKNUYMT1Wy2mc0DrIRQCwwO78l089HFj17GK0Gguz/kszqXbhDHlR/PYo=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzJq5rTZgLUz2JpnvbNIK5+rv4B8HFTVUfiqmTWgIEVKFJ1X/kJ
-	DQRn9YLvbdPtyWiNlqnPTR9htPp/fiJQY5k7wHYpPuuodIzS1WHHv3mTZuF2qfDTPqs0xzeBckY
-	rlvLfLnFo7Z2GXg8yK8SJKMAKv4zoQyPGxGU9ZFcfGeEK70GA0PSUsPdxhz5ZhbgIsMY=
-X-Gm-Gg: AfdE7cmr2AiKWH4py/7JLYnYOa0epU/KivCDSmlDbrstiqU/h8KYWVONPz/JuL4f4KX
-	+dp2rQqllCxHS+6+V532Nqm9FeM1AEDLtLx2Ym0WLByqpZurajf0nrL+2X/mm5hCkkv7kvSoSn9
-	vHBvlfLRqqiaOznroqLVgRjfmLdmceXLV7AUSnNo3SSMV/3ZT7A/jy97l2aMTPexz5hGwu2GeJF
-	Fxx+UGQ6MpQ/GXttG+6GUnADyH5tIINrX3MPuHDn5ipfcOsI/DXvLgKdTvEpkAOUvXfQZfCNi6y
-	NZ33Tog24uJIwk44EPXTSXXO2iOhC8j3aqqffHyPOxx3GB2fEl1HXl0tLEPDvtTChpO5+LVxq5Z
-	4cC8Ug/dVS5ayV8vceC2wAFHkvqw=
-X-Received: by 2002:a05:620a:280e:b0:912:67ca:bac6 with SMTP id af79cd13be357-920913955d3mr2773581885a.26.1782193746424;
-        Mon, 22 Jun 2026 22:49:06 -0700 (PDT)
-X-Received: by 2002:a05:620a:280e:b0:912:67ca:bac6 with SMTP id af79cd13be357-920913955d3mr2773574485a.26.1782193745589;
-        Mon, 22 Jun 2026 22:49:05 -0700 (PDT)
-Received: from quoll ([178.197.218.240])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-46666c579dfsm32588915f8f.31.2026.06.22.22.49.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Jun 2026 22:49:04 -0700 (PDT)
-From: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-To: Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Peter Griffin <peter.griffin@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney@redhat.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Sam Protsenko <semen.protsenko@linaro.org>,
-        Rob Clark <robin.clark@oss.qualcomm.com>,
-        Dmitry Baryshkov <lumag@kernel.org>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Jessica Zhang <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Inki Dae <inki.dae@samsung.com>,
-        Seung-Woo Kim <sw0312.kim@samsung.com>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Andi Shyti <andi.shyti@kernel.org>, Georgi Djakov <djakov@kernel.org>,
-        Lee Jones <lee@kernel.org>, Pavel Machek <pavel@kernel.org>,
-        Hans Verkuil <hverkuil@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Ulf Hansson <ulfh@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Linus Walleij <linusw@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Javier Martinez Canillas <javier@dowhile0.org>,
-        Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Srinivas Kandagatla <srini@kernel.org>,
-        Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
-        Jonathan Marek <jonathan@marek.ca>, Taniya Das <quic_tdas@quicinc.com>,
-        Robert Marko <robimarko@gmail.com>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        Adam Skladowski <a_skl39@protonmail.com>,
-        Sireesh Kodali <sireeshkodali@protonmail.com>,
-        Barnabas Czeman <barnabas.czeman@mainlining.org>,
-        Imran Shaik <quic_imrashai@quicinc.com>,
-        Sricharan Ramabadhran <quic_srichara@quicinc.com>,
-        Anusha Rao <quic_anusha@quicinc.com>, Luo Jie <quic_luoj@quicinc.com>,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        Chanho Park <chanho61.park@samsung.com>,
-        Sunyeal Hong <sunyeal.hong@samsung.com>,
-        Shin Son <shin.son@samsung.com>,
-        Krishna Manikandan <quic_mkrishn@quicinc.com>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Jaehoon Chung <jh80.chung@samsung.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Alina Yu <alina_yu@richtek.com>, Andy Gross <agross@kernel.org>,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        Wesley Cheng <quic_wcheng@quicinc.com>, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        linux-i2c@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-gpio@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-sound@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Cc: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund+renesas@ragnatech.se>
-Subject: [PATCH v2 2/2] dt-bindings: Drop incorrect usage of double '::'
-Date: Tue, 23 Jun 2026 07:48:44 +0200
-Message-ID: <20260623054842.21831-4-krzysztof.kozlowski@oss.qualcomm.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20260623054842.21831-3-krzysztof.kozlowski@oss.qualcomm.com>
-References: <20260623054842.21831-3-krzysztof.kozlowski@oss.qualcomm.com>
+	dkim=pass (1024-bit key) header.d=ziehl-abegg.de header.i=@ziehl-abegg.de header.b="SiUB6TJ1"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=m6CnG1cAl/uc6R0t/0eyHiLLaC/M5Vle3dGSmrztvkZK/RJryG+3fUvuxa95OD1sLdpilZTPfGQG5d4xlmdGm+D6ySl4hT+LeevWUWMlHFOcL9iDXpXLD4wgNGSgwsogVAhwV1h/BQbnzF9cdB/ojRTzo6jUSwY8o49nWrR2nsQVr9WhkoAlwWdv0fwDUHEkU5+FrByysV289PJCWYKrD4bDyrGi9uE11P9CjZWexLAAcCiBPCIr9moKwKQI77brBr7TDijJ+lO1EH4sfxYxAi7hYYtt2z0cH+3RE9/pzbwNPlf5AiSC025091jHbJ0vQ3aBaVd2YqWr7CZlutdJMQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/2wBzGkXRBReLv8GnQdhr6F+5tWk95wH5Glr/B0ybpg=;
+ b=uIfOQFzmd9AtdAeklC6T/hoJt1RQl0Hgit3dBj1yRVQohZBeslelfyeF8Ti0kZQBf00JFPo3rufV9cVKnSmnjQj0uw0jsC9XWfHTDMs4w7VY48evjsc64ez8AWm2v4YhByOnTIFMOAd3bub6D0KdsxP+jS61uZvnfDHWeWmJJKjdSmIl+xc3bsRCDEw+vsqom0ovmUK7Opdyd7rk9RFcnE+sLufD3BawaKtcVxRLESndS31qXhh+D6QjGVXmzDMcQNTsWw4U+Wh3oQp0s37gsHkaSLNaOr+aSGL9f0QgXgh3w7y6lyN30y6xGqTGW9l9Su4KLdMGgvvMUcnvdP/4rQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 52.138.216.130) smtp.rcpttodomain=vger.kernel.org
+ smtp.mailfrom=ziehl-abegg.de; dmarc=pass (p=quarantine sp=quarantine pct=100)
+ action=none header.from=ziehl-abegg.de; dkim=none (message not signed);
+ arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ziehl-abegg.de;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/2wBzGkXRBReLv8GnQdhr6F+5tWk95wH5Glr/B0ybpg=;
+ b=SiUB6TJ12rDeJx3IpKdhoPvxp0PwMIPyYjSRTRnjE7X0JA5NVRT9dIXG01MhSuuKASMb4Fuoc+6l0s8V9Nch6Lq9qWBozvZiKb9FX42l4dGrC9ZNde4wzuW0QZD20SMuJ8JMXhE6pTpV2qjRyFMUvUoyTQhMoKVx3IFHTNHFZTw=
+Received: from PA7P264CA0314.FRAP264.PROD.OUTLOOK.COM (2603:10a6:102:395::16)
+ by PR3PR02MB5979.eurprd02.prod.outlook.com (2603:10a6:102:2f::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.139.20; Tue, 23 Jun
+ 2026 11:23:31 +0000
+Received: from AM4PEPF00025F9C.EURPRD83.prod.outlook.com
+ (2603:10a6:102:395:cafe::58) by PA7P264CA0314.outlook.office365.com
+ (2603:10a6:102:395::16) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.139.20 via Frontend Transport; Tue,
+ 23 Jun 2026 11:23:31 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 52.138.216.130)
+ smtp.mailfrom=ziehl-abegg.de; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=ziehl-abegg.de;
+Received-SPF: Pass (protection.outlook.com: domain of ziehl-abegg.de
+ designates 52.138.216.130 as permitted sender)
+ receiver=protection.outlook.com; client-ip=52.138.216.130;
+ helo=eu22-emailsignatures-cloud.codetwo.com; pr=C
+Received: from eu22-emailsignatures-cloud.codetwo.com (52.138.216.130) by
+ AM4PEPF00025F9C.mail.protection.outlook.com (10.167.16.11) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.181.0 via Frontend Transport; Tue, 23 Jun 2026 11:23:31 +0000
+Received: from DB6PR07CU003.outbound.protection.outlook.com (40.93.64.89) by eu22-emailsignatures-cloud.codetwo.com with CodeTwo SMTP Server (TLS12) via SMTP; Tue, 23 Jun 2026 11:23:30 +0000
+Received: from AS9PR06CA0679.eurprd06.prod.outlook.com (2603:10a6:20b:49c::23)
+ by VI1PR02MB6288.eurprd02.prod.outlook.com (2603:10a6:800:190::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.139.20; Tue, 23 Jun
+ 2026 11:23:23 +0000
+Received: from AM4PEPF00025F99.EURPRD83.prod.outlook.com
+ (2603:10a6:20b:49c:cafe::33) by AS9PR06CA0679.outlook.office365.com
+ (2603:10a6:20b:49c::23) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.139.17 via Frontend Transport; Tue,
+ 23 Jun 2026 11:23:23 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 217.6.247.99)
+ smtp.mailfrom=ziehl-abegg.de; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=ziehl-abegg.de;
+Received-SPF: Pass (protection.outlook.com: domain of ziehl-abegg.de
+ designates 217.6.247.99 as permitted sender) receiver=protection.outlook.com;
+ client-ip=217.6.247.99; helo=mail.za.ziehl-abegg.de; pr=C
+Received: from mail.za.ziehl-abegg.de (217.6.247.99) by
+ AM4PEPF00025F99.mail.protection.outlook.com (10.167.16.8) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.21.181.0 via Frontend Transport; Tue, 23 Jun 2026 11:23:23 +0000
+Received: from localhost (10.1.201.87) by vEX02.za.ziehl-abegg.de
+ (10.1.201.106) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.61; Tue, 23 Jun
+ 2026 13:23:22 +0200
+From: Paul Mbewe <paultyson.mbewe@ziehl-abegg.de>
+To: <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC: <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+	<hvilleneuve@dimonoff.com>, Paul Mbewe <paultyson.mbewe@ziehl-abegg.de>
+Subject: [PATCH 0/2] serial: sc16is7xx: fix TX inter-frame gaps on SPI UARTs
+Date: Tue, 23 Jun 2026 13:22:23 +0200
+Message-ID: <20260623112225.82386-1-paultyson.mbewe@ziehl-abegg.de>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=33237; i=krzysztof.kozlowski@oss.qualcomm.com;
- h=from:subject; bh=Vm8XlvRcgjz05PgRySDfUm9lFHZJO0uf5woeuXrLjew=;
- b=owEBbQKS/ZANAwAKAcE3ZuaGi4PXAcsmYgBqOh49aaqvvngOytwYPZzhxV/1ufNdUXOttsyDE
- 5804fChdCOJAjMEAAEKAB0WIQTd0mIoPREbIztuuKjBN2bmhouD1wUCajoePQAKCRDBN2bmhouD
- 18jBD/4zpqbuSHP4s2gxPkGzF2gZz2Lchj7RYYdj5pxfIvq+kQFxdrbGqrNCfAqHv6Ag82YVXn2
- Y/eFoDBuVm2his4m8Do6l7nz76GHsjIBcOTRdsn/BrVSyhLIGcbE80WMrd8D1Q4adN1MKlR1w4N
- f28ec2j+9Fk/oOmPD8rUl8Ua7iFiP7Jxo3Q07lojYAxY8xC1aCebQiF02ZNMgiPPSmLS2PGbGyB
- Tar/wJnPf22oq9/oFtufV2L/ZzPHH1jLabPKvNSo5VPBCla9N6F+5r2WEwiWflPhRwqqGB/BU9h
- hV3G6zVbx1d4En0+LqR6QvmBgj0Pdw/WmE+M1H+nhM/Hozio9T1rWtIb2iqu62WcHGqec/Fquz7
- i6T9/blBduDbqEUmEnxbTjdFnO5qxFTnLbA8qMF0XE+QXCyeVgt+wNHQ16k1430fkwuIeE2J5+0
- FPra3iD6un08lPHN7RpCDZ9fWqtT29isMSOzgjQxriZQY8pYVu9pm3ML2lFYGeBguhggUzN/Wf3
- 0/BJrtkiq0figWjbR2MTWzR1uzbGChsp1KM33H2ef817ItbZ/4zo7VsvlVoVmySnqlBegn2Kjsb
- uzrBvkIwZfSFF2ZkalNG5bC5XsZrcuH4gA6PvmFmfdJxSLv/olCpdn9UGM/TN0nSNM/qqR6Nik6 PB9Ws1RJI41BCSA==
-X-Developer-Key: i=krzysztof.kozlowski@oss.qualcomm.com; a=openpgp; fpr=9BD07E0E0C51F8D59677B7541B93437D3B41629B
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjIzMDA0NCBTYWx0ZWRfX9Axsd73h7Ecg
- WmA9nQiFS/0Lwfn01hOm+/O1lo24FGkHun8A41WfxlAgh0BUOVDK56hfY+A+pRwaT/3eabVEcAL
- z6fc9RUJADoRAVBMC0tNixhTVZXzUaKi4d0RYZW473BvQA/NCSEzJcbLfxpCbz3SVfpkBwby5dz
- G5e+eFfn2Ngf9qnXDB9TeJ0jUq6IP+v/GoSQYX7y6eh+Y0sGAF0yc5ya5s0ow2g7W2FE6pBa4Pf
- tyC9n0IXlTcfef5hF5dMOLESqN57iU2ylGfYZqQQZ0Ds3lT7am9Gh3PB+IgHN/6tvoYYgVwwCa/
- C4DtBB7r9dsQgjkTJX09PphtL9f4v0di0R1/cO6FD0G3O3R+lW0fXz5p91UtmouCDhkOxeoZg8R
- j7RJlcmE7AaZemqJ09OeX6LiDa2CIYLyRezZ6uY3fL/Ov1FheEQPVv3fom6J5eWgIDdSJOwkTkU
- xgkLy83cRxvYXP+Ts9A==
-X-Proofpoint-GUID: Hub9o6QXnII6QqtI_oCyb2NvwLu8S_4T
-X-Authority-Analysis: v=2.4 cv=SoKgLvO0 c=1 sm=1 tr=0 ts=6a3a1e53 cx=c_pps
- a=hnmNkyzTK/kJ09Xio7VxxA==:117 a=qMZSjPy+XpteAuilWfML4g==:17
- a=IkcTkHD0fZMA:10 a=FelO9ux0wxsA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yx91gb_oNiZeI1HMLzn7:22
- a=fqWYVyBuAAAA:8 a=XYAwZIGsAAAA:8 a=hD80L64hAAAA:8 a=QX4gbG5DAAAA:8
- a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=WAwA4AJQovmkF_08t20A:9 a=3ZKOabzyN94A:10
- a=QEXdDO2ut3YA:10 a=PEH46H7Ffwr30OY-TuGO:22 a=3EkFFxAVN7Xjp7FSp-fE:22
- a=E8ToXWR_bxluHZ7gmE-Z:22 a=AbAUZ8qAyYyZVLSsDulk:22
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNjIzMDA0NCBTYWx0ZWRfXz6e+un7RbWxI
- s684Kp6ImlHyxMxFHzg/gyuIFjyD1FQBKga5y/4z/827aDOvu+fIiGmHENfmwXeFufgQpUIHs+7
- yP6BmFY6ObqxFR3j7Q6SmK9ynilQ6lQ=
-X-Proofpoint-ORIG-GUID: Hub9o6QXnII6QqtI_oCyb2NvwLu8S_4T
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
- definitions=2026-06-23_01,2026-06-22_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- lowpriorityscore=0 suspectscore=0 spamscore=0 malwarescore=0
- priorityscore=1501 bulkscore=0 clxscore=1015 adultscore=0 phishscore=0
- impostorscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
- definitions=main-2606230044
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-ClientProxiedBy: vEX03.za.ziehl-abegg.de (10.1.201.107) To
+ vEX02.za.ziehl-abegg.de (10.1.201.106)
+X-TM-AS-Product-Ver: SMEX-14.0.0.3239-9.1.2019-30024.005
+X-TM-AS-Result: No-10--5.206400-8.000000
+X-TMASE-MatchedRID: gLMW9eIxGuUcP7pp+NW9hB10V8fYzFslZK1SF2R3edgqikrexvmHw+qq
+	ko1PXeESof7QzEon7FvtsgpIym2RqL7ldv0N5D1dxxh6MdbXuKDdXycy6rwHov5CEAGScl89fw5
+	/fdoSsJBRu1oDF3mkxcq80Y2YbRJTr54JIx46I6QKjLWrARtsc1mur05CscKy0Um8j0thxXcibG
+	dC+CRqLQObIzLs3GAWeTKZayz4M/eq2KOMZ6VdFBiFRRcniIvUYNa100HsTEda4lUykSuqS5Wa1
+	HTl0YYn
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--5.206400-8.000000
+X-TMASE-Version: SMEX-14.0.0.3239-9.1.2019-30024.005
+X-TM-SNTS-SMTP: 30C5C7936B601D96E58529DB21172E84434CD1A7D17859073595F2A0992F45932000:8
+X-EOPAttributedMessage: 1
+X-MS-TrafficTypeDiagnostic:
+	AM4PEPF00025F99:EE_|VI1PR02MB6288:EE_|AM4PEPF00025F9C:EE_|PR3PR02MB5979:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4a2c07cb-1599-4360-ff2f-08ded119db07
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam-Untrusted:
+ BCL:0;ARA:13230040|376014|36860700016|82310400026|23010399003|1800799024|11063799006|6133799003|56012099006|18002099003;
+X-Microsoft-Antispam-Message-Info-Original:
+ 8OLMHJygIahFpr6R6LKK6RHlTQ3FtHnwvVhrOIHmYFgboJZdgL+2qfDgSqyROTkY554wNQU6vorL529YthxCTiWo00nJPg8Q1O/C+Fm6bANNyla5jna7/jBpETWCjBtYaTbbHFY3ziCUmDudVgseoJyXkvAPYZwtayqEDJtB3b8PResGRdv3A0t2ptinXPz1wXUl6ax7+pCfaB64DpFUtyw/iFyMC7YL26tvde2A/C+URR3g7bQGDUabxuuU+RctsRKWyxI1OqU7LzVk4LwUPaiOHvkCCSzW4bPMA8teEiywzKH2DqbdePetbV74W/2zLQmQONy21dLJ/0WndU2eBERJZzCJ9gz/40uc4HxasbK7uZJIa5CNBfnW5OmwLvkq2jz9zUGiYiE/04Ed357AliMYIiywsPPbDTUb8b8WGGlI8Sgfd9RIW1xBYuDobcFtBFLKloHjPJ64+1nfCkOycGuFFbBo2ikclsE9bjXkCrs9Lzbf5q4dJLpPNOg8potn32sD0eS9fIMWxHmJkAq1QzeuMgXt31mxTRdw83PfDIm9RVbL9TrTpyFicax6jXSoUa21ZgR7RH+ME+g2p1+7H9NEB+MNDIEN6x14OXHTjwXux7SXq4kwJ2vGAhrPJ1zlqbq/xoZlWiVieKOmalqZhpmaQa5gvSraScCI0dnfnHrDtoaBiaimswC2L6Tw9IS0wYDUCR5NR0MQ8ihncE6uIg==
+X-Forefront-Antispam-Report-Untrusted:
+ CIP:217.6.247.99;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.za.ziehl-abegg.de;PTR:nix.ziehl-abegg.de;CAT:NONE;SFS:(13230040)(376014)(36860700016)(82310400026)(23010399003)(1800799024)(11063799006)(6133799003)(56012099006)(18002099003);DIR:OUT;SFP:1102;
+X-Exchange-RoutingPolicyChecked: TySIx20dHpl1PvcVb1YScDqvUO2lMcAnTkH2OAyYrg6cV4pBN6Qk7vOVioppV3ZYjYwL/Z5rpRZSWwDt5FmL3arjDGD2YpvECOlcmESf7Oq+fYD2ud/KsQMnVDiMKIycwsQFN64UhxuwgYS599txUgqv+dtIjDl5nf3U6EII7jjTz/htB8DaXWtPawT54+1GymFL7rU6uoP1rlxgbvTEIJr/FLRuxiC/yOvc/ebQOL+MYBdruMno/GYHdbtC8/R/R7gyV7ssAz/8MB/tc4wu53EOHFoRBIMTCpIqB8P5rgIqOx60i56l/PcfQN3naP/GtTcLn3DBr2M/Bj8QsWrYbw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR02MB6288
+X-CodeTwo-MessageID: 74f88a90-7309-4d19-8ace-eb39b360a5ec.20260623112329@eu22-emailsignatures-cloud.codetwo.com
+X-CodeTwoProcessed: true
+X-MS-Exchange-Transport-CrossTenantHeadersStripped:
+ AM4PEPF00025F9C.EURPRD83.prod.outlook.com
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id-Prvs:
+	a89cfdef-4abc-4c4a-8687-08ded119d637
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|14060799003|376014|82310400026|35042699022|23010399003|1800799024|36860700016|18002099003|6133799003|11063799006|56012099006;
+X-Microsoft-Antispam-Message-Info:
+	HjXI/YGlBySPB9XI2VAZOKpsW12di5EgQ6Rn8BRZFnGdTJ1Ec+PxDPxpp6XX828gEKqWKR1N5dtkWwr0HjrXT/aEKcfw3aOdOB2IJ4T4ZaY93YOt8SHlseAATaJCGoNw2od78qpUC2JkB+nfB022GUQWiNlYMJru0BCg5Ma4gIg5TqjvRGf12jqB8rdO65PlR+3UVRHW7ysp36dy4O9QSxCIdyzRoqJRxsvoO1dPhl+7HSdlZc8MxmTEGjIs0xftf4desBu7PmJ7bEEYSaosU8guaChpp0lo4Ymcntng18kkdMqibikDHTjUbBRGVaazcnwkWLuRvxhGbxcC+ueV5RUWgW4awj/tnsJnTPRjmb4lbLrO9zvmEE2J8jq59f3LZxC0LJCjP6P3uhPNon5b5Y7Z+ZL7PH3SnQEFfBLfOI2A1j/k2/felNNz4kmBnBGQEVbxPf9iNF1eb7DHI9qGoSvyrG7DtsB+6nL2EYj1mbpRJCs1a7rJql4w6XN6R+wU/TjFVsXBqFML/qb04dJaujJkOMdUb2kjvQijuVG6TwWEO4kljCLp8rJBZ7uzfX0kp3/tTw+TEBgz14X50kNLwcQtoJr1onB6lPZs12J1ROP5Lla5WVdU4i1iCjhiAWTyOYGZcdFSbuPjIh396qnGxyhhto8LEODuOKfC+Z582LCoSW1AH0ZVfnjgVM+DmWhrdLhaVKJuNyV4s7Z+AgBnYQ==
+X-Forefront-Antispam-Report:
+	CIP:52.138.216.130;CTRY:IE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:eu22-emailsignatures-cloud.codetwo.com;PTR:eu22-emailsignatures-cloud.codetwo.com;CAT:NONE;SFS:(13230040)(14060799003)(376014)(82310400026)(35042699022)(23010399003)(1800799024)(36860700016)(18002099003)(6133799003)(11063799006)(56012099006);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	1NFljzob3Gp820ctEKj3qqF2I8OgSk7quS8ecSeBdgP3FushGUTNZUVQqEOTejzM3Rc+wrwaZXurXh3mWHf4Lw/qvdDl6WmNp3ryjEyPQ50+Hjk/GIU/UQo72r0rKiB/Oa1opb8rQIYaR3h65blFKsGNG1zE+I00Sk//Rs/H4HfDPySaXguRXzeJLU7t8uYuyqdpvL2gmfXvs6i2rhzGjZtcTjrMj/3Vxqxkc+gbTvWgXx53BsWNIwmhremTiFNJSy1Aqgzi7KL/gDfVSnzjywydXgbC/huYc5f3k1qKiXiOxoOXIov7KexespsmMYzUdDXFZy3A5yNtJGGvnyi1CYo3JwSLXrjIaFj4TjmVWJMnKr7Q8qFRha/LQqmFBLS5c3EkOkaJwIincCGHNcF0K75GNvW9kBGjZQO7+NgmtMnBd9plATST1SRBzCsn38W4
+X-OriginatorOrg: ziehl-abegg.de
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jun 2026 11:23:31.1335
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4a2c07cb-1599-4360-ff2f-08ded119db07
+X-MS-Exchange-CrossTenant-Id: 11a5c065-3ef5-41f0-92f9-a77cbf208c03
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=11a5c065-3ef5-41f0-92f9-a77cbf208c03;Ip=[52.138.216.130];Helo=[eu22-emailsignatures-cloud.codetwo.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	AM4PEPF00025F9C.EURPRD83.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR3PR02MB5979
 
-There is no use of double colon '::' in YAML. OTOH, the literal style
-block, e.g. using '|' treats all characters as content [1] therefore
-single use of ':' in descriptions is perfectly fine, whenever '|' is
-used.
+This series fixes two related TX path issues in the sc16is7xx SPI UART
+driver that cause visible inter-frame gaps on the wire, breaking Modbus
+RTU communication.
 
-Cleanup existing code, so the confusing style won't be re-used in new
-contributions.
+Patch 1 fixes a data loss / gap caused by kfifo_out_linear_ptr() only
+returning one contiguous segment of the circular buffer. When TX data
+wraps around the kfifo boundary, the remainder is delayed until the next
+TX interrupt, producing a silence gap that violates the Modbus 1.5
+character-time limit.
 
-Link: https://yaml.org/spec/1.2.2/#literal-style [1]
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
-Acked-by: Alim Akhtar <alim.akhtar@samsung.com>
-Acked-by: Sebastian Reichel <sebastian.reichel@collabora.com>
-Acked-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
-Acked-by: Mark Brown <broonie@kernel.org>
-Acked-by: Geert Uytterhoeven <geert+renesas@glider.be> # renesas
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Patch 2 raises the TX FIFO trigger level from 8 to 32 free spaces via
+the TLR register. The default trigger of 8 causes excessive SPI
+round-trips on slow single-core hosts, leading to TX FIFO underruns
+between bursts.
 
----
+Tested on SC16IS752 (SPI, 1 MHz) on i.MX6ULL driving RS-485 at 115200
+baud. Oscilloscope confirmed both gap types are eliminated after the
+fix.
 
-Intention for this patch is to go via Rob's tree.
+Paul Mbewe (2):
+  serial: sc16is7xx: fix TX gap caused by kfifo circular buffer
+    wrap-around
+  serial: sc16is7xx: set TX FIFO trigger level to half FIFO to prevent
+    underruns
 
-Changes in v2:
-1. Add tags (partial Reviews as Acks, as that's the meaning of Ack)
-2. Do not replace ::= in mux.
----
- .../devicetree/bindings/arm/qcom-soc.yaml     |  4 ++--
- .../devicetree/bindings/arm/qcom.yaml         |  4 ++--
- .../bindings/arm/samsung/samsung-soc.yaml     |  4 ++--
- .../display/msm/dsi-controller-main.yaml      | 20 +++++++++----------
- .../display/samsung/samsung,fimd.yaml         |  4 ++--
- .../bindings/i2c/samsung,s3c2410-i2c.yaml     |  2 +-
- .../interconnect/qcom,msm8998-bwmon.yaml      |  2 +-
- .../interconnect/samsung,exynos-bus.yaml      | 14 ++++++-------
- .../bindings/leds/qcom,pm8058-led.yaml        |  4 ++--
- .../bindings/leds/skyworks,aat1290.yaml       |  6 +++---
- .../bindings/media/cec/cec-gpio.yaml          |  2 +-
- .../bindings/mmc/samsung,exynos-dw-mshc.yaml  |  2 +-
- .../bindings/phy/samsung,mipi-video-phy.yaml  |  4 ++--
- .../bindings/phy/samsung,usb2-phy.yaml        |  2 +-
- .../bindings/phy/samsung,usb3-drd-phy.yaml    |  2 +-
- .../bindings/pinctrl/samsung,pinctrl.yaml     |  2 +-
- .../bindings/power/renesas,rcar-sysc.yaml     |  2 +-
- .../bindings/power/reset/restart-handler.yaml |  8 ++++----
- .../bindings/regulator/maxim,max77802.yaml    |  4 ++--
- .../bindings/regulator/richtek,rtq2208.yaml   |  2 +-
- .../bindings/serial/qcom,msm-uartdm.yaml      |  2 +-
- .../devicetree/bindings/slimbus/slimbus.yaml  |  4 ++--
- .../bindings/soc/qcom/qcom,apr-services.yaml  |  2 +-
- .../bindings/soc/qcom/qcom,rpmh-rsc.yaml      |  8 ++++----
- .../bindings/soc/qcom/qcom,wcnss.yaml         |  2 +-
- .../bindings/soc/renesas/renesas-soc.yaml     |  4 ++--
- .../bindings/sound/qcom,q6asm-dais.yaml       |  2 +-
- .../thermal/samsung,exynos-thermal.yaml       |  4 ++--
- .../devicetree/bindings/usb/qcom,dwc3.yaml    | 12 +++++------
- .../bindings/usb/qcom,snps-dwc3.yaml          | 12 +++++------
- 30 files changed, 73 insertions(+), 73 deletions(-)
+ drivers/tty/serial/sc16is7xx.c | 24 +++++++++++++++++++++---
+ 1 file changed, 21 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/arm/qcom-soc.yaml b/Documentation/devicetree/bindings/arm/qcom-soc.yaml
-index 27261039d56f..37fdd5a080b7 100644
---- a/Documentation/devicetree/bindings/arm/qcom-soc.yaml
-+++ b/Documentation/devicetree/bindings/arm/qcom-soc.yaml
-@@ -11,10 +11,10 @@ maintainers:
- 
- description: |
-   Guidelines for new compatibles for SoC blocks/components.
--  When adding new compatibles in new bindings, use the format::
-+  When adding new compatibles in new bindings, use the format:
-     qcom,SoC-IP
- 
--  For example::
-+  For example:
-    qcom,sdm845-llcc-bwmon
- 
-   When adding new compatibles to existing bindings, use the format in the
-diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
-index 50cc18a6ec5e..667607ae2c32 100644
---- a/Documentation/devicetree/bindings/arm/qcom.yaml
-+++ b/Documentation/devicetree/bindings/arm/qcom.yaml
-@@ -1215,7 +1215,7 @@ properties:
-     items:
-       items:
-         - description: |
--            MSM chipset ID - an exact match value consisting of two bitfields::
-+            MSM chipset ID - an exact match value consisting of two bitfields:
-              - bits 0-15  - The unique MSM chipset ID
-              - bits 16-31 - Reserved; should be 0
-         - description: |
-@@ -1241,7 +1241,7 @@ properties:
-       - items:
-           - items:
-               - description: |
--                  Board ID consisting of three bitfields::
-+                  Board ID consisting of three bitfields:
-                     - bits 31-24 - Unused
-                     - bits 23-16 - Platform Version Major
-                     - bits 15-8  - Platform Version Minor
-diff --git a/Documentation/devicetree/bindings/arm/samsung/samsung-soc.yaml b/Documentation/devicetree/bindings/arm/samsung/samsung-soc.yaml
-index 653f85997643..ab000befe76d 100644
---- a/Documentation/devicetree/bindings/arm/samsung/samsung-soc.yaml
-+++ b/Documentation/devicetree/bindings/arm/samsung/samsung-soc.yaml
-@@ -11,10 +11,10 @@ maintainers:
- 
- description: |
-   Guidelines for new compatibles for SoC blocks/components.
--  When adding new compatibles in new bindings, use the format::
-+  When adding new compatibles in new bindings, use the format:
-     samsung,SoC-IP
- 
--  For example::
-+  For example:
-     samsung,exynos5433-cmu-isp
- 
- select:
-diff --git a/Documentation/devicetree/bindings/display/msm/dsi-controller-main.yaml b/Documentation/devicetree/bindings/display/msm/dsi-controller-main.yaml
-index dbc0613e427e..395425a70db8 100644
---- a/Documentation/devicetree/bindings/display/msm/dsi-controller-main.yaml
-+++ b/Documentation/devicetree/bindings/display/msm/dsi-controller-main.yaml
-@@ -73,16 +73,16 @@ properties:
- 
-   clocks:
-     description: |
--      Several clocks are used, depending on the variant. Typical ones are::
--       - bus:: Display AHB clock.
--       - byte:: Display byte clock.
--       - byte_intf:: Display byte interface clock.
--       - core:: Display core clock.
--       - core_mss:: Core MultiMedia SubSystem clock.
--       - iface:: Display AXI clock.
--       - mdp_core:: MDP Core clock.
--       - mnoc:: MNOC clock
--       - pixel:: Display pixel clock.
-+      Several clocks are used, depending on the variant. Typical ones are:
-+       - bus: Display AHB clock.
-+       - byte: Display byte clock.
-+       - byte_intf: Display byte interface clock.
-+       - core: Display core clock.
-+       - core_mss: Core MultiMedia SubSystem clock.
-+       - iface: Display AXI clock.
-+       - mdp_core: MDP Core clock.
-+       - mnoc: MNOC clock
-+       - pixel: Display pixel clock.
-     minItems: 3
-     maxItems: 12
- 
-diff --git a/Documentation/devicetree/bindings/display/samsung/samsung,fimd.yaml b/Documentation/devicetree/bindings/display/samsung/samsung,fimd.yaml
-index ff685031bb2c..729705f419bb 100644
---- a/Documentation/devicetree/bindings/display/samsung/samsung,fimd.yaml
-+++ b/Documentation/devicetree/bindings/display/samsung/samsung,fimd.yaml
-@@ -41,7 +41,7 @@ properties:
-     additionalProperties: false
-     description: |
-       Timing configuration for lcd i80 interface support.
--      The parameters are defined as::
-+      The parameters are defined as:
-       VCLK(internal)  __|??????|_____|??????|_____|??????|_____|??????|_____|??
-                         :            :            :            :            :
-       Address Output  --:<XXXXXXXXXXX:XXXXXXXXXXXX:XXXXXXXXXXXX:XXXXXXXXXXXX:XX
-@@ -132,7 +132,7 @@ patternProperties:
-   "^port@[0-4]+$":
-     $ref: /schemas/graph.yaml#/properties/port
-     description: |
--      Contains ports with port with index::
-+      Contains ports with port with index:
-        0 - for CAMIF0 input,
-        1 - for CAMIF1 input,
-        2 - for CAMIF2 input,
-diff --git a/Documentation/devicetree/bindings/i2c/samsung,s3c2410-i2c.yaml b/Documentation/devicetree/bindings/i2c/samsung,s3c2410-i2c.yaml
-index a2ddc6803617..07600b49f2f9 100644
---- a/Documentation/devicetree/bindings/i2c/samsung,s3c2410-i2c.yaml
-+++ b/Documentation/devicetree/bindings/i2c/samsung,s3c2410-i2c.yaml
-@@ -35,7 +35,7 @@ properties:
- 
-   gpios:
-     description: |
--      The order of the GPIOs should be the following:: <SDA, SCL>.  The GPIO
-+      The order of the GPIOs should be the following: <SDA, SCL>.  The GPIO
-       specifier depends on the gpio controller. Required in all cases except
-       for "samsung,s3c2440-hdmiphy-i2c" whose input/output lines are
-       permanently wired to the respective client.
-diff --git a/Documentation/devicetree/bindings/interconnect/qcom,msm8998-bwmon.yaml b/Documentation/devicetree/bindings/interconnect/qcom,msm8998-bwmon.yaml
-index ff64225e8281..e002e70580f9 100644
---- a/Documentation/devicetree/bindings/interconnect/qcom,msm8998-bwmon.yaml
-+++ b/Documentation/devicetree/bindings/interconnect/qcom,msm8998-bwmon.yaml
-@@ -13,7 +13,7 @@ description: |
-   Bandwidth Monitor measures current throughput on buses between various NoC
-   fabrics and provides information when it crosses configured thresholds.
- 
--  Certain SoCs might have more than one Bandwidth Monitors, for example on SDM845::
-+  Certain SoCs might have more than one Bandwidth Monitors, for example on SDM845:
-    - Measuring the bandwidth between CPUs and Last Level Cache Controller -
-      called just BWMON,
-    - Measuring the bandwidth between Last Level Cache Controller and memory
-diff --git a/Documentation/devicetree/bindings/interconnect/samsung,exynos-bus.yaml b/Documentation/devicetree/bindings/interconnect/samsung,exynos-bus.yaml
-index 5e26e48c7217..0203959c8995 100644
---- a/Documentation/devicetree/bindings/interconnect/samsung,exynos-bus.yaml
-+++ b/Documentation/devicetree/bindings/interconnect/samsung,exynos-bus.yaml
-@@ -23,7 +23,7 @@ description: |
-   The each AXI bus has the owned source clock but, has not the only owned power
-   line. The power line might be shared among one more sub-blocks.  So, we can
-   divide into two type of device as the role of each sub-block.  There are two
--  type of bus devices as following::
-+  type of bus devices as following:
-    - parent bus device
-    - passive bus device
- 
-@@ -44,8 +44,8 @@ description: |
-   able to support the bus frequency for all Exynos SoCs.
- 
-   Detailed correlation between sub-blocks and power line according
--  to Exynos SoC::
--   - In case of Exynos3250, there are two power line as following::
-+  to Exynos SoC:
-+   - In case of Exynos3250, there are two power line as following:
-      VDD_MIF |--- DMC (Dynamic Memory Controller)
- 
-      VDD_INT |--- LEFTBUS (parent device)
-@@ -89,7 +89,7 @@ description: |
-        |L5   |200000 |200000  |400000 |300000 |       ||1000000 |
-        ----------------------------------------------------------
- 
--   - In case of Exynos4210, there is one power line as following::
-+   - In case of Exynos4210, there is one power line as following:
-      VDD_INT |--- DMC (parent device, Dynamic Memory Controller)
-        |--- LEFTBUS
-        |--- PERIL
-@@ -106,7 +106,7 @@ description: |
-        |--- LCD0
-        |--- LCD1
- 
--   - In case of Exynos4x12, there are two power line as following::
-+   - In case of Exynos4x12, there are two power line as following:
-      VDD_MIF |--- DMC (Dynamic Memory Controller)
- 
-      VDD_INT |--- LEFTBUS (parent device)
-@@ -124,7 +124,7 @@ description: |
-        |--- LCD0
-        |--- ISP
- 
--   - In case of Exynos5422, there are two power line as following::
-+   - In case of Exynos5422, there are two power line as following:
-      VDD_MIF |--- DREX 0 (parent device, DRAM EXpress controller)
-              |--- DREX 1
- 
-@@ -143,7 +143,7 @@ description: |
-        |--- FSYS
-        |--- FSYS2
- 
--   - In case of Exynos5433, there is VDD_INT power line as following::
-+   - In case of Exynos5433, there is VDD_INT power line as following:
-      VDD_INT |--- G2D (parent device)
-        |--- MSCL
-        |--- GSCL
-diff --git a/Documentation/devicetree/bindings/leds/qcom,pm8058-led.yaml b/Documentation/devicetree/bindings/leds/qcom,pm8058-led.yaml
-index b409b2a8b5c5..5165bfddcd54 100644
---- a/Documentation/devicetree/bindings/leds/qcom,pm8058-led.yaml
-+++ b/Documentation/devicetree/bindings/leds/qcom,pm8058-led.yaml
-@@ -10,10 +10,10 @@ maintainers:
-   - Krzysztof Kozlowski <krzk@kernel.org>
- 
- description: |
--  The Qualcomm PM8058 contains an LED block for up to six LEDs:: three normal
-+  The Qualcomm PM8058 contains an LED block for up to six LEDs: three normal
-   LEDs, two "flash" LEDs and one "keypad backlight" LED. The names are quoted
-   because sometimes these LED drivers are used for wildly different things than
--  flash or keypad backlight:: their names are more of a suggestion than a
-+  flash or keypad backlight: their names are more of a suggestion than a
-   hard-wired usecase.
- 
-   Hardware-wise the different LEDs support slightly different output currents.
-diff --git a/Documentation/devicetree/bindings/leds/skyworks,aat1290.yaml b/Documentation/devicetree/bindings/leds/skyworks,aat1290.yaml
-index a6aaa92dbccd..65576dfdca11 100644
---- a/Documentation/devicetree/bindings/leds/skyworks,aat1290.yaml
-+++ b/Documentation/devicetree/bindings/leds/skyworks,aat1290.yaml
-@@ -11,7 +11,7 @@ maintainers:
-   - Krzysztof Kozlowski <krzk@kernel.org>
- 
- description: |
--  The device is controlled through two pins:: FL_EN and EN_SET. The pins when,
-+  The device is controlled through two pins: FL_EN and EN_SET. The pins when,
-   asserted high, enable flash strobe and movie mode (max 1/2 of flash current)
-   respectively. In order to add a capability of selecting the strobe signal
-   source (e.g. CPU or camera sensor) there is an additional switch required,
-@@ -39,11 +39,11 @@ properties:
-       flash-max-microamp:
-         description: |
-           Maximum flash LED supply current can be calculated using following
--          formula:: I = 1A * 162 kOhm / Rset.
-+          formula: I = 1A * 162 kOhm / Rset.
- 
-       flash-max-timeout-us:
-         description: |
--          Maximum flash timeout can be calculated using following formula::
-+          Maximum flash timeout can be calculated using following formula:
-             T = 8.82 * 10^9 * Ct.
- 
-     required:
-diff --git a/Documentation/devicetree/bindings/media/cec/cec-gpio.yaml b/Documentation/devicetree/bindings/media/cec/cec-gpio.yaml
-index 582c6c9cae48..21118e4bae0f 100644
---- a/Documentation/devicetree/bindings/media/cec/cec-gpio.yaml
-+++ b/Documentation/devicetree/bindings/media/cec/cec-gpio.yaml
-@@ -14,7 +14,7 @@ description: |
-   hooked up to a pull-up GPIO line and - optionally - the HPD line is hooked up
-   to another GPIO line.
- 
--  Please note:: the maximum voltage for the CEC line is 3.63V, for the HPD and
-+  Please note: the maximum voltage for the CEC line is 3.63V, for the HPD and
-   5V lines it is 5.3V. So you may need some sort of level conversion
-   circuitry when connecting them to a GPIO line.
- 
-diff --git a/Documentation/devicetree/bindings/mmc/samsung,exynos-dw-mshc.yaml b/Documentation/devicetree/bindings/mmc/samsung,exynos-dw-mshc.yaml
-index 27c4060f2f91..223fcc9f651f 100644
---- a/Documentation/devicetree/bindings/mmc/samsung,exynos-dw-mshc.yaml
-+++ b/Documentation/devicetree/bindings/mmc/samsung,exynos-dw-mshc.yaml
-@@ -85,7 +85,7 @@ properties:
-     description: |
-       The value of CIU TX and RX clock phase shift value for HS400 mode
-       operation.
--      Valid values for SDR and DDR CIU clock timing::
-+      Valid values for SDR and DDR CIU clock timing:
-         - valid value for tx phase shift and rx phase shift is 0 to 7.
-         - when CIU clock divider value is set to 3, all possible 8 phase shift
-           values can be used.
-diff --git a/Documentation/devicetree/bindings/phy/samsung,mipi-video-phy.yaml b/Documentation/devicetree/bindings/phy/samsung,mipi-video-phy.yaml
-index 16967ef8e9ec..87b6a35b2626 100644
---- a/Documentation/devicetree/bindings/phy/samsung,mipi-video-phy.yaml
-+++ b/Documentation/devicetree/bindings/phy/samsung,mipi-video-phy.yaml
-@@ -13,14 +13,14 @@ maintainers:
- 
- description: |
-   For samsung,s5pv210-mipi-video-phy compatible PHYs the second cell in the
--  PHY specifier identifies the PHY and its meaning is as follows::
-+  PHY specifier identifies the PHY and its meaning is as follows:
-     0 - MIPI CSIS 0,
-     1 - MIPI DSIM 0,
-     2 - MIPI CSIS 1,
-     3 - MIPI DSIM 1.
- 
-   samsung,exynos5420-mipi-video-phy and samsung,exynos5433-mipi-video-phy
--  support additional fifth PHY::
-+  support additional fifth PHY:
-     4 - MIPI CSIS 2.
- 
- properties:
-diff --git a/Documentation/devicetree/bindings/phy/samsung,usb2-phy.yaml b/Documentation/devicetree/bindings/phy/samsung,usb2-phy.yaml
-index d9f22a801cbf..7db7605a82e2 100644
---- a/Documentation/devicetree/bindings/phy/samsung,usb2-phy.yaml
-+++ b/Documentation/devicetree/bindings/phy/samsung,usb2-phy.yaml
-@@ -14,7 +14,7 @@ maintainers:
- description: |
-   The first phandle argument in the PHY specifier identifies the PHY, its
-   meaning is compatible dependent. For the currently supported SoCs (Exynos4210
--  and Exynos4212) it is as follows::
-+  and Exynos4212) it is as follows:
-     0 - USB device ("device"),
-     1 - USB host ("host"),
-     2 - HSIC0 ("hsic0"),
-diff --git a/Documentation/devicetree/bindings/phy/samsung,usb3-drd-phy.yaml b/Documentation/devicetree/bindings/phy/samsung,usb3-drd-phy.yaml
-index 4562e0468f4f..a1b3d9e6a094 100644
---- a/Documentation/devicetree/bindings/phy/samsung,usb3-drd-phy.yaml
-+++ b/Documentation/devicetree/bindings/phy/samsung,usb3-drd-phy.yaml
-@@ -14,7 +14,7 @@ maintainers:
- description: |
-   For samsung,exynos5250-usbdrd-phy and samsung,exynos5420-usbdrd-phy
-   compatible PHYs, the second cell in the PHY specifier identifies the
--  PHY id, which is interpreted as follows::
-+  PHY id, which is interpreted as follows:
-     0 - UTMI+ type phy,
-     1 - PIPE3 type phy.
- 
-diff --git a/Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml
-index 7b006009ca0e..5e35686eeed3 100644
---- a/Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml
-@@ -18,7 +18,7 @@ description: |
-   All the pin controller nodes should be represented in the aliases node using
-   the following format 'pinctrl{n}' where n is a unique number for the alias.
- 
--  The controller supports three types of interrupts::
-+  The controller supports three types of interrupts:
-    - External GPIO interrupts (see interrupts property in pin controller node);
- 
-    - External wake-up interrupts - multiplexed (capable of waking up the system
-diff --git a/Documentation/devicetree/bindings/power/renesas,rcar-sysc.yaml b/Documentation/devicetree/bindings/power/renesas,rcar-sysc.yaml
-index 347571e2545a..b67aa170b2c1 100644
---- a/Documentation/devicetree/bindings/power/renesas,rcar-sysc.yaml
-+++ b/Documentation/devicetree/bindings/power/renesas,rcar-sysc.yaml
-@@ -13,7 +13,7 @@ maintainers:
- description: |
-   The R-Car (RZ/G) System Controller provides power management for the CPU
-   cores and various coprocessors.
--  The power domain IDs for consumers are defined in header files::
-+  The power domain IDs for consumers are defined in header files:
-   include/dt-bindings/power/r8*-sysc.h
- 
- properties:
-diff --git a/Documentation/devicetree/bindings/power/reset/restart-handler.yaml b/Documentation/devicetree/bindings/power/reset/restart-handler.yaml
-index 965a834a3dbe..00c00ec5ec81 100644
---- a/Documentation/devicetree/bindings/power/reset/restart-handler.yaml
-+++ b/Documentation/devicetree/bindings/power/reset/restart-handler.yaml
-@@ -18,12 +18,12 @@ properties:
-   priority:
-     $ref: /schemas/types.yaml#/definitions/uint32
-     description: |
--      A priority ranging from 0 to 255 according to the following guidelines::
--        0::   Restart handler of last resort, with limited restart capabilities.
--        128:: Typical, default restart handler; use if no other restart handler
-+      A priority ranging from 0 to 255 according to the following guidelines:
-+        0:   Restart handler of last resort, with limited restart capabilities.
-+        128: Typical, default restart handler; use if no other restart handler
-               is expected to be available, and/or if restart functionality is
-               sufficient to restart the entire system.
--        255:: Highest priority restart handler, will preempt all other restart handlers.
-+        255: Highest priority restart handler, will preempt all other restart handlers.
-     minimum: 0
-     maximum: 255
- 
-diff --git a/Documentation/devicetree/bindings/regulator/maxim,max77802.yaml b/Documentation/devicetree/bindings/regulator/maxim,max77802.yaml
-index b704f05ea454..b886495c1396 100644
---- a/Documentation/devicetree/bindings/regulator/maxim,max77802.yaml
-+++ b/Documentation/devicetree/bindings/regulator/maxim,max77802.yaml
-@@ -22,13 +22,13 @@ description: |
- 
-   Certain regulators support "regulator-initial-mode" and "regulator-mode".
-   The valid modes list is defined in the dt-bindings/regulator/maxim,max77802.h
--  and their meaning is::
-+  and their meaning is:
-     1 - Normal regulator voltage output mode.
-     3 - Low Power which reduces the quiescent current down to only 1uA
- 
-   The standard "regulator-mode" property can only be used for regulators that
-   support changing their mode to Low Power Mode during suspend. These
--  regulators are:: bucks 2-4 and LDOs 1-35. Also, it only takes effect if the
-+  regulators are: bucks 2-4 and LDOs 1-35. Also, it only takes effect if the
-   regulator has been enabled for the given suspend state using
-   "regulator-on-in-suspend" and has not been disabled for that state using
-   "regulator-off-in-suspend".
-diff --git a/Documentation/devicetree/bindings/regulator/richtek,rtq2208.yaml b/Documentation/devicetree/bindings/regulator/richtek,rtq2208.yaml
-index 022c1f197364..b0aa38edf8c2 100644
---- a/Documentation/devicetree/bindings/regulator/richtek,rtq2208.yaml
-+++ b/Documentation/devicetree/bindings/regulator/richtek,rtq2208.yaml
-@@ -21,7 +21,7 @@ description: |
-   conduction mode (FCCM).
- 
-   The definition of modes is in the datasheet which is available in below link
--  and their meaning is::
-+  and their meaning is:
-     0 - Auto mode for power saving, which reducing the switching frequency at light load condition
-     to maintain high frequency.
-     1 - FCCM to meet the strict voltage regulation accuracy, which keeping constant switching frequency.
-diff --git a/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.yaml b/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.yaml
-index 788ef5c1c446..bc967ead2350 100644
---- a/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.yaml
-+++ b/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.yaml
-@@ -17,7 +17,7 @@ description: |
-   software perspective it's mostly compatible with the MSM serial UART except
-   that it supports reading and writing multiple characters at a time.
- 
--  Note:: Aliases may be defined to ensure the correct ordering of the UARTs.
-+  Note: Aliases may be defined to ensure the correct ordering of the UARTs.
-   The alias serialN will result in the UART being assigned port N.  If any
-   serialN alias exists, then an alias must exist for each enabled UART.  The
-   serialN aliases should be in a .dts file instead of in a .dtsi file.
-diff --git a/Documentation/devicetree/bindings/slimbus/slimbus.yaml b/Documentation/devicetree/bindings/slimbus/slimbus.yaml
-index 5a941610ce4e..3910327c8ded 100644
---- a/Documentation/devicetree/bindings/slimbus/slimbus.yaml
-+++ b/Documentation/devicetree/bindings/slimbus/slimbus.yaml
-@@ -29,7 +29,7 @@ patternProperties:
-     description: |
-       Every SLIMbus controller node can contain zero or more child nodes
-       representing slave devices on the bus. Every SLIMbus slave device is
--      uniquely determined by the enumeration address containing 4 fields::
-+      uniquely determined by the enumeration address containing 4 fields:
-       Manufacturer ID, Product code, Device index, and Instance value for the
-       device.
- 
-@@ -48,7 +48,7 @@ patternProperties:
-       reg:
-         maxItems: 1
-         description: |
--          Pair of (device index, instande ID), where::
-+          Pair of (device index, instande ID), where:
-            - Device index, which uniquely identifies multiple devices within a
-              single component.
-            - Instance ID, can be used for the cases where multiple devices of
-diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,apr-services.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,apr-services.yaml
-index bdf482db32aa..b663be3ea5a1 100644
---- a/Documentation/devicetree/bindings/soc/qcom/qcom,apr-services.yaml
-+++ b/Documentation/devicetree/bindings/soc/qcom/qcom,apr-services.yaml
-@@ -40,7 +40,7 @@ properties:
-     $ref: /schemas/types.yaml#/definitions/string-array
-     description: |
-       Protection domain service name and path for APR service (if supported).
--      Possible values are::
-+      Possible values are:
-       "avs/audio", "msm/adsp/audio_pd".
-       "kernel/elf_loader", "msm/modem/wlan_pd".
-       "tms/servreg", "msm/adsp/audio_pd".
-diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,rpmh-rsc.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,rpmh-rsc.yaml
-index 26d9bc773ec5..1889139a3f7a 100644
---- a/Documentation/devicetree/bindings/soc/qcom/qcom,rpmh-rsc.yaml
-+++ b/Documentation/devicetree/bindings/soc/qcom/qcom,rpmh-rsc.yaml
-@@ -23,7 +23,7 @@ description: |
-   with a few variations that are captured by the properties here.
- 
-   A TCS may be triggered from Linux or triggered by the F/W after all the CPUs
--  have powered off to facilitate idle power saving. TCS could be classified as::
-+  have powered off to facilitate idle power saving. TCS could be classified as:
-     ACTIVE  - Triggered by Linux
-     SLEEP   - Triggered by F/W
-     WAKE    - Triggered by F/W
-@@ -76,7 +76,7 @@ properties:
-     items:
-       items:
-         - description: |
--            TCS type::
-+            TCS type:
-              - ACTIVE_TCS
-              - SLEEP_TCS
-              - WAKE_TCS
-@@ -152,7 +152,7 @@ examples:
-   - |
-     // For a TCS whose RSC base address is 0x179C0000 and is at a DRV id of
-     // 2, the register offsets for DRV2 start at 0D00, the register
--    // calculations are like this::
-+    // calculations are like this:
-     // DRV0: 0x179C0000
-     // DRV2: 0x179C0000 + 0x10000 = 0x179D0000
-     // DRV2: 0x179C0000 + 0x10000 * 2 = 0x179E0000
-@@ -182,7 +182,7 @@ examples:
-   - |
-     // For a TCS whose RSC base address is 0xAF20000 and is at DRV id of 0, the
-     // register offsets for DRV0 start at 01C00, the register calculations are
--    // like this::
-+    // like this:
-     // DRV0: 0xAF20000
-     // TCS-OFFSET: 0x1C00
-     #include <dt-bindings/interrupt-controller/arm-gic.h>
-diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,wcnss.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,wcnss.yaml
-index 4fcae6bedfff..72a7f8cb09ba 100644
---- a/Documentation/devicetree/bindings/soc/qcom/qcom,wcnss.yaml
-+++ b/Documentation/devicetree/bindings/soc/qcom/qcom,wcnss.yaml
-@@ -28,7 +28,7 @@ properties:
-     $ref: /schemas/types.yaml#/definitions/phandle
-     description: |
-       Reference to a node specifying the wcnss "ccu" and "dxe" register blocks.
--      The node must be compatible with one of the following::
-+      The node must be compatible with one of the following:
-            - qcom,riva"
-            - qcom,pronto"
- 
-diff --git a/Documentation/devicetree/bindings/soc/renesas/renesas-soc.yaml b/Documentation/devicetree/bindings/soc/renesas/renesas-soc.yaml
-index 5ddd31f30f26..57c9d3c57021 100644
---- a/Documentation/devicetree/bindings/soc/renesas/renesas-soc.yaml
-+++ b/Documentation/devicetree/bindings/soc/renesas/renesas-soc.yaml
-@@ -12,10 +12,10 @@ maintainers:
- 
- description: |
-   Guidelines for new compatibles for SoC blocks/components.
--  When adding new compatibles in new bindings, use the format::
-+  When adding new compatibles in new bindings, use the format:
-     renesas,SoC-IP
- 
--  For example::
-+  For example:
-    renesas,r8a77965-csi2
- 
-   When adding new compatibles to existing bindings, use the format in the
-diff --git a/Documentation/devicetree/bindings/sound/qcom,q6asm-dais.yaml b/Documentation/devicetree/bindings/sound/qcom,q6asm-dais.yaml
-index 47a105a97ecf..bc8c8ba24f9c 100644
---- a/Documentation/devicetree/bindings/sound/qcom,q6asm-dais.yaml
-+++ b/Documentation/devicetree/bindings/sound/qcom,q6asm-dais.yaml
-@@ -45,7 +45,7 @@ patternProperties:
-         $ref: /schemas/types.yaml#/definitions/uint32
-         enum: [0, 1, 2]
-         description: |
--          The direction of the dai stream::
-+          The direction of the dai stream:
-            - Q6ASM_DAI_TX_RX (0) for both tx and rx
-            - Q6ASM_DAI_TX (1) for only tx (Capture/Encode)
-            - Q6ASM_DAI_RX (2) for only rx (Playback/Decode)
-diff --git a/Documentation/devicetree/bindings/thermal/samsung,exynos-thermal.yaml b/Documentation/devicetree/bindings/thermal/samsung,exynos-thermal.yaml
-index 29a08b0729ee..3f333db72a71 100644
---- a/Documentation/devicetree/bindings/thermal/samsung,exynos-thermal.yaml
-+++ b/Documentation/devicetree/bindings/thermal/samsung,exynos-thermal.yaml
-@@ -40,7 +40,7 @@ properties:
-     description: |
-       The Exynos TMU supports generating interrupts when reaching given
-       temperature thresholds. Number of supported thermal trip points depends
--      on the SoC (only first trip points defined in DT will be configured)::
-+      on the SoC (only first trip points defined in DT will be configured):
-        - most of SoC: 4
-        - samsung,exynos5433-tmu: 8
-        - samsung,exynos7-tmu: 8
-@@ -52,7 +52,7 @@ properties:
-       - description: |
-           Shared TMU registers.
- 
--          Note:: On Exynos5420, the TRIMINFO register is misplaced for TMU
-+          Note: On Exynos5420, the TRIMINFO register is misplaced for TMU
-           channels 2, 3 and 4 Use "samsung,exynos5420-tmu-ext-triminfo" in
-           cases, there is a misplaced register, also provide clock to access
-           that base.
-diff --git a/Documentation/devicetree/bindings/usb/qcom,dwc3.yaml b/Documentation/devicetree/bindings/usb/qcom,dwc3.yaml
-index a7f58114c02e..90daee616880 100644
---- a/Documentation/devicetree/bindings/usb/qcom,dwc3.yaml
-+++ b/Documentation/devicetree/bindings/usb/qcom,dwc3.yaml
-@@ -92,14 +92,14 @@ properties:
- 
-   clocks:
-     description: |
--      Several clocks are used, depending on the variant. Typical ones are::
--       - cfg_noc:: System Config NOC clock.
--       - core:: Master/Core clock, has to be >= 125 MHz for SS operation and >=
-+      Several clocks are used, depending on the variant. Typical ones are:
-+       - cfg_noc: System Config NOC clock.
-+       - core: Master/Core clock, has to be >= 125 MHz for SS operation and >=
-                 60MHz for HS operation.
--       - iface:: System bus AXI clock.
--       - sleep:: Sleep clock, used for wakeup when USB3 core goes into low
-+       - iface: System bus AXI clock.
-+       - sleep: Sleep clock, used for wakeup when USB3 core goes into low
-                  power mode (U3).
--       - mock_utmi:: Mock utmi clock needed for ITP/SOF generation in host
-+       - mock_utmi: Mock utmi clock needed for ITP/SOF generation in host
-                      mode. Its frequency should be 19.2MHz.
-     minItems: 1
-     maxItems: 9
-diff --git a/Documentation/devicetree/bindings/usb/qcom,snps-dwc3.yaml b/Documentation/devicetree/bindings/usb/qcom,snps-dwc3.yaml
-index 8201656b41ed..d99af9f413d0 100644
---- a/Documentation/devicetree/bindings/usb/qcom,snps-dwc3.yaml
-+++ b/Documentation/devicetree/bindings/usb/qcom,snps-dwc3.yaml
-@@ -87,14 +87,14 @@ properties:
- 
-   clocks:
-     description: |
--      Several clocks are used, depending on the variant. Typical ones are::
--       - cfg_noc:: System Config NOC clock.
--       - core:: Master/Core clock, has to be >= 125 MHz for SS operation and >=
-+      Several clocks are used, depending on the variant. Typical ones are:
-+       - cfg_noc: System Config NOC clock.
-+       - core: Master/Core clock, has to be >= 125 MHz for SS operation and >=
-                 60MHz for HS operation.
--       - iface:: System bus AXI clock.
--       - sleep:: Sleep clock, used for wakeup when USB3 core goes into low
-+       - iface: System bus AXI clock.
-+       - sleep: Sleep clock, used for wakeup when USB3 core goes into low
-                  power mode (U3).
--       - mock_utmi:: Mock utmi clock needed for ITP/SOF generation in host
-+       - mock_utmi: Mock utmi clock needed for ITP/SOF generation in host
-                      mode. Its frequency should be 19.2MHz.
-     minItems: 1
-     maxItems: 9
--- 
-2.53.0
+--=20
+2.43.0
 
