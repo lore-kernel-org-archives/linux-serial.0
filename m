@@ -1,123 +1,159 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68E872DC350
-	for <linux-serial@vger.kernel.org>; Wed, 24 Jun 2026 13:44:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.52
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782308675; cv=pass; b=YHx69XRB9j2gwndKeKMJwv+1H8NVl3fqVxpWWFFcY4gZa2JlfJjcsithZiMBrG8W/OfKv2Vjnk3/pLCDQO0Ex7giwuA1ZZoJTQ3IYSdyA1uuRiCqlsOZbHbbAY131VSixhRGtvReATeHSsczm8WHZkOkw5vu0oziGk4rk2mmVfE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782308675; c=relaxed/simple;
-	bh=4hmQpzJT1LFiuBCedVTY1IO9MEPmTIQMCZ1zdVhoFzY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Q0HLDkUvEacz05Ozh6jHl/gtJsiYkME4JuXsCY6kPL0SV1OQLqqRDjs8JGyXIXtsMDD/hakQWWS8zrUNRQZ4gLDkqtyWmaxZXuzyIQoju3eC+iMl0jOFDjKQj5KE49S57hM7BKNWK7yd2OCLRT9txKdQr4w9hTR6amelSi+5eoI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=9elements.com; spf=pass smtp.mailfrom=9elements.com; dkim=pass (2048-bit key) header.d=9elements.com header.i=@9elements.com header.b=KfwDRbJv; arc=pass smtp.client-ip=209.85.128.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=9elements.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=9elements.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED2C917993;
+	Thu, 25 Jun 2026 04:38:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1782362320; cv=none; b=d54okcjnDM7jvHRRzJ24GDYurqcEP8hAflT5Y5fjH80BAJP0WAR56cTQLa5e17nKcNtikjdwIgDLJDEolwg0P7qQmLHqFERoVf6NhZYGANxFEcJHAOnoKbsorfLLjL0CFIL62b1t3N2vqNjTStPlWYt18bY1SP8FCavm1suolqs=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1782362320; c=relaxed/simple;
+	bh=Ghg+es7PMWHvyIWYOB4GuTY+eeE98RJnbilsdWX5+iE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=QjYPe4xoHfNM1kyvphVg6NqPsjc4UglAEDUoE8WuglsCDw+2k5Wr3aIEKhcMatbKPSiPkZ+gKB5iri9kQEvlcblXKQOCyS3TXME05qj6RHQsszXru3tIuITLdBgSMSjOhS6cWbze6fB3XP+AnT3oGjUO71vW/Xv3myeR+DjIlz4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iUJ6ak8K; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=9elements.com header.i=@9elements.com header.b="KfwDRbJv"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-490aaeabdb4so6872575e9.1
-        for <linux-serial@vger.kernel.org>; Wed, 24 Jun 2026 06:44:33 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1782308672; cv=none;
-        d=google.com; s=arc-20240605;
-        b=AjFlu8DMGp3c95FWHgA4muIKvarPMxTscyBIn6nk5cvDppZDByXyQuIujY1hFrk14M
-         ItT9SRTarkQvBeTYD0gyjAob+kOU1OEAy1LYtdpxLX6ne3CjfbcYzri7xT/EoxCk4lIq
-         Pmji/CwERs+FjJk+vExc759fH96q25GjY2uDEBsfVsEaN+4VCswOYlBG3qr9REe+RGZj
-         8AxHlXfbDiB2/J1/h07wyE9ag0QdT4wwdIwPGtGkzM/qRGW6geZ0/WGYXFrproKpnFT3
-         IoFImNJerjaxdY1mKhvJdNj7qayxGG7PBUnAtD6OVqBUvCfiZBucpTEU7seoZQVlSQ9V
-         kZHg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=4hmQpzJT1LFiuBCedVTY1IO9MEPmTIQMCZ1zdVhoFzY=;
-        fh=F4sKedzsKFWvsfpxHZ29j1Sqw2k7Ysmwq4yL1pBmbHg=;
-        b=DZe7Rfm5qg1cIEFzF/l4ch5+1Dy8eh+/PopFHqsHLUixnjhsv3jygs2ntv9VAB86fn
-         bwUWct7YYFqjHzf8LymyuVeBR0+3EmmiKdl59vjL+NwNCv5RPFl9im8d1+6Pc8PfuPNI
-         kJy4DGr1HqUJFQ5CfaLpLPTb36Kk6ffIQyXbLFkaAd+QrOxqLAg4SgQLidWMpTr95M2V
-         /Kr0uXLPJmot2MvkyWBQ/yZeZLA30nQ7dUDfJ0b6ZXxNvm56PLh25K9YGeBbOaGqJPvM
-         WaZc3M6zbsT88tObUkFa55RVhWBIV0zQXnxBKcGd1aeNzLCM0Siu2czfCZGp1CUmcj4X
-         AbmA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=9elements.com; s=google; t=1782308672; x=1782913472; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=4hmQpzJT1LFiuBCedVTY1IO9MEPmTIQMCZ1zdVhoFzY=;
-        b=KfwDRbJvBcKDt8Nlt5QHcOVyoaVnG7lSwpzYlHgsaZwctTnuNk/8j0CQhyW21n6IFF
-         Yhh4GTksLUQsWqdSFlXQolbrWZ4HZ5a8RBQ0cQcQDHwu75Gflp/PL7BUGLf8TQMXNV62
-         Eem7xW0K3yqxzUCj28M+ZuR7mkIAj4xfIH7BUyp+qIxKqFejcXEGl2yQO2LbTgNaVEMW
-         odeTnjBr56GUPj/Tp0ragreDlKAgHPO17UmTmrSj8Ua0mFkVxSd01wxAp0799eYAq8C6
-         RU9zosab0eCngr/aTgVdy6ulrJMgPq7pj2Cb1oXs/SD7Wc2ZMCY/i3aiTh6apP3Uhveb
-         f88g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782308672; x=1782913472;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=4hmQpzJT1LFiuBCedVTY1IO9MEPmTIQMCZ1zdVhoFzY=;
-        b=ZkyklY40Ftbf+Jd5G70SoSBCyZM7y47d2gXJjeSzoGkgmYDbUXTdW3QGN1LTKJRpqK
-         a+3DivT/VckNk6vtvcxiKo3W6g7z2BGoBUSrxv8sH9itHn8b+w5594Fc2bjbJyJtbExi
-         BACRE0dtRiwvBmB+kre/r7XPgL5Zw7XCPUKMocTtjX8GQo5VWiBd3Z/9Mygyo6r/Kw1P
-         GRByQJMjhHeIHtb2bZVU1vNw1T7MOoPB4CEobAG4w0VliDBeJJAvta+XFtUFjaeV788R
-         1fA2i9UHSnqwlZWtnU5qErq5vT3hznZBmzwapO0Y/2Mn+MNrIVG+kVD98ocUMgcvqSzR
-         2HjQ==
-X-Forwarded-Encrypted: i=1; AFNElJ9CiaDT0niBOZkJ6OsQ++b+F5TLJHlhVx0HiCcNyWQtorz69kqkSSPYaAlY0aC1cFMiHj68ZwqteLJl9qk=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy/YrORBNfJezlfj/C7kGiPmQIAgeNXg+G1gRFJtwvyJpBIzlz/
-	M4OlfYtmXgMykpqF0MRs2X7bFqDIfehNkeuRCs0qAvk0fJjSQY6mXhN5BLIUMmnEuMwQtT7TAGz
-	ddL82Lgax6sq/T9EZy3q20jogLF/G0On/YGNyvLmSpA==
-X-Gm-Gg: AfdE7ck3NW8EJ6NypRiGtosnzmWyLEURuchmmjKwWRVxWzWhJcKLMsxwAERay31Vaei
-	zietmT30hPY4YRqhnD3tB++Bck7vkvplVOLN+EYCHqnDqgU6HZ6noXnBKIruQA4M8cFIhW/NYW/
-	48P4FuoqA/C0lxn7bgXhy0Ukzdyb70u9V3YGxBc1eoAbdhKAE2leTfaPNQDQNkXHf4rK9XvwHE5
-	OGYlSZ/SMJLEBIGL9zFonzzceGXy9n2mM9Zj334r4W2Aw5TISeNZoHz4LlG0lhLmo96vy8l/nR3
-	9Ai8JZdZQc/pGstOxsQrOAXoNKYDkldWn7e/FKtXXyjbzLT4R9C6ZyC8QA==
-X-Received: by 2002:a05:600c:4ecb:b0:492:37b7:607a with SMTP id
- 5b1f17b1804b1-492608796bemr50951345e9.31.1782308671484; Wed, 24 Jun 2026
- 06:44:31 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iUJ6ak8K"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C8891F000E9;
+	Thu, 25 Jun 2026 04:38:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1782362319;
+	bh=en/Q8rhQAhmFAKqfB0zVLLdT4CQGk9nawe4wXWP9Uuk=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=iUJ6ak8K6MVKcWs+XJD/5EipmDKpowL/HRiXNnhTNRTP+ywSq97hI5SCgLaUmAG0q
+	 3pHOL65slEh8utRnOqcHdwjgckD1jwYKbvDtk/mSXuGUwVqNHknJKkl1k1X/gf93Mr
+	 p2nS8Hhrn1/0r/7mdP11exYhfua6NwN828eOrlz7aJB5QTLFVNtRTiyPQGFBg/lW1i
+	 pLeuKGK0z/J8BXZzlwWjs/EM++hBZuz3U/k2d9ziGES/vXSzhyfGGyOaWFZJWS883r
+	 HYeSYvXMH1yLI8oPdk25XPgZNVmVSdccWzFEpoVsFp+Kcs0aH5YghsukLrZDKRkcIs
+	 E1Dq0Uv2Zagbg==
+Message-ID: <80f44ace-9231-4b4e-9e47-cbe49b3e2d3e@kernel.org>
+Date: Thu, 25 Jun 2026 06:38:35 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1782224059.git.gregoire.layet@9elements.com>
- <30aedaa9ffd5ba2d763d8802a07b77ef2d5bfcf0.1782224060.git.gregoire.layet@9elements.com>
- <20260624-copper-albatross-of-youth-6abae8@quoll>
-In-Reply-To: <20260624-copper-albatross-of-youth-6abae8@quoll>
-From: =?UTF-8?Q?Gr=C3=A9goire_Layet?= <gregoire.layet@9elements.com>
-Date: Wed, 24 Jun 2026 15:44:19 +0200
-X-Gm-Features: AVVi8CevgRC28tg2RrmLdkUxp5ymSnVB-xqiyZURryTvD9U9Bz7rA-Yxg2vjrr0
-Message-ID: <CAFi2wKY+JZZV5vKnKKO91Bk-903+HVKm2a6NF+fufri0r3EjCA@mail.gmail.com>
-Subject: Re: [PATCH v3 6/7] ARM: dts: aspeed: g6: Change vuart compatible
- string for ast2600
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: joel@jms.id.au, andrew@codeconstruct.com.au, lkundrak@v3.sk, 
-	devicetree@vger.kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, andrew@lunn.ch, 
-	jacky_chou@aspeedtech.com, yh_chung@aspeedtech.com, ninad@linux.ibm.com, 
-	anirudhsriniv@gmail.com, linux-serial@vger.kernel.org, 
-	linux-aspeed@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5] serial: 8250: fix use-after-free in IRQ chain handling
+To: Jing Wu <realwujing@gmail.com>
+Cc: gregkh@linuxfoundation.org, avorontsov@ru.mvista.com, alan@redhat.com,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ wangzhaolong@fnnas.com
+References: <20260624-bug-221579-8250-shared-irq-race-v5-1-15d841f89e1e@gmail.com>
+ <b7c51606-e95a-4a15-9aff-d0c293ebe986@kernel.org>
+ <20260624084352.2978059-1-realwujing@gmail.com>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20260624084352.2978059-1-realwujing@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Krzysztof,
+On 24. 06. 26, 10:43, Jing Wu wrote:
+> From: Qiliang Yuan <realwujing@gmail.com>
+> 
+> On Wed, Jun 24, 2026 at 05:31:59AM +0200, Jiri Slaby wrote:
+>> So what is the reason to switch from guards to manual locking?
+> 
+> Scope-based guards release the lock at the end of the enclosing block,
+> but the fix requires hash_mutex to be held across request_irq() and
+> released at different exit points:
+> 
+>    1. IS_ERR(i) -- release hash_mutex and return error.
+>    2. Already in chain -- release i->lock, release hash_mutex, return 0.
+>    3. First port, request_irq() fails -- cleanup under hash_mutex, then
+>       release it and return error.
+>    4. First port, request_irq() succeeds -- release hash_mutex, return 0.
+> 
+> These paths span different nesting levels and early returns, so scope
+> guards cannot express the required lock lifecycle.  The same applies to
+> i->lock: it must be dropped before calling request_irq() (cannot hold a
+> spinlock while sleeping), but hash_mutex must remain held across the
+> call, which also breaks the guard model.
 
-> Please start testing your patches. This for sure fails tests.
->
-> It does not look like you tested the DTS against bindings. Please run
-> 'make dtbs_check W=3D1' (see
-> Documentation/devicetree/bindings/writing-schema.rst or
-> https://www.linaro.org/blog/tips-and-tricks-for-validating-devicetree-sou=
-rces-with-the-devicetree-schema/
-> for instructions).
-> Maybe you need to update your dtschema and yamllint. Don't rely on
-> distro packages for dtschema and be sure you are using the latest
-> released dtschema.
+I don't follow, the function now looks like this:
 
-You are right, I had tested my patches but wrongly. It is indeed failling.
-I'm very sorry for that. Thank's for taking the time to explain.
+         mutex_lock(&hash_mutex);
 
-Best regards,
-Gr=C3=A9goire
+         i = serial_get_or_create_irq_info(up);
+         if (IS_ERR(i)) {
+                 mutex_unlock(&hash_mutex);
+                 return PTR_ERR(i);
+         }
+
+         /*
+...
+          */
+         spin_lock_irq(&i->lock);
+         if (i->head) {
+                 list_add(&up->list, i->head);
+                 spin_unlock_irq(&i->lock);
+                 mutex_unlock(&hash_mutex);
+
+                 return 0;
+         }
+
+         INIT_LIST_HEAD(&up->list);
+         i->head = &up->list;
+         spin_unlock_irq(&i->lock);
+
+         ret = request_irq(up->port.irq, serial8250_interrupt,
+                           up->port.irqflags, up->port.name, i);
+         if (ret < 0) {
+                 serial_do_unlink(i, up);
+                 mutex_unlock(&hash_mutex);
+                 return ret;
+         }
+
+         mutex_unlock(&hash_mutex);
+
+         return 0;
+
+What am I missing?
+
+thanks,
+-- 
+js
+suse labs
