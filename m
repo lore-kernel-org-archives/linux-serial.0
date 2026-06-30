@@ -1,168 +1,131 @@
-Received: from va-2-38.ptr.blmpb.com (va-2-38.ptr.blmpb.com [209.127.231.38])
+Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34C2A3E121A
-	for <linux-serial@vger.kernel.org>; Tue, 30 Jun 2026 18:42:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.127.231.38
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4788233933
+	for <linux-serial@vger.kernel.org>; Tue, 30 Jun 2026 21:40:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782844944; cv=none; b=vArzRM7higy0o1SeyX5BD0zHGyxUtFoNaZgEr5WqpHxwZ7NM7LWizQSRYP3lVrsv1tXExUIJj10VjDGKrukcmxQxTncjIZ3Zr9inFjcdYiK1OBChg4683c5q7bThaO0F54BcdPjPPeV2K02kX3jPIkzGG7zm/YUEQ7p368pb7YI=
+	t=1782855653; cv=none; b=VVbC/YCbuQ7C3AoT2tZHi4AmG8QrCrisEkF4XqnPxXru9SYoiBpt3mIjNzWiKdpp5sztu54XdZC2db386WQNHzn3owFFyOuj3tRvQchsPb+qlaUDGgeap6aVJ7GgKkVpoXuCZzXY7IKDeYqmpqWZuc/4vbhpoSdsSfSsDjEaLkU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782844944; c=relaxed/simple;
-	bh=IJU7KD4L0qauoAPuZuUGOAPJgDmKRzFPdG/N2D53G3c=;
-	h=Date:Subject:Content-Type:From:Message-Id:Mime-Version:To:
-	 References:In-Reply-To:Cc; b=l90WKM9f+YFoW3RLr66kvEfAV/eC3KoHY/Qbf9su9Zsld0EMTUaQYJbNVG7UTChnNKkgovdYN0+zTLSXX7Bszi4TLdRszz1E3BtvA1o1X9TjLTixJr4VL3PsiiH/699P+J+puRnCcvLwvzYb/BRqiey/wwL1Zf6TDnp0P9NG6JQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=picoheart.com; spf=pass smtp.mailfrom=picoheart.com; dkim=pass (2048-bit key) header.d=picoheart.com header.i=@picoheart.com header.b=cNQpBxW+; arc=none smtp.client-ip=209.127.231.38
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=picoheart.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=picoheart.com
+	s=arc-20240116; t=1782855653; c=relaxed/simple;
+	bh=9PdbBDrJosyX5pVhkoD8q4hALAISiVxkpmummc8kLpA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=VxwdtNXdHnYJ/G73w9C3JsSv13rK5IXg2mQqTm9LzI7WF8xfD0mkiaaOwk7AO1gDgQ4cOGwy+MTwr+WK/HFED7B30TPZbNe6f+M0QVaFcuZavEVLQTSGjmOmaOIWNiCn5skCowLXL1ZHsIthfahVfK4ARXPdfhEEKaUQ91RxeBo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=foYhm8pt; arc=none smtp.client-ip=209.85.222.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=picoheart.com header.i=@picoheart.com header.b="cNQpBxW+"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- s=feishu2604151535; d=picoheart.com; t=1782844931; h=from:subject:
- mime-version:from:date:message-id:subject:to:cc:reply-to:content-type:
- mime-version:in-reply-to:message-id;
- bh=HrBoMr6wjmi48ox4EpS/DaweNIbWT9YcQ2jRL52a8TQ=;
- b=cNQpBxW+NbiTXalqok3DtJk9iDFExlJIGaa6kQe69ZLnZuBl2vaorr5hdpTjLrJXMjf9AD
- I0MwxdNZNqCH36aAIO8BdUd3OBKUEB66R0usk/4PO6p/I4fd/p6sudnlGx946GPHXyf/pP
- F83QWYpvNwVG4v7awaaM9KLUqEo52oLj5OUhrRKbz4bR3TPG00GOvqNueO0g11EOYcEzHz
- 3+/HBfjV+xzMTd+FhgfWSsYgLpAcMU8IfCeABmXxdwLsyO3dlpO3Qmj4bv7kVdrFlDve/w
- rhAhJlcyfUu+6f8G/JzKrYbTSoeuyorkXfUZjc9kEV5RRJf1xr8Ur9aOnUo7Mg==
-X-Lms-Return-Path: <lba+26a440e01+60544c+vger.kernel.org+yang.yicong@picoheart.com>
-User-Agent: Mozilla Thunderbird
-Date: Wed, 1 Jul 2026 02:42:01 +0800
-Subject: Re: [PATCH] serial: 8250_dw: Prefer SRBR in bogus RX timeout workaround if available
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-From: "Yicong Yang" <yang.yicong@picoheart.com>
-Message-Id: <b175fd37-e998-40b1-99c3-491e3d6f7e04@picoheart.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="foYhm8pt"
+Received: by mail-qk1-f170.google.com with SMTP id af79cd13be357-92e67555e24so104796285a.3
+        for <linux-serial@vger.kernel.org>; Tue, 30 Jun 2026 14:40:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1782855651; x=1783460451; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=kfP/+/XzENqIHs8vBadMsBN8LHk8zW+7QrwYcaSOfQs=;
+        b=foYhm8ptA+UPJIDnegnFsMg/caIzaZdS5qkMiVoAFAmqRV8qdYQg95MJTAwVkHnDh8
+         zyX8+6ZU1TsLsexIxnZfuWpV+PSHoU30nXqAJG4tl8EEfnKPxae0bffebRdul2rwWSQ6
+         ob9Nf0B0KGOQIQPlJfr9pBR7Kxxy6Lo18wp/bU9K7aIttA2eFc5zQFQXsV/aqbxlp/Xv
+         W7kE+zfFA/A0mCCiOuefXv8yKVniI7RiOM6s57REhYDU/q+m6jXWeDRFc/hzAHzansGq
+         LkR9D4gjCn4/U4rXU1WDqOSibATZFwmOXYSyhsXdL5Hv7ruadNsGnX6DLoYP1KtcU9C2
+         B7Lg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782855651; x=1783460451;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=kfP/+/XzENqIHs8vBadMsBN8LHk8zW+7QrwYcaSOfQs=;
+        b=CPC6Ua7zMybnJjTfcgOPMKO8AMVUTdfxHhtjomCWaR+7pfJbVsLRrNXBWylCtvj33E
+         jhKUH3N+pEZEjzyirCb3bzc5Be49PL28Y9emmnB1pqrsJB/OZFSebqueA8E3gwFE24a2
+         A9gpo0tPu2oLYiHYMsFs0VvOKCadbZGwjuyFu723qkqQpXvT8vWFUWO2cXUM4H9gxDbd
+         F+Qlpt1kR12UVO5QsrghLY02Dmmf2nc6WdLw3CeyVTsR+I3OA/pEQv7NwBNP51jnL1LT
+         97cu3TUcrzaMKY+QFyu4ntY+siqUTd4+BSUb/QpQYgj4jtXATtPXinrcnj0eCpwxKcKG
+         CwFQ==
+X-Forwarded-Encrypted: i=1; AFNElJ+Q1eQ+r2HoCzDuIPE5GQd9BbXEoPtY691tDsp/o4aMNov0sB63G8Q+WsK9d7zqs2ACXLRq8gHgK5IVMXI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyC3alYsHG3xkxjLeK+cvjlitMDL80w2eX4MuW87K1UVTHXjY6R
+	L7R8aiAqEAw8qCN6FF2x45KJDctdSiw6SP2bYNUNcJxs+7JLSh/IDJku
+X-Gm-Gg: AfdE7ckigvpx2HCGrgVXjrMLYhGb8ftsuduUqRxmZAD/ev1BqzBz1svyjqN1nLY9DS5
+	AX8JGGUvyV8z/ulRLpWiuA7L0kexjv0bE/kz/HLFEe8XY3hv+30wkgnLL4BOQooJf9lhaQ9PJSE
+	vHhXQesk690Xz2+xLnKjaHDgUmAtVD5xxkSzMEGr2e2ZwGLSzpPbNihh0Tmptm2b6aBkC1ut5Vz
+	SBN8FkqFk9lx/yVFl3/m3t5fyCf18CzrhOT3PGhO1B5YuMQ2L963zJjaUdauEggDIJG057Pz/wM
+	SNu+TujuwxX/68YuXKssJt8xt/ySKRj1gfe0qDhFRf3Wj071YhRMtNK4yruOJQm91uIORfZ90Ya
+	0DkBw0daKh40/UGACuZkgMoXr3oXTmPm9AGcZXilICR26gilXIv23aNbfGIf/CNdR1aqFVJOtvV
+	lhN4PtuFXHV0HpbtxwnnJL9JR4Dfufo4/uE5EMnkux
+X-Received: by 2002:a05:620a:1a01:b0:921:83c6:f948 with SMTP id af79cd13be357-92e6249fe05mr848255185a.6.1782855650630;
+        Tue, 30 Jun 2026 14:40:50 -0700 (PDT)
+Received: from i4-gl-tmk5904.ad.psu.edu ([130.203.156.186])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-92e6213bc35sm341819685a.1.2026.06.30.14.40.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Jun 2026 14:40:50 -0700 (PDT)
+From: Yuho Choi <dbgh9129@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	linux-serial@vger.kernel.org,
+	Jacky Huang <ychuang3@nuvoton.com>,
+	Shan-Chun Hung <schung@nuvoton.com>
+Cc: linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	Yuho Choi <dbgh9129@gmail.com>
+Subject: [PATCH v1] serial: ma35d1: Fix OF node reference leaks in console init
+Date: Tue, 30 Jun 2026 17:40:43 -0400
+Message-ID: <20260630214043.1887351-1-dbgh9129@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-To: =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-References: <20260629075510.32854-1-yang.yicong@picoheart.com> <1ef5a875-2c01-5b4b-7d2b-07e6ea3db2b3@linux.intel.com> <877fc902-7b8d-454c-8346-de1087edcdc4@picoheart.com> <c017f37a-5873-2716-96e7-3deb46eff1a8@linux.intel.com>
-X-Original-From: Yicong Yang <yang.yicong@picoheart.com>
-In-Reply-To: <c017f37a-5873-2716-96e7-3deb46eff1a8@linux.intel.com>
-Received: from [172.16.14.160] ([219.142.31.218]) by smtp.feishu.cn with ESMTPS; Wed, 01 Jul 2026 02:42:08 +0800
-Cc: <yang.yicong@picoheart.com>, 
-	"Andy Shevchenko" <andriy.shevchenko@linux.intel.com>, 
-	"linux-serial" <linux-serial@vger.kernel.org>, 
-	"LKML" <linux-kernel@vger.kernel.org>, 
-	"Greg Kroah-Hartman" <gregkh@linuxfoundation.org>, 
-	"Jiri Slaby" <jirislaby@kernel.org>, <geshijian@picoheart.com>, 
-	<yangyang.8776@picoheart.com>, <yanligen@picoheart.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-On 7/1/26 2:18 AM, Ilpo J=C3=A4rvinen wrote:
-> On Wed, 1 Jul 2026, Yicong Yang wrote:
->> On 6/29/26 11:56 PM, Ilpo J=C3=A4rvinen wrote:
->>> On Mon, 29 Jun 2026, Yicong Yang wrote:
->>>
->>>> The DW uart could get into the cases where a bogus RX timeout
->>>> interrupt is asserted but no available data. This could be
->>>> workaround by doing a bogus read.
->>>>
->>>> Currently the driver's using the standard RBR (receive buffer
->>>> register) for this bogus read. However the reading of RBR
->>>> in this case is allowed to raise a hardware error if vendor
->>>> choose to implement in this way (our platform). It's also
->>>> allowed to do the bogus read using SRBR (shadow RBR) for
->>>> workaround which won't raise the hardware error. So change
->>>> to use the SRBR to workaround the issue if it's available.
->>>>
->>>> Signed-off-by: Yicong Yang <yang.yicong@picoheart.com>
->>>> ---
->>>>  drivers/tty/serial/8250/8250_dw.c    | 15 +++++++++++++--
->>>>  drivers/tty/serial/8250/8250_dwlib.c |  3 +++
->>>>  drivers/tty/serial/8250/8250_dwlib.h |  4 ++++
->>>>  3 files changed, 20 insertions(+), 2 deletions(-)
->>>>
->>>> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/82=
-50/8250_dw.c
->>>> index 84ffba045ffa..fea7dfa30e78 100644
->>>> --- a/drivers/tty/serial/8250/8250_dw.c
->>>> +++ b/drivers/tty/serial/8250/8250_dw.c
->>>> @@ -440,8 +440,19 @@ static int dw8250_handle_irq(struct uart_port *p)
->>>>  	if (!up->dma && rx_timeout) {
->>>>  		status =3D serial_lsr_in(up);
->>>> =20
->>>> -		if (!(status & (UART_LSR_DR | UART_LSR_BI)))
->>>> -			serial_port_in(p, UART_RX);
->>>> +		if (!(status & (UART_LSR_DR | UART_LSR_BI))) {
->>>> +			/*
->>>> +			 * Do the bogus read from Shadow RBR (SRBR) if provided.
->>>> +			 * Both RBR and SRBR are supported ways to workaround
->>>
->>> Hi,
->>>
->>> I've not come across this being mentioned anywhere else than in kernel=
-=20
->>> related context, but you seem to imply there something that tells about=
-=20
->>> "supported ways"?
->>>
->>
->> in fact we got this workaround method that's documented in the synopsys
->> dw_uart issue report, so comment "supported" here. quote the related par=
-t
->> of the workaround below:
->>
->>   [read USR[3] for the rx fifo status]
->>   If the read value is '0' (indicating the RX FIFO is empty), do a dummy
->>   read of the RBR or shadow RBR (SRBR) register without processing the
->>   invalid read data.
->>
->>   ...Note: Reading the RBR results in a PSLVERR immediately if
->>   REG_TIMEOUT_WIDTH parameter is set to '0'. Whereas, reading SRBR does
->>   not result in PSLVERR.
->=20
-> Okay, thanks.
->=20
->>> If there's no such thing, I'm bit hesitant to declare presence of SRBR=
-=20
->>> guarantees reading it universally solves this issue.
->>>
->>> BUT, I suppose it does on your HW since you must have hit this code pat=
-h,=20
->>> and thus PSLVERR, yourself to actually discover this issue so I assume=
-=20
->>> you've then also confirmed that this patch solves the issue in your cas=
-e=20
->>> which isn't entirely without merit either.
->>>
->>
->> actually it's hard to reproduce, only once at boot time in our several
->> hundreds reboot test. we locate the code line here by the backtrace of
->> the system error. the issue hasn't reproduced yet on the patched kernel
->> (hundred reboots so far, but still going on), and I suppose it's correct
->> as provided by the IP designer.
->=20
-> For testing, you could have logged when this condition is actually hit=20
-> in the first place. I usually do that to increase my own confidence if th=
-e=20
-> problem is particularly hard to reproduce.
+ma35d1serial_console_init_port() stores matching UART device nodes in
+ma35d1serial_uart_nodes[] with an extra of_node_get() so that console
+setup can later read the "reg" property.  However, the stored references
+are never released after console setup has finished using them.
 
-thanks for the kind and useful guidance :) did add a log message in the
-workaround branch so we'll know if the issue hits.
+Drop the stored node reference after ma35d1serial_console_setup() reads
+the "reg" property, and clear the array slot to avoid leaving a stale
+pointer behind.  Also release the iterator reference before breaking out
+of for_each_matching_node(), since the normal iterator advance will not
+run in that path.
 
->=20
-> I don't know if it always triggers PSLVERR or if that's some % of !(statu=
-s=20
-> & (UART_LSR_DR | UART_LSR_BI)) cases because RBR read is racy with Rx but=
-=20
-> that could also be determined if similar debug is applied without the=20
-> patch, I guess.
+Fixes: 930cbf92db01 ("tty: serial: Add Nuvoton ma35d1 serial driver support")
+Signed-off-by: Yuho Choi <dbgh9129@gmail.com>
+---
+ drivers/tty/serial/ma35d1_serial.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-as the PSLVERR is caused by the reading of RBR so even in the latter case
-we should still using the SRBR here if availabe to avoid the PSLVERR as
-long as we enter this branch, I suppose this should be the safest way.
+diff --git a/drivers/tty/serial/ma35d1_serial.c b/drivers/tty/serial/ma35d1_serial.c
+index 285b0fe41a86..920fe7ff5083 100644
+--- a/drivers/tty/serial/ma35d1_serial.c
++++ b/drivers/tty/serial/ma35d1_serial.c
+@@ -608,8 +608,14 @@ static int __init ma35d1serial_console_setup(struct console *co, char *options)
+ 	if (!np || !p)
+ 		return -ENODEV;
+ 
+-	if (of_property_read_u32_array(np, "reg", val32, ARRAY_SIZE(val32)) != 0)
++	if (of_property_read_u32_array(np, "reg", val32, ARRAY_SIZE(val32)) != 0) {
++		of_node_put(np);
++		ma35d1serial_uart_nodes[co->index] = NULL;
+ 		return -EINVAL;
++	}
++
++	of_node_put(np);
++	ma35d1serial_uart_nodes[co->index] = NULL;
+ 
+ 	p->port.iobase = val32[1];
+ 	p->port.membase = ioremap(p->port.iobase, MA35_UART_REG_SIZE);
+@@ -648,8 +654,10 @@ static void ma35d1serial_console_init_port(void)
+ 			of_node_get(np);
+ 			ma35d1serial_uart_nodes[i] = np;
+ 			i++;
+-			if (i == MA35_UART_NR)
++			if (i == MA35_UART_NR) {
++				of_node_put(np);
+ 				break;
++			}
+ 		}
+ 	}
+ }
+-- 
+2.43.0
 
->=20
-> But with clearly more boots and it working, that's probably enough as=20
-> evidence together with the issue report offering it as a workaround.
->=20
-
-sure, will wait a bit and try to catch the condition.
-
-thanks.
