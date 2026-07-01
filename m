@@ -1,84 +1,84 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5F47380FC0
-	for <linux-serial@vger.kernel.org>; Wed,  1 Jul 2026 04:23:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F98C361DDE
+	for <linux-serial@vger.kernel.org>; Wed,  1 Jul 2026 05:58:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782879805; cv=none; b=MENzWw01OPWgj/GZwA43T1u1HadnM8UD6URjoFH/Ut25Rs+8DIuyk9OIb6/QcQNFVtPTHb2KquDpUK7NbyQBNdCqcSKeFlGdRgYa/QOEAljMNbj20S/Bqu/W0DgI1kJwQUOZOIToYCVbfZyeMUXwXnr6JyDDp+UAWh4zc6OR6GE=
+	t=1782885491; cv=none; b=V4GU2V8BwqLU/yFbCpe2tKjM3qnuUTRA44X8YNYkUSnjtqZEbZy/AqS4F3W1zcGBCNORlTk0gX95S5xuIuFBCFF01ne7Nci+HOcokWUI5YfB7tyLfh4UfUzPPAOHogLRFCHxCLex8M1Cvf9yp69CVFYnvwB7K4G/xroeB0mUhkc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782879805; c=relaxed/simple;
-	bh=h1A3GvXZLmpU+7XtveY+WUnq/NtQJw+MBtI4CdDkxiY=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=Mmaps3VX3ohBhiYalAZbGY/d0n4qPTyXkh/eyWe3MbgWtguSIeqqClGlr8xwUbPigNi9LhbnIK4w/ty+yfEki2gXPsE41HcKE2E2/ZmgV8LsxyaL6eEaSv2ANmZhTEyVAkR/5Dzsn1xCUMMtN6N0P6RJUEgZN6NQiPVCyJbjTmM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=i9bxJXz7; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=M7caRheI; arc=none smtp.client-ip=205.220.168.131
+	s=arc-20240116; t=1782885491; c=relaxed/simple;
+	bh=fzgLrdFqaGE/mRZaqKqjgHoSCum31HKjObovYE0bB6k=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=FE5tuetCZf284LJuhgah/tbC23tmMS6p1hqACsjwyOFAYc6Ol2xz0BhcHq2OdfaRNsebb+YuXV0xiGeQeMT01BjWUdhYSXGrF+uGRiQOF4KCqOtTr+mAgsUlCXpmwbX8dhRLUuO2P0EQ33VUtaH5pHluo31aZ3G5KeNmat1HOow=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=K6dm5sSM; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=FFHGU8CW; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="i9bxJXz7";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="M7caRheI"
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6612tJIn3960406
-	for <linux-serial@vger.kernel.org>; Wed, 1 Jul 2026 04:23:20 GMT
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="K6dm5sSM";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="FFHGU8CW"
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6615lZip058560
+	for <linux-serial@vger.kernel.org>; Wed, 1 Jul 2026 05:58:08 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
 	cc:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=qcppdkim1; bh=6Ts0whoWYnO66ZOrPIzcFD
-	yriQ+6rFG+W5+Pb9VPGn8=; b=i9bxJXz7xsYtxlN5DuZiYpRg8dxBU+4Xpo7UIh
-	yY95DfEs/Cn9/EAArBAJBRE9zUVXldcs801ul3Gw8cniI80+z9KX/WpM8m492DuQ
-	t+QmzLD+QO7xJi/UBEKtO6c0EFBTD+HfulCXgcksbWtvjxOvyFE+QuOFK8g8TKMV
-	3QaHaPIXt5O663BMKaiGQg052NBalPM7BMm+ZQlKfvfBepziPLa4OiDyiedM+KLn
-	Uiyff40paLPUairxobZRL3zzwDJSrT2WTJm4scyG2yt19oz77diJ4fCDrEUsEQng
-	dQxuLoqaDR7rq7F9JAT2N3MfdiF1omGeZcC+YR3BOYukUc4A==
-Received: from mail-dy1-f198.google.com (mail-dy1-f198.google.com [74.125.82.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4f4j9129nh-1
+	:mime-version:subject:to; s=qcppdkim1; bh=55kJi2SnGb1ozpyhdpZLPG
+	5yCmn6dbu9QqA2uo11k8M=; b=K6dm5sSM6BOieA5aK/kIdWS5VfTolEk780PiRT
+	9QWbhbLIVirDCNLmcPHXX5PUlkmbjVmh0LY7Qd2wFN77+H7eJKcNpUNL7a8XsBNm
+	OQeDHDMScGxnR32Ozsll/Yrdl6UDA1lS7QhE+xmxKAG+onaRFzF+WwukcBdhiQIG
+	Pole1MHU9NJTCi56MseOwCiKdfl5Pb9jM3PcuEkWqMWf3by+wZf/Si+xCvwChtdi
+	ZZvFOn2BvcdAmOCpWmruJRPqoX27j7yEETp0LfigIB2ctAYp3mXQICV/Psxq015S
+	ScbwoL/tuUuqAUySuzgJsskLLVvcgCB3oP42f3D2iOcbUm9A==
+Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com [209.85.216.70])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4f4hfyau9u-1
 	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-serial@vger.kernel.org>; Wed, 01 Jul 2026 04:23:20 +0000 (GMT)
-Received: by mail-dy1-f198.google.com with SMTP id 5a478bee46e88-30e85f5bc9eso798815eec.1
-        for <linux-serial@vger.kernel.org>; Tue, 30 Jun 2026 21:23:20 -0700 (PDT)
+	for <linux-serial@vger.kernel.org>; Wed, 01 Jul 2026 05:58:08 +0000 (GMT)
+Received: by mail-pj1-f70.google.com with SMTP id 98e67ed59e1d1-37e24235ce1so518278a91.0
+        for <linux-serial@vger.kernel.org>; Tue, 30 Jun 2026 22:58:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1782879800; x=1783484600; darn=vger.kernel.org;
+        d=oss.qualcomm.com; s=google; t=1782885487; x=1783490287; darn=vger.kernel.org;
         h=cc:to:message-id:content-transfer-encoding:mime-version:subject
          :date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=6Ts0whoWYnO66ZOrPIzcFDyriQ+6rFG+W5+Pb9VPGn8=;
-        b=M7caRheIbTk3AtBKEw7raY5Hqg1WoJ13R7Hy9pXPWnzEROyyti1eLu3y9IkXtvm2Mq
-         Z8l3tDeqtmL1PVEM7IfMSZDD/dAIX4Xhrw2jvP6+IMsEvJSQ1XVzlxdRzbA95LK0793M
-         M+JWSDol0HrqIEhtMoFhdcNOjAU83Y/B14ZBux27bF9dKxJo9dZU8somLIds4M2/6CR8
-         cY0ARDXytngCbk5BCNs7e1y+Kxhh079g1IqU3A39LbvwQ9vqZ3fdNu3CCBEYWa6/UiHt
-         MZ/QQf/wLNAR5YEMc4jVY5uyjOTs9HWIR5MutpmR4o2SGvvbZUtzTEL0VcyndYB66g5q
-         kx2Q==
+        bh=55kJi2SnGb1ozpyhdpZLPG5yCmn6dbu9QqA2uo11k8M=;
+        b=FFHGU8CWcopuKyTmnSuWEgfBVs+PUbnXGLGrITX3aTL6ITojeZeNYanbSXEGZiqkif
+         Ut5rJnFsrzTtutxhJVud9lg0LJlNJORciINEe4zgkxgZirZHyvF5QBHuxgvLzqLi1Y44
+         yjkE4M3pT2FmV8CGODqLUm3sSybd+IZavjc/JXVIbzryg4wiG3TGXUNXWq/TpXK45Me/
+         +6ZbRNawTgHC8CpceaCeifVwUSvS1XXUj+kJVlNewwHFp24Bwdhk/KWOTjwiROcjDWDo
+         WNkkiLOP8P7bVU9ZcovbZ7gU/9ndkH3mjLHBSxLXnEInqkdpU3N3Q4MgC1iUNd1MEkGm
+         mqww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782879800; x=1783484600;
+        d=1e100.net; s=20251104; t=1782885487; x=1783490287;
         h=cc:to:message-id:content-transfer-encoding:mime-version:subject
          :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=6Ts0whoWYnO66ZOrPIzcFDyriQ+6rFG+W5+Pb9VPGn8=;
-        b=BZpC6v/Ug+QglRycfTQ6RovfrAFT/3bVv5OHr+MqSl5o/SJfp7vB82aT81LFdMb/L7
-         WIQviMGgi+dwtoozDZLo3ekngWuCHkKGcXzm70zq/QVB5nUwciFkrAYPMPt3x+RCXIG6
-         sRCT46FGfbcMAqYGO21uSVWaGIIGhqEiGg3IWy2zgjgHHKFVaVxPuBq3OkLw8laGhbum
-         +1DVyymL3i65350aMf1HQfXPhPZgOPV89wmZihISPPw2MV15lukSqJhwHJWB561/tCBn
-         ms6EC8tOgZoLLN9VFRDbLL2AMJmO6mwFCC9dYaOMeMkp0kpSyCxRmeJ28jJjXiwuOXIK
-         diuw==
-X-Forwarded-Encrypted: i=1; AHgh+RqC0AGd62InFBNggeoU4ZPPe+GT4IqY0ly++PhDMHh7OaCjn3HERGnpZgGhAW86borXkx4k7aSvDWqLX04=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyG/YVKDSKTICR8tYPeatIA2BcIJKyibX50fsk//NILKXmj39xB
-	fYuzTxgUXkXpy5qYvHySiXwzFwqOljjQZS/mtRnP6jg9bLZCcCD/1fzc7PlHfnDJ6NGZ1sOrsJR
-	uS0AvuuuW4YpnFCpmIce9hS9kxrb57Cqxmi8hfnMJKy5j6LAkHc5AD+I8+6Ui43L2RHI=
-X-Gm-Gg: AfdE7ckg/1c1b1CqtTIiSe3vMs6pieIfl2U2wBSW9f3am+lOBbuTSgogTgjDzA4t5Y3
-	6wcXqaxL/RxfuktMXA/RMQYiCWwOXJiWXdu61L2aqLQvfqtNCnsuz9iWgslm3AlTu0/188scP3a
-	gmKvjJ1VkrLzihDAMGYxrQLdxWGRtc+0JU+ZQ4gQHVZOB68cJu8/3KfMMFDRjLMa7NcuH6WF1jS
-	hH1KvtKtU8HzR1DmxS8DNMW3z8fxIaqXDfk5guQrM+nCqtro/11b4OGF3FuQhI+WVjauljU3tUW
-	SjN6FSt1WDH5y0DICm+++pXIQqyzGyrnseSJZw1hjxqm3Yyv2qKc1kwu0wjAJRQhLtZ1/qb/5g1
-	oUFRVjm900w493My5bERd516jDmGY74gKZ6alOEdXW2AT
-X-Received: by 2002:a05:7300:691c:b0:30c:ab97:d7b3 with SMTP id 5a478bee46e88-30eff391662mr42656eec.45.1782879799917;
-        Tue, 30 Jun 2026 21:23:19 -0700 (PDT)
-X-Received: by 2002:a05:7300:691c:b0:30c:ab97:d7b3 with SMTP id 5a478bee46e88-30eff391662mr42605eec.45.1782879799302;
-        Tue, 30 Jun 2026 21:23:19 -0700 (PDT)
+        bh=55kJi2SnGb1ozpyhdpZLPG5yCmn6dbu9QqA2uo11k8M=;
+        b=bLYKjzSwmMrN+na9keKlfaNP+r327roTlqeY0K/W8BK3mGzVaBSWWMs8//zU716xq0
+         B9JP4TTRyEkiO3kSf5mHsi9p2TzrvO4OBJRGsM/YIqb5MR8yza+LoxUKgfcH8CG9/X54
+         zpcmA7Tdq7660vTeb09v+Dk2DcFV/YC27q+texuW6Ntli7tafrUqv8BK9z5qeDXkEl0S
+         /lhmma896EtOT8mOIxEPPC8Ro0RCx6UerRs0dLawkZIh3tyhiZq0fYNPVXj9sZEnq6Eh
+         XKRU6A9upcVndkv5xHwtbQBG/EJPMMa5E6fbdt+PsBUIlavkGtc8iDua7Vnq8fWZNKg+
+         qPgw==
+X-Forwarded-Encrypted: i=1; AHgh+RoLmT8nynvXMvbej6tFssPuQfAwmqvVimL7sz09BMLHRexLMaRTBlitULyIgK55G67mAzOkNpjiwoTlW/s=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwfZt6p70qtUgYm86SFe/dmfYN6Ow0NBOWRsizS3jNjkZJ7lGx2
+	zI80UxBnsl3n13IZl9PLJoQT1yMqF1MSQXvjD7cq+qdD7pvL7Cpl1aoC6ycDE5i9ttlr6Vn4sHF
+	qm/SIZ63xy8wp7XIWywjwHaMgXSK1tQE7xx/fFb6aoNumGGq7Ptj6M/y41v5+K+dOYmw=
+X-Gm-Gg: AfdE7ck709sy2WZ/wFBBeKqmWcuWodBHlClAdQsKZ0ToQj9apz/cNQnH5kiGnjlISLJ
+	v8+q9E9IpIDHrCGvY9kq8Wum0bEh/xaH+QArEA54xT9BdeIpDZ32k225lBL2uanUmrOKJt8cbOg
+	VMJhyd4LLJOY2kUOSXdRRC0WCHrmZQ36fvqpzIpy8zPqhfw4SYU0MJCmcbxytktUriTRmA7CTQ/
+	yOADMldp+luV5YBowDkoV+1Bjk0oJYwerM+mH6YE4XRKFtNaNqPFB+YNn/u9Pn4zTNSuMTEOkfw
+	mgbpNO0zz/OI7u+C29YdZDqWDR0yFCn1UqYfHzNlvy77NSMCVQgYLKsU0Y1/PLfLO5WXRYO8gUQ
+	DZmicoV4hZEjCy7NHDJan+Ceoiyic12o/JDtF9GAAai4G
+X-Received: by 2002:a17:90b:2e45:b0:37e:9e9:6ff0 with SMTP id 98e67ed59e1d1-380aa0bd330mr327886a91.13.1782885487371;
+        Tue, 30 Jun 2026 22:58:07 -0700 (PDT)
+X-Received: by 2002:a17:90b:2e45:b0:37e:9e9:6ff0 with SMTP id 98e67ed59e1d1-380aa0bd330mr327863a91.13.1782885486866;
+        Tue, 30 Jun 2026 22:58:06 -0700 (PDT)
 Received: from hu-ptalari-hyd.qualcomm.com ([202.46.22.19])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30ee3205796sm17815755eec.23.2026.06.30.21.23.14
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-38095d76381sm1146375a91.6.2026.06.30.22.58.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Jun 2026 21:23:18 -0700 (PDT)
+        Tue, 30 Jun 2026 22:58:06 -0700 (PDT)
 From: Praveen Talari <praveen.talari@oss.qualcomm.com>
-Date: Wed, 01 Jul 2026 09:53:10 +0530
-Subject: [PATCH] serial: qcom-geni: Pre-map RX DMA buffer at probe to avoid
- sleep-in-atomic
+Date: Wed, 01 Jul 2026 11:27:55 +0530
+Subject: [PATCH] serial: qcom-geni: add force suspend/resume to system
+ sleep callbacks
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -87,212 +87,131 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260701-fix-sleep-in-atomic-context-during-rx-dma-setup-v1-1-95c208380c65@oss.qualcomm.com>
-X-B4-Tracking: v=1; b=H4sIAC2WRGoC/yXNTQrCMBBA4auUWTuQFoziVcRFfqZ1xCYhk5RA6
- d2Nuvw27+0glJkEbsMOmTYWjqFjPA3gniYshOy7YVKTVnq84MwN5U2UkAOaEld26GIo1Ar6mjk
- smBv61aBQqQmdOmvrZ3U13kKvpkw98TveH39LtS9y5buB4/gAOCoTdpMAAAA=
-X-Change-ID: 20260617-fix-sleep-in-atomic-context-during-rx-dma-setup-c056bdf08adb
+Message-Id: <20260701-add_force_suspend_resume_to_system_sleep_callbacks-v1-1-38c9a721a462@oss.qualcomm.com>
+X-B4-Tracking: v=1; b=H4sIAGKsRGoC/yXNWw6CMBBG4a2QeZakoJboVgyZlPavVrk0HTAaw
+ t6t+vi9nLOSIAUInYuVEp5BwjRmVLuC7M2MV5TBZVOtaq101ZTGOfZTsmBZJGJ0nCDLAJ4nlrf
+ MGFh6ILI1fd8Z+5DS+9qcDs1R75WmHI4JPrx+00v7tyzdHXb+nmjbPtLGCsuWAAAA
+X-Change-ID: 20260617-add_force_suspend_resume_to_system_sleep_callbacks-ff2a94756306
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>, bjorn.andersson@oss.qualcomm.com,
         Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org,
-        Mukesh Kumar Savaliya <mukesh.savaliya@oss.qualcomm.com>,
+Cc: Mukesh Kumar Savaliya <mukesh.savaliya@oss.qualcomm.com>,
         aniket.randive@oss.qualcomm.com, chandana.chiluveru@oss.qualcomm.com,
-        chiluka.harish@oss.qualcomm.com,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org,
         Praveen Talari <praveen.talari@oss.qualcomm.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1782879794; l=5502;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1782885483; l=3242;
  i=praveen.talari@oss.qualcomm.com; s=20251114; h=from:subject:message-id;
- bh=h1A3GvXZLmpU+7XtveY+WUnq/NtQJw+MBtI4CdDkxiY=;
- b=kdD8dcSXZqQ7NHyLrx1sbeV+GNrH2FJw75X8kKH3ghy1LnC4ay2ffFuLHzBqHu2LhZhPBK9bt
- JFXGOR4qaTFDcKtMtE9hZg+0+mTBOqBjugQ6teoOVFv0WAVenOdYemA
+ bh=fzgLrdFqaGE/mRZaqKqjgHoSCum31HKjObovYE0bB6k=;
+ b=X/3Xg2ml/r+mDoC7g+ThTtawJlEnLJwotN2atbbOrLAHe1lsqs6VkAND+/LoxoBjy2iHwwUR7
+ dKPXSn+MiZKAPsI4htvdgt0qtHzaSNM4xoeuKpGl1dmgcm0Ro6Z3ZmN
 X-Developer-Key: i=praveen.talari@oss.qualcomm.com; a=ed25519;
  pk=NGK/88fjyHXgfhIKwag7+uIytOmyOypvZ/hDFaYPEss=
-X-Proofpoint-ORIG-GUID: v3L41-0ewYn-Z1gEyX4m1aLgS8W6laiy
-X-Authority-Analysis: v=2.4 cv=ftfsol4f c=1 sm=1 tr=0 ts=6a449638 cx=c_pps
- a=wEP8DlPgTf/vqF+yE6f9lg==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
+X-Authority-Analysis: v=2.4 cv=J5OaKgnS c=1 sm=1 tr=0 ts=6a44ac70 cx=c_pps
+ a=0uOsjrqzRL749jD1oC5vDA==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
  a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=Um2Pa8k9VHT-vaBCBUpS:22
- a=EUspDBNiAAAA:8 a=iI12EKIy37xJd30OuqwA:9 a=QEXdDO2ut3YA:10
- a=bBxd6f-gb0O0v-kibOvt:22
-X-Proofpoint-GUID: v3L41-0ewYn-Z1gEyX4m1aLgS8W6laiy
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzAxMDA0MiBTYWx0ZWRfX59AybXEwi2Pc
- Pdn6iAMlOw/qHDARp4PLj6IgWkwp0rFBfguqGqS1AZQXLTdAoxE8kORFV+wlh2Ji9xDi6/Loczw
- reYudalqUmxn9H1CuQmagU4kcfTB2Ya0b9wQhlW2aZmz170fYnIUcj1Vq9CISywtVNwMdxGLeGD
- MIcJm9b61R/7N+k+RIfajQt/fJDETO5AGSvqVbWX9Qaf+mEykdcGALclHLX1z+5lDSGhoWHql+b
- t25ltHtKaL0hWQOg+h1K3bJZqsFylbarv2zdxbVUoL5Gv3iKShR3jgY2QMslW7TGgheMu1GxsGA
- i59M4LI4ahiMQeqgQR/bMMfcMHJPtG87gvooOoxz9zM2UifejQtu/FcHHbmKnSJXPlwG4zo8nyi
- 9jDjsB+z4BDvYuQJXhD4RdvYyrNbjXrDeDus/9uqlRJ8C5R6WQgQIPcVsoSbAbvoaW27jPf0792
- uDYrme8nKDcoxPMnEaQ==
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzAxMDA0MiBTYWx0ZWRfX4pUYQLvjRssg
- XqXa4OW4ttmimOE5ewp1byQq3Ii0M9uizKgJW3MW8aOiQcNfg5g6ui9eph1mfF3FM9ilfpY0hrl
- 3T6UTBD+EW0K0/Yx16iTn87sRNS8HM4=
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yx91gb_oNiZeI1HMLzn7:22
+ a=EUspDBNiAAAA:8 a=rFQNHX_iIj8PGKCmY4cA:9 a=QEXdDO2ut3YA:10
+ a=mQ_c8vxmzFEMiUWkPHU9:22
+X-Proofpoint-ORIG-GUID: QIcZloJVerQNnjJD_HwK0G5efRX78AkO
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzAxMDA1OCBTYWx0ZWRfXyQMPSWqLgi8G
+ KKXZOdTtH6unc/Pp5ipdAItUZ+KWtl3xnca+8TVPS7pgNdFuUSyUTckxvzwUFEEN6ybGvr3QrQT
+ vswDfHPm/oVvAmSUS4CG5STI09qpbvc=
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzAxMDA1OCBTYWx0ZWRfX6BEs80XdBSFt
+ YDYpnjn8ZrgQeQYmmTG3axo6ycBLRHSY3BC0gMGnM5Cg1lPwk3Unwg24G+QAh90vK4QZe9ySfUa
+ doSrf9LO6ocyaoiO4oxDPocZXEVLJOcti1QiFv2Rb0E3A717n75bfMKOspktKWmc5J6eNQuXtHQ
+ F8EmMXXepYl/LjTDAhwG/h5ThHll/5/DzxxdzKmZkmpANe2GS1/pk3X8GXBt1Z3ZCVZ27MD5t0B
+ jw+xIz2NFUHw/+k4VPKYUFe6HteHT4V9SurNJQ/OhR+VHZMgvtDqzEKtkVX3s3hIc/tmEJoBhId
+ Tj4gZE4zTTSJImYbR+eKx2U8H7emlxbB3jtKbrX1QSxaktR1HcPGjLTJMvqXK8qYuRQeoFv3CtK
+ eVyM5YR4WeQ2/8LJlj6I7NT8/zDol3riAV/7hBPVkvIEq4VasJmOMpGDculb0Yc0607Me2IV07J
+ t3rkaRjC9eBqq2H1Gvw==
+X-Proofpoint-GUID: QIcZloJVerQNnjJD_HwK0G5efRX78AkO
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
  definitions=2026-07-01_01,2026-06-26_01,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- bulkscore=0 lowpriorityscore=0 clxscore=1015 phishscore=0 impostorscore=0
- priorityscore=1501 malwarescore=0 spamscore=0 adultscore=0 suspectscore=0
+ phishscore=0 bulkscore=0 priorityscore=1501 adultscore=0 clxscore=1015
+ lowpriorityscore=0 malwarescore=0 impostorscore=0 spamscore=0 suspectscore=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607010042
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607010058
 
-geni_se_rx_dma_prep() calls dma_map_single() which can trigger IOMMU
-page table allocations under GFP_KERNEL. This is unsafe when called
-from qcom_geni_serial_start_rx_dma(), which runs in atomic context
-producing a "sleeping function called from invalid context" splat:
+During system sleep the hardware resources (clocks, interconnect) are
+not gated because the runtime-suspend callback is never invoked from
+the system sleep path.  This prevents the platform from reaching its
+lowest idle state.
 
-    __might_resched+0x15c/0x17c
-    __alloc_pages_noprof+0xe4/0x4c8
-    qcom_io_pgtable_alloc_page+0x100/0x250
-    __arm_lpae_map+0x2d0/0x870
-    geni_se_rx_dma_prep+0xd8/0x158
-    qcom_geni_serial_start_rx_dma+0x84/0x16c
-    qcom_geni_serial_startup+0x70/0x104
+The system sleep callbacks qcom_geni_serial_suspend() and
+qcom_geni_serial_resume() rely solely on uart_suspend_port() /
+uart_resume_port() to manage power.  uart_suspend_port() drives the
+UART PM state machine to UART_PM_STATE_OFF, which in turn calls
+pm_runtime_put_sync() and eventually the runtime-suspend callback.
+However, if the runtime-PM usage count is still elevated at the time
+of system sleep (e.g. the port is held active by an open file
+descriptor), the runtime-suspend callback is never invoked and the
+hardware resources (clocks, interconnect) remain enabled across
+suspend, preventing the platform from reaching its lowest idle state.
 
-Fix this by mapping the RX DMA buffer once during probe, where sleeping
-is allowed, and keeping it mapped for the lifetime of the device.
-
-Replace the geni_se_rx_dma_prep() / geni_se_rx_dma_unprep() calls in
-the runtime paths with dma_sync_single_for_device() before initiating a
-transfer and dma_sync_single_for_cpu() on completion, using the persistent
-mapping. The buffer is unmapped in probe's error path and in remove().
+Fix this by calling pm_runtime_force_suspend() at the end of
+qcom_geni_serial_suspend() so that the runtime-suspend callback is
+always executed regardless of the usage count, and by calling
+pm_runtime_force_resume() at the start of qcom_geni_serial_resume()
+to restore those resources before uart_resume_port() re-opens the
+port.
 
 Signed-off-by: Praveen Talari <praveen.talari@oss.qualcomm.com>
 ---
- drivers/tty/serial/qcom_geni_serial.c | 55 +++++++++++++++++++++--------------
- 1 file changed, 33 insertions(+), 22 deletions(-)
+ drivers/tty/serial/qcom_geni_serial.c | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 7ead87b4eb65..3e460b0358eb 100644
+index e6b0a55f0cfb..ea8a1f0a9e3d 100644
 --- a/drivers/tty/serial/qcom_geni_serial.c
 +++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -9,6 +9,7 @@
+@@ -1954,6 +1954,7 @@ static int qcom_geni_serial_suspend(struct device *dev)
+ 	struct qcom_geni_serial_port *port = dev_get_drvdata(dev);
+ 	struct uart_port *uport = &port->uport;
+ 	struct qcom_geni_private_data *private_data = uport->private_data;
++	int ret;
  
- #include <linux/clk.h>
- #include <linux/console.h>
-+#include <linux/dma-mapping.h>
- #include <linux/io.h>
- #include <linux/iopoll.h>
- #include <linux/irq.h>
-@@ -863,37 +864,31 @@ static void qcom_geni_serial_stop_rx_dma(struct uart_port *uport)
- 				uport->membase + SE_DMA_RX_IRQ_CLR);
+ 	/*
+ 	 * This is done so we can hit the lowest possible state in suspend
+@@ -1963,7 +1964,19 @@ static int qcom_geni_serial_suspend(struct device *dev)
+ 		geni_icc_set_tag(&port->se, QCOM_ICC_TAG_ACTIVE_ONLY);
+ 		geni_icc_set_bw(&port->se);
  	}
- 
--	if (port->rx_dma_addr) {
--		geni_se_rx_dma_unprep(&port->se, port->rx_dma_addr,
--				      DMA_RX_BUF_SIZE);
--		port->rx_dma_addr = 0;
--	}
- }
- 
- static void qcom_geni_serial_start_rx_dma(struct uart_port *uport)
- {
- 	struct qcom_geni_serial_port *port = to_dev_port(uport);
--	int ret;
- 
- 	if (qcom_geni_serial_secondary_active(uport))
- 		qcom_geni_serial_stop_rx_dma(uport);
- 
- 	geni_se_setup_s_cmd(&port->se, UART_START_READ, UART_PARAM_RFR_OPEN);
- 
--	ret = geni_se_rx_dma_prep(&port->se, port->rx_buf,
--				  DMA_RX_BUF_SIZE,
--				  &port->rx_dma_addr);
--	if (ret) {
--		dev_err(uport->dev, "unable to start RX SE DMA: %d\n", ret);
--		qcom_geni_serial_stop_rx_dma(uport);
-+	if (!port->rx_dma_addr) {
-+		dev_err(uport->dev, "RX DMA buffer not mapped\n");
-+		return;
- 	}
+-	return uart_suspend_port(private_data->drv, uport);
 +
-+	dma_sync_single_for_device(uport->dev->parent, port->rx_dma_addr,
-+				   DMA_RX_BUF_SIZE, DMA_FROM_DEVICE);
-+	geni_se_rx_init_dma(&port->se, port->rx_dma_addr, DMA_RX_BUF_SIZE);
- }
- 
- static void qcom_geni_serial_handle_rx_dma(struct uart_port *uport, bool drop)
- {
- 	struct qcom_geni_serial_port *port = to_dev_port(uport);
- 	u32 rx_in;
--	int ret;
- 
- 	if (!qcom_geni_serial_secondary_active(uport))
- 		return;
-@@ -901,8 +896,8 @@ static void qcom_geni_serial_handle_rx_dma(struct uart_port *uport, bool drop)
- 	if (!port->rx_dma_addr)
- 		return;
- 
--	geni_se_rx_dma_unprep(&port->se, port->rx_dma_addr, DMA_RX_BUF_SIZE);
--	port->rx_dma_addr = 0;
-+	dma_sync_single_for_cpu(uport->dev->parent, port->rx_dma_addr,
-+				DMA_RX_BUF_SIZE, DMA_FROM_DEVICE);
- 
- 	rx_in = readl(uport->membase + SE_DMA_RX_LEN_IN);
- 	if (!rx_in)
-@@ -910,13 +905,9 @@ static void qcom_geni_serial_handle_rx_dma(struct uart_port *uport, bool drop)
- 	else if (!drop)
- 		handle_rx_uart(uport, rx_in);
- 
--	ret = geni_se_rx_dma_prep(&port->se, port->rx_buf,
--				  DMA_RX_BUF_SIZE,
--				  &port->rx_dma_addr);
--	if (ret) {
--		dev_err(uport->dev, "unable to start RX SE DMA: %d\n", ret);
--		qcom_geni_serial_stop_rx_dma(uport);
--	}
-+	dma_sync_single_for_device(uport->dev->parent, port->rx_dma_addr,
-+				   DMA_RX_BUF_SIZE, DMA_FROM_DEVICE);
-+	geni_se_rx_init_dma(&port->se, port->rx_dma_addr, DMA_RX_BUF_SIZE);
- }
- 
- static void qcom_geni_serial_start_rx(struct uart_port *uport)
-@@ -1864,6 +1855,14 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 			ret = -ENOMEM;
- 			goto error;
- 		}
++	ret = uart_suspend_port(private_data->drv, uport);
++	if (ret)
++		return ret;
 +
-+		port->rx_dma_addr = dma_map_single(pdev->dev.parent, port->rx_buf,
-+						   DMA_RX_BUF_SIZE, DMA_FROM_DEVICE);
-+		if (dma_mapping_error(pdev->dev.parent, port->rx_dma_addr)) {
-+			ret = -EIO;
-+			dev_err(&pdev->dev, "Failed to map RX DMA buffer: %d\n", ret);
-+			goto error;
-+		}
- 	}
- 
- 	port->name = devm_kasprintf(uport->dev, GFP_KERNEL,
-@@ -1928,6 +1927,11 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 	return 0;
- 
- error:
-+	if (port->rx_dma_addr) {
-+		dma_unmap_single(pdev->dev.parent, port->rx_dma_addr,
-+				 DMA_RX_BUF_SIZE, DMA_FROM_DEVICE);
-+		port->rx_dma_addr = 0;
-+	}
- 	dev_pm_domain_detach_list(port->pd_list);
- 	return ret;
- }
-@@ -1942,6 +1946,13 @@ static void qcom_geni_serial_remove(struct platform_device *pdev)
- 	device_init_wakeup(&pdev->dev, false);
- 	ida_free(&port_ida, uport->line);
- 	uart_remove_one_port(drv, &port->uport);
++	/*
++	 * When no_console_suspend is set the console must remain active
++	 * across system sleep, so skip the force suspend path.
++	 */
++	if (uart_console(uport) && !uport->suspended)
++		return 0;
 +
-+	if (port->rx_dma_addr) {
-+		dma_unmap_single(pdev->dev.parent, port->rx_dma_addr,
-+				 DMA_RX_BUF_SIZE, DMA_FROM_DEVICE);
-+		port->rx_dma_addr = 0;
-+	}
-+
- 	dev_pm_domain_detach_list(port->pd_list);
++	return pm_runtime_force_suspend(dev);
  }
  
+ static int qcom_geni_serial_resume(struct device *dev)
+@@ -1973,6 +1986,10 @@ static int qcom_geni_serial_resume(struct device *dev)
+ 	struct uart_port *uport = &port->uport;
+ 	struct qcom_geni_private_data *private_data = uport->private_data;
+ 
++	ret = pm_runtime_force_resume(dev);
++	if (ret)
++		return ret;
++
+ 	ret = uart_resume_port(private_data->drv, uport);
+ 	if (uart_console(uport)) {
+ 		geni_icc_set_tag(&port->se, QCOM_ICC_TAG_ALWAYS);
 
 ---
-base-commit: 4fa3f5fabb30bf00d7475d5a33459ea83d639bf9
-change-id: 20260617-fix-sleep-in-atomic-context-during-rx-dma-setup-c056bdf08adb
+base-commit: 1f5ffc672165ff851063a5fd044b727ab2517ae3
+change-id: 20260617-add_force_suspend_resume_to_system_sleep_callbacks-ff2a94756306
 
 Best regards,
 --  
