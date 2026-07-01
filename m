@@ -1,212 +1,122 @@
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
+Received: from mail-pj1-f48.google.com (mail-pj1-f48.google.com [209.85.216.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40917245008
-	for <linux-serial@vger.kernel.org>; Wed,  1 Jul 2026 17:41:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04A91348C6E
+	for <linux-serial@vger.kernel.org>; Wed,  1 Jul 2026 21:49:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782927709; cv=none; b=rPZG+8dr3XWSbUzCF63XozRKwfKWs8F60jTCJySZr2L/IB9o6i/YPt9BMUiDbYry3uw/oU3uj3uYOvluMP+nv8Zwv4UZK+Q0/41xD1+s+RxDHG4Q/y54jFtKBR2lDMnHpZnWzL/O34hfYTTQv0/c3w3Bz5/DSPV6Crfon/pjc2A=
+	t=1782942570; cv=none; b=ZpbG+B27BUMovgN1J9DLIeC6Ry/C6W+WISacOsYfqNULeLwVhVMPV2Maxc9vOZpfxn9xWwLKw2Nw/bs7NvIzHts+ecLujLpR8nA6QmTETBXeGhqIL9RwvNEuskpSv9z9pc9BWiBqeD0Hb6I4kfAsaIXhxXcu6ni41VFR4wC4O8A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782927709; c=relaxed/simple;
-	bh=/sFIIMwv1cwP6QuFYC8Bi6QyLRzPPMzGLuRnacUwDUk=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=u2D3gWSz2PDYEOWvxs8za1RBHCzo0DPQqCiaVkve7E1xiVLE223R81/miHdcx+fXy3Mtmm5n2yhC0+j1O9sighVChZEPQULfL0xqLMgSZZ+w8G6SlP0qk9gz8PF0Je+/n1PdDOsPschfgKxGxNPS5Ky0OuxiYkpkNN6oKMvuQ44=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MIRmANSp; arc=none smtp.client-ip=209.85.221.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1782942570; c=relaxed/simple;
+	bh=e2Mc99S14EwiVlrTIXj/dnyd1xTRih+Mv0plP40AMpo=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=tRJ0M5Op3UtmWJkoSbV6+QvqYs3ZMbzyYBdhfuC30iciYE3OJ0dgx3sEb5QtMzZHtgFR61xfmph5vFKYH97DDivPV+KMqcMWTytt0jHG/sdhvkJe72Fe3DuHRGasEiOTV7Cz0uay6rNg/wtmdmFL1xstt55PI952hrhdLT2G9Bs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jjdev.com; spf=none smtp.mailfrom=jjdev.com; dkim=pass (2048-bit key) header.d=jjdev-com.20251104.gappssmtp.com header.i=@jjdev-com.20251104.gappssmtp.com header.b=pJBDzHIp; arc=none smtp.client-ip=209.85.216.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jjdev.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=jjdev.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MIRmANSp"
-Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-4703bc0a99aso529553f8f.3
-        for <linux-serial@vger.kernel.org>; Wed, 01 Jul 2026 10:41:48 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=jjdev-com.20251104.gappssmtp.com header.i=@jjdev-com.20251104.gappssmtp.com header.b="pJBDzHIp"
+Received: by mail-pj1-f48.google.com with SMTP id 98e67ed59e1d1-38005a36edbso677298a91.1
+        for <linux-serial@vger.kernel.org>; Wed, 01 Jul 2026 14:49:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782927707; x=1783532507; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=RgZ+RRPPPNkUcHKx4yOh/np63o+QAr4UfMkPtju0y+0=;
-        b=MIRmANSpMmXXlyoF5YflIczMsBt1rwp26MWE8ORGPcoc6hMrvrpv8f3rGrkcHvEJxM
-         jMHL+k9J+YC45TcB3vlle8NMHNlnPm5E1PsnzFbsJguqmURB8M2bNZE8usNSc1q4c1rD
-         DQv9g1vp5m3rPnd5+KNaOunbvWsiHfsXu2ZTStIANeerPwi7Q0dG46uXHfA0hZOuvFyU
-         byazA+VJu9Ak9AuPrE7xVsfIl0J1p1NIn0L1IY+MYMOM6ul5wtG7VQhVA8uu9MI0D/03
-         ZDyTkbQt1krLbS+Z+1YvWg5wIlaydqOxp9dqzngEaSXNfVhkfzHZWm5Vvww3uj8QumhG
-         kb6g==
+        d=jjdev-com.20251104.gappssmtp.com; s=20251104; t=1782942568; x=1783547368; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=1dokrBTB60egFqlcTSb9K7bU6xTuOWrnhTXnVJVb3iw=;
+        b=pJBDzHIpsKpKIS38jm9SnAGUQpj4SqMh7VC7TDVSt8dSB/3WF6dPiJgWuHd4ofemxN
+         KCFnyUT6GcomqqG1UQSx22Qcb++l8Ml9LQh1ZO1rX1Cnw9JLhsgeULlIPTiKrbCzluSK
+         jiP0x8id71FCHWJ0hvVEXrYkMPdupicY7NFG1F2ezft/O0C+nhI91OWVnCTSP8TI7ZoZ
+         NvP9Dwg1v10E/0FfA5Gewi2l5lLIiSCRCsjnAW1/sWYSdDSS8TTTk4hRBQa3YXypwKMV
+         znV3S0jy7qRUwk0oEUYYy6hUp1/lXnd6tt3Szr7+18O1ZT4DZ6sICK945uvwfUSjwepH
+         FHeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782927707; x=1783532507;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=RgZ+RRPPPNkUcHKx4yOh/np63o+QAr4UfMkPtju0y+0=;
-        b=aZifUjpuLngScpcShmcdcyOjec1JM22QdPXfsqzL0F9qKl2hRB//85z/lsCfZxixk/
-         wW0d4dhNjT11NCZQLEOelarR5ElzvG2ndrVz62BlGOajSp+XnCeIApLdtWw5K/fVFs2l
-         Zy4fGJXnBA9ninvCzjxFXdOSiP+4oBLw00Mx+DLqG3N7Pm8B+R3T3bNqi3BFeVrD0z2d
-         4zrcuGW+fVfd9KgO22orfmSIitvJRy6VliA3qV2rJl9SK3G4MXv8SITH7TXminKf9lNW
-         DP3z0ATi5MZ2ygx95Lzjpilpx2SPeI13WHjBX4+OWgVPdmWhCj4/N+WyiBORWxPITMak
-         QGeQ==
-X-Forwarded-Encrypted: i=1; AHgh+Rqsk4hg5/TDRp1H/QmQ67Fu36cDloZj26iwVNE+qZIX71Dj8IqOx9JUY/hhhcuO+7Z7xebFpJrSf+A93gs=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwTBRascsiH17uS3leFnSHV4mfVz18P7Bqe8uuq0NGjdLajJgTt
-	7ULnO7ONNr2myZ/FyxHFDYZ+CFmt077kncLWI1sEr+Z7d+IlaCG3YJoL
-X-Gm-Gg: AfdE7clk5Ccchm2hcRxkihuQ1Ou2/wIP80/yKF7/hKI2VaetkGl9WhhJFG5N33WkVBy
-	1LiW8eADB5jMR6ZfpnbLGBfOk9oMZx/h1g0F7I1dlu7EDXylqt43tKNXfy3yoOgDDCmtOl9KoOu
-	IhHojHh9Q5Ba/s6IBWUY+Hk1/VhrKaCPQljwGrdzE27CNUQa9YXvPRPMtw4DoAOMqcon3y88kuV
-	ewK5UDPB+nbpWxzaL4rO6UtmFhLH/Fzqz4SWKAStGmzfch49pg+HiVKK4DST11P9zST/e7+QBx4
-	96fqs4KQvOfvfVo41vuXinSixoE2iwD806xMMDsvE6TRqbblojmrbQa+JvngBgb8FkzaPmzUDND
-	s998GqNUQcxo4Wnkn9PhmdS6s2zBPNbzcT+hsVh/Y/RoqOK19ZVcjD8i5yPzyfGUu8KQzhFpANI
-	S5esvX/mTw05GgvMLkNTKUYcvegK1B3NoBBERVk9EVkkl2rQ==
-X-Received: by 2002:a05:6000:2893:b0:46f:f12b:e444 with SMTP id ffacd0b85a97d-47759098164mr4140611f8f.29.1782927706618;
-        Wed, 01 Jul 2026 10:41:46 -0700 (PDT)
-Received: from pumpkin (host-92-21-50-228.as13285.net. [92.21.50.228])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-477ddf0fb15sm1250276f8f.29.2026.07.01.10.41.45
+        d=1e100.net; s=20251104; t=1782942568; x=1783547368;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=1dokrBTB60egFqlcTSb9K7bU6xTuOWrnhTXnVJVb3iw=;
+        b=pYTcHduff7KsDc/B06Lj+flFYCodNnrZ9tlnI3J1ikvyeblo7Sr5xf+k9/VLg3H87+
+         J8lE1eIbb271QACZz6Q6z/lwswejnHYfjSqX+WJCpmYMLUGpQRZ2GdtFYQoB916FhnbP
+         lra7x6zWg9UV9J7UH4NYyLpa1g0/nfIZVVtrIU+6Art7RfQebudRNFt7xetw2zr/Y809
+         ex3PcpQRh0Wib6lWKnqA7gvaPgIs0CTTeAoL0QvsXzXHnkwkgQ4jy8R/ga8WAxpXMAor
+         uon/Ff2HTxgpDiIDafPVFeOyuHcXeG1/TQQ38pQtaYNS6ZKsZo8T30qY66Il2EGtHRVM
+         wqPw==
+X-Gm-Message-State: AOJu0YzA9+R79YgUYcHL0ewFeWgkSBOebjh6ocB412SPYa7Q7R0P6OEL
+	ETJ5NsdJ0PM6EvaXpnzVjJNQ2vZy86Fm7LYvJsGO4wrh3DpOpaky2qGn4Ynh5fDs5+UYIi0WxbM
+	s1ibtLQ==
+X-Gm-Gg: AfdE7cm1dLH9Wee1N4iuAfF+rVQq/HFwKoVTIBBY7Pxqd3HKNKk+ds130ac7i2dOrzq
+	ndc/2jkXfVL9HGSXICLfq0D3Yrnl5HxAWjqYX+Pgl2+ZJoh8XaMX17VfJNTyzYKAfe7zar/jWl8
+	/6G6h/0V/QV+c+XcUnXyMQouu6AuGaPQ5MPnaNQl2AwAE7MsYzr6ewPu5b6U2by2ny+HkSiBbE7
+	rj8Fs+CKrDNdZ+h7sJt/HmK1scrrj84afNaMjEitCvMn5/Wuc+ZKpdRQmDAEc+h9ZzQS078QzZA
+	SSyTDprkgXRWHAak74VUu8G/Cxc4hmwtT9onEH7+60WPzRyr7PCS3iwzCikpfYbdtdMyrmMxwBO
+	YWQJfBszvecUHD3IG5WU1M7sdcIEANcC316j0L1btAO59S3iI9PQp5E/+qzmot0aVkAyZdCFrHd
+	nPq9r2/oNRbA==
+X-Received: by 2002:a17:90b:5845:b0:36b:9e24:c692 with SMTP id 98e67ed59e1d1-380aa1c9748mr3074310a91.20.1782942568113;
+        Wed, 01 Jul 2026 14:49:28 -0700 (PDT)
+Received: from jjbox.local.ftr ([47.151.31.186])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30f0bbdc4eesm1662488eec.24.2026.07.01.14.49.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jul 2026 10:41:46 -0700 (PDT)
-Date: Wed, 1 Jul 2026 18:41:44 +0100
-From: David Laight <david.laight.linux@gmail.com>
-To: Paul Mbewe <paultyson.mbewe@ziehl-abegg.de>
-Cc: <Maarten.Brock@sttls.nl>, <linux-serial@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, <gregkh@linuxfoundation.org>,
- <jirislaby@kernel.org>, <hvilleneuve@dimonoff.com>,
- <tobias.gannert@ziehl-abegg.de>, <joachim.knorr@ziehl-abegg.de>
-Subject: Re: [PATCH 2/2] serial: sc16is7xx: set TX FIFO trigger level to
- half FIFO to prevent underruns
-Message-ID: <20260701184144.62bac61e@pumpkin>
-In-Reply-To: <20260701164056.951230-1-paultyson.mbewe@ziehl-abegg.de>
-References: <GV2PR05MB1194183F888F21065CC596F3D83EC2@GV2PR05MB11941.eurprd05.prod.outlook.com>
-	<418f9ae5-8827-475c-b465-1271a784fbf1.bc56e27e-ecd8-43ae-bb87-75bfd472a28d.88efbd1d-67dc-430a-adbe-b90700d161bb@emailsignatures365.codetwo.com>
-	<20260701164056.951230-1-paultyson.mbewe@ziehl-abegg.de>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
+        Wed, 01 Jul 2026 14:49:27 -0700 (PDT)
+From: John de la Garza <john@jjdev.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org
+Cc: linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	John de la Garza <john@jjdev.com>
+Subject: [PATCH] tty: tty_jobctrl: use guard() in tiocgsid()
+Date: Wed,  1 Jul 2026 14:49:25 -0700
+Message-ID: <20260701214925.3966663-1-john@jjdev.com>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Wed, 1 Jul 2026 18:40:56 +0200
-Paul Mbewe <paultyson.mbewe@ziehl-abegg.de> wrote:
+guard()s express more clearly what the lock protects and let the
+function return immediately instead of jumping to an unlock label.
 
-> Hi David, Maarten,
->=20
-> I rechecked this with ftrace, and I think the right explanation is
-> narrower than my v1 commit message.
->=20
-> The underrun trace shows the SC16IS7xx refill path running with the
-> hardware TX FIFO already empty while the tty xmit FIFO still had data
-> queued, for example:
->=20
-> =C2=A0 sc16is7xx delayed refill: line=3D0 txlvl=3D64 pending=3D172
->=20
-> So the conclusions for me are:
->=20
-> =C2=A0 - The driver can catch up if the FIFO is only partially drained wh=
-en
-> =C2=A0=C2=A0=C2=A0 the THRI path runs. TXLVL will report more than the no=
-minal trigger
-> =C2=A0=C2=A0=C2=A0 amount and the driver can write more bytes.
->=20
-> =C2=A0 - Once TXLVL is 64, the FIFO has already emptied and the TX gap has
-> =C2=A0=C2=A0=C2=A0 already occurred.
+Signed-off-by: John de la Garza <john@jjdev.com>
+---
+ drivers/tty/tty_jobctrl.c | 15 +++++----------
+ 1 file changed, 5 insertions(+), 10 deletions(-)
 
-Right, but there must be something happening after the previous time the
-fifo was filled that makes this one happen too late.
-Either the hardware ISR was very late or it didn't schedule the thread.
-
-Thinks.....
-Maybe you are getting a fifo empty interrupt (rather than the fifo threshol=
-d)
-interrupt, with the threshold one getting lost.
-So what happens if the threshold is reached while the threaded ISR is still
-running?
-When that happens the ISR needs to loop, either in software or by re-enabli=
-ng
-a level-sensitive interrupt so that another hardware interrupt happens
-immediately.
-I'm not at all sure how that works with threaded ISR on the SPI interface.
-Especially since you really don't want to read any more SPI registers
-than absolutely necessary (you need to avoid PCIe reads as well!).
-
-For a 'normal' ethernet driver rx path it is important to check the next
-rx ring entry a second time after enabling the hardware interrupt.
-Otherwise you miss a wakeup.
-I think you are getting (effectively) the same problem.
-
-You might need to use (say) ktime_get_ns() to work out how many bytes
-were transmitted between the fifo space being read and the end of the
-fifo writes to see if you need to do a second refill.
-(Or, rather, to detect that you definitely don't need to do one.)
-
-With the threshold set to 32 it is much less likely that it will be hit
-during the fifo writes, so you are much less likely to lose an interrupt.
-But scheduling delays could still make it happen.=20
-
-	David
-
->=20
-> =C2=A0 - The v1 explanation was wrong to describe a 32-free-space trigger=
- as
-> =C2=A0=C2=A0=C2=A0 increasing the per-interrupt refill window. It does no=
-t. With the
-> =C2=A0=C2=A0=C2=A0 default trigger, the FIFO has about 56 character times=
- left when THRI
-> =C2=A0=C2=A0=C2=A0 fires; with a 32-free-space trigger, it has about 32 c=
-haracter times
-> =C2=A0=C2=A0=C2=A0 left.
->=20
-> =C2=A0 - As Maarten pointed out, the benefit is the other side of the
-> =C2=A0=C2=A0=C2=A0 trade-off: the refill event rate is reduced by 4x, fro=
-m roughly
-> =C2=A0=C2=A0=C2=A0 1 refill per 8 transmitted bytes to 1 refill per 32 tr=
-ansmitted bytes.
-> =C2=A0=C2=A0=C2=A0
-> =C2=A0 - On the tested SPI-backed system, that lower refill rate reduces =
-the
-> =C2=A0=C2=A0=C2=A0 IRQ/SPI load enough to avoid the observed underruns.
->=20
-> The change is limited to SPI-attached parts so the I2C case is
-> unaffected.
->=20
-> For v2 I will:
->=20
-> =C2=A0 - rework the commit message around Maarten's trade-off calculation:
-> =C2=A0=C2=A0=C2=A0 4x fewer TX refill events, at the cost of reducing the=
- time-to-empty
-> =C2=A0=C2=A0=C2=A0 margin from 56 to 32 character times;
-> =C2=A0 - limit the TX trigger change to SPI-backed SC16IS7xx devices;
-> =C2=A0 - leave the RX trigger level unchanged.
->=20
-> If maintainers would prefer this to be board-configurable instead, I can
-> look at a follow-up DT binding/property, but I would prefer to keep v2
-> focused on the TX/SPI case.
->=20
-> Thanks,
-> Paul
->=20
-> _______________________________________=C2=A0
->=20
-> ZIEHL-ABEGG=C2=A0
->=20
-> Executive Board: Joachim Ley (Chairman), Marco Altherr, Wolfgang Mayer
-> Supervisory Board: Dennis Ziehl (Chairman)=C2=A0
->=20
-> Court of Registry: District Court Stuttgart HRB 746188
-> Company Seat: K=C3=BCnzelsau, Germany=C2=A0
->=20
-> Der Inhalt dieser E-Mail und/oder jegliche Anh=C3=A4nge k=C3=B6nnen vertr=
-auliche Mitteilungen enthalten und sind ausschlie=C3=9Flich f=C3=BCr den be=
-zeichneten Adressaten bestimmt.
-> Wenn Sie nicht der vorgesehene Adressat dieser E-Mail oder dessen Vertret=
-er sein sollten, so beachten Sie bitte, dass jede Form der Kenntnisnahme, V=
-er=C3=B6ffentlichung,
-> Vervielf=C3=A4ltigung oder Weitergabe des Inhalts dieser E-Mail einschlie=
-=C3=9Flich Anh=C3=A4ngen unzul=C3=A4ssig ist.
-> Wir bitten Sie, sich in diesem Fall mit dem Absender der E-Mail in Verbin=
-dung zu setzen.=C2=A0
->=20
-> The content of this e-mail and/or attachments may contain confidential in=
-formation and is intended solely for the named recipient.
-> If you are not the intended recipient of this e-mail or on its distributi=
-on list, please note that any type of disclosure, publication,
-> copying or distribution of the content of this e-mail including attachmen=
-ts is strictly forbidden.
-> In this case, we would kindly ask you to notify the sender of the e-mail.
+diff --git a/drivers/tty/tty_jobctrl.c b/drivers/tty/tty_jobctrl.c
+index ef8741c3e662..939569f12119 100644
+--- a/drivers/tty/tty_jobctrl.c
++++ b/drivers/tty/tty_jobctrl.c
+@@ -542,7 +542,6 @@ static int tiocspgrp(struct tty_struct *tty, struct tty_struct *real_tty, pid_t
+  */
+ static int tiocgsid(struct tty_struct *tty, struct tty_struct *real_tty, pid_t __user *p)
+ {
+-	unsigned long flags;
+ 	pid_t sid;
+ 
+ 	/*
+@@ -552,17 +551,13 @@ static int tiocgsid(struct tty_struct *tty, struct tty_struct *real_tty, pid_t _
+ 	if (tty == real_tty && current->signal->tty != real_tty)
+ 		return -ENOTTY;
+ 
+-	spin_lock_irqsave(&real_tty->ctrl.lock, flags);
+-	if (!real_tty->ctrl.session)
+-		goto err;
+-	sid = pid_vnr(real_tty->ctrl.session);
+-	spin_unlock_irqrestore(&real_tty->ctrl.lock, flags);
++	scoped_guard(spinlock_irqsave, &real_tty->ctrl.lock) {
++		if (!real_tty->ctrl.session)
++			return -ENOTTY;
++		sid = pid_vnr(real_tty->ctrl.session);
++	}
+ 
+ 	return put_user(sid, p);
+-
+-err:
+-	spin_unlock_irqrestore(&real_tty->ctrl.lock, flags);
+-	return -ENOTTY;
+ }
+ 
+ /*
+-- 
+2.54.0
 
