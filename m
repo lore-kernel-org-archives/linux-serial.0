@@ -1,105 +1,300 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15E7D38F63D;
-	Wed,  1 Jul 2026 04:11:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5F47380FC0
+	for <linux-serial@vger.kernel.org>; Wed,  1 Jul 2026 04:23:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782879098; cv=none; b=fBF2tZxCxx0jYRkfP6Ib850CWjgZ/dyO0l1WyrzvO/5+Bijm67Cskl+YTwtASvo9ERCjaVQDBYgCt6lNPsEVJEO8ULuw8v1KPty6CcD6YSH9f9x5O+BAQfTkpUwR2mkAGKtX00lD5Mm48bdPMk6xQXM37mnB4QnEouJ75Phr5To=
+	t=1782879805; cv=none; b=MENzWw01OPWgj/GZwA43T1u1HadnM8UD6URjoFH/Ut25Rs+8DIuyk9OIb6/QcQNFVtPTHb2KquDpUK7NbyQBNdCqcSKeFlGdRgYa/QOEAljMNbj20S/Bqu/W0DgI1kJwQUOZOIToYCVbfZyeMUXwXnr6JyDDp+UAWh4zc6OR6GE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782879098; c=relaxed/simple;
-	bh=MkIbXGMISIHMMusl/V93SX15CPICIl/NRSyfRkfvYr8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Y0a2W7+tMEwBHSlT9EJG/Tzsa+i+XhrML9+FAnuHliATdpdcNIklb8pYoCAhSLLUyZagTwP0nJ1vKpJguinqQmLerDSaPoyfbq2T57kvz4y9wg7xebvRq8xdATWn4eCtNgEU7g8JvQsq6CH2L3+99YJ1jSSq1D/nYi5b49cnNqM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IHgw3frN; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1782879805; c=relaxed/simple;
+	bh=h1A3GvXZLmpU+7XtveY+WUnq/NtQJw+MBtI4CdDkxiY=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=Mmaps3VX3ohBhiYalAZbGY/d0n4qPTyXkh/eyWe3MbgWtguSIeqqClGlr8xwUbPigNi9LhbnIK4w/ty+yfEki2gXPsE41HcKE2E2/ZmgV8LsxyaL6eEaSv2ANmZhTEyVAkR/5Dzsn1xCUMMtN6N0P6RJUEgZN6NQiPVCyJbjTmM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=i9bxJXz7; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=M7caRheI; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IHgw3frN"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A338B1F000E9;
-	Wed,  1 Jul 2026 04:11:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782879090;
-	bh=i2sMm0RSyZM7bZpK7ivdGZyQKY/POA9XBX8030gTVVY=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=IHgw3frN2r3s2U7mYVP1uKuU9bWiTG7ZaybCo7rZafeWNl04cge7s7akpBQauPuoS
-	 58CsuCkgPFpLM8YTPx7lAMt1QmyXt4QWjCZsKNOnFCHlQ2BUNPZ4StOUYYIMXukPWT
-	 14CYyeFYiXemtd/mMa3jZqzYIJqlf7nMwTnoCsu1xBSqQVoFDk+/5Xt/MpBg+KKdix
-	 3Hk1pZAX6CtpnTRvZVdnJG39DNzzLHBha4Z0IuPWQ7qPP9ICvAt/IUnHQip548214o
-	 H233KRFlN9KLz83ix4oMdT+Zc0bQFqMMdexv3c01QHoi4GwslpqHYE8oYdBmXRg7dZ
-	 sgkNLstwlxVyg==
-Message-ID: <7c9c4d2a-3778-4955-ac5d-1c54175d97dc@kernel.org>
-Date: Wed, 1 Jul 2026 06:11:27 +0200
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="i9bxJXz7";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="M7caRheI"
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6612tJIn3960406
+	for <linux-serial@vger.kernel.org>; Wed, 1 Jul 2026 04:23:20 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=6Ts0whoWYnO66ZOrPIzcFD
+	yriQ+6rFG+W5+Pb9VPGn8=; b=i9bxJXz7xsYtxlN5DuZiYpRg8dxBU+4Xpo7UIh
+	yY95DfEs/Cn9/EAArBAJBRE9zUVXldcs801ul3Gw8cniI80+z9KX/WpM8m492DuQ
+	t+QmzLD+QO7xJi/UBEKtO6c0EFBTD+HfulCXgcksbWtvjxOvyFE+QuOFK8g8TKMV
+	3QaHaPIXt5O663BMKaiGQg052NBalPM7BMm+ZQlKfvfBepziPLa4OiDyiedM+KLn
+	Uiyff40paLPUairxobZRL3zzwDJSrT2WTJm4scyG2yt19oz77diJ4fCDrEUsEQng
+	dQxuLoqaDR7rq7F9JAT2N3MfdiF1omGeZcC+YR3BOYukUc4A==
+Received: from mail-dy1-f198.google.com (mail-dy1-f198.google.com [74.125.82.198])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4f4j9129nh-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-serial@vger.kernel.org>; Wed, 01 Jul 2026 04:23:20 +0000 (GMT)
+Received: by mail-dy1-f198.google.com with SMTP id 5a478bee46e88-30e85f5bc9eso798815eec.1
+        for <linux-serial@vger.kernel.org>; Tue, 30 Jun 2026 21:23:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1782879800; x=1783484600; darn=vger.kernel.org;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=6Ts0whoWYnO66ZOrPIzcFDyriQ+6rFG+W5+Pb9VPGn8=;
+        b=M7caRheIbTk3AtBKEw7raY5Hqg1WoJ13R7Hy9pXPWnzEROyyti1eLu3y9IkXtvm2Mq
+         Z8l3tDeqtmL1PVEM7IfMSZDD/dAIX4Xhrw2jvP6+IMsEvJSQ1XVzlxdRzbA95LK0793M
+         M+JWSDol0HrqIEhtMoFhdcNOjAU83Y/B14ZBux27bF9dKxJo9dZU8somLIds4M2/6CR8
+         cY0ARDXytngCbk5BCNs7e1y+Kxhh079g1IqU3A39LbvwQ9vqZ3fdNu3CCBEYWa6/UiHt
+         MZ/QQf/wLNAR5YEMc4jVY5uyjOTs9HWIR5MutpmR4o2SGvvbZUtzTEL0VcyndYB66g5q
+         kx2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782879800; x=1783484600;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6Ts0whoWYnO66ZOrPIzcFDyriQ+6rFG+W5+Pb9VPGn8=;
+        b=BZpC6v/Ug+QglRycfTQ6RovfrAFT/3bVv5OHr+MqSl5o/SJfp7vB82aT81LFdMb/L7
+         WIQviMGgi+dwtoozDZLo3ekngWuCHkKGcXzm70zq/QVB5nUwciFkrAYPMPt3x+RCXIG6
+         sRCT46FGfbcMAqYGO21uSVWaGIIGhqEiGg3IWy2zgjgHHKFVaVxPuBq3OkLw8laGhbum
+         +1DVyymL3i65350aMf1HQfXPhPZgOPV89wmZihISPPw2MV15lukSqJhwHJWB561/tCBn
+         ms6EC8tOgZoLLN9VFRDbLL2AMJmO6mwFCC9dYaOMeMkp0kpSyCxRmeJ28jJjXiwuOXIK
+         diuw==
+X-Forwarded-Encrypted: i=1; AHgh+RqC0AGd62InFBNggeoU4ZPPe+GT4IqY0ly++PhDMHh7OaCjn3HERGnpZgGhAW86borXkx4k7aSvDWqLX04=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyG/YVKDSKTICR8tYPeatIA2BcIJKyibX50fsk//NILKXmj39xB
+	fYuzTxgUXkXpy5qYvHySiXwzFwqOljjQZS/mtRnP6jg9bLZCcCD/1fzc7PlHfnDJ6NGZ1sOrsJR
+	uS0AvuuuW4YpnFCpmIce9hS9kxrb57Cqxmi8hfnMJKy5j6LAkHc5AD+I8+6Ui43L2RHI=
+X-Gm-Gg: AfdE7ckg/1c1b1CqtTIiSe3vMs6pieIfl2U2wBSW9f3am+lOBbuTSgogTgjDzA4t5Y3
+	6wcXqaxL/RxfuktMXA/RMQYiCWwOXJiWXdu61L2aqLQvfqtNCnsuz9iWgslm3AlTu0/188scP3a
+	gmKvjJ1VkrLzihDAMGYxrQLdxWGRtc+0JU+ZQ4gQHVZOB68cJu8/3KfMMFDRjLMa7NcuH6WF1jS
+	hH1KvtKtU8HzR1DmxS8DNMW3z8fxIaqXDfk5guQrM+nCqtro/11b4OGF3FuQhI+WVjauljU3tUW
+	SjN6FSt1WDH5y0DICm+++pXIQqyzGyrnseSJZw1hjxqm3Yyv2qKc1kwu0wjAJRQhLtZ1/qb/5g1
+	oUFRVjm900w493My5bERd516jDmGY74gKZ6alOEdXW2AT
+X-Received: by 2002:a05:7300:691c:b0:30c:ab97:d7b3 with SMTP id 5a478bee46e88-30eff391662mr42656eec.45.1782879799917;
+        Tue, 30 Jun 2026 21:23:19 -0700 (PDT)
+X-Received: by 2002:a05:7300:691c:b0:30c:ab97:d7b3 with SMTP id 5a478bee46e88-30eff391662mr42605eec.45.1782879799302;
+        Tue, 30 Jun 2026 21:23:19 -0700 (PDT)
+Received: from hu-ptalari-hyd.qualcomm.com ([202.46.22.19])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30ee3205796sm17815755eec.23.2026.06.30.21.23.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Jun 2026 21:23:18 -0700 (PDT)
+From: Praveen Talari <praveen.talari@oss.qualcomm.com>
+Date: Wed, 01 Jul 2026 09:53:10 +0530
+Subject: [PATCH] serial: qcom-geni: Pre-map RX DMA buffer at probe to avoid
+ sleep-in-atomic
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] tty: tty_jobctrl: use guard()s in tiocspgrp()
-To: John de la Garza <john@jjdev.com>, gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260701030139.3189030-1-john@jjdev.com>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20260701030139.3189030-1-john@jjdev.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Message-Id: <20260701-fix-sleep-in-atomic-context-during-rx-dma-setup-v1-1-95c208380c65@oss.qualcomm.com>
+X-B4-Tracking: v=1; b=H4sIAC2WRGoC/yXNTQrCMBBA4auUWTuQFoziVcRFfqZ1xCYhk5RA6
+ d2Nuvw27+0glJkEbsMOmTYWjqFjPA3gniYshOy7YVKTVnq84MwN5U2UkAOaEld26GIo1Ar6mjk
+ smBv61aBQqQmdOmvrZ3U13kKvpkw98TveH39LtS9y5buB4/gAOCoTdpMAAAA=
+X-Change-ID: 20260617-fix-sleep-in-atomic-context-during-rx-dma-setup-c056bdf08adb
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, bjorn.andersson@oss.qualcomm.com,
+        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org,
+        Mukesh Kumar Savaliya <mukesh.savaliya@oss.qualcomm.com>,
+        aniket.randive@oss.qualcomm.com, chandana.chiluveru@oss.qualcomm.com,
+        chiluka.harish@oss.qualcomm.com,
+        Praveen Talari <praveen.talari@oss.qualcomm.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1782879794; l=5502;
+ i=praveen.talari@oss.qualcomm.com; s=20251114; h=from:subject:message-id;
+ bh=h1A3GvXZLmpU+7XtveY+WUnq/NtQJw+MBtI4CdDkxiY=;
+ b=kdD8dcSXZqQ7NHyLrx1sbeV+GNrH2FJw75X8kKH3ghy1LnC4ay2ffFuLHzBqHu2LhZhPBK9bt
+ JFXGOR4qaTFDcKtMtE9hZg+0+mTBOqBjugQ6teoOVFv0WAVenOdYemA
+X-Developer-Key: i=praveen.talari@oss.qualcomm.com; a=ed25519;
+ pk=NGK/88fjyHXgfhIKwag7+uIytOmyOypvZ/hDFaYPEss=
+X-Proofpoint-ORIG-GUID: v3L41-0ewYn-Z1gEyX4m1aLgS8W6laiy
+X-Authority-Analysis: v=2.4 cv=ftfsol4f c=1 sm=1 tr=0 ts=6a449638 cx=c_pps
+ a=wEP8DlPgTf/vqF+yE6f9lg==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
+ a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=Um2Pa8k9VHT-vaBCBUpS:22
+ a=EUspDBNiAAAA:8 a=iI12EKIy37xJd30OuqwA:9 a=QEXdDO2ut3YA:10
+ a=bBxd6f-gb0O0v-kibOvt:22
+X-Proofpoint-GUID: v3L41-0ewYn-Z1gEyX4m1aLgS8W6laiy
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzAxMDA0MiBTYWx0ZWRfX59AybXEwi2Pc
+ Pdn6iAMlOw/qHDARp4PLj6IgWkwp0rFBfguqGqS1AZQXLTdAoxE8kORFV+wlh2Ji9xDi6/Loczw
+ reYudalqUmxn9H1CuQmagU4kcfTB2Ya0b9wQhlW2aZmz170fYnIUcj1Vq9CISywtVNwMdxGLeGD
+ MIcJm9b61R/7N+k+RIfajQt/fJDETO5AGSvqVbWX9Qaf+mEykdcGALclHLX1z+5lDSGhoWHql+b
+ t25ltHtKaL0hWQOg+h1K3bJZqsFylbarv2zdxbVUoL5Gv3iKShR3jgY2QMslW7TGgheMu1GxsGA
+ i59M4LI4ahiMQeqgQR/bMMfcMHJPtG87gvooOoxz9zM2UifejQtu/FcHHbmKnSJXPlwG4zo8nyi
+ 9jDjsB+z4BDvYuQJXhD4RdvYyrNbjXrDeDus/9uqlRJ8C5R6WQgQIPcVsoSbAbvoaW27jPf0792
+ uDYrme8nKDcoxPMnEaQ==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzAxMDA0MiBTYWx0ZWRfX4pUYQLvjRssg
+ XqXa4OW4ttmimOE5ewp1byQq3Ii0M9uizKgJW3MW8aOiQcNfg5g6ui9eph1mfF3FM9ilfpY0hrl
+ 3T6UTBD+EW0K0/Yx16iTn87sRNS8HM4=
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
+ definitions=2026-07-01_01,2026-06-26_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ bulkscore=0 lowpriorityscore=0 clxscore=1015 phishscore=0 impostorscore=0
+ priorityscore=1501 malwarescore=0 spamscore=0 adultscore=0 suspectscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607010042
 
-On 01. 07. 26, 5:27, John de la Garza wrote:
-> Convert the manual spin_lock_irq()/rcu_read_lock() nesting in tiocspgrp()
-> to scoped guard()s. This drops the out_unlock and out_unlock_ctrl labels
-> and lets the error paths return directly.
-> 
-> No functional change intended.
+geni_se_rx_dma_prep() calls dma_map_single() which can trigger IOMMU
+page table allocations under GFP_KERNEL. This is unsafe when called
+from qcom_geni_serial_start_rx_dma(), which runs in atomic context
+producing a "sleeping function called from invalid context" splat:
 
-Nice cleanup!
+    __might_resched+0x15c/0x17c
+    __alloc_pages_noprof+0xe4/0x4c8
+    qcom_io_pgtable_alloc_page+0x100/0x250
+    __arm_lpae_map+0x2d0/0x870
+    geni_se_rx_dma_prep+0xd8/0x158
+    qcom_geni_serial_start_rx_dma+0x84/0x16c
+    qcom_geni_serial_startup+0x70/0x104
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Fix this by mapping the RX DMA buffer once during probe, where sleeping
+is allowed, and keeping it mapped for the lifetime of the device.
 
-> Signed-off-by: John de la Garza <john@jjdev.com>
-thanks,
--- 
-js
-suse labs
+Replace the geni_se_rx_dma_prep() / geni_se_rx_dma_unprep() calls in
+the runtime paths with dma_sync_single_for_device() before initiating a
+transfer and dma_sync_single_for_cpu() on completion, using the persistent
+mapping. The buffer is unmapped in probe's error path and in remove().
+
+Signed-off-by: Praveen Talari <praveen.talari@oss.qualcomm.com>
+---
+ drivers/tty/serial/qcom_geni_serial.c | 55 +++++++++++++++++++++--------------
+ 1 file changed, 33 insertions(+), 22 deletions(-)
+
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 7ead87b4eb65..3e460b0358eb 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -9,6 +9,7 @@
+ 
+ #include <linux/clk.h>
+ #include <linux/console.h>
++#include <linux/dma-mapping.h>
+ #include <linux/io.h>
+ #include <linux/iopoll.h>
+ #include <linux/irq.h>
+@@ -863,37 +864,31 @@ static void qcom_geni_serial_stop_rx_dma(struct uart_port *uport)
+ 				uport->membase + SE_DMA_RX_IRQ_CLR);
+ 	}
+ 
+-	if (port->rx_dma_addr) {
+-		geni_se_rx_dma_unprep(&port->se, port->rx_dma_addr,
+-				      DMA_RX_BUF_SIZE);
+-		port->rx_dma_addr = 0;
+-	}
+ }
+ 
+ static void qcom_geni_serial_start_rx_dma(struct uart_port *uport)
+ {
+ 	struct qcom_geni_serial_port *port = to_dev_port(uport);
+-	int ret;
+ 
+ 	if (qcom_geni_serial_secondary_active(uport))
+ 		qcom_geni_serial_stop_rx_dma(uport);
+ 
+ 	geni_se_setup_s_cmd(&port->se, UART_START_READ, UART_PARAM_RFR_OPEN);
+ 
+-	ret = geni_se_rx_dma_prep(&port->se, port->rx_buf,
+-				  DMA_RX_BUF_SIZE,
+-				  &port->rx_dma_addr);
+-	if (ret) {
+-		dev_err(uport->dev, "unable to start RX SE DMA: %d\n", ret);
+-		qcom_geni_serial_stop_rx_dma(uport);
++	if (!port->rx_dma_addr) {
++		dev_err(uport->dev, "RX DMA buffer not mapped\n");
++		return;
+ 	}
++
++	dma_sync_single_for_device(uport->dev->parent, port->rx_dma_addr,
++				   DMA_RX_BUF_SIZE, DMA_FROM_DEVICE);
++	geni_se_rx_init_dma(&port->se, port->rx_dma_addr, DMA_RX_BUF_SIZE);
+ }
+ 
+ static void qcom_geni_serial_handle_rx_dma(struct uart_port *uport, bool drop)
+ {
+ 	struct qcom_geni_serial_port *port = to_dev_port(uport);
+ 	u32 rx_in;
+-	int ret;
+ 
+ 	if (!qcom_geni_serial_secondary_active(uport))
+ 		return;
+@@ -901,8 +896,8 @@ static void qcom_geni_serial_handle_rx_dma(struct uart_port *uport, bool drop)
+ 	if (!port->rx_dma_addr)
+ 		return;
+ 
+-	geni_se_rx_dma_unprep(&port->se, port->rx_dma_addr, DMA_RX_BUF_SIZE);
+-	port->rx_dma_addr = 0;
++	dma_sync_single_for_cpu(uport->dev->parent, port->rx_dma_addr,
++				DMA_RX_BUF_SIZE, DMA_FROM_DEVICE);
+ 
+ 	rx_in = readl(uport->membase + SE_DMA_RX_LEN_IN);
+ 	if (!rx_in)
+@@ -910,13 +905,9 @@ static void qcom_geni_serial_handle_rx_dma(struct uart_port *uport, bool drop)
+ 	else if (!drop)
+ 		handle_rx_uart(uport, rx_in);
+ 
+-	ret = geni_se_rx_dma_prep(&port->se, port->rx_buf,
+-				  DMA_RX_BUF_SIZE,
+-				  &port->rx_dma_addr);
+-	if (ret) {
+-		dev_err(uport->dev, "unable to start RX SE DMA: %d\n", ret);
+-		qcom_geni_serial_stop_rx_dma(uport);
+-	}
++	dma_sync_single_for_device(uport->dev->parent, port->rx_dma_addr,
++				   DMA_RX_BUF_SIZE, DMA_FROM_DEVICE);
++	geni_se_rx_init_dma(&port->se, port->rx_dma_addr, DMA_RX_BUF_SIZE);
+ }
+ 
+ static void qcom_geni_serial_start_rx(struct uart_port *uport)
+@@ -1864,6 +1855,14 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+ 			ret = -ENOMEM;
+ 			goto error;
+ 		}
++
++		port->rx_dma_addr = dma_map_single(pdev->dev.parent, port->rx_buf,
++						   DMA_RX_BUF_SIZE, DMA_FROM_DEVICE);
++		if (dma_mapping_error(pdev->dev.parent, port->rx_dma_addr)) {
++			ret = -EIO;
++			dev_err(&pdev->dev, "Failed to map RX DMA buffer: %d\n", ret);
++			goto error;
++		}
+ 	}
+ 
+ 	port->name = devm_kasprintf(uport->dev, GFP_KERNEL,
+@@ -1928,6 +1927,11 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+ 	return 0;
+ 
+ error:
++	if (port->rx_dma_addr) {
++		dma_unmap_single(pdev->dev.parent, port->rx_dma_addr,
++				 DMA_RX_BUF_SIZE, DMA_FROM_DEVICE);
++		port->rx_dma_addr = 0;
++	}
+ 	dev_pm_domain_detach_list(port->pd_list);
+ 	return ret;
+ }
+@@ -1942,6 +1946,13 @@ static void qcom_geni_serial_remove(struct platform_device *pdev)
+ 	device_init_wakeup(&pdev->dev, false);
+ 	ida_free(&port_ida, uport->line);
+ 	uart_remove_one_port(drv, &port->uport);
++
++	if (port->rx_dma_addr) {
++		dma_unmap_single(pdev->dev.parent, port->rx_dma_addr,
++				 DMA_RX_BUF_SIZE, DMA_FROM_DEVICE);
++		port->rx_dma_addr = 0;
++	}
++
+ 	dev_pm_domain_detach_list(port->pd_list);
+ }
+ 
+
+---
+base-commit: 4fa3f5fabb30bf00d7475d5a33459ea83d639bf9
+change-id: 20260617-fix-sleep-in-atomic-context-during-rx-dma-setup-c056bdf08adb
+
+Best regards,
+--  
+Praveen Talari <praveen.talari@oss.qualcomm.com>
+
