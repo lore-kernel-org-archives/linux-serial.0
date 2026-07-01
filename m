@@ -1,61 +1,60 @@
-Received: from mail-pj1-f48.google.com (mail-pj1-f48.google.com [209.85.216.48])
+Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com [209.85.216.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04A91348C6E
-	for <linux-serial@vger.kernel.org>; Wed,  1 Jul 2026 21:49:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92A8734DB52
+	for <linux-serial@vger.kernel.org>; Wed,  1 Jul 2026 23:12:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782942570; cv=none; b=ZpbG+B27BUMovgN1J9DLIeC6Ry/C6W+WISacOsYfqNULeLwVhVMPV2Maxc9vOZpfxn9xWwLKw2Nw/bs7NvIzHts+ecLujLpR8nA6QmTETBXeGhqIL9RwvNEuskpSv9z9pc9BWiBqeD0Hb6I4kfAsaIXhxXcu6ni41VFR4wC4O8A=
+	t=1782947541; cv=none; b=ROZzhpdItyU7wZNd9qI+3P2NbA87rLYslCU3JoIscd7H8gLMsqnEjQ157aoHYJk30F+fJdzAWz7J7vh933jGYoBlNGE1znrxnbdMUDzbE4qB7/1uludEjz/y7OLAeRRPq/qRp3fUFEa8orlrXBfGSpti4DQ84aUOrNLhGQHr8tY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782942570; c=relaxed/simple;
+	s=arc-20240116; t=1782947541; c=relaxed/simple;
 	bh=e2Mc99S14EwiVlrTIXj/dnyd1xTRih+Mv0plP40AMpo=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=tRJ0M5Op3UtmWJkoSbV6+QvqYs3ZMbzyYBdhfuC30iciYE3OJ0dgx3sEb5QtMzZHtgFR61xfmph5vFKYH97DDivPV+KMqcMWTytt0jHG/sdhvkJe72Fe3DuHRGasEiOTV7Cz0uay6rNg/wtmdmFL1xstt55PI952hrhdLT2G9Bs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jjdev.com; spf=none smtp.mailfrom=jjdev.com; dkim=pass (2048-bit key) header.d=jjdev-com.20251104.gappssmtp.com header.i=@jjdev-com.20251104.gappssmtp.com header.b=pJBDzHIp; arc=none smtp.client-ip=209.85.216.48
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=CNebd0b9f4Q0+Kd5kMNUnIWJoyHtL/PmgnwGlFfK2M3IJWIr21hMK4ZbEvf3iEtX9jNgQUGTItwZMqd/Wg4z/iVZUzhwlZvkRUM2KHrwaHgVY6UJ3AvWPY2J1fZgs8b3zc1bbqSb2ePTEWVJ+ifOB75ebnGWlh/hXyknAJcl7wU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jjdev.com; spf=none smtp.mailfrom=jjdev.com; dkim=pass (2048-bit key) header.d=jjdev-com.20251104.gappssmtp.com header.i=@jjdev-com.20251104.gappssmtp.com header.b=a6Z67XBM; arc=none smtp.client-ip=209.85.216.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jjdev.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=jjdev.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=jjdev-com.20251104.gappssmtp.com header.i=@jjdev-com.20251104.gappssmtp.com header.b="pJBDzHIp"
-Received: by mail-pj1-f48.google.com with SMTP id 98e67ed59e1d1-38005a36edbso677298a91.1
-        for <linux-serial@vger.kernel.org>; Wed, 01 Jul 2026 14:49:28 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=jjdev-com.20251104.gappssmtp.com header.i=@jjdev-com.20251104.gappssmtp.com header.b="a6Z67XBM"
+Received: by mail-pj1-f47.google.com with SMTP id 98e67ed59e1d1-37df72c9984so699550a91.3
+        for <linux-serial@vger.kernel.org>; Wed, 01 Jul 2026 16:12:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=jjdev-com.20251104.gappssmtp.com; s=20251104; t=1782942568; x=1783547368; darn=vger.kernel.org;
+        d=jjdev-com.20251104.gappssmtp.com; s=20251104; t=1782947540; x=1783552340; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
         bh=1dokrBTB60egFqlcTSb9K7bU6xTuOWrnhTXnVJVb3iw=;
-        b=pJBDzHIpsKpKIS38jm9SnAGUQpj4SqMh7VC7TDVSt8dSB/3WF6dPiJgWuHd4ofemxN
-         KCFnyUT6GcomqqG1UQSx22Qcb++l8Ml9LQh1ZO1rX1Cnw9JLhsgeULlIPTiKrbCzluSK
-         jiP0x8id71FCHWJ0hvVEXrYkMPdupicY7NFG1F2ezft/O0C+nhI91OWVnCTSP8TI7ZoZ
-         NvP9Dwg1v10E/0FfA5Gewi2l5lLIiSCRCsjnAW1/sWYSdDSS8TTTk4hRBQa3YXypwKMV
-         znV3S0jy7qRUwk0oEUYYy6hUp1/lXnd6tt3Szr7+18O1ZT4DZ6sICK945uvwfUSjwepH
-         FHeg==
+        b=a6Z67XBMGfMHqV0Zq6ymj2ustnAktBSM8ZcqexC+sS2JQIcwUi4IEPq5TACgXJi46L
+         vfVOwU/gUNkDw+2qEQWKVQDxtgOk4sEngrYrfwdqzuXDPD6ZasKcfP+IRlhlIRuuZyGT
+         FHGokoFqnSZKBqCh0E32Uq6s7wGQE8UTeKHu5uJv61yXd8c9e55IuUPYS6M7Axn9Tdwq
+         Dgeq4+iP3FTc3RgiFyIUpXPSrlhFv3eWqPmV+bA46bKz7v5iLscdgQvr/vk6+BjqO5rP
+         5nOsDX+3J8/6a7wu/bP4ja6oVhUK2E/4JmZXCHoY7ScK/NyitP4rXj/vbSnHx6FHIqo2
+         FwRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782942568; x=1783547368;
+        d=1e100.net; s=20251104; t=1782947540; x=1783552340;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
         bh=1dokrBTB60egFqlcTSb9K7bU6xTuOWrnhTXnVJVb3iw=;
-        b=pYTcHduff7KsDc/B06Lj+flFYCodNnrZ9tlnI3J1ikvyeblo7Sr5xf+k9/VLg3H87+
-         J8lE1eIbb271QACZz6Q6z/lwswejnHYfjSqX+WJCpmYMLUGpQRZ2GdtFYQoB916FhnbP
-         lra7x6zWg9UV9J7UH4NYyLpa1g0/nfIZVVtrIU+6Art7RfQebudRNFt7xetw2zr/Y809
-         ex3PcpQRh0Wib6lWKnqA7gvaPgIs0CTTeAoL0QvsXzXHnkwkgQ4jy8R/ga8WAxpXMAor
-         uon/Ff2HTxgpDiIDafPVFeOyuHcXeG1/TQQ38pQtaYNS6ZKsZo8T30qY66Il2EGtHRVM
-         wqPw==
-X-Gm-Message-State: AOJu0YzA9+R79YgUYcHL0ewFeWgkSBOebjh6ocB412SPYa7Q7R0P6OEL
-	ETJ5NsdJ0PM6EvaXpnzVjJNQ2vZy86Fm7LYvJsGO4wrh3DpOpaky2qGn4Ynh5fDs5+UYIi0WxbM
-	s1ibtLQ==
-X-Gm-Gg: AfdE7cm1dLH9Wee1N4iuAfF+rVQq/HFwKoVTIBBY7Pxqd3HKNKk+ds130ac7i2dOrzq
-	ndc/2jkXfVL9HGSXICLfq0D3Yrnl5HxAWjqYX+Pgl2+ZJoh8XaMX17VfJNTyzYKAfe7zar/jWl8
-	/6G6h/0V/QV+c+XcUnXyMQouu6AuGaPQ5MPnaNQl2AwAE7MsYzr6ewPu5b6U2by2ny+HkSiBbE7
-	rj8Fs+CKrDNdZ+h7sJt/HmK1scrrj84afNaMjEitCvMn5/Wuc+ZKpdRQmDAEc+h9ZzQS078QzZA
-	SSyTDprkgXRWHAak74VUu8G/Cxc4hmwtT9onEH7+60WPzRyr7PCS3iwzCikpfYbdtdMyrmMxwBO
-	YWQJfBszvecUHD3IG5WU1M7sdcIEANcC316j0L1btAO59S3iI9PQp5E/+qzmot0aVkAyZdCFrHd
-	nPq9r2/oNRbA==
-X-Received: by 2002:a17:90b:5845:b0:36b:9e24:c692 with SMTP id 98e67ed59e1d1-380aa1c9748mr3074310a91.20.1782942568113;
-        Wed, 01 Jul 2026 14:49:28 -0700 (PDT)
+        b=U9432H9M/GAdlKe1DPPiPbqb97vUgQCO5MS/5aXV0fgFZPj9zC51P+wFkN4Fynm+e5
+         0OBwPLpqQ7AJUg5ZnaNf5vWs498PKMNpEFtIpcyTRzhtck0gGPtje0ZYFLFRZcBy5FPT
+         tFAMMjHedeMzocD8jM0mrP4IHLm9UBOOnSQDRV6eSSWRp4urJrWS/y+qelywLXapelFq
+         0TdvWMnMHCaI1FrTKxoL8fwAsx5d3nPCTpPAQjGb6qRLP/6av4wvSwgKVSHjoPZAEXfS
+         lx1yyU9B4ICN5TiWCNaY2jKxktviqiOUG6m6uO43OsMaAFs49T+KcI22hwuligU4OSmM
+         yCYg==
+X-Gm-Message-State: AOJu0YzJu2x8d5S9M++KK7yCHcipVPx7M6xcAimAykrdDqoUkEa9Cgpw
+	oVwfHX1wjdlvV91e4w09flreUx/xy0iLRbYKYJ862qLHeuHBpaNrZOw2bhutY2+vvg==
+X-Gm-Gg: AfdE7cnBsdbXT2FhkRLX+XtNakWBMBVc7XobMm1GhPseZL4Cgr8FrQMd2abQgENA5S6
+	e2TiwKxrFqDpcPnKf5UHHAcKszknrt8q8K2++vowB57SJ06PEQUwSaqZ9XX88elE3b/kHjDr6kR
+	cuXlHyi3SqlRYweDsKulhOP5dRiwPb8SrtfA41awXXVBZNHZ9AaUi0OAqzjHEYtCfhMvTZDdVTZ
+	xZXjetx/gp0lnsVUZN2wkcrHYS3Jt2U0mhRm2zERLsii7dmT3BHvZHOoBGldoSMjenVFaasZhJL
+	35C5Szt4fsoMT2bcunRCGYyBMude97CbPrjnOUhCS5HzMTKs6onQZyyGN/oFCKxWz/v7eojmyx2
+	6LZieLsipXeT11BpWKg8tZzxggeaF8JSztwdVxmWOhhnuCMCOgIIjJQYQ+VjA+42Cf3na510fiC
+	jXUE7J2zDDkQ==
+X-Received: by 2002:a17:90a:d408:b0:380:7b4a:162 with SMTP id 98e67ed59e1d1-380aa12f611mr3830833a91.9.1782947539761;
+        Wed, 01 Jul 2026 16:12:19 -0700 (PDT)
 Received: from jjbox.local.ftr ([47.151.31.186])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30f0bbdc4eesm1662488eec.24.2026.07.01.14.49.27
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30f0b813c4dsm1968839eec.7.2026.07.01.16.12.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jul 2026 14:49:27 -0700 (PDT)
+        Wed, 01 Jul 2026 16:12:19 -0700 (PDT)
 From: John de la Garza <john@jjdev.com>
 To: gregkh@linuxfoundation.org,
 	jirislaby@kernel.org
@@ -63,8 +62,8 @@ Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	John de la Garza <john@jjdev.com>
 Subject: [PATCH] tty: tty_jobctrl: use guard() in tiocgsid()
-Date: Wed,  1 Jul 2026 14:49:25 -0700
-Message-ID: <20260701214925.3966663-1-john@jjdev.com>
+Date: Wed,  1 Jul 2026 16:12:15 -0700
+Message-ID: <20260701231215.4092457-1-john@jjdev.com>
 X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
