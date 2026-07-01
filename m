@@ -1,1772 +1,208 @@
-Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
+Received: from OSPPR02CU001.outbound.protection.outlook.com (mail-norwayeastazon11023121.outbound.protection.outlook.com [40.107.159.121])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BD0A233943;
-	Wed,  1 Jul 2026 16:36:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782923798; cv=none; b=m1gnHaKL+T9UFbzRzaIrE8D78hTEuXxVfc/WHJOVuEGvIBEYrwLBzjceznwgdtCtBMk65IBU9J7tz8W5gX3sHu8PCdjSaiOcYoQVdsAqh19jGNT0n6bmqXqhjgHc21+rZv8DbkTTO7v3MteL9tEo+Aym3IlluCnMlYaEh8pvs/M=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782923798; c=relaxed/simple;
-	bh=MYtBp9jOwhU+NS5oS4hsWrFYP6IdsSL+kjlEy/4i1Qg=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=hDp6kkxVFDSLPtEqI22zKHA8Z0MgkKcGHAJg4UDIZTwwPE7fLB/YXrki4okBpU3YwN0xfpjqEIsGdVevKnFzdpenZ3EiAVdq+/pxFQOPz+igVmMOhaoupsP9puunlUF5a9royOYdF88YAEsU7rc2YjRVOLD5SX8XKNPQQJOzugs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=lpddA5ZE; arc=none smtp.client-ip=148.251.105.195
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3442343893;
+	Wed,  1 Jul 2026 16:41:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.159.121
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1782924077; cv=fail; b=P7W/xkpW0R/8OKwmz5tLDfGyDN2D5Bb2rMpYOW66Rc0R66+l2HA/2QoW+ozLbWJ+fTiTyIFId4i7MkF4RaUMnWmxoiL85YuurggoG1iBdUaetodq6QGOjkesVO0o+PGVb2mqZ3TfgxfEbpuYWXvXYmxKOm75RTVwP8YD7G6srW0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1782924077; c=relaxed/simple;
+	bh=YLdBFP9NLdRi9MV0oQz+NcT2uJopQ2My+iDgMpNKSv0=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=tVGX8X+QAo0j5C6rGur3QUJGxid7vZWw1GH1Td9WN/JQjtE2wVMRgXAuEJXjmJxhSWeDPu95/wwJFsMH/hyb5B0j47ZBMIR2WqVLn3ZXSfskQqzZs7PivOBlUO4DYr6Al0eY0KLOXLJkzpinTgQXFedZb2OPidYvKyO3bduHe28=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ziehl-abegg.de; spf=pass smtp.mailfrom=ziehl-abegg.de; dkim=pass (1024-bit key) header.d=ziehl-abegg.de header.i=@ziehl-abegg.de header.b=g9iWU6wF; arc=fail smtp.client-ip=40.107.159.121
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ziehl-abegg.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziehl-abegg.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="lpddA5ZE"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1782923791;
-	bh=MYtBp9jOwhU+NS5oS4hsWrFYP6IdsSL+kjlEy/4i1Qg=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-	b=lpddA5ZEGNi21XwxElch1dLsGZUlinWojaRN9Zp/Ukd519MLBuYwgAwkB+tSxydRF
-	 KrBpf2u3MCyMLpccVOb9Li99I6WlhL2NHuLBAzNruOYxeQek353h02zzl/ACUKAwD5
-	 KfLV4crTjzvpvJQo5XQNP1lhybRLqdUbQpr0KUrj1WN9d/EiyLPzgWkX3E+ET2IM6f
-	 M3mJntF8IqQGUUCKmzBlR/xRAZuv6v5kTqGWGypm9+7KB9jBiSGpZoYYv1GPXIHS4Q
-	 pS9fvtYse07BHdkpG59Y2gsVrfh8AjZvw3LETKNM2+MZUtONaNfecB3NOlhuTF7uuZ
-	 VeZRoXuw5JQOw==
-Received: from yukiji.home (unknown [100.64.0.131])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: laeyraud)
-	by bali.collaboradmins.com (Postfix) with ESMTPSA id 5DC0017E0F44;
-	Wed,  1 Jul 2026 18:36:30 +0200 (CEST)
-From: Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>
-Date: Wed, 01 Jul 2026 18:35:21 +0200
-Subject: [PATCH v2 3/4] arm64: dts: mediatek: add Genio 720-EVK board
+	dkim=pass (1024-bit key) header.d=ziehl-abegg.de header.i=@ziehl-abegg.de header.b="g9iWU6wF"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=srr4L5a36B/xGoyGwlkqZIaauwpX9sW8vtQeD/3wK4b61f4eZb3tzSh0glTmVUvYGxy9g2HpyRYEzLnemi9Ni3TTk1hHDhiVJZkBRUsbDEAl9a4w4CwBCNm1Q7q6vQfJkeMqys5fK70BOJFTMVe23jsiaGK1VQ8+glooICn+zsyvtwlLbH3umDku6ozixHMlsHxDbS5MDvO0EWlhj73QLkbo9Mcs4oKhFrE3Qulm5qsH4O6Igpoz7PYsyyI0aDETGRaRJ9SR1Wghamba07WOvIlGfQtlP1A+AU+Le9EhAEeTNsXbKw+2wnGIc2kXOOZLbKwz9sZdR9uGgx2ncVHdoQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=WITBvTPkP9Nt0U1GkTzUGxXaDapkhiQhxlBB1nr60Mg=;
+ b=i5mctWcAZh0AiSecmq9upG+0yY95phKbOJtPWQ2mzwdMqlkbp/7mcnirnL7Q47nyi74JQhDZhRrndhGSUvtHY7Ub96MXD6YZ/Uhh15VUS9ZeTrXacromOhz16mfN9ilIJqo0VzayWMlRTurg2VYNfiO2lWobbUJEHPwT3e7/9LSm8glwIykRD7TgfOAt4rq0w+jbwpaKq3Binx+SCMAlkTyx9AWVZIXvKsRD6WeUIbtXU4143lFKMj53YBbac0eJBoDLvVZyArUVHyhDfWzXze2Pj/og8NERTeBdYigZcvOIZXmK73nHAkRQizl6F1ZBfbkGeKb2wa/HU2Yl0SBQ9Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 52.138.216.130) smtp.rcpttodomain=vger.kernel.org
+ smtp.mailfrom=ziehl-abegg.de; dmarc=pass (p=quarantine sp=quarantine pct=100)
+ action=none header.from=ziehl-abegg.de; dkim=none (message not signed);
+ arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ziehl-abegg.de;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WITBvTPkP9Nt0U1GkTzUGxXaDapkhiQhxlBB1nr60Mg=;
+ b=g9iWU6wFd7AYeLeWS/JeyB2ME3VIdBwrR3RchZIQBxJK2WryEpeF0lB569qDNcO7gbjMv+YevibtyIjlW7EYwudaVx7yPMzwmq+eMz589kw8mJm0k3r44YEYTT34Z2TDcAbtvEC97HhmmKHSigMjhKsZte8Czknv21NnpalqrFM=
+Received: from DUZPR01CA0333.eurprd01.prod.exchangelabs.com
+ (2603:10a6:10:4b8::27) by GV2PR02MB11471.eurprd02.prod.outlook.com
+ (2603:10a6:150:2a4::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.181.8; Wed, 1 Jul 2026
+ 16:41:09 +0000
+Received: from DB3PEPF0000885D.eurprd02.prod.outlook.com
+ (2603:10a6:10:4b8:cafe::2e) by DUZPR01CA0333.outlook.office365.com
+ (2603:10a6:10:4b8::27) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.181.8 via Frontend Transport; Wed, 1
+ Jul 2026 16:41:09 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 52.138.216.130)
+ smtp.mailfrom=ziehl-abegg.de; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=ziehl-abegg.de;
+Received-SPF: Pass (protection.outlook.com: domain of ziehl-abegg.de
+ designates 52.138.216.130 as permitted sender)
+ receiver=protection.outlook.com; client-ip=52.138.216.130;
+ helo=eu22-emailsignatures-cloud.codetwo.com; pr=C
+Received: from eu22-emailsignatures-cloud.codetwo.com (52.138.216.130) by
+ DB3PEPF0000885D.mail.protection.outlook.com (10.167.242.8) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.181.6 via Frontend Transport; Wed, 1 Jul 2026 16:41:09 +0000
+Received: from DB3PR08CU002.outbound.protection.outlook.com (40.93.64.82) by eu22-emailsignatures-cloud.codetwo.com with CodeTwo SMTP Server (TLS12) via SMTP; Wed, 01 Jul 2026 16:41:07 +0000
+Received: from AM0P309CA0029.EURP309.PROD.OUTLOOK.COM (2603:10a6:20b:28f::20)
+ by AS1PR02MB7872.eurprd02.prod.outlook.com (2603:10a6:20b:4a6::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.181.8; Wed, 1 Jul 2026
+ 16:41:02 +0000
+Received: from AM4PEPF00025F9A.EURPRD83.prod.outlook.com
+ (2603:10a6:20b:28f:cafe::b) by AM0P309CA0029.outlook.office365.com
+ (2603:10a6:20b:28f::20) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.202.4 via Frontend Transport; Wed, 1
+ Jul 2026 16:41:02 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 217.6.247.99)
+ smtp.mailfrom=ziehl-abegg.de; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=ziehl-abegg.de;
+Received-SPF: Pass (protection.outlook.com: domain of ziehl-abegg.de
+ designates 217.6.247.99 as permitted sender) receiver=protection.outlook.com;
+ client-ip=217.6.247.99; helo=mail.za.ziehl-abegg.de; pr=C
+Received: from mail.za.ziehl-abegg.de (217.6.247.99) by
+ AM4PEPF00025F9A.mail.protection.outlook.com (10.167.16.9) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.21.202.0 via Frontend Transport; Wed, 1 Jul 2026 16:41:02 +0000
+Received: from localhost (10.1.201.87) by vEX02.za.ziehl-abegg.de
+ (10.1.201.106) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.61; Wed, 1 Jul
+ 2026 18:41:01 +0200
+From: Paul Mbewe <paultyson.mbewe@ziehl-abegg.de>
+To: <david.laight.linux@gmail.com>
+CC: <Maarten.Brock@sttls.nl>, <linux-serial@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <gregkh@linuxfoundation.org>,
+	<jirislaby@kernel.org>, <hvilleneuve@dimonoff.com>,
+	<tobias.gannert@ziehl-abegg.de>, <joachim.knorr@ziehl-abegg.de>
+Subject: Re: [PATCH 2/2] serial: sc16is7xx: set TX FIFO trigger level to half FIFO to prevent underruns
+Date: Wed, 1 Jul 2026 18:40:56 +0200
+Message-ID: <20260701164056.951230-1-paultyson.mbewe@ziehl-abegg.de>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <GV2PR05MB1194183F888F21065CC596F3D83EC2@GV2PR05MB11941.eurprd05.prod.outlook.com>
+References: <GV2PR05MB1194183F888F21065CC596F3D83EC2@GV2PR05MB11941.eurprd05.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260701-add-mediatek-genio-520-720-evk-v2-3-19d5da4ef984@collabora.com>
-References: <20260701-add-mediatek-genio-520-720-evk-v2-0-19d5da4ef984@collabora.com>
-In-Reply-To: <20260701-add-mediatek-genio-520-720-evk-v2-0-19d5da4ef984@collabora.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Matthias Brugger <matthias.bgg@gmail.com>, 
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
- Sean Wang <sean.wang@mediatek.com>
-Cc: kernel@collabora.com, linux-kernel@vger.kernel.org, 
- linux-serial@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, 
- Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1782923787; l=45238;
- i=louisalexis.eyraud@collabora.com; s=20250113; h=from:subject:message-id;
- bh=MYtBp9jOwhU+NS5oS4hsWrFYP6IdsSL+kjlEy/4i1Qg=;
- b=YOBhQeWz7byOrTGtWXxJ0F74IZrhk5gFC5E/LevuOJFC0Qk9v30EtH21jbY624ZbbVdMOSG3F
- y9xNgitlNxtCa/CwzfkrLjfbemUwhTU1gb9yLe8cC1sT0Bu2Ruw6rXn
-X-Developer-Key: i=louisalexis.eyraud@collabora.com; a=ed25519;
- pk=CHFBDB2Kqh4EHc6JIqFn69GhxJJAzc0Zr4e8QxtumuM=
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-ClientProxiedBy: vEX04.za.ziehl-abegg.de (10.1.201.108) To
+ vEX02.za.ziehl-abegg.de (10.1.201.106)
+X-TM-AS-Product-Ver: SMEX-14.0.0.3239-9.1.2019-30040.007
+X-TM-AS-Result: No-10--15.684100-8.000000
+X-TMASE-MatchedRID: L8tZF6zWW2o53MvLYrUDiM8R4NzG9QOMUd1JKREWJmT7Bamin45J3HVY
+	40dPvzCfkiR1hYKzLo8et2W2IEA45uxAkh/4iTFXNng0qv9OzMfEu6IYOQ1zFygRAX0MQ/gd/7R
+	KIuPEJ7ko8MUoOsp8k5L5F9uAiy4tkjstfQbJrKcWYppa85zdYCd8voqopKNviGVApiRLArnrhe
+	UxuzThE7+R6kwzFLCtp0yAPzOYH2PVRCka1GSheYOGpR5yhwqnqmoMFwwlqXg0ni78cctbeq+eC
+	SMeOiOkFNPcKKOC8NjbyADE/9OzolYHXldrySG2FwZ0Ekw3W60CZlqQ/YU74UxvDO1Z0RBdK8mt
+	WfWd2GxjhL0sYSe3oQ==
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--15.684100-8.000000
+X-TMASE-Version: SMEX-14.0.0.3239-9.1.2019-30040.007
+X-TM-SNTS-SMTP: B0A6780C6E3CF0AF504E19CB12419D5C479A476C97E557ADE2E96762263EFD4F2000:8
+X-EOPAttributedMessage: 1
+X-MS-TrafficTypeDiagnostic:
+	AM4PEPF00025F9A:EE_|AS1PR02MB7872:EE_|DB3PEPF0000885D:EE_|GV2PR02MB11471:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0e804fa1-36ef-407d-2921-08ded78f8e09
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam-Untrusted:
+ BCL:0;ARA:13230040|36860700016|1800799024|376014|82310400026|23010399003|22082099003|18002099003|6133799003|11063799006|56012099006;
+X-Microsoft-Antispam-Message-Info-Original:
+ UrHOl8BDuL5LG+AHP3m9U25MMC63fjGMZcOoeMd7ilQ24f465uuGI3k064fihCbj6FGowEkXJiwuklO9UCFO/GpUtbX4Lub+FYn/prfKrFxkfzcdFxTKgHhYFflOFt1LmhHV59I59ZN5b9eBG8DESrrAsZlixKA0Qf6gv9H/Rm6GEwkZBi9tM1BK8aWL4fQqkwoZTypihgelD5jGNN6hnEhM4SzmSh7SkCvZciOw0lugIt1P3WSl3zq0LCXECtow4BlCipnSAbz1sJ5KsqmoaziCPxz7anDB7YjOH+x+CcxUMtrNKwT4n3xXwTd6UjVbSQyG67e7pA8iYkBklEF5MQUk6jVmnBf11EGFJ7OE4cILfvnnl8K0TgB+VrVcR++LYEaGaZzzHrFNiK+97z3iXzaMuIiaSxFzZ+Awi7zZMDQoxPWInbvh9sikz9CNGM2dRkfpzI4OrFtG9DNyiWV4ovctBZlqoicyouFVNQz9AzfYX53wJ6v0qZRDmidg7g5bRvyMXbt/l26OZmgGfKL33SIff5qXWaW3monhZBPJeCrSg5zThkisG5XQsqOeJStvwTSrqeOoT4sBwckMXcTyC2+jAxl5z9JCIitJAtDEnrmeqHqbpKnLmHUpxG7ArkrijhVsX7xpkGagMoyqynydklTARKU4jPwN7kKb1KfWNr/VcCru1pDJnxUV5ypX7hZM9nvfRWGS1AbTQnPqZg0bHQ==
+X-Forefront-Antispam-Report-Untrusted:
+ CIP:217.6.247.99;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.za.ziehl-abegg.de;PTR:nix.ziehl-abegg.de;CAT:NONE;SFS:(13230040)(36860700016)(1800799024)(376014)(82310400026)(23010399003)(22082099003)(18002099003)(6133799003)(11063799006)(56012099006);DIR:OUT;SFP:1102;
+X-Exchange-RoutingPolicyChecked: PeooyZibIdNtYSWm10thIbkSP5xKVOGISxl9FaWtwguQcIOl+V8M2vALAHHsqqmVZqWuVDau80dGTbiy9CkRA8hcp01N6OWfp/OYX79xzI8x6DCHHk/oqivJvhMhwuxGBDEz3FdFNj0avdxho2EP/tWCtHXKbAaujg7VTMYr8//zzDg3ohDD1dkfqRoEIgMEZpyA3OckuJt8z1YhLnJyWIsRcuzXARbUXzo+cbSHr+J9jh9txxW98Txgk4qNhhlL71R5kZUF0G3yicBuPyaioy9bWMn5nX+JzFtnHn0O6Jkozd0fTH4Ow+aGYaZVog5j+APUlwMLxwnoRddBpQVsSw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS1PR02MB7872
+X-CodeTwo-MessageID: 46a3ab7c-9f2f-46b5-a420-abf25f89c7e5.20260701164107@eu22-emailsignatures-cloud.codetwo.com
+X-CodeTwoProcessed: true
+X-MS-Exchange-Transport-CrossTenantHeadersStripped:
+ DB3PEPF0000885D.eurprd02.prod.outlook.com
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id-Prvs:
+	1dafb978-7918-45a4-6f2c-08ded78f89e7
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|36860700016|14060799003|82310400026|23010399003|376014|35042699022|1800799024|6133799003|11063799006|56012099006|22082099003|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	cjTn3KhrURqZsGwPj0w1Z2Z1tHAgfGAFcq3KvDZAagno2ZhVMPI3MCsiUHOdzBHE9fPgNaNcfsPUMZ6/MIVqEVDyav1ZJl7vqX/m/IFumWLYI9nWx2ADPJAumYQisCZjqJNjYeUq+cVvmma/2EWlEEvA6d0GLUmRYazS/cBchUZVCgb5gA8WIE1LomEdlJHqdK4W/sXgLIDgE4Qu0Fw8+t9qbbwRXClNA8ieADpZYRhBdLdtq2aESU6xB+CO9xZ6JvCv+/YtLD71RLG9STyaff7/l+nmsLvW7eu3MpSkYrUClOHFcafMhVaKaY7IkAwoFcuO0UoKiJdQO0UEy/vXGNp1xPc0CRoROIQPTqjttMTjjTs+jdA4iaEkZHAeMvq8MECPAPR2W805/cS7GrselJQraOb6sOeAxdQLgwEd6hta1RJggz1xNg5jtGqipzP4OdlTU28y0RggR0uOR1tJEV8Gaf6TZRqWmClVqD/sLC62B3AULvpbdYZBYuXrxhoyPC34EcEp2j3CmPjmEKjXFzGo/hrAY76ZEicgMoTN1bkLRF1+PpIYbXs4a4mmg4+6Eh3nmnykbkgKK6CkPo0VzbgUMZO73HbM8JSOXa+m7LUcjts9ZXenmESBfuVsGQETSZOxOh1EOEQzPnT6fowcsHlkF0Tvav+XMV5KrATCu8jPhba4qsni5ICK/9+SRAUxiTVSa0UnGMXBJSQXSN/Avw==
+X-Forefront-Antispam-Report:
+	CIP:52.138.216.130;CTRY:IE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:eu22-emailsignatures-cloud.codetwo.com;PTR:eu22-emailsignatures-cloud.codetwo.com;CAT:NONE;SFS:(13230040)(36860700016)(14060799003)(82310400026)(23010399003)(376014)(35042699022)(1800799024)(6133799003)(11063799006)(56012099006)(22082099003)(18002099003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	7Wb58LrFWOrVbZ0BTdyhtJ29w2rjpKo2HWIOdjANxu6HR4xvVt7F8SNu3he/JQHr8g7PqRJuC3E7YViQ4nldPlMjb15gwQN1/SfJHryYT7S8OLlCvC9JihCLh3nWAyDrMaDWNktLQY4IhfE8EiyvuCfFrlSQxL2YsAaKYsBLYiitA56cmIU4JMFiY8KBU8YNIwwcIUn8wU7a14JPgm9qPlPs53brQSb5b6EiZq4iYHm1F9sfsyQoWk2fNGFmRTm52IJpypi94dtdAV30ZsRKzgJRwe/7cdTjc958kaldfSwgKPLE3NsMuOyu1xXUb/ROSvPvsdEOBZWwu4ciEQiMoq7CMBaCT0hd+OXWX4zsiqTnGCVRrj/4dLeCbb2E5beMbsO3/iXz9Oqf/6kvitu9qyVxHbKz+oGEn6kBYJJfsBnmiykhh8MQHpvghujS6sNj
+X-OriginatorOrg: ziehl-abegg.de
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jul 2026 16:41:09.6291
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0e804fa1-36ef-407d-2921-08ded78f8e09
+X-MS-Exchange-CrossTenant-Id: 11a5c065-3ef5-41f0-92f9-a77cbf208c03
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=11a5c065-3ef5-41f0-92f9-a77cbf208c03;Ip=[52.138.216.130];Helo=[eu22-emailsignatures-cloud.codetwo.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DB3PEPF0000885D.eurprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV2PR02MB11471
 
-Add support for MediaTek MT8189 SoC and its variants, and a devicetree
-for the basic hardware enablement of the Genio 720-EVK board, based on
-MT8391 SoC.
+Hi David, Maarten,
 
-MT8391 SoC is a variant of MT8189 SoC with a difference for the Arm
-Cortex-A78 CPU core maximum frequency (2.6 Ghz for MT8391, 3 Ghz for
-MT8189). MT8391 hardware register maps are identical to MT8189.
+I rechecked this with ftrace, and I think the right explanation is
+narrower than my v1 commit message.
 
-The Genio 720-EVK board has following features:
-  - MT8391 SoC
-  - MT6365 PMIC
-  - MT6319 Buck IC
-  - MT6375 Charger IC
-  - 8GB LPDDR5 RAM
-  - 64GB eMMC 5.1
-  - 128GB UFS
-  - 20V DC Jack
-  - USB Type-C Power Adapter
-  - Micro SD card slot
-  - Push Button x 4 (Power, Reset, Download and Home Key)
-  - LED x 3 (System Power, Reset, DC-IN Power)
-  - USB Type-C Connector (USB 3.2) x 2
-  - USB Type-C Connector (USB 2.0) x 1
-  - 3.5mm Earphone Jack x 1 (with Microphone Input)
-  - 3.5mm Line Out Audio Jack x 1
-  - Analog Microphone x 1
-  - Digital Microphone x 2
-  - Gigabit Ethernet with RJ45 connector
-  - DP x 1 (Mode over USB Type-C)
-  - LVDS port x 1
-  - eDP port x 1
-  - UART x2 with serial-to-usb converters and USB Type-C connectors
-  - UART Port x 2 on Pin Header
-  - M.2 Slot x 2
-  - I2C Capacitive Touch Pad
-  - 4-Lane DSI x 1
-  - 4-Data Lane CSI x 2
-  - I2S Pin header
-  - 40-Pin 2.54mm Pin Header x 1
-  - CAN Bus x 1 (RS232 Connector)
+The underrun trace shows the SC16IS7xx refill path running with the
+hardware TX FIFO already empty while the tty xmit FIFO still had data
+queued, for example:
 
-Signed-off-by: Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>
----
- arch/arm64/boot/dts/mediatek/Makefile              |   1 +
- arch/arm64/boot/dts/mediatek/mt8189.dtsi           | 920 +++++++++++++++++++++
- .../boot/dts/mediatek/mt8391-genio-720-evk.dts     |  27 +
- .../boot/dts/mediatek/mt8391-genio-common.dtsi     | 673 +++++++++++++++
- 4 files changed, 1621 insertions(+)
+  sc16is7xx delayed refill: line=3D0 txlvl=3D64 pending=3D172
 
-diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
-index a86fb313b1a9..5c75ea1ef09a 100644
---- a/arch/arm64/boot/dts/mediatek/Makefile
-+++ b/arch/arm64/boot/dts/mediatek/Makefile
-@@ -173,6 +173,7 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8395-genio-1200-evk-ufs.dtb
- dtb-$(CONFIG_ARCH_MEDIATEK) += mt8390-genio-700-evk.dtb
- dtb-$(CONFIG_ARCH_MEDIATEK) += mt8390-grinn-genio-700-sbc.dtb
- dtb-$(CONFIG_ARCH_MEDIATEK) += mt8390-tungsten-smarc.dtb
-+dtb-$(CONFIG_ARCH_MEDIATEK) += mt8391-genio-720-evk.dtb
- dtb-$(CONFIG_ARCH_MEDIATEK) += mt8395-kontron-3-5-sbc-i1200.dtb
- dtb-$(CONFIG_ARCH_MEDIATEK) += mt8395-radxa-nio-12l.dtb
- dtb-$(CONFIG_ARCH_MEDIATEK) += mt8395-radxa-nio-12l-8-hd-panel.dtbo
-diff --git a/arch/arm64/boot/dts/mediatek/mt8189.dtsi b/arch/arm64/boot/dts/mediatek/mt8189.dtsi
-new file mode 100644
-index 000000000000..272b1b34c953
---- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt8189.dtsi
-@@ -0,0 +1,920 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/*
-+ * Copyright (c) 2025 MediaTek Inc.
-+ *
-+ * Copyright (c) 2025 Collabora Ltd.
-+ * Author: Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>
-+ */
-+
-+#include <dt-bindings/clock/mediatek,mt8189-clk.h>
-+#include <dt-bindings/interrupt-controller/arm-gic.h>
-+#include <dt-bindings/interrupt-controller/irq.h>
-+#include <dt-bindings/power/mediatek,mt8189-power.h>
-+#include <dt-bindings/phy/phy.h>
-+
-+/ {
-+	compatible = "mediatek,mt8189";
-+	interrupt-parent = <&gic>;
-+	#address-cells = <2>;
-+	#size-cells = <2>;
-+
-+	clk32k: clock-32k {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <32000>;
-+		clock-output-names = "clk32k";
-+	};
-+
-+	clk13m: clock-13m {
-+		compatible = "fixed-factor-clock";
-+		#clock-cells = <0>;
-+		clocks = <&clk26m>;
-+		clock-mult = <1>;
-+		clock-div = <2>;
-+		clock-output-names = "clk13m";
-+	};
-+
-+	clk26m: clock-26m {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <26000000>;
-+		clock-output-names = "clk26m";
-+	};
-+
-+	clock-520m {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <520000000>;
-+		clock-output-names = "ulposc";
-+	};
-+
-+	clock-vow-26m {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <26000000>;
-+		clock-output-names = "vowpll";
-+	};
-+
-+	clock-auxadc-26m {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <26000000>;
-+		clock-output-names = "aud_adc_ext";
-+	};
-+
-+	cpus {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		cpu0: cpu@0 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a55";
-+			reg = <0x000>;
-+			enable-method = "psci";
-+			capacity-dmips-mhz = <282>;
-+			cpu-idle-states = <&cpu_off_l>;
-+			i-cache-size = <32768>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <128>;
-+			d-cache-size = <32768>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>;
-+			next-level-cache = <&l2_0>;
-+			performance-domains = <&performance 0>;
-+			#cooling-cells = <2>;
-+		};
-+
-+		cpu1: cpu@100 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a55";
-+			reg = <0x100>;
-+			enable-method = "psci";
-+			capacity-dmips-mhz = <282>;
-+			cpu-idle-states = <&cpu_off_l>;
-+			i-cache-size = <32768>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <128>;
-+			d-cache-size = <32768>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>;
-+			next-level-cache = <&l2_0>;
-+			performance-domains = <&performance 0>;
-+			#cooling-cells = <2>;
-+		};
-+
-+		cpu2: cpu@200 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a55";
-+			reg = <0x200>;
-+			enable-method = "psci";
-+			capacity-dmips-mhz = <282>;
-+			cpu-idle-states = <&cpu_off_l>;
-+			i-cache-size = <32768>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <128>;
-+			d-cache-size = <32768>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>;
-+			next-level-cache = <&l2_0>;
-+			performance-domains = <&performance 0>;
-+			#cooling-cells = <2>;
-+		};
-+
-+		cpu3: cpu@300 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a55";
-+			reg = <0x300>;
-+			enable-method = "psci";
-+			capacity-dmips-mhz = <282>;
-+			cpu-idle-states = <&cpu_off_l>;
-+			i-cache-size = <32768>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <128>;
-+			d-cache-size = <32768>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>;
-+			next-level-cache = <&l2_0>;
-+			performance-domains = <&performance 0>;
-+			#cooling-cells = <2>;
-+		};
-+
-+		cpu4: cpu@400 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a55";
-+			reg = <0x400>;
-+			enable-method = "psci";
-+			capacity-dmips-mhz = <282>;
-+			cpu-idle-states = <&cpu_off_l>;
-+			i-cache-size = <32768>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <128>;
-+			d-cache-size = <32768>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>;
-+			next-level-cache = <&l2_0>;
-+			performance-domains = <&performance 0>;
-+			#cooling-cells = <2>;
-+		};
-+
-+		cpu5: cpu@500 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a55";
-+			reg = <0x500>;
-+			enable-method = "psci";
-+			capacity-dmips-mhz = <282>;
-+			cpu-idle-states = <&cpu_off_l>;
-+			i-cache-size = <32768>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <128>;
-+			d-cache-size = <32768>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>;
-+			next-level-cache = <&l2_0>;
-+			performance-domains = <&performance 0>;
-+			#cooling-cells = <2>;
-+		};
-+
-+		cpu6: cpu@600 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a78";
-+			reg = <0x600>;
-+			enable-method = "psci";
-+			capacity-dmips-mhz = <1024>;
-+			cpu-idle-states = <&cpu_off_b>;
-+			i-cache-size = <65536>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>;
-+			d-cache-size = <65536>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <256>;
-+			next-level-cache = <&l2_1>;
-+			performance-domains = <&performance 1>;
-+			#cooling-cells = <2>;
-+		};
-+
-+		cpu7: cpu@700 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a78";
-+			reg = <0x700>;
-+			enable-method = "psci";
-+			capacity-dmips-mhz = <1024>;
-+			cpu-idle-states = <&cpu_off_b>;
-+			i-cache-size = <65536>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>;
-+			d-cache-size = <65536>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <256>;
-+			next-level-cache = <&l2_1>;
-+			performance-domains = <&performance 1>;
-+			#cooling-cells = <2>;
-+		};
-+
-+		cpu-map {
-+			cluster0 {
-+				core0 {
-+					cpu = <&cpu0>;
-+				};
-+
-+				core1 {
-+					cpu = <&cpu1>;
-+				};
-+
-+				core2 {
-+					cpu = <&cpu2>;
-+				};
-+
-+				core3 {
-+					cpu = <&cpu3>;
-+				};
-+
-+				core4 {
-+					cpu = <&cpu4>;
-+				};
-+
-+				core5 {
-+					cpu = <&cpu5>;
-+				};
-+
-+				core6 {
-+					cpu = <&cpu6>;
-+				};
-+
-+				core7 {
-+					cpu = <&cpu7>;
-+				};
-+			};
-+		};
-+
-+		idle-states {
-+			entry-method = "psci";
-+
-+			cpu_off_l: cpu-off-l {
-+				compatible = "arm,idle-state";
-+				arm,psci-suspend-param = <0x00010000>;
-+				local-timer-stop;
-+				entry-latency-us = <25>;
-+				exit-latency-us = <57>;
-+				min-residency-us = <5700>;
-+			};
-+
-+			cpu_off_b: cpu-off-b {
-+				compatible = "arm,idle-state";
-+				arm,psci-suspend-param = <0x00010000>;
-+				local-timer-stop;
-+				entry-latency-us = <35>;
-+				exit-latency-us = <82>;
-+				min-residency-us = <1890>;
-+			};
-+		};
-+
-+		l2_0: l2-cache0 {
-+			compatible = "cache";
-+			cache-level = <2>;
-+			cache-size = <131072>;
-+			cache-line-size = <64>;
-+			cache-sets = <512>;
-+			next-level-cache = <&l3_0>;
-+			cache-unified;
-+		};
-+
-+		l2_1: l2-cache1 {
-+			compatible = "cache";
-+			cache-level = <2>;
-+			cache-size = <262144>;
-+			cache-line-size = <64>;
-+			cache-sets = <512>;
-+			next-level-cache = <&l3_0>;
-+			cache-unified;
-+		};
-+
-+		l3_0: l3-cache {
-+			compatible = "cache";
-+			cache-level = <3>;
-+			cache-size = <1048576>;
-+			cache-line-size = <64>;
-+			cache-sets = <2048>;
-+			cache-unified;
-+		};
-+	};
-+
-+	dsu-pmu {
-+		compatible = "arm,dsu-pmu";
-+		interrupts = <GIC_SPI 18 IRQ_TYPE_LEVEL_HIGH 0>;
-+		cpus = <&cpu0>, <&cpu1>, <&cpu2>, <&cpu3>,
-+		       <&cpu4>, <&cpu5>, <&cpu6>, <&cpu7>;
-+		status = "fail";
-+	};
-+
-+	fhctl: fhctl@1000ce00 {
-+		compatible = "mediatek,mt8189-fhctl";
-+		clocks = <&apmixedsys CLK_APMIXED_APUPLL>,
-+			 <&apmixedsys CLK_APMIXED_APUPLL2>,
-+			 <&apmixedsys CLK_APMIXED_ARMPLL_LL>,
-+			 <&apmixedsys CLK_APMIXED_ARMPLL_BL>,
-+			 <&apmixedsys CLK_APMIXED_CCIPLL>,
-+			 <&apmixedsys CLK_APMIXED_EMIPLL>,
-+			 <&apmixedsys CLK_APMIXED_MAINPLL>,
-+			 <&apmixedsys CLK_APMIXED_MFGPLL>,
-+			 <&apmixedsys CLK_APMIXED_MMPLL>,
-+			 <&apmixedsys CLK_APMIXED_MSDCPLL>,
-+			 <&apmixedsys CLK_APMIXED_TVDPLL1>,
-+			 <&apmixedsys CLK_APMIXED_TVDPLL2>,
-+			 <&apmixedsys CLK_APMIXED_UFSPLL>;
-+		reg = <0 0x1000ce00 0 0x200>;
-+		status = "okay";
-+	};
-+
-+	memory: memory@40000000 {
-+		device_type = "memory";
-+		/* This memory size is filled in by the bootloader */
-+		reg = <0 0x40000000 0 0>;
-+	};
-+
-+	pmu-a55 {
-+		compatible = "arm,cortex-a55-pmu";
-+		interrupt-parent = <&gic>;
-+		interrupts = <GIC_PPI 7 IRQ_TYPE_LEVEL_HIGH &ppi_cluster0>;
-+	};
-+
-+	pmu-a78 {
-+		compatible = "arm,cortex-a78-pmu";
-+		interrupt-parent = <&gic>;
-+		interrupts = <GIC_PPI 7 IRQ_TYPE_LEVEL_HIGH &ppi_cluster1>;
-+	};
-+
-+	psci {
-+		compatible = "arm,psci-1.0";
-+		method = "smc";
-+	};
-+
-+	soc {
-+		compatible = "simple-bus";
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		ranges;
-+		dma-ranges = <0x0 0x0 0x0 0x0 0x10 0x0>;
-+
-+		performance: performance-controller@108d78 {
-+			compatible = "mediatek,cpufreq-hw";
-+			reg = <0 0x00108d78 0 0x120>, <0 0x00108e98 0 0x120>;
-+			#performance-domain-cells = <1>;
-+		};
-+
-+		gic: interrupt-controller@c000000 {
-+			compatible = "arm,gic-v3";
-+			reg = <0 0xc000000 0 0x40000>, /* distributor */
-+			      <0 0xc040000 0 0x200000>; /* redistributor */
-+			interrupt-parent = <&gic>;
-+			interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH 0>;
-+			interrupt-controller;
-+			#interrupt-cells = <4>;
-+			#redistributor-regions = <1>;
-+
-+			ppi-partitions {
-+				ppi_cluster0: interrupt-partition-0 {
-+					affinity = <&cpu0 &cpu1 &cpu2 &cpu3 &cpu4 &cpu5>;
-+				};
-+
-+				ppi_cluster1: interrupt-partition-1 {
-+					affinity = <&cpu6 &cpu7>;
-+				};
-+			};
-+		};
-+
-+		apdma: dma-controller@11300b00 {
-+			compatible = "mediatek,mt8189-uart-dma", "mediatek,mt6985-uart-dma";
-+			reg = <0 0x11300b00 0 0x80>,
-+			      <0 0x11300b80 0 0x80>,
-+			      <0 0x11300c00 0 0x80>,
-+			      <0 0x11300c80 0 0x80>,
-+			      <0 0x11300d00 0 0x80>,
-+			      <0 0x11300d80 0 0x80>,
-+			      <0 0x11300e00 0 0x80>,
-+			      <0 0x11300e80 0 0x80>;
-+			interrupts = <GIC_SPI 432 IRQ_TYPE_LEVEL_HIGH 0>,
-+				     <GIC_SPI 433 IRQ_TYPE_LEVEL_HIGH 0>,
-+				     <GIC_SPI 434 IRQ_TYPE_LEVEL_HIGH 0>,
-+				     <GIC_SPI 435 IRQ_TYPE_LEVEL_HIGH 0>,
-+				     <GIC_SPI 436 IRQ_TYPE_LEVEL_HIGH 0>,
-+				     <GIC_SPI 437 IRQ_TYPE_LEVEL_HIGH 0>,
-+				     <GIC_SPI 438 IRQ_TYPE_LEVEL_HIGH 0>,
-+				     <GIC_SPI 439 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&peri_ao CLK_PERAO_DMA_B>;
-+			clock-names = "apdma";
-+			dma-requests = <8>;
-+			#dma-cells = <1>;
-+		};
-+
-+		auxadc: adc@11019000 {
-+			compatible = "mediatek,mt8189-auxadc", "mediatek,mt8173-auxadc";
-+			reg = <0 0x11019000 0 0x1000>;
-+			clocks = <&peri_ao CLK_PERAO_AUXADC_26M>;
-+			clock-names = "main";
-+			#io-channel-cells = <1>;
-+			status = "disabled";
-+		};
-+
-+		apmixedsys: clock-controller@1000c000 {
-+			compatible = "mediatek,mt8189-apmixedsys", "syscon";
-+			reg = <0 0x1000c000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		clock-controller@d01a000 {
-+			compatible = "mediatek,mt8189-dbg-ao";
-+			reg = <0 0xd01a000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		clock-controller@d0a0000 {
-+			compatible = "mediatek,mt8189-dem";
-+			reg = <0 0xd0a0000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		clock-controller@1c00f000 {
-+			compatible = "mediatek,mt8189-dvfsrc-top";
-+			reg = <0 0x1c00f000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		iic_wrap_e: clock-controller@11c22e00 {
-+			compatible = "mediatek,mt8189-iic-wrap-e";
-+			reg = <0 0x11c22e00 0 0x10>;
-+			#clock-cells = <1>;
-+		};
-+
-+		iic_wrap_en: clock-controller@11f32e00 {
-+			compatible = "mediatek,mt8189-iic-wrap-en";
-+			reg = <0 0x11f32e00 0 0x10>;
-+			#clock-cells = <1>;
-+		};
-+
-+		iic_wrap_s: clock-controller@11d74e00 {
-+			compatible = "mediatek,mt8189-iic-wrap-s";
-+			reg = <0 0x11d74e00 0 0x10>;
-+			#clock-cells = <1>;
-+		};
-+
-+		iic_wrap_ws: clock-controller@11b21e00 {
-+			compatible = "mediatek,mt8189-iic-wrap-ws";
-+			reg = <0 0x11b21e00 0 0x10>;
-+			#clock-cells = <1>;
-+		};
-+
-+		infra_ao: clock-controller@10001000 {
-+			compatible = "mediatek,mt8189-infra-ao", "syscon";
-+			reg = <0 0x10001000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		peri_ao: clock-controller@11036000 {
-+			compatible = "mediatek,mt8189-peri-ao", "syscon";
-+			reg = <0 0x11036000 0 0x1000>;
-+			#clock-cells = <1>;
-+			#reset-cells = <1>;
-+		};
-+
-+		topckgen: clock-controller@10000000 {
-+			compatible = "mediatek,mt8189-topckgen", "syscon";
-+			reg = <0 0x10000000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		clock-controller@1c80ae10 {
-+			compatible = "mediatek,mt8189-scp-i2c-clk";
-+			reg = <0 0x1c80ae10 0 0x10>;
-+			#clock-cells = <1>;
-+		};
-+
-+		clock-controller@1cb21150 {
-+			compatible = "mediatek,mt8189-scp-clk";
-+			reg = <0 0x1cb21150 0 0x10>;
-+			#clock-cells = <1>;
-+		};
-+
-+		clock-controller@112b8000 {
-+			compatible = "mediatek,mt8189-ufscfg-ao";
-+			reg = <0 0x112b8000 0 0x1000>;
-+			#clock-cells = <1>;
-+			#reset-cells = <1>;
-+		};
-+
-+		clock-controller@112bb000 {
-+			compatible = "mediatek,mt8189-ufscfg-pdn";
-+			reg = <0 0x112bb000 0 0x1000>;
-+			#clock-cells = <1>;
-+			#reset-cells = <1>;
-+		};
-+
-+		clock-controller@1c000800 {
-+			compatible = "mediatek,mt8189-vlpcfg-ao";
-+			reg = <0 0x1c000800 0 0x10>;
-+			#clock-cells = <1>;
-+		};
-+
-+		vlpcfg: clock-controller@1c00c000 {
-+			compatible = "mediatek,mt8189-vlpcfg";
-+			reg = <0 0x1c00c000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		vlpckgen: clock-controller@1c012000 {
-+			compatible = "mediatek,mt8189-vlpckgen", "syscon";
-+			reg = <0 0x1c012000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		efuse@11f10000 {
-+			compatible = "mediatek,mt8189-efuse", "mediatek,mt8186-efuse";
-+			reg = <0 0x11f10000 0 0x1000>;
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+
-+			socinfo-data1@7a0 {
-+				reg = <0x7a0 0x4>;
-+			};
-+
-+			socinfo-data2@7e0 {
-+				reg = <0x7e0 0x4>;
-+			};
-+		};
-+
-+		i2c0: i2c@11c20000 {
-+			compatible = "mediatek,mt8189-i2c", "mediatek,mt8188-i2c";
-+			reg = <0 0x11c20000 0 0x1000>, <0 0x11300200 0 0x80>;
-+			#address-cells = <1>;
-+			clock-div = <1>;
-+			clocks = <&iic_wrap_e CLK_IMPE_I2C0>, <&peri_ao CLK_PERAO_DMA_B>;
-+			clock-names = "main", "dma";
-+			interrupts = <GIC_SPI 274 IRQ_TYPE_LEVEL_HIGH 0>;
-+			#size-cells = <0>;
-+			status = "disabled";
-+		};
-+
-+		i2c1: i2c@11c21000 {
-+			compatible = "mediatek,mt8189-i2c", "mediatek,mt8188-i2c";
-+			reg = <0 0x11c21000 0 0x1000>, <0 0x11300300 0 0x80>;
-+			#address-cells = <1>;
-+			clock-div = <1>;
-+			clocks = <&iic_wrap_e CLK_IMPE_I2C1>, <&peri_ao CLK_PERAO_DMA_B>;
-+			clock-names = "main", "dma";
-+			interrupts = <GIC_SPI 275 IRQ_TYPE_LEVEL_HIGH 0>;
-+			#size-cells = <0>;
-+			status = "disabled";
-+		};
-+
-+		i2c2: i2c@11b20000 {
-+			compatible = "mediatek,mt8189-i2c", "mediatek,mt8188-i2c";
-+			reg = <0 0x11b20000 0 0x1000>, <0 0x11300400 0 0x80>;
-+			#address-cells = <1>;
-+			clock-div = <1>;
-+			clocks = <&iic_wrap_ws CLK_IMPWS_I2C2>, <&peri_ao CLK_PERAO_DMA_B>;
-+			clock-names = "main", "dma";
-+			interrupts = <GIC_SPI 276 IRQ_TYPE_LEVEL_HIGH 0>;
-+			#size-cells = <0>;
-+			status = "disabled";
-+		};
-+
-+		i2c3: i2c@11d70000 {
-+			compatible = "mediatek,mt8189-i2c", "mediatek,mt8188-i2c";
-+			reg = <0 0x11d70000 0 0x1000>, <0 0x11300500 0 0x80>;
-+			#address-cells = <1>;
-+			clock-div = <1>;
-+			clocks = <&iic_wrap_s CLK_IMPS_I2C3>, <&peri_ao CLK_PERAO_DMA_B>;
-+			clock-names = "main", "dma";
-+			interrupts = <GIC_SPI 277 IRQ_TYPE_LEVEL_HIGH 0>;
-+			#size-cells = <0>;
-+			status = "disabled";
-+		};
-+
-+		i2c4: i2c@11d71000 {
-+			compatible = "mediatek,mt8189-i2c", "mediatek,mt8188-i2c";
-+			reg = <0 0x11d71000 0 0x1000>, <0 0x11300600 0 0x80>;
-+			#address-cells = <1>;
-+			clock-div = <1>;
-+			clocks = <&iic_wrap_s CLK_IMPS_I2C4>, <&peri_ao CLK_PERAO_DMA_B>;
-+			clock-names = "main", "dma";
-+			interrupts = <GIC_SPI 208 IRQ_TYPE_LEVEL_HIGH 0>;
-+			#size-cells = <0>;
-+			status = "disabled";
-+		};
-+
-+		i2c5: i2c@11d72000 {
-+			compatible = "mediatek,mt8189-i2c", "mediatek,mt8188-i2c";
-+			reg = <0 0x11d72000 0 0x1000>, <0 0x11300700 0 0x80>;
-+			#address-cells = <1>;
-+			clock-div = <1>;
-+			clocks = <&iic_wrap_s CLK_IMPS_I2C5>, <&peri_ao CLK_PERAO_DMA_B>;
-+			clock-names = "main", "dma";
-+			interrupts = <GIC_SPI 209 IRQ_TYPE_LEVEL_HIGH 0>;
-+			#size-cells = <0>;
-+			status = "disabled";
-+		};
-+
-+		i2c6: i2c@11d73000 {
-+			compatible = "mediatek,mt8189-i2c", "mediatek,mt8188-i2c";
-+			reg = <0 0x11d73000 0 0x1000>, <0 0x11300800 0 0x80>;
-+			#address-cells = <1>;
-+			clock-div = <1>;
-+			clocks = <&iic_wrap_s CLK_IMPS_I2C6>, <&peri_ao CLK_PERAO_DMA_B>;
-+			clock-names = "main", "dma";
-+			interrupts = <GIC_SPI 210 IRQ_TYPE_LEVEL_HIGH 0>;
-+			#size-cells = <0>;
-+			status = "disabled";
-+		};
-+
-+		i2c7: i2c@11f30000 {
-+			compatible = "mediatek,mt8189-i2c", "mediatek,mt8188-i2c";
-+			reg = <0 0x11f30000 0 0x1000>, <0 0x11300900 0 0x80>;
-+			#address-cells = <1>;
-+			clock-div = <1>;
-+			clocks = <&iic_wrap_en CLK_IMPEN_I2C7>, <&peri_ao CLK_PERAO_DMA_B>;
-+			clock-names = "main", "dma";
-+			interrupts = <GIC_SPI 211 IRQ_TYPE_LEVEL_HIGH 0>;
-+			#size-cells = <0>;
-+			status = "disabled";
-+		};
-+
-+		i2c8: i2c@11f31000 {
-+			compatible = "mediatek,mt8189-i2c", "mediatek,mt8188-i2c";
-+			reg = <0 0x11f31000 0 0x1000>, <0 0x11300a00 0 0x80>;
-+			#address-cells = <1>;
-+			clock-div = <1>;
-+			clocks = <&iic_wrap_en CLK_IMPEN_I2C8>, <&peri_ao CLK_PERAO_DMA_B>;
-+			clock-names = "main", "dma";
-+			interrupts = <GIC_SPI 212 IRQ_TYPE_LEVEL_HIGH 0>;
-+			#size-cells = <0>;
-+			status = "disabled";
-+		};
-+
-+		mmc0: mmc@11230000 {
-+			compatible = "mediatek,mt8189-mmc";
-+			reg = <0 0x11230000 0 0x10000>, <0 0x11e70000 0 0x1000>;
-+			clocks = <&topckgen CLK_TOP_MSDC50_0_SEL>,
-+				 <&peri_ao CLK_PERAO_MSDC0_H>,
-+				 <&peri_ao CLK_PERAO_MSDC0>,
-+				 <&topckgen CLK_TOP_MSDC50_0_HCLK_SEL>,
-+				 <&peri_ao CLK_PERAO_MSDC0_SLV_H>,
-+				 <&peri_ao CLK_PERAO_MSDC0_MST_F>;
-+			clock-names = "source", "hclk", "source_cg",
-+				      "bus_clk", "pclk_cg", "axi_cg";
-+			interrupts = <GIC_SPI 387 IRQ_TYPE_LEVEL_HIGH 0>;
-+			status = "disabled";
-+		};
-+
-+		mmc1: mmc@11240000 {
-+			compatible = "mediatek,mt8189-mmc";
-+			reg = <0 0x11240000 0 0x1000>, <0 0x11d80000 0 0x1000>;
-+			clocks = <&topckgen CLK_TOP_MSDC30_1_SEL>,
-+				 <&peri_ao CLK_PERAO_MSDC1_H>,
-+				 <&peri_ao CLK_PERAO_MSDC1>,
-+				 <&topckgen CLK_TOP_MSDC30_1_HCLK_SEL>,
-+				 <&peri_ao CLK_PERAO_MSDC1_SLV_H>,
-+				 <&peri_ao CLK_PERAO_MSDC1_MST_F>;
-+			clock-names = "source", "hclk", "source_cg",
-+				      "bus_clk", "pclk_cg", "axi_cg";
-+			interrupts = <GIC_SPI 388 IRQ_TYPE_LEVEL_HIGH 0>;
-+			status = "disabled";
-+		};
-+
-+		pcie: pcie@112f0000 {
-+			compatible = "mediatek,mt8189-pcie", "mediatek,mt8192-pcie";
-+			reg = <0 0x112f0000 0 0x4000>;
-+			reg-names = "pcie-mac";
-+			ranges = <0x82000000 0 0x30000000 0x0 0x30000000 0 0x04000000>;
-+			bus-range = <0x00 0xff>;
-+			device_type = "pci";
-+			linux,pci-domain = <0>;
-+			#address-cells = <3>;
-+			#size-cells = <2>;
-+			clocks = <&peri_ao CLK_PERAO_AHB_APB>,
-+				 <&topckgen CLK_TOP_F26M_CK_EN>,
-+				 <&peri_ao CLK_PERAO_TL>,
-+				 <&clk32k>,
-+				 <&peri_ao CLK_PERAO_REF>,
-+				 <&peri_ao CLK_PERAO_AXI>;
-+			clock-names = "pl_250m", "tl_26m", "tl_96m",
-+				      "tl_32k", "peri_26m", "peri_mem";
-+			#interrupt-cells = <1>;
-+			interrupts = <GIC_SPI 467 IRQ_TYPE_LEVEL_HIGH 0>;
-+			interrupt-map = <0 0 0 1 &pcie_intc 0>,
-+					<0 0 0 2 &pcie_intc 1>,
-+					<0 0 0 3 &pcie_intc 2>,
-+					<0 0 0 4 &pcie_intc 3>;
-+			interrupt-map-mask = <0 0 0 7>;
-+			phys = <&pcieport PHY_TYPE_PCIE>;
-+			phy-names = "pcie-phy";
-+			power-domains = <&spm MT8189_POWER_DOMAIN_PCIE>;
-+			status = "disabled";
-+
-+			pcie_intc: interrupt-controller {
-+				#address-cells = <0>;
-+				#interrupt-cells = <1>;
-+				interrupt-controller;
-+			};
-+		};
-+
-+		pciephy: t-phy@11e50700 {
-+			compatible = "mediatek,mt8189-tphy", "mediatek,generic-tphy-v3";
-+			ranges = <0x0 0x0 0x11e50700 0x700>;
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+			power-domains = <&spm MT8189_POWER_DOMAIN_PCIE_PHY>;
-+			status = "disabled";
-+
-+			pcieport: pcie-phy@0 {
-+				reg = <0 0x700>;
-+				clocks = <&topckgen CLK_TOP_SSPXTP_F26M_CK_EN>;
-+				clock-names = "ref";
-+				#phy-cells = <1>;
-+			};
-+		};
-+
-+		pio: pinctrl@10005000 {
-+			compatible = "mediatek,mt8189-pinctrl";
-+			reg = <0 0x10005000 0 0x1000>,
-+			      <0 0x11b50000 0 0x1000>,
-+			      <0 0x11c50000 0 0x1000>,
-+			      <0 0x11c60000 0 0x1000>,
-+			      <0 0x11d20000 0 0x1000>,
-+			      <0 0x11d30000 0 0x1000>,
-+			      <0 0x11d40000 0 0x1000>,
-+			      <0 0x11e20000 0 0x1000>,
-+			      <0 0x11e30000 0 0x1000>,
-+			      <0 0x11f20000 0 0x1000>,
-+			      <0 0x11ce0000 0 0x1000>,
-+			      <0 0x11de0000 0 0x1000>,
-+			      <0 0x11e60000 0 0x1000>,
-+			      <0 0x1c01e000 0 0x1000>,
-+			      <0 0x11f00000 0 0x1000>;
-+			reg-names = "base", "lm", "rb0", "rb1", "bm0", "bm1",
-+				    "bm2", "lt0", "lt1", "rt", "eint0", "eint1",
-+				    "eint2", "eint3", "eint4";
-+			gpio-controller;
-+			#gpio-cells = <2>;
-+			gpio-ranges = <&pio 0 0 182>;
-+			interrupt-controller;
-+			interrupts = <GIC_SPI 239 IRQ_TYPE_LEVEL_HIGH 0>;
-+			#interrupt-cells = <2>;
-+		};
-+
-+		pwrap: pwrap@1cc04000 {
-+			compatible = "mediatek,mt8189-pwrap", "mediatek,mt8195-pwrap", "syscon";
-+			reg = <0 0x1cc04000 0 0x1000>;
-+			reg-names = "pwrap";
-+			assigned-clocks = <&vlpckgen CLK_VLP_CK_PWRAP_ULPOSC_SEL>;
-+			assigned-clock-parents = <&topckgen CLK_TOP_OSC_D10>;
-+			clocks =  <&vlpcfg CLK_VLPCFG_REG_PMIF_SPMI_M_SYS>,
-+				  <&vlpcfg CLK_VLPCFG_REG_PMIF_SPMI_M_TMR>;
-+			clock-names = "spi", "wrap";
-+			interrupts = <GIC_SPI 496 IRQ_TYPE_LEVEL_HIGH 0>;
-+		};
-+
-+		spmi: spmi@1cc06000 {
-+			compatible = "mediatek,mt8189-spmi", "mediatek,mt8195-spmi";
-+			reg = <0 0x1cc06000 0 0x0008ff>, <0 0x1cc00000 0 0x000100>;
-+			reg-names = "pmif", "spmimst";
-+			clocks = <&vlpcfg CLK_VLPCFG_REG_PMIF_SPMI_P_SYS>,
-+				 <&vlpcfg CLK_VLPCFG_REG_PMIF_SPMI_P_TMR>,
-+				 <&vlpckgen CLK_VLP_CK_SPMI_P_MST_SEL>;
-+			clock-names = "pmif_sys_ck", "pmif_tmr_ck", "spmimst_clk_mux";
-+			#address-cells = <2>;
-+			#size-cells = <0>;
-+		};
-+
-+		scpsys: syscon@1c001000 {
-+			compatible = "mediatek,mt8189-scpsys", "syscon", "simple-mfd";
-+			reg = <0 0x1c001000 0 0x1000>;
-+
-+			/* System Power Manager */
-+			spm: power-controller {
-+				compatible = "mediatek,mt8189-power-controller";
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				#power-domain-cells = <1>;
-+
-+				/* power domain of the SoC */
-+				power-domain@MT8189_POWER_DOMAIN_CONN {
-+					reg = <MT8189_POWER_DOMAIN_CONN>;
-+					mediatek,infracfg = <&infra_ao>;
-+					#power-domain-cells = <0>;
-+				};
-+
-+				power-domain@MT8189_POWER_DOMAIN_AUDIO {
-+					reg = <MT8189_POWER_DOMAIN_AUDIO>;
-+					clocks = <&topckgen CLK_TOP_AUD_INTBUS_SEL>;
-+					clock-names = "audio";
-+					mediatek,infracfg = <&infra_ao>;
-+					#power-domain-cells = <0>;
-+				};
-+
-+				power-domain@MT8189_POWER_DOMAIN_ADSP_AO {
-+					reg = <MT8189_POWER_DOMAIN_ADSP_AO>;
-+					clocks = <&vlpckgen CLK_VLP_CK_VADSP_SEL>;
-+					clock-names = "vadsp";
-+					#address-cells = <1>;
-+					#size-cells = <0>;
-+					#power-domain-cells = <1>;
-+
-+					power-domain@MT8189_POWER_DOMAIN_ADSP_INFRA {
-+						reg = <MT8189_POWER_DOMAIN_ADSP_INFRA>;
-+						#address-cells = <1>;
-+						#size-cells = <0>;
-+						#power-domain-cells = <1>;
-+
-+						power-domain@MT8189_POWER_DOMAIN_ADSP_TOP_DORMANT {
-+							reg = <MT8189_POWER_DOMAIN_ADSP_TOP_DORMANT>;
-+							#power-domain-cells = <0>;
-+						};
-+					};
-+				};
-+
-+				power-domain@MT8189_POWER_DOMAIN_SSUSB {
-+					reg = <MT8189_POWER_DOMAIN_SSUSB>;
-+					mediatek,infracfg = <&infra_ao>;
-+					#power-domain-cells = <0>;
-+				};
-+
-+				power-domain@MT8189_POWER_DOMAIN_PCIE {
-+					reg = <MT8189_POWER_DOMAIN_PCIE>;
-+					#address-cells = <1>;
-+					#size-cells = <0>;
-+					#power-domain-cells = <1>;
-+
-+					power-domain@MT8189_POWER_DOMAIN_PCIE_PHY {
-+						reg = <MT8189_POWER_DOMAIN_PCIE_PHY>;
-+						#power-domain-cells = <0>;
-+					};
-+				};
-+			};
-+		};
-+
-+		timer@1cc10000 {
-+			compatible = "mediatek,mt8189-timer", "mediatek,mt6765-timer";
-+			reg = <0 0x1cc10000 0 0x1000>;
-+			clocks = <&clk13m>;
-+			interrupts = <GIC_SPI 249 IRQ_TYPE_LEVEL_HIGH 0>;
-+		};
-+
-+		uart0: serial@11001000 {
-+			compatible = "mediatek,mt8189-uart", "mediatek,mt6577-uart";
-+			reg = <0 0x11001000 0 0x1000>;
-+			interrupts = <GIC_SPI 397 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&clk26m>, <&peri_ao CLK_PERAO_UART0>;
-+			clock-names = "baud", "bus";
-+			dmas = <&apdma 0>, <&apdma 1>;
-+			dma-names = "tx", "rx";
-+			status = "disabled";
-+		};
-+
-+		uart1: serial@11002000 {
-+			compatible = "mediatek,mt8189-uart", "mediatek,mt6577-uart";
-+			reg = <0 0x11002000 0 0x1000>;
-+			interrupts = <GIC_SPI 398 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&clk26m>, <&peri_ao CLK_PERAO_UART1>;
-+			clock-names = "baud", "bus";
-+			dmas = <&apdma 2>, <&apdma 3>;
-+			dma-names = "tx", "rx";
-+			status = "disabled";
-+		};
-+
-+		uart2: serial@11003000 {
-+			compatible = "mediatek,mt8189-uart", "mediatek,mt6577-uart";
-+			reg = <0 0x11003000 0 0x1000>;
-+			interrupts = <GIC_SPI 399 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&clk26m>, <&peri_ao CLK_PERAO_UART2>;
-+			clock-names = "baud", "bus";
-+			dmas = <&apdma 4>, <&apdma 5>;
-+			dma-names = "tx", "rx";
-+			status = "disabled";
-+		};
-+
-+		uart3: serial@11004000 {
-+			compatible = "mediatek,mt8189-uart", "mediatek,mt6577-uart";
-+			reg = <0 0x11004000 0 0x1000>;
-+			interrupts = <GIC_SPI 457 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&clk26m>, <&peri_ao CLK_PERAO_UART3>;
-+			clock-names = "baud", "bus";
-+			dmas = <&apdma 6>, <&apdma 7>;
-+			dma-names = "tx", "rx";
-+			status = "disabled";
-+		};
-+
-+		watchdog@1c00a000 {
-+			compatible = "mediatek,mt8189-wdt", "mediatek,mt6589-wdt";
-+			reg = <0 0x1c00a000 0 0x100>;
-+			#reset-cells = <1>;
-+		};
-+	};
-+
-+	timer {
-+		compatible = "arm,armv8-timer";
-+		interrupt-parent = <&gic>;
-+		interrupts = <GIC_PPI 13 IRQ_TYPE_LEVEL_HIGH 0>,
-+			     <GIC_PPI 14 IRQ_TYPE_LEVEL_HIGH 0>,
-+			     <GIC_PPI 11 IRQ_TYPE_LEVEL_HIGH 0>,
-+			     <GIC_PPI 10 IRQ_TYPE_LEVEL_HIGH 0>;
-+	};
-+};
-diff --git a/arch/arm64/boot/dts/mediatek/mt8391-genio-720-evk.dts b/arch/arm64/boot/dts/mediatek/mt8391-genio-720-evk.dts
-new file mode 100644
-index 000000000000..717077806e24
---- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt8391-genio-720-evk.dts
-@@ -0,0 +1,27 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/*
-+ * Copyright (c) 2025 Collabora Ltd.
-+ * Author: Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>
-+ */
-+/dts-v1/;
-+
-+#include "mt8189.dtsi"
-+#include "mt8391-genio-common.dtsi"
-+
-+/ {
-+	model = "MediaTek Genio 720 EVK";
-+	compatible = "mediatek,mt8391-evk", "mediatek,mt8391",
-+		     "mediatek,mt8189";
-+};
-+
-+&cpu6 {
-+	cpu-supply = <&mt6319_sid7_vbuck1>;
-+};
-+
-+&cpu7 {
-+	cpu-supply = <&mt6319_sid7_vbuck1>;
-+};
-+
-+&mt6319_sid7 {
-+	status = "okay";
-+};
-diff --git a/arch/arm64/boot/dts/mediatek/mt8391-genio-common.dtsi b/arch/arm64/boot/dts/mediatek/mt8391-genio-common.dtsi
-new file mode 100644
-index 000000000000..fbb202e34474
---- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt8391-genio-common.dtsi
-@@ -0,0 +1,673 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/*
-+ * Copyright (c) 2025 Collabora Ltd.
-+ * Author: Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>
-+ */
-+
-+#include "mt6365.dtsi"
-+
-+#include <dt-bindings/gpio/gpio.h>
-+#include <dt-bindings/input/input.h>
-+#include <dt-bindings/interrupt-controller/irq.h>
-+#include <dt-bindings/spmi/spmi.h>
-+#include "mt8189-pinfunc.h"
-+
-+/ {
-+	aliases {
-+		i2c0 = &i2c0;
-+		i2c1 = &i2c1;
-+		i2c2 = &i2c2;
-+		i2c3 = &i2c3;
-+		i2c4 = &i2c4;
-+		i2c5 = &i2c5;
-+		i2c6 = &i2c6;
-+		i2c7 = &i2c7;
-+		i2c8 = &i2c8;
-+		mmc0 = &mmc0;
-+		mmc1 = &mmc1;
-+		serial0 = &uart0;
-+	};
-+
-+	chosen: chosen {
-+		stdout-path = "serial0:921600n8";
-+	};
-+
-+	reserved_memory: reserved-memory {
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		ranges;
-+
-+		/* 2 MiB reserved for ARM Trusted Firmware (BL31) */
-+		bl31_secmon_reserved: memory@54600000 {
-+			reg = <0 0x54600000 0x0 0x200000>;
-+			no-map;
-+		};
-+	};
-+
-+	/* system wide 4.2V power rail from charger */
-+	reg_vsys: regulator-vsys {
-+		compatible = "regulator-fixed";
-+		regulator-name = "vsys";
-+		regulator-always-on;
-+		regulator-boot-on;
-+	};
-+
-+	/* used by PCIe Wi-Fi Module */
-+	reg_wifi_3v3: regulator-1 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "wifi_3v3";
-+		regulator-min-microvolt = <3300000>;
-+		regulator-max-microvolt = <3300000>;
-+		gpio = <&pio 79 GPIO_ACTIVE_HIGH>;
-+		enable-active-high;
-+		regulator-always-on;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pcie_3v3_en_pins>;
-+		vin-supply = <&reg_vsys>;
-+	};
-+};
-+
-+&auxadc {
-+	status = "okay";
-+};
-+
-+&cpu0 {
-+	cpu-supply = <&mt6359_vmodem_buck_reg>;
-+};
-+
-+&cpu1 {
-+	cpu-supply = <&mt6359_vmodem_buck_reg>;
-+};
-+
-+&cpu2 {
-+	cpu-supply = <&mt6359_vmodem_buck_reg>;
-+};
-+
-+&cpu3 {
-+	cpu-supply = <&mt6359_vmodem_buck_reg>;
-+};
-+
-+&cpu4 {
-+	cpu-supply = <&mt6359_vmodem_buck_reg>;
-+};
-+
-+&cpu5 {
-+	cpu-supply = <&mt6359_vmodem_buck_reg>;
-+};
-+
-+&i2c0 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&i2c0_pins>;
-+	status = "okay";
-+};
-+
-+&i2c1 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&i2c1_pins>;
-+	status = "okay";
-+};
-+
-+&i2c2 {
-+	clock-frequency = <1000000>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&i2c2_pins>;
-+	status = "okay";
-+};
-+
-+&i2c3 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&i2c3_pins>;
-+	status = "disabled";
-+};
-+
-+&i2c4 {
-+	clock-frequency = <400000>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&i2c4_pins>;
-+	status = "okay";
-+};
-+
-+&i2c5 {
-+	clock-frequency = <400000>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&i2c5_pins>;
-+	status = "okay";
-+};
-+
-+&i2c6 {
-+	clock-frequency = <400000>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&i2c6_pins>;
-+	status = "okay";
-+};
-+
-+&i2c7 {
-+	clock-frequency = <400000>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&i2c7_pins>;
-+	status = "okay";
-+};
-+
-+&i2c8 {
-+	clock-frequency = <400000>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&i2c8_pins>;
-+	status = "okay";
-+};
-+
-+&mmc0 {
-+	bus-width = <8>;
-+	cap-mmc-highspeed;
-+	cap-mmc-hw-reset;
-+	hs400-ds-delay = <0x1481b>;
-+	max-frequency = <200000000>;
-+	mmc-hs200-1_8v;
-+	mmc-hs400-1_8v;
-+	mmc-hs400-enhanced-strobe;
-+	no-sdio;
-+	no-sd;
-+	non-removable;
-+	supports-cqe;
-+	pinctrl-names = "default", "state_uhs";
-+	pinctrl-0 = <&mmc0_default_pins>;
-+	pinctrl-1 = <&mmc0_uhs_pins>;
-+	vmmc-supply = <&mt6359_vemc_1_ldo_reg>;
-+	vqmmc-supply = <&mt6359_vufs_ldo_reg>;
-+	status = "okay";
-+};
-+
-+&mmc1 {
-+	bus-width = <4>;
-+	cap-sd-highspeed;
-+	cd-gpios = <&pio 2 GPIO_ACTIVE_HIGH>;
-+	max-frequency = <200000000>;
-+	no-mmc;
-+	no-sdio;
-+	sd-uhs-sdr50;
-+	sd-uhs-sdr104;
-+	pinctrl-names = "default", "state_uhs";
-+	pinctrl-0 = <&mmc1_default_pins>;
-+	pinctrl-1 = <&mmc1_uhs_pins>;
-+	vmmc-supply = <&mt6359_vpa_buck_reg>;
-+	vqmmc-supply = <&mt6359_vsim1_ldo_reg>;
-+	status = "okay";
-+};
-+
-+&mt6359_va09_ldo_reg{
-+	regulator-name = "dvdd_sram_vadsp";
-+	regulator-always-on;
-+};
-+
-+&mt6359_vaux18_ldo_reg {
-+	regulator-always-on;
-+};
-+
-+&mt6359_vbbck_ldo_reg {
-+	regulator-always-on;
-+};
-+
-+&mt6359_vcore_buck_reg {
-+	regulator-name = "dvdd_apu";
-+	regulator-always-on;
-+};
-+
-+&mt6359_vgpu11_buck_reg {
-+	regulator-name = "dvdd_sram_core";
-+	regulator-always-on;
-+};
-+
-+&mt6359_vmodem_buck_reg {
-+	regulator-name = "dvdd_proc_l";
-+	regulator-always-on;
-+};
-+
-+&mt6359_vproc1_buck_reg {
-+	regulator-name = "vgpu";
-+};
-+
-+&mt6359_vproc2_buck_reg {
-+	regulator-name = "dvdd_core";
-+	regulator-always-on;
-+};
-+
-+&mt6359_vpu_buck_reg {
-+	regulator-name = "avdd075_emi";
-+	regulator-always-on;
-+};
-+
-+&mt6359_vrf12_ldo_reg {
-+	regulator-name = "va12_abb2";
-+	regulator-always-on;
-+};
-+
-+&mt6359_vrfck_ldo_reg {
-+	regulator-always-on;
-+};
-+
-+&mt6359_vsram_md_ldo_reg {
-+	regulator-name = "dvdd_sram_proc_l";
-+	regulator-always-on;
-+};
-+
-+&mt6359_vsram_proc1_ldo_reg {
-+	regulator-name = "vsram_gpu";
-+};
-+
-+&mt6359_vsram_proc2_ldo_reg {
-+	regulator-name = "dvdd_sram_proc_b";
-+	regulator-always-on;
-+};
-+
-+&mt6359_vsram_others_ldo_reg {
-+	regulator-name = "dvdd_sram_apu";
-+	regulator-always-on;
-+};
-+
-+&mt6359_vufs_ldo_reg {
-+	regulator-always-on;
-+};
-+
-+&pcie {
-+	pinctrl-names = "default", "sleep";
-+	pinctrl-0 = <&pcie_default_pins>;
-+	pinctrl-1 = <&pcie_sleep_pins>;
-+	status = "okay";
-+};
-+
-+&pciephy {
-+	status = "okay";
-+};
-+
-+&pio {
-+	i2c0_pins: i2c0-pins {
-+		pins {
-+			pinmux = <PINMUX_GPIO52__FUNC_SDA0>,
-+				 <PINMUX_GPIO51__FUNC_SCL0>;
-+			bias-pull-up;
-+		};
-+	};
-+
-+	i2c1_pins: i2c1-pins {
-+		pins {
-+			pinmux = <PINMUX_GPIO54__FUNC_SDA1>,
-+				 <PINMUX_GPIO53__FUNC_SCL1>;
-+			bias-pull-up;
-+		};
-+	};
-+
-+	i2c2_pins: i2c2-pins {
-+		pins {
-+			pinmux = <PINMUX_GPIO56__FUNC_SDA2>,
-+				 <PINMUX_GPIO55__FUNC_SCL2>;
-+			bias-pull-up;
-+		};
-+	};
-+
-+	i2c3_pins: i2c3-pins {
-+		pins {
-+			pinmux = <PINMUX_GPIO58__FUNC_SDA3>,
-+				 <PINMUX_GPIO57__FUNC_SCL3>;
-+			bias-pull-up;
-+		};
-+	};
-+
-+	i2c4_pins: i2c4-pins {
-+		pins {
-+			pinmux = <PINMUX_GPIO60__FUNC_SDA4>,
-+				 <PINMUX_GPIO59__FUNC_SCL4>;
-+			bias-pull-up;
-+		};
-+	};
-+	i2c5_pins: i2c5-pins {
-+		pins {
-+			pinmux = <PINMUX_GPIO62__FUNC_SDA5>,
-+				 <PINMUX_GPIO61__FUNC_SCL5>;
-+			bias-pull-up;
-+		};
-+	};
-+
-+	i2c6_pins: i2c6-pins {
-+		pins {
-+			pinmux = <PINMUX_GPIO64__FUNC_SDA6>,
-+				 <PINMUX_GPIO63__FUNC_SCL6>;
-+			bias-pull-up;
-+		};
-+	};
-+
-+	i2c7_pins: i2c7-pins {
-+		pins {
-+			pinmux = <PINMUX_GPIO66__FUNC_SDA7>,
-+				 <PINMUX_GPIO65__FUNC_SCL7>;
-+			bias-pull-up;
-+		};
-+	};
-+
-+	i2c8_pins: i2c8-pins {
-+		pins {
-+			pinmux = <PINMUX_GPIO68__FUNC_SDA8>,
-+				 <PINMUX_GPIO67__FUNC_SCL8>;
-+			bias-pull-up;
-+		};
-+	};
-+
-+	mmc0_default_pins: mmc0-default-pins {
-+		pins-clk {
-+			pinmux = <PINMUX_GPIO162__FUNC_MSDC0_CLK>;
-+			drive-strength = <6>;
-+			bias-pull-down = <MTK_PUPD_SET_R1R0_10>;
-+		};
-+
-+		pins-cmd-dat {
-+			pinmux = <PINMUX_GPIO166__FUNC_MSDC0_DAT0>,
-+				 <PINMUX_GPIO165__FUNC_MSDC0_DAT1>,
-+				 <PINMUX_GPIO164__FUNC_MSDC0_DAT2>,
-+				 <PINMUX_GPIO163__FUNC_MSDC0_DAT3>,
-+				 <PINMUX_GPIO159__FUNC_MSDC0_DAT4>,
-+				 <PINMUX_GPIO158__FUNC_MSDC0_DAT5>,
-+				 <PINMUX_GPIO157__FUNC_MSDC0_DAT6>,
-+				 <PINMUX_GPIO156__FUNC_MSDC0_DAT7>,
-+				 <PINMUX_GPIO161__FUNC_MSDC0_CMD>;
-+			input-enable;
-+			drive-strength = <6>;
-+			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
-+		};
-+
-+		pins-rst {
-+			pinmux = <PINMUX_GPIO160__FUNC_MSDC0_RSTB>;
-+			drive-strength = <6>;
-+			bias-pull-up = <MTK_PUPD_SET_R1R0_00>;
-+		};
-+	};
-+
-+	mmc0_uhs_pins: mmc0-uhs-pins {
-+		pins-clk {
-+			pinmux = <PINMUX_GPIO162__FUNC_MSDC0_CLK>;
-+			drive-strength = <8>;
-+			bias-pull-down = <MTK_PUPD_SET_R1R0_10>;
-+		};
-+
-+		pins-cmd-dat {
-+			pinmux = <PINMUX_GPIO166__FUNC_MSDC0_DAT0>,
-+				 <PINMUX_GPIO165__FUNC_MSDC0_DAT1>,
-+				 <PINMUX_GPIO164__FUNC_MSDC0_DAT2>,
-+				 <PINMUX_GPIO163__FUNC_MSDC0_DAT3>,
-+				 <PINMUX_GPIO159__FUNC_MSDC0_DAT4>,
-+				 <PINMUX_GPIO158__FUNC_MSDC0_DAT5>,
-+				 <PINMUX_GPIO157__FUNC_MSDC0_DAT6>,
-+				 <PINMUX_GPIO156__FUNC_MSDC0_DAT7>,
-+				 <PINMUX_GPIO161__FUNC_MSDC0_CMD>;
-+			input-enable;
-+			drive-strength = <8>;
-+			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
-+		};
-+
-+		pins-ds {
-+			pinmux = <PINMUX_GPIO167__FUNC_MSDC0_DSL>;
-+			drive-strength = <8>;
-+			bias-pull-down = <MTK_PUPD_SET_R1R0_10>;
-+		};
-+
-+		pins-rst {
-+			pinmux = <PINMUX_GPIO160__FUNC_MSDC0_RSTB>;
-+			bias-pull-up = <MTK_PUPD_SET_R1R0_00>;
-+		};
-+	};
-+
-+	mmc1_default_pins: mmc1-default-pins {
-+		pins-clk {
-+			pinmux = <PINMUX_GPIO169__FUNC_MSDC1_CLK>;
-+			drive-strength = <6>;
-+			bias-pull-down = <MTK_PUPD_SET_R1R0_10>;
-+		};
-+
-+		pins-cmd-dat {
-+			pinmux = <PINMUX_GPIO170__FUNC_MSDC1_DAT0>,
-+				 <PINMUX_GPIO171__FUNC_MSDC1_DAT1>,
-+				 <PINMUX_GPIO172__FUNC_MSDC1_DAT2>,
-+				 <PINMUX_GPIO173__FUNC_MSDC1_DAT3>,
-+				 <PINMUX_GPIO168__FUNC_MSDC1_CMD>;
-+			input-enable;
-+			drive-strength = <6>;
-+			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
-+		};
-+
-+		pins-insert {
-+			pinmux = <PINMUX_GPIO2__FUNC_GPIO2>;
-+			bias-pull-up;
-+		};
-+	};
-+
-+	mmc1_uhs_pins: mmc1-uhs-pins {
-+		pins-clk {
-+			pinmux = <PINMUX_GPIO169__FUNC_MSDC1_CLK>;
-+			drive-strength = <8>;
-+			bias-pull-down = <MTK_PUPD_SET_R1R0_10>;
-+		};
-+
-+		pins-cmd-dat {
-+			pinmux = <PINMUX_GPIO170__FUNC_MSDC1_DAT0>,
-+				 <PINMUX_GPIO171__FUNC_MSDC1_DAT1>,
-+				 <PINMUX_GPIO172__FUNC_MSDC1_DAT2>,
-+				 <PINMUX_GPIO173__FUNC_MSDC1_DAT3>,
-+				 <PINMUX_GPIO168__FUNC_MSDC1_CMD>;
-+			input-enable;
-+			drive-strength = <8>;
-+			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
-+		};
-+	};
-+
-+	pcie_default_pins: pcie-default-pins {
-+		pins-bus {
-+			pinmux = <PINMUX_GPIO48__FUNC_WAKEN>,
-+				 <PINMUX_GPIO49__FUNC_PERSTN>,
-+				 <PINMUX_GPIO50__FUNC_CLKREQN>;
-+			bias-pull-up;
-+		};
-+	};
-+
-+	pcie_sleep_pins: pcie-sleep-pins {
-+		pins {
-+			pinmux = <PINMUX_GPIO49__FUNC_PERSTN>;
-+			bias-disable;
-+			output-low;
-+		};
-+	};
-+
-+	pcie_3v3_en_pins: pcie-3v3-en-pins {
-+		pins {
-+			pinmux = <PINMUX_GPIO79__FUNC_GPIO79>;
-+			output-high;
-+		};
-+	};
-+
-+	uart0_pins: uart0-pins {
-+		pins {
-+			pinmux = <PINMUX_GPIO31__FUNC_UTXD0>,
-+				 <PINMUX_GPIO32__FUNC_URXD0>;
-+			bias-pull-up;
-+		};
-+	};
-+
-+	uart1_pins: uart1-pins {
-+		pins {
-+			pinmux = <PINMUX_GPIO33__FUNC_UTXD1>,
-+				 <PINMUX_GPIO34__FUNC_URXD1>;
-+			bias-pull-up;
-+		};
-+	};
-+
-+	uart2_pins: uart2-pins {
-+		pins {
-+			pinmux = <PINMUX_GPIO35__FUNC_UTXD2>,
-+				 <PINMUX_GPIO36__FUNC_URXD2>;
-+			bias-pull-up;
-+		};
-+
-+		pins-rtscts {
-+			pinmux = <PINMUX_GPIO16__FUNC_UCTS2>,
-+				 <PINMUX_GPIO17__FUNC_URTS2>;
-+		};
-+	};
-+
-+	uart3_pins: uart3-pins {
-+		pins {
-+			pinmux = <PINMUX_GPIO37__FUNC_UTXD3>,
-+				 <PINMUX_GPIO38__FUNC_URXD3>;
-+			bias-pull-up;
-+		};
-+
-+		pins-rtscts {
-+			pinmux = <PINMUX_GPIO14__FUNC_UCTS3>,
-+				 <PINMUX_GPIO15__FUNC_URTS3>;
-+		};
-+	};
-+};
-+
-+&pmic {
-+	interrupts-extended = <&pio 194 IRQ_TYPE_LEVEL_HIGH>;
-+	vsys-smps-supply = <&reg_vsys>;
-+	vsys-vcore-supply = <&reg_vsys>;
-+	vsys-vgpu11-supply = <&reg_vsys>;
-+	vsys-vgpu12-supply = <&reg_vsys>;
-+	vsys-vpa-supply = <&reg_vsys>;
-+	vsys-vproc1-supply = <&reg_vsys>;
-+	vsys-vproc2-supply = <&reg_vsys>;
-+	vsys-vpu-supply = <&reg_vsys>;
-+	vsys-vs1-supply = <&reg_vsys>;
-+	vsys-vs2-supply = <&reg_vsys>;
-+	vsys-vmodem-supply = <&reg_vsys>;
-+	vsys-ldo1-supply = <&reg_vsys>;
-+	vsys-ldo2-supply = <&reg_vsys>;
-+	vs1-ldo1-supply = <&mt6359_vs1_buck_reg>;
-+	vs1-ldo2-supply = <&mt6359_vs1_buck_reg>;
-+	vs2-ldo1-supply = <&mt6359_vs2_buck_reg>;
-+	vs2-ldo2-supply = <&mt6359_vs2_buck_reg>;
-+
-+	keys {
-+		compatible = "mediatek,mt6365-keys", "mediatek,mt6359-keys";
-+		mediatek,long-press-mode = <1>;
-+		power-off-time-sec = <0>;
-+
-+		power-key {
-+			linux,keycodes = <KEY_POWER>;
-+			wakeup-source;
-+		};
-+
-+		home {
-+			linux,keycodes = <KEY_HOME>;
-+		};
-+	};
-+};
-+
-+&spmi {
-+	/*
-+	 * MT6319 PMIC SID can change depending on the boards so add
-+	 * in this include file the nodes for the possible values,
-+	 * disabled by default to limit the code duplication.
-+	 */
-+	mt6319_sid6: pmic@6 {
-+		compatible = "mediatek,mt6319-regulator", "mediatek,mt6315-regulator";
-+		reg = <0x6 SPMI_USID>;
-+
-+		pvdd1-supply = <&reg_vsys>;
-+		pvdd2-supply = <&reg_vsys>;
-+		pvdd3-supply = <&reg_vsys>;
-+		pvdd4-supply = <&reg_vsys>;
-+
-+		status = "disabled";
-+
-+		regulators {
-+			mt6319_sid6_vbuck1: vbuck1 {
-+				regulator-name = "dvdd_proc_b";
-+				regulator-min-microvolt = <300000>;
-+				regulator-max-microvolt = <1193750>;
-+				regulator-enable-ramp-delay = <256>;
-+				regulator-allowed-modes = <0 1 2>;
-+				regulator-always-on;
-+			};
-+
-+			vbuck3 {
-+				regulator-name = "vdd2h_emi";
-+				regulator-min-microvolt = <300000>;
-+				regulator-max-microvolt = <1193750>;
-+				regulator-enable-ramp-delay = <256>;
-+				regulator-allowed-modes = <0 1 2>;
-+				regulator-always-on;
-+			};
-+
-+			vbuck4 {
-+				regulator-name = "avddq_emi";
-+				regulator-min-microvolt = <300000>;
-+				regulator-max-microvolt = <1193750>;
-+				regulator-enable-ramp-delay = <256>;
-+				regulator-allowed-modes = <0 1 2>;
-+				regulator-always-on;
-+			};
-+		};
-+	};
-+
-+	mt6319_sid7: pmic@7 {
-+		compatible = "mediatek,mt6319-regulator", "mediatek,mt6315-regulator";
-+		reg = <0x7 SPMI_USID>;
-+
-+		pvdd1-supply = <&reg_vsys>;
-+		pvdd2-supply = <&reg_vsys>;
-+		pvdd3-supply = <&reg_vsys>;
-+		pvdd4-supply = <&reg_vsys>;
-+
-+		status = "disabled";
-+
-+		regulators {
-+			mt6319_sid7_vbuck1: vbuck1 {
-+				regulator-name = "dvdd_proc_b";
-+				regulator-min-microvolt = <300000>;
-+				regulator-max-microvolt = <1193750>;
-+				regulator-enable-ramp-delay = <256>;
-+				regulator-allowed-modes = <0 1 2>;
-+				regulator-always-on;
-+			};
-+
-+			vbuck3 {
-+				regulator-name = "vdd2h_emi";
-+				regulator-min-microvolt = <300000>;
-+				regulator-max-microvolt = <1193750>;
-+				regulator-enable-ramp-delay = <256>;
-+				regulator-allowed-modes = <0 1 2>;
-+				regulator-always-on;
-+			};
-+
-+			vbuck4 {
-+				regulator-name = "avddq_emi";
-+				regulator-min-microvolt = <300000>;
-+				regulator-max-microvolt = <1193750>;
-+				regulator-enable-ramp-delay = <256>;
-+				regulator-allowed-modes = <0 1 2>;
-+				regulator-always-on;
-+			};
-+		};
-+	};
-+};
-+
-+&uart0 {
-+	pinctrl-0 = <&uart0_pins>;
-+	pinctrl-names = "default";
-+	status = "okay";
-+};
-+
-+&uart1 {
-+	pinctrl-0 = <&uart1_pins>;
-+	pinctrl-names = "default";
-+	status = "okay";
-+};
-+
-+&uart2 {
-+	pinctrl-0 = <&uart2_pins>;
-+	pinctrl-names = "default";
-+	status = "okay";
-+};
-+
-+&uart3 {
-+	pinctrl-0 = <&uart3_pins>;
-+	pinctrl-names = "default";
-+	status = "okay";
-+};
+So the conclusions for me are:
 
--- 
-2.54.0
+  - The driver can catch up if the FIFO is only partially drained when
+    the THRI path runs. TXLVL will report more than the nominal trigger
+    amount and the driver can write more bytes.
 
+  - Once TXLVL is 64, the FIFO has already emptied and the TX gap has
+    already occurred.
+
+  - The v1 explanation was wrong to describe a 32-free-space trigger as
+    increasing the per-interrupt refill window. It does not. With the
+    default trigger, the FIFO has about 56 character times left when THRI
+    fires; with a 32-free-space trigger, it has about 32 character times
+    left.
+
+  - As Maarten pointed out, the benefit is the other side of the
+    trade-off: the refill event rate is reduced by 4x, from roughly
+    1 refill per 8 transmitted bytes to 1 refill per 32 transmitted bytes.
+   =20
+  - On the tested SPI-backed system, that lower refill rate reduces the
+    IRQ/SPI load enough to avoid the observed underruns.
+
+The change is limited to SPI-attached parts so the I2C case is
+unaffected.
+
+For v2 I will:
+
+  - rework the commit message around Maarten's trade-off calculation:
+    4x fewer TX refill events, at the cost of reducing the time-to-empty
+    margin from 56 to 32 character times;
+  - limit the TX trigger change to SPI-backed SC16IS7xx devices;
+  - leave the RX trigger level unchanged.
+
+If maintainers would prefer this to be board-configurable instead, I can
+look at a follow-up DT binding/property, but I would prefer to keep v2
+focused on the TX/SPI case.
+
+Thanks,
+Paul
