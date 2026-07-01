@@ -1,193 +1,195 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from va-2-35.ptr.blmpb.com (va-2-35.ptr.blmpb.com [209.127.231.35])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8B3D481FDF
-	for <linux-serial@vger.kernel.org>; Wed,  1 Jul 2026 15:17:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DC10356744
+	for <linux-serial@vger.kernel.org>; Wed,  1 Jul 2026 16:13:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.127.231.35
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782919063; cv=none; b=nHPr+7boMuuEvbssBYpNTRsqQrHK4Up5aKkEjJZqIAn4WBZzms7j9onRYGyNni6OaJZ++c1uES3jCdHHO1/OP5BobcyFaE+K7s4DuHKsDWE406hDc3hrBpjSSW4bRKvlnL8/4A1M+kjIzOr95zzVAVBzgrm+VTd4K1gGSZ5jXIE=
+	t=1782922417; cv=none; b=XWAPcbYPl0a68FtO4KzUMaIg5AOHkOE3nsGaFsDQyxs8oZvXgmGLfBJsHOhExt+pW1M7uZgnrQBDBqcqRHB5unTXvkzLlpy0nZPcJTRbk32ffflip5H1mkKn6QsJShoYvotC/q9PTZ5oI0iKTCkXe8N6SAF1r72Usf1Evjq8DRM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782919063; c=relaxed/simple;
-	bh=by58mvU1Sfixgvz9hF5W5LYNik9UGMcTUhzX33TMKjM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=AOubD2SdFUyuPpt9zYmSsqzKyhQF6QPEWp8KskAq34y/GWqk3P0YZAfr+BxvGD6Azx1tZGvA/WOhGUBGSdeP/w4h6Kiyuqd9SpEsT7ocYJ02mPND19aXc9Ua2ExdRuyYCiQ6k0sGe7zIAoNUc5Rz0J2gq7RGm6VCvEY0gppsu8A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=HQCscZHD; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=An5TBxXS; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1782922417; c=relaxed/simple;
+	bh=joHMVJgE4R7g+rijZ593TnegVAahfYzWzD9U5bWRVpk=;
+	h=Cc:From:Subject:Date:In-Reply-To:References:Content-Type:To:
+	 Message-Id:Mime-Version; b=o90hidLNBq8M22aCiippp8/Mez+ATzjrmIDibRM+wRfKkQGBJozzZdQ1jBCqLm1ULEXi7LvowAycyQMjm6lAVsB/NOe4ACLFXr87fFwuE6KA7vPSBArL6NVYnxwNEEZzgCtc8gzThyy1HywwNt6bw/+XtnHlS+ukPlYqCUeHPSc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=picoheart.com; spf=pass smtp.mailfrom=picoheart.com; dkim=pass (2048-bit key) header.d=picoheart.com header.i=@picoheart.com header.b=L7FjZIQF; arc=none smtp.client-ip=209.127.231.35
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=picoheart.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=picoheart.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="HQCscZHD";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="An5TBxXS"
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 661A8pGw683696
-	for <linux-serial@vger.kernel.org>; Wed, 1 Jul 2026 15:17:40 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	eL8RzYtzz14uHHHZjdkg5Lcy+jo9dJN907wPOrw5Phw=; b=HQCscZHDsrpvDfg3
-	G0oD3d+Ry7j7w8ED7pDiRilXkTsnDxmcTuW1qRZDjPvFq4cQC7zKwehaXFAELj4D
-	uHylXxH4GSes/yvWOKkQDiXVkT1Fo00dDiXjd5+RY/T5JSzCdBPXgWqlh6pkpxw2
-	RmCYoS6EmNPNShJtFtYh43JoJMOIZJ3l+19oh4AwBl0H3LthATxUfcl6dRLET5L3
-	p8SxIF2VUfDEl1S+tkPv6RTHUW68VsptxNyCH2JmokTcP6rBDxF5DmkxW6AlUdFS
-	+xY3/BJeW7HGhoF2KmU+Nr9H0gPrfKlHA4fLigvyMcUU9vtKfOhp6pd7mnUdh2j6
-	rtZDnA==
-Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com [209.85.210.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4f4jtqmwt8-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-serial@vger.kernel.org>; Wed, 01 Jul 2026 15:17:39 +0000 (GMT)
-Received: by mail-pf1-f198.google.com with SMTP id d2e1a72fcca58-846f50381a6so567880b3a.0
-        for <linux-serial@vger.kernel.org>; Wed, 01 Jul 2026 08:17:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1782919059; x=1783523859; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=eL8RzYtzz14uHHHZjdkg5Lcy+jo9dJN907wPOrw5Phw=;
-        b=An5TBxXSIJ9Y9+BlrlzK4OcL0mEUSTQNh6B94jfY066QgAQ1BlKtI3nLTVZ7/CFyfE
-         xXxcYeK7x5d7CHLK//ut81xzVQMLDCOtXtt8GWzwZIAvNyPfd2DgVBS/RSKgPeNfxjOy
-         Uv72JKWCQOax+Rg28bNnZYkqOn6dOuvvUEr/xmW4ACkrew332T4YFNAZZIKrNBiT3S7B
-         jo61qOFaIhKA/wb16JHXFYhx0CmYInIzQ5caQynpKINMJDf4ChyjmTU5eAfMLCFe0i4x
-         NuBiRBMH/kuyTWZd/QfJS6hTJYBKd4b/rrPgVPhe7nHG2Z0thniNuFst6T2MVwqB8GAA
-         We2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782919059; x=1783523859;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=eL8RzYtzz14uHHHZjdkg5Lcy+jo9dJN907wPOrw5Phw=;
-        b=aPMvABzp9l8gDq47n7DgCXy8Zc9SDk/PvcBdr0sNEsxi1ljhxzWuf+GdcVYKT/CTWX
-         uxE1SFXgTQLmNdpR20WTq0kIYmSqR9O93TwwFGZrSuhaG7NLwyEOCGiw7W2DRnj74Nb0
-         LY86uUiT/YZrbrkTi6woucl9RLX1woT327yOStSpQMZrg7GND5/9Vxd92g/sRqKhadI9
-         zmjQ332tzYaChMRvnwX+7/B9uI0pOrAHFuNAJVhDvuDKbBisXVWMBIWz7NTE7LOlovZA
-         1+oI2Msv3W208AyUgAyylFnPYMMZmSX/TQnFEe7nPgkgkIoezoV69LSmzBaqnWQRGUY7
-         q5JQ==
-X-Forwarded-Encrypted: i=1; AHgh+RoUTx2BwyddM3RPQC7S0XSsRkSgJy0rQov90VrMHOgkJyA7i29MIUqv+Ia2RCIP3kbTiZOuS5A6K1IRYsE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzratHmZKpucwcKPy6qhwDzZf42gbm8o0vUAAhXYE+p7mVjXtdN
-	vKJhTGfja7BAVxEjJdl5AUPk58un7GtiHW2rnPKCoZ9zUAHuCCoG/Zr027hOF08UiAWe95eAYFX
-	bJJ8ta8G4Yzcv0/uhuYej1QRBfB0RIH7OStt8rcrMfhhXh5WDGKeJubt2Xqt+/5xZxPg=
-X-Gm-Gg: AfdE7clGy8tn1XUcBi8CvQwVPcnVr9wvZnLnVLwsznbzt9j23B2P0JEkI1R9QaXWVek
-	N+t8XqPhVMHin1pBmdUp+MiLE10DUc7iTsXJyfjss/bJ/87YCEYfLIkmqd3uIxY2p/SxQyyuyk8
-	rpqY30l4VSUpt04zrKhj5fZ8PCVI+8vSMl6lRzdR+7n2WuMRQBRLhKg6EKV7rxjnW6awtDo6k28
-	CCKYVnlkXrmxYBgEjRasalLucbATWq7oRL7nqW6Eh22t/HWuNtF97eLENOwaVEUJsE4WCauvBeX
-	TuH7LGPyoLafzRF6KQUQutS+NAGejnVDuFFJAAcJILcW+rWZRNdBmgsMv4yDGNOJjpuanlHemis
-	rasQGdNOjUmSqJlZpFdlyYs6rEaGAwK1DC+eRC9pQ1JkyGQ==
-X-Received: by 2002:a05:6a00:4f95:b0:847:7128:ecf6 with SMTP id d2e1a72fcca58-847c512d7b4mr991677b3a.40.1782919059351;
-        Wed, 01 Jul 2026 08:17:39 -0700 (PDT)
-X-Received: by 2002:a05:6a00:4f95:b0:847:7128:ecf6 with SMTP id d2e1a72fcca58-847c512d7b4mr991654b3a.40.1782919058882;
-        Wed, 01 Jul 2026 08:17:38 -0700 (PDT)
-Received: from [192.168.1.8] ([106.222.232.144])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-847a039f2afsm4262001b3a.53.2026.07.01.08.17.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Jul 2026 08:17:38 -0700 (PDT)
-Message-ID: <73243e36-175c-4fe3-a448-b30eef9c44ee@oss.qualcomm.com>
-Date: Wed, 1 Jul 2026 20:47:32 +0530
+	dkim=pass (2048-bit key) header.d=picoheart.com header.i=@picoheart.com header.b="L7FjZIQF"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ s=feishu2604151535; d=picoheart.com; t=1782922410; h=from:subject:
+ mime-version:from:date:message-id:subject:to:cc:reply-to:content-type:
+ mime-version:in-reply-to:message-id;
+ bh=IL9X2eVWufMJ3umWFy1m9zXnSbtxbyqhyAKdzjIxpoU=;
+ b=L7FjZIQFDRATCasAlh8W+hVZozeQM9qbDujdully2y1/Ber4E+boUmWkfjbbH/w1OPEXII
+ 2QDNSbSKwqyJbGoAd7kHa4hpZOuhIWj+S561K5LYYEYtzoUCm7JGF5xDAkPUHI+1D/c+60
+ 6qjwZhiuWNocZSdj7L8j00qvmz0SbeHpN4rFOR6fTTKVXBjf10HzIKsLvikA55ZSfnHxNY
+ tP24vfMzn/5mNwASkMsaG5bK8a3BSVM2TCJB5A8w74AtdysdLUxI+DO00T95SHUzZvllZ+
+ z9XpBH1gN3TmWMLp0ou405Wl/qQMLEDtEbuit4NLtQFfGd+i5ugg4Cg3Q7wDyw==
+Cc: <yang.yicong@picoheart.com>, 
+	"Andy Shevchenko" <andriy.shevchenko@linux.intel.com>, 
+	"linux-serial" <linux-serial@vger.kernel.org>, 
+	"LKML" <linux-kernel@vger.kernel.org>, 
+	"Greg Kroah-Hartman" <gregkh@linuxfoundation.org>, 
+	"Jiri Slaby" <jirislaby@kernel.org>, <geshijian@picoheart.com>, 
+	<yangyang.8776@picoheart.com>, <yanligen@picoheart.com>
+From: "Yicong Yang" <yang.yicong@picoheart.com>
+Subject: Re: [PATCH] serial: 8250_dw: Prefer SRBR in bogus RX timeout workaround if available
+Date: Thu, 2 Jul 2026 00:13:22 +0800
+In-Reply-To: <ce31a5fe-8b6e-62af-038b-4e65cb94493d@linux.intel.com>
+References: <20260629075510.32854-1-yang.yicong@picoheart.com> <1ef5a875-2c01-5b4b-7d2b-07e6ea3db2b3@linux.intel.com> <877fc902-7b8d-454c-8346-de1087edcdc4@picoheart.com> <c017f37a-5873-2716-96e7-3deb46eff1a8@linux.intel.com> <b175fd37-e998-40b1-99c3-491e3d6f7e04@picoheart.com> <ce31a5fe-8b6e-62af-038b-4e65cb94493d@linux.intel.com>
+Received: from [172.16.13.88] ([39.155.245.242]) by smtp.feishu.cn with ESMTPS; Thu, 02 Jul 2026 00:13:27 +0800
+Content-Type: text/plain; charset=UTF-8
+To: =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+X-Lms-Return-Path: <lba+26a453ca8+d2c02a+vger.kernel.org+yang.yicong@picoheart.com>
+Content-Language: en-US
+Message-Id: <29c00135-be80-4836-b25e-8c930ce6f278@picoheart.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+X-Original-From: Yicong Yang <yang.yicong@picoheart.com>
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: qcom-geni: add force suspend/resume to system
- sleep callbacks
-To: Praveen Talari <praveen.talari@oss.qualcomm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, bjorn.andersson@oss.qualcomm.com,
-        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-Cc: aniket.randive@oss.qualcomm.com, chandana.chiluveru@oss.qualcomm.com,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-References: <20260701-add_force_suspend_resume_to_system_sleep_callbacks-v1-1-38c9a721a462@oss.qualcomm.com>
-Content-Language: en-US
-From: Mukesh Savaliya <mukesh.savaliya@oss.qualcomm.com>
-In-Reply-To: <20260701-add_force_suspend_resume_to_system_sleep_callbacks-v1-1-38c9a721a462@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-ORIG-GUID: zTISybya3ATvva09wQg0bwXHibenn46E
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzAxMDE2MSBTYWx0ZWRfXykVu0/5AhrBq
- Mmo3DmK5/TRyeksLTncqiRr5zAfhVNoDpCOgIq2UbDt3+OmnjPL5KdpdWeE80FJNENdDh2hYZ6w
- wIdAYVctzvtxXhKJ0gImeIfkS6p3H65v8YEsztkfQOAMj7Q1SEa3jrxtuoBdqOYfE4+kes3empm
- q/+I27yAtmxWb2L1n/TmvSMjF7ktqduANIOiOsaDMcWm4cSb3UJ44pBTz7Li/suTC0/LkrJo3p3
- i9hGTSTFnN28jq8pU1C3uG0jQKgmNtqK1FzA2SG00rnp1dvywd7B/TJcr0+dQk35fwd6/PIqjfo
- Ux8CR7pYukFGy3yzuv0cVs+1+pd4WRXGAcLFqRCFQYTnqZw5/rbqUosu4qogofR0xEabtYB9F3e
- 6X/CxKqfqLwK36SEYJ+5zAuXYqIrSG/mhTjjVG7uaa0+XRwMUvXHTn2ubgyQX7ezNB2tO7Clvb3
- 1kAnU2V0EHek7AvJVmQ==
-X-Proofpoint-GUID: zTISybya3ATvva09wQg0bwXHibenn46E
-X-Authority-Analysis: v=2.4 cv=LIZWhpW9 c=1 sm=1 tr=0 ts=6a452f94 cx=c_pps
- a=m5Vt/hrsBiPMCU0y4gIsQw==:117 a=1q2F+KrbvUZPNaeG7DbW0w==:17
- a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=YMgV9FUhrdKAYTUUvYB2:22
- a=EUspDBNiAAAA:8 a=WaUktqV4Tl373BT39uoA:9 a=QEXdDO2ut3YA:10
- a=IoOABgeZipijB_acs4fv:22
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzAxMDE2MSBTYWx0ZWRfX/cgl6LPl5m1a
- NFAcFlf5r3KrGXhbY+bOfwlReUSB6hS/4Kcq2H/YNlBk20VcG85xoRa1XTeoKuuB4qBpaeGTeh7
- AsStAZoCMxGk8hy7rD37Hq0qF6l1vxI=
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
- definitions=2026-07-01_03,2026-06-26_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- suspectscore=0 priorityscore=1501 phishscore=0 lowpriorityscore=0
- clxscore=1011 malwarescore=0 bulkscore=0 adultscore=0 impostorscore=0
- spamscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
- adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
- definitions=main-2607010161
 
+On 7/1/26 4:45 PM, Ilpo J=C3=A4rvinen wrote:
+> On Wed, 1 Jul 2026, Yicong Yang wrote:
+>=20
+>> On 7/1/26 2:18 AM, Ilpo J=C3=A4rvinen wrote:
+>>> On Wed, 1 Jul 2026, Yicong Yang wrote:
+>>>> On 6/29/26 11:56 PM, Ilpo J=C3=A4rvinen wrote:
+>>>>> On Mon, 29 Jun 2026, Yicong Yang wrote:
+>>>>>
+>>>>>> The DW uart could get into the cases where a bogus RX timeout
+>>>>>> interrupt is asserted but no available data. This could be
+>>>>>> workaround by doing a bogus read.
+>>>>>>
+>>>>>> Currently the driver's using the standard RBR (receive buffer
+>>>>>> register) for this bogus read. However the reading of RBR
+>>>>>> in this case is allowed to raise a hardware error if vendor
+>>>>>> choose to implement in this way (our platform). It's also
+>>>>>> allowed to do the bogus read using SRBR (shadow RBR) for
+>>>>>> workaround which won't raise the hardware error. So change
+>>>>>> to use the SRBR to workaround the issue if it's available.
+>>>>>>
+>>>>>> Signed-off-by: Yicong Yang <yang.yicong@picoheart.com>
+>>>>>> ---
+>>>>>>  drivers/tty/serial/8250/8250_dw.c    | 15 +++++++++++++--
+>>>>>>  drivers/tty/serial/8250/8250_dwlib.c |  3 +++
+>>>>>>  drivers/tty/serial/8250/8250_dwlib.h |  4 ++++
+>>>>>>  3 files changed, 20 insertions(+), 2 deletions(-)
+>>>>>>
+>>>>>> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/=
+8250/8250_dw.c
+>>>>>> index 84ffba045ffa..fea7dfa30e78 100644
+>>>>>> --- a/drivers/tty/serial/8250/8250_dw.c
+>>>>>> +++ b/drivers/tty/serial/8250/8250_dw.c
+>>>>>> @@ -440,8 +440,19 @@ static int dw8250_handle_irq(struct uart_port *=
+p)
+>>>>>>  	if (!up->dma && rx_timeout) {
+>>>>>>  		status =3D serial_lsr_in(up);
+>>>>>> =20
+>>>>>> -		if (!(status & (UART_LSR_DR | UART_LSR_BI)))
+>>>>>> -			serial_port_in(p, UART_RX);
+>>>>>> +		if (!(status & (UART_LSR_DR | UART_LSR_BI))) {
+>>>>>> +			/*
+>>>>>> +			 * Do the bogus read from Shadow RBR (SRBR) if provided.
+>>>>>> +			 * Both RBR and SRBR are supported ways to workaround
+>>>>>
+>>>>> Hi,
+>>>>>
+>>>>> I've not come across this being mentioned anywhere else than in kerne=
+l=20
+>>>>> related context, but you seem to imply there something that tells abo=
+ut=20
+>>>>> "supported ways"?
+>>>>>
+>>>>
+>>>> in fact we got this workaround method that's documented in the synopsy=
+s
+>>>> dw_uart issue report, so comment "supported" here. quote the related p=
+art
+>>>> of the workaround below:
+>>>>
+>>>>   [read USR[3] for the rx fifo status]
+>>>>   If the read value is '0' (indicating the RX FIFO is empty), do a dum=
+my
+>>>>   read of the RBR or shadow RBR (SRBR) register without processing the
+>>>>   invalid read data.
+>>>>
+>>>>   ...Note: Reading the RBR results in a PSLVERR immediately if
+>>>>   REG_TIMEOUT_WIDTH parameter is set to '0'. Whereas, reading SRBR doe=
+s
+>>>>   not result in PSLVERR.
+>>>
+>>> Okay, thanks.
+>>>
+>>>>> If there's no such thing, I'm bit hesitant to declare presence of SRB=
+R=20
+>>>>> guarantees reading it universally solves this issue.
+>>>>>
+>>>>> BUT, I suppose it does on your HW since you must have hit this code p=
+ath,=20
+>>>>> and thus PSLVERR, yourself to actually discover this issue so I assum=
+e=20
+>>>>> you've then also confirmed that this patch solves the issue in your c=
+ase=20
+>>>>> which isn't entirely without merit either.
+>>>>>
+>>>>
+>>>> actually it's hard to reproduce, only once at boot time in our several
+>>>> hundreds reboot test. we locate the code line here by the backtrace of
+>>>> the system error. the issue hasn't reproduced yet on the patched kerne=
+l
+>>>> (hundred reboots so far, but still going on), and I suppose it's corre=
+ct
+>>>> as provided by the IP designer.
+>>>
+>>> For testing, you could have logged when this condition is actually hit=
+=20
+>>> in the first place. I usually do that to increase my own confidence if =
+the=20
+>>> problem is particularly hard to reproduce.
+>>
+>> thanks for the kind and useful guidance :) did add a log message in the
+>> workaround branch so we'll know if the issue hits.
+>>
+>>>
+>>> I don't know if it always triggers PSLVERR or if that's some % of !(sta=
+tus=20
+>>> & (UART_LSR_DR | UART_LSR_BI)) cases because RBR read is racy with Rx b=
+ut=20
+>>> that could also be determined if similar debug is applied without the=
+=20
+>>> patch, I guess.
+>>
+>> as the PSLVERR is caused by the reading of RBR so even in the latter cas=
+e
+>> we should still using the SRBR here if availabe to avoid the PSLVERR as
+>> long as we enter this branch, I suppose this should be the safest way.
+>=20
+> I was not commenting on how to fix it, but about probabilty of hitting=20
+> PSLVERR when taking this branch.
+>=20
+> Rx coming in (it's racing with the driver's code) may make the read not=
+=20
+> result in PSLVERR even when this branch is taken. It could be this does n=
+o=20
+> matter and taking this branch in practice always results in PSLVERR if RB=
+R=20
+> is read, which means even any hit of this branch confirms SRBR does indee=
+d=20
+> work.
+>=20
+> But if RBR reads do not always lead to PSLVERR because incoming Rx makes=
+=20
+> RBR read "safe" it's less clear how many times the branch should be taken=
+=20
+> before confidently declaring the fix works.
+>=20
 
+thanks for the detailed explanation, now I get the point here.
 
-On 7/1/2026 11:27 AM, Praveen Talari wrote:
-> During system sleep the hardware resources (clocks, interconnect) are
-> not gated because the runtime-suspend callback is never invoked from
-> the system sleep path.  This prevents the platform from reaching its
-> lowest idle state.
-> 
-> The system sleep callbacks qcom_geni_serial_suspend() and
-> qcom_geni_serial_resume() rely solely on uart_suspend_port() /
-> uart_resume_port() to manage power.  uart_suspend_port() drives the
-> UART PM state machine to UART_PM_STATE_OFF, which in turn calls
-> pm_runtime_put_sync() and eventually the runtime-suspend callback.
-> However, if the runtime-PM usage count is still elevated at the time
-> of system sleep (e.g. the port is held active by an open file
-> descriptor), the runtime-suspend callback is never invoked and the
-> hardware resources (clocks, interconnect) remain enabled across
-> suspend, preventing the platform from reaching its lowest idle state.
-> 
-> Fix this by calling pm_runtime_force_suspend() at the end of
-> qcom_geni_serial_suspend() so that the runtime-suspend callback is
-> always executed regardless of the usage count, and by calling
-> pm_runtime_force_resume() at the start of qcom_geni_serial_resume()
-> to restore those resources before uart_resume_port() re-opens the
-> port.
-> 
-> Signed-off-by: Praveen Talari <praveen.talari@oss.qualcomm.com>
-> ---
-[...]
-> @@ -1963,7 +1964,19 @@ static int qcom_geni_serial_suspend(struct device *dev)
->   		geni_icc_set_tag(&port->se, QCOM_ICC_TAG_ACTIVE_ONLY);
->   		geni_icc_set_bw(&port->se);
->   	}
-> -	return uart_suspend_port(private_data->drv, uport);
-> +
-> +	ret = uart_suspend_port(private_data->drv, uport);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/*
-> +	 * When no_console_suspend is set the console must remain active
-> +	 * across system sleep, so skip the force suspend path.
-> +	 */
-> +	if (uart_console(uport) && !uport->suspended)
-> +		return 0;
-Rather use console_suspend_enabled and take action to go force suspend.
-Here, it sounds opposite, if port is resumed, you don't go to suspend 
-within suspend function.
-> +
-> +	return pm_runtime_force_suspend(dev);
-Is this really required ? if  uart_suspend_port() successful, what will 
-happen with this ?
-
->   }
->   
-[...]
-
-
+thanks.
