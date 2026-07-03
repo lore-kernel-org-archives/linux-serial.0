@@ -1,39 +1,39 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD7B5383339;
-	Fri,  3 Jul 2026 08:47:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79196384CE6;
+	Fri,  3 Jul 2026 08:47:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783068446; cv=none; b=jLS/gmz/NV0c0yBWbjc4FxltfNq6XOU+dlUTefmyin3CYpY1JGXoZPfowBB14+hFsl1cvdlwfRp+8/SSHL7tteyuSoqJhZ4LdzrgCs1RfaNyMEzH3RDl5r+0BQVttd27qqqa7sjwMmXJNdInHOHa48+cAS+2Dqj/BQbmF3NxXH8=
+	t=1783068447; cv=none; b=GDnz03vAhtwfg3DwdFxmfZc5fPV/yVQFlT/QFGArx3LLO4RJImUOSZfD6bmuVGW4L9x5t7zhudUUPv4GtGZ+dG8ziHjoXSLEUnxLEZAwtw3TLR15QRninJt4QpYOJiF7tDApCZq1JPrmmzLaVVyVjuJ7sitxiQHlxdwLZaknpog=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783068446; c=relaxed/simple;
-	bh=4OSLlPM6PqiFgR3Mn8UM6JKHP2WJMHTx8XdhaHVseDo=;
+	s=arc-20240116; t=1783068447; c=relaxed/simple;
+	bh=NsYdWQCI1xOM4REpYiAnBw4NNs5FqUdCCDLBaqNApR8=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Imb90HJdcNJWcEbt+a4MixvHCTdFxyFUns5sEoYbqrZVAeMmDlSyNjeseBtfKK5ihYIT6dcdXl9bQwHYGP9DHDwii1Fr00pzz2F6wKKxiQdcM/9mbEEKRmuE+YnJ4lCjplwSyGXY3gKGNAniaezhZPjHJIMFAnLVuv1WEb2MwZg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=X3HTw9zp; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version; b=L13TdTJHRluyZuDX3XuzNbQaX1ULTxXCJkR7lP+Kv2uJj8RQM+csCeCH/zR0KUS5rXyEJHyJZWj9ELaWfwZP3ltTeGU2G1i0V9XYBul/GiIIWu3Uy9ZqHyXC0Tr6wtiBWPXvhWG9jvC9G2EA2Andbg98kcd9yQwdDgMiG0PDftM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Noq3bNQA; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="X3HTw9zp"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 701A61F000E9;
-	Fri,  3 Jul 2026 08:47:23 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Noq3bNQA"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 053F51F00A3A;
+	Fri,  3 Jul 2026 08:47:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783068444;
-	bh=nb9VOLAuCr2LlvVdJMmXIe0Yg1/y885z7dzJx+6fUt4=;
+	s=k20260515; t=1783068446;
+	bh=6J9n7rbnh8zwJtMmv6cRJ0lfK2K5CtymunTnKfp4d4A=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=X3HTw9zp2sSOKLETVwNreZvAGfnHHhOemN5U98A1XeUrA/ecP1+XTgkz94yqM5pG+
-	 elpWrDMqc29hvERIHYJ2+uqmQgsE0LkOAjingokSuUULhN79VN/106GJIbD+xBG5dP
-	 ok8VtFUzZR6B1fQp0PMAottTh3HM+musnDGlUXYQ2V0+B7nsWUOU3KYoJVVm7EdSKD
-	 GmOm6GvtvpDZYGpLOWV+KNw4WkasRLkYAFhvnCO0lirdtAKRdz1k0W063Hl6g7uobZ
-	 7BsC3R7w3l3Ax0O3EZeXVLcLkvrCXNpsw/wdTJn+ohPTA5GA+nIxXw00V2BCItl4A/
-	 DgjoBE+yINQUA==
+	b=Noq3bNQAKCQtuAnPvoQt+GftzDOtFg/VJGwoMnxt0zgvQEcl7Z8yo7AdWd1m0hVND
+	 0Lm19c5FHKDmqz1VhAk1877N+k5IJrp1cizl87fW6+aQ7olCmI6nddbjD/bSrXNXZW
+	 MTFLyfidL1Y9+SE2FdY7S2/maRN7PcoVBg+KttXuzRKv02yFwxQ6JWMGFA+OZFxTm/
+	 UUkWDFJWt26CPqvh13aHnBACStAng27pzzivyFjLFI5y2hcVFmGOGgfjylYKjW25f5
+	 Fi1/29El5/ZSXU6cxOGqEQ6c2ipOhu371h2EcJIhZSvommWP8HE+6gvZJLHGYt+4BH
+	 uH7aemwO+bZOg==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 3/4] tty: goldfish: move gf_write_ptr() to tty/goldfish.c
-Date: Fri,  3 Jul 2026 10:47:16 +0200
-Message-ID: <20260703084717.176442-3-jirislaby@kernel.org>
+Subject: [PATCH 4/4] tty: goldfish: use guard() for locks
+Date: Fri,  3 Jul 2026 10:47:17 +0200
+Message-ID: <20260703084717.176442-4-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.54.0
 In-Reply-To: <20260703084717.176442-1-jirislaby@kernel.org>
 References: <20260703084717.176442-1-jirislaby@kernel.org>
@@ -45,85 +45,60 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-tty/goldfish.c is the only user of gf_write_ptr(). Move it there, drop
-the unneeded casts, and name it appropriately.
+Using guard()s is cleaner and safer.
 
-FTR, the last non-tty user was removed in 2018 by 4ae0fe70a097 ("Delete
-the goldfish_nand driver.").
+goldfish_tty_probe() is omitted due to the crossing err_unmap
+goto-label. Using scoped_guard() does not look that nice there. Perhaps
+if someone refactored the locked part into a separate function...
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- drivers/tty/goldfish.c   | 13 +++++++++++--
- include/linux/goldfish.h | 13 -------------
- 2 files changed, 11 insertions(+), 15 deletions(-)
+ drivers/tty/goldfish.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/tty/goldfish.c b/drivers/tty/goldfish.c
-index 69367d878877..c643d76e9d1b 100644
+index c643d76e9d1b..fa723a4ba7b3 100644
 --- a/drivers/tty/goldfish.c
 +++ b/drivers/tty/goldfish.c
-@@ -17,6 +17,7 @@
- #include <linux/mm.h>
- #include <linux/dma-mapping.h>
- #include <linux/serial_core.h>
-+#include <linux/wordpart.h>
- 
- /* Goldfish tty register's offsets */
- #define	GOLDFISH_TTY_REG_BYTES_READY	0x04
-@@ -48,6 +49,14 @@ static u32 goldfish_tty_line_count = 8;
- static u32 goldfish_tty_current_line_count;
- static struct goldfish_tty *goldfish_ttys;
- 
-+static inline void gf_write_addr(unsigned long addr, void __iomem *portl, void __iomem *porth)
-+{
-+	gf_iowrite32(lower_32_bits(addr), portl);
-+#ifdef CONFIG_64BIT
-+	gf_iowrite32(upper_32_bits(addr), porth);
-+#endif
-+}
-+
+@@ -60,10 +60,10 @@ static inline void gf_write_addr(unsigned long addr, void __iomem *portl, void _
  static void do_rw_io(struct goldfish_tty *qtty, unsigned long address,
  		     size_t count, bool is_write)
  {
-@@ -55,8 +64,8 @@ static void do_rw_io(struct goldfish_tty *qtty, unsigned long address,
+-	unsigned long irq_flags;
  	void __iomem *base = qtty->base;
  
- 	spin_lock_irqsave(&qtty->lock, irq_flags);
--	gf_write_ptr((void *)address, base + GOLDFISH_TTY_REG_DATA_PTR,
--		     base + GOLDFISH_TTY_REG_DATA_PTR_HIGH);
-+	gf_write_addr(address, base + GOLDFISH_TTY_REG_DATA_PTR,
-+		      base + GOLDFISH_TTY_REG_DATA_PTR_HIGH);
+-	spin_lock_irqsave(&qtty->lock, irq_flags);
++	guard(spinlock_irqsave)(&qtty->lock);
++
+ 	gf_write_addr(address, base + GOLDFISH_TTY_REG_DATA_PTR,
+ 		      base + GOLDFISH_TTY_REG_DATA_PTR_HIGH);
  	gf_iowrite32(count, base + GOLDFISH_TTY_REG_DATA_LEN);
- 
- 	if (is_write)
-diff --git a/include/linux/goldfish.h b/include/linux/goldfish.h
-index 40a059e03d78..98a4719c6776 100644
---- a/include/linux/goldfish.h
-+++ b/include/linux/goldfish.h
-@@ -2,8 +2,6 @@
- #ifndef __LINUX_GOLDFISH_H
- #define __LINUX_GOLDFISH_H
- 
--#include <linux/kernel.h>
--#include <linux/types.h>
- #include <linux/io.h>
- 
- /* Helpers for Goldfish virtual platform */
-@@ -15,15 +13,4 @@
- #define gf_iowrite32 iowrite32
- #endif
- 
--static inline void gf_write_ptr(const void *ptr, void __iomem *portl,
--				void __iomem *porth)
--{
--	const unsigned long addr = (unsigned long)ptr;
+@@ -74,8 +74,6 @@ static void do_rw_io(struct goldfish_tty *qtty, unsigned long address,
+ 	else
+ 		gf_iowrite32(GOLDFISH_TTY_CMD_READ_BUFFER,
+ 		       base + GOLDFISH_TTY_REG_CMD);
 -
--	gf_iowrite32(lower_32_bits(addr), portl);
--#ifdef CONFIG_64BIT
--	gf_iowrite32(upper_32_bits(addr), porth);
--#endif
--}
--
- #endif /* __LINUX_GOLDFISH_H */
+-	spin_unlock_irqrestore(&qtty->lock, irq_flags);
+ }
+ 
+ static void goldfish_tty_rw(struct goldfish_tty *qtty, unsigned long addr,
+@@ -417,7 +415,7 @@ static void goldfish_tty_remove(struct platform_device *pdev)
+ {
+ 	struct goldfish_tty *qtty = platform_get_drvdata(pdev);
+ 
+-	mutex_lock(&goldfish_tty_lock);
++	guard(mutex)(&goldfish_tty_lock);
+ 
+ 	unregister_console(&qtty->console);
+ 	tty_unregister_device(goldfish_tty_driver, qtty->console.index);
+@@ -428,7 +426,6 @@ static void goldfish_tty_remove(struct platform_device *pdev)
+ 	goldfish_tty_current_line_count--;
+ 	if (goldfish_tty_current_line_count == 0)
+ 		goldfish_tty_delete_driver();
+-	mutex_unlock(&goldfish_tty_lock);
+ }
+ 
+ #ifdef CONFIG_GOLDFISH_TTY_EARLY_CONSOLE
 -- 
 2.54.0
 
