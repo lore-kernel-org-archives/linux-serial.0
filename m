@@ -1,86 +1,75 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from forward500b.mail.yandex.net (forward500b.mail.yandex.net [178.154.239.144])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86CC238238A
-	for <linux-serial@vger.kernel.org>; Mon,  6 Jul 2026 14:35:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AD2B3FF1B8
+	for <linux-serial@vger.kernel.org>; Mon,  6 Jul 2026 14:52:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.154.239.144
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783348524; cv=none; b=a9mOVEZOJL5Bwj1kj7qNNRFXbiqbom9/Mf1ABM4FvC3+Kh6pwFTgUllciois5VnQ06wLICEK9cmzmI6nGPIHZpwm/6/BcngDH1f3gWBERG97kiendpn9BfJicpZ8fqRLpASHkVAvhCIA1UiuGCCa+PIeMjBFd6a2RIcteIOnnmI=
+	t=1783349528; cv=none; b=nQ15BgkAzmz3bE9RZhAyb6Mt3NuL3wt2cfwUY0pxfShcLZLR3YDLs9SC3rgkOqATSwu7sNJUY7/I9y9a5mLVTr+nyHxAwcAGk+veUcZ8+W8aF9YPT4nM/Psxu5Qvy2o3ryOeJ7uCVqubrZ33ZOEqcnENKAXSRIJbrgltd46HlG0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783348524; c=relaxed/simple;
-	bh=DBqABHxHYldpXnvTqOMSux3NUGXLgXFkkq5x83HmH08=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=X42ychIZXD8ORtqpRC9HPwT6MTXkmid8MsbfCMzWJ1lfAVBbgJagCL/o8JKl96fwE3yseQkVu5MnU/duLyOALSr0slVwV0cac1Ge62aDvWrNC4PWhloRXR4FRmegxLlJoYlWIzPBkvxGKL6QEL3NpEMk/kHEBRyiEaaj9F7Swuo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=J1zH2Ayc; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1783349528; c=relaxed/simple;
+	bh=PH9LQ+qNqjrf3AjrdADFFOYBRrffXAqWad+Kcpvweqc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=fKo+BKIAuwGSUv0at/pQ5OJlaHwMCmEA/kEcyrj84KUBxv/JiuVQTgZtmBPPiwA3O8PLpZsWLsVN8nC9zFlJj04ti0fAxjKqKS+K3pmEoh6TyHx3pmrfgzmBl2OEFsadql0lxvGOtxxhEM+OTSXStXtGRnOnjKzBTWOK6nSCdz8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=yandex.ru; spf=pass smtp.mailfrom=yandex.ru; dkim=pass (1024-bit key) header.d=yandex.ru header.i=@yandex.ru header.b=DcyAsiBs; arc=none smtp.client-ip=178.154.239.144
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=yandex.ru
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=yandex.ru
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="J1zH2Ayc"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8ED1C1F00A3A;
-	Mon,  6 Jul 2026 14:35:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1783348523;
-	bh=SCvoonKkeli+xF8/8JviFrO7dGqC6426+llHFI0KR1o=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=J1zH2Aycuy2vbXKvOf4gOtIU7H93KFExy1X9P+irKkZusiahqmuNaMsohjZ/WAhLq
-	 Vet7pX1lrIaKCzI/+G9J6TB0DODy7+vBhZAOmKHAJiBTEY/wOSSjM0eHcts/u+6Vqo
-	 dfMf2Tw0ZkXbOT+/3KO/TCXgwHx6Wh1gltdZKBcQ=
-Date: Mon, 6 Jul 2026 16:35:36 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Dmitry Antipov <dmantipov@yandex.ru>
-Cc: Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
-	lvc-project@linuxtesting.org,
-	syzbot+b5d1f455d385b2c7da3c@syzkaller.appspotmail.com
-Subject: Re: [PATCH 1/2] tty: n_gsm: avoid reactivation without previous
- cleanup
-Message-ID: <2026070611-pamperer-traps-84d4@gregkh>
-References: <20260706142016.3385636-1-dmantipov@yandex.ru>
+	dkim=pass (1024-bit key) header.d=yandex.ru header.i=@yandex.ru header.b="DcyAsiBs"
+Received: from mail-nwsmtp-smtp-production-main-63.sas.yp-c.yandex.net (mail-nwsmtp-smtp-production-main-63.sas.yp-c.yandex.net [IPv6:2a02:6b8:c1e:489c:0:640:8d6b:0])
+	by forward500b.mail.yandex.net (postfix) with ESMTPS id 6323EC0AB3;
+	Mon, 06 Jul 2026 17:51:54 +0300 (MSK)
+Received: by mail-nwsmtp-smtp-production-main-63.sas.yp-c.yandex.net (smtp) with ESMTPSA id qpIXNivg1Cg0-58ZWrqbp;
+	Mon, 06 Jul 2026 17:51:53 +0300
+X-Yandex-Fwd: 1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex.ru; s=mail;
+	t=1783349513; bh=D/panZsQ9rcfajcgXOhlViIhYZaFyMHh+HrFvlmh/+s=;
+	h=From:In-Reply-To:Cc:Date:References:To:Subject:Message-ID;
+	b=DcyAsiBsU4Ezo36eXw0e8YWyvzpZ1FlCq2C0vO2aP3cOUseFZwp712RYWzLjLfW3M
+	 wZ+vDR5VcZQvZ3I07BLkhlYg7ERVJeSxMHdytOMqZ4R7mxWefaEKwC7gElV+4agWJY
+	 mIggCOYWN9Ud3ristczy+69wOEas7uegED/JS68c=
+Authentication-Results: mail-nwsmtp-smtp-production-main-63.sas.yp-c.yandex.net; dkim=pass header.i=@yandex.ru
+Message-ID: <16b08a3e-4b31-4941-a0aa-0b53a0dc4cec@yandex.ru>
+Date: Mon, 6 Jul 2026 17:49:38 +0300
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260706142016.3385636-1-dmantipov@yandex.ru>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] tty: n_gsm: avoid reactivation without previous
+ cleanup
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
+ lvc-project@linuxtesting.org,
+ syzbot+b5d1f455d385b2c7da3c@syzkaller.appspotmail.com
+References: <20260706142016.3385636-1-dmantipov@yandex.ru>
+ <2026070611-pamperer-traps-84d4@gregkh>
+Content-Language: en-US
+From: Dmitry Antipov <dmantipov@yandex.ru>
+In-Reply-To: <2026070611-pamperer-traps-84d4@gregkh>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Jul 06, 2026 at 05:20:15PM +0300, Dmitry Antipov wrote:
-> Initially reported by syzbot at as memory leak, actual issue is an attempt
-> to configure DLCI 0 (via 'ioctl(..., GSMIOC_SETCONF_EXT, ...)') more than
-> once without previous cleanup (likely requested with GSM_FL_RESTART). To
-> prevent such a scenario, including racy attempts to do it from multiple
-> threads, adjust 'gsm_activate_mux()' to grab GSM mux's mutex and throw
-> -EBUSY if DLCI 0 was configured already.
+On 7/6/26 5:35 PM, Greg Kroah-Hartman wrote:
+
+> We've had loads of syzbot "issues" reported in this code, and unless it
+> actually shows up in a real device or operation, I'd just leave it alone
+> please as there are lots of subtle issues involved in it.
 > 
-> Reported-by: syzbot+b5d1f455d385b2c7da3c@syzkaller.appspotmail.com
+> Have you tested this in real hardware?
 
-We've had loads of syzbot "issues" reported in this code, and unless it
-actually shows up in a real device or operation, I'd just leave it alone
-please as there are lots of subtle issues involved in it.
+No. But I don't see any practical reasons doing ioctl(..., GSMIOC_SETCONF_EXT, ...)
+more than once (without GSM_FL_RESTART) without doing anything else. Worse, an
+attempt to do it simultaneously from multiple threads is obviously racy.
 
-Have you tested this in real hardware?
+> Why unlikely()?  Can you measure it with/without that?  If not, it
+> should never be used.
 
-> Closes: https://syzkaller.appspot.com/bug?extid=b5d1f455d385b2c7da3c
-> Signed-off-by: Dmitry Antipov <dmantipov@yandex.ru>
-> ---
->  drivers/tty/n_gsm.c | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-> index c13e050de83b..ce447477ccf3 100644
-> --- a/drivers/tty/n_gsm.c
-> +++ b/drivers/tty/n_gsm.c
-> @@ -3186,6 +3186,11 @@ static int gsm_activate_mux(struct gsm_mux *gsm)
->  	struct gsm_dlci *dlci;
->  	int ret;
->  
-> +	guard(mutex)(&gsm->mutex);
-> +
-> +	if (unlikely(gsm->dlci[0]))
-> +		return -EBUSY;
+See above. IIUC "real" userspace program which talks to the device is unlikely
+to bomb the device driver with the weird sequences of ioctl()s like syzkaller
+usually does.
 
-Why unlikely()?  Can you measure it with/without that?  If not, it
-should never be used.
+Dmitry
 
-thanks,
-
-greg k-h
