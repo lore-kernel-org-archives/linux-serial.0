@@ -1,161 +1,136 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0562386C08
-	for <linux-serial@vger.kernel.org>; Tue,  7 Jul 2026 07:58:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D608B38F93B
+	for <linux-serial@vger.kernel.org>; Tue,  7 Jul 2026 09:06:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783411104; cv=none; b=TQbV1CljfHxt7dXmr15r8nKhkTovX/YU+UpOFh8AKdC9zzA4WaTKrOun8P0M7g4A66O0cdhDvV1A6+mxlFMLZGBhUldukEa4ijj/n6w1E5925NDW+VRmXzFeiUv2MPFXANIW+48dHSBaLpuBt49bdWvHRkq4BQANCZHwySiDDzY=
+	t=1783415174; cv=none; b=Daj+eLxjVjVnIVt1igHfDFWAbqrlH8PMFBSD6GNdcH/wLcz1wE8Xc5MynHqjb2EW9gCLpHULtYG7rf9oeANd+sQ3kv9eLXT/2uj6mgCdHOj09RuBQWR5Efl0vYN+DiiCCE63VSX6UbuIcTOOx7XErvxRUylUzkR5Ua7Yb0f2xK0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783411104; c=relaxed/simple;
-	bh=ztXmn+eCrSwh5ZiGnWR957nK0ZjcBtCetG6G6/NB6/M=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=rqjNnlkv7L4Qy7LSSygzvvFEfnp8WovWafIsTdU+ILWJwLxS8Yrz2/ri7sZQeG4tWTlAQuadMm23ZX9aG3uPPVH2WidLPrJIrymxOlTLrNodvd3xRmpGqI5j+LD9kt/hhthzbcZqZdCksijSYO2vRxQ9JQ+7C5crkRhskt0tKdY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=WX88L11J; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=IN6g2tgL; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1783415174; c=relaxed/simple;
+	bh=6eVSlguEwDWqI5eaBlFkb9sGynTF0H4vMBx0KAHeAGc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=TG0/YnjpeI+js41W2kMXRWeDonY/T057mnw6pR+5hfZCsxKSicKNfyL2qbY1GFQVfJhF7E8XnjACK9Kbl1TmwnofOHjWu0bdsORZkVS0rsNrLlSe2Cz4c90CnlRRHgq00/NwYpICz2UeEVoEpcn447NSbC3iPkGOf+GTds2lCD8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=hcIZ7j8A; arc=none smtp.client-ip=209.85.128.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="WX88L11J";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="IN6g2tgL"
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6676KTRf2922475
-	for <linux-serial@vger.kernel.org>; Tue, 7 Jul 2026 07:58:22 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	IUooB1deojgOvP7ieAkOlre2HwGhobUrInjBUHYU6dk=; b=WX88L11JIeZc7NaH
-	5BKM6YKzEwOc6c+K0YOQ7I28JB/jbuDrjo+HknAix/ofnhTWfAby/FzjvJmtEnFm
-	m1/xyixlRhiZaWt46TfSTl7naE/SgvKBZbmFXAzdeLgD1pCJTI+BJ+5zgSw9WrOx
-	QHfSbjdFbIHyDFhu0PyF3ibFOA0g1XxoDuYeJVrfeyndkPtMpMohSVGua9cLloci
-	9yHI7uFl6OJhUn53wHYbJFVMVCE4ynVCvrqXtrCSnQQ/+VvfAktuMbyhuxEWDVL+
-	6CCXApAjeJqJB8ZDanwJy9OGuUwIEZqLJkFN5p0BEowEI3BmNBwwdC4DoJNTgpey
-	cDh+pg==
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com [209.85.160.200])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4f8v3t8cp4-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-serial@vger.kernel.org>; Tue, 07 Jul 2026 07:58:21 +0000 (GMT)
-Received: by mail-qt1-f200.google.com with SMTP id d75a77b69052e-51c267931ebso23648471cf.2
-        for <linux-serial@vger.kernel.org>; Tue, 07 Jul 2026 00:58:21 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="hcIZ7j8A"
+Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-493b779003fso19639055e9.3
+        for <linux-serial@vger.kernel.org>; Tue, 07 Jul 2026 02:06:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1783411101; x=1784015901; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=IUooB1deojgOvP7ieAkOlre2HwGhobUrInjBUHYU6dk=;
-        b=IN6g2tgLq4IJ4iB6tXiDV13KW2kwXMiSFg9HPLjnZfPsgHJjT4LGyx19ka5kQkHZJ3
-         8bAv1q5+SKJgb8rEiLjmVL6Y/cLctsm21oR+bQBdctZlnMrxKTx1YwTgTI1tJrTNj1V+
-         8twoUojPVm6UFjJ0LAs5zURfV+X/ipbahWodaWXam7WaMXa/C28pYvRHVfRF3dtBtiA9
-         z8cYrMMTBtdvJFYHG0K2pa8jJEYlZctS6X3mEtgiyodCeKqHnLmNWFwSmHsIU/XR+V2u
-         M8jYMc4zdN74ovJAYGK30PsoSd6BuFJHpXdFLSgznlmBf4cNydm0jprHNcMePVGGYKCW
-         HeeQ==
+        d=baylibre.com; s=google; t=1783415170; x=1784019970; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=6eVSlguEwDWqI5eaBlFkb9sGynTF0H4vMBx0KAHeAGc=;
+        b=hcIZ7j8AC0kIj5GL4WkpTiLIxn0yzKoebCEDQubIEzu3UZRiAka+/smk8SBLSdryVg
+         93PRbPEVl97dqGv3qwmb8CYyZ2bx2M7oFDCvC0dtl6k2nIH7maKK4MTkbQkZjrKeXlzM
+         /3lEoLcI3A82sGd7l5LL8zI4mEbo4hvTWt68IPzqNyYey2Kj2bkwy9xYxNABHl9Imele
+         8LsP1Fgdds4Jv/3bXh5eOTrS19yxXdW2t5o5NfoeLt+HDE7WU0rCQmz2S0oekh0BI4M1
+         iIn2EU7d/uCEdNx1ergi6xYZv0NmQhxm0ONhawXVUVAgbzT5Tgl0VpCdJPkpd7rf2ZvZ
+         uJ0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783411101; x=1784015901;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=IUooB1deojgOvP7ieAkOlre2HwGhobUrInjBUHYU6dk=;
-        b=Bm6jD7uu1uU6wZnqxMUoh1H7AWPVd0gNSNOvNYlEWn4DOZ+e195TfeAgCqLKOR8M7v
-         ubGDm7IyrlECx23IWrkTNFgnLwpsku1/9zJUuc21uFufsu6Fkl6y6ZNsaXEwvEA0Mn/Z
-         SG0oJVRPWo5aPAWLlf0icjdDY4EtwroatcGusQaRh6T+fZurDERVGD+eXBWK7n+o7oP7
-         ttHl11E79RaRU1sCpds1CAtL+6T5A12pFuHaIr216QLAPIBZFwwjsudEKVjFw201pRVR
-         p4Pi18jRC7FD+Q/sd8rB7VOYCgkhaDphpzQiDC0bvCIP3eDinZx6OzIfVEN8OffRL87B
-         fmxg==
-X-Forwarded-Encrypted: i=1; AHgh+RrXZnn7UGM535KFOOqoCC3MCgDnmtjTUTPw4et8KzG/0dj06mUpUXxJFqN6PM6+Ye8f2EeD5tff7ZfhEdE=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz5CytVNtrDieAQVn9g1QWBS+7H4UYHpM7S3/zDoYg4h+8qP0ql
-	dsPwBd8YJ8Mb3bLKk6X7GApUPCpuO84TGTGkx6v2PpenfVe3Zs0B7nrnWBeCCp26tQrzqhvR+As
-	BqO2vAs1IEbw/UuahdC+j0//qUgBDim4PwpcAqqZQL7K1v9v8g/uSNRUJ2L/YttqZ2Kk=
-X-Gm-Gg: AfdE7cnQq4yZR3dxjHyGZriwDGHirSioYahYgLCYTMh6fOadX9raoXspb+BJJtzrIn6
-	AlStXijHZ6+ntd5XN7VS/pmLZpqp1CW1B3fnG8JnO3NxU+c2GulS2x3m2corBKCu0g/6A9+X9H1
-	V2KDnCzz4B4aJhTNhhWBD5um7zIkOG6X12uzuuW73AscXbUzeqNd12LdYTg5rIHeUwSYSioegND
-	1Q/v7FJPxYSoB5hHZFRgf1FiJcK9+LaG38Cudcqhi2eZS5E5VOGEvcF7/e21hxMOBKMfulx+/6r
-	Hnb++z6iDaQTLeu5yl36q6x3lwG2nrEV2uA4KfzGjfHDGYzDhc8H9SfmNToxOpiYi3H4oOLRA4M
-	Oke+1jb6YyD6b0p1kucW9OeUDXLhiUirtyQw=
-X-Received: by 2002:a05:622a:38f:b0:51a:8c9b:6494 with SMTP id d75a77b69052e-51c4beeb5e0mr117304311cf.11.1783411101074;
-        Tue, 07 Jul 2026 00:58:21 -0700 (PDT)
-X-Received: by 2002:a05:622a:38f:b0:51a:8c9b:6494 with SMTP id d75a77b69052e-51c4beeb5e0mr117302721cf.11.1783411095878;
-        Tue, 07 Jul 2026 00:58:15 -0700 (PDT)
-Received: from [192.168.120.193] ([178.235.128.140])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c15ad9bc655sm74024066b.41.2026.07.07.00.58.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jul 2026 00:58:15 -0700 (PDT)
-Message-ID: <45bf13a4-6538-43b0-9563-38178c4d0282@oss.qualcomm.com>
-Date: Tue, 7 Jul 2026 09:58:13 +0200
+        d=1e100.net; s=20251104; t=1783415170; x=1784019970;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=6eVSlguEwDWqI5eaBlFkb9sGynTF0H4vMBx0KAHeAGc=;
+        b=BEsarhyS/hG5dOjRroyyuQxGdIB33+u8VAhrZVnI/3dXlD4cqy9t5+5VOb0YBVvFMC
+         kLpTv2jRAMV4RqryuUAt0hxcIlfPjCOukiExUhIFlItV+C0o7dJSv0ZHloQi5pKSoI3u
+         2p7jkysMT1mplcQtaYe5JJOzYsToEUOh/Ke6bNDT9efHUPU6CnITXfx3nzFqvUcG9Skc
+         YNMlF6fD29wvVWmGqq//HPSiKTaVKGsnXjiNqk6Yvo5Xy27w1UAmTXDkWNiH1DDUtdnD
+         U9Du1+M7ROmn+wQeEP2Pkx/pfvoADZKs6QHhT/h6abY7R4q/MCUSGjpI5FcRxOZDqiTX
+         1Hog==
+X-Forwarded-Encrypted: i=1; AHgh+RqV5ChjpHTGmzPwjj0ve2flldmtOvT/5S0V/wzuQ35kRcXDYFOHuV79kUFmPOtvzvTO/9yTNs6VHP+Q28Y=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxvco+m/jqRTA+QkYoCykSjHYAON3eosU7SSDNohkYN6OAzDqjm
+	TVBvwXTovc6DEgQVVfxWft/HLu66oyL7mvEyk/FZf3Ob2jh6NYTfjAUKpnakXaKsQ24=
+X-Gm-Gg: AfdE7ckDLA5yQVlsfiYvxb5QdK4WCNW+50QMKMwIvrRVEXzRKn5/5QNvvUWIPWnC4hA
+	5qIK0GzAfT0Gu4NU/hPgVj+VH9Q3ER6eRVD14LbVjID15WPzn9vBCfcu1wa7keSyPZNyJsHEzwI
+	w4peJd6IiZuLt733r4zwA3u3v2IRm8lohkqZp6qV+CHI5N5rn+2at2oWnWZLjTdWLj+AHWl0Tvb
+	VqMiJVngVt8LUK20+JKwkUZbnqdr9LSyOjkVFzuewn7Th7MyYeaONxzntRG2lXMCpNA9lB+JwIZ
+	oZ69otxfgzO1Og4/gEzU2c7/nivxqeylKRx9sm1LKrmrO+W71MXZxs+nnhkWqpQGA6jJ+7gWDiO
+	G7Utn2QJmV+MB7kAWrzoGNzUlNwWRxMdYFVxrTQNz4ryI8pwLDmNiaBlT4o7sNoGydSa/j44QJy
+	93DCV1kQzj74SWP+SZlxcrF3sxTvg9LjsuN3eT+5JgVeZoaSN/2y0wr9aNnuLvM+77NzXd66uZC
+	PNs
+X-Received: by 2002:a05:600c:4e04:b0:493:c634:952 with SMTP id 5b1f17b1804b1-493df0379f7mr45919725e9.7.1783415170098;
+        Tue, 07 Jul 2026 02:06:10 -0700 (PDT)
+Received: from localhost (p200300f65f47db0437b4d928ee3eb6f8.dip0.t-ipconnect.de. [2003:f6:5f47:db04:37b4:d928:ee3e:b6f8])
+        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-47a9e4d8410sm32535168f8f.15.2026.07.07.02.06.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jul 2026 02:06:08 -0700 (PDT)
+Date: Tue, 7 Jul 2026 11:06:07 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: Florian Eckert <fe@dev.tdt.de>, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH v1] serial: 8250_exar: Consistently define pci_device_ids
+ using named initializers
+Message-ID: <akzBAgCwNho3-jpr@monoceros>
+References: <20260522140103.769262-2-u.kleine-koenig@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: msm: Disable DMA for kernel console UART
-To: Stephan Gerhold <stephan.gerhold@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, Sam Day <me@samcday.com>
-References: <20260706-serial-msm-console-dma-collision-v1-1-3179b8cb1d89@linaro.org>
-Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-In-Reply-To: <20260706-serial-msm-console-dma-collision-v1-1-3179b8cb1d89@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-GUID: zTA3fh2lRFQJRGMlPbS0WSQm97Duft7d
-X-Proofpoint-ORIG-GUID: zTA3fh2lRFQJRGMlPbS0WSQm97Duft7d
-X-Authority-Analysis: v=2.4 cv=HqVG3UTS c=1 sm=1 tr=0 ts=6a4cb19d cx=c_pps
- a=JbAStetqSzwMeJznSMzCyw==:117 a=PRfkaYvzSr8QmIIGAkY2Sg==:17
- a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=gowsoOTTUOVcmtlkKump:22
- a=VwQbUJbxAAAA:8 a=KKAkSRfTAAAA:8 a=EUspDBNiAAAA:8 a=K9FbrMKJn3BnTdmCLQ0A:9
- a=QEXdDO2ut3YA:10 a=uxP6HrT_eTzRwkO_Te1X:22 a=cvBusfyB2V15izCimMoJ:22
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzA3MDA3NiBTYWx0ZWRfXzJnz55CsR9iB
- NOz3CMfJdQyz/0ABxDamFdrKwFpoCAvvjolAGDKODFo/FEynhDVppHqBTbW+NEx0rYNnjiH1R5x
- TiREydutciKpb/a07Rd3sJhFWmbnRvEBOiYJKwuLiXvP9Q1ohI0CudV9+oBUeJmmN/K571CGDdG
- v4vDxPOfjf/SYHU+0C4lu8HELcm2MMFBhpstfBMf8vx/m4sOrMUFBdtMa0tIzUhgaJZw1kLZMxZ
- /dlasSFixWOeDwZUFvs+QTzfS4MMqR6tojDq7bhdZvxYsPDNa5o3CWoP6DG9HTxRdLicOdTeJ7S
- ORqL8s0RCZU666GVvFOzu+ZNCbIczDqLcfFXg6exwdkiwBH+Rab3RTMkhvJnpqcV4xFx6dzakGa
- D+GWzY3YwNWnQrLhKT3GP4r4W2x9wZThTRLv2lQlcc4HnPR6u/SBOJwuKn2KMEuO5lHDJa2U5z+
- 5ruhysAr59/CMwTg0XQ==
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzA3MDA3NiBTYWx0ZWRfX2I4015qaaCgJ
- x97Q5R8JcNjN97mgBAKwO61XoJeQGqkt6C03lt49qqEUK3xExT95SdAV+/lzg6abQRlqrnSJ3a2
- XoIC5qwzhC9duRUEKosCREUFpG+c+d8=
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-07-07_01,2026-07-06_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 impostorscore=0 adultscore=0 suspectscore=0 malwarescore=0
- bulkscore=0 lowpriorityscore=0 phishscore=0 priorityscore=1501 spamscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607070076
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="ya5muq7nyqwzkigj"
+Content-Disposition: inline
+In-Reply-To: <20260522140103.769262-2-u.kleine-koenig@baylibre.com>
 
-On 7/6/26 8:03 PM, Stephan Gerhold wrote:
-> At the moment, concurrent writes from userspace and the kernel to the
-> console can trigger a race condition that results in an infinite loop of
-> the same messages printed over and over again. This is most likely to
-> happen during system startup or shutdown when the init system starts/stops
-> a large number of system services that interact with various kernel code.
-> 
-> When userspace writes to the TTY device, the driver initiates an
-> asynchronous DMA transfer and releases the port lock. At the same moment,
-> the kernel printk path might grab the port lock and re-configure the UART
-> controller for PIO, without waiting for the DMA operation to complete. It
-> seems like this collision results in zero progress being reported for the
-> DMA engine, so the same text is printed to the console over and over again.
-> 
-> For the kernel console, we want a reliable output path that will be
-> functional even during crashes etc. So rather than implementing complex
-> code to synchronize the kernel console write routines with the userspace
-> DMA write routines, simply disable DMA for the console UART instance.
-> 
-> Similar checks exist in many other serial drivers, e.g. 8250_port.c,
-> imx.c, sh-sci.c etc.
-> 
-> Cc: stable@vger.kernel.org
-> Fixes: 3a878c430fd6 ("tty: serial: msm: Add TX DMA support")
-> Signed-off-by: Stephan Gerhold <stephan.gerhold@linaro.org>
-> ---
 
-Acked-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+--ya5muq7nyqwzkigj
+Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v1] serial: 8250_exar: Consistently define pci_device_ids
+ using named initializers
+MIME-Version: 1.0
 
-Konrad
+Hello Greg,
+
+On Fri, May 22, 2026 at 04:01:03PM +0200, Uwe Kleine-K=F6nig (The Capable H=
+ub) wrote:
+> The .driver_data member of the struct pci_device_id array were
+> initialized by list expressions. This isn't easily readable if you're
+> not into PCI, still more given that it's hidden in macros. Using named
+> initializers is more explicit and thus easier to parse for a human. And
+> it's also more robust against changes to the struct definition.
+>=20
+> The mentioned robustness is relevant for a planned change to struct
+> pci_device_id that replaces .driver_data by an anonymous union.
+>=20
+> Also drop a few explicit zeros that are not needed and improve
+> indention.
+>=20
+> This change doesn't introduce changes to the compiled pci_device_id
+> array. Tested on x86 and arm64.
+>=20
+> Signed-off-by: Uwe Kleine-K=F6nig (The Capable Hub) <u.kleine-koenig@bayl=
+ibre.com>
+
+Given this patch was sent around 7.1-rc5 and missed the merge window for
+7.2-rc1, I wonder if you still have it on your radar?!
+
+It still applies fine on top of next-20260706.
+
+Best regards
+Uwe
+
+--ya5muq7nyqwzkigj
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmpMwX0ACgkQj4D7WH0S
+/k4OXwf/XjZfOU1RX5rDi2FV3enSWxZOJfIrDW/YV0s/e7o9gQ2p8YXJg+kc+ryM
+7KxTKPHis2y75+1LmTyX4fByjuVSXjM4+rBCByYI4wuWmFRuLefIjq/a5fE675dg
+5KwjNOjVtLHy28peZeIFPGjM6Q9qs9ih7AG7dyWZdOtz/M7ioSwjph9NEiCfaX5c
+bV9bpF6sKK12ynw3FFtdRYJ+IRvLpNdxdta2H6Zffl+b4pJwiupc+WLuxm2ynu19
+0EUK8bLETwN/lUbEwBJR5cM+tfgemIX3WD2qGWQOrIozYJ/fEAe53UA2iFys2UZj
+PgZc17+yabLaYHuIoeFIuzAHGLcI6w==
+=FeB6
+-----END PGP SIGNATURE-----
+
+--ya5muq7nyqwzkigj--
