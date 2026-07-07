@@ -1,136 +1,151 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA9143E5A01
-	for <linux-serial@vger.kernel.org>; Tue,  7 Jul 2026 17:50:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783446631; cv=none; b=HneRbQwoVeXicegTdCb6TTZc7TbYuTDRX1NsAM7s8SD50V+wgwya59AH0lid+04T66tQiU9Fmp4jrpnIivZUU7XXsLd1dThAbHqAk2kIWavuvNdw3QiahaAVJ3xUBC+I18KpVYMvzqZDJIaU1Fiu6olRzU2uN3oRvJoVkzvZ6Yw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783446631; c=relaxed/simple;
-	bh=ItSfkmnlK6BHWdpxMHBvTF/ysEYEUmQQQU27gwke/l8=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=dTKYV38y0KohKByH7lg+J1EfKiRP/I+jy/I1Km2dTJtEuNRdOKV7iq4ZkNE0p9yFI2iOTSqN5r90WHSsM8PhyK1Pv3TVOZ6ghTlamcFbcLMlEmx8NAd1AvNVowv6RsQL/IQFkf+qjgeMV71r/W8mmjwD3zbcrsLUuqChJWIwn7E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CzBImRtM; arc=none smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB8973B27FE
+	for <linux-serial@vger.kernel.org>; Tue,  7 Jul 2026 19:57:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.50
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783454252; cv=pass; b=ah9BasT0ASruOCUhX+zOWBTuCWKBMID7/xrPRS++pc+fm28lzTO2jdmuwCRT17+GBpfg53uImcO6xsgbQRCvV/y3Qd0pQs89SKufb0kXekxo9+kri9AggG4I0Ucqv03Sj72r8E0UHtFVIPSMEZNDtRea/p1WQ6QrQkAKhqJOXcg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783454252; c=relaxed/simple;
+	bh=+4LGUwruSca6T/12Q76TuwR8e5qnyL223i6zRC1/Kh8=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=qwatzfVLOlZmdjyOsg9DYG0tFFJzdsKOWpOJJeiaSs00N/xMQIRAgrzycEi17zp7t3XYdxZnD45Dkz854tbhfERJCcOHr0wOZUa8OthRC6MrlCrOFJT8OSn49DFrlA/m11kcqzNWDkfonQPtNRtmTIztF1zkMbn07bfGx+d/EIs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=chiejUGP; arc=pass smtp.client-ip=209.85.208.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CzBImRtM"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-490cf322ed0so29836435e9.1
-        for <linux-serial@vger.kernel.org>; Tue, 07 Jul 2026 10:50:29 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="chiejUGP"
+Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-68bd9fce347so63001a12.2
+        for <linux-serial@vger.kernel.org>; Tue, 07 Jul 2026 12:57:30 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1783454249; cv=none;
+        d=google.com; s=arc-20260327;
+        b=jGhKrDZjp3EvPzZJumL2j9054PKID21pHkxdvWOHPJ+mbqANHM7Vv+p/AhbdVx/rt1
+         SjDVJqOMcNjIKgEAnEFniBWAoeIlPZaPQEfSjcmXaCimPlHHOVNIBRRYdkgmZ80ggLWh
+         w0nX1PyeEuxrjfzYhgJ2F9gXqPWU3D6EVlMw7x5uGbnA5/0XQnxHatyH3tUN+8bHZcPL
+         iH+ADX4+Lk3DNBexU0UVxjOrsu5oQbwkGKCTZ96i8KuARbEdIbk0BoxUgK1cUJWGakHX
+         3GsfTgh+v7bqHVSZe/xT5vtwk2UwdhIEv03LmFG8HqfGQOW0Pw1z3mTte9OuDilMbDKQ
+         ID8A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=N6fd1+Z+F0tbkYg37tULYg3QGW6SNWpeWQyaq5mTNYc=;
+        fh=LW6qye9T4Cv4Df/D2Sy2lPRxVDBxDp8S1ZQcolgXakY=;
+        b=CjgnlD6SRhc+R7qpU5/xZ1tlevexgNOIxGwt1NNQK+7Qubh90yDymspHQbQ2Mk0Hn9
+         8sHSlEPEm6whb5zVmlYAw/4EXXoTgTzEp3B6fh3XYUX8yojGVlMiB9SHMKXawieNuwQ3
+         ilcdIzGxybTCto9ZdwrxRyWbE/YI8nv7I9lYuJgAIrr2eTLpqKCCZC1j7mqNX1apfwp8
+         Df2/+/RvNAGLhIuM8LCNAusW2yVLd9+3DjR5CbF9dkgAD45I6P3q2FUhXcAx3g1CBSvM
+         UfGpJu+eLfgp2GLSbG65qOFP6k8jPc5PQBQ9ajTNTNoPMZBXWJ2wYzaKauDaSF8LS+yy
+         KnNA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783446628; x=1784051428; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+        d=gmail.com; s=20251104; t=1783454249; x=1784059049; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=cRE02Adizye6h3/KW0gtqPZj1uT3Ybf4N/0s4ldktFE=;
-        b=CzBImRtMIDf8vTK827S3/lPEdmwGgaxu54g7fknJ5TEnF2BfruR8mI8F2fyxUhYkDm
-         DvyDz5T+YDXJvXAczZUaN7dEoI5LaCCoGKsY+uRkwgtz1hZHLyZMcETaWpJQriifLA0D
-         yJmNVfTY8zL4qkHRKKj/j1EcSohqkd9H4GXxTFpiyXbQ7kFTx+6c8hUNk/PGm+jlsjKs
-         n72/UGsUCJBxnp96fCtRIMwD1Q5x1OkwBS2tO4etQSLYKwsxazzQi/Rpw08sshuB6H+2
-         czwdgGma6Va+nk2KfMk0emPApPU+W3ZNJomQdM/kPfsbzCCgEMMxaaWGMCuKXGW3u88P
-         lSog==
+        bh=N6fd1+Z+F0tbkYg37tULYg3QGW6SNWpeWQyaq5mTNYc=;
+        b=chiejUGP5tCJvdn9FLQvMZvudScWCx4a/UC/Bv0vhyiMAj1IjObNx5D99sFJWuw5Us
+         BflcF8CwifRPihQjXIGMTQ9Z/9lzR04aDywnl6bRqlAv91hr+NPC71VkI2thA1MGShF4
+         CymIyG59LsDcuh6FjKb5syKZOty721gnrCiGPqGXcjafMc8qA4JJnN8+6Dczi98wTm6A
+         XDM3WwxJnARrHGBCkClfojXwpA06R49243aVRLcJz0UVMHkvRFVvRaQzjA5izIYw5lJx
+         nOCAT1YhgV8ADyqIHqisb7mFMOTl7+fzg6jSGnMdOqKearFq1Cwa7fj+ypPdM+/n0+qY
+         epLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783446628; x=1784051428;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+        d=1e100.net; s=20251104; t=1783454249; x=1784059049;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=cRE02Adizye6h3/KW0gtqPZj1uT3Ybf4N/0s4ldktFE=;
-        b=rKt/sl+jtC8S3OTsK7a/Ak2Bv1R/c9ZBdh6qtn7Z9SSQLCC1AUMoWX5cHUZHwjXTUl
-         oG4qaV/+EMj3S3Mj58ZtS9hw4rWALNcNl/wemK9UF4+EwFvZK1qVtnAhyPRc+j/NOBra
-         tm+oFgnLOOJAZm1/ggoFeI6MSlEaAcFzTNXmlp6uB16sXbjOC+uW+P3HO73yuYqyf5oX
-         zHOGSAYf2q67FatlNq6zUtgC9R7Kw8ocs3WAXen5FQuXuOCh+32KOX7KlmnCteZ1DoLw
-         iY2WwamIs3ztKl0EOByVQrA+k8v9oZ5Wr1gRKhKaQ9xNMr5QtLr3R8bJyPD14imVRiZy
-         W73Q==
-X-Forwarded-Encrypted: i=1; AHgh+RrQrVKdqbi9SfMfKdqSP5AKcMz1x3NzL+2tVTr9MaPL/ix3lMMYp0OIgKHJ7pl9cla/7b8pW78pwuxU5jk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyMEwTQQMtPrtboIBJx9HAe0x3qNC/oeNfDj9cnBjkyq2o8jesv
-	zFa7N1UJH1mwcxWC56KULpYKSt1kDit9vWILQvTRmuajClHc2N2wVD+u
-X-Gm-Gg: AfdE7claTVxi1326EaIbDHafvNdylCtNW/1zEnFe1BhsoSHc2vm/rqv88PS72FV2DtR
-	PERUoTtl144pfQEqcjC/QjmiJHik82onYbQcesjnsV09jB3OP6aO4XtZMz6AYsdtihKV0+0x39n
-	apAO7ZZE4/WL4vkczP8vzcAAoadW+lXAaYeVefFnxx3YXY6gw+hmwZhfasBiVgdcyKNWXrAMaO8
-	MykyfZjmJBVYPqawTgc8wOdzE4sXQhU+q4PFbkPjefn9/HFGnbqsm85cyqoZG0nWTBORJqsvvG6
-	gaQTfkKHeRWl1zHfixXdKfqJK8EEE28NgGnt7ACWXoTcoT0gSsQ8faML1JlGzaZxprj8jXB/guL
-	M8P059MOS9luJAqYWkzdGWxGuYMx8W+prObBrkKeYvjgXI3TlUCAj0e6zx4wqxrEimlovCbQAep
-	9H+eaqCUOR+RijC/SjBJ3LfZ8kyGmGCkzFsoa1vyqF+PDhLJzhNYRJdVug
-X-Received: by 2002:a05:600c:8283:b0:493:b8cd:2555 with SMTP id 5b1f17b1804b1-493df066947mr72993875e9.3.1783446627922;
-        Tue, 07 Jul 2026 10:50:27 -0700 (PDT)
-Received: from pumpkin (host-92-21-50-228.as13285.net. [92.21.50.228])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-493e0ec6e64sm127359695e9.0.2026.07.07.10.50.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jul 2026 10:50:27 -0700 (PDT)
-Date: Tue, 7 Jul 2026 18:50:25 +0100
-From: David Laight <david.laight.linux@gmail.com>
-To: Paul Mbewe <paultyson.mbewe@ziehl-abegg.de>
-Cc: <Maarten.Brock@sttls.nl>, <crescentcy.hsieh@moxa.com>,
- <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
- <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
- <hvilleneuve@dimonoff.com>, <tobias.gannert@ziehl-abegg.de>,
- <joachim.knorr@ziehl-abegg.de>
-Subject: Re: [PATCH 2/2] serial: sc16is7xx: set TX FIFO trigger level to
- half FIFO to prevent underruns
-Message-ID: <20260707185025.2645b7b4@pumpkin>
-In-Reply-To: <20260707150344.353068-1-paultyson.mbewe@ziehl-abegg.de>
-References: <418f9ae5-8827-475c-b465-1271a784fbf1.bc56e27e-ecd8-43ae-bb87-75bfd472a28d.b2c59f9a-984f-45fd-b27f-021ecf433626@emailsignatures365.codetwo.com>
-	<20260707150344.353068-1-paultyson.mbewe@ziehl-abegg.de>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
+        bh=N6fd1+Z+F0tbkYg37tULYg3QGW6SNWpeWQyaq5mTNYc=;
+        b=cA1MntwtWbyPS891qPuPsjwOpBzqIkBpm6KJkp3eGVpSEcSFjnIXMMRDue+GalY03V
+         B2TR6+iYXQ4CK19Scbt+s1AEo226CIspZ4gaYbGLarlRcMTrif+lEfWdF8QU5rw5XA2y
+         ox2SGQfxm9PlRfm29g3VKzxbJruIcXczNgy6KHIr4dTPTzmpwOBP3Tjft7qtdi6zcNJd
+         swQfePZs3ZFwAnBOkvwPdoakCahcapj3gbfFi0qMJLZjhnT8u5KOJEoNLMBjEqPnqFiv
+         X/hBX1F61P/OBw0BvDTYz48yAUTSd5ngwbvmHQQwCG93GjT5vpjinkirxx/vfT++rZTf
+         d2IA==
+X-Gm-Message-State: AOJu0YzU7goyexmDErPYk8uTTBIdlSnd51142s+HQlC06bc/UxUq5GFo
+	KVW4OM2gp0s+Do5+T3faDZeQD+SymVdS2V5zcc+X4d1KEeufOcwhZCSInqcG8krGFD1k8XM5bWq
+	O0sHtekJhXbxUEA1aFXtWCpfv1k6FWRo=
+X-Gm-Gg: AfdE7cmo1VrJER4R7RIojJYnpUCJkLRftsmrgR8nrQhaaaekPkD1LTsxEkCa5j9at0a
+	jHgIwHsMrhfgNgzRE+JCHyhg8I23T41QscaS5sWu1FdCiIH9Qaj887omaN3ThoYaLH+ouCidMDj
+	dtaB5W9cyZalVYheJ+y9DoFVkRb5B6GXiJoBv6W3743VBEOR6VamBKdxwW9t7mUFw7cLWa0CCRK
+	/94+llqpTjzN+N3MyKNbsOqWsCE5bRN7z+j6nz3zgOrbVpD3+/Lq41VLrqHiK+KFDGarvFzkJS0
+	zxkROugbZFwkQ+vuEOEuPkC0d7//wcFjbfAaNLOUUbMEvkmsH6tuhGRfEtXnpa86KN38c9/kc/e
+	PFrEq4aV0uIpr/i0/vno5BVrD8DE=
+X-Received: by 2002:a50:c908:0:b0:695:dcb2:7438 with SMTP id
+ 4fb4d7f45d1cf-69a85bb6f42mr2799076a12.28.1783454248743; Tue, 07 Jul 2026
+ 12:57:28 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+References: <20260528201250.135691-1-rosenp@gmail.com> <2026070710-bronzing-handwork-33fe@gregkh>
+In-Reply-To: <2026070710-bronzing-handwork-33fe@gregkh>
+From: Rosen Penev <rosenp@gmail.com>
+Date: Tue, 7 Jul 2026 12:57:15 -0700
+X-Gm-Features: AVVi8CeaIqRF6fJFEAyvv0HZBSS_tjuP3_hlEWu5a78DgN_764QeXBU9rnOAp_I
+Message-ID: <CAKxU2N-3AFcyPPuoqQXoNvAO4Ht1Lunhb5q=qdBXYnYLnaH1cA@mail.gmail.com>
+Subject: Re: [PATCH] serial: 8250_pci: fix -Winitializer-overrides for
+ Brainboxes UC-260/271/701/756 entries
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>, 
+	Nathan Chancellor <nathan@kernel.org>, Nick Desaulniers <nick.desaulniers+lkml@gmail.com>, 
+	Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>, 
+	"open list:TTY LAYER AND SERIAL DRIVERS" <linux-kernel@vger.kernel.org>, 
+	"open list:CLANG/LLVM BUILD SUPPORT:Keyword:b(?i:clang|llvm)b" <llvm@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 7 Jul 2026 17:03:44 +0200
-Paul Mbewe <paultyson.mbewe@ziehl-abegg.de> wrote:
-
-> Hi David, Maarten,
->=20
-> Thanks, I double-checked this with finer TXLVL instrumentation, and the
-> root cause is clearer now: the failures are stale-TXLVL under-fills, not a
-> separate THRI re-arm issue.
->=20
-> > You need the refill path to be much faster then the drain path.
->=20
-> Agreed. The issue is that sc16is7xx reads TXLVL once and sizes the FIFO
-> write from that value. On this SPI-backed path, hardirq/softirq activity,
-> RT scheduling and the synchronous SPI transfer wait can delay the refill
-> while the UART continues draining. So the TXLVL value can become stale
-> before the write completes.
->=20
-> One failing example:
->=20
-> =C2=A0 tx_start=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 txlvl=3D9=C2=A0 txlvl=
-_read_us=3D580
-> =C2=A0 tx_pre_write=C2=A0=C2=A0 sent=3D9=C2=A0=C2=A0 pre_write_us=3D16
-> =C2=A0 tx_segment=C2=A0=C2=A0=C2=A0=C2=A0 sent=3D9=C2=A0=C2=A0 seg_us=3D3=
-64
-> =C2=A0 tx_post_write=C2=A0 txlvl_before=3D9 sent=3D9 txlvl_after=3D12 pen=
-ding_after=3D29
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0 post_gap_us=3D12 post_txlvl_us=3D130
->=20
-> Here TXLVL is free space, and the trigger is 8 free spaces. The driver
-> read 9 free spaces and wrote 9 bytes, but the post-write read still saw
-> 12 free spaces with data pending. Even allowing for the post-write read
-> window, the FIFO was not reliably pushed below the trigger, so no new
-> threshold crossing was expected. All failing samples I have checked show
-> the same pattern.
-
-That now makes sense.
-
-One extra thing you might check.
-Does filling the tx buffer clear the IER bit?
-If it does you can save a slow read by doing the tx-refill first (when
-there it tc data pending).
-
-You might also be able to leave the tx interrupt permanently enabled.
-It seems to be triggered by crossing the threshold rather than being
-based on space in the fifo.
-
-Did you try putting the second scope channel of the spi clock/data
-to get the scope to show you the pattern of transfers and the latencies?
-
-	David
+On Tue, Jul 7, 2026 at 8:21=E2=80=AFAM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Thu, May 28, 2026 at 01:12:50PM -0700, Rosen Penev wrote:
+> > PCI_VDEVICE() expands to set .class=3D0 and .class_mask=3D0, but the Br=
+ainboxes
+> >  UC-260/271/701/756 entries immediately override those fields. This cau=
+ses
+> >  a build error with clang -Werror,-Winitializer-overrides.
+> >
+> > Fix by expanding PCI_VDEVICE() manually, omitting the trailing
+> >  .class/.class_mask zeroes so each field is set exactly once.
+> >
+> > Found with W=3D1
+> >
+> > Assisted-by: Opencode:Big-pickle
+> > Signed-off-by: Rosen Penev <rosenp@gmail.com>
+> > ---
+> >  drivers/tty/serial/8250/8250_pci.c | 6 ++++--
+> >  1 file changed, 4 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/82=
+50/8250_pci.c
+> > index 3e5bc9e8d269..0513f4b3c093 100644
+> > --- a/drivers/tty/serial/8250/8250_pci.c
+> > +++ b/drivers/tty/serial/8250/8250_pci.c
+> > @@ -5394,12 +5394,14 @@ static const struct pci_device_id serial_pci_tb=
+l[] =3D {
+> >        * Brainboxes UC-260/271/701/756
+> >        */
+> >       {
+> > -             PCI_VDEVICE(INTASHIELD, 0x0D21),
+> > +             .vendor =3D PCI_VENDOR_ID_INTASHIELD, .device =3D 0x0D21,
+> > +             .subvendor =3D PCI_ANY_ID, .subdevice =3D PCI_ANY_ID,
+> >               .class =3D PCI_CLASS_COMMUNICATION_MULTISERIAL << 8,
+> >               .class_mask =3D 0xffff00,
+> >               .driver_data =3D pbn_b2_4_115200,
+> >       }, {
+> > -             PCI_VDEVICE(INTASHIELD, 0x0E34),
+> > +             .vendor =3D PCI_VENDOR_ID_INTASHIELD, .device =3D 0x0E34,
+> > +             .subvendor =3D PCI_ANY_ID, .subdevice =3D PCI_ANY_ID,
+> >               .class =3D PCI_CLASS_COMMUNICATION_MULTISERIAL << 8,
+> >               .class_mask =3D 0xffff00,
+> >               .driver_data =3D pbn_b2_4_115200,
+> > --
+> > 2.54.0
+> >
+>
+> Does not apply to the current tree :(
+This appears to have been fixed in 426e83cab1f5d53069ac7030cb03e2d7c6367ef1
