@@ -1,69 +1,89 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 827F827466A
-	for <linux-serial@vger.kernel.org>; Tue,  7 Jul 2026 05:58:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FF1013D53C;
+	Tue,  7 Jul 2026 07:42:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.11.138.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783403891; cv=none; b=GEYIHH2UMKduHONeC8OLTVZoKHEfLR5oxMIljdKqQ4S4BUolbQmghKO24xIRP+FsvFJoV9XZFZaRs/a/jiqW4hhyJ58OBO/G/rBUpRB0T3TaGybD6GQHn/ccsfK1PaVaKDmm+3zrgRNjTcxm9NvEdHjcogrKXkBoz1t+W5hSt1w=
+	t=1783410160; cv=none; b=H/eJQ6pLJRfjaez5MB/ClvpHu2cRlhiiV1SklVIrE88xEk1DjD6DbfZHe0HUVElH5lAQe8mPEPhXpKeu6HEPQeHPRFy+cIH5hdVZjLwNlGRUORPGphBDa4JmZVSj1bLc6FtHtc2Yrv5UfhMsoTeS8ezQAttH1VQynz1ka8gfUuk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783403891; c=relaxed/simple;
-	bh=387kmmBAcfCwnUaUlGGCTaoXE5/NQZaCgRU94itHu/U=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=R6Ss+cbr/HNUUnoGRv4/Wmn6YypuPEu2ahI0qXTTwWP7scXrJoLWjGZ6nNafa11bA6kpm5ZZmYJfmuF4d1iW6RNxklTW24B2p+/XdS9ODtrM+u/VQuCxtM/Yf1G3VMYIjMiZlIwtSnu+h7oGQf102JsAggacEGvoZCsdcw12IbU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=ysYgHrx9; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1783410160; c=relaxed/simple;
+	bh=pQwyXCyV2PJT4RikPbiEx3IVEGUY43jh3uk9m+jiWDM=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=FHxl+SLQs2zDkFaijpXVz5MtmVj8IsImW8XMDO1D0amswFkI9fjRU7NkYRBjGjTEsIugWPRHKn9KOET8fNlc8QPO6mZKclm48Tj+kcu1hKc0xGCZovL145jhChjd43tqS3o0vbQY5hqfQOcJkvrdhQtxKI0DyylGs0Ce0UQvZtQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=sntech.de; spf=pass smtp.mailfrom=sntech.de; dkim=pass (2048-bit key) header.d=sntech.de header.i=@sntech.de header.b=K8wqov0F; arc=none smtp.client-ip=185.11.138.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=sntech.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sntech.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="ysYgHrx9"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92D1E1F000E9;
-	Tue,  7 Jul 2026 05:58:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1783403890;
-	bh=JViUMcoaokAAMRTpX49i6k/gFG+B94Elonm67jeg7AY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=ysYgHrx9iXg8rw7sbjSV0J3rgr5ySj8q77jbqqqcQd6hQhMbbx0ucKOunvn8Mt0Th
-	 zv4EkltnylweOMxXZcV6M9BTE2mZdLJ/0v+p1yGVi3yJ6mvcKdCJuNJV0gT/UTlx1f
-	 i5DFOouvKrILPV1QtqA99kT3n2OAqndPAZDJ6spE=
-Date: Tue, 7 Jul 2026 07:58:23 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Dmitry Antipov <dmantipov@yandex.ru>
-Cc: Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
-	lvc-project@linuxtesting.org,
-	syzbot+b5d1f455d385b2c7da3c@syzkaller.appspotmail.com
-Subject: Re: [PATCH 1/2] tty: n_gsm: avoid reactivation without previous
- cleanup
-Message-ID: <2026070734-risotto-onshore-a30b@gregkh>
-References: <20260706142016.3385636-1-dmantipov@yandex.ru>
- <2026070611-pamperer-traps-84d4@gregkh>
- <16b08a3e-4b31-4941-a0aa-0b53a0dc4cec@yandex.ru>
- <2026070616-handsaw-careless-c428@gregkh>
- <3ca834d7-1ee0-426c-89d1-b52dab0b0a24@yandex.ru>
+	dkim=pass (2048-bit key) header.d=sntech.de header.i=@sntech.de header.b="K8wqov0F"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sntech.de;
+	s=gloria202408; h=Content-Type:Content-Transfer-Encoding:MIME-Version:
+	References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Reply-To;
+	bh=pQwyXCyV2PJT4RikPbiEx3IVEGUY43jh3uk9m+jiWDM=; b=K8wqov0FLWnvSZCw8PWY3vST+K
+	Yq8cHvYbn58/ct2vcJKmp1y9CkWhzw6rgoCqmDTWc+cqkFSGrX47X+ezJMe4xtZTUruJyIGS9W0q5
+	i05RRBKHlKCWz+9vus3Fl2HdapYqLWXDC5kOJG0f9r2xoB1aHXcs4397brhlqMIPptd3Z59qLFkWB
+	Vi4hVN7QnfA5xuhijDTGLLGScZNcuLDatSPa2GxITaJAEclHqxOVsr5Xg5xcH2n/aubDsRvfRErsd
+	xWKkAKAvGs/IOSaPIuyXbqjVpuIOd43VNJOGZZnAcq7thzN7sNTtZ02SIv/ARQ/31karQroi7Wf5y
+	AN3nsCfQ==;
+From: Heiko =?UTF-8?B?U3TDvGJuZXI=?= <heiko@sntech.de>
+To: Simon Glass <sjg@chromium.org>, Fabio Estevam <festevam@nabladev.com>
+Cc: linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org,
+ Albert Aribaud <albert.u.boot@aribaud.net>,
+ Andy Shevchenko <andy@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>,
+ Brian Masney <bmasney@redhat.com>, Chukun Pan <amadeus@jmu.edu.cn>,
+ Conor Dooley <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ FUKAUMI Naoki <naoki@radxa.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Guenter Roeck <linux@roeck-us.net>, Jamie Iles <jamie@jamieiles.com>,
+ Jeffy Chen <jeffy.chen@rock-chips.com>, Jiri Slaby <jirislaby@kernel.org>,
+ Jonas Karlman <jonas@kwiboo.se>, Jonathan Cameron <jic23@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Linus Walleij <linusw@kernel.org>,
+ Michael Opdenacker <michael.opdenacker@rootcommit.com>,
+ Michael Riesch <michael.riesch@collabora.com>,
+ Michael Turquette <mturquette@baylibre.com>,
+ Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Rob Herring <robh@kernel.org>,
+ Stephen Boyd <sboyd@kernel.org>, Ulf Hansson <ulfh@kernel.org>,
+ Wim Van Sebroeck <wim@linux-watchdog.org>, Yao Zi <ziyao@disroot.org>,
+ huang lin <hl@rock-chips.com>, linux-clk@vger.kernel.org,
+ linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
+ linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org
+Subject: Re: [PATCH 00/12] Add support for the Rockchip RV1106 and RV1103
+Date: Tue, 07 Jul 2026 09:41:41 +0200
+Message-ID: <7403763.aoefvbuG5b@diego>
+In-Reply-To: <882555c4-e1a3-0a0a-6830-b824b93cf3ac@nabladev.com>
+References:
+ <20260706195818.3906949-1-sjg@chromium.org>
+ <882555c4-e1a3-0a0a-6830-b824b93cf3ac@nabladev.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3ca834d7-1ee0-426c-89d1-b52dab0b0a24@yandex.ru>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
 
-On Tue, Jul 07, 2026 at 08:47:46AM +0300, Dmitry Antipov wrote:
-> On 7/6/26 6:18 PM, Greg Kroah-Hartman wrote:
-> 
-> > That's why userspace does not do this from multiple threads :)
-> 
-> What about malicious userspace like https://github.com/fff-vr/n_gsm_exploit?
-> IIUC completely unlocked 'gsmld_ioctl()' makes such a things relatively simple.
+Am Dienstag, 7. Juli 2026, 00:54:44 Mitteleurop=C3=A4ische Sommerzeit schri=
+eb Fabio Estevam:
+> Hi Simon,
+>=20
+> On Monday, July 06, 2026 16:57 -03, Simon Glass <sjg@chromium.org> wrote:
+>=20
+> > The series follows the structure of the recently merged RV1103B
+> > support. The clock driver is ported from the vendor kernel and is the
+>=20
+> When I submitted the initial version of the RV1103B series, I received fe=
+edback to split it into subsystems.=20
+>=20
+> You should do the same here and submit it per subsystem:
+> ARM, clock, pinctrl, serial, mmc, watchdog, and iio.
 
-The gsm code should never be loaded on systems that do not have the
-hardware for it, which is why it requires root access to do so.
+correct ... ARM + clock can stay together, as that is my stuff, but for a
+lot of maintainer it is just way easier to not have to pick apart series' .
+(or even realize they are meant to do something)
 
-Systems that do have this hardware, are properly secured to not allow
-untrusted userspace programs on it.
 
-This has been discussed numerous times in the past on this list, nothing
-new here.
 
-thanks,
 
-greg k-h
