@@ -1,151 +1,163 @@
-Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
+Received: from va-2-28.ptr.blmpb.com (va-2-28.ptr.blmpb.com [209.127.231.28])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB8973B27FE
-	for <linux-serial@vger.kernel.org>; Tue,  7 Jul 2026 19:57:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.50
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783454252; cv=pass; b=ah9BasT0ASruOCUhX+zOWBTuCWKBMID7/xrPRS++pc+fm28lzTO2jdmuwCRT17+GBpfg53uImcO6xsgbQRCvV/y3Qd0pQs89SKufb0kXekxo9+kri9AggG4I0Ucqv03Sj72r8E0UHtFVIPSMEZNDtRea/p1WQ6QrQkAKhqJOXcg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783454252; c=relaxed/simple;
-	bh=+4LGUwruSca6T/12Q76TuwR8e5qnyL223i6zRC1/Kh8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=qwatzfVLOlZmdjyOsg9DYG0tFFJzdsKOWpOJJeiaSs00N/xMQIRAgrzycEi17zp7t3XYdxZnD45Dkz854tbhfERJCcOHr0wOZUa8OthRC6MrlCrOFJT8OSn49DFrlA/m11kcqzNWDkfonQPtNRtmTIztF1zkMbn07bfGx+d/EIs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=chiejUGP; arc=pass smtp.client-ip=209.85.208.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC8A733E35B
+	for <linux-serial@vger.kernel.org>; Wed,  8 Jul 2026 03:12:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.127.231.28
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783480338; cv=none; b=VK64Z1/W+IA4UYFTpLMVYmujLp7HkI8avZgtZe6nK/6JTklG6fBaH2TrkjM6NNAOduzQvVzZYnd03AUqGTckEk6k5G5j4KuRioEDg7iOzj2FjgQDQJ7LW+22+fFmCFUuY9WbhICwPgTumufwMM0TvxeDPTFYXGNOtGFfblq44e8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783480338; c=relaxed/simple;
+	bh=4l2+byjnLrS3HSN9NzXdSmgIgF+PWBE0pX4OLlNfyQA=;
+	h=Subject:References:Content-Type:Cc:Mime-Version:In-Reply-To:To:
+	 Message-Id:From:Date; b=lLxMWBzULZjQiP/yzusKpjtOFH+eqqEQNQK6MJ/qtdpVj/IweUegHcLbTA7o2OY88CarffOrknD/056V+4IwKJPcY9+HViquuOf4DcH+gkduPhenSK2Q8PzKWat7jn0J6AGdqIHuCKqU6SGp3vLi/2QY0yJZp3zTteoQ+QWMMls=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=fnnas.com; spf=pass smtp.mailfrom=fnnas.com; dkim=pass (2048-bit key) header.d=fnnas-com.20200927.dkim.feishu.cn header.i=@fnnas-com.20200927.dkim.feishu.cn header.b=qObJkiV5; arc=none smtp.client-ip=209.127.231.28
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=fnnas.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fnnas.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="chiejUGP"
-Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-68bd9fce347so63001a12.2
-        for <linux-serial@vger.kernel.org>; Tue, 07 Jul 2026 12:57:30 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1783454249; cv=none;
-        d=google.com; s=arc-20260327;
-        b=jGhKrDZjp3EvPzZJumL2j9054PKID21pHkxdvWOHPJ+mbqANHM7Vv+p/AhbdVx/rt1
-         SjDVJqOMcNjIKgEAnEFniBWAoeIlPZaPQEfSjcmXaCimPlHHOVNIBRRYdkgmZ80ggLWh
-         w0nX1PyeEuxrjfzYhgJ2F9gXqPWU3D6EVlMw7x5uGbnA5/0XQnxHatyH3tUN+8bHZcPL
-         iH+ADX4+Lk3DNBexU0UVxjOrsu5oQbwkGKCTZ96i8KuARbEdIbk0BoxUgK1cUJWGakHX
-         3GsfTgh+v7bqHVSZe/xT5vtwk2UwdhIEv03LmFG8HqfGQOW0Pw1z3mTte9OuDilMbDKQ
-         ID8A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=N6fd1+Z+F0tbkYg37tULYg3QGW6SNWpeWQyaq5mTNYc=;
-        fh=LW6qye9T4Cv4Df/D2Sy2lPRxVDBxDp8S1ZQcolgXakY=;
-        b=CjgnlD6SRhc+R7qpU5/xZ1tlevexgNOIxGwt1NNQK+7Qubh90yDymspHQbQ2Mk0Hn9
-         8sHSlEPEm6whb5zVmlYAw/4EXXoTgTzEp3B6fh3XYUX8yojGVlMiB9SHMKXawieNuwQ3
-         ilcdIzGxybTCto9ZdwrxRyWbE/YI8nv7I9lYuJgAIrr2eTLpqKCCZC1j7mqNX1apfwp8
-         Df2/+/RvNAGLhIuM8LCNAusW2yVLd9+3DjR5CbF9dkgAD45I6P3q2FUhXcAx3g1CBSvM
-         UfGpJu+eLfgp2GLSbG65qOFP6k8jPc5PQBQ9ajTNTNoPMZBXWJ2wYzaKauDaSF8LS+yy
-         KnNA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783454249; x=1784059049; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=N6fd1+Z+F0tbkYg37tULYg3QGW6SNWpeWQyaq5mTNYc=;
-        b=chiejUGP5tCJvdn9FLQvMZvudScWCx4a/UC/Bv0vhyiMAj1IjObNx5D99sFJWuw5Us
-         BflcF8CwifRPihQjXIGMTQ9Z/9lzR04aDywnl6bRqlAv91hr+NPC71VkI2thA1MGShF4
-         CymIyG59LsDcuh6FjKb5syKZOty721gnrCiGPqGXcjafMc8qA4JJnN8+6Dczi98wTm6A
-         XDM3WwxJnARrHGBCkClfojXwpA06R49243aVRLcJz0UVMHkvRFVvRaQzjA5izIYw5lJx
-         nOCAT1YhgV8ADyqIHqisb7mFMOTl7+fzg6jSGnMdOqKearFq1Cwa7fj+ypPdM+/n0+qY
-         epLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783454249; x=1784059049;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=N6fd1+Z+F0tbkYg37tULYg3QGW6SNWpeWQyaq5mTNYc=;
-        b=cA1MntwtWbyPS891qPuPsjwOpBzqIkBpm6KJkp3eGVpSEcSFjnIXMMRDue+GalY03V
-         B2TR6+iYXQ4CK19Scbt+s1AEo226CIspZ4gaYbGLarlRcMTrif+lEfWdF8QU5rw5XA2y
-         ox2SGQfxm9PlRfm29g3VKzxbJruIcXczNgy6KHIr4dTPTzmpwOBP3Tjft7qtdi6zcNJd
-         swQfePZs3ZFwAnBOkvwPdoakCahcapj3gbfFi0qMJLZjhnT8u5KOJEoNLMBjEqPnqFiv
-         X/hBX1F61P/OBw0BvDTYz48yAUTSd5ngwbvmHQQwCG93GjT5vpjinkirxx/vfT++rZTf
-         d2IA==
-X-Gm-Message-State: AOJu0YzU7goyexmDErPYk8uTTBIdlSnd51142s+HQlC06bc/UxUq5GFo
-	KVW4OM2gp0s+Do5+T3faDZeQD+SymVdS2V5zcc+X4d1KEeufOcwhZCSInqcG8krGFD1k8XM5bWq
-	O0sHtekJhXbxUEA1aFXtWCpfv1k6FWRo=
-X-Gm-Gg: AfdE7cmo1VrJER4R7RIojJYnpUCJkLRftsmrgR8nrQhaaaekPkD1LTsxEkCa5j9at0a
-	jHgIwHsMrhfgNgzRE+JCHyhg8I23T41QscaS5sWu1FdCiIH9Qaj887omaN3ThoYaLH+ouCidMDj
-	dtaB5W9cyZalVYheJ+y9DoFVkRb5B6GXiJoBv6W3743VBEOR6VamBKdxwW9t7mUFw7cLWa0CCRK
-	/94+llqpTjzN+N3MyKNbsOqWsCE5bRN7z+j6nz3zgOrbVpD3+/Lq41VLrqHiK+KFDGarvFzkJS0
-	zxkROugbZFwkQ+vuEOEuPkC0d7//wcFjbfAaNLOUUbMEvkmsH6tuhGRfEtXnpa86KN38c9/kc/e
-	PFrEq4aV0uIpr/i0/vno5BVrD8DE=
-X-Received: by 2002:a50:c908:0:b0:695:dcb2:7438 with SMTP id
- 4fb4d7f45d1cf-69a85bb6f42mr2799076a12.28.1783454248743; Tue, 07 Jul 2026
- 12:57:28 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=fnnas-com.20200927.dkim.feishu.cn header.i=@fnnas-com.20200927.dkim.feishu.cn header.b="qObJkiV5"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ s=s1; d=fnnas-com.20200927.dkim.feishu.cn; t=1783480329;
+  h=from:subject:mime-version:from:date:message-id:subject:to:cc:
+ reply-to:content-type:mime-version:in-reply-to:message-id;
+ bh=yue4skZaKFuTAjJE0A8qYWVzHdt7vUztId56TGPY1HA=;
+ b=qObJkiV53khoogeg6yczJi9tovbsc1AvfuldYrd5PI5y9SFWAxkhiWFBJqP6gLDwW1mnFb
+ 2yEeSsxwbttz8c9zp/O0onL5vTuNm9ewWJg+a5wDaqinDr2IwdsiO08HCkepbzup1YeDOb
+ PpKsqDYbSAmVuPdoobwVX9l2342DnMgG1LeWjUq91woZ1T61jMBOR7+7usXCPEueEqo1pl
+ 2jdtyFLeGN5aJ2KO1vODx7oTRr2jh82/i/XBv8p3CL5iLKkxi7+oR5MBB3ZbhhPeUWjrxz
+ 54o3V7HMSdjEJ7tHZQ6kjydAGakulHMzBhZz3dWghW11q+wj0ogVOZ0Nr5y6ew==
+Subject: [PATCH v2] serial: 8250: fix shared IRQ startup race causing IRQ warning
+References: <20260527092052.2086342-1-wangzhaolong@fnnas.com>
+Content-Type: text/plain; charset=UTF-8
+Cc: <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>, 
+	<stable@vger.kernel.org>, <andriy.shevchenko@linux.intel.com>, 
+	<albanhuang@tencent.com>, <tombinfan@tencent.com>, 
+	<jackzxcui1989@163.com>, <kees@kernel.org>, <osama.abdelkader@gmail.com>, 
+	<realwujing@gmail.com>, "Wang Zhaolong" <wangzhaolong@fnnas.com>
+X-Lms-Return-Path: <lba+26a4dc007+04c453+vger.kernel.org+wangzhaolong@fnnas.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <20260528201250.135691-1-rosenp@gmail.com> <2026070710-bronzing-handwork-33fe@gregkh>
-In-Reply-To: <2026070710-bronzing-handwork-33fe@gregkh>
-From: Rosen Penev <rosenp@gmail.com>
-Date: Tue, 7 Jul 2026 12:57:15 -0700
-X-Gm-Features: AVVi8CeaIqRF6fJFEAyvv0HZBSS_tjuP3_hlEWu5a78DgN_764QeXBU9rnOAp_I
-Message-ID: <CAKxU2N-3AFcyPPuoqQXoNvAO4Ht1Lunhb5q=qdBXYnYLnaH1cA@mail.gmail.com>
-Subject: Re: [PATCH] serial: 8250_pci: fix -Winitializer-overrides for
- Brainboxes UC-260/271/701/756 entries
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>, 
-	Nathan Chancellor <nathan@kernel.org>, Nick Desaulniers <nick.desaulniers+lkml@gmail.com>, 
-	Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>, 
-	"open list:TTY LAYER AND SERIAL DRIVERS" <linux-kernel@vger.kernel.org>, 
-	"open list:CLANG/LLVM BUILD SUPPORT:Keyword:b(?i:clang|llvm)b" <llvm@lists.linux.dev>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.54.0
+X-Original-From: Wang Zhaolong <wangzhaolong@fnnas.com>
+Content-Transfer-Encoding: 7bit
+In-Reply-To: <20260527092052.2086342-1-wangzhaolong@fnnas.com>
+Received: from MiniServer ([183.34.163.178]) by smtp.feishu.cn with ESMTPS; Wed, 08 Jul 2026 11:12:06 +0800
+To: <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>
+Message-Id: <20260708031115.3757150-1-wangzhaolong@fnnas.com>
+From: "Wang Zhaolong" <wangzhaolong@fnnas.com>
+Date: Wed,  8 Jul 2026 11:11:14 +0800
 
-On Tue, Jul 7, 2026 at 8:21=E2=80=AFAM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Thu, May 28, 2026 at 01:12:50PM -0700, Rosen Penev wrote:
-> > PCI_VDEVICE() expands to set .class=3D0 and .class_mask=3D0, but the Br=
-ainboxes
-> >  UC-260/271/701/756 entries immediately override those fields. This cau=
-ses
-> >  a build error with clang -Werror,-Winitializer-overrides.
-> >
-> > Fix by expanding PCI_VDEVICE() manually, omitting the trailing
-> >  .class/.class_mask zeroes so each field is set exactly once.
-> >
-> > Found with W=3D1
-> >
-> > Assisted-by: Opencode:Big-pickle
-> > Signed-off-by: Rosen Penev <rosenp@gmail.com>
-> > ---
-> >  drivers/tty/serial/8250/8250_pci.c | 6 ++++--
-> >  1 file changed, 4 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/82=
-50/8250_pci.c
-> > index 3e5bc9e8d269..0513f4b3c093 100644
-> > --- a/drivers/tty/serial/8250/8250_pci.c
-> > +++ b/drivers/tty/serial/8250/8250_pci.c
-> > @@ -5394,12 +5394,14 @@ static const struct pci_device_id serial_pci_tb=
-l[] =3D {
-> >        * Brainboxes UC-260/271/701/756
-> >        */
-> >       {
-> > -             PCI_VDEVICE(INTASHIELD, 0x0D21),
-> > +             .vendor =3D PCI_VENDOR_ID_INTASHIELD, .device =3D 0x0D21,
-> > +             .subvendor =3D PCI_ANY_ID, .subdevice =3D PCI_ANY_ID,
-> >               .class =3D PCI_CLASS_COMMUNICATION_MULTISERIAL << 8,
-> >               .class_mask =3D 0xffff00,
-> >               .driver_data =3D pbn_b2_4_115200,
-> >       }, {
-> > -             PCI_VDEVICE(INTASHIELD, 0x0E34),
-> > +             .vendor =3D PCI_VENDOR_ID_INTASHIELD, .device =3D 0x0E34,
-> > +             .subvendor =3D PCI_ANY_ID, .subdevice =3D PCI_ANY_ID,
-> >               .class =3D PCI_CLASS_COMMUNICATION_MULTISERIAL << 8,
-> >               .class_mask =3D 0xffff00,
-> >               .driver_data =3D pbn_b2_4_115200,
-> > --
-> > 2.54.0
-> >
->
-> Does not apply to the current tree :(
-This appears to have been fixed in 426e83cab1f5d53069ac7030cb03e2d7c6367ef1
+Concurrent startup of two 8250 ports sharing the same IRQ can trigger an
+IRQ core warning:
+
+  Unbalanced enable for IRQ 3
+  WARNING: CPU: 0 PID: 580 at kernel/irq/manage.c:774 __enable_irq+0x3b/0x60
+  Call Trace:
+   enable_irq+0x8d/0x120
+   serial8250_do_startup+0x80d/0xa80
+   uart_port_startup+0x13d/0x440
+   uart_port_activate+0x5b/0xb0
+   tty_port_open+0xa1/0x120
+   uart_open+0x1e/0x30
+   tty_open+0x140/0x7a0
+
+This is reproducible in QEMU with four legacy 8250/16550 ports where ttyS1
+and ttyS3 share IRQ 3.  A small userspace reproducer that synchronizes two
+threads before open(), waits for both open attempts, and then closes both file
+descriptors can trigger the warning almost immediately.
+
+The regression was bisected to commit 64c79dfbc458 ("serial: 8250_pnp:
+Support configurable reg shift property").  That change made QEMU's legacy
+PNP serial ports take the shared-IRQ THRE test path in
+serial8250_do_startup():
+
+  if (port->irqflags & IRQF_SHARED)
+    disable_irq_nosync(port->irq)
+  ...
+  if (port->irqflags & IRQF_SHARED)
+    enable_irq(port->irq)
+
+The disable_irq_nosync()/enable_irq() pair is locally balanced, but it can
+race with the IRQ core startup path for the first 8250 port on the same IRQ.
+One possible interleaving is:
+
+  CPU0, ttyS1                         CPU1, ttyS3
+
+  serial_link_irq_chain()
+    hash_add(i)
+    i->head = &ttyS1
+    request_irq()
+                                        serial_link_irq_chain()
+                                          find i in irq_lists
+                                          list_add(&ttyS3, i->head)
+                                        serial8250_do_startup()
+                                          disable_irq_nosync(irq)
+    irq_startup()
+      desc->depth = 0
+                                          enable_irq(irq)
+                                            WARN: Unbalanced enable for IRQ 3
+
+Hold hash_mutex in serial_link_irq_chain() until the first request_irq() has
+completed.  This prevents another 8250 port sharing the IRQ from joining the
+chain and running the THRE test while the IRQ core is still starting the
+interrupt.  The request_irq() failure cleanup also remains covered by
+hash_mutex, so the just-published irq_info cannot be observed by another link
+attempt before it is unlinked again.
+
+Fixes: 64c79dfbc458 ("serial: 8250_pnp: Support configurable reg shift property")
+Closes: https://bugzilla.kernel.org/show_bug.cgi?id=221579
+Cc: stable@vger.kernel.org # 6.10+
+Signed-off-by: Wang Zhaolong <wangzhaolong@fnnas.com>
+---
+
+Changes in v2:
+  - Retitle the patch to describe the unbalanced IRQ enable warning.
+  - Move the code comment to the hash_mutex acquisition site to document why the
+    lock must cover the first request_irq() completion.
+  - Drop the Assisted-by tag.
+
+ drivers/tty/serial/8250/8250_core.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index a428e88938eb..dd202032cc7c 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -132,12 +132,10 @@ static void serial_do_unlink(struct irq_info *i, struct uart_8250_port *up)
+  */
+ static struct irq_info *serial_get_or_create_irq_info(const struct uart_8250_port *up)
+ {
+ 	struct irq_info *i;
+ 
+-	guard(mutex)(&hash_mutex);
+-
+ 	hash_for_each_possible(irq_lists, i, node, up->port.irq)
+ 		if (i->irq == up->port.irq)
+ 			return i;
+ 
+ 	i = kzalloc_obj(*i);
+@@ -154,10 +152,18 @@ static struct irq_info *serial_get_or_create_irq_info(const struct uart_8250_por
+ static int serial_link_irq_chain(struct uart_8250_port *up)
+ {
+ 	struct irq_info *i;
+ 	int ret;
+ 
++	/*
++	 * Keep the hash lock held until the first request_irq() completes.
++	 * The first port publishes i->head before request_irq() starts the IRQ;
++	 * a second port sharing the IRQ must not join the chain and run the
++	 * THRE test while the IRQ core is still bringing the line up.
++	 */
++	guard(mutex)(&hash_mutex);
++
+ 	i = serial_get_or_create_irq_info(up);
+ 	if (IS_ERR(i))
+ 		return PTR_ERR(i);
+ 
+ 	scoped_guard(spinlock_irq, &i->lock) {
+-- 
+2.54.0
