@@ -1,153 +1,263 @@
-Received: from va-2-28.ptr.blmpb.com (va-2-28.ptr.blmpb.com [209.127.231.28])
+Received: from mail-yx1-f48.google.com (mail-yx1-f48.google.com [74.125.224.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 831E1420876
-	for <linux-serial@vger.kernel.org>; Wed,  8 Jul 2026 06:20:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.127.231.28
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783491645; cv=none; b=Pltl2vD0bqG60uFkm4Qq/bXrFqzvhZe3UlwY/8yjGwEGclFKzEAVPp0gjlcG5qgdAQscL/SxRbfaZsKkXldOgW9Pigbj/M5kjlGeS/atPFELyyHTfkQIpsjtY8UcDBCl/TGvIOxcObbwQP73E+z+ISqbcRMEA4VgpVMfuVlzjAA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783491645; c=relaxed/simple;
-	bh=AN2GzrMWkyFaJbYvNPReXuJ+xD3LE+ovrbMBLCvTCio=;
-	h=Content-Type:To:References:Cc:Subject:From:Mime-Version:
-	 In-Reply-To:Date:Message-Id; b=VK3m9boz4VRFF3ZsZnIdjmHHtABO49IG0cLIpZ7KFCqXrC74gpfgNyxz2OBu21ot3gfmEXtD+riHN4Qz8/AiWzzGUP69zbcJL6DjCt5LxgOaNfrEHW2TAhYRdNobOacTchtCPAqT/xC5sPv7V/gd7N9I2GLOFoT2npJFjRZ+oWM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=fnnas.com; spf=pass smtp.mailfrom=fnnas.com; dkim=pass (2048-bit key) header.d=fnnas-com.20200927.dkim.feishu.cn header.i=@fnnas-com.20200927.dkim.feishu.cn header.b=Xh0KLllu; arc=none smtp.client-ip=209.127.231.28
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=fnnas.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fnnas.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D16B3BBA0E
+	for <linux-serial@vger.kernel.org>; Wed,  8 Jul 2026 06:22:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.48
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783491735; cv=pass; b=MLNYdsFqC4qGAsLnzZBoJxuMGZHzF6h4/Ksuht7a/RmwZK9P8zAplHFZyULJG70gnZMsVhwUuRF4dqGWF8ITA9UdVepWFLkggpF4ZHqxVgxFRZvwzxI4Clehob5yPbERt2TehMX4oP8O/fUnw596c8uUU9UaH69YwTyEQ5Z32Gk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783491735; c=relaxed/simple;
+	bh=Q+fJSBCJJKaFA5XtTf5qMvXQ35XMD3uNkGCHwK1jljw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ud77Szo1vHVlxFbhz/HwO1ZwO7TKkB034wHp4iVQ4zYQDmth33zaJI3bJx2f60Nwf0nDim0EivkK8S6fFbQ5pIdMCqXA5VbqLjVwdXspMq2aCXPu4IUpLt5BefJaJaP/KTR1XOkuT7+NfsE3cF7EZVe/ScUxoeD/AAcZ3H4w5Xw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=SOMpkoxX; arc=pass smtp.client-ip=74.125.224.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fnnas-com.20200927.dkim.feishu.cn header.i=@fnnas-com.20200927.dkim.feishu.cn header.b="Xh0KLllu"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- s=s1; d=fnnas-com.20200927.dkim.feishu.cn; t=1783491637;
-  h=from:subject:mime-version:from:date:message-id:subject:to:cc:
- reply-to:content-type:mime-version:in-reply-to:message-id;
- bh=AN2GzrMWkyFaJbYvNPReXuJ+xD3LE+ovrbMBLCvTCio=;
- b=Xh0KLlluYI56IvxQgmg14Ig5KjCro7Rdqk1mRMbkh4oPkXunjrNe1J8TJ8V3L/eoEgEeBQ
- pVEzmB8SsS9qd1ZbqBIIn0yNaLS6r1rTVoh+xXCYFp6Rf/wyySTwUAnputTYpptr7LZffD
- hJKyF0dCJJqGoysHtGcTDxIsSp3BVjezX4p2PHV/XIcaF2+ay2ayU1/TCdosax1g9uE/he
- 1i3fkOJO6UE42/kKfOt5KF6J21b6S4JvApwHr29HRzm62wSD+cUW7RPs3LJ+61J+iTM3RM
- eYOC+VXF0Clp0nr9mzK4bkmJ/idBrmE6VnEumq65hQCpM3DW7JXGT+cM5ykKEg==
-X-Lms-Return-Path: <lba+16a4dec33+85c115+vger.kernel.org+wangzhaolong@fnnas.com>
-Content-Type: text/plain; charset=UTF-8
-To: "Jiri Slaby" <jirislaby@kernel.org>
-References: <20260527092052.2086342-1-wangzhaolong@fnnas.com> <20260708031115.3757150-1-wangzhaolong@fnnas.com>
-	<25599a7f-e9cb-4aa0-a375-d9b4ed52be5e@kernel.org>
-Cc: <gregkh@linuxfoundation.org>, <linux-serial@vger.kernel.org>, 
-	<linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>, 
-	<andriy.shevchenko@linux.intel.com>, <albanhuang@tencent.com>, 
-	<tombinfan@tencent.com>, <jackzxcui1989@163.com>, <kees@kernel.org>, 
-	<osama.abdelkader@gmail.com>, <realwujing@gmail.com>
-Subject: Re: [PATCH v2] serial: 8250: fix shared IRQ startup race causing IRQ warning
-From: "Wang Zhaolong" <wangzhaolong@fnnas.com>
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="SOMpkoxX"
+Received: by mail-yx1-f48.google.com with SMTP id 956f58d0204a3-66766d649fdso403581d50.1
+        for <linux-serial@vger.kernel.org>; Tue, 07 Jul 2026 23:22:13 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1783491732; cv=none;
+        d=google.com; s=arc-20260327;
+        b=qWjzOvboDQRICY9pGprWGA2jCU2HIkLeKUBQDTQLJzSIvB8rUiC09mggODZyObvCQn
+         gNYCgyFi2DJs95fhoZMGkydvNWPrbgoFhWa+Gqcsw8U3NdBKnWtyjUjNBaZ1Oloayh/7
+         YbOGIMoi/kENs9NTPsTak/Y606Yu/J3yAZ59bmc/+klPLDArDeuUNTqT+JMW/Y5wv3As
+         txWIfsdgy/zDzKHzNA2sePF/mo1vV2kiYfKgCxzbAvvtLqJAVcwFsUCxiVCZfRi0YWKB
+         mIwT3j0CFegbtc6WbziRZeLBtIT7rmjsIKtEqRARaEtwLsrGT+fsLRdgMc0I5TYjaMeb
+         wxEA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=nyXdoI7KZnNpfNaLYiInRne3qbmZfDvP+wR+FbUBMps=;
+        fh=PHFzSUX7xWb4peHCj4hWkeghPEHqZ/9+smgG1uEBVGI=;
+        b=Ag/9jANER2oh332/mWfemzDPgxg8ge4p3nUWCcK8CzypvRJY5DqVrL6TO8fHIWvRtA
+         N4booczYunapVUPnXJnRB0kaLEx5rOKCHlt/QaROF9REaQL/dhAoU+8bgqsJAYRreg9c
+         3hN4fIJp6rgMXSVSf/mwFgx5ltwmrdBFvP1cXyZicw8mk9pl1ScaIae755I8RrUM+tW5
+         PppDeSKmo/D65Qa3tpKqeWhfzKqdMvNV4eytIzJnCoblSX2ZzIOySI9lGlH6cJYErEtg
+         D65ZrIy3/zfGorx0LSFTIBWXn8qFhJVGY55ug8AQdm/P9SNrETFweYHu2inMz9h1nwTe
+         VdiA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1783491732; x=1784096532; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=nyXdoI7KZnNpfNaLYiInRne3qbmZfDvP+wR+FbUBMps=;
+        b=SOMpkoxXAYU0ha8zZXa3DkE9A+bHOU39O9Ki47900Ryaq5LoxhQ65H6WJKg5Z0B+Fn
+         WlUqW3DVU748xZbcVS4TBX7Q8/w7WOV6kmqt60Xjf7vkmJnsmIbQTFIQqDwLDd7w9DsV
+         3012VAd3OX7dNpmKfWf57X1BLlcXYtzqbFZUQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783491732; x=1784096532;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=nyXdoI7KZnNpfNaLYiInRne3qbmZfDvP+wR+FbUBMps=;
+        b=naTVoUxYzSwrhmG8NbnAAVwNkUytY4u+bD53315pgZpjOqFYOUktuwL56QMy6cpKRb
+         qHsbSpBMNIqvBtX/4oaIawb8FU1WSEkcOECGEax45RMHks7a/34eYeOgyQ68MTQl/lTP
+         MySFNOdp7xV6DVx9HxaS/zuKJCBakTk7rax3GZ4T8afKfpKMiLy7suUlOE9ZIPcDrWt3
+         RZ/Q6lxaLr2MGMhXnPmVquxjUGg7y26+/3ya5Hnfjj6Esm5L3ANlr9HEI2wBEUxqhY1x
+         4RntkBhzHZQWEoVZgK+I+lz6qpbsSoGEXbXMl+lq0EfAgRY5mYeNzF8DU6T0eY3DO9WG
+         r5ig==
+X-Forwarded-Encrypted: i=1; AHgh+Rpxd/CzwXi9fp/8hi30Mmgkc2Njlf2HbD1gM0+mA9EUs8zc3lNcBHjF8n+rN41XPAlbRK2GkbiIu7plNV0=@vger.kernel.org
+X-Gm-Message-State: AOJu0YywVknZE50KIWoiuCmYVwVVRs1w7r7mIyAlYn/hALwJJRQ1ERsu
+	X2jqHABEudbO1fFj8jXneylP5i9CFKW7TzqF/QqGPfJqTgB/2mZI3xH6TffzkmpmRiW9Nc2unQJ
+	J37+T82niYFo3W8dDfLJBm8yXu6KNRFR5EEPQmEpS
+X-Gm-Gg: AfdE7cnUJY00KlWGuUw3XAOt6uHArfdebq/uPMAF/v0Lbw91WJPivlN/LHmGo4pLAVH
+	MP70RInyLV5oJoHFd4+GXmJSzgH7EkXeEKfKCfhbAk8gwXok174K3VmfhmRcFl55QosXOs2BRwV
+	+YYaZhSfdvNJtz/DyrHIu8on4MBPcP8B3DMowS2MG643YrGpjfIsBwMh3o76FECHa0rpqecwE8z
+	mHvkBZx4+POEo8n7MfEwh4BUbJlfHSVbMKN3BK6ctEpXlhb31uDTI0I6fSkjgMVA6aLdYToC//J
+	S6lY3tcjV7Q/4rFLHydiHd7WKRw=
+X-Received: by 2002:a05:690e:4841:b0:666:2480:2b0a with SMTP id
+ 956f58d0204a3-6679f201176mr697881d50.50.1783491732443; Tue, 07 Jul 2026
+ 23:22:12 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-In-Reply-To: <25599a7f-e9cb-4aa0-a375-d9b4ed52be5e@kernel.org>
+MIME-Version: 1.0
+References: <20260701-add-mediatek-genio-520-720-evk-v2-0-19d5da4ef984@collabora.com>
+ <20260701-add-mediatek-genio-520-720-evk-v2-3-19d5da4ef984@collabora.com>
+In-Reply-To: <20260701-add-mediatek-genio-520-720-evk-v2-3-19d5da4ef984@collabora.com>
+From: Chen-Yu Tsai <wenst@chromium.org>
+Date: Wed, 8 Jul 2026 14:22:01 +0800
+X-Gm-Features: AVVi8CeA6CFM4kR5Bt4fLtWwaGoE3MK5l8ZS1mrdHaGZI7ndDG_5d5ZiXOKEMvU
+Message-ID: <CAGXv+5F9RPzKWTH1heDEUmWgE2k9mnvdj_uLO9MS5aKqN+3cDw@mail.gmail.com>
+Subject: Re: [PATCH v2 3/4] arm64: dts: mediatek: add Genio 720-EVK board
+To: Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Matthias Brugger <matthias.bgg@gmail.com>, 
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
+	Sean Wang <sean.wang@mediatek.com>, kernel@collabora.com, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Date: Wed, 08 Jul 2026 14:20:34 +0800
-Message-Id: <5cf37150673ea4d5c28f94db91cdf68504b50522.5fc19520.ca7d.459c.8589.c67efbed854f@feishu.cn>
+
+On Thu, Jul 2, 2026 at 12:36=E2=80=AFAM Louis-Alexis Eyraud
+<louisalexis.eyraud@collabora.com> wrote:
+>
+> Add support for MediaTek MT8189 SoC and its variants, and a devicetree
+> for the basic hardware enablement of the Genio 720-EVK board, based on
+> MT8391 SoC.
+>
+> MT8391 SoC is a variant of MT8189 SoC with a difference for the Arm
+> Cortex-A78 CPU core maximum frequency (2.6 Ghz for MT8391, 3 Ghz for
+> MT8189). MT8391 hardware register maps are identical to MT8189.
+>
+> The Genio 720-EVK board has following features:
+>   - MT8391 SoC
+>   - MT6365 PMIC
+>   - MT6319 Buck IC
+>   - MT6375 Charger IC
+>   - 8GB LPDDR5 RAM
+>   - 64GB eMMC 5.1
+>   - 128GB UFS
+>   - 20V DC Jack
+>   - USB Type-C Power Adapter
+>   - Micro SD card slot
+>   - Push Button x 4 (Power, Reset, Download and Home Key)
+>   - LED x 3 (System Power, Reset, DC-IN Power)
+>   - USB Type-C Connector (USB 3.2) x 2
+>   - USB Type-C Connector (USB 2.0) x 1
+>   - 3.5mm Earphone Jack x 1 (with Microphone Input)
+>   - 3.5mm Line Out Audio Jack x 1
+>   - Analog Microphone x 1
+>   - Digital Microphone x 2
+>   - Gigabit Ethernet with RJ45 connector
+>   - DP x 1 (Mode over USB Type-C)
+>   - LVDS port x 1
+>   - eDP port x 1
+>   - UART x2 with serial-to-usb converters and USB Type-C connectors
+>   - UART Port x 2 on Pin Header
+>   - M.2 Slot x 2
+>   - I2C Capacitive Touch Pad
+>   - 4-Lane DSI x 1
+>   - 4-Data Lane CSI x 2
+>   - I2S Pin header
+>   - 40-Pin 2.54mm Pin Header x 1
+>   - CAN Bus x 1 (RS232 Connector)
+>
+> Signed-off-by: Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>
+> ---
+>  arch/arm64/boot/dts/mediatek/Makefile              |   1 +
+>  arch/arm64/boot/dts/mediatek/mt8189.dtsi           | 920 +++++++++++++++=
+++++++
+>  .../boot/dts/mediatek/mt8391-genio-720-evk.dts     |  27 +
+>  .../boot/dts/mediatek/mt8391-genio-common.dtsi     | 673 +++++++++++++++
+>  4 files changed, 1621 insertions(+)
+>
+> diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/=
+mediatek/Makefile
+> index a86fb313b1a9..5c75ea1ef09a 100644
+> --- a/arch/arm64/boot/dts/mediatek/Makefile
+> +++ b/arch/arm64/boot/dts/mediatek/Makefile
+> @@ -173,6 +173,7 @@ dtb-$(CONFIG_ARCH_MEDIATEK) +=3D mt8395-genio-1200-ev=
+k-ufs.dtb
+>  dtb-$(CONFIG_ARCH_MEDIATEK) +=3D mt8390-genio-700-evk.dtb
+>  dtb-$(CONFIG_ARCH_MEDIATEK) +=3D mt8390-grinn-genio-700-sbc.dtb
+>  dtb-$(CONFIG_ARCH_MEDIATEK) +=3D mt8390-tungsten-smarc.dtb
+> +dtb-$(CONFIG_ARCH_MEDIATEK) +=3D mt8391-genio-720-evk.dtb
+>  dtb-$(CONFIG_ARCH_MEDIATEK) +=3D mt8395-kontron-3-5-sbc-i1200.dtb
+>  dtb-$(CONFIG_ARCH_MEDIATEK) +=3D mt8395-radxa-nio-12l.dtb
+>  dtb-$(CONFIG_ARCH_MEDIATEK) +=3D mt8395-radxa-nio-12l-8-hd-panel.dtbo
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8189.dtsi b/arch/arm64/boot/d=
+ts/mediatek/mt8189.dtsi
+> new file mode 100644
+> index 000000000000..272b1b34c953
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/mediatek/mt8189.dtsi
+> @@ -0,0 +1,920 @@
+> +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+> +/*
+> + * Copyright (c) 2025 MediaTek Inc.
+> + *
+> + * Copyright (c) 2025 Collabora Ltd.
+> + * Author: Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>
+> + */
+> +
+> +#include <dt-bindings/clock/mediatek,mt8189-clk.h>
+> +#include <dt-bindings/interrupt-controller/arm-gic.h>
+> +#include <dt-bindings/interrupt-controller/irq.h>
+> +#include <dt-bindings/power/mediatek,mt8189-power.h>
+> +#include <dt-bindings/phy/phy.h>
+> +
+> +/ {
+
+[...]
+
+> +       soc {
+> +               compatible =3D "simple-bus";
+> +               #address-cells =3D <2>;
+> +               #size-cells =3D <2>;
+> +               ranges;
+> +               dma-ranges =3D <0x0 0x0 0x0 0x0 0x10 0x0>;
+> +
+> +               performance: performance-controller@108d78 {
+> +                       compatible =3D "mediatek,cpufreq-hw";
+> +                       reg =3D <0 0x00108d78 0 0x120>, <0 0x00108e98 0 0=
+x120>;
+> +                       #performance-domain-cells =3D <1>;
+> +               };
+> +
+> +               gic: interrupt-controller@c000000 {
+> +                       compatible =3D "arm,gic-v3";
+> +                       reg =3D <0 0xc000000 0 0x40000>, /* distributor *=
+/
+> +                             <0 0xc040000 0 0x200000>; /* redistributor =
+*/
+> +                       interrupt-parent =3D <&gic>;
+> +                       interrupts =3D <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH 0>;
+> +                       interrupt-controller;
+> +                       #interrupt-cells =3D <4>;
+> +                       #redistributor-regions =3D <1>;
+> +
+> +                       ppi-partitions {
+> +                               ppi_cluster0: interrupt-partition-0 {
+> +                                       affinity =3D <&cpu0 &cpu1 &cpu2 &=
+cpu3 &cpu4 &cpu5>;
+> +                               };
+> +
+> +                               ppi_cluster1: interrupt-partition-1 {
+> +                                       affinity =3D <&cpu6 &cpu7>;
+> +                               };
+> +                       };
+> +               };
+> +
+> +               apdma: dma-controller@11300b00 {
+> +                       compatible =3D "mediatek,mt8189-uart-dma", "media=
+tek,mt6985-uart-dma";
+> +                       reg =3D <0 0x11300b00 0 0x80>,
+> +                             <0 0x11300b80 0 0x80>,
+> +                             <0 0x11300c00 0 0x80>,
+> +                             <0 0x11300c80 0 0x80>,
+> +                             <0 0x11300d00 0 0x80>,
+> +                             <0 0x11300d80 0 0x80>,
+> +                             <0 0x11300e00 0 0x80>,
+> +                             <0 0x11300e80 0 0x80>;
+> +                       interrupts =3D <GIC_SPI 432 IRQ_TYPE_LEVEL_HIGH 0=
+>,
+> +                                    <GIC_SPI 433 IRQ_TYPE_LEVEL_HIGH 0>,
+> +                                    <GIC_SPI 434 IRQ_TYPE_LEVEL_HIGH 0>,
+> +                                    <GIC_SPI 435 IRQ_TYPE_LEVEL_HIGH 0>,
+> +                                    <GIC_SPI 436 IRQ_TYPE_LEVEL_HIGH 0>,
+> +                                    <GIC_SPI 437 IRQ_TYPE_LEVEL_HIGH 0>,
+> +                                    <GIC_SPI 438 IRQ_TYPE_LEVEL_HIGH 0>,
+> +                                    <GIC_SPI 439 IRQ_TYPE_LEVEL_HIGH 0>;
+> +                       clocks =3D <&peri_ao CLK_PERAO_DMA_B>;
+> +                       clock-names =3D "apdma";
+> +                       dma-requests =3D <8>;
+> +                       #dma-cells =3D <1>;
+> +               };
+> +
+> +               auxadc: adc@11019000 {
+
+The .dtsi file's device nodes should be sorted by base address.
+This file's device node order is inconsistent.
 
 
-> From: "Jiri Slaby"<jirislaby@kernel.org>
-> Date:=C2=A0 Wed, Jul 8, 2026, 2:03 PM
-> Subject:=C2=A0 Re: [PATCH v2] serial: 8250: fix shared IRQ startup race c=
-ausing IRQ warning
-> To: "Wang Zhaolong"<wangzhaolong@fnnas.com>, <gregkh@linuxfoundation.org>
-> Cc: <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>, <stab=
-le@vger.kernel.org>, <andriy.shevchenko@linux.intel.com>, <albanhuang@tence=
-nt.com>, <tombinfan@tencent.com>, <jackzxcui1989@163.com>, <kees@kernel.org=
->, <osama.abdelkader@gmail.com>, <realwujing@gmail.com>
-> Ah, you are fixing the same thing as:
-> https://lore.kernel.org/all/20260707-bug-221579-8250-shared-irq-race-v6-1=
--f8c499a90bdd@gmail.com/
->=C2=A0
-> I did not look up who of you was first.
->=C2=A0
-> Note the above contains you in the commit log:
-> Reported-by: Wang Zhaolong <wangzhaolong@fnnas.com>
-> Closes: https://bugzilla.kernel.org/show_bug.cgi?id=3D221579
->=C2=A0
-> You both CCed each other, so you know the other's submission. I don't=C2=
-=A0
-> understand why you both send the patch? Anyway, you guys speak to each=C2=
-=A0
-> other and decide who sends the (fixed) patch.
->=C2=A0
-> On 08. 07. 26, 5:11, Wang Zhaolong wrote:
-> ...
-> > --- a/drivers/tty/serial/8250/8250_core.c
-> > +++ b/drivers/tty/serial/8250/8250_core.c
-> > @@ -154,10 +152,18 @@ static struct irq_info *serial_get_or_create_irq_=
-info(const struct uart_8250_por
-> > =C2=A0 static int serial_link_irq_chain(struct uart_8250_port *up)
-> > =C2=A0 {
-> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 struct irq_info *i;
-> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 int ret;
-> > =C2=A0=C2=A0
-> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0/*
-> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0 * Keep the hash lock held until the first=
- request_irq() completes.
-> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0 * The first port publishes i->head before=
- request_irq() starts the IRQ;
-> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0 * a second port sharing the IRQ must not =
-join the chain and run the
-> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0 * THRE test while the IRQ core is still b=
-ringing the line up.
-> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0 */
-> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0guard(mutex)(&hash_mutex);
->=C2=A0
-> The same as in the other patch:
-> hash_mutex is no longer an appropriate name for this lock.
->=C2=A0
-> > +
-> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 i =3D serial_get_or_create_irq_info(=
-up);
-> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (IS_ERR(i))
-> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return P=
-TR_ERR(i);
-> > =C2=A0=C2=A0
-> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 scoped_guard(spinlock_irq, &i->lock)=
- {
->=C2=A0
-> thanks,
-> --=C2=A0
-> js
-> suse labs
->=C2=A0
-
-Hi Jiri,
-
-Thanks for looking.
-
-Just to clarify the timeline: I reported this issue and posted the original
-minimal fix on May 27:
-
-=C2=A0 https://lore.kernel.org/r/20260527092052.2086342-1-wangzhaolong@fnna=
-s.com
-
-I also pinged it on Jun 24:
-
-=C2=A0 https://lore.kernel.org/r/ajtFoTHUQHJGYV5Q@MiniServer/
-
-The other series was posted after my original submission and eventually
-converged on the same core locking change.=C2=A0 I had also commented on th=
-at
-series around v2/v3, pointing out the same startup race and the need to cov=
-er
-the first request_irq() completion, so I was aware of that thread.
-
-I sent v2 to refresh my earlier minimal fix with a clearer subject and comm=
-it
-message, since the original patch had not received review.=C2=A0 My intent =
-was not
-to create two competing fixes for the same issue.
-
-I agree with your comment that hash_mutex is no longer a great name once it
-also serializes the first request_irq() completion.=C2=A0 I can send a v3 w=
-hich
-renames it and keeps the patch focused on the required locking change.
-
-Thanks,
-Wang Zhaolong
+ChenYu
