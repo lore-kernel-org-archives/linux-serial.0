@@ -1,65 +1,68 @@
-Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B14F407CC7
-	for <linux-serial@vger.kernel.org>; Wed,  8 Jul 2026 09:11:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02CA1436BD6
+	for <linux-serial@vger.kernel.org>; Wed,  8 Jul 2026 11:18:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783501877; cv=none; b=TaQF4DnIBp2EJpV2JWm2Y+LN1R64Xc9K3jENy+jR77BC7h3z31G34HVr3A6WPUhAvrOtpD05pvxH7F8Xw8UQPBNjV3LsS95u+7QBdJDCaB66HT762FhZoUyjZGaKzD/3pHhpObH8TL6K8zcfyTrSnOTwt4LlnZPoDCCzmsyLcxg=
+	t=1783509483; cv=none; b=btZdfB604Amv6XylCih+2ZCTO61vKZM0+E1/8+oXjMlzi1MP2Y54EXpxoS9pTvUSp06Ee2lvI1sOeq6juwkTvXhBSBgJqvUZgPow0Mi81h1tl3ugBKYWkxL8fdW2ysLrDEj8JTs6fERQQwg+/sFdgiqw45L1TZKnaUv/A223F3Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783501877; c=relaxed/simple;
-	bh=oQNtRunvPMIM4Xv0EqwjVrExFo6RDAIPu/MPOikVLuU=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=hwOnbOXquiD95srLb1ylUw9mP+h4aozobr8WVKO4u8AD8DRYklhhjQkqsvMSReR6K8vWCfUnPI+l/7VPl2SySkkOFVLEui4QIw4zcWq8MewBRXl/zqL10Hjt9yjkxhDmnbQvXELdL6THM+Q/NKrGO0sBXjyhlbOxT8GF6vMCJdU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CMe5/j1N; arc=none smtp.client-ip=209.85.214.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1783509483; c=relaxed/simple;
+	bh=blyxwiZySzwrx12mnku2kqP86fYz3Uplh4R1YjG+QQU=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=BqWJSL1hT6oa0deEv/qARcbE3mnyKrIHCY6aMp8s6oW+76BVwcqUw7a4c7tssqsBX0f7+LItNX5xvjw5LVk+Ow+HV7v1qrvQMxB2HiFyLkd2oC3oV9Z50dszY/t4FQh50HUdnWLN8mFLSCWnsDaSChE5U2HhPwKKE4Oh0pJWMLk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=gIY5LnJk; arc=none smtp.client-ip=209.85.128.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CMe5/j1N"
-Received: by mail-pl1-f169.google.com with SMTP id d9443c01a7336-2cc8e87f29bso3725345ad.2
-        for <linux-serial@vger.kernel.org>; Wed, 08 Jul 2026 02:11:15 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="gIY5LnJk"
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-493c7902f47so3896775e9.1
+        for <linux-serial@vger.kernel.org>; Wed, 08 Jul 2026 04:18:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783501875; x=1784106675; darn=vger.kernel.org;
-        h=cc:to:message-id:content-transfer-encoding:content-type
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+        d=baylibre.com; s=google; t=1783509479; x=1784114279; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
          :reply-to:content-type;
-        bh=uVCLGt4zKTd2DICuHMjbcSxNEEOmgYyKSSHE1nj4L2A=;
-        b=CMe5/j1NE4qQmRTTJF2uKw2WEINVVgLX7avIOVhLN3BvDQAFe0+AMUNrSmyk9mIrVf
-         IkaOzQw25E5ZTjhqvozfC/kM+s1DTJzCCNbelGZxBWSn4XIs3YFuT/YnGxsKO07qBfzw
-         4gDyW1MF582t4c95TEvulJjT2hw5RDSGxIx4ICXtlCTOiziuSuZ7I9vHuHDQxSReo+2X
-         Uc4X7j0k44JxX5YV/n2CCnrn7hNlNt9G/kOORPbDroAScVwZen+60V4OuRfMjoPe0m6O
-         cD0j6shxWFqhLgolcKQ6qUGkmLKhnvGxGwqNajmS1JD+7RBlfYctkM4cAAGycULGSrfE
-         WBeQ==
+        bh=dg8dUhD3q+CJyCSEW+eoODBKi7tHbn/E8jcu9sHuzyo=;
+        b=gIY5LnJk7b3Jyc6mFEhlSYAUIEf9PJoDu49X5JyMx6PoKFkMkPJALVPHluCvWXyAFy
+         3xLUBZe4aNcbQYfenct7HYa01GRtq6IzCCkI0Gg2rVf67Imxw3Zh92MAkkv9SezYgyX/
+         WYelZyvMv9Y5NKLHfWxOpFfj8kajLQrjnIOLAMP0uO0ERAEKL7QYnOHL6BtiY+o+r2g7
+         T0WZTsRLtyu7C/IJfosv9RQfpT0txQ5SyR8sz4QrzPFjzRzgAFL6AZ7jt/NgHBnLKfrf
+         yMBrRA0o2WWLxBp/mcwOvW9pGxW+EYhIGndPpHTbjrVJpu9H4QVufvsmF59inBGXFh16
+         ydSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783501875; x=1784106675;
-        h=cc:to:message-id:content-transfer-encoding:content-type
-         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to:content-type;
-        bh=uVCLGt4zKTd2DICuHMjbcSxNEEOmgYyKSSHE1nj4L2A=;
-        b=QJc7nkiwL7i6XDIOCBdtza+TP3T7pTmWyQ89R7s/9kgb9nGNef6nMSshxatg9jLnRV
-         fRzugD5LQLkA4swAHrYDXc1VP9lvcYdwPT0Jjsb+jUaocfpxphMVZQW44JYUC0z/nREh
-         lpjSoGQ3ytMGeZT9qLxTY2IDGuwdGWJlLEvv0UGnQC1UpkoqKyl8q0CAoo1GvGfntNi3
-         NYIcNcggo5e3TMgKLHq8cPlmhtaf2qKF4bxgKN80InpIFPiytNAO4WtiiFXObwuF36/X
-         CmmnHCXuTZhuy2gX1doJB7JrOyV+pX6FfY+jiaTeqq5HsDMe0lcoZmyr54CkxPeWoR0f
-         1hBA==
-X-Forwarded-Encrypted: i=1; AHgh+RrEtNg0P3KraRMGBEIoaRpq6LmGkMJWYYACuzv05MWVqJZnW/TlIVJxoWdLSm04HGIqiLrwRAcDWbHHayo=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx1mzxDgLBl56CL40VaXuQNZZ12eAcTWSIaTKpHAPvrFsa5DUT1
-	h/DYq8RoW/+wsAFnyu2GGxD4zw3ddIHho4uC257QrtrEn5Yv+VPrXxRFOcf4guqoEXE=
-X-Gm-Gg: AfdE7cmk480V2z/YjsliHlAv1/yVK1rgEYyHBTUqHPAREMIIAIQ2DQ38d05nrtN28Bj
-	JgiorLjihntjL7H2La9IxX6yL++Jzhmdf8jZsCxarLJEPOzwEFSlJHIKIcxSlameIwq41FBiegU
-	gL0mr3U83KxWr1HH07owL5zVHfbxP1jhOD7ELY/khMtn/dJEWquzfOeOv1DFNlPnzr88aLoLxBR
-	P8njBM3QthcBohTFZtlNUV3dnEbKYOip5S/B0wHEi71rl1bScqT28veUlG1dp23U0V7T8wp9wBZ
-	blRXC+KePVBe7vjAtvZGWUMeWnEOq8bcQTciVwOXG5aIrmwkGM4AmlsI+6ebQxSQQWADQtbRgMM
-	MYuOnrzOn3epn3y7Bd9z9WHVi3XPFhIiT9IZMq/XRCSeVu9fIB7aNhE1IJaYTyH6+v3tpS9DCH9
-	jyiH+CYXcN96g=
-X-Received: by 2002:a17:902:fdad:b0:2cb:2b69:8d53 with SMTP id d9443c01a7336-2ccea3a7a85mr19391795ad.37.1783501875181;
-        Wed, 08 Jul 2026 02:11:15 -0700 (PDT)
-Received: from [127.0.1.1] ([61.144.108.37])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ccc9bf737bsm24455035ad.19.2026.07.08.02.11.12
+        d=1e100.net; s=20251104; t=1783509479; x=1784114279;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=dg8dUhD3q+CJyCSEW+eoODBKi7tHbn/E8jcu9sHuzyo=;
+        b=WFCGKZIP740E9q3Ajp5Vwy5+R9/ycUeve32PqT1ZZtnWxyTK8dFULWzFQRibBPYqYn
+         7H0FgO3fOdJE14KK4W9FRM9pkVQm+2H06rhjL/LG3+6Mldj33wDPpuPlUf/OiYe2XRSz
+         Hg4Ikh+tuWCAloMzHwq2Dwr0OmYMM2rCQx1zT6ikKw98qB5Huuep6LlczH8U+aPOPBiI
+         NK0Zfsa/TCWqjXCJQlXRRXq621YYGfZhz8WrHZ3dGhkONAtclc4TbsPRaU05SPpusBRQ
+         t/XEf9MAEQ4DAI3Bs+cllAHN8PpTJC1laU36PNAk7anpxahEU4pOaXr0cfaVC20snQk0
+         VtcQ==
+X-Forwarded-Encrypted: i=1; AHgh+RqNDWuoCViv4qg/+gW7P+fBjraXMZloAKyB3rf7PN2WPG8Iu7RjDbH2deAVpxD4Z8osRCuf14g91y+2zg8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyZ2cvikuEssxrrQW08ZOvgn4tbFpGVwc0KEfEV5DDDRzef3cCq
+	QO94956DloiEmpeZceWrVV0NSvA7CegOd2C2BwRV/ev4Kv6urRPlw4EDjelOaNzAlebnYQnWGrQ
+	iMBHEE2Azs0zk
+X-Gm-Gg: AfdE7cnb21OBnJd6QfwSaAxEJqll1Cxk1IXTASAi4RkwZ0N38VisjHVnJbOBVxpYUZq
+	7VFjEC8FxgI5l2Q1FB3t08FybTo3JG4u56dDzaMLYYIHs2T3syJFl0FnD2gISByIAPaWMKXgDfT
+	xQDBiJWOa7bX2M8STBq9n7I/ukMVt3qISQTN1gPl4w+6iVzyTV/CbchjappBBw4KwNOSPQrtSiM
+	Ils9gbAEURHWziV12sS1eFC+1uZdbSprfVnYBiAr/k75dOsaVWasf5NFdq6OveybrGfErXFlXPC
+	cFCP6aObyuKmHo/LGPxqeSmX60qlbAeH5x/+CLbYHJq4HTN/abbjNmLdG1MMutWBJY9FbliJzja
+	1P3sKmAfR5/cDAn+KMHZgLXJp8nym+eZS23j58K231Yw4XvitKE2ek4D7pzdzO/uK5GoNAL+Bfo
+	5Lh/ZywQeXODTmAzyAZK16UTnsUOt8pb6jOeqnBCaWc2+6atOzL4L0x1dS2eATQ//xTD35tQ0IY
+	bXh6TTwf+hv4wCgHQ==
+X-Received: by 2002:a05:600c:548f:b0:493:df44:2342 with SMTP id 5b1f17b1804b1-493e6831661mr22461155e9.5.1783509479276;
+        Wed, 08 Jul 2026 04:17:59 -0700 (PDT)
+Received: from 1.0.0.127.in-addr.arpa (host-79-16-115-126.retail.telecomitalia.it. [79.16.115.126])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47aa0a55be4sm37867694f8f.31.2026.07.08.04.17.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jul 2026 02:11:14 -0700 (PDT)
-From: Jing Wu <realwujing@gmail.com>
-Date: Wed, 08 Jul 2026 17:11:11 +0800
-Subject: [PATCH v8] serial: 8250: fix use-after-free in IRQ chain handling
+        Wed, 08 Jul 2026 04:17:58 -0700 (PDT)
+From: Carlo Caione <ccaione@baylibre.com>
+Subject: [PATCH 0/2] Stabilize serial line numbers on MediaTek Genio boards
+Date: Wed, 08 Jul 2026 13:17:39 +0200
+Message-Id: <20260708-ccaione-genio-serial-aliases-v1-0-bf22229e9383@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -67,185 +70,65 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20260708-bug-221579-8250-shared-irq-race-v8-1-0ae10b073dd9@gmail.com>
-X-B4-Tracking: v=1; b=H4sIAC4UTmoC/5XRzU7DMAwH8FeZcibIcb458R6IQ5o4bSS2QgoVa
- Oq7k+6yUQ7bjn9L/lm2j2yiWmhiT7sjqzSXqYyHFtzDjsUhHHriJbXMENCARse7r54jCm09d6i
- BT0OolHipH7yGSFw7QcoDBGEda8p7pVy+TxNeXlseyvQ51p/TwFms1dvtWXDBJXgHMQbALJ/7f
- Shvj3Hcs9We8U4PmwdGS9FaSKu09eSl5697snmZVFISnMHgt56601PNizkFIzulEPLW02fPoLr
- u6eYJnZwS2XkStPXM2bNgr3tm3ddF5X3w0KV/97OX3g3/sM1zyWiMxkrZ/fnvsiy/9E+53q4CA
- AA=
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, 
- Anton Vorontsov <avorontsov@ru.mvista.com>, Alan Cox <alan@redhat.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
- Wang Zhaolong <wangzhaolong@fnnas.com>, 
- Qiliang Yuan <yuanql9@chinatelecom.cn>, Jing Wu <realwujing@gmail.com>
-X-Mailer: b4 0.13.0
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yXMUQrCQAyE4auUPBtYF1qLVxEf0jhbI2UrGytC6
+ d3d6uMPM99KjmJwOjcrFbzNbc41joeG9C55BNutNsUQu3AKPatKnYBHZJt5f8vEMpk4nNGmqLE
+ f2pQ6qsSzINnnx1+u//ZleEBfu0nb9gVf1o/ngAAAAA==
+X-Change-ID: 20260708-ccaione-genio-serial-aliases-e5f2c28b5ff6
+To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Matthias Brugger <matthias.bgg@gmail.com>, 
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, 
+ linux-serial@vger.kernel.org, dlechner@baylibre.com, jstephan@baylibre.com, 
+ Carlo Caione <ccaione@baylibre.com>
+X-Mailer: b4 0.15.2
 
-serial_unlink_irq_chain() holds irq_chain_mutex and calls free_irq() +
-kfree(i) on an empty port list.  serial_link_irq_chain() used to release
-irq_chain_mutex after serial_get_or_create_irq_info() but before acquiring
-i->lock, so a concurrent unlink could see list_empty() as true while a
-port was being added, free i, and cause a use-after-free.
+On the MediaTek Genio boards only serial0 is aliased in DT, so every
+other enabled UART gets a first-free ttyS line number from the 8250
+core at probe time. Line numbers are handed out in probe order, and
+probe order is not deterministic once a UART defers on its clocks, so
+the console UART can lose ttyS0 to another port.
 
-Dropping irq_chain_mutex before request_irq() completes also lets another
-port on the same IRQ join the chain and run the THRE test while IRQ
-startup is still in progress, triggering "Unbalanced enable for IRQ"
-because irq_shutdown() in the premature free_irq() path increments
-desc->depth and breaks the disable_irq/enable_irq pairing in
-serial8250_THRE_test().
+This was observed on the Genio 700 EVK running the Ubuntu 26.04 generic
+kernel: uart0 (the debug console) deferred waiting for its clocks while
+uart1 probed first and claimed ttyS0. With console=ttyS0 on the kernel
+command line the console then pointed at the wrong UART, and the boot
+looked like it had hung on the serial console. The failure is
+intermittent and depends purely on probe timing.
 
-Hold irq_chain_mutex across the whole first request_irq() completion
-(including the error cleanup path) by taking it at the top of
-serial_link_irq_chain() via guard(mutex)(&irq_chain_mutex).
-serial_unlink_irq_chain() already holds irq_chain_mutex throughout, so
-the race is closed.
+Pin the line numbers explicitly instead:
 
-With irq_chain_mutex now taken by the caller, replace the guard in
-serial_get_or_create_irq_info() with lockdep_assert_held() and add
-__must_hold(&irq_chain_mutex) for static analysis.  Rename hash_mutex to
-irq_chain_mutex to reflect its broader role beyond hash table locking.
+ - Patch 1 aliases every enabled UART on the affected Genio boards
+   (mt8365-evk, the mt8390 and mt8395 Genio commons, and the Grinn
+   Genio SBC), so DT expresses the intended serial<N> -> ttyS<N>
+   mapping.
 
-Fixes: 768aec0b5bcc ("serial: 8250: fix shared interrupts issues with SMP and RT kernels")
-Reported-by: Wang Zhaolong <wangzhaolong@fnnas.com>
-Tested-by: Wang Zhaolong <wangzhaolong@fnnas.com>
-Closes: https://bugzilla.kernel.org/show_bug.cgi?id=221579
-Co-developed-by: Qiliang Yuan <yuanql9@chinatelecom.cn>
-Signed-off-by: Qiliang Yuan <yuanql9@chinatelecom.cn>
-Signed-off-by: Jing Wu <realwujing@gmail.com>
+ - Patch 2 makes the 8250_mtk driver read that alias with
+   of_alias_get_id() and seed uart.port.line before registering the
+   port, so the 8250 core reserves the requested ttyS slot instead of
+   falling back to first-free.
+
+Signed-off-by: Carlo Caione <ccaione@baylibre.com>
 ---
-V7 -> V8:
-- Remove Co-developed-by: Wang Zhaolong and his Signed-off-by.  Wang
-  reported the bug and confirmed our v3 fixed his reproducer, which
-  warrants Tested-by, not co-developer credit.
-- Add Tested-by: Wang Zhaolong.
+Carlo Caione (2):
+      arm64: dts: mediatek: alias all enabled serial ports on Genio boards
+      serial: 8250_mtk: honor DT serial aliases
 
-V6 -> V7:
-- Rename hash_mutex to irq_chain_mutex to reflect its broader role
-  beyond hash table locking.
-- Drop unrelated blank-line and return-value changes.
-- Add Co-developed-by: Qiliang Yuan.
-
-V5 -> V6:
-- Keep guard(mutex) and scoped_guard(spinlock_irq) style instead of
-  manual locking; the lock lifecycle fits the scope-based model.
-
-V4 -> V5:
-- Add __must_hold(&hash_mutex) annotation to
-  serial_get_or_create_irq_info() for static analysis.
-
-V3 -> V4:
-- Move cleanup under hash_mutex on request_irq() failure to prevent a
-  second port from joining the chain before the irq_info is cleaned up.
-- Fix inaccurate description of irq_shutdown() in commit message.
-
-V2 -> V3:
-- Hold hash_mutex across the first request_irq() completion to prevent a
-  second port from joining the chain and running the shared-IRQ THRE test
-  while IRQ startup is still in progress.
-
-V1 -> V2:
-- Add Reported-by tag from Wang Zhaolong.
-
-v7: https://lore.kernel.org/r/20260708-bug-221579-8250-shared-irq-race-v7-1-0da8d89f6072@gmail.com
-v6: https://lore.kernel.org/r/20260707-bug-221579-8250-shared-irq-race-v6-1-f8c499a90bdd@gmail.com
-v5: https://lore.kernel.org/r/20260624-bug-221579-8250-shared-irq-race-v5-1-15d841f89e1e@gmail.com
-v4: https://lore.kernel.org/r/20260529-bug-221579-8250-shared-irq-race-v4-1-cfda63b4420f@gmail.com
-v3: https://lore.kernel.org/r/20260529-bug-221579-8250-shared-irq-race-v3-1-fe4d430862a9@gmail.com
-v2: https://lore.kernel.org/r/20260528-bug-221579-8250-shared-irq-race-v2-1-06531202e54d@gmail.com
-v1: https://lore.kernel.org/r/20260528-bug-221579-8250-shared-irq-race-v1-1-30980cca02f3@gmail.com
+ arch/arm64/boot/dts/mediatek/mt8365-evk.dts              | 2 ++
+ arch/arm64/boot/dts/mediatek/mt8390-genio-common.dtsi    | 2 ++
+ arch/arm64/boot/dts/mediatek/mt8390-grinn-genio-sbc.dtsi | 2 ++
+ arch/arm64/boot/dts/mediatek/mt8395-genio-common.dtsi    | 1 +
+ drivers/tty/serial/8250/8250_mtk.c                       | 7 ++++++-
+ 5 files changed, 13 insertions(+), 1 deletion(-)
 ---
- drivers/tty/serial/8250/8250_core.c | 30 +++++++++++++++++++++++++-----
- 1 file changed, 25 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index a428e88938eb7..7e6bbac094091 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -50,7 +50,7 @@ struct irq_info {
- 
- #define IRQ_HASH_BITS		5	/* Can be adjusted later */
- static DEFINE_HASHTABLE(irq_lists, IRQ_HASH_BITS);
--static DEFINE_MUTEX(hash_mutex);	/* Used to walk the hash */
-+static DEFINE_MUTEX(irq_chain_mutex);	/* Serializes link/unlink on the IRQ chains */
- 
- static bool skip_txen_test;
- module_param(skip_txen_test, bool, 0644);
-@@ -131,10 +131,11 @@ static void serial_do_unlink(struct irq_info *i, struct uart_8250_port *up)
-  * - allocate a new one, add it to the hashtable and return it.
-  */
- static struct irq_info *serial_get_or_create_irq_info(const struct uart_8250_port *up)
-+	__must_hold(&irq_chain_mutex)
- {
- 	struct irq_info *i;
- 
--	guard(mutex)(&hash_mutex);
-+	lockdep_assert_held(&irq_chain_mutex);
- 
- 	hash_for_each_possible(irq_lists, i, node, up->port.irq)
- 		if (i->irq == up->port.irq)
-@@ -151,15 +152,34 @@ static struct irq_info *serial_get_or_create_irq_info(const struct uart_8250_por
- 	return i;
- }
- 
-+/*
-+ * serial_link_irq_chain() hooks the given 8250 port into the IRQ chain.
-+ *
-+ * irq_chain_mutex must be held from the hash lookup through the first
-+ * request_irq() completion.  Dropping it earlier allows a concurrent
-+ * serial_unlink_irq_chain() to race in after i->head is published but
-+ * before the IRQ is fully set up — another port sharing the IRQ can then
-+ * join the chain and run the shared-IRQ THRE test while IRQ startup is
-+ * still in progress, triggering an "Unbalanced enable for IRQ" warning
-+ * in kernel/irq/manage.c.
-+ */
- static int serial_link_irq_chain(struct uart_8250_port *up)
- {
- 	struct irq_info *i;
- 	int ret;
- 
-+	guard(mutex)(&irq_chain_mutex);
-+
- 	i = serial_get_or_create_irq_info(up);
- 	if (IS_ERR(i))
- 		return PTR_ERR(i);
- 
-+	/*
-+	 * Serialise against the list manipulation in the interrupt handler
-+	 * and in serial_unlink_irq_chain().  irq_chain_mutex is still held
-+	 * which prevents serial_unlink_irq_chain() from entering and freeing
-+	 * the irq_info until the first request_irq() completes.
-+	 */
- 	scoped_guard(spinlock_irq, &i->lock) {
- 		if (i->head) {
- 			list_add(&up->list, i->head);
-@@ -171,7 +191,8 @@ static int serial_link_irq_chain(struct uart_8250_port *up)
- 		i->head = &up->list;
- 	}
- 
--	ret = request_irq(up->port.irq, serial8250_interrupt, up->port.irqflags, up->port.name, i);
-+	ret = request_irq(up->port.irq, serial8250_interrupt,
-+			  up->port.irqflags, up->port.name, i);
- 	if (ret < 0)
- 		serial_do_unlink(i, up);
- 
-@@ -182,8 +203,7 @@ static void serial_unlink_irq_chain(struct uart_8250_port *up)
- {
- 	struct irq_info *i;
- 
--	guard(mutex)(&hash_mutex);
--
-+	guard(mutex)(&irq_chain_mutex);
- 	hash_for_each_possible(irq_lists, i, node, up->port.irq)
- 		if (i->irq == up->port.irq) {
- 			if (WARN_ON(i->head == NULL))
-
----
-base-commit: eb3f4b7426cfd2b79d65b7d37155480b32259a11
-change-id: 20260528-bug-221579-8250-shared-irq-race-581e4900a178
+base-commit: 0e35b9b6ec0ffcc5e23cbdec09f5c622ad532b53
+change-id: 20260708-ccaione-genio-serial-aliases-e5f2c28b5ff6
 
 Best regards,
--- 
-Jing Wu <realwujing@gmail.com>
+--  
+Carlo Caione <ccaione@baylibre.com>
 
