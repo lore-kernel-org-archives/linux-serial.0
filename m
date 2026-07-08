@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECFEB1ABED9;
-	Wed,  8 Jul 2026 06:03:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDE3B1C84BC;
+	Wed,  8 Jul 2026 06:03:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783490591; cv=none; b=k4gUpWOvtvhOveM5F+6o27WrB7p4qUHHbL55Lvi38K1LFR4hbak6m+i1xb572VZ6b2kHnaNZXHs0PC+ivbZ+bemk1wGT5NxO2BmNv7RNQnI/ABXl0qgzshsBTkouGvMUiPy0hzWsOG5JD6MwVdCAhIIMD3LguACuJtFjHkFq9SY=
+	t=1783490640; cv=none; b=JhRL75MyrjuVWG7Z6oPUj5bmEln8clOaqUlcFV9uQYOUgGqtA/lWe5+mXxw3XVWvX+opSn0Q30X9ebHCxKs8gM/y9/WBDBRu8p29y01T8rMU0EoNB8lcm1Kyh88Wb5Dx5wXH2fvY4dWzU192DjWzOJ6ytd7eRcqw8n9uh71tl/4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783490591; c=relaxed/simple;
-	bh=gSKIrVdgDbhsjTT7Fwbx/W0AdkIDbkQRquzcDz2U2OU=;
+	s=arc-20240116; t=1783490640; c=relaxed/simple;
+	bh=GHGM6DdqMKYaVkNMvoYlLJ4JgEBlFHcA0prOojP0OkU=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=jh0iBGTWMCJre3gm4Jrs39cXMIN3629DTpnhUTv6zMwT6gqtDqmgFrXJ3sVhRWUhuDsKVSnHKI2rNaN+YdRK0CHirkeHu4hFFE46TO+eMR/QgvDQ1k5gY/ATAzaMdYjtjsg9J9NIpNaQRLwpyBcpFOl4ruYo5z45UuAX0UMkqtY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VS1igjd+; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=ZPYCx04qW7o1tLcqWB6BNUsVQEFhTIohUgG8/WxnDREulYNE+husF9WKMbBH1QwgBTLzVZzR88Et+6WZQMjULEguFBP3BsujP47ulyloQJbyeVL8trkmbNoqJHwYw2gH7HL5tpoybYDPYpALtoyyX4T5LbiTssbrX1A7cojLIs0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N1czfc4x; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VS1igjd+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28F071F000E9;
-	Wed,  8 Jul 2026 06:03:06 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N1czfc4x"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19AA31F000E9;
+	Wed,  8 Jul 2026 06:03:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783490589;
-	bh=Fj0iGrfuPytQrb9kpP8/968TUDgqCaTRyYSgg+8fF50=;
+	s=k20260515; t=1783490638;
+	bh=krXgiCcw20UboyAFh1hr7VQZ/rEOaJ/YHz5XUVIESzY=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=VS1igjd+3YmBZqpEuQoiMIY5jWsl1riPbUXso0rwL+OMjlUUIU+30bmzLg2xDhivU
-	 HcCwgb9O/Lm3a5hMot8aOkDOvxO2YIKXk/FO9zlsuVYRhplNgGYLkFLGkEf8X8P4Ye
-	 U2XlpF2qg3YG65tJflmLZy/qYkmweh7gWW+qxlhJeQdBc2pDtLtB85D9OBiTMSoKGV
-	 Ggd+0rTSq9gj/w/dTgtXLiwvedzaeKNvKGtZ+Evf6g84Qa1+QbR8AbOiPnrhLkWl24
-	 V95QPPWHbjJFv7j3506pyO4STg9/jYAQKh48Nz2TMKWkrPxhkqm4PjmDegChUsWBq9
-	 5xkqaqIbTcYsg==
-Message-ID: <25599a7f-e9cb-4aa0-a375-d9b4ed52be5e@kernel.org>
-Date: Wed, 8 Jul 2026 08:03:04 +0200
+	b=N1czfc4x7LSbEyZQduOFeiSBGC2KjuVttAgUTnPlyzKf+Ljd+uFZ5ukQ2uXxq5E8I
+	 iZZP2ANSd2gOjYyzI+ijpUnScN+4lWL63ToiXtSZbpzDAJyXW5rbJrxq7wIlXLcE2g
+	 1R1YxVe6Gd3r7EPaHYfEqeKwPBeiogx7wCdth0ia0ZwtbTUTvjqhLqdbo5UCrmmIiW
+	 9ci87obv72Q5W/WmOZWHKkz/6TJ66R3DQksTZWvTM7kJwlKx3MG5ltDzOo5c3ffCQz
+	 JHOh9K9Gj4JMZ2IQBbnZ2URQvg49e9fetNIxzVxIVqg9s2iQhLZi08QIBAuuDubnZW
+	 DDkZwzWGuLTLA==
+Message-ID: <0ede8499-abe2-41d3-bb0c-095c02c5b699@kernel.org>
+Date: Wed, 8 Jul 2026 08:03:55 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,15 +35,13 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] serial: 8250: fix shared IRQ startup race causing IRQ
- warning
-To: Wang Zhaolong <wangzhaolong@fnnas.com>, gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org, andriy.shevchenko@linux.intel.com,
- albanhuang@tencent.com, tombinfan@tencent.com, jackzxcui1989@163.com,
- kees@kernel.org, osama.abdelkader@gmail.com, realwujing@gmail.com
-References: <20260527092052.2086342-1-wangzhaolong@fnnas.com>
- <20260708031115.3757150-1-wangzhaolong@fnnas.com>
+Subject: Re: [PATCH v6] serial: 8250: fix use-after-free in IRQ chain handling
+To: Qiliang Yuan <realwujing@gmail.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Anton Vorontsov <avorontsov@ru.mvista.com>, Alan Cox <alan@redhat.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ Wang Zhaolong <wangzhaolong@fnnas.com>
+References: <20260707-bug-221579-8250-shared-irq-race-v6-1-f8c499a90bdd@gmail.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -88,42 +86,61 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20260708031115.3757150-1-wangzhaolong@fnnas.com>
+In-Reply-To: <20260707-bug-221579-8250-shared-irq-race-v6-1-f8c499a90bdd@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-Ah, you are fixing the same thing as:
-https://lore.kernel.org/all/20260707-bug-221579-8250-shared-irq-race-v6-1-f8c499a90bdd@gmail.com/
+Ah, now I see you are fixing the same thing as:
+https://lore.kernel.org/all/20260708031115.3757150-1-wangzhaolong@fnnas.com/
 
 I did not look up who of you was first.
 
-Note the above contains you in the commit log:
+But:
 Reported-by: Wang Zhaolong <wangzhaolong@fnnas.com>
 Closes: https://bugzilla.kernel.org/show_bug.cgi?id=221579
 
-You both CCed each other, so you know the other's submission. I don't 
-understand why you both send the patch? Anyway, you guys speak to each 
-other and decide who sends the (fixed) patch.
+Looks like he reported and apparently tries to fix that too ;). You were 
+obviously CCed, talk to them and don't send two patches for the same issue.
 
-On 08. 07. 26, 5:11, Wang Zhaolong wrote:
+On 07. 07. 26, 16:06, Qiliang Yuan wrote:
 ...
 > --- a/drivers/tty/serial/8250/8250_core.c
 > +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -154,10 +152,18 @@ static struct irq_info *serial_get_or_create_irq_info(const struct uart_8250_por
+> @@ -131,10 +131,11 @@ static void serial_do_unlink(struct irq_info *i, struct uart_8250_port *up)
+>    * - allocate a new one, add it to the hashtable and return it.
+>    */
+>   static struct irq_info *serial_get_or_create_irq_info(const struct uart_8250_port *up)
+> +	__must_hold(&hash_mutex)
+>   {
+>   	struct irq_info *i;
+>   
+> -	guard(mutex)(&hash_mutex);
+> +	lockdep_assert_held(&hash_mutex);
+>   
+>   	hash_for_each_possible(irq_lists, i, node, up->port.irq)
+>   		if (i->irq == up->port.irq)
+> @@ -151,19 +152,37 @@ static struct irq_info *serial_get_or_create_irq_info(const struct uart_8250_por
+>   	return i;
+>   }
+>   
+> +/*
+> + * serial_link_irq_chain() hooks the given 8250 port into the IRQ chain.
+> + *
+> + * hash_mutex must be held from the hash lookup through the first
+> + * request_irq() completion.  Dropping it earlier allows a concurrent
+> + * serial_unlink_irq_chain() to race in after i->head is published but
+> + * before the IRQ is fully set up — another port sharing the IRQ can then
+> + * join the chain and run the shared-IRQ THRE test while IRQ startup is
+> + * still in progress, triggering an "Unbalanced enable for IRQ" warning
+> + * in kernel/irq/manage.c.
+> + */
 >   static int serial_link_irq_chain(struct uart_8250_port *up)
 >   {
 >   	struct irq_info *i;
 >   	int ret;
 >   
-> +	/*
-> +	 * Keep the hash lock held until the first request_irq() completes.
-> +	 * The first port publishes i->head before request_irq() starts the IRQ;
-> +	 * a second port sharing the IRQ must not join the chain and run the
-> +	 * THRE test while the IRQ core is still bringing the line up.
-> +	 */
 > +	guard(mutex)(&hash_mutex);
 
-The same as in the other patch:
 hash_mutex is no longer an appropriate name for this lock.
 
 > +
@@ -131,7 +148,39 @@ hash_mutex is no longer an appropriate name for this lock.
 >   	if (IS_ERR(i))
 >   		return PTR_ERR(i);
 >   
+> +	/*
+> +	 * Serialise against the list manipulation in the interrupt handler
+> +	 * and in serial_unlink_irq_chain().  hash_mutex is still held which
+> +	 * prevents serial_unlink_irq_chain() from entering and freeing the
+> +	 * irq_info until the first request_irq() completes.
+> +	 */
 >   	scoped_guard(spinlock_irq, &i->lock) {
+>   		if (i->head) {
+>   			list_add(&up->list, i->head);
+> -
+
+Unrelated change.
+
+>   			return 0;
+>   		}
+>   
+> @@ -171,11 +190,14 @@ static int serial_link_irq_chain(struct uart_8250_port *up)
+>   		i->head = &up->list;
+>   	}
+>   
+> -	ret = request_irq(up->port.irq, serial8250_interrupt, up->port.irqflags, up->port.name, i);
+> -	if (ret < 0)
+> +	ret = request_irq(up->port.irq, serial8250_interrupt,
+> +			  up->port.irqflags, up->port.name, i);
+> +	if (ret < 0) {
+>   		serial_do_unlink(i, up);
+> +		return ret;
+> +	}
+>   
+> -	return ret;
+> +	return 0;
+
+Unrelated and mainly unneeded change.
 
 thanks,
 -- 
