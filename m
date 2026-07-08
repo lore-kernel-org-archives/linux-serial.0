@@ -1,217 +1,123 @@
-Received: from va-2-36.ptr.blmpb.com (va-2-36.ptr.blmpb.com [209.127.231.36])
+Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F7CA293B5F
-	for <linux-serial@vger.kernel.org>; Wed,  8 Jul 2026 07:33:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.127.231.36
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14DAC3EBF07
+	for <linux-serial@vger.kernel.org>; Wed,  8 Jul 2026 07:39:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783496038; cv=none; b=BKos+crK30MTinoOUT5kAw/EETdvRlgBCDiWpQshmn4ZuA5KRZc26zF+o9IoRzRKYliRwFmNM1vzByH8WNLixWsRbI+9a1VnWbR/cYcAHQQAoFTnQmW28z3/xS38Si0iiDqM4l1rjQDysY8obY6e43EPMrV3rg0UiqxwdauzlvA=
+	t=1783496397; cv=none; b=K//rWaCaMOju6JHUYHQnNYgcPL/wyjM7kD07Mdf4CQMH5YSnEnrVdXNjQWQxYRDXAgRHwWhhDXngq/DodjNFnd4oUJPPIt3xjXC/LZe4U+roVCT7T7mbvleDkDpeRbwkFkMl9sAoYH1yhSaFrUUvFormUP3GDS4/IvX1hR9FHig=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783496038; c=relaxed/simple;
-	bh=1OS4Ye+cS0oIuNv1QC/5bSBIi5SQQjKdlwgtz1cC0pc=;
-	h=To:Subject:Mime-Version:Content-Type:In-Reply-To:Date:Message-Id:
-	 Cc:From:References; b=tqybfKWBqh+wQp2zPhV1Z0/REWlVw8P42oLp78gYXp2/cVnDp8XCZHOYGq4+ND8zSYJHaeiOHXWS3oKZnJsy1arAfk/VtklgS1Mc3Le+DT5xYqxFCoFX9mVF1e8xBUovgJMmvixI516ij9eFbBGtld37xmmvo4oDGJ5IVpmXPes=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=fnnas.com; spf=pass smtp.mailfrom=fnnas.com; dkim=pass (2048-bit key) header.d=fnnas-com.20200927.dkim.feishu.cn header.i=@fnnas-com.20200927.dkim.feishu.cn header.b=OAqy6g6Z; arc=none smtp.client-ip=209.127.231.36
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=fnnas.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fnnas.com
+	s=arc-20240116; t=1783496397; c=relaxed/simple;
+	bh=Eq3OobiBuPPEljSZV1qR/ybfYbxFRevHYoljGwbs/oQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=WuqBV6yIN81KjPXB1ywI6j6EuHl5BYMIgQ0LFpEYPcUjznbwh+00sYWTikw5XHcdD5EqysYRfRZoX11GsBkX8rd3IZnTjpJ1oMH1vy/FlJy6XCJS4j4zp8n44UaxeUj2PN+Mr0Gv8gPffDZ4TFlaETnSk7xWV//57m07U/e8B2M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XX7WgMkM; arc=none smtp.client-ip=209.85.214.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fnnas-com.20200927.dkim.feishu.cn header.i=@fnnas-com.20200927.dkim.feishu.cn header.b="OAqy6g6Z"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- s=s1; d=fnnas-com.20200927.dkim.feishu.cn; t=1783496019;
-  h=from:subject:mime-version:from:date:message-id:subject:to:cc:
- reply-to:content-type:mime-version:in-reply-to:message-id;
- bh=1OS4Ye+cS0oIuNv1QC/5bSBIi5SQQjKdlwgtz1cC0pc=;
- b=OAqy6g6Znofn4+Cw0Pqwbe6Ev8KK0Ya29W/nkisC3++lMARAOBlMtKtHGDrGggzh97RuAj
- kDaVnRxw9Nikittz9KKiY1U1jVk3ZCvNT5CvtBNaEvaEuHx9L/MPq3cUfqU1qtUMHNxuWk
- Qpo2/UkpVzSNIDuP3wB1RBAYeYi9x8mSwRP8acyXWOUqIdZh3Lpp6U5d20OuZHbPcIrEwp
- ca+uI/7WJfGjvtwIbbA0MzIkLVQNj/fX3RBHg+hf11r5urnuvXH0tRIHk2imrKtUH658yA
- YuzdyiTK1kIRqLS2LYZKIf75QpmOV0HrzxzZ5yx+F4BS9xkfG004QpYfI4yyZQ==
-To: "Jiri Slaby" <jirislaby@kernel.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XX7WgMkM"
+Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-2cca24023edso5804455ad.1
+        for <linux-serial@vger.kernel.org>; Wed, 08 Jul 2026 00:39:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1783496385; x=1784101185; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=I+pxaPIGiPBZm50eJSfbW6UPjpiFIRlWoavGQXcAOzg=;
+        b=XX7WgMkMjXJpxVOkgqwW4t3lmNAnnosNcNw0iUW1FmOIu065Quoe6KAGlXGK9gAxkx
+         dbFbU/eC/3hKz6Sq9w1VD8rMIGsAE8Odezioci9UprMpUSiolqD0taME1xqcSfpznlTx
+         F8ssyR3OXNEKA/QkLd/+/2llzUeGQBTNU9ZY/4Xzh5u2jyF3KFl+U2M7xchGB4gAKVJT
+         WnME3IfwmhX2ZDHw9IdkCzWiBIpEYGYIwgooDWYurWjNLnqir6DVfogymj0WHA/ElvGS
+         OGBj0MgKsIhxR+eLyfE7mTPWBMiWnRed+PGdJHRcknTTzlCZxr+gLZ+1PVjj+o23lGp3
+         NIeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783496385; x=1784101185;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=I+pxaPIGiPBZm50eJSfbW6UPjpiFIRlWoavGQXcAOzg=;
+        b=CMTPVVK2ioXcWlRuQZzWsQ9sPDOoA8nMMEJkGKsA6hNGFCGW9qJTppCJty+NnA+FNK
+         LCdEFgolmQJxv0WJSR0o0703ioyGUOqsQ6kdxLE/f0wTzd0xVTP4DVUeIgizUBZyG1JW
+         xNJgP6tVGZGbZC9YBxC6icIqGSKj5/fyjU4jYYpnKjZ5fkDsLCimIdcxaAvXll1UKJez
+         kKi5oy60b6ZLY/RJ6gKDMcWN9FnYIoZWRnPfHOeuf6sITnIW5RQ+ES50edEStzc2DEdL
+         sZbWIboUpUZbaZ0TQG/4VX4I+LoJMR+IvR9dvTScf/2ZGTHk+3u7/xHqSvxGnEmQB00e
+         b5sw==
+X-Forwarded-Encrypted: i=1; AHgh+RoeCtlBylT52azgpuMK/u8PZEImZNhC9mJZjV2pfG7otYVmY8TKAkSDV24MBXFkQR04MPD97Rm1qVPyAck=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzHmWxT9NNQ436Mu+N1z0CBIPE/mbE0Xq3iCDhvLQUv5rWSeVB9
+	rZ0tXcB3XSJO2KtAuVbmtZpM5PFmI9jMUQZkm4n9L7G8uwSPmJxvnosHL8WCIvJxkSE=
+X-Gm-Gg: AfdE7clkiVqpp6Exx3VyM8x9C7CYqWf6lY9+p8DnAlRKYYlad9KyyJ5KNgSSAzl7IE8
+	+bE7XeXFL7tPsBBt4VWgwb79JNtAHFwXO04OXPz2WnxDRAcS31+gybaBeTSFu293OTExSAAh9pQ
+	b1vg92EbLz52PyaO66AarHVi5QlKoEhp5rZrqcDaOhztGLFyo8DWwdmcMMWNlnQltKCxupNDnjO
+	/uLWjL+zzNzfQlANSCzgjHR8ROpjsk/pgpokZARfn1MSWPcoOfzHgwQgpqZ/nIj2+8BTs+5xv+B
+	3Jz5CfjGsyX13r08lYrFi1v3brnnGAP/s+QCLEEJc4RSMHqoHElAIvLiL5k+W+4LKkrYspJ3bKL
+	k/b6eB2IwMvifIoq/9Ws/lNzA/OaRszAQhBvHlAUIaxzGc6ifsN4NaiuOnMGQ5igbcO+li/EtAt
+	0cTsUS1ojibOJ6DuDJVg==
+X-Received: by 2002:a05:6a21:4582:b0:3bd:3800:7538 with SMTP id adf61e73a8af0-3c0bcf49ca1mr1613758637.33.1783496384550;
+        Wed, 08 Jul 2026 00:39:44 -0700 (PDT)
+Received: from ubuntu.. ([138.199.21.246])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-ca5b3b25204sm1997705a12.28.2026.07.08.00.39.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jul 2026 00:39:44 -0700 (PDT)
+From: Jing Wu <realwujing@gmail.com>
+To: jirislaby@kernel.org
+Cc: gregkh@linuxfoundation.org,
+	avorontsov@ru.mvista.com,
+	alan@redhat.com,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	wangzhaolong@fnnas.com,
+	yuanql9@chinatelecom.cn
 Subject: Re: [PATCH v6] serial: 8250: fix use-after-free in IRQ chain handling
+Date: Wed,  8 Jul 2026 15:39:38 +0800
+Message-ID: <20260708073938.3975921-1-realwujing@gmail.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <0ede8499-abe2-41d3-bb0c-095c02c5b699@kernel.org>
+References: <20260707-bug-221579-8250-shared-irq-race-v6-1-f8c499a90bdd@gmail.com> <0ede8499-abe2-41d3-bb0c-095c02c5b699@kernel.org> <20260708071138.3698581-1-realwujing@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <0ede8499-abe2-41d3-bb0c-095c02c5b699@kernel.org>
-Date: Wed, 08 Jul 2026 15:33:36 +0800
-Message-Id: <5cf37150673ea4d5c28f94db91cdf68504b50522.0e091ec2.1d26.4eb2.8da3.53f8a6520707@feishu.cn>
-Cc: "Qiliang Yuan" <realwujing@gmail.com>, 
-	"Greg Kroah-Hartman" <gregkh@linuxfoundation.org>, 
-	"Anton Vorontsov" <avorontsov@ru.mvista.com>, 
-	"Alan Cox" <alan@redhat.com>, <linux-kernel@vger.kernel.org>, 
-	<linux-serial@vger.kernel.org>
-From: "Wang Zhaolong" <wangzhaolong@fnnas.com>
-X-Lms-Return-Path: <lba+16a4dfd51+8b698c+vger.kernel.org+wangzhaolong@fnnas.com>
-References: <20260707-bug-221579-8250-shared-irq-race-v6-1-f8c499a90bdd@gmail.com>
-	<0ede8499-abe2-41d3-bb0c-095c02c5b699@kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-
-> From: "Jiri Slaby"<jirislaby@kernel.org>
-> Date:=C2=A0 Wed, Jul 8, 2026, 2:04 PM
-> Subject:=C2=A0 Re: [PATCH v6] serial: 8250: fix use-after-free in IRQ cha=
-in handling
-> To: "Qiliang Yuan"<realwujing@gmail.com>, "Greg Kroah-Hartman"<gregkh@lin=
-uxfoundation.org>, "Anton Vorontsov"<avorontsov@ru.mvista.com>, "Alan Cox"<=
-alan@redhat.com>
-> Cc: <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>, "Wang=
- Zhaolong"<wangzhaolong@fnnas.com>
+On Wed, Jul 08, 2026 at 08:03:55AM +0200, Jiri Slaby wrote:
 > Ah, now I see you are fixing the same thing as:
-> https://lore.kernel.org/all/20260708031115.3757150-1-wangzhaolong@fnnas.c=
-om/
->=C2=A0
+> https://lore.kernel.org/all/20260708031115.3757150-1-wangzhaolong@fnnas.com/
 > I did not look up who of you was first.
->=C2=A0
-> But:
-> Reported-by: Wang Zhaolong <wangzhaolong@fnnas.com>
-> Closes: https://bugzilla.kernel.org/show_bug.cgi?id=3D221579
->=C2=A0
-> Looks like he reported and apparently tries to fix that too ;). You were=
-=C2=A0
-> obviously CCed, talk to them and don't send two patches for the same issu=
-e.
->=C2=A0
-> On 07. 07. 26, 16:06, Qiliang Yuan wrote:
-> ...
-> > --- a/drivers/tty/serial/8250/8250_core.c
-> > +++ b/drivers/tty/serial/8250/8250_core.c
-> > @@ -131,10 +131,11 @@ static void serial_do_unlink(struct irq_info *i, =
-struct uart_8250_port *up)
-> > =C2=A0 =C2=A0* - allocate a new one, add it to the hashtable and return=
- it.
-> > =C2=A0 =C2=A0*/
-> > =C2=A0 static struct irq_info *serial_get_or_create_irq_info(const stru=
-ct uart_8250_port *up)
-> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0__must_hold(&hash_mutex)
-> > =C2=A0 {
-> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 struct irq_info *i;
-> > =C2=A0=C2=A0
-> > - =C2=A0 =C2=A0 =C2=A0 =C2=A0guard(mutex)(&hash_mutex);
-> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0lockdep_assert_held(&hash_mutex);
-> > =C2=A0=C2=A0
-> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 hash_for_each_possible(irq_lists, i,=
- node, up->port.irq)
-> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (i->i=
-rq =3D=3D up->port.irq)
-> > @@ -151,19 +152,37 @@ static struct irq_info *serial_get_or_create_irq_=
-info(const struct uart_8250_por
-> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return i;
-> > =C2=A0 }
-> > =C2=A0=C2=A0
-> > +/*
-> > + * serial_link_irq_chain() hooks the given 8250 port into the IRQ chai=
-n.
-> > + *
-> > + * hash_mutex must be held from the hash lookup through the first
-> > + * request_irq() completion. =C2=A0Dropping it earlier allows a concur=
-rent
-> > + * serial_unlink_irq_chain() to race in after i->head is published but
-> > + * before the IRQ is fully set up =E2=80=94 another port sharing the I=
-RQ can then
-> > + * join the chain and run the shared-IRQ THRE test while IRQ startup i=
-s
-> > + * still in progress, triggering an "Unbalanced enable for IRQ" warnin=
-g
-> > + * in kernel/irq/manage.c.
-> > + */
-> > =C2=A0 static int serial_link_irq_chain(struct uart_8250_port *up)
-> > =C2=A0 {
-> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 struct irq_info *i;
-> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 int ret;
-> > =C2=A0=C2=A0
-> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0guard(mutex)(&hash_mutex);
->=C2=A0
-> hash_mutex is no longer an appropriate name for this lock.
->=C2=A0
-> > +
-> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 i =3D serial_get_or_create_irq_info(=
-up);
-> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (IS_ERR(i))
-> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return P=
-TR_ERR(i);
-> > =C2=A0=C2=A0
-> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0/*
-> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0 * Serialise against the list manipulation=
- in the interrupt handler
-> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0 * and in serial_unlink_irq_chain(). =C2=
-=A0hash_mutex is still held which
-> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0 * prevents serial_unlink_irq_chain() from=
- entering and freeing the
-> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0 * irq_info until the first request_irq() =
-completes.
-> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0 */
-> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 scoped_guard(spinlock_irq, &i->lock)=
- {
-> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (i->h=
-ead) {
-> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 list_add(&up->list, i->head);
-> > -
->=C2=A0
-> Unrelated change.
->=C2=A0
-> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 return 0;
-> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 }
-> > =C2=A0=C2=A0
-> > @@ -171,11 +190,14 @@ static int serial_link_irq_chain(struct uart_8250=
-_port *up)
-> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 i->head =
-=3D &up->list;
-> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 }
-> > =C2=A0=C2=A0
-> > - =C2=A0 =C2=A0 =C2=A0 =C2=A0ret =3D request_irq(up->port.irq, serial82=
-50_interrupt, up->port.irqflags, up->port.name, i);
-> > - =C2=A0 =C2=A0 =C2=A0 =C2=A0if (ret < 0)
-> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0ret =3D request_irq(up->port.irq, serial82=
-50_interrupt,
-> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 =C2=A0 =C2=A0up->port.irqflags, up->port.name, i);
-> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0if (ret < 0) {
-> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 serial_d=
-o_unlink(i, up);
-> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return ret;
-> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0}
-> > =C2=A0=C2=A0
-> > - =C2=A0 =C2=A0 =C2=A0 =C2=A0return ret;
-> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0return 0;
->=C2=A0
-> Unrelated and mainly unneeded change.
->=C2=A0
-> thanks,
-> --=C2=A0
-> js
-> suse labs
->=C2=A0
+> Looks like he reported and apparently tries to fix that too ;). You were
+> obviously CCed, talk to them and don't send two patches for the same issue.
 
-Hi Jiri, Qiliang,
+I sent a v7 [1] addressing the three review items you raised, and added
+Co-developed-by: Wang Zhaolong and Qiliang Yuan.
 
-Thanks for looking at this.
+Wang has just posted a v3 [2] which copies the very same changes from
+our series — irq_chain_mutex rename, __must_hold(), lockdep_assert_held()
+— without any acknowledgment.  No Co-developed-by, no mention of our
+series in the changelog.  It presents these as his own improvements.
 
-From my side, I do not want to make this a patch ownership discussion.=C2=
-=A0 I have
-sent my v3 here:
+The full timeline, for the record:
 
-=C2=A0 https://lore.kernel.org/all/20260708072306.3921604-1-wangzhaolong@fn=
-nas.com/
+  May 27  Wang v1 — only the THRE test race, no use-after-free fix
+  May 28  Our v1 — both races, full fix
+  May 29  Wang on our v3 thread: "v3 fixes the Bugzilla reproducer"
+  Jun 24  Our v5 — added __must_hold() and lockdep_assert_held()
+  Jul  7  Our v6 — back to guard style
+  Jul  8  Our v7 — renamed hash_mutex to irq_chain_mutex (per Jiri)
+  Jul  8  Wang v3 — copies the rename, __must_hold(), lockdep_assert_held()
+                  from our v5/v7, claims as own work
 
-It addresses the lock rename comment, keeps the change focused on the requi=
-red
-locking, and has been verified again with the QEMU ttyS1/ttyS3 shared IRQ
-reproducer.
+Wang's v2 (Jul 8) was posted after our v5 and v6 and uses the same
+lock-move skeleton.  His v3 (Jul 8) was posted after our v7 and copies
+the irq_chain_mutex rename and __must_hold()/lockdep_assert_held() that
+we added in v5 and v7 — yet his changelog gives no credit.
 
-My main goal is simply to get this reproducible mainline regression fixed
-soon, because with panic_on_warn=3D1 it breaks my regular build/regression
-testing.=C2=A0 I do not have any promotion or credit pressure around which =
-patch is
-taken.
+I've been happy to add him as co-developer on our v7.  I would expect
+the same basic courtesy in return, but apparently that's too much to
+ask.
 
-So I think the choice should be left to the maintainers.=C2=A0 Please take =
-whichever
-version you think is the better basis for mainline.
+[1] https://lore.kernel.org/r/20260708-bug-221579-8250-shared-irq-race-v7-1-xxx@gmail.com
+[2] https://lore.kernel.org/all/20260708072306.3921604-1-wangzhaolong@fnnas.com/
 
 Thanks,
-Wang Zhaolong
+Jing
