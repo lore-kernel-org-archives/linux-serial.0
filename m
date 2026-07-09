@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D4FB39891E;
-	Thu,  9 Jul 2026 07:12:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43C3D34D4CE;
+	Thu,  9 Jul 2026 07:15:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783581129; cv=none; b=ZQo1e35TMp8BchQfMf86iucHp5KBwKCWCrUzJEBKB3IgsOdH33VNd3dMhhmC9uZJIeWkVnjzvhBcclraLEGpRkQdD5otX2ajxLI+s2CahmJQCeBD750PCOsw1VouVpisPHo1ntjhpuKPl1otJpMVdGsFtY6XPq2n3JwIwhab/uo=
+	t=1783581328; cv=none; b=Wm+pd02wQopL9dORvTvbPaCohnuPYxEj65I0eCvy0NUPZ2/mxMCyha6RnBmeg0qTm9ehHOgrTE3yTUPL923cVaaVIsIT1legdbCwsw/DWOUopEnwyrmrH6ta2p6gvBCzZwvMsc2WASx4ADcIH+75dgQR8DkMMXXwe5fSI9nwZXE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783581129; c=relaxed/simple;
-	bh=leo0P133rrbNqobaHaACFvOE1tGvWuZcnQJknu6XxrI=;
+	s=arc-20240116; t=1783581328; c=relaxed/simple;
+	bh=WdSR441NKOMTKsasewYrtwHIN8OLgEjCQ1aBsApRgow=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=rZNUWu/xHx6FGdtCwKOJRF6JHGOKFedunFUIrYBArNNfGHI/MDMnbN4CGrKJR2385J/wnLk44AZROTsXn4D9TbZZfsm773V5r9imuYfpFP0JXmQcn72REp6DsNDcGPM86u2KwULjDegecCM/yKSSy9zt2+Fxtl8EgMUBr36cMsc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jW12i+pz; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=GsogM1hCX2eSEVkJkBFGOtZODgajc7uWeyNR50LcTnm87wRWmN18zYlDyZCJ3KioKKDgtbul91W2fSYKymjUh42uZaBBwa1x2875/dJGwrEkwOmYxULEdx17b85AZUBQujPSnHY1DrP51DTmUPrXN80ItCu79W4otrFHMQ0fOqg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=htJRnZ7G; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jW12i+pz"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 787821F000E9;
-	Thu,  9 Jul 2026 07:12:06 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="htJRnZ7G"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FA681F000E9;
+	Thu,  9 Jul 2026 07:15:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783581127;
-	bh=+JODDSlPbVLYYCSwYiG9hxtdJYIFgMsCdee8uNmCpy0=;
+	s=k20260515; t=1783581326;
+	bh=cF0eVD5olzr1eYRO2KucDiaZmcLy/yJ6ot339dEMkHI=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=jW12i+pzSqRKa27wJAM9rgVWBQlMv1SN3kZhsWs+1RkknKn/8sS7mg4LmWReNhkhU
-	 MB2ZQBIZcGsqtQ/+uZC07nSlGUF7nzbfDrLE9fp7rJ5vfiogpte6f0kT4/kCrmK8gQ
-	 LScdMSShvzogOn9hgn4QC7S94CVuRtuuXfYOoz7XzG2n9RPl7Xyr75EtXY8ssrEXMH
-	 KwptWMu+fcseLcGSnS1NzJoe9ushSoOngUZgka17Y6T+A4ENnKizWMqUsg7vaquHap
-	 CwYj4hVc7LTbUgWeUTuZKPzO2GjO6BC6eB2lE6PauYiPFSxweW0es1ri4ZqNhcDJr5
-	 vKBU8zrLUsvbQ==
-Message-ID: <3a683b79-addc-4a41-a699-1656fd5250d8@kernel.org>
-Date: Thu, 9 Jul 2026 09:12:04 +0200
+	b=htJRnZ7G/gayHxDDXsbEZEUv+37vWfXZJgmGBsJx6pjIFjUoLEYvlbICG9oRhvxzy
+	 gMFHewt3aaQ5QjN2zvgFXqKBF/Mr7AShmql7rC1iBp51lxHCMw4p9PgbS1HnTRxzSE
+	 Ps/Nm1YTYlRY5nqMX/47tZt5LVq6sPBGHbHK4Pb4YYFUy+mNnd0EnMGp+MIdFkp8Ib
+	 zlLLlA2B5LxZr3dHEpneiH1XZ6EiShJS4ix6e8/u4QvzhC6h5GnoSXhv9iftPGrNpi
+	 6MRbrMb65pdYXXXjK6uVX3gLoF4AGkz+eOminaQcgs6U83n7VNoKfCT1lzYn5ya+PU
+	 b+yZKrTF6hjdQ==
+Message-ID: <f9ec0660-9cd1-496a-92a1-ebcc7f80282e@kernel.org>
+Date: Thu, 9 Jul 2026 09:15:24 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,7 +35,7 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 07/15] serial: 8250_mxpcie: speed up RX using
+Subject: Re: [PATCH v3 08/15] serial: 8250_mxpcie: speed up TX using
  memory-mapped FIFO window
 To: Crescent Hsieh <crescentcy.hsieh@moxa.com>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -43,7 +43,7 @@ To: Crescent Hsieh <crescentcy.hsieh@moxa.com>,
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
  FangpingFP.Cheng@moxa.com, Epson.Chiang@moxa.com
 References: <20260709053314.435629-1-crescentcy.hsieh@moxa.com>
- <20260709053314.435629-8-crescentcy.hsieh@moxa.com>
+ <20260709053314.435629-9-crescentcy.hsieh@moxa.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -88,7 +88,7 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20260709053314.435629-8-crescentcy.hsieh@moxa.com>
+In-Reply-To: <20260709053314.435629-9-crescentcy.hsieh@moxa.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
@@ -97,39 +97,41 @@ On 09. 07. 26, 7:33, Crescent Hsieh wrote:
 > --- a/drivers/tty/serial/8250/8250_mxpcie.c
 > +++ b/drivers/tty/serial/8250/8250_mxpcie.c
 ...
-> @@ -266,6 +271,29 @@ static void mxpcie8250_unthrottle(struct uart_port *port)
->   	serial_out(up, UART_IER, up->ier);
+> @@ -318,6 +320,37 @@ static u16 mxpcie8250_rx_chars(struct uart_8250_port *up, u16 lsr)
+>   	return serial8250_rx_chars(up, lsr);
 >   }
 >   
-> +static void mxpcie8250_do_rx_chars(struct uart_8250_port *up)
+> +static void mxpcie8250_tx_chars(struct uart_8250_port *up)
 > +{
 > +	struct uart_port *port = &up->port;
 > +	struct tty_port *tport = &port->state->port;
-> +	u8 buf[MOXA_PUART_FIFO_SIZE];
-> +	int recv_room, gdl;
+> +	unsigned int count, txsize;
+> +	unsigned char c;
 > +
-> +	recv_room = tty_buffer_request_room(tport, port->fifosize);
-> +	if (!recv_room)
+> +	if (port->x_char) {
+> +		uart_xchar_out(port, UART_TX);
 > +		return;
+> +	}
+> +	if (uart_tx_stopped(port) || kfifo_is_empty(&tport->xmit_fifo)) {
+> +		port->ops->stop_tx(port);
+> +		return;
+> +	}
+> +	txsize = serial_in(up, MOXA_PUART_TX_FIFO_CNT);
+> +	count = min(kfifo_len(&tport->xmit_fifo), port->fifosize - txsize);
 > +
-> +	gdl = serial_in(up, MOXA_PUART_RX_FIFO_CNT);
-> +	if (gdl > recv_room)
-> +		gdl = recv_room;
+> +	for (unsigned int i = 0; i < count; ++i) {
+> +		if (!uart_fifo_get(port, &c))
+> +			break;
 > +
-> +	for (int i = 0; i < gdl; ++i)
-> +		buf[i] = serial_in(up, MOXA_PUART_RX_FIFO_MEM + i);
+> +		serial_out(up, MOXA_PUART_TX_FIFO_MEM + i, c);
+> +	}
+> +	if (kfifo_len(&tport->xmit_fifo) < WAKEUP_CHARS)
+> +		uart_write_wakeup(port);
+> +
+> +	if (kfifo_is_empty(&tport->xmit_fifo) && !(up->capabilities & UART_CAP_RPM))
+> +		port->ops->stop_tx(port);
 
-This looks like tty_prepare_flip_string() is what you wanted instead.
-
-> +
-> +	port->icount.rx += gdl;
-> +	tty_insert_flip_string(tport, buf, gdl);
-> +	tty_flip_buffer_push(tport);
-> +}
-> +
->   static u16 mxpcie8250_rx_chars(struct uart_8250_port *up, u16 lsr)
->   {
->   	struct uart_port *port = &up->port;
+What's the reason not to use uart_port_tx() et al.?
 
 thanks,
 -- 
