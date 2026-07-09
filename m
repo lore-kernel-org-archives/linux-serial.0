@@ -1,46 +1,46 @@
 Received: from TYDPR03CU002.outbound.protection.outlook.com (mail-japaneastazon11013064.outbound.protection.outlook.com [52.101.127.64])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA7C03A960E;
-	Thu,  9 Jul 2026 05:34:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFF763B3BE9;
+	Thu,  9 Jul 2026 05:34:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.127.64
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783575248; cv=fail; b=HVwr0gvPYq2PVYjIUXC+FLLwBgq0zRPQs+fB+T26Tsz/zo9+TT7VYkiuevcqTW2AqC7zeebpUB6O9QbpcQ7PbdQlHR2FisJuLbuA72XaO616bctIYSng9oPS+yJAnm5OqxGHjwG+l/SyldKQkTGLfvn36gDpwci5QxJVRzZ4Cqs=
+	t=1783575250; cv=fail; b=lL4ILXBqoipsIJBPv79H8NRHL7UjYc0IXzgR1aNB31LXdnJec8snL/9UPf/dlnIZ2c/pJrH8n4bhSiCCoU1zdysAjFGUycIDRHTrLksBIdqT+mwuCGcXs/MsuziELsr9JqHS7ObKQMglI7zVjx8gZH7nNRMwZxkFAF69lW0mWF4=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783575248; c=relaxed/simple;
-	bh=wzeFOSkHQhiosE0oBC7uE1M9dMcFatQWyn0SknBfUV4=;
+	s=arc-20240116; t=1783575250; c=relaxed/simple;
+	bh=mC28292vgvkf7eo7aibnbuJxtPvPzuvJGgItBxuh/Bg=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=Wl0byZRUku+1G8AY71WKlX+vAFWNPf7TcAnYgLKt7NDGPxDYtcI7Bfw3NTF3sWLsI9snRy/csBB/yKkIqjC/3gTk0eoFlR0NqcZce7G3P29BxVMhzdMPGFtjN879Lq81h5X/TyAHb48uBQgi8CGkbGpn46JK8G3E8iqJI1iI0zY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=moxa.com; spf=pass smtp.mailfrom=moxa.com; dkim=pass (1024-bit key) header.d=moxa.com header.i=@moxa.com header.b=fRz86g7f; arc=fail smtp.client-ip=52.101.127.64
+	 Content-Type:MIME-Version; b=iHaAzK2bZUsh6QJBtT6DyJSVOb2PJgPPZDYpjkykxeuy9ybBbx3VVtvUhi/bmU3a76h7/HUxWwynlaycq4aAVf/TuLvopD1ryttcAbPU/mXzxHCDDU49YPLyjizkoHqHskXqGg6/6POeLcKkOhSfgr6QBMZrA33+7yx9/7j8wiA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=moxa.com; spf=pass smtp.mailfrom=moxa.com; dkim=pass (1024-bit key) header.d=moxa.com header.i=@moxa.com header.b=VJmknK0W; arc=fail smtp.client-ip=52.101.127.64
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=moxa.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=moxa.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=moxa.com header.i=@moxa.com header.b="fRz86g7f"
+	dkim=pass (1024-bit key) header.d=moxa.com header.i=@moxa.com header.b="VJmknK0W"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=MdoRUxHETZa9QIYPmq5hVXq4uMKUWiZZx5C1qd4JHb0SsAmGJ9nq5Si/LSm1XFInzJrrt27lWbSIGfso3dHis7WNjIfuXY8PbZOydq0aNIaaE167aK7DpF9RNPHWxGGD+EPFey6cSqupn30lvYJ5RiQN4ZsASdh5yMFUaDRWiB+SDOjlHL3NLOCum9DuTIqFm0Iqx9KfXVKEyS6x8FVmrMobUT3xeJ2yDiZa5MwjL4kAAvIxfjAN07EWynYaBZfUqfTr5xNjrGt3TbUrPwm8d+K6t+uw9Ov3gIs6HrEXBc6vWH5Mo7hvSzRSy+RDlYVdarD/kyz6cxA/SNyQSi4MjA==
+ b=zPsmWqYon0B/G3cb/sHOJyHy/XLjF7An+ZS0mPKI224yEIOg1rrQu16dFo9Co0RsP7yunIhlVHtoAaRmQXNqEwMzmvH6VsA1d5Kfr3/jKnhStoKQg10zBQ284WmZNktH/+VGWxeLxJof0COYCUMni6/2qZXDgOleRlKVmosUHgJHe2TOnzsZofTGZl+Uq+ZEF+RQ7751Ucw71BH5PzinT+cVxLaoz9BJhBF61zGlqiQk63gFk1HdJ5axSaWcFjonfEKdpV9D4PcM/Hj8nkSFutVugJj94QFCxVqqzDkHxRajujdcUGWMdFwjqXBbtdFwTmRjvgwpP7eSlk+q9Zy6rA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NV2thdKa6kG6x0SF+9UMRfodGAu4YGS0g86qrvTMs4U=;
- b=MDbYY8nOdX4HB4oaprRa9n9nrZu7qZkW3MphpgtpMcoqgf4CZKtPX0cKc4YFMYjtPvjT8pAtNJmxn4YgL8hNdDZBjfChKrcG9gLXfmdSMPBH0fkXEecwPXBlyRZQ1v9zjve0sm8H4VH8pNUxu5tpAaj5xISYdP9e+W2HGc9DFXSmVdeV3DtAtW+YMNoWSM3xbXq1YT17SxM0WJHghOF/lXzi1e5bKOZROvn6UnceIqcAP4M5Zjh107Z6+CwS74FHDQzazrxkD44HYgfExl8huC1SUuqfQ3QdGuV5oDOWrQXz1SCS89NfINN6bMRHFg0wrJzpXQEqdwBP5f/pfiqaEw==
+ bh=I/zfMslzS59dqLJvPNHncZ+5Lwj8Eq25bnU6T2kQ0ZM=;
+ b=qN+xYKRa337StTeNRyqzIn5XgXvfV+lU4frIA5dM6h5NIEeAD/THmX1ZHzWNmhiXeErsUtYcp8R7Lo3TWlW7Z7ZEeiTtqkTFgnAAtZwswfz4md8QvI5KuCa3h5OnFnx23maxe1I+m07Q3VBpqN4WmSJ+ki38uo8ZVZyLtY2mM0WnDKtWVmzR5JiDtXYmM3PFg6j0RUTjU3rDgqGs6l51xPMgofUgvnttWN2MA8fUd0n7mYJOe0Rv7Yd+bIbSCqJ4zroV9JRfSTczGjrbLsyGKNnbEKf5Jtsv/639Q1gExBxMbdcDPTg0sqc9SEn3RFa67irY+LF75+ttHiMSKUULxQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=moxa.com; dmarc=pass action=none header.from=moxa.com;
  dkim=pass header.d=moxa.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=moxa.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NV2thdKa6kG6x0SF+9UMRfodGAu4YGS0g86qrvTMs4U=;
- b=fRz86g7fRhKe+ERViiK5Ebwa+WEx4wFd7sr7DUkfykgfcxUCdniIrJphsOHxm2UZKnZH4BlxM2EodXiydtnmpiRy/yDw8VhgmYzLEuNfAFNeNeFuRrzY1BAzgDINOXrov4yprC5dq+2Kmagl1qspzrQf59BzDAeEw1yLWe5BF5s=
+ bh=I/zfMslzS59dqLJvPNHncZ+5Lwj8Eq25bnU6T2kQ0ZM=;
+ b=VJmknK0Wdp48QjsYwIZjH5judbXQWpLuDlrJOLwyt6Yu+5EwTfr5RoF0ScBNuEOwBnI1YJ8ferITnT+MpfNKtT5O8gEoFVxeZeBBN+OLV6mzGjDyHz/3rmIwmZkNdK2j5ikrSc8Kl38JTln70UNEoKwEwLviLTxjIGACGwzq8Xo=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=moxa.com;
 Received: from SEYPR01MB5387.apcprd01.prod.exchangelabs.com
  (2603:1096:101:d8::6) by TYZPR01MB4610.apcprd01.prod.exchangelabs.com
  (2603:1096:400:260::14) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.181.15; Thu, 9 Jul
- 2026 05:33:57 +0000
+ 2026 05:34:00 +0000
 Received: from SEYPR01MB5387.apcprd01.prod.exchangelabs.com
  ([fe80::8387:921a:71de:7aec]) by SEYPR01MB5387.apcprd01.prod.exchangelabs.com
  ([fe80::8387:921a:71de:7aec%6]) with mapi id 15.21.0181.014; Thu, 9 Jul 2026
- 05:33:57 +0000
+ 05:33:59 +0000
 From: Crescent Hsieh <crescentcy.hsieh@moxa.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
@@ -50,9 +50,9 @@ Cc: linux-kernel@vger.kernel.org,
 	FangpingFP.Cheng@moxa.com,
 	Epson.Chiang@moxa.com,
 	Crescent Hsieh <crescentcy.hsieh@moxa.com>
-Subject: [PATCH v3 10/15] serial: 8250_mxpcie: defer uart_write_wakeup() to workqueue
-Date: Thu,  9 Jul 2026 13:33:09 +0800
-Message-ID: <20260709053314.435629-11-crescentcy.hsieh@moxa.com>
+Subject: [PATCH v3 13/15] serial: 8250_mxpcie: add break support for RS485 using MUEx50 features
+Date: Thu,  9 Jul 2026 13:33:12 +0800
+Message-ID: <20260709053314.435629-14-crescentcy.hsieh@moxa.com>
 X-Mailer: git-send-email 2.45.2
 In-Reply-To: <20260709053314.435629-1-crescentcy.hsieh@moxa.com>
 References: <20260709053314.435629-1-crescentcy.hsieh@moxa.com>
@@ -68,167 +68,146 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: SEYPR01MB5387:EE_|TYZPR01MB4610:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1deec3b9-5940-425c-8b23-08dedd7bac58
+X-MS-Office365-Filtering-Correlation-Id: 31f632b0-4800-42b9-437a-08dedd7bada1
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|23010399003|366016|1800799024|52116014|56012099006|22082099003|18002099003|6133799003|38350700014;
+	BCL:0;ARA:13230040|376014|23010399003|366016|1800799024|52116014|56012099006|22082099003|18002099003|38350700014;
 X-Microsoft-Antispam-Message-Info:
-	h96pZNYiA4Ub54atsdUNemNwhpUBo4T/eXAk6X/yajKqNdwnDsFPXQxKLj1dW0zbC919knSILv56QSgOPQ9dNH5FJzJ0BLUpptZo/IAORw7zt6wMS1hEeHl5VurkDFTx8WijIdAd1wGRqka3FoZWvBQxXR2HGaA30Gq17jDIG8T4F67ZrFjueV+rOD8uczr0jO8gVLYCVbfgHDXyDs1mYC/rRklt4Bccs024frEpCmQn+4Y6YyrPPGhApSeZ5vMNWRxPGTQ0sZ7hg6Wd/p1aqK5VHIqILhxhpwrimHCnLUFoZvpPbwW57Kfv3S3+eYDe7HPD8RYgSxc8kEirfRA6MAyj9ooEcH8+89C4d+cu7Q9O6/moJfCqp/q4VLP6HX1/ZJ+I2cI4XQKjPpW+VWk5ngFbq+gNNivJMOp1Y9qwF9uJ+qB1ifPLl9YAuDaaZkjzYfHe+6pLqTf4gZey5YQdbhM3m4s4WdTxr4T1VSTEwPEsClTaVJT9dkESSd/Gz8jpsMji/cHryu/X9jwsa3aTNL3gt4UM0BNlrw1e5j97t5upUpfWhSG1UD5gv0b5k2/rrW57ROLk7617Q/qnVa7pFETHcSXM+xFDROPt9hCtg7SYccA7YHGmxC+NKzDmYCWmKSfdaLuqsrvyuhmgZilPEuZVZiW2951zTc0mXG0GsTT4bwlaQmbfyWc2b40hjR6aEKqSkWAWOjpHj5MVNOipqy/TdJZcpBEAGym8rDNMJhQ=
+	hDxkCxEb/6tJQ4ZRThxQ1kz8fxdy4gzbdskda8lLoD9UF3X7WMNVD2VxxoTQFyZ9j0gq/uy8eAeqO5DV8+oFNv9NElAO2ERTW4RdAD1sRXVF1GlzyOtifkUZq+RbnK9CZPv46lMrA1XQ2e7TUlvo1adw52sIhZzKc5ubx4WETaDtD7z89wiCjMhK9JCk+nHWEztBZjduoGhKs5oKOEKVK/M2mLQeaqRzmGY+64znZl4ZQGUthHWUa66d5nATSobb+CQyGGD2nVE/uk1lWLEO+QnA06KIa9FCQUITfSkE4fJboyWJTMjnK/GXVZ9nEeM+MJNuhAQNlDAPaIaNYY8EwAoxEff2F8NeVJuQOA6nynFm5SoAw2yQxMKIvrScttQsZem6LIYcOgoiWGz5bGEY/6iIgnv5mEMsN0j8zr4zkp+pyLKfhxthTJ/6/2Q+TIAcQStUihNIhM/hav3GsfkRFNadWjdjcbmwYvDhd6SCwLJBxp8dB+28ai9dklHUw4+Xy5p/OK7KmUrNQM4TMxlY7xmapAsvV7+JjPJX/9aPiCV/z4lyxbSq3KMhhjTcRLbUFRPSyLxrCTFJcRUPUhm012K+MVa2zRsEK+66PHPsUfNzc1RSwIpU0eE4WKwkKVPR9npishZZ3kfhrDAoHn80LfiguICUy2Pr0N0t3Ncv97N+6O2PmX3Q3o0NCsi02gfX/1QXGRRp29IK2t4+fsqwp7hSSQ/6ko3vatfC8l2/hv4=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SEYPR01MB5387.apcprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(23010399003)(366016)(1800799024)(52116014)(56012099006)(22082099003)(18002099003)(6133799003)(38350700014);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SEYPR01MB5387.apcprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(23010399003)(366016)(1800799024)(52116014)(56012099006)(22082099003)(18002099003)(38350700014);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?JmjsBbhTS5XwlXLzJ6FOg65/C/slQHxJQLDAEll6aq9zZi3Z2Lm8Zqamwdj4?=
- =?us-ascii?Q?YW5DaL9nz+7JaxqHvZjjgd05/s/gmUFR2YHgSZ7U0AY6luJc9Gk5TiXLnOy5?=
- =?us-ascii?Q?0t/Kj9uecZNm0q1OF4zCtv56GNXT8/YSt+rBQgk4t5gTmKUtLAmWTzIBN3kQ?=
- =?us-ascii?Q?nXEhhasooHjP2yyuXUAwVTmG+gc3jJmjTdVPgInaT1wJdFkTZA9V9secOqWx?=
- =?us-ascii?Q?k3bosqyrT/JkaTae1R6tbr+3D4Sp2NHC53J5VLRWkAOPER8FDhcEbQIEvRZz?=
- =?us-ascii?Q?9q+aqvh4t1pJWgI1jBfeMXS7gS5vQX5JS+vMlPt/vfz1jE3A+jkhrMRZtKeL?=
- =?us-ascii?Q?FEoKefHWbPZZX2T6Vtjy+X8pmnkkud3O8bnOBLjwo1Hc9X6D+SzJhr2b83oi?=
- =?us-ascii?Q?nWI+kOo69oNuufDqji8yVHonl0esL+zh3CT5FysfKdeSgWZpyElF0TmnYHLi?=
- =?us-ascii?Q?lbsuOOIL9JIPrDSaj+YfBi/4bvhMGO0G5B6PpfjVQv5qvGljfaZsYTTNJTwP?=
- =?us-ascii?Q?4OYj+nswgKhQYuHvNVvWTsy/bmM6me8/Ci8eg4ylPGmgkS1DG0t6BTIaTtUu?=
- =?us-ascii?Q?We7UoXoQZqeQ82DBfX8BWvo1jsqZEmNERcljup6UC34rWjMcpO/NtMDTvTiK?=
- =?us-ascii?Q?rc4j5mDl1Xfb/NPcx8uzSWd0crOwiiZVB0qozg/AVCzs3FJ4M8jxvu/la63x?=
- =?us-ascii?Q?bIPshJ2/XZgXnYUHpJCKnY9/EDZEg8dcGkqlH3zVZPa9slt0TzNCcfczTDrI?=
- =?us-ascii?Q?yk6QnjGwMWPT8UX/4GRlTK0aWjXfzCjA3nAXq3CaMX2UMdWwSh7qcd/IoZUL?=
- =?us-ascii?Q?fTeNYNdJJJx65FDwvc/5GyylYzY2vjO33rLnVtIHnSYqtGclfbwSNwEyI3CM?=
- =?us-ascii?Q?sh/yZxymHbujuvFPdGIVL0ab57t0X4IwnsB2euUEcdohZLxqq8ozyKrpcEnV?=
- =?us-ascii?Q?YqJcHtd0lm+B/Cs6lH4BPYyeNeYXBRi4amYRzyTUgkjlquQoAxtBozqliVEL?=
- =?us-ascii?Q?El+cOOgqxcFAP73K3bKN1RppTI4dcgCrG3QGaeVy/VDHuwukt0nW6YZgEHBH?=
- =?us-ascii?Q?sKDQTKrwatgFP42msK8WSK6vakjKF2OhDCRcys+qEWEDr10nBOa23k9THOen?=
- =?us-ascii?Q?nAyhhmTl1pxkHHGq/0MQfcDjv+lkrYDxWybtTKXDv4Ro9DJWN2iMxhf0Dm8M?=
- =?us-ascii?Q?Rra4y0YNj9tNdd6Lolcbd3je8SH3KumwBLsNxdTxzyXO7h3L215Q3QO5Ow77?=
- =?us-ascii?Q?9zq41GVt9jgBtpY14MS3t6YfM1ZUT3/jicqNB6FZkxGzELJ2kCgNLwwJFAhr?=
- =?us-ascii?Q?TuQpm22co8qZJpWtbvkdLt2WMP++EDN8BFVZboV0XUcIa6KhKJLdRDHqL/rz?=
- =?us-ascii?Q?QVqePHBiPR4PlJJU7cn9ljoxVZuyoAXTNej2wptA1mep2H0GN63W2WTPkncN?=
- =?us-ascii?Q?e0XdCLGyz2JCSBJHpILEp4s0M9WDd9phfcAb04VMVslGoe1HyK0yeA+3O/cK?=
- =?us-ascii?Q?X+fukz4TeKgJFJ17xj+7eqf8OtMQ46BP8nCRbmTSARlj8ZHhOQ4mfJT6H6wJ?=
- =?us-ascii?Q?kf6MD7h3U6evJkufWcACgWewdhH/OECbz7W50y4gi9BBv2kSH9CaTarAVdUe?=
- =?us-ascii?Q?cHlZg0Bxcj07kEUAMpDiF5nd0WpSvz8m9sRz6zUv6ikQrVPLXzFvgDrlebTD?=
- =?us-ascii?Q?Dyo5yd40qY45TX7pJynEt469R3fKuyYEi8s/4xq8sU2LvQBVNhxdJ4tNt70r?=
- =?us-ascii?Q?YXTYKokjH5YBPvMx5chU2dIN4UD2OsQ=3D?=
+	=?us-ascii?Q?NLbTiItc5u3lDuN+edo2XLlJuWlShNeTsRgG4oRxlag9iPux0wtJF6hblHCx?=
+ =?us-ascii?Q?pSXdTyJD5xihU2WEWCbEru0NLbN6cfWuMx1qb+K4+scCuB3ogTLJ/Ue5boZ3?=
+ =?us-ascii?Q?/hOzgOnd52n76XhAvmgKf7cHCy4XziZ78y6tuD04KECNxjvOkvs77I0s/bhT?=
+ =?us-ascii?Q?lJFL3JkpAdJE+nrRtQxbe1uJWvzI2PCT7lWC53vNP1WoZhJYezAdAyfOECFC?=
+ =?us-ascii?Q?YwOYdLJYYJfbv9d8TKnRrUa/2tfjPi3bped3m45KBkGxHhDB6CGR4y8HVwm6?=
+ =?us-ascii?Q?qhFiGVe11frIBicqc6DtcYCKWLCpKM/MtvJdXHB5IREy9ebbvPwO27CH7dqI?=
+ =?us-ascii?Q?o0mGKicAO6i61gYPfg9QTsD55YwTBeMOvrXM9xcofMaoCbPc70PWovNtDMWt?=
+ =?us-ascii?Q?pMg5/G24UTuncE+Ya4SZnB5gQdR9Yc0MDssZYtM/eTEVYT2X3fk1KP+bG2t4?=
+ =?us-ascii?Q?BekgG0MD7W9F6g2RH1+nW9eVYVs8KOtSZETqtvKOZxQSlzerIboniMT8+pcq?=
+ =?us-ascii?Q?PkrhdLAUwifiv3j89dg+SXEh6RNcHArJQxRPipe+6Ap85g4LU5hqt54hkDpG?=
+ =?us-ascii?Q?oH4QP6LZu7TyAAylGtIaWV31pxTMwboW/cljev+Kppc0Z/Y9ktnhWVdXj4B+?=
+ =?us-ascii?Q?EBHnmA/hrffv3WpWsZyTU24OrmXgi0l6E+C+77SbMyuC/SbLjbI3hiA9EjNB?=
+ =?us-ascii?Q?YhBwNcTss0Px/UnXo9ds2vAw4+O21+I2u+cHttU+uCVf4NQn3FfaUNZPaAcd?=
+ =?us-ascii?Q?yNGR4C8VtwFKRbhV8B+2PAGAbUWzRgNI5s4lKRrM7GNsAGI6nWDqxkiAsE5h?=
+ =?us-ascii?Q?+2tyyGMz5uSgWmxTLZcvW1lTjGF/dsQZZDeIRR5s6/wHGmS9aypHW7083l4A?=
+ =?us-ascii?Q?qODrFq48BVvB/Ev4aZ7PqQ6FBFodnwtSQtIZfWs8opSzRYxCM3+bs0IrkG0h?=
+ =?us-ascii?Q?Vfz73F2eTTMiV/HYZ2o0ADdwKPcIaihCef9QAh4DIt7ZrKfzki0TiW9//8F8?=
+ =?us-ascii?Q?xX7RyGehsLxtbG07x57BaVBTAqoW6lOp1xKlvmHpuOcENU+3pkgxv5TmwTqQ?=
+ =?us-ascii?Q?Vras3/E8poU98+zW9mKgEqzqiP1b4l9FW2KXIIWD73TJtWZz7ka0d23NkRtP?=
+ =?us-ascii?Q?/Xtpp3f7o8NP3Phh18DZhdZWeBHp91u7962a4gG0Vrsh5msnrYz7v4oSUy+z?=
+ =?us-ascii?Q?40Jj+Wp0t+ZwlvHh1uuqXH/8Xgqlf8yQfonDXOdEY48Rf/zlM17oNY8zSNpj?=
+ =?us-ascii?Q?BnUNZas4fV9IeDbJLTy5Af8keHhAEP32h1q0wQOfpvwz9kRcWCTk8fn1vz/4?=
+ =?us-ascii?Q?Fqc2mbM9imIQXehiVhuyYWS4q/5zrvuh5/dnbeLaDrlZPkw/45AUo4WSo9/J?=
+ =?us-ascii?Q?jwVFYtOJgWVhn5l95Nr2uHzZhIrEBlma8GicvEK/8g3C6D2kDw2LhD3FWpy1?=
+ =?us-ascii?Q?FWn+V665iFO6lJpaQHvERo6sd+7QgeajwHgZOSYN9LSkBmJQmlSm3HS2ffWe?=
+ =?us-ascii?Q?9jJ2oK8shhCxwf2pq2nkoEMSpdFnXtcJAbGvI1jkf/igXw5K/c9H4Tcx/5T6?=
+ =?us-ascii?Q?9hj7icjCWKwKGDfzo0QcKQLqUy/OFtDMOlXgxQJ07j0uZ8zCxbeCM3TM9UV5?=
+ =?us-ascii?Q?YL+cQ0wPsCECYbGC9rcLePBFZ2OAOkvIxpQxfK3iD/1q/nkxQjio6rLukNd/?=
+ =?us-ascii?Q?8SWgO97uVzZgWCD65fY4rQLpKSlDBWc2bNACscm3rHaxvVUDUwi4APsDdpBr?=
+ =?us-ascii?Q?PDLOcNmzB0kzRlOTWJHczBREFtqaCTg=3D?=
 X-OriginatorOrg: moxa.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1deec3b9-5940-425c-8b23-08dedd7bac58
+X-MS-Exchange-CrossTenant-Network-Message-Id: 31f632b0-4800-42b9-437a-08dedd7bada1
 X-MS-Exchange-CrossTenant-AuthSource: SEYPR01MB5387.apcprd01.prod.exchangelabs.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jul 2026 05:33:57.6941
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jul 2026 05:33:59.9108
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 5571c7d4-286b-47f6-9dd5-0aa688773c8e
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QSkunD6SKWF3S12Rj2rMt/GuYGYwTFVJdqMCyEgB1ZtB0ZiXv+KXKcgUZPS7Fu+gpn89A8O4Wwj9pR3NYxXO57hl530ulAsM3VVQ0cnTe8Q=
+X-MS-Exchange-CrossTenant-UserPrincipalName: f/5cP13Li2WYmWNUr8c4fmn+Fbp47sL6nN/WlLKkiUYdBo2BMxRoIkGc/bfi18TvhxVyV9Jbg5dhA42jK3CqOB2gXiP/b4+0hRxUb7z27Ko=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYZPR01MB4610
 
-Avoid calling uart_write_wakeup() directly from the interrupt-driven TX
-path.
+On MUEx50, break signaling under RS485 requires a driver-specific
+sequence and cannot be handled correctly by the generic 8250 break
+implementation alone.
 
-Defer the wakeup to a per-port work item and coalesce multiple TX events
-using a pending flag, so only one wakeup is scheduled while a previous
-one is still outstanding.
+Implement a mxpcie break_ctl callback that performs MUEx50-specific
+break handling when RS485 is enabled and fall back to the default 8250
+break handling for other modes.
 
 Signed-off-by: Crescent Hsieh <crescentcy.hsieh@moxa.com>
 ---
- drivers/tty/serial/8250/8250_mxpcie.c | 34 +++++++++++++++++++++++----
- 1 file changed, 29 insertions(+), 5 deletions(-)
+ drivers/tty/serial/8250/8250_mxpcie.c | 49 +++++++++++++++++++++++++++
+ 1 file changed, 49 insertions(+)
 
 diff --git a/drivers/tty/serial/8250/8250_mxpcie.c b/drivers/tty/serial/8250/8250_mxpcie.c
-index c7467fb94021..7b39ad19b331 100644
+index 695a896adf19..549973758542 100644
 --- a/drivers/tty/serial/8250/8250_mxpcie.c
 +++ b/drivers/tty/serial/8250/8250_mxpcie.c
-@@ -15,6 +15,7 @@
- #include <linux/pci.h>
- #include <linux/tty_flip.h>
- #include <linux/types.h>
-+#include <linux/workqueue.h>
+@@ -53,6 +53,7 @@
  
- #include <linux/8250_pci.h>
- #include <linux/serial_8250.h>
-@@ -104,7 +105,12 @@
- #define MOXA_EVEN_RS_MASK	GENMASK(3, 0)
- #define MOXA_ODD_RS_MASK	GENMASK(7, 4)
+ /* Special Function Register (SFR) */
+ #define MOXA_PUART_SFR		0x07
++#define MOXA_PUART_SFR_FORCE_TX	BIT(0)
+ #define MOXA_PUART_SFR_950	BIT(5)
  
-+#define MOXA_EVENT_TXLOW	BIT(0)
-+
- struct mxpcie8250_port {
-+	struct uart_port *port;
-+	struct work_struct work;
-+	unsigned long event_flags;
- 	int line;
- };
- 
-@@ -328,6 +334,8 @@ static void mxpcie8250_tx_chars(struct uart_8250_port *up)
- {
- 	struct uart_port *port = &up->port;
- 	struct tty_port *tport = &port->state->port;
-+	struct device *dev = port->dev;
-+	struct mxpcie8250 *priv = dev_get_drvdata(dev);
- 	unsigned int count, txsize;
- 	unsigned char c;
- 
-@@ -348,9 +356,10 @@ static void mxpcie8250_tx_chars(struct uart_8250_port *up)
- 
- 		serial_out(up, MOXA_PUART_TX_FIFO_MEM + i, c);
- 	}
--	if (kfifo_len(&tport->xmit_fifo) < WAKEUP_CHARS)
--		uart_write_wakeup(port);
--
-+	if (kfifo_len(&tport->xmit_fifo) < WAKEUP_CHARS) {
-+		if (!test_and_set_bit(MOXA_EVENT_TXLOW, &priv->port[port->port_id].event_flags))
-+			schedule_work(&priv->port[port->port_id].work);
-+	}
- 	if (kfifo_is_empty(&tport->xmit_fifo) && !(up->capabilities & UART_CAP_RPM))
- 		port->ops->stop_tx(port);
- }
-@@ -377,6 +386,14 @@ static int mxpcie8250_handle_irq(struct uart_port *port)
+ /* Enhanced Function Register (EFR) */
+@@ -422,6 +423,53 @@ static int mxpcie8250_handle_irq(struct uart_port *port)
  	return 1;
  }
  
-+static void mxpcie8250_work_handler(struct work_struct *work)
++static void mxpcie8250_software_break_ctl(struct uart_port *port, int break_state)
 +{
-+	struct mxpcie8250_port *priv_port = container_of(work, struct mxpcie8250_port, work);
++	struct uart_8250_port *up = up_to_u8250p(port);
++	struct tty_struct *tty = port->state->port.tty;
++	unsigned char tx_byte = 0x01;
++	unsigned int baud, quot;
++	u8 sfr;
 +
-+	if (test_and_clear_bit(MOXA_EVENT_TXLOW, &priv_port->event_flags))
-+		uart_write_wakeup(priv_port->port);
++	guard(uart_port_lock_irqsave)(port);
++
++	if (break_state == -1) {
++		serial_out(up, UART_LCR, up->lcr | UART_LCR_DLAB);
++		serial_dl_write(up, 0);
++		serial_out(up, UART_LCR, up->lcr);
++
++		serial_out(up, MOXA_PUART_TX_FIFO_MEM, tx_byte);
++
++		sfr = serial_in(up, MOXA_PUART_SFR);
++		serial_out(up, MOXA_PUART_SFR, sfr | MOXA_PUART_SFR_FORCE_TX);
++
++		up->lcr |= UART_LCR_SBC;
++		serial_out(up, UART_LCR, up->lcr);
++	} else {
++		up->lcr &= ~UART_LCR_SBC;
++		serial_out(up, UART_LCR, up->lcr);
++
++		sfr = serial_in(up, MOXA_PUART_SFR);
++		serial_out(up, MOXA_PUART_SFR, sfr & ~MOXA_PUART_SFR_FORCE_TX);
++
++		serial_out(up, UART_FCR, UART_FCR_CLEAR_XMIT);
++
++		baud = tty_get_baud_rate(tty);
++		quot = uart_get_divisor(port, baud);
++		serial8250_do_set_divisor(port, baud, quot);
++		serial_out(up, UART_LCR, up->lcr);
++	}
 +}
 +
- static void mxpcie8250_init_board(struct pci_dev *pdev, struct mxpcie8250 *priv)
- {
- 	void __iomem *bar2_base = priv->bar2_base;
-@@ -432,7 +449,7 @@ static void mxpcie8250_setup_port(struct pci_dev *pdev,
- static int mxpcie8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- {
- 	struct device *dev = &pdev->dev;
--	struct uart_8250_port up = {};
-+	struct uart_8250_port up = {}, *new_port;
- 	struct mxpcie8250 *priv;
- 	unsigned short device = pdev->device;
- 	unsigned int num_ports;
-@@ -492,6 +509,11 @@ static int mxpcie8250_probe(struct pci_dev *pdev, const struct pci_device_id *id
- 				up.port.iotype, priv->port[i].line);
- 			break;
- 		}
-+		new_port = serial8250_get_port(priv->port[i].line);
++static void mxpcie8250_break_ctl(struct uart_port *port, int break_state)
++{
++	if (port->rs485.flags & SER_RS485_ENABLED &&
++	    !(port->rs485.flags & SER_RS485_MODE_RS422))
++		mxpcie8250_software_break_ctl(port, break_state);
++	else
++		serial8250_do_break_ctl(port, break_state);
++}
 +
-+		priv->port[i].port = &new_port->port;
-+
-+		INIT_WORK(&priv->port[i].work, mxpcie8250_work_handler);
- 	}
- 	pci_set_drvdata(pdev, priv);
- 
-@@ -502,8 +524,10 @@ static void mxpcie8250_remove(struct pci_dev *pdev)
+ static void mxpcie8250_work_handler(struct work_struct *work)
  {
- 	struct mxpcie8250 *priv = pci_get_drvdata(pdev);
+ 	struct mxpcie8250_port *priv_port = container_of(work, struct mxpcie8250_port, work);
+@@ -535,6 +583,7 @@ static int mxpcie8250_probe(struct pci_dev *pdev, const struct pci_device_id *id
+ 	up.port.throttle = mxpcie8250_throttle;
+ 	up.port.unthrottle = mxpcie8250_unthrottle;
+ 	up.port.handle_irq = mxpcie8250_handle_irq;
++	up.port.break_ctl = mxpcie8250_break_ctl;
  
--	for (unsigned int i = 0; i < priv->num_ports; i++)
-+	for (unsigned int i = 0; i < priv->num_ports; i++) {
-+		cancel_work_sync(&priv->port[i].work);
- 		serial8250_unregister_port(priv->port[i].line);
-+	}
- }
- 
- static const struct pci_device_id mxpcie8250_pci_ids[] = {
+ 	for (unsigned int i = 0; i < num_ports; i++) {
+ 		mxpcie8250_setup_port(pdev, priv, &up, i);
 -- 
 2.45.2
 
