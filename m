@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C0A143932C;
-	Thu,  9 Jul 2026 05:19:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C3EA390CB3;
+	Thu,  9 Jul 2026 05:27:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783574346; cv=none; b=CGAkrDtLeVOqAD7UoJqeSvmepY5C/ahc6R8TI6u0aB0yDOgLgxVBuiIHHFbsYIJAbjUd4dA37PNKGLCmEC1WFGaio4TdPv4itKMC5j7t3GbGKf0KR3N25SexmGJjPiDxTY5WKlAJV7S27ocYCRRZiQq3pkRGwBpg6JocndwXVxA=
+	t=1783574843; cv=none; b=cKRxuJW+Rc5m14wg48VyCwALsUs+qHq7TiNVCqNDhjsVTLjd+67xTFq0EkHiLAHbyatLmFhaFGMiNZMwM5SbisikaP9lpiGbTEwSn5ijZbq8+RohT9si8vG7jBzNY+z+1sm6hlTesgSnyNfZNH2Pp5ZZijZrP06XWoqjD+dYfJg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783574346; c=relaxed/simple;
-	bh=Mz23HpxinhTBJMXB9H2g8ZlCVQ2KCzYFhLD5TwEq6Cc=;
+	s=arc-20240116; t=1783574843; c=relaxed/simple;
+	bh=vwqDMBYSjv8gqPoU1nOysOPHJh5eN5V4wV9NFJDES0o=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=WJcCsogBNku+jl650SKyGUjKVjFWdG/Rzix8P24NiFT1UY69Kg/k0UKp/Sx6KDoo/Wy5DWf5/7YBPxcSd/2JEf0/eAh4tUEVO2sGoYSWjFN07rbyvbwZdh5spzpl+6le5ZSpAsA4KbFA8BK9aL6zBGht2eyoBiZqd0lyitc5g2Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZQgTkk7o; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=YaFzijBekhZbLj7+CKdXGoE4MxqZc0/4fwA6nivX4x8MZHPfMIgNCK4DF6lAWADWVfk0OrVmkRGYKrNIpefU+gKoSuvPUETyx68IxPN98YUUHeBaRKQCAQkE98V2foPdWGCP4pVRGVLHmz8EFsfHtGhVpVGbmYZFZrbyghBJiCk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OhNnI6XR; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZQgTkk7o"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 551E51F000E9;
-	Thu,  9 Jul 2026 05:19:01 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OhNnI6XR"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F0AF1F000E9;
+	Thu,  9 Jul 2026 05:27:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783574344;
-	bh=U07Tc0YIkdsfSk0M4VsXB1xF7rMsrEoDAqiLn01Euk8=;
+	s=k20260515; t=1783574841;
+	bh=tVOQQ1gm3MZyZojREIn2l7JKx5S7mcFVw/rTEMaa2fY=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=ZQgTkk7o5Gtq0vBhgRq3X7NnyvQ48WC5NiKRizm7GFYjlmx1EZ74vLx2y/vXe4W8q
-	 3bCn3NMtd8UdUmQm51tHQZvt7pN1Fp+cXBafzR79pg5S65KftCbLa/z4MCsLtqVfXz
-	 aybFZGLDx2iH1v1QkwN1wuop+TPdStRDkhNE4QJJZsLtknaWkG5rx/0gF8YTwcWvHk
-	 kT7t1dGAFRun27RZnf/T9shpuCNhF6fBMpzufXX8E+pYZRrnOKAcSEh79MYHPlOTNJ
-	 iY/b8tosGccljiA4OrLp2dzde735byWJQZ3mdFaZcd3ROFioJ/PLQscjob0ISvBYVn
-	 0/3nvBlZuuvMw==
-Message-ID: <f391981a-29f8-4ed3-b582-744aa47cbe1d@kernel.org>
-Date: Thu, 9 Jul 2026 07:18:59 +0200
+	b=OhNnI6XRrEpf3ZwrCwpNHNFOrPAjL2ojo6iw0FWwEY/4x/EewKG6iCK5K9gQxmzYN
+	 WVbGhd5MXQYUVzGH8Uua+VoFc7ycTHtS1S4+zAEvIEPs2rHcIbzfJsARayquQ43TqY
+	 0IDe8hCWW2fReqILaKxHXGwfUfb5/RL/04EOWm64sYnpZ6/EK7WVtCRZGLzcv/r8MR
+	 AE3LVZkV00Ggbv2I3kSeRt5RuthiMfDiQfgIdeAdvu2y22wt2WcVkuOkFSsQrUZ9bo
+	 gZxMFbSM/ErhsYtj5wrg5BmlXkRKhmWR5F8muKLos4YYZRMVMnb+YideQLXU9KDAHg
+	 mPfYzxyKKYFGg==
+Message-ID: <eaef5bcc-99df-4549-8d37-fb3d127c414e@kernel.org>
+Date: Thu, 9 Jul 2026 07:27:15 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,18 +35,17 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 4/7] serial: 8250_aspeed_vuart: add VUART over PCI
-To: Andrew Lunn <andrew@lunn.ch>,
- =?UTF-8?Q?Gr=C3=A9goire_Layet?= <gregoire.layet@9elements.com>
-Cc: joel@jms.id.au, andrew@codeconstruct.com.au, lkundrak@v3.sk,
+Subject: Re: [PATCH v4 5/7] soc: aspeed: add host-side PCIe BMC device driver
+To: =?UTF-8?Q?Gr=C3=A9goire_Layet?= <gregoire.layet@9elements.com>,
+ joel@jms.id.au, andrew@codeconstruct.com.au, lkundrak@v3.sk,
  devicetree@vger.kernel.org, gregkh@linuxfoundation.org, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, jacky_chou@aspeedtech.com,
- yh_chung@aspeedtech.com, ninad@linux.ibm.com, anirudhsriniv@gmail.com,
- linux-serial@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+ krzk+dt@kernel.org, conor+dt@kernel.org
+Cc: andrew@lunn.ch, jacky_chou@aspeedtech.com, yh_chung@aspeedtech.com,
+ ninad@linux.ibm.com, anirudhsriniv@gmail.com, linux-serial@vger.kernel.org,
+ linux-aspeed@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org
 References: <cover.1783524645.git.gregoire.layet@9elements.com>
- <28c6e7c493559feffc7e6231b0a2f0b73b7fda41.1783524645.git.gregoire.layet@9elements.com>
- <694c7c37-fb42-4994-93eb-04ed4ae299cf@lunn.ch>
+ <51e455417bdcfe608270c6cb2806b1fd971fb998.1783524645.git.gregoire.layet@9elements.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -91,30 +90,124 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <694c7c37-fb42-4994-93eb-04ed4ae299cf@lunn.ch>
+In-Reply-To: <51e455417bdcfe608270c6cb2806b1fd971fb998.1783524645.git.gregoire.layet@9elements.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 08. 07. 26, 18:46, Andrew Lunn wrote:
->> +	if (silicon_revision_id == AST2600A3_REVISION_ID)
->> +		rc = regmap_update_bits(scu, ASPEED_SCUC24,
->> +					ASPEED_SCUC24_PCIDEV1_INTX_MSI_HOST2BMC_EN | ASPEED_SCUC24_MSI_ROUTING_MASK,
->> +					ASPEED_SCUC24_PCIDEV1_INTX_MSI_HOST2BMC_EN | ASPEED_SCUC24_MSI_ROUTING_PCIE2LPC_PCIDEV1);
->> +	else
->> +		rc = regmap_update_bits(scu, ASPEED_SCUC24,
->> +					/**
->> +					 * The bit 14 is reserved in the Datasheet.
->> +					 */
->> +					ASPEED_SCUC24_PCIDEV1_INTX_MSI_SCU560_EN | BIT(14) | ASPEED_SCUC24_MSI_ROUTING_MASK,
->> +					ASPEED_SCUC24_PCIDEV1_INTX_MSI_SCU560_EN | BIT(14) | ASPEED_SCUC24_MSI_ROUTING_PCIE2LPC_PCIDEV1);
+On 08. 07. 26, 17:35, Grégoire Layet wrote:
+> Add support for VUART over PCIe between BMC and host.
+> Add the host side driver.
+> Support only the AST2600.
 > 
-> checkpatch should be warning about these long lines. Traditionally,
-> the limit is 80 character lines, but recently 100 has been accepted by
-> some subsystems. The exception is when wrapping the lines will make
-> them less readable, but i don't think that applies here.
+> Taken from ASPEED 6.18 Kernel SDK and trimmed down.
+...
+> --- /dev/null
+> +++ b/drivers/soc/aspeed/aspeed-host-bmc-dev.c
+> @@ -0,0 +1,174 @@
+> +// SPDX-License-Identifier: GPL-2.0-or-later
+> +// Copyright (C) ASPEED Technology Inc.
+> +
+> +#include <linux/init.h>
+> +#include <linux/module.h>
+> +#include <linux/kernel.h>
+> +#include <linux/errno.h>
+> +#include <linux/pci.h>
+> +#include <linux/serial_core.h>
+> +#include <linux/serial_8250.h>
+> +
+> +#define BMC_MULTI_MSI	32
+> +#define PCI_BMC_DEVICE_ID 0x2402
+> +
+> +#define DRIVER_NAME "aspeed-host-bmc-dev"
+> +
+> +enum aspeed_platform_id {
+> +	ASPEED,
 
-FWIW 100 is fine by me. 80 is too ancient limit.
+What is this good for?
 
+> +};
+> +
+> +static const int vuart_msi_index[2] = { 16, 17 };
+> +static const int vuart_port_addr[2] = {0x3f8, 0x2f8};
+
+Sort of inconsistent spaces. Both arrays should be unsigned anyway. And 
+for the latter, u16 should be enough.
+
+> +struct aspeed_pci_bmc_dev {
+> +	unsigned long message_bar_base;
+> +
+> +	struct uart_8250_port uart[2];
+> +	int uart_line[2];
+> +};
+> +
+> +static int aspeed_pci_bmc_device_setup_vuart(struct pci_dev *pdev, int idx)
+> +{
+> +	struct aspeed_pci_bmc_dev *pci_bmc_dev = pci_get_drvdata(pdev);
+> +	struct device *dev = &pdev->dev;
+> +	struct uart_8250_port *uart = &pci_bmc_dev->uart[idx];
+> +	u16 vuart_ioport;
+> +	int ret;
+> +
+> +	/* Assign the line to non-exist device before everything is setup */
+> +	pci_bmc_dev->uart_line[idx] = -ENOENT;
+> +
+> +	vuart_ioport = vuart_port_addr[idx];
+> +	/* ASPEED BMC device shift addresses by 2 to the left */
+> +	vuart_ioport = vuart_ioport << 2;
+
+Simply:
+vuart_ioport <<= 2;
+? Or join the two lines?
+
+> +	uart->port.flags = UPF_SKIP_TEST | UPF_BOOT_AUTOCONF | UPF_SHARE_IRQ;
+> +	uart->port.uartclk = 115200 * 16;
+> +	uart->port.irq = pci_irq_vector(pdev, vuart_msi_index[idx]);
+> +	uart->port.dev = dev;
+> +	uart->port.iotype = UPIO_MEM32;
+> +	uart->port.iobase = 0;
+> +	uart->port.mapbase = pci_bmc_dev->message_bar_base + vuart_ioport;
+> +	uart->port.membase = 0;
+> +	uart->port.type = PORT_16550A;
+> +	uart->port.flags |= (UPF_IOREMAP | UPF_FIXED_PORT | UPF_FIXED_TYPE);
+> +	uart->port.regshift = 2;
+> +
+> +	ret = serial8250_register_8250_port(&pci_bmc_dev->uart[idx]);
+> +	if (ret < 0) {
+> +		dev_err_probe(dev, ret, "Can't setup PCIe VUART%d\n", idx);
+> +		return ret;
+> +	}
+> +
+> +	pci_bmc_dev->uart_line[idx] = ret;
+> +
+> +	return 0;
+> +}
+...
+> +static struct pci_device_id aspeed_host_bmc_dev_pci_ids[] = {
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_ASPEED, PCI_BMC_DEVICE_ID),
+> +		.class = 0xFF0000, .class_mask = 0xFFFF00,
+
+PCI_CLASS_OTHERS << 16
+
+> +		.driver_data = ASPEED },
+> +	{ 0 }
+> +};
+> +
+> +MODULE_DEVICE_TABLE(pci, aspeed_host_bmc_dev_pci_ids);
+> +
+> +static struct pci_driver aspeed_host_bmc_dev_driver = {
+> +	.name		= DRIVER_NAME,
+> +	.id_table	= aspeed_host_bmc_dev_pci_ids,
+> +	.probe		= aspeed_pci_host_bmc_device_probe,
+> +	.remove		= aspeed_pci_host_bmc_device_remove,
+> +};
+> +
+> +module_driver(aspeed_host_bmc_dev_driver, pci_register_driver, pci_unregister_driver);
+> +
+> +MODULE_AUTHOR("Ryan Chen <ryan_chen@aspeedtech.com>");
+> +MODULE_DESCRIPTION("ASPEED Host BMC DEVICE Driver");
+> +MODULE_LICENSE("GPL");
+
+thanks,
 -- 
 js
 suse labs
