@@ -1,161 +1,140 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vs1-f51.google.com (mail-vs1-f51.google.com [209.85.217.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37DCB3E3148;
-	Thu,  9 Jul 2026 07:31:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 721703DCD9A
+	for <linux-serial@vger.kernel.org>; Thu,  9 Jul 2026 08:04:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783582283; cv=none; b=SevxZGuHBOYh/ccKvj2zokNAEqfS7z37QL6lIWo/uylzyzldFkB+lKjOv9Bdvg5u8/a42vwPkx55nk7T1KADjplEQiJ6aY2ANSuN9qcOJArwC0PKU6kQU6ehQDaTKwTkm4KgjD4ugDXEq+s7v7jUmJM/mgOeZL3HRfSaNRVzZKc=
+	t=1783584248; cv=none; b=o1E0rcPBjWmXZhFMkWomXO96NK7cSLvtD0YV6wL3/P02jeIGOKvZyKai9aRp1Uqb3/kP6dwSqtTr6bw9H2VpAOMi/juXPBMrcSNhpBPlUx55V/Cl+4pflqE1NsC0LOVG74c4V2GztFgflCl2+3/GmNMvhkTEHZmX8SEeRtT4/9A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783582283; c=relaxed/simple;
-	bh=cjMXLnfC6g6dIxN+DHVrz3kfjIpPNwD3v2Vrk7OqkFQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=b/yGN6Syq9hqIwT7Iwfl9Z8RaC67OancZQzmCXD16KEddaEKXrz6k2bReMxTq4bjCYTlGOfYSRtbODn/seXomFKkfh5WIPVXLA6uO2/Hn6/kJAYB/0Em9IVkJ+8Dm7lKDmwDYt/A5SDoQU+EhB05ND4zc1Q3uS9zCx6aLmk3c9A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Nizz2/0P; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Nizz2/0P"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1783582281; x=1815118281;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=cjMXLnfC6g6dIxN+DHVrz3kfjIpPNwD3v2Vrk7OqkFQ=;
-  b=Nizz2/0PBf3aedaBgxqwxsdMNU/2Y9Q05O+R52Br3rQBYKvmbtSocW70
-   9cZu0wpDGGChdypm5AulaLyy8ku5Y+ohPZIMqMmjw6tMXZMnNy3aPMuln
-   xgee1C6ugz5wnHaGb0gP9I5249hRYZeicOaMXmv+Ndny0PXs6u3mVZv80
-   MPXZzarvIm9xMChRKtXbfUT3P5Z4e83jB8nCWMIZw7u73U14QVo9Y1yn5
-   dPuIrLeJ65NqFjsILJEIHtbYWMmVPcduYrtZq4oLYYlUnN0iR46UHDZzO
-   knJeNlKJUeTfd/nYr1Oi658QsuoGRudV/pd14/UlT+l30axtf7+8QVqc2
-   w==;
-X-CSE-ConnectionGUID: 7rpYzFpFReiPt5X/igFexQ==
-X-CSE-MsgGUID: bEiFxh60QzOOWr5yzr7Zfg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11841"; a="84356458"
-X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
-   d="scan'208";a="84356458"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jul 2026 00:31:18 -0700
-X-CSE-ConnectionGUID: l77jRguWS0KUZDhOEz0AwA==
-X-CSE-MsgGUID: c8A8Itj8SOiqwX6JveJBLA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
-   d="scan'208";a="277729305"
-Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.235])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jul 2026 00:31:10 -0700
-Date: Thu, 9 Jul 2026 10:31:08 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Praveen Talari <praveen.talari@oss.qualcomm.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Richard Genoud <richard.genoud@bootlin.com>,
-	Nicolas Ferre <nicolas.ferre@microchip.com>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	Claudiu Beznea <claudiu.beznea@tuxon.dev>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Peter Griffin <peter.griffin@linaro.org>,
-	Alim Akhtar <alim.akhtar@samsung.com>,
-	Orson Zhai <orsonzhai@gmail.com>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Chunyan Zhang <zhang.lyra@gmail.com>,
-	Patrice Chotard <patrice.chotard@foss.st.com>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Peter Korsgaard <jacmet@sunsite.dk>,
-	Michal Simek <michal.simek@amd.com>,
-	Aaro Koskinen <aaro.koskinen@iki.fi>,
-	Janusz Krzysztofik <jmkrzyszt@gmail.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@armlinux.org.uk>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	bjorn.andersson@oss.qualcomm.com,
-	Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-	linux-samsung-soc@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-omap@vger.kernel.org, linux-mips@vger.kernel.org,
-	Mukesh Kumar Savaliya <mukesh.savaliya@oss.qualcomm.com>,
-	aniket.randive@oss.qualcomm.com,
-	chandana.chiluveru@oss.qualcomm.com
-Subject: Re: [PATCH 0/6] tty: serial: propagate errors from uart_ops.pm
- callback
-Message-ID: <ak9OPNcVAhkfxHvZ@ashevche-desk.local>
-References: <20260709-add_return_check_for_uart_change_pm-v1-0-e85c6ffa8ec4@oss.qualcomm.com>
+	s=arc-20240116; t=1783584248; c=relaxed/simple;
+	bh=ihYWtNaN94O+bAheFYZwm+XaJhDB+RCMGsVPS51Ctao=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=DIDxHGVdo7TkMss4CbzKB7R2lMixcRElujk/GJ+2nggch5sjULcJrNsNp1lrunSh9t53lMu/OuUWPXoUaiRPbiUArp480dEg6yy01sdlIdTxsD4lOiSNuzGXdjsM3EvIujF1d+1yhnscFURv6tu8Ao6cmpW9yJWs1dUFXmxVVQ0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.217.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-vs1-f51.google.com with SMTP id ada2fe7eead31-738a5cc517eso1046860137.2
+        for <linux-serial@vger.kernel.org>; Thu, 09 Jul 2026 01:04:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783584245; x=1784189045;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=yNJ0CPi6whzhd05Ug8Zp7I8ZdqXAVuZLf2mnR6sqHTI=;
+        b=JKX/E9ye0rtkR6UJ9R9f0RpoB88MjSKVhpOgyeNWMbC/0AM4u3tlX6SadectMZn2Az
+         xUoLGQgC9SoQuEo1v+uIbsA7zcSUu9XamKGVrPU2ZSsG3Dr/6vcvWiZ3aFxLKsjgsOho
+         Mf/OJH1QdaFAaxIT7kFHcR9v3D8rz75FH6PRglRvHJkapJJtE4SkNFtQGlr+DO0V31t3
+         OG3HZkMrr0ZdW5+edPlQm8/HJPY505C2snx5o1RCL0qIAflZe9srWHGJsiatBLPt16nU
+         d9XPM2q1EyZJEQlQiUkwdEPso/OGO6+ShCxtlPotTq4NhAu3aD5p5eIo53o3mxwTNJH1
+         /U+A==
+X-Forwarded-Encrypted: i=1; AHgh+Ro7zr0iFckHiYDW898hTya5xcVHiVBEC3Bagi6PtUoqminyUGdPZWAv0jgDX2K96jMCsfd2H6qddSDV9lA=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz2Q9lO6XDvHarY3vBip9H/upRSS1llu4apKPcfqkcc4waXzBTz
+	lQA4OxolxXf8+SdePFIU/kGRAqzaV6B8+AuQ+C6zdZpdub1P2pakalBvBBhqtXe8gQs=
+X-Gm-Gg: AfdE7cmffpjORAlyk7gnzj5/LCR7vjIZh1YHfDezhwXL1xUync87MAatPmN2Gg6uU/V
+	N7C10abWpWorGE/l6bp0Awh8DJH9FPgDav8l+zYjI030/tG5sJiWUwm6sEpm3cPnGQ3xcv+b51+
+	JWaOat7ua+miGFLt2kFPuadmoOcMhjF20Wkc/pdHBOkpaQYRcnonO/GyW/KE5iAPUEXhxvT9++C
+	KGLwtXZ7EgLCWCD2rPGnmyqi4dsfpPSmS9SP/zcs+QjEDOnXlb1sjwiMWPa8LQD6LF+eXv2v+Dm
+	rzZLstSiROPlKjwr3emndUd11Zhz9vdZZXB6pzzphv78ytGzOpGAEQdvTIX9epQnuLVbl69/wlS
+	NOqHYJWAmkbjKqLwAX8Fanm6Mp+rgZL965jupH5E4gs+2TkO2OaJXVYshz86Ud2fdwSRw0ciByd
+	Pxz5Mp8x9yRAsNpKIVrAFFKY7CCWCjEbf1xLHb9r0SqcDwJEqYJQ==
+X-Received: by 2002:a05:6102:3e93:b0:737:d2e8:d64b with SMTP id ada2fe7eead31-744e03ca766mr3975926137.20.1783584245318;
+        Thu, 09 Jul 2026 01:04:05 -0700 (PDT)
+Received: from mail-ua1-f48.google.com (mail-ua1-f48.google.com. [209.85.222.48])
+        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-96ed663ded3sm2774546241.12.2026.07.09.01.04.04
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Jul 2026 01:04:04 -0700 (PDT)
+Received: by mail-ua1-f48.google.com with SMTP id a1e0cc1a2514c-9691ba8bc8aso797928241.1
+        for <linux-serial@vger.kernel.org>; Thu, 09 Jul 2026 01:04:04 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AHgh+Rrj0HjojJXW4Bhdxwz0WVDr8j27s0/XEEcgO2jtA22TxQEHjCcRJaoCClPptdEeAmZIiepkLJ0mxo6HZ4E=@vger.kernel.org
+X-Received: by 2002:a05:6102:c47:b0:737:bfe6:3b02 with SMTP id
+ ada2fe7eead31-744e0369abemr3827978137.18.1783584244666; Thu, 09 Jul 2026
+ 01:04:04 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260709-add_return_check_for_uart_change_pm-v1-0-e85c6ffa8ec4@oss.qualcomm.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20260531-b4-tty-v2-0-f7149947d4ef@kernel.org> <20260531-b4-tty-v2-2-f7149947d4ef@kernel.org>
+In-Reply-To: <20260531-b4-tty-v2-2-f7149947d4ef@kernel.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Thu, 9 Jul 2026 10:03:53 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWrLhDOFeeKJ573pvnmf0cNDsPJKEUQ_g+_+sawLEC6AQ@mail.gmail.com>
+X-Gm-Features: AUfX_mz0QeF12JvS07xaiPbV1Hu_Z54v9ARU9pRFij_0pmo3eygFx3vrDpgxzV8
+Message-ID: <CAMuHMdWrLhDOFeeKJ573pvnmf0cNDsPJKEUQ_g+_+sawLEC6AQ@mail.gmail.com>
+Subject: Re: [PATCH v2 2/4] tty: amiserial: replace get_zeroed_page() with kzalloc()
+To: "Mike Rapoport (Microsoft)" <rppt@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org, 
+	linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Thu, Jul 09, 2026 at 11:55:12AM +0530, Praveen Talari wrote:
-> The uart_ops.pm callback has been declared void since its introduction,
-> which means any error from a driver's power management implementation is
-> silently discarded by uart_change_pm(). Beyond losing the error
-> information, uart_change_pm() unconditionally updates state->pm_state
-> even when the underlying hardware transition failed. This causes the
-> serial core to track a power state that does not reflect reality:
-> subsequent calls to uart_change_pm() see the stale cached state as
-> matching the requested state and skip the callback entirely, leaving the
-> hardware permanently stuck with no further recovery attempt.
-> 
-> On modern platforms where the .pm callback performs real work —
-> enabling clock trees, interacting with runtime PM, asserting voltage
-> regulators — this is a correctness gap. Failures are invisible to the
-> PM framework, the port proceeds to call ops->startup() on potentially
-> unpowered hardware, and suspend/resume errors are hidden from the core
-> that needs to handle them.
-> 
-> This series fixes the problem in four steps:
-> 
->   Patch 1 changes the uart_ops.pm callback signature from void to int,
->   updates uart_change_pm() to propagate errors and only commit
->   state->pm_state on success, and handles the return value at every
->   call site in serial_core.c with appropriate policy per context
->   (propagate, log, or skip-on-failure).
-> 
->   Patch 2 updates the 8250 driver family: serial8250_do_pm() and
->   serial8250_pm() are updated to return int (with the exported symbol
->   declaration updated in serial_8250.h), and the 8250 sub-driver
->   pm callbacks are updated to return 0.
-> 
->   Patch 3 updates the remaining non-8250 serial drivers. All .pm
->   implementations are updated to return 0. The sh-sci forward
->   declaration shared with rsci is also updated.
-> 
->   Patch 4 updates arch-level implementations: SA1100 (assabet, h3xxx),
->   OMAP1/ams-delta (modem_pm, now propagates regulator errors), and
->   MIPS/Alchemy (alchemy_8250_pm).
-> 
-> All existing .pm implementations return 0, so there is no functional
-> change for any current driver. The series purely adds the infrastructure
-> for drivers to report errors going forward, with the serial core ready
-> to handle them correctly.
+Hi Mike,
 
-Just no, please just properly implement runtime PM. The .pm() must die completely.
-I used to have the PoC for that long time ago [1], but due to lack of time and
-other priorities it went abandoned. Also Atlassian made a brain damages move to
-limit repository to 1Gb, so I haven't able to update it for a few years.
+On Sun, 31 May 2026 at 09:04, Mike Rapoport (Microsoft) <rppt@kernel.org> wrote:
+> rs_startup() allocates a transmit ring buffer that is used to buffer reads
+> and writes from/to serial data register.
+>
+> This buffer can be allocated with kmalloc() as there's nothing special
+> about it to go directly to the page allocator.
+>
+> kmalloc() provides a better API that does not require ugly casts and
+> kfree() does not need to know the size of the freed object.
+>
+> Replace use of get_zeroed_page() with kzalloc() and free_page() with
+> kfree().
+>
+> Link: https://lore.kernel.org/all/635405e4-9423-4a25-a6e7-e03c8ea0bcbe@redhat.com
+> Signed-off-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
 
-Note, that Tony (you have him in the Cc list) did a lot for some corner cases
-with that and we still have them IIRC. Tony, do you know what is the state of
-affairs with runtime PM for UART?
+Thanks for your patch, which is now commit d26ed502d0c7c05c ("tty:
+amiserial: replace get_zeroed_page() with kzalloc()") in tty/tty-next
 
-[1]: https://bitbucket.org/andy-shev/linux/branch/topic/uart/rpm-plus
+> --- a/drivers/tty/amiserial.c
+> +++ b/drivers/tty/amiserial.c
+> @@ -443,23 +443,23 @@ static int rs_startup(struct tty_struct *tty, struct serial_state *info)
+>         struct tty_port *port = &info->tport;
+>         unsigned long flags;
+>         int     retval=0;
+> -       unsigned long page;
+> +       void *buffer;
+
+"char *", to match the type of info->xmit.buf?
+
+>
+> -       page = get_zeroed_page(GFP_KERNEL);
+> -       if (!page)
+> +       buffer = kzalloc(PAGE_SIZE, GFP_KERNEL);
+> +       if (!buffer)
+>                 return -ENOMEM;
+>
+>         local_irq_save(flags);
+>
+>         if (tty_port_initialized(port)) {
+> -               free_page(page);
+> +               kfree(buffer);
+>                 goto errout;
+>         }
+>
+>         if (info->xmit.buf)
+> -               free_page(page);
+> +               kfree(buffer);
+>         else
+> -               info->xmit.buf = (unsigned char *) page;
+> +               info->xmit.buf = buffer;
+>
+>  #ifdef SERIAL_DEBUG_OPEN
+>         printk("starting up ttys%d ...", info->line);
+
+Gr{oetje,eeting}s,
+
+                        Geert
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
