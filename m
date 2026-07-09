@@ -1,133 +1,101 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E68F13ED132;
-	Thu,  9 Jul 2026 08:54:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D656237C93D;
+	Thu,  9 Jul 2026 09:02:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783587299; cv=none; b=bvEeS311yWAjGQJANZwW2n6Due9D5J36RGuHsELRHNY+OTUL2nUzg3NHFf1XbjclNmqJx+ieH2XedTmfAXNXTqs+EPZfKJpf6Q/Lbf/fXG7YuUV5nzGr61kNZTqvVAyahlN/O3JBFUyHu8Mbi9euSrc9Hjz54Nl1ErhkEjxzsik=
+	t=1783587753; cv=none; b=fFeJGgLfXbn6Eac7G+L8ITXrTMh0Trkf31W5uSJEB03YuybBDAZ9KAnOk3LWcH6q6TPwFPc0QMheREMz/JnPcfOzFD2cJxPBPIH2XijC5MwwwFVPBGsXbUTtriQVu9ig/RKvS10kXshU53iZytm24OAt94vHIoBRNwWdgYt20iA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783587299; c=relaxed/simple;
-	bh=MIMlw1ZTsS+i/HrQ35IrRPR41sC3MZsulgHovt0Jrj0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=R+p2sAp/fApyhfzGZPAixrfq+Iuyq1GREEY9hCeQOd13Vi6Yz8ZimTcPDph9+jLgOPXLARPidnY93hpMl1uhAlwBTyGqPCZSZSXPjkPJ2ulj92dUlKlPa6DlrSq86KiMf3Ynl5DpJJsBf/An7klKcjYFvePhkcx2c4nPsHiUyhE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ev/MX5jc; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1783587753; c=relaxed/simple;
+	bh=sza15MUSuSXVu8kTcOWLvE/LJLLTF64g9tL/ubrh7a8=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=WhbEJPQJFRENVPfAdQvQ+eVn9lNSVHshhTNIjcv/a5VOlYNAX8d/+VK5xP/E2f6GbDYLlJUIoFiBan+xsrBsZ7BeJjT8wEkmph2lsspnESklwUUi60LwbyAIDR6CmS92CTl8I3kNktbYrxQT+WB9D1QIzp03bcHNT0Crr2C37AQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=vyrcTssg; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=7PeEjYvs; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ev/MX5jc"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A2D41F0155C;
-	Thu,  9 Jul 2026 08:54:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783587297;
-	bh=E+NtRvec8F8aekKuz6iezeEslYswvJ60lH8RuxMxcZU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=Ev/MX5jc/Q/G6Qw04KbVPZw5mRQE+925mjjdbilnfAAOVJNfB1vqvULVLTCS81vKk
-	 wN2ytgPlflg25QwFvcSP2Mv0/Og4TU7H5c3xEcu8NHXE2ECgL5+5plo48ZJQVghFzF
-	 ARE7QFfwFhP2oxWPJQtYxV8h4ax//Sd33HlQF2Bo5rtU+5NcVs10Z9Cev8yw3fQhzM
-	 74/hC6VBgPCPGTR9nk/d7uzrDgXFSYvRHsdwaKfU4yNLh06rO1EPX2L5jhL+ypVDGJ
-	 d3Hgo4aJ7/3SoluWgBzvIxxhHBj0j/dKNRgKt+m0jpCu4Y9TGMHVfy4bB/NJB0jyl8
-	 5sg4Dq9ZRwf1A==
-Date: Thu, 9 Jul 2026 10:54:53 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: =?utf-8?B?R3LDqWdvaXJl?= Layet <gregoire.layet@9elements.com>
-Cc: joel@jms.id.au, andrew@codeconstruct.com.au, lkundrak@v3.sk, 
-	devicetree@vger.kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, andrew@lunn.ch, 
-	jacky_chou@aspeedtech.com, yh_chung@aspeedtech.com, ninad@linux.ibm.com, 
-	anirudhsriniv@gmail.com, linux-serial@vger.kernel.org, linux-aspeed@lists.ozlabs.org, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 2/7] dt-bindings: serial: 8250: aspeed: add
- aspeed,vuart-over-pci bool prop
-Message-ID: <20260709-shaggy-discreet-dodo-e5ffbb@quoll>
-References: <cover.1783524645.git.gregoire.layet@9elements.com>
- <501428d6a6cb1548bf357c25313dbc319724ead2.1783524645.git.gregoire.layet@9elements.com>
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="vyrcTssg";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="7PeEjYvs"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1783587749;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=sFXYIbm/Hjr/hStCE1cyUKbLBfMtzQJll0dILXg2Qpg=;
+	b=vyrcTssgl5LI37H4TnnJNqDzP6aXIjASuIuNsU1SCnHvCcsg+dGPy/Sp44nyNQVQZM2tl0
+	Cy53BxDb9I2aIghEKUyk0EuvyubpjwkZCHXIFrb9yNGY2eX2MNutRRfRqK4tZo4l5dgPGN
+	JjdM07BpRs7lP/rWWfbqkJb9nW0hh6x5O1DqwFLpLUFaGwa/LPjDu2SNVHFAVxzNOiqhHx
+	Ne/cNvkJ4gSHbXYOup7IeXCcP/mpie75T1tbMNhuJsxfSNHIgEozTppUrT+qt0GHtQv5lF
+	YAgzrZGfVyMPJa0ieqBDAHRw1+3zZz/aCZKPTTjiFGr0EvWkWGUSBBBW0w3UKg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1783587749;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=sFXYIbm/Hjr/hStCE1cyUKbLBfMtzQJll0dILXg2Qpg=;
+	b=7PeEjYvsi6eUWPog7NnBd+b6sRbEQWY5BgmfEhlcLCG1IJfk4sDfonMV7qRWgndUa7HQBX
+	Qg6GtER0qRhpucAw==
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Ilpo =?utf-8?Q?J?=
+ =?utf-8?Q?=C3=A4rvinen?=
+ <ilpo.jarvinen@linux.intel.com>, Doug Anderson <dianders@chromium.org>,
+ linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Marco Felsch
+ <m.felsch@pengutronix.de>, Yunhui Cui <cuiyunhui@bytedance.com>
+Subject: Re: [PATCH tty] serial: 8250: Ignore flow control on suspend/resume
+ with no_console_suspend
+In-Reply-To: <20260707141032.5074-1-john.ogness@linutronix.de>
+References: <20260707141032.5074-1-john.ogness@linutronix.de>
+Date: Thu, 09 Jul 2026 11:08:29 +0206
+Message-ID: <87a4s0lemy.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <501428d6a6cb1548bf357c25313dbc319724ead2.1783524645.git.gregoire.layet@9elements.com>
+Content-Type: text/plain
 
-On Wed, Jul 08, 2026 at 03:35:54PM +0000, Gr=C3=A9goire Layet wrote:
-> The ASPEED AST2600 has 2 Virtual UARTs accessible over PCI.
-> The ASPEED AST2600 can be used as a PCI device.
-> 2 Virtual UART can be exposed to the host via this PCI device.
-> These are 8250-compatible register sets and can be used to have UART
-> communication between the PCI BMC and the host.
->=20
-> This boolean can be set to specify if a VUART is used over PCI. A VUART
-> over PCI needs a syscon phandle. The syscon gives a regmap to the SCU,
-> which is used to set the enable bits of the PCI device.
-> On the aspeed's chips, the clocks phandle already points at the SCU node.
-> But deriving the regmap from the clock provider would misuse the clocks
-> binding. An explicit syscon phandle states the dependency directly.
->=20
-> Signed-off-by: Gr=C3=A9goire Layet <gregoire.layet@9elements.com>
-> ---
->  .../devicetree/bindings/serial/8250.yaml      | 22 +++++++++++++++++++
->  1 file changed, 22 insertions(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/serial/8250.yaml b/Documen=
-tation/devicetree/bindings/serial/8250.yaml
-> index 8f22121381fc..2ea8981bba80 100644
-> --- a/Documentation/devicetree/bindings/serial/8250.yaml
-> +++ b/Documentation/devicetree/bindings/serial/8250.yaml
-> @@ -27,6 +27,16 @@ allOf:
->              enum:
->                - aspeed,ast2500-vuart
->                - aspeed,ast2600-vuart
-> +  - if:
-> +      required:
-> +        - aspeed,vuart-over-pci
-> +    then:
-> +      required:
-> +        - syscon
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            const: aspeed,ast2600-vuart
+On 2026-07-07, sashiko.dev wrote:
+>> -	/* Wait up to 1s for flow control if necessary */
+>> -	if (uart_console_hwflow_active(&up->port)) {
+>> +	/*
+>> +	 * Wait up to 1s for flow control if necessary.
+>> +	 * When 'no_console_suspend' is active (in the window between
+>> +	 * suspend() and resume()), flow control is temporarily ignored
+>> +	 * because the canary workaround is not reliable in all situations,
+>> +	 * leading to flow control timeouts for every character.
+>> +	 */
+>> +	if (uart_console_hwflow_active(&up->port) && !up->canary) {
+>
+> This isn't a bug introduced by this patch, but does this incomplete
+> fix still allow flow control timeouts if the UART loses power during
+> suspend?
 
-else:
-=2E..
-disallow new properties (see example-schema)
+Yes, and this is fine. More below...
 
->    - if:
->        properties:
->          compatible:
-> @@ -223,6 +233,12 @@ properties:
->            - const: uartclk
->            - const: reg
-> =20
-> +  syscon:
+> Looking at serial8250_console_write(), if power is lost, the canary is
+> successfully matched, the UART is restored, and the canary is cleared
+> to 0:
+>
+> serial8250_console_write() {
+>     ...
+>     if (up->canary && (up->canary != serial_port_in(port, UART_SCR))) {
+>         serial8250_console_restore(up);
+>         up->canary = 0;
+>     }
+>     ...
+> }
+>
+> Since this happens before the actual characters are printed, won't
+> subsequent calls to wait_for_xmitr() see !up->canary as true and
+> re-enable the flow control wait loop for each character?
 
-That's explicitly forbidden by writing bindings (and mentioned as the
-antipattern in my older talks about DT).
+Yes, and that is correct behavior. When serial8250_console_restore() is
+called (right before clearing @canary), hardware flow control is
+correctly re-configured, thus hardware flow control will work correctly
+and it is fine for wait_for_xmitr() to poll.
 
-> +    $ref: /schemas/types.yaml#/definitions/phandle
-> +    description:
-> +      Phandle to the SCU syscon, used to enable the VUART over the BMC P=
-CI
-> +      device. Only applicable to aspeed,ast2600-vuart.
-> +
->    dmas:
->      minItems: 1
->      maxItems: 4
-> @@ -316,6 +332,12 @@ properties:
->        polarity (IRQ_TYPE_LEVEL_LOW or IRQ_TYPE_LEVEL_HIGH). Only
->        applicable to aspeed,ast2500-vuart and aspeed,ast2600-vuart.
-> =20
-> +  aspeed,vuart-over-pci:
-> +    type: boolean
-> +    description:
-> +      Enable the VUART over the BMC PCI device. Only applicable to
-> +      aspeed,ast2600-vuart.
-> +
->  required:
->    - reg
->    - interrupts
-> --=20
-> 2.54.0
->=20
+John
