@@ -1,87 +1,88 @@
 Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DECD03C3438
-	for <linux-serial@vger.kernel.org>; Thu,  9 Jul 2026 06:26:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 998333C4546
+	for <linux-serial@vger.kernel.org>; Thu,  9 Jul 2026 06:26:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783578394; cv=none; b=EoHxRen9+SWD9/1m61VDxQeumyxzST+I1rphdlwLS2yi74lOOIvUy0Nxm5kJgKhNn2uiOLWeKNU9WwCX0f0uAQlxqYaFCn/NATgCgLOdFIfLP7SyJVaY6NO/s1lFS2ldDxNs+8Mq4lF2J4zIDgb5O9Dhw7tEwrYaOvyvk3NpTcA=
+	t=1783578400; cv=none; b=RFk9xZqjqTCgcwTh8ai1NbdliInv/CVealpOqOD4sCRwlQOdUHIGsv9dvZDu3iwdWAf+Sux6Q7TfVml1h/bK3cNFtgZuDn+qAhA3SeXDRwx9OBZr348QHmjkPX5SMOw3F7UQIqwRWt41mls6fK9F0eAMZnA7VyH2zPPkyulPlxc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783578394; c=relaxed/simple;
-	bh=ICa2ixYXQCQShcbLWiANred4DfWKjbRwuNEMyfbpR5M=;
+	s=arc-20240116; t=1783578400; c=relaxed/simple;
+	bh=RCVhJVzC+wYdvFevPUgqoSKxgJUMAgct7Wn34WkXRWM=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=RXTbagOdE5T0u3ZHtvakMrn4C3xnnJpa0zGuuOsZFtOcK8sxnH2fGynOKFNsZaxS0h0xUSWZDaHQiQ6Whz6ZnxPGNLH9rZJrf03rGJlbc8eylcyewZcalTa521DWqnm+K6GAsN7rAzrFa4Bx1smIp05WtR5kE+C2Tvjs3zheHVk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Mkog3pYJ; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=C3Bzu1EG; arc=none smtp.client-ip=205.220.168.131
+	 In-Reply-To:To:Cc; b=iPvmLLMZLx3Jz8pGwMTZ2/Hk4zV6Jiyg0whCZEmCtSyN5qJoz3srF6CnZkZpbZz3x/GwFJ9q/qLuPgnj2a0iIh9a8c1S+ahgPX90+dFLdsGd/dOL1Hii9JyP/udTYUTvHOJdAwZZrxJ3uqqPSaHs9fznX6EsgtWUChzNcd0AvPE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=NqHIsSbp; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=NXimI6+g; arc=none smtp.client-ip=205.220.168.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Mkog3pYJ";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="C3Bzu1EG"
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66960Qnb784639
-	for <linux-serial@vger.kernel.org>; Thu, 9 Jul 2026 06:26:21 GMT
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="NqHIsSbp";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="NXimI6+g"
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6696033O711972
+	for <linux-serial@vger.kernel.org>; Thu, 9 Jul 2026 06:26:32 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	TnjvUz+tLyUI32WEpJbsvsuJ+c/cX/I/b+xJ3yrgkM4=; b=Mkog3pYJ7tn+zULJ
-	/fo3Qw4k4eJPYDjH2q/dFwCBWtPnM9WhyDO4TrahAY2DyjQ0R92BRwz8BJTwDiEv
-	5m78QVX5wPfAokWCYhjEylaSPfV7EY3kdMzHE1ltpMS8qtzGADMUGX8br4SsVHab
-	AomcKTPm4hNZ3UtEFAoOM+nNEwY3TBKEhKHhbQNMuS2C1S8awHurYL4fQ89L4vi/
-	7GylYylnGfHZ64eH/lYr6WIHsmzFhzxYIFQhY9E7po+mMDyCKpsfGsUqtA5C2ONm
-	My0pMQO1XGNi+OAXeoMIP7+hMh/OdHbVHWv1FuctA18OEvxe6FDjoHat385USL3f
-	RHfwRQ==
-Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com [209.85.214.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4f9v4u26d4-1
+	jTTisIRrm1ikhDDsD0zkfVo0e3j+V+q/x3H6zj2yL0s=; b=NqHIsSbpA5lvbv4Z
+	47M3CAoj6uO6UEbJD5y0BQysq5L1Jr1rsf0AiPX313hzBYpS3K8LChKHvBfabvnc
+	V9BSGWOrBDr2DZBQr9+B7/Pw+mjlVbaPKaY3ZTof7YB16OMWPYtTwsTmlCkVChBj
+	P7lyNOhAzzk7GFFiC6wgEIsS3Bff7xMSxJlZXYrudLuIw+4puPBegSMEka9XgxXF
+	la3aa+G5nxIGIfXjpCvN1m0vNN556HsMZgp0k9TETl2Ay1AZuCJPvhGpVEdKiOGD
+	ya0cvjixpb/Q+TNZHJ+UTotRX0UDf/hKztHRgyPbpEln34SNELVk77g3jQkNYbXj
+	rSHpTw==
+Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com [209.85.214.197])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fa55vg9ks-1
 	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-serial@vger.kernel.org>; Thu, 09 Jul 2026 06:26:20 +0000 (GMT)
-Received: by mail-pl1-f198.google.com with SMTP id d9443c01a7336-2cc640dfde3so22155875ad.1
-        for <linux-serial@vger.kernel.org>; Wed, 08 Jul 2026 23:26:20 -0700 (PDT)
+	for <linux-serial@vger.kernel.org>; Thu, 09 Jul 2026 06:26:32 +0000 (GMT)
+Received: by mail-pl1-f197.google.com with SMTP id d9443c01a7336-2cca5e0a0c9so31339035ad.1
+        for <linux-serial@vger.kernel.org>; Wed, 08 Jul 2026 23:26:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1783578380; x=1784183180; darn=vger.kernel.org;
+        d=oss.qualcomm.com; s=google; t=1783578392; x=1784183192; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=TnjvUz+tLyUI32WEpJbsvsuJ+c/cX/I/b+xJ3yrgkM4=;
-        b=C3Bzu1EGa2hBpWErkVaSFKl4A9qMIopBIws1FPlS4rGk5LIdRiX021hWaMQBQ18W6Q
-         3xjm+trhrPkJ/9e+QcVs6ErFSWNUza6LmPZ5OZE4mr9w89ZvNRuMr5RQn/8E0lerN8HD
-         /7lzsQLGSfN1irGFCfubruNH9C8aNkRAnMG2Ur5sAH3vKyj9Fax29oedDi7lDTM6Fwd8
-         0v1ZpYLbgVHENwEQtC4zUc+amQJKBOWEQhZDJvwiG11cflb7B2DLhuTSAJEnvHD3KThT
-         +OVs7t6uiujvY7O0cj+21eIt1LPQbvzV199T2oXsjF18FN7M4akcqJAIOhnGdsVR925y
-         CLtQ==
+        bh=jTTisIRrm1ikhDDsD0zkfVo0e3j+V+q/x3H6zj2yL0s=;
+        b=NXimI6+ghMqPajeFez57UhCTW8vUbbWj3BLJ1zo790Ayh01vKg6nt6EkMB+YTAURIg
+         T3qM6aXG0lJL/XposEN1NjUevkcBI5jR8YDu0SfgkLQvJZQtPW7iVc68sMIfsIbPqxog
+         /fjfH2QZ577L0kqDa8INhraiiPIEq5Sxq7cumIszVI9IDvlHbk1oZuSaVgVEtyKC8gIB
+         sp7dLk4u0dYDTeIwiXi/1q9tm2OGJD+kIa8L2BbywI2CMxxfPrFa1w9qnkKWpIarPUWy
+         4t3yiBporZ7YR94G+0FZW+GiKI/bulELqwqtUvKEtbRTVakCc8RvOO5U4hP0FKqzvqvA
+         tdDQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783578380; x=1784183180;
+        d=1e100.net; s=20251104; t=1783578392; x=1784183192;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=TnjvUz+tLyUI32WEpJbsvsuJ+c/cX/I/b+xJ3yrgkM4=;
-        b=qWuQTPAYFl5TL2AIZ/htV05anWwiYthVnGnBFo5WbQd1x/OHvyHGbHN6jMDyVeP0SF
-         2ydUBsVgObJtquUawdsjhiO8qThZ5oWMqo6AsY6L9Yrp/p1c3t9K05VrfMTFn2DyCbuE
-         ffCznc5efpzZbUn/BQq6i4R1aGBHnCZ8fOLQ4SBECvwJhwjSPCeX9KWon0U4WhNpuPFT
-         wHXpUljLvCOEyTE/e01KQI5OrLGNvDnpeRNQ5Tn+2lzJjPZCW0Znz3FaWvEVTtoapnRv
-         Dgw9nhU5bBT8EfV8uf53XyKprCBCKZyLz2Za4G39EqL1JTeV4LFf8MfbfVl3YJAqWHFq
-         WGzg==
-X-Forwarded-Encrypted: i=1; AHgh+Rp58ZyRRm2WbA6sgKWsU0NjzfpJBsaNjfzmytAGTAyXp18z210lqDLqS9qmkqnVAqJgvxX4JBeqVfJBLMY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxngbG7bhX5OnhsZvwiDUpbXSkat0wC9PVSn/HwInDkSQgKUNnA
-	v9aCb8mtvybvnzDRNh9ue6ZvSLGPW4lATCgupBjji6w4Zr7D9jzN+H9tiGkECLf+gN/evmac3Ez
-	9DQxbTg3ZYq4s3xhrHLxXhI9CUk1iRO9MYNVbfB393y4pg5tMyZS0N19Mtyj14n5W474=
-X-Gm-Gg: AfdE7clIBVb2xbVjADF1iJ2KTIK/Bm93mCrjzs9HRbZUb9efbqLS5nrMj3ryA9modHD
-	Z+pujKjTHf4Y9qR0fOFuAdzL1z5GeuK9VVqikuWjnE1w3gI674vSN+4sU7nHV8rip+U3LXn69FV
-	odE31KJME7ZdSrJzMUA3ZNTfAqwxwKvbJ/HQbZ1wLCLeDrFTTtDFGda2r3g99HHkd+yYHDhxHF7
-	bMEjjyaCg3RAhePi1O1dV8cWQgJ18OT/mIA36d2Jdz+2brRxxsy+U96VhNDGgzyl8Cllwgc6rPC
-	dvIy3SlDoglSdceBIah9sejSom/gra6V95b2MwQBu8v3GffqkXkV3Lug8txau9pSlLf7Cde2hQA
-	1xxFrD2F5+XL3C8bzMfq+VsXv7WYda8Iihz4pxyfnFQa2
-X-Received: by 2002:a17:902:ce0d:b0:2c9:b8b7:5d1c with SMTP id d9443c01a7336-2ccea3b5089mr59094255ad.16.1783578379938;
-        Wed, 08 Jul 2026 23:26:19 -0700 (PDT)
-X-Received: by 2002:a17:902:ce0d:b0:2c9:b8b7:5d1c with SMTP id d9443c01a7336-2ccea3b5089mr59093555ad.16.1783578379292;
-        Wed, 08 Jul 2026 23:26:19 -0700 (PDT)
+        bh=jTTisIRrm1ikhDDsD0zkfVo0e3j+V+q/x3H6zj2yL0s=;
+        b=HFVVO9hEBnThgNEOD32Nv3IOqp2+W7gadxVqQaJpQGN6qh2u8rPn4Qg3ojzQ+nELwX
+         ylmFUX7CD7K1yQnLc9jTh9JzG8V/YUAZP+ElpM95l8YyCRg9F1xQ5t6aoW47Zy9SkJEC
+         3cfFohPLu05DcndfnU5Hs3DXzlC4sTGPFwevs9TZadOYR0e+lAslWe8fqMbHcT+eMrD3
+         jnD56Q4Y8cydL5M/9oErALD7tVuH0UlUZ9QKYfVJiYP7mKds4xpfIPloZuOgXfNYqdyM
+         zM2vIYdD17UCUBK7tn/T2ZgelIniiAjfKy0vQwLFHqFjECkZOYRhCDgfjnA0vRf1v0d4
+         EBuw==
+X-Forwarded-Encrypted: i=1; AHgh+RoNNG259Psk1Z3KQ60I/K+MK4TJyiSGb5lSmn2bS1L0yqs6rYxT0ULPPS39Wf61XjITwQnbhaqyZimVE+U=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyYis6c87TW2s/eQQ5vPM+WsXJbEyAtDHj6A6yywDHmS99beiA1
+	+aLQC/mPH+OgXyn4eMiy/ctvqFZg0i3X89qlJuT3WDl3km+++OhCp+HGavJCauPm76cY/1eTKLS
+	Ms0g8aMP+Sk+aEhiGCsQH9GL5763erix61Tcli/jFRpbW6adeLBR1HKOuXxeNfiYTzDc=
+X-Gm-Gg: AfdE7ckTvLzWVIvmIFhYGLbSltvOZRsdtXBv8j5E41B6C+vBDWk5c0MbQmDFiZL1xCC
+	LVKKyYZrFyqQgGQ9QDJOs/GobC5wvx8ois8v6VvpLtAftv0CDSOrjAEjOqqAnpaqG+z1xeWNgXp
+	pIGYVe708Qeyg2G+EDuYWPfXhXFsR7QsGH2xh9bZJTk//ryso0HixCIJ2emKOOeiwKEjruZvcjr
+	AAY0xYVtChDSUaO1F9Iuv9sUHMUkPx0qxTx/cnYqqJ8EQC0eRI3IZdpstyFC7BvDGPhtMBWMg9X
+	1DKks78Y3mqaP0HjW2SZUr5oFJLlFTKpFqiqL7mvJ8Uj+UgdUPVYFXyQTTJ/avCxYQQXiXcLi6G
+	Rh/c/toy5hDIaAiV56XC10hNQb+cazpjpD43r033zAKhQ
+X-Received: by 2002:a17:903:1b23:b0:2cc:d6de:d597 with SMTP id d9443c01a7336-2ccea36a539mr62888505ad.7.1783578391531;
+        Wed, 08 Jul 2026 23:26:31 -0700 (PDT)
+X-Received: by 2002:a17:903:1b23:b0:2cc:d6de:d597 with SMTP id d9443c01a7336-2ccea36a539mr62888325ad.7.1783578391002;
+        Wed, 08 Jul 2026 23:26:31 -0700 (PDT)
 Received: from hu-ptalari-hyd.qualcomm.com ([202.46.22.19])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ccc9bf74cbsm37986405ad.18.2026.07.08.23.26.08
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ccc9bf74cbsm37986405ad.18.2026.07.08.23.26.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jul 2026 23:26:18 -0700 (PDT)
+        Wed, 08 Jul 2026 23:26:30 -0700 (PDT)
 From: Praveen Talari <praveen.talari@oss.qualcomm.com>
-Date: Thu, 09 Jul 2026 11:55:16 +0530
-Subject: [PATCH 4/6] arch: update uart pm callbacks to return int
+Date: Thu, 09 Jul 2026 11:55:17 +0530
+Subject: [PATCH 5/6] tty: serial: propagate uart_configure_port failure to
+ uart_add_one_port
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -90,7 +91,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260709-add_return_check_for_uart_change_pm-v1-4-e85c6ffa8ec4@oss.qualcomm.com>
+Message-Id: <20260709-add_return_check_for_uart_change_pm-v1-5-e85c6ffa8ec4@oss.qualcomm.com>
 References: <20260709-add_return_check_for_uart_change_pm-v1-0-e85c6ffa8ec4@oss.qualcomm.com>
 In-Reply-To: <20260709-add_return_check_for_uart_change_pm-v1-0-e85c6ffa8ec4@oss.qualcomm.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -130,185 +131,130 @@ Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
         aniket.randive@oss.qualcomm.com, chandana.chiluveru@oss.qualcomm.com,
         Praveen Talari <praveen.talari@oss.qualcomm.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1783578321; l=5267;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1783578321; l=3013;
  i=praveen.talari@oss.qualcomm.com; s=20251114; h=from:subject:message-id;
- bh=ICa2ixYXQCQShcbLWiANred4DfWKjbRwuNEMyfbpR5M=;
- b=CBJQcr1StBfCKgCiFExqiQ7M8QhGHy52FU0kMlsvUYVyqZjr7DQWWJDaIF8hjah1SmBoEdoNw
- jckAiu0TkLbBx+pz4ekuZMMx6564yLJV/1h1ccPX1qXYkBxB0kccnis
+ bh=RCVhJVzC+wYdvFevPUgqoSKxgJUMAgct7Wn34WkXRWM=;
+ b=03mWtjLIQU7aWmNkLwR+vaK5fDe/SCxXzqhpbBs8b/Xb17vYTfEsjAwodzox5hzEhqv5I585X
+ VlgTWl/svaRAQ3BHkI4jtOEcL+pvacYHbhDmbmUE3ytsKKBRXOWcuW/
 X-Developer-Key: i=praveen.talari@oss.qualcomm.com; a=ed25519;
  pk=NGK/88fjyHXgfhIKwag7+uIytOmyOypvZ/hDFaYPEss=
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzA5MDA1OCBTYWx0ZWRfX63bY1D4xHmPN
- D3y4avNvFgawA4bMW9aMRLe0MtXMG3uHgxqPMCxKg9h4ygiXzZYjV94dKvIYLdJa51iXzkbVcXA
- i1AUEP0dW/9ayQ1HT/x19PaW+tLwgmQ=
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzA5MDA1OCBTYWx0ZWRfX/CFLLRQNIig9
- fXRrw2SYvjYX2xA/vwrmfgO0z3xcloDA/WhIw81NhRHXDnwMZhCF6Lls6CO6mBqBumyCoXm7qUi
- /aM8MOD8GYwnDdCTx6tqm8aNMRWBgDo3dmDTHhF4W3J5YJq2DkHVhWbM0xfz829Vh5FB6JFjo1D
- 5DRKMJwUTw6IDZFVXrLatEPpoQrdMyC/wMjjzn4vLe5VrYBzX1HoP6Iwd02FkpIxjWrEzT8h6AZ
- zfUgORYJjixj3s+X+emq8mf4weFnbDaUQMu4i0lt6Yj0PCUF/jFV9mJBvDbaYjQ9+cCOOPezMch
- fJLYFUQnqZksyWT4m8VrLmrtAcuI2ptNb0IONCR5G4W+Yf5ZUA49Gf34KKjsDHN+cM6yZPFhAPE
- BA7mCwFnZh3KLPHt1rJ1d3k23eToqPogtckBh3yDfkdf4MHC/QEwC3iS6z0x2lCZkNqoMxkNwsq
- cVl4WR1A8GFrN9gT2oA==
-X-Proofpoint-GUID: PKyr4Zw8A9szrgPmCS_jjPRAWhooV-5X
-X-Proofpoint-ORIG-GUID: PKyr4Zw8A9szrgPmCS_jjPRAWhooV-5X
-X-Authority-Analysis: v=2.4 cv=QoVuG1yd c=1 sm=1 tr=0 ts=6a4f3f0c cx=c_pps
- a=MTSHoo12Qbhz2p7MsH1ifg==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzA5MDA1OCBTYWx0ZWRfXw8Ix6ajPRXZu
+ oyBkQt2YWmExIKw7WeZ0GAGZiWrkpgniLMr1uYWEalPnd0geIEhj7iw1xj71jU2sfdpA2tl/cqJ
+ BvAqo/ZRxqeef1UZjwsbjr3PYAm+Zg5XdXxYQun8xxDXlP7aTalSt5z3h2FcSzlmSlxgq2DE2f/
+ WW5770fitWzO1PTST6dmdFlUfQXnVSSScIkDZ10Ue1HCiNGBlj6KuPuEKVMwwuvJ3wjXnrjO4I+
+ T6LGqf4fcoArnOGxD9rqC953WjsgbE01dKx2ItmbmN5R+47vpFkjRUn2QCyCaaKivRP5fGP7nmw
+ 1QpHecKwy9NBJZ8TGtB2K47jCyMCH+FBv2WlneWTBZMv294ExJu8XjPUyM0WQYw9yD5Q5bvKirc
+ +0bvKUyMofhSGi17iD4b67b+y9xom8NJ4IxyXlZybu2OzlZMQGZ5gzCpjRmqT7hR2y2dfT5u6wJ
+ gSFFuQxdliT3zc1QZPw==
+X-Authority-Analysis: v=2.4 cv=KfDidwYD c=1 sm=1 tr=0 ts=6a4f3f18 cx=c_pps
+ a=cmESyDAEBpBGqyK7t0alAg==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
  a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=YMgV9FUhrdKAYTUUvYB2:22
- a=EUspDBNiAAAA:8 a=B5ILv1Qk_D0jGc0hQdkA:9 a=QEXdDO2ut3YA:10
- a=GvdueXVYPmCkWapjIL-Q:22
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=DJpcGTmdVt4CTyJn9g5Z:22
+ a=EUspDBNiAAAA:8 a=ix9lyGl5LlKgHWL4iMAA:9 a=QEXdDO2ut3YA:10
+ a=1OuFwYUASf3TG4hYMiVC:22
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzA5MDA1OCBTYWx0ZWRfXwTo1GFcBmQ35
+ 2KDDyUIyK9WgStmXaPWSo66Ev8wcK+p9d9wbSNWR+DGtmCHnMGdfe2RICLy4HadsAi/7BmNTuyG
+ ONrfhCCNWKdr7WULGwdzu1DXNCiUJkM=
+X-Proofpoint-ORIG-GUID: qhUWqZfY_YgOnx0dZji5IyqZ5CkAh0GK
+X-Proofpoint-GUID: qhUWqZfY_YgOnx0dZji5IyqZ5CkAh0GK
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-07-09_01,2026-07-08_01,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- spamscore=0 priorityscore=1501 adultscore=0 suspectscore=0 lowpriorityscore=0
- clxscore=1015 bulkscore=0 phishscore=0 malwarescore=0 impostorscore=0
+ suspectscore=0 impostorscore=0 lowpriorityscore=0 phishscore=0 malwarescore=0
+ adultscore=0 clxscore=1015 priorityscore=1501 spamscore=0 bulkscore=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607090058
 
-The uart_ops.pm and plat_serial8250_port.pm callback signatures have
-been changed from void to int. Update all arch-level implementations
-that register a uart pm callback to match.
+uart_configure_port() was declared void, so the uart_change_pm(ON)
+failure introduced in the previous patch used a bare return that silently
+dropped the error and allowed port registration to proceed regardless.
 
-SA1100 (arch/arm/mach-sa1100/):
-  Update sa1100_port_fns.pm in include/linux/platform_data/sa11x0-serial.h
-  to return int. Update the two board-level implementations:
-    assabet.c: assabet_uart_pm() - controls RS-232 transceiver via GPIO
-    h3xxx.c:   h3xxx_uart_pm()   - controls RS-232 transceiver via GPIO
-  Both have no error path; they return 0.
-
-OMAP1 (arch/arm/mach-omap1/board-ams-delta.c):
-  modem_pm() controls a regulator and already captures the regulator
-  enable/disable return value. Update it to return int and propagate
-  the regulator error instead of only logging it.
-
-Alchemy MIPS (arch/mips/alchemy/common/platform.c):
-  alchemy_8250_pm() wraps serial8250_do_pm() with UART clock gating.
-  Update it to return int; return 0 since the clock and pm operations
-  have no error path here.
+Update serial_core_add_one_port() to check the return value and return
+immediately on failure. This propagates up through uart_add_one_port()
+to the driver's probe function, allowing the driver to handle or report
+the failure rather than silently registering a port that could not be
+initialised.
 
 Signed-off-by: Praveen Talari <praveen.talari@oss.qualcomm.com>
 ---
- arch/arm/mach-omap1/board-ams-delta.c       | 10 ++++++----
- arch/arm/mach-sa1100/assabet.c              |  3 ++-
- arch/arm/mach-sa1100/h3xxx.c                |  3 ++-
- arch/mips/alchemy/common/platform.c         |  5 +++--
- include/linux/platform_data/sa11x0-serial.h |  2 +-
- 5 files changed, 14 insertions(+), 9 deletions(-)
+ drivers/tty/serial/serial_core.c | 19 ++++++++++++++-----
+ 1 file changed, 14 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm/mach-omap1/board-ams-delta.c b/arch/arm/mach-omap1/board-ams-delta.c
-index 1bec4fa0bd5e..5cc8274013b1 100644
---- a/arch/arm/mach-omap1/board-ams-delta.c
-+++ b/arch/arm/mach-omap1/board-ams-delta.c
-@@ -758,19 +758,20 @@ static void __init ams_delta_init(void)
- 	omapfb_set_lcd_config(&ams_delta_lcd_config);
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index e624a67a9395..6cb9e870ba86 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2526,7 +2526,7 @@ uart_report_port(struct uart_driver *drv, struct uart_port *port)
+ 			port->uartclk / 8, port->uartclk / 4);
  }
  
--static void modem_pm(struct uart_port *port, unsigned int state, unsigned old)
-+static int modem_pm(struct uart_port *port, unsigned int state,
-+		    unsigned int old)
+-static void
++static int
+ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
+ 		    struct uart_port *port)
  {
- 	struct modem_private_data *priv = port->private_data;
- 	int ret;
- 
- 	if (!priv)
+@@ -2536,7 +2536,7 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
+ 	 * If there isn't a port here, don't do anything further.
+ 	 */
+ 	if (!port->iobase && !port->mapbase && !port->membase)
 -		return;
 +		return 0;
  
- 	if (IS_ERR(priv->regulator))
--		return;
-+		return 0;
- 
- 	if (state == old)
--		return;
-+		return 0;
- 
- 	if (state == 0)
- 		ret = regulator_enable(priv->regulator);
-@@ -783,6 +784,7 @@ static void modem_pm(struct uart_port *port, unsigned int state, unsigned old)
- 		dev_warn(port->dev,
- 			 "ams_delta modem_pm: failed to %sable regulator: %d\n",
- 			 state ? "dis" : "en", ret);
-+	return ret;
- }
- 
- static struct plat_serial8250_port ams_delta_modem_ports[] = {
-diff --git a/arch/arm/mach-sa1100/assabet.c b/arch/arm/mach-sa1100/assabet.c
-index 2b833aa0212b..48c3372a0f4f 100644
---- a/arch/arm/mach-sa1100/assabet.c
-+++ b/arch/arm/mach-sa1100/assabet.c
-@@ -649,7 +649,7 @@ fixup_assabet(struct tag *tags, char **cmdline)
- }
- 
- 
--static void assabet_uart_pm(struct uart_port *port, u_int state, u_int oldstate)
-+static int assabet_uart_pm(struct uart_port *port, u_int state, u_int oldstate)
- {
- 	if (port->mapbase == _Ser1UTCR0) {
- 		if (state)
-@@ -657,6 +657,7 @@ static void assabet_uart_pm(struct uart_port *port, u_int state, u_int oldstate)
- 		else
- 			ASSABET_BCR_set(ASSABET_BCR_RS232EN);
+ 	/*
+ 	 * Now do the auto configuration stuff.  Note that config_port
+@@ -2559,6 +2559,8 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
  	}
-+	return 0;
- }
  
- static struct sa1100_port_fns assabet_port_fns __initdata = {
-diff --git a/arch/arm/mach-sa1100/h3xxx.c b/arch/arm/mach-sa1100/h3xxx.c
-index d685f03f51f3..8a307c7ad9de 100644
---- a/arch/arm/mach-sa1100/h3xxx.c
-+++ b/arch/arm/mach-sa1100/h3xxx.c
-@@ -83,7 +83,7 @@ static struct resource h3xxx_flash_resource =
- /*
-  * H3xxx uart support
-  */
--static void h3xxx_uart_pm(struct uart_port *port, u_int state, u_int oldstate)
-+static int h3xxx_uart_pm(struct uart_port *port, u_int state, u_int oldstate)
- {
- 	if (port->mapbase == _Ser3UTCR0) {
- 		if (!gpio_request(H3XXX_EGPIO_RS232_ON, "RS232 transceiver")) {
-@@ -94,6 +94,7 @@ static void h3xxx_uart_pm(struct uart_port *port, u_int state, u_int oldstate)
- 				__func__);
+ 	if (port->type != PORT_UNKNOWN) {
++		int ret;
++
+ 		uart_report_port(drv, port);
+ 
+ 		/* Synchronize with possible boot console. */
+@@ -2566,11 +2568,12 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
+ 			console_lock();
+ 
+ 		/* Power up port for set_mctrl() */
+-		if (uart_change_pm(state, UART_PM_STATE_ON)) {
++		ret = uart_change_pm(state, UART_PM_STATE_ON);
++		if (ret) {
+ 			dev_err(port->dev, "failed to power up port\n");
+ 			if (uart_console(port))
+ 				console_unlock();
+-			return;
++			return ret;
+ 		}
+ 
+ 		/*
+@@ -2613,6 +2616,8 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
+ 				dev_err(port->dev, "failed to power down port\n");
  		}
  	}
++
 +	return 0;
  }
  
- /*
-diff --git a/arch/mips/alchemy/common/platform.c b/arch/mips/alchemy/common/platform.c
-index 02bf02164752..ef39cf52b168 100644
---- a/arch/mips/alchemy/common/platform.c
-+++ b/arch/mips/alchemy/common/platform.c
-@@ -28,8 +28,8 @@
+ #ifdef CONFIG_CONSOLE_POLL
+@@ -3094,6 +3099,7 @@ static int serial_core_add_one_port(struct uart_driver *drv, struct uart_port *u
+ 	struct tty_port *port;
+ 	struct device *tty_dev;
+ 	int num_groups;
++	int ret;
  
- #include <prom.h>
+ 	if (uport->line >= drv->nr)
+ 		return -EINVAL;
+@@ -3135,7 +3141,10 @@ static int serial_core_add_one_port(struct uart_driver *drv, struct uart_port *u
+ 	 * immediately after.
+ 	 */
+ 	tty_port_link_device(port, drv->tty_driver, uport->line);
+-	uart_configure_port(drv, state, uport);
++
++	ret = uart_configure_port(drv, state, uport);
++	if (ret)
++		return ret;
  
--static void alchemy_8250_pm(struct uart_port *port, unsigned int state,
--			    unsigned int old_state)
-+static int alchemy_8250_pm(struct uart_port *port, unsigned int state,
-+			   unsigned int old_state)
- {
- #ifdef CONFIG_SERIAL_8250
- 	switch (state) {
-@@ -46,6 +46,7 @@ static void alchemy_8250_pm(struct uart_port *port, unsigned int state,
- 		break;
- 	}
- #endif
-+	return 0;
- }
- 
- #define PORT(_base, _irq)					\
-diff --git a/include/linux/platform_data/sa11x0-serial.h b/include/linux/platform_data/sa11x0-serial.h
-index a88096bc74e4..be14a0152787 100644
---- a/include/linux/platform_data/sa11x0-serial.h
-+++ b/include/linux/platform_data/sa11x0-serial.h
-@@ -18,7 +18,7 @@ struct uart_port;
- struct sa1100_port_fns {
- 	void	(*set_mctrl)(struct uart_port *, u_int);
- 	u_int	(*get_mctrl)(struct uart_port *);
--	void	(*pm)(struct uart_port *, u_int, u_int);
-+	int	(*pm)(struct uart_port *port, u_int state, u_int oldstate);
- 	int	(*set_wake)(struct uart_port *, u_int);
- };
+ 	port->console = uart_console(uport);
  
 
 -- 
