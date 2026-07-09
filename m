@@ -1,64 +1,64 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 917913E024E
-	for <linux-serial@vger.kernel.org>; Thu,  9 Jul 2026 20:57:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E6F33E2ADB
+	for <linux-serial@vger.kernel.org>; Thu,  9 Jul 2026 20:57:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783630633; cv=none; b=RqzbNBAeolXGNi2Y+hcMzNvPVx4gOKWyD36Uto/0Tpg3ODzaXZQ+Qm8Qz7ZwOienphgUg4zTQDJWUKDk0wjxIK62oF6CxeAHoJzlYViX4tQCV+NQ9BeXHKJyPyw8LA9aaZpkX9OCL63U48R6u7YMzBwoO4snxzO+pnO4JnxGbJ0=
+	t=1783630635; cv=none; b=a5G0Du5eJY/R1UAx3DZeOV/FgMZaGjB3nMkR+Vvij/XaSHFV29A3Y+ukwtV02nVK4WXUfVtCp0fwH3paOKFltBLpKpOfzFRAivSoHcoCmpsOCxh86wvec4Hej9lCUpR6/w7r4/hNctTjO4aovTjgNYcYgJJbivZ+rABY3F4vMiE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783630633; c=relaxed/simple;
-	bh=FNzWFrZTMb4t6db1Hi3CrlR0Ddfp078rn2TuHJbzoqs=;
+	s=arc-20240116; t=1783630635; c=relaxed/simple;
+	bh=35v9WAZmslUVWv+L4VkKhmIp0hoPZJnhQy7LFzDfiLA=;
 	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=bESn6pSdqF06NElXtBxysFTKnWpplmR3+WntvR1Gf554ZilKUbM6arXyDR28B2k1uPVGFlGO2foKXEkryp6QJLe6t4MrJSQnU2OeLA0Zt2tFehWCsFL4wk6HQSPYKNRi2UKCKGqRkWYY1iH22qWicacbmYAhUyW0GNGDaH/u47A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MfNDsRm8; arc=none smtp.client-ip=209.85.128.48
+	 MIME-Version; b=laM7Mvey3SeESa4v3h9ghLbIMyi4CT+Nc85puVSA7KdzIEd8ig5uoTbB49GBJS28iKtOlE0gYfSIOIntieYEBaaw60L13aVwns3MzY4PiTP+wWys0e5+Rko1OiqHBTfiy3mv9jlAaRtkx4mEO8/T9LvhBeeykoR8csd7A484T1U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kOJDI1di; arc=none smtp.client-ip=209.85.221.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MfNDsRm8"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-493ec555a26so1587445e9.0
-        for <linux-serial@vger.kernel.org>; Thu, 09 Jul 2026 13:57:11 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kOJDI1di"
+Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-472326ca506so212152f8f.2
+        for <linux-serial@vger.kernel.org>; Thu, 09 Jul 2026 13:57:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783630630; x=1784235430; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1783630631; x=1784235431; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
          :reply-to:content-type;
-        bh=oIYK6Uxf0rVQVemNqKtH34uzk/Dg/3P3lfTJg9gaVtw=;
-        b=MfNDsRm8q7qG5LaQyf2538rpPfm1yiIrC8ccGQ4EQN+4f5B6XTQxSbwbmM0RO6PpuS
-         CepzOMT0421L4Mb5QiE4Too3z5FDzly+2rZu72Bib6Xo8deTFJjRpauursqo3Y5/BizV
-         6I2cy+SmyhMNwpxKhkZ0Jc2NAAyzrkQ0d7ZFk2zy1Xr0ZkP0VIeqhbDzC6YCa1xHafZx
-         upMdL0wIDUIHODIGd7EdBscaL2hd/hP+qUduExye+LngKocivJ0ua5fB0w4WeWNMQ7LC
-         EniSx9emMDseON8EZfpSu34tmLOPxc/wgICX8uEOOX6CPXOWrOCuhohxXR5k43pquRxZ
-         nqJg==
+        bh=SFQ9Eok0Wl4QiDdPnBH4n5fnWEcwO4nrRrZj/mbv1wM=;
+        b=kOJDI1didZkq9C/8yqwDEH7+V4hRox71BZQFI3lpEFzb64G31TFD6XO3zq8ZSp1HWr
+         tp1zKNgM0E/vvig8SosHri7C5RbvlOCJtZl/wieBy+gEHlVrPU6E1d+FMOeitkHhhnDq
+         t59gWXhk+kb3XAqpbvhLLAjofP9Ub3Q1rv8kHOu8auvmWGMUbM8ypTViwtc+xgCBGnRi
+         OSTWdMKkNfzg/vTbdL+JdJvXIzdr2+mSQEVl9BfoiWRQXolJgkVXqP1cuHB8mhptdsLt
+         8a3/tlz6/Em9xfUCvMWBbgCzRofXRjuc9SV/5KKk2Zlt7BiAUNtO8LlcEW9GLbu3F7UI
+         HDLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783630630; x=1784235430;
+        d=1e100.net; s=20251104; t=1783630631; x=1784235431;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to:content-type;
-        bh=oIYK6Uxf0rVQVemNqKtH34uzk/Dg/3P3lfTJg9gaVtw=;
-        b=D7AAY05HSlkpJRxcMeTSak9nU/beU740g+0FegV7frt48Y8Fmf+y2olv70yDJCAyHZ
-         CDI5TfzytdUe72Vn3p8p6yLMhF873xVB5b6KiOKzIA9WJ8PVWuQ0T9EbcGLEIZxVXMvu
-         GhCC3KJcGrdsnmYC4/EtugCbEcPWTZT9Y6vdWj142oQY/EQfVDs1C4TGkFQP6VstG1J0
-         iPhesQJhrlKjs+7iEA6pQ/M2ycMpMkLZmDe+qrP0LaUPmHQnugvdHXGJRly60D/+TMuX
-         zrgyyBe8aJhVBvdcKC3glZajIr04gjqhDNJuTtjROOLGbJPTxwxtc0pfZdXK16WEfwAE
-         fwTg==
-X-Forwarded-Encrypted: i=1; AHgh+RpQabXwXjB1JAeOCAZA8TnB7nP7mLZ5Qwxp5Bh7+Bj/9qeifm4rKe1n98YWALscLSWL5VbV1eG/QpoEk9E=@vger.kernel.org
-X-Gm-Message-State: AOJu0YylMpLtKQQ+jOrUuqk9RglqS6D6YAdioskqBof+3IFdJj4Nkmbe
-	OFi7n+KsYq6YjJ2A1rPH2DXhYFbm/Uij6GQm+ENgP5bLujV1PXvCpXIw
-X-Gm-Gg: AfdE7cmLkUovRX/NDXHkJu81l5i1M+SIA9x3oUQHvu8SUge6h3TGvi9Bw/a4s+0FBhc
-	tpBJBNDAQafrn6SbkhcrYtTnNHEj4JkmbWVbDDEM6Av5cofZsT11JqCgiMwxmBLw6Vgl2gIUA1r
-	Fz8qmRL7Kz2is/+/hresPUvbStOyFtpXUl4qrF/u1hmCpYXonOz30xUctRUCDAxdkW1JNHlkYBq
-	joUlB6ubZO/O/X+CEwtToq6cklMK3cAOMxsk/I2WnFI212IdvobmRvFkcc9jc+KPe/xVt6s2P66
-	9gCSrlUncOntNwi80eH0B9xQiAjCwyXf4T/IRfRqzD/RhIekwcZFkxs6R1o76SFTqwI5LUwYMe6
-	B3HqBYhrnEVoISMVK4OpRDlMMH0BuChKYqFrSiZeZvfkFmG4lY+rm6H51qn9O7P344ZKwBOMczG
-	PYoHNsq1+m+ip79oVQRTsHZAW9bkg5f07iU/Zh/Jxqx4l81cJjYTWX02DYJ5Hd34Mx4uMpyxPLw
-	+Mg5QUFIwBO1woHyMo=
-X-Received: by 2002:a05:600c:e558:10b0:493:e57e:7aa5 with SMTP id 5b1f17b1804b1-493e68c6e63mr58776745e9.22.1783630629769;
-        Thu, 09 Jul 2026 13:57:09 -0700 (PDT)
+        bh=SFQ9Eok0Wl4QiDdPnBH4n5fnWEcwO4nrRrZj/mbv1wM=;
+        b=HMHURTCmW8Y8UIW41E64z8/+J5nbXnqtmn6Xnw0Or30iOEIQTF++rOyeH+rAkMvCAQ
+         Ibd9ytC5cs1GiLNaV55ycTHQtO8+6poX9QYusqmjoYSIn0lLojOJuXRLnTsF8psJIZra
+         EpODH5zUMREQxRSne0PC+b0fj5zi++aF6i22vQL8uKZ2G9MXtkg0jOOxBy11gbF4Otof
+         el9mgy3FeJD8bAjXvSfPbFDBaXzbIb5NxjMMrGzoYmgkx2VLZSix+DhsWfDnZ65M2BWi
+         WNhRra0aLKpOoiobAk5ROdkMseZFGgmy5xAXnvjIhFXtFU6Cfxa+Nq72lz61oOatG/Sz
+         RX4w==
+X-Forwarded-Encrypted: i=1; AHgh+RrN1SgI5qm0RmyMehDDbThcY3pdf2ZgjmX+k3xTPHmjeLiHyp02TvaE6K5t6ATvNJjditgVqIbt48t6/MI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyqGGDztgZGmxK/vWMRvg5wmvhDe50qC0n3YdGaJ2QWKL/CALcM
+	A459+sFQgxpmcakXiGGglSPa01UGT2fLSFtSzZTh7r43D2pg5OsR3pZC
+X-Gm-Gg: AfdE7ckKJssPXsNLPXBvkj4zRgSbWDgkegoggrVKtXkiiLLE4be+CfVCs1LGxCajX7V
+	bdnxYkjY/gJxP0eeqj4DQBmNdDRZKlqeVURBgITHC+Ms5nUNG1+Hl+c0+5cClUCpBBd30TavpIE
+	caj9t8DjQ9cZWDPnqYXaGn6Hmj4Ys0EI9PPEMzR4EbZtojcy97rtfneYnCwSo7lcm3FctuNb4ik
+	ytGLvOYomt6+dw3lgdMZbvI05nzu+JG4nkjNRA2gi0iIGGH0IoOmp9WCtj3JDVuqNGsOnCFsz2x
+	QSXvQKeeFB28H/b19mwa2Zxia2x1mZH39iquvdKc7UaTprNhkHiqNV7dyxRjwd2izHUvZiybX6R
+	hN2OtKJFuGE44zc1N85ZTwZSPE/CVF/n0bgFhbC0s3w3sY0fIN4bWFAScnDICe04h/Z6Z/0cXWw
+	vce9WKEu1Wb9MDixcT8lzBHkbCc4X5ygGumKaGu833d/je8wRla6NtiggLGHMqK39qILnsmknlF
+	/eB4tAU
+X-Received: by 2002:a05:6000:428a:b0:43c:fdd:ea96 with SMTP id ffacd0b85a97d-47df074a29fmr9923731f8f.26.1783630631403;
+        Thu, 09 Jul 2026 13:57:11 -0700 (PDT)
 Received: from Ansuel-XPS24.localdomain (host-95-248-227-210.retail.telecomitalia.it. [95.248.227.210])
-        by smtp.googlemail.com with ESMTPSA id ffacd0b85a97d-47a9de1d910sm52894965f8f.6.2026.07.09.13.57.08
+        by smtp.googlemail.com with ESMTPSA id ffacd0b85a97d-47a9de1d910sm52894965f8f.6.2026.07.09.13.57.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jul 2026 13:57:09 -0700 (PDT)
+        Thu, 09 Jul 2026 13:57:11 -0700 (PDT)
 From: Christian Marangi <ansuelsmth@gmail.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
@@ -81,9 +81,9 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
-Subject: [PATCH 3/4] serial: 8250: map UAPI port type to internal enum
-Date: Thu,  9 Jul 2026 22:56:51 +0200
-Message-ID: <20260709205656.319531-4-ansuelsmth@gmail.com>
+Subject: [PATCH 4/4] serial: 8250: Add Airoha SoC UART and HSUART support
+Date: Thu,  9 Jul 2026 22:56:52 +0200
+Message-ID: <20260709205656.319531-5-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20260709205656.319531-1-ansuelsmth@gmail.com>
 References: <20260709205656.319531-1-ansuelsmth@gmail.com>
@@ -95,454 +95,295 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-There is currently some confusion when a new 8250 UART device needs to be
-defined with the related index for uart_config[] to be directly defined in
-UAPI header.
+Add support for Airoha AN7523 UART and AN7581 HSUART.
 
-There isn't any specific reason to define the index directly in UAPI header
-unless it's also needed to be defined for userspace usage.
+These implement a standard 16550 UART with only some custom logic
+for baud rate handling.
 
-To try to address this confusion and making it clear how these specific
-index should be defined and where, create a dedicated enum in 8250.h
-with all the current defined values in UAPI header and document how these
-id should be defined.
-
-Rename the define in 8250_port.c with the new UART_ prefix.
-
+Co-developed-by: Benjamin Larsson <benjamin.larsson@genexis.eu>
+Signed-off-by: Benjamin Larsson <benjamin.larsson@genexis.eu>
 Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 ---
- drivers/tty/serial/8250/8250.h      | 122 ++++++++++++++++++++++++++++
- drivers/tty/serial/8250/8250_port.c |  72 ++++++++--------
- 2 files changed, 158 insertions(+), 36 deletions(-)
+ drivers/tty/serial/8250/8250.h        |   4 +
+ drivers/tty/serial/8250/8250_airoha.c | 190 ++++++++++++++++++++++++++
+ drivers/tty/serial/8250/8250_port.c   |  16 +++
+ drivers/tty/serial/8250/Kconfig       |  11 ++
+ drivers/tty/serial/8250/Makefile      |   1 +
+ 5 files changed, 222 insertions(+)
+ create mode 100644 drivers/tty/serial/8250/8250_airoha.c
 
 diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-index 77fe0588fd6b..3a45f957d3a9 100644
+index 3a45f957d3a9..a0dec4161240 100644
 --- a/drivers/tty/serial/8250/8250.h
 +++ b/drivers/tty/serial/8250/8250.h
-@@ -73,6 +73,128 @@ struct serial8250_config {
- 	unsigned int	flags;
+@@ -193,6 +193,10 @@ enum uart_port_type {
+ 	UART_PORT_SUNIX			= PORT_SUNIX,
+ 	UART_PORT_LINFLEXUART		= PORT_LINFLEXUART,
+ 	UART_PORT_SUNPLUS		= PORT_SUNPLUS, /* 123 */
++
++	/* Internal 8250 only */
++	UART_PORT_AIROHA		= 124,
++	UART_PORT_AIROHA_HS		= 125,
  };
  
+ #define UART_CAP_FIFO	BIT(8)	/* UART has FIFO */
+diff --git a/drivers/tty/serial/8250/8250_airoha.c b/drivers/tty/serial/8250/8250_airoha.c
+new file mode 100644
+index 000000000000..9ec98cd8de43
+--- /dev/null
++++ b/drivers/tty/serial/8250/8250_airoha.c
+@@ -0,0 +1,190 @@
++// SPDX-License-Identifier: GPL-2.0+
 +/*
-+ * The uart_config[] array index is referenced and defined from index
-+ * in uapi/linux/serial.h and uapi/linux/serial_core.h.
++ * Airoha UART driver
 + *
-+ * This was old practice and for anything that doesn't need to support
-+ * userspace, new type should be limited and added only HERE.
-+ *
-+ * Any UART port that requires userspace support, should define the
-+ * dedicated index in the UAPI header and reference it when added
-+ * to this enum table.
++ * Copyright (c) 2025 Genexis Sweden AB
++ * Author: Benjamin Larsson <benjamin.larsson@genexis.eu>
++ *	   Christian Marangi <ansuelsmth@gmail.com>
 + */
-+enum uart_port_type {
-+	/* From uapi/linux/serial.h */
-+	UART_PORT_UNKNOWN		= PORT_UNKNOWN, /* 0 */
-+	UART_PORT_8250			= PORT_8250,
-+	UART_PORT_16450			= PORT_16450,
-+	UART_PORT_16550			= PORT_16550,
-+	UART_PORT_16550A		= PORT_16550A,
-+	UART_PORT_CIRRUS		= PORT_CIRRUS,
-+	UART_PORT_16650			= PORT_16650,
-+	UART_PORT_16650V2		= PORT_16650V2,
-+	UART_PORT_16750			= PORT_16750,
-+	UART_PORT_STARTECH		= PORT_STARTECH,
-+	UART_PORT_16C950		= PORT_16C950,
-+	UART_PORT_16654			= PORT_16654,
-+	UART_PORT_16850			= PORT_16850,
-+	UART_PORT_RSA			= PORT_RSA, /* 13 */
 +
-+	/* From uapi/linux/serial_core.h (14-123) */
-+	UART_PORT_NS16550A		= PORT_NS16550A, /* 14 */
-+	UART_PORT_XSCALE		= PORT_XSCALE,
-+	UART_PORT_RM9000		= PORT_RM9000,
-+	UART_PORT_OCTEON		= PORT_OCTEON,
-+	UART_PORT_AR7			= PORT_AR7,
-+	UART_PORT_U6_16550A		= PORT_U6_16550A,
-+	UART_PORT_TEGRA			= PORT_TEGRA,
-+	UART_PORT_XR17D15X		= PORT_XR17D15X,
-+	UART_PORT_LPC3220		= PORT_LPC3220,
-+	UART_PORT_8250_CIR		= PORT_8250_CIR,
-+	UART_PORT_XR17V35X		= PORT_XR17V35X,
-+	UART_PORT_BRCM_TRUMANAGE	= PORT_BRCM_TRUMANAGE,
-+	UART_PORT_ALTR_16550_F32	= PORT_ALTR_16550_F32,
-+	UART_PORT_ALTR_16550_F64	= PORT_ALTR_16550_F64,
-+	UART_PORT_ALTR_16550_F128	= PORT_ALTR_16550_F128,
-+	UART_PORT_RT2880		= PORT_RT2880,
-+	UART_PORT_16550A_FSL64		= PORT_16550A_FSL64,
-+	UART_PORT_PXA			= PORT_PXA,
-+	UART_PORT_AMBA			= PORT_AMBA,
-+	UART_PORT_CLPS711X		= PORT_CLPS711X,
-+	UART_PORT_SA1100		= PORT_SA1100,
-+	UART_PORT_UART00		= PORT_UART00,
-+	UART_PORT_OWL			= PORT_OWL,
-+	UART_PORT_21285			= PORT_21285,
-+	UART_PORT_SUNZILOG		= PORT_SUNZILOG,
-+	UART_PORT_SUNSAB		= PORT_SUNSAB,
-+	UART_PORT_NPCM			= PORT_NPCM,
-+	UART_PORT_TEGRA_TCU		= PORT_TEGRA_TCU,
-+	UART_PORT_ASPEED_VUART		= PORT_ASPEED_VUART,
-+	UART_PORT_PCH_8LINE		= PORT_PCH_8LINE,
-+	UART_PORT_PCH_2LINE		= PORT_PCH_2LINE,
-+	UART_PORT_DZ			= PORT_DZ,
-+	UART_PORT_ZS			= PORT_ZS,
-+	UART_PORT_MUX			= PORT_MUX,
-+	UART_PORT_ATMEL			= PORT_ATMEL,
-+	UART_PORT_MAC_ZILOG		= PORT_MAC_ZILOG,
-+	UART_PORT_PMAC_ZILOG		= PORT_PMAC_ZILOG,
-+	UART_PORT_SCI			= PORT_SCI,
-+	UART_PORT_SCIF			= PORT_SCIF,
-+	UART_PORT_IRDA			= PORT_IRDA,
-+	UART_PORT_IP22ZILOG		= PORT_IP22ZILOG,
-+	UART_PORT_CPM			= PORT_CPM,
-+	UART_PORT_MPC52xx		= PORT_MPC52xx,
-+	UART_PORT_ICOM			= PORT_ICOM,
-+	UART_PORT_IMX			= PORT_IMX,
-+	UART_PORT_TXX9			= PORT_TXX9,
-+	UART_PORT_JSM			= PORT_JSM,
-+	UART_PORT_SUNHV			= PORT_SUNHV,
-+	UART_PORT_UARTLITE		= PORT_UARTLITE,
-+	UART_PORT_BCM7271		= PORT_BCM7271,
-+	UART_PORT_SB1250_DUART		= PORT_SB1250_DUART,
-+	UART_PORT_MCF			= PORT_MCF,
-+	UART_PORT_SC26XX		= PORT_SC26XX,
-+	UART_PORT_SCIFA			= PORT_SCIFA,
-+	UART_PORT_S3C6400		= PORT_S3C6400,
-+	UART_PORT_MAX3100		= PORT_MAX3100,
-+	UART_PORT_TIMBUART		= PORT_TIMBUART,
-+	UART_PORT_MSM			= PORT_MSM,
-+	UART_PORT_BCM63XX		= PORT_BCM63XX,
-+	UART_PORT_APBUART		= PORT_APBUART,
-+	UART_PORT_ALTERA_JTAGUART	= PORT_ALTERA_JTAGUART,
-+	UART_PORT_ALTERA_UART		= PORT_ALTERA_UART,
-+	UART_PORT_SCIFB			= PORT_SCIFB,
-+	UART_PORT_MAX310X		= PORT_MAX310X,
-+	UART_PORT_DA830			= PORT_DA830,
-+	UART_PORT_OMAP			= PORT_OMAP,
-+	UART_PORT_VT8500		= PORT_VT8500,
-+	UART_PORT_XUARTPS		= PORT_XUARTPS,
-+	UART_PORT_AR933X		= PORT_AR933X,
-+	UART_PORT_MCHP16550A		= PORT_MCHP16550A,
-+	UART_PORT_ARC			= PORT_ARC,
-+	UART_PORT_RP2			= PORT_RP2,
-+	UART_PORT_LPUART		= PORT_LPUART,
-+	UART_PORT_HSCIF			= PORT_HSCIF,
-+	UART_PORT_ASC			= PORT_ASC,
-+	UART_PORT_MEN_Z135		= PORT_MEN_Z135,
-+	UART_PORT_SC16IS7XX		= PORT_SC16IS7XX,
-+	UART_PORT_MESON			= PORT_MESON,
-+	UART_PORT_DIGICOLOR		= PORT_DIGICOLOR,
-+	UART_PORT_SPRD			= PORT_SPRD,
-+	UART_PORT_STM32			= PORT_STM32,
-+	UART_PORT_MVEBU			= PORT_MVEBU,
-+	UART_PORT_PIC32			= PORT_PIC32,
-+	UART_PORT_MPS2UART		= PORT_MPS2UART,
-+	UART_PORT_MTK_BTIF		= PORT_MTK_BTIF,
-+	UART_PORT_RDA			= PORT_RDA,
-+	UART_PORT_MLB_USIO		= PORT_MLB_USIO,
-+	UART_PORT_SIFIVE_V0		= PORT_SIFIVE_V0,
-+	UART_PORT_SUNIX			= PORT_SUNIX,
-+	UART_PORT_LINFLEXUART		= PORT_LINFLEXUART,
-+	UART_PORT_SUNPLUS		= PORT_SUNPLUS, /* 123 */
++#include <linux/property.h>
++#include <linux/serial_reg.h>
++#include <linux/serial_8250.h>
++
++#include "8250.h"
++
++#define UART_AIROHA_BRDL	0
++#define UART_AIROHA_BRDH	1
++#define UART_AIROHA_XINCLKDR	10
++#define UART_AIROHA_XYD		11
++
++struct airoha_8250_priv {
++	int line;
 +};
 +
- #define UART_CAP_FIFO	BIT(8)	/* UART has FIFO */
- #define UART_CAP_EFR	BIT(9)	/* UART has EFR */
- #define UART_CAP_SLEEP	BIT(10)	/* UART has IER sleep */
++struct airoha_8250_data {
++	unsigned int type;
++};
++
++struct airoha_8250_clk_div_info {
++	int div;
++	int mask;
++};
++
++#define UART_BRDL_20M		0x01
++#define UART_BRDH_20M		0x00
++
++#define XINDIV_CLOCK		20000000
++#define XYD_Y			65000
++
++static const struct airoha_8250_clk_div_info airoha_clk_div_info[] = {
++	{ .div = 10, .mask = BIT(2) },
++	{ .div = 4, .mask = BIT(1) },
++	{ .div = 2, .mask = BIT(0) },
++};
++
++static const int clock_div_tab[] = { 10, 4, 2};
++static const int clock_div_reg[] = {  4, 2, 1};
++
++/*
++ * Airoha UART baud rate calculation logic
++ *
++ * crystal_clock = 20 MHz (fixed frequency)
++ * xindiv_clock = crystal_clock / clock_div
++ * (x/y) = XYD, 32 bit register with 16 bits of x and then 16 bits of y
++ * clock_div = XINCLK_DIVCNT (default set to 10 (0x4)),
++ *           - 3 bit register [ 1, 2, 4, 8, 10, 12, 16, 20 ]
++ *
++ * baud_rate = ((xindiv_clock) * (x/y)) / ([BRDH,BRDL] * 16)
++ *
++ * Selecting divider needs to fulfill
++ * 1.8432 MHz <= xindiv_clk <= APB clock / 2
++ * The clocks are unknown but a divider of value 1 did not result in a valid
++ * waveform.
++ *
++ * XYD_y seems to need to be larger then XYD_x for proper waveform generation.
++ * Setting [BRDH,BRDL] to [0,1] and XYD_y to 65000 gives even values
++ * for usual baud rates.
++ */
++static void airoha_set_termios(struct uart_port *port, struct ktermios *termios,
++			       const struct ktermios *old)
++{
++	const struct airoha_8250_clk_div_info *clk_div_info;
++	struct uart_8250_port *up = up_to_u8250p(port);
++	unsigned int xyd_x, nom, denom;
++	unsigned int baud;
++	int i;
++
++	serial8250_do_set_termios(port, termios, old);
++
++	baud = serial8250_get_baud_rate(port, termios, old);
++
++	/* Set DLAB to access the baud rate divider registers (BRDH, BRDL) */
++	serial_port_out(port, UART_LCR, up->lcr | UART_LCR_DLAB);
++
++	/* Set baud rate calculation defaults (BRDIV ([BRDH,BRDL]) to 1) */
++	serial_port_out(port, UART_AIROHA_BRDL, UART_BRDL_20M);
++	serial_port_out(port, UART_AIROHA_BRDH, UART_BRDH_20M);
++
++	/*
++	 * Calculate XYD_x and XINCLKDR register by searching
++	 * through a table of crystal_clock divisors.
++	 */
++	for (i = 0 ; i < ARRAY_SIZE(airoha_clk_div_info) ; i++) {
++		clk_div_info = &airoha_clk_div_info[i];
++
++		denom = (XINDIV_CLOCK / 40) / clk_div_info->div;
++		nom = baud * (XYD_Y / 40);
++		xyd_x = ((nom / denom) << 4);
++		/* For the HSUART xyd_x needs to be scaled by a factor of 2 */
++		if (port->type == UART_PORT_AIROHA_HS)
++			xyd_x = xyd_x >> 1;
++		if (xyd_x < XYD_Y)
++			break;
++	}
++
++	serial_port_out(port, UART_AIROHA_XINCLKDR, clk_div_info->mask);
++	serial_port_out(port, UART_AIROHA_XYD, (xyd_x << 16) | XYD_Y);
++
++	/* unset DLAB */
++	serial_port_out(port, UART_LCR, up->lcr);
++}
++
++static int airoha_8250_probe(struct platform_device *pdev)
++{
++	const struct airoha_8250_data *data;
++	struct uart_8250_port uart = { };
++	struct device *dev = &pdev->dev;
++	struct airoha_8250_priv *priv;
++	struct resource *res;
++	int ret;
++
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res)
++		return dev_err_probe(dev, -EINVAL, "invalid address\n");
++
++	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++
++	data = device_get_match_data(dev);
++
++	uart.port.dev = dev;
++	uart.port.type = data->type;
++	uart.port.flags = UPF_BOOT_AUTOCONF | UPF_FIXED_PORT |
++			  UPF_FIXED_TYPE | UPF_IOREMAP;
++	uart.port.set_termios = airoha_set_termios;
++	uart.port.mapbase = res->start;
++	uart.port.mapsize = resource_size(res);
++
++	ret = uart_read_and_validate_port_properties(&uart.port);
++	if (ret)
++		return ret;
++
++	ret = serial8250_register_8250_port(&uart);
++	if (ret < 0)
++		return ret;
++
++	priv->line = ret;
++	platform_set_drvdata(pdev, priv);
++
++	return 0;
++}
++
++static void airoha_8250_remove(struct platform_device *ofdev)
++{
++	struct airoha_8250_priv *priv = platform_get_drvdata(ofdev);
++
++	serial8250_unregister_port(priv->line);
++}
++
++static const struct airoha_8250_data en7523_data = {
++	.type = UART_PORT_AIROHA,
++};
++
++static const struct airoha_8250_data an7581_hs_data = {
++	.type = UART_PORT_AIROHA_HS,
++};
++
++static const struct of_device_id airoha_8250_dt_ids[] = {
++	{ .compatible = "airoha,en7523-uart", .data = &en7523_data, },
++	{ .compatible = "airoha,an7581-hsuart", .data = &an7581_hs_data, },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, airoha_8250_dt_ids);
++
++static struct platform_driver airoha_8250_driver = {
++	.driver = {
++		.name = "8250_airoha",
++		.of_match_table = airoha_8250_dt_ids,
++	},
++	.probe = airoha_8250_probe,
++	.remove = airoha_8250_remove,
++};
++
++module_platform_driver(airoha_8250_driver);
++
++MODULE_LICENSE("GPL");
++MODULE_DESCRIPTION("Airoha UART driver");
++MODULE_AUTHOR("Benjamin Larsson <benjamin.larsson@genexis.eu>");
++MODULE_AUTHOR("Christian Marangi <ansuelsmth@gmail.com>");
 diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 033d8fb8bb23..a0b80324a559 100644
+index a0b80324a559..29f0245264ec 100644
 --- a/drivers/tty/serial/8250/8250_port.c
 +++ b/drivers/tty/serial/8250/8250_port.c
-@@ -43,27 +43,27 @@
-  * Here we define the default xmit fifo size used for each type of UART.
-  */
- static const struct serial8250_config uart_config[] = {
--	[PORT_UNKNOWN] = {
-+	[UART_PORT_UNKNOWN] = {
- 		.name		= "unknown",
- 		.fifo_size	= 1,
- 		.tx_loadsz	= 1,
- 	},
--	[PORT_8250] = {
-+	[UART_PORT_8250] = {
- 		.name		= "8250",
- 		.fifo_size	= 1,
- 		.tx_loadsz	= 1,
- 	},
--	[PORT_16450] = {
-+	[UART_PORT_16450] = {
- 		.name		= "16450",
- 		.fifo_size	= 1,
- 		.tx_loadsz	= 1,
- 	},
--	[PORT_16550] = {
-+	[UART_PORT_16550] = {
- 		.name		= "16550",
- 		.fifo_size	= 1,
- 		.tx_loadsz	= 1,
- 	},
--	[PORT_16550A] = {
-+	[UART_PORT_16550A] = {
- 		.name		= "16550A",
- 		.fifo_size	= 16,
- 		.tx_loadsz	= 16,
-@@ -71,18 +71,18 @@ static const struct serial8250_config uart_config[] = {
- 		.rxtrig_bytes	= {1, 4, 8, 14},
- 		.flags		= UART_CAP_FIFO,
- 	},
--	[PORT_CIRRUS] = {
-+	[UART_PORT_CIRRUS] = {
- 		.name		= "Cirrus",
- 		.fifo_size	= 1,
- 		.tx_loadsz	= 1,
- 	},
--	[PORT_16650] = {
-+	[UART_PORT_16650] = {
- 		.name		= "ST16650",
- 		.fifo_size	= 1,
- 		.tx_loadsz	= 1,
- 		.flags		= UART_CAP_FIFO | UART_CAP_EFR | UART_CAP_SLEEP,
- 	},
--	[PORT_16650V2] = {
-+	[UART_PORT_16650V2] = {
- 		.name		= "ST16650V2",
- 		.fifo_size	= 32,
- 		.tx_loadsz	= 16,
-@@ -91,7 +91,7 @@ static const struct serial8250_config uart_config[] = {
- 		.rxtrig_bytes	= {8, 16, 24, 28},
- 		.flags		= UART_CAP_FIFO | UART_CAP_EFR | UART_CAP_SLEEP,
- 	},
--	[PORT_16750] = {
-+	[UART_PORT_16750] = {
- 		.name		= "TI16750",
- 		.fifo_size	= 64,
- 		.tx_loadsz	= 64,
-@@ -100,12 +100,12 @@ static const struct serial8250_config uart_config[] = {
- 		.rxtrig_bytes	= {1, 16, 32, 56},
- 		.flags		= UART_CAP_FIFO | UART_CAP_SLEEP | UART_CAP_AFE,
- 	},
--	[PORT_STARTECH] = {
-+	[UART_PORT_STARTECH] = {
- 		.name		= "Startech",
- 		.fifo_size	= 1,
- 		.tx_loadsz	= 1,
- 	},
--	[PORT_16C950] = {
-+	[UART_PORT_16C950] = {
- 		.name		= "16C950/954",
- 		.fifo_size	= 128,
- 		.tx_loadsz	= 128,
-@@ -114,7 +114,7 @@ static const struct serial8250_config uart_config[] = {
- 		/* UART_CAP_EFR breaks billionon CF bluetooth card. */
- 		.flags		= UART_CAP_FIFO | UART_CAP_SLEEP,
- 	},
--	[PORT_16654] = {
-+	[UART_PORT_16654] = {
- 		.name		= "ST16654",
- 		.fifo_size	= 64,
- 		.tx_loadsz	= 32,
-@@ -123,49 +123,49 @@ static const struct serial8250_config uart_config[] = {
- 		.rxtrig_bytes	= {8, 16, 56, 60},
- 		.flags		= UART_CAP_FIFO | UART_CAP_EFR | UART_CAP_SLEEP,
- 	},
--	[PORT_16850] = {
-+	[UART_PORT_16850] = {
- 		.name		= "XR16850",
- 		.fifo_size	= 128,
- 		.tx_loadsz	= 128,
- 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
- 		.flags		= UART_CAP_FIFO | UART_CAP_EFR | UART_CAP_SLEEP,
- 	},
--	[PORT_RSA] = {
-+	[UART_PORT_RSA] = {
- 		.name		= "RSA",
- 		.fifo_size	= 2048,
- 		.tx_loadsz	= 2048,
- 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_11,
- 		.flags		= UART_CAP_FIFO,
- 	},
--	[PORT_NS16550A] = {
-+	[UART_PORT_NS16550A] = {
- 		.name		= "NS16550A",
- 		.fifo_size	= 16,
- 		.tx_loadsz	= 16,
- 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
- 		.flags		= UART_CAP_FIFO | UART_NATSEMI,
- 	},
--	[PORT_XSCALE] = {
-+	[UART_PORT_XSCALE] = {
- 		.name		= "XScale",
- 		.fifo_size	= 32,
- 		.tx_loadsz	= 32,
- 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
- 		.flags		= UART_CAP_FIFO | UART_CAP_UUE | UART_CAP_RTOIE,
- 	},
--	[PORT_OCTEON] = {
-+	[UART_PORT_OCTEON] = {
- 		.name		= "OCTEON",
- 		.fifo_size	= 64,
- 		.tx_loadsz	= 64,
- 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
- 		.flags		= UART_CAP_FIFO,
- 	},
--	[PORT_U6_16550A] = {
-+	[UART_PORT_U6_16550A] = {
- 		.name		= "U6_16550A",
- 		.fifo_size	= 64,
- 		.tx_loadsz	= 64,
- 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
- 		.flags		= UART_CAP_FIFO | UART_CAP_AFE,
- 	},
--	[PORT_TEGRA] = {
-+	[UART_PORT_TEGRA] = {
- 		.name		= "Tegra",
- 		.fifo_size	= 32,
- 		.tx_loadsz	= 8,
-@@ -174,7 +174,7 @@ static const struct serial8250_config uart_config[] = {
- 		.rxtrig_bytes	= {1, 4, 8, 14},
- 		.flags		= UART_CAP_FIFO | UART_CAP_RTOIE,
- 	},
--	[PORT_XR17D15X] = {
-+	[UART_PORT_XR17D15X] = {
- 		.name		= "XR17D15X",
- 		.fifo_size	= 64,
- 		.tx_loadsz	= 64,
-@@ -182,7 +182,7 @@ static const struct serial8250_config uart_config[] = {
- 		.flags		= UART_CAP_FIFO | UART_CAP_AFE | UART_CAP_EFR |
- 				  UART_CAP_SLEEP,
- 	},
--	[PORT_XR17V35X] = {
-+	[UART_PORT_XR17V35X] = {
- 		.name		= "XR17V35X",
- 		.fifo_size	= 256,
- 		.tx_loadsz	= 256,
-@@ -191,7 +191,7 @@ static const struct serial8250_config uart_config[] = {
- 		.flags		= UART_CAP_FIFO | UART_CAP_AFE | UART_CAP_EFR |
- 				  UART_CAP_SLEEP,
- 	},
--	[PORT_LPC3220] = {
-+	[UART_PORT_LPC3220] = {
- 		.name		= "LPC3220",
- 		.fifo_size	= 64,
- 		.tx_loadsz	= 32,
-@@ -199,16 +199,16 @@ static const struct serial8250_config uart_config[] = {
- 				  UART_FCR_R_TRIG_00 | UART_FCR_T_TRIG_00,
- 		.flags		= UART_CAP_FIFO,
- 	},
--	[PORT_BRCM_TRUMANAGE] = {
-+	[UART_PORT_BRCM_TRUMANAGE] = {
- 		.name		= "TruManage",
- 		.fifo_size	= 1,
- 		.tx_loadsz	= 1024,
- 		.flags		= UART_CAP_HFIFO,
- 	},
--	[PORT_8250_CIR] = {
-+	[UART_PORT_8250_CIR] = {
- 		.name		= "CIR port"
- 	},
--	[PORT_ALTR_16550_F32] = {
-+	[UART_PORT_ALTR_16550_F32] = {
- 		.name		= "Altera 16550 FIFO32",
- 		.fifo_size	= 32,
- 		.tx_loadsz	= 32,
-@@ -216,7 +216,7 @@ static const struct serial8250_config uart_config[] = {
+@@ -311,6 +311,22 @@ static const struct serial8250_config uart_config[] = {
  		.rxtrig_bytes	= {1, 8, 16, 30},
  		.flags		= UART_CAP_FIFO | UART_CAP_AFE,
  	},
--	[PORT_ALTR_16550_F64] = {
-+	[UART_PORT_ALTR_16550_F64] = {
- 		.name		= "Altera 16550 FIFO64",
- 		.fifo_size	= 64,
- 		.tx_loadsz	= 64,
-@@ -224,7 +224,7 @@ static const struct serial8250_config uart_config[] = {
- 		.rxtrig_bytes	= {1, 16, 32, 62},
- 		.flags		= UART_CAP_FIFO | UART_CAP_AFE,
- 	},
--	[PORT_ALTR_16550_F128] = {
-+	[UART_PORT_ALTR_16550_F128] = {
- 		.name		= "Altera 16550 FIFO128",
- 		.fifo_size	= 128,
- 		.tx_loadsz	= 128,
-@@ -237,7 +237,7 @@ static const struct serial8250_config uart_config[] = {
- 	 * workaround of errata A-008006 which states that tx_loadsz should
- 	 * be configured less than Maximum supported fifo bytes.
- 	 */
--	[PORT_16550A_FSL64] = {
-+	[UART_PORT_16550A_FSL64] = {
- 		.name		= "16550A_FSL64",
- 		.fifo_size	= 64,
- 		.tx_loadsz	= 63,
-@@ -245,7 +245,7 @@ static const struct serial8250_config uart_config[] = {
- 				  UART_FCR7_64BYTE,
- 		.flags		= UART_CAP_FIFO | UART_CAP_NOTEMT,
- 	},
--	[PORT_RT2880] = {
-+	[UART_PORT_RT2880] = {
- 		.name		= "Palmchip BK-3103",
- 		.fifo_size	= 16,
- 		.tx_loadsz	= 16,
-@@ -253,7 +253,7 @@ static const struct serial8250_config uart_config[] = {
- 		.rxtrig_bytes	= {1, 4, 8, 14},
- 		.flags		= UART_CAP_FIFO,
- 	},
--	[PORT_DA830] = {
-+	[UART_PORT_DA830] = {
- 		.name		= "TI DA8xx/66AK2x",
- 		.fifo_size	= 16,
- 		.tx_loadsz	= 16,
-@@ -262,7 +262,7 @@ static const struct serial8250_config uart_config[] = {
- 		.rxtrig_bytes	= {1, 4, 8, 14},
- 		.flags		= UART_CAP_FIFO | UART_CAP_AFE,
- 	},
--	[PORT_MTK_BTIF] = {
-+	[UART_PORT_MTK_BTIF] = {
- 		.name		= "MediaTek BTIF",
- 		.fifo_size	= 16,
- 		.tx_loadsz	= 16,
-@@ -270,7 +270,7 @@ static const struct serial8250_config uart_config[] = {
- 				  UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT,
- 		.flags		= UART_CAP_FIFO,
- 	},
--	[PORT_NPCM] = {
-+	[UART_PORT_NPCM] = {
- 		.name		= "Nuvoton 16550",
- 		.fifo_size	= 16,
- 		.tx_loadsz	= 16,
-@@ -279,7 +279,7 @@ static const struct serial8250_config uart_config[] = {
- 		.rxtrig_bytes	= {1, 4, 8, 14},
- 		.flags		= UART_CAP_FIFO,
- 	},
--	[PORT_SUNIX] = {
-+	[UART_PORT_SUNIX] = {
- 		.name		= "Sunix",
- 		.fifo_size	= 128,
- 		.tx_loadsz	= 128,
-@@ -287,7 +287,7 @@ static const struct serial8250_config uart_config[] = {
- 		.rxtrig_bytes	= {1, 32, 64, 112},
- 		.flags		= UART_CAP_FIFO | UART_CAP_SLEEP,
- 	},
--	[PORT_ASPEED_VUART] = {
-+	[UART_PORT_ASPEED_VUART] = {
- 		.name		= "ASPEED VUART",
- 		.fifo_size	= 16,
- 		.tx_loadsz	= 16,
-@@ -295,7 +295,7 @@ static const struct serial8250_config uart_config[] = {
- 		.rxtrig_bytes	= {1, 4, 8, 14},
- 		.flags		= UART_CAP_FIFO,
- 	},
--	[PORT_MCHP16550A] = {
-+	[UART_PORT_MCHP16550A] = {
- 		.name           = "MCHP16550A",
- 		.fifo_size      = 256,
- 		.tx_loadsz      = 256,
-@@ -303,7 +303,7 @@ static const struct serial8250_config uart_config[] = {
- 		.rxtrig_bytes   = {2, 66, 130, 194},
- 		.flags          = UART_CAP_FIFO,
- 	},
--	[PORT_BCM7271] = {
-+	[UART_PORT_BCM7271] = {
- 		.name		= "Broadcom BCM7271 UART",
- 		.fifo_size	= 32,
- 		.tx_loadsz	= 32,
++	[UART_PORT_AIROHA] = {
++		.name		= "Airoha UART",
++		.fifo_size	= 8,
++		.tx_loadsz	= 1,
++		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_01 | UART_FCR_CLEAR_RCVR,
++		.rxtrig_bytes	= {1, 4},
++		.flags		= UART_CAP_FIFO,
++	},
++	[UART_PORT_AIROHA_HS] = {
++		.name		= "Airoha HSUART",
++		.fifo_size	= 128,
++		.tx_loadsz	= 128,
++		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_01 | UART_FCR_CLEAR_RCVR,
++		.rxtrig_bytes	= {1, 4},
++		.flags		= UART_CAP_FIFO,
++	},
+ };
+ 
+ /* Uart divisor latch read */
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index fc3e58d62233..310da7af7a49 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -337,6 +337,17 @@ config SERIAL_8250_ACORN
+ 	  system, say Y to this option.  The driver can handle 1, 2, or 3 port
+ 	  cards.  If unsure, say N.
+ 
++config SERIAL_8250_AIROHA
++	tristate "Airoha UART support"
++	depends on ARCH_AIROHA || COMPILE_TEST
++	depends on SERIAL_8250
++	help
++	  Selecting this option enables an Airoha SoC specific baud rate
++	  calculation routine on an otherwise 16550 compatible UART hardware.
++
++	  If you have an Airoha based board and want to use the serial port,
++	  say Y to this option. If unsure, say N.
++
+ config SERIAL_8250_BCM2835AUX
+ 	tristate "BCM2835 auxiliar mini UART support"
+ 	depends on ARCH_BCM2835 || COMPILE_TEST
+diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
+index 6d21402b4435..83257696ea8a 100644
+--- a/drivers/tty/serial/8250/Makefile
++++ b/drivers/tty/serial/8250/Makefile
+@@ -20,6 +20,7 @@ obj-$(CONFIG_SERIAL_8250_CONSOLE)	+= 8250_early.o
+ 
+ obj-$(CONFIG_SERIAL_8250_ACCENT)	+= 8250_accent.o
+ obj-$(CONFIG_SERIAL_8250_ACORN)		+= 8250_acorn.o
++obj-$(CONFIG_SERIAL_8250_AIROHA)	+= 8250_airoha.o
+ obj-$(CONFIG_SERIAL_8250_ASPEED_VUART)	+= 8250_aspeed_vuart.o
+ obj-$(CONFIG_SERIAL_8250_BCM2835AUX)	+= 8250_bcm2835aux.o
+ obj-$(CONFIG_SERIAL_8250_BCM7271)	+= 8250_bcm7271.o
 -- 
 2.53.0
 
