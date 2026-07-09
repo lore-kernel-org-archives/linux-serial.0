@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E73BB3D5226;
-	Thu,  9 Jul 2026 06:54:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 103363D5226;
+	Thu,  9 Jul 2026 06:59:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783580046; cv=none; b=Cqf0D45r08bD75L6ZaraFf5SDSdd65ItPrvZHsbkFj+mG5Ei3ZQpsicu5HfKRebatZxLScCflP/gwkpQtKoTDyXa8H2GLWnrmla3V/+p3kdBvsEmcaMcvI8JbEEMvWAOHxRpNcO+99C5IbkkEDVhAGGPjtdoka28UVnSaDpYGWk=
+	t=1783580391; cv=none; b=Rh2Gktc+5XENx2KwWpXtzznUZ58AY2xl3lJQmIE/IhP4OubIvBjeTQ2rwjylSARm8+Zwrt68LYubxWxB3lRYHc17/3V5gwHS0Gl3VVIts7zTZsXn242v3Uau+jTSMcI2C3kXjWE+TSLYOPK14lg4S6vlFyIjZmiE069gY4uicX0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783580046; c=relaxed/simple;
-	bh=ydBjedsFlM5zE7n02K5dZMnmI4uwth9M252K9flBJwo=;
+	s=arc-20240116; t=1783580391; c=relaxed/simple;
+	bh=jJJgbAW3S7giiSPDNYYxmlhnK68Eg+n0kXkC3TbKXTw=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ajqGTCrWAdtE0LoTemWrIgGYjIBj6Ib/vk9o833NzBRCXpufK/Soh7LlKtpwGb8NtpnuUaY07ZpHu8hUPEi85DlxjGjXfmW3nRpjNCeErMDOaKDlHf5ffoXIt3aLDNBF87fdhsuYq+uiKp9uQr+ZdNGsMoMFAChvlfNTLxpfyxQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eve+Ku/b; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=k4j2lOO1Vo7jutt/at2CakwIHIZmYJfNGXquTDOMS2tCgM+1W4qarYrK/ozpairxBNLSG8wYZlLNdW4KjqtgSuGlhCSyfQ6waLqnh3qIArWC3qG1BVX/mz9L9MapXEdwxk33Ek01FFEm5I9y7oR1+CAxmRx3wgbPXRBRffG1u00=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=c6HbfMHO; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eve+Ku/b"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA18F1F000E9;
-	Thu,  9 Jul 2026 06:53:56 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="c6HbfMHO"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CEEB1F000E9;
+	Thu,  9 Jul 2026 06:59:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783580044;
-	bh=Umjxh1wdEigWfrDYfCtSPiAZ4y/Nii4EbVro+PImADI=;
+	s=k20260515; t=1783580387;
+	bh=unxJiU3o8MfYUzTgGPpKLMYaq7It2z7Ckp4kI4w1OSA=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=eve+Ku/buy7nr9gkUgllmP30UOO+QyApAmLGK6h4Qn42Nr4HNLucG+pYmO07Wtxmk
-	 DWtBcDkCybkjMlqjaJAwd+FunPhP/l5E8qcTL2xsPlkrRQwgTqcC58b15eC4WZCrNW
-	 fy+PA4ct/pREL/oK75G/cagLF2JMP2E0x1x6qNQGOEUW/edqJPbb3eXflbtPImj6rr
-	 6mU9S7lgocbnzdZMe07a8786qBJXU0lxf05aRXoxRuFJMsGDl2iAXDkYuqhNkARf4s
-	 MxPTFY6X9AF2y/gnXEoGeobYHJvx5MR4EWTe2hp42in/8iWVNNdGaLMqCpALPbiZyj
-	 rFX4rJG1dpVLQ==
-Message-ID: <9320a573-ebf8-459b-a313-3a8b73a6180b@kernel.org>
-Date: Thu, 9 Jul 2026 08:53:54 +0200
+	b=c6HbfMHO83C8jh8Q/JIuviM45cudWvZ/oVRvcC5G6DlG7dTQ++sGeGyj4eOAjqwJJ
+	 5PeIasMZITYVX/nzXmmoKjWCoXINO94KCZ8XTIPSCI2BgcJKOaHv5bF1hczGiQuw1x
+	 D5QZ3mNliahRGEgH2BK507nJ8Xzy8k0iScsbUhDjOslxwJu3T7IHYFRfbHmvGIkKlP
+	 02nOhslljuoAWtp8hTqtJmCuMD2jfGbgtEqJ8vHntJuylBTpLkg9GauCbQ40dG1Dn8
+	 4LSvi2syorPJhmQDmGGk/tMgCr0WczV+rYTXIM4ATOSpicg8N2dqtVVpsZ8kOIDpVy
+	 iBl8GKfEJXopw==
+Message-ID: <9b45a796-9b84-4977-b697-cc91c4c6adbf@kernel.org>
+Date: Thu, 9 Jul 2026 08:59:44 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,41 +35,15 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 0/6] tty: serial: propagate errors from uart_ops.pm
+Subject: Re: [PATCH v3 06/15] serial: 8250_mxpcie: add custom handle_irq
  callback
-To: Praveen Talari <praveen.talari@oss.qualcomm.com>,
+To: Crescent Hsieh <crescentcy.hsieh@moxa.com>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Richard Genoud <richard.genoud@bootlin.com>,
- Nicolas Ferre <nicolas.ferre@microchip.com>,
- Alexandre Belloni <alexandre.belloni@bootlin.com>,
- Claudiu Beznea <claudiu.beznea@tuxon.dev>,
- Krzysztof Kozlowski <krzk@kernel.org>,
- Peter Griffin <peter.griffin@linaro.org>,
- Alim Akhtar <alim.akhtar@samsung.com>, Orson Zhai <orsonzhai@gmail.com>,
- Baolin Wang <baolin.wang@linux.alibaba.com>,
- Chunyan Zhang <zhang.lyra@gmail.com>,
- Patrice Chotard <patrice.chotard@foss.st.com>,
- Maxime Coquelin <mcoquelin.stm32@gmail.com>,
- Alexandre Torgue <alexandre.torgue@foss.st.com>,
- Peter Korsgaard <jacmet@sunsite.dk>, Michal Simek <michal.simek@amd.com>,
- Aaro Koskinen <aaro.koskinen@iki.fi>,
- Janusz Krzysztofik <jmkrzyszt@gmail.com>, Tony Lindgren <tony@atomide.com>,
- Russell King <linux@armlinux.org.uk>,
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- bjorn.andersson@oss.qualcomm.com,
- Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+ Andy Shevchenko <andy.shevchenko@gmail.com>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
- linux-arm-msm@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
- linux-stm32@st-md-mailman.stormreply.com, linux-omap@vger.kernel.org,
- linux-mips@vger.kernel.org,
- Mukesh Kumar Savaliya <mukesh.savaliya@oss.qualcomm.com>,
- aniket.randive@oss.qualcomm.com, chandana.chiluveru@oss.qualcomm.com
-References: <20260709-add_return_check_for_uart_change_pm-v1-0-e85c6ffa8ec4@oss.qualcomm.com>
+ FangpingFP.Cheng@moxa.com, Epson.Chiang@moxa.com
+References: <20260709053314.435629-1-crescentcy.hsieh@moxa.com>
+ <20260709053314.435629-7-crescentcy.hsieh@moxa.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -114,59 +88,66 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20260709-add_return_check_for_uart_change_pm-v1-0-e85c6ffa8ec4@oss.qualcomm.com>
+In-Reply-To: <20260709053314.435629-7-crescentcy.hsieh@moxa.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 09. 07. 26, 8:25, Praveen Talari wrote:
-> The uart_ops.pm callback has been declared void since its introduction,
-> which means any error from a driver's power management implementation is
-> silently discarded by uart_change_pm(). Beyond losing the error
-> information, uart_change_pm() unconditionally updates state->pm_state
-> even when the underlying hardware transition failed. This causes the
-> serial core to track a power state that does not reflect reality:
-> subsequent calls to uart_change_pm() see the stale cached state as
-> matching the requested state and skip the callback entirely, leaving the
-> hardware permanently stuck with no further recovery attempt.
-> 
-> On modern platforms where the .pm callback performs real work —
-> enabling clock trees, interacting with runtime PM, asserting voltage
-> regulators — this is a correctness gap. Failures are invisible to the
-> PM framework, the port proceeds to call ops->startup() on potentially
-> unpowered hardware, and suspend/resume errors are hidden from the core
-> that needs to handle them.
-> 
-> This series fixes the problem in four steps:
-> 
->    Patch 1 changes the uart_ops.pm callback signature from void to int,
->    updates uart_change_pm() to propagate errors and only commit
->    state->pm_state on success, and handles the return value at every
->    call site in serial_core.c with appropriate policy per context
->    (propagate, log, or skip-on-failure).
+On 09. 07. 26, 7:33, Crescent Hsieh wrote:
+...
+> --- a/drivers/tty/serial/8250/8250_mxpcie.c
+> +++ b/drivers/tty/serial/8250/8250_mxpcie.c
+> @@ -266,6 +266,48 @@ static void mxpcie8250_unthrottle(struct uart_port *port)
+>   	serial_out(up, UART_IER, up->ier);
+>   }
+>   
+> +static u16 mxpcie8250_rx_chars(struct uart_8250_port *up, u16 lsr)
+> +{
+> +	struct uart_port *port = &up->port;
+> +
+> +	if (!(lsr & (UART_LSR_DR | UART_LSR_BI)))
+> +		return lsr;
+> +
+> +	if (!(port->status & (UPSTAT_AUTOCTS | UPSTAT_AUTORTS)))
+> +		goto do_rx;
+> +	if (lsr & (UART_LSR_FIFOE | UART_LSR_BRK_ERROR_BITS))
+> +		goto do_rx;
+> +	if (port->read_status_mask & UART_LSR_DR)
+> +		goto do_rx;
 
-So does this break build without the below applied? IOW: breaks 
-bisectability?
+Perhaps extract the tests to a separate function (like bool 
+mxpcie8250_should_rx()) to get rid of the goto+label?
 
->    Patch 2 updates the 8250 driver family: serial8250_do_pm() and
->    serial8250_pm() are updated to return int (with the exported symbol
->    declaration updated in serial_8250.h), and the 8250 sub-driver
->    pm callbacks are updated to return 0.
-> 
->    Patch 3 updates the remaining non-8250 serial drivers. All .pm
->    implementations are updated to return 0. The sh-sci forward
->    declaration shared with rsci is also updated.
-> 
->    Patch 4 updates arch-level implementations: SA1100 (assabet, h3xxx),
->    OMAP1/ams-delta (modem_pm, now propagates regulator errors), and
->    MIPS/Alchemy (alchemy_8250_pm).
-> 
-> All existing .pm implementations return 0, so there is no functional
-> change for any current driver. The series purely adds the infrastructure
-> for drivers to report errors going forward, with the serial core ready
-> to handle them correctly.
+mxpcie8250_should_rx() and serial8250_rx_chars() could be called 
+directly in the ISR then...
 
-OK, now I miss the rationale behind the patchset. Neither there is a 
-possible code path to actually test this?
+> +	return lsr;
+> +
+> +do_rx:
+> +	return serial8250_rx_chars(up, lsr);
+> +}
+> +
+> +static int mxpcie8250_handle_irq(struct uart_port *port)
+> +{
+> +	struct uart_8250_port *up = up_to_u8250p(port);
+> +	u16 lsr;
+> +	u8 iir;
+> +
+> +	iir = serial_in(up, UART_IIR);
+> +	if (iir & UART_IIR_NO_INT)
+> +		return 0;
+> +
+> +	guard(uart_port_lock_check_sysrq_irqsave)(port);
+> +
+> +	lsr = mxpcie8250_rx_chars(up, serial_lsr_in(up));
+> +
+> +	serial8250_modem_status(up);
+> +
+> +	if ((lsr & UART_LSR_THRE) && (up->ier & UART_IER_THRI))
+> +		serial8250_tx_chars(up);
+> +
+> +	return 1;
+> +}
+
 
 thanks,
 -- 
