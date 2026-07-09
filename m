@@ -1,139 +1,161 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43C3D34D4CE;
-	Thu,  9 Jul 2026 07:15:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37DCB3E3148;
+	Thu,  9 Jul 2026 07:31:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783581328; cv=none; b=Wm+pd02wQopL9dORvTvbPaCohnuPYxEj65I0eCvy0NUPZ2/mxMCyha6RnBmeg0qTm9ehHOgrTE3yTUPL923cVaaVIsIT1legdbCwsw/DWOUopEnwyrmrH6ta2p6gvBCzZwvMsc2WASx4ADcIH+75dgQR8DkMMXXwe5fSI9nwZXE=
+	t=1783582283; cv=none; b=SevxZGuHBOYh/ccKvj2zokNAEqfS7z37QL6lIWo/uylzyzldFkB+lKjOv9Bdvg5u8/a42vwPkx55nk7T1KADjplEQiJ6aY2ANSuN9qcOJArwC0PKU6kQU6ehQDaTKwTkm4KgjD4ugDXEq+s7v7jUmJM/mgOeZL3HRfSaNRVzZKc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783581328; c=relaxed/simple;
-	bh=WdSR441NKOMTKsasewYrtwHIN8OLgEjCQ1aBsApRgow=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=GsogM1hCX2eSEVkJkBFGOtZODgajc7uWeyNR50LcTnm87wRWmN18zYlDyZCJ3KioKKDgtbul91W2fSYKymjUh42uZaBBwa1x2875/dJGwrEkwOmYxULEdx17b85AZUBQujPSnHY1DrP51DTmUPrXN80ItCu79W4otrFHMQ0fOqg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=htJRnZ7G; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1783582283; c=relaxed/simple;
+	bh=cjMXLnfC6g6dIxN+DHVrz3kfjIpPNwD3v2Vrk7OqkFQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=b/yGN6Syq9hqIwT7Iwfl9Z8RaC67OancZQzmCXD16KEddaEKXrz6k2bReMxTq4bjCYTlGOfYSRtbODn/seXomFKkfh5WIPVXLA6uO2/Hn6/kJAYB/0Em9IVkJ+8Dm7lKDmwDYt/A5SDoQU+EhB05ND4zc1Q3uS9zCx6aLmk3c9A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Nizz2/0P; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="htJRnZ7G"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FA681F000E9;
-	Thu,  9 Jul 2026 07:15:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783581326;
-	bh=cF0eVD5olzr1eYRO2KucDiaZmcLy/yJ6ot339dEMkHI=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=htJRnZ7G/gayHxDDXsbEZEUv+37vWfXZJgmGBsJx6pjIFjUoLEYvlbICG9oRhvxzy
-	 gMFHewt3aaQ5QjN2zvgFXqKBF/Mr7AShmql7rC1iBp51lxHCMw4p9PgbS1HnTRxzSE
-	 Ps/Nm1YTYlRY5nqMX/47tZt5LVq6sPBGHbHK4Pb4YYFUy+mNnd0EnMGp+MIdFkp8Ib
-	 zlLLlA2B5LxZr3dHEpneiH1XZ6EiShJS4ix6e8/u4QvzhC6h5GnoSXhv9iftPGrNpi
-	 6MRbrMb65pdYXXXjK6uVX3gLoF4AGkz+eOminaQcgs6U83n7VNoKfCT1lzYn5ya+PU
-	 b+yZKrTF6hjdQ==
-Message-ID: <f9ec0660-9cd1-496a-92a1-ebcc7f80282e@kernel.org>
-Date: Thu, 9 Jul 2026 09:15:24 +0200
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Nizz2/0P"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1783582281; x=1815118281;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=cjMXLnfC6g6dIxN+DHVrz3kfjIpPNwD3v2Vrk7OqkFQ=;
+  b=Nizz2/0PBf3aedaBgxqwxsdMNU/2Y9Q05O+R52Br3rQBYKvmbtSocW70
+   9cZu0wpDGGChdypm5AulaLyy8ku5Y+ohPZIMqMmjw6tMXZMnNy3aPMuln
+   xgee1C6ugz5wnHaGb0gP9I5249hRYZeicOaMXmv+Ndny0PXs6u3mVZv80
+   MPXZzarvIm9xMChRKtXbfUT3P5Z4e83jB8nCWMIZw7u73U14QVo9Y1yn5
+   dPuIrLeJ65NqFjsILJEIHtbYWMmVPcduYrtZq4oLYYlUnN0iR46UHDZzO
+   knJeNlKJUeTfd/nYr1Oi658QsuoGRudV/pd14/UlT+l30axtf7+8QVqc2
+   w==;
+X-CSE-ConnectionGUID: 7rpYzFpFReiPt5X/igFexQ==
+X-CSE-MsgGUID: bEiFxh60QzOOWr5yzr7Zfg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11841"; a="84356458"
+X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
+   d="scan'208";a="84356458"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jul 2026 00:31:18 -0700
+X-CSE-ConnectionGUID: l77jRguWS0KUZDhOEz0AwA==
+X-CSE-MsgGUID: c8A8Itj8SOiqwX6JveJBLA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
+   d="scan'208";a="277729305"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.235])
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jul 2026 00:31:10 -0700
+Date: Thu, 9 Jul 2026 10:31:08 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Praveen Talari <praveen.talari@oss.qualcomm.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Richard Genoud <richard.genoud@bootlin.com>,
+	Nicolas Ferre <nicolas.ferre@microchip.com>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	Claudiu Beznea <claudiu.beznea@tuxon.dev>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Peter Griffin <peter.griffin@linaro.org>,
+	Alim Akhtar <alim.akhtar@samsung.com>,
+	Orson Zhai <orsonzhai@gmail.com>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Chunyan Zhang <zhang.lyra@gmail.com>,
+	Patrice Chotard <patrice.chotard@foss.st.com>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Peter Korsgaard <jacmet@sunsite.dk>,
+	Michal Simek <michal.simek@amd.com>,
+	Aaro Koskinen <aaro.koskinen@iki.fi>,
+	Janusz Krzysztofik <jmkrzyszt@gmail.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Russell King <linux@armlinux.org.uk>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	bjorn.andersson@oss.qualcomm.com,
+	Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+	linux-samsung-soc@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-omap@vger.kernel.org, linux-mips@vger.kernel.org,
+	Mukesh Kumar Savaliya <mukesh.savaliya@oss.qualcomm.com>,
+	aniket.randive@oss.qualcomm.com,
+	chandana.chiluveru@oss.qualcomm.com
+Subject: Re: [PATCH 0/6] tty: serial: propagate errors from uart_ops.pm
+ callback
+Message-ID: <ak9OPNcVAhkfxHvZ@ashevche-desk.local>
+References: <20260709-add_return_check_for_uart_change_pm-v1-0-e85c6ffa8ec4@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 08/15] serial: 8250_mxpcie: speed up TX using
- memory-mapped FIFO window
-To: Crescent Hsieh <crescentcy.hsieh@moxa.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- FangpingFP.Cheng@moxa.com, Epson.Chiang@moxa.com
-References: <20260709053314.435629-1-crescentcy.hsieh@moxa.com>
- <20260709053314.435629-9-crescentcy.hsieh@moxa.com>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20260709053314.435629-9-crescentcy.hsieh@moxa.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260709-add_return_check_for_uart_change_pm-v1-0-e85c6ffa8ec4@oss.qualcomm.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 09. 07. 26, 7:33, Crescent Hsieh wrote:
-...
-> --- a/drivers/tty/serial/8250/8250_mxpcie.c
-> +++ b/drivers/tty/serial/8250/8250_mxpcie.c
-...
-> @@ -318,6 +320,37 @@ static u16 mxpcie8250_rx_chars(struct uart_8250_port *up, u16 lsr)
->   	return serial8250_rx_chars(up, lsr);
->   }
->   
-> +static void mxpcie8250_tx_chars(struct uart_8250_port *up)
-> +{
-> +	struct uart_port *port = &up->port;
-> +	struct tty_port *tport = &port->state->port;
-> +	unsigned int count, txsize;
-> +	unsigned char c;
-> +
-> +	if (port->x_char) {
-> +		uart_xchar_out(port, UART_TX);
-> +		return;
-> +	}
-> +	if (uart_tx_stopped(port) || kfifo_is_empty(&tport->xmit_fifo)) {
-> +		port->ops->stop_tx(port);
-> +		return;
-> +	}
-> +	txsize = serial_in(up, MOXA_PUART_TX_FIFO_CNT);
-> +	count = min(kfifo_len(&tport->xmit_fifo), port->fifosize - txsize);
-> +
-> +	for (unsigned int i = 0; i < count; ++i) {
-> +		if (!uart_fifo_get(port, &c))
-> +			break;
-> +
-> +		serial_out(up, MOXA_PUART_TX_FIFO_MEM + i, c);
-> +	}
-> +	if (kfifo_len(&tport->xmit_fifo) < WAKEUP_CHARS)
-> +		uart_write_wakeup(port);
-> +
-> +	if (kfifo_is_empty(&tport->xmit_fifo) && !(up->capabilities & UART_CAP_RPM))
-> +		port->ops->stop_tx(port);
+On Thu, Jul 09, 2026 at 11:55:12AM +0530, Praveen Talari wrote:
+> The uart_ops.pm callback has been declared void since its introduction,
+> which means any error from a driver's power management implementation is
+> silently discarded by uart_change_pm(). Beyond losing the error
+> information, uart_change_pm() unconditionally updates state->pm_state
+> even when the underlying hardware transition failed. This causes the
+> serial core to track a power state that does not reflect reality:
+> subsequent calls to uart_change_pm() see the stale cached state as
+> matching the requested state and skip the callback entirely, leaving the
+> hardware permanently stuck with no further recovery attempt.
+> 
+> On modern platforms where the .pm callback performs real work —
+> enabling clock trees, interacting with runtime PM, asserting voltage
+> regulators — this is a correctness gap. Failures are invisible to the
+> PM framework, the port proceeds to call ops->startup() on potentially
+> unpowered hardware, and suspend/resume errors are hidden from the core
+> that needs to handle them.
+> 
+> This series fixes the problem in four steps:
+> 
+>   Patch 1 changes the uart_ops.pm callback signature from void to int,
+>   updates uart_change_pm() to propagate errors and only commit
+>   state->pm_state on success, and handles the return value at every
+>   call site in serial_core.c with appropriate policy per context
+>   (propagate, log, or skip-on-failure).
+> 
+>   Patch 2 updates the 8250 driver family: serial8250_do_pm() and
+>   serial8250_pm() are updated to return int (with the exported symbol
+>   declaration updated in serial_8250.h), and the 8250 sub-driver
+>   pm callbacks are updated to return 0.
+> 
+>   Patch 3 updates the remaining non-8250 serial drivers. All .pm
+>   implementations are updated to return 0. The sh-sci forward
+>   declaration shared with rsci is also updated.
+> 
+>   Patch 4 updates arch-level implementations: SA1100 (assabet, h3xxx),
+>   OMAP1/ams-delta (modem_pm, now propagates regulator errors), and
+>   MIPS/Alchemy (alchemy_8250_pm).
+> 
+> All existing .pm implementations return 0, so there is no functional
+> change for any current driver. The series purely adds the infrastructure
+> for drivers to report errors going forward, with the serial core ready
+> to handle them correctly.
 
-What's the reason not to use uart_port_tx() et al.?
+Just no, please just properly implement runtime PM. The .pm() must die completely.
+I used to have the PoC for that long time ago [1], but due to lack of time and
+other priorities it went abandoned. Also Atlassian made a brain damages move to
+limit repository to 1Gb, so I haven't able to update it for a few years.
 
-thanks,
+Note, that Tony (you have him in the Cc list) did a lot for some corner cases
+with that and we still have them IIRC. Tony, do you know what is the state of
+affairs with runtime PM for UART?
+
+[1]: https://bitbucket.org/andy-shev/linux/branch/topic/uart/rpm-plus
+
 -- 
-js
-suse labs
+With Best Regards,
+Andy Shevchenko
+
+
