@@ -1,154 +1,174 @@
-Received: from fout-a7-smtp.messagingengine.com (fout-a7-smtp.messagingengine.com [103.168.172.150])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8745C3D3002
-	for <linux-serial@vger.kernel.org>; Thu,  9 Jul 2026 06:31:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.150
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E73BB3D5226;
+	Thu,  9 Jul 2026 06:54:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783578695; cv=none; b=kVqfVeEMclJMs1aOOW7lT2MAOsqJhYbY9xXZ1BiE7th4IIF4JMB4kwFgvbDdw2QEF1N8XtsQO4CbJoN4iSCKB6PEy2xR6n5jg8TebryWMw8T0MnzljPXYehB+VzfwrPwVJaAtzxiePfcL7ltYNHCNE5SRn1BAtSS7Ud1UkIkPjc=
+	t=1783580046; cv=none; b=Cqf0D45r08bD75L6ZaraFf5SDSdd65ItPrvZHsbkFj+mG5Ei3ZQpsicu5HfKRebatZxLScCflP/gwkpQtKoTDyXa8H2GLWnrmla3V/+p3kdBvsEmcaMcvI8JbEEMvWAOHxRpNcO+99C5IbkkEDVhAGGPjtdoka28UVnSaDpYGWk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783578695; c=relaxed/simple;
-	bh=5bNR+v+vU3f1vP1S/Nlxk0QKH2vWG864BQ7ldM2IM0Q=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=PR7yrRKdDH/oNkDoiHR8UhHU3BCFOY04OeTv6KUrWxr5bn+xcRAOw1Y8RWTEJGyHzKRbh/xpKCwlfl7sloWhy4aODXh3dQtUZ6jepAW8qw6x1qgVzj1+RSg5gn7VVzGNgAo5C1+LpAGjnqT+wFjr8Etqb1koug6mN/N2HkZeuII=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=bpigeooc; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=Nf08qqot; arc=none smtp.client-ip=103.168.172.150
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
+	s=arc-20240116; t=1783580046; c=relaxed/simple;
+	bh=ydBjedsFlM5zE7n02K5dZMnmI4uwth9M252K9flBJwo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ajqGTCrWAdtE0LoTemWrIgGYjIBj6Ib/vk9o833NzBRCXpufK/Soh7LlKtpwGb8NtpnuUaY07ZpHu8hUPEi85DlxjGjXfmW3nRpjNCeErMDOaKDlHf5ffoXIt3aLDNBF87fdhsuYq+uiKp9uQr+ZdNGsMoMFAChvlfNTLxpfyxQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eve+Ku/b; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="bpigeooc";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="Nf08qqot"
-Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
-	by mailfout.phl.internal (Postfix) with ESMTP id 85425EC012D;
-	Thu,  9 Jul 2026 02:31:32 -0400 (EDT)
-Received: from phl-imap-05 ([10.202.2.95])
-  by phl-compute-04.internal (MEProxy); Thu, 09 Jul 2026 02:31:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm1; t=1783578692;
-	 x=1783665092; bh=NHEqFUzgGuUH7Rt9Kyq5q2dhYfpUZW24+wCZYMJWUog=; b=
-	bpigeoocVxl8BY/ry2qOQfB6Cz7cz0RKyhnAl5UpFTWxxYrbCFZaBmNmh41R9w7i
-	vTMnZL8HXMgUhnFX35kBZfvaPjLFHz2FCAAtZhfe3mQZeY788OThGTUpopTvIIl+
-	ktDQ0588uIFeyYI2oLM5mf+0gUTtLcQ7401lsF7eqOiAW4fuGWu0iemoxDq0H+cQ
-	lL0Px/jZqrEdEV8q6w0n9FE9D/9+D8zcfDAkvbitFEU/R1Rrjas2/mSZl0rmbDnG
-	/OYXQqMYeQsQIeS7sfMSZ5kpuGmo0qDuCk/EPhfzBcl2HlbRHdUC22YdXY73uFyi
-	IlX4rAS9HleIrOmK71rX7g==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1783578692; x=
-	1783665092; bh=NHEqFUzgGuUH7Rt9Kyq5q2dhYfpUZW24+wCZYMJWUog=; b=N
-	f08qqotbXSviRpPz8DF/Qp4Gg35x5ciWmz6xHXiaJaUt3EM8SlILEAss+mHWj4MY
-	TZ9+Or8spUMlAHAYgKal7amOxrPd46lv6iPtguE02+c3ul8DiiSbIx6h0QypwaKa
-	GLWqg43vpmYUFVguokgZRJmRRJZAgAGG36ptRsA7ekhlmxeGgMfvqXoqFTEhrpWA
-	gyxnzKFG821A4XQ6y84gvt7oYrAE8svSBu9igTy0cYkfHnAKQtoRaK/h/eZwAB5+
-	3ralX03dDN/12RneVo3wk5ZW5F2RfSF1C0U2i18q2R/YHYr4pkTEQC4Q05iz1C8O
-	4U7QAtzJVkbKq0F/3f2sQ==
-X-ME-Sender: <xms:REBPaiuAouJKTwvNCXVyNr3n-qA1Qs01l9gOI8TcR7_D8w5s6m3y8Q>
-    <xme:REBPaiQIisv8EyNFroadB6dGC30VUi2YjeC1dSWfw5aEtlaY7Vd1azzf5lkJJcQBB
-    BnimskiUpUbkZvzlE-fd497XO25QCYHPG9dBUISHVgo2MyJX-ZJ5kA>
-X-ME-Proxy-Cause: dmFkZTGba0J+XKfIW76mmLc+czUnTDwffbl8cPaAot1756l/RSxRZNQZk8F03CM7pAh8S/
-    ccNJcnvl6fbFEGR6OYLqfs8TYuIiqFRZylJP3h+6nau8xNxazOoq24sXEMkJrV8qLThNcb
-    lX8cSNVEH8rYxnysaRlwZMgvp8OROGaXdS/oTKhhUFxOPaC5yOnrkBwEfXf+nQVCQlphgy
-    1xPXiMRgTcXD8ESch9z7DY0f3mW8zUNKqyvPihYCdrLqyRGNGMXv8gm6Z1MQu9paYaMQ1t
-    AXJyO9/Irgbt8WdsFaj71Qj9h+XDB5dQuUPwZRb3/3y/iiS7UTfke4GJrAE9ry54naWNLJ
-    OdW/g9n7YBN7XmwfEvL3XDQGkQWCwXc30R93n9Tn0n8WCtLgfX6dL8DVrk8ACBvA0lwcjk
-    DLdmFWOQMru55WVY261+Yyarq7PR2mWmmclcmRd+2oUX0kCKo01ZGo5/hm96jq5sHLek5I
-    Ct9IlshOpjLWKOTUKvGcpM6tE74EVfAYoSpMg8iFnEGN5pQgAJYkQz1j/gciLn3j8qJSam
-    BZ1DcppB02WO7FPibmExFpQhDgSw/efbS+LCVEjRUToersbmwynUUb0HzFkoFNDWTDrqOR
-    dITHoY0OGHg0FYrVJb8aIQAdO0JNQCrhztVc48G+OwI28RUjNz8QMQGAxDZg
-X-ME-Proxy: <xmx:REBPakb8DAELJJrxoN2tpvM2DgTuk2kwcgPMrrkUWzAIPv-YZLBkqA>
-    <xmx:REBPao2D9w6X4FlSoeuGopnFSUThcWnc1he_Umtx1A8NwLrw1n3FlQ>
-    <xmx:REBPauj-JZrZKXcYPOKedLLin5QGo1fByJsOSteXkUYrAhPC9Qk0DA>
-    <xmx:REBPakYM_XoDh-Wf58Won3LwHhhoQHJ9rkOd4646FeQnJeRVR3KQ4A>
-    <xmx:REBPamT6Ru26Ahh1JZDM5LhxJL1Of-08F5JWtbQU41xek9DJ7ulYsPLp>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id 1FAC7182007E; Thu,  9 Jul 2026 02:31:32 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eve+Ku/b"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA18F1F000E9;
+	Thu,  9 Jul 2026 06:53:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1783580044;
+	bh=Umjxh1wdEigWfrDYfCtSPiAZ4y/Nii4EbVro+PImADI=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=eve+Ku/buy7nr9gkUgllmP30UOO+QyApAmLGK6h4Qn42Nr4HNLucG+pYmO07Wtxmk
+	 DWtBcDkCybkjMlqjaJAwd+FunPhP/l5E8qcTL2xsPlkrRQwgTqcC58b15eC4WZCrNW
+	 fy+PA4ct/pREL/oK75G/cagLF2JMP2E0x1x6qNQGOEUW/edqJPbb3eXflbtPImj6rr
+	 6mU9S7lgocbnzdZMe07a8786qBJXU0lxf05aRXoxRuFJMsGDl2iAXDkYuqhNkARf4s
+	 MxPTFY6X9AF2y/gnXEoGeobYHJvx5MR4EWTe2hp42in/8iWVNNdGaLMqCpALPbiZyj
+	 rFX4rJG1dpVLQ==
+Message-ID: <9320a573-ebf8-459b-a313-3a8b73a6180b@kernel.org>
+Date: Thu, 9 Jul 2026 08:53:54 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-ThreadId: AUvWS1vDS7x-
-Date: Thu, 09 Jul 2026 08:29:43 +0200
-From: "Arnd Bergmann" <arnd@arndb.de>
-To: "Linus Walleij" <linusw@kernel.org>,
- "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
- "Jiri Slaby" <jirislaby@kernel.org>
-Cc: linux-serial@vger.kernel.org
-Message-Id: <2ac8f8b2-996d-42c1-b6fb-d319141325f2@app.fastmail.com>
-In-Reply-To: <20260709-ixp4xx-serial-hackfix-v1-1-cd1c29d02183@kernel.org>
-References: <20260709-ixp4xx-serial-hackfix-v1-1-cd1c29d02183@kernel.org>
-Subject: Re: [PATCH] serial: 8250: handle ixp4xx register endianness correctly
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 0/6] tty: serial: propagate errors from uart_ops.pm
+ callback
+To: Praveen Talari <praveen.talari@oss.qualcomm.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Richard Genoud <richard.genoud@bootlin.com>,
+ Nicolas Ferre <nicolas.ferre@microchip.com>,
+ Alexandre Belloni <alexandre.belloni@bootlin.com>,
+ Claudiu Beznea <claudiu.beznea@tuxon.dev>,
+ Krzysztof Kozlowski <krzk@kernel.org>,
+ Peter Griffin <peter.griffin@linaro.org>,
+ Alim Akhtar <alim.akhtar@samsung.com>, Orson Zhai <orsonzhai@gmail.com>,
+ Baolin Wang <baolin.wang@linux.alibaba.com>,
+ Chunyan Zhang <zhang.lyra@gmail.com>,
+ Patrice Chotard <patrice.chotard@foss.st.com>,
+ Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+ Alexandre Torgue <alexandre.torgue@foss.st.com>,
+ Peter Korsgaard <jacmet@sunsite.dk>, Michal Simek <michal.simek@amd.com>,
+ Aaro Koskinen <aaro.koskinen@iki.fi>,
+ Janusz Krzysztofik <jmkrzyszt@gmail.com>, Tony Lindgren <tony@atomide.com>,
+ Russell King <linux@armlinux.org.uk>,
+ Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+ bjorn.andersson@oss.qualcomm.com,
+ Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
+ linux-arm-msm@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+ linux-stm32@st-md-mailman.stormreply.com, linux-omap@vger.kernel.org,
+ linux-mips@vger.kernel.org,
+ Mukesh Kumar Savaliya <mukesh.savaliya@oss.qualcomm.com>,
+ aniket.randive@oss.qualcomm.com, chandana.chiluveru@oss.qualcomm.com
+References: <20260709-add_return_check_for_uart_change_pm-v1-0-e85c6ffa8ec4@oss.qualcomm.com>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20260709-add_return_check_for_uart_change_pm-v1-0-e85c6ffa8ec4@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Thu, Jul 9, 2026, at 01:05, Linus Walleij wrote:
-> @@ -122,6 +122,17 @@ static int of_platform_serial_setup(struct 
-> platform_device *ofdev,
->  	if (ret)
->  		goto err_pmruntime;
+On 09. 07. 26, 8:25, Praveen Talari wrote:
+> The uart_ops.pm callback has been declared void since its introduction,
+> which means any error from a driver's power management implementation is
+> silently discarded by uart_change_pm(). Beyond losing the error
+> information, uart_change_pm() unconditionally updates state->pm_state
+> even when the underlying hardware transition failed. This causes the
+> serial core to track a power state that does not reflect reality:
+> subsequent calls to uart_change_pm() see the stale cached state as
+> matching the requested state and skip the callback entirely, leaving the
+> hardware permanently stuck with no further recovery attempt.
 > 
-> +	if (IS_ENABLED(CONFIG_CPU_XSCALE) && type == PORT_XSCALE) {
-> +		/*
-> +		 * Adjust for BE32 register accesses: drop any hardcoded
-> +		 * address for the big endian byte target, add it explicitly
-> +		 * if running on BE32.
-> +		 */
-> +		port->mapbase &= ~3;
-> +		if (IS_ENABLED(CONFIG_CPU_ENDIAN_BE32))
-> +			port->mapbase += 3;
-> +	}
+> On modern platforms where the .pm callback performs real work —
+> enabling clock trees, interacting with runtime PM, asserting voltage
+> regulators — this is a correctness gap. Failures are invisible to the
+> PM framework, the port proceeds to call ops->startup() on potentially
+> unpowered hardware, and suspend/resume errors are hidden from the core
+> that needs to handle them.
+> 
+> This series fixes the problem in four steps:
+> 
+>    Patch 1 changes the uart_ops.pm callback signature from void to int,
+>    updates uart_change_pm() to propagate errors and only commit
+>    state->pm_state on success, and handles the return value at every
+>    call site in serial_core.c with appropriate policy per context
+>    (propagate, log, or skip-on-failure).
 
-I tried to adjust my original patch the same way yesterday, but
-got stuck after I noticed that a similar change is needed
-for the earlycon side that runs before of_platform_serial_setup().
+So does this break build without the below applied? IOW: breaks 
+bisectability?
 
-I think I've come up with a simple enough fix, essentially putting
-the same change in a second location, see below.
+>    Patch 2 updates the 8250 driver family: serial8250_do_pm() and
+>    serial8250_pm() are updated to return int (with the exported symbol
+>    declaration updated in serial_8250.h), and the 8250 sub-driver
+>    pm callbacks are updated to return 0.
+> 
+>    Patch 3 updates the remaining non-8250 serial drivers. All .pm
+>    implementations are updated to return 0. The sh-sci forward
+>    declaration shared with rsci is also updated.
+> 
+>    Patch 4 updates arch-level implementations: SA1100 (assabet, h3xxx),
+>    OMAP1/ams-delta (modem_pm, now propagates regulator errors), and
+>    MIPS/Alchemy (alchemy_8250_pm).
+> 
+> All existing .pm implementations return 0, so there is no functional
+> change for any current driver. The series purely adds the infrastructure
+> for drivers to report errors going forward, with the serial core ready
+> to handle them correctly.
 
-The other thing I realized is that I had the incorrect
-"port->regshift = 0" in my broken patch at first, which
-would mean that UPIO_MEM32 couldn't work either even if
-the hardware could do it after all.
+OK, now I miss the rationale behind the patchset. Neither there is a 
+possible code path to actually test this?
 
-     Arnd
-
-diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
-index dc0371857ecb..bfe8232e0ebb 100644
---- a/drivers/tty/serial/8250/8250_early.c
-+++ b/drivers/tty/serial/8250/8250_early.c
-@@ -177,16 +177,24 @@ OF_EARLYCON_DECLARE(ns16550a, "ns16550a", early_serial8250_setup);
- OF_EARLYCON_DECLARE(uart, "nvidia,tegra20-uart", early_serial8250_setup);
- OF_EARLYCON_DECLARE(uart, "snps,dw-apb-uart", early_serial8250_setup);
- 
--static int __init early_serial8250_rs2_setup(struct earlycon_device *device,
-+static int __init early_serial8250_xscale_setup(struct earlycon_device *device,
- 					     const char *options)
- {
-+	/*
-+	 * Adjust for BE32 register accesses: drop any hardcoded
-+	 * address for the big endian byte target, add it explicitly
-+	 * if running on BE32.
-+	 */
-+	port->membase &= ~3;
-+	if (IS_ENABLED(CONFIG_CPU_ENDIAN_BE32))
-+		port->membase += 3;
- 	device->port.regshift = 2;
- 
- 	return early_serial8250_setup(device, options);
- }
--OF_EARLYCON_DECLARE(uart, "intel,xscale-uart", early_serial8250_rs2_setup);
--OF_EARLYCON_DECLARE(uart, "mrvl,mmp-uart", early_serial8250_rs2_setup);
--OF_EARLYCON_DECLARE(uart, "mrvl,pxa-uart", early_serial8250_rs2_setup);
-+OF_EARLYCON_DECLARE(uart, "intel,xscale-uart", early_serial8250_xscale_setup);
-+OF_EARLYCON_DECLARE(uart, "mrvl,mmp-uart", early_serial8250_xscale_setup);
-+OF_EARLYCON_DECLARE(uart, "mrvl,pxa-uart", early_serial8250_xscale_setup);
- 
- #ifdef CONFIG_SERIAL_8250_OMAP
- 
+thanks,
+-- 
+js
+suse labs
