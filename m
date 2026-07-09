@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A826134D3B9;
-	Thu,  9 Jul 2026 05:17:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C0A143932C;
+	Thu,  9 Jul 2026 05:19:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783574279; cv=none; b=H3Aw5zhT90IF9j3+SAwKMndBaV4k/vGss9a16gpIL36NdjeRELMgaUsTqid4BQO/DDCZi4MjKpbmbnFowr4oRk645HvK9Oy7Bk/u3f2MEdwu/QAaQucBnjVIq6TTwtC1tiNrat+sdGIS9PduWk4DAhtP1GNofgXpuoLnHWtbuKM=
+	t=1783574346; cv=none; b=CGAkrDtLeVOqAD7UoJqeSvmepY5C/ahc6R8TI6u0aB0yDOgLgxVBuiIHHFbsYIJAbjUd4dA37PNKGLCmEC1WFGaio4TdPv4itKMC5j7t3GbGKf0KR3N25SexmGJjPiDxTY5WKlAJV7S27ocYCRRZiQq3pkRGwBpg6JocndwXVxA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783574279; c=relaxed/simple;
-	bh=USUWWsOFJoBEtv8EFh6a3oTFiCOE0gx3Y80iiAT1PrY=;
+	s=arc-20240116; t=1783574346; c=relaxed/simple;
+	bh=Mz23HpxinhTBJMXB9H2g8ZlCVQ2KCzYFhLD5TwEq6Cc=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=onJD4p4wNBTp/TcNESVtJvQZ6mg3lMnjjOlPZDVjpYIoCQk5f8vpx33BI8tD8ixfzmwtFkrKjIVfeKjibxI2Vp2bwE5h4w8jlhx9JkS/9tvhQ2JcEruI61nErhBpyDBfe7/HDGVSa6ZbRmNkXRYa//jI1eptSB6qpRYzbOiZ78w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=k32G/98M; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=WJcCsogBNku+jl650SKyGUjKVjFWdG/Rzix8P24NiFT1UY69Kg/k0UKp/Sx6KDoo/Wy5DWf5/7YBPxcSd/2JEf0/eAh4tUEVO2sGoYSWjFN07rbyvbwZdh5spzpl+6le5ZSpAsA4KbFA8BK9aL6zBGht2eyoBiZqd0lyitc5g2Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZQgTkk7o; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="k32G/98M"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78A151F000E9;
-	Thu,  9 Jul 2026 05:17:54 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZQgTkk7o"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 551E51F000E9;
+	Thu,  9 Jul 2026 05:19:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783574278;
-	bh=tQ+V+NoyUcPuvrO7cKOPdWAVnLPgCtZojOaNp2ZcxCc=;
+	s=k20260515; t=1783574344;
+	bh=U07Tc0YIkdsfSk0M4VsXB1xF7rMsrEoDAqiLn01Euk8=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=k32G/98MDVwSpEfyGKC/N9IIzGeaQas9poCOPA0KblZhNluiI1Z7fB5vBh8c3W4GK
-	 QKkFwAzJ0DWHo7fPX2BnHa/8JiBIvZi8WiKO2f9Y2hN8QSx3Eq6tsWctpJy3YrLRNi
-	 f9D53gOZGVVGTJUuiJNK7sNxsT5F/jPskZApFqTJNh/vWL/bw7bvy+Q+5+hv6kDpd/
-	 +gKDdASXtSzKsnt8xGKiRtfwHgVOZhIF5FtZW/CILAfYGdMkLGkI/gNCeK+T/ApASP
-	 hJQwkOwwQpI7TMQ0fHRJbjzJ+KYEcMZ6khfk3TrzT46oBQReSYNTPSPlnBy3au1h16
-	 kTyzNnbZcdKdQ==
-Message-ID: <1af9eb75-fcab-4541-8ba7-ec620546f031@kernel.org>
-Date: Thu, 9 Jul 2026 07:17:51 +0200
+	b=ZQgTkk7o5Gtq0vBhgRq3X7NnyvQ48WC5NiKRizm7GFYjlmx1EZ74vLx2y/vXe4W8q
+	 3bCn3NMtd8UdUmQm51tHQZvt7pN1Fp+cXBafzR79pg5S65KftCbLa/z4MCsLtqVfXz
+	 aybFZGLDx2iH1v1QkwN1wuop+TPdStRDkhNE4QJJZsLtknaWkG5rx/0gF8YTwcWvHk
+	 kT7t1dGAFRun27RZnf/T9shpuCNhF6fBMpzufXX8E+pYZRrnOKAcSEh79MYHPlOTNJ
+	 iY/b8tosGccljiA4OrLp2dzde735byWJQZ3mdFaZcd3ROFioJ/PLQscjob0ISvBYVn
+	 0/3nvBlZuuvMw==
+Message-ID: <f391981a-29f8-4ed3-b582-744aa47cbe1d@kernel.org>
+Date: Thu, 9 Jul 2026 07:18:59 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -36,16 +36,17 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v4 4/7] serial: 8250_aspeed_vuart: add VUART over PCI
-To: =?UTF-8?Q?Gr=C3=A9goire_Layet?= <gregoire.layet@9elements.com>,
- joel@jms.id.au, andrew@codeconstruct.com.au, lkundrak@v3.sk,
+To: Andrew Lunn <andrew@lunn.ch>,
+ =?UTF-8?Q?Gr=C3=A9goire_Layet?= <gregoire.layet@9elements.com>
+Cc: joel@jms.id.au, andrew@codeconstruct.com.au, lkundrak@v3.sk,
  devicetree@vger.kernel.org, gregkh@linuxfoundation.org, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org
-Cc: andrew@lunn.ch, jacky_chou@aspeedtech.com, yh_chung@aspeedtech.com,
- ninad@linux.ibm.com, anirudhsriniv@gmail.com, linux-serial@vger.kernel.org,
- linux-aspeed@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org
+ krzk+dt@kernel.org, conor+dt@kernel.org, jacky_chou@aspeedtech.com,
+ yh_chung@aspeedtech.com, ninad@linux.ibm.com, anirudhsriniv@gmail.com,
+ linux-serial@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 References: <cover.1783524645.git.gregoire.layet@9elements.com>
  <28c6e7c493559feffc7e6231b0a2f0b73b7fda41.1783524645.git.gregoire.layet@9elements.com>
+ <694c7c37-fb42-4994-93eb-04ed4ae299cf@lunn.ch>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -90,83 +91,30 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <28c6e7c493559feffc7e6231b0a2f0b73b7fda41.1783524645.git.gregoire.layet@9elements.com>
+In-Reply-To: <694c7c37-fb42-4994-93eb-04ed4ae299cf@lunn.ch>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 08. 07. 26, 17:35, Grégoire Layet wrote:
-...
-> --- a/drivers/tty/serial/8250/8250_aspeed_vuart.c
-> +++ b/drivers/tty/serial/8250/8250_aspeed_vuart.c
-> @@ -32,6 +32,26 @@
->   #define ASPEED_VUART_DEFAULT_SIRQ	4
->   #define ASPEED_VUART_DEFAULT_SIRQ_POLARITY	IRQ_TYPE_LEVEL_LOW
->   
-> +#define ASPEED_SCU_SILICON_REVISION_ID			0x04
-> +#define AST2600A3_REVISION_ID				0x05030303
-> +
-> +#define ASPEED_SCUC24			0xC24
-> +#define  ASPEED_SCUC24_MSI_ROUTING_MASK			GENMASK(11, 10)
-> +#define  ASPEED_SCUC24_MSI_ROUTING_PCIE2LPC_PCIDEV1		(0x2 << 10)
+On 08. 07. 26, 18:46, Andrew Lunn wrote:
+>> +	if (silicon_revision_id == AST2600A3_REVISION_ID)
+>> +		rc = regmap_update_bits(scu, ASPEED_SCUC24,
+>> +					ASPEED_SCUC24_PCIDEV1_INTX_MSI_HOST2BMC_EN | ASPEED_SCUC24_MSI_ROUTING_MASK,
+>> +					ASPEED_SCUC24_PCIDEV1_INTX_MSI_HOST2BMC_EN | ASPEED_SCUC24_MSI_ROUTING_PCIE2LPC_PCIDEV1);
+>> +	else
+>> +		rc = regmap_update_bits(scu, ASPEED_SCUC24,
+>> +					/**
+>> +					 * The bit 14 is reserved in the Datasheet.
+>> +					 */
+>> +					ASPEED_SCUC24_PCIDEV1_INTX_MSI_SCU560_EN | BIT(14) | ASPEED_SCUC24_MSI_ROUTING_MASK,
+>> +					ASPEED_SCUC24_PCIDEV1_INTX_MSI_SCU560_EN | BIT(14) | ASPEED_SCUC24_MSI_ROUTING_PCIE2LPC_PCIDEV1);
+> 
+> checkpatch should be warning about these long lines. Traditionally,
+> the limit is 80 character lines, but recently 100 has been accepted by
+> some subsystems. The exception is when wrapping the lines will make
+> them less readable, but i don't think that applies here.
 
-So is this
-FIELD_PREP(ASPEED_SCUC24_MSI_ROUTING_MASK, 2)
-?
+FWIW 100 is fine by me. 80 is too ancient limit.
 
-> +#define  ASPEED_SCUC24_PCIDEV1_INTX_MSI_HOST2BMC_EN		BIT(18)
-> +#define  ASPEED_SCUC24_PCIDEV1_INTX_MSI_SCU560_EN			BIT(17)
-
-Perhaps switch the two (to be in asc order)? And define 14 as _RESERVED 
-as well?
-
-> +#define ASPEED_SCU_PCIE_CONF_CTRL	0xC20
-
-Hmm, should these go before 0xC24?
-
-> +#define  SCU_PCIE_CONF_BMC_DEV_EN					BIT(8)
-> +#define  SCU_PCIE_CONF_BMC_DEV_EN_MMIO				BIT(9)
-> +#define  SCU_PCIE_CONF_BMC_DEV_EN_MSI				BIT(11)
-> +#define  SCU_PCIE_CONF_BMC_DEV_EN_IRQ				BIT(13)
-> +#define  SCU_PCIE_CONF_BMC_DEV_EN_PCIE_BUS_MASTER	BIT(14)
-> +#define  SCU_PCIE_CONF_BMC_DEV_EN_E2L				BIT(15)
-> +#define  SCU_PCIE_CONF_BMC_DEV_EN_LPC_DECODE		BIT(21)
-> +
-> +#define ASPEED_SCU_BMC_DEV_CLASS	0xC68
-> +
->   struct aspeed_vuart {
->   	struct device		*dev;
->   	int			line;
-> @@ -412,6 +432,63 @@ static int aspeed_vuart_map_irq_polarity(u32 dt)
->   	}
->   }
->   
-> +static int aspeed_ast2600_vuart_over_pci_set_enabled(struct platform_device *pdev)
-> +{
-...
-> +	if (silicon_revision_id == AST2600A3_REVISION_ID)
-> +		rc = regmap_update_bits(scu, ASPEED_SCUC24,
-> +					ASPEED_SCUC24_PCIDEV1_INTX_MSI_HOST2BMC_EN | ASPEED_SCUC24_MSI_ROUTING_MASK,
-> +					ASPEED_SCUC24_PCIDEV1_INTX_MSI_HOST2BMC_EN | ASPEED_SCUC24_MSI_ROUTING_PCIE2LPC_PCIDEV1);
-> +	else
-> +		rc = regmap_update_bits(scu, ASPEED_SCUC24,
-> +					/**
-> +					 * The bit 14 is reserved in the Datasheet.
-> +					 */
-
-If you defined reserved as suggested above, no need for the comment.
-
-> +					ASPEED_SCUC24_PCIDEV1_INTX_MSI_SCU560_EN | BIT(14) | ASPEED_SCUC24_MSI_ROUTING_MASK,
-> +					ASPEED_SCUC24_PCIDEV1_INTX_MSI_SCU560_EN | BIT(14) | ASPEED_SCUC24_MSI_ROUTING_PCIE2LPC_PCIDEV1);
-> +	if (rc) {
-> +		dev_err(dev, "could not set PCI device 1 MSI interrupt routing\n");
-> +		return -EIO;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-
-thanks,
 -- 
 js
 suse labs
