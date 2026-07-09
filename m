@@ -1,123 +1,205 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B7C53AFB14;
-	Thu,  9 Jul 2026 10:16:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFA45407CF4;
+	Thu,  9 Jul 2026 10:41:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783592185; cv=none; b=kLdI6DfjVJsCVQBPIGmMgSZFhEsphPXBbZrabM3eNY5DTaQGuTRyEL0AmdhNmfLFlD3Wg8HX4rPZizevWx3xR/chdjQHV0yijg2TwG5LVtTsIUGY0xYwb5zrjiExs+LS4xmSq0q1Mbo7cF1Zgep8O56gMnfIgouVKhD4w4D1T7M=
+	t=1783593667; cv=none; b=R8lprzlY5Sz4q4kHBFPxPiCHxyrpOLD/pAJI1V0hFyOvrZaFqRwTns/Ko+SZyWiuebnZZOwy3EVNNk128DtWeSzFtt/JBSN9mhNWHG5dsHDL8RdohcfdR1ND2DvjzKsC0SSMMqPgawWRVR9Zkj0ejYENszjnAy4GdpUJssjle5A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783592185; c=relaxed/simple;
-	bh=vUyuVhXb5XWOW1lu5ae8NpgTwEcJHaHweC6f6X1cbX8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=r4WUYOAdE3kHAD9CAuSgPyiZtbFO9GcxLVNX2aJ5WyU/zcx4JM2P3LZyQRpOWd2//JZSMF8wfAYmt8VrUdObmwU+X8U5aNjfQ2oDdCbS6GObbjlGHn9OeSVKsGWnE7DpLJOQbQYaoT2tz1J9oLMQEYyiqwUUus7knc5WXx/KnDE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ji6e8qyc; arc=none smtp.client-ip=192.198.163.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1783593667; c=relaxed/simple;
+	bh=/UYcyk4xSHZW2Za0icB5gjH5AfgATKKeiMDzb2mPIJQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=jPxhPrMh3zlIECc07Mfe+5p7POmuquFJlAz9HjAQE6WT0ihzp7cIpEK+blRejHUKEpeNUNO1hfxxEoIvfkEw4NP/TxPfIYPQQf16nElHelCKDr3wCHV3Pp8y5DVJfpQ0LbyGcNeBT0aL5/lOve7K7cIhUTmudStqMU9J0kwZO58=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=STkRj/LJ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ji6e8qyc"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1783592182; x=1815128182;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=vUyuVhXb5XWOW1lu5ae8NpgTwEcJHaHweC6f6X1cbX8=;
-  b=ji6e8qycOK9XTAsqrHCOh6aaNAjoLiqjUVdKZQm+snnRdvtEJsGo/qix
-   OupLfCGgH6dSBdsoKcrxZR0ucKFmPhpBkalP+iSHh7+91nbXrj46OZbjr
-   wqG71jEmekPMxcBT00b50s8Vr/doXWh1Hr4jd9a1cpdfAQ2HLVwp8thBa
-   RZunDLK0/9D73mRG0TPhhUTgfuoAG0eNmEHPpf9uC5hI74mOIu3WngOnM
-   n1+zvpWC30qk3iRu9aF79yD4pjTLK2Z7Tu/T2RZrEJAgJ1zDHuZOCPCXX
-   HG9muFRmvASemAvPjwUq3VdV4cBDqwHD5/N6dGbtE2HtQaNNzk2pF4jTq
-   A==;
-X-CSE-ConnectionGUID: 3Pu68IgrRvmwd45z6EwWjw==
-X-CSE-MsgGUID: uXkFtDF5TGeeFpoPasmUEA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11841"; a="94916084"
-X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
-   d="scan'208";a="94916084"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jul 2026 03:16:19 -0700
-X-CSE-ConnectionGUID: nZeE0HBNTiyYL9uGZR4QmA==
-X-CSE-MsgGUID: 88JSxELiQ7WNKT7Oj54cVQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
-   d="scan'208";a="254058060"
-Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.235])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jul 2026 03:16:11 -0700
-Date: Thu, 9 Jul 2026 13:16:08 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Praveen Talari <praveen.talari@oss.qualcomm.com>
-Cc: Jiri Slaby <jirislaby@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Richard Genoud <richard.genoud@bootlin.com>,
-	Nicolas Ferre <nicolas.ferre@microchip.com>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	Claudiu Beznea <claudiu.beznea@tuxon.dev>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Peter Griffin <peter.griffin@linaro.org>,
-	Alim Akhtar <alim.akhtar@samsung.com>,
-	Orson Zhai <orsonzhai@gmail.com>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Chunyan Zhang <zhang.lyra@gmail.com>,
-	Patrice Chotard <patrice.chotard@foss.st.com>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Peter Korsgaard <jacmet@sunsite.dk>,
-	Michal Simek <michal.simek@amd.com>,
-	Aaro Koskinen <aaro.koskinen@iki.fi>,
-	Janusz Krzysztofik <jmkrzyszt@gmail.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@armlinux.org.uk>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	bjorn.andersson@oss.qualcomm.com,
-	Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-	linux-samsung-soc@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-omap@vger.kernel.org, linux-mips@vger.kernel.org,
-	Mukesh Kumar Savaliya <mukesh.savaliya@oss.qualcomm.com>,
-	aniket.randive@oss.qualcomm.com,
-	chandana.chiluveru@oss.qualcomm.com
-Subject: Re: [PATCH 0/6] tty: serial: propagate errors from uart_ops.pm
- callback
-Message-ID: <ak906CqHYDooQTVu@ashevche-desk.local>
-References: <20260709-add_return_check_for_uart_change_pm-v1-0-e85c6ffa8ec4@oss.qualcomm.com>
- <9320a573-ebf8-459b-a313-3a8b73a6180b@kernel.org>
- <5eecf3a0-b608-4057-b400-236f6952b380@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="STkRj/LJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3E7A1F000E9;
+	Thu,  9 Jul 2026 10:41:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1783593665;
+	bh=Ok8nCG+5ZUFZj4SNj3aC5QZ5vEPt/YStIDSNq8/fAF4=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=STkRj/LJzMV0y33mat/04iL/Rkp9jnDa3B37IZtIN4rJZrUZc3xZijpHBNGMCVJQQ
+	 JosSQ6bPHF2MqwrsNxG+Kqh06g6Zrh3OFM2uLjiDinxxiHmeq0NH33uslRWHXTC3/w
+	 o2rYidt8u3440u3k+mQUh7VQsDWKHdZ4oswBxhmzDfOzZd38dIZTYOKW0ocwebHlvO
+	 DolFRIp+SWmeduVF8/YY+8zOW5vHGI/h0RXtcmiuXrpoeESQ99Gwe9szLR7yl0ai/X
+	 dAKS+GrEpwow5fzTnRBGoR8PtlqhN/PogcYBZmDEbm5rbzqH5mWXzpWkgYHP/jTxct
+	 bAiOINJDJykmQ==
+Message-ID: <158e6123-46fe-4a8c-9de4-093009a22a02@kernel.org>
+Date: Thu, 9 Jul 2026 12:41:03 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5eecf3a0-b608-4057-b400-236f6952b380@oss.qualcomm.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] serial: max310x: drive RTS in software when hardware
+ delays are too short
+To: Tapio Reijonen <tapio.reijonen@vaisala.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20260709-max310x-rs485-sw-delay-v1-1-454ac10b937a@vaisala.com>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20260709-max310x-rs485-sw-delay-v1-1-454ac10b937a@vaisala.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Jul 09, 2026 at 02:22:17PM +0530, Praveen Talari wrote:
-> On 09-07-2026 12:23, Jiri Slaby wrote:
-> > On 09. 07. 26, 8:25, Praveen Talari wrote:
-
+On 09. 07. 26, 10:46, Tapio Reijonen wrote:
+> max310x_rs485_config() rejected delay_rts_before_send and
+> delay_rts_after_send values larger than 0x0f with -ERANGE, which made
+> the UART core wipe port->rs485 in uart_rs485_config() and silently
+> disable RS485. The HDPIXDELAY register holds the setup and hold
+> delays in 4-bit-per-direction bit-times, so even values inside that
+> range only encode a fraction of a millisecond at typical baud rates
+> and the chip's hardware auto-RTS path cannot cover the millisecond
+> range the kernel UART layer expresses.
 ...
+> --- a/drivers/tty/serial/max310x.c
+> +++ b/drivers/tty/serial/max310x.c
+...
+> @@ -324,6 +345,21 @@ static struct uart_driver max310x_uart = {
+>   
+>   static DECLARE_BITMAP(max310x_lines, MAX310X_UART_NRMAX);
+>   
+> +static ktime_t max310x_get_character_duration(const struct ktermios *termios,
+> +					      unsigned int baud)
+> +{
+> +	const unsigned int startstop = 2;
+> +	const unsigned int char_bits = startstop +
+> +		(((termios->c_cflag & CSIZE) == CS5) ? 5 : 0) +
+> +		(((termios->c_cflag & CSIZE) == CS6) ? 6 : 0) +
+> +		(((termios->c_cflag & CSIZE) == CS7) ? 7 : 0) +
+> +		(((termios->c_cflag & CSIZE) == CS8) ? 8 : 0) +
+> +		((termios->c_cflag & PARENB) ? 1 : 0) +
+> +		((termios->c_cflag & CSTOPB) ? 1 : 0);
 
-> > OK, now I miss the rationale behind the patchset. Neither there is a
-> > possible code path to actually test this?
-> The rationale is that qcom_geni_serial_pm() calls
-> pm_runtime_resume_and_get() which can fail, but its return value is
-> currently discarded because the callback is void. 
+Is this an open-coded tty_get_frame_size()?
 
-So, you take the solution from a wrong end. Just get rid of .pm() in your driver.
-With that, problem solved. Really, this series is a road to even more broken
-PM solutions.
+> +
+> +	return us_to_ktime(DIV_ROUND_UP(USEC_PER_SEC * char_bits, baud));
+> +}
+> +
+>   static u8 max310x_port_read(struct uart_port *port, u8 reg)
+>   {
+>   	struct max310x_one *one = to_max310x_port(port);
+> @@ -680,6 +716,39 @@ static void max310x_batch_read(struct uart_port *port, u8 *rxbuf, unsigned int l
+>   	regmap_noinc_read(one->regmap, MAX310X_RHR_REG, rxbuf, len);
+>   }
+>   
+> +static void max310x_rts_ctl(struct uart_port *port, bool rts_state)
+> +{
+> +	max310x_port_update(port, MAX310X_LCR_REG, MAX310X_LCR_RTS_BIT,
+> +			    rts_state ? MAX310X_LCR_RTS_BIT : 0);
+> +}
+> +
+> +/*
+> + * Drive the RS485 RTS line to match the current tx_state. This is the only
+> + * place that touches RTS, and it reads tx_state rather than a fixed
+> + * assert/deassert intent, so a newer assert is never clobbered by a stale
+> + * release. It also arms the before-send timer once the RTS edge is on the wire,
+> + * so data is never shifted before RTS is asserted.
+> + */
+> +static void max310x_rts_work_proc(struct work_struct *ws)
+> +{
+> +	struct max310x_one *one = container_of(ws, struct max310x_one, rts_work);
+> +	struct uart_port *port = &one->port;
+> +	unsigned long flags;
+> +	bool rts_on = READ_ONCE(one->tx_state) != MAX310X_TX_OFF;
+> +
+> +	max310x_rts_ctl(port, rts_on ?
+> +			(port->rs485.flags & SER_RS485_RTS_ON_SEND) :
+> +			(port->rs485.flags & SER_RS485_RTS_AFTER_SEND));
+> +
+> +	spin_lock_irqsave(&port->lock, flags);
 
+We use guard()s these days.
+
+> +	if (READ_ONCE(one->tx_state) == MAX310X_TX_WAIT_BEFORE_SEND &&
+> +	    !one->cancel_tx_delay_tmr && !hrtimer_active(&one->tx_delay_tmr))
+> +		hrtimer_start(&one->tx_delay_tmr,
+> +			      ms_to_ktime(port->rs485.delay_rts_before_send),
+> +			      HRTIMER_MODE_REL);
+> +	spin_unlock_irqrestore(&port->lock, flags);
+> +}
+> +
+>   static void max310x_handle_rx(struct uart_port *port, unsigned int rxlen)
+>   {
+>   	struct max310x_one *one = to_max310x_port(port);
+> @@ -776,6 +845,75 @@ static void max310x_handle_rx(struct uart_port *port, unsigned int rxlen)
+>   	tty_flip_buffer_push(&port->state->port);
+>   }
+>   
+> +static enum hrtimer_restart max310x_tmr_tx(struct hrtimer *timer)
+> +{
+> +	struct max310x_one *one = container_of(timer, struct max310x_one,
+> +					       tx_delay_tmr);
+> +	unsigned long flags;
+> +
+> +	spin_lock_irqsave(&one->port.lock, flags);
+
+guard() on more places.
+
+> +	if (!one->cancel_tx_delay_tmr) {
+> +		if (READ_ONCE(one->tx_state) == MAX310X_TX_WAIT_AFTER_SEND) {
+> +			/* After-send hold elapsed: drop RTS via the rts worker. */
+> +			WRITE_ONCE(one->tx_state, MAX310X_TX_OFF);
+> +			schedule_work(&one->rts_work);
+> +		} else {
+> +			WRITE_ONCE(one->tx_state, MAX310X_TX_SEND);
+> +			schedule_work(&one->tx_work);
+> +		}
+> +	}
+> +	spin_unlock_irqrestore(&one->port.lock, flags);
+> +
+> +	return HRTIMER_NORESTART;
+> +}
+
+thanks,
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+js
+suse labs
