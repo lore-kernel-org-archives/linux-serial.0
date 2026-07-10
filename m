@@ -1,39 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9B33413247;
-	Fri, 10 Jul 2026 12:36:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D8F93F823A;
+	Fri, 10 Jul 2026 12:38:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783687021; cv=none; b=PLq05Q4dC1vvfphHWXXC3htlHHJKKDbzLoaChFLpObs6pBhOVwVWK2mSkjmRBlA02FBn+W3xU9POt2ADwQXqyix+zcw6e6Y53oPvsmnfRMmUIKLvIGafRk3/U4HxPYlv2RpdnkVKTADW85ktpaWjVvPWpU/4bzXhyOJvnRfM+FY=
+	t=1783687099; cv=none; b=Fi0humfMKLbuRVDRo76WwMsQTZ5ATD/QiNXMHGSft/reu4u/TkCUuujpJzXaIPI07AUtMDNvPAcNu8IBmurWtjIeTlNBVtphNQeYQwlgXgifUZJemWFysWkPMjDts+bULiUc5iQVoQ5aCCpGK7CA1oBcGCdsGN75VycXWhhM78Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783687021; c=relaxed/simple;
-	bh=d2Q8m1bm0pj/mmomWzIlqwv8Kb5fp2/h1aDAJ2nhxPg=;
+	s=arc-20240116; t=1783687099; c=relaxed/simple;
+	bh=5hn7ZcGD8Dwx44xO43WwgCfQZHXo/1lcuM52V7YTsAs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=orn2683nzt0SToyOQ3fmqkH4Vpb8x13I8akxFy1enhSV0sDSP+FjubDluvJHOiQyJ9WFEdIVq+1b6XfpcGMXI3fsUAlZV04vjZWti3Qx8xj/56V0Bvow5zyeSMz61JinlOUjkk+bBO39d14q/Nn2dLlV4OftZPi+m4BYj48JFD4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=RvmbMZ+h; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=uZu53PGIjeSseco6mTVBpAfdowO7rLfOayk1S2pUq0opD7hT/+wnRP0dbo43lWCvEfRp6KNiJ2I7cZz3uJMjX9Yl3qJwtZkSQi6zRF1l6rV2RrQAglW/TDEaFNKL5n1b18jwC3LUMTh1hlYUI/vVOmJAT1baXStfpRpVaH+9Z7U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=NN6qe6Om; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="RvmbMZ+h"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5D901F00A3A;
-	Fri, 10 Jul 2026 12:36:58 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="NN6qe6Om"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96A191F000E9;
+	Fri, 10 Jul 2026 12:38:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1783687019;
-	bh=/oKnotSkPygcr5C7b2AwTd5oaePd0MsmYSs/SLp0hz0=;
+	s=korg; t=1783687098;
+	bh=4FUAQD0h6gFwBi/zHnh/dhcRVI8pD9TzsqSXLN+CDu4=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=RvmbMZ+hmsCn+KSfTq57Jvk50knDqfSQTVciIeOsgZKzKtp8PzEzUpcwIxb8hCL3h
-	 Q8ZhicQ8IH1Vn66MDBp9rHU4AQ1SnyOUuGggBnBXB7KymmrZZm8pesStQlnuZWCAxO
-	 6cVuO00HgIjjTQjKrT1nLmgroguDFRWSf3HR2iJE=
-Date: Fri, 10 Jul 2026 14:36:55 +0200
+	b=NN6qe6OmbFlfy3Svxasz6ihKX32T5AWn9rOuZQXgtsDXhXzUze0Ywp2tYBXmg+l7J
+	 0CU6UNUYXfLPnQzESyS/l/DvFANn+k/0fblDLfo6NbLvc9Qh6TMXOIo3bFcbWm3/ET
+	 UbnVrKKXoqdhmzNNiD0WxGx2Y2bnvgQyww4x8ymM=
+Date: Fri, 10 Jul 2026 14:38:14 +0200
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Markus Probst <markus.probst@posteo.de>
-Cc: Jiri Slaby <jirislaby@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Len Brown <lenb@kernel.org>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org
-Subject: Re: [PATCH v3 1/2] serial: earlycon: add uart_clk_freq parameter
-Message-ID: <2026071048-imprudent-pumice-9b28@gregkh>
-References: <20260615-acpi_spcr-v3-0-9a59ebad74ea@posteo.de>
- <20260615-acpi_spcr-v3-1-9a59ebad74ea@posteo.de>
+To: Eric Curtin <ericcurtin17@gmail.com>
+Cc: Russell King <linux@armlinux.org.uk>, Jiri Slaby <jirislaby@kernel.org>,
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] serial: amba-pl011: don't wait for BUSY after every
+ earlycon character
+Message-ID: <2026071036-unworn-bunny-fec5@gregkh>
+References: <20260703191638.131476-1-ericcurtin17@gmail.com>
+ <20260703193805.135511-1-ericcurtin17@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -42,41 +41,34 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260615-acpi_spcr-v3-1-9a59ebad74ea@posteo.de>
+In-Reply-To: <20260703193805.135511-1-ericcurtin17@gmail.com>
 
-On Mon, Jun 15, 2026 at 12:40:21AM +0000, Markus Probst wrote:
-> Add function `setup_earlycon_with_uartclk`. This allows the
-> options string to be reused with `add_preferred_console`, while still
-> allowing to set the uart clock frequency. This will be used in the
-> following commit ("ACPI: SPCR: Support UART clock frequency field").
+On Fri, Jul 03, 2026 at 07:38:04PM +0000, Eric Curtin wrote:
+> pl011_putc(), used exclusively by the pl011 earlycon (pl011_early_write()
+> -> uart_console_write()), waits for UART01x_FR_TXFF to clear before
+> writing a character (correct: don't overrun the TX FIFO) and then *also*
+> busy-waited for UART01x_FR_BUSY to clear before returning, i.e. it waited
+> for the character to be fully shifted out on the wire before the next
+> character in the string could even be considered.
 > 
-> No logical change intended.
+> Waiting for BUSY per character defeats the TX FIFO: instead of letting
+> the UART buffer several queued bytes and transmit them back to back,
+> every single character printed through earlycon was forced to wait for
+> that character's own complete transmission (a full UART bit-time at the
+> configured baud rate) before the driver would even look at writing the
+> next one. This is wasted time on real hardware, and it is much worse
+> under virtualization: each read of UARTFR and each write to UARTDR is
+> an MMIO access that traps to the hypervisor, so every extra poll is a
+> full VM-exit/entry round trip.
 > 
-> Signed-off-by: Markus Probst <markus.probst@posteo.de>
-> ---
->  drivers/tty/serial/earlycon.c | 17 ++++++++++++-----
->  include/linux/serial_core.h   | 11 +++++++++--
->  2 files changed, 21 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-> index ab9af37f6cda..5a20fe9e3fb6 100644
-> --- a/drivers/tty/serial/earlycon.c
-> +++ b/drivers/tty/serial/earlycon.c
-> @@ -135,11 +135,14 @@ static int __init parse_options(struct earlycon_device *device, char *options)
->  	return 0;
->  }
->  
-> -static int __init register_earlycon(char *buf, const struct earlycon_id *match)
-> +static int __init register_earlycon(char *buf, unsigned int uart_clk_freq,
-> +				    const struct earlycon_id *match)
->  {
->  	int err;
->  	struct uart_port *port = &early_console_dev.port;
->  
-> +	port->uartclk = uart_clk_freq;
+> git blame on this function is unhelpful (this tree's history stops at a
+> shallow-clone boundary), but the equivalent history is available from
+> the upstream patch that added the QDF2400 erratum 44 workaround:
 
-This looks like a logical change, the code today does not do that
-anywhere, right?
+So this was generated by a LLM, right?  Otherwise why can't you find
+where this changed by NOT doing a shallow clone?
+
+When using a LLM, you must document that.
 
 thanks,
 
