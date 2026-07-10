@@ -1,38 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D8F93F823A;
-	Fri, 10 Jul 2026 12:38:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04CF441F7E9;
+	Fri, 10 Jul 2026 12:41:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783687099; cv=none; b=Fi0humfMKLbuRVDRo76WwMsQTZ5ATD/QiNXMHGSft/reu4u/TkCUuujpJzXaIPI07AUtMDNvPAcNu8IBmurWtjIeTlNBVtphNQeYQwlgXgifUZJemWFysWkPMjDts+bULiUc5iQVoQ5aCCpGK7CA1oBcGCdsGN75VycXWhhM78Q=
+	t=1783687291; cv=none; b=AiDsmGLBu2cMh0jI6Wm8E8O0GuyMO9+tvrJaVnq7t7/p6l+cZpfpgfb1hlaTYV0Wd7wj6v0RNOFKzfyQBtpgAc3rqxbRCN3zChKXpIEeTspAMj1rmokVveE0tmLZQKgjN/2CzmrEwjkRbCrwygz8XFMdVQc0RiEXEbzCMFNPGR4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783687099; c=relaxed/simple;
-	bh=5hn7ZcGD8Dwx44xO43WwgCfQZHXo/1lcuM52V7YTsAs=;
+	s=arc-20240116; t=1783687291; c=relaxed/simple;
+	bh=EE3TjfG5eBu9Kd/+X8PmMovB9kNi9gsUzWBASrpUxJ8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uZu53PGIjeSseco6mTVBpAfdowO7rLfOayk1S2pUq0opD7hT/+wnRP0dbo43lWCvEfRp6KNiJ2I7cZz3uJMjX9Yl3qJwtZkSQi6zRF1l6rV2RrQAglW/TDEaFNKL5n1b18jwC3LUMTh1hlYUI/vVOmJAT1baXStfpRpVaH+9Z7U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=NN6qe6Om; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=BZCzk2O0JMKJD++b3poocO5HslT63b5/iz6Qq/iG8G8DlFLXrUymUsvdATjfnBeFX31SZ5L3BaYgyNxSfngohU2dpu1D0qKgOE063sCRUnahyXMey7UV7i+e3hwsSHnNKUtS9WiKksY4+YmjxzsRBn6A9mpk9lE3i4uI5ZhwpDs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=wiaptpKI; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="NN6qe6Om"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96A191F000E9;
-	Fri, 10 Jul 2026 12:38:17 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="wiaptpKI"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E7A61F000E9;
+	Fri, 10 Jul 2026 12:41:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1783687098;
-	bh=4FUAQD0h6gFwBi/zHnh/dhcRVI8pD9TzsqSXLN+CDu4=;
+	s=korg; t=1783687289;
+	bh=hDRYjbEaGoQ0tWoMPUac6jeuxz0p0lipsR0FrMDOr4s=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=NN6qe6OmbFlfy3Svxasz6ihKX32T5AWn9rOuZQXgtsDXhXzUze0Ywp2tYBXmg+l7J
-	 0CU6UNUYXfLPnQzESyS/l/DvFANn+k/0fblDLfo6NbLvc9Qh6TMXOIo3bFcbWm3/ET
-	 UbnVrKKXoqdhmzNNiD0WxGx2Y2bnvgQyww4x8ymM=
-Date: Fri, 10 Jul 2026 14:38:14 +0200
+	b=wiaptpKIaT2vKbCT97Xw1lAzPN97jTJ7LbV6tqRp67jzEMDgFgq30g/xXN7ILSxyy
+	 Rg79dR3+x86n6Ikq3v85BLbHXFwdzzK68+Y5U52/KhKzspCYBSa/OI0w69KsCbJFOg
+	 4mtV7UUdjdoZ36eI2aZaQEtKh5KhS0xygKPCyjVM=
+Date: Fri, 10 Jul 2026 14:41:25 +0200
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Eric Curtin <ericcurtin17@gmail.com>
-Cc: Russell King <linux@armlinux.org.uk>, Jiri Slaby <jirislaby@kernel.org>,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] serial: amba-pl011: don't wait for BUSY after every
- earlycon character
-Message-ID: <2026071036-unworn-bunny-fec5@gregkh>
-References: <20260703191638.131476-1-ericcurtin17@gmail.com>
- <20260703193805.135511-1-ericcurtin17@gmail.com>
+To: Praveen Talari <praveen.talari@oss.qualcomm.com>
+Cc: Steven Rostedt <rostedt@goodmis.org>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+	Jiri Slaby <jirislaby@kernel.org>, konrad.dybcio@oss.qualcomm.com,
+	linux-kernel@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+	mukesh.savaliya@oss.qualcomm.com, aniket.randive@oss.qualcomm.com,
+	chandana.chiluveru@oss.qualcomm.com
+Subject: Re: [PATCH v5 2/2] serial: qcom-geni: Add tracepoints for Qualcomm
+ GENI serial driver
+Message-ID: <2026071015-empower-sandpit-97a8@gregkh>
+References: <20260615-add-tracepoints-for-qcom-geni-serial-v5-0-2efa4c97e0e2@oss.qualcomm.com>
+ <20260615-add-tracepoints-for-qcom-geni-serial-v5-2-2efa4c97e0e2@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -41,35 +47,24 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260703193805.135511-1-ericcurtin17@gmail.com>
+In-Reply-To: <20260615-add-tracepoints-for-qcom-geni-serial-v5-2-2efa4c97e0e2@oss.qualcomm.com>
 
-On Fri, Jul 03, 2026 at 07:38:04PM +0000, Eric Curtin wrote:
-> pl011_putc(), used exclusively by the pl011 earlycon (pl011_early_write()
-> -> uart_console_write()), waits for UART01x_FR_TXFF to clear before
-> writing a character (correct: don't overrun the TX FIFO) and then *also*
-> busy-waited for UART01x_FR_BUSY to clear before returning, i.e. it waited
-> for the character to be fully shifted out on the wire before the next
-> character in the string could even be considered.
+On Mon, Jun 15, 2026 at 07:46:53PM +0530, Praveen Talari wrote:
+> Add tracing to the Qualcomm GENI serial driver to improve runtime
+> observability.
 > 
-> Waiting for BUSY per character defeats the TX FIFO: instead of letting
-> the UART buffer several queued bytes and transmit them back to back,
-> every single character printed through earlycon was forced to wait for
-> that character's own complete transmission (a full UART bit-time at the
-> configured baud rate) before the driver would even look at writing the
-> next one. This is wasted time on real hardware, and it is much worse
-> under virtualization: each read of UARTFR and each write to UARTDR is
-> an MMIO access that traps to the hypervisor, so every extra poll is a
-> full VM-exit/entry round trip.
+> Trace hooks are added at key points including termios and clock
+> configuration, manual control get/set, interrupt handling, and data
+> TX/RX paths.
 > 
-> git blame on this function is unhelpful (this tree's history stops at a
-> shallow-clone boundary), but the equivalent history is available from
-> the upstream patch that added the QDF2400 erratum 44 workaround:
+> Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+> Signed-off-by: Praveen Talari <praveen.talari@oss.qualcomm.com>
+> ---
+> v2->v3:
+> - Updated commit text(removed example as it was available on cover
+>   letter).
+> ---
+>  drivers/tty/serial/qcom_geni_serial.c | 27 +++++++++++++++++++++++----
+>  1 file changed, 23 insertions(+), 4 deletions(-)
 
-So this was generated by a LLM, right?  Otherwise why can't you find
-where this changed by NOT doing a shallow clone?
-
-When using a LLM, you must document that.
-
-thanks,
-
-greg k-h
+Does not apply to my tty-next branch :(
