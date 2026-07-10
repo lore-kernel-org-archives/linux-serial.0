@@ -1,73 +1,37 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D61E3C277E;
-	Fri, 10 Jul 2026 10:09:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 905DC40F8DF;
+	Fri, 10 Jul 2026 12:11:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783678163; cv=none; b=osZo2pCFwdVTwPrhZSljVG7gTxBc7mrykO3PAPPwP2g0kJF/jWukXQKEfXZsyfK94PBZ9XrvrpEQwzM65FIiEDm/kEo3hzlcAiqsXkOTz+wXUomCm2wrZzAtj3mE09bLTCBrsKHXBKxAtmAtLVoingX7DHxjdf1zpL22oku4v3I=
+	t=1783685478; cv=none; b=P20MslEsmeJddlfqq6XBNX8qilAU2bAr/sxUdepUFUYEZ9oXyX2Ro0k5FA/JBW6mhf97TsRTqK4mnkM+IVldnDS4Kxpc5lNVGpjnBBqZ/kxesi09iWpnAIZh+AmMOJTT6ISzXuOeWbqxOXswD4L1+tX7AhnyOQumXzub8j+/Mgg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783678163; c=relaxed/simple;
-	bh=XR/AKWm9S/bmj9R9xWPMyTJeT0hkkYbgIdFX+BFmVaU=;
+	s=arc-20240116; t=1783685478; c=relaxed/simple;
+	bh=bPUZ+W4ibolmlQDsTuRyviDqpQFyagDxlwsZorek8qM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZyZGBrSiGoUzwk/f6q4vw8Jf19bvk8q4d2lbp15u/46nd7EUe+iF8FBu8VeHtG5FqRZgLyRspJSxUD48IkeKgnsJeApUc6yeDfIwEx3eLlgI+GihepeTSR/lZ0DOJ2Vk6WTKqV4jvt3NEL1JvotnfiGxhZALPzF63TvOR+6cWXo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VMM2JGq/; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=N+si0InGV1BSTIVou8GZo+vnvqxqZ/8dDpW9ikx2wCG9jsgQ9cnMjz4RapFl0ggbohylDlrWwrLE7JhUAuikXdJiPK9q0JUaphNSDd7WEGQZVVtIi0K9tJAtsCpOZNEhSqGBcDxFIm76b5OSc1KT34PkiLQ7FzOM8WMGv3OjOKY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=Sl8CYVrb; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VMM2JGq/"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1783678162; x=1815214162;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=XR/AKWm9S/bmj9R9xWPMyTJeT0hkkYbgIdFX+BFmVaU=;
-  b=VMM2JGq/nhc5yOiOzHQCg5NdeBW3khGvnk+GHNX57ngiMStO65qQSUSQ
-   he28S/3lUF+9NzlhhetvN3DmegYdDIewrwlSdYO9+nh/Tn29zIlFbwjC1
-   ebp0RJL3zMLzcHQbGCSyYPio4uNP0rqrvJGntxbgwb6lDimQE24KRoozq
-   97uFN681m8hc90aUP6gPOfrZBG0eHw3PCmMrZSoW5RvgdZEc406RMFnO2
-   JA3oIoQURUHeu4AbAZvmiLG7rljKvu9NGHSS5k6/Ohsj8RDiHA0WzMpPt
-   i6Evv43507G9+bKJy30epAKjfcJIt5D8GsOBTZiA9ewrS03Yq/FuZZX/J
-   A==;
-X-CSE-ConnectionGUID: tlvP+TnwTeq2iLsWXkrnlQ==
-X-CSE-MsgGUID: dTSOxMTsR3OWc31Kyxjs3A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11841"; a="109921648"
-X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
-   d="scan'208";a="109921648"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jul 2026 03:09:20 -0700
-X-CSE-ConnectionGUID: lssv4d2ET0CBZjyOXT6OfA==
-X-CSE-MsgGUID: AUwfa79ARf6ngIC2ZTogHQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
-   d="scan'208";a="279256841"
-Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.100])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jul 2026 03:09:14 -0700
-Date: Fri, 10 Jul 2026 13:09:11 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Christian Marangi <ansuelsmth@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Benjamin Larsson <benjamin.larsson@genexis.eu>,
-	John Ogness <john.ogness@linutronix.de>,
-	Marco Felsch <m.felsch@pengutronix.de>,
-	Gerhard Engleder <eg@keba.com>,
-	Jiaxun Yang <jiaxun.yang@flygoat.com>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Binbin Zhou <zhoubinbin@loongson.cn>,
-	Rong Zhang <rongrong@oss.cipunited.com>,
-	Lukas Wunner <lukas@wunner.de>, Lubomir Rintel <lkundrak@v3.sk>,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH 3/4] serial: 8250: map UAPI port type to internal enum
-Message-ID: <alDExy46n55IVHeN@ashevche-desk.local>
-References: <20260709205656.319531-1-ansuelsmth@gmail.com>
- <20260709205656.319531-4-ansuelsmth@gmail.com>
- <alAUrANx15gyOgdZ@ashevche-desk.local>
- <6a50169d.41a38e5f.1bb169.a6d5@mx.google.com>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="Sl8CYVrb"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A236E1F000E9;
+	Fri, 10 Jul 2026 12:11:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
+	s=korg; t=1783685477;
+	bh=/vD5hhkTqgptj2lhelbezJzYhQSxES3J5JQI2sgC0Qs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=Sl8CYVrbU4/PVmVts1Ou7Ck3xXnvH6BJS4+4Up7ufIdGuAZSdKQ0c+j6P5ALwzEVv
+	 8bH1JZMPbC32YwVSacY1ksXN8lR1CtL29/z1kXsOKGJdCCDCBaw5cSHDf4oQ/J1o3G
+	 HraL0hy8X3edVdkDxV8chQFfJnSlHEUvGc7KnKOo=
+Date: Fri, 10 Jul 2026 14:11:13 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Paul Mbewe <paultyson.mbewe@ziehl-abegg.de>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+	jirislaby@kernel.org, hvilleneuve@dimonoff.com
+Subject: Re: [PATCH 0/2] serial: sc16is7xx: fix TX inter-frame gaps on SPI
+ UARTs
+Message-ID: <2026071002-override-android-1faa@gregkh>
+References: <20260623112225.82386-1-paultyson.mbewe@ziehl-abegg.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -76,61 +40,66 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <6a50169d.41a38e5f.1bb169.a6d5@mx.google.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <20260623112225.82386-1-paultyson.mbewe@ziehl-abegg.de>
 
-On Thu, Jul 09, 2026 at 11:46:02PM +0200, Christian Marangi wrote:
-> On Fri, Jul 10, 2026 at 12:37:48AM +0300, Andy Shevchenko wrote:
-> > On Thu, Jul 09, 2026 at 10:56:51PM +0200, Christian Marangi wrote:
-> > > There is currently some confusion when a new 8250 UART device needs to be
-> > > defined with the related index for uart_config[] to be directly defined in
-> > > UAPI header.
-> > > 
-> > > There isn't any specific reason to define the index directly in UAPI header
-> > > unless it's also needed to be defined for userspace usage.
-> > > 
-> > > To try to address this confusion and making it clear how these specific
-> > > index should be defined and where, create a dedicated enum in 8250.h
-> > > with all the current defined values in UAPI header and document how these
-> > > id should be defined.
-> > > 
-> > > Rename the define in 8250_port.c with the new UART_ prefix.
-> > 
-> > This will bring a wide field for the all possible conflicts and doesn't really
-> > solve the issue. Why not simply kill the UAPI part of the definitions for good?
-> > (Move the all, except the first 13) to be internal to the kernel.
+On Tue, Jun 23, 2026 at 01:22:23PM +0200, Paul Mbewe wrote:
+> This series fixes two related TX path issues in the sc16is7xx SPI UART
+> driver that cause visible inter-frame gaps on the wire, breaking Modbus
+> RTU communication.
 > 
-> I mean... With correct review from maintainers, conflict won't happen. I don't
-> feel it's that easy to kill UAPI header... userspace stuff and we don't
-> kill userspace.
+> Patch 1 fixes a data loss / gap caused by kfifo_out_linear_ptr() only
+> returning one contiguous segment of the circular buffer. When TX data
+> wraps around the kfifo boundary, the remainder is delayed until the next
+> TX interrupt, producing a silence gap that violates the Modbus 1.5
+> character-time limit.
 > 
-> The previous suggested solution was to stop declaring stuff in UAPI header
-> and start declaring in the internal header making the situation even worse
-> and error prone with id conflict. This can really be prevent only by
-> correct review of the change. (or keep using UAPI)
+> Patch 2 raises the TX FIFO trigger level from 8 to 32 free spaces via
+> the TLR register. The default trigger of 8 causes excessive SPI
+> round-trips on slow single-core hosts, leading to TX FIFO underruns
+> between bursts.
 > 
-> Maybe other have better ideas on this. On net we have a similar problem and
-> the implementation is mostly similar with duplicated reference and some
-> BUILD_BUG magic.
+> Tested on SC16IS752 (SPI, 1 MHz) on i.MX6ULL driving RS-485 at 115200
+> baud. Oscilloscope confirmed both gap types are eliminated after the
+> fix.
+> 
+> Paul Mbewe (2):
+>   serial: sc16is7xx: fix TX gap caused by kfifo circular buffer
+>     wrap-around
+>   serial: sc16is7xx: set TX FIFO trigger level to half FIFO to prevent
+>     underruns
+> 
+>  drivers/tty/serial/sc16is7xx.c | 24 +++++++++++++++++++++---
+>  1 file changed, 21 insertions(+), 3 deletions(-)
+> 
+> -- 
+> 2.43.0
+> 
+> 
 
-The whole point of UAPI list of the supported types of the ports is busted from
-the very first case when we start re-using gaps. Meaning that if there is any
-current userspace software that relies on that information, it's already in a mess
-state. There is a Debian source code browser, you can check how many programs
-use that list for something real (behind the assigning types to the unknown ports).
-I believe none. And the assigning unknown port should not be considered valuable
-these days as we expect to have kernel drivers for most of the modern HW.
-That's why I just recommend to find a great common denominator and leave only
-those (and I think this split is exactly between the files in UAPI) in UAPI
-and hide the rest completely from the user space. Yes, big change on paper,
-but with 99.99% probability no functional change at all at the end of the day.
+Hi,
 
-Submit and RFC patch.
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
 
+You are receiving this message because of the following common error(s)
+as indicated below:
 
--- 
-With Best Regards,
-Andy Shevchenko
+- This looks like a new version of a previously submitted patch, but you
+  did not list below the --- line any changes from the previous version.
+  Please read the section entitled "The canonical patch format" in the
+  kernel file, Documentation/process/submitting-patches.rst for what
+  needs to be done here to properly describe this.
 
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
 
+thanks,
+
+greg k-h's patch email bot
