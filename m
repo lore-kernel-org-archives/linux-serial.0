@@ -1,43 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84B6C3C4B9A;
-	Fri, 10 Jul 2026 12:14:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07A43408014;
+	Fri, 10 Jul 2026 12:17:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783685650; cv=none; b=Vt+2N1Xs8/BrMXq3M6WQf24j3FgMStYGURPBIy1Qf6W5KAGhvrIppwJ+aT7S+JYhMLdr3TchUQ+HdWmcj0EuKis0DQWm9ZEpK/opc1glUGx052yDK+TnG5BffcUJHiAP74CL8nXl2HtrvZkTuRcLlUwISsBwixGRxeRN+18IAR8=
+	t=1783685859; cv=none; b=k+/xoQVFsU1W5gC1AFG6FcsBrs4dr3644UDdjS8ywZvKqX1QDT8XowJTHN0iNna2u/ISNNTRxnnjrr56W+AywVyuYcuYvO/p/0OLK9Y+5dRaPZP9ufXB8Wq7XEG6XlLO3jFrn8xxPlWEfNg2x3NKhyL64uQtcCQ6ItgrO2y42e8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783685650; c=relaxed/simple;
-	bh=bdjRNhk3RVjPJ9TsFlHMSflZ1bbdKMQB0TUYLZ8JXs4=;
+	s=arc-20240116; t=1783685859; c=relaxed/simple;
+	bh=lgYXuPbiW1Rt3KP1LOF2LXxjZbS4LP8xtjVx8DcyCjA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FUfmwcHhBKvrEejNu6zuEVMFHFr89meo8bTalixQRAOgCn5tK357cUiGUWSUux/91DXX5rMV66Z0qdkU6wJnKNGCTXM8oMxTCbklK1R6ES0I88dwccHO75w8JAhvsZaITxkFxcB9RfSei4oZAgJiq0DpZXyS2IzY8Pktmv/wmK4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=za01vZcO; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=pH1iUYbStpHenrUynHy9fbyaawAukGqTmLy3ftmVVjuNT8wKUEzWZ+22LXrN0iRbs4U3yviq2Ny2i/NTqaREuyaycSVaGjkgBSjIhlMvU3Kr1uG5hTw83mS0Kvb9uB/waIXPHD6VjCvYPBQyS1I1zomLJcIfoKcXQvatKzMFmks=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=kRBoKN12; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="za01vZcO"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87E9C1F000E9;
-	Fri, 10 Jul 2026 12:14:08 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="kRBoKN12"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D0621F00A3A;
+	Fri, 10 Jul 2026 12:17:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1783685649;
-	bh=d1q24GUI6rsOfMLlnXuF7mfh7deLK/3ISIR9kpFFfVc=;
+	s=korg; t=1783685857;
+	bh=xbchqjng8L5w3T4V3XGFQmYXrGJj6KHjmAyt8gfd4vc=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=za01vZcO9eMchxVzzR7TPgdHicizAe7/Cs5hofAfBFdTmJI8wOgK9IL08mGNIzOos
-	 +a1waIk+8NS7RxhIf8SYnp7SrXj23Ol6koytsu5sPyWqZIbXjISXqyZ8SXExLsZTQj
-	 6BxsMuGsYNLCdQ61Q6tqxI45oVXxtZ5oZdCZUcM8=
-Date: Fri, 10 Jul 2026 14:14:05 +0200
+	b=kRBoKN12k0bZeP74aM6FRILwfc9kOmTpPc0elFvQpOMXWdk6bf4RgqOhGXcVoRPWA
+	 jcy/ZRSaULxD1+IAjJ9B1JaRgKXAHhhnVajoW+K3dLsY449UgQPacKiZpef9oYpySv
+	 rvFg79OMp27zOCmVJMmZ38qgd0oM/uEz9EhAevi8=
+Date: Fri, 10 Jul 2026 14:17:33 +0200
 From: Greg KH <gregkh@linuxfoundation.org>
 To: Wang Zhaolong <wangzhaolong@fnnas.com>
-Cc: Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-	andriy.shevchenko@linux.intel.com, albanhuang@tencent.com,
-	tombinfan@tencent.com, jackzxcui1989@163.com, kees@kernel.org,
-	osama.abdelkader@gmail.com, realwujing@gmail.com
-Subject: Re: [PATCH v2] serial: 8250: fix shared IRQ startup race causing IRQ
- warning
-Message-ID: <2026071035-shadow-headrest-17de@gregkh>
-References: <20260527092052.2086342-1-wangzhaolong@fnnas.com>
- <20260708031115.3757150-1-wangzhaolong@fnnas.com>
- <25599a7f-e9cb-4aa0-a375-d9b4ed52be5e@kernel.org>
- <5cf37150673ea4d5c28f94db91cdf68504b50522.5fc19520.ca7d.459c.8589.c67efbed854f@feishu.cn>
+Cc: Jing Wu <realwujing@gmail.com>, jirislaby@kernel.org,
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+	yuanql9@chinatelecom.cn
+Subject: Re: [PATCH v6] serial: 8250: fix use-after-free in IRQ chain handling
+Message-ID: <2026071037-subprime-padding-3ba9@gregkh>
+References: <20260707-bug-221579-8250-shared-irq-race-v6-1-f8c499a90bdd@gmail.com>
+ <0ede8499-abe2-41d3-bb0c-095c02c5b699@kernel.org>
+ <20260708071138.3698581-1-realwujing@gmail.com>
+ <20260708073938.3975921-1-realwujing@gmail.com>
+ <5cf37150673ea4d5c28f94db91cdf68504b50522.f7d28dac.3ec0.4c7f.8bb2.ce59501a4b8d@feishu.cn>
+ <20260708080820.62288-1-realwujing@gmail.com>
+ <5cf37150673ea4d5c28f94db91cdf68504b50522.9be37cbd.7a04.4d7e.b20e.d3f90675af6e@feishu.cn>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -47,94 +47,42 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <5cf37150673ea4d5c28f94db91cdf68504b50522.5fc19520.ca7d.459c.8589.c67efbed854f@feishu.cn>
+In-Reply-To: <5cf37150673ea4d5c28f94db91cdf68504b50522.9be37cbd.7a04.4d7e.b20e.d3f90675af6e@feishu.cn>
 
-On Wed, Jul 08, 2026 at 02:20:34PM +0800, Wang Zhaolong wrote:
+On Wed, Jul 08, 2026 at 04:30:21PM +0800, Wang Zhaolong wrote:
+> Hi Jing,
 > 
-> > From: "Jiri Slaby"<jirislaby@kernel.org>
-> > Date:  Wed, Jul 8, 2026, 2:03 PM
-> > Subject:  Re: [PATCH v2] serial: 8250: fix shared IRQ startup race causing IRQ warning
-> > To: "Wang Zhaolong"<wangzhaolong@fnnas.com>, <gregkh@linuxfoundation.org>
-> > Cc: <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>, <andriy.shevchenko@linux.intel.com>, <albanhuang@tencent.com>, <tombinfan@tencent.com>, <jackzxcui1989@163.com>, <kees@kernel.org>, <osama.abdelkader@gmail.com>, <realwujing@gmail.com>
-> > Ah, you are fixing the same thing as:
-> > https://lore.kernel.org/all/20260707-bug-221579-8250-shared-irq-race-v6-1-f8c499a90bdd@gmail.com/
-> > 
-> > I did not look up who of you was first.
-> > 
-> > Note the above contains you in the commit log:
-> > Reported-by: Wang Zhaolong <wangzhaolong@fnnas.com>
-> > Closes: https://bugzilla.kernel.org/show_bug.cgi?id=221579
-> > 
-> > You both CCed each other, so you know the other's submission. I don't 
-> > understand why you both send the patch? Anyway, you guys speak to each 
-> > other and decide who sends the (fixed) patch.
-> > 
-> > On 08. 07. 26, 5:11, Wang Zhaolong wrote:
-> > ...
-> > > --- a/drivers/tty/serial/8250/8250_core.c
-> > > +++ b/drivers/tty/serial/8250/8250_core.c
-> > > @@ -154,10 +152,18 @@ static struct irq_info *serial_get_or_create_irq_info(const struct uart_8250_por
-> > >   static int serial_link_irq_chain(struct uart_8250_port *up)
-> > >   {
-> > >           struct irq_info *i;
-> > >           int ret;
-> > >   
-> > > +        /*
-> > > +         * Keep the hash lock held until the first request_irq() completes.
-> > > +         * The first port publishes i->head before request_irq() starts the IRQ;
-> > > +         * a second port sharing the IRQ must not join the chain and run the
-> > > +         * THRE test while the IRQ core is still bringing the line up.
-> > > +         */
-> > > +        guard(mutex)(&hash_mutex);
-> > 
-> > The same as in the other patch:
-> > hash_mutex is no longer an appropriate name for this lock.
-> > 
-> > > +
-> > >           i = serial_get_or_create_irq_info(up);
-> > >           if (IS_ERR(i))
-> > >                   return PTR_ERR(i);
-> > >   
-> > >           scoped_guard(spinlock_irq, &i->lock) {
-> > 
-> > thanks,
-> > -- 
-> > js
-> > suse labs
-> > 
+> No.
 > 
-> Hi Jiri,
+> A changelog entry describes what changed between my v2 and my v3.  It is not
+> a claim that nobody else ever wrote a similar line in another patch.
 > 
-> Thanks for looking.
+> The functional fix in my series was already in my v1 on May 27.  Whether my
+> v1 commit message named the UAF or not does not change the code: holding the
+> same mutex across link and unlink closes that window too.  My v1 commit
+> message intentionally described the failure mode I had reproduced and
+> validated: the unbalanced IRQ enable warning.  I did not want to overstate the
+> impact beyond the evidence I had at the time.
 > 
-> Just to clarify the timeline: I reported this issue and posted the original
-> minimal fix on May 27:
+> The v3 rename follows Jiri's review comment that hash_mutex is no longer an
+> appropriate name.  The __must_hold() and lockdep_assert_held() annotations
+> document the locking rule after the mutex was moved to the caller.  They are
+> not the functional fix.
 > 
->   https://lore.kernel.org/r/20260527092052.2086342-1-wangzhaolong@fnnas.com
+> I do not agree that Co-developed-by is appropriate for my patch, and I do not
+> authorize adding a Co-developed-by tag for me without my Signed-off-by.
 > 
-> I also pinged it on Jun 24:
-> 
->   https://lore.kernel.org/r/ajtFoTHUQHJGYV5Q@MiniServer/
-> 
-> The other series was posted after my original submission and eventually
-> converged on the same core locking change.  I had also commented on that
-> series around v2/v3, pointing out the same startup race and the need to cover
-> the first request_irq() completion, so I was aware of that thread.
-> 
-> I sent v2 to refresh my earlier minimal fix with a clearer subject and commit
-> message, since the original patch had not received review.  My intent was not
-> to create two competing fixes for the same issue.
-> 
-> I agree with your comment that hash_mutex is no longer a great name once it
-> also serializes the first request_irq() completion.  I can send a v3 which
-> renames it and keeps the patch focused on the required locking change.
+> I am not going to continue this argument.  Maintainers can decide which patch,
+> if any, to take.
 
-Ok, I agree with Jiri here.  You two need to get together and agree on
-what the final submission is, and how to properly attribute it.  Without
-that, I'm not going to take either of these as it's obviously a mess.
+As I said before, I'm not going to take either until you all can agree.
 
-Also, given that you both worked on this together (accidentally), odds
-are it should just be a co-developed-by: tag being used.
+And yes, a co-developed-by does require a signed-off-by.  Without you
+all agreeing, none of this is going to be acceptable, sorry.
+
+Also, all of these really look like they were created/found/whatever by
+a LLM, which is not being documented, and for that reason alone I think
+I need to reject all of these until that is properly addressed.
 
 thanks,
 
