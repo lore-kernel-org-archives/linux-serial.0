@@ -1,41 +1,41 @@
 Received: from mout01.posteo.de (mout01.posteo.de [185.67.36.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 132E8361675
-	for <linux-serial@vger.kernel.org>; Sun, 12 Jul 2026 16:58:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B20D3655CC
+	for <linux-serial@vger.kernel.org>; Sun, 12 Jul 2026 16:58:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.65
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783875517; cv=none; b=D1zQd/CJK8FGd4W/aaNQ5Wb2nMnVnvPVHpKOhksXO5bIxY29+HQqvA/k5C7S/WL4X17HgjAhwq+qj0Nkx1HF+CrEydLbmGa/dkqxlsYB5PZu2vXcAMLuCMhF4h5whbfZ2X0SbdxeNNCiBcw5VrxTPM2YwJ1lYwlQzLr9QkYO6O0=
+	t=1783875521; cv=none; b=q7fZPq77N1Id3NW4Y2t1ods49LKPkgA8vuntP1IbjSuAMQ2ktDLWg3h0YpvA1Yc9PmQlYSE87J3evE8ayCElrJFT0zkm5CmxfUbRlbjPJ71F2Ih55CLLmQt6bywSSIBAhetY7hTnIO0QU0CrH4QPKmiOS0cMIbg9pTozNphWx3U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783875517; c=relaxed/simple;
-	bh=fV624To3UhqgGQ5DL+BBAkhjZ2J8+nOFl26Z689PZKg=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=YbjWkaZf9Go6H8y0dCllIE7EXkbeNoM4YOj82vpWNHMwWG5fuqu8CtLSWu9NEO67vJn3BfeInl0D0Jh/sCVGzhBVLIFBFqPDxx3tcEm+fGyJuAQqIrRwf7QoB9Q7sVlopVQUJoSzd7R6xIDRVIAgAj/0Zj0vaqB2MfEpKcg6R8s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=VwJ43LSx; arc=none smtp.client-ip=185.67.36.65
+	s=arc-20240116; t=1783875521; c=relaxed/simple;
+	bh=1IC0dSEOd86D3yPYege0hdfK/rj6MWKVekJYvFYUAt0=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=S8NWCEc7A7tf5/MqyQ+cIe2dQPbgwFYhQg3Y1fjIj1VeJb5xmf7SAM0t066o6barTHfAweE9ACqolQHZJY3KUqSM4c2giLHqtlP32tJ6jWEP9eEV1AQTq+Oxa041rdiY+PUP18vpuLXrxd791jurp1ysY3VUurTavm8dHLn/Sug=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=HMt/GYTC; arc=none smtp.client-ip=185.67.36.65
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="VwJ43LSx"
+	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="HMt/GYTC"
 Received: from submission (posteo.de [185.67.36.169]) 
-	by mout01.posteo.de (Postfix) with ESMTPS id 49479240029
-	for <linux-serial@vger.kernel.org>; Sun, 12 Jul 2026 18:58:34 +0200 (CEST)
+	by mout01.posteo.de (Postfix) with ESMTPS id BA55B24002B
+	for <linux-serial@vger.kernel.org>; Sun, 12 Jul 2026 18:58:36 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de;
-	s=1984.8680eb; t=1783875514;
-	bh=tWPQ6xBmlMcyxk91xqi/8tmhrSraaxd2DhrAIo7VbCw=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding:To:Cc:Autocrypt:OpenPGP:From;
-	b=VwJ43LSxnXsz+f95UXeY8//UoRxX2QLmoHdQVLA8XZdMTOc2tArh6NJTJJGc0Whxi
-	 n7fKzejqpU/xjHpaheUltxz7OWatIM7Ku9fl8dYMwylDn6w9fzsNliJDOFpQul/nT9
-	 QphjRmRP6hVm4HilQSy7mtvnGagPdZgRJZdu/aoUW6KZMkQrorOOcs+74FfP35rt5a
-	 ycL0kEr0Wzol9706MaW8X06klwzqmLi64V51jmpLZ5dde/z5H5Tezj3heeshSf/OwI
-	 0zmzNoWW4Gc7IBEF0ZTLqyhtY3y2Z8BoqHrJ1AU3A6JkOECQbdW5lEG5Lef1o2wRts
-	 0GWQ/YI2MJoPA==
+	s=1984.8680eb; t=1783875516;
+	bh=s8i502YK4SebDw8xDbNuyo+Z+a6lracRnPDMV8/XT6g=;
+	h=From:Date:Subject:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:Message-Id:To:Cc:Autocrypt:OpenPGP:From;
+	b=HMt/GYTC/YQ8qv64PfXe6R2UpFBh/WIr23L3A90d6GRNazo1pM5CnvkFZClJAlyWk
+	 FCuxDqIqqznF4PgDQmGIwBD0d6USfSqe2ctYN3Sbv3JsHs57MCQ0WVmPa4m5S3Ol7e
+	 Q1T7CTqGs+0YNbMINNDHB5ofx45OsJe99x05WG7G3YNCycXCnUnHC/+MGKwy6L9KN3
+	 belcjHsx+7h5eJ6O9EWCa7wSeg8jNiYPYSxfhHxSfGfhYgquvmhYi38K6QWIAhfubN
+	 DgF0M5rY0FBQlmi3eGNhPH/ACbZz7roKTau8/h5GdFQDo2RfbRdo0woEgoChO5Swyv
+	 268uvWvtQYBsg==
 Received: from customer (localhost [127.0.0.1])
-	by submission (posteo.de) with ESMTPSA id 4gysGF243Hz6tsg;
-	Sun, 12 Jul 2026 18:58:29 +0200 (CEST)
+	by submission (posteo.de) with ESMTPSA id 4gysGJ6mKPz6twg;
+	Sun, 12 Jul 2026 18:58:32 +0200 (CEST)
 From: Markus Probst <markus.probst@posteo.de>
-Subject: [PATCH v13 0/3] rust: add basic serial device bus abstractions
-Date: Sun, 12 Jul 2026 16:58:32 +0000
-Message-Id: <20260712-rust_serdev-v13-0-2c4060bc8e30@posteo.de>
+Date: Sun, 12 Jul 2026 16:58:35 +0000
+Subject: [PATCH v13 1/3] rust: add basic serial device bus abstractions
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -44,15 +44,9 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/33T227bMAwG4FcJfD0FIiXqkKu+x1AUOlCt0SXuZ
- NfYUPTdJ6crajtALyXgo0n551s3cu157E6Ht67y3I/9cGkHUD8OXXoKl0cWfW4XHUokQLCivo7
- TQ1OZZ8FM2gF76Sh1TbxULv2fa7mf9+381I/TUP9eq8+w3P6vg3JTZwYhBWttNFljDcLdyzBOP
- Bwzd0udGT+tkUqarcXF+ogqaoxItLdqZUFtrWo2+aBCQdDFlr3VX1YDbK1u1mlib2QyBu3e0sr
- u56VmybKLQRL4ovbWrO32zWfTLFhlvcvEEG6sXVu/tbZZmZ1P1kOk5PbWfVlSu55dsxg8FcgBM
- dzM67+xvtniIpWUovbppmeQ32BoPQtDGTLl6KxJNxrWevebYMlWZnbcBley3GQLVuFqEdnpJV1
- KS1lKdC4CrvX7R+Qr/35tizN95L478ziG696cDp8DgUKrzFGhd6S9AJHDc7175nrhX8ehPi7LE
- 8PIIg3ncz+dDrM9oqgJ20fe/wEYdC/xpQMAAA==
-X-Change-ID: 20251217-rust_serdev-ee5481e9085c
+Message-Id: <20260712-rust_serdev-v13-1-2c4060bc8e30@posteo.de>
+References: <20260712-rust_serdev-v13-0-2c4060bc8e30@posteo.de>
+In-Reply-To: <20260712-rust_serdev-v13-0-2c4060bc8e30@posteo.de>
 To: Rob Herring <robh@kernel.org>, 
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
  Jiri Slaby <jirislaby@kernel.org>, Miguel Ojeda <ojeda@kernel.org>, 
@@ -74,21 +68,21 @@ Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
  rust-for-linux@vger.kernel.org, linux-pm@vger.kernel.org, 
  driver-core@lists.linux.dev, dri-devel@lists.freedesktop.org, 
  Markus Probst <markus.probst@posteo.de>
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4532;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=26520;
  i=markus.probst@posteo.de; h=from:subject:message-id;
- bh=fV624To3UhqgGQ5DL+BBAkhjZ2J8+nOFl26Z689PZKg=;
- b=owEBiQJ2/ZANAwAIATR2H/jnrUPSAcsmYgBqU8e0ycrwR6WYGMe+rwRRx/CQM3Cg9FcPsTsyq
- ovK3BEci9uJAk8EAAEIADkWIQSCdBjE9KxY53IwxHM0dh/4561D0gUCalPHtBsUgAAAAAAEAA5t
- YW51MiwyLjUrMS4xMiwyLDIACgkQNHYf+OetQ9JyMQ/+JlfcCfGrDNtXwweD8s+caaH/EhxixGQ
- UC1Kv5j0Xr/696+hs+48vVmgvW9L5qMiIu5f/Wtzg4g3W7oAQdVZ1m6JAoMjmKDgM9TVJk0gxw0
- 6AoG5ZP4wZkB1pqC5RkEC5XA5RTmkynxacQp7iNX4+3OLkX5e7PvcXJ+CRpQqEk6pRRR4kEz8pt
- DSFGOR/tpc85hKwVXK02NkMsds3ZWXjL65HTg/jgKDq6NUqjFMLdekrQxxBiFpPry8q3EdVeoFl
- 3dS1ndWOJ5Ry5ziNM7EG9St507MA13wRsiHMIcRlGbQQHzn+4bASOK0YosWXHu7C8H/mU+ID42K
- HiwWe3mVjqDEcLN0ehkbpsvpxgP1PSShsxSk0xdBk9bSrYwXSAEgcXE4UHk+K4pcOqBKlFp4VVn
- zMjPGdayqyiRHo2BAELr3q3zgall4vImGX+XZOi9l78FIDgM6zF88qdJBHsipJDJHYrFDjVNxUq
- GIuOhU3IOyf9rM5KU8gMtEFis47oYz01gevdYbdjjKWRltKjnx1dDb0Ml7TQ93FizVjZTLqwTiE
- +2IgqsSGhSG86gGwIc4fLHuUYGio3AbjOkqWNiNP5KbfP/t94vQkXxgpRYe9xt/+FmW2EbYp2Np
- b6EvETHH6sOsbtO8LwS6AA/gLxE5SWSKj/SL/RymHgUpbCuAZRCg=
+ bh=1IC0dSEOd86D3yPYege0hdfK/rj6MWKVekJYvFYUAt0=;
+ b=owEBiQJ2/ZANAwAIATR2H/jnrUPSAcsmYgBqU8e0Cku/qxcRXj0/zzg+JrUACwkl237zqyPI+
+ PlzlL3PZxyJAk8EAAEIADkWIQSCdBjE9KxY53IwxHM0dh/4561D0gUCalPHtBsUgAAAAAAEAA5t
+ YW51MiwyLjUrMS4xMiwyLDIACgkQNHYf+OetQ9JBFBAAnl7rv/tzjN8iXvS73H+g/Xw1pndeV/B
+ /mAIGMAsL2pp9d1Rghpo0vHmAeL6YzXSfUSqqGHt1z74b7U0Z3LHTLeqJWaofKq6+ML6BfHh3qc
+ NNeA7zIQXmdvm0ZR8ZHE4cHRWnvh+aZfIKRySOaNHoTFGwbpxWZs2f0B6vjKG3vb/nQdP7Jhh5A
+ sqENNTiKDYCRa/11JiHnydYU/tIdE5kY6zJUgzfPjJisLeXxkVjQozoK7InT2+xKiPkCPYQkKdi
+ /g4sKO8Xc2ZFBNXuW4ftvF0knAdIFEAVqXj7fWnTcQwaN+zHScGjvc354NW1xoRlHREAwzk3KI6
+ mwArllOvTypz4KKaEOzRZE2cV0RrLeYu/0CMxTbvO2GewIiRCS/4oPBWCiQ+J54zcHxmESttQ8p
+ F7xl7e0G7eQ6rVsGZiogJ8y0eK7Ge+iwUL0BtMWoB1i4civKoO7KZYSLj47lNawjE+fuftgnJZz
+ 6pZXTL9z2/LhIDKSbUi22yMCudDxslWLUR47aTZS5uYk57lOlg37vum3iN2ExYMNRrKt6bCwcpX
+ 08uXldnVA/82za9duFfrlsnhpR5dwffQiXGRpr5Unsk6kVWB3gi6nTlUDTKyhnzmppsBjC0lpGt
+ eBmNzd4Uwi98o6vliPcB0sq081uFPp8q9/+zV8OJH8Nc2gGa9onQ=
 X-Developer-Key: i=markus.probst@posteo.de; a=openpgp;
  fpr=827418C4F4AC58E77230C47334761FF8E7AD43D2
 Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
@@ -134,116 +128,722 @@ Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
   aBeNN4ijKZchBXHPgVx+YtWRHfcm4l8=
 OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
 
-This patch series adds the serdev device bus rust abstraction into the
-kernel.
+Implement the basic serial device bus abstractions required to write a
+serial device bus device driver with or without the need for initial device
+data. This includes the following data structures:
 
-This abstraction will be used by a driver,
-which targets the MCU devices in Synology devices.
+The `serdev::Driver` trait represents the interface to the driver.
 
-Kari Argillander also messaged me, stating that he wants to write a
-watchdog driver with this abstraction (needing initial device data).
+The `serdev::Device` abstraction represents a `struct serdev_device`.
 
-This series depends on [1].
-
-[1] https://lore.kernel.org/rust-for-linux/20260530132736.3298549-1-dakr@kernel.org/
+In order to provide the Serdev specific parts to a generic
+`driver::Registration` the `driver::RegistrationOps` trait is
+implemented by `serdev::Adapter`.
 
 Signed-off-by: Markus Probst <markus.probst@posteo.de>
 ---
-Changes in v13:
-- Added Acked-by trailer from Rob. Consider this a RESEND.
-- Link to v12: https://patch.msgid.link/20260603-rust_serdev-v12-0-3400ffb88b12@posteo.de
+ MAINTAINERS                     |   2 +
+ drivers/tty/serdev/Kconfig      |   7 +
+ rust/bindings/bindings_helper.h |   1 +
+ rust/helpers/helpers.c          |   1 +
+ rust/helpers/serdev.c           |  22 ++
+ rust/kernel/lib.rs              |   2 +
+ rust/kernel/serdev.rs           | 590 ++++++++++++++++++++++++++++++++++++++++
+ 7 files changed, 625 insertions(+)
 
-Changes in v12:
-- fix CoreInternal instead of BoundInternal
-- Link to v11: https://patch.msgid.link/20260531-rust_serdev-v11-0-dee8e0d830f1@posteo.de
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 4a8b0fd665ce..00d977ce7028 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -24567,6 +24567,8 @@ S:	Maintained
+ F:	Documentation/devicetree/bindings/serial/serial.yaml
+ F:	drivers/tty/serdev/
+ F:	include/linux/serdev.h
++F:	rust/helpers/serdev.c
++F:	rust/kernel/serdev.rs
+ 
+ SERIAL IR RECEIVER
+ M:	Sean Young <sean@mess.org>
+diff --git a/drivers/tty/serdev/Kconfig b/drivers/tty/serdev/Kconfig
+index 46ae732bfc68..e6dfe949ad01 100644
+--- a/drivers/tty/serdev/Kconfig
++++ b/drivers/tty/serdev/Kconfig
+@@ -9,6 +9,13 @@ menuconfig SERIAL_DEV_BUS
+ 
+ 	  Note that you typically also want to enable TTY port controller support.
+ 
++config RUST_SERIAL_DEV_BUS_ABSTRACTIONS
++	bool "Rust Serial device bus abstractions"
++	depends on RUST
++	select SERIAL_DEV_BUS
++	help
++	  This enables the Rust abstraction for the serial device bus API.
++
+ if SERIAL_DEV_BUS
+ 
+ config SERIAL_DEV_CTRL_TTYPORT
+diff --git a/rust/bindings/bindings_helper.h b/rust/bindings/bindings_helper.h
+index 1124785e210b..fe7c505da236 100644
+--- a/rust/bindings/bindings_helper.h
++++ b/rust/bindings/bindings_helper.h
+@@ -85,6 +85,7 @@
+ #include <linux/regulator/consumer.h>
+ #include <linux/sched.h>
+ #include <linux/security.h>
++#include <linux/serdev.h>
+ #include <linux/slab.h>
+ #include <linux/sys_soc.h>
+ #include <linux/task_work.h>
+diff --git a/rust/helpers/helpers.c b/rust/helpers/helpers.c
+index 998e31052e66..6921a5ecb78a 100644
+--- a/rust/helpers/helpers.c
++++ b/rust/helpers/helpers.c
+@@ -87,6 +87,7 @@
+ #include "regulator.c"
+ #include "scatterlist.c"
+ #include "security.c"
++#include "serdev.c"
+ #include "signal.c"
+ #include "slab.c"
+ #include "spinlock.c"
+diff --git a/rust/helpers/serdev.c b/rust/helpers/serdev.c
+new file mode 100644
+index 000000000000..c52b78ca3fc7
+--- /dev/null
++++ b/rust/helpers/serdev.c
+@@ -0,0 +1,22 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include <linux/serdev.h>
++
++__rust_helper
++void rust_helper_serdev_device_driver_unregister(struct serdev_device_driver *sdrv)
++{
++	serdev_device_driver_unregister(sdrv);
++}
++
++__rust_helper
++void rust_helper_serdev_device_put(struct serdev_device *serdev)
++{
++	serdev_device_put(serdev);
++}
++
++__rust_helper
++void rust_helper_serdev_device_set_client_ops(struct serdev_device *serdev,
++					      const struct serdev_device_ops *ops)
++{
++	serdev_device_set_client_ops(serdev, ops);
++}
+diff --git a/rust/kernel/lib.rs b/rust/kernel/lib.rs
+index 9512af7156df..d5ca17336739 100644
+--- a/rust/kernel/lib.rs
++++ b/rust/kernel/lib.rs
+@@ -119,6 +119,8 @@
+ pub mod scatterlist;
+ pub mod security;
+ pub mod seq_file;
++#[cfg(CONFIG_RUST_SERIAL_DEV_BUS_ABSTRACTIONS)]
++pub mod serdev;
+ pub mod sizes;
+ #[cfg(CONFIG_SOC_BUS)]
+ pub mod soc;
+diff --git a/rust/kernel/serdev.rs b/rust/kernel/serdev.rs
+new file mode 100644
+index 000000000000..ab5d6446b091
+--- /dev/null
++++ b/rust/kernel/serdev.rs
+@@ -0,0 +1,590 @@
++// SPDX-License-Identifier: GPL-2.0
++
++//! Abstractions for the serial device bus.
++//!
++//! C header: [`include/linux/serdev.h`](srctree/include/linux/serdev.h)
++
++use crate::{
++    acpi,
++    device,
++    driver,
++    error::{
++        from_result,
++        to_result,
++        VTABLE_DEFAULT_ERROR, //
++    },
++    new_mutex,
++    of,
++    prelude::*,
++    sync::{
++        aref::AlwaysRefCounted,
++        Mutex, //
++    },
++    time::{
++        msecs_to_jiffies,
++        Jiffies,
++        Msecs, //
++    },
++    types::{
++        Opaque,
++        ScopeGuard, //
++    }, //
++};
++
++use core::{
++    cell::UnsafeCell,
++    marker::PhantomData,
++    mem::{offset_of, MaybeUninit},
++    num::NonZero,
++    ptr::NonNull, //
++};
++
++/// Parity bit to use with a serial device.
++#[repr(u32)]
++pub enum Parity {
++    /// No parity bit.
++    None = bindings::serdev_parity_SERDEV_PARITY_NONE,
++    /// Even partiy.
++    Even = bindings::serdev_parity_SERDEV_PARITY_EVEN,
++    /// Odd parity.
++    Odd = bindings::serdev_parity_SERDEV_PARITY_ODD,
++}
++
++/// Timeout in Jiffies.
++pub enum Timeout {
++    /// Wait for a specific amount of [`Jiffies`].
++    Jiffies(NonZero<Jiffies>),
++    /// Wait for a specific amount of [`Msecs`].
++    Milliseconds(NonZero<Msecs>),
++    /// Wait as long as possible.
++    ///
++    /// This is equivalent to [`kernel::task::MAX_SCHEDULE_TIMEOUT`].
++    Max,
++}
++
++impl Timeout {
++    fn into_jiffies(self) -> isize {
++        match self {
++            Self::Jiffies(value) => value.get().try_into().unwrap_or_default(),
++            Self::Milliseconds(value) => {
++                msecs_to_jiffies(value.get()).try_into().unwrap_or_default()
++            }
++            Self::Max => 0,
++        }
++    }
++}
++
++/// An adapter for the registration of serial device bus device drivers.
++pub struct Adapter<T: Driver>(T);
++
++// SAFETY:
++// - `bindings::serdev_device_driver` is a C type declared as `repr(C)`.
++// - `PrivateData<'bound, T>` is the type of the driver's device private data.
++// - `struct serdev_device_driver` embeds a `struct device_driver`.
++// - `DEVICE_DRIVER_OFFSET` is the correct byte offset to the embedded `struct device_driver`.
++unsafe impl<T: Driver> driver::DriverLayout for Adapter<T> {
++    type DriverType = bindings::serdev_device_driver;
++    type DriverData<'bound> = PrivateData<'bound, T>;
++    const DEVICE_DRIVER_OFFSET: usize = core::mem::offset_of!(Self::DriverType, driver);
++}
++
++// SAFETY: A call to `unregister` for a given instance of `DriverType` is guaranteed to be valid if
++// a preceding call to `register` has been successful.
++unsafe impl<T: Driver> driver::RegistrationOps for Adapter<T> {
++    unsafe fn register(
++        sdrv: &Opaque<Self::DriverType>,
++        name: &'static CStr,
++        module: &'static ThisModule,
++    ) -> Result {
++        let of_table = match T::OF_ID_TABLE {
++            Some(table) => table.as_ptr(),
++            None => core::ptr::null(),
++        };
++
++        let acpi_table = match T::ACPI_ID_TABLE {
++            Some(table) => table.as_ptr(),
++            None => core::ptr::null(),
++        };
++
++        // SAFETY: It's safe to set the fields of `struct serdev_device_driver` on initialization.
++        unsafe {
++            (*sdrv.get()).driver.name = name.as_char_ptr();
++            (*sdrv.get()).probe = Some(Self::probe_callback);
++            (*sdrv.get()).remove = Some(Self::remove_callback);
++            (*sdrv.get()).driver.of_match_table = of_table;
++            (*sdrv.get()).driver.acpi_match_table = acpi_table;
++        }
++
++        // SAFETY: `sdrv` is guaranteed to be a valid `DriverType`.
++        to_result(unsafe { bindings::__serdev_device_driver_register(sdrv.get(), module.0) })
++    }
++
++    unsafe fn unregister(sdrv: &Opaque<Self::DriverType>) {
++        // SAFETY: `sdrv` is guaranteed to be a valid `DriverType`.
++        unsafe { bindings::serdev_device_driver_unregister(sdrv.get()) };
++    }
++}
++
++#[doc(hidden)]
++#[pin_data(PinnedDrop)]
++pub struct PrivateData<'bound, T: Driver> {
++    sdev: &'bound Device<device::Bound>,
++    #[pin]
++    driver: UnsafeCell<MaybeUninit<T::Data<'bound>>>,
++    open: UnsafeCell<bool>,
++    #[pin]
++    active: Mutex<bool>,
++}
++
++#[pinned_drop]
++impl<T: Driver> PinnedDrop for PrivateData<'_, T> {
++    fn drop(self: Pin<&mut Self>) {
++        let mut active = self.active.lock();
++        if *active {
++            // SAFETY:
++            // - We have exclusive access to `self.driver`.
++            // - `self.driver` is guaranteed to be initialized.
++            unsafe { (*self.driver.get()).assume_init_drop() };
++            *active = false;
++        }
++
++        // SAFETY: We have exclusive access to `self.open`.
++        if unsafe { *self.open.get() } {
++            // SAFETY: `self.sdev.as_raw()` is guaranteed to be a pointer to a valid
++            // `struct serdev_device`.
++            unsafe { bindings::serdev_device_close(self.sdev.as_raw()) };
++        }
++    }
++}
++
++impl<T: Driver> Adapter<T> {
++    const OPS: &'static bindings::serdev_device_ops = &bindings::serdev_device_ops {
++        receive_buf: if T::HAS_RECEIVE {
++            Some(Self::receive_buf_callback)
++        } else {
++            None
++        },
++        write_wakeup: Some(bindings::serdev_device_write_wakeup),
++    };
++
++    extern "C" fn probe_callback(sdev: *mut bindings::serdev_device) -> kernel::ffi::c_int {
++        // SAFETY: The serial device bus only ever calls the probe callback with a valid pointer to
++        // a `struct serdev_device`.
++        //
++        // INVARIANT: `sdev` is valid for the duration of `probe_callback()`.
++        let sdev = unsafe { &*sdev.cast::<Device<device::CoreInternal<'_>>>() };
++        let info = <Self as driver::Adapter>::id_info(sdev.as_ref());
++
++        from_result(|| {
++            sdev.as_ref().set_drvdata(try_pin_init!(PrivateData::<T> {
++                sdev: &**sdev,
++                driver: MaybeUninit::<T::Data<'_>>::zeroed().into(),
++                open: false.into(),
++                active <- new_mutex!(false),
++            }))?;
++            // SAFETY: We just set drvdata to `PrivateData<'_, T>`.
++            let private_data = unsafe { sdev.as_ref().drvdata_borrow::<PrivateData<'_, T>>() };
++            let private_data = ScopeGuard::new_with_data(private_data, |_| {
++                // SAFETY: We just set drvdata to `PrivateData<'_, T>`.
++                drop(unsafe { sdev.as_ref().drvdata_obtain::<PrivateData<'_, T>>() });
++            });
++            let mut active = private_data.active.lock();
++
++            // SAFETY: `sdev.as_raw()` is guaranteed to be a valid pointer to `serdev_device`.
++            unsafe { bindings::serdev_device_set_client_ops(sdev.as_raw(), Self::OPS) };
++
++            // SAFETY: The serial device bus only ever calls the probe callback with a valid pointer
++            // to a `serdev_device`.
++            to_result(unsafe { bindings::serdev_device_open(sdev.as_raw()) })?;
++
++            // SAFETY: We have exclusive access to `private_data.open`.
++            unsafe { *private_data.open.get() = true };
++
++            let data = T::probe(sdev, info);
++
++            // SAFETY: We have exclusive access to `private_data.driver`.
++            let driver = unsafe { &mut *private_data.driver.get() };
++            // SAFETY:
++            // - `driver.as_mut_ptr()` is a valid pointer to uninitialized data.
++            // - `private_data.driver` is pinned.
++            let result = unsafe { data.__pinned_init(driver.as_mut_ptr()) };
++
++            *active = result.is_ok();
++
++            drop(active);
++
++            result.map(|()| {
++                private_data.dismiss();
++                0
++            })
++        })
++    }
++
++    extern "C" fn remove_callback(sdev: *mut bindings::serdev_device) {
++        // SAFETY: The serial device bus only ever calls the remove callback with a valid pointer
++        // to a `struct serdev_device`.
++        //
++        // INVARIANT: `sdev` is valid for the duration of `remove_callback()`.
++        let sdev = unsafe { &*sdev.cast::<Device<device::CoreInternal<'_>>>() };
++
++        // SAFETY: `remove_callback` is only ever called after a successful call to
++        // `probe_callback`, hence it's guaranteed that `Device::set_drvdata()` has been called
++        // and stored a `Pin<KBox<PrivateData<'_, T>>>`.
++        let private_data = unsafe { sdev.as_ref().drvdata_borrow::<PrivateData<'_, T>>() };
++
++        // SAFETY: No one has exclusive access to `private_data.driver`.
++        let data = unsafe { &*private_data.driver.get() };
++        // SAFETY:
++        // - `private_data.driver` is pinned.
++        // - `remove_callback` is only ever called after a successful call to `probe_callback`,
++        //   hence it's guaranteed that `private_data.driver` was initialized.
++        let data_pinned = unsafe { Pin::new_unchecked(data.assume_init_ref()) };
++
++        T::unbind(sdev, data_pinned);
++    }
++
++    extern "C" fn receive_buf_callback(
++        sdev: *mut bindings::serdev_device,
++        buf: *const u8,
++        length: usize,
++    ) -> usize {
++        // SAFETY: The serial device bus only ever calls the receive buf callback with a valid
++        // pointer to a `struct serdev_device`.
++        //
++        // INVARIANT: `sdev` is valid for the duration of `receive_buf_callback()`.
++        let sdev = unsafe { &*sdev.cast::<Device<device::BoundInternal>>() };
++
++        // SAFETY: `receive_buf_callback` is only ever called after a successful call to
++        // `probe_callback`, hence it's guaranteed that `Device::set_drvdata()` has been called
++        // and stored a `Pin<KBox<PrivateData<'_, T>>>`.
++        let private_data = unsafe { sdev.as_ref().drvdata_borrow::<PrivateData<'_, T>>() };
++        let active = private_data.active.lock();
++
++        if !*active {
++            return length;
++        }
++
++        // SAFETY: No one has exclusive access to `private_data.driver`.
++        let data = unsafe { &*private_data.driver.get() };
++        // SAFETY:
++        // - `private_data.driver` is pinned.
++        // - `receive_buf_callback` is only ever called after a successful call to `probe_callback`,
++        //   hence it's guaranteed that `private_data.driver` was initialized.
++        let data_pinned = unsafe { Pin::new_unchecked(data.assume_init_ref()) };
++
++        // SAFETY: `buf` is guaranteed to be non-null and has the size of `length`.
++        let buf = unsafe { core::slice::from_raw_parts(buf, length) };
++
++        T::receive(sdev, data_pinned, buf)
++    }
++}
++
++impl<T: Driver> driver::Adapter for Adapter<T> {
++    type IdInfo = T::IdInfo;
++
++    fn of_id_table() -> Option<of::IdTable<Self::IdInfo>> {
++        T::OF_ID_TABLE
++    }
++
++    fn acpi_id_table() -> Option<acpi::IdTable<Self::IdInfo>> {
++        T::ACPI_ID_TABLE
++    }
++}
++
++/// Declares a kernel module that exposes a single serial device bus device driver.
++///
++/// # Examples
++///
++/// ```ignore
++/// kernel::module_serdev_device_driver! {
++///     type: MyDriver,
++///     name: "Module name",
++///     authors: ["Author name"],
++///     description: "Description",
++///     license: "GPL v2",
++/// }
++/// ```
++#[macro_export]
++macro_rules! module_serdev_device_driver {
++    ($($f:tt)*) => {
++        $crate::module_driver!(<T>, $crate::serdev::Adapter<T>, { $($f)* });
++    };
++}
++
++/// The serial device bus device driver trait.
++///
++/// Drivers must implement this trait in order to get a serial device bus device driver registered.
++///
++/// # Examples
++///
++///```
++/// # use kernel::{
++///     acpi,
++///     bindings,
++///     device::{
++///         Bound,
++///         Core, //
++///     },
++///     of,
++///     serdev, //
++/// };
++///
++/// struct MyDriver;
++///
++/// kernel::of_device_table!(
++///     OF_TABLE,
++///     MODULE_OF_TABLE,
++///     <MyDriver as serdev::Driver>::IdInfo,
++///     [
++///         (of::DeviceId::new(c"test,device"), ())
++///     ]
++/// );
++///
++/// kernel::acpi_device_table!(
++///     ACPI_TABLE,
++///     MODULE_ACPI_TABLE,
++///     <MyDriver as serdev::Driver>::IdInfo,
++///     [
++///         (acpi::DeviceId::new(c"LNUXBEEF"), ())
++///     ]
++/// );
++///
++/// #[vtable]
++/// impl serdev::Driver for MyDriver {
++///     type IdInfo = ();
++///     type Data<'bound> = Self;
++///     const OF_ID_TABLE: Option<of::IdTable<Self::IdInfo>> = Some(&OF_TABLE);
++///     const ACPI_ID_TABLE: Option<acpi::IdTable<Self::IdInfo>> = Some(&ACPI_TABLE);
++///
++///     fn probe<'bound>(
++///         sdev: &'bound serdev::Device<Core<'_>>,
++///         _id_info: Option<&'bound Self::IdInfo>,
++///     ) -> impl PinInit<Self::Data<'bound>, Error> + 'bound {
++///         sdev.set_baudrate(115200);
++///         sdev.write_all(b"Hello\n", serdev::Timeout::Max)?;
++///         Ok(MyDriver)
++///     }
++/// }
++///```
++#[vtable]
++pub trait Driver {
++    /// The type holding driver private data about each device id supported by the driver.
++    // TODO: Use associated_type_defaults once stabilized:
++    //
++    // ```
++    // type IdInfo: 'static = ();
++    // ```
++    type IdInfo: 'static;
++
++    /// The type of the driver's bus device private data.
++    type Data<'bound>: Send + 'bound;
++
++    /// The table of OF device ids supported by the driver.
++    const OF_ID_TABLE: Option<of::IdTable<Self::IdInfo>> = None;
++
++    /// The table of ACPI device ids supported by the driver.
++    const ACPI_ID_TABLE: Option<acpi::IdTable<Self::IdInfo>> = None;
++
++    /// Serial device bus device driver probe.
++    ///
++    /// Called when a new serial device bus device is added or discovered.
++    /// Implementers should attempt to initialize the device here.
++    fn probe<'bound>(
++        sdev: &'bound Device<device::Core<'_>>,
++        id_info: Option<&'bound Self::IdInfo>,
++    ) -> impl PinInit<Self::Data<'bound>, Error> + 'bound;
++
++    /// Serial device bus device driver unbind.
++    ///
++    /// Called when a [`Device`] is unbound from its bound [`Driver`]. Implementing this callback
++    /// is optional.
++    ///
++    /// This callback serves as a place for drivers to perform teardown operations that require a
++    /// `&Device<Core>` or `&Device<Bound>` reference. For instance.
++    ///
++    /// Otherwise, release operations for driver resources should be performed in `Drop`.
++    fn unbind<'bound>(sdev: &'bound Device<device::Core<'_>>, this: Pin<&Self::Data<'bound>>) {
++        let _ = (sdev, this);
++    }
++
++    /// Serial device bus device data receive callback.
++    ///
++    /// Called when data got received from device.
++    ///
++    /// Returns the number of bytes accepted.
++    fn receive<'bound>(
++        sdev: &'bound Device<device::Bound>,
++        this: Pin<&Self::Data<'bound>>,
++        data: &[u8],
++    ) -> usize {
++        let _ = (sdev, this, data);
++        build_error!(VTABLE_DEFAULT_ERROR)
++    }
++}
++
++/// The serial device bus device representation.
++///
++/// This structure represents the Rust abstraction for a C `struct serdev_device`. The
++/// implementation abstracts the usage of an already existing C `struct serdev_device` within Rust
++/// code that we get passed from the C side.
++///
++/// # Invariants
++///
++/// A [`Device`] instance represents a valid `struct serdev_device` created by the C portion of
++/// the kernel.
++#[repr(transparent)]
++pub struct Device<Ctx: device::DeviceContext = device::Normal>(
++    Opaque<bindings::serdev_device>,
++    PhantomData<Ctx>,
++);
++
++impl<Ctx: device::DeviceContext> Device<Ctx> {
++    fn as_raw(&self) -> *mut bindings::serdev_device {
++        self.0.get()
++    }
++}
++
++impl Device<device::Bound> {
++    /// Set the baudrate in bits per second.
++    ///
++    /// Common baudrates are 115200, 9600, 19200, 57600, 4800.
++    ///
++    /// Use [`Device::write_flush`] before calling this if you have written data prior to this call.
++    pub fn set_baudrate(&self, speed: u32) -> Result<(), u32> {
++        // SAFETY: `self.as_raw()` is guaranteed to be a pointer to a valid `serdev_device`.
++        let ret = unsafe { bindings::serdev_device_set_baudrate(self.as_raw(), speed) };
++        if ret == speed {
++            Ok(())
++        } else {
++            Err(ret)
++        }
++    }
++
++    /// Set if flow control should be enabled.
++    ///
++    /// Use [`Device::write_flush`] before calling this if you have written data prior to this call.
++    pub fn set_flow_control(&self, enable: bool) {
++        // SAFETY: `self.as_raw()` is guaranteed to be a pointer to a valid `serdev_device`.
++        unsafe { bindings::serdev_device_set_flow_control(self.as_raw(), enable) };
++    }
++
++    /// Set parity to use.
++    ///
++    /// Use [`Device::write_flush`] before calling this if you have written data prior to this call.
++    pub fn set_parity(&self, parity: Parity) -> Result {
++        // SAFETY: `self.as_raw()` is guaranteed to be a pointer to a valid `serdev_device`.
++        to_result(unsafe { bindings::serdev_device_set_parity(self.as_raw(), parity as u32) })
++    }
++
++    /// Write data to the serial device until the controller has accepted all the data or has
++    /// been interrupted by a timeout or signal.
++    ///
++    /// Note that any accepted data has only been buffered by the controller. Use
++    /// [`Device::wait_until_sent`] to make sure the controller write buffer has actually been
++    /// emptied.
++    ///
++    /// Returns the number of bytes written (less than `data.len()` if interrupted).
++    /// [`kernel::error::code::ETIMEDOUT`] or [`kernel::error::code::ERESTARTSYS`] if interrupted
++    /// before any bytes were written.
++    pub fn write_all(&self, data: &[u8], timeout: Timeout) -> Result<usize> {
++        // SAFETY:
++        // - `self.as_raw()` is guaranteed to be a pointer to a valid `serdev_device`.
++        // - `data.as_ptr()` is guaranteed to be a valid array pointer with the size of
++        //   `data.len()`.
++        let ret = unsafe {
++            bindings::serdev_device_write(
++                self.as_raw(),
++                data.as_ptr(),
++                data.len(),
++                timeout.into_jiffies(),
++            )
++        };
++        // CAST: negative return values are guaranteed to be between `-MAX_ERRNO` and `-1`,
++        // which always fit into a `i32`.
++        to_result(ret as i32).map(|()| ret.unsigned_abs())
++    }
++
++    /// Write data to the serial device.
++    ///
++    /// If you want to write until the controller has accepted all the data, use
++    /// [`Device::write_all`].
++    ///
++    /// Note that any accepted data has only been buffered by the controller. Use
++    /// [ Device::wait_until_sent`] to make sure the controller write buffer has actually been
++    /// emptied.
++    ///
++    /// Returns the number of bytes written (less than `data.len()` if not enough room in the
++    /// write buffer).
++    pub fn write(&self, data: &[u8]) -> Result<u32> {
++        // SAFETY:
++        // - `self.as_raw()` is guaranteed to be a pointer to a valid `serdev_device`.
++        // - `data.as_ptr()` is guaranteed to be a valid array pointer with the size of
++        //   `data.len()`.
++        let ret =
++            unsafe { bindings::serdev_device_write_buf(self.as_raw(), data.as_ptr(), data.len()) };
++
++        to_result(ret as i32).map(|()| ret.unsigned_abs())
++    }
++
++    /// Send data to the serial device immediately.
++    ///
++    /// Note that this doesn't guarantee that the data has been transmitted.
++    /// Use [`Device::wait_until_sent`] for this purpose.
++    pub fn write_flush(&self) {
++        // SAFETY: `self.as_raw()` is guaranteed to be a pointer to a valid `serdev_device`.
++        unsafe { bindings::serdev_device_write_flush(self.as_raw()) };
++    }
++
++    /// Wait for the data to be sent.
++    ///
++    /// After this function, the write buffer of the controller should be empty.
++    pub fn wait_until_sent(&self, timeout: Timeout) {
++        // SAFETY: `self.as_raw()` is guaranteed to be a pointer to a valid `serdev_device`.
++        unsafe { bindings::serdev_device_wait_until_sent(self.as_raw(), timeout.into_jiffies()) };
++    }
++}
++
++// SAFETY: `serdev::Device` is a transparent wrapper of `struct serdev_device`.
++// The offset is guaranteed to point to a valid device field inside `serdev::Device`.
++unsafe impl<Ctx: device::DeviceContext> device::AsBusDevice<Ctx> for Device<Ctx> {
++    const OFFSET: usize = offset_of!(bindings::serdev_device, dev);
++}
++
++// SAFETY: `Device` is a transparent wrapper of a type that doesn't depend on `Device`'s generic
++// argument.
++kernel::impl_device_context_deref!(unsafe { Device });
++kernel::impl_device_context_into_aref!(Device);
++
++// SAFETY: Instances of `Device` are always reference-counted.
++unsafe impl AlwaysRefCounted for Device {
++    fn inc_ref(&self) {
++        self.as_ref().inc_ref();
++    }
++
++    unsafe fn dec_ref(obj: NonNull<Self>) {
++        // SAFETY: The safety requirements guarantee that the refcount is non-zero.
++        unsafe { bindings::serdev_device_put(obj.cast().as_ptr()) }
++    }
++}
++
++impl<Ctx: device::DeviceContext> AsRef<device::Device<Ctx>> for Device<Ctx> {
++    fn as_ref(&self) -> &device::Device<Ctx> {
++        // SAFETY: By the type invariant of `Self`, `self.as_raw()` is a pointer to a valid
++        // `struct serdev_device`.
++        let dev = unsafe { &raw mut (*self.as_raw()).dev };
++
++        // SAFETY: `dev` points to a valid `struct device`.
++        unsafe { device::Device::from_raw(dev) }
++    }
++}
++
++// SAFETY: A `Device` is always reference-counted and can be released from any thread.
++unsafe impl Send for Device {}
++
++// SAFETY: `Device` can be shared among threads because all methods of `Device`
++// (i.e. `Device<Normal>) are thread safe.
++unsafe impl Sync for Device {}
++
++// SAFETY: Same as `Device<Normal>` -- the underlying `struct serdev_device` is the same;
++// `Bound` is a zero-sized type-state marker that does not affect thread safety.
++unsafe impl Sync for Device<device::Bound> {}
 
-Changes in v11:
-- redo changes from v9 with the following fixes:
-  - fix memory leak on probe failure
-  - fix possible access of dropped drvdata from receive_buf
-- Link to v10: https://patch.msgid.link/20260530-rust_serdev-v10-0-65d1d5db876c@posteo.de
-
-Changes in v10:
-- revert everything from v9, except BoundInternal
-- use mutex to ensure receive_buf won't be called on a dropped drvdata.
-- Link to v9: https://patch.msgid.link/20260530-rust_serdev-v9-0-f8b5fccb49c3@posteo.de
-
-Changes in v9:
-- make use of BoundInternal
-- use PrivateData wrapper and drop rust_private_data field
-- use non-devm version of serdev_device_open
-- Link to v8: https://patch.msgid.link/20260530-rust_serdev-v8-0-2a95f1da22a7@posteo.de
-
-Changes in v8:
-- adapted to driver-lifetime v5 patch series
-- add MAINTAINERS file patch
-- Link to v7: https://patch.msgid.link/20260429-rust_serdev-v7-0-0d89c791b5c8@posteo.de
-
-Changes in v7:
-- adapted to driver-lifetime patch series
-- Link to v6: https://patch.msgid.link/20260427-rust_serdev-v6-0-173798d5e1a3@posteo.de
-
-Changes in v6:
-- rebased onto v7.1-rc1
-- Link to v5: https://patch.msgid.link/20260420-rust_serdev-v5-0-57e8ba0519f3@posteo.de
-
-Changes in v5:
-- fix typo in documentation
-- Link to v4: https://lore.kernel.org/r/20260411-rust_serdev-v4-0-845e960c6627@posteo.de
-
-Changes in v4:
-- fixed not selecting rust serdev abstraction in sample
-- Link to v3: https://lore.kernel.org/r/20260313-rust_serdev-v3-0-c9a3af214f7f@posteo.de
-
-Changes in v3:
-- fix vertical import style
-- add Kconfig entry for the rust abstraction
-- fix documentation in include/linux/serdev.h
-- rename private_data to rust_private_data
-- fix `complete_all` <-> `wait_for_completion` typo
-- move drvdata_borrow call after the completion
-- Link to v2: https://lore.kernel.org/r/20260306-rust_serdev-v2-0-e9b23b42b255@posteo.de
-
-Changes in v2:
-- fix documentation in `serdev::Driver::write` and
-  `serdev::Driver::write_all`
-- remove use of `dev_info` in probe from the sample
-- remove `properties_parse` from the sample
-- add optional `baudrate` property to the sample
-- remove 1. patch
-- remove `TryFrom<&device::Device<Ctx>> for &serdev::Device<Ctx>`
-  implementation
-- fix import style
-- add patch to return reference in `devres::register` to fix safety
-  issue
-- add patch to add private data to serdev_device, to fix
-  `Device.drvdata()` from failing
-- simplify abstraction by removing ability to receive the initial
-  transmission. It may be added later in a separate patch series if
-  needed.
-- Link to v1: https://lore.kernel.org/r/20251220-rust_serdev-v1-0-e44645767621@posteo.de
-
----
-Markus Probst (3):
-      rust: add basic serial device bus abstractions
-      samples: rust: add Rust serial device bus sample device driver
-      MAINTAINERS: serdev: Add self for serdev
-
- MAINTAINERS                        |   5 +-
- drivers/tty/serdev/Kconfig         |   7 +
- rust/bindings/bindings_helper.h    |   1 +
- rust/helpers/helpers.c             |   1 +
- rust/helpers/serdev.c              |  22 ++
- rust/kernel/lib.rs                 |   2 +
- rust/kernel/serdev.rs              | 590 +++++++++++++++++++++++++++++++++++++
- samples/rust/Kconfig               |  11 +
- samples/rust/Makefile              |   1 +
- samples/rust/rust_driver_serdev.rs |  91 ++++++
- 10 files changed, 730 insertions(+), 1 deletion(-)
----
-base-commit: 4c45e14df2f4e77982ad70d6d8e3fe750edd4c37
-change-id: 20251217-rust_serdev-ee5481e9085c
-prerequisite-message-id: 20260530132736.3298549-1-dakr@kernel.org
-prerequisite-patch-id: 310c6bee038ca3909a8e5e58ec12b74f7189b869
-prerequisite-patch-id: 92812c3d42b29504838e6dc66c307ff5c035bb5e
+-- 
+2.54.0
 
