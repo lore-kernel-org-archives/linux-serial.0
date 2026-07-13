@@ -1,63 +1,125 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F9E234F270;
-	Sun, 12 Jul 2026 21:17:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8954D3E3163;
+	Mon, 13 Jul 2026 09:29:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783891064; cv=none; b=C9PKzI8EPrJiXfqXkXbCOz5MlqjareRIhseX87iaBTtBT6TXEg57saXUFHr1B5JGmVj9+42izJfo8yJ7sT9LtXiTF+vMLjjFmcR6bbLOKETc6EWKBItj58qkPesfpEdC8cqTY8QSv9ziju2LRP7jk12mhUNyRHoGWDxPTH42O/c=
+	t=1783934977; cv=none; b=U9lcIZjt42FX5qgt66SR9Z7xCN2ITIkHxzMfpkED7RZlPMTnAMyJ7QiLGxHTXdh2QH5fVASXuWvt3Ybir4BAA/t9ydMZH+MgN8JbXYay+/mt6pl4hmResOmnUIjt3RN79EElE8FPhMT1xMQHhCNFUm69tS0q+TZaxd5+95cz4AU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783891064; c=relaxed/simple;
-	bh=TAN8uqcXQaWpMu46V89+7rmBB0GHxnBNoDJ0iSaUJ0E=;
-	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=K/KZi6Ic7D790E2YTiBAsHGf5CFlutiVmwgtSSYE+WHxBO4HSKEXlYlpgAzumCujfQs5hs11OwFRWfSf9YAjtrUCzrYgsS20Ya921Ht8Cd+LuM8ceiwkmcxswt5srko6Z8KmPB1kwX8CNLkeqSp3UqPJQUGLqpMoiWN5e4Yt290=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZkC76YB+; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1783934977; c=relaxed/simple;
+	bh=IP6+FHRCeZ6ktDt3C7axt12zz2S64i+osWbdVgzJ2m8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=kfxx9Ta9kTBWjM+j6MSmwavtnl7FyE1ElSQLLEBr8VFMxI2Xu+uU4GKDlWwVRisiT1Z/L03JKen/z9zNx/PmMdC4yQjMH5P82G/t/fePhVdpqyXTFhgja9rK5feQrGcZAuSNbp+Tr5f6Fb/DOciKcuR0oWzSeFoPeNvRW6Ob4Cw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=YarZFYC3; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZkC76YB+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF7041F00A3E;
-	Sun, 12 Jul 2026 21:17:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783891059;
-	bh=BDdEyOx+OG/us7Sm7PENRBotnlk9VnO5k47Pd4YNgQA=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc;
-	b=ZkC76YB+LJnKymuC5lBNUhb5oYA4L/GKZz6CGMztgQMV3K/L1ND+oOlmkzqMk5kTe
-	 b+zkyOUe3EztlKXMGmYmS3SozZMUqHuqCn1oK+e3wpxjJfQw+U3QBhnZzUxeNgvdZY
-	 pjX8e1huHNBh5uTT1dZwSL8pCV5noKxB2uFDM5+M2+T+tBICCKlgTmlzV+uIOy4I8b
-	 V4FFe3eQq28wV5/I0ajG6nMNnNTDq6gKOD5Rc/T/BVOhrv2H8w8xrsiWYTVTY7zAqs
-	 gxTpccu9dadqyDpo4cD30dZkzsVzdyA/7BnwUOmGjesSlWgsECNy/suFRwmChM3FYt
-	 pCCY/IX4fusuw==
-Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 1967439244C3;
-	Sun, 12 Jul 2026 21:17:17 +0000 (UTC)
-Subject: Re: [GIT PULL] TTY/Serial driver fixes for 7.2-rc3
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <alNTUs9uo0TesjLv@kroah.com>
-References: <alNTUs9uo0TesjLv@kroah.com>
-X-PR-Tracked-List-Id: <linux-serial.vger.kernel.org>
-X-PR-Tracked-Message-Id: <alNTUs9uo0TesjLv@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-7.2-rc3
-X-PR-Tracked-Commit-Id: 302fbbb4fcbdeac2dc8c63a56c1c4e38c4781958
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 8a65af0e39da4f8bfb594c331450bdba8db04add
-Message-Id: <178389103581.1485009.9104051772100609027.pr-tracker-bot@kernel.org>
-Date: Sun, 12 Jul 2026 21:17:15 +0000
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="YarZFYC3"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1783934975; x=1815470975;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=IP6+FHRCeZ6ktDt3C7axt12zz2S64i+osWbdVgzJ2m8=;
+  b=YarZFYC3fbKVH6yRnBqmtzVR+8AVx8+rlKPO+b6VQLWvUZe4UYqZROj2
+   Krk6UL/0Ax2vIOjtra4HCe1kLE3paXtJMkigd/X9Rr5mtSe7OzqIvXZic
+   8wC9lNPaIpRIcfYtxjRIbtqi+WlzrJBoSHqb0SVOG3UGnlctqy4nFPX/7
+   6wwWTH9rmQ7jIAe3Q25b1AUqOJTY6hsdbeBmft0/0M/OOCGDBxvIg+HlP
+   Jo0K1Bbc95CB3Wl+6xli0LAAe7EJtxK+Dh/6oFLZIgAQfLUKzBoHkTdod
+   i9dyqOqXTRdKqrSF3npSWfLBsGxsTTU1CrrGGA9RWGsO517TE72V/8Du/
+   g==;
+X-CSE-ConnectionGUID: z24o08MsSc+/Vle9Q1vY/w==
+X-CSE-MsgGUID: a0/sTs0jQH6Uac4tWz25ew==
+X-IronPort-AV: E=McAfee;i="6800,10657,11841"; a="110082196"
+X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
+   d="scan'208";a="110082196"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2026 02:29:34 -0700
+X-CSE-ConnectionGUID: 4vHZevoKQ0ioRPvqHl9QsQ==
+X-CSE-MsgGUID: U0RLdXqZR9Ovvs5nHqBgCw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
+   d="scan'208";a="260394092"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.55])
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2026 02:29:23 -0700
+Date: Mon, 13 Jul 2026 12:29:20 +0300
+From: Tony Lindgren <tony.lindgren@linux.intel.com>
+To: Tony Lindgren <tony@atomide.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Praveen Talari <praveen.talari@oss.qualcomm.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Richard Genoud <richard.genoud@bootlin.com>,
+	Nicolas Ferre <nicolas.ferre@microchip.com>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	Claudiu Beznea <claudiu.beznea@tuxon.dev>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Peter Griffin <peter.griffin@linaro.org>,
+	Alim Akhtar <alim.akhtar@samsung.com>,
+	Orson Zhai <orsonzhai@gmail.com>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Chunyan Zhang <zhang.lyra@gmail.com>,
+	Patrice Chotard <patrice.chotard@foss.st.com>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Peter Korsgaard <jacmet@sunsite.dk>,
+	Michal Simek <michal.simek@amd.com>,
+	Aaro Koskinen <aaro.koskinen@iki.fi>,
+	Janusz Krzysztofik <jmkrzyszt@gmail.com>,
+	Russell King <linux@armlinux.org.uk>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	bjorn.andersson@oss.qualcomm.com,
+	Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+	linux-samsung-soc@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-omap@vger.kernel.org, linux-mips@vger.kernel.org,
+	Mukesh Kumar Savaliya <mukesh.savaliya@oss.qualcomm.com>,
+	aniket.randive@oss.qualcomm.com,
+	chandana.chiluveru@oss.qualcomm.com
+Subject: Re: [PATCH 0/6] tty: serial: propagate errors from uart_ops.pm
+ callback
+Message-ID: <alSv8BPCOiyKvOI2@tlindgre-MOBL1>
+References: <20260709-add_return_check_for_uart_change_pm-v1-0-e85c6ffa8ec4@oss.qualcomm.com>
+ <ak9OPNcVAhkfxHvZ@ashevche-desk.local>
+ <20260710043746.GM30058@atomide.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260710043746.GM30058@atomide.com>
 
-The pull request you sent on Sun, 12 Jul 2026 10:41:54 +0200:
+On Fri, Jul 10, 2026 at 07:37:46AM +0300, Tony Lindgren wrote:
+> * Andy Shevchenko <andriy.shevchenko@linux.intel.com> [260709 10:38]:
+> > Note, that Tony (you have him in the Cc list) did a lot for some corner cases
+> > with that and we still have them IIRC. Tony, do you know what is the state of
+> > affairs with runtime PM for UART?
+> 
+> The RX side of things should work for hardware that can wake up to an incoming
+> event. Linux for sure needs more work to properly handle the various corner case
+> TX wake-up of a PM runtime idled UART. I'm mostly offline until Monday though,
+> will check my notes for more details next week.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-7.2-rc3
+For the TX side handling, my understanding is that at least uart_update_mctrl()
+needs to call PM runtime resume and put autosuspend. And we should assume
+uart_update_mctrl() can sleep to resume the PM runtime suspended serial port.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/8a65af0e39da4f8bfb594c331450bdba8db04add
+For drivers, the callers of uport->ops->get/set_mctrl() should be updated
+to use uart_update_mctrl() where possible. And the remaining ones that cannot
+sleep should be fixed so they can sleep or have PM runtime disabled.
 
-Thank you!
+Anybody have better ideas?
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Regards,
+
+Tony
