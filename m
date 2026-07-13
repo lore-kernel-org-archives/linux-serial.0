@@ -1,52 +1,52 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8954D3E3163;
-	Mon, 13 Jul 2026 09:29:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 296C837E2E1;
+	Mon, 13 Jul 2026 11:21:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783934977; cv=none; b=U9lcIZjt42FX5qgt66SR9Z7xCN2ITIkHxzMfpkED7RZlPMTnAMyJ7QiLGxHTXdh2QH5fVASXuWvt3Ybir4BAA/t9ydMZH+MgN8JbXYay+/mt6pl4hmResOmnUIjt3RN79EElE8FPhMT1xMQHhCNFUm69tS0q+TZaxd5+95cz4AU=
+	t=1783941698; cv=none; b=hPpOsG7yHJn0ZnZJ2EmgDJUeMp76BlKGeqMt6S1MCNr7oA8MtViCoPPuhNPjz9tfhORdLITBIHz6jfYEI57jBXRRXqj3PSvqMpr5PV9amx2OaULZQxLJ5rIpEKebnWgLj4mjw1IIRxbWApQuvXrQ21gr34YBPj1nzE7+4K0tWs8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783934977; c=relaxed/simple;
-	bh=IP6+FHRCeZ6ktDt3C7axt12zz2S64i+osWbdVgzJ2m8=;
+	s=arc-20240116; t=1783941698; c=relaxed/simple;
+	bh=qjNurRQVSwJBiieOW9ThoUFB9rqOdoEiG35XLbhQwBc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kfxx9Ta9kTBWjM+j6MSmwavtnl7FyE1ElSQLLEBr8VFMxI2Xu+uU4GKDlWwVRisiT1Z/L03JKen/z9zNx/PmMdC4yQjMH5P82G/t/fePhVdpqyXTFhgja9rK5feQrGcZAuSNbp+Tr5f6Fb/DOciKcuR0oWzSeFoPeNvRW6Ob4Cw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=YarZFYC3; arc=none smtp.client-ip=192.198.163.7
+	 Content-Type:Content-Disposition:In-Reply-To; b=BqB8gBruEKc7HI1knAmgDGdSrcXLLixMWBjRPWze4ce5KHciH7eGFMs7lf5r4O/9WW2Lj1YUx5dBUZjTQ2k9izKIII8DzqAFEakY18abvclJNLYvFhenhxjTIK/BBWGagp0B8Qcg8kmQkrsFlU0c0thBxFfV9BSJ+eAwarYvDk8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IVF7dN58; arc=none smtp.client-ip=192.198.163.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="YarZFYC3"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IVF7dN58"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1783934975; x=1815470975;
+  t=1783941696; x=1815477696;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=IP6+FHRCeZ6ktDt3C7axt12zz2S64i+osWbdVgzJ2m8=;
-  b=YarZFYC3fbKVH6yRnBqmtzVR+8AVx8+rlKPO+b6VQLWvUZe4UYqZROj2
-   Krk6UL/0Ax2vIOjtra4HCe1kLE3paXtJMkigd/X9Rr5mtSe7OzqIvXZic
-   8wC9lNPaIpRIcfYtxjRIbtqi+WlzrJBoSHqb0SVOG3UGnlctqy4nFPX/7
-   6wwWTH9rmQ7jIAe3Q25b1AUqOJTY6hsdbeBmft0/0M/OOCGDBxvIg+HlP
-   Jo0K1Bbc95CB3Wl+6xli0LAAe7EJtxK+Dh/6oFLZIgAQfLUKzBoHkTdod
-   i9dyqOqXTRdKqrSF3npSWfLBsGxsTTU1CrrGGA9RWGsO517TE72V/8Du/
-   g==;
-X-CSE-ConnectionGUID: z24o08MsSc+/Vle9Q1vY/w==
-X-CSE-MsgGUID: a0/sTs0jQH6Uac4tWz25ew==
-X-IronPort-AV: E=McAfee;i="6800,10657,11841"; a="110082196"
+  bh=qjNurRQVSwJBiieOW9ThoUFB9rqOdoEiG35XLbhQwBc=;
+  b=IVF7dN583n2OunJc1CHQolm8+7XOduXuuwucQ4mHTerQIJr5YCK/rA7C
+   3lbcO9z1fYueaaO1EBnIX9AQEOqqmeKXFpYndsc8HtwN7zSQoFzvW8Vkr
+   LrwfUYbDGgfAI22Ki+mjIwWrNpR0L8ANNOyRfzyIscGozuDaaRDOr6t5e
+   l3vJWFPrDnr1r8qnPeEFYv5oiCxX9rNJjkOa5Y+DlZ6bAbwgVWK4V5RCN
+   /RO8hSt+Mo/c8QUkhLWnCSNPtJ2kGfDeORU0jYL7Zauo1JViDaf/Qa1nk
+   yk9m5Jr1G+rUt0USJ2ujuf2oCdwPME67BFHyFCXpd0XHs7dqWR+PMQkkK
+   Q==;
+X-CSE-ConnectionGUID: YRv4HQ/oTNykr5w0amOAZg==
+X-CSE-MsgGUID: yhjfuB5ERdmGXwY7ALj03A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11841"; a="88372077"
 X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
-   d="scan'208";a="110082196"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2026 02:29:34 -0700
-X-CSE-ConnectionGUID: 4vHZevoKQ0ioRPvqHl9QsQ==
-X-CSE-MsgGUID: U0RLdXqZR9Ovvs5nHqBgCw==
+   d="scan'208";a="88372077"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2026 04:21:35 -0700
+X-CSE-ConnectionGUID: FC1GeEyzSPKWMBYtZ/N88w==
+X-CSE-MsgGUID: 3GNUYWrFTM6f6PsT20OzmA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
-   d="scan'208";a="260394092"
-Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.55])
-  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2026 02:29:23 -0700
-Date: Mon, 13 Jul 2026 12:29:20 +0300
-From: Tony Lindgren <tony.lindgren@linux.intel.com>
-To: Tony Lindgren <tony@atomide.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+   d="scan'208";a="253788205"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.88])
+  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2026 04:21:26 -0700
+Date: Mon, 13 Jul 2026 14:21:24 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Tony Lindgren <tony.lindgren@linux.intel.com>
+Cc: Tony Lindgren <tony@atomide.com>,
 	Praveen Talari <praveen.talari@oss.qualcomm.com>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
@@ -85,10 +85,11 @@ Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	chandana.chiluveru@oss.qualcomm.com
 Subject: Re: [PATCH 0/6] tty: serial: propagate errors from uart_ops.pm
  callback
-Message-ID: <alSv8BPCOiyKvOI2@tlindgre-MOBL1>
+Message-ID: <alTKNEk97jkVGfML@ashevche-desk.local>
 References: <20260709-add_return_check_for_uart_change_pm-v1-0-e85c6ffa8ec4@oss.qualcomm.com>
  <ak9OPNcVAhkfxHvZ@ashevche-desk.local>
  <20260710043746.GM30058@atomide.com>
+ <alSv8BPCOiyKvOI2@tlindgre-MOBL1>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -97,29 +98,37 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260710043746.GM30058@atomide.com>
+In-Reply-To: <alSv8BPCOiyKvOI2@tlindgre-MOBL1>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Jul 10, 2026 at 07:37:46AM +0300, Tony Lindgren wrote:
-> * Andy Shevchenko <andriy.shevchenko@linux.intel.com> [260709 10:38]:
-> > Note, that Tony (you have him in the Cc list) did a lot for some corner cases
-> > with that and we still have them IIRC. Tony, do you know what is the state of
-> > affairs with runtime PM for UART?
+On Mon, Jul 13, 2026 at 12:29:20PM +0300, Tony Lindgren wrote:
+> On Fri, Jul 10, 2026 at 07:37:46AM +0300, Tony Lindgren wrote:
+> > * Andy Shevchenko <andriy.shevchenko@linux.intel.com> [260709 10:38]:
+> > > Note, that Tony (you have him in the Cc list) did a lot for some corner cases
+> > > with that and we still have them IIRC. Tony, do you know what is the state of
+> > > affairs with runtime PM for UART?
+> > 
+> > The RX side of things should work for hardware that can wake up to an incoming
+> > event. Linux for sure needs more work to properly handle the various corner case
+> > TX wake-up of a PM runtime idled UART. I'm mostly offline until Monday though,
+> > will check my notes for more details next week.
 > 
-> The RX side of things should work for hardware that can wake up to an incoming
-> event. Linux for sure needs more work to properly handle the various corner case
-> TX wake-up of a PM runtime idled UART. I'm mostly offline until Monday though,
-> will check my notes for more details next week.
+> For the TX side handling, my understanding is that at least uart_update_mctrl()
+> needs to call PM runtime resume and put autosuspend. And we should assume
+> uart_update_mctrl() can sleep to resume the PM runtime suspended serial port.
+> 
+> For drivers, the callers of uport->ops->get/set_mctrl() should be updated
+> to use uart_update_mctrl() where possible. And the remaining ones that cannot
+> sleep should be fixed so they can sleep or have PM runtime disabled.
+> 
+> Anybody have better ideas?
 
-For the TX side handling, my understanding is that at least uart_update_mctrl()
-needs to call PM runtime resume and put autosuspend. And we should assume
-uart_update_mctrl() can sleep to resume the PM runtime suspended serial port.
+I don't, but the above sounds like a plan. Is it a big task? I can help with
+something in that area, perhaps Ilpo also would be able to participate.
 
-For drivers, the callers of uport->ops->get/set_mctrl() should be updated
-to use uart_update_mctrl() where possible. And the remaining ones that cannot
-sleep should be fixed so they can sleep or have PM runtime disabled.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-Anybody have better ideas?
 
-Regards,
-
-Tony
