@@ -1,165 +1,214 @@
-Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
+Received: from mail-vs1-f53.google.com (mail-vs1-f53.google.com [209.85.217.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C242364049
-	for <linux-serial@vger.kernel.org>; Tue, 14 Jul 2026 07:14:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.51
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784013271; cv=pass; b=FH5kU0cvyhX9wu11R1CYaxk3Ml87zAh3IvY8AfYGC8locA5B+1HQfb5OB3V+DSbAge8rmujTdoncQkHVydMWhS+rOCfbC8bHjv2OyHWrum3Lsj8/OLhi1WuAwjiVqN/FdorQD1yTmz3LD8j8BxGx+R7DIRsPANMTG23Ym3gx0yQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784013271; c=relaxed/simple;
-	bh=dn7IW7f8g4oFd9sIoeJ6OCN9TIFKIj/He1K2oNRFlRE=;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4020743B3CB
+	for <linux-serial@vger.kernel.org>; Tue, 14 Jul 2026 10:00:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.53
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784023210; cv=none; b=WkUNqKIpWeNRfux1ft9/mlv58FAUB3syT6TW0AvRoZo0t08DR+gJNg3wMw36rT0mcHNOmp9p3fBlGgKVMBxF2Zpx/O2jQUqYy4UK3XzFJFHg21ktNWpffgOaqTT8BnvwQ/z6L46BL6+nWn33ZCHU/Q2au6+EV8rXL3XwvmdSRlQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784023210; c=relaxed/simple;
+	bh=yGS/YDTu7OHIco0QYXX8MIVFQyinXeeCWGxCZ7WhxwY=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=eqsOBxiqNusLgOdLWsq8HWJvhwCnx3R5no/xclTG72H6DpKQZrjGzAWlI78UvwnJeIGbwilvGHCFqZZObZZHDM4Wzrst13yHK8IGfc4/50vUBxPdpyaL8LoFe3NAp9rKwTkJvPlKz3jOqXZCl3DiVeNR/BNzCBF9d/7Cfj5CWeg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=9elements.com; spf=pass smtp.mailfrom=9elements.com; dkim=pass (2048-bit key) header.d=9elements.com header.i=@9elements.com header.b=cJDKc3He; arc=pass smtp.client-ip=209.85.218.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=9elements.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=9elements.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=9elements.com header.i=@9elements.com header.b="cJDKc3He"
-Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-c15c257a488so502793066b.3
-        for <linux-serial@vger.kernel.org>; Tue, 14 Jul 2026 00:14:29 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1784013268; cv=none;
-        d=google.com; s=arc-20260327;
-        b=TlfoPeZ+HyvMcCJ8NJBObQg0ZCBQ1l/TszTcuTI+/R0WilbZhQMS1hrH7//GAlVdc/
-         AgIdJzg1uYf4ohtLtowTwSRwysYUcwg0aVEtW27wlnLIDiXzo2UJZsNNkwe/U+K5Z1Q7
-         Q1ZafPVD20GBGOMDv3RPoPEG3RpEL3ETN7xX4stKtubVxi2jl6HHsPMxXIl9a+G2cvVY
-         cdBlZaKbLymmXTA/2s5+4PS/o2d3K2bPJNGrL8TA/2ywBm0t0eLVM/zODD/GjnnFWH/e
-         6Iyn4nQYUq066Zd9NcVm10guNzssfbOoohczCac49eUi7svZ0rMUKxmGz9wzL9vwCNtp
-         gFCg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=ZGRru2gQA+Baamgw+dIgFvngJo1yoHHQsL5cdXvYIZ8=;
-        fh=4pDyEWm6+xkhU5Tq/Z+PwAxMBkAVbTp0l59MufIJRss=;
-        b=XOi0fi3DJKiIWTSdLcbpdy+o7zpavoD+6z/P2BwUxd/BFPcZEOsHBtEa9bxNfU6o0t
-         Q7+YHPumgJrPDhf1CQl0OQYZcX9opmq/Km9vzwD/+AjsOpEYxWkq4P/b+KcpBZMdghW0
-         WvVNeRq5Z/sjZzmnYJ37C+9iB9aEuw6wBVeD9NDzABefxuQSC2F/t5nXBHI65PZTYKLF
-         ldeEh8w14NBE85Q7j3ZvGefNv0E0pRV4NhE7mvVrct0VrHhXIvjxX50VpSJj0wc1eCdL
-         GXSg2QPGCbI7PcjaJYG6pzWUcYSOmf23Ta0HLg43x2ak2LkwICOSfst5xH4JdkreYANM
-         yPDA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=9elements.com; s=google; t=1784013268; x=1784618068; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=ZGRru2gQA+Baamgw+dIgFvngJo1yoHHQsL5cdXvYIZ8=;
-        b=cJDKc3HemVX7jhAZisoNdP3xH5opCV90joefkqzW+HHkFe+Jt+cWe+tQLnvgqQCM2/
-         FQXZYrJX+2SRqaBtT5bRjXbyDtr+f/VtFCnyz5AYEdS0xK6P+1pzro2XyfVKEQ3RVCXa
-         +CKTGk8fTXtmnORuNWtL7+JnF/4+j5jXqsw6bHLxNRYGK7wI0GuHvZu09dKDkHPKSbFP
-         ezs7yCfkpcbNNkrKl9tTOK/rwvn/j8NE3Zq3Pa52xRtVOgN24ls2arrTK/Cf3czp2VYl
-         qtIUVoLD+r021WytKO20Jrw6RseRp/VMigfTwGdpgaKfW4n0pUFMLI9va+8PksYhEV9h
-         Z8Pg==
+	 To:Cc:Content-Type; b=VgCt8IU5WpdXZNfG7oU9eMhDErOU47yd4yr4x8HlQhNI1SB3lm0wB0JK45IAfQ/M0g4VOx0xWB4J2BdbKZbFy+1LwO9fF+8gBhjo6L91y8y/V/EzJAaax6O69jdGYnVvqQkz2lVSJ7ai+tNPuuJYUqhWhXfn/YBK7Qmg6aqzFkQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.217.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-vs1-f53.google.com with SMTP id ada2fe7eead31-737de525d2eso4182043137.2
+        for <linux-serial@vger.kernel.org>; Tue, 14 Jul 2026 03:00:08 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784013268; x=1784618068;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=ZGRru2gQA+Baamgw+dIgFvngJo1yoHHQsL5cdXvYIZ8=;
-        b=A7QczL2IXtiFqhrP9Z9Ss+P6nCUlLSWxdTcX3bULbg40Mr9MuqTsgRugHycb+bS9+z
-         pGxwCjs07TaGpwObGxOGq9uZSosuurLGjg4sCZLv21eur2SUX/jxvC4a4TbtHnD3Sdxc
-         Bj+/k/54DoZm7+RbDdo6HUaDVkLDqov5AkZisvCfh3OQsILF8XuiZybYlAXQnPQBMq1F
-         SI0YUkBtTSuJjqhiIwdyLd1b+KbWzNMA7Fm8qHHRt/dRCoVPAFx3zkFvGRNT+StSY5hl
-         lanbgO59xGD8sFXaxzsz561XTUaRf0AH+jOEbk457A9CkGyXRZI8pWiA4lr6o376zWpU
-         8ojA==
-X-Forwarded-Encrypted: i=1; AHgh+Rr40IVkqIDP3+bwgUN0deZ5gIGe1sgVQ2Wr4fvVB8BECFKaP2l1ZQkZJ8OvUaw0liX+3R/d+muF3446Or8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwZr9M/d98jn++samP82wFNd+3NaYDw+/Z0XjOOFTWAVWWJCV8z
-	Q5l8qcEpzxS6EKh/6mq+Dk6RQBrdfpXDyMWkiLbmECoYW6I6JGVewvKfy4UQkkBLluenwCwiJfS
-	rMst/Txob3qAwFyIoGJ2iJcvGOUt3Jj+tzEnHPL3P6w==
-X-Gm-Gg: AfdE7cmbdwtsRXkD91fe4RWU29KPBmX/VZzGKSGEfw6MzCTFLV4j2bPn5zN+oHjWGCj
-	b0kGnMF/bNfaWWw88gkwKKg642Ne9ojnyjzmzZ7dzK9h74QUuFQezX1v3QrMzk8AZmJTvoByQKO
-	3joJmIMB4c3rdsHyjDkuE6fQQcoKiRO/y18YyKcjEP78HYOIX+UWcB8AQ0ON2NSpb08Ur0MXklf
-	MxcKy4IrNed/gjJWeEUU4Rca+bahTz8ezDDu1iSd93KdvQWFoTQMrc+7qiqxWFVtfnzK1j8i676
-	QLzi15qz9XfZTeAYxXxZ8VczpdWUGIs56rA19RMneq6vkZzoC8CjWsavJo14iwzKCwDl
-X-Received: by 2002:a17:907:934b:b0:c15:b368:28ba with SMTP id
- a640c23a62f3a-c166196554emr121126866b.56.1784013268492; Tue, 14 Jul 2026
- 00:14:28 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1784023207; x=1784628007;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=Wn0BQQ4/rRQdXWgUn4m2jI/IYLLR83T3wBjDLJzZzGY=;
+        b=GGYYQnJG8n4fWS7oKQY8z+6MGZ6FslSyiTiNTHh6RsfqI/prJ8bjuj2vl/xcGYTVpg
+         Hy360+n5iRoUh3qQiAYjDFQl4dbvBUuVUagc7Y6mtw92E1COpxV0PEGV0jb30D9u6Gwz
+         SDS37zbbCg9FQo0aNhJwlhud4U/CfXDX3VZ9FgS3Furxcdr4ZuKTOlb3urAqMzN40AAI
+         cV0g4tJhTliZCvu3zXDG8qAbkD7OQZoOLXklD+qFQYLfL1RkWcRKiakl03ysB5hPkBeW
+         gRC6gEH95qnUaZ8r/YVrJyx7B2KiBXcMSxM0DM20AwUdX3YlGYSzsxC4CFmKmwRx5Hcu
+         Pb1Q==
+X-Forwarded-Encrypted: i=1; AHgh+RpagRWyD+1hwfpI792P5DaZ7LUG6oQxcLcZdQhBQx8ousXSPM9ju3WkGpNb7w+ePLObI8VQRoi8O2BnbXw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxYIHtALhTxJ0R7UI1BTdkFdrWLyEJkxeBwYWbeXJ7q+muWKS69
+	BzK45faJLqWBzQCJ3ss/IYTjTbqjnhRGlBv9YnUhCftWaE6VADPI7S/Q2ab0sAmHQsE=
+X-Gm-Gg: AfdE7ckgA/eFe5PaeTC22GPIuBF9V8bOUbvPqxFzhlrc61Kr6gaqbkXT455VI25xpjg
+	4jQmZ5jajUk6tVLnYiPs2PKPwBzBIh3tFIiaf/M8iug0ORS8SQJlrb8YLziThEqVo3afRVtfQEy
+	3V04jGzlShRYeYAReY1RGpi3//YkRLuoKLoKx1RaRsoAYZVG3dQRAXYcIXCdcmAL5t6Yw5eaY7e
+	frAmsESjxRCbDc9WQnLL9x7e9fUSojE4qctGe9jVlThNqYH3cDB9YG4KhS8OVV/PEpMxzOHh7Tv
+	0fSAwyU5IlgdbcLh1e7EcT352mdaa3gPfoB1Obz+jFTIZzvjM3V4Rpu/XEYxxf6isfBnN1jr0Oh
+	dTwkxPSl43zXL/56JT81HpNQ5g0YibVYWpfwyuKpFkyjKFXEtZgLnJB78uSoXOI1VDPhc+VoOZ6
+	KDPK+f44gI9zRxVB0IUzwb1kokSy1EDcI6D7ddjdeVxrQuvgHK4d8isbco/jDF
+X-Received: by 2002:a05:6102:370b:b0:745:bf3:6c4b with SMTP id ada2fe7eead31-74533eb2324mr8044827137.29.1784023206785;
+        Tue, 14 Jul 2026 03:00:06 -0700 (PDT)
+Received: from mail-vs1-f49.google.com (mail-vs1-f49.google.com. [209.85.217.49])
+        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-744d6deb1aasm10497722137.7.2026.07.14.03.00.05
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jul 2026 03:00:06 -0700 (PDT)
+Received: by mail-vs1-f49.google.com with SMTP id ada2fe7eead31-74019ed06aeso3248452137.3
+        for <linux-serial@vger.kernel.org>; Tue, 14 Jul 2026 03:00:05 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AHgh+Ro6MesV3b5FYrWyBOfgHQ935XeSCTLriimLvqcp9JwSPgX1JS/WK5RiTLpgYbj3AZ2BrauO+PWhrfyQpeA=@vger.kernel.org
+X-Received: by 2002:a05:6102:a53:b0:739:5cfb:50f4 with SMTP id
+ ada2fe7eead31-74533bf3048mr8548431137.11.1784023205731; Tue, 14 Jul 2026
+ 03:00:05 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1783524645.git.gregoire.layet@9elements.com>
- <501428d6a6cb1548bf357c25313dbc319724ead2.1783524645.git.gregoire.layet@9elements.com>
- <20260709-shaggy-discreet-dodo-e5ffbb@quoll>
-In-Reply-To: <20260709-shaggy-discreet-dodo-e5ffbb@quoll>
-From: =?UTF-8?Q?Gr=C3=A9goire_Layet?= <gregoire.layet@9elements.com>
-Date: Tue, 14 Jul 2026 09:14:17 +0200
-X-Gm-Features: AUfX_mw1ITD-w1oVJUIDHcxSt_M9AD3AkUSAllXjq-zp-XksDV-7pwC0diYVWEo
-Message-ID: <CAFi2wKZqHsEa3B9KMDyVk+1Ef42u4TqWzqf6O4SXtamRnWD8Yw@mail.gmail.com>
-Subject: Re: [PATCH v4 2/7] dt-bindings: serial: 8250: aspeed: add
- aspeed,vuart-over-pci bool prop
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: joel@jms.id.au, andrew@codeconstruct.com.au, lkundrak@v3.sk, 
-	devicetree@vger.kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, andrew@lunn.ch, 
-	jacky_chou@aspeedtech.com, yh_chung@aspeedtech.com, ninad@linux.ibm.com, 
-	anirudhsriniv@gmail.com, linux-serial@vger.kernel.org, 
-	linux-aspeed@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org
+References: <20260521-tty-upio-v3-0-bf74567994a0@dimonoff.com> <20260521-tty-upio-v3-4-bf74567994a0@dimonoff.com>
+In-Reply-To: <20260521-tty-upio-v3-4-bf74567994a0@dimonoff.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Tue, 14 Jul 2026 11:59:54 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXBA=e13WqmVPZEas1eS34xSY3N79pf90N71HZPU9oAkA@mail.gmail.com>
+X-Gm-Features: AUfX_mweztvV3jOOEAYZFG1KJLNaua4I8_PAf8dCRC7NGHuZXl_ibs0BtKWh-YE
+Message-ID: <CAMuHMdXBA=e13WqmVPZEas1eS34xSY3N79pf90N71HZPU9oAkA@mail.gmail.com>
+Subject: Re: [PATCH v3 04/10] serial: uniformize serial port I/O infos display
+To: Hugo Villeneuve <hugo@hugovil.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	ilpo.jarvinen@linux.intel.com, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, Hugo Villeneuve <hvilleneuve@dimonoff.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-Hi Krzysztof.
+Hi Hugo,
 
-On Thu, 9 Jul 2026 at 10:54, Krzysztof Kozlowski <krzk@kernel.org> wrote:
-> > ...
-> > @@ -27,6 +27,16 @@ allOf:
-> >              enum:
-> >                - aspeed,ast2500-vuart
-> >                - aspeed,ast2600-vuart
-> > +  - if:
-> > +      required:
-> > +        - aspeed,vuart-over-pci
-> > +    then:
-> > +      required:
-> > +        - syscon
-> > +      properties:
-> > +        compatible:
-> > +          contains:
-> > +            const: aspeed,ast2600-vuart
+On Thu, 21 May 2026 at 20:23, Hugo Villeneuve <hugo@hugovil.com> wrote:
+> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 >
-> else:
-> ...
-> disallow new properties (see example-schema)
-
-Yes it was missing. Acknowledged.
-
+> Uniformize serial port I/O infos display from three different functions
+> that display mostly the same information, but with some variations, by
+> adding a common function.
 >
-> >    - if:
-> >        properties:
-> >          compatible:
-> > @@ -223,6 +233,12 @@ properties:
-> >            - const: uartclk
-> >            - const: reg
-> >
-> > +  syscon:
+> This make use of new functions uart_iotype_mmio() and
+> uart_iotype_legacy_io() to simplify and improve code readability.
+> This will prevent displaying irrelevant information for future IO types
+> (ex: UPIO_BUS), while also addressing the (eventually) invalid check for
+> "iotype >= UPIO_MEM".
 >
-> That's explicitly forbidden by writing bindings (and mentioned as the
-> antipattern in my older talks about DT).
+> This also allows us to remove the confusing cast to (unsigned long long)
+> for iobase which is defined as an unsigned long, and use %pa to display the
+> mapbase pointer, as it is done in earlycon_print_info().
+>
+> Replace snprintf with more robust scnprintf so we could perhaps one day get
+> rid of snprintf() entirely.
+>
+> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Missed that.
-Should it be named to 'aspeed,scu-syscon' as the aspeed SCU is used
-for all the peripherals.
-Or should it be named to 'aspeed,pci-syscon' to specify its purpose in
-this context.
+Thanks for your patch, which is now commit 86305190f307c05b ("serial:
+uniformize serial port I/O infos display") in tty/tty-next.
 
-From what I have gathered, current convention would use the specific
-name 'aspeed,pci-syscon'.
-Would like some feedback on this!
+> Maybe the width information could be dropped entirely?
 
-> > +    $ref: /schemas/types.yaml#/definitions/phandle
-> > +    description:
-> > +      Phandle to the SCU syscon, used to enable the VUART over the BMC=
- PCI
-> > +      device. Only applicable to aspeed,ast2600-vuart.
-> > +
-> > ...
+Perhaps...
 
-Thanks
+> --- a/drivers/tty/serial/earlycon.c
+> +++ b/drivers/tty/serial/earlycon.c
+> @@ -75,19 +75,12 @@ static void __init earlycon_print_info(struct earlycon_device *device)
+>  {
+>         struct console *earlycon = device->con;
+>         struct uart_port *port = &device->port;
+> +       char ioinfos[64];
+>
+> -       if (port->iotype == UPIO_MEM || port->iotype == UPIO_MEM16 ||
+> -           port->iotype == UPIO_MEM32 || port->iotype == UPIO_MEM32BE)
+> -               pr_info("%s%d at MMIO%s %pa (options '%s')\n",
+> -                       earlycon->name, earlycon->index,
+> -                       (port->iotype == UPIO_MEM) ? "" :
+> -                       (port->iotype == UPIO_MEM16) ? "16" :
+> -                       (port->iotype == UPIO_MEM32) ? "32" : "32be",
 
-Regards,
-Gr=C3=A9goire
+This handled 32 vs 32be...
+
+> -                       &port->mapbase, device->options);
+> -       else
+> -               pr_info("%s%d at I/O port 0x%lx (options '%s')\n",
+> -                       earlycon->name, earlycon->index,
+> -                       port->iobase, device->options);
+> +       uart_get_ioinfos(port, ioinfos, sizeof(ioinfos));
+> +
+> +       pr_info("%s%d%s (options '%s')\n", earlycon->name, earlycon->index,
+> +               ioinfos, device->options);
+>  }
+>
+>  static int __init parse_options(struct earlycon_device *device, char *options)
+
+> @@ -2476,38 +2473,47 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
+>  }
+>  EXPORT_SYMBOL(uart_resume_port);
+>
+> +static const char *uart_get_mmio_width(struct uart_port *port)
+> +{
+> +       switch (port->iotype) {
+> +       case UPIO_MEM16:
+> +               return "16";
+> +       case UPIO_MEM32:
+
+Missing
+
+    return "32";
+
+> +       case UPIO_MEM32BE:
+> +               return "32be";
+> +       case UPIO_AU:
+> +       case UPIO_MEM:
+> +       default:
+> +               return "";
+> +       }
+> +}
+
+>  static inline void
+>  uart_report_port(struct uart_driver *drv, struct uart_port *port)
+>  {
+> -       char address[64];
+> +       char ioinfos[64];
+>
+> -       switch (port->iotype) {
+> -       case UPIO_PORT:
+> -               snprintf(address, sizeof(address), "I/O 0x%lx", port->iobase);
+> -               break;
+> -       case UPIO_HUB6:
+> -               snprintf(address, sizeof(address),
+> -                        "I/O 0x%lx offset 0x%x", port->iobase, port->hub6);
+> -               break;
+> -       case UPIO_MEM:
+> -       case UPIO_MEM16:
+> -       case UPIO_MEM32:
+> -       case UPIO_MEM32BE:
+> -       case UPIO_AU:
+> -       case UPIO_TSI:
+> -               snprintf(address, sizeof(address),
+> -                        "MMIO 0x%llx", (unsigned long long)port->mapbase);
+> -               break;
+> -       default:
+> -               strscpy(address, "*unknown*", sizeof(address));
+> -               break;
+> -       }
+> +       uart_get_ioinfos(port, ioinfos, sizeof(ioinfos));
+>
+> -       pr_info("%s%s%s at %s (irq = %u, base_baud = %u) is a %s\n",
+> -              port->dev ? dev_name(port->dev) : "",
+> -              port->dev ? ": " : "",
+> -              port->name,
+> -              address, port->irq, port->uartclk / 16, uart_type(port));
+> +       pr_info("%s%s%s%s (irq = %u, base_baud = %u) is a %s\n",
+> +               port->dev ? dev_name(port->dev) : "",
+> +               port->dev ? ": " : "",
+> +               port->name, ioinfos, port->irq, port->uartclk / 16, uart_type(port));
+>
+>         /* The magic multiplier feature is a bit obscure, so report it too.  */
+>         if (port->flags & UPF_MAGIC_MULTIPLIER)
+
+I am also wondering if the ", base_baud = %u" should be dropped if
+port->uartclk is zero.  But that is a pre-existing issue.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
