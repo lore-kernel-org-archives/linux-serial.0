@@ -1,40 +1,58 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 452DC22D792;
-	Wed, 15 Jul 2026 05:16:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 493BF33DEE5;
+	Wed, 15 Jul 2026 06:10:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784092614; cv=none; b=m7nNOb5nrczmY0UI2F1jTQAilq/2YtwQpdohqgZBYLbC/ohutgWxUH5oatCsZOdSBLHwLXVS59Cg/K2oqbWd35E6k8CiEiq2Ea8sgHcJ3HvArax+TvMdnz2fqo8hiE+NeduAZ+Qrj39UO2qplN7xzM7NhrVeOwWNePl3jNwlZVk=
+	t=1784095830; cv=none; b=u8hfpab8oUBvarSAWAvxE1Cg0A+Q0dSYKmPG4rgDivI0Jl+11mhRniHDswi6Zcgq9rY0vVdsUzXWtONSwTojGxFg197iVaXksw7oUpndIgyg8m15Z9+Q2SCmqo2cwncjbZqBbASA868ePXbhpcqZyJZHV94uDiyqufsIPV5OyJ4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784092614; c=relaxed/simple;
-	bh=MhjOFwN+YL6LNugxn6A/ZqkiNs66fdE8U6jIS0JLZKc=;
+	s=arc-20240116; t=1784095830; c=relaxed/simple;
+	bh=r+LyLQnT+HkAihr1peF3MlBwSZ9bD0l73Zfz3IacvRI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VfDXHE4bQY2xYebTAbyMd6OzQpDawUIN0Eg3eDKutpNh2Vs0EBeDT/WVp6XKL0eyDCQsUw17bUQKBwj8yQ5NmOT38AtesZOqM/2fRsf9fbGSY3OCFAdh7HozLNWGTYC8dan5NwZ8/fDTI2iBc3gN17qV2FthGjqW4XFRYjJvQjs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=B8iTWTyd; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=ua7IIZBsQ+8jRfqOq5oYdGg4y1U5ldBhv4wmbdU+2YjbcSjNpywz9nNCSNyqfpXdQxf7/J37et9dxfV3Bs7ncV3/p3oEPpO7WSygZYbY01dRzJouu+UGuTnf85jYkgMj4z6NQNQm9YxLANpkA/NwQl7DsjKK0bqytNNgSUmtYwo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=l79PhPDj; arc=none smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="B8iTWTyd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D1A51F000E9;
-	Wed, 15 Jul 2026 05:16:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1784092612;
-	bh=TKBAYGoy6OJhN20+nBVfAOp80I6Py1YCwK0I3j8Q+Tk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=B8iTWTydlKkaQrGuCHjoccxJBdEHrfhWTfW+EWo5R0+rSE+tRVWGAoLzBPwKYconM
-	 qwLvyFdZfCVj+OJ4TOs7IRpHTZC3/BORR15sgzcopDluPD6Qb1+OD1n4W6ypouxUkR
-	 b4LNS+jm7+TuJTFalQWhwAARYc6j/96+QyXZWwuA=
-Date: Wed, 15 Jul 2026 07:16:46 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: kernel test robot <lkp@intel.com>
-Cc: Hugo Villeneuve <hugo@hugovil.com>, Jiri Slaby <jirislaby@kernel.org>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	oe-kbuild-all@lists.linux.dev, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH] serial: 8250_hub6: add missing include for
- hub6_match_port()
-Message-ID: <2026071505-outgrow-yelp-cd59@gregkh>
-References: <20260714012610.576746-1-hugo@hugovil.com>
- <202607150717.2YxVdWpX-lkp@intel.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="l79PhPDj"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1784095828; x=1815631828;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=r+LyLQnT+HkAihr1peF3MlBwSZ9bD0l73Zfz3IacvRI=;
+  b=l79PhPDjr/3/yRs3w9J3yn3UcmQOxFeRRfXn4v9jQVy63IrIleIY8N7e
+   w/uI8vX96GKEB5uSKzsel8hJi3/iN7OJhd/4M2Aco+BmVQoiUa1pFAjb6
+   5BsX3BKNRDIbs4TXdgjQavGHaxR516bTAPNUOLqatrhhf4jb0VNQvPW89
+   lsBP5c+W7uf6MP81GMy5u90NlTjpnqlybCVpST8zCT/Km5gaMKomkvGSR
+   +fogMYe/XueN8WPpHLclD3brCTZ+THt1Zd8ppIpJT9XJz7MMQtOPUk+fg
+   Id61A3B0Zlw2wsNKBWXHcCsOQ+oGsq8yfHiHu4QX86tel4bHlNeLm65AA
+   g==;
+X-CSE-ConnectionGUID: HS43QJ4fQeCuuwxs9epp9A==
+X-CSE-MsgGUID: dIRmiQBGSJSv0tmkKExIxg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11847"; a="95368024"
+X-IronPort-AV: E=Sophos;i="6.25,165,1779174000"; 
+   d="scan'208";a="95368024"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2026 23:10:27 -0700
+X-CSE-ConnectionGUID: BM9PVe3eRXiQtL+PNoGs6A==
+X-CSE-MsgGUID: JdHce72CRc+wZ4l1/+sMhQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,165,1779174000"; 
+   d="scan'208";a="286147735"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.44])
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2026 23:10:25 -0700
+Date: Wed, 15 Jul 2026 09:10:23 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Jiangshan Yi <yijiangshan@kylinos.cn>
+Cc: andy@kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org,
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+	13667453960@163.com, stable@kernel.org
+Subject: Re: [PATCH] serial: 8250_mid: Fix NULL function pointer dereference
+ on DNV/ICX-D/SNR platforms
+Message-ID: <alckT06ko8sfvfMV@ashevche-desk.local>
+References: <20260715030336.1512861-1-yijiangshan@kylinos.cn>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -43,52 +61,52 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <202607150717.2YxVdWpX-lkp@intel.com>
+In-Reply-To: <20260715030336.1512861-1-yijiangshan@kylinos.cn>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Jul 15, 2026 at 07:42:00AM +0800, kernel test robot wrote:
-> Hi Hugo,
+On Wed, Jul 15, 2026 at 11:03:36AM +0800, Jiangshan Yi wrote:
+> Commit b1b4efea05a5 ("serial: 8250_mid: Disable DMA for selected
+> platforms") replaced the dnv_board setup and exit callbacks with
+> PTR_IF(false, ...), which evaluates to NULL. However, the three call
+> sites in mid8250_probe() and mid8250_remove() unconditionally dereference
+> these function pointers without NULL checks, causing a NULL pointer
+> dereference (kernel oops) on any Denverton (DNV), Ice Lake Xeon D
+> (ICX-D/CDF), or Snowridge (SNR) platform.
 > 
-> kernel test robot noticed the following build errors:
-> 
-> [auto build test ERROR on c1d4ce2d9eaeccd7e8aef7ec1109df49eaf4f503]
-> 
-> url:    https://github.com/intel-lab-lkp/linux/commits/Hugo-Villeneuve/serial-8250_hub6-add-missing-include-for-hub6_match_port/20260714-092814
-> base:   c1d4ce2d9eaeccd7e8aef7ec1109df49eaf4f503
-> patch link:    https://lore.kernel.org/r/20260714012610.576746-1-hugo%40hugovil.com
-> patch subject: [PATCH] serial: 8250_hub6: add missing include for hub6_match_port()
-> config: parisc-allmodconfig (https://download.01.org/0day-ci/archive/20260715/202607150717.2YxVdWpX-lkp@intel.com/config)
-> compiler: hppa-linux-gcc (GCC) 16.1.0
-> reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260715/202607150717.2YxVdWpX-lkp@intel.com/reproduce)
-> 
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <lkp@intel.com>
-> | Closes: https://lore.kernel.org/oe-kbuild-all/202607150717.2YxVdWpX-lkp@intel.com/
-> 
-> All errors (new ones prefixed by >>):
-> 
-> >> drivers/tty/serial/8250/8250_hub6.c:46:6: error: redefinition of 'hub6_match_port'
->       46 | bool hub6_match_port(const struct uart_port *port1, const struct uart_port *port2)
->          |      ^~~~~~~~~~~~~~~
->    In file included from drivers/tty/serial/8250/8250_hub6.c:10:
->    drivers/tty/serial/8250/8250.h:340:20: note: previous definition of 'hub6_match_port' with type 'bool(const struct uart_port *, const struct uart_port *)' {aka '_Bool(const struct uart_port *, const struct uart_port *)'}
->      340 | static inline bool hub6_match_port(const struct uart_port *port1, const struct uart_port *port2)
->          |                    ^~~~~~~~~~~~~~~
-> 
-> 
-> vim +/hub6_match_port +46 drivers/tty/serial/8250/8250_hub6.c
-> 
-> ec9f47cd6a14ca drivers/serial/8250_hub6.c          Russell King    2005-06-27  45  
-> 3d406299d88297 drivers/tty/serial/8250/8250_hub6.c Hugo Villeneuve 2026-05-21 @46  bool hub6_match_port(const struct uart_port *port1, const struct uart_port *port2)
-> 3d406299d88297 drivers/tty/serial/8250/8250_hub6.c Hugo Villeneuve 2026-05-21  47  {
-> 3d406299d88297 drivers/tty/serial/8250/8250_hub6.c Hugo Villeneuve 2026-05-21  48  	return port1->iobase == port2->iobase && port1->hub6 == port2->hub6;
-> 3d406299d88297 drivers/tty/serial/8250/8250_hub6.c Hugo Villeneuve 2026-05-21  49  }
-> 3d406299d88297 drivers/tty/serial/8250/8250_hub6.c Hugo Villeneuve 2026-05-21  50  EXPORT_SYMBOL_GPL(hub6_match_port);
-> 3d406299d88297 drivers/tty/serial/8250/8250_hub6.c Hugo Villeneuve 2026-05-21  51  
+> Fix this by adding the missing NULL checks before calling the setup
+> and exit callbacks.
 
-This patch didn't cause this problem, just made it show up.  Can you
-provide a follow-on patch that fixes this?
+Oh, thanks!
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+but I have a nit-pick below.
 
-thanks,
+> Fixes: b1b4efea05a5 ("serial: 8250_mid: Disable DMA for selected platforms")
+> Cc: stable@kernel.org
 
-greg k-h
+> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+These two Cc may be moved either to --to option of `git format-patch` or after
+the cutter '---' line to avoid unneeded noise in the commit message.
+
+...
+
+> -	ret = mid->board->setup(mid, &uart.port);
+> +	ret = mid->board->setup ? mid->board->setup(mid, &uart.port) : 0;
+>  	if (ret)
+>  		return ret;
+
+Likewise the rest, this can be also wrapped to the if-condition:
+
+	if (mid->board->setup) {
+		ret = mid->board->setup(mid, &uart.port);
+		if (ret)
+			return ret;
+	}
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
