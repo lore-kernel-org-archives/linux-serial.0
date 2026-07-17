@@ -1,84 +1,120 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95A663C0607;
-	Fri, 17 Jul 2026 07:22:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CDB4367B8B
+	for <linux-serial@vger.kernel.org>; Fri, 17 Jul 2026 07:41:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784272951; cv=none; b=cZbwmcb5mXQ5q2HFQHOCTn81j56AHgM+V7RqwbzygMwFxFIvdDCwNutRH6smTP5Cnu2H+ChWMgZnCERYwW1ABktK1BBtTdJ4lPQGSJ4F6lKj7PnwztAFrmkaSqBopMcYZvICj6/4ye+MOWLpLayk2KETY44+sYye31zTaj/g++4=
+	t=1784274096; cv=none; b=D+/ts4S6pIEYC8C8ZkntpMrxp1SqCHu/PnaZGo1GJ0etwWVz7zzEZu439ravUjWUTyOT+hjhnB0DzaYxTu4Auk7IKX+KuIo7atu8mNit9B9nYyvIkG5hwsXAeBoTSpX7Ngu+cQ20Kzx87cwhMw0MDftEd5EwpOvGI5RZhUedOu0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784272951; c=relaxed/simple;
-	bh=4GjXoFYM5PMm+XQgNoGcFSHsyQM5mxzd8NnRwBQJmyk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UbJRRMfgi8UVonua3qGlxe0h5VSmDk8rE0xqD1UjPRYESGfpDcLaQXJlhlgYkY4jUi96fImnpCceviknU0u9WVzwsHKUCGWlVDEQGWjB5nhNc1yiOIpgHMmRlr9MsVtTA6OPMQ4/BiDr//+2UqxIIrIUlPmtFs8bjLGXGhyGLEE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=Cz4qSHMM; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1784274096; c=relaxed/simple;
+	bh=Gbt8AAEZ2+OoVkZqGOUFGJ1glUjuYYPOXFOlTCeRvWo=;
+	h=From:In-Reply-To:MIME-Version:References:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=WQVFRPgkE4lQORWR0qi2OWZsYn/HpiPw2w9w52t2TcfPfeH86fC7Ce8sq9ZMUVtm6r0Odt3xNqDsO7OV/ez4bO4r0k9AWHCR9bYz48NyuLEYdJwdd81eHIK6BaRI1xAaLaQFYasw9HtEfy0ggvsgFzIuJJ+R06pa+TKPSfedkhM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hVyzCtYV; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="Cz4qSHMM"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29CBF1F000E9;
-	Fri, 17 Jul 2026 07:22:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1784272945;
-	bh=Km263qZK4J7sOQ977i1zY53C0oTm2Ho27YGewEty1VE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=Cz4qSHMMA9iPND5tsyFM2ZRoInQyJKYf+cawBYTTN0ghpb+aO6q+CmeWlvIxgNAhF
-	 BLQ/aENvu/issUhBwiCXhSiNEOgGRrw29drppsJ1+HlehlJQMcdQQvRFH5pdK3tMv/
-	 V6c3p4mn9wwNTmu66/m8/R6sUkO/X0l9olkEAd8Y=
-Date: Fri, 17 Jul 2026 09:22:18 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Karl Mehltretter <kmehltretter@gmail.com>
-Cc: Jiri Slaby <jirislaby@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-	Nicolas Pitre <nico@fluxnic.net>, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] tty: hvc: restrict HVC_DCC to ARMv6+ and ARM64
-Message-ID: <2026071743-number-headfirst-bcca@gregkh>
-References: <20260717071616.91423-1-kmehltretter@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hVyzCtYV"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 359D11F000E9
+	for <linux-serial@vger.kernel.org>; Fri, 17 Jul 2026 07:41:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1784274087;
+	bh=O33LBv121cI3446+fALTqMiAlHo2my8xGCUrTRDo3IU=;
+	h=From:In-Reply-To:References:Date:Subject:To:Cc;
+	b=hVyzCtYV9JqTXNNpFq+jErtvzBxrCe2Ksf43XnR1uOuqeQPOmP9Wryi08bdo5onB9
+	 ELs3Cqnf4IwU+QTz1VO3MV4szlREK+I7lmiheW63Rz9NFkLlAHHQu0hEMjqZYZ7AqX
+	 bVZ6MswMH1R6R99jFRFXXc+f5cUPb8uZWmo2p2SDPao+m74ZT4HP8f54Wz9Ygx76L2
+	 nvymIvhhJt/KYIt5tRyNc4m8/Q+ED+qTDXkAtvRhRAFsZmmgeKt24APj+rd+kzav4n
+	 Id/A+TyIn7Z+ZVE/Wm5RL5cUow0hGAPC/fsCo+hulIZEcbXqzL6N1Wl4Ceht2SpeoJ
+	 6B6SBtdRDC1HQ==
+Received: by mail-lf1-f45.google.com with SMTP id 2adb3069b0e04-5b159850b16so3835076e87.3
+        for <linux-serial@vger.kernel.org>; Fri, 17 Jul 2026 00:41:27 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AHgh+RrmL5v259WjBS6Q/WwRv8TOhmwW5fUoTIVhTFv/gVGOZTmHT0ZfsgssjA+dyj1hbQQiPH39IiJvt5ZC5oQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyT3FNfcODu+1hqROshI3jxUHEXilvJZOY3+2d48YNStEk5fAJt
+	ndnThIsXu1aabQ7yyXCRNcuSqksSWJeSAZeIMaSfCmCJwgM8aal1JXq4JEzno4QBJEPs6c/A5ON
+	/Vekm2HqU4u6iPZ+vP/kOXVmA+NFnYzPwwC4/SBDpMw==
+X-Received: by 2002:a05:6512:63d1:10b0:5ae:b0aa:8f07 with SMTP id
+ 2adb3069b0e04-5b28f8742cdmr256639e87.16.1784274081030; Fri, 17 Jul 2026
+ 00:41:21 -0700 (PDT)
+Received: from 969154062570 named unknown by gmailapi.google.com with
+ HTTPREST; Fri, 17 Jul 2026 02:41:19 -0500
+Received: from 969154062570 named unknown by gmailapi.google.com with
+ HTTPREST; Fri, 17 Jul 2026 02:41:19 -0500
+From: Bartosz Golaszewski <brgl@kernel.org>
+In-Reply-To: <20260716210813.2582826-1-hugo@hugovil.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260717071616.91423-1-kmehltretter@gmail.com>
+References: <20260716210813.2582826-1-hugo@hugovil.com>
+Date: Fri, 17 Jul 2026 02:41:19 -0500
+X-Gmail-Original-Message-ID: <CAMRc=MerwHnK5sdw7JRyzkhrRZF_2vSjcpOJ6R=Lz9rbKGE5JQ@mail.gmail.com>
+X-Gm-Features: AUfX_mwRwl5xhGKjVcL6rRS5fp6CK4RLwoUeOyI0kRluQd6smz7Yf4G_2u2wFj0
+Message-ID: <CAMRc=MerwHnK5sdw7JRyzkhrRZF_2vSjcpOJ6R=Lz9rbKGE5JQ@mail.gmail.com>
+Subject: Re: [PATCH] serial: sc16is7xx: implement gpio get_direction() callback
+To: Hugo Villeneuve <hugo@hugovil.com>
+Cc: Hugo Villeneuve <hvilleneuve@dimonoff.com>, stable@kernel.org, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	linux-gpio@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Linus Walleij <linusw@kernel.org>, 
+	Bartosz Golaszewski <brgl@kernel.org>, Jon Ringle <jringle@gridpoint.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Fri, Jul 17, 2026 at 09:16:16AM +0200, Karl Mehltretter wrote:
-> hvc_dcc drives the JTAG DCC via the ARMv6/v7 CP14 debug registers
-> (mrc/mcr p14, 0, rX, c0, c1/c5, 0 in asm/dcc.h). That encoding is
-> undefined on older ARM cores, and also on ARMv7-M, but HVC_DCC only
-> depends on ARM, so it can be enabled on e.g. ARM926 (ARCH_MULTI_V5),
-> where hvc_dcc_console_init() runs __dcc_putchar() at boot and takes an
-> undefined-instruction trap before the console is up:
-> 
->   Internal error: Oops - undefined instruction: 0 [#1] ARM
->   PC is at hvc_dcc_check+0x50/0x8c
->    hvc_dcc_check from hvc_dcc_console_init+0x18/0x48
->    hvc_dcc_console_init from console_init+0x58/0x170
->   Kernel panic - not syncing: Fatal exception
-> 
-> Restrict HVC_DCC to the CPUs where that encoding is valid: the
-> CPU_V6 || CPU_V6K || CPU_V7 set that arch/arm/include/debug/icedcc.S
-> guards it with, plus ARM64.
-> 
-> Fixes: 16c63f8ea49c ("drivers: char: hvc: add arm JTAG DCC console support")
-> Signed-off-by: Karl Mehltretter <kmehltretter@gmail.com>
+On Thu, 16 Jul 2026 23:08:09 +0200, Hugo Villeneuve <hugo@hugovil.com> said:
+> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+>
+> It's strongly recommended for GPIO drivers to always implement the
+> .get_direction() callback - even when the direction is tracked in
+> software. The GPIO core emits a warning when the callback is missing
+> and a user reads the direction of a line, e.g. via
+> /sys/kernel/debug/gpio.
+>
+> Fixes: dfeae619d781 ("serial: sc16is7xx")
+> Cc: stable@kernel.org
+> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 > ---
->  drivers/tty/hvc/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/hvc/Kconfig b/drivers/tty/hvc/Kconfig
-> index c2a4e88b328f..5866195de26a 100644
-> --- a/drivers/tty/hvc/Kconfig
-> +++ b/drivers/tty/hvc/Kconfig
-> @@ -79,7 +79,7 @@ config HVC_UDBG
->  
->  config HVC_DCC
->  	bool "ARM JTAG DCC console"
-> -	depends on ARM || ARM64
-> +	depends on (ARM && (CPU_V6 || CPU_V6K || CPU_V7)) || ARM64
+> Inspired by a similar patch for max310x: commit a483b1a91b33
+> ("serial: max310x: implement gpio_chip::get_direction()").
+> ---
+>  drivers/tty/serial/sc16is7xx.c | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+>
+> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+> index 2498f9da2bf77..943be318de410 100644
+> --- a/drivers/tty/serial/sc16is7xx.c
+> +++ b/drivers/tty/serial/sc16is7xx.c
+> @@ -1273,6 +1273,17 @@ static int sc16is7xx_gpio_set(struct gpio_chip *chip, unsigned int offset,
+>  	return 0;
+>  }
+>
+> +static int sc16is7xx_gpio_get_direction(struct gpio_chip *chip, unsigned int offset)
+> +{
+> +	struct sc16is7xx_port *s = gpiochip_get_data(chip);
+> +	struct uart_port *port = &s->p[0].port;
+> +	unsigned int val;
+> +
+> +	val = sc16is7xx_port_read(port, SC16IS7XX_IODIR_REG);
+> +
+> +	return val & BIT(offset) ? GPIO_LINE_DIRECTION_OUT : GPIO_LINE_DIRECTION_IN;
+> +}
+> +
+>  static int sc16is7xx_gpio_direction_input(struct gpio_chip *chip,
+>  					  unsigned offset)
+>  {
+> @@ -1350,6 +1361,7 @@ static int sc16is7xx_setup_gpio_chip(struct sc16is7xx_port *s)
+>  	s->gpio.parent		 = dev;
+>  	s->gpio.label		 = dev_name(dev);
+>  	s->gpio.init_valid_mask	 = sc16is7xx_gpio_init_valid_mask;
+> +	s->gpio.get_direction	 = sc16is7xx_gpio_get_direction;
+>  	s->gpio.direction_input	 = sc16is7xx_gpio_direction_input;
+>  	s->gpio.get		 = sc16is7xx_gpio_get;
+>  	s->gpio.direction_output = sc16is7xx_gpio_direction_output;
+>
+> base-commit: da7b5fd4e17f8e44c5590f2d603c01d499f056e6
+> --
+> 2.47.3
+>
+>
 
-What about testing builds?
-
-thanks,
-
-greg k-h
+Acked-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
