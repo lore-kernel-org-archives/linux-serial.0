@@ -1,101 +1,103 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E8273B14BC;
-	Fri, 17 Jul 2026 12:02:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAFD23C3F7B;
+	Fri, 17 Jul 2026 12:03:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784289764; cv=none; b=Os7Up/kif5vG6gFjprqVZ6279G5FRjmqOgQFLRfUM/pjsZmQsZxczJs4ohwIZTiUs+DUWj11YOI48nqlDf6qgwfB7zNT7CxX1/czPbCwkRq0ypJR24mGzyHABA0h/ScO0riP8/nlDjRZdPhs10a9ztW+1/ohgk6pHqTCPOoiWXg=
+	t=1784289831; cv=none; b=Ksnwz+nS8wCeAVqbxkgJcopnWDqCywy/itN6rDs5sqWb0OuKyJiiQj+aIs260Y0h0VysjEmP/3nUK4H9Mwo41xquiYa4RJbnNWGuapKzvlgYSl8H19hKiv16goTutF6U6B3pMXffF9BVHb+0wnsWQ46pzZ5IOJcSB226q4LknEo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784289764; c=relaxed/simple;
-	bh=M6dliTL3upPz3AWTcFuW/Bf8sQHGqFSf/FvFJ52AEJY=;
+	s=arc-20240116; t=1784289831; c=relaxed/simple;
+	bh=hGFSSP/8JtBx4EJXP1Po/WkVp313a+sVf4Vrxri8tzA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=l9MYNYWA3Bpp819UCNDe+JUNa+wOfKqcDXg60x+0q3Tiihwwh2VuedriQwhzMjh5tHoeRlNtyHuqNfDHcDp6NqTMTfuAaobhd4zx3otJJJY8bA3VWpv/Xi19pDfNyYQvyU7sCFUeD6PiaGIMzRS6Oml+v3LwFxstZU6eU13KywE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=afG26BD5; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=tRrHe+gD4hZ8aJz9vHz4ANd4zwcLbEqYken7hs3LlmKuc42zPLm3do6lR6zck/nTCse2PWl678tIFEHj/Rkz1dhiPQgQSH1yJ/7dRsubkQiRaPIK9wsoNucbDp+zt0Obw6EOnBrCvIDyn7CSBKc3SEDrrzQ9JzQIXzXhNOByjw0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=ThVR7oy/; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="afG26BD5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03A1A1F000E9;
-	Fri, 17 Jul 2026 12:02:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784289763;
-	bh=M6dliTL3upPz3AWTcFuW/Bf8sQHGqFSf/FvFJ52AEJY=;
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="ThVR7oy/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7066A1F000E9;
+	Fri, 17 Jul 2026 12:03:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
+	s=korg; t=1784289828;
+	bh=VSLA+rT8tjPVQ6J1CMEUPfkyicD10Zp1i6IB9Ga5VNA=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=afG26BD5DJqcY9jFPHWwLoeF+nbY3GkVgbzmYISsj7xeZVCukUAa6Tdq4RdHOi1kv
-	 VhO0c4wlgnq8/uJ4G1UyEHvTyxI9wOPKKaqgViGb19EFGyS0cg19B9qoWfDnJR0YZm
-	 xD7VopeVKolG7iP9adxYqAQAtLV8auh9YJx/PsTDMa4HNn8peJiYCom6ppiEpBE6Ri
-	 O5VPY2KO8x4IepP8GFuNG7upUnYOFwAgzIaIiRLTvysiIiBbNcvkYDfO9/wew8cRsb
-	 l3JKPUr7GFFU/UKQZM1P948sh1G9gBvmTEg4KhGcT678i50OfZ6MBUBq9hVbqmsveD
-	 3Nyo9BqNTTjfQ==
-Date: Fri, 17 Jul 2026 13:02:35 +0100
-From: Mark Brown <broonie@kernel.org>
-To: Swark Yang <syang@axiado.com>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Harshit Shah <hshah@axiado.com>,
-	Linus Walleij <linusw@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>, Jan Kotas <jank@cadence.com>,
-	Michal Simek <michal.simek@amd.com>,
-	Andi Shyti <andi.shyti@kernel.org>,
-	=?utf-8?Q?Przemys=C5=82aw?= Gaj <pgaj@cadence.com>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	Frank Li <Frank.Li@nxp.com>,
-	Boris Brezillon <bbrezillon@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Mathias Nyman <mathias.nyman@intel.com>, devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org,
-	linux-i3c@lists.infradead.org, linux-serial@vger.kernel.org,
-	linux-spi@vger.kernel.org, linux-usb@vger.kernel.org
-Subject: Re: [PATCH v3 6/8] dt-bindings: spi: dw-apb-ssi: add Axiado AX3005
- SPI variant
-Message-ID: <6d69cfd0-5f3b-4324-8d64-b4695cbb3e92@sirena.org.uk>
-References: <20260716-upstream-axiado-ax3005-upstream-v3-0-c429095143ec@axiado.com>
- <20260716-upstream-axiado-ax3005-upstream-v3-6-c429095143ec@axiado.com>
+	b=ThVR7oy/crZOE04QMjSmxOX/FDDGsDWp6ffjeMqsTZ8W31GV8SJ9QDwSC9IteQTAl
+	 /hgjWi0Ld3mIJvLccOfhi+zRP0rQVIi+yz0scxJ4//V/HNRfrPz1Fzj8vbCu/o8WOD
+	 Kbs49bKOY+8SncbhCPtZSvjIqlhmBDGXy/gkcCgU=
+Date: Fri, 17 Jul 2026 14:03:41 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Danilo Krummrich <dakr@kernel.org>
+Cc: Markus Probst <markus.probst@posteo.de>, Rob Herring <robh@kernel.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Miguel Ojeda <ojeda@kernel.org>,
+	Gary Guo <gary@garyguo.net>,
+	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Benno Lossin <lossin@kernel.org>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
+	Kari Argillander <kari.argillander@gmail.com>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Viresh Kumar <viresh.kumar@linaro.org>,
+	Boqun Feng <boqun@kernel.org>, David Airlie <airlied@gmail.com>,
+	Simona Vetter <simona@ffwll.ch>,
+	Daniel Almeida <daniel.almeida@collabora.com>,
+	Tamir Duberstein <tamird@kernel.org>,
+	Alexandre Courbot <acourbot@nvidia.com>,
+	Onur =?iso-8859-1?Q?=D6zkan?= <work@onurozkan.dev>,
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+	rust-for-linux@vger.kernel.org, linux-pm@vger.kernel.org,
+	driver-core@lists.linux.dev, dri-devel@lists.freedesktop.org
+Subject: Re: [PATCH v14 0/3] rust: add basic serial device bus abstractions
+Message-ID: <2026071719-afflicted-eleven-1be9@gregkh>
+References: <20260715-rust_serdev-v14-0-b4ed5c93606f@posteo.de>
+ <2026071747-android-overhead-c927@gregkh>
+ <6aafea3fdb0847766787dbe5c7c7dbaad606d649.camel@posteo.de>
+ <74213297-d3da-4637-8f31-8fecebd65f60@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="70M3+S0UoM/WolbI"
-Content-Disposition: inline
-In-Reply-To: <20260716-upstream-axiado-ax3005-upstream-v3-6-c429095143ec@axiado.com>
-X-Cookie: Enjoy yourself while you're still old.
-
-
---70M3+S0UoM/WolbI
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <74213297-d3da-4637-8f31-8fecebd65f60@kernel.org>
 
-On Thu, Jul 16, 2026 at 08:51:13PM -0700, Swark Yang wrote:
-> Add binding for Axiado AX3005 SPI controller. So far, no changes
-> are known, so it can fall back to the snps,dwc-ssi-1.01a compatible.
+On Fri, Jul 17, 2026 at 01:22:40PM +0200, Danilo Krummrich wrote:
+> On 7/17/26 1:14 PM, Markus Probst wrote:
+> > On Fri, 2026-07-17 at 12:55 +0200, Greg Kroah-Hartman wrote:
+> >> On Wed, Jul 15, 2026 at 09:00:14PM +0000, Markus Probst wrote:
+> >>> This patch series adds the serdev device bus rust abstraction into the
+> >>> kernel.
+> >>>
+> >>> This abstraction will be used by a driver,
+> >>> which targets the MCU devices in Synology devices.
+> >>>
+> >>> Kari Argillander also messaged me, stating that he wants to write a
+> >>> watchdog driver with this abstraction (needing initial device data).
+> >>>
+> >>> This series depends on [1].
+> >>>
+> >>> [1] https://lore.kernel.org/rust-for-linux/20260530132736.3298549-1-dakr@kernel.org/
+> >>>
+> >>> Signed-off-by: Markus Probst <markus.probst@posteo.de>
+> >>
+> >> Given there are no objections, I'll go queue this up now, thanks.
+> > Thanks for merging, but I haven't seen the dependency
+> > 
+> > https://lore.kernel.org/rust-for-linux/20260530132736.3298549-1-dakr@kernel.org/
+> > 
+> > getting picked yet (its at least not in linux-next), so it might not
+> > even compile. Not sure whats holding the patch back though.
+> (Ah, saw this just after I replied to the other thread.)
+> 
+> Nothing is holding them back other than requiring a user (which is your work),
+> so I did not pick them up.
+> 
+> Also note that tty and driver-core are different trees, so picking it up in
+> driver-core would not have helped tty.
 
-Please include human readable descriptions of things like commits and
-issues being discussed in e-mail in your mails, this makes them much
-easier for humans to read especially when they have no internet access.
-I do frequently catch up on my mail on flights or while otherwise
-travelling so this is even more pressing for me than just being about
-making things a bit easier to read.
+Should I drop this from the tty tree and take it through driver-core
+instead?  If so, no problem for me, just let me know.
 
-If there is no need for things to be part of a multi-subsystem series
-(eg, dependencies) it's normally better to send each subsystem
-separately.
+thanks,
 
---70M3+S0UoM/WolbI
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmpaGdoACgkQJNaLcl1U
-h9CYYgf/a6ZXfaJE/jmFwdCosDxknw75RDj7nPAqr8ZtQ6OEKCVRSIVBgwrMG1B6
-7TPPAIzIrDPqOWeb/BZihDW7BKUj2aDsl7pZivADMe0txrRhev2UcBUZUMxW1sXn
-DgyCTELlXBzkCAltV41zPIZTn6Rwcy8lHkkDXAfh0JGD5azOUiDxKAusCY9IhML1
-YtCaED6Zm325NAZ+cUqXIKy177WK3d4XQrt4N/qPahtGnlsER6BwUocE9HGNpNLh
-l3iTBw5h+slXmMR6H40Ax4/E64jiKe5RpDEW3MeDQgZLROX+xs5G+fp3eE5NGFPQ
-Z9zQeNxaiqK3XtZlukPgm9tW3O9UDA==
-=i8XU
------END PGP SIGNATURE-----
-
---70M3+S0UoM/WolbI--
+greg k-h
