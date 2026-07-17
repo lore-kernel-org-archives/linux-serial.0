@@ -1,39 +1,53 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39D47397E73;
-	Fri, 17 Jul 2026 10:53:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 092323E9C21;
+	Fri, 17 Jul 2026 10:55:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784285603; cv=none; b=oddA6HTU0Y07vc2q5tgSqRx00EfQQBx5uFW03mZxsWkPaFkjh/SNCnKiFeN1OmHSeXWGu+ZJjEJToVb88yp8hviWbffTZoHJ0hnk1F/H0dbk1TPItbxAWRpS5cd5EcaWzTYl9NqAI8FY++5no7cYknForO5rnQa5Aw+ePfhyCtE=
+	t=1784285720; cv=none; b=rsLNKNNCtTki+JWciVbJt903QhzruxWNNgND5i4ShWhJu2G9dIsKl3Xark+4Wq3OfGMdGQOTG/yc/2mW0Lpxiubp96bfwqZtjiRjAQBed8ANx1Wdwqa8MTiVQ7U39Sv4XclG3r3SabdBt0b7HeHx9KCDUX4BJnhFApnZfFGLsFc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784285603; c=relaxed/simple;
-	bh=GKN5VVcuBqCXrjhhKcfbQ84IekZUa2rtK02AObXtkmo=;
+	s=arc-20240116; t=1784285720; c=relaxed/simple;
+	bh=oqhEzQvOV1BOZVUFidHi/Gjxf2KiZ2mlDeQcFmKQ0E8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IPFbTI8qbFSwQtL0U8JGLOVFIcnEymvAzRj41r9P8tnOMRLzK6n8QtS87wqWKQzc70EsCtvN0yopaDAW2EoJuT/uptn/y3To4dZpAn/Q2wvygs7YIArUiRfy3Qv7lL6Bo7G34x1EXyYZU4sOqLxtWs0NqSV4DgeKnQr8VEHLAUc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=FdX8dyO2; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=btFrZ94IIqnT382Omu/ujYgaCalMeKTAsSpDcyS7AS86ASHuGhovDlGEPPilXP8umirwlIeoLlMoemp+yIlOSGdD46q6TKCNFcCk640cm9royfmR4ptObQo6kQTUDDC92csHByMk5LRRuLFmZOeuvOe+Z7PArMOjEl7Q7o4bN2g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=2rOna6d7; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="FdX8dyO2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 629F71F000E9;
-	Fri, 17 Jul 2026 10:53:21 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="2rOna6d7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D25431F000E9;
+	Fri, 17 Jul 2026 10:55:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1784285601;
-	bh=40g+KPjHxOh7egIEMtuae1UAJa3qXshJTrSRlAwhF14=;
+	s=korg; t=1784285710;
+	bh=np5EK8wmnij7Xk3htUt9hFn8FK1di2cvVoPPQcRvhzg=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=FdX8dyO2DkaWQE9CrHUdUw3/9wu+4qHTLjBi1FSGOv1bWvGW46gc8xnG5TdU7wN5G
-	 3Mmviy46CxGwLXYyYoSbnHyJRTOioD0kJ4unfD/eABnq9W/zbfHc25i7kveVNxUq5Q
-	 vr6oVCrSU6/0Lk2ccPiD5pnlGtsUTwaV3G48iL3s=
-Date: Fri, 17 Jul 2026 12:53:14 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Yun Zhou <yun.zhou@windriver.com>
-Cc: jirislaby@kernel.org, socketcan@hartkopp.net,
-	linux-serial@vger.kernel.org, mkl@pengutronix.de,
-	linux-can@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-	kuba@kernel.org, pabeni@redhat.com, horms@kernel.org,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] tty: ldisc: fix deadlock between ldisc_sem and rtnl_mutex
-Message-ID: <2026071718-yearbook-bloated-48ce@gregkh>
-References: <20260716064719.1401892-1-yun.zhou@windriver.com>
+	b=2rOna6d75JFg+Yitd99pCkx4iD+5MlcJy8dpI+umsalvV4XZg7hHpoxItYVEPxa8v
+	 6A8irRIXGkb8vZ2GAowW8YcZl8DEcTfd8IimuiQmff7rcex6gUCXyxcv5x371RSu0e
+	 3ONAscrVfUKiAEePXe8NxBJTVJ3g9JQwqPRWNkmg=
+Date: Fri, 17 Jul 2026 12:55:03 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Markus Probst <markus.probst@posteo.de>
+Cc: Rob Herring <robh@kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
+	Miguel Ojeda <ojeda@kernel.org>, Gary Guo <gary@garyguo.net>,
+	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Benno Lossin <lossin@kernel.org>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Kari Argillander <kari.argillander@gmail.com>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Viresh Kumar <viresh.kumar@linaro.org>,
+	Boqun Feng <boqun@kernel.org>, David Airlie <airlied@gmail.com>,
+	Simona Vetter <simona@ffwll.ch>,
+	Daniel Almeida <daniel.almeida@collabora.com>,
+	Tamir Duberstein <tamird@kernel.org>,
+	Alexandre Courbot <acourbot@nvidia.com>,
+	Onur =?iso-8859-1?Q?=D6zkan?= <work@onurozkan.dev>,
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+	rust-for-linux@vger.kernel.org, linux-pm@vger.kernel.org,
+	driver-core@lists.linux.dev, dri-devel@lists.freedesktop.org
+Subject: Re: [PATCH v14 0/3] rust: add basic serial device bus abstractions
+Message-ID: <2026071747-android-overhead-c927@gregkh>
+References: <20260715-rust_serdev-v14-0-b4ed5c93606f@posteo.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -42,48 +56,24 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260716064719.1401892-1-yun.zhou@windriver.com>
+In-Reply-To: <20260715-rust_serdev-v14-0-b4ed5c93606f@posteo.de>
 
-On Thu, Jul 16, 2026 at 02:47:19PM +0800, Yun Zhou wrote:
-> syzbot reported a circular lock dependency involving tty ldisc_sem and
-> the networking rtnl_mutex. The full chain is:
+On Wed, Jul 15, 2026 at 09:00:14PM +0000, Markus Probst wrote:
+> This patch series adds the serdev device bus rust abstraction into the
+> kernel.
 > 
->   rtnl_mutex --> nft_commit_mutex --> ... --> ep->mtx --> ldisc_sem --> rtnl_mutex
+> This abstraction will be used by a driver,
+> which targets the MCU devices in Synology devices.
 > 
-> The last edge (ldisc_sem -> rtnl_mutex) is created because tty line
-> discipline .open() callbacks (slcan, slip) call register_netdev() which
-> acquires rtnl_mutex, and .open() runs under ldisc_sem write lock in
-> tty_set_ldisc().
+> Kari Argillander also messaged me, stating that he wants to write a
+> watchdog driver with this abstraction (needing initial device data).
 > 
-> Fix by moving the .open() call outside the ldisc_sem write lock. The
-> ldisc .open() is initialization of the NEW discipline after the old one
-> has been closed - there is no need for ldisc_sem protection at this
-> point since:
+> This series depends on [1].
 > 
->  - tty_lock is held throughout, preventing concurrent tty_set_ldisc,
->    hangup, or close
->  - tty->ldisc is set to NULL during the window, so concurrent readers
->    (tty_ldisc_ref, tty_ldisc_ref_wait) see NULL and return immediately,
->    which callers already handle as a hangup condition
->  - tty buffer data stays queued until the ldisc is installed
+> [1] https://lore.kernel.org/rust-for-linux/20260530132736.3298549-1-dakr@kernel.org/
+> 
+> Signed-off-by: Markus Probst <markus.probst@posteo.de>
 
-Ah, but look at the review at:
-	https://sashiko.dev/#/patchset/20260716064719.1401892-1-yun.zhou@windriver.com
-which says:
-	Does unlocking the semaphore while the ldisc pointer is NULL introduce a UAPI
-	break for concurrent operations?
-
-	If a concurrent process calls read(), write(), or poll() during this unlocked
-	window, it can enter tty_ldisc_ref_wait() in drivers/tty/tty_io.c. Because the
-	semaphore was unlocked here, tty_ldisc_ref_wait() will successfully acquire
-	the read lock but observe tty->ldisc as NULL.
-
-	This causes the reader to immediately return EOF or -EIO, potentially
-	aborting userspace applications unexpectedly during a line discipline
-	transition.
-
-Is that not true?
-
-thanks,
+Given there are no objections, I'll go queue this up now, thanks.
 
 greg k-h
