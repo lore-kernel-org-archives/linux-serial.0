@@ -1,120 +1,148 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from fhigh-b8-smtp.messagingengine.com (fhigh-b8-smtp.messagingengine.com [202.12.124.159])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CDB4367B8B
-	for <linux-serial@vger.kernel.org>; Fri, 17 Jul 2026 07:41:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64CE23C0607;
+	Fri, 17 Jul 2026 08:04:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.159
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784274096; cv=none; b=D+/ts4S6pIEYC8C8ZkntpMrxp1SqCHu/PnaZGo1GJ0etwWVz7zzEZu439ravUjWUTyOT+hjhnB0DzaYxTu4Auk7IKX+KuIo7atu8mNit9B9nYyvIkG5hwsXAeBoTSpX7Ngu+cQ20Kzx87cwhMw0MDftEd5EwpOvGI5RZhUedOu0=
+	t=1784275491; cv=none; b=f+/GKQrvO3hb7bSufUyYB/bZIgWcn0zv1GMe5/xsI2FLKLX/SSkLUnw6/xhEgtE902e25Xco+BaXVnoSt8r4yqq82od/LqA3wRW76pMXhmLK+KMVz76ohU3fBYjLP1mZJLU6xisMCYcVSsOxJqGxsLmJVK+R6+EB0LPJNwB/xC4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784274096; c=relaxed/simple;
-	bh=Gbt8AAEZ2+OoVkZqGOUFGJ1glUjuYYPOXFOlTCeRvWo=;
-	h=From:In-Reply-To:MIME-Version:References:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=WQVFRPgkE4lQORWR0qi2OWZsYn/HpiPw2w9w52t2TcfPfeH86fC7Ce8sq9ZMUVtm6r0Odt3xNqDsO7OV/ez4bO4r0k9AWHCR9bYz48NyuLEYdJwdd81eHIK6BaRI1xAaLaQFYasw9HtEfy0ggvsgFzIuJJ+R06pa+TKPSfedkhM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hVyzCtYV; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1784275491; c=relaxed/simple;
+	bh=fYbS0sCOrEqLJlHItgakwP3+Y5x15z2KiNU3tTBCrDs=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=geyBXzEs5+g0MbLIdXVQZlXhEdUthQhnOgC/UZCVmTEMuS06AuzpvPUsDWWya2jzEN5OFnCdSexPlYwEloko3wHGhsDxd7vXFAeSYQYN+u0TZuZNHwBnRoOSkWCA7t4PNnLjckZuYo8EllRtX/RrlyjDRriSH439aZ23/DnXLpY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=uWy6+yYD; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=nLDOX/eM; arc=none smtp.client-ip=202.12.124.159
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hVyzCtYV"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 359D11F000E9
-	for <linux-serial@vger.kernel.org>; Fri, 17 Jul 2026 07:41:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784274087;
-	bh=O33LBv121cI3446+fALTqMiAlHo2my8xGCUrTRDo3IU=;
-	h=From:In-Reply-To:References:Date:Subject:To:Cc;
-	b=hVyzCtYV9JqTXNNpFq+jErtvzBxrCe2Ksf43XnR1uOuqeQPOmP9Wryi08bdo5onB9
-	 ELs3Cqnf4IwU+QTz1VO3MV4szlREK+I7lmiheW63Rz9NFkLlAHHQu0hEMjqZYZ7AqX
-	 bVZ6MswMH1R6R99jFRFXXc+f5cUPb8uZWmo2p2SDPao+m74ZT4HP8f54Wz9Ygx76L2
-	 nvymIvhhJt/KYIt5tRyNc4m8/Q+ED+qTDXkAtvRhRAFsZmmgeKt24APj+rd+kzav4n
-	 Id/A+TyIn7Z+ZVE/Wm5RL5cUow0hGAPC/fsCo+hulIZEcbXqzL6N1Wl4Ceht2SpeoJ
-	 6B6SBtdRDC1HQ==
-Received: by mail-lf1-f45.google.com with SMTP id 2adb3069b0e04-5b159850b16so3835076e87.3
-        for <linux-serial@vger.kernel.org>; Fri, 17 Jul 2026 00:41:27 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AHgh+RrmL5v259WjBS6Q/WwRv8TOhmwW5fUoTIVhTFv/gVGOZTmHT0ZfsgssjA+dyj1hbQQiPH39IiJvt5ZC5oQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyT3FNfcODu+1hqROshI3jxUHEXilvJZOY3+2d48YNStEk5fAJt
-	ndnThIsXu1aabQ7yyXCRNcuSqksSWJeSAZeIMaSfCmCJwgM8aal1JXq4JEzno4QBJEPs6c/A5ON
-	/Vekm2HqU4u6iPZ+vP/kOXVmA+NFnYzPwwC4/SBDpMw==
-X-Received: by 2002:a05:6512:63d1:10b0:5ae:b0aa:8f07 with SMTP id
- 2adb3069b0e04-5b28f8742cdmr256639e87.16.1784274081030; Fri, 17 Jul 2026
- 00:41:21 -0700 (PDT)
-Received: from 969154062570 named unknown by gmailapi.google.com with
- HTTPREST; Fri, 17 Jul 2026 02:41:19 -0500
-Received: from 969154062570 named unknown by gmailapi.google.com with
- HTTPREST; Fri, 17 Jul 2026 02:41:19 -0500
-From: Bartosz Golaszewski <brgl@kernel.org>
-In-Reply-To: <20260716210813.2582826-1-hugo@hugovil.com>
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="uWy6+yYD";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="nLDOX/eM"
+Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
+	by mailfhigh.stl.internal (Postfix) with ESMTP id E30517A00F7;
+	Fri, 17 Jul 2026 04:04:47 -0400 (EDT)
+Received: from phl-imap-05 ([10.202.2.95])
+  by phl-compute-04.internal (MEProxy); Fri, 17 Jul 2026 04:04:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm1; t=1784275487;
+	 x=1784361887; bh=6LUdNMnBaRSqyoN6IPBQzvi+iWUdJzMPuyjYPVqAxN0=; b=
+	uWy6+yYDdWv7J6l24u/EQsDSYYHca2XHAqPVt/XIXiJxodVZFHz+jxU9XPPpPRXa
+	Abxd9I1kUp4PYMWKOG7R3Sz5pudOelA4omx7I6gWWnwdJ5lTH5/w0rH8YSsoFouo
+	lbdyiZ+IHX1U67qvicDrILLqZN4SNHUEe34sYW3e6kB57c1Gn49Nl6tm+HFINqYv
+	tcw9umNMWUx3PjxA+qgsSyoqBa0cNQPkCh54+ZOvLMEHMbkHaaFHlPRA0YJlfu7o
+	NaYqWBeRs0eNfGY59JyUsOgxacRYiIUZYmn0QUlmUWq1DVueujQdeudU9P7MEPky
+	wxX5jRKLKKr4J31BuZqRKg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1784275487; x=
+	1784361887; bh=6LUdNMnBaRSqyoN6IPBQzvi+iWUdJzMPuyjYPVqAxN0=; b=n
+	LDOX/eMLFg1VvnDICDjnYWVKusG+SncZ9sg5PiFCLqP0l+Kw3NH1uXuRo/0Pm0rM
+	M6Sn/MwWvwBLEcXfmnYTfUJQq6v6Nlxl9DTy6V5nV9e0F1qebYRIyh/W9EgMBp1k
+	eeNGMl8VOOKFumPp2OP88fQOWNUg97AQWvJ+Kv7aUP7rH68zIEx0SGRudzWpgpjq
+	4eE725hxhidNkHm8W6TyGlYpSKb3ZhaRrjeTqFsUYUFzB0+prpCOULiRUm6zOhWB
+	ZdzVWMvKP4k/NSFlcOmoCX4aNjvSeuN8SoDb59kW3Zles1EO32VyRHqkSnoDFBE8
+	yGfkv08RfNJ23nC9VL2oA==
+X-ME-Sender: <xms:H-JZaleW3pTXxnKrT-yLUJOHtOzoDRG_GJ5cARc49dF8dXkI40YuaQ>
+    <xme:H-JZauAAm0MwC2S58dqBrHJaOX6Jyof47qYzhHlAIHCC-jA6aFyESSAOPBB6HIkyu
+    0dHa6DRVsZ8wfYAfJhPwqPpeosFrt43SY1y_NdIgyR7gO9uRXVWeEc>
+X-ME-Proxy-Cause: dmFkZTFhjKKPRKG7nJvYTjXJiMDFH2rb4YJffNLelfIuXLOK3F0/KRegeCFhzIjbW0bE5w
+    qGHY27YYLKz/PBOZmV1e+fBuFlBcD3kNd6mmDZInNaz6j9Sxku+rMCtJWDq92aEWrObX9r
+    Lmm8IOG9eOmneit8r/hacP2ae6mXkwPa4RxHNaFvNQ4UkVUHRlLDygdhrdF53yFuCV7hF4
+    FRq04bYf0YsRJA1GoFDmVBHeNI9f9XZxF4/3qPpQK3JiGu+wb8/dZX5m9X+0a0p+Mw+fr2
+    lIyaJGUGv3l+r+V5sIMuuoxszCwH/b5GA0Zw81gL6djRQbJDqW1spsvKoDg9Sw1HldnLBW
+    YCDPSJe0JPdSp6INKkPbpP3Q2w7vv2M7oLlwEg49fm0uPxzKjA/DmMuOJWRNghJHZ8+3sN
+    X3/oFZZXCEo2ITnrEpNCOtEwoROHnxnuhHfxC2pb5n6sjkNq0LYUdmijzVJ8IFivp5Sl6e
+    7HVsIVYtJcsKKr2Cv5vh/x64cZ1QR3DJMpuosNbaxfhfJ16ftBHRw/uO0zrKBNlxdUzi/+
+    5APIYkXume6pupgBggXLqVLoLH7inhMtQ6+EishiRN81LlcGRO+rPfXEEQ4WL84y5QUgVB
+    GjRgqL4WndpKmhOUMmglmbLWyVd4TdVskttYK9GYcP0yNEGh5Icb167I6D2A
+X-ME-Proxy: <xmx:H-JZam85y39p8_vnSiaLJx3yWhkA8vSNGptWjDjV1ArJY-LusL0lHQ>
+    <xmx:H-JZahpNpcIvQVfS9EKkowV5bDPqzJ0eqr2gjpKkyjxr31aG9_T6KQ>
+    <xmx:H-JZarCmpxEde3_WhN-BjX1hT3JR8XVPBSj3H0StP-FnBJek_MGrUQ>
+    <xmx:H-JZajwdMm3AWE-8WdOvNk-90iJSuXJ4xUvHA-5ycdJ8dtMZzzu0hQ>
+    <xmx:H-JZagfHje9Er08ZeNJjJ7gnQ1e3u7iZMrvLFsHSyfbz2EJFTX9f1AJr>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.phl.internal (Postfix, from userid 501)
+	id 7E8EC182007E; Fri, 17 Jul 2026 04:04:47 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260716210813.2582826-1-hugo@hugovil.com>
-Date: Fri, 17 Jul 2026 02:41:19 -0500
-X-Gmail-Original-Message-ID: <CAMRc=MerwHnK5sdw7JRyzkhrRZF_2vSjcpOJ6R=Lz9rbKGE5JQ@mail.gmail.com>
-X-Gm-Features: AUfX_mwRwl5xhGKjVcL6rRS5fp6CK4RLwoUeOyI0kRluQd6smz7Yf4G_2u2wFj0
-Message-ID: <CAMRc=MerwHnK5sdw7JRyzkhrRZF_2vSjcpOJ6R=Lz9rbKGE5JQ@mail.gmail.com>
-Subject: Re: [PATCH] serial: sc16is7xx: implement gpio get_direction() callback
-To: Hugo Villeneuve <hugo@hugovil.com>
-Cc: Hugo Villeneuve <hvilleneuve@dimonoff.com>, stable@kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-gpio@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Linus Walleij <linusw@kernel.org>, 
-	Bartosz Golaszewski <brgl@kernel.org>, Jon Ringle <jringle@gridpoint.com>
-Content-Type: text/plain; charset="UTF-8"
+X-ThreadId: AKWf8mvLe8Lc
+Date: Fri, 17 Jul 2026 10:04:17 +0200
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+ "Karl Mehltretter" <kmehltretter@gmail.com>
+Cc: "Jiri Slaby" <jirislaby@kernel.org>, "Nicolas Pitre" <nico@fluxnic.net>,
+ linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-Id: <8a4b1bb8-57ec-4746-8c98-3bcc13e9ffd9@app.fastmail.com>
+In-Reply-To: <2026071743-number-headfirst-bcca@gregkh>
+References: <20260717071616.91423-1-kmehltretter@gmail.com>
+ <2026071743-number-headfirst-bcca@gregkh>
+Subject: Re: [PATCH] tty: hvc: restrict HVC_DCC to ARMv6+ and ARM64
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 
-On Thu, 16 Jul 2026 23:08:09 +0200, Hugo Villeneuve <hugo@hugovil.com> said:
-> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
->
-> It's strongly recommended for GPIO drivers to always implement the
-> .get_direction() callback - even when the direction is tracked in
-> software. The GPIO core emits a warning when the callback is missing
-> and a user reads the direction of a line, e.g. via
-> /sys/kernel/debug/gpio.
->
-> Fixes: dfeae619d781 ("serial: sc16is7xx")
-> Cc: stable@kernel.org
-> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> ---
-> Inspired by a similar patch for max310x: commit a483b1a91b33
-> ("serial: max310x: implement gpio_chip::get_direction()").
-> ---
->  drivers/tty/serial/sc16is7xx.c | 12 ++++++++++++
->  1 file changed, 12 insertions(+)
->
-> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-> index 2498f9da2bf77..943be318de410 100644
-> --- a/drivers/tty/serial/sc16is7xx.c
-> +++ b/drivers/tty/serial/sc16is7xx.c
-> @@ -1273,6 +1273,17 @@ static int sc16is7xx_gpio_set(struct gpio_chip *chip, unsigned int offset,
->  	return 0;
->  }
->
-> +static int sc16is7xx_gpio_get_direction(struct gpio_chip *chip, unsigned int offset)
-> +{
-> +	struct sc16is7xx_port *s = gpiochip_get_data(chip);
-> +	struct uart_port *port = &s->p[0].port;
-> +	unsigned int val;
-> +
-> +	val = sc16is7xx_port_read(port, SC16IS7XX_IODIR_REG);
-> +
-> +	return val & BIT(offset) ? GPIO_LINE_DIRECTION_OUT : GPIO_LINE_DIRECTION_IN;
-> +}
-> +
->  static int sc16is7xx_gpio_direction_input(struct gpio_chip *chip,
->  					  unsigned offset)
->  {
-> @@ -1350,6 +1361,7 @@ static int sc16is7xx_setup_gpio_chip(struct sc16is7xx_port *s)
->  	s->gpio.parent		 = dev;
->  	s->gpio.label		 = dev_name(dev);
->  	s->gpio.init_valid_mask	 = sc16is7xx_gpio_init_valid_mask;
-> +	s->gpio.get_direction	 = sc16is7xx_gpio_get_direction;
->  	s->gpio.direction_input	 = sc16is7xx_gpio_direction_input;
->  	s->gpio.get		 = sc16is7xx_gpio_get;
->  	s->gpio.direction_output = sc16is7xx_gpio_direction_output;
->
-> base-commit: da7b5fd4e17f8e44c5590f2d603c01d499f056e6
-> --
-> 2.47.3
->
->
+On Fri, Jul 17, 2026, at 09:22, Greg Kroah-Hartman wrote:
+> On Fri, Jul 17, 2026 at 09:16:16AM +0200, Karl Mehltretter wrote:
+>> hvc_dcc drives the JTAG DCC via the ARMv6/v7 CP14 debug registers
+>> (mrc/mcr p14, 0, rX, c0, c1/c5, 0 in asm/dcc.h). That encoding is
+>> undefined on older ARM cores, and also on ARMv7-M, but HVC_DCC only
+>> depends on ARM, so it can be enabled on e.g. ARM926 (ARCH_MULTI_V5),
+>> where hvc_dcc_console_init() runs __dcc_putchar() at boot and takes an
+>> undefined-instruction trap before the console is up:
+>> 
+>>   Internal error: Oops - undefined instruction: 0 [#1] ARM
+>>   PC is at hvc_dcc_check+0x50/0x8c
+>>    hvc_dcc_check from hvc_dcc_console_init+0x18/0x48
+>>    hvc_dcc_console_init from console_init+0x58/0x170
+>>   Kernel panic - not syncing: Fatal exception
+>> 
+>> Restrict HVC_DCC to the CPUs where that encoding is valid: the
+>> CPU_V6 || CPU_V6K || CPU_V7 set that arch/arm/include/debug/icedcc.S
+>> guards it with, plus ARM64.
+>> 
+>> Fixes: 16c63f8ea49c ("drivers: char: hvc: add arm JTAG DCC console support")
+>> Signed-off-by: Karl Mehltretter <kmehltretter@gmail.com>
 
-Acked-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+I don't like having architecture specific symbols in drivers/*/Kconfig,
+but this one is clearly correct, so as a quick fix this is
+
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+
+A nicer alternative would be to improve the feature detection
+in the driver by probing an appropriate ID register for presence
+of DCC. Unfortunately we can't use regular device probing
+because the driver is a low-level debug hack that is intended
+to just bypass all of that and provide a console.
+
+Maybe checking RCP14_DBGDIDR() to see if the version is greater
+or equal to '1' (arm1136) will work? If that also traps,
+an __ex_table fixup could catch that to fail the driver probe.
+
+>>  drivers/tty/hvc/Kconfig | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>> 
+>> diff --git a/drivers/tty/hvc/Kconfig b/drivers/tty/hvc/Kconfig
+>> index c2a4e88b328f..5866195de26a 100644
+>> --- a/drivers/tty/hvc/Kconfig
+>> +++ b/drivers/tty/hvc/Kconfig
+>> @@ -79,7 +79,7 @@ config HVC_UDBG
+>>  
+>>  config HVC_DCC
+>>  	bool "ARM JTAG DCC console"
+>> -	depends on ARM || ARM64
+>> +	depends on (ARM && (CPU_V6 || CPU_V6K || CPU_V7)) || ARM64
+>
+> What about testing builds?
+
+The driver only builds on arm32 or arm64, and there is little
+value of build-testing it on armv4/v5.
+
+      Arnd
