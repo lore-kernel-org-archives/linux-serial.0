@@ -1,131 +1,141 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A0C51F2B8D;
-	Fri, 17 Jul 2026 12:20:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2E283F9292
+	for <linux-serial@vger.kernel.org>; Fri, 17 Jul 2026 12:35:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784290831; cv=none; b=WMLAX706BFslliZXrKNK6ihXgWW0hLwtNGbNjeTMVFvcew7mSzUnOTC5S8LvUCvef2Lq2d4Wu6eFfiwyENGUOt76YJ5dRgcNzMuF6xdW6lG3utT+Zj+nf2LBco6QQK3X02/bX7PKM+j+Q2J+1HYaY4sYlm12+ukU1+SiMbhGtWw=
+	t=1784291747; cv=none; b=TtmU9hGrRbbQmeq+wLsv8oA1HZW000SaUPnO6042t2vDVODyVQprJv7tUf3QSzOwct9+h+a0s+vntg1wAWQPBUduItWsXaV4617V+gv2u4KEPE3YCXmwn1WmmAv8MNRKvUh3N387ybgFZcNGTJFxH9jY/5/ak/CWgh0asLRAWlo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784290831; c=relaxed/simple;
-	bh=OSsYJ0/gsgawmggFSQKGzor9xdhntezQIouMLE96OhE=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:To:From:
-	 References:In-Reply-To; b=pWvzraAdTVBiHEVmiDN24OsH9xFbrO3JoYRpBjEaKCM5Ob/hzqjfzcvjluWwI623gTo81WgXqUPCC3bG+EOGH4W6uBLQ4c4evH4y+f9LrWgcMn+yU82pegPyorYu+cRiZKJAqLuvbVWrVWNcoKngw7D28g4kAD1bcde9DGRZQ50=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PJUj1kIZ; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1784291747; c=relaxed/simple;
+	bh=NoYERio/mf4DLekWv4MCy7+mB4/+mSN3HNuFTWNN6Mc=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=DGEQeRmleTrLS2fSHZ2xDHEAddKDOzZnvmLp7D3gk9Iy847xDHgPYK4UybVHci5vi2G6ZKJP9DX9bem7hzaZSHiTpMNAD6vu94ypdBwyChNkmOsYt14BrT+v1YUIS4FM4+GC8CTMgaCSGaV/Kg0Axxlq7D7YSOid3uqeLX2qjqc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=o7lrpT/z; arc=none smtp.client-ip=209.85.219.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PJUj1kIZ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9D131F000E9;
-	Fri, 17 Jul 2026 12:20:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784290829;
-	bh=3zZRRumE1bYiKKWD7igY43RWBksfZ312lkH+RvumdzU=;
-	h=Date:Subject:Cc:To:From:References:In-Reply-To;
-	b=PJUj1kIZgI7tHJLjsSEFXzZe/B6PsC7PZR8Yl3AinHSLs97AgiIO0zCSmAg3d5nYY
-	 LSmWQ7xlpT7892vVtBtQgMVilrYkSdYhTlVrcGFpSZukSQ3EgytGbe5N0hl5xxXUJl
-	 evCftt4IH4VmHcsvajxttGCsd6SNWIkl0lfTzjrZcpx//KjjfQoTWjt3EF6p9G+qdF
-	 y5tNygDHk0nNP6x7Yq2yDGfV3INf2XYEpMeJmrY51EuTEEDhex7ZWzYTi3+PyMAPoN
-	 V70mrE1jdZk55I33VTXze402Qz49QR1CTXMvvZKWeZmpEW3hChZNI78o1AijdVyvUE
-	 foX1m9US/waJQ==
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="o7lrpT/z"
+Received: by mail-qv1-f45.google.com with SMTP id 6a1803df08f44-8efb708b1a0so68315516d6.3
+        for <linux-serial@vger.kernel.org>; Fri, 17 Jul 2026 05:35:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1784291743; x=1784896543; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=lMekRXzh3ZMunw4GPDw9aK7U0CvdM1LOGZ4vytcNb5w=;
+        b=o7lrpT/zuAOqr9ryFmpbtQgOkh4N57dX3lbTLAoLMwaXUClfMhl7ROqowhGYMeGQcJ
+         btxjcv7y7yHHlkoqdzpDylX5e6tV6kzEPuqvhGsUddmOWZv0SD9Xac7uqAERZTHB04fB
+         j0yNFjt9NLiKiD3P/XEFXT1VdpN3RufdrH1MhOwdMXC4Xma41O422PI1xiT0EkE1RpkI
+         9a1F+EOLYZJYF8i+oDtWH5vVObMm5xPj5GFvOsRGFv/cmB1+giREArwB2rQ/n8/3f3XK
+         K44mzpglCrKJkflhOlrptCS7LwU7aqtM+Fth0dLvxgLdtqH6o0r51nI+hYTIcaWGMrJC
+         wK7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784291743; x=1784896543;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=lMekRXzh3ZMunw4GPDw9aK7U0CvdM1LOGZ4vytcNb5w=;
+        b=qRBjaGAZyjnFr8JXy9+Ob2bcz2Tz0VWDEwCyFU+Hi4sj4gQN+7DbOLYkiWo0yFVgLd
+         vdv7lYnhYwf3U8NlGtVJLRYiCgyd8m6aJAdk03EzPxOkAvWeahoKMyzxprwr43EhsVrq
+         Hw3rt5EpLnSkMg6deb3SKkh2ancLJoFY5tbG8izjxqW7wiM76ARk6ICRgF/kDWq+DLa9
+         weI3mFlG+HnRxcNcFQMWS/jmIGKSI6SLO2AIhF9TVQeE1z5FlcXMdMuphPqUrxpjf/wJ
+         f7qmNknXk/IFeHLXZ+SDfrnaB1HldkiakSQArBobHLLTaYL/rgPHyiZGU1i5jDITcufi
+         M+HQ==
+X-Forwarded-Encrypted: i=1; AHgh+RrP13wLhwtfNIU3bjBmPJi7fo5x3ygy91uYqSlwZRVgARqyOSeArv14PabjW3SaudPwDsRlM41oPwtD3Xo=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy3lsr/lNLGZXnU8k7avz4Cv+4RfoMShOiEmO0IZ159uf2oBSyw
+	lNFfdpWXYwPk9ryTKpIMwhosEW2+LC4CPi6eLXzSqd3p2GeTtJ7EEsM=
+X-Gm-Gg: AfdE7cl7iFmsUG02rKOjOSUMhlmCAEjuzToMtgkugERmnszCcCeygIzO2iAQ6hjgDJV
+	sG6MJoqr1iHFeb4TYkR2Ugl/iQv8hOkr2WzN0u1Ox0/0eQxYVz5UphkXQESvFqPvq005Y/Os5c4
+	T+uxNU+cA+1SgFsKemIsOwjrFi34SCoh1e/HTdbUrOHHiCS8VyIhciBX883Wmufk2hdv+XFTZbh
+	OZgcOwAN1iX0umcYB8Yi/xBjKSUHhTu/PqX3SHmL/pheBNCgkkF0tPTYy6ZHpwJIAx3DQHkaKzt
+	dW5Clm8F6AtvCrP3bY2n5pHOd1zPKhfQrNh/AyRgCSf2d1QWhMFhqUALX4qyykWQ28dOEEbLAK5
+	ddxYqj59uMW7/e4pAkWC2FquBcLweuJ5SypSHfKVKzXxjBJ8vzFIx0UtZ7xYEeItBxPs/E/rpTD
+	OvUreTN9ds+JHr/5t1Q8S5OIbf906F61MCBRo5BzOrXAbzUpH0IHBV77s=
+X-Received: by 2002:ad4:5744:0:b0:8f0:3736:dff6 with SMTP id 6a1803df08f44-907784fd685mr29769246d6.46.1784291743174;
+        Fri, 17 Jul 2026 05:35:43 -0700 (PDT)
+Received: from NAUTEL-9N0B043.nautel.com (host-76-11-42-59.public.eastlink.ca. [76.11.42.59])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-907786b21d6sm15558116d6.24.2026.07.17.05.35.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Jul 2026 05:35:42 -0700 (PDT)
+From: Ryan Wilbur <rwilbur633@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	John Ogness <john.ogness@linutronix.de>,
+	Manuel Lauss <manuel.lauss@gmail.com>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Ryan Wilbur <rwilbur633@gmail.com>,
+	stable@vger.kernel.org
+Subject: [PATCH] serial: 8250: clear stuck RX-timeout interrupt on LPC32xx (PORT_LPC3220)
+Date: Fri, 17 Jul 2026 09:35:30 -0300
+Message-Id: <20260717123530.481021-1-rwilbur633@gmail.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Fri, 17 Jul 2026 14:20:23 +0200
-Message-Id: <DK0UB4AMYUM9.4T90577F6VAI@kernel.org>
-Subject: Re: [PATCH v14 0/3] rust: add basic serial device bus abstractions
-Cc: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>, "Markus Probst"
- <markus.probst@posteo.de>, "Rob Herring" <robh@kernel.org>, "Jiri Slaby"
- <jirislaby@kernel.org>, "Miguel Ojeda" <ojeda@kernel.org>,
- =?utf-8?q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, "Benno Lossin"
- <lossin@kernel.org>, "Andreas Hindborg" <a.hindborg@kernel.org>, "Alice
- Ryhl" <aliceryhl@google.com>, "Trevor Gross" <tmgross@umich.edu>, "Kari
- Argillander" <kari.argillander@gmail.com>, "Rafael J. Wysocki"
- <rafael@kernel.org>, "Viresh Kumar" <viresh.kumar@linaro.org>, "Boqun Feng"
- <boqun@kernel.org>, "David Airlie" <airlied@gmail.com>, "Simona Vetter"
- <simona@ffwll.ch>, "Daniel Almeida" <daniel.almeida@collabora.com>, "Tamir
- Duberstein" <tamird@kernel.org>, "Alexandre Courbot" <acourbot@nvidia.com>,
- =?utf-8?q?Onur_=C3=96zkan?= <work@onurozkan.dev>,
- <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
- <rust-for-linux@vger.kernel.org>, <linux-pm@vger.kernel.org>,
- <driver-core@lists.linux.dev>, <dri-devel@lists.freedesktop.org>
-To: "Gary Guo" <gary@garyguo.net>
-From: "Danilo Krummrich" <dakr@kernel.org>
-References: <20260715-rust_serdev-v14-0-b4ed5c93606f@posteo.de>
- <2026071747-android-overhead-c927@gregkh>
- <6aafea3fdb0847766787dbe5c7c7dbaad606d649.camel@posteo.de>
- <74213297-d3da-4637-8f31-8fecebd65f60@kernel.org>
- <2026071719-afflicted-eleven-1be9@gregkh>
- <DK0U1G9NCIS9.228MIUKBL4KEL@garyguo.net>
-In-Reply-To: <DK0U1G9NCIS9.228MIUKBL4KEL@garyguo.net>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-On Fri Jul 17, 2026 at 2:07 PM CEST, Gary Guo wrote:
-> FWIW this series will also conflict quite significantly with
-> https://lore.kernel.org/driver-core/20260629-id_info-v2-0-56fccbe9c5ef@ga=
-ryguo.net/
-> which is routed via driver-core tree.
+The LPC32xx UART can latch an RX character-timeout interrupt while the
+RX FIFO is empty: IIR reports UART_IIR_RX_TIMEOUT (0x0c) but LSR.DR is
+clear. A character timeout is only cleared by reading RHR, but
+serial8250_rx_chars() reads RHR only when LSR.DR is set, so nothing ever
+clears the condition. The interrupt is level-triggered and re-fires
+immediately, so on a single-core ARM926 the resulting interrupt
+storm livelocks the CPU.
 
-Yeah, but I think it should be trivial (see below)? However, routing serdev
-through driver-core does indeed avoid this.
+It is reproducible when userspace repeatedly opens the front-panel port
+(ttyS1): serial8250_do_set_termios() re-enables interrupts on unlock and
+the handler then spins forever with iir=0xcc lsr=0x60 ier=0x05, tripping
+the soft-lockup detector in serial8250_handle_irq_locked().
 
-Thanks,
-Danilo
+Fix this by doing one throwaway RHR read to clear the timeout. It is gated
+on PORT_LPC3220 and only fires when the FIFO is empty (LSR.DR clear), so
+no real received data is ever discarded, and it is a no-op on healthy
+UARTs which never report a timeout with DR==0.
 
-diff --git a/rust/kernel/serdev.rs b/rust/kernel/serdev.rs
-index 0ffcef1849d2..a1161dd9f37f 100644
---- a/rust/kernel/serdev.rs
-+++ b/rust/kernel/serdev.rs
-@@ -174,7 +174,8 @@ extern "C" fn probe_callback(sdev: *mut bindings::serde=
-v_device) -> kernel::ffi:
-         //
-         // INVARIANT: `sdev` is valid for the duration of `probe_callback(=
-)`.
-         let sdev =3D unsafe { &*sdev.cast::<Device<device::CoreInternal<'_=
->>>() };
--        let info =3D <Self as driver::Adapter>::id_info(sdev.as_ref());
-+        // SAFETY: `sdev` has been matched by the serial device bus via it=
-s device ID table.
-+        let info =3D unsafe { <Self as driver::Adapter>::id_info(sdev.as_r=
-ef()) };
+This is the same class of bug already worked around for other 8250 cores;
+see commit 424d79183af0 ("serial: 8250_dw: Avoid "too much work" from bogus rx timeout interrupt")
+which reports the identical iir=0xcc/lsr=0x60. See also
+UART_RX_TIMEOUT_QUIRK in 8250_omap, and the note in 8250_bcm7271.
 
-         from_result(|| {
-             sdev.as_ref().set_drvdata(try_pin_init!(PrivateData::<T> {
-@@ -334,7 +335,6 @@ macro_rules! module_serdev_device_driver {
- ///
- /// kernel::of_device_table!(
- ///     OF_TABLE,
--///     MODULE_OF_TABLE,
- ///     <MyDriver as serdev::Driver>::IdInfo,
- ///     [
- ///         (of::DeviceId::new(c"test,device"), ())
-@@ -343,7 +343,6 @@ macro_rules! module_serdev_device_driver {
- ///
- /// kernel::acpi_device_table!(
- ///     ACPI_TABLE,
--///     MODULE_ACPI_TABLE,
- ///     <MyDriver as serdev::Driver>::IdInfo,
- ///     [
- ///         (acpi::DeviceId::new(c"LNUXBEEF"), ())
-diff --git a/samples/rust/rust_driver_serdev.rs b/samples/rust/rust_driver_=
-serdev.rs
-index a12b1412db30..51b4898cd855 100644
---- a/samples/rust/rust_driver_serdev.rs
-+++ b/samples/rust/rust_driver_serdev.rs
-@@ -20,14 +20,12 @@ struct SampleDriver {
+Cc: stable@vger.kernel.org
+Signed-off-by: Ryan Wilbur <rwilbur633@gmail.com>
+---
+ drivers/tty/serial/8250/8250_port.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
- kernel::of_device_table!(
-     OF_TABLE,
--    MODULE_OF_TABLE,
-     <SampleDriver as serdev::Driver>::IdInfo,
-     [(of::DeviceId::new(c"test,rust_driver_serdev"), ())]
- );
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 8c241ec7f4f2..20014f54637b 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1803,6 +1803,20 @@ void serial8250_handle_irq_locked(struct uart_port *port, unsigned int iir)
+ 	if (!(status & UART_LSR_DR) && (status & UART_LSR_FIFOE))
+ 		serial8250_clear_and_reinit_fifos(up);
+ 
++	/*
++	 * On PORT_LPC3220 the UART can raise an RX character-timeout
++	 * interrupt with an empty RX FIFO (IIR reports RX_TIMEOUT but
++	 * LSR.DR is clear). The timeout is only cleared by reading RHR,
++	 * but the RX path below is skipped when the FIFO is empty, so
++	 * nothing clears it. IRQ then re-fires immediately and livelocks
++	 * this single-core. Do one throwaway RHR read to clear it.
++	 * Same bug worked around for other 8250 cores (8250_dw, 8250_omap, 8250_bcm7271).
++	 */
++	if (port->type == PORT_LPC3220 &&
++	    (iir & UART_IIR_RX_TIMEOUT) == UART_IIR_RX_TIMEOUT &&
++	    !(status & UART_LSR_DR))
++		serial_in(up, UART_RX);
++
+ 	/*
+ 	 * If port is stopped and there are no error conditions in the
+ 	 * FIFO, then don't drain the FIFO, as this may lead to TTY buffer
 
- kernel::acpi_device_table!(
-     ACPI_TABLE,
--    MODULE_ACPI_TABLE,
-     <SampleDriver as serdev::Driver>::IdInfo,
-     [(acpi::DeviceId::new(c"LNUXBEEF"), ())]
- );
+base-commit: da7b5fd4e17f8e44c5590f2d603c01d499f056e6
+-- 
+2.25.1
+
