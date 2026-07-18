@@ -1,124 +1,174 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F293E379ECD;
-	Fri, 17 Jul 2026 17:54:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0049235972
+	for <linux-serial@vger.kernel.org>; Sat, 18 Jul 2026 06:42:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784310849; cv=none; b=oo6Uie6YQX5ZneupDKNRZXuQa65jdsxcjWSuybaUeZfp6FP5KTVrsjfR82tVnSxel2FSCzjf6gwYjtSQ65Mjz/+wfRrfA4DWNvxATMkmXXcU7Fsz9WA22kvCT+i7zeD81Etq/U46ApsjsU4AFSy7Y+g0qYeLyyeTrKOtqb2hDQo=
+	t=1784356973; cv=none; b=FIOHOfp4Pk5b/tk8D1JbOEBLstrqGcDvSs3QNCrAjMefeGmKqGsjo9aBoQBR9LS51u887BlD2SsqfK0wxxjqGYGCMCKDoOhKwGNctUrJpDMgMiRJbWwXARxtpGld8vpw6oXdbAnbWJGnKiRGKz72Xo58fq2CKcEeIED31N6MO88=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784310849; c=relaxed/simple;
-	bh=fVyo+aBDlkCO5YY4oF7PlSe29p3IKXJswtx8B0+nwcc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FHkmz7qfNZenHIXPy+BthnZwa9HCve+6TU56o9qd0dGqE4OFtvTID/Q3JoCerVFSkNd4wLorMit/L6G7fK4UTqTVCTpzyBFlVotOvhyB+bDe+dJgKEJW6MV5e/e/P5DjT2m5s9+1lWcAEQRJsjGcgGcye0LWPrOrJYZ8aZK9Fns=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=YWuN+WtD; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1784356973; c=relaxed/simple;
+	bh=EHaKIoTL6PZOTPYEeRiWvY2iUW5czK67RETtA4TzPKc=;
+	h=Date:From:To:Cc:Subject:Message-ID; b=B4rZAW95BaInlbxjnDnRW+j4x2dToUtqvZuTmapWhA7KC39ka4CNHhRzcs6rpvS/wpuXWyIK/qioeyJh4W09QftZMNOfwACc9XWVE57X8Ss65OKOymQqTAfauTAoGKHBmaOnLeG5U6u4TRjoZXIAlNDBl25crteyF1YZP9WF6rs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JeYN6vd5; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="YWuN+WtD"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JeYN6vd5"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1784310848; x=1815846848;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=fVyo+aBDlkCO5YY4oF7PlSe29p3IKXJswtx8B0+nwcc=;
-  b=YWuN+WtDepUXbajyzhqUBbb9HIm7PlqSn4awb98fCXpy19pXnShK2aUu
-   NwcYNDxn/WmWHP9U5FefrkP+T1J0tmFISUAKPfs/cGD/xZ9gjXYLMtJ9/
-   5rGoaUGjl1tKz2rcHXBYEKdjZA0sgbnWDl4x58Xcd3F9B9U0FGz2eSYzy
-   pdlXB3CFSh0Pg0Ey91G3AUdAd4o9ncwQPExgxM11SBbCx8+YLOAAK5Rdp
-   nOpk31Gn9MvO8jYIUYd6KJNhbZ4n93t3MNYyopm8D21+3bGHLSDA9I3tE
-   lR0cyEeJJ6m97NQe71PqtPa9Jp9ifXBWzdpw3EuugPBtIidBUxhDDnmCJ
-   Q==;
-X-CSE-ConnectionGUID: V+50oMLnTDqL8iSEKcvFuQ==
-X-CSE-MsgGUID: Dx4g1utCSxWYqm8O6TBOWw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11849"; a="88663944"
-X-IronPort-AV: E=Sophos;i="6.25,169,1779174000"; 
-   d="scan'208";a="88663944"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2026 10:54:08 -0700
-X-CSE-ConnectionGUID: rU2XKYITTKqvg5UjJZhATA==
-X-CSE-MsgGUID: MLNPqyruR/mPFEeeXBytSA==
+  t=1784356972; x=1815892972;
+  h=date:from:to:cc:subject:message-id;
+  bh=EHaKIoTL6PZOTPYEeRiWvY2iUW5czK67RETtA4TzPKc=;
+  b=JeYN6vd5GD/vpNUYNJpXbc1rEuRPvoJ64P6i1VxUxxiH7qyWEnPBAzdT
+   wTNx8BC6Ru2oN/1wMkE8V5r++R0yotnieVP4qDzcRY6RwNH7PNkDOFwtO
+   hJF6alxSYthGKozUsykKfeXhlim0HqiRFws1yPUgeDkIRtBwmpcKtaGxb
+   KYHByN8yxVlHhR85+t8p99++FPdoLPUgQE+f+JXOY/nvdK1Yf62xaC6Eo
+   Fxr2f2AAgbUkIbgeRxhxVZt8d0nncD8LuWw4bEzu34Qr72zdQjlyktq0X
+   BsKapX8XJ+0pdsqU5jwcq7Tenvla2kr8GFcSDbiXONjWJ+RwJs8B1e920
+   w==;
+X-CSE-ConnectionGUID: jZh59cQORVK/UhdzRDFAGA==
+X-CSE-MsgGUID: E/swUxcOSC6zK4cvNdZ/Nw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11849"; a="95614783"
+X-IronPort-AV: E=Sophos;i="6.25,170,1779174000"; 
+   d="scan'208";a="95614783"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2026 23:42:51 -0700
+X-CSE-ConnectionGUID: XW+T+9XiQeCCR+yQ6/yysw==
+X-CSE-MsgGUID: gE5eoGzKRTCSEiUwi2h6nA==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,169,1779174000"; 
-   d="scan'208";a="258845509"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.143])
-  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2026 10:54:04 -0700
-Date: Fri, 17 Jul 2026 20:54:02 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Ryan Wilbur <rwilbur633@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	John Ogness <john.ogness@linutronix.de>,
-	Manuel Lauss <manuel.lauss@gmail.com>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Subject: Re: [PATCH] serial: 8250: clear stuck RX-timeout interrupt on
- LPC32xx (PORT_LPC3220)
-Message-ID: <alpsOr5ZVqa_eLs9@ashevche-desk.local>
-References: <20260717123530.481021-1-rwilbur633@gmail.com>
+X-IronPort-AV: E=Sophos;i="6.25,170,1779174000"; 
+   d="scan'208";a="254337260"
+Received: from lkp-server02.sh.intel.com (HELO ea128546eb3d) ([10.239.97.151])
+  by fmviesa008.fm.intel.com with ESMTP; 17 Jul 2026 23:42:50 -0700
+Received: from kbuild by ea128546eb3d with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1wkyl2-00000000TWx-0cE1;
+	Sat, 18 Jul 2026 06:42:45 +0000
+Date: Sat, 18 Jul 2026 14:42:35 +0800
+From: kernel test robot <lkp@intel.com>
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Subject: [tty:tty-next] BUILD SUCCESS
+ facd005eee65df088cd73733741fbcf8d989fc5e
+Message-ID: <202607181424.YCk0ecxJ-lkp@intel.com>
+User-Agent: s-nail v14.9.25
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260717123530.481021-1-rwilbur633@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Jul 17, 2026 at 09:35:30AM -0300, Ryan Wilbur wrote:
-> The LPC32xx UART can latch an RX character-timeout interrupt while the
-> RX FIFO is empty: IIR reports UART_IIR_RX_TIMEOUT (0x0c) but LSR.DR is
-> clear. A character timeout is only cleared by reading RHR, but
-> serial8250_rx_chars() reads RHR only when LSR.DR is set, so nothing ever
-> clears the condition. The interrupt is level-triggered and re-fires
-> immediately, so on a single-core ARM926 the resulting interrupt
-> storm livelocks the CPU.
-> 
-> It is reproducible when userspace repeatedly opens the front-panel port
-> (ttyS1): serial8250_do_set_termios() re-enables interrupts on unlock and
-> the handler then spins forever with iir=0xcc lsr=0x60 ier=0x05, tripping
-> the soft-lockup detector in serial8250_handle_irq_locked().
-> 
-> Fix this by doing one throwaway RHR read to clear the timeout. It is gated
-> on PORT_LPC3220 and only fires when the FIFO is empty (LSR.DR clear), so
-> no real received data is ever discarded, and it is a no-op on healthy
-> UARTs which never report a timeout with DR==0.
-> 
-> This is the same class of bug already worked around for other 8250 cores;
-> see commit 424d79183af0 ("serial: 8250_dw: Avoid "too much work" from bogus rx timeout interrupt")
-> which reports the identical iir=0xcc/lsr=0x60. See also
-> UART_RX_TIMEOUT_QUIRK in 8250_omap, and the note in 8250_bcm7271.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-next
+branch HEAD: facd005eee65df088cd73733741fbcf8d989fc5e  Revert "serial: qcom-geni: remove .pm callback, use runtime PM in startup/shutdown"
 
-...
+elapsed time: 749m
 
-> +	/*
-> +	 * On PORT_LPC3220 the UART can raise an RX character-timeout
-> +	 * interrupt with an empty RX FIFO (IIR reports RX_TIMEOUT but
-> +	 * LSR.DR is clear). The timeout is only cleared by reading RHR,
-> +	 * but the RX path below is skipped when the FIFO is empty, so
-> +	 * nothing clears it. IRQ then re-fires immediately and livelocks
-> +	 * this single-core. Do one throwaway RHR read to clear it.
+configs tested: 97
+configs skipped: 0
 
-> +	 * Same bug worked around for other 8250 cores (8250_dw, 8250_omap, 8250_bcm7271).
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-This is 8250-port.c.
+tested configs:
+alpha                            allnoconfig    gcc-16.1.0
+alpha                           allyesconfig    gcc-16.1.0
+alpha                              defconfig    gcc-16.1.0
+arc                             allmodconfig    gcc-16.1.0
+arc                             allyesconfig    gcc-16.1.0
+arc                           randconfig-001    gcc-8.5.0
+arc                  randconfig-001-20260718    gcc-8.5.0
+arc                  randconfig-002-20260718    gcc-8.5.0
+arm                  randconfig-001-20260718    gcc-8.5.0
+arm                  randconfig-002-20260718    gcc-8.5.0
+arm                  randconfig-003-20260718    gcc-8.5.0
+arm                  randconfig-004-20260718    gcc-8.5.0
+arm                          u8500_defconfig    gcc-16.1.0
+arm64                         randconfig-001    gcc-14.3.0
+arm64                randconfig-001-20260718    gcc-14.3.0
+arm64                randconfig-002-20260718    gcc-14.3.0
+arm64                randconfig-003-20260718    gcc-14.3.0
+arm64                randconfig-004-20260718    gcc-14.3.0
+csky                            allmodconfig    gcc-16.1.0
+csky                 randconfig-001-20260718    gcc-14.3.0
+csky                 randconfig-002-20260718    gcc-14.3.0
+hexagon              randconfig-001-20260718    clang-18
+hexagon              randconfig-002-20260718    clang-18
+i386                            allmodconfig    gcc-14
+i386                 randconfig-001-20260718    gcc-14
+i386                 randconfig-002-20260718    gcc-14
+i386                 randconfig-003-20260718    gcc-14
+i386                 randconfig-004-20260718    gcc-14
+i386                 randconfig-005-20260718    gcc-14
+i386                 randconfig-006-20260718    gcc-14
+i386                 randconfig-007-20260718    gcc-14
+i386                 randconfig-011-20260718    clang-22
+i386                 randconfig-012-20260718    clang-22
+i386                 randconfig-013-20260718    clang-22
+i386                 randconfig-014-20260718    clang-22
+i386                 randconfig-015-20260718    clang-22
+i386                 randconfig-016-20260718    clang-22
+i386                 randconfig-017-20260718    clang-22
+loongarch                          defconfig    clang-24
+loongarch            randconfig-001-20260718    clang-18
+loongarch            randconfig-002-20260718    clang-18
+nios2                           allmodconfig    gcc-11.5.0
+nios2                            allnoconfig    gcc-11.5.0
+nios2                randconfig-001-20260718    clang-18
+nios2                randconfig-002-20260718    clang-18
+parisc                          allmodconfig    gcc-16.1.0
+parisc                          allyesconfig    gcc-16.1.0
+parisc                             defconfig    gcc-16.1.0
+parisc                        randconfig-001    gcc-16.1.0
+parisc               randconfig-001-20260718    gcc-16.1.0
+parisc               randconfig-002-20260718    gcc-16.1.0
+powerpc              randconfig-001-20260718    gcc-16.1.0
+powerpc              randconfig-002-20260718    gcc-16.1.0
+powerpc64            randconfig-001-20260718    gcc-16.1.0
+powerpc64            randconfig-002-20260718    gcc-16.1.0
+riscv                randconfig-001-20260718    clang-24
+riscv                randconfig-002-20260718    clang-24
+s390                 randconfig-001-20260718    clang-24
+s390                 randconfig-002-20260718    clang-24
+sh                                 defconfig    gcc-16.1.0
+sh                   randconfig-001-20260718    clang-24
+sh                   randconfig-002-20260718    clang-24
+sparc                randconfig-001-20260718    gcc-11.5.0
+sparc                randconfig-002-20260718    gcc-11.5.0
+sparc64              randconfig-001-20260718    gcc-11.5.0
+sparc64              randconfig-002-20260718    gcc-11.5.0
+um                   randconfig-001-20260718    gcc-11.5.0
+um                   randconfig-002-20260718    gcc-11.5.0
+x86_64     buildonly-randconfig-001-20260718    clang-22
+x86_64     buildonly-randconfig-002-20260718    clang-22
+x86_64     buildonly-randconfig-003-20260718    clang-22
+x86_64     buildonly-randconfig-004-20260718    clang-22
+x86_64     buildonly-randconfig-005-20260718    clang-22
+x86_64     buildonly-randconfig-006-20260718    clang-22
+x86_64                                 kexec    clang-22
+x86_64                        randconfig-001    gcc-14
+x86_64               randconfig-001-20260718    gcc-14
+x86_64               randconfig-002-20260718    gcc-14
+x86_64               randconfig-003-20260718    gcc-14
+x86_64               randconfig-004-20260718    gcc-14
+x86_64               randconfig-005-20260718    gcc-14
+x86_64               randconfig-006-20260718    gcc-14
+x86_64               randconfig-011-20260718    gcc-14
+x86_64               randconfig-012-20260718    gcc-14
+x86_64               randconfig-013-20260718    gcc-14
+x86_64               randconfig-014-20260718    gcc-14
+x86_64               randconfig-015-20260718    gcc-14
+x86_64               randconfig-016-20260718    gcc-14
+x86_64               randconfig-071-20260718    clang-22
+x86_64               randconfig-072-20260718    clang-22
+x86_64               randconfig-073-20260718    clang-22
+x86_64               randconfig-074-20260718    clang-22
+x86_64               randconfig-075-20260718    clang-22
+x86_64               randconfig-076-20260718    clang-22
+x86_64                          rhel-9.4-bpf    gcc-14
+xtensa               randconfig-001-20260718    gcc-11.5.0
+xtensa               randconfig-002-20260718    gcc-11.5.0
 
-> +	 */
-> +	if (port->type == PORT_LPC3220 &&
-
-Why do we have this then?
-
-> +	    (iir & UART_IIR_RX_TIMEOUT) == UART_IIR_RX_TIMEOUT &&
-> +	    !(status & UART_LSR_DR))
-> +		serial_in(up, UART_RX);
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+--
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
