@@ -1,41 +1,41 @@
 Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98409335BA
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9844F5733E
 	for <linux-serial@vger.kernel.org>; Sat, 18 Jul 2026 12:47:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.66
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784378872; cv=none; b=Plz/kTTSgWKQJjLPZbvG2HhwTgZwY5BLHHkV62C0zFvlDDS4qaSD5Jkbvc6dwozJCpBvhXcTQmVaWeOBFhMkZhnc9aPPHI0lZAYR6RhoIXdkMeoUOSxQnqw+7LtpfzHeILinDJ2BrVZcZqf2wMOfJvLB5/SJWIgCl4RZ5texowk=
+	t=1784378873; cv=none; b=KGuBe+sYN0pOB1s3Kc+mWPW8bFrNbb+bQej6Xtt1yP3l+8Ak8vGRqSKl21arByaX1dY1hg7cpx1vMkAn6UcUxczQeB3NGkwJ4CgDnV7gbCJ0PKDZo682bgLQv2kxOTsRjEI/JvAFfA+L58n0zPETHlb2l20dl0v+/OG5VExdorE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784378872; c=relaxed/simple;
-	bh=+DglkG3f/oa2ZGnDkZHurCMH7odPQbvwJv1U9ofUel4=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=cYXJ1OigRN+Dy2/BhibKTAbLOcfsN4FtcoF71U8rM5GSTm3VjIX82fyPXFd8lyOjjCYwtm3ghcir8pNE6DlZlrt7LH5YywXA9DEOq5hgIvfkxUIJZwO3UsyHkQZrWUpkf7lE4tc2kzZp0B/C8gfMBRn7eqmz2csPIQIz7+8Cj0o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=kwLNYbGn; arc=none smtp.client-ip=185.67.36.66
+	s=arc-20240116; t=1784378873; c=relaxed/simple;
+	bh=Ut/IRZsxXHW6O61T2pDCsBqDBfWdqPE0u1OY+IFn1Us=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=j9cZjRJ+81V0NTQ1nA2UNDdaNrqmq4u+23PPiARh22rC8c08vCMHr9dBphxatiFl+UlPSmo4sRmls3BsoCxvwr7/EXuODP4/XuozTOBEaaezwD9wVUqSE/Hc6gQ3qzPysSoeivpOxJGSxSwQ9+vsIiONrK1yGX3B4OXMfbBj5fU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=Hfo5rWCP; arc=none smtp.client-ip=185.67.36.66
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="kwLNYbGn"
+	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="Hfo5rWCP"
 Received: from submission (posteo.de [185.67.36.169]) 
-	by mout02.posteo.de (Postfix) with ESMTPS id E9B3E240101
-	for <linux-serial@vger.kernel.org>; Sat, 18 Jul 2026 14:47:48 +0200 (CEST)
+	by mout02.posteo.de (Postfix) with ESMTPS id C562F240105
+	for <linux-serial@vger.kernel.org>; Sat, 18 Jul 2026 14:47:47 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de;
-	s=1984.8680eb; t=1784378868;
-	bh=fjzyqMHqJCpWgCPY606AraCobo3dyLkKwD8V5CQfQK8=;
-	h=From:Date:Subject:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding:Message-Id:To:Cc:Autocrypt:OpenPGP:From;
-	b=kwLNYbGnuMqRzmQRRP/l8EKiIwbrpnV1ZtgTUPgdhrrYqv5mprxg1mQ6otz/pLdGX
-	 4nUyNPyb1MYBFxu7rRvlBfgB7Gw2cE3gEoPBv3FlPPfw1eHWmdoqubLCpp2+Hw8ptK
-	 OSp5eP028SqOf6pB/0LRy4wyo5xED9an/CvHxtyS91oLWsRKgCZt1c00W56AfiWwQt
-	 mJvnqkK81qinCqi0XcXRIr1aKzh1SZyJUf0JVl7SuN9S9839L0RkCxFs+Xceu/c6c9
-	 68WLxLi3/IaLLMgprhS1/aMtUImPYfypn54ytDbm7UAsaFCUY94fEB9Km/P1z5faJr
-	 Zpp7+IN7xd+NQ==
+	s=1984.8680eb; t=1784378867;
+	bh=aqspqbMtap3MyUHvygE65AWMHG91QJ7438aDXiT20PA=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:To:Cc:Autocrypt:OpenPGP:From;
+	b=Hfo5rWCP3ny+crTIZ3nIe5aV0oWFjn4lFPoNppQ5Cl0iynOUM8Hj36jJdUmBh0q8V
+	 8vWgDRYXQpIGvWJURUTy4BSQG9ucj2VN4M7fnXUUejxPZzfR9UX44PUDPjON/c37dH
+	 0xG/lcOn8zxoWfi1jbW/bUCdpw8KE3bYDu0jgK91BkMrMrqpNKZTh5w0I2lqx66qAg
+	 5h/Wsja4QBKL7YfkF6d1HJsdDNKTFdfGab574FW9fihwwaLd/3lRUvYas18GUl8DLL
+	 3bx3S7s99mWo+I6floEkYmhDLyPTPjYhTgoZgjQhRW7Jkvzi57xLWRkTXfcaTUMTR3
+	 NLaWTiHDmbwkQ==
 Received: from customer (localhost [127.0.0.1])
-	by submission (posteo.de) with ESMTPSA id 4h2RQB73cMz6tvs;
-	Sat, 18 Jul 2026 14:47:46 +0200 (CEST)
+	by submission (posteo.de) with ESMTPSA id 4h2RQ944V8z6tvx;
+	Sat, 18 Jul 2026 14:47:45 +0200 (CEST)
 From: Markus Probst <markus.probst@posteo.de>
-Date: Sat, 18 Jul 2026 12:47:47 +0000
-Subject: [PATCH v2 1/4] rust: serdev: fix typo in rustdoc
+Subject: [PATCH v2 0/4] rust: serdev: trivial fixes
+Date: Sat, 18 Jul 2026 12:47:46 +0000
+Message-Id: <20260718-rust_serdev_fixes-v2-0-e5214e03de13@posteo.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -44,9 +44,11 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260718-rust_serdev_fixes-v2-1-e5214e03de13@posteo.de>
-References: <20260718-rust_serdev_fixes-v2-0-e5214e03de13@posteo.de>
-In-Reply-To: <20260718-rust_serdev_fixes-v2-0-e5214e03de13@posteo.de>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/22OzQ6CMAzHX4X07HSAinLyPQwhwIrWRKbtWDSEd
+ 3eABw/e+kv/XwMIMqFAHg3A6EnIdgGSVQTNteouqMgEhkQne53FmeJeXBlMBn3Z0gtFHeuq3bV
+ prJPsAMH3YJwfwXYuFpa+vmHjpqCvgvHZhzK3yKCuBFVj73dyeWSYPHJAxs3PrYLYUXeBKfRK4
+ iy/590+njO+Ew9/JvpYaZXutmla702Duj09rDi0a4NQjOP4ASw52pMHAQAA
+X-Change-ID: 20260717-rust_serdev_fixes-9baf5f310278
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
  Miguel Ojeda <ojeda@kernel.org>, Boqun Feng <boqun@kernel.org>, 
  Gary Guo <gary@garyguo.net>, 
@@ -61,21 +63,21 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 Cc: linux-serial@vger.kernel.org, rust-for-linux@vger.kernel.org, 
  linux-kernel@vger.kernel.org, Markus Probst <markus.probst@posteo.de>, 
  kernel test robot <lkp@intel.com>
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1009;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1102;
  i=markus.probst@posteo.de; h=from:subject:message-id;
- bh=+DglkG3f/oa2ZGnDkZHurCMH7odPQbvwJv1U9ofUel4=;
- b=owEBiQJ2/ZANAwAIATR2H/jnrUPSAcsmYgBqW3XwpDTocvu2ZnGz9Qp6r/9ZZMjjqKAfyC5ul
- wdU7oz0osOJAk8EAAEIADkWIQSCdBjE9KxY53IwxHM0dh/4561D0gUCalt18BsUgAAAAAAEAA5t
- YW51MiwyLjUrMS4xMiwyLDIACgkQNHYf+OetQ9KWPQ/5AXlhQVUYscP5A+P3IyjLyUN2tsgklco
- l4yPdfCkFmz4kha4Bvtp+HoX5lXip1uwDBUMl8IPEpJSEe0Qj1TXlWzmlNcULSlCY4uI84OcT9Z
- BgeHPHO6gGJw6+gA16psZj0WH+tQXxwjo+vMKqkPXF2GMubbTX/lXyYvSl3HArD3F6hToj9OEbb
- sWjX99Wv4qaH3BI9KQbs9zjAqITzukjX4Zw0j+cw1G58XuPDDYIYicBHS/hfd5KUAnwZiCI5jXi
- kPkQZUGL5fpDZod1k3J6wz6VHDbmIQ8WWcnIEnGD0fr4y9nip3ya7qH4qiyBa02CwhWgbmSkWfN
- YC9wOBksXL57p4NHyQ6MGyJJYq2R3MBZ55SCJ/ceEOBrtNdVJTjVwlDXiPwr/RP3GG5le/Q9fQS
- d9wnrTz+fwU244fo1iDW7tcgQcUQkTj4XL2I369M9DxG8EuTqjlhxXK7uTQAPUaQ5BB5uaKKIlU
- oDtv9UGPX42jirhbvlQKjPx98Fz/wRVDaicMYVTFcgbprLnesuu4rvlzxrFN8CF0aVL7t9Bn/Fi
- xR9NbHxeFuznx9gp2pSO+kENxuWuc9xXgX+xtYkVQZGm91qM2iLp7HpKP1G3Sj+msgo2cec3eHK
- F70rbcFjW9NZAyXkOjSdCZ0ahpGXazOFiFn2sSEJhQf3+JecwpLM=
+ bh=Ut/IRZsxXHW6O61T2pDCsBqDBfWdqPE0u1OY+IFn1Us=;
+ b=owEBiQJ2/ZANAwAIATR2H/jnrUPSAcsmYgBqW3XpUJy8feyPI6HSGOPW5AGwbaYJxcng7uUW4
+ JQr0OazaMaJAk8EAAEIADkWIQSCdBjE9KxY53IwxHM0dh/4561D0gUCalt16RsUgAAAAAAEAA5t
+ YW51MiwyLjUrMS4xMiwyLDIACgkQNHYf+OetQ9IJfBAAts1/ifBxizf9uCgCTS8lejNZn560srp
+ HA1dCtUf6HHZgstf0w0A0MOV/w/aozYdGH2KGY/3dxnsk/XG9lsWsqqO7LHHrA17BQ09knvvx/3
+ IlLw7v9AJ55hF5jDyIa9aGtIJiyKbamWSjK3/htVtvhY5fPV19XF4eLpxtO4gIjV99uMN1CY4FN
+ DCCxk7vFLXpjlonAjvqMQ4oUMPBWumpRiNOAqNXVc6i5urU//alg2R22IKBCv3vQxLGzsvD4hrj
+ 67T/3zBNDBRuhv9fNGsPxGMt4ypzhH725rVi7P9BGhLuPnA9CNt9AY7+5192JfTpb6scp4XgisL
+ bifINyQGpFymvfUNII0lisFHCp9KdV2aDOvUzF6HVQggtuHq7kOWLHwfI9YbdsYm/L59bSL62sF
+ z1jjlVr0BnML5Jll96azxhdN+Zd5k9XWKibS8dd0eDgFYOUS8JjfV80I03EwP1RZW+gVFXV+nhL
+ ODclIKTCTi6CXb1nQ6rJXekEmzjI5UQ10T9lfmrRQ+8Vstlp5LmnVGvQrutICoMDoVN5VZbdRyo
+ Qm/PArakNSqqJFvbBRz8PLSMQbazdNNFy6PAT66+Bp4Y8C26lzZapElk/gLtxOcC+P+le5sk2f4
+ OCgpKzrQLjt34/alCSDDPJDWJIel4Kt+YJYvKkGRPCyP/kIgK+ko=
 X-Developer-Key: i=markus.probst@posteo.de; a=openpgp;
  fpr=827418C4F4AC58E77230C47334761FF8E7AD43D2
 Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
@@ -121,29 +123,34 @@ Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
   aBeNN4ijKZchBXHPgVx+YtWRHfcm4l8=
 OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
 
-Fix trivial typo
+Those are small fixes discovered by the kernel test robot and Gary Guo
+after the serdev rust abstraction have already been merged.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Closes: https://lore.kernel.org/oe-kbuild-all/202607172113.hLDQgD4l-lkp@intel.com/
+This includes
+- a fix for a documentation typo
+- adding missing `#[inline]` attributes
+- a small structual change for timeout
+
+There is no urgency to merge this.
+
 Signed-off-by: Markus Probst <markus.probst@posteo.de>
 ---
- rust/kernel/serdev.rs | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Changes in v2:
+- resolve Sashiko issues:
+  - reword small parts of the `PrivateData::active` documentation
+  - fix documentation references left to `serdev::Timeout`.
+- Link to v1: https://patch.msgid.link/20260718-rust_serdev_fixes-v1-0-35433b6dce0f@posteo.de
 
-diff --git a/rust/kernel/serdev.rs b/rust/kernel/serdev.rs
-index 0ffcef1849d2..47ca57966abf 100644
---- a/rust/kernel/serdev.rs
-+++ b/rust/kernel/serdev.rs
-@@ -515,7 +515,7 @@ pub fn write_all(&self, data: &[u8], timeout: Timeout) -> Result<usize> {
-     /// [`Device::write_all`].
-     ///
-     /// Note that any accepted data has only been buffered by the controller. Use
--    /// [ Device::wait_until_sent`] to make sure the controller write buffer has actually been
-+    /// [`Device::wait_until_sent`] to make sure the controller write buffer has actually been
-     /// emptied.
-     ///
-     /// Returns the number of bytes written (less than `data.len()` if not enough room in the
+---
+Markus Probst (4):
+      rust: serdev: fix typo in rustdoc
+      rust: serdev: mark small functions as `#[inline]`
+      rust: serdev: document `PrivateData::active`
+      rust: serdev: remove `serdev::Timeout`
 
--- 
-2.54.0
+ rust/kernel/serdev.rs | 82 +++++++++++++++++++++++++++------------------------
+ 1 file changed, 44 insertions(+), 38 deletions(-)
+---
+base-commit: 25acf039a5dbb40b6865d9392e05be8e713a39f3
+change-id: 20260717-rust_serdev_fixes-9baf5f310278
 
