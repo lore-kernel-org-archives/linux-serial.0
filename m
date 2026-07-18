@@ -1,41 +1,41 @@
-Received: from mout01.posteo.de (mout01.posteo.de [185.67.36.65])
+Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 556CA30DD2A
-	for <linux-serial@vger.kernel.org>; Sat, 18 Jul 2026 11:37:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.65
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09E4937703B
+	for <linux-serial@vger.kernel.org>; Sat, 18 Jul 2026 11:37:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.66
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784374625; cv=none; b=FVzr1pD6enUQOQ7COkRDzoSz/niJwLmor8UCCK5QAKXTiq1H//YVxwMj7h1VYrhjcixvKgQ+4kDm0Kyl1RcBX3mWxIbIi5rbeFrISx7ZvsEgxhjxSER+mMobuE0kwa2LMkIlgn8nICp09nkUhdoBht26jY+fBefa7lGcnYFbPb0=
+	t=1784374626; cv=none; b=Wj7UDGupo/GD2HFRVUetZMnXPqP03Xp9Wigb6pY8lL2/1EFCF2ynL/Hh7Wt2gj3YOYzN0IOajGKT1eH5nQ5IOVkfgIdJzM3542bZlPElq1LBJP70H4s0qZdE4UWcZ1umUHrMdGPsxiQ9BUoDz7Y/HzXL+RL6wHRviKmj03jCels=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784374625; c=relaxed/simple;
-	bh=ejBjjZoyNnpyxaqkTKNHNkHtdFFEL9SeyoIKLMqQlYA=;
+	s=arc-20240116; t=1784374626; c=relaxed/simple;
+	bh=LWG/xU/gWy5BpMDMua+aJnjyVbTyKX+yHFE5GjyVz2o=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=sYrm26jjEkXdsdBO78sOUqz205W6HpeYlbSSoGzF2M1pssRkZAsAgSEdOUjyJf8ETGMeY7iUftE2vW1gwb/LPSWOho8jU82svWGypIx8poL0Obq9vUC3ficRJvk1OShZMi8oJUg8WLUgZ2TGT81bczM8Nam/mAW2LzEC6kdFIEo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=CUb3qN9k; arc=none smtp.client-ip=185.67.36.65
+	 In-Reply-To:To:Cc; b=R2EVJ+i1ELi9aa1MYSEVrNTs42vbF5fI2vCx9ujZNyoBObUWOAcs2JfejEij+DOQXQhqnw50FqeUaeGRJU1hylFOUZye/h73taik70UIwaRciFDRhU6TvVu/ZaWWq9ycs7/c0LyPsoXb8Hhn7tX1GdNRRoVOAFIvb0Krh6NF9V0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=J++lZzoX; arc=none smtp.client-ip=185.67.36.66
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="CUb3qN9k"
+	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="J++lZzoX"
 Received: from submission (posteo.de [185.67.36.169]) 
-	by mout01.posteo.de (Postfix) with ESMTPS id 5E7C7240029
-	for <linux-serial@vger.kernel.org>; Sat, 18 Jul 2026 13:36:56 +0200 (CEST)
+	by mout02.posteo.de (Postfix) with ESMTPS id 44841240101
+	for <linux-serial@vger.kernel.org>; Sat, 18 Jul 2026 13:36:57 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de;
-	s=1984.8680eb; t=1784374616;
-	bh=ulyF8m79sw5U2CfdPGNsD4XEEokVxvg7p9l8hRTjR9k=;
+	s=1984.8680eb; t=1784374617;
+	bh=oAAcYcyS9CI0mS14njYT6nch2/6Ab6PkYsuhk40Vh+8=;
 	h=From:Date:Subject:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding:Message-Id:To:Cc:Autocrypt:OpenPGP:From;
-	b=CUb3qN9kk4SxYqj8Io13wDXQTEPmg0ipIoN120QiwRp/6edupLT5pZ5vjDWaIz8+v
-	 62xd9OvGf6Y/GpvUPQG4H2HuraU53CuxrvmkNOfsHJU4WZIY56o58FNpyD2ij1mK8S
-	 Em4NdNFUMLKsw1QPcYMeQmgmzW9odGaicVmOxqIggvTXf8l8vW74W6RIkndX+g9beo
-	 YujR9ioX4eK5v7KdTm8FaLqkbwKEudKIVnTYuf5kT9RV+XLcpud19PUzreDLlgexGf
-	 eIvVcyABU+6JjxYfDrFbSqwviwYn8ZxuljNE+zLRTIX2Io4pR30VHJ6clUl2Jidpsc
-	 FUi67kb941Maw==
+	b=J++lZzoXcdYd1xoqslB/N/sg+5kAd+1RKRyi5FCnBjlS1NlA7TYaXH4BgcEK4Y4MI
+	 V7/kX6SuOnwMpLLX5N8h6cRL+KJ/Q8Dt+fxe5aqqHG3I1YKHfzyI5wBJEQg3i/uW4J
+	 6fSJfr69tl3sBxPAZSSYnpFmzvL8QcfEwiqDmtfFV/Hqy8AnxY9vrDzL4TbLttB178
+	 JX58rvvSfvzXa6wTDDrzFR80X/vkcZecTivNk5PLvDvTR2ZzhswkCFuGWr3e2mMMu7
+	 lCj4ZVaNQIB+kmEabpiKBYOck9UCfRu/sVXuRM5EG5z1cmKad7ZqcRRwH5vQzZZMVr
+	 vP875/gfomWRg==
 Received: from customer (localhost [127.0.0.1])
-	by submission (posteo.de) with ESMTPSA id 4h2PrQ2MKcz6tx8;
-	Sat, 18 Jul 2026 13:36:54 +0200 (CEST)
+	by submission (posteo.de) with ESMTPSA id 4h2PrR4PgSz6tyL;
+	Sat, 18 Jul 2026 13:36:55 +0200 (CEST)
 From: Markus Probst <markus.probst@posteo.de>
-Date: Sat, 18 Jul 2026 11:36:55 +0000
-Subject: [PATCH 2/4] rust: serdev: mark small functions as `#[inline]`
+Date: Sat, 18 Jul 2026 11:36:56 +0000
+Subject: [PATCH 3/4] rust: serdev: document `PrivateData::active`
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -44,7 +44,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260718-rust_serdev_fixes-v1-2-35433b6dce0f@posteo.de>
+Message-Id: <20260718-rust_serdev_fixes-v1-3-35433b6dce0f@posteo.de>
 References: <20260718-rust_serdev_fixes-v1-0-35433b6dce0f@posteo.de>
 In-Reply-To: <20260718-rust_serdev_fixes-v1-0-35433b6dce0f@posteo.de>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
@@ -60,21 +60,21 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  =?utf-8?q?Onur_=C3=96zkan?= <work@onurozkan.dev>
 Cc: linux-serial@vger.kernel.org, rust-for-linux@vger.kernel.org, 
  linux-kernel@vger.kernel.org, Markus Probst <markus.probst@posteo.de>
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3954;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1839;
  i=markus.probst@posteo.de; h=from:subject:message-id;
- bh=ejBjjZoyNnpyxaqkTKNHNkHtdFFEL9SeyoIKLMqQlYA=;
- b=kA0DAAgBNHYf+OetQ9IByyZiAGpbZVKgTltNEyNJkZWgJniJc8XSu0AuaPcj4GNXyRvFxPUGQ
- YkCTwQAAQgAORYhBIJ0GMT0rFjncjDEczR2H/jnrUPSBQJqW2VSGxSAAAAAAAQADm1hbnUyLDIu
- NSsxLjEyLDIsMgAKCRA0dh/4561D0tCTEACicEF95ADLKEzGUlOk+fnClGB8XAQBBt4ex6+zpl+
- G11tuwvqM+t5ab1wddzOGgpbTX21bs4gXLMKwe8gtqfM9giG4lcx8hg/+eNFwuNae9rfQ3NxXbn
- eoCwUM7eaC9LJYgwzsdHhoahyIvKYJEpGWf3Rz5df63o8zJfKquMz2sDf8NO29xswQVztyd32Vl
- 6TKmYbdFaMQn+VnJaLLQnSIbT37n4kx50Hf3dNsummS7mqHr1Y39MhKlPNecEbUfM7pgpRO2+J1
- kKLT98owurR9U5TSHHTJqkUxQjF7U9paZTdrmiGNh7kPRDQ276CkKf5zdyQdqm78Rqi+4Hmd/KC
- pkp1KsER3OtNr5OyQmC5kTCH+MFZ4ZGGYgzoVbkNCTHNpd9FQnTuvYnuIQ0pA1y6pGP3hV1E8XJ
- 6l7HDWewoyqNSlU5tWg398mAQvrCWjgeSB8PgoFhr7T+O+61LYHo96frqeUw6R98GfhtJpyvwpG
- o54N/907bMcsFhSP/X9Ndvdl8mvdOjLZ+Z7q2LiIpcgokxbiZgIuVUuWKJ0m5XPXEzQVM0P4WcN
- A+6OjHI5ZS8fTL4l7tsRE/PJ7iM/Kwc5YAEpkElGjJuGBmjCy81m3g6CNmMxppm/FJJnE+qqcsW
- MTx2tGKqR36SdpRQmbArkeX6r7/l2Qi+LwjSZ+8w6NA==
+ bh=LWG/xU/gWy5BpMDMua+aJnjyVbTyKX+yHFE5GjyVz2o=;
+ b=owEBiQJ2/ZANAwAIATR2H/jnrUPSAcsmYgBqW2VSSaVBiF2HjuWrPdyrxT4hn145+0u+emlyX
+ 4rgUnq6BniJAk8EAAEIADkWIQSCdBjE9KxY53IwxHM0dh/4561D0gUCaltlUhsUgAAAAAAEAA5t
+ YW51MiwyLjUrMS4xMiwyLDIACgkQNHYf+OetQ9KCmRAAmUi6UbLmbUpCBbZyNJtOYoKQT32hCVQ
+ qrBUrxTiLJzpUmgZtUOYEIo2KDnuHJWdoYwKZMAHqiGrEQW8s0JFCMI2KObn+E4S0/kvqq83ziY
+ b9niuvWPJrcd6/IaBihPX6amNXLI2tqllW/40+DLxc0qq0QC0vrvmu9dhfTWUuOIzwltiEaYjA0
+ HLtzPqiQ4nh7EQaSnRux0rNgyIiviPAJwJmMHaojxEZtTxsJt7NmXv0njqlm6ldzaoYBOC8l5Mj
+ VRw+ZDsTNE5iv6jR7n7X5Okhpo0PWJLU/Osot4Ajp9/+H2qeiQ+bjn50FotU3nY0waaqL4qdJuS
+ 2eLQpBLvw0nWwo7GyoOnsPKTBqUmQqnOGzRsi6osS36YN0Vbq6vPhFnxa1OET90EpWyZgZsj4l9
+ O+eg5dVO6DJVfL1OrLZg2T9ytb5y99lFFFE0ZEvziO3Qj4qX73DPpDiuxHBCuhvt75hLFPirj/Z
+ b1N36fzUXrDSqxl30+ovvaiJQoBD7WLqwnXZoO4XIYRfUheGHiD4YrRFBXoWXAQ8pkXoYrg5fH8
+ EyAOKAMnb/15FeQNYg4dqfdjncQtkCtnx09IV5lDvvu1AnoJJEwJKE0FCFbXa06urR0G/3wZ/fh
+ mqnCt4IujWxGWjN17kbbYRIQOXVKkduN6AmNnCVBhODfpmG4g3Kw=
 X-Developer-Key: i=markus.probst@posteo.de; a=openpgp;
  fpr=827418C4F4AC58E77230C47334761FF8E7AD43D2
 Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
@@ -120,83 +120,44 @@ Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
   aBeNN4ijKZchBXHPgVx+YtWRHfcm4l8=
 OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
 
-These methods should be inlined for optimization reasons.
+Gary pointed out that it isn't clear for what the mutex is used for,
+thus adding documentation comments for it.
 
 Suggested-by: Gary Guo <gary@garyguo.net>
 Link: https://lore.kernel.org/rust-for-linux/DK0SX3P5K1J6.1OV4ETJMXW83R@garyguo.net/
 Signed-off-by: Markus Probst <markus.probst@posteo.de>
 ---
- rust/kernel/serdev.rs | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ rust/kernel/serdev.rs | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
 diff --git a/rust/kernel/serdev.rs b/rust/kernel/serdev.rs
-index 47ca57966abf..79d61c6ceeec 100644
+index 79d61c6ceeec..3556fe066ace 100644
 --- a/rust/kernel/serdev.rs
 +++ b/rust/kernel/serdev.rs
-@@ -440,6 +440,7 @@ pub struct Device<Ctx: device::DeviceContext = device::Normal>(
- );
- 
- impl<Ctx: device::DeviceContext> Device<Ctx> {
-+    #[inline]
-     fn as_raw(&self) -> *mut bindings::serdev_device {
-         self.0.get()
-     }
-@@ -451,6 +452,7 @@ impl Device<device::Bound> {
-     /// Common baudrates are 115200, 9600, 19200, 57600, 4800.
-     ///
-     /// Use [`Device::write_flush`] before calling this if you have written data prior to this call.
-+    #[inline]
-     pub fn set_baudrate(&self, speed: u32) -> Result<(), u32> {
-         // SAFETY: `self.as_raw()` is guaranteed to be a pointer to a valid `serdev_device`.
-         let ret = unsafe { bindings::serdev_device_set_baudrate(self.as_raw(), speed) };
-@@ -464,6 +466,7 @@ pub fn set_baudrate(&self, speed: u32) -> Result<(), u32> {
-     /// Set if flow control should be enabled.
-     ///
-     /// Use [`Device::write_flush`] before calling this if you have written data prior to this call.
-+    #[inline]
-     pub fn set_flow_control(&self, enable: bool) {
-         // SAFETY: `self.as_raw()` is guaranteed to be a pointer to a valid `serdev_device`.
-         unsafe { bindings::serdev_device_set_flow_control(self.as_raw(), enable) };
-@@ -472,6 +475,7 @@ pub fn set_flow_control(&self, enable: bool) {
-     /// Set parity to use.
-     ///
-     /// Use [`Device::write_flush`] before calling this if you have written data prior to this call.
-+    #[inline]
-     pub fn set_parity(&self, parity: Parity) -> Result {
-         // SAFETY: `self.as_raw()` is guaranteed to be a pointer to a valid `serdev_device`.
-         to_result(unsafe { bindings::serdev_device_set_parity(self.as_raw(), parity as u32) })
-@@ -487,6 +491,7 @@ pub fn set_parity(&self, parity: Parity) -> Result {
-     /// Returns the number of bytes written (less than `data.len()` if interrupted).
-     /// [`kernel::error::code::ETIMEDOUT`] or [`kernel::error::code::ERESTARTSYS`] if interrupted
-     /// before any bytes were written.
-+    #[inline]
-     pub fn write_all(&self, data: &[u8], timeout: Timeout) -> Result<usize> {
-         if data.len() > i32::MAX as usize {
-             return Err(EINVAL);
-@@ -520,6 +525,7 @@ pub fn write_all(&self, data: &[u8], timeout: Timeout) -> Result<usize> {
-     ///
-     /// Returns the number of bytes written (less than `data.len()` if not enough room in the
-     /// write buffer).
-+    #[inline]
-     pub fn write(&self, data: &[u8]) -> Result<u32> {
-         if data.len() > i32::MAX as usize {
-             return Err(EINVAL);
-@@ -539,6 +545,7 @@ pub fn write(&self, data: &[u8]) -> Result<u32> {
-     ///
-     /// Note that this doesn't guarantee that the data has been transmitted.
-     /// Use [`Device::wait_until_sent`] for this purpose.
-+    #[inline]
-     pub fn write_flush(&self) {
-         // SAFETY: `self.as_raw()` is guaranteed to be a pointer to a valid `serdev_device`.
-         unsafe { bindings::serdev_device_write_flush(self.as_raw()) };
-@@ -547,6 +554,7 @@ pub fn write_flush(&self) {
-     /// Wait for the data to be sent.
-     ///
-     /// After this function, the write buffer of the controller should be empty.
-+    #[inline]
-     pub fn wait_until_sent(&self, timeout: Timeout) {
-         // SAFETY: `self.as_raw()` is guaranteed to be a pointer to a valid `serdev_device`.
-         unsafe { bindings::serdev_device_wait_until_sent(self.as_raw(), timeout.into_jiffies()) };
+@@ -132,6 +132,23 @@ pub struct PrivateData<'bound, T: Driver> {
+     #[pin]
+     driver: UnsafeCell<MaybeUninit<T::Data<'bound>>>,
+     open: UnsafeCell<bool>,
++    /// Whether `receive_buf_callback` is allowed to call `Driver::receive_buf`.
++    ///
++    /// If locked, the receive_buf_callback will be blocked on data receival.
++    /// This is the case while the driver is being probed or while [`PrivateData`] is being dropped.
++    /// This is necessary, because we need to open the serdev device before the driver has been
++    /// probed in order to allow it to be configured, which allows [`Adapter::receive_buf_callback`]
++    /// to be called. Thus we need to block data until probe completes and the driver data becomes
++    /// initialized.
++    ///
++    /// If unlocked and true, the receive_buf_callback will forward the data to
++    /// `Driver::receive_buf`. This is the normal state of operation.
++    ///
++    /// If unlocked and false, the receive_buf_callback will throw away the data.
++    /// This is only the case, if the serdev device is open and
++    /// - the driver returned an error in probe
++    /// or
++    /// - the driver data already has been dropped, because it was unbound.
+     #[pin]
+     active: Mutex<bool>,
+ }
 
 -- 
 2.54.0
