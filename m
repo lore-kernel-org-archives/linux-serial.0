@@ -1,169 +1,128 @@
-Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB2D93A782B
-	for <linux-serial@vger.kernel.org>; Sun, 19 Jul 2026 16:09:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.66
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 449E2233D9E
+	for <linux-serial@vger.kernel.org>; Sun, 19 Jul 2026 22:10:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784477372; cv=none; b=q59TdVPvapDATBMKfXtUh+OfSio78C5m0Nw1Vz4TpHuT9YCpsvWVFRMa0H7rri5H8HXybOCRXr82GbAt9+eHkpXidTqMJ+s4lJPkFW9F9B11adBz+nuk8TlP/OYbqvdKMClIj4mbmvwbBtm/ALwNYY4r6PRjLXO7yT+zWpFTw8Y=
+	t=1784499033; cv=none; b=fPUkCc8YsbkSxRd/dCAVBzVB0HW5/WKLCN7ct9v1oHKKsw5dvzN2lbWHZexI3MMllDNGxEKu6jabK/iRgaa8/RO1784I4lgw73hEOcCO8hxE2cYqdtvwAJgoWMIzw9xeI7s6OsDjVI1QDno3XjkoecjzlCJ4qGiHTKdwK1t2luk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784477372; c=relaxed/simple;
-	bh=5j0+Q+8f9tUfn8r5/ID+yQmL1h8HTn3VdOrsDpaCmw8=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=N6paRMBe4VXdTVAxDcXAlBtIJEVEakr5bKLMoxRGlQFuAyjLuh3+9gMiz1Tk8AWh/SQQjWCT7gB/ZoX3e4MXzU4JMcLZFlOhg5LpmJIUtHyrg4feX8nkzf1q6dRNVlidVx7lv+q3esseUd1q83Qpp/dx1ySO4tNCSFWloCO1/f8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=Ls3PK8ha; arc=none smtp.client-ip=185.67.36.66
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
+	s=arc-20240116; t=1784499033; c=relaxed/simple;
+	bh=WKG4aYWvJjBpvDHeWFwlKSa+4vrtqttZ1i+2fGHy390=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=IWBYJ7w69iuXH8X8CiH7LShC0qZXaoCwRtlqow8yRNYItwtQhm0/CVKGuteM5qLEszVTBmdgjzxOzm3uvhKJDhseoBa/7QZKMilNEUU6AsSawh3sgTBgFsLUv4Vbh8uc57xSWlruR1wMjUTj8w34tN+4E1rhEv+8tILXnxSLTF0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Zqmh9wOq; arc=none smtp.client-ip=209.85.128.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="Ls3PK8ha"
-Received: from submission (posteo.de [185.67.36.169]) 
-	by mout02.posteo.de (Postfix) with ESMTPS id E56F9240108
-	for <linux-serial@vger.kernel.org>; Sun, 19 Jul 2026 18:09:21 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de;
-	s=1984.8680eb; t=1784477361;
-	bh=5j0+Q+8f9tUfn8r5/ID+yQmL1h8HTn3VdOrsDpaCmw8=;
-	h=Message-ID:Subject:From:To:Cc:Date:Autocrypt:Content-Type:
-	 MIME-Version:OpenPGP:From;
-	b=Ls3PK8ha/BcdA5Ioo8nsrQMOOtvxWxMvwBl9mpuUT6/Hol3atBR/F5lfiv89/TAAk
-	 YvB7o/8wu+COL1YxPWnbaC+rNQCQaxlhZAmhNDfGCh6OsfFXkKfqBC3oQWgboD4RcU
-	 nH8DBWacyGHCo7lQ3Rbyf/EkiaclGt9+g9ayIRMH6MYfF2veReBpMpdL/XbGc8TLYc
-	 daqfQVbDMFxafJUA3BEP3CumVob39IYJihqdu1o3d5iFdZdrIwwhyuD6OZGqLfAEoj
-	 /801vf1lmtl+TkO6ltyVoldk8mQ7lT9QCoBP9H35tna0ujIDbUS7SOmhUMsC21MQAB
-	 ieHUhIwFqZVOQ==
-Received: from customer (localhost [127.0.0.1])
-	by submission (posteo.de) with ESMTPSA id 4h37rH238Kz6txq;
-	Sun, 19 Jul 2026 18:09:19 +0200 (CEST)
-Message-ID: <128bd2f0b3369f2eff43357483565a74700cd5c4.camel@posteo.de>
-Subject: Re: [PATCH v2 0/4] rust: serdev: trivial fixes
-From: Markus Probst <markus.probst@posteo.de>
-To: Danilo Krummrich <dakr@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Miguel Ojeda	
- <ojeda@kernel.org>, Boqun Feng <boqun@kernel.org>, Gary Guo
- <gary@garyguo.net>,  =?ISO-8859-1?Q?Bj=F6rn?= Roy Baron	
- <bjorn3_gh@protonmail.com>, Benno Lossin <lossin@kernel.org>, Andreas
- Hindborg	 <a.hindborg@kernel.org>, Alice Ryhl <aliceryhl@google.com>,
- Trevor Gross	 <tmgross@umich.edu>, Daniel Almeida
- <daniel.almeida@collabora.com>, Tamir Duberstein <tamird@kernel.org>,
- Alexandre Courbot <acourbot@nvidia.com>, Onur =?ISO-8859-1?Q?=D6zkan?=	
- <work@onurozkan.dev>, linux-serial@vger.kernel.org, 
-	rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org, kernel test
- robot	 <lkp@intel.com>
-Date: Sun, 19 Jul 2026 16:09:21 +0000
-In-Reply-To: <DK1R9VZND2NS.36X0BL0F957OI@kernel.org>
-References: <20260718-rust_serdev_fixes-v2-0-e5214e03de13@posteo.de>
-	 <DK1R9VZND2NS.36X0BL0F957OI@kernel.org>
-Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
- keydata=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
- jfGillcaQOqFZ3WwVqyzG1BUfTow==
-Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-BiYm2L4aK4rtF4SVsgXx"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Zqmh9wOq"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-490cf322ed0so65467795e9.1
+        for <linux-serial@vger.kernel.org>; Sun, 19 Jul 2026 15:10:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1784499030; x=1785103830; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=uvinVPUoJhsV28WHeBTxSrSEvMvTNBW/BR+fiFjpbyw=;
+        b=Zqmh9wOqwswtCaok+JlxkCnZuHy0FaHAGJhZWDuh0GGeAoCjYYFusPqcedsEsh7aC3
+         FkWT7SW/I7uG2+97nx67UMma6wdw/jecMmQlpxBlu74pOXjWNizU33/A7k9Bw8FWyIVN
+         gQSGeYTajuBvkcv4UWLgpv591jDAzwBeNpZgMAm+NKsdlzeQGpLT0dELtV52wF8nueOY
+         Um+CQ135Mt+2BBShuJM2dJWSZYDBky1B6UHVzxuVUeDrFXTSgcRswgBJg4KQQQS6Ma+u
+         2Z7cbPBdcsh8Uy0DM97oMYG+G2UAk5DlXRl9pRHMmhY78kUyxsmAGJXX0iGoYwlMPo0E
+         7ywQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784499030; x=1785103830;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=uvinVPUoJhsV28WHeBTxSrSEvMvTNBW/BR+fiFjpbyw=;
+        b=gvYIppuVNMYUkrERzz6KJVQQtWUmNHJs+yd2VrgxUBX3PCZRlXhCLrFVB5U1Bt4d2u
+         FL7lw/eVKDQgOiKMYaorgqEOkZ6nUi8AnDzdPf5bCrCo9zkQ5PSnFlSdk5z76z8vqm2F
+         2E/2SHjQVfoZLWtwMrCAiL1SYDUnd7WyV00Amqcdqi/pfiiiMF0SbeEt5ODuIiRL8g0I
+         6pn7fhr1TvQqbkRnoOXH2gDuSGHQlt7RGurhPEUEnw1xj2Gw9584tlTuiLhRWSVdO8y9
+         kj6k3z2MhyV7mb2tbTTPu4vsdb4sNh58BJsCWGpvT6fP9JK4vnrnhRc4ddBkxVngg/7N
+         bIIg==
+X-Forwarded-Encrypted: i=1; AHgh+RoEDvyJolXbT6o4kfucnPHtLIGNZn2T/5ZSHjhIkOJUFUVORd7JFni+792XfoRG0CbSObrJK1h+qh/Z8tg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxZIQeRa7ub6W3tOzOe0tF5c69rIPk/ckF1WPcx/1SfHjIanVYN
+	Fgrub+lSPduJuRdwiacoDLry7Vm9Jc/oyrbmMbZ7XBJ6d5iYxLyFBvSq
+X-Gm-Gg: AfdE7clcbspnR2KejGvA+GQYyVNQyAhf3IHm/eFXpdc5zCm8ho3Yq6q4PHP9GaqmQ4m
+	Ty3GPUX7HRZEwCJrNotzy6uoGZA1iQLUg02ZXD13CWOMyzf0kXFKFIea04hMd7F6MM7kKzVNQ6w
+	o9g3v4NCG5h7kJP5zQQy9aYL42YLzTiDrOmb4m546rOWAeBDvrtsx4SlkrfDCFafSULayuBGQo9
+	jSytfdl9N7US7ZBHVGe9tHlPmWdtTFkL9GY65Gx7xe/u0ZG7itOgo5xEvw9z0Fb06joQ0wjz4Yt
+	l/8yzUGs93+ZlVyXdQ0l2KCZgEjzJF9Y6ySqP/wdjFLReNwJF6TuHj84tFg6A4bMwBOduj3oowd
+	seGKv0h351xjdNn2a9kqHg7bsOI8FvnQ9AFkHvwS+8+hqDtcMgrkTj6XXXFOe0/LzEZwpp5FNpo
+	2GaWLOt0Lh8YkVxgBkHWrkFcWK6rtmRsP7Z2AFdp9F72EOHxTU6DxsPiBYegXWD30cenf95O6Ln
+	d3/wUefuKV7cxZBv21Hr07975qKTNBK5yo8bX126oOLdSyC0D0crBEU12t2T2l8tm/aQ7U3N8or
+	znKpJMIj0MJ2AFdJxgWYdQru
+X-Received: by 2002:a05:600c:c117:b0:495:4b1d:915f with SMTP id 5b1f17b1804b1-4954b1d91ffmr117504925e9.23.1784499030391;
+        Sun, 19 Jul 2026 15:10:30 -0700 (PDT)
+Received: from MacBook-Pro-von-Karl.localdomain (dynamic-2a02-3100-aeaf-bd01-78a0-2a2d-507f-c97c.310.pool.telefonica.de. [2a02:3100:aeaf:bd01:78a0:2a2d:507f:c97c])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4955370d78csm114492445e9.12.2026.07.19.15.10.29
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Sun, 19 Jul 2026 15:10:29 -0700 (PDT)
+From: Karl Mehltretter <kmehltretter@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: Karl Mehltretter <kmehltretter@gmail.com>,
+	Frank Li <Frank.Li@nxp.com>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	imx@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v2 0/4] serial: fix console lifetime bugs on failed bind and removal
+Date: Mon, 20 Jul 2026 00:10:10 +0200
+Message-Id: <20260719221014.44354-1-kmehltretter@gmail.com>
+X-Mailer: git-send-email 2.39.5 (Apple Git-154)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
+Content-Transfer-Encoding: 8bit
 
+This series fixes three serial/tty bind-error bugs and an i.MX console
+port-table lifetime bug. The fixes were found with failslab fail-nth sweeps
+and sysfs bind/unbind sequences under KASAN on QEMU's raspi1ap and
+mcimx6ul-evk machines.
 
---=-BiYm2L4aK4rtF4SVsgXx
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Patches 1-3 fix shared serial/tty core code. Patch 1 moves fallible serial
+core allocations before console registration; patch 2 clears serial-core
+pointers after uart_driver registration fails; and patch 3 makes a non-NULL
+tty cdev slot mean that the cdev is live.
 
-On Sat, 2026-07-18 at 16:10 +0200, Danilo Krummrich wrote:
-> On Sat Jul 18, 2026 at 2:47 PM CEST, Markus Probst wrote:
-> > Those are small fixes discovered by the kernel test robot and Gary Guo
-> > after the serdev rust abstraction have already been merged.
-> >=20
-> > This includes
-> > - a fix for a documentation typo
-> > - adding missing `#[inline]` attributes
-> > - a small structual change for timeout
->=20
-> Thanks for the quick follow-up, the patches were only in the -testing bra=
-nch, so
-> I dropped them from the queue.
->=20
-> Can you please integrate those changes into the original patches and rese=
-nd?
->=20
-> Thanks,
-> Danilo
+Patch 4 clears i.MX's devm-allocated port-table entry on probe failure and
+removal. It keeps the entry valid through console unregistration and
+serializes the table updates against sibling probes.
 
-Hi,
+Backporting note: the probe-failure half of patch 4 relies on patch 1, which
+ensures that uart_add_one_port() cannot fail after registering the console.
+For complete coverage, patches 1 and 4 should be backported together.
 
-The patches have been integrated into
-https://lore.kernel.org/rust-for-linux/20260718-rust_serdev-v16-0-5809384d2=
-e1b@posteo.de
-.
+Validation for patch 4 includes reproducing the sibling-probe race under
+KASAN with and without the fix, a sequential unbind/rebind regression, and
+the same test with CONFIG_PROVE_LOCKING=y. The fixed kernel keeps the
+console unregistered and survives an explicit printk in each applicable run.
 
-As they haven't been picked up again yet, I assume you want to wait to
-allow for comments to be written.
+Changes in v2:
+- Patch 4: serialize port registration and removal with imx_uart_ports[]
+  updates to close the reported sibling-probe race.
+- Patches 1-3 are unchanged.
 
-Thanks
-- Markus Probst
+v1: https://lore.kernel.org/r/20260719160812.35407-1-kmehltretter@gmail.com
 
---=-BiYm2L4aK4rtF4SVsgXx
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
+Karl Mehltretter (4):
+  serial: core: do fallible allocations before the console can be
+    registered
+  serial: core: clear freed pointers on uart_register_driver() failure
+  tty: don't oops in tty_unregister_device() when no cdev is registered
+  serial: imx: serialize imx_uart_ports[] lifetime
 
------BEGIN PGP SIGNATURE-----
+ drivers/tty/serial/imx.c         | 21 ++++++++++++++++++--
+ drivers/tty/serial/serial_core.c | 33 ++++++++++++++++++--------------
+ drivers/tty/tty_io.c             |  6 ++++--
+ 3 files changed, 42 insertions(+), 18 deletions(-)
 
-iQJPBAABCAA5FiEEgnQYxPSsWOdyMMRzNHYf+OetQ9IFAmpc9pkbFIAAAAAABAAO
-bWFudTIsMi41KzEuMTIsMiwyAAoJEDR2H/jnrUPSz5kQAKOBVC0vSgi6aDXWZO+K
-dr1Ug/Ipswr9SeiNtXQbxqTtl/Y3wWZFLdvDKkNDAMbnT62GaXsaqjkIFknU0Z6x
-YPlVDR1D51MMclaLp7Ls7CDGf/xtWjDg7JqdnLg0pCqXVX6xmG9RKWQ3lmJJlA17
-bJdgFfZsPz04HblKvcrynKRWuf38Oi+RlQMk8j0ypvmWnk3udemHH+NA08NXx3LK
-JTVsMQJBd72+99HOGKp5xiacRQol9lRqd9tSFFWF9eYaMviD/1wQgnSqPrQ3T+nx
-5JauBQr/WSteBCzC+Kzv0XIxzLKTKuajh+xfivklU2BzND89YEZUc/Ok7tGxwpdR
-8UFzFFdITc1jrVJaVM+GfKhJshGRIKfM2NR6dI4DbSptXC0aOYS8GRbZx+OUgHuR
-rEPmg7tX1ebSR4Ftz/kRR5jlYVRUeuDsQXOKyOkU6yryZqxRxzNPLDYESanS0kjD
-KIQG7zfma0k8B5KGmhlkKQXgcj0D63pCTjMTKTGurcaAR9QCeV41bNo1qn136B/p
-VUu+KwuHEXedZTQYbCnTENHt+l0oTbiCayLx9vaeSeNFfcUlqLzcVMrOGCGtmZcV
-NEh3t5rufL+xZiLiKnDV64o4d2Z8BwCy+GKniyylmWSDyJ4AT0NB6pf2tEiQZYbq
-w0it182pWV1ljoIe9VuK+vnh
-=cnZu
------END PGP SIGNATURE-----
-
---=-BiYm2L4aK4rtF4SVsgXx--
+-- 
+2.53.0
