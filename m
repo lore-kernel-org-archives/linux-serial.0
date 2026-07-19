@@ -1,65 +1,65 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D12633115B8
-	for <linux-serial@vger.kernel.org>; Sun, 19 Jul 2026 22:10:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EDDF233D9E
+	for <linux-serial@vger.kernel.org>; Sun, 19 Jul 2026 22:10:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784499044; cv=none; b=IEbUsZsDDDoYWHM1zygu2tIlSMFGqD7OoTNduI23FR8tKvSZTl6TQpXEMC01cwJqNYIvLc67vfkkJHhVmAItuLjQb59OYiJNiNU6AUEkKCdB77iSoCUUDcOZ+f24P540pWOWzRpHUXwLYDFbUXlAzlaS3wAId41LogFgavxVw38=
+	t=1784499049; cv=none; b=Aw82wNbmw1eZFfhcz5ULq4+9St3KnWUo4bYKTXqcRDHB+tGQXSWVJirVK6ELoE5R/o+yKMbKPM8E05pOmRyg2hw0VcUFKz9NO+AmFqcY//Uw3e+BdxnfALFObbWa4nt485vnS4JaF45Yc6LHrwP0dLhF3p29YdXpQ6J5E5elWtQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784499044; c=relaxed/simple;
-	bh=dUEaJRxUr1v76K2SCkn5RSwlmWHDmcrArC8H6gE7+XA=;
+	s=arc-20240116; t=1784499049; c=relaxed/simple;
+	bh=xep+DbUTODAyiI61W5CCxIKqMCWLvMAtORFdzKJXX9g=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=OoHetSnSEZ0DNOGBIq4ZlgXbhC+yRJ+FWkGdUVI+ESVemiaztbRzP3SOuKBPL8XOu/t5/W9QxQoicRR83i6DAdR44QCIFSCNmNUrRsojD6xWGZ5l/VdbC8eHQdYdw4ae10ITadRxHWTlhBSWQgvcflGS1QI+Wyjezk3MThPebn0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rAG0/pVo; arc=none smtp.client-ip=209.85.128.45
+	 MIME-Version; b=SlQb+v4cMlFgb0wfiJtBHlOpdpwOpp+vNHRaxS29PlVSFQoONFWJ7UoCbvir8ecNVpGZyNysWab1yV3feyUDpC86ImrXbYoB/jFIc/1C2Pj/BWok+kZAGfJGF8TaWTcgrX21INKywLyAVydq3vuFUl+b7eU0MuY63WPjnowr0vs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qruG3Nyg; arc=none smtp.client-ip=209.85.128.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rAG0/pVo"
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-4955e639f5dso2368315e9.0
-        for <linux-serial@vger.kernel.org>; Sun, 19 Jul 2026 15:10:42 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qruG3Nyg"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-493f6de72faso21913245e9.0
+        for <linux-serial@vger.kernel.org>; Sun, 19 Jul 2026 15:10:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784499041; x=1785103841; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1784499047; x=1785103847; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=y2WnfrXCKBHilw+RfhMqIc4Ta8+VRnPx7kVZTMW2Ow4=;
-        b=rAG0/pVoxVjxY2l/TQcjuXeD8jEmCWPDakt8X1yRht+XSuWEJ2Luaysq4JCRXCMDM9
-         MFmDqXTjpCXTfhRBXTzZ5KffvqnLbhgDB0udBGFahQ8J7+21tgc1KjMRi6qqMmV/XRik
-         zcgbzI33V9rrpuBpZRUc5q+5H0aTmxnJRB6W8KQRN6Rb9ZWIa7ZqbBfnmkcd3OPm4hsQ
-         Se391YiFhE8LUun5QrArMinBRmY9FwhxtuNquHhnIT+mAv3cwZXxgc+3XwXJF2jdoaj3
-         3heWFCrI9zBzW0HxrBHA20rxbLna83AKaIS53OcAi++plna9CHpEH6Tm1GOXJ5sUXFrJ
-         BsVg==
+        bh=T7BUDbPgvu4uYiB0I4Tcu6S0zkTXWIU92UBF/zE/Z4w=;
+        b=qruG3NygUeT3MwGKkZWDoY67KUpNkZjbNfUG/HakYPVTGOE0StN/UW1O0LSYcg/6a9
+         8ZfS+lrz27UleaNUTfbV7XHyb7E8DQjAhjJ0w3FUtGdCWJBCoZOTIP8HpL5hD4Fuea6S
+         TPMbLHmKBHwgde4pPMHgEmB/6ciCjpCf11vvf/f366DOAUqak70MJXMICVFFaKT5nLwh
+         RiUgShY4q3N7rkGfOKVzw2mSUkuSrMnOM+lIeUgN3tvnHvZfmzSWrsqdI5RpXJURyFeC
+         wB0gZopIStURMsgFrYmzHAtiYXS+qn+ELJiNsbH6ymAzUy4AiNPv16nNZML95yUFjDH6
+         K0Dw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784499041; x=1785103841;
+        d=1e100.net; s=20251104; t=1784499047; x=1785103847;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=y2WnfrXCKBHilw+RfhMqIc4Ta8+VRnPx7kVZTMW2Ow4=;
-        b=heS5J70CvJjTOlIQTF6hr7Sa8D86eJCcHhP/HPsM7ZOqUkgey35PP+sQ+jndwaC5Kz
-         bIJZEnimv5ZKt7dDoxQCEchPez7mCPSFIrJTzpEaBAnjoSNtat1bcurgSzlISiWLdgx8
-         mJ/KLUqLecwtQN+WcpT83+1eZSXKmW8p9CvYJfsZjpEftNxSvcjsup9zM4ji7f0VABes
-         34qscjgvBCtr1H6ox6IoBRYs3HhMKCIk2GMQx6sz58TplmP4lspkeJjGljg4HnhxZNUo
-         2mD+pe0YkiCnXE/2do9R9vIvz+awspeceAqcj/Wh/tWWIhgf/sl4YjA2pjVfRvQXLqMK
-         bLhw==
-X-Forwarded-Encrypted: i=1; AHgh+RpIlsel1EVNXc/93OoLnA7E4Lrrlons9z7nMO2XhspE9vjb6/Y5pYaj6LRPZBYgZExCoj4jHMm7gS2zENI=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx4PnJ9NHYq63D01Cu0qHy1EwOVhbkzXnwvdqVe3F8dfy+iEtpK
-	ZXIn4ENn20cAq9hXFZLLS+pfYRGWcl+frUpu0MMalLl6RW2FDYDZ9bJn
-X-Gm-Gg: AfdE7clhYzeOFrr6VKsOzPPFYx9tbxzPjnWdS/JuOs+Z6So+8Ij90zuejKZKqvB5zmt
-	JBqgSZbee5cm4UpcRgO2CvjSvp9ZJ0qDYTbncXZ5Sw0nQanBj1TZE9hFSc7rfph0cHLWkkwaB5p
-	AmkhgU+jwaVR9dBCp7Lv+Vw0upKiBikwyryVPXESWJF2foEvKT5GQgMFmEKTlnGaOQ9e0ThujuZ
-	rHIDqHZABhcgstJJtjJ5w3mJgZ3yBJfxIX2wrG+/v99WxMz/WkJY2Otyqvy2vhhwG8vFhpUNz7b
-	hl6CVVZRdwQmAQG4MyaLrFqsmb6NrhskgakQknb1w25J79ZalyWvCY28myUizUr4mcybig+Bkgo
-	dKsCG8urFvWnt/iECJ91R4gmkutmxNM7DbgjQy+AG1QvyPMGoY6eF8AqbAxQ8gaQClMhNLT5m0u
-	VydQBdyDaL3rl3+ZUdgOkg6I/+GOh0OnaPK82Nvz93+w9QPzLx1ZijekoAjTO/dTBlgC7iv7x8U
-	rKqfbyVJIkE8fChUV3pqfxrRLH7vHW0fZDFD+1uGZTqi/ypehaXe5XiiutacQvjtBYCacB172n/
-	LHIaAe5UpH1gG4DL0foDgbko
-X-Received: by 2002:a05:600c:e558:20b0:495:5cda:52ec with SMTP id 5b1f17b1804b1-4955cda5441mr19986495e9.16.1784499040980;
-        Sun, 19 Jul 2026 15:10:40 -0700 (PDT)
+        bh=T7BUDbPgvu4uYiB0I4Tcu6S0zkTXWIU92UBF/zE/Z4w=;
+        b=Gp26MDNuNusVDhpFDgYreVNtJalvOXoOqRRRl584XvKKBaBUMd+5WcGGBDJEngXgCW
+         Lh6X+pKVaZeIOxQc7wFlTpCP1YNoegrXfUZWvMP6/Iwx3ict4pmcMJ4094VUgrMdSeBI
+         CZfqC9hr1n3qlUqFgRIoBgeul6N3ZjDoK22ldBCdjYfX0CniC+yvQMkEWPN2MahXA2W+
+         4G4NtUjzniQfeopXErFE+FbwJYdiuRsQe11z7Q5Fw6Je7TdLAwkrGIaKJ4wgVZwMnhTA
+         uD1iIMtAsOhvB6ou3zWGOmNvPugxmqvXyZvTEWnr0W5MBRB77qLtvM2wG104qPITh3mj
+         V+0A==
+X-Forwarded-Encrypted: i=1; AHgh+RqHzoKddrjplmmKuv7BzaY088xN9sdTjGtgPcMn4qu2uwXVXmHokPNH0EeUScXPvONZEGVKlh7nKBKXJx0=@vger.kernel.org
+X-Gm-Message-State: AOJu0YypnjRPtnFgOobEev5h9nSbxnEW4H5L9Rkbsb3O25ge+GVIXSb0
+	rZyOD2agy0zdfdxlt4lN3hkUH/hj1/MIAtHzt5YKxo/OVLWWrMrY0Sxc
+X-Gm-Gg: AfdE7ckyX5Nbt5Az3RgvqBCD6Rb/ZRxlNdDVNyLlPW2a/bLdR/jdx0/OYP2lj8lbu0U
+	wXMd1kkKczqagaj9i7EsKtTMIGGvWrLAVDP9F85Gmc9Lhux8hTV6ir3LgeUmZS6gOFdVu/dvti3
+	cbXFRys6k/R0bsk2lkzsLGTvLhStWDjGIY1yz1RNqLQhOEA7bSVzA0OaF41+i4q/dIn0N3+ETvc
+	rK9ie2rKuvkFpaiCoHL8Zw/RG6QhEHiwrMotid9VyV920u627mUs8MYL5EgSgIUrpx1OQ40CnMU
+	486PoRztom5xEDoMwethEoljg7LueYnG1GJCt6WfWOnPhb3E5Ncteh80P2oa0G+ZVLsha64aWx/
+	+wjru9xkemgAHdSW8t5e3YDzwR+0g9Y9SHVLLqHNFjW2kyvg6dWaCe9u2MxZJLHpPihCilJKR9W
+	t22MFgNUyKb3DVo4eiZNYmFKe2VaaPZNkrudLN/5X/k8kud6ihaunByf1Kuu7brDY6ptDVvfQDh
+	j4lfpYd9Pes7zIQQ0Mv0aqU9HXRbSqmc7NB0Iwqa/GWq5ah5udfD/a64woJMRWwERAr6kh3cX36
+	knxqiWvFtxr9Y6duJotgTDbv
+X-Received: by 2002:a05:600d:8443:20b0:493:ecf5:89fd with SMTP id 5b1f17b1804b1-4954a341a2bmr91369185e9.17.1784499046380;
+        Sun, 19 Jul 2026 15:10:46 -0700 (PDT)
 Received: from MacBook-Pro-von-Karl.localdomain (dynamic-2a02-3100-aeaf-bd01-78a0-2a2d-507f-c97c.310.pool.telefonica.de. [2a02:3100:aeaf:bd01:78a0:2a2d:507f:c97c])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4955370d78csm114492445e9.12.2026.07.19.15.10.39
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4955370d78csm114492445e9.12.2026.07.19.15.10.44
         (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Sun, 19 Jul 2026 15:10:40 -0700 (PDT)
+        Sun, 19 Jul 2026 15:10:45 -0700 (PDT)
 From: Karl Mehltretter <kmehltretter@gmail.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>
@@ -67,9 +67,9 @@ Cc: Karl Mehltretter <kmehltretter@gmail.com>,
 	linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH v2 2/4] serial: core: clear freed pointers on uart_register_driver() failure
-Date: Mon, 20 Jul 2026 00:10:12 +0200
-Message-Id: <20260719221014.44354-3-kmehltretter@gmail.com>
+Subject: [PATCH v2 3/4] tty: don't oops in tty_unregister_device() when no cdev is registered
+Date: Mon, 20 Jul 2026 00:10:13 +0200
+Message-Id: <20260719221014.44354-4-kmehltretter@gmail.com>
 X-Mailer: git-send-email 2.39.5 (Apple Git-154)
 In-Reply-To: <20260719221014.44354-1-kmehltretter@gmail.com>
 References: <20260719221014.44354-1-kmehltretter@gmail.com>
@@ -81,59 +81,59 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-uart_register_driver() leaves freed pointers behind on failure. If
-tty_alloc_driver() fails, it frees drv->state without clearing it. If
-tty_register_driver() fails, it also drops the tty driver reference
-without clearing drv->tty_driver.
+serial_core_add_one_port() keeps a uart_port when tty device registration
+fails so setserial can still use it. It marks the port UPF_DEAD and
+returns success. Removing the port later reaches tty_unregister_device(),
+which unconditionally passes driver->cdevs[index] to cdev_del().
 
-Several drivers register the uart_driver lazily and use drv->state as
-an "already registered" sentinel. After a failed registration, the
-next probe sees the stale pointer, skips re-registration and calls
-uart_add_one_port() with freed state.
+The slot does not always contain a live cdev. A serdev registration error
+other than -ENODEV returns before tty_register_device_attr(), leaving the
+slot NULL. If cdev_add() fails, tty_cdev_add() drops the cdev reference
+but leaves the slot pointing at freed memory. The later cdev_del() is
+therefore a NULL dereference or use-after-free.
 
-The resulting unwind can call uart_unregister_driver() with a NULL or
-dangling drv->tty_driver and oops in tty_unregister_driver():
+The NULL path was reproduced with failslab during UART bind on qemu's
+mcimx6ul-evk and raspi1ap boards:
 
-  Unhandled fault: page domain fault (0x01b) at 0x00000018
-  PC is at tty_unregister_driver+0x10/0x68
-  LR is at uart_unregister_driver+0x1c/0x60
+  Unhandled fault: page domain fault (0x01b) at 0x00000038
+  PC is at cdev_del+0x14/0x34
 
-Reproduced with failslab fail-nth injection on qemu's raspi1ap board:
-fail the tty_alloc_driver() allocation during a sysfs bind of the
-PL011 port, then bind again in the same boot.
+Clear the slot after cdev_add() fails and only call cdev_del() when it is
+non-NULL. This makes a non-NULL slot mean that a live cdev is registered.
 
-Clear drv->state after freeing the state array and clear
-drv->tty_driver after dropping the tty driver reference, as
-uart_unregister_driver() already does.
-
-The tty_register_driver() failure case predates Git history. The
-tty_alloc_driver() failure case was introduced by commit 9e845abfc8a8
-("serial: fix NULL pointer dereference"), which made that error path
-return cleanly instead of crashing in put_tty_driver(NULL).
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Fixes: 9e845abfc8a8 ("serial: fix NULL pointer dereference")
+Fixes: c1a752ba2d6b ("tty: don't leak cdev in tty_cdev_add()")
+Fixes: 8cde11b2baa1 ("tty/serdev: add serdev registration interface")
 Cc: stable@vger.kernel.org
 Assisted-by: Claude:claude-fable-5
 Signed-off-by: Karl Mehltretter <kmehltretter@gmail.com>
 ---
- drivers/tty/serial/serial_core.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/tty/tty_io.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 887b1dd80ad2..ba9145c5a38a 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2777,8 +2777,10 @@ int uart_register_driver(struct uart_driver *drv)
- 	for (i = 0; i < drv->nr; i++)
- 		tty_port_destroy(&drv->state[i].port);
- 	tty_driver_kref_put(normal);
-+	drv->tty_driver = NULL;
- out_kfree:
- 	kfree(drv->state);
-+	drv->state = NULL;
- out:
- 	return retval;
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 6b283fd03ff8..4889076b975f 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -3167,8 +3167,10 @@ static int tty_cdev_add(struct tty_driver *driver, dev_t dev,
+ 	driver->cdevs[index]->ops = &tty_fops;
+ 	driver->cdevs[index]->owner = driver->owner;
+ 	err = cdev_add(driver->cdevs[index], dev, count);
+-	if (err)
++	if (err) {
+ 		kobject_put(&driver->cdevs[index]->kobj);
++		driver->cdevs[index] = NULL;
++	}
+ 	return err;
  }
+ 
+@@ -3305,7 +3307,7 @@ EXPORT_SYMBOL_GPL(tty_register_device_attr);
+ void tty_unregister_device(struct tty_driver *driver, unsigned index)
+ {
+ 	device_destroy(&tty_class, MKDEV(driver->major, driver->minor_start) + index);
+-	if (!(driver->flags & TTY_DRIVER_DYNAMIC_ALLOC)) {
++	if (!(driver->flags & TTY_DRIVER_DYNAMIC_ALLOC) && driver->cdevs[index]) {
+ 		cdev_del(driver->cdevs[index]);
+ 		driver->cdevs[index] = NULL;
+ 	}
 -- 
 2.53.0
