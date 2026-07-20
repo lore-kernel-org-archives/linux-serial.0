@@ -1,127 +1,180 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1E96434E36;
-	Mon, 20 Jul 2026 15:48:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 090873FFFA4;
+	Mon, 20 Jul 2026 16:07:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784562514; cv=none; b=NpBezRBdgZO0O7C2V4Kcz3bQhplFDFrQZ0Acc5SDhZIkvGBjh693d3Ku+Z++NnUuqM+E6eKbherkfgRJzrg1p4wLQ4GkfvvG/bl0bLyOfu3HB4WwI59dkqjWW0wzkeglb2dFKB8cND4Ja7IX33w6fiHCAaFuOQ+Pq+gV/PAxBsM=
+	t=1784563664; cv=none; b=HEzoXqbMv1hC5ZG9KKqS4osSSd6jDUj3McBXiPkiSXHYRDyBrE9GQwLTTEoA4cHyr7RVwO56toYlHbozAA4ZmSmrKNS7cM6929ZCbKf9NY7MjXLSxP5QVQfjDOxoO5UKGHhFy2qLWu3QTZqt9lUmSmcAjz/qkicfx6dz5LvSzOk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784562514; c=relaxed/simple;
-	bh=CAhMSRdVQsu/O4ZNYpTI8yq0RFAJM9sQStU/01864fc=;
-	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
-	 Mime-Version:Content-Type; b=Ms02HwBNCTz++wdfJGWHcnft+DFDooaiOYiiky0Sf1jR84G8JujwQ7qHeHjt5lNV1i35VmRH1YssRF6ANHBIWquYEXDYKZAkMMeDlRDOMMjrcelsuM3NtB3X408ACj1T/nInpPVKfoinyeB4qXE0tn+lbKyTf5rpOasx7b2iirM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=oDT0WCuU; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	s=arc-20240116; t=1784563664; c=relaxed/simple;
+	bh=YJr1kAwzzlA4rDxg7M9FZoCWCeuORZTy+mcCiSD2noA=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=MlMqxUZqBj+JER+Yf1tcUrvfiVlgnK33SAtQDEIq5V3vtlCIsxc7vfdYlusWLrCzXFC++b9nDiLzglKi3AXmHhi8TlW0T5suiyQqmbrmhHnt2zkJ5qgWBI5YTt1JnBvHEdTQ8/aGZ12ts9HaOaXBln5SLQstYZcD4RgRy1zaq8o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=DzKyCTrY; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=MfdG4T91; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="oDT0WCuU"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=default; h=Content-Transfer-Encoding:Mime-Version:Message-Id:Subject:Cc:
-	To:From:Date:subject:date:message-id:reply-to;
-	bh=cPgnGTrVquqF75emqExWO0AgcYGPQLGqwHZ2HaypURw=; b=oDT0WCuUbBRh+l2FJQo0z8o+Dd
-	14CH/GflUjGavoQDFSCDJXXoY6CXhp3ET7VZX4m3UuIVydfxhvC+1dG7HCcyY6wgzGA6nAtXbtMAA
-	HES5RfbTE0VhWs6FPtOWUN4hsBGKs79q4cPbKmfq1sitixJzljyDz2jjhXLFwQ7k9ERo=;
-Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61] helo=pettiford.lan)
-	by mail.hugovil.com with esmtpa (Exim 4.98.2)
-	(envelope-from <hugo@hugovil.com>)
-	id 1wlqEH-000000001cV-2XRe;
-	Mon, 20 Jul 2026 11:48:29 -0400
-Date: Mon, 20 Jul 2026 11:48:29 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Hugo Villeneuve <hugo@hugovil.com>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Biju Das
- <biju.das.jz@bp.renesas.com>, "biju.das.au" <biju.das.au@gmail.com>, Greg
- Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, Prabhakar Mahadev Lad
- <prabhakar.mahadev-lad.rj@bp.renesas.com>, Thierry Bultel
- <thierry.bultel.yh@bp.renesas.com>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org"
- <linux-serial@vger.kernel.org>, "linux-renesas-soc@vger.kernel.org"
- <linux-renesas-soc@vger.kernel.org>
-Subject: Re: [PATCH v3 2/3] serial: sh-sci: Drop check for zero baud rate
- from uart_get_baud_rate()
-Message-Id: <20260720114829.14dee9de11975bb46f3126cc@hugovil.com>
-In-Reply-To: <20260422100538.25c6a279ec46defecd8d9a4f@hugovil.com>
-References: <20260420140426.237865-1-biju.das.jz@bp.renesas.com>
-	<20260420140426.237865-3-biju.das.jz@bp.renesas.com>
-	<CAMuHMdXQi7eSZg71=01dYjpmgHRXS+L9hXZMN_dR-mtM6sLKNw@mail.gmail.com>
-	<TY3PR01MB113464AE43A23A0B69BCC5675862D2@TY3PR01MB11346.jpnprd01.prod.outlook.com>
-	<CAMuHMdUfGY6VwW09zQX8T3_JkRHwKGRUyNGRXvQaD4e58OV8qA@mail.gmail.com>
-	<20260422100538.25c6a279ec46defecd8d9a4f@hugovil.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="DzKyCTrY";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="MfdG4T91"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1784563660;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=/bBPRtopZ4VY3hY/gLpEr6H2aVYx6/LSsNbuhMMYWAc=;
+	b=DzKyCTrYbjXnEd+CvkuvLUObVfZJJSSEaDqhUELxRFUdRGZUxjH34UuA5u+x1/0MXSa+yO
+	N6LZfh1tcpxbye1BZPHO1swarZ/c/WivU9YRqq24SkTN1yzyu0aaTd+DvbbXgsorLhPA8g
+	0YxNaqHres33MbrAAPMZVIOpwEaDcCO/adjKcKyQHuBzaXr6Tn2SSxALkFWbZRexR6eNZf
+	b90tZ/G198EVmMWnSkqaqfxHZSGcb7U7974FwHSz5U3CK7WBe0fxxZhRPLzHwQZcbEE+Cl
+	ARWvbfaQb7kfcQ72xHLzhobeywdLIGUH4UcXhYg9BgO2lzkFNij+gfa4zayLxQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1784563660;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=/bBPRtopZ4VY3hY/gLpEr6H2aVYx6/LSsNbuhMMYWAc=;
+	b=MfdG4T91dIDjDCZtDzZanL16BBu6qU0R18MeynYSCaC4XL6L9z9dBgDNtAsORxAAiv9UaZ
+	bMnoJFdWfl1EcFCA==
+To: Petr Mladek <pmladek@suse.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>, Andy Shevchenko <andy.shevchenko@gmail.com>,
+ linux-kernel@vger.kernel.org, Ilpo =?utf-8?Q?J=C3=A4rvinen?=
+ <ilpo.jarvinen@linux.intel.com>, Andy Shevchenko
+ <andriy.shevchenko@linux.intel.com>, Hugo Villeneuve
+ <hvilleneuve@dimonoff.com>, Osama Abdelkader <osama.abdelkader@gmail.com>,
+ Stepan Ionichev <sozdayvek@gmail.com>, Kees Cook <kees@kernel.org>, Xin
+ Zhao <jackzxcui1989@163.com>, Fushuai Wang <wangfushuai@baidu.com>, Yunhui
+ Cui <cuiyunhui@bytedance.com>, Jacques Nilo <jnilo@free.fr>,
+ linux-serial@vger.kernel.org
+Subject: Re: [PATCH tty v6 1/2] serial: 8250: Switch to nbcon console, take 2
+In-Reply-To: <al43iOyokb56SBF3@pathway.suse.cz>
+References: <20260720103242.7265-1-john.ogness@linutronix.de>
+ <20260720103242.7265-2-john.ogness@linutronix.de>
+ <al43iOyokb56SBF3@pathway.suse.cz>
+Date: Mon, 20 Jul 2026 18:13:39 +0206
+Message-ID: <87v7a9lk50.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam_score: -2.0
-X-Spam_bar: --
+MIME-Version: 1.0
+Content-Type: text/plain
 
-On Wed, 22 Apr 2026 10:05:38 -0400
-Hugo Villeneuve <hugo@hugovil.com> wrote:
+On 2026-07-20, Petr Mladek <pmladek@suse.com> wrote:
+> On Mon 2026-07-20 12:38:35, John Ogness wrote:
+>> --- a/drivers/tty/serial/8250/8250_core.c
+>> +++ b/drivers/tty/serial/8250/8250_core.c
+>> @@ -584,6 +609,9 @@ void serial8250_suspend_port(int line)
+>>  	struct uart_8250_port *up = &serial8250_ports[line];
+>>  	struct uart_port *port = &up->port;
+>>  
+>> +	/* No irq_work may be queued when suspending. */
+>> +	up->avoid_modem_status_work = true;
+>
+> Do we need to synchronize this against serial8250_console_write()
+> where this flag is checked, please?
 
-> Hi,
-> 
-> On Wed, 22 Apr 2026 10:59:23 +0200
-> Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> 
-> > Hi Biju,
-> > 
-> > On Wed, 22 Apr 2026 at 09:26, Biju Das <biju.das.jz@bp.renesas.com> wrote:
-> > > > From: Geert Uytterhoeven <geert@linux-m68k.org>
-> > > > On Mon, 20 Apr 2026 at 16:04, Biju <biju.das.au@gmail.com> wrote:
-> > > > > From: Biju Das <biju.das.jz@bp.renesas.com>
-> > > > >
-> > > > > On DT systems, a zero baud rate from uart_get_baud_rate() is not
-> 
-> The fact that uart_get_baud_rate() cannot return zero is not related
-> to the system using DT or not, so I would drop this "On DT systems, "
-> from the commit message.
-> 
-> > > > > possible even earlycon derives its bit rate from chosen/stdout-path.
-> > > > > The zero baud guard and its associated done label are therefore dead code. So remove it.
-> > > > >
-> > > > > Also drop the unused done label from rsci_set_termios().
-> > > > >
-> > > > > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> > > >
-> > > > > --- a/drivers/tty/serial/sh-sci.c
-> > > > > +++ b/drivers/tty/serial/sh-sci.c
-> > > > > @@ -2719,8 +2719,6 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
-> > > > >                 max_freq = max(max_freq, s->clk_rates[i]);
-> > > > >
-> > > > >         baud = uart_get_baud_rate(port, termios, old, 0, max_freq / min_sr(s));
-> > > > > -       if (!baud)
-> > > > > -               goto done;
-> > > > >
-> > > > >         /*
-> > > > >          * There can be multiple sources for the sampling clock.  Find
-> > > > > the one
-> > > >
-> > > > I am afraid you are missing that sh-sci is also used on SH, without DT?
-> > >
-> > > Ok, please share your thoughts to handle divide_by_zero fault for
-> > > SH platforms on the code path after done label??
-> > 
-> > Someone has to check on an SH platform (or qemu rts7751r2d) if
-> > this can happen. It might have been broken along the road, as people
-> > only use earlyprintk when debugging a problem that requires it.
-> 
-> Geert: this "goto done" is not related to the earlyprintk block, which
-> is untouched by this patch?
+Yes. @avoid_modem_status_work needs to be modified under the port->lock
+to ensure that serial8250_console_write() does not queue any new
+irq_work. It is evaluated in atomic context, but taking the port->lock
+also acquires nbcon ownership.
 
-Hi Biju,
-I cannot see any follow-up for these patches. My series for "serial:
-core: improve safety of uart_get_baud_rate()" has been accepted and
-integrated, so now the renesas sh-sci and rsci are the only drivers
-still checking (for nothing) the zero return value of
-uart_get_baud_rate().
+I will add this for v8 (in both places where @avoid_modem_status_work is
+modified).
 
-I plan on sending two patches to address only that for sh-sci and rsci,
-unless you are preparing a new serie that includes it?
+> This might even answer the question from Sashiko AI whether
+> we should flush the related irq_work() here, see
+> https://sashiko.dev/#/patchset/20260720103242.7265-1-john.ogness%40linutronix.de
+>
+> That said, I am not sure about RT_PREEMPT. AFAIK, it handles IRQs
+> in a kthread. In this case, synchronize_srcu() would not make
+> sure that the irq_work was procceed.
+>
+> Note that Sashiko AI suggests that we might need to flush the irq_work
+> even in serial8250_console_exit(). I guess that the situation is
+> the same there. It is called after synchronize_srcu()...
 
-Hugo.
+Yes, I will add irq_work_sync() in both locations.
+
+>> @@ -620,6 +648,12 @@ void serial8250_resume_port(int line)
+>>  		port->uartclk = 921600*16;
+>>  	}
+>>  	uart_resume_port(&serial8250_reg, port);
+>> +
+>> +	/* irq_work allowed again. Handle MSR now if pending. */
+>> +	up->avoid_modem_status_work = false;
+>> +	guard(uart_port_lock_irqsave)(port);
+>> +	if (uart_console(port) && up->msr_saved_flags)
+>> +		serial8250_modem_status(up);
+>
+> I would use scoped_guard() to make the scope clear. Something like:
+>
+> 	scoped_guard(uart_port_lock_irqsave, port) {
+> 		if (uart_console(port) && up->msr_saved_flags)
+> 			serial8250_modem_status(up);
+> 	}
+>
+> Motivation: The guard() is pretty hidden. It can easily get overlooked
+> 	when people add more code at the end of this function.
+
+OK.
+
+> Wait, this should not be needed if we make sure that the work
+> was flushed in serial8250_suspend_port().
+
+When !console_suspend_enabled, the driver will continue to print in
+atomic mode, but will avoid the irq_work. It will however notice if
+there are any MSR changes. Those changes are then handled here.
+
+I suppose I should add an "if (!console_suspend_enabled)" to the
+conditions.
+
+>> -	if (oops_in_progress)
+>> -		locked = uart_port_trylock_irqsave(port, &flags);
+>> -	else
+>> -		uart_port_lock_irqsave(port, &flags);
+>> +	if (!nbcon_enter_unsafe(wctxt))
+>> +		return;
+>>  
+>>  	/*
+>> -	 *	First save the IER then disable the interrupts
+>> +	 * First, save the IER, then disable the interrupts. The special
+>> +	 * variant to clear the IER is used because console printing may
+>> +	 * occur without holding the port lock.
+>
+> I would make the comment more clear when it might happen and if it is
+> safe. Something like:
+>
+> 	 * First, save the IER, then disable the interrupts. The special
+> 	 * variant to clear the IER is used because an emergency and panic
+> 	 * console printing is synchronized only by nbcon context without
+> 	 * holding the port lock.
+
+OK.
+
+>> +skip_write:
+>> +	/*
+>> +	 * If ownership was lost, this context must reacquire ownership and
+>> +	 * re-enter the unsafe section in order to perform final actions
+>> +	 * (such as re-enabling interrupts).
+>> +	 */
+>> +	if (!nbcon_can_proceed(wctxt)) {
+>
+> This should be:
+>
+> 	if (!nbcon_enter_unsafe(wctxt))
+>
+> or even better:
+>
+> 	while (!nbcon_enter_unsafe(wctxt))
+> 		nbcon_reacquire_nobuf(wctxt);
+
+Right. I will take the while loop variant.
+
+Thanks for your review! (You can ignore my v7 as you caught everything
+that I missed in my v7.)
+
+John
