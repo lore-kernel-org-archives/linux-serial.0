@@ -1,172 +1,136 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C29A339734B
-	for <linux-serial@vger.kernel.org>; Mon, 20 Jul 2026 10:39:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E845400E0F
+	for <linux-serial@vger.kernel.org>; Mon, 20 Jul 2026 11:46:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784543985; cv=none; b=m2n51yd8h1m/u5/Ux6l+3R/ORRzpfqldLsmJikdx9HYKq5cmsXMZR1Smb5VmIz35t7SKUBe2dSEMDa+3hZ+3epqArjQESk94Vc7IzlwayW1v4CZDNkPi5jNGYK1vupZI/o+sU39dN81TuT1IBXTYlNticYrqTAXGrqQ2x5Fk2ns=
+	t=1784547969; cv=none; b=KOz8/qIkhlOR6YkMaRhhdIO0KIDT2S3R7rhHLEXvov7vaNDXGnD2y/pP2AR5IWknpn9wlF7OejUZRJJX1GkeWGiHMsidT9eij+zHfXyF/rmrMjBqzAsHVlIclLOkatVle6Gwfc7fmK/dCPsZtseHgrgUITT7FOXPAJe3CKGBNsQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784543985; c=relaxed/simple;
-	bh=DVJ7qSX0uNfm15GcEO97JD1KRQETbqyrFscAKFQjCp0=;
+	s=arc-20240116; t=1784547969; c=relaxed/simple;
+	bh=fUp4cei3BPr8E914jW1LFi71X7u+EpY3vf8k/rOCOA8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pHnF9D06KjVcMLqBykI8+06i0Epj1xixAHlZ0vabwnRiwH1bB7UPmjSwgAtQMzOr1xAaQoUowO+51cgs3k3QInD5I1Wxjqmt0Rtq4CVo1fjKome5XluSFUtXqXnetUKfS6CEY7dg9K4LliTqB6uDGDwWa1hQP7CP0WCI6a+5UeM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=USB4cC6M; arc=none smtp.client-ip=209.85.128.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=q82tAmu1PbuVnSYjyfr81HDzQADYBei4Gn16zatVpdrre2lh4+q4cxtsO8wy2h4LhogiqGX5yWZO6yRroVMHIHI5V0dfIj7HjKGWpeQEFB06IJmes+Fg5AHOYVBO5VPD884xLqtTfRJ1WyRIjrmvFE1aXfp2QJweSkp8e3enzrc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=VkVnIS2H; arc=none smtp.client-ip=209.85.221.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="USB4cC6M"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-49554ebb87dso15912735e9.3
-        for <linux-serial@vger.kernel.org>; Mon, 20 Jul 2026 03:39:42 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="VkVnIS2H"
+Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-472326ca506so7712124f8f.2
+        for <linux-serial@vger.kernel.org>; Mon, 20 Jul 2026 04:46:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1784543981; x=1785148781; darn=vger.kernel.org;
+        d=suse.com; s=google; t=1784547961; x=1785152761; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=b9JXL9yTw9hjgzpkXGxJBEAzkr1jsDbpHFN4HUS2FG4=;
-        b=USB4cC6M4eWAzUZOriT1lGUzon3LFfiKca+nL5yii5ftoGLm5HELP8aI9n35NFyzdo
-         X0YwdOyEk5Ug454MO8lcJ7UG16+V8s+BEQEEr2sBqDfWoW2m0ybzz7uiWkYIclK7vLDN
-         o6Qoip279lR0tSkKJZivuG2TF7DLj6V66TJI/SclDctiW5Udr/DZ9VHacJDckuMonqW/
-         ymXc2A8D6nE7Zq/j232ewfgdaK9LUDwsqPruJzyxAqFEYH2/XBQroQ4S4I/WCIQBaYsX
-         JM0snPbTI0Z9/5OKyTQgtsb5mp0GTWf/7bD61XPXa2lV0lyHo3dX3Mg5EsByvN6L97G9
-         Yp8g==
+        bh=fsMxsXjpGTSr2po7Wxk96V1yFnPC/aTK9Y7JzwyoR2U=;
+        b=VkVnIS2H5BufBwPLPEGC7BoPG8cuc+KdrzASdI+3t5OLH6rT+nV3I+0HAgKm9XeqeW
+         lhVP9FYe89ZH7XCCaAQreJoXKvTJcDWKamSw407F+4StWo9bNxUr4/5Wp0e6LTS+XFEa
+         V4/DaMuMrJngWP2WIaZYaBxZ3l6Z6oDPoIfQyiKnnzmCE+b2NYIusYXxYzLgLFL8I3Pg
+         PcXG2+ChoD8K9D/6mgKmmV8fx+OMKM3P6C7T5ebV4gTzx2FlmUPZofLJYiRMwv7/dOxs
+         KjDr+EUsLKk3qR94z1eMADNwEiGbXDIIWuT3rpv2LQo135URI/f9iwbqq4EMGQZ/ou8q
+         nRLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784543981; x=1785148781;
+        d=1e100.net; s=20251104; t=1784547961; x=1785152761;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=b9JXL9yTw9hjgzpkXGxJBEAzkr1jsDbpHFN4HUS2FG4=;
-        b=CXPW9WTFRySHyKMATl9D04x9U96mNVgDGh1ReUULSXmx+N3LxY66OjGwC4UMr6ynW5
-         vrwTdcTZtQo7/8LUD46RjpzAZfcEhkYJbMLDqAsiTnn07c3OHM4bUbnaQn4sOetDXUbL
-         yb8gzV3ACQbQk00y++RaFk76jhEaQ2zX0q4mxOWMrXmcdpx0Q3XuEnEPb/uCpmS8vPlp
-         G9e86CysIHfjcYGraQ5ZA6i6988moFFqCD8UMNPttk9DH6fO4J54tYLrcYsaJOjQXYY4
-         h1uzUO3QoTHXVrVehylTriTbTxVPFIO0cHAu5vVI+W3cCdvppq1nRphD1eX3UbRb+TRZ
-         Yekg==
-X-Forwarded-Encrypted: i=1; AHgh+Rq95Qauq9L+N2A1/ovmICkkT0zNNR3DsHPaHG6uEr74yoAZPsrU+k4QOlCEDq+CgWhACjN/d4A5+lrtRTk=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yws5GXcNs0wwC7XIFCRwTlX/RTaLthz5wCqdPMG4QrzvvxmWceJ
-	HNWKc/08huN1d+tAC63qbtsfQDAfKfBrxqhrPkoHpW1/gnYJu6rufdbAlq2G2wjEM+A=
-X-Gm-Gg: AfdE7cnaeqDkaqBMkn6nrgEm6nAI5EvND98l6OnAgGa3tLt4jzctVRT/LL+H1Tfm48N
-	14eC0cITHIHj/ZWI65mMpm+oitOo6MszoJ+LaLROe1fWciiQwgIjtIanSqZIhgbUWw7bCpQGyaM
-	jCnGZpMYrTqcwzDE7oocW2a1cuiq/QpvTDQLR5T6+vFrT+lS5zUanODo73mFkyq4iJzSenMfL3o
-	GjP1NsgDhKPm5+RzRfNF57HXWD5yXVrTIx7je0szonn3ziYIrrdpZkscVoNDRrYHt3pTI7AWtBm
-	qHz4p4WW3ciB924EZJnuT/7F4uBhvd2Yc9TMbc6zmtSjUNg5I/WVu+QA9m1DOAD6pjvvchYEDBY
-	hU9jw5fo2fcZjqlza5mf6qzgPXGIatnzvf9Ot/L2lsHC2bC35H3eqYroQ1Dt5/tuN2BR1dBDgI/
-	Cml6IuN+cJPKRJXJ4xf3jW61UabTZ4adUMy6FESu7n3/w6QOHHVzW05MCCRIYU0ASBcQ==
-X-Received: by 2002:a05:600c:1c0b:b0:495:46dd:e238 with SMTP id 5b1f17b1804b1-4954a50ea30mr169131375e9.30.1784543981052;
-        Mon, 20 Jul 2026 03:39:41 -0700 (PDT)
-Received: from localhost (p200300f65f47db048587886ecb5b26b2.dip0.t-ipconnect.de. [2003:f6:5f47:db04:8587:886e:cb5b:26b2])
-        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-4955d6d9e71sm88447585e9.14.2026.07.20.03.39.40
+        bh=fsMxsXjpGTSr2po7Wxk96V1yFnPC/aTK9Y7JzwyoR2U=;
+        b=HyVgq0wjFj5WwZPe4kq5PplC1j/DnN+7mJ6/Xs9daI9pvzpC+vRVodIwswQSN9vUP7
+         T7WlYUFDQ5evTH39vwbQ8jjx0M9cSONCyaDwogzy6LSkT9ecemn4xH2QAZNOcVt0pGDi
+         3vYN/c08rtMadp+KtyP/pZoL8XlsVYrnmTMaFentwpFXBWfSGZrCIP8gHdyueC0WGpk6
+         bW7D0mOfOoFERMZ935PhWs6Di7OM4eyfZLb1EssACW5GfC9Wcv4OuapjISz6S/hK/97x
+         n25r8S+XlB9uIFm+dTrATROEyThrOTtEO2Imdqa9ec5Bq62sQauMUaAznsXT+Ei3m9j8
+         1pxA==
+X-Forwarded-Encrypted: i=1; AHgh+RrcHDXrzv4ua2Xhgp8HEQbSAQanwOTVCiKd0oCwH+Cjj0ShJX+9aFZfMP+739cJcSXRpEK1xS9Xu57XnTg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwnQiZGnJIQVEEEIZVZ3Hgm21I/CIqDZF+Gc3O+aSEVUelV2E7O
+	XTadR63cd7tE3G+tRYfgr1Jzrlh7+A2vOA3hh/fnJ3eRvLcD0k2xnu/ep075UC+/Mqu1In+GCwa
+	A4J3WgmE=
+X-Gm-Gg: AR+sD10QyfzMULo0OKpPyzmqdFaVsDSTu46XQ5gHpUVNmYoDexqTTwYFsD0yv8SIlZ5
+	Bx1+ZLpIu6Ai+ASoVcKZgnqbD9KLCPT8N3Z9B7U5tUvOScFCPkz162O5mqLXDZMtXKMuY4N8stC
+	3xX/zZXmVzlSS8ywm+IqNqox+P5e0zhQvse6D7I34sfKtk9jgkQUT19w2mdXKlnh2rm4L4mfh5j
+	69obqD7tnEnQVNPbAZmoyouLrxlRxSRdRYF+WYQy7+ZneTDgNivjvPAkx9vxJU7Jxn38ow/8JJB
+	pnYk/XY9+ihSIYFPnkSAf0ifkxlILyRpcQkvvPIn6R+9R0R1cog1L9yJUkN4Qj6NxhsHeXpczSA
+	Pb8IMtTmwvYsxin5kRfD1td8qq03xq1Ne+7ewkqqOghJbBdAuXMOy0qp9Pw8eaYgN/DF122Ad8b
+	b8ksW/
+X-Received: by 2002:adf:e351:0:b0:478:77c1:787c with SMTP id ffacd0b85a97d-47f6233bf07mr11020582f8f.56.1784547961445;
+        Mon, 20 Jul 2026 04:46:01 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.130])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47f63e65644sm27955963f8f.16.2026.07.20.04.46.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jul 2026 03:39:40 -0700 (PDT)
-Date: Mon, 20 Jul 2026 12:39:39 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-To: Hugo Villeneuve <hugo@hugovil.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Hugo Villeneuve <hvilleneuve@dimonoff.com>, 
-	kernel test robot <lkp@intel.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH] serial: 8250: fix compile error with hub6_match_port()
- when compiled as a module
-Message-ID: <al35IBntRNPJNoNw@monoceros>
-References: <20260715153707.4181828-1-hugo@hugovil.com>
+        Mon, 20 Jul 2026 04:46:00 -0700 (PDT)
+Date: Mon, 20 Jul 2026 13:45:58 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: Karl Mehltretter <kmehltretter@gmail.com>
+Cc: Russell King <linux@armlinux.org.uk>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Clark Williams <clrkwllms@kernel.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	linux-rt-devel@lists.linux.dev,
+	Toshiyuki Sato <fj6611ie@aa.jp.fujitsu.com>,
+	John Ogness <john.ogness@linutronix.de>
+Subject: Re: [PATCH 2/2] serial: amba-pl011: keep console clock enabled for
+ atomic writes
+Message-ID: <al4KdsU9YLOmwDoV@pathway.suse.cz>
+References: <20260719063502.18852-1-kmehltretter@gmail.com>
+ <20260719063502.18852-3-kmehltretter@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="rmqi7ipcqsg3tzep"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260715153707.4181828-1-hugo@hugovil.com>
+In-Reply-To: <20260719063502.18852-3-kmehltretter@gmail.com>
 
+Adding ARM mailing list into Cc.
 
---rmqi7ipcqsg3tzep
-Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH] serial: 8250: fix compile error with hub6_match_port()
- when compiled as a module
-MIME-Version: 1.0
+On Sun 2026-07-19 08:35:02, Karl Mehltretter wrote:
+> pl011_console_write_atomic() runs from nbcon atomic context, where
+> sleeping is not allowed. It calls clk_enable(), which takes the
+> common-clk enable_lock. Under PREEMPT_RT that is a sleeping lock:
+> clk_enable_lock() first tries spin_trylock_irqsave(), but on contention
+> falls back to spin_lock_irqsave(), so an atomic-context printk on an RT
+> kernel with a clk-backed pl011 can trip:
+> 
+>   BUG: sleeping function called from invalid context at spinlock_rt.c:48
+>     __might_resched from rt_spin_lock
+>     rt_spin_lock from clk_enable_lock
+>     clk_enable_lock from clk_enable
+>     clk_enable from pl011_console_write_atomic
+>     ... from vprintk_emit
+> 
+> This was found and reproduced on 32-bit ARM with PREEMPT_RT. In
+> addition, write_atomic() may be invoked from NMI context and is
+> documented to avoid locking. Since clk_enable() acquires the
+> common-clock enable_lock, removing it from the callback also avoids a
+> potentially unsafe NMI lock acquisition.
+> 
+> An nbcon atomic-capable console must be printable from any context, so
+> the clock cannot be gated between writes. Enable the clock while the
+> console is registered: use clk_prepare_enable() in
+> pl011_console_setup(), release it via clk_disable_unprepare() in the
+> console .exit() callback, and drop the per-write
+> clk_enable()/clk_disable() pairs from write_atomic() and
+> write_thread().
+> 
+> Keeping UARTCLK enabled may increase idle power on platforms where it
+> would otherwise be gated between console writes.
 
-On Wed, Jul 15, 2026 at 11:37:05AM -0400, Hugo Villeneuve wrote:
-> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
->=20
-> With CONFIG_SERIAL_8250_HUB6=3Dm, we have the following compile error:
->=20
->   ../drivers/tty/serial/8250/8250_hub6.c:46:6: error: redefinition of
->        'hub6_match_port'
->=20
-> Fix hub6_match_port() prototype definition by using IS_REACHABLE() to
-> support both built-in and module values, and substitute empty prototype
-> otherwise.
->=20
-> Fixes: 3d406299d8829 ("serial: 8250_hub6: add hub6_match_port()")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Closes: https://lore.kernel.org/oe-kbuild-all/202607150717.2YxVdWpX-lkp@i=
-ntel.com/
-> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Just to be sure. Is this acceptable, please?
 
-I hit the same problem and fixed it similarly[1] before spotting this
-patch.
+I have no idea what is the real life effect. It might be negligible.
+Or maybe it does not effect production systems at all because
+they do not have the serial console enabled.
 
-> ---
->  drivers/tty/serial/8250/8250.h | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->=20
-> diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/825=
-0.h
-> index 9d1068d0489dc..b62f88eec881f 100644
-> --- a/drivers/tty/serial/8250/8250.h
-> +++ b/drivers/tty/serial/8250/8250.h
-> @@ -8,6 +8,7 @@
->   */
-> =20
->  #include <linux/bits.h>
-> +#include <linux/kconfig.h>
+I just wonder if it might considerably increase the battery usage
+of some devices, e.g. watches or earbuds, just because of the possibility
+to write emergency messages via the serial console.
 
-This isn't really needed, because the compiler is called with
-
-	-include $(srctree)/include/linux/kconfig.h
-
-which I think you can rely on. But it also doesn't hurt.
-
->  #include <linux/serial_8250.h>
->  #include <linux/serial_core.h>
->  #include <linux/dmaengine.h>
-> @@ -334,7 +335,7 @@ int fintek_8250_probe(struct uart_8250_port *uart);
->  static inline int fintek_8250_probe(struct uart_8250_port *uart) { retur=
-n 0; }
->  #endif
-> =20
-> -#ifdef CONFIG_SERIAL_8250_HUB6
-> +#if IS_REACHABLE(CONFIG_SERIAL_8250_HUB6)
-
-I picked IS_ENABLED(). Both work fine here. (IS_ENABLED() has the slight
-(maybe subjective) advantage to break if CONFIG_SERIAL_8250_HUB6 is
-enabled but not reachabe (which currently cannot happen).
-
-Anyhow:
-
-Reviewed-by: Uwe Kleine-K=F6nig <u.kleine-koenig@baylibre.com>
-Tested-by: Uwe Kleine-K=F6nig <u.kleine-koenig@baylibre.com>
-
-Best regards
-Uwe
-
---rmqi7ipcqsg3tzep
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmpd+ucACgkQj4D7WH0S
-/k4sDQf+IIH2T/heCwFyutuVwuDpEMD0Zjs6qP1y4aXgIh8vxRO+jltXYBEYBMMx
-LVLpZFX00z8xROp3oYzLFhiQqjvaLYr0GPEEDGyaUsQ7MU4KUIi555J9Yo4sgksZ
-n9nHQ5ppS+qtEWcShgJZgNBjH6fbiWwkJdPi90XoOKAXYRHGcdmAyLoyNnzvZxr8
-J4FegOf/0xfSHWgiOm7VknosO4L9BYrzmPQPRatMO8aStNUhnvLJf9tj7klgDzmh
-D6SoEXut+TPxH1NEquZVOjyCiaK+pxvtsaZs1qdkAC4Lv2+C4Fv30acYg4HivVa1
-I/cmmq6tiCZuMx5h+Zp2isjEpduQyg==
-=WJIb
------END PGP SIGNATURE-----
-
---rmqi7ipcqsg3tzep--
+Best Regards,
+Petr
