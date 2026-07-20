@@ -1,85 +1,43 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A3A6313E03
-	for <linux-serial@vger.kernel.org>; Sun, 19 Jul 2026 22:10:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+Received: from zg8tmtyylji0my4xnjqumte4.icoremail.net (zg8tmtyylji0my4xnjqumte4.icoremail.net [162.243.164.118])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EF7FE2288D5;
+	Mon, 20 Jul 2026 05:38:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.164.118
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784499054; cv=none; b=ZtgdpWz4b65BD6qg5HEOXcY498wQdFOBMcz7hvg4QnWR19JvzuYU2DEGXQv1N5QBSdrvWm5h0U7DcwE1p4jwBs/jFBl/tWC1GTsxY/Lv3qSy/YIb/61tLyIgCUM6yfbaRFtqNki0cjotRvFbBYkNC9xBwUf/7SnnsdilaqBzTzg=
+	t=1784525891; cv=none; b=LypGS9IaEjdEXiBqngKgW4EyJp9nj/0+09Xay6doBDR7fgPgXXgcSI9eKdSgqyc6bX4tByZ8LrIzr9GVLucT+WLtBJollRjB0jUHpm/eqGIdsN8kmx2WOgpd4hl1eIfcfl1W4dod3EoBLpwRzeERoGZgmK/G3ZvpSWwPTl48iUU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784499054; c=relaxed/simple;
-	bh=e/TsC2jyQghy+fHjzGFRoV6KHp39YYSJL7Ig0TqCdS4=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=QfhI+ALLrJcWPI/BCME7mVsZ9HDe2QmU5ibX7ChKb/+xMfKs5lZzLXmGBv1wwhBf9WoVYgp3sx0xz8mrRBUgX0qD3pbchTCG4N6VvH+DYyYrLKDY8rljGPmyM+VljfOvpnWpGxN6JW/qFjraCOc4Js8JJY+PoeOgGz4lh3Mt5os=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CFVxb1dW; arc=none smtp.client-ip=209.85.128.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1784525891; c=relaxed/simple;
+	bh=4jojnu+E0QsY05hwAlGpnBAHyFPgNjp0ExCZFxwsob4=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=kajDXHOtjB+cWIo1VTBG4yd57rgha0bJBH4LrM06GFaGt2toFSJ5vx1Wz/4/4ZCdPJKSHP5Q2HkfppH4cy0JwJCAddFHKfCFKSytE6olDpmpw6P0bhgtuvLUWxk4cHwx6A3aoe7i1GgbzQOElYv3QfAim9Q8REDVVY2qIUYW4xU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=stu.xidian.edu.cn; spf=pass smtp.mailfrom=stu.xidian.edu.cn; dkim=fail (0-bit key) header.d=stu.xidian.edu.cn header.i=@stu.xidian.edu.cn header.b=MOIKw1Uv reason="key not found in DNS"; arc=none smtp.client-ip=162.243.164.118
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=stu.xidian.edu.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=stu.xidian.edu.cn
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CFVxb1dW"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-49557167508so9526965e9.1
-        for <linux-serial@vger.kernel.org>; Sun, 19 Jul 2026 15:10:52 -0700 (PDT)
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=stu.xidian.edu.cn header.i=@stu.xidian.edu.cn header.b="MOIKw1Uv"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784499051; x=1785103851; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=3PWe1Y8pYuAa7B+GagSYE8D0P3UeZCJcEkhdzL5G7fY=;
-        b=CFVxb1dWBYUtUYBD2MKGawFay9IOV2JUYjaW/oPtAcQCtENU2uAL/R21mLOWsV8xRf
-         BAmHnND+Ml5I2QI6ZmNPV1q7Y7EztOjetIieH72FZazQv4gFd6IpZT/2Lv2mNzUhzQtb
-         pkswJGtK0HbYud9SIRyzfp3qjISSkFDInqlG0KSunTzOcQIpgHpTQYammdZlfZJbRtxj
-         wH4a4idmuHt5h2gTvDrq8Xlg7qQhx0buq3NxdQbFrbZzPiuDxoaVIabXLBrdGtAYLrtK
-         fywCUGVwuSl12/smI8SFwC6qObd3JxWfQnMbNr7fKAt1yhk/aPtXC5JdkmI7JdR8qeCa
-         JThQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784499051; x=1785103851;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=3PWe1Y8pYuAa7B+GagSYE8D0P3UeZCJcEkhdzL5G7fY=;
-        b=rXeyMeuTy+yyXIz605OVT5rj9PfvcuvOiNF72JRH1Gdzt2B4Iy8id0ShrwOUdZg3Xb
-         N7X7ZGhefnPy/M6LBzi0jysJJeIYtrAa9KSVnUtmxwq4uHX/ryO/lAOt2IJ2KA+IxOQk
-         W3y3rqCYo6xsXbIsK5/jTSwAX8zls/3KkA+/y9chiy55Anl+amlTEUC/U0C9FlPklfaj
-         wSrUjmvknKHnK3oZ1jWZota1PiYLLRDtayn/nYbeVjqEJNIXG0yTiA1pV3CAlSE0VNve
-         pcmkRVIWdpEol9nzhifGp4joysofj0c2Ey3nynCjx2Ci9Hpy/aIYnf0KadY5w7hFbXAn
-         9FcQ==
-X-Forwarded-Encrypted: i=1; AHgh+Rr7YTPLCYrqrZY3EDP5sOzBpV9Db93D118DE6e+ybA+oONhuSj7A2ad8Gc1NfFKTteGBktFN4l8TR/FKfI=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz/Yr9tHla3dTPWR1+XQg2uJR5+204FwtY9hX9fclSb/xnISOL9
-	fUDyxpn6GhVQI1UG6wBo/zD1pBfRtk10MdvX+OWWpuTIEhoc5AB4UidT
-X-Gm-Gg: AfdE7cm4WLgQdrauG4CPTQ+L8lPtNnZONzmETAX9LCSQrz6v3k6Yi2tnE9b6zg1WqF2
-	bzYBeNGMEY0dv20r+H0ptaXrw6h94KRD9OFt/E98zA2EI+3Wagm9FghouEayPxfmWKiT5x0ilXV
-	kuKM8+HQHJ1PwGVF/esxk6i1BlSZjgfbK+3TVWbWJWv7RMo4V7Zoqt3GHbz5uvjyk+RLE5w27gL
-	ZzV0HvU3o7cZ4SB9/4GnVoLx2BMt1uJnDUqNA7WcIHzPEhaZBFFsACmEOo/gPJsZ274haDsn7ea
-	V4o8OWj3en95W0Vx9gStIhlm2slzrW/f/mH3+etsUPCUTYhnioIKwYtd2aH07yiJ+sD9t+JtIYt
-	mLdSnxDzMgu5zzDVW4yUUlP6ynmKdUwKVLBs+ciNcm/Afswz6jKattYpTXE63cmQj+416J8rtwO
-	bHK8tJTxAFVlo11ast5tccnBJdXQBWfgV74LA/Xjt/JqYGUeMUp6vo2/DAjr7cHtf7CTzXHhfGE
-	pNnURaceasDcw8p4q9o1F8TzmW+19yETlTfefJ6QCceGCsdixgfsBm/4i/eciJFwOJoOut5nUKa
-	/iiN2U2jiL77dVb5MBblNjaLVr6JMRqMHtI=
-X-Received: by 2002:a05:600c:1f93:b0:493:c8c6:4989 with SMTP id 5b1f17b1804b1-4954a3d64d4mr124694595e9.6.1784499050684;
-        Sun, 19 Jul 2026 15:10:50 -0700 (PDT)
-Received: from MacBook-Pro-von-Karl.localdomain (dynamic-2a02-3100-aeaf-bd01-78a0-2a2d-507f-c97c.310.pool.telefonica.de. [2a02:3100:aeaf:bd01:78a0:2a2d:507f:c97c])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4955370d78csm114492445e9.12.2026.07.19.15.10.48
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Sun, 19 Jul 2026 15:10:49 -0700 (PDT)
-From: Karl Mehltretter <kmehltretter@gmail.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: Karl Mehltretter <kmehltretter@gmail.com>,
-	Frank Li <Frank.Li@nxp.com>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>,
+	d=stu.xidian.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
+	Message-Id:MIME-Version:Content-Transfer-Encoding; bh=Ho4KU/mzaX
+	gJwtfAjQaopacALlq1GUREJBjOHiPg8rM=; b=MOIKw1UvfNuKZQqmDdKTAKGg+f
+	RMWPKRzJ9sOV0+qOD0Qp6mRoKDNJJNerxafWShGd9TThilLlLj4KHf2r7IasSMbF
+	50wse2pj6+ws3y/zatouPhSq1eE58jMO6cFjR6NO20yaEo5oF9vl6XkEZwySpE5h
+	O3WiIWPwh3BrYcuCA=
+Received: from wmy.localdomain (unknown [115.53.182.60])
+	by hzbj-edu-front-4.icoremail.net (Coremail) with SMTP id BrQMCkDG7BIftF1q_U44AQ--.12607S2;
+	Mon, 20 Jul 2026 13:37:38 +0800 (CST)
+From: Mingyu Wang <25181214217@stu.xidian.edu.cn>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org
+Cc: ilpo.jarvinen@linux.intel.com,
+	john.ogness@linutronix.de,
+	andriy.shevchenko@linux.intel.com,
 	linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	imx@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	Sashiko <sashiko-bot@kernel.org>,
-	stable@vger.kernel.org
-Subject: [PATCH v2 4/4] serial: imx: serialize imx_uart_ports[] lifetime
-Date: Mon, 20 Jul 2026 00:10:14 +0200
-Message-Id: <20260719221014.44354-5-kmehltretter@gmail.com>
-X-Mailer: git-send-email 2.39.5 (Apple Git-154)
-In-Reply-To: <20260719221014.44354-1-kmehltretter@gmail.com>
-References: <20260719221014.44354-1-kmehltretter@gmail.com>
+	syzkaller@googlegroups.com,
+	stable@vger.kernel.org,
+	Mingyu Wang <25181214217@stu.xidian.edu.cn>
+Subject: [PATCH] serial: 8250: validate iomem_base in serial8250_verify_port()
+Date: Mon, 20 Jul 2026 13:37:33 +0800
+Message-Id: <20260720053733.102186-1-25181214217@stu.xidian.edu.cn>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -87,104 +45,92 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:BrQMCkDG7BIftF1q_U44AQ--.12607S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxAr1xZr1kJryrJFyrWrykXwb_yoW5Wr47pa
+	9rtrsYyryDJ3Zrta1xZF1jkr48ZanYka47CF9xu3s0vryrXF4jyr17t3s0kr4DKF9Fq347
+	AF1UZw4UC34DtaUanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUBI14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+	1l84ACjcxK6xIIjxv20xvE14v26r1j6r1xM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+	6F4UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gr
+	1j6F4UJwAac4AC62xK8xCEY4vEwIxC4wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40E
+	FcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr
+	0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8v
+	x2IErcIFxwACI402YVCY1x02628vn2kIc2xKxwCY1x0262kKe7AKxVWUtVW8ZwCF04k20x
+	vY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I
+	3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIx
+	AIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAI
+	cVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2js
+	IEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7VUbQVy7UUUUU==
+X-CM-SenderInfo: qsvrmiqsrujiux6v33wo0lvxldqovvfxof0/1tbiAQUAEWpc6mtTNQAAsE
 
-imx_uart_probe() publishes the port in imx_uart_ports[] before
-uart_add_one_port(), because console setup during that call uses the
-table. The entry is not cleared if adding the port fails or after
-imx_uart_remove() removes it.
+syzkaller reports a slab-use-after-free in mutex_spin_on_owner().
+This occurs because a previous thread crashed during tty_open() while
+holding the tty_lock, leaving the owner pointer dangling.
 
-The port is devm-allocated, so a failed probe or unbind leaves the table
-pointing at freed memory. A later registration of the shared console can
-then dereference the stale entry. Reproduced on QEMU's mcimx6ul-evk by
-unbinding a sibling UART, unbinding the console UART and rebinding the
-sibling:
+The initial crash is an unhandled Page Fault in mem_serial_in():
 
-  BUG: KASAN: slab-use-after-free in imx_uart_console_setup+0xd0/0x3d8
+  BUG: unable to handle page fault for address: ffffc90001206014
+  #PF: supervisor read access in kernel mode
+  #PF: error_code(0x0000) - not-present page
+  Oops: Oops: 0000 [#1] SMP KASAN PTI
+  RIP: 0010:mem_serial_in+0x67/0x90
+  Call Trace:
+   serial8250_clear_interrupts+0x40/0xf0
+   serial8250_do_startup+0x3f5/0x3220
+   serial8250_startup+0x6c/0x90
+   uart_startup+0x4ff/0x12c0
+   uart_port_activate+0xf3/0x1a0
+   tty_port_open+0x15c/0x200
+   uart_open+0x47/0x60
+   tty_open+0x39b/0x1310
 
-The entry must remain valid until uart_remove_one_port() unregisters the
-console. Clearing it afterward without serialization still races a
-sibling probe: the sibling can register the shared console using the
-dying entry before it is cleared. The next console write then
-dereferences NULL.
+This sequence is triggered because the TIOCSSERIAL ioctl allows a user
+with CAP_SYS_ADMIN to change the io_type of a serial port to UPIO_MEM
+(or other memory-mapped types) and inject an arbitrary physical address
+via iomem_base.
 
-Use a driver-wide mutex to serialize table publication, port addition
-and rollback with port removal and table clearing. Console callbacks
-remain lockless because uart_add_one_port() may invoke setup while
-probe holds the mutex.
+When uart_change_port() applies these changes, it attempts to remap the
+port's I/O memory based on the injected iomem_base. This can result in an
+invalid or inaccessible virtual mapping for port->membase. The subsequent
+call to mem_serial_in() then dereferences this bogus pointer, triggering
+a fatal Page Fault.
 
-The probe-failure path also relies on "serial: core: do fallible
-allocations before the console can be registered", which moves the
-uport->name and uport->tty_groups allocations before console
-registration. Both changes should be backported together.
+Fix this by tightening the validation in serial8250_verify_port().
+Reject any TIOCSSERIAL requests that attempt to modify the io_type
+to/from memory-mapped types, or change the iomem_base of an existing
+memory-mapped port. Userspace can still legitimately modify IRQs or
+baud rates of MMIO ports as long as the io_type and mapbase remain
+unchanged.
 
-Fixes: dbff4e9ea2e8 ("IMX UART: remove statically initialized tables")
-Fixes: 9f322ad064f9 ("imx: serial: handle initialisation failure correctly")
-Reported-by: Sashiko <sashiko-bot@kernel.org>
-Link: https://lore.kernel.org/all/20260719162850.043B41F000E9@smtp.kernel.org
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Cc: stable@vger.kernel.org
-Assisted-by: Claude:claude-fable-5
-Signed-off-by: Karl Mehltretter <kmehltretter@gmail.com>
+Signed-off-by: Mingyu Wang <25181214217@stu.xidian.edu.cn>
 ---
- drivers/tty/serial/imx.c | 21 +++++++++++++++++++--
- 1 file changed, 19 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_port.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 251a50c8aa38..def874f9cd00 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -22,6 +22,7 @@
- #include <linux/clk.h>
- #include <linux/delay.h>
- #include <linux/ktime.h>
-+#include <linux/mutex.h>
- #include <linux/pinctrl/consumer.h>
- #include <linux/rational.h>
- #include <linux/slab.h>
-@@ -2080,6 +2081,15 @@ static const struct uart_ops imx_uart_pops = {
- 
- static struct imx_port *imx_uart_ports[UART_NR];
- 
-+/*
-+ * Store the port in imx_uart_ports[] before uart_add_one_port() and clear
-+ * it only after uart_remove_one_port() returns. Console callbacks in both
-+ * calls use the table, so this mutex serializes these sequences between
-+ * sibling ports. Callbacks must not take it because uart_add_one_port()
-+ * may invoke setup while it is held.
-+ */
-+static DEFINE_MUTEX(imx_uart_ports_lock);
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index e94a0802cbdd..79563afe9db9 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -3146,6 +3146,16 @@ serial8250_verify_port(struct uart_port *port, struct serial_struct *ser)
+ 	    ser->type >= ARRAY_SIZE(uart_config) || ser->type == PORT_CIRRUS ||
+ 	    ser->type == PORT_STARTECH)
+ 		return -EINVAL;
 +
- #if IS_ENABLED(CONFIG_SERIAL_IMX_CONSOLE)
- static void imx_uart_console_putchar(struct uart_port *port, unsigned char ch)
- {
-@@ -2632,11 +2642,14 @@ static int imx_uart_probe(struct platform_device *pdev)
- 		}
- 	}
- 
--	imx_uart_ports[sport->port.line] = sport;
--
- 	platform_set_drvdata(pdev, sport);
- 
-+	mutex_lock(&imx_uart_ports_lock);
-+	imx_uart_ports[sport->port.line] = sport;
- 	ret = uart_add_one_port(&imx_uart_uart_driver, &sport->port);
-+	if (ret)
-+		imx_uart_ports[sport->port.line] = NULL;
-+	mutex_unlock(&imx_uart_ports_lock);
- 
- err_clk:
- 	clk_disable_unprepare(sport->clk_ipg);
-@@ -2647,8 +2660,12 @@ static int imx_uart_probe(struct platform_device *pdev)
- static void imx_uart_remove(struct platform_device *pdev)
- {
- 	struct imx_port *sport = platform_get_drvdata(pdev);
-+	unsigned int line = sport->port.line;
- 
-+	mutex_lock(&imx_uart_ports_lock);
- 	uart_remove_one_port(&imx_uart_uart_driver, &sport->port);
-+	imx_uart_ports[line] = NULL;
-+	mutex_unlock(&imx_uart_ports_lock);
++	if (port->iotype == UPIO_MEM || port->iotype == UPIO_MEM32 ||
++	    port->iotype == UPIO_MEM32BE || port->iotype == UPIO_MEM16 ||
++	    ser->io_type == UPIO_MEM || ser->io_type == UPIO_MEM32 ||
++	    ser->io_type == UPIO_MEM32BE || ser->io_type == UPIO_MEM16) {
++		if (ser->io_type != port->iotype ||
++		    (unsigned long)ser->iomem_base != port->mapbase)
++			return -EINVAL;
++	}
++
+ 	return 0;
  }
  
- static void imx_uart_restore_context(struct imx_port *sport)
 -- 
-2.53.0
+2.34.1
+
