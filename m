@@ -1,154 +1,146 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B23E3859F5;
-	Mon, 20 Jul 2026 19:54:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784577268; cv=none; b=pV+s2r6iKLOWTcj0IziSUBOXTFj71MrJ+j3QbpX/JnlPyHdNiwkC6juktEVRtF7v666mVCPI938KaRyusAYYPlh60gsfWwahPtdbaA6tCLLUGmpUGfOpQi8H9ZykbVIuEsGHxql7PjTLKqbt460Z28gd93MkKXK6QRwFI7/BTvs=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784577268; c=relaxed/simple;
-	bh=gr++SKTsuiU1nnDtgqy68QOrXEpeYSoP7Oao7llCJJo=;
-	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
-	 Mime-Version:Content-Type; b=aTqlnCm8vZNK0YjpzsMf5mKvOAPUAf3SqXZEH6dsq3SVt/f38nmT/nEc9dy0SbdZNd+qqRXdBI+0JsFCd5mEAiPLA6025z5d5FlSIw+Y/zLLewlINAH/WeOXPVTOcsgv5NtNFo/ZnPH2nBSiRwAH8lY/ETPgkh6pBpALSOtRD3E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=qnvVbGef; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDE383BED7F
+	for <linux-serial@vger.kernel.org>; Mon, 20 Jul 2026 20:23:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.52
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784578993; cv=pass; b=MeIbckdVykJQHfchGWyv2NWEDXO7VvOXNg/IIHPE8aj+O5AvSWMQQdYa+m4L2qUkksCTMBa1XER7yA4I2VrOMF2OAZaurNURKdHbcwx4em5MXs/eb0ddAyhY/0DQX1SYRpQ8H9YZ6m+c+rDbdANXne/5QOJG31PMlgqO9g96+O0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784578993; c=relaxed/simple;
+	bh=RTMFMxuArwN9jelOoBB7ESiLdUnGOKJdUxXh/xMMGGM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=UOzlWiULP4FR9ZxdE5PkZ6bgSlfzjpbdneWJ1D/ttBCAGoEOJ5XWUMMIQkpAAVXCba8eJjkPnCY/foa3M1NC4o4tg4ImrnzGrtOhwcxyJCXfus4sRCh6+tNL41oPuPk2SEMr/HXuO+M2M1LWqsr2Y3X2jYo9tYFh1sgKQqYTnrc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=k1iPnccw; arc=pass smtp.client-ip=209.85.218.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="qnvVbGef"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=default; h=Content-Transfer-Encoding:Mime-Version:Message-Id:Subject:Cc:
-	To:From:Date:subject:date:message-id:reply-to;
-	bh=mg78F8Bjxia/BNADv+L6tDU1QYwOdmH4sHpEvCvjNFc=; b=qnvVbGefgzN1We8md4e49QuRgn
-	PFYQTL35mNxNi8eB4LAnWQXkppy11KWZa/vyxXYP+Qjh1A1lueHfwVVBEvFs5f7SQ4dYLiGdsIpdg
-	QP507zgydfzLOKAX7/cSfpRig0V6U4Z6bI+SNayKoCVIyJe1NU3reAtKj74YQFIKg3r8=;
-Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61] helo=pettiford.lan)
-	by mail.hugovil.com with esmtpa (Exim 4.98.2)
-	(envelope-from <hugo@hugovil.com>)
-	id 1wlu4F-0000000068Y-2xAV;
-	Mon, 20 Jul 2026 15:54:24 -0400
-Date: Mon, 20 Jul 2026 15:54:23 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Biju Das <biju.das.jz@bp.renesas.com>
-Cc: geert <geert@linux-m68k.org>, biju.das.au <biju.das.au@gmail.com>, Greg
- Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, Prabhakar Mahadev Lad
- <prabhakar.mahadev-lad.rj@bp.renesas.com>, Thierry Bultel
- <thierry.bultel.yh@bp.renesas.com>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org"
- <linux-serial@vger.kernel.org>, "linux-renesas-soc@vger.kernel.org"
- <linux-renesas-soc@vger.kernel.org>
-Subject: Re: [PATCH v3 2/3] serial: sh-sci: Drop check for zero baud rate
- from uart_get_baud_rate()
-Message-Id: <20260720155423.3cb27b9d9479f4b7c6668713@hugovil.com>
-In-Reply-To: <TY3PR01MB11346FBC3C68B5B970962FB4C86C32@TY3PR01MB11346.jpnprd01.prod.outlook.com>
-References: <20260420140426.237865-1-biju.das.jz@bp.renesas.com>
-	<20260420140426.237865-3-biju.das.jz@bp.renesas.com>
-	<CAMuHMdXQi7eSZg71=01dYjpmgHRXS+L9hXZMN_dR-mtM6sLKNw@mail.gmail.com>
-	<TY3PR01MB113464AE43A23A0B69BCC5675862D2@TY3PR01MB11346.jpnprd01.prod.outlook.com>
-	<CAMuHMdUfGY6VwW09zQX8T3_JkRHwKGRUyNGRXvQaD4e58OV8qA@mail.gmail.com>
-	<20260422100538.25c6a279ec46defecd8d9a4f@hugovil.com>
-	<20260720114829.14dee9de11975bb46f3126cc@hugovil.com>
-	<TY3PR01MB11346FBC3C68B5B970962FB4C86C32@TY3PR01MB11346.jpnprd01.prod.outlook.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="k1iPnccw"
+Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-c167aa9500dso754870066b.3
+        for <linux-serial@vger.kernel.org>; Mon, 20 Jul 2026 13:23:11 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1784578990; cv=none;
+        d=google.com; s=arc-20260327;
+        b=Nf5NuaUUTwD1JFjNV33SigpiH6Aeh/INo3KbS/aBVhC2KSR8r7IYnNuUv5oeusIUz0
+         C3gX6u8EobG6qx9e7UnonTUzey/FK1v7Duz9RpeKH3u1HW2oJKbuaP5XxKCTicjY9u/Y
+         FiMy+YmUInas8qMAdtxBa8np7KjbIVKFq5FNm0QvObPm2miDX2dk/pwT321aMqcFVLPu
+         mzvGVuQuFHmYkvVtijhXiyzVsBNY7rITbPR63kMQXqmzo254KdSHTbo4dVez+QzjfQLB
+         YW+7fnMvdPOnT+mFuSux1Y3VOb3tekz0dOza29NgjAp3wsCwcAlw6h+IfC9dZo4fDBsB
+         e3jA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=U5p3cHtQtnS2cSmiUqe9etBZiOH35jMaML1hTW4v5So=;
+        fh=G+UuoMG3ucGGqydwzvNnnP2hI6bvbAxD+aQ6cmKEAFo=;
+        b=BWRCXSwkUAXm+3J5R+DayNuPA8xWG0nmN1QeMvkCKtmDblOT0QMqLwgX5e6E37y6AK
+         Ntwpe3rsaxPHL14jIgstLxaBgN/EvwJQwf5+HYzXPWviaSvBdeivSw5FWoRltlxYDLWe
+         y9n0uW4wbRucLTVbY9ViGpTQrEE+QqQCYMJlGv3v0jRBSSyouWOiESmF3EnmneqM0G0v
+         3yoc6pu7xUfs5d7LCK6qOoV/w3IW9p3TA0k+tTlk4O71SKhZlbzNNk5S+QsH6yECAUWP
+         uHANedJhlRrHeC+ettX7220L2S2+ruXKJjtwxIOu0PadX1milxPyIl7P00PDzhvnaH/D
+         GZkQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1784578990; x=1785183790; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=U5p3cHtQtnS2cSmiUqe9etBZiOH35jMaML1hTW4v5So=;
+        b=k1iPnccwVTAdMkaX1nM6YH4EzxBbQ8RLEEGRaA5odgvx56s45Ag6+H0MLdFhFVSapp
+         5gKK1ZS0XGzV3Jf8PkLQJ6BPxbTxHe1metWCMFIseym1lMq6YBwM5gk/vTTxtrPZeaPH
+         oIFsozg6rVk3AOnKxmRNXykIpx2ZTDxoCwFuTGUYIEeRDAJOA02kdWnzXs6JTV/G7waj
+         lFIC5ZFVx4M3hcjHIokbl9ELhImmnp9+B70HJQlPMqZsIXtHXwoeD1kWzW59LclVcFeJ
+         FbfYSCQ+SsusYMsHASM/Vn7aa80XmS4hvQNVPrjhIYXg1pAgzlV8Rh27HjjBidIotOIv
+         aSNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784578990; x=1785183790;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=U5p3cHtQtnS2cSmiUqe9etBZiOH35jMaML1hTW4v5So=;
+        b=U93dYu3j4n9mrZw+BtFPaZqAH3S2NGlB6EZNEAspK1Cw6rVxQxUbfOirq/rtI1cZ4y
+         j+N2NPE72gSckGHUAeNsfaWd1ygsebMOiYf5IXIG77enK/lGzRnaynMierHLWfA9/XIX
+         bANXA/h4OQedpsQOtrZW58pLGeGjgWkIUs+kE9XXvPl5WqTdUM4iGoZtCkj0aZmRa9iF
+         k68E3imrIu52fzHpbD55jgC0t1oclJFyPOvIKla9kDpmO6jFCs0Vo6PwgKf2LUu8FRZA
+         dOVmfaQ2o4isfCOl2t41xkSMZM+YEPP1s/VytEDt9gud36uvR9G0ZYcystAIo/eUCkBP
+         uQ9g==
+X-Forwarded-Encrypted: i=1; AHgh+Ro/QR3vkNMfAqZkM0NgAfS6gZx+zdI0K3nl8BVQH9p6ci1NZlyS++wg+qe+ZV8pZUeFWCOI0qVw60Uh6Yg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YybvSDD+n3wvoDXQrKePHXYDcn5MU7d8LkJ4ArUO1HFANkWPRd8
+	2QkxogRGLkON38zw2z/vu5APxC1jFqCL8L8yw8F73qD/gh5i7+xkTT93m/3J55AHWm+rEjP7rJm
+	a66JNDchEr0SBKUcJB+HHQCrKYs+r/c0=
+X-Gm-Gg: AfdE7cnPr5ZDAmyEX3tPsy8Gcy6fvDuSc2PIBFtpPGZMMVI5hVhVR/F7FMHaXdSmhML
+	2aS4JBt0IxDGpoGawdTCkqi2zkTnXjCBGWuCA/eKfQTA39zXmK7yUJUC0myKkVuMl/O+Dt5+Gdm
+	3h3Xc9KwnxPMn/L5RgV2IxnHfxcRpT4m0u/ak+Jb7ZxDkPWo27mjzq15/m6+i6aRNBjqvd3A83e
+	y/xKS8ry+yyfdoF9qqQ/JTLYgx0MXsJze0/WMAXRLEjm19mNSYk5N7ysI2T0SqjA9OC+4ELxBJk
+	3ZUwO+VAAL7LAdduRcomMtYuLLVjH74GFsroXTjFnM0+BD9XkSHPTdbGIA6OeSB8N1muBsdhQnf
+	9IAX5M0fbD3X5K1j6ydRFtopapuKLZsQZKbtqhEEjBtW1r8s=
+X-Received: by 2002:a17:907:3e18:b0:c16:82cb:36c with SMTP id
+ a640c23a62f3a-c16b4878388mr701703066b.65.1784578989603; Mon, 20 Jul 2026
+ 13:23:09 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam_score: -2.0
-X-Spam_bar: --
+MIME-Version: 1.0
+References: <20260522101042.21976-1-fushuai.wang@linux.dev> <dnpnqx6fz4osobhi7ydt2pi6hvqb4lm5vonpfpwrl2nogpadmw@6bqiyjskjo5j>
+In-Reply-To: <dnpnqx6fz4osobhi7ydt2pi6hvqb4lm5vonpfpwrl2nogpadmw@6bqiyjskjo5j>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Mon, 20 Jul 2026 23:22:32 +0300
+X-Gm-Features: AUfX_mxtOFcF-lXO1FmKE2L6YVCWQGBhiXFoukdSxDl7f7nq0E5VpURnHlR6Z0Q
+Message-ID: <CAHp75VcTs2Vro3vg8dqmYfRebk6bBfmJCZFBgD2KMHpTKY6jvQ@mail.gmail.com>
+Subject: Re: [PATCH v3] serial: 8250: Clear CON_PRINTBUFFER on port re-registration
+To: Anirudh Srinivasan <asrinivasan@oss.tenstorrent.com>
+Cc: Fushuai Wang <fushuai.wang@linux.dev>, gregkh@linuxfoundation.org, 
+	jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com, 
+	osama.abdelkader@gmail.com, jackzxcui1989@163.com, kees@kernel.org, 
+	sean@mess.org, alan@linux.intel.com, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, wangfushuai@baidu.com, 
+	linux-riscv@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Biju,
+On Mon, Jul 20, 2026 at 10:22=E2=80=AFPM Anirudh Srinivasan
+<asrinivasan@oss.tenstorrent.com> wrote:
+> On Fri, May 22, 2026 at 06:10:42PM +0800, Fushuai Wang wrote:
 
-On Mon, 20 Jul 2026 16:33:38 +0000
-Biju Das <biju.das.jz@bp.renesas.com> wrote:
+> Seems like this patch was added in next-20261717.
 
-> Hi Hugo,
-> 
-> > -----Original Message-----
-> > From: Hugo Villeneuve <hugo@hugovil.com>
-> > Sent: 20 July 2026 16:48
-> > Subject: Re: [PATCH v3 2/3] serial: sh-sci: Drop check for zero baud rate from uart_get_baud_rate()
-> > 
-> > On Wed, 22 Apr 2026 10:05:38 -0400
-> > Hugo Villeneuve <hugo@hugovil.com> wrote:
-> > 
-> > > Hi,
-> > >
-> > > On Wed, 22 Apr 2026 10:59:23 +0200
-> > > Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> > >
-> > > > Hi Biju,
-> > > >
-> > > > On Wed, 22 Apr 2026 at 09:26, Biju Das <biju.das.jz@bp.renesas.com> wrote:
-> > > > > > From: Geert Uytterhoeven <geert@linux-m68k.org> On Mon, 20 Apr
-> > > > > > 2026 at 16:04, Biju <biju.das.au@gmail.com> wrote:
-> > > > > > > From: Biju Das <biju.das.jz@bp.renesas.com>
-> > > > > > >
-> > > > > > > On DT systems, a zero baud rate from uart_get_baud_rate() is
-> > > > > > > not
-> > >
-> > > The fact that uart_get_baud_rate() cannot return zero is not related
-> > > to the system using DT or not, so I would drop this "On DT systems, "
-> > > from the commit message.
-> > >
-> > > > > > > possible even earlycon derives its bit rate from chosen/stdout-path.
-> > > > > > > The zero baud guard and its associated done label are therefore dead code. So remove it.
-> > > > > > >
-> > > > > > > Also drop the unused done label from rsci_set_termios().
-> > > > > > >
-> > > > > > > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> > > > > >
-> > > > > > > --- a/drivers/tty/serial/sh-sci.c
-> > > > > > > +++ b/drivers/tty/serial/sh-sci.c
-> > > > > > > @@ -2719,8 +2719,6 @@ static void sci_set_termios(struct uart_port *port, struct ktermios
-> > *termios,
-> > > > > > >                 max_freq = max(max_freq, s->clk_rates[i]);
-> > > > > > >
-> > > > > > >         baud = uart_get_baud_rate(port, termios, old, 0, max_freq / min_sr(s));
-> > > > > > > -       if (!baud)
-> > > > > > > -               goto done;
-> > > > > > >
-> > > > > > >         /*
-> > > > > > >          * There can be multiple sources for the sampling
-> > > > > > > clock.  Find the one
-> > > > > >
-> > > > > > I am afraid you are missing that sh-sci is also used on SH, without DT?
-> > > > >
-> > > > > Ok, please share your thoughts to handle divide_by_zero fault for
-> > > > > SH platforms on the code path after done label??
-> > > >
-> > > > Someone has to check on an SH platform (or qemu rts7751r2d) if this
-> > > > can happen. It might have been broken along the road, as people only
-> > > > use earlyprintk when debugging a problem that requires it.
-> > >
-> > > Geert: this "goto done" is not related to the earlyprintk block, which
-> > > is untouched by this patch?
-> > 
-> > Hi Biju,
-> > I cannot see any follow-up for these patches. My series for "serial:
-> > core: improve safety of uart_get_baud_rate()" has been accepted and integrated, so now the renesas sh-sci
-> > and rsci are the only drivers still checking (for nothing) the zero return value of uart_get_baud_rate().
-> > 
-> > I plan on sending two patches to address only that for sh-sci and rsci, unless you are preparing a new
-> > serie that includes it?
-> 
-> Ack. I am busy with RZ/G3L SDHI/USB/DU work. Please go ahead with your patches.
+0717
 
-Ok, thank you.
+> I'm noticing that this patch is causing no serial output to be visible
+> on riscv boards till the uart device is registered. Normally while
+> booting, we expect for all the prints made before this to be
+> buffered and appear post serial device initialization.
+>
+> =3D> booti 0x11000000 0x21000000:${initrd_size} 0x31000000
+> Moving Image from 0x11000000 to 0x200000, end=3D1ca6000
+> [ 161.301] ## Flattened Device Tree blob at 31000000
+> [ 161.302]    Booting using the fdt blob at 0x31000000
+> [ 161.307]    Loading Ramdisk to 7653e000, end 7dd81853 ... OK
+> [ 161.366]    Loading Device Tree to 0000000076532000, end 000000007653d2=
+5d ... OK
+>
+> Starting kernel ...
+>
+> [    0.235159] printk: legacy console [ttyS0] enabled
+> [    0.238787] /soc/i2c@d401d800/pmic@41: Fixed dependency cycle(s) with =
+/soc/i2c@d401d800/pmic@41/regulators/buck5
+>
+> Most devs who are debugging might be booting with the earlycon boot
+> parameter. If earlycon is present, serial output is present, but
+> with earlycon missing (which is what most distros use), I don't get
+> any serial output till this point.
 
-I sent the first patch but forgot to add you in Cc. Here is the link 
-for both patches:
+Perhaps it's inconvenient. Logically I support using earlycon (I have
+noticed a few times in the past double printing of the kernel buffer
+to the serial console). So I tend more towards that this patch
+actually gives a better experience. However, I haven't given any tag
+to it, nor do I object to any improvements or reverting to the old
+behaviour =E2=80=94 your inconvenience will become mine :-)
 
-https://lore.kernel.org/all/20260720195147.3630241-1-hugo@hugovil.com/
+Just my 2c.
 
-https://lore.kernel.org/all/20260720193411.3517484-1-hugo@hugovil.com/
-
-Hugo.
-
--- 
-Hugo Villeneuve
+--=20
+With Best Regards,
+Andy Shevchenko
