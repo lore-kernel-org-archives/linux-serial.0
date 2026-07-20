@@ -1,152 +1,338 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 223CD3B811F;
-	Mon, 20 Jul 2026 14:20:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A2443BE144
+	for <linux-serial@vger.kernel.org>; Mon, 20 Jul 2026 14:58:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784557234; cv=none; b=fOeyXWv3pDBDsE+1rbPb5u8scSSpjC/Njeqlzd1aQzzQP71bWCpeIzjWYTko9rDoCkV7RIffr4DQkXQ8c7CaLRVcsoDhlTZbKkd6dnmkIqxI+eUUWcOPemGzDDUE7I485TsE2FNdeb3R6Qza9imnVMerE39edRpYGZKnUZmFsNo=
+	t=1784559502; cv=none; b=hlL7+24PCKc6nVsxt2x3osXwCn/xAVLu8F/abfcqAGDezUXOeu4e0uZAwFKrPTLfmudKk5YbRpVZRrN1r9YsCEO8MtxGyKrR7rp3xeIn+uNGek9rksici1CM8GVWc/wBSR5h5cxFP1cNmJjAaedepgdS2HlBklIqojcKwgYuXIE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784557234; c=relaxed/simple;
-	bh=Q8pz/4VVBgfA8/bPEAei8MB8X/cmr7OAJW/v2eTprWY=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=jRS7queTh2bKI96eAQK+yrhdGZ+dXoIFdaQuhGqRclJhN+Ep7N4hbePSYTixEwbKo+GhJTf7md1rkFlxz5FfBGyx4/r2xzjsOMIJ+C6BWer8BIfBRI4FiYXS3F0ACQr7bR1mzC0uVGdBMSComot9KLPtW+H9v6WUCQTFYXvzJYU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=m+sv+/Is; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1784559502; c=relaxed/simple;
+	bh=jzFQWnseWWxoyN1ShXRYtH2cU8pOwjWhXzAAGBHZ/o4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=RHs8Dk9dERdhKySjm1OerA2+0OrXpq4aqBxFfrK0gCKmZkkZI0NJ15AKZDipYH8h8j5+e9nV7ax3ASKKWQdLTJ3ib9oFjjzWp1wkrPEnOX2OjcAOvxmvM+S3WLB1RJawtg1ik9CvKMVjBdyV17QLNcHEOxlCW9U61ZLPD7NAZKI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=Qxa7InTI; arc=none smtp.client-ip=209.85.128.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="m+sv+/Is"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1784557233; x=1816093233;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=Q8pz/4VVBgfA8/bPEAei8MB8X/cmr7OAJW/v2eTprWY=;
-  b=m+sv+/Isbu/7gPcaRz+WB29xzVuXH9XB+DQmtjp7QF9tLPV3ibyDECXm
-   ol+7DF1T+mewaWkmuKy7Owza2OSLjknmqy3V7fP9Aow+qr7ZKldfy3Sfn
-   rc3Om23zgfGsN1qJRV2KN+2phzbTg/rADKXYjlVzBReaEDLNActjh08od
-   dY7JYnmUCr+B93KDtxOA5JKQJtu+g2ltK2NDOiGcldEKoQMgZI8TMRb+C
-   +kzSRbbBaKyVqPgHFKgmDA0YF27OgmidO2cRTecc7FaKZD4+H6XdPJEaQ
-   /BQ2dgDbcpjKUTZQQLh7wf+SLh3vRNsIoihWYfbPQokFrkZrbbpy7hQWr
-   w==;
-X-CSE-ConnectionGUID: wmg22aQrTaCD3Q5ht5bYEQ==
-X-CSE-MsgGUID: qFhvJJ75TeO5RID9Ue6U1A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11852"; a="85234572"
-X-IronPort-AV: E=Sophos;i="6.25,174,1779174000"; 
-   d="scan'208";a="85234572"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2026 07:20:32 -0700
-X-CSE-ConnectionGUID: dczVyWVuToqCpyunRsTiiQ==
-X-CSE-MsgGUID: bzewl6LeRL+0kNv2nwbJEA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,174,1779174000"; 
-   d="scan'208";a="256290605"
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.144])
-  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2026 07:20:30 -0700
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Mon, 20 Jul 2026 17:20:26 +0300 (EEST)
-To: Ryan Wilbur <rwilbur633@gmail.com>
-cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>, 
-    Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-    john.ogness@linutronix.de, hvilleneuve@dimonoff.com, 
-    m.felsch@pengutronix.de, linux-serial <linux-serial@vger.kernel.org>, 
-    LKML <linux-kernel@vger.kernel.org>, stable@vger.kernel.org
-Subject: Re: [PATCH v2] serial: 8250: clear a stuck RX-timeout interrupt with
- an empty FIFO
-In-Reply-To: <20260720131123.29840-1-rwilbur633@gmail.com>
-Message-ID: <c8a74142-5704-5ad3-3504-946bf3496cfc@linux.intel.com>
-References: <20260720131123.29840-1-rwilbur633@gmail.com>
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="Qxa7InTI"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-4955de8797cso6664765e9.3
+        for <linux-serial@vger.kernel.org>; Mon, 20 Jul 2026 07:58:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1784559498; x=1785164298; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=b0HRbfmTok9CVSMITXJl4LP8yNtyhGJvNwreiAeO/rE=;
+        b=Qxa7InTId4jxsi8L7wDj+tJXo2LRH9jkCs0AEiFJq/9XpGp+4Mufh96ShRko1JvwNu
+         JjRDK2uBIz8S12cMRHUaeRAS791j7SlzpHHAFz1ICATh5zoUjqMils+HL6t+V69TUPP7
+         +crIZ4ZHXNx4BBp225A1QpygzqY3lA6bj/NpQCPA1zGPB/J01w9jJYJKUzyF799xHswz
+         0VeXTy9Z8OBAdIeREZwN4DwJPFID2DRtKosTIq+OqUXtvtBR/rLZ+rYcmpW/InFHt9Ln
+         8oLbZbHBtqW04GezqBmjVWF01zGKSIxtqiksWoXs3GdNN30cz2O0hl6fCLZ2bvinqmHj
+         nITw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784559498; x=1785164298;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=b0HRbfmTok9CVSMITXJl4LP8yNtyhGJvNwreiAeO/rE=;
+        b=Dn57ryPsx7kX0oCBr6W7mRr/9XLBGrEqe+xKhaVrgUWwyNLTVlI6/RYTa0Sog/iiyp
+         zizx8H6yqOG9XBMsNEU5vej2q7Vo8h7iG4M9/gfoxuBL/fdEQCivDeC3Wwj9sIDbJTcT
+         ArV94hvFEu9pTR0j9mB5SZhmFmc4gsL90zVnZiQ8cJQwg4cFdy5HV+EKmKbQ4uIfxKBD
+         M/ZESvRH2+hTYkiId3BUyveHVkw1vnq6siDWumzPLd+y74tzjJ70iOyTQzOdVQoukYsF
+         lH+dFKAWAZqOdSaKbXm6kLlgWpwCSTDwThrbYDI76J+mK6yK13xX+x4EcDsuthPa5u6p
+         rI2Q==
+X-Forwarded-Encrypted: i=1; AHgh+Rqn3oGvOsAgX/5rxlE/epCUGt+fNs7hmbl2iKOBJDo7FVXOWh7bJS1Oka7ZupcNhajOWVNzLbT6If1eD0s=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwO3DmyL9frWggzSrzoQTFFhWPPDmKmlGCe4vWkXXA0o5drUe89
+	u1sEhWVf9Cm+RBCAsdJewRX/fRlykubhsD8i3gJ8z8q+W9Bk/WUfeouk932Qyw1tBSg=
+X-Gm-Gg: AfdE7cnCRABbkAz5XRte+MrUhW+bmw6XojZFseq1yRezWuAB31MUxw1FYJhNPooO+b3
+	vGm0KgpmP8ODp7NUXkGpRIOTb7nQszpudllXmIYUQWXAp+44bzEjagtfjG6agyi6O9/18o/BH24
+	IsGCp0KS6DsfQn5fJjo7KqscVXQEZ6NDPJf5mi6sx3ToSWByF90DiG6GPTwV8Zj+yrqIzGlSECe
+	6nc2N/1gyfXAM3ea8/PsSTJGWHuZvIEe/w2kARCB/XZqA4Xjw57YSP76u6Xaui94AS4nzWPoGLb
+	opSXz/MrQTV0kRAOZAyIWJDIi/0YPddGCjVfTx4yNWCJmaVV8gPnUpgg2YXqsnKph1yZBO36trj
+	kmlr49QrbXgxrd4Dv8I2BQ1azoZG1+Pm/1hiiDKLa0g7UcjPsTJQ944vgHvahUuhJGqt9z6kLF2
+	LxCcMP
+X-Received: by 2002:a05:600d:644d:10b0:495:5de0:d87 with SMTP id 5b1f17b1804b1-4955de00e16mr44746845e9.36.1784559498351;
+        Mon, 20 Jul 2026 07:58:18 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.130])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49549a47de7sm292714245e9.7.2026.07.20.07.58.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jul 2026 07:58:18 -0700 (PDT)
+Date: Mon, 20 Jul 2026 16:58:16 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: John Ogness <john.ogness@linutronix.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Andy Shevchenko <andy.shevchenko@gmail.com>,
+	linux-kernel@vger.kernel.org,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	Osama Abdelkader <osama.abdelkader@gmail.com>,
+	Stepan Ionichev <sozdayvek@gmail.com>, Kees Cook <kees@kernel.org>,
+	Xin Zhao <jackzxcui1989@163.com>,
+	Fushuai Wang <wangfushuai@baidu.com>,
+	Yunhui Cui <cuiyunhui@bytedance.com>, Jacques Nilo <jnilo@free.fr>,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH tty v6 1/2] serial: 8250: Switch to nbcon console, take 2
+Message-ID: <al43iOyokb56SBF3@pathway.suse.cz>
+References: <20260720103242.7265-1-john.ogness@linutronix.de>
+ <20260720103242.7265-2-john.ogness@linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260720103242.7265-2-john.ogness@linutronix.de>
 
-On Mon, 20 Jul 2026, Ryan Wilbur wrote:
+On Mon 2026-07-20 12:38:35, John Ogness wrote:
+> Implement the necessary callbacks to switch the 8250 console driver
+> to perform as an nbcon console.
+> 
+> Add implementations for the nbcon console callbacks:
+> 
+>   ->write_atomic()
+>   ->write_thread()
+>   ->device_lock()
+>   ->device_unlock()
+> 
+> and add CON_NBCON to the initial @flags.
+> 
+> All hardware access in the callbacks is within unsafe sections.
+> The ->write_atomic() and ->write_thread() callbacks allow safe
+> handover/takeover per byte and add a preceding newline if they
+> take over from another context mid-line.
+> 
+> For the ->write_atomic() callback, a new irq_work is used to defer
+> modem control since it may be called from a context that does not
+> allow waking up tasks. During suspend/resume the irq_work is not
+> used as this has been shown to cause suspend problems for some
+> hardware. Upon resume, any pending modem control is performed.
+> 
+> Note: A new __serial8250_clear_IER() is introduced for direct
+> clearing of UART_IER during console writing (which may not be
+> holding the port lock for atomic printing). This allows restoring
+> a lockdep check to serial8250_clear_IER() in a follow-up commit.
+> 
+> --- a/drivers/tty/serial/8250/8250_core.c
+> +++ b/drivers/tty/serial/8250/8250_core.c
+> @@ -584,6 +609,9 @@ void serial8250_suspend_port(int line)
+>  	struct uart_8250_port *up = &serial8250_ports[line];
+>  	struct uart_port *port = &up->port;
+>  
+> +	/* No irq_work may be queued when suspending. */
+> +	up->avoid_modem_status_work = true;
 
-> Some UARTs can latch an RX character-timeout interrupt while the
-> RX FIFO is empty: IIR reports UART_IIR_RX_TIMEOUT (0x0c) but LSR.DR is
-> clear. A character timeout is only cleared by reading RHR, but
-> serial8250_rx_chars() reads RHR only when LSR.DR is set, so nothing ever
-> clears the condition. The interrupt is level-triggered and re-fires
-> immediately, so on a single-core ARM926 the resulting interrupt
-> storm livelocks the CPU.
-> 
-> It is reproducible when userspace repeatedly opens the front-panel port
-> (ttyS1): serial8250_do_set_termios() re-enables interrupts on unlock and
-> the handler then spins forever with iir=0xcc lsr=0x60 ier=0x05, tripping
-> the soft-lockup detector in serial8250_handle_irq_locked().
-> 
-> Fix this by doing one throwaway RHR read to clear the timeout when the
-> FIFO is empty (LSR.DR clear), so no real received data is ever discarded,
-> and it is a no-op on healthy UARTs which never report a timeout with
-> DR==0.
-> 
-> This is the same class of bug already worked around in 8250 drivers;
-> see commit 424d79183af0 ("serial: 8250_dw: Avoid "too much work" from bogus rx timeout interrupt")
-> which reports the identical iir=0xcc/lsr=0x60. See also
-> UART_RX_TIMEOUT_QUIRK in 8250_omap, and the note in 8250_bcm7271.
-> 
-> LPC32xx (PORT_LPC3220) has no dedicated 8250 glue driver, driven
-> by generic 8250_of, so it's handled here.
-> 
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Ryan Wilbur <rwilbur633@gmail.com>
-> ---
-> Changes in v2:
-> - Drop the PORT_LPC3220 gate and handle the spurious RX timeout generically
-> 
-> v1: https://lore.kernel.org/linux-serial/20260717123530.481021-1-rwilbur633@gmail.com/
-> 
->  drivers/tty/serial/8250/8250_port.c | 15 +++++++++++++++
->  1 file changed, 15 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index 8c241ec7f4f2..c63c4165105a 100644
+Do we need to synchronize this against serial8250_console_write()
+where this flag is checked, please?
+
+My understanding is that we should be on the safe side. Otherwise
+there might be bigger problems.
+
+I believe that this is called after both console_suspend_all() and
+console_suspend(uport->cons). The later makes sure that the console
+is not longer used even when @console_suspend_enabled is false.
+And these functions even call synchronize_srcu(&console_srcu).
+
+This might even answer the question from Sashiko AI whether
+we should flush the related irq_work() here, see
+https://sashiko.dev/#/patchset/20260720103242.7265-1-john.ogness%40linutronix.de
+
+That said, I am not sure about RT_PREEMPT. AFAIK, it handles IRQs
+in a kthread. In this case, synchronize_srcu() would not make
+sure that the irq_work was procceed.
+
+Note that Sashiko AI suggests that we might need to flush the irq_work
+even in serial8250_console_exit(). I guess that the situation is
+the same there. It is called after synchronize_srcu()...
+
+> +
+>  	if (!console_suspend_enabled && uart_console(port) &&
+>  	    port->type != PORT_8250) {
+>  		unsigned char canary = 0xa5;
+> @@ -620,6 +648,12 @@ void serial8250_resume_port(int line)
+>  		port->uartclk = 921600*16;
+>  	}
+>  	uart_resume_port(&serial8250_reg, port);
+> +
+> +	/* irq_work allowed again. Handle MSR now if pending. */
+> +	up->avoid_modem_status_work = false;
+> +	guard(uart_port_lock_irqsave)(port);
+> +	if (uart_console(port) && up->msr_saved_flags)
+> +		serial8250_modem_status(up);
+
+I would use scoped_guard() to make the scope clear. Something like:
+
+	scoped_guard(uart_port_lock_irqsave, port) {
+		if (uart_console(port) && up->msr_saved_flags)
+			serial8250_modem_status(up);
+	}
+
+Motivation: The guard() is pretty hidden. It can easily get overlooked
+	when people add more code at the end of this function.
+
+Wait, this should not be needed if we make sure that the work
+was flushed in serial8250_suspend_port().
+
+>  }
+>  EXPORT_SYMBOL(serial8250_resume_port);
+>  
 > --- a/drivers/tty/serial/8250/8250_port.c
 > +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -1803,6 +1803,21 @@ void serial8250_handle_irq_locked(struct uart_port *port, unsigned int iir)
->  	if (!(status & UART_LSR_DR) && (status & UART_LSR_FIFOE))
->  		serial8250_clear_and_reinit_fifos(up);
->  
+> @@ -3286,39 +3329,57 @@ static void serial8250_console_fifo_write(struct uart_8250_port *up,
+>  	 * Allow timeout for each byte written since the caller will only wait
+>  	 * for UART_LSR_BOTH_EMPTY using the timeout of a single character
+>  	 */
+> -	serial8250_fifo_wait_for_lsr_thre(up, tx_count);
+> +	serial8250_fifo_wait_for_lsr_thre(up, wctxt, tx_count);
+> +}
+> +
+> +static void serial8250_console_byte_write(struct uart_8250_port *up,
+> +					  struct nbcon_write_context *wctxt)
+> +{
+> +	struct uart_port *port = &up->port;
+> +	const char *s = wctxt->outbuf;
+> +	const char *end = s + wctxt->len;
+> +
 > +	/*
-> +	 * A UART can raise an RX character-timeout interrupt while the RX
-> +	 * FIFO is already empty (IIR reports RX_TIMEOUT but LSR.DR is
-> +	 * clear). The timeout is only cleared by reading RHR, but the RX
-> +	 * path below is skipped when the FIFO is empty, so nothing clears
-> +	 * it. With a level-triggered IRQ it re-fires immediately and can
-> +	 * livelock a single-core. Observed on the NXP LPC32xx
-> +	 * UART (PORT_LPC3220). Do one throwaway RHR read to
-> +	 * clear it. A healthy 16550 UART never reports a timeout with DR clear,
-> +	 * so this is a no-op elsewhere.
+> +	 * Write out the message. If a handover or takeover occurs, writing
+> +	 * must be aborted since wctxt->outbuf and wctxt->len are no longer
+> +	 * valid.
 > +	 */
-> +	if ((iir & UART_IIR_RX_TIMEOUT) == UART_IIR_RX_TIMEOUT &&
-> +	    !(status & UART_LSR_DR))
-> +		serial_in(up, UART_RX);
+> +	while (s != end) {
+> +		if (!nbcon_enter_unsafe(wctxt))
+> +			return;
+> +
+> +		uart_console_write(port, s++, 1, serial8250_console_wait_putchar);
+> +
+> +		nbcon_exit_unsafe(wctxt);
+> +	}
+>  }
+>  
+>  /*
+> - *	Print a string to the serial port trying not to disturb
+> - *	any possible real use of the port...
+> + * Print a string to the serial port trying not to disturb
+> + * any possible real use of the port...
+>   *
+> - *	The console_lock must be held when we get here.
+> - *
+> - *	Doing runtime PM is really a bad idea for the kernel console.
+> - *	Thus, we assume the function is called when device is powered up.
+> + * Doing runtime PM is really a bad idea for the kernel console.
+> + * Thus, assume it is called when device is powered up.
+>   */
+> -void serial8250_console_write(struct uart_8250_port *up, const char *s,
+> -			      unsigned int count)
+> +void serial8250_console_write(struct uart_8250_port *up,
+> +			      struct nbcon_write_context *wctxt,
+> +			      bool is_atomic)
+>  {
+>  	struct uart_8250_em485 *em485 = up->em485;
+>  	struct uart_port *port = &up->port;
+> -	unsigned long flags;
+> -	unsigned int ier, use_fifo;
+> -	int locked = 1;
+> -
+> -	touch_nmi_watchdog();
+> +	unsigned int ier;
+> +	bool use_fifo;
+>  
+> -	if (oops_in_progress)
+> -		locked = uart_port_trylock_irqsave(port, &flags);
+> -	else
+> -		uart_port_lock_irqsave(port, &flags);
+> +	if (!nbcon_enter_unsafe(wctxt))
+> +		return;
+>  
+>  	/*
+> -	 *	First save the IER then disable the interrupts
+> +	 * First, save the IER, then disable the interrupts. The special
+> +	 * variant to clear the IER is used because console printing may
+> +	 * occur without holding the port lock.
 
-Hi,
+I would make the comment more clear when it might happen and if it is
+safe. Something like:
 
-I suspect Andy meant you should put this into hw specific file into a 
-hw-specific handle_irq. That could be setup in 8250_of.c, it already 
-seems to do something like that for some specific type.
+	 * First, save the IER, then disable the interrupts. The special
+	 * variant to clear the IER is used because an emergency and panic
+	 * console printing is synchronized only by nbcon context without
+	 * holding the port lock.
 
-It might make sense to put this code into a separate function that is 
-called from those drivers. However, it also looked there are minor 
-variations how each 8250 variant deals with this so it might not be that 
-practical (8250_dw include check for LSR_BI bit and this one doesn't seem 
-include that bit, not sure if that's an oversight or intentional 
-difference and omap + bcm7271 did something different to workaround it).
+>  	 */
+>  	ier = serial_port_in(port, UART_IER);
+> -	serial8250_clear_IER(up);
+> +	__serial8250_clear_IER(up);
+>  
+>  	/* check scratch reg to see if port powered off during system sleep */
+>  	if (up->canary && (up->canary != serial_port_in(port, UART_SCR))) {
+> @@ -3332,6 +3393,18 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
+>  		mdelay(port->rs485.delay_rts_before_send);
+>  	}
+>  
+> +	/* If ownership was lost, no writing is allowed */
+> +	if (!nbcon_can_proceed(wctxt))
+> +		goto skip_write;
+> +
+> +	/*
+> +	 * If console printer did not fully output the previous line, it must
+> +	 * have been handed or taken over. Insert a newline in order to
+> +	 * maintain clean output.
+> +	 */
+> +	if (!up->console_line_ended)
+> +		uart_console_write(port, "\n", 1, serial8250_console_wait_putchar);
+> +
+>  	use_fifo = (up->capabilities & UART_CAP_FIFO) &&
+>  		/*
+>  		 * BCM283x requires to check the fifo
+> @@ -3352,10 +3425,23 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
+>  		 */
+>  		!uart_console_hwflow_active(&up->port);
+>  
+> +	nbcon_exit_unsafe(wctxt);
+> +
+>  	if (likely(use_fifo))
+> -		serial8250_console_fifo_write(up, s, count);
+> +		serial8250_console_fifo_write(up, wctxt);
+>  	else
+> -		uart_console_write(port, s, count, serial8250_console_wait_putchar);
+> +		serial8250_console_byte_write(up, wctxt);
+> +skip_write:
+> +	/*
+> +	 * If ownership was lost, this context must reacquire ownership and
+> +	 * re-enter the unsafe section in order to perform final actions
+> +	 * (such as re-enabling interrupts).
+> +	 */
+> +	if (!nbcon_can_proceed(wctxt)) {
 
-So 3rd alternative would be to add e.g. UART_BUG_SPURIOUSRXTO but again 
-there are the per driver variations. To handle the variations, one option 
-would be add a callback which is invoked if UART_BUG_SPURIOUSRXTO is set 
-(that is probably acceptable to occur from 8250_port.c's handle_irq).
-It would be a bit more work and a few patches in a series but definitely 
-cleaner approach than copy-pasting this code around.
+This should be:
 
--- 
- i.
+	if (!nbcon_enter_unsafe(wctxt))
 
+or even better:
+
+	while (!nbcon_enter_unsafe(wctxt))
+		nbcon_reacquire_nobuf(wctxt);
+
+Otherwise, we would not be in the unsafe_context when
+nbcon_can_proceed() succeeded.
+
+Note: I have missed this. It was actually found by Sashiko...
+
+
+> +		do {
+> +			nbcon_reacquire_nobuf(wctxt);
+> +		} while (!nbcon_enter_unsafe(wctxt));
+> +	}
+>  
+>  	/*
+>  	 *	Finally, wait for transmitter to become empty
+
+Otherwise, it looks good to me.
+
+Best Regards,
+Petr
