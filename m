@@ -1,91 +1,154 @@
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B4D934DCCD;
-	Mon, 20 Jul 2026 19:51:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B23E3859F5;
+	Mon, 20 Jul 2026 19:54:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784577114; cv=none; b=Sd1XbXfCqZsTbecWHZjlfQdefzZJQLMIgl0qFUn30DgH0JH/4+b+sT8WJSnYxXIFGnF/jWK7lkC2j/7YVxwzMIOKhikJ2ahwcWrQl7nkphSOvw6IXkUdgjYK7cB977QRC/uLallNjKdDlHZj9zcvvQsqKjXyQpbJR1iVzOPm7dI=
+	t=1784577268; cv=none; b=pV+s2r6iKLOWTcj0IziSUBOXTFj71MrJ+j3QbpX/JnlPyHdNiwkC6juktEVRtF7v666mVCPI938KaRyusAYYPlh60gsfWwahPtdbaA6tCLLUGmpUGfOpQi8H9ZykbVIuEsGHxql7PjTLKqbt460Z28gd93MkKXK6QRwFI7/BTvs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784577114; c=relaxed/simple;
-	bh=+3tRQOkKXYTfm8//XPY7dOZ2s2DB0vL8Ensxxjwe5CQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ExD5VjJoAG9o3N6n3Imgwt3Y/YMIEO3YySFv0IGncBLi0wzKjB6RusH0XPlgCtXfP1gjzWYoCRxqbeoBtFM/tSYg6g4uz0LR26mQYGLgm01Q7W9c+Ru3UFHT1pPd/G33ybForapcCFxYooCR9kMwkx9Yv+VqjU5g1dHlr1g40O8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=s6+jR2vL; arc=none smtp.client-ip=162.243.120.170
+	s=arc-20240116; t=1784577268; c=relaxed/simple;
+	bh=gr++SKTsuiU1nnDtgqy68QOrXEpeYSoP7Oao7llCJJo=;
+	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
+	 Mime-Version:Content-Type; b=aTqlnCm8vZNK0YjpzsMf5mKvOAPUAf3SqXZEH6dsq3SVt/f38nmT/nEc9dy0SbdZNd+qqRXdBI+0JsFCd5mEAiPLA6025z5d5FlSIw+Y/zLLewlINAH/WeOXPVTOcsgv5NtNFo/ZnPH2nBSiRwAH8lY/ETPgkh6pBpALSOtRD3E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=qnvVbGef; arc=none smtp.client-ip=162.243.120.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="s6+jR2vL"
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="qnvVbGef"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=default; h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject
-	:Cc:To:From:subject:date:message-id:reply-to;
-	bh=pgebSYBfvUp63+eMYv0AErJqT8i7Kjg3m4XtWaqjsyU=; b=s6+jR2vLyZ1igGeaZeVadE+SD6
-	Ql+izDBxzMZ8O+mbBDAxMFqcUqP0cocvkMHio8qxR20U84Xw4hi5Z3CIqPsfQ50ngDDfFu/ZbJkSL
-	0hbap8sU1MDJmW1Sx40XrgRuVnIA4f14bHdLz/3RxpKApRJIVRPYI6SrKvLIa4PyHwSE=;
+	; s=default; h=Content-Transfer-Encoding:Mime-Version:Message-Id:Subject:Cc:
+	To:From:Date:subject:date:message-id:reply-to;
+	bh=mg78F8Bjxia/BNADv+L6tDU1QYwOdmH4sHpEvCvjNFc=; b=qnvVbGefgzN1We8md4e49QuRgn
+	PFYQTL35mNxNi8eB4LAnWQXkppy11KWZa/vyxXYP+Qjh1A1lueHfwVVBEvFs5f7SQ4dYLiGdsIpdg
+	QP507zgydfzLOKAX7/cSfpRig0V6U4Z6bI+SNayKoCVIyJe1NU3reAtKj74YQFIKg3r8=;
 Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61] helo=pettiford.lan)
-	by mail.hugovil.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.98.2)
+	by mail.hugovil.com with esmtpa (Exim 4.98.2)
 	(envelope-from <hugo@hugovil.com>)
-	id 1wlu1l-0000000065N-2thT;
-	Mon, 20 Jul 2026 15:51:50 -0400
+	id 1wlu4F-0000000068Y-2xAV;
+	Mon, 20 Jul 2026 15:54:24 -0400
+Date: Mon, 20 Jul 2026 15:54:23 -0400
 From: Hugo Villeneuve <hugo@hugovil.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: hugo@hugovil.com,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	"biju.das.au" <biju.das.au@gmail.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH] serial: rsci: remove check for zero baud rate from uart_get_baud_rate()
-Date: Mon, 20 Jul 2026 15:51:44 -0400
-Message-ID: <20260720195147.3630241-1-hugo@hugovil.com>
-X-Mailer: git-send-email 2.47.3
+To: Biju Das <biju.das.jz@bp.renesas.com>
+Cc: geert <geert@linux-m68k.org>, biju.das.au <biju.das.au@gmail.com>, Greg
+ Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>, Prabhakar Mahadev Lad
+ <prabhakar.mahadev-lad.rj@bp.renesas.com>, Thierry Bultel
+ <thierry.bultel.yh@bp.renesas.com>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org"
+ <linux-serial@vger.kernel.org>, "linux-renesas-soc@vger.kernel.org"
+ <linux-renesas-soc@vger.kernel.org>
+Subject: Re: [PATCH v3 2/3] serial: sh-sci: Drop check for zero baud rate
+ from uart_get_baud_rate()
+Message-Id: <20260720155423.3cb27b9d9479f4b7c6668713@hugovil.com>
+In-Reply-To: <TY3PR01MB11346FBC3C68B5B970962FB4C86C32@TY3PR01MB11346.jpnprd01.prod.outlook.com>
+References: <20260420140426.237865-1-biju.das.jz@bp.renesas.com>
+	<20260420140426.237865-3-biju.das.jz@bp.renesas.com>
+	<CAMuHMdXQi7eSZg71=01dYjpmgHRXS+L9hXZMN_dR-mtM6sLKNw@mail.gmail.com>
+	<TY3PR01MB113464AE43A23A0B69BCC5675862D2@TY3PR01MB11346.jpnprd01.prod.outlook.com>
+	<CAMuHMdUfGY6VwW09zQX8T3_JkRHwKGRUyNGRXvQaD4e58OV8qA@mail.gmail.com>
+	<20260422100538.25c6a279ec46defecd8d9a4f@hugovil.com>
+	<20260720114829.14dee9de11975bb46f3126cc@hugovil.com>
+	<TY3PR01MB11346FBC3C68B5B970962FB4C86C32@TY3PR01MB11346.jpnprd01.prod.outlook.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam_score: -1.0
-X-Spam_bar: -
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam_score: -2.0
+X-Spam_bar: --
 
-From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Hi Biju,
 
-The minimum baud rate supported by this driver is 0, so even for the B0
-case, uart_get_baud_rate() will return 9600, not zero. This check is no
-longer necessary since commit 16ae2a877bf4 ("serial: Fix crash if the
-minimum rate of the device is > 9600 baud") so remove it.
+On Mon, 20 Jul 2026 16:33:38 +0000
+Biju Das <biju.das.jz@bp.renesas.com> wrote:
 
-Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
----
-Cc: biju.das.au <biju.das.au@gmail.com>
----
- drivers/tty/serial/rsci.c | 3 ---
- 1 file changed, 3 deletions(-)
+> Hi Hugo,
+> 
+> > -----Original Message-----
+> > From: Hugo Villeneuve <hugo@hugovil.com>
+> > Sent: 20 July 2026 16:48
+> > Subject: Re: [PATCH v3 2/3] serial: sh-sci: Drop check for zero baud rate from uart_get_baud_rate()
+> > 
+> > On Wed, 22 Apr 2026 10:05:38 -0400
+> > Hugo Villeneuve <hugo@hugovil.com> wrote:
+> > 
+> > > Hi,
+> > >
+> > > On Wed, 22 Apr 2026 10:59:23 +0200
+> > > Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> > >
+> > > > Hi Biju,
+> > > >
+> > > > On Wed, 22 Apr 2026 at 09:26, Biju Das <biju.das.jz@bp.renesas.com> wrote:
+> > > > > > From: Geert Uytterhoeven <geert@linux-m68k.org> On Mon, 20 Apr
+> > > > > > 2026 at 16:04, Biju <biju.das.au@gmail.com> wrote:
+> > > > > > > From: Biju Das <biju.das.jz@bp.renesas.com>
+> > > > > > >
+> > > > > > > On DT systems, a zero baud rate from uart_get_baud_rate() is
+> > > > > > > not
+> > >
+> > > The fact that uart_get_baud_rate() cannot return zero is not related
+> > > to the system using DT or not, so I would drop this "On DT systems, "
+> > > from the commit message.
+> > >
+> > > > > > > possible even earlycon derives its bit rate from chosen/stdout-path.
+> > > > > > > The zero baud guard and its associated done label are therefore dead code. So remove it.
+> > > > > > >
+> > > > > > > Also drop the unused done label from rsci_set_termios().
+> > > > > > >
+> > > > > > > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> > > > > >
+> > > > > > > --- a/drivers/tty/serial/sh-sci.c
+> > > > > > > +++ b/drivers/tty/serial/sh-sci.c
+> > > > > > > @@ -2719,8 +2719,6 @@ static void sci_set_termios(struct uart_port *port, struct ktermios
+> > *termios,
+> > > > > > >                 max_freq = max(max_freq, s->clk_rates[i]);
+> > > > > > >
+> > > > > > >         baud = uart_get_baud_rate(port, termios, old, 0, max_freq / min_sr(s));
+> > > > > > > -       if (!baud)
+> > > > > > > -               goto done;
+> > > > > > >
+> > > > > > >         /*
+> > > > > > >          * There can be multiple sources for the sampling
+> > > > > > > clock.  Find the one
+> > > > > >
+> > > > > > I am afraid you are missing that sh-sci is also used on SH, without DT?
+> > > > >
+> > > > > Ok, please share your thoughts to handle divide_by_zero fault for
+> > > > > SH platforms on the code path after done label??
+> > > >
+> > > > Someone has to check on an SH platform (or qemu rts7751r2d) if this
+> > > > can happen. It might have been broken along the road, as people only
+> > > > use earlyprintk when debugging a problem that requires it.
+> > >
+> > > Geert: this "goto done" is not related to the earlyprintk block, which
+> > > is untouched by this patch?
+> > 
+> > Hi Biju,
+> > I cannot see any follow-up for these patches. My series for "serial:
+> > core: improve safety of uart_get_baud_rate()" has been accepted and integrated, so now the renesas sh-sci
+> > and rsci are the only drivers still checking (for nothing) the zero return value of uart_get_baud_rate().
+> > 
+> > I plan on sending two patches to address only that for sh-sci and rsci, unless you are preparing a new
+> > serie that includes it?
+> 
+> Ack. I am busy with RZ/G3L SDHI/USB/DU work. Please go ahead with your patches.
 
-diff --git a/drivers/tty/serial/rsci.c b/drivers/tty/serial/rsci.c
-index b00c9e385169d..40db9daa4272d 100644
---- a/drivers/tty/serial/rsci.c
-+++ b/drivers/tty/serial/rsci.c
-@@ -265,8 +265,6 @@ static void rsci_set_termios(struct uart_port *port, struct ktermios *termios,
- 	}
- 
- 	baud = uart_get_baud_rate(port, termios, old, 0, max_freq);
--	if (!baud)
--		goto done;
- 
- 	/* Divided Functional Clock using standard Bit Rate Register */
- 	err = sci_scbrr_calc(s, baud, &brr1, &srr1, &cks1);
-@@ -278,7 +276,6 @@ static void rsci_set_termios(struct uart_port *port, struct ktermios *termios,
- 		cks = cks1;
- 	}
- 
--done:
- 	if (best_clk >= 0)
- 		dev_dbg(port->dev, "Using clk %pC for %u%+d bps\n",
- 			s->clks[best_clk], baud, min_err);
+Ok, thank you.
 
-base-commit: 782f4dbd1794b4f30dc116a7ca42c5962c409be8
+I sent the first patch but forgot to add you in Cc. Here is the link 
+for both patches:
+
+https://lore.kernel.org/all/20260720195147.3630241-1-hugo@hugovil.com/
+
+https://lore.kernel.org/all/20260720193411.3517484-1-hugo@hugovil.com/
+
+Hugo.
+
 -- 
-2.47.3
-
+Hugo Villeneuve
