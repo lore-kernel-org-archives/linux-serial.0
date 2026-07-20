@@ -1,118 +1,152 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55F91389455;
-	Mon, 20 Jul 2026 14:07:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 223CD3B811F;
+	Mon, 20 Jul 2026 14:20:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784556440; cv=none; b=tXHEbbxFMaIwHS9famKWCM6BR7Z1ZAIvf9d8HKf0kYzN9xLls25lsspRaurSaocRdMIJ2T+LqBmFUiV2Fw9QBuMufeNQ9fGTLVw3qnmPRYpS545a6Wb8B+uAf1IM8tDM+wscfsRxi875QnrF5ez/pcVC5eqKKJBrQhdpMSGmykA=
+	t=1784557234; cv=none; b=fOeyXWv3pDBDsE+1rbPb5u8scSSpjC/Njeqlzd1aQzzQP71bWCpeIzjWYTko9rDoCkV7RIffr4DQkXQ8c7CaLRVcsoDhlTZbKkd6dnmkIqxI+eUUWcOPemGzDDUE7I485TsE2FNdeb3R6Qza9imnVMerE39edRpYGZKnUZmFsNo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784556440; c=relaxed/simple;
-	bh=yYZ70saqUACf/IL1Vo/EY4U1TjOqnb2Vu9Hsm5Mk2EE=;
-	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
-	 Mime-Version:Content-Type; b=WGnz3CCgrB7w4QimembIhCJEBcCX438sxbNlIeIEiA5rNvEco9u3dfIngvYps2mMA/dG+Dm789CIr3VcvhMuJ6ZyW9BioLw2z9SQKm4NRtvAydW3+IJ9pIdBh60rq9+d/PTmiba1gpDzcvJFVJ/1MfWRJ4747hc9vfBTBx61sl4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=mt7mkFDo; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	s=arc-20240116; t=1784557234; c=relaxed/simple;
+	bh=Q8pz/4VVBgfA8/bPEAei8MB8X/cmr7OAJW/v2eTprWY=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=jRS7queTh2bKI96eAQK+yrhdGZ+dXoIFdaQuhGqRclJhN+Ep7N4hbePSYTixEwbKo+GhJTf7md1rkFlxz5FfBGyx4/r2xzjsOMIJ+C6BWer8BIfBRI4FiYXS3F0ACQr7bR1mzC0uVGdBMSComot9KLPtW+H9v6WUCQTFYXvzJYU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=m+sv+/Is; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="mt7mkFDo"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=default; h=Content-Transfer-Encoding:Mime-Version:Message-Id:Subject:Cc:
-	To:From:Date:subject:date:message-id:reply-to;
-	bh=AY3+WPWTmnzoUbYnXKrbFciUA/tg3zPcppn2BkG2wwg=; b=mt7mkFDor7iAQm+WvImCbJxL66
-	yWc7KXWMTAq3/kJgtxq4Kff6Um2gTGnoB40VpN9Layzm6ChZRs4Ng56ekE1kL/Q8Mbc0voblMewva
-	YIo4Z0e3Ae6ZnSFMX5v3x+EhT1U/fJLl5c9+yDrJEUkPkfbma6hQeAXastAz2Q0NXHbE=;
-Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61] helo=pettiford.lan)
-	by mail.hugovil.com with esmtpa (Exim 4.98.2)
-	(envelope-from <hugo@hugovil.com>)
-	id 1wloeD-000000008Qu-1c1N;
-	Mon, 20 Jul 2026 10:07:09 -0400
-Date: Mon, 20 Jul 2026 10:07:08 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= (The Capable Hub)
- <u.kleine-koenig@baylibre.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>, Ilpo =?ISO-8859-1?Q?J=E4rvinen?=
- <ilpo.jarvinen@linux.intel.com>, Hugo Villeneuve
- <hvilleneuve@dimonoff.com>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org
-Subject: Re: [PATCH] serial: 8250_hub6: Fix double definition for
- hub6_match_port()
-Message-Id: <20260720100708.5b9b3ed9f6f42b27adb264d4@hugovil.com>
-In-Reply-To: <al34uIyOue73MMN0@monoceros>
-References: <20260720080812.1223096-2-u.kleine-koenig@baylibre.com>
-	<al34uIyOue73MMN0@monoceros>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="m+sv+/Is"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1784557233; x=1816093233;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=Q8pz/4VVBgfA8/bPEAei8MB8X/cmr7OAJW/v2eTprWY=;
+  b=m+sv+/Isbu/7gPcaRz+WB29xzVuXH9XB+DQmtjp7QF9tLPV3ibyDECXm
+   ol+7DF1T+mewaWkmuKy7Owza2OSLjknmqy3V7fP9Aow+qr7ZKldfy3Sfn
+   rc3Om23zgfGsN1qJRV2KN+2phzbTg/rADKXYjlVzBReaEDLNActjh08od
+   dY7JYnmUCr+B93KDtxOA5JKQJtu+g2ltK2NDOiGcldEKoQMgZI8TMRb+C
+   +kzSRbbBaKyVqPgHFKgmDA0YF27OgmidO2cRTecc7FaKZD4+H6XdPJEaQ
+   /BQ2dgDbcpjKUTZQQLh7wf+SLh3vRNsIoihWYfbPQokFrkZrbbpy7hQWr
+   w==;
+X-CSE-ConnectionGUID: wmg22aQrTaCD3Q5ht5bYEQ==
+X-CSE-MsgGUID: qFhvJJ75TeO5RID9Ue6U1A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11852"; a="85234572"
+X-IronPort-AV: E=Sophos;i="6.25,174,1779174000"; 
+   d="scan'208";a="85234572"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2026 07:20:32 -0700
+X-CSE-ConnectionGUID: dczVyWVuToqCpyunRsTiiQ==
+X-CSE-MsgGUID: bzewl6LeRL+0kNv2nwbJEA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,174,1779174000"; 
+   d="scan'208";a="256290605"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.144])
+  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2026 07:20:30 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Mon, 20 Jul 2026 17:20:26 +0300 (EEST)
+To: Ryan Wilbur <rwilbur633@gmail.com>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, 
+    Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+    john.ogness@linutronix.de, hvilleneuve@dimonoff.com, 
+    m.felsch@pengutronix.de, linux-serial <linux-serial@vger.kernel.org>, 
+    LKML <linux-kernel@vger.kernel.org>, stable@vger.kernel.org
+Subject: Re: [PATCH v2] serial: 8250: clear a stuck RX-timeout interrupt with
+ an empty FIFO
+In-Reply-To: <20260720131123.29840-1-rwilbur633@gmail.com>
+Message-ID: <c8a74142-5704-5ad3-3504-946bf3496cfc@linux.intel.com>
+References: <20260720131123.29840-1-rwilbur633@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-X-Spam_score: -2.0
-X-Spam_bar: --
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 
-Hi Uwe,
+On Mon, 20 Jul 2026, Ryan Wilbur wrote:
 
-On Mon, 20 Jul 2026 12:31:31 +0200
-Uwe Kleine-K=F6nig (The Capable Hub) <u.kleine-koenig@baylibre.com> wrote:
+> Some UARTs can latch an RX character-timeout interrupt while the
+> RX FIFO is empty: IIR reports UART_IIR_RX_TIMEOUT (0x0c) but LSR.DR is
+> clear. A character timeout is only cleared by reading RHR, but
+> serial8250_rx_chars() reads RHR only when LSR.DR is set, so nothing ever
+> clears the condition. The interrupt is level-triggered and re-fires
+> immediately, so on a single-core ARM926 the resulting interrupt
+> storm livelocks the CPU.
+> 
+> It is reproducible when userspace repeatedly opens the front-panel port
+> (ttyS1): serial8250_do_set_termios() re-enables interrupts on unlock and
+> the handler then spins forever with iir=0xcc lsr=0x60 ier=0x05, tripping
+> the soft-lockup detector in serial8250_handle_irq_locked().
+> 
+> Fix this by doing one throwaway RHR read to clear the timeout when the
+> FIFO is empty (LSR.DR clear), so no real received data is ever discarded,
+> and it is a no-op on healthy UARTs which never report a timeout with
+> DR==0.
+> 
+> This is the same class of bug already worked around in 8250 drivers;
+> see commit 424d79183af0 ("serial: 8250_dw: Avoid "too much work" from bogus rx timeout interrupt")
+> which reports the identical iir=0xcc/lsr=0x60. See also
+> UART_RX_TIMEOUT_QUIRK in 8250_omap, and the note in 8250_bcm7271.
+> 
+> LPC32xx (PORT_LPC3220) has no dedicated 8250 glue driver, driven
+> by generic 8250_of, so it's handled here.
+> 
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Ryan Wilbur <rwilbur633@gmail.com>
+> ---
+> Changes in v2:
+> - Drop the PORT_LPC3220 gate and handle the spurious RX timeout generically
+> 
+> v1: https://lore.kernel.org/linux-serial/20260717123530.481021-1-rwilbur633@gmail.com/
+> 
+>  drivers/tty/serial/8250/8250_port.c | 15 +++++++++++++++
+>  1 file changed, 15 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> index 8c241ec7f4f2..c63c4165105a 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -1803,6 +1803,21 @@ void serial8250_handle_irq_locked(struct uart_port *port, unsigned int iir)
+>  	if (!(status & UART_LSR_DR) && (status & UART_LSR_FIFOE))
+>  		serial8250_clear_and_reinit_fifos(up);
+>  
+> +	/*
+> +	 * A UART can raise an RX character-timeout interrupt while the RX
+> +	 * FIFO is already empty (IIR reports RX_TIMEOUT but LSR.DR is
+> +	 * clear). The timeout is only cleared by reading RHR, but the RX
+> +	 * path below is skipped when the FIFO is empty, so nothing clears
+> +	 * it. With a level-triggered IRQ it re-fires immediately and can
+> +	 * livelock a single-core. Observed on the NXP LPC32xx
+> +	 * UART (PORT_LPC3220). Do one throwaway RHR read to
+> +	 * clear it. A healthy 16550 UART never reports a timeout with DR clear,
+> +	 * so this is a no-op elsewhere.
+> +	 */
+> +	if ((iir & UART_IIR_RX_TIMEOUT) == UART_IIR_RX_TIMEOUT &&
+> +	    !(status & UART_LSR_DR))
+> +		serial_in(up, UART_RX);
 
-> On Mon, Jul 20, 2026 at 10:08:12AM +0200, Uwe Kleine-K=F6nig (The Capable=
- Hub) wrote:
-> > With CONFIG_SERIAL_8250_HUB6 configured as module
-> > (CONFIG_SERIAL_8250_HUB6=3Dm) the cpp symbol CONFIG_SERIAL_8250_HUB6 is=
-n't
-> > defined (only CONFIG_SERIAL_8250_HUB6_MODULE is). In this case
-> > hub6_match_port() is defined in drivers/tty/serial/8250/8250.h as static
-> > inline and in drivers/tty/serial/8250/8250_hub6.c as normal function.
-> >=20
-> > Use IS_ENABLED() to also handle the modular case correctly.
-> >=20
-> > Fixes: 3d406299d882 ("serial: 8250_hub6: add hub6_match_port()")
-> > Signed-off-by: Uwe Kleine-K=F6nig (The Capable Hub) <u.kleine-koenig@ba=
-ylibre.com>
-> > ---
-> >  drivers/tty/serial/8250/8250.h | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >=20
-> > diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8=
-250.h
-> > index 9d1068d0489d..fb9a7117d145 100644
-> > --- a/drivers/tty/serial/8250/8250.h
-> > +++ b/drivers/tty/serial/8250/8250.h
-> > @@ -334,7 +334,7 @@ int fintek_8250_probe(struct uart_8250_port *uart);
-> >  static inline int fintek_8250_probe(struct uart_8250_port *uart) { ret=
-urn 0; }
-> >  #endif
-> > =20
-> > -#ifdef CONFIG_SERIAL_8250_HUB6
-> > +#if IS_ENABLED(CONFIG_SERIAL_8250_HUB6)
-> >  bool hub6_match_port(const struct uart_port *port1, const struct uart_=
-port *port2);
-> >  #else
-> >  static inline bool hub6_match_port(const struct uart_port *port1, cons=
-t struct uart_port *port2)
-> >=20
-> > base-commit: 0718283ab28bc3907e10b61a6b4be6fefa1cbb2f
->=20
-> There is an earlier fix already at
-> https://lore.kernel.org/linux-serial/20260715153707.4181828-1-hugo@hugovi=
-l.com/
->=20
-> It's a bit different, but essentially equivalent. So please stick to
-> that older patch.
+Hi,
 
-They are not essentially equivalent. If=20
-CONFIG_SERIAL_8250=3Dy and CONFIG_SERIAL_8250_HUB6=3Dm, and using
-IS_ENABLED() gives this linker error:
+I suspect Andy meant you should put this into hw specific file into a 
+hw-specific handle_irq. That could be setup in 8250_of.c, it already 
+seems to do something like that for some specific type.
 
-ld: vmlinux.o: in function `uart_match_port':
-(.text+0x723aac): undefined reference to `hub6_match_port'
+It might make sense to put this code into a separate function that is 
+called from those drivers. However, it also looked there are minor 
+variations how each 8250 variant deals with this so it might not be that 
+practical (8250_dw include check for LSR_BI bit and this one doesn't seem 
+include that bit, not sure if that's an oversight or intentional 
+difference and omap + bcm7271 did something different to workaround it).
 
-Using IS_REACHABLE() fixes this.
+So 3rd alternative would be to add e.g. UART_BUG_SPURIOUSRXTO but again 
+there are the per driver variations. To handle the variations, one option 
+would be add a callback which is invoked if UART_BUG_SPURIOUSRXTO is set 
+(that is probably acceptable to occur from 8250_port.c's handle_irq).
+It would be a bit more work and a few patches in a series but definitely 
+cleaner approach than copy-pasting this code around.
 
---=20
-Hugo Villeneuve
+-- 
+ i.
+
