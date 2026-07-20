@@ -1,80 +1,118 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAAA13B2FDF;
-	Mon, 20 Jul 2026 14:03:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55F91389455;
+	Mon, 20 Jul 2026 14:07:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784556197; cv=none; b=oB7tmou/W85fPRuV4gCTsPF7qjiBCbCgXU6uXHKvXCOPpe0+WOWifyNwzrqxBfkI5BmdYy7xvDeC/K0fwC3/zBdXxfPYwp32tTY2QJU7xX3rO9wcQLHSH+I5BC0/T579dRm4bMGbQGDYRjxKbpPhjYJ8IizffnGGzPipaehqIeo=
+	t=1784556440; cv=none; b=tXHEbbxFMaIwHS9famKWCM6BR7Z1ZAIvf9d8HKf0kYzN9xLls25lsspRaurSaocRdMIJ2T+LqBmFUiV2Fw9QBuMufeNQ9fGTLVw3qnmPRYpS545a6Wb8B+uAf1IM8tDM+wscfsRxi875QnrF5ez/pcVC5eqKKJBrQhdpMSGmykA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784556197; c=relaxed/simple;
-	bh=wmjrl+3XO+U+WANJWn8E6DX6wWRUrxrdC4VRHhKCwx8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LhAcHUBLflWTcHb7OxGqxLXDhXC5anjFp+DMSfH+4OTGLVx4LxnFCbn4NA4Sa9S3MzyQ4X2Ts9mE1kqqTq0jN/CDfzcm3+xGy5AKwhDEREu7Im7bhA4AMk7cuhI2C6saHRXGW5coF9svksCL/mz2A1eJ+5b3AYuKLYTGsz74v0Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=lVoMux+n; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=IBz6kCrl; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1784556440; c=relaxed/simple;
+	bh=yYZ70saqUACf/IL1Vo/EY4U1TjOqnb2Vu9Hsm5Mk2EE=;
+	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
+	 Mime-Version:Content-Type; b=WGnz3CCgrB7w4QimembIhCJEBcCX438sxbNlIeIEiA5rNvEco9u3dfIngvYps2mMA/dG+Dm789CIr3VcvhMuJ6ZyW9BioLw2z9SQKm4NRtvAydW3+IJ9pIdBh60rq9+d/PTmiba1gpDzcvJFVJ/1MfWRJ4747hc9vfBTBx61sl4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=mt7mkFDo; arc=none smtp.client-ip=162.243.120.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="lVoMux+n";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="IBz6kCrl"
-Date: Mon, 20 Jul 2026 16:03:12 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1784556193;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=TO4XUXBcX9jugDI7rdMgy8/Ll6V9/50yI0xjJ5KWHI8=;
-	b=lVoMux+nbjf+FNqppOdfLTBmFm+rJNNeMQs48QUWk6GaswFq8opWFq4E9meb6hBozrlteE
-	eSvPb1xTdr0lTnw64SN1Hjhd0ifISSjkw6Hban4BS4p6IvxSi20p43KkcxW+6fRIQXGHr3
-	uHLKWs2Kv8Z08rhA3nCk7tLG3F3OKWc6l/y/ujDm9+DMXvtIdQYRYxmSTLnriF0lj8qO82
-	yxNa84CDvTan2a0r6oWqne8WR2iNDaLKdilZv3ijOLJDPsyhrLX4G5uqvJzcl7PlxYOIS3
-	2GZJLXua+out5aqX1TSl2AwsiD5CFNb9g5lo6Inp3QkyGJjeQ5YegGZpiNkzIg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1784556193;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=TO4XUXBcX9jugDI7rdMgy8/Ll6V9/50yI0xjJ5KWHI8=;
-	b=IBz6kCrl/pzIAOd93cUBQ9LDQBomSitPj51NZIkPDU8LhoNhx3vLzVRp7vOe4bBX8uzgya
-	hXkPMDASrKiXEdDA==
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Andy Shevchenko <andy.shevchenko@gmail.com>,
-	Petr Mladek <pmladek@suse.com>, linux-kernel@vger.kernel.org,
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Jacques Nilo <jnilo@free.fr>,
-	Marco Felsch <m.felsch@pengutronix.de>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH tty v7 2/2] serial: 8250: Revert "drop lockdep annotation
- from serial8250_clear_IER()"
-Message-ID: <20260720140312.M_LGafRy@linutronix.de>
-References: <20260720135407.3925-1-john.ogness@linutronix.de>
- <20260720135407.3925-3-john.ogness@linutronix.de>
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="mt7mkFDo"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=default; h=Content-Transfer-Encoding:Mime-Version:Message-Id:Subject:Cc:
+	To:From:Date:subject:date:message-id:reply-to;
+	bh=AY3+WPWTmnzoUbYnXKrbFciUA/tg3zPcppn2BkG2wwg=; b=mt7mkFDor7iAQm+WvImCbJxL66
+	yWc7KXWMTAq3/kJgtxq4Kff6Um2gTGnoB40VpN9Layzm6ChZRs4Ng56ekE1kL/Q8Mbc0voblMewva
+	YIo4Z0e3Ae6ZnSFMX5v3x+EhT1U/fJLl5c9+yDrJEUkPkfbma6hQeAXastAz2Q0NXHbE=;
+Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61] helo=pettiford.lan)
+	by mail.hugovil.com with esmtpa (Exim 4.98.2)
+	(envelope-from <hugo@hugovil.com>)
+	id 1wloeD-000000008Qu-1c1N;
+	Mon, 20 Jul 2026 10:07:09 -0400
+Date: Mon, 20 Jul 2026 10:07:08 -0400
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= (The Capable Hub)
+ <u.kleine-koenig@baylibre.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>, Andy Shevchenko
+ <andriy.shevchenko@linux.intel.com>, Ilpo =?ISO-8859-1?Q?J=E4rvinen?=
+ <ilpo.jarvinen@linux.intel.com>, Hugo Villeneuve
+ <hvilleneuve@dimonoff.com>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org
+Subject: Re: [PATCH] serial: 8250_hub6: Fix double definition for
+ hub6_match_port()
+Message-Id: <20260720100708.5b9b3ed9f6f42b27adb264d4@hugovil.com>
+In-Reply-To: <al34uIyOue73MMN0@monoceros>
+References: <20260720080812.1223096-2-u.kleine-koenig@baylibre.com>
+	<al34uIyOue73MMN0@monoceros>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20260720135407.3925-3-john.ogness@linutronix.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+X-Spam_score: -2.0
+X-Spam_bar: --
 
-On 2026-07-20 16:00:04 [+0206], John Ogness wrote:
-> The 8250 driver no longer depends on @oops_in_progress and
-> will no longer violate the port->lock locking constraints.
-> 
-> This reverts commit 3d9e6f556e235ddcdc9f73600fdd46fe1736b090.
+Hi Uwe,
 
-If needed, could this be please replaced with
-  3d9e6f556e235 ("serial: 8250: drop lockdep annotation from serial8250_clear_IER()")
+On Mon, 20 Jul 2026 12:31:31 +0200
+Uwe Kleine-K=F6nig (The Capable Hub) <u.kleine-koenig@baylibre.com> wrote:
 
-instead the bare number, please?
+> On Mon, Jul 20, 2026 at 10:08:12AM +0200, Uwe Kleine-K=F6nig (The Capable=
+ Hub) wrote:
+> > With CONFIG_SERIAL_8250_HUB6 configured as module
+> > (CONFIG_SERIAL_8250_HUB6=3Dm) the cpp symbol CONFIG_SERIAL_8250_HUB6 is=
+n't
+> > defined (only CONFIG_SERIAL_8250_HUB6_MODULE is). In this case
+> > hub6_match_port() is defined in drivers/tty/serial/8250/8250.h as static
+> > inline and in drivers/tty/serial/8250/8250_hub6.c as normal function.
+> >=20
+> > Use IS_ENABLED() to also handle the modular case correctly.
+> >=20
+> > Fixes: 3d406299d882 ("serial: 8250_hub6: add hub6_match_port()")
+> > Signed-off-by: Uwe Kleine-K=F6nig (The Capable Hub) <u.kleine-koenig@ba=
+ylibre.com>
+> > ---
+> >  drivers/tty/serial/8250/8250.h | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >=20
+> > diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8=
+250.h
+> > index 9d1068d0489d..fb9a7117d145 100644
+> > --- a/drivers/tty/serial/8250/8250.h
+> > +++ b/drivers/tty/serial/8250/8250.h
+> > @@ -334,7 +334,7 @@ int fintek_8250_probe(struct uart_8250_port *uart);
+> >  static inline int fintek_8250_probe(struct uart_8250_port *uart) { ret=
+urn 0; }
+> >  #endif
+> > =20
+> > -#ifdef CONFIG_SERIAL_8250_HUB6
+> > +#if IS_ENABLED(CONFIG_SERIAL_8250_HUB6)
+> >  bool hub6_match_port(const struct uart_port *port1, const struct uart_=
+port *port2);
+> >  #else
+> >  static inline bool hub6_match_port(const struct uart_port *port1, cons=
+t struct uart_port *port2)
+> >=20
+> > base-commit: 0718283ab28bc3907e10b61a6b4be6fefa1cbb2f
+>=20
+> There is an earlier fix already at
+> https://lore.kernel.org/linux-serial/20260715153707.4181828-1-hugo@hugovi=
+l.com/
+>=20
+> It's a bit different, but essentially equivalent. So please stick to
+> that older patch.
 
-> Signed-off-by: John Ogness <john.ogness@linutronix.de>
+They are not essentially equivalent. If=20
+CONFIG_SERIAL_8250=3Dy and CONFIG_SERIAL_8250_HUB6=3Dm, and using
+IS_ENABLED() gives this linker error:
 
-Sebastian
+ld: vmlinux.o: in function `uart_match_port':
+(.text+0x723aac): undefined reference to `hub6_match_port'
+
+Using IS_REACHABLE() fixes this.
+
+--=20
+Hugo Villeneuve
