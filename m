@@ -1,338 +1,163 @@
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A2443BE144
-	for <linux-serial@vger.kernel.org>; Mon, 20 Jul 2026 14:58:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2231C418A43
+	for <linux-serial@vger.kernel.org>; Mon, 20 Jul 2026 15:08:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784559502; cv=none; b=hlL7+24PCKc6nVsxt2x3osXwCn/xAVLu8F/abfcqAGDezUXOeu4e0uZAwFKrPTLfmudKk5YbRpVZRrN1r9YsCEO8MtxGyKrR7rp3xeIn+uNGek9rksici1CM8GVWc/wBSR5h5cxFP1cNmJjAaedepgdS2HlBklIqojcKwgYuXIE=
+	t=1784560089; cv=none; b=lGZ8htiaDKY0l4NN37IJdUoKSiJow6lpx06/Y6l8Tbe9eO4PB9HuyVSAlbhdR2C2hKnaIMZNClKTWIBOjbaWA3z30JXTDM4GNu3E0toKWWhA9/B5r3BuGtF0brjTIAk7k7rlJV45cMO32RXL8nQhZqFr2IDWc5uGTI8/5vbkZ6M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784559502; c=relaxed/simple;
-	bh=jzFQWnseWWxoyN1ShXRYtH2cU8pOwjWhXzAAGBHZ/o4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RHs8Dk9dERdhKySjm1OerA2+0OrXpq4aqBxFfrK0gCKmZkkZI0NJ15AKZDipYH8h8j5+e9nV7ax3ASKKWQdLTJ3ib9oFjjzWp1wkrPEnOX2OjcAOvxmvM+S3WLB1RJawtg1ik9CvKMVjBdyV17QLNcHEOxlCW9U61ZLPD7NAZKI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=Qxa7InTI; arc=none smtp.client-ip=209.85.128.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1784560089; c=relaxed/simple;
+	bh=7WLCND/ZXGAyuMsyPwAtugUkkMEKi8fZq+9tUxivf5I=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=s/L93Cckiyhs5yidAuL27JGf+ULLfdsx7pdrhn6sT1QBvmhvg3blEcAl6RoXtFtkIp70be+49bRnmCGIxHQn80IhG9AV9HAMJVK7HtQHpxlM9kbxyaWuCpCK6qm7pGbOjCgGHAly9dy+4pdSfDT9Al5hO+pCKhGoCBBESjxmdac=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=iLLvt+rl; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=YrQRY2nl; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="Qxa7InTI"
-Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-4955de8797cso6664765e9.3
-        for <linux-serial@vger.kernel.org>; Mon, 20 Jul 2026 07:58:20 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="iLLvt+rl";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="YrQRY2nl"
+Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66KDrFP82807741
+	for <linux-serial@vger.kernel.org>; Mon, 20 Jul 2026 15:08:07 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=2sUNNETE0h/q96BSYwXRXi
+	Gn6f30NVrYm0hZ1/p0G8I=; b=iLLvt+rlvSQtLaBtXNrnal0A8Hwvt+5Fm+Q09D
+	qtundav73bMBc0CMc8Wf+ze1+6OaySs4lLhqR/XKrUbSmmGNsShHVNtAccahOa1F
+	c4PS5tSq1YzpB5utTfZNrjblfJ8pOm9/Hkn8uboVAiJsPPXGNdENcXnx+gN1srCd
+	dyDfzQMMcbyAlv/JOvb6mX6+JduZ+k87Ih8gK2e6dB7jczvlGd1gblMmDL+KuY8Z
+	VRnu9h6UwlynhZY7kBZzjsHWAjuNLbTY+sXAEKaqPkZUus+g55fWZUVJpMVR1Pg8
+	efz5r2moAmZ/F4EZl8z8KJVHVqGed+vrnV7NOMEX0SC1uJfg==
+Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com [209.85.216.70])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fhgre9k7d-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-serial@vger.kernel.org>; Mon, 20 Jul 2026 15:08:06 +0000 (GMT)
+Received: by mail-pj1-f70.google.com with SMTP id 98e67ed59e1d1-38e1118e4abso10569457a91.0
+        for <linux-serial@vger.kernel.org>; Mon, 20 Jul 2026 08:08:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1784559498; x=1785164298; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=b0HRbfmTok9CVSMITXJl4LP8yNtyhGJvNwreiAeO/rE=;
-        b=Qxa7InTId4jxsi8L7wDj+tJXo2LRH9jkCs0AEiFJq/9XpGp+4Mufh96ShRko1JvwNu
-         JjRDK2uBIz8S12cMRHUaeRAS791j7SlzpHHAFz1ICATh5zoUjqMils+HL6t+V69TUPP7
-         +crIZ4ZHXNx4BBp225A1QpygzqY3lA6bj/NpQCPA1zGPB/J01w9jJYJKUzyF799xHswz
-         0VeXTy9Z8OBAdIeREZwN4DwJPFID2DRtKosTIq+OqUXtvtBR/rLZ+rYcmpW/InFHt9Ln
-         8oLbZbHBtqW04GezqBmjVWF01zGKSIxtqiksWoXs3GdNN30cz2O0hl6fCLZ2bvinqmHj
-         nITw==
+        d=oss.qualcomm.com; s=google; t=1784560086; x=1785164886; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=2sUNNETE0h/q96BSYwXRXiGn6f30NVrYm0hZ1/p0G8I=;
+        b=YrQRY2nlcfaJ/+M4T99m0X3LG2fE3bKoVkEu53LNZAnnTkLRSKOmGs6+5kJiymnIZW
+         Hm15doYHkNpyCiJTl7XllKPQtsQgNvEAx3I9/3tx3mxO8O5tV7VPwYFs9cD7ZvbFoRFN
+         O+LDuNZckvEkf3WBNTTUF+SxVPsd5v38cw/jK0zCUBy5uRgn77HL6fN2IjgwgN9mOVN4
+         lGmb6oqwSYbfbWcf8TofNTusB1BQ1GwOb8PsXiOHGoUhutTcbMCWWd1nTY5ab5vCbWR9
+         xWYDq4XpvdZ2zExm1p+BCeVjDTJzpq1SX7AxEzOaYZ4/K/At0VXZD2u6DjvsBLCXbKNO
+         UcdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784559498; x=1785164298;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=b0HRbfmTok9CVSMITXJl4LP8yNtyhGJvNwreiAeO/rE=;
-        b=Dn57ryPsx7kX0oCBr6W7mRr/9XLBGrEqe+xKhaVrgUWwyNLTVlI6/RYTa0Sog/iiyp
-         zizx8H6yqOG9XBMsNEU5vej2q7Vo8h7iG4M9/gfoxuBL/fdEQCivDeC3Wwj9sIDbJTcT
-         ArV94hvFEu9pTR0j9mB5SZhmFmc4gsL90zVnZiQ8cJQwg4cFdy5HV+EKmKbQ4uIfxKBD
-         M/ZESvRH2+hTYkiId3BUyveHVkw1vnq6siDWumzPLd+y74tzjJ70iOyTQzOdVQoukYsF
-         lH+dFKAWAZqOdSaKbXm6kLlgWpwCSTDwThrbYDI76J+mK6yK13xX+x4EcDsuthPa5u6p
-         rI2Q==
-X-Forwarded-Encrypted: i=1; AHgh+Rqn3oGvOsAgX/5rxlE/epCUGt+fNs7hmbl2iKOBJDo7FVXOWh7bJS1Oka7ZupcNhajOWVNzLbT6If1eD0s=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwO3DmyL9frWggzSrzoQTFFhWPPDmKmlGCe4vWkXXA0o5drUe89
-	u1sEhWVf9Cm+RBCAsdJewRX/fRlykubhsD8i3gJ8z8q+W9Bk/WUfeouk932Qyw1tBSg=
-X-Gm-Gg: AfdE7cnCRABbkAz5XRte+MrUhW+bmw6XojZFseq1yRezWuAB31MUxw1FYJhNPooO+b3
-	vGm0KgpmP8ODp7NUXkGpRIOTb7nQszpudllXmIYUQWXAp+44bzEjagtfjG6agyi6O9/18o/BH24
-	IsGCp0KS6DsfQn5fJjo7KqscVXQEZ6NDPJf5mi6sx3ToSWByF90DiG6GPTwV8Zj+yrqIzGlSECe
-	6nc2N/1gyfXAM3ea8/PsSTJGWHuZvIEe/w2kARCB/XZqA4Xjw57YSP76u6Xaui94AS4nzWPoGLb
-	opSXz/MrQTV0kRAOZAyIWJDIi/0YPddGCjVfTx4yNWCJmaVV8gPnUpgg2YXqsnKph1yZBO36trj
-	kmlr49QrbXgxrd4Dv8I2BQ1azoZG1+Pm/1hiiDKLa0g7UcjPsTJQ944vgHvahUuhJGqt9z6kLF2
-	LxCcMP
-X-Received: by 2002:a05:600d:644d:10b0:495:5de0:d87 with SMTP id 5b1f17b1804b1-4955de00e16mr44746845e9.36.1784559498351;
-        Mon, 20 Jul 2026 07:58:18 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49549a47de7sm292714245e9.7.2026.07.20.07.58.17
+        d=1e100.net; s=20251104; t=1784560086; x=1785164886;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=2sUNNETE0h/q96BSYwXRXiGn6f30NVrYm0hZ1/p0G8I=;
+        b=E0/ifLQumOTdfSAEhYB0tb451o6TFrAJZglJ1Pmm4WCI8NTMRHb1XYJqLoAGfyHRF2
+         +SWpXZyAa47PqjJO4IPW0J4uDj2krNYSC1xukyl3Je+D8FiA91aoP/E+BaseY2koLfgs
+         ezPwVRuruxgJOE539dYLGUVAHT9QKWVQlgYdNRjTeM/Fsb4lKN7V6/dJXj8VMpgRTwJz
+         Xqrm38nEzMXJ7eNQ+RKuymqSfemMGjR5cJZmu4XXDaJRJ7jF9GpDbutxYzwA2dZ5oSH5
+         yiQrhLP0enBKU5oFVLBUmKYR+pQ9ze4Ru8q+KF0Xql1fcKZM5xZSbxdWuMZHclIxuIkl
+         Z0Pg==
+X-Forwarded-Encrypted: i=1; AHgh+Rrd5xrKqJppeErMrrHOovAIBQ250LqfULSH443ZZlkiXFVzbmrnXZawxkLnd9hocB93KzDldPWZqcspAN4=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw8uO/SbAKYhulTnQfKCMofcZNkenxZyNW6vcsF2T1F++fwUgd/
+	lHScZs1wa7ZWk+08laVcKI/IazuJOtrBEWXQzuu3zaLpll1ySTbuvHqBrdllZq+BtTb5OYcTRzJ
+	ebb77ypfXWHlsKbd8J8XJCtn/x5vnEM6QbfMRJE6vJUWJS7pICX7JXjmH7OuXkvKxXqE=
+X-Gm-Gg: AR+sD10npw9C5vOWCxtFXqFVi2DWvzvQP44BocstSVzgNxxzkGMcYuyQ7I/JtJLxIMB
+	fCckvawwezy6cyQOJ6z69/H6Q/TnqjzpfJIIQOVtIGax5Ue5SZDBx33ylLud08upjpNHl5gjVLs
+	SQf7Mqyyd8HAb5280847Ukbm4drQS4cwWWouR7/lgnvxzX0ws7pYE+MWWnFNuJmE9UuLjAyCDcg
+	1OoL0JSidHpDv6S62UQYZJcUGenEJpQZDYdvCYNeoEbh+tfOay695E6CavEQsu+I6FBW1c3bfsC
+	URYVriOxllhLdTInRmEGXQfVbXdOdv3pRKQ5AAtDGiajcZpfMRv7iwls2Fl+wp7NjEWjV21RCjA
+	953CJfohrlKmL1kbzJGI5H7GTIzj0kvlYwg==
+X-Received: by 2002:a17:90b:1d45:b0:38c:e9e9:e7ce with SMTP id 98e67ed59e1d1-38e4b41bfd4mr15181181a91.3.1784560085773;
+        Mon, 20 Jul 2026 08:08:05 -0700 (PDT)
+X-Received: by 2002:a17:90b:1d45:b0:38c:e9e9:e7ce with SMTP id 98e67ed59e1d1-38e4b41bfd4mr15181122a91.3.1784560085273;
+        Mon, 20 Jul 2026 08:08:05 -0700 (PDT)
+Received: from hu-ptalari-hyd.qualcomm.com ([202.46.22.19])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-38e39e0531asm7856411a91.5.2026.07.20.08.08.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jul 2026 07:58:18 -0700 (PDT)
-Date: Mon, 20 Jul 2026 16:58:16 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Andy Shevchenko <andy.shevchenko@gmail.com>,
-	linux-kernel@vger.kernel.org,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Osama Abdelkader <osama.abdelkader@gmail.com>,
-	Stepan Ionichev <sozdayvek@gmail.com>, Kees Cook <kees@kernel.org>,
-	Xin Zhao <jackzxcui1989@163.com>,
-	Fushuai Wang <wangfushuai@baidu.com>,
-	Yunhui Cui <cuiyunhui@bytedance.com>, Jacques Nilo <jnilo@free.fr>,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH tty v6 1/2] serial: 8250: Switch to nbcon console, take 2
-Message-ID: <al43iOyokb56SBF3@pathway.suse.cz>
-References: <20260720103242.7265-1-john.ogness@linutronix.de>
- <20260720103242.7265-2-john.ogness@linutronix.de>
+        Mon, 20 Jul 2026 08:08:04 -0700 (PDT)
+From: Praveen Talari <praveen.talari@oss.qualcomm.com>
+Subject: [PATCH 0/3] serial: qcom-geni: Reuse common GENI framework helpers
+Date: Mon, 20 Jul 2026 20:37:48 +0530
+Message-Id: <20260720-reuse_common_geni_framework_helpers-v1-0-c3330ab9b982@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260720103242.7265-2-john.ogness@linutronix.de>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAMQ5XmoC/yXNQQ6CMBBA0auQWduk7YISr2JMU8oAo7YlM6Amh
+ Ltbdfk2/+8gyIQC52YHxicJlVxhTg3EOeQJFQ3VYLVttbNaMW6CPpaUSvYTZvIjh4Svwnc/42N
+ BFuU6pzvTD60JDmppYRzp/btcrn/L1t8wrt80HMcHZW+mZocAAAA=
+X-Change-ID: 20260720-reuse_common_geni_framework_helpers-787081bd61a7
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, konrad.dybcio@oss.qualcomm.com,
+        bjorn.andersson@oss.qualcomm.com
+Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, chandana.chiluveru@oss.qualcomm.com,
+        mukesh.savaliya@oss.qualcomm.com,
+        Praveen Talari <praveen.talari@oss.qualcomm.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1784560081; l=1120;
+ i=praveen.talari@oss.qualcomm.com; s=20251114; h=from:subject:message-id;
+ bh=7WLCND/ZXGAyuMsyPwAtugUkkMEKi8fZq+9tUxivf5I=;
+ b=ba6QyJoKq90zD0bNNORo1pakURnwN5hTDD7brR3G5XDa74kxLjzDFk3kVJFU8lSfFm6lkhQjF
+ MhlxVVjooOIByQVVOanNW2o+RP1+G4Vn8F84b6RHkNtjbwp5ycRIcZs
+X-Developer-Key: i=praveen.talari@oss.qualcomm.com; a=ed25519;
+ pk=NGK/88fjyHXgfhIKwag7+uIytOmyOypvZ/hDFaYPEss=
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzIwMDE2NyBTYWx0ZWRfX38+kM6slLohl
+ CKpUPaL2tfDXaCEfS4MdiE5VkIMd8bp8RZTykLfECC+OJ7o99bkMcSiK+nbRRG99G2lUtEujN9G
+ tYaEJkZKOuMsXuB8Mz9Vw5YYFoZCEKk=
+X-Proofpoint-GUID: UGmOoYTBayZxjUfX8JD2s_cLq9GN-hsy
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzIwMDE2NyBTYWx0ZWRfX1FUKluN+wgRq
+ pDpb9Vjvh0tidpx2NqBObOKzwuk9LavmgWDmZ1oXzxIzLioEae9kObwIOwd0/iE69og1vkI0QIz
+ ccLUAdG1QdxIeipUyFvnr7kpxOXZ51/szNUHyVIqwY8dj2fJU93NaHcIHHCAhU5YGtSoX+iW7cA
+ +HUF3kOXVKqmMZZUkj8nnz2Lor5XiQSAtaESuL+4RmjJIV+P/7R7WiVF4NEh/1CzPNyybHAQ57L
+ ehe0e75iDDaWgCxJ2t08KZY1lWzDjACgW8xRVVkzhEkUmswfzhwU8+Ty7/0MlbhbMuGJ9tj32+E
+ CM1FksWmAZDqHw5nRaEZ8NNA1vMaFwh6mb1Jbj2usgvWeUKrQJS9nbsewGdqCR1evGvzVtajfxj
+ ui/giKzuzx8q0WIPiy86zp3fg3/XufHDBnAI0wdhd/xxB6StzlfSAXbmU/qK4JSeMKLTnkiK6X8
+ 7npjFtj5vu4NJVoBeRg==
+X-Proofpoint-ORIG-GUID: UGmOoYTBayZxjUfX8JD2s_cLq9GN-hsy
+X-Authority-Analysis: v=2.4 cv=foLsol4f c=1 sm=1 tr=0 ts=6a5e39d6 cx=c_pps
+ a=0uOsjrqzRL749jD1oC5vDA==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
+ a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=gowsoOTTUOVcmtlkKump:22
+ a=EUspDBNiAAAA:8 a=zYmsmQLqyy5UlMnypS4A:9 a=QEXdDO2ut3YA:10
+ a=mQ_c8vxmzFEMiUWkPHU9:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-07-20_03,2026-07-20_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ phishscore=0 suspectscore=0 priorityscore=1501 spamscore=0 clxscore=1015
+ lowpriorityscore=0 bulkscore=0 malwarescore=0 adultscore=0 impostorscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607200167
 
-On Mon 2026-07-20 12:38:35, John Ogness wrote:
-> Implement the necessary callbacks to switch the 8250 console driver
-> to perform as an nbcon console.
-> 
-> Add implementations for the nbcon console callbacks:
-> 
->   ->write_atomic()
->   ->write_thread()
->   ->device_lock()
->   ->device_unlock()
-> 
-> and add CON_NBCON to the initial @flags.
-> 
-> All hardware access in the callbacks is within unsafe sections.
-> The ->write_atomic() and ->write_thread() callbacks allow safe
-> handover/takeover per byte and add a preceding newline if they
-> take over from another context mid-line.
-> 
-> For the ->write_atomic() callback, a new irq_work is used to defer
-> modem control since it may be called from a context that does not
-> allow waking up tasks. During suspend/resume the irq_work is not
-> used as this has been shown to cause suspend problems for some
-> hardware. Upon resume, any pending modem control is performed.
-> 
-> Note: A new __serial8250_clear_IER() is introduced for direct
-> clearing of UART_IER during console writing (which may not be
-> holding the port lock for atomic printing). This allows restoring
-> a lockdep check to serial8250_clear_IER() in a follow-up commit.
-> 
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -584,6 +609,9 @@ void serial8250_suspend_port(int line)
->  	struct uart_8250_port *up = &serial8250_ports[line];
->  	struct uart_port *port = &up->port;
->  
-> +	/* No irq_work may be queued when suspending. */
-> +	up->avoid_modem_status_work = true;
+The Serial driver currently maintains several helpers that duplicate
+functionality already available in the GENI core, including resource
+initialisation, power-domain attachment, runtime PM resource
+management, and perf-level selection.
 
-Do we need to synchronize this against serial8250_console_write()
-where this flag is checked, please?
+Replace these with common GENI helper APIs for resource initialization,
+runtime PM resource management, and performance-level configuration.  This
+reduces code duplication and centralizes GENI resource handling.
 
-My understanding is that we should be on the safe side. Otherwise
-there might be bigger problems.
+Signed-off-by: Praveen Talari <praveen.talari@oss.qualcomm.com>
+---
+Praveen Talari (3):
+      serial: qcom-geni: Use common GENI resource initialisation helpers
+      serial: qcom-geni: Use resources helper APIs in runtime PM functions
+      serial: qcom-geni: Use geni_se_set_perf_level() for baud rate perf level
 
-I believe that this is called after both console_suspend_all() and
-console_suspend(uport->cons). The later makes sure that the console
-is not longer used even when @console_suspend_enabled is false.
-And these functions even call synchronize_srcu(&console_srcu).
+ drivers/tty/serial/qcom_geni_serial.c | 204 ++++++----------------------------
+ 1 file changed, 34 insertions(+), 170 deletions(-)
+---
+base-commit: 782f4dbd1794b4f30dc116a7ca42c5962c409be8
+change-id: 20260720-reuse_common_geni_framework_helpers-787081bd61a7
 
-This might even answer the question from Sashiko AI whether
-we should flush the related irq_work() here, see
-https://sashiko.dev/#/patchset/20260720103242.7265-1-john.ogness%40linutronix.de
+Best regards,
+--  
+Praveen Talari <praveen.talari@oss.qualcomm.com>
 
-That said, I am not sure about RT_PREEMPT. AFAIK, it handles IRQs
-in a kthread. In this case, synchronize_srcu() would not make
-sure that the irq_work was procceed.
-
-Note that Sashiko AI suggests that we might need to flush the irq_work
-even in serial8250_console_exit(). I guess that the situation is
-the same there. It is called after synchronize_srcu()...
-
-> +
->  	if (!console_suspend_enabled && uart_console(port) &&
->  	    port->type != PORT_8250) {
->  		unsigned char canary = 0xa5;
-> @@ -620,6 +648,12 @@ void serial8250_resume_port(int line)
->  		port->uartclk = 921600*16;
->  	}
->  	uart_resume_port(&serial8250_reg, port);
-> +
-> +	/* irq_work allowed again. Handle MSR now if pending. */
-> +	up->avoid_modem_status_work = false;
-> +	guard(uart_port_lock_irqsave)(port);
-> +	if (uart_console(port) && up->msr_saved_flags)
-> +		serial8250_modem_status(up);
-
-I would use scoped_guard() to make the scope clear. Something like:
-
-	scoped_guard(uart_port_lock_irqsave, port) {
-		if (uart_console(port) && up->msr_saved_flags)
-			serial8250_modem_status(up);
-	}
-
-Motivation: The guard() is pretty hidden. It can easily get overlooked
-	when people add more code at the end of this function.
-
-Wait, this should not be needed if we make sure that the work
-was flushed in serial8250_suspend_port().
-
->  }
->  EXPORT_SYMBOL(serial8250_resume_port);
->  
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -3286,39 +3329,57 @@ static void serial8250_console_fifo_write(struct uart_8250_port *up,
->  	 * Allow timeout for each byte written since the caller will only wait
->  	 * for UART_LSR_BOTH_EMPTY using the timeout of a single character
->  	 */
-> -	serial8250_fifo_wait_for_lsr_thre(up, tx_count);
-> +	serial8250_fifo_wait_for_lsr_thre(up, wctxt, tx_count);
-> +}
-> +
-> +static void serial8250_console_byte_write(struct uart_8250_port *up,
-> +					  struct nbcon_write_context *wctxt)
-> +{
-> +	struct uart_port *port = &up->port;
-> +	const char *s = wctxt->outbuf;
-> +	const char *end = s + wctxt->len;
-> +
-> +	/*
-> +	 * Write out the message. If a handover or takeover occurs, writing
-> +	 * must be aborted since wctxt->outbuf and wctxt->len are no longer
-> +	 * valid.
-> +	 */
-> +	while (s != end) {
-> +		if (!nbcon_enter_unsafe(wctxt))
-> +			return;
-> +
-> +		uart_console_write(port, s++, 1, serial8250_console_wait_putchar);
-> +
-> +		nbcon_exit_unsafe(wctxt);
-> +	}
->  }
->  
->  /*
-> - *	Print a string to the serial port trying not to disturb
-> - *	any possible real use of the port...
-> + * Print a string to the serial port trying not to disturb
-> + * any possible real use of the port...
->   *
-> - *	The console_lock must be held when we get here.
-> - *
-> - *	Doing runtime PM is really a bad idea for the kernel console.
-> - *	Thus, we assume the function is called when device is powered up.
-> + * Doing runtime PM is really a bad idea for the kernel console.
-> + * Thus, assume it is called when device is powered up.
->   */
-> -void serial8250_console_write(struct uart_8250_port *up, const char *s,
-> -			      unsigned int count)
-> +void serial8250_console_write(struct uart_8250_port *up,
-> +			      struct nbcon_write_context *wctxt,
-> +			      bool is_atomic)
->  {
->  	struct uart_8250_em485 *em485 = up->em485;
->  	struct uart_port *port = &up->port;
-> -	unsigned long flags;
-> -	unsigned int ier, use_fifo;
-> -	int locked = 1;
-> -
-> -	touch_nmi_watchdog();
-> +	unsigned int ier;
-> +	bool use_fifo;
->  
-> -	if (oops_in_progress)
-> -		locked = uart_port_trylock_irqsave(port, &flags);
-> -	else
-> -		uart_port_lock_irqsave(port, &flags);
-> +	if (!nbcon_enter_unsafe(wctxt))
-> +		return;
->  
->  	/*
-> -	 *	First save the IER then disable the interrupts
-> +	 * First, save the IER, then disable the interrupts. The special
-> +	 * variant to clear the IER is used because console printing may
-> +	 * occur without holding the port lock.
-
-I would make the comment more clear when it might happen and if it is
-safe. Something like:
-
-	 * First, save the IER, then disable the interrupts. The special
-	 * variant to clear the IER is used because an emergency and panic
-	 * console printing is synchronized only by nbcon context without
-	 * holding the port lock.
-
->  	 */
->  	ier = serial_port_in(port, UART_IER);
-> -	serial8250_clear_IER(up);
-> +	__serial8250_clear_IER(up);
->  
->  	/* check scratch reg to see if port powered off during system sleep */
->  	if (up->canary && (up->canary != serial_port_in(port, UART_SCR))) {
-> @@ -3332,6 +3393,18 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
->  		mdelay(port->rs485.delay_rts_before_send);
->  	}
->  
-> +	/* If ownership was lost, no writing is allowed */
-> +	if (!nbcon_can_proceed(wctxt))
-> +		goto skip_write;
-> +
-> +	/*
-> +	 * If console printer did not fully output the previous line, it must
-> +	 * have been handed or taken over. Insert a newline in order to
-> +	 * maintain clean output.
-> +	 */
-> +	if (!up->console_line_ended)
-> +		uart_console_write(port, "\n", 1, serial8250_console_wait_putchar);
-> +
->  	use_fifo = (up->capabilities & UART_CAP_FIFO) &&
->  		/*
->  		 * BCM283x requires to check the fifo
-> @@ -3352,10 +3425,23 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
->  		 */
->  		!uart_console_hwflow_active(&up->port);
->  
-> +	nbcon_exit_unsafe(wctxt);
-> +
->  	if (likely(use_fifo))
-> -		serial8250_console_fifo_write(up, s, count);
-> +		serial8250_console_fifo_write(up, wctxt);
->  	else
-> -		uart_console_write(port, s, count, serial8250_console_wait_putchar);
-> +		serial8250_console_byte_write(up, wctxt);
-> +skip_write:
-> +	/*
-> +	 * If ownership was lost, this context must reacquire ownership and
-> +	 * re-enter the unsafe section in order to perform final actions
-> +	 * (such as re-enabling interrupts).
-> +	 */
-> +	if (!nbcon_can_proceed(wctxt)) {
-
-This should be:
-
-	if (!nbcon_enter_unsafe(wctxt))
-
-or even better:
-
-	while (!nbcon_enter_unsafe(wctxt))
-		nbcon_reacquire_nobuf(wctxt);
-
-Otherwise, we would not be in the unsafe_context when
-nbcon_can_proceed() succeeded.
-
-Note: I have missed this. It was actually found by Sashiko...
-
-
-> +		do {
-> +			nbcon_reacquire_nobuf(wctxt);
-> +		} while (!nbcon_enter_unsafe(wctxt));
-> +	}
->  
->  	/*
->  	 *	Finally, wait for transmitter to become empty
-
-Otherwise, it looks good to me.
-
-Best Regards,
-Petr
