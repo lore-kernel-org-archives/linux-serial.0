@@ -1,80 +1,95 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B039A39CD16;
-	Mon, 20 Jul 2026 19:34:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFB49449B0A;
+	Mon, 20 Jul 2026 19:37:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784576059; cv=none; b=B/8q+k7DbZ+6Pu0Xp09iLNT9whvlgNn2/3i9WoeGK8QtS9TnXiLxZLcbRWKkfT3m5RldQSxv+c8k/0XlfCrvjeayxdwlTLuHMK1oFhXDGIANsc6zKEJ41iBA/6HcPZBFAR1B7MnPyR79oGdarIrfJ9LVLaMVpnRTmyaQ8Q38qJo=
+	t=1784576224; cv=none; b=Vv/h7TwxdIqAB6T7FduhBiu/vqUL4Dfq7/2Xd+zw6LXyeD2LQZu4zUljcTZ7LkSkwktpH+5QIQo5UdrS1W1Y3SFKfE/AKtaVqx+cU8+OHoKeLVQz6k6X6k2YsXNky4+C0Rqgh0ueTlCmda4U7JvAzBmhoIm6KnicUgSXFSjpr3Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784576059; c=relaxed/simple;
-	bh=iS5x89S/6YljNPUqwggherspiOAPZ6f1Ghd8jsisM1Q=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Im4UfaXScEeXTyjVRpmLXljaIYInkyXPhktEv5Tlo8XiIqjO74l+ifbQ7MTW3Kefu06/VAGxjJnIgO6ANQ7OOVmW8MXP0Us/myQaVBLPywOIv0GhhG6pP8Vl3ZJ79LvuDVL01A8jMoP4KTYE6kS/6Ir/8ZvfF/aQofg9hV+0W8M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=cpqrcR69; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	s=arc-20240116; t=1784576224; c=relaxed/simple;
+	bh=PC9JMkkzzrir5NNFvL6kl3BHBcC2cb77FOM8GCxVYXU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=hI5k7OjSJ6TKd+P4ziwalIbUWbixeOfJV6a8xW+FrZb/ArC+3NezuZOzN66jHzrWuUmWzx4/Wdp5gPUJCCdJKpU+nFAcpZDyLbBhJ7dyZ0EmKW4exjW7W3tt965Wht5FgH/bISHdONhbZlIKGV3aKdoRlvvdZiAfH6K1R7ZDx5s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XVFDfMeD; arc=none smtp.client-ip=198.175.65.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="cpqrcR69"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=default; h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject
-	:Cc:To:From:subject:date:message-id:reply-to;
-	bh=ygWDmtbGerKI272ML42PV0e9vea5LeS5A4vYiIPnNn4=; b=cpqrcR69kNlwLIF7Tvi/4VH898
-	GMxNGup6KTwkfxDj+VeOPXjwxwW+Pno44FxkvRAmBDWViynVks5NDmVXRXuouuB+186BJghvt53KM
-	xY7AsCmdkbjhF2QldCXj5DkDt3FMGWmymh/hTBAI2h/cqWV7b+O6KVa2MGRKl32/+Id4=;
-Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61] helo=pettiford.lan)
-	by mail.hugovil.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.98.2)
-	(envelope-from <hugo@hugovil.com>)
-	id 1wltkm-000000005oB-0PNq;
-	Mon, 20 Jul 2026 15:34:16 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: hugo@hugovil.com,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XVFDfMeD"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1784576223; x=1816112223;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=PC9JMkkzzrir5NNFvL6kl3BHBcC2cb77FOM8GCxVYXU=;
+  b=XVFDfMeD4e7XnOwrZs9PDcOPDFgWuHfh7uOEZJjMvlLG6hvPbWXXCKOw
+   iXEOJic6xV3iLZEYbQzD4w4UxnrxF02RevoNvZjL3ENkdy8GTg1dejWw3
+   GgOO+diB9T+GiuY8NVVrU3Zum8HSSURv78tvGzDVz0cMnm+HV0azTlgws
+   3dbAtCXtL4FWGTuVyXpRyEB6UyH5oTepZvbKhtbBJFDryznxullVf2OWM
+   H+eQu3vYZ745Xb3aJQz+UIMnOcZO/J6lwnjg3RAJmVy+7rVXB3dwDSMM0
+   SWCZ447dO7dgidIURUzzNgQJqDVDA/oNNhMITqSf0w34F8HDSadoo4/KB
+   g==;
+X-CSE-ConnectionGUID: XmruqR41S+OEcEEowel0DA==
+X-CSE-MsgGUID: MBHfjIT3R9GijkBJ+IZsnQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11852"; a="96679074"
+X-IronPort-AV: E=Sophos;i="6.25,175,1779174000"; 
+   d="scan'208";a="96679074"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2026 12:37:03 -0700
+X-CSE-ConnectionGUID: FOV9C/4RRiWF+17O29kzuQ==
+X-CSE-MsgGUID: pm+61YkURKeZV0xcxfxZ6Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,175,1779174000"; 
+   d="scan'208";a="295758801"
+Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.175])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2026 12:37:01 -0700
+Date: Mon, 20 Jul 2026 22:36:58 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Hugo Villeneuve <hugo@hugovil.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
 	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	linux-kernel@vger.kernel.org,
+	kernel test robot <lkp@intel.com>, linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
-Subject: [PATCH] serial: sh-sci: remove check for zero baud rate from uart_get_baud_rate()
-Date: Mon, 20 Jul 2026 15:34:07 -0400
-Message-ID: <20260720193411.3517484-1-hugo@hugovil.com>
-X-Mailer: git-send-email 2.47.3
+Subject: Re: [PATCH] serial: 8250: fix compile error with hub6_match_port()
+ when compiled as a module
+Message-ID: <al542h_1frk-XTZf@ashevche-desk.local>
+References: <20260715153707.4181828-1-hugo@hugovil.com>
+ <al5yTxizfIGibYZa@black.igk.intel.com>
+ <20260720151140.70939799547c922b09670014@hugovil.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam_score: -1.0
-X-Spam_bar: -
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260720151140.70939799547c922b09670014@hugovil.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+On Mon, Jul 20, 2026 at 03:11:40PM -0400, Hugo Villeneuve wrote:
+> On Mon, 20 Jul 2026 21:09:03 +0200
+> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+> > On Wed, Jul 15, 2026 at 11:37:05AM -0400, Hugo Villeneuve wrote:
 
-The minimum baud rate supported by this driver is 0, so even for the B0
-case, uart_get_baud_rate() will return 9600, not zero. This check is no
-longer necessary since commit 16ae2a877bf4 ("serial: Fix crash if the
-minimum rate of the device is > 9600 baud") so remove it.
+...
 
-Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
----
- drivers/tty/serial/sh-sci.c | 2 --
- 1 file changed, 2 deletions(-)
+> > > +#include <linux/kconfig.h>
+> > 
+> > It's special header. It is always-included one, and hence here is a dup, please
+> > drop this line.
+> 
+> Will do. I will also remove the one in max310x.c which was added by...
+> me :)
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 787e7cdc5e9c3..92193eb26abf5 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -2719,8 +2719,6 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
- 		max_freq = max(max_freq, s->clk_rates[i]);
- 
- 	baud = uart_get_baud_rate(port, termios, old, 0, max_freq / min_sr(s));
--	if (!baud)
--		goto done;
- 
- 	/*
- 	 * There can be multiple sources for the sampling clock.  Find the one
+Yes, please. You can find the similar dropping changes in the lore archive from
+the last week, I sent a few. There is a pointer to the commit that makes that
+possible.
 
-base-commit: 782f4dbd1794b4f30dc116a7ca42c5962c409be8
 -- 
-2.47.3
+With Best Regards,
+Andy Shevchenko
+
 
