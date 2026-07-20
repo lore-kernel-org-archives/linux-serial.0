@@ -1,33 +1,32 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C5A5396B9A;
-	Mon, 20 Jul 2026 06:08:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+Received: from zg8tmtyylji0my4xnjqumte4.icoremail.net (zg8tmtyylji0my4xnjqumte4.icoremail.net [162.243.164.118])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 17FEB2288D5;
+	Mon, 20 Jul 2026 06:44:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.164.118
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784527740; cv=none; b=jAUH5JwLXvLQ1sdUMctZz1gOGAVpcKEKRkgwAFcSVygxu8rDs+wBTd2oZanMLiTJa+XzrN1x/GSSDTbWswGlvRPHKeYguJRjtV1PvqP25oRw7reiR2vK8bu2qfInHuyl3I+mwaJXjDoHYHuqFtId8yMk65deP6Ky9vGEYfRFb28=
+	t=1784529880; cv=none; b=B5atns65c4rmqOthH/ldBaL7TqMQzn8oZMT9YNhOQUYNKVZMOfHOzJYVplsB3SsQXqFB4S0WKD/ZmIArJxQVkR9mVb+HcsIAJN6QCZBh70Z+sTKTIRad7fixN0mnZSfWcpYkCk4w5OnJ1mgh0du2ad7+Hp0d7fxem3ZePKxyUEE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784527740; c=relaxed/simple;
-	bh=4JPdDSZPLoNcjwbTXCJzkIN+Z3+z0tCrOV2TrQcHiw8=;
+	s=arc-20240116; t=1784529880; c=relaxed/simple;
+	bh=sRJC3ADCLu7gf8dHSb3MbjdXNVOCnghxm8nmTTSpM9c=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=vBcWdwTKquBvdEdXTrm1Q/yrFGXqiMcqCbT/DXTLtNm44h6I/WhLMdwboW4QguQ1FAQf/3xB8A+WjEHsHxShRIAmPhHSLIaehTJ7HmrglBFmrrhKXqLjG3XZ2VJwmsmcs3kriK1r3xMpn1m2SgHOUAb0LW08iyO9kvhYmyTaFdw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=H24bv4XQ; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=U7shOD8Om94orFze/AzHU3HxbnJ+Yl7WVOwHpAYNL+4WOHTvLGBIK6v/SNWibgevQ4o3dyXU2dd79DPinvsXxoGYziUSu5Fkmr0IWlwz8PxlUz7QRrWbN53v/v818J1nUefwot17DTeeLX0yXmyIRPTVnDKqkTg/ePSvczOzPOk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=stu.xidian.edu.cn; spf=pass smtp.mailfrom=stu.xidian.edu.cn; dkim=fail (0-bit key) header.d=stu.xidian.edu.cn header.i=@stu.xidian.edu.cn header.b=33LZ9yZ4 reason="key not found in DNS"; arc=none smtp.client-ip=162.243.164.118
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=stu.xidian.edu.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=stu.xidian.edu.cn
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="H24bv4XQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E37641F000E9;
-	Mon, 20 Jul 2026 06:08:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784527732;
-	bh=hkHEouwlt6hTQycxY0xmps0aXJ7t4g0QoU7CcIZyP0A=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=H24bv4XQlfV4zDZkBw/7RFPhsl3KklE1tAg43IUq7o24exyMNm0A8lr07djG2uu85
-	 lHNbzVXAcb8PVNDpLyRDalMLAHhNnEq2zZbaN9+HjeAL36zfWa4mOC1VRq1REsPI6F
-	 iWIO8cxHdNPSamZaXnB/uNgmt76CzSHUX4ikXqYNaolgKN+VcU1O0LQDWjmdEhZ5SQ
-	 eyrNY39koWSCANnRvSen5CUVFtWW6hzyQbHjJykotK/5ybfHNPn5E82NC6Lcs8OV+y
-	 2grAVGennoA05G8OcqZtgA8sWiYhzCd1fpTeCQNZQHyW8obZzn1/vODbpVEAQp1Bhl
-	 yai/hZj7nI5FQ==
-Message-ID: <0d58c9fe-7aed-43dd-8d00-6edfee9e2876@kernel.org>
-Date: Mon, 20 Jul 2026 08:08:48 +0200
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=stu.xidian.edu.cn header.i=@stu.xidian.edu.cn header.b="33LZ9yZ4"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=stu.xidian.edu.cn; s=dkim; h=Received:Message-ID:Date:
+	MIME-Version:User-Agent:Subject:To:Cc:References:From:
+	In-Reply-To:Content-Type:Content-Transfer-Encoding; bh=iygIwyYQs
+	tN8+85NunkmgtCek3mcLlpP3iY3wOzNQXA=; b=33LZ9yZ4CeBZZeIB+4tyNXX7u
+	R/jlNMZroJlgh2sPAg08/YgS9ZvMuTLL2Uk3qXunj/fU6jeme5VgmRcn3MnLRwaq
+	TYaEKfCPrIsGTugldDNzfX7xLqOrp8g9FMCPgA1JY1FGEiHgV88y8+hdS9iU2D2o
+	gVW1QGeHZEgWsJEl/w=
+Received: from [192.168.1.109] (unknown [115.53.188.159])
+	by hzbj-edu-front-4.icoremail.net (Coremail) with SMTP id BrQMCkCmyxHFw11qnwo5AQ--.16552S3;
+	Mon, 20 Jul 2026 14:44:22 +0800 (CST)
+Message-ID: <706101a4-abf9-403d-a2cb-778a12338d99@stu.xidian.edu.cn>
+Date: Mon, 20 Jul 2026 14:44:19 +0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -37,73 +36,67 @@ MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH] serial: 8250: validate iomem_base in
  serial8250_verify_port()
-To: Mingyu Wang <25181214217@stu.xidian.edu.cn>, gregkh@linuxfoundation.org
+To: Jiri Slaby <jirislaby@kernel.org>, gregkh@linuxfoundation.org
 Cc: ilpo.jarvinen@linux.intel.com, john.ogness@linutronix.de,
  andriy.shevchenko@linux.intel.com, linux-serial@vger.kernel.org,
  linux-kernel@vger.kernel.org, syzkaller@googlegroups.com,
  stable@vger.kernel.org
 References: <20260720053733.102186-1-25181214217@stu.xidian.edu.cn>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20260720053733.102186-1-25181214217@stu.xidian.edu.cn>
+ <0d58c9fe-7aed-43dd-8d00-6edfee9e2876@kernel.org>
+From: Mingyu Wang <25181214217@stu.xidian.edu.cn>
+In-Reply-To: <0d58c9fe-7aed-43dd-8d00-6edfee9e2876@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:BrQMCkCmyxHFw11qnwo5AQ--.16552S3
+X-Coremail-Antispam: 1UD129KBjvJXoW7Cr1kCF4kCF1rtFyUGry7GFg_yoW8JFy5pF
+	yjgw4Dt34kGF92qFyxXr4qkry5K3Z3uFW5JF9Yq34Fkr1Y93yjyrZ2ka1UZay5Gws3GanI
+	vF40qrsxCaykZaDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUU9ab7Iv0xC_Zr1lb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I2
+	0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
+	A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_JFI_Gr1l84ACjcxK6xII
+	jxv20xvEc7CjxVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv67AKxVW8Jr0_Cr1UM28EF7xvwV
+	C2z280aVCY1x0267AKxVW8Jr0_Cr1UM2vYz4IE04k24VAvwVAKI4IrM2AIxVAIcxkEcVAq
+	07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r
+	18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41l
+	c7CjxVAaw2AFwI0_Jw0_GFylc2xSY4AK67AK6r47MxAIw28IcxkI7VAKI48JMxC20s026x
+	CaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_
+	JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r
+	1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_
+	Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8Jr
+	UvcSsGvfC2KfnxnUUI43ZEXa7IU08wI3UUUUU==
+X-CM-SenderInfo: qsvrmiqsrujiux6v33wo0lvxldqovvfxof0/1tbiAgUAEWpc6fla1AAAs+
 
-On 20. 07. 26, 7:37, Mingyu Wang wrote:
-> Fix this by tightening the validation in serial8250_verify_port().
-> Reject any TIOCSSERIAL requests that attempt to modify the io_type
-> to/from memory-mapped types, or change the iomem_base of an existing
-> memory-mapped port. Userspace can still legitimately modify IRQs or
-> baud rates of MMIO ports as long as the io_type and mapbase remain
-> unchanged.
 
-Pardon my ignorance, but isn't TIOCSSERIAL intended exactly to change 
-the type or mapbase when needed for ports without UPF_FIXED_PORT (and 
-under root)?
+>
+> Pardon my ignorance, but isn't TIOCSSERIAL intended exactly to change 
+> the type or mapbase when needed for ports without UPF_FIXED_PORT (and 
+> under root)?
+>
+Hi Jiri,
+
+You're right — TIOCSSERIAL is meant to allow root to change io_type
+and iomem_base for non-fixed ports. My patch was indeed too restrictive
+and would have broken that ABI. That was an oversight on my part.
+
+The issue was identified via local syzkaller testing. It reveals two
+related behaviors:
+1. Root injects a bogus iomem_base via TIOCSSERIAL; opening the port
+    faults in mem_serial_in() because the mapped address is invalid.
+2. Because the fault happens while holding tty_lock, the mutex remains
+    locked by the dying task. This leads to a cascading use-after-free
+    when subsequent threads try to acquire the same lock.
+
+While (1) is effectively "root shooting itself in the foot," (2) results
+in cascading failures beyond the initial fault.
+
+How would you prefer to handle this? Should we treat this as wontfix
+(since it requires CAP_SYS_ADMIN), or would you prefer a more targeted
+check to avoid the cascading UAF (e.g., ensuring basic validity of the
+mapbase before ioremap)?
+
+I'm happy to drop this patch if you feel the risk does not justify
+additional checks.
 
 thanks,
--- 
-js
-suse labs
+Mingyu Wang
+
