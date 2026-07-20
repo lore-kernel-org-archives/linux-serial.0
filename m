@@ -1,156 +1,115 @@
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16BD2399887
-	for <linux-serial@vger.kernel.org>; Mon, 20 Jul 2026 10:31:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C0DA3CF211;
+	Mon, 20 Jul 2026 10:32:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784543498; cv=none; b=DWYPyM8QJs8B6Kah5DSLf86F1bCo6Ej9JZ0DJs9PTsBsj4jfpy1xWO0c/d2uMn79BMj99Oh6D9wrsslHddKF792/NHXjrWfZm7rtoybpJ8EsT8mC3ofR9N6VBsqAquyCaPMxPLJ6bZICvTbliTmli1FeJQ+IjWiuVjPLkz+PPOk=
+	t=1784543567; cv=none; b=EgZ0tlZ+u0iKrGBqjf5s9LGqn+u1kc/rtpsTTAoQhK4rjLUWItHNagPlhVmBIBfA2S1Hf/LyD1iJ7zWJpGfmEoIICv9nEuBPAQu4vZ10rWZ+AYMcuVJCJa0EDJNVidhsiCWFKc6XilC4Ctt6LLS3XWXxH7U7xZ6tp3Rs1YD6xlU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784543498; c=relaxed/simple;
-	bh=46GnOF9F7vwDTg+XTnRNtlrnkTCbaGp+EJ46x5F+NZw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OYakni3N9vUyMuOrzNZM1fHQ7PVDwEUtLN5NuNHiLUxXPOnFGwgVIuFPn9hyMOi1HwQeZebBiU7eW/o9cXE+kzU+pTekGLWYTtQuAhjPfvnXn7D+2Gu7zWBji8nqpbiOGPPCL6ub0LA9ERWdPwB17wJ1+Y9se/k+r931Gqiwzqo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=io2yY9hv; arc=none smtp.client-ip=209.85.221.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1784543567; c=relaxed/simple;
+	bh=UOjgz6+9TGtUXH39/Uem4K5kk8OKANFor2MvY43QKSI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=DyE7Kn602lvp6EtJ7lZmmECsItfPGADd4Cbc5pN4r6RvbWq/UolcJ2pLZcy7z6CVxeDeBrQCn7HkBeZmyQ7XvEUKE9Tyx7SayTlQfyogXLcRbMwkajtgzalyL6679RhQyZ5UcnSBkQAibeMI/5+uEY50w7irv+MeK+9YCDSwCNM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=Tp6kD4ly; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=FWrpo4Jq; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="io2yY9hv"
-Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-471eeac43bfso9288155f8f.3
-        for <linux-serial@vger.kernel.org>; Mon, 20 Jul 2026 03:31:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1784543494; x=1785148294; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=9uvOwHXcOnUd6y6AJIJqeUq1M3Za1gq6UKyse48eUhM=;
-        b=io2yY9hvECPme4dZbULWWe4zZszs4OIRDWbAZAfQFtHwty6WUSjsitsB5hfuBNn77q
-         5s0z2wDY+bAFGhVkXeOW55TUuK7Pfsdk4/ShK5IzW1L/t++PZohu66xeE6wooEoJ0O+R
-         rzVy1zfkzgCHgacJRk04P2GNn6Ra8xMeifqNjiXTWeaZTCUcJicWVo1DeKA9uMa5kVg1
-         7LWYMDtRpFHaxY65amuoFg8Rdp8r5zOriXHOADlHrVo0uNpPxU7grkJ3w/kRZQ7ox8pL
-         81pWvPk11mLyN3izZiZRfPJez7vm8GObFi9UH6B+Ysu+PwCokv+ztP8hYl0ukx1yphwe
-         jFeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784543494; x=1785148294;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=9uvOwHXcOnUd6y6AJIJqeUq1M3Za1gq6UKyse48eUhM=;
-        b=aYqprskVYPfh42j3Bf8euMHWy6+/T2AUI2SOJWXhNPzpUpfY2UJxDapheoa5VcfVPu
-         kxnvtW0wABzhX5MjTv6POn94s4TfLmXVHipY2Pk9LST0nOqXO9qVktlqWGmoQe4BL9ek
-         +HfPayw6f9ciyiiGU3G4vSyFraCYNIc88ueMdpL0ldpKyIisuOLpSAq/HDdonHUlbXji
-         oVpjetUksjBv0zYBsEECjCawdPzYpV0YHIUKlXwgGBeZkASFbMDMFQzAzHgMhaB5QiXM
-         +hH20ZAItUNKTRn9SQMbsqMx5jbPDeHIovZcpyS08uFwNmDbdfr6/BF4SGkCbDwtDt57
-         6qVQ==
-X-Forwarded-Encrypted: i=1; AHgh+RpAR3F3wI4CmyFAmQjiHGGxgQ8RwbwHOIqbArCiA911JCcr+RBat4CH0dUsL8EX/L1ev5t4NJ2nTLSjw04=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwTXmM1pLzy+N6C6LmZalCT2poCu0nktJuaZq0eX93JJsmYKYYz
-	7qasSpSViOTZosQL8kVDWVaJe+Kj5bCgAPI9rp7oeFXrG2R9F0ZEikOWJ+PhHtcvbu4jgN44zL4
-	xDabk
-X-Gm-Gg: AfdE7ckzTKyoAsAGf9IU91jYXyWApUMFlVfedxeCdKz0h4Mc1nhCaWvBUMxU2jvwsTc
-	1JZluprCiRf3y5nmkB7WynqHieTMN7g25eASbV4PJpthhymPOE6u6FjygPoxYOvpgLUnY3rCY95
-	DeI1SXhggs1lkVOShNktyH2retVXh+iUDsO5WleB5wp2lMRjkZKKtpKVbgPYixxj0AjjMD526sM
-	WWLq4VPghgzwSGDeDTqvCk/16iQwZGgmnSIFF4OYFyA1HgePKuc6zaSZlA2q2HgWZ9qbst5sjiO
-	8h2iNPzxY2TYvjLBSZ6M0wkH9PIsEfQZNSBnoue4KPHysgxSb2rrkSTE6wRVeFUVgP0YqM/Dtpx
-	fvzuVdKpccx6LBT/gDalagM91z8fUe78L4fZiXe0NLpyN/KQ11sVf8R1QoyhfraPkkvr/PmfaHS
-	mVGF1vCA/etk+6qW4jJchGKdXsj7odV8s22ZIZL0lio3A0Eo+QOGRDV5I8tXrLMscMUNPor0tRs
-	eSZ
-X-Received: by 2002:a05:600c:c84:b0:495:4811:d71c with SMTP id 5b1f17b1804b1-4954a3ed4bamr143137025e9.13.1784543494185;
-        Mon, 20 Jul 2026 03:31:34 -0700 (PDT)
-Received: from localhost (p200300f65f47db048587886ecb5b26b2.dip0.t-ipconnect.de. [2003:f6:5f47:db04:8587:886e:cb5b:26b2])
-        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-47f63e65644sm27485955f8f.16.2026.07.20.03.31.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jul 2026 03:31:33 -0700 (PDT)
-Date: Mon, 20 Jul 2026 12:31:31 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH] serial: 8250_hub6: Fix double definition for
- hub6_match_port()
-Message-ID: <al34uIyOue73MMN0@monoceros>
-References: <20260720080812.1223096-2-u.kleine-koenig@baylibre.com>
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="Tp6kD4ly";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="FWrpo4Jq"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1784543563;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=/ALuNWnUOVvbjmf6kKTFj5ji5TEua2m8J7YFC0xbHMs=;
+	b=Tp6kD4lyNtTSxuFPmcNqYnL8xx4sViSCcp9sW0ovuOwmXJxlBCXqtns57WUUHaHUifmwNl
+	S7EdTVtp38CE49e1H2euNS1SM7GcBRecxsXKpdDJP62UHAPMJjkb2i07jhPTS1KoHzIBVh
+	tKCWN2O4XeNiXSh+xHEV6rJIKpj0MCzIdUMOMXxl8OuqJcQsZm6G+wr+JGYmSM8VVrkCxl
+	k5SRFTp7ektl4gjt4QROkmYD8s5K833qvq3qOlujWGNzTtRdLnucp61K3wmC0A3hoxEfJd
+	bV3mOo7gm8nJ8rUoHz8fX/BiloL9F5K/JcrQmK9pqFLjOVkamD+Km6xaI3yGdw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1784543563;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=/ALuNWnUOVvbjmf6kKTFj5ji5TEua2m8J7YFC0xbHMs=;
+	b=FWrpo4Jqx5qo3vWOBQL2Kp3TaVOtfI4+k+cH+5nD1+d/jmGKl7MTVbt/m5bH7PhnkI5fkb
+	cJqQyG0xbdNGyEBQ==
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>,
+	Petr Mladek <pmladek@suse.com>,
+	linux-kernel@vger.kernel.org,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	Osama Abdelkader <osama.abdelkader@gmail.com>,
+	Stepan Ionichev <sozdayvek@gmail.com>,
+	Kees Cook <kees@kernel.org>,
+	Xin Zhao <jackzxcui1989@163.com>,
+	Fushuai Wang <wangfushuai@baidu.com>,
+	Yunhui Cui <cuiyunhui@bytedance.com>,
+	Jacques Nilo <jnilo@free.fr>,
+	linux-serial@vger.kernel.org,
+	Manuel Lauss <manuel.lauss@gmail.com>
+Subject: [PATCH tty v6 0/2] Convert 8250 to NBCON, take 2
+Date: Mon, 20 Jul 2026 12:38:34 +0206
+Message-ID: <20260720103242.7265-1-john.ogness@linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="mrc3nztluxg2ig5y"
-Content-Disposition: inline
-In-Reply-To: <20260720080812.1223096-2-u.kleine-koenig@baylibre.com>
+Content-Transfer-Encoding: 8bit
+
+Hi,
+
+This is v6 of a series to convert the 8250 driver to an NBCON
+console, providing both threaded and atomic printing
+implementations. v5 of this series is here [0].
+
+Note that v5 was pulled into the 6.14 merge window, but was
+then reverted before the 6.14-rc1 release due to kernel test
+robot problems. It turned out that the problems were related
+to general 8250 driver issues. Those issues have now been
+addressed mainline, paving the way for a second take at
+converting the 8250 driver to NBCON.
+
+This time we have Sashiko, which is sure to provide some
+insights that we oversaw with v5.
+
+The changes since v5:
+
+- A new @avoid_modem_status_work field is added to struct
+  uart_8250_port in order to avoid handling modem control
+  during the suspend/resume window.
+
+- Handle any pending modem control on resume.
+
+- Allow serial8250_fifo_wait_for_lsr_thre() to be called
+  with wctxt=NULL since the helper is now used in
+  dw8250_idle_enter().
+
+John Ogness
+
+[0] https://lore.kernel.org/lkml/20250107212702.169493-1-john.ogness@linutronix.de
+
+John Ogness (2):
+  serial: 8250: Switch to nbcon console, take 2
+  serial: 8250: Revert "drop lockdep annotation from
+    serial8250_clear_IER()"
+
+ drivers/tty/serial/8250/8250.h      |   4 +-
+ drivers/tty/serial/8250/8250_core.c |  44 ++++++-
+ drivers/tty/serial/8250/8250_dw.c   |   2 +-
+ drivers/tty/serial/8250/8250_port.c | 193 +++++++++++++++++++++++-----
+ include/linux/serial_8250.h         |  16 ++-
+ 5 files changed, 216 insertions(+), 43 deletions(-)
 
 
---mrc3nztluxg2ig5y
-Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH] serial: 8250_hub6: Fix double definition for
- hub6_match_port()
-MIME-Version: 1.0
+base-commit: 782f4dbd1794b4f30dc116a7ca42c5962c409be8
+-- 
+2.47.3
 
-On Mon, Jul 20, 2026 at 10:08:12AM +0200, Uwe Kleine-K=F6nig (The Capable H=
-ub) wrote:
-> With CONFIG_SERIAL_8250_HUB6 configured as module
-> (CONFIG_SERIAL_8250_HUB6=3Dm) the cpp symbol CONFIG_SERIAL_8250_HUB6 isn't
-> defined (only CONFIG_SERIAL_8250_HUB6_MODULE is). In this case
-> hub6_match_port() is defined in drivers/tty/serial/8250/8250.h as static
-> inline and in drivers/tty/serial/8250/8250_hub6.c as normal function.
->=20
-> Use IS_ENABLED() to also handle the modular case correctly.
->=20
-> Fixes: 3d406299d882 ("serial: 8250_hub6: add hub6_match_port()")
-> Signed-off-by: Uwe Kleine-K=F6nig (The Capable Hub) <u.kleine-koenig@bayl=
-ibre.com>
-> ---
->  drivers/tty/serial/8250/8250.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/825=
-0.h
-> index 9d1068d0489d..fb9a7117d145 100644
-> --- a/drivers/tty/serial/8250/8250.h
-> +++ b/drivers/tty/serial/8250/8250.h
-> @@ -334,7 +334,7 @@ int fintek_8250_probe(struct uart_8250_port *uart);
->  static inline int fintek_8250_probe(struct uart_8250_port *uart) { retur=
-n 0; }
->  #endif
-> =20
-> -#ifdef CONFIG_SERIAL_8250_HUB6
-> +#if IS_ENABLED(CONFIG_SERIAL_8250_HUB6)
->  bool hub6_match_port(const struct uart_port *port1, const struct uart_po=
-rt *port2);
->  #else
->  static inline bool hub6_match_port(const struct uart_port *port1, const =
-struct uart_port *port2)
->=20
-> base-commit: 0718283ab28bc3907e10b61a6b4be6fefa1cbb2f
-
-There is an earlier fix already at
-https://lore.kernel.org/linux-serial/20260715153707.4181828-1-hugo@hugovil.=
-com/
-
-It's a bit different, but essentially equivalent. So please stick to
-that older patch.
-
-Best regards
-Uwe
-
---mrc3nztluxg2ig5y
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmpd+QAACgkQj4D7WH0S
-/k4ZnAgAoOlWWhpOIbmErmLUuhDTeuEjNUEUy553tY37nqI+JkPsiM9OfhvElr8x
-coEF6TwEs3+SEu9q967xCDBlC7TA080BptprdLHTbm1mMMMrJHElyjg+AF8X0abX
-Xt0JMW6YFV6bNe7KIjaqsapQS7k/4ubpoVb/2dtlDIhNpu4CUwYZLZ5yk+/5ypau
-5BIsSLvhjy49f2iFB7vjGWE6Q0VhTnm1uiU84pIZYqFTY8NbO4AzeoNx6qsUqgEe
-hZ6VvPszFIDvueCGBmE9TZzNd66kupXxz2s91tZF97VVP0AW4XH5iziCPSDfSZ9v
-y+1CogkN+7g5jnlycXoPvuVYsUbKlA==
-=Nw1k
------END PGP SIGNATURE-----
-
---mrc3nztluxg2ig5y--
