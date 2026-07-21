@@ -1,112 +1,109 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vk1-f175.google.com (mail-vk1-f175.google.com [209.85.221.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14E994C900F;
-	Tue, 21 Jul 2026 14:53:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D43FC436BC6
+	for <linux-serial@vger.kernel.org>; Tue, 21 Jul 2026 19:38:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784645620; cv=none; b=mtXPXvjsyhkuatz97V6jev2sYQYS8GIyn5QexEdUBHF8CGiCb5f0iTEfKmcOTjHudQRCwOVV2c0I9zY02nE0gSQQqjoRSh8gKDkadefYK2+NjiW5Dt5GUu53a/QsU/hctBm5Gc5UmjJg4sjrz+Oa4cQ5vPtVhIxByZ7ukuODZBk=
+	t=1784662696; cv=none; b=TPtUINpOsKY5T8dx/TIYNC51/CnFFAkyXhEkTjXFHXWRwy5NsY/rcSm+0oEs5GKLFejIKVbtETAHpV+kPvRQE1wsav2dvbmlM30nyUMiy5qFZRF+d4EDXVS5xaF0bRz5YPHCaE1A5oDWk5jodpdPfABgV0fpkLb0p9uW6oduzNU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784645620; c=relaxed/simple;
-	bh=ti0Xi4/ODz42Ys/vabDhPf9PQ35xAOkddWHIqDxt5RI=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=hIB82QpOHzxfWAdND4UakwUBMGSQRGDXmgUCe5yNlZ89ID8yTGR0sekqg51fGg/tBSYIxMgSyBdtFYD9fleJ75evqpBapnDwZqUsG41WSJiiGmrr/FTIdUq1aRp2sRKSLwAUemj01NA5m8ljCwAEiabrj02O6oKUDlL65V3t29g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=2QsFclmb; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=qBCjYDbu; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1784662696; c=relaxed/simple;
+	bh=6M8b1p+ST8nuue596dbyURkJ4CV4UWHAuUCuKNISn4g=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=qp9K5TqIdQS1NeDrhpbyh6Hc7I+jwIBMB03Y++TLtF8eFxK+htbo8kXblnoN5shWN1R/xak5cm6AeJebEUhJW9+u1NeJ+gvZ6il3MS8kmYFTF8pnKc+/hTveQhMycP7iweOiR/Ha1NOiEFFCKp0gPhWgoe1deIq3tVteAHUTpxs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LzVsGWO1; arc=none smtp.client-ip=209.85.221.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="2QsFclmb";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="qBCjYDbu"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1784645617;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=EwUclzuHFpjtHJN+111DzTjhoZOPgba1eIoD4Dvtsak=;
-	b=2QsFclmb/bgICZY5A+pzUSoioixJ4BIuQz2zPSjbK/G0b351z44aB98ma0z55WZc75DqR2
-	tzvmnygh7H+C4JGN2v2QN05YnJyuMQtblpc4QiwxkAoBr48S+3dV9yeXiKReCrS388Gjyh
-	D6z37v6ty2392DM2sLS/62lDw7FdcsKNWgfz6+3UEAivsvQJgQRtfowA19/b8l3bn2G902
-	RymN6e8bcJJeYXrCwLCQ+E0wredhizpm49pRjhokoZyhHJQSFEv0kANPZa59HCL8fEvOpU
-	dYJNwpSgdiLWdkQiqKf7vlcAgf+Zj5Xd/bnnAjbZRJvUHtwRfBt0H+kJ6fRfQg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1784645617;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=EwUclzuHFpjtHJN+111DzTjhoZOPgba1eIoD4Dvtsak=;
-	b=qBCjYDbu68uTbD5MVIdNB2qKQx+O51gQzv1ofnM21MDgmRDj10hw4Wie39gTa6jFe7PsyJ
-	qfP6+YhnT4hxJLDg==
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, Petr
- Mladek <pmladek@suse.com>, Sebastian Andrzej Siewior
- <bigeasy@linutronix.de>, linux-kernel@vger.kernel.org, Ilpo =?utf-8?Q?J?=
- =?utf-8?Q?=C3=A4rvinen?=
- <ilpo.jarvinen@linux.intel.com>, Hugo Villeneuve
- <hvilleneuve@dimonoff.com>, Kees Cook <kees@kernel.org>, Stepan Ionichev
- <sozdayvek@gmail.com>, Osama Abdelkader <osama.abdelkader@gmail.com>,
- Fushuai Wang <wangfushuai@baidu.com>, linux-serial@vger.kernel.org
-Subject: Re: [PATCH tty v7 1/2] serial: 8250: Switch to nbcon console, take 2
-In-Reply-To: <al57amN8TFhN4IOo@ashevche-desk.local>
-References: <20260720135407.3925-1-john.ogness@linutronix.de>
- <20260720135407.3925-2-john.ogness@linutronix.de>
- <al57amN8TFhN4IOo@ashevche-desk.local>
-Date: Tue, 21 Jul 2026 16:59:36 +0206
-Message-ID: <871pcw5r7z.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LzVsGWO1"
+Received: by mail-vk1-f175.google.com with SMTP id 71dfb90a1353d-5bfbbe5220dso2349614e0c.1
+        for <linux-serial@vger.kernel.org>; Tue, 21 Jul 2026 12:38:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1784662686; x=1785267486; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=6M8b1p+ST8nuue596dbyURkJ4CV4UWHAuUCuKNISn4g=;
+        b=LzVsGWO1uYPOH5XFei40fhfNGqSyTygvSSkwmCTwG5Jp4+dziDDSvOO8Og0qigp99c
+         1xq1GbouPFijgUNwH07CVCiJS4U28gwGsUb8RPVa1rg3fqhCJqIvOFXl5et8ZP+1Zatw
+         bVFGkP2zz7g4qffmsmzsKBgFBF9jJ16a2rysHV+sbBjZR3EN0H/M4L/nzQzvkCltO2k6
+         zQWeiA0t1/WXNuwNhtNC7LzZ6K8ZO8ReSksMbs4T/3F/YQrzIcswaECcSpFVYLAFhllW
+         k+vGTcGg0kuEA4hu0OLzXNxuDvKyllKU7Gu6sTqogu4HWSPmoanthq1UhAxKNzJKNd9u
+         g32w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784662686; x=1785267486;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=6M8b1p+ST8nuue596dbyURkJ4CV4UWHAuUCuKNISn4g=;
+        b=rGEtNILg/KU6/57sW1PzhRqtsSjmwaxefsn2Cl3GkaJDwXL6jALFRgiSgTXCVtuLqH
+         QGHZfXeWVPt2YaI6S1tNCavo/bNhnUBRJEp6UCKpNx4ogZklDM7kKTkV9L9SNuH52JFi
+         J5LXQknJVPBW9ZcFpc1fQgyL99EaFSq20U9BDjnauz6OangZje3aqnpFfn1GgU2nUqm6
+         LdOQUGeBjolNb/29VYGtE+sIF/ALznN+tNcxhxIduTZqLOV6k1vx+Pnhnkr1l/S7cgSf
+         0z6Av/QG0ECkJEMvcJdUqF8lFT+V/PDFeBPEirYMEFf510YcSdVHjG29K9UX1sBnYkWW
+         noLA==
+X-Forwarded-Encrypted: i=1; AHgh+Ro6A/p79+8Rs5PjjBX/64RK7MZkfgms/oDObGC7INH8sk12DJbyYN3QbO2K3C3BYLjBfQicRLXks3OQVt0=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx2rbLjlOyr1+Gz/LxpoPa1hedPdFVrFA4vE+tFJMWhENDhTnxB
+	MNcQKopcSjEKOcE3bp4dl+okyvjM/lWfj1f/s2wyp8teEVrLaVmd/RM=
+X-Gm-Gg: AR+sD13Ghv1n7GIenhEgp7xMHgh8UA7yp7G16xEqrHoARBRGtodRzycRXlbpmrRWfIP
+	4bUajsniRcJ8lJbO/cgc0bk6ziXP6hJDWGBSdJQcBV1LjI39YICgrLSrLL5pdnDsnyi1FSEvFWl
+	i1WdakSlcXKQxMnj5v7NCjcZmjrC26wQX9fhM7g2BK2j9TBThi3cdfXN7Galn5m1G48f+LdL7P6
+	gSmPJMeQ10WGgiln03XQ8SLknRneZ6yO8o6A/DU1ZgvDzwYRlqNvw0BVSlLzcljfZLfE7CbYSM/
+	8v9d2IFHH/Hf5tzDzQfdR1eNyj8gm7cjxlOwMwuk4n4GxwaquiXNGjPWKk5eawhJWW1XDSd6LXa
+	iR9qVYIlEusWD5zNyRYOp9HfkHJKSgjdHJPjRZ9x4d43Pz/rm0rsi0EkxRBa4zlKwx4JJe1f+dL
+	+QaXck9h8ZAJO/EUnyaMH+IVcPL102EoZ8h6+p7t7fRmKOOFvc38raK0g=
+X-Received: by 2002:a05:6122:414d:b0:5bf:6d5c:8cfb with SMTP id 71dfb90a1353d-5c2c3be4ef1mr561179e0c.6.1784662685993;
+        Tue, 21 Jul 2026 12:38:05 -0700 (PDT)
+Received: from NAUTEL-9N0B043.nautel.com (host-76-11-42-59.public.eastlink.ca. [76.11.42.59])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5c2c648944esm390996e0c.10.2026.07.21.12.38.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jul 2026 12:38:05 -0700 (PDT)
+From: Ryan Wilbur <rwilbur633@gmail.com>
+To: ilpo.jarvinen@linux.intel.com
+Cc: andriy.shevchenko@linux.intel.com,
+	gregkh@linuxfoundation.org,
+	hvilleneuve@dimonoff.com,
+	jirislaby@kernel.org,
+	john.ogness@linutronix.de,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	m.felsch@pengutronix.de,
+	rwilbur633@gmail.com,
+	stable@vger.kernel.org
+Subject: Re: [PATCH v2] serial: 8250: clear a stuck RX-timeout interrupt with an empty FIFO
+Date: Tue, 21 Jul 2026 16:37:51 -0300
+Message-Id: <20260721193751.22760-1-rwilbur633@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <c8a74142-5704-5ad3-3504-946bf3496cfc@linux.intel.com>
+References: <c8a74142-5704-5ad3-3504-946bf3496cfc@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 
-On 2026-07-20, Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
->> +	/* irq_work allowed again. Handle MSR now if pending. */
->> +	up->avoid_modem_status_work = false;
->> +	guard(uart_port_lock_irqsave)(port);
->
-> To make guard()() visible, we usually add a blank line before and after
-> guard()() line. I dunno if scoped_guard() makes more sense here as Petr
-> proposed, I'm fine with either.
+> I suspect Andy meant you should put this into hw specific file into a
+> hw-specific handle_irq. That could be setup in 8250_of.c, it already
+> seems to do something like that for some specific type.
 
-Ack.
+Thanks. I'll move the fix out of 8250_port.c into a PORT_LPC3220
+handle_irq, wired up in 8250_of.c the same way fsl8250_handle_irq is,
+with the handler logic following dw8250_handle_irq's empty-FIFO
+RX-timeout read.
 
->> +static void serial8250_console_byte_write(struct uart_8250_port *up,
->> +					  struct nbcon_write_context *wctxt)
->> +{
->> +	struct uart_port *port = &up->port;
->> +	const char *s = wctxt->outbuf;
->> +	const char *end = s + wctxt->len;
->> +
->> +	/*
->> +	 * Write out the message. If a handover or takeover occurs, writing
->> +	 * must be aborted since wctxt->outbuf and wctxt->len are no longer
->> +	 * valid.
->> +	 */
->> +	while (s != end) {
->
-> Can len == 0? If not, I would write this as do {} while ().
+> (8250_dw include check for LSR_BI bit and this one doesn't seem
+> include that bit, not sure if that's an oversight or intentional
+> difference [...])
 
-printk should never make such requests (len=0 means it is a skipped
-record) but the driver should not rely on that. Also, this pattern is
-the same used by serial8250_console_fifo_write()
+The missing LSR_BI check was an oversight, I'll gate on
+!(LSR & (UART_LSR_DR | UART_LSR_BI)) to match dw.
 
->> +/*
->> + * irq_work handler to perform modem control. Only triggered via
->> + * ->write_atomic() callback because it may be in a scheduler or
->> + * NMI context, unable to wake tasks.
->> + */
->> +static void modem_status_handler(struct irq_work *iwp)
->> +{
->> +	struct uart_8250_port *up = container_of(iwp, struct uart_8250_port, modem_status_work);
->> +	struct uart_port *port = &up->port;
->> +
->> +	guard(uart_port_lock)(port);
->
-> + blank line.
+> So 3rd alternative would be to add e.g. UART_BUG_SPURIOUSRXTO but again
+> there are the per driver variations. [...] definitely cleaner approach
+> than copy-pasting this code around.
 
-Ack.
-
-John
+I'll go with the per device handler over the UART_BUG_SPURIOUSRXTO
+callback because I can only test LPC32xx and I'm not comfortable touching
+drivers I can't explicitly test against.
