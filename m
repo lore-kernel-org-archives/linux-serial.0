@@ -1,94 +1,98 @@
-Received: from smtpdh16-2.aruba.it (smtpdh16-2.aruba.it [62.149.155.101])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E49A21FF2E
-	for <linux-serial@vger.kernel.org>; Tue, 21 Jul 2026 22:27:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=62.149.155.101
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 314AB3B7B97
+	for <linux-serial@vger.kernel.org>; Tue, 21 Jul 2026 23:24:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784672837; cv=none; b=ALg+AY3zRK3WNGEc1mVzn/yW9T+B/siubQjesDcll3Yqbc3P08JE37pj5G6berBN+wB7HI/tN89/Zt0OJpTHEF3H0MfmgeUf7NLfULUcpCI71WQmSEX9zc74xcMFlUMbxlMShcf/8OEr3lbe2zftiQ7gAXswE3waX+Uc4lsIB4U=
+	t=1784676258; cv=none; b=JVAPaydHMLlQMyc6GYwY+UJY7tZifrEO1ig1aJ5lto86KtKJTvf/uqsLWe2jvDhhT5nLxn/w4WxMnyjiik0P2ym66V5bZXURFvENlLEDp4mTWUYa4XFa5Dn4atn/aCGOInLZywIutyag2oX1XoHs2vzh+xFEHvrv14HBTK9sqJE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784672837; c=relaxed/simple;
-	bh=7zmPz26VekVv8pGTJ1pX5ab73d1VWSa/+KFYsz0RL9g=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=hxatyygU3tWHPzqfHXyEL5xGEpbXlzU35v/O+1G2h2ECgoht8HtSwhF10zi812w9/VDYTPXz0/Xo+gsaRKEIJnXjkqw1HfLdjEMIiwcDpa2ymj0jkNO0rrS8g4/LO/GBIErd3TvEZ46LmGfwNXjiIDaiQYNiKvcrdTQQaacCsXc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bithiatec.com; spf=pass smtp.mailfrom=bithiatec.com; dkim=pass (2048-bit key) header.d=aruba.it header.i=@aruba.it header.b=cIGxxMep; arc=none smtp.client-ip=62.149.155.101
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bithiatec.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bithiatec.com
+	s=arc-20240116; t=1784676258; c=relaxed/simple;
+	bh=/cQNEP8u2gP9w5bA9dCkkoabRjeOhuVGegYT3yK757Q=;
+	h=Date:From:To:Cc:Subject:Message-ID; b=GDgMBYO1wDQ0wP0kfn9tMJm472OpM200WCIHqSOIZEihewAkCwuNnwI+5G7cyP5P4Q9PvC+Gao1uJ6FlhdrSMgVMv9hyCvpnQtv3czwgJJfsvZ7zRNM1DkdtM79vLi6jAimUl5u79qXSjGI29h6GETtjQcqXBNwf5ZdjPSUHMWc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SEPa+G9n; arc=none smtp.client-ip=198.175.65.21
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=aruba.it header.i=@aruba.it header.b="cIGxxMep"
-Received: from bithiatec.com ([85.18.246.178])
-	by Aruba SMTP with ESMTPSA
-	id mIsewWxXk9tEmmIsewdqDH; Wed, 22 Jul 2026 00:24:04 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=aruba.it; s=a1;
-	t=1784672644; bh=7zmPz26VekVv8pGTJ1pX5ab73d1VWSa/+KFYsz0RL9g=;
-	h=From:To:Subject:Date:MIME-Version;
-	b=cIGxxMepPcT2hLdDwW1cSgBY9MilJlrUJkE4dzv0ERpuRhzSd1myAT/ZrwSc6YspQ
-	 KahW1jUGgQMO/xRC13JniuhywJbNk9neXo7rw29LWFhTD83Y7XwpNH+xeXP9yVZvKj
-	 YrMxhRaBpfPw0YOYnhv0y2vBd/ftQBHgf4gQM0Kv8TeftZoDxoHJo8cYMiOK7ftGHB
-	 rji9euVyO3a5yCubhENu5+QQl2/jp6Q2lpTcMKmnz903RTUC1R1hYm6vHWzVHUxrw9
-	 LimAcj2X3nfgf3nzYulKdVzKAuFkZtjv0a+Zmz/4nSXj4aVZOi1C1mIXAh/YvP0wLE
-	 J2eXtZmAF1OoA==
-From: Luca Fresi <luca.fresi@bithiatec.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: =?UTF-8?q?Tomasz=20Mo=C5=84?= <tomasz.mon@camlingroup.com>,
-	linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org,
-	Luca Fresi <luca.fresi@bithiatec.com>
-Subject: [PATCH] serial: sc16is7xx: enable THRI before filling TX FIFO
-Date: Wed, 22 Jul 2026 00:24:04 +0200
-Message-Id: <20260721222404.204746-1-luca.fresi@bithiatec.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SEPa+G9n"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1784676256; x=1816212256;
+  h=date:from:to:cc:subject:message-id;
+  bh=/cQNEP8u2gP9w5bA9dCkkoabRjeOhuVGegYT3yK757Q=;
+  b=SEPa+G9nRAxByseFyHTYgoVOeO2lvoHoFXo8G8oK93NHt2BafuZEJGAZ
+   69bdjZWY7uQF/BjMyPzUoE3Z7fh/Fji98sXUiAFHCReOxLBicl7RA6sID
+   +I0p7yjHXe7Zj9R+nERpqQb91hLpzz/kLaj10a5Qjk5GT1XXq+mpAO7/i
+   A3MSde/osLHd9x+ZC8sxsIYxv1oaICSYyBLK91sjLDygp3CQRr7Io28hA
+   Y2Lx7q7QpRHbdi7hF6NxwJnuoLuQyXcFqXwNxXxMhgRy/s39JfjhEWtjd
+   y1EQiwJQ4ITeAb/+ZCZ1H6iohBa4dWU4vXUAwMQUsGljQb8v8z0y/8b5D
+   Q==;
+X-CSE-ConnectionGUID: g/pADdHNSlydrR1B2BshZw==
+X-CSE-MsgGUID: 90DxK5uLRBWKXlXAmIfZIQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11853"; a="85149653"
+X-IronPort-AV: E=Sophos;i="6.25,177,1779174000"; 
+   d="scan'208";a="85149653"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2026 16:24:16 -0700
+X-CSE-ConnectionGUID: OMi6P/8DRNOiwC5qi8n8FA==
+X-CSE-MsgGUID: W3WBru6/TNCf7e87ezwG3g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,177,1779174000"; 
+   d="scan'208";a="282422749"
+Received: from lkp-server02.sh.intel.com (HELO ea128546eb3d) ([10.239.97.151])
+  by fmviesa001.fm.intel.com with ESMTP; 21 Jul 2026 16:24:14 -0700
+Received: from kbuild by ea128546eb3d with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1wmJoq-00000000Y9q-1m8H;
+	Tue, 21 Jul 2026 23:24:12 +0000
+Date: Wed, 22 Jul 2026 07:24:05 +0800
+From: kernel test robot <lkp@intel.com>
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ 782f4dbd1794b4f30dc116a7ca42c5962c409be8
+Message-ID: <202607220746.tcrZjjA5-lkp@intel.com>
+User-Agent: s-nail v14.9.25
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CMAE-Envelope: MS4xfKqqLMK7wqqG0ewBMTAmxtYH1jVyodMYfe1Vgpl6yJK+Ra7YiZLYB7rbMb5OqYCAsAZM8dqwdni9HJTjW6SBLzPaMyRJbqs5TnKnJky7lTGtYS4COnVv
- lH/B1h9AEPUXX71Yj9+AQjZjYY8XXmkkhmOM/fV44Kau0ELCDoZBvTiH/FwOwUuA3HBOVMahGoZmiyRIio81HHF+cjpobmPH3Uw3lTL9cSgWCBbEp6UvnV73
- wl53QhyqrK6fKiU3m7BJPeVolj4h3vtDOZy2WbgqxRfFptO7+fLHEo8xfRRqTLdV0Va22qHl9Jxg/HcMALKn0yDauqfNLCzvLgWcP+K/V1tsIsk4GKHrMJE6
- DSj/PeyvGZYYwv9v7sDehqylxneU3bR/tH2lE0S4OhBMpGzvH+3YR1VWqQ+7+BMjB23vRxXS5vdWuGhLDM5Zua/PU74uhg==
 
-sc16is7xx_handle_tx() currently requests the THRI enable only after it has
-filled the TX FIFO. The request is asynchronous because the IER update is
-performed later by reg_work.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: 782f4dbd1794b4f30dc116a7ca42c5962c409be8  tty: hvc: restrict HVC_DCC to ARMv6+ and ARM64
 
-The SC16IS7xx generates a THRI interrupt when the TX FIFO crosses its
-trigger level. If the FIFO drains past that level before reg_work enables
-THRI, the chip does not generate a new interrupt. Characters remain queued
-indefinitely even though the hardware FIFO is empty.
+elapsed time: 6070m
 
-This was observed on an SC16IS752 while both UART channels were active.
-During the stall the software TX buffer remained non-empty while TXLVL
-reported 64 bytes free, LSR reported THR and transmitter empty, IER had
-THRI enabled, and IIR reported no interrupt pending.
+configs tested: 21
+configs skipped: 0
 
-Enable THRI synchronously before filling the FIFO so the threshold crossing
-cannot be missed.
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-Fixes: cc4c1d05eb10 ("sc16is7xx: Properly resume TX after stop")
-Cc: stable@vger.kernel.org
-Signed-off-by: Luca Fresi <luca.fresi@bithiatec.com>
----
- drivers/tty/serial/sc16is7xx.c | 3 +++
- 1 file changed, 3 insertions(+)
+tested configs:
+alpha               allnoconfig    gcc-16.1.0
+alpha              allyesconfig    gcc-16.1.0
+alpha                 defconfig    gcc-16.1.0
+arc                allmodconfig    gcc-16.1.0
+arc                allyesconfig    gcc-16.1.0
+arm            ep93xx_defconfig    clang-24
+csky               allmodconfig    gcc-16.1.0
+i386               allmodconfig    gcc-14
+nios2              allmodconfig    gcc-11.5.0
+nios2               allnoconfig    gcc-11.5.0
+parisc             allmodconfig    gcc-16.1.0
+parisc             allyesconfig    gcc-16.1.0
+parisc                defconfig    gcc-16.1.0
+riscv   randconfig-001-20260722    gcc-13.4.0
+riscv   randconfig-002-20260722    gcc-13.4.0
+s390    randconfig-001-20260722    gcc-13.4.0
+s390    randconfig-002-20260722    gcc-13.4.0
+sh                    defconfig    gcc-16.1.0
+sh      randconfig-001-20260722    gcc-13.4.0
+sh      randconfig-002-20260722    gcc-13.4.0
+x86_64             rhel-9.4-bpf    gcc-14
 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index daebd92f32c7..a1bd175e2feb 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -827,6 +827,9 @@ static void sc16is7xx_tx_proc(struct kthread_work *ws)
- 		msleep(port->rs485.delay_rts_before_send);
- 
- 	guard(mutex)(&one->lock);
-+	sc16is7xx_port_update(port, SC16IS7XX_IER_REG,
-+			      SC16IS7XX_IER_THRI_BIT,
-+			      SC16IS7XX_IER_THRI_BIT);
- 	sc16is7xx_handle_tx(port);
- }
- 
--- 
-2.34.1
-
+--
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
