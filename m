@@ -1,62 +1,62 @@
-Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+Received: from mail-pg1-f180.google.com (mail-pg1-f180.google.com [209.85.215.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1033940F72B
-	for <linux-serial@vger.kernel.org>; Wed, 22 Jul 2026 23:51:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42AD72ECE86
+	for <linux-serial@vger.kernel.org>; Wed, 22 Jul 2026 23:58:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784764290; cv=none; b=bQCh3AZk5Dab1IlD/QT9pFXhpALFapBIs23PAIbqg7I6Dbd/z4UlAWJH5CZzech4fXsyP4ZSoGDDIJIqC+RAp9D3/uGwUvy6tpQ7Vd2wcgqbcXJ602hXHGbM1OpFo1p1rPga4nTV4tAde/h7/bE5SaYF50jGNUHm5+qWZhjce9Y=
+	t=1784764687; cv=none; b=VEB69n4a8hIZ7cVturfD9lePch05m9fkBRQ0hfzw1+pO2Z9rJ8fb5s6zrU4JK4X3iNL3tbLVhb5iNkHzEFyrvLtirxZFkNYU7RJ89wyGeKsamVVNtI3sSxSTRtgb9UiGZkaHLOOZSOwCOuj6Ykipq6I7D/N0z1iG6GjQykHxe90=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784764290; c=relaxed/simple;
-	bh=l76vJB//fiv5NUToi24XYVgUjHJscXal8jTd8z2f55A=;
+	s=arc-20240116; t=1784764687; c=relaxed/simple;
+	bh=35drW2DGwE6r9AD1bRPA9cvY3KZK2JVIMd9EV0LS8ps=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=iwadCIgpDmSoYDnjHAcC0npC7qP1w3q/O84n7q4+SSJp/xj2brET3az9Tf4UPC37yeS2+NZt0ep+y8K7jbQAD4sgESApVjEAxiNqpHftJNXk+xF0ctTXxVyyl4BGBmaZzhfMJf2jA91UQvMPRfNtBKRdBY1s0LR5lXjVDOYtFGE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=h3XuoyKw; arc=none smtp.client-ip=209.85.214.180
+	 Content-Type:Content-Disposition:In-Reply-To; b=nQf1uAZP6lQTe7gOR/D1j+8WqWU0cjYH3ACVrSGE/KoCaMs5gfnj2PvRCG/AGd+HkFa3DV4YfaWCrEgV/9TDOA8Aa5k7qB5JS9PCSCMZ8+HuGJksH1X/4k14yott+2OeIjnd3PaLvmINzuBbXj34S0k4kWGgJFSfCGKc4yClf4s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=fGn9lESZ; arc=none smtp.client-ip=209.85.215.180
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="h3XuoyKw"
-Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-2cc61541f8cso238815ad.0
-        for <linux-serial@vger.kernel.org>; Wed, 22 Jul 2026 16:51:28 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="fGn9lESZ"
+Received: by mail-pg1-f180.google.com with SMTP id 41be03b00d2f7-cbb85186d43so40850a12.3
+        for <linux-serial@vger.kernel.org>; Wed, 22 Jul 2026 16:58:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1784764288; x=1785369088; darn=vger.kernel.org;
+        d=chromium.org; s=google; t=1784764685; x=1785369485; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=/owFfuQW7essVnvkb7c0YaK3a70SCLv8tN9SvYhKU00=;
-        b=h3XuoyKwZmlKrruWjd31K78zdsYQfqD0AkXfe0mfklvzBiUn9AZsaqBcZtXcZRrf70
-         0d14oISnkUegynuzomoXusI/3zGKOiDevMrfi/86w8Ho2XyTwJGVzo13oADpITTfClgz
-         0VwVrz1CMaMNdWppzur+c5M7KxlY19DKsd4Rc=
+        bh=fvcmYZzoXJ2+AFhLmq8yWDeYXcFpMi5b7436MW8Ch78=;
+        b=fGn9lESZxZ1dgvDiQX7LFBPYYyT96CDX8eZ+GajVybtvs8PqGfhlW91ggKfXXoZZpg
+         m5eGpjvyHGGYUB8lN3LRbFAfd67GbegJIgqMRnl8n5fg8KlZSqPoRHCKSDQI2f7smhbd
+         y4WAhELjfbYcAc7na1qcMv9LcU7V/NjOp/3r0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784764288; x=1785369088;
+        d=1e100.net; s=20251104; t=1784764685; x=1785369485;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=/owFfuQW7essVnvkb7c0YaK3a70SCLv8tN9SvYhKU00=;
-        b=DMwXItBJT4ykmdNYm9jzGS3f+xxx6jgwJYf1Wl7ypRW9OcEdrKmaTshmRP5EXtMHEB
-         9E3KdkPtEvA3DfDsKWk0rF8Zps09t4tEm8/d0hYQfBILvSGO0JK7BNnCCVc8oFDOh5Ve
-         /m7vr4h8+bnbV6qwtDipUaAjSWUnMlMNH6tHp17HxtAF9OP+/MZTI/1YNuDWqHunfKoe
-         FBJtCSwuCULnQtArpt/+V+XM+ejTDnijctXGPgYKWb3FEQV9KRZimhoiER1wzGpTpEAc
-         f32APhwlhjOOM90n0JCpGvhNyTPArci9eZrWulhFJKQeeyZOa9s3NCHqUJRqNu47ihwb
-         8P8g==
-X-Forwarded-Encrypted: i=1; AHgh+Rp4f27h5cKFionHIHTBJvPg2Tdr/VAQYMyV5aFqM/BMFQHfNL/FIyFIRAgqgDRbLv/Gk9cR3af2O/W9lOE=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw38kUF5D0bNopWEbbZbNN1AtqZtxLMZUDOEQEY09mq5l8s8n06
-	briWgKYO3gtZw35WvL9U2hdGFD8OyzpFzR5ZVShXzoHa8JxygWWh7YFCPTB9rp5q6Q==
-X-Gm-Gg: AR+sD12Ns7QEaL3Qs43PItIqb9JYFunYi50dUpoR+kmeRq6N8USLTBE2In6Y4D3M5vG
-	/x4YUcvN7JY0pRw/hqEALUr6KcWfW81wK5hMW6MqFfimOpy8LrkCH4elVUj9/kna+QK3Ydhza4F
-	JZdTlzNm1IfQkSBDghWDbR/B24xG0CQiOZgQ4GB1SA+vOc4+dnvd/yGdK6m7ltgzQB1pkkQt5Kg
-	ZWO30tNksTprJevg0B6vv/GSw0Sm5QRXrutf8hu8A8rJZtKyqKFU7JOfmh2n12V9dUy331t6T8z
-	sQPue3LovelxcBGqbjcmBIIlMWfwU0VXzIFrtKU3gbCwpjDe5y7H+G7QJfhp8nVhaEPLfvVTCfe
-	pafAZO0MOHJMX7GVpqoH/AhinbvA4roAgTdyGbFAJhfcsCt92YWRFC+WTDE41Tclr/ihU2FvH79
-	OeZFRCvXa1T9mbpiGQlIBfcJzix9zmIXc3L1HqwF5UUoYwgKiXS0k=
-X-Received: by 2002:a05:6a20:6a26:b0:3c4:2f75:719 with SMTP id adf61e73a8af0-3c44cd1de09mr386413637.37.1784764288427;
-        Wed, 22 Jul 2026 16:51:28 -0700 (PDT)
+        bh=fvcmYZzoXJ2+AFhLmq8yWDeYXcFpMi5b7436MW8Ch78=;
+        b=P9g2r/tOlaZsM/VrKeqda22uscSLwN7C6DAiuK/BPnlzHyQS2SLTHOQSrojFJKO3Nh
+         EhZpWnHFPkAqh/sKcGFlBmSamrCfwtmXTPg4dDvHEYP5x6KSPbRP2y5vGSRpl2ERw/aA
+         1WAMdwkNdJtLcMTjYXSYDLw7Q2fTkbPuk9JHyS3iyYVbanQ/OQiUT5O9iWnzRnT2bpM9
+         Zal47+Rv7cFU3vKHkKud9rJNMix/5axb/lUIEUq2VspMrlHsfAwdh5xEbQd1+ZQM2uao
+         ae2AWy7B8/0WI1jyJWZmyHhXiwcUHeO3boTbKrmWU5C1hlxXfRZcWwoe6e79wAkBiJaO
+         HaKQ==
+X-Forwarded-Encrypted: i=1; AHgh+RpgZk7oNe8nqjUzJHnnJyMpivzJGw+rsAsGEpCcxtrmWY3cGERWmCPattVl5BrlXlqWijv5Cn7YDezRIYk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwU3cak/+c9N+Ox/JrbMn3LfMjtw3QSo1sSOL6kOVqdMVSvNzv7
+	fNK0OIapmdxiKoO7GPK2h4oGlqgiOdJHs/Thp8J8eGxmS01WrhTA0e6h9c9uQpA37A==
+X-Gm-Gg: AR+sD11xSrGzCdWjFp8LKkDjurfw7wUtOcNpAR+M9opWe6jAiIPa8ZqVYKPBVp7ItMy
+	4EasBHi8hVmQnde/fZNNSwXgNpSshpqDEe4aR8fxgWdcfr3RgddQmEO92yZ1UMcPirRR+a+3OaQ
+	lJE3ze9qjwWyDMzwZzs9sr7EcYNXD5u5Ko8bN8ESiEIw/2bu8LhHnGdxUfDC6pLKe66/AqQPTq1
+	6oy5D3NGNWOtPKRYKw1EVHgRWarFWKck2Ry0dR3wq49oiWmJDj31+AwUEoXKnKaiz/Xz1m/ORXt
+	i2jLOmABDS8MRU6xnisH9zN66s/VDdYhRiFw/rbxxSVXqkZgiYDNW/HCju6YGffrVMZS9G+GEzw
+	E19FvyhsP8r4q0WuRNC0BXxFOKyHqyQLyA0bVTM6JAPtL7YQ69/p5Apwr9/0gxyiWeTV/3L6enC
+	IWj7mnQ7dIc7OH/EwdeLRP7+C/cuAiVWPBbqDATKWN
+X-Received: by 2002:a05:6a21:e8c:b0:3a2:7ef4:81df with SMTP id adf61e73a8af0-3c44affc928mr723987637.26.1784764685561;
+        Wed, 22 Jul 2026 16:58:05 -0700 (PDT)
 Received: from localhost ([2a00:79e0:2e7c:8:f3fd:a899:78ad:64d4])
-        by smtp.gmail.com with UTF8SMTPSA id 5a478bee46e88-3147e07000fsm25313445eec.21.2026.07.22.16.51.25
+        by smtp.gmail.com with UTF8SMTPSA id 5a478bee46e88-3147df09a9dsm12945475eec.19.2026.07.22.16.58.03
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jul 2026 16:51:26 -0700 (PDT)
-Date: Wed, 22 Jul 2026 16:51:24 -0700
+        Wed, 22 Jul 2026 16:58:04 -0700 (PDT)
+Date: Wed, 22 Jul 2026 16:58:02 -0700
 From: Brian Norris <briannorris@chromium.org>
 To: Peter Griffin <peter.griffin@linaro.org>
 Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
@@ -79,11 +79,10 @@ Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	soc@lists.linux.dev, Douglas Anderson <dianders@chromium.org>,
 	Juan Yescas <jyescas@google.com>, RD Babiera <rdbabiera@google.com>,
 	William McVicker <willmcvicker@google.com>, kernel-team@android.com
-Subject: Re: [PATCH v2 4/5] arm64: dts: google: Add initial dts for
- frankel/blazer/mustang
-Message-ID: <amFXfFFSGfqReFWO@google.com>
+Subject: Re: [PATCH v2 0/5] Add Laguna/Tensor G5 SoC and Frankel, Blazer &
+ Mustang boards
+Message-ID: <amFZCkt1EXtOjOYW@google.com>
 References: <20260722-contrib-pg-pixel10-initial-dts-v2-0-3abae9717feb@linaro.org>
- <20260722-contrib-pg-pixel10-initial-dts-v2-4-3abae9717feb@linaro.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -92,34 +91,54 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260722-contrib-pg-pixel10-initial-dts-v2-4-3abae9717feb@linaro.org>
+In-Reply-To: <20260722-contrib-pg-pixel10-initial-dts-v2-0-3abae9717feb@linaro.org>
 
-Hi Peter,
+On Wed, Jul 22, 2026 at 10:55:51AM +0100, Peter Griffin wrote:
+> Hi folks,
+> 
+> This series adds initial basic support for Laguna (Tensor G5 SoC)
+> found in Frankel (Pixel 10), Blazer (Pixel 10 Pro) and Mustang (Pixel
+> 10 Pro XL) phones.
 
-On Wed, Jul 22, 2026 at 10:55:55AM +0100, Peter Griffin wrote:
-> diff --git a/arch/arm64/boot/dts/google/lga-pixel-common.dtsi b/arch/arm64/boot/dts/google/lga-pixel-common.dtsi
-> new file mode 100644
-> index 000000000000..57c318ab44c9
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/google/lga-pixel-common.dtsi
+...
 
-> +	aliases {
-> +		serial0 = "/soc@0/serial@db62000";	/* &lsion_cli16_uart */
-> +		ufs0 = "/ufs-placeholder";		/* &ufs - TODO "/soc@0/ufs@3c400000" */
+>       arm64: defconfig: enable Tensor G5 SoC family
 
-I'm going to go out on a limb here and guess that these aliases are
-being spelled literally (with comments pointing at their label) because
-they used to be formed as overlays (where the label won't resolve
-properly, I expect?).
+I'm not able to apply this one cleanly in my tree, although resolving
+the context conflict is trivial.
 
-Do we still want to spell it this way? This looks generally nicer, and
-won't need an update when we get a real ufs node:
+> 
+>  Documentation/devicetree/bindings/arm/google.yaml  |  48 ++-
+>  .../bindings/serial/snps-dw-apb-uart.yaml          |   1 +
+>  MAINTAINERS                                        |   1 +
+>  arch/arm64/Kconfig.platforms                       |   8 +
+>  arch/arm64/boot/dts/Makefile                       |   1 +
+>  arch/arm64/boot/dts/google/Makefile                |   6 +
+>  arch/arm64/boot/dts/google/lga-blazer.dts          |  15 +
+>  arch/arm64/boot/dts/google/lga-frankel.dts         |  16 +
+>  arch/arm64/boot/dts/google/lga-mustang.dts         |  15 +
+>  arch/arm64/boot/dts/google/lga-pixel-common.dtsi   |  23 ++
+>  arch/arm64/boot/dts/google/lga.dtsi                | 423 +++++++++++++++++++++
+>  arch/arm64/configs/defconfig                       |   1 +
+>  12 files changed, 539 insertions(+), 19 deletions(-)
+> ---
+> base-commit: 17c7841d09ee7d33557fd075562d9289b6018c90
 
-		serial0 = &lsion_cli16_uart;
-		ufs0 = &ufs;
+I don't find this base commit in Linus's tree. I only found it in
+linux-next after fetching this hash directly -- it's a linux-next tag
+from 20260507? Seems like an odd old choice. Might be worth refreshing
+your base.
 
-IMO, we can cross the overlay bridge when we come to it.
+Apart from that and a small note on patch 4, it works for me:
 
-Brian
+Tested-by: Brian Norris <briannorris@chromium.org>
+Reviewed-by: Brian Norris <briannorris@chromium.org>
 
-> +	};
+Thanks!
+
+> change-id: 20260710-contrib-pg-pixel10-initial-dts-49f5ec657b66
+> 
+> Best regards,
+> -- 
+> Peter Griffin <peter.griffin@linaro.org>
+> 
