@@ -1,156 +1,316 @@
-Received: from TYDPR03CU002.outbound.protection.outlook.com (mail-japaneastazon11013046.outbound.protection.outlook.com [52.101.127.46])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB41D3E929C;
-	Wed, 22 Jul 2026 03:47:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.127.46
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784692024; cv=fail; b=pQ4vktizP4TtvWGBDIVqrTuOVtuMXaNf1S/qHgIiF66EyUQhU08ijsFO/YNSOvZrUnTgT/hyxFosDgUMe79ZiRDr9CAorr3XMMX3PJDou3XW7/pcjELVbbuipDtjeYe7wjyWlqwLcvLi2eyB7V63o974w1zGlxBWrvb5XBjtVl8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784692024; c=relaxed/simple;
-	bh=LqWE6OUVSdhcwYqvI5P4A0YfvWMysjsBn/7nIOA66fY=;
-	h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=R5c4YX8JCuYSDyT5+/FhB19ZDcLapfFEEzTYLLZuhzhACuFcg4GcrhfDFmKHuE/i7AIjufbT4XAc4SqGGW+Ur7BGh8caOvyWqQtx6KrE16TE4tJB25jcAwrxNJCFxvFlv47cDvqgY6g84BMJa/5wNnIte5yYDYd06BYm9y77SKY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vivo.com; spf=pass smtp.mailfrom=vivo.com; dkim=pass (2048-bit key) header.d=vivo.com header.i=@vivo.com header.b=GUUnwWYq; arc=fail smtp.client-ip=52.101.127.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vivo.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vivo.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B9F844AB92;
+	Wed, 22 Jul 2026 06:02:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784700121; cv=none; b=T4rq2t9beI333bsRPMXCGRzq13EfEoH4kn5s9Z9s8W4Z9PRurZja6EvAjl6JGerMNJzE4OHdfvsQy26++4L6wGVNx1j33pwCZA6NGeJB5WMgxzEeGwixje49diFge0SEFRPRiZ34l57n8H0TToNkBHXFcCnpcPFwr6J+diK/PJo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784700121; c=relaxed/simple;
+	bh=FyBEUgvIq/x91xup4zlZzMj00wtsmCXCmN6f8ssx764=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=mnTq1GF7KS6EHEvtDjulCRp3fXJIBjnp/z7/gFMvX/Z7HvrRL3VIYYwhfWZD708+irXQfcG8OnDhRZI4UvgjysnSuOsDO7lkHnkNavTOrJQHKQz0yC/yV1eB6I8KGLke7aIUD85mrUx/TJGt8x16iVgQD5OJ5wQUKHRDJgYrSrU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Zjh6wimG; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=vivo.com header.i=@vivo.com header.b="GUUnwWYq"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=htKmq/HvbggPBeK7Q2zaFSoCsXPCVWituCtu/2WcbgZqyEqp1VWlOE/3c/6QVIffyvszEi0QF4PfGXKe2JPcbfP5idejDjzLubolnUBtkbK0+MWZXdBwX9qt6Kurh0v980rDALoAwGjSerotXAtYlewc2CiFzSPzYbS+5rPAf5bz2uLBxEDjh/yk+qNrBS+eqtBjaxDr2FRjcvrbQxjyfxAm5nybFIMEEn2lnSXFSNvgsTfmk+9iFztU9YLrFcDZN6fEkurx9xgTMFqqpPio6KlSWvMN2dQ/fI0Qy2l++Lj7mE0QeR3KGsd8mXT9UYlg+jf7dKCV/lIAkCVOzRLN/w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+odOIMr8bqlxYLyjsaqZmink5+eFUshLJX/oB6CHpUA=;
- b=wridVZZasaAoaQwkjjkcrTA5NUqUVyaEGtG9Nj1rgve/6A5lMuaVSRBA0lU0U00wc5gTbPEQF8QsDKV4mEMtbpZaWKVnn7E9vLZqulsNBJzOM6MsjAHvTr3M0tH8Xjt/Wiguhl5UCvMAhMHnGkNqyqrbHM/45j0zXNhJT3FPqrrpLorwuBPIa04bAGbAsZWebgcMT8eCn7gExeUv5U7ES+nv0DJtaH4v/3LhT/oOKFHF51qpiRZ6gspop9KSheGlnZWETRPOelAW/6flY0aFVlvVc/t4jvn/d2SOka+f2aOVpReRpv2E+RfzNk1DO46ahvpEEOH6FVtD99Xki4wiEw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+odOIMr8bqlxYLyjsaqZmink5+eFUshLJX/oB6CHpUA=;
- b=GUUnwWYqDQidqa+pWpeCXGGUme049u0cC1lcNRzy6YVXxpZ+3rnZJ7X3h1j8NiU0GdGET20TgMSj1S+AW40OtAZcoc9jo9j0dTAyE+2sgnpRW9B3hcq3DMyRl9u7IjegLATnhymMWdeQZngMrgCov1y55FrMh3CgnZQjKBzslfMktXqJ8loX0g5gQ83bMJm0Z+Orx1xUqNKwEW2PKEAwKxyMUBXz0f2SqnoRRwYxY1uF99YrlgGTveEJ8dqAoDw2TEe0Dddhh0fvHQboVcTouIAwmLIoharxcaTec8ZEOcroEQa7fqkGff8KS4M6eH+piMVvsWd/kwVR1uvL9om59g==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from SEZPR06MB5832.apcprd06.prod.outlook.com (2603:1096:101:c8::12)
- by KUYPR06MB8988.apcprd06.prod.outlook.com (2603:1096:d10:99::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.245.10; Wed, 22 Jul
- 2026 03:47:01 +0000
-Received: from SEZPR06MB5832.apcprd06.prod.outlook.com
- ([fe80::f98:5e32:4ccb:d07b]) by SEZPR06MB5832.apcprd06.prod.outlook.com
- ([fe80::f98:5e32:4ccb:d07b%6]) with mapi id 15.21.0245.009; Wed, 22 Jul 2026
- 03:47:01 +0000
-From: Pan Chuang <panchuang@vivo.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Orson Zhai <orsonzhai@gmail.com>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Chunyan Zhang <zhang.lyra@gmail.com>,
-	Pan Chuang <panchuang@vivo.com>,
-	Cixi Geng <cixi.geng@linux.dev>,
-	Wenhua Lin <Wenhua.Lin@unisoc.com>,
-	linux-kernel@vger.kernel.org (open list:TTY LAYER AND SERIAL DRIVERS),
-	linux-serial@vger.kernel.org (open list:TTY LAYER AND SERIAL DRIVERS)
-Subject: [PATCH 5/5] serial: sprd: Remove redundant dev_err()
-Date: Wed, 22 Jul 2026 11:43:33 +0800
-Message-Id: <20260722034342.316755-6-panchuang@vivo.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20260722034342.316755-1-panchuang@vivo.com>
-References: <20260722034342.316755-1-panchuang@vivo.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: TYCPR01CA0131.jpnprd01.prod.outlook.com
- (2603:1096:400:26d::19) To SEZPR06MB5832.apcprd06.prod.outlook.com
- (2603:1096:101:c8::12)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Zjh6wimG"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 762731F000E9;
+	Wed, 22 Jul 2026 06:01:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1784700120;
+	bh=c9NHI8JRoVoQgLmkSRAE8PekdlmvFjRvXZuDMiKAChc=;
+	h=From:To:Cc:Subject:Date;
+	b=Zjh6wimGOsQ2uFprcHSBo+8Jt6voc0rfHqWMC9MQIKv++ccaCarqBCErAt/IkH4wv
+	 lvhjwe5ZJb+Q8kBfRPRRvRw6xDcxD5jbaUcgHkuwmew9kEeOJZde4Ii+/F3oBFmSGM
+	 Ev40V6Nb3v4sO8j0bSvdfzonOmiOA1WOudj325vERGhfsaLGk4ROgsKhdbR51fdoD3
+	 6oX/tUzusA4Wb/zTCGvC7vbcGDKgxIYPMyA5X+xdech2Io37gT+AayYRnRxR5HFy5T
+	 jNxYFElg17i+PQvBeTju8dNE7zrhyG8YNRPa+/fiGIanIl+xQ91b16qr1Axd/0J9Xw
+	 nyOa8IqmJFd8w==
+From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+To: jack@suse.cz
+Cc: linux-kernel@vger.kernel.org,
+	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jan Kara <jack@suse.com>,
+	Yangtao Li <frank.li@vivo.com>,
+	Huacai Chen <chenhuacai@kernel.org>,
+	WANG Xuerui <kernel@xen0n.name>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	loongarch@lists.linux.dev,
+	linux-mips@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: [PATCH] quota: remove CONFIG_PRINT_QUOTA_WARNING code
+Date: Wed, 22 Jul 2026 08:01:55 +0200
+Message-ID: <20260722060155.1111519-1-jirislaby@kernel.org>
+X-Mailer: git-send-email 2.55.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SEZPR06MB5832:EE_|KUYPR06MB8988:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0a0ff994-8f8f-4675-df8a-08dee7a3e354
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|1800799024|366016|52116014|376014|921020|38350700014|11063799006|56012099006|10067099003|6133799003|22082099003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	FHxVY2s1xTsGtRLWabXhf8ZIhMjkFjF6qct5nMc278zzTMH9UvIwhebhRVJaHab15oxIkQPAwnvGFyD6oh//u5F0lMNExVkjo36qgyef/LJRE2lmS9aqL/AasLGHTJzAmSj11EQDgRNTa7a7zlgjc+rIWpK/2RSQOkaSsc3S9CUSOtDvF+aKeoqpmHyz1NCf247GJ6C966AgXNlzbswOUHX4oUn7FvE7pwVfja8rDWoGuEXD17tdpqQgbggaTFhMJa0I2Dnlu5h54UhoDh8a0MqglGy8FHmrNj75F51hrKQoJsSllnYpwA+2dxOSnaIMvs2BWUSQtgW6uw8WMj7oo1kbpqZ/oZmXXfqTzNCVKRoQsk4smfCNNfwA/RJBogYD1SfY9+C7naHLEKIL+Rd6V/nwfBzuFoVdt5nfDdusd1W8+WzguUldDCWViIc6I/lBdIy9qqjml+jpWnrcF0LgXSmKb/dtiySDHW+5C8L9qy21etbFwU5BUCGSPXWWzgGQvtDTMZh3zDdDv2c4HMaAJpiCWGTT9tXvZoUN+ytRHnLDfM5JDHgvnQMLIOcT94juSjyB6lX/r/AdYRvCrO/PRx9Krep10oCLiZJomSurFzFV6Uj04kyDCqykEZ+fHEtKI1TkhiUrLgN5AAIH6g5Io1Ta2aOlhm15De2AVFPK2GpBf9YQXYGhxS0o3ogflxhE4WITemisoi98b/fW1NID0QnQJl+RPyOpM21sJJSM0WHehwjeEYjkd40mXmpYzduM
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SEZPR06MB5832.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(1800799024)(366016)(52116014)(376014)(921020)(38350700014)(11063799006)(56012099006)(10067099003)(6133799003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?cU2IQRpe+2n+d0ljmlg6+IzBX4QKMbBPngVtEBWMsr/VnZQiVleX8XBSFiHn?=
- =?us-ascii?Q?UaFN4o88Vlz17feC86L0XFpfdG6EokVy8mF8lPaB64IZ5Ls9oQt4blaX+thU?=
- =?us-ascii?Q?Fe+gV4AJq1AnzMU9cOAkLI4tInqD6w734efGJ6Krre1kkQpyFPIJfzeTkAlG?=
- =?us-ascii?Q?Qd7Wgh9/3pQn5vD2LeUaejuxLBc34R0+Pugez2UCFPjmfBOxds84EZVacCax?=
- =?us-ascii?Q?ffEkH2s4u/I5wXK07wP3PjZdGFFKqhnAT59Wqhdn9NXd+vPzo+YlcbPH7xSX?=
- =?us-ascii?Q?rAEPos4Tm2poE/TV6SjcuMv1oOljJPb5G4USm0qr/x0nZQ2sf+PPuxMSeyZv?=
- =?us-ascii?Q?ULZzX1+bQ++m5by1rY5WIn2hnAdHjdwkAsvUJrUYiBZ7feWZKLRyFbv5wSSI?=
- =?us-ascii?Q?qJtRsxIKkzmCAuoSuN9rIfewHdx4wt25H6nvEfzfZPku/WipNrWNuO3jy0ib?=
- =?us-ascii?Q?BqyCtKP5MscictcTk/DMzRrt1gr8BLz3qvKl3IUXNsFyqPpnK8WyL2DQj0CE?=
- =?us-ascii?Q?aUmZalPloTtEhh705aVf8AmkZNoNN5MBz+Ybhlx72l5V58hnBuJZ6ax2zPx1?=
- =?us-ascii?Q?OKSbdvM9OX4rR+wCAYggUaOdGQQJgm3wil990coYQc9LMwh6mfHWAbtcitJp?=
- =?us-ascii?Q?Z4CDsmEDIUWw3Repm4W0Q6fS5rCK9L5FhcagmXwEvnm25HbX3WIz+kLksroj?=
- =?us-ascii?Q?hQXMVFXXDTA/xZDa2nGE9gZlazmk2qeMkvZ6HcDTsNZMtQfaWcq4hSAAewAs?=
- =?us-ascii?Q?qtciO9uofcYMeGi6j5IpDH5lfLD7mrF0vV4hSQ+VjyorU8vQyeDY/sK166bj?=
- =?us-ascii?Q?xajhtUpCDr0hORJtfZOuFv46Lr9+ibSk7g1IA/NJrNpmAjmToG//J+3DGv8A?=
- =?us-ascii?Q?HAcV5BztlVWgjkDI9INlNM6cYh3kukRZ7/g8iw0K6mCBGaVhFHueFn9uCAys?=
- =?us-ascii?Q?ZMaXJMrcRAy/k687ZJcFLzjN4sUVoipgBUWQXmc7SAygGHCacXj5Q5MuOd9f?=
- =?us-ascii?Q?5hBkO4RAFdeRDxoyzGk2whsBHMvLo4folxaoWsriTaxiNu4ZU2gkaiCqYgpa?=
- =?us-ascii?Q?JmOrudZCDA1+iF43CWGLSswgQG6e7FRBrVskhRMyLzVeakFP1HFrgmkdJrjE?=
- =?us-ascii?Q?zMlT+JV/NkLMqy6AAV0ex86QoI0XeuGcTPCcAMOvInZWVRVWA2O8pS7Y/dn5?=
- =?us-ascii?Q?j1dWqsXXBGNGEIDPwJi0iNtYVw2cbCgcu3Y9Wlgr3HvesJZaR12aIVx/s/74?=
- =?us-ascii?Q?lKCuJpJjyd/J/CBrKODVIDo6DdXvGGmUVhIIZDltS6gSnVnfpkBcDhUWYJO0?=
- =?us-ascii?Q?O2E+FAxki1idFgw5TILkNObeD3Zgr8r2FohBy7wM9WwEZoDdRsH2PY5gNtvB?=
- =?us-ascii?Q?QF4muby59VgGgo0tuU0f18koviPKbOjWy/bDzoksVhsgIgfqL0iajRhHW3yc?=
- =?us-ascii?Q?F5kG62teKdaNyi9+Vu8ZpT2QSjCMnH9G2/anymDpHD4wqBK3sAagMNvDGb3H?=
- =?us-ascii?Q?1kZoxBnomdpnXrtalnw5LOuLOia2GmV3G+DuzI3/ZPnlqcaig1d2PxtcZOEj?=
- =?us-ascii?Q?uXxjOWEFxz8AtDa+G10/zuyru6chJZi2Q6U+VvkFEUIWhZmFdFwWEVhly23d?=
- =?us-ascii?Q?JyB05MP4SB9eGEyxh7Q8Xw5YdR1wuX3043zLd7DGl/dvSF/PMr+77sD7WYWA?=
- =?us-ascii?Q?HSQfwR+Aut2vApedILYKTFjeRHBZfg6nyfMkCXYha3cL0hxTr/DYDyeSr4Ng?=
- =?us-ascii?Q?v3mNjHE2Dw=3D=3D?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0a0ff994-8f8f-4675-df8a-08dee7a3e354
-X-MS-Exchange-CrossTenant-AuthSource: SEZPR06MB5832.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jul 2026 03:47:01.4874
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ItnmrkV9WQZ80ZVv37e7Uq90t4COyrN7i81iPQOdj4babtg3E6aVsBL7bHyUY7tZbahWCMYezsQXk3Oo5NgwEw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: KUYPR06MB8988
+Content-Transfer-Encoding: 8bit
 
-Since commit 55b48e23f5c4 ("genirq/devres: Add error handling in
-devm_request_*_irq()"), devm_request_irq() automatically logs
-detailed error messages on failure. Remove the now-redundant
-driver-specific dev_err() call.
+CONFIG_PRINT_QUOTA_WARNING was marked as BROKEN in 2023 by 36d532d713db
+("quota: mark PRINT_QUOTA_WARNING as BROKEN").
 
-Signed-off-by: Pan Chuang <panchuang@vivo.com>
+The code is apparently unused and uninteresting, so remove it all, incl.
+the abuse of TTY.
+
+Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jan Kara <jack@suse.com>
+Cc: Yangtao Li <frank.li@vivo.com>
 ---
- drivers/tty/serial/sprd_serial.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+Cc: Huacai Chen <chenhuacai@kernel.org>
+Cc: WANG Xuerui <kernel@xen0n.name>
+Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc: loongarch@lists.linux.dev
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-mips@vger.kernel.org
+Cc: linux-serial@vger.kernel.org
+---
+ arch/loongarch/configs/loongson32_defconfig |  1 -
+ arch/loongarch/configs/loongson64_defconfig |  1 -
+ arch/mips/configs/bigsur_defconfig          |  1 -
+ arch/mips/configs/ip22_defconfig            |  1 -
+ arch/mips/configs/loongson2k_defconfig      |  1 -
+ drivers/tty/tty_io.c                        | 27 -------
+ fs/quota/Kconfig                            | 10 ---
+ fs/quota/dquot.c                            | 81 +--------------------
+ 8 files changed, 2 insertions(+), 121 deletions(-)
 
-diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
-index 092755f35683..3fdf5939a62c 100644
---- a/drivers/tty/serial/sprd_serial.c
-+++ b/drivers/tty/serial/sprd_serial.c
-@@ -741,11 +741,8 @@ static int sprd_startup(struct uart_port *port)
+diff --git a/arch/loongarch/configs/loongson32_defconfig b/arch/loongarch/configs/loongson32_defconfig
+index 7c8f01513ed2..3d552eb526fe 100644
+--- a/arch/loongarch/configs/loongson32_defconfig
++++ b/arch/loongarch/configs/loongson32_defconfig
+@@ -974,7 +974,6 @@ CONFIG_FS_VERITY=y
+ CONFIG_FANOTIFY=y
+ CONFIG_FANOTIFY_ACCESS_PERMISSIONS=y
+ CONFIG_QUOTA=y
+-# CONFIG_PRINT_QUOTA_WARNING is not set
+ CONFIG_QFMT_V1=m
+ CONFIG_QFMT_V2=m
+ CONFIG_AUTOFS_FS=y
+diff --git a/arch/loongarch/configs/loongson64_defconfig b/arch/loongarch/configs/loongson64_defconfig
+index 8e3906d3bd70..195cf40cdbca 100644
+--- a/arch/loongarch/configs/loongson64_defconfig
++++ b/arch/loongarch/configs/loongson64_defconfig
+@@ -1005,7 +1005,6 @@ CONFIG_FS_VERITY=y
+ CONFIG_FANOTIFY=y
+ CONFIG_FANOTIFY_ACCESS_PERMISSIONS=y
+ CONFIG_QUOTA=y
+-# CONFIG_PRINT_QUOTA_WARNING is not set
+ CONFIG_QFMT_V1=m
+ CONFIG_QFMT_V2=m
+ CONFIG_AUTOFS_FS=y
+diff --git a/arch/mips/configs/bigsur_defconfig b/arch/mips/configs/bigsur_defconfig
+index 611dc0dd392d..d2b18d5033be 100644
+--- a/arch/mips/configs/bigsur_defconfig
++++ b/arch/mips/configs/bigsur_defconfig
+@@ -140,7 +140,6 @@ CONFIG_EXT4_FS_SECURITY=y
+ CONFIG_EXT4_FS=y
+ CONFIG_QUOTA=y
+ CONFIG_QUOTA_NETLINK_INTERFACE=y
+-# CONFIG_PRINT_QUOTA_WARNING is not set
+ CONFIG_QFMT_V2=m
+ CONFIG_AUTOFS_FS=m
+ CONFIG_FUSE_FS=m
+diff --git a/arch/mips/configs/ip22_defconfig b/arch/mips/configs/ip22_defconfig
+index 009e66299b69..09a77e5b249c 100644
+--- a/arch/mips/configs/ip22_defconfig
++++ b/arch/mips/configs/ip22_defconfig
+@@ -238,7 +238,6 @@ CONFIG_XFS_FS=m
+ CONFIG_XFS_QUOTA=y
+ CONFIG_QUOTA=y
+ CONFIG_QUOTA_NETLINK_INTERFACE=y
+-# CONFIG_PRINT_QUOTA_WARNING is not set
+ CONFIG_QFMT_V2=m
+ CONFIG_AUTOFS_FS=m
+ CONFIG_FUSE_FS=m
+diff --git a/arch/mips/configs/loongson2k_defconfig b/arch/mips/configs/loongson2k_defconfig
+index ca534a6b66de..8fd863f4f7b0 100644
+--- a/arch/mips/configs/loongson2k_defconfig
++++ b/arch/mips/configs/loongson2k_defconfig
+@@ -303,7 +303,6 @@ CONFIG_XFS_FS=y
+ CONFIG_XFS_QUOTA=y
+ CONFIG_XFS_POSIX_ACL=y
+ CONFIG_QUOTA=y
+-# CONFIG_PRINT_QUOTA_WARNING is not set
+ CONFIG_AUTOFS_FS=y
+ CONFIG_FUSE_FS=m
+ CONFIG_ISO9660_FS=m
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 6b283fd03ff8..a77bbccb274d 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -1032,33 +1032,6 @@ static ssize_t iterate_tty_write(struct tty_ldisc *ld, struct tty_struct *tty,
+ 	return ret;
+ }
  
- 	ret = devm_request_irq(port->dev, port->irq, sprd_handle_irq,
- 			       IRQF_SHARED, sp->name, port);
--	if (ret) {
--		dev_err(port->dev, "fail to request serial irq %d, ret=%d\n",
--			port->irq, ret);
-+	if (ret)
- 		return ret;
+-#ifdef CONFIG_PRINT_QUOTA_WARNING
+-/**
+- * tty_write_message - write a message to a certain tty, not just the console.
+- * @tty: the destination tty_struct
+- * @msg: the message to write
+- *
+- * This is used for messages that need to be redirected to a specific tty. We
+- * don't put it into the syslog queue right now maybe in the future if really
+- * needed.
+- *
+- * We must still hold the BTM and test the CLOSING flag for the moment.
+- *
+- * This function is DEPRECATED, do not use in new code.
+- */
+-void tty_write_message(struct tty_struct *tty, char *msg)
+-{
+-	if (tty) {
+-		mutex_lock(&tty->atomic_write_lock);
+-		tty_lock(tty);
+-		if (tty->ops->write && tty->count > 0)
+-			tty->ops->write(tty, msg, strlen(msg));
+-		tty_unlock(tty);
+-		tty_write_unlock(tty);
 -	}
- 	fc = serial_in(port, SPRD_CTL1);
- 	fc |= RX_TOUT_THLD_DEF | RX_HFC_THLD_DEF;
- 	serial_out(port, SPRD_CTL1, fc);
+-}
+-#endif
+-
+ static ssize_t file_tty_write(struct file *file, struct kiocb *iocb, struct iov_iter *from)
+ {
+ 	struct tty_struct *tty = file_tty(file);
+diff --git a/fs/quota/Kconfig b/fs/quota/Kconfig
+index 818083a36bef..68eb441328ef 100644
+--- a/fs/quota/Kconfig
++++ b/fs/quota/Kconfig
+@@ -25,16 +25,6 @@ config QUOTA_NETLINK_INTERFACE
+ 	  hardlimit, etc.) will be reported through netlink interface. If unsure,
+ 	  say Y.
+ 
+-config PRINT_QUOTA_WARNING
+-	bool "Print quota warnings to console (OBSOLETE)"
+-	depends on QUOTA && BROKEN
+-	default y
+-	help
+-	  If you say Y here, quota warnings (about exceeding softlimit, reaching
+-	  hardlimit, etc.) will be printed to the process' controlling terminal.
+-	  Note that this behavior is currently deprecated and may go away in
+-	  future. Please use notification via netlink socket instead.
+-
+ config QUOTA_DEBUG
+ 	bool "Additional quota sanity checks"
+ 	depends on QUOTA
+diff --git a/fs/quota/dquot.c b/fs/quota/dquot.c
+index 9850de3955d3..204afc5e984b 100644
+--- a/fs/quota/dquot.c
++++ b/fs/quota/dquot.c
+@@ -153,7 +153,7 @@ void __quota_error(struct super_block *sb, const char *func,
+ }
+ EXPORT_SYMBOL(__quota_error);
+ 
+-#if defined(CONFIG_QUOTA_DEBUG) || defined(CONFIG_PRINT_QUOTA_WARNING)
++#ifdef CONFIG_QUOTA_DEBUG
+ static char *quotatypes[] = INITQFNAMES;
+ #endif
+ static struct quota_format_type *quota_formats;	/* List of registered formats */
+@@ -1208,72 +1208,6 @@ static int warning_issued(struct dquot *dquot, const int warntype)
+ 	return test_and_set_bit(flag, &dquot->dq_flags);
+ }
+ 
+-#ifdef CONFIG_PRINT_QUOTA_WARNING
+-static int flag_print_warnings = 1;
+-
+-static int need_print_warning(struct dquot_warn *warn)
+-{
+-	if (!flag_print_warnings)
+-		return 0;
+-
+-	switch (warn->w_dq_id.type) {
+-		case USRQUOTA:
+-			return uid_eq(current_fsuid(), warn->w_dq_id.uid);
+-		case GRPQUOTA:
+-			return in_group_p(warn->w_dq_id.gid);
+-		case PRJQUOTA:
+-			return 1;
+-	}
+-	return 0;
+-}
+-
+-/* Print warning to user which exceeded quota */
+-static void print_warning(struct dquot_warn *warn)
+-{
+-	char *msg = NULL;
+-	struct tty_struct *tty;
+-	int warntype = warn->w_type;
+-
+-	if (warntype == QUOTA_NL_IHARDBELOW ||
+-	    warntype == QUOTA_NL_ISOFTBELOW ||
+-	    warntype == QUOTA_NL_BHARDBELOW ||
+-	    warntype == QUOTA_NL_BSOFTBELOW || !need_print_warning(warn))
+-		return;
+-
+-	tty = get_current_tty();
+-	if (!tty)
+-		return;
+-	tty_write_message(tty, warn->w_sb->s_id);
+-	if (warntype == QUOTA_NL_ISOFTWARN || warntype == QUOTA_NL_BSOFTWARN)
+-		tty_write_message(tty, ": warning, ");
+-	else
+-		tty_write_message(tty, ": write failed, ");
+-	tty_write_message(tty, quotatypes[warn->w_dq_id.type]);
+-	switch (warntype) {
+-		case QUOTA_NL_IHARDWARN:
+-			msg = " file limit reached.\r\n";
+-			break;
+-		case QUOTA_NL_ISOFTLONGWARN:
+-			msg = " file quota exceeded too long.\r\n";
+-			break;
+-		case QUOTA_NL_ISOFTWARN:
+-			msg = " file quota exceeded.\r\n";
+-			break;
+-		case QUOTA_NL_BHARDWARN:
+-			msg = " block limit reached.\r\n";
+-			break;
+-		case QUOTA_NL_BSOFTLONGWARN:
+-			msg = " block quota exceeded too long.\r\n";
+-			break;
+-		case QUOTA_NL_BSOFTWARN:
+-			msg = " block quota exceeded.\r\n";
+-			break;
+-	}
+-	tty_write_message(tty, msg);
+-	tty_kref_put(tty);
+-}
+-#endif
+-
+ static void prepare_warning(struct dquot_warn *warn, struct dquot *dquot,
+ 			    int warntype)
+ {
+@@ -1296,9 +1230,7 @@ static void flush_warnings(struct dquot_warn *warn)
+ 	for (i = 0; i < MAXQUOTAS; i++) {
+ 		if (warn[i].w_type == QUOTA_NL_NOWARN)
+ 			continue;
+-#ifdef CONFIG_PRINT_QUOTA_WARNING
+-		print_warning(&warn[i]);
+-#endif
++
+ 		quota_send_warning(warn[i].w_dq_id,
+ 				   warn[i].w_sb->s_dev, warn[i].w_type);
+ 	}
+@@ -3008,15 +2940,6 @@ static const struct ctl_table fs_dqstats_table[] = {
+ 		.mode		= 0444,
+ 		.proc_handler	= do_proc_dqstats,
+ 	},
+-#ifdef CONFIG_PRINT_QUOTA_WARNING
+-	{
+-		.procname	= "warnings",
+-		.data		= &flag_print_warnings,
+-		.maxlen		= sizeof(int),
+-		.mode		= 0644,
+-		.proc_handler	= proc_dointvec,
+-	},
+-#endif
+ };
+ 
+ static int __init dquot_init(void)
 -- 
-2.34.1
+2.55.0
 
