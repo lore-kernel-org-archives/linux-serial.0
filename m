@@ -1,103 +1,93 @@
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B80BB466AF7
-	for <linux-serial@vger.kernel.org>; Thu, 23 Jul 2026 11:05:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DF9A36AB5A;
+	Thu, 23 Jul 2026 20:59:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784804727; cv=none; b=lGp7VcEOXvsQbRXJQQan3gqq8qdpiJi304eFq6UqDM+CpQ5vbfFC09Ihfy7WrIGQplFleXAtXEacuS9bq9NK+jdRDXg1w0xqtWRDGspaSi7JsAJYL+FZgSDyQokIU71GV1eeRiHp09rLwY7vnJzVXvmbqkmRGL4YNud+RuqaQxw=
+	t=1784840362; cv=none; b=sN7c4ou5o87sdZQbqsZFbDvlPcfTJ6qzc5qZSvcg5kUg/GKQcqujW5y/XqWZo1ljyYR0BMIeA7Ap4UUm4i2D6BoaHML4xprka1Pequ09srHjr6Wsif2m7j44hBh+9kPrnP2NUGi9Mflo0spzF2l0ogqxtTGwdJ97UeEOKv9oE4c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784804727; c=relaxed/simple;
-	bh=Z99f1XCGVjSL9klqfa+LLjusqb2L0TDPTeRLqSmvF6w=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=afSEUG2JkdEqbbxyJ3WFJMojFAFXce1dZyab5lYelbK3tQyo16Ojtb3jdLpjKUj22P2vxAhnsuNKCrGJ6jYREvgmoz7PQ3TGX/dJJEAi6a8wtVzb4oDM/4e9A0NkSiUFTJWtc59775OVettiWX11zNe7+mihrzajN7R659AcVxA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=RZhXpWww; arc=none smtp.client-ip=209.85.128.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1784840362; c=relaxed/simple;
+	bh=3siq3ZRHQHupARL5OcYGzfPbFcHUXu8g33Ej2kheHDQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=fAkO1lcMYkLi8oAWkaRLHVrQceC75KqLskksPEeZ2OsFFUl7l5tDMbdRV6coR5HjzayEMBhyMwQ7el6QohwTvbUa1+2kpTeZ2R8NlNFSVUSTCswB614b4YjtsUF/NNExJbrGMJQ1F/HypjN5y/OsZBIcBrHVNXIM9x+ZjL3os4E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BYwSWiPw; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="RZhXpWww"
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-4955aa106b1so4839255e9.0
-        for <linux-serial@vger.kernel.org>; Thu, 23 Jul 2026 04:05:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1784804724; x=1785409524; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=Vp85x2eRc/psjrLDK8diwI4ryuASXi8rpItu1f+MGS8=;
-        b=RZhXpWww88yh4NZhYb6T4Zr7g0gSFEn4WO6pxsW0bZqRv3+16qnM2KRZgn+40c9CoP
-         OlHFLhuD5hO0UCE/i7mjQNDDoKdqJKHYMeJZPDTy09DyAL31ZlIZ+Wy0maKyb31Qnw75
-         0hG0UwsF/N/hJqC7apyLEVTO0CLev/s0FNBObQKHbtZUajL8lMZ3vqxpkhrO54hisZUJ
-         NLrGpD5vYdb7Qb3JuWIVc9bDm84lC4zM+W3oNUK4LGWG2rPh0h72/t6gqbwY+n3srfNR
-         dkAiW+H3dhlmK3uAfA+Fwu82jMfQA/EBB2+sIC4iJZWl9LwkF94AHMFV+9VagDbRX182
-         cmlw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784804724; x=1785409524;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=Vp85x2eRc/psjrLDK8diwI4ryuASXi8rpItu1f+MGS8=;
-        b=p3+JJpJ7K0azmfwRsPVysh9wsO0MUGFur9PNC3D+TZxGw9tIlS/D6sOIo+z18l8+Cm
-         FSbJMzcw8lGPleaZFtWnB7bdNTDsn3WAYT/FBtAphb0D+wIDLolOCi1fxEoGGh0Ydi7p
-         NDgoGRjoVGCekj1YZ9SEAfAcFp3OrHoJQAiTIatYFUfHurivJLfazOP4N3U+oykKbCZE
-         fs6IMd1ANxRFXuqjh4KXCyRbov+CPmhjQ8RZiBOFp5DSufZ4NOfTrKtI3FWfhJ1YnQMz
-         8/KndpBydBakxkfi9sBGwoQWZLKdL6kBNuzMy+zAbN711sDwAtlCsDOiZtpQCbJ/kRpA
-         4etg==
-X-Forwarded-Encrypted: i=1; AHgh+RoaOIYwYGPvb42X58T1t5jv85kMa6cmyPBRpPgMFDtuOa9xcLL2Bmh9sUe2neguglPk6Seaq1gScwRNPoc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyjumT2aZ9ngagfRb8P+GEcjoyGXNUZUMT92EpydJM5QeV0FhTq
-	iSkiuQTK5i83pp/+r/s2pGTI4XV4vbUMiJ73/Ic08ceZMshBqT9rImdrdjKWPKhgzqA=
-X-Gm-Gg: AR+sD139vH7dQYL3PlWWB6Z7ZObmbeJKV67ECVWvRt0zTp8R1qiQFQ4FEmd6HApn5Z/
-	cJdPoLB6CBcbCcTPfJiRE7UGytkgc4qGGW+kUyRiPnRL3vo/NAOeA41ureRBgwq649LmT49+s2X
-	d3c5eUa7P7rWAjgg4Pa0myMI2RwR7miVzRWvIhMqbZHGEfnAFbOEzO9xaGQe/o7KSQ+KNfgebmF
-	78SopRzapuzcNKAyJ2jT/bpOBFkVSYdYae790mywkd8+abHmjfbAQpEvZHoqgBVBnbxUTrxahep
-	yZuOUnFQHw5owXhmNxkfq6m9NEB8q9lDjV5Rh+DBD+Pc9bkzOAkema5o9gNJzBAdaFj4nvQIbxU
-	vgdhZ8fAvrqJqgdmcmhNgr/6qP0dhka246oMqBF2UOUEJMfcmYaneX7SDcKUp4SUyhlwXCJydkJ
-	YiWDatS9AjSDhVdL0=
-X-Received: by 2002:a05:600c:1389:b0:495:5b4f:1efd with SMTP id 5b1f17b1804b1-49573cb983cmr25832805e9.2.1784804723890;
-        Thu, 23 Jul 2026 04:05:23 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47f85bb57cfsm13971961f8f.11.2026.07.23.04.05.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jul 2026 04:05:23 -0700 (PDT)
-Date: Thu, 23 Jul 2026 13:05:21 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BYwSWiPw"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CFF91F000E9;
+	Thu, 23 Jul 2026 20:59:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1784840360;
+	bh=5QlEtEB+KlYv+DW8jPCkBOH+68EPaADuCoS5PEm6aZw=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=BYwSWiPwuqD2kKCxGI2pr+TIGSE1pyF9pR6pHr23oOs9oOumzQ6nBN6YCuQT8d6qw
+	 scZe05tKL4XuEY4HRmVNBoM6ZCj2jiCNUebtZPIMnFozom1Sp3/5mK3JBuWY6Bmdgi
+	 slR32XwX0O+mdL+z+toFqIb/sbMBqxAeZmFFd9j1oK02JB3SDIvdy+61g5+71H/MP4
+	 0gd7tr5rTKqEl7i0qpu8hpCNFSxfHwpqDAcruahIoj1v2IlXEqluHKuNNhjEHj6kdU
+	 DK9cvbawwnr9JcuOpk8INMLDjagyIF8kPiHoQHjqZuK4oQAtj29ej+kR8Om+d6VXoK
+	 WbcqFtWsoh8eA==
+From: Danilo Krummrich <dakr@kernel.org>
+To: Markus Probst <markus.probst@posteo.de>
+Cc: Rob Herring <robh@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
-	Andy Shevchenko <andy.shevchenko@gmail.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Gary Guo <gary@garyguo.net>,
+	=?UTF-8?q?Bj=C3=B6rn=20Roy=20Baron?= <bjorn3_gh@protonmail.com>,
+	Benno Lossin <lossin@kernel.org>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Alice Ryhl <aliceryhl@google.com>,
+	Trevor Gross <tmgross@umich.edu>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Kari Argillander <kari.argillander@gmail.com>,
+	"Rafael J . Wysocki" <rafael@kernel.org>,
+	Viresh Kumar <viresh.kumar@linaro.org>,
+	Boqun Feng <boqun@kernel.org>,
+	David Airlie <airlied@gmail.com>,
+	Simona Vetter <simona@ffwll.ch>,
+	Daniel Almeida <daniel.almeida@collabora.com>,
+	Tamir Duberstein <tamird@kernel.org>,
+	Alexandre Courbot <acourbot@nvidia.com>,
+	=?UTF-8?q?Onur=20=C3=96zkan?= <work@onurozkan.dev>,
+	linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Kees Cook <kees@kernel.org>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH tty v8 2/2] Revert "serial: 8250: drop lockdep annotation
- from serial8250_clear_IER()"
-Message-ID: <amH1cX5awhnHg99D@pathway.suse.cz>
-References: <20260722110925.74387-1-john.ogness@linutronix.de>
- <20260722110925.74387-3-john.ogness@linutronix.de>
+	rust-for-linux@vger.kernel.org,
+	linux-pm@vger.kernel.org,
+	driver-core@lists.linux.dev,
+	dri-devel@lists.freedesktop.org
+Subject: Re: [PATCH v16 0/3] rust: add basic serial device bus abstractions
+Date: Thu, 23 Jul 2026 22:59:12 +0200
+Message-ID: <20260723205912.3441137-1-dakr@kernel.org>
+X-Mailer: git-send-email 2.55.0
+In-Reply-To: <20260718-rust_serdev-v16-0-5809384d2e1b@posteo.de>
+References: <20260718-rust_serdev-v16-0-5809384d2e1b@posteo.de>
+X-Patch-Reply: applied
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260722110925.74387-3-john.ogness@linutronix.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Wed 2026-07-22 13:15:19, John Ogness wrote:
-> This reverts commit 3d9e6f556e235ddcdc9f73600fdd46fe1736b090.
-> 
-> The 8250 driver no longer depends on @oops_in_progress and
-> will no longer violate the port->lock locking constraints.
-> 
-> Signed-off-by: John Ogness <john.ogness@linutronix.de>
+On Sat, 18 Jul 2026 15:33:09 +0000, Markus Probst wrote:
+> [PATCH v16 0/3] rust: add basic serial device bus abstractions
 
-Makes sense.
+Applied, thanks!
 
-Reviewed-by: Petr Mladek <pmladek@suse.com>
+  Branch: driver-core-testing
+  Tree:   git://git.kernel.org/pub/scm/linux/kernel/git/driver-core/driver-core.git
 
-Best Regards,
-Petr
+[1/3] rust: add basic serial device bus abstractions
+      commit: 99f59aa82341
+[2/3] samples: rust: add Rust serial device bus sample device driver
+      commit: 4b2c9156d312
+[3/3] MAINTAINERS: serdev: Add self for serdev
+      commit: 6b71fef6f05c
+
+The patches will appear in the next linux-next integration (typically within 24
+hours on weekdays).
+
+The patches are in the driver-core-testing branch and will be promoted to
+driver-core-next after validation.
