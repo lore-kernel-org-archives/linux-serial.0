@@ -1,144 +1,208 @@
-Received: from mail-pg1-f180.google.com (mail-pg1-f180.google.com [209.85.215.180])
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42AD72ECE86
-	for <linux-serial@vger.kernel.org>; Wed, 22 Jul 2026 23:58:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D3D7388E69
+	for <linux-serial@vger.kernel.org>; Thu, 23 Jul 2026 04:37:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784764687; cv=none; b=VEB69n4a8hIZ7cVturfD9lePch05m9fkBRQ0hfzw1+pO2Z9rJ8fb5s6zrU4JK4X3iNL3tbLVhb5iNkHzEFyrvLtirxZFkNYU7RJ89wyGeKsamVVNtI3sSxSTRtgb9UiGZkaHLOOZSOwCOuj6Ykipq6I7D/N0z1iG6GjQykHxe90=
+	t=1784781464; cv=none; b=UU4IOWWvadWOE09kKHAPRMlk5aQ7pbyG8ocoYTAhGRwDATpdCwImeS9JA13vFnZvRjZuuKMDRA9W0vzlcIGgFit360ghb4+sNilE1ppElyHuR6HVEpNZ1SYGe0agRjRY++yAwyGtk8ctstclqPYTbGSBNosv7CXhctp5qKa+VDM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784764687; c=relaxed/simple;
-	bh=35drW2DGwE6r9AD1bRPA9cvY3KZK2JVIMd9EV0LS8ps=;
+	s=arc-20240116; t=1784781464; c=relaxed/simple;
+	bh=rmV5wa7WGkm++YNPCVM45vZ5iI212ame9uuK6dMNzfo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nQf1uAZP6lQTe7gOR/D1j+8WqWU0cjYH3ACVrSGE/KoCaMs5gfnj2PvRCG/AGd+HkFa3DV4YfaWCrEgV/9TDOA8Aa5k7qB5JS9PCSCMZ8+HuGJksH1X/4k14yott+2OeIjnd3PaLvmINzuBbXj34S0k4kWGgJFSfCGKc4yClf4s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=fGn9lESZ; arc=none smtp.client-ip=209.85.215.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	 Content-Type:Content-Disposition:In-Reply-To; b=haQvJOlRnFXHDKfwp1oKE6rwLiEsl/z6AjAkMuN4lsis0dlvWgRrPTZybJyoaRP1chvQECXt+3/z45WlItV6XgW+yuumkT2gW0iEtqpXVNhANd8+pNkWIkdDiySUHyPJBkTZ73RFzSXMTERmE4029BOPlW/5FaPpvTW2NxnEPCo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=LC941cVH; arc=none smtp.client-ip=209.85.221.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="fGn9lESZ"
-Received: by mail-pg1-f180.google.com with SMTP id 41be03b00d2f7-cbb85186d43so40850a12.3
-        for <linux-serial@vger.kernel.org>; Wed, 22 Jul 2026 16:58:06 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="LC941cVH"
+Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-47f703a9e5dso59547f8f.0
+        for <linux-serial@vger.kernel.org>; Wed, 22 Jul 2026 21:37:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1784764685; x=1785369485; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1784781442; x=1785386242; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=fvcmYZzoXJ2+AFhLmq8yWDeYXcFpMi5b7436MW8Ch78=;
-        b=fGn9lESZxZ1dgvDiQX7LFBPYYyT96CDX8eZ+GajVybtvs8PqGfhlW91ggKfXXoZZpg
-         m5eGpjvyHGGYUB8lN3LRbFAfd67GbegJIgqMRnl8n5fg8KlZSqPoRHCKSDQI2f7smhbd
-         y4WAhELjfbYcAc7na1qcMv9LcU7V/NjOp/3r0=
+        bh=8AAHY7PT81febIFH3+wz3Qo4cag6VwKMhyYqM/7URpc=;
+        b=LC941cVHUNrxLLYV7oIU1Nig/ugDglqU13tnzWIuwzQuMP2893BGJVugPNbULLrYmg
+         lgB9hjTPgaJryogRBKxn502CbEJ4gFx9pWjFUdIcHlqAOa+9+LVFP6s7Yz6qrEPugtYd
+         oZ3tizeHUveh/X0WL3B4QBDu9st46aEwWWpoviM2UHgiHnjSrqPkjk7dDmduoXvKgXh9
+         YH2UqYOuJRxGsKqYPBBihvWncieKn5u/Ag05zvOXcYuxH8QOq+4MWGJi6F6hf2AMZgFy
+         gxgWMVujXwXlnrav1Yo+QheA2c4nUZ6AwUNBcX/iPfIxZy1u4vMPcaxWt1fFIHCKzEB+
+         Xhng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784764685; x=1785369485;
+        d=1e100.net; s=20251104; t=1784781442; x=1785386242;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=fvcmYZzoXJ2+AFhLmq8yWDeYXcFpMi5b7436MW8Ch78=;
-        b=P9g2r/tOlaZsM/VrKeqda22uscSLwN7C6DAiuK/BPnlzHyQS2SLTHOQSrojFJKO3Nh
-         EhZpWnHFPkAqh/sKcGFlBmSamrCfwtmXTPg4dDvHEYP5x6KSPbRP2y5vGSRpl2ERw/aA
-         1WAMdwkNdJtLcMTjYXSYDLw7Q2fTkbPuk9JHyS3iyYVbanQ/OQiUT5O9iWnzRnT2bpM9
-         Zal47+Rv7cFU3vKHkKud9rJNMix/5axb/lUIEUq2VspMrlHsfAwdh5xEbQd1+ZQM2uao
-         ae2AWy7B8/0WI1jyJWZmyHhXiwcUHeO3boTbKrmWU5C1hlxXfRZcWwoe6e79wAkBiJaO
-         HaKQ==
-X-Forwarded-Encrypted: i=1; AHgh+RpgZk7oNe8nqjUzJHnnJyMpivzJGw+rsAsGEpCcxtrmWY3cGERWmCPattVl5BrlXlqWijv5Cn7YDezRIYk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwU3cak/+c9N+Ox/JrbMn3LfMjtw3QSo1sSOL6kOVqdMVSvNzv7
-	fNK0OIapmdxiKoO7GPK2h4oGlqgiOdJHs/Thp8J8eGxmS01WrhTA0e6h9c9uQpA37A==
-X-Gm-Gg: AR+sD11xSrGzCdWjFp8LKkDjurfw7wUtOcNpAR+M9opWe6jAiIPa8ZqVYKPBVp7ItMy
-	4EasBHi8hVmQnde/fZNNSwXgNpSshpqDEe4aR8fxgWdcfr3RgddQmEO92yZ1UMcPirRR+a+3OaQ
-	lJE3ze9qjwWyDMzwZzs9sr7EcYNXD5u5Ko8bN8ESiEIw/2bu8LhHnGdxUfDC6pLKe66/AqQPTq1
-	6oy5D3NGNWOtPKRYKw1EVHgRWarFWKck2Ry0dR3wq49oiWmJDj31+AwUEoXKnKaiz/Xz1m/ORXt
-	i2jLOmABDS8MRU6xnisH9zN66s/VDdYhRiFw/rbxxSVXqkZgiYDNW/HCju6YGffrVMZS9G+GEzw
-	E19FvyhsP8r4q0WuRNC0BXxFOKyHqyQLyA0bVTM6JAPtL7YQ69/p5Apwr9/0gxyiWeTV/3L6enC
-	IWj7mnQ7dIc7OH/EwdeLRP7+C/cuAiVWPBbqDATKWN
-X-Received: by 2002:a05:6a21:e8c:b0:3a2:7ef4:81df with SMTP id adf61e73a8af0-3c44affc928mr723987637.26.1784764685561;
-        Wed, 22 Jul 2026 16:58:05 -0700 (PDT)
-Received: from localhost ([2a00:79e0:2e7c:8:f3fd:a899:78ad:64d4])
-        by smtp.gmail.com with UTF8SMTPSA id 5a478bee46e88-3147df09a9dsm12945475eec.19.2026.07.22.16.58.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jul 2026 16:58:04 -0700 (PDT)
-Date: Wed, 22 Jul 2026 16:58:02 -0700
-From: Brian Norris <briannorris@chromium.org>
-To: Peter Griffin <peter.griffin@linaro.org>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	=?iso-8859-1?Q?Andr=E9?= Draszik <andre.draszik@linaro.org>,
-	Tudor Ambarus <tudor.ambarus@linaro.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	Linus Walleij <linusw@kernel.org>,
-	Drew Fustini <fustini@kernel.org>, Kees Cook <kees@kernel.org>,
-	Tony Luck <tony.luck@intel.com>,
-	"Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-	soc@lists.linux.dev, Douglas Anderson <dianders@chromium.org>,
-	Juan Yescas <jyescas@google.com>, RD Babiera <rdbabiera@google.com>,
-	William McVicker <willmcvicker@google.com>, kernel-team@android.com
-Subject: Re: [PATCH v2 0/5] Add Laguna/Tensor G5 SoC and Frankel, Blazer &
- Mustang boards
-Message-ID: <amFZCkt1EXtOjOYW@google.com>
-References: <20260722-contrib-pg-pixel10-initial-dts-v2-0-3abae9717feb@linaro.org>
+        bh=8AAHY7PT81febIFH3+wz3Qo4cag6VwKMhyYqM/7URpc=;
+        b=YmaNvInDq2MZ9e+dOQa9A0S/5wEXG8GfWo7AVT8KP5s8TVwgQftigF6JJnIMe/6aWv
+         2uBgvrYd4pBjk5IoMq9Z6HuBMz5Znb7xPuCC+dOiJSFng/9SP+BMFanp010/J8Jfv4IR
+         jIdk+9kAWl5myKbagEOoSlIW53wdz7yR6rRGxcdduSxYhZ3p7gi8hOET1EKJh6wJmLE4
+         4SpQa0bhp/otu3O17uNku/eHH84etgGy9HlwjLo+7qR4fuSyb/09ziuXFyhn85Ypmu/p
+         LuFG9srAB4X+1BW2fkTJpRIm0fEtX/fV8MkCiYzsaxSrOLYdUuuo3TnUFJl3/LgbSnE4
+         DzlQ==
+X-Forwarded-Encrypted: i=1; AHgh+Rr+NDW9WAbhFPTaZeuzHLPFpu1Fem603JbE+aYpPdT64yXXaP227VtrTJnAAmOBrJZRu3F6KwQUmqoT0rE=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzz2w3U8ysxTBX+lYIpyFE9O7VYLGlx74KMslaoGbczCTwwJvhm
+	kWSOjkAzCgclQ+Pm7IIu2DVF4jix/4GhhMLivu5IyC+ZpZQQ5UYzljJbymLhn/yb2zs=
+X-Gm-Gg: AR+sD12vh/l04cxMAQgWdMr4J5UGkyhl9j5wmDwafKgJimcxr+TCrq27lfS0g5p0HQ/
+	/ATz6406gQvv5vuPAL1xBWgo0oKTKl9h+OeOI1ynjCjCVZWSpJoBVgy9F1KnQAgaQJfEF8Gi6gY
+	Sm3i+Sv73+V7o9h+34e6EOtujkT4eQTeBgFmpOsBIceEpF+zM5NMLCQjSdvmhttWDjvPfQPpfzb
+	ZXDNyN6VFgjQURy8pGKf4m4Ke3tyB8fuOtl41/bKhyNWQ5ro+kJKHiy1vHAynhyhPts8Slk0EOS
+	JfgeQ5fniluI25hDPmRRGjk+Hb9TlMmb9CNX7NxFonYSqGFcRa2yWpNJydd+8xzT7UFYOJEmZ0f
+	IuUt4OVwmZ5kjySYnYVcQ4yLnMMvqfhptb/aDz28B2P6/Sq6UQ/aD07wkwPc5XkFqzoqaTnV9A7
+	uuqgQiW08=
+X-Received: by 2002:a5d:5d0e:0:b0:460:3233:beee with SMTP id ffacd0b85a97d-47f8d75ee5bmr1661526f8f.42.1784781441998;
+        Wed, 22 Jul 2026 21:37:21 -0700 (PDT)
+Received: from localhost ([2a02:8071:56d1:2de0:1d24:d58d:2b65:c291])
+        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-47f85c532d4sm11220481f8f.22.2026.07.22.21.37.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jul 2026 21:37:20 -0700 (PDT)
+Date: Thu, 23 Jul 2026 06:37:17 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
+To: Hugo Villeneuve <hugo@hugovil.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Hugo Villeneuve <hvilleneuve@dimonoff.com>, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH] serial: 8250_hub6: Fix double definition for
+ hub6_match_port()
+Message-ID: <amGYgUhPrSdR5srV@monoceros>
+References: <20260720080812.1223096-2-u.kleine-koenig@baylibre.com>
+ <al34uIyOue73MMN0@monoceros>
+ <20260720100708.5b9b3ed9f6f42b27adb264d4@hugovil.com>
+ <al6PfMCuRiYcOBQV@monoceros>
+ <20260720185326.9652faa0df7b02e07eeb7d4b@hugovil.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="ysajxzblyrv4ygt7"
 Content-Disposition: inline
-In-Reply-To: <20260722-contrib-pg-pixel10-initial-dts-v2-0-3abae9717feb@linaro.org>
+In-Reply-To: <20260720185326.9652faa0df7b02e07eeb7d4b@hugovil.com>
 
-On Wed, Jul 22, 2026 at 10:55:51AM +0100, Peter Griffin wrote:
-> Hi folks,
-> 
-> This series adds initial basic support for Laguna (Tensor G5 SoC)
-> found in Frankel (Pixel 10), Blazer (Pixel 10 Pro) and Mustang (Pixel
-> 10 Pro XL) phones.
 
-...
+--ysajxzblyrv4ygt7
+Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH] serial: 8250_hub6: Fix double definition for
+ hub6_match_port()
+MIME-Version: 1.0
 
->       arm64: defconfig: enable Tensor G5 SoC family
+Hello Hugo,
 
-I'm not able to apply this one cleanly in my tree, although resolving
-the context conflict is trivial.
+On Mon, Jul 20, 2026 at 06:53:26PM -0400, Hugo Villeneuve wrote:
+> On Mon, 20 Jul 2026 23:18:47 +0200
+> Uwe Kleine-K=F6nig <u.kleine-koenig@baylibre.com> wrote:
+>=20
+> > On Mon, Jul 20, 2026 at 10:07:08AM -0400, Hugo Villeneuve wrote:
+> > > Hi Uwe,
+> > >=20
+> > > On Mon, 20 Jul 2026 12:31:31 +0200
+> > > Uwe Kleine-K=F6nig (The Capable Hub) <u.kleine-koenig@baylibre.com> w=
+rote:
+> > >=20
+> > > > On Mon, Jul 20, 2026 at 10:08:12AM +0200, Uwe Kleine-K=F6nig (The C=
+apable Hub) wrote:
+> > > > > With CONFIG_SERIAL_8250_HUB6 configured as module
+> > > > > (CONFIG_SERIAL_8250_HUB6=3Dm) the cpp symbol CONFIG_SERIAL_8250_H=
+UB6 isn't
+> > > > > defined (only CONFIG_SERIAL_8250_HUB6_MODULE is). In this case
+> > > > > hub6_match_port() is defined in drivers/tty/serial/8250/8250.h as=
+ static
+> > > > > inline and in drivers/tty/serial/8250/8250_hub6.c as normal funct=
+ion.
+> > > > >=20
+> > > > > Use IS_ENABLED() to also handle the modular case correctly.
+> > > > >=20
+> > > > > Fixes: 3d406299d882 ("serial: 8250_hub6: add hub6_match_port()")
+> > > > > Signed-off-by: Uwe Kleine-K=F6nig (The Capable Hub) <u.kleine-koe=
+nig@baylibre.com>
+> > > > > ---
+> > > > >  drivers/tty/serial/8250/8250.h | 2 +-
+> > > > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > > >=20
+> > > > > diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/=
+8250/8250.h
+> > > > > index 9d1068d0489d..fb9a7117d145 100644
+> > > > > --- a/drivers/tty/serial/8250/8250.h
+> > > > > +++ b/drivers/tty/serial/8250/8250.h
+> > > > > @@ -334,7 +334,7 @@ int fintek_8250_probe(struct uart_8250_port *=
+uart);
+> > > > >  static inline int fintek_8250_probe(struct uart_8250_port *uart)=
+ { return 0; }
+> > > > >  #endif
+> > > > > =20
+> > > > > -#ifdef CONFIG_SERIAL_8250_HUB6
+> > > > > +#if IS_ENABLED(CONFIG_SERIAL_8250_HUB6)
+> > > > >  bool hub6_match_port(const struct uart_port *port1, const struct=
+ uart_port *port2);
+> > > > >  #else
+> > > > >  static inline bool hub6_match_port(const struct uart_port *port1=
+, const struct uart_port *port2)
+> > > > >=20
+> > > > > base-commit: 0718283ab28bc3907e10b61a6b4be6fefa1cbb2f
+> > > >=20
+> > > > There is an earlier fix already at
+> > > > https://lore.kernel.org/linux-serial/20260715153707.4181828-1-hugo@=
+hugovil.com/
+> > > >=20
+> > > > It's a bit different, but essentially equivalent. So please stick to
+> > > > that older patch.
+> > >=20
+> > > They are not essentially equivalent. If=20
+> > > CONFIG_SERIAL_8250=3Dy and CONFIG_SERIAL_8250_HUB6=3Dm, and using
+> > > IS_ENABLED() gives this linker error:
+> > >=20
+> > > ld: vmlinux.o: in function `uart_match_port':
+> > > (.text+0x723aac): undefined reference to `hub6_match_port'
+> > >=20
+> > > Using IS_REACHABLE() fixes this.
+> >=20
+> > Oh, I read too quickly over the dependencies, I thought
+> > SERIAL_8250_HUB6's
+> >=20
+> > 	depends on SERIAL_8250 !=3D n && ISA && SERIAL_8250_MANY_PORTS
+> >=20
+> > would prevent that. With this configuration and IS_REACHABLE I wonder if
+> > it's an issue that hub6_match_port() returns false in
+> > drivers/tty/serial/serial_core.c.
+>=20
+> I forgot to mention that I temporary removed ISA in Kconfig to be able
+> to build and test it...
 
-> 
->  Documentation/devicetree/bindings/arm/google.yaml  |  48 ++-
->  .../bindings/serial/snps-dw-apb-uart.yaml          |   1 +
->  MAINTAINERS                                        |   1 +
->  arch/arm64/Kconfig.platforms                       |   8 +
->  arch/arm64/boot/dts/Makefile                       |   1 +
->  arch/arm64/boot/dts/google/Makefile                |   6 +
->  arch/arm64/boot/dts/google/lga-blazer.dts          |  15 +
->  arch/arm64/boot/dts/google/lga-frankel.dts         |  16 +
->  arch/arm64/boot/dts/google/lga-mustang.dts         |  15 +
->  arch/arm64/boot/dts/google/lga-pixel-common.dtsi   |  23 ++
->  arch/arm64/boot/dts/google/lga.dtsi                | 423 +++++++++++++++++++++
->  arch/arm64/configs/defconfig                       |   1 +
->  12 files changed, 539 insertions(+), 19 deletions(-)
-> ---
-> base-commit: 17c7841d09ee7d33557fd075562d9289b6018c90
+I guess that means, you don't have hardware either to test here.
 
-I don't find this base commit in Linus's tree. I only found it in
-linux-next after fetching this hash directly -- it's a linux-next tag
-from 20260507? Seems like an odd old choice. Might be worth refreshing
-your base.
+For me the open question remains if the driver works in the
+configuration CONFIG_SERIAL_8250=3Dy (and thus CONFIG_SERIAL_CORE=3Dy) +
+CONFIG_SERIAL_8250_HUB6=3Dm. In this case at least commit
+3d406299d8829747fe2e8692f4c29fe3dc1d101f +
+https://lore.kernel.org/linux-serial/20260715153707.4181828-1-hugo@hugovil.=
+com/
+introduces a logical change in uart_match_port() that isn't explained in
+the commit log.
 
-Apart from that and a small note on patch 4, it works for me:
+Best regards
+Uwe
 
-Tested-by: Brian Norris <briannorris@chromium.org>
-Reviewed-by: Brian Norris <briannorris@chromium.org>
+--ysajxzblyrv4ygt7
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Thanks!
+-----BEGIN PGP SIGNATURE-----
 
-> change-id: 20260710-contrib-pg-pixel10-initial-dts-49f5ec657b66
-> 
-> Best regards,
-> -- 
-> Peter Griffin <peter.griffin@linaro.org>
-> 
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmphmnkACgkQj4D7WH0S
+/k6J4ggAtMEawb5JYTcZ5oLqCa55QAzc+jtWB57AbEEjTFLD6zfOrvcYPsHBQ3KH
+tHH8K/xXgZdQPSa4AnKSecXigjExriHEneSb5l8I/UeevOHnc8A785TUP9uTJUBQ
+NUqyvd0JkqKgHl8b04YW0X8CCmAelaJSUbN1X7/a8fxVP5TIXHgmU/TjiNI7IFn+
+rZ5NYuWxwkCm2msAv8UuVDa/4MtMYRtBMOMs3fY5rIu+/6yi9QXVF8/PCxJKHn8B
+V4p0qhfhqS9gLbiVVoYNxQhn40dJ8VKsCo543go20krHNyd0JhGcxfikLC+995n8
+piQz3it945OPbBi05uEAP1GIfww8Dw==
+=oSBP
+-----END PGP SIGNATURE-----
+
+--ysajxzblyrv4ygt7--
