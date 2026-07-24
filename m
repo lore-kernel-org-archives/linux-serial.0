@@ -1,87 +1,192 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69C4A361977;
-	Fri, 24 Jul 2026 11:21:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F77441687C;
+	Fri, 24 Jul 2026 13:33:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784892109; cv=none; b=WfrARnZLARRT0Muwu/DTNwPmyJeCUfn/5qFk0xGp3joB/T61Raf+1JgFfKL2j1h0/KkGrzhFrG6qi2KeGWv1QdA2RSLYEWF/iV/xvcg8O6LF81nrwpHeoKiG36Vlk5Iu1Pd1JHO9dR5xlMrsX4x+Ym5q7qpLVSPvYOdJlD4yAiM=
+	t=1784900034; cv=none; b=TeTW5l/adZXsYYuEtcaR2jutLRP+6ABLKyawLc/wqkPQnBtSCr8n/HUuJ1Qnk1mZRNy+IfSEKX8yaEg0f2inzzRduKs7HAmfkLw87vJ9UPkKhI533ja2NdrUBO7KqLRgJWWZuezYg7oTk3p2uKgH8d+CowplH9V7THx9icCJ36U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784892109; c=relaxed/simple;
-	bh=K82UgFb1rKgwcnvk+CHJqjUqxhQyvR/VjzcpGGebxj4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=spe3BfCICjtfYXfZZW3yXHch7Gh2dgmD8LgkvKH6j6kznhGHBBq2isdi/CTe2dgzwn78gLJC9FMKW4I21+gDII2VhdbnmihoOgkxZqtWYr2wVCwpamNWXqPC/B7+j9YDdc6eJZGQWJ23bB5zElaKiaVkYCtpR6/18pswdL8L53Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=U1SX7FZj; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1784900034; c=relaxed/simple;
+	bh=MKGpOzd3Ib7HDz5W0s6eUgMGGCnPFOyRD+qxx0r6YIM=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=nO0hoOWpjK1fXgjzFeL0ze237FfIjbwP31d4To6KKHNOHH+xOSrVP27Luj8c4rpKHdwRKjSYhi37bWWAjM7np6dvL3NilUVYLTKefW5zGvQdjz5B9xi/OaYq9Lm/0daDLBRK6UlXKGrE5N3KaI8rzwMgwuM2xiwHIKUgL6gte0s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=b2Ado2m1; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=XvlrJYy4; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="U1SX7FZj"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17E331F00A3E;
-	Fri, 24 Jul 2026 11:21:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784892108;
-	bh=KaZedixFDmiSnf8rg7AkajdENjUKYbvhFLeADZl1ozU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=U1SX7FZj0Z+t4PlAnWPBWFu036ahvf9RwwTPFkIr5y1fMKR5v/IjWF00HJi3gcMER
-	 tdVb/+Ngx/IqFnPHwwxLz9BB0dlk4WhtZKzQ69tG3E4eAHKVDbkfkdVUYmoObfgZPa
-	 rxFrJlgFsYy2chVlEC+hK5FrclPsrG8TH4hgaJF0l/bTQS820dyypi+LraF+1Kn/OZ
-	 O5bzxGQ0krNZjpP6r20y3b6uGdPHB3PZyedLgmDi69jkd+1bUbknhCWMKAMEtZ4wMs
-	 YI5r1eG1yTcxtsugSHqpJiG2/O3pjgIc9luSsKdaesyP1xP8AYLfQaSkcYGcNMA1yi
-	 BFgjf942Zepsg==
-Date: Fri, 24 Jul 2026 12:21:41 +0100
-From: Mark Brown <broonie@kernel.org>
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Fushuai Wang <fushuai.wang@linux.dev>, jirislaby@kernel.org,
-	john.ogness@linutronix.de, osama.abdelkader@gmail.com,
-	jackzxcui1989@163.com, asrinivasan@oss.tenstorrent.com,
-	andy.shevchenko@gmail.com, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, Fushuai Wang <wangfushuai@baidu.com>
-Subject: Re: [PATCH] Revert "serial: 8250: Clear CON_PRINTBUFFER on port
- re-registration"
-Message-ID: <649ea8ae-8df8-42f5-a078-ae0985fd00d9@sirena.org.uk>
-References: <20260724072452.40455-1-fushuai.wang@linux.dev>
- <2026072454-eccentric-flatfoot-a6b4@gregkh>
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="b2Ado2m1";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="XvlrJYy4"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1784900030;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=wgtdNT2vJ8LpFW5nt+jw4G9PJuDdpoRiCRaUAZWu0qM=;
+	b=b2Ado2m1LzqOFzP0lQQPPVCL0Tsb5Om2tdchy1xNVUSwXJOgTVpUS1oHHGOdtKcFs48Wyc
+	djsG+CZY7TuCOopZ1/CIcbORirqJDYEnAIceEjWZIklFgPFk+r3XPPybSs4izlOhVHfjn2
+	1e3gt9Yn20uVnwJdqFGiZmWhm6yA8z41WC+fRBFbHcFDwCSk7c9xbNn26ltFvUJ4NBoPJn
+	5ES/JNrBSv6ke0sLiqm0byfhj0az8S3FhSvH1idu7xcQBbANRgJSwAALCXABTHpKXmJdYf
+	UwfaYxZZJoNQnL36J/MB9jfYPk9oRurv1VkGD9AW8WGyoU3GCIqabZ/dMwfcfA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1784900030;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=wgtdNT2vJ8LpFW5nt+jw4G9PJuDdpoRiCRaUAZWu0qM=;
+	b=XvlrJYy4Tn93cOd1JBBLJCon0HDQGs6K60j4QuNoYO0QMZCssNQ4sG6Gu2PJH9duz0LhWi
+	YEsTlm7i+ptR/hDA==
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, Petr Mladek
+ <pmladek@suse.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+ linux-kernel@vger.kernel.org, Ilpo =?utf-8?Q?J=C3=A4rvinen?=
+ <ilpo.jarvinen@linux.intel.com>, Andy Shevchenko
+ <andriy.shevchenko@linux.intel.com>, Hugo Villeneuve
+ <hvilleneuve@dimonoff.com>, Fushuai Wang <wangfushuai@baidu.com>, Kees
+ Cook <kees@kernel.org>, Stepan Ionichev <sozdayvek@gmail.com>,
+ linux-serial@vger.kernel.org
+Subject: Re: [PATCH tty v9 1/2] serial: 8250: Switch to nbcon console, take 2
+In-Reply-To: <20260724103654.133654-2-john.ogness@linutronix.de>
+References: <20260724103654.133654-1-john.ogness@linutronix.de>
+ <20260724103654.133654-2-john.ogness@linutronix.de>
+Date: Fri, 24 Jul 2026 15:39:49 +0206
+Message-ID: <87o6fwms02.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="f7xmxfHf9TQe9x6y"
-Content-Disposition: inline
-In-Reply-To: <2026072454-eccentric-flatfoot-a6b4@gregkh>
-X-Cookie: Do not stamp.
+Content-Type: text/plain
 
+On 2026-07-24, Sashiko wrote:
+>> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+>> index c0e8a4efbdcc8..5042a8e8c6fb1 100644
+>> --- a/drivers/tty/serial/8250/8250_core.c
+>> +++ b/drivers/tty/serial/8250/8250_core.c
+>> @@ -584,13 +609,19 @@ void serial8250_suspend_port(int line)
+>>  	struct uart_8250_port *up = &serial8250_ports[line];
+>>  	struct uart_port *port = &up->port;
+>>  
+>> -	if (!console_suspend_enabled && uart_console(port) &&
+>> -	    port->type != PORT_8250) {
+>> -		unsigned char canary = 0xa5;
+>> +	if (uart_console(port)) {
+>> +		/* No irq_work may be queued when suspending */
+>> +		scoped_guard(uart_port_lock_irq, port)
+>> +			up->console_msr_work_allow = false;
+>> +		irq_work_sync(&up->console_msr_work);
+>
+> Does clearing up->console_msr_work_allow under uart_port_lock_irq
+> properly serialize against serial8250_console_write()?
 
---f7xmxfHf9TQe9x6y
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Yes.
 
-On Fri, Jul 24, 2026 at 10:36:26AM +0200, Greg KH wrote:
-> On Fri, Jul 24, 2026 at 03:24:52PM +0800, Fushuai Wang wrote:
+> Since serial8250_console_write() performs atomic writes without taking
+> the port lock, could a delayed execution check
+> up->console_msr_work_allow locklessly, get preempted or delayed, and
+> then serial8250_suspend_port() clear the flag and call irq_work_sync()
+> before the delayed thread resumes?
 
-> > This may cause some boot logs to be lost on some platforms.
+No. uart_port_lock_irq() also acquires nbcon ownership. That is what
+synchronizes against serial8250_console_write() when atomic printing.
 
-> Can we get some more information than that here?
+>> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+>> index 8c241ec7f4f29..855a7aa48c2d2 100644
+>> --- a/drivers/tty/serial/8250/8250_port.c
+>> +++ b/drivers/tty/serial/8250/8250_port.c
+>> @@ -3198,13 +3218,28 @@ void serial8250_set_defaults(struct uart_8250_port *up)
+>>  }
+>>  EXPORT_SYMBOL_GPL(serial8250_set_defaults);
+>>  
+>> -void serial8250_fifo_wait_for_lsr_thre(struct uart_8250_port *up, unsigned int count)
+>> +void serial8250_fifo_wait_for_lsr_thre(struct uart_8250_port *up,
+>> +				       struct nbcon_write_context *wctxt,
+>> +				       unsigned int count)
+>>  {
+>>  	unsigned int i;
+>>  
+>> +	/*
+>> +	 * For console writing, enter/exit an unsafe section for each byte
+>> +	 * in order to pass the ownership as quickly as possible if a higher
+>> +	 * priority context wants ownership. Otherwise, an attempt to take
+>> +	 * over the ownership might timeout. The new owner will wait for
+>> +	 * UART_LSR_THRE before reusing the fifo.
+>> +	 */
+>>  	for (i = 0; i < count; i++) {
+>> +		if (wctxt && !nbcon_enter_unsafe(wctxt))
+>> +			return;
+>> +
+>>  		if (wait_for_lsr(up, UART_LSR_THRE))
+>>  			return;
+>
+> Does this early return on success bypass the cleanup of the unsafe
+> section?
+>
+> If wait_for_lsr() returns true, wouldn't
+> serial8250_fifo_wait_for_lsr_thre() return immediately without calling
+> nbcon_exit_unsafe(wctxt)?
+>
+> Could this resource leak of the nbcon unsafe state prevent other
+> contexts from taking over ownership?
 
-I think that's:
+It simply has the effect of joining this unsafe section with the next
+one. In this case it really wouldn't matter. But still, it was not my
+intention. I will fix this for v10.
 
-  https://lore.kernel.org/r/120da946-505c-4423-a39a-f64f1532a4a7@sirena.org.uk
+How I plan for it to look for v10:
 
-(causes boot regressions on a range of platforms)
+	for (i = 0; i < count; i++) {
+		bool tx_ready;
 
---f7xmxfHf9TQe9x6y
-Content-Type: application/pgp-signature; name="signature.asc"
+		if (wctxt && !nbcon_enter_unsafe(wctxt))
+			return;
 
------BEGIN PGP SIGNATURE-----
+		tx_ready = wait_for_lsr(up, UART_LSR_THRE);
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmpjSsQACgkQJNaLcl1U
-h9DI8Af/UkmfnqsoIyWFLMhjIcUjXOxhbrrFmEtRYN4AYOeBT/445S4e4eeJvSoq
-ydtATiJeN+wKJWCT6XDlzlYPAcFBH95jgLF8Lt9eruNed3CYN/xQXKiP39e7vOxB
-rnQNyQSuias21ViifrZ3V8pf296KYcBkH5NnyoimAGNwmH1pj56UTeLZC+lQbGcb
-A3hhFcdinNaXm7XL8fw9xgOFiKmZWo4KLELJb5YA5PGj9EuQIlz1fmGnCxIfrg6X
-bSlo0r8F8nxN9bJW5vlsUFC+HHM6soWIS34BL8hWq4vWjpKQvwyLnZXr78YKW8+u
-yJsDS0xYltExTtWs1QrelCuVLdfvFA==
-=iqbQ
------END PGP SIGNATURE-----
+		if (wctxt)
+			nbcon_exit_unsafe(wctxt);
 
---f7xmxfHf9TQe9x6y--
+		if (tx_ready)
+			break;
+	}
+
+I am wondering if we should add a WARN_ON_ONCE() to nbcon_enter_unsafe()
+if the context is already unsafe. It is a simple one-liner. That would
+at least catch these kinds of mistakes during runtime. (I would do that
+in a separate printk patch, not in this series.)
+
+>> @@ -3378,11 +3469,25 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
+>>  	 *	call it if we have saved something in the saved flags
+>>  	 *	while processing with interrupts off.
+>>  	 */
+>> -	if (up->msr_saved_flags)
+>> -		serial8250_modem_status(up);
+>> +	if (up->msr_saved_flags) {
+>> +		if (is_atomic) {
+>> +			/*
+>> +			 * For atomic, MSR handling must be deferred to
+>> +			 * irq_work because this may be a context that does
+>> +			 * not permit waking up tasks.
+>> +			 *
+>> +			 * But no irq_work may be queued when suspending.
+>> +			 * In that case, the MSR handling will occur during
+>> +			 * resume in serial8250_resume_port().
+>> +			 */
+>> +			if (up->console_msr_work_allow)
+>> +				irq_work_queue(&up->console_msr_work);
+>
+> This is where the lockless read of up->console_msr_work_allow occurs.
+>
+> If execution is delayed immediately after checking this flag, could
+> the port be suspended and irq_work_sync() finish before
+> irq_work_queue() is called here?
+
+No. Both the reader and writer must first aquire exclusive nbcon
+ownership. Also, WRT @console_msr_work_allow, both reader and writer are
+even in unsafe sections and so cannot lose ownership except for on a
+hostile takeover during the final unsafe flush of a panic.
+
+John
