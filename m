@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B89937C91E;
-	Fri, 24 Jul 2026 06:42:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED78431DD97;
+	Fri, 24 Jul 2026 06:46:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784875372; cv=none; b=CFT9ToiYZGPjP6S/QyIBhHvKhI03GBj4bJylTUmykaJV07h5Q5U1W2ueotUOoQl8MdZhfvQEhBWAxXYmu8jJ22Jn4bla4SxyM7FBM+wj6YhQri8p2nh0dLLlzdsrEVcZ1R5yIMvmHZ7PpCB+WTyi3zTt4XcFnO75M5hgssAU9Oo=
+	t=1784875574; cv=none; b=RFCrcUcy7iHq7tseZNxg2wvmFzOd4jMArtVvrpawzSDmBBqV0scwavYSYFt9fkkSnMM9HLUx9dV9L/KbChDVVclnSMko4wem+8mlfGRDE00g51yGCai26DravgoUIK2EwZpeLKgsl8VKezlbvG5AiM9QLlRSywIJ45HqLvh5dqI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784875372; c=relaxed/simple;
-	bh=rbHMg7meORFPZCFrphP6K9iLH0FHl6J5aPrXKqnmSrY=;
+	s=arc-20240116; t=1784875574; c=relaxed/simple;
+	bh=hlD8/cUKG+I0EWOOvCr44jhXNOo65cxBF40fW+R3lkg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WxNEHQ0p344mKNyQaUHbrUa/NKzhutolQBYlzBz1jOL+5zz2tk7XBACd7NnkqXrPw+UG8vSAgzhZoDHKilP+wdwomRRxkrtQpFSrrD8m1LLrdr22O9NHqE6rLcY0/DXSZyNy7TraDDtqKqonEFhcHOo56OULC5MKpnrfjLnriJQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ptvpp3F2; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=Tfu0IZEVuXVKuCia4VbJ/SQn1agi9Sm8wF+gsw9XYF9ikO/K09I1mns4NAnWtJTaiuFCdK80pKrcBNyPTJ/VrTIXlg2oWwoYiS/zdBSewsYpPEDJhG6+XFxqU8gbbtfFQTTQ3IbTJaQ8O1HW9BVdFKa1Zh4MzuhcRgeWpnP7T5Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HKgAwGFO; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ptvpp3F2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E69D71F000E9;
-	Fri, 24 Jul 2026 06:42:49 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HKgAwGFO"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D64C61F000E9;
+	Fri, 24 Jul 2026 06:46:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784875370;
-	bh=fFt6up+caZWFJ0oLSrURO3q5OjP8+JoeVblpcy/X/9s=;
+	s=k20260515; t=1784875572;
+	bh=b2vJ+M9F1JLYCArJOe+bb3FjbJIxromizLHWPeuzgew=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=Ptvpp3F2ELMeiE8KIDalhiQLpKaaYaqtRlUXic453BmD8AtHcUWRcJkONCnFOTLoz
-	 WhTIWoYUmJfMFviPqEscyGs0Ive5Yd36D018sOch4Ydxpo0pI5t+33iuqHr2jfAn4F
-	 Zs9YhD/RjrfxMPfMfsa4iZVS3yIuRiMmK7tAxvsyExztENkfqljh7OoQlHuBq5FeQc
-	 S+ElRYag6dDLf9mH3IQ5djrWJ8/XV6IPSB041Dd97Oor6XUvCe2k9qjVLqjN05cuKx
-	 EGQquEM5mKzq2tQg/Xk8Xxwd4UUCkNE7CcEpNFfHWm0tilJFahkvqq+vXs9DYfEwxB
-	 OmRjjcMIPhMJg==
-Date: Fri, 24 Jul 2026 08:42:47 +0200
+	b=HKgAwGFOvOviAZUJinOxYdfg0wAx2QbSqVbqMnW1JJvoze7ts8+Ds109tCjdxxQPk
+	 0rai1An1f7xfB/30JNFJu8L+Wnhch+4k+gY+R24jQ9ORWLNgZZnVENr8IR3QWrbtdr
+	 uPqRxKc0XwWHkAP2ut71VMg1a23QETq0SXphP5gvW4gw18RVKe6AE0/ewyHgnJRuJh
+	 PI9y6/k5h86eahNgB+G3oQGnL4/32yES+Y+KmL4VwWqMY2i7hmw88Xf8za53k1HovT
+	 k/hi5B91WSoR92Bqaz4l4A/9AewffiDWU3xXqoN/ONU5EuL5SbmdWbosF5w7+XkDgj
+	 GuEW9pwd0HA6g==
+Date: Fri, 24 Jul 2026 08:46:09 +0200
 From: Krzysztof Kozlowski <krzk@kernel.org>
 To: Peter Griffin <peter.griffin@linaro.org>
 Cc: Rob Herring <robh@kernel.org>, 
@@ -42,11 +42,11 @@ Cc: Rob Herring <robh@kernel.org>,
 	Juan Yescas <jyescas@google.com>, RD Babiera <rdbabiera@google.com>, 
 	Brian Norris <briannorris@google.com>, William McVicker <willmcvicker@google.com>, 
 	kernel-team@android.com
-Subject: Re: [PATCH v2 1/5] dt-bindings: arm: google: Add dt bindings for
- frankel/blazer/mustang
-Message-ID: <20260724-abiding-resilient-elk-1fc92e@quoll>
+Subject: Re: [PATCH v2 3/5] arm64: dts: google: Add dts directory for
+ Google-designed silicon
+Message-ID: <20260724-sly-grinning-pig-86900e@quoll>
 References: <20260722-contrib-pg-pixel10-initial-dts-v2-0-3abae9717feb@linaro.org>
- <20260722-contrib-pg-pixel10-initial-dts-v2-1-3abae9717feb@linaro.org>
+ <20260722-contrib-pg-pixel10-initial-dts-v2-3-3abae9717feb@linaro.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -55,19 +55,41 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260722-contrib-pg-pixel10-initial-dts-v2-1-3abae9717feb@linaro.org>
+In-Reply-To: <20260722-contrib-pg-pixel10-initial-dts-v2-3-3abae9717feb@linaro.org>
 
-On Wed, Jul 22, 2026 at 10:55:52AM +0100, Peter Griffin wrote:
-> Add binding documentation for Tensor G5 SoC (Laguna) which is referred
-> to in code as "lga" and three of the boards that use the Laguna SoC
-> Frankel (Pixel 10), Blazer (Pixel 10 Pro) and Mustang (Pixel 10 Pro XL).
+On Wed, Jul 22, 2026 at 10:55:54AM +0100, Peter Griffin wrote:
+> From: Douglas Anderson <dianders@chromium.org>
 > 
-> Additionally update to use a more efficient and scalable way to express
-> the various names a SoC is known by.
+> The first four Google Tensor SoCs were offshoots of Samsung Exynos
+> SoCs and their device trees were organized under the "exynos/google"
+> directory. Starting with the Google Tensor G5 SoC in Pixel 10 phones,
+> Google Tensor SoCs are now of Google's own design. Add a location in
+> the tree to store these device tree files.
 > 
-> Co-developed-by: Douglas Anderson <dianders@chromium.org>
+> Changes by Peter Griffin
+>  * update config symbol help with at least 4 lines to avoid checkpatch
+>    warning
+> 
 > Signed-off-by: Douglas Anderson <dianders@chromium.org>
 > Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
+> ---
+>  MAINTAINERS                         | 1 +
+>  arch/arm64/Kconfig.platforms        | 8 ++++++++
+>  arch/arm64/boot/dts/Makefile        | 1 +
+>  arch/arm64/boot/dts/google/Makefile | 1 +
+>  4 files changed, 11 insertions(+)
+> 
+
+This is not Samsung derivative, but new top-level SoC platform, thus
+usual way is that you send it after review to soc@ (see maintainer-soc
+profile).
+
+OTOH, the maintainers entry is the same as Google Tensor GS, thus maybe
+you want me to pick this up via Samsung SoC tree?
+
+Both will work, up to you.
+
+Patch looks good.
 
 Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 
