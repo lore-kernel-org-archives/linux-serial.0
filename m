@@ -1,89 +1,108 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07D7B3A1DB;
-	Fri, 24 Jul 2026 05:34:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCF31390C89;
+	Fri, 24 Jul 2026 06:40:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784871272; cv=none; b=bEDzKxUuHrwvTUD+eUGYkbo0Ks8OOiSzlWKMnM9wMABd4+v0Mbkh0HKeMwrALNPT/pqdA7bxwsUnZh8zbQSZQlfdMTocKv11yjP0HEumyG/L9czpJuib2HJEXGuT2c2bxCZ4weunrxdfKny5s6rh00IVnq9i+c19joWTU73zhXo=
+	t=1784875220; cv=none; b=VwjgEgK2LAXkN4KmSFed9c5sTUPgxSCl5AOnxpPXUpzjYdgmkjmMHhmLwl2YTpWpxsCK3rdpsGSBXHcmm18U2m7pjHvYCKU0eF/jh8sZOW+w6adhNzioH4Do0OblA0GihgzlotVmi76Y5AWti8z1mDM+Se2ut/HMOMhM2Ydo+5U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784871272; c=relaxed/simple;
-	bh=MU+789g6DeauvPtvTt6a3p0NedFE0rTQmlIJlURIQ7c=;
+	s=arc-20240116; t=1784875220; c=relaxed/simple;
+	bh=rUTUs2KGbeJsUWQqn+HdNstkBpoXH0i2GnzD0Za0520=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Hh5aZXKGyA+Qwr+OertqXrF8+RJaACRwjdSMNmKnpCt3lt2xF5yidO4J3NukUdNepk8OYgFsRezATNm6rqdin2K53JKIjAqHAAQFv0vDfiyxo7PbmWTcbcVg7geARrLsTNNMa2BARJFUZze/pGqE1l3hZ9mByMgY55iePrVqZLY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=SNzYsZ3T; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=j8zRSzbXqT7QPumYoyqQASgSaFheNpFrABFEDZZwvlXlo2R+7cnyLPWoDy6lBkafwjKnCilmqsJ/SYWQYjc6mCk1vcqnK/bACJODjEp1wk43CAWL3yTaFnPl41+jKo8kZYMDr1eYoaYPqskiiU6cvoIogpqqNoHPES9VMup0bdI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gVaJJZTY; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="SNzYsZ3T"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3C551F000E9;
-	Fri, 24 Jul 2026 05:34:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1784871270;
-	bh=yJpgQxTxm4jDRN2KRYXe9Fu81fij2GnkQjQHHYhOqwo=;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gVaJJZTY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8ECB71F000E9;
+	Fri, 24 Jul 2026 06:40:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1784875219;
+	bh=L4SpAErSPspS4jrFPaNl/RX6dGWCCbI6bzmXbcp3+3Y=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=SNzYsZ3TdjAbEcgLuUgRZio7co1q1Mo6e2TCphJ9fHDRHddzKwvJfKKKnSuQWGRwc
-	 6mryL5UrbvXSFq+ACzQ4CtfeaWurAXHBQSAIy26VubpSD8Nvlj3gZ56IEbd8ODmw0r
-	 6/5yFdSVIqErRvJTAdhlOb67Ja19dEHqvqBzX0Jg=
-Date: Fri, 24 Jul 2026 07:34:19 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Danilo Krummrich <dakr@kernel.org>
-Cc: Rob Herring <robh@kernel.org>, Markus Probst <markus.probst@posteo.de>,
-	Jiri Slaby <jirislaby@kernel.org>, Miguel Ojeda <ojeda@kernel.org>,
-	Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <lossin@kernel.org>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
-	Kari Argillander <kari.argillander@gmail.com>,
-	"Rafael J . Wysocki" <rafael@kernel.org>,
-	Viresh Kumar <viresh.kumar@linaro.org>,
-	Boqun Feng <boqun@kernel.org>, David Airlie <airlied@gmail.com>,
-	Simona Vetter <simona@ffwll.ch>,
-	Daniel Almeida <daniel.almeida@collabora.com>,
-	Tamir Duberstein <tamird@kernel.org>,
-	Alexandre Courbot <acourbot@nvidia.com>,
-	Onur =?iso-8859-1?Q?=D6zkan?= <work@onurozkan.dev>,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-	rust-for-linux@vger.kernel.org, linux-pm@vger.kernel.org,
-	driver-core@lists.linux.dev, dri-devel@lists.freedesktop.org
-Subject: Re: [PATCH v16 0/3] rust: add basic serial device bus abstractions
-Message-ID: <2026072414-dedicator-canopener-9d85@gregkh>
-References: <20260718-rust_serdev-v16-0-5809384d2e1b@posteo.de>
- <20260723205912.3441137-1-dakr@kernel.org>
- <DK69583TKES2.2ECSGER5Z77I6@kernel.org>
+	b=gVaJJZTYHaLn397U5HyfQBtSwUbZBMwDylwqYB9qZxwDKmwVXUbBqyY8SDhUlJ5P1
+	 QEq6QXO26YNrn7YsqTIVJRtJifexArWJSAPg9XCf+4yO54zMOsF4gDFRm/9APeA33V
+	 clGSb3XZNuWQ80DnVmmvgOE0Nqvvib4MHrdpHbbkfmjI1kQC4xPgfw/aiU53rJGC9/
+	 aZXEYx7qU0jzm87/JRwf4GSE9bAgi4IMEJLxYD1QS4ja+Qu/X/BqyJwkIKZ1hw/sVL
+	 ECXQZg5E281Otsgybigq1ck1IzY+2XjVjJq+VBQnAf2e2gPse+i4Qet7ctleBLeDC2
+	 nzDS6weJbr5Bg==
+Date: Fri, 24 Jul 2026 08:40:15 +0200
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Brian Norris <briannorris@chromium.org>
+Cc: Peter Griffin <peter.griffin@linaro.org>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, =?utf-8?B?QW5kcsOp?= Draszik <andre.draszik@linaro.org>, 
+	Tudor Ambarus <tudor.ambarus@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, 
+	Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>, 
+	Alexandre Belloni <alexandre.belloni@bootlin.com>, Linus Walleij <linusw@kernel.org>, 
+	Drew Fustini <fustini@kernel.org>, Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>, 
+	"Guilherme G. Piccoli" <gpiccoli@igalia.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org, 
+	soc@lists.linux.dev, Douglas Anderson <dianders@chromium.org>, 
+	Juan Yescas <jyescas@google.com>, RD Babiera <rdbabiera@google.com>, 
+	William McVicker <willmcvicker@google.com>, kernel-team@android.com
+Subject: Re: [PATCH v2 0/5] Add Laguna/Tensor G5 SoC and Frankel, Blazer &
+ Mustang boards
+Message-ID: <20260724-raspberry-otter-of-perception-b8ef80@quoll>
+References: <20260722-contrib-pg-pixel10-initial-dts-v2-0-3abae9717feb@linaro.org>
+ <amFZCkt1EXtOjOYW@google.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <DK69583TKES2.2ECSGER5Z77I6@kernel.org>
+In-Reply-To: <amFZCkt1EXtOjOYW@google.com>
 
-On Thu, Jul 23, 2026 at 11:01:17PM +0200, Danilo Krummrich wrote:
-> On Thu Jul 23, 2026 at 10:59 PM CEST, Danilo Krummrich wrote:
-> > On Sat, 18 Jul 2026 15:33:09 +0000, Markus Probst wrote:
-> >> [PATCH v16 0/3] rust: add basic serial device bus abstractions
-> >
-> > Applied, thanks!
-> >
-> >   Branch: driver-core-testing
-> >   Tree:   git://git.kernel.org/pub/scm/linux/kernel/git/driver-core/driver-core.git
-> >
-> > [1/3] rust: add basic serial device bus abstractions
-> >       commit: 99f59aa82341
-> > [2/3] samples: rust: add Rust serial device bus sample device driver
-> >       commit: 4b2c9156d312
-> > [3/3] MAINTAINERS: serdev: Add self for serdev
-> >       commit: 6b71fef6f05c
-> >
-> > The patches will appear in the next linux-next integration (typically within 24
-> > hours on weekdays).
-> >
-> > The patches are in the driver-core-testing branch and will be promoted to
-> > driver-core-next after validation.
+On Wed, Jul 22, 2026 at 04:58:02PM -0700, Brian Norris wrote:
+> On Wed, Jul 22, 2026 at 10:55:51AM +0100, Peter Griffin wrote:
+> > Hi folks,
+> > 
+> > This series adds initial basic support for Laguna (Tensor G5 SoC)
+> > found in Frankel (Pixel 10), Blazer (Pixel 10 Pro) and Mustang (Pixel
+> > 10 Pro XL) phones.
 > 
-> Greg, since I've dropped it from the queue a few days ago I've now picked it
-> back up.
+> ...
+> 
+> >       arm64: defconfig: enable Tensor G5 SoC family
+> 
+> I'm not able to apply this one cleanly in my tree, although resolving
+> the context conflict is trivial.
+> 
+> > 
+> >  Documentation/devicetree/bindings/arm/google.yaml  |  48 ++-
+> >  .../bindings/serial/snps-dw-apb-uart.yaml          |   1 +
+> >  MAINTAINERS                                        |   1 +
+> >  arch/arm64/Kconfig.platforms                       |   8 +
+> >  arch/arm64/boot/dts/Makefile                       |   1 +
+> >  arch/arm64/boot/dts/google/Makefile                |   6 +
+> >  arch/arm64/boot/dts/google/lga-blazer.dts          |  15 +
+> >  arch/arm64/boot/dts/google/lga-frankel.dts         |  16 +
+> >  arch/arm64/boot/dts/google/lga-mustang.dts         |  15 +
+> >  arch/arm64/boot/dts/google/lga-pixel-common.dtsi   |  23 ++
+> >  arch/arm64/boot/dts/google/lga.dtsi                | 423 +++++++++++++++++++++
+> >  arch/arm64/configs/defconfig                       |   1 +
+> >  12 files changed, 539 insertions(+), 19 deletions(-)
+> > ---
+> > base-commit: 17c7841d09ee7d33557fd075562d9289b6018c90
+> 
+> I don't find this base commit in Linus's tree. I only found it in
+> linux-next after fetching this hash directly -- it's a linux-next tag
+> from 20260507? Seems like an odd old choice. Might be worth refreshing
+> your base.
+> 
+> Apart from that and a small note on patch 4, it works for me:
+> 
+> Tested-by: Brian Norris <briannorris@chromium.org>
 
-That's great, thanks!
+This does not apply to 60% of patches here. Really, you could just reply
+to each email.
+
+I expect incorrect tags won't be picked up.
+
+Best regards,
+Krzysztof
+
