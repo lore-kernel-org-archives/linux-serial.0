@@ -1,192 +1,188 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F77441687C;
-	Fri, 24 Jul 2026 13:33:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A2FA445AD7
+	for <linux-serial@vger.kernel.org>; Fri, 24 Jul 2026 15:14:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.66
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784900034; cv=none; b=TeTW5l/adZXsYYuEtcaR2jutLRP+6ABLKyawLc/wqkPQnBtSCr8n/HUuJ1Qnk1mZRNy+IfSEKX8yaEg0f2inzzRduKs7HAmfkLw87vJ9UPkKhI533ja2NdrUBO7KqLRgJWWZuezYg7oTk3p2uKgH8d+CowplH9V7THx9icCJ36U=
+	t=1784906088; cv=none; b=I0jBC9WcI7A55dLFyezYgXGFiUDQLMHc3U9KSeODyOeB2aNEWimMRa659RYWdlC6MfsDXiRWMH6udENddlNguxE1qsLhSeQiDmGQli6AATWU4EOhzURhLF4zakC0xFmNOWgkLJK/qcNf2getj003vsIEtkod5U1j1aEQYW1WXzg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784900034; c=relaxed/simple;
-	bh=MKGpOzd3Ib7HDz5W0s6eUgMGGCnPFOyRD+qxx0r6YIM=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=nO0hoOWpjK1fXgjzFeL0ze237FfIjbwP31d4To6KKHNOHH+xOSrVP27Luj8c4rpKHdwRKjSYhi37bWWAjM7np6dvL3NilUVYLTKefW5zGvQdjz5B9xi/OaYq9Lm/0daDLBRK6UlXKGrE5N3KaI8rzwMgwuM2xiwHIKUgL6gte0s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=b2Ado2m1; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=XvlrJYy4; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1784906088; c=relaxed/simple;
+	bh=n0pBVxy5eNbWWv8Y33rhd5euKRFf+nQBn0YeKUrQEKs=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=fk1imton7XOYKFwZc7AuBT6Va2by5yRBWN37HI0r96mCNqmSeczCKG9/Binhe0iskiKMLviedM7PiiwoDx1ZWOSfdHmHfk+R8h/FEmfwk3wW4ZzzIeCNPcMfBza8XAQDrgzbV1e/R7D24fLMqdQqN5jaRcyuDJgewjAOcxXeY7U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=WnzXKd4M; arc=none smtp.client-ip=185.67.36.66
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="b2Ado2m1";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="XvlrJYy4"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1784900030;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=wgtdNT2vJ8LpFW5nt+jw4G9PJuDdpoRiCRaUAZWu0qM=;
-	b=b2Ado2m1LzqOFzP0lQQPPVCL0Tsb5Om2tdchy1xNVUSwXJOgTVpUS1oHHGOdtKcFs48Wyc
-	djsG+CZY7TuCOopZ1/CIcbORirqJDYEnAIceEjWZIklFgPFk+r3XPPybSs4izlOhVHfjn2
-	1e3gt9Yn20uVnwJdqFGiZmWhm6yA8z41WC+fRBFbHcFDwCSk7c9xbNn26ltFvUJ4NBoPJn
-	5ES/JNrBSv6ke0sLiqm0byfhj0az8S3FhSvH1idu7xcQBbANRgJSwAALCXABTHpKXmJdYf
-	UwfaYxZZJoNQnL36J/MB9jfYPk9oRurv1VkGD9AW8WGyoU3GCIqabZ/dMwfcfA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1784900030;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=wgtdNT2vJ8LpFW5nt+jw4G9PJuDdpoRiCRaUAZWu0qM=;
-	b=XvlrJYy4Tn93cOd1JBBLJCon0HDQGs6K60j4QuNoYO0QMZCssNQ4sG6Gu2PJH9duz0LhWi
-	YEsTlm7i+ptR/hDA==
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, Petr Mladek
- <pmladek@suse.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
- linux-kernel@vger.kernel.org, Ilpo =?utf-8?Q?J=C3=A4rvinen?=
- <ilpo.jarvinen@linux.intel.com>, Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>, Hugo Villeneuve
- <hvilleneuve@dimonoff.com>, Fushuai Wang <wangfushuai@baidu.com>, Kees
- Cook <kees@kernel.org>, Stepan Ionichev <sozdayvek@gmail.com>,
- linux-serial@vger.kernel.org
-Subject: Re: [PATCH tty v9 1/2] serial: 8250: Switch to nbcon console, take 2
-In-Reply-To: <20260724103654.133654-2-john.ogness@linutronix.de>
-References: <20260724103654.133654-1-john.ogness@linutronix.de>
- <20260724103654.133654-2-john.ogness@linutronix.de>
-Date: Fri, 24 Jul 2026 15:39:49 +0206
-Message-ID: <87o6fwms02.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="WnzXKd4M"
+Received: from submission (posteo.de [185.67.36.169]) 
+	by mout02.posteo.de (Postfix) with ESMTPS id C2CC8240103
+	for <linux-serial@vger.kernel.org>; Fri, 24 Jul 2026 17:14:40 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de;
+	s=1984.8680eb; t=1784906080;
+	bh=THbesUwzWx2HO5x6yeM0Yf8fs9T5DdvJebQlm+3NfH8=;
+	h=Message-ID:Subject:From:To:Cc:Date:Autocrypt:Content-Type:
+	 MIME-Version:OpenPGP:From;
+	b=WnzXKd4McxK92ztBPCswiKJIQq8/d2FXs5r7PQoLyJO3aJTmEP7fO3DlV508MIf+d
+	 xkNDIV9nrix305LNrZ1EsO8wVOCbTVQwOI/70VQ3manE9zVmtz8hxfOFwiTKt2489F
+	 1M2e3l3RFtXSGwmOEaz/1KZQTgPp08Oa+wOYJXIwQDJ5s6ZTwW3mCftnmC4OVpnrJx
+	 OCl1skTiTxxk02S5DfP1QoEhzz3j29LIch20jNh/OarP4Yr/xLkwGjk/HUlg7jHgRp
+	 afMwNeLCIxAk1SQxNVRU/ZxPR2f9HXCXAljJcZscPhWaDO+B6bDsYUmDdcD/80GMdu
+	 So9Smz6k7Cj/A==
+Received: from customer (localhost [127.0.0.1])
+	by submission (posteo.de) with ESMTPSA id 4h6BNv4Nwjz9rxB;
+	Fri, 24 Jul 2026 17:14:39 +0200 (CEST)
+Message-ID: <90b044a8bc6c53130afde5fc5686ae8bb547031f.camel@posteo.de>
+Subject: Re: [PATCH v3 2/2] ACPI: SPCR: Support UART clock frequency field
+From: Markus Probst <markus.probst@posteo.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>, "Rafael J. Wysocki"
+ <rafael@kernel.org>,  Len Brown <lenb@kernel.org>,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	linux-acpi@vger.kernel.org
+Date: Fri, 24 Jul 2026 15:14:40 +0000
+In-Reply-To: <2026071007-amaze-tartly-6282@gregkh>
+References: <20260615-acpi_spcr-v3-0-9a59ebad74ea@posteo.de>
+	 <20260615-acpi_spcr-v3-2-9a59ebad74ea@posteo.de>
+	 <2026071007-amaze-tartly-6282@gregkh>
+Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
+ keydata=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
+ jfGillcaQOqFZ3WwVqyzG1BUfTow==
+Content-Type: multipart/signed; micalg="pgp-sha256";
+	protocol="application/pgp-signature"; boundary="=-Xed+nY/kxpigcvlehwto"
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
 
-On 2026-07-24, Sashiko wrote:
->> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
->> index c0e8a4efbdcc8..5042a8e8c6fb1 100644
->> --- a/drivers/tty/serial/8250/8250_core.c
->> +++ b/drivers/tty/serial/8250/8250_core.c
->> @@ -584,13 +609,19 @@ void serial8250_suspend_port(int line)
->>  	struct uart_8250_port *up = &serial8250_ports[line];
->>  	struct uart_port *port = &up->port;
->>  
->> -	if (!console_suspend_enabled && uart_console(port) &&
->> -	    port->type != PORT_8250) {
->> -		unsigned char canary = 0xa5;
->> +	if (uart_console(port)) {
->> +		/* No irq_work may be queued when suspending */
->> +		scoped_guard(uart_port_lock_irq, port)
->> +			up->console_msr_work_allow = false;
->> +		irq_work_sync(&up->console_msr_work);
->
-> Does clearing up->console_msr_work_allow under uart_port_lock_irq
-> properly serialize against serial8250_console_write()?
 
-Yes.
+--=-Xed+nY/kxpigcvlehwto
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-> Since serial8250_console_write() performs atomic writes without taking
-> the port lock, could a delayed execution check
-> up->console_msr_work_allow locklessly, get preempted or delayed, and
-> then serial8250_suspend_port() clear the flag and call irq_work_sync()
-> before the delayed thread resumes?
+On Fri, 2026-07-10 at 14:34 +0200, Greg Kroah-Hartman wrote:
 
-No. uart_port_lock_irq() also acquires nbcon ownership. That is what
-synchronizes against serial8250_console_write() when atomic printing.
+I just noticed, I never replied to this email.
+My apologies for the late response.
 
->> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
->> index 8c241ec7f4f29..855a7aa48c2d2 100644
->> --- a/drivers/tty/serial/8250/8250_port.c
->> +++ b/drivers/tty/serial/8250/8250_port.c
->> @@ -3198,13 +3218,28 @@ void serial8250_set_defaults(struct uart_8250_port *up)
->>  }
->>  EXPORT_SYMBOL_GPL(serial8250_set_defaults);
->>  
->> -void serial8250_fifo_wait_for_lsr_thre(struct uart_8250_port *up, unsigned int count)
->> +void serial8250_fifo_wait_for_lsr_thre(struct uart_8250_port *up,
->> +				       struct nbcon_write_context *wctxt,
->> +				       unsigned int count)
->>  {
->>  	unsigned int i;
->>  
->> +	/*
->> +	 * For console writing, enter/exit an unsafe section for each byte
->> +	 * in order to pass the ownership as quickly as possible if a higher
->> +	 * priority context wants ownership. Otherwise, an attempt to take
->> +	 * over the ownership might timeout. The new owner will wait for
->> +	 * UART_LSR_THRE before reusing the fifo.
->> +	 */
->>  	for (i = 0; i < count; i++) {
->> +		if (wctxt && !nbcon_enter_unsafe(wctxt))
->> +			return;
->> +
->>  		if (wait_for_lsr(up, UART_LSR_THRE))
->>  			return;
->
-> Does this early return on success bypass the cleanup of the unsafe
-> section?
->
-> If wait_for_lsr() returns true, wouldn't
-> serial8250_fifo_wait_for_lsr_thre() return immediately without calling
-> nbcon_exit_unsafe(wctxt)?
->
-> Could this resource leak of the nbcon unsafe state prevent other
-> contexts from taking over ownership?
+> On Mon, Jun 15, 2026 at 12:40:22AM +0000, Markus Probst wrote:
+> > The Microsoft Serial Port Console Redirection (SPCR) specification
+> > revision 1.08 comprises additional field: UART Clock Frequency [1].
+> >=20
+> > It contains a non-zero value indicating the UART clock frequency in Hz.
+>=20
+> Ok, but then what are we going to do with this?  Please make this a lot
+> more descriptive, I have no idea what this is supposed to be doing at
+> all.
+The SPCR table provides information about a serial port. This can be
+used, to make use of a serial port, before the necessary drivers are
+loaded. Linux makes use of this in the earlycon console, if `earlycon`
+is added to the kernel parameters.
 
-It simply has the effect of joining this unsafe section with the next
-one. In this case it really wouldn't matter. But still, it was not my
-intention. I will fix this for v10.
+Currently the "UART clock frequency" field in the SPCR table is
+completely ignored. Thus if the uart clock frequency differs from the
+kernel default of `BAUD*16`, it results in a misconfiguration of the
+serial port.
 
-How I plan for it to look for v10:
+>=20
+> >=20
+> > Link: https://learn.microsoft.com/en-us/windows-hardware/drivers/serpor=
+ts/serial-port-console-redirection-table [1]
+> > Signed-off-by: Markus Probst <markus.probst@posteo.de>
+> > ---
+> >  drivers/acpi/spcr.c | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> >=20
+> > diff --git a/drivers/acpi/spcr.c b/drivers/acpi/spcr.c
+> > index 73cb933fdc89..c79c809f49d4 100644
+> > --- a/drivers/acpi/spcr.c
+> > +++ b/drivers/acpi/spcr.c
+> > @@ -228,7 +228,8 @@ int __init acpi_parse_spcr(bool enable_earlycon, bo=
+ol enable_console)
+> >  	pr_info("console: %s\n", opts);
+> > =20
+> >  	if (enable_earlycon)
+> > -		setup_earlycon(opts);
+> > +		setup_earlycon_with_uartclk(opts,
+> > +					    table->header.revision >=3D 3 ? table->uart_clk_freq : 0);
+>=20
+> Why the magic number 3?
+As seen on the Link in the commit message, the "UART Clock Frequency"
+field was introduced in the SPCR table with revision 3. For lower
+revisions, this value must be ignored (and should be 0 anyway).
 
-	for (i = 0; i < count; i++) {
-		bool tx_ready;
+Thanks
+- Markus Probst
 
-		if (wctxt && !nbcon_enter_unsafe(wctxt))
-			return;
+>=20
+> thanks,
+> greg k-h
 
-		tx_ready = wait_for_lsr(up, UART_LSR_THRE);
+--=-Xed+nY/kxpigcvlehwto
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
 
-		if (wctxt)
-			nbcon_exit_unsafe(wctxt);
+-----BEGIN PGP SIGNATURE-----
 
-		if (tx_ready)
-			break;
-	}
+iQJPBAABCAA5FiEEgnQYxPSsWOdyMMRzNHYf+OetQ9IFAmpjgVobFIAAAAAABAAO
+bWFudTIsMi41KzEuMTIsMiwyAAoJEDR2H/jnrUPSyoEP/1n08OeLwwzniIeiiIKC
+L947nnmTc6831Xqt0RPLbme3Bj2Pk3UKrGx21DcbaDjojOEIBGYCa30rfshkatvZ
+ISzKxn1iLjIiit3yNed6+jbS3mweEuIzHTRaTx2l66sUVLtVhPKKTU1/dOSVtYVW
+EOzAuNloSTG4BFEhIipyV4RzkiC3YKAyUEL2E6xfKXifZkAfe4N1jYljyyGKCe97
+J47SSML6DHoHfL6CdPdLVsEBXVbkt9EY6gpv1ZWt9TbPWZfEpx8W9RcF1auGRe8K
+m1BdSDsrHTQMAOiab8qF/YGHwRxUQIvK7nPOiB7XTP+1Rem0B/BZpBl+iW50snoG
+0YeNfNu3Btj6JUp/y+Z5XfPEdKASYZ0RKRKH1XPpMfl+eArKRFMRzVGedY+Qlm9K
+X/G2G2VLPtoN//rJNSvsBQF/kfuDHowGVQCrG0QfncNynb3TGViSnfUqsjRVca3L
+C46ahVgQqmDkBHjGdS05hnedZAaEM3lezXemjlzN3dw1EVx3doATyoKAby9IuY9N
+g34qeRcQf6Am1uI89yEYA71gfgPt7tSeaMBtRPu+DGUQq4z9kIU2aGszKNLs+zAz
+DuJ6vP4jLnw22BInATC4cFmlNaaL95gGI836mUO/Kqlce/uCEkelG3y6jgMnW4o4
+EWfRpRESsXsape0nZIUzmZCb
+=z/xK
+-----END PGP SIGNATURE-----
 
-I am wondering if we should add a WARN_ON_ONCE() to nbcon_enter_unsafe()
-if the context is already unsafe. It is a simple one-liner. That would
-at least catch these kinds of mistakes during runtime. (I would do that
-in a separate printk patch, not in this series.)
-
->> @@ -3378,11 +3469,25 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
->>  	 *	call it if we have saved something in the saved flags
->>  	 *	while processing with interrupts off.
->>  	 */
->> -	if (up->msr_saved_flags)
->> -		serial8250_modem_status(up);
->> +	if (up->msr_saved_flags) {
->> +		if (is_atomic) {
->> +			/*
->> +			 * For atomic, MSR handling must be deferred to
->> +			 * irq_work because this may be a context that does
->> +			 * not permit waking up tasks.
->> +			 *
->> +			 * But no irq_work may be queued when suspending.
->> +			 * In that case, the MSR handling will occur during
->> +			 * resume in serial8250_resume_port().
->> +			 */
->> +			if (up->console_msr_work_allow)
->> +				irq_work_queue(&up->console_msr_work);
->
-> This is where the lockless read of up->console_msr_work_allow occurs.
->
-> If execution is delayed immediately after checking this flag, could
-> the port be suspended and irq_work_sync() finish before
-> irq_work_queue() is called here?
-
-No. Both the reader and writer must first aquire exclusive nbcon
-ownership. Also, WRT @console_msr_work_allow, both reader and writer are
-even in unsafe sections and so cannot lose ownership except for on a
-hostile takeover during the final unsafe flush of a panic.
-
-John
+--=-Xed+nY/kxpigcvlehwto--
