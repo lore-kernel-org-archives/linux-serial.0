@@ -1,65 +1,65 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C68E38E11A
-	for <linux-serial@vger.kernel.org>; Fri, 24 Jul 2026 21:37:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8A6A3B3C15
+	for <linux-serial@vger.kernel.org>; Fri, 24 Jul 2026 21:37:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784929039; cv=none; b=XrzSQjsgpbXkc/g3WYdlM3f3TwabYHwes3avaui33ocZMpcPK+zhUO04kpvb6QvvS4kngPRgpOU0UM+S2r4egxQD3YM0tF2ZJP1Kmy4f/GFE9wPsfFKtjgdDzKwEItz8RnoM24EeMfOFfaAVUX5e+9iclJ2jTBshjLG3NBze178=
+	t=1784929044; cv=none; b=ZU2j0H2wdS8psjm1lUBfiz4GWrYsi+H95qnHgzs36OIhCcRJu6eiMBSiD6aw2uFtu2x8akF6RUCjHCNvPtkfdOpBG4Gon1ffjPuxjZWmWgPNL8jnCtfk/NNFzKJIETd6sC67fGlOuHKgcxjknoNTAHNiOU72j6YdhJnJS7obeZM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784929039; c=relaxed/simple;
-	bh=rXmESC+ogzRUoBCqexa0HRaaPKIP/aORjommBvUq5SU=;
+	s=arc-20240116; t=1784929044; c=relaxed/simple;
+	bh=k0eIj9G6Isnpa32QRNbc3ZJdWbsPOLvyESbeGdG2D8A=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=hHxyVif8ExfFvXvTQMPc6AmD2/9tWiREZVERE+rA11jav2w2IzPktFVm9Db2WPvzWMzeNqxjhNvuklkN8sPPsG85ftrN+bsUqcNbTbaQyvBxoa5pr/E8xf0tra2MqLPFsYEfSKnM6bUlLeBLvXkwMG0kncEVjP0qpdcIf7V6mL4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=s06Dc2w/; arc=none smtp.client-ip=209.85.221.51
+	 MIME-Version; b=kal0i0+BYmlfUGM9YPL0a2pzSO0FVnp6FZFJMRfYRYL4sxdolIk8z8JIRqgEFmjcRznfefR75aobflIWf6vNBEMCLtEHehawFZr/eW7qgXV2dhgfwdQ/Hw8NaQZK6rlCIST5GksS+a+qAA8irBXr/1OfG4IVfNanT0Kb6splNpA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=T20gc38f; arc=none smtp.client-ip=209.85.128.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="s06Dc2w/"
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-47f97d310caso671054f8f.2
-        for <linux-serial@vger.kernel.org>; Fri, 24 Jul 2026 14:37:17 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="T20gc38f"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-49548aebcd8so6619675e9.3
+        for <linux-serial@vger.kernel.org>; Fri, 24 Jul 2026 14:37:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784929036; x=1785533836; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1784929041; x=1785533841; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=nuZr0SzwEmaEHP8VYIwWfef2g2YTiEiEHZ6M99Shj8M=;
-        b=s06Dc2w//fPcdmZ+fn7qrtNqyxtbyAXyNAvEKGAm0569RiDGIw7MlrD4dNfLft5h7M
-         /sC9oPNAQe3WaCTzM+9xBXv2VWMLlpxIpjzWuAd8KRIg7/GUSdwvV7VCWvhpCytuS7J2
-         j2P9VaKntNl20Z8yn5daA2aY/+7P2ij81LJKIQx63LXipXaJLKCaZHXFx5vI8zjKAY80
-         FD3t+WwaRX38VKi46/V4B9B8B7WyXOoDjiKrZaJl+rW7z3OMsNZZnPaOKxNIyngtfm6i
-         MDLleICM00CrrVKWdkXcnw30bp9gjA0D6PaJsjkJdWgh5kcWjD5wYlCqpY5KeivSUDpX
-         Bdzw==
+        bh=zw+In47VNqyZ6M3jtrWopK6tPDTD0rxTpVkixtQCLIg=;
+        b=T20gc38f83JIJOSoPdH/rUsRKTxHFMK9j6stpBIAvThek//jgOe8/8KE1Qd4SQnkFl
+         HNqaeIKnau4gugLRciE6+Y5cG6hMPyoyw8DAYf8B7OzXbs/DtO4gxyE4lqCb0bpLntcH
+         B1lLc3xuy4rKQ3DlnQjymjbsqusYhiw4ZkaiA0T/67XDf3UYHdRHwYWdQvRa1alu3QWt
+         h36yNB2pJ1DLEa2hB5dyIY14UoCvRaGSpllmUNuZ3iY7MkPLdp+DW5GV8HbdR91qO5Mw
+         Nz1qPd/b+WR13C0nXvdlpfsJtl9T/xcVABDVbgQSCAFlOWu4uZHDYQ/2uC7BEijN32Kj
+         53gg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784929036; x=1785533836;
+        d=1e100.net; s=20251104; t=1784929041; x=1785533841;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=nuZr0SzwEmaEHP8VYIwWfef2g2YTiEiEHZ6M99Shj8M=;
-        b=BNoh0FqlCKfDZmS195ihv+om+9mIAbYW29FrPuxKlNDc+fdFdduCrm7coi5qf4p7aD
-         2LNRYDeqV3bgSiaIC80nswotqTc2gA5xjpQhV9Dh+TMEbYgyS5bY0sL0bAJlIsL14ler
-         WRYSkudbc/C6oV3ViYqdEjGlilD8mhRkhjyR3v4nRDdz/KnEDQLGyjCJsKXTI3/lynoR
-         2aEWRrhoXIhfMBwN00A6/+nZVly44H+J+//wjYIzCPF20aX3iPVJWNJgB+kpzJBuQa6c
-         qJSx62oo3EWuVWOm6zQsOpa8c7QDyLtsYfnq2tXwy5xbd9gk2i2An2fBbWY58/LoGIPY
-         XVdQ==
-X-Forwarded-Encrypted: i=1; AHgh+RoXSs1cxYrF6VNl5C3LdR3IEfGLGdwpdM7zLacQwsLZGnNXApKmn6SfGOKiseKvtQTr9U/1Z4kIvK1MDgk=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy3gJKPCKj6/Vq1ePQE6f4K3S5/RKq7Y0jwhE+KTVIAJXXqlxGG
-	iORME24+6WwmjgTrRtE2qd210PH1a1ZUdrynzSRhm5DEPoQRK8xC/A0B
-X-Gm-Gg: AR+sD10htTqcSenrP3OA+aFXu19KurtH2GbF0GtsbQFFzcoD6XBMqV1UkP2iAniTgQj
-	vgXKfI9bVevK7juRr7r6iP68OtTkvgv0gIxyJyDvUCUuIXRWNygvL0Gj4eA4kN7cgv+EXdMYIEz
-	UZQsvq8ah7f1d5bP5md2aVce1KaHnkDkZr9PAEAblHNKzVKwJBdwiA0llsJY3xnhocNaHgNpsEr
-	HmSlWTgNao6ulty8EB0T/lnTjh/LaVf/WQ/mJp2r/0zG/U2/+JNJohzrudmkN/hJyDwnRGBOxmy
-	wh3GpSHq0ApQchKULSbChclddR4i1HdmYJvp8Zgq9iaqt1jmdbbX+ad523luHtOty8yenOi25Be
-	J/Q01w61DIPyebWE5RSgRblkOe5FVTpGPjiueD2FGAPiePzrGRBcIVEuB4fdRkXhKdbSq/Oiw1j
-	1JC5QIauMN3L6LYG1BpjqyaCGGv0XE39OZ0N+IjC/U2oxitNlMupfyLErvlJ7jcIMVogBdVM/z6
-	nEbmPGa7lUIq7KDYnbMEEF9H80B5TRRi+qmzSv892HhNTcq4hABQXfEvYRG109KR2nOIgTqUNxh
-	EVS/N6RzdtGbYuZC+LlNgHgP
-X-Received: by 2002:a05:600c:46cc:b0:495:5e86:4e11 with SMTP id 5b1f17b1804b1-496b57177d7mr363715e9.12.1784929036022;
-        Fri, 24 Jul 2026 14:37:16 -0700 (PDT)
+        bh=zw+In47VNqyZ6M3jtrWopK6tPDTD0rxTpVkixtQCLIg=;
+        b=My34rs1BO5PwhBOM6HGxtvNM07mIkiUWgsNkPkmaAqRPxZkYK82aOfHwXzVk8fAWy5
+         o2Q46p49HuzqoHUC6fgYteiPkPe3fImqK4OMNc+756a+xjiYlWLO5nuIaNG1DxO2qNxd
+         GqkL2BIHjynJw4RevOmubMfT6BSe/mlU3Iv0caHLwMk+bz+gs2yBe5CsfJLpcl7d7GF1
+         excSI/aogSBuJre2JmIzcpADLuEjqCWJaUO10HynHTYQnvsSfoFuYLLnjAc8fWOJDQT4
+         v1LUD9VTHkDcBBX8gB1TjYKGmYvvc7od+LuSejrEKMCcFL0IilVc7ZBzelxORq2NmwRC
+         Vdtg==
+X-Forwarded-Encrypted: i=1; AHgh+Rqwuegx+m6gtzzePLG0IV3tqLc7EOfNYPnpZY1tl1Zba9XVZjF95bSVf/aqlvL9Sc2Q/ifj/zZX+FsTzno=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxzYilIo0xV4QTxs9hkT0GoDW0y5I0moxcU4INBNTFYHAOrRtrC
+	TALV3MiT4jU/bw6IqcEYdUxsl6xqdcewSSu9sEw14cEtcYukCMkrQQUR
+X-Gm-Gg: AR+sD13GnzpRa4rnGa6CLOFODMhCNzYI25vuISbC/43VZuClrGGZPQcNhC5DxZMypj3
+	50Dt5WAdoKLkMcwBM1B7sO7BrbpVSYEB6i/+5qmso8fdDEPvXaM4kfPhUOSlJrcIW+6rNAybtrE
+	EURY7NaPNNQNXmHRh7PiobKEvC80WGdkGpzRcr/pmhHF3p5oCoAyxL2kmJZ8KX8ijwuriXdc5bd
+	d+RbOWIxEB8BBzyNf6uZUhF57xtkjNKhoknJGCkFYFxor3LDLawvuAaFz22uMiAs5DMx/8kdhov
+	d27q6vosMGDaSOacSsEX+beSpRUJeAYyjztcj2QmXrLNfUYtXOjmpHjWhFrOxo5pLyOxUv6w7Yu
+	HgpVY7p0yhKmraD9zgHw1aHsYc5zxJ/i3LY8xfKLfLqEsKIaufZhyr6UJcre7iucTKTXf1QhYdA
+	35tm1XTfTwdy5/tFBCzL8qefdc6Mr9bfiUnL4FS/HVGl/1VWQMhojtiNbcL0pfTRQqkv5TgNCuq
+	L8zKvPNLDEsFbIaq8Tj5bK6rdTn6eFYVoymyW5retWpJUEzprjkfqRreJeVWR14LsbIrZAaep86
+	ksAcl5/KjoP/ng==
+X-Received: by 2002:a05:600c:4f94:b0:493:eb71:5cc6 with SMTP id 5b1f17b1804b1-496b5720ac4mr429335e9.27.1784929040710;
+        Fri, 24 Jul 2026 14:37:20 -0700 (PDT)
 Received: from localhost.localdomain (dynamic-2a02-3100-ae93-f301-cdd9-d5ea-080d-9131.310.pool.telefonica.de. [2a02:3100:ae93:f301:cdd9:d5ea:80d:9131])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-496b499cc49sm20754015e9.9.2026.07.24.14.37.14
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-496b499cc49sm20754015e9.9.2026.07.24.14.37.19
         (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Fri, 24 Jul 2026 14:37:15 -0700 (PDT)
+        Fri, 24 Jul 2026 14:37:20 -0700 (PDT)
 From: Karl Mehltretter <kmehltretter@gmail.com>
 To: Russell King <linux@armlinux.org.uk>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -75,9 +75,9 @@ Cc: Karl Mehltretter <kmehltretter@gmail.com>,
 	Steven Rostedt <rostedt@goodmis.org>,
 	Clark Williams <clrkwllms@kernel.org>,
 	Toshiyuki Sato <fj6611ie@aa.jp.fujitsu.com>
-Subject: [PATCH v2 1/2] serial: amba-pl011: unprepare console clock on unregister
-Date: Fri, 24 Jul 2026 23:33:47 +0200
-Message-Id: <20260724213348.77418-2-kmehltretter@gmail.com>
+Subject: [PATCH v2 2/2] serial: amba-pl011: keep console clock enabled for atomic writes
+Date: Fri, 24 Jul 2026 23:33:48 +0200
+Message-Id: <20260724213348.77418-3-kmehltretter@gmail.com>
 X-Mailer: git-send-email 2.39.5 (Apple Git-154)
 In-Reply-To: <20260724213348.77418-1-kmehltretter@gmail.com>
 References: <20260724213348.77418-1-kmehltretter@gmail.com>
@@ -89,55 +89,162 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-pl011_console_setup() calls clk_prepare() on the UART clock, but the
-console provides no matching teardown, so the clock is never unprepared
-when the console is unregistered -- via the sysfs "console" attribute or
-a driver unbind. Each re-registration prepares the clock again, leaking
-one prepare reference per cycle.
+pl011_console_write_atomic() runs from nbcon atomic context, where
+sleeping is not allowed. It calls clk_enable(), which takes the common-clk
+enable_lock. Under PREEMPT_RT that is a sleeping lock:
+clk_enable_lock() first tries spin_trylock_irqsave(), but on contention
+falls back to spin_lock_irqsave(). Therefore, an atomic-context printk on
+an RT kernel with a clk-backed pl011 can trip:
 
-Even where preparing the clock has no hardware effect, the stale
-reference leaves the clock framework's prepare count unbalanced. For
-providers with prepare/unprepare operations or runtime-PM integration,
-it may also retain resources after the console is unregistered.
+  BUG: sleeping function called from invalid context at spinlock_rt.c:48
+    __might_resched from rt_spin_lock
+    rt_spin_lock from clk_enable_lock
+    clk_enable_lock from clk_enable
+    clk_enable from pl011_console_write_atomic
+    ... from vprintk_emit
 
-Add a console .exit() callback that clk_unprepare()s the clock,
-balancing the clk_prepare() in pl011_console_setup().
+This was found and reproduced on PREEMPT_RT. Arm32 and arm64 DT SoCs are
+affected; arm64 SBSA/ACPI has no clk, so clk_enable(NULL) short-circuits
+before the lock. In addition, write_atomic() may be invoked from NMI
+context and is documented to avoid locking. Removing clk_enable() from
+the callback also avoids a potentially unsafe NMI acquisition of the
+common-clock enable_lock.
 
-Fixes: 4b4851c65d92 ("clk: amba-pl011: convert to clk_prepare()/clk_unprepare()")
+An nbcon atomic-capable console must be printable from any context, so
+the clock cannot be gated between writes. Enable the clock while the
+console is available for output: use clk_prepare_enable() in
+pl011_console_setup(), release it via clk_disable_unprepare() in the
+console .exit() callback, and drop the per-write clk_enable()/clk_disable()
+pairs from write_atomic() and write_thread().
+
+When printk suspends consoles, drop the reference after
+uart_suspend_port() stops console access and restore it before
+uart_resume_port() -- but only if suspend actually marked the port
+suspended (a wake-capable tty stays running and must keep its clock), and
+keep it when console_suspend_enabled is false so no_console_suspend works.
+
+The active power cost of keeping the clock enabled is platform-dependent:
+none where the UART clock is a fixed always-on oscillator, real where it
+is a gateable clock branch, which then cannot be gated (nor possibly can
+its parent clocks) while the console is available for output. When serial
+core actually suspends the port, the reference is released so the clock
+provider can gate the clock tree.
+
+Fixes: 2eb2608618ce ("serial: amba-pl011: Implement nbcon console")
+Suggested-by: John Ogness <john.ogness@linutronix.de>
+Link: https://lore.kernel.org/all/8733xeaxix.fsf@jogness.linutronix.de/
 Assisted-by: Claude:claude-fable-5
 Signed-off-by: Karl Mehltretter <kmehltretter@gmail.com>
 ---
- drivers/tty/serial/amba-pl011.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/tty/serial/amba-pl011.c | 40 +++++++++++++++++++++++----------
+ 1 file changed, 28 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 8ed91e1da22b..1aa43994a3cd 100644
+index 1aa43994a3cd..611d1f6a0590 100644
 --- a/drivers/tty/serial/amba-pl011.c
 +++ b/drivers/tty/serial/amba-pl011.c
-@@ -2552,6 +2552,15 @@ static int pl011_console_setup(struct console *co, char *options)
- 	return uart_set_options(&uap->port, co, baud, parity, bits, flow);
+@@ -2523,7 +2523,7 @@ static int pl011_console_setup(struct console *co, char *options)
+ 	/* Allow pins to be muxed in and configured */
+ 	pinctrl_pm_select_default_state(uap->port.dev);
+ 
+-	ret = clk_prepare(uap->clk);
++	ret = clk_prepare_enable(uap->clk);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -2556,7 +2556,7 @@ static int pl011_console_exit(struct console *co)
+ {
+ 	struct uart_amba_port *uap = amba_ports[co->index];
+ 
+-	clk_unprepare(uap->clk);
++	clk_disable_unprepare(uap->clk);
+ 
+ 	return 0;
+ }
+@@ -2630,8 +2630,6 @@ pl011_console_write_atomic(struct console *co, struct nbcon_write_context *wctxt
+ 	if (!nbcon_enter_unsafe(wctxt))
+ 		return;
+ 
+-	clk_enable(uap->clk);
+-
+ 	if (!uap->vendor->always_enabled) {
+ 		old_cr = pl011_read(uap, REG_CR);
+ 		pl011_write((old_cr & ~UART011_CR_CTSEN) | (UART01x_CR_UARTEN | UART011_CR_TXE),
+@@ -2648,8 +2646,6 @@ pl011_console_write_atomic(struct console *co, struct nbcon_write_context *wctxt
+ 	if (!uap->vendor->always_enabled)
+ 		pl011_write(old_cr, uap, REG_CR);
+ 
+-	clk_disable(uap->clk);
+-
+ 	nbcon_exit_unsafe(wctxt);
  }
  
-+static int pl011_console_exit(struct console *co)
-+{
-+	struct uart_amba_port *uap = amba_ports[co->index];
+@@ -2662,8 +2658,6 @@ pl011_console_write_thread(struct console *co, struct nbcon_write_context *wctxt
+ 	if (!nbcon_enter_unsafe(wctxt))
+ 		return;
+ 
+-	clk_enable(uap->clk);
+-
+ 	if (!uap->vendor->always_enabled) {
+ 		old_cr = pl011_read(uap, REG_CR);
+ 		pl011_write((old_cr & ~UART011_CR_CTSEN) | (UART01x_CR_UARTEN | UART011_CR_TXE),
+@@ -2692,8 +2686,6 @@ pl011_console_write_thread(struct console *co, struct nbcon_write_context *wctxt
+ 	if (!uap->vendor->always_enabled)
+ 		pl011_write(old_cr, uap, REG_CR);
+ 
+-	clk_disable(uap->clk);
+-
+ 	nbcon_exit_unsafe(wctxt);
+ }
+ 
+@@ -3080,21 +3072,45 @@ static void pl011_remove(struct amba_device *dev)
+ static int pl011_suspend(struct device *dev)
+ {
+ 	struct uart_amba_port *uap = dev_get_drvdata(dev);
++	int ret;
+ 
+ 	if (!uap)
+ 		return -EINVAL;
+ 
+-	return uart_suspend_port(&amba_reg, &uap->port);
++	ret = uart_suspend_port(&amba_reg, &uap->port);
++	if (ret)
++		return ret;
 +
-+	clk_unprepare(uap->clk);
++	if (console_suspend_enabled && uap->port.suspended &&
++	    uart_console_registered(&uap->port))
++		clk_disable_unprepare(uap->clk);
 +
 +	return 0;
-+}
+ }
+ 
+ static int pl011_resume(struct device *dev)
+ {
+ 	struct uart_amba_port *uap = dev_get_drvdata(dev);
++	bool resume_console;
++	int ret;
+ 
+ 	if (!uap)
+ 		return -EINVAL;
+ 
+-	return uart_resume_port(&amba_reg, &uap->port);
++	resume_console = console_suspend_enabled &&
++			 uap->port.suspended &&
++			 uart_console_registered(&uap->port);
++	if (resume_console) {
++		ret = clk_prepare_enable(uap->clk);
++		if (ret)
++			return ret;
++	}
 +
- /**
-  *	pl011_console_match - non-standard console matching
-  *	@co:	  registering console
-@@ -2705,6 +2714,7 @@ static struct console amba_console = {
- 	.name		= "ttyAMA",
- 	.device		= uart_console_device,
- 	.setup		= pl011_console_setup,
-+	.exit		= pl011_console_exit,
- 	.match		= pl011_console_match,
- 	.write_atomic	= pl011_console_write_atomic,
- 	.write_thread	= pl011_console_write_thread,
++	ret = uart_resume_port(&amba_reg, &uap->port);
++	if (ret && resume_console)
++		clk_disable_unprepare(uap->clk);
++
++	return ret;
+ }
+ #endif
+ 
 -- 
-2.53.0
+2.39.5 (Apple Git-154)
 
