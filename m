@@ -1,100 +1,104 @@
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A48A3FE362;
-	Mon, 27 Jul 2026 11:59:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10BC240DB5D;
+	Mon, 27 Jul 2026 14:53:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785153601; cv=none; b=guXSUh2OhEnpgxXshejR3RzRKIcORZqmy25lKHU/eDzs1Z2J4GX7FLczQ3DZf8BkgeMkbMV/NDMxWEUwN3XoVMuKm+d1BPhJyYOo2V3RKkmHC8OT1SiiNieCRA4ioWiV3Rf81c9KhbEeC0ul5W06Vdbjt7QiS3SBlpYD+JIP9DA=
+	t=1785164016; cv=none; b=kT3py6a+FmM0AjWppzebstUHKeCpTy6Bvcgxu64SDyN0j/Wwty1LznEsrWpv9UHp+YYipLSz5RkoFtPdwwDEb4PfIMBN6I3qxQngeYpHsSi4Cf1qmL6xJRlmjIIRJo2/36WyZH5Gu8gpoPra0051M+AFKG5MYWlhRJstWKelAZE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785153601; c=relaxed/simple;
-	bh=rILz7wtfonvqpyG5c3H5MGKD51F3LkusCc5Lk22A8tw=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=uZYAsA0sItkK50yQ8hWBRD1pIhItxKDTO+CJuQLzD8D9OwvBYgYbSgXllS/BU0VodwPa35J3APh3Ap9x65+aDOglkR6ZEpHlDYBZTGVTc46mC89UfePP9YWGI3ZGzw8mbWFwBX07gnT3Orj0xfKgnMDxvsnTBJOtTKBGgXDf3tg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=l+dqrzXU; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=t1rl//il; arc=none smtp.client-ip=193.142.43.55
+	s=arc-20240116; t=1785164016; c=relaxed/simple;
+	bh=sQ5lhq4RubF2RvFNlWVFfUt6fmxCekEgrr+/M2u+Ais=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=iCVPurXOk4SmvS2tTHhpj8A8xhdAQSQnqYiBCciEiBvzzyK4WsXWJY26hAATzIUX1lreLHqn14YjmEl3ZBO01364zxYGWbib96tfHbi8h+E6pUfnr87qgtAsXS3fSusx43TrQClW8xF5MT2cRLXEVr8dfvMOmA8NPzNjNnYI/bg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=I4cwZuge; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=lAIDBxaM; arc=none smtp.client-ip=193.142.43.55
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="l+dqrzXU";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="t1rl//il"
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="I4cwZuge";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="lAIDBxaM"
 From: John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1785153591;
+	s=2020; t=1785164012;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=rILz7wtfonvqpyG5c3H5MGKD51F3LkusCc5Lk22A8tw=;
-	b=l+dqrzXU0ezzpa4jwucaaZP3mvNR7xBv2+wWm7RNSDpfCceoK0Nbd9ynHpfN+aS1W5MyF8
-	h46ebnRT2kVW+Jbzrb+bAtCbIndTVdqov5nd5stFcKHE+EDUc9R35A1w7jaWJXJopaf4HB
-	ymrDJ+hF7nDXWZuUYcTXBxBq+QdCEn/t9pL+AjEWiADvtBTfPqQ/3qwp74OBNn4QJwNoVa
-	ZD5YWLbjVU0C0Q6viY2zb18tCv5ps+bnq16XZx5ybSjI/TF6mD9Q/E4sqJXnPOn8BBDm0+
-	arC6B7NQhfBPNxA3ZtWGCztzLpKDWHrtiF942ReR4wyK1zOnGde3HNzk+gvoCQ==
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=fK+jiQ+0oqZHo2G4nOKhBwsrgQBQ7GEeqnc1zUtiBB8=;
+	b=I4cwZugeFnFF37tpVKi+gWhh9OgV+XYtnxfeTWZJ+kBQeYk1dBKTP+UqMcF/aFnxHiNdt4
+	2PIygniIF52XzSh7MI2BbRN3IKnYvPYGMZeQy2T9Xt1lwG8mXhd6Irs+ELj01zlsw8k9Wq
+	gucWwpVMFwD3aV90NkIEx4Z7bUxvXdbuj/U+6n9dABQH+tiSfetdrPMNHa8J/fqajxZJT2
+	VGO/GiwSSQsWW0vrp/9nDyiHhfqX/nBeOoc82UpX5bEAV4mUkTCVVOUJXW3bhb4D1Ff5vy
+	o5lBGIuZ6QDU2g2oMgpdHn4kjQmDVfozAJYQ5oDXKHV0AxDEoWAtS+l8ILU97A==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1785153591;
+	s=2020e; t=1785164012;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=rILz7wtfonvqpyG5c3H5MGKD51F3LkusCc5Lk22A8tw=;
-	b=t1rl//il0I3uF34i2WLNAaP+jeSDiuWIUpDruy5uOPOxcCcmdYu33tcDFe+LoL1ARkvsWF
-	XrnaSPgtfuKXtFCA==
-To: "Toshiyuki Sato (Fujitsu)" <fj6611ie@fujitsu.com>, 'Karl Mehltretter'
- <kmehltretter@gmail.com>
-Cc: Russell King <linux@armlinux.org.uk>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>,
- "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>, "linux-serial@vger.kernel.org"
- <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>, "linux-rt-devel@lists.linux.dev"
- <linux-rt-devel@lists.linux.dev>, Sebastian Andrzej Siewior
- <bigeasy@linutronix.de>, Petr Mladek <pmladek@suse.com>, Steven Rostedt
- <rostedt@goodmis.org>, Clark Williams <clrkwllms@kernel.org>, "Toshiyuki
- Sato (Fujitsu)" <fj6611ie@fujitsu.com>
-Subject: RE: [PATCH v2 2/2] serial: amba-pl011: keep console clock enabled
- for atomic writes
-In-Reply-To: <TYXPR01MB15199DA567AF4541DD79359FBD7CC2@TYXPR01MB15199.jpnprd01.prod.outlook.com>
-References: <20260724213348.77418-1-kmehltretter@gmail.com>
- <20260724213348.77418-3-kmehltretter@gmail.com>
- <TYXPR01MB15199DA567AF4541DD79359FBD7CC2@TYXPR01MB15199.jpnprd01.prod.outlook.com>
-Date: Mon, 27 Jul 2026 14:05:50 +0206
-Message-ID: <87pl0863t5.fsf@jogness.linutronix.de>
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=fK+jiQ+0oqZHo2G4nOKhBwsrgQBQ7GEeqnc1zUtiBB8=;
+	b=lAIDBxaMaVv0Eh1oTVIpewQd1iT7RFrRS/WmVr3LUBzpsJaAp7pBgD18r7YChEv8+IEs2l
+	q3MbDgftN3QdK8Dg==
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>,
+	Petr Mladek <pmladek@suse.com>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	linux-kernel@vger.kernel.org,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	Stepan Ionichev <sozdayvek@gmail.com>,
+	Kees Cook <kees@kernel.org>,
+	Fushuai Wang <wangfushuai@baidu.com>,
+	Jacques Nilo <jnilo@free.fr>,
+	Peng Zhang <zhangpeng.00@bytedance.com>,
+	linux-serial@vger.kernel.org,
+	Marco Felsch <m.felsch@pengutronix.de>
+Subject: [PATCH tty v10 0/2] Convert 8250 to NBCON, take 2
+Date: Mon, 27 Jul 2026 16:59:18 +0206
+Message-ID: <20260727145332.231949-1-john.ogness@linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 
-Hi Toshiyuki,
+Hi,
 
-On 2026-07-27, "Toshiyuki Sato (Fujitsu)" <fj6611ie@fujitsu.com> wrote:
-> Regarding Petr's comment [1] as well, I'm concerned about the
-> potential impact when the clk remains enabled during periods without
-> console output.
+This is v10 of a series to convert the 8250 driver to an NBCON
+console, providing both threaded and atomic printing
+implementations. v9 of this series is here [0].
 
-Can you elaborate on your concerns? Do you actually need such low-power
-_and_ kernel logging directly on serial?
+Note that v5 was pulled into the 6.14 merge window, but was
+then reverted before the 6.14-rc1 release due to kernel test
+robot problems. It turned out that the problems were related
+to general 8250 driver issues. Those issues have now been
+addressed mainline, paving the way for a second take at
+converting the 8250 driver to NBCON.
 
-> When creating nbcon patch, I saw a similar patch [2] from the past.
-> Have you considered coordinating with the clk subsystem implementation
-> for this?
+The changes since v9:
 
-AFAICT there was no real justification for enabling clocks per write
-other than because we can. A lot has changed since 2013 and neither
-spin_locks nor raw_spin_locks are appropriate because atomic printing
-can occur in _any_ context (including NMI's).
-
-If the amba-pl011 insists on enabling clocks per write, I would
-recommend not implementing the write_atomic() callback. Since I assume a
-significant amount of users _will_ want atomic printing support, perhaps
-you can add a Kconfig to toggle building with clock-disabling and no
-atomic, or clock-always-on and atomic.
-
-Note that there is also CON_NBCON_ATOMIC_UNSAFE available, if the driver
-wants to somehow blindly enable clocks on panic in order to unsafely
-dump panic logs.
+- In serial8250_fifo_wait_for_lsr_thre(), always exit the
+  unsafe section, regardless of wait_for_lsr() results.
 
 John Ogness
 
-> [1] https://lore.kernel.org/all/al4KdsU9YLOmwDoV@pathway.suse.cz/
-> [2] https://lore.kernel.org/all/1359475526-17523-1-git-send-email-walimisdev@gmail.com/
+[0] https://lore.kernel.org/lkml/20260724103654.133654-1-john.ogness@linutronix.de
+
+John Ogness (2):
+  serial: 8250: Switch to nbcon console, take 2
+  Revert "serial: 8250: drop lockdep annotation from
+    serial8250_clear_IER()"
+
+ drivers/tty/serial/8250/8250.h      |   4 +-
+ drivers/tty/serial/8250/8250_core.c |  65 +++++++--
+ drivers/tty/serial/8250/8250_dw.c   |   2 +-
+ drivers/tty/serial/8250/8250_port.c | 210 +++++++++++++++++++++++-----
+ include/linux/serial_8250.h         |  16 ++-
+ 5 files changed, 245 insertions(+), 52 deletions(-)
+
+
+base-commit: a5339effdd523b4b3502fba5358d44e83c76a565
+-- 
+2.47.3
+
