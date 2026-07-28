@@ -1,70 +1,106 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D371456DEC;
-	Tue, 28 Jul 2026 15:11:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27A3F30568D;
+	Tue, 28 Jul 2026 15:24:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785251486; cv=none; b=HEESgRdablHsOQSuZIR5NfupKAiIPwLLMlfFOpx18MYwkooxkeEdpi51p1UNIoG10G33qNDkIHkJw+aMa4jKuoJ3P0P1hPcYlI8+BwLAJPtMJsJyGzDioYxeQI5AlquYaCORY7TTCPFxA9Yd/1MkgZk2h+zldNWeGVvF/51XACM=
+	t=1785252268; cv=none; b=OsTcd+rgI3WCOIMR172rxbLjq66lUh/Id42jBoXAFcIq+pFWGzHn9F9MFdSLqzHk8ILk4nn9ZQ1BWlV1+CpzIyCBkBzgI8iFn9/ZE6jFZZ4mEypGldZ/3vDlB94/GquOyIED3DXOqqDVs2TwZ9NC26Ds/K8owtSdAQOxjcXwbTU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785251486; c=relaxed/simple;
-	bh=Oheb5h8sMc8to/vLYHU6BByn/jRGPVwEJh5mGtTa+Ho=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=T4Gl+FkLZniV5l8Q7qsDd5TR7vOm2/d/u7++ZAuB7MzlmQvdp0y/heZF6HHJuu5hcs1csWo/vu3lLs2Kg3IKVxbQKkyJzg9mHa1B9GsqzPxfho74WczlVgrpRwzNGGVkOFx7+wnHQ7iYcC0OigaBGdz7tZF1RRbvgFvEbQzutuc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EVhR5Hlv; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785252268; c=relaxed/simple;
+	bh=HbAXE+kt/gg6/vVHF+a8eI7tJ3ds+StEx30QT3bbTIY=;
+	h=Date:Message-ID:From:To:Cc:Subject:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=pNRvweJp0iR1qAVQgJ0A731GxVwvB9lQIBIa0/4f0sRdyy94TB+baP+y25G7xTNrAOCuzEtGpCBdcO5vo0D+s4X7mH71hUHERD4LfUGdhCw08/pMr+JCOvoXaJ7xu2WxM/5pl/rHV8S3UUJyix5cmv6uq8h67bFUKVC+168JkMY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AQXRuwAn; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EVhR5Hlv"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7263F1F000E9;
-	Tue, 28 Jul 2026 15:11:23 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AQXRuwAn"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F40C91F00A3A;
+	Tue, 28 Jul 2026 15:24:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785251484;
-	bh=P2h0zvhiWJL99Ql/LzjPEa4TBK4rGTdRlw5CNE1+M5o=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=EVhR5HlvuT1lZzNuSDVgOjAPEYxN1UXWOjDHMF42Al88ql5VBXHTz0zc/I1+qKmA1
-	 3TCF7yGMwxeewqJ6xW1vr+9JdpBYj8LfP6UxPQe2eOxOWRhbOtxsRwOxRvI2ewRJeH
-	 d59QIYqyLJg0iNCBH26m5PaV4O1hiXkKjh0Hr1cRzfdyU3be/BCsdycZsOguWMpQNL
-	 YmD+A3WKNSNcY9Fpm++V7tz8VB6duU88XPXLV55UnQWe9EdRVYWEBrkOvLhir+6m5V
-	 avDAn1aZWF4Y1XE4DuxO2tKudWhej7/euP+WBRN+liVa9XRbMqsAYIFYjPVAnHYNm7
-	 G8GpR9d8irT7A==
-Date: Tue, 28 Jul 2026 17:11:20 +0200
-From: Andi Shyti <andi.shyti@kernel.org>
+	s=k20260515; t=1785252267;
+	bh=+XBHM4Y2azxZZa9+2n0cn7/S1Zo1nqK1cbQKursEuU8=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=AQXRuwAnmeNsCUMnDuyVSTCYhTop9FeluTrtQtmzhUKpET33xZQPbfMa/FsniHPe1
+	 jKfwwk1BzCkD2McI7qFj+Og0wcyJNXZUUhx4U6VMOm9Eoa9EGoypukF4qlVj3O2uB6
+	 uGvGpkG4eP5IVy+v/62ogTjydHTTIE/miaHcxSY4VEUVO7BJSKABFvx9rmLuiGi4t3
+	 KXI2mJpnvGKmIrAAlzbTHjtIADZcaTAs3cN0rufVC9R9/xiv2Alg65YXlTUfbIYiYQ
+	 rhzjx4WpOV3R2iGo4RIZUFdh2JChcxhkwF3zdsg0BDMslT6rdF0xGzd5/602iK+WFb
+	 zVIQsy6+FquJw==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=goblin-girl.misterjones.org)
+	by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.98.2)
+	(envelope-from <maz@kernel.org>)
+	id 1wojfM-00000009kmG-1Tn4;
+	Tue, 28 Jul 2026 15:24:24 +0000
+Date: Tue, 28 Jul 2026 16:24:23 +0100
+Message-ID: <86v79zcf2w.wl-maz@kernel.org>
+From: Marc Zyngier <maz@kernel.org>
 To: Swark Yang <syang@axiado.com>
-Cc: Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Harshit Shah <hshah@axiado.com>, Linus Walleij <linusw@kernel.org>, 
-	Bartosz Golaszewski <brgl@kernel.org>, Jan Kotas <jank@cadence.com>, 
-	Michal Simek <michal.simek@amd.com>, =?utf-8?Q?Przemys=C5=82aw?= Gaj <pgaj@cadence.com>, 
-	Alexandre Belloni <alexandre.belloni@bootlin.com>, Frank Li <Frank.Li@nxp.com>, 
-	Boris Brezillon <bbrezillon@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Mark Brown <broonie@kernel.org>, 
-	Mathias Nyman <mathias.nyman@intel.com>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org, 
-	linux-i3c@lists.infradead.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org, 
-	linux-usb@vger.kernel.org
-Subject: Re: [PATCH v3 3/8] dt-bindings: i2c: cdns: add Axiado AX3005 I2C
- variant
-Message-ID: <amjGh1ZQXTGXFv7q@zenone.zhora.eu>
+Cc: Rob Herring <robh@kernel.org>,	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,	Harshit Shah <hshah@axiado.com>,	Linus
+ Walleij <linusw@kernel.org>,	Bartosz Golaszewski <brgl@kernel.org>,	Jan
+ Kotas <jank@cadence.com>,	Michal Simek <michal.simek@amd.com>,	Andi Shyti
+ <andi.shyti@kernel.org>,	=?UTF-8?B?UHJ6ZW15c8WCYXc=?= Gaj
+ <pgaj@cadence.com>,	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	Frank Li <Frank.Li@nxp.com>,	Boris Brezillon <bbrezillon@kernel.org>,	Greg
+ Kroah-Hartman <gregkh@linuxfoundation.org>,	Jiri Slaby
+ <jirislaby@kernel.org>,	Mark Brown <broonie@kernel.org>,	Mathias Nyman
+ <mathias.nyman@intel.com>,	devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,	linux-kernel@vger.kernel.org,
+	linux-gpio@vger.kernel.org,	linux-i2c@vger.kernel.org,
+	linux-i3c@lists.infradead.org,	linux-serial@vger.kernel.org,
+	linux-spi@vger.kernel.org,	linux-usb@vger.kernel.org
+Subject: Re: [PATCH v3 8/8] arm64: dts: axiado: Add initial support for AX3005 SoC and eval board
+In-Reply-To: <20260716-upstream-axiado-ax3005-upstream-v3-8-c429095143ec@axiado.com>
 References: <20260716-upstream-axiado-ax3005-upstream-v3-0-c429095143ec@axiado.com>
- <20260716-upstream-axiado-ax3005-upstream-v3-3-c429095143ec@axiado.com>
+	<20260716-upstream-axiado-ax3005-upstream-v3-8-c429095143ec@axiado.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/30.1
+ (aarch64-unknown-linux-gnu) MULE/6.0 (HANACHIRUSATO)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260716-upstream-axiado-ax3005-upstream-v3-3-c429095143ec@axiado.com>
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: syang@axiado.com, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, hshah@axiado.com, linusw@kernel.org, brgl@kernel.org, jank@cadence.com, michal.simek@amd.com, andi.shyti@kernel.org, pgaj@cadence.com, alexandre.belloni@bootlin.com, Frank.Li@nxp.com, bbrezillon@kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org, broonie@kernel.org, mathias.nyman@intel.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org, linux-i3c@lists.infradead.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org, linux-usb@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 
-Hi Swark,
+On Fri, 17 Jul 2026 04:51:15 +0100,
+Swark Yang <syang@axiado.com> wrote:
+>
 
-On Thu, Jul 16, 2026 at 08:51:10PM -0700, Swark Yang wrote:
-> Add binding for Axiado AX3005 I2C controller. So far, no changes
-> are known, so it can fall back to the cdns,i2c-r1p14 compatible.
-> 
-> Signed-off-by: Swark Yang <syang@axiado.com>
+[...]
 
-merged to i2c/i2c.
+> +	soc {
+> +		compatible = "simple-bus";
+> +		#address-cells = <2>;
+> +		#size-cells = <2>;
+> +		interrupt-parent = <&gic500>;
+> +		ranges;
+> +
+> +		gic500: interrupt-controller@40400000 {
+> +			compatible = "arm,gic-v3";
+> +			reg = <0x0 0x40400000 0x0 0x10000>,
+> +			      <0x0 0x40500000 0x0 0xc0000>;
 
-Thanks,
-Andi
+This is missing the GICC, GICH and GICV regions that are implemented
+on Cortex-A53. See the binding document.
+
+> +			ranges;
+> +			#interrupt-cells = <3>;
+> +			interrupt-controller;
+> +			#address-cells = <2>;
+> +			#size-cells = <2>;
+> +			interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_LOW>;
+> +			#redistributor-regions = <1>;
+
+This is the default, and isn't required.
+
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
