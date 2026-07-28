@@ -1,209 +1,201 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CE8343F0A0;
-	Tue, 28 Jul 2026 13:34:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9E593A3815
+	for <linux-serial@vger.kernel.org>; Tue, 28 Jul 2026 14:45:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785245659; cv=none; b=ppuhFAModV4zKk4PfaV9TgzCQ1EYVBuallYiP09uwKbuVDEFloUyr/XQQp7RGjHok5rLgZLiBd8V1Ql0n3PSUbdwLOrntA0+622v7xoZar3mogbJhYLR2jMUJIm2XEsnQm2xxQNDeTTmF4QnEuHOLA3min3+NTeXW7z5qN7bwZA=
+	t=1785249905; cv=none; b=rQ6di4YK9EDkm1t22lO6WRl3Ea0oAoWAwe4bqbZpwNPCkevgFeydlB1beuI9dgaw00SfefMo2GMkfzGN3TNPNeFcgA8B1FJ5JM1h2WxXz6wvfXI+In5DxPqnJPAo3IHXPU4elyjKjgvz9z0kpNK3gc/LSlFeaSmtfs5MYGZch+s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785245659; c=relaxed/simple;
-	bh=XJdeUgEE3lIj86OtSX8h+5GxFGMhgGSbfUk1qlw3REE=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=FpCDT6iuFw1kSC5MzWY59LpwNW1ceSZkAuQ1BCifgmLU4Pd92UZaNxvEMOr2mFTExGMO7uQgTQ9Z2vcNfANFnm8QBOMpjXtr3M89ieF+XyGM2skjF9mLbwh0AZ/8M4YzXGVyueF6EC3dVN3ijjkYX+4LXwUxq7e4knRcSzuof7o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=0zxl+qcZ; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=bO7Z60xT; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1785249905; c=relaxed/simple;
+	bh=DiG15UEixbfgu6yBzjjk0nE3N6X6W7RUMAOuyWSj2Ng=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=r4gSGYT10xmsqighnXYj4RI8wciyQs93R9D+wCVlst9E9f1ya32UAW1AKsBWfG0kuwUOHNaSnt5L3yNWyW/CLDUY7atvs8RQOfckjj8SCnsM9w4gfP0r59SO6JETdvWIis3feuMhA+rTyYvvdPyMEx+jkm0Phcj10oQgukomo+I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Pn+UJd9r; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=BLjKZ80t; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="0zxl+qcZ";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="bO7Z60xT"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1785245647;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=6HNT9jalz1w6cL1ychE/yuwQ08r/BZLdFNp2PnzQnBM=;
-	b=0zxl+qcZP8tC91RTjUNr8ZFQGLQ4LzeOVpyMtONx5DDhSvetcddmKi3MUkd8s7O2/d3PbB
-	CB0juddDKBuTwQ2L0H7oonCr/xsl91GhNoCdJPCVWfUO5h3IMt6JlU1c/FuM67Gemq86Ji
-	DYqneWIqSOWIWrPiP8ms4tqfB9iPmNOvV/rOLmREeBZ4jrapCzwU158EQtzeyh/5wvRVCs
-	EPSwc4jymYev30lV7NEMz7sCltdxR+kKTnv+GPIgNJ6uUNswms6Bp2hpD+ogSBcxgRjL24
-	4tty+xR+x7lBpL/tX4pCFAeEihC+1NXodyYOVmvJB10728+w6waWJiTwuGTwuA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1785245647;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=6HNT9jalz1w6cL1ychE/yuwQ08r/BZLdFNp2PnzQnBM=;
-	b=bO7Z60xTzAdj7Ne9O19+YcpAdix99d5WuMrMPU3+GS0pGCoWOWwyoimE9IZSGDuN4CbREI
-	0z5qBaIMfHtfxKAQ==
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, Petr Mladek
- <pmladek@suse.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
- linux-kernel@vger.kernel.org, Ilpo =?utf-8?Q?J=C3=A4rvinen?=
- <ilpo.jarvinen@linux.intel.com>, Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>, Hugo Villeneuve
- <hvilleneuve@dimonoff.com>, Stepan Ionichev <sozdayvek@gmail.com>, Kees
- Cook <kees@kernel.org>, Fushuai Wang <wangfushuai@baidu.com>, Jacques Nilo
- <jnilo@free.fr>, Peng Zhang <zhangpeng.00@bytedance.com>,
- linux-serial@vger.kernel.org
-Subject: Re: [PATCH tty v10 1/2] serial: 8250: Switch to nbcon console, take 2
-In-Reply-To: <20260727145332.231949-2-john.ogness@linutronix.de>
-References: <20260727145332.231949-1-john.ogness@linutronix.de>
- <20260727145332.231949-2-john.ogness@linutronix.de>
-Date: Tue, 28 Jul 2026 15:40:06 +0206
-Message-ID: <87ecgntf01.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Pn+UJd9r";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="BLjKZ80t"
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66SEcqwa3239004
+	for <linux-serial@vger.kernel.org>; Tue, 28 Jul 2026 14:45:02 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=1DldpSgzdWMuNocSYgYiD1
+	ND93sFzGYAHc+0uoq3k7g=; b=Pn+UJd9r9zneS1hR/bYg4qYyajMAZTRqJYcBn6
+	ePeA7RD5/E/j3Tq39jhC027ZEVVi+iMSHRSfmB3QuT+JpQ+0atlNVNHHLbYg/yzm
+	u2HGO2LCSvP109p8mE87V2iFddEIPO4WTOA7R/NysIIB0f5gOAP69+TYTVYJmLe7
+	anUbEHowZPW7+67pNEuK1PQErytUQtdQmBUPyccLy1Gw885ugjC89x+3Qn94TGPQ
+	dHWvuZZRoFqCMDUHMeDc7WahHyQYbcuYA2i5oyqcgfRyQH96v0rz9AJUDnCW/6nI
+	dvyAiPLkMp7dFKBMtq5wYVbgcpU7uT2yi1ubzoi2AtNA8LjA==
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com [209.85.219.69])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fphh7kdfe-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-serial@vger.kernel.org>; Tue, 28 Jul 2026 14:45:02 +0000 (GMT)
+Received: by mail-qv1-f69.google.com with SMTP id 6a1803df08f44-8ec3314f65fso50338576d6.3
+        for <linux-serial@vger.kernel.org>; Tue, 28 Jul 2026 07:45:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1785249902; x=1785854702; darn=vger.kernel.org;
+        h=cc:to:message-id:content-transfer-encoding:content-type
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=1DldpSgzdWMuNocSYgYiD1ND93sFzGYAHc+0uoq3k7g=;
+        b=BLjKZ80tLxm7cuD10F+NxaLuJqdrxwzMR+0KaBKRq1j3s3l1k+mEP8nWvURHf4bfZJ
+         kmnTHRpI4C86PDgTulxAoGPk7evP+em13UZ5XZzPFnSdN+VVccVcs4//BSR1/Py3k5Sr
+         Z90vemNe2TfT65XFmx87U0zmwWWMGAxH8/avhU6Kr6KsxAuspUsOumw36a2X9Ik/hJ2s
+         IH12pgJjqYb2AasgpT2jrRCU+fXHFHY8NrWfzn5GYmnTIDcT+MIsBffBh6E50uRtjknV
+         mmx2Idoge3L07DemEFGsoKZnKlIPFXvkH89lrrGZCxWbTMRiXn8YZKwF/IVrT533ycTt
+         vh0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785249902; x=1785854702;
+        h=cc:to:message-id:content-transfer-encoding:content-type
+         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to:content-type;
+        bh=1DldpSgzdWMuNocSYgYiD1ND93sFzGYAHc+0uoq3k7g=;
+        b=FHY0mTZLunp5EIrnyLbD7Cs/MOdx/BRawjG0fmMPZOBKq9HUJPT4TZCPQdyNrmRsmc
+         DiaD9cOpqW2ahvaa0W9e17jbEH+fNTsZaIjLlYnflLMvS94d1QQa1Oq07YuN9o5cTDrR
+         s3Sef7aATZusoAZq1OGOfzeAIzXoPAOkaPoVNm5DXbUzzbybrpw1tObn4h8jAxmNDd6L
+         lmm0g61vK7qrC78Qxnq8DtMtm/8AIaqt/Mfcz7eVGq3VS9ePUlSHS9DNlsAN8vce+wOx
+         SKuvf/ljhWnN1ZJwUGR8ztTxQhB/6nANOQqx1CC01RqJQYFp3fr60U6Ko07U7h8rSeLo
+         3orQ==
+X-Forwarded-Encrypted: i=1; AHgh+RpPRRg2XvWSgWnGN9Sh92qTT7cdEkv2mB1qOptDQ3hY8D0v1NUUkp5CrGABmL5oVF753fMD1vyJbr73bMo=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw4zrfFmCSjUFth7ifOVv16cYY4q+rUkOPxJdAkmHJ07Be5dlxH
+	G7Ew9zJRiq6QKcf22bO8OJZjy9mZdYpNRc0BiW1A+qIBicdktPxAVKXcHVYceD5aUB9KEYBge51
+	RDw7N100tewPjj3TYQvzq4muvw1CtYtc5cAeEeBi+whP+ti6p3LZ8ribNJbZpVE6ek58=
+X-Gm-Gg: AR+sD13i2GXx7fkLtR3xvGp9/Dt7s1odpgLCVMjH34rMX3iHuorUfBwS1FQJoUD4ZkB
+	2m/h45uURbeoPe18gOqrcNZt+pn9AbvUauCCW4sflZSldhKc//vf5DCMgqreOy/SB7olfKyez3g
+	aZ/I+0XSK0z8h4ZUCtlq5jalAe0yzjsSg+nmE+zL3oPxdO9qHW3qj6OcWCHszPTqYANhOwWtEjn
+	RaQ2dikYf00snqW2S+y8FxsOhrVq2JmIYl+3uxtH/psZp96bVSki7xuhYlRC12Tc0X8JzC8qW2x
+	BEzBt5DyMhjEV08Num19dirqZXvQgWWlqBtwNkwGqxbOiIFRcZHcJivP0jEdFJGNZHwt60+XKwv
+	vbpVe9DbGSjXRkAWO+OyFPvX/n0MtvQ==
+X-Received: by 2002:a05:622a:1b10:b0:51c:1ff:2515 with SMTP id d75a77b69052e-529d7135d23mr22659231cf.65.1785249901794;
+        Tue, 28 Jul 2026 07:45:01 -0700 (PDT)
+X-Received: by 2002:a05:622a:1b10:b0:51c:1ff:2515 with SMTP id d75a77b69052e-529d7135d23mr22658831cf.65.1785249901373;
+        Tue, 28 Jul 2026 07:45:01 -0700 (PDT)
+Received: from brgl-qcom.local ([2a01:cb1d:dc:7e00:d2e3:b407:476e:c977])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47f85c531afsm65584869f8f.24.2026.07.28.07.44.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jul 2026 07:45:00 -0700 (PDT)
+From: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+Date: Tue, 28 Jul 2026 16:44:50 +0200
+Subject: [PATCH] serial: 8250_exar: use platform_device_register_full()
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260728-exar-pdev-reg-full-v1-1-7a96e77309e1@oss.qualcomm.com>
+X-B4-Tracking: v=1; b=H4sIAGHAaGoC/x3MwQpAQBRG4VfRXbvFmJBXkcXgH24J3YnU5N1Nl
+ t/inEgBKgjUZZEUtwQ59oQyz2ha3b6AZU4mU5i6aEzLeJzyOeNmxcL+2jZGVTpjbTPasaIUngo
+ vzz/th/f9AFVhKOhkAAAA
+X-Change-ID: 20260728-exar-pdev-reg-full-e31a2447b4b3
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc: brgl@kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org,
+        Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1973;
+ i=bartosz.golaszewski@oss.qualcomm.com; h=from:subject:message-id;
+ bh=DiG15UEixbfgu6yBzjjk0nE3N6X6W7RUMAOuyWSj2Ng=;
+ b=owEBbQKS/ZANAwAKAQWdLsv/NoTDAcsmYgBqaMBn45X/Mc0VWgtR3wbfgsNJVvEu6vrk38sAZ
+ YiA40PAIS6JAjMEAAEKAB0WIQSR5RMt5bVGHXuiZfwFnS7L/zaEwwUCamjAZwAKCRAFnS7L/zaE
+ w1slEACv3midsVoK4ZPfI8voL/xBvPxN+/6q6VdUJps96ta7rEc9Nkoy9d4imUYoKkNei2kY0yL
+ tOdWZ0jmp/Zx6FjL2R1j1KhGyZJQLLIMS8I3YfbnTSu+Yflt+FyXTGPuEhlFwOSnm0W1wawiFME
+ ryiAre8EcZno0gNjUajNx2rLddrjGeV8DkKip8XvygyVTo6OA8lfTxoc9JPd1ZxaKlJI/NgKHLX
+ 5eGP+7wYmnhhvSwMiARLHoICl18wHwiogH6qpgCfOFlKJL+3XJUdBOFac2YqxxVy54OmniSL8Tz
+ VusVvC4FE/uCuU0lg0Mo/JepOg+wBRLd/kJQuQb5suFCE/nxJIxpKgZNKqyXKzOGSAMyhvQJPtb
+ Z+47y4TfBPZ2f/ZFq0tqs7gMgIvBGjVAeEYhTqLgOfV2F1Mm3eo/M7HZNarm9X72gknb6AhZI1v
+ CUIsUizsF1w0OLRRhtG0ZhPEUVQObx6IQeSbEDkupWGP1nvIxcjxiNHkGg+TEhAcVIRgT5bLkJE
+ yfaCSFGhjxJV8xuUe9UNErMouSJhDEE7Qr9wt1eW95hN4rhI5+byOCmYg/z+sDYyA96bmiwY7Bq
+ xYqHw7SuHGoUK2+frpbzcUcZMbOW9xdTHLzEXWi4wnMyYV3StgnNBDI219bbijcC4ufAWm0hasR
+ d7Y6MCBNNVA5zoQ==
+X-Developer-Key: i=bartosz.golaszewski@oss.qualcomm.com; a=openpgp;
+ fpr=169DEB6C0BC3C46013D2C79F11A72EA01471D772
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzI4MDEzMSBTYWx0ZWRfX0u0Ltu0lEuhl
+ 8gXjouB2xyrvQCE7NMpFEhvAp8YFotwByA90EIlRdYbA+p1d3Up6TLJq1PAnUVSmwVJD/LtJCBX
+ rEUzu3mj9KA+1FJ4sLJ40RdiGzQexmu2QCYIQbt93fmmeD4NOYori1rnV48UkV/lSUxQ3R0xNRe
+ u8pQezTWrriQGwJDjpPGaAsavtgpImat1jni1ngJyUI15Qi2vt06cIdAIbhC5h/pwDOOgM0b93G
+ VfWFmcMDoU6vxs48+lcYtHJSbnkh5wGza9lc1IvZlSbKZORzHfFwdxZnMuxArRVYYhcZxlcViU7
+ LcRsW5iDICXdk3MbVatHkh/Z8ovsBeDgdzYCd83+OX7ZDqCUYVBCUTQgyMXgQhImDQOXHw+hKKp
+ Aq8JQnRwpxMzhPHPorEQAJwmWcKMCMX8kz97D+4U3/4w5bUnC34SIyyvUy/0Vnycz9V6agI1Z7W
+ NKfBH2kgtsPfV851dLw==
+X-Proofpoint-ORIG-GUID: UBeE4rwKC4E0rjHRy2v5Eg9kC8AwQuDE
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzI4MDEzMSBTYWx0ZWRfX28K222Oklt6u
+ 5t+L9IRU7NSjBTw3P/KHVkU7faYb+Uv1lLmKlds/WqLBi7rm9sdGW6605evmDlqSllWUjemSLpz
+ RZfeQDXjFIkON3e42+r0wP0v0GSRnps=
+X-Proofpoint-GUID: UBeE4rwKC4E0rjHRy2v5Eg9kC8AwQuDE
+X-Authority-Analysis: v=2.4 cv=b+6CJNGx c=1 sm=1 tr=0 ts=6a68c06e cx=c_pps
+ a=wEM5vcRIz55oU/E2lInRtA==:117 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10
+ a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=u7WPNUs3qKkmUXheDGA7:22 a=3WHJM1ZQz_JShphwDgj5:22 a=EUspDBNiAAAA:8
+ a=PZUIP3pysVZmXZS8_XoA:9 a=QEXdDO2ut3YA:10 a=OIgjcC2v60KrkQgK7BGD:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-07-28_04,2026-07-28_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ spamscore=0 phishscore=0 lowpriorityscore=0 suspectscore=0 adultscore=0
+ priorityscore=1501 impostorscore=0 malwarescore=0 bulkscore=0 clxscore=1015
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607280131
 
-On 2026-07-27, Sashiko wrote:
-> > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> > index 8c241ec7f4f29..5bcbb6deb12f7 100644
-> > --- a/drivers/tty/serial/8250/8250_port.c
-> > +++ b/drivers/tty/serial/8250/8250_port.c
-> [ ... ]
-> > @@ -3332,6 +3405,18 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
-> >  		mdelay(port->rs485.delay_rts_before_send);
-> >  	}
-> >  
-> > +	/* If ownership was lost, no writing is allowed */
-> > +	if (!nbcon_can_proceed(wctxt))
-> > +		goto skip_write;
-> > +
-> > +	/*
-> > +	 * If console printer did not fully output the previous line, it must
-> > +	 * have been handed or taken over. Insert a newline in order to
-> > +	 * maintain clean output.
-> > +	 */
-> > +	if (!up->console_line_ended)
-> > +		uart_console_write(port, "\n", 1, serial8250_console_wait_putchar);
-> > +
->
-> Will this cause the newline characters to be silently dropped if the
-> hardware FIFO is already full from a preempted context?
->
-> When uart_console_write() calls serial8250_console_wait_putchar(), it
-> relies on wait_for_lsr() to wait for transmitter room. The timeout in
-> wait_for_lsr() is calculated based on frame_time, which is only enough
-> for a single character. If the preempted context left a full FIFO (e.g.,
-> 16-64 bytes), the wait_for_lsr() timeout will expire before the FIFO
-> drains, causing the hardware to drop the injected newline characters.
+This driver doesn't really need to split the registration of the GPIO
+chip into stages, as platform_device_info already provides fields for
+the firmware node, parent device and the software node. Use
+platform_device_register_full() and simplify the code. This also
+addresses the problem with incorrect reference count of the assigned
+firmware node.
 
-Sashiko is correct. For v11 I am writing helper functions to handle
-@console_line_ended and the console line printing for fifo and
-non-fifo. This causes a bit more churn than I would like to see at this
-point (v11) but it will handle all situations, has increased code
-re-use, and should be easier to read/maintain.
+Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+---
+ drivers/tty/serial/8250/8250_exar.c | 25 +++++++++----------------
+ 1 file changed, 9 insertions(+), 16 deletions(-)
 
-> [ ... ]
-> >	while (!nbcon_enter_unsafe(wctxt))
-> >		nbcon_reacquire_nobuf(wctxt);
-> >
-> >  	/*
-> >  	 *	Finally, wait for transmitter to become empty
-> >  	 *	and restore the IER
-> >  	 */
-> >  	wait_for_xmitr(up, UART_LSR_BOTH_EMPTY);
-> >  
-> > +	if (em485) {
-> > +		mdelay(port->rs485.delay_rts_after_send);
-> > +		if (em485->tx_stopped)
-> > +			up->rs485_stop_tx(up, false);
-> > +	}
-> > +
-> >  	serial_port_out(port, UART_IER, ier);
->
-> Could the hardware state be corrupted here if a hostile takeover occurs
-> while waiting for the transmitter to empty?
->
-> The wait_for_xmitr() call can take a significant amount of time to let the
-> FIFO drain. If a system panic triggers a hostile console takeover during
-> this window, the panic context might reconfigure the hardware. Once the
-> original context finishes waiting, it will unconditionally execute
-> serial_port_out(), potentially undoing the panic context's configuration
-> or causing interrupt storms.
->
-> Should we check nbcon_can_proceed(wctxt) again before modifying the
-> hardware state?
-
-nbcon_can_proceed() is not enough because these final actions are
-necessary. It would need to be:
-
-	nbcon_exit_unsafe(wctxt);
-	while (!nbcon_enter_unsafe(wctxt))
-		nbcon_reacquire_nobuf(wctxt);
-
-Although this does not close the window, it does make it quite
-small. And if we are really in the unlikely situation of:
-
-- a panic occurs
-- the panic is unable to stop all the CPUs
-- a console printer is actively printing from a non-stopped CPU
-- the panic CPU performs a hostile takeover
-
-then we should probably do everything we can (within reason) to avoid
-interfering with the panic printing.
-
-As Sashiko points out, the wait_for_xmitr() and mdelay() calls could be
-relatively large. I agree that it makes sense to peform unsafe toggles
-in these two locations. I will add that for v11. It will look something
-like this:
-
-@@ -3481,10 +3487,21 @@ void serial8250_console_write(struct uart_8250_port *up,
- 
- 	if (em485) {
- 		mdelay(port->rs485.delay_rts_after_send);
+diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
+index f9a14eaa13cba85f2424c351510be093f52fd6a1..836792e861bfc742a14de90640a6252dca1bd226 100644
+--- a/drivers/tty/serial/8250/8250_exar.c
++++ b/drivers/tty/serial/8250/8250_exar.c
+@@ -1140,22 +1140,15 @@ static void setup_gpio(struct pci_dev *pcidev, u8 __iomem *p)
+ static struct platform_device *__xr17v35x_register_gpio(struct pci_dev *pcidev,
+ 							const struct software_node *node)
+ {
+-	struct platform_device *pdev;
+-
+-	pdev = platform_device_alloc("gpio_exar", PLATFORM_DEVID_AUTO);
+-	if (!pdev)
+-		return NULL;
+-
+-	pdev->dev.parent = &pcidev->dev;
+-	device_set_node(&pdev->dev, dev_fwnode(&pcidev->dev));
+-
+-	if (device_add_software_node(&pdev->dev, node) < 0 ||
+-	    platform_device_add(pdev) < 0) {
+-		platform_device_put(pdev);
+-		return NULL;
+-	}
+-
+-	return pdev;
++	struct platform_device_info pdevinfo = {
++		.name = "gpio_exar",
++		.id = PLATFORM_DEVID_AUTO,
++		.parent = &pcidev->dev,
++		.fwnode = dev_fwnode(&pcidev->dev),
++		.swnode = node,
++	};
 +
-+		/* Toggle unsafe after possibly long delay */
-+		nbcon_exit_unsafe(wctxt);
-+		while (!nbcon_enter_unsafe(wctxt))
-+			nbcon_reacquire_nobuf(wctxt);
-+
- 		if (em485->tx_stopped)
- 			up->rs485_stop_tx(up, false);
- 	}
++	return platform_device_register_full(&pdevinfo);
+ }
  
-+	/* Toggle unsafe after possibly long delay */
-+	nbcon_exit_unsafe(wctxt);
-+	while (!nbcon_enter_unsafe(wctxt))
-+		nbcon_reacquire_nobuf(wctxt);
-+
- 	serial_port_out(port, UART_IER, ier);
- 
- 	/*
+ static void __xr17v35x_unregister_gpio(struct platform_device *pdev)
 
-> > @@ -3400,8 +3509,24 @@ static unsigned int probe_baud(struct uart_port *port)
-> >  	return (port->uartclk / 16) / quot;
-> >  }
-> >  
-> > +/*
-> > + * irq_work handler to perform modem control during console output.
-> > + * Only triggered via ->write_atomic() callback because it may be
-> > + * in a scheduler or NMI context, unable to wake tasks.
-> > + */
-> > +static void console_msr_handler(struct irq_work *iwp)
-> > +{
-> > +	struct uart_8250_port *up = container_of(iwp, struct uart_8250_port, console_msr_work);
-> > +	struct uart_port *port = &up->port;
-> > +
-> > +	guard(uart_port_lock)(port);
-> > +
-> > +	serial8250_modem_status(up);
-> > +}
->
-> Does this code introduce a race condition that could cause invalid hardware
-> accesses on a suspended device?
->
-> If CPU1 is executing serial8250_console_write(), it reads
-> up->console_msr_work_allow locklessly before queueing the work...
+---
+base-commit: 0d33d21e47d9dc66f91e44da3fc9220c74d93df7
+change-id: 20260728-exar-pdev-reg-full-e31a2447b4b3
 
-Sashiko is not correct. Both code blocks (reader and writer) are within
-unsafe sections and therefore synchronized.
+Best regards,
+-- 
+Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
 
-John
