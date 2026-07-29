@@ -1,77 +1,69 @@
-Received: from out-187.mta1.migadu.com (out-187.mta1.migadu.com [95.215.58.187])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3210A473C6D
-	for <linux-serial@vger.kernel.org>; Wed, 29 Jul 2026 11:26:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.187
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25F6C47ACEE;
+	Wed, 29 Jul 2026 11:50:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785324407; cv=none; b=NoND/FGSJ4oJ2DKp9sVy1WCiDZyc3DO6DbcgRVUI/D5yyyLJycCZF++2iz7x6yPLTRLBkdkuhxVCYhWyvHjSdUaKU2af42wAknqX2nt6TsXnfAyVT80IbZDs7ry+7anrOwpNMTEFR8sIlO+sPzndcSy6yzkCRUKR0I8w9PhRMUE=
+	t=1785325858; cv=none; b=PjUJvbHIgzntIh8mcGtWEwfffJ4s2qHQgKFGZJ3nap3f6X0vUc+ll3j4+YUGhOkA4ijHaBQhgw+nK/gMu+V48SJIjIywO0r8YXwTdQT0sBOSvt1QtQ1PjgPSv77AlcC61PMyagSD59Edkytzubk1eK1bJatHhy6kM8T2OtvMFGU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785324407; c=relaxed/simple;
-	bh=APe9iUqSOAsuaQv1btRgyowYCJtjGA02G8TajhTIebE=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=MDllZ2J2O6bafhVyA3BOPGC8c4aOn8DiuKtcjJWiPoGEYC1f9SfjuHSF3KXx69ztRP8WgFg7qNHBETAUGRfeh/D4q4pqwNTiaExoyI9kqRxeHZJkcdSn9wOUN/y3D1Q/pa8PH+Q9g5nDlKWbdlElcqkMiNKJyDgg/M2AIHZImGE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=QjssBNOd; arc=none smtp.client-ip=95.215.58.187
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1785325858; c=relaxed/simple;
+	bh=ClpK3HCOZKw8gjXSOEE9pwHNXpq5BE4IpfBh+Hw9Si8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=msMOVBc2wkAu+N7lhl75+0uLD2xKByqP8IeFz0+//Dxa52NE9LTRIRUAICt49fDfxgVKXbHKDYHKJS6+83DXEk218J6E3WQIcLbgjcjexAY+hevRtEAFJtdZJ/r1zWl+ORu5/5Nl6+i0wyIt/xKjAlxzlZ9cQ3GPiE523h6IEo4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=ixI891Ei; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="QjssBNOd"
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1785324393;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Ms7TjNbqHRA4P5HZZQpw8gHBi1StBQU2oI5cQslDjks=;
-	b=QjssBNOdYMRQ7JTkGNl5tbZa4PiqZHfSQGsIllWJkEdchuffhmKcjne02HJ2yPWia2G1WK
-	2jb0AOVVEIEvSKS4qN/tUJZ0/9VhMTkSO7TmTdOqfIiyNTcD5YjBROrfM2qojFL6HB6q6f
-	Wwmqk8t+viFb7cSZepmOQeCKc6JExO4=
-From: Fushuai Wang <fushuai.wang@linux.dev>
-To: broonie@kernel.org
-Cc: andy.shevchenko@gmail.com,
-	asrinivasan@oss.tenstorrent.com,
-	fushuai.wang@linux.dev,
-	gregkh@linuxfoundation.org,
-	jackzxcui1989@163.com,
-	jirislaby@kernel.org,
-	john.ogness@linutronix.de,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	osama.abdelkader@gmail.com,
-	wangfushuai@baidu.com
-Subject: [PATCH v2] Revert "serial: 8250: Clear CON_PRINTBUFFER on port re-registration"
-Date: Wed, 29 Jul 2026 19:26:05 +0800
-Message-Id: <20260729112605.11764-1-fushuai.wang@linux.dev>
-In-Reply-To: <e086c2da-e08b-4d53-abb1-e7a5cfd0d6f6@sirena.org.uk>
-References: <e086c2da-e08b-4d53-abb1-e7a5cfd0d6f6@sirena.org.uk>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="ixI891Ei"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EA341F000E9;
+	Wed, 29 Jul 2026 11:50:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
+	s=korg; t=1785325856;
+	bh=Ql8HTZmeaTYy1NbRlFANKEac6co52RDvo10vJCeuwPA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=ixI891EianjWxol6vQVw2K5ZMHN0ZdxtBWvLwrlGEmNA5ph0ZNS98bGZucJd+QdZN
+	 qzLrvNL3YRaJkLWFuXqQJmff8T9JAiREz8uHGa/xmLCgnUUz7GsIGL83QuE+mjTv+L
+	 FycpCr/c40alIX27Njx1WyyJx/3a+XoIMJtyAOf8=
+Date: Wed, 29 Jul 2026 13:50:43 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Xincheng Wang <22009200607@stu.xidian.edu.cn>
+Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH] tty: limit TCSBRKP break duration
+Message-ID: <2026072921-curled-moonlike-1207@gregkh>
+References: <20260727055525.6170-1-22009200607@stu.xidian.edu.cn>
+ <2026072700-causal-remarry-6edf@gregkh>
+ <20260729111927.41154-1-22009200607@stu.xidian.edu.cn>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260729111927.41154-1-22009200607@stu.xidian.edu.cn>
 
-> > From: Fushuai Wang <wangfushuai@baidu.com>
-> > 
-> > This reverts commit d338ab1d90603f875c4f7ed223406535378173a5.
-> > 
-> > uart_console() only indicates that the port is selected as the console.
-> > It does not mean that the console has already been registered or has
-> > printed the buffered messages.
+On Wed, Jul 29, 2026 at 07:19:27PM +0800, Xincheng Wang wrote:
+> Hi Greg,
 > 
-> The multi-system boot regression this fixes is still present in -next.
+> Thanks for the review.
+> 
+> You are right. The RCU stall I observed does not by itself justify
+> clamping long break intervals in the tty core, so I will drop that
+> patch.
+> 
+> While looking at this path, I noticed that tty_ioctl() multiplies the
+> TCSBRKP argument by 100 and passes the result to send_break(), whose
+> duration argument is unsigned int. Values whose product exceeds UINT_MAX
+> are silently truncated to an unintended duration.
+> 
+> Do you think it is worth fixing that separately by rejecting TCSBRKP
+> values that cannot fit in the unsigned-int millisecond duration used by
+> send_break()?
 
-Hi, Greg
+Wouldn't that break userspace that is currently relying on that
+truncation?
 
-Just a ping.
+thanks,
 
-Mark has confirmed that the regression is still present in -next.
-Could you please take a look and consider applying it to tty/tty-testing 
-and tty/tty-next?
-
--- 
-Regards,
-Fushuai
+greg k-h
