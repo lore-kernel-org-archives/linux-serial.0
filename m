@@ -1,71 +1,73 @@
-Received: from fhigh-a3-smtp.messagingengine.com (fhigh-a3-smtp.messagingengine.com [103.168.172.154])
+Received: from fout-a8-smtp.messagingengine.com (fout-a8-smtp.messagingengine.com [103.168.172.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2E6D63CB;
-	Wed, 29 Jul 2026 17:41:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.154
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61438390231;
+	Wed, 29 Jul 2026 17:41:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.151
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785346900; cv=none; b=qDkCCrlBMrPt1P0DQC3vJnxFD4FE8/pJnHcvoY0a60gkrrB3lFhewG5gO42/T55TejkesLaZLOocGp0e/dRXp3fGoplOiDc5sTLc6+u7w9zI8j/aHycPuMSCurbUrzVJW6HpN3B0ZOwQhXFwyu/SySkW1ANPUdm9Q9gObXPQtrE=
+	t=1785346910; cv=none; b=b/N6T6HbK0opCUoeNJ9diTHR01t+ajRACuYyJIvW/SAQ5FjefLThKPEVXe24G6eqK62kW0i1B0ruX7DqpNVQfj3dejGR0ZlRNwLqJlB8A3u2ktG5TESRRRgYFD0/KClNDRhlAkv0L72nZ3oa1whfzkuR0QDAZeiv+Facnd1ojkU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785346900; c=relaxed/simple;
-	bh=2gBApwpdXHZDv5iILGOpTOR4LXQ67JCvw5ye4Fd+EIM=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Mfq8N0cMKFFEylhP7suMQi3gy8ap4dCGSzRBlp0ONIzVnyM1E5ZAXDTpJ18NjKEgD5WgxypsvX3sadwIRZxA/FgfORR9+e0pqYy/u9UE+xT4Gc/crIO9N73yt/HkH13TJHuefJzlirZ5Fe/p6f1hJ+0ApiWXvqy9bnwhsGe4ixU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jaseg.de; spf=pass smtp.mailfrom=jaseg.de; dkim=pass (2048-bit key) header.d=jaseg.de header.i=@jaseg.de header.b=IDZO0TrS; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=YHjGw0e2; arc=none smtp.client-ip=103.168.172.154
+	s=arc-20240116; t=1785346910; c=relaxed/simple;
+	bh=qo5h3VNWAzGEFdvQ0xNBFa4ZF+t7QzbwK3DsnihikGk=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=XCehDHZBW6cCPMY68MB0Dd5+WHcxOILOefgLUFVVcG4ilWZQXPsuBmBnImip7kQoHzSUtcwqMjRG0CZvQ2Ez6xOYbDxWGPOunKklaSf6pJi81R/cu6JskhJLUFrt4VZ0PfJ0w57g4G9At7CdCPcpLPgVKiM0VdhX7l2cYF3KHiw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jaseg.de; spf=pass smtp.mailfrom=jaseg.de; dkim=pass (2048-bit key) header.d=jaseg.de header.i=@jaseg.de header.b=MtJEZ2Hs; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=DNXeZOr/; arc=none smtp.client-ip=103.168.172.151
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jaseg.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=jaseg.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=jaseg.de header.i=@jaseg.de header.b="IDZO0TrS";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="YHjGw0e2"
+	dkim=pass (2048-bit key) header.d=jaseg.de header.i=@jaseg.de header.b="MtJEZ2Hs";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="DNXeZOr/"
 Received: from phl-compute-08.internal (phl-compute-08.internal [10.202.2.48])
-	by mailfhigh.phl.internal (Postfix) with ESMTP id 3329A1400485;
-	Wed, 29 Jul 2026 13:41:29 -0400 (EDT)
+	by mailfout.phl.internal (Postfix) with ESMTP id 47714EC0522;
+	Wed, 29 Jul 2026 13:41:32 -0400 (EDT)
 Received: from phl-frontend-04 ([10.202.2.163])
-  by phl-compute-08.internal (MEProxy); Wed, 29 Jul 2026 13:41:29 -0400
+  by phl-compute-08.internal (MEProxy); Wed, 29 Jul 2026 13:41:32 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=jaseg.de; h=cc
 	:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:message-id:mime-version:reply-to
-	:subject:subject:to:to; s=fm2; t=1785346889; x=1785433289; bh=5C
-	1/smUgET6TsKrn9pHhHAr435jfr9/zrBEJoOJlAMI=; b=IDZO0TrSKyTBQhmS2q
-	nN1GzItrk3jdF2t2CNXrZv5M4gvmX7quiIjjAzp9IjPfA25CPoXhnZEOiHU0fZC1
-	M+wP0eKewrIsL5ECCycBemRyiH1kQavqv5i2wk+903winoKW2CRcP0dB9JfqXN/p
-	jKf9DrTQvu37RM0VJieypXSO18BZcHUhbwDiHtAJBseUCwrQpEAmTr85XiV05k6n
-	ZzJPZpCfUmiXtbKem8y0hePhLRPjplPN8v7KImKY1v18aTnTcnKuj2g5G6zyZtAk
-	dmse1pMJcexbg5wfo9b7lpQo9CBgHm4U8nfq442QIRs5xjD1cpLcSA0uwyHWEPT8
-	U74Q==
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm2; t=1785346892;
+	 x=1785433292; bh=O0dGnjvFzVmFkVemNxwSqq8PLt+SyQJiIe7cP5VoALg=; b=
+	MtJEZ2HsAOa/x9Pki7qBmHiaPyPS12482Tdabv/KBrCEfdXS8Lv2Sd9vx7YMZxIJ
+	mhxRY/PwmSUSkRYK9N1ddRkZqMv5cIMkw561n77NzG4gw5IDCLeNSvcajEBKPONC
+	riWOs8PQwBFnAxop5e+cDizKD351XY99Hy/X51rnDzsU31VVxf0u2mXlyeJgD+gf
+	FRE8IZanAQCDkzrz1QAANXSwRJl4ENnKpsrbvnAcY8kup424qUL0CF7gY/B+EeJ0
+	lyvFof8wKmRSlsCXZ9MGtyYp3wRElrWVJ4gkpjNDXoCP+VEYyGmlBGHzfFmT7qD/
+	qanmAAIpy2kQQPRWoeBInQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
 	messagingengine.com; h=cc:cc:content-transfer-encoding
 	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:message-id:mime-version:reply-to:subject
-	:subject:to:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-	fm2; t=1785346889; x=1785433289; bh=5C1/smUgET6TsKrn9pHhHAr435jf
-	r9/zrBEJoOJlAMI=; b=YHjGw0e254TVWrHhQ+7BKaqTVQsjgZp15vUX/j6KhOjr
-	nragP/J5Gh4EVXmjfsFlTL9V9g7nwoc7J5BeUs3w9ngf3vcYB3uAhU/RVmjL53Ip
-	clGv/UwaSXWGI5KEnoZdot63WJF0V49rQi5z4DTH2UQFCttrzqKbMHqR4xKOzfoE
-	swRnLTyeoKh8g8YovEVOsGKS99gxQQdar6zWyBAvrz6CA25+jD8FUKm+6YYcrlkO
-	IVczE6ImJ3vJj9tbZZ+Z2TUjiWiG3BFXF0OU/Cgbx9Z3Sw2tnHcJFmYu1YB2PW8o
-	me5W6VuWWqq0VF80gGn3BWejq4lhrzdRI/MkB/kC0A==
-X-ME-Sender: <xms:SDtqahmwC-P0-Esxv6MLp0soT4TQnfyWpV8l2kva71Kbue3qNiHUrA>
-    <xme:SDtqarH2tJOnIqom9N9zyZ0b0QKnpJ84w6PCl8xtVmkesL3e3CjUCbxBLzHKe0yYb
-    jfPMd5qZKBIlWUfgP2fQ8vGU732iiZbvU1tsfNzHxaVKHNb2vbO>
-X-ME-Received: <xmr:SDtqag9TKlqDIw8DV1vv9xiIV3jQ5wswXko4MPfgjU2ITdVmkdLuKL3EVZaVZcftUGvjUnMRF_4fTvVT>
-X-ME-Proxy-Cause: dmFkZTF3TYmFCLCNODJ3U4J5XtSQJL/TRjwwTvuXA2AX8wizCxnjvT325/2GgW/9w9t+C9
-    zMIf4vlu5WnYGd3u/bfqpUY/FlmPlq/8wL7mdnqU/h29BqgC8BB9OQ9MSJxtLHHWv+LccU
-    4PYzA6otDd+X6zx3B2M3/NbMQ6l0vKRMLS8Dak9sf3/cAEuCqds8F99/esZLmSI7TNHMeL
-    0TD/9Q/gCoacmyq4evYp+h96FVuAA6At/x5BWjIo9jPuOJR14tkmbuzsJftBx05I5+9/EX
-    rFJ8nJj6frylAVdsIT2iTDR1OXfS6j0zHq1xZMut6t6xc0+bKVKMXYNZOgcuSLH3uqH4kz
-    j4oviVOX9+IhOc7Wv+mibz7oW6VRY+ltN71boXfd2uKUErTvoiNyRaxHFoAdbWpXNlW5AS
-    U7TxL2zyG3RlH2Jn7WXm4S7mkoposUjUMqDJZtjyFzbUXBfEAEKnBW1uOBPEaHlL4zFc64
-    kBTT0442q4mQZbZq64prTAEBCHjGJEO9jAAp44On62Di0WOmd7GnwlJEfw5TN/ErzpTNtT
-    Oy1JJXHWWdJQnti3a+EsB9q0qJw/fwkmuF3Rr3cc2/YcR4uSkwjOa9/uvGvV0OMbP84sfa
-    drVAC8PCdj+IqfjQt9R0jD4GHes6TZz/wgHTqpLPoZ5clkrmDoRACg8+V68g
-X-ME-Proxy: <xmx:SDtqakmqXfWG4N7TOTxGAI3rrk4ajSZ1GiF3zUl9Qd34HEjwu-XW7Q>
-    <xmx:SDtqajAy9rjK0bWlb-K6IapX_5_SKJRrzZWWkFhIFVuIX3w8UDyE6w>
-    <xmx:SDtqalXpW5OJPMHe0SKILfg-GxYgL9YGhbAukLGd99d3xaPQOVZxTg>
-    <xmx:SDtqap_wceoVDcq4BVKG0f-NqcCvUXxpbWITIup0HtG8sE0pyw2NoQ>
-    <xmx:STtqajj4FCwHr66dozMO8XHFJdOuW7RR_LED8X_bSveZhhbeVBiUdTOQ>
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1785346892; x=
+	1785433292; bh=O0dGnjvFzVmFkVemNxwSqq8PLt+SyQJiIe7cP5VoALg=; b=D
+	NXeZOr/60e0fb5sHbBNwLfMKNdfGI6iesrq8ySgAOZPCGjJXKaIHkPEPW1jiAetU
+	J/P7Szacv+9IrYWBxWrE3yeourCJiZqlM1nX3OUAW8s1k4dfehJsV0b49Zy1end0
+	LUtWBTYZdr2I8S0yTDfdwJGk/g/Q5lNshznYL7l2cJ+qPOTCYc80Vfr7Nd614/zi
+	VKcgr7go4AdXnrMCEfydCD0KzNfF2NBjJmNvvu9+ED0zwXRR9bKYT3z19STNNF/O
+	LEAvS00iV6pcMrvm+hMJEVWPA6MAT0pdI8O55TnO10mLuW/CXtGojzM7GDHJMAkk
+	TcOP18CYYdoPYc4oLbwrA==
+X-ME-Sender: <xms:TDtqamCXl84g9haHqL6kv0TUrKVOfjMZ7OmTK87y1x2PHyLrh4X6tg>
+    <xme:TDtqaoqFCiBRV7TOVMp_yPRPSBd4EPvD4Hk7uyVdNG6WMOqyI7ZqgHWJ_Ls0gMACm
+    8yIKx2gmwORaCpLz1unjEQd15OXrfX8b3wIhhiuZJChFvvqfgTTrg>
+X-ME-Received: <xmr:TDtqapHlRakOGsZoGs9XH5mrlK41E4Dce6IaDLZTjmEngs1-MICGuGMRBlh1sUquIcDwGgczOu-A4oY8>
+X-ME-Proxy-Cause: dmFkZTFd5BfrM21xr15PPLyl6QtlAoAmZUqUjNtYelXjhTkjwkdSqVbbyQghuIT0yxuuFM
+    dtKeO806aLs5t9ZXAoT/57TqWQ6T7bTpANjrc+yXHahXevhrJFh5o4L95gCN6vGCPYcMXn
+    dp242DjRTDo8I/PqN/77JYx9bHkFRQuAEoP2PdXgdSODNRUDzKJ3nye04KaUK66oeqY4Qd
+    2uVrwFC7yjIoqOu8tcRZwjHGHE+oVYL7Zj+JSGLMCov/SmEAa9k9JQv/O8rmYCgdBVbTaw
+    Rz4Lfd6ASveFmVeqeGedG/Z7VCx6vPFDDkYMDpW/3W+5GDQeSx61xpB8agJOtEnhfKQMaQ
+    wfRBR8l8wOpUZfE24Q/RXeoOwaBIY1sjYzTGlAknp1OM41Sz42kagUB0Nxix6KIGcdJ0uU
+    HwShTlFxf5bAmlQXZ9KmkuPh/Xjy9gTDmk8+d3KhqTevmTOPIeLzon66IQ+r5vBm6qvIxm
+    QazFqTA+LaDLDrN5wMutQaZCgGY6j7WDDkBrto1qiIYHWuu99Ca6dENypUQ/UO68Kuau9k
+    JqG3V5lPoxP2G1xQ2IzqQplLngh+PYkSYPXIPqtk3Ope49Fgi2/LXk7y+d6KsgOOXnC9Qn
+    iH7CbQ0ZFcubR+SSDsSaySHjccOtV5rjxJ/shHM0lW392rogAJ7yOmMga6Qw
+X-ME-Proxy: <xmx:TDtqakuDGZE_htofql8eP8TuSR2Twv4vvRv12aVIr5aTGwm4v9PDOw>
+    <xmx:TDtqanZq5kOrtDdPJ4ZO3Pz6C_ekt5RE34yKDj9da5P8xa-z6gcYAw>
+    <xmx:TDtqas739sqx3KLSQi3BwzsoIiWXvB2gxOplCeeeabCozfXA4cgb-w>
+    <xmx:TDtqan-hnPxWHSy0cPopMZlfX8gl4eBcv9BExPaimy7EWEpOoORgQA>
+    <xmx:TDtqahJvhtG8CTE9_ASzz3Pf8nKQatXR06VhN8Wv4sUnAGINkKc28vnY>
 Feedback-ID: i60a14417:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 29 Jul 2026 13:41:27 -0400 (EDT)
+ 29 Jul 2026 13:41:30 -0400 (EDT)
 From: jaseg <git@jaseg.de>
 To: 'Greg Kroah-Hartman ' <gregkh@linuxfoundation.org>,
 	'Jiri Slaby ' <jirislaby@kernel.org>,
@@ -76,11 +78,14 @@ Cc: 'Praveen Talari ' <praveen.talari@oss.qualcomm.com>,
 	'Krzysztof Kozlowski ' <krzk@kernel.org>,
 	linux-arm-msm@vger.kernel.org,
 	linux-serial@vger.kernel.org,
-	=?UTF-8?q?Jan=20Sebastian=20G=C3=B6tte?= <linux@jaseg.de>
-Subject: [PATCH 0/1] serial: qcom-geni: fix TX DMA buffer flush
-Date: Wed, 29 Jul 2026 19:41:04 +0200
-Message-ID: <20260729174105.21838-1-git@jaseg.de>
+	=?UTF-8?q?Jan=20Sebastian=20G=C3=B6tte?= <linux@jaseg.de>,
+	stable@vger.kernel.org
+Subject: [PATCH 1/1] serial: qcom-geni: fix TX DMA buffer flush
+Date: Wed, 29 Jul 2026 19:41:05 +0200
+Message-ID: <20260729174105.21838-2-git@jaseg.de>
 X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20260729174105.21838-1-git@jaseg.de>
+References: <20260729174105.21838-1-git@jaseg.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -92,70 +97,126 @@ Content-Transfer-Encoding: 8bit
 
 From: Jan Sebastian Götte <linux@jaseg.de>
 
-I ran into a weird issue using the UART on an Arduino Uno Q (Qualcomm
-QRB2210) target. When doing a write immediately followed by a transmit
-flush, the UART would get stuck infinitely repeating a stale DMA buffer
-and become unresponsive to further write() calls.
+When transmit flushing a qcom-geni UART during an ongoing TX DMA, the
+UART gets stuck infinitely repeating corrupted TX DMA frames.
 
-With some assistance from an LLM, I tracked down the issue to the geni
-serial driver's DMA mode code. There are at least two issues in the code
-that contribute to this behavior:
+The DMA-mode uart_ops does not provide a flush_buffer callback, so an
+in-flight transfer can complete after serial core has reset the transmit
+kfifo, underflowing its length and resubmitting page-sized transfers
+indefinitely. Add one that stops the transfer and clears tx_remaining
+and tx_queued.
 
-(1) In DMA mode, uart_ops.flush_buffer is missing, leading to an
-underflow in handle_tx_dma, which leads to an infinite loop of
-page-sized buffers being sent out.
+The stop path was also broken: it unmapped the buffer while the serial
+engine could still read it, and never reset the TX DMA state machine.
+Cancel the main sequencer command first, then reset the state machine
+and wait for it before unmapping. Drop the early return so a pending
+mapping is also cleaned up when the main command is inactive.
 
-(2) In DMA mode, uart_ops.stop_tx was fishy, and unmapped the DMA buffer
-without actually stopping the peripheral's DMA engine which led to a
-stuck state where the UART wouldn't transmit any more bytes.
+The bug can be triggered from userspace with a large write immediately
+followed by TCOFLUSH. A following tcdrain will hang forever. The bug was
+reproduced and this fix was validated on Arduino Uno Q (QRB2210)
+using /dev/ttyHS1.
 
-Qualcomm refused to give me access to their documentation, so I'm left
-guessing and vibe checking LLM output on some of this, but I've
-confirmed looking at hardware with an oscilloscope that both the fixes
-in stop_tx, and the new flush_buffer are necessary to solve the issue.
-
-What's left is that I'm pretty sure that even with my rework, stop_tx
-will still lead to buffer contents being re-transmitted after restarting
-when it's called during an ongoing DMA transfer. AFAICT there never was
-anything here that would keep track of partial transfers, so I think I
-didn't make things worse. I don't have a nice way to debug this, and I
-don't know what the original intention of whoever wrote that code was,
-so I'm leaving that for maybe someone at Qualcomm to have a look at.
-
-Below is a reproducer that when the bug is present hangs and leads to an
-infinite stream of alphabet soup on the UART TX pin.
-
-(*snip*)
-#include <fcntl.h>
-#include <stdio.h>
-#include <termios.h>
-#include <unistd.h>
-
-int main(int argc, char **argv)
-{
-	char buf[4096];
-	int fd, i;
-	for (i = 0; i < (int)sizeof(buf); i++)
-		buf[i] = 'A' + i % 26;
-	fd = open(argc > 1 ? argv[1] : "/dev/ttyHS1", O_RDWR | O_NOCTTY);
-	write(fd, buf, sizeof(buf));
-	usleep(20000);
-	tcflush(fd, TCOFLUSH);
-    write(fd, "foo\r\n", 5);
-    usleep(100000);
-	puts("tcdrain: hangs forever when wedged");
-	tcdrain(fd);
-	puts("tcdrain returned: NOT wedged");
-	return 0;
-}
-(*snip*)
-
-Jan Sebastian Götte (1):
-  serial: qcom-geni: fix TX DMA buffer flush
-
+Assisted-by: Claude:claude-5-opus Codex:gpt-5
+Signed-off-by: Jan Sebastian Götte <linux@jaseg.de>
+Fixes: 2aaa43c70778 ("tty: serial: qcom-geni-serial: add support for serial engine DMA")
+Cc: stable@vger.kernel.org
+---
  drivers/tty/serial/qcom_geni_serial.c | 43 ++++++++++++++-------------
  1 file changed, 22 insertions(+), 21 deletions(-)
 
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 7ead87b4eb65..1e39122ec09f 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -158,6 +158,7 @@ static const struct uart_ops qcom_geni_uart_pops;
+ static struct uart_driver qcom_geni_console_driver;
+ static struct uart_driver qcom_geni_uart_driver;
+ 
++static void qcom_geni_serial_stop_tx_dma(struct uart_port *uport);
+ static void __qcom_geni_serial_cancel_tx_cmd(struct uart_port *uport);
+ static void qcom_geni_serial_cancel_tx_cmd(struct uart_port *uport);
+ static int qcom_geni_serial_port_setup(struct uart_port *uport);
+@@ -636,35 +637,34 @@ static unsigned int qcom_geni_serial_tx_empty(struct uart_port *uport)
+ 	return !readl(uport->membase + SE_GENI_TX_FIFO_STATUS);
+ }
+ 
++static void qcom_geni_serial_flush_buffer_dma(struct uart_port *uport)
++{
++	struct qcom_geni_serial_port *port = to_dev_port(uport);
++
++	qcom_geni_serial_stop_tx_dma(uport);
++	port->tx_remaining = 0;
++	port->tx_queued = 0;
++}
++
+ static void qcom_geni_serial_stop_tx_dma(struct uart_port *uport)
+ {
+ 	struct qcom_geni_serial_port *port = to_dev_port(uport);
+-	bool done;
+ 
+-	if (!qcom_geni_serial_main_active(uport))
+-		return;
++	if (qcom_geni_serial_main_active(uport))
++		__qcom_geni_serial_cancel_tx_cmd(uport);
+ 
+ 	if (port->tx_dma_addr) {
++		writel(1, uport->membase + SE_DMA_TX_FSM_RST);
++		if (!qcom_geni_serial_poll_bit(uport, SE_DMA_TX_IRQ_STAT,
++					       TX_RESET_DONE, true))
++			dev_err_ratelimited(uport->dev, "TX DMA reset failed");
++		writel(TX_RESET_DONE | TX_DMA_DONE,
++		       uport->membase + SE_DMA_TX_IRQ_CLR);
++
+ 		geni_se_tx_dma_unprep(&port->se, port->tx_dma_addr,
+ 				      port->tx_remaining);
+ 		port->tx_dma_addr = 0;
+-		port->tx_remaining = 0;
+ 	}
+-
+-	geni_se_cancel_m_cmd(&port->se);
+-
+-	done = qcom_geni_serial_poll_bit(uport, SE_GENI_M_IRQ_STATUS,
+-					 M_CMD_CANCEL_EN, true);
+-	if (!done) {
+-		geni_se_abort_m_cmd(&port->se);
+-		done = qcom_geni_serial_poll_bit(uport, SE_GENI_M_IRQ_STATUS,
+-						 M_CMD_ABORT_EN, true);
+-		if (!done)
+-			dev_err_ratelimited(uport->dev, "M_CMD_ABORT_EN not set");
+-		writel(M_CMD_ABORT_EN, uport->membase + SE_GENI_M_IRQ_CLEAR);
+-	}
+-
+-	writel(M_CMD_CANCEL_EN, uport->membase + SE_GENI_M_IRQ_CLEAR);
+ }
+ 
+ static void qcom_geni_serial_start_tx_dma(struct uart_port *uport)
+@@ -1180,7 +1180,7 @@ static void qcom_geni_serial_shutdown(struct uart_port *uport)
+ 	uart_port_unlock_irq(uport);
+ }
+ 
+-static void qcom_geni_serial_flush_buffer(struct uart_port *uport)
++static void qcom_geni_serial_flush_buffer_fifo(struct uart_port *uport)
+ {
+ 	qcom_geni_serial_cancel_tx_cmd(uport);
+ }
+@@ -1769,7 +1769,7 @@ static const struct uart_ops qcom_geni_console_pops = {
+ 	.request_port = qcom_geni_serial_request_port,
+ 	.config_port = qcom_geni_serial_config_port,
+ 	.shutdown = qcom_geni_serial_shutdown,
+-	.flush_buffer = qcom_geni_serial_flush_buffer,
++	.flush_buffer = qcom_geni_serial_flush_buffer_fifo,
+ 	.type = qcom_geni_serial_get_type,
+ 	.set_mctrl = qcom_geni_serial_set_mctrl,
+ 	.get_mctrl = qcom_geni_serial_get_mctrl,
+@@ -1792,6 +1792,7 @@ static const struct uart_ops qcom_geni_uart_pops = {
+ 	.request_port = qcom_geni_serial_request_port,
+ 	.config_port = qcom_geni_serial_config_port,
+ 	.shutdown = qcom_geni_serial_shutdown,
++	.flush_buffer = qcom_geni_serial_flush_buffer_dma,
+ 	.type = qcom_geni_serial_get_type,
+ 	.set_mctrl = qcom_geni_serial_set_mctrl,
+ 	.get_mctrl = qcom_geni_serial_get_mctrl,
 -- 
 2.53.0
 
