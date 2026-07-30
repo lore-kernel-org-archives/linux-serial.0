@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC7801F3B85;
-	Thu, 30 Jul 2026 14:11:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0BC54398F4;
+	Thu, 30 Jul 2026 14:21:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785420711; cv=none; b=NcKriSZcRaocYpqwYOPN0T2O8UAU/2r+VGzxWTTj/LK9HRBi7SGU0yhT+cjArSHfh858GFh8dCp2jEs8ej5KaoNRJrlV1Elc2/8JJggAwCkqnW+oUG3Ie3/UBCe5pHYSjjpsg0ZD0Hl5nOhGD9N1YlSe/cHFo9q0nujcm+hO/XU=
+	t=1785421288; cv=none; b=OXtk/RcPHNk6BwHhjQ7q9LZ8z2nWpv/aXcLwNJzKdZLJAsFp6X481Yu5f1EfC7HTDjgynxhM1/aRmJND/MlUAfepdEwrNNwlyS0w7n6bKrxJi+rYTxRY2G5RbpgIzvf0X1IhGhQ4tmYcjVhV/QNSNTMFr6zNRku0nWBVKIe47Tw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785420711; c=relaxed/simple;
-	bh=58yU4qPtja/6Fpw6sKzfo0PGAqgv65nlsTPh9rhr31k=;
+	s=arc-20240116; t=1785421288; c=relaxed/simple;
+	bh=wSl8E8+vk6XB4jnkCW92nqsV2NUMcYbUpPs0SG6KQfE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Q7hNYVqfVEw6x+f69UB5Yeky8poQwKw39aosaywx7leZSebMsjs7MRIF1iX5M8lKA4lJx2jLPjpM1lv+0QHiLSUVmme1jZLexdO8VcBrCRmwzuEw2M+aoFy9w17p602++y4SKldtIQIvgvnr3SDpqE/wQWUk/bUfGnPmjQ6SZfQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Z8vLubTb; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=CGfAt7+KRQucD2drso5Yu333kdYMOWOd8rRP8xOOWvz2qzAi1ZLwhX8Z3Og+8+qFmXxMqmrA5SPsDPg+tux1PPwy32A4SZFvm8tPY7ZbNdiV2xXCM4ikXUzx8NB9nT22mn3m9AFqPM8xh7P0hJe7lQnEPqzNMK97M8xdfvtnjMs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZMf7bEHk; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Z8vLubTb"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70AC31F000E9;
-	Thu, 30 Jul 2026 14:11:49 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZMf7bEHk"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A0A21F00A3D;
+	Thu, 30 Jul 2026 14:21:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785420709;
-	bh=xOfZ1XZtmIGv5xPs/JpL5IA5kDeBp4wZjvToK2htZEg=;
+	s=k20260515; t=1785421283;
+	bh=qr2zNnHjplGtyB5hdoOxSOD8DyZRyErx54DxXFIYXP0=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=Z8vLubTbVrC5ggTk1y2XualK8J6337oJ22xbo6bslpP7b4zn0dWTkMpUIQ9r2F1vd
-	 wVgQx4rddZtSPRahJAUSCohb8kgDwjkOe/0FJzH9ieNLIiG6MR96um9+5hEimKYvL/
-	 al4vXaF0SYqn4yr3k9vm1F4IHLxrex+cFKMj2FP2iwvdYCeY1dESMqfjP+wKT1aSAZ
-	 DOyOQN5S1xNyPYjdZL9wIk5mMYrO+1bNzh1stF/vmBLT6xHQnRp4VP8U81ldpWcz6t
-	 jEgq4ctZt4/UPYwlQeQl+RD46/tA3FfeX5ZVxDfq/wxEzU60d6kQ+0ZhQ/eG3ndBTN
-	 mjIFhls78msYw==
-Date: Thu, 30 Jul 2026 09:11:48 -0500
+	b=ZMf7bEHkIttfkrZA+Z/z8PuF/NtQrck8+3kHY4qGEVwV5CosLsrrRQg4HpSvZWDyK
+	 y1Zs9iY631bZsBPI7v7dbmuFTaMPvY60BQjlRn6rMbtE5gI8hsBpOOV4zk6ULOTfME
+	 c+xGxVNwDBJhmbfB1uPaWShyUwQsUEj7af0i9N4H3SXEm35nDHJSO6akpN+3ctvwCD
+	 f3d8E78VyO8KHLEhQua0/ZkwSQqqdIBaPSDtK+SZWq2pff9ZmrANjT1qnfOhzkfq3W
+	 iTwcPV3QhO2EaBXaEwTaDv+/eb+y7DRC+m6y0A6jp5NGF1Rv15As9mH5boHgG0m+oE
+	 GpRIBdk6pIguQ==
+Date: Thu, 30 Jul 2026 09:21:22 -0500
 From: Rob Herring <robh@kernel.org>
 To: Long Zhao <longzhao@ambarella.com>
 Cc: Arnd Bergmann <arnd@arndb.de>,
@@ -41,11 +41,10 @@ Cc: Arnd Bergmann <arnd@arndb.de>,
 	Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
 	Catalin Marinas <catalin.marinas@arm.com>,
 	Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 03/10] dt-bindings: clock: add Ambarella CV75 RCT clock
- controller
-Message-ID: <20260730141148.GA2828054-robh@kernel.org>
+Subject: Re: [PATCH 04/10] dt-bindings: pinctrl: add Ambarella CV75 pinctrl
+Message-ID: <20260730142122.GA2952224-robh@kernel.org>
 References: <20260730104330.81367-1-longzhao@ambarella.com>
- <20260730104330.81367-4-longzhao@ambarella.com>
+ <20260730104330.81367-5-longzhao@ambarella.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -54,165 +53,181 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260730104330.81367-4-longzhao@ambarella.com>
+In-Reply-To: <20260730104330.81367-5-longzhao@ambarella.com>
 
-On Thu, Jul 30, 2026 at 06:43:23PM +0800, Long Zhao wrote:
-> Add the CV75 RCT clock controller binding and clock ID header.
+On Thu, Jul 30, 2026 at 06:43:24PM +0800, Long Zhao wrote:
+> Add the CV75 pin controller binding and pinmux ID header.
 > 
 > Signed-off-by: Long Zhao <longzhao@ambarella.com>
 > ---
->  .../bindings/clock/ambarella,cv75-rct.yaml    | 94 +++++++++++++++++++
->  .../dt-bindings/clock/ambarella,cv75-clock.h  | 17 ++++
->  2 files changed, 111 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/clock/ambarella,cv75-rct.yaml
->  create mode 100644 include/dt-bindings/clock/ambarella,cv75-clock.h
+>  .../pinctrl/ambarella,cv75-pinctrl.yaml       | 167 ++++++++++++++++++
+>  .../dt-bindings/pinctrl/ambarella,pinctrl.h   |  11 ++
+>  2 files changed, 178 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pinctrl/ambarella,cv75-pinctrl.yaml
+>  create mode 100644 include/dt-bindings/pinctrl/ambarella,pinctrl.h
 > 
-> diff --git a/Documentation/devicetree/bindings/clock/ambarella,cv75-rct.yaml b/Documentation/devicetree/bindings/clock/ambarella,cv75-rct.yaml
+> diff --git a/Documentation/devicetree/bindings/pinctrl/ambarella,cv75-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/ambarella,cv75-pinctrl.yaml
 > new file mode 100644
-> index 000000000000..5ff5b6a4a0b9
+> index 000000000000..8a331c642fad
 > --- /dev/null
-> +++ b/Documentation/devicetree/bindings/clock/ambarella,cv75-rct.yaml
-> @@ -0,0 +1,94 @@
+> +++ b/Documentation/devicetree/bindings/pinctrl/ambarella,cv75-pinctrl.yaml
+> @@ -0,0 +1,167 @@
 > +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
 > +%YAML 1.2
 > +---
-> +$id: http://devicetree.org/schemas/clock/ambarella,cv75-rct.yaml#
+> +$id: http://devicetree.org/schemas/pinctrl/ambarella,cv75-pinctrl.yaml#
 > +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
-> +title: Ambarella CV75 RCT Clock Controller
+> +title: Ambarella CV75 Pin Controller
 > +
 > +maintainers:
 > +  - Long Zhao <longzhao@ambarella.com>
 > +
-> +description: |
-> +  The RCT (Reset and Clock Tree) block on the Ambarella CV75 SoC provides
-> +  PLLs, clock muxes and dividers for on-chip peripherals.
-> +
-> +  The same register region is also exposed as a syscon for other drivers
-> +  (e.g. pin drive-strength), hence the "syscon" compatible.
-> +
-> +  Clock indices are defined in
-> +  include/dt-bindings/clock/ambarella,cv75-clock.h:
-> +
-> +  - CV75_GCLK_UART0: UART0 mux/div clock
-> +  - CV75_GCLK_CORE: Core PLL (gclk_core)
-> +  - CV75_GCLK_AHB: AHB bus clock (core / 2)
-> +  - CV75_GCLK_APB: APB bus clock (core / 4)
+> +description:
+> +  The Ambarella CV75 pin controller configures pin multiplexing, bias and
+> +  drive strength for the main GPIO banks. Pin multiplexing entries encode
+> +  the pin number and alternate function with the AMBA_PINMUX() macro from
+> +  dt-bindings/pinctrl/ambarella,pinctrl.h.
 > +
 > +allOf:
-> +  - $ref: /schemas/mfd/syscon-common.yaml#
-
-Drop this.
-
+> +  - $ref: pinctrl.yaml#
 > +
 > +properties:
-> +  $nodename:
-> +    pattern: "^clock-controller(@.*)?$"
-
-"^clock-controller@"
-
-unit-address is not optional.
-
-> +
 > +  compatible:
-> +    items:
-> +      - const: ambarella,cv75-rct
-> +      - const: syscon
+> +    const: ambarella,cv75-pinctrl
 > +
 > +  reg:
-> +    maxItems: 1
+> +    items:
+> +      - description: GPIO bank 0 registers
+> +      - description: GPIO bank 1 registers
+> +      - description: GPIO bank 2 registers
+> +      - description: IOMUX registers
+
+I'm not really convinced this is 1 h/w block. Looks more like 4 to me.
+
 > +
-> +  clocks:
-> +    description: Reference crystal oscillator (typically 24 MHz)
-> +    maxItems: 1
+> +  reg-names:
+> +    items:
+> +      - const: gpio0
+> +      - const: gpio1
+> +      - const: gpio2
+> +      - const: iomux
 > +
-> +  clock-names:
-> +    const: osc
+> +  interrupts:
+> +    items:
+> +      - description: GPIO bank 0 interrupt
+> +      - description: GPIO bank 1 interrupt
+> +      - description: GPIO bank 2 interrupt
+
+These go in the child nodes or your really should have 3 instances of 
+your GPIO h/w.
+
 > +
-> +  "#clock-cells":
+> +  ambarella,drive-strength-syscon:
+> +    $ref: /schemas/types.yaml#/definitions/phandle
+> +    description: RCT syscon containing the drive-strength registers.
+> +
+> +  ambarella,pull-syscon:
+> +    $ref: /schemas/types.yaml#/definitions/phandle
+> +    description: Secure scratchpad syscon containing the pull registers.
+> +
+> +  "#address-cells":
 > +    const: 1
 > +
-
-> +  assigned-clocks: true
+> +  "#size-cells":
+> +    const: 0
 > +
-> +  assigned-clock-parents: true
+> +patternProperties:
+> +  "^gpio@[0-9a-f]+$":
+> +    type: object
+> +    additionalProperties: false
 > +
-> +  assigned-clock-rates: true
+> +    properties:
+> +      reg:
+> +        maxItems: 1
 
-Drop. These are implicitly allowed for any node with 'clocks'.
+If the child nodes stay, this should be the MMIO GPIO bank address, not 
+a made up bank number.
 
+> +
+> +      gpio-controller: true
+> +
+> +      "#gpio-cells":
+> +        const: 2
+> +
+> +      gpio-ranges:
+> +        maxItems: 1
+> +
+> +      interrupt-controller: true
+> +
+> +      "#interrupt-cells":
+> +        const: 2
+> +
+> +    required:
+> +      - reg
+> +      - gpio-controller
+> +      - "#gpio-cells"
+> +      - gpio-ranges
+> +      - interrupt-controller
+> +      - "#interrupt-cells"
+> +
+> +  "^[a-z0-9-]+-pins$":
+> +    type: object
+> +    allOf:
+> +      - $ref: pinmux-node.yaml#
+> +      - $ref: pincfg-node.yaml#
+> +    additionalProperties: false
+> +
+> +    properties:
+> +      function: true
+> +
+> +      pinmux:
+> +        $ref: /schemas/types.yaml#/definitions/uint32-array
+> +        minItems: 1
+> +        maxItems: 96
+> +
+> +      bias-disable: true
+> +      bias-pull-down: true
+> +      bias-pull-up: true
+> +
+> +      drive-strength:
+> +        enum: [3, 4, 5, 6, 7, 8, 9, 12]
+> +
+> +    required:
+> +      - function
+> +      - pinmux
 > +
 > +required:
 > +  - compatible
 > +  - reg
-> +  - clocks
-> +  - clock-names
-> +  - "#clock-cells"
+> +  - reg-names
+> +  - interrupts
+> +  - ambarella,drive-strength-syscon
+> +  - ambarella,pull-syscon
+> +  - "#address-cells"
+> +  - "#size-cells"
 > +
 > +unevaluatedProperties: false
 > +
 > +examples:
 > +  - |
-> +    #include <dt-bindings/clock/ambarella,cv75-clock.h>
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +    #include <dt-bindings/pinctrl/ambarella,pinctrl.h>
 > +
-> +    / {
-> +        compatible = "ambarella,cv75-evk", "ambarella,cv75";
-> +        #address-cells = <2>;
-> +        #size-cells = <2>;
-
-Drop all this, not relevant to this binding.
-
-> +
-> +        osc: oscillator {
-> +            compatible = "fixed-clock";
-> +            #clock-cells = <0>;
-> +            clock-output-names = "osc";
-> +            clock-frequency = <24000000>;
-> +        };
-
-Drop. We don't put providers in examples.
-
-> +
-> +        rct: clock-controller@ed080000 {
-> +            compatible = "ambarella,cv75-rct", "syscon";
-> +            reg = <0xff 0xed080000 0x0 0x1000>;
-> +            clocks = <&osc>;
-> +            clock-names = "osc";
-> +            #clock-cells = <1>;
-> +
-> +            assigned-clocks = <&rct CV75_GCLK_UART0>;
-> +            assigned-clock-parents = <&osc>;
-> +            assigned-clock-rates = <24000000>;
-> +        };
+> +    rct: rct {
 > +    };
-> diff --git a/include/dt-bindings/clock/ambarella,cv75-clock.h b/include/dt-bindings/clock/ambarella,cv75-clock.h
-> new file mode 100644
-> index 000000000000..3d3314446e75
-> --- /dev/null
-> +++ b/include/dt-bindings/clock/ambarella,cv75-clock.h
-> @@ -0,0 +1,17 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause */
-> +/*
-> + * Copyright (C) 2026 Ambarella, Inc.
-> + */
 > +
-> +#ifndef _DT_BINDINGS_CLOCK_AMBARELLA_CV75_CLOCK_H
-> +#define _DT_BINDINGS_CLOCK_AMBARELLA_CV75_CLOCK_H
+> +    scratchpad: scratchpad {
+> +    };
 > +
-> +/* Boot / bus clocks */
-> +#define CV75_GCLK_UART0                0
-> +#define CV75_GCLK_CORE         1
-> +#define CV75_GCLK_AHB          2
-> +#define CV75_GCLK_APB          3
-> +
-> +#define CV75_CLK_NUM           4
-> +
-> +#endif
-> --
-> 2.34.1
-> 
-> NOTE: This email (including attachments) contain Ambarella Proprietary and/or Confidential Information and is intended solely for the use of the individual(s) to whom it is addressed. Any unauthorized review, use, disclosure, distribute, copy, or print is prohibited. If you are not an intended recipient, please contact the sender by reply email and destroy all copies of the original message. Thank you.
+> +    pinctrl: pinctrl@e4013000 {
+> +        compatible = "ambarella,cv75-pinctrl";
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +        reg = <0xe4013000 0x1000>, <0xe4014000 0x1000>,
+> +              <0xe4015000 0x1000>, <0xe4010000 0x1000>;
 
-You must remove this or we can't do anything with your patches.
+The alignment and size of these blocks is what tells me these are 
+separate blocks, not 1 block.
 
 Rob
