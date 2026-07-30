@@ -1,50 +1,40 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DFA8468C3A;
-	Thu, 30 Jul 2026 16:20:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9EF2469834;
+	Thu, 30 Jul 2026 16:20:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785428433; cv=none; b=ZsMz7ywImwm+pW5ii6KGc1RqMjs/HwoFDOyCT12Uz92O0IrP+WQmptP9KKdEymTj7n5rTbZYQX/UdDIiNPHKB1i6JjMy0POsUTRwdsy+L+WYGXseKg8O731MN+j300V2kFZ4U73Kpbj9Tbu6q1vKz/5oBdwp4nCUUvR9VsbOsmw=
+	t=1785428436; cv=none; b=JwwpCNo5vMRv6nqcU/iZi9I0n+EJr5s6yRQb/vXBhwd9pA6BfKDfFRfgueoKenugYG/RTLI955cHwF03aYriLKm8HnMgqs/ZI9hFMWRt5DMouUQSlykMbdo6UNNm3DhHJUlWT8HXcIzyDv8Kctp9/xkunYpwDjp4BPEfFw/Tnvg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785428433; c=relaxed/simple;
-	bh=UllcFxHjL5JUj7P0PKdmlQDx/aw5+TfTF31NO3heFhs=;
+	s=arc-20240116; t=1785428436; c=relaxed/simple;
+	bh=A4/1tW7h6zxlQBWRUA6+Wqi1bzSlxLg8MltiLeRi83s=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JqNPyaJOy4SM1sZR3LOUItJ1Ali4fln1uaIkN1t6YNW7CVWtk8QUR1P9feP82OP/9HnaXjEcmcxcW3i7FlkP8UF0yyMW1SpoubY3QDml5UcKbREwTB5f+J2YIxxHY9IfnH8Ua3MNniSv7p9Eg0pNoJH/0/Uov1nALpeC9KQf9ik=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=cGQRDIc2; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=Hj26vf+bNC0d4hXyzosD9WbrqkWsWWKJtEYfv6PW2CgLbmaWwimAgkw0p22ifNmfeTQaFAaTpbbChUyJWBiV8GcFiyz3ztoR89PDENtByJcYwCTtpg3EfuNAJC1jUjGqEk1pSjXEzV+JInC8XW2ZHPW/eumHC9CQNpqZFDFkk90=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=IWhLp4u2; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="cGQRDIc2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 579B21F000E9;
-	Thu, 30 Jul 2026 16:20:31 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="IWhLp4u2"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 584171F000E9;
+	Thu, 30 Jul 2026 16:20:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1785428432;
-	bh=HiCmLZEykQtwo+3aaoochyv6FuW4RAqsOt+hc8VVdd0=;
+	s=korg; t=1785428434;
+	bh=+iuGoat9AdxQzu1rkzKWJvdxdqSaBy046101iklSDi8=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=cGQRDIc2qjLO6l18IrBzXzAzVtWxUeaeOp9uiRxH7q40otPsFXytqPkNW1fLhuRG4
-	 hcMUjxXDJ7Yg8ZSnmRTI2TGTzVUT9itOTEmz/jXMDSdt98Y7WWyS/Oz5yCnxKGX7LS
-	 VeTn70b0iPfIOCTghuaZbLTqwGg1etI+xr54kBwg=
-Date: Thu, 30 Jul 2026 16:54:49 +0200
+	b=IWhLp4u2N6DG8voIA3Bvg3NayfUCwAbpGYTNNUeF1wl3agb1mo7JmEc0U1ORVnYmy
+	 D0wth+eMaTuJ7owG99/H+H1kdj0ld7T7fcYE6n6Er+TTUt7KUw7LdkhRrXs1zO/D85
+	 P+Bs6i6gbQcpluy3VzvQEspD2YCQ466SF0/vsVSY=
+Date: Thu, 30 Jul 2026 17:00:10 +0200
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Christian Marangi <ansuelsmth@gmail.com>
-Cc: Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Benjamin Larsson <benjamin.larsson@genexis.eu>,
-	John Ogness <john.ogness@linutronix.de>,
-	Peng Zhang <zhangpeng.00@bytedance.com>,
-	Jacques Nilo <jnilo@free.fr>,
-	Rong Zhang <rongrong@oss.cipunited.com>,
-	Gerhard Engleder <eg@keba.com>,
-	Jiaxun Yang <jiaxun.yang@flygoat.com>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Binbin Zhou <zhoubinbin@loongson.cn>,
-	Lubomir Rintel <lkundrak@v3.sk>, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v2 0/2] serial: 8250: Add AN7581 UART support
-Message-ID: <2026073035-bubble-pentagram-3dfe@gregkh>
-References: <20260724183007.188172-1-ansuelsmth@gmail.com>
+To: Praveen Talari <praveen.talari@oss.qualcomm.com>
+Cc: Jiri Slaby <jirislaby@kernel.org>, konrad.dybcio@oss.qualcomm.com,
+	bjorn.andersson@oss.qualcomm.com, linux-arm-msm@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	chandana.chiluveru@oss.qualcomm.com,
+	mukesh.savaliya@oss.qualcomm.com
+Subject: Re: [PATCH 0/3] serial: qcom-geni: Reuse common GENI framework
+ helpers
+Message-ID: <2026073053-gracious-creole-cbaa@gregkh>
+References: <20260720-reuse_common_geni_framework_helpers-v1-0-c3330ab9b982@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -53,22 +43,38 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260724183007.188172-1-ansuelsmth@gmail.com>
+In-Reply-To: <20260720-reuse_common_geni_framework_helpers-v1-0-c3330ab9b982@oss.qualcomm.com>
 
-On Fri, Jul 24, 2026 at 08:30:04PM +0200, Christian Marangi wrote:
-> This is a new version of [1] to support UART driver for
-> Airoha SoC.
+On Mon, Jul 20, 2026 at 08:37:48PM +0530, Praveen Talari wrote:
+> The Serial driver currently maintains several helpers that duplicate
+> functionality already available in the GENI core, including resource
+> initialisation, power-domain attachment, runtime PM resource
+> management, and perf-level selection.
 > 
-> One additional function was needed serial8250_get_baud_rate()
-> for the driver to work correctly for baud rate calculation.
+> Replace these with common GENI helper APIs for resource initialization,
+> runtime PM resource management, and performance-level configuration.  This
+> reduces code duplication and centralizes GENI resource handling.
 > 
-> While at it also try to clarify a long standing issue with
-> new UART driver when adding new ids for uart_config[].
+> Signed-off-by: Praveen Talari <praveen.talari@oss.qualcomm.com>
+> ---
+> Praveen Talari (3):
+>       serial: qcom-geni: Use common GENI resource initialisation helpers
+>       serial: qcom-geni: Use resources helper APIs in runtime PM functions
+>       serial: qcom-geni: Use geni_se_set_perf_level() for baud rate perf level
 > 
-> [1] https://lore.kernel.org/all/20250209210241.2622309-1-benjamin.larsson@genexis.eu/
+>  drivers/tty/serial/qcom_geni_serial.c | 204 ++++++----------------------------
+>  1 file changed, 34 insertions(+), 170 deletions(-)
+> ---
+> base-commit: 782f4dbd1794b4f30dc116a7ca42c5962c409be8
+> change-id: 20260720-reuse_common_geni_framework_helpers-787081bd61a7
+> 
+> Best regards,
+> --  
+> Praveen Talari <praveen.talari@oss.qualcomm.com>
+> 
 
-For your next version, please address the review comments found here:
-	https://sashiko.dev/#/patchset/20260724183007.188172-1-ansuelsmth@gmail.com
+Doesn't apply to my tty-testing branch now, perhaps because I took your
+other patch for this driver?
 
 thanks,
 
