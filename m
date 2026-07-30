@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E116532ED3A;
-	Thu, 30 Jul 2026 05:49:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B63EC33F8B2;
+	Thu, 30 Jul 2026 06:01:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785390595; cv=none; b=pmcXNqEMa9c2WvsnAQnx9mlq4kof2qj+FtVnKOOHAUCN6mGzVJFaIp/xWNSMutPZ4YfQDkmxr1+dY5RreyhL6lU0LxRUbFUNCEiJKS9e6aEKyr2IDYJJJwUgCby/0gc/trv7uUHyVYdiP/jWlP27bRmzIqDQE6tMg0rLbqXn1nQ=
+	t=1785391320; cv=none; b=rW6aRtoxgzzNLvhFfeYGEV2q4tTRl6dKxJcBakgWz47vpUoJ/6Qlu1AJNMG/RjDCiXrdRMHdt4R06kSQsRcDb07QxAuFfVSX+vCrfJSJpxoLkVCkqqSgabUDq0Qq2uKXvuC6GAa6lgIrftciSQWz2tXXmhTB6neHX95PHRmvwbc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785390595; c=relaxed/simple;
-	bh=L5OlKOGonYLda5FedjM33T4BZvXL6e+L8Cxt0+IOpqg=;
+	s=arc-20240116; t=1785391320; c=relaxed/simple;
+	bh=CHRcDAcvCwYt7QmhZ9W30DATbHC2RoGiI/hskcwBRs4=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=kkPSR9tcqweuX8mFMe/qBdsh5bpMJWYPgp11j6kt/mcywYF0bIG2+YDkfpHUQ3etRmJiy6LszxHuG8P+iASQeLfHGTxWHNORwYZR/i1US+xAlZwf8MAqBB4jbKTDS5+3hCtpoBBGcSdCy9ktvBYTxYrDH7RTr7YY6JenQdhACT0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GULkMyuE; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=e2Dn4gB1KGVCYcGJhueRtiG2b9XmPO+OuM/lySy4zPvmMqIJpl3h9GLQ6mdZwVZgvEUuYcz6XAfteVsExvyHL2OkrqolXFpf6JSsT+ZbYW1tvHj3nfv3ZGVr71HLDLC1Q5oa+QcFtzJWGDy8FBo0cMYqxkTpWvrc2YWyrSd0iKM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=g++jFDeQ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GULkMyuE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DCC41F000E9;
-	Thu, 30 Jul 2026 05:49:47 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="g++jFDeQ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEB5D1F000E9;
+	Thu, 30 Jul 2026 06:01:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785390594;
-	bh=tKA1qT4g+rLJRWBX4pdd62gjNJBehqiiwoW1GWrwqZc=;
+	s=k20260515; t=1785391314;
+	bh=vzf5E9YWmAZhDySeQdCiaA8p9qnrfA18758sslrcdpE=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=GULkMyuEcG6EB2uPqj9NBBQZi3ioCU1hcBCIglU6vKm16CknDCUgaAWj34G5whPT8
-	 XjMwx7pgLa3YQ2Cfp8qnMO1Lal22sVGACPjclE5q2PmElxlZ+zEAl5ZHyGJKgRzeWi
-	 RHmgeL9YY9ftSimhnPgNN/cUKshIStD5mIb8yqvZJyVxVWUwewph0xtJk5UJSihxeZ
-	 HP6MvzVfxkKR6kqsvmRJ33dm77hqT823h2W13A+Kj3mUhB8MgnMwHph1vL4rJSL8g2
-	 5DcvYh0aBDPSRJ2Nn0mCa/XP5knl1qUg1OPBnRIMyIpLbjdQeujAzjrQBsqM3BwRFB
-	 VZ8apwBKbxM3Q==
-Message-ID: <82cb09bd-7f95-4cb8-9cd9-634dbcf38729@kernel.org>
-Date: Thu, 30 Jul 2026 07:49:43 +0200
+	b=g++jFDeQmsP0fpaGxVUet1TluXjoHAC16+WEi0wcahlFrxUCP3V+/i7z0dqbP3DIn
+	 UQKqzComer9/SqrBVRHVCvv6HQnZ+z9jwjCkvoZE3prcGqzPX+Bhy05AOm4ZI8w/M5
+	 pbkOjwvu2EsAfPsQ5CLdgyYGtBOcgC7KEUQ65wh4nNng7NGvh8gbGYBP8MtWqn8sJH
+	 rZD5tdUfhDzUPm8if0xwu+uMBnVzx0VH3U5+o68tDVlYpobKdUO3NQFn7Xgqex9Jzb
+	 +BiS24s/GtK3jf3O4JVGXmIFfj8gh69Q/HPK2QofMrKXhw/rWi0PLkocGLBEYQSCVl
+	 XxV1JI7VFBv7w==
+Message-ID: <1abc49c7-fca8-4aea-ab5e-0881176de840@kernel.org>
+Date: Thu, 30 Jul 2026 08:01:49 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,15 +35,15 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 05/14] serial: 8250_mxpcie: offload XON/XOFF flow
- control to MUEx50 hardware
+Subject: Re: [PATCH v4 11/14] serial: 8250_mxpcie: add break support for RS485
+ using MUEx50 features
 To: Crescent Hsieh <crescentcy.hsieh@moxa.com>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Andy Shevchenko <andy.shevchenko@gmail.com>
 Cc: FangpingFP.Cheng@moxa.com, Epson.Chiang@moxa.com, EddieSY.Lin@moxa.com,
  linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 References: <20260729060602.492430-1-crescentcy.hsieh@moxa.com>
- <20260729060602.492430-6-crescentcy.hsieh@moxa.com>
+ <20260729060602.492430-12-crescentcy.hsieh@moxa.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -88,50 +88,60 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20260729060602.492430-6-crescentcy.hsieh@moxa.com>
+In-Reply-To: <20260729060602.492430-12-crescentcy.hsieh@moxa.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 29. 07. 26, 8:05, Crescent Hsieh wrote:
-> The MUEx50 UART can handle in-band software flow control (XON/XOFF)
-> directly in hardware.
+> On MUEx50, break signaling under RS485 requires a driver-specific
+> sequence and cannot be handled correctly by the generic 8250 break
+> implementation alone.
 > 
-> Program the on-chip XON/XOFF characters from termios settings and enable
-> the corresponding MUEx50 flow control modes when IXON or IXOFF is
-> requested. Provide throttle and unthrottle callbacks so RX can be
-> stopped and resumed cleanly.
+> Implement a mxpcie break_ctl callback that performs MUEx50-specific
+> break handling when RS485 is enabled and fall back to the default 8250
+> break handling for other modes.
 > 
 > Signed-off-by: Crescent Hsieh <crescentcy.hsieh@moxa.com>
 > ---
->   drivers/tty/serial/8250/8250_mxpcie.c | 55 +++++++++++++++++++++++++--
->   1 file changed, 52 insertions(+), 3 deletions(-)
+>   drivers/tty/serial/8250/8250_mxpcie.c | 49 +++++++++++++++++++++++++++
+>   1 file changed, 49 insertions(+)
 > 
 > diff --git a/drivers/tty/serial/8250/8250_mxpcie.c b/drivers/tty/serial/8250/8250_mxpcie.c
-> index 1124c7d951b3..0517caaf2d26 100644
+> index 927615f2d724..878fc64c4451 100644
 > --- a/drivers/tty/serial/8250/8250_mxpcie.c
 > +++ b/drivers/tty/serial/8250/8250_mxpcie.c
-...> @@ -172,6 +184,23 @@ static void mxpcie8250_set_termios(struct 
-uart_port *port,
->   		efr |= (MOXA_PUART_EFR_AUTO_RTS | MOXA_PUART_EFR_AUTO_CTS);
->   		up->port.status |= (UPSTAT_AUTORTS | UPSTAT_AUTOCTS);
->   	}
-> +	/* Set on-chip software flow control character */
-> +	serial_out(up, MOXA_PUART_XON1, START_CHAR(tty));
-> +	serial_out(up, MOXA_PUART_XON2, START_CHAR(tty));
-> +	serial_out(up, MOXA_PUART_XOFF1, STOP_CHAR(tty));
-> +	serial_out(up, MOXA_PUART_XOFF2, STOP_CHAR(tty));
+> @@ -54,6 +54,7 @@
+>   
+>   /* Special Function Register (SFR) */
+>   #define MOXA_PUART_SFR		0x07
+> +#define MOXA_PUART_SFR_FORCE_TX	BIT(0)
+>   #define MOXA_PUART_SFR_950	BIT(5)
+>   
+>   /* Enhanced Function Register (EFR) */
+> @@ -384,6 +385,53 @@ static int mxpcie8250_handle_irq(struct uart_port *port)
+>   	return 1;
+>   }
+>   
+> +static void mxpcie8250_software_break_ctl(struct uart_port *port, int break_state)
+> +{
+> +	struct uart_8250_port *up = up_to_u8250p(port);
+> +	struct tty_struct *tty = port->state->port.tty;
+> +	unsigned char tx_byte = 0x01;
+
+Do you actually need the variable? If so, it should be u8, given you 
+call byte and use it as such.
+
+> +	unsigned int baud, quot;
+> +	u8 sfr;
 > +
-> +	efr &= ~(MOXA_PUART_EFR_RX_FLOW_MASK | MOXA_PUART_EFR_TX_FLOW_MASK);
-
-This is not needed, as you use FIELD_MODIFY(), right?
-
-> +	val = I_IXON(tty) ? MOXA_PUART_EFR_RX_FLOW_XON1_XOFF1 : MOXA_PUART_EFR_RX_FLOW_DISABLED;
-> +	efr = FIELD_MODIFY(MOXA_PUART_EFR_RX_FLOW_MASK, &efr, val);
+> +	guard(uart_port_lock_irqsave)(port);
 > +
-> +	val = I_IXOFF(tty) ? MOXA_PUART_EFR_TX_FLOW_XON1_XOFF1 : MOXA_PUART_EFR_TX_FLOW_DISABLED;
-> +	efr = FIELD_MODIFY(MOXA_PUART_EFR_TX_FLOW_MASK, &efr, val);
-
-Assigning back to efr is unnecessary. The reg is updated in-place.
+> +	if (break_state == -1) {
+> +		serial_out(up, UART_LCR, up->lcr | UART_LCR_DLAB);
+> +		serial_dl_write(up, 0);
+> +		serial_out(up, UART_LCR, up->lcr);
+> +
+> +		serial_out(up, MOXA_PUART_TX_FIFO_MEM, tx_byte);
 
 thanks,
 -- 
