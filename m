@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B63EC33F8B2;
-	Thu, 30 Jul 2026 06:01:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD1D92DF3EA;
+	Thu, 30 Jul 2026 06:05:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785391320; cv=none; b=rW6aRtoxgzzNLvhFfeYGEV2q4tTRl6dKxJcBakgWz47vpUoJ/6Qlu1AJNMG/RjDCiXrdRMHdt4R06kSQsRcDb07QxAuFfVSX+vCrfJSJpxoLkVCkqqSgabUDq0Qq2uKXvuC6GAa6lgIrftciSQWz2tXXmhTB6neHX95PHRmvwbc=
+	t=1785391550; cv=none; b=nx04uWSCxXJ5Mb8G0Ym/kI3W9C+4IgyMsKDpYoi2Jle7dnHu7/gmoIIS9eDQvJMY3VjMZbMrZvuvGdCS/tPydLj5KTjGmutreNcfFP71q+/2SHedDGlR5PngXOkR0cIjSqCRImx2yjJ6g8viLhUdgx14HKuHrGrldgLWTFEeryw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785391320; c=relaxed/simple;
-	bh=CHRcDAcvCwYt7QmhZ9W30DATbHC2RoGiI/hskcwBRs4=;
+	s=arc-20240116; t=1785391550; c=relaxed/simple;
+	bh=uiB0EE/8XSkvECoRR/FTm2jzKxQVCu56EfC9z+qprv8=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=e2Dn4gB1KGVCYcGJhueRtiG2b9XmPO+OuM/lySy4zPvmMqIJpl3h9GLQ6mdZwVZgvEUuYcz6XAfteVsExvyHL2OkrqolXFpf6JSsT+ZbYW1tvHj3nfv3ZGVr71HLDLC1Q5oa+QcFtzJWGDy8FBo0cMYqxkTpWvrc2YWyrSd0iKM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=g++jFDeQ; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=mNT2dv0spjSZ4hsevjIpEP7SZ3WweJmW6yYaT4OZAp3XIMWbunwrBB31Tl8W6r5QECkfHEqbLspcL3Ed9RtLCobpunv7eRoVdtFGM5ZFH9fI4wKVBEKhOMjbF55nP0P9vX1Th4qtrua+q2WXH856WxKg0RsSNx24KztJJb4in/c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GtamCXF8; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="g++jFDeQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEB5D1F000E9;
-	Thu, 30 Jul 2026 06:01:51 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GtamCXF8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 837171F000E9;
+	Thu, 30 Jul 2026 06:05:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785391314;
-	bh=vzf5E9YWmAZhDySeQdCiaA8p9qnrfA18758sslrcdpE=;
+	s=k20260515; t=1785391549;
+	bh=tAOuAVsCjjlXv5KkLTD4QdgQYPCwzqX1BB1iFUTAalc=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=g++jFDeQmsP0fpaGxVUet1TluXjoHAC16+WEi0wcahlFrxUCP3V+/i7z0dqbP3DIn
-	 UQKqzComer9/SqrBVRHVCvv6HQnZ+z9jwjCkvoZE3prcGqzPX+Bhy05AOm4ZI8w/M5
-	 pbkOjwvu2EsAfPsQ5CLdgyYGtBOcgC7KEUQ65wh4nNng7NGvh8gbGYBP8MtWqn8sJH
-	 rZD5tdUfhDzUPm8if0xwu+uMBnVzx0VH3U5+o68tDVlYpobKdUO3NQFn7Xgqex9Jzb
-	 +BiS24s/GtK3jf3O4JVGXmIFfj8gh69Q/HPK2QofMrKXhw/rWi0PLkocGLBEYQSCVl
-	 XxV1JI7VFBv7w==
-Message-ID: <1abc49c7-fca8-4aea-ab5e-0881176de840@kernel.org>
-Date: Thu, 30 Jul 2026 08:01:49 +0200
+	b=GtamCXF8LsNyuOtX0bFxte6e2wpAFTZv/HNUf8fbyJRtGzD2RtVKpHyfR7BTefAUc
+	 lyejbFVWXRUBerhfdz6fFxKKF/VE2YlLN0RA5dFRRyhICMdknBSxe6t8ltf2L5GWxw
+	 ty6/iuEycnSkWed9HPy7BhNdZMiJres9bW37FY2SJTW6PEoI1qDJjx8h1360uLPvsq
+	 ETUtZ4wRJLhGBqTcnNsiOB1BBdmfXlAW+F+NCQpO3uWGOny6ZtgQvvzYchJIOz7Jwj
+	 +qDSS7PlGWqES7rimkkrHG5C6nGUvgK/FK0N3LV9M08t512ZcQmOXPSted6kzAMsSb
+	 5wAZLNDk3apMw==
+Message-ID: <b383f0bc-f077-4a0a-ab8b-bde0021696e4@kernel.org>
+Date: Thu, 30 Jul 2026 08:05:45 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,15 +35,13 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 11/14] serial: 8250_mxpcie: add break support for RS485
- using MUEx50 features
+Subject: Re: [PATCH v4 00/14] serial: 8250: add Moxa MUEx50 PCIe board support
 To: Crescent Hsieh <crescentcy.hsieh@moxa.com>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Andy Shevchenko <andy.shevchenko@gmail.com>
 Cc: FangpingFP.Cheng@moxa.com, Epson.Chiang@moxa.com, EddieSY.Lin@moxa.com,
  linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 References: <20260729060602.492430-1-crescentcy.hsieh@moxa.com>
- <20260729060602.492430-12-crescentcy.hsieh@moxa.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -88,62 +86,45 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20260729060602.492430-12-crescentcy.hsieh@moxa.com>
+In-Reply-To: <20260729060602.492430-1-crescentcy.hsieh@moxa.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 29. 07. 26, 8:05, Crescent Hsieh wrote:
-> On MUEx50, break signaling under RS485 requires a driver-specific
-> sequence and cannot be handled correctly by the generic 8250 break
-> implementation alone.
+> This series consolidates Moxa PCIe multiport serial board support under a
+> dedicated 8250_mxpcie driver and adds MUEx50 UART support needed by these
+> boards.
 > 
-> Implement a mxpcie break_ctl callback that performs MUEx50-specific
-> break handling when RS485 is enabled and fall back to the default 8250
-> break handling for other modes.
+> The first part splits the existing Moxa PCIe board handling out of
+> 8250_pci into a separate driver while preserving the existing probe flow
+> and device IDs. The series then introduces the MUEx50 UART port type and
+> enables the board-specific UART setup, including enhanced mode and FIFO
+> trigger programming.
 > 
-> Signed-off-by: Crescent Hsieh <crescentcy.hsieh@moxa.com>
+> The driver adds hardware-assisted flow control support for MUEx50 UARTs,
+> including automatic RTS/CTS handling and XON/XOFF offload. It also adds a
+> custom IRQ path and uses the MUEx50 memory-mapped FIFO windows to improve
+> RX and TX data movement.
+> 
+> Later patches add serial interface mode switching, RS485 break handling,
+> and per-port private state for MUEx50-specific configuration. The driver
+> supports switching the serial interface mode through the RS485
+> configuration path, covering RS232, RS422, and RS485 modes supported by
+> the boards.
+> 
+> The final part extends 8250 core callbacks where needed so low-level
+> drivers can override break control and rx_trig_bytes handling. The
+> 8250_mxpcie driver uses these hooks to implement RS485 break handling via
+> MUEx50 features and to expose the MUEx50 programmable RX trigger level
+> through the generic rx_trig_bytes sysfs interface.
+> 
 > ---
->   drivers/tty/serial/8250/8250_mxpcie.c | 49 +++++++++++++++++++++++++++
->   1 file changed, 49 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_mxpcie.c b/drivers/tty/serial/8250/8250_mxpcie.c
-> index 927615f2d724..878fc64c4451 100644
-> --- a/drivers/tty/serial/8250/8250_mxpcie.c
-> +++ b/drivers/tty/serial/8250/8250_mxpcie.c
-> @@ -54,6 +54,7 @@
->   
->   /* Special Function Register (SFR) */
->   #define MOXA_PUART_SFR		0x07
-> +#define MOXA_PUART_SFR_FORCE_TX	BIT(0)
->   #define MOXA_PUART_SFR_950	BIT(5)
->   
->   /* Enhanced Function Register (EFR) */
-> @@ -384,6 +385,53 @@ static int mxpcie8250_handle_irq(struct uart_port *port)
->   	return 1;
->   }
->   
-> +static void mxpcie8250_software_break_ctl(struct uart_port *port, int break_state)
-> +{
-> +	struct uart_8250_port *up = up_to_u8250p(port);
-> +	struct tty_struct *tty = port->state->port.tty;
-> +	unsigned char tx_byte = 0x01;
+> Changes in v4:
 
-Do you actually need the variable? If so, it should be u8, given you 
-call byte and use it as such.
+This looks very well from my POV, except the two nits. Thanks for this.
 
-> +	unsigned int baud, quot;
-> +	u8 sfr;
-> +
-> +	guard(uart_port_lock_irqsave)(port);
-> +
-> +	if (break_state == -1) {
-> +		serial_out(up, UART_LCR, up->lcr | UART_LCR_DLAB);
-> +		serial_dl_write(up, 0);
-> +		serial_out(up, UART_LCR, up->lcr);
-> +
-> +		serial_out(up, MOXA_PUART_TX_FIFO_MEM, tx_byte);
+Let's see what others say ;).
 
-thanks,
 -- 
 js
 suse labs
