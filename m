@@ -1,203 +1,135 @@
-Received: from mail-qk1-f174.google.com (mail-qk1-f174.google.com [209.85.222.174])
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 411F2426697
-	for <linux-serial@vger.kernel.org>; Thu, 30 Jul 2026 19:39:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 638A7381AE0
+	for <linux-serial@vger.kernel.org>; Thu, 30 Jul 2026 19:57:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785440385; cv=none; b=cYk/wJsQF0ZtJtkQo3fIyVJ4zHqpR1j6K9qq3SF/A6naEwuUnccwSlza0VwzfFxsXbMNP92OMJ5ifY58214/VbLoxngJ2PuU8mX7ZfCEBhE1mjcBJO8mPBEX5O5yJ6BQA4kfJ8OkwmJqLPsoO/E/LQvue5oySX70LVREMlk0/YU=
+	t=1785441426; cv=none; b=rCwjra0UDpd8sVEOH/D+0tBO1+Ase7xxvBcnhol4XDuhapEoDHgnvRdtRahRHgHMmqLzgxortPYuBMDTt4vnnfZl2GjWrTNETtpl7Jk4ABqcyj2RH5qqgSMxliezofZuHLzQ3F9rFKJRpAAhapUfVHkQ3RGc0JHu46p4/xEB1Iw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785440385; c=relaxed/simple;
-	bh=Xek6nAcAxHFWtjTAXAbgJUByFpoNIJp1L8Sni4LGBl4=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=JueP7O2wKqIFFM+PTAUCrTbF16Ljm8fhIJ+xjVphXaHf8c1t0fhE+qT34K8XXaFF9x8K2PzuYwiMtgrL5aLInxLd8USUI2BsQB/ts0yapb/RThCntj0eI2cMRgiWlxrBkhbUQzLD9nLvTE9Ju2MjXDYLpLHHYp9uilmu38jpD7s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CtdAdN4/; arc=none smtp.client-ip=209.85.222.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1785441426; c=relaxed/simple;
+	bh=5pjwylgUPG1ddiNDqMWkVVOaSdmxfjYRjTkVlzwlr2I=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=CsDY4v2Dy1rk7i79jVPfXOXcjav6eDbzk1e4ZynwSNPJyEAv4wm1nCUkW8MDLkVt21NOZf/ysVrNwiJ2cmPWz8KvoYllnUvH2bFZhoMwSSPty9pnAGWd+N9HbdrW+Gx0DZzQj7S8P5s/nF73aBWAwybLvA3gqNeh3rCb9jnw338=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=oAsHhKkQ; arc=none smtp.client-ip=209.85.128.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CtdAdN4/"
-Received: by mail-qk1-f174.google.com with SMTP id af79cd13be357-930f618435cso13167385a.3
-        for <linux-serial@vger.kernel.org>; Thu, 30 Jul 2026 12:39:43 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="oAsHhKkQ"
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-49556f97a9dso1065655e9.1
+        for <linux-serial@vger.kernel.org>; Thu, 30 Jul 2026 12:57:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785440382; x=1786045182; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=q6CySGkLA59m8l/gGJ5sKhCAFzbLaQDYRMPErxTdJ2I=;
-        b=CtdAdN4/GfEdLyg43GhFfgy0K1fzVoIHwwWAB5aqigR1jq3GVpYqd8my8kiv7ktNB+
-         gt6TlZY4T2ms0cDE+hf+La8Dwjy24P95xh9i/Q70TK9lxaUxETs35EWeTbC1yVGew40b
-         aPEd8hJv+tbqZKSKK9flzGPuuMK0z6jYvkDXvwTqCa6d6smGPhkrAn49I1WCqrOT+P6z
-         /M34DufKAoM0HE7/476ni7XXSm8JLQ9t25Eo7NufVsDuOEAN+PbeEIwaxZV1X+YrYVWU
-         /D9dBqgsFfZ5US0NR7JwtV0uyc4555fZSu+/SDdmg7LsuMH0SRQVscrgcaXroJG9QM4e
-         kmnA==
+        d=baylibre.com; s=google; t=1785441423; x=1786046223; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=5pjwylgUPG1ddiNDqMWkVVOaSdmxfjYRjTkVlzwlr2I=;
+        b=oAsHhKkQMfj0nozwJToDDehLOzAObAe4opbZPEF07R8h/jmPJ7rRIBLpL2e1DC38+u
+         c1MhOB5PAI/h/zqGQ5D7+EwHxVIBtLU/roO4KqOWboac0tVqDPcUc+KwPMl0IiXiU5fQ
+         ZRHG+cRRSlV48zb2nXsJogsBRB5RWjsVZvIyuR+VS1iMbhdfTnldQhIGxMXMJKvlCYhY
+         dO4yL/6c5SYbErvER1Gs0Lgj2Tq/VuyFyD3Tr4eV56Avp+0/dDovzn3ItGW5m3HZpKpn
+         5ZUPvCzgYXVLaHdO0BnkccXWo5SmvVvZHzpNvpBjEU5AVlR21SW2y8mOQZlW9t9EG7Fw
+         QZjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785440382; x=1786045182;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=q6CySGkLA59m8l/gGJ5sKhCAFzbLaQDYRMPErxTdJ2I=;
-        b=QoFHlhF6kF/Ms54L2Cv7+WNEDOzq1ocJBMCcfvQg8w2Qmi0ZmbbU9lwHn19A2MaYzZ
-         NYn1c+Hhrt07B5ajU8rlGzkRgcUfqd0OPWHSYC7g9SJ3XTX1bjx0d4dUxy9yUaTFe5BN
-         4U4GP4/c6LQdftDEhtWcLdUjV/Zm4d6FizlQguQhz6OwR5qeW0/49Uyp4G4I61hxqHJa
-         wkIhWOaREHld1bfS9432z3OGhZFz8BHv+2V3vIYXliOtaTSLuTIhWamsIhfn96DdEgP2
-         gR06KDeSxXd4DnnC3r34YmfcApfWpmpETL4XUPCOTujzAtHfHsKZQ0htwG1BPmIym11j
-         mJGw==
-X-Forwarded-Encrypted: i=1; AHgh+Rp+QJcD5uFJf2WI+l9Q8ys96XFbWuX6ekOKQbpiniN4FRWW1zK6PXovyfW0W9RKEdbemMgfC9QBb097WsI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxuuGYIqTrA3hqAveg2sJBJiX3TDd/NBzYxzoBPmP8q41nsCMaG
-	Azk2MuUGUei6ow4i4VU6kEdFWlwzNHg0vf9nv6p6IAowPLtMQgHzvuA=
-X-Gm-Gg: AR+sD10bFk8eJCYnS0gXKHJ18UoNCY8EiKlM6WUVnzSKXQ5FroIN1DHiEVndfLwtjRT
-	QMoFubaPorsR2hlaTwk7E/bRRVcuYb1cU2ykhzcwv276mEvF2bPvSHc7h2OJKLFtEDMF0WnJ9wP
-	swI7H+hm9kibUQAscUbG9uCs4NK3qcNI/u67M93iruFdSehhwxjkxWTlS0tuNipVtb3IoYSjnj5
-	MBmScXv564O9F9qYNpb0hEkRK3iE3rhY5h+DvTGmHnQuEzaPurfweqaVtl9n+WHsY4lVwx3pPvE
-	C5e/qblwtzRhTsMBIU9JeLFLnCuWkFpednIQcJAZQIZsXTlf38X0QzzsHo/DJC8ymyeaYpeOiit
-	LpjTbFrZNvKevH1Qd+8sHFh4Jp1pPXDexbxQHjR2iE4irko5OoZk3umSrhfWI/OhRDhDau6StHP
-	RzIBLliX8DFCurjn8mB0BYDQURlSHR2VbvlHLBY7FFtd5cbq+J8+e4hXxxtr4LLcF0WCafoqSEO
-	wIgoMKyFVP/yaElK+wXyJ9uuubEN8UqXqhRN/5OgzoIrgU8oW44
-X-Received: by 2002:a05:6214:54ca:b0:8ce:e651:5d63 with SMTP id 6a1803df08f44-90834753f59mr46487746d6.31.1785440381934;
-        Thu, 30 Jul 2026 12:39:41 -0700 (PDT)
-Received: from NAUTEL-9N0B043.nautel.com (host-76-11-42-59.public.eastlink.ca. [76.11.42.59])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-9083231957asm24537616d6.16.2026.07.30.12.39.40
+        d=1e100.net; s=20251104; t=1785441423; x=1786046223;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=5pjwylgUPG1ddiNDqMWkVVOaSdmxfjYRjTkVlzwlr2I=;
+        b=O9m5huoPXLxGpZgre7u8ns9uZJ7YwcwPGuTCAkWZsa4m7rGSpAapR0VQPAgcnkjZVi
+         OD2PQN+F04uITNg+6LG/lxEN8gl4/0WFC9U6dT7zES1l/lwK6+gPRN8R0QRDERQ8BbCN
+         eewljAhuBawtqN0Nd92Lg01M8oVyxbOTbI2st/Z9Ax0x1cqY2C58Dpg1EFGvGt3V4bqS
+         GsUU1sCmdCed97MHBC8pKfqolybYS+JWc2ktiR9Y7wrb1usw2ZUCpp/TZJ3FTsw17miv
+         fEmnX42SEck4M+VflHvtr3ekYzqHXvlskGhzf5CC7yECJtoz4XhykfafrYpE04ar0V7n
+         PLWw==
+X-Forwarded-Encrypted: i=1; AHgh+Rr5LWNP09FuR14ovNubewJWIFBok3u9pa83qXlRbR98+x7mM++MNnbLlw4X+TEYHqZgKvKY+Gf8hutSrzA=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy/9azKzt3p4almkUeI5dlaR5SN0tdGdl2s/FGzVygyd8MXXNQ1
+	JkcIoKYaQAHwOMVYAn+nX4h78SZjwsRc2a64AeJA/jtlLxO/qx4wesqPAJqYXgPkuMU=
+X-Gm-Gg: AR+sD10ptgdBjTCyeOCVOVVpvyYk7G8LezsqmMf49YcAXNoOMiUqzNxs/Ac+Sn7fd+a
+	K43hs0os/X9IOIc9jnArMmIfKg2lK/P0OMZ3KXTDUGAj6ww0BFYKIluCDjxlPMRZulJoaToPWfG
+	wrlYlfJ6lRn+Z4D81O/kpp2ktUEl7XJVrmIyZQlBtJhvt+TrHiXNXy16l2fEwpaSn4DLRxy7ayk
+	+TlWv4mQOe9qD09WDCxToyjZPUYDWOEsiXy81JeKsYsun7qohIMrLSsowJYU3Gh8E7PLB+XogjJ
+	R8s5MDKLZ+Pt9sXlOGB4ACRbt5TEzKaXI8zaYnJgdpkBOFWuidEQlPz/IGl8UdFmapLD94I1U39
+	Z03jPUM5iSJgfosKyyLj/s5ldB66Z5renCD2kb8/Bp9fuZWBEcxyuh4Gj7YUGIIsV1F+wOLB4vT
+	GtCFytWlUPsIMRFKjmAvxWGiCb82rd9Wo5sSYH4ASUgTi6FjNC1YiyEPsL0MdxiDd5Jw==
+X-Received: by 2002:a05:600c:6298:b0:495:64c7:804f with SMTP id 5b1f17b1804b1-49800ea1ea9mr56132035e9.23.1785441423688;
+        Thu, 30 Jul 2026 12:57:03 -0700 (PDT)
+Received: from localhost ([2a02:8071:56d1:2de0:1d24:d58d:2b65:c291])
+        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-4980120ba7fsm86961305e9.11.2026.07.30.12.57.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jul 2026 12:39:41 -0700 (PDT)
-From: Ryan Wilbur <rwilbur633@gmail.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	John Ogness <john.ogness@linutronix.de>,
-	Manuel Lauss <manuel.lauss@gmail.com>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Ryan Wilbur <rwilbur633@gmail.com>,
-	stable@vger.kernel.org
-Subject: [PATCH v4] serial: 8250_of: clear stuck empty-FIFO RX-timeout on LPC32xx
-Date: Thu, 30 Jul 2026 16:39:20 -0300
-Message-Id: <20260730193920.28954-1-rwilbur633@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 30 Jul 2026 12:57:02 -0700 (PDT)
+Date: Thu, 30 Jul 2026 21:57:01 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
+To: Hugo Villeneuve <hugo@hugovil.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Hugo Villeneuve <hvilleneuve@dimonoff.com>, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH] serial: 8250_hub6: Fix double definition for
+ hub6_match_port()
+Message-ID: <amusQjI0DOPzL4jM@monoceros>
+References: <20260720100708.5b9b3ed9f6f42b27adb264d4@hugovil.com>
+ <al6PfMCuRiYcOBQV@monoceros>
+ <20260720185326.9652faa0df7b02e07eeb7d4b@hugovil.com>
+ <amGYgUhPrSdR5srV@monoceros>
+ <20260723231359.5d7fa1e8e11990fa00c476f4@hugovil.com>
+ <amMZoJ41FKcd2ddG@monoceros>
+ <20260727112210.7a0b08d19de0e17fbd995290@hugovil.com>
+ <20260727112643.86b3ab3a725eabc66eb47e39@hugovil.com>
+ <amn8Hb2dbv_Sah_Y@monoceros>
+ <2026073028-anointer-unlinked-c0ea@gregkh>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="rftteozv3p3yh4rc"
+Content-Disposition: inline
+In-Reply-To: <2026073028-anointer-unlinked-c0ea@gregkh>
 
-The NXP LPC32xx UART (PORT_LPC3220) can latch an RX character-timeout
-interrupt while the RX FIFO is empty: IIR reports UART_IIR_RX_TIMEOUT
-(0x0c) but LSR.DR is clear. A character timeout is only cleared by
-reading RHR, but serial8250_rx_chars() reads RHR only when LSR.DR is
-set, so nothing ever clears the condition. The interrupt is
-level-triggered and re-fires immediately, so on a single-core ARM926
-the resulting interrupt storm livelocks the CPU.
 
-It is reproducible when userspace repeatedly opens the front-panel port
-(ttyS1): serial8250_do_set_termios() re-enables interrupts on unlock and
-the handler then spins forever with iir=0xcc lsr=0x60 ier=0x05, tripping
-the soft-lockup detector in serial8250_handle_irq_locked().
+--rftteozv3p3yh4rc
+Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH] serial: 8250_hub6: Fix double definition for
+ hub6_match_port()
+MIME-Version: 1.0
 
-LPC32xx has no dedicated 8250 glue driver, it's driven by the generic
-8250_of. Add a hardware specific handle_irq for PORT_LPC3220, wired up
-in of_platform_serial_setup() the same way fsl8250_handle_irq is
-installed. The handler follows dw8250_handle_irq(): on an RX timeout
-with an empty FIFO (LSR.DR and LSR.BI clear) it does one throwaway RHR
-read to clear the condition, then calls serial8250_handle_irq_locked().
-No real received data is ever discarded, and it is a no-op on healthy
-UARTs which never report a timeout with DR clear.
+Hello Hugo,
 
-This is the same class of bug already worked around in other 8250 drivers;
-see commit 424d79183af0 ("serial: 8250_dw: Avoid "too much work" from bogus rx timeout interrupt")
-which reports the identical iir=0xcc/lsr=0x60. See also
-UART_RX_TIMEOUT_QUIRK in 8250_omap, and the note in 8250_bcm7271.
+On Thu, Jul 30, 2026 at 04:49:45PM +0200, Greg Kroah-Hartman wrote:
+> On Wed, Jul 29, 2026 at 03:30:57PM +0200, Uwe Kleine-K=F6nig wrote:
+> > I think the real fix would be to just copy uart_match_port() into the
+> > two drivers that actually use it (and remove the then dead code paths).
+> > Then it would be drivers/tty/serial/8250/8250_core.c using
+> > hub6_match_port() only and that can be handled by a proper dependency.
+>=20
+> I'm totally confused, so I'll drop this patch from my review queue and
+> wait for you all to figure it out :)
 
-Cc: stable@vger.kernel.org
-Assisted-by: Claude:Opus4.8
-Signed-off-by: Ryan Wilbur <rwilbur633@gmail.com>
----
-Changes in v4:
-- Add MODULE_IMPORT_NS("SERIAL_8250") so 8250_of.c builds as a module.
-  Now calls the namespaced serial8250_handle_irq_locked(). Fixes the
-  modular build break reported by Greg KH. Reproduced the failure with
-  CONFIG_SERIAL_OF_PLATFORM=m and confirmed v4 builds cleanly
+Does my suggestion make sense for you? Do you intend to work on this to
+unconfuse Greg?
 
-Changes in v3:
-- Move the workaround out of serial8250_handle_irq_locked() into an
-  LPC32xx-specific ->handle_irq in 8250_of.c
-- Skip the dummy read when LSR.BI is set, matching dw8250_handle_irq
+Best regards
+Uwe
 
-Changes in v2:
-- Drop the PORT_LPC3220 gate and handle the spurious RX timeout generically
+--rftteozv3p3yh4rc
+Content-Type: application/pgp-signature; name="signature.asc"
 
-v3: https://lore.kernel.org/linux-serial/20260722140353.115899-1-rwilbur633@gmail.com/
-v2: https://lore.kernel.org/linux-serial/20260720131123.29840-1-rwilbur633@gmail.com/
-v1: https://lore.kernel.org/linux-serial/20260717123530.481021-1-rwilbur633@gmail.com/
+-----BEGIN PGP SIGNATURE-----
 
- drivers/tty/serial/8250/8250_of.c | 38 +++++++++++++++++++++++++++++++
- 1 file changed, 38 insertions(+)
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmprrIoACgkQj4D7WH0S
+/k4lAQf/WVX/WIN4b+WCVtKUAw3N9m/XRolz3JDLMsiqNA8R+Z207MWDCfOjFXgM
+Me+MfN6kKvfKnbhBKlJtGCyQ6w5C7b0CjVcZ7ua63MCkH2JAGvMQ+34ZfARQt1j/
+yqsy8yOdTOlq0SIzuouBg2wvM3nQ8dN07g4SMsYyZ0SBoKBM9boTTq2unz+ZGdzp
+6rL4C6bocj7iQ0Oo7R3hGwoYmotpU79hOtRLyLlXfyYnbz5iMEK0nl6RounBqvgx
+YmJgbV8Oi8c84+Jy18lEMSNSTJqfdjop5ZFpCk0oIW+tkWSvuNpR0DzgiEb7CHvV
+SgubOmsnWNCWyZLhvgsjoelArW1Hkw==
+=giPV
+-----END PGP SIGNATURE-----
 
-diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
-index f0537fb6ef4f..b1561c499acd 100644
---- a/drivers/tty/serial/8250/8250_of.c
-+++ b/drivers/tty/serial/8250/8250_of.c
-@@ -82,6 +82,40 @@ static int of_platform_serial_clk_notifier_cb(struct notifier_block *nb, unsigne
- 	return NOTIFY_DONE;
- }
- 
-+static int lpc32xx_handle_irq(struct uart_port *port)
-+{
-+	struct uart_8250_port *up = up_to_u8250p(port);
-+	unsigned int iir;
-+	u16 status;
-+
-+	guard(serial8250_rpm)(up);
-+
-+	iir = serial_port_in(port, UART_IIR);
-+	if (iir & UART_IIR_NO_INT)
-+		return 0;
-+
-+	guard(uart_port_lock_check_sysrq_irqsave)(port);
-+
-+	/*
-+	 * The LPC32xx UART can assert an RX character-timeout interrupt while
-+	 * the RX FIFO is empty: IIR reports UART_IIR_RX_TIMEOUT but LSR.DR is
-+	 * clear. The timeout is only cleared by reading RHR, but the core RX
-+	 * path skips that read when the FIFO is empty, so the level-triggered
-+	 * IRQ re-fires forever and livelocks this single-core SoC. Do one
-+	 * throwaway RHR read to clear it; a healthy UART never reports a
-+	 * timeout with DR/BI clear, so no received data is ever discarded.
-+	 */
-+	if ((iir & 0x3f) == UART_IIR_RX_TIMEOUT) {
-+		status = serial_lsr_in(up);
-+		if (!(status & (UART_LSR_DR | UART_LSR_BI)))
-+			serial_port_in(port, UART_RX);
-+	}
-+
-+	serial8250_handle_irq_locked(port, iir);
-+
-+	return 1;
-+}
-+
- /*
-  * Fill a struct uart_port for a given device node
-  */
-@@ -185,6 +219,9 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
- 	case PORT_NPCM:
- 		ret = npcm_setup(port);
- 		break;
-+	case PORT_LPC3220:
-+		port->handle_irq = lpc32xx_handle_irq;
-+		break;
- 	default:
- 		/* Nothing to do */
- 		ret = 0;
-@@ -381,6 +418,7 @@ static struct platform_driver of_platform_serial_driver = {
- 
- module_platform_driver(of_platform_serial_driver);
- 
-+MODULE_IMPORT_NS("SERIAL_8250");
- MODULE_AUTHOR("Arnd Bergmann <arnd@arndb.de>");
- MODULE_LICENSE("GPL");
- MODULE_DESCRIPTION("Serial Port driver for Open Firmware platform devices");
-
-base-commit: da7b5fd4e17f8e44c5590f2d603c01d499f056e6
--- 
-2.25.1
-
+--rftteozv3p3yh4rc--
