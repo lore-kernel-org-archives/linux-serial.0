@@ -1,117 +1,95 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1245940681D;
-	Thu, 30 Jul 2026 12:18:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FE1C42FCDB;
+	Thu, 30 Jul 2026 12:42:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785413933; cv=none; b=BUgr0P/sUmQ1iWMOOWbZ8eyEiD8CxAV/z08YL82tFK44X69Dj7iKhSKbWCurZgTJYGSLFM3NUgxmWVUDNwF4NknLIPB1cmmqx+JjNNrqwkNEEVSUw6i9lssU8vi8JoqppBjJ9NBoNy/MqELFpBGZKAdPcXjT8uw780exUYPkiNQ=
+	t=1785415368; cv=none; b=tOJZJW8DZUMJJ7XGBoSxkxk/D0FLgjkvdmzgOEMShp3DJxJ26RfJcl16AMLE7MCj1N8DY+ys3REoQhNG/+wRI54R6WfubRfBt8mYup9TP9mX7tAEmSH4LaP3cmpKS3zA/3ZbZbZPM10xv6dYcisrf7EbusvNvDeqwpkKV7p4BTA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785413933; c=relaxed/simple;
-	bh=jVPKa2VaoVV9XjaEVU/GwnBOp3DCoHvHFOl5tHZekJQ=;
-	h=Date:Message-ID:From:To:Cc:Subject:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ppAdgGiyt7wv2jIl9+Rg/1aTXkFb9lYdD2Y87vtMRrxCya8P5ZS02XmL/D30HVcYAOs3Fa+E5qAziYpMXxjJ545iDyX/gefUNfB+GkpAbEpuVnN6SdaDSP3so11PQuhluvSoFacIz1nNomh5lyLOZ9WuyaONxILkur1HkWSyEiQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IERn+3yT; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785415368; c=relaxed/simple;
+	bh=LvcFbw8oGouvM+jfTzOUofHdTDiFUki9e2xOIqaczCc=;
+	h=Date:Content-Type:MIME-Version:From:Cc:To:In-Reply-To:References:
+	 Message-Id:Subject; b=hcPOtZjQklAVLGV5MU5/UsJyYXJvJ3AJ/Ijzpw1HOYagZMResUbq1ETZbMsWvOpurktBfIqm4CErb7yYPIhcE9Nf2aMNr7GYIxT2+o9X2effirhvnWMyALMlsCeGRlLiwg1258aqd8uys90JTwCW8K1K2QBdQb/oYtaS8rbD2nA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=k55iXxW/; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IERn+3yT"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3D301F000E9;
-	Thu, 30 Jul 2026 12:18:51 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="k55iXxW/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD35F1F000E9;
+	Thu, 30 Jul 2026 12:42:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785413932;
-	bh=J51ZKPd6o6/BUGHko+ufxpPLTQ3XMe+QO50MAUxdiFE=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=IERn+3yT3GKAwlEz98+hOOx2EELH5lepwtkHN1LPJPtSbBcaqZH8R70BuuTlh0A/8
-	 k5n++E+0Q+jQMwVMJ5nkn/Xd6iHEoJJnvs/YUNaRar4FAS8vlAs7p1Q/fuvnhnBKEA
-	 NFTW/P6d+tNp6ozLVFlHrQGpnzNz5ygDa67uINaflNJeY3CLZ5ETiif99Fwy2t+40S
-	 mADy0iBff6NfDgZyxfiJ4G7MyoPoL3GzrPyU60gqBkwNQq9DeSwXGb7lfNYpiyyPt/
-	 Mqm37WJE36T0QKo6JWfmlIp+mvylB5nxq7lzE2+1q9NZiL1TBlFFhRx//2VevGaH8G
-	 ACuAsWAw8gANg==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=goblin-girl.misterjones.org)
-	by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.98.2)
-	(envelope-from <maz@kernel.org>)
-	id 1wpPir-0000000AWIY-1wZS;
-	Thu, 30 Jul 2026 12:18:49 +0000
-Date: Thu, 30 Jul 2026 13:18:49 +0100
-Message-ID: <86ldasd61i.wl-maz@kernel.org>
-From: Marc Zyngier <maz@kernel.org>
-To: Long Zhao <longzhao@ambarella.com>
-Cc: Arnd Bergmann <arnd@arndb.de>,
-	Alexandre Belloni
-	<alexandre.belloni@bootlin.com>,
-	<linux-arm-kernel@lists.infradead.org>,
-	<soc@lists.linux.dev>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	<devicetree@vger.kernel.org>,
-	"Michael\
- Turquette" <mturquette@baylibre.com>,
-	Stephen Boyd <sboyd@kernel.org>,
-	<linux-clk@vger.kernel.org>,
-	Linus Walleij <linusw@kernel.org>,
-	<linux-gpio@vger.kernel.org>,
-	Greg Kroah-Hartman
-	<gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	<linux-serial@vger.kernel.org>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>,
-	<linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 09/10] arm64: ambarella: add ARCH_AMBARELLA and CV75 EVK DT
-In-Reply-To: <20260730104330.81367-10-longzhao@ambarella.com>
-References: <20260730104330.81367-1-longzhao@ambarella.com>
-	<20260730104330.81367-10-longzhao@ambarella.com>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
- FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/30.1
- (aarch64-unknown-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+	s=k20260515; t=1785415366;
+	bh=w0qIs3ynZHgkXTYTbvPP3qUgG0ysx0KqrNSlrPX/EX8=;
+	h=Date:From:Cc:To:In-Reply-To:References:Subject;
+	b=k55iXxW/57vq4N7SQpzmf7TxlWiDqiu6jL+I4xd5BgkznDjH5YKXqPabxXI86qHbU
+	 3l0qGAPwnGS3ynu24kjqGaj3WRAKGkCVujl23HrcAh3cufaV0drXP7j65LGeeIbDQx
+	 SkqIir1IzMQF0cgHaZgbgm2riM/d3Cidi5UC2dNfOdQDV6ZPhUeR4Hcg8DuVFmwHdc
+	 KoaAHJAOeAbEMvHTAumgQDANvEFfcycUxNWMFdI3Cqt3/PeFuozDET6dbY2dLHBSWV
+	 hsK2/tm4vNz7XQ0zAaoPPWxi8IGFXU5o5jDsABEUAQ5kuo+MhggSqE6Tm8iTQOZ/We
+	 UvaIEpAQP+N0g==
+Date: Thu, 30 Jul 2026 07:42:46 -0500
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-Content-Type: text/plain; charset=US-ASCII
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: longzhao@ambarella.com, arnd@arndb.de, alexandre.belloni@bootlin.com, linux-arm-kernel@lists.infradead.org, soc@lists.linux.dev, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, devicetree@vger.kernel.org, mturquette@baylibre.com, sboyd@kernel.org, linux-clk@vger.kernel.org, linusw@kernel.org, linux-gpio@vger.kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org, linux-serial@vger.kernel.org, catalin.marinas@arm.com, will@kernel.org, linux-kernel@vger.kernel.org
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+MIME-Version: 1.0
+From: "Rob Herring (Arm)" <robh@kernel.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>, linux-gpio@vger.kernel.org, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, linux-kernel@vger.kernel.org, 
+ Linus Walleij <linusw@kernel.org>, Will Deacon <will@kernel.org>, 
+ Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+ linux-arm-kernel@lists.infradead.org, 
+ Michael Turquette <mturquette@baylibre.com>, Arnd Bergmann <arnd@arndb.de>, 
+ devicetree@vger.kernel.org, soc@lists.linux.dev, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-clk@vger.kernel.org, 
+ Catalin Marinas <catalin.marinas@arm.com>, Stephen Boyd <sboyd@kernel.org>, 
+ linux-serial@vger.kernel.org
+To: Long Zhao <longzhao@ambarella.com>
+In-Reply-To: <20260730104330.81367-4-longzhao@ambarella.com>
+References: <20260730104330.81367-1-longzhao@ambarella.com>
+ <20260730104330.81367-4-longzhao@ambarella.com>
+Message-Id: <178541536479.2601751.14563666222918731032.robh@kernel.org>
+Subject: Re: [PATCH 03/10] dt-bindings: clock: add Ambarella CV75 RCT clock
+ controller
 
-On Thu, 30 Jul 2026 11:43:29 +0100,
-Long Zhao <longzhao@ambarella.com> wrote:
 
-[...]
+On Thu, 30 Jul 2026 18:43:23 +0800, Long Zhao wrote:
+> Add the CV75 RCT clock controller binding and clock ID header.
+> 
+> Signed-off-by: Long Zhao <longzhao@ambarella.com>
+> ---
+>  .../bindings/clock/ambarella,cv75-rct.yaml    | 94 +++++++++++++++++++
+>  .../dt-bindings/clock/ambarella,cv75-clock.h  | 17 ++++
+>  2 files changed, 111 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/clock/ambarella,cv75-rct.yaml
+>  create mode 100644 include/dt-bindings/clock/ambarella,cv75-clock.h
+> 
 
-> diff --git a/arch/arm64/boot/dts/ambarella/cv75.dtsi b/arch/arm64/boot/dts/ambarella/cv75.dtsi
-> new file mode 100644
-> index 000000000000..7c6a61f473ef
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/ambarella/cv75.dtsi
-> @@ -0,0 +1,151 @@
-> +// SPDX-License-Identifier: GPL-2.0-or-later
-> +/*
-> + * Ambarella CV75 SoC
-> + *
-> + * Boot peripheral: UART0 console.
-> + * Clocks: a single ambarella,cv75-rct provider.
-> + */
-> +
+My bot found errors running 'make dt_binding_check' on your patch:
 
-[...]
+yamllint warnings/errors:
 
-> +       timer {
-> +               compatible = "arm,armv8-timer";
-> +               interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
-> +                            <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
-> +                            <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
-> +                            <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>;
-> +       };
+dtschema/dtc warnings/errors:
+Documentation/devicetree/bindings/clock/ambarella,cv75-rct.example.dtb: / (ambarella,cv75-evk): 'model' is a required property
+	from schema $id: http://devicetree.org/schemas/root-node.yaml
 
-You are missing the EL2 virtual timer interrupt, which is provided by
-Cortex-A76. This isn't optional. A recent Linux kernel will shout at
-you at boot time when booted at EL2 if this interrupt isn't present.
+doc reference errors (make refcheckdocs):
 
-	M.
+See https://patchwork.kernel.org/project/devicetree/patch/20260730104330.81367-4-longzhao@ambarella.com
 
--- 
-Without deviation from the norm, progress is not possible.
+The base for the series is generally the latest rc1. A different dependency
+should be noted in *this* patch.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit after running the above command yourself. Note
+that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+your schema. However, it must be unset to test all examples with your schema.
+
