@@ -1,87 +1,33 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C26903BFE40
-	for <linux-serial@vger.kernel.org>; Thu, 30 Jul 2026 09:17:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95C1C3F86E6;
+	Thu, 30 Jul 2026 10:48:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785403032; cv=none; b=X6H8VRQU9h/vcI9v1atac7Jayhvnufc9p97a0+1T/Y51lwyrQtfFohLxWO+43SQ+ZjX812CVueRhmVJb8J7vJapIe1wOM1RC3O5vLzhQxNnceIoZFHhQS8SwhhJhq6PSbtfilBDpWkxl3UVdP1JwHpndVc3TtlEPOqfEFau8pYw=
+	t=1785408503; cv=none; b=jRi56ULVpC5iZTNFz0WCSjVb9ZH6hIw2d/imb9OJ0HBNh+5FG56zq3xFd8FBh6JZITt5RTRqOPCGxAVf1fpEYgB6rrTK/nE8t5sex8bglUZBvnYOUkGEo8ZPuRTbmoSeuJp4iQ/Bixsf5TnoLndu4PWQoQq9F79r7O6++9bds1s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785403032; c=relaxed/simple;
-	bh=FZ81sEKa0AGlUh3qOMslFSdN4ZIgzNfOwEBmjr2Kigw=;
+	s=arc-20240116; t=1785408503; c=relaxed/simple;
+	bh=+gJKbKNn43Fk0RGDwq3n3eHs4VPbGyQ9iZkC0dGnIF8=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=nbjzkHadSawpklwyvCNnpmDyuZVZ093TmgIkUtPOEm7d+Z4OIiA7diJyqRmEXBXuWw23cgFfFheFdKwkOR9n/om0eqrTDXHupe4e/tIWvVPFZiYUO98WEs1tG4ZnEqqx+CJ7mfR+WWExbXbuVhNUM64UCYhbF+j9p1+mDqP6mVI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=pKlObpXO; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=FoJIOnAb; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	 In-Reply-To:Content-Type; b=X/k7KVJX/rY+fFnYJW2F4nwcOMOW0pUHCTLGqNEPhdcrz0t2X/h6+4ZwZa65FQOYQC4qx2W8qLWLMAQIde185uhxFtgKy2fh0rUTESR+n7EcyzBtYd6K5QhVfKWtq/lEuPcyXpPTtgTqSEgs4IQrYAmYvhXNyT5nVSketR1hGek=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Xu6/QUX/; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="pKlObpXO";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="FoJIOnAb"
-Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66U9CS8C618917
-	for <linux-serial@vger.kernel.org>; Thu, 30 Jul 2026 09:17:09 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	Sg+tTmUjvICwaDYn2CXixJNQI5H+8IfxBQw4flH87tw=; b=pKlObpXO9v76hLMy
-	gX4ER4IbpwRdL3T5OSejLFUujzwevHaEtrcktr/XI3EitwaiKjJL9+3nVxLEeFT4
-	eM7aE5A8lzmjSga7iCo7xHpFNQt6xFDBOefbVAdsLsntSlQfjw52/kCvZqNmfYpT
-	uFs5gfPzvqN4RBvaO/eNXjdVJJfxwbwxkgnGdPYUaU78tcBuAizfN1jq33lvJuIq
-	gzeNar1FqfK0QrBA/9IX+ZCTNyoi/Ok++yNZy3LbpaUNwwJVMs5u82w0cedIon7S
-	OvoRI3UQilym/yQaURD890J1VEMuX431XkVjhmRlaHwng8vAzccTh4C7tkdId11M
-	hLdPMQ==
-Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com [209.85.214.197])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fr3sd80st-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-serial@vger.kernel.org>; Thu, 30 Jul 2026 09:17:09 +0000 (GMT)
-Received: by mail-pl1-f197.google.com with SMTP id d9443c01a7336-2cce14a21faso9304555ad.0
-        for <linux-serial@vger.kernel.org>; Thu, 30 Jul 2026 02:17:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1785403028; x=1786007828; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=Sg+tTmUjvICwaDYn2CXixJNQI5H+8IfxBQw4flH87tw=;
-        b=FoJIOnAbzIOj81GmSUK6S+osqbWFJVScybPNzRHmQjza7TDZJWx0D8b1zQadXGLPmF
-         mdcBsfigHDS7Ce1YVDAJhlARMPKVzxBtG8+YvJtd3eHSTnls6DmTFQfH1c6d2as+m1+L
-         r1mblYWFyt52fllLpl9bcqHGcBWVjtv+AKbKkjmRbAJy0yXcXpI2g3l/JVLa3IGcmkHV
-         fmRWrLlUgYhFaMXsMv7D4OWMdgX6WlOb7PyzENYvZv5AsRDnQkVu6Wh7gXIQzii7kM/C
-         vxYBi7KlzIqT/hOpz8c/nraWJlP+7mLhE/0VJKR+PTaMyiGNtEF5w1LCj+vWH0d5HoQM
-         fJsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785403028; x=1786007828;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=Sg+tTmUjvICwaDYn2CXixJNQI5H+8IfxBQw4flH87tw=;
-        b=VJMTJWjt3JW/tszZRYgLKoX9h40LHCBRoI/5vc5koirFGP5jMLwMaUufCbCwhiQ+K0
-         LuuVWL+EYpFA4bAOkoT3FK5WeIlE6W3WdNvDEEpkDDAZ7fves7HQWyqnIwvezJSdxdWG
-         /kSnruyix0wUsZRIfdkkBamwp+dlNJMbS3L3NGFSgYR5X1mBZx6wBN6MWP81CrxT0wj9
-         CXWuKXRrMdVVx0JjRPybr2vb503is9IIrfN0iExnVUOPHMLUZfwszfuo13VkL7Jwioqv
-         YWe6BaD0qegbEDujlcSItoI57wWvkgmyFsSh/9ed/x2/o/IDaPqIaXdIw+ikarlPs2ca
-         JXBA==
-X-Forwarded-Encrypted: i=1; AHgh+RoYEfyw+4Kh4HPHS793aecRCGkzlSQ5c3qYj0F8z+ZcvLR2G/F0W53W5vygp7YECv+ap+UChR81kHTJG2Y=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzy8jAw3gF+0RNflVVx+Nma5qf6Y6umeq4eXWgjkY4YKMKHMjKT
-	TGixKThDizSW834KyLYq1zhatB4kZW+M3m8hZZSAGly936Pk55BNrVCi1hy68hdhdAjxREpXG89
-	b2kzj6hIxJsg/Sn6D2Wl/bc0MVnwaQVkfoAsPPh4FM6BWcA+UiKVenfPjS2U8MjKt7Qg=
-X-Gm-Gg: AR+sD13s7lsbQQ2h3th1TtX3o3vY8O74xRwgaAlCda60AUav+pvU06NVGUTjNZ37/SP
-	3fGdVfKfkcNOZNxqXI0FunLnRFOEl1wXbVsC4hdUyVxDHJNT/KrddZYCrPSv84kWAfuSblnuPrN
-	+DRLYvTKr9Y1H+ZP1OhO8D4QVNwchAqn+jYiFzliQD2FjEaOjpWRH3JNhSOjhNaYjErnfOH9zpk
-	f1ItXSFnkjJBwUClkOmgTFR98NTPTytzvOtj2POgGmNsz6YwF8iwHb/OmnuloIdo88l2N8DJVZp
-	2OQeEULpJQvNRv0SQXcGsjxUaRDmlfhJ4zRMzuJgaPPVMICftQjuE/PYLmni7YMIuErdzoyNrCm
-	7Wjd0wtsJw1Qjs3DcreVhlnxDUuCRvVOw
-X-Received: by 2002:a17:903:985:b0:2cf:18e5:1d18 with SMTP id d9443c01a7336-2d03709445bmr14082855ad.29.1785403028348;
-        Thu, 30 Jul 2026 02:17:08 -0700 (PDT)
-X-Received: by 2002:a17:903:985:b0:2cf:18e5:1d18 with SMTP id d9443c01a7336-2d03709445bmr14082545ad.29.1785403027810;
-        Thu, 30 Jul 2026 02:17:07 -0700 (PDT)
-Received: from [192.168.0.5] ([49.204.104.207])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2d022bc8400sm23245535ad.47.2026.07.30.02.17.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 30 Jul 2026 02:17:07 -0700 (PDT)
-Message-ID: <09c45fbe-f8f7-48b8-9385-2b02ed2b63ce@oss.qualcomm.com>
-Date: Thu, 30 Jul 2026 14:47:00 +0530
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Xu6/QUX/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F4851F000E9;
+	Thu, 30 Jul 2026 10:48:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1785408502;
+	bh=LQIam8Lk/rhF6Lm0HgQ3emsXNkYF4X/I9Zk8Ot6vu/0=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=Xu6/QUX/oYydCHTvPQ/A3cSkpBcfjLGjdI8g/Y+41jhXN40Gg0UAiujEcIvC1ehJl
+	 lYz7cWerr2Dtpftv15hLuy17PRMWhBuQk1kbePC8HNjxmRfELyavcoIPB0wtUy+CHz
+	 bDW4kxs9sQDdVAoxyfeC8Uz/mgtUicj/OlVCpADHH0SuDsPEHNqiVL4b944ysfC/ND
+	 nbKehVfpQ+PQsSuUQCFzXRVAhbZjpvDLqlN8z/MeMqComHi5ppUvJJZi7E3POkEW8E
+	 uqDdvwDmpd0f/aHhJPPXPnJccb/awCQ2ILSZqmlxfjo9C7sEGpOLc7HHThmOu40FYt
+	 bDX6DGX6cF4ZQ==
+Message-ID: <0fce6943-0d4b-4f3f-ae5f-277633577774@kernel.org>
+Date: Thu, 30 Jul 2026 12:48:12 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -89,181 +35,89 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/1] serial: qcom-geni: fix TX DMA buffer flush
-To: jaseg <git@jaseg.de>, 'Greg Kroah-Hartman ' <gregkh@linuxfoundation.org>,
-        'Jiri Slaby ' <jirislaby@kernel.org>,
-        'Bartosz Golaszewski ' <bartosz.golaszewski@oss.qualcomm.com>
-Cc: 'Viken Dadhaniya ' <viken.dadhaniya@oss.qualcomm.com>,
-        'Zong Jiang ' <quic_zongjian@quicinc.com>,
-        'Krzysztof Kozlowski ' <krzk@kernel.org>,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        =?UTF-8?Q?Jan_Sebastian_G=C3=B6tte?=
- <linux@jaseg.de>,
-        stable@vger.kernel.org
-References: <20260729174105.21838-1-git@jaseg.de>
- <20260729174105.21838-2-git@jaseg.de>
+Subject: Re: [PATCH 00/10] Ambarella CV75 SoC minimal bring-up
+To: Long Zhao <longzhao@ambarella.com>, Arnd Bergmann <arnd@arndb.de>,
+ Alexandre Belloni <alexandre.belloni@bootlin.com>,
+ linux-arm-kernel@lists.infradead.org, soc@lists.linux.dev
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
+ Michael Turquette <mturquette@baylibre.com>, Stephen Boyd
+ <sboyd@kernel.org>, linux-clk@vger.kernel.org,
+ Linus Walleij <linusw@kernel.org>, linux-gpio@vger.kernel.org,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
+ Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
+ linux-kernel@vger.kernel.org
+References: <20260730104330.81367-1-longzhao@ambarella.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
-From: Praveen Talari <praveen.talari@oss.qualcomm.com>
-In-Reply-To: <20260729174105.21838-2-git@jaseg.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-ORIG-GUID: XKeWVNMRdPGHVaflb6oUHMlOYMeIubkD
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzMwMDA2OCBTYWx0ZWRfX7ce43f92i5I0
- 4NTY2qB3Ut88ow2+zuWsrIthYvU9jbvHM94DRI5Vmupph3piue6ZXmv9ExNr+yenQqehQL4pHvp
- WKm0UedbMbfXJVvRJo8m6StmJxhUo58=
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzMwMDA2OCBTYWx0ZWRfX7hUfGMAswmeC
- T49ZcHT0r62CTLppyNyXFvNBjXDVmGO+e5CKQvml3xjdn6FRSsaG4gVLB4TJsfJBEfPNXnBdtiQ
- dYI24KlEkx5rpoe1p/l1MhicatMD9oDR6EC/aBa227J6e9hi0DBLk78lsxVQrG84294JoXlQD0G
- 6nsi1y4bVenwt1vwe7KYrVOJNK6w0t2WU6IoOwtKZdAnMm9Wu5ERGX0KZyfRxFH50GROniJd1hC
- Y9+qlXWY0EHlhpqw7j32Iit4ZTZCcAKlQKPcz7teDD77ElN2Lc9ldf0s+ABu8srfDdHzK7bQMz8
- mm7EnrdwH66aczINQOZYzmHf6eJuP1nPG1WUFSl2a+9urgjspWHNqPJRbLk+0Ckst5g6Pt3IPFf
- xJBrl48gZd4eZrrKI81vrIVku0mn7QAU9hodwzGXDNEdBW7UcFCu5UEypj6Zw0Z+LBBKja98tIs
- cqsen1f9Zbj5PtiRhCw==
-X-Authority-Analysis: v=2.4 cv=OJ8XGyaB c=1 sm=1 tr=0 ts=6a6b1695 cx=c_pps
- a=cmESyDAEBpBGqyK7t0alAg==:117 a=P6HVPSMEYUq+RwDLB+OCyA==:17
- a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=_glEPmIy2e8OvE2BGh3C:22
- a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=Z8m4AokP3hRY3N2J9A0A:9 a=3ZKOabzyN94A:10
- a=QEXdDO2ut3YA:10 a=1OuFwYUASf3TG4hYMiVC:22
-X-Proofpoint-GUID: XKeWVNMRdPGHVaflb6oUHMlOYMeIubkD
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-07-30_02,2026-07-29_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- suspectscore=0 adultscore=0 clxscore=1015 priorityscore=1501 bulkscore=0
- malwarescore=0 lowpriorityscore=0 impostorscore=0 spamscore=0 phishscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607300068
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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
+In-Reply-To: <20260730104330.81367-1-longzhao@ambarella.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Hi
+On 30/07/2026 12:43, Long Zhao wrote:
+> 
+> NOTE: This email (including attachments) contain Ambarella Proprietary and/or Confidential Information and is intended solely for the use of the individual(s) to whom it is addressed. Any unauthorized review, use, disclosure, distribute, copy, or print is prohibited. If you are not an intended recipient, please contact the sender by reply email and destroy all copies of the original message. Thank you.
 
-On 29-07-2026 23:11, jaseg wrote:
-> From: Jan Sebastian Götte <linux@jaseg.de>
->
-> When transmit flushing a qcom-geni UART during an ongoing TX DMA, the
-> UART gets stuck infinitely repeating corrupted TX DMA frames.
->
-> The DMA-mode uart_ops does not provide a flush_buffer callback, so an
-> in-flight transfer can complete after serial core has reset the transmit
-> kfifo, underflowing its length and resubmitting page-sized transfers
-> indefinitely. Add one that stops the transfer and clears tx_remaining
-> and tx_queued.
->
-> The stop path was also broken: it unmapped the buffer while the serial
-> engine could still read it, and never reset the TX DMA state machine.
-> Cancel the main sequencer command first, then reset the state machine
-> and wait for it before unmapping. Drop the early return so a pending
-> mapping is also cleaned up when the main command is inactive.
->
-> The bug can be triggered from userspace with a large write immediately
-> followed by TCOFLUSH. A following tcdrain will hang forever. The bug was
-> reproduced and this fix was validated on Arduino Uno Q (QRB2210)
-> using /dev/ttyHS1.
->
-> Assisted-by: Claude:claude-5-opus Codex:gpt-5
-> Signed-off-by: Jan Sebastian Götte <linux@jaseg.de>
-> Fixes: 2aaa43c70778 ("tty: serial: qcom-geni-serial: add support for serial engine DMA")
-> Cc: stable@vger.kernel.org
-> ---
->   drivers/tty/serial/qcom_geni_serial.c | 43 ++++++++++++++-------------
->   1 file changed, 22 insertions(+), 21 deletions(-)
->
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> index 7ead87b4eb65..1e39122ec09f 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -158,6 +158,7 @@ static const struct uart_ops qcom_geni_uart_pops;
->   static struct uart_driver qcom_geni_console_driver;
->   static struct uart_driver qcom_geni_uart_driver;
->   
-> +static void qcom_geni_serial_stop_tx_dma(struct uart_port *uport);
->   static void __qcom_geni_serial_cancel_tx_cmd(struct uart_port *uport);
->   static void qcom_geni_serial_cancel_tx_cmd(struct uart_port *uport);
->   static int qcom_geni_serial_port_setup(struct uart_port *uport);
-> @@ -636,35 +637,34 @@ static unsigned int qcom_geni_serial_tx_empty(struct uart_port *uport)
->   	return !readl(uport->membase + SE_GENI_TX_FIFO_STATUS);
->   }
->   
-> +static void qcom_geni_serial_flush_buffer_dma(struct uart_port *uport)
-> +{
-> +	struct qcom_geni_serial_port *port = to_dev_port(uport);
-> +
-> +	qcom_geni_serial_stop_tx_dma(uport);
-> +	port->tx_remaining = 0;
-> +	port->tx_queued = 0;
-> +}
-> +
->   static void qcom_geni_serial_stop_tx_dma(struct uart_port *uport)
->   {
->   	struct qcom_geni_serial_port *port = to_dev_port(uport);
-> -	bool done;
->   
-> -	if (!qcom_geni_serial_main_active(uport))
-> -		return;
-> +	if (qcom_geni_serial_main_active(uport))
-> +		__qcom_geni_serial_cancel_tx_cmd(uport);
->   
->   	if (port->tx_dma_addr) {
-> +		writel(1, uport->membase + SE_DMA_TX_FSM_RST);
-> +		if (!qcom_geni_serial_poll_bit(uport, SE_DMA_TX_IRQ_STAT,
-> +					       TX_RESET_DONE, true))
-> +			dev_err_ratelimited(uport->dev, "TX DMA reset failed");
-> +		writel(TX_RESET_DONE | TX_DMA_DONE,
-> +		       uport->membase + SE_DMA_TX_IRQ_CLR);
-> +
->   		geni_se_tx_dma_unprep(&port->se, port->tx_dma_addr,
->   				      port->tx_remaining);
->   		port->tx_dma_addr = 0;
-> -		port->tx_remaining = 0;
->   	}
-> -
-> -	geni_se_cancel_m_cmd(&port->se);
-> -
-> -	done = qcom_geni_serial_poll_bit(uport, SE_GENI_M_IRQ_STATUS,
-> -					 M_CMD_CANCEL_EN, true);
-> -	if (!done) {
-> -		geni_se_abort_m_cmd(&port->se);
-> -		done = qcom_geni_serial_poll_bit(uport, SE_GENI_M_IRQ_STATUS,
-> -						 M_CMD_ABORT_EN, true);
-> -		if (!done)
-> -			dev_err_ratelimited(uport->dev, "M_CMD_ABORT_EN not set");
-> -		writel(M_CMD_ABORT_EN, uport->membase + SE_GENI_M_IRQ_CLEAR);
-> -	}
-> -
-> -	writel(M_CMD_CANCEL_EN, uport->membase + SE_GENI_M_IRQ_CLEAR);
->   }
->   
->   static void qcom_geni_serial_start_tx_dma(struct uart_port *uport)
-> @@ -1180,7 +1180,7 @@ static void qcom_geni_serial_shutdown(struct uart_port *uport)
->   	uart_port_unlock_irq(uport);
->   }
->   
-> -static void qcom_geni_serial_flush_buffer(struct uart_port *uport)
-> +static void qcom_geni_serial_flush_buffer_fifo(struct uart_port *uport)
->   {
->   	qcom_geni_serial_cancel_tx_cmd(uport);
->   }
-> @@ -1769,7 +1769,7 @@ static const struct uart_ops qcom_geni_console_pops = {
->   	.request_port = qcom_geni_serial_request_port,
->   	.config_port = qcom_geni_serial_config_port,
->   	.shutdown = qcom_geni_serial_shutdown,
-> -	.flush_buffer = qcom_geni_serial_flush_buffer,
-> +	.flush_buffer = qcom_geni_serial_flush_buffer_fifo,
->   	.type = qcom_geni_serial_get_type,
->   	.set_mctrl = qcom_geni_serial_set_mctrl,
->   	.get_mctrl = qcom_geni_serial_get_mctrl,
-> @@ -1792,6 +1792,7 @@ static const struct uart_ops qcom_geni_uart_pops = {
->   	.request_port = qcom_geni_serial_request_port,
->   	.config_port = qcom_geni_serial_config_port,
->   	.shutdown = qcom_geni_serial_shutdown,
-> +	.flush_buffer = qcom_geni_serial_flush_buffer_dma,
->   	.type = qcom_geni_serial_get_type,
->   	.set_mctrl = qcom_geni_serial_set_mctrl,
->   	.get_mctrl = qcom_geni_serial_get_mctrl,
+Maybe I am the intended recipient of your message, maybe not. I don't
+want to have any legal questions regarding upstream, public
+collaboration, thus probably I should just remove your messages.
 
-Reviewed-by: Praveen Talari <praveen.talari@oss.qualcomm.com>
+Please talk with your IT that such disclaimers in open-source are not
+desired (and maybe even harmful).
+If you do not understand why, please also see:
+https://www.youtube.com/live/fMeH7wqOwXA?si=GY7igfbda6vnjXlJ&t=835
 
-Thanks,
+If you need to go around company SMTP server, then consider using b4
+web-relay: https://b4.docs.kernel.org/en/latest/contributor/send.html
 
-Praveen Talari
+Please be informed that by responding to this email you agree that all
+communications from you and/or your company is made public. In other
+words, all messages originating from you and/or your company will be
+made public.
 
+Best regards,
+Krzysztof
