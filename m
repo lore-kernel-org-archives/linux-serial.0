@@ -1,49 +1,49 @@
 Received: from mx0b-00622301.pphosted.com (mx0b-00622301.pphosted.com [205.220.175.205])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EFBB40A953;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F83D40B106;
 	Thu, 30 Jul 2026 11:06:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.175.205
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785409598; cv=none; b=iuj8Ar/wLrkY6whqMix/k0tgiEtOVmCg3rCnBBezchXis8HVPYxaSMclP+kbJ9kQiOW+aGdCJFDhZSMbAfSegNwg/8vAQh8sRinzRkbazeKGpp/689oz519OfKmbCjH4G1ZiwdVEnLTSi72DK+goVVjyD3g6Jxduri+NGVhNsdI=
+	t=1785409599; cv=none; b=OtDWxlxlPPrR22NDRsfTI3wd3Vju+op8VoeeSrfjAdc1B6P8byD8Q3TssNy3WuYh7QagCqp+WbS7RJIRVsC73JfRezpJLbxm/avbqW+eSOanRk5RnPAbQyKvap9nuFQUBkXoB5toITgoeO8AmPHwj9NhKtm/IEzvZosr7dxz/j0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785409598; c=relaxed/simple;
-	bh=ltZlPhx/ptNQC9ytBZYrLEguAh1jyqLhPYja+dxpavQ=;
+	s=arc-20240116; t=1785409599; c=relaxed/simple;
+	bh=bUofClu1/zGtirj8pRqn6zQv+Ydp5qFnEVY6+nQ5iNg=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=V7hkwEInL6XF8FkXAR5/qAiIII8zS2UBn/42vJHfKxwqKDVYPTTM6AnBcOBqDF8qvpuApi4KPQKo7B1QLGgLpcF3ZXk1fMLLF6h5O3JOLp5QhFpDF3BE94ZXb1JcdN7pxMqnSxo1h37CNv0sYOpAtPobaNHp0d4n1yNXbMxS800=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=ambarella.com; spf=pass smtp.mailfrom=ambarella.com; dkim=pass (2048-bit key) header.d=ambarella.com header.i=@ambarella.com header.b=W6CkfW+h; arc=none smtp.client-ip=205.220.175.205
+	 MIME-Version:Content-Type; b=ZPq5idUTgo8eF8h5j3go0H+jFxxCUGXEKxA4xFlZgGQny/GXAfbPNpttzK1eL+8eIM9wru4dD+hUNA1fjIJSA1vv7u2SFEfHWo9HDrHJDTGnafWTgTntDYmRxdsqcNPDWcgEMB3wHqoaSqp+XuhJbhh+NXda4n6aYugx28Qsz04=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=ambarella.com; spf=pass smtp.mailfrom=ambarella.com; dkim=pass (2048-bit key) header.d=ambarella.com header.i=@ambarella.com header.b=OebNI5VR; arc=none smtp.client-ip=205.220.175.205
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=ambarella.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ambarella.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ambarella.com header.i=@ambarella.com header.b="W6CkfW+h"
+	dkim=pass (2048-bit key) header.d=ambarella.com header.i=@ambarella.com header.b="OebNI5VR"
 Received: from pps.filterd (m0241925.ppops.net [127.0.0.1])
-	by mx0a-00622301.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66UA6Egn3332841;
-	Thu, 30 Jul 2026 10:43:52 GMT
+	by mx0a-00622301.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66UA6Egm3332841;
+	Thu, 30 Jul 2026 10:43:51 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ambarella.com;
 	 h=cc:content-transfer-encoding:content-type:date:from
 	:in-reply-to:message-id:mime-version:references:subject:to; s=
-	com20210415pp; bh=ijrYr6YBtJFCRCgubYGp5VRaGPQc7AEyp9FuRJSTWl0=; b=
-	W6CkfW+hQ4Rr3F21IryAAvcHWDrAaX7UsJ1XEnfg5127jK18H71pJ0GyvtzYAsvg
-	MJv+01Xrldy/6sUsbeM+DHuPmKdlbYN/tJXwWfHk6DjZ+ObcCOfzmAxck1uSmvcY
-	XmX8nTpqXVw2Z72GT807X1HhzuH/jb5rLFOx6ipyxRPRSaSTf/mkz+YdHqmEbKtc
-	NV2gz+Plj4/4G9hDp+Gf6DE/QwF+6HGcMjkXOurINLV89gFXVePnPUpKF/HhA6n+
-	Irb0DQ4jPl32GIyteX60uWHArIKC6vLA/ZclZvahonIMdsIeeO1fpER5P0hUgRIP
-	PMKQHSOXbl0DiJ8q90B1Tg==
+	com20210415pp; bh=YvuFtUHRJ622fTQw6EE1ghwsynYcwiJGjeuiRoRxumM=; b=
+	OebNI5VRxOmyVPW1SGzRmGi7YC05G6RwIZBMaQlwgVI1cjqB+qFaXoCj/TXAR8wK
+	0+wheBf7/dDfrYyq+91zTyKcCz0AxXk9HAl/OWRVzhNmPFyy61HcuPgpwqMr78TV
+	mcB+VAzg4ly8ZbOiiNFf+qKFgiDQEpUB7jfpwgwjyis5l80kor3aXk9TfUQMM9NO
+	ilOlzdZByY94CbE4Lw0CHmIOVOiBxJeooCSmJ1Sj0tIDLIT9iM8F/c/VAtSCkCbw
+	36hMDnw0WOq1EVRBsn1QKuUygamL8pboje/5t7C4p7K7/3QBB63qLNOGlfjz1xoW
+	5eAjQUJkjXfMhyvQWah29w==
 Received: from webmail.ambarella.com ([12.30.244.130])
-	by mx0a-00622301.pphosted.com (PPS) with ESMTPS id 4fq8twhnbe-1
+	by mx0a-00622301.pphosted.com (PPS) with ESMTPS id 4fq8twhnbd-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 30 Jul 2026 10:43:52 +0000 (GMT)
-Received: from ambtw-mbx5.ambarella.net (10.2.4.226) by
- ambus-ex-se1.ambarella.net (10.1.4.9) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.2.2562.45; Thu, 30 Jul 2026 03:43:51 -0700
+	Thu, 30 Jul 2026 10:43:50 +0000 (GMT)
+Received: from ambtw-cas2.ambarella.net (10.2.4.227) by
+ ambus-ex-se2.ambarella.net (10.1.4.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.45; Thu, 30 Jul 2026 03:43:49 -0700
 Received: from ambtw-cas3.ambarella.net (10.2.4.228) by
- ambtw-mbx5.ambarella.net (10.2.4.226) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.58; Thu, 30 Jul 2026 18:43:49 +0800
+ ambtw-cas2.ambarella.net (10.2.4.227) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.58; Thu, 30 Jul 2026 18:43:47 +0800
 Received: from shbuild7.ambarella.net (10.4.8.70) by ambtw-cas3.ambarella.net
  (10.2.4.228) with Microsoft SMTP Server id 15.1.2507.58 via Frontend
- Transport; Thu, 30 Jul 2026 18:43:48 +0800
+ Transport; Thu, 30 Jul 2026 18:43:46 +0800
 From: Long Zhao <longzhao@ambarella.com>
 To: Arnd Bergmann <arnd@arndb.de>,
         Alexandre Belloni
@@ -62,9 +62,9 @@ CC: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
         Will Deacon <will@kernel.org>, <linux-kernel@vger.kernel.org>,
         Long Zhao
 	<longzhao@ambarella.com>
-Subject: [PATCH 08/10] serial: ambarella: add Ambarella UART driver
-Date: Thu, 30 Jul 2026 18:43:28 +0800
-Message-ID: <20260730104330.81367-9-longzhao@ambarella.com>
+Subject: [PATCH 07/10] pinctrl: ambarella: add Ambarella pin controller
+Date: Thu, 30 Jul 2026 18:43:27 +0800
+Message-ID: <20260730104330.81367-8-longzhao@ambarella.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20260730104330.81367-1-longzhao@ambarella.com>
 References: <20260730104330.81367-1-longzhao@ambarella.com>
@@ -76,23 +76,24 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain
-X-Proofpoint-GUID: D2ypH8hkxi8ZbtHRbbGTvoVzRgp9kDpW
-X-Proofpoint-ORIG-GUID: D2ypH8hkxi8ZbtHRbbGTvoVzRgp9kDpW
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzMwMDA4MCBTYWx0ZWRfXyIqfZmdpLWSe
- 8RWqBt5GvnKS+7+UybBZ8000OKVeKyZ+1DnrQwHhnoIjhlsWRDAmsLCSmyn2+t+6KNbT8KotcS4
- u2zl/T0/kuseRs5ClqkglP5rc2Jr2Lkk3I9RpmvrhQd1nvSzZKGYnrIzmWPyzghif98UbzDcCi7
- WNKSeNQbuBygFQWMUAm8YJvRGaw5RagSE+DGf1Nx+Hp1QTwv2wcaHhTdaNsHONAhMGCYSP9lv9y
- 6jsTFqNaOi3HzKPS5JdW/oppWyy3y9Chkwkt7WfgQTtIbIiRMYmz9qxPD70ugHGMwDqG38LErSs
- PWS2k+dll+65/F0bf3WA1qdMYnY14jeQnOy5EdpyisC0XLurI9MN/HM2DQxB48Ya9B13Is0JeWm
- vMzxnbdrX3cht6/dmt73FFylwUY6DY946jm5vgh0mVRXqK9mlzZ3Y8yzGGoLJE1zkGn+p3qz6g8
- VfcyK/VlItVUkGPwUZQ==
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzMwMDA4MCBTYWx0ZWRfX5D32+OHONhg9
- 0oJZFbCfUj1CPHC8Mm29Ca4Cs+Mq7oAF2GzA2A8JQNx0Pu9KvXRbEzrDrc6nWBDOm5CfD8FMDko
- 8L1PjeNtSinaX7WsswLWapO7WvV+b/UvnrXzQqPJs+B/UyGEzvxZ
-X-Authority-Analysis: v=2.4 cv=PNE/P/qC c=1 sm=1 tr=0 ts=6a6b2ae8 cx=c_pps
+X-Proofpoint-GUID: kcJt9lrt0ZUIqc_mUSlYukSblaeURZG3
+X-Proofpoint-ORIG-GUID: kcJt9lrt0ZUIqc_mUSlYukSblaeURZG3
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzMwMDA4MCBTYWx0ZWRfX2vLs/idSfRNH
+ YVWNr6Ym5M+/52HMkuX3ZKCEcyEFhtFjDxjx4M5/Mkcz7rB+OJvkccFGB/005HIVeTG4EvW6z+N
+ OJvxia5q2PESNe47dzZiNlbDgmkvhX0ruSFRdGhvcXfwmkzveb8RT+txdqYRZUjmXVGYww1Dr9R
+ kfNSyXDmRQN/BNyshj4DqpOTaR/9GBFQhYxX+LVCHIRWmEyzfyUM+i8IKr1Ob9MXGc6KltwWOH9
+ TRpmGX/j/zmdsXH3uQj6IHUIzavtSvnaGUJPsJSC7Roz7pc5wpUf9YwOJmtOhv7pAeGYZZ5O5+F
+ R/w8BHrGktX5VDCvQzBILLDIAQR4JacU0ZbYeKVkdBK9jpwB+B6gk2qQ5dlp1CtdiQnLNLTuPFy
+ HO4OAj0dzyQMxPJUruO14r1mh4SVSv7/yJw/2bRzVYyrATk1Nr7+iR+Uw6Q26oWuCoGrpmDhVtA
+ pOdHRz85eKpvlAocfTA==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzMwMDA4MCBTYWx0ZWRfX3cZ44uiO9cyk
+ yp7BZ+3Z1OhxkFtFNKLm/YCxfzcns072pbtwBxjLvdb4y4mT99Buw0PAMOrQ1u7PEKqeM7rDOW2
+ 7vWqqGhYOFDXs0K2FLdHIM/cC8oo+mfFiPNYvcPxEZbomDly/vfM
+X-Authority-Analysis: v=2.4 cv=PNE/P/qC c=1 sm=1 tr=0 ts=6a6b2ae7 cx=c_pps
  a=DgnZYc2JwZ3KnY28M5UqXQ==:117 a=DgnZYc2JwZ3KnY28M5UqXQ==:17
  a=RAioF0-LDSMA:10 a=VkNPw1HP01LnGYTKEx00:22 a=yXVIz-0bn9infC194UBj:22
- a=KblO7da7ppA7TBl3N-nE:22 a=ppJngBeKAAAA:8 a=ZEP-G582OeCys1fdM1QA:9
+ a=KblO7da7ppA7TBl3N-nE:22 a=ppJngBeKAAAA:8 a=cH2J6t5YKUCr9WsprtMA:9
+ a=O8hF6Hzn-FEA:10
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-07-30_03,2026-07-29_01,2025-10-01_01
@@ -102,1035 +103,1771 @@ X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607300080
 
-Add an Ambarella UART driver with console support for early boot
-bring-up on CV75. Keep udelay() in wait_for_tx(); it runs under
-console/poll paths that may hold the port lock with IRQs disabled.
+Add the Ambarella pinmux/GPIO controller driver used by CV75.
 
 Signed-off-by: Long Zhao <longzhao@ambarella.com>
 ---
- drivers/tty/serial/Kconfig          |  21 +
- drivers/tty/serial/Makefile         |   1 +
- drivers/tty/serial/ambarella_uart.c | 937 ++++++++++++++++++++++++++++
- 3 files changed, 959 insertions(+)
- create mode 100644 drivers/tty/serial/ambarella_uart.c
+ drivers/pinctrl/Kconfig             |   15 +
+ drivers/pinctrl/Makefile            |    1 +
+ drivers/pinctrl/pinctrl-ambarella.c | 1561 +++++++++++++++++++++++++++
+ 3 files changed, 1577 insertions(+)
+ create mode 100644 drivers/pinctrl/pinctrl-ambarella.c
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index cf7dba473b20..e3f5ec794c72 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -18,6 +18,27 @@ source "drivers/tty/serial/8250/Kconfig"
+diff --git a/drivers/pinctrl/Kconfig b/drivers/pinctrl/Kconfig
+index c2cdd7b2c49b..572a4a898a99 100644
+--- a/drivers/pinctrl/Kconfig
++++ b/drivers/pinctrl/Kconfig
+@@ -37,6 +37,21 @@ config DEBUG_PINCTRL
+        help
+          Say Y here to add some extra checks and diagnostics to PINCTRL ca=
+lls.
 
- comment "Non-8250 serial port support"
-
-+config SERIAL_AMBARELLA
-+       bool "Ambarella UART support"
++config PINCTRL_AMB
++       bool "Ambarella pin controller support"
 +       depends on ARCH_AMBARELLA || COMPILE_TEST
-+       select SERIAL_CORE
++       select GENERIC_PINCONF
++       select GPIOLIB
++       select GPIOLIB_IRQCHIP
++       select MFD_SYSCON
++       select PINCONF
++       select PINMUX
 +       help
-+         Say Y here to enable the on-chip UART controller found on Ambarel=
-la
-+         SoCs. The driver supports interrupt-driven transmit and receive
-+         operation through the serial core. It can also provide a system
-+         console when SERIAL_AMBARELLA_CONSOLE is enabled.
++         Say Y here to enable the pin controller found on Ambarella SoCs.
++         The driver provides pin multiplexing and pin configuration as wel=
+l
++         as GPIO and GPIO interrupt support. It is required to configure
++         peripheral pins on systems using an Ambarella SoC.
 +
-+config SERIAL_AMBARELLA_CONSOLE
-+       bool "Console on Ambarella UART"
-+       depends on SERIAL_AMBARELLA
-+       select SERIAL_CORE_CONSOLE
-+       select SERIAL_EARLYCON
-+       help
-+         Say Y here to use an Ambarella UART as the system console. This
-+         enables both the regular serial console and earlycon support for
-+         messages emitted before the full UART driver is initialized.
-+         Select this option for early boot diagnostics on Ambarella system=
-s.
-+
- config SERIAL_AMBA_PL010
-        tristate "ARM AMBA PL010 serial port support"
-        depends on ARM_AMBA || COMPILE_TEST
-diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
-index bba7b21a4a1d..5c951719528b 100644
---- a/drivers/tty/serial/Makefile
-+++ b/drivers/tty/serial/Makefile
-@@ -26,6 +26,7 @@ obj-y +=3D 8250/
+ config PINCTRL_AMD
+        bool "AMD GPIO pin control"
+        depends on HAS_IOMEM
+diff --git a/drivers/pinctrl/Makefile b/drivers/pinctrl/Makefile
+index a35d71135abf..7cd9820d3088 100644
+--- a/drivers/pinctrl/Makefile
++++ b/drivers/pinctrl/Makefile
+@@ -10,6 +10,7 @@ obj-$(CONFIG_GENERIC_PINCONF) +=3D pinconf-generic.o
+ obj-$(CONFIG_GENERIC_PINCTRL)  +=3D pinctrl-generic.o
+ obj-$(CONFIG_OF)               +=3D devicetree.o
 
- obj-$(CONFIG_SERIAL_ALTERA_JTAGUART)   +=3D altera_jtaguart.o
- obj-$(CONFIG_SERIAL_ALTERA_UART)       +=3D altera_uart.o
-+obj-$(CONFIG_SERIAL_AMBARELLA)         +=3D ambarella_uart.o
- obj-$(CONFIG_SERIAL_AMBA_PL010)                +=3D amba-pl010.o
- obj-$(CONFIG_SERIAL_AMBA_PL011)                +=3D amba-pl011.o
- obj-$(CONFIG_SERIAL_GRLIB_GAISLER_APBUART) +=3D apbuart.o
-diff --git a/drivers/tty/serial/ambarella_uart.c b/drivers/tty/serial/ambar=
-ella_uart.c
++obj-$(CONFIG_PINCTRL_AMB)      +=3D pinctrl-ambarella.o
+ obj-$(CONFIG_PINCTRL_AMD)      +=3D pinctrl-amd.o
+ obj-$(CONFIG_PINCTRL_AMDISP)   +=3D pinctrl-amdisp.o
+ obj-$(CONFIG_PINCTRL_APPLE_GPIO) +=3D pinctrl-apple-gpio.o
+diff --git a/drivers/pinctrl/pinctrl-ambarella.c b/drivers/pinctrl/pinctrl-=
+ambarella.c
 new file mode 100644
-index 000000000000..e79f27c71986
+index 000000000000..641b50a0624d
 --- /dev/null
-+++ b/drivers/tty/serial/ambarella_uart.c
-@@ -0,0 +1,937 @@
++++ b/drivers/pinctrl/pinctrl-ambarella.c
+@@ -0,0 +1,1561 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Pinctrl driver for Ambarella SoCs
++ *
++ * History:
++ *     2013/12/18 - [Cao Rongrong] created file
++ *
++ * Copyright (C) 2012-2026, Ambarella, Inc.
++ */
 +
-+#include <linux/clk.h>
-+#include <linux/console.h>
-+#include <linux/delay.h>
-+#include <linux/io.h>
 +#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/pinctrl/consumer.h>
 +#include <linux/platform_device.h>
++#include <linux/io.h>
++#include <linux/of.h>
++#include <linux/of_device.h>
++#include <linux/of_irq.h>
 +#include <linux/pm.h>
-+#include <linux/serial_reg.h>
-+#include <linux/serial_core.h>
-+#include <linux/sysrq.h>
-+#include <linux/tty.h>
-+#include <linux/tty_flip.h>
++#include <linux/slab.h>
++#include <linux/regmap.h>
++#include <linux/mfd/syscon.h>
++#include <linux/irqdomain.h>
++#include <linux/irqchip/chained_irq.h>
++#include <linux/gpio/driver.h>
++#include <linux/pinctrl/pinctrl.h>
++#include <linux/pinctrl/pinmux.h>
++#include <linux/pinctrl/pinconf.h>
++#include <linux/pinctrl/pinconf-generic.h>
++#include <linux/seq_file.h>
++#include "core.h"
 +
-+#define UART_RB_OFFSET                 0x00
-+#define UART_TH_OFFSET                 0x00
-+#define UART_DLL_OFFSET                        0x00
-+#define UART_IE_OFFSET                 0x04
-+#define UART_DLH_OFFSET                        0x04
-+#define UART_II_OFFSET                 0x08
-+#define UART_FC_OFFSET                 0x08
-+#define UART_LC_OFFSET                 0x0c
-+#define UART_MC_OFFSET                 0x10
-+#define UART_LS_OFFSET                 0x14
-+#define UART_MS_OFFSET                 0x18
-+#define UART_US_OFFSET                 0x7c
-+#define UART_SRR_OFFSET                        0x88
++/* =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D*/
 +
-+#define UART_IE_ERETOI                 0x40
-+#define UART_IE_ETOI                   0x20
-+#define UART_IE_EDSSI                  0x08
-+#define UART_IE_ELSI                   0x04
-+#define UART_IE_ETBEI                  0x02
-+#define UART_IE_ERBFI                  0x01
++#define GPIO_DATA_OFFSET               0x00
++#define GPIO_DIR_OFFSET                        0x04
++#define GPIO_IS_OFFSET                 0x08
++#define GPIO_IBE_OFFSET                        0x0c
++#define GPIO_IEV_OFFSET                        0x10
++#define GPIO_IE_OFFSET                 0x14
++#define GPIO_AFSEL_OFFSET              0x18
++#define GPIO_RIS_OFFSET                        0x1c
++#define GPIO_MIS_OFFSET                        0x20
++#define GPIO_IC_OFFSET                 0x24
++#define GPIO_MASK_OFFSET               0x28
++#define GPIO_ENABLE_OFFSET             0x2c
 +
-+#define UART_II_MODEM_STATUS_CHANGED   0x00
-+#define UART_II_NO_INT_PENDING         0x01
-+#define UART_II_THR_EMPTY              0x02
-+#define UART_II_RCV_DATA_AVAIL         0x04
-+#define UART_II_RCV_STATUS             0x06
-+#define UART_II_CHAR_TIMEOUT           0x0c
-+#define UART_II_CHAR_TIMEOUT_FIFO_EMPTY        0x0d
++#define IOMUX_OFFSET(bank, n)          (((bank) * 0xc) + ((n) * 4))
++#define IOMUX_CTRL_SET_OFFSET          0xf0
 +
-+#define UART_FC_RX_2_TO_FULL           0xc0
-+#define UART_FC_TX_EMPTY               0x00
-+#define UART_FC_XMITR                  0x04
-+#define UART_FC_RCVRR                  0x02
-+#define UART_FC_FIFOE                  0x01
++/* =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D*/
 +
-+#define UART_LC_DLAB                   0x80
-+#define UART_LC_BRK                    0x40
-+#define UART_LC_EVEN_PARITY            0x10
-+#define UART_LC_ODD_PARITY             0x00
-+#define UART_LC_PEN                    0x08
-+#define UART_LC_STOP_2BIT              0x04
-+#define UART_LC_STOP_1BIT              0x00
-+#define UART_LC_CLS_8_BITS             0x03
-+#define UART_LC_CLS_7_BITS             0x02
-+#define UART_LC_CLS_6_BITS             0x01
-+#define UART_LC_CLS_5_BITS             0x00
++#define MAX_BANK_NUM                   8
++#define MAX_PIN_NUM                    (MAX_BANK_NUM * 32)
 +
-+#define UART_MC_AFCE                   0x20
-+#define UART_MC_LB                     0x10
-+#define UART_MC_OUT2                   0x08
-+#define UART_MC_OUT1                   0x04
-+#define UART_MC_RTS                    0x02
-+#define UART_MC_DTR                    0x01
++#define PINID_TO_BANK(p)               ((p) >> 5)
++#define PINID_TO_OFFSET(p)             ((p) & 0x1f)
 +
-+#define UART_LS_TEMT                   0x40
-+#define UART_LS_THRE                   0x20
-+#define UART_LS_BI                     0x10
-+#define UART_LS_FE                     0x08
-+#define UART_LS_PE                     0x04
-+#define UART_LS_OE                     0x02
-+#define UART_LS_DR                     0x01
++#define MUXIDS_TO_PINID(m)             ((m) & 0xfff)
++#define MUXIDS_TO_ALT(m)               (((m) >> 12) & 0xf)
 +
-+#define UART_MS_DCD                    0x80
-+#define UART_MS_RI                     0x40
-+#define UART_MS_DSR                    0x20
-+#define UART_MS_CTS                    0x10
-+#define UART_MS_DDCD                   0x08
-+#define UART_MS_DCTS                   0x01
-+
-+#define UART_US_TFNF                   0x02
-+
-+#define UART_FIFO_SIZE                 64
-+
-+#define DEFAULT_AMBARELLA_UART_MCR     0
-+#define DEFAULT_AMBARELLA_UART_IER     (UART_IE_ELSI | UART_IE_ERBFI | \
-+                                        UART_IE_ETOI)
-+
-+#define AMBA_UART_MAX_NUM              8
-+
-+#define AMBA_UART_RESET_FLAG           0 /* bit 0 */
-+
-+#define AMBARELLA_UART_TIMEOUT         (1000000)
-+
-+struct ambarella_uart_port {
-+       struct uart_port port;
-+       struct clk *uart_pll;
-+       unsigned long flags;
-+       u32 mcr;
++struct ambpin_group {
++       const char              *name;
++       const char              *function;
++       unsigned int            *pins;
++       unsigned int            num_pins;
++       u8                      *alt;
++       unsigned long           *configs;
++       unsigned int            num_configs;
 +};
 +
-+static struct ambarella_uart_port ambarella_port[AMBA_UART_MAX_NUM];
++struct ambpin_function {
++       const char              *name;
++       const char              **groups;
++       unsigned int            num_groups;
++};
 +
-+static void __serial_ambarella_stop_tx(struct uart_port *port)
++struct amb_pinctrl_data {
++       unsigned int            ds0[MAX_BANK_NUM];
++       unsigned int            ds1[MAX_BANK_NUM];
++       unsigned int            ds2[MAX_BANK_NUM];
++       unsigned int            pull_en[MAX_BANK_NUM];
++       unsigned int            pull_dir[MAX_BANK_NUM];
++       bool                    have_ds2;
++       u32                     hsm_domain_id;
++       u32                     clk_au_dedicated_pin;
++};
++
++struct amb_pinctrl_pm_state {
++       u32 iomux[3];
++       u32 pull[2];
++       u32 ds[3];
++       u32 data;
++       u32 dir;
++       u32 is;
++       u32 ibe;
++       u32 iev;
++       u32 ie;
++       u32 afsel;
++       u32 mask;
++};
++
++struct amb_pinctrl_soc_data {
++       struct device                   *dev;
++       const struct amb_pinctrl_data   *data;
++       void __iomem                    *gpio_base[MAX_BANK_NUM];
++       void __iomem                    *iomux_base;
++       struct regmap                   *ds_regmap;
++       struct regmap                   *pull_regmap;
++       unsigned int                    ds0[MAX_BANK_NUM];
++       unsigned int                    ds1[MAX_BANK_NUM];
++       unsigned int                    ds2[MAX_BANK_NUM];
++       unsigned int                    pull_en[MAX_BANK_NUM];
++       unsigned int                    pull_dir[MAX_BANK_NUM];
++       unsigned int                    bank_num;
++       unsigned int                    have_ds2;
++       int                             irq[MAX_BANK_NUM];
++       unsigned int                    irq_wake_mask[MAX_BANK_NUM];
++       unsigned long                   used[BITS_TO_LONGS(MAX_PIN_NUM)];
++       raw_spinlock_t lock;
++
++       struct pinctrl_dev              *pctl;
++       struct gpio_chip                *gc;
++       struct irq_domain               *domain;
++
++       struct ambpin_function          *functions;
++       unsigned int                    nr_functions;
++       struct ambpin_group             *groups;
++       unsigned int                    nr_groups;
++
++       struct amb_pinctrl_pm_state     pm[MAX_BANK_NUM];
++
++       /* Domain ID used in HSM boot. */
++       u32                             hsm_domain_id;
++       /* Dedicated clk_au pin used on some chips. */
++       u32                             clk_au_dedicated_pin;
++};
++
++static __iomem void *
++amb_get_gpio_base(const struct amb_pinctrl_soc_data *soc,
++                 struct irq_data *data)
 +{
-+       u32 ier;
-+
-+       ier =3D readl_relaxed(port->membase + UART_IE_OFFSET);
-+       writel_relaxed(ier & ~UART_IE_ETBEI, port->membase + UART_IE_OFFSET=
-);
++       return soc->gpio_base[PINID_TO_BANK(irqd_to_hwirq(data))];
 +}
 +
-+static u32 __serial_ambarella_read_ms(struct uart_port *port)
++/* check if the selector is a valid pin group selector */
++static int amb_get_group_count(struct pinctrl_dev *pctldev)
 +{
-+       return readl_relaxed(port->membase + UART_MS_OFFSET);
++       struct amb_pinctrl_soc_data *soc =3D pinctrl_dev_get_drvdata(pctlde=
+v);
++
++       return soc->nr_groups;
 +}
 +
-+static void __serial_ambarella_enable_ms(struct uart_port *port)
++/* return the name of the group selected by the group selector */
++static const char *amb_get_group_name(struct pinctrl_dev *pctldev,
++                                     unsigned int selector)
 +{
-+       u32 ier =3D readl_relaxed(port->membase + UART_IE_OFFSET);
++       struct amb_pinctrl_soc_data *soc =3D pinctrl_dev_get_drvdata(pctlde=
+v);
 +
-+       writel_relaxed(ier | UART_IE_EDSSI, port->membase + UART_IE_OFFSET)=
-;
++       return soc->groups[selector].name;
 +}
 +
-+static void __serial_ambarella_disable_ms(struct uart_port *port)
++/* return the pin numbers associated with the specified group */
++static int amb_get_group_pins(struct pinctrl_dev *pctldev,
++                             unsigned int selector, const unsigned int **p=
+ins,
++                             unsigned int *num_pins)
 +{
-+       u32 ier =3D readl_relaxed(port->membase + UART_IE_OFFSET);
++       struct amb_pinctrl_soc_data *soc =3D pinctrl_dev_get_drvdata(pctlde=
+v);
 +
-+       writel_relaxed(ier & ~UART_IE_EDSSI, port->membase + UART_IE_OFFSET=
-);
++       *pins =3D soc->groups[selector].pins;
++       *num_pins =3D soc->groups[selector].num_pins;
++
++       return 0;
 +}
 +
-+static inline void wait_for_tx(struct uart_port *port)
++#if IS_ENABLED(CONFIG_DEBUG_FS)
++static void amb_pin_dbg_show(struct pinctrl_dev *pctldev,
++                            struct seq_file *s, unsigned int pin)
 +{
-+       unsigned int timeout =3D AMBARELLA_UART_TIMEOUT;
++       struct pin_desc *desc;
 +
-+       while (timeout &&
-+              !(readl(port->membase + UART_LS_OFFSET) & UART_LS_TEMT)) {
-+               udelay(1);
-+               timeout--;
++       seq_printf(s, " %s", dev_name(pctldev->dev));
++
++       desc =3D pin_desc_get(pctldev, pin);
++       if (desc) {
++               seq_printf(s, " owner: %s%s%s%s",
++                          desc->mux_owner ? desc->mux_owner : "",
++                          desc->mux_owner && desc->gpio_owner ? " " : "",
++                          desc->gpio_owner ? desc->gpio_owner : "",
++                          !desc->mux_owner && !desc->gpio_owner ? "NULL" :=
+ "");
++       } else {
++               seq_puts(s, " not registered");
 +       }
-+
-+       if (unlikely(!timeout)) {
-+               writel_relaxed(UART_FC_RX_2_TO_FULL | UART_FC_TX_EMPTY |
-+                               UART_FC_XMITR | UART_FC_RCVRR,
-+                               port->membase + UART_FC_OFFSET);
-+               udelay(100);
-+               writel_relaxed(UART_FC_FIFOE | UART_FC_RX_2_TO_FULL |
-+                               UART_FC_TX_EMPTY | UART_FC_XMITR |
-+                               UART_FC_RCVRR,
-+                               port->membase + UART_FC_OFFSET);
-+       }
 +}
++#endif
 +
-+static inline void wait_for_rx(struct uart_port *port)
++#if IS_ENABLED(CONFIG_OF)
++static int amb_dt_node_to_map(struct pinctrl_dev *pctldev,
++                             struct device_node *np,
++                             struct pinctrl_map **map,
++                             unsigned int *num_maps)
 +{
-+       u32 ls;
++       struct amb_pinctrl_soc_data *soc =3D pinctrl_dev_get_drvdata(pctlde=
+v);
++       struct ambpin_group *grp =3D NULL;
++       struct pinctrl_map *new_map;
++       u32 i, new_num;
 +
-+       ls =3D readl_relaxed(port->membase + UART_LS_OFFSET);
-+       while ((ls & UART_LS_DR) !=3D UART_LS_DR) {
-+               cpu_relax();
-+               ls =3D readl_relaxed(port->membase + UART_LS_OFFSET);
-+       }
-+}
-+
-+static inline int tx_fifo_is_full(struct uart_port *port)
-+{
-+       return !(readl_relaxed(port->membase + UART_US_OFFSET) & UART_US_TF=
-NF);
-+}
-+
-+static void serial_ambarella_hw_setup(struct uart_port *port)
-+{
-+       struct ambarella_uart_port *amb_port;
-+
-+       amb_port =3D (struct ambarella_uart_port *)(port->private_data);
-+
-+       if (!test_and_set_bit(AMBA_UART_RESET_FLAG, &amb_port->flags)) {
-+               if (amb_port->uart_pll)
-+                       port->uartclk =3D clk_get_rate(amb_port->uart_pll);
-+               /* reset the whole UART only once */
-+               writel_relaxed(0x01, port->membase + UART_SRR_OFFSET);
-+               mdelay(1);
-+               writel_relaxed(0x00, port->membase + UART_SRR_OFFSET);
-+       }
-+
-+       writel_relaxed(UART_FC_FIFOE | UART_FC_RX_2_TO_FULL | UART_FC_TX_EM=
-PTY |
-+                       UART_FC_XMITR | UART_FC_RCVRR, port->membase + UART=
-_FC_OFFSET);
-+       /* Keep interrupts disabled until the IRQ handler is registered. */
-+       writel_relaxed(0, port->membase + UART_IE_OFFSET);
-+}
-+
-+static inline void serial_ambarella_receive_chars(struct uart_port *port,
-+                                                 u32 tmo)
-+{
-+       u32 ch, flag, ls;
-+       int max_count;
-+
-+       ls =3D readl_relaxed(port->membase + UART_LS_OFFSET);
-+       max_count =3D port->fifosize;
-+
-+       do {
-+               flag =3D TTY_NORMAL;
-+               if (unlikely(ls & (UART_LS_BI | UART_LS_PE |
-+                                       UART_LS_FE | UART_LS_OE))) {
-+                       if (ls & UART_LS_BI) {
-+                               ls &=3D ~(UART_LS_FE | UART_LS_PE);
-+                               port->icount.brk++;
-+
-+                               if (uart_handle_break(port))
-+                                       goto ignore_char;
-+                       }
-+                       if (ls & UART_LS_FE)
-+                               port->icount.frame++;
-+                       if (ls & UART_LS_PE)
-+                               port->icount.parity++;
-+                       if (ls & UART_LS_OE)
-+                               port->icount.overrun++;
-+
-+                       ls &=3D port->read_status_mask;
-+
-+                       if (ls & UART_LS_BI)
-+                               flag =3D TTY_BREAK;
-+                       else if (ls & UART_LS_FE)
-+                               flag =3D TTY_FRAME;
-+                       else if (ls & UART_LS_PE)
-+                               flag =3D TTY_PARITY;
-+                       else if (ls & UART_LS_OE)
-+                               flag =3D TTY_OVERRUN;
-+
-+                       if (ls & UART_LS_OE)
-+                               pr_debug("%s: OVERFLOW\n", __func__);
++       /* find the group of this node by name */
++       for (i =3D 0; i < soc->nr_groups; i++) {
++               if (!strcmp(soc->groups[i].name, np->name)) {
++                       grp =3D &soc->groups[i];
++                       break;
 +               }
++       }
++       if (!grp) {
++               dev_err(soc->dev, "unable to find group for node %s\n", np-=
+>name);
++               return -EINVAL;
++       }
 +
-+               if (likely(ls & UART_LS_DR)) {
-+                       ch =3D readl_relaxed(port->membase + UART_RB_OFFSET=
-);
-+                       port->icount.rx++;
-+                       tmo =3D 0;
++       new_num =3D !!grp->num_pins + !!grp->num_configs;
++       new_map =3D kcalloc(new_num, sizeof(*new_map), GFP_KERNEL);
++       if (!new_map)
++               return -ENOMEM;
 +
-+                       if (uart_handle_sysrq_char(port, ch))
-+                               goto ignore_char;
++       *map =3D new_map;
++       *num_maps =3D new_num;
 +
-+                       uart_insert_char(port, ls, UART_LS_OE, ch, flag);
-+               } else if (tmo) {
-+                       ch =3D readl_relaxed(port->membase + UART_RB_OFFSET=
-);
-+               }
++       /* create mux map */
++       if (grp->num_pins) {
++               new_map[0].type =3D PIN_MAP_TYPE_MUX_GROUP;
++               new_map[0].data.mux.group =3D grp->name;
++               new_map[0].data.mux.function =3D grp->function;
++               new_map++;
++       }
 +
-+ignore_char:
-+               ls =3D readl_relaxed(port->membase + UART_LS_OFFSET);
-+       } while ((ls & (UART_LS_DR | UART_LSR_BI)) && (max_count-- > 0));
++       if (grp->num_configs) {
++               new_map[0].type =3D PIN_MAP_TYPE_CONFIGS_GROUP;
++               new_map[0].data.configs.group_or_pin =3D grp->name;
++               new_map[0].data.configs.configs =3D grp->configs;
++               new_map[0].data.configs.num_configs =3D grp->num_configs;
++       }
 +
-+       tty_flip_buffer_push(&port->state->port);
++       return 0;
 +}
 +
-+static void serial_ambarella_transmit_chars(struct uart_port *port)
++static void amb_dt_free_map(struct pinctrl_dev *pctldev,
++                           struct pinctrl_map *map, unsigned int num_maps)
 +{
-+       struct tty_port *tport =3D &port->state->port;
-+       int count;
++       kfree(map);
++}
++#endif
 +
-+       if (port->x_char) {
-+               writel_relaxed(port->x_char, port->membase + UART_TH_OFFSET=
-);
-+               port->icount.tx++;
-+               port->x_char =3D 0;
++/* list of pinctrl callbacks for the pinctrl core */
++static const struct pinctrl_ops amb_pctrl_ops =3D {
++       .get_groups_count       =3D amb_get_group_count,
++       .get_group_name         =3D amb_get_group_name,
++       .get_group_pins         =3D amb_get_group_pins,
++#if IS_ENABLED(CONFIG_DEBUG_FS)
++       .pin_dbg_show           =3D amb_pin_dbg_show,
++#endif
++#if IS_ENABLED(CONFIG_OF)
++       .dt_node_to_map         =3D amb_dt_node_to_map,
++       .dt_free_map            =3D amb_dt_free_map,
++#endif
++};
++
++/* check if the selector is a valid pin function selector */
++static int amb_pinmux_request(struct pinctrl_dev *pctldev, unsigned int pi=
+n)
++{
++       struct amb_pinctrl_soc_data *soc =3D pinctrl_dev_get_drvdata(pctlde=
+v);
++
++       if (test_and_set_bit(pin, soc->used))
++               return -EBUSY;
++
++       return 0;
++}
++
++/* check if the selector is a valid pin function selector */
++static int amb_pinmux_free(struct pinctrl_dev *pctldev, unsigned int pin)
++{
++       struct amb_pinctrl_soc_data *soc =3D pinctrl_dev_get_drvdata(pctlde=
+v);
++
++       clear_bit(pin, soc->used);
++
++       return 0;
++}
++
++/* check if the selector is a valid pin function selector */
++static int amb_pinmux_get_fcount(struct pinctrl_dev *pctldev)
++{
++       struct amb_pinctrl_soc_data *soc =3D pinctrl_dev_get_drvdata(pctlde=
+v);
++
++       return soc->nr_functions;
++}
++
++/* return the name of the pin function specified */
++static const char *amb_pinmux_get_fname(struct pinctrl_dev *pctldev,
++                                       unsigned int selector)
++{
++       struct amb_pinctrl_soc_data *soc =3D pinctrl_dev_get_drvdata(pctlde=
+v);
++
++       return soc->functions[selector].name;
++}
++
++/* return the groups associated for the specified function selector */
++static int amb_pinmux_get_groups(struct pinctrl_dev *pctldev,
++                                unsigned int selector,
++                                const char * const **groups,
++                                unsigned int * const num_groups)
++{
++       struct amb_pinctrl_soc_data *soc =3D pinctrl_dev_get_drvdata(pctlde=
+v);
++
++       *groups =3D soc->functions[selector].groups;
++       *num_groups =3D soc->functions[selector].num_groups;
++
++       return 0;
++}
++
++static void amb_pinmux_set_altfunc(struct amb_pinctrl_soc_data *soc,
++                                  u32 bank, u32 offset, u32 altfunc)
++{
++       u32 i, data;
++
++       /* On CV3 platform, only ARM cluster0 (safety domain) can access pi=
+nctrl registers */
++       if (soc->hsm_domain_id !=3D 0)
 +               return;
++
++       for (i =3D 0; i < 3; i++) {
++               data =3D readl_relaxed(soc->iomux_base + IOMUX_OFFSET(bank,=
+ i));
++               data &=3D (~(0x1 << offset));
++               data |=3D (((altfunc >> i) & 0x1) << offset);
++               writel_relaxed(data, soc->iomux_base + IOMUX_OFFSET(bank, i=
+));
 +       }
 +
-+       if (uart_tx_stopped(port) || kfifo_is_empty(&tport->xmit_fifo)) {
-+               __serial_ambarella_stop_tx(port);
-+               return;
-+       }
-+
-+       count =3D port->fifosize;
-+       while (count-- > 0) {
-+               unsigned char c;
-+
-+               if (tx_fifo_is_full(port))
-+                       break;
-+
-+               if (!kfifo_peek(&tport->xmit_fifo, &c))
-+                       break;
-+
-+               writel_relaxed(c, port->membase + UART_TH_OFFSET);
-+               kfifo_skip(&tport->xmit_fifo);
-+               port->icount.tx++;
-+               if (kfifo_is_empty(&tport->xmit_fifo))
-+                       break;
-+       }
-+
-+       if (kfifo_len(&tport->xmit_fifo) < WAKEUP_CHARS)
-+               uart_write_wakeup(port);
-+       if (kfifo_is_empty(&tport->xmit_fifo))
-+               __serial_ambarella_stop_tx(port);
++       writel_relaxed(0x1, soc->iomux_base + IOMUX_CTRL_SET_OFFSET);
++       writel_relaxed(0x0, soc->iomux_base + IOMUX_CTRL_SET_OFFSET);
 +}
 +
-+static inline void serial_ambarella_check_modem_status(struct uart_port *p=
-ort)
++/* enable a specified pinmux by writing to registers */
++static int amb_pinmux_set_mux(struct pinctrl_dev *pctldev,
++                             unsigned int selector, unsigned int group)
 +{
-+       u32 ms;
-+
-+       ms =3D __serial_ambarella_read_ms(port);
-+
-+       if (ms & UART_MS_RI)
-+               port->icount.rng++;
-+       if (ms & UART_MS_DSR)
-+               port->icount.dsr++;
-+       if (ms & UART_MS_DCTS)
-+               uart_handle_cts_change(port, (ms & UART_MS_CTS));
-+       if (ms & UART_MS_DDCD)
-+               uart_handle_dcd_change(port, (ms & UART_MS_DCD));
-+
-+       wake_up_interruptible(&port->state->port.delta_msr_wait);
-+}
-+
-+static irqreturn_t serial_ambarella_irq(int irq, void *dev_id)
-+{
-+       struct uart_port *port =3D dev_id;
-+       struct ambarella_uart_port *amb_port;
++       struct amb_pinctrl_soc_data *soc =3D pinctrl_dev_get_drvdata(pctlde=
+v);
++       const struct ambpin_group *grp;
++       u32 i, bank, offset;
 +       unsigned long flags;
-+       u32 ii, ier;
 +
-+       amb_port =3D (struct ambarella_uart_port *)(port->private_data);
++       grp =3D &soc->groups[group];
 +
-+       spin_lock_irqsave(&port->lock, flags);
++       raw_spin_lock_irqsave(&soc->lock, flags);
++       for (i =3D 0; i < grp->num_pins; i++) {
++               bank =3D PINID_TO_BANK(grp->pins[i]);
++               offset =3D PINID_TO_OFFSET(grp->pins[i]);
++               amb_pinmux_set_altfunc(soc, bank, offset,  grp->alt[i]);
++       }
++       raw_spin_unlock_irqrestore(&soc->lock, flags);
 +
-+       ii =3D readl_relaxed(port->membase + UART_II_OFFSET);
-+       switch (ii & 0x0F) {
-+       case UART_II_MODEM_STATUS_CHANGED:
-+               serial_ambarella_check_modem_status(port);
++       return 0;
++}
++
++static int amb_pinmux_gpio_request_enable(struct pinctrl_dev *pctldev,
++                                         struct pinctrl_gpio_range *range,
++                                         unsigned int pin)
++{
++       struct amb_pinctrl_soc_data *soc =3D pinctrl_dev_get_drvdata(pctlde=
+v);
++       u32 bank, offset;
++       unsigned long flags;
++
++       if (!range || !range->gc) {
++               dev_err(soc->dev, "invalid range: %p\n", range);
++               return -EINVAL;
++       }
++
++       if (test_and_set_bit(pin, soc->used))
++               return -EBUSY;
++
++       bank =3D PINID_TO_BANK(pin);
++       offset =3D PINID_TO_OFFSET(pin);
++
++       raw_spin_lock_irqsave(&soc->lock, flags);
++       amb_pinmux_set_altfunc(soc, bank, offset, 0);
++       raw_spin_unlock_irqrestore(&soc->lock, flags);
++
++       return 0;
++}
++
++static void amb_pinmux_gpio_disable_free(struct pinctrl_dev *pctldev,
++                                        struct pinctrl_gpio_range *range,
++                                        unsigned int pin)
++{
++       struct amb_pinctrl_soc_data *soc =3D pinctrl_dev_get_drvdata(pctlde=
+v);
++
++       dev_dbg(soc->dev, "disable pin %u as GPIO\n", pin);
++       /* Set the pin to some default state, GPIO is usually default */
++
++       clear_bit(pin, soc->used);
++}
++
++/* list of pinmux callbacks for the pinmux vertical in pinctrl core */
++static const struct pinmux_ops amb_pinmux_ops =3D {
++       .request                =3D amb_pinmux_request,
++       .free                   =3D amb_pinmux_free,
++       .get_functions_count    =3D amb_pinmux_get_fcount,
++       .get_function_name      =3D amb_pinmux_get_fname,
++       .get_function_groups    =3D amb_pinmux_get_groups,
++       .set_mux                =3D amb_pinmux_set_mux,
++       .gpio_request_enable    =3D amb_pinmux_gpio_request_enable,
++       .gpio_disable_free      =3D amb_pinmux_gpio_disable_free,
++};
++
++static int amb_drive_strength_to_reg(struct amb_pinctrl_soc_data *soc,
++                                    u32 strength)
++{
++       if (soc->have_ds2) {
++               switch (strength) {
++               case 3:
++                       return 0;
++               case 4:
++               case 5:
++                       return 1;
++               case 6:
++                       return 2;
++               case 7:
++               case 8:
++                       return 3;
++               case 9:
++                       return 4;
++               case 12:
++                       return 5;
++               default:
++                       return -EINVAL;
++               }
++       }
++
++       switch (strength) {
++       case 2:
++               return 0;
++       case 4:
++               return 1;
++       case 8:
++               return 2;
++       case 12:
++               return 3;
++       default:
++               return -EINVAL;
++       }
++}
++
++/* set the pin config settings for a specified pin */
++static int amb_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
++                          unsigned long *configs, unsigned int num_configs=
+)
++{
++       struct amb_pinctrl_soc_data *soc =3D pinctrl_dev_get_drvdata(pctlde=
+v);
++       u32 i, bank, offset;
++       unsigned long config, flags;
++       enum pin_config_param param;
++       u32 arg;
++       int ds;
++
++       bank =3D PINID_TO_BANK(pin);
++       offset =3D PINID_TO_OFFSET(pin);
++
++       raw_spin_lock_irqsave(&soc->lock, flags);
++       for (i =3D 0; i < num_configs; i++) {
++               config =3D configs[i];
++               param =3D pinconf_to_config_param(config);
++               arg =3D pinconf_to_config_argument(config);
++
++               switch (param) {
++               case PIN_CONFIG_BIAS_DISABLE:
++                       regmap_update_bits(soc->pull_regmap,
++                                          soc->pull_en[bank], BIT(offset),=
+ 0);
++                       break;
++               case PIN_CONFIG_BIAS_PULL_DOWN:
++               case PIN_CONFIG_BIAS_PULL_UP:
++                       regmap_update_bits(soc->pull_regmap, soc->pull_dir[=
+bank],
++                                          BIT(offset),
++                                          (param =3D=3D PIN_CONFIG_BIAS_PU=
+LL_UP) ?
++                                          BIT(offset) : 0);
++                       regmap_update_bits(soc->pull_regmap, soc->pull_en[b=
+ank],
++                                          BIT(offset), BIT(offset));
++                       break;
++               case PIN_CONFIG_DRIVE_STRENGTH:
++                       ds =3D amb_drive_strength_to_reg(soc, arg);
++                       if (ds < 0) {
++                               raw_spin_unlock_irqrestore(&soc->lock, flag=
+s);
++                               return ds;
++                       }
++                       if (soc->have_ds2) {
++                               regmap_update_bits(soc->ds_regmap,
++                                                  soc->ds0[bank], BIT(offs=
+et),
++                                                  (ds & BIT(0)) ? BIT(offs=
+et) : 0);
++                               regmap_update_bits(soc->ds_regmap,
++                                                  soc->ds1[bank], BIT(offs=
+et),
++                                                  (ds & BIT(1)) ? BIT(offs=
+et) : 0);
++                               regmap_update_bits(soc->ds_regmap,
++                                                  soc->ds2[bank], BIT(offs=
+et),
++                                                  (ds & BIT(2)) ? BIT(offs=
+et) : 0);
++                       } else {
++                               regmap_update_bits(soc->ds_regmap,
++                                                  soc->ds0[bank], BIT(offs=
+et),
++                                                  (ds & BIT(1)) ? BIT(offs=
+et) : 0);
++                               regmap_update_bits(soc->ds_regmap,
++                                                  soc->ds1[bank], BIT(offs=
+et),
++                                                  (ds & BIT(0)) ? BIT(offs=
+et) : 0);
++                       }
++                       break;
++               default:
++                       raw_spin_unlock_irqrestore(&soc->lock, flags);
++                       return -EOPNOTSUPP;
++               }
++       }
++       raw_spin_unlock_irqrestore(&soc->lock, flags);
++
++       return 0;
++}
++
++static int amb_pinconf_group_set(struct pinctrl_dev *pctldev,
++                                unsigned int selector,
++                                unsigned long *configs,
++                                unsigned int num_configs)
++{
++       struct amb_pinctrl_soc_data *soc =3D pinctrl_dev_get_drvdata(pctlde=
+v);
++       const struct ambpin_group *grp =3D &soc->groups[selector];
++       int ret;
++       u32 i;
++
++       for (i =3D 0; i < grp->num_pins; i++) {
++               ret =3D amb_pinconf_set(pctldev, grp->pins[i], configs,
++                                     num_configs);
++               if (ret)
++                       return ret;
++       }
++
++       return 0;
++}
++
++/* get the pin config settings for a specified pin */
++static int amb_pinconf_get(struct pinctrl_dev *pctldev,
++                          unsigned int pin, unsigned long *config)
++{
++       dev_WARN_ONCE(pctldev->dev, true, "NOT Implemented.\n");
++       return -EOPNOTSUPP;
++}
++
++#if IS_ENABLED(CONFIG_DEBUG_FS)
++static void amb_pinconf_dbg_show(struct pinctrl_dev *pctldev,
++                                struct seq_file *s, unsigned int pin)
++{
++       struct amb_pinctrl_soc_data *soc =3D pinctrl_dev_get_drvdata(pctlde=
+v);
++       u32 pull_en, pull_dir, ds0, ds1, ds2, drv_strength;
++       u32 bank, offset;
++
++       bank =3D PINID_TO_BANK(pin);
++       offset =3D PINID_TO_OFFSET(pin);
++
++       regmap_read(soc->pull_regmap, soc->pull_en[bank], &pull_en);
++       pull_en =3D (pull_en >> offset) & 0x1;
++       regmap_read(soc->pull_regmap, soc->pull_dir[bank], &pull_dir);
++       pull_dir =3D (pull_dir >> offset) & 0x1;
++       seq_printf(s, " pull: %s, ", pull_en ? pull_dir ? "up" : "down" : "=
+disable");
++
++       regmap_read(soc->ds_regmap, soc->ds0[bank], &ds0);
++       ds0 =3D (ds0 >> offset) & 0x1;
++       regmap_read(soc->ds_regmap, soc->ds1[bank], &ds1);
++       ds1 =3D (ds1 >> offset) & 0x1;
++       if (soc->have_ds2) {
++               regmap_read(soc->ds_regmap, soc->ds2[bank], &ds2);
++               ds2 =3D (ds2 >> offset) & 0x1;
++               drv_strength =3D (ds2 << 2) | (ds1 << 1) | ds0;
++               seq_printf(s, "drive-strength: %s",
++                          drv_strength =3D=3D 5 ? "12mA(lvl5)" :
++                          drv_strength =3D=3D 4 ? "9mA(lvl4)" :
++                          drv_strength =3D=3D 3 ? "7.5mA(lvl3)" :
++                          drv_strength =3D=3D 2 ? "6mA(lvl2)" :
++                          drv_strength =3D=3D 1 ? "4.5mA(lvl1)" :
++                          drv_strength =3D=3D 0 ? "3mA(lvl0)" : "invalid")=
+;
++       } else {
++               drv_strength =3D (ds0 << 1) | ds1;
++               seq_printf(s, "drive-strength: %s",
++                          drv_strength =3D=3D 3 ? "12mA" :
++                          drv_strength =3D=3D 2 ? "8mA" :
++                          drv_strength =3D=3D 1 ? "4mA" : "2mA");
++       }
++}
++#endif
++
++/* list of pinconfig callbacks for pinconfig vertical in the pinctrl code =
+*/
++static const struct pinconf_ops amb_pinconf_ops =3D {
++       .is_generic             =3D true,
++       .pin_config_get         =3D amb_pinconf_get,
++       .pin_config_set         =3D amb_pinconf_set,
++       .pin_config_group_set   =3D amb_pinconf_group_set,
++#if IS_ENABLED(CONFIG_DEBUG_FS)
++       .pin_config_dbg_show    =3D amb_pinconf_dbg_show,
++#endif
++};
++
++static int amb_pinctrl_get_function_name(struct device_node *np,
++                                        const char **function)
++{
++       if (of_property_read_string(np, "function", function))
++               *function =3D np->name;
++
++       return 0;
++}
++
++static int amb_pinctrl_count_configs(struct device_node *np)
++{
++       unsigned int bias =3D 0, count =3D 0;
++
++       if (of_property_read_bool(np, "bias-disable"))
++               bias++;
++       if (of_property_read_bool(np, "bias-pull-down"))
++               bias++;
++       if (of_property_read_bool(np, "bias-pull-up"))
++               bias++;
++       if (bias > 1)
++               return -EINVAL;
++
++       count +=3D bias;
++       if (of_find_property(np, "drive-strength", NULL))
++               count++;
++
++       return count;
++}
++
++static int amb_pinctrl_parse_configs(struct amb_pinctrl_soc_data *soc,
++                                    struct device_node *np,
++                                    struct ambpin_group *grp)
++{
++       u32 drive;
++       int num_configs, i =3D 0;
++
++       num_configs =3D amb_pinctrl_count_configs(np);
++       if (num_configs < 0)
++               return dev_err_probe(soc->dev, num_configs,
++                                    "%pOF has conflicting bias properties\=
+n", np);
++       if (!num_configs)
++               return 0;
++
++       grp->configs =3D devm_kcalloc(soc->dev, num_configs,
++                                   sizeof(*grp->configs), GFP_KERNEL);
++       if (!grp->configs)
++               return -ENOMEM;
++
++       if (of_property_read_bool(np, "bias-disable"))
++               grp->configs[i++] =3D
++                       pinconf_to_config_packed(PIN_CONFIG_BIAS_DISABLE, 0=
+);
++       else if (of_property_read_bool(np, "bias-pull-down"))
++               grp->configs[i++] =3D
++                       pinconf_to_config_packed(PIN_CONFIG_BIAS_PULL_DOWN,=
+ 1);
++       else if (of_property_read_bool(np, "bias-pull-up"))
++               grp->configs[i++] =3D
++                       pinconf_to_config_packed(PIN_CONFIG_BIAS_PULL_UP, 1=
+);
++
++       if (!of_property_read_u32(np, "drive-strength", &drive))
++               grp->configs[i++] =3D
++                       pinconf_to_config_packed(PIN_CONFIG_DRIVE_STRENGTH,
++                                                drive);
++
++       grp->num_configs =3D i;
++
++       return 0;
++}
++
++static int amb_pinctrl_parse_group(struct amb_pinctrl_soc_data *soc,
++                                  struct device_node *np, int idx,
++                                  const char **out_name)
++{
++       struct ambpin_group *grp =3D &soc->groups[idx];
++       struct device *dev =3D soc->dev;
++       struct property *prop;
++       int length;
++       int ret;
++       u32 i;
++
++       grp->name =3D np->name;
++       amb_pinctrl_get_function_name(np, &grp->function);
++
++       prop =3D of_find_property(np, "pinmux", &length);
++       if (prop) {
++               grp->num_pins =3D length / sizeof(u32);
++
++               grp->pins =3D devm_kcalloc(dev, grp->num_pins, sizeof(*grp-=
+>pins), GFP_KERNEL);
++               if (!grp->pins)
++                       return -ENOMEM;
++
++               grp->alt =3D devm_kcalloc(dev, grp->num_pins, sizeof(*grp->=
+alt), GFP_KERNEL);
++               if (!grp->alt)
++                       return -ENOMEM;
++
++               of_property_read_u32_array(np, "pinmux", grp->pins,
++                                          grp->num_pins);
++
++               for (i =3D 0; i < grp->num_pins; i++) {
++                       grp->alt[i] =3D MUXIDS_TO_ALT(grp->pins[i]);
++                       grp->pins[i] =3D MUXIDS_TO_PINID(grp->pins[i]);
++               }
++       }
++
++       if (!grp->num_pins)
++               return dev_err_probe(soc->dev, -EINVAL,
++                                    "%pOF: missing pinmux property\n", np)=
+;
++
++       ret =3D amb_pinctrl_parse_configs(soc, np, grp);
++       if (ret)
++               return ret;
++
++       if (out_name)
++               *out_name =3D grp->name;
++
++       return 0;
++}
++
++static int amb_pinctrl_find_function(struct amb_pinctrl_soc_data *soc,
++                                    const char *function)
++{
++       int i;
++
++       for (i =3D 0; i < soc->nr_functions; i++) {
++               if (soc->functions[i].name &&
++                   !strcmp(soc->functions[i].name, function))
++                       return i;
++       }
++
++       return -ENOENT;
++}
++
++static int amb_pinctrl_parse_dt(struct amb_pinctrl_soc_data *soc)
++{
++       struct device_node *np =3D soc->dev->of_node;
++       struct device_node *child;
++       int idxf =3D 0, idxg =3D 0;
++       int i, ret;
++
++       /* Count total functions and groups */
++       for_each_child_of_node(np, child) {
++               if (of_find_property(child, "gpio-controller", NULL))
++                       continue;
++
++               soc->nr_groups++;
++       }
++
++       if (!soc->nr_groups) {
++               dev_err(soc->dev, "no group is defined\n");
++               return -ENOENT;
++       }
++
++       soc->functions =3D devm_kcalloc(soc->dev, soc->nr_groups,
++                                     sizeof(struct ambpin_function), GFP_K=
+ERNEL);
++       if (!soc->functions)
++               return -ENOMEM;
++
++       soc->groups =3D devm_kcalloc(soc->dev, soc->nr_groups,
++                                  sizeof(struct ambpin_group), GFP_KERNEL)=
+;
++       if (!soc->groups)
++               return -ENOMEM;
++
++       /* Parse groups and collect unique functions. */
++       idxg =3D 0;
++       for_each_child_of_node(np, child) {
++               if (of_find_property(child, "gpio-controller", NULL))
++                       continue;
++
++               ret =3D amb_pinctrl_parse_group(soc, child, idxg, NULL);
++               if (ret) {
++                       of_node_put(child);
++                       return ret;
++               }
++
++               i =3D amb_pinctrl_find_function(soc, soc->groups[idxg].func=
+tion);
++               if (i < 0) {
++                       soc->functions[idxf].name =3D soc->groups[idxg].fun=
+ction;
++                       i =3D idxf++;
++               }
++
++               soc->functions[i].num_groups++;
++               idxg++;
++       }
++
++       soc->nr_functions =3D idxf;
++
++       for (idxf =3D 0; idxf < soc->nr_functions; idxf++) {
++               soc->functions[idxf].groups =3D
++                       devm_kcalloc(soc->dev, soc->functions[idxf].num_gro=
+ups,
++                                    sizeof(*soc->functions[idxf].groups),
++                                    GFP_KERNEL);
++               if (!soc->functions[idxf].groups)
++                       return -ENOMEM;
++
++               soc->functions[idxf].num_groups =3D 0;
++       }
++
++       for (idxg =3D 0; idxg < soc->nr_groups; idxg++) {
++               i =3D amb_pinctrl_find_function(soc, soc->groups[idxg].func=
+tion);
++               if (i < 0)
++                       return -EINVAL;
++
++               soc->functions[i].groups[soc->functions[i].num_groups++] =
+=3D
++                       soc->groups[idxg].name;
++       }
++
++       return 0;
++}
++
++/* register the pinctrl interface with the pinctrl subsystem */
++static int amb_pinctrl_register(struct amb_pinctrl_soc_data *soc)
++{
++       struct pinctrl_pin_desc *pindesc;
++       int pin, pin_num, rval;
++       struct pinctrl_desc *amb_pinctrl_desc;
++
++       /* Addition one for clk_au dedicated pin */
++       pin_num =3D soc->bank_num * 32 + 16;
++
++       /* dynamically populate the pin number and pin name for pindesc */
++       pindesc =3D devm_kcalloc(soc->dev, pin_num, sizeof(*pindesc), GFP_K=
+ERNEL);
++       if (!pindesc)
++               return -ENOMEM;
++
++       for (pin =3D 0; pin < pin_num; pin++) {
++               pindesc[pin].number =3D pin;
++               pindesc[pin].name =3D devm_kasprintf(soc->dev, GFP_KERNEL, =
+"io%d", pin);
++               if (!pindesc[pin].name)
++                       return -ENOMEM;
++       }
++
++       amb_pinctrl_desc =3D devm_kzalloc(soc->dev, sizeof(*amb_pinctrl_des=
+c), GFP_KERNEL);
++       if (!amb_pinctrl_desc)
++               return -ENOMEM;
++
++       amb_pinctrl_desc->name =3D dev_name(soc->dev);
++       amb_pinctrl_desc->pins =3D pindesc;
++       amb_pinctrl_desc->npins =3D pin_num;
++       amb_pinctrl_desc->pctlops =3D &amb_pctrl_ops;
++       amb_pinctrl_desc->pmxops =3D &amb_pinmux_ops;
++       amb_pinctrl_desc->confops =3D &amb_pinconf_ops;
++
++       rval =3D amb_pinctrl_parse_dt(soc);
++       if (rval)
++               return rval;
++
++       soc->pctl =3D devm_pinctrl_register(soc->dev, amb_pinctrl_desc, soc=
+);
++       if (IS_ERR(soc->pctl)) {
++               dev_err(soc->dev, "could not register pinctrl driver\n");
++               return PTR_ERR(soc->pctl);
++       }
++
++       return 0;
++}
++
++/* gpiolib gpio_set callback function */
++static int amb_gpio_set(struct gpio_chip *gc, unsigned int pin, int value)
++{
++       struct amb_pinctrl_soc_data *soc =3D gpiochip_get_data(gc);
++       u32 bank, offset, data;
++       unsigned long flags;
++
++       bank =3D PINID_TO_BANK(pin);
++       offset =3D PINID_TO_OFFSET(pin);
++
++       raw_spin_lock_irqsave(&soc->lock, flags);
++       writel_relaxed(0x1 << offset, soc->gpio_base[bank] + GPIO_MASK_OFFS=
+ET);
++       data =3D (value =3D=3D 0) ? 0 : 0x1 << offset;
++       writel_relaxed(data, soc->gpio_base[bank] + GPIO_DATA_OFFSET);
++       raw_spin_unlock_irqrestore(&soc->lock, flags);
++
++       return 0;
++}
++
++/* gpiolib gpio_get callback function */
++static int amb_gpio_get(struct gpio_chip *gc, unsigned int pin)
++{
++       struct amb_pinctrl_soc_data *soc =3D gpiochip_get_data(gc);
++       u32 bank, offset, data;
++       unsigned long flags;
++
++       bank =3D PINID_TO_BANK(pin);
++       offset =3D PINID_TO_OFFSET(pin);
++
++       raw_spin_lock_irqsave(&soc->lock, flags);
++       writel_relaxed(0x1 << offset, soc->gpio_base[bank] + GPIO_MASK_OFFS=
+ET);
++       data =3D readl_relaxed(soc->gpio_base[bank] + GPIO_DATA_OFFSET);
++       raw_spin_unlock_irqrestore(&soc->lock, flags);
++
++       return (data >> offset) & 0x1;
++}
++
++static int amb_gpio_get_direction(struct gpio_chip *gc, unsigned int pin)
++{
++       struct amb_pinctrl_soc_data *soc =3D gpiochip_get_data(gc);
++       u32 bank, offset, data;
++       unsigned long flags;
++
++       bank =3D PINID_TO_BANK(pin);
++       offset =3D PINID_TO_OFFSET(pin);
++
++       raw_spin_lock_irqsave(&soc->lock, flags);
++       data =3D readl_relaxed(soc->gpio_base[bank] + GPIO_DIR_OFFSET);
++       data =3D (data >> offset) & 0x1;
++       raw_spin_unlock_irqrestore(&soc->lock, flags);
++
++       return data ? GPIO_LINE_DIRECTION_OUT : GPIO_LINE_DIRECTION_IN;
++}
++
++static int amb_gpio_set_direction(struct gpio_chip *gc, unsigned int pin, =
+bool input)
++{
++       struct amb_pinctrl_soc_data *soc =3D gpiochip_get_data(gc);
++       u32 bank, offset, data;
++       unsigned long flags;
++
++       bank =3D PINID_TO_BANK(pin);
++       offset =3D PINID_TO_OFFSET(pin);
++
++       raw_spin_lock_irqsave(&soc->lock, flags);
++       data =3D readl_relaxed(soc->gpio_base[bank] + GPIO_DIR_OFFSET);
++       if (input)
++               writel_relaxed(data & ~(0x1 << offset), soc->gpio_base[bank=
+] + GPIO_DIR_OFFSET);
++       else
++               writel_relaxed(data | (0x1 << offset), soc->gpio_base[bank]=
+ + GPIO_DIR_OFFSET);
++       raw_spin_unlock_irqrestore(&soc->lock, flags);
++
++       return 0;
++}
++
++/* gpiolib gpio_direction_input callback function */
++static int amb_gpio_direction_input(struct gpio_chip *gc, unsigned int pin=
+)
++{
++       return amb_gpio_set_direction(gc, pin, true);
++}
++
++/* gpiolib gpio_direction_output callback function */
++static int amb_gpio_direction_output(struct gpio_chip *gc, unsigned int pi=
+n, int value)
++{
++       amb_gpio_set_direction(gc, pin, false);
++       amb_gpio_set(gc, pin, value);
++       return 0;
++}
++
++/* gpiolib gpio_to_irq callback function */
++static int amb_gpio_to_irq(struct gpio_chip *gc, unsigned int pin)
++{
++       struct amb_pinctrl_soc_data *soc =3D gpiochip_get_data(gc);
++
++       return irq_create_mapping(soc->domain, pin);
++}
++
++#if IS_ENABLED(CONFIG_DEBUG_FS)
++static void amb_gpio_dbg_show(struct seq_file *s, struct gpio_chip *gc)
++{
++       struct amb_pinctrl_soc_data *soc =3D gpiochip_get_data(gc);
++       u32 afsel, data, dir, mask, iomux0, iomux1, iomux2, alt;
++       u32 i, bank, offset;
++
++       for (i =3D 0; i < gc->ngpio; i++) {
++               offset =3D PINID_TO_OFFSET(i);
++               if (!offset) {
++                       bank =3D PINID_TO_BANK(i);
++
++                       afsel =3D readl_relaxed(soc->gpio_base[bank] + GPIO=
+_AFSEL_OFFSET);
++                       dir =3D readl_relaxed(soc->gpio_base[bank] + GPIO_D=
+IR_OFFSET);
++                       mask =3D readl_relaxed(soc->gpio_base[bank] + GPIO_=
+MASK_OFFSET);
++                       writel_relaxed(0xffffffff, soc->gpio_base[bank] + G=
+PIO_MASK_OFFSET);
++                       data =3D readl_relaxed(soc->gpio_base[bank] + GPIO_=
+DATA_OFFSET);
++                       writel_relaxed(mask, soc->gpio_base[bank] + GPIO_MA=
+SK_OFFSET);
++
++                       seq_printf(s, "\nGPIO[%d]:\t[%d - %d]\n", bank, i, =
+i + 32 - 1);
++                       seq_printf(s, "GPIO_AFSEL:\t0x%08X\n", afsel);
++                       seq_printf(s, "GPIO_DIR:\t0x%08X\n", dir);
++                       seq_printf(s, "GPIO_MASK:\t0x%08X\n", mask);
++                       seq_printf(s, "GPIO_DATA:\t0x%08X\n", data);
++
++                       iomux0 =3D readl_relaxed(soc->iomux_base + bank * 1=
+2);
++                       iomux1 =3D readl_relaxed(soc->iomux_base + bank * 1=
+2 + 4);
++                       iomux2 =3D readl_relaxed(soc->iomux_base + bank * 1=
+2 + 8);
++                       seq_printf(s, "IOMUX_REG%d_0:\t0x%08X\n", bank, iom=
+ux0);
++                       seq_printf(s, "IOMUX_REG%d_1:\t0x%08X\n", bank, iom=
+ux1);
++                       seq_printf(s, "IOMUX_REG%d_2:\t0x%08X\n", bank, iom=
+ux2);
++               }
++
++               seq_printf(s, " gpio-%-3d", gc->base + i);
++
++               alt =3D ((iomux2 >> offset) & 1) << 2;
++               alt |=3D ((iomux1 >> offset) & 1) << 1;
++               alt |=3D ((iomux0 >> offset) & 1) << 0;
++               if (alt) {
++                       seq_printf(s, " [HW  ] (alt%d)\n", alt);
++               } else {
++                       char *label __free(kfree) =3D gpiochip_dup_line_lab=
+el(gc, i);
++                       if (IS_ERR(label)) {
++                               pr_debug("Failed to duplicate label\n");
++                               continue;
++                       }
++
++                       seq_printf(s, " [GPIO] (%-20.20s) %s %s\n",
++                                  label ? label : "",
++                                  (dir & (1 << offset)) ? "out" : "in ",
++                                  (data & (1 << offset)) ? "hi" : "lo");
++               }
++       }
++}
++#endif
++
++static void amb_gpio_irq_enable(struct irq_data *data)
++{
++       struct gpio_chip *gc =3D irq_data_get_irq_chip_data(data);
++       struct amb_pinctrl_soc_data *soc =3D gpiochip_get_data(gc);
++       void __iomem *gpio_base =3D amb_get_gpio_base(soc, data);
++       void __iomem *iomux_base =3D soc->iomux_base;
++       u32 i, val, bank, offset;
++       unsigned long flags;
++
++       bank =3D PINID_TO_BANK(irqd_to_hwirq(data));
++       offset =3D PINID_TO_OFFSET(irqd_to_hwirq(data));
++
++       raw_spin_lock_irqsave(&soc->lock, flags);
++
++       val =3D readl_relaxed(gpio_base + GPIO_DIR_OFFSET);
++       val &=3D ~(0x1 << offset);
++       writel_relaxed(val, gpio_base + GPIO_DIR_OFFSET);
++
++       for (i =3D 0; i < 3; i++) {
++               val =3D readl_relaxed(iomux_base + IOMUX_OFFSET(bank, i));
++               val &=3D ~(0x1 << offset);
++               writel_relaxed(val, iomux_base + IOMUX_OFFSET(bank, i));
++       }
++       writel_relaxed(0x1, iomux_base + IOMUX_CTRL_SET_OFFSET);
++       writel_relaxed(0x0, iomux_base + IOMUX_CTRL_SET_OFFSET);
++
++       writel_relaxed(0x1 << offset, gpio_base + GPIO_IC_OFFSET);
++
++       val =3D readl_relaxed(gpio_base + GPIO_IE_OFFSET);
++       val |=3D 0x1 << offset;
++       writel_relaxed(val, gpio_base + GPIO_IE_OFFSET);
++
++       raw_spin_unlock_irqrestore(&soc->lock, flags);
++}
++
++static void amb_gpio_irq_disable(struct irq_data *data)
++{
++       struct gpio_chip *gc =3D irq_data_get_irq_chip_data(data);
++       struct amb_pinctrl_soc_data *soc =3D gpiochip_get_data(gc);
++       void __iomem *gpio_base =3D amb_get_gpio_base(soc, data);
++       u32 offset, ie;
++       unsigned long flags;
++
++       offset =3D PINID_TO_OFFSET(irqd_to_hwirq(data));
++
++       raw_spin_lock_irqsave(&soc->lock, flags);
++       ie =3D readl_relaxed(gpio_base + GPIO_IE_OFFSET);
++       writel_relaxed(ie & ~(0x1 << offset), gpio_base + GPIO_IE_OFFSET);
++       writel_relaxed(0x1 << offset, gpio_base + GPIO_IC_OFFSET);
++       raw_spin_unlock_irqrestore(&soc->lock, flags);
++}
++
++static void amb_gpio_irq_ack(struct irq_data *data)
++{
++       struct gpio_chip *gc =3D irq_data_get_irq_chip_data(data);
++       struct amb_pinctrl_soc_data *soc =3D gpiochip_get_data(gc);
++       void __iomem *gpio_base =3D amb_get_gpio_base(soc, data);
++       u32 offset =3D PINID_TO_OFFSET(irqd_to_hwirq(data));
++       unsigned long flags;
++
++       raw_spin_lock_irqsave(&soc->lock, flags);
++       writel_relaxed(0x1 << offset, gpio_base + GPIO_IC_OFFSET);
++       raw_spin_unlock_irqrestore(&soc->lock, flags);
++}
++
++static void amb_gpio_irq_mask(struct irq_data *data)
++{
++       struct gpio_chip *gc =3D irq_data_get_irq_chip_data(data);
++       struct amb_pinctrl_soc_data *soc =3D gpiochip_get_data(gc);
++       void __iomem *gpio_base =3D amb_get_gpio_base(soc, data);
++       u32 offset, ie;
++       unsigned long flags;
++
++       offset =3D PINID_TO_OFFSET(irqd_to_hwirq(data));
++
++       raw_spin_lock_irqsave(&soc->lock, flags);
++       ie =3D readl_relaxed(gpio_base + GPIO_IE_OFFSET);
++       writel_relaxed(ie & ~(0x1 << offset), gpio_base + GPIO_IE_OFFSET);
++       raw_spin_unlock_irqrestore(&soc->lock, flags);
++}
++
++static void amb_gpio_irq_mask_ack(struct irq_data *data)
++{
++       struct gpio_chip *gc =3D irq_data_get_irq_chip_data(data);
++       struct amb_pinctrl_soc_data *soc =3D gpiochip_get_data(gc);
++       void __iomem *gpio_base =3D amb_get_gpio_base(soc, data);
++       u32 offset, ie;
++       unsigned long flags;
++
++       offset =3D PINID_TO_OFFSET(irqd_to_hwirq(data));
++
++       raw_spin_lock_irqsave(&soc->lock, flags);
++       ie =3D readl_relaxed(gpio_base + GPIO_IE_OFFSET);
++       writel_relaxed(ie & ~(0x1 << offset), gpio_base + GPIO_IE_OFFSET);
++       writel_relaxed(0x1 << offset, gpio_base + GPIO_IC_OFFSET);
++       raw_spin_unlock_irqrestore(&soc->lock, flags);
++}
++
++static void amb_gpio_irq_unmask(struct irq_data *data)
++{
++       struct gpio_chip *gc =3D irq_data_get_irq_chip_data(data);
++       struct amb_pinctrl_soc_data *soc =3D gpiochip_get_data(gc);
++       void __iomem *gpio_base =3D amb_get_gpio_base(soc, data);
++       u32 offset, ie;
++       unsigned long flags;
++
++       offset =3D PINID_TO_OFFSET(irqd_to_hwirq(data));
++
++       raw_spin_lock_irqsave(&soc->lock, flags);
++       ie =3D readl_relaxed(gpio_base + GPIO_IE_OFFSET);
++       writel_relaxed(ie | (0x1 << offset), gpio_base + GPIO_IE_OFFSET);
++       raw_spin_unlock_irqrestore(&soc->lock, flags);
++}
++
++static int amb_gpio_irq_set_type(struct irq_data *data, unsigned int type)
++{
++       struct gpio_chip *gc =3D irq_data_get_irq_chip_data(data);
++       struct amb_pinctrl_soc_data *soc =3D gpiochip_get_data(gc);
++       void __iomem *gpio_base =3D amb_get_gpio_base(soc, data);
++       u32 offset =3D PINID_TO_OFFSET(irqd_to_hwirq(data));
++       u32 mask, bit, sense, bothedges, event;
++       unsigned long flags;
++
++       mask =3D ~(0x1 << offset);
++       bit =3D (0x1 << offset);
++       sense =3D readl_relaxed(gpio_base + GPIO_IS_OFFSET);
++       bothedges =3D readl_relaxed(gpio_base + GPIO_IBE_OFFSET);
++       event =3D readl_relaxed(gpio_base + GPIO_IEV_OFFSET);
++
++       switch (type) {
++       case IRQ_TYPE_EDGE_RISING:
++               sense &=3D mask;
++               bothedges &=3D mask;
++               event |=3D bit;
++               irq_set_handler_locked(data, handle_edge_irq);
 +               break;
-+       case UART_II_THR_EMPTY:
-+               serial_ambarella_transmit_chars(port);
++       case IRQ_TYPE_EDGE_FALLING:
++               sense &=3D mask;
++               bothedges &=3D mask;
++               event &=3D mask;
++               irq_set_handler_locked(data, handle_edge_irq);
 +               break;
-+       case UART_II_RCV_STATUS:
-+       case UART_II_RCV_DATA_AVAIL:
-+               serial_ambarella_receive_chars(port, 0);
++       case IRQ_TYPE_EDGE_BOTH:
++               sense &=3D mask;
++               bothedges |=3D bit;
++               event &=3D mask;
++               irq_set_handler_locked(data, handle_edge_irq);
 +               break;
-+       case UART_II_CHAR_TIMEOUT_FIFO_EMPTY:
-+               /* Clear ERETOI to dismiss timeout-with-empty-FIFO IRQ */
-+               ier =3D readl_relaxed(port->membase + UART_IE_OFFSET);
-+               writel_relaxed(ier & ~UART_IE_ERETOI,
-+                              amb_port->port.membase + UART_IE_OFFSET);
-+               writel_relaxed(ier | UART_IE_ERETOI,
-+                              amb_port->port.membase + UART_IE_OFFSET);
-+               fallthrough;
-+       case UART_II_CHAR_TIMEOUT:
-+               serial_ambarella_receive_chars(port, 1);
++       case IRQ_TYPE_LEVEL_HIGH:
++               sense |=3D bit;
++               bothedges &=3D mask;
++               event |=3D bit;
++               irq_set_handler_locked(data, handle_level_irq);
 +               break;
-+       case UART_II_NO_INT_PENDING:
++       case IRQ_TYPE_LEVEL_LOW:
++               sense |=3D bit;
++               bothedges &=3D mask;
++               event &=3D mask;
++               irq_set_handler_locked(data, handle_level_irq);
 +               break;
 +       default:
-+               pr_debug("%s: 0x%x\n", __func__, ii);
-+               break;
++               pr_err("%s: irq[%d] type[%d] fail!\n",
++                      __func__, data->irq, type);
++               return -EINVAL;
 +       }
 +
-+       spin_unlock_irqrestore(&port->lock, flags);
++       raw_spin_lock_irqsave(&soc->lock, flags);
++       writel_relaxed(sense, gpio_base + GPIO_IS_OFFSET);
++       writel_relaxed(bothedges, gpio_base + GPIO_IBE_OFFSET);
++       writel_relaxed(event, gpio_base + GPIO_IEV_OFFSET);
++       /* clear obsolete irq */
++       writel_relaxed(0x1 << offset, gpio_base + GPIO_IC_OFFSET);
++       raw_spin_unlock_irqrestore(&soc->lock, flags);
 +
-+       return IRQ_HANDLED;
++       return 0;
 +}
 +
-+static void serial_ambarella_enable_ms(struct uart_port *port)
++static int amb_gpio_irq_set_wake(struct irq_data *data, unsigned int on)
 +{
-+       __serial_ambarella_enable_ms(port);
++       if (IS_ENABLED(CONFIG_PM)) {
++               struct gpio_chip *gc =3D irq_data_get_irq_chip_data(data);
++               struct amb_pinctrl_soc_data *soc =3D gpiochip_get_data(gc);
++               u32 bank =3D PINID_TO_BANK(irqd_to_hwirq(data));
++               u32 offset =3D PINID_TO_OFFSET(irqd_to_hwirq(data));
++               unsigned long flags;
++
++               raw_spin_lock_irqsave(&soc->lock, flags);
++               if (on)
++                       soc->irq_wake_mask[bank] |=3D (1 << offset);
++               else
++                       soc->irq_wake_mask[bank] &=3D ~(1 << offset);
++               raw_spin_unlock_irqrestore(&soc->lock, flags);
++       }
++       return 0;
 +}
 +
-+static void serial_ambarella_start_tx(struct uart_port *port)
++static struct irq_chip amb_gpio_irqchip =3D {
++       .name           =3D "GPIO",
++       .irq_enable     =3D amb_gpio_irq_enable,
++       .irq_disable    =3D amb_gpio_irq_disable,
++       .irq_ack        =3D amb_gpio_irq_ack,
++       .irq_mask       =3D amb_gpio_irq_mask,
++       .irq_mask_ack   =3D amb_gpio_irq_mask_ack,
++       .irq_unmask     =3D amb_gpio_irq_unmask,
++       .irq_set_type   =3D amb_gpio_irq_set_type,
++       .irq_set_wake   =3D amb_gpio_irq_set_wake,
++       .flags          =3D IRQCHIP_SET_TYPE_MASKED | IRQCHIP_MASK_ON_SUSPE=
+ND,
++};
++
++static int amb_gpio_irqdomain_map(struct irq_domain *d, unsigned int irq,
++                                 irq_hw_number_t hwirq)
 +{
-+       u32 ier;
++       struct amb_pinctrl_soc_data *soc =3D d->host_data;
 +
-+       /* if transmit buffer is not allocated, just return */
-+       if (!port->state->port.xmit_buf)
-+               return;
++       irq_set_chip_data(irq, soc->gc);
++       irq_set_chip_and_handler(irq, &amb_gpio_irqchip, handle_level_irq);
++       irq_set_noprobe(irq);
 +
-+       ier =3D readl_relaxed(port->membase + UART_IE_OFFSET);
-+       writel_relaxed(ier | UART_IE_ETBEI, port->membase + UART_IE_OFFSET)=
-;
-+
-+       serial_ambarella_transmit_chars(port);
++       return 0;
 +}
 +
-+static void serial_ambarella_stop_tx(struct uart_port *port)
++static const struct irq_domain_ops amb_gpio_irq_domain_ops =3D {
++       .map =3D amb_gpio_irqdomain_map,
++       .xlate =3D irq_domain_xlate_twocell,
++};
++
++static void amb_gpio_handle_irq(struct irq_desc *desc)
 +{
-+       __serial_ambarella_stop_tx(port);
++       struct amb_pinctrl_soc_data *soc;
++       struct irq_chip *irqchip;
++       u32 i, bit, gpio_mis, gpio_hwirq;
++
++       irqchip =3D irq_desc_get_chip(desc);
++       chained_irq_enter(irqchip, desc);
++
++       soc =3D irq_desc_get_handler_data(desc);
++
++       /* find the GPIO bank generating this irq */
++       for (i =3D 0; i < soc->bank_num; i++) {
++               if (soc->irq[i] =3D=3D irq_desc_get_irq(desc))
++                       break;
++       }
++
++       if (i =3D=3D soc->bank_num)
++               goto out;
++
++       gpio_mis =3D readl_relaxed(soc->gpio_base[i] + GPIO_MIS_OFFSET);
++       while (gpio_mis) {
++               bit =3D __ffs(gpio_mis);
++               gpio_hwirq =3D i * 32 + bit;
++               generic_handle_domain_irq(soc->domain, gpio_hwirq);
++               gpio_mis &=3D ~BIT(bit);
++       }
++
++out:
++       chained_irq_exit(irqchip, desc);
 +}
 +
-+static void serial_ambarella_stop_rx(struct uart_port *port)
++/* register the pinctrl interface with the pinctrl subsystem */
++static int amb_gpio_register(struct amb_pinctrl_soc_data *soc)
 +{
-+       u32 ier;
++       struct device_node *np;
++       int i, rval =3D -ENODEV;
 +
-+       ier =3D readl_relaxed(port->membase + UART_IE_OFFSET);
-+       writel_relaxed(ier & ~UART_IE_ERBFI, port->membase + UART_IE_OFFSET=
-);
-+}
-+
-+static unsigned int serial_ambarella_tx_empty(struct uart_port *port)
-+{
-+       unsigned int lsr;
-+       unsigned long flags;
-+
-+       spin_lock_irqsave(&port->lock, flags);
-+       lsr =3D readl_relaxed(port->membase + UART_LS_OFFSET);
-+       spin_unlock_irqrestore(&port->lock, flags);
-+
-+       return ((lsr & (UART_LS_TEMT | UART_LS_THRE)) =3D=3D
-+               (UART_LS_TEMT | UART_LS_THRE)) ? TIOCSER_TEMT : 0;
-+}
-+
-+static unsigned int serial_ambarella_get_mctrl(struct uart_port *port)
-+{
-+       u32 ms, mctrl =3D 0;
-+
-+       ms =3D __serial_ambarella_read_ms(port);
-+
-+       if (ms & UART_MS_CTS)
-+               mctrl |=3D TIOCM_CTS;
-+       if (ms & UART_MS_DSR)
-+               mctrl |=3D TIOCM_DSR;
-+       if (ms & UART_MS_RI)
-+               mctrl |=3D TIOCM_RI;
-+       if (ms & UART_MS_DCD)
-+               mctrl |=3D TIOCM_CD;
-+
-+       return mctrl;
-+}
-+
-+static void serial_ambarella_set_mctrl(struct uart_port *port,
-+                                      unsigned int mctrl)
-+{
-+       struct ambarella_uart_port *amb_port;
-+       u32 mcr, mcr_new =3D 0;
-+
-+       amb_port =3D (struct ambarella_uart_port *)(port->private_data);
-+
-+       mcr =3D readl_relaxed(port->membase + UART_MC_OFFSET);
-+
-+       if (mctrl & TIOCM_DTR)
-+               mcr_new |=3D UART_MC_DTR;
-+       if (mctrl & TIOCM_RTS)
-+               mcr_new |=3D UART_MC_RTS;
-+       if (mctrl & TIOCM_OUT1)
-+               mcr_new |=3D UART_MC_OUT1;
-+       if (mctrl & TIOCM_OUT2)
-+               mcr_new |=3D UART_MC_OUT2;
-+       if (mctrl & TIOCM_LOOP)
-+               mcr_new |=3D UART_MC_LB;
-+
-+       mcr_new |=3D amb_port->mcr;
-+       if (mcr_new !=3D mcr) {
-+               if ((mcr & UART_MC_AFCE) =3D=3D UART_MC_AFCE) {
-+                       mcr &=3D ~UART_MC_AFCE;
-+                       writel_relaxed(mcr, port->membase + UART_MC_OFFSET)=
-;
++       for_each_child_of_node(soc->dev->of_node, np) {
++               if (of_find_property(np, "gpio-controller", NULL)) {
++                       rval =3D 0;
++                       break;
 +               }
-+               writel_relaxed(mcr_new, port->membase + UART_MC_OFFSET);
 +       }
-+}
-+
-+static void serial_ambarella_break_ctl(struct uart_port *port, int break_s=
-tate)
-+{
-+       u32 lcr =3D readl_relaxed(port->membase + UART_LC_OFFSET);
-+       unsigned long flags;
-+
-+       spin_lock_irqsave(&port->lock, flags);
-+       if (break_state !=3D 0)
-+               writel_relaxed(lcr | UART_LC_BRK, port->membase + UART_LC_O=
-FFSET);
-+       else
-+               writel_relaxed(lcr & ~UART_LC_BRK, port->membase + UART_LC_=
-OFFSET);
-+       spin_unlock_irqrestore(&port->lock, flags);
-+}
-+
-+static void serial_ambarella_hw_deinit(struct ambarella_uart_port *amb_por=
-t)
-+{
-+       struct uart_port *port =3D &amb_port->port;
-+
-+       /* Disable interrupts */
-+       writel_relaxed(0, port->membase + UART_IE_OFFSET);
-+
-+       /* Reset the Rx and Tx FIFOs */
-+       writel_relaxed(UART_FCR_CLEAR_XMIT | UART_FCR_CLEAR_RCVR,
-+                      port->membase + UART_SRR_OFFSET);
-+}
-+
-+static int serial_ambarella_startup(struct uart_port *port)
-+{
-+       int rval;
-+       struct ambarella_uart_port *amb_port;
-+
-+       amb_port =3D (struct ambarella_uart_port *)(port->private_data);
-+
-+       serial_ambarella_hw_setup(port);
-+
-+       rval =3D request_irq(port->irq, serial_ambarella_irq, IRQF_TRIGGER_=
-HIGH,
-+                          dev_name(amb_port->port.dev), &amb_port->port);
 +       if (rval < 0) {
-+               dev_err(amb_port->port.dev,
-+                       "Failed to register ISR for IRQ %d\n", port->irq);
-+               serial_ambarella_hw_deinit(amb_port);
++               dev_err(soc->dev, "no gpio-controller child node\n");
 +               return rval;
 +       }
 +
-+       writel_relaxed(DEFAULT_AMBARELLA_UART_IER,
-+                      port->membase + UART_IE_OFFSET);
++       soc->gc =3D devm_kzalloc(soc->dev, sizeof(struct gpio_chip), GFP_KE=
+RNEL);
++       if (!soc->gc)
++               return -ENOMEM;
++       soc->gc->label =3D dev_name(soc->dev);
++       soc->gc->base =3D -1;
++       soc->gc->request =3D gpiochip_generic_request;
++       soc->gc->free =3D gpiochip_generic_free;
++       soc->gc->direction_input =3D amb_gpio_direction_input;
++       soc->gc->direction_output =3D amb_gpio_direction_output;
++       soc->gc->get_direction =3D amb_gpio_get_direction;
++       soc->gc->get =3D amb_gpio_get;
++       soc->gc->set =3D amb_gpio_set;
++       soc->gc->to_irq =3D amb_gpio_to_irq;
++#if IS_ENABLED(CONFIG_DEBUG_FS)
++       soc->gc->dbg_show  =3D amb_gpio_dbg_show;
++#endif
++       soc->gc->parent =3D soc->dev;
++       soc->gc->fwnode =3D of_fwnode_handle(np);
++       soc->gc->ngpio =3D soc->bank_num * 32;
++
++       rval =3D devm_gpiochip_add_data(soc->dev, soc->gc, soc);
++       if (rval) {
++               dev_err(soc->dev, "gpiochip_add_data failed %d\n", rval);
++               return rval;
++       }
++
++       for (i =3D 0; i < soc->bank_num; i++) {
++               writel_relaxed(0xffffffff, soc->gpio_base[i] + GPIO_ENABLE_=
+OFFSET);
++               writel_relaxed(0x00000000, soc->gpio_base[i] + GPIO_AFSEL_O=
+FFSET);
++               writel_relaxed(0x00000000, soc->gpio_base[i] + GPIO_MASK_OF=
+FSET);
++       }
++
++       /* Initialize GPIO irq */
++       soc->domain =3D irq_domain_add_linear(np, soc->gc->ngpio,
++                                           &amb_gpio_irq_domain_ops, soc);
++       if (!soc->domain) {
++               dev_err(soc->dev, "Failed to create irqdomain\n");
++               return -ENODEV;
++       }
++
++       for (i =3D 0; i < soc->bank_num; i++) {
++               irq_set_irq_type(soc->irq[i], IRQ_TYPE_LEVEL_HIGH);
++               irq_set_chained_handler_and_data(soc->irq[i], amb_gpio_hand=
+le_irq, soc);
++       }
 +
 +       return 0;
 +}
 +
-+static void serial_ambarella_shutdown(struct uart_port *port)
++static int amb_pinctrl_probe(struct platform_device *pdev)
 +{
-+       struct ambarella_uart_port *amb_port;
-+       u32 lcr;
-+       unsigned long flags;
++       struct amb_pinctrl_soc_data *soc;
++       struct device_node *np;
++       int i, rval;
 +
-+       amb_port =3D (struct ambarella_uart_port *)(port->private_data);
++       soc =3D devm_kzalloc(&pdev->dev, sizeof(*soc), GFP_KERNEL);
++       if (!soc)
++               return -ENOMEM;
 +
-+       spin_lock_irqsave(&port->lock, flags);
-+       serial_ambarella_hw_deinit(amb_port);
-+       lcr =3D readl_relaxed(port->membase + UART_LC_OFFSET);
-+       writel_relaxed(lcr & ~UART_LC_BRK, port->membase + UART_LC_OFFSET);
-+       spin_unlock_irqrestore(&port->lock, flags);
++       soc->dev =3D &pdev->dev;
++       soc->data =3D of_device_get_match_data(&pdev->dev);
++       if (!soc->data)
++               return dev_err_probe(&pdev->dev, -EINVAL, "missing soc data=
+");
 +
-+       free_irq(amb_port->port.irq, &amb_port->port);
++       np =3D pdev->dev.of_node;
++       soc->bank_num =3D of_irq_count(np);
++       if (!soc->bank_num || soc->bank_num > MAX_BANK_NUM)
++               return dev_err_probe(&pdev->dev, -EINVAL, "Invalid gpio ban=
+k(irq)");
++
++       for (i =3D 0; i < soc->bank_num; i++) {
++               soc->gpio_base[i] =3D devm_platform_ioremap_resource(pdev, =
+i);
++               if (IS_ERR(soc->gpio_base[i]))
++                       return dev_err_probe(&pdev->dev, PTR_ERR(soc->gpio_=
+base[i]),
++                                                                "couldn't =
+get gpio[%d] reg", i);
++
++               soc->irq[i] =3D platform_get_irq(pdev, i);
++               if (soc->irq[i] < 0)
++                       return dev_err_probe(&pdev->dev, -ENODEV, "couldn't=
+ get gpio[%d] irq", i);
++       }
++
++       soc->iomux_base =3D devm_platform_ioremap_resource(pdev, i);
++       if (IS_ERR(soc->iomux_base))
++               return dev_err_probe(&pdev->dev, PTR_ERR(soc->iomux_base),
++                                                        "couldn't get iomu=
+x reg");
++
++       soc->ds_regmap =3D syscon_regmap_lookup_by_phandle(np, "ambarella,d=
+rive-strength-syscon");
++       if (IS_ERR(soc->ds_regmap))
++               return dev_err_probe(&pdev->dev, PTR_ERR(soc->ds_regmap),
++                                    "couldn't get drive-strength regmap");
++
++       soc->pull_regmap =3D syscon_regmap_lookup_by_phandle(np, "ambarella=
+,pull-syscon");
++       if (IS_ERR(soc->pull_regmap))
++               return dev_err_probe(&pdev->dev, PTR_ERR(soc->pull_regmap),
++                                    "couldn't get pull regmap");
++
++       for (i =3D 0; i < soc->bank_num; i++) {
++               soc->ds0[i] =3D soc->data->ds0[i];
++               soc->ds1[i] =3D soc->data->ds1[i];
++               soc->ds2[i] =3D soc->data->ds2[i];
++               soc->pull_en[i] =3D soc->data->pull_en[i];
++               soc->pull_dir[i] =3D soc->data->pull_dir[i];
++       }
++
++       soc->have_ds2 =3D soc->data->have_ds2;
++       soc->hsm_domain_id =3D soc->data->hsm_domain_id;
++       soc->clk_au_dedicated_pin =3D soc->data->clk_au_dedicated_pin;
++
++       raw_spin_lock_init(&soc->lock);
++
++       /* not allowed to use for non-existed pins */
++       for (i =3D soc->bank_num * 32; i < MAX_BANK_NUM * 32; i++)
++               set_bit(i, soc->used);
++
++       if (soc->clk_au_dedicated_pin)
++               clear_bit(soc->clk_au_dedicated_pin, soc->used);
++
++       rval =3D amb_pinctrl_register(soc);
++       if (rval)
++               return dev_err_probe(&pdev->dev, rval, "pinctrl register fa=
+iled!");
++
++       rval =3D amb_gpio_register(soc);
++       if (rval)
++               return dev_err_probe(&pdev->dev, rval, "gpio register faile=
+d!");
++
++       platform_set_drvdata(pdev, soc);
++       dev_info(&pdev->dev, "Ambarella pinctrl driver registered");
++
++       return 0;
 +}
 +
-+static void serial_ambarella_set_termios(struct uart_port *port,
-+                                        struct ktermios *termios,
-+                                        const struct ktermios *old)
++static int amb_pinctrl_suspend_noirq(struct device *dev)
 +{
-+       struct ambarella_uart_port *amb_port;
-+       unsigned int baud, quot;
-+       unsigned long flags;
-+       u32 lc =3D 0x0;
++       struct amb_pinctrl_soc_data *soc =3D dev_get_drvdata(dev);
++       u32 i;
 +
-+       amb_port =3D (struct ambarella_uart_port *)(port->private_data);
++       for (i =3D 0; i < soc->bank_num; i++) {
++               regmap_read(soc->pull_regmap, soc->pull_en[i], &soc->pm[i].=
+pull[0]);
++               regmap_read(soc->pull_regmap, soc->pull_dir[i], &soc->pm[i]=
+.pull[1]);
 +
-+       port->uartclk =3D clk_get_rate(amb_port->uart_pll);
-+       switch (termios->c_cflag & CSIZE) {
-+       case CS5:
-+               lc |=3D UART_LC_CLS_5_BITS;
-+               break;
-+       case CS6:
-+               lc |=3D UART_LC_CLS_6_BITS;
-+               break;
-+       case CS7:
-+               lc |=3D UART_LC_CLS_7_BITS;
-+               break;
-+       case CS8:
-+       default:
-+               lc |=3D UART_LC_CLS_8_BITS;
-+               break;
-+       }
-+
-+       if (termios->c_cflag & CSTOPB)
-+               lc |=3D UART_LC_STOP_2BIT;
-+       else
-+               lc |=3D UART_LC_STOP_1BIT;
-+
-+       if (termios->c_cflag & PARENB) {
-+               if (termios->c_cflag & PARODD)
-+                       lc |=3D (UART_LC_PEN | UART_LC_ODD_PARITY);
-+               else
-+                       lc |=3D (UART_LC_PEN | UART_LC_EVEN_PARITY);
-+       }
-+
-+       baud =3D uart_get_baud_rate(port, termios, old, 0, port->uartclk / =
-16);
-+       quot =3D uart_get_divisor(port, baud);
-+
-+       spin_lock_irqsave(&port->lock, flags);
-+       uart_update_timeout(port, termios->c_cflag, baud);
-+
-+       port->read_status_mask =3D UART_LSR_OE | UART_LSR_THRE | UART_LSR_D=
-R;
-+       if (termios->c_iflag & INPCK)
-+               port->read_status_mask |=3D UART_LSR_FE | UART_LSR_PE;
-+       if (termios->c_iflag & (BRKINT | PARMRK))
-+               port->read_status_mask |=3D UART_LSR_BI;
-+
-+       port->ignore_status_mask =3D 0;
-+       if (termios->c_iflag & IGNPAR)
-+               port->ignore_status_mask |=3D UART_LSR_PE | UART_LSR_FE;
-+       if (termios->c_iflag & IGNBRK) {
-+               port->ignore_status_mask |=3D UART_LSR_BI;
-+               if (termios->c_iflag & IGNPAR)
-+                       port->ignore_status_mask |=3D UART_LSR_OE;
-+       }
-+       if ((termios->c_cflag & CREAD) =3D=3D 0)
-+               port->ignore_status_mask |=3D UART_LSR_DR;
-+
-+       if ((termios->c_cflag & CRTSCTS) =3D=3D 0) {
-+               amb_port->mcr &=3D ~UART_MC_AFCE;
-+               port->status &=3D ~UPSTAT_AUTOCTS;
-+       } else {
-+               amb_port->mcr |=3D UART_MC_AFCE;
-+               port->status |=3D UPSTAT_AUTOCTS;
-+       }
-+
-+       writel_relaxed(UART_LC_DLAB, port->membase + UART_LC_OFFSET);
-+       writel_relaxed(quot & 0xff, port->membase + UART_DLL_OFFSET);
-+       writel_relaxed((quot >> 8) & 0xff, port->membase + UART_DLH_OFFSET)=
++               regmap_read(soc->ds_regmap, soc->ds0[i], &soc->pm[i].ds[0])=
 ;
-+       writel_relaxed(lc, port->membase + UART_LC_OFFSET);
-+       if (UART_ENABLE_MS(port, termios->c_cflag))
-+               __serial_ambarella_enable_ms(port);
-+       else
-+               __serial_ambarella_disable_ms(port);
-+       serial_ambarella_set_mctrl(port, port->mctrl);
++               regmap_read(soc->ds_regmap, soc->ds1[i], &soc->pm[i].ds[1])=
+;
++               if (soc->have_ds2)
++                       regmap_read(soc->ds_regmap, soc->ds2[i], &soc->pm[i=
+].ds[2]);
 +
-+       spin_unlock_irqrestore(&port->lock, flags);
-+}
++               soc->pm[i].iomux[0] =3D readl_relaxed(soc->iomux_base + IOM=
+UX_OFFSET(i, 0));
++               soc->pm[i].iomux[1] =3D readl_relaxed(soc->iomux_base + IOM=
+UX_OFFSET(i, 1));
++               soc->pm[i].iomux[2] =3D readl_relaxed(soc->iomux_base + IOM=
+UX_OFFSET(i, 2));
 +
-+static void serial_ambarella_pm(struct uart_port *port,
-+                               unsigned int state, unsigned int oldstate)
-+{
-+}
++               soc->pm[i].afsel =3D readl_relaxed(soc->gpio_base[i] + GPIO=
+_AFSEL_OFFSET);
++               soc->pm[i].dir =3D readl_relaxed(soc->gpio_base[i] + GPIO_D=
+IR_OFFSET);
++               soc->pm[i].is =3D readl_relaxed(soc->gpio_base[i] + GPIO_IS=
+_OFFSET);
++               soc->pm[i].ibe =3D readl_relaxed(soc->gpio_base[i] + GPIO_I=
+BE_OFFSET);
++               soc->pm[i].iev =3D readl_relaxed(soc->gpio_base[i] + GPIO_I=
+EV_OFFSET);
++               soc->pm[i].ie =3D readl_relaxed(soc->gpio_base[i] + GPIO_IE=
+_OFFSET);
++               soc->pm[i].mask =3D readl_relaxed(soc->gpio_base[i] + GPIO_=
+MASK_OFFSET);
++               writel_relaxed(0xffffffff, soc->gpio_base[i] + GPIO_MASK_OF=
+FSET);
++               soc->pm[i].data =3D readl_relaxed(soc->gpio_base[i] + GPIO_=
+DATA_OFFSET);
 +
-+static void serial_ambarella_release_port(struct uart_port *port)
-+{
-+}
-+
-+static int serial_ambarella_request_port(struct uart_port *port)
-+{
-+       return 0;
-+}
-+
-+static void serial_ambarella_config_port(struct uart_port *port, int flags=
-)
-+{
-+}
-+
-+static int serial_ambarella_verify_port(struct uart_port *port,
-+                                       struct serial_struct *ser)
-+{
-+       int rval =3D 0;
-+
-+       if (ser->type !=3D PORT_UNKNOWN && ser->type !=3D PORT_UART00)
-+               rval =3D -EINVAL;
-+       if (port->irq !=3D ser->irq)
-+               rval =3D -EINVAL;
-+       if (ser->io_type !=3D SERIAL_IO_MEM)
-+               rval =3D -EINVAL;
-+
-+       return rval;
-+}
-+
-+static const char *serial_ambarella_type(struct uart_port *port)
-+{
-+       return "ambuart";
-+}
-+
-+#ifdef CONFIG_CONSOLE_POLL
-+static void serial_ambarella_poll_put_char(struct uart_port *port,
-+                                          unsigned char chr)
-+{
-+       if (!port->suspended) {
-+               wait_for_tx(port);
-+               writel_relaxed(chr, port->membase + UART_TH_OFFSET);
-+       }
-+}
-+
-+static int serial_ambarella_poll_get_char(struct uart_port *port)
-+{
-+       if (!port->suspended) {
-+               wait_for_rx(port);
-+               return readl_relaxed(port->membase + UART_RB_OFFSET);
-+       }
-+       return 0;
-+}
-+#endif
-+
-+static const struct uart_ops serial_ambarella_pops =3D {
-+       .tx_empty       =3D serial_ambarella_tx_empty,
-+       .set_mctrl      =3D serial_ambarella_set_mctrl,
-+       .get_mctrl      =3D serial_ambarella_get_mctrl,
-+       .stop_tx        =3D serial_ambarella_stop_tx,
-+       .start_tx       =3D serial_ambarella_start_tx,
-+       .stop_rx        =3D serial_ambarella_stop_rx,
-+       .enable_ms      =3D serial_ambarella_enable_ms,
-+       .break_ctl      =3D serial_ambarella_break_ctl,
-+       .startup        =3D serial_ambarella_startup,
-+       .shutdown       =3D serial_ambarella_shutdown,
-+       .set_termios    =3D serial_ambarella_set_termios,
-+       .pm             =3D serial_ambarella_pm,
-+       .type           =3D serial_ambarella_type,
-+       .release_port   =3D serial_ambarella_release_port,
-+       .request_port   =3D serial_ambarella_request_port,
-+       .config_port    =3D serial_ambarella_config_port,
-+       .verify_port    =3D serial_ambarella_verify_port,
-+#ifdef CONFIG_CONSOLE_POLL
-+       .poll_put_char  =3D serial_ambarella_poll_put_char,
-+       .poll_get_char  =3D serial_ambarella_poll_get_char,
-+#endif
-+};
-+
-+#if defined(CONFIG_SERIAL_AMBARELLA_CONSOLE)
-+
-+static struct uart_driver serial_ambarella_reg;
-+
-+static void serial_ambarella_console_putchar(struct uart_port *port,
-+                                            unsigned char ch)
-+{
-+       wait_for_tx(port);
-+       writel_relaxed(ch, port->membase + UART_TH_OFFSET);
-+}
-+
-+static void serial_ambarella_console_write(struct console *co,
-+                                          const char *s, unsigned int coun=
-t)
-+{
-+       struct uart_port *port;
-+       int locked =3D 1;
-+       unsigned long flags;
-+
-+       port =3D &ambarella_port[co->index].port;
-+
-+       if (!port->suspended) {
-+               if (port->sysrq)
-+                       locked =3D 0;
-+               else if (oops_in_progress)
-+                       locked =3D uart_port_trylock_irqsave(port, &flags);
-+               else
-+                       uart_port_lock_irqsave(port, &flags);
-+
-+               uart_console_write(port, s, count,
-+                                  serial_ambarella_console_putchar);
-+               wait_for_tx(port);
-+
-+               if (locked)
-+                       uart_port_unlock_irqrestore(port, flags);
-+       }
-+}
-+
-+static int __init serial_ambarella_console_setup(struct console *co,
-+                                                char *options)
-+{
-+       struct uart_port *port;
-+       int baud =3D 115200, bits =3D 8, parity =3D 'n', flow =3D 'n';
-+
-+       if (co->index < 0 || co->index >=3D serial_ambarella_reg.nr)
-+               co->index =3D 0;
-+
-+       port =3D &ambarella_port[co->index].port;
-+       if (!port->membase) {
-+               pr_err("No device available for serial console\n");
-+               return -ENODEV;
++               if (soc->irq_wake_mask[i])
++                       writel_relaxed(soc->irq_wake_mask[i], soc->gpio_bas=
+e[i] + GPIO_IE_OFFSET);
 +       }
 +
-+       port->ops =3D &serial_ambarella_pops;
-+       port->private_data =3D &ambarella_port[co->index];
-+       port->line =3D co->index;
-+
-+       serial_ambarella_hw_setup(port);
-+
-+       if (options)
-+               uart_parse_options(options, &baud, &parity, &bits, &flow);
-+
-+       return uart_set_options(port, co, baud, parity, bits, flow);
-+}
-+
-+static struct console serial_ambarella_console =3D {
-+       .name           =3D "ttyAB",
-+       .write          =3D serial_ambarella_console_write,
-+       .device         =3D uart_console_device,
-+       .setup          =3D serial_ambarella_console_setup,
-+       .flags          =3D CON_PRINTBUFFER | CON_ANYTIME,
-+       .index          =3D -1,
-+       .data           =3D &serial_ambarella_reg,
-+};
-+
-+static void serial_ambarella_console_early_write(struct console *con,
-+                                                const char *s,
-+                                                unsigned int count)
-+{
-+       struct earlycon_device *dev =3D con->data;
-+
-+       uart_console_write(&dev->port, s, count, serial_ambarella_console_p=
-utchar);
-+}
-+
-+static int __init serial_ambarella_console_early_setup(struct earlycon_dev=
-ice *dev,
-+                                                      const char *opt)
-+{
-+       if (!dev->port.membase)
-+               return -ENODEV;
-+
-+       dev->con->write =3D serial_ambarella_console_early_write;
++       if (soc->clk_au_dedicated_pin) {
++               i =3D PINID_TO_BANK(soc->clk_au_dedicated_pin);
++               soc->pm[i].iomux[0] =3D readl_relaxed(soc->iomux_base + IOM=
+UX_OFFSET(i, 0));
++               soc->pm[i].iomux[1] =3D readl_relaxed(soc->iomux_base + IOM=
+UX_OFFSET(i, 1));
++               soc->pm[i].iomux[2] =3D readl_relaxed(soc->iomux_base + IOM=
+UX_OFFSET(i, 2));
++       }
 +
 +       return 0;
 +}
 +
-+OF_EARLYCON_DECLARE(ambarella_uart, "ambarella,uart", serial_ambarella_con=
-sole_early_setup);
++static int amb_pinctrl_resume_noirq(struct device *dev)
++{
++       struct amb_pinctrl_soc_data *soc =3D dev_get_drvdata(dev);
++       u32 i;
 +
-+#define AMBARELLA_CONSOLE      (&serial_ambarella_console)
-+#else
-+#define AMBARELLA_CONSOLE      NULL
-+#endif
++       for (i =3D 0; i < soc->bank_num; i++) {
++               regmap_write(soc->pull_regmap, soc->pull_en[i], soc->pm[i].=
+pull[0]);
++               regmap_write(soc->pull_regmap, soc->pull_dir[i], soc->pm[i]=
+.pull[1]);
 +
-+static struct uart_driver serial_ambarella_reg =3D {
-+       .owner          =3D THIS_MODULE,
-+       .driver_name    =3D "ambarella-uart",
-+       .dev_name       =3D "ttyAB",
-+       .major          =3D 0,
-+       .minor          =3D 0,
-+       .nr             =3D AMBA_UART_MAX_NUM,
-+       .cons           =3D AMBARELLA_CONSOLE,
++               regmap_write(soc->ds_regmap, soc->ds0[i], soc->pm[i].ds[0])=
+;
++               regmap_write(soc->ds_regmap, soc->ds1[i], soc->pm[i].ds[1])=
+;
++               if (soc->have_ds2)
++                       regmap_write(soc->ds_regmap, soc->ds2[i], soc->pm[i=
+].ds[2]);
++
++               writel_relaxed(soc->pm[i].iomux[0], soc->iomux_base + IOMUX=
+_OFFSET(i, 0));
++               writel_relaxed(soc->pm[i].iomux[1], soc->iomux_base + IOMUX=
+_OFFSET(i, 1));
++               writel_relaxed(soc->pm[i].iomux[2], soc->iomux_base + IOMUX=
+_OFFSET(i, 2));
++
++               writel_relaxed(soc->pm[i].afsel, soc->gpio_base[i] + GPIO_A=
+FSEL_OFFSET);
++               writel_relaxed(soc->pm[i].dir, soc->gpio_base[i] + GPIO_DIR=
+_OFFSET);
++               /* Expose DATA writes while restoring the saved GPIO state.=
+ */
++               writel_relaxed(0xffffffff,
++                              soc->gpio_base[i] + GPIO_MASK_OFFSET);
++               writel_relaxed(soc->pm[i].data, soc->gpio_base[i] + GPIO_DA=
+TA_OFFSET);
++               /* Ensure DATA restore reaches hardware before restoring ma=
+sk. */
++               wmb();
++               writel_relaxed(soc->pm[i].mask, soc->gpio_base[i] + GPIO_MA=
+SK_OFFSET);
++               writel_relaxed(soc->pm[i].is, soc->gpio_base[i] + GPIO_IS_O=
+FFSET);
++               writel_relaxed(soc->pm[i].ibe, soc->gpio_base[i] + GPIO_IBE=
+_OFFSET);
++               writel_relaxed(soc->pm[i].iev, soc->gpio_base[i] + GPIO_IEV=
+_OFFSET);
++               writel_relaxed(soc->pm[i].ie, soc->gpio_base[i] + GPIO_IE_O=
+FFSET);
++               writel_relaxed(0xffffffff, soc->gpio_base[i] + GPIO_ENABLE_=
+OFFSET);
++       }
++
++       if (soc->clk_au_dedicated_pin) {
++               i =3D PINID_TO_BANK(soc->clk_au_dedicated_pin);
++               writel_relaxed(soc->pm[i].iomux[0], soc->iomux_base + IOMUX=
+_OFFSET(i, 0));
++               writel_relaxed(soc->pm[i].iomux[1], soc->iomux_base + IOMUX=
+_OFFSET(i, 1));
++               writel_relaxed(soc->pm[i].iomux[2], soc->iomux_base + IOMUX=
+_OFFSET(i, 2));
++               /* Ensure dedicated-pin iomux writes reach hardware before =
+commit. */
++               wmb();
++       }
++
++       writel_relaxed(0x1, soc->iomux_base + IOMUX_CTRL_SET_OFFSET);
++       writel_relaxed(0x0, soc->iomux_base + IOMUX_CTRL_SET_OFFSET);
++
++       return 0;
++}
++
++static DEFINE_NOIRQ_DEV_PM_OPS(amb_pinctrl_pm_ops,
++                              amb_pinctrl_suspend_noirq,
++                              amb_pinctrl_resume_noirq);
++
++static const struct amb_pinctrl_data cv75_pinctrl_data =3D {
++       .ds0 =3D {
++               0x314, 0x320, 0x32c,
++       },
++       .ds1 =3D {
++               0x318, 0x324, 0x330,
++       },
++       .ds2 =3D {
++               0x31c, 0x328, 0x334,
++       },
++       .pull_en =3D {
++               0x60, 0x64, 0x68,
++       },
++       .pull_dir =3D {
++               0x7c, 0x80, 0x84,
++       },
++       .have_ds2 =3D true,
++       .clk_au_dedicated_pin =3D 96,
 +};
 +
-+static int serial_ambarella_probe(struct platform_device *pdev)
-+{
-+       struct ambarella_uart_port *amb_port;
-+       struct resource *mem;
-+       struct pinctrl *pinctrl;
-+       int irq, id, rval;
-+
-+       mem =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+       if (!mem) {
-+               dev_err(&pdev->dev, "no mem resource!\n");
-+               return -ENODEV;
-+       }
-+
-+       irq =3D platform_get_irq(pdev, 0);
-+       if (irq < 0) {
-+               dev_err(&pdev->dev, "no irq resource!\n");
-+               return -ENODEV;
-+       }
-+
-+       id =3D of_alias_get_id(pdev->dev.of_node, "serial");
-+       if (id < 0 || id >=3D serial_ambarella_reg.nr) {
-+               dev_err(&pdev->dev, "Invalid uart ID %d!\n", id);
-+               return -ENXIO;
-+       }
-+
-+       pinctrl =3D devm_pinctrl_get_select_default(&pdev->dev);
-+       if (IS_ERR(pinctrl)) {
-+               dev_err(&pdev->dev, "Failed to request pinctrl\n");
-+               return PTR_ERR(pinctrl);
-+       }
-+
-+       amb_port =3D &ambarella_port[id];
-+
-+       amb_port->uart_pll =3D devm_clk_get_enabled(&pdev->dev, NULL);
-+       if (IS_ERR(amb_port->uart_pll)) {
-+               dev_err(&pdev->dev, "Get uart clk failed!\n");
-+               return PTR_ERR(amb_port->uart_pll);
-+       }
-+
-+       amb_port->mcr =3D DEFAULT_AMBARELLA_UART_MCR;
-+
-+       amb_port->port.dev =3D &pdev->dev;
-+       amb_port->port.type =3D PORT_UART00;
-+       amb_port->port.iotype =3D UPIO_MEM;
-+       amb_port->port.fifosize =3D UART_FIFO_SIZE;
-+       amb_port->port.uartclk =3D clk_get_rate(amb_port->uart_pll);
-+       amb_port->port.ops =3D &serial_ambarella_pops;
-+       amb_port->port.private_data =3D amb_port;
-+       amb_port->port.irq =3D irq;
-+       amb_port->port.line =3D id;
-+       amb_port->port.mapbase =3D mem->start;
-+       amb_port->port.membase =3D devm_ioremap_resource(&pdev->dev, mem);
-+       if (IS_ERR(amb_port->port.membase))
-+               return PTR_ERR(amb_port->port.membase);
-+
-+       rval =3D uart_add_one_port(&serial_ambarella_reg, &amb_port->port);
-+       if (rval < 0)
-+               dev_err(&pdev->dev, "failed to add port: %d, %d!\n", id, rv=
-al);
-+
-+       platform_set_drvdata(pdev, amb_port);
-+
-+       return rval;
-+}
-+
-+static void serial_ambarella_remove(struct platform_device *pdev)
-+{
-+       struct ambarella_uart_port *amb_port;
-+
-+       amb_port =3D platform_get_drvdata(pdev);
-+       uart_remove_one_port(&serial_ambarella_reg, &amb_port->port);
-+}
-+
-+static int serial_ambarella_suspend(struct device *dev)
-+{
-+       struct ambarella_uart_port *amb_port =3D dev_get_drvdata(dev);
-+
-+       return uart_suspend_port(&serial_ambarella_reg, &amb_port->port);
-+}
-+
-+static int serial_ambarella_resume(struct device *dev)
-+{
-+       struct ambarella_uart_port *amb_port =3D dev_get_drvdata(dev);
-+
-+       clear_bit(AMBA_UART_RESET_FLAG, &amb_port->flags);
-+       serial_ambarella_hw_setup(&amb_port->port);
-+
-+       return uart_resume_port(&serial_ambarella_reg, &amb_port->port);
-+}
-+
-+static DEFINE_SIMPLE_DEV_PM_OPS(serial_ambarella_pm_ops,
-+                               serial_ambarella_suspend,
-+                               serial_ambarella_resume);
-+
-+static const struct of_device_id ambarella_serial_of_match[] =3D {
-+       { .compatible =3D "ambarella,cv75-uart" },
-+       { .compatible =3D "ambarella,uart" },
++static const struct of_device_id amb_pinctrl_dt_match[] =3D {
++       {
++               .compatible =3D "ambarella,cv75-pinctrl",
++               .data =3D &cv75_pinctrl_data,
++       },
 +       {},
 +};
-+MODULE_DEVICE_TABLE(of, ambarella_serial_of_match);
++MODULE_DEVICE_TABLE(of, amb_pinctrl_dt_match);
 +
-+static struct platform_driver serial_ambarella_driver =3D {
-+       .probe          =3D serial_ambarella_probe,
-+       .remove         =3D serial_ambarella_remove,
-+       .driver         =3D {
-+               .name   =3D "ambarella-uart",
-+               .of_match_table =3D ambarella_serial_of_match,
-+               .pm =3D pm_sleep_ptr(&serial_ambarella_pm_ops),
++static void amb_pinctrl_remove(struct platform_device *pdev)
++{
++       struct amb_pinctrl_soc_data *soc =3D platform_get_drvdata(pdev);
++       unsigned int i;
++
++       for (i =3D 0; i < soc->bank_num; i++)
++               irq_set_chained_handler_and_data(soc->irq[i], NULL, NULL);
++
++       if (soc->domain)
++               irq_domain_remove(soc->domain);
++}
++
++static struct platform_driver amb_pinctrl_driver =3D {
++       .probe  =3D amb_pinctrl_probe,
++       .remove =3D amb_pinctrl_remove,
++       .driver =3D {
++               .name   =3D "ambarella-pinctrl",
++               .of_match_table =3D of_match_ptr(amb_pinctrl_dt_match),
++               .pm =3D pm_sleep_ptr(&amb_pinctrl_pm_ops),
 +       },
 +};
 +
-+static int __init serial_ambarella_init(void)
++static int __init amb_pinctrl_drv_register(void)
 +{
-+       int rval;
-+
-+       rval =3D uart_register_driver(&serial_ambarella_reg);
-+       if (rval < 0)
-+               return rval;
-+
-+       rval =3D platform_driver_register(&serial_ambarella_driver);
-+       if (rval < 0) {
-+               uart_unregister_driver(&serial_ambarella_reg);
-+               return rval;
-+       }
-+
-+       return 0;
++       return platform_driver_register(&amb_pinctrl_driver);
 +}
++arch_initcall(amb_pinctrl_drv_register);
 +
-+static void __exit serial_ambarella_exit(void)
-+{
-+       platform_driver_unregister(&serial_ambarella_driver);
-+       uart_unregister_driver(&serial_ambarella_reg);
-+}
-+
-+module_init(serial_ambarella_init);
-+module_exit(serial_ambarella_exit);
-+
-+MODULE_DESCRIPTION("Ambarella UART driver");
++MODULE_AUTHOR("Cao Rongrong <rrcao@ambarella.com>");
++MODULE_DESCRIPTION("Ambarella SoC pinctrl driver");
 +MODULE_LICENSE("GPL");
-+MODULE_ALIAS("platform:ambarella-uart");
 --
 2.34.1
 
