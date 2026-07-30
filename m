@@ -1,130 +1,160 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD1D92DF3EA;
-	Thu, 30 Jul 2026 06:05:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A0013B71A6
+	for <linux-serial@vger.kernel.org>; Thu, 30 Jul 2026 08:27:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785391550; cv=none; b=nx04uWSCxXJ5Mb8G0Ym/kI3W9C+4IgyMsKDpYoi2Jle7dnHu7/gmoIIS9eDQvJMY3VjMZbMrZvuvGdCS/tPydLj5KTjGmutreNcfFP71q+/2SHedDGlR5PngXOkR0cIjSqCRImx2yjJ6g8viLhUdgx14HKuHrGrldgLWTFEeryw=
+	t=1785400047; cv=none; b=Mtjmasuo2yOoMTSXT4j67SO/jCjOoXr9Dqh8e9OUNf3Yld6PCIm7VMt5gDvuBAjlPi+nPFVAwhydMXLl5i/IQiJFUikXk3Gz6sesgzbnIQiOVnAltLePVwrgjPdJvcbt80JIouDHGnlUzg3WMbWo0H1lOBijZyuvXEyLVk2R/yY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785391550; c=relaxed/simple;
-	bh=uiB0EE/8XSkvECoRR/FTm2jzKxQVCu56EfC9z+qprv8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=mNT2dv0spjSZ4hsevjIpEP7SZ3WweJmW6yYaT4OZAp3XIMWbunwrBB31Tl8W6r5QECkfHEqbLspcL3Ed9RtLCobpunv7eRoVdtFGM5ZFH9fI4wKVBEKhOMjbF55nP0P9vX1Th4qtrua+q2WXH856WxKg0RsSNx24KztJJb4in/c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GtamCXF8; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785400047; c=relaxed/simple;
+	bh=pwW/HHeZcEkraoLdRbDlR2cnbN4a866QfwOfBHCrZG4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=shG9NPHNVmgGw4UT7pckplGOx5AFC0RJsIRwVFHTVX2DRaqaTCYXdIAO3M1bNOYqVL9iiaahltmsPMicF5YX88s9e9ENjIj6NJ9sBwIKZkRwpV+O7BVE+SnQ2eCBgZ+ukgK8YigvBegyGjEa37OJaatonAGdyE/h1nG4COK7Pw4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=QvWi4+fe; arc=none smtp.client-ip=209.85.221.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GtamCXF8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 837171F000E9;
-	Thu, 30 Jul 2026 06:05:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785391549;
-	bh=tAOuAVsCjjlXv5KkLTD4QdgQYPCwzqX1BB1iFUTAalc=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=GtamCXF8LsNyuOtX0bFxte6e2wpAFTZv/HNUf8fbyJRtGzD2RtVKpHyfR7BTefAUc
-	 lyejbFVWXRUBerhfdz6fFxKKF/VE2YlLN0RA5dFRRyhICMdknBSxe6t8ltf2L5GWxw
-	 ty6/iuEycnSkWed9HPy7BhNdZMiJres9bW37FY2SJTW6PEoI1qDJjx8h1360uLPvsq
-	 ETUtZ4wRJLhGBqTcnNsiOB1BBdmfXlAW+F+NCQpO3uWGOny6ZtgQvvzYchJIOz7Jwj
-	 +qDSS7PlGWqES7rimkkrHG5C6nGUvgK/FK0N3LV9M08t512ZcQmOXPSted6kzAMsSb
-	 5wAZLNDk3apMw==
-Message-ID: <b383f0bc-f077-4a0a-ab8b-bde0021696e4@kernel.org>
-Date: Thu, 30 Jul 2026 08:05:45 +0200
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="QvWi4+fe"
+Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-47f904e80eeso1548852f8f.1
+        for <linux-serial@vger.kernel.org>; Thu, 30 Jul 2026 01:27:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1785400040; x=1786004840; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=KmzU97//bt/RgXYEt4zQpFpox6tHLxvze+7qfkerEFg=;
+        b=QvWi4+feV5TZFSt8zvTeqUgShdK/CIhQ2RnvwtlS4snWwpwrJKBtkNLEBg/7pb1+Yn
+         RcpbfraqhLQPZBj9rUGphx8GI/qCuLsiw6v0Trdb0+byXzRu8bHnX06Xw2wTNXsZN2PI
+         Vdqusmcp+n7nmuCrdemybwhxgZuP72jDxi90/fVZDF57mkJpdOQjx/TInoua4DlobmuC
+         30fftAHycEFucMJqm/nbWRfrIWV9FXqkXesvlbddBDJdw/H1OfWKBvJkgkmCe8T6lRJI
+         jvNYX1s3/V9U6vpaOC4RE3fLXA1kATCH2gLzDCLzSXQbHDbw/Yi352cvboec43qGYa5d
+         kg0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785400040; x=1786004840;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=KmzU97//bt/RgXYEt4zQpFpox6tHLxvze+7qfkerEFg=;
+        b=YmtN+/ZwANsrjD2z0ymVm246pb0Qm/0jcD0mt0eMGshprW8BkblQsXsO58/rKrt5uS
+         5dnD5poZBmtSuobaxCnnaYVf/tk0YSk8athYpQsmuqD2VSHuHC9M76mAI8/LDKvUok1b
+         V/dLy7J5MGgpYAehUtU9PAxVBv/ox38SeC6kPmuS/qkEHTMUkxRE+3LDmUTqfGTsHk8m
+         vz2eXn441FnEYDcNnn8KEz6TArdxzS+IU30eXXny1Fabxr92FWmrx4i38jirdIrO8kaU
+         mwrb2XGSDQDpp0pyMTYivkpwoGQjmAURzX3iI52EWyWl1ffAxSLKbmDrOgDXSCYMyMZ2
+         WSuw==
+X-Forwarded-Encrypted: i=1; AHgh+RooQA8GBHsm9FOD+VPeWxUiZX3dqZitGn0LI8y2HboQOMCRCrJsV0C3/SQQgRaRb+Zu/QIapxhHse9QWTw=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyd6uxTtPirVPtnnWCYxq4lJDBQO3XWEuegMMej57i/hYs6OE2b
+	qFVWaDLTTcKZhsuUa6e+OJ0AEontxe3Av0bI/bQziSCi6YP1X6z0ZmyIBiTakjjmUxA=
+X-Gm-Gg: AR+sD10hzgNv9aJ1cg0o2OYB/3NZbqOa5rPYIa/8mM8/ZJd24oX6/duOUtcRzav5rbE
+	yBpLfYT1Zb+6ISKaXCDQy/HHiLqTrWNC6TMJq4uTmdU+Jvp3epBAJRlp2MFcwDxutWh3EMtRrck
+	A3BveO+cEBs2DI4kzHkTpINMZRaU+K3JcprohtvnrMfeNseix2SBw9uyPsrkQiZFm3W2Qis70G7
+	l3o6jyhUcSPAJTwwHuJ4Qpf2RheA+Q3aJlweqlbABljgD4+eZfT1ge4GqHMsRtx5o/yYMrRBQnV
+	F6szGMaR6gUojj0jQWJUlmWUEsHKHkpVlj7U7rdnm+s8jpdlQeTNQecNmSCnyH4QfFesSqR6Fve
+	sVw52DD5ZwckTNb5t8oqw2kcvTBQSoHLW+FGsvEoQPpOfkq/GkrxqsWgG6UeLCnNmFd85/9IcVT
+	UuKb34x4okdryl4H+zvLUyFtEI0Yp++X4RWPPmECCGNTYgdeoa2V20NTvQKrR08E4=
+X-Received: by 2002:a05:6000:22ca:b0:47f:921f:3a37 with SMTP id ffacd0b85a97d-47fc81f5222mr2189848f8f.35.1785400040403;
+        Thu, 30 Jul 2026 01:27:20 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.130])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47fc88e3c73sm4426665f8f.10.2026.07.30.01.27.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Jul 2026 01:27:19 -0700 (PDT)
+Date: Thu, 30 Jul 2026 10:27:17 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: John Ogness <john.ogness@linutronix.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Andy Shevchenko <andy.shevchenko@gmail.com>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	linux-kernel@vger.kernel.org,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	Fushuai Wang <wangfushuai@baidu.com>, Kees Cook <kees@kernel.org>,
+	Stepan Ionichev <sozdayvek@gmail.com>, linux-serial@vger.kernel.org
+Subject: Re: [PATCH tty v9 1/2] serial: 8250: Switch to nbcon console, take 2
+Message-ID: <amsK5UPlzthyZJqD@pathway.suse.cz>
+References: <20260724103654.133654-1-john.ogness@linutronix.de>
+ <20260724103654.133654-2-john.ogness@linutronix.de>
+ <87o6fwms02.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 00/14] serial: 8250: add Moxa MUEx50 PCIe board support
-To: Crescent Hsieh <crescentcy.hsieh@moxa.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: FangpingFP.Cheng@moxa.com, Epson.Chiang@moxa.com, EddieSY.Lin@moxa.com,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20260729060602.492430-1-crescentcy.hsieh@moxa.com>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20260729060602.492430-1-crescentcy.hsieh@moxa.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87o6fwms02.fsf@jogness.linutronix.de>
 
-On 29. 07. 26, 8:05, Crescent Hsieh wrote:
-> This series consolidates Moxa PCIe multiport serial board support under a
-> dedicated 8250_mxpcie driver and adds MUEx50 UART support needed by these
-> boards.
+On Fri 2026-07-24 15:39:49, John Ogness wrote:
+> On 2026-07-24, Sashiko wrote:
+> >> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> >> index 8c241ec7f4f29..855a7aa48c2d2 100644
+> >> --- a/drivers/tty/serial/8250/8250_port.c
+> >> +++ b/drivers/tty/serial/8250/8250_port.c
+> >> @@ -3198,13 +3218,28 @@ void serial8250_set_defaults(struct uart_8250_port *up)
+> >>  }
+> >>  EXPORT_SYMBOL_GPL(serial8250_set_defaults);
+> >>  
+> >> -void serial8250_fifo_wait_for_lsr_thre(struct uart_8250_port *up, unsigned int count)
+> >> +void serial8250_fifo_wait_for_lsr_thre(struct uart_8250_port *up,
+> >> +				       struct nbcon_write_context *wctxt,
+> >> +				       unsigned int count)
+> >>  {
+> >>  	unsigned int i;
+> >>  
+> >> +	/*
+> >> +	 * For console writing, enter/exit an unsafe section for each byte
+> >> +	 * in order to pass the ownership as quickly as possible if a higher
+> >> +	 * priority context wants ownership. Otherwise, an attempt to take
+> >> +	 * over the ownership might timeout. The new owner will wait for
+> >> +	 * UART_LSR_THRE before reusing the fifo.
+> >> +	 */
+> >>  	for (i = 0; i < count; i++) {
+> >> +		if (wctxt && !nbcon_enter_unsafe(wctxt))
+> >> +			return;
+> >> +
+> >>  		if (wait_for_lsr(up, UART_LSR_THRE))
+> >>  			return;
+> >
+> > Does this early return on success bypass the cleanup of the unsafe
+> > section?
+> >
+> > If wait_for_lsr() returns true, wouldn't
+> > serial8250_fifo_wait_for_lsr_thre() return immediately without calling
+> > nbcon_exit_unsafe(wctxt)?
+> >
+> > Could this resource leak of the nbcon unsafe state prevent other
+> > contexts from taking over ownership?
 > 
-> The first part splits the existing Moxa PCIe board handling out of
-> 8250_pci into a separate driver while preserving the existing probe flow
-> and device IDs. The series then introduces the MUEx50 UART port type and
-> enables the board-specific UART setup, including enhanced mode and FIFO
-> trigger programming.
+> It simply has the effect of joining this unsafe section with the next
+> one. In this case it really wouldn't matter. But still, it was not my
+> intention. I will fix this for v10.
 > 
-> The driver adds hardware-assisted flow control support for MUEx50 UARTs,
-> including automatic RTS/CTS handling and XON/XOFF offload. It also adds a
-> custom IRQ path and uses the MUEx50 memory-mapped FIFO windows to improve
-> RX and TX data movement.
+> How I plan for it to look for v10:
 > 
-> Later patches add serial interface mode switching, RS485 break handling,
-> and per-port private state for MUEx50-specific configuration. The driver
-> supports switching the serial interface mode through the RS485
-> configuration path, covering RS232, RS422, and RS485 modes supported by
-> the boards.
+> 	for (i = 0; i < count; i++) {
+> 		bool tx_ready;
 > 
-> The final part extends 8250 core callbacks where needed so low-level
-> drivers can override break control and rx_trig_bytes handling. The
-> 8250_mxpcie driver uses these hooks to implement RS485 break handling via
-> MUEx50 features and to expose the MUEx50 programmable RX trigger level
-> through the generic rx_trig_bytes sysfs interface.
+> 		if (wctxt && !nbcon_enter_unsafe(wctxt))
+> 			return;
 > 
-> ---
-> Changes in v4:
+> 		tx_ready = wait_for_lsr(up, UART_LSR_THRE);
+> 
+> 		if (wctxt)
+> 			nbcon_exit_unsafe(wctxt);
+> 
+> 		if (tx_ready)
+> 			break;
+> 	}
+> 
+> I am wondering if we should add a WARN_ON_ONCE() to nbcon_enter_unsafe()
+> if the context is already unsafe. It is a simple one-liner. That would
+> at least catch these kinds of mistakes during runtime. (I would do that
+> in a separate printk patch, not in this series.)
 
-This looks very well from my POV, except the two nits. Thanks for this.
+Yup, makes sense.
 
-Let's see what others say ;).
-
--- 
-js
-suse labs
+Best Regards,
+Petr
