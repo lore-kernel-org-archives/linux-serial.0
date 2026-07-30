@@ -1,127 +1,117 @@
-Received: from smtpout-02.galae.net (smtpout-02.galae.net [185.246.84.56])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E8A03D3326;
-	Thu, 30 Jul 2026 11:56:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.246.84.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1245940681D;
+	Thu, 30 Jul 2026 12:18:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785412603; cv=none; b=HSKBM5dwsYzXAvilSHJ7kxyNc8et9FVSJtOo974YhL/26cZwUshJfWocjACrjw24K6NBM2xVt+nXvavxd/ZOZGnK+bg/95lZ8Ajszi48nf1GpDe9tUlOSPf2S9sJvga4QEgiVRXv5VoqL4SaIo3RIcXtUB1J/UC19lWBjFK0pc8=
+	t=1785413933; cv=none; b=BUgr0P/sUmQ1iWMOOWbZ8eyEiD8CxAV/z08YL82tFK44X69Dj7iKhSKbWCurZgTJYGSLFM3NUgxmWVUDNwF4NknLIPB1cmmqx+JjNNrqwkNEEVSUw6i9lssU8vi8JoqppBjJ9NBoNy/MqELFpBGZKAdPcXjT8uw780exUYPkiNQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785412603; c=relaxed/simple;
-	bh=eUdPpF2aPfV+5zFJbox69rDruWhHk4EJd2mIWwEH/XE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FaGapjjoJMSp/FzcfkgGv8R2dEAPs84ifsse0kMbF5CHktOUt33RMCQAARzh6WpHpStoFNWhnkgakCjfPXmuQBxWcdaMvA4lni3fwFTO/r1JvO9NNzmJzhiPkWk3khAP38ZzCmFgO1hE5Pe6YzwIREo2hVJ9N+tml/CY8S9RClM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=H2CSFJEi; arc=none smtp.client-ip=185.246.84.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
+	s=arc-20240116; t=1785413933; c=relaxed/simple;
+	bh=jVPKa2VaoVV9XjaEVU/GwnBOp3DCoHvHFOl5tHZekJQ=;
+	h=Date:Message-ID:From:To:Cc:Subject:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ppAdgGiyt7wv2jIl9+Rg/1aTXkFb9lYdD2Y87vtMRrxCya8P5ZS02XmL/D30HVcYAOs3Fa+E5qAziYpMXxjJ545iDyX/gefUNfB+GkpAbEpuVnN6SdaDSP3so11PQuhluvSoFacIz1nNomh5lyLOZ9WuyaONxILkur1HkWSyEiQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IERn+3yT; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="H2CSFJEi"
-Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
-	by smtpout-02.galae.net (Postfix) with ESMTPS id 809DB1A131C;
-	Thu, 30 Jul 2026 11:56:38 +0000 (UTC)
-Received: from mail.galae.net (mail.galae.net [212.83.136.155])
-	by smtpout-01.galae.net (Postfix) with ESMTPS id 49C91602B8;
-	Thu, 30 Jul 2026 11:56:38 +0000 (UTC)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 75E7E11C15B5B;
-	Thu, 30 Jul 2026 13:56:31 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
-	t=1785412597; h=from:subject:date:message-id:to:cc:mime-version:content-type:
-	 in-reply-to:references; bh=3Ef1P6L/nl5Yq+a1L+Mp1w6BvcG1ZQc74+9RfReR48E=;
-	b=H2CSFJEi52MZg5AMBAodTlp78EUjV/3SknW0Ms+7byVOonCK8bf7xweA+PQORSRV8GGmBK
-	RUKqidciS5RFhXI3OpGjuePLa9RJADedZR1prt+ACFje4A4QDjNHmflTzHafNgETAdjv5B
-	3Ey95ueQ56UnP4+nDZkoIT2LhZ/huDWgUCV1gExpgIny3qLZ5LGaQnLYW6SxkMNtyJtAIU
-	umzpe5kkdlyFNddvl944Y+lXFFaUPzbZnpngOCTe7Pgl/vjxaGevnyFmsESvCLzUCw+uvn
-	8R5rwSvmTKOqBaTzA1mYVUDVv8noVgTFag+j2uy/6Genn+qd6HJ8eQL+xZgj1A==
-Date: Thu, 30 Jul 2026 13:56:30 +0200
-From: Alexandre Belloni <alexandre.belloni@bootlin.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IERn+3yT"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3D301F000E9;
+	Thu, 30 Jul 2026 12:18:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1785413932;
+	bh=J51ZKPd6o6/BUGHko+ufxpPLTQ3XMe+QO50MAUxdiFE=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=IERn+3yT3GKAwlEz98+hOOx2EELH5lepwtkHN1LPJPtSbBcaqZH8R70BuuTlh0A/8
+	 k5n++E+0Q+jQMwVMJ5nkn/Xd6iHEoJJnvs/YUNaRar4FAS8vlAs7p1Q/fuvnhnBKEA
+	 NFTW/P6d+tNp6ozLVFlHrQGpnzNz5ygDa67uINaflNJeY3CLZ5ETiif99Fwy2t+40S
+	 mADy0iBff6NfDgZyxfiJ4G7MyoPoL3GzrPyU60gqBkwNQq9DeSwXGb7lfNYpiyyPt/
+	 Mqm37WJE36T0QKo6JWfmlIp+mvylB5nxq7lzE2+1q9NZiL1TBlFFhRx//2VevGaH8G
+	 ACuAsWAw8gANg==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=goblin-girl.misterjones.org)
+	by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.98.2)
+	(envelope-from <maz@kernel.org>)
+	id 1wpPir-0000000AWIY-1wZS;
+	Thu, 30 Jul 2026 12:18:49 +0000
+Date: Thu, 30 Jul 2026 13:18:49 +0100
+Message-ID: <86ldasd61i.wl-maz@kernel.org>
+From: Marc Zyngier <maz@kernel.org>
 To: Long Zhao <longzhao@ambarella.com>
-Cc: Krzysztof Kozlowski <krzk@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
-	"soc@lists.linux.dev" <soc@lists.linux.dev>,
+Cc: Arnd Bergmann <arnd@arndb.de>,
+	Alexandre Belloni
+	<alexandre.belloni@bootlin.com>,
+	<linux-arm-kernel@lists.infradead.org>,
+	<soc@lists.linux.dev>,
 	Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	Michael Turquette <mturquette@baylibre.com>,
+	<devicetree@vger.kernel.org>,
+	"Michael\
+ Turquette" <mturquette@baylibre.com>,
 	Stephen Boyd <sboyd@kernel.org>,
-	"linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
+	<linux-clk@vger.kernel.org>,
 	Linus Walleij <linusw@kernel.org>,
-	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	<linux-gpio@vger.kernel.org>,
+	Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+	<linux-serial@vger.kernel.org>,
 	Catalin Marinas <catalin.marinas@arm.com>,
 	Will Deacon <will@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [EXT] Re: [PATCH 00/10] Ambarella CV75 SoC minimal bring-up
-Message-ID: <20260730115630b8f9bcaf@mail.local>
+	<linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 09/10] arm64: ambarella: add ARCH_AMBARELLA and CV75 EVK DT
+In-Reply-To: <20260730104330.81367-10-longzhao@ambarella.com>
 References: <20260730104330.81367-1-longzhao@ambarella.com>
- <0fce6943-0d4b-4f3f-ae5f-277633577774@kernel.org>
- <DS0PR19MB792519CDB8D28B0672713A05DAC92@DS0PR19MB7925.namprd19.prod.outlook.com>
+	<20260730104330.81367-10-longzhao@ambarella.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/30.1
+ (aarch64-unknown-linux-gnu) MULE/6.0 (HANACHIRUSATO)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DS0PR19MB792519CDB8D28B0672713A05DAC92@DS0PR19MB7925.namprd19.prod.outlook.com>
-X-Last-TLS-Session-Version: TLSv1.3
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: longzhao@ambarella.com, arnd@arndb.de, alexandre.belloni@bootlin.com, linux-arm-kernel@lists.infradead.org, soc@lists.linux.dev, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, devicetree@vger.kernel.org, mturquette@baylibre.com, sboyd@kernel.org, linux-clk@vger.kernel.org, linusw@kernel.org, linux-gpio@vger.kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org, linux-serial@vger.kernel.org, catalin.marinas@arm.com, will@kernel.org, linux-kernel@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 
-On 30/07/2026 11:05:01+0000, Long Zhao wrote:
-> Hi Krzysztof,
-> 
-> Thank you for the feedback.
-> 
-> Regarding the footer: I did not see that disclaimer when I sent a
-> test copy to myself. It looks like our mail system automatically
-> appends it only on messages going outside the company. That was
-> unintentional on my side, and I will check with our IT and find a way 
-> to send v2 without that corporate disclaimer.
-> 
-> I will also switch to SoC-specific compatibles and re-read the writing
-> bindings documentation and DTS coding guidelines before posting v2.
-> 
-> I will wait a bit for further comments on the rest of the series and
-> address them together in v2.
-> 
+On Thu, 30 Jul 2026 11:43:29 +0100,
+Long Zhao <longzhao@ambarella.com> wrote:
 
-Note that tabs were converted to spaces in your submissions.
+[...]
 
+> diff --git a/arch/arm64/boot/dts/ambarella/cv75.dtsi b/arch/arm64/boot/dts/ambarella/cv75.dtsi
+> new file mode 100644
+> index 000000000000..7c6a61f473ef
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/ambarella/cv75.dtsi
+> @@ -0,0 +1,151 @@
+> +// SPDX-License-Identifier: GPL-2.0-or-later
+> +/*
+> + * Ambarella CV75 SoC
+> + *
+> + * Boot peripheral: UART0 console.
+> + * Clocks: a single ambarella,cv75-rct provider.
+> + */
+> +
 
-> Thanks,
-> Long Zhao
-> 
-> -----Original Message-----
-> From: Krzysztof Kozlowski <krzk@kernel.org> 
-> Sent: Thursday, July 30, 2026 18:48
-> To: Long Zhao <longzhao@ambarella.com>; Arnd Bergmann <arnd@arndb.de>; Alexandre Belloni <alexandre.belloni@bootlin.com>; linux-arm-kernel@lists.infradead.org; soc@lists.linux.dev
-> Cc: Rob Herring <robh@kernel.org>; Krzysztof Kozlowski <krzk+dt@kernel.org>; Conor Dooley <conor+dt@kernel.org>; devicetree@vger.kernel.org; Michael Turquette <mturquette@baylibre.com>; Stephen Boyd <sboyd@kernel.org>; linux-clk@vger.kernel.org; Linus Walleij <linusw@kernel.org>; linux-gpio@vger.kernel.org; Greg Kroah-Hartman <gregkh@linuxfoundation.org>; Jiri Slaby <jirislaby@kernel.org>; linux-serial@vger.kernel.org; Catalin Marinas <catalin.marinas@arm.com>; Will Deacon <will@kernel.org>; linux-kernel@vger.kernel.org
-> Subject: [EXT] Re: [PATCH 00/10] Ambarella CV75 SoC minimal bring-up
-> 
-> On 30/07/2026 12:43, Long Zhao wrote:
-> > 
-> > NOTE: This email (including attachments) contain Ambarella Proprietary and/or Confidential Information and is intended solely for the use of the individual(s) to whom it is addressed. Any unauthorized review, use, disclosure, distribute, copy, or print is prohibited. If you are not an intended recipient, please contact the sender by reply email and destroy all copies of the original message. Thank you.
-> 
-> Maybe I am the intended recipient of your message, maybe not. I don't want to have any legal questions regarding upstream, public collaboration, thus probably I should just remove your messages.
-> 
-> Please talk with your IT that such disclaimers in open-source are not desired (and maybe even harmful).
-> If you do not understand why, please also see:
-> https://urldefense.com/v3/__https://www.youtube.com/live/fMeH7wqOwXA?si=GY7igfbda6vnjXlJ&t=835__;!!PeEy7nZLVv0!mZI0csEB1zKe7UGEUdAjbQT7R3g7c3LEYitq4DVi3F_PXjl08eazP5ctMgouCBoz1x_bdQ3kJdmIWGo$ 
-> 
-> If you need to go around company SMTP server, then consider using b4
-> web-relay: https://urldefense.com/v3/__https://b4.docs.kernel.org/en/latest/contributor/send.html__;!!PeEy7nZLVv0!mZI0csEB1zKe7UGEUdAjbQT7R3g7c3LEYitq4DVi3F_PXjl08eazP5ctMgouCBoz1x_bdQ3kYN0VDlM$ 
-> 
-> Please be informed that by responding to this email you agree that all communications from you and/or your company is made public. In other words, all messages originating from you and/or your company will be made public.
-> 
-> Best regards,
-> Krzysztof
-> 
-> ######################################################################
-> This EXTERNAL email has been scanned by Proofpoint Email Protect service.
+[...]
+
+> +       timer {
+> +               compatible = "arm,armv8-timer";
+> +               interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
+> +                            <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
+> +                            <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
+> +                            <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>;
+> +       };
+
+You are missing the EL2 virtual timer interrupt, which is provided by
+Cortex-A76. This isn't optional. A recent Linux kernel will shout at
+you at boot time when booted at EL2 if this interrupt isn't present.
+
+	M.
 
 -- 
-Alexandre Belloni, co-owner and COO, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+Without deviation from the norm, progress is not possible.
