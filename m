@@ -1,49 +1,49 @@
 Received: from mx0b-00622301.pphosted.com (mx0b-00622301.pphosted.com [205.220.175.205])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F83D40B106;
-	Thu, 30 Jul 2026 11:06:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E1DF40E8C1;
+	Thu, 30 Jul 2026 11:06:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.175.205
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785409599; cv=none; b=OtDWxlxlPPrR22NDRsfTI3wd3Vju+op8VoeeSrfjAdc1B6P8byD8Q3TssNy3WuYh7QagCqp+WbS7RJIRVsC73JfRezpJLbxm/avbqW+eSOanRk5RnPAbQyKvap9nuFQUBkXoB5toITgoeO8AmPHwj9NhKtm/IEzvZosr7dxz/j0=
+	t=1785409600; cv=none; b=owFN1xD02IGwNPKJsGUlIXcMpZFhvzWb/c6ODlKAVbW6qdop4JYwaq+F8jEqNgfXSIBc79zEklRDT0+zQqAYxIa5IL7YDUGJOsig6IwA3V9wXXiz5qdPxoIOZVqsPYAjOYkuXT/o/Jl/JlbMkyBGDy+ZXG5fSXR34b5BxR7PpYg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785409599; c=relaxed/simple;
-	bh=bUofClu1/zGtirj8pRqn6zQv+Ydp5qFnEVY6+nQ5iNg=;
+	s=arc-20240116; t=1785409600; c=relaxed/simple;
+	bh=uoRbcAD6F5I3du01U+UsE/oEJX0BBBOhmskF5tJP0+0=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ZPq5idUTgo8eF8h5j3go0H+jFxxCUGXEKxA4xFlZgGQny/GXAfbPNpttzK1eL+8eIM9wru4dD+hUNA1fjIJSA1vv7u2SFEfHWo9HDrHJDTGnafWTgTntDYmRxdsqcNPDWcgEMB3wHqoaSqp+XuhJbhh+NXda4n6aYugx28Qsz04=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=ambarella.com; spf=pass smtp.mailfrom=ambarella.com; dkim=pass (2048-bit key) header.d=ambarella.com header.i=@ambarella.com header.b=OebNI5VR; arc=none smtp.client-ip=205.220.175.205
+	 MIME-Version:Content-Type; b=VvgtDAUVq2SnV7ZoVv43H8vmfv95bGWlCj2vxtmAY5/eIZfbLs0YK5+/rA/fLWUss54NtCyrCJ43l/ets1BqWlSYeQiHDd1ItxqrGtk7jX5mYisXMCxItwhtF2d6XKr2o85plCyNSWrZRhWa21mS6r6nf3VAFyJ+YhSH1GyprIo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=ambarella.com; spf=pass smtp.mailfrom=ambarella.com; dkim=pass (2048-bit key) header.d=ambarella.com header.i=@ambarella.com header.b=YnP54G2H; arc=none smtp.client-ip=205.220.175.205
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=ambarella.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ambarella.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ambarella.com header.i=@ambarella.com header.b="OebNI5VR"
+	dkim=pass (2048-bit key) header.d=ambarella.com header.i=@ambarella.com header.b="YnP54G2H"
 Received: from pps.filterd (m0241925.ppops.net [127.0.0.1])
-	by mx0a-00622301.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66UA6Egm3332841;
-	Thu, 30 Jul 2026 10:43:51 GMT
+	by mx0a-00622301.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66UA6Egl3332841;
+	Thu, 30 Jul 2026 10:43:49 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ambarella.com;
 	 h=cc:content-transfer-encoding:content-type:date:from
 	:in-reply-to:message-id:mime-version:references:subject:to; s=
-	com20210415pp; bh=YvuFtUHRJ622fTQw6EE1ghwsynYcwiJGjeuiRoRxumM=; b=
-	OebNI5VRxOmyVPW1SGzRmGi7YC05G6RwIZBMaQlwgVI1cjqB+qFaXoCj/TXAR8wK
-	0+wheBf7/dDfrYyq+91zTyKcCz0AxXk9HAl/OWRVzhNmPFyy61HcuPgpwqMr78TV
-	mcB+VAzg4ly8ZbOiiNFf+qKFgiDQEpUB7jfpwgwjyis5l80kor3aXk9TfUQMM9NO
-	ilOlzdZByY94CbE4Lw0CHmIOVOiBxJeooCSmJ1Sj0tIDLIT9iM8F/c/VAtSCkCbw
-	36hMDnw0WOq1EVRBsn1QKuUygamL8pboje/5t7C4p7K7/3QBB63qLNOGlfjz1xoW
-	5eAjQUJkjXfMhyvQWah29w==
+	com20210415pp; bh=5Kruq/R6ztnHJ+eq+TsufwvY3s1IZreB9R/rlD1wjSc=; b=
+	YnP54G2HEpTI1PpEopfIn1J6rg4XF1SAdMPaR8AnpwYaGv75vzpBbaYJVaQZi1+q
+	KWJvpby9KYZQIURafF5OWPYxVtuzCYZtlSjUaq/lwikcM3f+CyXq/cB9+ihIxzZP
+	9d7jGzPdY4K7hNcMpV6ae4NzCEdoFvkqSOHXVRHacBldSdjZ3rLn4ByZAr/RTEPh
+	RzVbB7HWnU+zMgcOT78XPt3rn3rFEsUTCGWLk6yS58Wh17wIugabD8CulKB9Oknf
+	A05+X7wTgJwREzGUtFC/j/pV4nQC0wlcrbfu2vBGdZxmSZsQtbEq4qYi6kDuQQwV
+	P82j1yXKQTe5ZYWieNWNOw==
 Received: from webmail.ambarella.com ([12.30.244.130])
-	by mx0a-00622301.pphosted.com (PPS) with ESMTPS id 4fq8twhnbd-1
+	by mx0a-00622301.pphosted.com (PPS) with ESMTPS id 4fq8twhnbb-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 30 Jul 2026 10:43:50 +0000 (GMT)
-Received: from ambtw-cas2.ambarella.net (10.2.4.227) by
+	Thu, 30 Jul 2026 10:43:49 +0000 (GMT)
+Received: from ambtw-ex-se1.ambarella.net (10.2.5.164) by
  ambus-ex-se2.ambarella.net (10.1.4.10) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.45; Thu, 30 Jul 2026 03:43:49 -0700
+ 15.2.2562.45; Thu, 30 Jul 2026 03:43:47 -0700
 Received: from ambtw-cas3.ambarella.net (10.2.4.228) by
- ambtw-cas2.ambarella.net (10.2.4.227) with Microsoft SMTP Server
+ ambtw-ex-se1.ambarella.net (10.2.5.164) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.58; Thu, 30 Jul 2026 18:43:47 +0800
+ 15.2.2562.45; Thu, 30 Jul 2026 03:43:46 -0700
 Received: from shbuild7.ambarella.net (10.4.8.70) by ambtw-cas3.ambarella.net
  (10.2.4.228) with Microsoft SMTP Server id 15.1.2507.58 via Frontend
- Transport; Thu, 30 Jul 2026 18:43:46 +0800
+ Transport; Thu, 30 Jul 2026 18:43:44 +0800
 From: Long Zhao <longzhao@ambarella.com>
 To: Arnd Bergmann <arnd@arndb.de>,
         Alexandre Belloni
@@ -62,9 +62,9 @@ CC: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
         Will Deacon <will@kernel.org>, <linux-kernel@vger.kernel.org>,
         Long Zhao
 	<longzhao@ambarella.com>
-Subject: [PATCH 07/10] pinctrl: ambarella: add Ambarella pin controller
-Date: Thu, 30 Jul 2026 18:43:27 +0800
-Message-ID: <20260730104330.81367-8-longzhao@ambarella.com>
+Subject: [PATCH 06/10] clk: ambarella: add CV75 CCU driver
+Date: Thu, 30 Jul 2026 18:43:26 +0800
+Message-ID: <20260730104330.81367-7-longzhao@ambarella.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20260730104330.81367-1-longzhao@ambarella.com>
 References: <20260730104330.81367-1-longzhao@ambarella.com>
@@ -76,24 +76,23 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain
-X-Proofpoint-GUID: kcJt9lrt0ZUIqc_mUSlYukSblaeURZG3
-X-Proofpoint-ORIG-GUID: kcJt9lrt0ZUIqc_mUSlYukSblaeURZG3
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzMwMDA4MCBTYWx0ZWRfX2vLs/idSfRNH
- YVWNr6Ym5M+/52HMkuX3ZKCEcyEFhtFjDxjx4M5/Mkcz7rB+OJvkccFGB/005HIVeTG4EvW6z+N
- OJvxia5q2PESNe47dzZiNlbDgmkvhX0ruSFRdGhvcXfwmkzveb8RT+txdqYRZUjmXVGYww1Dr9R
- kfNSyXDmRQN/BNyshj4DqpOTaR/9GBFQhYxX+LVCHIRWmEyzfyUM+i8IKr1Ob9MXGc6KltwWOH9
- TRpmGX/j/zmdsXH3uQj6IHUIzavtSvnaGUJPsJSC7Roz7pc5wpUf9YwOJmtOhv7pAeGYZZ5O5+F
- R/w8BHrGktX5VDCvQzBILLDIAQR4JacU0ZbYeKVkdBK9jpwB+B6gk2qQ5dlp1CtdiQnLNLTuPFy
- HO4OAj0dzyQMxPJUruO14r1mh4SVSv7/yJw/2bRzVYyrATk1Nr7+iR+Uw6Q26oWuCoGrpmDhVtA
- pOdHRz85eKpvlAocfTA==
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzMwMDA4MCBTYWx0ZWRfX3cZ44uiO9cyk
- yp7BZ+3Z1OhxkFtFNKLm/YCxfzcns072pbtwBxjLvdb4y4mT99Buw0PAMOrQ1u7PEKqeM7rDOW2
- 7vWqqGhYOFDXs0K2FLdHIM/cC8oo+mfFiPNYvcPxEZbomDly/vfM
-X-Authority-Analysis: v=2.4 cv=PNE/P/qC c=1 sm=1 tr=0 ts=6a6b2ae7 cx=c_pps
+X-Proofpoint-GUID: f4-Y_vSIsHn-KeeGlqQfWkyo9xRYu-_T
+X-Proofpoint-ORIG-GUID: f4-Y_vSIsHn-KeeGlqQfWkyo9xRYu-_T
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzMwMDA4MCBTYWx0ZWRfX/5BQtCXdeyZy
+ ZhMK0xjDYu6YbG7tIJ9MrZ5fdDYulbNBbdiEvMGrVc4R+WcOrtWxUSxBkwOTFsFAQHpe5wBB8qZ
+ jvfA5N0oDg6HwXa95Oz2MPxOEJNIzuW3YXnixQokPWkhH3snWUiOwpzRxHbB5OxSs3lTwy7Ea4e
+ XS6hZSUv1NaFwxr4uzeDkHbmqc6014MQ+dd/wkm2VDaaG7XHZ1aogjrD70mo05terGQyjIyQPpV
+ eogrfyScVuZGV271hM1fuU+wVadYveU2E2+sfn3FP5iyVSEPb9fX7RKCUNyAI7oNOCYTd/ZbTUn
+ 7aag5xq4ztJg0xTqoempDhketTCHNZPJ7/5nVFrUVTa0kfqm6OUFip01oPvHcC5j/MFQltZfXw9
+ rSveT0tvcenMcSfMRhw4mR3xoe7b/ER6gqtKxLpzEs8jd5/gV8tyGeGxqP1N8PTiUg2x19LXyIe
+ YOcYavTvr4DfUoAIDwg==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzMwMDA4MCBTYWx0ZWRfX8ToyGlfOq5QJ
+ q3VcoqScqKBvtnRd2lV/zmt7lF6z5CQMCovsIa1+90ZzLaNTEJKGv/zzjq3jP9HFpVWLjZYKXNH
+ 9RyuB4RE9jClmNKhqHCJhgPBdtsmI4Qr6u2rSJ018cV1OOZU4PNn
+X-Authority-Analysis: v=2.4 cv=PNE/P/qC c=1 sm=1 tr=0 ts=6a6b2ae5 cx=c_pps
  a=DgnZYc2JwZ3KnY28M5UqXQ==:117 a=DgnZYc2JwZ3KnY28M5UqXQ==:17
  a=RAioF0-LDSMA:10 a=VkNPw1HP01LnGYTKEx00:22 a=yXVIz-0bn9infC194UBj:22
- a=KblO7da7ppA7TBl3N-nE:22 a=ppJngBeKAAAA:8 a=cH2J6t5YKUCr9WsprtMA:9
- a=O8hF6Hzn-FEA:10
+ a=KblO7da7ppA7TBl3N-nE:22 a=ppJngBeKAAAA:8 a=zJAyzUMJKmXp9TaLk2sA:9
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-07-30_03,2026-07-29_01,2025-10-01_01
@@ -103,1771 +102,1253 @@ X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607300080
 
-Add the Ambarella pinmux/GPIO controller driver used by CV75.
+Add a minimal Ambarella clock controller for CV75 covering the
+UART0 and core/ahb/apb clocks required for early console bring-up.
 
 Signed-off-by: Long Zhao <longzhao@ambarella.com>
 ---
- drivers/pinctrl/Kconfig             |   15 +
- drivers/pinctrl/Makefile            |    1 +
- drivers/pinctrl/pinctrl-ambarella.c | 1561 +++++++++++++++++++++++++++
- 3 files changed, 1577 insertions(+)
- create mode 100644 drivers/pinctrl/pinctrl-ambarella.c
+ drivers/clk/Kconfig                 |   1 +
+ drivers/clk/Makefile                |   1 +
+ drivers/clk/ambarella/Kconfig       |  16 ++
+ drivers/clk/ambarella/Makefile      |   6 +
+ drivers/clk/ambarella/ccu-cv75.c    | 296 ++++++++++++++++++++++
+ drivers/clk/ambarella/ccu_common.c  |  60 +++++
+ drivers/clk/ambarella/ccu_common.h  |  25 ++
+ drivers/clk/ambarella/ccu_mux_div.c | 223 +++++++++++++++++
+ drivers/clk/ambarella/ccu_mux_div.h |  35 +++
+ drivers/clk/ambarella/ccu_pll.c     | 374 ++++++++++++++++++++++++++++
+ drivers/clk/ambarella/ccu_pll.h     |  70 ++++++
+ 11 files changed, 1107 insertions(+)
+ create mode 100644 drivers/clk/ambarella/Kconfig
+ create mode 100644 drivers/clk/ambarella/Makefile
+ create mode 100644 drivers/clk/ambarella/ccu-cv75.c
+ create mode 100644 drivers/clk/ambarella/ccu_common.c
+ create mode 100644 drivers/clk/ambarella/ccu_common.h
+ create mode 100644 drivers/clk/ambarella/ccu_mux_div.c
+ create mode 100644 drivers/clk/ambarella/ccu_mux_div.h
+ create mode 100644 drivers/clk/ambarella/ccu_pll.c
+ create mode 100644 drivers/clk/ambarella/ccu_pll.h
 
-diff --git a/drivers/pinctrl/Kconfig b/drivers/pinctrl/Kconfig
-index c2cdd7b2c49b..572a4a898a99 100644
---- a/drivers/pinctrl/Kconfig
-+++ b/drivers/pinctrl/Kconfig
-@@ -37,6 +37,21 @@ config DEBUG_PINCTRL
-        help
-          Say Y here to add some extra checks and diagnostics to PINCTRL ca=
-lls.
+diff --git a/drivers/clk/Kconfig b/drivers/clk/Kconfig
+index 1717ce75a907..fbbf4963716c 100644
+--- a/drivers/clk/Kconfig
++++ b/drivers/clk/Kconfig
+@@ -506,6 +506,7 @@ config COMMON_CLK_RPMI
+          the RISC-V platform management interface (RPMI) specification.
 
-+config PINCTRL_AMB
-+       bool "Ambarella pin controller support"
-+       depends on ARCH_AMBARELLA || COMPILE_TEST
-+       select GENERIC_PINCONF
-+       select GPIOLIB
-+       select GPIOLIB_IRQCHIP
-+       select MFD_SYSCON
-+       select PINCONF
-+       select PINMUX
-+       help
-+         Say Y here to enable the pin controller found on Ambarella SoCs.
-+         The driver provides pin multiplexing and pin configuration as wel=
-l
-+         as GPIO and GPIO interrupt support. It is required to configure
-+         peripheral pins on systems using an Ambarella SoC.
-+
- config PINCTRL_AMD
-        bool "AMD GPIO pin control"
-        depends on HAS_IOMEM
-diff --git a/drivers/pinctrl/Makefile b/drivers/pinctrl/Makefile
-index a35d71135abf..7cd9820d3088 100644
---- a/drivers/pinctrl/Makefile
-+++ b/drivers/pinctrl/Makefile
-@@ -10,6 +10,7 @@ obj-$(CONFIG_GENERIC_PINCONF) +=3D pinconf-generic.o
- obj-$(CONFIG_GENERIC_PINCTRL)  +=3D pinctrl-generic.o
- obj-$(CONFIG_OF)               +=3D devicetree.o
+ source "drivers/clk/actions/Kconfig"
++source "drivers/clk/ambarella/Kconfig"
+ source "drivers/clk/analogbits/Kconfig"
+ source "drivers/clk/aspeed/Kconfig"
+ source "drivers/clk/bcm/Kconfig"
+diff --git a/drivers/clk/Makefile b/drivers/clk/Makefile
+index cc108a75a900..30d823ee606f 100644
+--- a/drivers/clk/Makefile
++++ b/drivers/clk/Makefile
+@@ -112,6 +112,7 @@ obj-$(CONFIG_COMMON_CLK_XGENE)              +=3D clk-xg=
+ene.o
 
-+obj-$(CONFIG_PINCTRL_AMB)      +=3D pinctrl-ambarella.o
- obj-$(CONFIG_PINCTRL_AMD)      +=3D pinctrl-amd.o
- obj-$(CONFIG_PINCTRL_AMDISP)   +=3D pinctrl-amdisp.o
- obj-$(CONFIG_PINCTRL_APPLE_GPIO) +=3D pinctrl-apple-gpio.o
-diff --git a/drivers/pinctrl/pinctrl-ambarella.c b/drivers/pinctrl/pinctrl-=
-ambarella.c
+ # please keep this section sorted lexicographically by directory path name
+ obj-y                                  +=3D actions/
++obj-y                                  +=3D ambarella/
+ obj-y                                  +=3D analogbits/
+ obj-y                                  +=3D aspeed/
+ obj-$(CONFIG_COMMON_CLK_AT91)          +=3D at91/
+diff --git a/drivers/clk/ambarella/Kconfig b/drivers/clk/ambarella/Kconfig
 new file mode 100644
-index 000000000000..641b50a0624d
+index 000000000000..639993033f96
 --- /dev/null
-+++ b/drivers/pinctrl/pinctrl-ambarella.c
-@@ -0,0 +1,1561 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
++++ b/drivers/clk/ambarella/Kconfig
+@@ -0,0 +1,16 @@
++# SPDX-License-Identifier: GPL-2.0-only
++
++config CLK_AMBARELLA_CV75
++       bool "Ambarella CV75 RCT clock controller"
++       depends on ARCH_AMBARELLA || COMPILE_TEST
++       select CLK_AMBARELLA_CCU
++       default ARCH_AMBARELLA
++       help
++         Say Y to enable support for the Reset and Clock Tree controller
++         found on Ambarella CV75 SoCs. The controller provides the core PL=
+L,
++         bus clocks and UART clock required during early platform boot.
++         It is needed to use the serial console on CV75-based systems.
++
++config CLK_AMBARELLA_CCU
++       bool
++       select REGMAP_MMIO
+diff --git a/drivers/clk/ambarella/Makefile b/drivers/clk/ambarella/Makefil=
+e
+new file mode 100644
+index 000000000000..36e96326ea97
+--- /dev/null
++++ b/drivers/clk/ambarella/Makefile
+@@ -0,0 +1,6 @@
++#
++# Makefile for ambarella specific clk
++#
++
++obj-$(CONFIG_CLK_AMBARELLA_CCU) +=3D ccu_common.o ccu_mux_div.o ccu_pll.o
++obj-$(CONFIG_CLK_AMBARELLA_CV75) +=3D ccu-cv75.o
+diff --git a/drivers/clk/ambarella/ccu-cv75.c b/drivers/clk/ambarella/ccu-c=
+v75.c
+new file mode 100644
+index 000000000000..55132dfa7431
+--- /dev/null
++++ b/drivers/clk/ambarella/ccu-cv75.c
+@@ -0,0 +1,296 @@
++// SPDX-License-Identifier: GPL-2.0-only
 +/*
-+ * Pinctrl driver for Ambarella SoCs
++ * Copyright (C) 2026 Ambarella, Inc.
 + *
-+ * History:
-+ *     2013/12/18 - [Cao Rongrong] created file
-+ *
-+ * Copyright (C) 2012-2026, Ambarella, Inc.
++ * CV75 RCT clock controller for boot clocks.
 + */
 +
++#include <linux/clk-provider.h>
++#include <linux/clk.h>
 +#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include <linux/io.h>
 +#include <linux/of.h>
-+#include <linux/of_device.h>
-+#include <linux/of_irq.h>
-+#include <linux/pm.h>
++#include <linux/platform_device.h>
 +#include <linux/slab.h>
-+#include <linux/regmap.h>
-+#include <linux/mfd/syscon.h>
-+#include <linux/irqdomain.h>
-+#include <linux/irqchip/chained_irq.h>
-+#include <linux/gpio/driver.h>
-+#include <linux/pinctrl/pinctrl.h>
-+#include <linux/pinctrl/pinmux.h>
-+#include <linux/pinctrl/pinconf.h>
-+#include <linux/pinctrl/pinconf-generic.h>
-+#include <linux/seq_file.h>
-+#include "core.h"
 +
-+/* =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D*/
++#include <dt-bindings/clock/ambarella,cv75-clock.h>
 +
-+#define GPIO_DATA_OFFSET               0x00
-+#define GPIO_DIR_OFFSET                        0x04
-+#define GPIO_IS_OFFSET                 0x08
-+#define GPIO_IBE_OFFSET                        0x0c
-+#define GPIO_IEV_OFFSET                        0x10
-+#define GPIO_IE_OFFSET                 0x14
-+#define GPIO_AFSEL_OFFSET              0x18
-+#define GPIO_RIS_OFFSET                        0x1c
-+#define GPIO_MIS_OFFSET                        0x20
-+#define GPIO_IC_OFFSET                 0x24
-+#define GPIO_MASK_OFFSET               0x28
-+#define GPIO_ENABLE_OFFSET             0x2c
++#include "ccu_common.h"
++#include "ccu_mux_div.h"
++#include "ccu_pll.h"
 +
-+#define IOMUX_OFFSET(bank, n)          (((bank) * 0xc) + ((n) * 4))
-+#define IOMUX_CTRL_SET_OFFSET          0xf0
-+
-+/* =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D*/
-+
-+#define MAX_BANK_NUM                   8
-+#define MAX_PIN_NUM                    (MAX_BANK_NUM * 32)
-+
-+#define PINID_TO_BANK(p)               ((p) >> 5)
-+#define PINID_TO_OFFSET(p)             ((p) & 0x1f)
-+
-+#define MUXIDS_TO_PINID(m)             ((m) & 0xfff)
-+#define MUXIDS_TO_ALT(m)               (((m) >> 12) & 0xf)
-+
-+struct ambpin_group {
-+       const char              *name;
-+       const char              *function;
-+       unsigned int            *pins;
-+       unsigned int            num_pins;
-+       u8                      *alt;
-+       unsigned long           *configs;
-+       unsigned int            num_configs;
++enum amb_cv75_clk_type {
++       AMB_CV75_CLK_FIXED_RATE,
++       AMB_CV75_CLK_FIXED_FACTOR,
++       AMB_CV75_CLK_PLL,
++       AMB_CV75_CLK_DIV,
++       AMB_CV75_CLK_MUX_DIV,
 +};
 +
-+struct ambpin_function {
-+       const char              *name;
-+       const char              **groups;
-+       unsigned int            num_groups;
++enum amb_cv75_clk_ref {
++       AMB_CV75_CLK_REF_OSC =3D -1,
++       AMB_CV75_CLK_REF_DUMMY =3D -2,
 +};
 +
-+struct amb_pinctrl_data {
-+       unsigned int            ds0[MAX_BANK_NUM];
-+       unsigned int            ds1[MAX_BANK_NUM];
-+       unsigned int            ds2[MAX_BANK_NUM];
-+       unsigned int            pull_en[MAX_BANK_NUM];
-+       unsigned int            pull_dir[MAX_BANK_NUM];
-+       bool                    have_ds2;
-+       u32                     hsm_domain_id;
-+       u32                     clk_au_dedicated_pin;
++/* PLL version for CV75 (ambarella,clkpll-v1 in vendor DTS) */
++static const struct amb_pll_soc_data cv75_pll_soc_data =3D {
++       .pll_version    =3D 1,
++       .fsout_mask     =3D CTRL2_FSOUT_DIV2,
++       .fsout_val      =3D CTRL2_FSOUT_DIV2,
++       .fsdiv_mask     =3D CTRL2_FSDIV_DIV2,
++       .fsdiv_val      =3D CTRL2_FSDIV_DIV2,
++       .vcodiv_mask    =3D CTRL2_VCODIV_DIV2,
++       .vcodiv_val     =3D CTRL2_VCODIV_DIV2,
++       .vco_max_mhz    =3D 2600UL,
++       .vco_min_mhz    =3D 850UL,
++       .vco_range      =3D { 1800UL, 1400UL, 1100UL, 0UL },
 +};
 +
-+struct amb_pinctrl_pm_state {
-+       u32 iomux[3];
-+       u32 pull[2];
-+       u32 ds[3];
-+       u32 data;
-+       u32 dir;
-+       u32 is;
-+       u32 ibe;
-+       u32 iev;
-+       u32 ie;
-+       u32 afsel;
-+       u32 mask;
++struct amb_cv75_clk_desc {
++       int id;
++       enum amb_cv75_clk_type type;
++       const char *name;
++       int parent;
++
++       union {
++               struct {
++                       unsigned long rate;
++               } fixed_rate;
++               struct {
++                       unsigned long flags;
++                       unsigned int mult;
++                       unsigned int div;
++               } fixed_factor;
++               struct {
++                       u32 reg_offset[REG_NUM];
++                       const struct amb_pll_soc_data *soc_data;
++               } pll;
++               struct {
++                       u32 reg;
++                       u32 shift;
++                       u32 width;
++                       u32 flags;
++                       u32 fix_divider;
++               } div;
++               struct amb_mux_div_desc mux_div;
++       };
 +};
 +
-+struct amb_pinctrl_soc_data {
-+       struct device                   *dev;
-+       const struct amb_pinctrl_data   *data;
-+       void __iomem                    *gpio_base[MAX_BANK_NUM];
-+       void __iomem                    *iomux_base;
-+       struct regmap                   *ds_regmap;
-+       struct regmap                   *pull_regmap;
-+       unsigned int                    ds0[MAX_BANK_NUM];
-+       unsigned int                    ds1[MAX_BANK_NUM];
-+       unsigned int                    ds2[MAX_BANK_NUM];
-+       unsigned int                    pull_en[MAX_BANK_NUM];
-+       unsigned int                    pull_dir[MAX_BANK_NUM];
-+       unsigned int                    bank_num;
-+       unsigned int                    have_ds2;
-+       int                             irq[MAX_BANK_NUM];
-+       unsigned int                    irq_wake_mask[MAX_BANK_NUM];
-+       unsigned long                   used[BITS_TO_LONGS(MAX_PIN_NUM)];
-+       raw_spinlock_t lock;
-+
-+       struct pinctrl_dev              *pctl;
-+       struct gpio_chip                *gc;
-+       struct irq_domain               *domain;
-+
-+       struct ambpin_function          *functions;
-+       unsigned int                    nr_functions;
-+       struct ambpin_group             *groups;
-+       unsigned int                    nr_groups;
-+
-+       struct amb_pinctrl_pm_state     pm[MAX_BANK_NUM];
-+
-+       /* Domain ID used in HSM boot. */
-+       u32                             hsm_domain_id;
-+       /* Dedicated clk_au pin used on some chips. */
-+       u32                             clk_au_dedicated_pin;
++static const struct amb_cv75_clk_desc cv75_clks[] =3D {
++       {
++               .id =3D AMB_CV75_CLK_REF_DUMMY,
++               .type =3D AMB_CV75_CLK_FIXED_RATE,
++               .name =3D "dummy",
++               .fixed_rate.rate =3D 0,
++       },
++       {
++               .id =3D CV75_GCLK_CORE,
++               .type =3D AMB_CV75_CLK_PLL,
++               .name =3D "core",
++               .parent =3D AMB_CV75_CLK_REF_OSC,
++               .pll =3D {
++                       .reg_offset =3D {
++                               0x000, 0x004, 0x100,
++                               0x104, 0x000, 0x000,
++                       },
++                       .soc_data =3D &cv75_pll_soc_data,
++               },
++       },
++       {
++               .id =3D CV75_GCLK_AHB,
++               .type =3D AMB_CV75_CLK_FIXED_FACTOR,
++               .name =3D "ahb",
++               .parent =3D CV75_GCLK_CORE,
++               .fixed_factor =3D {
++                       .flags =3D 0,
++                       .mult =3D 1,
++                       .div =3D 2,
++               },
++       },
++       {
++               .id =3D CV75_GCLK_APB,
++               .type =3D AMB_CV75_CLK_FIXED_FACTOR,
++               .name =3D "apb",
++               .parent =3D CV75_GCLK_CORE,
++               .fixed_factor =3D {
++                       .flags =3D 0,
++                       .mult =3D 1,
++                       .div =3D 4,
++               },
++       },
++       {
++               .id =3D CV75_GCLK_UART0,
++               .type =3D AMB_CV75_CLK_MUX_DIV,
++               .name =3D "uart0",
++               .mux_div =3D {
++                       .name =3D "uart0",
++                       .parents =3D (const int[]) {
++                               AMB_CV75_CLK_REF_OSC, CV75_GCLK_CORE,
++                               AMB_CV75_CLK_REF_DUMMY, AMB_CV75_CLK_REF_DU=
+MMY,
++                       },
++                       .num_parents =3D 4,
++                       .mux_reg =3D 0x1c8,
++                       .mux_shift =3D 0,
++                       .mux_mask =3D 0x3,
++                       .div_reg =3D 0x038,
++                       .div_shift =3D 0,
++                       .div_width =3D 24,
++                       .div_flags =3D CLK_DIVIDER_ONE_BASED,
++                       .fix_divider =3D 1,
++               },
++       },
 +};
 +
-+static __iomem void *
-+amb_get_gpio_base(const struct amb_pinctrl_soc_data *soc,
-+                 struct irq_data *data)
++static struct clk_hw *amb_cv75_get_parent(struct amb_ccu *ccu,
++                                         struct clk_hw *osc,
++                                         struct clk_hw *dummy,
++                                         int parent)
 +{
-+       return soc->gpio_base[PINID_TO_BANK(irqd_to_hwirq(data))];
++       if (parent =3D=3D AMB_CV75_CLK_REF_OSC)
++               return osc;
++       if (parent =3D=3D AMB_CV75_CLK_REF_DUMMY)
++               return dummy;
++
++       if (parent < 0 || parent >=3D ccu->data->num)
++               return ERR_PTR(-EINVAL);
++
++       if (!ccu->data->hws[parent])
++               return ERR_PTR(-EPROBE_DEFER);
++
++       return ccu->data->hws[parent];
 +}
 +
-+/* check if the selector is a valid pin group selector */
-+static int amb_get_group_count(struct pinctrl_dev *pctldev)
++static struct clk_hw *amb_cv75_register_mux_div(struct device *dev,
++                                               struct amb_ccu *ccu,
++                                               const struct amb_cv75_clk_d=
+esc *desc,
++                                               struct clk_hw *osc,
++                                               struct clk_hw *dummy)
 +{
-+       struct amb_pinctrl_soc_data *soc =3D pinctrl_dev_get_drvdata(pctlde=
-v);
++       const struct amb_mux_div_desc *md =3D &desc->mux_div;
++       struct clk_parent_data *pdata;
++       struct clk_hw *parent;
++       u8 i;
 +
-+       return soc->nr_groups;
-+}
++       pdata =3D devm_kcalloc(dev, md->num_parents, sizeof(*pdata), GFP_KE=
+RNEL);
++       if (!pdata)
++               return ERR_PTR(-ENOMEM);
 +
-+/* return the name of the group selected by the group selector */
-+static const char *amb_get_group_name(struct pinctrl_dev *pctldev,
-+                                     unsigned int selector)
-+{
-+       struct amb_pinctrl_soc_data *soc =3D pinctrl_dev_get_drvdata(pctlde=
-v);
-+
-+       return soc->groups[selector].name;
-+}
-+
-+/* return the pin numbers associated with the specified group */
-+static int amb_get_group_pins(struct pinctrl_dev *pctldev,
-+                             unsigned int selector, const unsigned int **p=
-ins,
-+                             unsigned int *num_pins)
-+{
-+       struct amb_pinctrl_soc_data *soc =3D pinctrl_dev_get_drvdata(pctlde=
-v);
-+
-+       *pins =3D soc->groups[selector].pins;
-+       *num_pins =3D soc->groups[selector].num_pins;
-+
-+       return 0;
-+}
-+
-+#if IS_ENABLED(CONFIG_DEBUG_FS)
-+static void amb_pin_dbg_show(struct pinctrl_dev *pctldev,
-+                            struct seq_file *s, unsigned int pin)
-+{
-+       struct pin_desc *desc;
-+
-+       seq_printf(s, " %s", dev_name(pctldev->dev));
-+
-+       desc =3D pin_desc_get(pctldev, pin);
-+       if (desc) {
-+               seq_printf(s, " owner: %s%s%s%s",
-+                          desc->mux_owner ? desc->mux_owner : "",
-+                          desc->mux_owner && desc->gpio_owner ? " " : "",
-+                          desc->gpio_owner ? desc->gpio_owner : "",
-+                          !desc->mux_owner && !desc->gpio_owner ? "NULL" :=
- "");
-+       } else {
-+               seq_puts(s, " not registered");
-+       }
-+}
-+#endif
-+
-+#if IS_ENABLED(CONFIG_OF)
-+static int amb_dt_node_to_map(struct pinctrl_dev *pctldev,
-+                             struct device_node *np,
-+                             struct pinctrl_map **map,
-+                             unsigned int *num_maps)
-+{
-+       struct amb_pinctrl_soc_data *soc =3D pinctrl_dev_get_drvdata(pctlde=
-v);
-+       struct ambpin_group *grp =3D NULL;
-+       struct pinctrl_map *new_map;
-+       u32 i, new_num;
-+
-+       /* find the group of this node by name */
-+       for (i =3D 0; i < soc->nr_groups; i++) {
-+               if (!strcmp(soc->groups[i].name, np->name)) {
-+                       grp =3D &soc->groups[i];
-+                       break;
++       for (i =3D 0; i < md->num_parents; i++) {
++               if (md->parents[i] =3D=3D AMB_CV75_CLK_REF_OSC) {
++                       pdata[i].fw_name =3D "osc";
++                       continue;
 +               }
-+       }
-+       if (!grp) {
-+               dev_err(soc->dev, "unable to find group for node %s\n", np-=
->name);
-+               return -EINVAL;
-+       }
 +
-+       new_num =3D !!grp->num_pins + !!grp->num_configs;
-+       new_map =3D kcalloc(new_num, sizeof(*new_map), GFP_KERNEL);
-+       if (!new_map)
-+               return -ENOMEM;
++               parent =3D amb_cv75_get_parent(ccu, osc, dummy, md->parents=
+[i]);
++               if (IS_ERR(parent))
++                       return parent;
 +
-+       *map =3D new_map;
-+       *num_maps =3D new_num;
-+
-+       /* create mux map */
-+       if (grp->num_pins) {
-+               new_map[0].type =3D PIN_MAP_TYPE_MUX_GROUP;
-+               new_map[0].data.mux.group =3D grp->name;
-+               new_map[0].data.mux.function =3D grp->function;
-+               new_map++;
++               pdata[i].hw =3D parent;
 +       }
 +
-+       if (grp->num_configs) {
-+               new_map[0].type =3D PIN_MAP_TYPE_CONFIGS_GROUP;
-+               new_map[0].data.configs.group_or_pin =3D grp->name;
-+               new_map[0].data.configs.configs =3D grp->configs;
-+               new_map[0].data.configs.num_configs =3D grp->num_configs;
-+       }
-+
-+       return 0;
++       return amb_mux_div_register(dev, ccu->map, md, pdata);
 +}
 +
-+static void amb_dt_free_map(struct pinctrl_dev *pctldev,
-+                           struct pinctrl_map *map, unsigned int num_maps)
++static struct clk_hw *amb_cv75_register_clk(struct device *dev,
++                                           struct amb_ccu *ccu,
++                                           const struct amb_cv75_clk_desc =
+*desc,
++                                           struct clk_hw *osc,
++                                           struct clk_hw *dummy)
 +{
-+       kfree(map);
-+}
-+#endif
++       struct amb_pll_desc pll_desc;
++       struct clk_hw *parent;
 +
-+/* list of pinctrl callbacks for the pinctrl core */
-+static const struct pinctrl_ops amb_pctrl_ops =3D {
-+       .get_groups_count       =3D amb_get_group_count,
-+       .get_group_name         =3D amb_get_group_name,
-+       .get_group_pins         =3D amb_get_group_pins,
-+#if IS_ENABLED(CONFIG_DEBUG_FS)
-+       .pin_dbg_show           =3D amb_pin_dbg_show,
-+#endif
-+#if IS_ENABLED(CONFIG_OF)
-+       .dt_node_to_map         =3D amb_dt_node_to_map,
-+       .dt_free_map            =3D amb_dt_free_map,
-+#endif
-+};
++       switch (desc->type) {
++       case AMB_CV75_CLK_FIXED_RATE:
++               return devm_clk_hw_register_fixed_rate(dev, desc->name, NUL=
+L, 0,
++                                                      desc->fixed_rate.rat=
+e);
++       case AMB_CV75_CLK_FIXED_FACTOR:
++               parent =3D amb_cv75_get_parent(ccu, osc, dummy, desc->paren=
+t);
++               if (IS_ERR(parent))
++                       return parent;
 +
-+/* check if the selector is a valid pin function selector */
-+static int amb_pinmux_request(struct pinctrl_dev *pctldev, unsigned int pi=
-n)
-+{
-+       struct amb_pinctrl_soc_data *soc =3D pinctrl_dev_get_drvdata(pctlde=
-v);
++               return devm_clk_hw_register_fixed_factor_parent_hw(dev,
++                               desc->name, parent,
++                               desc->fixed_factor.flags,
++                               desc->fixed_factor.mult,
++                               desc->fixed_factor.div);
++       case AMB_CV75_CLK_PLL:
++               parent =3D amb_cv75_get_parent(ccu, osc, dummy, desc->paren=
+t);
++               if (IS_ERR(parent))
++                       return parent;
 +
-+       if (test_and_set_bit(pin, soc->used))
-+               return -EBUSY;
++               pll_desc.name =3D desc->name;
++               pll_desc.parent =3D parent;
++               memcpy((void *)pll_desc.reg_offset, desc->pll.reg_offset,
++                      sizeof(pll_desc.reg_offset));
++               pll_desc.soc_data =3D desc->pll.soc_data;
++               pll_desc.frac_mode =3D false;
 +
-+       return 0;
-+}
++               return amb_pll_register(dev, ccu->map, &pll_desc);
++       case AMB_CV75_CLK_DIV:
++               parent =3D amb_cv75_get_parent(ccu, osc, dummy, desc->paren=
+t);
++               if (IS_ERR(parent))
++                       return parent;
 +
-+/* check if the selector is a valid pin function selector */
-+static int amb_pinmux_free(struct pinctrl_dev *pctldev, unsigned int pin)
-+{
-+       struct amb_pinctrl_soc_data *soc =3D pinctrl_dev_get_drvdata(pctlde=
-v);
-+
-+       clear_bit(pin, soc->used);
-+
-+       return 0;
-+}
-+
-+/* check if the selector is a valid pin function selector */
-+static int amb_pinmux_get_fcount(struct pinctrl_dev *pctldev)
-+{
-+       struct amb_pinctrl_soc_data *soc =3D pinctrl_dev_get_drvdata(pctlde=
-v);
-+
-+       return soc->nr_functions;
-+}
-+
-+/* return the name of the pin function specified */
-+static const char *amb_pinmux_get_fname(struct pinctrl_dev *pctldev,
-+                                       unsigned int selector)
-+{
-+       struct amb_pinctrl_soc_data *soc =3D pinctrl_dev_get_drvdata(pctlde=
-v);
-+
-+       return soc->functions[selector].name;
-+}
-+
-+/* return the groups associated for the specified function selector */
-+static int amb_pinmux_get_groups(struct pinctrl_dev *pctldev,
-+                                unsigned int selector,
-+                                const char * const **groups,
-+                                unsigned int * const num_groups)
-+{
-+       struct amb_pinctrl_soc_data *soc =3D pinctrl_dev_get_drvdata(pctlde=
-v);
-+
-+       *groups =3D soc->functions[selector].groups;
-+       *num_groups =3D soc->functions[selector].num_groups;
-+
-+       return 0;
-+}
-+
-+static void amb_pinmux_set_altfunc(struct amb_pinctrl_soc_data *soc,
-+                                  u32 bank, u32 offset, u32 altfunc)
-+{
-+       u32 i, data;
-+
-+       /* On CV3 platform, only ARM cluster0 (safety domain) can access pi=
-nctrl registers */
-+       if (soc->hsm_domain_id !=3D 0)
-+               return;
-+
-+       for (i =3D 0; i < 3; i++) {
-+               data =3D readl_relaxed(soc->iomux_base + IOMUX_OFFSET(bank,=
- i));
-+               data &=3D (~(0x1 << offset));
-+               data |=3D (((altfunc >> i) & 0x1) << offset);
-+               writel_relaxed(data, soc->iomux_base + IOMUX_OFFSET(bank, i=
-));
-+       }
-+
-+       writel_relaxed(0x1, soc->iomux_base + IOMUX_CTRL_SET_OFFSET);
-+       writel_relaxed(0x0, soc->iomux_base + IOMUX_CTRL_SET_OFFSET);
-+}
-+
-+/* enable a specified pinmux by writing to registers */
-+static int amb_pinmux_set_mux(struct pinctrl_dev *pctldev,
-+                             unsigned int selector, unsigned int group)
-+{
-+       struct amb_pinctrl_soc_data *soc =3D pinctrl_dev_get_drvdata(pctlde=
-v);
-+       const struct ambpin_group *grp;
-+       u32 i, bank, offset;
-+       unsigned long flags;
-+
-+       grp =3D &soc->groups[group];
-+
-+       raw_spin_lock_irqsave(&soc->lock, flags);
-+       for (i =3D 0; i < grp->num_pins; i++) {
-+               bank =3D PINID_TO_BANK(grp->pins[i]);
-+               offset =3D PINID_TO_OFFSET(grp->pins[i]);
-+               amb_pinmux_set_altfunc(soc, bank, offset,  grp->alt[i]);
-+       }
-+       raw_spin_unlock_irqrestore(&soc->lock, flags);
-+
-+       return 0;
-+}
-+
-+static int amb_pinmux_gpio_request_enable(struct pinctrl_dev *pctldev,
-+                                         struct pinctrl_gpio_range *range,
-+                                         unsigned int pin)
-+{
-+       struct amb_pinctrl_soc_data *soc =3D pinctrl_dev_get_drvdata(pctlde=
-v);
-+       u32 bank, offset;
-+       unsigned long flags;
-+
-+       if (!range || !range->gc) {
-+               dev_err(soc->dev, "invalid range: %p\n", range);
-+               return -EINVAL;
-+       }
-+
-+       if (test_and_set_bit(pin, soc->used))
-+               return -EBUSY;
-+
-+       bank =3D PINID_TO_BANK(pin);
-+       offset =3D PINID_TO_OFFSET(pin);
-+
-+       raw_spin_lock_irqsave(&soc->lock, flags);
-+       amb_pinmux_set_altfunc(soc, bank, offset, 0);
-+       raw_spin_unlock_irqrestore(&soc->lock, flags);
-+
-+       return 0;
-+}
-+
-+static void amb_pinmux_gpio_disable_free(struct pinctrl_dev *pctldev,
-+                                        struct pinctrl_gpio_range *range,
-+                                        unsigned int pin)
-+{
-+       struct amb_pinctrl_soc_data *soc =3D pinctrl_dev_get_drvdata(pctlde=
-v);
-+
-+       dev_dbg(soc->dev, "disable pin %u as GPIO\n", pin);
-+       /* Set the pin to some default state, GPIO is usually default */
-+
-+       clear_bit(pin, soc->used);
-+}
-+
-+/* list of pinmux callbacks for the pinmux vertical in pinctrl core */
-+static const struct pinmux_ops amb_pinmux_ops =3D {
-+       .request                =3D amb_pinmux_request,
-+       .free                   =3D amb_pinmux_free,
-+       .get_functions_count    =3D amb_pinmux_get_fcount,
-+       .get_function_name      =3D amb_pinmux_get_fname,
-+       .get_function_groups    =3D amb_pinmux_get_groups,
-+       .set_mux                =3D amb_pinmux_set_mux,
-+       .gpio_request_enable    =3D amb_pinmux_gpio_request_enable,
-+       .gpio_disable_free      =3D amb_pinmux_gpio_disable_free,
-+};
-+
-+static int amb_drive_strength_to_reg(struct amb_pinctrl_soc_data *soc,
-+                                    u32 strength)
-+{
-+       if (soc->have_ds2) {
-+               switch (strength) {
-+               case 3:
-+                       return 0;
-+               case 4:
-+               case 5:
-+                       return 1;
-+               case 6:
-+                       return 2;
-+               case 7:
-+               case 8:
-+                       return 3;
-+               case 9:
-+                       return 4;
-+               case 12:
-+                       return 5;
-+               default:
-+                       return -EINVAL;
-+               }
-+       }
-+
-+       switch (strength) {
-+       case 2:
-+               return 0;
-+       case 4:
-+               return 1;
-+       case 8:
-+               return 2;
-+       case 12:
-+               return 3;
++               return amb_div_register(dev, ccu->map, desc->name, parent,
++                                       desc->div.reg, desc->div.shift,
++                                       desc->div.width, desc->div.flags,
++                                       desc->div.fix_divider);
++       case AMB_CV75_CLK_MUX_DIV:
++               return amb_cv75_register_mux_div(dev, ccu, desc, osc, dummy=
+);
 +       default:
-+               return -EINVAL;
++               return ERR_PTR(-EINVAL);
 +       }
 +}
 +
-+/* set the pin config settings for a specified pin */
-+static int amb_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
-+                          unsigned long *configs, unsigned int num_configs=
-)
++static int amb_cv75_rct_probe(struct platform_device *pdev)
 +{
-+       struct amb_pinctrl_soc_data *soc =3D pinctrl_dev_get_drvdata(pctlde=
-v);
-+       u32 i, bank, offset;
-+       unsigned long config, flags;
-+       enum pin_config_param param;
-+       u32 arg;
-+       int ds;
++       struct amb_ccu *ccu;
++       struct clk *osc_clk;
++       struct clk_hw *osc, *dummy =3D NULL, *hw;
++       int i;
 +
-+       bank =3D PINID_TO_BANK(pin);
-+       offset =3D PINID_TO_OFFSET(pin);
++       ccu =3D amb_ccu_init(pdev, CV75_CLK_NUM);
++       if (IS_ERR(ccu))
++               return PTR_ERR(ccu);
 +
-+       raw_spin_lock_irqsave(&soc->lock, flags);
-+       for (i =3D 0; i < num_configs; i++) {
-+               config =3D configs[i];
-+               param =3D pinconf_to_config_param(config);
-+               arg =3D pinconf_to_config_argument(config);
++       osc_clk =3D devm_clk_get(&pdev->dev, "osc");
++       if (IS_ERR(osc_clk))
++               return dev_err_probe(&pdev->dev, PTR_ERR(osc_clk),
++                                    "missing osc clock\n");
++       osc =3D __clk_get_hw(osc_clk);
 +
-+               switch (param) {
-+               case PIN_CONFIG_BIAS_DISABLE:
-+                       regmap_update_bits(soc->pull_regmap,
-+                                          soc->pull_en[bank], BIT(offset),=
- 0);
-+                       break;
-+               case PIN_CONFIG_BIAS_PULL_DOWN:
-+               case PIN_CONFIG_BIAS_PULL_UP:
-+                       regmap_update_bits(soc->pull_regmap, soc->pull_dir[=
-bank],
-+                                          BIT(offset),
-+                                          (param =3D=3D PIN_CONFIG_BIAS_PU=
-LL_UP) ?
-+                                          BIT(offset) : 0);
-+                       regmap_update_bits(soc->pull_regmap, soc->pull_en[b=
-ank],
-+                                          BIT(offset), BIT(offset));
-+                       break;
-+               case PIN_CONFIG_DRIVE_STRENGTH:
-+                       ds =3D amb_drive_strength_to_reg(soc, arg);
-+                       if (ds < 0) {
-+                               raw_spin_unlock_irqrestore(&soc->lock, flag=
-s);
-+                               return ds;
-+                       }
-+                       if (soc->have_ds2) {
-+                               regmap_update_bits(soc->ds_regmap,
-+                                                  soc->ds0[bank], BIT(offs=
-et),
-+                                                  (ds & BIT(0)) ? BIT(offs=
-et) : 0);
-+                               regmap_update_bits(soc->ds_regmap,
-+                                                  soc->ds1[bank], BIT(offs=
-et),
-+                                                  (ds & BIT(1)) ? BIT(offs=
-et) : 0);
-+                               regmap_update_bits(soc->ds_regmap,
-+                                                  soc->ds2[bank], BIT(offs=
-et),
-+                                                  (ds & BIT(2)) ? BIT(offs=
-et) : 0);
-+                       } else {
-+                               regmap_update_bits(soc->ds_regmap,
-+                                                  soc->ds0[bank], BIT(offs=
-et),
-+                                                  (ds & BIT(1)) ? BIT(offs=
-et) : 0);
-+                               regmap_update_bits(soc->ds_regmap,
-+                                                  soc->ds1[bank], BIT(offs=
-et),
-+                                                  (ds & BIT(0)) ? BIT(offs=
-et) : 0);
-+                       }
-+                       break;
-+               default:
-+                       raw_spin_unlock_irqrestore(&soc->lock, flags);
-+                       return -EOPNOTSUPP;
-+               }
-+       }
-+       raw_spin_unlock_irqrestore(&soc->lock, flags);
++       for (i =3D 0; i < ARRAY_SIZE(cv75_clks); i++) {
++               hw =3D amb_cv75_register_clk(&pdev->dev, ccu, &cv75_clks[i]=
+,
++                                          osc, dummy);
++               if (IS_ERR(hw))
++                       return dev_err_probe(&pdev->dev, PTR_ERR(hw),
++                                            "failed to register %s\n",
++                                            cv75_clks[i].name);
 +
-+       return 0;
-+}
-+
-+static int amb_pinconf_group_set(struct pinctrl_dev *pctldev,
-+                                unsigned int selector,
-+                                unsigned long *configs,
-+                                unsigned int num_configs)
-+{
-+       struct amb_pinctrl_soc_data *soc =3D pinctrl_dev_get_drvdata(pctlde=
-v);
-+       const struct ambpin_group *grp =3D &soc->groups[selector];
-+       int ret;
-+       u32 i;
-+
-+       for (i =3D 0; i < grp->num_pins; i++) {
-+               ret =3D amb_pinconf_set(pctldev, grp->pins[i], configs,
-+                                     num_configs);
-+               if (ret)
-+                       return ret;
++               if (cv75_clks[i].id =3D=3D AMB_CV75_CLK_REF_DUMMY)
++                       dummy =3D hw;
++               else
++                       ccu->data->hws[cv75_clks[i].id] =3D hw;
 +       }
 +
-+       return 0;
++       return amb_ccu_register(ccu);
 +}
 +
-+/* get the pin config settings for a specified pin */
-+static int amb_pinconf_get(struct pinctrl_dev *pctldev,
-+                          unsigned int pin, unsigned long *config)
-+{
-+       dev_WARN_ONCE(pctldev->dev, true, "NOT Implemented.\n");
-+       return -EOPNOTSUPP;
-+}
++static const struct of_device_id amb_cv75_rct_match[] =3D {
++       { .compatible =3D "ambarella,cv75-rct" },
++       { }
++};
++MODULE_DEVICE_TABLE(of, amb_cv75_rct_match);
 +
-+#if IS_ENABLED(CONFIG_DEBUG_FS)
-+static void amb_pinconf_dbg_show(struct pinctrl_dev *pctldev,
-+                                struct seq_file *s, unsigned int pin)
-+{
-+       struct amb_pinctrl_soc_data *soc =3D pinctrl_dev_get_drvdata(pctlde=
-v);
-+       u32 pull_en, pull_dir, ds0, ds1, ds2, drv_strength;
-+       u32 bank, offset;
++static struct platform_driver amb_cv75_rct_driver =3D {
++       .probe  =3D amb_cv75_rct_probe,
++       .driver =3D {
++               .name =3D "ambarella-cv75-rct",
++               .of_match_table =3D amb_cv75_rct_match,
++       },
++};
++module_platform_driver(amb_cv75_rct_driver);
 +
-+       bank =3D PINID_TO_BANK(pin);
-+       offset =3D PINID_TO_OFFSET(pin);
++MODULE_AUTHOR("Ambarella Inc.");
++MODULE_DESCRIPTION("Ambarella CV75 RCT clock controller");
++MODULE_LICENSE("GPL");
+diff --git a/drivers/clk/ambarella/ccu_common.c b/drivers/clk/ambarella/ccu=
+_common.c
+new file mode 100644
+index 000000000000..78587c5f2ce1
+--- /dev/null
++++ b/drivers/clk/ambarella/ccu_common.c
+@@ -0,0 +1,60 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright (C) 2026 Ambarella, Inc.
++ */
 +
-+       regmap_read(soc->pull_regmap, soc->pull_en[bank], &pull_en);
-+       pull_en =3D (pull_en >> offset) & 0x1;
-+       regmap_read(soc->pull_regmap, soc->pull_dir[bank], &pull_dir);
-+       pull_dir =3D (pull_dir >> offset) & 0x1;
-+       seq_printf(s, " pull: %s, ", pull_en ? pull_dir ? "up" : "down" : "=
-disable");
++#include <linux/clk-provider.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
++#include <linux/regmap.h>
 +
-+       regmap_read(soc->ds_regmap, soc->ds0[bank], &ds0);
-+       ds0 =3D (ds0 >> offset) & 0x1;
-+       regmap_read(soc->ds_regmap, soc->ds1[bank], &ds1);
-+       ds1 =3D (ds1 >> offset) & 0x1;
-+       if (soc->have_ds2) {
-+               regmap_read(soc->ds_regmap, soc->ds2[bank], &ds2);
-+               ds2 =3D (ds2 >> offset) & 0x1;
-+               drv_strength =3D (ds2 << 2) | (ds1 << 1) | ds0;
-+               seq_printf(s, "drive-strength: %s",
-+                          drv_strength =3D=3D 5 ? "12mA(lvl5)" :
-+                          drv_strength =3D=3D 4 ? "9mA(lvl4)" :
-+                          drv_strength =3D=3D 3 ? "7.5mA(lvl3)" :
-+                          drv_strength =3D=3D 2 ? "6mA(lvl2)" :
-+                          drv_strength =3D=3D 1 ? "4.5mA(lvl1)" :
-+                          drv_strength =3D=3D 0 ? "3mA(lvl0)" : "invalid")=
-;
-+       } else {
-+               drv_strength =3D (ds0 << 1) | ds1;
-+               seq_printf(s, "drive-strength: %s",
-+                          drv_strength =3D=3D 3 ? "12mA" :
-+                          drv_strength =3D=3D 2 ? "8mA" :
-+                          drv_strength =3D=3D 1 ? "4mA" : "2mA");
-+       }
-+}
-+#endif
++#include "ccu_common.h"
 +
-+/* list of pinconfig callbacks for pinconfig vertical in the pinctrl code =
-*/
-+static const struct pinconf_ops amb_pinconf_ops =3D {
-+       .is_generic             =3D true,
-+       .pin_config_get         =3D amb_pinconf_get,
-+       .pin_config_set         =3D amb_pinconf_set,
-+       .pin_config_group_set   =3D amb_pinconf_group_set,
-+#if IS_ENABLED(CONFIG_DEBUG_FS)
-+       .pin_config_dbg_show    =3D amb_pinconf_dbg_show,
-+#endif
++static const struct regmap_config amb_rct_regmap_config =3D {
++       .reg_bits =3D 32,
++       .val_bits =3D 32,
++       .reg_stride =3D 4,
++       .max_register =3D AMB_RCT_REG_SIZE - 4,
 +};
 +
-+static int amb_pinctrl_get_function_name(struct device_node *np,
-+                                        const char **function)
++struct amb_ccu *amb_ccu_init(struct platform_device *pdev,
++                            unsigned int num_clks)
 +{
-+       if (of_property_read_string(np, "function", function))
-+               *function =3D np->name;
++       struct amb_ccu *ccu;
++       void __iomem *base;
 +
-+       return 0;
++       if (!num_clks)
++               return ERR_PTR(-EINVAL);
++
++       ccu =3D devm_kzalloc(&pdev->dev, sizeof(*ccu), GFP_KERNEL);
++       if (!ccu)
++               return ERR_PTR(-ENOMEM);
++
++       ccu->dev =3D &pdev->dev;
++
++       ccu->data =3D devm_kzalloc(&pdev->dev,
++                                struct_size(ccu->data, hws, num_clks),
++                                GFP_KERNEL);
++       if (!ccu->data)
++               return ERR_PTR(-ENOMEM);
++
++       ccu->data->num =3D num_clks;
++
++       base =3D devm_platform_ioremap_resource(pdev, 0);
++       if (IS_ERR(base))
++               return ERR_CAST(base);
++
++       ccu->map =3D devm_regmap_init_mmio(&pdev->dev, base,
++                                        &amb_rct_regmap_config);
++       if (IS_ERR(ccu->map))
++               return ERR_CAST(ccu->map);
++
++       return ccu;
 +}
 +
-+static int amb_pinctrl_count_configs(struct device_node *np)
++int amb_ccu_register(struct amb_ccu *ccu)
 +{
-+       unsigned int bias =3D 0, count =3D 0;
++       return devm_of_clk_add_hw_provider(ccu->dev, of_clk_hw_onecell_get,
++                                          ccu->data);
++}
+diff --git a/drivers/clk/ambarella/ccu_common.h b/drivers/clk/ambarella/ccu=
+_common.h
+new file mode 100644
+index 000000000000..f2bf9d1f06d7
+--- /dev/null
++++ b/drivers/clk/ambarella/ccu_common.h
+@@ -0,0 +1,25 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Copyright (C) 2026 Ambarella, Inc.
++ */
 +
-+       if (of_property_read_bool(np, "bias-disable"))
-+               bias++;
-+       if (of_property_read_bool(np, "bias-pull-down"))
-+               bias++;
-+       if (of_property_read_bool(np, "bias-pull-up"))
-+               bias++;
-+       if (bias > 1)
-+               return -EINVAL;
++#ifndef __CCU_COMMON_H
++#define __CCU_COMMON_H
 +
-+       count +=3D bias;
-+       if (of_find_property(np, "drive-strength", NULL))
-+               count++;
++#include <linux/clk-provider.h>
++#include <linux/device.h>
++#include <linux/regmap.h>
 +
-+       return count;
++#define AMB_RCT_REG_SIZE       0x1000
++
++struct amb_ccu {
++       struct device *dev;
++       struct regmap *map;
++       struct clk_hw_onecell_data *data;
++};
++
++struct amb_ccu *amb_ccu_init(struct platform_device *pdev,
++                            unsigned int num_clks);
++int amb_ccu_register(struct amb_ccu *ccu);
++
++#endif
+diff --git a/drivers/clk/ambarella/ccu_mux_div.c b/drivers/clk/ambarella/cc=
+u_mux_div.c
+new file mode 100644
+index 000000000000..33430506f8ed
+--- /dev/null
++++ b/drivers/clk/ambarella/ccu_mux_div.c
+@@ -0,0 +1,223 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright (C) 2026 Ambarella, Inc.
++ *
++ * Regmap-backed mux + divider, derived from the vendor composite-clock dr=
+iver.
++ */
++
++#include <linux/clk-provider.h>
++#include <linux/device.h>
++#include <linux/regmap.h>
++
++#include "ccu_mux_div.h"
++
++struct amb_mux {
++       struct clk_hw hw;
++       struct regmap *map;
++       u32 offset;
++       u32 mask;
++       u32 shift;
++};
++
++struct amb_div {
++       struct clk_hw hw;
++       struct regmap *map;
++       u32 offset;
++       u32 shift;
++       u32 width;
++       u32 flags;
++       u32 fix_divider;
++};
++
++#define to_amb_mux(_hw)        container_of(_hw, struct amb_mux, hw)
++#define to_amb_div(_hw)        container_of(_hw, struct amb_div, hw)
++
++static u8 amb_mux_get_parent(struct clk_hw *hw)
++{
++       struct amb_mux *mux =3D to_amb_mux(hw);
++       u32 val;
++
++       regmap_read(mux->map, mux->offset, &val);
++       val >>=3D mux->shift;
++       val &=3D mux->mask;
++
++       return val;
 +}
 +
-+static int amb_pinctrl_parse_configs(struct amb_pinctrl_soc_data *soc,
-+                                    struct device_node *np,
-+                                    struct ambpin_group *grp)
++static int amb_mux_set_parent(struct clk_hw *hw, u8 index)
 +{
-+       u32 drive;
-+       int num_configs, i =3D 0;
++       struct amb_mux *mux =3D to_amb_mux(hw);
 +
-+       num_configs =3D amb_pinctrl_count_configs(np);
-+       if (num_configs < 0)
-+               return dev_err_probe(soc->dev, num_configs,
-+                                    "%pOF has conflicting bias properties\=
-n", np);
-+       if (!num_configs)
++       return regmap_update_bits(mux->map, mux->offset,
++                                 mux->mask << mux->shift,
++                                 index << mux->shift);
++}
++
++static const struct clk_ops amb_mux_ops =3D {
++       .get_parent =3D amb_mux_get_parent,
++       .set_parent =3D amb_mux_set_parent,
++};
++
++static unsigned long amb_div_recalc_rate(struct clk_hw *hw,
++                                        unsigned long parent_rate)
++{
++       struct amb_div *div =3D to_amb_div(hw);
++       unsigned long rate;
++       u32 val;
++
++       regmap_read(div->map, div->offset, &val);
++
++       if (val & BIT(div->width))
 +               return 0;
 +
-+       grp->configs =3D devm_kcalloc(soc->dev, num_configs,
-+                                   sizeof(*grp->configs), GFP_KERNEL);
-+       if (!grp->configs)
-+               return -ENOMEM;
++       val >>=3D div->shift;
++       val &=3D clk_div_mask(div->width);
 +
-+       if (of_property_read_bool(np, "bias-disable"))
-+               grp->configs[i++] =3D
-+                       pinconf_to_config_packed(PIN_CONFIG_BIAS_DISABLE, 0=
-);
-+       else if (of_property_read_bool(np, "bias-pull-down"))
-+               grp->configs[i++] =3D
-+                       pinconf_to_config_packed(PIN_CONFIG_BIAS_PULL_DOWN,=
- 1);
-+       else if (of_property_read_bool(np, "bias-pull-up"))
-+               grp->configs[i++] =3D
-+                       pinconf_to_config_packed(PIN_CONFIG_BIAS_PULL_UP, 1=
-);
++       rate =3D divider_recalc_rate(hw, parent_rate, val, NULL,
++                                  div->flags, div->width);
++       if (div->fix_divider)
++               do_div(rate, div->fix_divider);
 +
-+       if (!of_property_read_u32(np, "drive-strength", &drive))
-+               grp->configs[i++] =3D
-+                       pinconf_to_config_packed(PIN_CONFIG_DRIVE_STRENGTH,
-+                                                drive);
-+
-+       grp->num_configs =3D i;
-+
-+       return 0;
++       return rate;
 +}
 +
-+static int amb_pinctrl_parse_group(struct amb_pinctrl_soc_data *soc,
-+                                  struct device_node *np, int idx,
-+                                  const char **out_name)
++static int amb_div_determine_rate(struct clk_hw *hw,
++                                 struct clk_rate_request *req)
 +{
-+       struct ambpin_group *grp =3D &soc->groups[idx];
-+       struct device *dev =3D soc->dev;
-+       struct property *prop;
-+       int length;
++       struct amb_div *div =3D to_amb_div(hw);
++       struct clk_rate_request scaled =3D *req;
 +       int ret;
-+       u32 i;
 +
-+       grp->name =3D np->name;
-+       amb_pinctrl_get_function_name(np, &grp->function);
++       if (!req->rate && (div->flags & CLK_DIVIDER_ONE_BASED))
++               return 0;
 +
-+       prop =3D of_find_property(np, "pinmux", &length);
-+       if (prop) {
-+               grp->num_pins =3D length / sizeof(u32);
-+
-+               grp->pins =3D devm_kcalloc(dev, grp->num_pins, sizeof(*grp-=
->pins), GFP_KERNEL);
-+               if (!grp->pins)
-+                       return -ENOMEM;
-+
-+               grp->alt =3D devm_kcalloc(dev, grp->num_pins, sizeof(*grp->=
-alt), GFP_KERNEL);
-+               if (!grp->alt)
-+                       return -ENOMEM;
-+
-+               of_property_read_u32_array(np, "pinmux", grp->pins,
-+                                          grp->num_pins);
-+
-+               for (i =3D 0; i < grp->num_pins; i++) {
-+                       grp->alt[i] =3D MUXIDS_TO_ALT(grp->pins[i]);
-+                       grp->pins[i] =3D MUXIDS_TO_PINID(grp->pins[i]);
-+               }
++       if (div->fix_divider) {
++               scaled.rate =3D min(req->rate,
++                                 ULONG_MAX / div->fix_divider) *
++                             div->fix_divider;
++               scaled.min_rate =3D min(req->min_rate,
++                                     ULONG_MAX / div->fix_divider) *
++                                 div->fix_divider;
++               scaled.max_rate =3D min(req->max_rate,
++                                     ULONG_MAX / div->fix_divider) *
++                                 div->fix_divider;
 +       }
 +
-+       if (!grp->num_pins)
-+               return dev_err_probe(soc->dev, -EINVAL,
-+                                    "%pOF: missing pinmux property\n", np)=
-;
-+
-+       ret =3D amb_pinctrl_parse_configs(soc, np, grp);
++       ret =3D divider_determine_rate(hw, &scaled, NULL, div->width,
++                                    div->flags);
 +       if (ret)
 +               return ret;
 +
-+       if (out_name)
-+               *out_name =3D grp->name;
++       req->rate =3D scaled.rate;
++       req->best_parent_rate =3D scaled.best_parent_rate;
++       req->best_parent_hw =3D scaled.best_parent_hw;
++       if (div->fix_divider)
++               do_div(req->rate, div->fix_divider);
 +
 +       return 0;
 +}
 +
-+static int amb_pinctrl_find_function(struct amb_pinctrl_soc_data *soc,
-+                                    const char *function)
++static int amb_div_set_rate(struct clk_hw *hw, unsigned long rate,
++                           unsigned long parent_rate)
 +{
-+       int i;
++       struct amb_div *div =3D to_amb_div(hw);
++       int val, mask;
 +
-+       for (i =3D 0; i < soc->nr_functions; i++) {
-+               if (soc->functions[i].name &&
-+                   !strcmp(soc->functions[i].name, function))
-+                       return i;
++       if (div->fix_divider)
++               rate *=3D div->fix_divider;
++
++       if (!rate) {
++               val =3D BIT(div->width);
++       } else {
++               val =3D divider_get_val(rate, parent_rate, NULL,
++                                     div->width, div->flags);
++               if (val < 0)
++                       return val;
 +       }
 +
-+       return -ENOENT;
++       mask =3D (div->flags & CLK_DIVIDER_ONE_BASED) ?
++               clk_div_mask(div->width + 1) : clk_div_mask(div->width);
++
++       regmap_update_bits(div->map, div->offset, mask << div->shift,
++                          val << div->shift);
++
++       if (!(div->flags & CLK_DIVIDER_ONE_BASED)) {
++               regmap_update_bits(div->map, div->offset, BIT(0), BIT(0));
++               regmap_update_bits(div->map, div->offset, BIT(0), 0);
++       }
++
++       return 0;
 +}
 +
-+static int amb_pinctrl_parse_dt(struct amb_pinctrl_soc_data *soc)
++static const struct clk_ops amb_div_ops =3D {
++       .recalc_rate =3D amb_div_recalc_rate,
++       .determine_rate =3D amb_div_determine_rate,
++       .set_rate =3D amb_div_set_rate,
++};
++
++struct clk_hw *amb_div_register(struct device *dev, struct regmap *map,
++                               const char *name, const struct clk_hw *pare=
+nt,
++                               u32 div_reg, u32 div_shift, u32 div_width,
++                               u32 div_flags, u32 fix_divider)
 +{
-+       struct device_node *np =3D soc->dev->of_node;
-+       struct device_node *child;
-+       int idxf =3D 0, idxg =3D 0;
-+       int i, ret;
++       struct amb_div *div;
++       struct clk_init_data init =3D {};
++       int ret;
 +
-+       /* Count total functions and groups */
-+       for_each_child_of_node(np, child) {
-+               if (of_find_property(child, "gpio-controller", NULL))
-+                       continue;
++       div =3D devm_kzalloc(dev, sizeof(*div), GFP_KERNEL);
++       if (!div)
++               return ERR_PTR(-ENOMEM);
 +
-+               soc->nr_groups++;
++       div->map =3D map;
++       div->offset =3D div_reg;
++       div->shift =3D div_shift;
++       div->width =3D div_width;
++       div->flags =3D div_flags;
++       div->fix_divider =3D fix_divider;
++
++       init.name =3D name;
++       init.ops =3D &amb_div_ops;
++       init.parent_hws =3D &parent;
++       init.num_parents =3D 1;
++
++       div->hw.init =3D &init;
++
++       ret =3D devm_clk_hw_register(dev, &div->hw);
++       if (ret)
++               return ERR_PTR(ret);
++
++       return &div->hw;
++}
++
++struct clk_hw *amb_mux_div_register(struct device *dev, struct regmap *map=
+,
++                                   const struct amb_mux_div_desc *desc,
++                                   const struct clk_parent_data *parent_da=
+ta)
++{
++       struct amb_mux *mux;
++       struct amb_div *div;
++
++       mux =3D devm_kzalloc(dev, sizeof(*mux), GFP_KERNEL);
++       div =3D devm_kzalloc(dev, sizeof(*div), GFP_KERNEL);
++       if (!mux || !div)
++               return ERR_PTR(-ENOMEM);
++
++       mux->map =3D map;
++       mux->offset =3D desc->mux_reg;
++       mux->shift =3D desc->mux_shift;
++       mux->mask =3D desc->mux_mask;
++
++       div->map =3D map;
++       div->offset =3D desc->div_reg;
++       div->shift =3D desc->div_shift;
++       div->width =3D desc->div_width;
++       div->flags =3D desc->div_flags;
++       div->fix_divider =3D desc->fix_divider;
++
++       return devm_clk_hw_register_composite_pdata(dev, desc->name,
++                                                   parent_data,
++                                                   desc->num_parents,
++                                                   &mux->hw, &amb_mux_ops,
++                                                   &div->hw, &amb_div_ops,
++                                                   NULL, NULL,
++                                                   CLK_SET_RATE_NO_REPAREN=
+T);
++}
+diff --git a/drivers/clk/ambarella/ccu_mux_div.h b/drivers/clk/ambarella/cc=
+u_mux_div.h
+new file mode 100644
+index 000000000000..abaefff1201a
+--- /dev/null
++++ b/drivers/clk/ambarella/ccu_mux_div.h
+@@ -0,0 +1,35 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Copyright (C) 2026 Ambarella, Inc.
++ */
++
++#ifndef __CCU_MUX_DIV_H
++#define __CCU_MUX_DIV_H
++
++#include <linux/clk-provider.h>
++#include <linux/regmap.h>
++
++struct amb_mux_div_desc {
++       const char *name;
++       const int *parents;
++       u8 num_parents;
++       u32 mux_reg;
++       u32 mux_shift;
++       u32 mux_mask;
++       u32 div_reg;
++       u32 div_shift;
++       u32 div_width;
++       u32 div_flags;
++       u32 fix_divider;
++};
++
++struct clk_hw *amb_mux_div_register(struct device *dev, struct regmap *map=
+,
++                                   const struct amb_mux_div_desc *desc,
++                                   const struct clk_parent_data *parent_da=
+ta);
++
++struct clk_hw *amb_div_register(struct device *dev, struct regmap *map,
++                               const char *name, const struct clk_hw *pare=
+nt,
++                               u32 div_reg, u32 div_shift, u32 div_width,
++                               u32 div_flags, u32 fix_divider);
++
++#endif
+diff --git a/drivers/clk/ambarella/ccu_pll.c b/drivers/clk/ambarella/ccu_pl=
+l.c
+new file mode 100644
+index 000000000000..1293836e222e
+--- /dev/null
++++ b/drivers/clk/ambarella/ccu_pll.c
+@@ -0,0 +1,374 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright (C) 2026 Ambarella, Inc.
++ */
++
++#include <linux/clk-provider.h>
++#include <linux/delay.h>
++#include <linux/device.h>
++#include <linux/math64.h>
++#include <linux/rational.h>
++#include <linux/regmap.h>
++#include <linux/slab.h>
++
++#include "ccu_pll.h"
++
++#define AMB_PLL_MAX_SOUT       16UL
++#define AMB_PLL_MAX_SDIV       16UL
++
++struct amb_pll {
++       struct clk_hw hw;
++       struct regmap *map;
++       u32 reg_offset[REG_NUM];
++       const struct amb_pll_soc_data *soc_data;
++       u32 fix_divider;
++       bool frac_mode;
++};
++
++#define to_amb_pll(_hw) container_of(_hw, struct amb_pll, hw)
++
++static void amb_pll_write_enable(struct regmap *map, u32 offset, u32 val)
++{
++       regmap_write(map, offset, val);
++       regmap_write(map, offset, val | CTRL_WRITE_ENABLE);
++       regmap_write(map, offset, val);
++}
++
++static unsigned long amb_pll_calc_vco(struct amb_pll *pll,
++                                     unsigned long parent_rate)
++{
++       const struct amb_pll_soc_data *soc_data =3D pll->soc_data;
++       u32 *reg =3D pll->reg_offset;
++       u32 pre_scaler =3D 1;
++       u32 ctrl_val, ctrl2_val =3D 0, frac_val;
++       u32 intp, sdiv, vcodiv, fsdiv;
++       u64 frac =3D 0, vco;
++
++       if (reg[PRES_OFFSET]) {
++               regmap_read(pll->map, reg[PRES_OFFSET], &pre_scaler);
++               pre_scaler =3D (pre_scaler >> 4) + 1;
 +       }
 +
-+       if (!soc->nr_groups) {
-+               dev_err(soc->dev, "no group is defined\n");
-+               return -ENOENT;
++       regmap_read(pll->map, reg[CTRL_OFFSET], &ctrl_val);
++       intp =3D ((ctrl_val >> 24) & 0x7f) + 1;
++       sdiv =3D ((ctrl_val >> 12) & 0xf) + 1;
++
++       if (soc_data->pll_version >=3D 2) {
++               vcodiv =3D (ctrl_val & soc_data->vcodiv_mask) =3D=3D
++                        soc_data->vcodiv_val ? 2 : 1;
++               fsdiv =3D (ctrl_val & soc_data->fsdiv_mask) =3D=3D
++                       soc_data->fsdiv_val ? 2 : 1;
++       } else {
++               regmap_read(pll->map, reg[CTRL2_OFFSET], &ctrl2_val);
++               vcodiv =3D (ctrl2_val & soc_data->vcodiv_mask) =3D=3D
++                        soc_data->vcodiv_val ? 2 : 1;
++               fsdiv =3D (ctrl2_val & soc_data->fsdiv_mask) =3D=3D
++                       soc_data->fsdiv_val ? 2 : 1;
 +       }
 +
-+       soc->functions =3D devm_kcalloc(soc->dev, soc->nr_groups,
-+                                     sizeof(struct ambpin_function), GFP_K=
-ERNEL);
-+       if (!soc->functions)
-+               return -ENOMEM;
++       vco =3D (u64)parent_rate * vcodiv * fsdiv * intp * sdiv;
++       vco =3D div_u64(vco, pre_scaler);
 +
-+       soc->groups =3D devm_kcalloc(soc->dev, soc->nr_groups,
-+                                  sizeof(struct ambpin_group), GFP_KERNEL)=
++       if (ctrl_val & CTRL_FRAC_MODE) {
++               regmap_read(pll->map, reg[FRAC_OFFSET], &frac_val);
++               frac =3D (u64)parent_rate * vcodiv * fsdiv * sdiv * frac_va=
+l;
++               frac =3D div_u64(frac, pre_scaler) >> 32;
++       }
++
++       return vco + frac;
++}
++
++static unsigned long amb_pll_recalc_rate(struct clk_hw *hw,
++                                        unsigned long parent_rate)
++{
++       struct amb_pll *pll =3D to_amb_pll(hw);
++       const struct amb_pll_soc_data *soc_data =3D pll->soc_data;
++       u32 *reg =3D pll->reg_offset;
++       u32 pre_scaler =3D 1, post_scaler =3D 1;
++       u32 ctrl_val, ctrl2_val =3D 0;
++       u32 vcodiv, fsout, sout;
++       u64 rate;
++
++       regmap_read(pll->map, reg[CTRL_OFFSET], &ctrl_val);
++       if (ctrl_val & (CTRL_POWER_DOWN | CTRL_HALT_VCO | CTRL_FORCE_RESET)=
+)
++               return 0;
++
++       if (reg[PRES_OFFSET]) {
++               regmap_read(pll->map, reg[PRES_OFFSET], &pre_scaler);
++               pre_scaler =3D (pre_scaler >> 4) + 1;
++       }
++
++       if (reg[POST_OFFSET]) {
++               regmap_read(pll->map, reg[POST_OFFSET], &post_scaler);
++               post_scaler =3D (post_scaler >> 4) + 1;
++       }
++
++       if (ctrl_val & CTRL_BYPASS)
++               return parent_rate / pre_scaler / post_scaler;
++
++       if (soc_data->pll_version >=3D 2) {
++               vcodiv =3D (ctrl_val & soc_data->vcodiv_mask) =3D=3D
++                        soc_data->vcodiv_val ? 2 : 1;
++               fsout =3D (ctrl_val & soc_data->fsout_mask) =3D=3D
++                       soc_data->fsout_val ? 2 : 1;
++       } else {
++               regmap_read(pll->map, reg[CTRL2_OFFSET], &ctrl2_val);
++               vcodiv =3D (ctrl2_val & soc_data->vcodiv_mask) =3D=3D
++                        soc_data->vcodiv_val ? 2 : 1;
++               fsout =3D (ctrl2_val & soc_data->fsout_mask) =3D=3D
++                       soc_data->fsout_val ? 2 : 1;
++       }
++
++       sout =3D ((ctrl_val >> 16) & 0xf) + 1;
++       rate =3D amb_pll_calc_vco(pll, parent_rate);
++
++       if (soc_data->pll_version >=3D 2) {
++               if (!(ctrl_val & CTRL_BYPASS_HSDIV))
++                       rate =3D div_u64(rate, vcodiv * fsout * sout);
++       } else {
++               if (!(ctrl2_val & CTRL2_BYPASS_HSDIV))
++                       rate =3D div_u64(rate, vcodiv * fsout * sout);
++       }
++
++       rate =3D div_u64(rate, pll->fix_divider * post_scaler);
++
++       return rate;
++}
++
++static int amb_pll_determine_rate(struct clk_hw *hw,
++                                 struct clk_rate_request *req)
++{
++       struct amb_pll *pll =3D to_amb_pll(hw);
++       unsigned long half_refclk =3D req->best_parent_rate / 2;
++
++       if (pll->frac_mode)
++               return 0;
++
++       if (!half_refclk)
++               return 0;
++
++       req->rate =3D roundup(req->rate, half_refclk);
++
++       return 0;
++}
++
++static int amb_pll_calc_params(struct amb_pll *pll, unsigned long rate,
++                              unsigned long parent_rate, u32 ctrl2_val,
++                              u32 *intp, u32 *sdiv, u32 *sout,
++                              u32 *vcodiv, u32 *fsdiv, u32 *fsout)
++{
++       const struct amb_pll_soc_data *soc_data =3D pll->soc_data;
++       unsigned long max_numerator, max_denominator;
++       unsigned long intp_ul, sout_ul, rate_tmp;
++       u32 ctrl_val;
++
++       *sdiv =3D 1;
++
++       if (soc_data->pll_version >=3D 2) {
++               ctrl_val =3D 0;
++               *vcodiv =3D (ctrl_val & soc_data->vcodiv_mask) =3D=3D
++                         soc_data->vcodiv_val ? 2 : 1;
++               *fsdiv =3D (ctrl_val & soc_data->fsdiv_mask) =3D=3D
++                        soc_data->fsdiv_val ? 2 : 1;
++               *fsout =3D (ctrl_val & soc_data->fsout_mask) =3D=3D
++                        soc_data->fsout_val ? 2 : 1;
++       } else {
++               *vcodiv =3D (ctrl2_val & soc_data->vcodiv_mask) =3D=3D
++                         soc_data->vcodiv_val ? 2 : 1;
++               *fsdiv =3D (ctrl2_val & soc_data->fsdiv_mask) =3D=3D
++                        soc_data->fsdiv_val ? 2 : 1;
++               *fsout =3D (ctrl2_val & soc_data->fsout_mask) =3D=3D
++                        soc_data->fsout_val ? 2 : 1;
++       }
++
++       if (rate < parent_rate)
++               return -EINVAL;
++
++       max_numerator =3D soc_data->vco_max_mhz;
++       max_numerator =3D div_u64(max_numerator * 1000000ULL, parent_rate);
++       max_numerator =3D div_u64(max_numerator, *vcodiv * *fsdiv);
++       max_numerator =3D min(128UL, max_numerator);
++       if (!max_numerator)
++               return -EINVAL;
++
++       max_denominator =3D AMB_PLL_MAX_SOUT;
++       rate_tmp =3D rate;
++       rational_best_approximation(rate_tmp, parent_rate, max_numerator,
++                                   max_denominator, &intp_ul, &sout_ul);
++
++       while (parent_rate * *fsdiv * intp_ul * *sdiv / *fsout / sout_ul >
++              rate) {
++               unsigned long resolution =3D parent_rate / AMB_PLL_MAX_SOUT=
 ;
-+       if (!soc->groups)
-+               return -ENOMEM;
 +
-+       /* Parse groups and collect unique functions. */
-+       idxg =3D 0;
-+       for_each_child_of_node(np, child) {
-+               if (of_find_property(child, "gpio-controller", NULL))
-+                       continue;
-+
-+               ret =3D amb_pinctrl_parse_group(soc, child, idxg, NULL);
-+               if (ret) {
-+                       of_node_put(child);
-+                       return ret;
-+               }
-+
-+               i =3D amb_pinctrl_find_function(soc, soc->groups[idxg].func=
-tion);
-+               if (i < 0) {
-+                       soc->functions[idxf].name =3D soc->groups[idxg].fun=
-ction;
-+                       i =3D idxf++;
-+               }
-+
-+               soc->functions[i].num_groups++;
-+               idxg++;
-+       }
-+
-+       soc->nr_functions =3D idxf;
-+
-+       for (idxf =3D 0; idxf < soc->nr_functions; idxf++) {
-+               soc->functions[idxf].groups =3D
-+                       devm_kcalloc(soc->dev, soc->functions[idxf].num_gro=
-ups,
-+                                    sizeof(*soc->functions[idxf].groups),
-+                                    GFP_KERNEL);
-+               if (!soc->functions[idxf].groups)
-+                       return -ENOMEM;
-+
-+               soc->functions[idxf].num_groups =3D 0;
-+       }
-+
-+       for (idxg =3D 0; idxg < soc->nr_groups; idxg++) {
-+               i =3D amb_pinctrl_find_function(soc, soc->groups[idxg].func=
-tion);
-+               if (i < 0)
++               if (rate_tmp <=3D resolution)
 +                       return -EINVAL;
 +
-+               soc->functions[i].groups[soc->functions[i].num_groups++] =
-=3D
-+                       soc->groups[idxg].name;
++               rate_tmp -=3D resolution;
++               rational_best_approximation(rate_tmp, parent_rate,
++                                           max_numerator, max_denominator,
++                                           &intp_ul, &sout_ul);
 +       }
 +
-+       return 0;
-+}
++       while (parent_rate / 1000000 * *vcodiv * *fsdiv * intp_ul * *sdiv <
++              soc_data->vco_min_mhz) {
++               if (sout_ul > 8 || intp_ul > 64)
++                       break;
 +
-+/* register the pinctrl interface with the pinctrl subsystem */
-+static int amb_pinctrl_register(struct amb_pinctrl_soc_data *soc)
-+{
-+       struct pinctrl_pin_desc *pindesc;
-+       int pin, pin_num, rval;
-+       struct pinctrl_desc *amb_pinctrl_desc;
-+
-+       /* Addition one for clk_au dedicated pin */
-+       pin_num =3D soc->bank_num * 32 + 16;
-+
-+       /* dynamically populate the pin number and pin name for pindesc */
-+       pindesc =3D devm_kcalloc(soc->dev, pin_num, sizeof(*pindesc), GFP_K=
-ERNEL);
-+       if (!pindesc)
-+               return -ENOMEM;
-+
-+       for (pin =3D 0; pin < pin_num; pin++) {
-+               pindesc[pin].number =3D pin;
-+               pindesc[pin].name =3D devm_kasprintf(soc->dev, GFP_KERNEL, =
-"io%d", pin);
-+               if (!pindesc[pin].name)
-+                       return -ENOMEM;
++               intp_ul *=3D 2;
++               sout_ul *=3D 2;
 +       }
 +
-+       amb_pinctrl_desc =3D devm_kzalloc(soc->dev, sizeof(*amb_pinctrl_des=
-c), GFP_KERNEL);
-+       if (!amb_pinctrl_desc)
-+               return -ENOMEM;
-+
-+       amb_pinctrl_desc->name =3D dev_name(soc->dev);
-+       amb_pinctrl_desc->pins =3D pindesc;
-+       amb_pinctrl_desc->npins =3D pin_num;
-+       amb_pinctrl_desc->pctlops =3D &amb_pctrl_ops;
-+       amb_pinctrl_desc->pmxops =3D &amb_pinmux_ops;
-+       amb_pinctrl_desc->confops =3D &amb_pinconf_ops;
-+
-+       rval =3D amb_pinctrl_parse_dt(soc);
-+       if (rval)
-+               return rval;
-+
-+       soc->pctl =3D devm_pinctrl_register(soc->dev, amb_pinctrl_desc, soc=
-);
-+       if (IS_ERR(soc->pctl)) {
-+               dev_err(soc->dev, "could not register pinctrl driver\n");
-+               return PTR_ERR(soc->pctl);
-+       }
-+
-+       return 0;
-+}
-+
-+/* gpiolib gpio_set callback function */
-+static int amb_gpio_set(struct gpio_chip *gc, unsigned int pin, int value)
-+{
-+       struct amb_pinctrl_soc_data *soc =3D gpiochip_get_data(gc);
-+       u32 bank, offset, data;
-+       unsigned long flags;
-+
-+       bank =3D PINID_TO_BANK(pin);
-+       offset =3D PINID_TO_OFFSET(pin);
-+
-+       raw_spin_lock_irqsave(&soc->lock, flags);
-+       writel_relaxed(0x1 << offset, soc->gpio_base[bank] + GPIO_MASK_OFFS=
-ET);
-+       data =3D (value =3D=3D 0) ? 0 : 0x1 << offset;
-+       writel_relaxed(data, soc->gpio_base[bank] + GPIO_DATA_OFFSET);
-+       raw_spin_unlock_irqrestore(&soc->lock, flags);
-+
-+       return 0;
-+}
-+
-+/* gpiolib gpio_get callback function */
-+static int amb_gpio_get(struct gpio_chip *gc, unsigned int pin)
-+{
-+       struct amb_pinctrl_soc_data *soc =3D gpiochip_get_data(gc);
-+       u32 bank, offset, data;
-+       unsigned long flags;
-+
-+       bank =3D PINID_TO_BANK(pin);
-+       offset =3D PINID_TO_OFFSET(pin);
-+
-+       raw_spin_lock_irqsave(&soc->lock, flags);
-+       writel_relaxed(0x1 << offset, soc->gpio_base[bank] + GPIO_MASK_OFFS=
-ET);
-+       data =3D readl_relaxed(soc->gpio_base[bank] + GPIO_DATA_OFFSET);
-+       raw_spin_unlock_irqrestore(&soc->lock, flags);
-+
-+       return (data >> offset) & 0x1;
-+}
-+
-+static int amb_gpio_get_direction(struct gpio_chip *gc, unsigned int pin)
-+{
-+       struct amb_pinctrl_soc_data *soc =3D gpiochip_get_data(gc);
-+       u32 bank, offset, data;
-+       unsigned long flags;
-+
-+       bank =3D PINID_TO_BANK(pin);
-+       offset =3D PINID_TO_OFFSET(pin);
-+
-+       raw_spin_lock_irqsave(&soc->lock, flags);
-+       data =3D readl_relaxed(soc->gpio_base[bank] + GPIO_DIR_OFFSET);
-+       data =3D (data >> offset) & 0x1;
-+       raw_spin_unlock_irqrestore(&soc->lock, flags);
-+
-+       return data ? GPIO_LINE_DIRECTION_OUT : GPIO_LINE_DIRECTION_IN;
-+}
-+
-+static int amb_gpio_set_direction(struct gpio_chip *gc, unsigned int pin, =
-bool input)
-+{
-+       struct amb_pinctrl_soc_data *soc =3D gpiochip_get_data(gc);
-+       u32 bank, offset, data;
-+       unsigned long flags;
-+
-+       bank =3D PINID_TO_BANK(pin);
-+       offset =3D PINID_TO_OFFSET(pin);
-+
-+       raw_spin_lock_irqsave(&soc->lock, flags);
-+       data =3D readl_relaxed(soc->gpio_base[bank] + GPIO_DIR_OFFSET);
-+       if (input)
-+               writel_relaxed(data & ~(0x1 << offset), soc->gpio_base[bank=
-] + GPIO_DIR_OFFSET);
-+       else
-+               writel_relaxed(data | (0x1 << offset), soc->gpio_base[bank]=
- + GPIO_DIR_OFFSET);
-+       raw_spin_unlock_irqrestore(&soc->lock, flags);
-+
-+       return 0;
-+}
-+
-+/* gpiolib gpio_direction_input callback function */
-+static int amb_gpio_direction_input(struct gpio_chip *gc, unsigned int pin=
-)
-+{
-+       return amb_gpio_set_direction(gc, pin, true);
-+}
-+
-+/* gpiolib gpio_direction_output callback function */
-+static int amb_gpio_direction_output(struct gpio_chip *gc, unsigned int pi=
-n, int value)
-+{
-+       amb_gpio_set_direction(gc, pin, false);
-+       amb_gpio_set(gc, pin, value);
-+       return 0;
-+}
-+
-+/* gpiolib gpio_to_irq callback function */
-+static int amb_gpio_to_irq(struct gpio_chip *gc, unsigned int pin)
-+{
-+       struct amb_pinctrl_soc_data *soc =3D gpiochip_get_data(gc);
-+
-+       return irq_create_mapping(soc->domain, pin);
-+}
-+
-+#if IS_ENABLED(CONFIG_DEBUG_FS)
-+static void amb_gpio_dbg_show(struct seq_file *s, struct gpio_chip *gc)
-+{
-+       struct amb_pinctrl_soc_data *soc =3D gpiochip_get_data(gc);
-+       u32 afsel, data, dir, mask, iomux0, iomux1, iomux2, alt;
-+       u32 i, bank, offset;
-+
-+       for (i =3D 0; i < gc->ngpio; i++) {
-+               offset =3D PINID_TO_OFFSET(i);
-+               if (!offset) {
-+                       bank =3D PINID_TO_BANK(i);
-+
-+                       afsel =3D readl_relaxed(soc->gpio_base[bank] + GPIO=
-_AFSEL_OFFSET);
-+                       dir =3D readl_relaxed(soc->gpio_base[bank] + GPIO_D=
-IR_OFFSET);
-+                       mask =3D readl_relaxed(soc->gpio_base[bank] + GPIO_=
-MASK_OFFSET);
-+                       writel_relaxed(0xffffffff, soc->gpio_base[bank] + G=
-PIO_MASK_OFFSET);
-+                       data =3D readl_relaxed(soc->gpio_base[bank] + GPIO_=
-DATA_OFFSET);
-+                       writel_relaxed(mask, soc->gpio_base[bank] + GPIO_MA=
-SK_OFFSET);
-+
-+                       seq_printf(s, "\nGPIO[%d]:\t[%d - %d]\n", bank, i, =
-i + 32 - 1);
-+                       seq_printf(s, "GPIO_AFSEL:\t0x%08X\n", afsel);
-+                       seq_printf(s, "GPIO_DIR:\t0x%08X\n", dir);
-+                       seq_printf(s, "GPIO_MASK:\t0x%08X\n", mask);
-+                       seq_printf(s, "GPIO_DATA:\t0x%08X\n", data);
-+
-+                       iomux0 =3D readl_relaxed(soc->iomux_base + bank * 1=
-2);
-+                       iomux1 =3D readl_relaxed(soc->iomux_base + bank * 1=
-2 + 4);
-+                       iomux2 =3D readl_relaxed(soc->iomux_base + bank * 1=
-2 + 8);
-+                       seq_printf(s, "IOMUX_REG%d_0:\t0x%08X\n", bank, iom=
-ux0);
-+                       seq_printf(s, "IOMUX_REG%d_1:\t0x%08X\n", bank, iom=
-ux1);
-+                       seq_printf(s, "IOMUX_REG%d_2:\t0x%08X\n", bank, iom=
-ux2);
-+               }
-+
-+               seq_printf(s, " gpio-%-3d", gc->base + i);
-+
-+               alt =3D ((iomux2 >> offset) & 1) << 2;
-+               alt |=3D ((iomux1 >> offset) & 1) << 1;
-+               alt |=3D ((iomux0 >> offset) & 1) << 0;
-+               if (alt) {
-+                       seq_printf(s, " [HW  ] (alt%d)\n", alt);
-+               } else {
-+                       char *label __free(kfree) =3D gpiochip_dup_line_lab=
-el(gc, i);
-+                       if (IS_ERR(label)) {
-+                               pr_debug("Failed to duplicate label\n");
-+                               continue;
-+                       }
-+
-+                       seq_printf(s, " [GPIO] (%-20.20s) %s %s\n",
-+                                  label ? label : "",
-+                                  (dir & (1 << offset)) ? "out" : "in ",
-+                                  (data & (1 << offset)) ? "hi" : "lo");
-+               }
-+       }
-+}
-+#endif
-+
-+static void amb_gpio_irq_enable(struct irq_data *data)
-+{
-+       struct gpio_chip *gc =3D irq_data_get_irq_chip_data(data);
-+       struct amb_pinctrl_soc_data *soc =3D gpiochip_get_data(gc);
-+       void __iomem *gpio_base =3D amb_get_gpio_base(soc, data);
-+       void __iomem *iomux_base =3D soc->iomux_base;
-+       u32 i, val, bank, offset;
-+       unsigned long flags;
-+
-+       bank =3D PINID_TO_BANK(irqd_to_hwirq(data));
-+       offset =3D PINID_TO_OFFSET(irqd_to_hwirq(data));
-+
-+       raw_spin_lock_irqsave(&soc->lock, flags);
-+
-+       val =3D readl_relaxed(gpio_base + GPIO_DIR_OFFSET);
-+       val &=3D ~(0x1 << offset);
-+       writel_relaxed(val, gpio_base + GPIO_DIR_OFFSET);
-+
-+       for (i =3D 0; i < 3; i++) {
-+               val =3D readl_relaxed(iomux_base + IOMUX_OFFSET(bank, i));
-+               val &=3D ~(0x1 << offset);
-+               writel_relaxed(val, iomux_base + IOMUX_OFFSET(bank, i));
-+       }
-+       writel_relaxed(0x1, iomux_base + IOMUX_CTRL_SET_OFFSET);
-+       writel_relaxed(0x0, iomux_base + IOMUX_CTRL_SET_OFFSET);
-+
-+       writel_relaxed(0x1 << offset, gpio_base + GPIO_IC_OFFSET);
-+
-+       val =3D readl_relaxed(gpio_base + GPIO_IE_OFFSET);
-+       val |=3D 0x1 << offset;
-+       writel_relaxed(val, gpio_base + GPIO_IE_OFFSET);
-+
-+       raw_spin_unlock_irqrestore(&soc->lock, flags);
-+}
-+
-+static void amb_gpio_irq_disable(struct irq_data *data)
-+{
-+       struct gpio_chip *gc =3D irq_data_get_irq_chip_data(data);
-+       struct amb_pinctrl_soc_data *soc =3D gpiochip_get_data(gc);
-+       void __iomem *gpio_base =3D amb_get_gpio_base(soc, data);
-+       u32 offset, ie;
-+       unsigned long flags;
-+
-+       offset =3D PINID_TO_OFFSET(irqd_to_hwirq(data));
-+
-+       raw_spin_lock_irqsave(&soc->lock, flags);
-+       ie =3D readl_relaxed(gpio_base + GPIO_IE_OFFSET);
-+       writel_relaxed(ie & ~(0x1 << offset), gpio_base + GPIO_IE_OFFSET);
-+       writel_relaxed(0x1 << offset, gpio_base + GPIO_IC_OFFSET);
-+       raw_spin_unlock_irqrestore(&soc->lock, flags);
-+}
-+
-+static void amb_gpio_irq_ack(struct irq_data *data)
-+{
-+       struct gpio_chip *gc =3D irq_data_get_irq_chip_data(data);
-+       struct amb_pinctrl_soc_data *soc =3D gpiochip_get_data(gc);
-+       void __iomem *gpio_base =3D amb_get_gpio_base(soc, data);
-+       u32 offset =3D PINID_TO_OFFSET(irqd_to_hwirq(data));
-+       unsigned long flags;
-+
-+       raw_spin_lock_irqsave(&soc->lock, flags);
-+       writel_relaxed(0x1 << offset, gpio_base + GPIO_IC_OFFSET);
-+       raw_spin_unlock_irqrestore(&soc->lock, flags);
-+}
-+
-+static void amb_gpio_irq_mask(struct irq_data *data)
-+{
-+       struct gpio_chip *gc =3D irq_data_get_irq_chip_data(data);
-+       struct amb_pinctrl_soc_data *soc =3D gpiochip_get_data(gc);
-+       void __iomem *gpio_base =3D amb_get_gpio_base(soc, data);
-+       u32 offset, ie;
-+       unsigned long flags;
-+
-+       offset =3D PINID_TO_OFFSET(irqd_to_hwirq(data));
-+
-+       raw_spin_lock_irqsave(&soc->lock, flags);
-+       ie =3D readl_relaxed(gpio_base + GPIO_IE_OFFSET);
-+       writel_relaxed(ie & ~(0x1 << offset), gpio_base + GPIO_IE_OFFSET);
-+       raw_spin_unlock_irqrestore(&soc->lock, flags);
-+}
-+
-+static void amb_gpio_irq_mask_ack(struct irq_data *data)
-+{
-+       struct gpio_chip *gc =3D irq_data_get_irq_chip_data(data);
-+       struct amb_pinctrl_soc_data *soc =3D gpiochip_get_data(gc);
-+       void __iomem *gpio_base =3D amb_get_gpio_base(soc, data);
-+       u32 offset, ie;
-+       unsigned long flags;
-+
-+       offset =3D PINID_TO_OFFSET(irqd_to_hwirq(data));
-+
-+       raw_spin_lock_irqsave(&soc->lock, flags);
-+       ie =3D readl_relaxed(gpio_base + GPIO_IE_OFFSET);
-+       writel_relaxed(ie & ~(0x1 << offset), gpio_base + GPIO_IE_OFFSET);
-+       writel_relaxed(0x1 << offset, gpio_base + GPIO_IC_OFFSET);
-+       raw_spin_unlock_irqrestore(&soc->lock, flags);
-+}
-+
-+static void amb_gpio_irq_unmask(struct irq_data *data)
-+{
-+       struct gpio_chip *gc =3D irq_data_get_irq_chip_data(data);
-+       struct amb_pinctrl_soc_data *soc =3D gpiochip_get_data(gc);
-+       void __iomem *gpio_base =3D amb_get_gpio_base(soc, data);
-+       u32 offset, ie;
-+       unsigned long flags;
-+
-+       offset =3D PINID_TO_OFFSET(irqd_to_hwirq(data));
-+
-+       raw_spin_lock_irqsave(&soc->lock, flags);
-+       ie =3D readl_relaxed(gpio_base + GPIO_IE_OFFSET);
-+       writel_relaxed(ie | (0x1 << offset), gpio_base + GPIO_IE_OFFSET);
-+       raw_spin_unlock_irqrestore(&soc->lock, flags);
-+}
-+
-+static int amb_gpio_irq_set_type(struct irq_data *data, unsigned int type)
-+{
-+       struct gpio_chip *gc =3D irq_data_get_irq_chip_data(data);
-+       struct amb_pinctrl_soc_data *soc =3D gpiochip_get_data(gc);
-+       void __iomem *gpio_base =3D amb_get_gpio_base(soc, data);
-+       u32 offset =3D PINID_TO_OFFSET(irqd_to_hwirq(data));
-+       u32 mask, bit, sense, bothedges, event;
-+       unsigned long flags;
-+
-+       mask =3D ~(0x1 << offset);
-+       bit =3D (0x1 << offset);
-+       sense =3D readl_relaxed(gpio_base + GPIO_IS_OFFSET);
-+       bothedges =3D readl_relaxed(gpio_base + GPIO_IBE_OFFSET);
-+       event =3D readl_relaxed(gpio_base + GPIO_IEV_OFFSET);
-+
-+       switch (type) {
-+       case IRQ_TYPE_EDGE_RISING:
-+               sense &=3D mask;
-+               bothedges &=3D mask;
-+               event |=3D bit;
-+               irq_set_handler_locked(data, handle_edge_irq);
-+               break;
-+       case IRQ_TYPE_EDGE_FALLING:
-+               sense &=3D mask;
-+               bothedges &=3D mask;
-+               event &=3D mask;
-+               irq_set_handler_locked(data, handle_edge_irq);
-+               break;
-+       case IRQ_TYPE_EDGE_BOTH:
-+               sense &=3D mask;
-+               bothedges |=3D bit;
-+               event &=3D mask;
-+               irq_set_handler_locked(data, handle_edge_irq);
-+               break;
-+       case IRQ_TYPE_LEVEL_HIGH:
-+               sense |=3D bit;
-+               bothedges &=3D mask;
-+               event |=3D bit;
-+               irq_set_handler_locked(data, handle_level_irq);
-+               break;
-+       case IRQ_TYPE_LEVEL_LOW:
-+               sense |=3D bit;
-+               bothedges &=3D mask;
-+               event &=3D mask;
-+               irq_set_handler_locked(data, handle_level_irq);
-+               break;
-+       default:
-+               pr_err("%s: irq[%d] type[%d] fail!\n",
-+                      __func__, data->irq, type);
++       if (intp_ul > max_numerator || sout_ul > max_denominator ||
++           *sdiv > AMB_PLL_MAX_SDIV)
 +               return -EINVAL;
-+       }
 +
-+       raw_spin_lock_irqsave(&soc->lock, flags);
-+       writel_relaxed(sense, gpio_base + GPIO_IS_OFFSET);
-+       writel_relaxed(bothedges, gpio_base + GPIO_IBE_OFFSET);
-+       writel_relaxed(event, gpio_base + GPIO_IEV_OFFSET);
-+       /* clear obsolete irq */
-+       writel_relaxed(0x1 << offset, gpio_base + GPIO_IC_OFFSET);
-+       raw_spin_unlock_irqrestore(&soc->lock, flags);
++       *intp =3D intp_ul;
++       *sout =3D sout_ul;
 +
 +       return 0;
 +}
 +
-+static int amb_gpio_irq_set_wake(struct irq_data *data, unsigned int on)
++static int amb_pll_set_rate(struct clk_hw *hw, unsigned long rate,
++                           unsigned long parent_rate)
 +{
-+       if (IS_ENABLED(CONFIG_PM)) {
-+               struct gpio_chip *gc =3D irq_data_get_irq_chip_data(data);
-+               struct amb_pinctrl_soc_data *soc =3D gpiochip_get_data(gc);
-+               u32 bank =3D PINID_TO_BANK(irqd_to_hwirq(data));
-+               u32 offset =3D PINID_TO_OFFSET(irqd_to_hwirq(data));
-+               unsigned long flags;
++       struct amb_pll *pll =3D to_amb_pll(hw);
++       const struct amb_pll_soc_data *soc_data =3D pll->soc_data;
++       u32 *reg =3D pll->reg_offset;
++       u32 ctrl_val, ctrl2_val =3D 0, ctrl3_val, frac_val =3D 0;
++       u32 intp, sdiv, sout, vcodiv, fsdiv, fsout;
++       unsigned long old_rate, new_rate, rate_tmp;
++       int ret;
 +
-+               raw_spin_lock_irqsave(&soc->lock, flags);
-+               if (on)
-+                       soc->irq_wake_mask[bank] |=3D (1 << offset);
-+               else
-+                       soc->irq_wake_mask[bank] &=3D ~(1 << offset);
-+               raw_spin_unlock_irqrestore(&soc->lock, flags);
-+       }
-+       return 0;
-+}
-+
-+static struct irq_chip amb_gpio_irqchip =3D {
-+       .name           =3D "GPIO",
-+       .irq_enable     =3D amb_gpio_irq_enable,
-+       .irq_disable    =3D amb_gpio_irq_disable,
-+       .irq_ack        =3D amb_gpio_irq_ack,
-+       .irq_mask       =3D amb_gpio_irq_mask,
-+       .irq_mask_ack   =3D amb_gpio_irq_mask_ack,
-+       .irq_unmask     =3D amb_gpio_irq_unmask,
-+       .irq_set_type   =3D amb_gpio_irq_set_type,
-+       .irq_set_wake   =3D amb_gpio_irq_set_wake,
-+       .flags          =3D IRQCHIP_SET_TYPE_MASKED | IRQCHIP_MASK_ON_SUSPE=
-ND,
-+};
-+
-+static int amb_gpio_irqdomain_map(struct irq_domain *d, unsigned int irq,
-+                                 irq_hw_number_t hwirq)
-+{
-+       struct amb_pinctrl_soc_data *soc =3D d->host_data;
-+
-+       irq_set_chip_data(irq, soc->gc);
-+       irq_set_chip_and_handler(irq, &amb_gpio_irqchip, handle_level_irq);
-+       irq_set_noprobe(irq);
-+
-+       return 0;
-+}
-+
-+static const struct irq_domain_ops amb_gpio_irq_domain_ops =3D {
-+       .map =3D amb_gpio_irqdomain_map,
-+       .xlate =3D irq_domain_xlate_twocell,
-+};
-+
-+static void amb_gpio_handle_irq(struct irq_desc *desc)
-+{
-+       struct amb_pinctrl_soc_data *soc;
-+       struct irq_chip *irqchip;
-+       u32 i, bit, gpio_mis, gpio_hwirq;
-+
-+       irqchip =3D irq_desc_get_chip(desc);
-+       chained_irq_enter(irqchip, desc);
-+
-+       soc =3D irq_desc_get_handler_data(desc);
-+
-+       /* find the GPIO bank generating this irq */
-+       for (i =3D 0; i < soc->bank_num; i++) {
-+               if (soc->irq[i] =3D=3D irq_desc_get_irq(desc))
-+                       break;
++       if (!rate) {
++               regmap_read(pll->map, reg[CTRL_OFFSET], &ctrl_val);
++               ctrl_val |=3D CTRL_POWER_DOWN | CTRL_HALT_VCO;
++               amb_pll_write_enable(pll->map, reg[CTRL_OFFSET], ctrl_val);
++               return 0;
 +       }
 +
-+       if (i =3D=3D soc->bank_num)
-+               goto out;
++       rate *=3D pll->fix_divider;
 +
-+       gpio_mis =3D readl_relaxed(soc->gpio_base[i] + GPIO_MIS_OFFSET);
-+       while (gpio_mis) {
-+               bit =3D __ffs(gpio_mis);
-+               gpio_hwirq =3D i * 32 + bit;
-+               generic_handle_domain_irq(soc->domain, gpio_hwirq);
-+               gpio_mis &=3D ~BIT(bit);
++       if (soc_data->ctrl2_val)
++               ctrl2_val =3D soc_data->ctrl2_val;
++       else
++               regmap_read(pll->map, reg[CTRL2_OFFSET], &ctrl2_val);
++
++       ret =3D amb_pll_calc_params(pll, rate, parent_rate, ctrl2_val,
++                                 &intp, &sdiv, &sout, &vcodiv, &fsdiv,
++                                 &fsout);
++       if (ret)
++               return ret;
++
++       if (soc_data->ctrl2_val)
++               regmap_write(pll->map, reg[CTRL2_OFFSET], soc_data->ctrl2_v=
+al);
++
++       ctrl_val =3D ((intp - 1) & 0x7f) << 24;
++       ctrl_val |=3D ((sdiv - 1) & 0xf) << 12;
++       ctrl_val |=3D ((sout - 1) & 0xf) << 16;
++       if (soc_data->pll_version >=3D 2) {
++               ctrl_val |=3D vcodiv =3D=3D 2 ? soc_data->vcodiv_val : 0;
++               ctrl_val |=3D fsdiv =3D=3D 2 ? soc_data->fsdiv_val : 0;
++               ctrl_val |=3D fsout =3D=3D 2 ? soc_data->fsout_val : 0;
 +       }
 +
-+out:
-+       chained_irq_exit(irqchip, desc);
-+}
++       regmap_write(pll->map, reg[CTRL_OFFSET], ctrl_val);
++       regmap_write(pll->map, reg[FRAC_OFFSET], 0);
 +
-+/* register the pinctrl interface with the pinctrl subsystem */
-+static int amb_gpio_register(struct amb_pinctrl_soc_data *soc)
-+{
-+       struct device_node *np;
-+       int i, rval =3D -ENODEV;
++       old_rate =3D amb_pll_recalc_rate(hw, parent_rate) * pll->fix_divide=
+r;
++       rate_tmp =3D old_rate > rate ? 0 : rate - old_rate;
++       if (rate_tmp && pll->frac_mode) {
++               u64 dividend, divider;
 +
-+       for_each_child_of_node(soc->dev->of_node, np) {
-+               if (of_find_property(np, "gpio-controller", NULL)) {
-+                       rval =3D 0;
-+                       break;
++               dividend =3D (u64)rate_tmp * sout * fsout;
++               dividend <<=3D 32;
++               divider =3D (u64)sdiv * fsdiv * parent_rate;
++               frac_val =3D DIV_ROUND_CLOSEST_ULL(dividend, divider);
++               regmap_write(pll->map, reg[FRAC_OFFSET], frac_val);
++               ctrl_val |=3D CTRL_FRAC_MODE;
++       }
++
++       if (soc_data->pll_version >=3D 2) {
++               ctrl3_val =3D soc_data->ctrl3_val;
++               regmap_write(pll->map, reg[CTRL3_OFFSET],
++                            ctrl3_val | CTRL3_VCO_CLAMP);
++               regmap_write(pll->map, reg[CTRL_OFFSET],
++                            ctrl_val | CTRL_FORCE_RESET);
++               ndelay(100);
++               regmap_write(pll->map, reg[CTRL_OFFSET],
++                            ctrl_val & ~CTRL_FORCE_RESET);
++               ndelay(100);
++               regmap_write(pll->map, reg[CTRL3_OFFSET],
++                            ctrl3_val & ~CTRL3_VCO_CLAMP);
++       } else {
++               u32 fvco_mhz, range;
++
++               fvco_mhz =3D amb_pll_calc_vco(pll, parent_rate) / 1000000UL=
+;
++               for (range =3D 0; range < ARRAY_SIZE(soc_data->vco_range);
++                    range++) {
++                       if (fvco_mhz > soc_data->vco_range[range])
++                               break;
 +               }
-+       }
-+       if (rval < 0) {
-+               dev_err(soc->dev, "no gpio-controller child node\n");
-+               return rval;
++               range =3D ARRAY_SIZE(soc_data->vco_range) - range - 1;
++
++               regmap_read(pll->map, reg[CTRL3_OFFSET], &ctrl3_val);
++               ctrl3_val &=3D ~CTRL3_VCO_RANGE_MASK;
++               ctrl3_val |=3D range << 1;
++               regmap_write(pll->map, reg[CTRL3_OFFSET], ctrl3_val);
++
++               if (frac_val) {
++                       ctrl_val |=3D CTRL_FORCE_RESET;
++                       amb_pll_write_enable(pll->map, reg[CTRL_OFFSET],
++                                            ctrl_val);
++               }
++
++               ctrl_val &=3D ~CTRL_FORCE_RESET;
++               amb_pll_write_enable(pll->map, reg[CTRL_OFFSET], ctrl_val);
 +       }
 +
-+       soc->gc =3D devm_kzalloc(soc->dev, sizeof(struct gpio_chip), GFP_KE=
-RNEL);
-+       if (!soc->gc)
-+               return -ENOMEM;
-+       soc->gc->label =3D dev_name(soc->dev);
-+       soc->gc->base =3D -1;
-+       soc->gc->request =3D gpiochip_generic_request;
-+       soc->gc->free =3D gpiochip_generic_free;
-+       soc->gc->direction_input =3D amb_gpio_direction_input;
-+       soc->gc->direction_output =3D amb_gpio_direction_output;
-+       soc->gc->get_direction =3D amb_gpio_get_direction;
-+       soc->gc->get =3D amb_gpio_get;
-+       soc->gc->set =3D amb_gpio_set;
-+       soc->gc->to_irq =3D amb_gpio_to_irq;
-+#if IS_ENABLED(CONFIG_DEBUG_FS)
-+       soc->gc->dbg_show  =3D amb_gpio_dbg_show;
++       new_rate =3D amb_pll_recalc_rate(hw, parent_rate);
++       rate_tmp =3D rate / pll->fix_divider;
++       if (max(new_rate, rate_tmp) - min(new_rate, rate_tmp) > 10)
++               pr_warn("%s: requested %lu, got %lu\n", clk_hw_get_name(hw)=
+,
++                       rate_tmp, new_rate);
++
++       return 0;
++}
++
++static const struct clk_ops amb_pll_ops =3D {
++       .recalc_rate =3D amb_pll_recalc_rate,
++       .determine_rate =3D amb_pll_determine_rate,
++       .set_rate =3D amb_pll_set_rate,
++};
++
++struct clk_hw *amb_pll_register(struct device *dev, struct regmap *map,
++                               const struct amb_pll_desc *desc)
++{
++       struct amb_pll *pll;
++       struct clk_init_data init =3D {};
++       const struct clk_hw *parent =3D desc->parent;
++       int ret;
++
++       pll =3D devm_kzalloc(dev, sizeof(*pll), GFP_KERNEL);
++       if (!pll)
++               return ERR_PTR(-ENOMEM);
++
++       pll->map =3D map;
++       memcpy(pll->reg_offset, desc->reg_offset, sizeof(pll->reg_offset));
++       pll->soc_data =3D desc->soc_data;
++       pll->fix_divider =3D 1;
++       pll->frac_mode =3D desc->frac_mode;
++
++       init.name =3D desc->name;
++       init.ops =3D &amb_pll_ops;
++       init.flags =3D CLK_GET_RATE_NOCACHE | CLK_IS_CRITICAL;
++       init.parent_hws =3D &parent;
++       init.num_parents =3D 1;
++
++       pll->hw.init =3D &init;
++
++       ret =3D devm_clk_hw_register(dev, &pll->hw);
++       if (ret)
++               return ERR_PTR(ret);
++
++       return &pll->hw;
++}
+diff --git a/drivers/clk/ambarella/ccu_pll.h b/drivers/clk/ambarella/ccu_pl=
+l.h
+new file mode 100644
+index 000000000000..b9e453e9debf
+--- /dev/null
++++ b/drivers/clk/ambarella/ccu_pll.h
+@@ -0,0 +1,70 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Copyright (C) 2026 Ambarella, Inc.
++ */
++
++#ifndef __CCU_PLL_H
++#define __CCU_PLL_H
++
++#include <linux/bits.h>
++#include <linux/clk-provider.h>
++#include <linux/device.h>
++#include <linux/regmap.h>
++#include <linux/types.h>
++
++enum {
++       CTRL_OFFSET =3D 0,
++       FRAC_OFFSET,
++       CTRL2_OFFSET,
++       CTRL3_OFFSET,
++       PRES_OFFSET,
++       POST_OFFSET,
++       REG_NUM,
++};
++
++#define CTRL_BYPASS            BIT(2)
++#define CTRL_WRITE_ENABLE      BIT(0)
++#define CTRL_FRAC_MODE         BIT(3)
++#define CTRL_FORCE_RESET       BIT(4)
++#define CTRL_POWER_DOWN                BIT(5)
++#define CTRL_HALT_VCO          BIT(6)
++#define CTRL_VCODIV_DIV2       BIT(8)
++#define CTRL_FSDIV_DIV2                BIT(9)
++#define CTRL_FSOUT_DIV2                BIT(10)
++#define CTRL_BYPASS_HSDIV      BIT(11)
++
++#define CTRL2_VCODIV_DIV2      BIT(8)
++#define CTRL2_FSDIV_DIV2       BIT(9)
++#define CTRL2_FSOUT_DIV2       BIT(11)
++#define CTRL2_BYPASS_HSDIV     BIT(12)
++
++#define CTRL3_VCO_RANGE_MASK   0x6
++#define CTRL3_VCO_CLAMP                0x8
++
++struct amb_pll_soc_data {
++       u32 pll_version;
++       u32 fsout_mask;
++       u32 fsout_val;
++       u32 fsdiv_mask;
++       u32 fsdiv_val;
++       u32 vcodiv_mask;
++       u32 vcodiv_val;
++       u32 vco_max_mhz;
++       u32 vco_min_mhz;
++       u32 vco_range[4];
++       u32 ctrl2_val;
++       u32 ctrl3_val;
++};
++
++struct amb_pll_desc {
++       const char *name;
++       const struct clk_hw *parent;
++       const u32 reg_offset[REG_NUM];
++       const struct amb_pll_soc_data *soc_data;
++       bool frac_mode;
++};
++
++struct clk_hw *amb_pll_register(struct device *dev, struct regmap *map,
++                               const struct amb_pll_desc *desc);
++
 +#endif
-+       soc->gc->parent =3D soc->dev;
-+       soc->gc->fwnode =3D of_fwnode_handle(np);
-+       soc->gc->ngpio =3D soc->bank_num * 32;
-+
-+       rval =3D devm_gpiochip_add_data(soc->dev, soc->gc, soc);
-+       if (rval) {
-+               dev_err(soc->dev, "gpiochip_add_data failed %d\n", rval);
-+               return rval;
-+       }
-+
-+       for (i =3D 0; i < soc->bank_num; i++) {
-+               writel_relaxed(0xffffffff, soc->gpio_base[i] + GPIO_ENABLE_=
-OFFSET);
-+               writel_relaxed(0x00000000, soc->gpio_base[i] + GPIO_AFSEL_O=
-FFSET);
-+               writel_relaxed(0x00000000, soc->gpio_base[i] + GPIO_MASK_OF=
-FSET);
-+       }
-+
-+       /* Initialize GPIO irq */
-+       soc->domain =3D irq_domain_add_linear(np, soc->gc->ngpio,
-+                                           &amb_gpio_irq_domain_ops, soc);
-+       if (!soc->domain) {
-+               dev_err(soc->dev, "Failed to create irqdomain\n");
-+               return -ENODEV;
-+       }
-+
-+       for (i =3D 0; i < soc->bank_num; i++) {
-+               irq_set_irq_type(soc->irq[i], IRQ_TYPE_LEVEL_HIGH);
-+               irq_set_chained_handler_and_data(soc->irq[i], amb_gpio_hand=
-le_irq, soc);
-+       }
-+
-+       return 0;
-+}
-+
-+static int amb_pinctrl_probe(struct platform_device *pdev)
-+{
-+       struct amb_pinctrl_soc_data *soc;
-+       struct device_node *np;
-+       int i, rval;
-+
-+       soc =3D devm_kzalloc(&pdev->dev, sizeof(*soc), GFP_KERNEL);
-+       if (!soc)
-+               return -ENOMEM;
-+
-+       soc->dev =3D &pdev->dev;
-+       soc->data =3D of_device_get_match_data(&pdev->dev);
-+       if (!soc->data)
-+               return dev_err_probe(&pdev->dev, -EINVAL, "missing soc data=
-");
-+
-+       np =3D pdev->dev.of_node;
-+       soc->bank_num =3D of_irq_count(np);
-+       if (!soc->bank_num || soc->bank_num > MAX_BANK_NUM)
-+               return dev_err_probe(&pdev->dev, -EINVAL, "Invalid gpio ban=
-k(irq)");
-+
-+       for (i =3D 0; i < soc->bank_num; i++) {
-+               soc->gpio_base[i] =3D devm_platform_ioremap_resource(pdev, =
-i);
-+               if (IS_ERR(soc->gpio_base[i]))
-+                       return dev_err_probe(&pdev->dev, PTR_ERR(soc->gpio_=
-base[i]),
-+                                                                "couldn't =
-get gpio[%d] reg", i);
-+
-+               soc->irq[i] =3D platform_get_irq(pdev, i);
-+               if (soc->irq[i] < 0)
-+                       return dev_err_probe(&pdev->dev, -ENODEV, "couldn't=
- get gpio[%d] irq", i);
-+       }
-+
-+       soc->iomux_base =3D devm_platform_ioremap_resource(pdev, i);
-+       if (IS_ERR(soc->iomux_base))
-+               return dev_err_probe(&pdev->dev, PTR_ERR(soc->iomux_base),
-+                                                        "couldn't get iomu=
-x reg");
-+
-+       soc->ds_regmap =3D syscon_regmap_lookup_by_phandle(np, "ambarella,d=
-rive-strength-syscon");
-+       if (IS_ERR(soc->ds_regmap))
-+               return dev_err_probe(&pdev->dev, PTR_ERR(soc->ds_regmap),
-+                                    "couldn't get drive-strength regmap");
-+
-+       soc->pull_regmap =3D syscon_regmap_lookup_by_phandle(np, "ambarella=
-,pull-syscon");
-+       if (IS_ERR(soc->pull_regmap))
-+               return dev_err_probe(&pdev->dev, PTR_ERR(soc->pull_regmap),
-+                                    "couldn't get pull regmap");
-+
-+       for (i =3D 0; i < soc->bank_num; i++) {
-+               soc->ds0[i] =3D soc->data->ds0[i];
-+               soc->ds1[i] =3D soc->data->ds1[i];
-+               soc->ds2[i] =3D soc->data->ds2[i];
-+               soc->pull_en[i] =3D soc->data->pull_en[i];
-+               soc->pull_dir[i] =3D soc->data->pull_dir[i];
-+       }
-+
-+       soc->have_ds2 =3D soc->data->have_ds2;
-+       soc->hsm_domain_id =3D soc->data->hsm_domain_id;
-+       soc->clk_au_dedicated_pin =3D soc->data->clk_au_dedicated_pin;
-+
-+       raw_spin_lock_init(&soc->lock);
-+
-+       /* not allowed to use for non-existed pins */
-+       for (i =3D soc->bank_num * 32; i < MAX_BANK_NUM * 32; i++)
-+               set_bit(i, soc->used);
-+
-+       if (soc->clk_au_dedicated_pin)
-+               clear_bit(soc->clk_au_dedicated_pin, soc->used);
-+
-+       rval =3D amb_pinctrl_register(soc);
-+       if (rval)
-+               return dev_err_probe(&pdev->dev, rval, "pinctrl register fa=
-iled!");
-+
-+       rval =3D amb_gpio_register(soc);
-+       if (rval)
-+               return dev_err_probe(&pdev->dev, rval, "gpio register faile=
-d!");
-+
-+       platform_set_drvdata(pdev, soc);
-+       dev_info(&pdev->dev, "Ambarella pinctrl driver registered");
-+
-+       return 0;
-+}
-+
-+static int amb_pinctrl_suspend_noirq(struct device *dev)
-+{
-+       struct amb_pinctrl_soc_data *soc =3D dev_get_drvdata(dev);
-+       u32 i;
-+
-+       for (i =3D 0; i < soc->bank_num; i++) {
-+               regmap_read(soc->pull_regmap, soc->pull_en[i], &soc->pm[i].=
-pull[0]);
-+               regmap_read(soc->pull_regmap, soc->pull_dir[i], &soc->pm[i]=
-.pull[1]);
-+
-+               regmap_read(soc->ds_regmap, soc->ds0[i], &soc->pm[i].ds[0])=
-;
-+               regmap_read(soc->ds_regmap, soc->ds1[i], &soc->pm[i].ds[1])=
-;
-+               if (soc->have_ds2)
-+                       regmap_read(soc->ds_regmap, soc->ds2[i], &soc->pm[i=
-].ds[2]);
-+
-+               soc->pm[i].iomux[0] =3D readl_relaxed(soc->iomux_base + IOM=
-UX_OFFSET(i, 0));
-+               soc->pm[i].iomux[1] =3D readl_relaxed(soc->iomux_base + IOM=
-UX_OFFSET(i, 1));
-+               soc->pm[i].iomux[2] =3D readl_relaxed(soc->iomux_base + IOM=
-UX_OFFSET(i, 2));
-+
-+               soc->pm[i].afsel =3D readl_relaxed(soc->gpio_base[i] + GPIO=
-_AFSEL_OFFSET);
-+               soc->pm[i].dir =3D readl_relaxed(soc->gpio_base[i] + GPIO_D=
-IR_OFFSET);
-+               soc->pm[i].is =3D readl_relaxed(soc->gpio_base[i] + GPIO_IS=
-_OFFSET);
-+               soc->pm[i].ibe =3D readl_relaxed(soc->gpio_base[i] + GPIO_I=
-BE_OFFSET);
-+               soc->pm[i].iev =3D readl_relaxed(soc->gpio_base[i] + GPIO_I=
-EV_OFFSET);
-+               soc->pm[i].ie =3D readl_relaxed(soc->gpio_base[i] + GPIO_IE=
-_OFFSET);
-+               soc->pm[i].mask =3D readl_relaxed(soc->gpio_base[i] + GPIO_=
-MASK_OFFSET);
-+               writel_relaxed(0xffffffff, soc->gpio_base[i] + GPIO_MASK_OF=
-FSET);
-+               soc->pm[i].data =3D readl_relaxed(soc->gpio_base[i] + GPIO_=
-DATA_OFFSET);
-+
-+               if (soc->irq_wake_mask[i])
-+                       writel_relaxed(soc->irq_wake_mask[i], soc->gpio_bas=
-e[i] + GPIO_IE_OFFSET);
-+       }
-+
-+       if (soc->clk_au_dedicated_pin) {
-+               i =3D PINID_TO_BANK(soc->clk_au_dedicated_pin);
-+               soc->pm[i].iomux[0] =3D readl_relaxed(soc->iomux_base + IOM=
-UX_OFFSET(i, 0));
-+               soc->pm[i].iomux[1] =3D readl_relaxed(soc->iomux_base + IOM=
-UX_OFFSET(i, 1));
-+               soc->pm[i].iomux[2] =3D readl_relaxed(soc->iomux_base + IOM=
-UX_OFFSET(i, 2));
-+       }
-+
-+       return 0;
-+}
-+
-+static int amb_pinctrl_resume_noirq(struct device *dev)
-+{
-+       struct amb_pinctrl_soc_data *soc =3D dev_get_drvdata(dev);
-+       u32 i;
-+
-+       for (i =3D 0; i < soc->bank_num; i++) {
-+               regmap_write(soc->pull_regmap, soc->pull_en[i], soc->pm[i].=
-pull[0]);
-+               regmap_write(soc->pull_regmap, soc->pull_dir[i], soc->pm[i]=
-.pull[1]);
-+
-+               regmap_write(soc->ds_regmap, soc->ds0[i], soc->pm[i].ds[0])=
-;
-+               regmap_write(soc->ds_regmap, soc->ds1[i], soc->pm[i].ds[1])=
-;
-+               if (soc->have_ds2)
-+                       regmap_write(soc->ds_regmap, soc->ds2[i], soc->pm[i=
-].ds[2]);
-+
-+               writel_relaxed(soc->pm[i].iomux[0], soc->iomux_base + IOMUX=
-_OFFSET(i, 0));
-+               writel_relaxed(soc->pm[i].iomux[1], soc->iomux_base + IOMUX=
-_OFFSET(i, 1));
-+               writel_relaxed(soc->pm[i].iomux[2], soc->iomux_base + IOMUX=
-_OFFSET(i, 2));
-+
-+               writel_relaxed(soc->pm[i].afsel, soc->gpio_base[i] + GPIO_A=
-FSEL_OFFSET);
-+               writel_relaxed(soc->pm[i].dir, soc->gpio_base[i] + GPIO_DIR=
-_OFFSET);
-+               /* Expose DATA writes while restoring the saved GPIO state.=
- */
-+               writel_relaxed(0xffffffff,
-+                              soc->gpio_base[i] + GPIO_MASK_OFFSET);
-+               writel_relaxed(soc->pm[i].data, soc->gpio_base[i] + GPIO_DA=
-TA_OFFSET);
-+               /* Ensure DATA restore reaches hardware before restoring ma=
-sk. */
-+               wmb();
-+               writel_relaxed(soc->pm[i].mask, soc->gpio_base[i] + GPIO_MA=
-SK_OFFSET);
-+               writel_relaxed(soc->pm[i].is, soc->gpio_base[i] + GPIO_IS_O=
-FFSET);
-+               writel_relaxed(soc->pm[i].ibe, soc->gpio_base[i] + GPIO_IBE=
-_OFFSET);
-+               writel_relaxed(soc->pm[i].iev, soc->gpio_base[i] + GPIO_IEV=
-_OFFSET);
-+               writel_relaxed(soc->pm[i].ie, soc->gpio_base[i] + GPIO_IE_O=
-FFSET);
-+               writel_relaxed(0xffffffff, soc->gpio_base[i] + GPIO_ENABLE_=
-OFFSET);
-+       }
-+
-+       if (soc->clk_au_dedicated_pin) {
-+               i =3D PINID_TO_BANK(soc->clk_au_dedicated_pin);
-+               writel_relaxed(soc->pm[i].iomux[0], soc->iomux_base + IOMUX=
-_OFFSET(i, 0));
-+               writel_relaxed(soc->pm[i].iomux[1], soc->iomux_base + IOMUX=
-_OFFSET(i, 1));
-+               writel_relaxed(soc->pm[i].iomux[2], soc->iomux_base + IOMUX=
-_OFFSET(i, 2));
-+               /* Ensure dedicated-pin iomux writes reach hardware before =
-commit. */
-+               wmb();
-+       }
-+
-+       writel_relaxed(0x1, soc->iomux_base + IOMUX_CTRL_SET_OFFSET);
-+       writel_relaxed(0x0, soc->iomux_base + IOMUX_CTRL_SET_OFFSET);
-+
-+       return 0;
-+}
-+
-+static DEFINE_NOIRQ_DEV_PM_OPS(amb_pinctrl_pm_ops,
-+                              amb_pinctrl_suspend_noirq,
-+                              amb_pinctrl_resume_noirq);
-+
-+static const struct amb_pinctrl_data cv75_pinctrl_data =3D {
-+       .ds0 =3D {
-+               0x314, 0x320, 0x32c,
-+       },
-+       .ds1 =3D {
-+               0x318, 0x324, 0x330,
-+       },
-+       .ds2 =3D {
-+               0x31c, 0x328, 0x334,
-+       },
-+       .pull_en =3D {
-+               0x60, 0x64, 0x68,
-+       },
-+       .pull_dir =3D {
-+               0x7c, 0x80, 0x84,
-+       },
-+       .have_ds2 =3D true,
-+       .clk_au_dedicated_pin =3D 96,
-+};
-+
-+static const struct of_device_id amb_pinctrl_dt_match[] =3D {
-+       {
-+               .compatible =3D "ambarella,cv75-pinctrl",
-+               .data =3D &cv75_pinctrl_data,
-+       },
-+       {},
-+};
-+MODULE_DEVICE_TABLE(of, amb_pinctrl_dt_match);
-+
-+static void amb_pinctrl_remove(struct platform_device *pdev)
-+{
-+       struct amb_pinctrl_soc_data *soc =3D platform_get_drvdata(pdev);
-+       unsigned int i;
-+
-+       for (i =3D 0; i < soc->bank_num; i++)
-+               irq_set_chained_handler_and_data(soc->irq[i], NULL, NULL);
-+
-+       if (soc->domain)
-+               irq_domain_remove(soc->domain);
-+}
-+
-+static struct platform_driver amb_pinctrl_driver =3D {
-+       .probe  =3D amb_pinctrl_probe,
-+       .remove =3D amb_pinctrl_remove,
-+       .driver =3D {
-+               .name   =3D "ambarella-pinctrl",
-+               .of_match_table =3D of_match_ptr(amb_pinctrl_dt_match),
-+               .pm =3D pm_sleep_ptr(&amb_pinctrl_pm_ops),
-+       },
-+};
-+
-+static int __init amb_pinctrl_drv_register(void)
-+{
-+       return platform_driver_register(&amb_pinctrl_driver);
-+}
-+arch_initcall(amb_pinctrl_drv_register);
-+
-+MODULE_AUTHOR("Cao Rongrong <rrcao@ambarella.com>");
-+MODULE_DESCRIPTION("Ambarella SoC pinctrl driver");
-+MODULE_LICENSE("GPL");
 --
 2.34.1
 
