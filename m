@@ -1,160 +1,269 @@
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A0013B71A6
-	for <linux-serial@vger.kernel.org>; Thu, 30 Jul 2026 08:27:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C26903BFE40
+	for <linux-serial@vger.kernel.org>; Thu, 30 Jul 2026 09:17:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785400047; cv=none; b=Mtjmasuo2yOoMTSXT4j67SO/jCjOoXr9Dqh8e9OUNf3Yld6PCIm7VMt5gDvuBAjlPi+nPFVAwhydMXLl5i/IQiJFUikXk3Gz6sesgzbnIQiOVnAltLePVwrgjPdJvcbt80JIouDHGnlUzg3WMbWo0H1lOBijZyuvXEyLVk2R/yY=
+	t=1785403032; cv=none; b=X6H8VRQU9h/vcI9v1atac7Jayhvnufc9p97a0+1T/Y51lwyrQtfFohLxWO+43SQ+ZjX812CVueRhmVJb8J7vJapIe1wOM1RC3O5vLzhQxNnceIoZFHhQS8SwhhJhq6PSbtfilBDpWkxl3UVdP1JwHpndVc3TtlEPOqfEFau8pYw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785400047; c=relaxed/simple;
-	bh=pwW/HHeZcEkraoLdRbDlR2cnbN4a866QfwOfBHCrZG4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=shG9NPHNVmgGw4UT7pckplGOx5AFC0RJsIRwVFHTVX2DRaqaTCYXdIAO3M1bNOYqVL9iiaahltmsPMicF5YX88s9e9ENjIj6NJ9sBwIKZkRwpV+O7BVE+SnQ2eCBgZ+ukgK8YigvBegyGjEa37OJaatonAGdyE/h1nG4COK7Pw4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=QvWi4+fe; arc=none smtp.client-ip=209.85.221.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1785403032; c=relaxed/simple;
+	bh=FZ81sEKa0AGlUh3qOMslFSdN4ZIgzNfOwEBmjr2Kigw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=nbjzkHadSawpklwyvCNnpmDyuZVZ093TmgIkUtPOEm7d+Z4OIiA7diJyqRmEXBXuWw23cgFfFheFdKwkOR9n/om0eqrTDXHupe4e/tIWvVPFZiYUO98WEs1tG4ZnEqqx+CJ7mfR+WWExbXbuVhNUM64UCYhbF+j9p1+mDqP6mVI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=pKlObpXO; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=FoJIOnAb; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="QvWi4+fe"
-Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-47f904e80eeso1548852f8f.1
-        for <linux-serial@vger.kernel.org>; Thu, 30 Jul 2026 01:27:22 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="pKlObpXO";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="FoJIOnAb"
+Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66U9CS8C618917
+	for <linux-serial@vger.kernel.org>; Thu, 30 Jul 2026 09:17:09 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	Sg+tTmUjvICwaDYn2CXixJNQI5H+8IfxBQw4flH87tw=; b=pKlObpXO9v76hLMy
+	gX4ER4IbpwRdL3T5OSejLFUujzwevHaEtrcktr/XI3EitwaiKjJL9+3nVxLEeFT4
+	eM7aE5A8lzmjSga7iCo7xHpFNQt6xFDBOefbVAdsLsntSlQfjw52/kCvZqNmfYpT
+	uFs5gfPzvqN4RBvaO/eNXjdVJJfxwbwxkgnGdPYUaU78tcBuAizfN1jq33lvJuIq
+	gzeNar1FqfK0QrBA/9IX+ZCTNyoi/Ok++yNZy3LbpaUNwwJVMs5u82w0cedIon7S
+	OvoRI3UQilym/yQaURD890J1VEMuX431XkVjhmRlaHwng8vAzccTh4C7tkdId11M
+	hLdPMQ==
+Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com [209.85.214.197])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fr3sd80st-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-serial@vger.kernel.org>; Thu, 30 Jul 2026 09:17:09 +0000 (GMT)
+Received: by mail-pl1-f197.google.com with SMTP id d9443c01a7336-2cce14a21faso9304555ad.0
+        for <linux-serial@vger.kernel.org>; Thu, 30 Jul 2026 02:17:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1785400040; x=1786004840; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=KmzU97//bt/RgXYEt4zQpFpox6tHLxvze+7qfkerEFg=;
-        b=QvWi4+feV5TZFSt8zvTeqUgShdK/CIhQ2RnvwtlS4snWwpwrJKBtkNLEBg/7pb1+Yn
-         RcpbfraqhLQPZBj9rUGphx8GI/qCuLsiw6v0Trdb0+byXzRu8bHnX06Xw2wTNXsZN2PI
-         Vdqusmcp+n7nmuCrdemybwhxgZuP72jDxi90/fVZDF57mkJpdOQjx/TInoua4DlobmuC
-         30fftAHycEFucMJqm/nbWRfrIWV9FXqkXesvlbddBDJdw/H1OfWKBvJkgkmCe8T6lRJI
-         jvNYX1s3/V9U6vpaOC4RE3fLXA1kATCH2gLzDCLzSXQbHDbw/Yi352cvboec43qGYa5d
-         kg0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785400040; x=1786004840;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+        d=oss.qualcomm.com; s=google; t=1785403028; x=1786007828; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=KmzU97//bt/RgXYEt4zQpFpox6tHLxvze+7qfkerEFg=;
-        b=YmtN+/ZwANsrjD2z0ymVm246pb0Qm/0jcD0mt0eMGshprW8BkblQsXsO58/rKrt5uS
-         5dnD5poZBmtSuobaxCnnaYVf/tk0YSk8athYpQsmuqD2VSHuHC9M76mAI8/LDKvUok1b
-         V/dLy7J5MGgpYAehUtU9PAxVBv/ox38SeC6kPmuS/qkEHTMUkxRE+3LDmUTqfGTsHk8m
-         vz2eXn441FnEYDcNnn8KEz6TArdxzS+IU30eXXny1Fabxr92FWmrx4i38jirdIrO8kaU
-         mwrb2XGSDQDpp0pyMTYivkpwoGQjmAURzX3iI52EWyWl1ffAxSLKbmDrOgDXSCYMyMZ2
-         WSuw==
-X-Forwarded-Encrypted: i=1; AHgh+RooQA8GBHsm9FOD+VPeWxUiZX3dqZitGn0LI8y2HboQOMCRCrJsV0C3/SQQgRaRb+Zu/QIapxhHse9QWTw=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyd6uxTtPirVPtnnWCYxq4lJDBQO3XWEuegMMej57i/hYs6OE2b
-	qFVWaDLTTcKZhsuUa6e+OJ0AEontxe3Av0bI/bQziSCi6YP1X6z0ZmyIBiTakjjmUxA=
-X-Gm-Gg: AR+sD10hzgNv9aJ1cg0o2OYB/3NZbqOa5rPYIa/8mM8/ZJd24oX6/duOUtcRzav5rbE
-	yBpLfYT1Zb+6ISKaXCDQy/HHiLqTrWNC6TMJq4uTmdU+Jvp3epBAJRlp2MFcwDxutWh3EMtRrck
-	A3BveO+cEBs2DI4kzHkTpINMZRaU+K3JcprohtvnrMfeNseix2SBw9uyPsrkQiZFm3W2Qis70G7
-	l3o6jyhUcSPAJTwwHuJ4Qpf2RheA+Q3aJlweqlbABljgD4+eZfT1ge4GqHMsRtx5o/yYMrRBQnV
-	F6szGMaR6gUojj0jQWJUlmWUEsHKHkpVlj7U7rdnm+s8jpdlQeTNQecNmSCnyH4QfFesSqR6Fve
-	sVw52DD5ZwckTNb5t8oqw2kcvTBQSoHLW+FGsvEoQPpOfkq/GkrxqsWgG6UeLCnNmFd85/9IcVT
-	UuKb34x4okdryl4H+zvLUyFtEI0Yp++X4RWPPmECCGNTYgdeoa2V20NTvQKrR08E4=
-X-Received: by 2002:a05:6000:22ca:b0:47f:921f:3a37 with SMTP id ffacd0b85a97d-47fc81f5222mr2189848f8f.35.1785400040403;
-        Thu, 30 Jul 2026 01:27:20 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47fc88e3c73sm4426665f8f.10.2026.07.30.01.27.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jul 2026 01:27:19 -0700 (PDT)
-Date: Thu, 30 Jul 2026 10:27:17 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Andy Shevchenko <andy.shevchenko@gmail.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	linux-kernel@vger.kernel.org,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Fushuai Wang <wangfushuai@baidu.com>, Kees Cook <kees@kernel.org>,
-	Stepan Ionichev <sozdayvek@gmail.com>, linux-serial@vger.kernel.org
-Subject: Re: [PATCH tty v9 1/2] serial: 8250: Switch to nbcon console, take 2
-Message-ID: <amsK5UPlzthyZJqD@pathway.suse.cz>
-References: <20260724103654.133654-1-john.ogness@linutronix.de>
- <20260724103654.133654-2-john.ogness@linutronix.de>
- <87o6fwms02.fsf@jogness.linutronix.de>
+        bh=Sg+tTmUjvICwaDYn2CXixJNQI5H+8IfxBQw4flH87tw=;
+        b=FoJIOnAbzIOj81GmSUK6S+osqbWFJVScybPNzRHmQjza7TDZJWx0D8b1zQadXGLPmF
+         mdcBsfigHDS7Ce1YVDAJhlARMPKVzxBtG8+YvJtd3eHSTnls6DmTFQfH1c6d2as+m1+L
+         r1mblYWFyt52fllLpl9bcqHGcBWVjtv+AKbKkjmRbAJy0yXcXpI2g3l/JVLa3IGcmkHV
+         fmRWrLlUgYhFaMXsMv7D4OWMdgX6WlOb7PyzENYvZv5AsRDnQkVu6Wh7gXIQzii7kM/C
+         vxYBi7KlzIqT/hOpz8c/nraWJlP+7mLhE/0VJKR+PTaMyiGNtEF5w1LCj+vWH0d5HoQM
+         fJsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785403028; x=1786007828;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=Sg+tTmUjvICwaDYn2CXixJNQI5H+8IfxBQw4flH87tw=;
+        b=VJMTJWjt3JW/tszZRYgLKoX9h40LHCBRoI/5vc5koirFGP5jMLwMaUufCbCwhiQ+K0
+         LuuVWL+EYpFA4bAOkoT3FK5WeIlE6W3WdNvDEEpkDDAZ7fves7HQWyqnIwvezJSdxdWG
+         /kSnruyix0wUsZRIfdkkBamwp+dlNJMbS3L3NGFSgYR5X1mBZx6wBN6MWP81CrxT0wj9
+         CXWuKXRrMdVVx0JjRPybr2vb503is9IIrfN0iExnVUOPHMLUZfwszfuo13VkL7Jwioqv
+         YWe6BaD0qegbEDujlcSItoI57wWvkgmyFsSh/9ed/x2/o/IDaPqIaXdIw+ikarlPs2ca
+         JXBA==
+X-Forwarded-Encrypted: i=1; AHgh+RoYEfyw+4Kh4HPHS793aecRCGkzlSQ5c3qYj0F8z+ZcvLR2G/F0W53W5vygp7YECv+ap+UChR81kHTJG2Y=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzy8jAw3gF+0RNflVVx+Nma5qf6Y6umeq4eXWgjkY4YKMKHMjKT
+	TGixKThDizSW834KyLYq1zhatB4kZW+M3m8hZZSAGly936Pk55BNrVCi1hy68hdhdAjxREpXG89
+	b2kzj6hIxJsg/Sn6D2Wl/bc0MVnwaQVkfoAsPPh4FM6BWcA+UiKVenfPjS2U8MjKt7Qg=
+X-Gm-Gg: AR+sD13s7lsbQQ2h3th1TtX3o3vY8O74xRwgaAlCda60AUav+pvU06NVGUTjNZ37/SP
+	3fGdVfKfkcNOZNxqXI0FunLnRFOEl1wXbVsC4hdUyVxDHJNT/KrddZYCrPSv84kWAfuSblnuPrN
+	+DRLYvTKr9Y1H+ZP1OhO8D4QVNwchAqn+jYiFzliQD2FjEaOjpWRH3JNhSOjhNaYjErnfOH9zpk
+	f1ItXSFnkjJBwUClkOmgTFR98NTPTytzvOtj2POgGmNsz6YwF8iwHb/OmnuloIdo88l2N8DJVZp
+	2OQeEULpJQvNRv0SQXcGsjxUaRDmlfhJ4zRMzuJgaPPVMICftQjuE/PYLmni7YMIuErdzoyNrCm
+	7Wjd0wtsJw1Qjs3DcreVhlnxDUuCRvVOw
+X-Received: by 2002:a17:903:985:b0:2cf:18e5:1d18 with SMTP id d9443c01a7336-2d03709445bmr14082855ad.29.1785403028348;
+        Thu, 30 Jul 2026 02:17:08 -0700 (PDT)
+X-Received: by 2002:a17:903:985:b0:2cf:18e5:1d18 with SMTP id d9443c01a7336-2d03709445bmr14082545ad.29.1785403027810;
+        Thu, 30 Jul 2026 02:17:07 -0700 (PDT)
+Received: from [192.168.0.5] ([49.204.104.207])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2d022bc8400sm23245535ad.47.2026.07.30.02.17.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 30 Jul 2026 02:17:07 -0700 (PDT)
+Message-ID: <09c45fbe-f8f7-48b8-9385-2b02ed2b63ce@oss.qualcomm.com>
+Date: Thu, 30 Jul 2026 14:47:00 +0530
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87o6fwms02.fsf@jogness.linutronix.de>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/1] serial: qcom-geni: fix TX DMA buffer flush
+To: jaseg <git@jaseg.de>, 'Greg Kroah-Hartman ' <gregkh@linuxfoundation.org>,
+        'Jiri Slaby ' <jirislaby@kernel.org>,
+        'Bartosz Golaszewski ' <bartosz.golaszewski@oss.qualcomm.com>
+Cc: 'Viken Dadhaniya ' <viken.dadhaniya@oss.qualcomm.com>,
+        'Zong Jiang ' <quic_zongjian@quicinc.com>,
+        'Krzysztof Kozlowski ' <krzk@kernel.org>,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        =?UTF-8?Q?Jan_Sebastian_G=C3=B6tte?=
+ <linux@jaseg.de>,
+        stable@vger.kernel.org
+References: <20260729174105.21838-1-git@jaseg.de>
+ <20260729174105.21838-2-git@jaseg.de>
+Content-Language: en-US
+From: Praveen Talari <praveen.talari@oss.qualcomm.com>
+In-Reply-To: <20260729174105.21838-2-git@jaseg.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-ORIG-GUID: XKeWVNMRdPGHVaflb6oUHMlOYMeIubkD
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzMwMDA2OCBTYWx0ZWRfX7ce43f92i5I0
+ 4NTY2qB3Ut88ow2+zuWsrIthYvU9jbvHM94DRI5Vmupph3piue6ZXmv9ExNr+yenQqehQL4pHvp
+ WKm0UedbMbfXJVvRJo8m6StmJxhUo58=
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzMwMDA2OCBTYWx0ZWRfX7hUfGMAswmeC
+ T49ZcHT0r62CTLppyNyXFvNBjXDVmGO+e5CKQvml3xjdn6FRSsaG4gVLB4TJsfJBEfPNXnBdtiQ
+ dYI24KlEkx5rpoe1p/l1MhicatMD9oDR6EC/aBa227J6e9hi0DBLk78lsxVQrG84294JoXlQD0G
+ 6nsi1y4bVenwt1vwe7KYrVOJNK6w0t2WU6IoOwtKZdAnMm9Wu5ERGX0KZyfRxFH50GROniJd1hC
+ Y9+qlXWY0EHlhpqw7j32Iit4ZTZCcAKlQKPcz7teDD77ElN2Lc9ldf0s+ABu8srfDdHzK7bQMz8
+ mm7EnrdwH66aczINQOZYzmHf6eJuP1nPG1WUFSl2a+9urgjspWHNqPJRbLk+0Ckst5g6Pt3IPFf
+ xJBrl48gZd4eZrrKI81vrIVku0mn7QAU9hodwzGXDNEdBW7UcFCu5UEypj6Zw0Z+LBBKja98tIs
+ cqsen1f9Zbj5PtiRhCw==
+X-Authority-Analysis: v=2.4 cv=OJ8XGyaB c=1 sm=1 tr=0 ts=6a6b1695 cx=c_pps
+ a=cmESyDAEBpBGqyK7t0alAg==:117 a=P6HVPSMEYUq+RwDLB+OCyA==:17
+ a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=_glEPmIy2e8OvE2BGh3C:22
+ a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=Z8m4AokP3hRY3N2J9A0A:9 a=3ZKOabzyN94A:10
+ a=QEXdDO2ut3YA:10 a=1OuFwYUASf3TG4hYMiVC:22
+X-Proofpoint-GUID: XKeWVNMRdPGHVaflb6oUHMlOYMeIubkD
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-07-30_02,2026-07-29_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ suspectscore=0 adultscore=0 clxscore=1015 priorityscore=1501 bulkscore=0
+ malwarescore=0 lowpriorityscore=0 impostorscore=0 spamscore=0 phishscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607300068
 
-On Fri 2026-07-24 15:39:49, John Ogness wrote:
-> On 2026-07-24, Sashiko wrote:
-> >> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> >> index 8c241ec7f4f29..855a7aa48c2d2 100644
-> >> --- a/drivers/tty/serial/8250/8250_port.c
-> >> +++ b/drivers/tty/serial/8250/8250_port.c
-> >> @@ -3198,13 +3218,28 @@ void serial8250_set_defaults(struct uart_8250_port *up)
-> >>  }
-> >>  EXPORT_SYMBOL_GPL(serial8250_set_defaults);
-> >>  
-> >> -void serial8250_fifo_wait_for_lsr_thre(struct uart_8250_port *up, unsigned int count)
-> >> +void serial8250_fifo_wait_for_lsr_thre(struct uart_8250_port *up,
-> >> +				       struct nbcon_write_context *wctxt,
-> >> +				       unsigned int count)
-> >>  {
-> >>  	unsigned int i;
-> >>  
-> >> +	/*
-> >> +	 * For console writing, enter/exit an unsafe section for each byte
-> >> +	 * in order to pass the ownership as quickly as possible if a higher
-> >> +	 * priority context wants ownership. Otherwise, an attempt to take
-> >> +	 * over the ownership might timeout. The new owner will wait for
-> >> +	 * UART_LSR_THRE before reusing the fifo.
-> >> +	 */
-> >>  	for (i = 0; i < count; i++) {
-> >> +		if (wctxt && !nbcon_enter_unsafe(wctxt))
-> >> +			return;
-> >> +
-> >>  		if (wait_for_lsr(up, UART_LSR_THRE))
-> >>  			return;
-> >
-> > Does this early return on success bypass the cleanup of the unsafe
-> > section?
-> >
-> > If wait_for_lsr() returns true, wouldn't
-> > serial8250_fifo_wait_for_lsr_thre() return immediately without calling
-> > nbcon_exit_unsafe(wctxt)?
-> >
-> > Could this resource leak of the nbcon unsafe state prevent other
-> > contexts from taking over ownership?
-> 
-> It simply has the effect of joining this unsafe section with the next
-> one. In this case it really wouldn't matter. But still, it was not my
-> intention. I will fix this for v10.
-> 
-> How I plan for it to look for v10:
-> 
-> 	for (i = 0; i < count; i++) {
-> 		bool tx_ready;
-> 
-> 		if (wctxt && !nbcon_enter_unsafe(wctxt))
-> 			return;
-> 
-> 		tx_ready = wait_for_lsr(up, UART_LSR_THRE);
-> 
-> 		if (wctxt)
-> 			nbcon_exit_unsafe(wctxt);
-> 
-> 		if (tx_ready)
-> 			break;
-> 	}
-> 
-> I am wondering if we should add a WARN_ON_ONCE() to nbcon_enter_unsafe()
-> if the context is already unsafe. It is a simple one-liner. That would
-> at least catch these kinds of mistakes during runtime. (I would do that
-> in a separate printk patch, not in this series.)
+Hi
 
-Yup, makes sense.
+On 29-07-2026 23:11, jaseg wrote:
+> From: Jan Sebastian Götte <linux@jaseg.de>
+>
+> When transmit flushing a qcom-geni UART during an ongoing TX DMA, the
+> UART gets stuck infinitely repeating corrupted TX DMA frames.
+>
+> The DMA-mode uart_ops does not provide a flush_buffer callback, so an
+> in-flight transfer can complete after serial core has reset the transmit
+> kfifo, underflowing its length and resubmitting page-sized transfers
+> indefinitely. Add one that stops the transfer and clears tx_remaining
+> and tx_queued.
+>
+> The stop path was also broken: it unmapped the buffer while the serial
+> engine could still read it, and never reset the TX DMA state machine.
+> Cancel the main sequencer command first, then reset the state machine
+> and wait for it before unmapping. Drop the early return so a pending
+> mapping is also cleaned up when the main command is inactive.
+>
+> The bug can be triggered from userspace with a large write immediately
+> followed by TCOFLUSH. A following tcdrain will hang forever. The bug was
+> reproduced and this fix was validated on Arduino Uno Q (QRB2210)
+> using /dev/ttyHS1.
+>
+> Assisted-by: Claude:claude-5-opus Codex:gpt-5
+> Signed-off-by: Jan Sebastian Götte <linux@jaseg.de>
+> Fixes: 2aaa43c70778 ("tty: serial: qcom-geni-serial: add support for serial engine DMA")
+> Cc: stable@vger.kernel.org
+> ---
+>   drivers/tty/serial/qcom_geni_serial.c | 43 ++++++++++++++-------------
+>   1 file changed, 22 insertions(+), 21 deletions(-)
+>
+> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+> index 7ead87b4eb65..1e39122ec09f 100644
+> --- a/drivers/tty/serial/qcom_geni_serial.c
+> +++ b/drivers/tty/serial/qcom_geni_serial.c
+> @@ -158,6 +158,7 @@ static const struct uart_ops qcom_geni_uart_pops;
+>   static struct uart_driver qcom_geni_console_driver;
+>   static struct uart_driver qcom_geni_uart_driver;
+>   
+> +static void qcom_geni_serial_stop_tx_dma(struct uart_port *uport);
+>   static void __qcom_geni_serial_cancel_tx_cmd(struct uart_port *uport);
+>   static void qcom_geni_serial_cancel_tx_cmd(struct uart_port *uport);
+>   static int qcom_geni_serial_port_setup(struct uart_port *uport);
+> @@ -636,35 +637,34 @@ static unsigned int qcom_geni_serial_tx_empty(struct uart_port *uport)
+>   	return !readl(uport->membase + SE_GENI_TX_FIFO_STATUS);
+>   }
+>   
+> +static void qcom_geni_serial_flush_buffer_dma(struct uart_port *uport)
+> +{
+> +	struct qcom_geni_serial_port *port = to_dev_port(uport);
+> +
+> +	qcom_geni_serial_stop_tx_dma(uport);
+> +	port->tx_remaining = 0;
+> +	port->tx_queued = 0;
+> +}
+> +
+>   static void qcom_geni_serial_stop_tx_dma(struct uart_port *uport)
+>   {
+>   	struct qcom_geni_serial_port *port = to_dev_port(uport);
+> -	bool done;
+>   
+> -	if (!qcom_geni_serial_main_active(uport))
+> -		return;
+> +	if (qcom_geni_serial_main_active(uport))
+> +		__qcom_geni_serial_cancel_tx_cmd(uport);
+>   
+>   	if (port->tx_dma_addr) {
+> +		writel(1, uport->membase + SE_DMA_TX_FSM_RST);
+> +		if (!qcom_geni_serial_poll_bit(uport, SE_DMA_TX_IRQ_STAT,
+> +					       TX_RESET_DONE, true))
+> +			dev_err_ratelimited(uport->dev, "TX DMA reset failed");
+> +		writel(TX_RESET_DONE | TX_DMA_DONE,
+> +		       uport->membase + SE_DMA_TX_IRQ_CLR);
+> +
+>   		geni_se_tx_dma_unprep(&port->se, port->tx_dma_addr,
+>   				      port->tx_remaining);
+>   		port->tx_dma_addr = 0;
+> -		port->tx_remaining = 0;
+>   	}
+> -
+> -	geni_se_cancel_m_cmd(&port->se);
+> -
+> -	done = qcom_geni_serial_poll_bit(uport, SE_GENI_M_IRQ_STATUS,
+> -					 M_CMD_CANCEL_EN, true);
+> -	if (!done) {
+> -		geni_se_abort_m_cmd(&port->se);
+> -		done = qcom_geni_serial_poll_bit(uport, SE_GENI_M_IRQ_STATUS,
+> -						 M_CMD_ABORT_EN, true);
+> -		if (!done)
+> -			dev_err_ratelimited(uport->dev, "M_CMD_ABORT_EN not set");
+> -		writel(M_CMD_ABORT_EN, uport->membase + SE_GENI_M_IRQ_CLEAR);
+> -	}
+> -
+> -	writel(M_CMD_CANCEL_EN, uport->membase + SE_GENI_M_IRQ_CLEAR);
+>   }
+>   
+>   static void qcom_geni_serial_start_tx_dma(struct uart_port *uport)
+> @@ -1180,7 +1180,7 @@ static void qcom_geni_serial_shutdown(struct uart_port *uport)
+>   	uart_port_unlock_irq(uport);
+>   }
+>   
+> -static void qcom_geni_serial_flush_buffer(struct uart_port *uport)
+> +static void qcom_geni_serial_flush_buffer_fifo(struct uart_port *uport)
+>   {
+>   	qcom_geni_serial_cancel_tx_cmd(uport);
+>   }
+> @@ -1769,7 +1769,7 @@ static const struct uart_ops qcom_geni_console_pops = {
+>   	.request_port = qcom_geni_serial_request_port,
+>   	.config_port = qcom_geni_serial_config_port,
+>   	.shutdown = qcom_geni_serial_shutdown,
+> -	.flush_buffer = qcom_geni_serial_flush_buffer,
+> +	.flush_buffer = qcom_geni_serial_flush_buffer_fifo,
+>   	.type = qcom_geni_serial_get_type,
+>   	.set_mctrl = qcom_geni_serial_set_mctrl,
+>   	.get_mctrl = qcom_geni_serial_get_mctrl,
+> @@ -1792,6 +1792,7 @@ static const struct uart_ops qcom_geni_uart_pops = {
+>   	.request_port = qcom_geni_serial_request_port,
+>   	.config_port = qcom_geni_serial_config_port,
+>   	.shutdown = qcom_geni_serial_shutdown,
+> +	.flush_buffer = qcom_geni_serial_flush_buffer_dma,
+>   	.type = qcom_geni_serial_get_type,
+>   	.set_mctrl = qcom_geni_serial_set_mctrl,
+>   	.get_mctrl = qcom_geni_serial_get_mctrl,
 
-Best Regards,
-Petr
+Reviewed-by: Praveen Talari <praveen.talari@oss.qualcomm.com>
+
+Thanks,
+
+Praveen Talari
+
