@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95C1C3F86E6;
-	Thu, 30 Jul 2026 10:48:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5200401A02;
+	Thu, 30 Jul 2026 10:50:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785408503; cv=none; b=jRi56ULVpC5iZTNFz0WCSjVb9ZH6hIw2d/imb9OJ0HBNh+5FG56zq3xFd8FBh6JZITt5RTRqOPCGxAVf1fpEYgB6rrTK/nE8t5sex8bglUZBvnYOUkGEo8ZPuRTbmoSeuJp4iQ/Bixsf5TnoLndu4PWQoQq9F79r7O6++9bds1s=
+	t=1785408607; cv=none; b=f2nk6Uno6jNepopCdEN6VX7J5GCgwPPhptMkKdIenXUiwTAPj9v79mpAghOqkIevh2RGYTfj4Ix3/mfUeyIsvFT6lhL6VnzQmxmslCsBHDh+Qc5KXWU1c/XFACGwcYmloivQqHHWNnrr3g3BhPXU9uR1kpRF9jzHHjVnyJR0L0c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785408503; c=relaxed/simple;
-	bh=+gJKbKNn43Fk0RGDwq3n3eHs4VPbGyQ9iZkC0dGnIF8=;
+	s=arc-20240116; t=1785408607; c=relaxed/simple;
+	bh=QTdgNsdGDTCmZo9xgJnK/MTeBgWspAAt7z0FxnG2ZF4=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=X/k7KVJX/rY+fFnYJW2F4nwcOMOW0pUHCTLGqNEPhdcrz0t2X/h6+4ZwZa65FQOYQC4qx2W8qLWLMAQIde185uhxFtgKy2fh0rUTESR+n7EcyzBtYd6K5QhVfKWtq/lEuPcyXpPTtgTqSEgs4IQrYAmYvhXNyT5nVSketR1hGek=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Xu6/QUX/; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=FQArPcXfvBU6ImMRNjtgWQj7ByXfJ3yh7iny/4Enxve7+SRWzC7u4lNSiPSKNqVrDASCu3m5CmimYXpFnG9AvTMjI1wsmyOO+qh1SmTpDQws1m96Q6JRn1KqsEk5IvB2fN8qg5pKjGoy7CqLk/GHLuLBVTA0EQPcswoiHPBQ99o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DMcYY0E8; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Xu6/QUX/"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F4851F000E9;
-	Thu, 30 Jul 2026 10:48:15 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DMcYY0E8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD6281F000E9;
+	Thu, 30 Jul 2026 10:49:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785408502;
-	bh=LQIam8Lk/rhF6Lm0HgQ3emsXNkYF4X/I9Zk8Ot6vu/0=;
+	s=k20260515; t=1785408606;
+	bh=QTdgNsdGDTCmZo9xgJnK/MTeBgWspAAt7z0FxnG2ZF4=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=Xu6/QUX/oYydCHTvPQ/A3cSkpBcfjLGjdI8g/Y+41jhXN40Gg0UAiujEcIvC1ehJl
-	 lYz7cWerr2Dtpftv15hLuy17PRMWhBuQk1kbePC8HNjxmRfELyavcoIPB0wtUy+CHz
-	 bDW4kxs9sQDdVAoxyfeC8Uz/mgtUicj/OlVCpADHH0SuDsPEHNqiVL4b944ysfC/ND
-	 nbKehVfpQ+PQsSuUQCFzXRVAhbZjpvDLqlN8z/MeMqComHi5ppUvJJZi7E3POkEW8E
-	 uqDdvwDmpd0f/aHhJPPXPnJccb/awCQ2ILSZqmlxfjo9C7sEGpOLc7HHThmOu40FYt
-	 bDX6DGX6cF4ZQ==
-Message-ID: <0fce6943-0d4b-4f3f-ae5f-277633577774@kernel.org>
-Date: Thu, 30 Jul 2026 12:48:12 +0200
+	b=DMcYY0E8S9mkD403M9X0OtCB+ADWh6z8gDlG/a37jog5MMvnZHM+xGnREqNGggU3+
+	 pzkbqqr6EJL5cy473Fevj1dRmK+9j/ywoI5cArPzuTe9I+UCQ44IcDGkGV0ZYvDCNz
+	 dIwqISmpQuFa4KmhQFJBIumArB1a38+26jCX5Ze5B0AckPaUi3Kv2RLTAOHMIJ882/
+	 SW0sf89h12t4gPLYAyO1qe2LyreH147CiSnHlByvjobhgiD4UQJQN0B9peePT4Jr2b
+	 f1WGBLoIfRxpspWV49U9fLwbYM7HtyZ2Iben+QFkBMXwNfveDOTHbdKDg1TgYb4HDc
+	 S28NRPri/UT/g==
+Message-ID: <efb23a70-ae3d-44fc-af3c-1407c38fd6b3@kernel.org>
+Date: Thu, 30 Jul 2026 12:49:57 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,7 +35,7 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 00/10] Ambarella CV75 SoC minimal bring-up
+Subject: Re: [PATCH 05/10] dt-bindings: serial: add Ambarella UART
 To: Long Zhao <longzhao@ambarella.com>, Arnd Bergmann <arnd@arndb.de>,
  Alexandre Belloni <alexandre.belloni@bootlin.com>,
  linux-arm-kernel@lists.infradead.org, soc@lists.linux.dev
@@ -49,6 +49,7 @@ Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
  Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
  linux-kernel@vger.kernel.org
 References: <20260730104330.81367-1-longzhao@ambarella.com>
+ <20260730104330.81367-6-longzhao@ambarella.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -94,30 +95,25 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  K9bCVaboTA2T77QYkRcRJYSsO1alGX0ome/hMLD1daXlkrNUp1HWa3K4iytLRXjCSIorWiGs
  n+q3krnpXu3TFkA8qtOFZMdnIiFuiq1yLT8hptsV5xh1TA2nsVvSYiaCr3q4s4BKjS/KrLDb
  qoxzw8ISjdUp4pA85vb6YLCmb39NgidD+7PmAr65lBNveIFynTgsja1rRQ4=
-In-Reply-To: <20260730104330.81367-1-longzhao@ambarella.com>
+In-Reply-To: <20260730104330.81367-6-longzhao@ambarella.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 30/07/2026 12:43, Long Zhao wrote:
-> 
+> Document the Ambarella UART controller.
+
+I will drop all your patches from DT patchwork as you requested in the
+footer.
+
+I cannot destroy the copies, but I will comply as much as I can.
+
+Just a note - generic compatibles are not the way to go. Please
+carefully read writing bindings document and DTS101 slides
+
+...
+
 > NOTE: This email (including attachments) contain Ambarella Proprietary and/or Confidential Information and is intended solely for the use of the individual(s) to whom it is addressed. Any unauthorized review, use, disclosure, distribute, copy, or print is prohibited. If you are not an intended recipient, please contact the sender by reply email and destroy all copies of the original message. Thank you.
 
-Maybe I am the intended recipient of your message, maybe not. I don't
-want to have any legal questions regarding upstream, public
-collaboration, thus probably I should just remove your messages.
-
-Please talk with your IT that such disclaimers in open-source are not
-desired (and maybe even harmful).
-If you do not understand why, please also see:
-https://www.youtube.com/live/fMeH7wqOwXA?si=GY7igfbda6vnjXlJ&t=835
-
-If you need to go around company SMTP server, then consider using b4
-web-relay: https://b4.docs.kernel.org/en/latest/contributor/send.html
-
-Please be informed that by responding to this email you agree that all
-communications from you and/or your company is made public. In other
-words, all messages originating from you and/or your company will be
-made public.
 
 Best regards,
 Krzysztof
