@@ -1,48 +1,49 @@
 Received: from mx0b-00622301.pphosted.com (mx0b-00622301.pphosted.com [205.220.175.205])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EDB8409273;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F29A40B102;
 	Thu, 30 Jul 2026 11:06:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.175.205
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785409595; cv=none; b=K6YzhSLja444kVVSGpndd9vYun8XehDYsYDgZUchxGZU5T8J4F1cVwDpV2WIeg57sKrQcnNGmzs0m71Pz4opVccx+PyHiUT+ROEWy3UDLk1pOgHMFGdTAf28Gc0GWE/qPKjYedBWMiKhQtY/mcBt5JTJQ8pNfzH/Fj1U2PG+NDc=
+	t=1785409595; cv=none; b=SAc/tnKfm93CapobtcnB81Aa7JlH93QNWIEemuS0odz+YemUVYsb+qGLxTkuskRgjaqLQ/+v1+PLaNDqDv4rgPc2wvwMdQCsiKTBJ6/WEb6KCOd3M5urSZsRtILW9XlCC5DVIVjyB3cdv4Jz8Y3Y6tqcAt+KoaOuoVVj1dxmUFw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1785409595; c=relaxed/simple;
-	bh=JJfiLbJ3fwSf+fMfQDgsOpGGAiaWQyVX3U4sg7NpQy8=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=QxJh1rX+xDTj+MLPeQ+ornmtWa8wKJnHLar7BLfh0kyE4v9XiR8mFprBqmeBxmxPvns3hZoSqe+JKXlg6S0bvz5S2zLoN2RhGEiGvwOXFVkCqOkP8mYz8QDj1VVKs16jVdvQ/7U2gc8B//O0FdVKx/UGNVcQBNvkWJbQU2GYS+g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=ambarella.com; spf=pass smtp.mailfrom=ambarella.com; dkim=pass (2048-bit key) header.d=ambarella.com header.i=@ambarella.com header.b=ZwinZ+Rr; arc=none smtp.client-ip=205.220.175.205
+	bh=636J9EQYRe7tVVCazXdLYj1tEmn5J9pbvmLzgUJ4iMk=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=HurxAFsKA37Z8fFiRhF51Wf1sb/jFzn1gpINSWGGlaDfdDyXWdGXfQcbaBsvmREqO/EWQWlEshUwF1Eb3RbNkLmeUdHds5Fxy6LwLmDumtZC1BVuBz5QVYuuB5FbMVUGx1f6FB6Xh4hR9umOLmz709RQeOV+fVbqQHAtDVZhcHk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=ambarella.com; spf=pass smtp.mailfrom=ambarella.com; dkim=pass (2048-bit key) header.d=ambarella.com header.i=@ambarella.com header.b=I+eJwk2o; arc=none smtp.client-ip=205.220.175.205
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=ambarella.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ambarella.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ambarella.com header.i=@ambarella.com header.b="ZwinZ+Rr"
+	dkim=pass (2048-bit key) header.d=ambarella.com header.i=@ambarella.com header.b="I+eJwk2o"
 Received: from pps.filterd (m0241925.ppops.net [127.0.0.1])
-	by mx0a-00622301.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66UA6Egi3332841;
-	Thu, 30 Jul 2026 10:43:39 GMT
+	by mx0a-00622301.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66UA3stW3328748;
+	Thu, 30 Jul 2026 10:43:41 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ambarella.com;
 	 h=cc:content-transfer-encoding:content-type:date:from
-	:message-id:mime-version:subject:to; s=com20210415pp; bh=B6cfWYY
-	HjbHbSBK9jmV76tchnVz9XZL5/OBjKoitaAM=; b=ZwinZ+Rrn+owSGRoCGjFkOv
-	oCahNOH7dLjDIsCRc1FgIkTm+gGMCTHQt3vck5Hxp4qiOiJxRwELivMrFyWgV4Mj
-	TXjSRv3wnKgK4cHBhmn7tfJo9rJmgzZEY78Az/BX0FIHADh0XDrOHwXwUp5iyzDB
-	3qmj8HSLj3fUi9lBadgv4OTk9rKJ6x10ptQr/jWH/Opg1Bl8Ifg1rE2YSYb75FDV
-	+bRynujtvwA+RtKiCvr9hxklb0i2kbtd38inAy3cfg7eTv5PWD6N9Agr/MSjBT3Z
-	yXF8pn6+CQi1jAuYacFrsqXIAgwnXHFxUPCsOfjii5PDuQHi9r8B+imxOTbJzPQ=
-	=
+	:in-reply-to:message-id:mime-version:references:subject:to; s=
+	com20210415pp; bh=4LxfYmHR5L0zBw2a260tAcDoh7shWgndlmIo8JVY22s=; b=
+	I+eJwk2ohZai5wjE5R8jZ6eLR4eTSWvhyVoxviNcnM2/eRjry3up/lKquEFze/in
+	G7q4a6m95lA4E/p8wvcQ1AZp7P2BDzcIVL2KUEsUpaWlIbWGVCebmUSJQwVnNulW
+	rsa32xhlsuogapxz5PuCr8+yfjPOa8XnfCYpgjAGfCevq6N5Fg7wJp69WsFO6A/W
+	4VdajiunOcRG6/s2ll9ax1oP4y2nkC/wMjaC+6JpZddqpRhkwVg70wz21lmbA6iZ
+	3D+3SswQHgtjlM4X6Edz8YlD5ddMHTJuiW5ScbhA05rudShSkokhODacctm1gaZI
+	19cgYocDHEZ9glwEBQTWZg==
 Received: from webmail.ambarella.com ([12.30.244.130])
-	by mx0a-00622301.pphosted.com (PPS) with ESMTPS id 4fq8twhnb0-1
+	by mx0a-00622301.pphosted.com (PPS) with ESMTPS id 4fq8twhnb1-2
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 30 Jul 2026 10:43:39 +0000 (GMT)
-Received: from ambtw-cas3.ambarella.net (10.2.4.228) by
- ambus-ex-se2.ambarella.net (10.1.4.10) with Microsoft SMTP Server
+	Thu, 30 Jul 2026 10:43:41 +0000 (GMT)
+Received: from ambtw-ex-se1.ambarella.net (10.2.5.164) by
+ ambus-ex-se1.ambarella.net (10.1.4.9) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.45; Thu, 30 Jul 2026 03:43:37 -0700
+ 15.2.2562.45; Thu, 30 Jul 2026 03:43:40 -0700
 Received: from ambtw-cas3.ambarella.net (10.2.4.228) by
- ambtw-cas3.ambarella.net (10.2.4.228) with Microsoft SMTP Server
+ ambtw-ex-se1.ambarella.net (10.2.5.164) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.58; Thu, 30 Jul 2026 18:43:36 +0800
+ 15.2.2562.45; Thu, 30 Jul 2026 03:43:39 -0700
 Received: from shbuild7.ambarella.net (10.4.8.70) by ambtw-cas3.ambarella.net
  (10.2.4.228) with Microsoft SMTP Server id 15.1.2507.58 via Frontend
- Transport; Thu, 30 Jul 2026 18:43:34 +0800
+ Transport; Thu, 30 Jul 2026 18:43:38 +0800
 From: Long Zhao <longzhao@ambarella.com>
 To: Arnd Bergmann <arnd@arndb.de>,
         Alexandre Belloni
@@ -61,10 +62,12 @@ CC: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
         Will Deacon <will@kernel.org>, <linux-kernel@vger.kernel.org>,
         Long Zhao
 	<longzhao@ambarella.com>
-Subject: [PATCH 00/10] Ambarella CV75 SoC minimal bring-up
-Date: Thu, 30 Jul 2026 18:43:20 +0800
-Message-ID: <20260730104330.81367-1-longzhao@ambarella.com>
+Subject: [PATCH 02/10] dt-bindings: soc: add Ambarella secure scratchpad
+Date: Thu, 30 Jul 2026 18:43:22 +0800
+Message-ID: <20260730104330.81367-3-longzhao@ambarella.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20260730104330.81367-1-longzhao@ambarella.com>
+References: <20260730104330.81367-1-longzhao@ambarella.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -73,23 +76,24 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain
-X-Proofpoint-GUID: QvM4xzgoxCOLYd73qqOIgifnYq3f3tNj
-X-Proofpoint-ORIG-GUID: QvM4xzgoxCOLYd73qqOIgifnYq3f3tNj
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzMwMDA4MCBTYWx0ZWRfX1tEdZe81ZO4K
- QUPuxLiDizW8+3XNrG4D/MWaVod+ialWZrPUV2BCCYtp7p6QCk5xaQDaDjwQszi8q6F1SAwoV33
- WmbyJcAML59SksXNAzZz8OFgstkSmk/mtjQ07X+vMNyUPxMqZ5TVlWZy7QzO1hCDJMs5zi8QOha
- pHmNZVkgSO4VoB4cqHByNCYIAE+//GWLw+OyFJlEGHFdgXArYf4QAcQaquaeq/n5tCPyQPEfqBi
- zqGOelsd5neibQ6Sdx0eTFIcu0kGxEk2r7+457mNKtJG3/m3uoXXM50z1EWBnV45VBd83bKfj8T
- 6xx5+ESvIFddqKuD/olVZ39vCTdc/U9hZLQNUeJIRfU2AaInokXrzfonGMf+j2U2BNSJIuX5XYn
- tPB0eElLah2iI3a31OvdnY1/Do33KUnOBcRDBtOTb47O5vAMrc/MvIsR3CUQFyxt0eVCtdMn8PZ
- LKMzPYRdH01FfT3bPJQ==
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzMwMDA4MCBTYWx0ZWRfXxeGiWCanzM/o
- +tPbj2ZnDJZUnL7aZmtSVWBhshynav+dwoOGtai8QjKipUziA5qnSH9pLRP5fgc5wrABnuxS1P0
- uQ5dMSrYGcrck01AR/7/K2pfw1JRu+cOp65frmshp9CLNZMi0CqO
-X-Authority-Analysis: v=2.4 cv=PNE/P/qC c=1 sm=1 tr=0 ts=6a6b2adb cx=c_pps
+X-Proofpoint-GUID: w0DM6PpSMCrvEJjKZKVss7cCGHSuMjvq
+X-Proofpoint-ORIG-GUID: w0DM6PpSMCrvEJjKZKVss7cCGHSuMjvq
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzMwMDA4MCBTYWx0ZWRfX5eO3aDpGcYYy
+ BmCX+vFIW/tVcXB27bqAGAqf618xMTBWLS0o+EsxHkRvFICQedSGtSlsDJDkpgRQzJf+ja6nQri
+ 6i8EndLeWr647ocnln7D7+L8ZeWlsuKo/B+QmpOkOIMIL+4tg1UKjap75Awc3qO30abMd3Zh66r
+ vmHqrn7pbP5linBitwVJr7tTBshvWVtFSjuAjOO7kSGe9eLPQHvqwuuGDjhBp81erEjsZohcYsH
+ NDyYUN4SxCfZRXHQfABfVVFRRkfPxPOOQqHptszRtVa+1qNO8sIt/RH+c5vHEPawkj33mxrj88y
+ c1IX2dIrlyaUDtwU3nTA17PcGM+nRicaAKgIGwhy2l3Ja9jejAUO2XQJmO1Nv2ZvxmXOxDdD7XK
+ CEp/V+ZjuafjvdNuOho1KZ0fP6Ne2sccK00OjMP642BFKHIoyz5Lssa+VCX9MPFPSoqPTRaYH8S
+ Gv5nSBn3/i2UP33ejzw==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzMwMDA4MCBTYWx0ZWRfX8F8tty7wmKtG
+ P/fTtH2HLAv3/eRX0jkQ7swIKwftonN9qEEMjflOy9ujg8aoq87KlC73JYdoP0l2oftfrFd4TYA
+ 3ashrTRpzUfupZ2Q83hQ4Kc7udlIVEG9K+XykO7XpEUCpc9CjrUN
+X-Authority-Analysis: v=2.4 cv=PNE/P/qC c=1 sm=1 tr=0 ts=6a6b2add cx=c_pps
  a=DgnZYc2JwZ3KnY28M5UqXQ==:117 a=DgnZYc2JwZ3KnY28M5UqXQ==:17
  a=RAioF0-LDSMA:10 a=VkNPw1HP01LnGYTKEx00:22 a=yXVIz-0bn9infC194UBj:22
- a=KblO7da7ppA7TBl3N-nE:22 a=2LzS6VQafNHXJvlkB2cA:9
+ a=KblO7da7ppA7TBl3N-nE:22 a=gEfo2CItAAAA:8 a=ppJngBeKAAAA:8
+ a=Y7lJEgl3tIs_xKLw27oA:9 a=sptkURWiP4Gy88Gu7hUp:22
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-07-30_03,2026-07-29_01,2025-10-01_01
@@ -99,95 +103,66 @@ X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607300080
 
-This series adds minimal Ambarella CV75 support sufficient for early
-bring-up with a serial console.
+Document the Ambarella secure scratchpad syscon used by CV75.
 
-It introduces DT bindings and drivers for the RCT clock controller,
-pinctrl, and UART, plus ARCH_AMBARELLA, a minimal CV75 EVK device tree,
-arm64 defconfig entries, and a MAINTAINERS entry.
-
-The goal of this first submission is a small, reviewable console-capable
-baseline. Further SoC peripherals can follow in later series.
-
-The series is based on linux-next. It has been booted on CV75
-hardware with the serial console working.
-
-Testing:
- - Booted to console on CV75 EVK with initramfs
- - scripts/checkpatch.pl --strict
- - make dt_binding_check DT_SCHEMA_FILES=3Dambarella
-
-Long Zhao (10):
-  dt-bindings: arm: add Ambarella CV75 platforms
-  dt-bindings: soc: add Ambarella secure scratchpad
-  dt-bindings: clock: add Ambarella CV75 RCT clock controller
-  dt-bindings: pinctrl: add Ambarella CV75 pinctrl
-  dt-bindings: serial: add Ambarella UART
-  clk: ambarella: add CV75 CCU driver
-  pinctrl: ambarella: add Ambarella pin controller
-  serial: ambarella: add Ambarella UART driver
-  arm64: ambarella: add ARCH_AMBARELLA and CV75 EVK DT
-  MAINTAINERS: add ARM/AMBARELLA SoC support
-
- .../devicetree/bindings/arm/ambarella.yaml    |   23 +
- .../bindings/clock/ambarella,cv75-rct.yaml    |   94 +
- .../pinctrl/ambarella,cv75-pinctrl.yaml       |  167 ++
- .../bindings/serial/ambarella,uart.yaml       |   55 +
- .../ambarella/ambarella,sec-scratchpad.yaml   |   41 +
- .../devicetree/bindings/vendor-prefixes.yaml  |    2 +
- MAINTAINERS                                   |   18 +
- arch/arm64/Kconfig.platforms                  |    9 +
- arch/arm64/boot/dts/Makefile                  |    1 +
- arch/arm64/boot/dts/ambarella/Makefile        |    3 +
- arch/arm64/boot/dts/ambarella/cv75-evk.dts    |   30 +
- arch/arm64/boot/dts/ambarella/cv75.dtsi       |  151 ++
- arch/arm64/configs/defconfig                  |    3 +
- drivers/clk/Kconfig                           |    1 +
- drivers/clk/Makefile                          |    1 +
- drivers/clk/ambarella/Kconfig                 |   16 +
- drivers/clk/ambarella/Makefile                |    6 +
- drivers/clk/ambarella/ccu-cv75.c              |  296 ++++
- drivers/clk/ambarella/ccu_common.c            |   60 +
- drivers/clk/ambarella/ccu_common.h            |   25 +
- drivers/clk/ambarella/ccu_mux_div.c           |  223 +++
- drivers/clk/ambarella/ccu_mux_div.h           |   35 +
- drivers/clk/ambarella/ccu_pll.c               |  374 ++++
- drivers/clk/ambarella/ccu_pll.h               |   70 +
- drivers/pinctrl/Kconfig                       |   15 +
- drivers/pinctrl/Makefile                      |    1 +
- drivers/pinctrl/pinctrl-ambarella.c           | 1561 +++++++++++++++++
- drivers/tty/serial/Kconfig                    |   21 +
- drivers/tty/serial/Makefile                   |    1 +
- drivers/tty/serial/ambarella_uart.c           |  937 ++++++++++
- .../dt-bindings/clock/ambarella,cv75-clock.h  |   17 +
- .../dt-bindings/pinctrl/ambarella,pinctrl.h   |   11 +
- 32 files changed, 4268 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/arm/ambarella.yaml
- create mode 100644 Documentation/devicetree/bindings/clock/ambarella,cv75-=
-rct.yaml
- create mode 100644 Documentation/devicetree/bindings/pinctrl/ambarella,cv7=
-5-pinctrl.yaml
- create mode 100644 Documentation/devicetree/bindings/serial/ambarella,uart=
-.yaml
+Signed-off-by: Long Zhao <longzhao@ambarella.com>
+---
+ .../ambarella/ambarella,sec-scratchpad.yaml   | 41 +++++++++++++++++++
+ 1 file changed, 41 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/soc/ambarella/ambarel=
 la,sec-scratchpad.yaml
- create mode 100644 arch/arm64/boot/dts/ambarella/Makefile
- create mode 100644 arch/arm64/boot/dts/ambarella/cv75-evk.dts
- create mode 100644 arch/arm64/boot/dts/ambarella/cv75.dtsi
- create mode 100644 drivers/clk/ambarella/Kconfig
- create mode 100644 drivers/clk/ambarella/Makefile
- create mode 100644 drivers/clk/ambarella/ccu-cv75.c
- create mode 100644 drivers/clk/ambarella/ccu_common.c
- create mode 100644 drivers/clk/ambarella/ccu_common.h
- create mode 100644 drivers/clk/ambarella/ccu_mux_div.c
- create mode 100644 drivers/clk/ambarella/ccu_mux_div.h
- create mode 100644 drivers/clk/ambarella/ccu_pll.c
- create mode 100644 drivers/clk/ambarella/ccu_pll.h
- create mode 100644 drivers/pinctrl/pinctrl-ambarella.c
- create mode 100644 drivers/tty/serial/ambarella_uart.c
- create mode 100644 include/dt-bindings/clock/ambarella,cv75-clock.h
- create mode 100644 include/dt-bindings/pinctrl/ambarella,pinctrl.h
 
+diff --git a/Documentation/devicetree/bindings/soc/ambarella/ambarella,sec-=
+scratchpad.yaml b/Documentation/devicetree/bindings/soc/ambarella/ambarella=
+,sec-scratchpad.yaml
+new file mode 100644
+index 000000000000..2cca277674f7
+--- /dev/null
++++ b/Documentation/devicetree/bindings/soc/ambarella/ambarella,sec-scratch=
+pad.yaml
+@@ -0,0 +1,41 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/soc/ambarella/ambarella,sec-scratchpad.=
+yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Ambarella Secure Scratchpad Registers
++
++maintainers:
++  - Long Zhao <longzhao@ambarella.com>
++
++description:
++  The secure scratchpad block contains shared system registers used by
++  other Ambarella SoC blocks through syscon regmap lookups.
++
++allOf:
++  - $ref: /schemas/mfd/syscon-common.yaml#
++
++properties:
++  compatible:
++    items:
++      - const: ambarella,cv75-sec-scratchpad
++      - const: ambarella,sec-scratchpad
++      - const: syscon
++
++  reg:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    scratchpad@e002e000 {
++        compatible =3D "ambarella,cv75-sec-scratchpad",
++                     "ambarella,sec-scratchpad", "syscon";
++        reg =3D <0xe002e000 0x1000>;
++    };
 --
 2.34.1
 
