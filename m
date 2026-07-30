@@ -1,70 +1,70 @@
-Received: from mail-vs1-f47.google.com (mail-vs1-f47.google.com [209.85.217.47])
+Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com [209.85.128.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1674347A870
-	for <linux-serial@vger.kernel.org>; Thu, 30 Jul 2026 23:34:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAB484219E7
+	for <linux-serial@vger.kernel.org>; Thu, 30 Jul 2026 23:39:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785454496; cv=none; b=aVC4rnoba22+Pa+nY0oppPejIb9NSWp9yNFstLpv9fr/G8kKn4gGa9zIYYmagfP6maA9Piw5Q7wMHHn5SS0O1XTZ0btfYv7hQigR0RCMXL49VQWUU5lQWlVpePyDy3+SZsIcAjnwOeCXWh+8F+t4HCoMhTwyTKD3K+GidhWOXyk=
+	t=1785454751; cv=none; b=C4h8clBS40R+vRbe5rIsVbcwADqsrRY4Sy/3tiHpB85XxkL51J+XOX+/63bcYps9x3rla6VLBof7EfWN7IyejSTpcdhsGFkgDhTVhmvfCXIksu8omLtVb4XIqFZj2xICBbzoGoT7eLx+z/uKZpF3aNQC5YeLJvHufsa5dKpusBs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785454496; c=relaxed/simple;
-	bh=utT5GH8JwJmVzB+0txH3Mifzm/70gcqs7ugOLa5BO/c=;
+	s=arc-20240116; t=1785454751; c=relaxed/simple;
+	bh=O0SjzN/C0aO3qHhb3UBjmXFOhQPDFTOsNKhcZLytoNI=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=I4jelYFU6TR2LuBhL8lx70vWd2poEVnzRPzE2J/Yhi9Cw0G2DRUkPTDNvnqYwUb8a6rzH1tcb7qAhjndrm8KZu8FOvQOrClubJtZEY0jf/ZzlhlyZgHDEjs53z7VGq5t81/ixZZdMISLxYh6rXHizKkAlUZOe9hcqjN2lW/mu+Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=jOAxZEwJ; arc=none smtp.client-ip=209.85.217.47
+	 To:Cc:Content-Type; b=KzhWR7ENgFgh7DbOCy/EM00A/fEIei9oiG5uqSq2ryiTRmjM2D9/TqiSsRVQuce6VvgC8Kc4kdsZKsytEmln5Q+mtjmkbb0f2MV1LMB4zkxrNEtB5bk2PEmX3Zj5Y79TIZOaJbMO7+oNTD3DLOzoIY47JPSaIoIftgNttbTn1cg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=PlC+edWQ; arc=none smtp.client-ip=209.85.128.177
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="jOAxZEwJ"
-Received: by mail-vs1-f47.google.com with SMTP id ada2fe7eead31-74d55dac06dso108781137.1
-        for <linux-serial@vger.kernel.org>; Thu, 30 Jul 2026 16:34:54 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="PlC+edWQ"
+Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-80c5cb9a888so4075177b3.3
+        for <linux-serial@vger.kernel.org>; Thu, 30 Jul 2026 16:39:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1785454494; x=1786059294; darn=vger.kernel.org;
+        d=chromium.org; s=google; t=1785454749; x=1786059549; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=N7GFN5YpwDEZAtAP3vleYwkuNsvwAGPeTkmkPSkEkzs=;
-        b=jOAxZEwJLw5Me8TAT5p3HD3jl3cTf00u3naxMR48xdOQ+vBnYdESrbfBoBo2iav3vC
-         jwCcPmcNjJUHWvySnfW5+rQ0MNP0nq9GVvNa1OJA9W9CamMlqxkzzKPTcyZK5dyjef0w
-         RiNWvzY/YH3orUCDi09CCByQ/HdsXdq8/dpRc=
+        bh=b2iUYeLjQUxHnF+XDQe2fiV8PKRsDwqLHqM0lXiq4GU=;
+        b=PlC+edWQkL1rwnx+ZtUKskhvd99FIIuM+30uL84w3KKidCmWKYuamYjiNDWlGfAYH0
+         ADtx8TsTw7tK+k4DFvxNIjldJPTnCN49xMc0QiHKd78EiPzSaQc9jo0W/9kt8nB3Lhid
+         7o84G7YxhHJlLIxQvl9fqI2duJ6R9SzDZ1P/Y=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785454494; x=1786059294;
+        d=1e100.net; s=20251104; t=1785454749; x=1786059549;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=N7GFN5YpwDEZAtAP3vleYwkuNsvwAGPeTkmkPSkEkzs=;
-        b=UYHbk2r0MmJhGzpsAg1Wbx8adSzAk2XXcDnenkpjTLz40GC6L3NJ2zLljKRQT9P58u
-         M94LsZJlckQs0DSGELMFeUO+uo2GVSlKI+MEG6N6ie9yveRSn4VMdMChCb4oI0LgH8x/
-         gFM4hP9OfI01YGxZ6sG5+7RVyyqfrpggXHZVzrBwtYoRS4/EmQUU5u4eAYKj/ujAXVF/
-         JVUyZYFwDzBQaeZIwF3cDQ7RkjT+BelT+mSzQdDL7TdLhgYfe9fHLM/5X6IQawEpL6Y0
-         QKRHhK7UIhzAwonzM+Y8HIgsyYOSYiAmtxyUamF7/m0qaCizoTvEDvswcf8tMAw6Gyxv
-         gB8g==
-X-Forwarded-Encrypted: i=1; AHgh+RoAYSbJx6yUDPXRXy8JuS9YtiI2qiwhUIJ/poPV26YmVnmY1PCLAcOvSJ3/YasIvtj0wxI21vpp8c1plxo=@vger.kernel.org
-X-Gm-Message-State: AOJu0YztobP1RnKF/GVtua0VL3DheyLTekYe56V2Ua4u8k1WeWkMO8We
-	kkAO8CJlqBARd+UWKwq+Pl/9NnFWrH0uquraxdf7n59mypcGbyYUtppMpjJ8jBtz1dtZuGNbHTd
-	1Jrw=
-X-Gm-Gg: AR+sD130d6N46TVMMyYuFUGeh6Qv6EQjTxZBig16nq7/a0zb8ag0LCfyqHzkM6FGOt7
-	A37HTN+mADrHpULcvYRP6uLXHUUjmBhMTMQWfZ15/tZbIVcfY3q3vbZWI9JoGXyLM1KrDoFwgtx
-	7f9LgnV0Xh/e86vPeDBBFwSXfox/MX1iCOJs/bLA+Il0l801BDLdMQybmUEfANJwX4FxH6HadOw
-	qkbsZRyL9l1Z8k5cqRWgFYuJd2RLXBXrZGZZKVBo9r4AVvMWzSWSd63+5QAEMbBYNum85PWuSFC
-	tfGPumhn7OjfoDznX3H1Vjf1iaJHBMLJ68CHbYIB5bgRkJhtb+LVCHCzCe5vyhIZ2D4Al7YRhje
-	wU3XZ6CD6oMtgNEo+k63De4aEYQMc8YjTHy8L3/CZRVErrR1kBeX90cCWNGnAx7GxRU4LQroO+t
-	oFVlcqD0i/hXJAiOrEozBVoUEn2Y16U1dt+g2sZn+mw3dF+yHgBxLlwaliFjQW/704L4292hpLT
-	FSpgsy194zP8gZK/nx2xMsnKSg=
-X-Received: by 2002:a05:6102:5e88:b0:631:28c1:154c with SMTP id ada2fe7eead31-7574e4dd42emr1604266137.9.1785454494107;
-        Thu, 30 Jul 2026 16:34:54 -0700 (PDT)
-Received: from mail-vs1-f43.google.com (mail-vs1-f43.google.com. [209.85.217.43])
-        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-977cdb237a0sm2281397241.6.2026.07.30.16.34.53
+        bh=b2iUYeLjQUxHnF+XDQe2fiV8PKRsDwqLHqM0lXiq4GU=;
+        b=PDwIox8tEWCMMsQar/NQxaY7RaRsh5jT8RjHYB1GzNUkmojDivetUs5Fiw57l9yor6
+         ttqJZ+PqeZsPvIW2nOpxGKI/KUpVFU1MSPepIVD/n1e3/7dzip4t43jZ+P919r08FfS3
+         tF2CEtIAN2/fea3rx7n8kmCMIvgk6WvGzdC/hbBtcQQfdLXv/QyCRuc48dlStsAEOztA
+         04D45ID0jPoJuYEUAY0d895fIxjqXFtNdWilpnLaKH3RCXO7/6CLXPL/cknzeukkth9t
+         wFh2uaeGbSH4VfO7PSiEayM372F0TtpleBze5G7u6TEqwC18IGZlH79W1jO4ZVJCwILw
+         CVEQ==
+X-Forwarded-Encrypted: i=1; AHgh+Rr9aWvu5RKYDe/DO9Nh8PMR6ABjxpu7Sldppq8n0hw1YQ9EiYDp2mmN69aLHN9e/neDc6TIWEkjy+b6rgs=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzd34dl5yFNI9PZ7QVOBRKpolgyFELcE+OALrQhxwM6iZl7DfwM
+	NaZn3hcGnfFcvKJ2KZiX0bQrIKiWdDRFJhXfer0QSOI2ZylNazlk9zD0LbGfEwI/kx1QnjM/CBi
+	9dJk=
+X-Gm-Gg: AR+sD11rIk2mYOgpvWcgavgmJd83ZObroi1ZJYYF10anx9NYEXYSKFIfXdZjvHlS8t/
+	76zSWKU3KfO3UsQssxc3xHMIn9RXatTJ780un2n/v3SRCJUoD+pGbeKnqwkD3ISRhfhIiZA8/rV
+	k70RS9v7IKn3m+xcMCkm9qc7QoBtMsgVdhSlwdmNhbFuVdpBgf5DSSmEctml8w7cIKD9d1IeXfc
+	/e1OMBRhqqGcuNJ9IEm9+wWrUJQ31uM64z8Np1HcLy39BOX89saoeLxVW0QddW+OgfLskherPcB
+	mJeZ2H7Kxp8sVECGbMwxmpA7Nedzic9yEoK2KrTpwWFHPmRzWnBcoURJ1XJ6FnqHyZhUexDO02c
+	hOBPADjNt8oRl/JE1EfeaX8xU6p+qEIrTSWYYWlufYzfk/pJXkJXjmwY1zmgjb4zVQZFT9qJZbz
+	BsLP+AwAb6GxuBRSPKj1i3ZiON8guOQKKl1IgS1phhsWLSax0s0LjwMuwcgUTj7VN1G6XH9hnip
+	P4Z+T9lwCRPEQxDu3F24SodnJXHXVk=
+X-Received: by 2002:a05:690c:909:b0:81e:d656:9909 with SMTP id 00721157ae682-81fb89449abmr32831217b3.1.1785454748827;
+        Thu, 30 Jul 2026 16:39:08 -0700 (PDT)
+Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com. [209.85.128.181])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-81fb8aec6f4sm20608637b3.41.2026.07.30.16.39.08
         for <linux-serial@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 30 Jul 2026 16:34:53 -0700 (PDT)
-Received: by mail-vs1-f43.google.com with SMTP id ada2fe7eead31-74d55dac06dso108778137.1
-        for <linux-serial@vger.kernel.org>; Thu, 30 Jul 2026 16:34:53 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AHgh+Rr16PrX24T5w+OiFytg3K5Xx1LbH2lyMgtUj9ArR9ezpjk3A5ZfPkvu/fnZb7i6UXNWuCCww2sIJOhDx5w=@vger.kernel.org
-X-Received: by 2002:a05:6102:511f:b0:745:78d4:4856 with SMTP id
- ada2fe7eead31-7574e1d5298mr1438306137.7.1785454492526; Thu, 30 Jul 2026
- 16:34:52 -0700 (PDT)
+        Thu, 30 Jul 2026 16:39:08 -0700 (PDT)
+Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-81f64e8dfbcso5306107b3.2
+        for <linux-serial@vger.kernel.org>; Thu, 30 Jul 2026 16:39:08 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AHgh+Rr5nV63sVY5uX3Vl2X+DwbbSjJeDMxQeW5PEkGlDxG0zcMyQSrX3EobusfLFxF8NyNF6vWouaCHjfjYI0s=@vger.kernel.org
+X-Received: by 2002:a05:6102:14aa:b0:739:97bf:9189 with SMTP id
+ ada2fe7eead31-7574f93a65fmr1607449137.19.1785454369736; Thu, 30 Jul 2026
+ 16:32:49 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -72,20 +72,21 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 References: <20260722-contrib-pg-pixel10-initial-dts-v2-0-3abae9717feb@linaro.org>
- <20260722-contrib-pg-pixel10-initial-dts-v2-5-3abae9717feb@linaro.org>
-In-Reply-To: <20260722-contrib-pg-pixel10-initial-dts-v2-5-3abae9717feb@linaro.org>
+ <20260722-contrib-pg-pixel10-initial-dts-v2-4-3abae9717feb@linaro.org> <20260724-dancing-skunk-of-novelty-72c1b8@quoll>
+In-Reply-To: <20260724-dancing-skunk-of-novelty-72c1b8@quoll>
 From: Doug Anderson <dianders@chromium.org>
-Date: Thu, 30 Jul 2026 16:34:40 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=WWpswZ0LbZzpj6RcyRxYps1Ht8+w2TYTviTw4bo80KZg@mail.gmail.com>
-X-Gm-Features: AUfX_mxnuq3KCnn0XeSL1ZB4QNLigMdFRjElx75voPzjUsE6soU8Kl1B5ccPok8
-Message-ID: <CAD=FV=WWpswZ0LbZzpj6RcyRxYps1Ht8+w2TYTviTw4bo80KZg@mail.gmail.com>
-Subject: Re: [PATCH v2 5/5] arm64: defconfig: enable Tensor G5 SoC family
-To: Peter Griffin <peter.griffin@linaro.org>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, =?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>, 
+Date: Thu, 30 Jul 2026 16:32:37 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=U0HUdjPcg+5Vx8_ag0zLd3CZx5w5SFr38p+YwRnC_G6w@mail.gmail.com>
+X-Gm-Features: AUfX_mwnyu4WjATq-AQcVkDVhFUfk_uPBliwju6dkYwZZ_ZMH3FiPhsyMK3Tdpo
+Message-ID: <CAD=FV=U0HUdjPcg+5Vx8_ag0zLd3CZx5w5SFr38p+YwRnC_G6w@mail.gmail.com>
+Subject: Re: [PATCH v2 4/5] arm64: dts: google: Add initial dts for frankel/blazer/mustang
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Peter Griffin <peter.griffin@linaro.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	=?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>, 
 	Tudor Ambarus <tudor.ambarus@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
 	Jiri Slaby <jirislaby@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, 
-	Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>, 
+	Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>, 
 	Alexandre Belloni <alexandre.belloni@bootlin.com>, Linus Walleij <linusw@kernel.org>, 
 	Drew Fustini <fustini@kernel.org>, Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>, 
 	"Guilherme G. Piccoli" <gpiccoli@igalia.com>, devicetree@vger.kernel.org, 
@@ -99,17 +100,91 @@ Content-Transfer-Encoding: quoted-printable
 
 Hi,
 
-On Wed, Jul 22, 2026 at 2:56=E2=80=AFAM Peter Griffin <peter.griffin@linaro=
-.org> wrote:
+On Fri, Jul 24, 2026 at 12:00=E2=80=AFAM Krzysztof Kozlowski <krzk@kernel.o=
+rg> wrote:
 >
-> Enable the Google Tensor G5 (Laguna) SoC family in the arm64
-> defconfig. This SoC family is found in Pixel 10 and later phones.
+> > +                     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LE=
+VEL_LOW) 0>,
+> > +                     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LE=
+VEL_LOW) 0>,
+> > +                     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LE=
+VEL_LOW) 0>;
+> > +     };
+> > +
+> > +     /*
+> > +      * The Pixel bootloader considers it a fatal error if it doesn't =
+find
+> > +      * a `ufs0` alias so it can add calibration data to the node. Unt=
+il
 >
-> Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
-> ---
->  arch/arm64/configs/defconfig | 1 +
->  1 file changed, 1 insertion(+)
+> Fake node is ok, but alias won't fly because aliases are not allowed for
+> ufs. Well, would work 10 years ago, but this is a device from ~2025 (so
+> SoC maybe a bit earlier), thus Google already knew that they MUST talk
+> with upstream open source maintainers before they ship such ABI.
+>
+> They did not talk, so you reap what you sow.
+>
+> There is no more excuse for a vendor to ignore open source and push
+> whatever-ABI-they-wish into their product, if they ever want to upstream
+> that product.
+>
+> I know it is not your fault, obviously. And I know that not much you can
+> do, so that is not rant towards you nor towards Doug.
+>
+> You will have to keep this part of patch out of tree or fix the Pixel
+> bootloader.
 
-In case having a tag helps:
+FWIW, it actually _is_ a rant towards me, since I added the "ufs0" alias. :=
+-P
 
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
+When I was originally bringing up Pixel 10 with upstream, the
+bootloader had a hardcoded path to the UFS node. It looked for it at
+"/ufs@3c400000". That certainly wasn't going to work. Downstream
+_still_ hasn't transitioned to having a "soc@0" node to put all the
+MMIO peripherals under, so the equivalent upstream path would be
+"/soc@0/ufs@3c400000"
+
+Now, I certainly could have made the bootloader search both paths, but
+that seemed bad to me because:
+
+1. As I understand it, DT paths aren't ABI. While it feels unlikely
+upstream would change "/soc@0/ufs@3c400000" to something else, I
+believe upstream would feel free to and not consider it a "breaking"
+change. This makes it feel unwise to hardcode the path in the
+bootloader. In the past, upstream has renamed nodes to clean them up
+and it wasn't considered a violation of the sanctity of the
+device-tree ABI.
+
+2. If #1 is untrue and we consider DT paths as ABI, it's still a bit
+awkward. We have one bootloader base that supports multiple SoCs. The
+unit address differs across SoCs, even though the IP block is nearly
+the same (bootloader still adds the same type of calibration data to
+the node). The code I started with had a bunch of #if statements for
+the paths in various SoC variants, and that went away with the alias.
+I suppose the bootloader needs to know the UFS base address anyway so
+I could have probably constructed the node name based on other
+#defines, but it still was a bit awkward.
+
+3. I certainly could have searched the whole device tree for the UFS
+node by "compatible" string, but the Pixel 10 (and future) UFS
+controllers aren't upstream yet. We wouldn't be able to land the Pixel
+10 device tree without the UFS bindings landed yet and I think we're a
+bit far away from getting the Pixel 10 UFS bindings landed...
+
+With all that, the "aliases" seemed like a pretty clean way for the
+bootloader to find the UFS node. It also matched my understanding of
+an appropriate use of an "alias".
+
+Any suggestions for how to resolve this? Do we go back to hardcoding a
+path in the bootloader and cross our fingers that upstream never
+cleans up anything that changes the path to the UFS node? Would it
+really be terrible to allow a "ufs0" alias for this case?
+
+As a side note, I did "talk" to upstream shortly after adding the
+"ufs0" node by sending the Pixel 10 patches upstream, but I guess we
+were so focused on the overlay topic that nobody thought to comment on
+the "ufs0" node? At the time, I'm fairly certain my resulting device
+tree files passed schema validation at the time, too...
+
+
+-Doug
