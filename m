@@ -1,38 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E16A137BE6B;
-	Thu, 30 Jul 2026 16:20:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7502445AF8;
+	Thu, 30 Jul 2026 16:20:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785428404; cv=none; b=a2D7KhKPuggBQDINns3+C4tdBhWo9l7e+VcVDEUtSecrd8zHPHf4BnFVXHfa4fQYr0ExSxZfDgJhPnfVqMma2Mi2CDSUtaPgfYBjbsPYgJCsXhk0o8vtd79gf0y++y2A1qUvN4VxJvQLjpHcFZWBl3dkR+uO50Ulsq6pinTLxQk=
+	t=1785428407; cv=none; b=kJCVxLFiBhpq+TMmwegcP1JwLT1zzRkHgvFTWwm8CMqWDwpJcmwlE0/1rwj+CgUI/ZaOoRmuA5hBgnsPkIKz3UBB5G2TDAmJDyja43RBU3Ol8k10mX5wAaRuHI5RUeyKgeVeyhvBGkKDkQz2tdcUBRr3J9zLOlZJOzbtCjn3wGY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785428404; c=relaxed/simple;
-	bh=jcZeaLfQ6zD+vXftAwGPX8QEZqx6VpMY4dOCeGCp82c=;
+	s=arc-20240116; t=1785428407; c=relaxed/simple;
+	bh=NG/Hf9uKQiJmdoislCB0y7wGpGQwRGVVUCDKwXWtQ1E=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Idsyc/rzN//FhKcvmbXdMfyXvNI9u1xPEmVKdGz7NKwvAmngH8Sr1AfL+Sf24/2/hwLUusOkmst+du16wniSZdFzLzpCUe9dDh3KE31Bn4lxcmrlUuChAd35qTgrOEHB093lVx3MznrBr7MctxgrViNvORpZvjTyRpuYTwV/oGQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=QIoJlxxL; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=tNHEWPiSbdOKXIDAqRqt5Qe/VNPweAfoUnfKPzISqMVK75AD1dLacXmfHfpnUoluUi2BPZxJPXnOKq/i2OeUCmtbjCznWwo0eUT4xHHs1VTEjquOO9XjM/7CKhtnp3lnik5wCS8MyvJ/ALTZy1Amo59onmDbwQDbM5DXM25SPZw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=zvSST8bd; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="QIoJlxxL"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43C6F1F000E9;
-	Thu, 30 Jul 2026 16:20:03 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="zvSST8bd"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15A601F000E9;
+	Thu, 30 Jul 2026 16:20:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1785428403;
-	bh=KPToJt+Qzhvwimh4jr2kFhz5PbYNSzFusVg510y0Xbs=;
+	s=korg; t=1785428406;
+	bh=QYLU6RYr3yfEPtc/KMYVr/k2ZzhyQ8RzBCm4m1OE4s0=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=QIoJlxxLKILj0w816NBmrWQ8aD6ErNrHo8joIY7r9xhKWjtb7e7FLJUskS538c4PI
-	 +wOeb/0qOwtYnLB+wlOJpHM93RRI1K0IBmHg3EIRGfZp9NiH8YZm8F1jfM3PrFQm7H
-	 2tjAFBC+PejedQMOoM0sjq4rUx9hvsrM4GThWF3w=
-Date: Thu, 30 Jul 2026 16:47:46 +0200
+	b=zvSST8bdPg82qSZ8SRa5S0ItPvKCkNFYYi7/9Hh085X/cpng9dT7BeY0sr2eybj2l
+	 +XTGVPLY9Hk6GSSnWltFjPGBddhCi2mchWFvw/sRVup2j/EFvjItU9KKuigfJpufha
+	 3UFomj0Ci97bk2O2WzJUE1niRxJxjS+4jGv+zQBs=
+Date: Thu, 30 Jul 2026 16:48:16 +0200
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Hugo Villeneuve <hugo@hugovil.com>
-Cc: Jiri Slaby <jirislaby@kernel.org>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH] serial: 8250: remove always included kconfig.h
-Message-ID: <2026073034-unbroken-busload-f0cf@gregkh>
-References: <20260721144847.3728422-1-hugo@hugovil.com>
+To: Jan Kara <jack@suse.cz>
+Cc: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+	linux-kernel@vger.kernel.org, Jan Kara <jack@suse.com>,
+	Yangtao Li <frank.li@vivo.com>, Huacai Chen <chenhuacai@kernel.org>,
+	WANG Xuerui <kernel@xen0n.name>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	loongarch@lists.linux.dev, linux-mips@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH] quota: remove CONFIG_PRINT_QUOTA_WARNING code
+Message-ID: <2026073007-nearby-debtless-cfd6@gregkh>
+References: <20260722060155.1111519-1-jirislaby@kernel.org>
+ <5cxumyfngrzddts3igtfqhogyabpjf5jywabpjclimnzy5pug6@e34tyng6thbg>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -41,24 +45,24 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260721144847.3728422-1-hugo@hugovil.com>
+In-Reply-To: <5cxumyfngrzddts3igtfqhogyabpjf5jywabpjclimnzy5pug6@e34tyng6thbg>
 
-On Tue, Jul 21, 2026 at 10:48:32AM -0400, Hugo Villeneuve wrote:
-> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+On Mon, Jul 27, 2026 at 09:53:30PM +0200, Jan Kara wrote:
+> On Wed 22-07-26 08:01:55, Jiri Slaby (SUSE) wrote:
+> > CONFIG_PRINT_QUOTA_WARNING was marked as BROKEN in 2023 by 36d532d713db
+> > ("quota: mark PRINT_QUOTA_WARNING as BROKEN").
+> > 
+> > The code is apparently unused and uninteresting, so remove it all, incl.
+> > the abuse of TTY.
+> > 
+> > Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > Cc: Jan Kara <jack@suse.com>
+> > Cc: Yangtao Li <frank.li@vivo.com>
 > 
-> The inclusion of <linux/kconfig.h> in commit 7ab80d1e72431 ("serial: 8250:
-> fix compile error with hub6_match_port() when compiled as a module") is
-> unneeded as it's guaranteed by the build starting from commit 2a11c8ea20bf
-> ("kconfig: Introduce IS_ENABLED(), IS_BUILTIN() and IS_MODULE()").
-> Remove it here.
-> 
-> Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> ---
-> Maybe this could be merged with commit 7ab80d1e72431 ("serial: 8250: fix
-> compile error with hub6_match_port() when compiled as a module") since it
-> is, for now, only in tty-testing?
+> OK, I'm for trying this because so far nobody was complaining about the
+> feature getting marked as BROKEN. Let's see how it goes...
 
-It's now in tty-next, so I'll just apply this, thanks!
+Great!
 
-greg k-h
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
