@@ -1,46 +1,41 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D59F2571B8;
-	Fri, 31 Jul 2026 09:39:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F9243B9D8C;
+	Fri, 31 Jul 2026 09:39:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785490793; cv=none; b=A67/FzI/I2ShkxNisUfSzeqNFTaLdsd7/nULl4d6nCGzx+ZrLgZ3tEwYh2QdLd7U4eT6dqEdHVapvV/JKSDe1f+WHwXtTn74+J5mNSsDI7nWbG8rIUdOqZio/QOrjHa37vCWVAOdd/gdk+amzqsPDJxeqd4yvDWkGxYOQ7aVlYM=
+	t=1785490793; cv=none; b=XDxjKmo+epLv0OtJI/NaxzlT/xzNH6WE1GRESox9UcKUgxGH1xb5O3prN3QfB6ajRwdEIN/UdYqxb8CQPqFLOo04a1JTvft6T9pJhD594PiliCvSJVZ+JXgR9tvy5AyKMGYA+TMTwMVghv47IKHhfU1oqaPAEWRo9MdTdeD7Tlw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1785490793; c=relaxed/simple;
-	bh=qpY7AgeLtloKboCTPUJdGHGeqUKP2v6Av7OeXI92rLk=;
+	bh=xQ57vSGhfk+spwSnO7P+psnMJ//Su5Tt12ziizj7xNo=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=j8gmM32DmaL3eZAU54YsA0adqmbsgaJ7RUK5I54bv4FzNO2X/tUJXiDTwwcEsmzeKQTWX2/Xg6Pt9gqbkcP9Y9/Hgp6F2iitTCiWCF75xfJMmBo0e/BwuFv80DtYKVaKtyY49OhvQ8K9S9Yxw5qsajZ5twggm6Is0qPtUHUQodM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CgODjDdu; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=RUmbbHwztb+39RVJr1mmQBZhmmmOSJ6ZZ831ZN2UUYWqXFnspAS3hmABhkQCf+XxmAnxjTC+y+a++KrQkU1DPN3wYT+3EMHAOcH1SUxQqE9xVwG7Lsb2v68xVVKt7kyE2PKBeS7qaR/IZ+dit6yP6wk2XoJYkGqwP91UVwv0H/c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eOaw//U+; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CgODjDdu"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 2205A1F00A3A;
-	Fri, 31 Jul 2026 09:39:47 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eOaw//U+"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id C01991F000E9;
+	Fri, 31 Jul 2026 09:39:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785490788;
-	bh=gCnifO7YGokBDy4pddwRpI2M8VTQL87Sux7PhHHvXJs=;
+	s=k20260515; t=1785490791;
+	bh=dT/pxT080sVpjDaix5JB0lJEcHzpIeZgjHJASWqeng4=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=CgODjDdu+xTEn7jd2pY2iQ2fx3qyA9jezsF/hIf/0er39cDmS3O9qvvveidNcllku
-	 e1jKj3AENIptIenuACJA4FLCq4JPgpHJrPYqs6wgW8V67kY6TnxtUhLpAEu0vBpJuD
-	 RkaJpz0nT7Bb6apk8i5UqHN9we6r7HNAITQ7J2xmMYTgAQQH+to54v37urVAUYA79E
-	 JBrQpcGz2W14az9QzzLLkpRqTTGqwtfuo8P85UFiv47xjWcizPQ7VOLopoGuD8CXVz
-	 fNIoXPa2cqUFHrRvbcEIYzfQWRs0ratW8FhUYCZpyv4W2iTeVYPGAHeswRjbgL4C4O
-	 wrsletjtQB53A==
+	b=eOaw//U+R1dX9vodh5yPy0D/vD7hqUL19/CTjlY+gNyGVVrXDmTPjS5gwQkNgJbMg
+	 NSZtReRXy+KUISWau4tA8ST3Pk7LRLmLvPcffr7z/d8hDKkZOkneWbFDgIe4DdQrZM
+	 3uFhqLPe1j5ClGOLU106u4E99ziPaqwr9nSZuzpD4PiJRsmKKU+PHGQ2zN33bcNEv4
+	 V1mzWIKwKeHZ4zOMMA5MC+CUfT+yb1IP/SGCMcl9zl280UhRj2oajy3K9STqLZW5+M
+	 HMSJDxvQis+T/+KKWRm2chtvKFosC+1eQ1P1FLtO9pl6albuOWIOR4einJCOooE2cN
+	 0eRTj4VQHEkAA==
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>
 Cc: Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	=?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Abinash Singh <abinashsinghlalotra@gmail.com>,
 	Rahul Bukte <rahul.bukte@sony.com>,
-	Kees Cook <kees@kernel.org>,
-	Russell King <rmk@dyn-67.arm.linux.org.uk>,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
-Subject: [PATCH v1 5/6] serial: 8250: hub6: Add cleanup code
-Date: Fri, 31 Jul 2026 11:39:08 +0200
-Message-ID:  <7f55243755253d7c76c5f2e188fd1df4f923a265.1785489518.git.ukleinek@kernel.org>
+Subject: [PATCH v1 6/6] serial: 8250: pnp: Annotate init and exit functions for conditional discarding
+Date: Fri, 31 Jul 2026 11:39:09 +0200
+Message-ID:  <8db68a66238fec8be60620ff78e8e02b8f139c4f.1785489518.git.ukleinek@kernel.org>
 X-Mailer: git-send-email 2.55.0.11.g153666a7d9bb
 In-Reply-To: <cover.1785489518.git.ukleinek@kernel.org>
 References: <cover.1785489518.git.ukleinek@kernel.org>
@@ -51,79 +46,39 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2470; i=ukleinek@kernel.org; h=from:subject:message-id; bh=qpY7AgeLtloKboCTPUJdGHGeqUKP2v6Av7OeXI92rLk=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBqbG1MU1fbVCbY/yRGe54TazsRu2JJjc1Gdbw/V sDyqJj1Ss+JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCamxtTAAKCRCPgPtYfRL+ TgbSCACQrruUuvTzPOOsk6DvCyBLQQPFgEmfO5kpz5XExmK6u5rgNWHd4O7qfl+a2cDEI6O0DpK P3D51oYbvbrYg3gzNS267PHpN3It93WSK+p9pQR/YYx7uLuuSOJbmmzs+Efgvi0nCJmmCHiV7sD ziOKk3QafkCQzhOaa8irAdqDeCM6vf7FDejRBJXDfaSP0ULSDFmzCqKUA7QNieJJZm3h4JpmnIu 0Jzf3oktY7UTcLlbgIuIwCbrWXVjep8BZ5pHT04yUcvLUd6Pe/9Br7XqX2+7LPKp+3+NeKBNjnp jepL058EMKSshfURc4LkdMTNb1bYE/19pSUal41PIiLpYtSZ
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1040; i=ukleinek@kernel.org; h=from:subject:message-id; bh=xQ57vSGhfk+spwSnO7P+psnMJ//Su5Tt12ziizj7xNo=; b=kA0DAAoBj4D7WH0S/k4ByyZiAGpsbU6hFkpnwCTs92laVg459iW95s9es3sY5J+q7A4vH4wQz 4kBMwQAAQoAHRYhBD+BrGk6eh5Zia3+04+A+1h9Ev5OBQJqbG1OAAoJEI+A+1h9Ev5OpyAH/1zE D94KegFZyP78iBFbhmX+EZkD40b4C0uMi9V0zJ6Bvq/BddvLGdADJ8irgitKt5xwdx34j0IBHUW TDz3RWq0o7M23ugErvpt3LSyJ6M4c89hweSgTH9uKOzRuQ/0XZwznA+P3NIpF1QsOSxfhEPuVUz DdSzOa2gP5LNyXMKdJ1yIaw+4xWjUWh9N1BJTw21uKMubWtdt+tng3OX0d3cBDP/44t1Oj6rzVJ JhsxbhDFSAcJjC+BuNGdQKPvc3ksVfF41Dugg4vNIElc0QXNyWOQlm/aaPrBIbCTHpBQFjBOFmf Wn0i9l5aDh0ZI3qmROKTXrXUTc/LUtsoQMa1bPo=
 X-Developer-Key: i=ukleinek@kernel.org; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 
-At module load time a platform device is registered. That should be
-undone when the module is unloaded.
+serial8250_pnp_init() is only called from serial8250_init() which is
+marked with __init, so the pnp init function can also get the same
+marking. serial8250_pnp_exit() is only called from __init and __exit
+code, so __init_or_module is appropriate for that.
 
-Fixes: ec9f47cd6a14 ("[PATCH] Serial: Split 8250 port table")
 Signed-off-by: Uwe Kleine-König <ukleinek@kernel.org>
 ---
- drivers/tty/serial/8250/8250.h          | 2 ++
- drivers/tty/serial/8250/8250_hub6.c     | 5 +++++
- drivers/tty/serial/8250/8250_platform.c | 5 ++++-
- 3 files changed, 11 insertions(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_pnp.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-index 39d72f1480c0..01fed8d44b7b 100644
---- a/drivers/tty/serial/8250/8250.h
-+++ b/drivers/tty/serial/8250/8250.h
-@@ -317,8 +317,10 @@ static inline void serial8250_pnp_exit(void) { }
+diff --git a/drivers/tty/serial/8250/8250_pnp.c b/drivers/tty/serial/8250/8250_pnp.c
+index b39f005f11cf..e142f4296062 100644
+--- a/drivers/tty/serial/8250/8250_pnp.c
++++ b/drivers/tty/serial/8250/8250_pnp.c
+@@ -526,12 +526,12 @@ static struct pnp_driver serial_pnp_driver = {
+ 	.id_table	= pnp_dev_table,
+ };
  
- #ifdef CONFIG_SERIAL_8250_HUB6
- int serial8250_hub6_init(void);
-+void serial8250_hub6_exit(void);
- #else
- static inline int serial8250_hub6_init(void) { return 0; }
-+static inline void serial8250_hub6_exit(void) { }
- #endif
- 
- #ifdef CONFIG_SERIAL_8250_RSA
-diff --git a/drivers/tty/serial/8250/8250_hub6.c b/drivers/tty/serial/8250/8250_hub6.c
-index 3e548530ec4e..55320b794165 100644
---- a/drivers/tty/serial/8250/8250_hub6.c
-+++ b/drivers/tty/serial/8250/8250_hub6.c
-@@ -53,3 +53,8 @@ int __init serial8250_hub6_init(void)
+-int serial8250_pnp_init(void)
++int __init serial8250_pnp_init(void)
  {
- 	return platform_device_register(&hub6_device);
+ 	return pnp_register_driver(&serial_pnp_driver);
  }
-+
-+int __init_or_module serial8250_hub6_exit(void)
-+{
-+	return platform_device_unregister(&hub6_device);
-+}
-diff --git a/drivers/tty/serial/8250/8250_platform.c b/drivers/tty/serial/8250/8250_platform.c
-index e8524d545de9..72076ccb5bde 100644
---- a/drivers/tty/serial/8250/8250_platform.c
-+++ b/drivers/tty/serial/8250/8250_platform.c
-@@ -326,7 +326,7 @@ static int __init serial8250_init(void)
- 	serial8250_isa_devs = platform_device_alloc("serial8250", PLAT8250_DEV_LEGACY);
- 	if (!serial8250_isa_devs) {
- 		ret = -ENOMEM;
--		goto unreg_pnp;
-+		goto unreg_hub6;
- 	}
  
- 	ret = platform_device_add(serial8250_isa_devs);
-@@ -342,6 +342,8 @@ static int __init serial8250_init(void)
- 	platform_device_del(serial8250_isa_devs);
- put_dev:
- 	platform_device_put(serial8250_isa_devs);
-+unreg_hub6:
-+	serial8250_hub6_exit();
- unreg_pnp:
- 	serial8250_pnp_exit();
- unreg_uart_drv:
-@@ -369,6 +371,7 @@ static void __exit serial8250_exit(void)
- 	platform_driver_unregister(&serial8250_isa_driver);
- 	platform_device_unregister(isa_dev);
- 
-+	serial8250_hub6_exit();
- 	serial8250_pnp_exit();
- 
- #ifdef CONFIG_SPARC
+-void serial8250_pnp_exit(void)
++void __init_or_module serial8250_pnp_exit(void)
+ {
+ 	pnp_unregister_driver(&serial_pnp_driver);
+ }
 -- 
 2.55.0.11.g153666a7d9bb
 
