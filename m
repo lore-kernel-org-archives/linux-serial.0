@@ -1,155 +1,118 @@
-Received: from DU2PR03CU002.outbound.protection.outlook.com (mail-northeuropeazon11011023.outbound.protection.outlook.com [52.101.65.23])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f171.google.com (mail-pf1-f171.google.com [209.85.210.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AF71405C3F;
-	Fri, 31 Jul 2026 15:28:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.65.23
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785511718; cv=fail; b=Kz2Crl44bz97X6hSG/vdoxIeIjf+XIMwdsZL69DGmrw9bHBl5PENIywCaiiDZ+yMZYUvI7hIpxw9HfvxEr53FuFSBo39oWHdBXpcrkaG8dV8F0ir7eymDrpbqhCRhHxSl4Zt9RxBCtV6MyFpi3T1bo9BAk6AzBZWB+oIS8Je8I4=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785511718; c=relaxed/simple;
-	bh=0fF1n9QCDPqhI5Lvj6xE+AJcoPUWz7nN4jU8NSb1IL0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=NOu2M75XrN9Nnqo12uIXsDi55t2YZK+8tVODNIumlQnC19RjULXONUYSxmIjHwdos1OhY7uAhUByg/XAq22DGKv+DL2XcUcLZ6oZE4UdmrmT2Gt4tleVD6aiQtP50/x4BhehZSByKwWciISHLvg7bqlhlRUQYZbkop8A1G3V8Nk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com; spf=pass smtp.mailfrom=oss.nxp.com; dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b=TU/ELSd4; arc=fail smtp.client-ip=52.101.65.23
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55CD43101D8
+	for <linux-serial@vger.kernel.org>; Fri, 31 Jul 2026 16:18:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.171
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785514703; cv=none; b=PdSI60IGL4Mlx/g+EcbtAe2k4kID6YVrzNDllqGHOTSlmwG3P8aCji9UFTSx2te31hDUi3Z/Vo8BQA/4Be67wlLp0S/ScP3ezF0ZKL6vmr6rn+5wHWj+uOJm9NQiYdK+ZmTDO0b+mHQVBNYlr4OTMnU6D0mBg+xn4ISMUPPi2v8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785514703; c=relaxed/simple;
+	bh=9Yzh38GRiodpjie4zcPRooc5jBJTJ/dzig1dvhms+IY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=CR6b8UkBSygYAB0ytzn9twUmbjKmlTZGs5PajgNfC95U5Cd63aD7kGZhe8/okeZqd6ZQCrPDrjiExaU3gSLL0o46hRJZc1gXLpNrgn4Queu0XyNB88hwUofRYM3QOM9pnL3rRyd//Nd/q4fwUQ9i72hoWQpOH60fKnM4LwlyYL4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nA3kFAUf; arc=none smtp.client-ip=209.85.210.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b="TU/ELSd4"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=FyqUl6lNxRgxcpcWuEdNOVoW1xZNCi2VK4Zs9Gl2oTi5X9tegIkZHv42l/KWlZtom+FtKOfisbT5ctPvqhZH5ZLhCeSxv34fjHbTLQRkx5ia4HNT9wuvBK1r3ENsGrRrcmewfNQNRWtUFejLZ9cuUIRGjIdYJW/CYXx3xXA3crdpiVUwRo3N6ZyAYXpK4KK3N6dxoowbZr2H08BjTG7lyddnh3IUgzS3uLsYxKwUV9lJfMYpXRJ/+T58+C5KphR6mxLjIcFxioa6iZ8TCtPzunk6MLihj/KpdWQGQ2miqj68+rSR51xdG1pDtdt0SQ3/gsdfiV/BfT2w0uNPQU4C3A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=cVQwd2qEgKjHAgU7Zi16NvRD9FWP06z/1zGikoEGa2k=;
- b=i2ufJncx3XQhgozJspXsCZGQPWBlFbUq/4BFaHCilcljmUeGa/ED4hwtspVgSBpUZh4GhjzAbcYs4uisrSpeqB5i5Gq3TrZzeYdSQBhE7Ss11erxLSwh+APLRhgXU9350LXo1FQRQWf9vw2kVbqe/eDRFnZH0oq+TKnmVXKB/ErHna0fTi5kXxek4wg+g58x0bzj+mHESNeYmGuqurZLncuI6+6pjVk+UOnkjfwWEJvM391f5Kets/p0uTvYNAVAq30lKz3db3NVrW1TqaURBKiPYIIeJIMSDhzC7jLIEU05a92fmPHBuDcIE8G7+h05YwHS5Ah+2DTf+NoIaDoQKg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector1-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cVQwd2qEgKjHAgU7Zi16NvRD9FWP06z/1zGikoEGa2k=;
- b=TU/ELSd4CFZ1UnkDv2JwIXAQ8f3IgwfFcdgurVqqTrdnj8RFuCs8dseYuUXPr02SVAuojQnCrK4vIXGZpWNuj9H9bP+kHnmCfXNL8CGRcCdca4Xf2R4yKKYCZ6ID9e7qTkgxHexsbmT9Ngy2eLI/wPmIgmf5cmbxGLqKu2cW2ztIQDAo6Jpry1WdNtPo7vVbZzem/CAPQswKV28WJNLeZago7jiSo+J3Nn9dlBoH+FvwqH5kMzeFqVOYWdIi/4zfNyhoZTJ4K5VI9y7k6kPfdOBytGJps5VZ3prpB+SHGuPM9CmKeU+py15JBnfv17iLC9OpTIRrDXKlDDUtXihfog==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from GV2PR04MB11799.eurprd04.prod.outlook.com (2603:10a6:150:2cf::9)
- by GV1PR04MB10487.eurprd04.prod.outlook.com (2603:10a6:150:1cc::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.270.15; Fri, 31 Jul
- 2026 15:28:31 +0000
-Received: from GV2PR04MB11799.eurprd04.prod.outlook.com
- ([fe80::2146:83a2:5329:b7c]) by GV2PR04MB11799.eurprd04.prod.outlook.com
- ([fe80::2146:83a2:5329:b7c%7]) with mapi id 15.21.0270.012; Fri, 31 Jul 2026
- 15:28:31 +0000
-Date: Fri, 31 Jul 2026 10:28:21 -0500
-From: Frank Li <Frank.li@oss.nxp.com>
-To: Karl Mehltretter <kmehltretter@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Frank Li <Frank.Li@nxp.com>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org, imx@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	Sashiko <sashiko-bot@kernel.org>, stable@vger.kernel.org
-Subject: Re: [PATCH v2 4/4] serial: imx: serialize imx_uart_ports[] lifetime
-Message-ID: <amy_Fe7hYtidlua5@SMW015318>
-References: <20260719221014.44354-1-kmehltretter@gmail.com>
- <20260719221014.44354-5-kmehltretter@gmail.com>
- <amufrR-1hop2pZOz@SMW015318>
- <amyxxce6haNJBJ3G@gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <amyxxce6haNJBJ3G@gmail.com>
-X-ClientProxiedBy: PH2PEPF0000384B.namprd17.prod.outlook.com
- (2603:10b6:518:1::68) To GV2PR04MB11799.eurprd04.prod.outlook.com
- (2603:10a6:150:2cf::9)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nA3kFAUf"
+Received: by mail-pf1-f171.google.com with SMTP id d2e1a72fcca58-8486ac3f347so2291625b3a.1
+        for <linux-serial@vger.kernel.org>; Fri, 31 Jul 2026 09:18:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1785514700; x=1786119500; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=TKjEK1gC87c9kIwXqKCw727kvsVZgAnx7reueDbTuj0=;
+        b=nA3kFAUfNnWsWvjABU3qAPTa2LJKAgkKSsu6xI0ZOYvcntzGZ81szLCwl51kWs7uxl
+         YwFO3cUVROsezXWdKL+9Fw30h+e6QgLl+lWb5R70DcWUD3X6QH5INo4AcOVXjkTUQBQT
+         Wwr5kgaa9kWCEunaNoM6DGtwemBeMgQDw6UFVQPGDs9d8N11UIxHkCCzIZnRFoPQGWnh
+         E5UpLt0RobFeAH/6QAxowKliQVUfd5wS7uevI9Aj124OpqDU7Nu0sn9xwYWOSonRbGDz
+         gWP3EsYLKJOCCXYMWKAhvuL4/KbpWZZ3KjYNFyLrKrD/YBJjeRQbPFyX72zP2QLwtfsT
+         6u5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785514700; x=1786119500;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=TKjEK1gC87c9kIwXqKCw727kvsVZgAnx7reueDbTuj0=;
+        b=Trmp1xaVH5rWXLkOjVyNcr4Lh6GfeTsdf4RxrHzdN3TlV7XBO0Q+WmQUKvAL2Gv0tk
+         7fUYaNj95h0eMnMa3qOScW5Bs8Zf7SaOCwiQ/j4APJOkcCCASEuxjiN42CtolnTR20W9
+         72aKDRlk5cvgVsyDSxrNqYuv3nCl60x7jYSuBoa2pASPoPUV0Cgtv7xJ+Vp3xL9J0RbS
+         29Fff20BpmMs5JuQPhfucg8p19gE4jwgAMV/+CkrLNtD1GnXbx4B83jZ1l+pd9SSxJHs
+         /kP7RTS20prcLH/NsCs+FNRDUVwn+63VuLHy0Q4bBO06grEELyCI7mow3h6YpQ23LCKw
+         2xfA==
+X-Gm-Message-State: AOJu0Yy7CSvCjgbdtlGluZlIH45xktv9TtdSA7CVNSHYSc7GBdOKhYZx
+	4wumGGA0QF7jjAfug1f9YWHl9ANAnBDbKry83srE1cVAJjsuqLQSYFw=
+X-Gm-Gg: AR+sD12+uXzDcm1D0XwwqeTR/lrlMb9CcaSjpZOdeEKZmWQi43DWahhDIT8iirzdLFC
+	nCUi7sINXKnPr6FtVpIrVUSaXW8OiQUFW4FVkdlgWJNmcl8lRjLmxzB6oz+/gaOUwxTjUU6Ukg6
+	if8bPY6na+kPftl18B5CqOVpuXZIiHyiD8vkOTDXz5SebrA92mnC96Sv741edScMFBM4gLmujtc
+	g9DN988L5kLX5NCrUHix4oaVxhIdXmDaFBUnPLOiaWd5oiVDYZ28T9LPmaV8TSRV1O1I4HY0BSp
+	Pb4LfATQhKXXlbv8HJ0olPwz/cBnBibA67iOpSzgqiQY39VRSE964YB8Livu/w5pE0PQrZInzDN
+	oFLogo8IoRe83TlimZ9J5lI3b3P5J0BuuXaiY6o3AectvGVybtRKCQFyEbHVdmc7MxnIjOvad6F
+	+zhIvSYMr44K2GwZgOcliawxuOE6M4bV1XSNAeCmNfF81s6uKndv7fiuisETuczBp9uW3sCTx+o
+	eHxyGVe1cLYZS6cidt0/Y9g/DwezuFBoEpZg7UOkJLltwrurlh9ot+yN6tiw5tXtfIUBcnMP9Q/
+	Q3KW7g5DgCk+kMiF0jtQa2c=
+X-Received: by 2002:a05:6a00:4b02:b0:84e:cd14:aeba with SMTP id d2e1a72fcca58-84ee48123a3mr269712b3a.6.1785514699546;
+        Fri, 31 Jul 2026 09:18:19 -0700 (PDT)
+Received: from localhost.localdomain ([1.226.165.54])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-84edc29e6f0sm647072b3a.39.2026.07.31.09.18.17
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Fri, 31 Jul 2026 09:18:18 -0700 (PDT)
+From: Myeonghun Pak <mhun512@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org,
+	Myeonghun Pak <mhun512@gmail.com>,
+	Ijae Kim <ae878000@gmail.com>
+Subject: [PATCH 1/2] tty: moxa: unwind tty driver if PCI registration fails
+Date: Sat,  1 Aug 2026 01:18:08 +0900
+Message-ID: <20260731161809.45066-1-mhun512@gmail.com>
+X-Mailer: git-send-email 2.50.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: GV2PR04MB11799:EE_|GV1PR04MB10487:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6c18ca36-0b77-4ad8-09ed-08deef186098
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|1800799024|366016|19092799006|376014|7416014|22082099003|18002099003|10067099003|4143699003|11063799006|56012099006;
-X-Microsoft-Antispam-Message-Info:
-	geIP2OKogcNG7XaITlrnzDo3mHQPCpMv/35wKkwvK8n5yTK9HTe1ULj8qS6JJK4VMqout9j5igNwXJBhJPW8AWPNUwOUDjqBfA00HntNEkQPEXodB8Qz8A7Eozmb5pP8AaQN3nFnWHyR3brLcSEI10PuIpCD/r8YXa5UJulf9fMA/PdxfhJRYXRTXaUrn2y0lJN4VPDw3zyFCk8jkAoPz1VAhsH+cqnR2bNbm+zD6ep7P18/iITasYNLbw2LLyFNtJgQ+7oA7fzWwmj9skLUVThVwqZPwyYiT3BtXAmTJAGBOjPglBKEhf2PFGZQLpUh0rWe8cPjN5qJJ75on04U78GTZkAZCnWZdT2OcAxBpIYH8Hn3rGyZTzIxKSfuCsNzA/EW8c1+qtwomN83Q2EMBvXsrCpdRfPPOEsp6iM0t9ac5t/l7+hoY3XySfKY9PJj5CbI6IMoj8SRL1Wz0t6VVuOoGYHYbwaO4x+VgnjyJGhC4UjaEmU4wqMxr5iMIFO5jlnepdEAmjfbPodkaZYnMA61ajGCesuLudtz5qidb5ZtvKPFFRMmsPZlGNn1MKG3Fj1B1DZApkdfk8Rct8DY1oFNOCz1rmyTPo+5RwpZrk5nmFwEVUOI4oIs2N7lVcVCG9Yn4nbcZf+znnzPQRB5xuG3Cws6+rkJkXClRzdRWZU=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV2PR04MB11799.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(1800799024)(366016)(19092799006)(376014)(7416014)(22082099003)(18002099003)(10067099003)(4143699003)(11063799006)(56012099006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?6vitXt37InHseua3UgYlDYVbRuGr7xD+fWCUAqZc3Gg9uWKnJ93qjgz8Qibn?=
- =?us-ascii?Q?Qa/40ZoxoyV0c8ZSYBlEMkm+6h121O0bNHYl+1X/rOPRIGqDRltzOIXxBnQD?=
- =?us-ascii?Q?lMdVEO1C0HiCfP4gPsCQUvjLgBqf8FCcGdeo43VXzTQaoiqC+GpgSr+PTTjE?=
- =?us-ascii?Q?ErUIEv0KzOk2CVOgS10Ex+nMOhxSp+y4+UFVbnZM4VpRze40OczfpXLrIocd?=
- =?us-ascii?Q?BetgkYXe3qcP0O2lpxGUYXsHNHBLtefkXJjARQpl3MjTKXpYxLSuXvTNvOVk?=
- =?us-ascii?Q?iva/ymHQEpSGZbqzgRHXQpFfcdL0CTe1IAIiCt1894t+thaTPDhxnvfKTuyR?=
- =?us-ascii?Q?4AU0V55hI9JXe9rwnRQYZoTZ7ajQWCQ/P1aBH+2n3Evtf4rT9TWJtMFLfV6G?=
- =?us-ascii?Q?CGbKohOIwELxhyCSUP6mGwPrrB+WYPIiUlovQeuG8QIywXWnlN9AOVJgRkPS?=
- =?us-ascii?Q?HcAPUO3ZHsQiIO6QJ8AS5pee0+YoYAS08getlLKrdPtE8EQY1qqlxbnjAOk+?=
- =?us-ascii?Q?b5UzPU9A4fQUhnDWxTIirK1HSN5LqdNcHrOHosh0EKm6Z3mBon5H2DDDFiLE?=
- =?us-ascii?Q?RWPojwmbLzHI2Bhql0XTYHlTQIpTJJjoEACAfq6RC0Jd3IZzkiZIqwSSxNIE?=
- =?us-ascii?Q?veL2zjnGNR+NlqxTt6K5eMasXvAuZlHtwH2b3dSmS+/g0LRrBJ6LS6r9JgX3?=
- =?us-ascii?Q?XmsHv/blcJfpnQ/JD05VpXZAeqG80O3UBdB1zk6gdjdzfwagBOR8aS/84J5i?=
- =?us-ascii?Q?XOENQqNjTtIVU611lUnpdNvFFq+vHVC1HF/VSLms5J3r395y0kJbGg75aCT1?=
- =?us-ascii?Q?6MLsZmmHygVBvvt090BKDC2dtGsMljfQLRPxrpe4Hi+SWyrcQ3OtMLIhuYvV?=
- =?us-ascii?Q?57tB9jxonrZvf+tanzpGn899xNu5OsdhlmDhfVPsnZi3O7N7QYuR7PCftIY2?=
- =?us-ascii?Q?k5PD9+fev+dtnkEhDWbSjYODD/JbckgG4L9n8cHpNXhYbYv6wdA8NgriJtED?=
- =?us-ascii?Q?SP3QZAugfTanbcK38gPEHqBkor94fMDvVTzo5dNsxVFLSOJSJSdCx1xxQIxr?=
- =?us-ascii?Q?Xyy03GuwyWjPdeFHgK07aRyTtUDZb/n7WJCQqjR12CksAWol/Mw0RoDrDIyG?=
- =?us-ascii?Q?Wb67S/DZNoBunWeLFSzhQJQXFMJ9nNaKBM1cV3uo7Y5/PBf3B2yvq0lLmlCk?=
- =?us-ascii?Q?rc/ZzWqZMF5flI2feBTyQ+GWJR914B2PAgAn32+xxFGbHcx1t0pFGiftHuPj?=
- =?us-ascii?Q?ijIvq6+sMXyNIoW3vIncwEAMWwVDRe2ox07E5sbBEswEIUgJOc011oHBbTpn?=
- =?us-ascii?Q?yjORy8jDEaBw1OfV/ZGBz6hMVxvBhuhN1s44zKLjW5bOTpEZrfbRM49IhaF5?=
- =?us-ascii?Q?BM5May2KNjG2BVUqQ660ObanvumVfhaZv3BHBZaHPRAyNz5xHGd80SbJJc0G?=
- =?us-ascii?Q?oNyl3Bt7Hi02oZJCFO1ALxYk7i0h+/0+9T8yKq7Vf9er56wxShcTx0J736ht?=
- =?us-ascii?Q?Osnv+ccpPCPeLKddE4X/rEVw+8qOaoJQ/1oGCt/InkiV7/MWwPHVN2WGBSo3?=
- =?us-ascii?Q?Txa7IuF0x37o4y/SKBhmpphwPkUfe8M+hWh9rfddgPtiCUoKM9zYnSWHEBdu?=
- =?us-ascii?Q?MPBPnfQ5dsXl/IvuvGPjOlfC8FW4sCeVklA/bjgAXj7WTTe2BaKJVWXrns56?=
- =?us-ascii?Q?aiL6UtkXJztM8wb4Z1fRZFz2vjxAFR7GjNyQS8ZuptWWxJL1kBrpL5pgNah6?=
- =?us-ascii?Q?LW7CQ8iKuaHPemFUK5LE0wRgEg0CmCowd6Mi/0AB0wiFlZz+S/x4?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6c18ca36-0b77-4ad8-09ed-08deef186098
-X-MS-Exchange-CrossTenant-AuthSource: GV2PR04MB11799.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jul 2026 15:28:31.3782
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: UgM0UVfvE3HcdydOflJabLxqf4UJnNXkdI4n3V9TH+jwQEZoXUqJL4JT7lPjyvHEKaQaBy3onUD2wu7/akhiesnLeqBYnXAuK6zuu6wtL90GjmQdfKG7OBnv8jbI9Tuc
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR04MB10487
+Content-Transfer-Encoding: 8bit
 
-On Fri, Jul 31, 2026 at 04:40:21PM +0200, Karl Mehltretter wrote:
-> On Thu, Jul 30, 2026 at 02:02:05PM +0100, Frank Li wrote:
-> > imx_uart_remove()
-> > {
-> > 	imx_uart_ports[line] = NULL;
-> > 	uart_remove_one_port(&imx_uart_uart_driver, &sport->port);
-> > }
-> >
-> > Is above sequence to avoid use mutex?
-> >
->
-> I now tried this, but it doesn't work as-is:
->
-> uart_add_one_port() may call imx_uart_console_setup(), so the entry
-> must be present before the call.
->
-> uart_remove_one_port() unregisters the console. Clearing the entry first
-> causes its callbacks to dereference NULL.
->
-> The mutex protects those sequences against sibling probes.
+moxa_init() registers the tty driver before registering the PCI driver.
+If pci_register_driver() fails, module initialization returns without
+unregistering the tty driver or dropping its reference. moxa_exit() is
+not called after a failed module initialization.
 
-Okay
+Unregister the tty driver and drop its reference before returning the
+PCI registration error.
 
-Frank
->
-> Thanks,
-> Karl
+This issue was identified during our ongoing static-analysis research while
+reviewing kernel code.
+
+Fixes: a784bf7c195f ("[PATCH] Char: moxa, pci probing")
+Cc: stable@vger.kernel.org
+Co-developed-by: Ijae Kim <ae878000@gmail.com>
+Signed-off-by: Ijae Kim <ae878000@gmail.com>
+Signed-off-by: Myeonghun Pak <mhun512@gmail.com>
+---
+ drivers/tty/moxa.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/moxa.c b/drivers/tty/moxa.c
+index 1bb2376af85c..680b2dd65462 100644
+--- a/drivers/tty/moxa.c
++++ b/drivers/tty/moxa.c
+@@ -1172,8 +1172,11 @@ static int __init moxa_init(void)
+ 	}
+ 
+ 	retval = pci_register_driver(&moxa_pci_driver);
+-	if (retval)
++	if (retval) {
+ 		printk(KERN_ERR "Can't register MOXA pci driver!\n");
++		tty_unregister_driver(moxaDriver);
++		tty_driver_kref_put(moxaDriver);
++	}
+ 
+ 	return retval;
+ }
+-- 
+2.47.1
