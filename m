@@ -1,111 +1,122 @@
-Received: from zg8tmtyylji0my4xnjqumte4.icoremail.net (zg8tmtyylji0my4xnjqumte4.icoremail.net [162.243.164.118])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E701133B6D9;
-	Fri, 31 Jul 2026 02:46:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.164.118
+Received: from zg8tmja2lje4os43os4xodqa.icoremail.net (zg8tmja2lje4os43os4xodqa.icoremail.net [206.189.79.184])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id ACC5133F58C;
+	Fri, 31 Jul 2026 02:46:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=206.189.79.184
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785465974; cv=none; b=QsX+dUWLydhBazpMG2JpWG01BGpwiJnyySxYTw3WFsNdMxAX5eC1f29YAoS0UQHU/rMZmd51QAoR8obfNxJJ/74oUdYA+vtRaycj5iXeEuvCR9dmCZQ49OpUHIJ0+MDAWpF8jy0ayPy58GD7ZbIwRW5bTtPMzSLbKwq+xo668pI=
+	t=1785466009; cv=none; b=PmzyMynfWdgGawBFfpyNi6yd71HQ2pYtupQRfy5EZIS0+iTBdhI71E7QKLEzDjzFA7NNRYE0jpe4oamCh+U3ypNQTuveSwH5V6F/pxHtaJvHCbYJ+5944tsC5gt2W5oQDsBx/IhFl4KG02LG6EE/C/gSRurW1vjZ/ITXBy+3n/0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785465974; c=relaxed/simple;
-	bh=mUS4G2ULN5kZHTwipcf1t+xtKRof5AF6yhDhrxYudhg=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=lBD/uzYoEH/GIhgijYVE2xq+JIucGzuaXFWNEWphdiOSPGxzJMT6ZFvSpda2W/ejqM0Nd+UzS4NL7NIXZN13M0IegQNOdkpA4Lu/MJ56OJ31Phu/JxricYZ7NZICgnrxtKUXFdGzWA0OjnbB1GZUrt8OY2py7LAt+S83ogQy8Xs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=stu.xidian.edu.cn; spf=pass smtp.mailfrom=stu.xidian.edu.cn; dkim=fail (0-bit key) header.d=stu.xidian.edu.cn header.i=@stu.xidian.edu.cn header.b=4q1gnOsj reason="key not found in DNS"; arc=none smtp.client-ip=162.243.164.118
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=stu.xidian.edu.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=stu.xidian.edu.cn
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=stu.xidian.edu.cn header.i=@stu.xidian.edu.cn header.b="4q1gnOsj"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=stu.xidian.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
-	Message-Id:MIME-Version:Content-Transfer-Encoding; bh=aW+SWeZI97
-	LW4jbwATlCbid8ooslJnXbTxJlFk4icD4=; b=4q1gnOsjudJd36kI688xB8Aj7K
-	0iCMsYXQhCbYk87D7p3K9nl1EKMFxrxBFB2nlw717M9OiXy5IGXuIRiR1+8veJmN
-	oHYzP+zxQ73TMrrVWRyhLAoJykf+y7BYDrN33hj4BXkYVcJgLYZpur7JFe0FX8dO
-	1DL9+W0DQlQJtN0GM=
-Received: from wmy.localdomain (unknown [221.14.152.201])
-	by hzbj-edu-front-4.icoremail.net (Coremail) with SMTP id BrQMCkC23RNiDGxq7fisAQ--.17105S2;
-	Fri, 31 Jul 2026 10:45:58 +0800 (CST)
-From: Mingyu Wang <25181214217@stu.xidian.edu.cn>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	stable@vger.kernel.org,
-	Mingyu Wang <25181214217@stu.xidian.edu.cn>
-Subject: [PATCH v2] tty: vt: fix memory leak in vc_allocate()
-Date: Fri, 31 Jul 2026 10:45:50 +0800
-Message-Id: <20260731024550.158801-1-25181214217@stu.xidian.edu.cn>
-X-Mailer: git-send-email 2.34.1
+	s=arc-20240116; t=1785466009; c=relaxed/simple;
+	bh=VFqmMrYtNZ5X096CK4TVpLCm30bCCsyb+0NX8nqgMAg=;
+	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
+	 Message-Id:References:To; b=YCHR+UHqT0TvJ08Gm0c+CTUnEfkTTKX86hhIqiDKmladKHpQG7RV5Ov1Ita48hWW6dsea8bFvXYm24XQhdjgkXP2IDWwIbBDSVy1z0fy8bwQqju6lip5g7laSYijQvDTVtPQeqhbIG/KWLUeLoKLxlKHO4U3nUwEraMyy1+u+lo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=zju.edu.cn; spf=pass smtp.mailfrom=zju.edu.cn; arc=none smtp.client-ip=206.189.79.184
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=zju.edu.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zju.edu.cn
+Received: from zju.edu.cn (unknown [10.190.164.227])
+	by mtasvr (Coremail) with SMTP id _____wBXX3yRDGxqdSVSAA--.541S3;
+	Fri, 31 Jul 2026 10:46:42 +0800 (CST)
+Received: from smtpclient.apple (unknown [10.190.164.227])
+	by mail-app1 (Coremail) with SMTP id yy_KCgC3BZ6RDGxqrkRZAw--.51708S2;
+	Fri, 31 Jul 2026 10:46:41 +0800 (CST)
+Content-Type: text/plain;
+	charset=us-ascii
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:BrQMCkC23RNiDGxq7fisAQ--.17105S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7tr1kWF4fAF1UXFy5Zw17GFg_yoW8Zw1Upr
-	s8KrW2yF90g3WIyFnrAw48XFyrWa13KFy5CFWjg340vwsxXFyvkF1Fya45WryUZr4kC3W3
-	trWqk3s0gF1qvaDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUvK14x267AKxVWUJVW8JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-	1l84ACjcxK6xIIjxv20xvE14v26r1j6r1xM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r1j
-	6r4UM28EF7xvwVC2z280aVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVCY1x0267AKxVW8JV
-	W8Jr1lnxkEFVAIw20F6cxK64vIFxWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xv
-	F2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r
-	4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I
-	648v4I1lc7CjxVAaw2AFwI0_JF0_Jw1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7
-	v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF
-	1VAY17CE14v26r126r1DMIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIx
-	AIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI
-	42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxh
-	VjvjDU0xZFpf9x0JUfnY7UUUUU=
-X-CM-SenderInfo: qsvrmiqsrujiux6v33wo0lvxldqovvfxof0/1tbiAgULEWpranxD4AAAsp
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3774.600.62\))
+Subject: Re: [PATCH] tty: serial: max3100: drain async producers in remove()
+ to fix timer UAF
+From: Fan Wu <12321260@zju.edu.cn>
+In-Reply-To: <2026073036-coping-starter-ad07@gregkh>
+Date: Fri, 31 Jul 2026 10:46:31 +0800
+Cc: Fan Wu <fanwu01@zju.edu.cn>,
+ jirislaby@kernel.org,
+ broonie@kernel.org,
+ zhao.xichao@vivo.com,
+ linux-serial@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <F3BAD313-F584-40E0-B0B8-968A9E2D8719@zju.edu.cn>
+References: <20260721035631.3186613-1-fanwu01@zju.edu.cn>
+ <2026073036-coping-starter-ad07@gregkh>
+To: Greg KH <gregkh@linuxfoundation.org>
+X-Mailer: Apple Mail (2.3774.600.62)
+X-CM-TRANSID:yy_KCgC3BZ6RDGxqrkRZAw--.51708S2
+X-CM-SenderInfo: qrstjiaswqq6lmxovvfxof0/
+X-CM-DELIVERINFO: =?B?WJdrtwXKKxbFmtjJiESix3B1w3vZ3A9ovKVTomAyoQazvoRs/NHSP8GI2EvgeEEW7R
+	sfnVCjTgEH9dVomQuWcozCBBH7r6nLMU0tTQMWvC+8AaMQ4hfoAY9qyalzGqWITSoIqhZl
+	ekwcg/FcW8r/MU7KeMGp9E6mavGmQbzmcFsnzP86
+X-Coremail-Antispam: 1Uk129KBj93XoW7ArW3Zw4kCF18AFWDWw4DAwc_yoW8GryrpF
+	Z5Ka1ayF1YqF4xX34rJF4DXF1xKrsaq39FyFnxGa42vFs5urWv9F1xKFyagFyfZFn3tr4U
+	ZFsYg3s5Zrn0yrXCm3ZEXasCq-sJn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7KY7ZEXa
+	sCq-sGcSsGvfJ3Ic02F40EFcxC0VAKzVAqx4xG6I80ebIjqfuFe4nvWSU5nxnvy29KBjDU
+	0xBIdaVrnRJUUU9mb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2
+	IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48v
+	e4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI
+	0_Cr1j6rxdM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v2
+	6rxl6s0DM2vYz4IE04k24VAvwVAKI4IrM2AIxVAIcxkEcVAq07x20xvEncxIr21l57IF6x
+	kI12xvs2x26I8E6xACxx1l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v2
+	6r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2
+	Ij64vIr41lF7xvr2IYc2Ij64vIr40E4x8a64kEw24l42xK82IYc2Ij64vIr41l4I8I3I0E
+	4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGV
+	WUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_
+	Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rV
+	WUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r1j6r4U
+	YxBIdaVFxhVjvjDU0xZFpf9x07jbo7NUUUUU=
 
-If the screen buffer allocation fails in vc_allocate(), the error handling
-path jumps to `err_free`. However, this path fails to release the unicode
-screen map attached to `vc->uni_pagedict_loc`.
+Hi Greg,
 
-During the early stages of vc_allocate(), the unicode screen map is either
-newly allocated via con_set_default_unimap() or shares the default unicode
-map from a previously initialized console (which increments its refcount).
-If the subsequent kzalloc() for the screen buffer fails, the err_free path
-frees the vc structure but leaves the attached uni_pagedict with an
-elevated refcount. This results in an unreferenced object memory leak, as
-the reference to the dictionary is lost and its refcount can never reach
-zero.
+Thanks for the review. You're right. I'll respin with a concise =
+changelog,
+remove the boolean helper, and rename the state to irq_registered.
 
-This issue was discovered by DevGen (an automated virtual device modeling
-fuzzer based on Syzkaller). During fuzzing with kernel fault injection
-(failslab) enabled, the fuzzer forcefully failed the kzalloc() for the
-screen buffer, exposing this error-handling path leak.
+I'll send v2 shortly.
 
-Fix this by calling con_free_unimap(vc) in the err_free path before
-kfree(vc). This safely decrements the refcount and releases the dictionary
-memory if this was the last reference.
+Thanks,
+Fan
 
-Fixes: 34902b7f2754 ("tty: vt, get rid of weird source code flow")
-Cc: stable@vger.kernel.org
-Signed-off-by: Mingyu Wang <25181214217@stu.xidian.edu.cn>
----
-Changes in v2:
-- Added documentation in the commit message detailing the fuzzing
-  environment (DevGen/Syzkaller) and the fault injection (failslab)
-  mechanism used to discover the bug, as requested by Greg KH.
-
- drivers/tty/vt/vt.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index 8f467b22b799..4bac89ea968a 100644
---- a/drivers/tty/vt/vt.c
-+++ b/drivers/tty/vt/vt.c
-@@ -1134,6 +1134,7 @@ int vc_allocate(unsigned int currcons)	/* return 0 on success */
- 	return 0;
- err_free:
- 	visual_deinit(vc);
-+	con_free_unimap(vc);
- 	kfree(vc);
- 	vc_cons[currcons].d = NULL;
- 	return err;
--- 
-2.34.1
+> On Jul 30, 2026, at 22:39, Greg KH <gregkh@linuxfoundation.org> wrote:
+>=20
+> Yes, but that's not needed here, right?
+>=20
+> LLMs love to write text, please don't let it and write your own
+> changelog that actually makes sense :)
+>=20
+>>=20
+>> +/*
+>> + * Stop async producers before tearing down the workqueue.  A normal
+>> + * shutdown must leave the timer re-armable for the next open, while =
+final
+>> + * removal uses timer_shutdown_sync() to prevent max3100_timeout() =
+from
+>> + * re-arming a timer embedded in an object about to be freed.
+>> + */
+>> +static void max3100_drain_async(struct max3100_port *s, bool final)
+>=20
+> Having a bool here makes no sense at all, and it's a horrible api as =
+now
+> you have to look up the documentation each time you run across it.
+>=20
+> Also, you didn't even document it (well, the LLM didn't...)
+>=20
+> Please be more careful.
+>=20
+>> +{
+>> + s->force_end_work =3D 1;
+>> + if (final)
+>> + timer_shutdown_sync(&s->timer);
+>> + else
+>> + timer_delete_sync(&s->timer);
+>> + if (s->irq_requested) {
+>> + free_irq(s->port.irq, s);
+>> + s->irq_requested =3D false;
+>=20
+> It's not "requested" it's "is an interrupt registered or not", right?
+>=20
+> thanks,
+>=20
+> greg k-h
 
