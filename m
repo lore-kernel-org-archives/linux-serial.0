@@ -1,53 +1,52 @@
-Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
+Received: from mout01.posteo.de (mout01.posteo.de [185.67.36.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E7A635DA76
-	for <linux-serial@vger.kernel.org>; Fri, 31 Jul 2026 12:43:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.66
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A021729BDB1
+	for <linux-serial@vger.kernel.org>; Fri, 31 Jul 2026 13:00:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.65
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785501793; cv=none; b=r8GpQWAur4JLilDBGN97QcLTcoYIX8LdcgjSQg+PGlHf16NOIYlyNlJMwzmQPnQ4SuIODKSWmrNhkfkXfeHG/Bmtsq5YN9RjrnMZ+I81ah4Im8SCnbGHoJoh2wi0NjlBPe7l8CMUu4kAqo8wxULmOZuI7iqiFoERKBaacaonlTc=
+	t=1785502835; cv=none; b=WZRek2W8RAenPHFikO2mDnfaxelxtod1GtanCRo3b8mpA28HBMxuK1JF6pO+RFfZ+gdiZW9AeeLYF7nHrGc1Fvoy1W68FtjjOBtSr0xtTNbVWWz21z6ZDRUcRpI4ocDwYC6kwG92pIY9LlqCDSRlNTm/KpeUdzUI2W3iF1rGFSE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785501793; c=relaxed/simple;
-	bh=kXjDFxvvU5agCXLhU7opxug8WhT9bJs2AMFw8OxVX/o=;
+	s=arc-20240116; t=1785502835; c=relaxed/simple;
+	bh=Wz2+xt6OGg0gqsPqbYf5fUQ+mbzW1aL5Crz52NjUhEo=;
 	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=p5SXf5/5lnNS0zWit62gez9Rwwt6oif/PjK0o6oUa6gRKLtekt5O204ojuTzSZ89nP8Jo1e2+we+SMYumNvPxc4fhsO4JYCdDWQfETLSKOqrzMwmNseZpNm5PDIUX+rMqGYt3IXH+ufkkL1Ut0qusuDdmKu8degRMXKAIXZpy1s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=bdsaQ53h; arc=none smtp.client-ip=185.67.36.66
+	 Content-Type:MIME-Version; b=FIIOxC4AyICBnn2uJaG9xHOJjOrHrd19ShXXcaaaowCw3rAqBlZn0bHLZpv3cOkuLanmSz05gldIbcUCaHa39NS+HlkR3d0uWv54/ZZU1l5JcfRHJWzmxuEFTQ/JbmzRlg++fyN0kDMeR7J414A5qsSwv5u7P9pUxGrPZTHmrcE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=hR1pQo9d; arc=none smtp.client-ip=185.67.36.65
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="bdsaQ53h"
+	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="hR1pQo9d"
 Received: from submission (posteo.de [185.67.36.169]) 
-	by mout02.posteo.de (Postfix) with ESMTPS id D881F240101
-	for <linux-serial@vger.kernel.org>; Fri, 31 Jul 2026 14:43:07 +0200 (CEST)
+	by mout01.posteo.de (Postfix) with ESMTPS id 6452624002A
+	for <linux-serial@vger.kernel.org>; Fri, 31 Jul 2026 15:00:30 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de;
-	s=1984.8680eb; t=1785501787;
-	bh=jradFcftWYvOnDFfoP3/zr550UfgORNMS1jtQxVyzl0=;
+	s=1984.8680eb; t=1785502830;
+	bh=jnDSIzsGoB+tAgiBdFTv9sYHQERzo4XunsAeyQsL3R4=;
 	h=Message-ID:Subject:From:To:Cc:Date:Autocrypt:Content-Type:
 	 MIME-Version:OpenPGP:From;
-	b=bdsaQ53hrIvJcqN3yCv/4ww0j2I+KHXViwlWMFCEwlI9cwPRX2AUbTuCQMXBwFd4f
-	 IXaN1lWugqPElhif72ODU1/1yb4kIJ9VcuSFcdQ12lOYRcZ8BirjwAnG/uY+j6kwZq
-	 0UEDSyP5sKjw++Cu9hzseknIpfmrmkYXZZWqXDat7KgwBRU3HPsn98D5/J+JPSCrht
-	 7YZGmhYEler1FKA/stIIqV1m/6w4Dhd5nuXs32wtOZe6mx26DisnoDHI07TLLQtRk3
-	 Jb4EcvIN29kzKO86LU0Nksk0vfHgLmM40O2m6FgzfdUA7dgVneBfRbMBqEod+DqYWK
-	 J3TQqpxEucvqQ==
+	b=hR1pQo9ddkSVjFogT4oFGgIg87NPOkbtFZOKIIb8jRgajY9pTw7vc6bl8dM7wkmLO
+	 xyxCCz9lxt5N65DQbvz1RgNCTPKwP+rgXdhz95AK8Z3z2/pI7ZUhnFVRPtubd5mQAo
+	 Ka8eyGuGS4m7o3IC2ZR1/5gSj/arGoRAhuN6iJH5QjDDaBXw5mQG25rNSBCMyvFptw
+	 Sc34Fvkhi7vfUnN7vkcFSuh8fmmZ0WR++/WBE1RhLx6395eTDa/ujj05uU2U4Jvk3U
+	 08PtNmD9MjFU0iW5kuUbXOBK/ij1tEfeiopDa+nbOlCILAvQwhNlC5hyv47dfqfz28
+	 Krs4YVNfNW+VQ==
 Received: from customer (localhost [127.0.0.1])
-	by submission (posteo.de) with ESMTPSA id 4hBQhn6Dkdz9rxL;
-	Fri, 31 Jul 2026 14:43:05 +0200 (CEST)
-Message-ID: <e78199c0d917f28cce30997317a9b45f7b8a57eb.camel@posteo.de>
-Subject: Re: [PATCH 1/2] serdev: fix race between tty-port unregister and
- in-flight callbacks
+	by submission (posteo.de) with ESMTPSA id 4hBR4s2Rytz6tw1;
+	Fri, 31 Jul 2026 15:00:29 +0200 (CEST)
+Message-ID: <11b34a60b7f66379e66f4cff779acdccd3fd0c8d.camel@posteo.de>
+Subject: Re: [PATCH 2/2] serdev: use tty_port_tty_get() in
+ ttyport_write_buf() to prevent UAF
 From: Markus Probst <markus.probst@posteo.de>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, Rob Herring <robh@kernel.org>, Jiri Slaby
-	 <jirislaby@kernel.org>, linux-kernel@vger.kernel.org, Joshua Rogers
-	 <linux@joshua.hu>, stable <stable@kernel.org>
-Date: Fri, 31 Jul 2026 12:43:06 +0000
-In-Reply-To: <2026073118-handwash-vitality-5f3f@gregkh>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	linux-serial@vger.kernel.org
+Cc: Rob Herring <robh@kernel.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	linux-kernel@vger.kernel.org, Joshua Rogers <linux@joshua.hu>, stable
+	 <stable@kernel.org>
+Date: Fri, 31 Jul 2026 13:00:30 +0000
+In-Reply-To: <20260731-aisle-tty-serdev-v1-2-2401a3189327@linuxfoundation.org>
 References: 
 	<20260731-aisle-tty-serdev-v1-0-2401a3189327@linuxfoundation.org>
-	 <20260731-aisle-tty-serdev-v1-1-2401a3189327@linuxfoundation.org>
-	 <edd75d5a4362e5c8e7b691f65768d1fedc30309a.camel@posteo.de>
-	 <2026073118-handwash-vitality-5f3f@gregkh>
+	 <20260731-aisle-tty-serdev-v1-2-2401a3189327@linuxfoundation.org>
 Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
  keydata=mQINBGiDvXgBEADAXUceKafpl46S35UmDh2wRvvx+UfZbcTjeQOlSwKP7YVJ4JOZrVs93
  qReNLkOWguIqPBxR9blQ4nyYrqSCV+MMw/3ifyXIm6Pw2YRUDg+WTEOjTixRCoWDgUj1nOsvJ9tVA
@@ -93,7 +92,7 @@ Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
  dQNGrZ91M9nlIBKw8Y7c7xZ4098qX2b8JX/CxD+gC1r4C8vuA3GkhFLx+KlkON7LyiJPkrePp6Qky
  jfGillcaQOqFZ3WwVqyzG1BUfTow==
 Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-mx5cNm777Bf9oKHRXlOr"
+	protocol="application/pgp-signature"; boundary="=-9ubk5P0CAZ1iIWTfmgD3"
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -103,132 +102,103 @@ MIME-Version: 1.0
 OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
 
 
---=-mx5cNm777Bf9oKHRXlOr
+--=-9ubk5P0CAZ1iIWTfmgD3
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, 2026-07-31 at 14:01 +0200, Greg Kroah-Hartman wrote:
-> On Fri, Jul 31, 2026 at 11:30:53AM +0000, Markus Probst wrote:
-> > On Fri, 2026-07-31 at 10:06 +0200, Greg Kroah-Hartman wrote:
-> > > From: Joshua Rogers <linux@joshua.hu>
-> > >=20
-> > > serdev_tty_port_unregister() clears port->client_data and frees the
-> > > controller without synchronizing with in-flight flip buffer work.
-> > > This can cause NULL pointer dereferences or use-after-free if
-> > > ttyport_receive_buf() or ttyport_write_wakeup() runs concurrently.
-> > >=20
-> > > Add cancel_work_sync() to drain pending buffer work before clearing
-> > > state, and add NULL checks for client_data in both callbacks as
-> > > secondary hardening.
-> > >=20
-> > > Assisted-by: AISLE:Snapshot
-> > > Cc: stable <stable@kernel.org>
-> > > Signed-off-by: Joshua Rogers <linux@joshua.hu>
-> > > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > > ---
-> > >  drivers/tty/serdev/serdev-ttyport.c | 15 +++++++++++++--
-> > >  1 file changed, 13 insertions(+), 2 deletions(-)
-> > >=20
-> > > diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev=
-/serdev-ttyport.c
-> > > index bab1b143b8a6..48ce5b3f8308 100644
-> > > --- a/drivers/tty/serdev/serdev-ttyport.c
-> > > +++ b/drivers/tty/serdev/serdev-ttyport.c
-> > > @@ -26,9 +26,14 @@ static size_t ttyport_receive_buf(struct tty_port =
-*port, const u8 *cp,
-> > >  				  const u8 *fp, size_t count)
-> > >  {
-> > >  	struct serdev_controller *ctrl =3D port->client_data;
-> > > -	struct serport *serport =3D serdev_controller_get_drvdata(ctrl);
-> > > +	struct serport *serport;
-> > >  	size_t ret;
-> > > =20
-> > > +	if (!ctrl)
-> > > +		return 0;
-> > > +
-> > > +	serport =3D serdev_controller_get_drvdata(ctrl);
-> > > +
-> > >  	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
-> > >  		return 0;
-> > > =20
-> > > @@ -46,9 +51,14 @@ static size_t ttyport_receive_buf(struct tty_port =
-*port, const u8 *cp,
-> > >  static void ttyport_write_wakeup(struct tty_port *port)
-> > >  {
-> > >  	struct serdev_controller *ctrl =3D port->client_data;
-> > > -	struct serport *serport =3D serdev_controller_get_drvdata(ctrl);
-> > > +	struct serport *serport;
-> > >  	struct tty_struct *tty;
-> > > =20
-> > > +	if (!ctrl)
-> > > +		return;
-> > > +
-> > > +	serport =3D serdev_controller_get_drvdata(ctrl);
-> > > +
-> > >  	tty =3D tty_port_tty_get(port);
-> > >  	if (!tty)
-> > >  		return;
-> > > @@ -312,6 +322,7 @@ int serdev_tty_port_unregister(struct tty_port *p=
-ort)
-> > >  		return -ENODEV;
-> > > =20
-> > >  	serdev_controller_remove(ctrl);
-> > > +	cancel_work_sync(&port->buf.work);
-> > >  	port->client_data =3D NULL;
-> > >  	port->client_ops =3D &tty_port_default_client_ops;
-> > >  	serdev_controller_put(ctrl);
-> >=20
-> > So why exactly does tty keep calling `receive_buf` and `write_wakeup`
-> > with the tty port closed?
-> >=20
-> > After `serdev_controller_remove` is called, the tty port should already
-> > be closed by the drivers.
+On Fri, 2026-07-31 at 10:06 +0200, Greg Kroah-Hartman wrote:
+> From: Joshua Rogers <linux@joshua.hu>
 >=20
-> Are you sure?  remove can be called by a device removal, while close
-> might be coming from a different code path (like it is in userspace.)
+> ttyport_write_buf() snapshots serport->tty as a raw pointer without
+> taking a reference, while ttyport_close() can concurrently release the
+> tty via tty_release_struct(), leading to a use-after-free. Use
+> tty_port_tty_get() to obtain a reference-counted tty pointer, matching
+> the pattern already used by ttyport_write_wakeup().
 >=20
-> If this is impossible, as close will ALWAYS happen before remove, then
-> it's not an issue, but that is probably not the case, right?
+> Assisted-by: AISLE:Snapshot
+> Cc: stable <stable@kernel.org>
+> Signed-off-by: Joshua Rogers <linux@joshua.hu>
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> ---
+>  drivers/tty/serdev/serdev-ttyport.c | 12 ++++++++++--
+>  1 file changed, 10 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/ser=
+dev-ttyport.c
+> index 48ce5b3f8308..4d37c8130dd7 100644
+> --- a/drivers/tty/serdev/serdev-ttyport.c
+> +++ b/drivers/tty/serdev/serdev-ttyport.c
+> @@ -85,13 +85,21 @@ static const struct tty_port_client_operations client=
+_ops =3D {
+>  static ssize_t ttyport_write_buf(struct serdev_controller *ctrl, const u=
+8 *data, size_t len)
+>  {
+>  	struct serport *serport =3D serdev_controller_get_drvdata(ctrl);
+> -	struct tty_struct *tty =3D serport->tty;
+> +	struct tty_struct *tty;
+> +	ssize_t ret;
+> =20
+>  	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
+>  		return 0;
+> =20
+> +	tty =3D tty_port_tty_get(serport->port);
+> +	if (!tty)
+> +		return 0;
+> +
+>  	set_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
+> -	return tty->ops->write(serport->tty, data, len);
+> +	ret =3D tty->ops->write(tty, data, len);
+> +	tty_kref_put(tty);
+> +
+> +	return ret;
+>  }
+> =20
+>  static void ttyport_write_flush(struct serdev_controller *ctrl)
 
-The driver *should* always close the serdev device on remove if
-previously opened. Thus the existence of `devm_serdev_device_open`.
+It should be the responsibility of the driver to ensure
+`serdev_device_close` and `serdev_device_write_buf` are not called
+concurrently.
 
-The serdev subsystem itself does not guarantee that it has been called.
+This also applies to
+- serdev_device_set_baudrate
+- serdev_device_set_flow_control
+- serdev_device_wait_until_sent
+and more, which currently iirc even introduce a null pointer
+dereference if called with the serdev device closed.
 
-I just took a look at every driver using `serdev_device_open` (non
-devm), and every one seems to call `serdev_device_close` on remove.
+I don't see why `serdev_device_write_buf` needs special protection
+here, which the other functions don't need for some reason.
 
-Assuming `cancel_work_sync(&port->buf.work);` is used correctly here,
-we could still take the patch for hardening.
+As with the previous patch, this still makes sense for hardening.
+With scope_guard being used,
+
+Reviewed-by: Markus Probst <markus.probst@posteo.de>
+
 
 Thanks
 - Markus Probst
 
->=20
-> thanks,
->=20
-> greg k-h
 
---=-mx5cNm777Bf9oKHRXlOr
+--=-9ubk5P0CAZ1iIWTfmgD3
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: This is a digitally signed message part
 
 -----BEGIN PGP SIGNATURE-----
 
-iQJPBAABCAA5FiEEgnQYxPSsWOdyMMRzNHYf+OetQ9IFAmpsmEobFIAAAAAABAAO
-bWFudTIsMi41KzEuMTIsMiwyAAoJEDR2H/jnrUPSPnoP/0cy0RT9oHV7SXZFZtha
-c1nq/y1RcBgmcbNulJ06C2nBg7uT21PzKOzFuhXEMQg8JeLen0LVNhTjad8+Ma5h
-pMRVZLf48NqikqnbsMqhtM0b8SSFGsVtUL8HVvaDepyxP4r0FpGkggtm2aGts6ON
-fqkAAiV1xKMcbjNNS9x1MfVNMvqgfI47Fau4yyVKu8nT3BQaaCSYPwaNbTUOVIkY
-A8hU1E8VExVfkl/GiqXsbeF9HCwcE3twg3ZEBm+7P9398cGq3DuX5RYRrZK+PNl2
-1RNarJRoK1Hkuz411gL492QHkqw97eLMj9qBWdQRt2xWUgRV7AM4YUUQ47otxc+0
-3XZ5c+THK7saEzc5rhQ5Etss3YUnz4+xWmXlf2Yku7XJGujThfqct2hEl7mUQMtD
-EfTmTTdpB3FsLrruxpTkAiq2hXLH0c9x5tzKM92g9/G+uR1udxVys6RU8QqCsAGo
-vxiXCFZwVRMChEYOb/WXWVOKv1/bnbE2rN0U8AirT2nxvf5UCEqyUpVI46AGs/dR
-GAot9jtfxX3tF1wM7E/lgAqBi54bv+Wrzy1ontwo0KHHQcgKo8H94scxE/8YFCxZ
-ICX4u65gjDLehjTNk0eGQ8GhcO/R7sachZvg7UJTsKTw8xk16t1vuMwSJ9rjKDx1
-ZquopxFs8kIG+bfzZsY1YNnA
-=88FJ
+iQJPBAABCAA5FiEEgnQYxPSsWOdyMMRzNHYf+OetQ9IFAmpsnGwbFIAAAAAABAAO
+bWFudTIsMi41KzEuMTIsMiwyAAoJEDR2H/jnrUPSfK8P/jc0o5PydQM2Kze0GhXR
+CNIpoB7VD4wyqMichSSRja7U3vkm/nMR7+HnGq6x4Kw8d5/YLptLsr7gXTtIY7o3
+87KBY3PyGOt+nO2LgDjw/yh+Km+buX5WehVoDE6+c0PZQK0IvVq1gNZT57VoNmHG
+DMp8PwtnbwcalHr90sNZC0+GEztipo94d5CsE+WF/8taUCLRikGipRn7jQx+uyr0
+YyofhX73v0qo8zbcwydU3zxdmJBuxDf61XN1YspwIKaoWQe1nyw5r+g+O4flC+wH
+p9wHQS+cSsHaSnoeZ/0icDqcq5g7IWWgYeoHynOAlXkz9ai5Wpy/LMJKngH50j0C
+yLRkjVcu+88gr90PyUhRW0IBdQWHYG3HnrIJ4xFOcVn2Uo/Qk9xJ48sA2afoqou+
+vM3/Km0UR3jWltfs5G05RURI0kPt9mD7J/83sjKcbQYKOjnYXcKaM6HcE63mFdPl
+oqbWJ1YOmtwAytDQqHlpbrlRdPnEIJbkUI3mdDLODq5h6sqGg/ccAuoAAhIvc/2F
+KHIjznXHihMKVs9XiZfbVlFFEmUxvRUnRm9cZZPAZYmzaI71BmjG/mk3f7XUL2vD
+iI3ctoKhquLLB0LSJpOlTezxcoPMiHysswuUYP/9WdMs5L50ELxplF3KcpbGenoR
+RcdKXdt6nkiuj9vxYJaYZSSo
+=0LCx
 -----END PGP SIGNATURE-----
 
---=-mx5cNm777Bf9oKHRXlOr--
+--=-9ubk5P0CAZ1iIWTfmgD3--
