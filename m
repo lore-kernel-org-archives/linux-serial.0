@@ -1,57 +1,57 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 037F742A78B
-	for <linux-serial@vger.kernel.org>; Fri, 31 Jul 2026 14:19:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63F30282F01
+	for <linux-serial@vger.kernel.org>; Fri, 31 Jul 2026 14:20:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785507583; cv=none; b=Kc6klF/teg3GNFpHRCZOH4Q3qba5wMw8XOFOAVURS1Z+4T7K9f7g5PTnYZ6bXduduEzDFtA4wDXCmRA3AFYTSxkGbkfLe/3GZACFNda7rznqB8r66mceMDcEy8xSVW917T4GbTrHZ1Rj+XWf5rMEfTeDvxUjxW31oP9NJBwW5lM=
+	t=1785507654; cv=none; b=L9i1cog5n78cNDjZ5cDguBLO02PNTSyfODj61y4tpeZjhtWHn6Kv53Iftc7KustkuWbyf8MCHoJb2ylipqfRV2GOf9Wo4BH+fXYNupKEmtULGurMzFXevfhhGNv8OGA7DWhk81nSN1/hSSkhYOrittZCmlQGfwW6MJu6hOcRNlk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785507583; c=relaxed/simple;
-	bh=gPnc8oodKt65dzlO+wuaoyeoyF0KLvO1dIIwV7KCe5g=;
-	h=Date:From:To:Cc:Subject:Message-ID; b=kOtS1qCAlKtOga4BisDf8V4LSyP94LzBt2Mp9Ohz141U0uhmdWnZ0dgqqF9sA5zwZ8YSPezAIt3T9xGapr1nQ/KPfwjwXo9MtneLh0SkxFV21eKbnxhM3j37fEEMF8GkvErQyh4bHWpWrbINtcaj9oKW2akCUhGO8C9COyOlmQc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=j1MH/f+c; arc=none smtp.client-ip=192.198.163.9
+	s=arc-20240116; t=1785507654; c=relaxed/simple;
+	bh=AN105AzyMKzVJoD7xXXBiPSFChFxA4y6j0v5qfXZZPc=;
+	h=Date:From:To:Cc:Subject:Message-ID; b=ihlP90uW4gd7B4ifXb7T+8c9l5kMn8EPRGI6Mq1/YmILkndCyFGbKIlshU94qGL+rZqP5ohNF1JhFDiNc+ki0oUJ1yFs601stDaX6zaqevCuxqZQBJahG+DMN5BdxqT9MPgrysqt84F1IbMzixPFeif/Be+C3WUMduOGyJgO4Lo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FFLkUTdb; arc=none smtp.client-ip=198.175.65.13
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="j1MH/f+c"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FFLkUTdb"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1785507582; x=1817043582;
+  t=1785507652; x=1817043652;
   h=date:from:to:cc:subject:message-id;
-  bh=gPnc8oodKt65dzlO+wuaoyeoyF0KLvO1dIIwV7KCe5g=;
-  b=j1MH/f+cwcYkljGDnD8poYhCr8dGy+JYu5RQbxXsg+jeM2KC0LZghjcM
-   X157zyx94YkyNh+gMNKbTdxFkZccT9wHwCIvcXZ59JIuKJ2yeoZQ/uM4f
-   sT/oJXEeNryr26E6IvRzUoOwylL8P4ZjV1LkyUGANf3HTzAZ+wWYFSkEV
-   BEsp58MQ+lQ4lUJ6c8VJAX8S2qhZs+O2XhMiRKCXbc7KbyzP+CJ47yH+9
-   cbxv0WJubqj+ECYunSFB3PdrhY6OIzqtG6Nn7ICJq3f/U4aV5iUMck9A6
-   L5mFSkBNKZJaMOT0QgAyPw7/Z4tAzMCPio48saCGmdolRcgEMEpp3wuuN
-   A==;
-X-CSE-ConnectionGUID: zMFo2Lr7RHa8g78kj3y26w==
-X-CSE-MsgGUID: jG/WnAFYSVyWw9aHxLuJWw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11861"; a="96792824"
+  bh=AN105AzyMKzVJoD7xXXBiPSFChFxA4y6j0v5qfXZZPc=;
+  b=FFLkUTdb3a194/i4cK8dIpckCOItNMMYvkoZBFyc3HEXPdcAtHG3J2y5
+   5k4K7KdndM45kdHQOHvH68H+x2UKiLfKceLW8CRrYD7RcAZlGAflm8pdh
+   AUQx15p0hRqwlwdZdh0Ky597uUngVKgbyj7SpKKeB/EPFhPDYi66t51OR
+   1x/kAwKRGVz58Ymf0jMeeVESGyKHtIkNRtBJPGoTwhj6F/fKi7nOwnMCi
+   zcuTbsVz7qQP2ev+PCJCgjsV9NkovopjekYWZsgkNcQBpRQXyWEMMAVfJ
+   0zmmT/D5TENlptWcxFLP/PZvtjzWzgemlaCbxcKlakLJZLSB5ACIcM41q
+   w==;
+X-CSE-ConnectionGUID: lGfiLTODRZ+0+cY8knGTJw==
+X-CSE-MsgGUID: hnRoV5YqRZeLTSyi2EcKXg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11861"; a="97290858"
 X-IronPort-AV: E=Sophos;i="6.25,196,1779174000"; 
-   d="scan'208";a="96792824"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2026 07:19:41 -0700
-X-CSE-ConnectionGUID: VjueBGZgT5iw9qPZHmlf5A==
-X-CSE-MsgGUID: TmrSFqfURfOWevo6NJn1XQ==
+   d="scan'208";a="97290858"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2026 07:20:50 -0700
+X-CSE-ConnectionGUID: llQJEIa5R8yzL7VbjDcPtg==
+X-CSE-MsgGUID: EO1fMdk/QDOQeGQY76hpVg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,196,1779174000"; 
-   d="scan'208";a="260652315"
+   d="scan'208";a="283921068"
 Received: from lkp-server01.sh.intel.com (HELO 6eda058d650d) ([10.239.97.150])
-  by orviesa007.jf.intel.com with ESMTP; 31 Jul 2026 07:19:40 -0700
+  by fmviesa002.fm.intel.com with ESMTP; 31 Jul 2026 07:20:49 -0700
 Received: from kbuild by 6eda058d650d with local (Exim 4.98.2)
 	(envelope-from <lkp@intel.com>)
-	id 1wpo5J-000000001Bv-38li;
-	Fri, 31 Jul 2026 14:19:37 +0000
-Date: Fri, 31 Jul 2026 22:18:35 +0800
+	id 1wpo6Q-000000001CF-43mv;
+	Fri, 31 Jul 2026 14:20:46 +0000
+Date: Fri, 31 Jul 2026 22:20:00 +0800
 From: kernel test robot <lkp@intel.com>
 To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
 Cc: linux-serial@vger.kernel.org
-Subject: [tty:tty-next] BUILD SUCCESS
- 57c0741b8c15b93ba4aa92c6618cde6f3f4115b2
-Message-ID: <202607312217.Ktuk7dOy-lkp@intel.com>
+Subject: [tty:tty-testing] BUILD SUCCESS
+ 8200871327d1bd4c08daf248a8693a3093982fa4
+Message-ID: <202607312245.WceBO1NJ-lkp@intel.com>
 User-Agent: s-nail v14.9.25
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -59,8 +59,8 @@ List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-next
-branch HEAD: 57c0741b8c15b93ba4aa92c6618cde6f3f4115b2  Revert "serial: 8250: Clear CON_PRINTBUFFER on port re-registration"
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: 8200871327d1bd4c08daf248a8693a3093982fa4  serial: qcom-geni: Keep FIFO RX active during console TX
 
 elapsed time: 802m
 
