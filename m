@@ -1,45 +1,46 @@
 Received: from SEYPR02CU001.outbound.protection.outlook.com (mail-koreacentralazon11013014.outbound.protection.outlook.com [40.107.44.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15ED45474F;
-	Fri, 31 Jul 2026 07:49:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D96B3947AC;
+	Fri, 31 Jul 2026 07:49:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.44.14
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785484144; cv=fail; b=SId/cYCJsOG3MDVBXLoF+pHcDrNtZ84DwugO+gwD6nEYM5xNFnkagLzIusq1e64KbcGVYDN3gLvenoOYi082YaMsj5+VdQo4S3tlA6Ojxvl5eY5NVnmAnx+Ia+ztrn7kOOBKWTCKsQqG6zB1Xm6vfoh4PNubsE2rZNgZ9yn98aY=
+	t=1785484147; cv=fail; b=BkZu43ZPGuCH3dRIlOdsEZXJvEpBTGMTGN3GBKXFpCROEr2A3KIfGsQeDeoMyOL5uyfTlmdCyv1GF1a/Jjuul1djLi8haz4g05l+uxbSm/ljuUYuu7mfbFmkOixDYVmQXT+hW+IoQmL/U6MUN7i+G8QRqk3rgmF+lWGziArgDPQ=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785484144; c=relaxed/simple;
-	bh=d9cqk/kHBKFkPXYFEMd4cn0UPx0byVt+1rSYz944mJs=;
-	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=sqiEJ+UIY0uLVzIdC+dEuyiofFka+29y/1BZIT0sHsat5+fMEeiMD5ZtapKE1/FVswgsPad0QU4GjjgzqQmYeDODPnLxyV+TnnxxfDTelIwfFajBfvc/RlEA5SbUfsrtsKng44txVZfeubjf8I8QnNL8cWjlshq/sR6huSCFKmg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=moxa.com; spf=pass smtp.mailfrom=moxa.com; dkim=pass (1024-bit key) header.d=moxa.com header.i=@moxa.com header.b=E+5uI3Ib; arc=fail smtp.client-ip=40.107.44.14
+	s=arc-20240116; t=1785484147; c=relaxed/simple;
+	bh=rc8vShyLx+KwgdTVmWZoqju0h7QQ+xShE/aW+7hZ7yo=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=NP+66NuB9EPreX/qHEt1JpiQn9KNLmX4gjdG5WxtJah8CHPbDuZc4ZsMdHATJO/6dYtnOwQlysa76/wVFwx9h3uzwYNZa3z9QVrzK7VHscyT2jJzgZNKNHSuNYUO9CW9TIrHmkSmxcInoyvQM8tZ2fUHkz7sbATW9Za9PBr+iwM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=moxa.com; spf=pass smtp.mailfrom=moxa.com; dkim=pass (1024-bit key) header.d=moxa.com header.i=@moxa.com header.b=BmpZGmeh; arc=fail smtp.client-ip=40.107.44.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=moxa.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=moxa.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=moxa.com header.i=@moxa.com header.b="E+5uI3Ib"
+	dkim=pass (1024-bit key) header.d=moxa.com header.i=@moxa.com header.b="BmpZGmeh"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=AJ/KXBEmNRWMQBJD8pwMrZGII89A6l+Z4+YcRuZCZs5zgcF1MuxBLJiZ0iJfxPtzkyI7zICZdjsCvKKGr4cHrCTQUuhzrfKX9F1T+33VFSsXSk38vTn3gsCVZ5O2bRki7mxlhUei5xRlgmCnTr3UmreRMBnm3sCsuKgKYkhhMzudYK3dPadS/D7JLw2qhNSYTB8z+9poDEiiWUEqhNuIY1MWUPYON6EtCfI7YvwQWVpB8cw2PEZFj5q1rf6vZ1XpOyURKEPGNMasKXT7g3bvHiPJsnwuO4rBLp/072SVGShK+6PVhLl5yFQwOs78FpT4GkF0LrUI0zVKdnJHXtuOWg==
+ b=fj+5RLXQkOJIfRu6BCHxdQSV7qraxe+1uEdd6eVPDQpxeOKm3FHr0BsX0ODiW8KKcSqMBCXRZPmxzUnwc8TWpaUoufxkuiA01QQpIteQFYGTvPvnB5oc/dzHTOZmg3kH6F0tMX5Cje19R7eZ6/E5SiPbTfcO0hJsxkEVfCZz4OJSm+c5UxJSD0ZoIqFxIF2NFyHSV6MRAMUSeDF/6YTOlfHThT5FRKBpv3Phz+LyKJHIDz3WO0anL+QEQgwxMwIV2pR0M3HyP9Ozyx3PWJEKEoBl6K0UagSVspAYamyJmABBkjMLyQmFHS0LVYSedSmD04B03obkcFXxqPPPy2aOYA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=n3vOnSdSr8ROmCcJyyN7nMLxWMJ8269SGniaubNmYiU=;
- b=qys0Ig5wlnTYcZDFvIPOcdv9jsxgrU+dvnRohu7582wKY+85gV4YshcUURfZKKzaMZWoqbpbT4CCL4Ubj2/CIQ7g3pUbsc5xBuYDol9uhJYYUG6DcAcuJ+sFfxZxhho390C1hdQcZ/mUiKkPWz3tDwj7HVcoSpMFuC2M3YlCFokZLs4vzjVxtfh0tul3RNcOb/2OGqJe6m1iRmvjEW5ZIYEtV6xlWRFlQT0xmrSGyuiz5BtGsudED+zjpyLi1TiAXth3LDrCgMU3qzq2DmzvuyYjn/vp+HXBsdbj1adfdFu0oujo62P1YaIQ/4OamlyatGsI5d/SMC4CSGjnPN6S0Q==
+ bh=1EkYu0kjrGsQK19Obl99n17+DS4qqeUl4O5Tv8dU7EQ=;
+ b=iZdtTr9nSvZHDhN1jBx8bv5PbXlLbpl3lr7qhl+S+NKHbm0zIx8vClTMxGdKxK9VOme4D2G0fbA3+Q7WaAfhA4ptWvjTuob6ng5JPv6aHYpkpZENnzBy8iwtavY59WncT4bxeh9jVMULdDJgR6E6HvQP/ZWaUrTae1nrmzTAhC14OpdeYmEpCpK204JYJXNfbtZv7FDpU4Dpi4v9dh3wnKDKtvSS2GmuClqneIV0rVxoDIQh1UTDTMtjtChyxw5FJylSp8fcLIvY3do9OL1AVgdEe7ZZohOsvFJd066hQD5ZJLfvtozbgNr/sa1ShQOGo3V66IoD6BQ3I2x7oySSkw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=moxa.com; dmarc=pass action=none header.from=moxa.com;
  dkim=pass header.d=moxa.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=moxa.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=n3vOnSdSr8ROmCcJyyN7nMLxWMJ8269SGniaubNmYiU=;
- b=E+5uI3Ib3Ck4w/+Nsi0nuUTpxpmE6d1dwxCT4jjjsZsEqoWf7rLhXWV5FFE2jRF9HduxFmkPh5YSiSD9YG7htDRh0u54TxD1Y39P2Euvaoy7DQaNtEX95NDfrgA2nnaCw54MRc81Vpb0EkQBiU0DE+u8+QSBo4vO689WkTZJM6g=
+ bh=1EkYu0kjrGsQK19Obl99n17+DS4qqeUl4O5Tv8dU7EQ=;
+ b=BmpZGmehvHfFOdl+yjBJZm9WsdsWvz3KUDLtaCJ6sCA9h9ttlgeI/Sf4pqtJfHzNU7aEkXyNPty2FFfBJZn0UFcnvUarufKs4GrnQIupEPFgOvziNjrgsLRmnwI53peX4CR1l9g1HJbdMCu+3KtyXvIBN/6Hva9LguXv6o/qNRg=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=moxa.com;
 Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
  (2603:1096:301:115::14) by SEYPR01MB4488.apcprd01.prod.exchangelabs.com
  (2603:1096:101:89::7) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.270.15; Fri, 31 Jul
- 2026 07:48:58 +0000
+ 2026 07:48:59 +0000
 Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
  ([fe80::ae38:e821:cf7d:3717]) by PUZPR01MB5405.apcprd01.prod.exchangelabs.com
  ([fe80::ae38:e821:cf7d:3717%4]) with mapi id 15.21.0270.012; Fri, 31 Jul 2026
- 07:48:58 +0000
+ 07:48:59 +0000
 From: Crescent Hsieh <crescentcy.hsieh@moxa.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
@@ -50,10 +51,12 @@ Cc: FangpingFP.Cheng@moxa.com,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	Crescent Hsieh <crescentcy.hsieh@moxa.com>
-Subject: [PATCH v5 00/14] serial: 8250: add Moxa MUEx50 PCIe board support
-Date: Fri, 31 Jul 2026 15:48:06 +0800
-Message-ID: <20260731074820.735619-1-crescentcy.hsieh@moxa.com>
+Subject: [PATCH v5 01/14] serial: 8250: split Moxa PCIe serial board support out of 8250_pci
+Date: Fri, 31 Jul 2026 15:48:07 +0800
+Message-ID: <20260731074820.735619-2-crescentcy.hsieh@moxa.com>
 X-Mailer: git-send-email 2.45.2
+In-Reply-To: <20260731074820.735619-1-crescentcy.hsieh@moxa.com>
+References: <20260731074820.735619-1-crescentcy.hsieh@moxa.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: TP0P295CA0051.TWNP295.PROD.OUTLOOK.COM
@@ -67,202 +70,673 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: PUZPR01MB5405:EE_|SEYPR01MB4488:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5a42e7a7-b632-4402-de51-08deeed82de5
+X-MS-Office365-Filtering-Correlation-Id: 7be461e0-fe9e-4819-e9f2-08deeed82e63
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|52116014|366016|376014|23010399003|1800799024|38350700014|6133799003|56012099006|10067099003|3023799007|18002099003;
+	BCL:0;ARA:13230040|52116014|366016|376014|23010399003|1800799024|38350700014|6133799003|56012099006|10067099003|3023799007|4133799003|18002099003|22082099003;
 X-Microsoft-Antispam-Message-Info:
-	Ff/y+8h6ZkL9Etm/ljHsZOam7KMHFi+FOjfxrueo/7t4Sw3iIaoe46Pr68os18239raSIipjDxGYdAS8XPSsNKFJ1QPcDLWfD3kP4W74ZjgSLuNZ2BTcKVy2MLypY3RaLK/s3cOLUrWYYWnnEanNicbkpeD9+SHGGub7ktLoHRfl7nXhR0m04CC5ycBlI55p4MsOayiurT2t/jca0FIuG9INqFydewT8GmlPNORdnvoaFXW/2QEONiw4iux6BpfUSQf6ub3xPKh+OraVj65CG4wb2TKldf6TyVId3nE5e/IsHbrLfnnQbBXrJO5Lq2/+CgQwrKmi+mZ3Bjnu0TGHHvE5y1dnBuG+wJF/1HlgxkbvoNjzSBPSFiCD9xmNK0C4tvtB9vV8tGIsxL9GcLuxjcZFeXLOJs0lRb1Icz+Z+0Mty1qrAOZgUjtQvcDijt3o0ccseCGy6MtoitH+coM6B9OmbMjMk1Z0FKAuoWbZWpMQS4bfY+rlhd0df2MQjk2UQS4Rq7+atnm14y42SHSo3nV5A8EwfOokZfoDhsjvFy/24NNyfm0F8aka0aCHgt0dV09o8v0GIGw1sGWJNXBAkM/xjvInLAUFYTkLd5Q6te9XTtYU4vEKHCdwCCkSMfJ34V1phtdLwq5OJ/SZPYCuCQ+BbJrxxKj1kHVrFm87uyNLM6XdXXRDFe/Mi91vlhyXKc7LsfVrCATFetAmg5J2vaL5rpG9KdTyv1nEAC/BuXo=
+	nzIkro//LC2gr9jP4PDl9dJTCXWcOYxZ9xzSCRfhwS2zFAONJq/dyJLNNNoAbnWK8Kcm9Ua6nb8DES4qZhBgJJIeYNFTn6aig3bcSwzpzHRYsK0Jg8ZEx+h+LP9Hce/KiLRCcp0MBFcHE5lVt9JyblFUKpyiGrf+lu5dn4zCqDBZufxnglVEhg6b2bY8BlHAzQevRacIBxE3rt4lMkxn+w9+7ZHI+9lNta81HQFYZ7FVqRHAYOWaFEUWd+hpcHX0DeLOixpdCeL6CDQL7HHWjNncZADrdMd2OCO3xtGtZLM9XSm2CDXfbDZ8BLTfz5hcRAOv0Ng8+ZuIJkcxgOA78kBbwnxHPwu9QEihVd9BMTwJwxOTyhTRf/p4aYVFfOBYsvDomm4Skwc/Ytoo68POOG2Q21tZCJmfb0wUTYY2e+l2JeIsck/XL93bswLuuDqrHcYoTLlDui/+WSwVqgBy1el2LXUoWJoIF8cTEGtQh4u1+LlOKzv80JCdd+44nP8NC3wNoXnWh3fRbRQnhn7TjThOqf4FYZsSQVglA296lv5G3RUuvcxjfBPw4tEP8bdOdLo+ittbxr3nAV7v13NhtO76bUr6Ss76WgaCxvD8eMR1EoAwFRtUeLEMqkwn8mhEUmoc6d5TDLJZFcpTZTNO8f5fXfxM0c+ZAHPnzTQaE9M=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PUZPR01MB5405.apcprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230040)(52116014)(366016)(376014)(23010399003)(1800799024)(38350700014)(6133799003)(56012099006)(10067099003)(3023799007)(18002099003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PUZPR01MB5405.apcprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230040)(52116014)(366016)(376014)(23010399003)(1800799024)(38350700014)(6133799003)(56012099006)(10067099003)(3023799007)(4133799003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?jb6rxLh5lmOmP6/RsQkCvD0avqgPDTLcugqj/phAe8ia12kupxlbJLKtvNCl?=
- =?us-ascii?Q?K0nM2XabrHCP/HtxpbhTC6ot3caJzKyiN6XALe/3w61BMdKeL/jfBoZ0NpJt?=
- =?us-ascii?Q?7gDi7rlxvPlfLBhGDx6MGnseAadYRSUaBY8hf5KiiextxxDexzgzctPnJnd1?=
- =?us-ascii?Q?34d1Bwd94D5WXT+FehQBCWa5QuMWIv1vXTKTOQa+iooiP4cazp0QuoNxVEvD?=
- =?us-ascii?Q?axqtlvnagOfIFJpmOXXRNkVdve8tVwp2mpWCmpfHeZX/ULPWCcE393LLko7j?=
- =?us-ascii?Q?RNGIpaPih/+hGoIdmqT/89GWq99ntYe0IOG7R/6jYd4kce7WHcO4K1UfKC/J?=
- =?us-ascii?Q?H8qc6H7kXpVCd/WOsWDxwmcRSxU9uFzdNTVtX3gqLzjesluBI2+moN1+w6vI?=
- =?us-ascii?Q?hMhHJiinYM9J25kAROA07QoUEu7S6Lsy0DJKHNHumwz5q6/Bq7duy/wlGX+k?=
- =?us-ascii?Q?/lVAefmONZuPv8bmw/bWzNzJsVKkdjyBRllffuvYZIlAsZtTNfJ2j1or77Ls?=
- =?us-ascii?Q?voZCmUefqH9eoqvqvtW3CK5xzp6ahV8UMp7PD8UNKDm8sasGAvBV6m2knBL6?=
- =?us-ascii?Q?tEm/lHGgmAq5cEx2laszRkwxrHNEw7fRQpV/hl63rGOaGn7BUR+B33jn3/Yn?=
- =?us-ascii?Q?T8OBKiyZlYGRYr2KU/9DU/GqAgFI37gfdpc5eCVbp8HDKxFJNNftjkxXpQGx?=
- =?us-ascii?Q?Ann97jJRoqh4t263phBXexmcxSLuyHqMKn0rVDdDyBbHEjXPAwYgT35kmhoI?=
- =?us-ascii?Q?BNJEShQCSa3d7KtJGqL38gDz+5Ys1sL6rRfjPgAn8vLnnlx41QLbItV23WvR?=
- =?us-ascii?Q?Q4l/ANZQ8WWr+nbt+ak6jygKNYZLfj0A3iE5eVrPo2M0NMerV9sHHbkEfKHE?=
- =?us-ascii?Q?4RhC9dC4a8HOnr+iWbKP9Cj3eFXQcpbLeDoOnZN4oU9Gvx0yf62LWShfwGxo?=
- =?us-ascii?Q?dRUKR3lnWssyoo7yiLz8mSEOLHQCOULYuqDc3TKDpMhttduh0ObQfy6rNJo/?=
- =?us-ascii?Q?vtizB9tpB/yRrd+da6TDOE5qZyLdvifhE6VWX0hQEPIi6d9Q5OhbftveS7b1?=
- =?us-ascii?Q?QksBLiyE8dTaEcz9teuXYqBqV3cMYnUAxEH9qn7/68uLxlDM3/NQsR0zCW8Z?=
- =?us-ascii?Q?Q9XGm7vRIJCBghF7IjeRxKjSuWRp3XSY2HhWNGCz/bNqZP1mBIH/RAd7mSkY?=
- =?us-ascii?Q?1cA4dkwCbAxGqDGIAESG8pqrAW4X3+vcdguYmQeGcou8FFVvH6c9GoLTM60V?=
- =?us-ascii?Q?D2dv5NOGBzSO6a3nIb10xF4MNmpeOaeT70YT115OcVOUFdWws4KWeYksDu51?=
- =?us-ascii?Q?D2WUViMuRXFHBLksUCK7WWoFXL19fJIf0j9FZ1Wh+IffWp1fUn/gQh09V5Ab?=
- =?us-ascii?Q?SxURbut3n3QtWYO/CYL7JPJyhuU0DtJyXjkEc3Sf3rpCKM1+j4JF866Z154W?=
- =?us-ascii?Q?1ICMTv4c5/tVwGJCWQMlcR4Bv/d+cOivwBBV4Nr8jFGk1HfrwKM0GcBMXJSP?=
- =?us-ascii?Q?4UeiOC+dM4ig1720h9TzWrlzh/4lggjmqAEHen3hH6EPfEJWvnqOkB9mlESk?=
- =?us-ascii?Q?TGWo+PqcMb8p5Py350jty9e0G45F8mVRAuWfX37dCrDoihMNoH/Mkleqdh8e?=
- =?us-ascii?Q?fHjgqIjew2fhkNo1bWd3cr/X5oS4IqD0i+KJInm7siornv7p2nrFMWqE5VJj?=
- =?us-ascii?Q?CKycRnPTKZIDzztUgujJhAB+CQS2ZI23BKw124HRCnGTRA98xv6AwzkKd5gh?=
- =?us-ascii?Q?U3rCaN+6TIAXFFDzmsRsIHGUquEkRkk=3D?=
+	=?us-ascii?Q?bNyYkg/rud9x2csEwF4Jsmn2KDUg+C40M3Ipx1479cytKMriwrTs31sIQcNr?=
+ =?us-ascii?Q?sUBoh5+xVp/V8dRxbVnbVHCtKVH/Gfr0Of4p0efRqt1ptn8tYf9AWmnzqbzx?=
+ =?us-ascii?Q?r5JxEOUgq0lyjhxJOMfjk9SwhuyURtP7kUHts+hA5a7OB+LAxXSXOisSWkzJ?=
+ =?us-ascii?Q?p6Xv1IdLTqpKVsQaDIq4o9OpUcU5l83xT0NWz8E9+PVHsUDNKTGXNiYZeULf?=
+ =?us-ascii?Q?4syfetQHh/efPbd23tB1uY0qFUg1QXFBEMvMnP2IKAwLnUGrfjHm2lBc/Kmb?=
+ =?us-ascii?Q?poQbRVNNaD/LtTurrcsx1gQ3OHjJlVEa9RdLsJnCbkj6WxI/5LCd6uiqcN67?=
+ =?us-ascii?Q?XJF/+7vhOV65O85hSqBxjp58LjwyPhKFLLbm/wqe0TlinO9R58LhG9dC4iz/?=
+ =?us-ascii?Q?4IZd2Q6uoLLSGW5OZRoVkKa1ePK1OMZGaXC7xVeuLrNTox1bW4X8O56GbP/Y?=
+ =?us-ascii?Q?KNoHvS/sEWazO1F5koZYsKfd1HruMw7HCLBz+D+vFXHWbskPu0WwE9h+HlnG?=
+ =?us-ascii?Q?WusL2m/K+pTGn6HLXeyPJeH+uqU1sFsYS/CsCc8bWcGy7G7PfIDPRnXvc8GG?=
+ =?us-ascii?Q?VY5VENc+vWL7ZdjMgLhc53iH3dmEQlqZV4viYbC3UJtQbmNIFVdZLvEv1u4D?=
+ =?us-ascii?Q?kd8REzkLOxyHWcHxC3HpOosZZ0DU9EwBpehUCJR0MhNTrP0E1puw3NDbnH4P?=
+ =?us-ascii?Q?25PL51T3/LT6wlwtO4oc4VCGxHyV0XW8DvGVJi2KHffpNUebW8PX76iiObQF?=
+ =?us-ascii?Q?uclnjZhc1o3yM8cx8X0PPbg9WC0h5roGK4ynhR6h6Cr0a/2GR85B6LGGB09A?=
+ =?us-ascii?Q?avEYoIhJjjfeLwG0/w1PVo9VunY894ZA03tLoEIk0R7ZGbeWPmvNOf1pixPG?=
+ =?us-ascii?Q?2R7M+apyXqGbgMGvfqjVju++I81/Oil7kPCgu+P1vtpmFf7zomCVoT9tZ/Xf?=
+ =?us-ascii?Q?UEif3f8KxyReUS1nLhWCQ7eq1mCZkZlonQaL7EosCmDbIa8iMybye7Pcu5IU?=
+ =?us-ascii?Q?OTOKeszP0Lec6zLQoAZdRWWocwALW6sTPbN8jhDmkrbX6of72YRACDOoq0dO?=
+ =?us-ascii?Q?7MYJ3n3NgMyiBJGUqRlzvDixSMn/DYGtWUzq1QBPKw6S4EUWxOqPpin6fXv6?=
+ =?us-ascii?Q?Ajor2RhDhoA+byTyfKs0neI/mC1hUaHmPF7Y0SbHcl1xV3Ox7jOduM9+mVDN?=
+ =?us-ascii?Q?8tKtAlXfQdi/esxeESYYI/H/vYuwlqgb3c9i1kDAVvgyAJYr+obuC49HO9dB?=
+ =?us-ascii?Q?/1grTIpsrC4jX/2khfh7vPksjEIGilqghCzB1BcaRTWa+K4Sd5hEsponmrjN?=
+ =?us-ascii?Q?tUtRBxqJ6iGf4SVuV9We4PN6Kn3NDexEtyw6Nu/Mbadhm5OTfQLGVcO8j4BS?=
+ =?us-ascii?Q?xxIcTDTJcmjn1yQX3Qn1+Inzm6NdfVpf+a0J5FBSjNhWq4LkYF/Y7pr06610?=
+ =?us-ascii?Q?dPv2oZ2hy8dyqxajia54ngWfYT4r/ehQuS0BNlyK9MM2HKhLCgeEe+pwUdAc?=
+ =?us-ascii?Q?DjxjmRJ/TaeeC3DZQmwJQsdEtuPZ9gMMQ4nTyVba0faeoFhCPlUhYDQgY/7z?=
+ =?us-ascii?Q?csO0+Ea5eJri8E2QcRw+86oIjLtxPPlhXdcPV+0bJoiskHH3fN6JnsslEARw?=
+ =?us-ascii?Q?UOFjM5RKE0ra2gDLI4xQYGak2xBAZpxC8XKjFEyybWDsdiPv6neboRwW9p5I?=
+ =?us-ascii?Q?n5GJ/Kz+I7ByQG/oCTM4ctZ0Qkdi/jSe31eK12ZY/sy7pWDAImwGGh8z5Cih?=
+ =?us-ascii?Q?963XIT02KGeKgdlLFsGnA1SQovbHW3Y=3D?=
 X-OriginatorOrg: moxa.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5a42e7a7-b632-4402-de51-08deeed82de5
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7be461e0-fe9e-4819-e9f2-08deeed82e63
 X-MS-Exchange-CrossTenant-AuthSource: PUZPR01MB5405.apcprd01.prod.exchangelabs.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jul 2026 07:48:58.5450
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jul 2026 07:48:59.4121
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 5571c7d4-286b-47f6-9dd5-0aa688773c8e
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: nEsWZYbXLFow/9XJRxnUeQ4FVm+PzUKf5iaW4aJSv3QMpznUA6xdLh/qfALdmLKyqAp5/PEMX6/BjAkm6fBbsBCSSA9bnP5THoPDtwQ4JCc=
+X-MS-Exchange-CrossTenant-UserPrincipalName: OdmEUHFbIJ4YcAtXkpO0i+pSU4c3vjQF2pYdH8L/2gW0+CCl4HF321OqLvtXmiBKCHLuB3eq341tWPViFOjQdJICEk27+Z4WKnlJN6wAzso=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: SEYPR01MB4488
 
-This series consolidates Moxa PCIe multiport serial board support under a
-dedicated 8250_mxpcie driver and adds MUEx50 UART support needed by these
-boards.
+The Moxa PCIe multiport serial boards are currently handled as part of
+8250_pci.c. In preparation for adding Moxa-specific UART features and
+optimizations, move the Moxa PCIe implementation into a dedicated
+driver.
 
-The first part splits the existing Moxa PCIe board handling out of
-8250_pci into a separate driver while preserving the existing probe flow
-and device IDs. The series then introduces the MUEx50 UART port type and
-enables the board-specific UART setup, including enhanced mode and FIFO
-trigger programming.
+This introduces drivers/tty/serial/8250/8250_mxpcie.c and wires it up
+via Kconfig and Makefile, while preserving the existing probe flow and
+device IDs.
 
-The driver adds hardware-assisted flow control support for MUEx50 UARTs,
-including automatic RTS/CTS handling and XON/XOFF offload. It also adds a
-custom IRQ path and uses the MUEx50 memory-mapped FIFO windows to improve
-RX and TX data movement.
+This change was suggested during earlier reviews by Andy Shevchenko [1][2].
 
-Later patches add serial interface mode switching, RS485 break handling,
-and per-port private state for MUEx50-specific configuration. The driver
-supports switching the serial interface mode through the RS485
-configuration path, covering RS232, RS422, and RS485 modes supported by
-the boards.
+No functional change intended.
 
-The final part extends 8250 core callbacks where needed so low-level
-drivers can override break control and rx_trig_bytes handling. The
-8250_mxpcie driver uses these hooks to implement RS485 break handling via
-MUEx50 features and to expose the MUEx50 programmable RX trigger level
-through the generic rx_trig_bytes sysfs interface.
-
+Link: https://lore.kernel.org/all/ZmQovC6TbDpTb3c8@surfacebook.localdomain/ [1]
+Link: https://lore.kernel.org/all/CAHp75VeDsVt0GQYUFxLM+obfmqXBPa3hM3YMsFbc26uzWZG-SQ@mail.gmail.com/ [2]
+Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Crescent Hsieh <crescentcy.hsieh@moxa.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 ---
-Changes in v5:
-  - [PATCH v5 01/14]
-    - Call FIELD_MODIFY() without assigning its result back.
-  - [PATCH v5 05/14]
-    - Remove the redundant EFR flow-control mask clearing.
-    - Call FIELD_MODIFY() without assigning its result back.
-  - [PATCH v5 11/14]
-    - Change tx_byte from unsigned char to u8.
-
-Changes in v4:
-  - Drop [PATCH v3 10/15], the workqueue-based TX wakeup patch.
-  - Reorder [PATCH v3 09/15] to [PATCH v4 13/14].
-  - [PATCH v4 01/14]
-    - Remove the unused 8250_pcilib.h include,
-      MODULE_IMPORT_NS("SERIAL_8250_PCI"), and select SERIAL_8250_PCILIB
-      in Kconfig.
-  - [PATCH v4 03/14]
-    - Replace FIFO trigger level and flow-control threshold magic numbers
-      with named default constants.
-  - [PATCH v4 05/14]
-    - Replace the EFR flow-control comment and magic values with named
-      RX/TX field values, and use FIELD_MODIFY() to program the EFR flow
-      fields.
-  - [PATCH v4 06/14]
-    - Split the RX decision logic into mxpcie8250_should_rx() and keep the
-      IRQ path responsible for calling the generic RX handler.
-  - [PATCH v4 07/14]
-    - Switch the RX FIFO path to tty_prepare_flip_string() and remove
-      the temporary stack buffer plus tty_insert_flip_string().
-  - [PATCH v4 08/14]
-    - Rework TX FIFO handling to use uart_port_tx_limited() for common
-      serial-core TX handling.
-  - [PATCH v4 10/14]
-    - Export serial8250_do_break_ctl() with EXPORT_SYMBOL_GPL()
-      instead of the SERIAL_8250_PCI namespace.
-  - [PATCH v4 14/14]
-    - Reuse the RX trigger default constant and change the range check to
-      use port->fifosize.
-
-Changes in v3:
-  - [PATCH v3 01/15]
-    - Add Andy's Reviewed-by tag.
-  - [PATCH v3 06/15]
-    - Use guard(uart_port_lock_check_sysrq_irqsave) in the IRQ handler,
-      remove the now-unused flags variable, and join the LSR read with
-      the mxpcie8250_rx_chars() call.
-  - [PATCH v3 07/15]
-    - Declare the RX FIFO copy loop iterator inside the for loop.
-  - [PATCH v3 08/15]
-    - Declare the TX FIFO fill loop iterator inside the for loop.
-
-Changes in v2:
-  - [PATCH v1 01/15]
-    - Sort and trim 8250_mxpcie includes, add __counted_by(num_ports),
-      tidy switch fallbacks and loop counters, use pci_set_drvdata() /
-      pci_get_drvdata(), and add numbered review links.
-  - [PATCH v1 03/15]
-    - Document the repeated FIFO clear sequence and the TX FIFO
-      read/write pointer clock-domain issue, and declare the FIFO clear
-      loop counter inside the for loop.
-  - [PATCH v1 05/15]
-    - Replace open-coded uart port lock/unlock with
-      guard(uart_port_lock_irqsave) in throttle() and unthrottle(), and
-      remove the unused flags variable.
-  - [PATCH v1 09/15]
-    - Preserve __counted_by(num_ports) when converting the flexible
-      array from line[] to per-port port[] storage.
-  - [PATCH v1 10/15]
-    - Add per-port workqueue state in pahole-friendly member order.
-  - [PATCH v1 13/15]
-    - Use guard(uart_port_lock_irqsave), use serial_dl_write(up, 0)
-      instead of direct UART_DLL/UART_DLM writes, and avoid modifying
-      sfr inside the serial_out() argument.
-  - [PATCH v1 14/15]
-    - Move get_rxtrig/set_rxtrig near existing getter/setter callbacks
-      in struct uart_port and in the 8250_core.c callback copy path.
-  - [PATCH v1 15/15]
-    - Use named RX trigger constants, serial_port_in/out(), and aligned
-      get_rxtrig/set_rxtrig ordering in both the implementation and
-      probe callback assignment.
-
-v4: https://lore.kernel.org/all/20260729060602.492430-1-crescentcy.hsieh@moxa.com/
-v3: https://lore.kernel.org/all/20260709053314.435629-1-crescentcy.hsieh@moxa.com/
-v2: https://lore.kernel.org/all/20260701034128.218569-1-crescentcy.hsieh@moxa.com/
-v1: https://lore.kernel.org/all/20260504084900.22380-1-crescentcy.hsieh@moxa.com/
-
-Crescent Hsieh (14):
-  serial: 8250: split Moxa PCIe serial board support out of 8250_pci
-  serial: 8250: add Moxa MUEx50 UART port type
-  serial: 8250_mxpcie: enable enhanced mode and program FIFO trigger
-    levels
-  serial: 8250_mxpcie: enable automatic RTS/CTS flow control
-  serial: 8250_mxpcie: offload XON/XOFF flow control to MUEx50 hardware
-  serial: 8250_mxpcie: add custom handle_irq callback
-  serial: 8250_mxpcie: speed up RX using memory-mapped FIFO window
-  serial: 8250_mxpcie: speed up TX using memory-mapped FIFO window
-  serial: 8250_mxpcie: support serial interface mode switching
-  serial: 8250: allow low-level drivers to override break control
-  serial: 8250_mxpcie: add break support for RS485 using MUEx50 features
-  serial: 8250: allow UART drivers to override rx_trig_bytes handling
-  serial: 8250_mxpcie: introduce per-port private data structure
-  serial: 8250_mxpcie: implement rx_trig_bytes callbacks via MUEx50 RTL
-
- drivers/tty/serial/8250/8250_core.c   |   6 +
- drivers/tty/serial/8250/8250_mxpcie.c | 627 ++++++++++++++++++++++++++
- drivers/tty/serial/8250/8250_pci.c    | 208 +--------
- drivers/tty/serial/8250/8250_port.c   |  33 +-
+ drivers/tty/serial/8250/8250_mxpcie.c | 288 ++++++++++++++++++++++++++
+ drivers/tty/serial/8250/8250_pci.c    | 208 +------------------
  drivers/tty/serial/8250/Kconfig       |  10 +
  drivers/tty/serial/8250/Makefile      |   1 +
- include/linux/serial_8250.h           |   1 +
- include/linux/serial_core.h           |   3 +
- include/uapi/linux/serial_core.h      |   3 +
- 9 files changed, 684 insertions(+), 208 deletions(-)
+ 4 files changed, 302 insertions(+), 205 deletions(-)
  create mode 100644 drivers/tty/serial/8250/8250_mxpcie.c
 
+diff --git a/drivers/tty/serial/8250/8250_mxpcie.c b/drivers/tty/serial/8250/8250_mxpcie.c
+new file mode 100644
+index 000000000000..e75446923d08
+--- /dev/null
++++ b/drivers/tty/serial/8250/8250_mxpcie.c
+@@ -0,0 +1,288 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Moxa PCIe multiport serial device driver
++ *
++ * Copyright (C) 2025 Moxa Inc. (support@moxa.com)
++ * Author: Crescent Hsieh <crescentcy.hsieh@moxa.com>
++ */
++#include <linux/bitfield.h>
++#include <linux/bits.h>
++#include <linux/device.h>
++#include <linux/dev_printk.h>
++#include <linux/io.h>
++#include <linux/ioport.h>
++#include <linux/module.h>
++#include <linux/pci.h>
++#include <linux/types.h>
++
++#include <linux/8250_pci.h>
++#include <linux/serial_8250.h>
++
++#include "8250.h"
++
++#define PCI_DEVICE_ID_MOXA_CP102E	0x1024
++#define PCI_DEVICE_ID_MOXA_CP102EL	0x1025
++#define PCI_DEVICE_ID_MOXA_CP102N	0x1027
++#define PCI_DEVICE_ID_MOXA_CP104EL_A	0x1045
++#define PCI_DEVICE_ID_MOXA_CP104N	0x1046
++#define PCI_DEVICE_ID_MOXA_CP112N	0x1121
++#define PCI_DEVICE_ID_MOXA_CP114EL	0x1144
++#define PCI_DEVICE_ID_MOXA_CP114N	0x1145
++#define PCI_DEVICE_ID_MOXA_CP116E_A_A	0x1160
++#define PCI_DEVICE_ID_MOXA_CP116E_A_B	0x1161
++#define PCI_DEVICE_ID_MOXA_CP118EL_A	0x1182
++#define PCI_DEVICE_ID_MOXA_CP118E_A_I	0x1183
++#define PCI_DEVICE_ID_MOXA_CP132EL	0x1322
++#define PCI_DEVICE_ID_MOXA_CP132N	0x1323
++#define PCI_DEVICE_ID_MOXA_CP134EL_A	0x1342
++#define PCI_DEVICE_ID_MOXA_CP134N	0x1343
++#define PCI_DEVICE_ID_MOXA_CP138E_A	0x1381
++#define PCI_DEVICE_ID_MOXA_CP168EL_A	0x1683
++
++/* Bits in PCI device ID encoding board capabilities */
++#define MOXA_DEV_ID_IFACE_MASK	GENMASK(11, 8)	/* Supported serial interface */
++#define MOXA_DEV_ID_NPORTS_MASK	GENMASK(7, 4)	/* Number of UART ports */
++
++/* UART */
++#define MOXA_PUART_BASE_BAUD		921600
++#define MOXA_PUART_OFFSET		0x200
++
++#define MOXA_GPIO_DIRECTION	0x09
++#define MOXA_GPIO_OUTPUT	0x0A
++
++#define MOXA_GPIO_PIN2	BIT(2)
++
++#define MOXA_UIR_OFFSET		0x04
++#define MOXA_UIR_RS232		0x00
++#define MOXA_UIR_RS422		0x01
++#define MOXA_UIR_RS485_4W	0x0B
++#define MOXA_UIR_RS485_2W	0x0F
++
++#define MOXA_EVEN_RS_MASK	GENMASK(3, 0)
++#define MOXA_ODD_RS_MASK	GENMASK(7, 4)
++
++struct mxpcie8250 {
++	unsigned int supp_rs;
++	unsigned int num_ports;
++	void __iomem *bar1_base; /* UART registers (MMIO) */
++	void __iomem *bar2_base; /* UIR / GPIO / CPLD (IO) */
++	int line[] __counted_by(num_ports);
++};
++
++enum {
++	MOXA_SUPP_RS232 = BIT(0),
++	MOXA_SUPP_RS422 = BIT(1),
++	MOXA_SUPP_RS485 = BIT(2),
++};
++
++static bool mxpcie8250_is_mini_pcie(unsigned short device)
++{
++	if (device == PCI_DEVICE_ID_MOXA_CP102N ||
++	    device == PCI_DEVICE_ID_MOXA_CP104N ||
++	    device == PCI_DEVICE_ID_MOXA_CP112N ||
++	    device == PCI_DEVICE_ID_MOXA_CP114N ||
++	    device == PCI_DEVICE_ID_MOXA_CP132N ||
++	    device == PCI_DEVICE_ID_MOXA_CP134N)
++		return true;
++
++	return false;
++}
++
++static unsigned int mxpcie8250_get_supp_rs(unsigned short device)
++{
++	switch (device & MOXA_DEV_ID_IFACE_MASK) {
++	case 0x0000:
++	case 0x0600:
++		return MOXA_SUPP_RS232;
++	case 0x0100:
++		return MOXA_SUPP_RS232 | MOXA_SUPP_RS422 | MOXA_SUPP_RS485;
++	case 0x0300:
++		return MOXA_SUPP_RS422 | MOXA_SUPP_RS485;
++	default:
++		return 0;
++	}
++}
++
++static unsigned short mxpcie8250_get_nports(unsigned short device)
++{
++	switch (device) {
++	case PCI_DEVICE_ID_MOXA_CP116E_A_A:
++	case PCI_DEVICE_ID_MOXA_CP116E_A_B:
++		return 8;
++	default:
++		return FIELD_GET(MOXA_DEV_ID_NPORTS_MASK, device);
++	}
++}
++
++static void mxpcie8250_set_interface(struct mxpcie8250 *priv,
++				     unsigned int port_idx,
++				     u8 mode)
++{
++	void __iomem *uir_addr = priv->bar2_base + MOXA_UIR_OFFSET + port_idx / 2;
++	u8 cval;
++
++	cval = ioread8(uir_addr);
++
++	if (port_idx % 2)
++		FIELD_MODIFY(MOXA_ODD_RS_MASK, &cval, mode);
++	else
++		FIELD_MODIFY(MOXA_EVEN_RS_MASK, &cval, mode);
++
++	iowrite8(cval, uir_addr);
++}
++
++static void mxpcie8250_init_board(struct pci_dev *pdev, struct mxpcie8250 *priv)
++{
++	void __iomem *bar2_base = priv->bar2_base;
++	unsigned short device = pdev->device;
++	u8 cval;
++
++	/* Initial terminator */
++	if (device == PCI_DEVICE_ID_MOXA_CP114EL ||
++	    device == PCI_DEVICE_ID_MOXA_CP118EL_A) {
++		iowrite8(0xff, bar2_base + MOXA_GPIO_DIRECTION);
++		iowrite8(0x00, bar2_base + MOXA_GPIO_OUTPUT);
++	}
++	/*
++	 * Enable hardware buffer to prevent break signal output when system boots up.
++	 * This hardware buffer is only supported on Mini PCIe series.
++	 */
++	if (mxpcie8250_is_mini_pcie(device)) {
++		/* Set GPIO direction */
++		cval = ioread8(bar2_base + MOXA_GPIO_DIRECTION);
++		cval |= MOXA_GPIO_PIN2;
++		iowrite8(cval, bar2_base + MOXA_GPIO_DIRECTION);
++		/* Enable low GPIO */
++		cval = ioread8(bar2_base + MOXA_GPIO_OUTPUT);
++		cval &= ~MOXA_GPIO_PIN2;
++		iowrite8(cval, bar2_base + MOXA_GPIO_OUTPUT);
++	}
++}
++
++static void mxpcie8250_setup_port(struct pci_dev *pdev,
++				  struct mxpcie8250 *priv,
++				  struct uart_8250_port *up,
++				  int idx)
++{
++	unsigned short device = pdev->device;
++	int offset = idx * MOXA_PUART_OFFSET;
++	u8 init_mode = MOXA_UIR_RS232;
++
++	if (!(priv->supp_rs & MOXA_SUPP_RS232))
++		init_mode = MOXA_UIR_RS422;
++
++	mxpcie8250_set_interface(priv, idx, init_mode);
++
++	if (idx == 3 &&
++	    (device == PCI_DEVICE_ID_MOXA_CP104EL_A ||
++	     device == PCI_DEVICE_ID_MOXA_CP114EL   ||
++	     device == PCI_DEVICE_ID_MOXA_CP134EL_A))
++		offset = 7 * MOXA_PUART_OFFSET;
++
++	up->port.mapbase = pci_resource_start(pdev, FL_BASE1) + offset;
++	up->port.membase = pcim_iomap_table(pdev)[FL_BASE1] + offset;
++}
++
++static int mxpcie8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
++{
++	struct device *dev = &pdev->dev;
++	struct uart_8250_port up = {};
++	struct mxpcie8250 *priv;
++	unsigned short device = pdev->device;
++	unsigned int num_ports;
++	int ret;
++
++	ret = pcim_enable_device(pdev);
++	if (ret)
++		return ret;
++
++	num_ports = mxpcie8250_get_nports(device);
++
++	priv = devm_kzalloc(dev, struct_size(priv, line, num_ports), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++
++	priv->num_ports = num_ports;
++	priv->supp_rs = mxpcie8250_get_supp_rs(device);
++
++	priv->bar1_base = pcim_iomap(pdev, FL_BASE1, 0);
++	if (!priv->bar1_base)
++		return -ENOMEM;
++
++	priv->bar2_base = pcim_iomap(pdev, FL_BASE2, 0);
++	if (!priv->bar2_base)
++		return -ENOMEM;
++
++	mxpcie8250_init_board(pdev, priv);
++
++	up.port.dev = dev;
++	up.port.irq = pdev->irq;
++	up.port.uartclk = MOXA_PUART_BASE_BAUD * 16;
++	up.port.flags = UPF_SKIP_TEST | UPF_BOOT_AUTOCONF | UPF_SHARE_IRQ;
++
++	up.port.iotype = UPIO_MEM;
++	up.port.iobase = 0;
++	up.port.regshift = 0;
++
++	for (unsigned int i = 0; i < num_ports; i++) {
++		mxpcie8250_setup_port(pdev, priv, &up, i);
++
++		dev_dbg(dev, "Setup PCI port: port %lx, irq %d, type %d\n",
++			up.port.iobase, up.port.irq, up.port.iotype);
++
++		priv->line[i] = serial8250_register_8250_port(&up);
++		if (priv->line[i] < 0) {
++			dev_err(dev,
++				"Couldn't register serial port %lx, irq %d, type %d, error %d\n",
++				up.port.iobase, up.port.irq,
++				up.port.iotype, priv->line[i]);
++			break;
++		}
++	}
++	pci_set_drvdata(pdev, priv);
++
++	return 0;
++}
++
++static void mxpcie8250_remove(struct pci_dev *pdev)
++{
++	struct mxpcie8250 *priv = pci_get_drvdata(pdev);
++
++	for (unsigned int i = 0; i < priv->num_ports; i++)
++		serial8250_unregister_port(priv->line[i]);
++}
++
++static const struct pci_device_id mxpcie8250_pci_ids[] = {
++	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP102E) },
++	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP102EL) },
++	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP102N) },
++	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP104EL_A) },
++	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP104N) },
++	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP112N) },
++	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP114EL) },
++	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP114N) },
++	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP116E_A_A) },
++	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP116E_A_B) },
++	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP118EL_A) },
++	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP118E_A_I) },
++	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP132EL) },
++	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP132N) },
++	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP134EL_A) },
++	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP134N) },
++	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP138E_A) },
++	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP168EL_A) },
++	{ }
++};
++MODULE_DEVICE_TABLE(pci, mxpcie8250_pci_ids);
++
++static struct pci_driver mxpcie8250_pci_driver = {
++	.name		= "8250_mxpcie",
++	.id_table	= mxpcie8250_pci_ids,
++	.probe		= mxpcie8250_probe,
++	.remove		= mxpcie8250_remove,
++};
++module_pci_driver(mxpcie8250_pci_driver);
++
++MODULE_AUTHOR("Moxa Inc.");
++MODULE_LICENSE("GPL");
++MODULE_DESCRIPTION("Moxa PCIe Multiport Serial Device Driver");
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index 152f914c599d..fa172477409a 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -76,25 +76,6 @@
+ #define PCI_DEVICE_ID_WCHIC_CH384_4S	0x3470
+ #define PCI_DEVICE_ID_WCHIC_CH384_8S	0x3853
+ 
+-#define PCI_DEVICE_ID_MOXA_CP102E	0x1024
+-#define PCI_DEVICE_ID_MOXA_CP102EL	0x1025
+-#define PCI_DEVICE_ID_MOXA_CP102N	0x1027
+-#define PCI_DEVICE_ID_MOXA_CP104EL_A	0x1045
+-#define PCI_DEVICE_ID_MOXA_CP104N	0x1046
+-#define PCI_DEVICE_ID_MOXA_CP112N	0x1121
+-#define PCI_DEVICE_ID_MOXA_CP114EL	0x1144
+-#define PCI_DEVICE_ID_MOXA_CP114N	0x1145
+-#define PCI_DEVICE_ID_MOXA_CP116E_A_A	0x1160
+-#define PCI_DEVICE_ID_MOXA_CP116E_A_B	0x1161
+-#define PCI_DEVICE_ID_MOXA_CP118EL_A	0x1182
+-#define PCI_DEVICE_ID_MOXA_CP118E_A_I	0x1183
+-#define PCI_DEVICE_ID_MOXA_CP132EL	0x1322
+-#define PCI_DEVICE_ID_MOXA_CP132N	0x1323
+-#define PCI_DEVICE_ID_MOXA_CP134EL_A	0x1342
+-#define PCI_DEVICE_ID_MOXA_CP134N	0x1343
+-#define PCI_DEVICE_ID_MOXA_CP138E_A	0x1381
+-#define PCI_DEVICE_ID_MOXA_CP168EL_A	0x1683
+-
+ /* Unknown vendors/cards - this should not be in linux/pci_ids.h */
+ #define PCI_SUBDEVICE_ID_UNKNOWN_0x1584	0x1584
+ #define PCI_SUBDEVICE_ID_UNKNOWN_0x1588	0x1588
+@@ -1994,138 +1975,6 @@ pci_sunix_setup(struct serial_private *priv,
+ 	return setup_port(priv, port, bar, offset, 0);
+ }
+ 
+-#define MOXA_PUART_GPIO_EN	0x09
+-#define MOXA_PUART_GPIO_OUT	0x0A
+-
+-#define MOXA_GPIO_PIN2	BIT(2)
+-
+-#define MOXA_RS232	0x00
+-#define MOXA_RS422	0x01
+-#define MOXA_RS485_4W	0x0B
+-#define MOXA_RS485_2W	0x0F
+-#define MOXA_UIR_OFFSET	0x04
+-#define MOXA_EVEN_RS_MASK	GENMASK(3, 0)
+-#define MOXA_ODD_RS_MASK	GENMASK(7, 4)
+-
+-enum {
+-	MOXA_SUPP_RS232 = BIT(0),
+-	MOXA_SUPP_RS422 = BIT(1),
+-	MOXA_SUPP_RS485 = BIT(2),
+-};
+-
+-static unsigned short moxa_get_nports(unsigned short device)
+-{
+-	switch (device) {
+-	case PCI_DEVICE_ID_MOXA_CP116E_A_A:
+-	case PCI_DEVICE_ID_MOXA_CP116E_A_B:
+-		return 8;
+-	}
+-
+-	return FIELD_GET(0x00F0, device);
+-}
+-
+-static bool pci_moxa_is_mini_pcie(unsigned short device)
+-{
+-	if (device == PCI_DEVICE_ID_MOXA_CP102N	||
+-	    device == PCI_DEVICE_ID_MOXA_CP104N	||
+-	    device == PCI_DEVICE_ID_MOXA_CP112N	||
+-	    device == PCI_DEVICE_ID_MOXA_CP114N ||
+-	    device == PCI_DEVICE_ID_MOXA_CP132N ||
+-	    device == PCI_DEVICE_ID_MOXA_CP134N)
+-		return true;
+-
+-	return false;
+-}
+-
+-static unsigned int pci_moxa_supported_rs(struct pci_dev *dev)
+-{
+-	switch (dev->device & 0x0F00) {
+-	case 0x0000:
+-	case 0x0600:
+-		return MOXA_SUPP_RS232;
+-	case 0x0100:
+-		return MOXA_SUPP_RS232 | MOXA_SUPP_RS422 | MOXA_SUPP_RS485;
+-	case 0x0300:
+-		return MOXA_SUPP_RS422 | MOXA_SUPP_RS485;
+-	}
+-	return 0;
+-}
+-
+-static int pci_moxa_set_interface(const struct pci_dev *dev,
+-				  unsigned int port_idx,
+-				  u8 mode)
+-{
+-	resource_size_t iobar_addr = pci_resource_start(dev, 2);
+-	resource_size_t UIR_addr = iobar_addr + MOXA_UIR_OFFSET + port_idx / 2;
+-	u8 val;
+-
+-	val = inb(UIR_addr);
+-
+-	if (port_idx % 2) {
+-		val &= ~MOXA_ODD_RS_MASK;
+-		val |= FIELD_PREP(MOXA_ODD_RS_MASK, mode);
+-	} else {
+-		val &= ~MOXA_EVEN_RS_MASK;
+-		val |= FIELD_PREP(MOXA_EVEN_RS_MASK, mode);
+-	}
+-	outb(val, UIR_addr);
+-
+-	return 0;
+-}
+-
+-static int pci_moxa_init(struct pci_dev *dev)
+-{
+-	unsigned short device = dev->device;
+-	resource_size_t iobar_addr = pci_resource_start(dev, 2);
+-	unsigned int i, num_ports = moxa_get_nports(device);
+-	u8 val, init_mode = MOXA_RS232;
+-
+-	if (!IS_ENABLED(CONFIG_HAS_IOPORT))
+-		return serial_8250_warn_need_ioport(dev);
+-
+-	if (!(pci_moxa_supported_rs(dev) & MOXA_SUPP_RS232)) {
+-		init_mode = MOXA_RS422;
+-	}
+-	for (i = 0; i < num_ports; ++i)
+-		pci_moxa_set_interface(dev, i, init_mode);
+-
+-	/*
+-	 * Enable hardware buffer to prevent break signal output when system boots up.
+-	 * This hardware buffer is only supported on Mini PCIe series.
+-	 */
+-	if (pci_moxa_is_mini_pcie(device)) {
+-		/* Set GPIO direction */
+-		val = inb(iobar_addr + MOXA_PUART_GPIO_EN);
+-		val |= MOXA_GPIO_PIN2;
+-		outb(val, iobar_addr + MOXA_PUART_GPIO_EN);
+-		/* Enable low GPIO */
+-		val = inb(iobar_addr + MOXA_PUART_GPIO_OUT);
+-		val &= ~MOXA_GPIO_PIN2;
+-		outb(val, iobar_addr + MOXA_PUART_GPIO_OUT);
+-	}
+-
+-	return num_ports;
+-}
+-
+-static int
+-pci_moxa_setup(struct serial_private *priv,
+-		const struct pciserial_board *board,
+-		struct uart_8250_port *port, int idx)
+-{
+-	unsigned int bar = FL_GET_BASE(board->flags);
+-	int offset;
+-
+-	if (!IS_ENABLED(CONFIG_HAS_IOPORT))
+-		return serial_8250_warn_need_ioport(priv->dev);
+-
+-	if (board->num_ports == 4 && idx == 3)
+-		offset = 7 * board->uart_offset;
+-	else
+-		offset = idx * board->uart_offset;
+-
+-	return setup_port(priv, port, bar, offset, 0);
+-}
+-
+ /*
+  * Master list of serial port init/setup/exit quirks.
+  * This does not describe the general nature of the port.
+@@ -2941,17 +2790,6 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
+ 		.setup		= pci_fintek_setup,
+ 		.init		= pci_fintek_init,
+ 	},
+-	/*
+-	 * MOXA
+-	 */
+-	{
+-		.vendor		= PCI_VENDOR_ID_MOXA,
+-		.device		= PCI_ANY_ID,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.init		= pci_moxa_init,
+-		.setup		= pci_moxa_setup,
+-	},
+ 	{
+ 		.vendor		= 0x1c29,
+ 		.device		= 0x1204,
+@@ -3169,9 +3007,6 @@ enum pci_board_num_t {
+ 	pbn_titan_2_4000000,
+ 	pbn_titan_4_4000000,
+ 	pbn_titan_8_4000000,
+-	pbn_moxa_2,
+-	pbn_moxa_4,
+-	pbn_moxa_8,
+ };
+ 
+ /*
+@@ -3943,24 +3778,6 @@ static struct pciserial_board pci_boards[] = {
+ 		.uart_offset	= 0x200,
+ 		.first_offset	= 0x1000,
+ 	},
+-	[pbn_moxa_2] = {
+-		.flags		= FL_BASE1,
+-		.num_ports      = 2,
+-		.base_baud      = 921600,
+-		.uart_offset	= 0x200,
+-	},
+-	[pbn_moxa_4] = {
+-		.flags		= FL_BASE1,
+-		.num_ports      = 4,
+-		.base_baud      = 921600,
+-		.uart_offset	= 0x200,
+-	},
+-	[pbn_moxa_8] = {
+-		.flags		= FL_BASE1,
+-		.num_ports      = 8,
+-		.base_baud      = 921600,
+-		.uart_offset	= 0x200,
+-	},
+ };
+ 
+ #define REPORT_CONFIG(option) \
+@@ -4014,6 +3831,9 @@ static const struct pci_device_id blacklist[] = {
+ 	{ PCI_VDEVICE(PERICOM, PCI_ANY_ID), REPORT_8250_CONFIG(PERICOM), },
+ 	{ PCI_VDEVICE(ACCESSIO, PCI_ANY_ID), REPORT_8250_CONFIG(PERICOM), },
+ 
++	/* Moxa devices */
++	{ PCI_VDEVICE(MOXA, PCI_ANY_ID), REPORT_8250_CONFIG(MOXA), },
++
+ 	/* End of the black list */
+ 	{ }
+ };
+@@ -5851,28 +5671,6 @@ static const struct pci_device_id serial_pci_tbl[] = {
+ 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+ 		pbn_ni8430_4 },
+ 
+-	/*
+-	 * MOXA
+-	 */
+-	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP102E),	    pbn_moxa_2 },
+-	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP102EL),    pbn_moxa_2 },
+-	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP102N),	    pbn_moxa_2 },
+-	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP104EL_A),  pbn_moxa_4 },
+-	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP104N),	    pbn_moxa_4 },
+-	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP112N),	    pbn_moxa_2 },
+-	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP114EL),    pbn_moxa_4 },
+-	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP114N),	    pbn_moxa_4 },
+-	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP116E_A_A), pbn_moxa_8 },
+-	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP116E_A_B), pbn_moxa_8 },
+-	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP118EL_A),  pbn_moxa_8 },
+-	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP118E_A_I), pbn_moxa_8 },
+-	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP132EL),    pbn_moxa_2 },
+-	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP132N),     pbn_moxa_2 },
+-	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP134EL_A),  pbn_moxa_4 },
+-	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP134N),	    pbn_moxa_4 },
+-	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP138E_A),   pbn_moxa_8 },
+-	{ PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP168EL_A),  pbn_moxa_8 },
+-
+ 	/*
+ 	* ADDI-DATA GmbH communication cards <info@addi-data.com>
+ 	*/
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index f64ef0819cd4..c3151a91e39c 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -157,6 +157,16 @@ config SERIAL_8250_EXAR
+ 	  422x PCIe serial cards that are not covered by the more generic
+ 	  SERIAL_8250_PCI option.
+ 
++config SERIAL_8250_MOXA_PCIE
++	tristate "8250/16550 Moxa PCIe device support"
++	depends on SERIAL_8250 && PCI
++	default SERIAL_8250
++	help
++	  Say Y here if you have a Moxa PCIe serial card.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called 8250_mxpcie.
++
+ config SERIAL_8250_HP300
+ 	tristate
+ 	depends on SERIAL_8250 && HP300
+diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
+index 9ec4d5fe64de..be78fd6b337a 100644
+--- a/drivers/tty/serial/8250/Makefile
++++ b/drivers/tty/serial/8250/Makefile
+@@ -42,6 +42,7 @@ obj-$(CONFIG_SERIAL_8250_LPC18XX)	+= 8250_lpc18xx.o
+ obj-$(CONFIG_SERIAL_8250_LPSS)		+= 8250_lpss.o
+ obj-$(CONFIG_SERIAL_8250_MEN_MCB)	+= 8250_men_mcb.o
+ obj-$(CONFIG_SERIAL_8250_MID)		+= 8250_mid.o
++obj-$(CONFIG_SERIAL_8250_MOXA_PCIE)	+= 8250_mxpcie.o
+ obj-$(CONFIG_SERIAL_8250_MT6577)	+= 8250_mtk.o
+ obj-$(CONFIG_SERIAL_8250_NI)		+= 8250_ni.o
+ obj-$(CONFIG_SERIAL_OF_PLATFORM)	+= 8250_of.o
 -- 
 2.45.2
 
