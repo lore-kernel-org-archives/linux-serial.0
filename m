@@ -1,106 +1,127 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1AE1253340;
-	Fri, 31 Jul 2026 08:28:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51ACC253340;
+	Fri, 31 Jul 2026 08:29:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785486517; cv=none; b=qR/HthdbMq/TcM4Sibx+8zlafDaGfpZ9tHt5XMupOfnCBYbch2q66K9glWlt7zyVhwKP8kuAPQV48chnFALIi+9YNSKEubvX8ZTyMwl7E9nJEaY5jzVmgKv9Eho5c/29BUg2UH4vI6+NPM1bAsJKlItIXqCJHjH/c+w6NN7RGbE=
+	t=1785486558; cv=none; b=Sj1NQ7go8Z0q4VoPvQdlClU3uP928hjmA6g61ThHMkEKcB8LwJra8UuPGp2qGRBGxMXNyEeXz4m5xPpvs1nwfIBH2UYgXs5LuASxKmwKK8w8Y/zZrwCOIl9osKSE8MU1LsJzT5oloC6yxjUc5plCjQofGYJCnvYKQONUwZgzy/M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785486517; c=relaxed/simple;
-	bh=rHAWX+QSHMAFDUyI19EU53mZcTLdsFUVbBf3N4hX9Ng=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=O2YzalAn5bASHRmOZ6BmKqEXdVYQ+CHN+o77NwPWZ/V/R9JkMBo7ikSSwk6WFdOoKPe55fPluniKFwuKkpyt2afx12UQlrcNOmIcaZbuzNqbjQBTH6YHcEVseMb1wkWtPt4iGtYM1cepkeaRAhS8hCMe2xDXFHIbIj9bBz4zOOk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=vvOlp29u; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785486558; c=relaxed/simple;
+	bh=nPij8swPulGzIDSpJZg0qWuVNA+d+JZyWKAk6CQzdkM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=jraNzBLcDgxlFcuRJ+sCNXFQ6+2yARSPi+9WDJ5FyBwb5sGyq4go6bn+/gHMtsg3HvtlGTosP8IK4KCkbdUJsNp8hov2qqgrMeZSGd+FiZyfT6Usm64puMoSAAPJAL5fQpdk0FkqY5D+Fn1+z6i+HInYbfHDB7Rj3/ItAg0pgq4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VlQLsVLQ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="vvOlp29u"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFEC41F00A3A;
-	Fri, 31 Jul 2026 08:28:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1785486516;
-	bh=8GDTRfAP7dRgN9+1b/AB2a68zvYVBgQcHw0U9xaHWwk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=vvOlp29uHZIUZ1trLTC6hJxHXDNqxuAekYKQTGuxIw7lCmE5isQzTf2mFXFOhRmYc
-	 hlzkoEilTe2QDKE2t69ERfxpQ9DU/s6+xDaUdzTVNC33Thn4c8VnjncW0MmfPhhud1
-	 XADXlD8/9pIsIXG53IQBuZ3yddLvQ/hpEo/4Oya4=
-Date: Fri, 31 Jul 2026 10:28:22 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Jiri Slaby <jirislaby@kernel.org>
-Cc: Markus Probst <markus.probst@posteo.de>, linux-serial@vger.kernel.org,
-	Rob Herring <robh@kernel.org>, linux-kernel@vger.kernel.org,
-	Joshua Rogers <linux@joshua.hu>, stable <stable@kernel.org>
-Subject: Re: [PATCH 2/2] serdev: use tty_port_tty_get() in
- ttyport_write_buf() to prevent UAF
-Message-ID: <2026073132-nucleus-retying-680c@gregkh>
-References: <20260731-aisle-tty-serdev-v1-0-2401a3189327@linuxfoundation.org>
- <20260731-aisle-tty-serdev-v1-2-2401a3189327@linuxfoundation.org>
- <d6d96f15-03f5-4213-9d7c-145b5a8c3f79@kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VlQLsVLQ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80D9D1F000E9;
+	Fri, 31 Jul 2026 08:29:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1785486557;
+	bh=J32eHY2j00z+Kpdy17Sh3xVGhBSQ49ATakpA+02jpzI=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=VlQLsVLQNA8os3tQTYloOHmpGqu9k0YBP+9Od+5kUMZDtkdTb6pLFkIyDDk4NPA80
+	 HeteaLBg8Kc0sBsFtaiRxUIkOGmeSo/Wt/wCn9nEd0I4Oq30ilpBM46uGYex6ErOky
+	 a7a0wNfAn5ONo57WaV59QrMf/IdX4LZzF76JhRjin0PTLaztDEQTTLDP5i81FtuzpT
+	 HE+mVvDQ54f4LWhr6257oVWNfWeglWJDxjk6s21sBoLMWJURni8j7Nktt7BpI5sJhv
+	 ChDCLFAGUaM7Aj44rlx0gSOZ6jKUeaGouXT6axwwZofKyh9wcvIgLfWyOPNDTLaAUn
+	 GUH7f821tVRyg==
+Message-ID: <42534bff-4aed-497d-bb9c-e413b92493cb@kernel.org>
+Date: Fri, 31 Jul 2026 10:29:14 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d6d96f15-03f5-4213-9d7c-145b5a8c3f79@kernel.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] tty: vcc: zero-initialize control packet in
+ vcc_send_ctl()
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ sparclinux@vger.kernel.org
+Cc: "David S. Miller" <davem@davemloft.net>, Joshua Rogers <linux@joshua.hu>,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ stable <stable@kernel.org>
+References: <20260731-aisle-tty-vcc-v1-0-962e18beb8a8@linuxfoundation.org>
+ <20260731-aisle-tty-vcc-v1-1-962e18beb8a8@linuxfoundation.org>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20260731-aisle-tty-vcc-v1-1-962e18beb8a8@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Jul 31, 2026 at 10:24:02AM +0200, Jiri Slaby wrote:
-> On 31. 07. 26, 10:06, Greg Kroah-Hartman wrote:
-> > From: Joshua Rogers <linux@joshua.hu>
-> > 
-> > ttyport_write_buf() snapshots serport->tty as a raw pointer without
-> > taking a reference, while ttyport_close() can concurrently release the
-> > tty via tty_release_struct(), leading to a use-after-free. Use
-> > tty_port_tty_get() to obtain a reference-counted tty pointer, matching
-> > the pattern already used by ttyport_write_wakeup().
-> > 
-> > Assisted-by: AISLE:Snapshot
-> > Cc: stable <stable@kernel.org>
-> > Signed-off-by: Joshua Rogers <linux@joshua.hu>
-> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > ---
-> >   drivers/tty/serdev/serdev-ttyport.c | 12 ++++++++++--
-> >   1 file changed, 10 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
-> > index 48ce5b3f8308..4d37c8130dd7 100644
-> > --- a/drivers/tty/serdev/serdev-ttyport.c
-> > +++ b/drivers/tty/serdev/serdev-ttyport.c
-> > @@ -85,13 +85,21 @@ static const struct tty_port_client_operations client_ops = {
-> >   static ssize_t ttyport_write_buf(struct serdev_controller *ctrl, const u8 *data, size_t len)
-> >   {
-> >   	struct serport *serport = serdev_controller_get_drvdata(ctrl);
-> > -	struct tty_struct *tty = serport->tty;
-> > +	struct tty_struct *tty;
-> > +	ssize_t ret;
-> >   	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
-> >   		return 0;
-> > +	tty = tty_port_tty_get(serport->port);
-> > +	if (!tty)
-> > +		return 0;
-> > +
-> >   	set_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
-> > -	return tty->ops->write(serport->tty, data, len);
-> > +	ret = tty->ops->write(tty, data, len);
-> > +	tty_kref_put(tty);
+On 31. 07. 26, 10:15, Greg Kroah-Hartman wrote:
+> From: Joshua Rogers <linux@joshua.hu>
 > 
-> Here,
+> The stack-allocated struct vio_vcc pkt was partially initialized,
+> leaving the tag.stype_env field uninitialized before being sent via
+> ldc_write(), potentially leaking kernel stack data to the LDC peer.
 > 
->   scope_guard(tty_port_tty, serport->port) {
->     struct tty_struct *tty = scoped_tty();
+> Assisted-by: AISLE:Snapshot
+> Cc: stable <stable@kernel.org>
+> Signed-off-by: Joshua Rogers <linux@joshua.hu>
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> ---
+>   drivers/tty/vcc.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
 > 
->     set_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
->     return tty->ops->write(serport->tty, data, len);
->   }
-> 
->   return 0;
-> 
-> appears to be cleaner.
+> diff --git a/drivers/tty/vcc.c b/drivers/tty/vcc.c
+> index 27a55465bf5e..3947bd2b75ac 100644
+> --- a/drivers/tty/vcc.c
+> +++ b/drivers/tty/vcc.c
+> @@ -492,7 +492,7 @@ static ssize_t domain_show(struct device *dev,
+>   
+>   static int vcc_send_ctl(struct vcc_port *port, int ctl)
+>   {
+> -	struct vio_vcc pkt;
+> +	struct vio_vcc pkt = {};
 
-Yes, much cleaner.  LLMs really don't know about "modern" kernel coding
-styles (they always use min_t() and don't like guard() code).
+Note this needs not initialize holes. I believe there are none here, but 
+memset() is usually preferred/safer.
 
-I'll respin this and do a new version in a few days, thanks.
-
-greg k-h
+thanks,
+-- 
+js
+suse labs
