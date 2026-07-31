@@ -1,62 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC8BF3AAF52;
-	Fri, 31 Jul 2026 09:39:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CC6B3A4F26;
+	Fri, 31 Jul 2026 09:39:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785490777; cv=none; b=sP+JS36+wlwx5u6h1yvD0ANcaTvnMfjpmFrcCZATNXCf4gUZkEiEMsbtqmmjwaNhqhHlMKqrmqGDlgaeA+ZTIGwvu3OSqj2228Mo3kLZ5qOBFaKRFeoItXpU78vRdEDZKdoJ1fDDDnChPhcL8zdIqs//ZCudRsPEs8GrlJlwLVY=
+	t=1785490779; cv=none; b=U/RptE9QmM2IjwHJypzyxpJFg1RtWOyXNGbTswxcZL8o0J5WRHahDqi5TsycMbO714CfdPgAcVib/pBXV4GqgXQFbGEL6CNyIf7FH3jKHwiadUiADlp/ojc6rPcB9xjJlJokUDucIdRbpVZrpukGfjFJrf+3nO7JHg06xzmJNbs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785490777; c=relaxed/simple;
-	bh=zG6swiB/AMk0TGLjz2J7YcWMcFeSZMr+eM+NGLkx4t0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=mAB9GxTa55tNcz2VBPaGs62CRKvfQMoAN00Wox4kJJ1pTE0vvk6T4K0zuGwZ7eobCK4zo+V4C7f6vL0j4uFMH646xiy7UA1LVm0JbIoURV77lVYGocPyJCBAyz0BIS6Pzsvhj0lVtwmDk4fGDHowDTWGZTaUVFEmVpmr3UK+ldw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XaNCiFXt; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785490779; c=relaxed/simple;
+	bh=n9Ty9fFbfeSt37AJjyEY+9KmMlPmIhv6yCQOpVeFrMM=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=uQgVwGHke/M7BV73wvFAVpxFBxSvc9HP8A99Kb7NEH4uxP/MvD167PMtjaa5V5gfUXZtP6vjrE8yOiepQQNwq5hq9R2AXbKUO+cf2Y7uKgF0DsnIj28ERlZ+Lq0fVpGyOo9RhO+nUjpN7oG42slVr2ftXq0zcxsHYYAtzam1ze4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=F44qzywT; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XaNCiFXt"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id CCAFB1F00A3A;
-	Fri, 31 Jul 2026 09:39:34 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="F44qzywT"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 70A991F000E9;
+	Fri, 31 Jul 2026 09:39:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785490775;
-	bh=vu8zzqXJAgd/ggo2pVA5oFd3CA10umr0vwdR2u0YsTk=;
-	h=From:To:Cc:Subject:Date;
-	b=XaNCiFXtF7inCpVpxi+3u+hhpm0MiMqk7wwurW9BMdgzKXrtlXBWtHoFpP/+OP2VA
-	 CFBGdLpyfxsgB8XvvuHKdQkA3Y8lH/CJIMdxhVIETBMOUSHhnhCH9Ok+BIZm3eweOt
-	 VcblC9kcJGT3iW/BijVpcXcypGriKdVITPcZgiUKPhBs99twMW9rS4ll7sGEPK7s1o
-	 s7KyY2TBeE5BEqxiAG+Ui8JGrn+TZqIML2k3dPuZH1wWBRyTSXddd31CAFPNQMrURW
-	 6yQzpvMtGJJuMiy1un1X3OUzsC5n0vmL7MdHQtbc43VPqkSZ832NpQ2MLFbMtw7lY+
-	 IRNxtnp2qCmjA==
+	s=k20260515; t=1785490778;
+	bh=22Ilw/IkI0k96901vA78kHlE2RFXy9U+AV3Jr6io4iY=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=F44qzywT1iWydYzd/CpjTCvrU9zxNL1vCs26xvmkRPIsw2hfYKxAiZKExSf9scyFn
+	 4wDLUb45oEBHlhb6If2nMcwE/FjW9zefObMlFS/YCpY06/aizD1RSmjcME11d116al
+	 Buy/bcODq+UX2hxkc1grUKwJS6EYs69Ee4eilhlNrFJIR+avgVqXlVJHfatal6CSeC
+	 BOHf6TqxNgSLBycg/EB+v3e+9G1c4bE3AoBatkDAFsM5myrf8V9egpdDCZ0pYmhay5
+	 6qH/Ch4I1oiQAVGibT9ehSWphJ6Vfxvv/Tbl0Jbt91zzAgmiSK39cwi6nnL9MJo9db
+	 hGtSTqow3Alzg==
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Cc: John Ogness <john.ogness@linutronix.de>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	John Ogness <john.ogness@linutronix.de>,
 	Atsushi Nemoto <anemo@mba.ocn.ne.jp>,
 	Alan Cox <alan@redhat.com>,
 	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Stepan Ionichev <sozdayvek@gmail.com>,
-	Fushuai Wang <wangfushuai@baidu.com>,
-	Osama Abdelkader <osama.abdelkader@gmail.com>,
-	linux-doc@vger.kernel.org,
-	=?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Abinash Singh <abinashsinghlalotra@gmail.com>,
-	Kees Cook <kees@kernel.org>,
-	Gerhard Engleder <eg@keba.com>,
-	Lukas Wunner <lukas@wunner.de>,
-	Huacai Chen <chenhuacai@kernel.org>,
-	Binbin Zhou <zhoubinbin@loongson.cn>,
-	Rong Zhang <rongrong@oss.cipunited.com>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Haowei Zheng <zhenghaowei@loongson.cn>,
-	Rahul Bukte <rahul.bukte@sony.com>,
-	Russell King <rmk@dyn-67.arm.linux.org.uk>
-Subject: [PATCH v1 0/6] serial: Some yak shaving
-Date: Fri, 31 Jul 2026 11:39:03 +0200
-Message-ID: <cover.1785489518.git.ukleinek@kernel.org>
+	linux-serial@vger.kernel.org
+Subject: [PATCH v1 1/6] serial: txx9: Drop noop probe function and dangerous remove callback
+Date: Fri, 31 Jul 2026 11:39:04 +0200
+Message-ID:  <25e2b1d699652b095ee69be030850c8818bf78d8.1785489518.git.ukleinek@kernel.org>
 X-Mailer: git-send-email 2.55.0.11.g153666a7d9bb
+In-Reply-To: <cover.1785489518.git.ukleinek@kernel.org>
+References: <cover.1785489518.git.ukleinek@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -64,71 +48,117 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2501; i=ukleinek@kernel.org; h=from:subject:message-id; bh=zG6swiB/AMk0TGLjz2J7YcWMcFeSZMr+eM+NGLkx4t0=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBqbG0430SmozmDnsmI0NKnw4zAAtOWHMd+fZhg/ x1GjPpLNdqJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCamxtOAAKCRCPgPtYfRL+ Tg+OB/96o7kGKIe7n09XmsuC+oTgqoJxDaBlADO/6AxrdN26RQDsW7V2Fm5FwFrRCC/ZTGWqokd j46UnehxgkOxGlgOHUyd3dqwDho9/KjpJgj2mFofun/gjf6GiYxNnf4VXE1iyrIw6xtcWzqtJEh 8Au5crx2ps47SOIGJ/VMmphPGZB7qPGoC0aV6iXFV09nhu0M+pIWwJtvYxiuVOPg7ysFYsjVGPy Rz3WYrYEkdsyYH1kqT4+LKbVaEwFqv070yzAmNqMKTc61Mc2lxBko3+ftBhYARLINDzzXt/cjGK jQ9hDDclcvktXJoLmx2eLGklDb/K2f4N8qznsfDGyHdZxoF9
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3716; i=ukleinek@kernel.org; h=from:subject:message-id; bh=n9Ty9fFbfeSt37AJjyEY+9KmMlPmIhv6yCQOpVeFrMM=; b=owGbwMvMwMXY3/A7olbonx/jabUkhqycXKc57jfjXG7dmJP3cknbA4Mf5+9pSBX/LKrS/J8ud f+14iHdTkZjFgZGLgZZMUUW+8Y1mVZVcpGda/9dhhnEygQyhYGLUwAmcvYFB0PndWvj4KlHkyxa nXY9tF0wY3r2vzPrf3s4ls7MqBLLmKw7PTv4KZ/l4dyff210q9fF289KZGKeacWxRyeh/sKkLc3 Jp5Z3XAyvn/1NsYdj39WT7t8j8rtvL4t4129p/JDzWvCR9EgpwXP3W/v2TzR8/tDxvH7aLqPaA6 cTfW+pGy5O+lx8yt58267SzFlxpTbC/QLlxm0/RAO8XnRZ13arB2jMrt9vNLH220yppi0Lb+bp2 fLfmGn20FlqaX5ZYWtax68lYvyrGAyjMstOKife3FXU32OkJyihEKt+nHnZkWN1jDl9ufJpaRyi MrcfRfDZ+KctWbKw6p93pIdEJLtA+fwpX0xszV3PqcsDAA==
 X-Developer-Key: i=ukleinek@kernel.org; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 
-Hello,
+The only platform device that can be bound to the driver is allocated by
+the driver itself. That device doesn't have platdata, so the probe
+function only consists of a loop that is never run and thus can be
+dropped without loss of functionality.
 
-after the discussion with Hugo about hub6_match_port()[1] I looked into
-implementing my suggestion. Hugo had a doubt there:
+The remove function then should better not undo things that were not
+done in the first place. That happens because serial_txx9_init() calls
+serial_txx9_register_ports() with the created platform device and so
+up->dev == &dev->dev evaluates to true and uart_remove_one_port() is
+called twice for each port.
 
-> I am not sure to fully understand what you suggest. Copying the same
-> function code to two drivers seems like a waisted opportunity for code
-> reuse?
+So let serial_txx9_exit() undo exactly what serial_txx9_init() does and
+remove the useless respectively wrong functions.
 
-I don't think this is a wasted opportunity, as uart_match_port() only
-becomes a single comparison for the txx9 driver. Also having 8250
-specific parts in serial_core is a layer violation.
+Fixes: 0970769aceb9 ("[SERIAL] serial_txx9 driver update")
+Signed-off-by: Uwe Kleine-König <ukleinek@kernel.org>
+---
+ drivers/tty/serial/serial_txx9.c | 55 ++------------------------------
+ 1 file changed, 3 insertions(+), 52 deletions(-)
 
-I was unable to unsee some of the stuff I discovered, so there are a few
-more patches in this series now ...
-
-The first txx9 patch is a preparation for the second to establish the
-assertion ".iotype is always UPIO_PORT". It's also a fix that is correct
-on its own (assuming I understood the driver model misuse in this driver
-correctly).
-
-After that uart_match_port() is only used by the 8250 driver code and
-thus can be moved to there in the third patch, simplifying the
-dependencies a bit which enables fixing the breakage I found in the
-fourth patch.
-
-The two remaining patches are cleanups I found while working on that
-driver.
-
-Note this is only compile tested as I don't have a machine with any of
-the three affected serial hardwares.
-
-Best regards
-Uwe
-
-[1] https://lore.kernel.org/linux-serial/amn8Hb2dbv_Sah_Y@monoceros/
-
-Uwe Kleine-König (6):
-  serial: txx9: Drop noop probe function and dangerous remove callback
-  serial: txx9: Drop usage of uart_match_port()
-  serial: 8250: Make uart_match_port() a 8250 specific function
-  serial: 8250: Fix corner case for port matching
-  serial: 8250: hub6: Add cleanup code
-  serial: 8250: pnp: Annotate init and exit functions for conditional
-    discarding
-
- Documentation/driver-api/serial/driver.rst |  2 +-
- drivers/tty/serial/8250/8250.h             | 10 +++-
- drivers/tty/serial/8250/8250_core.c        | 27 +++++++++-
- drivers/tty/serial/8250/8250_hub6.c        | 11 ++---
- drivers/tty/serial/8250/8250_platform.c    |  9 +++-
- drivers/tty/serial/8250/8250_pnp.c         |  4 +-
- drivers/tty/serial/8250/Kconfig            |  4 +-
- drivers/tty/serial/8250/Makefile           |  2 +-
- drivers/tty/serial/serial_core.c           | 27 ----------
- drivers/tty/serial/serial_txx9.c           | 57 ++--------------------
- include/linux/serial_core.h                |  2 -
- 11 files changed, 58 insertions(+), 97 deletions(-)
-
-
-base-commit: 95d6a9ccef99117115e41e9adb271243bd5e985b
+diff --git a/drivers/tty/serial/serial_txx9.c b/drivers/tty/serial/serial_txx9.c
+index 4ae9a45c8e3a..5ed20129b44b 100644
+--- a/drivers/tty/serial/serial_txx9.c
++++ b/drivers/tty/serial/serial_txx9.c
+@@ -1009,7 +1009,8 @@ static void serial_txx9_unregister_port(int line)
+ 	struct uart_port *uart = &serial_txx9_ports[line];
+ 
+ 	mutex_lock(&serial_txx9_mutex);
+-	uart_remove_one_port(&serial_txx9_reg, uart);
++	if (up->iobase || up->mapbase)
++		uart_remove_one_port(&serial_txx9_reg, uart);
+ 	uart->flags = 0;
+ 	uart->type = PORT_UNKNOWN;
+ 	uart->iobase = 0;
+@@ -1019,52 +1020,6 @@ static void serial_txx9_unregister_port(int line)
+ 	mutex_unlock(&serial_txx9_mutex);
+ }
+ 
+-/*
+- * Register a set of serial devices attached to a platform device.
+- */
+-static int serial_txx9_probe(struct platform_device *dev)
+-{
+-	struct uart_port *p = dev_get_platdata(&dev->dev);
+-	struct uart_port port;
+-	int ret, i;
+-
+-	memset(&port, 0, sizeof(struct uart_port));
+-	for (i = 0; p && p->uartclk != 0; p++, i++) {
+-		port.iobase	= p->iobase;
+-		port.membase	= p->membase;
+-		port.irq	= p->irq;
+-		port.uartclk	= p->uartclk;
+-		port.iotype	= p->iotype;
+-		port.flags	= p->flags;
+-		port.mapbase	= p->mapbase;
+-		port.dev	= &dev->dev;
+-		port.has_sysrq	= IS_ENABLED(CONFIG_SERIAL_TXX9_CONSOLE);
+-		ret = serial_txx9_register_port(&port);
+-		if (ret < 0) {
+-			dev_err(&dev->dev, "unable to register port at index %d "
+-				"(IO%lx MEM%llx IRQ%d): %d\n", i,
+-				p->iobase, (unsigned long long)p->mapbase,
+-				p->irq, ret);
+-		}
+-	}
+-	return 0;
+-}
+-
+-/*
+- * Remove serial ports registered against a platform device.
+- */
+-static void serial_txx9_remove(struct platform_device *dev)
+-{
+-	int i;
+-
+-	for (i = 0; i < UART_NR; i++) {
+-		struct uart_port *up = &serial_txx9_ports[i];
+-
+-		if (up->dev == &dev->dev)
+-			serial_txx9_unregister_port(i);
+-	}
+-}
+-
+ #ifdef CONFIG_PM
+ static int serial_txx9_suspend(struct platform_device *dev, pm_message_t state)
+ {
+@@ -1096,8 +1051,6 @@ static int serial_txx9_resume(struct platform_device *dev)
+ #endif
+ 
+ static struct platform_driver serial_txx9_plat_driver = {
+-	.probe		= serial_txx9_probe,
+-	.remove		= serial_txx9_remove,
+ #ifdef CONFIG_PM
+ 	.suspend	= serial_txx9_suspend,
+ 	.resume		= serial_txx9_resume,
+@@ -1251,9 +1204,7 @@ static void __exit serial_txx9_exit(void)
+ 	platform_driver_unregister(&serial_txx9_plat_driver);
+ 	platform_device_unregister(serial_txx9_plat_devs);
+ 	for (i = 0; i < UART_NR; i++) {
+-		struct uart_port *up = &serial_txx9_ports[i];
+-		if (up->iobase || up->mapbase)
+-			uart_remove_one_port(&serial_txx9_reg, up);
++		serial_txx9_unregister_port(i);
+ 	}
+ 
+ 	uart_unregister_driver(&serial_txx9_reg);
 -- 
 2.55.0.11.g153666a7d9bb
 
