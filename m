@@ -1,151 +1,131 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1D573EE1C5
-	for <linux-serial@vger.kernel.org>; Fri, 31 Jul 2026 13:20:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EA7D2DC32C;
+	Fri, 31 Jul 2026 13:23:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785504054; cv=none; b=dI/tKVElB191h80EGuB80G1jiGgbK5A0rAj2ALR6QqQv1YAOCe8sL4xodPV7pj4xlrf9UVonbRUBnLurAP8bMG8In8a3qyrQFVe+sdwJFo/sHI2j3YUndGsUqPCF4mvkOyqgfSQNHFnsoDUdR/PtqujaV3Rf4vReNeMlwni+1EA=
+	t=1785504183; cv=none; b=afEvDdnfWqUKrRm9vCEzH5U4Axra/gQZb/bDwL2gDPoqDYCVN1Vca07ArZtUGEukTHVh5/2i5Zl1fivo0MHeraTz+Qt+Y7JTZhyGREnuuJSB9GhxPvxOkFbvgW714wvF1sI8cdrVsiFIqSVA63KQS3+SDMUVwkPtRtlITKWCFFQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785504054; c=relaxed/simple;
-	bh=mTHH2uXaTFHG0lmJ8V9E8KrT19j61IIWLZLNED33QyQ=;
+	s=arc-20240116; t=1785504183; c=relaxed/simple;
+	bh=lttGdRcdtsr1Ye79AEZUBF4rHbLXZNk7nNHM982i0cg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BccF2tXSBXL3zfkEKrvZHdowKpPNfUraH9kAReIBETsaVOPpl0ODwAsWFrMsSXiu/gGofh+7ABQtskjh8Qn55S7bvGYLjSAsn2ZNEaOuMrRMG+sMUnrLw35vop4Sja/LvdXMayLqTRjKpmRtsIgy4QtaB53Na3tmQg4xP5AodU0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=A+HPpXZ6; arc=none smtp.client-ip=209.85.221.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=gQb1J4bGVPFHKJ5GEXsbHh9PNqa9S0rvEWTvpKrUCkTaR43s4iKuTzsur+56j+8ePnrRXU9bB4+ssZeQgVocv473543kxMtl9QGc+IRErcM/i4TzBUqz4H8y542JWCFgjwMukjk7Oj7hP7825vsCTk1ugBioF4ONI61cnan0FF0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=Yo2GIs0v; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="A+HPpXZ6"
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-47f64ca1c2dso317275f8f.2
-        for <linux-serial@vger.kernel.org>; Fri, 31 Jul 2026 06:20:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1785504050; x=1786108850; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=mTHH2uXaTFHG0lmJ8V9E8KrT19j61IIWLZLNED33QyQ=;
-        b=A+HPpXZ6vlIAvMx1IcAWCLMLDBPbx5kw44D+mu6jyou5CRk89Zm/QKkk4KCqnb91vG
-         C3hk8NEw4bZIrdGFfuQBkopbc5YlPBycjkEFXLB0zYh2tlrECnQpPsrSAd33jRN8lBFa
-         XifGgCEMpnQPYO5t2cTR71mX1C3X9RvW2Rao3l5zl1/9wPC4iIOpqLHCMGAnNaMK6u1x
-         mMn0UUP9i5mFtMmue0aC8chuoGEnobclIN6jie1JrxiamPmzJJE7iGLOyr0GrS/g8Zzq
-         n8GXNxrAUkg1o1SCVOX+OfN82RGZdd0CrwvOMGM4U857E3zgyPG16vmTyYVNHrjiQuql
-         KUjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785504050; x=1786108850;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=mTHH2uXaTFHG0lmJ8V9E8KrT19j61IIWLZLNED33QyQ=;
-        b=iA0ooukIFqq/xFzrs+KJ0cFNlZiT4awWBjUpt2fNqoGlIyQlnjSSdp0GvxGCEHWjI/
-         g47H1XqFeRqqLnZTNIEzmmBeAAt0DGciJzu/kCslNtumRvuchbwwdsCifKnPI78Tff0z
-         uC1PaHYqJ1m4oY4YFnzEie/357/53+9ERZd8chE3jF6Loya07ViLQUxlyBlWCWnorIE7
-         rUc+nXLdU7Ly0Fedv1nWraFhmOV96NjUhyF8HAjmyPemdsmw5NBctewWpZIGRMb0NY1Y
-         cX7LA1jj46dz26kh/x+vzpWD4rhVMr5SDXi3uoTDqii+RNSLRR8yCrgJ1amzp02sv/sv
-         9fMQ==
-X-Forwarded-Encrypted: i=1; AHgh+RrVN01q189NwCNdscnxb3CNr9YwI2AClv3GC6UuBVH2AK2l8sNCWkF6k2bbCOqNqmbQzlVFL2N5y9cE7HE=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx+/a2/p8bFDPL4D6aOFLMENNYa+LYi/D2sKwt14PtWQKXw3kiH
-	U5uuecLoqpaA6/+c9pRn9MjteAi+dazigd0XGqwikYqbTlkI7FCHN5zdq/e2yiYom4U=
-X-Gm-Gg: AR+sD13pql1escqABB9MRHY/eczR8dCwmdtp9BSzarrJXpzBtFvOtqFypboK43xhggf
-	8yAtYzSFpgdSQumGfB1IvDL9GM9we3CA8LzxvPLWJAsGHXSU6WoGxf8GdhFdS5XQNgiLfoGvslR
-	v3fL1dvWtrRQIp+Mz3sgiTNTuYvFSW3hFHYiXKsc67uhXKcRtzdfS73AsSMZjlEMb4ep6iYL+0o
-	gwbzq7UXKfAT2srEwf7nPoNDGDs1wgQw48SzLddLqag8t6qWBz2+lJJzJ/9XQ7hajLe5kI4zMOl
-	qHSApPLDD32k+fsVLyQF8f/K5/jVS5/Y5lEnzx9N0ngEj+cAZKlV6NP07jdO2LotOifmIiLTpns
-	zgQNUGhhNIBpEdW9kkp3lOUGhwpx9iCu4sTUvyMfI24OYPKL5/GV44aa2VIEukqPaO9C0/DusPM
-	lkIemNQyNbABGLgvfGgqlRaNGY0ANax1/znjulm18hHXHz9H8wSpD0fcGa18K8LWT92YWvKTt+T
-	QBI8NJnehhVk00TFquCkfn9gq8=
-X-Received: by 2002:a05:6000:471e:b0:47f:77a8:7e20 with SMTP id ffacd0b85a97d-47fd2b41d0bmr4640886f8f.35.1785504049959;
-        Fri, 31 Jul 2026 06:20:49 -0700 (PDT)
-Received: from localhost (p5dc68b01.dip0.t-ipconnect.de. [93.198.139.1])
-        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-47fd41e2abbsm4741063f8f.9.2026.07.31.06.20.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 31 Jul 2026 06:20:48 -0700 (PDT)
-Date: Fri, 31 Jul 2026 15:20:46 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-To: Hugo Villeneuve <hugo@hugovil.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Hugo Villeneuve <hvilleneuve@dimonoff.com>, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH] serial: 8250_hub6: Fix double definition for
- hub6_match_port()
-Message-ID: <amyg0sR7SafpFuKR@monoceros>
-References: <20260720185326.9652faa0df7b02e07eeb7d4b@hugovil.com>
- <amGYgUhPrSdR5srV@monoceros>
- <20260723231359.5d7fa1e8e11990fa00c476f4@hugovil.com>
- <amMZoJ41FKcd2ddG@monoceros>
- <20260727112210.7a0b08d19de0e17fbd995290@hugovil.com>
- <20260727112643.86b3ab3a725eabc66eb47e39@hugovil.com>
- <amn8Hb2dbv_Sah_Y@monoceros>
- <2026073028-anointer-unlinked-c0ea@gregkh>
- <amusQjI0DOPzL4jM@monoceros>
- <20260730161516.3def31f58d3c1d6f8eb3f4a0@hugovil.com>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="Yo2GIs0v"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F67E1F000E9;
+	Fri, 31 Jul 2026 13:23:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
+	s=korg; t=1785504182;
+	bh=djmvzhkuCHisV7ATbKjuLGiE9H8+1kpsSbKwMLrGQCY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=Yo2GIs0vChsdEFLbh7dfjUk8LwK2CzyIXBEDukqgo1Dgl5zwUPlIdEQNaq5Bae/iF
+	 LRBbrlw/hACK7vd7ZtokWwNYF4mNG06gq+Wo18+MOOpULMxtge5vNYKgF6XCY0CrDH
+	 01ZWDd9Jf/v9bt+LHcrn4kbQdRFDcYgjqLO62TBg=
+Date: Fri, 31 Jul 2026 15:22:47 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Markus Probst <markus.probst@posteo.de>
+Cc: linux-serial@vger.kernel.org, Rob Herring <robh@kernel.org>,
+	Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
+	Joshua Rogers <linux@joshua.hu>, stable <stable@kernel.org>
+Subject: Re: [PATCH 2/2] serdev: use tty_port_tty_get() in
+ ttyport_write_buf() to prevent UAF
+Message-ID: <2026073144-sputter-gusto-c640@gregkh>
+References: <20260731-aisle-tty-serdev-v1-0-2401a3189327@linuxfoundation.org>
+ <20260731-aisle-tty-serdev-v1-2-2401a3189327@linuxfoundation.org>
+ <11b34a60b7f66379e66f4cff779acdccd3fd0c8d.camel@posteo.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="pot5h2ofhsberfqg"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260730161516.3def31f58d3c1d6f8eb3f4a0@hugovil.com>
+In-Reply-To: <11b34a60b7f66379e66f4cff779acdccd3fd0c8d.camel@posteo.de>
 
+On Fri, Jul 31, 2026 at 01:00:30PM +0000, Markus Probst wrote:
+> On Fri, 2026-07-31 at 10:06 +0200, Greg Kroah-Hartman wrote:
+> > From: Joshua Rogers <linux@joshua.hu>
+> > 
+> > ttyport_write_buf() snapshots serport->tty as a raw pointer without
+> > taking a reference, while ttyport_close() can concurrently release the
+> > tty via tty_release_struct(), leading to a use-after-free. Use
+> > tty_port_tty_get() to obtain a reference-counted tty pointer, matching
+> > the pattern already used by ttyport_write_wakeup().
+> > 
+> > Assisted-by: AISLE:Snapshot
+> > Cc: stable <stable@kernel.org>
+> > Signed-off-by: Joshua Rogers <linux@joshua.hu>
+> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > ---
+> >  drivers/tty/serdev/serdev-ttyport.c | 12 ++++++++++--
+> >  1 file changed, 10 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
+> > index 48ce5b3f8308..4d37c8130dd7 100644
+> > --- a/drivers/tty/serdev/serdev-ttyport.c
+> > +++ b/drivers/tty/serdev/serdev-ttyport.c
+> > @@ -85,13 +85,21 @@ static const struct tty_port_client_operations client_ops = {
+> >  static ssize_t ttyport_write_buf(struct serdev_controller *ctrl, const u8 *data, size_t len)
+> >  {
+> >  	struct serport *serport = serdev_controller_get_drvdata(ctrl);
+> > -	struct tty_struct *tty = serport->tty;
+> > +	struct tty_struct *tty;
+> > +	ssize_t ret;
+> >  
+> >  	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
+> >  		return 0;
+> >  
+> > +	tty = tty_port_tty_get(serport->port);
+> > +	if (!tty)
+> > +		return 0;
+> > +
+> >  	set_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
+> > -	return tty->ops->write(serport->tty, data, len);
+> > +	ret = tty->ops->write(tty, data, len);
+> > +	tty_kref_put(tty);
+> > +
+> > +	return ret;
+> >  }
+> >  
+> >  static void ttyport_write_flush(struct serdev_controller *ctrl)
+> 
+> It should be the responsibility of the driver to ensure
+> `serdev_device_close` and `serdev_device_write_buf` are not called
+> concurrently.
+> 
+> This also applies to
+> - serdev_device_set_baudrate
 
---pot5h2ofhsberfqg
-Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH] serial: 8250_hub6: Fix double definition for
- hub6_match_port()
-MIME-Version: 1.0
+Doesn't touch a tty structure, so why is the same reference count logic
+needed here?
 
-Heyho,
+> - serdev_device_set_flow_control
 
-On Thu, Jul 30, 2026 at 04:15:16PM -0400, Hugo Villeneuve wrote:
-> On Thu, 30 Jul 2026 21:57:01 +0200
-> Uwe Kleine-K=F6nig <u.kleine-koenig@baylibre.com> wrote:
->=20
-> > On Thu, Jul 30, 2026 at 04:49:45PM +0200, Greg Kroah-Hartman wrote:
-> > > On Wed, Jul 29, 2026 at 03:30:57PM +0200, Uwe Kleine-K=F6nig wrote:
-> > > > I think the real fix would be to just copy uart_match_port() into t=
-he
-> > > > two drivers that actually use it (and remove the then dead code pat=
-hs).
-> > > > Then it would be drivers/tty/serial/8250/8250_core.c using
-> > > > hub6_match_port() only and that can be handled by a proper dependen=
-cy.
-> > >=20
-> > > I'm totally confused, so I'll drop this patch from my review queue and
-> > > wait for you all to figure it out :)
-> >=20
-> > Does my suggestion make sense for you? Do you intend to work on this to
-> > unconfuse Greg?
->=20
-> I am not sure to fully understand what you suggest. Copying the same
-> function code to two drivers seems like a waisted opportunity for code
-> reuse?
+Same here.
 
-FTR, I prepared a patch for what I had in mind, see
-https://lore.kernel.org/linux-serial/cover.1785489518.git.ukleinek@kernel.o=
-rg/
+> - serdev_device_wait_until_sent
 
-Best regards
-Uwe
+Or here?
 
---pot5h2ofhsberfqg
-Content-Type: application/pgp-signature; name="signature.asc"
+> and more, which currently iirc even introduce a null pointer
+> dereference if called with the serdev device closed.
+> 
+> I don't see why `serdev_device_write_buf` needs special protection
+> here, which the other functions don't need for some reason.
 
------BEGIN PGP SIGNATURE-----
+It's the access to the tty pointer that I think the issue is, right?
 
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmpsoSQACgkQj4D7WH0S
-/k407gf+ONnXFwVuQ95sUG2tDsai/JGUVNwnMXFXs4ev8Jjovw2/XOwcIVWSt1R0
-POtFXZGCjSH96US+cUS5zJlTdGg8tzbjvklS3NG+wuwATh3xo9gIi5lBMxcFhyGm
-noY7zxaNV7N+Q2NJOasYTICeJZKqCVl9P2GkD3uRQuU8TYlFmihBWjNjM0P2sVNH
-0tr1o+ha8lVkSeHbVzKZY937FemhJeHD1h4bgGbgPrn8o7zYPoGbi2s5by1EcUJj
-dJ3+nrcrzX/oKi7Q1TGyWpS2AqDgAgF0wiqlzAWKRKUHKqKiZocNBNSYInZ+tjtO
-R4UlJ+3btkGxezOHlsJ42jw/AvfVrw==
-=nrzM
------END PGP SIGNATURE-----
+> As with the previous patch, this still makes sense for hardening.
+> With scope_guard being used,
+> 
+> Reviewed-by: Markus Probst <markus.probst@posteo.de>
 
---pot5h2ofhsberfqg--
+Great, thanks, I'll send out a v2 next week with that change made, as
+I've done it locally and will wait a bit.
+
+thanks,
+
+greg k-h
