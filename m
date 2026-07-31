@@ -1,43 +1,79 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A5753DB303;
-	Fri, 31 Jul 2026 12:02:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2365A3C1F36
+	for <linux-serial@vger.kernel.org>; Fri, 31 Jul 2026 12:37:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785499368; cv=none; b=qzJJeWtWn3aO6yOwqooCzg57B5f1mZXTOT4DLMa5iaCldYed2W8xi+NG/YSvlQtgZ9POr6xpOl0Io+SzhH59+rJi3B+hm1IUhfxY5Uk9JsD7yLwm6xP0w9eYwxojc72BO6Gz9PQ1bM1dfSijEtGwREXddCa0c3+2a2SFp6mtjJY=
+	t=1785501455; cv=none; b=VUcSKNXg2Q+/5c6dD4xxjtKeVQGwXaZBxHX6fh9Dc6f6cr+OO/jXgjlVFOqj1xFjRygLejK9wF3XW5CocIu83ySFLLXvQmUYRR3/b9xtu5xyg9OBMDXWsyUC6A/n0i16h0oaCibm5AL2pt1O40f4MA1XAehMu56/epfE7VRGknM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785499368; c=relaxed/simple;
-	bh=YsoHqoCT8q75aHibkwXI4goLzTmSMzcs5r0ko7Esuhk=;
+	s=arc-20240116; t=1785501455; c=relaxed/simple;
+	bh=YqebT9clfnPMsC7yqrCtUYusj4Rz5asoem6l5jV5TlQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lFQfJaI0q+J8qEaSC6+fS08wyclrLg8yhi43sXpRbyrox6t9NQl3kkf3rIZmS/ZfWWZfugfCivWxw4FhhAU0l2M1To5YsLPa3Y6RMA7NAJjUuwga26tQsGrQCec9Mil270A6OGz3JE24OvnHeB9c2Kyl6RRcYi6Dbh25/mqL470=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=V1pdBJwl; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=oHx1RyZ0I+UyC0AZUY6nKTL/ciCYOsTMsPN3NQegPvpQkmh6iBtdWBBeotn/SP9LxwklhNiy+pFldvaWdK6terChE7d51ZkO7vRvWMVAx75hlYB6++m4juVoBA41DMvRpVgWZ0g9mKjJGK01WUR8eRw4vUiIrSERl3d0fZNbZ1U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Hz4ZHMw0; arc=none smtp.client-ip=209.85.208.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="V1pdBJwl"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 489561F000E9;
-	Fri, 31 Jul 2026 12:02:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1785499366;
-	bh=Kyh3YtlcG1QKAWFgrLpZN1IWmJAybjc0wqimqZ3K3qM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=V1pdBJwlIK+vXLamflQf+YJHknoc+xJ1fj6/P/7wg4x92ySYX6l3/cCozFX91UTLZ
-	 HuwIa4gcaxOR/w8m+uL1vD6hj61diSW8DqSN3sf00/S2al1bAYQVXDrUDiYQ20WsIc
-	 Votu19kNyjuzEzEKmDwGnWDX4dFiucETMc5kU0rA=
-Date: Fri, 31 Jul 2026 14:02:32 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Jiri Slaby <jirislaby@kernel.org>
-Cc: sparclinux@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-	Joshua Rogers <linux@joshua.hu>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, stable <stable@kernel.org>,
-	Kees Cook <keescook@chromium.org>
-Subject: Re: [PATCH 1/2] tty: vcc: zero-initialize control packet in
- vcc_send_ctl()
-Message-ID: <2026073124-foster-tremble-7061@gregkh>
-References: <20260731-aisle-tty-vcc-v1-0-962e18beb8a8@linuxfoundation.org>
- <20260731-aisle-tty-vcc-v1-1-962e18beb8a8@linuxfoundation.org>
- <42534bff-4aed-497d-bb9c-e413b92493cb@kernel.org>
- <2026073155-leverage-rentable-fbbd@gregkh>
- <3bf1002b-4e3e-4670-a3d9-2f5b7f67beb7@kernel.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Hz4ZHMw0"
+Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-697bd21fdc2so1613335a12.1
+        for <linux-serial@vger.kernel.org>; Fri, 31 Jul 2026 05:37:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1785501450; x=1786106250; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=zxJ+yA42EHLQdUzb/+RpNk8wZMGnUA7//ORKkd+D1IE=;
+        b=Hz4ZHMw0aOrm1r0slpGzgaDgIn9QEZTm1bne/4F7C0kHCoyRsnL8zLlG+eZUGeINR4
+         o1HutbwOsUCa59j1poSqzGdSiFoO7ZsuyJf3gNOrFG618xiLCzukBskuldrQuY0J5Vkv
+         MPhwhKhGOHLs9Vl6AOUm6+mmeMLtTSfGyRxRsYXtfYWPXePsqAqfPCZojLLDA2zRqos0
+         KRMDoHB7ZXdu0sFxww632T75v2e7UtMCX8U5S+OgxjDC2YnVKfqSWf5Ei+5v50OYD5ag
+         Sc8gDKza9uFRZ2n47On/Oj65SUhPe/ahnAgVOhOAekLcOxd7V660RjP5BNag7xq7EQct
+         d4Vg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785501450; x=1786106250;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=zxJ+yA42EHLQdUzb/+RpNk8wZMGnUA7//ORKkd+D1IE=;
+        b=R/QA+ot0q6C/TpvkUCN+D1wJ0VjfGiVTISp4/VsYm97jt/tg/kd3OQBhj3+8jGqYyj
+         leQNZCyCxuYSPgGpGADoVUdiAuoM5mxVMaYfC1AZb/9oX06n2dEe0R3MSGv/aaTciWoy
+         paD9CPMjyvNK7+aA8GIJIlT7UHM0dtR74eZkKohBvnvK9Dp+fESeyfp+NkfxkCbzNtF2
+         WKeh5rXqWcbntQEgfRB87JNS6MVNjD4DGCa/nVRvl3KOW0pIpkrLBlDUPQdfIdd4WLVM
+         DALnAVRoY8+PZMdrPZwKfcdK85vRh6BxP1wsWAQqLzfYH4bh+BKzUXW+nyD8Sgb+Nx2m
+         3/mA==
+X-Forwarded-Encrypted: i=1; AHgh+RoOapcge+YCyVK7GJSjZ5m7TLMs2N9n4VuQ/rY9IEbu7dJjgNGPtyYHQnwxgMsRZpEWwx7+Kl18vv0YdYs=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxnA/8klz6uVuKF+gcNg0o/CZiczUvUl7BdG8sLxwIPJxpyorma
+	uP+N0ksUUi/ze55YLWqEKOLQs22nlzXGzoE97dDw+J+E0Ejjde2IQIaWIy4Hf/Gi
+X-Gm-Gg: AR+sD11/9jS1RXHg3nR5FNBiTUWyGL2bPYq9aZR/SizMufbOcgylj/uNJYA2IoMDjEp
+	Za5Pr/OAc6QBU9DigCcEy0ZVIlHQhvB0v4DrIwl1cM/cX324WWlSdvcFptzgTqQ/oKiKrCl9u9E
+	OD/TK88ZqtTwJpWm9b2VCdz/lsqXceHSwsReGM8k5ptS7FZGzZEQVzS6H2UywP/YdOY1juPVLzF
+	DXAehtTGrwxsXf67c4hSPCkh+Oy7bJg/utODqt6K78JqM31+lX2QICdMsJrOOAnepOs7JR3BrIN
+	YRcKZSKKMum1SS/PTBQoAQLvRjMy2s63umW/AmB7+0/w59uKmbOHTxogCSK3xuY5fq3Bm/dIMVd
+	jvSh92yiDgGj9FmLYmuSdihqr9Mihqy1ieCGQt6cIcuGm8CH2P08StzlEQ2lfQ+5XY8/x/CK43t
+	5jUA3+3n4FNC94PNiotWLSCnSd+ATJ9seCBTP4/DOz47Fw5bdA1p92uyi7VkEgo/zaf13Pu1F80
+	RoDxn0+9G9g+I6aulS3iI5bwysAf2fRYW584yWkiva56GIaeyJljZ3R+S04hn1fRgCBZ4AVBSFa
+	mmt9487zlHGoTirHKMc4/x7uZQrD212c3WayrdRVqyM1UKao7k+PBkKkqXubWck4glt2Uvc=
+X-Received: by 2002:a05:6402:51c8:b0:6a0:1704:de29 with SMTP id 4fb4d7f45d1cf-6a098d07135mr979233a12.33.1785501450131;
+        Fri, 31 Jul 2026 05:37:30 -0700 (PDT)
+Received: from unknown748F3CBA5068 (dynamic-2a02-3100-a8d0-bc01-6d31-3d12-3a11-d2d0.310.pool.telefonica.de. [2a02:3100:a8d0:bc01:6d31:3d12:3a11:d2d0])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6a09c660febsm1308537a12.28.2026.07.31.05.37.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 31 Jul 2026 05:37:29 -0700 (PDT)
+Date: Fri, 31 Jul 2026 14:37:28 +0200
+From: Karl Mehltretter <kmehltretter@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>, Frank Li <Frank.Li@nxp.com>, 
+	Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, 
+	Fabio Estevam <festevam@gmail.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org, stable@vger.kernel.org
+Subject: Re: [PATCH v2 1/4] serial: core: do fallible allocations before the
+ console can be registered
+Message-ID: <amyWRaZN2kSiv3YQ@gmail.com>
+References: <20260719221014.44354-1-kmehltretter@gmail.com>
+ <20260719221014.44354-2-kmehltretter@gmail.com>
+ <2026073056-embargo-rejoicing-87c2@gregkh>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -46,85 +82,25 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <3bf1002b-4e3e-4670-a3d9-2f5b7f67beb7@kernel.org>
+In-Reply-To: <2026073056-embargo-rejoicing-87c2@gregkh>
 
-On Fri, Jul 31, 2026 at 11:16:57AM +0200, Jiri Slaby wrote:
-> On 31. 07. 26, 10:32, Greg Kroah-Hartman wrote:
-> > On Fri, Jul 31, 2026 at 10:29:14AM +0200, Jiri Slaby wrote:
-> > > On 31. 07. 26, 10:15, Greg Kroah-Hartman wrote:
-> > > > From: Joshua Rogers <linux@joshua.hu>
-> > > > 
-> > > > The stack-allocated struct vio_vcc pkt was partially initialized,
-> > > > leaving the tag.stype_env field uninitialized before being sent via
-> > > > ldc_write(), potentially leaking kernel stack data to the LDC peer.
-> > > > 
-> > > > Assisted-by: AISLE:Snapshot
-> > > > Cc: stable <stable@kernel.org>
-> > > > Signed-off-by: Joshua Rogers <linux@joshua.hu>
-> > > > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > > > ---
-> > > >    drivers/tty/vcc.c | 2 +-
-> > > >    1 file changed, 1 insertion(+), 1 deletion(-)
-> > > > 
-> > > > diff --git a/drivers/tty/vcc.c b/drivers/tty/vcc.c
-> > > > index 27a55465bf5e..3947bd2b75ac 100644
-> > > > --- a/drivers/tty/vcc.c
-> > > > +++ b/drivers/tty/vcc.c
-> > > > @@ -492,7 +492,7 @@ static ssize_t domain_show(struct device *dev,
-> > > >    static int vcc_send_ctl(struct vcc_port *port, int ctl)
-> > > >    {
-> > > > -	struct vio_vcc pkt;
-> > > > +	struct vio_vcc pkt = {};
-> > > 
-> > > Note this needs not initialize holes.
-> > 
-> > Does it?  I keep forgetting this if it's really true or not.  I think
-> > we've been through this in the past but I can't find the archives.
-> > 
-> > > I believe there are none here, but memset() is usually
-> > > preferred/safer.
-> > 
-> > Last I remember, a long time ago, the compiler would just use memset()
-> > for this, and hit the holes.  Or is that a compiler-specific issue?
-> > 
-> > Yes, it's more obvious, and I'll be glad to change it, but figuring this
-> > out for real would be great :)
+On Thu, Jul 30, 2026 at 04:28:10PM +0100, Greg Kroah-Hartman wrote:
+> > Cc: stable@vger.kernel.org
 > 
-> OK, so the standard (C17) does not guarantee zeroing.
-> 
-> What I found though:
-> 
-> * both clang and gcc zero the full struct for "{}". There was a bug in gcc <
-> 8 where it did not.
-> 
-> * this is not true for designated initializer, cf. ce50039be49e ("net:
-> sched: act_ife: initialize struct tc_ife to fix KMSAN kernel-infoleak")).
+> As this can only be duplicated with fault-injection, it really doesn't
+> need to go to any stable kernels, right?
 
-Ok, as our compiler is newer than these versions, and this isn't a
-designated initializer, we should be ok.
+Agreed, I'll drop it.
 
 > 
-> Adding Kees who is the author of:
-> ====
-> Memory initialization
-> ---------------------
+> > +	if (!uport->tty_groups) {
+> > +		kfree(uport->name);
+> > +		uport->name = NULL;
 > 
-> Memory copied to userspace must always be fully initialized. If not
-> explicitly memset(), this will require changes to the compiler to make
-> sure structure holes are cleared.
-> ====
+> Why set this to NULL?
 > 
-> He might aware of more bugs.
-> 
-> 
-> 
-> FWIW, {} here should be safe for two reasons:
-> * not a designated initializer
-> * no holes (IMO)
 
-Great, I'll keep this as-is.  Now if only anyone can tell me if this
-code is even used anymore :)
+It's not necessary. I will remove it.
 
-thanks,
-
-greg k-h
+Thanks,
+Karl
