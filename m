@@ -1,63 +1,63 @@
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F01133B19CA
-	for <linux-serial@vger.kernel.org>; Fri, 31 Jul 2026 18:03:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85E4841D659
+	for <linux-serial@vger.kernel.org>; Fri, 31 Jul 2026 18:04:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785521034; cv=none; b=fjWrdzpSkMiT66Wv/bFfHrEFP3RFZhIzAEZzmYTFYW7WtglU+kuTCt5KLi+8takdqsUON1rnAw2U1nOzpB1Wtk3/+U+nD+UmsTc2/WlKpexzxb2rHbC4l/y42DfYtk7J3g5fwbMgZigDeyVDsKxIi3GOk/2dg4yxGgy/o2gDpmY=
+	t=1785521051; cv=none; b=kGCMKya1qzgevciEQKKVIAyduTZfvSXak04FHZ2LmRmqUwjzhY4i6CFxwHsDgLqp9gzvWutY711E0ivQg6BW4zfogHO7/xfiJXV7xN5ORzycrSkL/3hS2tNY3xFuErXz15wKQJ3ufsmK8Ls5apl6zMJQJWXjrybr6lJAYH28eMQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785521034; c=relaxed/simple;
-	bh=UnIwtfXNjLpC1Ihz9kKhZCxir32MMPCFCV40pupJOyw=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=q6Ni8dGYEXD5kvnVcXAOljZyAjcQpMwW+ZhjOt4aGUwRfn4/N1nftHkZkpHQuCf3bQPa31XMqkyFxmKCP3CT6QQBYodYw2/taQpsTFENJ+eoXBhnJ/ax0IfTpEmqb34wt0yy7iOSfvZwB00AG4BTFF/VVAyGNK8IjQN2Ld/b3PU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jC7RYNFC; arc=none smtp.client-ip=209.85.221.43
+	s=arc-20240116; t=1785521051; c=relaxed/simple;
+	bh=YOKf9/usp4erLkDN0Msqj3Z2/dbnL0uqaOiOLKQ/ALI=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=WlGcsUi6oWIMGQt5o37nUygCDXz1QCNPKnmVI81HG//d4dY2yriKoiec/0K9fSn6YXT+BphPIT/yNkqcY1Bjv+z2Kv7hZGZnSHyCM7gxf5NTCpjw+i6kS2XtE3rGkNKvO2JOubFB0cW0hzotF8BZEcI68FWX4xtfftO0jxI3hyg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EkFUF0Ey; arc=none smtp.client-ip=209.85.221.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jC7RYNFC"
-Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-47f633e6058so1335535f8f.0
-        for <linux-serial@vger.kernel.org>; Fri, 31 Jul 2026 11:03:52 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EkFUF0Ey"
+Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-47f92e3c14bso604523f8f.0
+        for <linux-serial@vger.kernel.org>; Fri, 31 Jul 2026 11:04:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785521031; x=1786125831; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1785521042; x=1786125842; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=Z3rxXlGHbXQONq0nbuDOk1X0SJF+agPubKPIOuTmpB4=;
-        b=jC7RYNFCQ9j7SkbOkGU3wY18IDiGMx58mbs7oe3tP8HGJ5Rh3TvMQ3L5bzzF/v90fC
-         2xYFlHB/YiZYjpfH+UdSkAa8vFc7UPmTnz/RmdjrRiR1XmKfpjxjY+9CKaL7y2DzsEoP
-         JhmloKnIpufU15LjNDGYw9om6P0avNf0DErLCWk/+ASQLUsxr06mPO05v24uubfAxVU6
-         yuykQ4SCx5HEHKnYGSDab4GO2BpFA2QDND4Yqx/CtJbbl8825bMqV5RdXdO6o63vo8xd
-         IQZed0vKixyjTPEKoJtG62s+mM02WCzJLQVRocTeREbXOpsfOS+hx9WTs93Mjn2ihSl/
-         768g==
+        bh=pw2+6W330KNNbLzF0QvSgAqSLp8AT2ZZJuEbFAlLaQ4=;
+        b=EkFUF0EyC2l1zDP5ggI98o0ggD9dLJhhJzV0x8LYQlfLEZjTaBCxNuetQ+iuG20Mm2
+         4Fib/OhhvzL86rqjdxViW6G9Wlhaor3qlxtePL42gMlqnUnOjIRxEogrLAuI6OHKp/gm
+         nJnmgdQtkPJE2N3qabjpwnJdHFhAuqzza1L23uByeHbMhhv5Q4Lhu8mYz4Zpq4xov3Dn
+         uYdPlmZicXB9XA5x67WisRYjXDf/gqQ1Lj/KNXI5mtrQ1fptSx7yf7H9z2m9Bqy0tLFv
+         JnmDyoJbCrptBgV5gAK1ypuzJAtlKIcaWv074sStLV51pq9a/SFH1xt8oSNPyZaYLl8A
+         0Thg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785521031; x=1786125831;
+        d=1e100.net; s=20251104; t=1785521042; x=1786125842;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=Z3rxXlGHbXQONq0nbuDOk1X0SJF+agPubKPIOuTmpB4=;
-        b=lFmK5/XU2zZwEOvvzgJ0uUBiYWVjImT48LB6+yGNoz1kWs+mAqD0qmP12xsdlVLYs1
-         EfcfjkU3cR32mxLCfEaMWi21AwaIHPiV6PTMmn+RHBmQc3vkcBMKdqrIPHvtTXVYmYhW
-         L9e5BPkV4sJaaQDQRepEt9U0e4a210wtymDG/A7Xa9dXrGKZWpvdfa22pDw+ARYwi+/I
-         aTCxFKpcftXRdm83nifNpTItMDqZYif8B3caNCIiLgewfkslMOHXdboS5pF61FcpkvoI
-         WtA3m0+8s96xRUspluC41/uI5Y47CHhdSpe8rCF9kL1OVv7xdfAEYqFctP1E9STFD3Eq
-         VgdA==
-X-Forwarded-Encrypted: i=1; AHgh+RqiJq/ysbNrYtkrT2kruiSS6jKxKaZWmA8GV7DzK+ObnFinbrfTvyQHdYKYWztFQb/OFPlVTnAFby8aDVI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwyJYsNjkt9+8+JEAernW3Q8ieiqruVLJo4tGj21IvPsBNvaPR+
-	0chQcJi0q4i4RXbB7kVt2VxzRFT1ev5mlYYy2DK0ia2lDABgP96WmDE5
-X-Gm-Gg: AR+sD11SoWdjbKvpotgwZyjmR52MSs1gF2yI9WIMPABJU1dxT8CyBhwYZ4IEUGf6GBY
-	F+/fbLznG+l4LtWqsqJXRKV5TWN3Z4a1pq/C5YOd8O/2UvZSI+WDywVlKih10UvlZrMtz3/fzDx
-	xqIlGcwa+GM4LtoYn3LjCutkFHJ9r4oQoOg+GPw8HcdsoXfBsAGkT/93K0QiFOYZhJy5BsrBj2m
-	X7wGtZmz5U82icY/ZE3875p2wt5boBS33MknhCqbuLg4GWpeQgM8uviIJsN1eAJ0Cgygmd7FPjL
-	FnI5k+I02C0EDel+g3Szg7mK+KXsE0GFwc5OuDBw32A3S9WkDuQD04Tk5rVUvErTt3B4xX4MRc/
-	eyXEpiynKc1uRX5hXKPAGAjLpdJlQV+sD7yYJabrDjB9bYQhzJZhgpuNotlZdMQfOh436Abf2m6
-	Gbt/j90IJz86j/SqjG7Aqy1TSU7MQT8fuZke+3QvqMUPIHcVex9vwLrIbOajY/7Q6m/z4lDFzvY
-	/ZzPNyCHGMTEVEB6onLlBNkqqPm3IqShzcU9Qh6WxqbE/SQGApjzEVAO00BynkJz+Izokif+j8E
-	5TRXlvJZzHTGgGC/nr1uTOM2UVH6nzHHATmEDxKQi4IyqqwsWG/myPt7cEuMFFb5QW4w
-X-Received: by 2002:a05:6000:4693:b0:470:2fb1:3dbc with SMTP id ffacd0b85a97d-47fd72e0638mr836970f8f.35.1785521030885;
-        Fri, 31 Jul 2026 11:03:50 -0700 (PDT)
+        bh=pw2+6W330KNNbLzF0QvSgAqSLp8AT2ZZJuEbFAlLaQ4=;
+        b=oIpDkos2noQtjj2FqFOHc0Ct1D2fv3vQY1yqkfg52/y1esqiMqSmpIh+Pw+BQ9n/3m
+         0qca/4KBrI1Z/nwuRTkH0l/GSbRdLZ8LSLZFkt8G7d9EgxTQDtLdq41FFxX0C/Qv9U3z
+         ZyR0PHKVEXlwzuWp21iczOno1IrfVfjbTGpi1SmDmL8+UpnG0ha4ZhjPKX/cgo9w/UQi
+         lNPBFqtUZ1nt+jZY9XVcarxE4LwVe8jKezZvwNSylVRgJqN85JxZ9juDngN0vhe9RKZM
+         gGQOcomMLH/1PEYbFF86Z0kNQEpGPAde6AXf0mmOyK5GO51h/NWWj2F23XMmai+aZhG7
+         tK5g==
+X-Forwarded-Encrypted: i=1; AHgh+RruaMIutzHrhlhRINy+j8vX9vxjz9Z3rP81mUn13ziBTAmvAM4FtGeHMUlMnDp+9T0vZQzqnYnJ0JpRxIQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz9O2QMWlsa2eXgdITRAo2NA3/uA1duuCtJ5EbUo8Bw741T+Yiy
+	8KJotHffsptzCeAxKeC6cqxii06B8eUQ9Y5oKjAIWqelOtqqnV29EjzP
+X-Gm-Gg: AR+sD11vWL6wGO05HCqVD+GrAOSe2GKxUw28K3jgt+gS4PQa73pG9+GL8YfilPdSK21
+	kt4xeRR8H3uLFbaO7bFEEHQZ9XViicg72NvpUzuu1H05uMWUW7HvWF7RM2M+znc2UtGQnX2RRTc
+	32ataNe21Td1cDyDF6qjMdghDSDf5jn610wOAUu3iW+PrbljPqICQ4c6eEHLBuEghc7AoarSlAg
+	DvErlE+caGgeJIUuNIaapiFEFde4lnWz6fVan5oAwyRGWxKPg+MJSfOGmlU2S1jFNDpsyuRf2sC
+	4tV6H6AE4C3pt/Rex7/quUmovvuGTN3NRGsEBgSm5KMWEkXsrX5nH5+hqISQjxQbPjEPfD7gcl3
+	UnvueQRbpyljBYxqWu1xqT3wPw/G96Hz1c8pFDxhA8P+2H1Qru/nYnPbUX0yV48lr19o5ag98Pr
+	Xk8k8l6rBafUHiztItNP1rOGls6LEdyOlBT6elsn71vP5k6Fc+vQnNcvNczDT1LRooj0AWDtFj1
+	xJRjfwCTTKTiH/5UOodw12pTq2Nk8Q2OEU9AQYsI+Z+xwHqgGQsroQZDiDM4JXpbdaIkNhv4AaK
+	qgKfUkFGmubzsqDI6LwZEwsqYeEjH4ChAatf72s3rqknm60xR6usrANxJwtisQM2pZyE
+X-Received: by 2002:a05:6000:1366:b0:47f:77a4:fd0 with SMTP id ffacd0b85a97d-47fd72a8e32mr1022136f8f.22.1785521041538;
+        Fri, 31 Jul 2026 11:04:01 -0700 (PDT)
 Received: from localhost.localdomain (dynamic-2a02-3100-a8d0-bc01-6d31-3d12-3a11-d2d0.310.pool.telefonica.de. [2a02:3100:a8d0:bc01:6d31:3d12:3a11:d2d0])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47fd42d91bfsm7878295f8f.15.2026.07.31.11.03.48
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47fd45a1240sm7164084f8f.36.2026.07.31.11.04.00
         (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Fri, 31 Jul 2026 11:03:49 -0700 (PDT)
+        Fri, 31 Jul 2026 11:04:01 -0700 (PDT)
 From: Karl Mehltretter <kmehltretter@gmail.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>
@@ -69,10 +69,11 @@ Cc: Karl Mehltretter <kmehltretter@gmail.com>,
 	linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	imx@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v3 0/5] serial: fix console lifetime bugs on failed bind and removal
-Date: Fri, 31 Jul 2026 20:03:43 +0200
-Message-Id: <20260731180343.10818-1-kmehltretter@gmail.com>
+	linux-arm-kernel@lists.infradead.org,
+	Sashiko <sashiko-bot@kernel.org>
+Subject: [PATCH v3 1/5] serial: core: do fallible allocations before the console can be registered
+Date: Fri, 31 Jul 2026 20:03:57 +0200
+Message-Id: <20260731180357.10843-1-kmehltretter@gmail.com>
 X-Mailer: git-send-email 2.39.5 (Apple Git-154)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -82,53 +83,90 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This series fixes four serial/tty error-path bugs and an i.MX console
-port-table lifetime bug. The fixes were found with failslab fail-nth sweeps
-and sysfs bind/unbind sequences under KASAN on QEMU's raspi1ap and
-mcimx6ul-evk machines.
+serial_core_add_one_port() allocates uport->tty_groups after
+uart_configure_port(), which may register the console. If the allocation
+fails, the driver unwinds the port while its console remains registered.
+The earlier uport->name allocation has a related failure path that leaves
+state->uart_port linked to a port being freed.
 
-Patches 1-4 fix shared serial/tty core code. They move fallible allocations
-before console registration, clear pointers after uart_driver registration
-fails, and make a non-NULL tty cdev slot mean that the cdev is live.
+Failslab reproduced a NULL dereference in PL011 console output and a KASAN
+use-after-free in i.MX console output after failed binds.
 
-Patch 5 clears i.MX's devm-allocated port-table entry after failed probe and
-removal. It keeps the entry valid through console unregistration, rejects
-duplicate lines and serializes table updates against other port probes.
+Allocate the name and tty_groups before linking the port and configuring
+it. Reserve space for the optional driver attribute group because
+config_port() may populate uport->attr_group during configuration.
 
-Validation includes fail-nth sweeps on both boards. The i.MX tests also
-cover the sibling-probe race, sequential unbind/rebind and
-CONFIG_PROVE_LOCKING=y.
+Fixes: 266dcff03eed ("Serial: allow port drivers to have a default attribute group")
+Fixes: f7048b15900f ("tty: serial_core: Add name field to uart_port struct")
+Reported-by: Sashiko <sashiko-bot@kernel.org>
+Closes: https://lore.kernel.org/all/20260719070454.D6FA21F000E9@smtp.kernel.org/
+Assisted-by: Claude:claude-fable-5
+Signed-off-by: Karl Mehltretter <kmehltretter@gmail.com>
+---
+ drivers/tty/serial/serial_core.c | 30 ++++++++++++++++--------------
+ 1 file changed, 16 insertions(+), 14 deletions(-)
 
-Changes in v3:
-- Drop Cc: stable from patches 1-4.
-- Patch 1: remove redundant uport->name clearing and credit Sashiko's report
-  with Reported-by and Closes trailers.
-- Split v2 patch 3 into two patches with corresponding Fixes tags.
-- Shorten the changelogs.
-- Patch 5: use scoped guards, reject occupied slots, remove the unnecessary
-  line variable, document the console-callback locking constraint and add a
-  backport note.
-
-Changes in v2:
-- Patch 4: serialize port registration and removal with imx_uart_ports[]
-  updates to close the reported sibling-probe race.
-- Patches 1-3 are unchanged.
-
-v2: https://lore.kernel.org/r/20260719221014.44354-1-kmehltretter@gmail.com
-v1: https://lore.kernel.org/r/20260719160812.35407-1-kmehltretter@gmail.com
-
-Karl Mehltretter (5):
-  serial: core: do fallible allocations before the console can be
-    registered
-  serial: core: clear freed pointers on uart_register_driver() failure
-  tty: skip cdev_del() when no cdev is registered
-  tty: clear cdev pointer after cdev_add() failure
-  serial: imx: serialize imx_uart_ports[] lifetime
-
- drivers/tty/serial/imx.c         | 20 +++++++++++++++++---
- drivers/tty/serial/serial_core.c | 32 ++++++++++++++++++--------------
- drivers/tty/tty_io.c             |  6 ++++--
- 3 files changed, 39 insertions(+), 19 deletions(-)
-
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index a530ad372b43..03ee3d038f4e 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -3056,7 +3056,6 @@ static int serial_core_add_one_port(struct uart_driver *drv, struct uart_port *u
+ 	struct uart_state *state;
+ 	struct tty_port *port;
+ 	struct device *tty_dev;
+-	int num_groups;
+ 
+ 	if (uport->line >= drv->nr)
+ 		return -EINVAL;
+@@ -3068,6 +3067,22 @@ static int serial_core_add_one_port(struct uart_driver *drv, struct uart_port *u
+ 	if (state->uart_port)
+ 		return -EINVAL;
+ 
++	uport->name = kasprintf(GFP_KERNEL, "%s%u", drv->dev_name,
++				drv->tty_driver->name_base + uport->line);
++	if (!uport->name)
++		return -ENOMEM;
++
++	/*
++	 * uart_configure_port() may set uport->attr_group and register the
++	 * console. Allocate room for both groups and a NULL terminator first.
++	 */
++	uport->tty_groups = kzalloc_objs(*uport->tty_groups, 3);
++	if (!uport->tty_groups) {
++		kfree(uport->name);
++		return -ENOMEM;
++	}
++	uport->tty_groups[0] = &tty_dev_attr_group;
++
+ 	/* Link the port to the driver state table and vice versa */
+ 	atomic_set(&state->refcount, 1);
+ 	init_waitqueue_head(&state->remove_wait);
+@@ -3084,10 +3099,6 @@ static int serial_core_add_one_port(struct uart_driver *drv, struct uart_port *u
+ 	state->pm_state = UART_PM_STATE_UNDEFINED;
+ 	uart_port_set_cons(uport, drv->cons);
+ 	uport->minor = drv->tty_driver->minor_start + uport->line;
+-	uport->name = kasprintf(GFP_KERNEL, "%s%u", drv->dev_name,
+-				drv->tty_driver->name_base + uport->line);
+-	if (!uport->name)
+-		return -ENOMEM;
+ 
+ 	if (uport->cons && uport->dev)
+ 		of_console_check(uport->dev->of_node, uport->cons->name, uport->line);
+@@ -3102,15 +3113,6 @@ static int serial_core_add_one_port(struct uart_driver *drv, struct uart_port *u
+ 
+ 	port->console = uart_console(uport);
+ 
+-	num_groups = 2;
+-	if (uport->attr_group)
+-		num_groups++;
+-
+-	uport->tty_groups = kzalloc_objs(*uport->tty_groups, num_groups);
+-	if (!uport->tty_groups)
+-		return -ENOMEM;
+-
+-	uport->tty_groups[0] = &tty_dev_attr_group;
+ 	if (uport->attr_group)
+ 		uport->tty_groups[1] = uport->attr_group;
+ 
 -- 
 2.53.0
