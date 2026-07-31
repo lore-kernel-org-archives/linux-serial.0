@@ -1,74 +1,41 @@
-Received: from mail-pg1-f170.google.com (mail-pg1-f170.google.com [209.85.215.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8187414A34
-	for <linux-serial@vger.kernel.org>; Fri, 31 Jul 2026 14:22:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.170
+Received: from zg8tmtyylji0my4xnjqumte4.icoremail.net (zg8tmtyylji0my4xnjqumte4.icoremail.net [162.243.164.118])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DE0D4283C9D;
+	Fri, 31 Jul 2026 14:30:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.164.118
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785507754; cv=none; b=fMtseP+ZajEnhna57Vak53kUJhpTtDj7CQzuHoz+uDTeveMQVCSi6c8Bz8XFI/tS2oKg6IV8t47rnAIQyhlxSYYT7/uA/FgnajsX2ug3MsxnzBSJG0jTgO4970o2BrANCl9iqzwbcK1uB3e4dzH0Sea9U00qXxSAD7M9KKPGmyw=
+	t=1785508253; cv=none; b=sNS4Wan66JUD8xg+knMECKuttePHlr/ePo4SmwDOE3a919q6Ttk9xeucpZIqf3gslGMi3W7TN3PUtESmpYeG4OvIhMnabORxMN88639GQXSWpggw2lNZKcThm/95F5+O2/jT+j17mqeWICkP7rzDuf7dhtmcEWzNBo2XEi/Q8gk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785507754; c=relaxed/simple;
-	bh=ll6FLQerJq3jLfjs/fN90YGo45O8imjtMDX2eTiTmhE=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=eLKrybovm+r6+HvpiN3ezCin3GYbn57fJULV9Wj6Fqu9VslNP43rnBQjiNMlsdJlEFd7PaCMQWQh3wMLtiE1I0jXo9J847eKkz/Io9GDaUuunVdKhloDdIJ/hopdYsqeSEzDiFXDmjNTkYRtHFNcISudtEIYZJ1ZE1z7o87vIh8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FvF9E4Mp; arc=none smtp.client-ip=209.85.215.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1785508253; c=relaxed/simple;
+	bh=7yzwy4sbjY8sQCQarNwdB/DmD1o6JsPOO9utRCvoWds=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=dSk++7ZsBUqtzrBEpLunaaAADHd7EesMubMvAcW2lkdO/cNGEex1qrdBx5nC0KxeZSPjrwXFi8/JGc+W4RNzpWdWaS7xSghdHfcS9fgCG88yrSInRA+ro6QpEEjD3yjkk4dIuqAcsWdZwWZ+HlLMeOcZiNBInpE70m4NCK5/dqE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=stu.xidian.edu.cn; spf=pass smtp.mailfrom=stu.xidian.edu.cn; dkim=fail (0-bit key) header.d=stu.xidian.edu.cn header.i=@stu.xidian.edu.cn header.b=7WAynChz reason="key not found in DNS"; arc=none smtp.client-ip=162.243.164.118
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=stu.xidian.edu.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=stu.xidian.edu.cn
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FvF9E4Mp"
-Received: by mail-pg1-f170.google.com with SMTP id 41be03b00d2f7-ca957338f14so55665a12.1
-        for <linux-serial@vger.kernel.org>; Fri, 31 Jul 2026 07:22:32 -0700 (PDT)
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=stu.xidian.edu.cn header.i=@stu.xidian.edu.cn header.b="7WAynChz"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785507752; x=1786112552; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=cPoeW3jLES6wCr33SzwG3txLGpwaWgERLK4MD+MFZtU=;
-        b=FvF9E4MpEzP1X8Np3czmCCjgB+eNVlhvCUrY4Ggp0hrLL3/alXRjLiBi9gpgsY3gBD
-         yeNMoB1YRuyY4/14iOS2MItWjSbbP288nSutIu8amjb7cyECQ/tLIWM0ArdgkUWDg/B0
-         O8xt5S2e1wvYZvT8lgAzAkDPttaiMFQtd6bFK1sPmmDe47zIavl/UodwU/CVHujx75E4
-         g01Y8GIaD8LUskASPme/4VFKeaWwri2415FSv5v/VDk4GdaAud+GZo3OKmJmtPYSYwxb
-         NzM8GHhGCz9n63/LpshZ/Lpp3mcJL+ir8xCyAU1c9YHYTJHXbVvB3tpA4Vr28yee1wil
-         XZ9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785507752; x=1786112552;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=cPoeW3jLES6wCr33SzwG3txLGpwaWgERLK4MD+MFZtU=;
-        b=qQwAJiw6/KdO2pOv/i732axlRwXIb7ipAKkSZso6yxGNEb95qztsePFcfrKcsSlTzP
-         dpjkbxFXNR5cfGxS9bx8Wq2ZYO9gabv6HLbbaXHUsxVgazG6JzH4Luit6qm8KsOBfksX
-         gjY4bHXqM4CGjLOlQdI5Sg+u7tYSCBxqhRGP+zihrP0box9wQaToEMLZgnVhvLibgVho
-         UOatClO9TE/hmZzf2mFEm2S9c0Txn0GCCy6cg1+cjdazW1kzBT4eMvQKbXTUMo+tH0oa
-         FAo/D1HCpEB9biii8R2vfskq2ca035qrMsRAdZ7WIVMU53oBEreQpFKHgP/9zR+VDcaC
-         A7Pg==
-X-Forwarded-Encrypted: i=1; AHgh+RqSjkqG5Rh/SXpF7FLfTahFVncpC5JC8YddIQVJZgU1CY01Bmm20cOY/j21MpWk/X45qOCXtfD8jS/X3k8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxFsYU/VnCjQXlVdkTu0fkGDe7vDu6CZC9+N29QN3aCwaENc3id
-	PfGaWe01tUHMvrtVStKocx5l7pWhmSjtY5pnifnGAJTTqx5uUCXNNWTR
-X-Gm-Gg: AR+sD10eWS4Qz+EHdKuZq4FT65UaCrc65RrHo52Z7nPBjYmTib7k7Yd5954GNgotBBB
-	GXKOvbe0tBj//9SCpzPB1hD5rc9XZsnrzuNzXqKCN+kqjKacs1fUFE52JiCjqdD3XK3mtcVd2D7
-	O1osw2BqCJQM0Kf+e26diyOLpAXS0ANl2a9BG0v0GOftgp1Vrt+7v0AGOs6qrcMbULu0iAzLoMc
-	q/y6jfxR2bjm2SEml+I0Y+V3ThyUE/mzpgg8ozP/3M3UUOKzI8ywiRXj9qQQH7GkRSjjv8NZRSB
-	XZEp5wm3GwW7mH1wdQqvXAF6+9ybXGyPFu2276abTGF2Gjb3TKPwKxgHnhmTVZacDuV5nSf/vAT
-	Sm6tWWv8Od79Kt81lbhPaBXeeG40ZgXcUfCJOqVLkSlMY6j8laJIMJ5UYwmip00uPubmJl3hUPI
-	ECYS9OMh2f2iGwhKOwIq1MncKQLOFtkdmrJ8tpHorjVl8jW83ZGL5pnbncDlw0/smrLdvq8Wo2/
-	dmTTfM/qpIWLmqmnfP0DDo42S5iqZelGyLKFOqjYZdLtgzGrnVjLiM=
-X-Received: by 2002:a17:903:38c7:b0:2c9:8287:fd0d with SMTP id d9443c01a7336-2d052438c91mr2628485ad.3.1785507751833;
-        Fri, 31 Jul 2026 07:22:31 -0700 (PDT)
-Received: from localhost.localdomain (45.78.65.84.16clouds.com. [45.78.65.84])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3153dd4f0f0sm6470095eec.2.2026.07.31.07.22.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 31 Jul 2026 07:22:30 -0700 (PDT)
-From: Chengfeng Ye <nicoyip.dev@gmail.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Richard Watts <rrw@kynesim.co.uk>
-Cc: linux-kernel@vger.kernel.org,
+	d=stu.xidian.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
+	Message-Id:In-Reply-To:References:MIME-Version:
+	Content-Transfer-Encoding; bh=7yzwy4sbjY8sQCQarNwdB/DmD1o6JsPOO9
+	utRCvoWds=; b=7WAynChzW/3EzvDSFfqi8uOhl/FFt1KBoF/4T065zFEjOotTmB
+	gmhw1vWyvbc9sKPyI/Jb3ocx44QsjdjcFWne6E5bxiZ5zYFN2NNzC5//bApkEPQN
+	psSe3hp0yzvpffa3UR5bzyb9H2nI1pu6zb9UZyIplqIGag//TrxLjIjmw=
+Received: from localhost (unknown [120.221.100.92])
+	by hzbj-edu-front-2.icoremail.net (Coremail) with SMTP id BLQMCkA2fjOTsWxqwCmxAQ--.8975S2;
+	Fri, 31 Jul 2026 22:30:43 +0800 (CST)
+From: Xincheng Wang <22009200607@stu.xidian.edu.cn>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>,
+	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
-	Chengfeng Ye <nicoyip.dev@gmail.com>,
-	stable@vger.kernel.org
-Subject: [PATCH] tty: serialize device registration and removal
-Date: Fri, 31 Jul 2026 22:22:20 +0800
-Message-ID: <20260731142220.3000214-1-nicoyip.dev@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	Xincheng Wang <22009200607@stu.xidian.edu.cn>
+Subject: Re: [PATCH] tty: limit TCSBRKP break duration
+Date: Fri, 31 Jul 2026 22:30:41 +0800
+Message-Id: <20260731143041.6400-1-22009200607@stu.xidian.edu.cn>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <2026072921-curled-moonlike-1207@gregkh>
+References: <20260727055525.6170-1-22009200607@stu.xidian.edu.cn> <2026072700-causal-remarry-6edf@gregkh> <20260729111927.41154-1-22009200607@stu.xidian.edu.cn> <2026072921-curled-moonlike-1207@gregkh>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -76,138 +43,38 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:BLQMCkA2fjOTsWxqwCmxAQ--.8975S2
+X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
+	VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUYW7AC8VAFwI0_Jr0_Gr1l1xkIjI8I6I8E
+	6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28Cjx
+	kF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWUJVWUCwA2z4x0Y4vE2Ix0cI8I
+	cVCY1x0267AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIE14v26r4UJVWxJr1l84ACjcxK6I8E87
+	Iv6xkF7I0E14v26r4UJVWxJr1lnxkEFVAIw20F6cxK64vIFxWle2I262IYc4CY6c8Ij28I
+	cVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx
+	0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwAC
+	jI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6ry5MxAIw28IcxkI7VAKI48JMxAqzx
+	v26xkF7I0En4kS14v26r126r1DMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAF
+	wI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc4
+	0Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AK
+	xVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr
+	1lIxAIcVC2z280aVCY1x0267AKxVWUJVW8JbIYCTnIWIevJa73UjIFyTuYvjfUe6pBDUUU
+	U
+X-CM-SenderInfo: qssqimasqqliux6v33wo0lvxldqovvfxof0/
 
-tty_cdev_add() stores a newly allocated cdev in driver->cdevs[index]
-before initializing and registering it. tty_unregister_device() reads and
-deletes the same pointer without serialization.
+Hi Greg,
 
-The race can proceed as follows:
+Yes, it would still be user-visible.
 
-  registration                     removal
-  ------------                     -------
-  driver->cdevs[index] = cdev
-                                   cdev_del(driver->cdevs[index])
-                                   kobject_put() frees cdev
-  driver->cdevs[index]->ops = &tty_fops
+My concern is that tty_ioctl() first multiplies the TCSBRKP argument by
+100 before passing it to send_break(), whose duration argument is
+unsigned int. For values above UINT_MAX / 100, the current behavior uses
+the low 32 bits of the multiplied product, which can be a duration very
+different from the requested interval.
 
-The final write accesses freed memory. Concurrent registration can also
-replace the slot while another caller is still using its cdev.
+But I agree that rejecting or saturating that value would also change
+current behavior. Would you be open to a fix for this, or would you
+rather leave the path as-is?
 
-KASAN reported:
-
-  BUG: KASAN: slab-use-after-free in tty_cdev_add+0x5c7/0x670
-  Write of size 8 at addr ffff88810b298c48
-
-  Call Trace:
-   tty_cdev_add+0x5c7/0x670
-   tty_register_device_attr+0x458/0x810
-   gsm_activate_mux+0x105/0x2e0
-   gsmld_ioctl+0x92f/0x14d0
-
-  Allocated by task 111:
-   cdev_alloc+0x99/0x130
-   tty_cdev_add+0x93/0x670
-
-  Freed by task 110:
-   cdev_dynamic_release+0x38/0x50
-   kobject_put+0x14d/0x280
-   tty_unregister_device+0x1b7/0x3c0
-
-Add a per-driver mutex and hold it across complete device registration and
-removal. This prevents either transition from replacing or freeing a cdev
-until the other has finished.
-
-Fixes: a3a10ce3429e ("Avoid usb reset crashes by making tty_io cdevs truly dynamic")
-Cc: stable@vger.kernel.org
-Signed-off-by: Chengfeng Ye <nicoyip.dev@gmail.com>
----
- drivers/tty/tty_io.c       | 13 ++++++++++---
- include/linux/tty_driver.h |  3 +++
- 2 files changed, 13 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 6b283fd03ff8..926a9b586c7d 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -3185,7 +3185,8 @@ static int tty_cdev_add(struct tty_driver *driver, dev_t dev,
-  * that bit is not set, this function should not be called by a tty
-  * driver.
-  *
-- * Locking: ??
-+ * Locking: device registration and removal are serialized by
-+ * @driver->device_mutex.
-  *
-  * Return: A pointer to the struct device for this tty device (or
-  * ERR_PTR(-EFOO) on error).
-@@ -3217,7 +3218,8 @@ static void tty_device_create_release(struct device *dev)
-  * tty driver's flags have the %TTY_DRIVER_DYNAMIC_DEV bit set. If that bit is
-  * not set, this function should not be called by a tty driver.
-  *
-- * Locking: ??
-+ * Locking: device registration and removal are serialized by
-+ * @driver->device_mutex.
-  *
-  * Return: A pointer to the struct device for this tty device (or
-  * ERR_PTR(-EFOO) on error).
-@@ -3257,6 +3259,7 @@ struct device *tty_register_device_attr(struct tty_driver *driver,
- 	dev_set_drvdata(dev, drvdata);
- 
- 	dev_set_uevent_suppress(dev, 1);
-+	guard(mutex)(&driver->device_mutex);
- 
- 	retval = device_register(dev);
- 	if (retval)
-@@ -3300,10 +3303,13 @@ EXPORT_SYMBOL_GPL(tty_register_device_attr);
-  * If a tty device is registered with a call to tty_register_device() then
-  * this function must be called when the tty device is gone.
-  *
-- * Locking: ??
-+ * Locking: device registration and removal are serialized by
-+ * @driver->device_mutex.
-  */
- void tty_unregister_device(struct tty_driver *driver, unsigned index)
- {
-+	guard(mutex)(&driver->device_mutex);
-+
- 	device_destroy(&tty_class, MKDEV(driver->major, driver->minor_start) + index);
- 	if (!(driver->flags & TTY_DRIVER_DYNAMIC_ALLOC)) {
- 		cdev_del(driver->cdevs[index]);
-@@ -3338,6 +3344,7 @@ struct tty_driver *__tty_alloc_driver(unsigned int lines, struct module *owner,
- 		return ERR_PTR(-ENOMEM);
- 
- 	kref_init(&driver->kref);
-+	mutex_init(&driver->device_mutex);
- 	driver->num = lines;
- 	driver->owner = owner;
- 	driver->flags = flags;
-diff --git a/include/linux/tty_driver.h b/include/linux/tty_driver.h
-index 1f2896e56e77..bf8c9d8ec698 100644
---- a/include/linux/tty_driver.h
-+++ b/include/linux/tty_driver.h
-@@ -7,6 +7,7 @@
- #include <linux/kref.h>
- #include <linux/list.h>
- #include <linux/cdev.h>
-+#include <linux/mutex.h>
- #include <linux/uaccess.h>
- #include <linux/termios.h>
- #include <linux/seq_file.h>
-@@ -497,6 +498,7 @@ struct tty_operations {
-  * @kref: reference counting. Reaching zero frees all the internals and the
-  *	  driver.
-  * @cdevs: allocated/registered character /dev devices
-+ * @device_mutex: serializes device registration and removal
-  * @owner: modules owning this driver. Used drivers cannot be rmmod'ed.
-  *	   Automatically set by tty_alloc_driver().
-  * @driver_name: name of the driver used in /proc/tty
-@@ -532,6 +534,7 @@ struct tty_operations {
- struct tty_driver {
- 	struct kref kref;
- 	struct cdev **cdevs;
-+	struct mutex device_mutex;
- 	struct module	*owner;
- 	const char	*driver_name;
- 	const char	*name;
--- 
-2.43.0
+Thanks,
+Xincheng
 
