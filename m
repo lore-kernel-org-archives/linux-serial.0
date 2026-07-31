@@ -1,62 +1,64 @@
-Received: from mail-pf1-f171.google.com (mail-pf1-f171.google.com [209.85.210.171])
+Received: from mail-pf1-f181.google.com (mail-pf1-f181.google.com [209.85.210.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55CD43101D8
-	for <linux-serial@vger.kernel.org>; Fri, 31 Jul 2026 16:18:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BA04441635
+	for <linux-serial@vger.kernel.org>; Fri, 31 Jul 2026 16:18:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785514703; cv=none; b=PdSI60IGL4Mlx/g+EcbtAe2k4kID6YVrzNDllqGHOTSlmwG3P8aCji9UFTSx2te31hDUi3Z/Vo8BQA/4Be67wlLp0S/ScP3ezF0ZKL6vmr6rn+5wHWj+uOJm9NQiYdK+ZmTDO0b+mHQVBNYlr4OTMnU6D0mBg+xn4ISMUPPi2v8=
+	t=1785514704; cv=none; b=IAus4dUC4rLH5rkTfYoR2OCTeSqzl0a+7cBps5ZQTg2dAwacN871MC6uHVSxqM0WvDYTuuln4Hsh8wuJ0Kr3kuRgWQrNUeUN07DCP4vuNTxqYXeByGdXRLcIIX8HSFA/HzcC+5zDNPKpqyiEA9Re1XhEkbMSsQSGRnDQxbZDMNQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785514703; c=relaxed/simple;
-	bh=9Yzh38GRiodpjie4zcPRooc5jBJTJ/dzig1dvhms+IY=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=CR6b8UkBSygYAB0ytzn9twUmbjKmlTZGs5PajgNfC95U5Cd63aD7kGZhe8/okeZqd6ZQCrPDrjiExaU3gSLL0o46hRJZc1gXLpNrgn4Queu0XyNB88hwUofRYM3QOM9pnL3rRyd//Nd/q4fwUQ9i72hoWQpOH60fKnM4LwlyYL4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nA3kFAUf; arc=none smtp.client-ip=209.85.210.171
+	s=arc-20240116; t=1785514704; c=relaxed/simple;
+	bh=YOAC5Iz8b4Wfr8gFSlts5gUsGsYV93JUg+dXPJSubq8=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=RHe4Y+DqlFZ1mHqhOxeIh6JJ0dzZUDXBUSZ/M0MJKzONirvTgBsjPoEwYujewoN18enOHMwDv3EG7UVA0GXN0gNAH4w4cQwpgEoHfZ9RLZoDlUJOo7SKe6drj677B8nYOf/uelj/j3Ngw3jk7De/9IJMQOP/ozOIKQ0p8ptgwT0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=sX1a0SK0; arc=none smtp.client-ip=209.85.210.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nA3kFAUf"
-Received: by mail-pf1-f171.google.com with SMTP id d2e1a72fcca58-8486ac3f347so2291625b3a.1
-        for <linux-serial@vger.kernel.org>; Fri, 31 Jul 2026 09:18:20 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sX1a0SK0"
+Received: by mail-pf1-f181.google.com with SMTP id d2e1a72fcca58-84e84a6c4bfso985484b3a.1
+        for <linux-serial@vger.kernel.org>; Fri, 31 Jul 2026 09:18:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785514700; x=1786119500; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=TKjEK1gC87c9kIwXqKCw727kvsVZgAnx7reueDbTuj0=;
-        b=nA3kFAUfNnWsWvjABU3qAPTa2LJKAgkKSsu6xI0ZOYvcntzGZ81szLCwl51kWs7uxl
-         YwFO3cUVROsezXWdKL+9Fw30h+e6QgLl+lWb5R70DcWUD3X6QH5INo4AcOVXjkTUQBQT
-         Wwr5kgaa9kWCEunaNoM6DGtwemBeMgQDw6UFVQPGDs9d8N11UIxHkCCzIZnRFoPQGWnh
-         E5UpLt0RobFeAH/6QAxowKliQVUfd5wS7uevI9Aj124OpqDU7Nu0sn9xwYWOSonRbGDz
-         gWP3EsYLKJOCCXYMWKAhvuL4/KbpWZZ3KjYNFyLrKrD/YBJjeRQbPFyX72zP2QLwtfsT
-         6u5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785514700; x=1786119500;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1785514702; x=1786119502; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=TKjEK1gC87c9kIwXqKCw727kvsVZgAnx7reueDbTuj0=;
-        b=Trmp1xaVH5rWXLkOjVyNcr4Lh6GfeTsdf4RxrHzdN3TlV7XBO0Q+WmQUKvAL2Gv0tk
-         7fUYaNj95h0eMnMa3qOScW5Bs8Zf7SaOCwiQ/j4APJOkcCCASEuxjiN42CtolnTR20W9
-         72aKDRlk5cvgVsyDSxrNqYuv3nCl60x7jYSuBoa2pASPoPUV0Cgtv7xJ+Vp3xL9J0RbS
-         29Fff20BpmMs5JuQPhfucg8p19gE4jwgAMV/+CkrLNtD1GnXbx4B83jZ1l+pd9SSxJHs
-         /kP7RTS20prcLH/NsCs+FNRDUVwn+63VuLHy0Q4bBO06grEELyCI7mow3h6YpQ23LCKw
-         2xfA==
-X-Gm-Message-State: AOJu0Yy7CSvCjgbdtlGluZlIH45xktv9TtdSA7CVNSHYSc7GBdOKhYZx
-	4wumGGA0QF7jjAfug1f9YWHl9ANAnBDbKry83srE1cVAJjsuqLQSYFw=
-X-Gm-Gg: AR+sD12+uXzDcm1D0XwwqeTR/lrlMb9CcaSjpZOdeEKZmWQi43DWahhDIT8iirzdLFC
-	nCUi7sINXKnPr6FtVpIrVUSaXW8OiQUFW4FVkdlgWJNmcl8lRjLmxzB6oz+/gaOUwxTjUU6Ukg6
-	if8bPY6na+kPftl18B5CqOVpuXZIiHyiD8vkOTDXz5SebrA92mnC96Sv741edScMFBM4gLmujtc
-	g9DN988L5kLX5NCrUHix4oaVxhIdXmDaFBUnPLOiaWd5oiVDYZ28T9LPmaV8TSRV1O1I4HY0BSp
-	Pb4LfATQhKXXlbv8HJ0olPwz/cBnBibA67iOpSzgqiQY39VRSE964YB8Livu/w5pE0PQrZInzDN
-	oFLogo8IoRe83TlimZ9J5lI3b3P5J0BuuXaiY6o3AectvGVybtRKCQFyEbHVdmc7MxnIjOvad6F
-	+zhIvSYMr44K2GwZgOcliawxuOE6M4bV1XSNAeCmNfF81s6uKndv7fiuisETuczBp9uW3sCTx+o
-	eHxyGVe1cLYZS6cidt0/Y9g/DwezuFBoEpZg7UOkJLltwrurlh9ot+yN6tiw5tXtfIUBcnMP9Q/
-	Q3KW7g5DgCk+kMiF0jtQa2c=
-X-Received: by 2002:a05:6a00:4b02:b0:84e:cd14:aeba with SMTP id d2e1a72fcca58-84ee48123a3mr269712b3a.6.1785514699546;
-        Fri, 31 Jul 2026 09:18:19 -0700 (PDT)
+        bh=EkiEIruiRSk3N9UIDQ+4txiR4UPtQnB+oM9OYfyxLPI=;
+        b=sX1a0SK0Ddf1AB5GeYJVJTuMJ6cuSQSwFc8i2AOuXuLkYEHQas6DGP0PqU+X2G7EiM
+         tzFqT5Ozs7EkEa0v4vDCTV3qcXFfZO2ERc5rZ+oaU6pQPLnoXa3YP5YU1eEEF4ocmx78
+         I48pF0bNI2EqWcdGpDcLbpO/rS3uVeUytAAF4zch6IX0YyYuhDEABw/s+/DXU1gWvoj4
+         8kTJYcYI87FVzjV89JpLGu53sIpqORGq0Nmt1dj5EMLXn++0de+/z757mv2K0N6xDOpu
+         iTE9LKCu9zUwJdJbQnR/D2X7hDjUrrE0JuDtFN0W0WzdcyWlazzCmjBgKAJd4wvnLrFf
+         +bLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785514702; x=1786119502;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=EkiEIruiRSk3N9UIDQ+4txiR4UPtQnB+oM9OYfyxLPI=;
+        b=ea2nWqIwzjSmC1TETJQE83G+Egb3C1Wc2hY/W/1CNrUxIP1Zlud4M3l+nqYSLqtLrJ
+         ZI/LU+P3s1PCz+KMR5Llro7It6OKMziSHBnDKVRUMDj/GelOBxSlIGyx6MmSewFooCRK
+         FCpg/AOpkMd6oEFxWVWJLEeJpWc+hmVpWlFA5kor+MqAciNgKwjnJqpP9vji0upsraEi
+         r9St2hIepLPpLTYOAn9Y5Q98LWzfJEtJ5V4CxuS8ghfoNDwocM3pUTk5u8kLeF4pG5/f
+         ColAN+YNXsBlIX6pMTbaVZ2iKbyGm+SPqraDqSvTGznZiH7I/BSSqdIbQbmLGIxu5/63
+         kHPw==
+X-Gm-Message-State: AOJu0Yx9GK0MZvFbMr27IRxwR7YL3Thn6Yh3giNE+lwxKCwt8g2Qo5mP
+	h99Cd3LhPFnBAjlYssd4ilXGisRLhObhphdWTgSQx+b8zonNg8GukAc=
+X-Gm-Gg: AR+sD13VmtuTSWHOv/y7HjkOVp0D7rtLHU9R/2pttb+bzTR63UZilIQZi3reuMDFHdT
+	hqSN54u8o/o53PaIsE70uqpFYMg+QjcWKog0/5k7OK04W3sh9iP4JkWAVseFizMoyADe7j4cN8m
+	TexswJAlaApnM053iZRQe7DCOuwB+3eivf2BHrS/Xm/K1YLgT8ALHATnwbu8YEqzz+yV7JIR6ME
+	nV/dWM0CbJu6qnptQu89ezpfeom3X1Jdp9oywXeS+zpat0kLWjWuAHnO5G44A22NmJ+yK/xx0kI
+	qKnPAmndG1Pz6J6lxQOcGGpgIa3jioD/sKdvyehrfKHxh9JDYIVMRF1EeZ3YFlbbKT8jcvafmS8
+	HzJxhrfdN8PYQ/vfcXKSgs6CqEAyLJ5/2zViV20N04YsXbv0o2m7GJ3YQ+CZiWp3g5YHsNJeH/V
+	VriDiN2Qh/lw+dCByFDBHahTTGwj6VTNcBeAS/k+IG2ieKK9I3Wa9VBnon2uiBXEk1ssmVvRHBG
+	EqUdBYjHcLACHNYVKRF1BSzD1TuF2gIHRmTulCBwpwZwoia9o6aaqxM/lutTIM89Ja2bq0gQFjv
+	TlaHEhGB9JOjD1Doe55clA0=
+X-Received: by 2002:a05:6a00:2d9c:b0:848:4ee6:4d0 with SMTP id d2e1a72fcca58-84ed7483c02mr2063804b3a.23.1785514702344;
+        Fri, 31 Jul 2026 09:18:22 -0700 (PDT)
 Received: from localhost.localdomain ([1.226.165.54])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-84edc29e6f0sm647072b3a.39.2026.07.31.09.18.17
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-84edc29e6f0sm647072b3a.39.2026.07.31.09.18.19
         (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Fri, 31 Jul 2026 09:18:18 -0700 (PDT)
+        Fri, 31 Jul 2026 09:18:21 -0700 (PDT)
 From: Myeonghun Pak <mhun512@gmail.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>
@@ -65,10 +67,12 @@ Cc: linux-serial@vger.kernel.org,
 	stable@vger.kernel.org,
 	Myeonghun Pak <mhun512@gmail.com>,
 	Ijae Kim <ae878000@gmail.com>
-Subject: [PATCH 1/2] tty: moxa: unwind tty driver if PCI registration fails
-Date: Sat,  1 Aug 2026 01:18:08 +0900
-Message-ID: <20260731161809.45066-1-mhun512@gmail.com>
+Subject: [PATCH 2/2] tty: moxa: use pcim_enable_device()
+Date: Sat,  1 Aug 2026 01:18:09 +0900
+Message-ID: <20260731161809.45066-2-mhun512@gmail.com>
 X-Mailer: git-send-email 2.50.1
+In-Reply-To: <20260731161809.45066-1-mhun512@gmail.com>
+References: <20260731161809.45066-1-mhun512@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -77,42 +81,38 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-moxa_init() registers the tty driver before registering the PCI driver.
-If pci_register_driver() fails, module initialization returns without
-unregistering the tty driver or dropping its reference. moxa_exit() is
-not called after a failed module initialization.
+moxa_pci_probe() enables the PCI device with pci_enable_device(), but
+its failure paths and remove callback do not disable it. Repeated bind
+and unbind cycles can therefore leave the PCI enable count unbalanced.
 
-Unregister the tty driver and drop its reference before returning the
-PCI registration error.
+Use pcim_enable_device() so the PCI core automatically disables the
+device when probe fails or the driver detaches. Keep the existing
+explicit BAR request and mapping cleanup unchanged.
 
 This issue was identified during our ongoing static-analysis research while
 reviewing kernel code.
 
-Fixes: a784bf7c195f ("[PATCH] Char: moxa, pci probing")
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Cc: stable@vger.kernel.org
 Co-developed-by: Ijae Kim <ae878000@gmail.com>
 Signed-off-by: Ijae Kim <ae878000@gmail.com>
 Signed-off-by: Myeonghun Pak <mhun512@gmail.com>
 ---
- drivers/tty/moxa.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/tty/moxa.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/tty/moxa.c b/drivers/tty/moxa.c
-index 1bb2376af85c..680b2dd65462 100644
+index 680b2dd65462..02220ecf3b38 100644
 --- a/drivers/tty/moxa.c
 +++ b/drivers/tty/moxa.c
-@@ -1172,8 +1172,11 @@ static int __init moxa_init(void)
- 	}
+@@ -1063,7 +1063,7 @@ static int moxa_pci_probe(struct pci_dev *pdev,
+ 	int board_type = ent->driver_data;
+ 	int retval;
  
- 	retval = pci_register_driver(&moxa_pci_driver);
--	if (retval)
-+	if (retval) {
- 		printk(KERN_ERR "Can't register MOXA pci driver!\n");
-+		tty_unregister_driver(moxaDriver);
-+		tty_driver_kref_put(moxaDriver);
-+	}
- 
- 	return retval;
- }
+-	retval = pci_enable_device(pdev);
++	retval = pcim_enable_device(pdev);
+ 	if (retval) {
+ 		dev_err(&pdev->dev, "can't enable pci device\n");
+ 		goto err;
 -- 
 2.47.1
