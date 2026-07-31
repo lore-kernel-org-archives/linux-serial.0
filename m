@@ -1,106 +1,170 @@
-Received: from zg8tmja2lje4os43os4xodqa.icoremail.net (zg8tmja2lje4os43os4xodqa.icoremail.net [206.189.79.184])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C9CCA48986B;
-	Fri, 31 Jul 2026 09:00:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=206.189.79.184
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D72A32D9EFB;
+	Fri, 31 Jul 2026 09:17:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785488429; cv=none; b=SaAXqxp3tbiFVbOMOxResrB+yM8BtgyNxVHl0rmHBcOEmVzCAPwhxIw9mDf/r4weTYwoI8X0MqG3a/64pyFwKyDKAW/IYUGB0+DN8a37xCqdw5tojGnxqrlvJYlvGAtnmgrUctYyBBqwe+KVHTZQlRKcMF4W+hE61ZTsOYgbWIQ=
+	t=1785489422; cv=none; b=HE2MjIfpIrZQaU8MMe2OZmuxaTh/JA/vETFCAwLcFMhLAS37w/SCp8JnkONCk5TcHquIxsg5TfHjkOqI0t3FwhDziCfopWo7lzWbSQb9zYEKx++zrDihTW+06J7ZA4SKIc23/S0ue6uLYM8xDi/GBXqIqfQWmqSa0gWUXukbOrU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785488429; c=relaxed/simple;
-	bh=0ii7Rhc0O9S3lkjf50jLi7eII+vtGnAD1xO8gVzulqQ=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=AjH6oP9VsultBi1ycHZ97wh+g1wYoIa/fRZ4ajMSHigHnA38XxBVVTj99sJRrb2oB65N3p8PmU17xrHp7B6bgMdt0jy06MmOaUdhiNf88nRyL1t+dSTk7dVFoKzhQEDwtBYwlFq5kwzjrJUtvZ17TcOTyUiXVsjH1+ouC5Z7W+Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=zju.edu.cn; spf=pass smtp.mailfrom=zju.edu.cn; arc=none smtp.client-ip=206.189.79.184
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=zju.edu.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zju.edu.cn
-Received: from zju.edu.cn (unknown [10.98.66.117])
-	by mtasvr (Coremail) with SMTP id _____wB39jwdZGxqJWpTAA--.3193S3;
-	Fri, 31 Jul 2026 17:00:14 +0800 (CST)
-Received: from localhost.localdomain (unknown [10.98.66.117])
-	by mail-app4 (Coremail) with SMTP id zi_KCgB3fDYaZGxqvp_CAg--.43373S2;
-	Fri, 31 Jul 2026 17:00:10 +0800 (CST)
-From: Fan Wu <fanwu01@zju.edu.cn>
-To: linux@armlinux.org.uk,
-	gregkh@linuxfoundation.org
-Cc: jirislaby@kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org,
-	Fan Wu <fanwu01@zju.edu.cn>
-Subject: [PATCH v2 0/3] serial: amba-pl011: fix RS485 and DMA teardown
-Date: Fri, 31 Jul 2026 08:59:12 +0000
-Message-Id: <20260731085915.326775-1-fanwu01@zju.edu.cn>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <2026073047-unsorted-stick-b16f@gregkh>
-References: <2026073047-unsorted-stick-b16f@gregkh>
+	s=arc-20240116; t=1785489422; c=relaxed/simple;
+	bh=STdaIP3BkiVmPg2LzJMfTZnSTYZgh/uiXsJvPKHCoG0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Sc8fXku1w2KdbydUCRBk10fIsBLMhgMTX2hM/zIb5QScGVK34oMQig8BtR44khI3Kf8yTWWM0kcFv9xa5ol/RZ/7XMOgjPsNsOalRRsNNO/asuesNHZcox0qUb357ZvXYCvCg3oCoN24ljPRAXBKGyPp0Yi9vgKK5tfJp6Rc9z4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hVqZv+eN; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hVqZv+eN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A682E1F000E9;
+	Fri, 31 Jul 2026 09:16:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1785489420;
+	bh=lUJhtLi6sjw4TDrdtAdIGO4QqwN3Ldi1q7BaQU8Zx0g=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=hVqZv+eNQ0zmamVWG/pRAGaYY20PIzxTUffAL7k+7erCUTDQ3iIWfWrFI+Oc9rF6S
+	 5WGp/o28iCUUc5xqTUHdmi4Wu/G7YuvjFbYzn1/y9IAdFsv+fdkl38lrwI5dsIzZfX
+	 O3aDueXRG0pkUQ33hAmi/+n7v//J67j6pbrbIOI2hdwmMfzWCfTPa1yQxVcQ7vQ7Cp
+	 vEI7DoV0xD1td3+Hhhp0EZopRrqN0Hx8iNzGT+pbgXY1YFtQrYBoc3laNWv5JO87Bi
+	 HY9N/yQ/Qos2JjrIJyPT1nPDMW5wnrfyHB1qeF3OtB7t+S6vyx/cQWy3Qp78GkR8AJ
+	 vauF1M+uhhwDA==
+Message-ID: <3bf1002b-4e3e-4670-a3d9-2f5b7f67beb7@kernel.org>
+Date: Fri, 31 Jul 2026 11:16:57 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:zi_KCgB3fDYaZGxqvp_CAg--.43373S2
-X-CM-SenderInfo: qrstjiaswqq6lmxovvfxof0/
-X-CM-DELIVERINFO: =?B?IzdSIwXKKxbFmtjJiESix3B1w3vZ3A9ovKVTomAyoQazvoRs/NHSP8GI2EvgeEEW7R
-	sfnXz+g1OQfMo27QHy5TwQyZyCNRWVXrNC7CTxYrZAaRa6LJLLPouM96QrQijSMggK2sNA
-	M5gF6rFEcLAFruHL/Wip9E6mavGmQbzmcFsnzP86
-X-Coremail-Antispam: 1Uk129KBj93XoW7uw1DJw17Zw1DtF18Xw18JFc_yoW8WFWUpr
-	ZIva9IyrWkG3WIvFsIyF48ur15Ar4rJrW7Ga1fKw1rCF13CF1rXr1IkF4fuFW7G393G3W7
-	Kr40ya1rWry5JrgCm3ZEXasCq-sJn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7KY7ZEXa
-	sCq-sGcSsGvfJ3Ic02F40EFcxC0VAKzVAqx4xG6I80ebIjqfuFe4nvWSU5nxnvy29KBjDU
-	0xBIdaVrnRJUUU9Gb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2
-	IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48v
-	e4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI
-	0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AK
-	xVW0oVCq3wAac4AC62xK8xCEY4vEwIxC4wAS0I0E0xvYzxvE52x082IY62kv0487Mc804V
-	CY07AIYIkI8VC2zVCFFI0UMc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AK
-	xVWUAVWUtwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48Icx
-	kI7VAKI48JM4x0Y48IcxkI7VAKI48G6xCjnVAKz4kxMxAIw28IcxkI7VAKI48JMxC20s02
-	6xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_Jr
-	I_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v2
-	6r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj4
-	0_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8
-	JrUvcSsGvfC2KfnxnUUI43ZEXa7IU8TEEUUUUUU==
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] tty: vcc: zero-initialize control packet in
+ vcc_send_ctl()
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: sparclinux@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+ Joshua Rogers <linux@joshua.hu>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, stable <stable@kernel.org>,
+ Kees Cook <keescook@chromium.org>
+References: <20260731-aisle-tty-vcc-v1-0-962e18beb8a8@linuxfoundation.org>
+ <20260731-aisle-tty-vcc-v1-1-962e18beb8a8@linuxfoundation.org>
+ <42534bff-4aed-497d-bb9c-e413b92493cb@kernel.org>
+ <2026073155-leverage-rentable-fbbd@gregkh>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <2026073155-leverage-rentable-fbbd@gregkh>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Greg,
+On 31. 07. 26, 10:32, Greg Kroah-Hartman wrote:
+> On Fri, Jul 31, 2026 at 10:29:14AM +0200, Jiri Slaby wrote:
+>> On 31. 07. 26, 10:15, Greg Kroah-Hartman wrote:
+>>> From: Joshua Rogers <linux@joshua.hu>
+>>>
+>>> The stack-allocated struct vio_vcc pkt was partially initialized,
+>>> leaving the tag.stype_env field uninitialized before being sent via
+>>> ldc_write(), potentially leaking kernel stack data to the LDC peer.
+>>>
+>>> Assisted-by: AISLE:Snapshot
+>>> Cc: stable <stable@kernel.org>
+>>> Signed-off-by: Joshua Rogers <linux@joshua.hu>
+>>> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>>> ---
+>>>    drivers/tty/vcc.c | 2 +-
+>>>    1 file changed, 1 insertion(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/tty/vcc.c b/drivers/tty/vcc.c
+>>> index 27a55465bf5e..3947bd2b75ac 100644
+>>> --- a/drivers/tty/vcc.c
+>>> +++ b/drivers/tty/vcc.c
+>>> @@ -492,7 +492,7 @@ static ssize_t domain_show(struct device *dev,
+>>>    static int vcc_send_ctl(struct vcc_port *port, int ctl)
+>>>    {
+>>> -	struct vio_vcc pkt;
+>>> +	struct vio_vcc pkt = {};
+>>
+>> Note this needs not initialize holes.
+> 
+> Does it?  I keep forgetting this if it's really true or not.  I think
+> we've been through this in the past but I can't find the archives.
+> 
+>> I believe there are none here, but memset() is usually
+>> preferred/safer.
+> 
+> Last I remember, a long time ago, the compiler would just use memset()
+> for this, and hit the holes.  Or is that a compiler-specific issue?
+> 
+> Yes, it's more obvious, and I'll be glad to change it, but figuring this
+> out for real would be great :)
 
-v2 shortens the changelogs and reworks the RS485 fix as you asked.
+OK, so the standard (C17) does not guarantee zeroing.
 
-  1: fix an indefinite RS485 post-send-delay hrtimer rearm
-  2: fix a use-after-free of the RS485 trigger hrtimers on teardown
-  3: fix a use-after-free of the DMA buffers on teardown
+What I found though:
 
-The hrtimers are embedded in the devm-managed port. The IRQ handler can
-arm a timer, so patch 2 frees the IRQ before cancelling them. Patch 1
-goes first because the rearm it fixes is what keeps the timer armed.
+* both clang and gcc zero the full struct for "{}". There was a bug in 
+gcc < 8 where it did not.
 
-I read the sashiko.dev review [1]. All six points it raises are valid;
-this series addresses each:
+* this is not true for designated initializer, cf. ce50039be49e ("net: 
+sched: act_ife: initialize struct tc_ife to fix KMSAN kernel-infoleak")).
 
-  - the lockless pl011_rs485_tx_stop() in shutdown racing the hrtimer
-    callback, and a TX interrupt re-arming a timer after it was cancelled:
-    patch 2 stops under the port lock and frees the IRQ first.
-  - cancelling the timer before it fires left rs485_tx_state stuck at
-    WAIT_AFTER_SEND, so the next open skipped the RS485 TX setup: patch 2
-    finishes the stop with pl011_rs485_tx_stop_now(), resetting the state.
-  - the post-send-delay timer rearming indefinitely: patch 1.
-  - the RX poll timer and the TX DMA callback touching freed buffers:
-    patch 3.
 
-Changes since v1:
-  - split into three patches and shortened the changelogs
-  - free the IRQ before cancelling the hrtimers (v1 cancelled first)
-  - add the post-send-delay (1) and DMA (3) fixes
+Adding Kees who is the author of:
+====
+Memory initialization
+---------------------
 
-v1: https://lore.kernel.org/all/20260721042858.3187311-1-fanwu01@zju.edu.cn/
+Memory copied to userspace must always be fully initialized. If not
+explicitly memset(), this will require changes to the compiler to make
+sure structure holes are cleared.
+====
 
-[1] https://sashiko.dev/#/patchset/20260721042858.3187311-1-fanwu01@zju.edu.cn
+He might aware of more bugs.
 
----
 
- drivers/tty/serial/amba-pl011.c | 45 +++++++++++++++++++++++++++---------------
- 1 file changed, 45 insertions(+), 23 deletions(-)
 
---
-2.34.1
+FWIW, {} here should be safe for two reasons:
+* not a designated initializer
+* no holes (IMO)
 
+thanks,
+-- 
+js
+suse labs
