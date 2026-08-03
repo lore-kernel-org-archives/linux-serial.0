@@ -1,39 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87E5835C183;
-	Mon,  3 Aug 2026 12:56:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92A41402443;
+	Mon,  3 Aug 2026 13:23:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785761786; cv=none; b=Imdpx2VyxxOlhQSGY714FRzxuIR+swlgyIu+yYy+VBYNMgQ8sITSJLT/K6SjNN7yHZrNTfYa5bqO84rTnAIAMNMnBcSzXFcG1Yt4jnJXChloYfq/dWU75TZz/U2Bo6ijNV1yiuFNJEK7iXDlnYoBidrVTmdDCXyvBYm3VD1AFo4=
+	t=1785763396; cv=none; b=k5/Wn4is9Uy/0YTwXmXwq9J413IuQ0Eg+et0zUXSJdsuKpO3DESvj69OExYBintTmb2+ZEPQcnumaTCWOH/YTCpRxrEfBHFf6fea7o7bqf/fOufHD8fZe4vIaiZlxn4gYHITkZtEWJoghY7ql3QZ85VeIOQtdPTwJ+7lHHUL9mg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785761786; c=relaxed/simple;
-	bh=zR4lh11GRIdJttYDzLy5OV+hGlxex6I8HHNmW5c1c7g=;
+	s=arc-20240116; t=1785763396; c=relaxed/simple;
+	bh=Lr3OyC/HZgFuOIcUvbWBJFAaZRluUNKhaC5ZzYyW1c4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZmNUw3vvlIqEo77OTA2HvV79Pjqeu/jaLslRzPSYzkAhqmqEEc7rX8fRQO2qJtRPes4GqsVYmkMpAmicSz4863Q5OF8bbO1j9pWX5Cb4dS9CtqzqDrg4wrs5muWJ3ai7q/Mn6YgZyS+1GizwGc3x7YWTQ1XkHA+Ra6kURC6a80Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=AiFtnJVF; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=okMpmoP6x2toKdbXRJH1GfKTLCzt1Ik9iN48VWh94b7aPcMnWsfc2vw3Wm05yPhuJAh3ZCu/ahJggP3TM3ipvLVYuokvID8RPK+Bz7DABvIZ1L1xOQ5NCF/T1KhQM0OL0nTcDaCB2kjLZteOYjWw3OFHCk4TtRghsBW0vGvy75M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oqzmsRRq; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="AiFtnJVF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 920B91F000E9;
-	Mon,  3 Aug 2026 12:56:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1785761784;
-	bh=OXsmNyUVqCO5xA+kOWaRUZXD1UJnnyoHcYSRN+f169Q=;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oqzmsRRq"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 810641F000E9;
+	Mon,  3 Aug 2026 13:23:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1785763388;
+	bh=bz8SgM4BG0+WSGkNrgBnB/bkcDhyqp3qGnY0xAuanGc=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=AiFtnJVFAFBBIKh0EPIwW87Oz3N9pcoJZbeOBCaxCS+gCfiQirvahvaoxfVWmGZp2
-	 iUf9s2c3v5qCIoi/X5WXH9DCHszcug02GU5cHfQzVDL57/wFI3dTx9loJ0IOfAXBdz
-	 tSnCKr+uYJczSMUAcvjHRBek+nutqqRfTtIamdeU=
-Date: Mon, 3 Aug 2026 14:56:08 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Fan Wu <fanwu01@zju.edu.cn>
-Cc: jirislaby@kernel.org, broonie@kernel.org, zhao.xicheng@vivo.com,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Subject: Re: [PATCH v2] tty: serial: max3100: shut down timer before freeing
- port
-Message-ID: <2026080353-bats-jailhouse-804f@gregkh>
-References: <2026073036-coping-starter-ad07@gregkh>
- <20260801061208.356142-1-fanwu01@zju.edu.cn>
+	b=oqzmsRRqXOulFxMQvF5fNjacQaf92fdo8SCOdBiEu8zRfok4yNYY5GW8G9kmM3geK
+	 Kxl8JrbT9AKNQyTYQQ7lgmrQSyipTjBLxM1XdHYcIeBCoGQcUPdjfhakOjyu2z1OKt
+	 zgjjhrS+xIZXlWhw0S/mlcOWn+4uYlLsD0BriepfMfWjpoc+YZ1PPZFOTC5stlIYxj
+	 d/TExiAbhv2Muv7VWdifPMebKMScA4bzqkzFWxN3sj6M0R5UjmnQhXnORnM0K75Pme
+	 PeVK4t17vjlMwcL9ANxLdXqZTnVkeVwfQuMCAdMy9D4XUOCuysmLUiEVgi1pJ8HVMt
+	 glOGzyJD2+Cww==
+Date: Mon, 3 Aug 2026 08:23:07 -0500
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: Yu-Che Hsieh <yc_hsieh@aspeedtech.com>
+Cc: Jiri Slaby <jirislaby@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+	devicetree@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Lubomir Rintel <lkundrak@v3.sk>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: serial: 8250: Add Aspeed AST2600 and
+ AST2700 uart compatible
+Message-ID: <178576338736.3095458.59419877773354816.robh@kernel.org>
+References: <20260721-upstream-ast2700-vuart-support-v1-1-b4ed612b1aa2@aspeedtech.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -42,63 +47,22 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260801061208.356142-1-fanwu01@zju.edu.cn>
+In-Reply-To: <20260721-upstream-ast2700-vuart-support-v1-1-b4ed612b1aa2@aspeedtech.com>
 
-On Sat, Aug 01, 2026 at 06:12:08AM +0000, Fan Wu wrote:
-> max3100_shutdown() stops the polling timer but returns early during
-> system suspend. If the SPI device is unbound before resume, the serial
-> core does not call max3100_shutdown() again, so max3100_remove() frees
-> the port while the timer remains armed. max3100_timeout() can then
-> access the freed port and re-arm the timer.
+
+On Tue, 21 Jul 2026 09:44:23 +0800, Yu-Che Hsieh wrote:
+> The AST2600 and AST2700 VUART controllers are identical to the AST2500
+> VUART controller.
 > 
-> Add final timer teardown to max3100_remove() and use
-> timer_shutdown_sync() to prevent a racing callback from re-arming it.
-> Also drain the IRQ and workqueue before freeing the port.
+> Add the "aspeed,ast2600-vuart" and "aspeed,ast2700-vuart" compatible
+> strings and fall back to "aspeed,ast2500-vuart" for compatibility with
+> the existing driver.
 > 
-> Keep timer_delete_sync() in max3100_shutdown() so that a subsequent
-> open() can re-arm the timer.
-> 
-> Introduce an irq_registered flag to track whether the IRQ is registered,
-> independently of port->irq, so a failed request_irq() can be retried on
-> the next open().
-> 
-> Found by static analysis.
-> 
-> Fixes: 7831d56b0a35 ("tty: MAX3100")
-> Cc: stable@vger.kernel.org # 6.2+
-> Assisted-by: Codex:gpt-5.6
-> Signed-off-by: Fan Wu <fanwu01@zju.edu.cn>
+> Signed-off-by: Yu-Che Hsieh <yc_hsieh@aspeedtech.com>
 > ---
-> Changes since v1:
->   - Drop the shared drain helper; call timer_shutdown_sync() only in
->     max3100_remove(), keeping timer_delete_sync() in max3100_shutdown()
->     so a later open() can re-arm the timer.
->   - Track IRQ registration with a flag instead of clearing port->irq,
->     so a failed request_irq() can be retried on the next open().
+>  Documentation/devicetree/bindings/serial/8250.yaml | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
 > 
-> v1: https://lore.kernel.org/all/20260721035631.3186613-1-fanwu01@zju.edu.cn/
-> ---
->  drivers/tty/serial/max3100.c | 18 ++++++++++++++++--
->  1 file changed, 16 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/max3100.c b/drivers/tty/serial/max3100.c
-> index 44b745fa26c6..7bc3c5cfe886 100644
-> --- a/drivers/tty/serial/max3100.c
-> +++ b/drivers/tty/serial/max3100.c
-> @@ -107,6 +107,7 @@ struct max3100_port {
->  	int  force_end_work;
->  	/* need to know we are suspending to avoid deadlock on workqueue */
->  	int suspending;
-> +	bool irq_registered;
 
-LLMs _love_ to use boolean flags to attempt to figure things out that
-they can't seem to determine.  Are you _SURE_ this really is needed?
-How about unwinding things better so it's not required?  You are just
-adding another "state" to the device, adding to the complexity overall,
-which is generally not a good idea.
+Acked-by: Rob Herring (Arm) <robh@kernel.org>
 
-And do you have this hardware to test this with?
-
-thanks,
-
-greg k-h
