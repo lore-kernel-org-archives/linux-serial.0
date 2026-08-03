@@ -1,44 +1,40 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92A41402443;
-	Mon,  3 Aug 2026 13:23:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1984730566D;
+	Mon,  3 Aug 2026 14:09:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785763396; cv=none; b=k5/Wn4is9Uy/0YTwXmXwq9J413IuQ0Eg+et0zUXSJdsuKpO3DESvj69OExYBintTmb2+ZEPQcnumaTCWOH/YTCpRxrEfBHFf6fea7o7bqf/fOufHD8fZe4vIaiZlxn4gYHITkZtEWJoghY7ql3QZ85VeIOQtdPTwJ+7lHHUL9mg=
+	t=1785766163; cv=none; b=UhsP4TGPMSjjnsuRwrxk49KF633Jzw1/B1wgR/CCLUvec8cLZ9smAciprq4DR4IxJeo0ovxCj4N06oT4o/0KRR1QLFqM1y8pDgxrJLDGrGi+AAT06XQXr//DUHf28C8du6CwezwEthciggO/0qHaneuivew6KipH3SoYDYKV/e0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785763396; c=relaxed/simple;
-	bh=Lr3OyC/HZgFuOIcUvbWBJFAaZRluUNKhaC5ZzYyW1c4=;
+	s=arc-20240116; t=1785766163; c=relaxed/simple;
+	bh=yl1nxuaUQkr7Tc+vg0n/aqYKEcvTe5GNVWcalyaNklg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=okMpmoP6x2toKdbXRJH1GfKTLCzt1Ik9iN48VWh94b7aPcMnWsfc2vw3Wm05yPhuJAh3ZCu/ahJggP3TM3ipvLVYuokvID8RPK+Bz7DABvIZ1L1xOQ5NCF/T1KhQM0OL0nTcDaCB2kjLZteOYjWw3OFHCk4TtRghsBW0vGvy75M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oqzmsRRq; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=AMarEBgc6LhDojJaAQv6kUJJvoOFs6WRTIY5qzWGHm+jOHfGj1s8b6431RYyotOcmtbwFwnUPZy4xpkMeHRXrb/Wyv8p0nFw7EmTaEf9ItS1xp7CdehrnN+pfiuuOwtpVeLGKUuSR2hM4qQuUOWAkmBW6P3+GInuNvEaI5BouiE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=HAwdMg70; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oqzmsRRq"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 810641F000E9;
-	Mon,  3 Aug 2026 13:23:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785763388;
-	bh=bz8SgM4BG0+WSGkNrgBnB/bkcDhyqp3qGnY0xAuanGc=;
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="HAwdMg70"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AC091F000E9;
+	Mon,  3 Aug 2026 14:09:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
+	s=korg; t=1785766161;
+	bh=zs28fNZpyv0n8GbK0CWykTKHcKPEGrslPM5N3nPnjqw=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=oqzmsRRqXOulFxMQvF5fNjacQaf92fdo8SCOdBiEu8zRfok4yNYY5GW8G9kmM3geK
-	 Kxl8JrbT9AKNQyTYQQ7lgmrQSyipTjBLxM1XdHYcIeBCoGQcUPdjfhakOjyu2z1OKt
-	 zgjjhrS+xIZXlWhw0S/mlcOWn+4uYlLsD0BriepfMfWjpoc+YZ1PPZFOTC5stlIYxj
-	 d/TExiAbhv2Muv7VWdifPMebKMScA4bzqkzFWxN3sj6M0R5UjmnQhXnORnM0K75Pme
-	 PeVK4t17vjlMwcL9ANxLdXqZTnVkeVwfQuMCAdMy9D4XUOCuysmLUiEVgi1pJ8HVMt
-	 glOGzyJD2+Cww==
-Date: Mon, 3 Aug 2026 08:23:07 -0500
-From: "Rob Herring (Arm)" <robh@kernel.org>
-To: Yu-Che Hsieh <yc_hsieh@aspeedtech.com>
-Cc: Jiri Slaby <jirislaby@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
-	devicetree@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Lubomir Rintel <lkundrak@v3.sk>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: serial: 8250: Add Aspeed AST2600 and
- AST2700 uart compatible
-Message-ID: <178576338736.3095458.59419877773354816.robh@kernel.org>
-References: <20260721-upstream-ast2700-vuart-support-v1-1-b4ed612b1aa2@aspeedtech.com>
+	b=HAwdMg70/GR4kJ06heS2HB5sxfikyCPC9Fp9WGzP7NIt90HlO/16rI2/UswFy1+b8
+	 WHV3QCVJs8dsQtOhHM6j/sQjlFk7upD3Yfii2Y7My9B/wCrBDC+5LnECA7L11ijXqK
+	 uR8zrljC9/asIryVGV8YI0Xw3umn1035aC/4xAtw=
+Date: Mon, 3 Aug 2026 16:09:05 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: sparclinux@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+	Joshua Rogers <linux@joshua.hu>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, stable <stable@kernel.org>
+Subject: Re: [PATCH 2/2] tty: vcc: hold port lock when clearing tty pointer
+ in vcc_cleanup
+Message-ID: <2026080338-imperfect-plant-ef79@gregkh>
+References: <20260731-aisle-tty-vcc-v1-0-962e18beb8a8@linuxfoundation.org>
+ <20260731-aisle-tty-vcc-v1-2-962e18beb8a8@linuxfoundation.org>
+ <f3b571b3-86b3-480b-bde3-dd2e7bead7fb@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -47,22 +43,48 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260721-upstream-ast2700-vuart-support-v1-1-b4ed612b1aa2@aspeedtech.com>
+In-Reply-To: <f3b571b3-86b3-480b-bde3-dd2e7bead7fb@kernel.org>
 
-
-On Tue, 21 Jul 2026 09:44:23 +0800, Yu-Che Hsieh wrote:
-> The AST2600 and AST2700 VUART controllers are identical to the AST2500
-> VUART controller.
+On Fri, Jul 31, 2026 at 10:32:36AM +0200, Jiri Slaby wrote:
+> On 31. 07. 26, 10:15, Greg Kroah-Hartman wrote:
+> > From: Joshua Rogers <linux@joshua.hu>
+> > 
+> > vcc_cleanup() sets port->tty to NULL without holding port->lock, racing
+> > with vcc_event() LDC callbacks that read port->tty under port->lock and
+> > then use tty->port. This can cause a use-after-free when the callback
+> > dereferences tty->port after cleanup has already destroyed and freed it.
+> > 
+> > Assisted-by: AISLE:Snapshot
+> > Cc: stable <stable@kernel.org>
+> > Signed-off-by: Joshua Rogers <linux@joshua.hu>
+> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > ---
+> >   drivers/tty/vcc.c | 3 +++
+> >   1 file changed, 3 insertions(+)
+> > 
+> > diff --git a/drivers/tty/vcc.c b/drivers/tty/vcc.c
+> > index 3947bd2b75ac..03ed8c692acd 100644
+> > --- a/drivers/tty/vcc.c
+> > +++ b/drivers/tty/vcc.c
+> > @@ -983,10 +983,13 @@ static int vcc_install(struct tty_driver *driver, struct tty_struct *tty)
+> >   static void vcc_cleanup(struct tty_struct *tty)
+> >   {
+> >   	struct vcc_port *port;
+> > +	unsigned long flags;
+> >   	port = vcc_get(tty->index, true);
+> >   	if (port) {
+> > +		spin_lock_irqsave(&port->lock, flags);
+> >   		port->tty = NULL;
+> > +		spin_unlock_irqrestore(&port->lock, flags);
 > 
-> Add the "aspeed,ast2600-vuart" and "aspeed,ast2700-vuart" compatible
-> strings and fall back to "aspeed,ast2500-vuart" for compatibility with
-> the existing driver.
+> For these, I like
 > 
-> Signed-off-by: Yu-Che Hsieh <yc_hsieh@aspeedtech.com>
-> ---
->  Documentation/devicetree/bindings/serial/8250.yaml | 8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
-> 
+> scope_guard(spinlock_irqsave, &port->lock)
+>   port->tty = NULL;
 
-Acked-by: Rob Herring (Arm) <robh@kernel.org>
+Fair enough, that's much cleaner, LLMs really do not know about that
+pattern yet :)
 
+thanks,
+
+greg k-h
