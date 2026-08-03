@@ -1,78 +1,78 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA628423EA9;
-	Mon,  3 Aug 2026 14:46:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3A752836F;
+	Mon,  3 Aug 2026 14:53:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785768391; cv=none; b=HSxcVL1XQqDwQx65om9JZsq1pdgqpQTwygHhlTWorCzYJHlLwHf1bzaYuB0tX26Y85TKyIgzUdgYxCQHmTEKMHKPOgCtWnkLOmRhVFRfkmnFmIIAa41qhV1SVHMU1G1zEfkrvJl9w3yOks6o6C61jbjitnvNgCx/kyUgiqzHo34=
+	t=1785768810; cv=none; b=rA9xSwTYJzf0++il+1QpYpw9RtSCP027r6WWpCQZWkOckosPRKkY/4mLJ5esv9s1VqK663j2PC9T30P/FD5lObCMA++SPferLrdv4dGNhXYY9F9oD3aQMBs3oD+u3hYkUYw/b/yClbgw7XhVeQXXmetYB+ESykKqj32sPUPE5zI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785768391; c=relaxed/simple;
-	bh=x0LxHdLYX3mSkEcX2DoQj+daGEOxkfDvkV9fxFaoHzE=;
+	s=arc-20240116; t=1785768810; c=relaxed/simple;
+	bh=WG24IppSyrWVtgq49qoJn/FTVTay3I8R4m0/bpR5ihM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=YlHYaGYH/iRax82OL2EWo+E1Qx/2KYC1xwY8d2FcQ5ZGIIHf4iN0QhMT0oY9QHhvvAI/T0vInN1ncplE+TPG3fWaHww98pfCHnk6Xz1iYdCQjIxT/5NkXof3FmCXIPSRIiOr+5yg3ROJlpxTAiTWJ+frjEGKEc+XG5Nv8S4vwWw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=BRjsT75o; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=qmS+TBSdr3C4dbh6xQcqbge4MGPNUQ/WN0xgY3rDvBk8rX5yeOoqTPkzy53H1qb1t07c38sa7UbHpy7Nl6UU5ZOOPbkLo4bmNOqoDy4axmPVrsQ/RjlPvA3nOMLl5O2Jlpba7DKgyDMUINMxVPt9hZlXm9amJhSp2O43573fCQ8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=JtcBUeHt; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="BRjsT75o"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8D671F000E9;
-	Mon,  3 Aug 2026 14:46:29 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="JtcBUeHt"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C83891F000E9;
+	Mon,  3 Aug 2026 14:53:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1785768390;
-	bh=2e60ISEMLAjDjPJmg0fyZ5+WfgdVEmJgBrMUEwYQF5s=;
+	s=korg; t=1785768809;
+	bh=omQX029SsGCTE9ez7BnaxT69w2wDaKEJAA3wRGXd2Zc=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=BRjsT75o1oJt2ylPkDCUT8RyhIPnFyVwj5YzK8lm7T2ZnHXfLrPXD2qmaxRXKMpEt
-	 8EF938Dc6/6Xt2zCk3D6qTN0ykjHjcBe+XfXZCZkCekyGQb6k2cr4Dr+fwtYsntWcY
-	 iSfAzG5V+ZAQV16DPQ1h9J0F7OvZqy51I3w1m/fI=
-Date: Mon, 3 Aug 2026 16:46:14 +0200
+	b=JtcBUeHtIKdDRbr8DdTk+LWU0dA8qrlpv11T2IM2O6wkeNbVyJg9TpD4/FwzL5RwB
+	 1pGglnYbYf86/Qb6jiwjVzrQ59TLy/77w0gCRgeG66867OVMiYWinl0gkWSq2AsOk1
+	 RXPhUr8Hdf8SXKl7yis4G4iMbT6ewHeiBVGoV0To=
+Date: Mon, 3 Aug 2026 16:52:57 +0200
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>
+To: Crescent Hsieh <crescentcy.hsieh@moxa.com>
 Cc: Jiri Slaby <jirislaby@kernel.org>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	John Ogness <john.ogness@linutronix.de>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v1 2/6] serial: txx9: Drop usage of uart_match_port()
-Message-ID: <2026080352-chatter-neurotic-48c3@gregkh>
-References: <cover.1785489518.git.ukleinek@kernel.org>
- <c785f3269794934d126909719e94d5ad6c35f7dc.1785489518.git.ukleinek@kernel.org>
+	Andy Shevchenko <andy.shevchenko@gmail.com>,
+	FangpingFP.Cheng@moxa.com, Epson.Chiang@moxa.com,
+	EddieSY.Lin@moxa.com, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH v5 00/14] serial: 8250: add Moxa MUEx50 PCIe board support
+Message-ID: <2026080335-prewashed-cozily-9bc8@gregkh>
+References: <20260731074820.735619-1-crescentcy.hsieh@moxa.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <c785f3269794934d126909719e94d5ad6c35f7dc.1785489518.git.ukleinek@kernel.org>
+In-Reply-To: <20260731074820.735619-1-crescentcy.hsieh@moxa.com>
 
-On Fri, Jul 31, 2026 at 11:39:05AM +0200, Uwe Kleine-König wrote:
-> In this driver .iotype is always UPIO_PORT. So uart_match_port() is
-> equivalent to comparing .iobase. Remove the call to uart_match_port()
-> which then only has a single caller that is handled in the next commit.
+On Fri, Jul 31, 2026 at 03:48:06PM +0800, Crescent Hsieh wrote:
+> This series consolidates Moxa PCIe multiport serial board support under a
+> dedicated 8250_mxpcie driver and adds MUEx50 UART support needed by these
+> boards.
 > 
-> Signed-off-by: Uwe Kleine-König <ukleinek@kernel.org>
-> ---
->  drivers/tty/serial/serial_txx9.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> The first part splits the existing Moxa PCIe board handling out of
+> 8250_pci into a separate driver while preserving the existing probe flow
+> and device IDs. The series then introduces the MUEx50 UART port type and
+> enables the board-specific UART setup, including enhanced mode and FIFO
+> trigger programming.
 > 
-> diff --git a/drivers/tty/serial/serial_txx9.c b/drivers/tty/serial/serial_txx9.c
-> index 5ed20129b44b..2368081c3742 100644
-> --- a/drivers/tty/serial/serial_txx9.c
-> +++ b/drivers/tty/serial/serial_txx9.c
-> @@ -965,7 +965,7 @@ static int serial_txx9_register_port(struct uart_port *port)
->  	mutex_lock(&serial_txx9_mutex);
->  	for (i = 0; i < UART_NR; i++) {
->  		uart = &serial_txx9_ports[i];
-> -		if (uart_match_port(uart, port)) {
-> +		if (uart->iobase == port->iobase)
->  			uart_remove_one_port(&serial_txx9_reg, uart);
->  			break;
->  		}
+> The driver adds hardware-assisted flow control support for MUEx50 UARTs,
+> including automatic RTS/CTS handling and XON/XOFF offload. It also adds a
+> custom IRQ path and uses the MUEx50 memory-mapped FIFO windows to improve
+> RX and TX data movement.
+> 
+> Later patches add serial interface mode switching, RS485 break handling,
+> and per-port private state for MUEx50-specific configuration. The driver
+> supports switching the serial interface mode through the RS485
+> configuration path, covering RS232, RS422, and RS485 modes supported by
+> the boards.
+> 
+> The final part extends 8250 core callbacks where needed so low-level
+> drivers can override break control and rx_trig_bytes handling. The
+> 8250_mxpcie driver uses these hooks to implement RS485 break handling via
+> MUEx50 features and to expose the MUEx50 programmable RX trigger level
+> through the generic rx_trig_bytes sysfs interface.
 
-Does this even build?
-
-:(
-
-thanks,
+I've queued this up now, for the issues that Andy pointed out, feel free
+to just send follow-on patches, thanks!
 
 greg k-h
