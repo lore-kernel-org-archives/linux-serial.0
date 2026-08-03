@@ -1,126 +1,230 @@
-Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6056D31AABF
-	for <linux-serial@vger.kernel.org>; Mon,  3 Aug 2026 15:47:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.41
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785772026; cv=pass; b=ID+AZlbXrNDIkRmUQIT0EhbXR/EGFC2wuLIRH1M5m6rBm6tHZ3PZZptuDGWVU5ry8HGY/kiRLq8OwlQ7/CelXhWnf30hgHvyBfyP7vNR8TAc/iIgNo6VZRboWynkN4XA+9zHZCW5mSt6SU7tO/6jLWXqA5tcuJDRFIF9sApBxig=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785772026; c=relaxed/simple;
-	bh=f9j7LG29CWoYTu6tfO78YEbBNKOeC6jsIJJlx8TGfV0=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=YJvIS+G5PAmkhFLucgQ1q5WOgKAWHm66o68wPHpLB6DD70kzIBK+WG83mmaqj0pTYwHCCQN2skcT0KHdQxx+gX06/NkWIjJfkKRKhk9Fe8ehKc+CG3ViKEl/aN7F3+sKgAqH4qZHcU/5KVMZj4XSU8p+CMvECbnIbWrBdP5fAGg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fIrNE2dr; arc=pass smtp.client-ip=209.85.208.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BAC53195F9;
+	Mon,  3 Aug 2026 17:23:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785777840; cv=none; b=eUJbaUhl+8iUfMGuOTYxvJysGdKlNpoPGgEdHa3828oRYeo35Oy/2/GUdF3yyt5HNV2Taknk/A08SCSScTWbMnOPdf5Njx8Im1dO6h2XTVkXEQFQstC8dmHl8qXZFAoC+cpi2w6L8NllLtDW/D6fPEIS0nO00bxM6gOeyZZn8QM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785777840; c=relaxed/simple;
+	bh=A6mbnhNrzJK4qOh6Hb3SSxXudhxLb0SfcQiK/pFXkJM=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=Tel1vruzcHj4rmJA6R+yQ3a4L5v+wHgpH8wFgohdCwdPmWSrPr7hR9XcDWiEI4Twa3Ysa72FCAR9fUFp0rjj2pVQQJgR9yKwkVeNO4SH8KNBrFywvMea+xNBvTbyUgSvfz8RNI+4SboaPrXu8MNQawuSc98Y7k1ILEDVxGmm6D0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BNbf97Jy; arc=none smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fIrNE2dr"
-Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-6a09571dd5cso575732a12.2
-        for <linux-serial@vger.kernel.org>; Mon, 03 Aug 2026 08:47:03 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1785772022; cv=none;
-        d=google.com; s=arc-20260327;
-        b=DwBKGf1+d6jCfD+h1+w9omH9afqBVXUweqluy1Zk1iRuIdMAW4QqBXES4dZ/l1VYco
-         92UjhhiLexJ3kHPIibwe/7MrnXuPjBcWv0dHAiuvD0obxrXs5kpRUQjULDe4MMRSyNp9
-         PD83yrVCULhF54CQHkJU6Y6lYdoYhQ58b5geb3KdqJx+76VSZYAK0QR2wMYHpMt38Fna
-         HHVT/KBv58Hjw7MkCuIX6A2fAk3a5PEEzn+KSJBj5qO261l8TgLCaMvfLkrLHOQlnjiQ
-         8iCRG+CMzIRDbGbghp4UvPQb/+6U3qEcySF9OoDrPLAS8fawXgpYYfW2ZJ6KrOXhmvVz
-         IzZw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=f9j7LG29CWoYTu6tfO78YEbBNKOeC6jsIJJlx8TGfV0=;
-        fh=aI2k0Z6U32F25dTviigFH041lH16oivL1kEgKB78qNQ=;
-        b=WUGSsjiokpGNTnty1zYRPaworJh4dPqyE3dsF17GsuiXtZOcSbz3+7yNr8ajxqL6Sq
-         ooI95qzIfpsAwfS3tiEMSV1l6pL9hzOppIKZ1REVjxLWgpdMbO52kS6AxHj1p0Xll2cQ
-         6QpPLf2YOzMwkK70eZzsW110z39/yljOnyBWPZnesWaoFDSYiroGRACKEyknTtWju2eS
-         br2ujxid97lBt/jbCCfJi7hqsn5QtVAbOMe4htxaDmx8BGjLnk1hUqqvieUm21wPN8gu
-         F8RkVG7ZpyY+/tdq9adkB8ghu8wXbWD2+la3VTuQOXVBv7cZeRAvD6B3lMdCdcccJq/5
-         VNGA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785772022; x=1786376822; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=f9j7LG29CWoYTu6tfO78YEbBNKOeC6jsIJJlx8TGfV0=;
-        b=fIrNE2drkrs+Hej3dREqqzeCTqKFtunVLL57kdi7pCxzFU4J1EpDA2gBEn3XxNItF/
-         p7sCGRlZIV9smkHiA6X/yG7JxjoV+VEgjMGwcgxIqGQ1sW65DSx6UL82kLkoGYhVnKTO
-         g/estd3Wq81aCxrT4HViUW4Yhllu6p2kicVcRakbVxMqXFB6Fhbx11/Qn0cfvdtVhF70
-         4LBLCzm2gG/bLPMVSHQeHNrPvJcqTCx3f+/pDeCIVRUEaRhfZROBIA50zFQX+oIrIlQ6
-         +b/OabrQp2FkCzGcfzz/n9bvgbdxySxT8yJTzgkO4Ew4MmHi/CDE04zlRmcH6wYRt5Ag
-         6hvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785772022; x=1786376822;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=f9j7LG29CWoYTu6tfO78YEbBNKOeC6jsIJJlx8TGfV0=;
-        b=GYAO9CVfaaDYYFSxbb0Al23ZGQpFRraQdhYixlZAdcVpYOUqwvV1BccTNNk0QnpYR2
-         LIVWzVsaF+iuR9cRlBe+HfDlPs17KUf0LQa9dWAilZHMrX/e3WiE5FaE3I1nQpCjjh1d
-         aQDzH0sNwaVJOCC/hQNCgSBR2iej69ubChlIZEPdQiB0DOVflUyRmu5EP6PwTUCLM0TJ
-         GPzPOsMHktV7Zt+ohWgneTsK2hP3vEQgp4zDcn+IjGGlugkMnt5peKXu+RHeU/pfLYug
-         4L6bFwdIM1EKYcHUWcM62W7+CYwzmyKcQQ1fiB+BOkKPrWRhpu/m+n3ZUDbhz2T9vE5L
-         abiw==
-X-Forwarded-Encrypted: i=1; AHgh+Rp/1IkKn3Z83tBzWmx972rmdbvDuilS8yMm7MZT9yMuYpHPx9krS6B8Tju8PpO7wCm6BwRnX4t0NSB+cA8=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx6vhnbju28YELUOKi84NXMASWp3bQcMvIA1E3i2YWdTZDa9DrN
-	TVo67pexhL4z0Bhi0at+4yVb3K/7ZJSkdnHgO7ZFFsOlJsVaFTBnVeqPoYJGqcLWhrQ7DWZmYUq
-	Uj7dX8HgDPSKdShNDQroFXOoVNWGtEAhzrpwAXaE=
-X-Gm-Gg: AR+sD13cGQsNshg+huPesoH6B/eGsiJ+G/BzROz0GJLJD7ikjArzLsyiCpf1H9KUMUJ
-	kI514kAQe1W4pCtayGg85RY7MS+WWqSDnuG7JdGJrxRHuuVCnx6lLdsAHsqFEU0RHshdiXgcn4X
-	6Y45BTqUUD1oj+ViFn0esG1haFKuwFo+9w8ja0nozqho6jtm8/hzmGRkLOYXWLbmUMVsJXId1vM
-	IBNepP1EweRXD3SULS60LFhctlHzkPTB10qGonKYeS4QY+u+3d8bIdAyWBFwtUkr7dE1b0sOOrq
-	1E09hyu70ymAKBRehCKMsZ5306X3OBleWEoKbD3iSfvmf1E/EFwIAzfryx0AaR+RefeDYjsWnA=
-	=
-X-Received: by 2002:a05:6402:28c5:b0:6a0:4e35:deaa with SMTP id
- 4fb4d7f45d1cf-6a0a7c66dd9mr4790179a12.1.1785772021709; Mon, 03 Aug 2026
- 08:47:01 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BNbf97Jy"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1785777838; x=1817313838;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=A6mbnhNrzJK4qOh6Hb3SSxXudhxLb0SfcQiK/pFXkJM=;
+  b=BNbf97JymM/XaC3VfGrZBXQG59ZjcQuHxzJ4z6hlfs1648sEhkXaCjxU
+   B9d3Af3esrCOpcBwA/t4wODBy+QqKrKp/1k9OjsM20maJZA6P7v5hsxZW
+   yONqmMLC8cOdJ3NBzZXi4qa42jDPmXshvmcEE3DygE8zNjD5n4R/EF8k6
+   pc8tAbuDoxTPpCmWN0dBDvxWi2toIC+W4W5EEStAelh05pIAJyolH+Mtx
+   yybfG8se2U7ttVoXvZYXL6pKmRGnNauzaEH7PBwi8p9iP97XMLB50fCt2
+   FQlrpQ/3t1sjLPN8oAW2B0xIaGm/z431nEPqzBrid9kT2SsYREeU+3Svz
+   g==;
+X-CSE-ConnectionGUID: H7yiXE+SSvuK30c/Fs3YQA==
+X-CSE-MsgGUID: QJOKGQ2fTWeVNtlXMbGC2Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11864"; a="97691397"
+X-IronPort-AV: E=Sophos;i="6.25,202,1779174000"; 
+   d="scan'208";a="97691397"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2026 10:23:58 -0700
+X-CSE-ConnectionGUID: xnMu9EnVR9Oe+dpQ8t+P3g==
+X-CSE-MsgGUID: qvsSLgiETcSgZNn0ilJC9w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,202,1779174000"; 
+   d="scan'208";a="299493968"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.61])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2026 10:23:52 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Mon, 3 Aug 2026 20:23:48 +0300 (EEST)
+To: =?ISO-8859-15?Q?Uwe_Kleine-K=F6nig?= <ukleinek@kernel.org>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
+    Shuah Khan <skhan@linuxfoundation.org>, 
+    John Ogness <john.ogness@linutronix.de>, 
+    Stepan Ionichev <sozdayvek@gmail.com>, 
+    Fushuai Wang <wangfushuai@baidu.com>, 
+    Osama Abdelkader <osama.abdelkader@gmail.com>, 
+    Hugo Villeneuve <hvilleneuve@dimonoff.com>, 
+    LKML <linux-kernel@vger.kernel.org>, 
+    linux-serial <linux-serial@vger.kernel.org>, linux-doc@vger.kernel.org
+Subject: Re: [PATCH v1 3/6] serial: 8250: Make uart_match_port() a 8250
+ specific function
+In-Reply-To: <8f707b41d462afcf7a2237869adece5fc16a9a77.1785489518.git.ukleinek@kernel.org>
+Message-ID: <bf8293fb-8418-1c60-5fc1-bef476f47f0a@linux.intel.com>
+References: <cover.1785489518.git.ukleinek@kernel.org> <8f707b41d462afcf7a2237869adece5fc16a9a77.1785489518.git.ukleinek@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260731142220.3000214-1-nicoyip.dev@gmail.com> <2026080347-marsupial-clothing-b083@gregkh>
-In-Reply-To: <2026080347-marsupial-clothing-b083@gregkh>
-From: Chengfeng Ye <nicoyip.dev@gmail.com>
-Date: Mon, 3 Aug 2026 23:46:50 +0800
-X-Gm-Features: AUfX_mxNdEwX8xfmOVCyXhNGM2l1XfvLV34VZ7QqIAlDAto2-nGRnPOrK2ukLPQ
-Message-ID: <CAAo+4rVBDYfhJU0-KOQz=XDHpgc7mnSB9ciUQgdrcG6Ec6NafA@mail.gmail.com>
-Subject: Re: [PATCH] tty: serialize device registration and removal
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>, Richard Watts <rrw@kynesim.co.uk>, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/mixed; boundary="8323328-1670649127-1785777828=:1172"
 
-Hi Greg,
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-On Mon, Aug 3, 2026 at 10:20=E2=80=AFPM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> Hah, that's funny :)
->
-> Look in the mailing list archives for why we don't touch n_gsm issues,
-> ESPECIALLY by changing core tty code to work around the known
-> bugs/problems in that code base.
+--8323328-1670649127-1785777828=:1172
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 
-Thanks for the clarification, and sorry for the noise this patch caused.
+On Fri, 31 Jul 2026, Uwe Kleine-K=C3=B6nig wrote:
 
-> Your LLM should know not to run this code, please tell it to never do
-> so.
->
-> Also, you forgot to add an Assisted-by: tag :(
->
-> thanks,
->
-> greg k-h
+> The 8250 driver conglomerate is the only user of this function and in
 
-No problem, I will be more careful when sending LLM-assisted
-bug-fixing patches next time.
+Please write these such that they don't depend on the shortlog. Here "this=
+=20
+function" lacks any context without assuming one has first read the=20
+shortlog.
 
-Best regards,
-Chengfeng
+You have similar problem with "this driver" in patch 2.
+
+--=20
+ i.
+
+> fact it already is 8250 specific as it uses hub6_match_port() which is
+> defined in drivers/tty/serial/8250/8250_hub6.c unless the dummy
+> implementation is in use.
+>=20
+> Signed-off-by: Uwe Kleine-K=C3=B6nig <ukleinek@kernel.org>
+> ---
+>  Documentation/driver-api/serial/driver.rst |  2 +-
+>  drivers/tty/serial/8250/8250_core.c        | 27 +++++++++++++++++++++-
+>  drivers/tty/serial/serial_core.c           | 27 ----------------------
+>  include/linux/serial_core.h                |  2 --
+>  4 files changed, 27 insertions(+), 31 deletions(-)
+>=20
+> diff --git a/Documentation/driver-api/serial/driver.rst b/Documentation/d=
+river-api/serial/driver.rst
+> index c1db6a1a67c4..975b0ba53e98 100644
+> --- a/Documentation/driver-api/serial/driver.rst
+> +++ b/Documentation/driver-api/serial/driver.rst
+> @@ -70,7 +70,7 @@ Other functions
+> =20
+>  .. kernel-doc:: drivers/tty/serial/serial_core.c
+>     :identifiers: uart_update_timeout uart_get_baud_rate uart_get_divisor
+> -           uart_match_port uart_write_wakeup uart_register_driver
+> +           uart_write_wakeup uart_register_driver
+>             uart_unregister_driver uart_suspend_port uart_resume_port
+>             uart_add_one_port uart_remove_one_port uart_console_write
+>             uart_parse_earlycon uart_parse_options uart_set_options
+> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/825=
+0/8250_core.c
+> index c0e8a4efbdcc..6059b84d8364 100644
+> --- a/drivers/tty/serial/8250/8250_core.c
+> +++ b/drivers/tty/serial/8250/8250_core.c
+> @@ -630,6 +630,31 @@ EXPORT_SYMBOL(serial8250_resume_port);
+>   */
+>  static DEFINE_MUTEX(serial_mutex);
+> =20
+> +/**
+> + * serial8250_match_port - are the two ports equivalent?
+> + * @port1: first port
+> + * @port2: second port
+> + *
+> + * This utility function can be used to determine whether two uart_port
+> + * structures describe the same port.
+> + */
+> +static bool serial8250_match_port(const struct uart_port *port1,
+> +=09=09=09=09  const struct uart_port *port2)
+> +{
+> +=09if (port1->iotype !=3D port2->iotype)
+> +=09=09return false;
+> +=09else if (port1->iotype =3D=3D UPIO_PORT)
+> +=09=09return port1->iobase =3D=3D port2->iobase;
+> +=09else if (port1->iotype =3D=3D UPIO_HUB6)
+> +=09=09return hub6_match_port(port1, port2);
+> +=09else if (uart_iotype_mmio(port1->iotype))
+> +=09=09return port1->mapbase =3D=3D port2->mapbase;
+> +=09else if (port1->iotype =3D=3D UPIO_BUS)
+> +=09=09return true;
+> +=09else
+> +=09=09return false;
+> +}
+> +
+>  static struct uart_8250_port *serial8250_find_match_or_unused(const stru=
+ct uart_port *port)
+>  {
+>  =09int i;
+> @@ -638,7 +663,7 @@ static struct uart_8250_port *serial8250_find_match_o=
+r_unused(const struct uart_
+>  =09 * First, find a port entry which matches.
+>  =09 */
+>  =09for (i =3D 0; i < nr_uarts; i++)
+> -=09=09if (uart_match_port(&serial8250_ports[i].port, port))
+> +=09=09if (serial8250_match_port(&serial8250_ports[i].port, port))
+>  =09=09=09return &serial8250_ports[i];
+> =20
+>  =09/* try line number first if still available */
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial=
+_core.c
+> index edd1e7be2a5c..8a6c53a9996e 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -33,7 +33,6 @@
+>  #include <linux/uaccess.h>
+> =20
+>  #include "serial_base.h"
+> -#include "8250/8250.h" /* For hub6_match_port() */
+> =20
+>  /*
+>   * This is used to lock changes in serial line configuration.
+> @@ -3229,32 +3228,6 @@ static void serial_core_remove_one_port(struct uar=
+t_driver *drv,
+>  =09state->uart_port =3D NULL;
+>  }
+> =20
+> -/**
+> - * uart_match_port - are the two ports equivalent?
+> - * @port1: first port
+> - * @port2: second port
+> - *
+> - * This utility function can be used to determine whether two uart_port
+> - * structures describe the same port.
+> - */
+> -bool uart_match_port(const struct uart_port *port1,
+> -=09=09const struct uart_port *port2)
+> -{
+> -=09if (port1->iotype !=3D port2->iotype)
+> -=09=09return false;
+> -=09else if (port1->iotype =3D=3D UPIO_PORT)
+> -=09=09return port1->iobase =3D=3D port2->iobase;
+> -=09else if (port1->iotype =3D=3D UPIO_HUB6)
+> -=09=09return hub6_match_port(port1, port2);
+> -=09else if (uart_iotype_mmio(port1->iotype))
+> -=09=09return port1->mapbase =3D=3D port2->mapbase;
+> -=09else if (port1->iotype =3D=3D UPIO_BUS)
+> -=09=09return true;
+> -=09else
+> -=09=09return false;
+> -}
+> -EXPORT_SYMBOL(uart_match_port);
+> -
+>  static struct serial_ctrl_device *
+>  serial_core_get_ctrl_dev(struct serial_port_device *port_dev)
+>  {
+> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+> index c4cc4f66af4b..1659805e2233 100644
+> --- a/include/linux/serial_core.h
+> +++ b/include/linux/serial_core.h
+> @@ -1137,8 +1137,6 @@ int uart_add_one_port(struct uart_driver *reg, stru=
+ct uart_port *port);
+>  void uart_remove_one_port(struct uart_driver *reg, struct uart_port *por=
+t);
+>  int uart_read_port_properties(struct uart_port *port);
+>  int uart_read_and_validate_port_properties(struct uart_port *port);
+> -bool uart_match_port(const struct uart_port *port1,
+> -=09=09const struct uart_port *port2);
+> =20
+>  /*
+>   * Power Management
+>=20
+--8323328-1670649127-1785777828=:1172--
