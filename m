@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B01A3370D69
-	for <linux-serial@vger.kernel.org>; Mon,  3 Aug 2026 06:06:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B28D3845D5;
+	Mon,  3 Aug 2026 06:07:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785737168; cv=none; b=FZ8r5Yxnapv5wCS0w/3q9eeluDADcOJMv+YtlO4dxO4/IvVz061c+149msvr1vEWuOxnQKt2CcIZeKB6dMRPL00AvJ+v1xy8ai5TzGOYO+SdsOOkj4AiCod50Kq1dc3hcDHjhEHvqPTAmqCiz20HzNxvAgECiTCUqjk6XnWp0g8=
+	t=1785737230; cv=none; b=JAeWQmc8EJiLK+DwWt6SVemtRn9njozIOUlrcneggzUxodmGiqyhkCuHQ/4+sZ61MRvvSJqvu0k9dya/mpni4IfnNn5fjM6o75jnQWnqJXC7ND5lReD/SGMO49PEuFyqJb7QbqpdlNnSKPU1eCwmepJ/vG5ZUTLkFiz1zM0a8tw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785737168; c=relaxed/simple;
-	bh=r69rBuEp71F0c6ql8cAoRfWxmSj1YFCB+STWrQVoyy4=;
+	s=arc-20240116; t=1785737230; c=relaxed/simple;
+	bh=2kU2611CdfQ1tJrynaYBHpxi8aIegsDte2fVHCblXoM=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=RO9+W5sTRFI6RG194woebfgVMJT09QMkv2Arvfj9AFUpOWcD6XYLN2cmdlX+V8/hxAjgzmQ7gqf3F7GIRo+bRXycwUpQuLHY98PT88TLt6sOBXCYYSB0cZlmKoH5JXtSc318zo6jj7yOtPN9k2SrCh/CiUbd/4qOLdJ5EmRECz8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VDJoGguI; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=Vvlva8M0jKWU79RlkCwLARuQafFhrTf0hCCDFMcsT6gzfctwpII8gJTPsvL5LN6+vRiweVmV+7QZCe4se+jW7stKS7RBsJzRyIH5Jhg/asDIQGXlHGden7ZKbGkyUtvH/VHW8laWXF4hxIj76p86i6JcljOoJ3x7ah5v4uRQoEs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BNhLdoQ+; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VDJoGguI"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84F241F000E9;
-	Mon,  3 Aug 2026 06:06:05 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BNhLdoQ+"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A79C1F000E9;
+	Mon,  3 Aug 2026 06:07:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785737167;
-	bh=vIglg9TVP4Lfn2h21BAFUMWlEDsJgWWXUWsr0eQBHQ8=;
+	s=k20260515; t=1785737228;
+	bh=2lPsuaaSLnBVFLML1WjWzkVxnE72AXO0eFebBy2HKs8=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=VDJoGguINSpXK2zN4vBlk6C99lR3v6b3Dw0evb4o7EN5+brmc3LGhQOGnOUsMsFeA
-	 y7+b+LTbd93Rnn7iVAvidBhwmC8o7znmaRkfzH4LcRD3IQxBCg4yO/leLepcagIixK
-	 blGCKhNxkoDhCLNePK+wWThNAcBlow9EDebVQ9VK1bYv4lhFTc2U3DuRVrBTggc/1J
-	 v+d0QehGqfm4KdK0Ngl3MyOnGplPlGQ4liGkt5BwSpEoBz/pY8E1VgYMfdBPjgbcQg
-	 RxxdbaPajKiBcc1ZE81xbDb4i3rC9zZLO/yoWN66z6Mifd5Ibyk591BIQPLD9yQdyg
-	 FxQ9ejc3aQm8w==
-Message-ID: <2da84e36-7ac6-407d-8e08-edca82f4cbce@kernel.org>
-Date: Mon, 3 Aug 2026 08:06:03 +0200
+	b=BNhLdoQ+kmteaVIJHEgq2T/Ch+OdyEIQEcfN4AwOxCqVWFit6BXSkD5X+vE7hk2dr
+	 cYwiKhHM+vf18ZNFMz87nWu8umjVBRmJ3Wg/NDlZyLha7oMJW4P9bdvEWT2qH2kfMb
+	 D8cJc4tl/u7NnCwMg8jOoIqEtav+94/gVGdcB6ybPJiYNWANvmoIEdx2xSscRrCANW
+	 YR2p4nBKF34U60WVsf2nsNaDTjXdTw1XPF/e87m31k0lSQBtnXNLRkl02Jt56NNF6H
+	 h2nOpte2SOYDF2cy4WOIz7zJ84zVN4Hx+s4oLui/2X02XueXXp2Pz/k0RA9bVxCb7L
+	 t29MPJX+UIw5g==
+Message-ID: <908e828b-1fbc-4a44-8718-f0e7459b6ed1@kernel.org>
+Date: Mon, 3 Aug 2026 08:06:58 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,20 +35,13 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/3] tty: move remaining serial drivers into the serial/
- directory
-To: Crescent Hsieh <crescentcy.hsieh@moxa.com>
-Cc: Ethan Nelson-Moore <enelsonmoore@gmail.com>,
- linux-serial@vger.kernel.org, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, =?UTF-8?Q?Ilpo_J=C3=A4rvinen?=
- <ilpo.jarvinen@linux.intel.com>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- =?UTF-8?B?UmF5IENoZW4gKOmZs+advuaYsSk=?= <Ray.Chen@moxa.com>,
- linux-m68k@lists.linux-m68k.org, Geert Uytterhoeven <geert@linux-m68k.org>
-References: <cover.1777943090.git.enelsonmoore@gmail.com>
- <042d993686c87fdfd4130f11b57c3b559944603d.1777943090.git.enelsonmoore@gmail.com>
- <ed6dce34-2207-4403-bbcf-080db2614241@kernel.org>
- <afqyY8FQ8ZfpH48_@moxa-ThinkCentre-M90t>
+Subject: Re: [PATCH 1/2] tty: moxa: unwind tty driver if PCI registration
+ fails
+To: Myeonghun Pak <mhun512@gmail.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org, Ijae Kim <ae878000@gmail.com>
+References: <20260731161809.45066-1-mhun512@gmail.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -93,34 +86,44 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <afqyY8FQ8ZfpH48_@moxa-ThinkCentre-M90t>
+In-Reply-To: <20260731161809.45066-1-mhun512@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 06. 05. 26, 5:15, Crescent Hsieh wrote:
->> I am not sure even about users of Moxa Intellio. I think I prompted long
->> time ago. Oh yes, Ray Chen (CCed) from Moxa wrote me back in 2021:
->> === 8< ===
->> For the Intellio cards, we phased them out in 2017.
->> You may find the discontinuance notification as attached.
->> We will keep the software support for 5 years, to 2023.
->> === 8< ===
->>
->> I believe we can mark it as BROKEN to let someone convert it to serial_core.
->> Or drop it for good already.
+On 31. 07. 26, 18:18, Myeonghun Pak wrote:
+> moxa_init() registers the tty driver before registering the PCI driver.
+> If pci_register_driver() fails, module initialization returns without
+> unregistering the tty driver or dropping its reference. moxa_exit() is
+> not called after a failed module initialization.
 > 
-> As for Moxa Intellio (moxa.c), I have confirmed internally that both the
-> hardware and software support have already been phased out.
+> Unregister the tty driver and drop its reference before returning the
+> PCI registration error.
+I think, we should remove the whole driver instead:
+https://lore.kernel.org/all/2da84e36-7ac6-407d-8e08-edca82f4cbce@kernel.org/
+
+> ---
+>   drivers/tty/moxa.c | 5 ++++-
+>   1 file changed, 4 insertions(+), 1 deletion(-)
 > 
-> Therefore, it would be reasonable to drop it at this point. I can help
-> with preparing a removal patch if this is the preferred direction.
+> diff --git a/drivers/tty/moxa.c b/drivers/tty/moxa.c
+> index 1bb2376af85c..680b2dd65462 100644
+> --- a/drivers/tty/moxa.c
+> +++ b/drivers/tty/moxa.c
+> @@ -1172,8 +1172,11 @@ static int __init moxa_init(void)
+>   	}
+>   
+>   	retval = pci_register_driver(&moxa_pci_driver);
+> -	if (retval)
+> +	if (retval) {
+>   		printk(KERN_ERR "Can't register MOXA pci driver!\n");
+> +		tty_unregister_driver(moxaDriver);
+> +		tty_driver_kref_put(moxaDriver);
+> +	}
+>   
+>   	return retval;
+>   }
 
-Let me revive this one.
 
-I think we should proceed -- so could you remove the intellio driver, 
-please?
-
-thanks,
 -- 
 js
 suse labs
