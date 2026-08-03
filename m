@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9908525487C;
-	Mon,  3 Aug 2026 04:46:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B01A3370D69
+	for <linux-serial@vger.kernel.org>; Mon,  3 Aug 2026 06:06:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785732416; cv=none; b=rc8pxy1bzxB60kwoy2HnggEM7Q0sYwvxyqXLg8INI5Ia8tZmWUuX8QQnyz5pbVYZjlZ5jtJ1YaV5bvQV4DNOvt0Lida0spQxVhxpqR33ZEXvQtDkCj+h2FCxzfA2lppXb4CV7S+KT+GfzAF39svs6W4XNk9wU/teZnNtsYQ2nfM=
+	t=1785737168; cv=none; b=FZ8r5Yxnapv5wCS0w/3q9eeluDADcOJMv+YtlO4dxO4/IvVz061c+149msvr1vEWuOxnQKt2CcIZeKB6dMRPL00AvJ+v1xy8ai5TzGOYO+SdsOOkj4AiCod50Kq1dc3hcDHjhEHvqPTAmqCiz20HzNxvAgECiTCUqjk6XnWp0g8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785732416; c=relaxed/simple;
-	bh=ssCjDaDCm81QLG8YnQ9oWOUT0noCAg1hmg5X8ReqBjU=;
+	s=arc-20240116; t=1785737168; c=relaxed/simple;
+	bh=r69rBuEp71F0c6ql8cAoRfWxmSj1YFCB+STWrQVoyy4=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=YBLGZ5EXvm6gFCK+qoAKzmj9nt7xYTG/uIuXM0iZ0gGhkVs4wuaCYzXNiiTuDQWFyZrOIWIq4mgorFzy6ytRiikGBDSNdfMFUZntgTJyKjiiU2dVKcU1xVvbIAbPUsbcN/2f2I0laQeLHbQ0ePbL1p9fGxGmqA46SC/sI3lWfME=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=M8VoA1xo; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=RO9+W5sTRFI6RG194woebfgVMJT09QMkv2Arvfj9AFUpOWcD6XYLN2cmdlX+V8/hxAjgzmQ7gqf3F7GIRo+bRXycwUpQuLHY98PT88TLt6sOBXCYYSB0cZlmKoH5JXtSc318zo6jj7yOtPN9k2SrCh/CiUbd/4qOLdJ5EmRECz8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VDJoGguI; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="M8VoA1xo"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D44A71F000E9;
-	Mon,  3 Aug 2026 04:46:53 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VDJoGguI"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84F241F000E9;
+	Mon,  3 Aug 2026 06:06:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785732415;
-	bh=THNhJrW8qY0WU/HoVHqGfzwC7VukSSewoNV72JuUbSk=;
+	s=k20260515; t=1785737167;
+	bh=vIglg9TVP4Lfn2h21BAFUMWlEDsJgWWXUWsr0eQBHQ8=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=M8VoA1xo85IoPPM138W4P5hR1bQL7tSYAbZl6WM6Kc+ADKVCuH6siNUBLBPxUXAwG
-	 z6BUkxum7eWvyBFBEbl31VMctiEdCyAWHQtxkPeNJNKMIJy3wYoDjo7cNpVXYo7rD3
-	 kOOUdnWO3TrdbHtUwYYGsnvoUwENUORk+UY1NuIfXNK6z1JPV7HmeEPV2CQfBlPwZQ
-	 L1yzZ85XjUSPtxztHTzb1Rf3HQQER045vVVGs5YFTl8mNjSEccLpB4e2enUGYgTGuS
-	 zupYHC7O6e0Yl0MXF0Hjh2e6PCDM+Tml6ays7XFeojH3CGKru1nGmjueZ52cReWFBo
-	 IwQjZJ7wDcRNg==
-Message-ID: <7a4900a7-bd31-46ee-81ee-d597899a34de@kernel.org>
-Date: Mon, 3 Aug 2026 06:46:51 +0200
+	b=VDJoGguINSpXK2zN4vBlk6C99lR3v6b3Dw0evb4o7EN5+brmc3LGhQOGnOUsMsFeA
+	 y7+b+LTbd93Rnn7iVAvidBhwmC8o7znmaRkfzH4LcRD3IQxBCg4yO/leLepcagIixK
+	 blGCKhNxkoDhCLNePK+wWThNAcBlow9EDebVQ9VK1bYv4lhFTc2U3DuRVrBTggc/1J
+	 v+d0QehGqfm4KdK0Ngl3MyOnGplPlGQ4liGkt5BwSpEoBz/pY8E1VgYMfdBPjgbcQg
+	 RxxdbaPajKiBcc1ZE81xbDb4i3rC9zZLO/yoWN66z6Mifd5Ibyk591BIQPLD9yQdyg
+	 FxQ9ejc3aQm8w==
+Message-ID: <2da84e36-7ac6-407d-8e08-edca82f4cbce@kernel.org>
+Date: Mon, 3 Aug 2026 08:06:03 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,16 +35,20 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 08/14] serial: 8250_mxpcie: speed up TX using
- memory-mapped FIFO window
-To: Andy Shevchenko <andy.shevchenko@gmail.com>,
- Crescent Hsieh <crescentcy.hsieh@moxa.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- FangpingFP.Cheng@moxa.com, Epson.Chiang@moxa.com, EddieSY.Lin@moxa.com,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20260731074820.735619-1-crescentcy.hsieh@moxa.com>
- <20260731074820.735619-9-crescentcy.hsieh@moxa.com>
- <CAHp75VdL71oE-E85fOLbz36bhs3EKg1iL_vtNP+TQzek5PNqnQ@mail.gmail.com>
+Subject: Re: [PATCH 1/3] tty: move remaining serial drivers into the serial/
+ directory
+To: Crescent Hsieh <crescentcy.hsieh@moxa.com>
+Cc: Ethan Nelson-Moore <enelsonmoore@gmail.com>,
+ linux-serial@vger.kernel.org, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, =?UTF-8?Q?Ilpo_J=C3=A4rvinen?=
+ <ilpo.jarvinen@linux.intel.com>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ =?UTF-8?B?UmF5IENoZW4gKOmZs+advuaYsSk=?= <Ray.Chen@moxa.com>,
+ linux-m68k@lists.linux-m68k.org, Geert Uytterhoeven <geert@linux-m68k.org>
+References: <cover.1777943090.git.enelsonmoore@gmail.com>
+ <042d993686c87fdfd4130f11b57c3b559944603d.1777943090.git.enelsonmoore@gmail.com>
+ <ed6dce34-2207-4403-bbcf-080db2614241@kernel.org>
+ <afqyY8FQ8ZfpH48_@moxa-ThinkCentre-M90t>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -89,41 +93,34 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <CAHp75VdL71oE-E85fOLbz36bhs3EKg1iL_vtNP+TQzek5PNqnQ@mail.gmail.com>
+In-Reply-To: <afqyY8FQ8ZfpH48_@moxa-ThinkCentre-M90t>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 02. 08. 26, 11:10, Andy Shevchenko wrote:
-> On Fri, Jul 31, 2026 at 10:49 AM Crescent Hsieh
-> <crescentcy.hsieh@moxa.com> wrote:
+On 06. 05. 26, 5:15, Crescent Hsieh wrote:
+>> I am not sure even about users of Moxa Intellio. I think I prompted long
+>> time ago. Oh yes, Ray Chen (CCed) from Moxa wrote me back in 2021:
+>> === 8< ===
+>> For the Intellio cards, we phased them out in 2017.
+>> You may find the discontinuance notification as attached.
+>> We will keep the software support for 5 years, to 2023.
+>> === 8< ===
 >>
->> The MUEx50 UART provides a memory-mapped TX FIFO data window along with
->> a TX FIFO level counter.
->>
->> Fill the TX FIFO in bulk via the MMIO FIFO window based on available
->> FIFO space, using uart_port_tx_limited() for the common serial-core TX
->> handling.
+>> I believe we can mark it as BROKEN to let someone convert it to serial_core.
+>> Or drop it for good already.
 > 
-> ...
+> As for Moxa Intellio (moxa.c), I have confirmed internally that both the
+> hardware and software support have already been phased out.
 > 
->> +static void mxpcie8250_tx_chars(struct uart_8250_port *up)
->> +{
->> +       struct uart_port *port = &up->port;
->> +       unsigned int offset = 0;
->> +       unsigned char c;
->> +
->> +       uart_port_tx_limited(port, c, port->fifosize - serial_in(up, MOXA_PUART_TX_FIFO_CNT),
->> +                            true,
->> +                            serial_out(up, MOXA_PUART_TX_FIFO_MEM + offset++, c),
->> +                            ({}));
->> +}
-> 
-> At least three randomly chosen drivers use the empty tx_done, perhaps
-> it's time to have a helper that embeds this ugly piece in it and hides
-> from the driver?
+> Therefore, it would be reasonable to drop it at this point. I can help
+> with preparing a removal patch if this is the preferred direction.
 
-I haven't tried, can we make the helper a variadic macro?
+Let me revive this one.
 
+I think we should proceed -- so could you remove the intellio driver, 
+please?
+
+thanks,
 -- 
 js
 suse labs
