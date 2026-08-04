@@ -1,45 +1,45 @@
 Received: from ocn-bld-mts-104c1.ocn.ad.jp (ocn-bld-mts-104c1.ocn.ad.jp [153.128.188.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 765A64756BA;
-	Tue,  4 Aug 2026 14:05:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A81546DFEA;
+	Tue,  4 Aug 2026 14:08:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=153.128.188.66
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785852341; cv=none; b=iOzm4W1neYgZoWztLvbqD3ArHyY9W8X6B55VAYn+luvbGWC9Uf2B9+0ciegfxeGgw+Wb0XFpdYN2QEEBKemmImTNWklgWgRafZG37AeDLzKd2P9L0MBer9YUi+diWHrg7JAfwfv+TOLaZrQ40xV51WxrVPVTyQRukMs/Ekb4DbA=
+	t=1785852512; cv=none; b=CV80kwmxvuV3ZZYoB6gVsmXw747rMmvAAtB1cEC1ipUhsKb3FLPbLOReSlpC6oaoutsokfZddvgj0NPsdbwAerg5rkHNA5NqOSFBPy3i0QGy64rCilIqksk3qSEcHI6s1KXrWqiivywWr1iZkZ5NW+9uJg/RFWFq1ptq8cpcJ7Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785852341; c=relaxed/simple;
-	bh=Whp2NjyIGiV0j+LXfGAWIO5Gr8D/xUC9Ho9lcNnbdWY=;
+	s=arc-20240116; t=1785852512; c=relaxed/simple;
+	bh=pHkE5dyd2pOBTmeKCU2oVevCEaxGsiU+oXGiEQRRnbo=;
 	h=Date:Message-Id:To:Cc:Subject:From:In-Reply-To:References:
-	 Mime-Version:Content-Type; b=mzHtLapJqQ7bFbc9ETfsDJqwTWxzK3RoUyMi0fJ7ikSKVh1QGWlxhtjGqjsHE7dw+R5sT/v8GyMr/4pNeaGeB6UkPm/tnNjNvZRMeh4hZo13ceoTQzohf05p9kTpt3tBlidcJ2dN2spydfFdVxsOhkz9FCWnd7Nm0VcKODLPVJE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mba.ocn.ne.jp; spf=pass smtp.mailfrom=mba.ocn.ne.jp; dkim=pass (2048-bit key) header.d=mba.ocn.ne.jp header.i=@mba.ocn.ne.jp header.b=hvO5QNN8; arc=none smtp.client-ip=153.128.188.66
+	 Mime-Version:Content-Type; b=dDhcEHfynqt6iYpGBigEAcx3gax17cDBJ29JSXujZOMMgfHdimbuD1n2Bd0j5d8unoFaSlT12UGD9uBFjkocpARDrb1sEqLROKBCyAo1mS5JOXtkbw1y20rADaybh2P9jBwzNs/xFmwIMq09ARwhZw+H6pqnVhl/TdIGuEHnm6w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mba.ocn.ne.jp; spf=pass smtp.mailfrom=mba.ocn.ne.jp; dkim=pass (2048-bit key) header.d=mba.ocn.ne.jp header.i=@mba.ocn.ne.jp header.b=bIZJSXOt; arc=none smtp.client-ip=153.128.188.66
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mba.ocn.ne.jp
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mba.ocn.ne.jp
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mba.ocn.ne.jp header.i=@mba.ocn.ne.jp header.b="hvO5QNN8"
-Received: from ocn-spm-mts-101c1.ocn.ad.jp (ocn-spm-mts-101c1.ocn.ad.jp [153.128.190.226])
-	by ocn-bld-mts-104c1.ocn.ad.jp (Postfix) with ESMTP id A7FC41492;
-	Tue,  4 Aug 2026 23:05:36 +0900 (JST)
+	dkim=pass (2048-bit key) header.d=mba.ocn.ne.jp header.i=@mba.ocn.ne.jp header.b="bIZJSXOt"
+Received: from ocn-spm-mts-105c1.ocn.ad.jp (ocn-spm-mts-105c1.ocn.ad.jp [153.128.190.234])
+	by ocn-bld-mts-104c1.ocn.ad.jp (Postfix) with ESMTP id ABF052430;
+	Tue,  4 Aug 2026 23:00:59 +0900 (JST)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mba.ocn.ne.jp;
-	s=20240118; t=1785852336;
-	bh=Whp2NjyIGiV0j+LXfGAWIO5Gr8D/xUC9Ho9lcNnbdWY=;
+	s=20240118; t=1785852059;
+	bh=pHkE5dyd2pOBTmeKCU2oVevCEaxGsiU+oXGiEQRRnbo=;
 	h=Date:To:Cc:Subject:From:In-Reply-To:References:From;
-	b=hvO5QNN8NbuddrS7CQZPtAzg5Ni3IKVP0oB+a7E/sT20aN55GceKojAFnY5gbl7JP
-	 T1gPcvoWeO+PW7j/raDpEbG+eIRuMa9TokEMpwfvirlWXHOcT+0DyD2rb+cAw80p8+
-	 KWw0fSLzXLjFFtZIFyzMKhOqtNcwJDBn5eiDWZNIc5a7qzNloPYMG1ZQwSXMd+efb+
-	 h4eZV5L6+VSR/s+DBwr+s/jORCNgp4Ijbjxc8EBMOKhJQZmTj9qXaIdKFyzmSLRm19
-	 zUlYxTmjFnzJqOI0D5z6d5d6SES+avbdoqCTEd33JZJ1+hrgrVX5GvX9iK1nrqGACk
-	 LuyNHbSyLG6dg==
+	b=bIZJSXOtmrC4V2mtK47JAWRrOiK8eL5pWLdE8yx366fbPcu99nmZ0FFqhld9uuKAW
+	 FI8qLa+LvfgMUgbMY89GS2qahBSlk/+8AbTJwUnz4KxzmDZ+68pBOc7oMnQHxGzxuC
+	 aJ3FZFnGHswgkeE2O0VqGkGbiWyNECvxzjP6CifWVeJpuna7Y+RceVritWvmT5qg9B
+	 JCK4vYjMOu4M+zIiz1dF+5zdHnBKKRK5aapOH+JGsnl786aSfGaxLiDpIADPMuFdi6
+	 5E0EFBuP4xIaxvsWAr82NRnh0hN+jBk4hjwSlpEK2TeDwKATQ/cT0IR1wUf0ieAv7j
+	 UJKUrm8aJZpeA==
 Received: from ocn-vc-mts-111c1.ocn.ad.jp ([153.149.236.164])
- by ocn-spm-mts-101c1 with ngmta
- id 77e33579-18c89f3cfec66c7b; Tue, 04 Aug 2026 23:05:36 +0900
-Received: from ocn-sdpx-mts-110c1.ocn.ad.jp ([153.128.117.202])
+ by ocn-spm-mts-105c1 with ngmta
+ id fe2e7efb-18c89efc80c0f6d6; Tue, 04 Aug 2026 23:00:59 +0900
+Received: from ocn-sdpx-mts-108c1.ocn.ad.jp ([153.128.117.196])
  by ocn-vc-mts-111c1 with ngmta
- id f04fefb6-18c89f3cef137a69; Tue, 04 Aug 2026 23:05:36 +0900
+ id e762416d-18c89efc6f0251d5; Tue, 04 Aug 2026 23:00:59 +0900
 Received: from localhost (p1601136-ipoe.ipoe.ocn.ne.jp [114.172.254.135])
-	by ocn-sdpx-mts-110c1.ocn.ad.jp (Postfix) with ESMTPA;
-	Tue,  4 Aug 2026 23:05:36 +0900 (JST)
-Date: Tue, 04 Aug 2026 23:05:36 +0900 (JST)
-Message-Id: <20260804.230536.670060570505120005.anemo@mba.ocn.ne.jp>
+	by ocn-sdpx-mts-108c1.ocn.ad.jp (Postfix) with ESMTPA;
+	Tue,  4 Aug 2026 23:00:59 +0900 (JST)
+Date: Tue, 04 Aug 2026 23:00:58 +0900 (JST)
+Message-Id: <20260804.230058.2181811588216184828.anemo@mba.ocn.ne.jp>
 To: u.kleine-koenig@baylibre.com
 Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
  hvilleneuve@dimonoff.com, john.ogness@linutronix.de,
@@ -70,8 +70,6 @@ RT.
 No, .iotype can be UPIO_MEM if early_serial_txx9_setup() was called fro=
 m
 arch/mips/txx9/generic/setup.c.
-
-Please drop this patch from your series.
 
 ---
 Atsushi Nemoto
