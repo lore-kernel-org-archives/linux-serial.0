@@ -1,223 +1,120 @@
-Received: from ocn-bld-mts-104c1.ocn.ad.jp (ocn-bld-mts-104c1.ocn.ad.jp [153.128.188.66])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vs1-f53.google.com (mail-vs1-f53.google.com [209.85.217.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A81546DFEA;
-	Tue,  4 Aug 2026 14:08:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=153.128.188.66
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8AF53C2798
+	for <linux-serial@vger.kernel.org>; Tue,  4 Aug 2026 14:26:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785852512; cv=none; b=CV80kwmxvuV3ZZYoB6gVsmXw747rMmvAAtB1cEC1ipUhsKb3FLPbLOReSlpC6oaoutsokfZddvgj0NPsdbwAerg5rkHNA5NqOSFBPy3i0QGy64rCilIqksk3qSEcHI6s1KXrWqiivywWr1iZkZ5NW+9uJg/RFWFq1ptq8cpcJ7Y=
+	t=1785853590; cv=none; b=jFzWOvdhYRye8rbMQXsPDK3hPCQDPWslw2Z2NZ+g1JomoMKVep7O/wIsxYJJ+D597lnf4/DwYMQTN6AcJ7AXNE02J2NNRD3pd+vvV+GwmIVc1IphW+5z0AnKpm6puz5rsRvWmgHtrmQLhDW9JQOmwuirjuW+GlXWd7F+kcCGJhk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785852512; c=relaxed/simple;
-	bh=pHkE5dyd2pOBTmeKCU2oVevCEaxGsiU+oXGiEQRRnbo=;
-	h=Date:Message-Id:To:Cc:Subject:From:In-Reply-To:References:
-	 Mime-Version:Content-Type; b=dDhcEHfynqt6iYpGBigEAcx3gax17cDBJ29JSXujZOMMgfHdimbuD1n2Bd0j5d8unoFaSlT12UGD9uBFjkocpARDrb1sEqLROKBCyAo1mS5JOXtkbw1y20rADaybh2P9jBwzNs/xFmwIMq09ARwhZw+H6pqnVhl/TdIGuEHnm6w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mba.ocn.ne.jp; spf=pass smtp.mailfrom=mba.ocn.ne.jp; dkim=pass (2048-bit key) header.d=mba.ocn.ne.jp header.i=@mba.ocn.ne.jp header.b=bIZJSXOt; arc=none smtp.client-ip=153.128.188.66
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mba.ocn.ne.jp
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mba.ocn.ne.jp
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mba.ocn.ne.jp header.i=@mba.ocn.ne.jp header.b="bIZJSXOt"
-Received: from ocn-spm-mts-105c1.ocn.ad.jp (ocn-spm-mts-105c1.ocn.ad.jp [153.128.190.234])
-	by ocn-bld-mts-104c1.ocn.ad.jp (Postfix) with ESMTP id ABF052430;
-	Tue,  4 Aug 2026 23:00:59 +0900 (JST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mba.ocn.ne.jp;
-	s=20240118; t=1785852059;
-	bh=pHkE5dyd2pOBTmeKCU2oVevCEaxGsiU+oXGiEQRRnbo=;
-	h=Date:To:Cc:Subject:From:In-Reply-To:References:From;
-	b=bIZJSXOtmrC4V2mtK47JAWRrOiK8eL5pWLdE8yx366fbPcu99nmZ0FFqhld9uuKAW
-	 FI8qLa+LvfgMUgbMY89GS2qahBSlk/+8AbTJwUnz4KxzmDZ+68pBOc7oMnQHxGzxuC
-	 aJ3FZFnGHswgkeE2O0VqGkGbiWyNECvxzjP6CifWVeJpuna7Y+RceVritWvmT5qg9B
-	 JCK4vYjMOu4M+zIiz1dF+5zdHnBKKRK5aapOH+JGsnl786aSfGaxLiDpIADPMuFdi6
-	 5E0EFBuP4xIaxvsWAr82NRnh0hN+jBk4hjwSlpEK2TeDwKATQ/cT0IR1wUf0ieAv7j
-	 UJKUrm8aJZpeA==
-Received: from ocn-vc-mts-111c1.ocn.ad.jp ([153.149.236.164])
- by ocn-spm-mts-105c1 with ngmta
- id fe2e7efb-18c89efc80c0f6d6; Tue, 04 Aug 2026 23:00:59 +0900
-Received: from ocn-sdpx-mts-108c1.ocn.ad.jp ([153.128.117.196])
- by ocn-vc-mts-111c1 with ngmta
- id e762416d-18c89efc6f0251d5; Tue, 04 Aug 2026 23:00:59 +0900
-Received: from localhost (p1601136-ipoe.ipoe.ocn.ne.jp [114.172.254.135])
-	by ocn-sdpx-mts-108c1.ocn.ad.jp (Postfix) with ESMTPA;
-	Tue,  4 Aug 2026 23:00:59 +0900 (JST)
-Date: Tue, 04 Aug 2026 23:00:58 +0900 (JST)
-Message-Id: <20260804.230058.2181811588216184828.anemo@mba.ocn.ne.jp>
-To: u.kleine-koenig@baylibre.com
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
- hvilleneuve@dimonoff.com, john.ogness@linutronix.de,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- ilpo.jarvinen@linux.intel.com, Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v2 2/8] serial: txx9: Simplify knowing that .iotype is
- always UPIO_PORT
-From: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
-In-Reply-To: <b90344819432e493f54d557ec06e734e3392724f.1785832297.git.u.kleine-koenig@baylibre.com>
-References: <cover.1785832297.git.u.kleine-koenig@baylibre.com>
-	<b90344819432e493f54d557ec06e734e3392724f.1785832297.git.u.kleine-koenig@baylibre.com>
-X-Mailer: Mew version 6.8 on Emacs 30.1
+	s=arc-20240116; t=1785853590; c=relaxed/simple;
+	bh=xi5v7LADZ5lZjgD2F10vINb4GRK0rfnpR06o5Uod98M=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ERI4K0uCDhRYo+yP/YspDzncrTlbNlmBpqk51VTAOjX00T2xnwBq5G8rwemcO2c1AfrWsdICzuD0A5Fo7rA5nttgaZrXBw47ImGIxNxNGbeB1/JYnymaz+53Zi/DjLJxqSE2RD5mC9wzB1qJZqHrIohJP+XmEJ+OlVeajR7SovY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.217.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-vs1-f53.google.com with SMTP id ada2fe7eead31-74a9ac9cda6so2287427137.1
+        for <linux-serial@vger.kernel.org>; Tue, 04 Aug 2026 07:26:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785853574; x=1786458374;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=kPXk0/edZya7gvnQtK3N3NvmUlbdY/8dXhP9gVxxmf8=;
+        b=ancpOkdrF/VV5R4UqdXaeLMCkUZYlIDurbM7vaGtM0Br5VdWTaJCgb4rDpf0bEViOX
+         JdnSx4/CuUDksRSzhIIjWktpatgb4bR+fEIf+fPy5YVakjltZFo0FwN/K12rAX51ol0G
+         +M1XlmwId5mE5OSl4MvIN1/LFjuFhg/8n2YYgE2Qz66/Gg/fHFOK7ekpDlKXpjaluwL+
+         n7EtM4VpNI8uQ9PNNb9yJd6sSkPM27V4dHWqhaaRbGoSm1B50wfDRhx1igq1KBZI3vvZ
+         LfDC4S7y+vdVw7BToKIDehcsP74z8s/XnSWwvYGFeBn2pe1WXIrIPHSQ8IypCmeuIIq/
+         bBQA==
+X-Forwarded-Encrypted: i=1; AHgh+Rp6+w/HNP/8KtDN/SFJc4nMDaWn1PMsa0X7FzIZ3VUSI7Dt8tTEtiBkM4jhwzHnUD+uQWcpImEmm+7BzkI=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx/dupVhTQcitQZ82RDOSzM5bw4UmDkqEtwkrrE9ZKNmfKCj1as
+	S0fHx1dlVhfxrSOTwK1Woxhuc2DqnNfpwy6hg53o5SFOG+A+hnW1nU1LPjD7y7p3
+X-Gm-Gg: AR+sD13Nej9jx6pHG9lnfC1LSH9j5PDXhtNAod2Ya/qakvU9jZFbz+yuLNn/WUsU19i
+	trKkpH+79mh9TKQMdD9frd+vN182/vyfKRd3cOOs8CNOlQG/Iv0aRQb+F3kvVjoQuLcg3FiiSID
+	7SA1oUkCSwNKaw/ZkCJMVtQOibUrsuXkO+VbiJBQ+msNdvSERQ2E93HcFU3vgzItyNK7SSYCL5p
+	SjJPaJcyzGGE1GEVgl35Ti7AbVxVxzFfoRskjYtV6ddsWbEpIi+2IZKY+zw7+XL2FFAracrss0W
+	bSAzyRVOzkpJihWGMYFeHG2iZNb8aPwx5b9t/ELeYegA3cxvdYpaAyC41DZdObssHwuysecL25P
+	a73BIR6jF0jfRiWPwWSmhmwQhIZL0LGl5O4TMZaypYzTotOg2SiBSA04+MsBAapbuZqzRKCpKIP
+	a38ZHdj+1yqC91pGqv9nC3O0V2Ilwr5UcPUC/JLrHRR4e8yOrhCIzWO58en9jjMv6V1/FCIlA5j
+	FbWnt9CfsmCYNv9LbomBbQQ1LQJXItgaIri
+X-Received: by 2002:a05:6102:94d:b0:74c:11b2:a944 with SMTP id ada2fe7eead31-75b2447389bmr9984513137.14.1785853573946;
+        Tue, 04 Aug 2026 07:26:13 -0700 (PDT)
+Received: from mail-ua1-f49.google.com (mail-ua1-f49.google.com. [209.85.222.49])
+        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-9782c8e8724sm213711241.10.2026.08.04.07.26.12
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 04 Aug 2026 07:26:13 -0700 (PDT)
+Received: by mail-ua1-f49.google.com with SMTP id a1e0cc1a2514c-966d70b9e1cso2628005241.2
+        for <linux-serial@vger.kernel.org>; Tue, 04 Aug 2026 07:26:12 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AHgh+RrTpdH2LMAdar298knMTT749lz0zLd49QTy9z3fZA8baSFe1jPfnW9XVzRqmZSLkkZ/Vt3teZZkJFubptI=@vger.kernel.org
+X-Received: by 2002:a05:6102:fa8:b0:73e:9fae:5845 with SMTP id
+ ada2fe7eead31-75b1e83a285mr10923817137.0.1785853571914; Tue, 04 Aug 2026
+ 07:26:11 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-1
+MIME-Version: 1.0
+References: <cover.1785832297.git.u.kleine-koenig@baylibre.com>
+ <2165469758f26f79c0267386bc6cd92379fb0e2c.1785832297.git.u.kleine-koenig@baylibre.com>
+ <20260804.225236.1648692120067580029.anemo@mba.ocn.ne.jp>
+In-Reply-To: <20260804.225236.1648692120067580029.anemo@mba.ocn.ne.jp>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Tue, 4 Aug 2026 16:26:00 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdVySB4aDc4k6O8XZmsDpfY3ua+CqxqrDBPLV7jtWNcXyw@mail.gmail.com>
+X-Gm-Features: AUfX_mySy6oat3lIq9zehgf8P9fuQfKACVSn7E98lg-55g1VQHNxdLr665ApRZU
+Message-ID: <CAMuHMdVySB4aDc4k6O8XZmsDpfY3ua+CqxqrDBPLV7jtWNcXyw@mail.gmail.com>
+Subject: Re: [PATCH v2 1/8] serial: txx9: Drop noop probe function and
+ dangerous remove callback
+To: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
+Cc: u.kleine-koenig@baylibre.com, gregkh@linuxfoundation.org, 
+	jirislaby@kernel.org, hvilleneuve@dimonoff.com, john.ogness@linutronix.de, 
+	alan@redhat.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue,  4 Aug 2026 10:57:54 +0200, Uwe Kleine-K=F6nig (The Capable Hub=
-) <u.kleine-koenig@baylibre.com> wrote:
-> After the previous commit it's obvious that .iotype is always UPIO_PO=
-RT.
-> Simplify some functions accordingly.
+On Tue, 4 Aug 2026 at 15:52, Atsushi Nemoto <anemo@mba.ocn.ne.jp> wrote:
+> On Tue,  4 Aug 2026 10:57:53 +0200, Uwe Kleine-K=C3=B6nig (The Capable Hu=
+b) <u.kleine-koenig@baylibre.com> wrote:
+> > The only platform device that can be bound to the driver is allocated b=
+y
+> > the driver itself. That device doesn't have platdata, so the probe
+> > function only consists of a loop that is never run and thus can be
+> > dropped without loss of functionality.
+>
+> The noop loop might came from old 8250 driver I referenced at that time.
+> Now I think it can be removed safely.
+> Thank you for this cleanup.
+>
+> Reviewed-by: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
 
-No, .iotype can be UPIO_MEM if early_serial_txx9_setup() was called fro=
-m
-arch/mips/txx9/generic/setup.c.
+TX4927 actually has two serial ports:
 
----
-Atsushi Nemoto
+    $ cat proc/iomem
+    [...]
+    fff1f0000-fff1fffff : TX4927
+      [...]
+      fff1ff300-fff1ff323 : serial_txx9
+      fff1ff400-fff1ff423 : serial_txx9
 
-On Tue,  4 Aug 2026 10:57:54 +0200, Uwe Kleine-K=F6nig (The Capable Hub=
-) <u.kleine-koenig@baylibre.com> wrote:
-> After the previous commit it's obvious that .iotype is always UPIO_PO=
-RT.
-> Simplify some functions accordingly.
-> =
+At first sight, I don't see how these are registered, but it still works
+after your patch, so
+Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-> Suggested-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
-> Link: https://lore.kernel.org/linux-serial/01a84877-9cc7-8136-d5a8-e3=
-68a36cda93@linux.intel.com
-> Signed-off-by: Uwe Kleine-K=F6nig (The Capable Hub) <u.kleine-koenig@=
-baylibre.com>
-> ---
->  drivers/tty/serial/serial_txx9.c | 69 ++++--------------------------=
---
->  1 file changed, 7 insertions(+), 62 deletions(-)
-> =
+Gr{oetje,eeting}s,
 
-> diff --git a/drivers/tty/serial/serial_txx9.c b/drivers/tty/serial/se=
-rial_txx9.c
-> index ef56979321b9..bda7f7527b8d 100644
-> --- a/drivers/tty/serial/serial_txx9.c
-> +++ b/drivers/tty/serial/serial_txx9.c
-> @@ -158,25 +158,13 @@
->  =
+                        Geert
 
->  static inline unsigned int sio_in(struct uart_port *up, int offset)
->  {
-> -	switch (up->iotype) {
-> -	default:
-> -		return __raw_readl(up->membase + offset);
-> -	case UPIO_PORT:
-> -		return inl(up->iobase + offset);
-> -	}
-> +	return inl(up->iobase + offset);
->  }
->  =
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
 
->  static inline void
->  sio_out(struct uart_port *up, int offset, int value)
->  {
-> -	switch (up->iotype) {
-> -	default:
-> -		__raw_writel(value, up->membase + offset);
-> -		break;
-> -	case UPIO_PORT:
-> -		outl(value, up->iobase + offset);
-> -		break;
-> -	}
-> +	outl(value, up->iobase + offset);
->  }
->  =
-
->  static inline void
-> @@ -698,57 +686,15 @@ serial_txx9_pm(struct uart_port *port, unsigned=
- int state,
->  =
-
->  static int serial_txx9_request_resource(struct uart_port *up)
->  {
-> -	unsigned int size =3D TXX9_REGION_SIZE;
-> -	int ret =3D 0;
-> +	if (!request_region(up->iobase, TXX9_REGION_SIZE, "serial_txx9"))
-> +		return -EBUSY;
->  =
-
-> -	switch (up->iotype) {
-> -	default:
-> -		if (!up->mapbase)
-> -			break;
-> -
-> -		if (!request_mem_region(up->mapbase, size, "serial_txx9")) {
-> -			ret =3D -EBUSY;
-> -			break;
-> -		}
-> -
-> -		if (up->flags & UPF_IOREMAP) {
-> -			up->membase =3D ioremap(up->mapbase, size);
-> -			if (!up->membase) {
-> -				release_mem_region(up->mapbase, size);
-> -				ret =3D -ENOMEM;
-> -			}
-> -		}
-> -		break;
-> -
-> -	case UPIO_PORT:
-> -		if (!request_region(up->iobase, size, "serial_txx9"))
-> -			ret =3D -EBUSY;
-> -		break;
-> -	}
-> -	return ret;
-> +	return 0;
->  }
->  =
-
->  static void serial_txx9_release_resource(struct uart_port *up)
->  {
-> -	unsigned int size =3D TXX9_REGION_SIZE;
-> -
-> -	switch (up->iotype) {
-> -	default:
-> -		if (!up->mapbase)
-> -			break;
-> -
-> -		if (up->flags & UPF_IOREMAP) {
-> -			iounmap(up->membase);
-> -			up->membase =3D NULL;
-> -		}
-> -
-> -		release_mem_region(up->mapbase, size);
-> -		break;
-> -
-> -	case UPIO_PORT:
-> -		release_region(up->iobase, size);
-> -		break;
-> -	}
-> +	release_region(up->iobase, TXX9_REGION_SIZE);
->  }
->  =
-
->  static void serial_txx9_release_port(struct uart_port *up)
-> @@ -983,7 +929,7 @@ static int serial_txx9_register_port(struct uart_=
-port *port)
->  		uart->membase =3D port->membase;
->  		uart->irq      =3D port->irq;
->  		uart->uartclk  =3D port->uartclk;
-> -		uart->iotype   =3D port->iotype;
-> +		uart->iotype   =3D UPIO_PORT;
->  		uart->flags    =3D port->flags
->  			| UPF_BOOT_AUTOCONF | UPF_FIXED_PORT;
->  		uart->mapbase  =3D port->mapbase;
-> @@ -1081,7 +1027,6 @@ pciserial_txx9_init_one(struct pci_dev *dev, co=
-nst struct pci_device_id *ent)
->  	port.flags |=3D UPF_TXX9_HAVE_CTS_LINE;
->  	port.uartclk =3D 66670000;
->  	port.irq =3D dev->irq;
-> -	port.iotype =3D UPIO_PORT;
->  	port.iobase =3D pci_resource_start(dev, 1);
->  	port.dev =3D &dev->dev;
->  	line =3D serial_txx9_register_port(&port);
-> -- =
-
-> 2.55.0.11.g153666a7d9bb
-> =
-
-> =
-
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
