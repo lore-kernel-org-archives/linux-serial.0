@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9714830C174;
-	Tue,  4 Aug 2026 10:18:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B2803FADF1;
+	Tue,  4 Aug 2026 10:19:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785838727; cv=none; b=izgeQv5TdksLoAPOgG6uPL2BrnOlRmLziBRZT6ptPwqDswhyVTPly49iEDJHOwGz9BGp8fZysZz452Y2L6klyQBNdR/GFyxe7EBtG/bgyIXdYVu/zwX2TVBAKkCVlWifIjNdaEXXwEy9vj4NN2II/zJBuYNvL1OkDWuL9itJLtk=
+	t=1785838784; cv=none; b=PUIZWDzZfcLbXBqgCgiTFVirGtTs6RRu6xuGY5tBSxO+tiMD8B46yJL5GxiGRAhNNZP1hmfP8n9WtFjfN0E0m9ZQqmRPN5jgh04Rq9brtyM4hBYSbiSs735FeFu4O1B4SjkO6X/NYAgWokFCbdtUD+S5KWY24H2f/8/KYl8JgmY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785838727; c=relaxed/simple;
-	bh=aZdmmLQ/MNK6xmqBKSlrxSEI7sLpWjj7PxVXrKI939c=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=NfxBd1Y/oGEjoGhVhCzbweVsYGgKlrg2FeWygnU8ljBmEvgp+lgORz/Nxz7VXEMH0xI+m/LWDVEK2snwtfP2sNT5rx7STfqAy6lCHEmeG6TLmp+YRkONRXkMRgV7M6ukhGdvFW08BRVna5jOJTRwcCnSkygyCHDXHirYL2KM55Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RqCw4oGM; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785838784; c=relaxed/simple;
+	bh=2ux56xLMmSGnVmcntW12ZW/8bQRVg0NTIKmF2N0EyAc=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=DhjU4IRiGvb0bXLjT4g1pP1tRCLPNsl/cETJ98dFLpBn5Rj8L4s7nBE7yq5TpmTVugHQ+oshqMa5ggj0ijZ2R8QP7TGL6XUUUKJVYt00lT+cP51/XtOWHyPzTQPvPXa9af63gfuhF430FuTpL6quOrCnnkJxcJoMupLGQnSqZLc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=U15iHHMa; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RqCw4oGM"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80C991F000E9;
-	Tue,  4 Aug 2026 10:18:45 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="U15iHHMa"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D4C91F00A3A;
+	Tue,  4 Aug 2026 10:19:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785838726;
-	bh=jkjJiFBUO+c2FmPb7tRkkaqBfisR4+tpSDqOOOAV8LQ=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=RqCw4oGMD+CAnmMKEVKshmYDL/4rFvWBMBvlVzjYwnRRuVhMmGeRjE91msXjuHhL7
-	 +pVYolUbLai5Zy1zbc755jbtUhUT1OvN8Q3i0GlBsCk82aDT2EGLPhVgZJr/0rThfy
-	 RslExKiEHVMG/GaykCcLz8d862E1fUyPBizExNjVawkvn109uvQYr4dy/H55OpXPzG
-	 w/ex1hJGg95emIr/A8hPfI5f0hkbKw8+aVxD27Ip73qD09F4OLWubun2x2tOtQWsn1
-	 XXhVKNIQHFHEz1CJeC6hxI+Kd80wSXd7DMyaZM0dXVdEBkgr4U91KBPJu6BbXckyBs
-	 s7HT7eUtWRN9A==
-Message-ID: <0bcdcb38-78b1-47e9-9a4c-4df0bb8380c6@kernel.org>
-Date: Tue, 4 Aug 2026 12:18:43 +0200
+	s=k20260515; t=1785838783;
+	bh=4UU+aP6dey8xJOgNjcdcd2E54lT2VovimHrOzlDVkgs=;
+	h=Date:Subject:From:To:Cc:References:In-Reply-To;
+	b=U15iHHMabs20bY6SsGw06A9G1CKKb53X+LJxs7/JLJnL0Mk+X7mFeClYLiN6IVyIc
+	 yYWP/o2lneZ1Ywc4pN2vdEUlzBBPj5FBonrWb2XxhBWvNmeDYTV9HNRHZ1ik+EJ/ni
+	 IDTK4jZ71KIQ5HaTmW5nVmwl4UDDuMG9CaxuNf+31G2orRHirS5qiMb0Pa5dqsDcTu
+	 RMZfY4Y8CuTUD2794B7kWZci2hMwHVTr/5z/AIhFUNkU0B9GBBN3rBujxTLPwDmPVY
+	 EM6EiVydlHaX+gY5NFV9K4UkFdjYzcX0mpobt+as4z/HGrnLz/W8pGQBu0UyFhtZJO
+	 iSXuG3h6cf1WA==
+Message-ID: <1d3fb866-afb9-4bdb-86f3-a5611bc141ae@kernel.org>
+Date: Tue, 4 Aug 2026 12:19:40 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -36,14 +36,15 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH] tty: moxa: remove driver.
+From: Jiri Slaby <jirislaby@kernel.org>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
  Crescent Hsieh <crescentcy.hsieh@moxa.com>
 References: <2026080345-unmapped-sliced-49f2@gregkh>
  <7a3538e1-444d-42f5-b48a-0a8eb9f2625f@kernel.org>
  <2026080429-deforest-snowiness-90ad@gregkh>
+ <0bcdcb38-78b1-47e9-9a4c-4df0bb8380c6@kernel.org>
 Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
  xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
  rrcDwGs6tFVrAHvdHeIdI07s1iIx5R/ndcHwt4fvI8CL5PzPmn5J+h0WERR5rFprRh6axhOk
@@ -86,62 +87,45 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <2026080429-deforest-snowiness-90ad@gregkh>
+In-Reply-To: <0bcdcb38-78b1-47e9-9a4c-4df0bb8380c6@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 04. 08. 26, 11:57, Greg Kroah-Hartman wrote:
-> On Tue, Aug 04, 2026 at 07:12:01AM +0200, Jiri Slaby wrote:
->> On 03. 08. 26, 14:52, Greg Kroah-Hartman wrote:
->>> This is a very old driver, and no known hardware is still around for it,
->>> and the company says they do not need it anymore, so let's remove it as
->>> the LLMs are starting to poke at it and find "interesting" things which
->>> will just waste everyone's time given it's not actually used.
+On 04. 08. 26, 12:18, Jiri Slaby wrote:
+> On 04. 08. 26, 11:57, Greg Kroah-Hartman wrote:
+>> On Tue, Aug 04, 2026 at 07:12:01AM +0200, Jiri Slaby wrote:
+>>> On 03. 08. 26, 14:52, Greg Kroah-Hartman wrote:
+>>>> This is a very old driver, and no known hardware is still around for 
+>>>> it,
+>>>> and the company says they do not need it anymore, so let's remove it as
+>>>> the LLMs are starting to poke at it and find "interesting" things which
+>>>> will just waste everyone's time given it's not actually used.
+>>>>
+>>>> So let's drop it.  If someone really needs it, it can come back in the
+>>>> future, in a more "modern" way, as the style here is very old...
+>>>>
+>>>> Reported-by: Jiri Slaby <jirislaby@kernel.org>
+>>>> Cc: Crescent Hsieh <crescentcy.hsieh@moxa.com>
+>>>> Link: https://lore.kernel.org/all/afqyY8FQ8ZfpH48_@moxa-ThinkCentre- 
+>>>> M90t/
+>>>> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 >>>
->>> So let's drop it.  If someone really needs it, it can come back in the
->>> future, in a more "modern" way, as the style here is very old...
->>>
->>> Reported-by: Jiri Slaby <jirislaby@kernel.org>
->>> Cc: Crescent Hsieh <crescentcy.hsieh@moxa.com>
->>> Link: https://lore.kernel.org/all/afqyY8FQ8ZfpH48_@moxa-ThinkCentre-M90t/
->>> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>>> LGTM, there are leftovers though:
+>>> MAINTAINERS
+>>> 18341:MOXA SMARTIO/INDUSTIO/INTELLIO SERIAL CARD
 >>
->> LGTM, there are leftovers though:
->> MAINTAINERS
->> 18341:MOXA SMARTIO/INDUSTIO/INTELLIO SERIAL CARD
-> 
-> As you said, that one documents the mxser.c file, not moxa.c, so should
-> I just remove both and this entry too?
-> 
-> And the .rst file needs to go, right?
-
-SMARTIO/INDUSTIO = mxser is supposed to stay.
-INTELLIO = moxa is being removed.
-
->> Documentation/admin-guide/devices.txt
->> 2391: 172 char  Moxa Intellio serial card
->> 2398: 173 char  Moxa Intellio serial card - alternate devices
-> 
-> Oops, missed that.
-> 
->> =========
+>> As you said, that one documents the mxser.c file, not moxa.c, so should
+>> I just remove both and this entry too?
 >>
->> Funilly, the MAINTAINERS entry was supposed to be for both mxser
->> (SMARTIO/INDUSTIO) and moxa (INTELLIO), but the F: pattern for moxa was
->> never added (cf. 679655daffdd). INTELLIO should dismiss from there,
->> nonetheless.
+>> And the .rst file needs to go, right?
 > 
-> As above, should we also just drop mxser?  Same age of the hardware from
-> what I can tell.
+> SMARTIO/INDUSTIO = mxser is supposed to stay.
+> INTELLIO = moxa is being removed.
 
-No, mxser is still alive hardware-wise. I have a couple of mxser PCI 
-cards around :).
+That being said, the "/INTELLIO" part should go.
 
-There is also a patchset to convert mxser to serial_core (even 
-8250_core), yet not ready:
-https://lore.kernel.org/all/20251130104222.63077-1-crescentcy.hsieh@moxa.com/
-
-thanks,
+> thanks,
 -- 
 js
 suse labs
+
