@@ -1,96 +1,108 @@
-Received: from azure-sdnproxy.icoremail.net (azure-sdnproxy.icoremail.net [4.193.249.245])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4C44143BDBE;
-	Tue,  4 Aug 2026 09:16:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=4.193.249.245
+Received: from smtpbguseast1.qq.com (smtpbguseast1.qq.com [54.204.34.129])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49A153ACA68;
+	Tue,  4 Aug 2026 09:53:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.204.34.129
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785834980; cv=none; b=YXGc6le8LKXR87HgJmmIWLTvUvSXzmGAlzgHvoTfbaWaBODBDu9ISkhtW5rYIbz6+fGIejeN2shCCMHpjWMAGMB5bEebndntTEa6o0H9Qx5Y6O5oNBFWlli2lZSdU8Kj4JDg32+v2KAkV8QjwQjZmF87uhwGCkXmtvM8VxZJAKg=
+	t=1785837236; cv=none; b=ECOcU79z/sYV3HLoAvZQoRHrQR2hcvVQwyj2vsgi7V1716DFU9Zhr8f+PQstQddy9f1uJgWBwU9851qeoBYO2Oe1wy8GcwvGkOW7ATv/5nw/sc3M26vEyFaA5aHxD/9qRgrWtfcAhCsd1oJ75dwSuXNpwp3CdXLe4F8tNs4kwqc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785834980; c=relaxed/simple;
-	bh=phSDRUFl3KB9oxmhLnro70tI6ZGimYikKTJ+ouQ+SwI=;
-	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Message-Id:References:To; b=CKm8H0hZgVhQ0MeoSXyJPJpezzAh0Vq9/ralwdSeD+3YNU56cG62WGJlA3gq4HkOJSIQtNHoSycY8WsJSLBxCSHdrEOqKzvVAtZwZ5TkTvcx33OMQcjKH50Uft7BN5h181Adp8C8LJtjuYKzsO1AR4LQpeL11mg/BbMaxfmCcTs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=zju.edu.cn; spf=pass smtp.mailfrom=zju.edu.cn; arc=none smtp.client-ip=4.193.249.245
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=zju.edu.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zju.edu.cn
-Received: from zju.edu.cn (unknown [10.190.132.129])
-	by mtasvr (Coremail) with SMTP id _____wDHoX7SrXFqzRNkAA--.13767S3;
-	Tue, 04 Aug 2026 17:16:03 +0800 (CST)
-Received: from smtpclient.apple (unknown [10.190.132.129])
-	by mail-app3 (Coremail) with SMTP id zS_KCgD3DXDRrXFqHMjvAw--.8415S2;
-	Tue, 04 Aug 2026 17:16:02 +0800 (CST)
-Content-Type: text/plain;
-	charset=us-ascii
+	s=arc-20240116; t=1785837236; c=relaxed/simple;
+	bh=3qvbNnf2kTyEuxYwIk3iG7+xgB+027kjFFo6J7yYnfA=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=S3ZYfyZsakcGoLyuW73kjJCU+v4hEhdPijb4h/SLNbDq2pgEkdu7vTg85nLsMC4slt6mmfFfDZDIFuaAgmpg2bBoSVI+E+mgdCBjISw/I9T9L9EBXvKNco5DmP/HxrKW+WDJrSRIt4qkjrRseuC9uIXaC/4W1mfmu7ZbHxvhl60=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com; spf=pass smtp.mailfrom=uniontech.com; dkim=pass (1024-bit key) header.d=uniontech.com header.i=@uniontech.com header.b=k2Jmczvf; arc=none smtp.client-ip=54.204.34.129
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=uniontech.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=uniontech.com header.i=@uniontech.com header.b="k2Jmczvf"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniontech.com;
+	s=onoh2408; t=1785837184;
+	bh=owRv1HotSrrvggmAkxnIlFUedbNCLsIBqotgGco58ww=;
+	h=From:To:Subject:Date:Message-Id:MIME-Version;
+	b=k2JmczvfbzQYg+oMuPNB+5ylhH2KIl7gj3cniUk+98w9O3HPjUC2TIOMGgzZ6s1ZQ
+	 bXBbV+PqFFt85+m1yB0yVmASTaUFM3uKWkeMQQkAeVWVWzfRqJ3qfFhpQAcsiPIbUe
+	 w74t8yPUMr3GdJSMXwDWXmxjJdWxsp1+5UiLuZxA=
+X-QQ-mid: zesmtpsz6t1785837174tb4c829a3
+X-QQ-Originating-IP: j3fSjw2qT01n7GwQIPNH24dQA1Rewy03PcG7rsI6Y58=
+Received: from uniontech.com ( [113.57.152.160])
+	by bizesmtp.qq.com (ESMTP) with 
+	id ; Tue, 04 Aug 2026 17:52:52 +0800 (CST)
+X-QQ-SSF: 0000000000000000000000000000000
+X-QQ-GoodBg: 1
+X-BIZMAIL-ID: 9562648362156521564
+From: Yichong Chen <chenyichong@uniontech.com>
+To: gregkh@linuxfoundation.org
+Cc: jirislaby@kernel.org,
+	viro@zeniv.linux.org.uk,
+	willy@infradead.org,
+	kees@kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] devpts: fix pty count limit off by one
+Date: Tue,  4 Aug 2026 17:52:52 +0800
+Message-Id: <20260804095252.889108-1-chenyichong@uniontech.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <2026080419-chatting-curve-e49c@gregkh>
+References: <2026080419-chatting-curve-e49c@gregkh>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3774.600.62\))
-Subject: Re: [PATCH v2] tty: serial: max3100: shut down timer before freeing
- port
-From: Fan Wu <12321260@zju.edu.cn>
-In-Reply-To: <2026080353-bats-jailhouse-804f@gregkh>
-Date: Tue, 4 Aug 2026 17:15:50 +0800
-Cc: Fan Wu <fanwu01@zju.edu.cn>,
- jirislaby@kernel.org,
- broonie@kernel.org,
- zhao.xicheng@vivo.com,
- linux-serial@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
-Content-Transfer-Encoding: 7bit
-Message-Id: <0FEECD29-C7BE-4D4D-8441-3F8BA3C55902@zju.edu.cn>
-References: <2026073036-coping-starter-ad07@gregkh>
- <20260801061208.356142-1-fanwu01@zju.edu.cn>
- <2026080353-bats-jailhouse-804f@gregkh>
-To: Greg KH <gregkh@linuxfoundation.org>
-X-Mailer: Apple Mail (2.3774.600.62)
-X-CM-TRANSID:zS_KCgD3DXDRrXFqHMjvAw--.8415S2
-X-CM-SenderInfo: qrstjiaswqq6lmxovvfxof0/
-X-CM-DELIVERINFO: =?B?anxzZwXKKxbFmtjJiESix3B1w3vZ3A9ovKVTomAyoQazvoRs/NHSP8GI2EvgeEEW7R
-	sfnZPoDCNGYdHSfuFmYJL54WM+1x03kkzY63nJhmkcBmP+T9fi2CBDPmnsJbLEd5LTvupJ
-	AXZl4WhrGaD1d4lVFbI=
-X-Coremail-Antispam: 1Uk129KBj9xXoWruw4DGw4kXryrZF1UKF4DAwc_yoW3GFX_Cw
-	1kJFnrC3s0vF1kGry8GrsFqw45JFW0qryrAw4kJa1kG345Xr4DXr4jq3ySvws0qa95tFnx
-	uw1I9348Z3W29osvyTuYvTs0mTUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUj1kv1TuYvT
-	s0mT0YCTnIWjqI5I8CrVACY4xI64kE6c02F40Ex7xfYxn0WfASr-VFAUDa7-sFnT9fnUUI
-	cSsGvfJTRUUUb-kYFVCjjxCrM7AC8VAFwI0_Gr0_Xr1l1xkIjI8I6I8E6xAIw20EY4v20x
-	vaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxS
-	w2x7M28EF7xvwVC0I7IYx2IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxV
-	WxJr0_GcWl84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_
-	GcCE3s1lnxkEFVAIw20F6cxK64vIFxWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqjxCEc2
-	xF0cIa020Ex4CE44I27wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_
-	Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x
-	0EwIxGrwACjcxG0xvY0x0EwIxGrVCF72vEw4AK0wCF04k20xvY0x0EwIxGrwCFx2IqxVCF
-	s4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r
-	1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWU
-	JVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6r
-	1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Jr0_GrUv
-	cSsGvfC2KfnxnUUI43ZEXa7IU85l1PUUUUU==
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: zesmtpsz:uniontech.com:qybglogicsvrgz:qybglogicsvrgz3a-0
+X-QQ-XMAILINFO: M83iEva+1QDBx7XHXGA5/0T5pK3EJA4ydJ08F3FXzGUXTpwDJetWeFo4
+	oCQsam+OQ/xIiFj9LWbCCSiztzFB82sm7Hgn97/iicuuKkGMfANpoVp13iPB7yS+sRtw1L2
+	/ktuh0TVBYFMXKIn/LVFmQrfgUIVfyFXpuKnu1zIJ04kLPnD4Cg40Elu7QRogribHFHhtui
+	T5UJSL8Ixq09DTA15xy0iKAuhmNczuZ/XXV9GJ7TL3K9J09Qc3DWVN8ePkAH+uQGzkQNV5/
+	Q2u/EWhJmS6DxayofIPLBXyNiu4Q5llGMugQjnpwjM+RBtgQt4PdVgxW6oP8xCtTt82HMPL
+	gAjfDelQ8A2bBK/tV3c+kGYJhY/VtewYIFb68RwwkJR3dp11MDTDhZUz4xlzvB64laPCNA7
+	JE02FgGjb+ZcMRMDVoV+i1PR6D9GA76AAkAcz75y7VHCl1HgrxmUX0OKK3tfASOXwu4cRC9
+	RNOkfUmboySSL/sYxImbXDWRkuJXb+9Z/kHKqhSoNt5PC7dFOduTxks3bKs1RtfFaw9nx5z
+	6mUZfyZZDrvMK3ArAKOifVKG/vGwkPCfC2TUP86Z1ChpE2EzJoLZxEOGvnZJIiPXesY+F1X
+	pkHlLI3IB9/cejPl3cf9ro4HZZVh79pJkXHynUbGB6NKTdYorl8doT58chJXnyFUl+wmxZA
+	0ANU3QjTFuJGAEn/TJ54He9q8Ajv0QOBvcnvixKXaHVECAsf3PmAYKMDFpkU74pIQCsw73l
+	7LWJLZw61+jp6ve9ToYFxY2B8Szad5D5Y6HCD9V5t39qruc2bcypZ6NUd2R2XsZTxZoR3O1
+	qN574oOASQSiRFbFlpqXqOuj56ANEwhHDTZfB2kvzvYwfgHaCQLd4oI6ipAbiD2sjCUYYK/
+	f0hhwSTPfOGi8x0ay1++pvG6oYmAhKAXMhdcGuPM2isDf4yAm81AwDuncUwR2qUMh/8uNQY
+	Ok2+LjPhOdfhW/o8RGw2BhM5/1W1eikaxwWP3grXIOoNIQSFJjfg6+MVNZ4KFKjevEsZ05+
+	c6EBFQYlj0KTZ0tv5Uc6t0FjFpZdTsWDfYOJLxhi+c+/qadNAu
+X-QQ-XMRINFO: M/715EihBoGS47X28/vv4NpnfpeBLnr4Qg==
+X-QQ-RECHKSPAM: 0
 
 Hi Greg,
 
-Sorry, I don't have MAX3100 hardware, so I have not tested this on
-hardware.
+Yes, this is user-visible.
 
-You're right about the extra state. I'll rework the cleanup to use the
-existing startup/unwind state instead of adding irq_registered, then
-send v3 after rebuilding it.
+The reason I sent the patch is that this used to allow pty_count to reach
+the configured limit.  Before commit 0f0a0e54a2a1 ("devpts: Convert to new
+IDA API"), devpts_new_index() checked the old pty_count first and only
+incremented it after the allocation succeeded:
+
+  if (pty_count >= limit)
+          return -ENOSPC;
+  ...
+  pty_count++;
+
+After that commit, the code started using atomic_inc_return(), but kept the
+>= comparison:
+
+  if (atomic_inc_return(&pty_count) >= limit)
+          goto out;
+
+So a count equal to the configured limit became rejected.  That makes
+kernel.pty.max behave as an effective max - 1 limit.
+
+I thought allowing the count to reach kernel.pty.max again would better
+match the usual interpretation of a "max" sysctl.  But I agree this also
+changes visible behavior again, and the current max - 1 behavior has been
+around since 2018.
+
+So if you prefer to preserve the existing behavior for compatibility, I am
+fine with dropping the patch.
 
 Thanks,
-Fan
-
-> On Aug 3, 2026, at 20:56, Greg KH <gregkh@linuxfoundation.org> wrote:
-
-> LLMs _love_ to use boolean flags to attempt to figure things out that
-> they can't seem to determine.  Are you _SURE_ this really is needed?
-> How about unwinding things better so it's not required?  You are just
-> adding another "state" to the device, adding to the complexity overall,
-> which is generally not a good idea.
-> 
-> And do you have this hardware to test this with?
-> 
-> thanks,
-> 
-> greg k-h
-
+Yichong
