@@ -1,108 +1,87 @@
-Received: from smtpbguseast1.qq.com (smtpbguseast1.qq.com [54.204.34.129])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49A153ACA68;
-	Tue,  4 Aug 2026 09:53:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.204.34.129
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E083D440A23;
+	Tue,  4 Aug 2026 09:58:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785837236; cv=none; b=ECOcU79z/sYV3HLoAvZQoRHrQR2hcvVQwyj2vsgi7V1716DFU9Zhr8f+PQstQddy9f1uJgWBwU9851qeoBYO2Oe1wy8GcwvGkOW7ATv/5nw/sc3M26vEyFaA5aHxD/9qRgrWtfcAhCsd1oJ75dwSuXNpwp3CdXLe4F8tNs4kwqc=
+	t=1785837488; cv=none; b=TsHExGgyJLVe070DtDUjFWgUJ17QFZXuj+QOk1TSCKXkNAi2PGgegB0adeW0ZBpzNel2J4YE0FWavFyxrTYiDy99f4EUSdlXo/tWHb5WaFhodABojhcC9l/ZT++56Oip1PlOGVkY4Dawl/zekxikfLxOpICRhRB+99Ga50FGDi8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785837236; c=relaxed/simple;
-	bh=3qvbNnf2kTyEuxYwIk3iG7+xgB+027kjFFo6J7yYnfA=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=S3ZYfyZsakcGoLyuW73kjJCU+v4hEhdPijb4h/SLNbDq2pgEkdu7vTg85nLsMC4slt6mmfFfDZDIFuaAgmpg2bBoSVI+E+mgdCBjISw/I9T9L9EBXvKNco5DmP/HxrKW+WDJrSRIt4qkjrRseuC9uIXaC/4W1mfmu7ZbHxvhl60=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com; spf=pass smtp.mailfrom=uniontech.com; dkim=pass (1024-bit key) header.d=uniontech.com header.i=@uniontech.com header.b=k2Jmczvf; arc=none smtp.client-ip=54.204.34.129
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=uniontech.com
+	s=arc-20240116; t=1785837488; c=relaxed/simple;
+	bh=REpAHXcnP2eJ0pbU9bIljfleGc8qy6I/DzyhYpCtKYI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=AEIuyEjfpRxrK2YC348GEWBZf3F+TZUnOCs0e22qGWQfjwS4S+Y89lVTeyykj9kl2o2ZiiDOrMgOi7alp8b2jQj2r9Sy0bSbg2k85sdckp0Ou3JHBVrO2Cg03b/BwP6+GsQubPZC40lIZag7IOdDRYtpTJIZ18hOjmZ+M2E4O4Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=1CcajIkA; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=uniontech.com header.i=@uniontech.com header.b="k2Jmczvf"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniontech.com;
-	s=onoh2408; t=1785837184;
-	bh=owRv1HotSrrvggmAkxnIlFUedbNCLsIBqotgGco58ww=;
-	h=From:To:Subject:Date:Message-Id:MIME-Version;
-	b=k2JmczvfbzQYg+oMuPNB+5ylhH2KIl7gj3cniUk+98w9O3HPjUC2TIOMGgzZ6s1ZQ
-	 bXBbV+PqFFt85+m1yB0yVmASTaUFM3uKWkeMQQkAeVWVWzfRqJ3qfFhpQAcsiPIbUe
-	 w74t8yPUMr3GdJSMXwDWXmxjJdWxsp1+5UiLuZxA=
-X-QQ-mid: zesmtpsz6t1785837174tb4c829a3
-X-QQ-Originating-IP: j3fSjw2qT01n7GwQIPNH24dQA1Rewy03PcG7rsI6Y58=
-Received: from uniontech.com ( [113.57.152.160])
-	by bizesmtp.qq.com (ESMTP) with 
-	id ; Tue, 04 Aug 2026 17:52:52 +0800 (CST)
-X-QQ-SSF: 0000000000000000000000000000000
-X-QQ-GoodBg: 1
-X-BIZMAIL-ID: 9562648362156521564
-From: Yichong Chen <chenyichong@uniontech.com>
-To: gregkh@linuxfoundation.org
-Cc: jirislaby@kernel.org,
-	viro@zeniv.linux.org.uk,
-	willy@infradead.org,
-	kees@kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] devpts: fix pty count limit off by one
-Date: Tue,  4 Aug 2026 17:52:52 +0800
-Message-Id: <20260804095252.889108-1-chenyichong@uniontech.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <2026080419-chatting-curve-e49c@gregkh>
-References: <2026080419-chatting-curve-e49c@gregkh>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="1CcajIkA"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEA8F1F000E9;
+	Tue,  4 Aug 2026 09:58:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
+	s=korg; t=1785837486;
+	bh=TqoANJ/3I396vuzyuigpkl0b3SaHeHySj+rowYU+wQ0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=1CcajIkAHH4D7xInJGEs2x/RckuJiG/hjH1yHz1Skb5edxvItZj474bg9HTanfJoY
+	 gbNIlEV+hS3yrJJmMqfr5jsY4DCfMe8vDDb3Q/dkEiuDnmi52wdbuUQhwwxYrPgMn7
+	 TfSc5eHFYOBpz6ACKGuKRHcQxZ5CWwgt4n6TJnw4=
+Date: Tue, 4 Aug 2026 11:57:49 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Crescent Hsieh <crescentcy.hsieh@moxa.com>
+Subject: Re: [PATCH] tty: moxa: remove driver.
+Message-ID: <2026080429-deforest-snowiness-90ad@gregkh>
+References: <2026080345-unmapped-sliced-49f2@gregkh>
+ <7a3538e1-444d-42f5-b48a-0a8eb9f2625f@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: zesmtpsz:uniontech.com:qybglogicsvrgz:qybglogicsvrgz3a-0
-X-QQ-XMAILINFO: M83iEva+1QDBx7XHXGA5/0T5pK3EJA4ydJ08F3FXzGUXTpwDJetWeFo4
-	oCQsam+OQ/xIiFj9LWbCCSiztzFB82sm7Hgn97/iicuuKkGMfANpoVp13iPB7yS+sRtw1L2
-	/ktuh0TVBYFMXKIn/LVFmQrfgUIVfyFXpuKnu1zIJ04kLPnD4Cg40Elu7QRogribHFHhtui
-	T5UJSL8Ixq09DTA15xy0iKAuhmNczuZ/XXV9GJ7TL3K9J09Qc3DWVN8ePkAH+uQGzkQNV5/
-	Q2u/EWhJmS6DxayofIPLBXyNiu4Q5llGMugQjnpwjM+RBtgQt4PdVgxW6oP8xCtTt82HMPL
-	gAjfDelQ8A2bBK/tV3c+kGYJhY/VtewYIFb68RwwkJR3dp11MDTDhZUz4xlzvB64laPCNA7
-	JE02FgGjb+ZcMRMDVoV+i1PR6D9GA76AAkAcz75y7VHCl1HgrxmUX0OKK3tfASOXwu4cRC9
-	RNOkfUmboySSL/sYxImbXDWRkuJXb+9Z/kHKqhSoNt5PC7dFOduTxks3bKs1RtfFaw9nx5z
-	6mUZfyZZDrvMK3ArAKOifVKG/vGwkPCfC2TUP86Z1ChpE2EzJoLZxEOGvnZJIiPXesY+F1X
-	pkHlLI3IB9/cejPl3cf9ro4HZZVh79pJkXHynUbGB6NKTdYorl8doT58chJXnyFUl+wmxZA
-	0ANU3QjTFuJGAEn/TJ54He9q8Ajv0QOBvcnvixKXaHVECAsf3PmAYKMDFpkU74pIQCsw73l
-	7LWJLZw61+jp6ve9ToYFxY2B8Szad5D5Y6HCD9V5t39qruc2bcypZ6NUd2R2XsZTxZoR3O1
-	qN574oOASQSiRFbFlpqXqOuj56ANEwhHDTZfB2kvzvYwfgHaCQLd4oI6ipAbiD2sjCUYYK/
-	f0hhwSTPfOGi8x0ay1++pvG6oYmAhKAXMhdcGuPM2isDf4yAm81AwDuncUwR2qUMh/8uNQY
-	Ok2+LjPhOdfhW/o8RGw2BhM5/1W1eikaxwWP3grXIOoNIQSFJjfg6+MVNZ4KFKjevEsZ05+
-	c6EBFQYlj0KTZ0tv5Uc6t0FjFpZdTsWDfYOJLxhi+c+/qadNAu
-X-QQ-XMRINFO: M/715EihBoGS47X28/vv4NpnfpeBLnr4Qg==
-X-QQ-RECHKSPAM: 0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7a3538e1-444d-42f5-b48a-0a8eb9f2625f@kernel.org>
 
-Hi Greg,
+On Tue, Aug 04, 2026 at 07:12:01AM +0200, Jiri Slaby wrote:
+> On 03. 08. 26, 14:52, Greg Kroah-Hartman wrote:
+> > This is a very old driver, and no known hardware is still around for it,
+> > and the company says they do not need it anymore, so let's remove it as
+> > the LLMs are starting to poke at it and find "interesting" things which
+> > will just waste everyone's time given it's not actually used.
+> > 
+> > So let's drop it.  If someone really needs it, it can come back in the
+> > future, in a more "modern" way, as the style here is very old...
+> > 
+> > Reported-by: Jiri Slaby <jirislaby@kernel.org>
+> > Cc: Crescent Hsieh <crescentcy.hsieh@moxa.com>
+> > Link: https://lore.kernel.org/all/afqyY8FQ8ZfpH48_@moxa-ThinkCentre-M90t/
+> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> 
+> LGTM, there are leftovers though:
+> MAINTAINERS
+> 18341:MOXA SMARTIO/INDUSTIO/INTELLIO SERIAL CARD
 
-Yes, this is user-visible.
+As you said, that one documents the mxser.c file, not moxa.c, so should
+I just remove both and this entry too?
 
-The reason I sent the patch is that this used to allow pty_count to reach
-the configured limit.  Before commit 0f0a0e54a2a1 ("devpts: Convert to new
-IDA API"), devpts_new_index() checked the old pty_count first and only
-incremented it after the allocation succeeded:
+And the .rst file needs to go, right?
 
-  if (pty_count >= limit)
-          return -ENOSPC;
-  ...
-  pty_count++;
+> Documentation/admin-guide/devices.txt
+> 2391: 172 char  Moxa Intellio serial card
+> 2398: 173 char  Moxa Intellio serial card - alternate devices
 
-After that commit, the code started using atomic_inc_return(), but kept the
->= comparison:
+Oops, missed that.
 
-  if (atomic_inc_return(&pty_count) >= limit)
-          goto out;
+> =========
+> 
+> Funilly, the MAINTAINERS entry was supposed to be for both mxser
+> (SMARTIO/INDUSTIO) and moxa (INTELLIO), but the F: pattern for moxa was
+> never added (cf. 679655daffdd). INTELLIO should dismiss from there,
+> nonetheless.
 
-So a count equal to the configured limit became rejected.  That makes
-kernel.pty.max behave as an effective max - 1 limit.
+As above, should we also just drop mxser?  Same age of the hardware from
+what I can tell.
 
-I thought allowing the count to reach kernel.pty.max again would better
-match the usual interpretation of a "max" sysctl.  But I agree this also
-changes visible behavior again, and the current max - 1 behavior has been
-around since 2018.
+thanks,
 
-So if you prefer to preserve the existing behavior for compatibility, I am
-fine with dropping the patch.
-
-Thanks,
-Yichong
+greg k-h
