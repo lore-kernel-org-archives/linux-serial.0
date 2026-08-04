@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CBD3489888;
-	Tue,  4 Aug 2026 05:12:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACDD63090D7;
+	Tue,  4 Aug 2026 05:12:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785820326; cv=none; b=Af2mcSDHXhh2qWYIfSrYWVnlVkRdUWadMPMo3v5BBltYfQfvfhQgnSIi6NFib635VlQHuHbAlxr1x6V6Ji6aMBGkMIzEDh+9wNywKm9Naf5v/mAxFvii+3DgSFNviBfYDBHQrm64NxT7UEQVUQaXfHmiRcevPjaJHP0QvsS8NBY=
+	t=1785820377; cv=none; b=fjAFohw5EnXDF4/ZdP+PLK+GZiZKUP9dgk0Lb+LqHASVCcNEgtJIq0tn7bkdJZmH53F5QPAbt54kn5rEtSKJkp9IQdWY2nbvRzWXT5hkKZgp5F7716JyT8+D7xnnwOkpUucmfbjxMk3m1caDljxSzUdjBNwCJsrAyAXPCmEkeyc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785820326; c=relaxed/simple;
-	bh=Q+5duugH42MD2jhtHRIo7/3QBD2j8zQK9vLTkjWp3OQ=;
+	s=arc-20240116; t=1785820377; c=relaxed/simple;
+	bh=b8Zz6sFckpEXHqkZjcnal6h2/CIhgBcmivmVrY6XbZc=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=YchdyosJq8u9bFy4iUtgjL7JzAr8GEbaTgdyFczc+Dt89eIwXuTeDdzopzg8NveKc/G0kQvsVtwwn/1H5udl3jGWk9kL9Y7oCrAqOGzx/VSnFr433piqzv3RrqiIOxA5PrcjsuFkMa3lbJMoXCVpfAky4gWR+nXqM4X1Gf0D3PE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Bra2ZM7C; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=cesWXS9at9mXo+mNMmRVGhE125spueOXOL6gmFTYQFOwTI5pC+0RqgjdYwJ1UiNeCz+elDlDRddCOIYGUxdymsgll/nZiJApLOwzQ59QxbnXy6MPjvpAN/KRBX2sxpFnuI+QMAlzmFqHdVJJeHAnxqjklua8H1exfJ1roztgbCk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MoKju+wR; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Bra2ZM7C"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 098801F000E9;
-	Tue,  4 Aug 2026 05:12:03 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MoKju+wR"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C464E1F000E9;
+	Tue,  4 Aug 2026 05:12:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785820324;
-	bh=jn8OLjo04t61sUzweB7pr8OCFp/+N/eQR4ik5f9HmKY=;
+	s=k20260515; t=1785820376;
+	bh=cqwgCKIgosJdkM5B1XfmbPhyJ3udd3gbBJgx37iGREg=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=Bra2ZM7Cvur0924BlmMdWnleJEBzqQFAppZSni/J+KmQilsb3sMA9Vezj4xC0NSuk
-	 DNqVHjn6XFTp0ZczxLWCxMldERRyTHO0r6/dhA8XQ7XBlFaiQsVoeoKydpdYMW549Q
-	 7vwXBKvyfzeNsG2KO4Wmk+nvVf9kP2dNub/InaWXKB/Ugq6wZhAISdWM3cBPzt1v7X
-	 Rt9fcZsFrAlGX1Qad1p04n2DmY0lwwV4qh3vcJ4INZz21EJqMVE89ezcmwgq5lbjCg
-	 YbDyYN1lUbJRUL7xHaK2Y79IhLF4v3i1zz3Lcz6Y1KFY9ers+QKi0qWliwJDiiojkE
-	 PrQPvjf9BfFBw==
-Message-ID: <7a3538e1-444d-42f5-b48a-0a8eb9f2625f@kernel.org>
-Date: Tue, 4 Aug 2026 07:12:01 +0200
+	b=MoKju+wR7J18SPYmLQ7ZiJrFXZtWkIWeq4xJSCWD3y4KXq1BMCXJ1GhHlPo2201OS
+	 gl5phSIbU0OwuX26FaMUNVNBkH76a7mcVbZ971qgBYgcL6JPtCip9YTlEXEZ2mBChD
+	 YuGeT191kTrjj2onWdfm34uiTp0ftU7k2wRi41rCGkw8PpfjCSzF4b8309kNHUABcv
+	 SgoN6dlmAerjvbx2SxtN6xqG7gwBRPz5Y1OJw9nty5a2AZzaQ/klvXAUyMTrRn8eeH
+	 ymRJPew5eOT5oCK08FAmEJ2q79yfObvLVJjGHNvMmd/yu2dglvx04s0AItZXW/IRk6
+	 cC1oIa/d2ojqQ==
+Message-ID: <3322aff6-bc28-4787-a7f1-ab46f0a636f9@kernel.org>
+Date: Tue, 4 Aug 2026 07:12:53 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,11 +35,15 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] tty: moxa: remove driver.
+Subject: Re: [PATCH v2 1/2] tty: vcc: zero-initialize control packet in
+ vcc_send_ctl()
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Crescent Hsieh <crescentcy.hsieh@moxa.com>
-References: <2026080345-unmapped-sliced-49f2@gregkh>
+ sparclinux@vger.kernel.org
+Cc: "David S. Miller" <davem@davemloft.net>, Joshua Rogers <linux@joshua.hu>,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ stable <stable@kernel.org>
+References: <20260803-aisle-tty-vcc-v2-0-a50bc9b15193@linuxfoundation.org>
+ <20260803-aisle-tty-vcc-v2-1-a50bc9b15193@linuxfoundation.org>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -84,38 +88,23 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <2026080345-unmapped-sliced-49f2@gregkh>
+In-Reply-To: <20260803-aisle-tty-vcc-v2-1-a50bc9b15193@linuxfoundation.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 03. 08. 26, 14:52, Greg Kroah-Hartman wrote:
-> This is a very old driver, and no known hardware is still around for it,
-> and the company says they do not need it anymore, so let's remove it as
-> the LLMs are starting to poke at it and find "interesting" things which
-> will just waste everyone's time given it's not actually used.
+On 03. 08. 26, 16:10, Greg Kroah-Hartman wrote:
+> From: Joshua Rogers <linux@joshua.hu>
 > 
-> So let's drop it.  If someone really needs it, it can come back in the
-> future, in a more "modern" way, as the style here is very old...
+> The stack-allocated struct vio_vcc pkt was partially initialized,
+> leaving the tag.stype_env field uninitialized before being sent via
+> ldc_write(), potentially leaking kernel stack data to the LDC peer.
 > 
-> Reported-by: Jiri Slaby <jirislaby@kernel.org>
-> Cc: Crescent Hsieh <crescentcy.hsieh@moxa.com>
-> Link: https://lore.kernel.org/all/afqyY8FQ8ZfpH48_@moxa-ThinkCentre-M90t/
+> Assisted-by: AISLE:Snapshot
+> Cc: stable <stable@kernel.org>
+> Signed-off-by: Joshua Rogers <linux@joshua.hu>
 > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-LGTM, there are leftovers though:
-MAINTAINERS
-18341:MOXA SMARTIO/INDUSTIO/INTELLIO SERIAL CARD
-
-Documentation/admin-guide/devices.txt
-2391: 172 char  Moxa Intellio serial card
-2398: 173 char  Moxa Intellio serial card - alternate devices
-
-=========
-
-Funilly, the MAINTAINERS entry was supposed to be for both mxser 
-(SMARTIO/INDUSTIO) and moxa (INTELLIO), but the F: pattern for moxa was 
-never added (cf. 679655daffdd). INTELLIO should dismiss from there, 
-nonetheless.
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
 thanks,
 -- 
