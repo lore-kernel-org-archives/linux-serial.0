@@ -1,117 +1,96 @@
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B02724562B7
-	for <linux-serial@vger.kernel.org>; Tue,  4 Aug 2026 08:58:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
+Received: from azure-sdnproxy.icoremail.net (azure-sdnproxy.icoremail.net [4.193.249.245])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4C44143BDBE;
+	Tue,  4 Aug 2026 09:16:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=4.193.249.245
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785833919; cv=none; b=XHb4yNDGVGPkLCSM4BFPyZhiEmzRnoVmaSctkgpR2Lyn63se/bsRZyXwjymy34+L7a3QzooudDM41RXaWfg+sVgZuecoTegMpx1vUJ8iFNdZWOmpVAp0lPOA/1NsqCzjXYk+B14lgToqXaxR00ADdCjWzBvFelNK09uV+5B45h0=
+	t=1785834980; cv=none; b=YXGc6le8LKXR87HgJmmIWLTvUvSXzmGAlzgHvoTfbaWaBODBDu9ISkhtW5rYIbz6+fGIejeN2shCCMHpjWMAGMB5bEebndntTEa6o0H9Qx5Y6O5oNBFWlli2lZSdU8Kj4JDg32+v2KAkV8QjwQjZmF87uhwGCkXmtvM8VxZJAKg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785833919; c=relaxed/simple;
-	bh=9b5hv7NuP99bZVltiQNQtGI97d1HD/5btdiVcCguw9s=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=NcN6dQRR/uZ08IpyGuNCb313gu2sLXuKopE+loJAhUd9EsmjBRpPVE1L86EpOXjKQmL+91u9aQNy285PQ5eNpUrvzynSCBF1EpsggdlWIWwQ4HyZJL2O0es0PGS6Xxzv6CqJ1Q2ELOpUfU80Pqr6xLtug9Db1WgSKYqqlXEGA6s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=QGWkeRKy; arc=none smtp.client-ip=209.85.221.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="QGWkeRKy"
-Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-47db714766aso423612f8f.0
-        for <linux-serial@vger.kernel.org>; Tue, 04 Aug 2026 01:58:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1785833916; x=1786438716; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=E/NNfpHYJNt2yLJFPy+XHHqBnXci9iT/8pZeLdqQo8E=;
-        b=QGWkeRKyOn52TmXveo0fZkN0UVEhX8jouO50FS9G16mANBy2GZAOIgUFl1Ie9PgQIK
-         s8WECXi2eDfilCTO9orEGiyl5PSJJiEKDh+OKkuV81le3tHImifP5Zajd52crdqY6riK
-         zAgUHdm5Xi/0YNyTj7FKfWBsf73mXKMroA8bsFequ/pLQKhWz5M8gw04il+JAJYlyUbN
-         I065UYFRyaMhxUFHtGzNcHvNSksVP738dU3rn9TRxbeGuI93hchIxfcjQ0R05ezy1ZY4
-         CaA+75iWXiwLycZwn+nGCCcAN765yRxiRRKlcoJitu9IPHCPedB7SMdeoRyxTXfd9Iz7
-         cA6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785833916; x=1786438716;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=E/NNfpHYJNt2yLJFPy+XHHqBnXci9iT/8pZeLdqQo8E=;
-        b=OOpC4VtVH5iGw8NN68JlnVFm0dSbVZG1G9B78mBWI0tE59jLunWJ7i5oVDgjFAQ0kI
-         BKHGp+nh/Ss8AlfAvUe85jxKKdqUewQsxZVcYZino50F3UOoo2x7rT+VC1UJB9SLOxxH
-         N4V9iMUSH7czp7IS89edx9K+DITer0Yfy1vft9J6s7AyvYF0Y7Gzw5EvoXtvWUZvXef4
-         69oeSl59e6SfpUsbjm0tiDPTQlWhP/hrdeTlLHfv1Cx0c/4NyoJnIhn4CakwYB7uIRYY
-         ElpynU44ClCqNUy9pGkuBxGpYXmtGjIVkDVdur2qowjFQxivy0fqvvYSVTORWG15w7G0
-         uhSQ==
-X-Forwarded-Encrypted: i=1; AHgh+Rob29nx8UcM3wwak1ZjbxWxNAiMuaI21Q/b26SyiWaZHpDlMGkIxM+kpkpZDmHdCpMYOHkP/QaBgqu7kaE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwzUR+flxjiY23xQPALfpePQxlwuSAYjgTuuD7dhQsZwti6rM5f
-	Qkd/UDFRLTI7WlBi/zpk27fP5ugrn1tczW0V/ZCbZ3MMrJhUyuz0xGjJQJkyYtw4HNw=
-X-Gm-Gg: AR+sD13eiHPH5gdyREQyWGDADvyLtYqdy5JJC75ifQOGB8kjV3BC4scMvrUtDqC3g9e
-	QL9mjWSxBt+1lyrqGocp4tSofHK3dNvvWtWhRtx3lfIwu2/FBWgIgGgVkx923DHrX7qFGJxwJ2o
-	Qu+ShzDnMtVjjYiYvMOtQhPif3Mz+SGhwlmA5chrUkIkWmBY41+I3LvtbUKT76QbUH+7WgK6Jhd
-	JhtofDXBwBOW/dj0PfdwbKXUfECocCeurWF1yZNyJalWSqbrHbaOeQzvkuK/UffRJ+Ecc+Uvm3t
-	AhDZ3JWoKNNbYdYBHxzJzUbyURJ/zQZFL7LOIEjfIPqeKccOX+qZ8GvJduGMHFUi1ol6eexSiLG
-	MDM3mlTZYQzyi5JXIfwy224vPk7XxifIbNfFDS8AUtMq7iZAatH/ApwiDmY79ndoO6QLDmeY2jW
-	jNTzSAzbMM9rEKpYoHxP9tKxToNHE7/0r0w3XKUmrxDECu4YfaJR5C3wt4JtMTlnpxZ0owj7ct8
-	+yCr9pfDWkhhqqmgXmiZIt4e++PgkBIzihQIeuAwvQEyyNcQ2NVPtqXEsEWMSY=
-X-Received: by 2002:a05:6000:240a:b0:47d:f508:3364 with SMTP id ffacd0b85a97d-47fe81d732emr5887066f8f.15.1785833915981;
-        Tue, 04 Aug 2026 01:58:35 -0700 (PDT)
-Received: from localhost (p200300f65f01710496a76592f11363a3.dip0.t-ipconnect.de. [2003:f6:5f01:7104:96a7:6592:f113:63a3])
-        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-47fe9a3f516sm2984118f8f.17.2026.08.04.01.58.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Aug 2026 01:58:35 -0700 (PDT)
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig=20=28The=20Capable=20Hub=29?= <u.kleine-koenig@baylibre.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: Rahul Bukte <rahul.bukte@sony.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH v2 8/8] serial: 8250: pnp: Annotate init and exit functions for conditional discarding
-Date: Tue,  4 Aug 2026 10:58:00 +0200
-Message-ID:  <efb88ec9bfcd7840b0d43f71a4b19b4b54b7a182.1785832297.git.u.kleine-koenig@baylibre.com>
-X-Mailer: git-send-email 2.55.0.11.g153666a7d9bb
-In-Reply-To: <cover.1785832297.git.u.kleine-koenig@baylibre.com>
-References: <cover.1785832297.git.u.kleine-koenig@baylibre.com>
+	s=arc-20240116; t=1785834980; c=relaxed/simple;
+	bh=phSDRUFl3KB9oxmhLnro70tI6ZGimYikKTJ+ouQ+SwI=;
+	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
+	 Message-Id:References:To; b=CKm8H0hZgVhQ0MeoSXyJPJpezzAh0Vq9/ralwdSeD+3YNU56cG62WGJlA3gq4HkOJSIQtNHoSycY8WsJSLBxCSHdrEOqKzvVAtZwZ5TkTvcx33OMQcjKH50Uft7BN5h181Adp8C8LJtjuYKzsO1AR4LQpeL11mg/BbMaxfmCcTs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=zju.edu.cn; spf=pass smtp.mailfrom=zju.edu.cn; arc=none smtp.client-ip=4.193.249.245
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=zju.edu.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zju.edu.cn
+Received: from zju.edu.cn (unknown [10.190.132.129])
+	by mtasvr (Coremail) with SMTP id _____wDHoX7SrXFqzRNkAA--.13767S3;
+	Tue, 04 Aug 2026 17:16:03 +0800 (CST)
+Received: from smtpclient.apple (unknown [10.190.132.129])
+	by mail-app3 (Coremail) with SMTP id zS_KCgD3DXDRrXFqHMjvAw--.8415S2;
+	Tue, 04 Aug 2026 17:16:02 +0800 (CST)
+Content-Type: text/plain;
+	charset=us-ascii
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1067; i=u.kleine-koenig@baylibre.com; h=from:subject:message-id; bh=9b5hv7NuP99bZVltiQNQtGI97d1HD/5btdiVcCguw9s=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBqcamlu5p3PXOIMm7ZGkDo+M8cuQ1Oq+++/vUWW DOgHUM0vvKJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCanGppQAKCRCPgPtYfRL+ TuPHB/4u/hPqhhxuhOxZ18/l8nozrCvf0HZOeFE79bSNKEV2sJNIb7lBbB9SJ+uH1R2r3InZSVF HxcZdVlc/VkzRj3hAhegGeysrH5sdk/F6wVrgYeGDBM19Y1CMaQyrPzhlueaEKoKKbZI0bIpc+o 3g8oAtWZDLsaLY+ehbAwEWHm1C7hT/MN8ZpQmshcQohrtOWQwVwdIdN8a6RLffy9mt6mm1vnwEe BNm1awiZUVAR8tgM4erkb+Q35J8fVwl0vAlKwCr8WF5RPw9Sn9NZPBZnVyPAh7DH4BHwQPiBJ0f hf6OY6tW7IFrmTRhxtn6PjXYGLXFrHwhTG46iVZK7/ySHWwh
-X-Developer-Key: i=u.kleine-koenig@baylibre.com; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3774.600.62\))
+Subject: Re: [PATCH v2] tty: serial: max3100: shut down timer before freeing
+ port
+From: Fan Wu <12321260@zju.edu.cn>
+In-Reply-To: <2026080353-bats-jailhouse-804f@gregkh>
+Date: Tue, 4 Aug 2026 17:15:50 +0800
+Cc: Fan Wu <fanwu01@zju.edu.cn>,
+ jirislaby@kernel.org,
+ broonie@kernel.org,
+ zhao.xicheng@vivo.com,
+ linux-serial@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Message-Id: <0FEECD29-C7BE-4D4D-8441-3F8BA3C55902@zju.edu.cn>
+References: <2026073036-coping-starter-ad07@gregkh>
+ <20260801061208.356142-1-fanwu01@zju.edu.cn>
+ <2026080353-bats-jailhouse-804f@gregkh>
+To: Greg KH <gregkh@linuxfoundation.org>
+X-Mailer: Apple Mail (2.3774.600.62)
+X-CM-TRANSID:zS_KCgD3DXDRrXFqHMjvAw--.8415S2
+X-CM-SenderInfo: qrstjiaswqq6lmxovvfxof0/
+X-CM-DELIVERINFO: =?B?anxzZwXKKxbFmtjJiESix3B1w3vZ3A9ovKVTomAyoQazvoRs/NHSP8GI2EvgeEEW7R
+	sfnZPoDCNGYdHSfuFmYJL54WM+1x03kkzY63nJhmkcBmP+T9fi2CBDPmnsJbLEd5LTvupJ
+	AXZl4WhrGaD1d4lVFbI=
+X-Coremail-Antispam: 1Uk129KBj9xXoWruw4DGw4kXryrZF1UKF4DAwc_yoW3GFX_Cw
+	1kJFnrC3s0vF1kGry8GrsFqw45JFW0qryrAw4kJa1kG345Xr4DXr4jq3ySvws0qa95tFnx
+	uw1I9348Z3W29osvyTuYvTs0mTUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUj1kv1TuYvT
+	s0mT0YCTnIWjqI5I8CrVACY4xI64kE6c02F40Ex7xfYxn0WfASr-VFAUDa7-sFnT9fnUUI
+	cSsGvfJTRUUUb-kYFVCjjxCrM7AC8VAFwI0_Gr0_Xr1l1xkIjI8I6I8E6xAIw20EY4v20x
+	vaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxS
+	w2x7M28EF7xvwVC0I7IYx2IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxV
+	WxJr0_GcWl84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_
+	GcCE3s1lnxkEFVAIw20F6cxK64vIFxWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqjxCEc2
+	xF0cIa020Ex4CE44I27wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_
+	Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x
+	0EwIxGrwACjcxG0xvY0x0EwIxGrVCF72vEw4AK0wCF04k20xvY0x0EwIxGrwCFx2IqxVCF
+	s4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r
+	1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWU
+	JVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6r
+	1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Jr0_GrUv
+	cSsGvfC2KfnxnUUI43ZEXa7IU85l1PUUUUU==
 
-serial8250_pnp_init() is only called from serial8250_init() which is
-marked with __init, so the pnp init function can also get the same
-marking. serial8250_pnp_exit() is only called from __init and __exit
-code, so __init_or_module is appropriate for that.
+Hi Greg,
 
-Signed-off-by: Uwe Kleine-König (The Capable Hub) <u.kleine-koenig@baylibre.com>
----
- drivers/tty/serial/8250/8250_pnp.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Sorry, I don't have MAX3100 hardware, so I have not tested this on
+hardware.
 
-diff --git a/drivers/tty/serial/8250/8250_pnp.c b/drivers/tty/serial/8250/8250_pnp.c
-index 6bfdeff5fe22..7decf62400ab 100644
---- a/drivers/tty/serial/8250/8250_pnp.c
-+++ b/drivers/tty/serial/8250/8250_pnp.c
-@@ -526,12 +526,12 @@ static struct pnp_driver serial_pnp_driver = {
- 	.id_table	= pnp_dev_table,
- };
- 
--int serial8250_pnp_init(void)
-+int __init serial8250_pnp_init(void)
- {
- 	return pnp_register_driver(&serial_pnp_driver);
- }
- 
--void serial8250_pnp_exit(void)
-+void __init_or_module serial8250_pnp_exit(void)
- {
- 	pnp_unregister_driver(&serial_pnp_driver);
- }
--- 
-2.55.0.11.g153666a7d9bb
+You're right about the extra state. I'll rework the cleanup to use the
+existing startup/unwind state instead of adding irq_registered, then
+send v3 after rebuilding it.
+
+Thanks,
+Fan
+
+> On Aug 3, 2026, at 20:56, Greg KH <gregkh@linuxfoundation.org> wrote:
+
+> LLMs _love_ to use boolean flags to attempt to figure things out that
+> they can't seem to determine.  Are you _SURE_ this really is needed?
+> How about unwinding things better so it's not required?  You are just
+> adding another "state" to the device, adding to the complexity overall,
+> which is generally not a good idea.
+> 
+> And do you have this hardware to test this with?
+> 
+> thanks,
+> 
+> greg k-h
 
