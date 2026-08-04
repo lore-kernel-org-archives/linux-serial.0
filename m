@@ -1,77 +1,76 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D29AD445AE3
-	for <linux-serial@vger.kernel.org>; Tue,  4 Aug 2026 08:58:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9746446821
+	for <linux-serial@vger.kernel.org>; Tue,  4 Aug 2026 08:58:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785833909; cv=none; b=ap9PJBrTWtVMCPgbQumYnyAozcnw7CFBy1QN1hDlhmD/bc+Qt82TzJeIIpZ7p7EXgIsS/z00hdA2VulwpRl/AF5SDjzyIIKNlpgkTmCN6YV/bgBkhTk91oBpKMZVv7hADhMPHf/QnoOAhcKuHbS5UblI8zojYn0YOgHtnXIseGw=
+	t=1785833911; cv=none; b=mLAYE8TLHrRL7FEAlhgGCReVpVczfp4zyBYcw+PL1OwCEHBH0LyiRO5DXgo/8r/LgLEay9mhUCMtg8OW3mWCaJ/kPqsbAPJD7CXGUmAGVFi8dpGGqxUpUTrJIH3Be8ibG9cI6wgNXg85MY/EA3I85wbv/WU3W8s/i2k+83hPQ8w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785833909; c=relaxed/simple;
-	bh=71axuqcdIWYyzTSqeq7Ho6eKIQvZa/VH/yJAtF1pi4Y=;
+	s=arc-20240116; t=1785833911; c=relaxed/simple;
+	bh=gk6JcyJKTdGD6/CklPk8oD3ZXcxR4v8iNyYK3AygeO0=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=NnqggI2du74pw239lrEuTqk4WDNXZTmDQZCwChT9lbHciGicahAmUVvO91KeUE+SYufLiu8x3hwwbWJlvg4OvaS4rToUBozoPAbsWFGRjMJKwPRNEU7wIbmL62awCqR+dNri5FQ+m2UsICsJL4k2eh9Qoy97olSr8OhXbJ9rmdE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=grUTPq8S; arc=none smtp.client-ip=209.85.128.48
+	 MIME-Version:Content-Type; b=k67tcTmXUAY5+ZzGNDqjhGrmcDiBPsq4eMpdwQ/LL3cp/j9FLs8FEFRZ8VBiE7KkR2yKfmkzv4pZ5n0zRi7AX9V7fX2MeQD+U422w6HL07blY4+rpFgry6kwuSwR8iZ0CyCMI83FY6OLn+UjFNWaQCMx7lElAVyXuctz+SxhjOg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=gOG3vMqr; arc=none smtp.client-ip=209.85.128.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="grUTPq8S"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-49556f97a9dso19539475e9.1
-        for <linux-serial@vger.kernel.org>; Tue, 04 Aug 2026 01:58:27 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="gOG3vMqr"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-493b966dd74so16684155e9.3
+        for <linux-serial@vger.kernel.org>; Tue, 04 Aug 2026 01:58:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1785833906; x=1786438706; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1785833907; x=1786438707; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=qZlncH+fc7Qjn+MG/IiL0HUtec9ZDNYqZDynW85gEes=;
-        b=grUTPq8SXzE0DSQkMMfjkwqLWgrPiDNCySqTCAHGEX664eP/rIpQJXUrHJ6dxFPWLc
-         t/uvZlsyaMvE5XckmIhwj17ClVhbuhKN7Sqsr+OpEcnNVOW3XmBTTWnpidD7+jAzy6hn
-         vvjo29Q/YkHjk6lqgSciq9trLyCs/Br3jH65j8hkYQuUFxE00VMCDaF0glTD694hJuVK
-         qKrbwAZXCzedLCUSA7CL9FibQ/oZBXG9HfxxtBcH7dWf06Qww+MnDQ7uZpR+/xw3Sg05
-         5ExJ1OP+k1xDCH/Wm/mufq2OkI3wvpq7Z5+2eQxVYCoCVjMO/bYBqu6avgxwHK/3udpB
-         hhkA==
+        bh=92DZp8Jau+VN4V5EfNugjZTHDMsoIzvzLmLfhOU2IAs=;
+        b=gOG3vMqr9FQzw85olRyy42Ok5ak5kP0Awls7rNdctN+LxE14/I7BN603jMw9T6f1U4
+         VfplqLWcMzWKJwBwvBn7CVuQMgnQAY8wkTdF3Bfuj1yTGlJInmC7Jdo6qV/jNSLqA//W
+         dQ1eUOUeRCleC1X02GNU4MLLqfXWcUN7Fl1JFeBy/1NmdOMdzwR+glW/b9XsB+3rhBjf
+         SytuvdNWyH8ttjzHVdGTx92HciFXfXKo69ky5ysqUCDjBwOrNcEfPbr7jA1vL500pJfk
+         b6tXSvzNqtvhfgSTya0uLiIYJwVBjXiXJnu+XxegkkieV2hK963gsOkd6uH5p8bmBYRL
+         pW1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785833906; x=1786438706;
+        d=1e100.net; s=20251104; t=1785833907; x=1786438707;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=qZlncH+fc7Qjn+MG/IiL0HUtec9ZDNYqZDynW85gEes=;
-        b=G+UPoccDHboXJWnAQfPz1ENfWRL0HJ9LgjjcbltFzwkaazA/57LgpXpFkMt7KjTbVN
-         4szEgqwBoHx748FJX2tVfg3Av6jq9ljjxVBsnK8PqjQeAw7ylrjod+A+8ABxlqXgovA9
-         R0FJOePZHQQ5QI26VO4OjCI0YbEFL5e+7zCCSPcBttOnKnHfYeYWtnltTSJUwAZ6rFcL
-         nNa+fjanPUTiyTjvhaaRN4yxSe8k+gqztOI4VIBIctvnDVkJdxnmciv1x1lTXwd49+Wt
-         OBqZqG0FpMTUdzKUPT5aWtCWXHptwQrU6VqYFjm08GIHXZS+ttIexcj/FFvVZWXELhKd
-         H1HQ==
-X-Forwarded-Encrypted: i=1; AHgh+RqG1V2JqwGaPY+FBSculriyjYp2fwnYr6KRdvOGlpHax01RJLqFJr7KE/v/MtcFMz7eAm4G4/GTNQSRAqc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxYZB9XPPCsHboJ1AAWsWUOWDcZdHEjDp6BVFVKfFwyz41/zYKF
-	Oks4YvgDXFrGBquaxC9xppdOMQroxN5b47g5SDg86qslpDfZl04Xe1R+vR6G60zblq0=
-X-Gm-Gg: AR+sD13gYCv9D7R+aNS+fEkMtJNF9k2zKYTfaBRoaPB81HC/0ANJ0CbigeBtdp2gRh+
-	ATT4FuPgtyCRZ+ISRSsdempD/zeG85U4waP5IT7N4J/fZlgaa1ecgIxmjH1GNkBmTV+S51YBrB/
-	fxXSGbabGQcstiRG/D0Tswt2hqTKewVuRFc+chXFZBd2BJSFx5VqgD6nzJklv+UOuULCN1D7jWC
-	3NDuVaUGg3nkRwBV2TTccdCwf15Q6jo1xA0ti+uzxvejLem0ExTzuvL9rpgMopzaaCWJqg+5l8W
-	7uzsIGSBjCYTFe6601zC5whFReYD/sHW9v+QHIIFdMwxbFTuPDMvdAjo2oSrxAT675W8OT2Aol+
-	ZjjCRvZMfleaTna9v3Z/8bHzS8i1Sxh//sWi1FSrzzohtlLLgRhxuHmPQGgRngaOzqp9vNG6gFo
-	uctIdCeTsfFuYKBvYhHU1u80VsQjto9//9ioFf+6suGwe63y3c5ElWVnORkAGrpXrmZ7KQxsTE7
-	32GW8fY82KF8ZXg7PwLzvslxutMdW+Z2eNEvxMwjcA/Dx6pOBoFWl0bBXdUPpI=
-X-Received: by 2002:a05:600c:19cf:b0:496:bbce:fd with SMTP id 5b1f17b1804b1-4980c66c73amr312828585e9.6.1785833905661;
-        Tue, 04 Aug 2026 01:58:25 -0700 (PDT)
+        bh=92DZp8Jau+VN4V5EfNugjZTHDMsoIzvzLmLfhOU2IAs=;
+        b=riuuCqBiLGD71PGi8lPirmutCasir/qRxEx3q61VQ9n2SCz5jaeo6GsMoj5CmqQwyo
+         3UTua3Jl3PbLOQxKVzkDd+ZIA5RShmsxDsGndF29JgQWwEXEbSWRA6Iof3sm/6h6JfMk
+         N9/r/nslk/K7ChdxRSVl6SIrvY4XxfBbF6M0qd+VeJwpqUi+mZrke0IyN2E0fZTMIEHd
+         ErogtEDF2QFJiYjZ/W+J707r6lkPT6RHTxYsBvobFIV32gC441Izo7NrsSJRvx09GAzs
+         mtMK8xBflCLfFzBGvH6TP3Am4yQ0w94ptF6FoncaSVCe3wjgyEMP7bQO/XyuCiuPh+ym
+         Xvbg==
+X-Forwarded-Encrypted: i=1; AHgh+RrfKWE+YwKEU8aGDInbQj7MbX5dWcqMFtU7GOUMjRvSz17Egt7C98oIf3374onXO2Yiloxse9I6V5LerHU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzJp3EIsYFS7OeZ8sexoOOpwE9qU9WU7DyrXljNBOGpJze8duNW
+	G0EuoDTcKHhCCdRResrLZx9i8anCwoOUIPVIrQMC4FyvukfFbIYLpFXZNu84vEpy/YU=
+X-Gm-Gg: AR+sD10GDAkCXgfO/caePWFAB41aW+F7md4YKEtS/CWhkGX70U75Dh7JYcJcosxUAmn
+	QNZZVWPFALd1aVzDqKNIeuFg5tABma1yQUZj+q5GGKMZQ9EMOYi2WwEc6klNG2OdY+8XILJdpMU
+	Bzz8NqqBasychl4Fa5B5b4JOCi5UxogBIZwrgAMcYzcsQ3ol+TBrBQR/N9TB1DbZ4kGeRNALpvx
+	0PbwL7wybpxk4jhJZv/+WiN4SGKWi4+9Qsyoe6sx69T41b4MWnHgj6A0l0B0V9eTYWP2uqeG28c
+	TvlLM7lNBuhdk5tzMnpESfWE3OzkjWaOqRudY36dZlJTd/P+WHgP8U1bn/EE4S1eUnVb+3e8lah
+	KNDK/p7j+YwWaH8ArPrftjtjIkalSTU0gpexG+Nieaamol7zlTGPyysxOYmSmr2P5ot/CNpqgL0
+	eoJf4iyGPrww524+dvPl/44DdQj7io0y55HhcchYz1/GHoc/CBsMT0nELQb9dghm3nmO17DSmKj
+	O53wlq4Pniw06Tk0c4kghLcbsF/YjRyUtySIFQnUJltc4sbpyF1
+X-Received: by 2002:a05:600c:548d:b0:495:6134:6d61 with SMTP id 5b1f17b1804b1-4980c674de0mr339437805e9.19.1785833907008;
+        Tue, 04 Aug 2026 01:58:27 -0700 (PDT)
 Received: from localhost (p200300f65f01710496a76592f11363a3.dip0.t-ipconnect.de. [2003:f6:5f01:7104:96a7:6592:f113:63a3])
-        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-49949fe2f4fsm80024315e9.10.2026.08.04.01.58.25
+        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-49949fef72esm81915375e9.15.2026.08.04.01.58.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Aug 2026 01:58:25 -0700 (PDT)
+        Tue, 04 Aug 2026 01:58:26 -0700 (PDT)
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig=20=28The=20Capable=20Hub=29?= <u.kleine-koenig@baylibre.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>
 Cc: Hugo Villeneuve <hvilleneuve@dimonoff.com>,
 	John Ogness <john.ogness@linutronix.de>,
-	Alan Cox <alan@redhat.com>,
-	Atsushi Nemoto <anemo@mba.ocn.ne.jp>,
 	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH v2 1/8] serial: txx9: Drop noop probe function and dangerous remove callback
-Date: Tue,  4 Aug 2026 10:57:53 +0200
-Message-ID:  <2165469758f26f79c0267386bc6cd92379fb0e2c.1785832297.git.u.kleine-koenig@baylibre.com>
+	linux-serial@vger.kernel.org,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH v2 2/8] serial: txx9: Simplify knowing that .iotype is always UPIO_PORT
+Date: Tue,  4 Aug 2026 10:57:54 +0200
+Message-ID:  <b90344819432e493f54d557ec06e734e3392724f.1785832297.git.u.kleine-koenig@baylibre.com>
 X-Mailer: git-send-email 2.55.0.11.g153666a7d9bb
 In-Reply-To: <cover.1785832297.git.u.kleine-koenig@baylibre.com>
 References: <cover.1785832297.git.u.kleine-koenig@baylibre.com>
@@ -82,117 +81,131 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3747; i=u.kleine-koenig@baylibre.com; h=from:subject:message-id; bh=71axuqcdIWYyzTSqeq7Ho6eKIQvZa/VH/yJAtF1pi4Y=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBqcamUBn9d6xxzHZR29Wzep6BwAsgONGRDSv6dv JzcS96Gb1GJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCanGplAAKCRCPgPtYfRL+ TtrSB/9HfkwZiuuKjzYm3o4SLkH6gd+MsJayTzE3p/ymmYqLKJMLN87mxU4USYadZWhBt+zQzRz WmlxDjLM+sJ16dteRlyIY6RReOr1VK+OvW4VrU0dxmD9LCgot1HbWKUcuCFaoL54DhIF3rFpqVz vdFBemEc7Vjq3xEspLiIR5vb9CdF2qs0SueY3HVoN9DuTY47qlUQuqmgXydOwIttpeXBdP3ZWpV fr7MmJvnbFQ4/kCYQTPbb6F+gB4LpJCAA0m+6fwKSvXj6fKR9Y5gLQMPuM5hig59vETVDMH+JTg yBC/3svog1Bff0WAz69VSWfufwnVIMdkyPY5jbB6V3N73y8J
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3377; i=u.kleine-koenig@baylibre.com; h=from:subject:message-id; bh=gk6JcyJKTdGD6/CklPk8oD3ZXcxR4v8iNyYK3AygeO0=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBqcamXaDiS3RBR0+qbBwNAwVWgqMVXzklKa4F9s t/YdciWIyWJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCanGplwAKCRCPgPtYfRL+ TpYnCACULkPZUr2OmqjBZ4MUHej3MCGBPub2I3LblGvYBNm2YfQfDoGLZuAYNBbg0qBVyTm3mJM bUxKi6H8sMtNnKBtLty0PyEZMZSF6V82uzdDwH+7YRmxvrVe9rLnmWTmr4Hqsdpl+VxA0b39+fj GEGSIMOltQHQ2MlL6Q+O83TD/UP0N90zNodtJDuQNnM2scpvOxqkotvIO3RqRc1Vi7QssajpNWs ESUsFFdTH+3JJIBP9+EQPKWLioiJcmYC5X/AVMd/Y1Q8O4uDPg+ZbAWiiMDF/jXIdUSx0FgaaZo voB1fD6WCn8TXkmCdjK5cxf0WiDKKRhx5+aH1V7/a8zdz8+e
 X-Developer-Key: i=u.kleine-koenig@baylibre.com; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 
-The only platform device that can be bound to the driver is allocated by
-the driver itself. That device doesn't have platdata, so the probe
-function only consists of a loop that is never run and thus can be
-dropped without loss of functionality.
+After the previous commit it's obvious that .iotype is always UPIO_PORT.
+Simplify some functions accordingly.
 
-The remove function then should better not undo things that were not
-done in the first place. That happens because serial_txx9_init() calls
-serial_txx9_register_ports() with the created platform device and so
-up->dev == &dev->dev evaluates to true and uart_remove_one_port() is
-called twice for each port.
-
-So let serial_txx9_exit() undo exactly what serial_txx9_init() does and
-remove the useless respectively wrong functions.
-
-Fixes: 0970769aceb9 ("[SERIAL] serial_txx9 driver update")
+Suggested-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Link: https://lore.kernel.org/linux-serial/01a84877-9cc7-8136-d5a8-e368a36cda93@linux.intel.com
 Signed-off-by: Uwe Kleine-König (The Capable Hub) <u.kleine-koenig@baylibre.com>
 ---
- drivers/tty/serial/serial_txx9.c | 55 ++------------------------------
- 1 file changed, 3 insertions(+), 52 deletions(-)
+ drivers/tty/serial/serial_txx9.c | 69 ++++----------------------------
+ 1 file changed, 7 insertions(+), 62 deletions(-)
 
 diff --git a/drivers/tty/serial/serial_txx9.c b/drivers/tty/serial/serial_txx9.c
-index 4ae9a45c8e3a..ef56979321b9 100644
+index ef56979321b9..bda7f7527b8d 100644
 --- a/drivers/tty/serial/serial_txx9.c
 +++ b/drivers/tty/serial/serial_txx9.c
-@@ -1009,7 +1009,8 @@ static void serial_txx9_unregister_port(int line)
- 	struct uart_port *uart = &serial_txx9_ports[line];
+@@ -158,25 +158,13 @@
  
- 	mutex_lock(&serial_txx9_mutex);
--	uart_remove_one_port(&serial_txx9_reg, uart);
-+	if (uart->iobase || uart->mapbase)
-+		uart_remove_one_port(&serial_txx9_reg, uart);
- 	uart->flags = 0;
- 	uart->type = PORT_UNKNOWN;
- 	uart->iobase = 0;
-@@ -1019,52 +1020,6 @@ static void serial_txx9_unregister_port(int line)
- 	mutex_unlock(&serial_txx9_mutex);
+ static inline unsigned int sio_in(struct uart_port *up, int offset)
+ {
+-	switch (up->iotype) {
+-	default:
+-		return __raw_readl(up->membase + offset);
+-	case UPIO_PORT:
+-		return inl(up->iobase + offset);
+-	}
++	return inl(up->iobase + offset);
  }
  
--/*
-- * Register a set of serial devices attached to a platform device.
-- */
--static int serial_txx9_probe(struct platform_device *dev)
--{
--	struct uart_port *p = dev_get_platdata(&dev->dev);
--	struct uart_port port;
--	int ret, i;
--
--	memset(&port, 0, sizeof(struct uart_port));
--	for (i = 0; p && p->uartclk != 0; p++, i++) {
--		port.iobase	= p->iobase;
--		port.membase	= p->membase;
--		port.irq	= p->irq;
--		port.uartclk	= p->uartclk;
--		port.iotype	= p->iotype;
--		port.flags	= p->flags;
--		port.mapbase	= p->mapbase;
--		port.dev	= &dev->dev;
--		port.has_sysrq	= IS_ENABLED(CONFIG_SERIAL_TXX9_CONSOLE);
--		ret = serial_txx9_register_port(&port);
--		if (ret < 0) {
--			dev_err(&dev->dev, "unable to register port at index %d "
--				"(IO%lx MEM%llx IRQ%d): %d\n", i,
--				p->iobase, (unsigned long long)p->mapbase,
--				p->irq, ret);
--		}
--	}
--	return 0;
--}
--
--/*
-- * Remove serial ports registered against a platform device.
-- */
--static void serial_txx9_remove(struct platform_device *dev)
--{
--	int i;
--
--	for (i = 0; i < UART_NR; i++) {
--		struct uart_port *up = &serial_txx9_ports[i];
--
--		if (up->dev == &dev->dev)
--			serial_txx9_unregister_port(i);
--	}
--}
--
- #ifdef CONFIG_PM
- static int serial_txx9_suspend(struct platform_device *dev, pm_message_t state)
+ static inline void
+ sio_out(struct uart_port *up, int offset, int value)
  {
-@@ -1096,8 +1051,6 @@ static int serial_txx9_resume(struct platform_device *dev)
- #endif
+-	switch (up->iotype) {
+-	default:
+-		__raw_writel(value, up->membase + offset);
+-		break;
+-	case UPIO_PORT:
+-		outl(value, up->iobase + offset);
+-		break;
+-	}
++	outl(value, up->iobase + offset);
+ }
  
- static struct platform_driver serial_txx9_plat_driver = {
--	.probe		= serial_txx9_probe,
--	.remove		= serial_txx9_remove,
- #ifdef CONFIG_PM
- 	.suspend	= serial_txx9_suspend,
- 	.resume		= serial_txx9_resume,
-@@ -1251,9 +1204,7 @@ static void __exit serial_txx9_exit(void)
- 	platform_driver_unregister(&serial_txx9_plat_driver);
- 	platform_device_unregister(serial_txx9_plat_devs);
- 	for (i = 0; i < UART_NR; i++) {
--		struct uart_port *up = &serial_txx9_ports[i];
--		if (up->iobase || up->mapbase)
--			uart_remove_one_port(&serial_txx9_reg, up);
-+		serial_txx9_unregister_port(i);
- 	}
+ static inline void
+@@ -698,57 +686,15 @@ serial_txx9_pm(struct uart_port *port, unsigned int state,
  
- 	uart_unregister_driver(&serial_txx9_reg);
+ static int serial_txx9_request_resource(struct uart_port *up)
+ {
+-	unsigned int size = TXX9_REGION_SIZE;
+-	int ret = 0;
++	if (!request_region(up->iobase, TXX9_REGION_SIZE, "serial_txx9"))
++		return -EBUSY;
+ 
+-	switch (up->iotype) {
+-	default:
+-		if (!up->mapbase)
+-			break;
+-
+-		if (!request_mem_region(up->mapbase, size, "serial_txx9")) {
+-			ret = -EBUSY;
+-			break;
+-		}
+-
+-		if (up->flags & UPF_IOREMAP) {
+-			up->membase = ioremap(up->mapbase, size);
+-			if (!up->membase) {
+-				release_mem_region(up->mapbase, size);
+-				ret = -ENOMEM;
+-			}
+-		}
+-		break;
+-
+-	case UPIO_PORT:
+-		if (!request_region(up->iobase, size, "serial_txx9"))
+-			ret = -EBUSY;
+-		break;
+-	}
+-	return ret;
++	return 0;
+ }
+ 
+ static void serial_txx9_release_resource(struct uart_port *up)
+ {
+-	unsigned int size = TXX9_REGION_SIZE;
+-
+-	switch (up->iotype) {
+-	default:
+-		if (!up->mapbase)
+-			break;
+-
+-		if (up->flags & UPF_IOREMAP) {
+-			iounmap(up->membase);
+-			up->membase = NULL;
+-		}
+-
+-		release_mem_region(up->mapbase, size);
+-		break;
+-
+-	case UPIO_PORT:
+-		release_region(up->iobase, size);
+-		break;
+-	}
++	release_region(up->iobase, TXX9_REGION_SIZE);
+ }
+ 
+ static void serial_txx9_release_port(struct uart_port *up)
+@@ -983,7 +929,7 @@ static int serial_txx9_register_port(struct uart_port *port)
+ 		uart->membase = port->membase;
+ 		uart->irq      = port->irq;
+ 		uart->uartclk  = port->uartclk;
+-		uart->iotype   = port->iotype;
++		uart->iotype   = UPIO_PORT;
+ 		uart->flags    = port->flags
+ 			| UPF_BOOT_AUTOCONF | UPF_FIXED_PORT;
+ 		uart->mapbase  = port->mapbase;
+@@ -1081,7 +1027,6 @@ pciserial_txx9_init_one(struct pci_dev *dev, const struct pci_device_id *ent)
+ 	port.flags |= UPF_TXX9_HAVE_CTS_LINE;
+ 	port.uartclk = 66670000;
+ 	port.irq = dev->irq;
+-	port.iotype = UPIO_PORT;
+ 	port.iobase = pci_resource_start(dev, 1);
+ 	port.dev = &dev->dev;
+ 	line = serial_txx9_register_port(&port);
 -- 
 2.55.0.11.g153666a7d9bb
 
