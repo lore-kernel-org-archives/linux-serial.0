@@ -1,143 +1,131 @@
-Received: from TYPPR03CU001.outbound.protection.outlook.com (mail-japaneastazon11012056.outbound.protection.outlook.com [52.101.126.56])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0652360EEE;
-	Wed,  5 Aug 2026 00:29:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.126.56
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785889749; cv=fail; b=HaM9X39/yTDqYmYtypC0Iaq8fxIFh1bh5p6tqu1h2Pz+ZmSgMQ4a9H5KVgQfx9qNCj4dDGIh7R5q1dZWbSKoajm6DHFZtcoa3Lc0n0bXC3eCqDoqdvGzBggunoaTqHyVbgcQHExTENIrYCcjuelm02KEJHV/LCcUAcVGaxOg+pM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785889749; c=relaxed/simple;
-	bh=54kNct6w/kejn073xna38Cq/4HJJh7eaPjTnanqiIBM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=PtqJ8LyGRHQuZTsqXBPKARcg825BJl3I/ZhVLslfj3AIEvzVka7Un3JWkHdnOcvJmIHaK2f7Q6RqNqsvVkM8ubZj61iHsMhpVNUNq6QPvgetM0swpOzNP3ff37F3gQiEwanaUUZQzK8EtIk+yY1op++LTx73jJRbNH4zZBfAXN8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=moxa.com; spf=pass smtp.mailfrom=moxa.com; dkim=pass (1024-bit key) header.d=moxa.com header.i=@moxa.com header.b=c4SvvPoI; arc=fail smtp.client-ip=52.101.126.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=moxa.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=moxa.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=moxa.com header.i=@moxa.com header.b="c4SvvPoI"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=DZA5PW1yPwDe8rwzPP4NEsTtBuZXVdVXC4ZborlrJV9l9jwCUwy4+smkpEY/yZwblEIdHhNQXJuTLyv0LbSJP04tbuUVfVlWIbUWai3n6/pE1jxJUfGRYw/holmSZxkgCJZ4QV6IY5yHGZmcUiRKJp8PpTWLPXFxSIJRQ8HWFKubPtYm+pd80tRsB/PDEkmU2oHNL5ElDn8YDdRE9mzMigjiVSSPBNUYroN5g/LeFo5X1OanC7lJ2HaQMWUHUGZEqXVD7muv0oUYpoCumrqUJs9Fun2XqOYdFK9nI/Cm1VcTPFgkX45eidAYjuOZ8tECgYZVwBtUt0k/G+fikiiZrA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wBpM2GGwrlyyaPnfTMqv9O0gwhaoxUn2QERvTjLJY0s=;
- b=v6WrYi1JPX7vOYMLgN7lja3T+3xSqK7pRQjWi6Gu1+ic/MI5gcbce5OjZbocR7KqybrXTorczuBZJx7KGJ0RB6j4Zj7wffRSion4ewDglHN5MZ4fzFmQQqVgS1mxdpNxqnB3b4jP4iUDSbrnI0X0wiWEb9gZUOsdvlowj5yrF4L4pbOk4zCqVA7XuBxTgnLWoEzwYOPg0wZ3rim25iLdhD0Fv0ZDCIMEShr4Wt5Ft0MMccliBwz2GgMp+unkwLY2lpTneUz7gIwJS9cZZ7mObLV4y4GsJ9apnu9hgJHGFGvnI14NYRwYAacLst7rkaSZsgx2SG8zWoUR4nbPcQQx3Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=moxa.com; dmarc=pass action=none header.from=moxa.com;
- dkim=pass header.d=moxa.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=moxa.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wBpM2GGwrlyyaPnfTMqv9O0gwhaoxUn2QERvTjLJY0s=;
- b=c4SvvPoIQA38mkNJOcrq7E6Q+Yy6RqRYJ2CKNUtEGC/OkinF5EVzVGRDH8L/6Vk+u7Gu9fTHqURVe9LMf8e/mvbG2Zyf9tJTNzZIjH5hd6BLD+ISYcc4kM1AjGGVfPA6/BiiPFa1xLEQQ2+vma2mYGuoB55mTKjGrHLHigWpl7Q=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=moxa.com;
-Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
- (2603:1096:301:115::14) by TYZPR01MB5328.apcprd01.prod.exchangelabs.com
- (2603:1096:400:343::12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.292.15; Wed, 5 Aug
- 2026 00:29:03 +0000
-Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
- ([fe80::ae38:e821:cf7d:3717]) by PUZPR01MB5405.apcprd01.prod.exchangelabs.com
- ([fe80::ae38:e821:cf7d:3717%4]) with mapi id 15.21.0270.017; Wed, 5 Aug 2026
- 00:29:02 +0000
-Date: Wed, 5 Aug 2026 08:28:59 +0800
-From: Crescent Hsieh <crescentcy.hsieh@moxa.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH v2] tty: moxa: remove driver.
-Message-ID: <anKDyz8AEpyDpdeS@moxa-KabyLake-H>
-References: <20260804-x-remove-moxa-v2-1-947c039b66e8@linuxfoundation.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260804-x-remove-moxa-v2-1-947c039b66e8@linuxfoundation.org>
-X-ClientProxiedBy: TP0P295CA0001.TWNP295.PROD.OUTLOOK.COM
- (2603:1096:910:2::10) To PUZPR01MB5405.apcprd01.prod.exchangelabs.com
- (2603:1096:301:115::14)
+Received: from zg8tmtyylji0my4xnjqumte4.icoremail.net (zg8tmtyylji0my4xnjqumte4.icoremail.net [162.243.164.118])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 25DBD2561A7;
+	Wed,  5 Aug 2026 00:41:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.164.118
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785890515; cv=none; b=jmp7g5FvF5ZhX+VdtbupjhNhIZ1ClvkGmhR+blBhA4UMcD/9BKEfcx9GwJ3WuId4Zr1laTHxp0t90LT/FsvjY5e5JtU0xLW0007tXooHNIUxhPi1dVuSPgxz+sMmLDoBIj8MvQ+S4EQZznuvIUtdLxSMddSkgdCfyIpG17QmqxM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785890515; c=relaxed/simple;
+	bh=QL1C8oriicwyazzjRilusfKw0JwNpaWhAYQxMfbAdSE=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=FHAvJmDFah7R8RmlNe2asTBePV5RhCMucGJHeTK35BWq5CcE5nMfYK+xoPeN6a4dSJ/xJjVIvdNgcUc7YT0wxXjmSqijW8kMEKxgzriblDWkFIlLXJMQHgYG17tYtsT5yrFmI5OAZ+Yciv8GYOU973ScywuEzP77zqFtngYXdDU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=zju.edu.cn; spf=pass smtp.mailfrom=zju.edu.cn; arc=none smtp.client-ip=162.243.164.118
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=zju.edu.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zju.edu.cn
+Received: from zju.edu.cn (unknown [10.98.66.117])
+	by mtasvr (Coremail) with SMTP id _____wDX3y_AhnJq2NNmAA--.15575S3;
+	Wed, 05 Aug 2026 08:41:37 +0800 (CST)
+Received: from localhost.localdomain (unknown [10.98.66.117])
+	by mail-app4 (Coremail) with SMTP id zi_KCgCXyTC+hnJqZfnlAg--.1858S2;
+	Wed, 05 Aug 2026 08:41:35 +0800 (CST)
+From: Fan Wu <fanwu01@zju.edu.cn>
+To: gregkh@linuxfoundation.org
+Cc: jirislaby@kernel.org,
+	broonie@kernel.org,
+	zhao.xicheng@vivo.com,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org,
+	Fan Wu <fanwu01@zju.edu.cn>
+Subject: [PATCH v3] tty: serial: max3100: shut down timer before freeing port
+Date: Wed,  5 Aug 2026 00:40:39 +0000
+Message-Id: <20260805004039.382698-1-fanwu01@zju.edu.cn>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <2026080353-bats-jailhouse-804f@gregkh>
+References: <2026080353-bats-jailhouse-804f@gregkh>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PUZPR01MB5405:EE_|TYZPR01MB5328:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8bcd910e-c969-41e5-1f47-08def2888c47
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|52116014|376014|23010399003|366016|1800799024|38350700014|56012099006|10067099003|22082099003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	KbfhI1eC6rio49wgcNFysdm3E8dlUWPvNZrcsFw6Mum9aaEZRkDCFTkYpTeWjBoubKV5iA1f44zVzaPdOQvWryflOsw/26kE0DFdP3YFtRT4BBBghhlUtHhyc88bO+wXs2YZizyT8gInFSZBf9z0AYlEGWjDU1vyI8kEusDgCgttbKInRVvJKzYDPW6Vlk9mF45TCO/x5J8wfG9ayAMzafSRgd3U1+vUifg6z7iMXVOl7bT7mkkc2pe9GWOztuKk3nYdaD9FkL4GgfHNpqpv2qyLum3tcqnxfss4VgqszlKaIdkhPQeEESeDTUeNPaPyCmaUX+10hgyF9OLaaik/GBIn/LPfMrKeH+Rf/IOHuVSeVExVwaM3UnYlAVpzGUo96515+7KOl9tFto/SPwRwOemGrjoMXH0LXrE2jC98ntcw6PgX+xEPHKsLRCvzEHemzgDybQUfF1q4dSstEg0Wdy2kP85Bkdr4YHcl4Wyy3CqDlfh2Y4w+zm1OynkACimwW+2rYOARHHtFrOehQLDWRD72D/amDG3M0ubzkeqeY7ALr35zlKiU3t+XTknG2imQyvATNlTeRRa7EurVDOQrJGdv/eciF+0A4Wczisy07lM1MqewmlJSa/eit5YNtPEjgInwGhPByj3deHIJVLlADSf1iKjpuGVPEj7xEjCkZQF/3+2FZ771jAME5/f5zUDOkA2kMB4YLIgsCsDfnP5Izg==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PUZPR01MB5405.apcprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230040)(52116014)(376014)(23010399003)(366016)(1800799024)(38350700014)(56012099006)(10067099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?ZrKiV8XDsikwYprt+Glu84rx/94atvz4IpzZvCe1wbxKneTXpcvRFH2+sfBP?=
- =?us-ascii?Q?PeTNHbiVtO24e0q2fKkdsES4mUUuIz6CAQ1mXqZ0gqhbaulniAWp4eLVsmIF?=
- =?us-ascii?Q?iRxoiQ3wec27KmR+zgV3hIGbsHmn1i0hftHEEfGlpnehaPfXFuk09i2FaIZ5?=
- =?us-ascii?Q?ICzXmT3JFo+d4+hcF84o1GSx1+xalOL6yc0a21UpKNcZ4kBvZNEuzM0NEuk2?=
- =?us-ascii?Q?37ahB+gfPbixbE9WZvrs7tEr5MC3hQvHAbhfL2jBbJN2TI7u+jNlQ2S7fY4j?=
- =?us-ascii?Q?KVyxm/qSKKdSPVsFbTKJH7jRG9PQf1iOVOqwkVRNegBOB2CNKQ0RX3yfTPGK?=
- =?us-ascii?Q?0vIjLEBOuZzMrySbrbiQk+3WKHM4Q2a60eBTcoppdQKiLRiwFKRibWCHw2uA?=
- =?us-ascii?Q?ojz4QaMBXefLtMQh7yyRpPP+gsiUE7XRruvH6b+GR7RJn9qGbeYj0ZzjHN1X?=
- =?us-ascii?Q?uIYLpHeJ+9awVNghaxAdQghNFB94eqiaD9vrrqv3fjWZgX+iafqm8yeUTxAD?=
- =?us-ascii?Q?p8IeBglSAxLRLbo2wfKw/TMUXu0+iqg3AMM/PKj2ILBEhIzRLIlwHQYyWcWo?=
- =?us-ascii?Q?9h1fq429tH+ULkdB3pKH/qbKyBN/I/5TMuiRapFRij2R7BxAzKTNN8Kgs99u?=
- =?us-ascii?Q?N/sXTkkYO1TS7phUs5392C6+bStjsSDToxjGR7OloTOjcX6jnYyaNvlOMTvh?=
- =?us-ascii?Q?PtOSuQZ3De+TNBrliZ2Ojs6NwvWaedLlhz0v1aRI4ZyaQHAsIa55SGfagwh/?=
- =?us-ascii?Q?H73uKTeDL5T/v/f1hyzMoF+gCeQ6zs5bwvYcdvsq7F5ahBHKx/nOnDwqS58h?=
- =?us-ascii?Q?nxDRfecV3tq12LQ8d49aVgpPZfZg1+ht2f54kcX//kYjRvH2Mt+nBEcX/Wzu?=
- =?us-ascii?Q?cXqQkZ3emflOscYu7wTbJgwog+mScvB0h6Yf3fwBPi9FnswpG6XnSdmrhHSy?=
- =?us-ascii?Q?Fe57P1qsHP3nuDVEfDgd0y/tG6/jfpeiDHac4M2a+xyf8vxC6X2TRSNxXtVS?=
- =?us-ascii?Q?dYounQA21oa1k0pDK+aVRZ/1lyxtmpJ5He0RCEXV1QDf3/L81cyVQwSTRMOG?=
- =?us-ascii?Q?ctDY4BK7Q0MrFQYg4ubjW3Ww7ZwjcLkdEHmfqZlHegd2aXVRuaSJlADCEp4Q?=
- =?us-ascii?Q?Lti2qiHI4dPs9bexJ80u1Ulp3LUvpWuj/FoClIee+3FE6XnZuFcz7pnJ+gEG?=
- =?us-ascii?Q?zJrKrBFYnxus1B4JWT1mzoootY1/3Hx5aGMsG9t1TobQCsIeHkbaZi+NIzek?=
- =?us-ascii?Q?PtW/8rp8qNM0HCVuAk4Rde/cRK6gL+jiX713J+BgDGHpv3hr1Od6CMyPqeNo?=
- =?us-ascii?Q?bnnvQ94hF0JYaOtxvecZIF4ncJG5T/Wm65MhkgAZzVpklmG4Vjw/GDfo5rJi?=
- =?us-ascii?Q?N3IKgaN+wxrzc0vwZw0oJn5e/ORP5xYvzdZfdthfLwNr70eF0TcfV/+cjVaX?=
- =?us-ascii?Q?X6uYjQ94mmMOMEbYpm+jidZGSqcMcX8E77IWbnhTxCqIiJD92juzYndl9qyw?=
- =?us-ascii?Q?2TN/s92E/TIcpNVzedC6scWXA4/nQiA8RluzEXsH2CvmV1XkOXBVODJdbbzd?=
- =?us-ascii?Q?0TqV+zsLjrPOQJ1a9Jg5xnBAPxYRvNVyr9kxa7x1zK6ghv8I3/WLJwTTs7o+?=
- =?us-ascii?Q?MuKIK51d93K1qqP6Cfgmv+f2goTDWpaTixZVwrtzrn0Bd0B1qj2tQRPNsfOb?=
- =?us-ascii?Q?JZ/oi5phW2TYwIw23wTBl/Jn70ZvruU50+Kly+yKJI3vca8tCHhF1MEprZEn?=
- =?us-ascii?Q?CS2Z8wM7EPBJzlUwwGI4s+fBpEDL4Kc=3D?=
-X-OriginatorOrg: moxa.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8bcd910e-c969-41e5-1f47-08def2888c47
-X-MS-Exchange-CrossTenant-AuthSource: PUZPR01MB5405.apcprd01.prod.exchangelabs.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Aug 2026 00:29:02.2589
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 5571c7d4-286b-47f6-9dd5-0aa688773c8e
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: HiIITltoxOlAKdPJQk32YOpD6bPzeGUukYVv8MkFJsL5pKPECAMEjrUov5YesfGacTmVHADSenuUgtqNj6P30kcN0MSzf1DiyT7ovL85Zbc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYZPR01MB5328
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:zi_KCgCXyTC+hnJqZfnlAg--.1858S2
+X-CM-SenderInfo: qrstjiaswqq6lmxovvfxof0/
+X-CM-DELIVERINFO: =?B?xCuIiQXKKxbFmtjJiESix3B1w3vZ3A9ovKVTomAyoQazvoRs/NHSP8GI2EvgeEEW7R
+	sfnXz+g1OQfMo27QHy5TwQyZyOVMmQOkizLkuaexDcogPgrmCuPT5teSqe6ob3RG8e4pvW
+	RyO2L90EXdLxFDLi2GMB5rM+H8XhqwExY4Cjs2QP
+X-Coremail-Antispam: 1Uk129KBj93XoW7Ar1xXFWrJF48JrWfZrWxZrc_yoW5JF45pF
+	s3urs8KFWrWr47uFnxCwsxXF15Wa1fJw47Gr1xKw1a9r15JryYg3WxKay7KFW5AFWkWF4D
+	JF95ta98Ar1qy3XCm3ZEXasCq-sJn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7KY7ZEXa
+	sCq-sGcSsGvfJ3Ic02F40EFcxC0VAKzVAqx4xG6I80ebIjqfuFe4nvWSU5nxnvy29KBjDU
+	0xBIdaVrnRJUUU9Cb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2
+	IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48v
+	e4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI
+	0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4A2jsIEc7CjxVAF
+	wI0_Cr1j6rxdM2vYz4IE04k24VAvwVAKI4IrM2AIxVAIcxkEcVAq07x20xvEncxIr21l57
+	IF6xkI12xvs2x26I8E6xACxx1l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE
+	14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2
+	IYc2Ij64vIr41lF7xvr2IYc2Ij64vIr40E4x8a64kEw24l42xK82IYc2Ij64vIr41l4I8I
+	3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxV
+	WUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAF
+	wI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcI
+	k0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r1j
+	6r4UYxBIdaVFxhVjvjDU0xZFpf9x07jbo7NUUUUU=
 
-On Tue, Aug 04, 2026 at 03:35:29PM +0200, Greg Kroah-Hartman wrote:
-> This is a very old driver, and no known hardware is still around for it,
-> and the company says they do not need it anymore, so let's remove it as
-> the LLMs are starting to poke at it and find "interesting" things which
-> will just waste everyone's time given it's not actually used.
-> 
-> So let's drop it.  If someone really needs it, it can come back in the
-> future, in a more "modern" way, as the style here is very old...
+max3100_shutdown() stops the polling timer but returns early during
+system suspend. If the SPI device is unbound before resume, the serial
+core does not call max3100_shutdown() again, so max3100_remove() frees
+the port while the timer remains armed. max3100_timeout() may then
+access the freed port and re-arm the timer.
 
-The removal looks good to me.
+Add final timer teardown to max3100_remove() and use
+timer_shutdown_sync() to prevent a racing callback from re-arming it.
+Also free the IRQ and destroy the workqueue there before freeing the
+port. Keep timer_delete_sync() in max3100_shutdown() so that a
+subsequent open() can re-arm the timer.
 
-Acked-by: Crescent Hsieh <crescentcy.hsieh@moxa.com>
+The workqueue is created before request_irq() and destroyed on both
+request_irq() failure and normal shutdown. Its presence at remove thus
+identifies the IRQ left registered when suspend bypasses shutdown.
 
-With drivers/tty/moxa.c removed, the following device IDs in
-include/linux/pci_ids.h would have no remaining users:
+This issue was found by an in-house static analysis tool.
 
-- PCI_DEVICE_ID_MOXA_CP204J
-- PCI_DEVICE_ID_MOXA_C218
-- PCI_DEVICE_ID_MOXA_C320
+Fixes: 7831d56b0a35 ("tty: MAX3100")
+Cc: stable@vger.kernel.org # 6.2+
+Assisted-by: Codex:gpt-5.6
+Signed-off-by: Fan Wu <fanwu01@zju.edu.cn>
+---
+Changes since v2:
+  - Drop irq_registered; use the workqueue lifetime to decide whether
+    remove must release an IRQ left by the suspend path.
 
-Would it make sense to remove them as part of this patch as well?
+v1: https://lore.kernel.org/all/20260721035631.3186613-1-fanwu01@zju.edu.cn/
+v2: https://lore.kernel.org/all/20260801061208.356142-1-fanwu01@zju.edu.cn/
+---
+ drivers/tty/serial/max3100.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
---
-Thanks
-Crescent Hsieh
+diff --git a/drivers/tty/serial/max3100.c b/drivers/tty/serial/max3100.c
+index 44b745fa26c6..48c66b6e1c18 100644
+--- a/drivers/tty/serial/max3100.c
++++ b/drivers/tty/serial/max3100.c
+@@ -537,9 +537,8 @@ static void max3100_shutdown(struct uart_port *port)
+ 	if (s->workqueue) {
+ 		destroy_workqueue(s->workqueue);
+ 		s->workqueue = NULL;
+-	}
+-	if (port->irq)
+ 		free_irq(port->irq, s);
++	}
+ 
+ 	/* set shutdown mode to save power */
+ 	max3100_sr(s, MAX3100_WC | MAX3100_SHDN, &rx);
+@@ -752,6 +751,14 @@ static void max3100_remove(struct spi_device *spi)
+ 		if (max3100s[i] == s) {
+ 			dev_dbg(&spi->dev, "%s: removing port %d\n", __func__, i);
+ 			uart_remove_one_port(&max3100_uart_driver, &max3100s[i]->port);
++
++			s->force_end_work = 1;
++			timer_shutdown_sync(&s->timer);
++			if (s->workqueue) {
++				destroy_workqueue(s->workqueue);
++				s->workqueue = NULL;
++				free_irq(s->port.irq, s);
++			}
+ 			kfree(max3100s[i]);
+ 			max3100s[i] = NULL;
+ 			break;
+-- 
+2.34.1
+
