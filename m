@@ -1,65 +1,65 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC0E9466B09
-	for <linux-serial@vger.kernel.org>; Wed,  5 Aug 2026 12:20:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38516466B70
+	for <linux-serial@vger.kernel.org>; Wed,  5 Aug 2026 12:20:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785932435; cv=none; b=GfUWfG/KOXP7RNV8+P+UvndZToCCzc30f16DA1LXOcqcZ6KOvWVAgXyV+0xvETYPDPj2Q/vWP0T3jVlYvM9JXEPdzYLaUsP1UXVKDrEni/7Sn6ar0kV/8lOWrFVbJJlu5+Zfls5sTKmVW8MfDJMWLzMFPhObSOdrv6fOXr84Eb0=
+	t=1785932439; cv=none; b=rGCB+orZAzT7JZdQqkBg8bMfgEQxL/LG6QygYc3qWmdY8uS+iaRFRBkTQCrc9FG+HjktZxlFe1gvTSjTsNAqaI/sqcYV+OA6fpIASABtXtKARvkMBoOPAxUnzaIl1mtKHAYrjS6/U+2X82XZhMGTgZ7bz9qMQ/coijbDDN+Sxhc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785932435; c=relaxed/simple;
-	bh=3X7WL8xkq/xgDF1Yg+6dXU2AAPke6iAzEkoxOpEOTPY=;
+	s=arc-20240116; t=1785932439; c=relaxed/simple;
+	bh=a230ZCfC90axJlgwhM1ZKMw6zyzB++PhLGa2dLzKeqQ=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=dJeifXPkH477GYB2R9DQzzXzYCDpjH+32Pl0R+1/XPdLpE6sVwGC1YT51ux0pFcacI01sqt2M9+6TMPsVin8XDM2KJzV1+y3fxshxnhZK1z6x7DCJgWyEiuJXvs7yglRqXF3xL+Rea7hk15gAQw3uS5OfTK05w20JhmtFEAV21g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=9elements.com; spf=pass smtp.mailfrom=9elements.com; dkim=pass (2048-bit key) header.d=9elements.com header.i=@9elements.com header.b=fCBwq3wj; arc=none smtp.client-ip=209.85.128.54
+	 MIME-Version:Content-Type; b=D7wbYarsEBDo4kh8Lgx0y5ZcA0ZUMhr510eruoASdGqVRqQureEa3o0g4E2o/ujruV/sme22B5/UHhDE28s0Y0N3cK1JugH30RHkZRonKrt8gCLqlzaALbxYUujt6es6WJG4XCuvLUdJT3JKQQ4nIiVtv1ooUkYPL1FIUeguwFA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=9elements.com; spf=pass smtp.mailfrom=9elements.com; dkim=pass (2048-bit key) header.d=9elements.com header.i=@9elements.com header.b=HWr5qCkR; arc=none smtp.client-ip=209.85.128.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=9elements.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=9elements.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=9elements.com header.i=@9elements.com header.b="fCBwq3wj"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-4955158f26aso5636405e9.3
-        for <linux-serial@vger.kernel.org>; Wed, 05 Aug 2026 05:20:33 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=9elements.com header.i=@9elements.com header.b="HWr5qCkR"
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-49553515a8bso13234695e9.1
+        for <linux-serial@vger.kernel.org>; Wed, 05 Aug 2026 05:20:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=9elements.com; s=google; t=1785932432; x=1786537232; darn=vger.kernel.org;
+        d=9elements.com; s=google; t=1785932435; x=1786537235; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=bz6C6stmStVMzEFUIQDnKapYsxwqb3V9iw0SJh4YNFs=;
-        b=fCBwq3wj4guwNRBMmDZfWUE7Bj9psC5iB5Oi7PQe/nQNva27tSl9rKiEAyJbn4YKLA
-         55lpxiuMlIpYfrN90FNge0oR4BaV/+sAbEppR3kX4b5tyLjzogJOvIhK4r6p1oLNWzEX
-         6MvcIlnAPWRcFO4ss6/HdVE+cYxB0nlz9rCwtCsHmTWjaI8HHJn+1rvXdjYCl7X1g3ia
-         75lZ739clNp7l3GK24noAho8uVxooNXj74MDAofZuSyLRk3a9d0ekeDcMDy1Zbr0NiLs
-         KOgUITKL9BsTRlurbumXAfFil0rMZtKyW+BZFG0lP1rNjpFVSk2Phx1sR6D5WRIMDMnx
-         pfyA==
+        bh=43Zhfg5+4+Z1uzvRXKb3yHpIvITffod/8Jre6ZQvzL4=;
+        b=HWr5qCkR2F1BUH964LLjzbJfK1Mc7YqBSNbLqEligu+GTUFn0w4mIuyu6+cYt1BBku
+         WVhHn2yPbf6DA+sznbM2eAafcK7e60MGWF6HuFQkfEpDhsvEe1MEFqn59L0JeuGlOedw
+         BgPSpdCwpCQ6zOolg8+NHcyWsb+wjZMkNJs3twNscW37kFyC32piEf6W6KBKzFjta9IV
+         qP32PvfjlOVJ/pJ/fNQxuMUVRGBpIdpvqA3hvOk3SeVd47ZTqGG1VmuLCj0diVkmjQVu
+         uy6W9IKv+c8dseUE0mjrL/CzWl1/VDC3DgVZdL+OwcNMjIBP9+f5ATM0OscETWsMEfox
+         PcwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785932432; x=1786537232;
+        d=1e100.net; s=20251104; t=1785932435; x=1786537235;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=bz6C6stmStVMzEFUIQDnKapYsxwqb3V9iw0SJh4YNFs=;
-        b=cSqk5+i2YAOMWZeZPydWJWXoHMK7v4ijYvPBj8mTumCLK6zXGbvdHFjZcKnbELu4R1
-         S3lMWcvR+KZcK8NLsvLGFxmnd1iRXy56GOjpr079kUL1C6iDxbF+aEaejhaBjU2NcjyK
-         e+jr5y/w2pJbiECLccHQ93Xsy38PLeKzXIHVze13J4o62tr9H0MR7l1cG+McVN7KpMXF
-         KxkSkPXWs+kKaqzNKGIps1WoJG2xbCw5suD/8tpMpAa63+i68NnZ/OdNPSje4gZRZeSi
-         Y2EiociSJG0q5gy1ePjkxPflujkZupsacYcP8mAHv9VSQZcrD+qtMkGi6xDknwqIZTla
-         PkQQ==
-X-Forwarded-Encrypted: i=1; AHgh+Rqv1cgLD8XApmWVa9cQ4ji0w2FP4OnLLvxAfN/9DnaJPut8w4lsG9pCRXH2nhaPW1/d5l9rmQkIrRazCYI=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzl8OK+NVrs5J7Tb1HfVfPEK6idZGqN6rQ6XVgH6doexAn/1Zi6
-	WeiNOb73aYzlxgGQFUt+sCBHhpxa8qvvU8SFH9sJ0O5c1BUE8FemWBR5TgNKOkvX9+4=
-X-Gm-Gg: AR+sD10BeeR5c+ECzdXFtRk3kDEqfrZx12U09VxdfIybOASv+ddtPrb4+Q5lHk5Jl3r
-	wR345+L+PSiDie3rMe3e1TQj67aHjcnCxFtmULy5I3eEefSot3/WzlUCW94kvmtt6ljaAxi7+hF
-	AJynxcpU5uWttV2Kx+euWYrLD6xw85wjZZ5WLYOgEQdGA1/8Nl3cOXfQdnvKTbMihB8RpHS35MU
-	fIQki8UFiR6xhTFgOmI9focdRcqOdcjmEi1jDSG8c9Pq3ESBGjYZrsa41ZMuqeKQWnpA8VRkZ7p
-	A9ujxTOd8D6rtIA1QmJgsHvLjh2JSDSYzovZRupG/nH6FPIHE4faJJMwBjokHYOnPAMZk5zffer
-	MU44UBI5VuD44CY39scqMlX0dHRx2udTk7GrjjP+XxX9yv7tV7SVJfx/gOMb/q/JMd4R3qGJkPL
-	mmGDTOw7+Qn/SrSqlEqFYT7r1zVN38WKtqwknDFTP83JGsaOerKHvGWeC84La+ANfIkEqHRV+Hf
-	U7VN3+BxRLWkVZDMjvBZGxJP6iSHxk0ol4ZSymsVDPAMcV7Vth0iL+gN6CZcJ3BitpLBbUJSPN2
-X-Received: by 2002:a05:600c:198f:b0:492:4e09:9fc1 with SMTP id 5b1f17b1804b1-4994e7cc5a4mr72969715e9.15.1785932431891;
-        Wed, 05 Aug 2026 05:20:31 -0700 (PDT)
+        bh=43Zhfg5+4+Z1uzvRXKb3yHpIvITffod/8Jre6ZQvzL4=;
+        b=GcV3xgjMRh9J3BwZxQ+Uy2GnvMmu81L7Qujlg+C5udjLHsomuAuawOeBfwWtoIJZQA
+         6In6pP/yY4pVnlhCNwzUFksKbiTvZFBNd7AX/4wT8tOLb9zX/SUppUiHWyvl21JpjvuO
+         AKs4WZon/xYoL4acg92CeaxUhgAW0u/BTL7xEj21sfXmqhQDnC/WEFYw+T0icTqL9vAu
+         Yvqb7TxdXba8RSkxR3XzGu0iMW6abnLsYT1Y9rhUX246GUfRcKom9k8DNtdS9Jf5Zu1U
+         D5i1ZiRFrxoFua/6YbgPYNAPAk6p3uCvLIsg1azzvaBhbw0xKp2OWlJ0XVCD9/F/OLC1
+         L0GQ==
+X-Forwarded-Encrypted: i=1; AHgh+RpX0PwGNircbsSld98Y+5O/c0l1f5Tkv9KhsMkV3TFHGqv1WGwvaxVaE5iJVAMpOIyGv4bfAn2CPBaClJM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxsZomC+SjBEQ0HE7JEjc3rGha2uQsuJD9cRjDaR4IEdn0WLn7L
+	9L24HsCC1cS2b2QLnuDylNCFImuLivER1Dl6S9R+TPu4sKzAIdc0FZ8HD4C9sbcI8ug=
+X-Gm-Gg: AR+sD12RVbDvpIrphLpnmMGbue/d63wLRXRuRpgrRKfpdMVN2pVSOkccgT8UH1UFuXD
+	T6XQaHQPqLvg+4PnuzxPqiA31PegegtWVXUJwcGbyw+Clqw+TojVC3WSW+mXv4A/SFzTq00VXlS
+	BbdbTamA0X0M60WP3nxRrIiVnZlMuzyhLCXTtC/Gt8dIsC58cGos2XSJRtFT5omoPLlNOEElIvk
+	VvrmQM6Lq8GhBbDJQopx6CR8AeWmMYs6eEIHbIEQG0qqI0vgHGCBskwW832BpGtbJMBK/A6u3dd
+	i4Wo2kp1oZcKw7uioRznmfm/UWMK4jhf7Pg962Xqt5Xt9FUGPQj390v8MOGav4/jNPYS7cB9xW9
+	LhfLnFzhUPxpeYif3UTI3ZHCsJoiMBDkmqA/IOhiYCvBBgm1fheD3u1arXNAGjXILl6IF9wXZP3
+	I7g1S4/mpKi78ROj8aEQ9i7J0T2zWrhH0h4uep2UJSvomB57Q3L5HVGV11005aI6AvVPM1Vqx8G
+	IaCuyiXRApGAx87mJDWrEz1xT59ABgzU7N7bbeBiX51/EL2u299cZsjneAoEf7U6xqDitcRVVlP
+X-Received: by 2002:a05:600c:1c22:b0:495:734e:4825 with SMTP id 5b1f17b1804b1-4994e7dcf28mr67408645e9.16.1785932435246;
+        Wed, 05 Aug 2026 05:20:35 -0700 (PDT)
 Received: from gregwork.sec.9e.network ([188.111.3.154])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49949f68f95sm196663515e9.0.2026.08.05.05.20.30
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49949f68f95sm196663515e9.0.2026.08.05.05.20.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Aug 2026 05:20:31 -0700 (PDT)
+        Wed, 05 Aug 2026 05:20:35 -0700 (PDT)
 From: =?UTF-8?q?Gr=C3=A9goire=20Layet?= <gregoire.layet@9elements.com>
 To: joel@jms.id.au,
 	andrew@codeconstruct.com.au,
@@ -83,9 +83,9 @@ Cc: andrew@lunn.ch,
 	linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
 	=?UTF-8?q?Gr=C3=A9goire=20Layet?= <gregoire.layet@9elements.com>
-Subject: [PATCH v5 1/6] dt-bindings: serial: 8250: aspeed: add ast2600 and aspeed,vuart-over-pci
-Date: Wed,  5 Aug 2026 14:19:48 +0200
-Message-ID: <52d5bce1cf8ec3ff0b27e7313655cf7ffa2236b5.1785932211.git.gregoire.layet@9elements.com>
+Subject: [PATCH v5 2/6] serial: 8250_aspeed_vuart: add aspeed,ast2600-vuart compatible string
+Date: Wed,  5 Aug 2026 14:19:49 +0200
+Message-ID: <56aa0a5e26ea76e4f9a27ed059d2b05bec9cffa5.1785932211.git.gregoire.layet@9elements.com>
 X-Mailer: git-send-email 2.54.0
 In-Reply-To: <cover.1785932211.git.gregoire.layet@9elements.com>
 References: <cover.1785932211.git.gregoire.layet@9elements.com>
@@ -98,104 +98,26 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-The ASPEED AST2600 has 2 Virtual UARTs accessible over PCI.
-The ASPEED AST2600 can be used as a PCI device.
-2 Virtual UART can be exposed to the host via this PCI device.
-These are 8250-compatible register sets and can be used to have UART
-communication between the PCI BMC and the host.
-
-This boolean can be set to specify if a VUART is used over PCI. A VUART
-over PCI needs a syscon phandle. The syscon gives a regmap to the SCU,
-which is used to set the enable bits of the PCI device.
-On the aspeed's chips, the clocks phandle already points at the SCU node.
-But deriving the regmap from the clock provider would misuse the clocks
-binding. An explicit syscon phandle states the dependency directly.
+Make the driver compatible with the ast2600-vuart.
+Enable specific configuration for the AST2600.
 
 Signed-off-by: Grégoire Layet <gregoire.layet@9elements.com>
 ---
- .../devicetree/bindings/serial/8250.yaml      | 42 ++++++++++++++++++-
- 1 file changed, 40 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_aspeed_vuart.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/serial/8250.yaml b/Documentation/devicetree/bindings/serial/8250.yaml
-index bb7b9c87a807..8dd4b7af0c0d 100644
---- a/Documentation/devicetree/bindings/serial/8250.yaml
-+++ b/Documentation/devicetree/bindings/serial/8250.yaml
-@@ -18,12 +18,34 @@ allOf:
-             - aspeed,lpc-io-reg
-         - required:
-             - aspeed,lpc-interrupts
-+    then:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - aspeed,ast2500-vuart
-+              - aspeed,ast2600-vuart
-+  - if:
-+      anyOf:
-         - required:
-             - aspeed,sirq-polarity-sense
-     then:
-       properties:
-         compatible:
-           const: aspeed,ast2500-vuart
-+  - if:
-+      required:
-+        - aspeed,vuart-over-pci
-+    then:
-+      required:
-+        - aspeed,scu-syscon
-+      properties:
-+        compatible:
-+          contains:
-+            const: aspeed,ast2600-vuart
-+    else:
-+      properties:
-+        aspeed,scu-syscon: false
-   - if:
-       properties:
-         compatible:
-@@ -106,6 +128,9 @@ properties:
-       - const: ns16850
-       - const: aspeed,ast2400-vuart
-       - const: aspeed,ast2500-vuart
-+      - items:
-+          - const: aspeed,ast2600-vuart
-+          - const: aspeed,ast2500-vuart
-       - const: intel,xscale-uart
-       - const: mrvl,pxa-uart
-       - const: nuvoton,wpcm450-uart
-@@ -297,7 +322,8 @@ properties:
-     $ref: /schemas/types.yaml#/definitions/uint32-array
-     maxItems: 1
-     description: |
--      The VUART LPC address.  Only applicable to aspeed,ast2500-vuart.
-+      The VUART LPC address.  Only applicable to aspeed,ast2500-vuart and
-+      aspeed,ast2600-vuart.
- 
-   aspeed,lpc-interrupts:
-     $ref: /schemas/types.yaml#/definitions/uint32-array
-@@ -306,7 +332,19 @@ properties:
-     description: |
-       A 2-cell property describing the VUART SIRQ number and SIRQ
-       polarity (IRQ_TYPE_LEVEL_LOW or IRQ_TYPE_LEVEL_HIGH).  Only
--      applicable to aspeed,ast2500-vuart.
-+      applicable to aspeed,ast2500-vuart and aspeed,ast2600-vuart.
-+
-+  aspeed,vuart-over-pci:
-+    type: boolean
-+    description:
-+      Enable the VUART over the BMC PCI device. Only applicable to
-+      aspeed,ast2600-vuart.
-+
-+  aspeed,scu-syscon:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    description:
-+      Phandle to the SCU syscon, used to enable the VUART over the BMC PCI
-+      device. Only applicable to aspeed,ast2600-vuart.
- 
- required:
-   - reg
+diff --git a/drivers/tty/serial/8250/8250_aspeed_vuart.c b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+index 26fc0464f1cc..6afa2f4057e1 100644
+--- a/drivers/tty/serial/8250/8250_aspeed_vuart.c
++++ b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+@@ -560,6 +560,7 @@ static void aspeed_vuart_remove(struct platform_device *pdev)
+ static const struct of_device_id aspeed_vuart_table[] = {
+ 	{ .compatible = "aspeed,ast2400-vuart" },
+ 	{ .compatible = "aspeed,ast2500-vuart" },
++	{ .compatible = "aspeed,ast2600-vuart" },
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(of, aspeed_vuart_table);
 -- 
 2.54.0
 
