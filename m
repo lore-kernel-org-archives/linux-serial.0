@@ -1,39 +1,31 @@
-Received: from mail-m49197.qiye.163.com (mail-m49197.qiye.163.com [45.254.49.197])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 974313976BA;
-	Thu,  6 Aug 2026 06:07:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.254.49.197
+Received: from out28-171.mail.aliyun.com (out28-171.mail.aliyun.com [115.124.28.171])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1FF8E3B3C1D;
+	Thu,  6 Aug 2026 06:10:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.28.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785996488; cv=none; b=QM/YxCUGeOyv7qQg/jn5OiATvgZp7YGcaLvH7O35s9DnzqLhtfYSlF7P+OJ7pQUkgsCenPMkzROTFXZBmegAOmHeOVla4XgNAKKooRIZJ7mIEWkX8wU+Ubm4lPDNAZ7PmkuGkZBhz8l6kk+5bhe5D0yg+LNlqIzMcaLkU+FbsBs=
+	t=1785996655; cv=none; b=BVO+frGRG5PBIs766qVq2yvuB4/JYfC+rA0txfOdZa0qJzDPqgFfHXfu/VcgDPx78rBDDlopEa/fYwvCQSNZRJWTeMWzKSkEWMYHHIHnQ2iCXQPTqI2fzlL1ttG5kxJZPmJSTd7sNqA5KndkRlNJ7Mso9zSY+DD6xdd0t+aQfnk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785996488; c=relaxed/simple;
-	bh=+ZxxIBjOAkjCaBMcskoSDQyY8idNcT5ah8g/trROG9o=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=IrG369JgTsUZ2wVGKuZ36XmW3AWRHeB1OgET0A4LUrvBWeW+5XoBkyks+90dckIPzJQzshA08Z1MPo17exhEtm4iB5kFiKDDfhTPiqr9C69G9Ia9cTmX4CJ+Ica3ESg8tyClETJFfUDDqDWmGv18btCc9QXeSTlton7d4+TErUQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=seu.edu.cn; spf=pass smtp.mailfrom=seu.edu.cn; dkim=pass (1024-bit key) header.d=seu.edu.cn header.i=@seu.edu.cn header.b=iB2UUeOr; arc=none smtp.client-ip=45.254.49.197
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=seu.edu.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=seu.edu.cn
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=seu.edu.cn header.i=@seu.edu.cn header.b="iB2UUeOr"
-Received: from LAPTOP-99KJFSET (unknown [36.153.54.46])
-	by smtp.qiye.163.com (Hmail) with ESMTP id 48fb94a4d;
-	Thu, 6 Aug 2026 14:07:54 +0800 (GMT+08:00)
-From: Hongyan Xu <getshell@seu.edu.cn>
-To: Jiri Kosina <jikos@kernel.org>,
-	David Sterba <dsterba@suse.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: Ben Martel <benm@symmetric.co.nz>,
-	Stephen Blackheath <stephen@symmetric.co.nz>,
+	s=arc-20240116; t=1785996655; c=relaxed/simple;
+	bh=BBAawUIgmqTjssKl3AyD9QjMcVWC1xw4KaUd40/vViM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=mxqZHvJJhZ+V2pQag6yJ3RYztSA9OzmJk/Ajsyel+N0y1IeCenpPp1eU7itc5uol1LANXjOgJm2zXqY/A1upOomlYO40tkzFMSeFxwGfk4fD1vMUYNV5m6wkClk7wQya4rHSW9NCBh5vjDbp0sI3ak3IRrtHEFX0BHvmlxvpQnw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=open-hieco.net; spf=pass smtp.mailfrom=open-hieco.net; arc=none smtp.client-ip=115.124.28.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=open-hieco.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=open-hieco.net
+X-Alimail-AntiSpam:AC=CONTINUE;BC=0.07707395|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.000709742-2.15949e-05-0.999269;FP=12043138144921380423|1|1|1|0|-1|-1|-1;HT=maildocker-contentspam033037006180;MF=lixiaochun@open-hieco.net;NM=1;PH=DS;RN=6;RT=6;SR=0;TI=SMTPD_---.if9m0nn_1785996614;
+Received: from dev02(mailfrom:lixiaochun@open-hieco.net fp:SMTPD_---.if9m0nn_1785996614 cluster:ay29)
+          by smtp.aliyun-inc.com;
+          Thu, 06 Aug 2026 14:10:27 +0800
+From: Xiaochun Li <lixiaochun@open-hieco.net>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org
+Cc: john.ogness@linutronix.de,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
-	stable@vger.kernel.org,
-	jianhao.xu@seu.edu.cn,
-	Hongyan Xu <getshell@seu.edu.cn>
-Subject: [PATCH] tty: ipwireless: shut down setup timer before freeing hardware
-Date: Thu,  6 Aug 2026 14:07:40 +0800
-Message-ID: <20260806060741.714-1-getshell@seu.edu.cn>
-X-Mailer: git-send-email 2.50.1.windows.1
+	Xiaochun Li <lixiaochun@open-hieco.net>
+Subject: [PATCH] serial: core: Fix a NULL pointer dereference in uart_parse_earlycon()
+Date: Thu,  6 Aug 2026 14:10:11 +0800
+Message-ID: <20260806061011.9007-1-lixiaochun@open-hieco.net>
+X-Mailer: git-send-email 2.52.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -41,46 +33,47 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-HM-Tid: 0a9fd5af675d03a1kunmc1045b49289430
-X-HM-MType: 10
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-	tZV1koWUFITzdXWRgWCB1ZQUpXWS1ZQUlXWQ8JGhUIEh9ZQVkaTRkeVhodTRhDSExKSU8dQ1YeHw
-	5VEwETFhoSFyQUDg9ZV1kYEgtZQVlITVVKTkhVTk9VT01ZV1kWGg8SFR0UWUFZT0tIVUpLSEpPSE
-	xVSktLVUpCS0tZBg++
-DKIM-Signature: a=rsa-sha256;
-	b=iB2UUeOrGX/hV4riKfPr8ePBPYs4wxMWaXEoVy203Oh6N4XHhfn8VRzFDYvrcmv54iqzP3C2eFnsu7Mel0EzZ6gzg+BsNl+gLt4YUY4IDmgY9ehy9xU5sEi2KZRJ/4O1kB6q5bqh0PMihIE+awzX3sZVVxX72hnvIzoqTaRSk24=; s=default; c=relaxed/relaxed; d=seu.edu.cn; v=1;
-	bh=rSEmjRBE4v1UIpSrh/ztXnharFntaNpe+cZjJlKxOMA=;
-	h=date:mime-version:subject:message-id:from;
 
-ipwireless_stop_interrupts() uses timer_delete() for a timer whose callback
-can rearm itself. timer_delete() neither waits for a running callback nor
-prevents that callback from rearming the timer. The callback can therefore
-continue to access struct ipw_hardware after ipwireless_hardware_free() has
-freed it.
+console=uart and console=pl011 can reach the preferred console matching
+path without an options field when a comma is absent from the command
+line. In that case uart_parse_earlycon() receives a NULL pointer and
+immediately passes it to strncmp(), which triggers a NULL pointer
+dereference during console matching.
 
-Use timer_shutdown_sync() so teardown waits for the callback and prevents
-any further rearming.
+Address this by returning -EINVAL when the options pointer is missing,
+ensuring incomplete console arguments are cleanly rejected while
+preserving the behavior of all valid earlycon-style command lines.
 
-Fixes: 099dc4fb6265 ("ipwireless: driver for PC Card 3G/UMTS modem")
-Cc: stable@vger.kernel.org
-Signed-off-by: Hongyan Xu <getshell@seu.edu.cn>
+Fixes: 73abaf87f01b ("serial: earlycon: Refactor parse_options into serial core")
+Signed-off-by: Xiaochun Li <lixiaochun@open-hieco.net>
 ---
- drivers/tty/ipwireless/hardware.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/serial_core.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/ipwireless/hardware.c b/drivers/tty/ipwireless/hardware.c
-index 0bfcbca6e2df..fb3554a6e04b 100644
---- a/drivers/tty/ipwireless/hardware.c
-+++ b/drivers/tty/ipwireless/hardware.c
-@@ -1721,7 +1721,7 @@ void ipwireless_stop_interrupts(struct ipw_hardware *hw)
- 	if (!hw->shutting_down) {
- 		/* Tell everyone we are going down. */
- 		hw->shutting_down = 1;
--		timer_delete(&hw->setup_timer);
-+		timer_shutdown_sync(&hw->setup_timer);
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index a530ad372b43..02e770bf8bf6 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2084,7 +2084,8 @@ EXPORT_SYMBOL_GPL(uart_console_write);
  
- 		/* Prevent the hardware from sending any more interrupts */
- 		do_close_hardware(hw);
+ /**
+  * uart_parse_earlycon - Parse earlycon options
+- * @p:	     ptr to 2nd field (ie., just beyond '<name>,')
++ * @p:	     ptr to 2nd field (ie., just beyond '<name>,'); %NULL if
++ *	     no console options were supplied
+  * @iotype:  ptr for decoded iotype (out)
+  * @addr:    ptr for decoded mapbase/iobase (out)
+  * @options: ptr for <options> field; %NULL if not present (out)
+@@ -2104,6 +2105,9 @@ EXPORT_SYMBOL_GPL(uart_console_write);
+ int uart_parse_earlycon(char *p, enum uart_iotype *iotype,
+ 			resource_size_t *addr, char **options)
+ {
++	if (!p)
++		return -EINVAL;
++
+ 	if (strncmp(p, "mmio,", 5) == 0) {
+ 		*iotype = UPIO_MEM;
+ 		p += 5;
 -- 
-2.50.1.windows.1
+2.52.0
 
