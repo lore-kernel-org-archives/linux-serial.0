@@ -1,96 +1,95 @@
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AF48D41F5D4;
-	Thu,  6 Aug 2026 10:54:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78DDB43786F;
+	Thu,  6 Aug 2026 10:56:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786013689; cv=none; b=TH72bnVhVwFiFZYy83oRqC3jWloN97ljutLpBdfPx8cj16QGn1DLunVg9QrhJHhKPAuQKvFIcGCZ2g9W8413RknGO5La3ACKeYMfjhyZFyOwEUFvzHp2NmNYeJrh9xmmsYddGlWUz0sSuyNzm74Y4P2qqT/Xx0BOASfq+BcQApg=
+	t=1786013793; cv=none; b=i4yFhgcVEXZCp5E2iq5CXwYW/sFlvRuMgik+tD6GpnkoJuGuJsA56tGJrXKlPfSWkeYhLgGYIueV4V3NHAI9TUztCgj4UG4CZhl+xsFP070BeecpN5DiM3DQfyfG+cy+5qV7TmRsoQXEZYLP5T0sSC5na2nY5gmLha2ryaChy5o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786013689; c=relaxed/simple;
-	bh=aYNTk2DyqmjHoaJWEdG8hZUEWF+Ex8IU0dNQqNCeytU=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=OFVVywtxXk+2l6zPikflDa1evunPcy+FVjbmtwV1tCJ0/fzTr+jwA/aCjLkkTwwbBS4aD04TM1l7UJIPM3zXwbQBZHBI/BLgTmCdWvjJWtmeOXGpIFAdQ+Tx9WC6svnc9SB6kq4ybaMx5o3MJ5C7uNztzGVTHSoULuuyGy4U23E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-	id A0D7492009C; Thu,  6 Aug 2026 12:54:46 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-	by angie.orcam.me.uk (Postfix) with ESMTP id 9A7DF92009B;
-	Thu,  6 Aug 2026 11:54:46 +0100 (BST)
-Date: Thu, 6 Aug 2026 11:54:46 +0100 (BST)
-From: "Maciej W. Rozycki" <macro@orcam.me.uk>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
-    Jiri Slaby <jirislaby@kernel.org>, 
-    Elena Reshetova <elena.reshetova@intel.com>, 
-    David Windsor <dwindsor@gmail.com>, Kees Cook <kees@kernel.org>, 
-    Hans Liljestrand <ishkamiel@gmail.com>, linux-mips@vger.kernel.org, 
-    linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/6] serial: sb1250-duart: Convert to use a platform
- device
-In-Reply-To: <2026071045-turmoil-daytime-f8f8@gregkh>
-Message-ID: <alpine.DEB.2.21.2608020045050.55540@angie.orcam.me.uk>
-References: <alpine.DEB.2.21.2605241602220.1450@angie.orcam.me.uk> <alpine.DEB.2.21.2605241625180.1450@angie.orcam.me.uk> <2026071045-turmoil-daytime-f8f8@gregkh>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+	s=arc-20240116; t=1786013793; c=relaxed/simple;
+	bh=sNEUopoyTJUHwBT+rKD2gMVOginLuCDXNd+/Fwk/yS4=;
+	h=Date:Content-Type:MIME-Version:From:Cc:To:In-Reply-To:References:
+	 Message-Id:Subject; b=ciEn1iVA1x9X0A5loZyfBhMxvyGAI7ILJknPDJlVVe+h6PeVttTTFyp93/tHZput549gBw8CnxW82hMIYF4Zwpci1jCWh8N43++fVUGUr+yXHs2EQ3gRE6lDgil2OS/Y6chrL5QyToDQWt5TcciZl+xAu7z6D5YmTFa7Bu5+rhs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=F7dcb2/y; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="F7dcb2/y"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A82B1F000E9;
+	Thu,  6 Aug 2026 10:56:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1786013792;
+	bh=Q2SvrgBAvQzWpCgMCUgmcZUm9KIImY+r3a3l7Zd8wi8=;
+	h=Date:From:Cc:To:In-Reply-To:References:Subject;
+	b=F7dcb2/yd2Yy3f2kyTTPO1spfJw3CONmketrIR7kFW/uv8tdayy5Kp0RAIdhzjCcS
+	 UO8eEl+c+Sz/raZTKj1eUdW1imC3ygy9gxvGs9GOe1iFGkrtxDcR1Iw2RnJ48iD8Wr
+	 bHXhudad88iuhGqybIQTzHALl1BB4hPIuDGji2MH2n1++fvnnzg/73hgwNRovBBWUp
+	 NrkEdqLIdd0XlyV01PrbaVD3b6L2yf1gfsxMFC4prwo1NikYv3TchGr2jb/wBDSJLf
+	 PiPwTNsk0iCZscT6j8Yl3hpEKFh3oDenDpRmJGPUhgNBgtqmpErEnrZSbBQi+rMe5k
+	 5mtHxrBoi04eQ==
+Date: Thu, 06 Aug 2026 05:56:31 -0500
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+From: "Rob Herring (Arm)" <robh@kernel.org>
+Cc: linux-gpio@vger.kernel.org, 
+ Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+ Jiri Slaby <jirislaby@kernel.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Conor Dooley <conor+dt@kernel.org>, linux-arm-kernel@lists.infradead.org, 
+ linux-serial@vger.kernel.org, Linus Walleij <linusw@kernel.org>, 
+ linux-kernel@vger.kernel.org, soc@lists.linux.dev, 
+ Catalin Marinas <catalin.marinas@arm.com>, linux-clk@vger.kernel.org, 
+ Arnd Bergmann <arnd@arndb.de>, Stephen Boyd <sboyd@kernel.org>, 
+ Michael Turquette <mturquette@baylibre.com>, Will Deacon <will@kernel.org>, 
+ devicetree@vger.kernel.org, Krzysztof Kozlowski <krzk+dt@kernel.org>
+To: Long Zhao <longzhao@ambarella.com>
+In-Reply-To: <20260806-longzhao-upstream-cv75-v2-v2-3-6b09707c5fe9@ambarella.com>
+References: <20260806-longzhao-upstream-cv75-v2-v2-0-6b09707c5fe9@ambarella.com>
+ <20260806-longzhao-upstream-cv75-v2-v2-3-6b09707c5fe9@ambarella.com>
+Message-Id: <178601379135.876323.14270090902806254891.robh@kernel.org>
+Subject: Re: [PATCH v2 03/10] dt-bindings: clock: add Ambarella CV75 RCT
+ clock controller
 
-On Fri, 10 Jul 2026, Greg Kroah-Hartman wrote:
 
-> > Conversely only starting the console port so late lets the reset code
-> > fully utilise our delay handlers, so switch from udelay() to fsleep()
-> > for transmitter draining so as to avoid busy-waiting for an excessive
-> > amount of time.
+On Thu, 06 Aug 2026 17:34:11 +0800, Long Zhao wrote:
+> Add the CV75 RCT clock controller binding and clock ID header.
 > 
-> That's a different thing than "convert to a platform device" why are you
-> mixing this up?
-
- With the move of this code to execute past the initialisation of the time 
-subsystem (a consequence of converting to a platform device) retaining 
-udelay() would introduce a functional bug where this busy loop would hold 
-onto the CPU rather than making it available to the scheduler.  The bug 
-would then have to be fixed with a separate change.  Perhaps I didn't make 
-it clear enough in the change description.
-
- That said I investigated this situation further and I think this should 
-have been implemented differently in 1/6, because pre-3/6 this code is 
-executed early enough that even udelay() does not work correctly, since 
-BogoMIPS haven't been calculated yet, and consequently line corruption 
-remains.  Conversely when this code is executed late, such as in the 
-non-console or even modular case, using udelay() is the very same 
-functional bug.
-
- So with the rewrite in v3 I've come up with two variants, one for the 
-early-boot case and the other for the late execution case, and then with 
-the conversion to a platform device the early-boot case becomes dead code, 
-the removal of which hopefully will raise no controversy.
-
- NB a similar approach should have been taken with commit ca904f4b4235 
-("serial: dz: Fix bootconsole message clobbering at chip reset").
-
-> > Since there is one way only remaining to reach sbd_init_port() now, drop 
-> > the port initialisation marker as no longer needed and go through the 
-> > channel resets unconditionally.
-> > 
-> > Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
-> > Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-> > Cc: stable@vger.kernel.org # needs to use .remove_new for <= 6.10
+> Signed-off-by: Long Zhao <longzhao@ambarella.com>
+> ---
+>  .../bindings/clock/ambarella,cv75-rct.yaml         | 66 ++++++++++++++++++++++
+>  include/dt-bindings/clock/ambarella,cv75-clock.h   | 17 ++++++
+>  2 files changed, 83 insertions(+)
 > 
-> The first 3 patches in this series are cc: stable, the rest not, which
-> is a mix I don't really know how to handle.  Please break things up into
-> series that can go for this release, and those that can wait for the
-> next onen (i.e. fsleep() stuff).
 
- I gather this is because you merge via different trees depending on 
-whether a change is to be backported or not, right?  In any case I guess 
-the other fix from the set can wait a couple of months until this has 
-propagated.  And I'll post the MAINTAINERS update right away.
+My bot found errors running 'make dt_binding_check' on your patch:
 
- Thank you for your review.
+yamllint warnings/errors:
 
-  Maciej
+dtschema/dtc warnings/errors:
+Documentation/devicetree/bindings/display/mediatek/mediatek,mt8196-tdshp.example.dtb: tdshp@321e0000 (mediatek,mt8196-disp-tdshp): 'clock-names' is a required property
+	from schema $id: http://devicetree.org/schemas/display/mediatek/mediatek,mt8196-tdshp.yaml
+Documentation/devicetree/bindings/display/imx/fsl,imx-lcdc.example.dtb: display0: fsl,pcr: b'\xf0\xc8\x80\x80' is not of type 'object', 'integer', 'array', 'boolean', 'null'
+	from schema $id: http://devicetree.org/schemas/dt-core.yaml
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.kernel.org/project/devicetree/patch/20260806-longzhao-upstream-cv75-v2-v2-3-6b09707c5fe9@ambarella.com
+
+The base for the series is generally the latest rc1. A different dependency
+should be noted in *this* patch.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit after running the above command yourself. Note
+that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+your schema. However, it must be unset to test all examples with your schema.
+
