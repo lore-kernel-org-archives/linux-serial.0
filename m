@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B082E3F4138;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA1DC3F411B;
 	Thu,  6 Aug 2026 09:34:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786008866; cv=none; b=DAlU/6qRzxjzL1KPnxg4U4m9MeRihrN+sj9bsHYYuqzClSo08KvJrGMyjEawt1bGG//mY7TNGxnflLnDZlssQD6WwqIdW6bCMO3lxlNoZXTGj1B7pBoQUScDUirlVSwdeCGbzd4eQ3ZnacUTQk/K45e97+ck0h0kTmHwIGWrRGQ=
+	t=1786008866; cv=none; b=k+4heUFqCVMn+GA1QM8LdSGiPYs59f33pXbnJbnHWon8we1pEjkgc6pb5n6sEFJvNgcSWq2hfXoZHVjFyErqQRtGsTaTBWLY2pnnbV3zjroB5gyYhpCmj+jWJvkPfmgnvUBVEfPqJXKsffPCdavlAa5t4pMQwqsirCIgouC0FBg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1786008866; c=relaxed/simple;
-	bh=Nlm5hTHmD3jVsjGjeCec+uJpTqsxuKfQw+NDZdxHGoE=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=QCbs2vGzxPP0SITsRaALashLhSRKqTOZW4mmC+AFa4QhELhHafh7J+UPbsN9B84gXazrxsPwRkC0KKLBIdNnEnQfwJcnMdX2x8alYIGyFLGGs+e91UrSQ1AjkYdN4roTkqMZZ0utcQ01/5KzZvRe1bUK4ooWZBlhU+BiZ5gtg+o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=t95zQJej; arc=none smtp.client-ip=10.30.226.201
+	bh=C9JHKAjPPmXGoQ//B5ouZUxOqyevIxFUeda9hRCDS9I=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=CBC5Jhhs2U+s94s2zkkxpsxRt9t/D95K2iO8rOVWYXDWhu3Dwk8C/cqD3TCzC0mkbEH+mLCm/YN2d3hALihF3zdN9hrbNWr/DWvl5K2tQFHYoHcM2862/UUTf3/0C2NE2XvMqZtwvFueiDiVDYyYF6NEXm41oi6PxmFGQ+kwAB0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IgHnjhzC; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="t95zQJej"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 715A2C2BD04;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IgHnjhzC"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 281C0C2BCB9;
 	Thu,  6 Aug 2026 09:34:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1786008866;
-	bh=Nlm5hTHmD3jVsjGjeCec+uJpTqsxuKfQw+NDZdxHGoE=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=t95zQJejNNWaf44gVX1XbrLkTX/Js0YD3NmiU/Rapaf7/VvToPBUGKSuKv7qb/Djs
-	 7in/ykeMEKANpMFTaCgKM+AOJ06E6z17w+r7pA1NyyyzmIIBvcMOpIZlxlTs0VwBUL
-	 MxZzkooVYLRDQmMmz5ThAlrtDWMCU6BoJDv/Zy6ql+3tBGhlSyUPYXuRdwcjpbvyfC
-	 AaBDuBNGDLvQOkbungQFw1XeKS3plf0G4gb3kNb3wH24NFi+rTbEct7VGGyoM8nteQ
-	 VvuyP3k68lJw3EZLohiVrxv8ZiYxff2Qa1/svrUVbvNK/7N4ASk48JZmxxBskSAEnf
-	 RcDqCDsTIVy8w==
+	bh=C9JHKAjPPmXGoQ//B5ouZUxOqyevIxFUeda9hRCDS9I=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=IgHnjhzCMIzNZk8HP8xrXlD5nIYieg8anXt3cAwsTsGWgjXwCJSdGNvYFYXFvBdK2
+	 1MyDlC8k27HLi9pusxWw8zlVRW3UVyPwgbTVySHkncvWGsEHz/d+GLV9Z91DGFT1hy
+	 bMUR568E8BDsVQ0aowBRSISRVh7FK/xA0kWDnfosaNiISL9MlmONCzcRrDscmPaiOB
+	 q+NXmu1ShgjW675VJGeYuaK/M1aP9QXAUoryBCVPYJlNUk+PWupR2d7us+fi6X09g9
+	 dbyZwOQ1VnvLRjSur6PD47WochlswZ0KXqOB5CQmRgJGHWFgf4aHNl2EhOxzpBs8gD
+	 TFBtwoDHmYk6Q==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AE80C5AC6F;
-	Thu,  6 Aug 2026 09:34:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE859C55838;
+	Thu,  6 Aug 2026 09:34:25 +0000 (UTC)
 From: Long Zhao via B4 Relay <devnull+longzhao.ambarella.com@kernel.org>
-Date: Thu, 06 Aug 2026 17:34:12 +0800
-Subject: [PATCH v2 04/10] dt-bindings: pinctrl: add Ambarella CV75 pinctrl
+Subject: [PATCH v2 00/10] Ambarella CV75 SoC minimal bring-up
+Date: Thu, 06 Aug 2026 17:34:08 +0800
+Message-Id: <20260806-longzhao-upstream-cv75-v2-v2-0-6b09707c5fe9@ambarella.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -40,9 +40,10 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260806-longzhao-upstream-cv75-v2-v2-4-6b09707c5fe9@ambarella.com>
-References: <20260806-longzhao-upstream-cv75-v2-v2-0-6b09707c5fe9@ambarella.com>
-In-Reply-To: <20260806-longzhao-upstream-cv75-v2-v2-0-6b09707c5fe9@ambarella.com>
+X-B4-Tracking: v=1; b=H4sIABRVdGoC/yXMQQ6CMBBA0auQWTtJMxGwXsW4KOMINdqSDjREw
+ t2puHyL/1dQSV4UrtUKSbJXH0MBnSrgwYVe0D+KgQw15mLO+I6h/w4u4jzqlMR9kHNbYyZkqm3
+ LnbUNC5R+TPL0y/G+3f/WuXsJT78hbNsOtCq2FH0AAAA=
+X-Change-ID: 20260804-longzhao-upstream-cv75-v2-c2597cb996ce
 To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
  Conor Dooley <conor+dt@kernel.org>, 
  Michael Turquette <mturquette@baylibre.com>, 
@@ -57,11 +58,11 @@ Cc: devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, 
  soc@lists.linux.dev, Long Zhao <longzhao@ambarella.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1786008863; l=4816;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1786008863; l=4719;
  i=longzhao@ambarella.com; s=20260730; h=from:subject:message-id;
- bh=9rdubmZ/+QRo7Rx2fG5nIwgQAldJunotrOeXcg9Kbfo=;
- b=F8tcpzImpasxLSOpFpa6um1OEviO7AaVDmtd8wslWwtethIiD275bee1POZMWiMBBcB9DdOFD
- FcfOCqbzGK7AV21UvOdQljOEMAhfsnfobtLOJK/JcoYagHZhqT/ROQs
+ bh=C9JHKAjPPmXGoQ//B5ouZUxOqyevIxFUeda9hRCDS9I=;
+ b=TlVdhCw0rcuc6SGNOvniCQ+KZa7tu6qsNa/S9pG97AAqo54goGd3rssNe33YrrZj7QlPKJpVA
+ 8LRpmaoz7icBLaUJtwo0d0IFXVpwR4SfflGLqCGJ8iRnk0BdFsw36oZ
 X-Developer-Key: i=longzhao@ambarella.com; a=ed25519;
  pk=/xGhPTOX0/eYsyTWzyjjgAIW1Z/YD+IlnOnvcdRozow=
 X-Endpoint-Received: by B4 Relay for longzhao@ambarella.com/20260730 with
@@ -69,198 +70,101 @@ X-Endpoint-Received: by B4 Relay for longzhao@ambarella.com/20260730 with
 X-Original-From: Long Zhao <longzhao@ambarella.com>
 Reply-To: longzhao@ambarella.com
 
-From: Long Zhao <longzhao@ambarella.com>
+This series adds minimal Ambarella CV75 support sufficient for early
+bring-up with a serial console.
 
-Add the CV75 pin controller binding.
+It introduces DT bindings and drivers for the RCT clock controller,
+pinctrl, and UART, plus ARCH_AMBARELLA, a minimal CV75 EVK device tree,
+arm64 defconfig entries, and a MAINTAINERS entry.
+
+The goal remains a small, reviewable console-capable baseline. Further
+SoC peripherals can follow in later series.
+
+This is v2. Link to v1:
+https://lore.kernel.org/r/20260730104330.81367-1-longzhao@ambarella.com
+
+Changes since v1:
+- pinctrl: parent node only describes IOMUX; GPIO bank MMIO and IRQs
+  live in gpio child nodes (Rob)
+- pinctrl: switch DT/bindings to function + groups; keep pinmux data in
+  the driver; drop include/dt-bindings/pinctrl/ambarella,pinctrl.h
+  (Linus)
+- pinctrl: split CV75 static data into pinctrl-ambarella-cv75.c
+- clock binding: drop syscon-common and redundant assigned-clock*
+  properties from the schema (Rob)
+- serial: keep only SoC-specific compatible ambarella,cv75-uart
+  (Krzysztof)
+- scratchpad: drop generic ambarella,sec-scratchpad compatible
+  (Krzysztof)
+- bindings: rename ambarella,uart.yaml and ambarella,sec-scratchpad.yaml
+  to SoC-specific ambarella,cv75-*.yaml names
+- dts: fix GIC unit-address; add EL2 virtual timer PPI (Marc)
+- uart: use container_of and guarded locks; keep break_ctl under the
+  port lock; split earlycon putchar from the console path (Jiri)
+- uart: convert console to nbcon; stop toggling IER around console
+  writes; drain RBR before uart_handle_break()
+- misc binding/DTS cleanups from review
+
+Testing:
+- Booted to console on CV75 EVK with initramfs
+- scripts/checkpatch.pl --strict
+- make dt_binding_check DT_SCHEMA_FILES=ambarella
+- W=1 arm64 Image build for the new drivers/DTS
 
 Signed-off-by: Long Zhao <longzhao@ambarella.com>
 ---
- .../bindings/pinctrl/ambarella,cv75-pinctrl.yaml   | 175 +++++++++++++++++++++
- 1 file changed, 175 insertions(+)
+Long Zhao (10):
+      dt-bindings: arm: add Ambarella CV75 platforms
+      dt-bindings: soc: add Ambarella secure scratchpad
+      dt-bindings: clock: add Ambarella CV75 RCT clock controller
+      dt-bindings: pinctrl: add Ambarella CV75 pinctrl
+      dt-bindings: serial: add Ambarella UART
+      clk: ambarella: add CV75 CCU driver
+      pinctrl: ambarella: add Ambarella pin controller
+      serial: ambarella: add Ambarella UART driver
+      arm64: ambarella: add ARCH_AMBARELLA and CV75 EVK DT
+      MAINTAINERS: add ARM/AMBARELLA SoC support
 
-diff --git a/Documentation/devicetree/bindings/pinctrl/ambarella,cv75-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/ambarella,cv75-pinctrl.yaml
-new file mode 100644
-index 000000000000..3fa30b275e51
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pinctrl/ambarella,cv75-pinctrl.yaml
-@@ -0,0 +1,175 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pinctrl/ambarella,cv75-pinctrl.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Ambarella CV75 Pin Controller
-+
-+maintainers:
-+  - Long Zhao <longzhao@ambarella.com>
-+
-+description:
-+  The Ambarella CV75 pin controller configures pin multiplexing, bias and
-+  drive strength for the main GPIO banks. Pin groups and their mux settings
-+  are defined by the pin controller driver and selected by function and group
-+  names.
-+
-+allOf:
-+  - $ref: pinctrl.yaml#
-+
-+properties:
-+  compatible:
-+    const: ambarella,cv75-pinctrl
-+
-+  reg:
-+    maxItems: 1
-+    description: IOMUX registers
-+
-+  ambarella,drive-strength-syscon:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    description: RCT syscon containing the drive-strength registers.
-+
-+  ambarella,pull-syscon:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    description: Secure scratchpad syscon containing the pull registers.
-+
-+  "#address-cells":
-+    const: 1
-+
-+  "#size-cells":
-+    const: 1
-+
-+  ranges: true
-+
-+patternProperties:
-+  "^gpio@[0-9a-f]+$":
-+    type: object
-+    additionalProperties: false
-+
-+    properties:
-+      reg:
-+        maxItems: 1
-+
-+      interrupts:
-+        maxItems: 1
-+
-+      gpio-controller: true
-+
-+      "#gpio-cells":
-+        const: 2
-+
-+      gpio-ranges:
-+        maxItems: 1
-+
-+      interrupt-controller: true
-+
-+      "#interrupt-cells":
-+        const: 2
-+
-+    required:
-+      - reg
-+      - interrupts
-+      - gpio-controller
-+      - "#gpio-cells"
-+      - gpio-ranges
-+      - interrupt-controller
-+      - "#interrupt-cells"
-+
-+  "^[a-z0-9-]+-pins$":
-+    type: object
-+    allOf:
-+      - $ref: pinmux-node.yaml#
-+      - $ref: pincfg-node.yaml#
-+    additionalProperties: false
-+
-+    properties:
-+      function:
-+        const: uart0
-+
-+      groups:
-+        $ref: /schemas/types.yaml#/definitions/string-array
-+        items:
-+          enum: [uart0tx, uart0rx]
-+        minItems: 2
-+        maxItems: 2
-+        uniqueItems: true
-+
-+      bias-disable: true
-+      bias-pull-down: true
-+      bias-pull-up: true
-+
-+      drive-strength:
-+        enum: [3, 4, 5, 6, 7, 8, 9, 12]
-+
-+    required:
-+      - function
-+      - groups
-+
-+required:
-+  - compatible
-+  - reg
-+  - ambarella,drive-strength-syscon
-+  - ambarella,pull-syscon
-+  - "#address-cells"
-+  - "#size-cells"
-+  - ranges
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+
-+    rct: rct {
-+    };
-+
-+    scratchpad: scratchpad {
-+    };
-+
-+    pinctrl: pinctrl@e4010000 {
-+        compatible = "ambarella,cv75-pinctrl";
-+        #address-cells = <1>;
-+        #size-cells = <1>;
-+        reg = <0xe4010000 0x1000>;
-+        ranges;
-+        ambarella,drive-strength-syscon = <&rct>;
-+        ambarella,pull-syscon = <&scratchpad>;
-+
-+        gpio0: gpio@e4013000 {
-+            reg = <0xe4013000 0x1000>;
-+            interrupts = <GIC_SPI 163 IRQ_TYPE_LEVEL_HIGH>;
-+            gpio-controller;
-+            #gpio-cells = <2>;
-+            gpio-ranges = <&pinctrl 0 0 32>;
-+            interrupt-controller;
-+            #interrupt-cells = <2>;
-+        };
-+
-+        gpio1: gpio@e4014000 {
-+            reg = <0xe4014000 0x1000>;
-+            interrupts = <GIC_SPI 164 IRQ_TYPE_LEVEL_HIGH>;
-+            gpio-controller;
-+            #gpio-cells = <2>;
-+            gpio-ranges = <&pinctrl 0 32 32>;
-+            interrupt-controller;
-+            #interrupt-cells = <2>;
-+        };
-+
-+        gpio2: gpio@e4015000 {
-+            reg = <0xe4015000 0x1000>;
-+            interrupts = <GIC_SPI 165 IRQ_TYPE_LEVEL_HIGH>;
-+            gpio-controller;
-+            #gpio-cells = <2>;
-+            gpio-ranges = <&pinctrl 0 64 32>;
-+            interrupt-controller;
-+            #interrupt-cells = <2>;
-+        };
-+
-+        uart0-pins {
-+            function = "uart0";
-+            groups = "uart0tx", "uart0rx";
-+            bias-disable;
-+            drive-strength = <8>;
-+        };
-+    };
+ .../devicetree/bindings/arm/ambarella.yaml         |   23 +
+ .../bindings/clock/ambarella,cv75-rct.yaml         |   66 +
+ .../bindings/pinctrl/ambarella,cv75-pinctrl.yaml   |  175 +++
+ .../bindings/serial/ambarella,cv75-uart.yaml       |   45 +
+ .../ambarella/ambarella,cv75-sec-scratchpad.yaml   |   39 +
+ .../devicetree/bindings/vendor-prefixes.yaml       |    2 +
+ MAINTAINERS                                        |   17 +
+ arch/arm64/Kconfig.platforms                       |    9 +
+ arch/arm64/boot/dts/Makefile                       |    1 +
+ arch/arm64/boot/dts/ambarella/Makefile             |    3 +
+ arch/arm64/boot/dts/ambarella/cv75-evk.dts         |   30 +
+ arch/arm64/boot/dts/ambarella/cv75.dtsi            |  166 +++
+ arch/arm64/configs/defconfig                       |    3 +
+ drivers/clk/Kconfig                                |    1 +
+ drivers/clk/Makefile                               |    1 +
+ drivers/clk/ambarella/Kconfig                      |   16 +
+ drivers/clk/ambarella/Makefile                     |    6 +
+ drivers/clk/ambarella/ccu-cv75.c                   |  296 ++++
+ drivers/clk/ambarella/ccu_common.c                 |   60 +
+ drivers/clk/ambarella/ccu_common.h                 |   25 +
+ drivers/clk/ambarella/ccu_mux_div.c                |  223 +++
+ drivers/clk/ambarella/ccu_mux_div.h                |   35 +
+ drivers/clk/ambarella/ccu_pll.c                    |  374 +++++
+ drivers/clk/ambarella/ccu_pll.h                    |   70 +
+ drivers/pinctrl/Kconfig                            |   15 +
+ drivers/pinctrl/Makefile                           |    2 +
+ drivers/pinctrl/pinctrl-ambarella-cv75.c           |   68 +
+ drivers/pinctrl/pinctrl-ambarella.c                | 1510 ++++++++++++++++++++
+ drivers/pinctrl/pinctrl-ambarella.h                |   48 +
+ drivers/tty/serial/Kconfig                         |   21 +
+ drivers/tty/serial/Makefile                        |    1 +
+ drivers/tty/serial/ambarella_uart.c                | 1001 +++++++++++++
+ include/dt-bindings/clock/ambarella,cv75-clock.h   |   17 +
+ 33 files changed, 4369 insertions(+)
+---
+base-commit: 34cf6dafc47441dfb6b356a095b89c3585a93714
+change-id: 20260804-longzhao-upstream-cv75-v2-c2597cb996ce
 
--- 
-2.34.1
+Best regards,
+--  
+Long Zhao <longzhao@ambarella.com>
 
 
