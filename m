@@ -1,36 +1,36 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1ED6D3D9DAA;
-	Thu,  6 Aug 2026 06:18:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9241129AB05;
+	Thu,  6 Aug 2026 06:18:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785997108; cv=none; b=MDbsRONeSK/AVYoYsxlL4KEMscpz2NIJ3a9UKTelCE+uKh6SqamEYrh3UoYUwvYCv5GsaJRhXFXhGXQJCJLUqE6XQyL5nrer/TYsiKKiqcngzPnKv+HvY2RlcWWMXSGKP4mNF/SFweUkroD7i2NYYTOCuG02WXQTv96wY13xa9E=
+	t=1785997130; cv=none; b=J2qQv/7Pbl2+nrDdYefh57/Jh1cV8WXkfSHkromdD8RLgJvVKvUt+2JFXDB3XGqw3jy/97S21D3G1YUYkn/aHey+qJSwEcCFIQ65bEqFHVE9SXOkcRpYYj713f4uWYtOwKAq6VIuDpEF4RYNoSBKNhzpUuPJoirjujOz2mLfMow=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785997108; c=relaxed/simple;
-	bh=4/mIMdNYBp0C6O5JC88RWrpnZS+0s7vKreLUGNOyfZU=;
+	s=arc-20240116; t=1785997130; c=relaxed/simple;
+	bh=4sxfQyzX9vG6o1/mwv+zDuiykdAZQxNmf1SuEqD5Qpw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CRN7yiovaOp+CrvAWUQYyViVQRKhKgbrSG1uKWjHdTXerdTZW10XPn2GsuCFOnfnZdnMaV57fl2rnS11ivvUpVRSbCpUJuU/ldvaonTLFPLYgk1N9JKX/w+VEAXyYsFDTKp41LizxZII6/YZTJbrMD6ab3IqTA5uSg2FlK2ruGI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=InK+bEFY; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=FBIfwABJBBUDekU4oDDuDl2buS2zNM/rNtBjuFIXSOHUhabkgTa4eFQVdvjFO4ohYB841evfGRoaRJWgqyo45HvvpyXmeK4GgpI0j2/jH9nZXbP36TCXmrOewujFBHToEnKV5aqtguPJUsPAYWoor2oAJ4NaescFhg9uddAbJ88=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=i98De6xy; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="InK+bEFY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAC8C1F000E9;
-	Thu,  6 Aug 2026 06:18:23 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="i98De6xy"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A74A1F000E9;
+	Thu,  6 Aug 2026 06:18:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1785997104;
-	bh=58qRJApXG31vkDUz7i1n1FkqR8EV+rCCfycq8BhjbwM=;
+	s=korg; t=1785997123;
+	bh=bo+QPG8t0xtis9vcTqGxs5GykQltdRoRyRHyM1YK+O0=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=InK+bEFYd2ra0zrTk15GGGiUfaQ1rxOSZ5em27hC53kRM5h2YoMy8tz9VEC2MUac+
-	 c/mXSRvzZvhcI9ba6BjSF/c3eBg9izOscHO/GyQ2kXqOwCRSVr7DjnTNmAG+xnNdtX
-	 1IXjppOlXWRuTCtkli63Z3pCQsUeNlkFNiN1td/s=
-Date: Thu, 6 Aug 2026 08:16:54 +0200
+	b=i98De6xyAkmBVHozb2vXDVRqnYOIdCq1h1etWr9xI6iRr8k749Sk5JDujYf5SfTBD
+	 CIM1J2Du8H452STEFaLvGww/kow54i/cvES7h0+YTVQWZLrW6zOPiTc69OVdCRkRMf
+	 +VK1E6DmCGTB8R22vg9FQpDHoK5hBi9aBpuRq3xI=
+Date: Thu, 6 Aug 2026 08:17:13 +0200
 From: Greg KH <gregkh@linuxfoundation.org>
 To: Xiaochun Li <lixiaochun@open-hieco.net>
 Cc: jirislaby@kernel.org, john.ogness@linutronix.de,
 	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Subject: Re: [PATCH] serial: core: Fix a NULL pointer dereference in
  uart_parse_earlycon()
-Message-ID: <2026080638-waged-tactical-005d@gregkh>
+Message-ID: <2026080605-ambulance-cathedral-b39f@gregkh>
 References: <20260806061011.9007-1-lixiaochun@open-hieco.net>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -88,4 +88,32 @@ On Thu, Aug 06, 2026 at 02:10:11PM +0800, Xiaochun Li wrote:
 > 
 > 
 
-How was this tested?
+Hi,
+
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
+
+You are receiving this message because of the following common error(s)
+as indicated below:
+
+- You have marked a patch with a "Fixes:" tag for a commit that is in an
+  older released kernel, yet you do not have a cc: stable line in the
+  signed-off-by area at all, which means that the patch will not be
+  applied to any older kernel releases.  To properly fix this, please
+  follow the documented rules in the
+  Documentation/process/stable-kernel-rules.rst file for how to resolve
+  this.
+
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
+
+thanks,
+
+greg k-h's patch email bot
