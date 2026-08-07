@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 443444499A1;
-	Fri,  7 Aug 2026 06:20:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B972A27A907;
+	Fri,  7 Aug 2026 06:45:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786083649; cv=none; b=ASu+qxd0Ss1Z4v99EZ6cYV9PQUJY/KljQgN7KUbbKcdKlpOkyOozPQ0uzy3fjEAQT0zO8GD1Cw1cAIimwrHJljT7K/qxBZt4jG3QkM4WZOr7ZVAl+S8Dtayxpk7JP/jHARh0duNcCJ/HSVSbbuBhmzUYwoI7FqXkN07ZikzoHV0=
+	t=1786085154; cv=none; b=Cz0U4MpIVS2BIumDGAPET95Uxo9UPE2Dal6CIjxnpnsmudmyC0pF7QvbrxiNGpjNjuaq03RA9pxDkc0OUbOVDixdUyC/gIapLyMsDiPehAvw5zWdZAXTlGKiK7bE/mlQzdjXbHQn4JG9QJMsNOYbWy4SBgsKbR/TzpoAxGcl01c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786083649; c=relaxed/simple;
-	bh=ahvekBiyrsV4wHna4Lm5XwYna0DMqITaqz6I3tbqrOc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=qMf+ae7Lre+zhBIQeqjyGGi6BB3Om3CoSNsAhUkcK3X9lwnvIYCe4lP7dV9z3ZQ7k0ubt+NOUswqu3AsRs9vY4F6oLvernRCLWphcBEJupxsw2v2vsrrtjB3zyyXTaBsa6z4nLZcrY+EBJFGe5MwuVljYjyPJ6Lu6uDhHXiHnaw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UEZYYU17; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786085154; c=relaxed/simple;
+	bh=84cyBJf8fSQ/v8PtTSYSpvHiZ8RN0Zd04fYbHTpxMhc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=h/9n5Hx0bh68KIxzf1uwzTzo/z3dkDhdJu1PkCf7JYX2iZLFdHWOB7D4AmvMAAC3RqJnJHwsguaJeBllAB6zHkS+xyB/NoAERRQc3PHuVouKe+Na1ygMWw1jB2sqDi7UMUAXl5nRa2WNORil8GVcmL2fURQ4B2BJVO0K66V+A8E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=buRjjZUy; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UEZYYU17"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBCA31F000E9;
-	Fri,  7 Aug 2026 06:20:46 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="buRjjZUy"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BBFD1F00A3A;
+	Fri,  7 Aug 2026 06:45:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786083647;
-	bh=WBiMZ8pzjZSVHdpaZWaDZ2AQMrPpC80FXLt4yLoy/jw=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=UEZYYU17Zo2rR4PnEiAAHykPCfPaXPMyT9ka727ehmcyQHzg0ETtAtQHyZ8MYMMdW
-	 colIRlvqZwcYDTf5qGnWoVPtde/6DY8VTt659NN1vkcUr4XFTPDF+W/iOpPvJTH8nf
-	 k7CO0Cg81yRsn88Ev47mQjHw93i5Ep85WA0hmKYjRw2c2Xi0geTtPBd323yo/sLoCu
-	 PomY8okSqvPX4xaXyD67ntkKrk7h8uU7HU+n9YXyNxzc9zGwDrNLhzWTLm3XdYkJu/
-	 8SfFntkCKiGXgxuLVro0ts+3oD2TtSFjznrRl5vlV9coTaj+dW9UJG1fHLA6M39bQp
-	 05UB8Zu2cnayQ==
-Message-ID: <ebc16b69-ac5b-44b9-a7df-f1363bd87b08@kernel.org>
-Date: Fri, 7 Aug 2026 08:20:45 +0200
+	s=k20260515; t=1786085153;
+	bh=GFp8IxywBCbWdweVabG/3grrD1nmpDk9rfvKiuf1E1w=;
+	h=Date:Subject:To:References:From:In-Reply-To;
+	b=buRjjZUy7afMVbBZcMrlhehQh27leSBNcFS0tCp80PVPqNW02H3WFLUQyrRD9i+3V
+	 qcIsBQecHufSvhjDpPuHO7v/rREhdsOzfBoJ+BpLMIzUYY/uMSr5kOM3BGYLymNbuu
+	 F6FKZufjXPHP0LFM5/UONMciIf57w1VZ3ITcQA709M8+RGmPU1BGYRWHOSUMRcuVjY
+	 7H2EtiUqvaOq9V7TIZYBRiTkhb74np7M7w4+Iv6tWJNONouFV0dV0VkS/1T2Gl88eE
+	 NMrJmwZa41U04eiNKTJsvXXlSdCcFMlL6cTU7xQwX9jvsUtThTj53yk0t1h4Pcj0xG
+	 6VFJuSLV5z/FA==
+Message-ID: <c60f8248-dbba-4a87-ab29-ab6315a9932a@kernel.org>
+Date: Fri, 7 Aug 2026 08:45:50 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,16 +35,11 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: core: Fix a NULL pointer dereference in
- uart_parse_earlycon()
-To: Greg KH <gregkh@linuxfoundation.org>,
- Xiaochun Li <lixiaochun@open-hieco.net>
-Cc: john.ogness@linutronix.de, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org
-References: <20260806061011.9007-1-lixiaochun@open-hieco.net>
- <2026080638-waged-tactical-005d@gregkh>
- <2d73c05e-8e5c-43bd-b6f1-a9a97b8631bd@open-hieco.net>
- <2026080605-claim-unmade-e05c@gregkh>
+Subject: Re: [syzbot] [serial?] WARNING in register_console
+To: syzbot <syzbot+1ebbc20f223b99446034@syzkaller.appspotmail.com>,
+ gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com
+References: <6a7411dd.9c11d2ce.289b96.0094.GAE@google.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -89,40 +84,70 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <2026080605-claim-unmade-e05c@gregkh>
+In-Reply-To: <6a7411dd.9c11d2ce.289b96.0094.GAE@google.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 06. 08. 26, 9:29, Greg KH wrote:
-> On Thu, Aug 06, 2026 at 03:10:26PM +0800, Xiaochun Li wrote:
->> Panic log below:
->>
->> [    0.000000] BUG: kernel NULL pointer dereference, address: 0000000000000000
->> [    0.000000] #PF: supervisor read access in kernel mode
->> [    0.000000] #PF: error_code(0x0000) - not-present page
->> [    0.000000] PGD 0 P4D 0
->> [    0.000000] Oops: Oops: 0000 [#1] SMP NOPTI
->> [    0.000000] CPU: 0 UID: 0 PID: 0 Comm: swapper/0 Not tainted 7.2.0-rc6 #5 PREEMPT(lazy)
->> [    0.000000] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.16.1-0-g3208b098f51a-prebuilt.q4
->> [    0.000000] RIP: 0010:strncmp+0x1a/0x40
->> [    0.000000] Code: 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 f3 0f 1e fa 48 85 d2 74 24 31 c0 eb 0d 84 c9
->> [    0.000000] RSP: 0000:ffffffff82c03df0 EFLAGS: 00000246
->> [    0.000000] RAX: 0000000000000000 RBX: ffffffff82c03e20 RCX: ffffffff82c03e20
->> [    0.000000] RDX: 0000000000000005 RSI: ffffffff82acb7a1 RDI: 0000000000000000
->> [    0.000000] RBP: 0000000000000000 R08: 0000000000000040 R09: 0000000000000001
->> [    0.000000] R10: 00000000ffffffea R11: ffffffff82c5cb20 R12: ffffffff82c03e30
->> [    0.000000] R13: ffffffff82c03e2c R14: 0000000000000001 R15: 0000000000014770
->> [    0.000000] FS:  0000000000000000(0000) GS:ffff8882b4460000(0000) knlGS:0000000000000000
->> [    0.000000] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->> [    0.000000] CR2: 0000000000000000 CR3: 0000000002c30000 CR4: 00000000000000b0
->> [    0.000000] Call Trace:
->> [    0.000000]  <TASK>
->> [    0.000000]  uart_parse_earlycon+0x27/0x140
-...
-> Odd that this hasn't come up in the decades since it has been present :)
+On 06. 08. 26, 6:47, syzbot wrote:
+> syzbot has found a reproducer for the following issue on:
+> 
+> HEAD commit:    0d8395707651 Merge tag 'soc-fixes-7.2-2' of git://git.kern..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=10883c99580000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=cb17729fb04b1e3a
+> dashboard link: https://syzkaller.appspot.com/bug?extid=1ebbc20f223b99446034
+> compiler:       Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15b1bbb9580000
+> 
+> Downloadable assets:
+> disk image: https://storage.googleapis.com/syzbot-assets/14b35ca281d5/disk-0d839570.raw.xz
+> vmlinux: https://storage.googleapis.com/syzbot-assets/68c2ac2fdce0/vmlinux-0d839570.xz
+> kernel image: https://storage.googleapis.com/syzbot-assets/29bdd737b48f/bzImage-0d839570.xz
+> mounted in repro: https://storage.googleapis.com/syzbot-assets/cce97dbb2265/mount_0.gz
+>    fsck result: failed (log: https://syzkaller.appspot.com/x/fsck.log?x=11da8e49580000)
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+1ebbc20f223b99446034@syzkaller.appspotmail.com
+> 
+> printk: legacy console [ttyS0] enabled
+> ------------[ cut here ]------------
+> IS_ERR(kt)
 
-Everyone follows the documentation :P.
+Well, the creation of "pr/legacy" thread failed. Would be nice to see 
+what is actual PTR_ERR(kt).
 
+> WARNING: kernel/printk/printk.c:3728 at legacy_kthread_create kernel/printk/printk.c:3728 [inline], CPU#0: syz.4.49/6392
+> WARNING: kernel/printk/printk.c:3728 at printk_kthreads_check_locked+0x2a7/0x3f0 kernel/printk/printk.c:3802, CPU#0: syz.4.49/6392
+> Modules linked in:
+> CPU: 0 UID: 0 PID: 6392 Comm: syz.4.49 Not tainted syzkaller #0 PREEMPT_{RT,(full)}
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/24/2026
+> RIP: 0010:legacy_kthread_create kernel/printk/printk.c:3728 [inline]
+> RIP: 0010:printk_kthreads_check_locked+0x2a7/0x3f0 kernel/printk/printk.c:3802
+> Code: fe c1 38 c1 7c 9a 4c 89 f7 e8 c5 85 8a 00 eb 90 e8 7e 12 21 00 eb 05 e8 77 12 21 00 b0 01 88 05 2f a4 08 18 e9 e2 00 00 00 90 <0f> 0b 90 48 c7 c7 80 bd 6d 8b e8 1a 9f 82 ff 48 8b 1d 93 9e 04 18
+> RSP: 0018:ffffc9000509fa70 EFLAGS: 00010206
+> RAX: fffffffffffffffc RBX: 0000000000000001 RCX: 10959546c0351c00
+> RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+> RBP: ffffc9000509fb70 R08: ffff888032eb2daf R09: 1ffff110065d65b5
+> R10: dffffc0000000000 R11: ffffed10065d65b6 R12: 0000000000000000
+> R13: dffffc0000000000 R14: 1ffff92000a13f5c R15: dffffc0000000000
+> FS:  00007f7f4a99d6c0(0000) GS:ffff888125c3e000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00007fd99747f000 CR3: 000000003dd70000 CR4: 00000000003526f0
+> Call Trace:
+>   <TASK>
+>   register_console+0xc19/0xfc0 kernel/printk/printk.c:4221
+>   console_store+0x359/0x4f0 drivers/tty/serial/serial_core.c:2999
+
+console_store() is serialized by a mutex. So this should not be a race. 
+I cannot reproduce using:
+while :; do
+   echo 0 >/sys/class/tty/ttyS0/console
+   echo 1 > /sys/class/tty/ttyS0/console
+done
+
+That's what the reproducer suggests is the cause.
+
+thanks,
 -- 
 js
 suse labs
