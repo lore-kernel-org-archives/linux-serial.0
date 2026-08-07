@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A9274B048E;
-	Fri,  7 Aug 2026 06:06:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB13B3806CD;
+	Fri,  7 Aug 2026 06:11:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786082816; cv=none; b=JqA7As3fom3rCN5DlabzxusDrn0ACm9SMQ5x3IPvnR5ZyB3QZZmK/fpyJDI4Fvcwexildgp5s8uQDjj1dukTSvmY9SVgeK+L+p7F4uN+2FfK27aHTXYNTeuv5OgED1wiSxnz3xBg0A7aZhvJ5W2zAnkbtE0UPlCsGFTd8wT9Xrk=
+	t=1786083113; cv=none; b=apJF4gUfRYEat+XX54XbA8sOjYPqB/nVBth5Gpm1l9BzjWW8V26TUgVIHD25BMIOu9PKhEbUkCm+7VUSsYFKZkjJkFTbXBEBkM+Pe9z9ItcZc78NlgJmKAhGKSm97CkJPn5LKaz2/nmznwBCPJmlR7/D5cDmRFvx2YJCmqddGX4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786082816; c=relaxed/simple;
-	bh=qMG02EPIVXOMn/7ueSsbGJRAVfznGl3cvBs9YZBspcQ=;
+	s=arc-20240116; t=1786083113; c=relaxed/simple;
+	bh=b9mBsccD7rOQIONlGmoxPFUFqc54BDYqcnsN6vzrxnU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Y473WulQfd8RlBfztgi4S5SRpEpQjFmhcxsc4GEFIuLVShDmSh3AoKZtUKbkMUmrq/BObAlvaJFXzTMklAPoIrdpyrkH5s23yviMEAGxHIthjfm8aiZTiqzBrElEKm6vjhbVtXxXtMN517yMPFViiqxPp6jpbJFxWgZDSziq8/U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fL1GeBVz; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=GAsi8HkojSBcnsLkOLPOoXCcVlZjwYUnilllg4WQBlbUUCxfvsTzLsGDazcSZch0McPTswRcKlKNdNPBbs6NVbqw1BwJh6vwMMarEJuOAiIDqDDa5q4o6B2B8L6HewpVtGdXkLgEFcjUhAHq/PIC3KuHfWZjObQuoZ33E9+uqYY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ld6kM4EJ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fL1GeBVz"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D0251F000E9;
-	Fri,  7 Aug 2026 06:06:53 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ld6kM4EJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A31941F000E9;
+	Fri,  7 Aug 2026 06:11:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786082815;
-	bh=L9tU9pcxg+3S2Ft6tVACbmzA71Uk5jr59+MtaRvQsfQ=;
+	s=k20260515; t=1786083111;
+	bh=J55er94G0k2ICmgS4qCQzJyyM6SJf2ITEtdKlk7xk1g=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=fL1GeBVzFTDJO+OxlnCdamnGAWnSq9h+zuv8RDed3xjeGl9LzXoDcTmyqgOSA6CCJ
-	 dk5EwCirGTGyK1NCU/t1EAmcblh+EM4qd0uDl4Jh0auAZ3d7ezb7JWL/PacLHG+FE0
-	 IPIkYFjBnaHPVb768H0qV1JnxFKganZt4p1bIRFK9QuzPv1Rfo3d0HtANkO7f9TREY
-	 KXvEsQQ3EiLdlIbSzdzz7ZQxNsEwXBOG73tjKIkYom8KYJq7Nu7jYFoW/hxQOu5zcM
-	 ZPwj/KtHYdiN3asbO6tkQkKsIxRe6+W1IBEBub6apb7BiCFW9ZVtm8SydeFREguI4f
-	 hqEKO8qUfPosA==
-Date: Fri, 7 Aug 2026 08:06:50 +0200
+	b=ld6kM4EJL/jbavAxures/BJEH/xVioaUFTnxOKr2QBej07NnqTV7x3/gPiqzCO7VV
+	 kavhQP5qs2uNetzRvXZBKXs1NuDixGoUNvouLE40hyGDGY1CnnNIlGzi1b82irSbw/
+	 nKO9yDC6tgbSg4OC0+XAvL49WSGMBpiAZut4dyujhfT83oRtKlms5rRa6OEWE7UHPU
+	 QvZoIF/jZRxD8WWXeT9bS0RMKbFkvMw9I0CrIA4DA3xxyD7WN8Nm/G1+RWB7n6Nqw3
+	 /px28I0NpOXBT616KSt3pNcQtcR+Oahz7aX1iZXmLlCaPPSHBJ4r/WNFZoee2Ec5aN
+	 nqf18OW8Pfjdw==
+Date: Fri, 7 Aug 2026 08:11:47 +0200
 From: Krzysztof Kozlowski <krzk@kernel.org>
 To: Long Zhao <longzhao@ambarella.com>
 Cc: Rob Herring <robh@kernel.org>, 
@@ -38,10 +38,11 @@ Cc: Rob Herring <robh@kernel.org>,
 	Alexandre Belloni <alexandre.belloni@bootlin.com>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
 	linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org, 
 	linux-serial@vger.kernel.org, soc@lists.linux.dev
-Subject: Re: [PATCH v2 04/10] dt-bindings: pinctrl: add Ambarella CV75 pinctrl
-Message-ID: <20260807-slim-amusing-jaybird-0bd13a@quoll>
+Subject: Re: [PATCH v2 09/10] arm64: ambarella: add ARCH_AMBARELLA and CV75
+ EVK DT
+Message-ID: <20260807-caped-steady-earwig-adf6d4@quoll>
 References: <20260806-longzhao-upstream-cv75-v2-v2-0-6b09707c5fe9@ambarella.com>
- <20260806-longzhao-upstream-cv75-v2-v2-4-6b09707c5fe9@ambarella.com>
+ <20260806-longzhao-upstream-cv75-v2-v2-9-6b09707c5fe9@ambarella.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -50,178 +51,221 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260806-longzhao-upstream-cv75-v2-v2-4-6b09707c5fe9@ambarella.com>
+In-Reply-To: <20260806-longzhao-upstream-cv75-v2-v2-9-6b09707c5fe9@ambarella.com>
 
-On Thu, Aug 06, 2026 at 05:34:12PM +0800, Long Zhao wrote:
-> Add the CV75 pin controller binding.
+On Thu, Aug 06, 2026 at 05:34:17PM +0800, Long Zhao wrote:
+> Enable the Ambarella ARMv8 platform Kconfig, add the CV75 SoC and
+> EVK device trees, and select the Ambarella UART in the arm64
+> defconfig for console bring-up.
+
+Subject - missing dts prefix. Please do not come with your own style.
+It's for example: arm64: dts: ambarella:
+
+
 > 
 > Signed-off-by: Long Zhao <longzhao@ambarella.com>
 > ---
->  .../bindings/pinctrl/ambarella,cv75-pinctrl.yaml   | 175 +++++++++++++++++++++
->  1 file changed, 175 insertions(+)
+>  arch/arm64/Kconfig.platforms               |   9 ++
+>  arch/arm64/boot/dts/Makefile               |   1 +
+>  arch/arm64/boot/dts/ambarella/Makefile     |   3 +
+>  arch/arm64/boot/dts/ambarella/cv75-evk.dts |  30 ++++++
+>  arch/arm64/boot/dts/ambarella/cv75.dtsi    | 166 +++++++++++++++++++++++++++++
+>  arch/arm64/configs/defconfig               |   3 +
+>  6 files changed, 212 insertions(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/pinctrl/ambarella,cv75-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/ambarella,cv75-pinctrl.yaml
+> diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
+> index d2acfac73003..166430ddb3c9 100644
+> --- a/arch/arm64/Kconfig.platforms
+> +++ b/arch/arm64/Kconfig.platforms
+> @@ -26,6 +26,15 @@ config ARCH_SUNXI
+>  	help
+>  	  This enables support for Allwinner sunxi based SoCs like the A64.
+>  
+> +config ARCH_AMBARELLA
+> +	bool "Ambarella SoC family"
+> +	select ARM_PSCI
+> +	select HAVE_ARM_ARCH_TIMER
+> +	select PINCTRL
+> +	select PINCTRL_AMB
+> +	help
+> +	  This enables support for the ARM64 based Ambarella SoCs like CV75.
+> +
+>  config ARCH_ALPINE
+>  	bool "Annapurna Labs Alpine platform"
+>  	select ALPINE_MSI if PCI
+> diff --git a/arch/arm64/boot/dts/Makefile b/arch/arm64/boot/dts/Makefile
+> index fc726b215f12..f1709eb5d915 100644
+> --- a/arch/arm64/boot/dts/Makefile
+> +++ b/arch/arm64/boot/dts/Makefile
+> @@ -4,6 +4,7 @@ subdir-y += airoha
+>  subdir-y += allwinner
+>  subdir-y += altera
+>  subdir-y += amazon
+> +subdir-y += ambarella
+>  subdir-y += amd
+>  subdir-y += amlogic
+>  subdir-y += apm
+> diff --git a/arch/arm64/boot/dts/ambarella/Makefile b/arch/arm64/boot/dts/ambarella/Makefile
 > new file mode 100644
-> index 000000000000..3fa30b275e51
+> index 000000000000..ddca3d7b18cc
 > --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pinctrl/ambarella,cv75-pinctrl.yaml
-> @@ -0,0 +1,175 @@
-> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/pinctrl/ambarella,cv75-pinctrl.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +++ b/arch/arm64/boot/dts/ambarella/Makefile
+> @@ -0,0 +1,3 @@
+> +# SPDX-License-Identifier: GPL-2.0
 > +
-> +title: Ambarella CV75 Pin Controller
+> +dtb-$(CONFIG_ARCH_AMBARELLA) += cv75-evk.dtb
+> diff --git a/arch/arm64/boot/dts/ambarella/cv75-evk.dts b/arch/arm64/boot/dts/ambarella/cv75-evk.dts
+> new file mode 100644
+> index 000000000000..42a0fe24b83b
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/ambarella/cv75-evk.dts
+> @@ -0,0 +1,30 @@
+> +// SPDX-License-Identifier: GPL-2.0-or-later
+> +/*
+> + * Ambarella CV75 EVK board
+> + */
 > +
-> +maintainers:
-> +  - Long Zhao <longzhao@ambarella.com>
+> +/dts-v1/;
 > +
-> +description:
-> +  The Ambarella CV75 pin controller configures pin multiplexing, bias and
-> +  drive strength for the main GPIO banks. Pin groups and their mux settings
-> +  are defined by the pin controller driver and selected by function and group
-> +  names.
+> +#include "cv75.dtsi"
 > +
-> +allOf:
-> +  - $ref: pinctrl.yaml#
+> +/ {
+> +	model = "Ambarella CV75 EVK Board";
+> +	compatible = "ambarella,cv75-evk", "ambarella,cv75";
 > +
-> +properties:
-> +  compatible:
-> +    const: ambarella,cv75-pinctrl
+> +	aliases {
+> +		serial0 = &uart0;
+> +	};
 > +
-> +  reg:
-> +    maxItems: 1
-> +    description: IOMUX registers
+> +	chosen {
+> +		stdout-path = &uart0;
+> +	};
 > +
-> +  ambarella,drive-strength-syscon:
-> +    $ref: /schemas/types.yaml#/definitions/phandle
-> +    description: RCT syscon containing the drive-strength registers.
+> +	memory@200000 {
+> +		device_type = "memory";
+> +		reg = <0x0 0x00200000 0x0 0x07e00000>;
+> +	};
+> +};
 > +
-> +  ambarella,pull-syscon:
-> +    $ref: /schemas/types.yaml#/definitions/phandle
-> +    description: Secure scratchpad syscon containing the pull registers.
+> +&uart0 {
+> +	status = "okay";
+> +};
+> diff --git a/arch/arm64/boot/dts/ambarella/cv75.dtsi b/arch/arm64/boot/dts/ambarella/cv75.dtsi
+> new file mode 100644
+> index 000000000000..825b773f052f
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/ambarella/cv75.dtsi
+> @@ -0,0 +1,166 @@
+> +// SPDX-License-Identifier: GPL-2.0-or-later
+> +/*
+> + * Ambarella CV75 SoC
+> + *
+> + * Boot peripheral: UART0 console.
+> + * Clocks: a single ambarella,cv75-rct provider.
+> + */
 > +
-> +  "#address-cells":
-> +    const: 1
+> +#include <dt-bindings/clock/ambarella,cv75-clock.h>
+> +#include <dt-bindings/interrupt-controller/arm-gic.h>
 > +
-> +  "#size-cells":
-> +    const: 1
+> +/ {
+> +	compatible = "ambarella,cv75";
+> +	interrupt-parent = <&gic>;
+> +	#address-cells = <2>;
+> +	#size-cells = <2>;
 > +
-> +  ranges: true
+> +	osc: oscillator {
+> +		compatible = "fixed-clock";
+> +		#clock-cells = <0>;
+> +		clock-output-names = "osc";
+> +		clock-frequency = <24000000>;
+> +	};
 > +
-> +patternProperties:
-> +  "^gpio@[0-9a-f]+$":
-> +    type: object
-> +    additionalProperties: false
-> +
-> +    properties:
-> +      reg:
-> +        maxItems: 1
-> +
-> +      interrupts:
-> +        maxItems: 1
-> +
-> +      gpio-controller: true
-> +
-> +      "#gpio-cells":
-> +        const: 2
-> +
-> +      gpio-ranges:
-> +        maxItems: 1
-> +
-> +      interrupt-controller: true
-> +
-> +      "#interrupt-cells":
-> +        const: 2
-> +
-> +    required:
-> +      - reg
-> +      - interrupts
-> +      - gpio-controller
-> +      - "#gpio-cells"
-> +      - gpio-ranges
-> +      - interrupt-controller
-> +      - "#interrupt-cells"
-> +
-> +  "^[a-z0-9-]+-pins$":
+> +	psci {
 
-Mixing MMIO and non-MMIO nodes in a bus is discouraged. Sloppy code.
+This looks randomly ordered.
 
-Why the pins aren't per gpio-controller?
+Please follow DTS coding style.
 
-> +    type: object
-> +    allOf:
-> +      - $ref: pinmux-node.yaml#
-> +      - $ref: pincfg-node.yaml#
-> +    additionalProperties: false
-> +
-> +    properties:
-> +      function:
-> +        const: uart0
 
-If the function is fixed, then you do not need any of this.
+> +		compatible = "arm,psci-0.2";
+> +		method = "smc";
+> +	};
+> +
+> +	cpus {
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+> +
+> +		cpu@0 {
+> +			compatible = "arm,cortex-a76";
+> +			device_type = "cpu";
+> +			reg = <0x000>;
+> +			enable-method = "psci";
+> +		};
+> +
+> +		cpu@1 {
+> +			compatible = "arm,cortex-a76";
+> +			device_type = "cpu";
+> +			reg = <0x100>;
+> +			enable-method = "psci";
+> +		};
+> +	};
+> +
+> +	gic: interrupt-controller@fff0101000 {
 
-You must post COMPLETE bindings, see writing bindings doc.
+This cannot be here, it's MMIO node, you have dtbs check warnings
+likely. Just look at any other file how it is done.
 
-> +
-> +      groups:
-> +        $ref: /schemas/types.yaml#/definitions/string-array
-> +        items:
-> +          enum: [uart0tx, uart0rx]
+Please confirm that you have run dtbs_check W=1 and you fixed all the
+warnings.
 
-Same here, pointless/redunadnt.
+> +		compatible = "arm,gic-400";
+> +		#interrupt-cells = <3>;
+> +		#address-cells = <0>;
+> +		#size-cells = <1>;
+> +		interrupt-controller;
+> +		reg = <0xff 0xf0101000 0x0 0x1000>,
+> +		      <0xff 0xf0102000 0x0 0x2000>,
+> +		      <0xff 0xf0104000 0x0 0x2000>,
+> +		      <0xff 0xf0106000 0x0 0x2000>;
+> +		interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_HIGH)>;
+> +	};
+> +
+> +	timer {
+> +		compatible = "arm,armv8-timer";
+> +		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
+> +			     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
+> +			     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
+> +			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
+> +			     <GIC_PPI 12 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>;
+> +	};
+> +
+> +	soc {
+> +		compatible = "simple-bus";
+> +		#address-cells = <2>;
+> +		#size-cells = <2>;
+> +		ranges;
+> +
+> +		/* Clock provider and shared system registers. */
+> +		rct: clock-controller@ffed080000 {
+> +			compatible = "ambarella,cv75-rct", "syscon";
+> +			reg = <0xff 0xed080000 0x0 0x1000>;
+> +			clocks = <&osc>;
+> +			clock-names = "osc";
+> +			#clock-cells = <1>;
+> +
+> +			assigned-clocks = <&rct CV75_GCLK_UART0>;
+> +			assigned-clock-parents = <&osc>;
+> +			assigned-clock-rates = <24000000>;
+> +		};
+> +
+> +		apb@ffe4000000 {
+> +			compatible = "simple-bus";
+> +			#address-cells = <1>;
+> +			#size-cells = <1>;
+> +			reg = <0xff 0xe4000000 0x0 0x01000000>;
+> +			ranges = <0xe4000000 0xff 0xe4000000 0x01000000>;
 
-> +        minItems: 2
-> +        maxItems: 2
-> +        uniqueItems: true
-> +
-> +      bias-disable: true
-> +      bias-pull-down: true
-> +      bias-pull-up: true
-> +
-> +      drive-strength:
-> +        enum: [3, 4, 5, 6, 7, 8, 9, 12]
-> +
-> +    required:
-> +      - function
-> +      - groups
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - ambarella,drive-strength-syscon
-> +  - ambarella,pull-syscon
-> +  - "#address-cells"
-> +  - "#size-cells"
-> +  - ranges
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +
-> +    rct: rct {
-> +    };
-> +
-> +    scratchpad: scratchpad {
-> +    };
-
-Drop above, irrelevant. Do you see any other bindings doing this?
-
-> +
-> +    pinctrl: pinctrl@e4010000 {
-> +        compatible = "ambarella,cv75-pinctrl";
-> +        #address-cells = <1>;
-> +        #size-cells = <1>;
-
-You need to follow DTS coding style.
-
-> +        reg = <0xe4010000 0x1000>;
-> +        ranges;
-> +        ambarella,drive-strength-syscon = <&rct>;
-> +        ambarella,pull-syscon = <&scratchpad>;
+You need to read DTS coding style.
 
 Best regards,
 Krzysztof
