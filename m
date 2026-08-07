@@ -1,148 +1,137 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+Received: from mail-pf1-f172.google.com (mail-pf1-f172.google.com [209.85.210.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3104C3DDB1E
-	for <linux-serial@vger.kernel.org>; Fri,  7 Aug 2026 08:37:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E0703D091A
+	for <linux-serial@vger.kernel.org>; Fri,  7 Aug 2026 09:10:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786091852; cv=none; b=PUi7GNcQ7A7dgV336cmHBLgjxzOTYUvyuOvtkoAeD5zzMDZ/ccbO+37y6Wuot6yWUVAOKa9d4EtHl21BoLcsd6AMHbco2SD06JV5BXZIQ3rpUuEaZ7poKXnKwd9bdj1eG5ihoy3oPWe4CRrXwbh7XQmd1Z4r+iBCGG3swdvkwmM=
+	t=1786093806; cv=none; b=GbfM+L1KQk2vz5tXmspJusmHsoHn4wzIe0g8zbPussPmC7HIlicxYE+8ByFWPCBzU9wjD5reM8/+nYLIyox//8AQdNnLNjGd62zRsA9niKomapOxL4xXScLsx7gpWGvvkt4FfBIe54CVxqmcCQ6WdvNRuVe/BVMiXoqWnfeZdkE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786091852; c=relaxed/simple;
-	bh=/UdSyTf9Swt5Ml5qDkK3fqt0U1o1wltMS/fTtppqJ+4=;
-	h=MIME-Version:Content-Type:Subject:From:To:Cc:In-Reply-To:
-	 References:Date:Message-Id; b=CW4h4iFCRMQuOJTcF+hQc49gOVs6fTV1pG2sPZYzsKu97U4xhFSTlaVl4MG3GFagTRTfZ3MtJG0J4cixLOULpPMoYyLf5kQvaxsv8aO7kfHXrlH5HH+o7FTWvrNLx9D8FxJTcbEAYmUJTp56MeKmIBWVQAg+xdZ7UH5cQxTgkcI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=9elements.com; spf=pass smtp.mailfrom=9elements.com; dkim=pass (2048-bit key) header.d=9elements.com header.i=@9elements.com header.b=bjf9LTfe; arc=none smtp.client-ip=209.85.128.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=9elements.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=9elements.com
+	s=arc-20240116; t=1786093806; c=relaxed/simple;
+	bh=fXE63t+reDfxE+sqDQQS8BlL8hfF9EAW6qlirdeQqlE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=I3WYO3khfy85BnCyuZ1yRxiV9aYebHnAK9BwuPllaCtRJTA9p2YvF9mJxMjSCVMSGPOVYk96qBO5GptAtBR8ycbzGRiznqifefKzkge7vgsFuIx7vaMteIY+sSMVZCCSn3ksfLAKk6fIbDHjazU4WnmM5D+mZSNfoxAoSY5Wsqo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KU47NJQn; arc=none smtp.client-ip=209.85.210.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=9elements.com header.i=@9elements.com header.b="bjf9LTfe"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-4994c49f588so17723465e9.0
-        for <linux-serial@vger.kernel.org>; Fri, 07 Aug 2026 01:37:22 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KU47NJQn"
+Received: by mail-pf1-f172.google.com with SMTP id d2e1a72fcca58-84e27035206so2413267b3a.3
+        for <linux-serial@vger.kernel.org>; Fri, 07 Aug 2026 02:10:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=9elements.com; s=google; t=1786091840; x=1786696640; darn=vger.kernel.org;
-        h=message-id:date:references:in-reply-to:cc:to:from:subject
-         :content-transfer-encoding:content-type:mime-version:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=qa/2IU2RbAAtb2QUYjZKVHQ104XeXVbZBNjUDvADO9U=;
-        b=bjf9LTfe3ZbLy0YUfOmjCm5sIjoRu7V7U+sgL5Tb2LKbPYRvWPUyPG4JIBeSuv6Opw
-         iruoVk/cHY1WFHqzyh+4wt6Ad298cW2c/5O61Vu0x5oS5+/vzy0jtr/+jW+bubbpoBre
-         2mmflEWdKGL7csSAvRWiPVskwSjr7yIRtXqyP/UqCmi1/s8XVTg/3Za4Ras+o8MPbuQb
-         9IsuJZH/iJN7ga1rwUmm2EyhUF9K+XeGGPlF//w6DHMLjNtOpMSWvoivQI/Rjhn0KqBZ
-         RV94Q7WfigLnD8jcdhrrTFJRb3FDqk6wFfTPnWcLTbQy4OY7mRYyVGtuLAOww+BQ/I1y
-         gPqg==
+        d=gmail.com; s=20251104; t=1786093804; x=1786698604; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=KIWGEh9Ufcm6qiadbjnDxFEVPk5jpDGnhvZvsj6Ps4M=;
+        b=KU47NJQnEopEF+L4hTrqSxbEkxPT5dfuKOEOoSMbElijAsbEYZt5NENPUx6HvsXjJC
+         IEIhzyHjS8Tvt9KhrLZE8rFymoDdyHd7ZRXTxLSFD6RmoiIrr3nNj2/V4GTK0nsvVdwE
+         BPRO1Kc45KVWBFX3JyciOXJi6uJ7QoKJMUW0uwgTxV57+UojgITR9zdet3qWKaKOvJvy
+         45/xlsh6YmSb/6sfxbpSeWTG/1F1kQJ4uAn6nBhqR6zEEEm1IDd88PAOi0JNQ65z5/a+
+         CJHyXZzQiFN4B6EAaJLnnYIJrHV5Ni3PKJ1MJGWpdclULxOsz3Irro1d0NdgXTifNYTm
+         /74A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786091840; x=1786696640;
-        h=message-id:date:references:in-reply-to:cc:to:from:subject
-         :content-transfer-encoding:content-type:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=qa/2IU2RbAAtb2QUYjZKVHQ104XeXVbZBNjUDvADO9U=;
-        b=WZfv6Dd4kX51bl7Wzj6Jw3fJMg86022JO9uKpmCCulNMnBTGnE85IXxa9xKpj4iIY2
-         plp2JigNq1HC29YoyYgxtPi90GzgzfERqXQaAHueK5uqd8jwSaJr/cMi2tdrb4yzUI7j
-         r6HnqVnkpednWlxs3z0YucKlNCOgu4TfjbtnZ7I3R+ZAR8I9ige6KW47YQSIMCgoSv4P
-         /PkQkbd8eFZPytMaKE80OKqAoK66pFL4GEBEENg3mMqZAp7dzpEp5QOklHpsTq0euJ0f
-         avHdWKBC5V+CNCbMpSQ9gMuRFnnMDf+EkgWImTtStMYHoOELXRhInwXLVhBYy2RWnGzd
-         Elpg==
-X-Forwarded-Encrypted: i=1; AHgh+Rr/bV6ZHUpVtDZesm4Vwuw3TDnjLwK7/FUMfKz8APhRK7WE+puEXxKDE7Q0xROKeeCxfF0HKkr4YSe1m2c=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwCdVsnE3RtlNv9i0OupwbdW+U8LE1BORCQ/Owdj26gzLPBTXUT
-	tW1qe2E+bMO3v4i2767bgNlv4DiQustRoGPqv1I3uSwk1WkBpY8ssNfgjSMxI4dAbfk=
-X-Gm-Gg: AR+sD10zZjsIepE4V2WkNtFz7U6uqss22z4QlvdQKWpoCP1hfHi0kTpHl/irA2KANoR
-	W1IL/CWzl/D0tQsQIhKl2K/RVrfbnqDISlx2gQf2gFg4wMeeJmxO4QAziAou+vS/p6bu3Z2oEMi
-	6tEdfR7otW2DMvHFJslRyNGiJPlaWcmT+ruvey3LzKYubo0WMCOFtlhwrhGvb5VeqpH/Qh+TiOM
-	OA4ZPKIyt9R47RwTo+9ZzLAq6ppRGMzjge6vF3njCJyUtPrljIn8p0geXYjo64bTz92l+T3YK8O
-	4YMkFRafljlheH73lp4PUJ9erQxOzSkaSrjEL2D+9gnJA7Id0KTeabiu2oG1NddiGW0AAA7cFyY
-	H6yrw09b3csAlr+kw25b7XPowYL6UQexTWqumOvpyMU264mIZ88O0xEILwiKg/QsztCD+/lIGbu
-	6dSlGx3iWH7UxwE3PZtfW2I6Opm3nr5GnXvRHu6UY++BVIrBJ623MLvqbBllfCVkLURpqsnlpRq
-	Et3q/GqMQ==
-X-Received: by 2002:a05:600c:19c9:b0:499:5f80:83ac with SMTP id 5b1f17b1804b1-4995f8083c9mr1877075e9.7.1786091840306;
-        Fri, 07 Aug 2026 01:37:20 -0700 (PDT)
-Received: from [172.20.10.3] ([2a01:599:843:2744:7f5d:3df0:76c1:3705])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4995e9e7171sm17795195e9.1.2026.08.07.01.37.18
+        d=1e100.net; s=20251104; t=1786093804; x=1786698604;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=KIWGEh9Ufcm6qiadbjnDxFEVPk5jpDGnhvZvsj6Ps4M=;
+        b=qA0lvWzjuRGVEbBqU/sF2M6xu10+airbm58gJX8Ornt4pUD4M6PdpCCqSRh9y917EI
+         CRSLwDx9jFF4ia+Kdf+Duas3J7jrMDNnHcirUm9CerKrJeSPSdxS1Jn50mqQJGCYBC/A
+         LyraG8ec7n3Fa31mA6ZFLsxdrEgQy84GXTWbTGeDzOLREnS78wWrnYbFCVz9/lJpue+H
+         xtWMUEmjvgwZPnxbw8MHHpY93KBS1k4OrP1pkxOv08jU8B2dJIoiVeZpSLeE1CfDc58A
+         5zMaRDATkCm2/ACLvZhLuGLdpSUiD6yWkHH5asFo1LaMnhWg1I76SD9nbABHeYcI4j8F
+         RcHw==
+X-Forwarded-Encrypted: i=1; AHgh+RqsA1VEhTh/7Al/aZI/rWwINq0hyD2KVc7hDdnHR+AYIdmVUNCPm0QXOMNwSu47Vlsy1UBaJpcUHigbWn8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YylCg1wSYpt1nIU0VsPJanLeFxPA+VPNHCmIDBcmG5pFwwOLqco
+	zo8SjoSrnhVQkkRGafNxsxYmEx2n2a+FvFGMXvzQnbUBJiWwTLSUQKDo
+X-Gm-Gg: AR+sD12BWOhUMGZw6saFdlziFjRYqJnQAv5Xc0Oz4TInpNcyXQ8Fth8CWmrqijzgvXz
+	UFtHHPhnc+5oR1M8O0Zfgu4+r4pkO+whYUgB4/zt3uzABOzvj0XA7K+0ePVBMraxwMEZxGN57/p
+	/2Ada5aEvnonqT1AX8wSahRvFCQHyi1i2hyA85WIq02gmSJ6z0oaVXCL4QUmWMONAK9/QImQanN
+	nJgFBqkHJN0INqoONigWuvnzm+LPN2TBW9IMepjlvc/lunjrygg/QBRy5HEBcEu6pOmW2OU9q2I
+	Fz6R6h0zU7mw8FtYoRvAwwhW4olIrO2BR2ULI2hdIKBpMjy5dRNZ9c34rPRInzOTwS9KvG/RAO7
+	Qd/GunQo/t+qrM9sX0Zibq4Z/5d3UpPE3x8gHBZXnyLCTHPQGcRAE3vqdoD6/DaV9bhOcN3E+86
+	IlQR//6pgxtwPqUKcnuhYw9loaSmOIzcXXeStoQjcSoFld6pQPABDSE4KFK+3f2U13Wm/Ai99I3
+	54tieoCub5NIohr64Rd/1paTnI9Nch2HVu3wDTUVv543JllwgBEAoEfTDonapYP8o7cdXrpYKOm
+	nlmZ
+X-Received: by 2002:a05:6a00:a116:b0:846:bc60:5bf7 with SMTP id d2e1a72fcca58-84f2dfcf7f5mr24182425b3a.6.1786093804529;
+        Fri, 07 Aug 2026 02:10:04 -0700 (PDT)
+Received: from phuc-desktop.. ([183.91.15.56])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-84f5a552859sm715908b3a.42.2026.08.07.02.09.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Aug 2026 01:37:20 -0700 (PDT)
+        Fri, 07 Aug 2026 02:10:03 -0700 (PDT)
+From: phucduc.bui@gmail.com
+To: Jiri Slaby <jirislaby@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Frank Li <Frank.Li@nxp.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	Yenchia Chen <yenchia.chen@mediatek.com>,
+	Daniel Golle <daniel@makrotopia.org>,
+	Zhiyong Tao <zhiyong.tao@mediatek.com>,
+	Sherry Sun <sherry.sun@nxp.com>,
+	Robin Gong <yibin.gong@nxp.com>,
+	Viken Dadhaniya <viken.dadhaniya@oss.qualcomm.com>,
+	Praveen Talari <praveen.talari@oss.qualcomm.com>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Zong Jiang <quic_zongjian@quicinc.com>,
+	Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+	Aniket Randive <aniket.randive@oss.qualcomm.com>,
+	Kathiravan Thirumoorthy <kathiravan.thirumoorthy@oss.qualcomm.com>,
+	Anup Kulkarni <anup.kulkarni@oss.qualcomm.com>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-mediatek@lists.infradead.org,
+	imx@lists.linux.dev,
+	linux-arm-msm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	bui duc phuc <phucduc.bui@gmail.com>
+Subject: [PATCH 1/3] serial: qcom-geni: Propagate errors from optional IRQ lookup
+Date: Fri,  7 Aug 2026 16:09:43 +0700
+Message-ID: <20260807090945.41690-1-phucduc.bui@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v5 6/6] ARM: dts: aspeed: g6: add aspeed,vuart-over-pci
- prop to vuart3 and 4
-From: Tan Siewert <tan.siewert@9elements.com>
-To: =?utf-8?q?Gr=C3=A9goire_Layet?= <gregoire.layet@9elements.com>
-Cc: joel@jms.id.au, andrew@codeconstruct.com.au, lkundrak@v3.sk, 
- devicetree@vger.kernel.org, gregkh@linuxfoundation.org, 
- jirislaby@kernel.org, robh@kernel.org, krzk+dt@kernel.org, 
- conor+dt@kernel.org, lee@kernel.org, andrew@lunn.ch, 
- jacky_chou@aspeedtech.com, yh_chung@aspeedtech.com, ninad@linux.ibm.com, 
- anirudhsriniv@gmail.com, tan.siewert@9elements.com, 
- linux-serial@vger.kernel.org, mfd@lists.linux.dev, 
- linux-aspeed@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, 
- linux-kernel@vger.kernel.org
-In-Reply-To: <8d24d424b3504105394055de268e0a11515635a9.1785932211.git.gregoire.layet@9elements.com>
-References: <cover.1785932211.git.gregoire.layet@9elements.com>
- <8d24d424b3504105394055de268e0a11515635a9.1785932211.git.gregoire.layet@9elements.com>
-Date: Fri, 07 Aug 2026 10:37:09 +0200
-Message-Id: <178609182924.193353.1528505361399129387.b4-review@b4>
-X-Mailer: b4 0.17-dev
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1786091831; l=2379;
- i=tan.siewert@9elements.com; s=20260527; h=from:subject:message-id;
- bh=/UdSyTf9Swt5Ml5qDkK3fqt0U1o1wltMS/fTtppqJ+4=;
- b=Td0FBVHZjwGzgXbgiKllL4oZyf/Dbkogo3BlU9t3xclOt5YoCOrEbt8mL9QHVk7XLfkFRJ7Wa
- 6EY3etRH2R9C3Q3YQKlDY8mjaPAEc28k3jIyzjAH3Oq3M2RB4ymHQFB
-X-Developer-Key: i=tan.siewert@9elements.com; a=ed25519;
- pk=ORQd/zQf+LsAvJGXP1CjQwVO6t6iEOGq/eGUsmRVTG4=
 
-> The VUART 3 and 4 are VUART over PCI.
-> Set this flag to indicate this information.
-> Also set the syscon phandle.
-> 
-> Signed-off-by: Grégoire Layet <gregoire.layet@9elements.com>
->
-> diff --git a/arch/arm/boot/dts/aspeed/aspeed-g6.dtsi b/arch/arm/boot/dts/aspeed/aspeed-g6.dtsi
-> index 7c02633f2bd6..fbd7ab6332a1 100644
-> --- a/arch/arm/boot/dts/aspeed/aspeed-g6.dtsi
-> +++ b/arch/arm/boot/dts/aspeed/aspeed-g6.dtsi
-> @@ -722,7 +722,9 @@ vuart3: serial@1e787800 {
->  				reg-shift = <2>;
->  				interrupts = <GIC_SPI 180 IRQ_TYPE_LEVEL_HIGH>;
->  				clocks = <&syscon ASPEED_CLK_APB2>;
-> +				aspeed,scu-syscon = <&syscon>;
->  				no-loopback-test;
-> +				aspeed,vuart-over-pci;
->  				status = "disabled";
->  			};
+From: bui duc phuc <phucduc.bui@gmail.com>
 
-dt-style check fails with:
+platform_get_irq_optional() returns a positive IRQ number on success or
+a negative error code on failure. For an optional IRQ, -ENXIO indicates
+that no IRQ is available, while other errors should be propagated.
 
-    arch/arm/boot/dts/aspeed/aspeed-g6.dtsi:723: [property-order] property 'interrupts' out of canonical order (should sort before 'reg-shift')
-    arch/arm/boot/dts/aspeed/aspeed-g6.dtsi:724: [property-order] property 'clocks' out of canonical order (should sort before 'interrupts')
-    arch/arm/boot/dts/aspeed/aspeed-g6.dtsi:726: [property-order] property 'no-loopback-test' out of canonical order (should sort before 'aspeed,scu-syscon')
-    arch/arm/boot/dts/aspeed/aspeed-g6.dtsi:728: [required-blank-lines] "status" must be preceded by a blank line
+Propagate errors such as -EPROBE_DEFER and -EINVAL instead of continuing
+probe without the IRQ.
 
->  
-> @@ -742,7 +744,9 @@ vuart4: serial@1e788800 {
->  				reg-shift = <2>;
->  				interrupts = <GIC_SPI 181 IRQ_TYPE_LEVEL_HIGH>;
->  				clocks = <&syscon ASPEED_CLK_APB2>;
-> +				aspeed,scu-syscon = <&syscon>;
->  				no-loopback-test;
-> +				aspeed,vuart-over-pci;
->  				status = "disabled";
->  			};
->  
+Signed-off-by: bui duc phuc <phucduc.bui@gmail.com>
+---
+ drivers/tty/serial/qcom_geni_serial.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-Same here:
-
-    arch/arm/boot/dts/aspeed/aspeed-g6.dtsi:742: [line-length] line exceeds 80 columns (92)
-    arch/arm/boot/dts/aspeed/aspeed-g6.dtsi:745: [property-order] property 'interrupts' out of canonical order (should sort before 'reg-shift')
-    arch/arm/boot/dts/aspeed/aspeed-g6.dtsi:746: [property-order] property 'clocks' out of canonical order (should sort before 'interrupts')
-    arch/arm/boot/dts/aspeed/aspeed-g6.dtsi:748: [property-order] property 'no-loopback-test' out of canonical order (should sort before 'aspeed,scu-syscon')
-    arch/arm/boot/dts/aspeed/aspeed-g6.dtsi:750: [required-blank-lines] "status" must be preceded by a blank line
-
-Tan
-
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 7ead87b4eb65..240a6d67d847 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -1883,8 +1883,13 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+ 	uport->irq = irq;
+ 	uport->has_sysrq = IS_ENABLED(CONFIG_SERIAL_QCOM_GENI_CONSOLE);
+ 
+-	if (!data->console)
++	if (!data->console) {
+ 		port->wakeup_irq = platform_get_irq_optional(pdev, 1);
++		if (port->wakeup_irq < 0 && port->wakeup_irq != -ENXIO) {
++			ret = port->wakeup_irq;
++			goto error;
++		}
++	}
+ 
+ 	if (of_property_read_bool(pdev->dev.of_node, "rx-tx-swap"))
+ 		port->rx_tx_swap = true;
 -- 
-Tan Siewert <tan.siewert@9elements.com>
+2.43.0
+
