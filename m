@@ -1,65 +1,65 @@
-Received: from mail-pf1-f182.google.com (mail-pf1-f182.google.com [209.85.210.182])
+Received: from mail-pf1-f174.google.com (mail-pf1-f174.google.com [209.85.210.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 446533D091A
-	for <linux-serial@vger.kernel.org>; Fri,  7 Aug 2026 09:10:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B30A3B637A
+	for <linux-serial@vger.kernel.org>; Fri,  7 Aug 2026 09:10:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786093816; cv=none; b=XO1MlP1FxvKcAj1sEBakFyZszMSXKn7ojh6xhOkjFmkltawV2YGt+ZxNO+aRzELZuHXFG4gdo5U7ANCxtMpOSzFNpev+EeJxP8ouuJ2K9T/DvHT3UnhciKb8+gnKtewJF9JHG2Qf8g5TSqa2HkhxWkjIkEq5Euxh22ezCKlCq/U=
+	t=1786093823; cv=none; b=iSrhl9M5tsUWcbtOCurNHAZ613n42eiDBXz/y9rIS6s4uzVjFTEDPgU+oybbF+FGAUMv6dPpwNJX1sXHQvgFDL+GGtXIJAqM6k5ZDmoF27/2XkBzPf9Nh+Qtck/1h0oNj7jgmF08lIdeHDs9EJAcwS1U1yq2UBpMxepwSsrGQS0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786093816; c=relaxed/simple;
-	bh=g8Pd3hLWXKDO1TxCxTibVOhcinoabj6frf5OHE6N6r4=;
+	s=arc-20240116; t=1786093823; c=relaxed/simple;
+	bh=zmd+hXMz/1zZGAjuKxtwL7umtro7DdjiUAmgu9dyibQ=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ivnFgISgfLdOAiih8BByFI41bKufnez7Aehz5mwk/1xsmkjQk9lalqzk3zp1/2IshnvfNh1xJbM/pMGZDiQ56B9QQ+ROAgY3wEHE4HtR3arpD6WUdmBU3hOzcmRqYBrEczwHAdsRsdZyiMgwzUE/iZdvTiAonRivM/EPchAOhE0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=pWsZIzPp; arc=none smtp.client-ip=209.85.210.182
+	 MIME-Version; b=qmYOxUcxMoeWh5MkoBKUAURq861aN+ULCRAlavdM5qAgTgXwXiVtTiz+o6Twg1eZfw6+e2owOYJ7K1+OQsgoBEdaLigGUpmcGp5oJbf/GS52T6fzhKMYJh5SY5fOcOBM9q84AakrU2/0caSjx9zD9ej7/KtmN2ygTHWZD+xpLQI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=S5CYqQI0; arc=none smtp.client-ip=209.85.210.174
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pWsZIzPp"
-Received: by mail-pf1-f182.google.com with SMTP id d2e1a72fcca58-848643382fcso3513547b3a.1
-        for <linux-serial@vger.kernel.org>; Fri, 07 Aug 2026 02:10:14 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="S5CYqQI0"
+Received: by mail-pf1-f174.google.com with SMTP id d2e1a72fcca58-848643382fcso3513637b3a.1
+        for <linux-serial@vger.kernel.org>; Fri, 07 Aug 2026 02:10:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786093813; x=1786698613; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1786093822; x=1786698622; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=Ff2PqEjwL9/E48n/LYtyoRX7V3j9un3+kJnzZ64yyh8=;
-        b=pWsZIzPpqelHngJ98XRM3q6m1VwfH3Au1wer4+wHds6MxvevrWaAIwAtB3vtxkmGj2
-         K8NthasfzDwZS7huwZBUlL848HjDkkdjK8GnLvcvhy5tOeebTj1ncNXge8ecyRfIKiM1
-         FzsAG9vITXDLisvDekxSLmKGoXKCAeTwW7Fqsq1zX4mrQaJmoXVLnYw2RxRuWBXM8UgS
-         xswQkft3hM8zYi3ASOhax0FdIAIAhpBsSi8t3OgSsGmX+z6oPM97kw97k26h1yZ7HMQU
-         TG3kFKWslNC1TTBDfM7L2I12e59TgeEOvI1dmO2xiEdtto/R7lqDEHsd+vh1C+DuvF0t
-         FNcg==
+        bh=ElLqReA861EolgaVnlXggqBl/5aqmb9EAPSEfZwWA+w=;
+        b=S5CYqQI0UahkAkppVaHE7UZKBJ33HhmZgafDHfHMK2nV+I7XO562yKRYO8V4B05jgJ
+         Avc1zgLFGnOzCVOZYsSpvIi8ljvR1DkO/c9xE55xVA30VCsPYXPRsS/NvHPfGfnqIZnF
+         4KU5ULsnkHLTv7AOyks3ZQmhMUtrXu6d6TT+z5mzJ0eMYmRVMQuyipznN8oVbw8Qb0zR
+         pyQfz6zWAINUA9coCF0P9vdHOjkPv15MQQa1Z32c16PjYnZ4kcY6u0wKeHD9x1WYbqPs
+         h8oGuZcJG+SjvjZjgJrIM22/y45GYm+S9IF9z1ItrexTuVNsz/zh3YdeuBq3fd2oRzx0
+         Y2/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786093813; x=1786698613;
+        d=1e100.net; s=20251104; t=1786093822; x=1786698622;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=Ff2PqEjwL9/E48n/LYtyoRX7V3j9un3+kJnzZ64yyh8=;
-        b=DaqRjXhe7dmPP/U+gUlEvDIu/jzjXKUueZ0VmqbJ5SRzWWUxSB1KvnvoFhmc1MmZvT
-         8ctygIsL2nVYJXh8eXDejJGtO7M+1+gg68IoJmGEtgJknjFTXAIcaVTj79NkJ8dVWCVg
-         pWDl9t1wpVRS6/zEaWjqc/3Ho4G+UoUlZzbfXeItXvYPjqWT/uXg+9j2I/2u6tGHkx8I
-         O8xwb24TF1V2GVK0vjnM3hd6Ohkl4jSu95uAr2JHL0YbI4GYWVw7LZkIpsvdb9PsC+AL
-         Gk6gPTwbCCgQG2ktFriD4XfDszUs6deCUGTTx98qB2LeQX2e0d8sUDC70fUcvOAh/9td
-         i+sw==
-X-Forwarded-Encrypted: i=1; AHgh+RrJgJJI6c+VPAlsDRzcf/NFM0gtUeWA3puCH9+D0YVe5Afr34SeE6MhAZSLdjIAixEIEeEHtkZj/x4WnkY=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw35za+MAA6DRqwCGUhTb6P0HxkHA4q4gIGWxnGLX70JX/HTnvH
-	OEYMq5c39IC3QiNndn7PrItmPOK03ATw2e43uACkNM8L3eWnGCk/Hd4u
-X-Gm-Gg: AR+sD12pwr/IhH1DZdMOolZ1qenHTbmNUi2D9XTQRbaThPKqXo3t+sulcGXifdAa1VF
-	XjsNJFq8J8CulYzVy1vHVYNQXlPwwg9pYIqC+/zGSsmFzWrc1+yk741YNEjdjHVWqyT/kVuLpMW
-	Om9XHogHpWcsvylC6XIxv8t/WegNNvicZNel6qdW2x1qy+0CR3ynbI620dPAW365o8wjbfCzjpY
-	MAgTrvzblorIAtYBs5FDQrSxUiFwb5QBNMRGV7THgf2XWXKo58q0ft7MLykPtmzXtKdEsH9g63G
-	5ZPsTDlyJ6+gAR8nVJXsZ7xFQzau6DYjzt3RDwz8xSo8OmBWQB/YxVWHXzxZAjwI94TiOxYdzTi
-	Nva4Ak0jd3Wjbuau+mrJ8nQxmzsDaJiEqidk3oBP8pBAQUu5W1lowc3aol4raEg0V7t/rVXZY1N
-	s6+MAS8TsSPycARjNBddVenqt1Jq+8jMXA84w6tJx7CEh3WKYODgf5WsWc6GC7mYS2vNIc0NIY5
-	qYJBD/osbMk5mz/6pVU5NLiP9OjLgYhtxZ1FlY+uSozsmDsDWE9c2Hby4wNSwSh3qDdVLNPGIbl
-	Xdays/8hb7uxzSA=
-X-Received: by 2002:a05:6a00:420e:b0:84a:6726:62f9 with SMTP id d2e1a72fcca58-84f2dff7c61mr26343835b3a.9.1786093813505;
-        Fri, 07 Aug 2026 02:10:13 -0700 (PDT)
+        bh=ElLqReA861EolgaVnlXggqBl/5aqmb9EAPSEfZwWA+w=;
+        b=TVnTZI42qrwboruavxGQ1wIk3R/IWZP/dqfWU839X75QcYSW/GMRmU8FZ1GAuptZIr
+         xbvHXUNVEGxiWu4qzk/Man9LQ5FEdjmqVhgjLcDodZtL0GQmGlylmNk4yi4eXiIcOg+C
+         5FXiG3OWNyM7Wck5GNrYGZk0lTEdqd8dXWkdSLxBWUewGhjxt4Q03rRVRFy0pi7/febj
+         m1dnixRZuali0U1cofbYJCh55igdElUfidQcbe+MycbV4+4MkRSvhtM1LmF5+bJdAa+B
+         VorcEpFhXLJys6eOdjNphLki6pk3pd0As/Kq/8oPHVfB6UaU+Y++VbuyvRPoAOrC+vEo
+         yLfw==
+X-Forwarded-Encrypted: i=1; AHgh+Rpr3snPLXzVYtBjGfPN34PXBLcabFl46RtYpCvFjgc4LxVzyEIQDofOaadSoP7GE3RU3yRwKA2XY4esxqU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwrIwI4gtgTGYFtaXIdRbcDE8Ih6/ke2UzS6xRHz2pDbKA2jvlq
+	mm/WaNwMRNJ3f7KmkKpoOMVk3gCK1jpmv37Yotc7KZa5yHTBa4Ntvshc
+X-Gm-Gg: AR+sD11EDiHBtG1SJ8HTDlYUK9wFrCKBTOTVSuKE8sNoxh11GajaXNEBLZbqVo9BbzC
+	PsuProWBUIgPAGf1TCdpSZjPOyru3EMz+wkaGLQMUEVMSURp3RPszMEXubnl8DcA5QoJpd9/jH8
+	B4H4VyLPwIqAVtsGNWpVWlTX37CrOeFX85qkVTuLJnRhxZPSYS4Nbz1jrrwnEKLNvSwUsbK43qA
+	OMTRPcsjfKy35uL5v1FH4Ur0cPVqU7ZTj47wz6woneMiQgv1Kw4W/9SfQXUVNMl/DOS1Wy9IV1W
+	9NEBsVYgLmEGv6ig7Sgs+fpFzad3g+NdW6LRzWqxwcUIYjFOlcZnoxJ+wIdbeJKIzYvW142iMoz
+	BNn3jzawQ7j3bbMWUM05jyScQC9wD+NOcHA7IOqPq+W6nfiAR3dU/B3mM/EXigbck2Ibumk6jPW
+	Bq2TiDN+y5dBwQOMe26Vh8cAVDYL4xpl4RdjwkbXy/G9bkUtAbqI8ttOywyyua8Dn5WL+E6N8tK
+	3lQmYD8J9KTHIaDjeGk9pYJO5Gg5eoYw+PBXaxslBYANm6HmUurmLLA+Er1/26q0gVb6YrTYb8t
+	iGp2
+X-Received: by 2002:a05:6a00:f99:b0:845:ebbf:e7be with SMTP id d2e1a72fcca58-84f2e03954amr24222618b3a.23.1786093821837;
+        Fri, 07 Aug 2026 02:10:21 -0700 (PDT)
 Received: from phuc-desktop.. ([183.91.15.56])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-84f5a552859sm715908b3a.42.2026.08.07.02.10.07
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-84f5a552859sm715908b3a.42.2026.08.07.02.10.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Aug 2026 02:10:12 -0700 (PDT)
+        Fri, 07 Aug 2026 02:10:21 -0700 (PDT)
 From: phucduc.bui@gmail.com
 To: Jiri Slaby <jirislaby@kernel.org>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -89,9 +89,9 @@ Cc: Matthias Brugger <matthias.bgg@gmail.com>,
 	linux-arm-msm@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	bui duc phuc <phucduc.bui@gmail.com>
-Subject: [PATCH 2/3] tty: serial: imx: Propagate errors from optional IRQ lookup
-Date: Fri,  7 Aug 2026 16:09:44 +0700
-Message-ID: <20260807090945.41690-2-phucduc.bui@gmail.com>
+Subject: [PATCH 3/3] serial: 8250_mtk: Propagate errors from optional IRQ lookup
+Date: Fri,  7 Aug 2026 16:09:45 +0700
+Message-ID: <20260807090945.41690-3-phucduc.bui@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260807090945.41690-1-phucduc.bui@gmail.com>
 References: <20260807090945.41690-1-phucduc.bui@gmail.com>
@@ -114,25 +114,22 @@ probe without the IRQ.
 
 Signed-off-by: bui duc phuc <phucduc.bui@gmail.com>
 ---
- drivers/tty/serial/imx.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/tty/serial/8250/8250_mtk.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 251a50c8aa38..4224454d360e 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -2463,7 +2463,11 @@ static int imx_uart_probe(struct platform_device *pdev)
- 	if (rxirq < 0)
- 		return rxirq;
- 	txirq = platform_get_irq_optional(pdev, 1);
-+	if (txirq < 0 && txirq != -ENXIO)
-+		return txirq;
- 	rtsirq = platform_get_irq_optional(pdev, 2);
-+	if (rtsirq < 0 && rtsirq != -ENXIO)
-+		return rtsirq;
+diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
+index e6a56cf54ae0..d0d2aecf9005 100644
+--- a/drivers/tty/serial/8250/8250_mtk.c
++++ b/drivers/tty/serial/8250/8250_mtk.c
+@@ -587,6 +587,8 @@ static int mtk8250_probe(struct platform_device *pdev)
+ 		return data->line;
  
- 	sport->port.dev = &pdev->dev;
- 	sport->port.mapbase = res->start;
+ 	data->rx_wakeup_irq = platform_get_irq_optional(pdev, 1);
++	if (data->rx_wakeup_irq < 0 && data->rx_wakeup_irq != -ENXIO)
++		return data->rx_wakeup_irq;
+ 
+ 	pm_runtime_set_active(&pdev->dev);
+ 	pm_runtime_enable(&pdev->dev);
 -- 
 2.43.0
 
