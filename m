@@ -1,135 +1,149 @@
-Received: from mail-pf1-f174.google.com (mail-pf1-f174.google.com [209.85.210.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B30A3B637A
-	for <linux-serial@vger.kernel.org>; Fri,  7 Aug 2026 09:10:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79F7F338910
+	for <linux-serial@vger.kernel.org>; Fri,  7 Aug 2026 17:45:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786093823; cv=none; b=iSrhl9M5tsUWcbtOCurNHAZ613n42eiDBXz/y9rIS6s4uzVjFTEDPgU+oybbF+FGAUMv6dPpwNJX1sXHQvgFDL+GGtXIJAqM6k5ZDmoF27/2XkBzPf9Nh+Qtck/1h0oNj7jgmF08lIdeHDs9EJAcwS1U1yq2UBpMxepwSsrGQS0=
+	t=1786124725; cv=none; b=QlGBPgqCQ9XAuAb3kKWFxK7PYVKL9Mggdhtn6/578bMI51quWrDLGa98pqo1AHwuydVBoOBqYjTcyQlyJiPVGiij1IV4TGSNEy7byEnu4wkdX32eM9xGkMymHe89nEAAyKL8l+DHWRcvObVKHTvDJHhVrfqwNtbnuG9M5+vYxXs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786093823; c=relaxed/simple;
-	bh=zmd+hXMz/1zZGAjuKxtwL7umtro7DdjiUAmgu9dyibQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=qmYOxUcxMoeWh5MkoBKUAURq861aN+ULCRAlavdM5qAgTgXwXiVtTiz+o6Twg1eZfw6+e2owOYJ7K1+OQsgoBEdaLigGUpmcGp5oJbf/GS52T6fzhKMYJh5SY5fOcOBM9q84AakrU2/0caSjx9zD9ej7/KtmN2ygTHWZD+xpLQI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=S5CYqQI0; arc=none smtp.client-ip=209.85.210.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1786124725; c=relaxed/simple;
+	bh=K9y7+qgOIUgusqqnv2A0lIuXRIzhe19SOiZ/1cedtZM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=F4P3zyfO5KaHLy9OQDvnZGke9j0QhaEPs9vrtJIDV3LeYsxWg9qKb02stEpshIaThZtQJfdXTve9av6oJFO89DMedZEvESfmEryUbC0VPXoEAJ0kRDOONvBaGTA1ZwuF7uWoKk0mf0r5GCpUL5MwqZsVDnQJrBVuN715h44zWDw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=f9mdM+J7; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="S5CYqQI0"
-Received: by mail-pf1-f174.google.com with SMTP id d2e1a72fcca58-848643382fcso3513637b3a.1
-        for <linux-serial@vger.kernel.org>; Fri, 07 Aug 2026 02:10:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786093822; x=1786698622; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=ElLqReA861EolgaVnlXggqBl/5aqmb9EAPSEfZwWA+w=;
-        b=S5CYqQI0UahkAkppVaHE7UZKBJ33HhmZgafDHfHMK2nV+I7XO562yKRYO8V4B05jgJ
-         Avc1zgLFGnOzCVOZYsSpvIi8ljvR1DkO/c9xE55xVA30VCsPYXPRsS/NvHPfGfnqIZnF
-         4KU5ULsnkHLTv7AOyks3ZQmhMUtrXu6d6TT+z5mzJ0eMYmRVMQuyipznN8oVbw8Qb0zR
-         pyQfz6zWAINUA9coCF0P9vdHOjkPv15MQQa1Z32c16PjYnZ4kcY6u0wKeHD9x1WYbqPs
-         h8oGuZcJG+SjvjZjgJrIM22/y45GYm+S9IF9z1ItrexTuVNsz/zh3YdeuBq3fd2oRzx0
-         Y2/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786093822; x=1786698622;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=ElLqReA861EolgaVnlXggqBl/5aqmb9EAPSEfZwWA+w=;
-        b=TVnTZI42qrwboruavxGQ1wIk3R/IWZP/dqfWU839X75QcYSW/GMRmU8FZ1GAuptZIr
-         xbvHXUNVEGxiWu4qzk/Man9LQ5FEdjmqVhgjLcDodZtL0GQmGlylmNk4yi4eXiIcOg+C
-         5FXiG3OWNyM7Wck5GNrYGZk0lTEdqd8dXWkdSLxBWUewGhjxt4Q03rRVRFy0pi7/febj
-         m1dnixRZuali0U1cofbYJCh55igdElUfidQcbe+MycbV4+4MkRSvhtM1LmF5+bJdAa+B
-         VorcEpFhXLJys6eOdjNphLki6pk3pd0As/Kq/8oPHVfB6UaU+Y++VbuyvRPoAOrC+vEo
-         yLfw==
-X-Forwarded-Encrypted: i=1; AHgh+Rpr3snPLXzVYtBjGfPN34PXBLcabFl46RtYpCvFjgc4LxVzyEIQDofOaadSoP7GE3RU3yRwKA2XY4esxqU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwrIwI4gtgTGYFtaXIdRbcDE8Ih6/ke2UzS6xRHz2pDbKA2jvlq
-	mm/WaNwMRNJ3f7KmkKpoOMVk3gCK1jpmv37Yotc7KZa5yHTBa4Ntvshc
-X-Gm-Gg: AR+sD11EDiHBtG1SJ8HTDlYUK9wFrCKBTOTVSuKE8sNoxh11GajaXNEBLZbqVo9BbzC
-	PsuProWBUIgPAGf1TCdpSZjPOyru3EMz+wkaGLQMUEVMSURp3RPszMEXubnl8DcA5QoJpd9/jH8
-	B4H4VyLPwIqAVtsGNWpVWlTX37CrOeFX85qkVTuLJnRhxZPSYS4Nbz1jrrwnEKLNvSwUsbK43qA
-	OMTRPcsjfKy35uL5v1FH4Ur0cPVqU7ZTj47wz6woneMiQgv1Kw4W/9SfQXUVNMl/DOS1Wy9IV1W
-	9NEBsVYgLmEGv6ig7Sgs+fpFzad3g+NdW6LRzWqxwcUIYjFOlcZnoxJ+wIdbeJKIzYvW142iMoz
-	BNn3jzawQ7j3bbMWUM05jyScQC9wD+NOcHA7IOqPq+W6nfiAR3dU/B3mM/EXigbck2Ibumk6jPW
-	Bq2TiDN+y5dBwQOMe26Vh8cAVDYL4xpl4RdjwkbXy/G9bkUtAbqI8ttOywyyua8Dn5WL+E6N8tK
-	3lQmYD8J9KTHIaDjeGk9pYJO5Gg5eoYw+PBXaxslBYANm6HmUurmLLA+Er1/26q0gVb6YrTYb8t
-	iGp2
-X-Received: by 2002:a05:6a00:f99:b0:845:ebbf:e7be with SMTP id d2e1a72fcca58-84f2e03954amr24222618b3a.23.1786093821837;
-        Fri, 07 Aug 2026 02:10:21 -0700 (PDT)
-Received: from phuc-desktop.. ([183.91.15.56])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-84f5a552859sm715908b3a.42.2026.08.07.02.10.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Aug 2026 02:10:21 -0700 (PDT)
-From: phucduc.bui@gmail.com
-To: Jiri Slaby <jirislaby@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Frank Li <Frank.Li@nxp.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>,
-	Yenchia Chen <yenchia.chen@mediatek.com>,
-	Daniel Golle <daniel@makrotopia.org>,
-	Zhiyong Tao <zhiyong.tao@mediatek.com>,
-	Sherry Sun <sherry.sun@nxp.com>,
-	Robin Gong <yibin.gong@nxp.com>,
-	Viken Dadhaniya <viken.dadhaniya@oss.qualcomm.com>,
-	Praveen Talari <praveen.talari@oss.qualcomm.com>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Zong Jiang <quic_zongjian@quicinc.com>,
-	Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
-	Aniket Randive <aniket.randive@oss.qualcomm.com>,
-	Kathiravan Thirumoorthy <kathiravan.thirumoorthy@oss.qualcomm.com>,
-	Anup Kulkarni <anup.kulkarni@oss.qualcomm.com>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-mediatek@lists.infradead.org,
-	imx@lists.linux.dev,
-	linux-arm-msm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	bui duc phuc <phucduc.bui@gmail.com>
-Subject: [PATCH 3/3] serial: 8250_mtk: Propagate errors from optional IRQ lookup
-Date: Fri,  7 Aug 2026 16:09:45 +0700
-Message-ID: <20260807090945.41690-3-phucduc.bui@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260807090945.41690-1-phucduc.bui@gmail.com>
-References: <20260807090945.41690-1-phucduc.bui@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="f9mdM+J7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 376DA1F0155A
+	for <linux-serial@vger.kernel.org>; Fri,  7 Aug 2026 17:45:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1786124724;
+	bh=OyhnxF+idjJakv4GGlOu6M8jr1I7wPOlS/SALR3zs0g=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc;
+	b=f9mdM+J7MWS3rxSYZmb8Ntb5HpemFgXBtzrgLvmiufo0fNS13aqkWAPZ/knkrIyXR
+	 VIny+XIoazS+Wtlhe/qDN6VtJgJROhVR4kWZM9DDwccMVdxHfWIuNctzbIvZIW5owQ
+	 ksjRvnBLj5RBVbW3Lxo5sPVNpuguMjCSupqMwORjLSoUzcdGMHFnlCk0W7rpY2B1IB
+	 s6YVhjxVhd+YSBeTJE+0ZYBwCHJhhM5OgfGi8tsnQGdwrcihn6zWLEwnqn0TqYP0JH
+	 3vc12AuTC3vdzXcFEKGtfsAaCxGcMlA0Yi03Tdfi1h/PLp3ezXgUtxq3Ryl+c40f77
+	 NyerY3Z8luhwA==
+Received: by mail-lf1-f42.google.com with SMTP id 2adb3069b0e04-5aebd52488cso4160920e87.2
+        for <linux-serial@vger.kernel.org>; Fri, 07 Aug 2026 10:45:24 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AHgh+RpvkHqq8WPuRL1d2uFQiZ1GObyrN4RlvPn0Mn4tN4WY859lITUqJGUyIJUvQ5xSoNTrfVyS8TGqukfhSds=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzUqCULWU2pSnpI5Glg2dm522bCDS7ZEc6P3YTD5LhOLPK7oc1t
+	Fev3HawzkxjZ1PhrH4QOQm8PE5rdxj9UKrrUZXSqojZVCDnabDHWO1hjRjuxWusTU9EDHkayatL
+	YAkywqQy8zY75MH/+TitO7bl/1rciYXA=
+X-Received: by 2002:ac2:515b:0:b0:5b2:a483:a367 with SMTP id
+ 2adb3069b0e04-5b2f4cbfd35mr2719806e87.40.1786124722892; Fri, 07 Aug 2026
+ 10:45:22 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260806-longzhao-upstream-cv75-v2-v2-0-6b09707c5fe9@ambarella.com>
+ <20260806-longzhao-upstream-cv75-v2-v2-7-6b09707c5fe9@ambarella.com>
+In-Reply-To: <20260806-longzhao-upstream-cv75-v2-v2-7-6b09707c5fe9@ambarella.com>
+From: Linus Walleij <linusw@kernel.org>
+Date: Fri, 7 Aug 2026 19:45:10 +0200
+X-Gmail-Original-Message-ID: <CAD++jLk0LoOJk=TXin42AL3_z_7eVVkvMnYr1S8090C6A_B+dQ@mail.gmail.com>
+X-Gm-Features: AUfX_mz4THtJsHukdTGhBJPWk-nL3TQtLhDW7VNIYAXq_FOwFa7WqkqY6sFI5Ns
+Message-ID: <CAD++jLk0LoOJk=TXin42AL3_z_7eVVkvMnYr1S8090C6A_B+dQ@mail.gmail.com>
+Subject: Re: [PATCH v2 07/10] pinctrl: ambarella: add Ambarella pin controller
+To: longzhao@ambarella.com, Bartosz Golaszewski <brgl@kernel.org>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Michael Turquette <mturquette@baylibre.com>, 
+	Stephen Boyd <sboyd@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, 
+	Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>, 
+	Alexandre Belloni <alexandre.belloni@bootlin.com>, devicetree@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+	linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org, 
+	linux-serial@vger.kernel.org, soc@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-From: bui duc phuc <phucduc.bui@gmail.com>
+Hi Long,
 
-platform_get_irq_optional() returns a positive IRQ number on success or
-a negative error code on failure. For an optional IRQ, -ENXIO indicates
-that no IRQ is available, while other errors should be propagated.
+thanks for your patch!
 
-Propagate errors such as -EPROBE_DEFER and -EINVAL instead of continuing
-probe without the IRQ.
+On Thu, Aug 6, 2026 at 11:34=E2=80=AFAM Long Zhao via B4 Relay
+<devnull+longzhao.ambarella.com@kernel.org> wrote:
 
-Signed-off-by: bui duc phuc <phucduc.bui@gmail.com>
----
- drivers/tty/serial/8250/8250_mtk.c | 2 ++
- 1 file changed, 2 insertions(+)
+> +#define GPIO_DATA_OFFSET               0x00
+> +#define GPIO_DIR_OFFSET                        0x04
+> +#define GPIO_IS_OFFSET                 0x08
+> +#define GPIO_IBE_OFFSET                        0x0c
+> +#define GPIO_IEV_OFFSET                        0x10
+> +#define GPIO_IE_OFFSET                 0x14
+> +#define GPIO_AFSEL_OFFSET              0x18
+> +#define GPIO_RIS_OFFSET                        0x1c
+> +#define GPIO_MIS_OFFSET                        0x20
+> +#define GPIO_IC_OFFSET                 0x24
+> +#define GPIO_MASK_OFFSET               0x28
+> +#define GPIO_ENABLE_OFFSET             0x2c
 
-diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-index e6a56cf54ae0..d0d2aecf9005 100644
---- a/drivers/tty/serial/8250/8250_mtk.c
-+++ b/drivers/tty/serial/8250/8250_mtk.c
-@@ -587,6 +587,8 @@ static int mtk8250_probe(struct platform_device *pdev)
- 		return data->line;
- 
- 	data->rx_wakeup_irq = platform_get_irq_optional(pdev, 1);
-+	if (data->rx_wakeup_irq < 0 && data->rx_wakeup_irq != -ENXIO)
-+		return data->rx_wakeup_irq;
- 
- 	pm_runtime_set_active(&pdev->dev);
- 	pm_runtime_enable(&pdev->dev);
--- 
-2.43.0
+As everyone can see from a mile away this is a modified ARM PL061
+primecell, see drivers/gpio/gpio-pl061.c.
 
+I'm not very interested in having two drivers for pretty much the same
+hardware in the kernel. Odds are that there will be new quirks and fixed
+to one of the drivers that the other one doesn't get :/
+Also the PL061 driver is pretty complex and specialized as GPIO
+drivers go already. I certainly don't want to have a second copy
+of that.
+
+We need to find a way to re-use the PL061 driver with this pin
+controller.
+
+1. Modify the existing PL061 driver to use a dynamic register
+  layout, i.e. make the different register locations part of some
+  per-variant data:
+
+struct vendor_data {
+    u32 data_offset;
+    u32 dir_offset;
+...
+};
+
+Add:
+
+struct pl061 {
+    struct vendor_data *variant;
+...
+};
+
+Add vendor data to the PL061 variant:
+
+static struct vendor_data vendor_arm =3D {...};
+
+static struct vendor_data vendor_ambarella =3D {...};
+
+static const struct amba_id pl061_ids[] =3D {
+        {
+                .id     =3D 0x00041061,
+                .mask   =3D 0x000fffff,
+                . data =3D &vendor_arm;
+        },
+        {
+               .id =3D /* make something up, see include/linux/amba/bus.h *=
+/
+               .mask =3D ....
+               .data =3D &vendor_ambarella;
+        },
+
+
+Essentially follow the pattern from drivers/spi/spi-pl022.c.
+
+2. Contemplate if the GPIO should be a separate entity in the
+ device tree or not. If not, Linux needs to spawn the new AMBA
+ device with this pin control driver using e.g.
+ amba_device_alloc() and amba_device_register() etc,
+ see drivers/of/platform.c
+
+3. select GPIO_PL061 in Kconfig for this pin controller...
+
+This is not a simple solution but it is the right one.
+
+Yours,
+Linus Walleij
