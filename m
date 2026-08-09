@@ -1,62 +1,64 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4157F3CF670
-	for <linux-serial@vger.kernel.org>; Sun,  9 Aug 2026 12:15:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1E8D3D0930
+	for <linux-serial@vger.kernel.org>; Sun,  9 Aug 2026 12:15:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786277710; cv=none; b=ivUwr9Kk24jx24ppsEgalDj8pIvkuhoVqXAkfheLVWLZCWE82aycsPvn2eykcg/eh3p+63hNgDbTyf5vEKy6VhuVSg2lHY4BAeZbxVnhFQNLfCGMawV1k9D5/JzjL/GvzIAuIMa88qVbvp9rl3f0mdd2Kgyl1e6bN3Wo/sm9mSM=
+	t=1786277712; cv=none; b=HKCKgLiZg62EL7yc8ai5JupwjVWOR0XrkbHzvZSNgw55+rVtTricD7/PQtYVPvOa/ktLqD5gsB1R2CH3FxHL1pCLPeaG9SWiDrLzj8qKtkb6mgO9qPxXl/c/mo6X+lcRaCHSD4IDmwf6ZY9LwQ+GDwPO840KwDHiS3L0nEc5W4U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786277710; c=relaxed/simple;
-	bh=I6mglyweQO8ryeKHCO+zp+ON2naaajVwIsB/Q6NBjwk=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version; b=lBdg3n5tJfPQRfcEu0tI+KXxI4NikHFAqfHUMAJD7pl22cZLPHLphHcaX+LtS6uNEvVbCScAvobKqCyUUhXJCYQipboAdbjZV0VgnN7p0zHvm0vjt+UupP8LO1otcEQpPcASIk4oCExo2fwbPEu0wtwqNgrkvepyhMZAeIbvq5g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ovVuSSIs; arc=none smtp.client-ip=209.85.128.48
+	s=arc-20240116; t=1786277712; c=relaxed/simple;
+	bh=VT2WkLbrVHZk/VBbTj+r4ElGw6wpo4atU2roVry+mzA=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=cOevMLEODq/f49wi5t0uFSb1XHhpNLVjeDHy2Wib6NkIp6hJbuOB73l4CMIrV1QXGgLo6L7Z1WS5Htch+Hb+5NK95/kLtN9z4/F7r3IYwdoEhvAjyZ5A7iaRyFECnp2Emck5AQm7ap7D3weMhXfOelWinGTYaHXQjtpaW9ZRy20=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YV5gi6dY; arc=none smtp.client-ip=209.85.128.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ovVuSSIs"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-49553515a8bso15364735e9.1
-        for <linux-serial@vger.kernel.org>; Sun, 09 Aug 2026 05:15:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YV5gi6dY"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-4956869750eso6059585e9.2
+        for <linux-serial@vger.kernel.org>; Sun, 09 Aug 2026 05:15:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786277703; x=1786882503; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:to
-         :from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=rE3IjPZJHA6t5dZ+S5v5NleRepR+dFK9piV5wH4qC4U=;
-        b=ovVuSSIs8CdiselHBXLerEcR8sVL8lm2ch54NUDvyB63x54k9N/QptkflX650SCCI8
-         x25G3AeFGgbd18Drsj6wop3aikCa4baPx7b3g+Ko41f5V4s97aVnVTgmG2XpkYpuW61P
-         EwWmo0R9IDaok5JarVKonHUUrhxfla83GEzZQdx2yf1poqi9KzoyPlHrV/zD8QVhPUS+
-         T2HuFgV7NykNBRfD9dhKlW7RrrzHQYwDHSV7u2CimP6hyJU+lgKGn/gpDV/SUGnWtX+h
-         SaboSnY6RbC7548sjleGpmyaQs+ZsQvcOOeWM81afG09iF4whYLtRJVzuqdLse2QV3ty
-         23DA==
+        d=gmail.com; s=20251104; t=1786277705; x=1786882505; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=XHSgNIqpIGMGCDb/vwfax9xQeZ/i97RAydBRvL1DXus=;
+        b=YV5gi6dYipeW2cJLZRhHhOiqjTw80r5E03ZeONgFeSMNb5cjUpvKAdjGfWZkuF6JbA
+         HGfG8yb5CMSztLGLx/wKv8i7M8KslM2Vc+B+C+MClZZMActHDvgFDCPvdHSGsy1DyqhI
+         DYWw/oWkPT53Rj1StwODOcsOnEi65v23AisRNk67hRLk3GbIhinLqCS7sIIO94fcKSl6
+         edOeATs/LaY/Y0V4MPdWoXCupowCebo3D/HZEuCiU35SFNLylmwE6+4lrLfioH9hDzaT
+         dtcswbIlrgUhVStw8t99l04kPQ9auDJw8mmdL1kMzC/FM7lKzKFmXPIdhJai31Mg5J77
+         92Dw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786277703; x=1786882503;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:to
-         :from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=rE3IjPZJHA6t5dZ+S5v5NleRepR+dFK9piV5wH4qC4U=;
-        b=mRxocFqOvifUhT/h+T9OWSNrvVFLXn4dOkaIo4dtd4Sekw/98woxtNT4Lgu3xDtlWv
-         PcE6H1X+eW/yIH3P1t/GH3qf6wbkqJEJm0WtFtTlilj4CL+wbjD+bOyEydHlVlB8D1k/
-         OlznOhbTldU5kOysa4BUnqfb+hjZ9awI43IqLaPBxaST8e5Dt1T8PBxRxmOqPfBiJhHc
-         vHI3NYzX3GpBEo25EB/eVv7L7C1Ick5jP1sT40vamSCoWyDEEXWt4UXKPqou46wI/MJL
-         cQRoJukt0LEHwVuYfNJY6zoX4EFd5Q6pZjXDknLVXwDLJeeX5ZHhaSP0tpohlEWsFNM8
-         BPGQ==
-X-Forwarded-Encrypted: i=1; AHgh+RoX8RZiqv2ZRA/01wOLFTk4ZGM76YBRxM/wQWMSBRfsY4VpwHswgJG54l9a9nv8hwy26doAiXCQnm0oAuo=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxsYYZF96S0Vytlo1rhSwq1ym758fyIkbHFwfYd1K5C13CKUAFX
-	fNfKrMgAjB/WlNTz5LRa/NmJe8+m/KxnqBn5VaenN1eEkDRXmdRVjBQA
-X-Gm-Gg: AR+sD11ExUd/wH0c5lJFdBeAmt4vndWep1VD8k0Ww6chO1BaeyYxiCuB8w0ZBdq5FOi
-	KHeERa7kJTv6QIt44UvYOxbkH0N7k7V26YiN4PnaGon38tqKwM+hBm0yIXtNVu1+j0QRhh/HhrG
-	d/B+aK/AvqoIFHMW+ycAcKmdIjgNGwym7Fo7MxwH0wLuDhky8mvCvyA4uZ6HKS2tfnRudfLfOqA
-	VKrWi14BHqO7Z4UZB1jCodCvwETPb7y7/SCBTwmKL3K8YlsByAkJeODidcGrbD9EsEUka+JY35e
-	SdFWohwk7gaLGQHuRHo6extrUgfo0+ASsfX1FaeIzzhEzXn0cWI4CudakrRVJVGDyNCxQ3vAo76
-	gw6hwvRjXMb99DsYCW1ASVujsBLFuMmZ9QBtS+97Z2t1E50dU1PGTup4dKfXhPW0jPm4kbwl/VF
-	/GqTK4jRae+UlUeaQV4XYDvNJb+E/x829XQU+QUaPai69W4FA5+D9/lovdXklrzQggafUYuvV++
-	7WdezHmTvbYzAefLSi29rg/fA9T09M8CbI9n6SQDg7hIVRn5RbsHD7j65M=
-X-Received: by 2002:a05:600c:3ba6:b0:495:779a:ed33 with SMTP id 5b1f17b1804b1-49959e0c481mr269281445e9.7.1786277703131;
-        Sun, 09 Aug 2026 05:15:03 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1786277705; x=1786882505;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=XHSgNIqpIGMGCDb/vwfax9xQeZ/i97RAydBRvL1DXus=;
+        b=KwxPCjSVhJHS2NHH5UqGvVABBsVmyW5cq/lkZaHt2gQsOwfDdXRtDP/ORv9pF9SlCc
+         R0vHNjmMk3eWyBv4XdnT4gfMfQfVM7UBf7G4Hn+DE6mdzCH4CIUisEB9a1JjD5vDqna/
+         rrSYnyatHKQy6LkAllMJbEZ92MTkMCeE3myuZk4WLeuyxaH4SdxJDLFoGJVNHCZcKhNm
+         7dnTR6N7Aaw+Glu/RVs+7kcc7f0YxW2CtLMC93zy92ST9GtwJrGTcj2ZXp8xC0JGsFay
+         EcAytdnR3Me3oxze06bsjTQiPr0RQcImFEgiIiAvDduPbESrxPkU6OGZ62ulgv1zcauo
+         GQBg==
+X-Forwarded-Encrypted: i=1; AHgh+RpAg49BzLymugfHY3Gv1ocjTxDT8P3BJML1oZk+ZLP97gR3byTp2xeVLuwe+AZnwfx27DfpFjSORkXQ3ro=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzmXPrxMJRdFHRcZwceo5s79JkDIDPYshaPbPHO/LrUko7OVG/Z
+	CqWA+PqYCQDQ8kQlOgnEypAPUZy6tEF8702arszJ6A1hTQhqy0XjRuiZ
+X-Gm-Gg: AR+sD10KEC/w0SpWAOIoj8BzvMTWYdKFZ9yW+TOYhYlaGb7IDz3ZC4fV+AId6f6o9Hw
+	i68Ekl0t/QDB/2PI9jkNdqfoZf3nDxteuIrwp4A3R9EAyoc+E+e/kALqDwbsZWp5s0wLdKZyb+w
+	I24BKEBfPooCyciNX3+435jDmCNJHXWH2mBOBmb4tdQoOSX8wxy0Oj+YNCo+4v1Slkuedh1f+4a
+	Y9imAwvC2qJYebmIUZ9iCFJKdflkSQ6AnDygBGVbuox4Cg3vFhV6kUaIh5wuMb7rhgO31R+PVdE
+	tjoE6APYMK5Q1hdtDG8RmVpxUkVdOit7KraLS3k197rsU9Tof/2K+YJOJ3atdFawmdYY8NLiH0t
+	NGMGinu3zTONqdSsFZ6Hv8afwB9lr4oqvqF4ngW8289uhv+uYNe/znHfcQW5Vgb1N3Aht5NeHAr
+	deQXMadbM8LXUEUDXEEhz8Q49I/XYPHZCKxFOH3lvHNXX9XFCCqIY2JbSviHDtkNtMlOu3gyPO7
+	3VI/l4tTrsez+l/KgPU4sSVOAzvsLvamI3m9+YEch7nqNaCGw3Hyzs+L7F0
+X-Received: by 2002:a05:600c:a20b:b0:495:737a:7afe with SMTP id 5b1f17b1804b1-4994e7d5b82mr349705485e9.15.1786277705032;
+        Sun, 09 Aug 2026 05:15:05 -0700 (PDT)
 Received: from Ansuel-XPS24.localdomain (host-87-20-3-207.retail.telecomitalia.it. [87.20.3.207])
-        by smtp.googlemail.com with ESMTPSA id 5b1f17b1804b1-4995ea3361esm194506475e9.15.2026.08.09.05.15.00
+        by smtp.googlemail.com with ESMTPSA id 5b1f17b1804b1-4995ea3361esm194506475e9.15.2026.08.09.05.15.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 09 Aug 2026 05:15:02 -0700 (PDT)
+        Sun, 09 Aug 2026 05:15:04 -0700 (PDT)
 From: Christian Marangi <ansuelsmth@gmail.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
@@ -79,10 +81,13 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
-Subject: [PATCH v4 0/2] serial: 8250: Add AN7581 UART support
-Date: Sun,  9 Aug 2026 14:14:45 +0200
-Message-ID: <20260809121449.574277-1-ansuelsmth@gmail.com>
+Cc: Conor Dooley <conor.dooley@microchip.com>
+Subject: [PATCH v4 1/2] dt-bindings: serial: 8250: Add Airoha compatibles
+Date: Sun,  9 Aug 2026 14:14:46 +0200
+Message-ID: <20260809121449.574277-2-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20260809121449.574277-1-ansuelsmth@gmail.com>
+References: <20260809121449.574277-1-ansuelsmth@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -91,59 +96,35 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This is a new version of [1] to support UART driver for
-Airoha SoC.
+From: Benjamin Larsson <benjamin.larsson@genexis.eu>
 
-One additional function was needed serial8250_get_baud_rate()
-for the driver to work correctly for baud rate calculation.
+The Airoha SoC family have a mostly 16550-compatible UART
+and High-Speed UART hardware with the exception of custom
+baud rate settings register.
 
-While at it also try to clarify a long standing issue with
-new UART driver when adding new ids for uart_config[].
+Signed-off-by: Benjamin Larsson <benjamin.larsson@genexis.eu>
+Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+---
+ Documentation/devicetree/bindings/serial/8250.yaml | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-[1] https://lore.kernel.org/all/20250209210241.2622309-1-benjamin.larsson@genexis.eu/
-
-Changes v4:
-- Add Review tag
-- Add errno and types header
-- Drop redundant () from comment
-- Use define for get_divisor
-
-Changes v3:
-- Address review from ai bot
-- Add all missing kernel headers
-- Improve divisor calculation
-- Fix wrong uart config table
-- Simplify divisor table handling
-
-Changes v2:
-- Drop intermediate patch
-- Use .set_divisor OPs
-- Use div_u64 instead of / 40 for 32 bit overflow
-- Drop dedicated match table and use compatible for type
-
-Changes compared to [1]:
-- Fix all formal error
-- Use better compatible names
-- Drop unneeded header
-- Drop usage of irq (it's filled by the generic function)
-- General code cleanup and reorg
-- Split to patch and add the UAPI map patch
-
-Benjamin Larsson (1):
-  dt-bindings: serial: 8250: Add Airoha compatibles
-
-Christian Marangi (1):
-  serial: 8250: Add Airoha SoC UART and HSUART support
-
- .../devicetree/bindings/serial/8250.yaml      |   5 +
- drivers/tty/serial/8250/8250.h                |   6 +
- drivers/tty/serial/8250/8250_airoha.c         | 187 ++++++++++++++++++
- drivers/tty/serial/8250/8250_port.c           |  16 ++
- drivers/tty/serial/8250/Kconfig               |  11 ++
- drivers/tty/serial/8250/Makefile              |   1 +
- 6 files changed, 226 insertions(+)
- create mode 100644 drivers/tty/serial/8250/8250_airoha.c
-
+diff --git a/Documentation/devicetree/bindings/serial/8250.yaml b/Documentation/devicetree/bindings/serial/8250.yaml
+index bb7b9c87a807..b6f7e093d8d7 100644
+--- a/Documentation/devicetree/bindings/serial/8250.yaml
++++ b/Documentation/devicetree/bindings/serial/8250.yaml
+@@ -110,6 +110,11 @@ properties:
+       - const: mrvl,pxa-uart
+       - const: nuvoton,wpcm450-uart
+       - const: nuvoton,npcm750-uart
++      - const: airoha,en7523-uart
++      - items:
++          - const: airoha,an7581-uart
++          - const: airoha,en7523-uart
++      - const: airoha,an7581-hsuart
+       - const: nvidia,tegra20-uart
+       - const: nxp,lpc3220-uart
+       - items:
 -- 
 2.53.0
 
