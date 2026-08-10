@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35981306B3B;
-	Mon, 10 Aug 2026 18:12:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11A75436BF4;
+	Mon, 10 Aug 2026 18:17:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786385564; cv=none; b=fKRDZcYCWpLdsBgW54fOr1m6tRK59uejmzNyjxuPR7DWIWeySzJErn5odmH8PgxttgPybfmdOtu+dmxLE3t2/XOyHYp7A40jOhafGMZ9PWjMiNpbNMd/sNm/wfWUukoVAOaKVLTzi33Bu2az8zvT5O11XqA5rnYbpW7xvJ2/Lso=
+	t=1786385880; cv=none; b=RTuIWrEaIpB+xQcmeBQChpu1SvoPyrDH1fmu0lFaSem9tc5JmYwjVxEAZgmjGi9ZF16OG9P40JVSv1HyMfy+4KO/f8+Bqn+U2Xm7sZx7RBArC8yB2RSmCNPjSAkEUbu4PnXvL/l4I0KmbW7cJ0JDsWBzxIG8n9Rflf1D8dKiJtw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786385564; c=relaxed/simple;
-	bh=F11Xrj4bvY7dI4efnBVSrqv60Jk9i126GoZXVbVr7TE=;
+	s=arc-20240116; t=1786385880; c=relaxed/simple;
+	bh=VgAeIZXSeTAkar+huAlc0BALXMGa3XOG9jpCQ0QA2e0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=YOfTYePkhNjyF6Lg5KLytQ5ngPC8rP25hL9lbGrhbl3FnPa0IRnvfjc5wPb0aFIhwwtrEtkYGNb7WBDCxVlDXVFftQOoSHi1cLVT0txYTh9MqMSwUvd7PpaKU62fdQqQWTL5HJNHfrc+bk6qJi+CnoHYGqDyxoSsNXxRV7RRzqU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mpRDHnB7; arc=none smtp.client-ip=192.198.163.13
+	 Content-Type:Content-Disposition:In-Reply-To; b=G5dQT9MUFCBam2uu+4UPwoDM1C4YWcJWb4mSPaXeYt9CIgq+CvDZ5/0IrhTYhcpTMoIKj3aNiOeA/c6IvIalmwJV9zJAZxP64bAov2GoWYPQ+l/muzqyqHkrb4RcqZZriJDDmcG5Z/tv42aDrJTuhliIoJNoZisuJJ/2tlRsdFE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OtorT4kn; arc=none smtp.client-ip=198.175.65.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mpRDHnB7"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OtorT4kn"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1786385562; x=1817921562;
+  t=1786385878; x=1817921878;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:content-transfer-encoding:in-reply-to;
-  bh=F11Xrj4bvY7dI4efnBVSrqv60Jk9i126GoZXVbVr7TE=;
-  b=mpRDHnB7WrukaXMmYeqR9asvP6gRpmzdTxQsRFhSaIKqAT9zc15LL7yI
-   ui4Ru3hyNIzmRLaT+RSu+MxHkWvPvpM5PXNYBa6+XHeMUmzxIm5CJkHBi
-   B4P7d/6BpA+gNbvLD6Gb9a2G13dPLVKaKFspKTKt9Q/YlwKAtCucpfS/9
-   Sn211kByRSiYVp0LeftLwvUcxmdoORrA+fRlc6WOMoezHyGmzoLc1sAoy
-   hynEvrzvrtLuTB6LbQcACYXcztY5kkzAkKhvnILVAQTavxMcjYo1XCbZP
-   IEaMemwQgam3Z1E1XEX/T3dnaGxDSpltDE6+00dGivJhXkQ2RAqLEeFn7
-   g==;
-X-CSE-ConnectionGUID: tgJ65a80TOGABF8ThSOIMA==
-X-CSE-MsgGUID: zC8WwD7VSZ2RvWd8CqF8RQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11871"; a="89434534"
+  bh=VgAeIZXSeTAkar+huAlc0BALXMGa3XOG9jpCQ0QA2e0=;
+  b=OtorT4kn1UC4W9Dw3lOXjXXZWMmJSh2DpEN0/0Rvf8xALXtlfKuU9iVp
+   hrgpmqx5YfHRKnR7x/abnDO+OTXg02p2MvQ90RYzOHE43NtLbSjAYQQTJ
+   7GyV4pQjdbdnUJ+jOE62rKFA0uFsGwW/S+gJ+CsV77DGgVdd5ZZeZeYVj
+   jsl52tI/m6YyXejDd3yjmLdKlCItbT1IbNp8aQLj7jDNGq9vDBoGMbFDi
+   B4RSwEch7dCGOG4OAO9I+xrlWjet8dBiI2NpgMedPj/0op/jbshTY8Ovh
+   L+2FtwEfyX+3OWaaEW9JiFyNTsL12hkxJ1ApdjQ+CfhSANRm0P9iIieOQ
+   Q==;
+X-CSE-ConnectionGUID: WqnTpMOER5WSiDyveqn/2w==
+X-CSE-MsgGUID: 4CR9zk5PSJq9dlEOypLCaw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11871"; a="98426795"
 X-IronPort-AV: E=Sophos;i="6.25,216,1779174000"; 
-   d="scan'208";a="89434534"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 11:12:41 -0700
-X-CSE-ConnectionGUID: YoyAPRtpS2Ks2iknPIl8Tw==
-X-CSE-MsgGUID: ojnvnHCQT7G2qrvIfLQpbg==
+   d="scan'208";a="98426795"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 11:17:58 -0700
+X-CSE-ConnectionGUID: dOjiaqGZTCqMx2WPIE/ARw==
+X-CSE-MsgGUID: /iamwLxURdaq63aE9PNxgg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,216,1779174000"; 
-   d="scan'208";a="256887570"
+   d="scan'208";a="263161748"
 Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.99])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 11:12:38 -0700
-Date: Mon, 10 Aug 2026 21:12:36 +0300
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 11:17:55 -0700
+Date: Mon, 10 Aug 2026 21:17:52 +0300
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: =?utf-8?B?TWljaGHFgiBLYXJkYcWb?= <mkmkl@google.com>
 Cc: Linus Walleij <linusw@kernel.org>,
@@ -53,11 +53,11 @@ Cc: Linus Walleij <linusw@kernel.org>,
 	Douglas Anderson <dianders@chromium.org>,
 	Vic Huang <vich@google.com>, linux-gpio@vger.kernel.org,
 	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 1/2] pinctrl: core: Allow drivers to keep "init"
- pinctrl state after probe
-Message-ID: <anoUlD3ep6t0WkHw@ashevche-desk.local>
+Subject: Re: [PATCH v1 2/2] tty: serial: 8250_dw: Keep init pinctrl state
+ until first open
+Message-ID: <anoV0K_Xk19DsDlI@ashevche-desk.local>
 References: <20260810130635.1166626-1-mkmkl@google.com>
- <20260810130635.1166626-2-mkmkl@google.com>
+ <20260810130635.1166626-3-mkmkl@google.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -67,67 +67,65 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260810130635.1166626-2-mkmkl@google.com>
+In-Reply-To: <20260810130635.1166626-3-mkmkl@google.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Aug 10, 2026 at 01:06:34PM +0000, Michał Kardaś wrote:
-> During device probe, pinctrl_bind_pins() binds pins to their "init" state
-> if specified in Device Tree. When probe finishes, pinctrl_init_done()
-> automatically transitions the pins from "init" to "default" state.
+On Mon, Aug 10, 2026 at 01:06:35PM +0000, Michał Kardaś wrote:
+> When a UART port is connected to an external peripheral whose power
+> domain is kept powered off until first use, transitioning the UART
+> pins from the "init" state to the "default" state prematurely at probe
+> completion can cause parasitic back-powering into the unpowered
+> peripheral.
 > 
-> While this auto-transition works well for devices that are immediately
-> active upon driver binding, certain peripherals (such as power-sequenced
-> devices connected over UART, SPI, or other buses) remain unpowered until
-> userspace explicitly opens the device node or attaches a protocol driver.
+> Ensure that on boards specifying an "init" pinctrl state for the port,
+> the "init" state is preserved until the port is first opened:
 > 
-> On board designs where the connected peripheral is kept unpowered during
-> boot, auto-selecting "default" or "sleep" pin states (where signals such
-> as TXD or RTS may be driven high or pulled up) can cause parasitic
-> back-powering into the unpowered peripheral through its ESD protection
-> diodes.
-> 
-> Allow drivers to explicitly opt out of the automatic "init" -> "default"
-> transition by calling pinctrl_keep_init_state(dev) during probe. When this
-> helper is called, pinctrl_init_done() leaves the pins in their "init"
-> state upon probe completion. The driver can then transition to the
-> "default" state when the device is first opened by calling
-> pinctrl_pm_select_default_state(dev).
+> 1. In dw8250_probe(), call pinctrl_keep_init_state(dev) to opt out of the
+>    automatic "init" -> "default" transition at probe completion and record
+>    this in data->in_init_state.
+> 2. In dw8250_do_pm(), when the port is opened (state == 0), transition
+>    pins from "init" to "default" if data->in_init_state is set, and clear
+>    the flag.
 
 ...
 
-> +/**
-> + * pinctrl_keep_init_state() - mark pinctrl handle to stay in init state after probe
-> + * @dev: device to keep init state for
-> + *
-> + * Return: true if the device has a valid init state and keep_init flag was set,
-> + *         false otherwise.
-> + */
-> +bool pinctrl_keep_init_state(struct device *dev)
-> +{
-> +	if (!dev->pins || IS_ERR(dev->pins->init_state))
-> +		return false;
+>  dw8250_do_pm(struct uart_port *port, unsigned int state, unsigned int old)
+>  {
+> -	if (!state)
+> +	struct dw8250_data *d = to_dw8250_data(port->private_data);
+> +
+> +	if (!state) {
+>  		pm_runtime_get_sync(port->dev);
+> +		if (d->in_init_state) {
+> +			d->in_init_state = false;
 
-The above keeps_init in the initial state which may or may not be wrong.
-I would avoid the ambiguity by rewriting this as
+Mistyped assignee. Should be 0.
 
-> +	dev->pins->keep_init = true;
-> +	return true;
+> +			pinctrl_pm_select_default_state(port->dev);
+> +		}
+> +	}
 
-	dev->pins->keep_init = dev->pins && !IS_ERR(dev->pins->init_state);
-
-	return dev->pins->keep_init;
-
-But please, check if that is what you want.
-
-> +}
+Obviously the above needs a good comment in the code explaining why it is doing
+that.
 
 ...
 
-> +	bool keep_init:1;
+>  	if (data->data.line < 0)
+>  		return data->data.line;
 
-What is ':1' supposed to mean (for boolean)? I understand that for say
-unsigned int.
+And a good comment explaining what you put in the commit message.
+
+> +	data->in_init_state = pinctrl_keep_init_state(dev);
+
+>  	platform_set_drvdata(pdev, data);
+>  
+>  	pm_runtime_enable(dev);
+
+...
+
+Wondering if this anyhow affects the future idea of the OOB wakeup for the UART
+using its Rx as GPIO wake source in the suspend.
 
 -- 
 With Best Regards,
