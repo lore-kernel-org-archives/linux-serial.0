@@ -1,62 +1,64 @@
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B4C33D6498
-	for <linux-serial@vger.kernel.org>; Mon, 10 Aug 2026 15:26:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 384D13D6498
+	for <linux-serial@vger.kernel.org>; Mon, 10 Aug 2026 15:26:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786375606; cv=none; b=ioAWTf0sQzGjUUffaxRmMnHl/xIjvByUzLRtGIF0skucOC4TfQrQsP2fk2X5kCvrmeJ3ZROntL5LISPI8SbwMTUl211cGlRH4lcl0e2V7SE8Hgw00esvcp/2K94+TK7kM4LArecczfXdn/wnGy2OprxY1yfT8rhCdOUkgUS+Mas=
+	t=1786375608; cv=none; b=AO+aMvZW3s6dGBCuEKAX/bvfMwI1KWRSL0DSvbHNmeiWusrf+dN7BliV7fsdtnzIVbb3b502L37rqv6ke79KLbnVJZMhm+ydkyZ+SXhclkHCMrd2ffDv0gAg4x1EuayD0g8tUF4SJe9WLOP7z94fx82fT8YHPWCFZ802E1aZZro=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786375606; c=relaxed/simple;
-	bh=tCe5sL9UJxPqIv1FmE8Uu6kylYA2Gof1PUEPD3/FReA=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version; b=tnzagLOkZg80M4IHEx8NAygqnSjuwYCRXmgALLSAvgBEZ6qRQL5LH09dlv1uqulXm2YsEqK7rcvF6eAsJSW8s5twdqVP2ckRYJRgqTmAl2/4vvVvtViDigdvQuXAoAmWTjgXc1UcdEnf/GXyc7FV3FVaEH28IEgUpIk32iPhh+g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XsO1ZqQ0; arc=none smtp.client-ip=209.85.221.44
+	s=arc-20240116; t=1786375608; c=relaxed/simple;
+	bh=qojpEXZM1zqUcd4Hb1bZu7Wvi6ygJ+VZs++N+cOMmOY=;
+	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=E/tP8jYLR3rmkz+8k+rK0nD+oUz6uk88iB4ye449539uJUt2HIh8P8fOS9oBgXF44xDew9+q9L6gciaDa0Z5wIsid4GpS0wvkkiqJsETNwfRA4MnQA7kp1iZPid2KtSwShejzWxjAmixTYUAhv/cCXEmYEyi5h67Pu28wqVuel8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QCUH2meg; arc=none smtp.client-ip=209.85.221.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XsO1ZqQ0"
-Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-47fecbb7000so997840f8f.2
-        for <linux-serial@vger.kernel.org>; Mon, 10 Aug 2026 08:26:45 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QCUH2meg"
+Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-47f96c5b722so1127163f8f.0
+        for <linux-serial@vger.kernel.org>; Mon, 10 Aug 2026 08:26:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786375603; x=1786980403; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:to
-         :from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=Y8SFe5FskJGVS8OAXxFiwxeNb2xSdeCITuphL9WXOk0=;
-        b=XsO1ZqQ01hJCbr+9DuzkItlyE7F4zw7DLWm9IjV05LZAulW9JUvHbU7hNWkOip/OUE
-         1MW2l1nlBLqFuClDJqWosdM+Zr8uTpdQR9905V83kFL9x7tPSdUmgifiLkNe0ZzhfEAs
-         fhEojdbA+n7dt4b7WeRnbNxSrqqn6nM7SkekzHp749Rv0BFnfFv2WwRmuom3gg2NF3r0
-         uQ7DbznbdDUkDwX5WndmA/4wwRY+Klx74pzyXDnNNCUn9yxT+V7YCBaWBKesx3YR1+Yd
-         tROxCJbDyomibP3enc8ZyMmtP9uzajHUvSLzojfifdRmU2vMA0+2mX4qqcotAFwXdMJZ
-         aJ0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786375603; x=1786980403;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:to
-         :from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=gmail.com; s=20251104; t=1786375605; x=1786980405; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
          :reply-to:content-type;
-        bh=Y8SFe5FskJGVS8OAXxFiwxeNb2xSdeCITuphL9WXOk0=;
-        b=tJIEiPM955FmqpO+6rUZ2Pcl/8DHWQNxwijngsx573jg5Zh2L5q+LKRSnGv6Swpz8t
-         FxWzohExofgMlVGTHJjiD4mTm0mIy4JlZfq8kMQiNd96YVOXv/IQqH81i5OmJHm9cbjJ
-         pF99fEd0zdf9KvQAUvoR2Pkmck/C02Ilu4+9UY3CcLI6EdkyVGt2Bvp5jr2XTYhp2z5D
-         znqlVuJBfex8vkdvJjZsLW+9Mv/y/x7lkMi6OQAy1vcSyjMyXWk/mRCC6bTOeeDgVTj4
-         szpm7GI7aO3eWVFo58vaOhVp3VMLRUK6HjsvF2Q5Jaappe38Fj3FIIGdwZ0JaXZXplXp
-         rZlw==
-X-Forwarded-Encrypted: i=1; AHgh+RrOoi3M4bUzDNQVujI8frgZwWUnX5DY/IV4zjYO7Inl0h9DUH4AMrs5RUnYcMBmCMlznAZ1pMm/AKayBks=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwZDaurrTgHEk86olrRvfRIFaghVeFGcfA+K974sthjCdjarwUO
-	kPC3BZPE27ptHOJq4/a8YGmFBSMxO79yhdZOw89+JaKT984c7aHszoEO
-X-Gm-Gg: AR+sD12stPSz9u/0mqNq155EgyZQ9BUCpwieAcEJCfYUx9H7S5SiCH+zdJoTLVkuQDW
-	6J/a5mu0gMUqdaVbULiSu3fY+s16IXbXsZm/mlH8W9e+EwIknoow9yJ5ntgeoKXhG4I8r8QS0wx
-	W7fozLyNgvPqVq/2rVJ84+CC/TDhVgYUyBgXh/Lg+syyfr+he1rh/aPYmyk6b5loGjdnc411nlF
-	P6zlJqbULjwxyVASw60TJirtgF3jND8mWeBSVpAMiPLv8mW+LrFxLlkqW9Fr+uluv80/MAqnKjB
-	UUZov2MEgZ2unLy1pp66DmhghF12IJU7H+EfEm+fnszLZ9N0/IiaPTDPT5k6vN1HROwuZ9ojRE8
-	9wble6R6VmoQrOfVVpufbLsYI7Ty4TU3CZK/44G7Xz+hXmSO9GnFy5jumO+ml0AL8yLgC/eTFi9
-	GVUMndfmpk/vpsp9S0fRPRoWEZKyiiatcUeWhFcHxtZPK1KEFzSfCw8IYENJ+GZ13qeEh5pfnC0
-	f0ulJ9X4KoPdDP9+vCrniI5jbJZoljoNmYo3bZpyoEHbkP6
-X-Received: by 2002:a5d:6a8a:0:b0:47f:81af:1a3b with SMTP id ffacd0b85a97d-48130eea595mr23302846f8f.22.1786375603323;
-        Mon, 10 Aug 2026 08:26:43 -0700 (PDT)
+        bh=8CIp/0d4M5gEc+Mi2m/WthSFXtXGevzphjUBHHQhGts=;
+        b=QCUH2meg+Bw/U/bZQFOOBvv0YifsKLY2F4ZvbUsUBCV4QNzCUGbc0dJL/Yx8rXOB2u
+         RLGqLqxFCVvlWw9++tWka6USfxAJvSYxac3A12W6BedVgia3qZDLWAXmCHQMWURmTxpK
+         asAAYFCj4fQH50OJ5+87jOwCL92h2J231hYSs2l8v+EW3kjK8iy/OHOqcB0oUICbM9b0
+         Tq9xGlsISPMRZjCrcbRC9IXmo2V7lfCOlQo+uS9y+iJRrp/Xj9/F3ea9tJj2vY61RDRh
+         7mAxjum818tKJuhl43PhiQGOMdqQUsjnS68gaPlDd/3X9YMkIKaPeg8FJnOAqTtUFxJj
+         pWqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786375605; x=1786980405;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:to:from:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to:content-type;
+        bh=8CIp/0d4M5gEc+Mi2m/WthSFXtXGevzphjUBHHQhGts=;
+        b=rZfJbSR1u85JIu6tI+0dn/Wj2lRtqrHvnuBL96fJ+f3UARNhQQZR1aMhWcljhHlLJJ
+         nzFEhnZ7m7Sj745Jtd4WmYN1u+iFl3+LiimUUQ6io8lGF3YMQqJo+pQDFau8D+Wg9vSO
+         fzIAHVATTIy6z4kn3WL/I0JnKsfbWPIFtR6FKn+o5+uckNfadtLJezLpmsNPEP4l5nji
+         BSi0PONRHA7kXIqlYFJjU/25g9AfAt/w6h3b/QplOlMmtUqbIE29DimwbjDUBOYHsad2
+         +kuW8sSKWct5NdgK4fGz43TWRINx+hjwUThdeL0CEjJc4XaFrENgqR2YIi6UwZgoKPrC
+         FM9Q==
+X-Forwarded-Encrypted: i=1; AHgh+RrPNueEfRPxsH4ng1i8TjSWm2WN6zJ0BKAO+qiwsvJXpmPvYIGQ0jY5hsitlSLInUfIM6kxNAtOGemh7Vo=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwhR0MMEwFF03v/CPGELZP+TFI6F+Xg/uSx+lxtr0sckXdx2W+j
+	WMzQ/55G5w1FjjHeJo52laoSW/AfC9s5+royvUK5Wdsx7Q2z3gkOkFsa
+X-Gm-Gg: AR+sD11rjgOA2d0b5i+B81cuSyfMnC3C8AAdoe9evqF0yvhEGlBoLtFSyG705r3mYse
+	We5eFFItbfjVCazz/gRymVsFuEoDnwoyjLX2k1wJIMZBEbopL4+Lc6mn7KdJeHM6DwzDK34Tdew
+	1a787vNee4jkZ7qLA6zaNKEvJ40ei+Zkx8aFpLXGf5mXOHld61kmp+9gvLaEY3khxPmwKrViJ//
+	A/T+SoCMQnlhm65+hb5wretnDvpGOTt/xPuSotT0mLCZ18Obw5FVzNJy4n/3aubRVttb8yWXUj1
+	0ALIyMr0AH4yjEv709n+sgl/HQvkImh3+MZIOtbz3qAod4t34NSLhW5pR51ToR9DZmCpCp5PbUE
+	1MeiQjpn3wxzq+PvNJIfbw9mRKlB2qX4UeTGThtwCyMZ4yBnwRlk/YLEQl7uLuF/B+fZhBqCf/a
+	0r5lAO2YJWiq4tcXSJYqN4P9vXk7NXn8IciJT8CLxz/ye8uO3uMmgF0dbNZNIa+0mHF1HE1WRi6
+	WMqu1m0sHmBhdnHWPbXFy63d47HiqDf4hc/MrjrOjAmMDOb
+X-Received: by 2002:a05:6000:29c3:b0:47f:fe45:e597 with SMTP id ffacd0b85a97d-481455c8dc6mr3299302f8f.3.1786375605322;
+        Mon, 10 Aug 2026 08:26:45 -0700 (PDT)
 Received: from Ansuel-XPS24.localdomain (host-87-20-3-207.retail.telecomitalia.it. [87.20.3.207])
-        by smtp.googlemail.com with ESMTPSA id ffacd0b85a97d-480021e8cd0sm34952469f8f.17.2026.08.10.08.26.41
+        by smtp.googlemail.com with ESMTPSA id ffacd0b85a97d-480021e8cd0sm34952469f8f.17.2026.08.10.08.26.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Aug 2026 08:26:42 -0700 (PDT)
+        Mon, 10 Aug 2026 08:26:44 -0700 (PDT)
 From: Christian Marangi <ansuelsmth@gmail.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
@@ -80,10 +82,12 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
-Subject: [PATCH v5 0/3] serial: 8250: Add AN7581 UART support
-Date: Mon, 10 Aug 2026 17:26:32 +0200
-Message-ID: <20260810152636.658955-1-ansuelsmth@gmail.com>
+Subject: [PATCH v5 1/3] dt-bindings: serial: 8250: Reorganize compatible to single enum
+Date: Mon, 10 Aug 2026 17:26:33 +0200
+Message-ID: <20260810152636.658955-2-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20260810152636.658955-1-ansuelsmth@gmail.com>
+References: <20260810152636.658955-1-ansuelsmth@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -92,64 +96,54 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This is a new version of [1] to support UART driver for
-Airoha SoC.
+Instead of declaring each single compatible string with a const, move them
+to a single enum and reorder them.
 
-One additional function was needed serial8250_get_baud_rate()
-for the driver to work correctly for baud rate calculation.
+First put the generic ns one and then follow alphabetical order.
 
-While at it also try to clarify a long standing issue with
-new UART driver when adding new ids for uart_config[].
+Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+---
+ .../devicetree/bindings/serial/8250.yaml      | 27 ++++++++++---------
+ 1 file changed, 14 insertions(+), 13 deletions(-)
 
-[1] https://lore.kernel.org/all/20250209210241.2622309-1-benjamin.larsson@genexis.eu/
-
-Changes v5:
-- Improve 8250 YAML schema with enum
-- Keep alphabetical order for YAML schema
-
-Changes v4:
-- Add Review tag
-- Add errno and types header
-- Drop redundant () from comment
-- Use define for get_divisor
-
-Changes v3:
-- Address review from ai bot
-- Add all missing kernel headers
-- Improve divisor calculation
-- Fix wrong uart config table
-- Simplify divisor table handling
-
-Changes v2:
-- Drop intermediate patch
-- Use .set_divisor OPs
-- Use div_u64 instead of / 40 for 32 bit overflow
-- Drop dedicated match table and use compatible for type
-
-Changes compared to [1]:
-- Fix all formal error
-- Use better compatible names
-- Drop unneeded header
-- Drop usage of irq (it's filled by the generic function)
-- General code cleanup and reorg
-- Split to patch and add the UAPI map patch
-
-Benjamin Larsson (1):
-  dt-bindings: serial: 8250: Add Airoha compatibles
-
-Christian Marangi (2):
-  dt-bindings: serial: 8250: Reorganize compatible to single enum
-  serial: 8250: Add Airoha SoC UART and HSUART support
-
- .../devicetree/bindings/serial/8250.yaml      |  32 +--
- drivers/tty/serial/8250/8250.h                |   6 +
- drivers/tty/serial/8250/8250_airoha.c         | 187 ++++++++++++++++++
- drivers/tty/serial/8250/8250_port.c           |  16 ++
- drivers/tty/serial/8250/Kconfig               |  11 ++
- drivers/tty/serial/8250/Makefile              |   1 +
- 6 files changed, 240 insertions(+), 13 deletions(-)
- create mode 100644 drivers/tty/serial/8250/8250_airoha.c
-
+diff --git a/Documentation/devicetree/bindings/serial/8250.yaml b/Documentation/devicetree/bindings/serial/8250.yaml
+index bb7b9c87a807..039bd392f876 100644
+--- a/Documentation/devicetree/bindings/serial/8250.yaml
++++ b/Documentation/devicetree/bindings/serial/8250.yaml
+@@ -99,19 +99,20 @@ allOf:
+ properties:
+   compatible:
+     oneOf:
+-      - const: ns8250
+-      - const: ns16450
+-      - const: ns16550
+-      - const: ns16550a
+-      - const: ns16850
+-      - const: aspeed,ast2400-vuart
+-      - const: aspeed,ast2500-vuart
+-      - const: intel,xscale-uart
+-      - const: mrvl,pxa-uart
+-      - const: nuvoton,wpcm450-uart
+-      - const: nuvoton,npcm750-uart
+-      - const: nvidia,tegra20-uart
+-      - const: nxp,lpc3220-uart
++      - enum:
++          - ns8250
++          - ns16450
++          - ns16550
++          - ns16550a
++          - ns16850
++          - aspeed,ast2400-vuart
++          - aspeed,ast2500-vuart
++          - intel,xscale-uart
++          - mrvl,pxa-uart
++          - nuvoton,npcm750-uart
++          - nuvoton,wpcm450-uart
++          - nvidia,tegra20-uart
++          - nxp,lpc3220-uart
+       - items:
+           - enum:
+               - exar,xr16l2552
 -- 
 2.53.0
 
