@@ -1,108 +1,87 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D32CF43E487;
-	Mon, 10 Aug 2026 19:16:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E0944446FA
+	for <linux-serial@vger.kernel.org>; Mon, 10 Aug 2026 19:42:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786389374; cv=none; b=e9xdiPKAqHS4gUrVktXG/QUx0JfabxDjAxF5FP6QmHbySiAjba37v1R8QLSc7nL9JmdiFjS82twgu8J/pdn71nL7P212Nhbcnvk+alrf/7cQPaL5Yp9kUY4pWbUNnZGDzHrv2nIFIc92XoqkP3XCqNX7k1pjUhL9rphZjcY1mF0=
+	t=1786390957; cv=none; b=FD/wb7a33Y9SoxIRaZAPcDpJCw6FrbdT/1sgdiz9E8UVhsAUoiLieR9rZmjaNtktZeTc12v0Y5EISwFTqdgt0Id2j6+uPLzSNkBkmL3R5xN23lMhUDDU7oq3LYfvwdwRAD8xugT/rP9LMcQaNVCluoAaNAlNKAP9JIzCo2eVyPo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786389374; c=relaxed/simple;
-	bh=mtFENE88hMKa6wmKPHxnZFDO1wgLoWRNPnGtHma0cn4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Dt/kYQTOfGIfpu07zeuc9VbAESugadHxvTm0Rz0ZzWKEj35ZoJGtVoEyGLhXBECkO0/SIcIi3xqul3NQO4mhCfuJUKFGOM5VvjzhuG7LDFgnIXcxdzlput9Gir4j54ogbetYZUmKDfO2M+yMtx5WztGrOdc17YQQV+cvZNqL66k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iArr3AhY; arc=none smtp.client-ip=198.175.65.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1786390957; c=relaxed/simple;
+	bh=a/RorDak4AbNVbw/fWC8eA91U4vFHIR3vGa//TAL5kU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=WcHj9kPsxvycjlBdfAj5bw/Y3Ur98PVX2RlEtBwaDPJYeiXNBbQ2Nxzl4jMduuQzOJfH9Tn3h/JjEqBommRrzXWQJldtwEe+Eh4nDqs5tbZWYYsXNdSJ6XbK82V0mAR7uMxrq0nxxnJn66FVaI9MQUHld1sVSr60m0FiS0OsDE0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kSLGM9fv; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iArr3AhY"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1786389372; x=1817925372;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=mtFENE88hMKa6wmKPHxnZFDO1wgLoWRNPnGtHma0cn4=;
-  b=iArr3AhYkPvAA1jL87VAppjdbCVjOKhTepf+w5QXUHA1dDTCB2OFQneo
-   MXCAhIdrvV6pzQmxPX6PcEEQnUtXtz4YbpN4YgcW2jAE8ziEINAL4xv2Z
-   d5UUuHDymA9S3Hw7ARBMczYqs1YVzCcx1umEimPwNdiRlx3I0yT3E5H9O
-   GqulKneYEroBZTdcG6QXpuUMBG1paUwi7GfD9x7usOL65VfP5F2zWawqS
-   JcFlUPIQL4iU5oKwMUtNhm2Oxpck7e48iyIr5uJ7k/m03z+YKdR0Q3nc6
-   k0rnGxCaCzBcDMFk1ppW2HOJ9BIi3lEirSZzv0s8Pb8mQLmLhQzfErimo
-   g==;
-X-CSE-ConnectionGUID: kjPbksVCQEGBiNlXHd52jg==
-X-CSE-MsgGUID: XApNQVXZT7ON0Hx6fDQWFA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11871"; a="86847837"
-X-IronPort-AV: E=Sophos;i="6.25,216,1779174000"; 
-   d="scan'208";a="86847837"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 12:16:10 -0700
-X-CSE-ConnectionGUID: HCUxOJ3vR6qi4x9TOs8jBg==
-X-CSE-MsgGUID: Rrc/NPOfRfeBnA5lDnIb4g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,216,1779174000"; 
-   d="scan'208";a="256895324"
-Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.99])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2026 12:16:08 -0700
-Date: Mon, 10 Aug 2026 22:16:05 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Ryan Wilbur <rwilbur633@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	John Ogness <john.ogness@linutronix.de>,
-	Manuel Lauss <manuel.lauss@gmail.com>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Subject: Re: [PATCH v4] serial: 8250_of: clear stuck empty-FIFO RX-timeout on
- LPC32xx
-Message-ID: <anojdTKiNZrBoRGh@ashevche-desk.local>
-References: <20260730193920.28954-1-rwilbur633@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kSLGM9fv"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADE441F0155E
+	for <linux-serial@vger.kernel.org>; Mon, 10 Aug 2026 19:42:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1786390939;
+	bh=a/RorDak4AbNVbw/fWC8eA91U4vFHIR3vGa//TAL5kU=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc;
+	b=kSLGM9fvZI2I6QdHwXN0GjtPaULcvCw9vClBJvqivQxrdMkxYyJaRVbE3dw9Eg0pk
+	 gV9irYScyYu3xK17ROFreMHuX9kjNrCsAI7rTWmkA8bsJv37uaRG/Q1i91vBEsdUgF
+	 YeOFxPs7saOgvEvi4Zeb+YNk8YhPmK+vMCPBiRYFNUkY4TLRLuxOq4Dc0hZFhhI8e3
+	 tKJkrH7B5676yvOgh5CfKkNSh1T1uN2TG66MEnlhrdm/SUiD7x87+TLkC78ihLb5y4
+	 UiFCyMjEmhKX9kMCNnOdxIEpJLkERQOkYray6+KOiu7troydDHQ8l4Mmgk5yO3hUFK
+	 CuDJ7XTxoQmKQ==
+Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-5b29599b81cso2924894e87.1
+        for <linux-serial@vger.kernel.org>; Mon, 10 Aug 2026 12:42:19 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AHgh+RqrpNsNyPu/Y5rn+l+XmDbdPT2L9rFYa/S4T3hs6l0lrYGP6ZROdCwkXSryGTWSBfI8wqTPAkso7ZufQ+Y=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyrDgAcSTIv09S2e/xrn52mp834d4Uvr1Se8J8auy5vi4QJSh4X
+	zqr7MnOICMuxS7iWp9iODC6DAQ3af2a3ZyySui2b8Er8mUPwZTcK94dLLbaSP0m3Z2R+hvyPAUU
+	Qnbc0OB20DWw0WKb0jaS3mhAajWun/P0=
+X-Received: by 2002:a05:6512:61a5:b0:5ae:ba8e:2ef2 with SMTP id
+ 2adb3069b0e04-5b3181d3181mr686062e87.51.1786390938286; Mon, 10 Aug 2026
+ 12:42:18 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260730193920.28954-1-rwilbur633@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20260806-longzhao-upstream-cv75-v2-v2-0-6b09707c5fe9@ambarella.com>
+ <20260806-longzhao-upstream-cv75-v2-v2-7-6b09707c5fe9@ambarella.com>
+ <CAD++jLk0LoOJk=TXin42AL3_z_7eVVkvMnYr1S8090C6A_B+dQ@mail.gmail.com> <DS0PR19MB7925690FD29D578D8AC5D10EDADE2@DS0PR19MB7925.namprd19.prod.outlook.com>
+In-Reply-To: <DS0PR19MB7925690FD29D578D8AC5D10EDADE2@DS0PR19MB7925.namprd19.prod.outlook.com>
+From: Linus Walleij <linusw@kernel.org>
+Date: Mon, 10 Aug 2026 21:42:05 +0200
+X-Gmail-Original-Message-ID: <CAD++jLkUPU0eujvWc5Hn1tEu4n451LvkuGGT=j6OfirJENpRgg@mail.gmail.com>
+X-Gm-Features: AUfX_mzNR-BpdsCoy7KeBCm5BOABzsx_ocJuW04mgEWpmksgWM6rzG04G-gloAk
+Message-ID: <CAD++jLkUPU0eujvWc5Hn1tEu4n451LvkuGGT=j6OfirJENpRgg@mail.gmail.com>
+Subject: Re: Re: [PATCH v2 07/10] pinctrl: ambarella: add Ambarella pin controller
+To: Long Zhao <longzhao@ambarella.com>
+Cc: Bartosz Golaszewski <brgl@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>, 
+	Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, 
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, 
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
+	"linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>, 
+	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, 
+	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "soc@lists.linux.dev" <soc@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jul 30, 2026 at 04:39:20PM -0300, Ryan Wilbur wrote:
-> The NXP LPC32xx UART (PORT_LPC3220) can latch an RX character-timeout
-> interrupt while the RX FIFO is empty: IIR reports UART_IIR_RX_TIMEOUT
-> (0x0c) but LSR.DR is clear. A character timeout is only cleared by
-> reading RHR, but serial8250_rx_chars() reads RHR only when LSR.DR is
-> set, so nothing ever clears the condition. The interrupt is
-> level-triggered and re-fires immediately, so on a single-core ARM926
-> the resulting interrupt storm livelocks the CPU.
-> 
-> It is reproducible when userspace repeatedly opens the front-panel port
-> (ttyS1): serial8250_do_set_termios() re-enables interrupts on unlock and
-> the handler then spins forever with iir=0xcc lsr=0x60 ier=0x05, tripping
-> the soft-lockup detector in serial8250_handle_irq_locked().
-> 
-> LPC32xx has no dedicated 8250 glue driver, it's driven by the generic
-> 8250_of. Add a hardware specific handle_irq for PORT_LPC3220, wired up
-> in of_platform_serial_setup() the same way fsl8250_handle_irq is
-> installed. The handler follows dw8250_handle_irq(): on an RX timeout
-> with an empty FIFO (LSR.DR and LSR.BI clear) it does one throwaway RHR
-> read to clear the condition, then calls serial8250_handle_irq_locked().
-> No real received data is ever discarded, and it is a no-op on healthy
-> UARTs which never report a timeout with DR clear.
-> 
-> This is the same class of bug already worked around in other 8250 drivers;
-> see commit 424d79183af0 ("serial: 8250_dw: Avoid "too much work" from bogus rx timeout interrupt")
-> which reports the identical iir=0xcc/lsr=0x60. See also
-> UART_RX_TIMEOUT_QUIRK in 8250_omap, and the note in 8250_bcm7271.
+On Mon, Aug 10, 2026 at 6:02=E2=80=AFAM Long Zhao <longzhao@ambarella.com> =
+wrote:
 
-As long as this quirk is not anymore in the generic 8250 code, I'm fine with it
-Acked-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Thanks for the review. I will rework this to reuse the PL061 driver with
+> per-variant register offsets, and evaluate modeling each GPIO bank as a
+> separate DT entity. The duplicated GPIO implementation will be removed.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Thanks Long, I think it will be easier if you break out the pin control
+bindings and driver from the patch series and work on it separately,
+the same with the serial driver at least.
 
+I understand this can be hard to test on the hardware, I usually
+put a few patches "underneath" the b4 cover letter, and then the
+b4 send-email will only send the cover letter and the patches
+on top.
 
+Yours,
+Linus Walleij
