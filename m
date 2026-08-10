@@ -1,251 +1,189 @@
-Received: from mail-oo1-f78.google.com (mail-oo1-f78.google.com [209.85.161.78])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F82F1E9B1A
-	for <linux-serial@vger.kernel.org>; Mon, 10 Aug 2026 00:24:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.78
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E626248896
+	for <linux-serial@vger.kernel.org>; Mon, 10 Aug 2026 03:14:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786321470; cv=none; b=PppXxO7NvqUDyTw5cHn7CJ7tSYyiFN1I+B21PZAY/kRvgKgzpMGxsYfxoY5mRVvsbCcs47T1yh6Aij5b7WOT6W++ob2t03sra68tlvvQjGgYGyd1iYA0gwCBM2+MHp9DAVq0VmcIuqofK2lYmnE3YK3YvFxKcPM6GEOP6BHgZFI=
+	t=1786331662; cv=none; b=L6S2iyMmy+2y6F3cHC99YXHOBPlLRrB8nQ1pqeH8zN0Hkjj/ImcCcc1lSpXAIJdMPikeGysRcgAt1Ms96rC80zg6fVHpxefghLj07+rwFCn8Qh6DsNA4aP8CZC4fLjA1KEV9LDo/F6owETZL4xRuw5OzI/rpKPM/NtxGGDHa86U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786321470; c=relaxed/simple;
-	bh=MJihiC8nhDmzUdon/QfJIW5MayRSL05PND3vKShXBOw=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=P/jMRlNbhx2wD/rd3QwObefl1QJ2XSuGiKhg/NTmhHRcvsm2e1YLhAgvOOzZyHWwLZJx9/H/1Xcjvg9TBIE5xMQsq1wEHzJBBUOBr1drV4/YOQN3/RfHRoi87pKIFsdd5rfsULMwGmluM8SswMhwBmfBSHZTMop5JkrKxh/WZQM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.78
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f78.google.com with SMTP id 006d021491bc7-6ae34317b7eso308653eaf.1
-        for <linux-serial@vger.kernel.org>; Sun, 09 Aug 2026 17:24:28 -0700 (PDT)
+	s=arc-20240116; t=1786331662; c=relaxed/simple;
+	bh=hJVZGjdzMszsM5bjwrmT88RtUDhCOhiCTzcuewL63EY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=iBV6aPeV+ZFBGK/DtZZE3bp4SiCe3y23Pxec+/w/3EWY8yvkiTe/tlQu9jX+is99srvNrPy4SK3ezWFCUwwP10OncqaD6I3706ePgGSPKX6M2su+Vt4ms79u96J2tb7kHBaPkPddv7zK1Qk+DRZWgLLlIlsBad7VSDmXqqOTw6I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=PCjKCX5O; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=YXSUJvB/; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="PCjKCX5O";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="YXSUJvB/"
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 679MuXRd3696411
+	for <linux-serial@vger.kernel.org>; Mon, 10 Aug 2026 03:14:20 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	c20YFg7R+aIz/hgdPzYueBJ9BwfxuVTOpY3oG8UMOr0=; b=PCjKCX5Ofd+7t3oH
+	jGFoKUF1nRrglUXU2SIReN7qrYQ2HncGc+x/56ijyhXfXyjosTfaopA13lvnBFuz
+	QSLuwioIX7ZQuYffzZ00RcWHsu3ykXYxz5T/Zj6u7UcmPPbANFV57YUz3vqryp7o
+	e/egEF6jIhNZFEQ90cE3Av1v6gaEu6T7Ee3xZfPuly/xRuxLqBAHbDtIC9406HqA
+	sObhoyFKPKGqsyo3OxOhgPJgoi9Gh+cRj4aNWFWEQEbReqBw8EXCpmIkWT28/gNj
+	SDQRAJg6DDBUH4EMkYWsPamzAI9j5r66VcA1tdswOZXpZ1W000R80/jMf9S3YyFW
+	H/w1oA==
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com [209.85.160.197])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fww7cv3n0-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-serial@vger.kernel.org>; Mon, 10 Aug 2026 03:14:20 +0000 (GMT)
+Received: by mail-qt1-f197.google.com with SMTP id d75a77b69052e-51bfe3fa93bso12787511cf.2
+        for <linux-serial@vger.kernel.org>; Sun, 09 Aug 2026 20:14:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1786331655; x=1786936455; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from:references
+         :cc:to:content-language:subject:user-agent:mime-version:date
+         :message-id:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=c20YFg7R+aIz/hgdPzYueBJ9BwfxuVTOpY3oG8UMOr0=;
+        b=YXSUJvB/LR639BRMr16COatmxzLXQOvVp9KA+Ss09ZbvcrKjEAEvuud+wGCy0f6tsz
+         uFlCeDHLKuWF7xrC37B4UOxc6uwU9a9oHohGbvkxHQxcWsLVGx5B9TGlNAHS7iOF5EO0
+         SEv6khmT+nOEPE5TOzRjLtQr8oNbAIJQFLlMaEp6q6il8qITc8IxFikpBh452GmGk2JR
+         bFOnbKk4PUCuBRO94gNtJij2nmG4XLEeVdIsRrcdO7ThgsKGoApcX34ZeChQTbwtOiXk
+         9ld/kC3MGEyJPZplvtx04fhQiUBasg168+s/qvH8lcU9vF64PUQCvS0qn1G6AQKFgi+b
+         gAoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786321467; x=1786926267;
-        h=content-type:to:from:subject:message-id:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=zBAPaX6K32lddLGBoQTPstIwiqPmSlrUv7rG4jADdx4=;
-        b=SdYiswvkqVcWXkJcm1JHKq99U+vhn4WCe7cIBlfR4pN7igdQdnzDPRKzE46triXdZa
-         5Qgxpkcf9z9Q0Fg2dX2jARt3AE9OnI76+peb62BLfPB3c99E1LfeWj5EkNM+BLm4SEvZ
-         HigpBUmLJtURM1MkOeqqjA3HzGa17FZKGC/H2Z7Skrf6jUQKW9Iwx1qyL3GZ6U77nMwE
-         1Q4+PCQ2UYCCsLXx+C3ZOY3YYeC1oTJwEo+FAp3C9Rpd68qBPJkj4AOqMBm4Fn5DbfX/
-         BEzkSd9uqUKi5ObSWNb7ilHUW+7uIBdO2ay43CFC2jaSk9dp3kUQEX4X8NkVBUizloda
-         JSMA==
-X-Forwarded-Encrypted: i=1; AHgh+Rre1NVem28FpJPuSUh4H5BVoO47lJKMkHiq5GyCCAFtDEthx2GkrfjIOL/8c/iystZhYkAk0EGUC4Xt64A=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzSfCPqLLtgL6FPcgpjstiad4FU2W5+4nzmZBMzmVItNdut+4uC
-	7WYeTS3fz9+x0W27W1lTPKpvBQD9tNnkJo6DnXZgVheK0S6zzVEx3osArp8kCZivdo/HfjMcPgq
-	z55xyHIdHem5fA7OcYP+oy1Hx5pAI4e/cvbBoFRMdlMt+Jpnt7zoe3v/d6cs=
+        d=1e100.net; s=20251104; t=1786331655; x=1786936455;
+        h=content-transfer-encoding:content-type:in-reply-to:from:references
+         :cc:to:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=c20YFg7R+aIz/hgdPzYueBJ9BwfxuVTOpY3oG8UMOr0=;
+        b=cXXARLxWjSOP2j69hMg2wLyexBIOvDKTPZ7ZqvwSVfTJFiIFKFO8f9o3B74FD6lnCz
+         m4Hyu/q3QpyOermwbAIiemM+JMhCb5U6szJEj2kuwhUVuyqG1VCcs4F6SjsOqTfxJCgZ
+         +PtmgXCp+316PC0wVuE2MrhJSV2Zq6aNJl7pPVMA58PoS4wUk8SIuBIYxjlHxrXjVpWU
+         7UWK5+NQTiY5po2FTqzFNJTYG+g4+b2eWHD24kqDiKzDS0fkepG7qyjHsoKrybQzTHM4
+         BHa/2YwBZ2+0/0eFLnJqYytiv5nxOJSqVUP4Y3jukDJmgnXlfUda2vT1Sp/hUZrPfpux
+         HFKw==
+X-Forwarded-Encrypted: i=1; AHgh+RreGkqsbZ93d1WM6rUExIszVMDDbDsn0WYmQSFwDRNi/K1fAwV7iOHGcelK5ehBgTLzCWnb5raaQXDdVtU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwdMgTiJakzPmaKdBHA9EF3VgxQSmX9nMMuQT2seU1GEjSq+lqS
+	MHNr/wcJ02bl2sVGaB2dnyC8laFBrdGMrISg1GTnKoVTDPVGDUYkYHgmUMOLT6AjFxbuglM81gA
+	UsmPJFxxgSzb0t+mc8dCkPfLPBW4Dfmx/SFXD7bBuTFAsVgbZaMwhWD38R7lR8NtJAsw=
+X-Gm-Gg: AR+sD12NBGUEL00dU+S6un+PMFv+QsSEz0LmiFJyhYtw2GVNUiEAHB8I+Z10BWzOM3e
+	EuXfDawQd13poCjUUp5vnhD+x7tVEU/0cDjg11QMWQJhjGkbbfdepCQZ4n92OvxuBlXnz32kY0L
+	vgxBytduSQR/D1sg0AZae+6alKw39kybd5Y41BswCO76K3dN2ssInkYFniKnTPO5o1/4ZhwfqXQ
+	Q1+8A+/azCX1w2sgTHPpzvTCd30Io4s/S3k7wWTfQR8kZ93YyaqZKMVT9q/Fbc/Ny3ci9nZgBZ+
+	6RhL5gQVyzbV/SOK46pSbTv511g9kAMm+tKez87rAwrlOt/kl3EnqO3pj1vxX1ofB+/1ZYtkrgv
+	ak+EjoDbvQah8Zf7eVmGS95c1SkwAjKb3Yfs=
+X-Received: by 2002:ac8:58ce:0:b0:528:162e:29d3 with SMTP id d75a77b69052e-52ce614ba88mr400898781cf.32.1786331654630;
+        Sun, 09 Aug 2026 20:14:14 -0700 (PDT)
+X-Received: by 2002:ac8:58ce:0:b0:528:162e:29d3 with SMTP id d75a77b69052e-52ce614ba88mr400898361cf.32.1786331654128;
+        Sun, 09 Aug 2026 20:14:14 -0700 (PDT)
+Received: from [192.168.69.229] (pmd666.hd.free.fr. [88.187.86.199])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-480021501bcsm29134102f8f.9.2026.08.09.20.14.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 09 Aug 2026 20:14:13 -0700 (PDT)
+Message-ID: <f1067d27-6b39-433f-b1e2-ad753e54153d@oss.qualcomm.com>
+Date: Mon, 10 Aug 2026 05:14:12 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a4a:e908:0:b0:6a3:d77e:725a with SMTP id
- 006d021491bc7-6b04213b952mr8472137eaf.20.1786321467372; Sun, 09 Aug 2026
- 17:24:27 -0700 (PDT)
-Date: Sun, 09 Aug 2026 17:24:27 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a791a3b.9c11d2ce.289b96.00e4.GAE@google.com>
-Subject: [syzbot] [serial?] possible deadlock in n_tty_receive_buf_common (2)
-From: syzbot <syzbot+087f6a513e0d60ee6ee4@syzkaller.appspotmail.com>
-To: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 2/3] serial: sb1250-duart: Fix bootconsole handover
+ lockup
+Content-Language: en-US
+To: "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-mips@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <alpine.DEB.2.21.2608060322360.55540@angie.orcam.me.uk>
+ <alpine.DEB.2.21.2608060359330.55540@angie.orcam.me.uk>
+From: =?UTF-8?Q?Philippe_Mathieu-Daud=C3=A9?= <philmd@oss.qualcomm.com>
+In-Reply-To: <alpine.DEB.2.21.2608060359330.55540@angie.orcam.me.uk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-GUID: WK98Xf5xf7OrAJJmgfzFpsT75qnmLxS7
+X-Proofpoint-ORIG-GUID: WK98Xf5xf7OrAJJmgfzFpsT75qnmLxS7
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODEwMDAyNCBTYWx0ZWRfX3u1efkJ4yUpl
+ HEOkLXHSvqkRSJLnKus6sLwD/IJ9YZROg+K7r2fHlHwbRCHakqHvoatHlEUQcp82AUksBPy9ZcX
+ Sa1EicraDwj91tw8yA6ocNtOgL51PDxGnQdfjujqSGKiuR7nEsJ5kxciEzuV4lo2lds9Y8yVOSh
+ bZjObdifxNSw8PBfSbpEoSUs+pJo+XUqrxO6g7FHXDkd4Sr2IH2SL+yuqfG5NVaqX2pJD4wiVLT
+ vqVqkHMY5c9N2x+Qj8Txdnb46L4l2TEzJxw3b1tnBfk6INem83yVIGpZzJIHVX2jnY6IAXcX3Gk
+ +fRQvmSxuiPNf27BfBaBy7U0w6ERDt4eq6pSojN/7uBDh9JZwufOnVYux11VwcqmuDsHd6P3Qqj
+ 6cik+qirDeV3VXXHcqB9Jtg0O0O5X0eKOzGrDY0zff00kMlS+U/oxTorLSHMuj85SUeMmIf6hJ2
+ w3T4XhSKVQs2tHKwGQQ==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODEwMDAyNCBTYWx0ZWRfX300ZLSC+fuHd
+ nlMjeWsgmHmJ1+vtMzcOvXgTWgBL5TaoQzq+pdsM+3hrAQc/zHNA+lZEXUldh8ac67NOdLPcqUF
+ 6I8hMS9EMPJatJih1f8Jl5xZsreKTzA=
+X-Authority-Analysis: v=2.4 cv=IPsyzAvG c=1 sm=1 tr=0 ts=6a79420c cx=c_pps
+ a=EVbN6Ke/fEF3bsl7X48z0g==:117 a=4s3hRJSeHn4rkQlkrse1kQ==:17
+ a=IkcTkHD0fZMA:10 a=Sv0fKeRqtYgA:10 a=M51BFTxLslgA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=_K5XuSEh1TEqbUxoQ0s3:22
+ a=VwQbUJbxAAAA:8 a=BcPKCTjPAAAA:8 a=EUspDBNiAAAA:8 a=_xeo5rayHQ2-IrAwGUsA:9
+ a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10 a=a_PwQJl-kcHnX1M80qC6:22
+ a=MNXww67FyIVnWKX2fotq:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-08-09_07,2026-08-07_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ malwarescore=0 phishscore=0 clxscore=1015 priorityscore=1501 suspectscore=0
+ bulkscore=0 impostorscore=0 adultscore=0 lowpriorityscore=0 spamscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608100024
 
-Hello,
-
-syzbot found the following issue on:
-
-HEAD commit:    848acc8ffe1b Merge tag 'fsverity-for-linus' of git://git.k..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=12785bb9580000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=f221a1b5d497ed15
-dashboard link: https://syzkaller.appspot.com/bug?extid=087f6a513e0d60ee6ee4
-compiler:       gcc (Debian 14.2.0-19) 14.2.0, GNU ld (GNU Binutils for Debian) 2.44
-userspace arch: i386
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-Downloadable assets:
-disk image (non-bootable): https://storage.googleapis.com/syzbot-assets/d900f083ada3/non_bootable_disk-848acc8f.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/31f94fe4d67f/vmlinux-848acc8f.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/391ba15cbf42/bzImage-848acc8f.xz
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+087f6a513e0d60ee6ee4@syzkaller.appspotmail.com
-
-======================================================
-WARNING: possible circular locking dependency detected
-syzkaller #0 Not tainted
-------------------------------------------------------
-kworker/u33:3/62 is trying to acquire lock:
-ffff88804b3fe2c8 (&tty->termios_rwsem){++++}-{4:4}, at: class_rwsem_read_constructor include/linux/rwsem.h:259 [inline]
-ffff88804b3fe2c8 (&tty->termios_rwsem){++++}-{4:4}, at: n_tty_receive_buf_common+0x85/0x1930 drivers/tty/n_tty.c:1678
-
-but task is already holding lock:
-ffff88801404a8b8 (&buf->lock){+.+.}-{4:4}, at: flush_to_ldisc+0x34/0x730 drivers/tty/tty_buffer.c:474
-
-which lock already depends on the new lock.
-
-
-the existing dependency chain (in reverse order) is:
-
--> #3 (&buf->lock){+.+.}-{4:4}:
-       lock_acquire kernel/locking/lockdep.c:5868 [inline]
-       lock_acquire+0x1b9/0x370 kernel/locking/lockdep.c:5825
-       __mutex_lock_common kernel/locking/mutex.c:646 [inline]
-       __mutex_lock+0x1a4/0x1bd0 kernel/locking/mutex.c:821
-       tty_buffer_flush+0x72/0x310 drivers/tty/tty_buffer.c:236
-       tty_ldisc_flush+0xd2/0xf0 drivers/tty/tty_ldisc.c:388
-       __do_SAK+0x368/0x480 drivers/tty/tty_io.c:3025
-       vc_SAK+0x7f/0x320 drivers/tty/vt/vt_ioctl.c:994
-       process_one_work+0xa23/0x1940 kernel/workqueue.c:3322
-       process_scheduled_works kernel/workqueue.c:3405 [inline]
-       worker_thread+0x5ef/0xe50 kernel/workqueue.c:3486
-       kthread+0x370/0x450 kernel/kthread.c:436
-       ret_from_fork+0x72b/0xd50 arch/x86/kernel/process.c:158
-       ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
-
--> #2 (console_lock){+.+.}-{0:0}:
-       lock_acquire kernel/locking/lockdep.c:5868 [inline]
-       lock_acquire+0x1b9/0x370 kernel/locking/lockdep.c:5825
-       console_lock+0x7a/0xa0 kernel/printk/printk.c:2896
-       uart_configure_port drivers/tty/serial/serial_core.c:2530 [inline]
-       serial_core_add_one_port drivers/tty/serial/serial_core.c:3101 [inline]
-       serial_core_register_port+0xe65/0x16f0 drivers/tty/serial/serial_core.c:3322
-       serial8250_register_8250_port+0x15af/0x2330 drivers/tty/serial/8250/8250_core.c:828
-       serial_pnp_probe+0x436/0x930 drivers/tty/serial/8250/8250_pnp.c:480
-       pnp_device_probe+0x2b3/0x4a0 drivers/pnp/driver.c:111
-       call_driver_probe drivers/base/dd.c:628 [inline]
-       really_probe+0x241/0xa60 drivers/base/dd.c:706
-       __driver_probe_device+0x20e/0x450 drivers/base/dd.c:868
-       driver_probe_device+0x4a/0x140 drivers/base/dd.c:898
-       __driver_attach+0x21f/0x5b0 drivers/base/dd.c:1292
-       bus_for_each_dev+0x13e/0x1d0 drivers/base/bus.c:383
-       bus_add_driver+0x305/0x5b0 drivers/base/bus.c:763
-       driver_register+0x1e2/0x360 drivers/base/driver.c:174
-       serial8250_init+0xcc/0x1c0 drivers/tty/serial/8250/8250_platform.c:317
-       do_one_initcall+0x11d/0x700 init/main.c:1347
-       do_initcall_level init/main.c:1409 [inline]
-       do_initcalls init/main.c:1425 [inline]
-       do_basic_setup init/main.c:1445 [inline]
-       kernel_init_freeable+0x6ea/0x7b0 init/main.c:1658
-       kernel_init+0x1f/0x1e0 init/main.c:1548
-       ret_from_fork+0x72b/0xd50 arch/x86/kernel/process.c:158
-       ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
-
--> #1 (&port->mutex){+.+.}-{4:4}:
-       lock_acquire kernel/locking/lockdep.c:5868 [inline]
-       lock_acquire+0x1b9/0x370 kernel/locking/lockdep.c:5825
-       __mutex_lock_common kernel/locking/mutex.c:646 [inline]
-       __mutex_lock+0x1a4/0x1bd0 kernel/locking/mutex.c:821
-       class_mutex_constructor include/linux/mutex.h:253 [inline]
-       uart_set_termios+0x8e/0x690 drivers/tty/serial/serial_core.c:1645
-       tty_set_termios+0x64d/0x980 drivers/tty/tty_ioctl.c:341
-       set_termios+0x5c8/0x880 drivers/tty/tty_ioctl.c:516
-       tty_mode_ioctl+0x17e/0xd40 drivers/tty/tty_ioctl.c:803
-       n_tty_ioctl_helper+0x47/0x2b0 drivers/tty/tty_ioctl.c:982
-       n_tty_ioctl+0x53/0x340 drivers/tty/n_tty.c:2496
-       tty_ioctl+0x11b4/0x1640 drivers/tty/tty_io.c:2801
-       vfs_ioctl fs/ioctl.c:51 [inline]
-       __do_sys_ioctl fs/ioctl.c:597 [inline]
-       __se_sys_ioctl fs/ioctl.c:583 [inline]
-       __x64_sys_ioctl+0x18e/0x210 fs/ioctl.c:583
-       do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
-       do_syscall_64+0x115/0x840 arch/x86/entry/syscall_64.c:94
-       entry_SYSCALL_64_after_hwframe+0x77/0x7f
-
--> #0 (&tty->termios_rwsem){++++}-{4:4}:
-       check_prev_add+0xeb/0xe60 kernel/locking/lockdep.c:3165
-       check_prevs_add kernel/locking/lockdep.c:3284 [inline]
-       validate_chain kernel/locking/lockdep.c:3908 [inline]
-       __lock_acquire+0x136c/0x1a40 kernel/locking/lockdep.c:5237
-       lock_acquire kernel/locking/lockdep.c:5868 [inline]
-       lock_acquire+0x1b9/0x370 kernel/locking/lockdep.c:5825
-       down_read+0x99/0x4c0 kernel/locking/rwsem.c:1574
-       class_rwsem_read_constructor include/linux/rwsem.h:259 [inline]
-       n_tty_receive_buf_common+0x85/0x1930 drivers/tty/n_tty.c:1678
-       tty_ldisc_receive_buf+0xaa/0x1a0 drivers/tty/tty_buffer.c:394
-       tty_port_default_receive_buf+0x70/0xb0 drivers/tty/tty_port.c:37
-       receive_buf drivers/tty/tty_buffer.c:452 [inline]
-       flush_to_ldisc+0x26b/0x730 drivers/tty/tty_buffer.c:502
-       process_one_work+0xa23/0x1940 kernel/workqueue.c:3322
-       process_scheduled_works kernel/workqueue.c:3405 [inline]
-       worker_thread+0x5ef/0xe50 kernel/workqueue.c:3486
-       kthread+0x370/0x450 kernel/kthread.c:436
-       ret_from_fork+0x72b/0xd50 arch/x86/kernel/process.c:158
-       ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
-
-other info that might help us debug this:
-
-Chain exists of:
-  &tty->termios_rwsem --> console_lock --> &buf->lock
-
- Possible unsafe locking scenario:
-
-       CPU0                    CPU1
-       ----                    ----
-  lock(&buf->lock);
-                               lock(console_lock);
-                               lock(&buf->lock);
-  rlock(&tty->termios_rwsem);
-
- *** DEADLOCK ***
-
-4 locks held by kworker/u33:3/62:
- #0: ffff88801bce4140 ((wq_completion)events_unbound){+.+.}-{0:0}, at: process_one_work+0x12b1/0x1940 kernel/workqueue.c:3297
- #1: ffffc900009efd08 ((work_completion)(&buf->work)){+.+.}-{0:0}, at: process_one_work+0x988/0x1940 kernel/workqueue.c:3298
- #2: ffff88801404a8b8 (&buf->lock){+.+.}-{4:4}, at: flush_to_ldisc+0x34/0x730 drivers/tty/tty_buffer.c:474
- #3: ffff88804b3fe0a0 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_ref+0x21/0x90 drivers/tty/tty_ldisc.c:263
-
-stack backtrace:
-CPU: 0 UID: 0 PID: 62 Comm: kworker/u33:3 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-Workqueue: events_unbound flush_to_ldisc
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:94 [inline]
- dump_stack_lvl+0x100/0x190 lib/dump_stack.c:120
- print_circular_bug.cold+0x178/0x1c7 kernel/locking/lockdep.c:2043
- check_noncircular+0x146/0x160 kernel/locking/lockdep.c:2175
- check_prev_add+0xeb/0xe60 kernel/locking/lockdep.c:3165
- check_prevs_add kernel/locking/lockdep.c:3284 [inline]
- validate_chain kernel/locking/lockdep.c:3908 [inline]
- __lock_acquire+0x136c/0x1a40 kernel/locking/lockdep.c:5237
- lock_acquire kernel/locking/lockdep.c:5868 [inline]
- lock_acquire+0x1b9/0x370 kernel/locking/lockdep.c:5825
- down_read+0x99/0x4c0 kernel/locking/rwsem.c:1574
- class_rwsem_read_constructor include/linux/rwsem.h:259 [inline]
- n_tty_receive_buf_common+0x85/0x1930 drivers/tty/n_tty.c:1678
- tty_ldisc_receive_buf+0xaa/0x1a0 drivers/tty/tty_buffer.c:394
- tty_port_default_receive_buf+0x70/0xb0 drivers/tty/tty_port.c:37
- receive_buf drivers/tty/tty_buffer.c:452 [inline]
- flush_to_ldisc+0x26b/0x730 drivers/tty/tty_buffer.c:502
- process_one_work+0xa23/0x1940 kernel/workqueue.c:3322
- process_scheduled_works kernel/workqueue.c:3405 [inline]
- worker_thread+0x5ef/0xe50 kernel/workqueue.c:3486
- kthread+0x370/0x450 kernel/kthread.c:436
- ret_from_fork+0x72b/0xd50 arch/x86/kernel/process.c:158
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
- </TASK>
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-
-If the report is already addressed, let syzbot know by replying with:
-#syz fix: exact-commit-title
-
-If you want to overwrite report's subsystems, reply with:
-#syz set subsystems: new-subsystem
-(See the list of subsystem names on the web dashboard)
-
-If the report is a duplicate of another one, reply with:
-#syz dup: exact-subject-of-another-report
-
-If you want to undo deduplication, reply with:
-#syz undup
+On 6/8/26 12:54, Maciej W. Rozycki wrote:
+> Calling sbd_init_port() in the course of setting up the serial device
+> causes line parameters to be messed up and the transmitter disabled.
+> We've been lucky in that no message is usually produced to the kernel
+> log between this call and the later call to uart_set_options() in the
+> course of console setup done by sbd_serial_console_init(), or the system
+> would hang as the console output handler in CFE tried to access a port
+> whose transmitter has been disabled and line parameters messed up.
+> 
+> It'll change with the next change to the driver, so fix sbd_init_port()
+> such that line parameters are set for 115200n8 console operation as with
+> the CFE firmware and the transmitter re-enabled after reset.
+> 
+> Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
+> Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+> Cc: stable@vger.kernel.org # v6.5+
+> ---
+> No change from v2 (2/3),
+> <https://lore.kernel.org/r/alpine.DEB.2.21.2605241623110.1450@angie.orcam.me.uk/>.
+> 
+> Changes from v1 (2/4),
+> <https://lore.kernel.org/r/alpine.DEB.2.21.2604130338210.29980@angie.orcam.me.uk/>:
+> 
+> - Sanitise the change heading.
+> ---
+>   drivers/tty/serial/sb1250-duart.c |    7 ++++++-
+>   1 file changed, 6 insertions(+), 1 deletion(-)
+> 
+> linux-serial-sb1250-duart-prom-console.diff
+> Index: linux-macro/drivers/tty/serial/sb1250-duart.c
+> ===================================================================
+> --- linux-macro.orig/drivers/tty/serial/sb1250-duart.c
+> +++ linux-macro/drivers/tty/serial/sb1250-duart.c
+> @@ -542,14 +542,19 @@ static void sbd_init_port(struct sbd_por
+>   	/* There is no DUART reset feature, so just set some sane defaults.  */
+>   	write_sbdchn(sport, R_DUART_CMD, V_DUART_MISC_CMD_RESET_TX);
+>   	write_sbdchn(sport, R_DUART_CMD, V_DUART_MISC_CMD_RESET_RX);
+> -	write_sbdchn(sport, R_DUART_MODE_REG_1, V_DUART_BITS_PER_CHAR_8);
+> +	write_sbdchn(sport, R_DUART_MODE_REG_1,
+> +		     V_DUART_PARITY_MODE_NONE | V_DUART_BITS_PER_CHAR_8);
+>   	write_sbdchn(sport, R_DUART_MODE_REG_2, 0);
+> +	write_sbdchn(sport, R_DUART_CLK_SEL, V_DUART_BAUD_RATE(115200));
+>   	write_sbdchn(sport, R_DUART_FULL_CTL,
+>   		     V_DUART_INT_TIME(0) | V_DUART_SIG_FULL(15));
+>   	write_sbdchn(sport, R_DUART_OPCR_X, 0);
+>   	write_sbdchn(sport, R_DUART_AUXCTL_X, 0);
+>   	write_sbdshr(sport, R_DUART_IMRREG((uport->line) % 2), 0);
+>   
+> +	/* Re-enable transmission for the initial PROM-based console.  */
+> +	write_sbdchn(sport, R_DUART_CMD, M_DUART_TX_EN);
+> +
+>   	sport->initialised = 1;
+>   }
+>   
+Reviewed-by: Philippe Mathieu-Daudé <philmd@oss.qualcomm.com>
