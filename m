@@ -1,236 +1,218 @@
-Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com [209.85.208.199])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D58D53DB655
-	for <linux-serial@vger.kernel.org>; Mon, 10 Aug 2026 13:06:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.199
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786367202; cv=none; b=rH0NmRme4umGR7VHc6f/Rrufk75J7/ZAQDIX88ad58DEBUpN0O/ll9LpfvoQFraWpDy/py6luypAYI75wRDuRxSE2GPoU2ArWeEaS+O+LQNpYhAk/nt2sr+2CWMey5S5RhGHFvH6RvMzRoM6wMPoXrazdNhvQUbt8HMbMZtxgSU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786367202; c=relaxed/simple;
-	bh=lny2tVxPP3EBC64DjZVVlmMheEKgPPMBmx7Is6mdwkE=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=chPjvEIF9epa5bVZG90M6jBslqSRxwckuBia2bBS+VjHMAgHnrjzk0I+GWmWCHd+M3ZXixLsKmnhe4PLh/TDfWzpEosSgILew1lkTOJDPMVuWJM0skba3If7oZcoXcPBoyvHCnfo7uvCSuld8+4xeqbRX8z1as5bBhSqR7/mT9A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--mkmkl.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=PVDUbSSL; arc=none smtp.client-ip=209.85.208.199
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--mkmkl.bounces.google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 751DE3F4DCF
+	for <linux-serial@vger.kernel.org>; Mon, 10 Aug 2026 14:19:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=205.220.180.131
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786371577; cv=pass; b=LJ3SbSftoUs53fbOvH4uL5QylcvReXcMdCZGhTIqq9T0pbOwiBXwmQ3ZVxRPFs63F5jkYZJSRVpwiR+Z+rNaR9jDLMsDNaGmbV+jS0NpLuT5FX054aCfrwsR/l62z2an6FRxArwoM0qYjTowPX7utTkmOypPCG+F6YnV0age+1E=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786371577; c=relaxed/simple;
+	bh=n+Ksvu/zVWPobgx5KX7GBu9XwArpcsGtQQ3SBCwrIrY=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=kKDhc8Kd+31w7jSryB+U6ROiJ+EZwUxTHmgynGyuIMeI0RTqD2mlZuVQoSN3SFjcV/pwOeGgmLIIIUhmtNrTPik2avtvt6UqXQVuK4gL192GsiwO6hxdkjrZPAXynv3t8OYMJujT/9TXgYCxuqpObjnMDrFnrxiTyNj4SCAUBzU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Ev1TpKH3; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=UCSWrhxp; arc=pass smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="PVDUbSSL"
-Received: by mail-lj1-f199.google.com with SMTP id 38308e7fff4ca-39d93d95a21so12887561fa.0
-        for <linux-serial@vger.kernel.org>; Mon, 10 Aug 2026 06:06:39 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Ev1TpKH3";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="UCSWrhxp"
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67ACjC151367894
+	for <linux-serial@vger.kernel.org>; Mon, 10 Aug 2026 14:19:32 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	TV2EQ2xg94/gFwpPmqRGt0+RWBXJJXwWFz3sZUe92ds=; b=Ev1TpKH3ebEU1fy8
+	g+4xebhPHPUNEgczi4RSZlAAra5Cj91TiMJid3WIyK5/K42u1qxUcjk7uUCBQHoM
+	D8o21YcfVK1/Y97choME6/qa7CdDIhuHrlaVEOIr7xgiuVzpWUQGLsJRHjecc0X8
+	5OmdKvdY1UX2SdEE6NQg2yuWzpmvtnJjOYPGFJ+VOPekQ4vxFoORjT1aoxhP7vvV
+	YYapTAPpjm+7JFbvSNZqrR5jaeN6QyO+1y8HV8IIM1yy0lsfCMSKDFY5nXQLSOGp
+	AE5sKxscyBtkwJygu9QY3Z06kIxGDzYvIbVbErm3jiF7vYdIQvt+b22j8wAU+yxK
+	2sR7gA==
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com [209.85.219.71])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fy8v49x2n-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-serial@vger.kernel.org>; Mon, 10 Aug 2026 14:19:31 +0000 (GMT)
+Received: by mail-qv1-f71.google.com with SMTP id 6a1803df08f44-9080b7b2f2bso18990726d6.3
+        for <linux-serial@vger.kernel.org>; Mon, 10 Aug 2026 07:19:31 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1786371571; cv=none;
+        d=google.com; s=arc-20260327;
+        b=feoANO1Hn7ESEhhGUFsHg7caPxplaZMPth4avC7EC931Yr2ko4KUA+wsgT9nciecS6
+         f8RRyauot3gtA5zN8E6jKScXyZgjoiBsyKmNPIM3pevmPesBMpKdJwRAucBFn8piKw8L
+         HHVFz1vWSdA4cudp5m2zCAJDCotsX90rN/9V+B9Qt6BrzDfRLS7THA0RZBuwOkyJV//l
+         8am1l1kQnEBcJaONNXHpxYtx3ogQsSzK9wvdYWHQGkn6/3eu0M0LFXu1L4I5JEvCFktd
+         JPyiGLJlxKmQ6CiiCV9lrGVGB3tSSqGk5RIsmc1MhK/ZlZmXadvmV/YBcWaIh42UO0D9
+         6cxA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=TV2EQ2xg94/gFwpPmqRGt0+RWBXJJXwWFz3sZUe92ds=;
+        fh=0ZqvpJmo/KXp/rJJS1vIR5t3L0hWCwgF2ZNBLjDjoEQ=;
+        b=J0tkhG8zkKu9iakb5Ou/0ZXveF+V2nUBxtZcqIpCkF1cdCPWlKCPHR3rtNdWCZJ6Xt
+         qH8l/zZlV9wqI+SHKvGiTf9ygYOPhiSYbfzuTunmWSG5pM01wSgqRTbwD9uEkH5l1yR9
+         OBBVxd1nnYWq26SLO7WAbW38HlLxu5oGK/X9haz4JO9JchE1acaum1/ZcF3LmuWRj1gQ
+         UuC84oO6u+L2ggMro1jnUPTKGcAjaURka+hXst3+EWOCHmJbYhX+qHMdiIAf2SdlCXGZ
+         mt1HV71qsj+z5yNiUHUNSUSjDRkC4aRJk0612uFsmQb5qPRFI6cnr1PTJ85ULtxbC79l
+         uVmQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1786367198; x=1786971998; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:from:subject
-         :message-id:references:mime-version:in-reply-to:date:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=Aj+m8iVcwc+I5UrIpsW4B7C15egkkpzlbpamrytbNZ4=;
-        b=PVDUbSSLiHaOizW11PbDYBZKQ7gInP5wR8ESqBZEZ5q+RG+nBz3l5w0rNvLsJr40rn
-         X/ouFLi4+rQo73nuZIoKyo8gw3OVsOscsiGe0LdRA2W2AzX+3S81ZLwlWnxTkopZ3U08
-         LtmhNQtmg+nWwHYpMTKG2w79Ig2KkAbzqfeF0l4XMem/15J0Q+9fY7IWuhc+r9tFg2vs
-         OAPaADBDFTJwseJfjkpyzTLxbFb0nVrMdLLKOIW8m173btSWOirwdJb0x+jK2QZQsl2Q
-         UNE6Q3pd5e5FF6iZDQIusOSKJ6dvhs6IiQGHeUjJnFmV7rWf2KOzZ9BuFFk8KeH+FiRu
-         LIHA==
+        d=oss.qualcomm.com; s=google; t=1786371571; x=1786976371; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=TV2EQ2xg94/gFwpPmqRGt0+RWBXJJXwWFz3sZUe92ds=;
+        b=UCSWrhxp/54c1zxxL6Rv0OqpS43JyRPPHsFf/oQkkHaUQOuChZcrIFqUkWKg3p9f5s
+         3n4EjZXaclrirDAZiiexpY/RjB8zKPSQYceo8AasR3z1PQpPvEgeb0fxo/isuIARZGnm
+         JhV0uTjMlissRcg6nvjGHn721k/7qrEus1jbl/ZKMYBsYZcn3YkpDdAHKnek8QKgqNDG
+         2HlvGa0bplBCE8/Lbm9A8Vhn1apQQQeEqh2E39dnClzQrj/Q/mIPMfcWawvUE4/FK8FV
+         wbhn/Gfw8Ko3WABUL6XQI7uUaMwyxTUDlYcCAcvIbaVT3mJuzdGNj2EvffndKF/R+km7
+         4bzA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786367198; x=1786971998;
-        h=content-transfer-encoding:content-type:cc:to:from:subject
-         :message-id:references:mime-version:in-reply-to:date
+        d=1e100.net; s=20251104; t=1786371571; x=1786976371;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=Aj+m8iVcwc+I5UrIpsW4B7C15egkkpzlbpamrytbNZ4=;
-        b=A0WOqlvzvRlp+WO4BGw9Bd7Js65EnZ2JEShMqxPoKFW04WNPU31LJem96RdoZUzshK
-         I4Im80umkkR0sN/hQMOvzo6mhPsj+8JTPBZR19OnBruQR0JkO+UebWxc955zaBXlMOqH
-         lxygxJB193pwy2wmLKEWic63RuNq4hChOmzGkAtDPTG0uBIhLFzSzx9GO/ydmn2SQY79
-         OspyZqfKBom1otfZV0z+egB1MQjhKrMUwT1sruNs+4Xch4PchMmkC5f9vxUGYLDMwN8G
-         s7XKBl0D/+B54X93k5kU0cTc3ZzZo+JSeozsx02Fc/ngL7C633X6OrXhIFAelu1cBnre
-         kD9A==
-X-Forwarded-Encrypted: i=1; AHgh+Rp8kWlsGq76+A+9TlVWIWsc3ATW5S5nXXa2Nr5nkRlS9DC89GDjVd1W+gzXsD6yIwgS32OMhELEW8sHWVk=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx8IQWOVKVHgHOKealRvhT4uKaHMILMioOa42wp7a5SJ0Jg6cEw
-	UWKti2O1WWv8sZLPZBrsv6DU6rLlW0IMPUUffbmQk5ALJkCS84ZFWzYkeIiS1No/k/+P5LlVjzQ
-	m7g==
-X-Received: from ljic26-n2.prod.google.com ([2002:a05:651c:235a:20b0:39e:e62c:8bfc])
- (user=mkmkl job=prod-delivery.src-stubby-dispatcher) by 2002:a05:651c:198c:b0:39c:6f75:2eea
- with SMTP id 38308e7fff4ca-39fdf42ae01mr28082051fa.11.1786367197480; Mon, 10
- Aug 2026 06:06:37 -0700 (PDT)
-Date: Mon, 10 Aug 2026 13:06:34 +0000
-In-Reply-To: <20260810130635.1166626-1-mkmkl@google.com>
+        bh=TV2EQ2xg94/gFwpPmqRGt0+RWBXJJXwWFz3sZUe92ds=;
+        b=n/l5OGluZKEMLe+Y1gTqyK1iTLwQBMepRXekoLaI9jBrS22r8LZAkxMSYDCejws8KN
+         2SzRwVvkEZPzNRtdzrrz4H+XQe/7p26oWtygcxMjQJyngqX/x1JkXSJ2Vbe6Po1JQDSU
+         415vP2p+tgF14qvmV+knST5HDYRZYiEx2cpKbqUP040doAZh6P4Gfk5E88CXsCOHtMLP
+         srdO/wGLmv03KSEvYZFW0kbjAPBNsZk1mXFJXqiRO7Tq24NX/Y8BmufbVmsT8SFd6Z08
+         lFgKlVLHn+jlHgJ7ViQX//kGqzUkGVXnMMxwuArN1U0x6dfNT4514sMo+COLGVbzJE1C
+         sziQ==
+X-Forwarded-Encrypted: i=1; AHgh+RoaHxxCQbPvWDtf+M9p0P0+YcD4j0BmyKR8k727GBv3+kAaQE934EK/ExCJKE/XEV3fnmd8SmLZHr+OU7w=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwRpz7yloaCxeF0r4PcQCMr4Nl3Wk45YQnmQPuzYHpaYjvUJKOt
+	nQ4FMI0YWps6kB954Kjga+rtbyv27kY6FfQe8rrjczJP+JzSDcCI+6VeJywXfaWQ+Z++ESOBqni
+	asZ4w5T1PzPGZAsCnXYnUEWCPyKQaimJSCPqTbG9fVnvToL6Eogw2P1IEkztSVuSHARHyYK54SE
+	E0HyHeMnqjgcPIdaruVcQ+bpwEowlGtOcNgvvN13boYA==
+X-Gm-Gg: AR+sD103TvJgDdbt52hn+XqVGpkAQjxxidWvbfQ+M/r+Il60U+h8mHdcLMUOa3NKT9F
+	Ld9pTk7W9AKqsbSBCMO442o9NUm7PmHa+HOPJJsI2moZAbVOctp6Bb/7gdvJubr8iZkjizZr0C9
+	813O5AKArja1f0rhttW9lrmw9j6L7eEr/hawJqB1+aehKShCcq4L40eUJTPg==
+X-Received: by 2002:a05:622a:4c8d:b0:521:8ef0:b4e0 with SMTP id d75a77b69052e-52d4bba4201mr24352711cf.17.1786371571036;
+        Mon, 10 Aug 2026 07:19:31 -0700 (PDT)
+X-Received: by 2002:a05:622a:4c8d:b0:521:8ef0:b4e0 with SMTP id
+ d75a77b69052e-52d4bba4201mr24351481cf.17.1786371570441; Mon, 10 Aug 2026
+ 07:19:30 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-References: <20260810130635.1166626-1-mkmkl@google.com>
-X-Mailer: git-send-email 2.55.0.654.g21b8a5bc05-goog
-Message-ID: <20260810130635.1166626-2-mkmkl@google.com>
-Subject: [PATCH v1 1/2] pinctrl: core: Allow drivers to keep "init" pinctrl
- state after probe
-From: "=?UTF-8?q?Micha=C5=82=20Karda=C5=9B?=" <mkmkl@google.com>
-To: Linus Walleij <linusw@kernel.org>, 
-	"=?UTF-8?q?Ilpo=20J=C3=A4rvinen?=" <ilpo.jarvinen@linux.intel.com>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	Douglas Anderson <dianders@chromium.org>, Vic Huang <vich@google.com>, linux-gpio@vger.kernel.org, 
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	"=?UTF-8?q?Micha=C5=82=20Karda=C5=9B?=" <mkmkl@google.com>
+MIME-Version: 1.0
+References: <20260805-derive_clk_perf_tbl_from_perf_domain_opp_table-v1-0-61171ab1cdce@oss.qualcomm.com>
+ <20260805-derive_clk_perf_tbl_from_perf_domain_opp_table-v1-1-61171ab1cdce@oss.qualcomm.com>
+In-Reply-To: <20260805-derive_clk_perf_tbl_from_perf_domain_opp_table-v1-1-61171ab1cdce@oss.qualcomm.com>
+From: Ulf Hansson <ulf.hansson@oss.qualcomm.com>
+Date: Mon, 10 Aug 2026 16:19:19 +0200
+X-Gm-Features: AUfX_mx3R25JFulSxbPIMFamz2pIVHYPn9K-rVq3DlUVa-mxAozC_itBBx8G2xk
+Message-ID: <CAPx+jO9MZTsDpofZ0fR7FxJbrfuAV+soqN3x7ttK-F7o6MkYmg@mail.gmail.com>
+Subject: Re: [PATCH 1/7] pmdomain: arm: Fix -EINVAL from scmi_pd_set_perf_state()
+ on state 0
+To: Praveen Talari <praveen.talari@oss.qualcomm.com>
+Cc: konrad.dybcio@oss.qualcomm.com, Sudeep Holla <sudeep.holla@kernel.org>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Ulf Hansson <ulfh@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, Mark Brown <broonie@kernel.org>,
+        Viken Dadhaniya <viken.dadhaniya@oss.qualcomm.com>,
+        Andi Shyti <andi.shyti@kernel.org>, mukesh.savaliya@oss.qualcomm.com,
+        chandana.chiluveru@oss.qualcomm.com, arm-scmi@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-i2c@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+X-Proofpoint-ORIG-GUID: JlN9dhyN2xeJyPS_w_MRZeNLyCtdthz3
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODEwMDEyMyBTYWx0ZWRfXw6tXl8rTuyYJ
+ YVmcJAQHi4zdMOwWrKzYaXh5Z/xxMXdjSrBzYeL8Eu5Bh/Y0T/JqCDDnHe2svl2IR/+kMTqrkYK
+ zLWc9xLctXuzCb7Q9uy6W2tbuNVPiaE=
+X-Authority-Analysis: v=2.4 cv=W5EIkxWk c=1 sm=1 tr=0 ts=6a79ddf3 cx=c_pps
+ a=UgVkIMxJMSkC9lv97toC5g==:117 a=IkcTkHD0fZMA:10 a=Sv0fKeRqtYgA:10
+ a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22
+ a=yx91gb_oNiZeI1HMLzn7:22 a=EUspDBNiAAAA:8 a=IN2mYG8luz48gvOoqwMA:9
+ a=QEXdDO2ut3YA:10 a=1HOtulTD9v-eNWfpl4qZ:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODEwMDEyMyBTYWx0ZWRfX7ahM7VNHVMAK
+ /ZSfOYC05c1i97JAwv+TMT+5qEsXOaBJG++JMbSnpmWfqptzE9YY1M8IQSfICDXV5KnpymiHNiI
+ Bl4BKksUD8X+crkuN2ywJ99MR2N1m+u1rFCD3nWH/i2k5DEB/J7eFw8FC2b7dNqfWB7c9daSJHr
+ zNyCaRtqysokDUL3V1hTlFBNuFN+ZrkIccMUCFIL4jT/CB+MPlwVMQk0107qhosJFnt1hmtCli0
+ xiVXJx/kKxXfDDM4UR5v5qJstyugorIcWrcICSgGSn3Z3S8RVNwng6cxsMoM07xsPnyZYhN/ytL
+ gVtlQy27yWsMgBEFzJ4cqVJlerRLoPGfqPwsDSRT21u4pTwH85UZKBzfP96ptrOVmrLNquW6Iir
+ B6QWrkReyoawIaC+BDNHZ0GEA2c7bFKXTFkEwP0vMJGWQCt+oNVyChovkHsBpb87OEv0OVj0OaG
+ GmPTAkk4g/T48JUbZ0A==
+X-Proofpoint-GUID: JlN9dhyN2xeJyPS_w_MRZeNLyCtdthz3
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-08-10_03,2026-08-07_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ suspectscore=0 lowpriorityscore=0 priorityscore=1501 phishscore=0
+ clxscore=1011 adultscore=0 bulkscore=0 spamscore=0 impostorscore=0
+ malwarescore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
+ definitions=main-2608100123
 
-During device probe, pinctrl_bind_pins() binds pins to their "init" state
-if specified in Device Tree. When probe finishes, pinctrl_init_done()
-automatically transitions the pins from "init" to "default" state.
+On Tue, Aug 4, 2026 at 9:58=E2=80=AFPM Praveen Talari
+<praveen.talari@oss.qualcomm.com> wrote:
+>
+> Currently, scmi_pd_set_perf_state() treats a performance state of 0 as
+> invalid and returns -EINVAL. As a result, devices attached to SCMI
+> performance domains can report failures when relinquishing their
+> performance vote.
 
-While this auto-transition works well for devices that are immediately
-active upon driver binding, certain peripherals (such as power-sequenced
-devices connected over UART, SPI, or other buses) remain unpowered until
-userspace explicitly opens the device node or attaches a protocol driver.
+Yes, this is indeed a problem. I recall that I hesitated when deciding
+what was best here, returning an error code or 0.
 
-On board designs where the connected peripheral is kept unpowered during
-boot, auto-selecting "default" or "sleep" pin states (where signals such
-as TXD or RTS may be driven high or pulled up) can cause parasitic
-back-powering into the unpowered peripheral through its ESD protection
-diodes.
+The reasoning I had for returning -EINVAL, was that I didn't want
+genpd to believe that it actually succeeded in setting the performance
+state to 0, when in fact it didn't.
 
-Allow drivers to explicitly opt out of the automatic "init" -> "default"
-transition by calling pinctrl_keep_init_state(dev) during probe. When this
-helper is called, pinctrl_init_done() leaves the pins in their "init"
-state upon probe completion. The driver can then transition to the
-"default" state when the device is first opened by calling
-pinctrl_pm_select_default_state(dev).
+However, except for the problem below with the OPP library, it
+actually also screws up the internal performance state aggregation in
+genpd, potentially leading us to running at higher state than
+necessary.
 
-Suggested-by: Douglas Anderson <dianders@chromium.org>
-Signed-off-by: Micha=C5=82 Karda=C5=9B <mkmkl@google.com>
----
- Documentation/driver-api/pin-control.rst | 10 ++++++----
- drivers/pinctrl/core.c                   | 20 ++++++++++++++++++++
- include/linux/pinctrl/consumer.h         |  6 ++++++
- include/linux/pinctrl/devinfo.h          |  2 ++
- 4 files changed, 34 insertions(+), 4 deletions(-)
+>
+> The OPP framework use performance state 0 to indicate that no performance
+> vote is required. For example, dev_pm_opp_set_rate(dev, 0) is commonly
+> used (by firmware or linux)  when a device is runtime suspended.
+>
+> A zero performance state does not require any SCMI performance request
+> to be sent. Treat it as a no-op and return success instead of reporting
+> an error.
+>
+> Signed-off-by: Praveen Talari <praveen.talari@oss.qualcomm.com>
 
-diff --git a/Documentation/driver-api/pin-control.rst b/Documentation/drive=
-r-api/pin-control.rst
-index 1f585ecca63c..8d52bf74da6c 100644
---- a/Documentation/driver-api/pin-control.rst
-+++ b/Documentation/driver-api/pin-control.rst
-@@ -1172,7 +1172,8 @@ Possible standard state names are: "default", "init",=
- "sleep" and "idle".
-=20
- - if ``init`` and ``default`` are defined in the device tree, the "init"
-   state is selected before the driver probe and the "default" state is
--  selected after the driver probe.
-+  selected after the driver probe, unless the driver explicitly opts out
-+  by calling ``pinctrl_keep_init_state()`` during probe.
-=20
- - the ``sleep`` and ``idle`` states are for power management and can only
-   be selected with the PM API bellow.
-@@ -1233,9 +1234,10 @@ operation and going to sleep, moving from the ``PINC=
-TRL_STATE_DEFAULT`` to
- current in sleep mode.
-=20
- Another case is when the pinctrl needs to switch to a certain mode during
--probe and then revert to the default state at the end of probe. For exampl=
-e
--a PINMUX may need to be configured as a GPIO during probe. In this case, u=
-se
--``PINCTRL_STATE_INIT`` to switch state before probe, then move to
-+probe and then revert to the default state at the end of probe (or remain
-+in the init state until activated if ``pinctrl_keep_init_state()`` is call=
-ed).
-+For example a PINMUX may need to be configured as a GPIO during probe. In =
-this
-+case, use ``PINCTRL_STATE_INIT`` to switch state before probe, then move t=
-o
- ``PINCTRL_STATE_DEFAULT`` at the end of probe for normal operation.
-=20
- A driver may request a certain control state to be activated, usually just=
- the
-diff --git a/drivers/pinctrl/core.c b/drivers/pinctrl/core.c
-index 1675dd36bd5c..fd0c91610338 100644
---- a/drivers/pinctrl/core.c
-+++ b/drivers/pinctrl/core.c
-@@ -1640,6 +1640,9 @@ int pinctrl_init_done(struct device *dev)
- 	if (pins->p->state !=3D pins->init_state)
- 		return 0; /* Not at init anyway */
-=20
-+	if (pins->keep_init)
-+		return 0; /* Driver explicitly requested to stay in init state */
-+
- 	if (IS_ERR(pins->default_state))
- 		return 0; /* No default state */
-=20
-@@ -1678,6 +1681,23 @@ int pinctrl_select_default_state(struct device *dev)
- }
- EXPORT_SYMBOL_GPL(pinctrl_select_default_state);
-=20
-+/**
-+ * pinctrl_keep_init_state() - mark pinctrl handle to stay in init state a=
-fter probe
-+ * @dev: device to keep init state for
-+ *
-+ * Return: true if the device has a valid init state and keep_init flag wa=
-s set,
-+ *         false otherwise.
-+ */
-+bool pinctrl_keep_init_state(struct device *dev)
-+{
-+	if (!dev->pins || IS_ERR(dev->pins->init_state))
-+		return false;
-+
-+	dev->pins->keep_init =3D true;
-+	return true;
-+}
-+EXPORT_SYMBOL_GPL(pinctrl_keep_init_state);
-+
- #ifdef CONFIG_PM
-=20
- /**
-diff --git a/include/linux/pinctrl/consumer.h b/include/linux/pinctrl/consu=
-mer.h
-index 11b8f0b8da0c..4312a098fb4c 100644
---- a/include/linux/pinctrl/consumer.h
-+++ b/include/linux/pinctrl/consumer.h
-@@ -47,6 +47,7 @@ int pinctrl_select_state(struct pinctrl *p, struct pinctr=
-l_state *s);
- struct pinctrl * __must_check devm_pinctrl_get(struct device *dev);
- void devm_pinctrl_put(struct pinctrl *p);
- int pinctrl_select_default_state(struct device *dev);
-+bool pinctrl_keep_init_state(struct device *dev);
-=20
- #ifdef CONFIG_PM
- int pinctrl_pm_select_default_state(struct device *dev);
-@@ -152,6 +153,11 @@ static inline int pinctrl_select_default_state(struct =
-device *dev)
- 	return 0;
- }
-=20
-+static inline bool pinctrl_keep_init_state(struct device *dev)
-+{
-+	return false;
-+}
-+
- static inline int pinctrl_pm_select_default_state(struct device *dev)
- {
- 	return 0;
-diff --git a/include/linux/pinctrl/devinfo.h b/include/linux/pinctrl/devinf=
-o.h
-index de4228eea90a..13dac33f2df1 100644
---- a/include/linux/pinctrl/devinfo.h
-+++ b/include/linux/pinctrl/devinfo.h
-@@ -32,6 +32,7 @@ struct pinctrl;
-  * @init_state: the state at probe time, if found
-  * @sleep_state: the state at suspend time, if found
-  * @idle_state: the state at idle (runtime suspend) time, if found
-+ * @keep_init: flag indicating if init state should persist after probe
-  */
- struct dev_pin_info {
- 	struct pinctrl *p;
-@@ -41,6 +42,7 @@ struct dev_pin_info {
- 	struct pinctrl_state *sleep_state;
- 	struct pinctrl_state *idle_state;
- #endif
-+	bool keep_init:1;
- };
-=20
- extern int pinctrl_init_done(struct device *dev);
---=20
-2.55.0.654.g21b8a5bc05-goog
+I added a fixes+stable tag and applied this for fixes, thanks!
 
+Kind regards
+Uffe
+
+
+
+> ---
+>  drivers/pmdomain/arm/scmi_perf_domain.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/pmdomain/arm/scmi_perf_domain.c b/drivers/pmdomain/a=
+rm/scmi_perf_domain.c
+> index 3693423459c9..e390f902a444 100644
+> --- a/drivers/pmdomain/arm/scmi_perf_domain.c
+> +++ b/drivers/pmdomain/arm/scmi_perf_domain.c
+> @@ -33,7 +33,7 @@ scmi_pd_set_perf_state(struct generic_pm_domain *genpd,=
+ unsigned int state)
+>                 return 0;
+>
+>         if (!state)
+> -               return -EINVAL;
+> +               return 0;
+>
+>         ret =3D pd->perf_ops->level_set(pd->ph, pd->domain_id, state, fal=
+se);
+>         if (ret)
+>
+> --
+> 2.34.1
+>
