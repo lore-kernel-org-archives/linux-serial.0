@@ -1,178 +1,129 @@
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com [209.85.208.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D13D37F00A
-	for <linux-serial@vger.kernel.org>; Mon, 10 Aug 2026 10:36:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.42
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786358215; cv=pass; b=T8wBpCS73vjiWMkjtVEAYlYvZOD3eSIRlYajAuPaqeDa8PHa1FIXX28GK6+157sv0tkoV6UC2XxE2FkegkOz47gVH4TpvxQslsEXBAxGuQErq9Enk2jo4KgAZpN6s57v8qvNqR7ee2sT1PingmPHomBEPC6WQ1gotYA0pSd6dIY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786358215; c=relaxed/simple;
-	bh=EoJjq+T7VyGPNATN8SO5bqxvJfuZRwCFmI4lyyJXJ0o=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=BF4L9YSL/STIFM6dve6STR/X+7tuXrQwg7BBo/mO+D95UGLYzBk19A7JnNYeZQYLFGeVn5xF51TFyF5r90Vp40tex+sJjseEVjU86kvmjkOT2I5ejtBNRi006TY5WY02Ly4aRaqFkFhUPfyghnKfsCOpT9KtYj7jYrgxgVBjcaY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=9elements.com; spf=pass smtp.mailfrom=9elements.com; dkim=pass (2048-bit key) header.d=9elements.com header.i=@9elements.com header.b=WBYhzMr4; arc=pass smtp.client-ip=209.85.221.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=9elements.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=9elements.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 940863E009B
+	for <linux-serial@vger.kernel.org>; Mon, 10 Aug 2026 13:06:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.198
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786367201; cv=none; b=KebHEwJZGopfwfOv5itRs4By1XoTJihO1KRD6EWYH00ES9riuxRRB1LpdMvM42IrLZI1bIczzUN5TqZ8pwxe6pe10FEO182k8DEetHKrCR76OabiG6fGTCzqhzGE8zWR1SMI/4gENVRkKT+pO5lo5BrPvGPJkh/0txe+XDb3+c8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786367201; c=relaxed/simple;
+	bh=tQTTUSW7eUWfh15MDV5ZX7e6q64R5S4/Oqee01xSP2s=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=FnpAn8FpRB3FHUi/sKlPI2pfZUGyMNNiImyoBZQm9AlVxI7XynpATm1RKrdFsLvVxEYoffz0sXY9Wxo4gnIbLZwdVSazEcWJJRQWhuhzmmgP3k+PlYeoI5I1CBu6wLfiOVxDYTjcJYXUK+kXTwEUn0jNBOI6fmJ3R9/PsLbtcwM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--mkmkl.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=NmXPU0La; arc=none smtp.client-ip=209.85.208.198
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--mkmkl.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=9elements.com header.i=@9elements.com header.b="WBYhzMr4"
-Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-480033bdcf4so921536f8f.2
-        for <linux-serial@vger.kernel.org>; Mon, 10 Aug 2026 03:36:53 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1786358212; cv=none;
-        d=google.com; s=arc-20260327;
-        b=NQrWwnoS1+p5HSjfvKrDG8kHVuHRKQ7onYLltWOHfcTGrd3VHTj1b4/XzY4OuQomif
-         cjMoQ46ZAxdiB0c5nLPur2MzDaXDC3B21udkGYLDYnay6YWCOyiOoeGB2PzFy9imJ+VV
-         vKiZusDjgtEevC2v4c5H/0kvwc9SkZWU7zoq3DCPja4C9WI9R0tdCNgvV78zP3yl3LyI
-         dF7qd8alnVXlNy6FSWADbZkUL/9QI0Q9bUlvPXcd/hP3iHYS594sjVY41+xWn30klcIr
-         Kluqa7AWGifXeGMxOW/B5nd4BM8v1yqpv1CG1o59rWnd96z0QC4Pr83eMiYA2mhCCuaN
-         RgiA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=JZiFErJumO4f6l/jB3Vv8dc/wBPU8PfaQ8eqWXYPx/g=;
-        fh=N4UyGkHWfZMPx+ZjY5S5msJd13aeVu3AIYQFNyVcHPg=;
-        b=a9Vw/sVbl/fdeVWorM5eRWXsWlutpIoi01zIu/habCKH52qmRRlKdpekKbrIo0dIAf
-         +J8RFzUbSIn7fzjsL+NHXEVrqhr/qiuyk2u12Fft8NwsQAxtQVLrNTnQYKwhCONpahxr
-         FLxQII52wnUxoIVt4dZ0pUdZ9I31DFr/2zSXiZeAOveJPdKoxhVOpoG17iQLX5hkVeFJ
-         vvSzI1hBj0rPJ/mzpz+9AUJWKzljmRMvVsyYRDzIOBvsaOL8JsTqPTlfrRM3QigboAC7
-         YCbDl3h4C7m0AOJhQki5BVOEgeCbkQlSU8gRUOwwzarkqbmat/KB5b43ei2qAMScYf32
-         siSg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="NmXPU0La"
+Received: by mail-lj1-f198.google.com with SMTP id 38308e7fff4ca-39f6a02edacso5160691fa.2
+        for <linux-serial@vger.kernel.org>; Mon, 10 Aug 2026 06:06:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=9elements.com; s=google; t=1786358212; x=1786963012; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=JZiFErJumO4f6l/jB3Vv8dc/wBPU8PfaQ8eqWXYPx/g=;
-        b=WBYhzMr4Cf+6KEWTSh3811AVodQnmLtOhN/fXj7ACc5pC4j3KNdC9Q9nfSyO89paK+
-         EVsFDZpuwLSzi/JjV4jcVkadqxYf3WrIFbAjE64nqj6Y9nWMt4OQGtPTXnXRn02e4BLg
-         3JuXEXqorbjU6OrFdhbzOdSqfA2ncm4cSap0ij3kBHiE0ypSzPm4YX4LSS3OYj5AXTWe
-         eE4bH54u7VqtNddKi8nmHBWHTvw6GRppBYdMI6sk97sb/Toqd4swPPvhMGvlNDbuWf2X
-         x/dhcYQiPcm9g9pRlGFqnU2bqhx+b1a9qlj32VOZ/HDYfCXWwPkja55oQIMEqe3uDsgA
-         0Jkg==
+        d=google.com; s=20251104; t=1786367197; x=1786971997; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:from:subject
+         :message-id:mime-version:date:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=95XcyuahfruBLeOEab+HwcmrCQNnVz9pT3RpyBKiDUY=;
+        b=NmXPU0Lad6lCZaJrpbVNx4xxpalTRW9the7mhqbHsFDRHuHK6nBEQv6dMwA6n6eL1L
+         ZeHJ3eQn38VcC2byGebImq0oUGI2gaRhkR8fasIKCrKQMiVkI2C9gVz4pXI/yJL+Rn3D
+         CL8JnnlsmwBOtpwMKdpU0qT4RimephFMhr6vGVfQqCdusiHeC8pd3Z3oekbICbLLo8Xm
+         yXOU2JytQo8wHPr83dauMMSPbZgynw+i3r9oNaQZs3fGYdBUxOK03ld/wFYpBMJNOHy9
+         A1XRevjWUN3x30ZQm75CDBc1eycZReSM3iZD9CgXouzXjXLv/sikCorAngdJluUP0BUI
+         AIsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786358212; x=1786963012;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=JZiFErJumO4f6l/jB3Vv8dc/wBPU8PfaQ8eqWXYPx/g=;
-        b=CNNwp7qPbwkwm4vufM4BNelZar0ceZIFSaaqzYvL2cw9b/RMBJvDhEmM8tiAqLNEO4
-         iCrqIs9dNRY3C7lc9PRIVQc2jcbcaWqjCwUt6+PvZFc44tqBPTZ1TnSUuqZ3n+DxmvPs
-         vW5fgwYWrC3sox88/p85C2mXEWZScwJM3afSv92iYC6tX5AROtxwrVETOsYZvHjVIlTe
-         lJ69lpiXmMhIZJQfjE9CEP6Bp/rRcSzw5cIgxk/kQprXDh/bcsG8WdBFOBYhRzjvo+LA
-         +i1r4pJM/o7iDg9HSCZeXl5IDgeXuoOYRLRjprjpNRUFPnglP5PmSVW+sD1zKL8xbuPx
-         OnmA==
-X-Forwarded-Encrypted: i=1; AHgh+RpBitY//aRv5//OQ8htS1g7IYeds1Qwdb20l1LCc7jfiepkJ/piGw2GZ5Q0xg7yhIlwAljQPfw6end0F20=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxQseuzFk6f36P8x8G/vtvYY3aEuCSOZS8UNRERTu1qOu9sSqYX
-	crlDxFdjnawv7tfpEyzKesW2jrTypNSfG8r6RtW+BsYdNh3utdxiGIUpiIvKTO+0+62NLC3XyTl
-	ws6e2grFJ1BFlSwgGRLZO6Tfh9p+8N4tTcLltGWR/IA==
-X-Gm-Gg: AR+sD10hI3T0b4ip9aYAsy1D+ulTo2R6d9oUNsQiKhtAoinmjk/o/e8SVaYsO/oGRKX
-	VXRmzsip7KTjO5wcxJ8cpaAgzERVsI4asOcsDmlpXCl8qQBcX2HOde/IRRQVOr0FamY/NjURZQX
-	zfbvVFHnD1w7Y5NE+CO/NyERcXDXVP5zYWwv5NUDA1rwBrJpxonORUT3/NMeofQEAjjtiQRlb6W
-	jua/dE9f+1M/MdQsMVbZFNKXgT8ArbkdT/iyDhgwz1oKJQNYF/EVkXmnS/CUKCy6wor58GkU7x7
-	QeTuqSjvrxyzjyZVwOQYbwRzlkV+zc6FStIuLndwZPM3bHcHOaBu7EG9/hcc5JeVp9NYXpXY922
-	C7U1MwdoD4lYz0C6bPg0k8ZP3sX8tkA==
-X-Received: by 2002:adf:e012:0:20b0:47f:959f:f69c with SMTP id
- ffacd0b85a97d-481455ce280mr1198921f8f.7.1786358211845; Mon, 10 Aug 2026
- 03:36:51 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1786367197; x=1786971997;
+        h=content-transfer-encoding:content-type:cc:to:from:subject
+         :message-id:mime-version:date:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=95XcyuahfruBLeOEab+HwcmrCQNnVz9pT3RpyBKiDUY=;
+        b=NkTRgaSsTmsHXiPx+BSWjzJsS4GB+WCJ+3cnXTiSFpbgDo8zrGxDMLzLTVmBBVxD9h
+         7e7bEGDyXNws4OkMJ5NFRbSzj7ju9j4lNyoXNxLSoJXKOt6QoXaaTqZp4HzjaDKViUnR
+         d7+RKVTrX96OYwAB9EhZaH8OP69Lznuw/vSpI8YNVYBY4uLVM6MvjqAc1+UGnfHlvxLd
+         IwBmJ3HFsY3oSlH9AIoiGZp6nJauUtEqmEXD7EpJFICCOLUXDexKP3KQQvOrImoCIHjh
+         7PMjQj70bZ3UbdQYaizQ8j21Zyhel7hmxr816PLDfcwPT0jLLTCk0BAYnJYAGXyne9S6
+         22gg==
+X-Forwarded-Encrypted: i=1; AHgh+RqTBw6vgGa7kSXKS7ptzIZLF2pg4OTZ4VmG7Ruju385cgkNkWqmwUcBVzljNcYbQIdq+SOSITLMjJVKmW4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyiXZpq8+jQplXL4ZVJLJ/k2nSdUlvCbuN3KnX4j0+0TZmg2w+p
+	zUtzaBXcbrl3W1JFOpBmshEYCj+KsckABrqpCVrgHlzbOn87ETFDsJqy/7QNey1qdkqCaGCIU0K
+	zqw==
+X-Received: from ljjo19.prod.google.com ([2002:a2e:9b53:0:b0:39b:50cf:4a26])
+ (user=mkmkl job=prod-delivery.src-stubby-dispatcher) by 2002:a05:651c:54e:b0:39a:fa7c:b152
+ with SMTP id 38308e7fff4ca-39fe5648f40mr20830661fa.4.1786367196243; Mon, 10
+ Aug 2026 06:06:36 -0700 (PDT)
+Date: Mon, 10 Aug 2026 13:06:33 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <cover.1785932211.git.gregoire.layet@9elements.com>
- <51db5e5bb5bf44dd5ab893b8d547291f04e1d3c7.1785932211.git.gregoire.layet@9elements.com>
- <178609182923.193353.7287772568467157519.b4-review@b4>
-In-Reply-To: <178609182923.193353.7287772568467157519.b4-review@b4>
-From: =?UTF-8?Q?Gr=C3=A9goire_Layet?= <gregoire.layet@9elements.com>
-Date: Mon, 10 Aug 2026 12:36:39 +0200
-X-Gm-Features: AUfX_mzXwFrJ-NjND3MQzEP6QwRNrCstHPVctQ1cLuVCmYnxx742CiD2MW3y8Ss
-Message-ID: <CAFi2wKZdJ3LxJVDqC2K79T0JhoOOWSj=ZmL9pB+Lka_aXDXatQ@mail.gmail.com>
-Subject: Re: [PATCH v5 4/6] soc: mfd: add ASPEED AST2600 PCIe BMC device driver
-To: Tan Siewert <tan.siewert@9elements.com>
-Cc: joel@jms.id.au, andrew@codeconstruct.com.au, lkundrak@v3.sk, 
-	devicetree@vger.kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, lee@kernel.org, 
-	=?UTF-8?Q?Gr=C3=A9goire_Layet?= <git@gregoirelayet.com>, andrew@lunn.ch, 
-	jacky_chou@aspeedtech.com, yh_chung@aspeedtech.com, ninad@linux.ibm.com, 
-	anirudhsriniv@gmail.com, linux-serial@vger.kernel.org, mfd@lists.linux.dev, 
-	linux-aspeed@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.55.0.654.g21b8a5bc05-goog
+Message-ID: <20260810130635.1166626-1-mkmkl@google.com>
+Subject: [PATCH v1 0/2] pinctrl / 8250_dw: Allow drivers to keep init pinctrl
+ state until first open
+From: "=?UTF-8?q?Micha=C5=82=20Karda=C5=9B?=" <mkmkl@google.com>
+To: Linus Walleij <linusw@kernel.org>, 
+	"=?UTF-8?q?Ilpo=20J=C3=A4rvinen?=" <ilpo.jarvinen@linux.intel.com>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+	Douglas Anderson <dianders@chromium.org>, Vic Huang <vich@google.com>, linux-gpio@vger.kernel.org, 
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	"=?UTF-8?q?Micha=C5=82=20Karda=C5=9B?=" <mkmkl@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-> > +
-> > +static int aspeed_pci_bmc_device_setup_vuart(struct pci_dev *pdev,
-> > +                                          struct aspeed_pci_bmc_dev *p=
-ci_bmc_dev)
-> > +{
-> > +     resource_size_t bar =3D pci_resource_start(pdev, 1);
-> > +     struct plat_serial8250_port *port;
-> > +     u16 vuart_ioport;
-> > +     unsigned int i;
-> > +
-> > +     for (i =3D 0; i < ASPEED_BMC_VUART; i++) {
-> > +             port =3D &pci_bmc_dev->uart[i];
-> > +
-> > +             /* ASPEED BMC device shift addresses by 2 to the left */
-> > +             vuart_ioport =3D vuart_port_addr[i] << 2;
-> > +
-> > +             port->mapbase =3D bar + vuart_ioport;
-> > +             port->uartclk =3D 115200 * 16;
-> > +             port->irq =3D pci_irq_vector(pdev, vuart_msi_index[i]);
-> > +             port->iotype =3D UPIO_MEM32;
-> > +             port->type =3D PORT_16550A;
-> > +             port->flags |=3D (UPF_IOREMAP | UPF_FIXED_PORT | UPF_FIXE=
-D_TYPE);
-> > +             port->regshift =3D 2;
-> > +     }
-> > +
-> > +     pci_bmc_dev->cell =3D (struct mfd_cell) {
-> > +             .name           =3D "serial8250",
-> > +             .platform_data  =3D pci_bmc_dev->uart,
-> > +             .pdata_size     =3D sizeof(pci_bmc_dev->uart),
-> > +     };
->
-> In the commit message you're describing that the MFD driver will be used =
-for
-> setting up MSI interrupts:
-> > It doesn't bind the whole PCIe resource to allow each sub-driver to bin=
-d the
-> > needed addresses.
->
-> But you're adding the UART devices here which now means that the core dri=
-ver is
-> doing more than MSI interrupt init.
+During device probe, pinctrl_bind_pins() binds pins to their "init" state
+if specified in Device Tree. When probe finishes, pinctrl_init_done()
+automatically transitions the pins from "init" to "default" state.
 
-I might have misunderstood but this is creating the UART device by
-using the 'serial8250' driver.
+While this auto-transition works well for devices that are immediately
+active upon driver binding, certain peripherals (such as power-sequenced
+devices connected over UART, SPI, or other buses) remain unpowered until
+userspace explicitly opens the device node or attaches a protocol driver.
 
-> the core driver is doing more than MSI interrupt init.
+On board designs where the connected peripheral is kept unpowered during
+boot, auto-selecting "default" pin states (where signals such as TXD or
+RTS may be driven high or pulled up) can cause parasitic back-powering
+into the unpowered peripheral through its ESD protection diodes.
 
-Yes, as the core driver should add the devices with the right drivers.
-I will add this in the commit message.
+To address this without requiring new Device Tree binding names, this
+series extends the existing "init" pinctrl state mechanism (introduced
+in commit ef0eebc05130 ("drivers/pinctrl: Add the concept of an "init"
+state")):
 
-> Suggestion from my side would be to have an array of `mfd_cell` where you=
- define
-> which devices are part of the MFD,
+1. Patch 1 (pinctrl core):
+   Adds pinctrl_keep_init_state(dev). When called during probe,
+   pinctrl_init_done() opts out of the automatic "init" -> "default"
+   transition, allowing the driver to keep pins in the safe "init" state
+   upon probe completion. Updates Documentation/driver-api/pin-control.rst.
+   Board configurations that do not define an "init" state are completely
+   unaffected.
 
-There is already such an array, it is a one element array as only the
-VUART is done.
-'struct mfd_cell cell; ' will become an real array when KCS will be
-added afterwards.
+2. Patch 2 (8250_dw serial driver):
+   Updates 8250_dw so that when an "init" state is defined for the port,
+   the driver calls pinctrl_keep_init_state() and preserves the "init"
+   state until the port is first opened via dw8250_do_pm(), at which point
+   it transitions to "default" state and resumes normal operation.
 
-This is not an 2 cell array for the 2 VUART as the 'serial8250'
-manages the two VUART on its own.
-From what I have researched, this was the way to add UART devices from
-an MFD driver.
+Testing:
+- Built and verified with CONFIG_PINCTRL=3Dy and CONFIG_PINCTRL=3Dn on
+  upstream tree.
+- Verified zero checkpatch warnings (`checkpatch.pl --strict`).
+- Note: Functional hardware testing was performed on a downstream kernel
+  tree where the physical back-powering issue was reproduced and verified
+  fixed. The underlying UART pinctrl lifecycle issue and core logic apply
+  identically to upstream.
 
-> and your VUART lives in another driver.
-> See `ls2k-bmc-core` for example.
+Micha=C5=82 Karda=C5=9B (2):
+  pinctrl: core: Allow drivers to keep "init" pinctrl state after probe
+  tty: serial: 8250_dw: Keep init pinctrl state until first open
 
-The UART already lives in another driver: the 'serial8250' driver.
+ Documentation/driver-api/pin-control.rst | 10 ++++++----
+ drivers/pinctrl/core.c                   | 20 ++++++++++++++++++++
+ drivers/tty/serial/8250/8250_dw.c        | 13 ++++++++++++-
+ include/linux/pinctrl/consumer.h         |  6 ++++++
+ include/linux/pinctrl/devinfo.h          |  2 ++
+ 5 files changed, 46 insertions(+), 5 deletions(-)
 
-Regards,
-Gr=C3=A9goire
+--=20
+2.55.0.654.g21b8a5bc05-goog
+
