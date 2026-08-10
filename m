@@ -1,143 +1,155 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 029F02DA74C
-	for <linux-serial@vger.kernel.org>; Mon, 10 Aug 2026 15:08:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B4C33D6498
+	for <linux-serial@vger.kernel.org>; Mon, 10 Aug 2026 15:26:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786374501; cv=none; b=bpo96qxHC8Q631Cz0EWIN+Q/IJz3KdoZpMsabEzfeDu/r6UsjEet33jPWTDGwZKzwlUmJSxdTef7MLsb/9ocR/nYQOeDlNApd+ym90Up0Ir8pe5BZ5k9qZxqhqgI7EFIoqhOdvMg5MyO2zxeXtSSFqD6xwr2f81A4TUOQ7TTzkg=
+	t=1786375606; cv=none; b=ioAWTf0sQzGjUUffaxRmMnHl/xIjvByUzLRtGIF0skucOC4TfQrQsP2fk2X5kCvrmeJ3ZROntL5LISPI8SbwMTUl211cGlRH4lcl0e2V7SE8Hgw00esvcp/2K94+TK7kM4LArecczfXdn/wnGy2OprxY1yfT8rhCdOUkgUS+Mas=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786374501; c=relaxed/simple;
-	bh=jtiRNjP6pzKEg6mH9UVKn5p6c2otQpub8B1O2WWHOr8=;
-	h=Message-ID:Date:From:To:Cc:Subject:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TkIsup/cdXD9jP9IxfGnu8HeISBPe7RjQtrPKcAkN77JONlDY4JdT3UouyRkw79/nvAv5quseEYxcHsjS+oGGdTO6dZIXM9GyqsojeaRryN63ctaoMhSS19VIFitQwYmqdO2EPqatMxIbo11B6FRGJhaBEja1kdbQVKX88OLY5g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Jz2srSOR; arc=none smtp.client-ip=209.85.128.51
+	s=arc-20240116; t=1786375606; c=relaxed/simple;
+	bh=tCe5sL9UJxPqIv1FmE8Uu6kylYA2Gof1PUEPD3/FReA=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version; b=tnzagLOkZg80M4IHEx8NAygqnSjuwYCRXmgALLSAvgBEZ6qRQL5LH09dlv1uqulXm2YsEqK7rcvF6eAsJSW8s5twdqVP2ckRYJRgqTmAl2/4vvVvtViDigdvQuXAoAmWTjgXc1UcdEnf/GXyc7FV3FVaEH28IEgUpIk32iPhh+g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XsO1ZqQ0; arc=none smtp.client-ip=209.85.221.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Jz2srSOR"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-495590dde14so25105195e9.0
-        for <linux-serial@vger.kernel.org>; Mon, 10 Aug 2026 08:08:19 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XsO1ZqQ0"
+Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-47fecbb7000so997840f8f.2
+        for <linux-serial@vger.kernel.org>; Mon, 10 Aug 2026 08:26:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786374498; x=1786979298; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:subject:cc:to:from:date:message-id:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=ebQk+CorC9WkHJnaMmCzEoXkD9mmuaev36oaO9xUg6w=;
-        b=Jz2srSORKX97Owf6rx2BQvmc/D7kDk0ckZQpzH2OKi6izgx2K9SqOBvK0U8J2RKU2z
-         NvHRc6p0Xc6Vvdj7isPzIyEuDUdL+zrWugvHgG2C0+ShzrgnWW0/St21S/u2lE36+Q+8
-         AggQB6ov5icCNhJqChSb0HaDwxHLT6meoQvw5suxVsJQJIzOM8IRgDo/myW3VPBHTvQY
-         ILT9eM/62bLRSwLQsrDNOVNb6zuYizytnc5eDjuNMp0pn5F67UQNeDTbY1afkHHz2OEQ
-         x2x7+tZOTy9NMFZOIM58qPSqaqROFYBEU210YjxVoRNfUBbhg1uJYRr4JjynGkAWCcRS
-         6mRA==
+        d=gmail.com; s=20251104; t=1786375603; x=1786980403; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=Y8SFe5FskJGVS8OAXxFiwxeNb2xSdeCITuphL9WXOk0=;
+        b=XsO1ZqQ01hJCbr+9DuzkItlyE7F4zw7DLWm9IjV05LZAulW9JUvHbU7hNWkOip/OUE
+         1MW2l1nlBLqFuClDJqWosdM+Zr8uTpdQR9905V83kFL9x7tPSdUmgifiLkNe0ZzhfEAs
+         fhEojdbA+n7dt4b7WeRnbNxSrqqn6nM7SkekzHp749Rv0BFnfFv2WwRmuom3gg2NF3r0
+         uQ7DbznbdDUkDwX5WndmA/4wwRY+Klx74pzyXDnNNCUn9yxT+V7YCBaWBKesx3YR1+Yd
+         tROxCJbDyomibP3enc8ZyMmtP9uzajHUvSLzojfifdRmU2vMA0+2mX4qqcotAFwXdMJZ
+         aJ0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786374498; x=1786979298;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:subject:cc:to:from:date:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=ebQk+CorC9WkHJnaMmCzEoXkD9mmuaev36oaO9xUg6w=;
-        b=IOXSSuKgyBHCZVCv7VCJEJbY4ZFv0qUpKpAd0LstpukhDlV2VlUIbB85FJjrt0BajT
-         dyxqO/PieNgh9pGzttKCopiAaPyRHNU06eK4vYnhLe264HrAOoD6U4NkElqTTglwAn79
-         hz+JsFl4SwA07ffNMOK8cr9geo5gk6BMGfVu/jEs3/LDsralSxTgvZ1798fcjbk79f6p
-         dQuqVYmXFnjde4Jddd6MgbLPfyCbaLdOVHXja8S1eEt3YySCGGKErOEUc6gcvsmdUuqD
-         Gxevdpq0BbOsmB4eSkUHjS97jlEGWEdK/VQIdDFksTXadLTLbFgWXIMwY64rpIZx+TDO
-         e9fw==
-X-Forwarded-Encrypted: i=1; AHgh+Ro+yuRC6e9edPe15pIbjLtMToUrUEGPPhsYU2yc93w5+/IbWKkibH8tdOTKeG0S2WaktRRFA5vg1TnAz9Y=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz2xKxhlxohMmz3cd84QnXfx+8qLIkXk1wQPPF4hWm0hgFfLvhJ
-	UYGbfpmfwmTzuOvjietvLf50Xz4+pCvAaGuxFzpOg+E7nJkNzKWWl6/g
-X-Gm-Gg: AR+sD13KSqwiELcgauJ8yeOoj761jnyR7ZJhMe/ASamd1YgPCQCIVd36qf13/FpFBBO
-	g3YCdoiyZCzm5x16z7v5aAmFXC7o/ADWxFdk7RH+cYeSaeal7beECh21de8re7Jy2rE4AxAUYB8
-	r4fcnVDaQpt3+1TfQ642yqLZWsG43M4TLkkwUo1UonK23GJ2yf2VAShuVP1H447+4SaMpL7yvxw
-	ICK3PU0uQdQ/SkrQQJ+I1hiD5ndvSN/HzldNVgPpXYPDQa4ZO4bQSlRNrmuAEAPogwcyWnwLTZQ
-	bYux6iTKDlZ7MZzvcnMXhm7DXanREsvHtqcTaHBFrUIE06F+OoYhp0HTBiWGlomkqZt6HNLfAMn
-	uj+0PQ5MTHyM5fYLT6Cb9r45mEJio8Yi4Tuo7KSfOzLTtpot43ZLdCx8hXJP08IMPWDT1WnCSyP
-	rWceliD7ZZ3Do09VJHn/jXc9RCVlA4+Vt17rlNlMIeZwqxHAw2283285phJ4XvfNwDDHDH4YZqL
-	MdHwX5Kc5ZXT6zvaQDBZ2YULjIef5yh0l2Kzoc0fg==
-X-Received: by 2002:a05:6000:118f:b0:47f:9de0:c27f with SMTP id ffacd0b85a97d-47fec4e41c7mr50878167f8f.1.1786374498127;
-        Mon, 10 Aug 2026 08:08:18 -0700 (PDT)
-Received: from Ansuel-XPS. (host-87-20-3-207.retail.telecomitalia.it. [87.20.3.207])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-480021ec565sm33874307f8f.22.2026.08.10.08.08.16
+        d=1e100.net; s=20251104; t=1786375603; x=1786980403;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=Y8SFe5FskJGVS8OAXxFiwxeNb2xSdeCITuphL9WXOk0=;
+        b=tJIEiPM955FmqpO+6rUZ2Pcl/8DHWQNxwijngsx573jg5Zh2L5q+LKRSnGv6Swpz8t
+         FxWzohExofgMlVGTHJjiD4mTm0mIy4JlZfq8kMQiNd96YVOXv/IQqH81i5OmJHm9cbjJ
+         pF99fEd0zdf9KvQAUvoR2Pkmck/C02Ilu4+9UY3CcLI6EdkyVGt2Bvp5jr2XTYhp2z5D
+         znqlVuJBfex8vkdvJjZsLW+9Mv/y/x7lkMi6OQAy1vcSyjMyXWk/mRCC6bTOeeDgVTj4
+         szpm7GI7aO3eWVFo58vaOhVp3VMLRUK6HjsvF2Q5Jaappe38Fj3FIIGdwZ0JaXZXplXp
+         rZlw==
+X-Forwarded-Encrypted: i=1; AHgh+RrOoi3M4bUzDNQVujI8frgZwWUnX5DY/IV4zjYO7Inl0h9DUH4AMrs5RUnYcMBmCMlznAZ1pMm/AKayBks=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwZDaurrTgHEk86olrRvfRIFaghVeFGcfA+K974sthjCdjarwUO
+	kPC3BZPE27ptHOJq4/a8YGmFBSMxO79yhdZOw89+JaKT984c7aHszoEO
+X-Gm-Gg: AR+sD12stPSz9u/0mqNq155EgyZQ9BUCpwieAcEJCfYUx9H7S5SiCH+zdJoTLVkuQDW
+	6J/a5mu0gMUqdaVbULiSu3fY+s16IXbXsZm/mlH8W9e+EwIknoow9yJ5ntgeoKXhG4I8r8QS0wx
+	W7fozLyNgvPqVq/2rVJ84+CC/TDhVgYUyBgXh/Lg+syyfr+he1rh/aPYmyk6b5loGjdnc411nlF
+	P6zlJqbULjwxyVASw60TJirtgF3jND8mWeBSVpAMiPLv8mW+LrFxLlkqW9Fr+uluv80/MAqnKjB
+	UUZov2MEgZ2unLy1pp66DmhghF12IJU7H+EfEm+fnszLZ9N0/IiaPTDPT5k6vN1HROwuZ9ojRE8
+	9wble6R6VmoQrOfVVpufbLsYI7Ty4TU3CZK/44G7Xz+hXmSO9GnFy5jumO+ml0AL8yLgC/eTFi9
+	GVUMndfmpk/vpsp9S0fRPRoWEZKyiiatcUeWhFcHxtZPK1KEFzSfCw8IYENJ+GZ13qeEh5pfnC0
+	f0ulJ9X4KoPdDP9+vCrniI5jbJZoljoNmYo3bZpyoEHbkP6
+X-Received: by 2002:a5d:6a8a:0:b0:47f:81af:1a3b with SMTP id ffacd0b85a97d-48130eea595mr23302846f8f.22.1786375603323;
+        Mon, 10 Aug 2026 08:26:43 -0700 (PDT)
+Received: from Ansuel-XPS24.localdomain (host-87-20-3-207.retail.telecomitalia.it. [87.20.3.207])
+        by smtp.googlemail.com with ESMTPSA id ffacd0b85a97d-480021e8cd0sm34952469f8f.17.2026.08.10.08.26.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Aug 2026 08:08:17 -0700 (PDT)
-Message-ID: <6a79e961.9099b29d.285f89.0e7e@mx.google.com>
-X-Google-Original-Message-ID: <annpXTsB71zL2oSu@Ansuel-XPS.>
-Date: Mon, 10 Aug 2026 17:08:13 +0200
+        Mon, 10 Aug 2026 08:26:42 -0700 (PDT)
 From: Christian Marangi <ansuelsmth@gmail.com>
-To: Rob Herring <robh@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
+	Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
 	Benjamin Larsson <benjamin.larsson@genexis.eu>,
+	Christian Marangi <ansuelsmth@gmail.com>,
 	John Ogness <john.ogness@linutronix.de>,
-	Manuel Lauss <manuel.lauss@gmail.com>, Jacques Nilo <jnilo@free.fr>,
+	Jacques Nilo <jnilo@free.fr>,
+	Randy Dunlap <rdunlap@infradead.org>,
 	Rong Zhang <rongrong@oss.cipunited.com>,
 	Jiaxun Yang <jiaxun.yang@flygoat.com>,
-	Randy Dunlap <rdunlap@infradead.org>,
 	Gerhard Engleder <eg@keba.com>,
 	Binbin Zhou <zhoubinbin@loongson.cn>,
-	Lubomir Rintel <lkundrak@v3.sk>, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	Conor Dooley <conor.dooley@microchip.com>
-Subject: Re: [PATCH v4 1/2] dt-bindings: serial: 8250: Add Airoha compatibles
-References: <20260809121449.574277-1-ansuelsmth@gmail.com>
- <20260809121449.574277-2-ansuelsmth@gmail.com>
- <20260810150221.GA1621358-robh@kernel.org>
+	Huacai Chen <chenhuacai@kernel.org>,
+	Haowei Zheng <zhenghaowei@loongson.cn>,
+	Lubomir Rintel <lkundrak@v3.sk>,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: [PATCH v5 0/3] serial: 8250: Add AN7581 UART support
+Date: Mon, 10 Aug 2026 17:26:32 +0200
+Message-ID: <20260810152636.658955-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260810150221.GA1621358-robh@kernel.org>
+Content-Transfer-Encoding: 8bit
 
-On Mon, Aug 10, 2026 at 10:02:21AM -0500, Rob Herring wrote:
-> On Sun, Aug 09, 2026 at 02:14:46PM +0200, Christian Marangi wrote:
-> > From: Benjamin Larsson <benjamin.larsson@genexis.eu>
-> > 
-> > The Airoha SoC family have a mostly 16550-compatible UART
-> > and High-Speed UART hardware with the exception of custom
-> > baud rate settings register.
-> > 
-> > Signed-off-by: Benjamin Larsson <benjamin.larsson@genexis.eu>
-> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> > Acked-by: Conor Dooley <conor.dooley@microchip.com>
-> > ---
-> >  Documentation/devicetree/bindings/serial/8250.yaml | 5 +++++
-> >  1 file changed, 5 insertions(+)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/serial/8250.yaml b/Documentation/devicetree/bindings/serial/8250.yaml
-> > index bb7b9c87a807..b6f7e093d8d7 100644
-> > --- a/Documentation/devicetree/bindings/serial/8250.yaml
-> > +++ b/Documentation/devicetree/bindings/serial/8250.yaml
-> > @@ -110,6 +110,11 @@ properties:
-> >        - const: mrvl,pxa-uart
-> >        - const: nuvoton,wpcm450-uart
-> >        - const: nuvoton,npcm750-uart
-> > +      - const: airoha,en7523-uart
-> > +      - items:
-> > +          - const: airoha,an7581-uart
-> > +          - const: airoha,en7523-uart
-> 
-> Don't stick this in the middle of a bunch single entry items (which 
-> should really be an 'enum' if you would like to clean that up).
->
+This is a new version of [1] to support UART driver for
+Airoha SoC.
 
-Let me see what I can do... Seems this schema really needs some love.
- 
-> > +      - const: airoha,an7581-hsuart
-> >        - const: nvidia,tegra20-uart
-> >        - const: nxp,lpc3220-uart
-> 
-> >        - items:
-> > -- 
-> > 2.53.0
-> > 
+One additional function was needed serial8250_get_baud_rate()
+for the driver to work correctly for baud rate calculation.
+
+While at it also try to clarify a long standing issue with
+new UART driver when adding new ids for uart_config[].
+
+[1] https://lore.kernel.org/all/20250209210241.2622309-1-benjamin.larsson@genexis.eu/
+
+Changes v5:
+- Improve 8250 YAML schema with enum
+- Keep alphabetical order for YAML schema
+
+Changes v4:
+- Add Review tag
+- Add errno and types header
+- Drop redundant () from comment
+- Use define for get_divisor
+
+Changes v3:
+- Address review from ai bot
+- Add all missing kernel headers
+- Improve divisor calculation
+- Fix wrong uart config table
+- Simplify divisor table handling
+
+Changes v2:
+- Drop intermediate patch
+- Use .set_divisor OPs
+- Use div_u64 instead of / 40 for 32 bit overflow
+- Drop dedicated match table and use compatible for type
+
+Changes compared to [1]:
+- Fix all formal error
+- Use better compatible names
+- Drop unneeded header
+- Drop usage of irq (it's filled by the generic function)
+- General code cleanup and reorg
+- Split to patch and add the UAPI map patch
+
+Benjamin Larsson (1):
+  dt-bindings: serial: 8250: Add Airoha compatibles
+
+Christian Marangi (2):
+  dt-bindings: serial: 8250: Reorganize compatible to single enum
+  serial: 8250: Add Airoha SoC UART and HSUART support
+
+ .../devicetree/bindings/serial/8250.yaml      |  32 +--
+ drivers/tty/serial/8250/8250.h                |   6 +
+ drivers/tty/serial/8250/8250_airoha.c         | 187 ++++++++++++++++++
+ drivers/tty/serial/8250/8250_port.c           |  16 ++
+ drivers/tty/serial/8250/Kconfig               |  11 ++
+ drivers/tty/serial/8250/Makefile              |   1 +
+ 6 files changed, 240 insertions(+), 13 deletions(-)
+ create mode 100644 drivers/tty/serial/8250/8250_airoha.c
 
 -- 
-	Ansuel
+2.53.0
+
