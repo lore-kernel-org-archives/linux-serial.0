@@ -1,110 +1,165 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25EF2288C81
-	for <linux-serial@vger.kernel.org>; Wed, 12 Aug 2026 07:47:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 481A43AAF4E
+	for <linux-serial@vger.kernel.org>; Wed, 12 Aug 2026 08:55:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786520830; cv=none; b=cUd7+e2Pr6xsLHw0gaxDzIZ+LHsjW++WHQYWA3qZoEZ0xtj32JlzDbQi3hgsrABk8pRZxgQ81z2aqx3ui4V/Bab6yzeR/4cylHWxtBKUxFkvyK2bPZ7IdhkxJ1TJoQfbZbbKtewfM+/ajAyWFYxzrFEMEDYtFzF3KyZGVSuW2XM=
+	t=1786524917; cv=none; b=G2mTMJs1r8hUm8lCXJV3qsa/gZksuBZNziA1A5+obY/FynTRkqB13Efz2CTv54naJRF6CvL/HGFQlO0MuZL7tjDRXb2FyNVqQbuZKNhwgfWoeEVkKXK8pL4zC+AiGtU12l1aveKzfngnKO4FTTf+59P9IoUpo3WjGJCvfcdzBaw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786520830; c=relaxed/simple;
-	bh=sUiK7Fx/H+JDSm4/b+Shne5rP7OtJDFv8SjEMu2XlDY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=TfoRj3owwTeid867D2f7rPJIoqlE+ob67bpRBSqg1Yd/AJ5L0xNYqpYrjSfVV8xC8IpzwWb+Rmbs/zVdnZArTfrwH/LrYZjBNUjZfhrd/8IlYMd3HbYypU6yk2Wnz0BhdUtaop0U4kj1ogrkjVNLkydQI1fnAHEi4E7FzQ5B4Ws=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QZY6JpQE; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786524917; c=relaxed/simple;
+	bh=F7MqsTpvXEhShRZzCrVhWm+SLKO+Vc5RAc23Ul79HmY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=lHugoru/sQ4XhSqqYWMT5Dme9LzSoExEZuKgnZ0c4OE0ufKcQosDlLtD1OJ6egb7eJfK9FL234IpS8OnsX5iyMJgVsipEz8lzOpVHMWb0YdPiM6CYYr3iyx+2qYSZd+lePmlh9GGJaNgNEarMj5qHxBrv420wXSBwI+LnlsW1go=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=cL67h0iu; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=QfbOGbE1; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QZY6JpQE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D6D01F00AC4
-	for <linux-serial@vger.kernel.org>; Wed, 12 Aug 2026 07:47:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786520829;
-	bh=sUiK7Fx/H+JDSm4/b+Shne5rP7OtJDFv8SjEMu2XlDY=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=QZY6JpQEuKgX85dPRvSGmr3bH9qAroW0GR8zhFsvGh3VWcao3sMM4Moo4XaM3SOEP
-	 O4bdYPcDWBVzEdkkPzhhSltYb1YvSak70l7e5cJLOUTsnP1jwIHqLp5M32CmtlaKSH
-	 T1B9Y/kzFdT5lZ5qQ+KHqYwgup+ceGMaRlm3fxGz4zsBSDi9Y9BvhUjLEwrwvg4a3O
-	 Lkfsvz0iw902zsQgsNW3WMrfodW1et5yFaNjxxBsBZFsKHC5boRsv7juGXvoO5LyKV
-	 VXa/KcW3GdXYMRZb3I/E2FvVcF4IehIiZu5O+0tjPVFHapa73x+soXio0u/IwsaOvT
-	 UIHXquD6Qj5sw==
-Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-5b2aab18795so716874e87.2
-        for <linux-serial@vger.kernel.org>; Wed, 12 Aug 2026 00:47:08 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AHgh+RqCUXFD1rCmZWHSEPWqBQou0YVUdVfhECbwySCLJrqp/8Rzl2t2tpj/XUXBbw91kT23lHZrfXhpM1I6ITM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzKfe7FlL6uAzIm1VybejtgXH2KbyWc0AOAoscVn4vsqIndS2Yv
-	0D9U+B2BVLWYpfTf29bmDIjTE7AdWdBTZEjLLpydcsVU3ory98RQwnukK8C2kSkeZIMCBtb5X0x
-	arSj4YCNCG/O9fK0uBX9lihssY37o6Zw=
-X-Received: by 2002:a05:6512:15a0:b0:5ad:4cb6:fcf with SMTP id
- 2adb3069b0e04-5b44e2e25edmr406738e87.12.1786520827820; Wed, 12 Aug 2026
- 00:47:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="cL67h0iu";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="QfbOGbE1"
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67C8YqEv3847931
+	for <linux-serial@vger.kernel.org>; Wed, 12 Aug 2026 08:55:14 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	l/9WLhEJTgXWRjhzQHboMAkJhxat9TGdxV61Ba2hGvY=; b=cL67h0iuMunP3Yqn
+	+dKF8mXZ2XFnPGfyvHp1w2Ih1MY1WrOc6GqtrXdddlSD7I0/N47HFrp6Div3gJ4N
+	KSf0k7v4+2I4IDFhcaTepJbDkcoV0eepRY4mCcUExPzizr1RZuCVaqtdzohIYdkq
+	C4aobWj+TeBFiCVxLqNYUQouMenBZeDMXHXsWhzR//tZPW8TUGKKDIB80rQmCA25
+	ZujvmJvrbpJtjiwR12Rs24X/aFvxhZSvEsQO4USZgnlEgX0t2cA5XejgTsQc9YBT
+	Ad1nc5Wr4jv9C01nbuBtwEPSe7UWmUWbuftY/gnXRceX0v2IsDfI8M7CqP12vA+M
+	4zclJw==
+Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com [209.85.216.69])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4g08j5k0p9-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-serial@vger.kernel.org>; Wed, 12 Aug 2026 08:55:14 +0000 (GMT)
+Received: by mail-pj1-f69.google.com with SMTP id 98e67ed59e1d1-38f5ac7416eso921989a91.3
+        for <linux-serial@vger.kernel.org>; Wed, 12 Aug 2026 01:55:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1786524914; x=1787129714; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=l/9WLhEJTgXWRjhzQHboMAkJhxat9TGdxV61Ba2hGvY=;
+        b=QfbOGbE1dT4ou/+9LRTPtoNUH8UNZMkDn6xnSeV/pE9QkX4Ue23uAY+ExS9evvb+Kd
+         Jzz9jdosEVxztAA5YkGXoLBG8A7dFoITcxBJutE0Fe34VCuHV40njSjniTPwPym4o94L
+         nTivS27WwQL6OOhaJm/FHjUDOLwhuSclxv/fVdomAs6LRniVUrPj0FcvT1TprseA5AKS
+         HpaXqlRqiMk526WE05YSmu6nxX5b1/c505GE908jb+CVU0xJPVzjlUNQlLBxQAnqZvKB
+         jWSpAhZHbRetdAVodjucv2osdP4avQz6dHnsoSVhVhuHKWSJnQYcDBezx+o+LjJcDSuW
+         JQ5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786524914; x=1787129714;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=l/9WLhEJTgXWRjhzQHboMAkJhxat9TGdxV61Ba2hGvY=;
+        b=l+fQkplmxQKr8ItNzD+NBUFw+EApAc0ga0tYHX9rYlomWhG4PVONH9pJEp2QPFKJwi
+         2xdu+prl156zFwNFrPYvwfwPMn7v3R3nUe4LCNHAiz7jcXD4665NfrL2Kzj13CZc00Mq
+         +EJa/88h7788gft4WxDp4IKF/Y2NrMNHDb1I+gpuX9RfK3fRDuKosAHUHAUS7SAJpTQr
+         gbkGBUBFNlxaBBLBOmoly+erHYKRPm3ZYhDH3eDIWj4WzefO3ipLnPY2BsgtwWvY7vbo
+         WKaY2lX2rG4JGfJeApM+a6flib+R/uZQ/hL3uHiENiO/0pDEhjEkKLL7yHQUfd9edWGX
+         xdqA==
+X-Forwarded-Encrypted: i=1; AHgh+RrWJdl0OeZfm8nGqb6nCSNtPtKjmKZJJFzhEoK4goHGT3P6XzEqljWSkB4jvl28ZQvsxFxas3nroVb/0eY=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzb/6U9lFVUwa51Aso/df8ay66jRqjoeVsK3Ycmb4AAp+tLqG0h
+	fuuGsczRWYydYzrD52CycSRTednzue+vSw9gghhfrY5ZysURSMwITSixVKbr08uJwgR25Cmvza2
+	wJ3P9eIPmMykQLuCI1vf321ywMGltgLfOcFjyfsLY3gnSQskM7vR+cFi4nsH9ryDDW9w=
+X-Gm-Gg: AR+sD11IB0aMoVWjnDNI5s81TGCvWXqEXil52u37Z6wBtk6iy7D9pEUh95TUJMNiaa5
+	g0qW24KXgCVHdA76331WNHx3DosPP6HZ1/wL2zZKGdSa9MLJv/Lee7Z+vxOHiAoBxNw7YZVC8JG
+	OWZ5QpXP8De5oXuWkOyAqg6vyMLlv6LORH4MzcRx8J38mg3IwlUSQa6ldhCBDV+yRx9IGiZ4lVW
+	Vcy7+rXJW9Nrpt/U8mOq6xMRoLXHPElh0V3uTzRyiFanFP0E0NsiU8kBbamTwqU2EU4IXdisc+l
+	+4Ju+OhLiAu8QS2sTtpJ4O3qxAUq6Ak4MaGXbkEJXi9P3dYcmcZymku6NAsRuWtvE1uaXyIylZh
+	iYI98rUwWiLwh8njgxkGXAvUGAnXpLA63Cg==
+X-Received: by 2002:a17:90b:3802:b0:38e:5c6:4db9 with SMTP id 98e67ed59e1d1-39301490a5emr3605669a91.11.1786524913683;
+        Wed, 12 Aug 2026 01:55:13 -0700 (PDT)
+X-Received: by 2002:a17:90b:3802:b0:38e:5c6:4db9 with SMTP id 98e67ed59e1d1-39301490a5emr3605632a91.11.1786524913227;
+        Wed, 12 Aug 2026 01:55:13 -0700 (PDT)
+Received: from [10.217.219.92] ([202.46.22.19])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-392f908a82bsm2808212a91.0.2026.08.12.01.55.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Aug 2026 01:55:12 -0700 (PDT)
+Message-ID: <de19d0ac-3b3c-494b-a3da-028570989bc7@oss.qualcomm.com>
+Date: Wed, 12 Aug 2026 14:25:04 +0530
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260810130635.1166626-1-mkmkl@google.com> <CAD++jLnpZbmbZ_uQTS7pBdbmpvOZSy5+JsVP=Vb3HDhV8J-h4Q@mail.gmail.com>
- <CAD=FV=UzV=G_XLoDZ4zq0ZPSQ3ttUDX9oBJUQrLYfUQ6v35nsg@mail.gmail.com>
- <CAD++jL=WmAJNotpxqQkE9Yf3COxMcj=afDVGB2zi+ZN+mRocAg@mail.gmail.com> <CAD=FV=UoZ=CoUdku5aaJr9uihxr0Q-Yj4UQeQtYeODMzku7LkA@mail.gmail.com>
-In-Reply-To: <CAD=FV=UoZ=CoUdku5aaJr9uihxr0Q-Yj4UQeQtYeODMzku7LkA@mail.gmail.com>
-From: Linus Walleij <linusw@kernel.org>
-Date: Wed, 12 Aug 2026 09:46:55 +0200
-X-Gmail-Original-Message-ID: <CAD++jL=A+wkWudoDZLDy9mq-y3UT9Yvpi8cWM5Nr6zcXT4qskg@mail.gmail.com>
-X-Gm-Features: AUfX_mxYz7-hp5qQbVQRpfBnrohWFDpJP9rhisrRcXR_wOY30NeSoikp25BhLNk
-Message-ID: <CAD++jL=A+wkWudoDZLDy9mq-y3UT9Yvpi8cWM5Nr6zcXT4qskg@mail.gmail.com>
-Subject: Re: [PATCH v1 0/2] pinctrl / 8250_dw: Allow drivers to keep init
- pinctrl state until first open
-To: Doug Anderson <dianders@chromium.org>
-Cc: =?UTF-8?B?TWljaGHFgiBLYXJkYcWb?= <mkmkl@google.com>, 
-	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Vic Huang <vich@google.com>, 
-	linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 3/7] soc: qcom: geni-se: Add helper to set SE clock rate
+ via OPP
+To: Praveen Talari <praveen.talari@oss.qualcomm.com>,
+        konrad.dybcio@oss.qualcomm.com, Sudeep Holla <sudeep.holla@kernel.org>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Ulf Hansson <ulfh@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, Mark Brown <broonie@kernel.org>,
+        Viken Dadhaniya <viken.dadhaniya@oss.qualcomm.com>,
+        Andi Shyti <andi.shyti@kernel.org>
+Cc: chandana.chiluveru@oss.qualcomm.com, arm-scmi@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-i2c@vger.kernel.org
+References: <20260805-derive_clk_perf_tbl_from_perf_domain_opp_table-v1-0-61171ab1cdce@oss.qualcomm.com>
+ <20260805-derive_clk_perf_tbl_from_perf_domain_opp_table-v1-3-61171ab1cdce@oss.qualcomm.com>
+Content-Language: en-US
+From: Mukesh Savaliya <mukesh.savaliya@oss.qualcomm.com>
+In-Reply-To: <20260805-derive_clk_perf_tbl_from_perf_domain_opp_table-v1-3-61171ab1cdce@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODEyMDA3MCBTYWx0ZWRfX3ee6NjJ/br3e
+ Y50SYR9WAgGMkMSMCqImVyh564qzqXYe9+wY6XVrRKb+HCbR9Nj45EiYItuHjusZhhz+pRy0txG
+ b05/kodNnD1wfMVXo0dmpR0DalE3S/Y=
+X-Authority-Analysis: v=2.4 cv=evHvCIpX c=1 sm=1 tr=0 ts=6a7c34f2 cx=c_pps
+ a=vVfyC5vLCtgYJKYeQD43oA==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
+ a=IkcTkHD0fZMA:10 a=Sv0fKeRqtYgA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=Um2Pa8k9VHT-vaBCBUpS:22
+ a=EUspDBNiAAAA:8 a=9aiwZt7zaXvVnErAyWsA:9 a=QEXdDO2ut3YA:10 a=ZXulRonScM0A:10
+ a=rl5im9kqc5Lf4LNbBjHf:22
+X-Proofpoint-GUID: E5IZbPYRPSaNdMDSXSWvs_8t1uz1Cy1E
+X-Proofpoint-ORIG-GUID: E5IZbPYRPSaNdMDSXSWvs_8t1uz1Cy1E
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODEyMDA3MCBTYWx0ZWRfXwT4+HIQAWCQX
+ P5DgTJuvTVwCVcD7LXCIkNbwgZ0l0zXROiDE23O627ovQ1mmh9AI89DBEOGz+8OsglR9kMtmdTC
+ DVQx0hsU7EDBnW7cxRgWOXsvzlydS5wCzVggpvB0J/hJ9urURxWcoVju19NqzS0wO0+1SFgb8Lo
+ vfqPhXyBGF2Qj99XaYYCTxg5F1/gXVyrq96SRCe5KGevCk77eImtlAExCyKDF2VvBXhZlwXn6WA
+ dHLTHnOtyU0/XUYtUJt71HZvu+2HPeXVFXV3sir/cwR+2HrFaRhwuSUUPr3yNw8eMIyQnxY0RF3
+ rT7MaWshUSky7jrRQItW1BKKbYWLtYuYXCoGANI2TA7UMIkYXmZvxq+JtxLurSptKcBDgQUnDQm
+ UViBBkG1z16HXm7Q1W1sq5Qe6x/iraSC91rVTc4b50oSfrtYHaSTNnZXMbrfggb1FNHktX03oAu
+ AgkKAC1RWkWRtkamIsw==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-08-12_02,2026-08-10_03,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 lowpriorityscore=0 adultscore=0 priorityscore=1501
+ bulkscore=0 suspectscore=0 clxscore=1015 phishscore=0 spamscore=0
+ malwarescore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
+ definitions=main-2608120070
 
-Hi Doug,
 
-On Tue, Aug 11, 2026 at 10:15=E2=80=AFPM Doug Anderson <dianders@chromium.o=
-rg> wrote:
 
-> One thing I guess we'd have to work out is whether we'd really want to
-> use "default" and "open". I usually think of "default" as the active
-> state and then the two common states "sleep" and "idle" as the
-> inactive states. I guess looking at all the states, maybe you'd
-> suggest:
->
-> * At probe time, select "default" state since the port is closed.
-> * At port open time, select "open" state if it exists.
-> * If a port runtime suspends while open, select "idle" state if it exists=
-.
-> * If a port runtime resumes while open, try to select "open" if it
-> exists, or fallback to "default".
-> * If a port does system suspend while open, select "sleep" state if it ex=
-ists.
-> * If a port does system resume while open, try to select "open" if it
-> exists, or fallback to "default".
-> * If any kind of suspend/resume happens while a port is closed, it
-> stays in "default"
->
-> The above assumes that if a port is closed that it doesn't need /
-> shouldn't transition to "sleep" / "idle" states. That's probably true
-> (?) for any port that defines an "open" state, implying that "default"
-> means "closed". If someone only defines "default" and "sleep" or
-> "idle", though, maybe they'd expect transitions to "sleep" / "idle" at
-> suspend time?
->
-> Does that sound roughly like what you're thinking?
+On 8/5/2026 1:27 AM, Praveen Talari wrote:
+> GENI protocol drivers need a common way to scale the SE source clock
+> through the OPP framework. However, the device that owns the OPP table
+> differs depending on how the SE resources are managed. For Linux clock
+> managed platforms, the OPP table is associated with the SE device,
+> whereas on firmware-managed platforms it is associated with the
+> performance power-domain device. This requires protocol drivers to be
+> aware of the underlying resource management model when requesting
+> frequency changes.
+> 
+> Introduce geni_se_set_rate(), a common helper that abstracts this
+> difference and applies the requested frequency through the appropriate
+> device. The helper automatically selects the performance-domain device
+> when power domains are attached and falls back to the SE device
+> otherwise.
+> 
+> Signed-off-by: Praveen Talari <praveen.talari@oss.qualcomm.com>
+> ---
 
-Attention to detail is officially your middle name Doug!
-
-It's what I would have been thinking, if I had sat down and
-had the same attention to detail.
-
-So I really like what I'm seeing here, go ahead with this
-design, provided it checks out and you can somewhat test
-it. I guess you have hardware where you can actually test
-the hairy transitions between open, idle, sleep etc and that
-is more than most will do.
-
-Yours,
-Linus Walleij
+Acked-by: Mukesh Savaliya <mukesh.savaliya@oss.qualcomm.com>
