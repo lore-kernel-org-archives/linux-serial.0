@@ -1,116 +1,81 @@
-Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [80.241.56.152])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96C2E3EA66;
-	Thu, 13 Aug 2026 18:38:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=80.241.56.152
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 646D539D6DA;
+	Thu, 13 Aug 2026 23:20:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786646333; cv=none; b=hvqLsA/sqSxtQ/brAXW8Xr3K1g23+XagdQC+NGjVtdXAqhuzQYawsIzjjIoDCHljVGt7MqUt0M5PXttIkH601Gpi2XgcsCUaryZjEUG6KxJHKw1GZi6cSg6XufX0HWrODEmauRnIQkOCF/7dZSmFiTvWYoSJoV7qpNqsunrryhc=
+	t=1786663211; cv=none; b=NZLxWAKSG6dUPaKZwSGKPzveV4CMDWI7CwqE87kpbUGsOpSihYy8HlVrCnxAIH9wB374yeAOsxPtzU39PdME88DFXyL/MZsJrH2Geq2AqRfz1xmspXzYz2K8c3yHjE75GYIlM/uFO6p1pOQHo0gyOlspyv1u4AzRBLNy6yOPMVc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786646333; c=relaxed/simple;
-	bh=9mJaxGbz8SEtvlx2N4Fd85iYrFUMZ8aT9RjHqj/TvBI=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=kQt3XWh4OzSjvCuSxLSslaKqMIEuEKCXDG+EWe+bccdSai4yRju+ZmpTzGFS3sE3fceWTHBKLFOCmm+vAJojPvco/t9pCOfMbrgAovAJZXGLW/11/O2hZhHj7K4aBys+GaGH3usN1oT3pidcuijrsqPLmpO/LrfGXrlZG75pHp0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=steffen.cc; spf=pass smtp.mailfrom=steffen.cc; dkim=pass (2048-bit key) header.d=steffen.cc header.i=@steffen.cc header.b=J3xHLmsv; arc=none smtp.client-ip=80.241.56.152
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=steffen.cc
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=steffen.cc
+	s=arc-20240116; t=1786663211; c=relaxed/simple;
+	bh=cnhS01uG9VWMhmA0DHTk2JdLGF1m9f/uYmZuCbHuVFY=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=TivKh410XsozpiC5TY7DcVl96FSJ/Wnk8q77l+xY1mEs4jrDXa+Ze1EqKg5fZErQhhnqjCgRXeDUvJZXbrzfNFB+juZj8yn8AANfu6AX3j5lGlHNlJR1n1VVA5CeT4nes3aX0LzOFrgUcy1jfXhWQh4XFkQO5e4+zW/zCJaCUGs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Dw7C3vC0; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=steffen.cc header.i=@steffen.cc header.b="J3xHLmsv"
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [10.196.197.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4hLYzC566NzKrtJ;
-	Thu, 13 Aug 2026 20:38:47 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=steffen.cc; s=MBO0001;
-	t=1786646328;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=SRk/PQ/Cve5njj2W2D90/QdHFpg2KLeYNNFprJwYRVU=;
-	b=J3xHLmsvG5i64x/lttwf7UpPaW7Q3C/NVo7gOawrmvBsP7Gz9aAzkvfnXzQ5WdysMEQwtR
-	Yj78Vs1ZdOoDFKsoc6UikiG+crtNDCf586zfQN7d96hHruK52a2b4m0LGI69J/9og+qeYj
-	UmJpESZ2jfCA2rBzoyk1oSfaZUDNLzXXWH2MbT6N4VAvz1AgK7AJ71LU9ubiQblZbRXN2G
-	SHA5Ln1JWLXp4Yj7EEeeZKzimW/ma6tkOeQcxa8QbG2Ww43iCGpfa4CyIlxGyGpLavIsrZ
-	9Aw4l9ScELwOq9GutzemfBCi4Vnuml37jY/BIrgwOiXgumSc1ZZRWKkVaYQG8w==
-From: Steffen Dirkwinkel <lists@steffen.cc>
-Date: Thu, 13 Aug 2026 20:37:05 +0200
-Subject: [PATCH] serial: 8250_dw: Add device HID for AMDI0021 AMD UART
- controller
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Dw7C3vC0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 155161F000E9;
+	Thu, 13 Aug 2026 23:20:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1786663210;
+	bh=iilT7T5vjN7wnf+WuVuEr4UAw0PHQT2Q1HqYsDLvtYY=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=Dw7C3vC0ooh9NFiMt16OJS5l21zmuw+HT3oCkEhK8mZX0Vhli6SPBlTepR6oQtw2R
+	 iVDX0//YQjrJINad0SiLxk/8gtheu0/hvuUK4HaK4zXmuN8f3j27mUtZGNx8ijD0/h
+	 rMw4Mrzh1X0c3q70TyQ3aZmc9F+asJEI9GyEdkocAYaQVJzZBGmbQCDFim/CMgd6Ev
+	 zpP3O9SXPYQYQzJk7v6GZ8qzQ80eUsREEyqeco1e1XSIL4ZGFbuyS8EJHk+xArVDhD
+	 r61rxN4dN3qCy6fhZ+9xq5iVTpXT9gEW1hg/fOj6iR4aw4jVU+dOgVlZdIf3snmIEi
+	 kmv6gd5+07E4w==
+From: Danilo Krummrich <dakr@kernel.org>
+To: Danilo Krummrich <dakr@kernel.org>
+Cc: markus.probst@posteo.de,
+	gregkh@linuxfoundation.org,
+	rafael@kernel.org,
+	ojeda@kernel.org,
+	boqun@kernel.org,
+	gary@garyguo.net,
+	bjorn3_gh@protonmail.com,
+	lossin@kernel.org,
+	a.hindborg@kernel.org,
+	aliceryhl@google.com,
+	tmgross@umich.edu,
+	daniel.almeida@collabora.com,
+	tamird@kernel.org,
+	acourbot@nvidia.com,
+	work@onurozkan.dev,
+	driver-core@lists.linux.dev,
+	linux-serial@vger.kernel.org,
+	rust-for-linux@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] rust: serdev: use ThisModule::as_ptr() instead of field access
+Date: Fri, 14 Aug 2026 01:20:03 +0200
+Message-ID: <20260813232003.792467-1-dakr@kernel.org>
+X-Mailer: git-send-email 2.55.0
+In-Reply-To: <20260813152444.514580-1-dakr@kernel.org>
+References: <20260813152444.514580-1-dakr@kernel.org>
+X-Patch-Reply: applied
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260813-b4-raven-ridge-uart-v1-1-fae442416ba1@beckhoff.com>
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yXMQQqFMAxF0a1IxgZslSJuRRy0NdU4qJKqCOLer
- f8PD493b0gkTAm64gahkxOvMUOVBfjZxomQx2zQlTZVq2p0DYo9KaLwmNfDyo5GO0VBBa8bA/m
- 5CQW+ftV++DsdbiG/fyl4nhcCjxPddwAAAA==
-X-Change-ID: 20260813-b4-raven-ridge-uart-62b1ef1fc246
-To: "Rafael J. Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>, 
- =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, 
- Mario Limonciello <mario.limonciello@amd.com>, 
- Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
-Cc: linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-serial@vger.kernel.org, 
- Steffen Dirkwinkel <s.dirkwinkel@beckhoff.com>
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1786646322; l=1774;
- i=s.dirkwinkel@beckhoff.com; s=20260625; h=from:subject:message-id;
- bh=TwVe9q5jYPFqsnswjy0Kv9C5ghwBKK/NeVo5XaCg7CQ=;
- b=IlxQcr3ljAdgN0qICwLAAkBRWUVdyskrrm9VU1tn1OrUNoEab2xtkPRPHjJmdqqKWBJOm8F9h
- SBCUhKLYy5yDdtTEmGy7G+sWlf9jIBIupr8D0AeWY3dcJ8rpDPuWtK+
-X-Developer-Key: i=s.dirkwinkel@beckhoff.com; a=ed25519;
- pk=5DcsaSpVtmm7nCi3Bnw5A4vbXI+sg3hBgt8e2A2U/gw=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-From: Steffen Dirkwinkel <s.dirkwinkel@beckhoff.com>
+On Thu, 13 Aug 2026 17:24:41 +0200, Danilo Krummrich wrote:
+> [PATCH] rust: serdev: use ThisModule::as_ptr() instead of field access
 
-This ID is found on AMD V1202B.
-Like the AMDI0022 [1] this one works with the same match and the existing driver.
-Tested with a loopback cable.
+Applied, thanks!
 
-[1] commit 3c35d2a960c0 ("serial: 8250_dw: Add device HID for new AMD UART controller")
+  Branch: driver-core-next
+  Tree:   git://git.kernel.org/pub/scm/linux/kernel/git/driver-core/driver-core.git
 
-Signed-off-by: Steffen Dirkwinkel <s.dirkwinkel@beckhoff.com>
----
- drivers/acpi/acpi_apd.c           | 1 +
- drivers/tty/serial/8250/8250_dw.c | 1 +
- 2 files changed, 2 insertions(+)
+[1/1] rust: serdev: use ThisModule::as_ptr() instead of field access
+      commit: ddca0cd80096
 
-diff --git a/drivers/acpi/acpi_apd.c b/drivers/acpi/acpi_apd.c
-index 008bd0552cb7..562be86aa272 100644
---- a/drivers/acpi/acpi_apd.c
-+++ b/drivers/acpi/acpi_apd.c
-@@ -250,6 +250,7 @@ static const struct acpi_device_id acpi_apd_device_ids[] = {
- 	{ "AMDI0015", APD_ADDR(wt_i3c_desc) },
- 	{ "AMDI0019", APD_ADDR(wt_i2c_desc) },
- 	{ "AMDI0020", APD_ADDR(cz_uart_desc) },
-+	{ "AMDI0021", APD_ADDR(cz_uart_desc) },
- 	{ "AMDI0022", APD_ADDR(cz_uart_desc) },
- 	{ "HYGO0010", APD_ADDR(wt_i2c_desc) },
- #endif
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 5fba913f3301..214d3e7ae628 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -910,6 +910,7 @@ static const struct acpi_device_id dw8250_acpi_match[] = {
- 	{ "8086228A", (kernel_ulong_t)&dw8250_dw_apb },
- 	{ "AMD0020", (kernel_ulong_t)&dw8250_dw_apb },
- 	{ "AMDI0020", (kernel_ulong_t)&dw8250_dw_apb },
-+	{ "AMDI0021", (kernel_ulong_t)&dw8250_dw_apb },
- 	{ "AMDI0022", (kernel_ulong_t)&dw8250_dw_apb },
- 	{ "APMC0D08", (kernel_ulong_t)&dw8250_apmc0d08 },
- 	{ "BRCM2032", (kernel_ulong_t)&dw8250_dw_apb },
+The patch will appear in the next linux-next integration (typically within 24
+hours on weekdays).
 
----
-base-commit: 3aa1dcaa4f6f5ae08936491e08bd456f331f2d40
-change-id: 20260813-b4-raven-ridge-uart-62b1ef1fc246
-
-Best regards,
---  
-Steffen Dirkwinkel <s.dirkwinkel@beckhoff.com>
-
+The patch is queued up for the upcoming merge window for the next major kernel
+release.
