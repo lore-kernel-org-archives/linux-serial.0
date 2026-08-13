@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C29E40B0EC;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C1FF40927F;
 	Thu, 13 Aug 2026 10:35:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786617319; cv=none; b=o8cw/rONngX0/BhBI2tqz6Hb/Hw04lCGwr6r3FX7KMAN1xkcb909Axb4uO5f+OZyMMAKifJc3vOoGOuESvUZDK1OGSwzBNbVt+K9kviCzGcLI6sz/TYrfgoQZMLh4qBmJg8yprZPSBDbKIwhI1oK4JUpEVdukxaS6l3OfKt7Hoo=
+	t=1786617319; cv=none; b=u84zlAiAsOlnimxp2/8Gq2Cy+mtKUfMuavsX8riBfgEtpTb+0pxbFPsRC4O7OPwHy4qc7BuFg5/h0nELN5ylVnc7iOljIRlaU7OejgyGoZhQD/sHiatHz9jDbmPXok/OOp1DLOR3qA2+TgD9cwult2NJ1XGcvzZI/DhxJi+Zpkw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1786617319; c=relaxed/simple;
-	bh=Qlg67X/kobKT+eFwxKXQ3z/kZm6+Os7ksYkYqj8PrC4=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=T8l/Op/XS/tlh/MuSTs7PeKOja3f4bfeHUIwA7e/C1Tf/xPHvM+jonI9RwVbW1L/2ilFU4FTyv8ZQQAjVSxoQ8zB1OZLdiopaGrP+PXmjnBhV61RZzDLgwrpk+7u2TbXTetR7TdqpnUpmzzmtqnckSPVfK2AFTtwzAXWtAAyJF4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ND9WyMqT; arc=none smtp.client-ip=10.30.226.201
+	bh=HuHAAmFhsnViNBOyFb1R8/0wMc3TeeTHz8YWaouugC0=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=rLDMNtXDGVySO61aSXlPZEMSjdkAdPXsgBPazvQoXp6bS3qZY2XSIOjtZh7NVvtPYIVRkmfnesoBstV9Yz7piiba3xLAffUD6NE+x2WodL+Z5wonrVLE1PJVv6ZIxhItMrBAvKjP1r/cCQVzSn+0MrIY1y2H/6z5ex1SOj7NNKg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=n3gje18u; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ND9WyMqT"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E0F6CC2BCC7;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="n3gje18u"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C70BDC19425;
 	Thu, 13 Aug 2026 10:35:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1786617319;
-	bh=Qlg67X/kobKT+eFwxKXQ3z/kZm6+Os7ksYkYqj8PrC4=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=ND9WyMqTRSDeZHwZaTddaEDDBA9R+ak5Nl3GRnUJ3yLG1LOHn2tPRb95vrJD8eg0W
-	 9QDL160Di98Q+48jqU+fbEt7Y09qZeV29BHaWF4/QjAfVhJh/vJmKK2CHMihW9I4HB
-	 sGoWXdsvoSK6+uWo1nySTD2sKernWd2LmWnSTeRyN7oI9BUxHXCiuRk+T/9X1wGJk7
-	 Yu1HGCxXXOcQgVCz3qkKFLQi5bkdQ8Jqt4S45PFwggYhorRPMsVHxTSRslHpUZoS8X
-	 5OThNfCvTIcN+qxFpEybFSjFTQ86k+9OtNyAKFC1dfxPUU+UFqNpH32fi6mp13MO+3
-	 EwHrYOt2uJ1Qg==
+	s=k20201202; t=1786617318;
+	bh=HuHAAmFhsnViNBOyFb1R8/0wMc3TeeTHz8YWaouugC0=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=n3gje18uSVLwU7Wcw7vN91Ih+wsVaZpLZTfRnNE0l9Xj/+pPdJ1Kay6BWChkFl14P
+	 Z3HArjhbmYb4pv9XLuExKwXQ+IQ8sdouF2pk4p6VHd89JOiqOFhbKaK5lKPCHQS6Qw
+	 Ja76TPR432IQ1UrWeyusE8lPPyJht10qW2yQ1ll2lySVX5n9qqdS4SCEj96t2+jKd7
+	 0VCF6l0TQpZGnC/JV1Y22CeS1Nm0UKm49k2maQGQVBkq2mn0UlsUeOpvpAuXBAUkdP
+	 fzhYqik+qXdz/8t8jAleEZ9NCO2pBBx+kmupO/YQZtRCNx4KML0LuOu17fWXHukuBI
+	 EbjLcriCdFWOg==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C214DC5DF66;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A35EBC5CFEB;
 	Thu, 13 Aug 2026 10:35:18 +0000 (UTC)
 From: Long Zhao via B4 Relay <devnull+longzhao.ambarella.com@kernel.org>
-Date: Thu, 13 Aug 2026 18:35:13 +0800
-Subject: [PATCH v3 2/2] serial: 8250_dw: add Ambarella CV75 quirks
+Subject: [PATCH v3 0/2] Ambarella CV75: 8250_dw UART
+Date: Thu, 13 Aug 2026 18:35:11 +0800
+Message-Id: <20260813-cv75-v3-c-v3-0-9352b3fd6026@ambarella.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -40,9 +40,10 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260813-cv75-v3-c-v3-2-9352b3fd6026@ambarella.com>
-References: <20260813-cv75-v3-c-v3-0-9352b3fd6026@ambarella.com>
-In-Reply-To: <20260813-cv75-v3-c-v3-0-9352b3fd6026@ambarella.com>
+X-B4-Tracking: v=1; b=H4sIAN+dfWoC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyjHUUlJIzE
+ vPSU3UzU4B8JSMDIzMDC0Nj3eQyc1PdMiCtm2JpkWhpnmKQZplmqARUX1CUmpZZATYrOhbCLy5
+ NykpNLgEZoFRbCwCOiWNObQAAAA==
+X-Change-ID: 20260813-cv75-v3-c-d98a97d0f9f1
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
  Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>, 
  Krzysztof Kozlowski <krzk+dt@kernel.org>, 
@@ -52,11 +53,11 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
  devicetree@vger.kernel.org, Long Zhao <longzhao@ambarella.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1786617317; l=2923;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1786617317; l=1249;
  i=longzhao@ambarella.com; s=20260730; h=from:subject:message-id;
- bh=XSAN/JBo4TbrQ7CY2sRl+6NMf5TA6SIWR2Keo4EKJvU=;
- b=gnaylrcPeuS6xs0Jkt0AkOlSBVkkbXmt/hrQO1Hz7xVQQFYFfCQVtrvAzSoOe3RDXxx3wzfmf
- wl+7jPs3iLPAeWrdL7qbYZ88UCnQXuePH5O6utAPzW3L3TiLGw880x4
+ bh=HuHAAmFhsnViNBOyFb1R8/0wMc3TeeTHz8YWaouugC0=;
+ b=VMOAORclmZq65HmUV7KltmK8GgBks9rZmr6JcV8hU7pvSSLiyrHr2bDnCg6RXEVcX3/lm+5mJ
+ HUV217J71GkDqo8lmeXGXQ2E+HWxuMoFZJyQOmXm1Yk7VhWZ4mP5PV3
 X-Developer-Key: i=longzhao@ambarella.com; a=ed25519;
  pk=/xGhPTOX0/eYsyTWzyjjgAIW1Z/YD+IlnOnvcdRozow=
 X-Endpoint-Received: by B4 Relay for longzhao@ambarella.com/20260730 with
@@ -64,94 +65,46 @@ X-Endpoint-Received: by B4 Relay for longzhao@ambarella.com/20260730 with
 X-Original-From: Long Zhao <longzhao@ambarella.com>
 Reply-To: longzhao@ambarella.com
 
-From: Long Zhao <longzhao@ambarella.com>
+This is part C of a 3-part CV75 v3 split:
 
-Add CV75 platform data with an ETOI IER mask and skip-set-rate so the
-DesignWare 8250 driver can drive the Ambarella UART for console use.
+  A: bindings + RCT/CCU clocks + SoC/EVK DT + MAINTAINERS
+  B: pinctrl + PL061 GPIO variant
+  C: 8250_dw UART quirks  (this series)
+
+Depends on series A:
+https://lore.kernel.org/r/20260813-cv75-v3-a-v3-0-cfdd20b1b4dd@ambarella.com
+
+Depends on series B:
+https://lore.kernel.org/r/20260813-cv75-v3-b-v3-0-1d82e18da09b@ambarella.com
+
+Link to v2:
+https://lore.kernel.org/r/20260806-longzhao-upstream-cv75-v2-v2-0-6b09707c5fe9@ambarella.com
+
+Summary:
+- document ambarella,cv75-uart on snps,dw-apb-uart
+- Ambarella quirks in 8250_dw
+
+Changes since v2 (C scope):
+- drop custom Ambarella UART driver; reuse 8250_dw (Linus)
+
+Verified on CV75 with A+B+C.
 
 Signed-off-by: Long Zhao <longzhao@ambarella.com>
+
 ---
- drivers/tty/serial/8250/8250_dw.c | 30 ++++++++++++++++++++++++++++++
- 1 file changed, 30 insertions(+)
+Long Zhao (2):
+      dt-bindings: serial: snps-dw-apb-uart: add ambarella,cv75-uart
+      serial: 8250_dw: add Ambarella CV75 quirks
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 5fba913f3301..e8aa592924d4 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -43,6 +43,9 @@
- #define RZN1_UART_xDMACR_8_WORD_BURST	(2 << 1)
- #define RZN1_UART_xDMACR_BLK_SZ(x)	((x) << 3)
- 
-+/* Ambarella specific register fields */
-+#define AMBARELLA_UART_IER_ETOI		BIT(5)
-+
- /* Quirks */
- #define DW_UART_QUIRK_OCTEON		BIT(0)
- #define DW_UART_QUIRK_ARMADA_38X	BIT(1)
-@@ -60,6 +63,7 @@
- 
- struct dw8250_platform_data {
- 	u8 usr_reg;
-+	u8 ier_mask;
- 	u32 cpr_value;
- 	unsigned int quirks;
- };
-@@ -572,6 +576,23 @@ static void dw8250_prepare_rx_dma(struct uart_8250_port *p)
- 	dw8250_writel_ext(up, RZN1_UART_RDMACR, val);
- }
- 
-+static int dw8250_ier_mask_startup(struct uart_port *p)
-+{
-+	struct dw8250_data *d = to_dw8250_data(p->private_data);
-+	struct uart_8250_port *up = up_to_u8250p(p);
-+	int ret;
-+
-+	ret = serial8250_do_startup(p);
-+	if (ret)
-+		return ret;
-+
-+	/* Keep variant-specific bits in the shadow across subsequent updates. */
-+	up->ier |= d->pdata->ier_mask;
-+	serial_port_out(p, UART_IER, up->ier);
-+
-+	return 0;
-+}
-+
- static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
- {
- 	unsigned int quirks = data->pdata->quirks;
-@@ -606,6 +627,8 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
- 		p->serial_in = dw8250_serial_in32;
- 		data->uart_16550_compatible = true;
- 	}
-+	if (data->pdata->ier_mask)
-+		p->startup = dw8250_ier_mask_startup;
- }
- 
- static void dw8250_reset_control_assert(void *data)
-@@ -879,6 +902,12 @@ static const struct dw8250_platform_data dw8250_intc10ee = {
- 	.quirks = DW_UART_QUIRK_IER_KICK,
- };
- 
-+static const struct dw8250_platform_data dw8250_ambarella_cv75_data = {
-+	.usr_reg = DW_UART_USR,
-+	.ier_mask = AMBARELLA_UART_IER_ETOI,
-+	.quirks = DW_UART_QUIRK_SKIP_SET_RATE,
-+};
-+
- static const struct dw8250_platform_data dw8250_ultrarisc_dp1000_data = {
- 	.usr_reg = DW_UART_USR,
- 	.cpr_value = FIELD_PREP_CONST(DW_UART_CPR_ABP_DATA_WIDTH, 2) |
-@@ -889,6 +918,7 @@ static const struct dw8250_platform_data dw8250_ultrarisc_dp1000_data = {
- };
- 
- static const struct of_device_id dw8250_of_match[] = {
-+	{ .compatible = "ambarella,cv75-uart", .data = &dw8250_ambarella_cv75_data },
- 	{ .compatible = "snps,dw-apb-uart", .data = &dw8250_dw_apb },
- 	{ .compatible = "cavium,octeon-3860-uart", .data = &dw8250_octeon_3860_data },
- 	{ .compatible = "marvell,armada-38x-uart", .data = &dw8250_armada_38x_data },
+ .../bindings/serial/snps-dw-apb-uart.yaml          |  1 +
+ drivers/tty/serial/8250/8250_dw.c                  | 30 ++++++++++++++++++++++
+ 2 files changed, 31 insertions(+)
+---
+base-commit: 378c935cabe003ef440c1c79302a1f8ed7913778
+change-id: 20260813-cv75-v3-c-d98a97d0f9f1
 
--- 
-2.34.1
+Best regards,
+--  
+Long Zhao <longzhao@ambarella.com>
 
 
