@@ -1,108 +1,93 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 672A8439015
-	for <linux-serial@vger.kernel.org>; Thu, 13 Aug 2026 14:23:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A95C5483BF4;
+	Thu, 13 Aug 2026 15:24:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786631030; cv=none; b=RQ3q1ZpCIz1Eov8ByVGg9p+7XZ/K47ZqyOo8seIBX1NgVLt9k/crwgxjk/Arrskss+0hWk4Qm4/FVkl2mChmKWmfqqhl+7ztXA5qnshNdI+4sQ0ORSULWbY2HZVw8svYvJRtLEZ8fQlNE2qO7gz1Qqsu8EE9qc/exVpiT1xCRZ8=
+	t=1786634700; cv=none; b=StXANhp+HG0piKoNSOUGbK87I/z+4f6f2/CK/XMlFcS17yowK46DLylMWxvG79SFP2PEXx/6tSglyky6SFCyraP9m+hNqPpa8A6vQ/BRgFKBPU2KJEsaBUgUknqPiBmef4cXBjue0aT6Y7RxmohLtB/j2tGxkyRM7UMoY09CCes=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786631030; c=relaxed/simple;
-	bh=xzA6z/ScLQYJHgyemPeQLuBov2qwLz98o4xTEP7Bomw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=LKvu7B4BaHT/FBQzxcQnzP2XePCxislJlZYNYrhVTsgM44wTGvR5AIAQoYx5zDlSymaaVLb64jWTWb01ZjYRMoxfrYabEDaQGKemwgAGRtl2sKf8PySILgOxM0QLQjL4CeOzplRRhb9s1qzNB5bggg+OdvmGaFv+zN6TOhC3f20=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=9elements.com; spf=pass smtp.mailfrom=9elements.com; dkim=pass (2048-bit key) header.d=9elements.com header.i=@9elements.com header.b=Ny6tl/Ko; arc=none smtp.client-ip=209.85.221.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=9elements.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=9elements.com
+	s=arc-20240116; t=1786634700; c=relaxed/simple;
+	bh=SuWG8aA9nGYj5PmNtAx+oxAwEwtJKnAZ6IGJ5YhHqAs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=oWtdvmofVk5muTGf8PyBf+IX8Sw8EVvvmMEDqdUyxyArxAPgnHYO/RyTJ0UEIUiOe1p5mJEGTTL2O4H7dXZrYf420fgRxTufbtsnvQPzFNR/JbvaPN5B0RQZ+B8gwgI715JotAX7ZGEdsX/XkkqK0Jh0y7cV96La4w+5Eo8900s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=drqiBzn2; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=9elements.com header.i=@9elements.com header.b="Ny6tl/Ko"
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-47db714766aso619059f8f.0
-        for <linux-serial@vger.kernel.org>; Thu, 13 Aug 2026 07:23:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=9elements.com; s=google; t=1786631026; x=1787235826; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=3zAK75b8ZUtjKJXv+z/knfiDKVadFa2L6rKVWPT2qQc=;
-        b=Ny6tl/KodaHSIrpr3YhGQ9SMgRJ14naUzlZee0rVY32T0OhFFNYRC9dfocN1Bwkkvf
-         0LV79OYDsCIlbak351iadjewtHq3qDK7l2v1an12NHiNE/eF5j2Q0M9k5RGz7PpOz2d6
-         w4uW5XhAOVwYf9Si+HjeaQiw5Pcphtgg0QV2vmB5ptugcn3D8tRMmdsXcBlN3KFupnk5
-         HFHphB2TD7nOjHEh54loe0mYKqXmKrmBLwc8Co2K+gnEMAvbSI79na9/D4Kgiof4QU8g
-         EC1VDn4gUQspz1ZjzWJp1Aqa58rnLaDH70/rqFuDID9+imESMdYXrRx8te9itn5wG99d
-         Vy7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786631026; x=1787235826;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=3zAK75b8ZUtjKJXv+z/knfiDKVadFa2L6rKVWPT2qQc=;
-        b=m1qjREqfosJKYGfnf6v4ULs5J0GZ1rv9n37utcXYiQFdTR5wYeviVtU44sB7mYMxCv
-         Vy7mU4p7Yy1fijfyCISTWI9ZHnmmEudgY0qybJtZeCAxUgG17z+ZHoqeTlb/amzE+JKS
-         FuyaaG8jMQurxtdp12/hPfDNKZLIkRXskm5xgSx1x6P7aXtn/9WhGEIQDL2e+Noe/zze
-         V3y4aYiO4bMavzLhHwqQBikfooGlp6l3f7NkrNYhabp98cIZPaLLX+XaobGRuQrH3xRH
-         Cx06sb1vlbLYBF8UvppJDHR4+f/PnDmamSfzYJPMoqZNgCD/VcXhvsYnRkWyjjfp9CMA
-         gBhQ==
-X-Forwarded-Encrypted: i=1; AHgh+RpzG8RWROGhUiLC6hBYVRM/Kucq0Cq/9tlDnSf7sRGCUAOc+p4KpiSXyIMKcoUoTL/wUQ2nDFU64hUeSJw=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxpw9CM79zXwVHasPwTUvSGXMzc2aSX3k0myQ1/FS+rygyluyEt
-	bVNRt2Ms6y1YT0sNYpZ3DND6iEBZ7Zej2H74VAoLii8cLXBtgxoTBbNpjVwrEPtJaxs=
-X-Gm-Gg: AR+sD11PFV4XOJhIAwZNPu0ZH0BPnla2uX6C66QlB41el6EdUk3MXvGFqTr3hBu6obS
-	YoTxbjAnknibrzMyxDPNjW04deaZ65oDXGjrH9x/oFw3kp1h2g45OzXsk/pT5r324LENwBj4qzF
-	gaO7Vgjl3eMiCKilq4N9SKDJfFF07H3BJK8GiEeNrcPNks9Pc4VPQGKcw2IiPuyJeO/j+wja43f
-	OnTPPRU3fL4HIKE9Xi7vdNJGCURnKF07Wk50p0vS+MK8mB2BywIzP9b/hqyjoY0nWD/nm3tqnmO
-	me6JbR04l7Tz7Wjba8f9QWI2M/ZSNNEQEdsm5Lkpb9yoixBNb7X8/wTHDV2h5qZo4cFWhaf8hsu
-	W3m4aIGARScvN+e9rNwhJfMY9t9J8hWMrs6SXDqL9rnAvi/f3eJEVycK+VzGJiGfHrNcn6starW
-	St02gmaQOfOwMwz7IZVjs+K1/LN3WIiN0pLkNhq7Y7joVgSJDDH4+k2231kEdiY48aSFhPVB2wI
-	zvzFdhtHL2OriXcNW4ENwAQ+ASBK28ideQKRGMBgDAY/3o3JQ/c
-X-Received: by 2002:a05:600d:6409:10b0:499:84fc:4548 with SMTP id 5b1f17b1804b1-49984fc45c0mr29737445e9.5.1786631026583;
-        Thu, 13 Aug 2026 07:23:46 -0700 (PDT)
-Received: from ?IPV6:2a01:599:447:e518:cc7c:e59e:1489:db94? ([2a01:599:447:e518:cc7c:e59e:1489:db94])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49981e2e266sm51262395e9.2.2026.08.13.07.23.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 13 Aug 2026 07:23:46 -0700 (PDT)
-Message-ID: <15d1ced4-2400-477b-800d-fdcca80559bc@9elements.com>
-Date: Thu, 13 Aug 2026 16:23:44 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="drqiBzn2"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 884531F00A3A;
+	Thu, 13 Aug 2026 15:24:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1786634697;
+	bh=BL6aeg2XUs2pIQwUHE/ZkMvRSZowduK7k2b5fXuit3Y=;
+	h=From:To:Cc:Subject:Date;
+	b=drqiBzn2hqLoStHvJbtPkmxcZoXFE8q/TC5bInoyLKqsXXGzvSFY2UQI6rvF8MzSA
+	 isikLjBc1n49NgjPrZLwK+VpYRpSg07lRK1vLgR5VeR53QQylOpaG6SKNqCCT2+pzC
+	 pWE6+nLAVpesldSHtO2IQ7iZhQCnnH8jPi8o/jaWyIagn2flSVHCBfGt6jDfVrhcrm
+	 W7kOysRNjoiRSEKtfbwNa8tj0q6VaRcoTkETDg8Gfygr25Z/pzmkoXVRH4lwzRJhbO
+	 j4mVaUFT92ileAa5IM/HPxTERkJjibnLSkdZXRgR/V0m19R1r5FuUOGd3kcTicpIpk
+	 gVYqAXvgSk1Ow==
+From: Danilo Krummrich <dakr@kernel.org>
+To: markus.probst@posteo.de,
+	gregkh@linuxfoundation.org,
+	rafael@kernel.org,
+	dakr@kernel.org,
+	ojeda@kernel.org,
+	boqun@kernel.org,
+	gary@garyguo.net,
+	bjorn3_gh@protonmail.com,
+	lossin@kernel.org,
+	a.hindborg@kernel.org,
+	aliceryhl@google.com,
+	tmgross@umich.edu,
+	daniel.almeida@collabora.com,
+	tamird@kernel.org,
+	acourbot@nvidia.com,
+	work@onurozkan.dev
+Cc: driver-core@lists.linux.dev,
+	linux-serial@vger.kernel.org,
+	rust-for-linux@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] rust: serdev: use ThisModule::as_ptr() instead of field access
+Date: Thu, 13 Aug 2026 17:24:41 +0200
+Message-ID: <20260813152444.514580-1-dakr@kernel.org>
+X-Mailer: git-send-email 2.55.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 4/6] soc: mfd: add ASPEED AST2600 PCIe BMC device
- driver
-To: =?UTF-8?Q?Gr=C3=A9goire_Layet?= <gregoire.layet@9elements.com>
-Cc: joel@jms.id.au, andrew@codeconstruct.com.au, lkundrak@v3.sk,
- devicetree@vger.kernel.org, gregkh@linuxfoundation.org,
- jirislaby@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, lee@kernel.org, =?UTF-8?Q?Gr=C3=A9goire_Layet?=
- <git@gregoirelayet.com>, andrew@lunn.ch, jacky_chou@aspeedtech.com,
- yh_chung@aspeedtech.com, ninad@linux.ibm.com, anirudhsriniv@gmail.com,
- linux-serial@vger.kernel.org, mfd@lists.linux.dev,
- linux-aspeed@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org
-References: <cover.1785932211.git.gregoire.layet@9elements.com>
- <51db5e5bb5bf44dd5ab893b8d547291f04e1d3c7.1785932211.git.gregoire.layet@9elements.com>
- <178609182923.193353.7287772568467157519.b4-review@b4>
- <CAFi2wKZdJ3LxJVDqC2K79T0JhoOOWSj=ZmL9pB+Lka_aXDXatQ@mail.gmail.com>
-Content-Language: en-US
-From: Tan Siewert <tan.siewert@9elements.com>
-In-Reply-To: <CAFi2wKZdJ3LxJVDqC2K79T0JhoOOWSj=ZmL9pB+Lka_aXDXatQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 8/10/26 12:36 PM, Grégoire Layet wrote:
->> But you're adding the UART devices here which now means that the core driver is
->> doing more than MSI interrupt init.
-> 
-> I might have misunderstood but this is creating the UART device by
-> using the 'serial8250' driver.
+The THIS_MODULE series [1] applied to rust-next moved ThisModule from
+lib.rs into a module.rs submodule, making the tuple struct field private
+outside the module. This breaks the module.0 field access in serdev in
+driver-core-next.
 
-You're right :face_palm: I haven't had enough coffee when I reviewed it.
+Update the call to __serdev_device_driver_register() to use the public
+module.as_ptr() accessor to fix the build.
 
-Sorry for the confusion!
+Link: https://lore.kernel.org/all/20260811-fix-fops-owner-v10-0-7e71776f9dbe@linux.dev/ [1]
+Closes: https://lore.kernel.org/all/DKNAS52KYWLD.M15VEC6U0F6R@kernel.org/
+Signed-off-by: Danilo Krummrich <dakr@kernel.org>
+---
+ rust/kernel/serdev.rs | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Tan
+diff --git a/rust/kernel/serdev.rs b/rust/kernel/serdev.rs
+index c0cd24481ee3..eecb1117095c 100644
+--- a/rust/kernel/serdev.rs
++++ b/rust/kernel/serdev.rs
+@@ -87,7 +87,7 @@ unsafe fn register(
+         }
+ 
+         // SAFETY: `sdrv` is guaranteed to be a valid `DriverType`.
+-        to_result(unsafe { bindings::__serdev_device_driver_register(sdrv.get(), module.0) })
++        to_result(unsafe { bindings::__serdev_device_driver_register(sdrv.get(), module.as_ptr()) })
+     }
+ 
+     unsafe fn unregister(sdrv: &Opaque<Self::DriverType>) {
 
+base-commit: 8364d0e36cbbdfe9adb65a170a70cbe3cdb02ff9
+-- 
+2.55.0
 
