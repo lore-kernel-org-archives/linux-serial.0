@@ -1,54 +1,54 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A6B137DAA3
-	for <linux-serial@vger.kernel.org>; Fri, 14 Aug 2026 06:58:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77A6D3DBD65
+	for <linux-serial@vger.kernel.org>; Fri, 14 Aug 2026 07:00:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786690721; cv=none; b=G+eCNvQNxOrI222dvVk5yBVX2BuNnGhyMClpupz/y/hgigFn4d0S82GFq3j9wX9npbeb/DnWbZynsz/9cWTzf+PvCKSo7PDsNUF8FpFi3DJ2KiZ6LnXGmzSxZIFibdLn5EcmsGcEKa0nyH4yG0395I05tmSKPboMNfw25VXGCbU=
+	t=1786690815; cv=none; b=SVskm2/cx+u2dElS3j7JjmQ5dpLyn13/symOq36OUk32JpzBgiZ6m11esCRF9DtZTy3cm+Fr5QnGSWVqgUdYEnc504LDV2wZatSEVgrc1EiJGj+5cwmp9r1Z+bsB/K0puAl5vxk0w0k0qok0ky2+85t1ArrEUt1TnxDVZly/0bM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786690721; c=relaxed/simple;
-	bh=csIsvLf1U9LsyENkdQVy1zbSHkYcN8Of8/B075321fU=;
+	s=arc-20240116; t=1786690815; c=relaxed/simple;
+	bh=QDHTWER7gaZGVxdnix6HF1IV6R/NU/zTyMo3McscTZw=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=eOs7S+7cMZYGVBkxC4FGzpXk4LwtDYtiySQ6R5kdvGZXS61ui6vvDJdkKWxAFRXWul+1q7nJY37vcBoCJ3uWy1vJfZnPOp+BBY1V1c+p693DOSKH1oYXUhubpb97GzvdcRMJeJhR1MAfOjTgGYU7WBJCBd1arxNShHeYhdDNUig=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=D/bP5ViT; arc=none smtp.client-ip=100.103.45.18
+	 To:Cc:Content-Type; b=pojwe8TMLn/GXepHQmgFAHEq1NhVADz+7m0aNLeqm1bQrYq8zOUhqpLehr6Tj+cdcqKJqIV536olk/oPXt0SSFcuC/mrX+lEV+c/50yziGodupJ50WXK9yIdV/4HwENp8MvR8XbslMEX9YZahIUsVXl/d1l00SESt693gNZQ+T8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MFpNzmn9; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="D/bP5ViT"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C25A31F00A3D
-	for <linux-serial@vger.kernel.org>; Fri, 14 Aug 2026 06:58:39 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MFpNzmn9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 316EC1F00ADF
+	for <linux-serial@vger.kernel.org>; Fri, 14 Aug 2026 07:00:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786690719;
-	bh=csIsvLf1U9LsyENkdQVy1zbSHkYcN8Of8/B075321fU=;
+	s=k20260515; t=1786690809;
+	bh=QDHTWER7gaZGVxdnix6HF1IV6R/NU/zTyMo3McscTZw=;
 	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=D/bP5ViTAhcQxJkz9ISTAsbQQJx/HxuNi6D2zTuf+sMjx4s52nIlOcWFsiQBgNXwz
-	 BVAu406wVJe0JnfgSZawXiEVMpvrkEjhibwRwTVJRbgBRctlAyt29i6yVmG5r6uNbm
-	 bXlz5ARqU+T34etDQ+1HIkA6MPysN0tAL+/UefNTCkmjj9Vh0cjOAWZZBfXGTC0Zg/
-	 kpbdS1EqO5+vPbEywaJN/NO7yIcwSXC2mGK3ode9qBTk2Eu1kvB0YkSCKAY7hH8Hs1
-	 Mgg7zM2itiqjfIOh90vyInZ4rJJeIsTn1mZ/H9CQ/BLRCU5TQmxcWJi3GCXgA4orgN
-	 ErmlxlZfN5R7Q==
-Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-5b015b2d792so622665e87.3
-        for <linux-serial@vger.kernel.org>; Thu, 13 Aug 2026 23:58:39 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AHgh+Rrs1pAKqH9h3QtFYjgNsDPILqpjCWQ3oQDm0xGnuWFKoCK8Cw9cHxksTnrcct1NpnrRv0vcbMu1M8QLdBs=@vger.kernel.org
-X-Gm-Message-State: AOJu0YysevpOgovsrBVpbZd2twoQyyIqmuCke/8+E3VuMX1+8okn/w0d
-	nUNwSpM/EUhVBiCZUWsuZeDLkBq9e2FF1h1z8Rj4TMPT3aZNK6kcLHpkyOQZwM/UGTa8zx1UHdF
-	jDx5+twI/K348ambFbidsxUj757hbNJY=
-X-Received: by 2002:ac2:4f11:0:b0:5b0:1ace:3bc7 with SMTP id
- 2adb3069b0e04-5b459164d3cmr561959e87.31.1786690718590; Thu, 13 Aug 2026
- 23:58:38 -0700 (PDT)
+	b=MFpNzmn9PY3nk07mgfQgps8YiGSp8vz7TLyKh5WxFd9sUXmWYMosTQyYpfp+6HsLB
+	 L0rYre2gQ5JSq5+vBGfCnJ1JY795bIae/pd/y0oCZln2bwQM/RxxjhoSDyQ43L4t0P
+	 1I9h2m61dqxoBJAm+HN1jwfKGpX3gPNx3UPbBnhYROc7CtC2fdO0jtoFKc01HoO1qq
+	 0UKQsVFfSRAnoLBkjAWNcPpYWMstZR9Rbg9vweR5t01LJneoKnTHKbc23J3YflAAIk
+	 sH963A3ORbYT+01BVGRgfkDXq1yiX+N9Z9N9ZSg9sIq5TsHaCQYS6a/Ge7d6fbl/D0
+	 IC/Xhvhi6V/MQ==
+Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-5b0f19bea2fso686519e87.1
+        for <linux-serial@vger.kernel.org>; Fri, 14 Aug 2026 00:00:09 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AHgh+RpHsz5KHWZFBezejs40mIqRJrtruJAbJTDs5KaJ/8DvRVAyoZeT0sM6UPSOZvKu3QR5Fc0MrErBk5KOtAI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwagDMkuIGuS7dERyb+T2w9qr/Lrg68FBfP4FjnKbcWDM1xbhSC
+	7lccJ0RjdmaHQ+NuDXtYLBoBbDwmRujcvGqhE0kWtwVivyIAMAQo2VrKKomPVO32NdxxEoV0iOK
+	ZpMTUiZbNJi8kX8MER6p/dzk9ArXv0r0=
+X-Received: by 2002:ac2:4f0c:0:b0:5b0:eda:de1b with SMTP id
+ 2adb3069b0e04-5b45915d0f8mr422711e87.16.1786690807955; Fri, 14 Aug 2026
+ 00:00:07 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260813-cv75-v3-c-v3-0-9352b3fd6026@ambarella.com> <20260813-cv75-v3-c-v3-1-9352b3fd6026@ambarella.com>
-In-Reply-To: <20260813-cv75-v3-c-v3-1-9352b3fd6026@ambarella.com>
+References: <20260813-cv75-v3-c-v3-0-9352b3fd6026@ambarella.com> <20260813-cv75-v3-c-v3-2-9352b3fd6026@ambarella.com>
+In-Reply-To: <20260813-cv75-v3-c-v3-2-9352b3fd6026@ambarella.com>
 From: Linus Walleij <linusw@kernel.org>
-Date: Fri, 14 Aug 2026 08:58:26 +0200
-X-Gmail-Original-Message-ID: <CAD++jLnFqSy0yUfn_NtmxAij_jN5BeMXNNNuQFv99Q82hRxpHw@mail.gmail.com>
-X-Gm-Features: AcwNN1XuvUL75RlWfYI66nkaW_h1Km9OIlm1Ef0qiIjxZ-dRRgrwe-r9r6XcyPY
-Message-ID: <CAD++jLnFqSy0yUfn_NtmxAij_jN5BeMXNNNuQFv99Q82hRxpHw@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] dt-bindings: serial: snps-dw-apb-uart: add ambarella,cv75-uart
+Date: Fri, 14 Aug 2026 08:59:55 +0200
+X-Gmail-Original-Message-ID: <CAD++jLngKLVtojVtmVkYkdLLZrUojper2H4UEA-jK9gcvCSbMQ@mail.gmail.com>
+X-Gm-Features: AcwNN1X41Lg0pGS5rN1f6LITo8FZUmbNN0ilERFfy_O7IWKV3Rive9omrkTS7bk
+Message-ID: <CAD++jLngKLVtojVtmVkYkdLLZrUojper2H4UEA-jK9gcvCSbMQ@mail.gmail.com>
+Subject: Re: [PATCH v3 2/2] serial: 8250_dw: add Ambarella CV75 quirks
 To: longzhao@ambarella.com
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
 	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
@@ -63,11 +63,14 @@ On Thu, Aug 13, 2026 at 12:35=E2=80=AFPM Long Zhao via B4 Relay
 
 > From: Long Zhao <longzhao@ambarella.com>
 >
-> Add the Ambarella CV75 compatible string to the Synopsys DW APB UART
-> binding.
+> Add CV75 platform data with an ETOI IER mask and skip-set-rate so the
+> DesignWare 8250 driver can drive the Ambarella UART for console use.
 >
 > Signed-off-by: Long Zhao <longzhao@ambarella.com>
 
+I see this approach was successful! :)
+Look into the Sashiko comment abour lockless write to UART_IER
+but from my PoV this is fine:
 Reviewed-by: Linus Walleij <linusw@kernel.org>
 
 Yours,
