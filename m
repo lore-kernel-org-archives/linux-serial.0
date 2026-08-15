@@ -1,128 +1,81 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from ocn-dfr-mts-113c2.ocn.ad.jp (ocn-dfr-mts-113c2.ocn.ad.jp [153.128.190.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6480846DFFC;
-	Fri, 14 Aug 2026 12:49:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 946DD3F58E8;
+	Sat, 15 Aug 2026 07:44:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=153.128.190.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786711795; cv=none; b=hU72iEsCE8wqqF0hQI4YEBCfHMMLC6DA2sTaAecanYJHDFBvMlKeX7QKxDG72DmkY3rlbhdBvrRr4Xt8c2tRFMLvenn8M5SkGSWiwJLYwqwiSUEnzcOQp82GqmlCGNPI7PiEm7uNOts/UeuVO+IxBvwA/0d4xVt+M/Ngr8QxgrE=
+	t=1786779871; cv=none; b=htxHuqQntcXvy0RZ5YE9bSuD/fuDURzkzXKQk3e4IkW/M/qLwXLp+eyAP5HBqkGVlqnCfLIbywsFMhOnbGQZJqt2lnzcC/Edo9uBFqC/wraxclexRx7fvA1Y472fFwivGwTzi9jkQkDEeNGwoKzscEH1ui09gvNNfe6VXQU6npA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786711795; c=relaxed/simple;
-	bh=N6Wm7zvO1O97Kiw/b6HRbmjzTds561mSYObozWbWlp4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QdtxOcSDzDzXR9ITkjL+s0zwxAQmLpLAE98iIODtqPV9FsLa9jQgjvM6x/VxXT/5k0HJ+4j8ngzNxj6GV5uKL+DKNPQk5XBTpRVB0GSzic3TKGkMJCiYMvuH0c3LSC9UHzeFcTqjgeBbSYUPM/sGuQlZZ0ni7/XaEzRSQ6Br3zQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YWTGi5Q7; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1786779871; c=relaxed/simple;
+	bh=MbCY+tED5EWgOKaWY+wFJVszaGqUYlwmB9GiuNU07GE=;
+	h=Date:Message-Id:To:Cc:Subject:From:In-Reply-To:References:
+	 Mime-Version:Content-Type; b=RmvuY8uoX9rxXLPJfy4Aoy5/H98OpHKnpOeReDOR0CnqaJzsyMf8+hXY7HfgnbCtc0VXnSNlHnYzne08yQ5QRKbyN2kdmtlnnl5TG84MV4QT+xfE/OkV2z6/q3j76Vbt0O0m0W8+9Bh3cwtlzMEBzMxtC+OXt/DGNfWCxlu+iPo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mba.ocn.ne.jp; spf=pass smtp.mailfrom=mba.ocn.ne.jp; dkim=pass (2048-bit key) header.d=mba.ocn.ne.jp header.i=@mba.ocn.ne.jp header.b=WXN3OHLR; arc=none smtp.client-ip=153.128.190.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mba.ocn.ne.jp
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mba.ocn.ne.jp
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YWTGi5Q7"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D80B61F000E9;
-	Fri, 14 Aug 2026 12:49:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1786711787;
-	bh=/N/HX1GSPPOcqxWY/4dtIRIphxWYu1pio+UkOSgheTs=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=YWTGi5Q7f/pZmJbmyIgbKJXzr77Dl+/MMrgnXHtQhpdZC8lW4AM2lJ29i/13HYRdd
-	 ZQKimYvkaspsstjrhlp1dq/ocDqT+e9aYeFGesZYVmKzima9JfENh95wImTEFhAOOF
-	 InlnEDgETc0DXUW/G9AqEj8peU3XxtQ8u3hD8h31hatop8+Hh8AjZU393+lWriyc/Z
-	 EVITiCpW6A/dgpEBJrpHeJdXAzSOokK69IItB/oZQJMvMjkSmvkKYCrS9oZWm39vIJ
-	 V0pIfa1+uydAKd2dHEyqaNtmy1/312M8sPv1nFW1nNhSKMxOOlcZBEOhOyutdrHw5Y
-	 mPs6QRNcCyzvA==
-Date: Fri, 14 Aug 2026 14:49:31 +0200
-From: Manivannan Sadhasivam <mani@kernel.org>
-To: Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>, 
-	manivannan.sadhasivam@oss.qualcomm.com, Rob Herring <robh@kernel.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Nathan Chancellor <nathan@kernel.org>, Nicolas Schier <nicolas.schier@linux.dev>, 
-	Hans de Goede <hansg@kernel.org>, Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, 
-	Mark Pearson <mpearson-lenovo@squebb.ca>, "Derek J. Clark" <derekjohn.clark@gmail.com>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Marcel Holtmann <marcel@holtmann.org>, Luiz Augusto von Dentz <luiz.dentz@gmail.com>, 
-	Bartosz Golaszewski <brgl@bgdev.pl>, Daniel Scally <djrscally@gmail.com>, 
-	Heikki Krogerus <heikki.krogerus@linux.intel.com>, Sakari Ailus <sakari.ailus@linux.intel.com>, 
-	"Rafael J. Wysocki" <rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>, 
-	Bartosz Golaszewski <brgl@kernel.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-kbuild@vger.kernel.org, platform-driver-x86@vger.kernel.org, linux-pci@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org, 
-	linux-pm@vger.kernel.org, Stephan Gerhold <stephan.gerhold@linaro.org>, 
-	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, linux-acpi@vger.kernel.org, 
-	Sui Jingfeng <sui.jingfeng@linux.dev>
-Subject: Re: [PATCH v3 03/14] software node: Implement device_get_match_data
- fwnode callback
-Message-ID: <ks2nm67zp5i2grzomu7mjb7uhkuwtd7w5stoqp5kri2clpxpsp@ayn42h7meh5l>
-References: <20260110-pci-m2-e-v3-0-4faee7d0d5ae@oss.qualcomm.com>
- <20260110-pci-m2-e-v3-3-4faee7d0d5ae@oss.qualcomm.com>
- <aWSpFk9z0zpyKjr6@smile.fi.intel.com>
- <6l3rs5pv6xnrbygpvqrdxqoqtybjyefsltk5bl4336q56rfoza@ejo3sxuufghe>
- <aWSwgRiEkT9unYw9@smile.fi.intel.com>
- <6peb6afhpm4l7opxbdt3b5sx32longevwds5c3dlqji2hr5dlh@kxuvj55jkqgi>
- <ljqd5ovcsg7t62tdzd77w5mv5buawm3x7xyapy7n7l7azcaorh@tytj46t2lxyb>
+	dkim=pass (2048-bit key) header.d=mba.ocn.ne.jp header.i=@mba.ocn.ne.jp header.b="WXN3OHLR"
+Received: from ocn-ckd-mts-118c32.ocn.ad.jp (ocn-ckd-mts-118c32.ocn.ad.jp [122.28.129.97])
+	by ocn-dfr-mts-113c2.ocn.ad.jp (Postfix) with ESMTP id 7997E1C000258;
+	Sat, 15 Aug 2026 16:36:34 +0900 (JST)
+Received: from ocn-spm-mts-102c1.ocn.ad.jp (ocn-spm-mts-102c1.ocn.ad.jp [153.128.190.228])
+	by ocn-ckd-mts-118c32.ocn.ad.jp (Postfix) with ESMTP id 0FE3F68007103;
+	Sat, 15 Aug 2026 16:36:27 +0900 (JST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mba.ocn.ne.jp;
+	s=20240118; t=1786779387;
+	bh=MbCY+tED5EWgOKaWY+wFJVszaGqUYlwmB9GiuNU07GE=;
+	h=Date:To:Cc:Subject:From:In-Reply-To:References:From;
+	b=WXN3OHLRwGogBKwIwkSAc3uRjfOfqFSVzX39nABGwZIKWMMsylNHZhcx52I3n72c2
+	 5LRnZSuPgr6+2u/gIiHgPp9c9uRROa8Rn/Dt9g8xlmBpTaV07haGSkeMkAnKwurRGS
+	 /xOpR3t+HJpniZ8j1mJYWTR6E7aGKWF2kO8MoY3zPS5Jw2l3ETWPjUZqpfZFon+tl9
+	 AWgFKnsJi6xM1rOGP4ry3JywJfXhD18FgHvtNCxDNMz0m9GLB2koGTkWU7fautSR8A
+	 wAN2SUrvdDvAVuiNIMtvXE+O7DRbB98zez/Z6m4tn3pinBjjKqW9hDdekJ1l4RyK2q
+	 uj26ZeCDEtuaA==
+Received: from ocn-vc-mts-110c1.ocn.ad.jp ([153.149.236.162])
+ by ocn-spm-mts-102c1 with ngmta
+ id beed6ee8-18cbea62bd6dbdd8; Sat, 15 Aug 2026 16:36:27 +0900
+Received: from ocn-sdpx-mts-113c1.ocn.ad.jp ([153.128.117.211])
+ by ocn-vc-mts-110c1 with ngmta
+ id 58488311-18cbea62aff71174; Sat, 15 Aug 2026 16:36:26 +0900
+Received: from localhost (p1601136-ipoe.ipoe.ocn.ne.jp [114.172.254.135])
+	by ocn-sdpx-mts-113c1.ocn.ad.jp (Postfix) with ESMTPA;
+	Sat, 15 Aug 2026 16:36:26 +0900 (JST)
+Date: Sat, 15 Aug 2026 16:36:23 +0900 (JST)
+Message-Id: <20260815.163623.821342571660046378.anemo@mba.ocn.ne.jp>
+To: u.kleine-koenig@baylibre.com
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
+ andriy.shevchenko@linux.intel.com, john.ogness@linutronix.de,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ geert@linux-m68k.org
+Subject: Re: [PATCH v3 2/7] serial: txx9: Drop usage of uart_match_port()
+From: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
+In-Reply-To: <b9287ba4b13b32a11765c0532db5d34843227373.1786697789.git.u.kleine-koenig@baylibre.com>
+References: <cover.1786697789.git.u.kleine-koenig@baylibre.com>
+	<b9287ba4b13b32a11765c0532db5d34843227373.1786697789.git.u.kleine-koenig@baylibre.com>
+X-Mailer: Mew version 6.8 on Emacs 30.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ljqd5ovcsg7t62tdzd77w5mv5buawm3x7xyapy7n7l7azcaorh@tytj46t2lxyb>
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jan 12, 2026 at 10:01:23PM +0530, Manivannan Sadhasivam wrote:
-> On Mon, Jan 12, 2026 at 02:32:21PM +0530, Manivannan Sadhasivam wrote:
-> > On Mon, Jan 12, 2026 at 10:27:45AM +0200, Andy Shevchenko wrote:
-> > > On Mon, Jan 12, 2026 at 01:49:54PM +0530, Manivannan Sadhasivam wrote:
-> > > > + Dmitry Torokhov (who was against this patch previously)
-> > > > 
-> > > > On Mon, Jan 12, 2026 at 09:56:06AM +0200, Andy Shevchenko wrote:
-> > > > > On Sat, Jan 10, 2026 at 12:26:21PM +0530, Manivannan Sadhasivam via B4 Relay wrote:
-> > > > > 
-> > > > > > Because the software node backend of the fwnode API framework lacks an
-> > > > > > implementation for the .device_get_match_data function callback.
-> > > > > 
-> > > > > Maybe this is done on purpose. Have you thought about this aspect?
-> > > > 
-> > > > IMO, software nodes were introduced to add sub-properties to the existing
-> > > > firmware nodes, but it has usecase/potential to go beyond that. More below.
-> > > 
-> > > Potential doesn't mean the necessity.
-> > > 
-> > > > > > This makes it difficult to use(and/or test) a few drivers that originates
-> > > > > > from DT world on the non-DT platform.
-> > > > > 
-> > > > > How difficult? DSA implementation went to the way of taking DT overlay
-> > > > > approach. Why that one can't be applied here?
-> > > > 
-> > > > Sometimes you do not have any DT node at all.
-> > > 
-> > > Yes, that is exactly the case I have referred to. The PCI core (in Linux)
-> > > is able to create DT subtree on non-OF based platforms.
-> > > 
-> > 
-> > Maybe I should look into creating dynamic DT node for the device and insert it
-> > to the uart node. Theoretically it should work.
-> > 
-> 
-> It worked flawlessly. So I sent v4 incorporating this design:
-> https://lore.kernel.org/linux-pci/20260112-pci-m2-e-v4-0-eff84d2c6d26@oss.qualcomm.com/
-> 
+On Fri, 14 Aug 2026 11:19:28 +0200, Uwe Kleine-K=F6nig (The Capable Hub=
+) <u.kleine-koenig@baylibre.com> wrote:
+> -		if (uart_match_port(uart, port)) {
+> +		/*
+> +		 * serial_txx9_register_port() is only called from
+> +		 * pciserial_txx9_init_one(). So .iotype is UPIO_PORT and
+> +		 * comparing .iobase serves to distinguish ports.
+> +		 */
+> +		if (uart->iobase =3D=3D port->iobase) {
 
-Andy, I had to revive this old thread of a merged series as Krzk is not in
-favour of adding DT overlay or dynamic OF nodes for these BT devices [1]. His
-objections are due to the fact that we are just adding BT nodes of a
-discoverable device (M.2 PCIe device) without any resources. So the node just
-contains the compatible to match with the serdev driver and nothing else.
+Thank you for adding this comment.
 
-And he suggested to use swnodes or other similar mechanisms to plug with the
-serdev driver as that's the only thing we want here, not a true hardware
-description.
+Reviewed-by: Atsushi Nemoto <anemo@mba.ocn.ne.jp>
 
-Since you strongly objected the swnode approach in this series, I wanted to hear
-your opinion before I rework the code.
-
-- Mani
-
-[1] https://lore.kernel.org/linux-pci/768142f0-2638-41f3-a34f-dc80bb99eb7f@kernel.org
-
--- 
-மணிவண்ணன் சதாசிவம்
+---
+Atsushi Nemoto
