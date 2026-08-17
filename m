@@ -1,281 +1,177 @@
-Received: from mail-oo2-f8.google.com (mail-oo2-f8.google.com [74.125.231.136])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F44042465C
-	for <linux-serial@vger.kernel.org>; Mon, 17 Aug 2026 13:05:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.231.136
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0D583EC82D;
+	Mon, 17 Aug 2026 13:55:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786971939; cv=none; b=cjGHNCAQCyb8bz6DaFN0s0JfObJCTQ7Fu5YneZWrBs3Z1uQmrxJGDuLgTzidvX9Amkv2VohZW0ssK4lgn2sVOxDrTbq3WT3N0b371sJi9oHX62dSznaJ2LdCT+RsYKjL6id3dfuSufG5q+cW9IhXRKK5f9931F/d4zHUgtm3B1I=
+	t=1786974944; cv=none; b=D3J471KFz+ykvUHLE5+cs60NUaz+cIbA6yv0WXDHOedBlN52Es5RQioeWF+empG7IL1+hfcIFBYiozMMoEtPYedpxLyymtk+uDCDFqpiKCcomD7zAcnYAubAGsMKfOPCDGgcB0zbr0IIp6FKWMGe3bGfdYI2/kG0r/t0yXaI0mY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786971939; c=relaxed/simple;
-	bh=pKCgjH748e1AQJwFsN5nBhYLBvR0ccXNLnmA/OiQBog=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=cXyVzpl0l7UZPeEmgjfr5AWVlnSPw4y/Xgx85+fgYYTXeM2D7GVrRcpE+qnJTy5cu2ADfYy4hiQ8nAI9LPanDCq4DHUk8YsVWHpkf+l73vPIHleQ7eqceB2t1djMVZp5pjqUQqnHQC0neK44hREcMqy6Zs3EwgBF8vsAu5mwsPY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=74.125.231.136
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo2-f8.google.com with SMTP id 46e09a7af769-7e9db59c430so1366808a34.0
-        for <linux-serial@vger.kernel.org>; Mon, 17 Aug 2026 06:05:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786971936; x=1787576736;
-        h=content-type:to:from:subject:message-id:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=d3qqApgDbwjm3SVNMKUuWKrjSXgYT+AN4NCmX4ojbD8=;
-        b=KdsdEC9Z80PwaF8Bk/FJaEGL/Uo0o32krvpj+Or2GQakRtfovXBo8SBjJT7yyuG5Jb
-         ORTiHfIgE54svh2dPHUuB30h+Y54/Ux9jKoGXBZ1OrOQKf4SEBEw+lWMiJMdQ6xNsvi3
-         Rfi/Xyh+Kg/3NYFZkRGAEeMd8YskLgjdSyk4XTuLF+ZEfqEQXgv6CuPJd0L3HUKY7zcc
-         02//4UCFf8dxCO1Hipk5o24zsyJMS8Q5iXt6DyJK4l8gMf4nNfNJOGJ59OoT2wF5CWxZ
-         3DkyAp/mLkcSY7NX7uQv+mDjA/RbLxxAH9S+9JY0GwQmr/xI9yNvWd3AL4QhPKaJx/TQ
-         lWnQ==
-X-Forwarded-Encrypted: i=1; AHgh+RoSV/hOLkvlRbceN+s4LbFI10ouHf1WY/L0s6wt0aAR9VKoEPDe/MolJOQjs1qnP7bUjJDR5nDe+TK09WA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyHFRg1QXJXDkZB2iHU3iTtwp6kYwlf+KgRHtRR6nQ1ztGVgpVN
-	f30xv5h+AVp3v2CnOGOvKVqWVgOREMHvd+iqo8VVENkKHdSqbzm1mlan+0eoGXHgYhKLZYjr9b1
-	lKc9uIwIU0reSx8LCiBq2UQ6XVfHcwAE8+5fpTgGgmwKDo9uwpTEyblyGu98=
+	s=arc-20240116; t=1786974944; c=relaxed/simple;
+	bh=2b28gpyO74OvnboGMfs6XMlpW97XwqylhC48G0RFMkc=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=uqbxqzDmKAQ/4EasTXcCHNyEne7avg2S8+hRb0fjFFDrci5ZhZAqMqsLWeQv03DMnQhBJvG4Ks72q3jJDlM4Iefj303tD9Aj46LpDW+kR55n1kT6YYUyBdYUYcPEIK8w6BGesv9C8NsFACQ9axyCM26M759RRw/gZREuhVnXdf0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Iddg0sOF; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Iddg0sOF"
+Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67HD68Ci2329989;
+	Mon, 17 Aug 2026 13:55:33 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:date:from:message-id:mime-version
+	:subject:to; s=qcppdkim1; bh=XB+1w/rL4F2agfvTbAyxmvx2OYmAWpqE2lq
+	eMF8DoYY=; b=Iddg0sOFQRx0mqdPVPDxOhn1TnWLq/T9PZ09a3IsIXjzvKjWb7x
+	nlH0c4EtXC6YxgwyyV/NvIlsxSCYVBBAEhPwjWr0e6vpy2eLrGtSna600P6mYzR4
+	MDjRTzI8yZIkVJbqDNTJBYySas3NlDyYA4LVRQN9clDySjSApAM6X/l5ZTGyfNyz
+	Q+XvfMGfRxcMbHqk2bd7NH+FQodhyIpIRJq7YaeI2zw7ccBTVETrCAoSjzPUFA+R
+	P1Xj7ETUWjGvlKIyPh+HNKKBPc8GvTgvg0J9y85jt2y3f+yWVl8Ey2Wlx2i+itzw
+	i1wcWtyeLrKcMzRFZbV8tkmvDWJ8S+Rp9Bw==
+Received: from aptaippmta01.qualcomm.com (tpe-colo-wan-fw-bordernet.qualcomm.com [103.229.16.4])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4g3vghsx14-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 17 Aug 2026 13:55:33 +0000 (GMT)
+Received: from pps.filterd (APTAIPPMTA01.qualcomm.com [127.0.0.1])
+	by APTAIPPMTA01.qualcomm.com (8.18.1.7/8.18.1.7) with ESMTP id 67HDtTqQ011834;
+	Mon, 17 Aug 2026 13:55:29 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+	by APTAIPPMTA01.qualcomm.com (PPS) with ESMTPS id 4g2h6jnw2n-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 17 Aug 2026 13:55:29 +0000 (GMT)
+Received: from APTAIPPMTA01.qualcomm.com (APTAIPPMTA01.qualcomm.com [127.0.0.1])
+	by pps.reinject (8.18.1.12/8.18.1.12) with ESMTP id 67HDtTlG011829;
+	Mon, 17 Aug 2026 13:55:29 GMT
+Received: from bt-iot-sh02-lnx.ap.qualcomm.com (smtphost-taiwan.qualcomm.com [10.249.136.33])
+	by APTAIPPMTA01.qualcomm.com (PPS) with ESMTPS id 67HDtT0L011824
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 17 Aug 2026 13:55:29 +0000 (GMT)
+Received: by bt-iot-sh02-lnx.ap.qualcomm.com (Postfix, from userid 4260555)
+	id 17EA622948; Mon, 17 Aug 2026 21:55:28 +0800 (CST)
+From: Xin Chen <xin.chen2@oss.qualcomm.com>
+To: gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        liulzhao@qti.qualcomm.com, cheng.jiang@oss.qualcomm.com,
+        Xin Chen <xin.chen2@oss.qualcomm.com>
+Subject: [PATCH v1] tty: n_tty: use kvzalloc/kvfree for line discipline data
+Date: Mon, 17 Aug 2026 21:55:26 +0800
+Message-Id: <20260817135526.386863-1-xin.chen2@oss.qualcomm.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:2086:b0:6ac:a994:8794 with SMTP id
- 006d021491bc7-6b11dce8389mr129600eaf.7.1786971936247; Mon, 17 Aug 2026
- 06:05:36 -0700 (PDT)
-Date: Mon, 17 Aug 2026 06:05:36 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6a830720.dbb3a75c.20434b.005b.GAE@google.com>
-Subject: [syzbot] [serial?] KASAN: slab-use-after-free Read in check_tty_count
-From: syzbot <syzbot+39a2135de1558208d3b3@syzkaller.appspotmail.com>
-To: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Authority-Analysis: v=2.4 cv=P9gKQCAu c=1 sm=1 tr=0 ts=6a8312d5 cx=c_pps
+ a=nuhDOHQX5FNHPW3J6Bj6AA==:117 a=nuhDOHQX5FNHPW3J6Bj6AA==:17
+ a=Sv0fKeRqtYgA:10 a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22
+ a=rJkE3RaqiGZ5pbrm-msn:22 a=VwQbUJbxAAAA:8 a=COk6AnOGAAAA:8 a=EUspDBNiAAAA:8
+ a=5IXlErGSFCVb9qIZTWgA:9 a=TjNXssC_j7lpFel5tvFf:22
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODE3MDEwNiBTYWx0ZWRfX9PXhi14gv9GT
+ aXd7dm6Jyz1vNW9k9v7HI1oTchOVwVw+sAc/u8aNG6JZAQ0xKHW13EzIKzLg9j3t0kZJaw7owEo
+ XCOUA+8DQm+mtiqBi0mAS935PSYkMdI=
+X-Proofpoint-ORIG-GUID: KcfK1MrntN3g5sL7QMnHOwcik0-JnSXN
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODE3MDEwNiBTYWx0ZWRfX6zOr2jqS5aVP
+ BxXLG6uINICCbNwdQTI+CEfPofcetmyg2cgRfjndU1RRBgsXNU1i3L3CVBhu1jzBB7zMYp1a1fY
+ nYgcOyKlFzEO4QE201giSGtALdKIV24tTeo+VD7SfeNPfyJtT/MjT1LBye271hF/LPg2HFwE+Ru
+ 2QAMJy3ju6SSYgZ3SOGOIJEdTf+wFIZTKvaLmHR82LJYEgvNgkwDcsO/YnFCHOoiSFuDyOo15aJ
+ CtycCCYzcGX4/gV3hhFgGl41JSy6dczQCAJ9i4fjm7mqUdIw0FeTfAi3KlfNBjJcF65wCDAzNBK
+ DcACkVMZEIbU01IvOzJ0sMYSoNP7G5r2pJbJ/Zrpdq2lzrTA7gJhVmrHPMTu2iVxht+ZfmNULeD
+ //F3kesGHM0k//mKaCqcwH5iJ/pbA3b1mD/LIO5V331m/KpzfOltfd1Kq8fhRVfYVTI7uGaAzxp
+ NdXVU3YQkYmK8wfkNog==
+X-Proofpoint-GUID: KcfK1MrntN3g5sL7QMnHOwcik0-JnSXN
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-08-17_01,2026-08-12_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1011 impostorscore=0 malwarescore=0 lowpriorityscore=0
+ priorityscore=1501 adultscore=0 spamscore=0 phishscore=0 bulkscore=0
+ suspectscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
+ definitions=main-2608170106
 
-Hello,
+BT enable fails intermittently with -ETIMEDOUT (-110).  The kernel log
+shows the HCI Read Local Version command was sent and the firmware
+replied with status 0x00 (logged by hci_req_cmd_complete() BT_DBG),
+but the waiter in __hci_cmd_sync_sk() never woke up and timed out
+after 10 s:
 
-syzbot found the following issue on:
+  bluetooth hci0: Opcode 0xfc00              // __hci_cmd_sync_sk
+  bluetooth hci0: opcode 0xfc00 plen 1       // hci_cmd_sync_add
+  bluetooth hci0: skb len 4                  // hci_cmd_sync_alloc
+  bluetooth hci0: length 1                   // hci_req_sync_run
+  Bluetooth: hci0 cmd_cnt 1 cmd queued 1     // hci_cmd_work
+  Bluetooth: hci0 type 1 len 4               // hci_send_frame
+  Bluetooth: opcode 0xfc00 status 0x00       // hci_req_cmd_complete
+  <-- req_skb NULL: req_complete_skb not set,
+      hci_cmd_sync_complete() never called,
+      req_status stays HCI_REQ_PEND            -->
+  <-- 10 s later: wait_event_interruptible_timeout expires -->
+  bluetooth hci0: end: err -110              // __hci_cmd_sync_sk
 
-HEAD commit:    3d6d817622b0 Merge tag 'scsi-fixes' of git://git.kernel.or..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=12961c79580000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c44651ea7dd2f307
-dashboard link: https://syzkaller.appspot.com/bug?extid=39a2135de1558208d3b3
-compiler:       gcc (Debian 14.2.0-19) 14.2.0, GNU ld (GNU Binutils for Debian) 2.44
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=171ff479580000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15f92c79580000
+The root cause is that hci_send_cmd_sync() clones the sent command
+into hdev->req_skb so that hci_req_cmd_complete() can locate the
+registered completion callback.  Under memory pressure this
+skb_clone() fails, leaving hdev->req_skb NULL.  The firmware reply
+is received and processed, but hci_req_cmd_complete() finds NULL
+req_skb, so hci_cmd_sync_complete() is never called, req_status
+stays HCI_REQ_PEND, and the waiter times out with -ETIMEDOUT.
 
-Downloadable assets:
-disk image (non-bootable): https://storage.googleapis.com/syzbot-assets/d900f083ada3/non_bootable_disk-3d6d8176.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/f486efba4dfc/vmlinux-3d6d8176.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/9b9dcf9ee9f3/bzImage-3d6d8176.xz
+The memory pressure is caused by n_tty_open().  When a BT UART
+transport is opened, serdev_device_open() may be called multiple
+times in quick succession, each triggering n_tty_open().  n_tty_open()
+uses vzalloc() for the ~10 KB n_tty_data structure, which always
+allocates page-by-page from the buddy order-0 free list.  Repeated
+vzalloc() calls drain enough order-0 pages that the subsequent
+skb_clone(GFP_KERNEL) in hci_send_cmd_sync() cannot get a page.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+39a2135de1558208d3b3@syzkaller.appspotmail.com
+Replace vzalloc/vfree with kvzalloc/kvfree.  kvzalloc() tries
+kmalloc first and falls back to vmalloc only on failure.  The
+~10 KB n_tty_data is served from the kmalloc-16384 slab (backed
+by an order-2 compound page), leaving the order-0 free list intact
+for the subsequent skb_clone() calls.
 
-==================================================================
-BUG: KASAN: slab-use-after-free in instrument_atomic_read include/linux/instrumented.h:82 [inline]
-BUG: KASAN: slab-use-after-free in _test_bit include/asm-generic/bitops/instrumented-non-atomic.h:141 [inline]
-BUG: KASAN: slab-use-after-free in tty_port_kopened include/linux/tty_port.h:234 [inline]
-BUG: KASAN: slab-use-after-free in check_tty_count+0x134/0x2b0 drivers/tty/tty_io.c:287
-Read of size 8 at addr ffff88802e4c4230 by task syz.2.21/6005
+Note: checkpatch warns "Prefer kvzalloc_obj over kvzalloc with
+sizeof", but kvzalloc_obj() was introduced after v6.6 and is not
+available in the target kernel, so kvzalloc(sizeof(*ldata),
+GFP_KERNEL) is used intentionally.
 
-CPU: 0 UID: 0 PID: 6005 Comm: syz.2.21 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:94 [inline]
- dump_stack_lvl+0x100/0x190 lib/dump_stack.c:120
- print_address_description mm/kasan/report.c:378 [inline]
- print_report+0x13d/0x4b0 mm/kasan/report.c:482
- kasan_report+0xdf/0x1c0 mm/kasan/report.c:595
- check_region_inline mm/kasan/generic.c:186 [inline]
- kasan_check_range+0x10f/0x1e0 mm/kasan/generic.c:200
- instrument_atomic_read include/linux/instrumented.h:82 [inline]
- _test_bit include/asm-generic/bitops/instrumented-non-atomic.h:141 [inline]
- tty_port_kopened include/linux/tty_port.h:234 [inline]
- check_tty_count+0x134/0x2b0 drivers/tty/tty_io.c:287
- tty_release+0x95/0x1300 drivers/tty/tty_io.c:1728
- __fput+0x3ff/0xb50 fs/file_table.c:512
- task_work_run+0x150/0x240 kernel/task_work.c:233
- resume_user_mode_work include/linux/resume_user_mode.h:50 [inline]
- __exit_to_user_mode_loop kernel/entry/common.c:70 [inline]
- exit_to_user_mode_loop+0x1d8/0x6f0 kernel/entry/common.c:101
- __exit_to_user_mode_prepare include/linux/irq-entry-common.h:207 [inline]
- syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:230 [inline]
- syscall_exit_to_user_mode include/linux/entry-common.h:318 [inline]
- do_syscall_64+0x666/0x870 arch/x86/entry/syscall_64.c:100
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fce91f9e0d9
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffc8e0021f8 EFLAGS: 00000246 ORIG_RAX: 00000000000001b4
-RAX: 0000000000000000 RBX: 00007fce92227da0 RCX: 00007fce91f9e0d9
-RDX: 0000000000000000 RSI: 000000000000001e RDI: 0000000000000003
-RBP: 00007fce92227da0 R08: 00007fce92226038 R09: 0000000000000000
-R10: 000000000003fd94 R11: 0000000000000246 R12: 000000000000e659
-R13: 00007fce92225fac R14: 000000000000e352 R15: 00007ffc8e002300
- </TASK>
+This issue was first observed as a use-after-free in ttyport_close()
+when ttyport_open() failed, which was investigated in an earlier
+patch series [1].  That investigation led to the discovery of the
+true root cause described above.
 
-Allocated by task 6007:
- kasan_save_stack+0x30/0x50 mm/kasan/common.c:57
- kasan_save_track+0x14/0x30 mm/kasan/common.c:78
- poison_kmalloc_redzone mm/kasan/common.c:398 [inline]
- __kasan_kmalloc+0xaa/0xb0 mm/kasan/common.c:415
- kasan_kmalloc include/linux/kasan.h:263 [inline]
- __kmalloc_cache_noprof+0x2e5/0x6c0 mm/slub.c:5489
- _kmalloc_noprof include/linux/slab.h:988 [inline]
- _kzalloc_noprof include/linux/slab.h:1309 [inline]
- gs_port_alloc drivers/usb/gadget/function/u_serial.c:1218 [inline]
- gserial_alloc_line_no_console+0xac/0x710 drivers/usb/gadget/function/u_serial.c:1298
- gserial_alloc_line+0x16/0xa0 drivers/usb/gadget/function/u_serial.c:1332
- acm_alloc_instance+0xd9/0x160 drivers/usb/gadget/function/f_acm.c:891
- try_get_usb_function_instance+0x136/0x1f0 drivers/usb/gadget/functions.c:28
- usb_get_function_instance+0x16/0x70 drivers/usb/gadget/functions.c:44
- function_make+0x18c/0x3f0 drivers/usb/gadget/configfs.c:626
- configfs_mkdir+0x51e/0xb70 fs/configfs/dir.c:1360
- vfs_mkdir+0x361/0x850 fs/namei.c:5276
- filename_mkdirat+0x48b/0x5e0 fs/namei.c:5309
- __do_sys_mkdirat fs/namei.c:5330 [inline]
- __se_sys_mkdirat fs/namei.c:5327 [inline]
- __x64_sys_mkdirat+0x89/0xc0 fs/namei.c:5327
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x115/0x870 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
+[1] https://lore.kernel.org/all/20250430111617.1151390-1-quic_cxin@quicinc.com/
 
-Freed by task 6007:
- kasan_save_stack+0x30/0x50 mm/kasan/common.c:57
- kasan_save_track+0x14/0x30 mm/kasan/common.c:78
- kasan_save_free_info+0x3b/0x70 mm/kasan/generic.c:584
- poison_slab_object mm/kasan/common.c:253 [inline]
- __kasan_slab_free+0x5f/0x80 mm/kasan/common.c:285
- kasan_slab_free include/linux/kasan.h:235 [inline]
- slab_free_hook mm/slub.c:2677 [inline]
- slab_free mm/slub.c:6377 [inline]
- kfree+0x22b/0x6c0 mm/slub.c:6692
- gserial_free_port+0x146/0x2f0 drivers/usb/gadget/function/u_serial.c:1262
- gserial_free_line+0xf8/0x1e0 drivers/usb/gadget/function/u_serial.c:1279
- acm_free_instance+0x3b/0x60 drivers/usb/gadget/function/f_acm.c:875
- usb_put_function_instance+0x89/0xc0 drivers/usb/gadget/functions.c:77
- config_item_cleanup+0x146/0x240 fs/configfs/item.c:128
- config_item_release fs/configfs/item.c:137 [inline]
- kref_put include/linux/kref.h:65 [inline]
- config_item_put fs/configfs/item.c:149 [inline]
- config_item_put+0x93/0xb0 fs/configfs/item.c:146
- configfs_rmdir+0x5e3/0x950 fs/configfs/dir.c:1571
- vfs_rmdir fs/namei.c:5381 [inline]
- vfs_rmdir+0x328/0x8a0 fs/namei.c:5354
- filename_rmdir+0x31a/0x5c0 fs/namei.c:5438
- __do_sys_rmdir fs/namei.c:5461 [inline]
- __se_sys_rmdir fs/namei.c:5458 [inline]
- __x64_sys_rmdir+0x46/0x70 fs/namei.c:5458
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0x115/0x870 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-
-The buggy address belongs to the object at ffff88802e4c4000
- which belongs to the cache kmalloc-2k of size 2048
-The buggy address is located 560 bytes inside of
- freed 2048-byte region [ffff88802e4c4000, ffff88802e4c4800)
-
-The buggy address belongs to the physical page:
-page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x2e4c0
-head: order:3 mapcount:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
-flags: 0xfff00000000040(head|node=0|zone=1|lastcpupid=0x7ff)
-page_type: f5(slab)
-raw: 00fff00000000040 ffff88801bc42f00 dead000000000100 dead000000000122
-raw: 0000000000000000 0000000800080008 00000000f5000000 0000000000000000
-head: 00fff00000000040 ffff88801bc42f00 dead000000000100 dead000000000122
-head: 0000000000000000 0000000800080008 00000000f5000000 0000000000000000
-head: 00fff00000000003 fffffffffffffe01 00000000ffffffff 00000000ffffffff
-head: ffffffffffffffff 0000000000000000 00000000ffffffff 0000000000000008
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 3, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 5827, tgid 5827 (kworker/2:4), ts 58184228669, free_ts 57556351194
- set_page_owner include/linux/page_owner.h:32 [inline]
- post_alloc_hook+0xfd/0x120 mm/page_alloc.c:1859
- prep_new_page mm/page_alloc.c:1867 [inline]
- get_page_from_freelist+0xf48/0x3530 mm/page_alloc.c:3946
- __alloc_frozen_pages_noprof+0x299/0x2dc0 mm/page_alloc.c:5304
- alloc_slab_page mm/slub.c:3266 [inline]
- allocate_slab mm/slub.c:3380 [inline]
- new_slab+0xa2/0x640 mm/slub.c:3426
- refill_objects+0xe3/0x410 mm/slub.c:7310
- refill_sheaf mm/slub.c:2804 [inline]
- __pcs_replace_empty_main+0x376/0x680 mm/slub.c:4675
- alloc_from_pcs mm/slub.c:4773 [inline]
- slab_alloc_node mm/slub.c:4905 [inline]
- __do_kmalloc_node mm/slub.c:5333 [inline]
- __kmalloc_node_track_caller_noprof+0x679/0x830 mm/slub.c:5471
- kmalloc_reserve+0xe8/0x350 net/core/skbuff.c:637
- __alloc_skb+0x185/0x710 net/core/skbuff.c:715
- alloc_skb include/linux/skbuff.h:1384 [inline]
- mld_newpack.isra.0+0x18e/0xa20 net/ipv6/mcast.c:1789
- add_grhead+0x299/0x340 net/ipv6/mcast.c:1900
- add_grec+0x1389/0x1930 net/ipv6/mcast.c:2039
- mld_send_cr net/ipv6/mcast.c:2164 [inline]
- mld_ifc_work+0x3c5/0xc10 net/ipv6/mcast.c:2710
- process_one_work+0xa23/0x1940 kernel/workqueue.c:3322
- process_scheduled_works kernel/workqueue.c:3405 [inline]
- worker_thread+0x5ef/0xe50 kernel/workqueue.c:3486
- kthread+0x370/0x450 kernel/kthread.c:436
-page last free pid 5850 tgid 5850 stack trace:
- reset_page_owner include/linux/page_owner.h:25 [inline]
- __free_pages_prepare mm/page_alloc.c:1406 [inline]
- __free_frozen_pages+0x79f/0x1090 mm/page_alloc.c:2950
- qlink_free mm/kasan/quarantine.c:163 [inline]
- qlist_free_all+0x47/0xf0 mm/kasan/quarantine.c:179
- kasan_quarantine_reduce+0x1a0/0x1f0 mm/kasan/quarantine.c:286
- __kasan_slab_alloc+0x69/0x90 mm/kasan/common.c:350
- kasan_slab_alloc include/linux/kasan.h:253 [inline]
- slab_post_alloc_hook mm/slub.c:4584 [inline]
- slab_alloc_node mm/slub.c:4917 [inline]
- kmem_cache_alloc_noprof+0x26b/0x6a0 mm/slub.c:4931
- __kernfs_new_node+0xd2/0xa10 fs/kernfs/dir.c:665
- kernfs_new_node+0x117/0x150 fs/kernfs/dir.c:751
- __kernfs_create_file+0x53/0x350 fs/kernfs/file.c:1050
- sysfs_add_file_mode_ns+0x207/0x3c0 fs/sysfs/file.c:316
- create_files fs/sysfs/group.c:82 [inline]
- internal_create_group+0x593/0xfb0 fs/sysfs/group.c:189
- internal_create_groups+0x9d/0x150 fs/sysfs/group.c:229
- device_add_groups drivers/base/core.c:2907 [inline]
- device_add_attrs drivers/base/core.c:2971 [inline]
- device_add+0x71a/0x1970 drivers/base/core.c:3711
- netdev_register_kobject+0x1df/0x410 net/core/net-sysfs.c:2340
- register_netdevice+0x15b6/0x25a0 net/core/dev.c:11446
- nsim_init_netdevsim drivers/net/netdevsim/netdev.c:1070 [inline]
- nsim_create+0xc93/0x1420 drivers/net/netdevsim/netdev.c:1152
- __nsim_dev_port_add+0x3ba/0x8f0 drivers/net/netdevsim/dev.c:1509
-
-Memory state around the buggy address:
- ffff88802e4c4100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff88802e4c4180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->ffff88802e4c4200: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                                     ^
- ffff88802e4c4280: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff88802e4c4300: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
-
-
+Signed-off-by: Xin Chen <xin.chen2@oss.qualcomm.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ drivers/tty/n_tty.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-
-If the report is already addressed, let syzbot know by replying with:
-#syz fix: exact-commit-title
-
-If you want syzbot to run the reproducer, reply with:
-#syz test: git://repo/address.git branch-or-commit-hash
-If you attach or paste a git patch, syzbot will apply it before testing.
-
-If you want to overwrite report's subsystems, reply with:
-#syz set subsystems: new-subsystem
-(See the list of subsystem names on the web dashboard)
-
-If the report is a duplicate of another one, reply with:
-#syz dup: exact-subject-of-another-report
-
-If you want to undo deduplication, reply with:
-#syz undup
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index e6a0f5b40d0a..7ace11f6d600 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -1870,7 +1870,7 @@ static void n_tty_close(struct tty_struct *tty)
+ 		n_tty_packet_mode_flush(tty);
+ 
+ 	guard(rwsem_write)(&tty->termios_rwsem);
+-	vfree(ldata);
++	kvfree(ldata);
+ 	tty->disc_data = NULL;
+ }
+ 
+@@ -1887,7 +1887,7 @@ static int n_tty_open(struct tty_struct *tty)
+ 	struct n_tty_data *ldata;
+ 
+ 	/* Currently a malloc failure here can panic */
+-	ldata = vzalloc(sizeof(*ldata));
++	ldata = kvzalloc(sizeof(*ldata), GFP_KERNEL);
+ 	if (!ldata)
+ 		return -ENOMEM;
+ 
+-- 
+2.43.0
