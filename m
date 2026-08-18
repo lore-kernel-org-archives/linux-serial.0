@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DDA4351C2F;
-	Tue, 18 Aug 2026 19:27:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA62B35C1B0;
+	Tue, 18 Aug 2026 19:28:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787081238; cv=none; b=e9Nhw6MI4wQB5ywynTDVe4TLOJeyHP5v32M6FcaJvhaSTJmXKpET5HPF12EEA4TEkaTHNxOnTPJZP+uQOj7QLKIi9ISKESQdT0poaJjMLJJeFShxPbujC8DNwfOiXeOHogTAJm5ZituF2wMYjRbIPmBkhp5hFD8z74v9P6IIsIM=
+	t=1787081328; cv=none; b=tEXymPE0tIZTQh3tCzAdgK7Lihy3bfE5BP5nuMPB1nND5IDQTC/k4s7aq1TELg0ORAzBfph3Tz0V9SnoEXjRvHf+aH1MBvzuU3YmNg6Dr/qT+JBFrpRqmLm29nK0z576IU3lkpFx5798JH6J6vHJ9ByCNplswF5x0saqGbszfXg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787081238; c=relaxed/simple;
-	bh=CaLthcIaUdd4f+DFXAi91i7trcrQA5J2j/5213a+r/M=;
+	s=arc-20240116; t=1787081328; c=relaxed/simple;
+	bh=4Vpv5zCLi44iufKU1afO+rmUwyT2htQzjGQNmOfDyYo=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=NDkdZCAVEsKzlUoFAYzj7kew2czhr/HH7l5DYQWMV6Z34BenlTEHkN8iW+B1Jg5LeVBT1HE1eT4vmWpZ+kU5SgC/e3PMYNbSipgokY0mJ9qlRtST4h7xi0sdmp5PkWPI6V8ww51ErFONiiDHyIHXhGw7SchiOuErkBmmhk/U8Ps=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OeTDtvHf; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=Eqxhq6Aia/aDAklZxr+uVdwEVfTimxBFMLnpAhKC0VA0d2E18r/p58bbDMrsltLfp1yL5hbn10WkQ7KUeuXe/jBx40bDZalTlJiO2+BX8u+Gpaajlcrue3CZNZ15i2nf51nT50FTVHO/r98+9ktftm0xqEW38dIX30gCrh1fBaU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KgDRKWw0; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OeTDtvHf"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 890E51F000E9;
-	Tue, 18 Aug 2026 19:27:09 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KgDRKWw0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D10A1F000E9;
+	Tue, 18 Aug 2026 19:28:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787081237;
-	bh=xw1cEj+Ja4tDSH9V8hNNzU55PwJcLp6Fhxkj/sX0VYI=;
+	s=k20260515; t=1787081327;
+	bh=gBsZ0xwI/Le18b2qGJn/FAvpMBURVFLBFmujAbRyTkU=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=OeTDtvHfwlI0+Bq32NykIz1YxvsWe5plQt6TqO5eVvO3pfKuD6uYH8PAiX5FKGbe6
-	 wDBD92Ckp711to4ov+C+Tbot9SdGswTohxqNfdoCBJSvhu9Ym4GgWzoJKwnAyZHu+v
-	 9+/E9xinfQ/SN1/2OHzm36Tls/r3xdefzFv3MUgKPSNoLgCD+XUDKDMJBp96M/1XSY
-	 Ea3kgpLZcC/qDJpQ4mZsBmPgwKbfwW5ykiH4VVE3Zcdy8z+EK95OdB4D3YFm/sH3LX
-	 LiCUrcOrU/Pu8WbktEl0AdM/40FFG6oB9h54ki3rla9S77nTdcv0UHhCkZz59GmPuR
-	 CR6/XxHtiDjRw==
-Message-ID: <6c8471ad-8d68-42d9-bc61-83968a2e8acd@kernel.org>
-Date: Tue, 18 Aug 2026 21:27:07 +0200
+	b=KgDRKWw06PAWPw5qGCcc0iYOFW9SZXfNffM8HZ9jYIL9SqRmsBWp+KSmmduq1UYfB
+	 oxnHCtrWoW6vwSNwNhfZJruOuVVVriWKROCZzhlgkP4wcx15UBXQg3AEnghVAVqjNW
+	 4AlMGuJ1xyDdPCi7Qtswd5G5JoQBJ1NAbaNgO09PLyJjJuu13VJohA1mL0D8vlhVjI
+	 2UIzJTKs+pdaChY9kfXg7zKP8Z8xzU9Cfs/aHoOjv1P0aBP0oDFwQ1iHJU36/3Lybc
+	 8q0taZ8XHoAhj0yVTwvMF7SN9gNkGoTk0RX3O/qBZ3TSRshR27VfnEmsnXHxVRzXNx
+	 85pHh+slZSF4A==
+Message-ID: <9f97b734-b92f-425d-920b-2c7ee15a2f9e@kernel.org>
+Date: Tue, 18 Aug 2026 21:28:35 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,8 +35,7 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 02/12] dt-bindings: mfd: syscon: add Ambarella CV75
- secure scratchpad
+Subject: Re: [PATCH v5 03/12] dt-bindings: clock: add Ambarella CV75 RCT
 To: longzhao@ambarella.com, Arnd Bergmann <arnd@arndb.de>,
  Alexandre Belloni <alexandre.belloni@bootlin.com>, soc@lists.linux.dev,
  linux-arm-kernel@lists.infradead.org
@@ -54,7 +53,7 @@ Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
  linux-kernel@vger.kernel.org, Brian Masney <bmasney@redhat.com>,
  Lee Jones <lee@kernel.org>, mfd@lists.linux.dev, Long Zhao <zl020895@163.com>
 References: <20260818-cv75-v5-v5-0-7bbb12f0360f@ambarella.com>
- <20260818-cv75-v5-v5-2-7bbb12f0360f@ambarella.com>
+ <20260818-cv75-v5-v5-3-7bbb12f0360f@ambarella.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -100,20 +99,28 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  K9bCVaboTA2T77QYkRcRJYSsO1alGX0ome/hMLD1daXlkrNUp1HWa3K4iytLRXjCSIorWiGs
  n+q3krnpXu3TFkA8qtOFZMdnIiFuiq1yLT8hptsV5xh1TA2nsVvSYiaCr3q4s4BKjS/KrLDb
  qoxzw8ISjdUp4pA85vb6YLCmb39NgidD+7PmAr65lBNveIFynTgsja1rRQ4=
-In-Reply-To: <20260818-cv75-v5-v5-2-7bbb12f0360f@ambarella.com>
+In-Reply-To: <20260818-cv75-v5-v5-3-7bbb12f0360f@ambarella.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 18/08/2026 12:31, Long Zhao via B4 Relay wrote:
 > From: Long Zhao <longzhao@ambarella.com>
 > 
-> Allow ambarella,cv75-sec-scratchpad as a syscon for the shared secure
-> scratchpad registers on CV75.
+> Document the CV75 RCT clock controller and the clock ID header used by
+> DT consumers.
 > 
-> Signed-off-by: Long Zhao <longzhao@ambarella.com>
+> This initial binding describes only the clock-provider functionality.
+> Reset-controller support is outside scope of this series, so #reset-cells
+> property is intentionally omitted.
+> 
 
-You already received review at v2 which you did not respond to and did
-not implement.
+You received feedback at v1 or v2. You ignored it. It was reminded you
+at v3. You ignored it.
+
+Now you send this again.
+
+NAK, you need to start responding to feedback.
+
 
 Best regards,
 Krzysztof
