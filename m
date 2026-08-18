@@ -1,105 +1,119 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0744C2D6E5C
-	for <linux-serial@vger.kernel.org>; Tue, 18 Aug 2026 18:52:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DDA4351C2F;
+	Tue, 18 Aug 2026 19:27:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787079125; cv=none; b=o4mMaG8pzT/Vn7pl6W12/VEdqySCvJRa7D4dfW73RzuV8Cc9bcu1f5yC4SKPpuukA9Umwy9w7WIe0K3pXahDX66g8QcblQohQNDVMuDynD/PhRysY18fd4M5yeCL8pcR0yg44FtnQQCWljqgVViZ1nFsWIFOFa1/tdi3a8/L28M=
+	t=1787081238; cv=none; b=e9Nhw6MI4wQB5ywynTDVe4TLOJeyHP5v32M6FcaJvhaSTJmXKpET5HPF12EEA4TEkaTHNxOnTPJZP+uQOj7QLKIi9ISKESQdT0poaJjMLJJeFShxPbujC8DNwfOiXeOHogTAJm5ZituF2wMYjRbIPmBkhp5hFD8z74v9P6IIsIM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787079125; c=relaxed/simple;
-	bh=Hrs/9NMsr5HJTULUw2It4HagL6BuCS8FHkZ5uh6OwzI=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Vc7Xd5G8uow2WZHezebwLiUs1qB5uUOORErrcBqonH09kzjjh4EhlyJ5ReAViIVU22WANAA3+ftRbYeNpxnyAS4giMQpYUDXAVfF35YDr+hLtIBVbUjt7QTbaPxCzt9PjGeLQMkawj2LordvGUzHbiOKO9m+fzaYxGk6rEk2siE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.com; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-4954f5e8020so1070905e9.2
-        for <linux-serial@vger.kernel.org>; Tue, 18 Aug 2026 11:52:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787079122; x=1787683922;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=qZ5z7fwve5FMy5m1IMm5ZFxSUCweCqJ2mA7pSyCd4EE=;
-        b=E9nU6eMrkuAnarK4OuKoutWqRlx4H5gtY0azLIY7fhYXbJ/bP+0IvVMtXvXwW7p3sk
-         wz65oKPzjCy63zr0TbEfuIOreZ8DH+8j86TwZjHymHPv6DnuMj/AKsXwrA3l4azMDf4n
-         FkTk3V5jfV6coeBvJXfnL2brpuUrfSQG0LjkUe5RNEsb+S3O82hknQbPWX8fGVRSb1pf
-         hXMrOVOaNwwvCd0vu7Z8t5ohP4v8bGbgDDy0+gVdJKSoaBCfK5I3ikv/shTqqEIH7cjd
-         BN4OpJid2/2/E+mjnjoPmht6YiYC3TMTvDTup0Zb+bRv8DqK7MHZHCU1jsVAFaYFS67m
-         iiGQ==
-X-Forwarded-Encrypted: i=1; AHgh+RqnvrYgqMbcB+x4PPVRlEoNTmaU2MIwC4TFobYKfVWf5TPRDq8oM/HbY2vMeJ1b9neaKuQLfCENR3rxQVk=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw6uJYdbtEMP/dmtiY3Q32vzo6bjqCi3EfWqGFEkgnOcqts9e7g
-	o3xwSy3r3tFVXmiR0HT0lvGo/zQzzFgHTlekkNgzoHTTpIWPaW3MI3Tz
-X-Gm-Gg: AR+sD110NI8hCvmFzawkZ9JTxdoaVr7z1ct0aaA8ACCvSspQJk2ee0ATOYiRMkUvfP9
-	3doau3YoW0Pf9xrFAtA5OYxwaxwlWkFbM+jSmHlCOiDBTNKMoRDFbSO7FiXuGy+YKE6MDWA7I9/
-	aus0/Mu70Mb7Jb1d72OuMg364Szn14fufPJ5cdwNaGdQ+LHI0Sm63fDgxilv9rmunyOX7BtphX2
-	f+xChwIivRgVSlC8gqy3MLIfr8C4xWsDIY2ZR0vAsA1QWBVgsupJysjSQg1KbBLzzo5haa0XmcT
-	TqM7BguKOJQ6wosP+rx0j7HJZK2RXaRwSGEy4K+ihXJkTLsdqz95+JxILm5e0r78leeiqGTpGL0
-	0/NucPssA+8hlDsi/fu6RCQZ9DZ9DWBEZzukp9fcAAZvbM0LTsLXIM0i9hK0d/zYeB5at+zD1rp
-	hzF9ZO1ISqqTklGdmt5JrPnL7ONMel/1q/7miNeA3SaK8ciyKIa1pcZ1EifEXn+H9ukxls7Glac
-	LizWufZMkSmR07EQVhLOITEbi4=
-X-Received: by 2002:a05:600c:8b6f:b0:493:bd2a:93be with SMTP id 5b1f17b1804b1-499a8f62d13mr2823225e9.6.1787079122068;
-        Tue, 18 Aug 2026 11:52:02 -0700 (PDT)
-Received: from threads.localdomain ([83.106.158.114])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-482a5b816c0sm14257310f8f.33.2026.08.18.11.52.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Aug 2026 11:52:01 -0700 (PDT)
-From: Lucas Tanure <tanure@linux.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH] serial: 8250: don't register ports that have no hardware
-Date: Tue, 18 Aug 2026 19:52:00 +0100
-Message-ID: <20260818185200.10243-1-tanure@linux.com>
-X-Mailer: git-send-email 2.55.0
+	s=arc-20240116; t=1787081238; c=relaxed/simple;
+	bh=CaLthcIaUdd4f+DFXAi91i7trcrQA5J2j/5213a+r/M=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=NDkdZCAVEsKzlUoFAYzj7kew2czhr/HH7l5DYQWMV6Z34BenlTEHkN8iW+B1Jg5LeVBT1HE1eT4vmWpZ+kU5SgC/e3PMYNbSipgokY0mJ9qlRtST4h7xi0sdmp5PkWPI6V8ww51ErFONiiDHyIHXhGw7SchiOuErkBmmhk/U8Ps=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OeTDtvHf; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OeTDtvHf"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 890E51F000E9;
+	Tue, 18 Aug 2026 19:27:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1787081237;
+	bh=xw1cEj+Ja4tDSH9V8hNNzU55PwJcLp6Fhxkj/sX0VYI=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=OeTDtvHfwlI0+Bq32NykIz1YxvsWe5plQt6TqO5eVvO3pfKuD6uYH8PAiX5FKGbe6
+	 wDBD92Ckp711to4ov+C+Tbot9SdGswTohxqNfdoCBJSvhu9Ym4GgWzoJKwnAyZHu+v
+	 9+/E9xinfQ/SN1/2OHzm36Tls/r3xdefzFv3MUgKPSNoLgCD+XUDKDMJBp96M/1XSY
+	 Ea3kgpLZcC/qDJpQ4mZsBmPgwKbfwW5ykiH4VVE3Zcdy8z+EK95OdB4D3YFm/sH3LX
+	 LiCUrcOrU/Pu8WbktEl0AdM/40FFG6oB9h54ki3rla9S77nTdcv0UHhCkZz59GmPuR
+	 CR6/XxHtiDjRw==
+Message-ID: <6c8471ad-8d68-42d9-bc61-83968a2e8acd@kernel.org>
+Date: Tue, 18 Aug 2026 21:27:07 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 02/12] dt-bindings: mfd: syscon: add Ambarella CV75
+ secure scratchpad
+To: longzhao@ambarella.com, Arnd Bergmann <arnd@arndb.de>,
+ Alexandre Belloni <alexandre.belloni@bootlin.com>, soc@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>,
+ Michael Turquette <mturquette@baylibre.com>, Stephen Boyd
+ <sboyd@kernel.org>, Linus Walleij <linusw@kernel.org>,
+ Bartosz Golaszewski <brgl@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
+ devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+ linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Brian Masney <bmasney@redhat.com>,
+ Lee Jones <lee@kernel.org>, mfd@lists.linux.dev, Long Zhao <zl020895@163.com>
+References: <20260818-cv75-v5-v5-0-7bbb12f0360f@ambarella.com>
+ <20260818-cv75-v5-v5-2-7bbb12f0360f@ambarella.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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
+In-Reply-To: <20260818-cv75-v5-v5-2-7bbb12f0360f@ambarella.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-The 8250 driver creates a fixed set of port slots at boot and
-registers a ttyS device for each one, even when the slot describes no
-hardware. On device tree platforms those slots are empty, but they
-still take the ttyS0..ttyS3 names.
+On 18/08/2026 12:31, Long Zhao via B4 Relay wrote:
+> From: Long Zhao <longzhao@ambarella.com>
+> 
+> Allow ambarella,cv75-sec-scratchpad as a syscon for the shared secure
+> scratchpad registers on CV75.
+> 
+> Signed-off-by: Long Zhao <longzhao@ambarella.com>
 
-New Amlogic SoCs (S4, T7) name their real UARTs ttyS as well. With
-both drivers built in, as in arm64 defconfig, the real port fails to bind:
+You already received review at v2 which you did not respond to and did
+not implement.
 
-  sysfs: cannot create duplicate filename '/class/tty/ttyS0'
-  meson_uart fe078000.serial: Cannot register tty device on line 0
-
-Skip slots that have no I/O and no memory address. Legacy x86 slots
-come with resources and are not affected.
-
-Signed-off-by: Lucas Tanure <tanure@linux.com>
-Assisted-by: Claude:claude-fable-5
----
- drivers/tty/serial/8250/8250_core.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index f49862d90eeb..e66e0cdbb210 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -378,6 +378,14 @@ void __init serial8250_register_ports(struct uart_driver *drv, struct device *de
- 		if (up->port.dev)
- 			continue;
- 
-+		/*
-+		 * Skip slots that describe no hardware: they would only
-+		 * take up ttyS<n> names. Real ports get their node when
-+		 * they claim a slot in serial8250_register_8250_port().
-+		 */
-+		if (!up->port.iobase && !up->port.mapbase && !up->port.membase)
-+			continue;
-+
- 		up->port.dev = dev;
- 
- 		if (uart_console_registered(&up->port))
--- 
-2.55.0
-
+Best regards,
+Krzysztof
