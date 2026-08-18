@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D560456E12;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 519FD45DF6E;
 	Tue, 18 Aug 2026 10:32:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787049134; cv=none; b=QwYbrfPe8iqPr8EAfLLB6/+8odiZkdNNCl4QxNTOD0UAo8fuwaR97t4rdSUSpym5CnEDTQBj+LSsKrv8O176PWfb4xgGHC0Dq4I6eYHXLya/6YtBNDyNXDW7hKRZIz9Xf+pHnYS6ena17jKzyS0/5lTQOm9DP/3gvX6Ys08jOoM=
+	t=1787049134; cv=none; b=GeAXdINSu4e8wxjFCTw6/wBvtMwJWfrcEYfTAqGAuFMm3nFIEHVEuLrZeCdwpWrUWbj0nYsrPpqGXd6RCffSjF9fhhyo+WzFl6sIN5NhyL1SiyB2+BdIfYgbOJ/W2UMMJj023T2Chsw6aFFKogZl4GqQdkCgphcKbgbiM9+531E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1787049134; c=relaxed/simple;
-	bh=jEcPzTS2r9CRkRuHf/bP0CLeDxdimN8/GXo8Hz0PSGQ=;
+	bh=XE7Jze2pWOY+XLVEZ5GthHvKEoJMO8iLYBrsfeT5fUs=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=d56ISHha7m9/m0xejhOhqP45wsRd6F5YWZI1ucpppVGw1oa0UWYzSqiB5ODbdLDoYEZlnbCXJkLlWhWTDBBhX6nk0mX2DmfxXbcYHdQEioqLzzDyaKGaeVS5Ty8ZndQPHnR9Uvi4l0r07JU+TJ5G1BCvP2h4kq72UCEgxHN72S0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lmMsA0G5; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=fFP0LyWoMdzZxrSCe9wdufi4riypdaitEPDkp06pHcJdEmt5PdjtGxnQs/hwKljLHwAFW8jjDvtJnFPFL+UvQ6qE8eXxzyPabWjnHRYhvl0/XUygVhV0JsxrsCzkrKGQsqioveTm8uLrDq5jbIs2KiNjCzLsUpoimecmmLePuZI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kcmtxsBB; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lmMsA0G5"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id CFF09C4AF0C;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kcmtxsBB"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E4727C32781;
 	Tue, 18 Aug 2026 10:32:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1787049133;
-	bh=jEcPzTS2r9CRkRuHf/bP0CLeDxdimN8/GXo8Hz0PSGQ=;
+	s=k20201202; t=1787049134;
+	bh=XE7Jze2pWOY+XLVEZ5GthHvKEoJMO8iLYBrsfeT5fUs=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=lmMsA0G5Q8oZQVCxvjBSavux2XN9pcMMQ2yqJxzorr/srtzEr08xBhf2s1phw7p9N
-	 1lSf6a+ws2OUAND5BAN/taHWwfCFNSwxTA+bg/qlZsIJ6vPy6GXbMSfmYxNLJBzEuK
-	 2W5Yki/1O278pIdNJurvJwo8T2XmaZkRGnf5sFIu0d5WvPAi8A588Qw6TpMh5CiZLv
-	 okFtuLZkENaKtOEEHNnMrpx6OOXxVkDIHHDulgXNI/CZCd7xnt6O9H4FnHT9XSFQEY
-	 UYP/b/8Lcp+ePUGbwiU0YjFNo+JW0iEfW/c9MVIMkpba+dfUsxzHmaj5H64I++tjKK
-	 w6hMzwavt2KQQ==
+	b=kcmtxsBBiEst7E+Mh78eRH4cxVf0bQPPMYZyThjxUW0nSeltxVbnc4+fo2hsAE8l4
+	 VW3JUjl8HSOWOdaG6rC6E8WnXABuUnZq57dgD3+HsLx7luEF7UHck477nIgQGbqv1b
+	 6j91dqY0IZKYkV8KViC4moGmVAeVSKFc9olgoy3o8O/SYpI9oj7FpvhU+ZbvEfOmBL
+	 zrLjO3MxxC4fjmThTvl5JmwHC9aPRVUsd72CVBG3DTJt6DAGDLp9ytH13PhNPZRlo/
+	 KLxvvF/7GtUZMIOqwvqtH7Wqf3EkYbHlGqw8kvR6kUWJzhB7JGUVJhrNntcr/KeA6p
+	 b2ZE5bz42KFYQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B495CC5DF84;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB559C5DF7E;
 	Tue, 18 Aug 2026 10:32:13 +0000 (UTC)
 From: Long Zhao via B4 Relay <devnull+longzhao.ambarella.com@kernel.org>
-Date: Tue, 18 Aug 2026 18:31:19 +0800
-Subject: [PATCH v5 05/12] dt-bindings: gpio: pl061: add Ambarella CV75
- variant
+Date: Tue, 18 Aug 2026 18:31:20 +0800
+Subject: [PATCH v5 06/12] dt-bindings: serial: add Ambarella CV75 UART
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260818-cv75-v5-v5-5-7bbb12f0360f@ambarella.com>
+Message-Id: <20260818-cv75-v5-v5-6-7bbb12f0360f@ambarella.com>
 References: <20260818-cv75-v5-v5-0-7bbb12f0360f@ambarella.com>
 In-Reply-To: <20260818-cv75-v5-v5-0-7bbb12f0360f@ambarella.com>
 To: Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>, 
@@ -62,11 +61,11 @@ Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
  Lee Jones <lee@kernel.org>, mfd@lists.linux.dev, 
  Long Zhao <zl020895@163.com>, Long Zhao <longzhao@ambarella.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1787049131; l=1941;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1787049131; l=1828;
  i=longzhao@ambarella.com; s=20260730; h=from:subject:message-id;
- bh=Pngr7p+U3E/qWLbm7iUMOUjiAHv8IZUzMpz2/ZKNyVk=;
- b=ERm6YliqAyLiRYZMFDvJ/vS+LdTq7UeN8oTFIqiNI6KrdZKYs66DOsVTYT6sbgYEBuqfZgS2r
- 3YpxPbqjO7WDEs0T54oSFzodxcJSxS/ZKO7XsH4b7e6RewM+4nGHJOa
+ bh=5fvXIv4VkCf1t6ZAmNKnU3A6+aTT4MQ6fcD192SSaH0=;
+ b=mUjLxTDt6GYIBD1VZ0ihH3mBXE05YBuVvYwKtwJk/oVtF8hBC5N1AYZD8QCXF8h3B/hzS3JiS
+ x6XHFYANljODgynMMLC6EQ5Y8ffoS6SlvUxp4Q01qVPH85Nn14H0XGu
 X-Developer-Key: i=longzhao@ambarella.com; a=ed25519;
  pk=/xGhPTOX0/eYsyTWzyjjgAIW1Z/YD+IlnOnvcdRozow=
 X-Endpoint-Received: by B4 Relay for longzhao@ambarella.com/20260730 with
@@ -76,74 +75,77 @@ Reply-To: longzhao@ambarella.com
 
 From: Long Zhao <longzhao@ambarella.com>
 
-Document the Ambarella CV75 GPIO bank compatible and the synthetic
-arm,primecell-periphid used with the PL061 binding.
+Document the Ambarella CV75 on-chip UART controller binding for early
+console bring-up. The binding requires a single RCT clock input and
+fixed 32-bit register access via reg-shift and reg-io-width.
 
 Signed-off-by: Long Zhao <longzhao@ambarella.com>
 ---
- .../devicetree/bindings/gpio/pl061-gpio.yaml       | 35 +++++++++++++++++++---
- 1 file changed, 31 insertions(+), 4 deletions(-)
+ .../bindings/serial/ambarella,cv75-uart.yaml       | 56 ++++++++++++++++++++++
+ 1 file changed, 56 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/gpio/pl061-gpio.yaml b/Documentation/devicetree/bindings/gpio/pl061-gpio.yaml
-index 4d970e55104b..414f8d4a3976 100644
---- a/Documentation/devicetree/bindings/gpio/pl061-gpio.yaml
-+++ b/Documentation/devicetree/bindings/gpio/pl061-gpio.yaml
-@@ -15,7 +15,9 @@ select:
-   properties:
-     compatible:
-       contains:
--        const: arm,pl061
-+        enum:
-+          - arm,pl061
-+          - ambarella,cv75-gpio
-   required:
-     - compatible
- 
-@@ -24,9 +26,20 @@ properties:
-     pattern: "^gpio@[0-9a-f]+$"
- 
-   compatible:
--    items:
--      - const: arm,pl061
--      - const: arm,primecell
-+    oneOf:
-+      - items:
-+          - const: arm,pl061
-+          - const: arm,primecell
-+      - items:
-+          - const: ambarella,cv75-gpio
-+          - const: arm,primecell
+diff --git a/Documentation/devicetree/bindings/serial/ambarella,cv75-uart.yaml b/Documentation/devicetree/bindings/serial/ambarella,cv75-uart.yaml
+new file mode 100644
+index 000000000000..223c84bf460d
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/ambarella,cv75-uart.yaml
+@@ -0,0 +1,56 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/serial/ambarella,cv75-uart.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+  arm,primecell-periphid:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+      Value to override the hardware PrimeCell peripheral ID. Ambarella
-+      variants use a synthetic ID retaining the PL061 part number because
-+      the hardware has no discoverable ID or assigned designer ID.
- 
-   reg:
-     maxItems: 1
-@@ -57,6 +70,20 @@ properties:
-     minItems: 1
-     maxItems: 8
- 
++title: Ambarella CV75 UART
++
++maintainers:
++  - Long Zhao <longzhao@ambarella.com>
++
 +allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: ambarella,cv75-gpio
-+    then:
-+      properties:
-+        arm,primecell-periphid:
-+          const: 0x00000061
-+      required:
-+        - arm,primecell-periphid
-+        - gpio-ranges
++  - $ref: serial.yaml#
 +
- required:
-   - compatible
-   - reg
++properties:
++  compatible:
++    const: ambarella,cv75-uart
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  reg-shift:
++    const: 2
++
++  reg-io-width:
++    const: 4
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++  - reg-shift
++  - reg-io-width
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/ambarella,cv75-rct.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++
++    serial@e4000000 {
++        compatible = "ambarella,cv75-uart";
++        reg = <0xe4000000 0x1000>;
++        clocks = <&rct CV75_GCLK_UART0>;
++        interrupts = <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>;
++        reg-shift = <2>;
++        reg-io-width = <4>;
++    };
 
 -- 
 2.34.1
