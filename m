@@ -1,102 +1,126 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5967D18B0A;
-	Tue, 18 Aug 2026 06:09:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 967B5347BD7;
+	Tue, 18 Aug 2026 06:14:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787033366; cv=none; b=nQEYOStPdREeJLqcGMWyvoZZj2HRl4puE1zxCBNQH7GWRXTSKlpHEwMkscYndVo37gIfQFLtHiFO73vb6O7dJeGyCRtMQdjvfYMGJ6Jy+CP5TTpKc5RlRn0hQs1qORGiDU/Idb87SqKqsjmutgzpyu5hdTadVqKk/20z5aL9Lu8=
+	t=1787033698; cv=none; b=fwAtoRU37wYGXz3kvd7iNkFMGtD7TPG5DJTrltZaRCD85F1IZTBKZGMGKhI9QA3lGHODRHv/b5O01C2RFAbzMEXrJFaYEhrd0048Bku0Xl/A+ia47Y/AnTT+GdkneUnEec2aetpQEz5Cwyb4Ql2LGrf1wmdnuSBN0I29qqrr6b8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787033366; c=relaxed/simple;
-	bh=gB6uRz7eRY0JmDLwfu4co3mm9os4niF+AxsGWiqdtA8=;
+	s=arc-20240116; t=1787033698; c=relaxed/simple;
+	bh=qmM93o9jv0NTkaOlDD7aB7TzWSk+F2gZPiTnShlYhI8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=oPhthyLWq5CGHNgG6KXc2g8Q1JoxZtE9notqs+g/jQZfti+ao3CeZseVdZF6vphHuqEP26s3lu5+CGBU3/qKu+GowMt0dC/K6KiN0ytY7dygIMBNu9D1YF+vBQ01paE1k3w10rq+xJWngLfG9xX0sPMBvJdvVwpHBa9O1JwfSew=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=pcRKIYHc; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=UmIobewR56rKmyTUkPMTXjLOZGAcSGcb6cZGMFC6Sdnniyaqv2dp0ElUtV2KU4aRt7/8Att5yuJ5jKiDmz/zBrlX7u+zQJ3sqrLkU1A1gqa+EG7/xGztNw7gT7K4InOEtWwuEJ6AXYdhiqRzW6proC9tjvwwjMFI1247NNsApT0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=b9HIKrPy; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="pcRKIYHc"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51E461F000E9;
-	Tue, 18 Aug 2026 06:09:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1787033364;
-	bh=khAEW55O1G15+kYQqrcsG6wJrv8NjtopgQ4/4yjakCk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=pcRKIYHchjYfjc/e970YxkGeoLeiPaQb2fUr1ua/NjZVYlxNR+z+/0WTrLtz+bAMN
-	 bZA6zfkNrC4ezuVnvD8BhFWIZYEe2GC0W3qzJMB+koJou+uPtihCDfXvCAT3ftRKoI
-	 zQCdDBwrpvbJnh2laGgis4AYjhNIBh7BchtdxnZU=
-Date: Tue, 18 Aug 2026 08:07:47 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Xin Chen <xin.chen2@oss.qualcomm.com>
-Cc: jirislaby@kernel.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, liulzhao@qti.qualcomm.com,
-	cheng.jiang@oss.qualcomm.com, cxin@qti.qualcomm.com
-Subject: Re: [PATCH v1] tty: n_tty: use kvzalloc/kvfree for line discipline
- data
-Message-ID: <2026081841-relation-barn-304e@gregkh>
-References: <20260817135526.386863-1-xin.chen2@oss.qualcomm.com>
- <2026081706-tricky-slicing-166f@gregkh>
- <d2aa3572-e3f3-44c1-816e-a95bbbc77abb@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="b9HIKrPy"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1787033697; x=1818569697;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=qmM93o9jv0NTkaOlDD7aB7TzWSk+F2gZPiTnShlYhI8=;
+  b=b9HIKrPyXA7TgZ3Q1DpbLGjPGwXpGmiy6mspsKlv2Zudv2rcNp27KDcw
+   /yt0SZkmuyu1zYOy03r2HLZmENjAF2cJGh7AeAIfLmjjeLhJnv5UeZWbx
+   VxJoJLPetj6ozoZbLkB+5vdx3+KWrLZEasu2GHkEo5+r+0KOyTdsZfO0l
+   IeyEPG8K0XEdQZ4ZEJaHFwbRAu0mgMwRsQyC9q28XcCOd+ypmyat1xVNA
+   AaprAjcw/ZIRoq8UtzS94OiwA6Yn3PBUXKEvdkv2MeLwmKS9pyJclLgg2
+   KuSfvCcKe373G5LtU1K0lhDgPXQT+u0a67pRBRBcYfKZlvdGG2cIMbxy0
+   A==;
+X-CSE-ConnectionGUID: Id1Xq7AMQDCKhMFWSpzXGA==
+X-CSE-MsgGUID: Ruse1gmlT6mWYJ29sngNew==
+X-IronPort-AV: E=McAfee;i="6800,10657,11878"; a="87430104"
+X-IronPort-AV: E=Sophos;i="6.25,230,1779174000"; 
+   d="scan'208";a="87430104"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2026 23:14:57 -0700
+X-CSE-ConnectionGUID: EtJUJCZRQO+QPOocJrxmnw==
+X-CSE-MsgGUID: clqqQzv4RCOrbqD+WkD+xQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,230,1779174000"; 
+   d="scan'208";a="265742698"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.209])
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2026 23:14:54 -0700
+Date: Tue, 18 Aug 2026 09:14:51 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Jon Hunter <jonathanh@nvidia.com>
+Cc: John Ogness <john.ogness@linutronix.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Andy Shevchenko <andy.shevchenko@gmail.com>,
+	Petr Mladek <pmladek@suse.com>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	linux-kernel@vger.kernel.org,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	Fushuai Wang <wangfushuai@baidu.com>, Kees Cook <kees@kernel.org>,
+	Stepan Ionichev <sozdayvek@gmail.com>, linux-serial@vger.kernel.org,
+	"linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
+Subject: Re: [PATCH tty v9 1/2] serial: 8250: Switch to nbcon console, take 2
+Message-ID: <aoP4Wzji7w1XTTpI@ashevche-desk.local>
+References: <20260724103654.133654-1-john.ogness@linutronix.de>
+ <20260724103654.133654-2-john.ogness@linutronix.de>
+ <3023d7d7-c8ab-48e7-a0e4-e18cc4ea0b9a@nvidia.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <d2aa3572-e3f3-44c1-816e-a95bbbc77abb@oss.qualcomm.com>
+In-Reply-To: <3023d7d7-c8ab-48e7-a0e4-e18cc4ea0b9a@nvidia.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Aug 18, 2026 at 11:31:14AM +0800, Xin Chen wrote:
-> On Mon, Aug 17, 2026, Greg KH wrote:
-> > So you run out of memory?  That feels wrong.
+On Tue, Aug 18, 2026 at 06:32:12AM +0100, Jon Hunter wrote:
+> On 24/07/2026 11:36, John Ogness wrote:
+> > Implement the necessary callbacks to switch the 8250 console driver
+> > to perform as an nbcon console.
+> > 
+> > Add implementations for the nbcon console callbacks:
+> > 
+> >    ->write_atomic()
+> >    ->write_thread()
+> >    ->device_lock()
+> >    ->device_unlock()
+> > 
+> > and add CON_NBCON to the initial @flags.
+> > 
+> > All hardware access in the callbacks is within unsafe sections.
+> > The ->write_atomic() and ->write_thread() callbacks allow safe
+> > handover/takeover per byte and add a preceding newline if they
+> > take over from another context mid-line.
+> > 
+> > For the ->write_atomic() callback, a new irq_work is used to defer
+> > modem control since it may be called from a context that does not
+> > allow waking up tasks. During suspend/resume the irq_work is not
+> > used as this has been shown to cause suspend problems for some
+> > hardware. Upon resume, any pending modem control is performed.
+> > 
+> > Note: A new __serial8250_clear_IER() is introduced for direct
+> > clearing of UART_IER during console writing (which will not be
+> > holding the port lock for atomic printing or KDB/KGDB). This
+> > allows restoring a lockdep check to serial8250_clear_IER() in
+> > a follow-up commit.
 > 
-> Not a full OOM — just a transient exhaustion of order-0 pages caused
-> by repeated vzalloc() calls each draining the buddy order-0 free list.
-> The system recovers quickly, but the damage is already done by then.
+> This change is causing a boot regression for our Tegra20 and Tegra30
+> platforms. Reverting this on top of -next fixes the issue. Previously with
+> V5 I did not see a boot issue only an issue in suspend.
 
-What specific "damage"?
+Wasn't v11 applied and not v9?
 
-> > Why not just use a specific slab for this one structure if it is so
-> > important that it never run out?
-> 
-> kvzalloc() already achieves that: it tries kmalloc() first, which
-> serves the ~10 KB n_tty_data from the kmalloc-16384 slab (an order-2
-> compound page), leaving the order-0 free list intact. A dedicated slab
-> would add complexity without further benefit.
-> 
-> > Why was this using vzalloc() in the first place if it could fail?
-> 
-> Historically, ~10 KB was considered too large for kmalloc(), so
-> vzalloc() was used. kvzalloc() is the natural modern replacement: it
-> tries kmalloc() first and falls back to vmalloc() only on failure,
-> which is strictly better.
-> 
-> > And if it does fail, doesn't everything work properly, you just need
-> > to handle that failure in userspace correctly, right?
-> 
-> Even if the error were surfaced correctly to userspace, there is
-> nothing useful it can do. The actual failure here is that skb_clone()
-> in hci_send_cmd_sync() silently fails due to the depleted order-0
-> free list, leaving hdev->req_skb NULL. The firmware reply arrives and
-> is processed, but hci_req_cmd_complete() cannot find the completion
-> callback, so the waiter times out with -ETIMEDOUT. From userspace's
-> perspective this looks like a hardware or firmware timeout, not a
-> memory issue. Even if userspace retried BT enable, it would trigger
-> serdev_device_open() again, which calls n_tty_open() again, which
-> calls vzalloc() again — further draining the order-0 free list and
-> making recovery harder. The root fix is to stop consuming order-0
-> pages unnecessarily in the first place, which is exactly what
-> switching to kvzalloc() achieves.
+> So far the only
+> interesting thing I have observed is that if I add 'keep_bootcon' to the
+> command line the board does boot.
 
-But it's not consuming them "unnecessarily" as the memory is needed.
-Why not fix the root problem here of having this be called so many times
-that you are running out of memory?
+keep_bootcon defers driver taking over, that's why it works, it uses just
+simple primitives instead of full-featured driver.
 
-And why isn't memory being reclaimed properly if we do not have any left
-in that free list?  The allocation can sleep, so it should be always
-succeeding if the system isn't truely out of memory, as you imply it is
-not.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-thanks,
 
-greg k-h
