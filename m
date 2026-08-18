@@ -1,105 +1,169 @@
-Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BF81448CE8;
-	Tue, 18 Aug 2026 09:39:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=124.126.103.232
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03EAE451982
+	for <linux-serial@vger.kernel.org>; Tue, 18 Aug 2026 10:31:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787045981; cv=none; b=sMHGpOVyB7T7rDNxS2d/CLSEXm9214TbGzh+dwiowaExG3ROIqoZE/xlG8CjD2E+7vMms9BY1PvOPMHBiitxR/mK7oJlC3xbPmGVb71FV61sOs/pdbSXeDrBJT/Xq2ntPupWbLgYm1ELzl1KKAqgzwOKfzIXyfnxEG1TLiXqTdk=
+	t=1787049105; cv=none; b=CqMGPA/ab7LUUC84aaybOxGuB362gWOuAyFyrR0HZG0Oqhs40qsxJVxk7sgqw5OA+1q/sJP+Dhn6Nua1tW0xh9htVvc/Nnp6ygZMh2YKnhIi9PUOVGtwZ9YFAlhdtIPemK8BNIJAIjWZSDbFdDWaC0HIXDa3eC8xjOIgmcRJvZI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787045981; c=relaxed/simple;
-	bh=YGGvLyjuVFKbu53Y/AZ7U+kAxE9qdfPgxuWYZTi0KCM=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=PHg9DV07+NcWlr0G2uSosp0yItvPR1AcdiUPHsrH6G1FMoKfPtYFN0k/wpO/Yx7UPxnIF9Q9l/hPRldbpGfKDFbXCKwAtod6pGhcFn5c9/00rFAMVbPOsH3JnVSLtya++p2NPes3WS5F679mbsgWi3XleroHjVqpx6f4RZyCFC4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn; spf=pass smtp.mailfrom=kylinos.cn; arc=none smtp.client-ip=124.126.103.232
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
-X-UUID: b58856d69ae811f19a56ed5b684f684d-20260818
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.3.19,REQID:656a1af8-8724-4de2-89ca-c1063ce96e8f,IP:0,U
-	RL:0,TC:0,Content:-5,EDM:25,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTIO
-	N:release,TS:20
-X-CID-META: VersionHash:7db8b62,CLOUDID:d4173447bc66701c8e009505c14829aa,BulkI
-	D:nil,BulkQuantity:0,SF:81|82|102|850|865|898,TC:nil,Content:0|15|50,EDM:5
-	,IP:nil,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV
-	:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
-X-CID-BVR: 2,SSN|SDN
-X-CID-BAS: 2,SSN|SDN,0,_
-X-CID-FACTOR: TF_CID_SPAM_SNR
-X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
-X-UUID: b58856d69ae811f19a56ed5b684f684d-20260818
-X-User: lilinmao@kylinos.cn
-Received: from localhost.localdomain [(10.44.16.150)] by mailgw.kylinos.cn
-	(envelope-from <lilinmao@kylinos.cn>)
-	(Generic MTA with TLSv1.3 TLS_AES_256_GCM_SHA384 256/256)
-	with ESMTP id 529868187; Tue, 18 Aug 2026 17:39:29 +0800
-From: Linmao Li <lilinmao@kylinos.cn>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: Crescent Hsieh <crescentcy.hsieh@moxa.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Linmao Li <lilinmao@kylinos.cn>
-Subject: [PATCH 2/3] serial: 8250_mxpcie: fail the probe when a port cannot be registered
-Date: Tue, 18 Aug 2026 17:39:17 +0800
-Message-Id: <20260818093918.3190686-3-lilinmao@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20260818093918.3190686-1-lilinmao@kylinos.cn>
-References: <20260818093918.3190686-1-lilinmao@kylinos.cn>
+	s=arc-20240116; t=1787049105; c=relaxed/simple;
+	bh=zdf7YbsGr17j4IBQi976SWW4xGeMan6sdZEmC9JWzII=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=KOqRaHBGLsMT2dhw65nxdKNnbfHsBjhv/L+qEmfEt4pokWAQdT/5HlrJIgAGiQgki01lrlm3xkgwbt7Jv8GRQfDOmTRAlZKXYrO/CapKrmC4sSKrnlA9F/PpZJOzhMbMbII3zyVjGr5D6Nj12s2nqB+JipbmBkB9+dC5PfCWtYA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=9elements.com; spf=pass smtp.mailfrom=9elements.com; dkim=pass (2048-bit key) header.d=9elements.com header.i=@9elements.com header.b=UQqrdzlw; arc=none smtp.client-ip=209.85.128.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=9elements.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=9elements.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=9elements.com header.i=@9elements.com header.b="UQqrdzlw"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-49554ebb87dso44435375e9.3
+        for <linux-serial@vger.kernel.org>; Tue, 18 Aug 2026 03:31:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=9elements.com; s=google; t=1787049101; x=1787653901; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=iRzYJ7RHlmt5faDVd4SQiUF+QBz3mgu2M1pqY/9IwAk=;
+        b=UQqrdzlwm+uoEMvLBU8cI6IwLin8x47ZsKL/NDJ8Wd+H2cWQDNoqBWyQ0fFKJuG++0
+         gBxKSapAaPGZqKjKlz/6ngyF3+VMve+2TdNYjpicQXa2r6T9i6p85N6WV3QNpu+XqEUd
+         GMi/jkOvuHZSwx2TqpcMyuoOKgTWlQ41Ksh7+iOpooZ51AGcUGbEnb9adJXtzOxukiVQ
+         Up7/mKPz7JYf5U0Q6SoOvnG1uMU97Pv1UU4rTg+jJBBIfOIoC7Q4Jyx3BcDP1azsLOaC
+         ywBOXpQUChhIppy4Wud8wNDdEMAOOtfiXCke1cVW6m2Gps/fGvlSlLrIAQS5PPSI4j27
+         i5uw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787049101; x=1787653901;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=iRzYJ7RHlmt5faDVd4SQiUF+QBz3mgu2M1pqY/9IwAk=;
+        b=m4xZv5lbKGRDFAm6VLWyuc9/7GmMnuWwrkiQmVkRDEi7CSSTTnKgCN9pFPNysiplk+
+         rSVIc+6JnhqScKEtcb+IXZOALxd7u39CDvOyWd8upvU0FSUMQSBMcTeQLfoXTQV8lNL8
+         d2OYveZn+kA638mTWoYiiGKqziy+8r1y7rEEW8G/7h2RzClgF57RumZIsz1DVBixquvl
+         PYsZD7TifBL++TEgJvY9d7DNdFFvtDvz5N6NRhfW/i9PcadYrgwp38KaXi4ZtQh+DHnn
+         HKsUMLmijcn36ocdELxnvjk/Mxup7qvd5SemzxEQhcbasdaUcXBhbVySsKETpHbeoOtj
+         gLwg==
+X-Forwarded-Encrypted: i=1; AHgh+RooW/MGZMNGG12YusIUrHl4m6es+xpgLjqbAb3eKF2OZo3vDy5l79ZH9eLB7nOJ06ylphXhvEN1eTFYtjA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwQW96mb8/4Rg5PHpA3Om2IzhIBp0LLKdvxB9e4lHDlnyeuf/Ee
+	vfd0HLMZu92xwOjC+K+xpMRUsskyISG9Y+1ol5QGz9Qf+H2q2Cbx7SmtxcxhwV/ndto=
+X-Gm-Gg: AR+sD10KJbUSM0VyJ4JX8VP9kIgai82ophJ62fGdm5/0SdM/lkCPC2U357uzamlxq+a
+	8hczPjhi23huIBIQoxUR8MZ6mto3ajNtpgngVLDpdybjR2Q9IjgPw6GKG5MLVaiy0NWRL8Y8eO8
+	m1akP9WBiEKa5kJi7StGNRlYdX3KaY3cEJWY+SrX5nhR05qoBJ2IL8aXoglsAGqItE3Vfhx5A8H
+	oD37qnUtCQT5GDcJHiosG8vakS++dxzAcalT4fJ3d09BvyV5xPEVJzsWRGveCneUEUpdanjuC5p
+	69XfBjSwJvUF9fCEhFYqSE7rU5A01jK/n6Nr2rVTViDGxHvj5R50lnmnZyQnUOp/p+STwK88T9t
+	+jW52MbMV1N166cGPYq04is+7Tld8KFveRhUEe7vjy11oWh/uyezW4OM896HCiH249qVVENRNyN
+	XdMJbj7u+YbZwE45/g7OcC7xXtIcyV1+4RPV+PDZ5f9Q3Xnl1gLQs3QlH1GtO9nDvHAQcs3pjqB
+	7xBFo9TuwbzR4Qfxk2kXryZ2ahDdjDCLVyr2wV39VO53fS/FZ4HhlJ3IKWC81e6fSK7t0E=
+X-Received: by 2002:a05:600c:6089:b0:499:86ce:465e with SMTP id 5b1f17b1804b1-49987941e38mr561900575e9.4.1787049101182;
+        Tue, 18 Aug 2026 03:31:41 -0700 (PDT)
+Received: from [127.0.0.2] ([188.111.3.154])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-499960988c6sm246025575e9.0.2026.08.18.03.31.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Aug 2026 03:31:40 -0700 (PDT)
+From: =?utf-8?q?Gr=C3=A9goire_Layet?= <gregoire.layet@9elements.com>
+Subject: [PATCH v6 0/6] soc: aspeed: Add BMC and host driver for PCIe BMC
+ device
+Date: Tue, 18 Aug 2026 10:29:13 +0000
+Message-Id: <20260818-aspeed-driver-v6-v6-0-fd7cc0b338ea@9elements.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIAPkzhGoC/yXMyw6CMBBG4Vchs3YSyqUBX8W4KO2PjgskM9qYE
+ N6dqstvcc5GBhUYnauNFFlMnkuBP1UU72G5gSUVU1M3vh7cwMFWIHFSyVDOntM0jn0bQ+c6RyV
+ bFbN8fsvL9W97Tw/E1/dD+34AwrvMHHQAAAA=
+X-Change-ID: 20260818-aspeed-driver-v6-db9953ca4141
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>, 
+ devicetree@vger.kernel.org, Joel Stanley <joel@jms.id.au>, 
+ Andrew Jeffery <andrew@codeconstruct.com.au>, Lee Jones <lee@kernel.org>, 
+ =?utf-8?q?Gr=C3=A9goire_Layet?= <git@gregoirelayet.com>, 
+ Tan Siewert <tan.siewert@9elements.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, linux-aspeed@lists.ozlabs.org, 
+ mfd@lists.linux.dev, andrew@lunn.ch, jacky_chou@aspeedtech.com, 
+ yh_chung@aspeedtech.com, ninad@linux.ibm.com, anirudhsriniv@gmail.com, 
+ =?utf-8?q?Gr=C3=A9goire_Layet?= <gregoire.layet@9elements.com>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+X-Mailer: b4 0.15.2
 
-When serial8250_register_8250_port() fails the loop only breaks out and
-the probe still returns success.  The entries it did not reach keep the
-zero devm_kzalloc() left there, and the entry that failed keeps a
-negative error code.
+This is the v6 for upstreaming the VUART over PCIe BMC device drivers.
 
-mxpcie8250_remove() then feeds all of them to
-serial8250_unregister_port(), which checks neither: line 0 unregisters a
-port this driver does not own, and the negative line indexes
-serial8250_ports[] out of bounds.
+The initial drivers were taken from the ASPEED kernel SDK
+(master-v6.18) [1], and have been adapted greatly.
 
-Fail the probe instead, unregistering the ports registered so far.
+There are two drivers: a BMC-side driver and a host-side driver.
+Together they enable host<->BMC VUART communication via PCIe.
 
-Fixes: 0481a041e956 ("serial: 8250: split Moxa PCIe serial board support out of 8250_pci")
-Signed-off-by: Linmao Li <lilinmao@kylinos.cn>
+The virtual UART is an 8250-compatible register set. It is called
+'virtual' because it is internally a simple FIFO.
+On the AST2600, two VUARTs can be exposed over PCI via the PCI BMC device.
+
+The host cannot access the BMC's memory. Only the exposed features are
+accessible. These are the KCS4 channel and 2 VUARTs. There is also some
+mailbox register functionality for a communication between
+the host and the BMC. More information can be found here [2].
+
+Changes since v5 [3]:
+- Fix small formatting issue in Patch 4's commit message.
+- Use static const for MFD cell and uart_port in the mfd driver.
+
+The host driver will performs multiple functions. The AST2600 also
+supports LPC over PCI, with a specific KCS channel (KCS4). This host core
+driver should also be used to enable the IPMI automatically via this KCS
+channel.
+
+Tested:
+As with v5, VUART data flow and MSI interrupts have been verified
+as working on the test hardware, in both directions and on both VUARTs.
+BMC: Asus IPMI Kommando Card R1.01, AST2600 A3 running OpenBMC
+Host: Linux kernel v7.0.0
+
+This series only supports the AST2600; the AST2700 is not supported.
+
+The findings regarding the MSI interrupt numbers are explained in the v4
+cover letter [4].
+
+As with v3 and v4, I would like to know whether I should add the
+'lpc-io-reg' and 'lpc-interrupt' values to the vuart3 and vuart4 nodes
+directly in the 'aspeed-g6.dtsi'. The host driver is not capable of
+finding the vuart address on its own, so they are hardcoded to 0x3f8 and
+0x2f8. It will not work with other addresses, so perhaps they should be
+in the .dtsi to ensure the correct configuration for the two vuart over
+PCI.
+
+[1]: https://github.com/AspeedTech-BMC/linux/tree/aspeed-master-v6.18/drivers/soc/aspeed
+[2]: https://lore.kernel.org/linux-aspeed/CAFi2wKYOAotiezepDqaR5PZDqDaPKKDfAEnpx5EHC0mL39hy6w@mail.gmail.com/
+[3]: https://lore.kernel.org/linux-aspeed/cover.1785932211.git.gregoire.layet@9elements.com/
+[4]: https://lore.kernel.org/linux-aspeed/cover.1783524645.git.gregoire.layet@9elements.com/
+
+Signed-off-by: Grégoire Layet <gregoire.layet@9elements.com>
 ---
- drivers/tty/serial/8250/8250_mxpcie.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+Grégoire Layet (6):
+      dt-bindings: serial: 8250: aspeed: add ast2600 and aspeed,vuart-over-pci
+      serial: 8250_aspeed_vuart: add aspeed,ast2600-vuart compatible string
+      serial: 8250_aspeed_vuart: add VUART over PCI
+      mfd: aspeed-pci-core: add AST2600 PCIe BMC device driver
+      ARM: dts: aspeed: g6: Change vuart compatible string for ast2600
+      ARM: dts: aspeed: g6: add aspeed,vuart-over-pci prop to vuart3 and 4
 
-diff --git a/drivers/tty/serial/8250/8250_mxpcie.c b/drivers/tty/serial/8250/8250_mxpcie.c
-index c0e3517d4e4ec..ddd02d5622ec4 100644
---- a/drivers/tty/serial/8250/8250_mxpcie.c
-+++ b/drivers/tty/serial/8250/8250_mxpcie.c
-@@ -570,14 +570,18 @@ static int mxpcie8250_probe(struct pci_dev *pdev, const struct pci_device_id *id
- 		dev_dbg(dev, "Setup PCI port: port %lx, irq %d, type %d\n",
- 			up.port.iobase, up.port.irq, up.port.iotype);
- 
--		priv->port[i].line = serial8250_register_8250_port(&up);
--		if (priv->port[i].line < 0) {
-+		ret = serial8250_register_8250_port(&up);
-+		if (ret < 0) {
- 			dev_err(dev,
- 				"Couldn't register serial port %lx, irq %d, type %d, error %d\n",
- 				up.port.iobase, up.port.irq,
--				up.port.iotype, priv->port[i].line);
--			break;
-+				up.port.iotype, ret);
-+			while (i--)
-+				serial8250_unregister_port(priv->port[i].line);
-+
-+			return ret;
- 		}
-+		priv->port[i].line = ret;
- 		priv->port[i].rx_trig_level = MOXA_PUART_RX_TRIG_DEFAULT;
- 	}
- 
--- 
-2.25.1
+ Documentation/devicetree/bindings/serial/8250.yaml |  42 +++++++-
+ MAINTAINERS                                        |   6 ++
+ arch/arm/boot/dts/aspeed/aspeed-g6.dtsi            |  14 ++-
+ drivers/mfd/Kconfig                                |  12 +++
+ drivers/mfd/Makefile                               |   2 +
+ drivers/mfd/aspeed-pci-core.c                      | 115 +++++++++++++++++++++
+ drivers/tty/serial/8250/8250_aspeed_vuart.c        |  92 +++++++++++++++++
+ 7 files changed, 277 insertions(+), 6 deletions(-)
+---
+base-commit: 6fdec78001b3b94f1b6000bbb2f9ec3498f1c73e
+change-id: 20260818-aspeed-driver-v6-db9953ca4141
+
+Best regards,
+--  
+Grégoire Layet <gregoire.layet@9elements.com>
 
