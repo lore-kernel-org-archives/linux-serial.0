@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98F747478;
-	Wed, 19 Aug 2026 04:26:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98E7D1E492D;
+	Wed, 19 Aug 2026 04:42:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787113594; cv=none; b=PT3N3spi001ZSGY6YJ+u/DXON8yU+lepA0UDHA/FwkesoCTxR4PHcZMelcrBTWVqag8JWt4fJHmxMwhKLlO+UnGIgCgPoc70ARTbH51+5chDkV8et58WrU2JgelXvBhto0HedfG6bG+sWOhtO1tcm982qUGUCK9rlT6Dd8BAquk=
+	t=1787114531; cv=none; b=kQYQ9HBtoLmK7x52ncPL+R6AmUmFSw9uQIXLlRewZs9eidMriU2Qm4dXmiUVGzi5CfG3Ts1Hp8Cb8O2oMM9c2tkz8v6LbPMqH5IOVj5dAmVX0+eEzx8rNCUfxZPRzw7cul8eUdChHLgozPbR+8xCaco+vIVytrNQoSCMysxzOdc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787113594; c=relaxed/simple;
-	bh=3dH4ROXMXeRGiQcvakgSxCQUsQkqrvfrA28UZGtGVVk=;
+	s=arc-20240116; t=1787114531; c=relaxed/simple;
+	bh=rUe+GMt9e+kgjQ14g1s9YdCgm4/H/8FEv5uZvK5eRh0=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=X1YBy8hRH45xPImhn8U9v3/q8lE3PjA5czi5z5AsdRXA9yPHu1jZuxYHJYwAQUSIE+BfZNWnfo1PzadQo4QrCMPuxk7jC4jTAtxTr3zuEMS76BJI7hjJr1kE8ASm+tdTqdPOE0V2lPOFGUzVnlMGJkotPcNCG/uEQOC0FlxhDi0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HP/FhzWr; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=UdRc3Ypsgj09E/gFLGacAWEUAOxHJKM+KI67g+H4xWNUtA+500Wh5lGboIV20qx5utZfvXYJaWow+Jh3HiFaA2su1jfU+xtmMwUIrr+BVahSlI21SOYaJ4+yQcY8Q5Eg2/E3HtTQ7zpI5QsBzGd0Urp1aOaawrRoMdf+JwVbYSk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XPbJTEFo; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HP/FhzWr"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A0051F000E9;
-	Wed, 19 Aug 2026 04:26:30 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XPbJTEFo"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2DD01F00A3A;
+	Wed, 19 Aug 2026 04:42:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787113593;
-	bh=ErXhuF7Ai0HjSZoqnrXxUkmbIHJi9H6R6PaXpZbpqo8=;
+	s=k20260515; t=1787114529;
+	bh=TEWABgkLWaBnLm0VChjKnTzKxcRohv9ljTXmhk11e4U=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=HP/FhzWrZM/gW/b1/4S+hPZV/UUhvHOVRU9y/oPMh6xm+RSso2zgpuDCOdv845s8H
-	 rXfygICJPI8sGR2CL4dH8vioHozWiQxCYfBYpaLqs3KG1PXEMV6v3kmf9ygq5jTku7
-	 c3ylCiMuymfYijX0bgI/IN2ESNyB9WWOLUbJuHUjoBssfOMQpSLrIyOOXSzAZuy4gv
-	 2H/IVWznWIF9S6/mRJw1r149c+jRhd8OwJW2aE7fQro71BjEpIVVDi0Ep4AiHIPluC
-	 6tkGckiALH3WNje2xGiVdoEFX0wkfaC+T8uZxfd9aXTwBHUjS825qJQjXvEhq91ScI
-	 S6gg6txu8064Q==
-Message-ID: <46936686-3bdd-4d36-9124-e8d3376ad5ea@kernel.org>
-Date: Wed, 19 Aug 2026 06:26:28 +0200
+	b=XPbJTEFo4/uOj7iTdUsNlxeTpXK4vQEhnHZKwGzcM4W5/pASIKWhtAzhczZshZDUl
+	 hxDoNtiMFHNAzzzDNq0nBrO/OpQXFn+7Tjfc1n3itNLPkqPnGiCazD5/NyHOOX/98r
+	 dwRLVNuGx1BIF+dbu30pJETKjMd7dkz4DFZo+v6ttbrSVAZx+0pjiKb8py9QImvpee
+	 B34VRZ9XoJtW1vARpNcHAElPrRUhA/AxfsYGVQg5N3FYcG3y7GmTZ/j2+wa2QWSyGz
+	 Caw86fdUedqlal39bSbjHdWhAbzm4XNlczATLtwncPCxdO0NLPIp9sBsW+7747iYXn
+	 tkoF/8dJfuNJQ==
+Message-ID: <dd831cb7-7cfc-46cb-a9e4-2899add9518d@kernel.org>
+Date: Wed, 19 Aug 2026 06:42:06 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,16 +35,11 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: imx: cancel RS485 trigger hrtimers in shutdown
- and remove
-To: Fan Wu <fanwu01@zju.edu.cn>,
+Subject: Re: [PATCH] serial: 8250: don't register ports that have no hardware
+To: Lucas Tanure <tanure@linux.com>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Frank Li <Frank.Li@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>,
- Pengutronix Kernel Team <kernel@pengutronix.de>,
- Fabio Estevam <festevam@gmail.com>, linux-serial@vger.kernel.org,
- linux-kernel@vger.kernel.org, imx@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, stable@vger.kernel.org
-References: <20260819021916.442827-1-fanwu01@zju.edu.cn>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20260818185200.10243-1-tanure@linux.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -89,30 +84,54 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20260819021916.442827-1-fanwu01@zju.edu.cn>
+In-Reply-To: <20260818185200.10243-1-tanure@linux.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 19. 08. 26, 4:19, Fan Wu wrote:
-> The rs485 delay hrtimers trigger_start_tx and trigger_stop_tx are
-> embedded in the devm allocated struct imx_port, and their callbacks
-> reach the port through container_of() and touch registers under the
-> port lock.  Nothing cancels them synchronously: the tx paths only
-> call hrtimer_try_to_cancel(), which does not wait for a running
-> callback, and the bounded wait in imx_uart_shutdown() can give up,
-> force tx_state to OFF, and leave a timer armed.  After
-> imx_uart_remove() returns, devm frees the port and a late callback
-> dereferences freed memory.
+On 18. 08. 26, 20:52, Lucas Tanure wrote:
+> The 8250 driver creates a fixed set of port slots at boot and
+> registers a ttyS device for each one, even when the slot describes no
+> hardware. On device tree platforms those slots are empty, but they
+> still take the ttyS0..ttyS3 names.
 > 
-> Cancel both timers at the end of imx_uart_shutdown(), after the port
-> lock is dropped and before the clocks are disabled, and again in
-> imx_uart_remove() before the devm free:
+> New Amlogic SoCs (S4, T7) name their real UARTs ttyS as well. With
+> both drivers built in, as in arm64 defconfig, the real port fails to bind:
+> 
+>    sysfs: cannot create duplicate filename '/class/tty/ttyS0'
+>    meson_uart fe078000.serial: Cannot register tty device on line 0
+> 
+> Skip slots that have no I/O and no memory address. Legacy x86 slots
+> come with resources and are not affected.
+> 
+> Signed-off-by: Lucas Tanure <tanure@linux.com>
+> Assisted-by: Claude:claude-fable-5
+> ---
+>   drivers/tty/serial/8250/8250_core.c | 8 ++++++++
+>   1 file changed, 8 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+> index f49862d90eeb..e66e0cdbb210 100644
+> --- a/drivers/tty/serial/8250/8250_core.c
+> +++ b/drivers/tty/serial/8250/8250_core.c
+> @@ -378,6 +378,14 @@ void __init serial8250_register_ports(struct uart_driver *drv, struct device *de
+>   		if (up->port.dev)
+>   			continue;
+>   
+> +		/*
+> +		 * Skip slots that describe no hardware: they would only
+> +		 * take up ttyS<n> names. Real ports get their node when
+> +		 * they claim a slot in serial8250_register_8250_port().
+> +		 */
+> +		if (!up->port.iobase && !up->port.mapbase && !up->port.membase)
+> +			continue;
 
+So you can no longer set up those ports via TIOCSSERIAL?
 
-> serial core does not call the
-> driver shutdown on every path that reaches remove().
+And what about already registered consoles?
 
-Could you be more specific on what path it does not?
+Why does meson register ttyS* in the first place?
+
+F*ck AI proposed changes.
 
 thanks,
 -- 
