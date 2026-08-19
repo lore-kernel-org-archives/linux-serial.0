@@ -1,107 +1,150 @@
-Received: from zg8tmtyylji0my4xnjqumte4.icoremail.net (zg8tmtyylji0my4xnjqumte4.icoremail.net [162.243.164.118])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B1FFE302753;
-	Wed, 19 Aug 2026 06:40:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.164.118
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E99F3A1D14;
+	Wed, 19 Aug 2026 06:50:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787121638; cv=none; b=Mo+82G/FyFaKKpTRO/vJjU8r5DqpSQULNcwfbyZ0CQqkNeg7RjuAJ6aA1UzsjLHhkU7kTQTcq0vw+xJ6WGPWCV4PKVmsuyJ/GR322KB52e2fodEo7q5PdhptGqxoy0bv1uLRRYAjMCGJR9zfjDxS0kMwEMrinxWVQBZiB6VnkS4=
+	t=1787122222; cv=none; b=jGf+f7376vfYtRL7J9ticwfEWvPbIiTAYY1lMnjmHZwUMbu1wC0wIUAsEVPiITuH5g5T1ACnY+avoFHbRdwv4kFGXYAf6qlQbcY1Ud+Av3IaR7bDY8X6t0Ua+q5ArxnFPIFSIyMnG4mTHHwcQFIhJVGdq/WMtiSXhXtHVJSJ05k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787121638; c=relaxed/simple;
-	bh=lxWU45Bto7KMCpNbz5PO8YKIa/YktYWn+MjkaIXISCU=;
-	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Message-Id:References:To; b=V1n5rNRSoNoAWEPoUCkH3QDOnXQtqj7Et4R2Gs+/O/X7myHXPTh0+Qaet+wBircOp75n7lTfsAWqLtzKaHyzy8j6wd4VWj+WYjTzBDX5CI1eau2QGZOauFu4UI8p29Qvl8bGFy1vz8zqpMWmOlsy+Fzeb9YWmgeeAgHNAxvdX00=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=zju.edu.cn; spf=pass smtp.mailfrom=zju.edu.cn; arc=none smtp.client-ip=162.243.164.118
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=zju.edu.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zju.edu.cn
-Received: from zju.edu.cn (unknown [10.97.62.103])
-	by mtasvr (Coremail) with SMTP id _____wCnvny_T4VqtJ6nAA--.36202S3;
-	Wed, 19 Aug 2026 14:40:00 +0800 (CST)
-Received: from smtpclient.apple (unknown [10.97.62.103])
-	by mail-app2 (Coremail) with SMTP id zC_KCgB35cq8T4Vqfrz9Aw--.39095S2;
-	Wed, 19 Aug 2026 14:39:56 +0800 (CST)
-Content-Type: text/plain;
-	charset=us-ascii
+	s=arc-20240116; t=1787122222; c=relaxed/simple;
+	bh=izjKXIFxi/rqtVADf2M0sBpedoa8cJQqW1TXF55iZ3A=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Dqla9THKX6A51jJmgiAHWITUYRXSn01tGXVXtnzXyYXIumfbDZ6Wx+2XBUjTO52Oi8cFcEI37JKtCvuSV0t48rjG3yfyC7AeP++x/Ua6U+V9rxlCDwLnx1BxMQfAIXyRYN0a6s0meJTZohciGgQwdM7Q33Jw/FrwlzyN0Lf/tuw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mM2knBFF; arc=none smtp.client-ip=198.175.65.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mM2knBFF"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1787122220; x=1818658220;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=izjKXIFxi/rqtVADf2M0sBpedoa8cJQqW1TXF55iZ3A=;
+  b=mM2knBFFGFqRysWIHnSptxhOBFC+LXIi80JPCfgkdfkKLIoEYPhmQ7GA
+   6gWqROSJjYy++GloTHxBIgpIKpxkOz0ii+7nY7Uf1c7EdtAEgs8EgGjuy
+   JpeLaiwhmYlMyVEwniPHJI5N49809VZZ//ObLiyKV2fGxHFPrIt/AqOBp
+   LKqmLvcqYTXzaSn/iHok6jMvzJnCydtwQjV/n2QKskde23rJYr7BibVzj
+   UzTekMdd2p/o2vqZ6CR3P4TOl+06D7slcgt7bNQPdCY7Nn6tgxVYIGuFi
+   dc1KKRg06tnsKl/5/nuFzT5LrFSeJHFHDdCc9xfvF2OM0vLhQ+TtHXuM2
+   g==;
+X-CSE-ConnectionGUID: phjZPAoNQD6TRGLD3KInAw==
+X-CSE-MsgGUID: BiFBqsA9SeeqCHfqNJ7V3w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11879"; a="87829334"
+X-IronPort-AV: E=Sophos;i="6.25,231,1779174000"; 
+   d="scan'208";a="87829334"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2026 23:50:20 -0700
+X-CSE-ConnectionGUID: H1XQ80vSTXqXbOh+BrnsQw==
+X-CSE-MsgGUID: QSkiNZ14S62aTkp1BIOMog==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,231,1779174000"; 
+   d="scan'208";a="268965440"
+Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.244.106])
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2026 23:50:14 -0700
+Date: Wed, 19 Aug 2026 09:50:11 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: zl020895 <zl020895@163.com>
+Cc: longzhao <longzhao@ambarella.com>, Arnd Bergmann <arnd@arndb.de>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	soc <soc@lists.linux.dev>,
+	linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@kernel.org>, Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>,
+	devicetree <devicetree@vger.kernel.org>,
+	linux-clk <linux-clk@vger.kernel.org>,
+	linux-gpio <linux-gpio@vger.kernel.org>,
+	linux-serial <linux-serial@vger.kernel.org>,
+	linux-kernel <linux-kernel@vger.kernel.org>,
+	Brian Masney <bmasney@redhat.com>, Lee Jones <lee@kernel.org>,
+	mfd <mfd@lists.linux.dev>
+Subject: Re: Re: [PATCH v5 10/12] serial: 8250: add Ambarella UART driver
+Message-ID: <aoVSI4xcpRqUZIew@ashevche-desk.local>
+References: <20260818-cv75-v5-v5-0-7bbb12f0360f@ambarella.com>
+ <20260818-cv75-v5-v5-10-7bbb12f0360f@ambarella.com>
+ <aoRpc2RK2_X3CdAi@ashevche-desk.local>
+ <162c0385.2c076.1a018b82fa7.Coremail.zl020895@163.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3774.600.62\))
-Subject: Re: [PATCH] serial: imx: cancel RS485 trigger hrtimers in shutdown
- and remove
-From: Fan Wu <12321260@zju.edu.cn>
-In-Reply-To: <46936686-3bdd-4d36-9124-e8d3376ad5ea@kernel.org>
-Date: Wed, 19 Aug 2026 14:39:45 +0800
-Cc: Fan Wu <fanwu01@zju.edu.cn>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Frank Li <Frank.Li@nxp.com>,
- Sascha Hauer <s.hauer@pengutronix.de>,
- Pengutronix Kernel Team <kernel@pengutronix.de>,
- Fabio Estevam <festevam@gmail.com>,
- linux-serial@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- imx@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org,
- stable@vger.kernel.org
-Content-Transfer-Encoding: 7bit
-Message-Id: <C6A3233A-A352-45AC-A498-0DED1EC57147@zju.edu.cn>
-References: <20260819021916.442827-1-fanwu01@zju.edu.cn>
- <46936686-3bdd-4d36-9124-e8d3376ad5ea@kernel.org>
-To: Jiri Slaby <jirislaby@kernel.org>
-X-Mailer: Apple Mail (2.3774.600.62)
-X-CM-TRANSID:zC_KCgB35cq8T4Vqfrz9Aw--.39095S2
-X-CM-SenderInfo: qrstjiaswqq6lmxovvfxof0/
-X-CM-DELIVERINFO: =?B?su+KKgXKKxbFmtjJiESix3B1w3vZ3A9ovKVTomAyoQazvoRs/NHSP8GI2EvgeEEW7R
-	sfncGSG+szpQCInt5Y8rbJUI3EaNafmokmxSGacB/SiOKcuO416gdgVifUJNAsz9S/YwSp
-	Wt05rizKujXnc7uVicOp9E6mavGmQbzmcFsnzP86
-X-Coremail-Antispam: 1Uk129KBj9xXoW7JFy3XF47AF13Xr1rCw15Awc_yoWftFc_u3
-	4UAw1kuw1q9F4xA3W5Gw1kZrW7tF429FyktryFyry3t3yrWF9xJFn2k34Iqry8X393ZF9r
-	Cr9FkFyI93W29osvyTuYvTs0mTUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUj1kv1TuYvT
-	s0mT0YCTnIWjqI5I8CrVACY4xI64kE6c02F40Ex7xfYxn0WfASr-VFAUDa7-sFnT9fnUUI
-	cSsGvfJTRUUUbDxYFVCjjxCrM7AC8VAFwI0_Gr0_Xr1l1xkIjI8I6I8E6xAIw20EY4v20x
-	vaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxS
-	w2x7M28EF7xvwVC0I7IYx2IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxV
-	W8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v2
-	6rxl6s0DM2vYz4IE04k24VAvwVAKI4IrM2AIxVAIcxkEcVAq07x20xvEncxIr21l57IF6x
-	kI12xvs2x26I8E6xACxx1l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v2
-	6r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2
-	Ij64vIr41lF7xvr2IYc2Ij64vIr40E4x8a64kEw24lFIxGxcIEc7CjxVA2Y2ka0xkIwI1l
-	42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJV
-	WUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAK
-	I48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F
-	4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY
-	6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjxU7gAwDUUUU
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <162c0385.2c076.1a018b82fa7.Coremail.zl020895@163.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
+On Wed, Aug 19, 2026 at 02:31:59PM +0800, zl020895 wrote:
 
-> On Aug 19, 2026, at 12:26, Jiri Slaby <jirislaby@kernel.org> wrote:
+> This is Ambarella 8250-compatible IP, not Synopsys DesignWare. We
+> first tried 8250_dw after Linus asked us to move to the 8250 library;
+> you then told us not to touch 8250_dw and to use 8250_ambarella
+> instead. That is what this patch is.
+> Background:
+> https://lore.kernel.org/r/CAD++jLm6HzEU1TM-c=Vtjv3FJEBecVP7TyxSgq_Q0zF-YwT6NA@mail.gmail.com/
+> https://lore.kernel.org/linux-serial/an8KvvHWX0naH3Xw@ashevche-desk.local/
+> https://lore.kernel.org/linux-serial/7E774305-3920-4BB7-BA46-E0772D6BED84@ambarella.com/
+> I will also switch to uart_read_port_properties() and trim the
+> 8250_dw-derived boilerplate.
+
+But it has layout like Synopsys? Do you have a link to the datasheet?
+
+> ---- Replied Message ----
+> | From | Andy Shevchenko<andriy.shevchenko@linux.intel.com> |
+> | Date | 08/18/2026 22:17 |
+> On Tue, Aug 18, 2026 at 06:31:24PM +0800, Long Zhao via B4 Relay wrote:
 > 
->> serial core does not call the
->> driver shutdown on every path that reaches remove().
+> > Add an 8250 platform driver for Ambarella CV75 instead of claiming
+> > snps,dw-apb-uart compatibility.
 > 
-> Could you be more specific on what path it does not?
+> This is a record from a changelog. There is nothing in the commit message.
+> ...
 > 
-> thanks,
-> -- 
-> js
-> suse labs
+> The code seems like an almost blind copy of 8250_dw.c.
+> 
+> > +#define AMBARELLA_UART_USR        0x1f
+> > +#define AMBARELLA_UART_USR_BUSY        BIT(0)
+> 
+> So, is it Synopsys IP-based design? How this gets into this platform? This
+> whole story completely made me lost.
+> 
+> > +#define AMBARELLA_UART_IIR_IID        GENMASK(3, 0)
+> > +#define AMBARELLA_UART_IIR_STATUS    GENMASK(5, 0)
 
-Hi Jiri
+...
 
-Yes. The relevant path is a console port whose last TTY user closes it
-before the device is unbound.
+> > +    of_property_read_u32(dev->of_node, "reg-shift", &reg_shift);
+> > +    of_property_read_u32(dev->of_node, "reg-io-width", &reg_io_width);
+> > +    uart.port.regshift = reg_shift;
+> 
+> > +    switch (reg_io_width) {
+> > +    case 4:
+> > +        uart.port.iotype = UPIO_MEM32;
+> > +        uart.port.serial_in = ambarella_serial_in;
+> > +        uart.port.serial_out = ambarella_serial_out;
+> > +        break;
+> > +    default:
+> > +        return dev_err_probe(dev, -EINVAL,
+> > +                     "unsupported reg-io-width %u\n",
+> > +                     reg_io_width);
+> > +    }
+> 
+> This is handled by uart_read_port_properties().
 
-tty_port_shutdown() skips port->ops->shutdown() for console ports. The
-last close then clears the active state and dissociates the TTY, so the
-later tty_port_tty_vhangup() in the remove path has no TTY to hang up
-and cannot invoke the driver shutdown.  That is the path the cancel in
-imx_uart_remove() covers.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-trigger_stop_tx can already be pending at that point: after TXDC,
-imx_uart_stop_tx() starts it for delay_rts_after_send, whereas the close
-path only waits for TXDC.
-
-I can add this to the changelog if you would prefer the rationale to be
-spelled out there.
-
-Thanks,
-Fan
 
