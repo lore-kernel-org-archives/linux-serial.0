@@ -1,146 +1,169 @@
-Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1057343D63;
-	Wed, 19 Aug 2026 12:15:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=124.126.103.232
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 667DB31985C
+	for <linux-serial@vger.kernel.org>; Wed, 19 Aug 2026 12:57:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787141762; cv=none; b=Z9lwnNn6WrvCwu5iU4LstEkya59zDRsIdOmqAqRXBWA1yGhU9BJpn3B+kFGZ6I9yqZXgzdJ3METsEOt/9VPwCWJdkGSg1bQ8Q4GtK7MsitYaQe0EMfG4UiFEkdiS3TkX1arrqguY85OVBgUCS5WySTpzhRYlxvktBOozog07moA=
+	t=1787144273; cv=none; b=A3dPsrYBgHONOxRWpjFC31TAfQVyznUTric1QWnp9gSZTq7AIkN8ZL+YyjaTuhqWNdCUGS35I7awU7vrh/9rr2V66SHcy2coPrxWNOSHhcRF0f9E5qmqydsYc7Pqx/KBO4yJ+mNuZrr5x7/p3HqMKsO562txlwtZXgll8e/xrKY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787141762; c=relaxed/simple;
-	bh=t/0Oydr6ttRgy3Tiy39WxJexHr3TySmIOp4Lp/VS53Y=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ebxeK7LicCh2voQ7u+61ZNMY4zsOZOC6Z/iEgzzVFBGWXPfYTi55PsvbTWF+pGro1gkoY6hcFl2ZYxbwigb/Aqw/hHK53Be9XHhcypYKi5tohh800fUYtR5hFkRbVeacPaMy8jE7YRupDOcvTL1Xk+6bNSYWlNJurcZkAr2JpiY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn; spf=pass smtp.mailfrom=kylinos.cn; arc=none smtp.client-ip=124.126.103.232
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
-X-UUID: b89dd65e9bc711f19a56ed5b684f684d-20260819
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.3.19,REQID:417d8e06-034d-4744-862f-8ef272b87ace,IP:0,U
-	RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
-	release,TS:0
-X-CID-META: VersionHash:7db8b62,CLOUDID:47fcd1d5dde46670a3fdac7fb8f547ef,BulkI
-	D:nil,BulkQuantity:0,SF:80|81|82|83|102|865|898,TC:nil,Content:0|15|52,EDM
-	:-3,IP:nil,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0
-	,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
-X-CID-BVR: 2,SSN|SDN
-X-CID-BAS: 2,SSN|SDN,0,_
-X-CID-FACTOR: TF_CID_SPAM_SNR
-X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
-X-UUID: b89dd65e9bc711f19a56ed5b684f684d-20260819
-X-User: lilinmao@kylinos.cn
-Received: from [10.0.2.15] [(10.44.16.150)] by mailgw.kylinos.cn
-	(envelope-from <lilinmao@kylinos.cn>)
-	(Generic MTA with TLSv1.3 TLS_AES_128_GCM_SHA256 128/128)
-	with ESMTP id 183993364; Wed, 19 Aug 2026 20:15:52 +0800
-Message-ID: <d4915b7c-9a46-45b1-8b0f-e746772d1e54@kylinos.cn>
-Date: Wed, 19 Aug 2026 20:15:48 +0800
+	s=arc-20240116; t=1787144273; c=relaxed/simple;
+	bh=SBnRSODcu+BEcMd+HCD9hRp9IxuD24gRkwX5OrkVLig=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=F1BFa7awpFhWvmo5jQxN6fDjOqqRANKJSoQez4B/6fAv4BaQIvv6nZVQ+lcuN4V4olR0GQwHPGQRhZdlyQaL2P5i8n4tF1KpN4LdXmWX0C+08bQn8R7lVRiofxMjePlea5qgtet5ElyM+orMSD1zn2TCLKJBxk6M20ul2OKK2GU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=p1E0BnoB; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=YE+48cqx; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="p1E0BnoB";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="YE+48cqx"
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67JClSR21374285
+	for <linux-serial@vger.kernel.org>; Wed, 19 Aug 2026 12:57:51 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:date:from:message-id:mime-version
+	:subject:to; s=qcppdkim1; bh=bJR4NmkM02I7TCKsHwKAlsIMTf+H3Xz7PHX
+	Xsr1YvVo=; b=p1E0BnoBweztQLgbQj5cofd7eEa+YXb6eLSpht8aErTrLdIo5VN
+	U4Uw/dbPxR7mPu2g+LRzwML06Xat+GU9tJMq663X2q9h1AjRXy1d1UbQTAAkqTFv
+	EOS5c3HoZ5X+tJg0UqNJ/iMlES1G+/C/3Av8gMyirUoj2UytI/EqBJNbmmouCvC7
+	DhFrKqKGw3bIz5GgLyBYEMSsDH2dtDsZvdV+e2412G759LrLfSgIWkO+4Rt4KyOH
+	TmL0TZDKjp4Mel9HbbySFGwsZtBhH/5XXunZ28w1YSaR559O7Yr1yqSRLCcjBkbl
+	BidHADccYJf4BI2iLbdzZYmPxGi9LnI0mCw==
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com [209.85.222.200])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4g4yfm395b-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-serial@vger.kernel.org>; Wed, 19 Aug 2026 12:57:51 +0000 (GMT)
+Received: by mail-qk1-f200.google.com with SMTP id af79cd13be357-92e82060977so98328285a.1
+        for <linux-serial@vger.kernel.org>; Wed, 19 Aug 2026 05:57:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1787144270; x=1787749070; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=bJR4NmkM02I7TCKsHwKAlsIMTf+H3Xz7PHXXsr1YvVo=;
+        b=YE+48cqxleTuWfiLwLvS4RSr5dMGilPoRt9f1oL5t/TQ8Lu3DunG2NxOHUHa/Cs86l
+         MLNUXyY+YGLo7dV9xcziwQvGn9v1dlHmx+jFKoN7PKMiPGrJYRvzdrgz4XNP5+uoabHy
+         himSCUZzkgJdAH5FZMKqDB2y3mAzEOg+B5jlnixVSVrdNaYbjp6rj1pwOs0HspUyb//P
+         A1TIfI0E4zAeTIfOiPmIxSJbuXn4OYkzK1WDDJLd5BFZksGEJwPnfYfgZSRDJWt5qJPI
+         XaYseLmMVuoqpgPA+cMnq0fnnLsxcO/RWL/ovEFZ0S45h94DNiStqF2IIAEHUnX1qh2e
+         9A4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787144270; x=1787749070;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=bJR4NmkM02I7TCKsHwKAlsIMTf+H3Xz7PHXXsr1YvVo=;
+        b=hsl8m84crpa51nQoFjXXiWBbpnCJ2uc4i9mvvSoI2/FRiGXXTm1Okt7olbtWYY35iK
+         vb3YxlhICDZ/HbXzVHcfkokwcbAKa0zTTJKr32IvpCq+0Msj3S5bMT8Pgayzh3fzx6uF
+         jbFuirV3NUCT5kj+Cou/zrjAt9s7powxuSk4f0Z3lZ+kUwHlNBM3UHmOdKXrnP0uoLZk
+         9ipjJUae0Zo1aAL5YEmXV/XTysZvXiDAGFzO2tvCS+ntvyby9pqyPbD+UWGXejSFJ0rD
+         /hF9dHu6PlJuDY9j8toqBlyLsu4uhHb7mTuf5WigdRCIv8/GQzoHuHN9DNZVHyeni0uB
+         LomA==
+X-Forwarded-Encrypted: i=1; AHgh+RqwcDHVPxCgFhQgCYruqsrXwdWPWAWfUvTlVwhn7qxRSVnEPrZ7k+tgId0j1Xo5e6LQ0OlYZDz0HyEqDcI=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy2nd9vfw5tX1dzQl13YQfMY5nib52tYpxdG/sKreP9hVk9Qzdt
+	/fWYWc9QJnT8jeNu4RKGrnc5FZNVicSrmTOCs4RvYvihlreiXRsGoFgJi7l24NYiPZClIQA41zO
+	SW8Ifu0Fkul7kSJTfvr+89YVHeTxYAwW28sKS+2kp/pedz/JDoQ8y0pih/GLhMtxBxsg=
+X-Gm-Gg: AR+sD12Iq0Wyf2sIf9kvQTpd83dtsquTJmVMAveGu8pwh03TNPHycRBrz4kSVdA6T7k
+	vu4r02cK750TLpKtFEi766XPpJYw0hVvmiD9i4PDV7lXM6xDQ1ooiqwJ6+bBWdK1pM9RIlVZLIK
+	7SZgtrudqFiBTaFgTZWul8ZX8NfyOZ+zbq2uREn+Ol6vomTbgkTri+GEvZQtp5sKLSR8VbX7XWt
+	Gm1wZ1w0k4nmC/jreCe03c6sgXHvoXxPudlVjukdGhiq1EifDB+Ntl9swRjS30tqpGEf2/e6RCC
+	kf+aQW4A9vOzVFeVhYK3okxnT0Drzlrs4m9+o4OY4SbTqsJifihSfkib/5o0hS5FAvaHRznOUXI
+	TFXEhGDaR6Tg9YbzCEW9rWJofWLxvCZSjrjh/d+O0IxrA2m7W72wM27TASe10uDJF8x09LU3nUR
+	6lotsH9usUNnM2XFQ=
+X-Received: by 2002:a05:620a:4613:b0:932:db03:4da3 with SMTP id af79cd13be357-9371e7046c1mr323571785a.19.1787144270384;
+        Wed, 19 Aug 2026 05:57:50 -0700 (PDT)
+X-Received: by 2002:a05:620a:4613:b0:932:db03:4da3 with SMTP id af79cd13be357-9371e7046c1mr323568685a.19.1787144269924;
+        Wed, 19 Aug 2026 05:57:49 -0700 (PDT)
+Received: from shalem (2001-1c00-0c32-7800-5bfa-a036-83f0-f9ec.cable.dynamic.v6.ziggo.nl. [2001:1c00:c32:7800:5bfa:a036:83f0:f9ec])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c243c38c5dcsm68931666b.44.2026.08.19.05.57.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Aug 2026 05:57:49 -0700 (PDT)
+From: Hans de Goede <johannes.goede@oss.qualcomm.com>
+To: Rob Herring <robh@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc: Hans de Goede <johannes.goede@oss.qualcomm.com>,
+        Ibrahim Abdelkader <iabdelka@qti.qualcomm.com>,
+        linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [PATCH] serdev: ttyport: Clear serport->tty after freeing
+Date: Wed, 19 Aug 2026 14:57:48 +0200
+Message-ID: <20260819125748.194377-1-johannes.goede@oss.qualcomm.com>
+X-Mailer: git-send-email 2.55.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 3/3] serial: 8250_mxpcie: take the line settings from the
- new termios
-To: Crescent Hsieh <crescentcy.hsieh@moxa.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260818093918.3190686-1-lilinmao@kylinos.cn>
- <20260818093918.3190686-4-lilinmao@kylinos.cn>
- <aoV-xi0uPEf62-U1@moxa-KabyLake-H>
-From: Linmao Li <lilinmao@kylinos.cn>
-In-Reply-To: <aoV-xi0uPEf62-U1@moxa-KabyLake-H>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODE5MDEwMCBTYWx0ZWRfX5qt23nrO09Wp
+ pPmLD/Z+5R3obxLxZIcDGP1eJ7fWogazDbZYageFHPo/ME3Jb/ewKbOsmjYRpzDrQfOONWFD0S/
+ BxKUX8MtLvudFxPBlgwlp7iuBaiFve8=
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODE5MDEwMCBTYWx0ZWRfX+Qn5k3+8tEvf
+ yN10iAQ43L08UTlSOsttSLlgSsp2KBu7wf4j9Vs3unQ35Vvzuem5Bqxa5+HJQz5qXR4+5kWN6lX
+ yc2J1SCkLgfSkrDv9RW08sAA7fi27kQxWnbKFust/KfVOkxCBSZZBDi9bN4xEF50vF+UPoxN5f5
+ fj3DhrlTJSfkFqB2fgG6/8/cHZhMWC8JIgYKkt9Cc4kOD0pgYd75lstSF11Ctd0luvf6EyDYsx9
+ qQsLxBVWivMV3E/Hr6ISumFAE9+DKISiQ/Vj4/xcNNbK6kYOPyPyW8sLXIVfO3RQ2donHkBTkWT
+ hfEhID1Z0g3gvfs0hdNmyu5nv5pfWmjqkYc9TPR2bUxd/Yg4Es8yEkEnAM6qO9uk5M0duImiNqj
+ lDXKhm3KHFCw8TWq4gzVY9aY9z+UzFFbvIXD8NgBs6SK/GWIn3O6NRm02NAyzYpWFB853X+oW5G
+ D0hawY3B/WZ+Ilwvi1g==
+X-Proofpoint-ORIG-GUID: ZCyTJaeJ5ZxuHgXkPpr6Unv5hdHxj7b_
+X-Authority-Analysis: v=2.4 cv=bN0m5v+Z c=1 sm=1 tr=0 ts=6a85a84f cx=c_pps
+ a=hnmNkyzTK/kJ09Xio7VxxA==:117 a=xqWC_Br6kY4A:10 a=Sv0fKeRqtYgA:10
+ a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22
+ a=eoimf2acIAo5FJnRuUoq:22 a=EUspDBNiAAAA:8 a=c0e1n4jylXfP7e-yc8IA:9
+ a=PEH46H7Ffwr30OY-TuGO:22
+X-Proofpoint-GUID: ZCyTJaeJ5ZxuHgXkPpr6Unv5hdHxj7b_
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-08-19_03,2026-08-19_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ bulkscore=0 phishscore=0 priorityscore=1501 clxscore=1011 adultscore=0
+ impostorscore=0 lowpriorityscore=0 suspectscore=0 malwarescore=0 spamscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608190100
 
+From: Ibrahim Abdelkader <iabdelka@qti.qualcomm.com>
 
-在 2026/8/19 18:00, Crescent Hsieh 写道:
-> On Tue, Aug 18, 2026 at 05:39:18PM +0800, Linmao Li wrote:
->> mxpcie8250_set_termios() reads the line settings out of
->> port->state->port.tty, which is only set once the port has been opened.
->>
->> uart_set_options() builds a termios of its own and calls ->set_termios()
->> with no tty behind it, so using such a board as the console
->> (console=ttyS<n>) dereferences a NULL tty during console setup, as does
->> attaching kgdboc to it and resuming a suspended console from
->> uart_resume_port().
->>
->> Read the settings from the termios the serial core passes in instead.
->> It holds the same values on the normal path - uart_change_line_settings()
->> passes &tty->termios - and it is what serial8250_do_set_termios() right
->> above already uses.
->>
->> Fixes: 55edf8511f47 ("serial: 8250_mxpcie: enable automatic RTS/CTS flow control")
->> Signed-off-by: Linmao Li <lilinmao@kylinos.cn>
-> Hi,
->
-> I tested this by configuring kgdboc on a CP-168EL-A. Thanks for the fix.
-Thank you for testing it.  May I add your Tested-by to v2?
->
->> ---
->>   drivers/tty/serial/8250/8250_mxpcie.c | 19 ++++++++++---------
->>   1 file changed, 10 insertions(+), 9 deletions(-)
->>
->> diff --git a/drivers/tty/serial/8250/8250_mxpcie.c b/drivers/tty/serial/8250/8250_mxpcie.c
->> index ddd02d5622ec4..eba59f1724b78 100644
->> --- a/drivers/tty/serial/8250/8250_mxpcie.c
->> +++ b/drivers/tty/serial/8250/8250_mxpcie.c
->> @@ -217,8 +217,7 @@ static void mxpcie8250_set_termios(struct uart_port *port,
->>   				   const struct ktermios *old)
->>   {
->>   	struct uart_8250_port *up = up_to_u8250p(port);
->> -	struct tty_struct *tty = port->state->port.tty;
->> -	unsigned int cflag = tty->termios.c_cflag;
->> +	unsigned int cflag = new->c_cflag;
-> Nit: Since cflag is used only once, while c_iflag and c_cc are
-> accessed directly through new below, could we drop the local variable
-> and use new->c_cflag directly for consistency?
+Both error paths in ttyport_open(), and ttyport_close(), release the tty
+with tty_release_struct() and leave serport->tty pointing at freed memory.
 
-Yes, that reads better.  v2 drops the local and uses new->c_cflag.
+The serdev core itself never dereferences it afterwards. However, a buggy
+driver could easily trigger a use-after-free by calling a ttyport operation
+on a port that is not open, or by calling close() twice. While those
+drivers should be fixed, clearing the pointer, makes them fail
+deterministically instead of touching freed memory.
 
+Note that a driver which currently double closes gets away with it only by
+chance, depending on whether the freed tty has been reused. After this
+change such a driver oopses immediately instead, which is the intended
+outcome, but it may surface latent bugs elsewhere.
 
-Thanks,
-Linmao
+Signed-off-by: Ibrahim Abdelkader <iabdelka@qti.qualcomm.com>
+Reviewed-by: Hans de Goede <johannes.goede@oss.qualcomm.com>
+Signed-off-by: Hans de Goede <johannes.goede@oss.qualcomm.com>
+---
+ drivers/tty/serdev/serdev-ttyport.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
->
->>   	u8 efr, val;
->>   
->>   	serial8250_do_set_termios(port, new, old);
->> @@ -233,18 +232,20 @@ static void mxpcie8250_set_termios(struct uart_port *port,
->>   		up->port.status |= (UPSTAT_AUTORTS | UPSTAT_AUTOCTS);
->>   	}
->>   	/* Set on-chip software flow control character */
->> -	serial_out(up, MOXA_PUART_XON1, START_CHAR(tty));
->> -	serial_out(up, MOXA_PUART_XON2, START_CHAR(tty));
->> -	serial_out(up, MOXA_PUART_XOFF1, STOP_CHAR(tty));
->> -	serial_out(up, MOXA_PUART_XOFF2, STOP_CHAR(tty));
->> +	serial_out(up, MOXA_PUART_XON1, new->c_cc[VSTART]);
->> +	serial_out(up, MOXA_PUART_XON2, new->c_cc[VSTART]);
->> +	serial_out(up, MOXA_PUART_XOFF1, new->c_cc[VSTOP]);
->> +	serial_out(up, MOXA_PUART_XOFF2, new->c_cc[VSTOP]);
->>   
->> -	val = I_IXON(tty) ? MOXA_PUART_EFR_RX_FLOW_XON1_XOFF1 : MOXA_PUART_EFR_RX_FLOW_DISABLED;
->> +	val = (new->c_iflag & IXON) ? MOXA_PUART_EFR_RX_FLOW_XON1_XOFF1 :
->> +				      MOXA_PUART_EFR_RX_FLOW_DISABLED;
->>   	FIELD_MODIFY(MOXA_PUART_EFR_RX_FLOW_MASK, &efr, val);
->>   
->> -	val = I_IXOFF(tty) ? MOXA_PUART_EFR_TX_FLOW_XON1_XOFF1 : MOXA_PUART_EFR_TX_FLOW_DISABLED;
->> +	val = (new->c_iflag & IXOFF) ? MOXA_PUART_EFR_TX_FLOW_XON1_XOFF1 :
->> +				       MOXA_PUART_EFR_TX_FLOW_DISABLED;
->>   	FIELD_MODIFY(MOXA_PUART_EFR_TX_FLOW_MASK, &efr, val);
->>   
->> -	if (I_IXOFF(tty))
->> +	if (new->c_iflag & IXOFF)
->>   		up->port.status |= UPSTAT_AUTOXOFF;
->>   
->>   	serial_out(up, MOXA_PUART_EFR, efr);
->> -- 
->> 2.25.1
->>
-> ---
-> Thanks,
-> Crescent Hsieh
+diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
+index bab1b143b8a6..b6638f9f40d2 100644
+--- a/drivers/tty/serdev/serdev-ttyport.c
++++ b/drivers/tty/serdev/serdev-ttyport.c
+@@ -137,6 +137,7 @@ static int ttyport_open(struct serdev_controller *ctrl)
+ err_unlock:
+ 	tty_unlock(tty);
+ 	tty_release_struct(tty, serport->tty_idx);
++	serport->tty = NULL;
+ 
+ 	return ret;
+ }
+@@ -154,6 +155,7 @@ static void ttyport_close(struct serdev_controller *ctrl)
+ 	tty_unlock(tty);
+ 
+ 	tty_release_struct(tty, serport->tty_idx);
++	serport->tty = NULL;
+ }
+ 
+ static unsigned int ttyport_set_baudrate(struct serdev_controller *ctrl, unsigned int speed)
+-- 
+2.55.0
+
