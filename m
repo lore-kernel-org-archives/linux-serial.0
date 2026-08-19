@@ -1,87 +1,40 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82443451988
-	for <linux-serial@vger.kernel.org>; Wed, 19 Aug 2026 11:13:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDBE63B6377;
+	Wed, 19 Aug 2026 12:13:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=124.126.103.232
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787138026; cv=none; b=eqGZW2+XDegRUMAV/EBoPArjbEJQVFb0gky2DyK0rrUBB6rQncyOQ6p27+4KShqW7ZcDjQKAPH+bOA3pP86etnCK1rQP9rTulGiSjQMWLtnMoQaG1mgWQ0SizSgFfsn7NHV213/pXV79zWkO9eelQ63tBeUMhpnZ/EnMTQCvmco=
+	t=1787141641; cv=none; b=kQKPPemmEylqcPKq7JFk0M+FNdeNDnVmq4rwLvLSRHyFUIeQ6oiKKAriMNq4dJJwusJM3nq1vxa/hgStA9DoQv7y7zvzhVbSwAGxbOAVllyy85AMFZRlOoKTfQgHOdsDVEjkfTgZwjk5qUPb4+2j0V6COwF7vJD3dYprmuLEwoc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787138026; c=relaxed/simple;
-	bh=909ro/fzf/GQehxNHMqOgCUY8OQL2KUAAFxDDPFuGf0=;
+	s=arc-20240116; t=1787141641; c=relaxed/simple;
+	bh=1XiVz5SQEhLDfuBvKMgignom3NNs44iWFERN2cxK6xQ=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=PKPpAvIBqRhOLr9CV7BUmP3z/wvPy7Yc6xuyH3zFslfikqxKZeV3gPy9f0frg8cZJKu2ZZYYKNSQfUPmfBhv67nVDl7zFd6hiFhi90/NtJYeg5KxDhZzVb6c6LAVw4WhgaSg3v1MleXweI3EqBRZbRRLVHt4LonDGoh7CvJDcII=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=R6KbtOGk; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=YUXWBJjt; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="R6KbtOGk";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="YUXWBJjt"
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67JA8PUf4182147
-	for <linux-serial@vger.kernel.org>; Wed, 19 Aug 2026 11:13:43 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	Ig6FvSRli1ZqS5uDLkbhiTZeNooor70ALrndiWqEtrI=; b=R6KbtOGk0MOGWZ1p
-	gb4jfVydfHxpojFg0GJhs/q21UKl0i/VEiMcB/DcdwHtPGBYoMh9TelId8APGW1H
-	mpPKtwLl/mIxWgYIR8VeZHgVifvtEMkhIxaUenX8yCpWRX6UUErn/p0Z/tbgCq5E
-	z7azllfMmg6bu707r3cmjGJjj5A22/uc3byH36q4v6RtVqDR1ovUIJfbXPM65JbJ
-	HBzd2gq1Jwt7/1TUCgQaILpad8RK8lhnHnmp/F5Kq0Q5IhCm/cW2VwUWd353s6em
-	hslwnuteh06ocWdwq+C8G72MQYUVL5B6khbQ/E2RLw6EtvSj50lRTRT4hhS/+8UB
-	pR0x9Q==
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com [209.85.160.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4g4yfkaw6s-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-serial@vger.kernel.org>; Wed, 19 Aug 2026 11:13:43 +0000 (GMT)
-Received: by mail-qt1-f198.google.com with SMTP id d75a77b69052e-51bfd1772d8so1547781cf.1
-        for <linux-serial@vger.kernel.org>; Wed, 19 Aug 2026 04:13:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1787138023; x=1787742823; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=Ig6FvSRli1ZqS5uDLkbhiTZeNooor70ALrndiWqEtrI=;
-        b=YUXWBJjt6l/r8oS+3+ufi/6/qNBvMdE+AENmKJveui9yji9be9e/tVtm8VlrwLw2mU
-         NVwnY88ZiYNN2TKqXTE8gzbw+QjSOrJ+zeyj91N3p7fSa0o3BI3F7XaflDD72TsAJ5F3
-         esitBffIC/rTb6XfBPd840bPpqELmmcAPwkifvhJWzH3So7cY/W898eMSAVnGDc4uk04
-         UP1cgFRqIX8mr7oTZFIwmkUB0FumXEyJsW8As7iAdSzH2R3hR+JMWUV9wu/QD6/Z0SaF
-         vXkekwQGni9D9Ef+5F+wVKluGF7SVI47eaKhU/EIcxhNwslgGNgiGi/QroJBAQxFYzdK
-         oWpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787138023; x=1787742823;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=Ig6FvSRli1ZqS5uDLkbhiTZeNooor70ALrndiWqEtrI=;
-        b=RMyppyBXMvNXnii0vCWSS0GBRYPhxQzT1QKha3Zq5epVYvTgzVxv9xXkM947kRTUtE
-         gvOs93z9vvbd+qjeswFlJx+pesADPCyhXNmBd5IBNYVVt5ANZLSUF4RAPXEa9sArL0vJ
-         QcMxhnbrw8tl6WSH2qTKmYUFO0H+i1L6HT96ffVxVUQCKKUu/yZ3XsE75jnebggXDTsl
-         fbSJAmQa+Z4qKKqZQlUwtD7M0CUostmb1Gm36nspFVdWwpMLM0a+QA4yJI/yXWvdCAl9
-         Ql1S3tGwQbeewl1CGZqB/bMDOgiGZEFIHmERqs/r4sRGE9bipelaAUSuQVUwiF9EeUUR
-         92wQ==
-X-Forwarded-Encrypted: i=1; AHgh+RqbR/yqqK11bQNdinzxO0RpMDRsxtqYpuhqbGu5Vp8/U7OaM7CdrmCjpVvJ9rm0cP1+p/v8K+kj7xlml08=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxmig6LnWNDf1E5kFLe0k5i9WAWhzPXAgxMX6vFZQaRGDEQ+23F
-	8wq6nUBI5nHyUeRzsnKkfiob8sbxwMnGi3WTj0KSSmYRqFZIi2/lRlCwHe4FwBDmVqnczYTaeeo
-	RXyJxdWT+24OZqdocmRZjml71QANQKanZwCDB6uiW8GjxfKuPqGUfPa8m+/3XfLozxYM=
-X-Gm-Gg: AR+sD121JoSy19+8y22jysb0UWKuhVbq4JVQvGnSYH4SGzg2uAzQ8eL6+a/Yk3x/v4r
-	xeaLLclKSZod4g8CSk6fhZgNeHTdLPkBSci3ovaVN1DH3JQ4nBTMBBRCzDZjxy5XMNzC7S1RQw9
-	7YgmNz9xfSWIjd49Kt9wFHEkMlTiHnTkFcCCUNEBmowlrO8rtQ8IvKvv7K2Dbf+YbhVUT7j8Q1o
-	AsJ6/WHM/MivFeHxtQiozLDtYna7/ResZM3pLZ83Dr5eCaA/M9zH6qcEomqFl5EnPxZtgRlp81G
-	Gmcd30nWsepwd98mSp98nnKZMZri0yEUftKSfCYnZ9dgLh9VRlayNM2l4zW53QNW2w+sGwjAe4k
-	IgWXallyCQ9CcH7mMEDF7HVQG
-X-Received: by 2002:ac8:7f0f:0:b0:517:6162:daf5 with SMTP id d75a77b69052e-52dd5c958aamr25088891cf.3.1787138022837;
-        Wed, 19 Aug 2026 04:13:42 -0700 (PDT)
-X-Received: by 2002:ac8:7f0f:0:b0:517:6162:daf5 with SMTP id d75a77b69052e-52dd5c958aamr25088541cf.3.1787138022385;
-        Wed, 19 Aug 2026 04:13:42 -0700 (PDT)
-Received: from [192.168.120.193] ([178.235.128.140])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c243c7a6bd9sm57416566b.23.2026.08.19.04.13.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 19 Aug 2026 04:13:41 -0700 (PDT)
-Message-ID: <061e5547-4109-4965-8e97-fb126dea3a28@oss.qualcomm.com>
-Date: Wed, 19 Aug 2026 13:13:37 +0200
+	 In-Reply-To:Content-Type; b=oEou2Ml2Qc1GZiw2F+YLL811sCXhIBhyJ0lPyzdNUY2vAyHYmUmQZ3VlcKmQyK+HENhmrt2QyFZ2Pqm71rnW9Uu0Rhvv+z+r88SCBe34GFOTq4UdRy3MQQjE6JUNtDbpzgnXN+2ulG9DbV59FjKdnGlPZVYd6pnzgeothTFD+wk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn; spf=pass smtp.mailfrom=kylinos.cn; arc=none smtp.client-ip=124.126.103.232
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
+X-UUID: 71edbd6e9bc711f19a56ed5b684f684d-20260819
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.3.19,REQID:e49ab339-9e9f-4e84-862b-09c45e0a0945,IP:0,U
+	RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
+	release,TS:0
+X-CID-META: VersionHash:7db8b62,CLOUDID:01abf18681c4132f3d95ffeeb0689da8,BulkI
+	D:nil,BulkQuantity:0,SF:80|81|82|83|102|865|898,TC:nil,Content:0|15|52,EDM
+	:-3,IP:nil,URL:99|1,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OS
+	A:0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
+X-CID-BVR: 2,SSN|SDN
+X-CID-BAS: 2,SSN|SDN,0,_
+X-CID-FACTOR: TF_CID_SPAM_SNR,TF_CID_SPAM_ULS
+X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
+X-UUID: 71edbd6e9bc711f19a56ed5b684f684d-20260819
+X-User: lilinmao@kylinos.cn
+Received: from [10.0.2.15] [(10.44.16.150)] by mailgw.kylinos.cn
+	(envelope-from <lilinmao@kylinos.cn>)
+	(Generic MTA with TLSv1.3 TLS_AES_128_GCM_SHA256 128/128)
+	with ESMTP id 1852119034; Wed, 19 Aug 2026 20:13:53 +0800
+Message-ID: <c8f3d27a-c8e0-41d0-b8b3-3df783370779@kylinos.cn>
+Date: Wed, 19 Aug 2026 20:13:50 +0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -89,79 +42,101 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/3] serial: qcom-geni: Propagate errors from optional IRQ
- lookup
-To: phucduc.bui@gmail.com, Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Frank Li
- <Frank.Li@nxp.com>,
-        AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Yenchia Chen <yenchia.chen@mediatek.com>,
-        Daniel Golle <daniel@makrotopia.org>,
-        Zhiyong Tao
- <zhiyong.tao@mediatek.com>,
-        Sherry Sun <sherry.sun@nxp.com>, Robin Gong <yibin.gong@nxp.com>,
-        Viken Dadhaniya <viken.dadhaniya@oss.qualcomm.com>,
-        Praveen Talari <praveen.talari@oss.qualcomm.com>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Zong Jiang <quic_zongjian@quicinc.com>,
-        Aniket Randive <aniket.randive@oss.qualcomm.com>,
-        Kathiravan Thirumoorthy <kathiravan.thirumoorthy@oss.qualcomm.com>,
-        Anup Kulkarni <anup.kulkarni@oss.qualcomm.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        imx@lists.linux.dev, linux-arm-msm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-References: <20260807090945.41690-1-phucduc.bui@gmail.com>
-Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-In-Reply-To: <20260807090945.41690-1-phucduc.bui@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-GUID: Jo3ZvdLEzp4JbS0ip06C7rLfLBwKuaZU
-X-Proofpoint-ORIG-GUID: Jo3ZvdLEzp4JbS0ip06C7rLfLBwKuaZU
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODE5MDA4NiBTYWx0ZWRfX5SiN5fxpXYMm
- I4Ojie66+/l+9OHDkVccCPaW6sd/pGTXLdXW4aj+z+H7SXJKh6SZpOMRxWp6l8l+0AC5uWzLQiz
- by6U/3iYG5Dm2u2qypjVTESOdbchSL27gUZQiVK4zjTcVCuHtMGW43ptQucYSXt/I6Gaq2GhpgG
- 5WY8AmcQMCaHsusuBnp86vnpwQpVZ0y5uI4sgHnU9iynprXTS/mIIF6/gSMNOtVMAZfiYf8Ar6f
- fB9++TU66hQnNMixNbRFGTwcxFsPDVmanrgIsMrAyMoGXf8it6iiUFk4zhQdhpeufwIvVEsXwCd
- w1iRi9Co+xiAnC42SMb8CogIsZK+9pY9aPOX/7v4XH0ljefdaiYWBMWfZcC0Ji7gAD+Me715q57
- Kt5ylJUEXibJBEIt8ru68s1l1F/4QPI3QH8faV1JTYeV43GNuzd97z1PfZ4fqbOv0EjpS14faVR
- 2iGi3LdMjW2fWaEKIEA==
-X-Proofpoint-Spam-Info: AW1haW4tMjYwODE5MDA4NiBTYWx0ZWRfXz7QlwUn59uwG
- HNPdb3YbfUzXHn7QkkAo301bzSIif/zqw7QqJ71EsxeSNb5Odw7IkSgT8YWtFq0lENw3LHrzWpi
- unZnVnn1cKwqsrLtbkdZpeLBA+WGQrg=
-X-Authority-Analysis: v=2.4 cv=fvfsol4f c=1 sm=1 tr=0 ts=6a858fe7 cx=c_pps
- a=mPf7EqFMSY9/WdsSgAYMbA==:117 a=PRfkaYvzSr8QmIIGAkY2Sg==:17
- a=IkcTkHD0fZMA:10 a=Sv0fKeRqtYgA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=gowsoOTTUOVcmtlkKump:22
- a=pGLkceISAAAA:8 a=EUspDBNiAAAA:8 a=HsG88Ws7tFqbOaRkTuUA:9 a=QEXdDO2ut3YA:10
- a=dawVfQjAaf238kedN5IG:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-08-19_03,2026-08-18_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- phishscore=0 clxscore=1011 impostorscore=0 malwarescore=0 lowpriorityscore=0
- bulkscore=0 spamscore=0 priorityscore=1501 suspectscore=0 adultscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608190086
+Subject: Re: [PATCH 1/3] serial: 8250_mxpcie: set the driver data before
+ registering ports
+To: Crescent Hsieh <crescentcy.hsieh@moxa.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Lukas Wunner <lukas@wunner.de>,
+ Gerhard Engleder <gerhard@engleder-embedded.com>,
+ linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260818093918.3190686-1-lilinmao@kylinos.cn>
+ <20260818093918.3190686-2-lilinmao@kylinos.cn>
+ <aoVyV8x0HgCrCGv2@moxa-KabyLake-H>
+From: Linmao Li <lilinmao@kylinos.cn>
+In-Reply-To: <aoVyV8x0HgCrCGv2@moxa-KabyLake-H>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On 8/7/26 11:09 AM, phucduc.bui@gmail.com wrote:
-> From: bui duc phuc <phucduc.bui@gmail.com>
-> 
-> platform_get_irq_optional() returns a positive IRQ number on success or
-> a negative error code on failure. For an optional IRQ, -ENXIO indicates
-> that no IRQ is available, while other errors should be propagated.
-> 
-> Propagate errors such as -EPROBE_DEFER and -EINVAL instead of continuing
-> probe without the IRQ.
-> 
-> Signed-off-by: bui duc phuc <phucduc.bui@gmail.com>
+
+在 2026/8/19 17:07, Crescent Hsieh 写道:
+> On Tue, Aug 18, 2026 at 05:39:16PM +0800, Linmao Li wrote:
+>> mxpcie8250_rs485_config() looks the board up with dev_get_drvdata() on
+>> the PCI device, but pci_set_drvdata() only runs after the registration
+>> loop.  Where mxpcie8250_setup_port() presets rs485.flags to
+>> SER_RS485_ENABLED, uart_configure_port() calls ->rs485_config() from
+>> inside serial8250_register_8250_port(), and the callback dereferences a
+>> NULL board pointer.
+>>
+>> Publish the driver data before the first port is registered.
+>>
+>> Fixes: d21a1509c623 ("serial: 8250_mxpcie: support serial interface mode switching")
+>> Signed-off-by: Linmao Li <lilinmao@kylinos.cn>
+> Hi,
+>
+> Thanks for pointing this out.
+>
+> I tried to reproduce the NULL pointer dereference with a CP-134EL-A on
+> an ACPI x86 system, but the callback was not reached during port
+> registration.
+>
+> The driver initially sets the RS485 flags to 0x201
+> (SER_RS485_ENABLED | SER_RS485_MODE_RS422) and directly programs the
+> hardware interface for RS422. However, uart_get_rs485_mode() finds an
+> ACPI firmware node and changes the flags to 0x202 because the node does
+> not provide the linux,rs485-enabled-at-boot-time property.
+Thank you for putting a board on it.
+
+Your analysis matches what the code does: serial8250_register_8250_port()
+calls uart_get_rs485_mode() before uart_add_one_port(), and since
+6974711cf770 ("serial: Keep rs485 settings for devices without firmware
+node") that helper leaves the driver's flags alone only when there is no
+firmware node.  With one it clears SER_RS485_ENABLED, and sets it again
+only for linux,rs485-enabled-at-boot-time, which your node does not have
+- so uart_rs485_config() returns before ->rs485_config() and nothing
+dereferences the NULL driver data.
+
+So what the crash needs is an RS422/RS485-only board and
+SER_RS485_ENABLED still set once uart_get_rs485_mode() has run: either
+the device has no firmware node, or its node carries
+linux,rs485-enabled-at-boot-time.  v2 says that in the commit message;
+the change itself stays as it is.
+
+I agree the state mismatch you describe is a separate issue.  It looks
+like a driver-side decision - mxpcie8250_setup_port() programs the
+interface for RS422 and presets rs485.flags, and only the flags are then
+cleared - so I would rather leave it to you than guess which of the two
+should win.
+
+Thanks,
+Linmao
+>
+> uart_configure_port() subsequently calls uart_rs485_config(), but the
+> latter returns without calling mxpcie8250_rs485_config() because
+> SER_RS485_ENABLED is no longer set. Therefore, the NULL driver-data
+> pointer is not dereferenced on this system.
+>
+> This also leaves the software state inconsistent with the hardware
+> after initialization. The hardware is configured for RS422, while
+> TIOCGRS485 reports SER_RS485_MODE_RS422 without SER_RS485_ENABLED.
+>
+> I also reviewed commit 6974711cf770 ("serial: Keep rs485 settings for
+> devices without firmware node") and its review discussion [1]. That
+> change preserves driver-provided defaults when no firmware node exists.
+> In this case, however, the PCI device has a generic ACPI firmware node
+> without any RS485 properties.
+>
+> The driver-data ordering change still looks correct to me because
+> SER_RS485_ENABLED is preserved on systems without a firmware node,
+> allowing mxpcie8250_rs485_config() to be called during port
+> registration. The case where an ACPI firmware node exists but provides
+> no RS485 properties appears to be a separate issue that also needs to
+> be addressed.
+>
+> [1]
+> https://lore.kernel.org/all/20251023151229.11774-2-gerhard@engleder-embedded.com/
+>
 > ---
-
-Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-
-Konrad
+> Thanks,
+> Crescent Hsieh
