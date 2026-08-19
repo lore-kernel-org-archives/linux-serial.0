@@ -1,93 +1,107 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67AB73CEBA9
-	for <linux-serial@vger.kernel.org>; Wed, 19 Aug 2026 06:40:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+Received: from zg8tmtyylji0my4xnjqumte4.icoremail.net (zg8tmtyylji0my4xnjqumte4.icoremail.net [162.243.164.118])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B1FFE302753;
+	Wed, 19 Aug 2026 06:40:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.164.118
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787121621; cv=none; b=KkneWWfGG6plqrz16loeOMQNyfB+g8B9NVjKIns30vleGoquXpLwNHS7FFfYgGU9p15QlOspJMTVVLrOH5USwzAfpAdA5u9kYjFRJkE15D/XW8MQMruepeUC6w382y+pLTvnGLBfCuG1j6AN14BTiA6eyRMC1TupH8h2jEGvCOU=
+	t=1787121638; cv=none; b=Mo+82G/FyFaKKpTRO/vJjU8r5DqpSQULNcwfbyZ0CQqkNeg7RjuAJ6aA1UzsjLHhkU7kTQTcq0vw+xJ6WGPWCV4PKVmsuyJ/GR322KB52e2fodEo7q5PdhptGqxoy0bv1uLRRYAjMCGJR9zfjDxS0kMwEMrinxWVQBZiB6VnkS4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787121621; c=relaxed/simple;
-	bh=sXtsjC3Cg+AuWn4pFUN/14YzNiJzLmYcsExmKmcPbSo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=cYUbe81EoBbILTAwWdc4Iuzsd/5/RsYSW+AzO+x5A9NlHZHmjjSYTk1zIMf96mncZaOcZjsZ6BN+6CiWRwPiyHh6dIYkyjXWV0mpLPmFw0FLRotJui8jPRswJqlIWNKqSdGvMYEbaj/inzKWlzP7jtcI2lObN4r3mp9gRinDJ50=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.com; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-49557167508so6676455e9.1
-        for <linux-serial@vger.kernel.org>; Tue, 18 Aug 2026 23:40:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787121619; x=1787726419;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=cBqWma/qo71aJ3ooE0LRAPm0QRfejCf5pbI9noV+BqQ=;
-        b=D8bp7hCRmOqAPu28eN4yNwuyGdYhpcuAYSsLOknOq98/Mgr7SrITbYnFc+9MAI8RqK
-         8qBKN9Yxi8beUTEp+TosspBjV2iNySAzmKDgIsoniIds1FkclQ8p9k9ToyUT53dIaOZ/
-         v5bRvIlpXvl9fm0ALksh6akWMyf67uNcSIktxuMdM20VXO8HPCX5IFkzH/S1vo98ukGa
-         RmpikfzHa0IniB+nH+rwqV+GXAOBcboyot3uGgtUOpC9LaqAqcQNdQV2u3/cybMJ8oBV
-         G9Sfpfa+MIQLRUa6WWaylleN7Lv9GIkFs5YO0p1GSYKiE9DzXtvA5KHjfj/Afwm8o9le
-         fyJw==
-X-Forwarded-Encrypted: i=1; AHgh+Rp0nTGPf1ejldzJnJpWkGb5fV+RdsWf69bFDg7gta3Uy4zoH1EhGVnL4XvX/6ReyL83HJhPURMVLk7Y7bI=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw3fzBpabzpfTfU5uGNfK5jbzBxeGf6WNMgwfnbksoBmE+dKIQm
-	9USEA7wv3oSFMwF9j+1Dg8K+o9H6FbFJntdTGhM4/PvIW28TBESAlB49
-X-Gm-Gg: AR+sD12cR0+1tTMybvz55aEGCHZtMHrW2blzySpkRdfPHDH6MIwB8xNmVYQWVvj5O/R
-	uaadHZEj6UtkBMyQ/XdYINFzL7Sacjwm771lA8DAPIw91+GrZu8LEG2ACh6AILhPbuZmSB84Epj
-	KnWJbYf2A577LRgbvgFzqbuh7HH4bmC/14QT34zrAv95gOM9HSXa0qjnsBwNUOX6oR7/ZqI22PM
-	W/bdOPgkJ7Q8N+Yq9PeBEvRz+Z08kD7aHAE5Qcm6wMtBrmEJ6RMmXkdRRv4Ie2GO2fH9Wbcr8lh
-	V4NpPxANkIOlWc322jidkzCeifzoDMEwz9sgqZWY5kwSEZwg4x9URHVkoJluyydVdzlc4T7AVau
-	8c0milkO/XLp5tJyJBDGDAh8PPd0GAPtaK8NJ+FZd6IKxIN1t4haWZ9+BA61t8GvO0Fdkz1rANJ
-	ELqCUMzQOLQR7OH6n2l9v2oYjP2Y6M0fqfWcYrG+my3EMozk7Fo5oSV915zaT4r7subRz+igqQM
-	IhalzoeizjgXghof/aT/A==
-X-Received: by 2002:a05:600c:4f52:b0:499:7a15:fcec with SMTP id 5b1f17b1804b1-499aa1fdfb3mr32762455e9.13.1787121618614;
-        Tue, 18 Aug 2026 23:40:18 -0700 (PDT)
-Received: from [192.168.1.135] ([83.106.158.114])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-499aaef1665sm32946355e9.5.2026.08.18.23.40.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 18 Aug 2026 23:40:18 -0700 (PDT)
-Message-ID: <ecc5ada8-c878-4123-acd7-64af3219b181@linux.com>
-Date: Wed, 19 Aug 2026 07:40:17 +0100
+	s=arc-20240116; t=1787121638; c=relaxed/simple;
+	bh=lxWU45Bto7KMCpNbz5PO8YKIa/YktYWn+MjkaIXISCU=;
+	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
+	 Message-Id:References:To; b=V1n5rNRSoNoAWEPoUCkH3QDOnXQtqj7Et4R2Gs+/O/X7myHXPTh0+Qaet+wBircOp75n7lTfsAWqLtzKaHyzy8j6wd4VWj+WYjTzBDX5CI1eau2QGZOauFu4UI8p29Qvl8bGFy1vz8zqpMWmOlsy+Fzeb9YWmgeeAgHNAxvdX00=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=zju.edu.cn; spf=pass smtp.mailfrom=zju.edu.cn; arc=none smtp.client-ip=162.243.164.118
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=zju.edu.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zju.edu.cn
+Received: from zju.edu.cn (unknown [10.97.62.103])
+	by mtasvr (Coremail) with SMTP id _____wCnvny_T4VqtJ6nAA--.36202S3;
+	Wed, 19 Aug 2026 14:40:00 +0800 (CST)
+Received: from smtpclient.apple (unknown [10.97.62.103])
+	by mail-app2 (Coremail) with SMTP id zC_KCgB35cq8T4Vqfrz9Aw--.39095S2;
+	Wed, 19 Aug 2026 14:39:56 +0800 (CST)
+Content-Type: text/plain;
+	charset=us-ascii
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: 8250: don't register ports that have no hardware
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org
-References: <20260818185200.10243-1-tanure@linux.com>
- <2026081923-magical-enlisted-64ff@gregkh>
-Content-Language: en-US
-From: Lucas Tanure <tanure@linux.com>
-In-Reply-To: <2026081923-magical-enlisted-64ff@gregkh>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3774.600.62\))
+Subject: Re: [PATCH] serial: imx: cancel RS485 trigger hrtimers in shutdown
+ and remove
+From: Fan Wu <12321260@zju.edu.cn>
+In-Reply-To: <46936686-3bdd-4d36-9124-e8d3376ad5ea@kernel.org>
+Date: Wed, 19 Aug 2026 14:39:45 +0800
+Cc: Fan Wu <fanwu01@zju.edu.cn>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Frank Li <Frank.Li@nxp.com>,
+ Sascha Hauer <s.hauer@pengutronix.de>,
+ Pengutronix Kernel Team <kernel@pengutronix.de>,
+ Fabio Estevam <festevam@gmail.com>,
+ linux-serial@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ imx@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org,
+ stable@vger.kernel.org
 Content-Transfer-Encoding: 7bit
+Message-Id: <C6A3233A-A352-45AC-A498-0DED1EC57147@zju.edu.cn>
+References: <20260819021916.442827-1-fanwu01@zju.edu.cn>
+ <46936686-3bdd-4d36-9124-e8d3376ad5ea@kernel.org>
+To: Jiri Slaby <jirislaby@kernel.org>
+X-Mailer: Apple Mail (2.3774.600.62)
+X-CM-TRANSID:zC_KCgB35cq8T4Vqfrz9Aw--.39095S2
+X-CM-SenderInfo: qrstjiaswqq6lmxovvfxof0/
+X-CM-DELIVERINFO: =?B?su+KKgXKKxbFmtjJiESix3B1w3vZ3A9ovKVTomAyoQazvoRs/NHSP8GI2EvgeEEW7R
+	sfncGSG+szpQCInt5Y8rbJUI3EaNafmokmxSGacB/SiOKcuO416gdgVifUJNAsz9S/YwSp
+	Wt05rizKujXnc7uVicOp9E6mavGmQbzmcFsnzP86
+X-Coremail-Antispam: 1Uk129KBj9xXoW7JFy3XF47AF13Xr1rCw15Awc_yoWftFc_u3
+	4UAw1kuw1q9F4xA3W5Gw1kZrW7tF429FyktryFyry3t3yrWF9xJFn2k34Iqry8X393ZF9r
+	Cr9FkFyI93W29osvyTuYvTs0mTUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUj1kv1TuYvT
+	s0mT0YCTnIWjqI5I8CrVACY4xI64kE6c02F40Ex7xfYxn0WfASr-VFAUDa7-sFnT9fnUUI
+	cSsGvfJTRUUUbDxYFVCjjxCrM7AC8VAFwI0_Gr0_Xr1l1xkIjI8I6I8E6xAIw20EY4v20x
+	vaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxS
+	w2x7M28EF7xvwVC0I7IYx2IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxV
+	W8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v2
+	6rxl6s0DM2vYz4IE04k24VAvwVAKI4IrM2AIxVAIcxkEcVAq07x20xvEncxIr21l57IF6x
+	kI12xvs2x26I8E6xACxx1l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v2
+	6r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2
+	Ij64vIr41lF7xvr2IYc2Ij64vIr40E4x8a64kEw24lFIxGxcIEc7CjxVA2Y2ka0xkIwI1l
+	42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJV
+	WUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAK
+	I48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F
+	4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY
+	6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjxU7gAwDUUUU
 
-On 19/08/2026 06:57, Greg Kroah-Hartman wrote:
-> On Tue, Aug 18, 2026 at 07:52:00PM +0100, Lucas Tanure wrote:
->> The 8250 driver creates a fixed set of port slots at boot and
->> registers a ttyS device for each one, even when the slot describes no
->> hardware. On device tree platforms those slots are empty, but they
->> still take the ttyS0..ttyS3 names.
->>
->> New Amlogic SoCs (S4, T7) name their real UARTs ttyS as well. With
->> both drivers built in, as in arm64 defconfig, the real port fails to bind:
+
+> On Aug 19, 2026, at 12:26, Jiri Slaby <jirislaby@kernel.org> wrote:
 > 
-> Then fix that bug, don't break everyone else's systems because of it.
+>> serial core does not call the
+>> driver shutdown on every path that reaches remove().
 > 
-Hi,
+> Could you be more specific on what path it does not?
+> 
+> thanks,
+> -- 
+> js
+> suse labs
 
-Understood. I thought preventing 8250 from probing on devices that don't 
-use it would be a good idea, and fix my bug. Thanks for the feedback.
+Hi Jiri
 
-I will tak to Amlogic list the ttyS name collision introduced for the 
-new Amlogic SoCs in e71aab9d6132.
+Yes. The relevant path is a console port whose last TTY user closes it
+before the device is unbound.
+
+tty_port_shutdown() skips port->ops->shutdown() for console ports. The
+last close then clears the active state and dissociates the TTY, so the
+later tty_port_tty_vhangup() in the remove path has no TTY to hang up
+and cannot invoke the driver shutdown.  That is the path the cancel in
+imx_uart_remove() covers.
+
+trigger_stop_tx can already be pending at that point: after TXDC,
+imx_uart_stop_tx() starts it for delay_rts_after_send, whereas the close
+path only waits for TXDC.
+
+I can add this to the changelog if you would prefer the rationale to be
+spelled out there.
 
 Thanks,
-Lucas
-> greg k-h
+Fan
 
