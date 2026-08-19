@@ -1,70 +1,70 @@
-Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
+Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com [209.85.128.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB6C83C3458
-	for <linux-serial@vger.kernel.org>; Wed, 19 Aug 2026 17:11:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C0D21E515
+	for <linux-serial@vger.kernel.org>; Wed, 19 Aug 2026 17:11:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787159470; cv=none; b=KCFj30L8aoygco4xu2VGzHATVShYEAGUziegZldxE2DCr35QM8yN/l32PO7G3eMuPKl/uzeLKs6QS446e0n07aVuSuszniZwKf4Hdu5t8XEo8LA3HAeLcTmzyQGFUImDAG5RxN7GsyDlxD5gm/GMDhGz1mhOvxuFcMqp2iTYvCU=
+	t=1787159521; cv=none; b=RlNQ9UqRDWL6uqPYMTRCNvvzIo1b1fwT3H9U52Tb6vFcL05IP7VeHxStktY2MfEO8t9wr1Jj/iAPbY1NCU2PIhj6GZxqvrFgHfE45kKIDf6M/aNvA3tUYamGcT0qF/PohFWj8ON+OPLNWJqUOIpjiUDtyV8UNYO2ubBgATd+Z8E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787159470; c=relaxed/simple;
-	bh=Fe7DkO5aRoKlOx5BdmX7YNUhZMMlLH8G7Y1MOtuX6k4=;
+	s=arc-20240116; t=1787159521; c=relaxed/simple;
+	bh=xMRZ/YioDGD5qZ+6uqVpdRktvjMuhXrPGr3NK/pQ9Z8=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=L3KkO+HWt0+wnvmpXLaONwtocLRe8bV9MoBQ4ck60SYP9SavP7fUBNFuxO3yzmQeBwRBQrHE8GvJcysy2QMmrzI+FXE4DwTDFRSRS6gm3RnkZjAanaV5ly4rJdRPfgMvv2WzCiej81pTGxsem4JA/jv93lEBPQXzuUmchmN2SQA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=O+VZo9e8; arc=none smtp.client-ip=209.85.210.48
+	 To:Cc:Content-Type; b=Qi4SJSfLIosyEiRulUAuqtCAgpMsrtPvhKyAK4Td49zTMLnluJFndUrQnTBb7gRNBaURK7rooxqliMeytThpIpKK0B3+APn363Pcsc9CT6q88+6YE8QJ+pyAzs8ADDTaKTRGOX2Ia1upeJsetcLX61sOfdJ6PHrxR+RXCS1pGG0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=NpnavrBb; arc=none smtp.client-ip=209.85.128.177
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="O+VZo9e8"
-Received: by mail-ot1-f48.google.com with SMTP id 46e09a7af769-7ee125ec926so1045594a34.2
-        for <linux-serial@vger.kernel.org>; Wed, 19 Aug 2026 10:11:08 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="NpnavrBb"
+Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-836f34a0ceaso2643457b3.1
+        for <linux-serial@vger.kernel.org>; Wed, 19 Aug 2026 10:11:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1787159467; x=1787764267; darn=vger.kernel.org;
+        d=chromium.org; s=google; t=1787159519; x=1787764319; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=Fe7DkO5aRoKlOx5BdmX7YNUhZMMlLH8G7Y1MOtuX6k4=;
-        b=O+VZo9e8XHyj0uP/RH8NrdX6YMhS9tlJFuAkdUn1V8dfp7//HKorwiA+rCw1S1qKnG
-         +YdBshT62sByzOyAhmFyXmEkkRAl5dKrGXc9+Ec1keGgCYw1Q42ghzHRIowndzLp9d/K
-         +TJbBz7O+9X0U2LEhGLf7l+KxiPnMbBjbOcTw=
+        bh=xMRZ/YioDGD5qZ+6uqVpdRktvjMuhXrPGr3NK/pQ9Z8=;
+        b=NpnavrBbYqZp6EaJg9cCMcMDzcY66qMLBSDvqGa8SQt1HbP2xgpBUqHghorK3Iwdts
+         TtegwqyCZb3oESv1Q5+o/7uL99Nwk2yN76SA4D4SDr0LfbSnnLfRAgnBTMzeBt+o5I9r
+         NKUA5SCqCTQidSTODZaQ4VqhQrP6w5mMuXeWw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787159467; x=1787764267;
+        d=1e100.net; s=20251104; t=1787159519; x=1787764319;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=Fe7DkO5aRoKlOx5BdmX7YNUhZMMlLH8G7Y1MOtuX6k4=;
-        b=EUjTaWyZB0sg4OSX0XPEA/9UIXbjwfiKLY8QqufXjDiv8tSpqM5XXswzuY801h13gm
-         b4yKed+cBT4lb8GbFjMrxs//1kzaq7by2bY4h8V739YyVizObnByAmA+L7u3J15o3wj2
-         oeRNt3/p7FPIqPGGVQIxjUoyRcTpm56/4NRPZ5aisAa2DE7jlK1A+gFJhVSpsqL8AgAC
-         kVgKtnM3Xcn7lkKCQybMOWh7xhBlU6fmv6caJCwED08G3yrE03T0YmJklOfO7uoSnrkp
-         2oQwiI6w1V6W5kCyBhCFJ53du5P6XC0pWU5zFMAP6dhKd1OUQ1/KgeT25Cdlu5rncCsa
-         SDpA==
-X-Forwarded-Encrypted: i=1; AHgh+Roux9nd9RwRax8hFK9Wm1+uQhirN1d37phInx7yCcPj1JfRfV71m/iuZ9Zn9EJ/UsAXVoZ/o9g8h1Bolqk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxA6mc17NfAWs02DA2qkSMNSAHKJ2S0X25WEgXJbpfLItCvRQzF
-	BqnxuPeafjFvyvK5/3UsDlDkWKNsO+9u7e8yw+ChHVbeksh86Mz9KkO2zgceotOpWMccrqQMfQI
-	TFtM=
-X-Gm-Gg: AR+sD12e2outK6/xXc0ol35tLApg1+411d3Ght0wboRPOcVtwJPEtnleE4bU3ZGi3d3
-	O/jFHTn8IwWnHG1GOJKbUuAab0Z9zopathSrcWc6qK35z3u5kBnQECiaOQs6OxVno3oVzDZXHt5
-	2iSoZQ1Z3WW+b57UPyreI76NQ5ulvX2atsL2WaGb6pMqG14jiwCE3FANtVGbXmCQLMsm7Rl8HEC
-	kNpHKHNvDp25pgxUhnY0DWXgPQUncKk3J/tjbRPr4eHAI6KwqHXVODsOXO7q5z0/P3olNuA5IFb
-	agdRH/6WRzoedjvYTLiZyC7M+B0gXl5bht38fHV6SyKQXxRqOIWH91ftYmqK1awgKpaOWLc8rp7
-	Bw4223KNdYw29b+1eYRakhtM33E+6tUIAjNcmKqDeXCe8d6Rq2Mf/QFMLOObIB9JVMyP+eCjW+w
-	YqGYE6icipkIiLHL7mJXni/yAoHnDFdjGrjac7XHF7hAXVyf85qukJDDY+sGbd/ebuDSIcofztO
-	PwDRqnfiGkDBKlah7eDjLfdOQY=
-X-Received: by 2002:a05:6830:82e1:b0:7dc:d967:63de with SMTP id 46e09a7af769-7f43f90e40emr7647323a34.3.1787159467597;
-        Wed, 19 Aug 2026 10:11:07 -0700 (PDT)
-Received: from mail-oa1-f52.google.com (mail-oa1-f52.google.com. [209.85.160.52])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7f4439d218dsm1743248a34.26.2026.08.19.10.11.07
+        bh=xMRZ/YioDGD5qZ+6uqVpdRktvjMuhXrPGr3NK/pQ9Z8=;
+        b=AKaGl0KNSRXuCRFJOIX5dJlHYeS2pD+Z7RJbUluQSMT2f4BbOxH2LsEJ/iDZF/H+hg
+         VLQAFqOtAESmtiYUGrUIwR++t38zGQwHgYqLlM2DTz7Ahwu5C8r8x9QNkvZPv8JWVTDV
+         vwFRZNxRtOxNqm4/kpUhYzWW9TaCBlZHJrAlg25vlNo3nUXEaNc3P+LQsM6ZJ+eW8ru2
+         RZYWBlY85VdCFB8NtKpjcFi0jXA9tChunaI4iphYg5Ifjw8tX48D4EdvMRXRmqmC37rx
+         U3jSw0869rhrt/t9WgbfwoQXV35WCtNqgFMM+B5T2l+KjNyu7q4DsSf+2RkCnGBft+zo
+         PTMQ==
+X-Forwarded-Encrypted: i=1; AHgh+Ro5izFT7Ozlbp51u56tAYau3ayzZLbWtNFJ9TjejZ7nJaqZWIhGfAnqi1fWKK4DKWoHzFp48OTRkB5/w1I=@vger.kernel.org
+X-Gm-Message-State: AFuF++k4U9Tadf8aZalTdM0aUBFq4LPfjdAS6w/5VyI9+4Ml0/PMCMyV
+	2dfP0HLTD99EzsF8Pn6rtojAX/esvTlq5Fu9g75lST7Y7+bALfMLEAczdld+UTpW5UrJRfpRKic
+	m7GY=
+X-Gm-Gg: AR+sD13nrUO0Pi3m+187Wkz6mADDZppwNzv1CZdpZro32nGFWdRPPoXr7KVHeMyaa/u
+	72FQNWFm/aVQOMTP+iu0iUd5bmwCNvUZaqtp8cduWn9Ddl79SresV6d0zL53fr3vpkGdzMkPTWH
+	QmZavPGiuYMQYFZsBXfvkgFy8S8s8DFPt1uU0nBiG63+hKqEDaDuQtdcKwf/kSfdl3bU3I3TatY
+	pK3SyAZB5V38dn2ZS3UGigEncc93tsa2An+y/pich9bxgUyQsal9dD9ZwNWaLg2Lm/Ghyrm0m1Y
+	x6piiwqVJeuEn+H9utO9d/ozR1j7pZWuyPCz4PbcrSVtl10e8LfSce9NLc3Usmzqkyf8Vz3AK8n
+	+EfuV/5cfP7GXznhzOeDTd+T8XGM50cMfQdAKyav2v5DR6/ZlPCP2ESJL8/jH6wsnnKQNMglJTG
+	Ci9T0aBPbPHjDLb+zANbhBugOjn4MCVyns2kZHGZMnKSzRK9mH+LCIWOF691pcT+ES0PjGYm7T8
+	XYrU2ROrO0F1UZD4BCLQrtFxReVKm5OXgm9fg==
+X-Received: by 2002:a05:690c:e3d3:b0:826:9d78:a0cf with SMTP id 00721157ae682-8470b1e9c66mr2597467b3.9.1787159519138;
+        Wed, 19 Aug 2026 10:11:59 -0700 (PDT)
+Received: from mail-vs1-f51.google.com (mail-vs1-f51.google.com. [209.85.217.51])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-84511abc117sm12376977b3.3.2026.08.19.10.11.58
         for <linux-serial@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 19 Aug 2026 10:11:07 -0700 (PDT)
-Received: by mail-oa1-f52.google.com with SMTP id 586e51a60fabf-451d8064238so966973fac.3
-        for <linux-serial@vger.kernel.org>; Wed, 19 Aug 2026 10:11:07 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AHgh+Rr/GzQ5mVpI9xwfJ3hl2So/CwpTueusOWajw1m61VXxu/6SwM6lA5CJSniZ6/DmLSH8LZkgeo1XHCfuj3A=@vger.kernel.org
-X-Received: by 2002:a05:6102:918:b0:778:5c2b:f836 with SMTP id
- ada2fe7eead31-7785c2bf8famr1715744137.5.1787159025695; Wed, 19 Aug 2026
- 10:03:45 -0700 (PDT)
+        Wed, 19 Aug 2026 10:11:58 -0700 (PDT)
+Received: by mail-vs1-f51.google.com with SMTP id ada2fe7eead31-7737a1f65c0so117689137.1
+        for <linux-serial@vger.kernel.org>; Wed, 19 Aug 2026 10:11:58 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AHgh+RrBjjanSAKroSo/u/DF1RYTrlp4kOVHbvz6y1vFtylZo22rKQiA7B7znR0adPeJtiKAvI/ms4daYFaWfbk=@vger.kernel.org
+X-Received: by 2002:a05:6102:4449:20b0:76b:2548:560a with SMTP id
+ ada2fe7eead31-778f37d8a97mr140907137.16.1787159100271; Wed, 19 Aug 2026
+ 10:05:00 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -74,23 +74,23 @@ MIME-Version: 1.0
 References: <20260722-contrib-pg-pixel10-initial-dts-v2-0-3abae9717feb@linaro.org>
  <20260722-contrib-pg-pixel10-initial-dts-v2-4-3abae9717feb@linaro.org>
  <20260724-dancing-skunk-of-novelty-72c1b8@quoll> <CAD=FV=U0HUdjPcg+5Vx8_ag0zLd3CZx5w5SFr38p+YwRnC_G6w@mail.gmail.com>
- <CAD=FV=V2+D1m5L-0d81W3E_ih2us-SrddeBUAJtMybpQons7Ww@mail.gmail.com> <CAD++jLnQGy_LvRxMjq1s2Hs9Hn4LNTFZ0W17zC1YLs5StwfqMg@mail.gmail.com>
-In-Reply-To: <CAD++jLnQGy_LvRxMjq1s2Hs9Hn4LNTFZ0W17zC1YLs5StwfqMg@mail.gmail.com>
+ <CAD=FV=V2+D1m5L-0d81W3E_ih2us-SrddeBUAJtMybpQons7Ww@mail.gmail.com> <72ec1b1f-112d-4f65-897e-e99652c5a7bf@kernel.org>
+In-Reply-To: <72ec1b1f-112d-4f65-897e-e99652c5a7bf@kernel.org>
 From: Doug Anderson <dianders@chromium.org>
-Date: Wed, 19 Aug 2026 10:03:34 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=VuVdq_=TQmONJZak84S2c2-2yQ8DS0k_odYsUfg0C+rQ@mail.gmail.com>
-X-Gm-Features: AcwNN1Xq_Hs6V24rG4OhS-cjamxWAO0UpSeGmP_9xYxqjvzRBGkaMhCLOMPBOe8
-Message-ID: <CAD=FV=VuVdq_=TQmONJZak84S2c2-2yQ8DS0k_odYsUfg0C+rQ@mail.gmail.com>
+Date: Wed, 19 Aug 2026 10:04:48 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=ViYUB6NXKVNxnPGwvkHzKnNQQSJfLRhVx7T-S8t0kqKg@mail.gmail.com>
+X-Gm-Features: AcwNN1UtXmY_Pr6A3vg9yN6JPfaZdRsVgtlhCWAfgMFRKlEKan_CTSIL5IjyAS4
+Message-ID: <CAD=FV=ViYUB6NXKVNxnPGwvkHzKnNQQSJfLRhVx7T-S8t0kqKg@mail.gmail.com>
 Subject: Re: [PATCH v2 4/5] arm64: dts: google: Add initial dts for frankel/blazer/mustang
-To: Linus Walleij <linusw@kernel.org>
-Cc: Krzysztof Kozlowski <krzk@kernel.org>, Rob Herring <robh@kernel.org>, Conor Dooley <conor@kernel.org>, 
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Rob Herring <robh@kernel.org>, Conor Dooley <conor@kernel.org>, 
 	Peter Griffin <peter.griffin@linaro.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
 	Conor Dooley <conor+dt@kernel.org>, =?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>, 
 	Tudor Ambarus <tudor.ambarus@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
 	Jiri Slaby <jirislaby@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, 
 	Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>, 
-	Alexandre Belloni <alexandre.belloni@bootlin.com>, Drew Fustini <fustini@kernel.org>, 
-	Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>, 
+	Alexandre Belloni <alexandre.belloni@bootlin.com>, Linus Walleij <linusw@kernel.org>, 
+	Drew Fustini <fustini@kernel.org>, Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>, 
 	"Guilherme G. Piccoli" <gpiccoli@igalia.com>, devicetree@vger.kernel.org, 
 	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
 	linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org, 
@@ -102,92 +102,39 @@ Content-Transfer-Encoding: quoted-printable
 
 Hi,
 
-On Wed, Aug 19, 2026 at 1:29=E2=80=AFAM Linus Walleij <linusw@kernel.org> w=
-rote:
+On Wed, Aug 19, 2026 at 2:26=E2=80=AFAM Krzysztof Kozlowski <krzk@kernel.or=
+g> wrote:
 >
-> > Is there some other documentation saying "aliases =3D=3D evil" that I
-> > missed? Maybe some email thread we're all supposed to have read?
+> On 19/08/2026 00:13, Doug Anderson wrote:
+> > I did some digging. As far as I can tell:
+> >
+> > * Nothing in the DeviceTree specification 0.4 [1] mentions that
+> > aliases are deprecated.
+> >
+> > * Nothing in the dt-schema repository [2] causes validation to fail
+> > when you use new aliases and there is no "allowlist" of old aliases
+> > that are allowed for historical reasons.
+> >
+> > * There is a single reference in the kernel "Documentation/devicetree"
+> > about not using aliases to assign an "instance ID" [3].
 >
-> Yes, kind of, it was 10 years ago and about MMC aliases for
-> selecting a primary device for boot:
-> https://lore.kernel.org/lkml/CAD=3DFV=3DXLuPWKjQBMLApRQxk0K30p_TPcztB7g_1=
-DB7iRA9BGRQ@mail.gmail.com/T/
-> and you were in the thread, it's not pretty, leaves a bad aftertaste.
-> For, I think, reasons stated in my initial paragraph.
 >
-> The takeway is something like "the device enumeration is policy,
-> not hardware information, so it should not be encoded into
-> the device tree", and that is not an argument about aliases
-> per se.
+> No. The rule is saying: Do not add instance index properties OR custom
+> OF aliases.
 >
-> As a result (as I think, I may be wrong) MMC gained a few
-> properties such as:
-> non-removable;
-> no-sd;
-> no-mmc;
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/D=
-ocumentation/devicetree/bindings/mmc/mmc-controller-common.yaml
->
-> These provide a heuristic for which devices to inspect for boot.
-> Then on top of that I think people use schemes like EFI for finding
-> boot devices. (Or they still live with their quirks...)
+> Logical "OR" means here that for you this sentence is equal to:
+> "Do not add custom OF aliases."
 
-Yup, I was definitely involved in that conversation around mmc. ...and
-yes, that was a frustrating topic. Though I guess I remember things a
-bit differently / have a different takeaway. Specifically:
+That feels like a stretch. While that interpretation is correct if you
+read just that sentence in isolation, in the context of the patch as a
+whole it feels clear that the point was that you didn't want aliases
+specifically because they were used to assign instance IDs. The
+patch's subject is "Document discouraged instance IDs", not "document
+that aliases are bad" or even "document a bunch of bad things". The
+sentence is also in a paragraph that's all about instance IDs.
 
-* The whole argument there was about people not liking the idea of
-assigning "numbers" to MMC nodes. As I have said, I'm OK with not
-having a number here and it's not central to my needs. Said another
-way, people seemed to hate assigning a numeric ID to hardware devices,
-which is not my goal here.
-
-* The "mmc numbering" patches were (independently) sent again and
-again by people because (shockingly, I know) people found it useful to
-have their MMC devices enumerate with consistent numbers.
-
-* In the end, support for "mmc aliases" was landed. See commit
-fa2d0aa96941 ("mmc: core: Allow setting slot index via device tree
-alias").
-
-
-> Now this ufs0 node seems to be about calibration of some sort,
-> which is a more hardware adjacent subject. Is there a way to
-> add the entity that needs this calibration to the device tree and
-> reference the UFS device with a phandle along the lines of:
->
-> calibration-storage =3D <&ufs_node>;
->
-> ?
->
-> Even say adding a synthetic modem node if the calibration is
-> for a modem is probably going to be more acceptable than an
-> alias.
-
-The crux of the issue is that the bootloader needs to add UFS
-calibration to the device tree provided to it, and later the UFS
-driver in Linux needs to find this calibration data. Since the device
-tree lives outside the firmware and is provided to it, the firmware
-should make the fewest assumptions about the device tree possible.
-
-Having the firmware hardcode the path to the UFS node doesn't seem
-ideal, since (I believe) device tree paths aren't guaranteed to stay
-consistent according to the device tree ABI. This, and the current
-downstream device tree path differs from what upstream would accept.
-
-Using an alias seems (to me) to be a reasonable solution. However,
-I've tried to express that I'm open to concrete ideas.
-
-I appreciate your suggestion of having a separate node for calibration
-storage. This feels more awkward to me than just giving up and having
-the bootloader hardcode all known device-tree paths that the UFS node
-might be found at. That being said, if everyone says that this would
-be a great solution, I could try prototyping it. The trick would now
-be that the Linux UFS driver would need to be able to find this
-calibration data, so the Linux UFS driver would either need to be able
-to find it at a specific hardcoded device tree path or the Linux UFS
-driver would need to search the device tree for a specific
-ufs-calibration compatible string.
+While I understand you authored the patch, it still feels hard to read
+"all aliases are bad" from it.
 
 
 -Doug
