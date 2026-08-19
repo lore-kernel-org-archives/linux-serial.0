@@ -1,94 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98E7D1E492D;
-	Wed, 19 Aug 2026 04:42:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F33824BBF0;
+	Wed, 19 Aug 2026 05:58:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787114531; cv=none; b=kQYQ9HBtoLmK7x52ncPL+R6AmUmFSw9uQIXLlRewZs9eidMriU2Qm4dXmiUVGzi5CfG3Ts1Hp8Cb8O2oMM9c2tkz8v6LbPMqH5IOVj5dAmVX0+eEzx8rNCUfxZPRzw7cul8eUdChHLgozPbR+8xCaco+vIVytrNQoSCMysxzOdc=
+	t=1787119082; cv=none; b=XtuEJraniofVIyNNJqCG3FzftVp6uaDRPF6GZU6MRDGSwOur9u9P6W1oTbLOWnnJCuM9wqiHvpR+91mP4Icwv+xKXN612QZohxClmTXqsJhwBvjjEX1HQLEPLu6vN3nu1ZnNNIyRD2nORJ403QT4kX6/b2q57FGP9oXV5JTWD5Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787114531; c=relaxed/simple;
-	bh=rUe+GMt9e+kgjQ14g1s9YdCgm4/H/8FEv5uZvK5eRh0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=UdRc3Ypsgj09E/gFLGacAWEUAOxHJKM+KI67g+H4xWNUtA+500Wh5lGboIV20qx5utZfvXYJaWow+Jh3HiFaA2su1jfU+xtmMwUIrr+BVahSlI21SOYaJ4+yQcY8Q5Eg2/E3HtTQ7zpI5QsBzGd0Urp1aOaawrRoMdf+JwVbYSk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XPbJTEFo; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1787119082; c=relaxed/simple;
+	bh=uleT3oonKuUHp8KyB+FWYMbjZkqtqmZ7O2UgttsLjpw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=bvNtd9NbQdNLC8ZBRaTFDHdgRchina6BVtSGYDLAlmujSHjaiQ3bX7rDKGfDqz+9O5nInuEfzs0RC4wZRtcrKTh9ARtSGClhMVsyThUFfKcrCiocTnafSC7BI0VCLqK+ZI65eLyFQYlA0R5ECSv8knMQWTBRxMazsemkJp+4FWE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=weqaX/St; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XPbJTEFo"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2DD01F00A3A;
-	Wed, 19 Aug 2026 04:42:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787114529;
-	bh=TEWABgkLWaBnLm0VChjKnTzKxcRohv9ljTXmhk11e4U=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=XPbJTEFo4/uOj7iTdUsNlxeTpXK4vQEhnHZKwGzcM4W5/pASIKWhtAzhczZshZDUl
-	 hxDoNtiMFHNAzzzDNq0nBrO/OpQXFn+7Tjfc1n3itNLPkqPnGiCazD5/NyHOOX/98r
-	 dwRLVNuGx1BIF+dbu30pJETKjMd7dkz4DFZo+v6ttbrSVAZx+0pjiKb8py9QImvpee
-	 B34VRZ9XoJtW1vARpNcHAElPrRUhA/AxfsYGVQg5N3FYcG3y7GmTZ/j2+wa2QWSyGz
-	 Caw86fdUedqlal39bSbjHdWhAbzm4XNlczATLtwncPCxdO0NLPIp9sBsW+7747iYXn
-	 tkoF/8dJfuNJQ==
-Message-ID: <dd831cb7-7cfc-46cb-a9e4-2899add9518d@kernel.org>
-Date: Wed, 19 Aug 2026 06:42:06 +0200
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="weqaX/St"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8140B1F000E9;
+	Wed, 19 Aug 2026 05:58:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
+	s=korg; t=1787119080;
+	bh=M78ux5Luv12vwazeY14UpmURjJXkAKhmW41TkZV357k=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=weqaX/StkOb4nqMvH9291nqGBfaekt1OXYqsLpV3HLCTK1uMWBf+bvkv6jtjulAr9
+	 ZMdqcJpGSL4eaXXornAXnGbEb43LVbpyV4XJZiaNNfL9mR+i9Fbjek1ekwG4n9T3sC
+	 YkIUK9VKXAUNu07eO3RKrwKlMSqffkRane2Ppt3g=
+Date: Wed, 19 Aug 2026 07:57:57 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Lucas Tanure <tanure@linux.com>
+Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH] serial: 8250: don't register ports that have no hardware
+Message-ID: <2026081923-magical-enlisted-64ff@gregkh>
+References: <20260818185200.10243-1-tanure@linux.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: 8250: don't register ports that have no hardware
-To: Lucas Tanure <tanure@linux.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20260818185200.10243-1-tanure@linux.com>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 In-Reply-To: <20260818185200.10243-1-tanure@linux.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
 
-On 18. 08. 26, 20:52, Lucas Tanure wrote:
+On Tue, Aug 18, 2026 at 07:52:00PM +0100, Lucas Tanure wrote:
 > The 8250 driver creates a fixed set of port slots at boot and
 > registers a ttyS device for each one, even when the slot describes no
 > hardware. On device tree platforms those slots are empty, but they
@@ -96,44 +49,7 @@ On 18. 08. 26, 20:52, Lucas Tanure wrote:
 > 
 > New Amlogic SoCs (S4, T7) name their real UARTs ttyS as well. With
 > both drivers built in, as in arm64 defconfig, the real port fails to bind:
-> 
->    sysfs: cannot create duplicate filename '/class/tty/ttyS0'
->    meson_uart fe078000.serial: Cannot register tty device on line 0
-> 
-> Skip slots that have no I/O and no memory address. Legacy x86 slots
-> come with resources and are not affected.
-> 
-> Signed-off-by: Lucas Tanure <tanure@linux.com>
-> Assisted-by: Claude:claude-fable-5
-> ---
->   drivers/tty/serial/8250/8250_core.c | 8 ++++++++
->   1 file changed, 8 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> index f49862d90eeb..e66e0cdbb210 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -378,6 +378,14 @@ void __init serial8250_register_ports(struct uart_driver *drv, struct device *de
->   		if (up->port.dev)
->   			continue;
->   
-> +		/*
-> +		 * Skip slots that describe no hardware: they would only
-> +		 * take up ttyS<n> names. Real ports get their node when
-> +		 * they claim a slot in serial8250_register_8250_port().
-> +		 */
-> +		if (!up->port.iobase && !up->port.mapbase && !up->port.membase)
-> +			continue;
 
-So you can no longer set up those ports via TIOCSSERIAL?
+Then fix that bug, don't break everyone else's systems because of it.
 
-And what about already registered consoles?
-
-Why does meson register ttyS* in the first place?
-
-F*ck AI proposed changes.
-
-thanks,
--- 
-js
-suse labs
+greg k-h
