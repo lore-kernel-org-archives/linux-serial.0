@@ -1,200 +1,144 @@
-Received: from mout01.posteo.de (mout01.posteo.de [185.67.36.65])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32E0A48A8BB
-	for <linux-serial@vger.kernel.org>; Wed, 19 Aug 2026 16:44:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.65
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BA5748A2A9;
+	Wed, 19 Aug 2026 16:46:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787157858; cv=none; b=Dy104/K9Scp2DgYMhp2e4+AJMFRLs2EJO5t5l+XOjXzYYtDJ1hkFfZCHxk/VnWGAH0Fpa7TCciCVym6JYnzo6XBcieZq160PuqHZAhqfIW63w8cPniQGz/Z5Gzsw5lYDwcLbyzEwxd1ql+x2CNgUjZxQP6b0N3qlE8cMzsWUuP8=
+	t=1787158017; cv=none; b=XkxNnLkXGa22Bq+OR0SAlkulTXlQQP3QbxIVvj83MVq3jvWTLywJyOk5JRIWOHlum9yAY0W/qr/LcYAOVVqyiSM1JRsbRNIvnYUngZl1yFhhoaIjnBu6D9myTRuNf1qxhdMii9olQ/l9hx37hMSL6mFncNP5Q0Xdwy7jgDpxebA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787157858; c=relaxed/simple;
-	bh=+8ygwU+oRd9RrEP2oGSLFg0kkBGM1O/CnNSr1lz0D9g=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=lb6DoHDcqzYzpKegfx9X4TEhtiy3irA9gMJV8tvoXcD5ppfJbIB2dyNnvOVsVfPFD8ZOP1umiKzwC8EI+coO1fUNDEeWJkeokBQ//ptZB+8JFT/iW0VrN/CuVRRzRpoafnTTs7/hZECSvN+RZtfNRCro37tS+LponIIUZaAlWjI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=MSfkKytm; arc=none smtp.client-ip=185.67.36.65
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
+	s=arc-20240116; t=1787158017; c=relaxed/simple;
+	bh=t4WY1SZyOjTB00Qv3JqSZhT4hew4iMx4qlIkKMqCixg=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=i2r7qnNa/8msf1GA3KPt5OHVKKi0XYn8FW9dq5cDrMRoYoJyRh68FBuam5sUJpcCPAtsIXAIavKS+4NcHoJrSHehA4B4KpBy1zVbt68L0zutYpWj71Fjh3IhHxzTqURxlJ28O2jrgRIWZTDC87hjZs2Reo6KHuxdb2kawTAdnEg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q3s6Y90T; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="MSfkKytm"
-Received: from submission (posteo.de [185.67.36.169]) 
-	by mout01.posteo.de (Postfix) with ESMTPS id 8A4CF240028
-	for <linux-serial@vger.kernel.org>; Wed, 19 Aug 2026 18:44:12 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de;
-	s=1984.8680eb; t=1787157852;
-	bh=UJwdSsh+Jl6iVnQxa4U2bYTKs6Ykn6infgkpGZC1ZRk=;
-	h=Message-ID:Subject:From:To:Cc:Date:Autocrypt:Content-Type:
-	 MIME-Version:OpenPGP:From;
-	b=MSfkKytmDHmCZ881/zGeVOYV4WdOmNh4+EBsGa0q9+gtzYu+G4J2luY9nJdajm0p5
-	 J238PrQebE9gt+qw3jnJrcOs04mvcp8K1tmxIIL/SO9vtR/9VfRSaWIO30Q3bnER7N
-	 uIR7YB+SoZLNzcH6MZFJ5UmfhYRAogscWuKa7/MawDjM6KdZ8x/3yb606ZA6jpojo3
-	 hLjDDBTsL9QCzFz2VxJ7vNcC7JHeJHnTCyijGDdsYUnt975lMwy2wiQpbSKisxUfIC
-	 3E1ar1CfqE6i+QaIlQ/SB2BHTyy2NqPFlCW+CrWBP+T/V1uX4BsgNNhQSio9fXHRwA
-	 6enrgxHcsA1wg==
-Received: from customer (localhost [127.0.0.1])
-	by submission (posteo.de) with ESMTPSA id 4hQC8C37LSz6trs;
-	Wed, 19 Aug 2026 18:44:11 +0200 (CEST)
-Message-ID: <e9e7a52f8d11ec8f57a72424bfaa40eaf738f1e9.camel@posteo.de>
-Subject: Re: [PATCH] serdev: ttyport: Clear serport->tty after freeing
-From: Markus Probst <markus.probst@posteo.de>
-To: Hans de Goede <johannes.goede@oss.qualcomm.com>, Rob Herring	
- <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri
- Slaby	 <jirislaby@kernel.org>
-Cc: Ibrahim Abdelkader <iabdelka@qti.qualcomm.com>, 
-	linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org
-Date: Wed, 19 Aug 2026 16:44:12 +0000
-In-Reply-To: <20260819125748.194377-1-johannes.goede@oss.qualcomm.com>
-References: <20260819125748.194377-1-johannes.goede@oss.qualcomm.com>
-Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
- keydata=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
- jfGillcaQOqFZ3WwVqyzG1BUfTow==
-Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-q5Qe+PMmpLkX876UKUI3"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q3s6Y90T"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DD2C1F000E9;
+	Wed, 19 Aug 2026 16:46:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1787158016;
+	bh=gDwETqbehTA+WSxsmLNqku3KFpowN3JsHqzKFU+pEy0=;
+	h=From:Date:Subject:To:Cc;
+	b=Q3s6Y90ThXWXCDzJdGlQyDIFtju+A/MHb+Xgs1OX8e4ZYCmdlfBPVFoQPjjUZL538
+	 0uMo/4Re0Z0Eeq0ZFe7SwGRkG39gg4GOu/xtp1l81IJDydVnkT9s+uKxn1SCNgABQl
+	 5gANFOZxeWwNDnwS1YtODR/KC3PhboelKCJWn9wBVLduz1b6lnWlcmtT19QTaVRXTy
+	 Ak/74EEyNWnOjlKVXcbNG0AaW7Yv7TovUiauHxxFVncJb0cNDCmSm6H9mF4M6bBFPl
+	 KW9zeKFfFhbABxB70XdbFkmxp+2SIqwUkpcyzaYQMKgTcB6axFTR/3aVoZH3pQesYh
+	 f82h0mZO2Yy7Q==
+From: Konrad Dybcio <konradybcio@kernel.org>
+Date: Wed, 19 Aug 2026 18:46:47 +0200
+Subject: [PATCH] serial: qcom-geni: keep registered console runtime active
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260819-topic-geni_console_poweredoff-v1-1-7f7bb3aad8da@oss.qualcomm.com>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yXMTQrCMBAG0KuUWRtI4l/0KiLFpl/qiGRCUluh9
+ O5GXb7NW6ggMwqdm4UyJi4sscJsGvL3WxyguK8mq+1BO3NSoyT2akDk1kss8kSbZEZGLyGocNx
+ 2O2f2zmpQPVJG4Pfvv1z/Lq/uAT9+U1rXDw6VAeyBAAAA
+X-Change-ID: 20260819-topic-geni_console_poweredoff-f73b4815820e
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, 
+ Praveen Talari <praveen.talari@oss.qualcomm.com>
+Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-serial@vger.kernel.org, 
+ Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1787158014; l=2948;
+ i=konrad.dybcio@oss.qualcomm.com; s=20230215; h=from:subject:message-id;
+ bh=vTBGxYlsnzN7flm5ABJf0KVHH4ytKurSM1HT+V9rNIE=;
+ b=JkN/sjSz+tAJP+wK9ebIZQbHL7BDRVcfn6vRQ7MkJe43kWzynY5g858yE4o80ZY/EBXoBk/JM
+ 6NH5l/QxMziAKjh7VF1H9Q+Blesoe6SUYJ80ays1+mpUYjJxW0xW98q
+X-Developer-Key: i=konrad.dybcio@oss.qualcomm.com; a=ed25519;
+ pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
 
+From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
 
---=-q5Qe+PMmpLkX876UKUI3
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Commit aee1f94dab13 ("serial: qcom-geni: remove .pm callback, use
+runtime PM in startup/shutdown") moved runtime PM references from the
+serial-core PM callback to the port startup and shutdown callbacks.
 
-On Wed, 2026-08-19 at 14:57 +0200, Hans de Goede wrote:
-> From: Ibrahim Abdelkader <iabdelka@qti.qualcomm.com>
->=20
-> Both error paths in ttyport_open(), and ttyport_close(), release the tty
-> with tty_release_struct() and leave serport->tty pointing at freed memory=
-.
->=20
-> The serdev core itself never dereferences it afterwards. However, a buggy
-> driver could easily trigger a use-after-free by calling a ttyport operati=
-on
-> on a port that is not open, or by calling close() twice. While those
-> drivers should be fixed, clearing the pointer, makes them fail
-> deterministically instead of touching freed memory.
->=20
-> Note that a driver which currently double closes gets away with it only b=
-y
-> chance, depending on whether the freed tty has been reused. After this
-> change such a driver oopses immediately instead, which is the intended
-> outcome, but it may surface latent bugs elsewhere.
->=20
-> Signed-off-by: Ibrahim Abdelkader <iabdelka@qti.qualcomm.com>
-> Reviewed-by: Hans de Goede <johannes.goede@oss.qualcomm.com>
-> Signed-off-by: Hans de Goede <johannes.goede@oss.qualcomm.com>
+The serial core used to leave the console port powered after
+registration, but after the callback was removed the temporary probe
+reference is always released. Console writes are not tied to an open TTY
+and can run from contexts which cannot resume the device, so a
+runtime-suspended console can stall. This was observed on a Qualcomm
+X1E80100 CRD device, as the boot console became flakey across boots.
 
-I recently took the role as maintainer for serdev [1].
+Acquire a runtime PM reference when the console is set up and release it
+through the console exit callback. This keeps the device active only
+while the console is registered and balances the reference when the
+console is disabled or re-enabled through sysfs.
 
-Please add me to CC if sending another revision.
-I only look loosly at the linux-serial mailing list, so I might
-otherwise miss a patch.
+Fixes: aee1f94dab13 ("serial: qcom-geni: remove .pm callback, use runtime PM in startup/shutdown")
+Assisted-by: LLM
+Signed-off-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+---
+ drivers/tty/serial/qcom_geni_serial.c | 26 ++++++++++++++++++++++++--
+ 1 file changed, 24 insertions(+), 2 deletions(-)
 
-[1]
-https://git.kernel.org/pub/scm/linux/kernel/git/driver-core/driver-core.git=
-/commit/MAINTAINERS?h=3Ddriver-core-next&id=3D6b71fef6f05cee64ebbaa8aec6dc6=
-88169f47e9c
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 3633723acef8..92858bcdebc7 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -1625,16 +1625,37 @@ static int qcom_geni_console_setup(struct console *co, char *options)
+ 	if (unlikely(!uport->membase))
+ 		return -ENXIO;
+ 
++	ret = pm_runtime_resume_and_get(uport->dev);
++	if (ret < 0)
++		return ret;
++
+ 	if (!port->setup) {
+ 		ret = qcom_geni_serial_port_setup(uport);
+-		if (ret)
++		if (ret) {
++			pm_runtime_put_sync(uport->dev);
+ 			return ret;
++		}
+ 	}
+ 
+ 	if (options)
+ 		uart_parse_options(options, &baud, &parity, &bits, &flow);
+ 
+-	return uart_set_options(uport, co, baud, parity, bits, flow);
++	ret = uart_set_options(uport, co, baud, parity, bits, flow);
++	if (ret)
++		pm_runtime_put_sync(uport->dev);
++
++	return ret;
++}
++
++static int qcom_geni_console_exit(struct console *co)
++{
++	struct qcom_geni_serial_port *port;
++
++	port = get_port_from_line(co->index, true, NULL);
++	if (IS_ERR(port))
++		return PTR_ERR(port);
++
++	return pm_runtime_put_sync(port->uport.dev);
+ }
+ 
+ static void qcom_geni_serial_earlycon_write(struct console *con,
+@@ -1751,6 +1772,7 @@ static struct console cons_ops = {
+ 	.device_unlock = qcom_geni_serial_console_device_unlock,
+ 	.device = uart_console_device,
+ 	.setup = qcom_geni_console_setup,
++	.exit = qcom_geni_console_exit,
+ 	.flags = CON_PRINTBUFFER | CON_NBCON,
+ 	.index = -1,
+ 	.data = &qcom_geni_console_driver,
 
-> ---
->  drivers/tty/serdev/serdev-ttyport.c | 2 ++
->  1 file changed, 2 insertions(+)
->=20
-> diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/ser=
-dev-ttyport.c
-> index bab1b143b8a6..b6638f9f40d2 100644
-> --- a/drivers/tty/serdev/serdev-ttyport.c
-> +++ b/drivers/tty/serdev/serdev-ttyport.c
-> @@ -137,6 +137,7 @@ static int ttyport_open(struct serdev_controller *ctr=
-l)
->  err_unlock:
->  	tty_unlock(tty);
->  	tty_release_struct(tty, serport->tty_idx);
-> +	serport->tty =3D NULL;
-> =20
->  	return ret;
->  }
-> @@ -154,6 +155,7 @@ static void ttyport_close(struct serdev_controller *c=
-trl)
->  	tty_unlock(tty);
-> =20
->  	tty_release_struct(tty, serport->tty_idx);
-> +	serport->tty =3D NULL;
->  }
-> =20
->  static unsigned int ttyport_set_baudrate(struct serdev_controller *ctrl,=
- unsigned int speed)
+---
+base-commit: 6a746cd265aed59107ebdaa9ce039bb832922969
+change-id: 20260819-topic-geni_console_poweredoff-f73b4815820e
 
-Always good to see hardening.
+Best regards,
+--  
+Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
 
-Reviewed-by: Markus Probst <markus.probst@posteo.de>
-
-Thanks
-- Markus Probst
-
-
---=-q5Qe+PMmpLkX876UKUI3
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-
------BEGIN PGP SIGNATURE-----
-
-iQJPBAABCAA5FiEEgnQYxPSsWOdyMMRzNHYf+OetQ9IFAmqF3VobFIAAAAAABAAO
-bWFudTIsMi41KzEuMTIsMiwyAAoJEDR2H/jnrUPSjZsQAIhpqpKP4U0au63s9Nh4
-cJtzroMgUu2K+7OTTiLydZoKLJBditjTbtRNKr1J7iYG8xTyM/j7W1ZTlkFpXYpY
-+h4irDbEyj2Kcd8CtQNtBMoA2/jVBOW7+hG5CR/vxps+WIBallOIJETdgxG9g5Y/
-LdGk/RBhbKeVic51BVWL0avl1mOhNhHJasLp/w22Oxjvy1nokLIobVLIuMU5ahyC
-c21OvutXYPmYK/tVO69X7q/9Knkwy600eD1pRecIsDcySYDAP8m2VO5+3lRvpTNo
-3vdfTe2BhUhqhMW1krIQcXX3NWQbycdARNdlOBaZokXCnHWSWnVaszKSAqWyUqvb
-GdrtIneOVAU44Xas8bybJcLJJCokko0WpVBctBuv8ZyzwZvXWO8JL/d0wY3tDyex
-V5P+r1QnvVWR/auw8Px16HcnYZaLfhA/26heL3BWacy3j58eXMVwBHTMgRT1T/mE
-/5Nd+9SPVUFkPlI9j68eMli5e3KHysGIEeTA39kVdSEbIqZyid2HCmdmNAJENEhA
-uqMqdRX0nuVCUs01Vkou2AE7fLw1/EJOmXqjjAp9MCtlJI8/fm59VNagt/6ZcIBr
-BBEfHzc+FOUcSJ1Fqrzy6yXevKePuLTqPJx3E8be/foylLn54emVfRfaoC32xrT9
-WEyJRPF0jwKUJcfkOt9JhnSM
-=ypTE
------END PGP SIGNATURE-----
-
---=-q5Qe+PMmpLkX876UKUI3--
