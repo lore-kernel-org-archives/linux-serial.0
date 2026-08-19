@@ -1,144 +1,193 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BA5748A2A9;
-	Wed, 19 Aug 2026 16:46:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB6C83C3458
+	for <linux-serial@vger.kernel.org>; Wed, 19 Aug 2026 17:11:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787158017; cv=none; b=XkxNnLkXGa22Bq+OR0SAlkulTXlQQP3QbxIVvj83MVq3jvWTLywJyOk5JRIWOHlum9yAY0W/qr/LcYAOVVqyiSM1JRsbRNIvnYUngZl1yFhhoaIjnBu6D9myTRuNf1qxhdMii9olQ/l9hx37hMSL6mFncNP5Q0Xdwy7jgDpxebA=
+	t=1787159470; cv=none; b=KCFj30L8aoygco4xu2VGzHATVShYEAGUziegZldxE2DCr35QM8yN/l32PO7G3eMuPKl/uzeLKs6QS446e0n07aVuSuszniZwKf4Hdu5t8XEo8LA3HAeLcTmzyQGFUImDAG5RxN7GsyDlxD5gm/GMDhGz1mhOvxuFcMqp2iTYvCU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787158017; c=relaxed/simple;
-	bh=t4WY1SZyOjTB00Qv3JqSZhT4hew4iMx4qlIkKMqCixg=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=i2r7qnNa/8msf1GA3KPt5OHVKKi0XYn8FW9dq5cDrMRoYoJyRh68FBuam5sUJpcCPAtsIXAIavKS+4NcHoJrSHehA4B4KpBy1zVbt68L0zutYpWj71Fjh3IhHxzTqURxlJ28O2jrgRIWZTDC87hjZs2Reo6KHuxdb2kawTAdnEg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q3s6Y90T; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1787159470; c=relaxed/simple;
+	bh=Fe7DkO5aRoKlOx5BdmX7YNUhZMMlLH8G7Y1MOtuX6k4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=L3KkO+HWt0+wnvmpXLaONwtocLRe8bV9MoBQ4ck60SYP9SavP7fUBNFuxO3yzmQeBwRBQrHE8GvJcysy2QMmrzI+FXE4DwTDFRSRS6gm3RnkZjAanaV5ly4rJdRPfgMvv2WzCiej81pTGxsem4JA/jv93lEBPQXzuUmchmN2SQA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=O+VZo9e8; arc=none smtp.client-ip=209.85.210.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q3s6Y90T"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DD2C1F000E9;
-	Wed, 19 Aug 2026 16:46:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787158016;
-	bh=gDwETqbehTA+WSxsmLNqku3KFpowN3JsHqzKFU+pEy0=;
-	h=From:Date:Subject:To:Cc;
-	b=Q3s6Y90ThXWXCDzJdGlQyDIFtju+A/MHb+Xgs1OX8e4ZYCmdlfBPVFoQPjjUZL538
-	 0uMo/4Re0Z0Eeq0ZFe7SwGRkG39gg4GOu/xtp1l81IJDydVnkT9s+uKxn1SCNgABQl
-	 5gANFOZxeWwNDnwS1YtODR/KC3PhboelKCJWn9wBVLduz1b6lnWlcmtT19QTaVRXTy
-	 Ak/74EEyNWnOjlKVXcbNG0AaW7Yv7TovUiauHxxFVncJb0cNDCmSm6H9mF4M6bBFPl
-	 KW9zeKFfFhbABxB70XdbFkmxp+2SIqwUkpcyzaYQMKgTcB6axFTR/3aVoZH3pQesYh
-	 f82h0mZO2Yy7Q==
-From: Konrad Dybcio <konradybcio@kernel.org>
-Date: Wed, 19 Aug 2026 18:46:47 +0200
-Subject: [PATCH] serial: qcom-geni: keep registered console runtime active
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="O+VZo9e8"
+Received: by mail-ot1-f48.google.com with SMTP id 46e09a7af769-7ee125ec926so1045594a34.2
+        for <linux-serial@vger.kernel.org>; Wed, 19 Aug 2026 10:11:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1787159467; x=1787764267; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=Fe7DkO5aRoKlOx5BdmX7YNUhZMMlLH8G7Y1MOtuX6k4=;
+        b=O+VZo9e8XHyj0uP/RH8NrdX6YMhS9tlJFuAkdUn1V8dfp7//HKorwiA+rCw1S1qKnG
+         +YdBshT62sByzOyAhmFyXmEkkRAl5dKrGXc9+Ec1keGgCYw1Q42ghzHRIowndzLp9d/K
+         +TJbBz7O+9X0U2LEhGLf7l+KxiPnMbBjbOcTw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787159467; x=1787764267;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=Fe7DkO5aRoKlOx5BdmX7YNUhZMMlLH8G7Y1MOtuX6k4=;
+        b=EUjTaWyZB0sg4OSX0XPEA/9UIXbjwfiKLY8QqufXjDiv8tSpqM5XXswzuY801h13gm
+         b4yKed+cBT4lb8GbFjMrxs//1kzaq7by2bY4h8V739YyVizObnByAmA+L7u3J15o3wj2
+         oeRNt3/p7FPIqPGGVQIxjUoyRcTpm56/4NRPZ5aisAa2DE7jlK1A+gFJhVSpsqL8AgAC
+         kVgKtnM3Xcn7lkKCQybMOWh7xhBlU6fmv6caJCwED08G3yrE03T0YmJklOfO7uoSnrkp
+         2oQwiI6w1V6W5kCyBhCFJ53du5P6XC0pWU5zFMAP6dhKd1OUQ1/KgeT25Cdlu5rncCsa
+         SDpA==
+X-Forwarded-Encrypted: i=1; AHgh+Roux9nd9RwRax8hFK9Wm1+uQhirN1d37phInx7yCcPj1JfRfV71m/iuZ9Zn9EJ/UsAXVoZ/o9g8h1Bolqk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxA6mc17NfAWs02DA2qkSMNSAHKJ2S0X25WEgXJbpfLItCvRQzF
+	BqnxuPeafjFvyvK5/3UsDlDkWKNsO+9u7e8yw+ChHVbeksh86Mz9KkO2zgceotOpWMccrqQMfQI
+	TFtM=
+X-Gm-Gg: AR+sD12e2outK6/xXc0ol35tLApg1+411d3Ght0wboRPOcVtwJPEtnleE4bU3ZGi3d3
+	O/jFHTn8IwWnHG1GOJKbUuAab0Z9zopathSrcWc6qK35z3u5kBnQECiaOQs6OxVno3oVzDZXHt5
+	2iSoZQ1Z3WW+b57UPyreI76NQ5ulvX2atsL2WaGb6pMqG14jiwCE3FANtVGbXmCQLMsm7Rl8HEC
+	kNpHKHNvDp25pgxUhnY0DWXgPQUncKk3J/tjbRPr4eHAI6KwqHXVODsOXO7q5z0/P3olNuA5IFb
+	agdRH/6WRzoedjvYTLiZyC7M+B0gXl5bht38fHV6SyKQXxRqOIWH91ftYmqK1awgKpaOWLc8rp7
+	Bw4223KNdYw29b+1eYRakhtM33E+6tUIAjNcmKqDeXCe8d6Rq2Mf/QFMLOObIB9JVMyP+eCjW+w
+	YqGYE6icipkIiLHL7mJXni/yAoHnDFdjGrjac7XHF7hAXVyf85qukJDDY+sGbd/ebuDSIcofztO
+	PwDRqnfiGkDBKlah7eDjLfdOQY=
+X-Received: by 2002:a05:6830:82e1:b0:7dc:d967:63de with SMTP id 46e09a7af769-7f43f90e40emr7647323a34.3.1787159467597;
+        Wed, 19 Aug 2026 10:11:07 -0700 (PDT)
+Received: from mail-oa1-f52.google.com (mail-oa1-f52.google.com. [209.85.160.52])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7f4439d218dsm1743248a34.26.2026.08.19.10.11.07
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 19 Aug 2026 10:11:07 -0700 (PDT)
+Received: by mail-oa1-f52.google.com with SMTP id 586e51a60fabf-451d8064238so966973fac.3
+        for <linux-serial@vger.kernel.org>; Wed, 19 Aug 2026 10:11:07 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AHgh+Rr/GzQ5mVpI9xwfJ3hl2So/CwpTueusOWajw1m61VXxu/6SwM6lA5CJSniZ6/DmLSH8LZkgeo1XHCfuj3A=@vger.kernel.org
+X-Received: by 2002:a05:6102:918:b0:778:5c2b:f836 with SMTP id
+ ada2fe7eead31-7785c2bf8famr1715744137.5.1787159025695; Wed, 19 Aug 2026
+ 10:03:45 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260819-topic-geni_console_poweredoff-v1-1-7f7bb3aad8da@oss.qualcomm.com>
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yXMTQrCMBAG0KuUWRtI4l/0KiLFpl/qiGRCUluh9
- O5GXb7NW6ggMwqdm4UyJi4sscJsGvL3WxyguK8mq+1BO3NSoyT2akDk1kss8kSbZEZGLyGocNx
- 2O2f2zmpQPVJG4Pfvv1z/Lq/uAT9+U1rXDw6VAeyBAAAA
-X-Change-ID: 20260819-topic-geni_console_poweredoff-f73b4815820e
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, 
- Praveen Talari <praveen.talari@oss.qualcomm.com>
-Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-serial@vger.kernel.org, 
- Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1787158014; l=2948;
- i=konrad.dybcio@oss.qualcomm.com; s=20230215; h=from:subject:message-id;
- bh=vTBGxYlsnzN7flm5ABJf0KVHH4ytKurSM1HT+V9rNIE=;
- b=JkN/sjSz+tAJP+wK9ebIZQbHL7BDRVcfn6vRQ7MkJe43kWzynY5g858yE4o80ZY/EBXoBk/JM
- 6NH5l/QxMziAKjh7VF1H9Q+Blesoe6SUYJ80ays1+mpUYjJxW0xW98q
-X-Developer-Key: i=konrad.dybcio@oss.qualcomm.com; a=ed25519;
- pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
+References: <20260722-contrib-pg-pixel10-initial-dts-v2-0-3abae9717feb@linaro.org>
+ <20260722-contrib-pg-pixel10-initial-dts-v2-4-3abae9717feb@linaro.org>
+ <20260724-dancing-skunk-of-novelty-72c1b8@quoll> <CAD=FV=U0HUdjPcg+5Vx8_ag0zLd3CZx5w5SFr38p+YwRnC_G6w@mail.gmail.com>
+ <CAD=FV=V2+D1m5L-0d81W3E_ih2us-SrddeBUAJtMybpQons7Ww@mail.gmail.com> <CAD++jLnQGy_LvRxMjq1s2Hs9Hn4LNTFZ0W17zC1YLs5StwfqMg@mail.gmail.com>
+In-Reply-To: <CAD++jLnQGy_LvRxMjq1s2Hs9Hn4LNTFZ0W17zC1YLs5StwfqMg@mail.gmail.com>
+From: Doug Anderson <dianders@chromium.org>
+Date: Wed, 19 Aug 2026 10:03:34 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=VuVdq_=TQmONJZak84S2c2-2yQ8DS0k_odYsUfg0C+rQ@mail.gmail.com>
+X-Gm-Features: AcwNN1Xq_Hs6V24rG4OhS-cjamxWAO0UpSeGmP_9xYxqjvzRBGkaMhCLOMPBOe8
+Message-ID: <CAD=FV=VuVdq_=TQmONJZak84S2c2-2yQ8DS0k_odYsUfg0C+rQ@mail.gmail.com>
+Subject: Re: [PATCH v2 4/5] arm64: dts: google: Add initial dts for frankel/blazer/mustang
+To: Linus Walleij <linusw@kernel.org>
+Cc: Krzysztof Kozlowski <krzk@kernel.org>, Rob Herring <robh@kernel.org>, Conor Dooley <conor@kernel.org>, 
+	Peter Griffin <peter.griffin@linaro.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, =?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>, 
+	Tudor Ambarus <tudor.ambarus@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, 
+	Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>, 
+	Alexandre Belloni <alexandre.belloni@bootlin.com>, Drew Fustini <fustini@kernel.org>, 
+	Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>, 
+	"Guilherme G. Piccoli" <gpiccoli@igalia.com>, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org, 
+	soc@lists.linux.dev, Juan Yescas <jyescas@google.com>, RD Babiera <rdbabiera@google.com>, 
+	Brian Norris <briannorris@google.com>, William McVicker <willmcvicker@google.com>, 
+	kernel-team@android.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+Hi,
 
-Commit aee1f94dab13 ("serial: qcom-geni: remove .pm callback, use
-runtime PM in startup/shutdown") moved runtime PM references from the
-serial-core PM callback to the port startup and shutdown callbacks.
+On Wed, Aug 19, 2026 at 1:29=E2=80=AFAM Linus Walleij <linusw@kernel.org> w=
+rote:
+>
+> > Is there some other documentation saying "aliases =3D=3D evil" that I
+> > missed? Maybe some email thread we're all supposed to have read?
+>
+> Yes, kind of, it was 10 years ago and about MMC aliases for
+> selecting a primary device for boot:
+> https://lore.kernel.org/lkml/CAD=3DFV=3DXLuPWKjQBMLApRQxk0K30p_TPcztB7g_1=
+DB7iRA9BGRQ@mail.gmail.com/T/
+> and you were in the thread, it's not pretty, leaves a bad aftertaste.
+> For, I think, reasons stated in my initial paragraph.
+>
+> The takeway is something like "the device enumeration is policy,
+> not hardware information, so it should not be encoded into
+> the device tree", and that is not an argument about aliases
+> per se.
+>
+> As a result (as I think, I may be wrong) MMC gained a few
+> properties such as:
+> non-removable;
+> no-sd;
+> no-mmc;
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/D=
+ocumentation/devicetree/bindings/mmc/mmc-controller-common.yaml
+>
+> These provide a heuristic for which devices to inspect for boot.
+> Then on top of that I think people use schemes like EFI for finding
+> boot devices. (Or they still live with their quirks...)
 
-The serial core used to leave the console port powered after
-registration, but after the callback was removed the temporary probe
-reference is always released. Console writes are not tied to an open TTY
-and can run from contexts which cannot resume the device, so a
-runtime-suspended console can stall. This was observed on a Qualcomm
-X1E80100 CRD device, as the boot console became flakey across boots.
+Yup, I was definitely involved in that conversation around mmc. ...and
+yes, that was a frustrating topic. Though I guess I remember things a
+bit differently / have a different takeaway. Specifically:
 
-Acquire a runtime PM reference when the console is set up and release it
-through the console exit callback. This keeps the device active only
-while the console is registered and balances the reference when the
-console is disabled or re-enabled through sysfs.
+* The whole argument there was about people not liking the idea of
+assigning "numbers" to MMC nodes. As I have said, I'm OK with not
+having a number here and it's not central to my needs. Said another
+way, people seemed to hate assigning a numeric ID to hardware devices,
+which is not my goal here.
 
-Fixes: aee1f94dab13 ("serial: qcom-geni: remove .pm callback, use runtime PM in startup/shutdown")
-Assisted-by: LLM
-Signed-off-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
----
- drivers/tty/serial/qcom_geni_serial.c | 26 ++++++++++++++++++++++++--
- 1 file changed, 24 insertions(+), 2 deletions(-)
+* The "mmc numbering" patches were (independently) sent again and
+again by people because (shockingly, I know) people found it useful to
+have their MMC devices enumerate with consistent numbers.
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 3633723acef8..92858bcdebc7 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -1625,16 +1625,37 @@ static int qcom_geni_console_setup(struct console *co, char *options)
- 	if (unlikely(!uport->membase))
- 		return -ENXIO;
- 
-+	ret = pm_runtime_resume_and_get(uport->dev);
-+	if (ret < 0)
-+		return ret;
-+
- 	if (!port->setup) {
- 		ret = qcom_geni_serial_port_setup(uport);
--		if (ret)
-+		if (ret) {
-+			pm_runtime_put_sync(uport->dev);
- 			return ret;
-+		}
- 	}
- 
- 	if (options)
- 		uart_parse_options(options, &baud, &parity, &bits, &flow);
- 
--	return uart_set_options(uport, co, baud, parity, bits, flow);
-+	ret = uart_set_options(uport, co, baud, parity, bits, flow);
-+	if (ret)
-+		pm_runtime_put_sync(uport->dev);
-+
-+	return ret;
-+}
-+
-+static int qcom_geni_console_exit(struct console *co)
-+{
-+	struct qcom_geni_serial_port *port;
-+
-+	port = get_port_from_line(co->index, true, NULL);
-+	if (IS_ERR(port))
-+		return PTR_ERR(port);
-+
-+	return pm_runtime_put_sync(port->uport.dev);
- }
- 
- static void qcom_geni_serial_earlycon_write(struct console *con,
-@@ -1751,6 +1772,7 @@ static struct console cons_ops = {
- 	.device_unlock = qcom_geni_serial_console_device_unlock,
- 	.device = uart_console_device,
- 	.setup = qcom_geni_console_setup,
-+	.exit = qcom_geni_console_exit,
- 	.flags = CON_PRINTBUFFER | CON_NBCON,
- 	.index = -1,
- 	.data = &qcom_geni_console_driver,
+* In the end, support for "mmc aliases" was landed. See commit
+fa2d0aa96941 ("mmc: core: Allow setting slot index via device tree
+alias").
 
----
-base-commit: 6a746cd265aed59107ebdaa9ce039bb832922969
-change-id: 20260819-topic-geni_console_poweredoff-f73b4815820e
 
-Best regards,
---  
-Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+> Now this ufs0 node seems to be about calibration of some sort,
+> which is a more hardware adjacent subject. Is there a way to
+> add the entity that needs this calibration to the device tree and
+> reference the UFS device with a phandle along the lines of:
+>
+> calibration-storage =3D <&ufs_node>;
+>
+> ?
+>
+> Even say adding a synthetic modem node if the calibration is
+> for a modem is probably going to be more acceptable than an
+> alias.
 
+The crux of the issue is that the bootloader needs to add UFS
+calibration to the device tree provided to it, and later the UFS
+driver in Linux needs to find this calibration data. Since the device
+tree lives outside the firmware and is provided to it, the firmware
+should make the fewest assumptions about the device tree possible.
+
+Having the firmware hardcode the path to the UFS node doesn't seem
+ideal, since (I believe) device tree paths aren't guaranteed to stay
+consistent according to the device tree ABI. This, and the current
+downstream device tree path differs from what upstream would accept.
+
+Using an alias seems (to me) to be a reasonable solution. However,
+I've tried to express that I'm open to concrete ideas.
+
+I appreciate your suggestion of having a separate node for calibration
+storage. This feels more awkward to me than just giving up and having
+the bootloader hardcode all known device-tree paths that the UFS node
+might be found at. That being said, if everyone says that this would
+be a great solution, I could try prototyping it. The trick would now
+be that the Linux UFS driver would need to be able to find this
+calibration data, so the Linux UFS driver would either need to be able
+to find it at a specific hardcoded device tree path or the Linux UFS
+driver would need to search the device tree for a specific
+ufs-calibration compatible string.
+
+
+-Doug
