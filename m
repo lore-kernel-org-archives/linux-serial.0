@@ -1,122 +1,83 @@
-Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 173B233DEE9
-	for <linux-serial@vger.kernel.org>; Wed, 19 Aug 2026 07:31:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5914F1DF736
+	for <linux-serial@vger.kernel.org>; Wed, 19 Aug 2026 07:33:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787124674; cv=none; b=s1FRTG1nHWfl1UE6Iv/mVr7pLs8+7JtXYE3i6kErnFF+lc4Ce0i2yv7lsLEOnkHlMkK5q4XqSHcqAh3lkJWj8MwwCojduwcbWlpOubpMkFJ5LQDn0Uh54KtAF9KCgWpD4gOY7+pNbpgTzi8qhrJSxnfVDL6zTNMwTW8+nnWLP0A=
+	t=1787124787; cv=none; b=aV47w/Y8LsYpvmXeqLziCFGbbBSNHIrOUI7CncZE1ctJVm8wjOeiVoV9N++gIUHM+eL/QusMddtajPqa7Vnw2nye1v2aFVSRvronBczfFm10w0+RgkQtsVfMLygHUajd5e6Bhk3Puf0//yUutcy1YQgF4ogoVpZUPUurEtcxCXw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787124674; c=relaxed/simple;
-	bh=KDz40ob1DP1awgyQpoQz8zlL0Dgc5sAY4J66gSV3FQw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=D68Kvat9v4PdLk+YPmI0T+Sioc8blX8P+EfoVjlAwVgpDQ11Ppau6eWzzi/4bfWCs2nxDBRWkTMc42Un185RmVAWtdSj8hZI0RfDVWDLpeo/P3QIrsJt5k9MXJWltZe76MQorjWeu2Aotmus/KpHdTOPC5wU2J842FkG7ymJcEI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.com; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.218.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ej1-f50.google.com with SMTP id a640c23a62f3a-c2022323c37so95979466b.0
-        for <linux-serial@vger.kernel.org>; Wed, 19 Aug 2026 00:31:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787124671; x=1787729471;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=HiDaEknU4hvGEw8cYMmApLQGE2jE6rj6ed8HdH6DIqQ=;
-        b=fzjHtK9HE8I4gWJXct4jHcm1MWpviF9srgmHPBBVdgz9t2VavHorGFBbz6d7Y+xAY1
-         xi7r11zOJskQZrb1xIYzJu9yldj+4yoltRac9cFdQJUPkxeqo8+F1yuVAWpX43d0SvyF
-         heyWqopfVRN6bgagwd+wnk6NA0gjxopGSThL0Rf46UTMfOU2VNp117roYwlK8J8yfzwC
-         XRKLyEpUf5a6x5xW8Ui7O4aGiUmaPlqHAPmmjipex3z6EYzCQTsMIiCr7Cxmk/CZUoOo
-         YAdxh5kjG1lLMeBevvrrwp0+AAsc2l/CFyjZHjkRzdyWEPQ7rf5HTvYJssxEkt8iNfOb
-         lY0w==
-X-Forwarded-Encrypted: i=1; AHgh+RrfBKQFH0F+CQBo/Yhro3juIfwMqj19X5ieuFVqXC+RMHkXWrgWzycTAfPh7QJVxGErKhqc7h+ohNgk4Dw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzlqM5r/eIrM5netQO3IsXDwn+JKQXYcqQyG7FvnvfIfShhUO8z
-	0Yc5y7QXGVE50hBPR2TTRe11O/Ymw11MV2gfHyRYDVQT+Q8m5OwqaEFa
-X-Gm-Gg: AR+sD10exqe2NnWlUu3IinTUyl+FxkwE8mwQ6Qeg/IjRhQRqpNNVGUYqcEPR2Z1CdRs
-	mSdp6HB5Qb+HQluSQC6l8Kz1ba/OFN9im5oFYaZBe/DfsC0nZaMN8jsjclBcjVtDJ8rNm2OSPfr
-	KLuEbJRzWoH6BuCRjMKH57RZIqqB8xioFaZwrpiRZ9WhYuwIvWwzDJHrre+S8+m6pn6ySKdeBcJ
-	btEk0gVM+2V8q9uPjJs8NxyIK61HMfm8Lti/G+LNx22RHEfj5F7+8i8dSW6EGs8Q+nLQfJPcg/a
-	+r1Sl0t3Ie+ybDepkFmMf1BAfDIqnkERtu0SCg/k88kTF65KGVsGJ498yFjD9cPdYWK4Eqj8Gld
-	mLWEPWe1MDWRgo4m5vDjzgfjaYOPKhz4hrsIyLfVX116gZk8AaLRrwzVvoQo59rR/Q/mrdk7kQs
-	ZjABp+fEl8b3WSG8MKviUQZTkuEzhnW9pwyEyRz1tEo6Cc1YW+00Yp8WLX3SalNke8I9sgZg1g0
-	knmiLTX7PHtFjxlY+33vw==
-X-Received: by 2002:a17:906:9c95:b0:c12:74af:51f3 with SMTP id a640c23a62f3a-c242a5af4fcmr134040566b.6.1787124671066;
-        Wed, 19 Aug 2026 00:31:11 -0700 (PDT)
-Received: from [192.168.1.135] ([83.106.158.114])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c243c7c2b45sm37142066b.13.2026.08.19.00.31.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 19 Aug 2026 00:31:10 -0700 (PDT)
-Message-ID: <47719008-a26d-481c-8b0c-8acf669e987f@linux.com>
-Date: Wed, 19 Aug 2026 08:31:10 +0100
+	s=arc-20240116; t=1787124787; c=relaxed/simple;
+	bh=VkxwTHhpX690h2pXqhYY+zmBovwI3C9WHSBD9ryCt6I=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=gaZajK5HCOFY2GcCa+LwfE7ZH0g84afkSUiTMbC0QUqEnkhFSta/vv0+B8ZgFhHBPf8x7lko2TVpH9aNhCkLEThYZyNCjMHkZEjJBvUWkftEkWNrIktXVqQHBjD/Dy83dRjHzLshISgcQaiw82fHp+xpXVNRKmTFI5xO8bMwz6U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dpOjroIG; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dpOjroIG"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 708821F00A3E
+	for <linux-serial@vger.kernel.org>; Wed, 19 Aug 2026 07:33:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1787124785;
+	bh=VkxwTHhpX690h2pXqhYY+zmBovwI3C9WHSBD9ryCt6I=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc;
+	b=dpOjroIGI85uGUmiGJs9drYoXJhWNmVi4Uu3qGsw/NyvsqnuNvUgi89N9RNfPYAWP
+	 AEgu6FA3sfYXpsYY+Wr9HXu2c8CUR44guutkanr8ETQ64s6zPs4Fh46HEBjo8TPYvD
+	 jjXR4/BaPP1E02MEgaQLgH9LhmetQeGWQMYLdCcKPn1/lPeuo0vL87iviG8vq5aFMT
+	 7BUbcYev20AFu3U5/liiINcqpf2o06mkh1Gpk22RTGdfBkWjXs6MZ2GSuVFHiDCubn
+	 dJzb1UguVvNUKib86ajaYHZEAOcpz6oxmJS6n2q77Tm19iJyblR4R/XacjfhHp7Blg
+	 IdoWLK+59joQA==
+Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-5b0231a3e86so784130e87.0
+        for <linux-serial@vger.kernel.org>; Wed, 19 Aug 2026 00:33:05 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AHgh+Rr0rnZ/VHeWa0x3w0G7gpCirMq3dC8vLvxTd9CU4fLvrg6vG4XzQB9pWLwjk34cT6G0+gi6XnEo4OlVZ34=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyYQgIl/y9TMTDhNGFV4Qi/q/1paOM88OczsBuJBcPg2ZZZ291U
+	6bNob7ciRHGMvMDP/k4H2ylc9grO2pSezb0G20H1ODoETZv/y1B+Q0AU7lr6QPJ1MgEUpRmvdO4
+	C4YoVIqwNKd7q2eyOdq6G5fm+5vb5TIo=
+X-Received: by 2002:a05:6512:3d86:b0:5ae:a702:6528 with SMTP id
+ 2adb3069b0e04-5b478bdc331mr681671e87.26.1787124783764; Wed, 19 Aug 2026
+ 00:33:03 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: 8250: don't register ports that have no hardware
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org
-References: <20260818185200.10243-1-tanure@linux.com>
- <2026081923-magical-enlisted-64ff@gregkh>
- <ecc5ada8-c878-4123-acd7-64af3219b181@linux.com>
- <2026081908-clamp-safely-de2f@gregkh>
-Content-Language: en-US
-From: Lucas Tanure <tanure@linux.com>
-In-Reply-To: <2026081908-clamp-safely-de2f@gregkh>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20260818-cv75-v5-v5-0-7bbb12f0360f@ambarella.com> <20260818-cv75-v5-v5-6-7bbb12f0360f@ambarella.com>
+In-Reply-To: <20260818-cv75-v5-v5-6-7bbb12f0360f@ambarella.com>
+From: Linus Walleij <linusw@kernel.org>
+Date: Wed, 19 Aug 2026 09:32:50 +0200
+X-Gmail-Original-Message-ID: <CAD++jLnsyZDBixXMDFUf1+i0ZtYkmzpc+kggn9bx7=8W-gZHSw@mail.gmail.com>
+X-Gm-Features: AcwNN1WedvW-uebjWVm_0ycL6wQEG6qNIR9PZrbwX20kSbc79ar1YheT6gV97uE
+Message-ID: <CAD++jLnsyZDBixXMDFUf1+i0ZtYkmzpc+kggn9bx7=8W-gZHSw@mail.gmail.com>
+Subject: Re: [PATCH v5 06/12] dt-bindings: serial: add Ambarella CV75 UART
+To: longzhao@ambarella.com
+Cc: Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>, 
+	Alexandre Belloni <alexandre.belloni@bootlin.com>, soc@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, 
+	Bartosz Golaszewski <brgl@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+	Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, devicetree@vger.kernel.org, 
+	linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org, 
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Brian Masney <bmasney@redhat.com>, Lee Jones <lee@kernel.org>, mfd@lists.linux.dev, 
+	Long Zhao <zl020895@163.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 19/08/2026 07:49, Greg Kroah-Hartman wrote:
-> On Wed, Aug 19, 2026 at 07:40:17AM +0100, Lucas Tanure wrote:
->> On 19/08/2026 06:57, Greg Kroah-Hartman wrote:
->>> On Tue, Aug 18, 2026 at 07:52:00PM +0100, Lucas Tanure wrote:
->>>> The 8250 driver creates a fixed set of port slots at boot and
->>>> registers a ttyS device for each one, even when the slot describes no
->>>> hardware. On device tree platforms those slots are empty, but they
->>>> still take the ttyS0..ttyS3 names.
->>>>
->>>> New Amlogic SoCs (S4, T7) name their real UARTs ttyS as well. With
->>>> both drivers built in, as in arm64 defconfig, the real port fails to bind:
->>>
->>> Then fix that bug, don't break everyone else's systems because of it.
->>>
->> Hi,
->>
->> Understood. I thought preventing 8250 from probing on devices that don't use
->> it would be a good idea, and fix my bug. Thanks for the feedback.
->>
->> I will tak to Amlogic list the ttyS name collision introduced for the new
->> Amlogic SoCs in e71aab9d6132.
-> 
-> That was an explicit decision by Amlogic to do that, so there should not
-> be any collisions as their systems should NOT be having the older 8250
-> device tree entries.
-> 
-> So perhaps just fix your device tree to not be broken?
-> 
-> thanks,
-> 
-> greg k-h
-Hi,
+On Tue, Aug 18, 2026 at 12:32=E2=80=AFPM Long Zhao via B4 Relay
+<devnull+longzhao.ambarella.com@kernel.org> wrote:
 
-There are no 8250 nodes in the Vim4 device tree.
-At __serial8250_isa_init_ports() in 8250_platform.c it creates nr_uarts 
-ports unconditionally:
+> From: Long Zhao <longzhao@ambarella.com>
+>
+> Document the Ambarella CV75 on-chip UART controller binding for early
+> console bring-up. The binding requires a single RCT clock input and
+> fixed 32-bit register access via reg-shift and reg-io-width.
+>
+> Signed-off-by: Long Zhao <longzhao@ambarella.com>
 
-       for (i = 0; i < nr_uarts; i++)
-               serial8250_setup_port(i);
+Looks good to me!
+Reviewed-by: Linus Walleij <linusw@kernel.org>
 
-And serial8250_init calls serial8250_isa_init_ports unconditionally. So 
-by just probing the module the serial ports are created.
-
-Am I missing something? I can also boot with 8250.nr_uarts=0 to make the 
-issue go away, but I would prefer a code fix for the colision.
-
-I will take the naming question to the Amlogic list, but I wanted to 
-double check my understand of the code.
-
-Thanks,
-Lucas
+Yours,
+Linus Walleij
