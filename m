@@ -1,92 +1,95 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF0763D5C31
-	for <linux-serial@vger.kernel.org>; Wed, 19 Aug 2026 07:47:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC2BC3DA5AE;
+	Wed, 19 Aug 2026 07:49:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787125642; cv=none; b=Ufc8rxKdvcA6jR2J2dysh/+qQch2jPhxAFpbqQxeAahCUQykjIlhkMB63AHgVWToR3Js9ukmOMjWvuEwJYkGENgG9jAQdH65HO6OS8IM6/Ezhx38tzizfZB//nSQKKDASL3Sub3bHaP0Jz3JHlqQk29uQYsGqi0h7ZajU+l/VYU=
+	t=1787125747; cv=none; b=L9CwTaoyGJq7cG92XeWmcWSTYS9ZCtZFrQbQEvdhJDaJgKrErX62L2RLqpAMkmx7oGk5EaRicOzgxvKuKomBdXV+LjCn/6/bEo1kk9PCT+3h5O6TuOIucvWJqAVS/xXgChcyBNbJyxV4Kfui09FR2LZ0HB1GopHV/bj4UBBRo0g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787125642; c=relaxed/simple;
-	bh=CME2svg5ClAUnJKPj2PXGWwyQELSDleWLCO85/xq6ew=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=gnKMwypsWrm4j4eC7atIfrufmHdUYwrwMBjfNhwslujssdfMSHZLWUGgUc9K8I9N4UQW64s/WyvCQwIZfEArnlBG4wijJLnkYX++DVqrRLnZ73I+Pex8UVmxFh/zb7QOtdiAV96HTHVJLKuLLByF0T7nCQ8qanMvsxm1d9qpM4c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=H4xJGj9/; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1787125747; c=relaxed/simple;
+	bh=nxWHSP5PHQL7M+QBFxwaIaIWgbWABQeI02mXZubMEEg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=oEwR9tLWw8zk6j7S6/n8Y39ETILDBmlZpgV+g4wHf8+UHmXBsDjDJ7CX3CTRlRjcs6b2ZGE4iBEZUptK5DlEqgUXFt0DDpVRNfRg27D5915FOs8Sm/QDYLhr+Q0XE7YEQTwAmdfBqzmRxaaLwl8hGXLqeqTnzcmN4hBSrnqleeM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=lj8WeGmf; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="H4xJGj9/"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96D991F00ACA
-	for <linux-serial@vger.kernel.org>; Wed, 19 Aug 2026 07:47:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787125641;
-	bh=FFro0CShRsSHLGgbO4zij6styDLmEifSQxQUeqQE0X0=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=H4xJGj9/2X+lT/uWhbxXcdPQuM7Bg0MQpuq1YyZ+1rRUji8sJaogN48P6A9i+WlXF
-	 CmbN9ufpRZKvfQ6RHrNVHDKf0ZUKH6lMmKJw7oDStcMGXAGn0aBMXq+s1NsNvDrWZ9
-	 Oljf1DDTrJg9pk8S9WLkII1kgG/vYLtKZ48tKvOA/csRJYfBhVTo3A/9r/PbZzmg2Y
-	 efCuanDt6OZrg0W5f9MhLFvQOGXAzTCWx6lZGlWvr/aX4xkhoq2VnwxEh4XhAolNfu
-	 FDozd1jLinL5SbFvKPd574wZbePTihcoFq2hrYBE+GJwIDlRCEPwDIKZy8j3XzgW1Z
-	 XePiEDb7g8E4Q==
-Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-5b2b92065ffso824422e87.1
-        for <linux-serial@vger.kernel.org>; Wed, 19 Aug 2026 00:47:21 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AHgh+RpzkW/IUfOX9JR5qm/0rL3J9gK3cx/17IR9IRqElIlQ3tfP0QPyjnhrW9WRj2tQjs8+/0MUqi6kKK8BM+Y=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzy02B8cblRLqkFDbNhoUjZgtZOTzw3kFacAC5l2HRuC6LokaZl
-	IIAXg//2vzmnnb5QfdvQBDqeEtLflNR5EctSB3ngIeg5SPyu5ItpqpAQhlp6iIbx4MWu/CeOIJG
-	BXU9zX1UuLo3XegoKhrCtjCGjrL+yFxI=
-X-Received: by 2002:a05:6512:3b9c:b0:5b4:5c5f:2aed with SMTP id
- 2adb3069b0e04-5b478bafeedmr801963e87.9.1787125640383; Wed, 19 Aug 2026
- 00:47:20 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="lj8WeGmf"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 020941F000E9;
+	Wed, 19 Aug 2026 07:49:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
+	s=korg; t=1787125746;
+	bh=kVD1wleIxlRps+GeowwWMVdoDZQFF7p0sf5QbTFaO2w=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=lj8WeGmfSwuuHU3wPg9bmGHbAK0rLhQ7ff7ZjiEx5ODU2zgfAmYmGMA29Tu84gj2u
+	 8LCHMDFkGp15wV36KxxD+NXppouXpCToAMl4tIMYzTMGIsnOUOMVq/n+ohh30jQDCo
+	 JsPAEY+z+1GC1OUT4wJN3Db+pUng1Sb5RlCRz/ko=
+Date: Wed, 19 Aug 2026 09:46:48 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Lucas Tanure <tanure@linux.com>
+Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH] serial: 8250: don't register ports that have no hardware
+Message-ID: <2026081906-curtsy-widow-028b@gregkh>
+References: <20260818185200.10243-1-tanure@linux.com>
+ <2026081923-magical-enlisted-64ff@gregkh>
+ <ecc5ada8-c878-4123-acd7-64af3219b181@linux.com>
+ <2026081908-clamp-safely-de2f@gregkh>
+ <47719008-a26d-481c-8b0c-8acf669e987f@linux.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260818-cv75-v5-v5-0-7bbb12f0360f@ambarella.com> <20260818-cv75-v5-v5-5-7bbb12f0360f@ambarella.com>
-In-Reply-To: <20260818-cv75-v5-v5-5-7bbb12f0360f@ambarella.com>
-From: Linus Walleij <linusw@kernel.org>
-Date: Wed, 19 Aug 2026 09:47:06 +0200
-X-Gmail-Original-Message-ID: <CAD++jLngqGzethEG5Hx+oAPzZoV6rvWNGXYaycFFkDz_dXFz=g@mail.gmail.com>
-X-Gm-Features: AcwNN1Xd6vVOI9stCj2gRpLkQqCARgCDR2Ns_rmI0pVH0qFiDI8kQzTDIQYC_Ck
-Message-ID: <CAD++jLngqGzethEG5Hx+oAPzZoV6rvWNGXYaycFFkDz_dXFz=g@mail.gmail.com>
-Subject: Re: [PATCH v5 05/12] dt-bindings: gpio: pl061: add Ambarella CV75 variant
-To: longzhao@ambarella.com
-Cc: Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>, 
-	Alexandre Belloni <alexandre.belloni@bootlin.com>, soc@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, 
-	Bartosz Golaszewski <brgl@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, devicetree@vger.kernel.org, 
-	linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org, 
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	Brian Masney <bmasney@redhat.com>, Lee Jones <lee@kernel.org>, mfd@lists.linux.dev, 
-	Long Zhao <zl020895@163.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <47719008-a26d-481c-8b0c-8acf669e987f@linux.com>
 
-On Tue, Aug 18, 2026 at 12:32=E2=80=AFPM Long Zhao via B4 Relay
-<devnull+longzhao.ambarella.com@kernel.org> wrote:
+On Wed, Aug 19, 2026 at 08:31:10AM +0100, Lucas Tanure wrote:
+> On 19/08/2026 07:49, Greg Kroah-Hartman wrote:
+> > On Wed, Aug 19, 2026 at 07:40:17AM +0100, Lucas Tanure wrote:
+> > > On 19/08/2026 06:57, Greg Kroah-Hartman wrote:
+> > > > On Tue, Aug 18, 2026 at 07:52:00PM +0100, Lucas Tanure wrote:
+> > > > > The 8250 driver creates a fixed set of port slots at boot and
+> > > > > registers a ttyS device for each one, even when the slot describes no
+> > > > > hardware. On device tree platforms those slots are empty, but they
+> > > > > still take the ttyS0..ttyS3 names.
+> > > > > 
+> > > > > New Amlogic SoCs (S4, T7) name their real UARTs ttyS as well. With
+> > > > > both drivers built in, as in arm64 defconfig, the real port fails to bind:
+> > > > 
+> > > > Then fix that bug, don't break everyone else's systems because of it.
+> > > > 
+> > > Hi,
+> > > 
+> > > Understood. I thought preventing 8250 from probing on devices that don't use
+> > > it would be a good idea, and fix my bug. Thanks for the feedback.
+> > > 
+> > > I will tak to Amlogic list the ttyS name collision introduced for the new
+> > > Amlogic SoCs in e71aab9d6132.
+> > 
+> > That was an explicit decision by Amlogic to do that, so there should not
+> > be any collisions as their systems should NOT be having the older 8250
+> > device tree entries.
+> > 
+> > So perhaps just fix your device tree to not be broken?
+> > 
+> > thanks,
+> > 
+> > greg k-h
+> Hi,
+> 
+> There are no 8250 nodes in the Vim4 device tree.
+> At __serial8250_isa_init_ports() in 8250_platform.c it creates nr_uarts
+> ports unconditionally:
+> 
+>       for (i = 0; i < nr_uarts; i++)
+>               serial8250_setup_port(i);
 
-> +      properties:
-> +        arm,primecell-periphid:
-> +          const: 0x00000061
+Then the amlogic driver should not be attempting to use the same device
+nodes.  Something is broken somewhere, and I don't think it is in the
+30+ year old isa code :)
 
-The 0x41 in ARMs PeriphID is actually the JEDEC JEP106
-implementer ID (8 bits).
+thanks,
 
-So you should ideally set this to whatever the hardware engineers
-should have used, had they paid attention to detail.
-If your company has a contact point at JEDEC they should
-know which implementer ID to use for Ambarella designs.
-
-Since Ambarella is evidently a member of JEDEC your
-representative should be able to simply request a JEP106
-implementer ID and give it to you if there is not one assigned
-already, but I know it can be hard
-sometimes to find the right person inside the company
-but I think it'd be worth going the extra mile here, say that
-this guy from the kernel community persists.
-
-Yours,
-Linus Walleij
+greg k-h
