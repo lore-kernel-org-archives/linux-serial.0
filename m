@@ -1,192 +1,196 @@
-Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazon11010001.outbound.protection.outlook.com [40.93.198.1])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFDA044062A;
-	Thu, 20 Aug 2026 04:56:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.198.1
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787201786; cv=fail; b=VQDVmtrjLuDq4SqHLCszKZUaEyVBuwcyxIBTEIaxqUNMg2u4p2hdIKqTnJYLW758uFvLJSW3ttOq2aVmoipwQDSwJFdlk6YPH/3MxsefjY7Z2/ey7MaV3z+dbrEC8OfZZrwg0+3rQUs+AGk5jLTeE9wu03PS6DlDFts3diizdzI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787201786; c=relaxed/simple;
-	bh=nliyzKgGT61UEpO/S/LVvCyaS7g4WZ87Mn2XL9dcdeI=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=YZQNhGp0D6yJd7OP9rnbcyppf9P5gie9s8Gk1pwe79nqx7EgtJVGPsCpRndR2F33vQ3rvo9KsCisIsu//9aNHGqI+VLAHwJOcrJAGVY8FxijpgzVbrzQZrWp1Zc/RpxXqHdQTIpZnLGA6YrgNKsKQqVYiJWbt5A3u9TyN6J9JB4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=m6NNjNEl; arc=fail smtp.client-ip=40.93.198.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0E653AE6FC;
+	Thu, 20 Aug 2026 06:03:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787205801; cv=none; b=KjV2RWgSaCqOa+0SL0WCNI/QTTzbtiW9v5lhXt8GyqQmXB6NVaBVXELbtdfFAXNnNJWAC6tz1hmW58Y1jJdphtQTTcqQg/NoGDMsmHvUqih77ABoscn+h24iD5RBfVGcMk/0M8ET8aygNO5XtKtBqj9XfjkX3Tv/WSy2i16yyM8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787205801; c=relaxed/simple;
+	bh=jnFPaMuN6Jw6pqqQT/InQ6wYjEGcdsE/XK1iLLP36bA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=uF9Xa3KuX3JB850O9zCxkT7X+LI/ONqICoez4t2bW41UNrXlv5tCsP33f0wsZwuNeswc93b3+oBpo3NNyI9/TjQXEtJz5+n6vQ/q4EfThR9YDXqRd6HV5E5Jz5by28rOibDnLYy0A6ndmt0xxIJZUe6MKzlJLd3OvIP/D/rR3iQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Bk2yfDZB; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="m6NNjNEl"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=gXv2zTUP0j6EwOgeRxXu/Yq1CjoHv0DsOqDxlMc3y+MJrvYTKO3Jv4revWDQK14mrsPr3ik9h5r6cA+F5h6zzwYwA7fAm2OYFeiRrxRHKjWZrRr948ncljSsGx/BgUH1eOdePau0h3u2ny2kdgp7ZchhtttT+R40lRv6JqViHgYBNKtBRDi1SnT6+hmUxe6xHBQojQ0a6Auu4NWnbrlFkHbfOn1W0YtTWAo3hJcapzcFGwWZkRA8RmtDR9AQLBD0cMqX8S2K5R+0VQrzzTfti0ZMygAK932s3shZZrc1pNCAo40uwLTTkRQ30M5lxl7aAu7wIHdZOEl7dRDPw9qasA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=f7wko9QzZA7GZ5O/3Hycxv0T17zdPudKXj+ly/Yox00=;
- b=nWogwfeqnzsY5sFPk5dNV2NuLaaeOF5TI1Vr2UYCv8SHjEUSwJtw24XNQ19CljQGHlFWlNy6ehNT3HiHj505hmI3LGdowu6MWO8WAlGxOiGOTew1llavppATErFemnIrjgExlDFarxrhh55Bqrxh0u4FNkfnLfKXcQA+xhJmI5EDbSwxt144KI8NkdJYmtin1puSwR2GY8vAAKx4H13KNcjEGdfFUrz2cOg/QTZt6YUTw8kZRkXvTp5cPb42ajbB2kGlfwmYiC9A/BDCY4JoL5L6TQYeB/X/tIMkfHJ3Tpu2TSOkpOKRqdL8A/P4HSP9fRyYt0xlbp7pxVszO9hHnw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=f7wko9QzZA7GZ5O/3Hycxv0T17zdPudKXj+ly/Yox00=;
- b=m6NNjNElNejbER715EtZgBAJ4ybAfAbrcvvjJ0CJVTMUOBa/PeJAN02aWrWUtA6AmUQHGblV6patsXA6UvEbXUB9YnwCJ8Ttysnq6RECVGUwlXO25bYzVAWYdwT14BSvUMNPdULQDkQZ32/TELkTPRRpJT8PtAXFROGyItS/RbQ=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from CH3PR12MB8284.namprd12.prod.outlook.com (2603:10b6:610:12e::21)
- by DM6PR12MB4186.namprd12.prod.outlook.com (2603:10b6:5:21b::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.339.8; Thu, 20 Aug
- 2026 04:56:21 +0000
-Received: from CH3PR12MB8284.namprd12.prod.outlook.com
- ([fe80::1bc1:88b1:7cf7:87aa]) by CH3PR12MB8284.namprd12.prod.outlook.com
- ([fe80::1bc1:88b1:7cf7:87aa%4]) with mapi id 15.21.0339.008; Thu, 20 Aug 2026
- 04:56:21 +0000
-Message-ID: <f22c5687-c379-4fa5-9b32-555ecf5e54f1@amd.com>
-Date: Thu, 20 Aug 2026 10:26:11 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: 8250_dw: Add device HID for AMDI0021 AMD UART
- controller
-To: Steffen Dirkwinkel <lists@steffen.cc>,
- "Rafael J. Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>,
- Mario Limonciello <mario.limonciello@amd.com>
-Cc: linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, Steffen Dirkwinkel <s.dirkwinkel@beckhoff.com>
-References: <20260813-b4-raven-ridge-uart-v1-1-fae442416ba1@beckhoff.com>
-Content-Language: en-US
-From: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
-In-Reply-To: <20260813-b4-raven-ridge-uart-v1-1-fae442416ba1@beckhoff.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN4PR01CA0100.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:2ac::6) To CH3PR12MB8284.namprd12.prod.outlook.com
- (2603:10b6:610:12e::21)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Bk2yfDZB"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FAE91F000E9;
+	Thu, 20 Aug 2026 06:03:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1787205799;
+	bh=uXj7CZeqo1loDtSz0pXTzQ1JoeNkYByZu2BnknAMqN4=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=Bk2yfDZB6ALt7tiJO60H8je+GokIcayDpuTkE3D5rvn1AlEbdc77/FF7OZkHPCre7
+	 zq4000MqgbBOhr3+hNKWJRyOoyVarikKf44o/jkI2msY2RDpReLXk1JyALSDg3sCae
+	 6ZnloNUZO8g/SebhY2GzcEDdEtrNoaEgF8s2C/vrfzdl5K3Q/Jsw777YqhJTkk1Xlo
+	 8FteA5mrBIYyQzCmyEVqzDr/TcRQ47XDGiiUEtMwwXwjPCwLO0ROYaK5gP9IKH+hGL
+	 r0L0MzbK8xnRxSZbmULLCUK68afRvzghIr52WbmEK1UXowkc9ys0UZ/BDp9PfXoqXZ
+	 E7WpsEJ5+JGXA==
+Message-ID: <56db332f-a18e-4a9e-be9d-67d2e25c3666@kernel.org>
+Date: Thu, 20 Aug 2026 08:03:03 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8284:EE_|DM6PR12MB4186:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8725ee31-26f7-4fc7-5a51-08defe776098
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|7416014|376014|366016|23010399003|10067099003|56012099006|11063799006|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	dqJdhKBr+JwNVXGlT8YxiYHrWl4/PzIDy3rb96O1Zn4Le1BDAvmk/RoSjch9mRrtYRu+2s0uh6IRDzaMc7yaeOSg2alGNCr3NQiKjmBFDlrOSiDMq932fILeH2/wQtg5LGwceWjpnbpR9gnZ+Buo7tKsTzsN65LBwv41oOcvdm0zXLiOXXhPJq9jTfMnSCJwmmko0oWxYUBTY+J7H87irnIuWvmFIH3xpSl6q+jrqV1GXNuUPmmGEBZ4wKX4e61ryLIXZbyFJZBfmC3XlPHv2EaU8YMPY367kWOpLiyIBYBKMZlFD+pew/WW4KEHezLtyM8d5FMWocMs2AP5+ZKMqSjHV0Wuj6OBgdG3/1vE2Q/9s4CVVBp2G++oM6XAme8SQfky+hbqk5a2HbpThSnuYGz60sKE2qZay6QY20IAr4BPsatYQeHSDfeL0cP9Tazy2mpnDHFRQ3UXE9rdScCV04ycSeQYd8K4eOs+EhJUS+cmAKSGGggERH5HPidJ6sddOjtJgJO+In/xlrmM4v1I7nDEtRt+y95axgvrlWOqkRIa+OBkJ3/JAq4CdpOK5/jbZ5ft8Ebm/HFlnBDFrbEdqZGnI5Jq7V8tQ7IReCPXyqMkydBz8plh2t+Fe6QwgQEFYRnJpVsxTNXiIVNagg64JyZZiQWKdSh8jk0ZYJpY3fI=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8284.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(366016)(23010399003)(10067099003)(56012099006)(11063799006)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?S0pwWit0NVVGTDVCM3BzSjFRZEdzWXVIZEVac1A0cXhMSk9qNTEwbkJqYll3?=
- =?utf-8?B?K29KYWVuekoxSnZadUxaWVlsMm9GQll0SUN0SDlzRWxHQUx2L3BKcTVRb0c5?=
- =?utf-8?B?Ynd2Z05Uc2ZZUStXZm9nOUV6N3pRcXNkcTEzREt0QzMwOXczS3FRY3ozTjJS?=
- =?utf-8?B?WlpyNXJKUWF2ZFdUdFdmL2dKdkFTWVpzWVZBbnFaM2cvazUzWXJDZC85cUkr?=
- =?utf-8?B?K1V5RDU0OGZ3b3NBbXhTMFc3NTBhVW1EUTlGV2V2MzlmYVM0Y3A1Zk5ydjFW?=
- =?utf-8?B?ODdaT0dKenRTYzhpM0EybnZQdlNOUFZqUHkrMTFoUkZWZEdLZUV6SzhIT2ho?=
- =?utf-8?B?R2k3aE1FdGt0SmtOQzR3WFJqZDlKL0QrUUtaVlU5RHRYY25RTytrSFpJUjUy?=
- =?utf-8?B?eHBZc2V4L0xrZndnWWZIS3I1bUJ1cVYwaXhwZXlHdmNONXdoZXN5SzJuRUpv?=
- =?utf-8?B?a1IyYVVhM1p0Q3plZUpEc05mb0JqZTlsT0FIaXROc1AxNUdHNVBTeGE2YWYr?=
- =?utf-8?B?QUZmVUQ3VG4xOWhKWSt2KzBmWTF4YjRBczNDTXBRUGZ5Z2xMYXRlMEx2TDF4?=
- =?utf-8?B?aUNwYThOZTlyMjIzOWlVWVdTVWgrOEZtZHA0UitKTDJGc0lmbWhPbHVoVUdN?=
- =?utf-8?B?aytRUmk3V2MrL1YxRy9NdFpONHAvU0lmYWVtTUU4TjlqaXlmTE1mYlBpeWRi?=
- =?utf-8?B?Um11bk8rYnBsbmc1cHZneWZqOE8yNEFTK3ZpbHdrZTM3R0VVT3pQNUlJSFZD?=
- =?utf-8?B?dklrUFM3R3FqN25zckdpeFlqbEhPR2RVbVBxQldwNFJneFhYTG00WmFKNlBZ?=
- =?utf-8?B?eTBkMzFaQ0lXRzRlR1huYmdnOEgyTUdZd2J1UWYwa2ZFV2p6R2VMVTdWQlY2?=
- =?utf-8?B?R2FvWUdkVjRLemxTbFBtT3dNYmpyOGFla0l4ZXdjRjNlU25aNzNkZFpWRHlH?=
- =?utf-8?B?TU1acVJiYStRZE9URUNaNjkrR3dPV2F1V1lFdkNNMy9TSGJFa1dUTW9qd1RS?=
- =?utf-8?B?YWoxVlA1dUZoVXF5eDJzeVBBdW11cDFmWDNpcHhTTTNLRXROdElTM3o4eVhT?=
- =?utf-8?B?OUIyZWR3VldFb3BGeXh2WVV5WFdXWFRmdDdTT1QwRnE2a0owZ0ZwTk5yZ0VR?=
- =?utf-8?B?VjRNdzU3T0czNDVvTU9PaDN6RDZmTUNXQmxublZRTzZCbVllK3pQelNuNU9Q?=
- =?utf-8?B?cFVrVWs2NjhrM2ZvZitRaWFjWk9ZVHh5T3EwU0xBNng2aWN1T2V1YklYRCsy?=
- =?utf-8?B?RWtQeWtYc0FHRGZscUR6YzlXMVdnMDkwWGNSa0tkOEdTbzU1NGNmNWVFZGdq?=
- =?utf-8?B?Zmh2SkFvbDVQQzlQY1ViSU41NmJoajFBbU5tRy9UaHdnT3QxYjYvRzNUUEhy?=
- =?utf-8?B?RG4xenZNOFNheUNpTVFLTUxjV01XWGwwSy9QL1F1N29zakI3VWNaTHhhR2tZ?=
- =?utf-8?B?ajJTeGVNeUpIbHlxaUxXTkp3bTZVaERUZGRqV0tSMXdaNkFjU3FwWHJZSkZs?=
- =?utf-8?B?YjFxREk2dTArZjVueEFoQTJFTmxxcWxnYnMzZmttZmM3YjE0SlpBZ1VRekJ5?=
- =?utf-8?B?TjZRZXVNbHFOYkcvajhFeTlYYkIvU0ZmSWFRRFRNZ1V6UkxqTU56czNkQ0pK?=
- =?utf-8?B?OTlsbHBudHVJN0VDd0tVSksya3ZLOXhBV3hnWUE0UFN3bS83ZjhCbHdONFcr?=
- =?utf-8?B?aWhWVUlRdlZBQWNkTHJFMGltcFZhT2FqcTJlU2pRZ2JnTWE2ODhZMGNFblcz?=
- =?utf-8?B?SHFBbmFGc2lIMW9GRXAwNDk4RTVzTVBleDlUTUd4TDNyQ2VTdEMzOGZQR3lX?=
- =?utf-8?B?VlpraWVVdjFMWnhKVWUyN0diNG1vb3prazF3R1hOYSs2N1BQSkh0UVpJcEx6?=
- =?utf-8?B?cnpFSUJlN3RhbU5nR0dvU3BPZWhCa2diTUxOcFN5SFdTNDRkSHFpYXFsZ1pQ?=
- =?utf-8?B?RU1ZZjdwQkJiajdSVlBkeTZaSlA1UHVybWlab05KcEFmR2U3TzJXM0czdzNI?=
- =?utf-8?B?eWFZWklXZ0JYU2UrUWVNSUZobDd5Z2t5anQvVy9FTzVFMWZDbGNsOVZJbXNq?=
- =?utf-8?B?aEpDRkU1UWxVNjRoclV5cjc3WFBsTzRvd21HNHZUOGR0a2RkR1ozakdvSmor?=
- =?utf-8?B?dHpVSmF6R210OUV2eTY0aU92MUpDMHcxMkZaYTBBb1REQklyY3p2OU93ankr?=
- =?utf-8?B?ajRPak1UOVMrQzZKYythYjlYRWZ0LzVJU0VkbWVSaWw1Y0EwMDRNa1FOLzJh?=
- =?utf-8?B?ODU5WG9lNHdpVC92dGd5eXB6bVNaUDhlRGUreG1WRjZ1Tmc3Tm5FWERqbVYy?=
- =?utf-8?B?aDBaai9oZ080ZHdJTFJRRFVQTjRMWnZKazcwYzhKeWZyZkx6TG9OZz09?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8725ee31-26f7-4fc7-5a51-08defe776098
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8284.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Aug 2026 04:56:21.0526
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8/1yOpB4gNHjfJ2VRk51AAJeC7J+ks6xSDUre40oRnVedkulslQ4XA5TDH9GgORiLFou5LZIuTMvE1nK0Av9HA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4186
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 4/5] arm64: dts: google: Add initial dts for
+ frankel/blazer/mustang
+To: Doug Anderson <dianders@chromium.org>
+Cc: Rob Herring <robh@kernel.org>, Conor Dooley <conor@kernel.org>,
+ Peter Griffin <peter.griffin@linaro.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, =?UTF-8?Q?Andr=C3=A9_Draszik?=
+ <andre.draszik@linaro.org>, Tudor Ambarus <tudor.ambarus@linaro.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Catalin Marinas
+ <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
+ Arnd Bergmann <arnd@arndb.de>,
+ Alexandre Belloni <alexandre.belloni@bootlin.com>,
+ Linus Walleij <linusw@kernel.org>, Drew Fustini <fustini@kernel.org>,
+ Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>,
+ "Guilherme G. Piccoli" <gpiccoli@igalia.com>, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+ soc@lists.linux.dev, Juan Yescas <jyescas@google.com>,
+ RD Babiera <rdbabiera@google.com>, Brian Norris <briannorris@google.com>,
+ William McVicker <willmcvicker@google.com>, kernel-team@android.com
+References: <20260722-contrib-pg-pixel10-initial-dts-v2-0-3abae9717feb@linaro.org>
+ <20260722-contrib-pg-pixel10-initial-dts-v2-4-3abae9717feb@linaro.org>
+ <20260724-dancing-skunk-of-novelty-72c1b8@quoll>
+ <CAD=FV=U0HUdjPcg+5Vx8_ag0zLd3CZx5w5SFr38p+YwRnC_G6w@mail.gmail.com>
+ <CAD=FV=V2+D1m5L-0d81W3E_ih2us-SrddeBUAJtMybpQons7Ww@mail.gmail.com>
+ <c0657108-1958-4c4c-b5f5-0eb24e81b2b4@kernel.org>
+ <CAD=FV=VY4AeAf=TMZfJYRo6C0iSqmL-P0GzxRvZHfnNsf+GnYQ@mail.gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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
+In-Reply-To: <CAD=FV=VY4AeAf=TMZfJYRo6C0iSqmL-P0GzxRvZHfnNsf+GnYQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+On 19/08/2026 19:04, Doug Anderson wrote:
+> Hi,
+> 
+> On Wed, Aug 19, 2026 at 2:02 AM Krzysztof Kozlowski <krzk@kernel.org> wrote:
+>>
+>>> Is there some other documentation saying "aliases == evil" that I
+>>> missed? Maybe some email thread we're all supposed to have read?
+>>
+>> A lot of rules are implied by other rules and this one, how Linus stated
+>> in other thread, might be implied by no-Linuxisms as you want ordering
+>> or stable naming of Linux /dev entries.
+>>
+>> I understand your reason is actually different than above, but your code
+>> does not suggest that.
+>>
+>> Anyway, if you wanted to have aliases as ABI, it would have to be
+>> documented. You cannot send post-factum DTS and say "we already use it".
+>> Every ABI must be documented before usage.
+> 
+> I'm happy to document. Can you please point to how / where I would
+
+Description of:
+Documentation/devicetree/bindings/ufs/ufs-common.yaml
+And obviously, as with every binding/ABI, you also need open-source,
+upstream user of this.
+
+> document this? As far as I can tell, no aliases are documented today,
+
+git grep disagrees with you, e.g. second paragraph of serial.yaml.
+
+> so this would be the first. If you could give me a hint of where you'd
+> expect it, that would probably be better than me guessing.
+> 
+> 
+>> And this is what my comment was about: "they MUST talk
+>> with upstream open source maintainers before they ship such ABI."
+>>
+>> And no, sending such DTS in your v1 is not documenting ABI. Does not count.
+> 
+> Sure, sending a DTS isn't documenting, but it _is_ talking. Discussion
+> in responses to patches is where we figure things out. For that to
+> work, reviewers need to point out problems and then we need to have a
+> continued discussion until we can figure out a solution. When that
+> discussion just stops, it's incredibly hard to make progress.
+> 
+> 
+>>> thus implicitly provides an "instance ID"?  Would it be OK if I
+>>> changed my alias name to "ufs-primary" or "ufs-internal" or "ufs-boot"
+>>> or just "ufs"? We're not using the alias to get an instance ID, but
+>>> when I added the alias I followed the pattern of all the other aliases
+>>> and put an number at the end.
+>>>
+>>> I'm happy to attempt to fix our bootloader using whatever scheme
+>>> upstream suggests. I'm trying to "talk to upstream" as requested, but
+>>> for it to work I need upstream to talk back. :-)
+>>
+>> Make your case - what is the purpose of it? Boot device? Then you have
+>> "chosen" node for stuff between firmware and OS. There is even a
+>> property called "bootsource". If this is not boot device, but some
+>> calibration data for ONE given instance of IP, regardless whether you
+>> boot from it or not, then I find such case as border-base and not worth
+>> implementing, because basically one can come one month later with "I
+>> need 1000 aliases because my bootloader is patching up every device
+>> node".
+> 
+> I think I've presened my problem fairly concretely [1]. If you hate
+
+There is no description of the problem at [1], except "bootloader adds
+the same type of calibration data".
+
+So I repeat my questions: to every UFS node? To every node? To one UFS
+node (but how do you guarantee that?)?
+
+I gave you two solutions, depending on actual upstream need of this. If
+you have the second case - so not the boot device - then you basically
+want to re-implement overlays which you cannot. Use overlays, which
+gives you nice stable and build-time verifiable label/phandle.
 
 
 
-On 14-08-2026 00:07, Steffen Dirkwinkel wrote:
-> From: Steffen Dirkwinkel <s.dirkwinkel@beckhoff.com>
-> 
-> This ID is found on AMD V1202B.
-> Like the AMDI0022 [1] this one works with the same match and the existing driver.
-> Tested with a loopback cable.
-> 
-> [1] commit 3c35d2a960c0 ("serial: 8250_dw: Add device HID for new AMD UART controller")
-> 
-> Signed-off-by: Steffen Dirkwinkel <s.dirkwinkel@beckhoff.com>
-
-Looked at AMD's ACPI reservation table and this looks right to me.
-
-Acked-by: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
-
-> ---
->  drivers/acpi/acpi_apd.c           | 1 +
->  drivers/tty/serial/8250/8250_dw.c | 1 +
->  2 files changed, 2 insertions(+)
-> 
-> diff --git a/drivers/acpi/acpi_apd.c b/drivers/acpi/acpi_apd.c
-> index 008bd0552cb7..562be86aa272 100644
-> --- a/drivers/acpi/acpi_apd.c
-> +++ b/drivers/acpi/acpi_apd.c
-> @@ -250,6 +250,7 @@ static const struct acpi_device_id acpi_apd_device_ids[] = {
->  	{ "AMDI0015", APD_ADDR(wt_i3c_desc) },
->  	{ "AMDI0019", APD_ADDR(wt_i2c_desc) },
->  	{ "AMDI0020", APD_ADDR(cz_uart_desc) },
-> +	{ "AMDI0021", APD_ADDR(cz_uart_desc) },
->  	{ "AMDI0022", APD_ADDR(cz_uart_desc) },
->  	{ "HYGO0010", APD_ADDR(wt_i2c_desc) },
->  #endif
-> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-> index 5fba913f3301..214d3e7ae628 100644
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -910,6 +910,7 @@ static const struct acpi_device_id dw8250_acpi_match[] = {
->  	{ "8086228A", (kernel_ulong_t)&dw8250_dw_apb },
->  	{ "AMD0020", (kernel_ulong_t)&dw8250_dw_apb },
->  	{ "AMDI0020", (kernel_ulong_t)&dw8250_dw_apb },
-> +	{ "AMDI0021", (kernel_ulong_t)&dw8250_dw_apb },
->  	{ "AMDI0022", (kernel_ulong_t)&dw8250_dw_apb },
->  	{ "APMC0D08", (kernel_ulong_t)&dw8250_apmc0d08 },
->  	{ "BRCM2032", (kernel_ulong_t)&dw8250_dw_apb },
-> 
-> ---
-> base-commit: 3aa1dcaa4f6f5ae08936491e08bd456f331f2d40
-> change-id: 20260813-b4-raven-ridge-uart-62b1ef1fc246
-> 
-> Best regards,
-> --  
-> Steffen Dirkwinkel <s.dirkwinkel@beckhoff.com>
-> 
-
+Best regards,
+Krzysztof
