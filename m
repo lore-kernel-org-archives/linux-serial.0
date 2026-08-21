@@ -1,121 +1,141 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EA46395240;
-	Fri, 21 Aug 2026 08:06:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCACF3B1EE2;
+	Fri, 21 Aug 2026 08:35:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787299595; cv=none; b=jwiBpvCaKlfwxVx45zs3VdPsZJteUmt5M4ImBnWFyoWaBI7hg5IyEUz1fUO1FQsk7h87wUvjilHDibN+LteIXRou5LzjmhM6uEsmD1jftAkuJF0PtcUevSci8/oqd+QIVcvadofWXo/oB/JZBOdn0pdB9ezOqgfjtHkwBQfJXRs=
+	t=1787301361; cv=none; b=YlOR4UrgTH17CrPHVXSmCVUCYOX8f0/j7MytLnZA3jOjS9gdYnw+iYyYt/1l3Oeto6jAlaqoP2d5LeeXM7m5TK9+t+Tgw01kD7WXG1MG/hHEo6K75ojgAORRW2Blip/+ee1m+OmfTUrli1HdoFvHkGgWkVaohbvKl2mXEfgHwrw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787299595; c=relaxed/simple;
-	bh=0rmn31QUnFJH5V1ktkeKPXErn8mJHDPcaOeuxoHOv8Q=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=I9W9rGUJ5sLz5Lp7KXZS6cTfHjLhPGF5h0Vlx19c7Z2RNmax02xJmu/6uXrIGYCJrHt28HxAW+aakkLjFMOJ9S/Yk/Yb4dZoU2O3NxNdchImAAJ8DRZF4b9xk2RAQnLHyWROGytsWAo0ZdCyaIICVfPmmrs1K5GQlS/XDNDYdDg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=WhOTpmHL; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qualcomm.com
+	s=arc-20240116; t=1787301361; c=relaxed/simple;
+	bh=EJYE5osII66Y2HveI+uu49t7RXfKKfg3eaJiiA93NT8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=mTxlu8oESbVv/lEEbEAihakHnMTyDcGwGYNBR/nZw6vEZR2WQaE5mB0eDl6MsBqcx653tvsGGfDESoNPKJwZArXlrLU5cbhd2qkMMHFdKd+7LuCINn9w/465CcFYLMlagsmO5JOE0nHPNY8yEoy2CLahVvzRJ9LhSOXospqyeQI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jJ8tdoi1; arc=none smtp.client-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="WhOTpmHL"
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67L5TjQ61027447;
-	Fri, 21 Aug 2026 08:06:31 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	NbPgSc6wquWI+IJZHFhY/D+nJC/hRUQ33D6SqCCd09s=; b=WhOTpmHLLHY3WPpZ
-	rRQu3n0q0DV5NF9VzfoKzJwhxP2lXbFn8akKZuSLXf+ymIwx88a1azfW/SbWPeF9
-	18/+oOKn1I73yX26+ND1pdpSS3hIk5vkbzS++IDfXupigodlJOB3Ge2cSsH7j4uQ
-	RHrII7u0Wv9D543dejoq4uY+ncvL5S79Sg5E6+MCuJFJdkIa9HmKTCeuK43bY7nR
-	QWQqGe7SQERTmLOGTrOGtaIF51BzwyxRezhCVGhn6FyVkNJXtnTD3BQSGQXcE5sg
-	rQFrWHAqxTZWwZ2ZHZpgDmWfrX2IMkU5TQUhrJPe4V8boxGuoL36w4moJHe9emPE
-	+sFuog==
-Received: from aptaippmta02.qualcomm.com (tpe-colo-wan-fw-bordernet.qualcomm.com [103.229.16.4])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4g6d06978m-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 21 Aug 2026 08:06:30 +0000 (GMT)
-Received: from pps.filterd (APTAIPPMTA02.qualcomm.com [127.0.0.1])
-	by APTAIPPMTA02.qualcomm.com (8.18.1.7/8.18.1.7) with ESMTP id 67L86SeS010730;
-	Fri, 21 Aug 2026 08:06:28 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-	by APTAIPPMTA02.qualcomm.com (PPS) with ESMTPS id 4g2h6jq93k-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 21 Aug 2026 08:06:28 +0000 (GMT)
-Received: from APTAIPPMTA02.qualcomm.com (APTAIPPMTA02.qualcomm.com [127.0.0.1])
-	by pps.reinject (8.18.1.12/8.18.1.12) with ESMTP id 67L86SA0010724;
-	Fri, 21 Aug 2026 08:06:28 GMT
-Received: from bt-iot-sh05-lnx.qualcomm.com (smtphost-taiwan.qualcomm.com [10.249.136.33])
-	by APTAIPPMTA02.qualcomm.com (PPS) with ESMTPS id 67L86SQg010723
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 21 Aug 2026 08:06:28 +0000 (GMT)
-Received: by bt-iot-sh05-lnx.qualcomm.com (Postfix, from userid 4260555)
-	id 3DED2410D3; Fri, 21 Aug 2026 16:06:27 +0800 (CST)
-From: Xin Chen <xin.chen2@oss.qualcomm.com>
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Xin Chen <xin.chen2@oss.qualcomm.com>, jirislaby@kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        liulzhao@qti.qualcomm.com, cheng.jiang@oss.qualcomm.com,
-        cxin@qti.qualcomm.com
-Subject: Re: [PATCH v1] tty: n_tty: use kvzalloc/kvfree for line discipline data
-Date: Fri, 21 Aug 2026 16:06:27 +0800
-Message-ID: <20260821080627.3935370-1-xin.chen2@oss.qualcomm.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <2026081851-krypton-shady-b18d@gregkh>
-References: <2026081851-krypton-shady-b18d@gregkh>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jJ8tdoi1"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1787301360; x=1818837360;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=EJYE5osII66Y2HveI+uu49t7RXfKKfg3eaJiiA93NT8=;
+  b=jJ8tdoi1zMht0om2NbYCpNBHhnyUJCIONDs+CtgM3FgCYFkyt0s6W6zP
+   HPEWeM9hhk566wpjudUVgN2kVun/RqJxqrIb+Flq1FHrhoychad17XvZ4
+   MMRUX4T0Ynb+qhSPVrlsNXhft9VmYTgxkD6Nto/Gpr6HKbAJdEiHIBrFu
+   pueJTO7aUgs3uKgtHdAz1Z1nfqYXITAUuVg3BQm4P8yZo7l6GgNcjbl4T
+   rNjulrMcmQ2oXtmh4yg/TJWnSHo/dF/V89sSsUPBUCgOoAd95DKujWaS9
+   YxbDwniilgwDB8KQEdxSE4yWXuswjk2mQpbgbensdmeypqrONj3TvVVNi
+   Q==;
+X-CSE-ConnectionGUID: nSAq3SgOTfW63Xf1NcCy9w==
+X-CSE-MsgGUID: zAxAajugTTurGyqn102/YQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11881"; a="87865763"
+X-IronPort-AV: E=Sophos;i="6.25,234,1779174000"; 
+   d="scan'208";a="87865763"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2026 01:35:59 -0700
+X-CSE-ConnectionGUID: XwtK2wYaT4+DOIFOe8HJ6g==
+X-CSE-MsgGUID: NUDoPnBaSYOfThemt2JFJw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,234,1779174000"; 
+   d="scan'208";a="291125078"
+Received: from lkp-server01.sh.intel.com (HELO 6eda058d650d) ([10.239.97.150])
+  by fmviesa001.fm.intel.com with ESMTP; 21 Aug 2026 01:35:56 -0700
+Received: from kbuild by 6eda058d650d with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1wxKjC-00000000pbx-1BME;
+	Fri, 21 Aug 2026 08:35:54 +0000
+Date: Fri, 21 Aug 2026 16:35:29 +0800
+From: kernel test robot <lkp@intel.com>
+To: Xin Chen <xin.chen2@oss.qualcomm.com>, gregkh@linuxfoundation.org,
+	jirislaby@kernel.org
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	stable@vger.kernel.org, liulzhao@qti.qualcomm.com,
+	cheng.jiang@oss.qualcomm.com, cxin@qti.qualcomm.com,
+	Xin Chen <xin.chen2@oss.qualcomm.com>
+Subject: Re: [PATCH v2] tty: n_tty: use kvzalloc/kvfree for line discipline
+ data
+Message-ID: <202608211618.rZcRAXep-lkp@intel.com>
+References: <20260818070324.136726-1-xin.chen2@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-QCInternal: smtphost
-X-QCInternal: smtphost
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODIxMDA1OCBTYWx0ZWRfXzfmo7DPJLKnB
- ShZI7KN7605kyA0eJlxzluyg6QX4UQSapodxiwQOa0s7i44A/W//eT7LzWIKC3tEjocoxiTw69V
- NJaiNf1E7knZziXj3AqpAXLYzqg8BiOaX4I9Mv+IDqNGSo8j3sVKie6QgNG1u65gXllvz3txakX
- +7NuJnrcTPydn51UGuuo9TBFdMl3zZAb3sYN6UFcj++K2iUDieeOFZBODErrVhVCp5jWql8SrtG
- N0+hAYPVkMzzLx9Z7icqq7Z0CDxbx2T6B/qDwWoxgwoPJop8JF7NsHzvB4ghrnYKYyeCclITSxm
- bJaZ7MqKSnw7KNqt19+O8j1m8k0FOcqfHjx51VjqQ8quZvINd7iQWEyulAZ/jO4bGJxjmnJ0GSR
- QjPnmMPKS/QZUjApiSfLp4Xz8FEYvn0d1P4DZ8mGPsdtl6tvGsvYDgKigo9G6FLkuvDW4PIsyoo
- /9w6vbIG6EbE1JJrRBA==
-X-Proofpoint-Spam-Info: AW1haW4tMjYwODIxMDA1OCBTYWx0ZWRfXxd0174XCGhpG
- IFIXUmY6Rxx3+KEXpBLh9AGiMhdsrYc41Dxp84fXxQkI+n9ljz3AAn4ZeuqS8224k+yqgO9FzKd
- 63wCv0pLPIkIrVXsg+Cv+N8DLxkzI40=
-X-Authority-Analysis: v=2.4 cv=DdQnbPtW c=1 sm=1 tr=0 ts=6a880707 cx=c_pps
- a=nuhDOHQX5FNHPW3J6Bj6AA==:117 a=nuhDOHQX5FNHPW3J6Bj6AA==:17
- a=IkcTkHD0fZMA:10 a=Sv0fKeRqtYgA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=u7WPNUs3qKkmUXheDGA7:22 a=_K5XuSEh1TEqbUxoQ0s3:22 a=VwQbUJbxAAAA:8
- a=EUspDBNiAAAA:8 a=9ZP8Lzs8rE8-CPWomJsA:9 a=QEXdDO2ut3YA:10
-X-Proofpoint-ORIG-GUID: xzL5V7Zw7XkHYIRmmrB0FbARvE2AN_iN
-X-Proofpoint-GUID: xzL5V7Zw7XkHYIRmmrB0FbARvE2AN_iN
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-08-21_02,2026-08-20_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- spamscore=0 clxscore=1015 priorityscore=1501 phishscore=0 bulkscore=0
- impostorscore=0 suspectscore=0 adultscore=0 lowpriorityscore=0 malwarescore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608210058
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260818070324.136726-1-xin.chen2@oss.qualcomm.com>
 
-On Thu, Aug 21, 2026, Greg KH wrote:
-> But it's not consuming them "unnecessarily" as the memory is needed.
-> Why not fix the root problem here of having this be called so many times
-> that you are running out of memory?
->
-> And why isn't memory being reclaimed properly if we do not have any left
-> in that free list?  The allocation can sleep, so it should be always
-> succeeding if the system isn't truely out of memory, as you imply it is
-> not.
+Hi Xin,
 
-You raise valid points. I am abandoning this patch.
+kernel test robot noticed the following build errors:
 
-After further investigation, I followed your suggestion and fixed the
-root cause in the Bluetooth layer instead. That fix has since been
-applied upstream:
+[auto build test ERROR on tty/tty-testing]
+[also build test ERROR on tty/tty-next tty/tty-linus linus/master v7.2 next-20260819]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-https://lore.kernel.org/all/20260819135321.1444185-1-xin.chen2@oss.qualcomm.com/
+url:    https://github.com/intel-lab-lkp/linux/commits/Xin-Chen/tty-n_tty-use-kvzalloc-kvfree-for-line-discipline-data/20260818-150324
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+patch link:    https://lore.kernel.org/r/20260818070324.136726-1-xin.chen2%40oss.qualcomm.com
+patch subject: [PATCH v2] tty: n_tty: use kvzalloc/kvfree for line discipline data
+config: x86_64-kexec (https://download.01.org/0day-ci/archive/20260821/202608211618.rZcRAXep-lkp@intel.com/config)
+compiler: clang version 22.1.3 (https://github.com/llvm/llvm-project e9846648fd6183ee6d8cbdb4502213fcf902a211)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260821/202608211618.rZcRAXep-lkp@intel.com/reproduce)
 
-Thanks for the review.
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202608211618.rZcRAXep-lkp@intel.com/
 
-Xin
+All errors (new ones prefixed by >>):
+
+>> drivers/tty/n_tty.c:1890:8: error: incompatible pointer types assigning to 'struct n_tty_data *' from 'typeof (ldata) *' (aka 'struct n_tty_data **'); dereference with * [-Wincompatible-pointer-types]
+    1890 |         ldata = kvzalloc_obj(ldata);
+         |               ^ ~~~~~~~~~~~~~~~~~~~
+         |                 *(                 )
+   1 error generated.
+
+
+vim +1890 drivers/tty/n_tty.c
+
+  1876	
+  1877	/**
+  1878	 * n_tty_open		-	open an ldisc
+  1879	 * @tty: terminal to open
+  1880	 *
+  1881	 * Called when this line discipline is being attached to the terminal device.
+  1882	 * Can sleep. Called serialized so that no other events will occur in parallel.
+  1883	 * No further open will occur until a close.
+  1884	 */
+  1885	static int n_tty_open(struct tty_struct *tty)
+  1886	{
+  1887		struct n_tty_data *ldata;
+  1888	
+  1889		/* Currently a malloc failure here can panic */
+> 1890		ldata = kvzalloc_obj(ldata);
+  1891		if (!ldata)
+  1892			return -ENOMEM;
+  1893	
+  1894		ldata->overrun_time = jiffies;
+  1895		mutex_init(&ldata->atomic_read_lock);
+  1896		mutex_init(&ldata->output_lock);
+  1897	
+  1898		tty->disc_data = ldata;
+  1899		tty->closing = 0;
+  1900		/* indicate buffer work may resume */
+  1901		clear_bit(TTY_LDISC_HALTED, &tty->flags);
+  1902		n_tty_set_termios(tty, NULL);
+  1903		tty_unthrottle(tty);
+  1904		return 0;
+  1905	}
+  1906	
+
+--
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
