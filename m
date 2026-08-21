@@ -1,225 +1,121 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FCFD38E8BF;
-	Fri, 21 Aug 2026 06:51:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EA46395240;
+	Fri, 21 Aug 2026 08:06:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787295070; cv=none; b=JK0BBKKaF4hS59Tt1sAvqp37U/BdOmU6ZYE82YxCsWoxsKECInoG2UYvpqWEvrDUzGKysrv+SgzLeXzL3QCaS7ugSDxYRWmhZwSokhp7EPHcKifwVGVI1JyhfNJKV/D3KShnnRCMAOnEa5hR3PFbKEvsdvuhpQLhEu0X9eiRJ/Q=
+	t=1787299595; cv=none; b=jwiBpvCaKlfwxVx45zs3VdPsZJteUmt5M4ImBnWFyoWaBI7hg5IyEUz1fUO1FQsk7h87wUvjilHDibN+LteIXRou5LzjmhM6uEsmD1jftAkuJF0PtcUevSci8/oqd+QIVcvadofWXo/oB/JZBOdn0pdB9ezOqgfjtHkwBQfJXRs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787295070; c=relaxed/simple;
-	bh=m3193OZFBal0WsEyZHzaF6/vy0omLw97GZP0jJP+5ek=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=iuggalqUnUrSUSHbDmHDuEfPodcr5G7UkotN2N6cqEIQFgWh8d8lwEhsnYOkz/dEfWkrpF8zG7J2fhdwrdb9ptkcJzqRo9yGBif/kjVQwxpKN6G1fQbfF+3YY9IB6fXs7R/Pd5wPMGFl1l0nnaHO8nzo9sz9NgKitoZTdpXZLKw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lOWDkQe0; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1787299595; c=relaxed/simple;
+	bh=0rmn31QUnFJH5V1ktkeKPXErn8mJHDPcaOeuxoHOv8Q=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=I9W9rGUJ5sLz5Lp7KXZS6cTfHjLhPGF5h0Vlx19c7Z2RNmax02xJmu/6uXrIGYCJrHt28HxAW+aakkLjFMOJ9S/Yk/Yb4dZoU2O3NxNdchImAAJ8DRZF4b9xk2RAQnLHyWROGytsWAo0ZdCyaIICVfPmmrs1K5GQlS/XDNDYdDg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=WhOTpmHL; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lOWDkQe0"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13C931F000E9;
-	Fri, 21 Aug 2026 06:50:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787295068;
-	bh=cNce5NTp3bzmktGv/kwxmMrsz/kWQy7fuPujgbA0jpY=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=lOWDkQe0ThtRfw5LTSHUWMJF1Cg4m1Na/jFGjAR2smnFs3nVn1DmG1SnAGT2rD3pD
-	 tQ0BnnkkOouH0tyPIMZnvx7gGSvTf+bz+iuvaeu/6pGwrIll1b3woRotSn3XpLKNX8
-	 PxWiwQU7a7Vl3/+P8UChuXWn8/9RIN/e0dE0Ij+r5hqy4pIN3ksNfRn5m+7SjVG9aA
-	 fmHf6wIXvfVJZJ62nDl1SwCIA21l0msOqTCH9zKVTI6IHNfKkiNJ6jaFAi+e2IBFkp
-	 aaSWL8gBmnV9UD2lS0lkd69UfeCfZHxM+MFp7ORdqESWpF3Sbuy3uAnWeFeP4T64u3
-	 uPrCk57oE5dEw==
-Message-ID: <d6685094-b241-415e-9e56-d2fba75f3269@kernel.org>
-Date: Fri, 21 Aug 2026 08:50:56 +0200
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="WhOTpmHL"
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67L5TjQ61027447;
+	Fri, 21 Aug 2026 08:06:31 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	NbPgSc6wquWI+IJZHFhY/D+nJC/hRUQ33D6SqCCd09s=; b=WhOTpmHLLHY3WPpZ
+	rRQu3n0q0DV5NF9VzfoKzJwhxP2lXbFn8akKZuSLXf+ymIwx88a1azfW/SbWPeF9
+	18/+oOKn1I73yX26+ND1pdpSS3hIk5vkbzS++IDfXupigodlJOB3Ge2cSsH7j4uQ
+	RHrII7u0Wv9D543dejoq4uY+ncvL5S79Sg5E6+MCuJFJdkIa9HmKTCeuK43bY7nR
+	QWQqGe7SQERTmLOGTrOGtaIF51BzwyxRezhCVGhn6FyVkNJXtnTD3BQSGQXcE5sg
+	rQFrWHAqxTZWwZ2ZHZpgDmWfrX2IMkU5TQUhrJPe4V8boxGuoL36w4moJHe9emPE
+	+sFuog==
+Received: from aptaippmta02.qualcomm.com (tpe-colo-wan-fw-bordernet.qualcomm.com [103.229.16.4])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4g6d06978m-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 21 Aug 2026 08:06:30 +0000 (GMT)
+Received: from pps.filterd (APTAIPPMTA02.qualcomm.com [127.0.0.1])
+	by APTAIPPMTA02.qualcomm.com (8.18.1.7/8.18.1.7) with ESMTP id 67L86SeS010730;
+	Fri, 21 Aug 2026 08:06:28 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+	by APTAIPPMTA02.qualcomm.com (PPS) with ESMTPS id 4g2h6jq93k-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 21 Aug 2026 08:06:28 +0000 (GMT)
+Received: from APTAIPPMTA02.qualcomm.com (APTAIPPMTA02.qualcomm.com [127.0.0.1])
+	by pps.reinject (8.18.1.12/8.18.1.12) with ESMTP id 67L86SA0010724;
+	Fri, 21 Aug 2026 08:06:28 GMT
+Received: from bt-iot-sh05-lnx.qualcomm.com (smtphost-taiwan.qualcomm.com [10.249.136.33])
+	by APTAIPPMTA02.qualcomm.com (PPS) with ESMTPS id 67L86SQg010723
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 21 Aug 2026 08:06:28 +0000 (GMT)
+Received: by bt-iot-sh05-lnx.qualcomm.com (Postfix, from userid 4260555)
+	id 3DED2410D3; Fri, 21 Aug 2026 16:06:27 +0800 (CST)
+From: Xin Chen <xin.chen2@oss.qualcomm.com>
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Xin Chen <xin.chen2@oss.qualcomm.com>, jirislaby@kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        liulzhao@qti.qualcomm.com, cheng.jiang@oss.qualcomm.com,
+        cxin@qti.qualcomm.com
+Subject: Re: [PATCH v1] tty: n_tty: use kvzalloc/kvfree for line discipline data
+Date: Fri, 21 Aug 2026 16:06:27 +0800
+Message-ID: <20260821080627.3935370-1-xin.chen2@oss.qualcomm.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <2026081851-krypton-shady-b18d@gregkh>
+References: <2026081851-krypton-shady-b18d@gregkh>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 4/5] arm64: dts: google: Add initial dts for
- frankel/blazer/mustang
-To: Doug Anderson <dianders@chromium.org>
-Cc: Rob Herring <robh@kernel.org>, Conor Dooley <conor@kernel.org>,
- Peter Griffin <peter.griffin@linaro.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, =?UTF-8?Q?Andr=C3=A9_Draszik?=
- <andre.draszik@linaro.org>, Tudor Ambarus <tudor.ambarus@linaro.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Catalin Marinas
- <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
- Arnd Bergmann <arnd@arndb.de>,
- Alexandre Belloni <alexandre.belloni@bootlin.com>,
- Linus Walleij <linusw@kernel.org>, Drew Fustini <fustini@kernel.org>,
- Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>,
- "Guilherme G. Piccoli" <gpiccoli@igalia.com>, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
- soc@lists.linux.dev, Juan Yescas <jyescas@google.com>,
- RD Babiera <rdbabiera@google.com>, Brian Norris <briannorris@google.com>,
- William McVicker <willmcvicker@google.com>, kernel-team@android.com
-References: <20260722-contrib-pg-pixel10-initial-dts-v2-0-3abae9717feb@linaro.org>
- <20260722-contrib-pg-pixel10-initial-dts-v2-4-3abae9717feb@linaro.org>
- <20260724-dancing-skunk-of-novelty-72c1b8@quoll>
- <CAD=FV=U0HUdjPcg+5Vx8_ag0zLd3CZx5w5SFr38p+YwRnC_G6w@mail.gmail.com>
- <CAD=FV=V2+D1m5L-0d81W3E_ih2us-SrddeBUAJtMybpQons7Ww@mail.gmail.com>
- <c0657108-1958-4c4c-b5f5-0eb24e81b2b4@kernel.org>
- <CAD=FV=VY4AeAf=TMZfJYRo6C0iSqmL-P0GzxRvZHfnNsf+GnYQ@mail.gmail.com>
- <56db332f-a18e-4a9e-be9d-67d2e25c3666@kernel.org>
- <CAD=FV=WUMKGRUbAyd7XFFc-NGoJEKRwu4MaUnEQUDB9Mq6YYXA@mail.gmail.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
- cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
- JMp7PSyMPzpUXfU12yfcRYVEMQrmplNZssmYhiTeVicuOOypWugZKVLGNm0IweVCaZ/DJDIH
- gNbpvVwjcKYrx85m9cBVEBUGaQP6AT7qlVCkrf50v8bofSIyVa2xmubbAwwFA1oxoOusjPIE
- J3iadrwpFvsZjF5uHAKS+7wHLoW9hVzOnLbX6ajk5Hf8Pb1m+VH/E8bPBNNYKkfTtypTDUCj
- NYcd27tjnXfG+SDs/EXNUAIRefCyvaRG7oRYF3Ec+2RgQDRnmmjCjoQNbFrJvJkFHlPeHaeS
- BosGY+XWKydnmsfY7SSnjAzLUGAFhLd/XDVpb1Een2XucPpKvt9ORF+48gy12FA5GduRLhQU
- vK4tU7ojoem/G23PcowM1CwPurC8sAVsQb9KmwTGh7rVz3ks3w/zfGBy3+WmLg++C2Wct6nM
- Pd8/6CBVjEWqD06/RjI2AnjIq5fSEH/BIfXXfC68nMp9BZoy3So4ZsbOlBmtAPvMYX6U8VwD
- TNeBxJu5Ex0Izf1NV9CzC3nNaFUYOY8KfN01X5SExAoVTr09ewARAQABzSVLcnp5c3p0b2Yg
- S296bG93c2tpIDxrcnprQGtlcm5lbC5vcmc+wsGPBBMBCgA5AhsDBgsJCAcDAgYVCAIJCgsE
- FgIDAQIeAQIXgBYhBJvQfg4MUfjVlne3VBuTQ307QWKbBQJp2mE8AAoJEBuTQ307QWKbeaIP
- /ihHTkTW4KsN/DQ945JJbyu5tI0J80Wue7QyyLPglyKfhgb5cLLNPpOC8cCIJsc7+W3i2P38
- s2c1cOH6CYGE7E9ur3Vfme8NW2S2I/Z8VC7bZnzyS23wT17LrsdS/qCpx4o8U+pt/xdXDKph
- EGRYrIEmMpUWvyYzyYKGIe25FtaayIIKpq8eZYyFcp2f/sG5IkOW5uZzHPMPdcm87jU7fyuQ
- rAU2vx9r+ulUfQ/q9Z2roC/ode3l7t2pN7BCBCsUDp6JCrUyZrtT1e7EbA0ZRP3aOBNk2P2E
- DQOgJGjGdO5Yx2Y9LFtltu6JbsBJHi1syGRX3AtQYOMc4Y1WGoeZJmMlvKj2ZqqXNkcWi2DS
- IQEWB0uW6CqFsBBIMGDa+6OzdaVO/uAVXWDWml02Men3CILdI1MbVjoh8ECqYUY7OQ+JJvNN
- vnliuq5WM3Ghd3jg/LZZrxXjdIginRHFQCjIJYLKpLZWm1/iDFedcfzqRNYmTtqscdCNHW41
- oT3Z7BmO9xwdjuwBS6nmS6JJwkbf5Ot2QR4pB/DRU7ZwjT1qHe+9r9gF32wXVQatHNGK/VVu
- sfwOnkdxCWkp/qb2gdQRmZh+SedStWshigH6sNfuHBloF/q+hjMRc8b2m326OZdrbSHwY1Sz
- vti8Hn7n8NjdHO9LKB7BIdjkA9DA5WsqOuVCzsFNBFVDXDQBEADNkrQYSREUL4D3Gws46JEo
- Z9HEQOKtkrwjrzlw/tCmqVzERRPvz2Xg8n7+HRCrgqnodIYoUh5WsU84N03KlLueMNsWLJBv
- BaubYN4JuJIdRr4dS4oyF1/fQAQPHh8Thpiz0SAZFx6iWKB7Qrz3OrGCjTPcW6eiOMheesVS
- 5hxietSmlin+SilmIAPZHx7n242u6kdHOh+/SyLImKn/dh9RzatVpUKbv34eP1wAGldWsRxb
- f3WP9pFNObSzI/Bo3kA89Xx2rO2roC+Gq4LeHvo7ptzcLcrqaHUAcZ3CgFG88CnA6z6lBZn0
- WyewEcPOPdcUB2Q7D/NiUY+HDiV99rAYPJztjeTrBSTnHeSBPb+qn5ZZGQwIdUW9YegxWKvX
- XHTwB5eMzo/RB6vffwqcnHDoe0q7VgzRRZJwpi6aMIXLfeWZ5Wrwaw2zldFuO4Dt91pFzBSO
- IpeMtfgb/Pfe/a1WJ/GgaIRIBE+NUqckM+3zJHGmVPqJP/h2Iwv6nw8U+7Yyl6gUBLHFTg2h
- YnLFJI4Xjg+AX1hHFVKmvl3VBHIsBv0oDcsQWXqY+NaFahT0lRPjYtrTa1v3tem/JoFzZ4B0
- p27K+qQCF2R96hVvuEyjzBmdq2esyE6zIqftdo4MOJho8uctOiWbwNNq2U9pPWmu4vXVFBYI
- GmpyNPYzRm0QPwARAQABwsF2BBgBCgAgAhsMFiEEm9B+DgxR+NWWd7dUG5NDfTtBYpsFAmna
- YUkACgkQG5NDfTtBYptX+BAApg32CkxwNucNEi8WfWA8oKkW0y8YDuY6ORMo9FWNGiT/OTy0
- vyJrLocrpn86zwfjVp+eCrssPYh8eqJfnWqmYv6ACQtHPYzPZQ3mSo8H97Z01oUxITzCxpXm
- ZkLgPIqtDPcC2E3dPM/fVxcyowM8XsaMA9wcsaUYrta8toOq2b9tKcjleKMfMrm0gQ9u7wUc
- QbLkwj6TCLOwucb07GXzLTNF9PZmaDUpKAZjMjmrW+le+SFvQbhamx0rxLWPR0NWntXpbCn+
- +ACch03p/JyTBVktxFsFyCt7pTPE1kEaeuXBTe/a2D9iQvRxRW19LvuO2e59/u1wYUiH/orz
- wbIC2S4dBsPAPihL3ztOU1yE86GPyQtSE0kU+/7snnLt4QGi6PChf3t5gnNjAzjUUovO8rgI
- c+5yN5heq5loYHgK6OQ9OlHzsPHO9e9MOQcKlFycs1pyijFGzDwdNUm/SchK8iWT2QApTx4A
- K9bCVaboTA2T77QYkRcRJYSsO1alGX0ome/hMLD1daXlkrNUp1HWa3K4iytLRXjCSIorWiGs
- n+q3krnpXu3TFkA8qtOFZMdnIiFuiq1yLT8hptsV5xh1TA2nsVvSYiaCr3q4s4BKjS/KrLDb
- qoxzw8ISjdUp4pA85vb6YLCmb39NgidD+7PmAr65lBNveIFynTgsja1rRQ4=
-In-Reply-To: <CAD=FV=WUMKGRUbAyd7XFFc-NGoJEKRwu4MaUnEQUDB9Mq6YYXA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODIxMDA1OCBTYWx0ZWRfXzfmo7DPJLKnB
+ ShZI7KN7605kyA0eJlxzluyg6QX4UQSapodxiwQOa0s7i44A/W//eT7LzWIKC3tEjocoxiTw69V
+ NJaiNf1E7knZziXj3AqpAXLYzqg8BiOaX4I9Mv+IDqNGSo8j3sVKie6QgNG1u65gXllvz3txakX
+ +7NuJnrcTPydn51UGuuo9TBFdMl3zZAb3sYN6UFcj++K2iUDieeOFZBODErrVhVCp5jWql8SrtG
+ N0+hAYPVkMzzLx9Z7icqq7Z0CDxbx2T6B/qDwWoxgwoPJop8JF7NsHzvB4ghrnYKYyeCclITSxm
+ bJaZ7MqKSnw7KNqt19+O8j1m8k0FOcqfHjx51VjqQ8quZvINd7iQWEyulAZ/jO4bGJxjmnJ0GSR
+ QjPnmMPKS/QZUjApiSfLp4Xz8FEYvn0d1P4DZ8mGPsdtl6tvGsvYDgKigo9G6FLkuvDW4PIsyoo
+ /9w6vbIG6EbE1JJrRBA==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODIxMDA1OCBTYWx0ZWRfXxd0174XCGhpG
+ IFIXUmY6Rxx3+KEXpBLh9AGiMhdsrYc41Dxp84fXxQkI+n9ljz3AAn4ZeuqS8224k+yqgO9FzKd
+ 63wCv0pLPIkIrVXsg+Cv+N8DLxkzI40=
+X-Authority-Analysis: v=2.4 cv=DdQnbPtW c=1 sm=1 tr=0 ts=6a880707 cx=c_pps
+ a=nuhDOHQX5FNHPW3J6Bj6AA==:117 a=nuhDOHQX5FNHPW3J6Bj6AA==:17
+ a=IkcTkHD0fZMA:10 a=Sv0fKeRqtYgA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=u7WPNUs3qKkmUXheDGA7:22 a=_K5XuSEh1TEqbUxoQ0s3:22 a=VwQbUJbxAAAA:8
+ a=EUspDBNiAAAA:8 a=9ZP8Lzs8rE8-CPWomJsA:9 a=QEXdDO2ut3YA:10
+X-Proofpoint-ORIG-GUID: xzL5V7Zw7XkHYIRmmrB0FbARvE2AN_iN
+X-Proofpoint-GUID: xzL5V7Zw7XkHYIRmmrB0FbARvE2AN_iN
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-08-21_02,2026-08-20_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ spamscore=0 clxscore=1015 priorityscore=1501 phishscore=0 bulkscore=0
+ impostorscore=0 suspectscore=0 adultscore=0 lowpriorityscore=0 malwarescore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608210058
 
-On 21/08/2026 01:40, Doug Anderson wrote:
-> Hi,
-> 
-> On Wed, Aug 19, 2026 at 11:03 PM Krzysztof Kozlowski <krzk@kernel.org> wrote:
->>
->>> I'm happy to document. Can you please point to how / where I would
->>
->> Description of:
->> Documentation/devicetree/bindings/ufs/ufs-common.yaml
-> 
-> Got it.
-> 
-> If you tell me that the patch won't be instantly NAKed I'd be happy to
-> post an addition to this file saying:
-> 
-> If this UFS controller has a well-known ID <N>, a "ufsN" alias may be
-> created in the "aliases" node. If this UFS controller is a singleton
-> (no other UFS controllers in the system), a "ufs0" alias may be
-> created in the "aliases" node.
-> 
-> 
->> And obviously, as with every binding/ABI, you also need open-source,
->> upstream user of this.
-> 
-> As I understand it, this isn't truly policy. I know DT folks often
-> want to look at an open-source driver to ensure the hardware is
-> described correctly. I also know that a badly written but
-> "open-source" driver doesn't justify landing your bindings. ...but in
-> this case, it doesn't feel like there is any complexity understanding
-> what's going on.
+On Thu, Aug 21, 2026, Greg KH wrote:
+> But it's not consuming them "unnecessarily" as the memory is needed.
+> Why not fix the root problem here of having this be called so many times
+> that you are running out of memory?
+>
+> And why isn't memory being reclaimed properly if we do not have any left
+> in that free list?  The allocation can sleep, so it should be always
+> succeeding if the system isn't truely out of memory, as you imply it is
+> not.
 
-It is a policy. We do not take unused bindings. Also we do not take
-bindings for downstream, because then we would have to take a ton of crap.
+You raise valid points. I am abandoning this patch.
 
-> 
-> 
->>> document this? As far as I can tell, no aliases are documented today,
->>
->> git grep disagrees with you, e.g. second paragraph of serial.yaml.
-> 
-> Ah, I see! I was looking for something more formal. Something like a
-> list of allowed aliases or something that would automatically validate
-> which aliases are permitted. You're just saying to document this in
-> prose.
-> 
-> Thank you for clarifying. I didn't understand this based on your
-> previous emails.
-> 
-> 
->>> I think I've presened my problem fairly concretely [1]. If you hate
->>
->> There is no description of the problem at [1], except "bootloader adds
->> the same type of calibration data".
->>
->> So I repeat my questions: to every UFS node? To every node? To one UFS
->> node (but how do you guarantee that?)?
-> 
-> I'm sure it's not what you want to hear, but I guess my answer would
-> be "for these boards".
+After further investigation, I followed your suggestion and fixed the
+root cause in the Bluetooth layer instead. That fix has since been
+applied upstream:
 
-No, the question is how many aliases you need. Devices might have more
-than one UFS storage, e.g. ExynosAuto.
+https://lore.kernel.org/all/20260819135321.1444185-1-xin.chen2@oss.qualcomm.com/
 
-And then someone might need to calibrate UFS and SPI NOR storage? And MMC?
+Thanks for the review.
 
-> 
-> In my opinion, this would be fine as an ABI contract between the
-> device trees intended to run on Pixel 10 phones and the Pixel 10
-> bootloader. While I'm still of the opinion that people should be
-
-Unfortunately no, because you are coming with a generic property so it
-has to be treated as generic one.
-
-> allowed to include UFS aliases in general and it would be handy if
-> that affected the "dev/ufsN" node created in Linux, I know that's not
-> a popular opinion among DT maintainers. If upstream would allow a less
-> "generic" sounding alias "google,ufs = <&xyz>" I could do that, but I
-> doubt that would make you any happier.
-> 
-> 
->> I gave you two solutions, depending on actual upstream need of this. If
->> you have the second case - so not the boot device - then you basically
->> want to re-implement overlays which you cannot. Use overlays, which
->> gives you nice stable and build-time verifiable label/phandle.
-> 
-> I'm not quite clear on the "overlay" suggestion here. You're saying
-> that we should require the base device tree to be compiled with "-@"?
-> ...and not because we necessarily have any overlays upstream, but
-> because the bootloader will generate an overlay dynamically? Compiling
-> with "-@" would mean we could give a "ufs:" label to the UFS node and
-> with "-@" that would be preserved. The bootloader could then use the
-> "ufs:" label to find the node. When compiling with "-@", the exposed
-> labels are essentially ABI. Did I get that right?
-
-I am saying that if you cannot answer my questions earlier (and you did
-not), thus this should be treated as adding calibration to multiple
-random nodes, then essentially you are reimplementing overlays and this
-won't be accepted. Instead you should use overlays.
-
-"-@" will give you the labels in __symbols__ section, but it won't be
-treated as ABI because it is not feasible. No one would remember which
-boards have @ and which don't thus which labels are needed externally.
-Only a comment in DTS code would prevent it from being changed.
-
-Well, same for aliases honestly. There is no tool which would guard that
-ABI.
-
-Best regards,
-Krzysztof
+Xin
