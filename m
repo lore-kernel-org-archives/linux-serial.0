@@ -1,187 +1,200 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 444503DFC8A;
-	Mon, 24 Aug 2026 06:25:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C4B04078C0
+	for <linux-serial@vger.kernel.org>; Mon, 24 Aug 2026 10:45:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787552734; cv=none; b=aMvTjq1gIqsasmYSvoFNmRY8tagZ+0d3+xeiDIeeYc1wj5hxH0CxLhAI+n+gNnTQ4lkpyB1tNbWsIILFMV5xjVbgwlUHWQJXc+v9osbmFxvwXbK9SaCFYprMqH8ufl7PBapxlHxYo3hpwFPDNCFD9sNXvdfLGkHozwPcMHVjEDY=
+	t=1787568329; cv=none; b=hVPYVY1Kj3ODLYxOnp5YsJ2nqOV3M5lhsPIdL9W1mYRR/mpa71++vS/W1q+I1MhHV2ma7Eg2+ScMyf2wOauHTRXX91QLnfCVa9t3XDhBE4TOhpAvyOvseS/MXko0lcQoKU1cYcpfUJkN3gzs/c4mSx94zcd5tdGoho79T9cp6kk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787552734; c=relaxed/simple;
-	bh=7igC2cDbucoh/04cVTYIH5CUVb63maf9OOFgl5APb4Q=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=RGIot+GPQourNhDgwvB+lhKSusQQBJ0rqjzYDGHK8gnaLmmh4xfpZeWAr9IkMFe/67lIiXtcqPtQNPNdeJQiqdSC7UxpF+KlCZEH9NzMrBOLXJqWDHg31AglSIb2+aUuJCAV2n8omhgUZMrQTDqitVMLjO6AzyDWzmQMnC3NEyw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HGuzhHFc; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1787568329; c=relaxed/simple;
+	bh=fvLJEoTbG7x7YjEzxCfSesZ/Qr9wwF7rbtjWeVqSHYU=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=CbJD8fmGSrW2euXWIZDu3+HaTRNcF6SEa+2v2VnRTjH3DJtQXasD7HdTDT+FjWexziur5DCAOCX4kJ00lm6sTzof4VAGSWDPlFQqUiFUOcMHwQ64tot/09KiqFs/tYQQGexmBOAw7pApH+MN7Feg+Vy1N5cmTq3eXIafi7fbupM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=K+6kORRU; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=SvuRXIgf; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HGuzhHFc"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C47E51F000E9;
-	Mon, 24 Aug 2026 06:25:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787552728;
-	bh=nQiKOvNAzzAP5bzzy3oCf6etpJ4me7o2INgLuv6lebM=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=HGuzhHFc2XUwClmXGVpwVpzeTrii9LRKiYMo/vRzQS4bT8ZXm4np6g3mkUWq5XSsQ
-	 4oH/T2l0Hgy8bTcIJ/25NlkO+ew2FK5h4SBdr36aZeBEOwLTVThQSgFXK0JK5iWptu
-	 GUFsH13aA8MZ1vgZV1UxXsOuHShaWKc+ZRgCINeJ0jsxP9yDXerbIKMkfl+wStxrKE
-	 L2KwIiE9UzHG9vMFS8wUdc2qQmxJEZMkoelKwEtVMs841bhFfQVVKt69TGsMh5cF7z
-	 SAVYJV8X744QkvkziWKxuYkwapUMyMT31Wip4LnFcGAtI8JUgvVCYIsCVzPF1r3biv
-	 ehslSh/EpxPhA==
-Message-ID: <17aa3974-95fe-419a-a382-3c053e66d640@kernel.org>
-Date: Mon, 24 Aug 2026 08:25:15 +0200
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="K+6kORRU";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="SvuRXIgf"
+Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67O9978C1378533
+	for <linux-serial@vger.kernel.org>; Mon, 24 Aug 2026 10:45:27 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=+LIBYtIL0v8CM9/T+oWSwU
+	EA64rVmEdJGaHGlR+XkR0=; b=K+6kORRUZFoLc2OhB0ZzgaV8qWxMuUbj0koF7h
+	iasnGY4Yhtyh/3zOqlsqn13PR96TvGezGxhdwSM9zSG2mmKIRBT1hGssfPqwbspw
+	N5V4271BLGGm3G8C8Qh55PC1EWPwolEZiF6lvAcJW/+7MYW7MEQT+pFJZ4EonOVK
+	AUvZpRlpMI2IghSPtRrIOT01eQ21FhoRF+EtCJzh0XsWaR5v3xPxWFqe3vgc6Iyo
+	Q4xxup6VLgLjKfim0eY0EmVBFDSrZfGqQx69vJsUI91O79tgvSjddD0JzFE9GJ11
+	TIHN6RZQXpvUGxP9rR46qNVqs1622iN9pxv9DtiT3dB8vyog==
+Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com [209.85.210.198])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4g8huf0t52-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-serial@vger.kernel.org>; Mon, 24 Aug 2026 10:45:27 +0000 (GMT)
+Received: by mail-pf1-f198.google.com with SMTP id d2e1a72fcca58-8486c3411c8so4340294b3a.2
+        for <linux-serial@vger.kernel.org>; Mon, 24 Aug 2026 03:45:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1787568321; x=1788173121; darn=vger.kernel.org;
+        h=cc:to:message-id:content-transfer-encoding:content-type
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=+LIBYtIL0v8CM9/T+oWSwUEA64rVmEdJGaHGlR+XkR0=;
+        b=SvuRXIgf6KYcyza7kuyrwSQ3e8y6p9z7AYDeb4lC/7Ryl18c0t8NTqeX0Jlbq/ebFS
+         ch48WX/RCdok+tPKpBGm6bUmqL3FjzRDxUgHqXgm2jnncG+zPtF3lhCNw5eAH0zCQMPx
+         M33xvIpuiijEsvJQwZP/g1SRtFF80jxLO1Qbnwj1qwsZ44sXOIASXd77ke99v3KjLMOg
+         6kefsRciUv+FyT6VMWvTKw+/vbpUfhjCVd3cVzXE+y99CVaVt7gNbvX+J9qDaYlt76kR
+         JSodQRjCzo4pcL0PgZBc2fNN46FVaLfzLSdCdmOdjniHM0F0ygEijzm4qJ889opiDnEE
+         lnoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787568321; x=1788173121;
+        h=cc:to:message-id:content-transfer-encoding:content-type
+         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to:content-type;
+        bh=+LIBYtIL0v8CM9/T+oWSwUEA64rVmEdJGaHGlR+XkR0=;
+        b=Rlcgpvtem67MTjGidElpoO/PdYX3dEbGyHiMJhq6IXm5EqJ7bltApntpdf3o0w5c87
+         XfSMJ0KqUPoGD2RKGqAv6aLn/+jgeHx4n+l0V/4yWiOSH6XMzDC6wMBaMmiLm46V4jpk
+         jvQ6iWo0dYq0ZxVzZcjRcqdcpgTxvifvLsXLZSdiq1SdAG94a0FioIowvvpxxJBsFlbe
+         KH6P91dIZCD22C5PGFR5EpfGs/iWLglYypsVfx71RpEwQ98yriZ6/IhFOa0L0IWbw5P0
+         /Ta8IdOwj9DuNBG9vETng58QxxKJmp9+FIyXGVmaO+lB0LfoAibVaP4ognWuqEEDYqP/
+         5q5w==
+X-Forwarded-Encrypted: i=1; AHgh+RqTFViWYGG65nxnBw4F3L39cmN51C0US+CeTAsKTVw/132my1BQc5iUnSajdcXg/wefPCicEqW1AK6kWQs=@vger.kernel.org
+X-Gm-Message-State: AFuF++kXtRiNqpfYprT1fTo4x4gG5+U+KgSirRejrLGU22O5h+YfLlys
+	baC26OAKynZJ+oB0qeCgNVwV56rgQ4h95+bME9ty/Z0eQYWY06CFXqwsu+hwaAVqi1XIS+pePP6
+	0KZdEg9aSdEuOhzY7NUUyMJCoOLDfNZQ9TxTFJOeeQUc4TaBEFKT5ODF+1I6m/fuSZ3w=
+X-Gm-Gg: AR+sD13YSG9n0jDrfJm//kMPZBqH6bZd1T1kSyV6+Rw79lmh0JsEEex/D1nryo2ZkBI
+	tVgktr8ykR5xl7K4nSb0OOs167rBTeZnNQBgG6aBH/zVQS9UKmSUMNjJYbt+VUNoVuSMPceWHR3
+	YPpdFDe6U1afyNaaB3ZUedDJJouaYv/bqDVA+2p2gGhmJj9bj76eED4s2nviAggRM984QuxYIo8
+	SSh18Ii0V1kQ4jv08nsTx7Ka8YAOiNNEW37Ixa73y+6Gm7QAAcqIyKR2akIs5DLuHZmE54x+NRV
+	gEvtOTiOOjkQmOnjxbzJ0oZ3NZx78XP3JeFI0/+8ChH30FywlMTTIbxeOnqzBW6uIWn6bCqeyC5
+	OnJT/gVOXzCOPZnRyM5Z+j0WIBL77QCxa8A==
+X-Received: by 2002:a05:6a00:bd03:b0:845:cf73:c1d8 with SMTP id d2e1a72fcca58-8520ba55d99mr27055416b3a.14.1787568321138;
+        Mon, 24 Aug 2026 03:45:21 -0700 (PDT)
+X-Received: by 2002:a05:6a00:bd03:b0:845:cf73:c1d8 with SMTP id d2e1a72fcca58-8520ba55d99mr27055338b3a.14.1787568320609;
+        Mon, 24 Aug 2026 03:45:20 -0700 (PDT)
+Received: from hu-ptalari-hyd.qualcomm.com ([202.46.22.19])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8520f1638aesm1779459b3a.57.2026.08.24.03.45.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Aug 2026 03:45:20 -0700 (PDT)
+From: Praveen Talari <praveen.talari@oss.qualcomm.com>
+Date: Mon, 24 Aug 2026 16:15:14 +0530
+Subject: [PATCH] serial: qcom-geni: Drop unsafe rx_buf realloc from
+ setup_fifos()
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 4/5] arm64: dts: google: Add initial dts for
- frankel/blazer/mustang
-To: Doug Anderson <dianders@chromium.org>
-Cc: Rob Herring <robh@kernel.org>, Conor Dooley <conor@kernel.org>,
- Peter Griffin <peter.griffin@linaro.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, =?UTF-8?Q?Andr=C3=A9_Draszik?=
- <andre.draszik@linaro.org>, Tudor Ambarus <tudor.ambarus@linaro.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Catalin Marinas
- <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
- Arnd Bergmann <arnd@arndb.de>,
- Alexandre Belloni <alexandre.belloni@bootlin.com>,
- Linus Walleij <linusw@kernel.org>, Drew Fustini <fustini@kernel.org>,
- Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>,
- "Guilherme G. Piccoli" <gpiccoli@igalia.com>, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
- soc@lists.linux.dev, Juan Yescas <jyescas@google.com>,
- RD Babiera <rdbabiera@google.com>, Brian Norris <briannorris@google.com>,
- William McVicker <willmcvicker@google.com>, kernel-team@android.com
-References: <20260722-contrib-pg-pixel10-initial-dts-v2-0-3abae9717feb@linaro.org>
- <20260722-contrib-pg-pixel10-initial-dts-v2-4-3abae9717feb@linaro.org>
- <20260724-dancing-skunk-of-novelty-72c1b8@quoll>
- <CAD=FV=U0HUdjPcg+5Vx8_ag0zLd3CZx5w5SFr38p+YwRnC_G6w@mail.gmail.com>
- <CAD=FV=V2+D1m5L-0d81W3E_ih2us-SrddeBUAJtMybpQons7Ww@mail.gmail.com>
- <c0657108-1958-4c4c-b5f5-0eb24e81b2b4@kernel.org>
- <CAD=FV=VY4AeAf=TMZfJYRo6C0iSqmL-P0GzxRvZHfnNsf+GnYQ@mail.gmail.com>
- <56db332f-a18e-4a9e-be9d-67d2e25c3666@kernel.org>
- <CAD=FV=WUMKGRUbAyd7XFFc-NGoJEKRwu4MaUnEQUDB9Mq6YYXA@mail.gmail.com>
- <d6685094-b241-415e-9e56-d2fba75f3269@kernel.org>
- <CAD=FV=WPu5tuWA7MhC=48r=1uP3LK6hSqY7Egy=56V1Dqq1wRg@mail.gmail.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
- cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
- JMp7PSyMPzpUXfU12yfcRYVEMQrmplNZssmYhiTeVicuOOypWugZKVLGNm0IweVCaZ/DJDIH
- gNbpvVwjcKYrx85m9cBVEBUGaQP6AT7qlVCkrf50v8bofSIyVa2xmubbAwwFA1oxoOusjPIE
- J3iadrwpFvsZjF5uHAKS+7wHLoW9hVzOnLbX6ajk5Hf8Pb1m+VH/E8bPBNNYKkfTtypTDUCj
- NYcd27tjnXfG+SDs/EXNUAIRefCyvaRG7oRYF3Ec+2RgQDRnmmjCjoQNbFrJvJkFHlPeHaeS
- BosGY+XWKydnmsfY7SSnjAzLUGAFhLd/XDVpb1Een2XucPpKvt9ORF+48gy12FA5GduRLhQU
- vK4tU7ojoem/G23PcowM1CwPurC8sAVsQb9KmwTGh7rVz3ks3w/zfGBy3+WmLg++C2Wct6nM
- Pd8/6CBVjEWqD06/RjI2AnjIq5fSEH/BIfXXfC68nMp9BZoy3So4ZsbOlBmtAPvMYX6U8VwD
- TNeBxJu5Ex0Izf1NV9CzC3nNaFUYOY8KfN01X5SExAoVTr09ewARAQABzSVLcnp5c3p0b2Yg
- S296bG93c2tpIDxrcnprQGtlcm5lbC5vcmc+wsGPBBMBCgA5AhsDBgsJCAcDAgYVCAIJCgsE
- FgIDAQIeAQIXgBYhBJvQfg4MUfjVlne3VBuTQ307QWKbBQJp2mE8AAoJEBuTQ307QWKbeaIP
- /ihHTkTW4KsN/DQ945JJbyu5tI0J80Wue7QyyLPglyKfhgb5cLLNPpOC8cCIJsc7+W3i2P38
- s2c1cOH6CYGE7E9ur3Vfme8NW2S2I/Z8VC7bZnzyS23wT17LrsdS/qCpx4o8U+pt/xdXDKph
- EGRYrIEmMpUWvyYzyYKGIe25FtaayIIKpq8eZYyFcp2f/sG5IkOW5uZzHPMPdcm87jU7fyuQ
- rAU2vx9r+ulUfQ/q9Z2roC/ode3l7t2pN7BCBCsUDp6JCrUyZrtT1e7EbA0ZRP3aOBNk2P2E
- DQOgJGjGdO5Yx2Y9LFtltu6JbsBJHi1syGRX3AtQYOMc4Y1WGoeZJmMlvKj2ZqqXNkcWi2DS
- IQEWB0uW6CqFsBBIMGDa+6OzdaVO/uAVXWDWml02Men3CILdI1MbVjoh8ECqYUY7OQ+JJvNN
- vnliuq5WM3Ghd3jg/LZZrxXjdIginRHFQCjIJYLKpLZWm1/iDFedcfzqRNYmTtqscdCNHW41
- oT3Z7BmO9xwdjuwBS6nmS6JJwkbf5Ot2QR4pB/DRU7ZwjT1qHe+9r9gF32wXVQatHNGK/VVu
- sfwOnkdxCWkp/qb2gdQRmZh+SedStWshigH6sNfuHBloF/q+hjMRc8b2m326OZdrbSHwY1Sz
- vti8Hn7n8NjdHO9LKB7BIdjkA9DA5WsqOuVCzsFNBFVDXDQBEADNkrQYSREUL4D3Gws46JEo
- Z9HEQOKtkrwjrzlw/tCmqVzERRPvz2Xg8n7+HRCrgqnodIYoUh5WsU84N03KlLueMNsWLJBv
- BaubYN4JuJIdRr4dS4oyF1/fQAQPHh8Thpiz0SAZFx6iWKB7Qrz3OrGCjTPcW6eiOMheesVS
- 5hxietSmlin+SilmIAPZHx7n242u6kdHOh+/SyLImKn/dh9RzatVpUKbv34eP1wAGldWsRxb
- f3WP9pFNObSzI/Bo3kA89Xx2rO2roC+Gq4LeHvo7ptzcLcrqaHUAcZ3CgFG88CnA6z6lBZn0
- WyewEcPOPdcUB2Q7D/NiUY+HDiV99rAYPJztjeTrBSTnHeSBPb+qn5ZZGQwIdUW9YegxWKvX
- XHTwB5eMzo/RB6vffwqcnHDoe0q7VgzRRZJwpi6aMIXLfeWZ5Wrwaw2zldFuO4Dt91pFzBSO
- IpeMtfgb/Pfe/a1WJ/GgaIRIBE+NUqckM+3zJHGmVPqJP/h2Iwv6nw8U+7Yyl6gUBLHFTg2h
- YnLFJI4Xjg+AX1hHFVKmvl3VBHIsBv0oDcsQWXqY+NaFahT0lRPjYtrTa1v3tem/JoFzZ4B0
- p27K+qQCF2R96hVvuEyjzBmdq2esyE6zIqftdo4MOJho8uctOiWbwNNq2U9pPWmu4vXVFBYI
- GmpyNPYzRm0QPwARAQABwsF2BBgBCgAgAhsMFiEEm9B+DgxR+NWWd7dUG5NDfTtBYpsFAmna
- YUkACgkQG5NDfTtBYptX+BAApg32CkxwNucNEi8WfWA8oKkW0y8YDuY6ORMo9FWNGiT/OTy0
- vyJrLocrpn86zwfjVp+eCrssPYh8eqJfnWqmYv6ACQtHPYzPZQ3mSo8H97Z01oUxITzCxpXm
- ZkLgPIqtDPcC2E3dPM/fVxcyowM8XsaMA9wcsaUYrta8toOq2b9tKcjleKMfMrm0gQ9u7wUc
- QbLkwj6TCLOwucb07GXzLTNF9PZmaDUpKAZjMjmrW+le+SFvQbhamx0rxLWPR0NWntXpbCn+
- +ACch03p/JyTBVktxFsFyCt7pTPE1kEaeuXBTe/a2D9iQvRxRW19LvuO2e59/u1wYUiH/orz
- wbIC2S4dBsPAPihL3ztOU1yE86GPyQtSE0kU+/7snnLt4QGi6PChf3t5gnNjAzjUUovO8rgI
- c+5yN5heq5loYHgK6OQ9OlHzsPHO9e9MOQcKlFycs1pyijFGzDwdNUm/SchK8iWT2QApTx4A
- K9bCVaboTA2T77QYkRcRJYSsO1alGX0ome/hMLD1daXlkrNUp1HWa3K4iytLRXjCSIorWiGs
- n+q3krnpXu3TFkA8qtOFZMdnIiFuiq1yLT8hptsV5xh1TA2nsVvSYiaCr3q4s4BKjS/KrLDb
- qoxzw8ISjdUp4pA85vb6YLCmb39NgidD+7PmAr65lBNveIFynTgsja1rRQ4=
-In-Reply-To: <CAD=FV=WPu5tuWA7MhC=48r=1uP3LK6hSqY7Egy=56V1Dqq1wRg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260824-drop-unsafe-rx-buf-realloc-from-setup-fifos-v1-1-52d231c840e1@oss.qualcomm.com>
+X-B4-Tracking: v=1; b=H4sIALkgjGoC/yXNTQrCMBBA4auUWTsQg0rxKuIiPzMaqUmYaUqh9
+ O5GXX6b9zZQkkQK12EDoSVpKrnjeBggPF1+EKbYDdbYixmtxSilYsvqmFBW9I1RyE1TCchS3qg
+ 0t4qcuChaP1ryJvhzPEEvViFO6+92u/+tzb8ozN8F7PsHmN9vlY8AAAA=
+X-Change-ID: 20260822-drop-unsafe-rx-buf-realloc-from-setup-fifos-2b82eb0cb5d4
+To: konrad.dybcio@oss.qualcomm.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc: chandana.chiluveru@oss.qualcomm.com, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        Praveen Talari <ptalari@qualcomm.com>,
+        Praveen Talari <praveen.talari@oss.qualcomm.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1787568317; l=2427;
+ i=praveen.talari@oss.qualcomm.com; s=20251114; h=from:subject:message-id;
+ bh=fvLJEoTbG7x7YjEzxCfSesZ/Qr9wwF7rbtjWeVqSHYU=;
+ b=5XZD6uUJOIi3z1M8HI842tmUvtNy4D+t2KQqUFSzPdF9Fkyv27L9pSBaoWU+tv15qij473Lm3
+ nEIaAw39qjwAp7wnhcboynvBUetj7nF9bNzBWuXounf8hMj2ZBJlUNc
+X-Developer-Key: i=praveen.talari@oss.qualcomm.com; a=ed25519;
+ pk=NGK/88fjyHXgfhIKwag7+uIytOmyOypvZ/hDFaYPEss=
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODI0MDA4OSBTYWx0ZWRfX7BRQsz82gTDC
+ YhmbmekiPHtEuLC2Lbn5QmsqGq4enDlk7vKkRgnU1RPgzAA+eJ/gY70ICl9WupKvm398YHdZBE8
+ vUSUt+0Nh/d0sq6PRACFv8mTHff/I78=
+X-Authority-Analysis: v=2.4 cv=Wac8rUhX c=1 sm=1 tr=0 ts=6a8c20c7 cx=c_pps
+ a=m5Vt/hrsBiPMCU0y4gIsQw==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
+ a=IkcTkHD0fZMA:10 a=Sv0fKeRqtYgA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=_glEPmIy2e8OvE2BGh3C:22
+ a=EUspDBNiAAAA:8 a=rO80i1saf4kzB67oEq4A:9 a=QEXdDO2ut3YA:10
+ a=IoOABgeZipijB_acs4fv:22
+X-Proofpoint-ORIG-GUID: Jaiq-4x7HwWXZQLb4AJpD01zMb4QysGk
+X-Proofpoint-GUID: Jaiq-4x7HwWXZQLb4AJpD01zMb4QysGk
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODI0MDA4OSBTYWx0ZWRfX9bu7mIgTG4Lq
+ 9ti8zZ/1Cmjf9CWgUqg0++Kyh+ODOp74N1tagXpkU8sB82PRYtZ05vRXhNE924Zcqjd31Slrwe4
+ F7NAVQulUkIAFWhF/NVvUdTIdbluzrxbP9izXNjPOYlmgu1IZbIN9aeOtntDt4yJV3hdgowLY3t
+ eVw2Bo+s+C18to4lc0+uQjE/g65Hp6mPz0kESTh7XjWrTMg0xpHNywwxF8Ax9FDFWFrwiHTVqaH
+ AZ5q7EQKcaPzGOA/ulcqM6CxGsc8a01fMOiaN0GMTJ3Zs7ZL6EOs4EuYTRm2ps4CupanaqhObJY
+ OpVxIX+WcVUaHZVhjWOY24YbWm548rmGOyXF9zXp9IZgbOVfA9M0Vg6bqvMifVQt2AaPYqyB78L
+ PF5NSBF13dJfXxUDI0VY187+BgcI4RKp+nrmjydvnYoqmzjDUD5XFj80WZoGovjevZgOoX0FUwq
+ VrIHfJxdeBkH0SxnT/g==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-08-24_03,2026-08-21_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1015 suspectscore=0 impostorscore=0 adultscore=0 priorityscore=1501
+ bulkscore=0 lowpriorityscore=0 phishscore=0 malwarescore=0 spamscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2608240089
 
-On 21/08/2026 18:40, Doug Anderson wrote:
-> Hi,
-> 
-> On Thu, Aug 20, 2026 at 11:51 PM Krzysztof Kozlowski <krzk@kernel.org> wrote:
->>
->>>>> I think I've presened my problem fairly concretely [1]. If you hate
->>>>
->>>> There is no description of the problem at [1], except "bootloader adds
->>>> the same type of calibration data".
->>>>
->>>> So I repeat my questions: to every UFS node? To every node? To one UFS
->>>> node (but how do you guarantee that?)?
->>>
->>> I'm sure it's not what you want to hear, but I guess my answer would
->>> be "for these boards".
->>
->> No, the question is how many aliases you need. Devices might have more
->> than one UFS storage, e.g. ExynosAuto.
-> 
-> How many UFS aliases do I need for this board? The answer is in the
-> patch that started this whole discussion: one UFS alias.
-> 
-> 
->> And then someone might need to calibrate UFS and SPI NOR storage? And MMC?
-> 
-> Not for this board.
+The RX buffer is allocated once during probe using a fixed DMA_RX_BUF_SIZE
+and is DMA-mapped for the lifetime of the port. However, setup_fifos()
+attempts to reallocate rx_buf whenever the reported RX FIFO depth changes.
+Since the DMA mapping is not re-established after reallocation, the buffer
+pointer may change while the DMA engine continues using the stale DMA
+address. This can result in RX DMA targeting memory that no longer
+corresponds to the active buffer, leading to invalid DMA accesses and
+potential memory corruption.
 
-We do not talk about your board. You are adding GENERIC alias, so you
-are solving GENERIC problem for everyone and needs to be addressed as such.
+The RX FIFO depth is unrelated to the size of rx_buf. The buffer is
+allocated independently using DMA_RX_BUF_SIZE and all RX DMA paths consume
+it at that fixed size. As such, resizing the buffer based on FIFO depth
+changes provides no functional benefit.
 
-If you are solving here only your board problem and do not care how does
-it scale or whether it makes sense for anyone else, then topic is done -
-we do not need this feature.
+Signed-off-by: Praveen Talari <ptalari@qualcomm.com>
+---
+Signed-off-by: Praveen Talari <praveen.talari@oss.qualcomm.com>
+---
+ drivers/tty/serial/qcom_geni_serial.c | 14 --------------
+ 1 file changed, 14 deletions(-)
 
-> 
-> If you're asking about all future boards, of course they may have
-> other things to calibrate / tune. My point is that the contract here
-> is between the bootloader that will be run on these boards and the
-> device tree that will be run on these boards.
-> 
-> FWIW: the idea of a bootloader using an alias to find a node is not
-> something I invented. Coreboot (the upstream, open-source project)
-> uses "wifi" and "bluetooth" aliases to find nodes on Chromebooks. It
-> uses these aliases to place MAC addresses (which are stored by
-> manufacturing outside of DT) into the DT nodes (where bindings expect
-> them). Perhaps coreboot is doing it wrong, but this concept isn't new,
-> and I didn't invent it.
-> 
-> 
->>> I'm not quite clear on the "overlay" suggestion here. You're saying
->>> that we should require the base device tree to be compiled with "-@"?
->>> ...and not because we necessarily have any overlays upstream, but
->>> because the bootloader will generate an overlay dynamically? Compiling
->>> with "-@" would mean we could give a "ufs:" label to the UFS node and
->>> with "-@" that would be preserved. The bootloader could then use the
->>> "ufs:" label to find the node. When compiling with "-@", the exposed
->>> labels are essentially ABI. Did I get that right?
->>
->> I am saying that if you cannot answer my questions earlier (and you did
->> not)
-> 
-> I'm still not quite sure which question I didn't answer, but I guess
-> at this point it doesn't matter.
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 3633723acef8..75b2e0b77d05 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -1291,7 +1291,6 @@ static irqreturn_t qcom_geni_serial_isr(int isr, void *dev)
+ static int setup_fifos(struct qcom_geni_serial_port *port)
+ {
+ 	struct uart_port *uport;
+-	u32 old_rx_fifo_depth = port->rx_fifo_depth;
+ 
+ 	uport = &port->uport;
+ 	port->tx_fifo_depth = geni_se_get_tx_fifo_depth(&port->se);
+@@ -1300,19 +1299,6 @@ static int setup_fifos(struct qcom_geni_serial_port *port)
+ 	uport->fifosize =
+ 		(port->tx_fifo_depth * port->tx_fifo_width) / BITS_PER_BYTE;
+ 
+-	if (port->rx_buf && (old_rx_fifo_depth != port->rx_fifo_depth) && port->rx_fifo_depth) {
+-		/*
+-		 * Use krealloc rather than krealloc_array because rx_buf is
+-		 * accessed as 1 byte entries as well as 4 byte entries so it's
+-		 * not necessarily an array.
+-		 */
+-		port->rx_buf = devm_krealloc(uport->dev, port->rx_buf,
+-					     port->rx_fifo_depth * sizeof(u32),
+-					     GFP_KERNEL);
+-		if (!port->rx_buf)
+-			return -ENOMEM;
+-	}
+-
+ 	return 0;
+ }
+ 
 
-I gave you the code which solves your problem, IMO. I do not see so far
-any reason to reimplement it with aliases.
+---
+base-commit: 903c1cf6dff9964e71eda98a39e2e5d442050472
+change-id: 20260822-drop-unsafe-rx-buf-realloc-from-setup-fifos-2b82eb0cb5d4
 
 Best regards,
-Krzysztof
+--  
+Praveen Talari <praveen.talari@oss.qualcomm.com>
+
