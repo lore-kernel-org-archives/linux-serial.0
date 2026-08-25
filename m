@@ -1,173 +1,251 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mout01.posteo.de (mout01.posteo.de [185.67.36.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1454748D882
-	for <linux-serial@vger.kernel.org>; Tue, 25 Aug 2026 22:17:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D944A48F836
+	for <linux-serial@vger.kernel.org>; Tue, 25 Aug 2026 23:11:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.65
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787696241; cv=none; b=qRC5cJH4p7ddm9DkXo858BZ+IA7KLRndSl0pM7ks+4u2q5m54YJy6vnwxLa9qkc+ftGMm+TQU7Moon5BxKX4vxLyjHIAxofGmVtiu5mQUc92j8QTWqIu55UJpFECPZeFOXaqhMPe6RJJB/Ix8e0BWLbb3PgxQ2M2UnKfp4rYKfA=
+	t=1787699464; cv=none; b=ZJB7cj9DP/z1WhnYRXcO2IxGeShAradZTcueOwaDh7Cu0no5k4N5W2bQ7MPpRR0RoDQ5mmB/MYzRiRB1inXpzHliS+kbwW7wBiPUzIngJ2tALwJvi1fbEggOX3GvsJb52PWKKlnzRuc5POQPeO3Gv2QI3ItI3Gwnr+rKN/B+Jlc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787696241; c=relaxed/simple;
-	bh=fkDuswExWO8mmU84d6EWs9awb3zXqfD7eI8k7Qyes9s=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=LEiDf5rzUHp2gUG7Utr2WwAV+l1mVQmRCcYFfV2ogjhYFSHJAFtpS9qyUSBM3WbYXSc43JLk2w9Zs6CAvgVtDTWLJ5sdCdQv3LJsBl9ZBds5GtYWo/qFmerTPgh1/xvDbmqYQxjl80XHcLwP2hDnoXFtxM9Paq/Jx5yTjJMpYg4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ue7oN43S; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1787699464; c=relaxed/simple;
+	bh=/mG6PyefbWFiabSftZ542/gjN6J7mAIDhUmg6WE7Sys=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=dUBxwuHkvAww8S2p2CYhL+21ODt8DKC6CWMdv4Bk4k+uhuKj6sxgBP6LzwZsZyg+TxjeJ5z+T1ocdJmsMNkRkFt+4Hg0I1HDEcCUBjLt9drmNSGpP1zj1Lva8NnEojs4ynxyw/bFu6d1ZfrQt6RbwK0TgUKchs0fQ7gOOUnEVwo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=fJt5Q3dI; arc=none smtp.client-ip=185.67.36.65
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ue7oN43S"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9293A1F000E9;
-	Tue, 25 Aug 2026 22:17:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787696239;
-	bh=4CW6yOcKba6mq0k1UXi72DpGNicVNjDQqcHqQRqZano=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=Ue7oN43St1OEKq5vYtvLV3zfMZJoznCs5kYIXXY89cB9GiGbCrLtMu1SkL7QgYMJ9
-	 KpHlyPr7aU+PaV2O2snP19HJF7fxfHDCHFnQrURF6Irpzk7e8zqJ82Tzt+vsDveJYJ
-	 GFQ1xZBmmfnBA9+biRtf46zzTr4IYZqf07VRI1e7YrcqmKcRZrXvNfhLEJLqhPBcCG
-	 NsOYRzVG4kuC5dCNl3vaFc90jnGjXy92i75huqMpDmXdDEox+Qy06JdyXnfzKOWAbA
-	 m7sDyswTPYkjKHeJWEegdWrLmM49VNs8uUhOeMhFQAgRQ3WMP/UeR2S+Uzby2Xbk0R
-	 WSb+nFJJLAC4g==
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v2] serial: 8250_omap: fix wake irq cleared during
- suspend
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Kendall Willis" <k-willis@ti.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20260825-uart-wakeirq-fix-v2-1-0b9fba03d9b6@ti.com>
-References: <20260825-uart-wakeirq-fix-v2-1-0b9fba03d9b6@ti.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Tue, 25 Aug 2026 22:17:19 +0000
-Message-Id: <20260825221719.9293A1F000E9@smtp.kernel.org>
+	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="fJt5Q3dI"
+Received: from submission (posteo.de [185.67.36.169]) 
+	by mout01.posteo.de (Postfix) with ESMTPS id 747AC240029
+	for <linux-serial@vger.kernel.org>; Wed, 26 Aug 2026 01:10:59 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de;
+	s=1984.8680eb; t=1787699459;
+	bh=tzlvJ6oEobG27IKTMAet51gtj7PMHSLpqxA+1yDIakw=;
+	h=From:Date:Subject:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:Message-Id:To:Cc:Autocrypt:OpenPGP:From;
+	b=fJt5Q3dIMiKQFgoS/unZe6lbYdl4WxZYxGkDyc0n3fnFegyuv4X+/b2NqyZX12AYe
+	 xzHsnItt1DT1DVO32SdM9cYVeOTQvL4m/j0d3wruoMR/N8n4yy4ZTbeiW5Un8am4Od
+	 WOZTQ2J2GIyVD28zAdeeSBuL3fDJu/ZJ4gNwR9RLdF2NULdrvD5krOV2LiYd9zDdYc
+	 ry19sesoxRb0nVLInfMN7FpCRd1jVetsMsu1hereATd8do7y/zPndPYTDB8t4pN+4C
+	 EKcJTO31zQTZ+mrp0BebqbO9lvQM5L1REj4jMQunK8QoS1unyItIDSHVXWrb5hWex/
+	 ASb5cwnw2I69Q==
+Received: from customer (localhost [127.0.0.1])
+	by submission (posteo.de) with ESMTPSA id 4hV3Rk2DFfz6twb;
+	Wed, 26 Aug 2026 01:10:58 +0200 (CEST)
+From: Markus Probst <markus.probst@posteo.de>
+Date: Tue, 25 Aug 2026 23:10:59 +0000
+Subject: [PATCH v4] ACPI: SPCR: Support UART clock frequency field
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260826-acpi_spcr-v4-1-2d5670dace43@posteo.de>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/12O3WoDIRSEX2XxugY9urs1V32PUoo/x8ZC4kaNt
+ IR99xpTaLaXA983M1eSMQXMZD9cScIacoinFuTTQOxBnz6QBtcyAQYTk4JRbZfwnheb6MQVA+8
+ UCA+k8UtCH7561+vbPeeL+URbbgW/RMLzpY2UO0aMzkhtPB5D2Q913gG5mYeQS0zf/VTlHez7I
+ xsf9iunnHonjZ28RDOKlyXmgnHnsLdUeDBhYwJl1DIJ7Fm5WVj93xR/5sQ3pmim0qNCo90scWO
+ u6/oDQkZIvlABAAA=
+X-Change-ID: 20260430-acpi_spcr-61902fd923f2
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, 
+ Len Brown <lenb@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ linux-acpi@vger.kernel.org, Markus Probst <markus.probst@posteo.de>
+X-Developer-Signature: v=1; a=openpgp-sha256; l=5267;
+ i=markus.probst@posteo.de; h=from:subject:message-id;
+ bh=/mG6PyefbWFiabSftZ542/gjN6J7mAIDhUmg6WE7Sys=;
+ b=owEBiQJ2/ZANAwAIATR2H/jnrUPSAcsmYgBqjiEBHGcyS0Z7fP9FG82778r5OASTaPGvYpDi2
+ tNT1u7Mn3WJAk8EAAEIADkWIQSCdBjE9KxY53IwxHM0dh/4561D0gUCao4hARsUgAAAAAAEAA5t
+ YW51MiwyLjUrMS4xMiwyLDIACgkQNHYf+OetQ9IUBA//bOagfhY6RcvfHTuOEo/1CirdwtBJqgk
+ mHdOMpE+7tSZljIy0+/FppkNrg0br+rdEFiH92Aqncn7FLt7Xvge/dMpn4nIpSDeqL4YMGDU/ZH
+ XI/KY4l+erROR8JSlM8ELiVBMc458SZa0hElJctkSzPxcsrLvmRYKaAN7DUn+dsZOJJMsZnyVwe
+ sr2/nkbSx4nqFhV+8m97Bg8p19W3ig23U7lZk0sD5wdw+NvpEVM/ESgcPcaptbXE+7Dt9FhI/Hb
+ mr/UHGYOBgr7AgNBlRSdPDR/y+QfyidtzCjtaMp2T2f817VfoowHVe3y4BzOz8Yt+Do8b0C8Sbt
+ euqDBjny9gZ9QVX5/tIQOa8qzz8J9zpKPCbB1NCQca7avshU0pdDeoND6tpZniQmslo2x5UcP4A
+ MBhcjrsaEawwsPAdm0YWBzJKfyhvKcvRbIGEu+/vdBVse2b8YEJlkv8EIZn+deouo04LY2pcMEx
+ dzx0kRvw0+lIsp0ZbttTz1QkmjW2TlPTFHL1v3zX54o5vzbgxaVQSwqMHvXCPTH9rqVjtqhaB3w
+ QZK4lxOcbYjFWP5MFdjG0JLgDBjzupFDOYU/vyMKfYyb/ObmunjasBBsV1swcHcgCOWkC2MOZ11
+ fWZ8BwwucI3TjL0Mk3jFX4zCKUHwOG3FnvP47AINagvORW3sA8fw=
+X-Developer-Key: i=markus.probst@posteo.de; a=openpgp;
+ fpr=827418C4F4AC58E77230C47334761FF8E7AD43D2
+Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
+  keydata=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
+  aBeNN4ijKZchBXHPgVx+YtWRHfcm4l8=
+OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
 
-Thank you for your contribution! Sashiko AI review found 3 potential issue(=
-s) to consider:
+Prior to this patch, we assume the uart clock frequency is 1843200 Hz in
+the early console. This behaviour results in garbage console output if the
+actual uart clock frequency differs.
 
-Pre-existing issues:
-- [High] The IRQ handler `omap8250_irq()` calls `pm_runtime_get_noresume()`=
- and subsequently accesses hardware registers without checking if the devic=
-e is active.
-- [High] `omap8250_remove()` ignores the failure of `pm_runtime_resume_and_=
-get()`, leading to hardware access on a suspended device and unbalanced run=
-time PM usage counters.
-- [High] Unchecked return value of `pm_runtime_get_sync()` leads to potenti=
-ally unsafe hardware access in `omap8250_probe()`.
---
+The UART Clock Frequency field was added in the Microsoft Serial Port
+Console Redirection (SPCR) specification revision 1.08. If present, use it
+to configure the serial port with the correct uart clock frequency.
+Fallback to old behaviour if missing.
 
-commit bc6e22f3c6331f4f33e45d32f550a8d1ce7dad46
-Author: Kendall Willis <k-willis@ti.com>
+Add function `setup_earlycon_with_uartclk` to set uart clock frequency
+while still allowing to reuse the same console string with
+`add_preferred_console`.
 
-serial: 8250_omap: fix wake irq cleared during suspend
+Link: https://learn.microsoft.com/en-us/windows-hardware/drivers/serports/serial-port-console-redirection-table
+Signed-off-by: Markus Probst <markus.probst@posteo.de>
+---
+Changes in v4:
+- merge patches together
+- rewrite commit message
+- Link to v3: https://patch.msgid.link/20260615-acpi_spcr-v3-0-9a59ebad74ea@posteo.de
 
-This commit moves the wake irq setup from omap_8250_startup() to
-omap8250_probe() and teardown from omap_8250_shutdown() to omap8250_remove(=
-).
-This ensures the wake irq remains armed during the suspend sequence when the
-UART is acting as a wakeup source.
+Changes in v3:
+- add separate function for earlycon with uartclk
+- Link to v2: https://patch.msgid.link/20260525-acpi_spcr-v2-0-c042089d73ca@posteo.de
 
-> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/825=
-0/8250_omap.c
-> --- a/drivers/tty/serial/8250/8250_omap.c
-> +++ b/drivers/tty/serial/8250/8250_omap.c
+Changes in v2:
+- fix uart_clk_freq possibly being interpreted as parity/bits/flow
+- Link to v1: https://patch.msgid.link/20260505-acpi_spcr-v1-1-fd4bc6f4eb53@posteo.de
+---
+ drivers/acpi/spcr.c           |  3 ++-
+ drivers/tty/serial/earlycon.c | 17 ++++++++++++-----
+ include/linux/serial_core.h   | 11 +++++++++--
+ 3 files changed, 23 insertions(+), 8 deletions(-)
 
-[ ... ]
+diff --git a/drivers/acpi/spcr.c b/drivers/acpi/spcr.c
+index 73cb933fdc89..c79c809f49d4 100644
+--- a/drivers/acpi/spcr.c
++++ b/drivers/acpi/spcr.c
+@@ -228,7 +228,8 @@ int __init acpi_parse_spcr(bool enable_earlycon, bool enable_console)
+ 	pr_info("console: %s\n", opts);
+ 
+ 	if (enable_earlycon)
+-		setup_earlycon(opts);
++		setup_earlycon_with_uartclk(opts,
++					    table->header.revision >= 3 ? table->uart_clk_freq : 0);
+ 
+ 	if (enable_console)
+ 		err = add_preferred_console(uart, 0, opts + strlen(uart) + 1);
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index ab9af37f6cda..5a20fe9e3fb6 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -135,11 +135,14 @@ static int __init parse_options(struct earlycon_device *device, char *options)
+ 	return 0;
+ }
+ 
+-static int __init register_earlycon(char *buf, const struct earlycon_id *match)
++static int __init register_earlycon(char *buf, unsigned int uart_clk_freq,
++				    const struct earlycon_id *match)
+ {
+ 	int err;
+ 	struct uart_port *port = &early_console_dev.port;
+ 
++	port->uartclk = uart_clk_freq;
++
+ 	/* On parsing error, pass the options buf to the setup function */
+ 	if (buf && !parse_options(&early_console_dev, buf))
+ 		buf = NULL;
+@@ -163,8 +166,9 @@ static int __init register_earlycon(char *buf, const struct earlycon_id *match)
+ }
+ 
+ /**
+- *	setup_earlycon - match and register earlycon console
+- *	@buf:	earlycon param string
++ *	setup_earlycon_with_uartclk - match and register earlycon console
++ *	@buf:			      earlycon param string
++ *	@uart_clk_freq:		      uart clock frequency in Hz or 0 for BASE_BAUD*16
+  *
+  *	Registers the earlycon console matching the earlycon specified
+  *	in the param string @buf. Acceptable param strings are of the form
+@@ -177,10 +181,13 @@ static int __init register_earlycon(char *buf, const struct earlycon_id *match)
+  *	<options> string in the 'options' parameter; all other forms set
+  *	the parameter to NULL.
+  *
++ *	If the uart clock frequency is specified in the 'options' parameter,
++ *	the value of the param @uart_clk_freq will be ignored.
++ *
+  *	Returns 0 if an attempt to register the earlycon was made,
+  *	otherwise negative error code
+  */
+-int __init setup_earlycon(char *buf)
++int __init setup_earlycon_with_uartclk(char *buf, unsigned int uart_clk_freq)
+ {
+ 	const struct earlycon_id *match;
+ 	bool empty_compatible = true;
+@@ -209,7 +216,7 @@ int __init setup_earlycon(char *buf)
+ 		} else
+ 			buf = NULL;
+ 
+-		return register_earlycon(buf, match);
++		return register_earlycon(buf, uart_clk_freq, match);
+ 	}
+ 
+ 	if (empty_compatible) {
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index bdc214386e4a..9b2bcd4295a9 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -1099,11 +1099,18 @@ int of_setup_earlycon(const struct earlycon_id *match, unsigned long node,
+ 
+ #ifdef CONFIG_SERIAL_EARLYCON
+ extern bool earlycon_acpi_spcr_enable __initdata;
+-int setup_earlycon(char *buf);
++int setup_earlycon_with_uartclk(char *buf, unsigned int uart_clk_freq);
+ #else
+ static const bool earlycon_acpi_spcr_enable EARLYCON_USED_OR_UNUSED;
+-static inline int setup_earlycon(char *buf) { return 0; }
++static inline int setup_earlycon_with_uartclk(char *buf, unsigned int uart_clk_freq)
++{
++	return 0;
++}
+ #endif
++static inline int setup_earlycon(char *buf)
++{
++	return setup_earlycon_with_uartclk(buf, 0);
++}
+ 
+ /* Variant of uart_console_registered() when the console_list_lock is held. */
+ static inline bool uart_console_registered_locked(struct uart_port *port)
 
-> @@ -1588,6 +1581,12 @@ static int omap8250_probe(struct platform_device *=
-pdev)
-> =20
->  	priv->wakeirq =3D irq_of_parse_and_map(np, 1);
-> =20
-> +	if (priv->wakeirq) {
-> +		ret =3D dev_pm_set_dedicated_wake_irq(&pdev->dev, priv->wakeirq);
-> +		if (ret)
-> +			goto err;
-> +	}
-> +
->  	ret =3D serial8250_register_8250_port(&up);
->  	if (ret < 0) {
->  		dev_err(&pdev->dev, "unable to register 8250 port\n");
-> @@ -1603,6 +1602,7 @@ static int omap8250_probe(struct platform_device *p=
-dev)
-> =20
->  	return 0;
->  err:
-> +	dev_pm_clear_wake_irq(&pdev->dev);
->  	pm_runtime_dont_use_autosuspend(&pdev->dev);
->  	pm_runtime_put_sync(&pdev->dev);
+---
+base-commit: 237a1c39e8dfd3e1c6f1f023eea37a48ec04cc63
+change-id: 20260430-acpi_spcr-61902fd923f2
 
-[Severity: High]
-This is a pre-existing issue, but I noticed an unchecked return value earli=
-er
-in omap8250_probe():
-
-drivers/tty/serial/8250/8250_omap.c:omap8250_probe() {
-    ...
-    pm_runtime_get_sync(&pdev->dev);
-    omap_serial_fill_features_erratas(&up, priv);
-    ...
-}
-
-Does this risk a bus fault if pm_runtime_get_sync() fails? If the device
-fails to resume due to PM domain issues, omap_serial_fill_features_erratas()
-will proceed to perform readl operations on the unclocked UART memory space.
-
->  	flush_work(&priv->qos_work);
-> @@ -1625,6 +1625,7 @@ static void omap8250_remove(struct platform_device =
-*pdev)
->  	omap_8250_shutdown(&up->port);
->  	serial8250_unregister_port(priv->line);
->  	priv->line =3D -ENODEV;
-> +	dev_pm_clear_wake_irq(&pdev->dev);
->  	pm_runtime_dont_use_autosuspend(&pdev->dev);
->  	pm_runtime_put_sync(&pdev->dev);
->  	flush_work(&priv->qos_work);
-
-[Severity: High]
-This is a pre-existing issue, but is it safe to proceed with hardware teard=
-own
-if we fail to resume the device in omap8250_remove()?
-
-drivers/tty/serial/8250/8250_omap.c:omap8250_remove() {
-    ...
-    err =3D pm_runtime_resume_and_get(&pdev->dev);
-    if (err)
-        dev_err(&pdev->dev, "Failed to resume hardware\n");
-
-    up =3D serial8250_get_port(priv->line);
-    omap_8250_shutdown(&up->port);
-    ...
-}
-
-Executing omap_8250_shutdown() on an unclocked device could cause a bus fau=
-lt.
-
-Additionally, unconditionally calling pm_runtime_put_sync() at the end of
-omap8250_remove() after a failed pm_runtime_resume_and_get() might cause the
-usage counter to underflow.
-
-[Severity: High]
-This is another pre-existing issue, but is there a risk of invalid hardware
-access in the interrupt handler?
-
-drivers/tty/serial/8250/8250_omap.c:omap8250_irq() {
-    ...
-    pm_runtime_get_noresume(port->dev);
-    ...
-    lsr =3D serial_port_in(port, UART_LSR);
-    ...
-}
-
-If the interrupt fires while the device is in a runtime-suspended state (for
-instance, via a shared line or spurious interrupt), pm_runtime_get_noresume=
-()
-increments the usage counter but does not wake the device. Could the
-unconditional read of UART_LSR result in invalid register reads returning
-0xffffffff on unclocked hardware?
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260825-uart-wakei=
-rq-fix-v2-1-0b9fba03d9b6@ti.com?part=3D1
