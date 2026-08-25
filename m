@@ -1,210 +1,227 @@
-Received: from CH4PR04CU002.outbound.protection.outlook.com (mail-northcentralusazon11013000.outbound.protection.outlook.com [40.107.201.0])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C07044E055;
-	Tue, 25 Aug 2026 15:35:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.201.0
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787672131; cv=fail; b=YCUzqznMrkZSnll7amHx/tC8e10VG8gZqnPnz80hawNbu3HuAGjZyskgvLAQPVWeRGH0jGrgIZQASNvsY4cS0fZB/5bwGFFg+V0lcnXXHXtmqQlM5zAJTXjD7TFF3ZiZv3PQOX7tgVPaOkFFFunCqwGXKys8fjhfqaMSVKD4vLM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787672131; c=relaxed/simple;
-	bh=ZymEhdlCQYShCKIq4Juaki8DjXdZRyQBfD/5FH695i0=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=qE94aXnG/r4jL9yxrGOJ3ElqIxOAi+UDlx3A2nskx45L4Gh42CEYg9yslxOYrI/XYTIIvD3lLhIm+osCa/ozonPnfAF0yHxcEMu8F4MnHbxfgUSvtHu3EBi4diO23Ep5A64yfSI7NkBU8YKcCmFavw6WDKnsnGyxbzdOcAvXEhE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=LxkDSgL/; arc=fail smtp.client-ip=40.107.201.0
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86DA231DDBF
+	for <linux-serial@vger.kernel.org>; Tue, 25 Aug 2026 18:03:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787681010; cv=none; b=kIEuz+usCHLDrw6/F1glnBKSn2Am36YtNNc/ernxUK7MdMcOFrW+YQSFuL0IKk4yIyk9YVqC25pd3RBqjjUmGNxofiKBdR9o8ZQrZHGWfjW83BB0Ly9QONJq/opieRf5yq6RqFOtHDrdt2MltDgdjSxKeMcHITS7PoLBpG4UXlQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787681010; c=relaxed/simple;
+	bh=/qmvj7oQP9+hee2C20TKZdFcP+FMqjk6v+eNCfV8brU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=o4pFrISelbv2ZNfoIonZUW3olIgyaztKiNzsnO2PaMirzpbnSt/qj2wKAbKOfRHaBgKQJfWIyKbdIIkm0acAei/6dxpFooU7MrT0brbbagoDepQ2OtFAQRdEtqSVavucEY3Gn39end6Hhxxb/61JyNfY2BXfK7VZ84eHIAdG8e0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=LStShXil; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=khaUJU89; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="LxkDSgL/"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=P9blcCQrSJ2vJKmk2uBWXVY/WqTdwJU9kVPCsrR6yTh8Pic5+elSYXRJu6ljYc6r/7JSFgsY7LidZZ7WegnIH/ITCy6vvPUdikxdY6r46Gi/ZjpmqtA1ZWgGqJKhkKdCH5VWd0F4Rpp/Q7Yu6cRPjCaDfvQ8QGJ0TJQfSEEnxZYkjhShy4wnfFlR5EjK44fq8VtObwPzXSS6y24RfyYprbm3+G7etTMKrSeTIHENeC+qgJrBLZkTfxqJ30fVYQO6wlXHjVJFr39fthOYd0ldlIkpWo7+tTLAtZAvgOoWQXWlkL2Bigd/a+/tVm9brMQ8HUBiX825qrM8axRmOpQbpg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FII7yTVkJm4nLN59AzZR73xGxoznqXotqDB9rDgcdhE=;
- b=iGZrePMa0C8KWc7oPjj75ZCMuA/6NcogP6Tz1jyrqVye8Q3pf1Qsog+nCASQGNKxHXDYBzwwkOmtv5PIiilTS5NL9t/AOb3roHPiee/b4fz6U+5ZKQtg2+biYaiF1sQMMgxVOAhu/SHzW5pzpoYPojulhu1rwYPXTRF8elaimnAGUDEFMpZk+rD+r/BDAoeG8VhwnPULrupmAYUkyi+dHbc0E9YmNMOgE+PGxaU1vNl4KCmPOJJwF6jHaNV+5Xqd1BC5Vc6egcabqaoOCdxN4ls7LNGw8RhciarS1VuBHPFiJJlbT0T91MNTlsBincFijngGi9BLnMb5PlrMFBy9xw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FII7yTVkJm4nLN59AzZR73xGxoznqXotqDB9rDgcdhE=;
- b=LxkDSgL/xECBr+OViX5y6EJDJwDzJQw98lchVIvfClfSex5ZPSHBfL+ZWqhwwC0i+Mk69rczTktU/Sgfs58q+yzO6w/ANZQ8Kb/VrR0Ial3F89b+56+rEnp1VvJmQiDiyPk+BTRZ/LvfsQAxlL81UmaRjvNpN/rY+Gt8NATnsU+hqG7l7xtYL35NIXekjL1xgtBVF0U4KR1lsR/kGEhlxRDBCOHv3rElkhvcncZR2LoS4NXiEG43M/n+vmoIV1wkauA/21JvaC7UEPAPhqqHChtczRnE4COzJ3Iqmg7aVjYCnQSilrMpMWVFLLmOaPbyLy0yhSig6Ih1Imn++0zZxQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM4PR12MB6063.namprd12.prod.outlook.com (2603:10b6:8:b1::19) by
- SA5PPF9D25F0C6D.namprd12.prod.outlook.com (2603:10b6:80f:fc04::8d9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.339.12; Tue, 25 Aug
- 2026 15:35:22 +0000
-Received: from DM4PR12MB6063.namprd12.prod.outlook.com
- ([fe80::c06b:5df:6a68:1b06]) by DM4PR12MB6063.namprd12.prod.outlook.com
- ([fe80::c06b:5df:6a68:1b06%3]) with mapi id 15.21.0339.012; Tue, 25 Aug 2026
- 15:35:22 +0000
-Message-ID: <d058012e-2be7-4e70-9c10-5e4c00a23b05@nvidia.com>
-Date: Tue, 25 Aug 2026 16:35:15 +0100
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH tty v11 1/2] serial: 8250: Switch to nbcon console, take 2
-To: John Ogness <john.ogness@linutronix.de>, Petr Mladek <pmladek@suse.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>,
- Andy Shevchenko <andy.shevchenko@gmail.com>,
- Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
- linux-kernel@vger.kernel.org, =?UTF-8?Q?Ilpo_J=C3=A4rvinen?=
- <ilpo.jarvinen@linux.intel.com>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Hugo Villeneuve <hvilleneuve@dimonoff.com>, Kees Cook <kees@kernel.org>,
- Stepan Ionichev <sozdayvek@gmail.com>, Xin Zhao <jackzxcui1989@163.com>,
- Osama Abdelkader <osama.abdelkader@gmail.com>,
- Fushuai Wang <wangfushuai@baidu.com>, Marco Felsch
- <m.felsch@pengutronix.de>, linux-serial@vger.kernel.org,
- "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
-References: <20260729120439.281252-1-john.ogness@linutronix.de>
- <20260729120439.281252-2-john.ogness@linutronix.de>
- <f3757a75-0ba1-4558-bf57-f19ab7e59a4c@nvidia.com>
- <aoQPFC7d8mSuNZMh@pathway.suse.cz>
- <861247ca-dfd4-40c6-a094-0fbe389f3b67@nvidia.com>
- <aoR_9g7W0qyqWbOj@pathway.suse.cz>
- <fd1802c3-4b38-4127-b988-a9ff059bcebf@nvidia.com>
- <877bll9d91.fsf@jogness.linutronix.de>
- <eb0f2c8b-2c7b-4bfd-9144-6786999c4c31@nvidia.com>
- <875x139eqr.fsf@jogness.linutronix.de>
- <6b46866f-548f-4963-bc41-48ce15ae9012@nvidia.com>
- <877ble714e.fsf@jogness.linutronix.de>
-Content-Language: en-US
-From: Jon Hunter <jonathanh@nvidia.com>
-In-Reply-To: <877ble714e.fsf@jogness.linutronix.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO4P123CA0434.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:1a9::7) To DM4PR12MB6063.namprd12.prod.outlook.com
- (2603:10b6:8:b1::19)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="LStShXil";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="khaUJU89"
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 67PHdNXu2145131
+	for <linux-serial@vger.kernel.org>; Tue, 25 Aug 2026 18:03:27 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	dAzvwPMvS0QGNlY8eB3tLuP2d1LA5UE0AZDeb4igS9A=; b=LStShXilBn/N/NVU
+	B+zJ086C8sJhHVWLd+R8rKiO9UfjZ0740/W+UGfDVPq1bKPENeK4jFfAyipylQJu
+	BVHo5R1jDR+u93GetjgtVEj78/zpeMpkezZobvZcP9GvPdAdpFo4xz526CB7J4/L
+	wPFFto914JwtFXJGu1jM1yJ53TkHeSG+BI8vSo/ENi2hzJ3W+en+8vdrL2/bwVXl
+	kJuIV4gj8mFE7uBeQYpZkJxQgJk5IOocT7/JvB5MDsMUsmsuP51NgRq1E37cVd3H
+	wwmoU+biGU/cZYb4Y03MkYOB3Di92t2XG3svLhIS0lB99KMrFzTR7kXia+r5OxvD
+	F5eR6w==
+Received: from mail-pg1-f200.google.com (mail-pg1-f200.google.com [209.85.215.200])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4g9cgu110h-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-serial@vger.kernel.org>; Tue, 25 Aug 2026 18:03:27 +0000 (GMT)
+Received: by mail-pg1-f200.google.com with SMTP id 41be03b00d2f7-cc1b8088202so13843a12.3
+        for <linux-serial@vger.kernel.org>; Tue, 25 Aug 2026 11:03:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1787681006; x=1788285806; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=dAzvwPMvS0QGNlY8eB3tLuP2d1LA5UE0AZDeb4igS9A=;
+        b=khaUJU8989VwdPaqaxaIb4vL+m2uYEvkuniKfELujRysXiZFdFXLp4eQzfOkSObr3x
+         +RBSfF7VgsJQvuWepZWOZPC2epKOjHigeh9ffy/coSnMEtnkw00RRmObr7YzFfPs+kz2
+         DW3FNzWdbOGJ6rzpZsk+x89Fu4kR0GnJA2/ijeF4GQgQVz2MZRsreN01gOD/sjJmFaVH
+         vXr8bOBrO3GBqlFDotWIrAW+fyzn0MNxTfc0KuSdJP5NIqpsQa1HJsV5bH+OxHli8juq
+         L8gApFt/e77lqENBvfrlMCZamwX+pPx+OXFZyTQVt10wpj9+y4o4XTHHtcbMxk5rokUq
+         qbUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787681006; x=1788285806;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=dAzvwPMvS0QGNlY8eB3tLuP2d1LA5UE0AZDeb4igS9A=;
+        b=XP6k3FM5u1+EqRYuEB6XA71dtJ/knZs2GkNupmaq9XmlzG9v+JVNGqKtsptLGy5e5r
+         fVzZcP8qrhQVvo0nBN9JwHImKJIlqErUD3dAmcQkg2cS734bEbo+3dEqnFVXvhS1KUno
+         x7YAg+7srPbnXcrHREbFDff6epNZ/ipmwKhKM0rZ4uV8QTd8xAYFE80Eb4Xd5rpP9Hl5
+         i/3t87pUGIxOFbIeM4zgwDwhIVf6/Vqrr5Ytcqm4Ucs/pDOYheACG/piMo66hXj0TCap
+         AGMESHLEp11oyg6dlLsUx5kcmiC+m8JURNeXxpj0ihcqXzt9+7eYzXiKUvkIazB1NNpU
+         JzYA==
+X-Forwarded-Encrypted: i=1; AHgh+RpP2dTCeS0YimCNx4OFmJmiINI7WCRIJISonUkvqaGm13/G9tRse6kOP4855OZPI60gD+5QN8ghqvHuTAk=@vger.kernel.org
+X-Gm-Message-State: AFuF++lZUUEnffEZOqsZKYdbXtW6FbdbtMzTWbaeytZLuIZnrGD5lgz4
+	6Fc/OirIwHOtGz6BHpR35PH3zc08TRySn863of34j77wgPw9yXD1vN5Cbn3B1sM2/wZ4AzS3dco
+	QhxT99WArSn4aTaGwWDsm2uO2Fs3t7nwzg1BHfJ+87QnjSAXZlJhgl3CxAj1PUKtESGg=
+X-Gm-Gg: AR+sD107k4QgorFQNntbAJM0NiEgGAUd0yjiczdXUq4nhC73VotiU7NxDG9VnzypFpU
+	VBj+ywiM8FCBfsyVYoigyDfk8s8MJ5JUq3ARl+oc3bv8G8TfDDfHp+6IeM8GWEab2iOY8bnxHvs
+	mEYEdcGD8pzcPhGsdiBXkTCIvn/OI67NhKbA6WXeRz9gtMFIO/iG41E5xtlMYiBNfoLKZ+AXQiQ
+	b2Jz4z4O9HGKYxdQpc84JFldMbiqvgZIGnH5eqyuZjqcZcj7YaWUKYlvLQS/Tsc5iA8WlWJMMsK
+	yNLSRpIULRlhn5TSC0B5aGCnE7m35nsYv6LG6DFnGoSsd3FBlLqD+9BSPA111Dvy9gL8FLnbio6
+	cv2EwKDTVlbi7hlIpWpwa65R6ErzOqSwO
+X-Received: by 2002:a17:90b:4e8d:b0:38d:f5bb:e0f4 with SMTP id 98e67ed59e1d1-3966d400334mr1832581a91.1.1787681006044;
+        Tue, 25 Aug 2026 11:03:26 -0700 (PDT)
+X-Received: by 2002:a17:90b:4e8d:b0:38d:f5bb:e0f4 with SMTP id 98e67ed59e1d1-3966d400334mr1832233a91.1.1787681004826;
+        Tue, 25 Aug 2026 11:03:24 -0700 (PDT)
+Received: from [192.168.0.7] ([49.204.110.145])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-141a8f20095sm914906c88.6.2026.08.25.11.03.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Aug 2026 11:03:24 -0700 (PDT)
+Message-ID: <29b5226a-d403-4bdd-a114-eeb2fd341ea0@oss.qualcomm.com>
+Date: Tue, 25 Aug 2026 23:33:12 +0530
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM4PR12MB6063:EE_|SA5PPF9D25F0C6D:EE_
-X-MS-Office365-Filtering-Correlation-Id: d12139ec-d246-46a0-4f65-08df02be79d8
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|1800799024|366016|23010399003|7416014|10067099003|11063799006|3023799007|4143699003|56012099006|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	PM88BVwQ6YQPjB1hdTmtfDkE3iltSvkUcA5jYE47I4uPg5SVgbF0I14FOjr4UxHiGJyjOg55WNWTbkNUlkWdmtLo6iBjCwK7pU7360Yp6IRhAnYiyUnXBbWRU6wXpFTx/6nKpKN4zcBUWwIhK+hp9ygPv5hB/L+Z0Byv/SOVvHESD0NtsmQF+p3MC4q970LctwczMGuX+fbXFVZgGp76aV8pE4vITgdJ58G+ELUCifUcu/1z1VCZ3sI5fzymceRigB5tsticsZ4sW6qtCpx1kXvL2N/IXevOgSiozO1Z/Tq10qzy7QmgDvLzCZzpmRpTNdOedcqJCWiMTDQkmvo3BB7SG7Ty4qx02OHGtmCcLCC90ksOeJe6G9BEqfYz8DXlbCtpu24Cho10iWKKCquLBH09QBOsXoZjNAmBLCwOm+uoyp+cbHFGDI/IbjQWT4vz0+Az7DPKPwmzk9chenytKm9iaAqwZOVrVIgpl7Vv6wNJ5Zod30KJszcKeCQzhAbZ/S95NVBGsiYZxbvfA4X+JW/3mOw0IRQLXJZSry1MkBLjTdV+8nIT/23ZgiebrNuGHXulB3hSNt/cQ1pwxoGF3OapWOIDBlHHPzAvkKkRbcuQ18RU7TrvKArrnPbv+yldm8Fs6CYxp/Yi3l5Egl/l06D9ohWjQiTx/8w1ID5Fcfs=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB6063.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016)(23010399003)(7416014)(10067099003)(11063799006)(3023799007)(4143699003)(56012099006)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?L05pSUFINnBBOEx4K0U3c0dzWmJGNy9lK2VhR05CTlVZcWpMMFFwaDBTeHha?=
- =?utf-8?B?YmozN29WVkJ4bkdvblh1V2tYR2FnNHhhbnh6akd5RnU5b0NUQ3JaVHlzUE9m?=
- =?utf-8?B?VUpxR05qbS9CV2hlSVZZVVJON1EyUFl1dlNCMXQyQ1BEdGYyZ05tNC82aWRJ?=
- =?utf-8?B?SEU4NEJOVDNkb1lIWlV0SnduMzRYZUFnVzRZbks4MVBUUFc5WURqUG84OC8v?=
- =?utf-8?B?MlN2dXplcnFNSFg5OG04Tng1V3kyWUNCVDJxaSswYk40ZWY2Z2xNMm4xYTIy?=
- =?utf-8?B?MkNPcXU4Z2xMMkRQcWlrS01wSjJGSlhqWDJiNmdsOUFQSXFWWm1VRE1BZ21J?=
- =?utf-8?B?UWdUbTNScFUvNGp1WUJvS2NqMDh4TTdCWFIvbGZlQUVJQ2VGNVVYc1NtaVp1?=
- =?utf-8?B?TEh4WTRCUHlaNDhhTFpnVTduZXZVR0lzV3loRCtZOTEvT2M5eU5UV3RveDdN?=
- =?utf-8?B?YWdJVjRoNDB6cEVoSEt2REVScG01SlU3T0NSTDd5dG9JQmRObFQ4Rzh4QnBk?=
- =?utf-8?B?aW5QT0FTWGQxK1JGeUs3WVFKQThSeGVyWVlmTlZLT0hNUzRhWjdTN2o4ZUFD?=
- =?utf-8?B?d0RhSUFFRS9pSXh3R3hJWmtwODNYZlRQN21BTXEzSGE1U096akJIYzZtZ3Nz?=
- =?utf-8?B?U294ZDhPVnVXSmlnRG4xSVB6Z2d3b244VnY2T3FKdjY5ZkFYOFcxM1pMMnFm?=
- =?utf-8?B?ck5GYmdZVC8xZGxGUHNuRzRnTzFZTEpUZklPbjNyd3lBSmkrYmJFY1UvVjBp?=
- =?utf-8?B?N0VWaEV3QXQ3WXBlVzdxbmZQb2QzQUVpU0hFc1M4OHMrZTZCWWdWOGJOTGF0?=
- =?utf-8?B?dzdPd1NBRUJlWlVpQ3pwT0lGejVTZTd2M2pneGxaemQ4MHIxRmxTWkk5UFlV?=
- =?utf-8?B?d0ZoYUlYRmpMejRBak5KL1BtWkptM2FuOGxENDFBRFBIZ3MvOWtUNlRYNlN0?=
- =?utf-8?B?Uk83L0lpa1BSUXdnNVF6MExYYjlMUmlwcFJadHRzT2h2OVBqLzMrTU14dnpz?=
- =?utf-8?B?ekV3b3hpZnIwTE9QVkRqcFZsbTVONm01ZWE5aXZYV1IrS2VrV2RlT1FUWnh2?=
- =?utf-8?B?b3JwSFZyNTBEN1pzVjZDU2l1OEQwaENGVVFmZi8yZ09rSHJWZWoyYXo1SDBa?=
- =?utf-8?B?N3M0czlQMXBrZHV6N3dFaW5vZHpERTdzeWhHbi9WcFdOODl4amlRVkptZzBD?=
- =?utf-8?B?MWtCNmU0MEFJWUYxSDJmaHpEcHNCVEg5YmRkdHhRYVRtTk9rMW5xTGdMZkhL?=
- =?utf-8?B?Q2JNMTB5a1BhR2x5V0huYXZRZWp5MUVuNllUaWRndFpqQ3IxN3dTbUlGci9F?=
- =?utf-8?B?WUNLVVh2UXUyVGVUbUlwRUR3OGhkQk00ZkIwRjJkTmRUN0ZDY1BNMURWUXVX?=
- =?utf-8?B?dEJKSUphMTEwV1pQdEdhMHMxd1dzR2RkZjBuemlJb3E5TE5hTmhPcmlEdWsx?=
- =?utf-8?B?dU1FUEM1b0tPbHF6RWlKbU0yTDU4bmdHNEhXVytwZ2RyMmFjb0FzQlRVa1hT?=
- =?utf-8?B?WmN1dm5NY283U0dnSUcyZ1NhVjF5eFhwUWduSTgzOEFrVUYyMStzQzNOektR?=
- =?utf-8?B?S0RyMHlhUUVreHhCRDM5Vzh4YUU4Y3JlN2d5MEVTSHd3MGJMMkhGRTg5dm9F?=
- =?utf-8?B?NEFjUUpGZ04ycldqRloxa3FRZ2l5aSsxZ29JMEF2cmxxcGNuTVdhZ1dLRFNQ?=
- =?utf-8?B?eXh2ZW90NGpBRjU0eGFGVmhpZU8zMHZKcDRINUZFZjBzT2wwYkM5YjVoM3N3?=
- =?utf-8?B?MnM0bE9mczh1cks2eXVNb0RGbk8yS0JOeER1WDRpejVBT2xzZXAyRVhVTkdY?=
- =?utf-8?B?bjBGNjNVdDRBU0tjakIrcHBxMnNocyswMStXaEN3N1VPdzhEUmxaVHRBYjlz?=
- =?utf-8?B?NS8yL1RZMWVQMy9mR2NxcldIcTRNdU9YNmVDV1JyZ2lUb2twZDVTdTBkYjF1?=
- =?utf-8?B?MlU1SC9uWTdVYm5xcjdkZmZwQXBjV29pOWFGR2RobXRKTXFDWDJHY0ZYR1ds?=
- =?utf-8?B?TEk1VVNRRjRyR2pMNGp5aHJBV3FJQXRXY2JDZC8zQkhzVDBqZHVITHFMbEg2?=
- =?utf-8?B?OGJJUldjREtYek5ZWGEyOE5ZN0twd25xczg0eGZjTzAxb2hzNXA1QkdmTmRL?=
- =?utf-8?B?Sm9LelovbFIvemNXWVE2NUtzN2lpdXZicjIvRG04QTJ5VFVES3JjcEJoQSt5?=
- =?utf-8?B?UTJYaUNwMTBQeStiY2lFQllnVy9xalBMbWFiYTg2eGlwK2xSN2t0dmIvQUw2?=
- =?utf-8?B?WTZBZ1ZuRmlCdDhyeVpDRXB0TTBsQkw3Z2VXaW5NTm5JWkJSQm1CL1lqUENZ?=
- =?utf-8?B?ZktZWHlxRzRjeVUrWjlnNE52bU9sS3lhNVVTcXFWWGpNU1hjZnZIQT09?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d12139ec-d246-46a0-4f65-08df02be79d8
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB6063.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2026 15:35:22.3802
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: GluWY2olIlEATs4XzwWlAwGJX+4gCOEqinW1UvS896yRie09R8ZymNNAez003YyiZSzFndQNDN23ylhcXV3jwQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA5PPF9D25F0C6D
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 7/7] i2c: qcom-geni: Use geni_se_set_rate() for setting
+ source clock frequency
+To: Mukesh Savaliya <mukesh.savaliya@oss.qualcomm.com>,
+        konrad.dybcio@oss.qualcomm.com, Sudeep Holla <sudeep.holla@kernel.org>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Ulf Hansson <ulfh@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, Mark Brown <broonie@kernel.org>,
+        Viken Dadhaniya <viken.dadhaniya@oss.qualcomm.com>,
+        Andi Shyti <andi.shyti@kernel.org>
+Cc: chandana.chiluveru@oss.qualcomm.com, arm-scmi@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-i2c@vger.kernel.org
+References: <20260805-derive_clk_perf_tbl_from_perf_domain_opp_table-v1-0-61171ab1cdce@oss.qualcomm.com>
+ <20260805-derive_clk_perf_tbl_from_perf_domain_opp_table-v1-7-61171ab1cdce@oss.qualcomm.com>
+ <8af7a34a-da4f-492f-a51c-cc420edc5e6e@oss.qualcomm.com>
+Content-Language: en-US
+From: Praveen Talari <praveen.talari@oss.qualcomm.com>
+In-Reply-To: <8af7a34a-da4f-492f-a51c-cc420edc5e6e@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Spam-Info: AW1haW4tMjYwODI1MDE1MyBTYWx0ZWRfXxNQOJQN/PbL/
+ FUdEra0knYdhK3/KMIELbSLUa7Qkhf6fQEG5QCxRbVDOiDJYUxGC4jasvK9A651A8b/k62m/8zj
+ HZjQUDGffeekIq8ehoi4YYprspY4wQ8=
+X-Proofpoint-ORIG-GUID: EtOoS56C64PFQU0Tfov-KD7luTWE5_3D
+X-Proofpoint-GUID: EtOoS56C64PFQU0Tfov-KD7luTWE5_3D
+X-Authority-Analysis: v=2.4 cv=Sb7HsPRu c=1 sm=1 tr=0 ts=6a8dd8ef cx=c_pps
+ a=oF/VQ+ItUULfLr/lQ2/icg==:117 a=T2iwtsF3Qoe1cvxaLfjbZQ==:17
+ a=IkcTkHD0fZMA:10 a=Sv0fKeRqtYgA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yx91gb_oNiZeI1HMLzn7:22
+ a=EUspDBNiAAAA:8 a=s8i-5AHMM79FQocxpXYA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=3WC7DwWrALyhR5TkjVHa:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwODI1MDE1MyBTYWx0ZWRfX0ZsUF+Jd1M7K
+ YZ9EQmzuQcPDERySxBoeoWnYxqIaiDSWfZsZR8UC80X5K/vvhNAmeROVDqkPUBaosREG+lVlc99
+ zSz7c0KfoGxqTywxHAh6s4grDnBvDwF0YCA8KyuSz7OZDhzN3AZxrXnt4dvHjjfTb9fnS4Xykdq
+ Gr4LwIvfm62WXuypORSiPeJJnoKqUMFJ7XanRw5hx7rHfYAbcjaQPc1X5pS3axnyx4qj7Aknv7U
+ 1+UE3b4AwbuiyhVzlRoPaNLyab9crknSyUhwy7mqCjClZPm1kikdEi8KVx7h4qIAnjvTn75p6+G
+ xW/utxojX5zaPYfp6Aqt1Qu7kQnz4mIDVaFrK0Ve6G2RWZwE7HC8mrtUBlIduTCneq1UKniX0K1
+ H6DvZEJ0iVV4JYf8rOybhEyDja5hanGoaERLYHvUSpYGsVeQcln+mn6Hd08ipBrY3RXbmasHwvo
+ bwAvNv51Stbezg8SKyQ==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-08-25_05,2026-08-24_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 malwarescore=0 phishscore=0 spamscore=0 adultscore=0
+ suspectscore=0 bulkscore=0 clxscore=1015 priorityscore=1501
+ lowpriorityscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
+ definitions=main-2608250153
 
-Hi John,
+Hi Mukesh
 
-On 25/08/2026 14:58, John Ogness wrote:
-> Hi Jon,
-> 
-> On 2026-08-24, Jon Hunter <jonathanh@nvidia.com> wrote:
->> With this I see a little more output on the console, but it still
->> appears to hang later and never fully boots.
+On 24-08-2026 19:11, Mukesh Savaliya wrote:
+>
+>
+> On 8/5/2026 1:27 AM, Praveen Talari wrote:
+>> On the SA8255P platform there is no Linux clock handler for the SE 
+>> source
+>> clock; resources are instead managed by firmware via a genpd performance
+>> domain. The I2C driver therefore relies on geni_se_set_rate() to 
+>> apply the
+>> fixed 19.2 MHz source clock frequency expected by the SCL divider and
+>
+> somewhere it's 32 MHz also and this may change too ?
+19.2 MHz is just the frequency currently requested by the I2C driver.
+
+Other frequencies such as 32 MHz are also supported and may change in 
+the future.
+>
+>> counter values programmed by qcom_geni_i2c_conf().
 >>
->> Boot log here: https://pastebin.com/Xe1vmeUj
-> 
-> Thanks, this information is helpful. Below is another hack, to be used
-> on the unmodified linux-next. For whatever reason, I think the queuing
-> of irqwork is causing problems. Perhaps the irqwork is actually firing
-> even though interrupts are supposed to be disabled here.
-> 
-> The following hack will disable the queuing during the cpuidle. Please
-> give this a try:
-> 
-> ===== BEGIN CPUIDLE HACK =====
-> diff --git a/drivers/cpuidle/cpuidle-tegra.c b/drivers/cpuidle/cpuidle-tegra.c
-> index aca907a62bb5d..1dca9d6defbff 100644
-> --- a/drivers/cpuidle/cpuidle-tegra.c
-> +++ b/drivers/cpuidle/cpuidle-tegra.c
-> @@ -226,6 +226,7 @@ static int tegra_cpuidle_adjust_state_index(int index, unsigned int cpu)
->   	return index;
->   }
->   
-> +extern bool console_irqwork_blocked;
->   static __cpuidle int tegra_cpuidle_enter(struct cpuidle_device *dev,
->   					 struct cpuidle_driver *drv,
->   					 int index)
-> @@ -238,6 +239,8 @@ static __cpuidle int tegra_cpuidle_enter(struct cpuidle_device *dev,
->   	if (dev->states_usage[index].disable)
->   		return -1;
->   
-> +	console_irqwork_blocked = true;
-> +
->   	if (index == TEGRA_C1) {
->   		if (do_rcu)
->   			ct_cpuidle_enter();
-> @@ -256,6 +259,8 @@ static __cpuidle int tegra_cpuidle_enter(struct cpuidle_device *dev,
->   		index = ret;
->   	}
->   
-> +	console_irqwork_blocked = false;
-> +
->   	return index;
->   }
-> ===== END CPUIDLE HACK =====
-Yes that does boot. Let me know if there are any further tests I can run.
-
-Thanks!
-Jon
-
--- 
-nvpublic
-
+>> Call geni_se_set_rate() directly from qcom_geni_i2c_conf() so the
+>> configured frequency is applied to the correct device (the perf domain
+>> device on the firmware-managed path, or se->dev otherwise) without 
+>> the I2C
+>> driver needing to know which resources_init() variant is in use.
+>>
+>> Drop the now-unused set_rate field from struct geni_i2c_desc, the
+>> geni_se_set_perf_opp() usage on the SA8255P variant, and the unused freq
+>> parameter from qcom_geni_i2c_conf().
+>>
+>> Signed-off-by: Praveen Talari <praveen.talari@oss.qualcomm.com>
+>> ---
+>>   drivers/i2c/busses/i2c-qcom-geni.c | 13 +++++++------
+>>   1 file changed, 7 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/drivers/i2c/busses/i2c-qcom-geni.c 
+>> b/drivers/i2c/busses/i2c-qcom-geni.c
+>> index a23554d101fd..4561e2d235d5 100644
+>> --- a/drivers/i2c/busses/i2c-qcom-geni.c
+>> +++ b/drivers/i2c/busses/i2c-qcom-geni.c
+>> @@ -213,11 +213,11 @@ static int geni_i2c_clk_map_idx(struct 
+>> geni_i2c_dev *gi2c)
+>>       return -EINVAL;
+>>   }
+>>   -static int qcom_geni_i2c_conf(struct geni_se *se, unsigned long freq)
+>> +static int qcom_geni_i2c_conf(struct geni_se *se)
+>>   {
+>>       struct geni_i2c_dev *gi2c = dev_get_drvdata(se->dev);
+>>       const struct geni_i2c_clk_fld *itr = gi2c->clk_fld;
+>> -    u32 val;
+>> +    u32 val, ret;
+>>         writel_relaxed(0, gi2c->se.base + SE_GENI_CLK_SEL);
+>>   @@ -233,6 +233,10 @@ static int qcom_geni_i2c_conf(struct geni_se 
+>> *se, unsigned long freq)
+>>                    itr->clk_div, itr->t_high_cnt,
+>>                    itr->t_low_cnt, itr->t_cycle_cnt);
+>>   +    ret = geni_se_set_rate(&gi2c->se, 19200000);
+>
+> hard code ?
+Good point. The 19.2 MHz value is not intended to be a permanent 
+limitation.
+This matches the frequency currently used by the I2C driver and 
+therefore preserves
+the existing behavior. If support for higher source clock frequencies 
+(e.g. 32 MHz or others)
+is added in the future, the requested OPP/performance state will need to 
+be updated accordingly.
+> May work currently, but if higher frequency support added, source may 
+> change.
+>
+> Also you have added in commit message, but add a comment also here.
+>
+>> +    if (ret)
+>> +        return ret;
+>> +
+>>       return geni_icc_set_bw_ab(&gi2c->se, GENI_DEFAULT_BW, 
+>> GENI_DEFAULT_BW,
+>>                     Bps_to_icc(gi2c->clk_freq_out));
+>>   }
+>
+> [...]
+>
