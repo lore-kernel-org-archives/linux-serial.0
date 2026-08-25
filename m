@@ -1,148 +1,123 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2376D45C70B;
-	Tue, 25 Aug 2026 13:57:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7C7B1F2B88;
+	Tue, 25 Aug 2026 13:58:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787666265; cv=none; b=XdHYMY446mjPvOtY35ndawLdAl1hAENAGMfNJVaaK/X6xk2YZNRgdTcXMZIXlGhid2p/dsdiqQrDxSEXd146ajU/6YYDKODsEbYC0gCz2EcgZg6SubE0mrlCg5YHzyQTcss1NtrGT5eZ0JArHri+mDVWZozuR1fL0DKaO/CMDLs=
+	t=1787666326; cv=none; b=Di5GB5w/73LSgclGjmKJnY8uaIWA+OaDZOZd9/ORRSLFqhmAsaFQlsmtJFlYS7SjDgsSKDbDwuS5UQmfLfw980KsLM6IwxZTGGn3kJ4sAk9QuO0vz2mu2T36jr/lKmUP5bIRW8bhV/rxhELk4oLsYjEeAtPhIFVPv9EwizILjAc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787666265; c=relaxed/simple;
-	bh=ccfp13Ex/bdX/+cSPLI8OfotNi6PEzN0nmjiCvtjVPg=;
-	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
-	 Mime-Version:Content-Type; b=Kg2ntHmbNoG8Pb4B01+lSZ+wau8oh55LqUsYnkXcToEDVEbGtrjFW3ILK75knPProEEeQI1OBXrXW2oV2OIDhtlPB2JAh052Vl8ddC821Rl69/hpZYp1w6lJeHarv0P+NRmwkHqXZTeNmXR6lnMSlOp/KyCbGpMBuyJQVM/cAao=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=U4Ztk9M0; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	s=arc-20240116; t=1787666326; c=relaxed/simple;
+	bh=+yqYdexVh/ewwGXf4CuHdE7ucuSjxbJaqm433cWulSw=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=Ml92KQWbjeYo02RzWE2MOYLJ+ibQNVfoOf7605tnnP0+EOwCK6KjXgQe1k+NJ6sZYYJaqpY+o7ajKAbAKbpPiY7rUNMgc+OINqixUtJK1RhS0+dQIrLkCkdwOkO/UxINKHlezmdO9zgeo/WMDzh4tSpAC9105Mw9J+Rp0HbXmI0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=vZXj54yb; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=3nZTdCqI; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="U4Ztk9M0"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=default; h=Content-Transfer-Encoding:Mime-Version:Message-Id:Subject:Cc:
-	To:From:Date:subject:date:message-id:reply-to;
-	bh=LSkFSJdgSktGSdc7N8X9eD+ZySBXU7m+wuK4INimUOE=; b=U4Ztk9M0ruthWfCxn1ve0FOymH
-	uG5ye3ScD4xXWpadtvOYsGd74qW8ZbexSZSj1srAe+UX1+/mTXhLlffVdG8StprgU3ReQ/Y2TxHYC
-	d0kS2EBApUQr4JNf4KZngx+mHy74IcLZMugRZj/dRijpLWSXlKoz7LBgfH5DABt4BhLw=;
-Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61] helo=pettiford.lan)
-	by mail.hugovil.com with esmtpa (Exim 4.98.2)
-	(envelope-from <hugo@hugovil.com>)
-	id 1wyreo-000000006c7-1upT;
-	Tue, 25 Aug 2026 09:57:42 -0400
-Date: Tue, 25 Aug 2026 09:57:41 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Paul Mbewe <paultyson.mbewe@ziehl-abegg.de>
-Cc: <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
- <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
- <hvilleneuve@dimonoff.com>, <stable@vger.kernel.org>, Tobias Gannert
- <tobias.gannert@ziehl-abegg.de>, Joachim Knorr
- <joachim.knorr@ziehl-abegg.de>
-Subject: Re: [PATCH 1/2] serial: sc16is7xx: fix TX gap caused by kfifo
- circular buffer wrap-around
-Message-Id: <20260825095741.6dbe87760a2401ba93ed9035@hugovil.com>
-In-Reply-To: <20260623112225.82386-2-paultyson.mbewe@ziehl-abegg.de>
-References: <20260623112225.82386-1-paultyson.mbewe@ziehl-abegg.de>
-	<20260623112225.82386-2-paultyson.mbewe@ziehl-abegg.de>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="vZXj54yb";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="3nZTdCqI"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1787666322;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=JpxYfEw8Y3L2dt+1X3XZajsKGK7TK6rB0kNOBLoseK4=;
+	b=vZXj54yb2z5cxzTCCNeUVBTfxSvToUm0nq8WXUjo/a5uXzS+cc+Rf/MIlE00bb33No3gZM
+	CXZwBFKDqnY7oAXBXE81B5/QGgcuLGqs6NPs+Zr1WzcITMmAEF6cGvwWij7bKHK54eySZP
+	AoTFiGkIFHCKPXlc4KbHlAEX2RDIcFWxC1onM7schhNJ+0fUng0Qq9fI9TSfL8BmAdaA7o
+	Ckpro0HvYL0l5aqB/0cbSHzSqum4HcXFFreZEgEJss13VUXjasNIUwUsxmKOWBWl518u6R
+	7RZP4e6ajTf3kkkY23rnmTwjq/0ezR5uYhhFMjpmzqyqSaUWhgCfsl/T9TL9Sg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1787666322;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=JpxYfEw8Y3L2dt+1X3XZajsKGK7TK6rB0kNOBLoseK4=;
+	b=3nZTdCqIcS2ybtn3UkRYyuQUl+mrlpOelTuOGa6aVyrgWTqKeulU7nJjrvqeM8eiQ0gHDM
+	V35igiX0FLv/GcBg==
+To: Jon Hunter <jonathanh@nvidia.com>, Petr Mladek <pmladek@suse.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>, Andy Shevchenko <andy.shevchenko@gmail.com>,
+ Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+ linux-kernel@vger.kernel.org, Ilpo =?utf-8?Q?J=C3=A4rvinen?=
+ <ilpo.jarvinen@linux.intel.com>, Andy Shevchenko
+ <andriy.shevchenko@linux.intel.com>, Hugo Villeneuve
+ <hvilleneuve@dimonoff.com>, Kees Cook <kees@kernel.org>, Stepan Ionichev
+ <sozdayvek@gmail.com>, Xin Zhao <jackzxcui1989@163.com>, Osama Abdelkader
+ <osama.abdelkader@gmail.com>, Fushuai Wang <wangfushuai@baidu.com>, Marco
+ Felsch <m.felsch@pengutronix.de>, linux-serial@vger.kernel.org,
+ "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
+Subject: Re: [PATCH tty v11 1/2] serial: 8250: Switch to nbcon console, take 2
+In-Reply-To: <6b46866f-548f-4963-bc41-48ce15ae9012@nvidia.com>
+References: <20260729120439.281252-1-john.ogness@linutronix.de>
+ <20260729120439.281252-2-john.ogness@linutronix.de>
+ <f3757a75-0ba1-4558-bf57-f19ab7e59a4c@nvidia.com>
+ <aoQPFC7d8mSuNZMh@pathway.suse.cz>
+ <861247ca-dfd4-40c6-a094-0fbe389f3b67@nvidia.com>
+ <aoR_9g7W0qyqWbOj@pathway.suse.cz>
+ <fd1802c3-4b38-4127-b988-a9ff059bcebf@nvidia.com>
+ <877bll9d91.fsf@jogness.linutronix.de>
+ <eb0f2c8b-2c7b-4bfd-9144-6786999c4c31@nvidia.com>
+ <875x139eqr.fsf@jogness.linutronix.de>
+ <6b46866f-548f-4963-bc41-48ce15ae9012@nvidia.com>
+Date: Tue, 25 Aug 2026 16:04:41 +0206
+Message-ID: <877ble714e.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam_score: -2.0
-X-Spam_bar: --
+MIME-Version: 1.0
+Content-Type: text/plain
 
-Hi Paul,
+Hi Jon,
 
-On Tue, 23 Jun 2026 13:22:24 +0200
-Paul Mbewe <paultyson.mbewe@ziehl-abegg.de> wrote:
+On 2026-08-24, Jon Hunter <jonathanh@nvidia.com> wrote:
+> With this I see a little more output on the console, but it still
+> appears to hang later and never fully boots.
+>
+> Boot log here: https://pastebin.com/Xe1vmeUj
 
-> kfifo_out_linear_ptr() returns only one contiguous linear segment of the
-> circular kfifo buffer. When transmit data wraps around the end of the
-> buffer, only the first segment (up to the buffer end) is sent. The
-> remaining data at the start of the buffer is not sent until the next TX
-> interrupt fires, resulting in a visible inter-frame gap on the wire.
-> 
-> This gap violates the Modbus RTU 1.5 character-time inter-character
-> silence limit. Receivers interpret any silence exceeding 1.5 character
-> times as an end-of-frame marker, splitting a single valid frame into
-> two malformed fragments and corrupting communication on the bus.
-> 
-> The incomplete transfer also causes unnecessary TX interrupts: instead
-> of draining the full available FIFO space in one pass, the driver fires
-> an extra interrupt per wrap-around just to send the remaining bytes.
-> 
-> The pre-kfifo code handled wrap-around by copying bytes one at a time
-> from the circ_buf into a linear staging buffer. The conversion to kfifo
-> replaced this with a single kfifo_out_linear_ptr() call, losing the
-> wrap-around handling. The max310x driver (a similar SPI UART) correctly
-> handles this with a while loop.
-> 
-> Fix this by calling kfifo_out_linear_ptr() in a loop, advancing through
-> all contiguous segments until the available TX FIFO space is exhausted
-> or the kfifo is empty.
-> 
-> Tested on SC16IS752 (SPI) driving RS-485 at 115200 baud 8N1 on an
-> i.MX6ULL based board. Oscilloscope confirmed mid-frame breaks at the
-> kfifo wrap-around boundary before the fix; no breaks observed after.
-> 
-> Fixes: 1788cf6a91d9 ("tty: serial: switch from circ_buf to kfifo")
-> Cc: stable@vger.kernel.org
-> Reported-by: Tobias Gannert <tobias.gannert@ziehl-abegg.de>
-> Tested-by: Tobias Gannert <tobias.gannert@ziehl-abegg.de>
-> Reviewed-by: Joachim Knorr <joachim.knorr@ziehl-abegg.de>
-> Signed-off-by: Paul Mbewe <paultyson.mbewe@ziehl-abegg.de>
-> ---
->  drivers/tty/serial/sc16is7xx.c | 14 +++++++++++---
->  1 file changed, 11 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-> index 1a2c4c14f6aa..395a219280be 100644
-> --- a/drivers/tty/serial/sc16is7xx.c
-> +++ b/drivers/tty/serial/sc16is7xx.c
-> @@ -730,9 +730,17 @@ static void sc16is7xx_handle_tx(struct uart_port *port)
->  		txlen = 0;
->  	}
->  
-> -	txlen = kfifo_out_linear_ptr(&tport->xmit_fifo, &tail, txlen);
-> -	sc16is7xx_fifo_write(port, tail, txlen);
-> -	uart_xmit_advance(port, txlen);
-> +	/* Handle circular buffer wrap-around by sending in contiguous segments */
+Thanks, this information is helpful. Below is another hack, to be used
+on the unmodified linux-next. For whatever reason, I think the queuing
+of irqwork is causing problems. Perhaps the irqwork is actually firing
+even though interrupts are supposed to be disabled here.
 
-Maybe I would drop "by sending in contiguous segments", because it is
-more confusing than helping for me, because before your patch it was
-already sending one contiguous segment...
-Or maybe change to "... by sending multiple segments"?
+The following hack will disable the queuing during the cpuidle. Please
+give this a try:
 
+===== BEGIN CPUIDLE HACK =====
+diff --git a/drivers/cpuidle/cpuidle-tegra.c b/drivers/cpuidle/cpuidle-tegra.c
+index aca907a62bb5d..1dca9d6defbff 100644
+--- a/drivers/cpuidle/cpuidle-tegra.c
++++ b/drivers/cpuidle/cpuidle-tegra.c
+@@ -226,6 +226,7 @@ static int tegra_cpuidle_adjust_state_index(int index, unsigned int cpu)
+ 	return index;
+ }
+ 
++extern bool console_irqwork_blocked;
+ static __cpuidle int tegra_cpuidle_enter(struct cpuidle_device *dev,
+ 					 struct cpuidle_driver *drv,
+ 					 int index)
+@@ -238,6 +239,8 @@ static __cpuidle int tegra_cpuidle_enter(struct cpuidle_device *dev,
+ 	if (dev->states_usage[index].disable)
+ 		return -1;
+ 
++	console_irqwork_blocked = true;
++
+ 	if (index == TEGRA_C1) {
+ 		if (do_rcu)
+ 			ct_cpuidle_enter();
+@@ -256,6 +259,8 @@ static __cpuidle int tegra_cpuidle_enter(struct cpuidle_device *dev,
+ 		index = ret;
+ 	}
+ 
++	console_irqwork_blocked = false;
++
+ 	return index;
+ }
+===== END CPUIDLE HACK =====
 
-> +	while (txlen > 0 && !kfifo_is_empty(&tport->xmit_fifo)) {
-> +		unsigned int to_send;
-
-You can now move this variable here since it is used only in the
-while() scope:
-                unsigned char *tail;
-
-> +
-> +		to_send = kfifo_out_linear_ptr(&tport->xmit_fifo, &tail, txlen);
-> +		if (!to_send)
-> +			break;
-
-Insert empty line
-
-> +		sc16is7xx_fifo_write(port, tail, to_send);
-> +		uart_xmit_advance(port, to_send);
-> +		txlen -= to_send;
-> +	}
->  
->  	uart_port_lock_irqsave(port, &flags);
->  	if (kfifo_len(&tport->xmit_fifo) < WAKEUP_CHARS)
-> -- 
-> 2.43.0
-> 
-> 
-> 
-
-
--- 
-Hugo Villeneuve
+John Ogness
