@@ -1,123 +1,325 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7C7B1F2B88;
-	Tue, 25 Aug 2026 13:58:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C9D9404BC4;
+	Tue, 25 Aug 2026 14:28:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787666326; cv=none; b=Di5GB5w/73LSgclGjmKJnY8uaIWA+OaDZOZd9/ORRSLFqhmAsaFQlsmtJFlYS7SjDgsSKDbDwuS5UQmfLfw980KsLM6IwxZTGGn3kJ4sAk9QuO0vz2mu2T36jr/lKmUP5bIRW8bhV/rxhELk4oLsYjEeAtPhIFVPv9EwizILjAc=
+	t=1787668082; cv=none; b=aZHztbrrfghNe8jXjOEtUqAN9xg68hn6Z45voiaXw5MONK0Nwe+yma3Qf+jhro3UzVoko5DxL1aYbHyKoi9eqT0sOG6ef3U7WWP+TFN7ixIQTlNIL57cnyTX3QVQKhnDIGBI86oQZKmeIbHAf1EWOi3NuYuf6inNDyQImAwHsGI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787666326; c=relaxed/simple;
-	bh=+yqYdexVh/ewwGXf4CuHdE7ucuSjxbJaqm433cWulSw=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=Ml92KQWbjeYo02RzWE2MOYLJ+ibQNVfoOf7605tnnP0+EOwCK6KjXgQe1k+NJ6sZYYJaqpY+o7ajKAbAKbpPiY7rUNMgc+OINqixUtJK1RhS0+dQIrLkCkdwOkO/UxINKHlezmdO9zgeo/WMDzh4tSpAC9105Mw9J+Rp0HbXmI0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=vZXj54yb; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=3nZTdCqI; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1787668082; c=relaxed/simple;
+	bh=zUoi02lEWw5502PwfY+29ekthFYveoeIf0/OVAM46SU=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=b4LVfxgiIv6n0/pI3r71Y+y4G9tCF59Ph1dWoy7DIk56IJ/p02ViHqN6LaidJnBV1TKx4VqQ4IqG0ITzatqqAe3Obi7XNAkcImt76eyhKxo5QpvqYkoA6M5uSLAB2kEr6RmIL7lpVKqDcyfJumwrO68r0F3mEKELShMv4qus4JE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=cNQtB43i; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="vZXj54yb";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="3nZTdCqI"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1787666322;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=JpxYfEw8Y3L2dt+1X3XZajsKGK7TK6rB0kNOBLoseK4=;
-	b=vZXj54yb2z5cxzTCCNeUVBTfxSvToUm0nq8WXUjo/a5uXzS+cc+Rf/MIlE00bb33No3gZM
-	CXZwBFKDqnY7oAXBXE81B5/QGgcuLGqs6NPs+Zr1WzcITMmAEF6cGvwWij7bKHK54eySZP
-	AoTFiGkIFHCKPXlc4KbHlAEX2RDIcFWxC1onM7schhNJ+0fUng0Qq9fI9TSfL8BmAdaA7o
-	Ckpro0HvYL0l5aqB/0cbSHzSqum4HcXFFreZEgEJss13VUXjasNIUwUsxmKOWBWl518u6R
-	7RZP4e6ajTf3kkkY23rnmTwjq/0ezR5uYhhFMjpmzqyqSaUWhgCfsl/T9TL9Sg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1787666322;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=JpxYfEw8Y3L2dt+1X3XZajsKGK7TK6rB0kNOBLoseK4=;
-	b=3nZTdCqIcS2ybtn3UkRYyuQUl+mrlpOelTuOGa6aVyrgWTqKeulU7nJjrvqeM8eiQ0gHDM
-	V35igiX0FLv/GcBg==
-To: Jon Hunter <jonathanh@nvidia.com>, Petr Mladek <pmladek@suse.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, Andy Shevchenko <andy.shevchenko@gmail.com>,
- Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
- linux-kernel@vger.kernel.org, Ilpo =?utf-8?Q?J=C3=A4rvinen?=
- <ilpo.jarvinen@linux.intel.com>, Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>, Hugo Villeneuve
- <hvilleneuve@dimonoff.com>, Kees Cook <kees@kernel.org>, Stepan Ionichev
- <sozdayvek@gmail.com>, Xin Zhao <jackzxcui1989@163.com>, Osama Abdelkader
- <osama.abdelkader@gmail.com>, Fushuai Wang <wangfushuai@baidu.com>, Marco
- Felsch <m.felsch@pengutronix.de>, linux-serial@vger.kernel.org,
- "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
-Subject: Re: [PATCH tty v11 1/2] serial: 8250: Switch to nbcon console, take 2
-In-Reply-To: <6b46866f-548f-4963-bc41-48ce15ae9012@nvidia.com>
-References: <20260729120439.281252-1-john.ogness@linutronix.de>
- <20260729120439.281252-2-john.ogness@linutronix.de>
- <f3757a75-0ba1-4558-bf57-f19ab7e59a4c@nvidia.com>
- <aoQPFC7d8mSuNZMh@pathway.suse.cz>
- <861247ca-dfd4-40c6-a094-0fbe389f3b67@nvidia.com>
- <aoR_9g7W0qyqWbOj@pathway.suse.cz>
- <fd1802c3-4b38-4127-b988-a9ff059bcebf@nvidia.com>
- <877bll9d91.fsf@jogness.linutronix.de>
- <eb0f2c8b-2c7b-4bfd-9144-6786999c4c31@nvidia.com>
- <875x139eqr.fsf@jogness.linutronix.de>
- <6b46866f-548f-4963-bc41-48ce15ae9012@nvidia.com>
-Date: Tue, 25 Aug 2026 16:04:41 +0206
-Message-ID: <877ble714e.fsf@jogness.linutronix.de>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="cNQtB43i"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD6BA1F000E9;
+	Tue, 25 Aug 2026 14:27:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
+	s=korg; t=1787668081;
+	bh=Sf1j2gff94PNeENqlWOFnn4DxjwbCKByNyForIAvdds=;
+	h=Date:From:To:Cc:Subject;
+	b=cNQtB43i6ji5vTRERNEkh8w3wTlxte72rWXp070o1bQlMt7+N/M9nw+Si5aHQTgHN
+	 NxkjTzs61tuUS4vJNAy4ZmdniPIrkismd1WXCtO0LO4dNOLlYfDKPCoOrQBOWN41pE
+	 u/cxOcUtwFCTAuij8ZeodliNNeDocOrKG93wyNFg=
+Date: Tue, 25 Aug 2026 16:27:54 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Andrew Morton <akpm@linux-foundation.org>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY/Serial driver updates for 7.3-rc1
+Message-ID: <ao2masQJ22TNPd12@kroah.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 
-Hi Jon,
+The following changes since commit f5098b6bae761e346ebcd9da7f95622c04733cff:
 
-On 2026-08-24, Jon Hunter <jonathanh@nvidia.com> wrote:
-> With this I see a little more output on the console, but it still
-> appears to hang later and never fully boots.
->
-> Boot log here: https://pastebin.com/Xe1vmeUj
+  Linux 7.2-rc5 (2026-07-26 14:45:48 -0700)
 
-Thanks, this information is helpful. Below is another hack, to be used
-on the unmodified linux-next. For whatever reason, I think the queuing
-of irqwork is causing problems. Perhaps the irqwork is actually firing
-even though interrupts are supposed to be disabled here.
+are available in the Git repository at:
 
-The following hack will disable the queuing during the cpuidle. Please
-give this a try:
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-7.3-rc1
 
-===== BEGIN CPUIDLE HACK =====
-diff --git a/drivers/cpuidle/cpuidle-tegra.c b/drivers/cpuidle/cpuidle-tegra.c
-index aca907a62bb5d..1dca9d6defbff 100644
---- a/drivers/cpuidle/cpuidle-tegra.c
-+++ b/drivers/cpuidle/cpuidle-tegra.c
-@@ -226,6 +226,7 @@ static int tegra_cpuidle_adjust_state_index(int index, unsigned int cpu)
- 	return index;
- }
- 
-+extern bool console_irqwork_blocked;
- static __cpuidle int tegra_cpuidle_enter(struct cpuidle_device *dev,
- 					 struct cpuidle_driver *drv,
- 					 int index)
-@@ -238,6 +239,8 @@ static __cpuidle int tegra_cpuidle_enter(struct cpuidle_device *dev,
- 	if (dev->states_usage[index].disable)
- 		return -1;
- 
-+	console_irqwork_blocked = true;
-+
- 	if (index == TEGRA_C1) {
- 		if (do_rcu)
- 			ct_cpuidle_enter();
-@@ -256,6 +259,8 @@ static __cpuidle int tegra_cpuidle_enter(struct cpuidle_device *dev,
- 		index = ret;
- 	}
- 
-+	console_irqwork_blocked = false;
-+
- 	return index;
- }
-===== END CPUIDLE HACK =====
+for you to fetch changes up to 8b0b29fdcb47907ae0296b8fe829e918e05e300f:
 
-John Ogness
+  serial: imx: serialize imx_uart_ports[] lifetime (2026-08-03 16:54:10 +0200)
+
+----------------------------------------------------------------
+TTY / Serial driver updates for 7.3-rc1
+
+Here is the "big" set of tty and serial driver updates for 7.3-rc1.  Not
+really all that much happened this development cycle for this subsystem,
+changes in here are:
+  - removal of the ipwireless driver as it's no longer used or needed
+  - new 8250_mxpcie driver added
+  - qcom serial driver updates and additions
+  - vt mode validation addition
+  - lots of other small serial driver updates and additions
+
+All of these have been in linux-next for weeks with no reported issues.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Andy Shevchenko (1):
+      serdev: acpi: Free resource list at appropriate time
+
+Aniket Randive (1):
+      serial: qcom_geni: Disable closing_wait for console to prevent shutdown timeout
+
+Arnd Bergmann (1):
+      serial: 8250: handle ixp4xx register endianness correctly
+
+Bartosz Golaszewski (1):
+      serial: 8250_exar: use platform_device_register_full()
+
+Bjorn Andersson (2):
+      serial: qcom-geni: Convert console to nbcon
+      serial: qcom-geni: Keep FIFO RX active during console TX
+
+Carlo Caione (2):
+      arm64: dts: mediatek: alias all enabled serial ports
+      serial: 8250_mtk: honor DT serial aliases
+
+Crescent Hsieh (14):
+      serial: 8250: split Moxa PCIe serial board support out of 8250_pci
+      serial: 8250: add Moxa MUEx50 UART port type
+      serial: 8250_mxpcie: enable enhanced mode and program FIFO trigger levels
+      serial: 8250_mxpcie: enable automatic RTS/CTS flow control
+      serial: 8250_mxpcie: offload XON/XOFF flow control to MUEx50 hardware
+      serial: 8250_mxpcie: add custom handle_irq callback
+      serial: 8250_mxpcie: speed up RX using memory-mapped FIFO window
+      serial: 8250_mxpcie: speed up TX using memory-mapped FIFO window
+      serial: 8250_mxpcie: support serial interface mode switching
+      serial: 8250: allow low-level drivers to override break control
+      serial: 8250_mxpcie: add break support for RS485 using MUEx50 features
+      serial: 8250: allow UART drivers to override rx_trig_bytes handling
+      serial: 8250_mxpcie: introduce per-port private data structure
+      serial: 8250_mxpcie: implement rx_trig_bytes callbacks via MUEx50 RTL
+
+David Laight (1):
+      drivers/tty/serial/kgdboc: Use strscpy() to copy strings into arrays
+
+Douglas Anderson (1):
+      dt-bindings: serial: snps-dw-apb-uart: Add "google,lga-uart"
+
+Fushuai Wang (2):
+      serial: 8250: Clear CON_PRINTBUFFER on port re-registration
+      Revert "serial: 8250: Clear CON_PRINTBUFFER on port re-registration"
+
+Greg Kroah-Hartman (3):
+      Merge 7.2-rc3 into tty-next
+      Revert "serial: qcom-geni: remove .pm callback, use runtime PM in startup/shutdown"
+      Merge 7.2-rc5 into tty-next
+
+Guangshuo Li (1):
+      serial: qcom-geni: do not advance stale DMA completions
+
+Haoxiang Li (1):
+      tty: serial: pch_uart: add check for pci_get_slot()
+
+Hugo Villeneuve (17):
+      serial: 8250_hub6: add hub6_match_port()
+      serial: core: add uart_iotype_mmio/io helper functions
+      serial: core: use uart_iotype_*() to simplify uart_match_port()
+      serial: uniformize serial port I/O infos display
+      serial: 8250: use uart_iotype_*() to simplify code
+      serial: 8250_rsa: use uart_iotype_*() to simplify code
+      serial: core: add new I/O type for SPI and I2C bus devices
+      serial: sc16is7xx: use new UPIO_BUS as iotype
+      serial: max310x: use new UPIO_BUS as iotype
+      serial: max3100: use new UPIO_BUS as iotype
+      serial: 8250_hub6: add missing include for hub6_match_port()
+      serial: 8250: fix compile error with hub6_match_port() when compiled as a module
+      serial: core: display 32 for MEM32 and MEM32BE UPIO types
+      serial: max310x: remove always included kconfig.h
+      serial: 8250: remove always included kconfig.h
+      serial: rsci: remove check for zero baud rate from uart_get_baud_rate()
+      serial: sh-sci: remove check for zero baud rate from uart_get_baud_rate()
+
+Jiri Slaby (SUSE) (4):
+      goldfish: remove unused gf_write_dma_addr()
+      tty: goldfish: drop unused goldfish_tty::opencount
+      tty: goldfish: move gf_write_ptr() to tty/goldfish.c
+      tty: goldfish: use guard() for locks
+
+John Ogness (2):
+      serial: 8250: Switch to nbcon console, take 2
+      Revert "serial: 8250: drop lockdep annotation from serial8250_clear_IER()"
+
+John de la Garza (2):
+      tty: tty_jobctrl: use guard()s in tiocspgrp()
+      tty: tty_jobctrl: use guard() in tiocgsid()
+
+Karl Mehltretter (8):
+      tty: hvc: restrict HVC_DCC to ARMv6+ and ARM64
+      serial: amba-pl011: unprepare console clock on unregister
+      serial: amba-pl011: keep console clock enabled for atomic writes
+      serial: core: do fallible allocations before the console can be registered
+      serial: core: clear freed pointers on uart_register_driver() failure
+      tty: skip cdev_del() when no cdev is registered
+      tty: clear cdev pointer after cdev_add() failure
+      serial: imx: serialize imx_uart_ports[] lifetime
+
+Mike Rapoport (Microsoft) (4):
+      serial: pch: replace __get_free_page() with kmalloc()
+      tty: amiserial: replace get_zeroed_page() with kzalloc()
+      tty: serial: men_z135_uart: replace __get_free_page() with kmalloc()
+      vc_screen: replace __get_free_pages() with kmalloc()
+
+Pan Chuang (5):
+      serial: 8250_bcm7271: Remove redundant dev_err_probe()
+      serial: imx: Remove redundant dev_err()
+      serial: mvebu-uart: Remove redundant dev_err()
+      serial: mctrl_gpio: Remove redundant dev_err()
+      serial: sprd: Remove redundant dev_err()
+
+Pei Xiao (1):
+      serial: bcm63xx-uart: silence false positive coccinelle warning on clk_put
+
+Praveen Talari (11):
+      serial: qcom-geni: trace: Drop redundant len field from geni_serial_data
+      serial: qcom-geni: Pre-map RX DMA buffer at probe to avoid sleep-in-atomic
+      serial: qcom-geni: add force suspend/resume to system sleep callbacks
+      serial: qcom-geni: remove .pm callback, use runtime PM in startup/shutdown
+      serial: qcom-geni: Add tracepoints for Qualcomm GENI serial driver
+      serial: qcom_geni: Add shutdown callback to quiesce hardware on reboot
+      serial: qcom_geni: Add panic notifier to stop UART on panic
+      serial: qcom-geni: remove .pm callback, use runtime PM in startup/shutdown
+      serial: qcom-geni: Use common GENI resource initialisation helpers
+      serial: qcom-geni: Use resources helper APIs in runtime PM functions
+      serial: qcom-geni: Use geni_se_set_perf_level() for baud rate perf level
+
+Qingfang Deng (1):
+      tty: remove the ipwireless driver
+
+Rahul Bukte (1):
+      serial: 8250: force synchronous probe for the ISA and PNP drivers
+
+Rosen Penev (2):
+      tty: serial: mpc52xx_uart: add bounds check for psc_num array index
+      serial: cpm_uart: replace irq_of_parse_and_map with platform_get_irq
+
+Simon Glass (1):
+      dt-bindings: serial: snps-dw-apb-uart: Add RV1106 compatible
+
+Tapio Reijonen (3):
+      serial: max310x: register GPIO controller before adding UART ports
+      dt-bindings: serial: maxim,max310x: describe per-channel rs485 subnodes
+      serial: max310x: honour rs485 properties from per-channel DT subnode
+
+Uwe Kleine-König (The Capable Hub) (3):
+      serial: 8250_exar: Consistently define pci_device_ids using named initializers
+      tty: serial: rp2: Use named initializer for pci_device_id::driver_data
+      serial: 8250_pnp: Use named initializers for pnp_device_id array
+
+Wang Zihan (1):
+      vt: add mode validation in vt_setactivate
+
+Yu-Che Hsieh (1):
+      dt-bindings: serial: 8250: Add Aspeed AST2600 and AST2700 uart compatible
+
+Yuho Choi (1):
+      serial: ma35d1: Fix OF node reference leaks in console init
+
+ Documentation/devicetree/bindings/serial/8250.yaml |    8 +-
+ .../devicetree/bindings/serial/maxim,max310x.yaml  |   92 +-
+ .../bindings/serial/snps-dw-apb-uart.yaml          |    2 +
+ MAINTAINERS                                        |    6 -
+ .../boot/dts/mediatek/mt6795-sony-xperia-m5.dts    |    1 +
+ arch/arm64/boot/dts/mediatek/mt7622-rfb1.dts       |    1 +
+ .../boot/dts/mediatek/mt7986a-bananapi-bpi-r3.dts  |    2 +
+ arch/arm64/boot/dts/mediatek/mt7986a-rfb.dts       |    2 +
+ arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi     |    1 +
+ .../boot/dts/mediatek/mt8192-asurada-hayato-r1.dts |    4 +
+ arch/arm64/boot/dts/mediatek/mt8195-demo.dts       |    1 +
+ arch/arm64/boot/dts/mediatek/mt8365-evk.dts        |    2 +
+ .../boot/dts/mediatek/mt8390-genio-common.dtsi     |    2 +
+ .../boot/dts/mediatek/mt8390-grinn-genio-sbc.dtsi  |    2 +
+ .../boot/dts/mediatek/mt8390-tungsten-smarc.dtsi   |    2 +
+ .../boot/dts/mediatek/mt8395-genio-common.dtsi     |    1 +
+ arch/powerpc/configs/ppc6xx_defconfig              |    1 -
+ drivers/tty/Kconfig                                |    9 -
+ drivers/tty/Makefile                               |    2 -
+ drivers/tty/amiserial.c                            |   14 +-
+ drivers/tty/goldfish.c                             |   23 +-
+ drivers/tty/hvc/Kconfig                            |    2 +-
+ drivers/tty/ipwireless/Makefile                    |    9 -
+ drivers/tty/ipwireless/hardware.c                  | 1770 --------------------
+ drivers/tty/ipwireless/hardware.h                  |   63 -
+ drivers/tty/ipwireless/main.c                      |  356 ----
+ drivers/tty/ipwireless/main.h                      |   66 -
+ drivers/tty/ipwireless/network.c                   |  517 ------
+ drivers/tty/ipwireless/network.h                   |   54 -
+ drivers/tty/ipwireless/setup_protocol.h            |  109 --
+ drivers/tty/ipwireless/tty.c                       |  627 -------
+ drivers/tty/ipwireless/tty.h                       |   46 -
+ drivers/tty/serdev/core.c                          |    4 +-
+ drivers/tty/serial/8250/8250.h                     |   11 +-
+ drivers/tty/serial/8250/8250_bcm7271.c             |    4 +-
+ drivers/tty/serial/8250/8250_core.c                |   71 +-
+ drivers/tty/serial/8250/8250_dw.c                  |    2 +-
+ drivers/tty/serial/8250/8250_early.c               |   19 +-
+ drivers/tty/serial/8250/8250_exar.c                |   53 +-
+ drivers/tty/serial/8250/8250_hub6.c                |    8 +
+ drivers/tty/serial/8250/8250_mtk.c                 |    7 +-
+ drivers/tty/serial/8250/8250_mxpcie.c              |  627 +++++++
+ drivers/tty/serial/8250/8250_of.c                  |   12 +
+ drivers/tty/serial/8250/8250_pci.c                 |  245 +--
+ drivers/tty/serial/8250/8250_platform.c            |    1 +
+ drivers/tty/serial/8250/8250_pnp.c                 |  309 ++--
+ drivers/tty/serial/8250/8250_port.c                |  321 +++-
+ drivers/tty/serial/8250/8250_rsa.c                 |   40 +-
+ drivers/tty/serial/8250/Kconfig                    |   10 +
+ drivers/tty/serial/8250/Makefile                   |    1 +
+ drivers/tty/serial/amba-pl011.c                    |   48 +-
+ drivers/tty/serial/bcm63xx_uart.c                  |   11 +-
+ drivers/tty/serial/cpm_uart.c                      |    9 +-
+ drivers/tty/serial/earlycon.c                      |   17 +-
+ drivers/tty/serial/imx.c                           |   39 +-
+ drivers/tty/serial/kgdboc.c                        |    2 +-
+ drivers/tty/serial/ma35d1_serial.c                 |   12 +-
+ drivers/tty/serial/max3100.c                       |    1 +
+ drivers/tty/serial/max310x.c                       |  101 +-
+ drivers/tty/serial/men_z135_uart.c                 |    7 +-
+ drivers/tty/serial/mpc52xx_uart.c                  |    8 +
+ drivers/tty/serial/mvebu-uart.c                    |   12 +-
+ drivers/tty/serial/pch_uart.c                      |   11 +-
+ drivers/tty/serial/qcom_geni_serial.c              |  660 +++++---
+ drivers/tty/serial/rp2.c                           |    2 +-
+ drivers/tty/serial/rsci.c                          |    3 -
+ drivers/tty/serial/sc16is7xx.c                     |    9 +-
+ drivers/tty/serial/serial_core.c                   |  167 +-
+ drivers/tty/serial/serial_mctrl_gpio.c             |    3 -
+ drivers/tty/serial/sh-sci.c                        |    2 -
+ drivers/tty/serial/sprd_serial.c                   |    5 +-
+ drivers/tty/tty_io.c                               |    6 +-
+ drivers/tty/tty_jobctrl.c                          |   41 +-
+ drivers/tty/vt/vc_screen.c                         |    6 +-
+ drivers/tty/vt/vt_ioctl.c                          |    2 +
+ include/linux/goldfish.h                           |   24 -
+ include/linux/serial_8250.h                        |   17 +-
+ include/linux/serial_core.h                        |    9 +
+ include/trace/events/qcom_geni_serial.h            |    7 +-
+ include/uapi/linux/serial.h                        |    1 +
+ include/uapi/linux/serial_core.h                   |    3 +
+ 81 files changed, 2061 insertions(+), 4726 deletions(-)
+ delete mode 100644 drivers/tty/ipwireless/Makefile
+ delete mode 100644 drivers/tty/ipwireless/hardware.c
+ delete mode 100644 drivers/tty/ipwireless/hardware.h
+ delete mode 100644 drivers/tty/ipwireless/main.c
+ delete mode 100644 drivers/tty/ipwireless/main.h
+ delete mode 100644 drivers/tty/ipwireless/network.c
+ delete mode 100644 drivers/tty/ipwireless/network.h
+ delete mode 100644 drivers/tty/ipwireless/setup_protocol.h
+ delete mode 100644 drivers/tty/ipwireless/tty.c
+ delete mode 100644 drivers/tty/ipwireless/tty.h
+ create mode 100644 drivers/tty/serial/8250/8250_mxpcie.c
