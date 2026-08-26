@@ -1,112 +1,107 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B4C527144B;
-	Wed, 26 Aug 2026 07:53:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DAED64A8D;
+	Wed, 26 Aug 2026 07:59:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787730822; cv=none; b=dy+y9XP2+XPwBMcvJHPjpQuHceTK6xzFYlgiCzwwKA59V4J5I7bLyX+cx27nci7kIxlnzlGfVMLuCEW5KaOwONIAwrwvVdQF2MEoPLeePPCvb8YSAl+vKHot36brYRNlr15s6ngko5C0DtW5d0Q0hG1zh819gWce1naoUPGLvvs=
+	t=1787731170; cv=none; b=rdVd9Aww+d/iLR2SWJcSwEiQdxVKN7BrFLvkMHLvWn6iXdZLmoaDvUasp34G8YzP0/UzFVCcjGc1oaxv7Syag1GrMoRUD2TTlosi8sWdP6l6iRbIEnL5avPBV3d33WPXuUV+9VNaCigbe7uQYe06eBOFUi+cTMt/Ak9fm476pZE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787730822; c=relaxed/simple;
-	bh=0KfEbqnDTdOceuaOkU3mdBu566L40MteOW/Tc1fkWUY=;
+	s=arc-20240116; t=1787731170; c=relaxed/simple;
+	bh=r/0+M4wdvjLRgs1k3O+I6W8cWObIePkDJOUd+tJSOJk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=utLoHmyxErZr8oDWzGhDE/BHd83pc1uplEwKRIH32Ye6PPC+QmQyA0w8cs8Oz4Aa+LliBNtKC9egtPJr+6pLGB6abkuXX5GCDHmaZxWBPXBVv8UYzfB+SUrGyrrIoQELWrZub+4H3i0NOJVOofgwmhNziOCoCsXgH6CONPtEtac=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=mMnOw6w4; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=GUyjWbngCCu0hCvLAK8e+6a0J7ABWVZ0W95jMsGJthuTjyYMiZdSv3NwXTa5kKnE+EKQn8sMx3rr6w8+d5TOPHEaMOWvQe0+gdrhe3LsZQlpfd2nB+QLPABBYgBSILEURqCkXFOVH6N8X9G24nhO50IUpQTgHzZPTTgebOgszLU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=cBI3xtKk; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=Dni4fe3n; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="mMnOw6w4"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 113E91F000E9;
-	Wed, 26 Aug 2026 07:53:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1787730821;
-	bh=GFZ1eWUK2aCU5hx1QdT914JOIzfjTIdqLP24BI9REkg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=mMnOw6w4EiVFl8fAej0nCflcutPxW3zuAraqm+wscRrS5IIAqJJBE95u3UVM0HFfD
-	 Ak33wxdrvXWOlZkglL6SeWzTy5QEQLHY4Hup6FW19pxUREZilUubaXrw/gwXKOXLYU
-	 hCUau+ZuK+fc5G/wyt5D6Uh8fWK9cbj0cn6IVdKo=
-Date: Wed, 26 Aug 2026 09:53:34 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Ruslan Valiyev <linuxoid@gmail.com>
-Cc: Jiri Slaby <jirislaby@kernel.org>, Tony Lindgren <tony@atomide.com>,
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="cBI3xtKk";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="Dni4fe3n"
+Date: Wed, 26 Aug 2026 09:59:25 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1787731166;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Vp8n5tXAE/0DxEjcH9DrU0RGbMnRQpKfp5sszJqLRLw=;
+	b=cBI3xtKkRriqqSNOzSTcGsy1SxsD6TlAvNm7sQFQryV/k+6U/H1Igg6M7hQUcP/4YqZqy9
+	sWJQtucnK10cfpcsrud54vF+A6O56Ehf49gVJug4AogMQYuz/kWelqmZ6zN9cFfeVQWOpL
+	89NtwKnJiAUt9AHN9lh8VFGHmUwq4JDHdKg8kGbvxpQR2G11Y0kOnqvKMAQWOb/1ZaetcP
+	aPm9KUMhdczDcehDroaCBUTjXi/uBELyq/iEUW4kQyI8WYIgGvs27WG60QZXCTRKj4bpwN
+	6ifnRwd9LB3rkTpuuJZc24kqhGAUaZQ8C7NjTveWHBYqOGkump4pP2b/IqTjUQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1787731166;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Vp8n5tXAE/0DxEjcH9DrU0RGbMnRQpKfp5sszJqLRLw=;
+	b=Dni4fe3nwRpDEJExlFlzK6UDjFQBL5SNh4WtCCif1/d9H/s0sywaOC/S5o9bBAWR3PCZGj
+	Dzd6IQ8mB4RrIUBQ==
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: Petr Mladek <pmladek@suse.com>
+Cc: John Ogness <john.ogness@linutronix.de>,
+	Jon Hunter <jonathanh@nvidia.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Andy Shevchenko <andy.shevchenko@gmail.com>,
+	linux-kernel@vger.kernel.org,
+	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	John Ogness <john.ogness@linutronix.de>,
-	Lukas Wunner <lukas@wunner.de>, Gerhard Engleder <eg@keba.com>,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-	syzkaller-bugs@googlegroups.com,
-	syzbot+9f57c1b2792029198fcf@syzkaller.appspotmail.com,
-	stable@vger.kernel.org
-Subject: Re: [PATCH] serial: core: fix NULL pointer dereference in
- serial_core_unregister_port()
-Message-ID: <2026082645-stench-backpack-6e07@gregkh>
-References: <20260826073237.1377668-1-linuxoid@gmail.com>
+	Kees Cook <kees@kernel.org>, Stepan Ionichev <sozdayvek@gmail.com>,
+	Xin Zhao <jackzxcui1989@163.com>,
+	Osama Abdelkader <osama.abdelkader@gmail.com>,
+	Fushuai Wang <wangfushuai@baidu.com>,
+	Marco Felsch <m.felsch@pengutronix.de>,
+	linux-serial@vger.kernel.org,
+	"linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
+Subject: Re: [PATCH tty v11 1/2] serial: 8250: Switch to nbcon console, take 2
+Message-ID: <20260826075925.WTEVoXWi@linutronix.de>
+References: <aoR_9g7W0qyqWbOj@pathway.suse.cz>
+ <fd1802c3-4b38-4127-b988-a9ff059bcebf@nvidia.com>
+ <877bll9d91.fsf@jogness.linutronix.de>
+ <eb0f2c8b-2c7b-4bfd-9144-6786999c4c31@nvidia.com>
+ <875x139eqr.fsf@jogness.linutronix.de>
+ <6b46866f-548f-4963-bc41-48ce15ae9012@nvidia.com>
+ <877ble714e.fsf@jogness.linutronix.de>
+ <d058012e-2be7-4e70-9c10-5e4c00a23b05@nvidia.com>
+ <87pkz56epl.fsf@jogness.linutronix.de>
+ <ao6XVfmvV6HjBiEv@pathway.suse.cz>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260826073237.1377668-1-linuxoid@gmail.com>
+In-Reply-To: <ao6XVfmvV6HjBiEv@pathway.suse.cz>
 
-On Wed, Aug 26, 2026 at 09:32:36AM +0200, Ruslan Valiyev wrote:
-> serial_core_unregister_port() dereferences port->port_dev before it has
-> been checked:
+On 2026-08-26 09:35:49 [+0200], Petr Mladek wrote:
+> > As for this 8250 "switch to nbcon" series, I am uncertain how to
+> > proceed. Is it really printk's job (and, by extension, the console
+> > driver's job) to decipher when it is allowed to queue irq_work?
 > 
-> 	struct serial_port_device *port_dev = port->port_dev;
-> 	struct serial_ctrl_device *ctrl_dev = serial_core_get_ctrl_dev(port_dev);
-> 
-> serial_core_get_ctrl_dev() takes &port_dev->dev and reads dev->parent
-> straight away, so a NULL port_dev faults at offset 0x40.
-> 
-> port_dev is NULL whenever no port device is installed:
-> serial_core_remove_one_port() clears it on teardown, and it is never
-> set if registration failed before serial_core_port_device_add().
-> 
-> serial8250_unregister_port() reaches that state. It calls
-> uart_remove_one_port(), which clears port_dev, and then re-adds the
-> port with uart_add_one_port() without checking the return value. When
-> that re-add fails, port_dev stays NULL while port.dev still points at
-> the ISA platform device, so unbinding that device once more calls
-> serial8250_unregister_port() again and oopses:
-> 
->   Oops: general protection fault, probably for non-canonical address
->   KASAN: null-ptr-deref in range [0x0000000000000040-0x0000000000000047]
->   RIP: 0010:serial_core_unregister_port+0xef/0x990
->   Call Trace:
->    serial8250_unregister_port+0x1e4/0x8a0
->    serial8250_remove+0x8c/0xb0
->    platform_remove+0x5f/0x80
->    device_release_driver_internal+0x46b/0x640
->    unbind_store+0xf8/0x110
->    sysfs_kf_write+0xf2/0x150
->    vfs_write+0x6ac/0x1050
-> 
-> Return early when there is no port device to remove, and read
-> port->port_dev under port_mutex, since every other update of that
-> field is serialised by it.
-> 
-> Also clear port->port_dev on the serial_core_register_port() error
-> path. serial_base_port_device_remove() frees the port device but left
-> the pointer behind, so unregistering after a failed registration read
-> freed memory instead. That is the use-after-free variant of the same
-> crash, and matches the title syzbot first reported this under.
+> I wonder how other architectures hanle this situation. I wonder
+> if they just ignore the pending IRQs.
 
-It's an invalid syzbot reproducer, if root tells the kernel to unbind
-from a device when it is being used, it gets to keep the pieces when
-things break :(
+The interrupts should be disabled and the enqueued irq_work should be
+delayed until after the interrupts are enabled again while entering
+idle. An interrupt is probably what pulls the CPU out of idle.
+Is it possible to get some kind of crash dump or anything else to figure
+out the state of CPU while it hangs?
+If that irq_work is the problem that making nbcon_irq_work LAZY should
+delay it, masking the problem.
 
-Let me go polish off my "taint the kernel if bind/unbind runs" patch to
-keep this from happening...
+Either way, I don't see why raising irq_work should be a problem. That
+interrupt has to trigger once interrupts are enabled again. However, if
+this is missed then further irq_work enqueues won't trigger an
+interrupt which might be a problem if something relies on it.
 
-> Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
-> Reported-by: syzbot+9f57c1b2792029198fcf@syzkaller.appspotmail.com
-> Closes: https://syzkaller.appspot.com/bug?extid=9f57c1b2792029198fcf
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Ruslan Valiyev <linuxoid@gmail.com>
+So the question what is doing while it makes no progress and does not
+fully boot.
 
-Did you forget an Assisted-by: tag?
+> Best Regards,
+> Petr
 
-thanks,
-
-greg k-h
+Sebastian
