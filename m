@@ -1,137 +1,234 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A4033A7F5F
-	for <linux-serial@vger.kernel.org>; Wed, 26 Aug 2026 06:43:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2EF953B0AF0
+	for <linux-serial@vger.kernel.org>; Wed, 26 Aug 2026 07:32:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787726617; cv=none; b=CVSpNf9hlPP3eSGzawo7V2/YX27RqY1YT/PA/2SXTARIsyDAJgKS6j9DlD3ESStGR9mZQqQC47Cg0Os+XoPqcU9gXmDDMA/baAMeOtf7Q+n+drPeRzuOvcQKxIdPTiH7rH+LUaD4n7YNoPkcReU6ZEljvGvBoqM35Hy8bhAtfPA=
+	t=1787729562; cv=none; b=DTyNg1tj1lf5CP5HGjroZbk301DxiV/QPF/9MkFZcsmjE8t22LF2t5ZqjrVZJJK+4RsU+xGKq7q+BGPG54fFAlGFVp8AmFcT3oIJyHfAvRNuNrFOHm7npHC/xD6MuSKjmG16Tz0HPBj80BbARkkPTVWNukJ8+ng/I0iiJZGQqAM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787726617; c=relaxed/simple;
-	bh=toG6c8/w131u2Yc79cBtkAoxDia49aq2xRwcDlUdyek=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=ducA54It/S9rVmj/x3JaqbKXtt6FCbLf3ckiYDuewL1WJpCAEnOuT2DhD2Mn2gLf1TpOL/Vl4sjsEVyqwCSCbePCj2loynk+wIe+4ainOJpJQMT8ciStsbUnZYVBu3ngkBpEU6/3cuFaZVPtEykp4rJIVt5hXjJJuQ2L6t2Uh6Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KaTwBCv0; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1787729562; c=relaxed/simple;
+	bh=/KrtSiS5MivC3u0JqMMRfaAggd3pNZKQnsME6DgWEPc=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=FxQ+ga8Lih4qPZiDPiOoykaiFSrwjJ4m2Ht/AItug/vd7YKhFXGL55HV4dv/8O6GMCSLXjyk2Ego3ZvNey2Ei+ce4mHpLQzGdiiJ8XS3k5cU7i3FI5Xpl8z0aM2pstaan73CDJvp2gVthIn1zTbisIaLSbW/WZsIddGB2Xo3QGw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fEaZzt6V; arc=none smtp.client-ip=209.85.208.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KaTwBCv0"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B89C81F000E9;
-	Wed, 26 Aug 2026 06:43:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787726615;
-	bh=7gaDup9fMxeKy3yKm0qT7olRuyfsqLbM4gUnCcx036Q=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=KaTwBCv0wgRfg1JDuXRZdhOLPnfhRbEYiY7MJ70p/1jMmKh/1MOh6RYioPjzKkVAG
-	 frrmnlvd4xzz93s2NIIEw0cl3cyLhj6NoMmfCJ9e2vinPGrkEoxkanLlV0pxSz3x8i
-	 acJTViSwqvorpxIqHxXcUGd/ql1guhh4jWj4hfq7LcL4RP74zHoWJdeox31DG5C4sd
-	 OEJGueW/QbV18bKgxcfp9UKddmLpzwsGsKGQq1PrYSQnITUnnHCizdNFzffzPBQrVP
-	 1FM7tha4gmNFhbHh+CABP5VJJesZpr72ll7QgTZPMzJcNx8t6rjHTKBN6SJXhoOt55
-	 cfjwPNEsHF3tg==
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 1/1] tty: n_gsm: fix missing modem controls after DLCI
- open in convergence layer type 2
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "D. Starke" <daniel.starke@siemens.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20260826063026.2472-1-daniel.starke@siemens.com>
-References: <20260826063026.2472-1-daniel.starke@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 26 Aug 2026 06:43:35 +0000
-Message-Id: <20260826064335.B89C81F000E9@smtp.kernel.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fEaZzt6V"
+Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-69c108fee7fso980167a12.3
+        for <linux-serial@vger.kernel.org>; Wed, 26 Aug 2026 00:32:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1787729559; x=1788334359; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=sPWaGeR1MUDdLk1lsk2+05G43PRnssA/Efn40Sg+GhI=;
+        b=fEaZzt6VXEHZgp72Yo20uOQCDl9EGDpAKAxxSprh7bFQ19Easv3dYNAB2wksIFcKLi
+         ij6pa+7+HF/vAYuG/wUlbcMuRl5rcQ8dOKVtHlVO/Pjm0pZDGJCGmMTrHFz2EKeME7V+
+         IcD3zUqcoJz0cPWl7TwVruLAHjd69RxZQhTMxAhbxMIrj0L+ZE+mJ166NWcDDNN7AcUj
+         V2L06vvaEt7qCJCsRie8bjK43F1Fz2rHGS+I+uCzPj2cdhpXB7arFnISvnP6whbOjCLF
+         noMiJMg0kKthL6TDTPey+42k31z4d3qltrEeAULIWb9u8HVjjwh/RWQEiDE+mJ9kofdA
+         nueQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787729559; x=1788334359;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=sPWaGeR1MUDdLk1lsk2+05G43PRnssA/Efn40Sg+GhI=;
+        b=AzhynulQZG1OHRN9W4IMNFwSDuHtRwT5SR/ty45Tu1ywERlN9PKSyCV2jV6/eWhEd7
+         vVYU0RrnW4fFQwL7caKEFk1omfo7JcjSjZGo3qqal71tESLtxiaRhS5R4mBCvZDlgvqg
+         HKZsQ4f+5yrVeTLLzHA0b7r8gsoasuxtlEiDyO4TiaNB1CpIlj9JWQLpfR3oLfCSnJu8
+         j6ceWJhyzo1Ip13JR1HqcoW/2UmszbukzuyZQh+nliNgkzjzbvqdyJZpArnnjGeC0APk
+         Vs0l36Z4sxD4CAGfCUCkAzM5cV9AE7bvLLXe2Ou6OuM1WyIvIenPF8goJDRc1AoMqimx
+         88jQ==
+X-Forwarded-Encrypted: i=1; AHgh+RpQ3WD4NSWRwE3GTN/Aeuo1naOnIdtyYrA/3WDso78DQwRfPUcZZeGPX6DxoZ4yKioOUBep2hhqKcoAEBI=@vger.kernel.org
+X-Gm-Message-State: AFuF++nqoIX6rLnyJ8H0TAAybAX++BUHhLPNMtEj/BUGRx8N1BEte6yb
+	LMu6iT3w0ULPmNcyw+Hwa/HidO9nkc+AOYoNjK8tPeTK6ALdrpWIe2qK
+X-Gm-Gg: AR+sD13CJw+Q2x3G8TAyXKsCda85EzDAXSGUCxfSzt6YYqsF1hrk0lo3iJGeEWv7sGV
+	r45gYcm0dH4zkh+cCWiB//sHKHfN6msHoELHTuUKk5xZk7TYSaL1ir+wFFg4n8M7Eq0LcRQIp4s
+	g8J7fhEwLR71WdmlYQ3IPn/ISvtl3zrzRhVkt2lbTZIOWyrow3QAGbv1soDdDuDMUpGs9rDzrPX
+	vWwenmnzvk4BTbpTmLCJM9ijKKDcALqYeEg+LobBPZEbVi5195rpM47OKIlKYHdHYhu1x5+fWbU
+	E3s/8nQJuM7rQBqFHqzLZk+PMsAB4jKChBw/I3Wr+qKdufsSaWZHt2eebpgLTynWAUj3zOVV52Y
+	gxOsxOPHxX+mYa/rETScNCXFAO7VgWxLgOrb0wleZbVMj7y+JT1gns3Y/C6GGfX/SQVEs6L1UZy
+	nGWwQ1BAtozDLhpOc5YPdTLmLBqX+pXwkj3LuEHxFDdTIZSE876cmxMRFZ5SO67KwVy1A=
+X-Received: by 2002:a05:6402:254c:b0:69f:b1d3:3903 with SMTP id 4fb4d7f45d1cf-6a5df5e323amr4944312a12.8.1787729559117;
+        Wed, 26 Aug 2026 00:32:39 -0700 (PDT)
+Received: from x1.tail0e71db.ts.net ([46.140.7.198])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6a5deae9a75sm2655883a12.28.2026.08.26.00.32.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Aug 2026 00:32:38 -0700 (PDT)
+From: Ruslan Valiyev <linuxoid@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: Tony Lindgren <tony@atomide.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	John Ogness <john.ogness@linutronix.de>,
+	Lukas Wunner <lukas@wunner.de>,
+	Gerhard Engleder <eg@keba.com>,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	syzkaller-bugs@googlegroups.com,
+	Ruslan Valiyev <linuxoid@gmail.com>,
+	syzbot+9f57c1b2792029198fcf@syzkaller.appspotmail.com,
+	stable@vger.kernel.org
+Subject: [PATCH] serial: core: fix NULL pointer dereference in serial_core_unregister_port()
+Date: Wed, 26 Aug 2026 09:32:36 +0200
+Message-ID: <20260826073237.1377668-1-linuxoid@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-Thank you for your contribution! Sashiko AI review found 2 potential issue(=
-s) to consider:
+serial_core_unregister_port() dereferences port->port_dev before it has
+been checked:
 
-Pre-existing issues:
-- [High] Threads waiting in `gsm_control_wait` may hang forever in `TASK_UN=
-INTERRUPTIBLE` if the GSM mux is concurrently shut down, also leading to a =
-memory leak of the control object.
-- [High] Lockless read-modify-write of `dlci->modem_tx` leading to lost vir=
-tual V.24 control signals and broken hardware flow control.
---
+	struct serial_port_device *port_dev = port->port_dev;
+	struct serial_ctrl_device *ctrl_dev = serial_core_get_ctrl_dev(port_dev);
 
-commit 94af07ea4775d3698d9b5b43641a19696873abc0
-Author: Daniel Starke <daniel.starke@siemens.com>
+serial_core_get_ctrl_dev() takes &port_dev->dev and reads dev->parent
+straight away, so a NULL port_dev faults at offset 0x40.
 
-tty: n_gsm: fix missing modem controls after DLCI open in convergence layer=
- type 2
+port_dev is NULL whenever no port device is installed:
+serial_core_remove_one_port() clears it on teardown, and it is never
+set if registration failed before serial_core_port_device_add().
 
-This commit updates virtual V.24 control signals by transmitting an empty d=
-ata
-frame in advanced option mode with convergence layer type 2. It introduces a
-wait flag to gsm_modem_update() and gsm_modem_upd_via_msc() to control wait=
-ing
-for the MSC command response. The obsolete gsm_modem_send_initial_msc() is
-also removed.
+serial8250_unregister_port() reaches that state. It calls
+uart_remove_one_port(), which clears port_dev, and then re-adds the
+port with uart_add_one_port() without checking the return value. When
+that re-add fails, port_dev stays NULL while port.dev still points at
+the ISA platform device, so unbinding that device once more calls
+serial8250_unregister_port() again and oopses:
 
-> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-> --- a/drivers/tty/n_gsm.c
-> +++ b/drivers/tty/n_gsm.c
+  Oops: general protection fault, probably for non-canonical address
+  KASAN: null-ptr-deref in range [0x0000000000000040-0x0000000000000047]
+  RIP: 0010:serial_core_unregister_port+0xef/0x990
+  Call Trace:
+   serial8250_unregister_port+0x1e4/0x8a0
+   serial8250_remove+0x8c/0xb0
+   platform_remove+0x5f/0x80
+   device_release_driver_internal+0x46b/0x640
+   unbind_store+0xf8/0x110
+   sysfs_kf_write+0xf2/0x150
+   vfs_write+0x6ac/0x1050
 
-[ ... ]
+Return early when there is no port device to remove, and read
+port->port_dev under port_mutex, since every other update of that
+field is serialised by it.
 
-> @@ -4155,41 +4155,22 @@ static int gsm_modem_upd_via_msc(struct gsm_dlci =
-*dlci, u8 brk)
->  		modembits[2] =3D (brk << 4) | 2 | EA; /* Length, Break, EA */
->  		len++;
->  	}
-> +	if (!wait)
-> +		return gsm_control_command(dlci->gsm, CMD_MSC, modembits, len);
->  	ctrl =3D gsm_control_send(dlci->gsm, CMD_MSC, modembits, len);
->  	if (ctrl =3D=3D NULL)
->  		return -ENOMEM;
->  	return gsm_control_wait(dlci->gsm, ctrl);
->  }
+Also clear port->port_dev on the serial_core_register_port() error
+path. serial_base_port_device_remove() frees the port device but left
+the pointer behind, so unregistering after a failed registration read
+freed memory instead. That is the use-after-free variant of the same
+crash, and matches the title syzbot first reported this under.
 
-[Severity: High]
-This isn't a bug introduced by this patch, but can threads waiting in
-gsm_control_wait() hang forever?
+Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
+Reported-by: syzbot+9f57c1b2792029198fcf@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=9f57c1b2792029198fcf
+Cc: stable@vger.kernel.org
+Signed-off-by: Ruslan Valiyev <linuxoid@gmail.com>
+---
+Reproduced and verified on 8d3ae59288f1 (Linux 7.2) with syzbot's config,
+under QEMU/KVM x86_64. Over six runs of the reproducer:
 
-If a thread queues a control command here and blocks in gsm_control_wait(),
-and the physical serial port is closed concurrently, gsmld_close() will call
-gsm_cleanup_mux().
+  stock:   6/6 oops at serial_core_unregister_port+0xef, with the same
+           Code: bytes and RDI=0x40 as the syzbot report
+  patched: 0/6 oops at serial_core_unregister_port
 
-gsm_cleanup_mux() calls timer_delete_sync(&gsm->t2_timer), which cancels the
-retransmit timer without aborting the pending command. Does this mean the w=
-ake
-condition for wait_event(gsm->event, control->done =3D=3D 1) will never be =
-met,
-leading to an unkillable TASK_UNINTERRUPTIBLE task and leaking the control
-object?
+checkpatch.pl clean, W=1 build of serial_core.o produces no new warnings,
+and the patch applies cleanly to current mainline.
 
-[ ... ]
+Please note the reproducer does not run to completion on a patched kernel.
+It goes on to hit two further problems. Both look pre-existing and neither
+is addressed here; I am describing them so the remaining crashes are not
+mistaken for this patch failing.
 
-> @@ -4265,7 +4246,7 @@ static void gsm_dtr_rts(struct tty_port *port, bool=
- active)
->  		modem_tx &=3D ~(TIOCM_DTR | TIOCM_RTS);
->  	if (modem_tx !=3D dlci->modem_tx) {
->  		dlci->modem_tx =3D modem_tx;
-> -		gsm_modem_update(dlci, 0);
-> +		gsm_modem_update(dlci, 0, true);
->  	}
->  }
+1) tty_cdev_add() drops the last reference to the cdev when cdev_add()
+   fails, but leaves driver->cdevs[index] pointing at it, and
+   tty_unregister_device() then calls cdev_del() on the freed object:
 
-[Severity: High]
-This is a pre-existing issue, but does this lockless read-modify-write of
-dlci->modem_tx risk losing virtual V.24 control signals?
+     WARNING: lib/refcount.c:28 at refcount_warn_saturate
+     Call Trace:
+      kobject_put+0x26f/0x6f0
+      tty_unregister_device+0x118/0x1c0
+      tty_port_unregister_device+0x60/0x70
+      serial_core_unregister_port+0x333/0x9a0
 
-If gsmtty_throttle() is called (often from softirq context when receive buf=
-fers
-fill up) to clear TIOCM_RTS, it updates dlci->modem_tx locklessly.
+   tty_unregister_device() also calls cdev_del(driver->cdevs[index])
+   unconditionally, and that entry is NULL when registration failed
+   before tty_cdev_add() ran:
 
-Concurrently, if a userspace ioctl calls gsmtty_tiocmset(), it also performs
-a lockless read-modify-write on dlci->modem_tx.
+     KASAN: null-ptr-deref in range [0x60-0x67]
+     RIP: 0010:cdev_del+0x26/0xa0
 
-If these updates overlap, could the throttle state change be overwritten and
-lost? This might cause the local system to believe it has throttled the pee=
-r,
-while the RTS bit remains set, leading to receive buffer overflows.
+   serial_core_add_one_port() reaches both: it treats a failed tty
+   registration as non-fatal, flagging the port dead and returning
+   success, so the port is still unregistered later.
 
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260826063026.2472=
--1-daniel.starke@siemens.com?part=3D1
+2) Registration is not failure-atomic. serial_core_add_one_port() links
+   state->uart_port before the kasprintf() and tty_groups allocations, so
+   a failure there leaves the port half registered. The state is never
+   released, and because serial_core_add_one_port() starts with
+
+           if (state->uart_port)
+                   return -EINVAL;
+
+   that line can then never be registered again. Unwinding it properly
+   means undoing uart_configure_port(), which claims resources and can
+   register a console, so it did not look like something to bolt onto a
+   crash fix.
+
+While here I also noticed serial8250_unregister_port() ignores the return
+value of the uart_add_one_port() call that re-adds the port to the ISA
+device, which is what produces the NULL port_dev this patch guards
+against.
+ drivers/tty/serial/serial_core.c | 17 +++++++++++++++--
+ 1 file changed, 15 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index a530ad372b434..5bf71d7bbd223 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -3327,6 +3327,7 @@ int serial_core_register_port(struct uart_driver *drv, struct uart_port *port)
+ 
+ err_unregister_port_dev:
+ 	serial_base_port_device_remove(port->port_dev);
++	port->port_dev = NULL;
+ 
+ err_unregister_ctrl_dev:
+ 	serial_base_ctrl_device_remove(new_ctrl_dev);
+@@ -3341,12 +3342,24 @@ int serial_core_register_port(struct uart_driver *drv, struct uart_port *port)
+ void serial_core_unregister_port(struct uart_driver *drv, struct uart_port *port)
+ {
+ 	struct device *phys_dev = port->dev;
+-	struct serial_port_device *port_dev = port->port_dev;
+-	struct serial_ctrl_device *ctrl_dev = serial_core_get_ctrl_dev(port_dev);
++	struct serial_port_device *port_dev;
++	struct serial_ctrl_device *ctrl_dev;
+ 	int ctrl_id = port->ctrl_id;
+ 
+ 	guard(mutex)(&port_mutex);
+ 
++	/*
++	 * A NULL port device means there is no registered port device to
++	 * remove: serial_core_remove_one_port() clears port_dev on
++	 * teardown, and it is never set if registration failed before
++	 * serial_core_port_device_add().
++	 */
++	port_dev = port->port_dev;
++	if (!port_dev)
++		return;
++
++	ctrl_dev = serial_core_get_ctrl_dev(port_dev);
++
+ 	port->flags |= UPF_DEAD;
+ 
+ 	serial_core_remove_one_port(drv, port);
+
+base-commit: 8d3ae59288f1e7d58d76558a6ee96d533bc5019f
+-- 
+2.43.0
+
