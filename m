@@ -1,108 +1,127 @@
-Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62CC93932F7
-	for <linux-serial@vger.kernel.org>; Wed, 26 Aug 2026 08:06:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C3E23B6C1D;
+	Wed, 26 Aug 2026 08:13:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787731591; cv=none; b=kO5RQHO5OMwy7yWecCIWaXqSV9fAG+81DljHFDRBHxZRwk7PbZrO4A/yRyN1anLEw4H3XWYAgpe6s90mZTGel4yOuk3cY/japnYw+QL/uwIo/ZqJWqH8D5xJIC4FIoDaFxIfmS4r4jZ9t+lAu+N2m/aJUeexOvdJykIVQzzStG8=
+	t=1787732011; cv=none; b=fiCEC+VKmBRb1NUwhY4meO5UgSSflW2Wxgx+jI60+zPxfIJE5zi2Nc105c1Fk1tyA5NlPGkUAXh2ud8SCqq6Dj18Mq1DWTPUQJcMOm2XRTMayWT0PaUYLJWdfll4f+zPG3gSMy0pPkc/Lk+rOAsQCFfPHJ+0/xY6GYq240yRJt0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787731591; c=relaxed/simple;
-	bh=mIVc+27luKXxYN8m1A9ZFRB4DjjTlFOX4P5cdCWbcDI=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=jTN0FiQ+ael/O49KnOIgbmI+kaheKuj9nYEx64lkW5d4e2BoLRWPu9OSWfL8uaenTpLGuv3RFEPkW2m7nqkKpZHAkMXtM9xXfgLTNWwCnpCEe3hltCAcLmj9Woq56UGOGZT9BXejdqa7ECrnpn1mzs1c8l+GjFr+gV+YjGOY+rA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Z6qD9Ml6; arc=none smtp.client-ip=209.85.218.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1787732011; c=relaxed/simple;
+	bh=zKCnuFKFoAISxYZ0mt727QSfCVLybUWLQ+ZMiMObw8g=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=MateHLbE/W26Dgp6I6rhyfKdO8cDQmfV5giarbY6/McPHTtEo4zPpMkDbSXsEeIxsDW0WpTf9hDIofFv/qSjJ6x0ymnyffJErm/0zOwEfOzJxUhbiBm2JFt4He+Qgwrvc2nI3w/Zd4c3CLgNuAa0xGgZx+GjMBmr56m6lJP+JG8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HmZWmqvP; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Z6qD9Ml6"
-Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-c1600d040e4so103821766b.1
-        for <linux-serial@vger.kernel.org>; Wed, 26 Aug 2026 01:06:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787731589; x=1788336389; darn=vger.kernel.org;
-        h=mime-version:content-transfer-encoding:content-type:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=uJAve/ikP1v0T3xdVPEDONKs2L7oCeoGp7TwH3nXlKo=;
-        b=Z6qD9Ml6fxhQ0tSavrm7YKBR0XMzgMM6n2MPe2SVDLAAiYJ+NA5kh9qchfsZRdUut0
-         sOE4Fg+iVY+Ss3ZizsNnG51xMTjvgtWmrPl+tom8SqVZti1kNZMb5M9p1/0gJymAAxbM
-         wzhOCjodQd9zT8L2kJY0bwA1oY4l2DsX/ogHYwfMYmCljx5q13bjRgbtuzv1CnpvyT3X
-         Txxpt2WETp2u6rdQd2ebxNzYQUQ9KnKtH0OFN808W+BIVYDI4aA3hkMgyliAJ5W4oJ+T
-         cHP9W7VuJGHLlqvtI35VdvZXePxUyFAybw3kMu1el0F7xpqufd3wKbL7ck+g0pwUvO00
-         SArA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787731589; x=1788336389;
-        h=mime-version:content-transfer-encoding:content-type:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=uJAve/ikP1v0T3xdVPEDONKs2L7oCeoGp7TwH3nXlKo=;
-        b=nH5twfkWp4iiQEXpaEhHm5k3AQBhmT7yNgMNFJD3cTnCMU063YwA3xymKjhWOa40hM
-         zVFwq1WdvF212UQ0WlnX/nhUggoo8mWApn8qPsWAf6JcMD7nDrjI6oFHy7ZTHJtRhLMM
-         vo1+cwa5WFwOVCPJYARM770wl+LDjLJc0RY3PNagEebgNUt5sxqvL8grlEeVrQvxauhE
-         2MwfbLhsTumou0kGEhQzQwIVpHgmvnl7KYodmNR8DXMERQYqegjjUwSbDmipaWqSKBJR
-         7X0iYKZAaOVAG1uIeHwghwMV1YrlWtI7fAgEXubdj9KhRMEuY5S8Yy7d94wBnQ71A5ZY
-         GuJA==
-X-Forwarded-Encrypted: i=1; AHgh+RqBdIYT2HZULQGiWCgaifgkooknD/JpVCe5TsdHpk25a8MNfPnIX9riRw+WFWuFyTyGfKZmfKg5f8U9K1M=@vger.kernel.org
-X-Gm-Message-State: AFuF++knjywT+oQeQ19ioc5dK8+KgI8B3wds/XVcE6aoKzghfQQY9DD4
-	62flzqtNOpKBUn0lCMDUZQQS6NQUpcdobSByTv4ZEtv7D4oJ9wiCJ6qQ
-X-Gm-Gg: AR+sD132yyYygA6GjarujTbyjcVYAanJRamrFtI1h0xmvbLlvb0xQxOQ984rsa5x1gY
-	tMg4pOFtXCBe5gQ4In8rKMu8jI9HP+th0jiCi2GPis4GyjtwxpO0rD/FL+kDw8I+5dQBGBWwcMD
-	kiAXZ8S0gV/2WoYFerLg9F9xBR/07qheE5Vp9KSxBdO8oqM4WZWdpi/Ly6B0CTzW3VDN48UVOTR
-	xWAFQgLc37EORzBv5J/KPlfAfl1guG3Gyc5B/amZJL2Sbr2YgoZ4dtwyZZv/OoHvzbywS6tH3vv
-	ceHYLlTsxvETnE/7LtARePGyhnvfbAUEtWYNrwsHpHXo7n7y1IQi1wesHEBwnKNLKhgkDtlSezl
-	2rJT5471tctqeK3lcCfe0OWuEkt5CvSx5ak34F5/1U1udYZgnGL2AIXK/+ZCUOx7WaSPep1GmHY
-	8D1VRkS4mQrt2bYpLjSw2ScJP8SfG0Ia+QwktqtQ6ehpRWEliq9L8P0vg1EW22dzFiMg==
-X-Received: by 2002:a17:907:844:b0:c1c:2218:f317 with SMTP id a640c23a62f3a-c24e2aa48bemr1491171966b.2.1787731588513;
-        Wed, 26 Aug 2026 01:06:28 -0700 (PDT)
-Received: from [127.0.1.1] ([46.140.7.198])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c250a9b10cesm364143066b.48.2026.08.26.01.06.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Aug 2026 01:06:28 -0700 (PDT)
-From: Ruslan Valiyev <linuxoid@gmail.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>, Tony Lindgren <tony@atomide.com>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Hugo Villeneuve <hvilleneuve@dimonoff.com>,
- John Ogness <john.ogness@linutronix.de>, Lukas Wunner <lukas@wunner.de>,
- Gerhard Engleder <eg@keba.com>, linux-serial@vger.kernel.org,
- linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
- syzbot+9f57c1b2792029198fcf@syzkaller.appspotmail.com, stable@vger.kernel.org
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HmZWmqvP"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1787732010; x=1819268010;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=zKCnuFKFoAISxYZ0mt727QSfCVLybUWLQ+ZMiMObw8g=;
+  b=HmZWmqvPR4FQS94lgjx+PjpIjNmQfmeqYTgZDKZynJ/B1za2ALIXjJiC
+   TY6RNxNQqQjTuTkbojHQ2z9yZ7CucQtQ/X/DWtuWf2wfnQornnGnNStSD
+   BJYIdiH7jdgmprt85vB+/Kr5rfW/PZX5AIBwPrkSp/W1ZVvGrVxflWUXg
+   Ywb/lQFRjb+OzB4t7QAUasyWfmD0sPihLEMuXmyfFsMoWpX1dmgNWD1fc
+   YzYk+blgdaQcCMlsooNPyG+44yFbpf0P6SmUd8F8DDUKrpcW8JWHYNSko
+   ZnsMRzPzrGox9x2KURCACQUdDvI9pztlO9YauPmJSsG4wwFhChCs9QjpF
+   A==;
+X-CSE-ConnectionGUID: zgE9p5OrRymZBPP4oUb6cQ==
+X-CSE-MsgGUID: r9mMjGIIQFu8gBzDGzMsSg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11886"; a="90719731"
+X-IronPort-AV: E=Sophos;i="6.25,244,1779174000"; 
+   d="scan'208";a="90719731"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2026 01:13:29 -0700
+X-CSE-ConnectionGUID: v4AFlEZuQ2ebS9idgfxxhQ==
+X-CSE-MsgGUID: Uf+abpV6SUi1yAWSDLjR4w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,244,1779174000"; 
+   d="scan'208";a="261380416"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.235])
+  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2026 01:13:26 -0700
+Date: Wed, 26 Aug 2026 11:13:23 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Ruslan Valiyev <linuxoid@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Tony Lindgren <tony@atomide.com>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	John Ogness <john.ogness@linutronix.de>,
+	Lukas Wunner <lukas@wunner.de>, Gerhard Engleder <eg@keba.com>,
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+	syzkaller-bugs@googlegroups.com,
+	syzbot+9f57c1b2792029198fcf@syzkaller.appspotmail.com,
+	stable@vger.kernel.org
 Subject: Re: [PATCH] serial: core: fix NULL pointer dereference in
  serial_core_unregister_port()
-Date: Wed, 26 Aug 2026 10:06:26 +0200
-Message-ID: <178773158689.1384029.3121943722878545406@gmail.com>
-In-Reply-To: <2026082645-stench-backpack-6e07@gregkh>
+Message-ID: <ao6gI3bH_dHpfIof@ashevche-desk.local>
 References: <20260826073237.1377668-1-linuxoid@gmail.com>
- <2026082645-stench-backpack-6e07@gregkh>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260826073237.1377668-1-linuxoid@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Aug 26, 2026 at 09:53:34AM +0200, Greg Kroah-Hartman wrote:
-> It's an invalid syzbot reproducer, if root tells the kernel to unbind
-> from a device when it is being used, it gets to keep the pieces when
-> things break :(
->
-> Let me go polish off my "taint the kernel if bind/unbind runs" patch to
-> keep this from happening...
+On Wed, Aug 26, 2026 at 09:32:36AM +0200, Ruslan Valiyev wrote:
+> serial_core_unregister_port() dereferences port->port_dev before it has
+> been checked:
+> 
+> 	struct serial_port_device *port_dev = port->port_dev;
+> 	struct serial_ctrl_device *ctrl_dev = serial_core_get_ctrl_dev(port_dev);
+> 
+> serial_core_get_ctrl_dev() takes &port_dev->dev and reads dev->parent
+> straight away, so a NULL port_dev faults at offset 0x40.
+> 
+> port_dev is NULL whenever no port device is installed:
+> serial_core_remove_one_port() clears it on teardown, and it is never
+> set if registration failed before serial_core_port_device_add().
+> 
+> serial8250_unregister_port() reaches that state. It calls
+> uart_remove_one_port(), which clears port_dev, and then re-adds the
+> port with uart_add_one_port() without checking the return value. When
+> that re-add fails, port_dev stays NULL while port.dev still points at
+> the ISA platform device, so unbinding that device once more calls
+> serial8250_unregister_port() again and oopses:
+> 
+>   Oops: general protection fault, probably for non-canonical address
+>   KASAN: null-ptr-deref in range [0x0000000000000040-0x0000000000000047]
+>   RIP: 0010:serial_core_unregister_port+0xef/0x990
+>   Call Trace:
+>    serial8250_unregister_port+0x1e4/0x8a0
+>    serial8250_remove+0x8c/0xb0
+>    platform_remove+0x5f/0x80
+>    device_release_driver_internal+0x46b/0x640
+>    unbind_store+0xf8/0x110
 
-Understood, thanks for looking at it so quickly. I'll drop the patch.
+>    sysfs_kf_write+0xf2/0x150
+>    vfs_write+0x6ac/0x1050
 
-> Did you forget an Assisted-by: tag?
+At least these two lines are noise in the backtrace in the commit message.
+Submitting Patches recommends to leave only significantly important lines.
 
-Yes. The patch was AI-assisted and should have included
+> Return early when there is no port device to remove, and read
+> port->port_dev under port_mutex, since every other update of that
+> field is serialised by it.
+> 
+> Also clear port->port_dev on the serial_core_register_port() error
+> path. serial_base_port_device_remove() frees the port device but left
+> the pointer behind, so unregistering after a failed registration read
+> freed memory instead. That is the use-after-free variant of the same
+> crash, and matches the title syzbot first reported this under.
 
-  Assisted-by: Claude:claude-opus-5
-  Assisted-by: Codex:gpt-5.6-sol
+Overall, try to re-read and simplify the text. This looks like an AI puke.
 
-I worked from submitting-patches.rst for the tag order and did not read
-coding-assistants.rst. My mistake, and it will be on anything I send in future.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-Thanks,
-Ruslan
+
