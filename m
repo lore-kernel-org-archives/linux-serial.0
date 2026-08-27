@@ -1,173 +1,131 @@
-Received: from mail.muc.de (mail.muc.de [193.149.48.3])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A3B7415F20
-	for <linux-serial@vger.kernel.org>; Thu, 27 Aug 2026 18:58:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.149.48.3
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FD13431E76
+	for <linux-serial@vger.kernel.org>; Thu, 27 Aug 2026 19:12:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787857140; cv=none; b=l2/MWcFnHVhHfz4ztXCyxpnhWKV23HpldQfUr8hKStEyfWrpsIUjKirr0jLoCOfXGDRCAqQoezS3NvnpMUUeKEkfqFXk18KWPy5iBYEY2wr20EDurRAObcpll46PpakG2IT1wL36d+6aexBLaZXZBWwlOElSnh1yOnhM1B+tU8Y=
+	t=1787857979; cv=none; b=BYjLlgoGDLjU+/N603oPSZKGxjH8F5Zyd/VJGVg3uIN/jbiEfkV2UCDRQXCDyY23pVrGxvVQ0v1vBhCPHhQkHH1Gh6iJjtuGMP1h1QiWefT0VXbqAix4M/xy9dF2N7CaKmQ/bdWFEyj8r4X71uV2xFFbWpz27pnZftXnaxt+gPs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787857140; c=relaxed/simple;
-	bh=HjViuf1CgFYHCz//y2JoY6sU4NK6J/e0fdh+7UIi3Ss=;
-	h=Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To:From; b=qmHZikxEridXsN1rHYSg7hYJ7smcvOow2J6qhx2mGHC+4VsljRwLXfy8u5RyvxZfLCiewPHIpS26OtWTUbop+er/3Ps3uM4fzBKExK9KS7ylvwqoRxpyi0KPo8mCbZu1+Gy3xWpydH7Ya+vssK4eZXYAEtvzo2BG10yR7uxTeX8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=muc.de; spf=pass smtp.mailfrom=muc.de; arc=none smtp.client-ip=193.149.48.3
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=muc.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=muc.de
-Received: (qmail 25821 invoked by uid 3782); 27 Aug 2026 20:58:49 +0200
-Received: from muc.de (p4fe15cdf.dip0.t-ipconnect.de [79.225.92.223]) (using
- STARTTLS) by colin.muc.de (tmda-ofmipd) with ESMTP;
- Thu, 27 Aug 2026 20:58:48 +0200
-Received: (qmail 31226 invoked by uid 1000); 27 Aug 2026 18:58:48 -0000
-Date: Thu, 27 Aug 2026 18:58:48 +0000
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-  Jiri Slaby <jirislaby@kernel.org>, Simona Vetter <simona@ffwll.ch>,
-  linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-  Helge Deller <deller@gmx.de>, Thomas Zimmermann <tzimmermann@suse.de>,
-  linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
-Cc: acm@muc.de
-Subject: [Patch 9/9]: vt: Misc changes, e.g. to #include directives
-Message-ID: <apCI6JhoH5D7ss34@MAC.fritz.box>
+	s=arc-20240116; t=1787857979; c=relaxed/simple;
+	bh=UMiQ6H0crQ6QlfgYbkqDfbG+2kNs5ob1b4gkM54mkHs=;
+	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
+	 Message-Id; b=O8R28NNohRD9EXyRuuOAN1Ucls8ocTEsqV/3v3B9PQMGg23s7FFcJ2t+K5iUqnPhDmbL3NKUP2jUi9+L+xxfjTGX9h3XKu1JrD/2qnDHYYFpi++bcIIfY7zkAKib9sFXzRCCgjjcAhzjzovmtkAEhLvBVdsNrucFF7uHcTJGa44=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SYlQ6J1j; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SYlQ6J1j"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE0A51F000E9;
+	Thu, 27 Aug 2026 19:12:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1787857977;
+	bh=n/prNACSm7ZD+vf9e96Ht6fX4eX3xVkiLOEXo1W+KBA=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=SYlQ6J1j0JuUZur+PsSqfbunc9x4lITrP7q3r/JSauPA8IfMm3Eswn55v2lEF4frI
+	 tPYIvbvgIFBnExt1xkfYIs/GGtWPbpjzUQWTG6QRxMjoi2YGE21Bvz7CrLbX5L/cHt
+	 lE/IJ7jMBEChlxxr3/jceWvdBH1kL8yqoCFXDCXGozXk0g8k81PmutWnUphKnpTvUI
+	 WK0GndRElaHtb2FFxwvTFlUDO3cduB46IvOQ/TbZhfh7ihr3UcpNBcshogO1fV2lWc
+	 pKHza8rYqd1y4kA84X6vk2H6Q9aHFMLfN8ZtPAHqTJgqc9qcZSq5Qn/49aFwZiueS6
+	 8HFZ+M0iWQR9w==
+From: sashiko-bot@kernel.org
+Subject: Re: [Patch 5/9]: vt: Amend three Kconfig files
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Alan Mackenzie" <acm@muc.de>
+Cc: linux-serial@vger.kernel.org, dri-devel@lists.freedesktop.org
+In-Reply-To: <apCG-zHyuMVYHJ6j@MAC.fritz.box>
 References: <apCEDM2sWv_M354-@MAC.fritz.box>
+ <apCG-zHyuMVYHJ6j@MAC.fritz.box>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 27 Aug 2026 19:12:57 +0000
+Message-Id: <20260827191257.AE0A51F000E9@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <apCEDM2sWv_M354-@MAC.fritz.box>
-X-Submission-Agent: TMDA/1.3.x (Ph3nix)
-From: Alan Mackenzie <acm@muc.de>
-X-Primary-Address: acm@muc.de
 
-vt: 32b glyph: 9. Misc changes, e.g. to #include directives
+Thank you for your contribution! Sashiko AI review found 2 potential issue(=
+s) to consider:
+- [High] Enabling CONFIG_FB_GLYPH_21BIT changes GLYPH_SZ to 4 globally, bre=
+aking hardware console drivers (like vgacon) and rotated fbcon drivers that=
+ still hardcode 16-bit screen buffer accesses.
+- [Medium] FB_GLYPH_21BIT is a generic VT/fbdev feature but is inappropriat=
+ely placed in the DRM clients menu, unnecessarily restricting its use.
+--
 
-Rearrange some #include directives, add some clarifying
-comments, and some code changes which didn't fit elsewhere.
+commit 7b9fb605add2fa8c6f62e8ba79cee762cbcbd24c
+Author: Alan Mackenzie <acm@muc.de>
 
-Signed-off-by: Alan Mackenzie <acm@muc.de>
+vt: Amend three Kconfig files
 
-diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
-index dfdea0842149..35da5e127a49 100644
---- a/drivers/tty/vt/keyboard.c
-+++ b/drivers/tty/vt/keyboard.c
-@@ -25,7 +25,6 @@
- 
- #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
- 
--#include <linux/consolemap.h>
- #include <linux/init.h>
- #include <linux/input.h>
- #include <linux/jiffies.h>
-@@ -46,6 +45,7 @@
- #include <linux/tty.h>
- #include <linux/uaccess.h>
- #include <linux/vt_kern.h>
-+#include <linux/consolemap.h>
- 
- #include <asm/irq_regs.h>
- 
-diff --git a/drivers/tty/vt/selection.c b/drivers/tty/vt/selection.c
-index 13f4e48b4142..18affdb3c7c5 100644
---- a/drivers/tty/vt/selection.c
-+++ b/drivers/tty/vt/selection.c
-@@ -48,6 +48,8 @@ static struct vc_selection {
- 	.start = -1,
- };
- 
-+static unsigned int size_row;
-+
- /* clear_selection, highlight and highlight_pointer can be called
-    from interrupt (via scrollback/front) */
- 
-@@ -340,6 +342,7 @@ static int vc_selection(struct vc_data *vc, struct tiocl_selection *v,
- {
- 	int ps, pe;
- 
-+	size_row = vc->vc_size_row;
- 	poke_blanked_console();
- 
- 	if (v->sel_mode == TIOCL_SELCLEAR) {
-diff --git a/drivers/tty/vt/vc_screen.c b/drivers/tty/vt/vc_screen.c
-index 7d40eacc21b3..f23d61fe10c1 100644
---- a/drivers/tty/vt/vc_screen.c
-+++ b/drivers/tty/vt/vc_screen.c
-@@ -201,6 +201,8 @@ static struct vc_data *vcs_vc(struct inode *inode, bool *viewed)
- 
- /**
-  * vcs_size - return size for a VC in @vc
-+ * The size is the number of bytes required by a buffer reading to/writing from
-+ * the entire device.
-  * @vc: which VC
-  * @attr: does it use attributes?
-  * @unicode: is it unicode?
-@@ -307,7 +314,9 @@ static unsigned int vcs_read_buf(const struct vc_data *vc, char *con_buf,
- 		getconsxy(vc, con_buf + 2);
- 
- 		*skip += pos;
--		count += pos;
-+		count += pos;	/* COUNT is now the byte offset of the end
-+				 * position from the start of the header.
-+				 */
- 		if (count > CON_BUF_SIZE) {
- 			count = CON_BUF_SIZE;
- 			filled = count - pos;
-diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index 8f467b22b799..0c389a564357 100644
---- a/drivers/tty/vt/vt.c
-+++ b/drivers/tty/vt/vt.c
-@@ -89,6 +89,7 @@
- #include <linux/init.h>
- #include <linux/mutex.h>
- #include <linux/vt_kern.h>
-+#include <linux/vt_buffer.h>
- #include <linux/selection.h>
- #include <linux/tiocl.h>
- #include <linux/kbd_kern.h>
-@@ -4910,15 +4967,17 @@ static int con_font_get(struct vc_data *vc, struct console_font_op *op)
- static int con_font_get(struct vc_data *vc, struct console_font_op *op)
- {
- 	struct console_font font;
- 	int c;
--	unsigned int vpitch = op->op == KD_FONT_OP_GET_TALL ? op->height : 32;
-+	unsigned int vpitch =
-+		op->op == KD_FONT_OP_GET_TALL ? vc->vc_font.height : 32;
- 
- 	if (vpitch > max_font_height)
- 		return -EINVAL;
- 
- 	void *font_data __free(kvfree) = NULL;
-+	c = DIV_ROUND_UP(vc->vc_font.width, 8) * vpitch * vc->vc_font.charcount;
- 	if (op->data) {
--		font.data = font_data = kvzalloc(max_font_size, GFP_KERNEL);
-+		font.data = font_data = kvzalloc(c, GFP_KERNEL);
- 		if (!font.data)
- 			return -ENOMEM;
- 	} else
-@@ -4935,8 +4994,6 @@ static int con_font_get(struct vc_data *vc, struct console_font_op *op)
- 			return ret;
- 	}
- 
--	c = DIV_ROUND_UP(font.width, 8) * vpitch * font.charcount;
--
- 	if (op->data && font.charcount > op->charcount)
- 		return -ENOSPC;
- 	if (font.width > op->width || font.height > op->height)
-diff --git a/include/linux/console_struct.h b/include/linux/console_struct.h
-index fe915afdece5..5afce52057ca 100644
---- a/include/linux/console_struct.h
-+++ b/include/linux/console_struct.h
-@@ -13,6 +13,7 @@
- #ifndef _LINUX_CONSOLE_STRUCT_H
- #define _LINUX_CONSOLE_STRUCT_H
- 
-+#include <linux/consolemap.h>
- #include <linux/vt.h>
- #include <linux/wait.h>
- #include <linux/workqueue.h>
+Until it becomes clear how to integrate CONFIG_A11Y_BRAILLE_CONSOLE and
+CONFIG_SPEAKUP, they will remain disabled when CONFIG_FB_GLYPH_21BIT is
+#defined.
 
+[ ... ]
 
--- 
-Alan Mackenzie (Nuremberg, Germany).
+> diff --git a/drivers/gpu/drm/clients/Kconfig b/drivers/gpu/drm/clients/Kc=
+onfig
+> index 6096c623d9d5b..0ce8c1506eaad 100644
+> --- a/drivers/gpu/drm/clients/Kconfig
+> +++ b/drivers/gpu/drm/clients/Kconfig
+> @@ -42,6 +42,15 @@ config DRM_FBDEV_EMULATION
+> =20
+>  	  If in doubt, say "Y".
+> =20
+> +config FB_GLYPH_21BIT
+> +	bool "Enable 21-bit glyphs in the frame buffer device"
+> +	depends on (DRM_FBDEV_EMULATION =3D y)
+
+[Severity: Medium]
+Could placing this generic VT/fbdev feature in the DRM clients menu
+inappropriately restrict its use?
+
+Native framebuffer drivers (e.g., vesafb, efifb, simplefb) might be prevent=
+ed
+from utilizing 21-bit glyph support, as this strictly requires
+DRM_FBDEV_EMULATION. The feature modifies the generic Virtual Terminal and
+fbcon subsystems, which are independent of DRM.
+
+[Severity: High]
+Can enabling CONFIG_FB_GLYPH_21BIT corrupt the screen buffer for hardware
+console drivers and rotated fbcon drivers?
+
+When this is enabled, GLYPH_SZ becomes 4 globally and VT uses 32-bit screen
+buffer entries. However, the consw interface still passes pointers typed as
+const unsigned short *, and some drivers still hardcode 16-bit accesses.
+
+For example, rotated fbcon implementations iterate the buffer using scr_rea=
+dw()
+which advances the u16 pointer by 2 bytes instead of 4, reading half-charac=
+ters:
+
+drivers/video/fbdev/core/fbcon_cw.c:cw_putcs_aligned() {
+    ...
+    src =3D par->rotated.buf + (scr_readw(s++) & charmask) * cellsize;
+    ...
+}
+
+Similarly, vgacon maps physical VGA VRAM assuming exactly 16 bits per chara=
+cter,
+meaning 32-bit writes from scr_writeg in vt.c will overwrite adjacent cells
+in hardware memory:
+
+drivers/video/console/vgacon.c:vgacon_invert_region() {
+    ...
+    u16 a =3D scr_readw(p);
+    ...
+    scr_writew(a, p++);
+    ...
+}
+
+> +	help
+> +	  This option enables 21-bit glyphs in the fbdev framebuffer,
+> +	  surmounting the traditional restriction to 256/512 glyphs dating back
+> +	  to the VGA hardware of the 1980s and 1990s.  To use this effectively
+> +	  you will need a suitable font and possibly a suitable keyboard layout.
+> +
+
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/apCEDM2sWv_M354-@MA=
+C.fritz.box?part=3D5
