@@ -1,99 +1,150 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4820D44E671
-	for <linux-serial@vger.kernel.org>; Thu, 27 Aug 2026 18:16:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9ED5472547
+	for <linux-serial@vger.kernel.org>; Thu, 27 Aug 2026 18:17:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787854597; cv=none; b=R/Q6HhcMo5RaGzq18AXVT3cjh5VctQZkhOe0ISC9EnNP60cQGNYs7aHYXL2JwFDI36NKduxOlSqNPX3cR6J5/N+pS+pii76W0WeXb8vmzU1rmQUXK8yC26bTaHiDQOgyGIJZ8TZhw1B/HNZBkGBmdjmGMzOInGjoJVsH+5M/S6k=
+	t=1787854622; cv=none; b=IMbpp3R2Vtd57Udb2+uF3dOqJnECq3YxesUY7WTPpDLsQFMAi9970H+fjzSnb57W12uKyrAZyMhFG1Gibt6+2kvFjIhw1n9kEix1EvNhV0/9blrtStdynOagtme/+JjyFOHGUudNh0UZXLetGOcMsRFRNuNNjGlSON7UewfW6Us=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787854597; c=relaxed/simple;
-	bh=uX5C60reDvRpK36SAxecoaPL1YQjSkOsLOLg47bHsHI=;
+	s=arc-20240116; t=1787854622; c=relaxed/simple;
+	bh=FvQN3QQrJRzJCRGzhDeCDbwvBrGPYAB7wo1ChKVwKEY=;
 	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=e4LVE4bBwcV8fgr8U7raKYSlSPRJWx40b/EyryDGUIGBUL/qhov33YbhBx9v1C2RFoaXDRjM1m4SYDyohvxWlnseZczMA/7QV9awNFcjdXHYMw+SH6Jm4cDdTgl170IKQY4snf1faiw+NfyR/3dcrzD0PphrWH8W4qscbx94H5A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EgTS8znV; arc=none smtp.client-ip=100.103.45.18
+	 Message-Id; b=J3l4CudBSofZ1YFv+ScAVn6QtHFLreYZ19Y99hTL1mQXrFmVsEuVJ8aqKlmMIVeoTNs4lQv+dEl62o0WVa75Eob88RnuaP98vR+20/cIHWLut6irdMXzkEDezVyJfYFb+B3q68zy9xXPhpPQHYtIIkVYlqnwzruzqxaRyM8l8MU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jE8pmIHT; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EgTS8znV"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 891381F00A3D;
-	Thu, 27 Aug 2026 18:16:34 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jE8pmIHT"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53B941F000E9;
+	Thu, 27 Aug 2026 18:17:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787854594;
-	bh=IZM/+OheTcw+O1O8tHPsRKPiNl89z1PtnrtBP4rRViY=;
+	s=k20260515; t=1787854620;
+	bh=vVBnLepYhRpMpuH4DxlR018ZAk75+SWhvvEzKArF8+w=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=EgTS8znVVyI4Vr41OOA0BDNtaSikn2OpJSv62OPQBRknt9Ku35l9BqgKx+CwEMCrU
-	 stofIsPS5TDYLL5lc0x+lnjoCoYSC+XMQ0AfQkB4Ab/jiD3jsMBp4b8V3wHKl0jhHa
-	 RSkXRVvoArjpgBeYS1L+Ua7WlmBUHHE19NGaE/B1ODcvOOcygPrDis06Aef8VkR8kM
-	 OoE7Ua+OjUlpZgoSjWITvtPNiB9hKoPQuu2KYDuTNGMLY1oBH/rA2Hu+XiMvULzcFz
-	 ih+6pjzwP2Us55+M1LH4aBCiGECWVVqCRw+d4z/SmWjaTgPvo3HvJW0uRjSYsdPD5y
-	 xAjm063Ycc7LQ==
+	b=jE8pmIHTV+KG10/0BbQWaaP9KWKdFnqEZNFdMbWir6dYQXvRed3yy8v1C0xE7EgYX
+	 BbrSih4+kY+mk56WyjnP8ST8gTJ2ibhfbN5mq94EPp1pFKbWaKm9AC38zjYOs1Z3om
+	 BgIwWVFzLBfl0N4rq33yhRE7oaV1xKo/VGMisXpHBv0eHKIFzpIeH8ogFjXDGa7Bza
+	 0yC8tHL/mlEYK03otimhV/GjTRX9/DQuP/XsmpwpSCmLzfpXX8mdyzOlLH11GLD2xB
+	 3VuKzNUUTJGaNn400YToTFb03QihBV+7X6QepwIGxmN5swWZctp4Zj/Dgf7FjkyEtz
+	 6cfHA502oWGPw==
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v2 1/9] pmdomain: arm: Fix -EINVAL from
- scmi_pd_set_perf_state() on state 0
+Subject: Re: [PATCH v2 2/9] soc: qcom: geni-se: Populate clk_perf_tbl with
+ SE source clock frequencies from perf OPP table
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Praveen Talari" <praveen.talari@oss.qualcomm.com>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20260827-derive_clk_perf_tbl_from_perf_domain_opp_table-v2-1-091697dbeb02@oss.qualcomm.com>
+In-Reply-To: <20260827-derive_clk_perf_tbl_from_perf_domain_opp_table-v2-2-091697dbeb02@oss.qualcomm.com>
 References: <20260827-derive_clk_perf_tbl_from_perf_domain_opp_table-v2-0-091697dbeb02@oss.qualcomm.com>
- <20260827-derive_clk_perf_tbl_from_perf_domain_opp_table-v2-1-091697dbeb02@oss.qualcomm.com>
+ <20260827-derive_clk_perf_tbl_from_perf_domain_opp_table-v2-2-091697dbeb02@oss.qualcomm.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Thu, 27 Aug 2026 18:16:34 +0000
-Message-Id: <20260827181634.891381F00A3D@smtp.kernel.org>
+Date: Thu, 27 Aug 2026 18:16:59 +0000
+Message-Id: <20260827181700.53B941F000E9@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-Thank you for your contribution! Sashiko AI review found 1 potential issue(=
+Thank you for your contribution! Sashiko AI review found 2 potential issue(=
 s) to consider:
-- [Medium] Returning success for performance state 0 without notifying the =
-SCMI hardware causes a power leak and genpd state desynchronization.
+- [Critical] Populating `clk_perf_tbl` with OPP performance levels instead =
+of frequencies breaks clock divider math, introduces division-by-zero risks=
+, and fails `dev_pm_opp_set_rate()`.
+- [High] Fragile OPP iteration loop will fail the probe if the OPP table co=
+ntains duplicate levels.
 --
 
-commit 2b6c1834f31c5a0d438704d927e8d116c0dd29ad
+commit f430a1f0dd5802c00d71aa7a1d541115aa32fe57
 Author: Praveen Talari <praveen.talari@oss.qualcomm.com>
 
-pmdomain: arm: Fix -EINVAL from scmi_pd_set_perf_state() on state 0
+soc: qcom: geni-se: Populate clk_perf_tbl with SE source clock frequencies =
+from perf OPP table
 
-The commit modifies scmi_pd_set_perf_state() to return 0 (success) instead
-of -EINVAL when the requested performance state is 0. This change aims to
-accommodate the OPP framework which uses state 0 when a device is runtime
-suspended.
+This commit populates clk_perf_tbl with SE source clock frequencies
+from the perf OPP table. It treats the OPP table as the actual SE hardware
+supported source clock frequencies, allowing protocol drivers to compute
+the correct source clock and divider.
 
-> diff --git a/drivers/pmdomain/arm/scmi_perf_domain.c b/drivers/pmdomain/a=
-rm/scmi_perf_domain.c
-> index 3693423459c9c..e390f902a4442 100644
-> --- a/drivers/pmdomain/arm/scmi_perf_domain.c
-> +++ b/drivers/pmdomain/arm/scmi_perf_domain.c
-> @@ -33,7 +33,7 @@ scmi_pd_set_perf_state(struct generic_pm_domain *genpd,=
- unsigned int state)
->  		return 0;
+> diff --git a/drivers/soc/qcom/qcom-geni-se.c b/drivers/soc/qcom/qcom-geni=
+-se.c
+> index 873bfbd6b2b7b..447b9cc6babf6 100644
+> --- a/drivers/soc/qcom/qcom-geni-se.c
+> +++ b/drivers/soc/qcom/qcom-geni-se.c
+[ ... ]
+> @@ -1175,6 +1181,31 @@ int geni_se_domain_attach(struct geni_se *se)
+>  	else if (ret < 0)
+>  		return ret;
 > =20
->  	if (!state)
-> -		return -EINVAL;
-> +		return 0;
+> +	perf_dev =3D se->pd_list->pd_devs[DOMAIN_IDX_PERF];
+> +
+> +	num_opps =3D dev_pm_opp_get_opp_count(perf_dev);
+> +	if (num_opps < 0)
+> +		return num_opps;
+> +	if (num_opps =3D=3D 0)
+> +		return -ENODEV;
+> +
+> +	se->clk_perf_tbl =3D devm_kcalloc(se->dev, num_opps,
+> +					sizeof(*se->clk_perf_tbl),
+> +					GFP_KERNEL);
+> +	if (!se->clk_perf_tbl)
+> +		return -ENOMEM;
+> +
+> +	for (i =3D 0, level =3D 0; i < num_opps; i++, level++) {
+> +		opp =3D dev_pm_opp_find_level_ceil(perf_dev, &level);
+> +		if (IS_ERR(opp))
+> +			return PTR_ERR(opp);
 
-[Severity: Medium]
-Will this return 0 without notifying the SCMI hardware of the state change?
+[Severity: High]
+Does this iteration loop safely handle duplicate or missing OPP levels?
 
-Since SCMI performance domains are marked with GENPD_FLAG_ALWAYS_ON, they a=
-re
-never actually powered off. When all devices in the domain suspend and genpd
-aggregates the state to 0, it invokes scmi_pd_set_perf_state() with state 0.
+If the OPP table contains duplicate levels (e.g., same performance state but
+different voltages), or if opp-level is unpopulated for some entries,
+dev_pm_opp_find_level_ceil() will skip the duplicates.
 
-If we immediately return 0 here without calling pd->perf_ops->level_set(),
-no request is sent to the firmware.
+This means the loop will run out of unique levels before 'i' reaches
+'num_opps', returning -ERANGE or -ENODEV and failing the entire GENI SE pro=
+be.
 
-Does this cause the hardware to get stuck at its last requested
-high-performance level instead of scaling down, leading to a silent power
-leak and a desynchronization between genpd software state and the hardware?
+[Severity: Critical]
+Does fetching the OPP performance level here instead of the clock frequency
+break the clock divider math later on?
 
+When this loop uses dev_pm_opp_find_level_ceil() instead of
+dev_pm_opp_find_freq_ceil(), it retrieves abstract performance levels
+(which can be 0 for OFF/minimum states) rather than actual Hz frequencies.
+
+> +
+> +		se->clk_perf_tbl[i] =3D level;
+
+These performance levels are then stored in se->clk_perf_tbl, which is meant
+for Hz frequencies.
+
+When protocol drivers call geni_se_clk_freq_match() to configure their sour=
+ce
+clock, the following math is used:
+
+	divider =3D DIV_ROUND_UP(tbl[i], req_freq);
+	new_delta =3D req_freq - tbl[i] / divider;
+
+If a performance level in tbl[i] is 0, 'divider' evaluates to 0, which leads
+to a divide-by-zero kernel panic.
+
+Even if the level is non-zero, it is treated as a tiny frequency, causing
+dev_pm_opp_set_rate() to either fail with -ERANGE or force the clock to its
+minimum state, breaking serial communication.
+
+Should this use dev_pm_opp_find_freq_ceil() to populate the table with
+opp-hz instead?
+
+> +		dev_pm_opp_put(opp);
+> +	}
+> +	se->num_clk_levels =3D num_opps;
+> +	se->has_opp =3D true;
 > =20
->  	ret =3D pd->perf_ops->level_set(pd->ph, pd->domain_id, state, false);
->  	if (ret)
+>  	return 0;
+>  }
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260827-derive_clk=
 _perf_tbl_from_perf_domain_opp_table-v2-0-091697dbeb02@oss.qualcomm.com?par=
-t=3D1
+t=3D2
