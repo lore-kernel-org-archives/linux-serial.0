@@ -1,95 +1,131 @@
-Received: from mail.muc.de (mail.muc.de [193.149.48.3])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6BD436C588
-	for <linux-serial@vger.kernel.org>; Thu, 27 Aug 2026 19:23:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.149.48.3
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45B3142BC56
+	for <linux-serial@vger.kernel.org>; Thu, 27 Aug 2026 19:25:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787858614; cv=none; b=IJZM8iCi0jyTqyvacbFhM9x/wlKy5xtIhNSuO8hSSGHkwVxU159/8L23tGvLNvcuBXff/81KLVga22Qs0QXxtj1cM315HRQtrp5xMgxEAHt+xe0wZpx990l9XtseeWUWsRKNHt88f5IasCKHPcktvhytoMtPhjvhR5HNQWKNZ7o=
+	t=1787858738; cv=none; b=FcjsO+PYd7PfLCwrewbS35wRAIwSKdrxqPXPFImdnCrwXdsTnlTtIOym1z/HG6fmtshNF740nr+/oK3spTJIMYd/OElFH4RoGirU0mFG/OC9ekX3cAq/xi3sYRkp8etBAlnx8MNrFvxnzf4Z58YiVnQl9RfrFMsUFdb7n0DOI3w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787858614; c=relaxed/simple;
-	bh=sJuobXBSZ212/N11LPCC3AWMDR+8fmUlzrVNIfK4kQg=;
-	h=Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To:From; b=mOg+4Dd1VWXA8tBkfId2ZCJIlTCEZoZgfZ5BD/KMP+EJmXGBJ8afs/uPvji2HFOgbyrw2sogyemy7je8+kpapXnhxPhzAAzWrdJSvmB7oVFpZTwBHfuBV4ddPRw08lqSdXlrdbdqpAWT9z8vYUlPEYQUPrfm/S3iPZuKQfytk1I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=muc.de; spf=pass smtp.mailfrom=muc.de; arc=none smtp.client-ip=193.149.48.3
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=muc.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=muc.de
-Received: (qmail 43829 invoked by uid 3782); 27 Aug 2026 21:23:30 +0200
-Received: from muc.de (p4fe15cdf.dip0.t-ipconnect.de [79.225.92.223]) (using
- STARTTLS) by colin.muc.de (tmda-ofmipd) with ESMTP;
- Thu, 27 Aug 2026 21:23:30 +0200
-Received: (qmail 31421 invoked by uid 1000); 27 Aug 2026 19:23:29 -0000
-Date: Thu, 27 Aug 2026 19:23:29 +0000
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>, Simona Vetter <simona@ffwll.ch>,
-  linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: More than 256/512 glyphs on the Liinux console
-Message-ID: <apCOsfuSYkaI8A1r@MAC.fritz.box>
-References: <Z7idXzMcDhe_E5oN@MAC.fritz.box>
- <2025022243-street-joylessly-6dfa@gregkh>
+	s=arc-20240116; t=1787858738; c=relaxed/simple;
+	bh=20HVZiKu5OHP1jg2+Nl/3Y1bIvyRy9QyBbNs7tIPhkk=;
+	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
+	 Message-Id; b=WCOFscxAgjc+ls+ubJHoXu3H/Nc/tb6gBSa4shUCgcjpyXmJ37a0F9aOkdvW8jlfH+qS+plXDzPUOH6nUat6UqBDr3hdHZ4Gz/9Kp6+0Ap5lmBYGOC3t7poFYGiMNfdJBezbtMrZGU5s+AvxvNbsf3WyMFo0jSb1RXpmiRRKqEk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=caZiuM7p; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="caZiuM7p"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73AF81F00A3A;
+	Thu, 27 Aug 2026 19:25:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1787858734;
+	bh=liM7vgTjmUm5n6RpLjwlfmzvmxa80WHxUVHF/vR/7uY=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=caZiuM7pf9eWWkd454RQyZemP2hlx+jL9JVKiCxL7+9kJxVM5vsErt55fCyVf/JHV
+	 rat957dYlyX8+BmHOs1P7NNgUox7xr8HG71SZd+XghndcR+fl82D8q+np7sfCzzDkM
+	 ETAatyhoUfQcRYQ8/c5GKLbPGVvFaVzHW6b3sjUgmEwMYMkjJnLfQFxEtDtzEPFpnz
+	 oqTLM4i6hX1QIjbZCsrkyjyKq5LOXl48g4GOgGf89jvG2b50zpTBpKGVGAF0YObs7t
+	 /hhWRgn3FA46E/jq7y2QR6WiAfzmLea8PqtQIyn3H18PKdsbAmcc4irjeqH8dR464i
+	 bSB0gZLPcoMCQ==
+From: sashiko-bot@kernel.org
+Subject: Re: [Patch 9/9]: vt: Misc changes, e.g. to #include directives
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Alan Mackenzie" <acm@muc.de>
+Cc: dri-devel@lists.freedesktop.org, linux-serial@vger.kernel.org
+In-Reply-To: <apCI6JhoH5D7ss34@MAC.fritz.box>
+References: <apCEDM2sWv_M354-@MAC.fritz.box>
+ <apCI6JhoH5D7ss34@MAC.fritz.box>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 27 Aug 2026 19:25:34 +0000
+Message-Id: <20260827192534.73AF81F00A3A@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2025022243-street-joylessly-6dfa@gregkh>
-X-Submission-Agent: TMDA/1.3.x (Ph3nix)
-From: Alan Mackenzie <acm@muc.de>
-X-Primary-Address: acm@muc.de
 
-[ Following a break of ~18 months ]
+Thank you for your contribution! Sashiko AI review found 2 potential issue(=
+s) to consider:
+- [Critical] A Time-of-Check to Time-of-Use (TOCTOU) race condition in `con=
+_font_get()` can lead to a kernel heap buffer overflow.
+- [Critical] Pre-calculating the allocation size `c` based on the per-conso=
+le `vc->vc_font.charcount` causes a heap buffer overflow in `vgacon_font_ge=
+t()` due to a per-console versus global state mismatch.
+--
 
-On Sat, Feb 22, 2025 at 09:48:32 +0100, Greg Kroah-Hartman wrote:
-> On Fri, Feb 21, 2025 at 03:35:59PM +0000, Alan Mackenzie wrote:
-> > 
-> > Dear Linux Maintainers,
-> > 
-> > The Linux console is currently restricted to 256/512 glyphs, the VGA
-> > standard from the 1980s.  I would like that restriction to be lifted, and
-> > believe that many other console users would agree.
+commit 501185cf94f089f684db150e409e50e6d10bc832
+Author: Alan Mackenzie <acm@muc.de>
 
-> First off, why?  What about the move to get rid of the vt code entirely,
-> if you do that, can't you get proper glyphs with the drm subsystem?
+vt: Misc changes, e.g. to #include directives
 
-We talked back then about kmscon.  It doesn't look to me to be a
-suitable replacement for the Linux console yet, at least for me anyway,
-for quite a few reasons.
+Rearrange some #include directives, add some clarifying comments, and some
+code changes which didn't fit elsewhere.
 
-> Doing huge changes for a subsystem that almost everyone agrees should
-> only be kept around for legacy reasons is a rough undertaking.
+> diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+> index baf7c98429e9c..0c389a5643576 100644
+> --- a/drivers/tty/vt/vt.c
+> +++ b/drivers/tty/vt/vt.c
+[ ... ]
+> @@ -4967,14 +4968,16 @@ static int con_font_get(struct vc_data *vc, struc=
+t console_font_op *op)
+>  {
+>  	struct console_font font;
+>  	int c;
+> -	unsigned int vpitch =3D op->op =3D=3D KD_FONT_OP_GET_TALL ? op->height =
+: 32;
+> +	unsigned int vpitch =3D
+> +		op->op =3D=3D KD_FONT_OP_GET_TALL ? vc->vc_font.height : 32;
+> =20
+>  	if (vpitch > max_font_height)
+>  		return -EINVAL;
+> =20
+>  	void *font_data __free(kvfree) =3D NULL;
+> +	c =3D DIV_ROUND_UP(vc->vc_font.width, 8) * vpitch * vc->vc_font.charcou=
+nt;
+>  	if (op->data) {
+> -		font.data =3D font_data =3D kvzalloc(max_font_size, GFP_KERNEL);
+> +		font.data =3D font_data =3D kvzalloc(c, GFP_KERNEL);
 
-> <snip>
+[Severity: Critical]
+Does this introduce a race condition regarding the allocation size?
 
-> > I would very much like further to develop and to refine this code to the
-> > point where it is suitable for inclusion in the mainline kernel.  What do
-> > you say?
+Since the buffer size c is now calculated using vc->vc_font.width and
+vc->vc_font.charcount before acquiring the console_lock, couldn't another
+thread concurrently call con_font_set(), update the console font dimensions
+to be larger, and cause the newly sized font data to be written into this
+undersized heap allocation later when vc_sw->con_font_get() is called inside
+the lock?
 
-> Only you can decide what you want to work on.  If you have working
-> patches, and submit them so that they can be reviewed, we'll be glad to
-> do so.
+Additionally, can this cause an issue with the vgacon driver due to a misma=
+tch
+between per-console and global state?
 
-I've just submitted a series of patches to a few mailing lists and
-several people, including yourself.
+The vgacon driver tracks whether a 512-character font is in use globally
+via vga_512_chars. However, vc->vc_font.charcount is maintained per-console.
 
-> But again, you are going to have to answer the reason "why" first.
+If a 512-character font is set on one terminal (setting vga_512_chars to
+true), but con_font_get() is called on a different terminal that still
+has a 256-character font, this calculation will size the allocation for 256
+characters.
 
-The main reason I don't like kmscon (yet) is that it has no key bindings
-<Alt>-<Fn> to switch to a specific VT (or something analogous).  This
-would make it unusable for my current work flow, where I have 20 tty's
-running, and switch between them frequently using <Alt>-<Fn> or
-<Shift>-<Alt>-<Fn>.
+The vgacon_font_get() callback will then observe the global flag and
+force a read of 512 characters, writing out of bounds into the smaller
+buffer during vgacon_do_font_op().
 
-Even though kmscon has been included in some distributions (including
-Fedora), I have failed to find any user reviews of it in a web search.
-In particular, I'm looking for somebody writing something like "I've
-been using kmscon for <n> weeks, and I find it delightful.".
+>  		if (!font.data)
+>  			return -ENOMEM;
+>  	} else
+> @@ -4991,8 +4994,6 @@ static int con_font_get(struct vc_data *vc, struct =
+console_font_op *op)
+>  			return ret;
+>  	}
+> =20
+> -	c =3D DIV_ROUND_UP(font.width, 8) * vpitch * font.charcount;
+> -
+>  	if (op->data && font.charcount > op->charcount)
+>  		return -ENOSPC;
+>  	if (font.width > op->width || font.height > op->height)
 
-> thanks,
-
-> greg k-h
-
--- 
-Alan Mackenzie (Nuremberg, Germany).
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/apCEDM2sWv_M354-@MA=
+C.fritz.box?part=3D9
