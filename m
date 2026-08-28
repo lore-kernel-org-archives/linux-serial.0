@@ -1,155 +1,138 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E801717BED0
-	for <linux-serial@vger.kernel.org>; Fri, 28 Aug 2026 03:37:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3596D4315F;
+	Fri, 28 Aug 2026 04:57:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787888251; cv=none; b=Sw5tlfHVTKXBkSnCjjUPaw6uc/ssP2SaHshpkV0pSwgExokU7geOh5TVh77RCoGHrjsG0oEkWhMSaigpDuB9Ut4fDZzO2NCYebPe7aO+vcx9eSHUFsOi9BvlGqUldF4nSB2KPuiNP2Zfi6Gn0k0ZiDckZ4bbwqsA4yZHALwsxtQ=
+	t=1787893030; cv=none; b=QMbL+iLStYcU3iX8BRwXZhaONE3l9uqUQOaTJDQd9vXgqrWSUPm2qgBiIOmxXkfrzeN+oSDVtn4jADjggI9crMD9+ojJHao+8lLUx3pFOnDLfaoFWySgq0AzgtJGUKvm9iygjF0d12ZEiJWjyJTl7Hib67c3PFxGgemA/2duRqk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787888251; c=relaxed/simple;
-	bh=V3ufYqnTTxThZ7rBz/BRVdqjSOYh0iYIjXGIy/aSzfY=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=BxSsTNPtpHUtd6Cm1j/qVchCBviqwbpFVnPX4I2xHGAquCKmAgoBQdyNpKS9+LwAKbE32lvBeLnC4WZIteBP2ksCuzhZ2v+VBdUG6pee3O7cEn0zY7fxhBFwkVAVjYDKHzsBq4t0ZQZv+2Nffkis8nzlC+ry25AGJp+bsyonKf8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UOJZiIpB; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1787893030; c=relaxed/simple;
+	bh=ybu/9C5Y5K9vGbbTdsX6Qa2JT8JIZut+yHcbtL7m85w=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=HRrtpIXO+lxbfPQlhjzS2cY+TX2ncT8T76OGD//Tdkz3MOqO6Gn35NGFXwPo1c6mvXNyYr47PD7D2/qFNXa+QoK+Ou++gjltyfCODIZbJTeSM6wAlFY0VtvtUv/relxOi7W/MZYssiQdK3tjD/END48KRJTJJ7j1AbprwQ4XaEA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XsuqmT8B; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UOJZiIpB"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 499ED1F000E9;
-	Fri, 28 Aug 2026 03:37:29 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XsuqmT8B"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E30771F000E9;
+	Fri, 28 Aug 2026 04:57:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787888249;
-	bh=x2M3+sVfSepX+U/6enE9cEq0cwNeeuusM12aaZF4X8k=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=UOJZiIpByzUoo6qk3YPMwn44xOIinqlIZwg/Q1DYvKDKE3/IuN5ptRHToh44LhWBX
-	 eCwbow8S/iu/PvHGmuB+hdZMcVAzfZIZPeMe9GPxw7ErNvZg8LXBwSpGnKWFxqWhvn
-	 KKx7LDPcjyQyT/DtxHnY8mIjIDI/C++6SxW3kH+nLjBpE0M70UZWMXurLBXxVY89sf
-	 Tj9ZOA/nn6gu6pPOD1ByHgA+0ST9/Z9oTd5V23vz+yUx/PYHoq4GrL3JvNw0mo2umL
-	 DHcrCurvGlNREci5pImWScjS/hJHQ8gmUVNNOylXuSVsYzC/ydypgPcHQ2qesiMt2+
-	 BfbsIRV44nPlw==
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH] tty: n_gsm: pin DLCI during configuration ioctls
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Qing Ming" <a0yami@mailbox.org>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20260828031949.18580-1-a0yami@mailbox.org>
-References: <20260828031949.18580-1-a0yami@mailbox.org>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Fri, 28 Aug 2026 03:37:28 +0000
-Message-Id: <20260828033729.499ED1F000E9@smtp.kernel.org>
+	s=k20260515; t=1787893028;
+	bh=30+vWOFLvDRyu2p90gkDmZljBAVI066FlFRhEIPobq4=;
+	h=Date:Subject:To:References:From:In-Reply-To;
+	b=XsuqmT8BLHhd/wNOCMPFIZg9T6f06PThC89n6aM9DjV5GVvDnYCDHhFk1X+G3kM3B
+	 Ab652uxuQdZLjvkYlTlXWLti66Fxk3QBkhhBw190DBJuc3kZ34iWbe874zwRGMQjHd
+	 mb3ccGw8hHztO7M4hBITyRtxjkBcvjdoiHwrUsOkI6bd66kt4SD0b1g9AaZ2Cn9aG9
+	 n7Qtrvo1WelU7roXNl1591trpY/TZhstLi3ei4umlZU1N8Wfa/kxSy20pq60rmehjh
+	 mRt/HUWSWUWF0HTSFkZMYsnu0FkLQ1QL0vRcEQDreyRyxzmNrYlTBC4V3+M/kaN3Dx
+	 ofmL1OgnQFWmQ==
+Message-ID: <d1437839-5a08-46d9-b40d-83faae7b19c9@kernel.org>
+Date: Fri, 28 Aug 2026 06:57:04 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [Patch 1/9]: Make consolemap.c handle Unicode planes outside BMP
+To: Alan Mackenzie <acm@muc.de>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Simona Vetter <simona@ffwll.ch>, linux-serial@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Helge Deller <deller@gmx.de>,
+ Thomas Zimmermann <tzimmermann@suse.de>, linux-fbdev@vger.kernel.org,
+ dri-devel@lists.freedesktop.org
+References: <apCEDM2sWv_M354-@MAC.fritz.box> <apCFLI0ga-DG-HRN@MAC.fritz.box>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <apCFLI0ga-DG-HRN@MAC.fritz.box>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Thank you for your contribution! Sashiko AI review found 1 potential issue(=
-s) to consider:
-- [Critical] The patch introduces a Use-After-Free and refcount underflow b=
-ecause dlci_put() is called outside of gsm->mutex, and gsm_dlci_get_or_allo=
-c() fails to check if the acquired reference is valid.
---
+On 27. 08. 26, 20:42, Alan Mackenzie wrote:
+> vt: 32b glyph: 1. Make consolemap.c handle Unicode planes outside BMP
+> 
+> For this, add a fourth layer "planes" onto the sparse map in
+> this file.  Also handle glyph numbers up to 2^21 rather than
+> 256/512.  Move the conversion between __user and kernel data
+> from consolemap.c to vt_ioctl.c.
+> 
+> Signed-off-by: Alan Mackenzie <acm@muc.de>
+> 
+> diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
+> index 3fa89a2dbeba..2f695d97f0eb 100644
+> --- a/drivers/tty/vt/consolemap.c
+> +++ b/drivers/tty/vt/consolemap.c
+> @@ -34,11 +34,11 @@
+>   #include <linux/tty.h>
+>   #include <linux/uaccess.h>
+>   #include <linux/console.h>
+> -#include <linux/consolemap.h>
+>   #include <linux/vt_kern.h>
+> +#include <linux/consolemap.h>
 
-commit 705962eabdbe5c697544b69418bcb84720186a19
-Author: Qing Ming <a0yami@mailbox.org>
+Why do you do this?
 
-tty: n_gsm: pin DLCI during configuration ioctls
+>   #include <linux/string.h>
+>   
+> -static unsigned short translations[][E_TABSZ] = {
+> +static u1632 translations[][E_TABSZ] = {
 
-This patch addresses a lifetime issue in the N_GSM line discipline by
-attempting to acquire a DLCI reference during configuration ioctls. It adds
-gsm_dlci_get_or_alloc() to retrieve or allocate a DLCI and pin it using
-dlci_get() before releasing gsm->mutex, then unpins it with dlci_put() after
-use.
+This breaks the build at this point, right?
 
-> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-> index c13e050de83b1..605549d742e6a 100644
-> --- a/drivers/tty/n_gsm.c
-> +++ b/drivers/tty/n_gsm.c
-> @@ -2711,6 +2711,22 @@ static inline void dlci_put(struct gsm_dlci *dlci)
->  	tty_port_put(&dlci->port);
->  }
-> =20
-> +static struct gsm_dlci *gsm_dlci_get_or_alloc(struct gsm_mux *gsm,
-> +					      unsigned int addr)
-> +{
-> +	struct gsm_dlci *dlci;
-> +
-> +	mutex_lock(&gsm->mutex);
-> +	dlci =3D gsm->dlci[addr];
-> +	if (!dlci)
-> +		dlci =3D gsm_dlci_alloc(gsm, addr);
-> +	if (dlci)
-> +		dlci_get(dlci);
+u1632 is a bad name though.
 
-[Severity: Critical]
-Does this code silently ignore reference acquisition failures?
+ > For the avoidance of doubt, no LLM has been used in the preparation 
+of this change.
 
-When looking at dlci_get(), it wraps tty_port_get() but discards its return
-value:
+Given the above, perhaps you should have?
 
-static inline void dlci_get(struct gsm_dlci *dlci)
-{
-	tty_port_get(&dlci->port);
-}
+See also what Sashiko thinks:
+https://sashiko.dev/#/patchset/apCEDM2sWv_M354-%40MAC.fritz.box
 
-Since tty_port_get() uses kref_get_unless_zero(), it can fail to increment
-the refcount if it is already zero.
-
-Because dlci_get() returns void, gsm_dlci_get_or_alloc() cannot check if
-the underlying tty_port_get() failed, which might result in returning a
-dying object to the caller.
-
-> +	mutex_unlock(&gsm->mutex);
-> +
-> +	return dlci;
-> +}
-> +
-[ ... ]
-> @@ -3862,29 +3878,29 @@ static int gsmld_ioctl(struct tty_struct *tty, un=
-signed int cmd,
->  		if (dc.channel =3D=3D 0 || dc.channel >=3D NUM_DLCI)
->  			return -EINVAL;
->  		addr =3D array_index_nospec(dc.channel, NUM_DLCI);
-> -		dlci =3D gsm->dlci[addr];
-> -		if (!dlci) {
-> -			dlci =3D gsm_dlci_alloc(gsm, addr);
-> -			if (!dlci)
-> -				return -ENOMEM;
-> -		}
-> +		dlci =3D gsm_dlci_get_or_alloc(gsm, addr);
-> +		if (!dlci)
-> +			return -ENOMEM;
->  		gsm_dlci_copy_config_values(dlci, &dc);
-> +		dlci_put(dlci);
-
-[Severity: Critical]
-Is it safe to drop this transient reference outside of gsm->mutex?
-
-If a concurrent GSMIOC_SETCONF or gsm_cleanup_mux() drops the mux's base
-reference, this dlci_put() could drop the final reference and trigger the
-destructor gsm_dlci_free().
-
-The destructor gsm_dlci_free() runs unprotected by gsm->mutex and eventually
-clears the array pointer without synchronization:
-
-static void gsm_dlci_free(struct tty_port *port)
-{
-	...
-	dlci->gsm->dlci[dlci->addr] =3D NULL;
-	...
-}
-
-Concurrently, a new ioctl could call gsm_dlci_get_or_alloc(), acquire
-gsm->mutex, and observe the non-NULL stale pointer before it is cleared.
-
-It would then call dlci_get(), which fails to increment the zero refcount,
-returning a dying DLCI to the caller. The caller would then use the freed
-object and subsequently call dlci_put(), triggering a kref underflow.
-
->  		if (copy_to_user((void __user *)arg, &dc, sizeof(dc)))
->  			return -EFAULT;
->  		return 0;
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260828031949.1858=
-0-1-a0yami@mailbox.org?part=3D1
+thanks,
+-- 
+js
+suse labs
