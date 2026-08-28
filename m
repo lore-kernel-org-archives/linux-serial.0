@@ -1,184 +1,210 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vs1-f97.google.com (mail-vs1-f97.google.com [209.85.217.97])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11C01440A3E
-	for <linux-serial@vger.kernel.org>; Fri, 28 Aug 2026 14:43:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4213F327BFC
+	for <linux-serial@vger.kernel.org>; Fri, 28 Aug 2026 14:46:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.97
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787928189; cv=none; b=bkCRvO3mnR+8LI+mK2ryfQYQqHD8bwVw9JBdrcaA7TtSt14666b3wVHol0dqb5PVkT2jgqiFBJHQ/S2AkWA8U5ReFxIXK0M9UczopsBO5otAik666nPxfWlB/KhAbO7G1Q1NTEX5tbykWUfPn3tAA/g1dlFylb2Htx+Sze21orc=
+	t=1787928422; cv=none; b=KyXn8enDq8dE+QwAtSmNL7xVRD1UCoGWDMy6UD5ebex4dt50WosnDFBDPu5IVAOSR7YY5MuyzYOQ8Ar1AQh5cj4RApRQe6aVTWVCSfGW/U5Zxrllg0P15Dbo+RbKJwM19rgfC4cXuDRnYzK3BYnuS5Pwp7sDg3opEtHivKQcVzc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787928189; c=relaxed/simple;
-	bh=/hnCC4ygD9QomR0qAj9SWBtV/AJzMmnZfi9/5eO+Yb4=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=Cac0fhDEP+vCGNAC2TGyHcWHEusMaMBzNAXvoqsOFDzzjUW+zv102C2diNfqobCDd3PYTwEoFjVJIQoXK1b7WS5eJJQ8hu4RnVbbwjFF03lSjjRpCsLyC5TVFZEr7o817DIa4WfFOjjnaa6WIoKi6Qe4sPdnRtCP0/r8/BDdo1A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dofeL24o; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1787928422; c=relaxed/simple;
+	bh=PyMFn68RRIN3IzGpKysy1B9f4xHkGdvkvFc5FOvKIBI=;
+	h=From:To:Cc:Subject:Date:Message-ID; b=hwd1WaWKx0lyEKoU8sM9vPg2fxNN8igIV3AqD0JQpKOTSj0sbzHQgvBQWzl/xvTV1yiE9vUvWbXL/EuUAL+x9nNUW/YEwieKW9THaerrth0Uci1nNUzuSTv1biKSJbVJezgy4EgDkd5ha2/9A6kYactiAKgPHxhOFWJK7W6CcoY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=arista.com; spf=pass smtp.mailfrom=arista.com; dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b=EN5ec2xj; arc=none smtp.client-ip=209.85.217.97
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=arista.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arista.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dofeL24o"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79A7D1F000E9;
-	Fri, 28 Aug 2026 14:43:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787928187;
-	bh=E4KGb8noFFZVuLx5uuEwFW4+WTlK4TN3/VwwF+eMnSc=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=dofeL24oubJDD/Tml48asIkSycwCtwQqGvtmRYsmgDm04hvIXel3jISRYJUZ/zdj3
-	 3S4NbGQkcofDgQCGjdCE0mOfsEFg5ZnvMYPkDsSuJoyjnjsUI7nKZCqvn+s0nBMA8k
-	 Xzet6yjVqqUm2HmCaCZE7U0izLV/Dxt7LUpWFQIMM2N3WRC5zUAXy4Q86t7Mwz/35g
-	 zGUKuneDdIagwfGGHJfPGDrBycQgrpuIyiC9MFvzHvry8EB7nhzyRvhGjf/J5recyB
-	 Mn1T60GXZu0bF0g2VMdLDnxm7m7Owv1BuUc4n1Xte3cEK7KUORpQHmi1MnxJnkktDb
-	 ANxnlpL2pR5iA==
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH] serial: qcom-geni: Fix unbalanced runtime PM resume for
- no_console_suspend
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Abel Vesa" <abel.vesa@oss.qualcomm.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20260828-serial-qcom-geni-fix-unbalanced-rpm-resume-v1-1-af3e5aef17a6@oss.qualcomm.com>
-References: <20260828-serial-qcom-geni-fix-unbalanced-rpm-resume-v1-1-af3e5aef17a6@oss.qualcomm.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Fri, 28 Aug 2026 14:43:07 +0000
-Message-Id: <20260828144307.79A7D1F000E9@smtp.kernel.org>
+	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="EN5ec2xj"
+Received: by mail-vs1-f97.google.com with SMTP id ada2fe7eead31-782e0fc1e55so303283137.3
+        for <linux-serial@vger.kernel.org>; Fri, 28 Aug 2026 07:46:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787928418; x=1788533218;
+        h=content-transfer-encoding:message-id:date:subject:cc:to:from
+         :dkim-signature:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=YA8nPi3ueKnPwe6mZk4m/RrVVcVGq0t5B55x+7fBTtQ=;
+        b=r/P32Yz4D0WdE5+II6VXg6zM8jGv/eYZQSo9cCprGbt4sMovyu8kF8Vo/uiaRMEjLU
+         4O3fFxMzoYjfskAfSN9mwESgx+4pqCrhyV21JiuMf6yVEcvBPEZlunH/ZdwB44TX4/ww
+         KegbaQChWNStz8M00UIBY0T0wD2J/DqbdE3GSkdhgsMuyKg9L0P1xogI1ZdMiBjz2zv4
+         oGmyCHJqYcnhA7XdEgtQMmreEAG7GA3vL+oi8B4tTSeHGG66ty0f2L08OMVhJTVj9OPJ
+         Yxfnq4Kpz8zpySf0IV5GAfiraY9CyMDzQ0MtpAkFtwE+/OAfkQgKdyF3RFt3qs6Sruw5
+         lJ2w==
+X-Forwarded-Encrypted: i=1; AHgh+RpqYn0YcOiv76sA/BDyvYC+Hn2ZQ+Hd8j3peLZvPvO0yCCZIDRb0RCKW/NH7eeo5ZIXkvjt/0kdTEBfVpk=@vger.kernel.org
+X-Gm-Message-State: AFuF++mdOgJaxUMZssR6BIDgKF+smP6t6g9EsnO/bPENdlb7cV1Kd2bc
+	F/+aJ/Let4yr5MmmollJpRJ2Zoh46c4RXUIVpi8bFGJG5hMxbqljR0VvDX0S8SQ0OspoxSGaElt
+	8VnmWw7zTl7LWtla+2gm2BrsJ1XsekdK2ig==
+X-Gm-Gg: AR+sD12C16eE9VhCOan47nr6u/mbWAKhFx8JLQCW+qvx7LDEB21tU6NUyJY/WmmgmUz
+	6tGadYxkW6SEkGfvE/TzhQJyqCTmxaNlu9ZmCL4s5IkMeT0XlX7xbQDnKg2lbFYZPXvNXk/1DE0
+	NZMtfoRpi5mC+hy0Hgn6jBDyiD42XvM2YTEiNEkYyKtOS/FqYkSChhDK4Uz6sQNgwW6HjkCQySb
+	cUtr0xq+s8Aa6zVta+bOCJUO+iTSYL8GZcVwIztgYtyi7tT0X1DpX2YPXELN3Uqulp66gR1PGkK
+	UKY+QvjU+RNsU6+U3W0pQNP/cZunKSN1IWMbfBOMo7JvOMRjBR7L+14PazAXW8FhOjbvSkL3xxd
+	xQDOGor+CR7knaPfG1Te7pwf/Wc4xOpSl7LY=
+X-Received: by 2002:a05:6102:2907:b0:782:de7b:eead with SMTP id ada2fe7eead31-785962b3b4fmr2012595137.1.1787928418039;
+        Fri, 28 Aug 2026 07:46:58 -0700 (PDT)
+Received: from smtp.aristanetworks.com (mx1.aristanetworks.com. [74.123.28.25])
+        by smtp-relay.gmail.com with ESMTPS id ada2fe7eead31-785f800dbd3sm28652137.17.2026.08.28.07.46.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 28 Aug 2026 07:46:58 -0700 (PDT)
+X-Relaying-Domain: arista.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arista.com;
+	s=Arista-A; t=1787928417;
+	bh=YA8nPi3ueKnPwe6mZk4m/RrVVcVGq0t5B55x+7fBTtQ=;
+	h=From:To:Cc:Subject:Date:From;
+	b=EN5ec2xjEDQzo5TUwvsImgohFuK2Ucq51bvpqk5Ichgg9ZdWA+bfElliISOYYeY87
+	 JdMvH5TkgUgl+vCrQSimMFgYY6cW5rVlKUdA0wK6qhwU+/21sIPmEbgmBhDAu2eS3A
+	 iGEWBtiMsn9ARvnwbubsmopAfOV2yGVn2waBVZMGnF4waUOZaxmvqvkK6Z451wB+ET
+	 4gy6/SH2Kpwro4Woi37KpBUkaGuBZoOmqUcUDCpn/38dpIBJ0x9yTGZUmQRd1uLz0j
+	 WC2BUcnVI9wRAwogxR/j/eduSwbDzf0+AQ8JVvDSvQ+fr5sgH/agqeOrHMx3c82D7v
+	 t9VK2pj06Z0ig==
+Received: from vm-whiteberg-ubuntu.aristanetworks.com (dhcp-244-90-77.sjc.aristanetworks.com [10.244.90.77])
+	by smtp.aristanetworks.com (Postfix) with ESMTPS id 260B31003C7;
+	Fri, 28 Aug 2026 14:46:57 +0000 (UTC)
+X-SMTP-Authentication: Allow-List-permitted
+X-SMTP-Authentication: Allow-List-permitted
+From: Tate Whiteberg <whiteberg@arista.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Andy Shevchenko <andy@kernel.org>
+Cc: Tate Whiteberg <whiteberg@arista.com>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: [PATCH] serial: 8250_mid: wait for LSR tx empty before setting termios
+Date: Fri, 28 Aug 2026 14:45:17 +0000
+Message-ID: <20260828144617.1210599-2-whiteberg@arista.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-Thank you for your contribution! Sashiko AI review found 4 potential issue(=
-s) to consider:
+If mid8250_set_termios is called while data is still in transmission,
+the corresponding register updates will corrupt the transmission.
 
-Pre-existing issues:
-- [Critical] Reallocating the DMA receive buffer in setup_fifos() frees the=
- active DMA-mapped memory without unmapping it, leading to DMA use-after-fr=
-ee and massive out-of-bounds reads/writes.
-- [High] Asynchronous pm_runtime_put() is used on the probe error path befo=
-re devres pm_runtime_disable(), leaving hardware powered on indefinitely.
-- [High] Missing rollback in qcom_geni_serial_suspend() if pm_runtime_force=
-_suspend() fails, leaving the UART port permanently disabled.
-- [High] IDA line ID is freed before the UART port is unregistered, allowin=
-g a race condition with a concurrent probe.
---
+Fix this by locking the port and and waiting for the transmitter to
+empty before performing updates. It is necessary to wait for both
+UART_LSR_THRE and UART_LSR_TEMT to ensure the final character is sent.
 
-commit 7fc2859a848a4f1ec1c0bc7d7815a5c518730a33
-Author: Abel Vesa <abel.vesa@oss.qualcomm.com>
+Signed-off-by: Tate Whiteberg <whiteberg@arista.com>
+---
+ drivers/tty/serial/8250/8250.h      |  1 +
+ drivers/tty/serial/8250/8250_mid.c  |  5 +++++
+ drivers/tty/serial/8250/8250_port.c | 13 +++++++------
+ 3 files changed, 13 insertions(+), 6 deletions(-)
 
-serial: qcom-geni: Fix unbalanced runtime PM resume for no_console_suspend
+diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+index 9337fec9394e..f99620b1cab7 100644
+--- a/drivers/tty/serial/8250/8250.h
++++ b/drivers/tty/serial/8250/8250.h
+@@ -180,6 +180,7 @@ void serial8250_clear_and_reinit_fifos(struct uart_8250_port *p);
+ void serial8250_fifo_wait_for_lsr_thre(struct uart_8250_port *up,
+ 				       struct nbcon_write_context *wctxt,
+ 				       unsigned int count);
++void serial8250_wait_for_xmitr(struct uart_8250_port *up, int bits);
+ 
+ void serial8250_rpm_get(struct uart_8250_port *p);
+ void serial8250_rpm_put(struct uart_8250_port *p);
+diff --git a/drivers/tty/serial/8250/8250_mid.c b/drivers/tty/serial/8250/8250_mid.c
+index 82656645b8a6..c77e117b7822 100644
+--- a/drivers/tty/serial/8250/8250_mid.c
++++ b/drivers/tty/serial/8250/8250_mid.c
+@@ -210,6 +210,7 @@ static void mid8250_set_termios(struct uart_port *p, struct ktermios *termios,
+ {
+ 	unsigned int baud = tty_termios_baud_rate(termios);
+ 	struct mid8250 *mid = p->private_data;
++	struct uart_8250_port *up = up_to_u8250p(p);
+ 	unsigned short ps = 16;
+ 	unsigned long fuart = baud * ps;
+ 	unsigned long w = BIT(24) - 1;
+@@ -218,6 +219,7 @@ static void mid8250_set_termios(struct uart_port *p, struct ktermios *termios,
+ 	/* Gracefully handle the B0 case: fall back to B9600 */
+ 	fuart = fuart ? fuart : 9600 * 16;
+ 
++	uart_port_lock_irq(p);
+ 	if (mid->board->freq < fuart) {
+ 		/* Find prescaler value that satisfies Fuart < Fref */
+ 		if (mid->board->freq > baud)
+@@ -231,11 +233,14 @@ static void mid8250_set_termios(struct uart_port *p, struct ktermios *termios,
+ 	}
+ 
+ 	rational_best_approximation(fuart, mid->board->freq, w, w, &mul, &div);
++
++	serial8250_wait_for_xmitr(up, UART_LSR_BOTH_EMPTY);
+ 	p->uartclk = fuart * 16 / ps;		/* core uses ps = 16 always */
+ 
+ 	writel(ps, p->membase + INTEL_MID_UART_PS);		/* set PS */
+ 	writel(mul, p->membase + INTEL_MID_UART_MUL);		/* set MUL */
+ 	writel(div, p->membase + INTEL_MID_UART_DIV);
++	uart_port_unlock_irq(p);
+ 
+ 	serial8250_do_set_termios(p, termios, old);
+ }
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 38fa45e74a37..4eaf417f1fd7 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -2024,7 +2024,7 @@ static bool wait_for_lsr(struct uart_8250_port *up, int bits)
+ }
+ 
+ /* Wait for transmitter and holding register to empty with timeout */
+-static void wait_for_xmitr(struct uart_8250_port *up, int bits)
++void serial8250_wait_for_xmitr(struct uart_8250_port *up, int bits)
+ {
+ 	unsigned int tmout;
+ 	bool tx_ready;
+@@ -2052,6 +2052,7 @@ static void wait_for_xmitr(struct uart_8250_port *up, int bits)
+ 		}
+ 	}
+ }
++EXPORT_SYMBOL_NS_GPL(serial8250_wait_for_xmitr, "SERIAL_8250");
+ 
+ #ifdef CONFIG_CONSOLE_POLL
+ /*
+@@ -2098,7 +2099,7 @@ static void serial8250_put_poll_char(struct uart_port *port,
+ 	ier = serial_port_in(port, UART_IER);
+ 	__serial8250_clear_IER(up);
+ 
+-	wait_for_xmitr(up, UART_LSR_BOTH_EMPTY);
++	serial8250_wait_for_xmitr(up, UART_LSR_BOTH_EMPTY);
+ 	/*
+ 	 *	Send the character out.
+ 	 */
+@@ -2108,7 +2109,7 @@ static void serial8250_put_poll_char(struct uart_port *port,
+ 	 *	Finally, wait for transmitter to become empty
+ 	 *	and restore the IER
+ 	 */
+-	wait_for_xmitr(up, UART_LSR_BOTH_EMPTY);
++	serial8250_wait_for_xmitr(up, UART_LSR_BOTH_EMPTY);
+ 	serial_port_out(port, UART_IER, ier);
+ }
+ 
+@@ -2223,7 +2224,7 @@ static void serial8250_THRE_test(struct uart_port *port)
+ 	 * Synchronize UART_IER access against the console.
+ 	 */
+ 	scoped_guard(uart_port_lock_irqsave, port) {
+-		wait_for_xmitr(up, UART_LSR_THRE);
++		serial8250_wait_for_xmitr(up, UART_LSR_THRE);
+ 		serial_port_out_sync(port, UART_IER, UART_IER_THRI);
+ 		udelay(1); /* allow THRE to set */
+ 		iir_noint1 = serial_port_in(port, UART_IIR) & UART_IIR_NO_INT;
+@@ -3293,7 +3294,7 @@ static void serial8250_console_wait_putchar(struct uart_port *port, unsigned cha
+ {
+ 	struct uart_8250_port *up = up_to_u8250p(port);
+ 
+-	wait_for_xmitr(up, UART_LSR_THRE);
++	serial8250_wait_for_xmitr(up, UART_LSR_THRE);
+ 	serial8250_console_putchar(port, ch);
+ }
+ 
+@@ -3504,7 +3505,7 @@ void serial8250_console_write(struct uart_8250_port *up,
+ 	 *	Finally, wait for transmitter to become empty
+ 	 *	and restore the IER
+ 	 */
+-	wait_for_xmitr(up, UART_LSR_BOTH_EMPTY);
++	serial8250_wait_for_xmitr(up, UART_LSR_BOTH_EMPTY);
+ 
+ 	if (em485) {
+ 		mdelay(port->rs485.delay_rts_after_send);
+-- 
+2.43.0
 
-When no_console_suspend is set for the serial console, the system
-suspend callback skips pm_runtime_force_suspend() to keep the console
-active. The resume callback still unconditionally calls
-pm_runtime_force_resume(), which triggers an "Unbalanced
-pm_runtime_enable!" warning.
-
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/q=
-com_geni_serial.c
-> index 3633723acef8d..a180a00c9e23d 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -1074,10 +1074,10 @@ static int setup_fifos(struct qcom_geni_serial_po=
-rt *port)
-[ ... ]
-> 	if (port->rx_buf && (old_rx_fifo_depth !=3D port->rx_fifo_depth) && port=
-->rx_fifo_depth) {
-> 		/*
-> 		 * Use krealloc rather than krealloc_array because rx_buf is
-> 		 * accessed as 1 byte entries as well as 4 byte entries so it's
-> 		 * not necessarily an array.
-> 		 */
-> 		port->rx_buf =3D devm_krealloc(uport->dev, port->rx_buf,
-> 					     port->rx_fifo_depth * sizeof(u32),
-> 					     GFP_KERNEL);
-
-[Severity: Critical]
-This is a pre-existing issue, but it looks like devm_krealloc() frees the
-original active DMA-mapped memory buffer here without updating
-port->rx_dma_addr or unmapping the original DMA mapping.
-
-Could this allow the hardware DMA to write to the freed memory block, and
-cause handle_rx_uart() to later read out-of-bounds from the newly allocated,
-shrunk port->rx_buf, leaking kernel heap memory to the TTY layer?
-
-> @@ -1991,7 +1991,7 @@ static int qcom_geni_serial_probe(struct platform_d=
-evice *pdev)
-[ ... ]
-> 	ret =3D pm_runtime_resume_and_get(uport->dev);
-> 	if (ret < 0) {
-> 		dev_err(uport->dev, "Failed to resume and get %d\n", ret);
-> 		goto error;
-> 	}
->=20
-> 	ret =3D uart_add_one_port(drv, uport);
-> 	pm_runtime_put(uport->dev);
-> 	if (ret)
-> 		goto error;
-
-[Severity: High]
-This isn't a bug introduced by this patch, but doesn't using an asynchronous
-pm_runtime_put() here on the probe error path leave the hardware powered on
-indefinitely?
-
-The devres pm_runtime_disable() that follows will cancel any pending
-asynchronous suspend work.
-
-> @@ -2022,6 +2022,6 @@ static void qcom_geni_serial_remove(struct platform=
-_device *pdev)
-[ ... ]
-> 	WRITE_ONCE(port->tx_kick_enabled, false);
-> 	irq_work_sync(&port->tx_kick);
-> 	dev_pm_clear_wake_irq(&pdev->dev);
-> 	device_init_wakeup(&pdev->dev, false);
-> 	ida_free(&port_ida, uport->line);
-> 	uart_remove_one_port(drv, &port->uport);
-
-[Severity: High]
-This is a pre-existing issue, but is the IDA line ID prematurely freed here
-before the UART port is completely unregistered on the next line?
-
-If a concurrent device probe allocates the just-freed IDA line ID while
-uart_remove_one_port() is still running for the old device, it seems this
-could cause a collision in the serial core due to duplicate line IDs being
-registered simultaneously.
-
-> @@ -2086,10 +2086,10 @@ static int qcom_geni_serial_suspend(struct device=
- *dev)
-[ ... ]
-> 	/*
-> 	 * When no_console_suspend is set the console must remain active
-> 	 * across system sleep, so skip the force suspend path.
-> 	 */
-> 	if (!console_suspend_enabled && uart_console(uport))
-> 		return 0;
->=20
-> 	return pm_runtime_force_suspend(dev);
-
-[Severity: High]
-This isn't a bug introduced by this patch, but if pm_runtime_force_suspend()
-fails, does this return the error without reverting the effects of
-uart_suspend_port() and geni_icc_set_tag() executed earlier in the function?
-
-It seems this could leave the UART port permanently disabled.
-
->  }
-> =20
->  static int qcom_geni_serial_resume(struct device *dev)
->  {
->  	int ret;
->  	struct qcom_geni_serial_port *port =3D dev_get_drvdata(dev);
->  	struct uart_port *uport =3D &port->uport;
->  	struct qcom_geni_private_data *private_data =3D uport->private_data;
-> =20
-> -	ret =3D pm_runtime_force_resume(dev);
-> -	if (ret)
-> -		return ret;
-> +	if (console_suspend_enabled || !uart_console(uport)) {
-> +		ret =3D pm_runtime_force_resume(dev);
-> +		if (ret)
-> +			return ret;
-> +	}
-> =20
->  	ret =3D uart_resume_port(private_data->drv, uport);
->  	if (uart_console(uport)) {
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260828-serial-qco=
-m-geni-fix-unbalanced-rpm-resume-v1-1-af3e5aef17a6@oss.qualcomm.com?part=3D1
