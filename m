@@ -1,87 +1,60 @@
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mout-p-101.mailbox.org (mout-p-101.mailbox.org [80.241.56.151])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C369032B10E
-	for <linux-serial@vger.kernel.org>; Thu, 27 Aug 2026 22:08:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EA701448E0;
+	Fri, 28 Aug 2026 03:20:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=80.241.56.151
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787868498; cv=none; b=pWlnFoNsLSUwp/P1j9oBYOBrkd454aZJae6+3ogDlJeIsRkjUFy+8Ta8v3JEljuCB+Cq2tbd+4v/qcSBHWxUMyogQ3stk8PwckbxHfoWZy6q9vPifim6cm5gehnK3kq7nh+f/fYyUULuJu4rgmzdF/WBVFckGa8GLgsWiDeis20=
+	t=1787887217; cv=none; b=U7Z8Dz4bWmW3dwAohKkHtiL531/va+w4+7fzeD3gcIm+JvTZ90XnQNLdYHvyEymgRjINTN36m/+2FaMztjGn3V3CaZrNoP9PmdgYgLl8ppucyXJeK9daFxIZY/ad3Fg0b7oXjKZ/uJ0SFbyihx+ea2QxdV0PNFsonRDFI4eLf/Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787868498; c=relaxed/simple;
-	bh=4NZvaMgEivH19ze0KrHa5URPQF+DJXe0KL1Iof4hU0I=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=tP2iI/ibi/ZQed/NvnyqnJ2XyfnXVxMOFVpu048YOWI0tCrtH0dSLnym2RIpaS0kiRlKIfG15BBlKp6N2uvdGlwr/gyMnlgXRQfLHN+C2/PoLKaxr9RMTimPtAMezdvRE+UAs21BUgBpydwK55hYUSzmE8XcBTD41deTg7Kyp2M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZkZACa4M; arc=none smtp.client-ip=209.85.221.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1787887217; c=relaxed/simple;
+	bh=nbHAPIj9By8rrcKYY1reKxYEa32ax6KO7ebFKK6TmKg=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=gq+abquI2XJ43HXGulof842kpq7Y0lSCNTfrkGXkCKI9L9SkCOklIfRLSQD1kKW0joAU3Vnr4Jyl/1UGbMaQtIcA5Qk5w7SIKCOR0/gpuL11/g1G2ZQ1cYHgDG4fj+DTXbBm6P8VoddKVU7WAXOKKV5nU2tCQuRpNtvVsam0L/E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org; spf=pass smtp.mailfrom=mailbox.org; dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b=OlFNxeu+; dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b=txv8Xjjz; arc=none smtp.client-ip=80.241.56.151
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mailbox.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZkZACa4M"
-Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-47fde295992so222809f8f.0
-        for <linux-serial@vger.kernel.org>; Thu, 27 Aug 2026 15:08:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787868495; x=1788473295; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=12Czze317YjE4biaV1BLwood9eGVcYGSVELmZ2ehr0Q=;
-        b=ZkZACa4MWqRVc/0lmyKUfN+BEO3QCsy1dGf0mBe8Zi3krYTf4Rpp+MGpPfDI1Soi0S
-         NIcwitWJh0Gpu/PkYOwOgasQj39XuNdu6GscUn4RgcplqNI8pH3VROh2YLFUet9dqaji
-         Gmnp2Otm5XQ31LaFJnPIBHPDIc/3GpHWyh3uD0wTnRqHPyIy6LT8U54IGllYfS3s7EUr
-         aSVee/ptWVfB9mW5l+MML3d/hMCEbQ+DRW7b+y1gDk5kbbZN3fTCpSeUQrTfJqkfDZYA
-         Mr9bTE1uxewFIYCM0GCdPVqQXLxV+tkeFaSE6SaGgwHLlNXG4c+B7pd201DbZVdViJPz
-         iOUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787868495; x=1788473295;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=12Czze317YjE4biaV1BLwood9eGVcYGSVELmZ2ehr0Q=;
-        b=bxe5wJ09cM3vzV12W1FTqmLjond02oT6r9bfk99pHBQ8QDgqJKs5h+wmD+A1k2SwAh
-         TVjnpz5EIRk54BbAzyufFgFhNa3NacWvs8smjvSoAXCkVM+Bg+1oU5siZY5ufKfRVKJR
-         7uqA+TNR82wpaYwnC2ooU+42kjUjWLms6h13rIRNebxA+d+IgXJPxXRSepKcga/YMwX3
-         AJ9EbinIDz+/JpC8uNiverc2NfCWdXi5zhQmNFWMi6yy1o5v2EnCmQwvoOF3R0sPTYT1
-         wq26jyuOERDy2uNoAgwyKd7FNZC6N1adSN9AE1nMlMDtR6OMHvHc0Vnxzxf9BrfXRjr2
-         CimA==
-X-Forwarded-Encrypted: i=1; AHgh+Rp2/IESB4HzYLAH8RrzdRCq1eVce/0QHC3BV2ADJ1Mz4Hu//Z9DkYfbGn3/iSxzs3HItEqvF5tFx7fKOzo=@vger.kernel.org
-X-Gm-Message-State: AFuF++leiE6RhgQ86J9u3NxGv2N6Wm5UGzzRWlzJOa7FLt8Z43SQU3FC
-	0n0ogrwRaP8wlG7nY6PyUIlG4erXS39pzA/j7umLTGyyHUNoNZNUn8EI
-X-Gm-Gg: AR+sD12QY4l5fRsWgS4DudK5udk8GiLKfvnFcIeN9eKPErElDPVodZml80zR4EHKlgg
-	LgfjNFcA1N73kZEShU4xhRQlIn6oQMV3zdyM6ES/3ArcxNN2SoczPPiPMD8LjPSvpk9CXbLbfsd
-	9VFD5VSI5AY4vGXOpM85IaZ56NwS1qTN/q/zLQc2/Gf5NKbiJBFIFvzf5mMv64aQTaJSFOJKT18
-	j+5Ye621Tq4Ii1euVWbWSIO3qNegtie2DzuNX1tdBTEu/GqFqNJgXYZ2X8XohPXxDEs7XsV3iwc
-	nP/Dd8PXsvqNt5oW1LrdP/dgRSEOuwb69CgOd7ltlBcHgCi8tFgoUrMLZZvTz96d10b37syKPUk
-	MYyRvmTml+m7Jty9eCNtnIUtpGiC065P7OmZaPUDWwbhLAqNNIO4SRuQDNC5B6dX4O3NaabbFpi
-	Ih4CFeY/kTIwwIQnN7iiGzbwsmfS94+qhZxOfgEKdpj+ao0IK6G+X0gd56b1E=
-X-Received: by 2002:a5d:6f0d:0:b0:47f:71a0:c060 with SMTP id ffacd0b85a97d-482eab5ff3cmr11537622f8f.2.1787868494701;
-        Thu, 27 Aug 2026 15:08:14 -0700 (PDT)
-Received: from m2.. ([37.142.156.156])
-        by smtp.googlemail.com with ESMTPSA id ffacd0b85a97d-482e28e899dsm12023740f8f.28.2026.08.27.15.08.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Aug 2026 15:08:13 -0700 (PDT)
-From: Michael Zaidman <michael.zaidman@gmail.com>
-To: linusw@kernel.org
-Cc: jikos@kernel.org,
-	bentiss@kernel.org,
-	brgl@kernel.org,
-	germain.hebert@ca.abb.com,
-	rio@r26.me,
-	brunoceg1@gmail.com,
-	contact@christina-quast.de,
-	daniel.beer@igorinstitute.com,
-	gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	michael.zaidman@gmail.com,
+	dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b="OlFNxeu+";
+	dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b="txv8Xjjz"
+Received: from smtp202.mailbox.org (smtp202.mailbox.org [10.196.197.202])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4hWNtN1sr1z8v4R;
+	Fri, 28 Aug 2026 05:20:12 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
+	t=1787887212;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=GHZ2xVh5v+YPKAnAGNjJoiKICOFNNjf0Cg/Bo8t5giA=;
+	b=OlFNxeu+YBTNN04nZxyXk7KYujfLEmm6kfeeE2jDkS/uxv9XqnwKft0dBQnDYw9L0GvqSI
+	PjhDbGIbngnc4avzxpCGeJuqVNMsaAtpc5tZeLUaev5qGi9JkP4bPsqcWPAR9qAdXi1mnR
+	lS4v1HrpiYufNogHrNiF2sH4sIL5GNPBYTHju5Mczk+KH+WpiuiYEm/04OBBUuPKifdRXo
+	d5PnZ9G/8XzE5Fs/K0Z/u6/pt1pxpRr1Z1mBM/FDgy9hdy7Ly8eNpe9uf+c+QAiKmH1Jqw
+	YUuUDuqptRbJIO8n+h+fq8V6kuEuCL3Wbci1W7JfUSpbHUh8RJp9BPfhEnCj8w==
+From: Qing Ming <a0yami@mailbox.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
+	t=1787887210;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=GHZ2xVh5v+YPKAnAGNjJoiKICOFNNjf0Cg/Bo8t5giA=;
+	b=txv8XjjzXfzEjGpus9JYGmP6bPHdbYOXWLWDWyb04++S0Eti2iq+4z3XANLka0GJSHeYUF
+	ypFXSbfAVLr2S4bvRvGlgNuZHaICH71pbBxqRIwyMfXJQk4EBaiyUbPTeZpbXXelJRnzMK
+	XwYXMkKSqrao/XfrAzaMJF3AapS+Y/EJBQqduwdYr5l0VSY4hhndX6mZeg3OLhhSK9SGgX
+	ZDaAARsiEvE3DWvDHX64mfYEkQjRpkEOc2EJ8B+vmCa0Zb3dx69x3ZNZiQKR4ma4jVt5xP
+	P8lBUFgt+YVFZXneEcj/+/sWLkLXpDWaDWmESFmcOqz4GmLAspykt5eXeP8WEQ==
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: Daniel Starke <daniel.starke@siemens.com>,
+	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
-	linux-input@vger.kernel.org,
-	linux-gpio@vger.kernel.org,
-	linux-i2c@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 08/13] HID: ft260: uart: add modem pins control via ioctl
-Date: Fri, 28 Aug 2026 01:08:05 +0300
-Message-ID: <20260827220805.23112-1-michael.zaidman@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <CAD++jLnKXqbV0xB3wvTF9Ri7g1MuWV6csO0MGzCtv5LBwmSr4g@mail.gmail.com>
-References: <CAD++jLnKXqbV0xB3wvTF9Ri7g1MuWV6csO0MGzCtv5LBwmSr4g@mail.gmail.com>
+	Qing Ming <a0yami@mailbox.org>,
+	stable@vger.kernel.org
+Subject: [PATCH] tty: n_gsm: pin DLCI during configuration ioctls
+Date: Fri, 28 Aug 2026 11:19:49 +0800
+Message-ID: <20260828031949.18580-1-a0yami@mailbox.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -89,94 +62,144 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-MBO-RS-META: 4jr86dfb6skdhk5ehmirjm5fdxmpayon
+X-MBO-RS-ID: 3ddbde06dd230ad720b
 
-On Tue, 25 Aug 2026 at 10:08 +0200, Linus Walleij wrote:
-> I'm not the authortative expert on modem control using GPIO,
-> but what I think you should do is to
->
-> select GPIOLIB
-> select SERIAL_MCTRL_GPIO
->
-> On Kconfig, so that gpiolib is always available and you can use
-> the generic modem control helpers for modem control over GPIO.
+The N_GSM line discipline keeps per-channel state in the mux table
+gsm->dlci[].  GSMIOC_GETCONF_DLCI and GSMIOC_SETCONF_DLCI fetch a raw
+pointer from that table and then read or update the DLCI
+configuration, allocating the entry on the spot when the slot is
+empty.
 
-I looked into this, and it does not work for the FT260 without
-changing serial_mctrl_gpio.c first. Three blockers:
+The table lookup is done without holding gsm->mutex and without
+taking a reference on the DLCI.  A concurrent GSMIOC_SETCONF that
+changes the multiplexer configuration calls gsm_cleanup_mux(), which
+releases every table entry under gsm->mutex; the final tty_port put
+frees the DLCI.  The first ioctl then keeps using the freed object:
+the GET path reads it in gsm_dlci_copy_config_values() and the SET
+path writes it in gsm_dlci_config().
 
-- Every GPIO access on this chip is a USB transfer, so the
-  gpiochip has can_sleep = true. mctrl_gpio_set() calls
-  gpiod_set_array_value() and mctrl_gpio_get() calls
-  gpiod_get_value(), and gpiolib does WARN_ON(can_sleep) in both,
-  so every TIOCMGET/TIOCMSET would give a WARN backtrace.
+The issue was found by static analysis of the returned-pointer
+lifetime.  A reproducer on a PTY-backed passive mux racing 16
+concurrent GSMIOC_GETCONF_DLCI readers against repeated mux restarts
+via GSMIOC_SETCONF, with no fault injection or artificial delays,
+produced the same KASAN report in 2 of 2 unpatched boots: the first
+report landed within half a minute of starting the race, and each
+120-second race window averaged 2-3 reports per restart (486 reports
+across 172 restarts, then 357 across 162; the copy helper is inlined,
+so KASAN names the caller):
 
-- mctrl_gpio_init() takes a struct uart_port and its IRQ handler
-  needs it: uart_port_lock_irqsave(), uart_handle_dcd_change(),
-  port->icount, delta_msr_wait. This UART is a plain tty_driver
-  with a tty_port, so only mctrl_gpio_init_noauto() is left - and
-  the FT260 GPIO lines have no interrupts anyway.
+  BUG: KASAN: slab-use-after-free in gsmld_ioctl+0x156b/0x17e0
+  Read of size 4 at addr ffff88800b84d008 by task n_gsm_dlci_conf/226
 
-- mctrl_gpio_init_noauto() only picks up lines that exist as
-  firmware properties: device_property_present(dev, "cts-gpios")
-  and friends. A gpiod_add_lookup_table() table is the machine
-  lookup path, so every line would be skipped, all descriptors
-  would stay NULL and both helpers would silently do nothing.
-  Software nodes could satisfy that check, but there is no
-  PROPERTY_ENTRY_GPIO in the tree to build them with.
+  Call Trace:
+   gsmld_ioctl
+   tty_ioctl
+   __x64_sys_ioctl
 
-serial_mctrl_gpio.h is also private to drivers/tty/serial - all
-eleven users are serial_core drivers in that directory.
+  Allocated by task 218:
+   gsm_dlci_alloc
+   gsmld_ioctl
 
-Registering a uart_port instead was tried for this device and
-turned down. Daniel Beer's 2022 FT260 UART patch was built on
-serial_core and called uart_add_one_port(); Greg asked for
-usb-serial, and Johan Hovold answered that "neither USB-serial or
-serial (core) is a good fit for such a HID device", pointing at
-Christina Quast's tty driver as the right approach - which patch
-1 of this series is a port of.
+  Freed by task 235:
+   kfree
+   gsm_cleanup_mux
+   gsmld_ioctl
 
-  https://lore.kernel.org/lkml/638c51a2.170a0220.3af16.18f8@mx.google.com/
-  https://lore.kernel.org/lkml/Y6WNl6+ySy8zcSyg@hovoldconsulting.com/
+The reported address is 8 bytes inside the freed 2048-byte object
+(cache kmalloc-2k), i.e. the read of dlci->addr.
 
-That patch left set_mctrl empty and get_mctrl returning a
-constant, which is this same constraint seen from the other side:
-uart_ops.set_mctrl and .get_mctrl must not sleep, while every
-FT260 line access is a HID feature report over USB.
+A control run with this patch applied completed 19291547 GET
+iterations and 226 restarts with no KASAN report.
 
-> This can be a bit delicate in this case since the gpiochip that you
-> use for mctrl is also registered in this driver, so you need to
-> register the gpiochip *first*, then add a look-up table for the
-> GPIOs, then register this modem control.
->
-> Then look in e.g. drivers/mfd/sm501.c which is an
-> MFD device that register a gpiochip and then consume
-> GPIOs from itself.
+Serialize the lookup/allocation against mux cleanup with gsm->mutex
+and acquire a tty_port reference before dropping it.  A concurrent
+gsm_cleanup_mux() then either completes before the lookup, in which
+case the slot is NULL and a fresh DLCI is allocated, or runs after
+the reference is taken, in which case its put is not final and the
+object survives until the ioctl releases it.
 
-Agreed on the ordering, and thanks for the reference. The UART
-probe currently registers the tty port before the gpiochip, so
-that would have to be inverted, and the gpiochip label is built
-from the HID device name, so the table would have to be built at
-probe rather than being static. Both are workable; they are not
-what blocks this. sm501 does not hit the sleeping problem because
-its gpiochip is memory mapped.
+Fixes: afe3154ba87e ("tty: n_gsm: add ioctl for DLC config via ldisc handle")
+Cc: stable@vger.kernel.org
+Signed-off-by: Qing Ming <a0yami@mailbox.org>
+Assisted-by: Claude:kimi-k3
+---
+ drivers/tty/n_gsm.c | 44 ++++++++++++++++++++++++++++++--------------
+ 1 file changed, 30 insertions(+), 14 deletions(-)
 
-> The core idea is that the serial modem control should look
-> up the GPIOs from its own gpiochip and use the MCTRL
-> library helpers, then this should result in very little and
-> compact code that is easy to read.
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index c13e050de83b..605549d742e6 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -2711,6 +2711,22 @@ static inline void dlci_put(struct gsm_dlci *dlci)
+ 	tty_port_put(&dlci->port);
+ }
+ 
++static struct gsm_dlci *gsm_dlci_get_or_alloc(struct gsm_mux *gsm,
++					      unsigned int addr)
++{
++	struct gsm_dlci *dlci;
++
++	mutex_lock(&gsm->mutex);
++	dlci = gsm->dlci[addr];
++	if (!dlci)
++		dlci = gsm_dlci_alloc(gsm, addr);
++	if (dlci)
++		dlci_get(dlci);
++	mutex_unlock(&gsm->mutex);
++
++	return dlci;
++}
++
+ static void gsm_destroy_network(struct gsm_dlci *dlci);
+ 
+ /**
+@@ -3862,29 +3878,29 @@ static int gsmld_ioctl(struct tty_struct *tty, unsigned int cmd,
+ 		if (dc.channel == 0 || dc.channel >= NUM_DLCI)
+ 			return -EINVAL;
+ 		addr = array_index_nospec(dc.channel, NUM_DLCI);
+-		dlci = gsm->dlci[addr];
+-		if (!dlci) {
+-			dlci = gsm_dlci_alloc(gsm, addr);
+-			if (!dlci)
+-				return -ENOMEM;
+-		}
++		dlci = gsm_dlci_get_or_alloc(gsm, addr);
++		if (!dlci)
++			return -ENOMEM;
+ 		gsm_dlci_copy_config_values(dlci, &dc);
++		dlci_put(dlci);
+ 		if (copy_to_user((void __user *)arg, &dc, sizeof(dc)))
+ 			return -EFAULT;
+ 		return 0;
+-	case GSMIOC_SETCONF_DLCI:
++	case GSMIOC_SETCONF_DLCI: {
++		int ret;
++
+ 		if (copy_from_user(&dc, (void __user *)arg, sizeof(dc)))
+ 			return -EFAULT;
+ 		if (dc.channel == 0 || dc.channel >= NUM_DLCI)
+ 			return -EINVAL;
+ 		addr = array_index_nospec(dc.channel, NUM_DLCI);
+-		dlci = gsm->dlci[addr];
+-		if (!dlci) {
+-			dlci = gsm_dlci_alloc(gsm, addr);
+-			if (!dlci)
+-				return -ENOMEM;
+-		}
+-		return gsm_dlci_config(dlci, &dc, 0);
++		dlci = gsm_dlci_get_or_alloc(gsm, addr);
++		if (!dlci)
++			return -ENOMEM;
++		ret = gsm_dlci_config(dlci, &dc, 0);
++		dlci_put(dlci);
++		return ret;
++	}
+ 	default:
+ 		return n_tty_ioctl_helper(tty, cmd, arg);
+ 	}
 
-No argument with the goal - I would rather have that than my own
-TIOCM handling. But making it usable here means work inside the
-serial helpers: cansleep set/get, a path that does not require a
-uart_port, a lookup that works without firmware properties, and
-the header moved to include/linux. That is a serial subsystem
-series to agree with Greg and Jiri Slaby, so I propose keeping
-the ioctl implementation in this series and doing the conversion
-as a follow-up.
+base-commit: 45c13f3f9e3bb15fd89ff2864c6f627a3b4b4229
+-- 
+2.53.0
 
-Even then only the set/get helpers would apply: with no GPIO
-interrupts, modem status changes come from the FT260's own
-interrupt status input report (0xB1), so that part stays in the
-driver either way.
-
-Thanks,
-Michael
