@@ -1,77 +1,79 @@
-Received: from mout-p-103.mailbox.org (mout-p-103.mailbox.org [80.241.56.161])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE58F39A04A;
-	Fri, 28 Aug 2026 08:23:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=80.241.56.161
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55DEC38A701;
+	Fri, 28 Aug 2026 10:51:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787905393; cv=none; b=WcU9XB+PK+w0e1Xbx+wzEAq1f6pAPu0HxSIFzPb7JkHQNcpbEXQv9s3Z8ncTtJBFpNdK8Xqe5rZMMHn/iPkydwgfkAZuFjC+MuAXyCkt2AJ13CM0sdcYdzS0JOOvbS3B49LwSUGcx8loKASNpN852JQ3I/CT6TsSVank0uXkYYI=
+	t=1787914320; cv=none; b=lL8CQsrggWT6C+OpFKxxkUD7IeBwWIECOEm9S8/+Hvx3FL2AbnQImeVVIAqqZnXJm0/mMCX1mM1MPo3Yi2fc9ODHqJPbndHE/8wQ1+lOD5hQ9CeQMPxY2zr80C1DGG4rtrrmErYAOxxFLPymKjVzUYnbdqBOl2/T6iLLJlQXgSU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787905393; c=relaxed/simple;
-	bh=hDydiq7AQMDQDpd+0whVhGG1pczvBtYNIPt4W2hjzK4=;
-	h=Date:From:To:Cc:Message-ID:In-Reply-To:References:Subject:
-	 MIME-Version:Content-Type; b=entGZ25cVUxZZvgaHPdRSK0EGa/cMPE7AU36FlWBdiKrCuezKicx0Lj1vDaiuqicdNnbD1WZTINbRXwxzRthjp4eErmJpvUQcWj3ivaAteOB5zCVIozS+Qp+z7HGYSF9vqCtkWZrf7DtOt3nWCdxRBdFuI1eKYAju0sXSeusJRI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org; spf=pass smtp.mailfrom=mailbox.org; dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b=ZUjvASJ0; arc=none smtp.client-ip=80.241.56.161
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mailbox.org
+	s=arc-20240116; t=1787914320; c=relaxed/simple;
+	bh=KnJ0xS4wtKF41uZcB5P0f1h7kIrwaBmbT9mcXlzZ+0s=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=H3ve36mgFqdMQL1JYdtLQJ+ytBAdo2deq62L7gwi415oaFl3VmaBEfL2pqCk7craBbKZX5YYTvZZg1LNsU4vBIw+33I8ie/A9D1n1G+alpA7tEonVOiStaAt7E5fGW5mwRzk3eqXqe17H5kPH7uWvlBHqrqNWckJUieDGU4HY4o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=MlgSrKfR; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b="ZUjvASJ0"
-Received: from smtp202.mailbox.org (smtp202.mailbox.org [IPv6:2001:67c:2050:b231:465::202])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4hWWbn2kJTzKmTr;
-	Fri, 28 Aug 2026 10:23:01 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
-	t=1787905381;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=YsmP5wmnG/UQyhwJAqUcew+uGLtul3Yjk3sK/pL/sxc=;
-	b=ZUjvASJ0A06DSzNfhieJCepU83N6DnapX+ofTuJtugpd2B/7ZvgnwvKQjEqquhexYHMOT+
-	S3cyCdu/gMfdDcVJI3MADuPTwetpDSI0CY1WjpBOWuggv7zyyaSNeu0C+9tBceY88dO8Hx
-	shJQUn9RbYYfD1VPTdzuEvy9kyvF2KyJCuL4eq5Z28QS0z2BLo3C74Hy84RvW1TWju46Kd
-	O2dLb1C8fH9mBGAHpRMHJLvpDpkk7Qfl0KVL/oFdLwZ4T6v0xNWJB3E/2Qu/bx+OaBnDL3
-	ksgulA3doXWxY6utUF+lcrF//Kth3L8pLlcEIZ/9nk2qAj/qC3O6OXc3T3tOdQ==
-Date: Fri, 28 Aug 2026 16:22:59 +0800 (CST)
-From: Ming Qing <a0yami@mailbox.org>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>,
-	Daniel Starke <daniel.starke@siemens.com>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	stable@vger.kernel.org
-Message-ID: <2073007787.358333.1787905379172@app.mailbox.org>
-In-Reply-To: <2026082810-vastness-detest-6637@gregkh>
-References: <20260828031949.18580-1-a0yami@mailbox.org>
- <2026082810-vastness-detest-6637@gregkh>
-Subject: Re: [PATCH] tty: n_gsm: pin DLCI during configuration ioctls
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="MlgSrKfR"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 348671F000E9;
+	Fri, 28 Aug 2026 10:51:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
+	s=korg; t=1787914318;
+	bh=8QR+mV84eUADKcRuIlSxXNiDLsii5HShOwXWR6BkAu0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=MlgSrKfRAXCvPPkD46t3kXwV2P8imQHSgQRHIWBUvSk3Uc9Kk0yBbHBIO6jUWKH04
+	 XWYFyVeqQC2Xbk7/12BcoJEWTaWrM6Nszjm03OleYjCtw+5Amhu+3yWD4kV7u1T9rT
+	 0k9hipGZIKXRV7XPkvBcb4cjpKo0smjc48lPAP98=
+Date: Fri, 28 Aug 2026 12:50:17 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Farhad Alemi <farhad.alemi@berkeley.edu>
+Cc: Jiri Slaby <jirislaby@kernel.org>, falemi@asu.edu,
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [BUG] WARNING: refcount bug in gsm_mux_net_start_xmit
+Message-ID: <2026082821-leverage-ninth-bf28@gregkh>
+References: <CA+0ovCh9MQE6BZD-8vqWMcrVS8Bj-tYY47HqeASvE7_b9QP-ZQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Priority: 3
-Importance: Normal
-X-MBO-RS-META: 6ofpc3x46i99rjc9c3yefquruusuc86o
-X-MBO-RS-ID: 21c49ce813949b09834
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+0ovCh9MQE6BZD-8vqWMcrVS8Bj-tYY47HqeASvE7_b9QP-ZQ@mail.gmail.com>
 
-
-> On 08/28/2026 1:50 PM CST Greg Kroah-Hartman wrote:
-> Please have your llm read the email archives for why you shouldn't be
-> touching this file at all, UNLESS you have the real hardware and system
-> to test it with.
+On Fri, Aug 28, 2026 at 05:53:36AM +0000, Farhad Alemi wrote:
+> Hello,
 > 
-> thanks,
+> As part of the kernel research at ASU's SEFCOM
+> lab, we hit the crash below. Crash reports can be found here:
 > 
-> greg k-h
+>   https://github.com/farhad-alemi/public_bug_reports/tree/main/199-warning-refcount-bug-in-gsm-mux-net-start-xmit/
+> 
+>   refcount_t: addition on 0; use-after-free.
+>   WARNING: lib/refcount.c:25 at refcount_warn_saturate+0x9f/0x110
+> lib/refcount.c:25, CPU#0: kworker/u8:1/14
+>   Workqueue: ipv6_addrconf addrconf_dad_work
+>   Call Trace:
+>    refcount_warn_saturate+0x9f/0x110 lib/refcount.c:25
+>    __refcount_inc include/linux/refcount.h:366 [inline]
+>    refcount_inc include/linux/refcount.h:383 [inline]
+>    kref_get include/linux/kref.h:45 [inline]
+>    muxnet_get drivers/tty/n_gsm.c:3938 [inline]
+>    gsm_mux_net_start_xmit+0x3af/0x440 drivers/tty/n_gsm.c:3951
+>    __netdev_start_xmit include/linux/netdevice.h:5368 [inline]
+>    dev_hard_start_xmit+0x23b/0x620 net/core/dev.c:3904
+>    __dev_queue_xmit+0x160b/0x3250 net/core/dev.c:4831
+>    ip6_finish_output2+0xfd4/0x19b0 net/ipv6/ip6_output.c:136
+>    mld_sendpack+0x820/0xe00 net/ipv6/mcast.c:1855
+>    ipv6_mc_dad_complete+0x85/0x470 net/ipv6/mcast.c:2279
+> 
+> Our reproducer.c is available upon request.
 
-Thanks for the reminder. 
+Please read the mailing list archives for why you shouldn't be worrying
+about this file unless you have access to the real hardware.
 
-I'll be more careful with fixes like this in the future.
+Also, this required root to trigger, right?
 
-Best regards,
-Qing Ming
+thanks,
+
+greg k-h
