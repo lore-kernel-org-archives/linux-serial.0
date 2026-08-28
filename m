@@ -1,93 +1,69 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 378F3377A83;
-	Fri, 28 Aug 2026 16:06:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 628DB24A078
+	for <linux-serial@vger.kernel.org>; Fri, 28 Aug 2026 16:18:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787933216; cv=none; b=mBvShi9m/SpnVZ8T1yFgHZ+fpBpgakwBeUe157N8SSlS3F2a2BZvg+CFv/OaPH7f/kT9DyduMzk3wr/0DEmczbVsjnv6NdgExBjvDIxxi+/Jpd07WQXewc7mS4GaEkzFtuk9bAK1IboUN+6CFhDlkdToBSAcufMZfux1NYrVXkQ=
+	t=1787933934; cv=none; b=cTBt8C8VpdwlgUqMPTFAk+GAMLzNWvQR/PPSBkmyPAm9yLBoobQ+jA1MrRzn4YpVvk32qFO83bWyFzNGKZRc06sv1eDnAg2nGgI7m0AOjjKB4WhtE93mS1CaweDCSOX3lAFwU9GaK7O48uuzRkl88sz/KcVE+Ly+xRyLUhP1G+w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787933216; c=relaxed/simple;
-	bh=KUdVNzS7J08gZEG5L1JNnrXe3a6ABvrWF4v/HYz5wDQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Z+TJn5OVgBYxq11+Hg4IUxJGFUW97ntWAwoZkHnLJnyr77yziZ88Kxk6CDRZ5zKJZYQut6yXaTYvkhyHNHRD5cgugPH5P2Xj9eos40IouqYN1lRRE7ODVJoivBQTXXIaVXD0DCnty2Y0jvooaoHGiv5hPHLBxX9D5BU5qYmsQaw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=3hMR7+qI; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=RjrJiDqk; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1787933934; c=relaxed/simple;
+	bh=GFljN4FtAYNpohdzQvqlvs4Vxbyo0Mlte5/B3mzFxls=;
+	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
+	 Message-Id; b=Xf5xWkbjtSDSwcLKvORTDB2wnvoHxJrvf6H4khOKdMMWJ6LJ/OnA8ea0NHEIOcE9lstZqVQxpS0GOApM2d3f3ZnmkJm5aK9E4/ERS+YI1stH2NWTNA4hmt+NrjkXXPzZeI4ZHAjNIAHHMGDPi/W3JGdru1XWZob5kImoVwinUmc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=byoT0ehL; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="3hMR7+qI";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="RjrJiDqk"
-Date: Fri, 28 Aug 2026 18:06:52 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1787933213;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=4jEUr6IeQK/dhrUiysofDNbqn21YATEcvFeZZvaTgAQ=;
-	b=3hMR7+qIanoOHq5DwT+KUAT3VfUtJ7l+uCgRdXRD37R4ujFLhuz8ls8wDrf7AkfQqlT/9y
-	MTn7u66ZHyyIMZhHGAAGiey7mwl9PXT2mjLtn71iedmyFW/IbquWX2Jl7pNfqtChyzmDQH
-	ZtKWZ7Y+cLnSEzPIFHx4flHCMeyO07SOw5F0pnrcp3dBbrXXoT+wwS6PRPoKq7r58gzIVw
-	KfJ+YlvYVutGeIm1Pii1A8FIdTjEeTOXHK9USd5v1ZaQ0y0Z5gWGvJKV/jgLb7Z7WES2SJ
-	R9fy8zISYc4/iM6LOGUk0wzIzKjNCnVCfCqvkPKeUeYcS4uYx/eN64DYDJiktA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1787933213;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=4jEUr6IeQK/dhrUiysofDNbqn21YATEcvFeZZvaTgAQ=;
-	b=RjrJiDqkflbPfGpEk/2axBeTJxp44cxuQ4fStPCBhPsprVp4RgIqgZXewIkQD/VMKKg1O4
-	J6SgkAgQlzAZ/2Aw==
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Andy Shevchenko <andy.shevchenko@gmail.com>,
-	Petr Mladek <pmladek@suse.com>, Jon Hunter <jonathanh@nvidia.com>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	linux-kernel@vger.kernel.org,
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Crescent Hsieh <crescentcy.hsieh@moxa.com>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	linux-serial@vger.kernel.org
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="byoT0ehL"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E80551F000E9;
+	Fri, 28 Aug 2026 16:18:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1787933933;
+	bh=GFljN4FtAYNpohdzQvqlvs4Vxbyo0Mlte5/B3mzFxls=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=byoT0ehLYqmQIhsvAPDLsdQ37lBQmy+G4Rel2zHajg8P1N4qfCdBtlX2DcQodnyR7
+	 gjmbDmh81WBFgpriLDSaYjpPBnh7cahmkKpJ8IvMZRbu2pyEhHMeqJA8IErEgFdGqI
+	 VM8FToNjZiFuFOEx4zHfYOvKzLLf6qYn2vbteSdcATCQ+C8lTLujEKZvHXwr6KjgWg
+	 3sfEshpecqhDbHKssUciWACCuyUzkKRh3VSKEQ7Y4m4pHIQkZ11vmJQPMB4xFeWnFN
+	 OwFNn/FHxhd4KYoQvsVOzA0Ol7QfmlxC87Itly09b+kotUSTNZiBzkMsvME1af1BT1
+	 SVDk/3wy0sCWA==
+From: sashiko-bot@kernel.org
 Subject: Re: [PATCH tty 1/1] serial: 8250: Change console_msr_work to
  IRQ_WORK_LAZY
-Message-ID: <20260828160652.TQBsi8oO@linutronix.de>
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "John Ogness" <john.ogness@linutronix.de>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20260828155811.270462-2-john.ogness@linutronix.de>
 References: <20260828155811.270462-1-john.ogness@linutronix.de>
  <20260828155811.270462-2-john.ogness@linutronix.de>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Fri, 28 Aug 2026 16:18:52 +0000
+Message-Id: <20260828161852.E80551F000E9@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20260828155811.270462-2-john.ogness@linutronix.de>
 
-On 2026-08-28 18:04:08 [+0206], John Ogness wrote:
 > For some platforms it is a problem to queue irq_work when entering
 > cpuidle states. Since irq_work is used for deferred MSR handling,
 > any atomic console printing when entering cpuidle states can lead
 > to the affected hardware hanging. Tegra20 and Tegra30 are examples
 > of such platforms. Avoiding raising the irq_work IRQ has shown to
 > circumvent the problem.
-
-I would argue that this is done for the benefit of less interrupts since
-there no need to handle console_msr_work immediately. With the side
-effect that it might fix a bug that was not yet reported on Tegra[23]0. 
-
-Ideally the Tegra folks should figure out what exactly is broken instead
-of adding duct tape everywhere else.
-
+>=20
 > Change the console_msr_work to be IRQ_WORK_LAZY, thus not raising
 > an IRQ upon irq_work queuing. The irq_work is then handled on the
 > next interrupt (worst case, kernel tick).
+>=20
+> Link: https://lore.kernel.org/lkml/f3757a75-0ba1-4558-bf57-f19ab7e59a4c@n=
+vidia.com
+> Fixes: d3539347022a ("serial: 8250: Switch to nbcon console, take 2")
+> Signed-off-by: John Ogness <john.ogness@linutronix.de>
 
-Not on the next interrupt, on the next jiffies tick. Should you run
-tickless and should the CPU have the tick switch off then it will raise
-the irq-work interrupt anyway.
+Sashiko has reviewed this patch and found no issues. It looks great!
 
-side-note: Wasn't there another tegra workaround in v5/take1?
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260828155811.2704=
+62-1-john.ogness@linutronix.de?part=3D1
 
-Sebastian
