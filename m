@@ -1,83 +1,77 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+Received: from mout-p-103.mailbox.org (mout-p-103.mailbox.org [80.241.56.161])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBAD33DC4DE;
-	Fri, 28 Aug 2026 07:10:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE58F39A04A;
+	Fri, 28 Aug 2026 08:23:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=80.241.56.161
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787901056; cv=none; b=ewyoVGc7CCbilWWUGbEF6uYJgCxSYFH6OhHF26tky6LvLqrk+JGATVR+QWYWPLg/5lpxyuNAJ2UWOCbVxTNleHTZn+co6mm4F3e6Qg717bzfbLQLEpwlGU29uU/eE4Pc1U+5q/qbhqJhfcVTYX3FGSVjrw/fNAjB3qhLc92DzlY=
+	t=1787905393; cv=none; b=WcU9XB+PK+w0e1Xbx+wzEAq1f6pAPu0HxSIFzPb7JkHQNcpbEXQv9s3Z8ncTtJBFpNdK8Xqe5rZMMHn/iPkydwgfkAZuFjC+MuAXyCkt2AJ13CM0sdcYdzS0JOOvbS3B49LwSUGcx8loKASNpN852JQ3I/CT6TsSVank0uXkYYI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787901056; c=relaxed/simple;
-	bh=GH+2BGvQdVddsbkQX85S0FzQEnTHKd1Lwfa8+9jrmPs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LJ5HaXeUp+G7tiXRVa8vK1BZcVtMGUZvfwOPO+EH5s80YDkmgOC3M55/Saz3w49NshWucaklb9kABYAFXWvV76tgS2uENV1vtZzsTISTDJSQBQNBfRhEDU+GecwFYleyFj4www4kQRtgEIWhG74cGK9vtHF4/cG4blhCR9ttWdM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IoOU63ek; arc=none smtp.client-ip=192.198.163.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1787905393; c=relaxed/simple;
+	bh=hDydiq7AQMDQDpd+0whVhGG1pczvBtYNIPt4W2hjzK4=;
+	h=Date:From:To:Cc:Message-ID:In-Reply-To:References:Subject:
+	 MIME-Version:Content-Type; b=entGZ25cVUxZZvgaHPdRSK0EGa/cMPE7AU36FlWBdiKrCuezKicx0Lj1vDaiuqicdNnbD1WZTINbRXwxzRthjp4eErmJpvUQcWj3ivaAteOB5zCVIozS+Qp+z7HGYSF9vqCtkWZrf7DtOt3nWCdxRBdFuI1eKYAju0sXSeusJRI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org; spf=pass smtp.mailfrom=mailbox.org; dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b=ZUjvASJ0; arc=none smtp.client-ip=80.241.56.161
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mailbox.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IoOU63ek"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1787901052; x=1819437052;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=GH+2BGvQdVddsbkQX85S0FzQEnTHKd1Lwfa8+9jrmPs=;
-  b=IoOU63ekSnpjzE3vJgg+q42JiQoPGB/mYfP1GU4ixMBu7ZoqhHFS6NCQ
-   n44cDhv6Q/BBOgAyf1vjstfopcGWp5FnmIBLcjuvOUIKNB60wZqmGALnI
-   x8DfLVzK4LSYyJdg+1fPaztAeZP3I7l91X8aTmJzBmU2ebJdI0Njc2YqR
-   bcNxAb8MlyrpUJQhPdPGRhILzJoUILTvpTxMeMQl1E02jX/PTgIse0Mf8
-   s6P+I9C9wqfFtTGKZa0Hmz2OxwLVfq9OT2CuKKzRSxFUURnxXPiyoygLi
-   JEwr+HQbEr2jZvTJFe2fOp5ycGxuMRvMNbrtHRbUYm7XPZDTzp/9lVB/l
-   A==;
-X-CSE-ConnectionGUID: Yscn+rL2QHWATzvWlXeJcA==
-X-CSE-MsgGUID: HU0vLp3GTOeGsyhbQVMZkg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11888"; a="87349706"
-X-IronPort-AV: E=Sophos;i="6.25,248,1779174000"; 
-   d="scan'208";a="87349706"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2026 00:10:51 -0700
-X-CSE-ConnectionGUID: Iw2sTN9qQPanwe8WFQKQhg==
-X-CSE-MsgGUID: FSdjeaUgRQqmI9qO2FUvYw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,248,1779174000"; 
-   d="scan'208";a="268113610"
-Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.245.42])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2026 00:10:46 -0700
-Date: Fri, 28 Aug 2026 10:10:42 +0300
-From: Tony Lindgren <tony.lindgren@linux.intel.com>
-To: Ruslan Valiyev <linuxoid@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	John Ogness <john.ogness@linutronix.de>,
-	Lukas Wunner <lukas@wunner.de>, Gerhard Engleder <eg@keba.com>,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-	syzkaller-bugs@googlegroups.com,
-	syzbot+9f57c1b2792029198fcf@syzkaller.appspotmail.com,
+	dkim=pass (2048-bit key) header.d=mailbox.org header.i=@mailbox.org header.b="ZUjvASJ0"
+Received: from smtp202.mailbox.org (smtp202.mailbox.org [IPv6:2001:67c:2050:b231:465::202])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4hWWbn2kJTzKmTr;
+	Fri, 28 Aug 2026 10:23:01 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
+	t=1787905381;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=YsmP5wmnG/UQyhwJAqUcew+uGLtul3Yjk3sK/pL/sxc=;
+	b=ZUjvASJ0A06DSzNfhieJCepU83N6DnapX+ofTuJtugpd2B/7ZvgnwvKQjEqquhexYHMOT+
+	S3cyCdu/gMfdDcVJI3MADuPTwetpDSI0CY1WjpBOWuggv7zyyaSNeu0C+9tBceY88dO8Hx
+	shJQUn9RbYYfD1VPTdzuEvy9kyvF2KyJCuL4eq5Z28QS0z2BLo3C74Hy84RvW1TWju46Kd
+	O2dLb1C8fH9mBGAHpRMHJLvpDpkk7Qfl0KVL/oFdLwZ4T6v0xNWJB3E/2Qu/bx+OaBnDL3
+	ksgulA3doXWxY6utUF+lcrF//Kth3L8pLlcEIZ/9nk2qAj/qC3O6OXc3T3tOdQ==
+Date: Fri, 28 Aug 2026 16:22:59 +0800 (CST)
+From: Ming Qing <a0yami@mailbox.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>,
+	Daniel Starke <daniel.starke@siemens.com>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: Re: [PATCH v2] serial: core: fix NULL pointer dereference in
- serial_core_unregister_port()
-Message-ID: <apE0cj_mrXvmiT-s@tlindgre-MOBL1>
-References: <20260826084654.1392851-1-linuxoid@gmail.com>
+Message-ID: <2073007787.358333.1787905379172@app.mailbox.org>
+In-Reply-To: <2026082810-vastness-detest-6637@gregkh>
+References: <20260828031949.18580-1-a0yami@mailbox.org>
+ <2026082810-vastness-detest-6637@gregkh>
+Subject: Re: [PATCH] tty: n_gsm: pin DLCI during configuration ioctls
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260826084654.1392851-1-linuxoid@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Priority: 3
+Importance: Normal
+X-MBO-RS-META: 6ofpc3x46i99rjc9c3yefquruusuc86o
+X-MBO-RS-ID: 21c49ce813949b09834
 
-On Wed, Aug 26, 2026 at 10:46:54AM +0200, Ruslan Valiyev wrote:
-> Return early when there is no port device, and read port->port_dev
-> under port_mutex.
+
+> On 08/28/2026 1:50 PM CST Greg Kroah-Hartman wrote:
+> Please have your llm read the email archives for why you shouldn't be
+> touching this file at all, UNLESS you have the real hardware and system
+> to test it with.
 > 
-> Also clear port->port_dev on the serial_core_register_port() error
-> path, where the port device has already been removed.
+> thanks,
+> 
+> greg k-h
 
-These look like valid fixes to me:
+Thanks for the reminder. 
 
-Reviewed-by: Tony Lindgren <tony.lindgren@linux.intel.com>
+I'll be more careful with fixes like this in the future.
+
+Best regards,
+Qing Ming
