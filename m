@@ -1,138 +1,126 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3596D4315F;
-	Fri, 28 Aug 2026 04:57:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787893030; cv=none; b=QMbL+iLStYcU3iX8BRwXZhaONE3l9uqUQOaTJDQd9vXgqrWSUPm2qgBiIOmxXkfrzeN+oSDVtn4jADjggI9crMD9+ojJHao+8lLUx3pFOnDLfaoFWySgq0AzgtJGUKvm9iygjF0d12ZEiJWjyJTl7Hib67c3PFxGgemA/2duRqk=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787893030; c=relaxed/simple;
-	bh=ybu/9C5Y5K9vGbbTdsX6Qa2JT8JIZut+yHcbtL7m85w=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=HRrtpIXO+lxbfPQlhjzS2cY+TX2ncT8T76OGD//Tdkz3MOqO6Gn35NGFXwPo1c6mvXNyYr47PD7D2/qFNXa+QoK+Ou++gjltyfCODIZbJTeSM6wAlFY0VtvtUv/relxOi7W/MZYssiQdK3tjD/END48KRJTJJ7j1AbprwQ4XaEA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XsuqmT8B; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BF0D3C4B89
+	for <linux-serial@vger.kernel.org>; Fri, 28 Aug 2026 05:33:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.216.41
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787895208; cv=pass; b=dZaSz9lcFr7TGjCP6duYL5S1F5nS6abDwb4Zhrnti0di/VkoxSvIJfEnncqSrn1nCLp0kC3FFyS6LKAZxUdsTLX5baRA6fAovynAZ+qWXNfd1/csAogYWmAijm1eWh775ScQbkG/3eBHHzXoD9ESVikU60Kfk5OnljYcJRhwQaY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787895208; c=relaxed/simple;
+	bh=fCXpJWGL0HsRKyVrjB0SFpLwZh2xB5IoQduFHSkNNms=;
+	h=From:MIME-Version:Date:Message-ID:Subject:To:Cc:Content-Type; b=mn4ZbGiXv8OdJ+gz1GGx32mCBKcfj0+Ft/R1xp69+tEQDl70Odgj4IRJhqMQ+ZHMBQOPVEdmR0+mavmPl37wFF2vipib498Q90HtahD5/gb0RxDy3RBL1M31EjKMxsmXxzFLoa318h5mVx0PnYjNjmG0LHOFUhYmmOTgqbihUZY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=berkeley.edu; spf=pass smtp.mailfrom=berkeley.edu; dkim=pass (2048-bit key) header.d=berkeley.edu header.i=@berkeley.edu header.b=tN1DWNyU; arc=pass smtp.client-ip=209.85.216.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=berkeley.edu
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=berkeley.edu
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XsuqmT8B"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E30771F000E9;
-	Fri, 28 Aug 2026 04:57:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787893028;
-	bh=30+vWOFLvDRyu2p90gkDmZljBAVI066FlFRhEIPobq4=;
-	h=Date:Subject:To:References:From:In-Reply-To;
-	b=XsuqmT8BLHhd/wNOCMPFIZg9T6f06PThC89n6aM9DjV5GVvDnYCDHhFk1X+G3kM3B
-	 Ab652uxuQdZLjvkYlTlXWLti66Fxk3QBkhhBw190DBJuc3kZ34iWbe874zwRGMQjHd
-	 mb3ccGw8hHztO7M4hBITyRtxjkBcvjdoiHwrUsOkI6bd66kt4SD0b1g9AaZ2Cn9aG9
-	 n7Qtrvo1WelU7roXNl1591trpY/TZhstLi3ei4umlZU1N8Wfa/kxSy20pq60rmehjh
-	 mRt/HUWSWUWF0HTSFkZMYsnu0FkLQ1QL0vRcEQDreyRyxzmNrYlTBC4V3+M/kaN3Dx
-	 ofmL1OgnQFWmQ==
-Message-ID: <d1437839-5a08-46d9-b40d-83faae7b19c9@kernel.org>
-Date: Fri, 28 Aug 2026 06:57:04 +0200
+	dkim=pass (2048-bit key) header.d=berkeley.edu header.i=@berkeley.edu header.b="tN1DWNyU"
+Received: by mail-pj1-f41.google.com with SMTP id 98e67ed59e1d1-38fdeaed181so1195312a91.1
+        for <linux-serial@vger.kernel.org>; Thu, 27 Aug 2026 22:33:26 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1787895206; cv=none;
+        d=google.com; s=arc-20260327;
+        b=YSIxzALDiAOq/iJxldzeseohid1tGQHGZ/cyQnIeVEmIbHyP9sV2BMAZQO5nZdld10
+         ly2rMmpZ82cadAjK1gsNw999bKo7BF+F59Hjho6F2e66uxNPVbdDDW0qyIZANW/o3G1d
+         I2h1eK5e6xmBn0ISu1RXdHonUBFA41gBmOKiDjixTLC8ZYTBYuOEv9zlSkpMVNzEpFbN
+         gHw3Bgi8CtxgUG/5wg5EcXBJo26B1Bi6UqxFHMtsiTll3YFmGn95z0KhUbfdUdQroyTs
+         sEkeEGk9p/w/3rYrm2Ni3TLAFTs7ycWRPfI4q02a6ILEliVLONdLCtLF93AO5DexXXr4
+         E0aA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:mime-version:from:dkim-signature;
+        bh=7O7l+IQrbI/ZxxlPuQjVLXIxWYmvm7xGFp595JbNWyM=;
+        fh=rcbbUM3UgQfPuPTZRmM3bpkAKNIFAEmDh1CiVq6JcMI=;
+        b=qa0+xVy3c6Ip/lIA9CPryxsEL1gPsPB7j6/HyhN0C486gSqsB01YRJHliCw2EVC+Il
+         vf+X2KuM0bUNenlLlPmdgqQbEl0VXet2tb3BRTqWCY5sL5oD3tTXdjK12dJdrTfqvzSi
+         JJKOy/om9rP8k6xaGf5OWcIIXivK8ofrN3xUFEkgtfsSwRXiUYoRncRyDYshH8SJXgn0
+         J/C6wkh+64AyQHSIOQRxRensZJK/NQU9MOLxOvcAxGT8TIJ1tUMwWVJQkzQiNyRSYvJW
+         9MqUiWc69HipwC2xCBeWMlmt2+6V5IWCrBKYLW4egv11GlLmj8w/51oX1I4rlnaL4wCx
+         iqvA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=berkeley.edu; s=google; t=1787895206; x=1788500006; darn=vger.kernel.org;
+        h=content-type:cc:to:subject:message-id:date:mime-version:from:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=7O7l+IQrbI/ZxxlPuQjVLXIxWYmvm7xGFp595JbNWyM=;
+        b=tN1DWNyUqsuqyWbC1B8q06g90RQLrmamoy/G///XXmwXF2kXXFZpXIE5do5XjIYmZd
+         W4JcbQ54JalGg3ZzUiIJfA2ELSo2pZ2jMV3+phmUuxQlp0e3OOnjMwJQii5+xSQyMNSz
+         3ebdOL/2hguP8N3gcjrdgzMpC6g2QI2RrlzzK4NP+gMWefEXj7JSZIrlXr4PYDoShz5V
+         5PM9r7oIf9DW4HzzOenJ4nU61jhdx2LNkYptqfQNCX1Z8SePD/tPN5/lerXtf3Fp1l3o
+         JpYFWPdSjnOxLMIYNh0dK/+68H9sfyhGWJe85vpgENFmA0L9qEwbYXeM9wEKQiF7FHD0
+         Bo7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787895206; x=1788500006;
+        h=content-type:cc:to:subject:message-id:date:mime-version:from
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=7O7l+IQrbI/ZxxlPuQjVLXIxWYmvm7xGFp595JbNWyM=;
+        b=ITs8buliIJvNaihk7dTUY6cIfwf1JN6qaijVYD6FdEerVCAHxE6klNnHCGMYNnBp5U
+         Q7dMBopWAuVfuP7aNkf+6iN2oQNeHgr3+C75x5c/Wa5UZsml0d7/awdhpR28S4VWL0c6
+         4GPGhazmTl3pa93pKtTjWDnvZdrfKao/+yPHwZmVGvprNNjE8oMdyf+2AepyuLJs7eSm
+         2SOhSBZrP8kvGOC+J+MrS5pbo+kfjPuqFYzdi6PC1XFlx8alW4ZnJlnIKgPL+uJWV6iL
+         jj7pSJEIpQ2CGR2XwymUGr6kws0O70DyQYZTpJHx24mhSn5Ps8mYaVDnu96K5xX/t4Wu
+         dJ8Q==
+X-Forwarded-Encrypted: i=1; AHgh+RpMqovimbxIud1ZlEbtsQBffya3tXYf3YuTyiVTtZ0IoHT1XYQ8xZHV1fIJhdA4AUltN11PNNIoOrTy4q8=@vger.kernel.org
+X-Gm-Message-State: AFuF++mmPqN44v3975GU03hznYIl2xQokXq3CmXTecgUZQYlWal89bn+
+	a54m0EHQGt/aCiLzXN/dkvFlZ6uCJIs7CMUISZct2FT92MZvT2io3vCvB+H6CHIUcEPS9ipoBEc
+	Sl1RaAzC6ro3iQYejaf7v9amCIY/7B8z/L6dhuz6P
+X-Gm-Gg: AR+sD11YIxAS58jSQUM8WAzL1kt4NhOstFATLKt9csBy0z7RIPBn134uyYhHro0Qdxd
+	IxgINN0wFAuZQE9vAstEgnc47eS9OhtVXQpMCrL3En+lBNzMh5+3rSelprolSqQmQAQNdeuXd+k
+	qZChaqPyhTJLtOOw3MUlC6zx+o5yr9c5KC9NPdHoxcIHxonLwPK5hg3fzr5pDPnN8D8/fW5iKbw
+	adX8B/X7J4j7V1BVXJW5l6QcrM13T5o9q9lLlaljk0xxOp6IWEWa3oJUOfD2GJFN02z8oep74bh
+	GasyL/fxU7KNXlRidizzZTXv9yFF/x+tgpK3t+msOF+5Q8O978NT7ULJer6m1/vfC8hf+YPFnm9
+	I3OXu6SMADPqaAqA8QkIGizpI0IRrGZ4w
+X-Received: by 2002:a17:90b:2885:b0:392:ca3b:370a with SMTP id
+ 98e67ed59e1d1-396d0d2f6cbmr9349899a91.2.1787895205357; Thu, 27 Aug 2026
+ 22:33:25 -0700 (PDT)
+Received: from 474444807712 named unknown by gmailapi.google.com with
+ HTTPREST; Thu, 27 Aug 2026 22:33:24 -0700
+Received: from 474444807712 named unknown by gmailapi.google.com with
+ HTTPREST; Thu, 27 Aug 2026 22:33:24 -0700
+From: Farhad Alemi <farhad.alemi@berkeley.edu>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [Patch 1/9]: Make consolemap.c handle Unicode planes outside BMP
-To: Alan Mackenzie <acm@muc.de>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Simona Vetter <simona@ffwll.ch>, linux-serial@vger.kernel.org,
- linux-kernel@vger.kernel.org, Helge Deller <deller@gmx.de>,
- Thomas Zimmermann <tzimmermann@suse.de>, linux-fbdev@vger.kernel.org,
- dri-devel@lists.freedesktop.org
-References: <apCEDM2sWv_M354-@MAC.fritz.box> <apCFLI0ga-DG-HRN@MAC.fritz.box>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <apCFLI0ga-DG-HRN@MAC.fritz.box>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Date: Thu, 27 Aug 2026 22:33:24 -0700
+X-Gm-Features: AcwNN1UwGy6jymCAHOolL1mUNh6Gl_8QUCV28vDSjljrT3oZC7SNgIbgai8Hcvk
+Message-ID: <CA+0ovCh_phuo7TsORd9dZGA3joG6rAOyXm=cv9+BrGgQb4w33Q@mail.gmail.com>
+Subject: [BUG] nozomi: missing BAR-TYPE check -- writew() on an IOPORT cookie
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: falemi@asu.edu, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On 27. 08. 26, 20:42, Alan Mackenzie wrote:
-> vt: 32b glyph: 1. Make consolemap.c handle Unicode planes outside BMP
-> 
-> For this, add a fourth layer "planes" onto the sparse map in
-> this file.  Also handle glyph numbers up to 2^21 rather than
-> 256/512.  Move the conversion between __user and kernel data
-> from consolemap.c to vt_ioctl.c.
-> 
-> Signed-off-by: Alan Mackenzie <acm@muc.de>
-> 
-> diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
-> index 3fa89a2dbeba..2f695d97f0eb 100644
-> --- a/drivers/tty/vt/consolemap.c
-> +++ b/drivers/tty/vt/consolemap.c
-> @@ -34,11 +34,11 @@
->   #include <linux/tty.h>
->   #include <linux/uaccess.h>
->   #include <linux/console.h>
-> -#include <linux/consolemap.h>
->   #include <linux/vt_kern.h>
-> +#include <linux/consolemap.h>
+Hello,
 
-Why do you do this?
+As part of the kernel research at ASU's SEFCOM
+lab, we hit the crash below. Crash reports can be found here:
 
->   #include <linux/string.h>
->   
-> -static unsigned short translations[][E_TABSZ] = {
-> +static u1632 translations[][E_TABSZ] = {
+  https://github.com/farhad-alemi/public_bug_reports/tree/main/148-tty-nozomi-writew-on-ioport-cookie/
 
-This breaks the build at this point, right?
+  nozomi 0000:00:02.0: Card type is: 8192
+  BUG: unable to handle page fault for address: 000000000001d044
+  #PF: supervisor write access in kernel mode
+  #PF: error_code(0x0002) - not-present page
+  Oops: Oops: 0002 [#1] SMP KASAN NOPTI
+  RIP: 0010:nozomi_card_init+0x9fe/0x14c0
+  Call Trace:
+   nozomi_card_init+0x9fe/0x14c0
+   pci_device_probe+0x436/0xc90
+   really_probe+0x267/0xaf0
+   __driver_probe_device+0x1e2/0x350
+   driver_probe_device+0x4f/0x240
+   __device_attach_driver+0x270/0x410
+   bus_for_each_drv+0x258/0x2f0
+   __device_attach+0x2c5/0x450
+   drivers_probe_store+0x11c/0x220
+   kernfs_fop_write_iter+0x3af/0x540
+   ksys_write+0x150/0x270
 
-u1632 is a bad name though.
+Our reproducer.c is available upon request.
 
- > For the avoidance of doubt, no LLM has been used in the preparation 
-of this change.
+Happy to test a patch if that would help.
 
-Given the above, perhaps you should have?
-
-See also what Sashiko thinks:
-https://sashiko.dev/#/patchset/apCEDM2sWv_M354-%40MAC.fritz.box
-
-thanks,
--- 
-js
-suse labs
+Regards,
