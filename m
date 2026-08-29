@@ -1,153 +1,108 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mail.muc.de (mail.muc.de [193.149.48.3])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDA5538D41A
-	for <linux-serial@vger.kernel.org>; Fri, 28 Aug 2026 18:14:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6996819644B
+	for <linux-serial@vger.kernel.org>; Sat, 29 Aug 2026 11:51:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.149.48.3
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787940890; cv=none; b=BDAFVJRc4MAlZrlepfM4XbMC6CmZ5oLbn7u5m9MlEXkHgQEt0aXGl4ohnq/uXtc2D6sw941uMTJux8M2SjDZyD87dIgWVqLxFRkwpGM1x6t6B4eY02nFEp1FJ10ON5+w6qPoWC4DtacOQoSFBQM3C+ete8fo74Cyw29r8L68y2s=
+	t=1788004294; cv=none; b=LAmNeHOAuIjj+78fHnamBH2rQm2cp21Gkxd+VsfP/qMk3SK7glNvJOnw4VEvcFmWju7qP/WkhIonGnuzJ641CH4xYE/oEfKvp+Pjt/KXcGsjKLc1gjV9tEhwKDgC5793D92BhXYZqTr6B/TB2tmIxcuLSXvUWcqnhcvKiKqj/B0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787940890; c=relaxed/simple;
-	bh=HfhMCnYLVOIidY3fDJl9Az1baiDbNUXzOg3/CCRH074=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=FvRCxxGL/FzbToujTMmjBLgOq7TqiWmraYgY2YwzeyHKbJfssJEPUjR1XRFn8W1CClf3wYkDbffkZyqKCxF6jf0Q6d2Lm9pDhN9EJ3jwLX+1SVt5OFATqf0wWwIQhWDW6/gpXzWEmyoQKitiZw5HiSaxKZd6LuFkx9+MtcRCI3I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=h4w6t3j0; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="h4w6t3j0"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AD4E1F000E9;
-	Fri, 28 Aug 2026 18:14:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1787940888;
-	bh=xTftT9cRGHpooQEBHs05t+4G3pWOqlFje2o4kHF2984=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=h4w6t3j0DoPM8MA8SN1pufiumP5mye1B6evsb81WES5wopt2z4PTRlwSaN/+rU9q3
-	 GN9FsOv8iYKkcf1Z6LtAuF/thG3PsvSXUs5cWFyrWsueFXFkd3WFMWw3VwKPTauMJc
-	 oSIjqO95HqrAR1a/Id7QIjw9gzVajY6im9KG1w+Iq4CZ0SONKNyddhSAoKse5/9VOM
-	 O+glZh9k4Sl/JFSUShwWMqaqUWDTVkhCCwsQqDZmIEcfw348fy0FQNdiMuwfAOSGv2
-	 E3yK1ExRQkFdmpuURAHVtRrk98dGN212fdD1dqBW1NEy9N+3KnLuhyPfZDrT+WAaJm
-	 gNLJAUa4pG6FA==
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v2 2/2] serial: 8250_mid: wait for LSR tx empty before
- setting termios
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Tate Whiteberg" <whiteberg@arista.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20260828175733.1650267-3-whiteberg@arista.com>
-References: <20260828175733.1650267-1-whiteberg@arista.com>
- <20260828175733.1650267-3-whiteberg@arista.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Fri, 28 Aug 2026 18:14:47 +0000
-Message-Id: <20260828181448.3AD4E1F000E9@smtp.kernel.org>
+	s=arc-20240116; t=1788004294; c=relaxed/simple;
+	bh=Rz7tNKQneggBbq3w6Xb4rPN+HyBfUCe9wTuhzdC5sWI=;
+	h=Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To:From; b=qmVPETjeOHOL5gDoCnRIysRupCeg5FvFeAWf2HstuZIf7J6N83q7U9Uu9FhPOQ5u2fUDF25GD4nGri2b4v/DYVMEQhCsfJtuFVLHcf/KZPApUyWf1unXZj3lgEp8OBZWmJjNyxmMpIMWOIfFEY11Ak+m/Y4+bJBlnDkqnQFdO+4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=muc.de; spf=pass smtp.mailfrom=muc.de; arc=none smtp.client-ip=193.149.48.3
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=muc.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=muc.de
+Received: (qmail 17896 invoked by uid 3782); 29 Aug 2026 13:51:22 +0200
+Received: from muc.de (p4fe15d93.dip0.t-ipconnect.de [79.225.93.147]) (using
+ STARTTLS) by colin.muc.de (tmda-ofmipd) with ESMTP;
+ Sat, 29 Aug 2026 13:51:21 +0200
+Received: (qmail 56114 invoked by uid 1000); 29 Aug 2026 11:51:20 -0000
+Date: Sat, 29 Aug 2026 11:51:20 +0000
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+  Simona Vetter <simona@ffwll.ch>, linux-serial@vger.kernel.org,
+  linux-kernel@vger.kernel.org, Helge Deller <deller@gmx.de>,
+  Thomas Zimmermann <tzimmermann@suse.de>, linux-fbdev@vger.kernel.org,
+  dri-devel@lists.freedesktop.org
+Subject: Re: [Patch 1/9]: Make consolemap.c handle Unicode planes outside BMP
+Message-ID: <apLHuOHMjO5OzX9E@MAC.fritz.box>
+References: <apCEDM2sWv_M354-@MAC.fritz.box>
+ <apCFLI0ga-DG-HRN@MAC.fritz.box>
+ <d1437839-5a08-46d9-b40d-83faae7b19c9@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d1437839-5a08-46d9-b40d-83faae7b19c9@kernel.org>
+X-Submission-Agent: TMDA/1.3.x (Ph3nix)
+From: Alan Mackenzie <acm@muc.de>
+X-Primary-Address: acm@muc.de
 
-Thank you for your contribution! Sashiko AI review found 4 potential issue(=
-s) to consider:
-- [High] `serial8250_wait_for_xmitr()` timeout is too short to drain the FI=
-FO, failing to prevent data corruption.
-- [High] `uart_port_unlock_irq()` unconditionally enables local interrupts,=
- violating caller context expectations.
-- [High] Releasing the port lock between Intel-specific register updates an=
-d core 8250 register updates introduces a TOCTOU race condition that corrup=
-ts transmission.
-- [Low] Missing MODULE_IMPORT_NS("SERIAL_8250") causes a modpost namespace =
-warning/error.
---
+Thanks for trying the patch out.
 
-commit f345869677f080c82ebb31b7ea7f98c00bfefd55
-Author: Tate Whiteberg <whiteberg@arista.com>
+On Fri, Aug 28, 2026 at 06:57:04 +0200, Jiri Slaby wrote:
+> On 27. 08. 26, 20:42, Alan Mackenzie wrote:
+> > vt: 32b glyph: 1. Make consolemap.c handle Unicode planes outside BMP
 
-serial: 8250_mid: wait for LSR tx empty before setting termios
+> > For this, add a fourth layer "planes" onto the sparse map in
+> > this file.  Also handle glyph numbers up to 2^21 rather than
+> > 256/512.  Move the conversion between __user and kernel data
+> > from consolemap.c to vt_ioctl.c.
 
-If mid8250_set_termios() is called while data is still in transmission,
-the corresponding register updates will corrupt the transmission. This patch
-locks the port and waits for the transmitter to empty before performing
-the register updates.
+> > Signed-off-by: Alan Mackenzie <acm@muc.de>
 
-> diff --git a/drivers/tty/serial/8250/8250_mid.c b/drivers/tty/serial/8250=
-/8250_mid.c
-> index 82656645b8a64..ce792888acfee 100644
-> --- a/drivers/tty/serial/8250/8250_mid.c
-> +++ b/drivers/tty/serial/8250/8250_mid.c
+> > diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
+> > index 3fa89a2dbeba..2f695d97f0eb 100644
+> > --- a/drivers/tty/vt/consolemap.c
+> > +++ b/drivers/tty/vt/consolemap.c
+> > @@ -34,11 +34,11 @@
+> >   #include <linux/tty.h>
+> >   #include <linux/uaccess.h>
+> >   #include <linux/console.h>
+> > -#include <linux/consolemap.h>
+> >   #include <linux/vt_kern.h>
+> > +#include <linux/consolemap.h>
 
-[ ... ]
+> Why do you do this?
 
-> @@ -231,12 +232,18 @@ static void mid8250_set_termios(struct uart_port *p=
-, struct ktermios *termios,
->  	}
-> =20
->  	rational_best_approximation(fuart, mid->board->freq, w, w, &mul, &div);
-> +
-> +	uart_port_lock_irq(p);
+That's a remnant of a struggle to put in new declarations such that the
+kernel would build at all.  I've just tried restoring the original order
+of the #includes for consolemap.h and vt_kern.h, and it builds equally
+well.  So that change could/should be undone.
 
-[Severity: High]
-Does acquiring the port lock here using uart_port_lock_irq() break caller
-context expectations?
+> >   #include <linux/string.h>
 
-Since mid8250_set_termios() serves as the set_termios callback, it is
-frequently called from contexts where local interrupts are already disabled
-(such as early boot console setup).=20
+> > -static unsigned short translations[][E_TABSZ] = {
+> > +static u1632 translations[][E_TABSZ] = {
 
-This will eventually pair with uart_port_unlock_irq() below, which
-unconditionally re-enables hardware interrupts via local_irq_enable(),
-rather than restoring the previous interrupt state.
+> This breaks the build at this point, right?
 
-Should this use uart_port_lock_irqsave(p, &flags) instead?
+I'm assuming your error message was "symbol u1632 undeclared".  I don't
+understand yet what's happened here.  u1632 gets declared in
+consolemap.h, so should be avaiable throughout consolemap.c.
 
-> +
->  	p->uartclk =3D fuart * 16 / ps;		/* core uses ps =3D 16 always */
-> +	serial8250_wait_for_xmitr(up, UART_LSR_BOTH_EMPTY);
+> u1632 is a bad name though.
 
-[Severity: High]
-Can this wait silently time out and fail to prevent data corruption?
+Possibly.  It's the best I could come up with, given it should be concise
+and thus not cause a lot of refilling of the source code.  I'm not sure
+what would be better instead of u1632.
 
-The 8250_mid UART (PORT_16750) has a 64-byte FIFO. However,=20
-serial8250_wait_for_xmitr() internally calls wait_for_lsr(), which uses a
-timeout of up->port.frame_time * 2 (approximately 2 characters).
+> See also what Sashiko thinks:
+> https://sashiko.dev/#/patchset/apCEDM2sWv_M354-%40MAC.fritz.box
 
-If there is a large burst in the FIFO at a low baud rate, won't this wait
-time out long before the 64-byte FIFO drains, proceeding to modify the
-PS/MUL/DIV registers while data is still actively shifting out?
+Sashiko has pointed out a number of errors I'll need to fix.  I got nine
+emails directly from it.
 
+> thanks,
+> -- 
+> js
+> suse labs
 
-[Severity: Low]
-Does this module need to import the SERIAL_8250 namespace?
-
-The function serial8250_wait_for_xmitr() is exported to the "SERIAL_8250"
-namespace in drivers/tty/serial/8250/8250_port.c. Since 8250_mid.c is
-compiled as a separate module (8250_mid.ko), failing to include
-MODULE_IMPORT_NS("SERIAL_8250") at the module definition level will trigger
-a modpost namespace warning or error when building the driver as a module.
-
-> =20
->  	writel(ps, p->membase + INTEL_MID_UART_PS);		/* set PS */
->  	writel(mul, p->membase + INTEL_MID_UART_MUL);		/* set MUL */
->  	writel(div, p->membase + INTEL_MID_UART_DIV);
-> =20
-> +	uart_port_unlock_irq(p);
-> +
->  	serial8250_do_set_termios(p, termios, old);
-
-[Severity: High]
-Does releasing the port lock here introduce a race condition?
-
-The lock is dropped before calling serial8250_do_set_termios(), which then
-re-acquires the lock to update DLL/DLM and LCR.
-
-During this unlocked window, the port is left in an inconsistent hardware
-state with new clock multipliers but the old divisor.=20
-
-Because interrupts are enabled, could a TX interrupt or concurrent console
-write acquire the lock, fill the hardware FIFO with new data, and transmit
-it at a garbled frequency before the core 8250 function completes the updat=
-e?
-
->  }
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260828175733.1650=
-267-1-whiteberg@arista.com?part=3D2
+-- 
+Alan Mackenzie (Nuremberg, Germany).
