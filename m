@@ -1,32 +1,33 @@
 Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 240863CB56D;
-	Sat, 29 Aug 2026 15:58:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3553C3F1ADA;
+	Sat, 29 Aug 2026 16:16:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788019142; cv=none; b=fvGNigGUsJ0sdOi2dNrgdl+TPTC/9tt89rQnKZ1hxr/I7U2WXPLzJ279vdCPYYH8bhpUpSbGsLHLhxkFN5WpQ9NiEwGqxIUMI42VOUCUrXtJb6jQbXnJmGKr9XR6PFrxAdsAhfM05UlR7A6pmzJQWrY8LWZggsF5v+wv1RVn7Nk=
+	t=1788020186; cv=none; b=CmaTO9Uyk6YIttjD300xnuFjP0+JEKKi5s49i6i9OvOaR4kei6AOjcyp1+/ECvs/pRqRm+gBJVHhmF03yQKTBVv4LXaKax4lE9gxTWtu2kSQ73IVpwwzBXjYoRB972SWxcf9VrPCV3NvSjWENkXEv2PKp4CRLw4tXJGpQSfVifE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788019142; c=relaxed/simple;
+	s=arc-20240116; t=1788020186; c=relaxed/simple;
 	bh=mMN9QqRnJUj18c3qYawSslLuAcpjtpQ/jQxX2r9fvzs=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=tdj9RZ6qS9c9ZiprDZUGkFtZBCjqixzPpmmH/+f8vMH3cvb0GKs1eBkGnLYYnq120gzaf5WQCtu/u0wuTNh7fSX4OIJDYTqsowGQzz5mJFwHcen5FN5XIq6nIA7DnSb//ETWlPEING7M+RFlB8QFI2PfyQPTgikCxbnhrWmlpac=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=reject dis=none) header.from=grrlz.net; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=I1+/i1Ey; dkim=permerror (0-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=JjnZPDdY; arc=none smtp.client-ip=5.75.144.95
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=oAfH87i1AXfnuxzg8nsefin5Ln2FZxlFa4TkdvflHZD2Qgewkp1R/yrvqFvAZG5O21wNknIsO7JHc6jFq/AxCKjGNB0ZJgvnhG70erJ7flIGsjddpyfGFCHN6YMHOXiYZVcLeUyKr46bA7GHILwYgCJUsMsfaTvoRrSUGD1Ugl4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=reject dis=none) header.from=grrlz.net; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=P0TsPUM1; dkim=permerror (0-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=I0ouGfHg; arc=none smtp.client-ip=5.75.144.95
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=reject dis=none) header.from=grrlz.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="I1+/i1Ey";
-	dkim=permerror (0-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="JjnZPDdY"
+	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="P0TsPUM1";
+	dkim=permerror (0-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="I0ouGfHg"
 DKIM-Signature: v=1; a=rsa-sha256; s=202507r; d=mainlining.org; c=relaxed/relaxed;
-	h=Message-ID:Date:Subject:To:From; t=1788019120; bh=cfVMFIJrg+09/nJj00CWZEw
-	QgKdYXaKHGfOUSAKISi4=; b=I1+/i1Ey4HgnFsNhKVHPefbKSFnOalnILLkHU/21RBhqd4ddY/
-	vXqd29DxHjR4BfxsyARsjvLXT2e95Az0rwiOO3Fo1s7vFchbv8U/MGz+XK/UDtssIbxNqE7rgk5
-	MziPZU1sRmZDM0mVyxnUzMXIbpIx8HkPym9aq61jtCk/bmbjix+HiOVSSq4SP46XNBrPfQB+mIe
-	vlC+uY7ZFMrwYF/zEPQPtoPF4j8j106VzqEETjhVdTc3yx14FlNgG/YM66iV3pXHwo28lA3LLki
-	rc2DlFE8WHLS6/Bbts4Lwty9rfVnCcwBHLxv7SI1MCHIMeK7s1pSD2cdOtj8QqtTSNA==;
+	h=Message-ID:Date:Subject:To:From; t=1788020179; bh=cfVMFIJrg+09/nJj00CWZEw
+	QgKdYXaKHGfOUSAKISi4=; b=P0TsPUM1bXbFJTTpdDQ6HEWM9y5oFzSBCioUqVPZvsH0J8Qd52
+	+YMYgJL0+nvW8eDoR9Iym1FtY0L3oCWTiT76ufUULtWgPcPDqEJWKhiUoRsTyD4GhhYL/epC1Py
+	gX24zVmjSaHf9UCL7HgBJCGL5NAwR/GnO1KWIvQl/fSCTS3xV3Q/KOWgOzsfN+ZDYEFwfc5D6HR
+	zCTonpFbAWZNEHN5iSM/F+fJpuiKe69P2U7UHHUY20oonlLt9eUwoImGyHAIaGbJY0L3IrjpWq+
+	6V6IR9emUeOA1RIU9+pVEKyY75sdd4Yw0z7rEIEbDH3Blvy2EINoGd1DqjdbOgReW4w==;
 DKIM-Signature: v=1; a=ed25519-sha256; s=202507e; d=mainlining.org; c=relaxed/relaxed;
-	h=Message-ID:Date:Subject:To:From; t=1788019120; bh=cfVMFIJrg+09/nJj00CWZEw
-	QgKdYXaKHGfOUSAKISi4=; b=JjnZPDdYW4NREKEP0v0rtbDEKTGr6SyrcmKYXFKjzBqQytDIjh
-	dtddp/x+rTkjdrWB5ThKs8c9UU49gR/aTDAQ==;
+	h=Message-ID:Date:Subject:To:From; t=1788020179; bh=cfVMFIJrg+09/nJj00CWZEw
+	QgKdYXaKHGfOUSAKISi4=; b=I0ouGfHgbGIx9hsqSjhFqMKu1f82oQmSKKSS4OvKNv0aHRb6GM
+	MfJLFLEVC2SFDzK8JysIFU9hZaj4PgZjV2AQ==;
 From: Bradley Morgan <include@grrlz.net>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>
@@ -35,9 +36,11 @@ Cc: Hugo Villeneuve <hvilleneuve@dimonoff.com>,
 	linux-kernel@vger.kernel.org,
 	brads@mainlining.org
 Subject: [PATCH 3/5] tty: sc16is7xx: convert to kthread_run_worker
-Date: Sat, 29 Aug 2026 15:58:41 +0000
-Message-ID: <20260829155841.5627-1-include@grrlz.net>
+Date: Sat, 29 Aug 2026 16:16:20 +0000
+Message-ID: <20260829161620.19047-1-include@grrlz.net>
 X-Mailer: git-send-email 2.47.3
+In-Reply-To: <20260829161150.16301-1-include@grrlz.net>
+References: <20260829161150.16301-1-include@grrlz.net>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
