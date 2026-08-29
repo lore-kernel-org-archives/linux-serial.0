@@ -1,151 +1,208 @@
-Received: from mail.muc.de (mail.muc.de [193.149.48.3])
+Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85858374A1B
-	for <linux-serial@vger.kernel.org>; Sat, 29 Aug 2026 14:39:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.149.48.3
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 240863CB56D;
+	Sat, 29 Aug 2026 15:58:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788014401; cv=none; b=dIUm9KNtbM/e23g1FoyAOsVd043EAjaGUWlqVBW9Rl7fKrHN4NhelHLDTlcoMPILPpedN7onh8aIMDkvnD8cSeE+l8dbQmJMeytu2uimv/9JGrZQEzuWYB2cwlTqhVeFYgUfuD+NOCN1HyyR8Ai+gfbr4aEDJcfgeRzf6jDn7qI=
+	t=1788019142; cv=none; b=fvGNigGUsJ0sdOi2dNrgdl+TPTC/9tt89rQnKZ1hxr/I7U2WXPLzJ279vdCPYYH8bhpUpSbGsLHLhxkFN5WpQ9NiEwGqxIUMI42VOUCUrXtJb6jQbXnJmGKr9XR6PFrxAdsAhfM05UlR7A6pmzJQWrY8LWZggsF5v+wv1RVn7Nk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788014401; c=relaxed/simple;
-	bh=9vE1Q70eZZSR31+/RidojCwzcI5zWQ5NHxCiEzF6IoE=;
-	h=Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To:From; b=Shle3/1p87Bh+uKJu08cN8WAVW5PQqpDzcpLXfUYYcC1Oo+qnRMoPkoUqD839YoAJsgOAJK32HPyC0qptnUIE0vSesms6Z4OWJS4ra6jZnjclLi/UwODvRXm2VLrD3ICMnCLoP5jSkisAw6Vb2hTagd2oYveyGWe/7eJpMf17Fs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=muc.de; spf=pass smtp.mailfrom=muc.de; arc=none smtp.client-ip=193.149.48.3
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=muc.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=muc.de
-Received: (qmail 42260 invoked by uid 3782); 29 Aug 2026 16:39:57 +0200
-Received: from muc.de (p4fe15d93.dip0.t-ipconnect.de [79.225.93.147]) (using
- STARTTLS) by colin.muc.de (tmda-ofmipd) with ESMTP;
- Sat, 29 Aug 2026 16:39:56 +0200
-Received: (qmail 57602 invoked by uid 1000); 29 Aug 2026 14:39:55 -0000
-Date: Sat, 29 Aug 2026 14:39:55 +0000
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>,
-  Jiri Slaby <jirislaby@kernel.org>, Simona Vetter <simona@ffwll.ch>,
-  linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-  Helge Deller <deller@gmx.de>, linux-fbdev@vger.kernel.org,
-  dri-devel@lists.freedesktop.org
-Subject: Re: vt: Enlarge the framebuffer glyph size from 16 to 32 bits
-Message-ID: <apLvO-8YJmQG7T0Z@MAC.fritz.box>
-References: <apCEDM2sWv_M354-@MAC.fritz.box>
- <145be2e3-a8c0-4f4f-a701-af2696cec461@suse.de>
- <apGc4y8ApYWh4Yr4@MAC.fritz.box>
- <2026082938-spray-shimmer-9389@gregkh>
+	s=arc-20240116; t=1788019142; c=relaxed/simple;
+	bh=mMN9QqRnJUj18c3qYawSslLuAcpjtpQ/jQxX2r9fvzs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=tdj9RZ6qS9c9ZiprDZUGkFtZBCjqixzPpmmH/+f8vMH3cvb0GKs1eBkGnLYYnq120gzaf5WQCtu/u0wuTNh7fSX4OIJDYTqsowGQzz5mJFwHcen5FN5XIq6nIA7DnSb//ETWlPEING7M+RFlB8QFI2PfyQPTgikCxbnhrWmlpac=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=reject dis=none) header.from=grrlz.net; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=I1+/i1Ey; dkim=permerror (0-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=JjnZPDdY; arc=none smtp.client-ip=5.75.144.95
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=reject dis=none) header.from=grrlz.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="I1+/i1Ey";
+	dkim=permerror (0-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="JjnZPDdY"
+DKIM-Signature: v=1; a=rsa-sha256; s=202507r; d=mainlining.org; c=relaxed/relaxed;
+	h=Message-ID:Date:Subject:To:From; t=1788019120; bh=cfVMFIJrg+09/nJj00CWZEw
+	QgKdYXaKHGfOUSAKISi4=; b=I1+/i1Ey4HgnFsNhKVHPefbKSFnOalnILLkHU/21RBhqd4ddY/
+	vXqd29DxHjR4BfxsyARsjvLXT2e95Az0rwiOO3Fo1s7vFchbv8U/MGz+XK/UDtssIbxNqE7rgk5
+	MziPZU1sRmZDM0mVyxnUzMXIbpIx8HkPym9aq61jtCk/bmbjix+HiOVSSq4SP46XNBrPfQB+mIe
+	vlC+uY7ZFMrwYF/zEPQPtoPF4j8j106VzqEETjhVdTc3yx14FlNgG/YM66iV3pXHwo28lA3LLki
+	rc2DlFE8WHLS6/Bbts4Lwty9rfVnCcwBHLxv7SI1MCHIMeK7s1pSD2cdOtj8QqtTSNA==;
+DKIM-Signature: v=1; a=ed25519-sha256; s=202507e; d=mainlining.org; c=relaxed/relaxed;
+	h=Message-ID:Date:Subject:To:From; t=1788019120; bh=cfVMFIJrg+09/nJj00CWZEw
+	QgKdYXaKHGfOUSAKISi4=; b=JjnZPDdYW4NREKEP0v0rtbDEKTGr6SyrcmKYXFKjzBqQytDIjh
+	dtddp/x+rTkjdrWB5ThKs8c9UU49gR/aTDAQ==;
+From: Bradley Morgan <include@grrlz.net>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	brads@mainlining.org
+Subject: [PATCH 3/5] tty: sc16is7xx: convert to kthread_run_worker
+Date: Sat, 29 Aug 2026 15:58:41 +0000
+Message-ID: <20260829155841.5627-1-include@grrlz.net>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2026082938-spray-shimmer-9389@gregkh>
-X-Submission-Agent: TMDA/1.3.x (Ph3nix)
-From: Alan Mackenzie <acm@muc.de>
-X-Primary-Address: acm@muc.de
+Content-Transfer-Encoding: 8bit
 
-On Sat, Aug 29, 2026 at 14:09:52 +0200, Greg Kroah-Hartman wrote:
-> On Fri, Aug 28, 2026 at 02:36:19PM +0000, Alan Mackenzie wrote:
-> > On Fri, Aug 28, 2026 at 08:12:16 +0200, Thomas Zimmermann wrote:
-> > > Hi
+From: Bradley Morgan <brads@mainlining.org>
 
-> > > Am 27.08.26 um 20:38 schrieb Alan Mackenzie:
-> > > > vt: Enlarge the framebuffer glyph size from 16 to 32 bits.
+Embedding a kthread_worker and running kthread_worker_fn yourself is
+the old way. Convert sc16is7xx to kthread_run_worker(), dropping the
+separate kworker_task pointer.
 
-> > > > This allows:
-> > > >    o - More than 256/512 distinct half-width glyphs (in fact, up to 2^21).
-> > > >    o - Unicode code points >0xffff (outside the Basic Multilingual Plane).
-> > > >    o - Coloured glyphs (as before).
+This is part of removing the worker->task self-assignment in
+kthread_worker_fn().
 
-> > > But what is the use case here? We have excellent support for text and 
-> > > font rendering in graphical userspace for I18N and L10N.
+Signed-off-by: Bradley Morgan <brads@mainlining.org>
+---
+ drivers/tty/serial/sc16is7xx.c | 39 ++++++++++++++++------------------
+ 1 file changed, 18 insertions(+), 21 deletions(-)
 
-> > GUIs are sub-optimal for pure text work.  A full screen terminal is
-> > wanted.  The current preeminent user space terminal, kmscon, appears to
-> > lack the refinements of many decades development of the kernel's
-> > console.
-
-> What is missing from kmscon that the kernel currently supports?
-
-<Alt>-<Fn>, for a start.  Also the facility to enter an arbitrary Unicode
-code point by holding down <AltGr> and typing the hex code on the numeric
-keypad.  There are probably other things, too.
-
-> Why not just make it feature-equal there, and then make these
-> additional changes there as well?
-
-I suspect the politics involved would be more difficult than here, and
-I'm not good at politics.  kmscon is controlled by Redhat, and they have
-a reputation for dismissing third party suggestions and patches rather
-than integrating them.
-
-But it's not just a matter of adding features.  The kernel console is an
-elegant system.  You just have to add entries in /etc/inittab, select a
-keyboard, select a font (all mostly done at system installation) and
-that's it.  kmscon is anything but elegant.  It has something like 75
-command line options, and a configuration file is virtually mandatory.
-
-kmscon has no documentation for its keyboard system, nothing to compare
-with Andries Brouwer's keymaps man page.  It uses xkb.  I remember
-searching for xkb doc around 10 years ago and found nothing systematic.
-Just a very helpful tutorial, which enabled me to  make my changes.
-
-I don't think it's got doc for its various font systems either.  It might
-well be that you need to use a GUI to make font changes.  That is not a
-Good Thing.
-
-> As others have said, we don't want to add new features to the in-kernel
-> console mode due to all of the reasons the patch review has shown on
-> this series already (i.e. complex interactions that end up making the
-> system broken.)  This is best all done in userspace, where a bug there
-> will not cause these same problems, right?
-
-From the user's point of view, a bug in either will render his computer
-unusable.
-
-Have you considered that the code in kmscon might not be any better than
-that in the kernel's console?  I've no evidence either way.
-
-> > Support for blind users exists in the kernel's console.  I don't know
-> > how good it is, as I don't (yet) need to use it.
-
-> But others use it, so we can't break that, and the fact that you ignored
-> those codepaths here makes me very worried.
-
-Hey, give me a chance!  One thing at a time.  I didn't ignore that code,
-I noted (in two Kconfig's) that it would also need attention, and I
-blocked it out safely when CONFIG_FB_GLYPH_21BIT was set.
-
-It may well be (I'm not sure) that these facilities for the blind are an
-integral part of the kernel's console.  That would be a good reason not
-to remove it from the kernel.
-
-> > > In contrast, the kernel's text-mode support is limited and a hotbed for 
-> > > bugs. IMHO we shouldn't add features, but try to simplify that code base.
-
-> > >From a user's point of view, the kernel's console is rock solid and
-> > dependable; it doesn't crash, and its interfaces don't suddenly change
-> > with the latest release of KDE or Gnome or whatever.
-
-> This has nothing to do with KDE or Gnome, if you have issues with those
-> projects, please take it up with them and contribute to them to resolve
-> those issues.  I know they can always use the help.
-
-My point is that the kernel's console is rock solid and dependable.
-Things like kmscon are subject to the vagaries of fashion.
-
-> > As is clear, I think the console's limitations should be eliminated.
-
-> And the rest of us feel the kernel console's code should be eliminated
-> entirely, when ever possible :)
-
-The rest of you don't appear to be console users.  It's easy to advocate
-for removal when you don't use it yourself.
-
-> thanks,
-
-> greg k-h
-
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 7107a0fb1e7b..2cfc1f290009 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -306,8 +306,7 @@ struct sc16is7xx_port {
+ 	unsigned long			gpio_valid_mask;
+ #endif
+ 	u8				mctrl_mask;
+-	struct kthread_worker		kworker;
+-	struct task_struct		*kworker_task;
++	struct kthread_worker		*kworker;
+ 	struct kthread_delayed_work	poll_work;
+ 	bool				polling;
+ 	struct sc16is7xx_one		p[];
+@@ -434,7 +433,7 @@ static void sc16is7xx_ier_clear(struct uart_port *port, u8 bit)
+ 	one->config.flags |= SC16IS7XX_RECONF_IER;
+ 	one->config.ier_mask |= bit;
+ 	one->config.ier_val &= ~bit;
+-	kthread_queue_work(&s->kworker, &one->reg_work);
++	kthread_queue_work(s->kworker, &one->reg_work);
+ }
+ 
+ static void sc16is7xx_ier_set(struct uart_port *port, u8 bit)
+@@ -447,7 +446,7 @@ static void sc16is7xx_ier_set(struct uart_port *port, u8 bit)
+ 	one->config.flags |= SC16IS7XX_RECONF_IER;
+ 	one->config.ier_mask |= bit;
+ 	one->config.ier_val |= bit;
+-	kthread_queue_work(&s->kworker, &one->reg_work);
++	kthread_queue_work(s->kworker, &one->reg_work);
+ }
+ 
+ static void sc16is7xx_stop_tx(struct uart_port *port)
+@@ -813,7 +812,7 @@ static void sc16is7xx_poll_proc(struct kthread_work *ws)
+ 	sc16is7xx_irq(0, s);
+ 
+ 	/* Setup delay based on SC16IS7XX_POLL_PERIOD_MS */
+-	kthread_queue_delayed_work(&s->kworker, &s->poll_work,
++	kthread_queue_delayed_work(s->kworker, &s->poll_work,
+ 				   msecs_to_jiffies(SC16IS7XX_POLL_PERIOD_MS));
+ }
+ 
+@@ -900,7 +899,7 @@ static void sc16is7xx_ms_proc(struct kthread_work *ws)
+ 		scoped_guard(mutex, &one->lock)
+ 			sc16is7xx_update_mlines(one);
+ 
+-		kthread_queue_delayed_work(&s->kworker, &one->ms_work, HZ);
++		kthread_queue_delayed_work(s->kworker, &one->ms_work, HZ);
+ 	}
+ }
+ 
+@@ -911,7 +910,7 @@ static void sc16is7xx_enable_ms(struct uart_port *port)
+ 
+ 	lockdep_assert_held_once(&port->lock);
+ 
+-	kthread_queue_delayed_work(&s->kworker, &one->ms_work, 0);
++	kthread_queue_delayed_work(s->kworker, &one->ms_work, 0);
+ }
+ 
+ static void sc16is7xx_start_tx(struct uart_port *port)
+@@ -919,7 +918,7 @@ static void sc16is7xx_start_tx(struct uart_port *port)
+ 	struct sc16is7xx_port *s = dev_get_drvdata(port->dev);
+ 	struct sc16is7xx_one *one = to_sc16is7xx_one(port);
+ 
+-	kthread_queue_work(&s->kworker, &one->tx_work);
++	kthread_queue_work(s->kworker, &one->tx_work);
+ }
+ 
+ static void sc16is7xx_throttle(struct uart_port *port)
+@@ -968,7 +967,7 @@ static void sc16is7xx_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ 	struct sc16is7xx_one *one = to_sc16is7xx_one(port);
+ 
+ 	one->config.flags |= SC16IS7XX_RECONF_MD;
+-	kthread_queue_work(&s->kworker, &one->reg_work);
++	kthread_queue_work(s->kworker, &one->reg_work);
+ }
+ 
+ static void sc16is7xx_break_ctl(struct uart_port *port, int break_state)
+@@ -1098,7 +1097,7 @@ static int sc16is7xx_config_rs485(struct uart_port *port, struct ktermios *termi
+ 	}
+ 
+ 	one->config.flags |= SC16IS7XX_RECONF_RS485;
+-	kthread_queue_work(&s->kworker, &one->reg_work);
++	kthread_queue_work(s->kworker, &one->reg_work);
+ 
+ 	return 0;
+ }
+@@ -1159,7 +1158,7 @@ static int sc16is7xx_startup(struct uart_port *port)
+ 	uart_port_unlock_irqrestore(port, flags);
+ 
+ 	if (s->polling)
+-		kthread_queue_delayed_work(&s->kworker, &s->poll_work,
++		kthread_queue_delayed_work(s->kworker, &s->poll_work,
+ 					   msecs_to_jiffies(SC16IS7XX_POLL_PERIOD_MS));
+ 
+ 	return 0;
+@@ -1186,7 +1185,7 @@ static void sc16is7xx_shutdown(struct uart_port *port)
+ 	if (s->polling)
+ 		kthread_cancel_delayed_work_sync(&s->poll_work);
+ 
+-	kthread_flush_worker(&s->kworker);
++	kthread_flush_worker(s->kworker);
+ }
+ 
+ static const char *sc16is7xx_type(struct uart_port *port)
+@@ -1595,14 +1594,12 @@ int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
+ 	s->devtype = devtype;
+ 	dev_set_drvdata(dev, s);
+ 
+-	kthread_init_worker(&s->kworker);
+-	s->kworker_task = kthread_run(kthread_worker_fn, &s->kworker,
+-				      "sc16is7xx");
+-	if (IS_ERR(s->kworker_task)) {
+-		ret = PTR_ERR(s->kworker_task);
++	s->kworker = kthread_run_worker(0, "sc16is7xx");
++	if (IS_ERR(s->kworker)) {
++		ret = PTR_ERR(s->kworker);
+ 		goto out_clk;
+ 	}
+-	sched_set_fifo(s->kworker_task);
++	sched_set_fifo(s->kworker->task);
+ 
+ 	ret = sc16is7xx_reset(dev, regmaps[0]);
+ 	if (ret)
+@@ -1676,7 +1673,7 @@ int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
+ 	}
+ 
+ out_kthread:
+-	kthread_stop(s->kworker_task);
++	kthread_destroy_worker(s->kworker);
+ 
+ out_clk:
+ 	clk_disable_unprepare(s->clk);
+@@ -1705,8 +1702,8 @@ void sc16is7xx_remove(struct device *dev)
+ 	if (s->polling)
+ 		kthread_cancel_delayed_work_sync(&s->poll_work);
+ 
+-	kthread_flush_worker(&s->kworker);
+-	kthread_stop(s->kworker_task);
++	kthread_flush_worker(s->kworker);
++	kthread_destroy_worker(s->kworker);
+ 
+ 	clk_disable_unprepare(s->clk);
+ }
 -- 
-Alan Mackenzie (Nuremberg, Germany).
+2.47.3
+
