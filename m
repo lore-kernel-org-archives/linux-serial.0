@@ -1,211 +1,114 @@
-Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3553C3F1ADA;
-	Sat, 29 Aug 2026 16:16:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82EA2231A3B;
+	Sun, 30 Aug 2026 07:42:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788020186; cv=none; b=CmaTO9Uyk6YIttjD300xnuFjP0+JEKKi5s49i6i9OvOaR4kei6AOjcyp1+/ECvs/pRqRm+gBJVHhmF03yQKTBVv4LXaKax4lE9gxTWtu2kSQ73IVpwwzBXjYoRB972SWxcf9VrPCV3NvSjWENkXEv2PKp4CRLw4tXJGpQSfVifE=
+	t=1788075771; cv=none; b=Cic9wpvlo2CfEfIxUC8jcdrFXzESZGMhj9mAlm6MKvisMuQMC/O8oLaXQWf0Fs0w8MwtS9ACfWx/LjE5Fkn/YFKuXPv5gSwXwLxNdJWajdn7btbFLG8l3K+0gwhQoGQ81j10yJVkyg0gWw4Kzlb1jYq8AOc8NBx0OFyGI4XJfp8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788020186; c=relaxed/simple;
-	bh=mMN9QqRnJUj18c3qYawSslLuAcpjtpQ/jQxX2r9fvzs=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=oAfH87i1AXfnuxzg8nsefin5Ln2FZxlFa4TkdvflHZD2Qgewkp1R/yrvqFvAZG5O21wNknIsO7JHc6jFq/AxCKjGNB0ZJgvnhG70erJ7flIGsjddpyfGFCHN6YMHOXiYZVcLeUyKr46bA7GHILwYgCJUsMsfaTvoRrSUGD1Ugl4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=reject dis=none) header.from=grrlz.net; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=P0TsPUM1; dkim=permerror (0-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=I0ouGfHg; arc=none smtp.client-ip=5.75.144.95
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=reject dis=none) header.from=grrlz.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
+	s=arc-20240116; t=1788075771; c=relaxed/simple;
+	bh=1GxxShbqhyWR5JXZGet2lOpYv+Ym/BROEPbMOYsx7J8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Uh9M5jTOf0ZgJ1w7vNNPSkFWfhiTkKa51zUJSWXo8coGAj4aBTnNDRytCTsE2z1AlWjIUhGfesy80/AVj3WeVCYtx+NIhMdzfIFhoW5c1xn66j10YCcwBMdG5ntcZxKB/ZK+Ai5Y3wyH46Oa20qhGfwdn+9IaFi8osvdGD3neHA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OOakZbd8; arc=none smtp.client-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="P0TsPUM1";
-	dkim=permerror (0-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="I0ouGfHg"
-DKIM-Signature: v=1; a=rsa-sha256; s=202507r; d=mainlining.org; c=relaxed/relaxed;
-	h=Message-ID:Date:Subject:To:From; t=1788020179; bh=cfVMFIJrg+09/nJj00CWZEw
-	QgKdYXaKHGfOUSAKISi4=; b=P0TsPUM1bXbFJTTpdDQ6HEWM9y5oFzSBCioUqVPZvsH0J8Qd52
-	+YMYgJL0+nvW8eDoR9Iym1FtY0L3oCWTiT76ufUULtWgPcPDqEJWKhiUoRsTyD4GhhYL/epC1Py
-	gX24zVmjSaHf9UCL7HgBJCGL5NAwR/GnO1KWIvQl/fSCTS3xV3Q/KOWgOzsfN+ZDYEFwfc5D6HR
-	zCTonpFbAWZNEHN5iSM/F+fJpuiKe69P2U7UHHUY20oonlLt9eUwoImGyHAIaGbJY0L3IrjpWq+
-	6V6IR9emUeOA1RIU9+pVEKyY75sdd4Yw0z7rEIEbDH3Blvy2EINoGd1DqjdbOgReW4w==;
-DKIM-Signature: v=1; a=ed25519-sha256; s=202507e; d=mainlining.org; c=relaxed/relaxed;
-	h=Message-ID:Date:Subject:To:From; t=1788020179; bh=cfVMFIJrg+09/nJj00CWZEw
-	QgKdYXaKHGfOUSAKISi4=; b=I0ouGfHgbGIx9hsqSjhFqMKu1f82oQmSKKSS4OvKNv0aHRb6GM
-	MfJLFLEVC2SFDzK8JysIFU9hZaj4PgZjV2AQ==;
-From: Bradley Morgan <include@grrlz.net>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	linux-serial@vger.kernel.org,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OOakZbd8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1788075769; x=1819611769;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=1GxxShbqhyWR5JXZGet2lOpYv+Ym/BROEPbMOYsx7J8=;
+  b=OOakZbd8douTOF+V8YSzJPTuOxEFUQy13OW0QPUilZrdW5+3iNt1cKmd
+   zZdI+yEy4L/5wnfSc1sQJ6Ba1IEqkpT6okzf03OJOtI6hNjN+kSSuKBVN
+   erQk2iptCA27wi2DNP+/uw44QDgddnRImxsK/Dct0CZkgiaXnShXvuCGi
+   hWhWC6UlnVjpQPnc6Q+t9+6YZoFcVYdyYP6kUxEh2gS5Dhdfpf21IHIxr
+   aOlIbP1ZoIQs4XIwCv2uwoUSwBffRAOnmnTsJlgcnVUg68clOZFMyERCc
+   lo/PJpNLr3Mn+1EMtDm7UC5JM+7euRgVCTU5zbmTczrVSgzwIMHnEVJrN
+   w==;
+X-CSE-ConnectionGUID: L2xdrHIXSyuBPe1crp67jg==
+X-CSE-MsgGUID: /g7h99q9SpabKsQxoCpBcQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11890"; a="92381499"
+X-IronPort-AV: E=Sophos;i="6.25,251,1779174000"; 
+   d="scan'208";a="92381499"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2026 00:42:48 -0700
+X-CSE-ConnectionGUID: NrKHh4eVRFCvL58bT4Fh/Q==
+X-CSE-MsgGUID: IlsWzdGqTimm488ePG15kA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,251,1779174000"; 
+   d="scan'208";a="264243276"
+Received: from abityuts-desk1.ger.corp.intel.com (HELO localhost) ([10.245.245.243])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2026 00:42:44 -0700
+Date: Sun, 30 Aug 2026 10:42:42 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Jon Hunter <jonathanh@nvidia.com>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	John Ogness <john.ogness@linutronix.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Andy Shevchenko <andy.shevchenko@gmail.com>,
+	Petr Mladek <pmladek@suse.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
 	linux-kernel@vger.kernel.org,
-	brads@mainlining.org
-Subject: [PATCH 3/5] tty: sc16is7xx: convert to kthread_run_worker
-Date: Sat, 29 Aug 2026 16:16:20 +0000
-Message-ID: <20260829161620.19047-1-include@grrlz.net>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260829161150.16301-1-include@grrlz.net>
-References: <20260829161150.16301-1-include@grrlz.net>
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Crescent Hsieh <crescentcy.hsieh@moxa.com>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	linux-serial@vger.kernel.org,
+	"linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
+Subject: Re: [PATCH tty 1/1] serial: 8250: Change console_msr_work to
+ IRQ_WORK_LAZY
+Message-ID: <apPe8mK8fZPM6NL8@ashevche-desk.local>
+References: <20260828155811.270462-1-john.ogness@linutronix.de>
+ <20260828155811.270462-2-john.ogness@linutronix.de>
+ <20260828160652.TQBsi8oO@linutronix.de>
+ <0c2c424f-0372-4626-b14e-7697d98e6b20@nvidia.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0c2c424f-0372-4626-b14e-7697d98e6b20@nvidia.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-From: Bradley Morgan <brads@mainlining.org>
+On Fri, Aug 28, 2026 at 06:06:50PM +0100, Jon Hunter wrote:
+> On 28/08/2026 17:06, Sebastian Andrzej Siewior wrote:
+> > On 2026-08-28 18:04:08 [+0206], John Ogness wrote:
+> > > For some platforms it is a problem to queue irq_work when entering
+> > > cpuidle states. Since irq_work is used for deferred MSR handling,
+> > > any atomic console printing when entering cpuidle states can lead
+> > > to the affected hardware hanging. Tegra20 and Tegra30 are examples
+> > > of such platforms. Avoiding raising the irq_work IRQ has shown to
+> > > circumvent the problem.
+> > 
+> > I would argue that this is done for the benefit of less interrupts since
+> > there no need to handle console_msr_work immediately. With the side
+> > effect that it might fix a bug that was not yet reported on Tegra[23]0.
+> > 
+> > Ideally the Tegra folks should figure out what exactly is broken instead
+> > of adding duct tape everywhere else.
+> 
+> Yes that would be ideal. Unfortunately these are old devices now and very
+> much in maintenance mode so getting to the bottom of this now is unlikely.
+> You may say then why don't we completely deprecate these, but then you
+> could argue the other way and say they have been working fine up until
+> now.
 
-Embedding a kthread_worker and running kthread_worker_fn yourself is
-the old way. Convert sc16is7xx to kthread_run_worker(), dropping the
-separate kworker_task pointer.
+This is a trade-off between burden of supporting them vs. developing and move
+on on more important things. Personally I consider non-blocking console feature
+is *much* more important than a few "working fine up until now" outdated
+platforms (side example, recently the whole i486 support was ripped off, while
+working fine...).
 
-This is part of removing the worker->task self-assignment in
-kthread_worker_fn().
-
-Signed-off-by: Bradley Morgan <brads@mainlining.org>
----
- drivers/tty/serial/sc16is7xx.c | 39 ++++++++++++++++------------------
- 1 file changed, 18 insertions(+), 21 deletions(-)
-
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 7107a0fb1e7b..2cfc1f290009 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -306,8 +306,7 @@ struct sc16is7xx_port {
- 	unsigned long			gpio_valid_mask;
- #endif
- 	u8				mctrl_mask;
--	struct kthread_worker		kworker;
--	struct task_struct		*kworker_task;
-+	struct kthread_worker		*kworker;
- 	struct kthread_delayed_work	poll_work;
- 	bool				polling;
- 	struct sc16is7xx_one		p[];
-@@ -434,7 +433,7 @@ static void sc16is7xx_ier_clear(struct uart_port *port, u8 bit)
- 	one->config.flags |= SC16IS7XX_RECONF_IER;
- 	one->config.ier_mask |= bit;
- 	one->config.ier_val &= ~bit;
--	kthread_queue_work(&s->kworker, &one->reg_work);
-+	kthread_queue_work(s->kworker, &one->reg_work);
- }
- 
- static void sc16is7xx_ier_set(struct uart_port *port, u8 bit)
-@@ -447,7 +446,7 @@ static void sc16is7xx_ier_set(struct uart_port *port, u8 bit)
- 	one->config.flags |= SC16IS7XX_RECONF_IER;
- 	one->config.ier_mask |= bit;
- 	one->config.ier_val |= bit;
--	kthread_queue_work(&s->kworker, &one->reg_work);
-+	kthread_queue_work(s->kworker, &one->reg_work);
- }
- 
- static void sc16is7xx_stop_tx(struct uart_port *port)
-@@ -813,7 +812,7 @@ static void sc16is7xx_poll_proc(struct kthread_work *ws)
- 	sc16is7xx_irq(0, s);
- 
- 	/* Setup delay based on SC16IS7XX_POLL_PERIOD_MS */
--	kthread_queue_delayed_work(&s->kworker, &s->poll_work,
-+	kthread_queue_delayed_work(s->kworker, &s->poll_work,
- 				   msecs_to_jiffies(SC16IS7XX_POLL_PERIOD_MS));
- }
- 
-@@ -900,7 +899,7 @@ static void sc16is7xx_ms_proc(struct kthread_work *ws)
- 		scoped_guard(mutex, &one->lock)
- 			sc16is7xx_update_mlines(one);
- 
--		kthread_queue_delayed_work(&s->kworker, &one->ms_work, HZ);
-+		kthread_queue_delayed_work(s->kworker, &one->ms_work, HZ);
- 	}
- }
- 
-@@ -911,7 +910,7 @@ static void sc16is7xx_enable_ms(struct uart_port *port)
- 
- 	lockdep_assert_held_once(&port->lock);
- 
--	kthread_queue_delayed_work(&s->kworker, &one->ms_work, 0);
-+	kthread_queue_delayed_work(s->kworker, &one->ms_work, 0);
- }
- 
- static void sc16is7xx_start_tx(struct uart_port *port)
-@@ -919,7 +918,7 @@ static void sc16is7xx_start_tx(struct uart_port *port)
- 	struct sc16is7xx_port *s = dev_get_drvdata(port->dev);
- 	struct sc16is7xx_one *one = to_sc16is7xx_one(port);
- 
--	kthread_queue_work(&s->kworker, &one->tx_work);
-+	kthread_queue_work(s->kworker, &one->tx_work);
- }
- 
- static void sc16is7xx_throttle(struct uart_port *port)
-@@ -968,7 +967,7 @@ static void sc16is7xx_set_mctrl(struct uart_port *port, unsigned int mctrl)
- 	struct sc16is7xx_one *one = to_sc16is7xx_one(port);
- 
- 	one->config.flags |= SC16IS7XX_RECONF_MD;
--	kthread_queue_work(&s->kworker, &one->reg_work);
-+	kthread_queue_work(s->kworker, &one->reg_work);
- }
- 
- static void sc16is7xx_break_ctl(struct uart_port *port, int break_state)
-@@ -1098,7 +1097,7 @@ static int sc16is7xx_config_rs485(struct uart_port *port, struct ktermios *termi
- 	}
- 
- 	one->config.flags |= SC16IS7XX_RECONF_RS485;
--	kthread_queue_work(&s->kworker, &one->reg_work);
-+	kthread_queue_work(s->kworker, &one->reg_work);
- 
- 	return 0;
- }
-@@ -1159,7 +1158,7 @@ static int sc16is7xx_startup(struct uart_port *port)
- 	uart_port_unlock_irqrestore(port, flags);
- 
- 	if (s->polling)
--		kthread_queue_delayed_work(&s->kworker, &s->poll_work,
-+		kthread_queue_delayed_work(s->kworker, &s->poll_work,
- 					   msecs_to_jiffies(SC16IS7XX_POLL_PERIOD_MS));
- 
- 	return 0;
-@@ -1186,7 +1185,7 @@ static void sc16is7xx_shutdown(struct uart_port *port)
- 	if (s->polling)
- 		kthread_cancel_delayed_work_sync(&s->poll_work);
- 
--	kthread_flush_worker(&s->kworker);
-+	kthread_flush_worker(s->kworker);
- }
- 
- static const char *sc16is7xx_type(struct uart_port *port)
-@@ -1595,14 +1594,12 @@ int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
- 	s->devtype = devtype;
- 	dev_set_drvdata(dev, s);
- 
--	kthread_init_worker(&s->kworker);
--	s->kworker_task = kthread_run(kthread_worker_fn, &s->kworker,
--				      "sc16is7xx");
--	if (IS_ERR(s->kworker_task)) {
--		ret = PTR_ERR(s->kworker_task);
-+	s->kworker = kthread_run_worker(0, "sc16is7xx");
-+	if (IS_ERR(s->kworker)) {
-+		ret = PTR_ERR(s->kworker);
- 		goto out_clk;
- 	}
--	sched_set_fifo(s->kworker_task);
-+	sched_set_fifo(s->kworker->task);
- 
- 	ret = sc16is7xx_reset(dev, regmaps[0]);
- 	if (ret)
-@@ -1676,7 +1673,7 @@ int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
- 	}
- 
- out_kthread:
--	kthread_stop(s->kworker_task);
-+	kthread_destroy_worker(s->kworker);
- 
- out_clk:
- 	clk_disable_unprepare(s->clk);
-@@ -1705,8 +1702,8 @@ void sc16is7xx_remove(struct device *dev)
- 	if (s->polling)
- 		kthread_cancel_delayed_work_sync(&s->poll_work);
- 
--	kthread_flush_worker(&s->kworker);
--	kthread_stop(s->kworker_task);
-+	kthread_flush_worker(s->kworker);
-+	kthread_destroy_worker(s->kworker);
- 
- 	clk_disable_unprepare(s->clk);
- }
 -- 
-2.47.3
+With Best Regards,
+Andy Shevchenko
+
 
