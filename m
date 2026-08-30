@@ -1,114 +1,104 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82EA2231A3B;
-	Sun, 30 Aug 2026 07:42:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87A922DCBE3;
+	Sun, 30 Aug 2026 07:49:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788075771; cv=none; b=Cic9wpvlo2CfEfIxUC8jcdrFXzESZGMhj9mAlm6MKvisMuQMC/O8oLaXQWf0Fs0w8MwtS9ACfWx/LjE5Fkn/YFKuXPv5gSwXwLxNdJWajdn7btbFLG8l3K+0gwhQoGQ81j10yJVkyg0gWw4Kzlb1jYq8AOc8NBx0OFyGI4XJfp8=
+	t=1788076183; cv=none; b=JqGegGL7nfYmVLE9T1KekdGSfWJdTIcUOpEMrZjWFND7YhDM88q7tNKZP9vXl7Dm4aX38V2lXsa/zGsAto1s437Y9cthT9s1A2TUfI/RPEKYDLF2o2pjB81CrvaB/7fJliMy3tsAVNqrxsPZnuJ4fFQ5cnn1iAF+YMVKhv6oDg0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788075771; c=relaxed/simple;
-	bh=1GxxShbqhyWR5JXZGet2lOpYv+Ym/BROEPbMOYsx7J8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Uh9M5jTOf0ZgJ1w7vNNPSkFWfhiTkKa51zUJSWXo8coGAj4aBTnNDRytCTsE2z1AlWjIUhGfesy80/AVj3WeVCYtx+NIhMdzfIFhoW5c1xn66j10YCcwBMdG5ntcZxKB/ZK+Ai5Y3wyH46Oa20qhGfwdn+9IaFi8osvdGD3neHA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OOakZbd8; arc=none smtp.client-ip=198.175.65.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1788076183; c=relaxed/simple;
+	bh=v5KDJGioMDUQEbfn+Zfwn81YGi7/DYHdybbGniOixqk=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=GaVrlHC7743cd4iy8seeMJeOIHj80Pe5n99C7yUIaIIxlh6LIQ8AyJHkQlNX4F5v45l+fPAoCGxqhUGkPL9t9v/DwGK1jdcjns2lc6vw7PGYsVKvBSJJ0vd1dbZXGnbOktuq47sl6KYiD+IL/WExtko1YQqT7PVkJuA/CYAsj6E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eNe9x6Un; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OOakZbd8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1788075769; x=1819611769;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=1GxxShbqhyWR5JXZGet2lOpYv+Ym/BROEPbMOYsx7J8=;
-  b=OOakZbd8douTOF+V8YSzJPTuOxEFUQy13OW0QPUilZrdW5+3iNt1cKmd
-   zZdI+yEy4L/5wnfSc1sQJ6Ba1IEqkpT6okzf03OJOtI6hNjN+kSSuKBVN
-   erQk2iptCA27wi2DNP+/uw44QDgddnRImxsK/Dct0CZkgiaXnShXvuCGi
-   hWhWC6UlnVjpQPnc6Q+t9+6YZoFcVYdyYP6kUxEh2gS5Dhdfpf21IHIxr
-   aOlIbP1ZoIQs4XIwCv2uwoUSwBffRAOnmnTsJlgcnVUg68clOZFMyERCc
-   lo/PJpNLr3Mn+1EMtDm7UC5JM+7euRgVCTU5zbmTczrVSgzwIMHnEVJrN
-   w==;
-X-CSE-ConnectionGUID: L2xdrHIXSyuBPe1crp67jg==
-X-CSE-MsgGUID: /g7h99q9SpabKsQxoCpBcQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11890"; a="92381499"
-X-IronPort-AV: E=Sophos;i="6.25,251,1779174000"; 
-   d="scan'208";a="92381499"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2026 00:42:48 -0700
-X-CSE-ConnectionGUID: NrKHh4eVRFCvL58bT4Fh/Q==
-X-CSE-MsgGUID: IlsWzdGqTimm488ePG15kA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,251,1779174000"; 
-   d="scan'208";a="264243276"
-Received: from abityuts-desk1.ger.corp.intel.com (HELO localhost) ([10.245.245.243])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2026 00:42:44 -0700
-Date: Sun, 30 Aug 2026 10:42:42 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Jon Hunter <jonathanh@nvidia.com>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	John Ogness <john.ogness@linutronix.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Andy Shevchenko <andy.shevchenko@gmail.com>,
-	Petr Mladek <pmladek@suse.com>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	linux-kernel@vger.kernel.org,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Crescent Hsieh <crescentcy.hsieh@moxa.com>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	linux-serial@vger.kernel.org,
-	"linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
-Subject: Re: [PATCH tty 1/1] serial: 8250: Change console_msr_work to
- IRQ_WORK_LAZY
-Message-ID: <apPe8mK8fZPM6NL8@ashevche-desk.local>
-References: <20260828155811.270462-1-john.ogness@linutronix.de>
- <20260828155811.270462-2-john.ogness@linutronix.de>
- <20260828160652.TQBsi8oO@linutronix.de>
- <0c2c424f-0372-4626-b14e-7697d98e6b20@nvidia.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eNe9x6Un"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A190A1F000E9;
+	Sun, 30 Aug 2026 07:49:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1788076182;
+	bh=Kmf7UNuR3TJfz0wmHchwj7E8FCZ4Ng6XB4qrntzPsXg=;
+	h=From:Subject:Date:To:Cc;
+	b=eNe9x6UnAK5IeFqG2g12NDUx45i6Sa7NrF/9OqdSg+uGiEVFvzk5LFJM1blh/UbMy
+	 BZdDLd/DVd8TX6VxnkN9vZ8z4Y0G81c3wDyXh6pV3V/c/msuMtzKI1ivKcA4LbE3GJ
+	 SMADYzhe0EHnAp8QVn9iHnc4HAwNqZp0DizycG89nBIv7RLinZsDF8J5uANqqAdMd5
+	 +2quL2ySSSXwdofmmFlhwgLBxah6rWfg7/YTIT0DhFiGrsE+iIVRR1rSgfZmODmmmW
+	 bYJFZfVqhJVUepBerrCFkXFvHkrqPe7aFeEXQg2zv7dE5mUBz907gwL1aKOKkqXg2T
+	 KV2IanmTnRHOw==
+From: "Mike Rapoport (Microsoft)" <rppt@kernel.org>
+Subject: [PATCH 0/3] tty: replace page allocator calls with k[mz]alloc()
+Date: Sun, 30 Aug 2026 10:49:36 +0300
+Message-Id: <20260830-tty-v1-0-0cbe6170649b@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0c2c424f-0372-4626-b14e-7697d98e6b20@nvidia.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yXMwQ6DIBAE0F8xey4NRavUX2k8AF3r9kAbFhsN8
+ d8FPb7JzCRgDIQMfZUg4J+Yvj7jdqnATca/UdArG5RUrdTqIWJchW5Gebddo1tlIDd/AUdajpf
+ ncJpn+0EXy7Q0rGEUNhjvphId7K41bNsOOOCfDYIAAAA=
+X-Change-ID: 20260829-tty-84f05b74862a
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>, 
+ David Hildenbrand <david@kernel.org>, Matthew Wilcox <willy@infradead.org>, 
+ Mike Rapoport <rppt@kernel.org>, Vlastimil Babka <vbabka@kernel.org>, 
+ linux-kernel@vger.kernel.org, linux-mm@kvack.org, 
+ linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+X-Mailer: b4 0.17-dev
 
-On Fri, Aug 28, 2026 at 06:06:50PM +0100, Jon Hunter wrote:
-> On 28/08/2026 17:06, Sebastian Andrzej Siewior wrote:
-> > On 2026-08-28 18:04:08 [+0206], John Ogness wrote:
-> > > For some platforms it is a problem to queue irq_work when entering
-> > > cpuidle states. Since irq_work is used for deferred MSR handling,
-> > > any atomic console printing when entering cpuidle states can lead
-> > > to the affected hardware hanging. Tegra20 and Tegra30 are examples
-> > > of such platforms. Avoiding raising the irq_work IRQ has shown to
-> > > circumvent the problem.
-> > 
-> > I would argue that this is done for the benefit of less interrupts since
-> > there no need to handle console_msr_work immediately. With the side
-> > effect that it might fix a bug that was not yet reported on Tegra[23]0.
-> > 
-> > Ideally the Tegra folks should figure out what exactly is broken instead
-> > of adding duct tape everywhere else.
-> 
-> Yes that would be ideal. Unfortunately these are old devices now and very
-> much in maintenance mode so getting to the bottom of this now is unlikely.
-> You may say then why don't we completely deprecate these, but then you
-> could argue the other way and say they have been working fine up until
-> now.
+This is a (small) part of larger work of replacing page allocator calls
+with kmalloc.
 
-This is a trade-off between burden of supporting them vs. developing and move
-on on more important things. Personally I consider non-blocking console feature
-is *much* more important than a few "working fine up until now" outdated
-platforms (side example, recently the whole i486 support was ripped off, while
-working fine...).
+My initial intention a few month ago was to remove ugly casts [1], but then
+willy pointed out that Linus objected to something like this [2] and it
+looks like more than a decade old technical debt.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Largely, anything that doesn't need struct page (or a memdesc in the
+future) should just use kmalloc() or kvmalloc() to allocate memory.
+kmalloc() guarantees alignment, physical contiguity and working
+virt_to_phys() and beside nicer API that returns void * on alloc and
+doesn't require to know the allocation size on free, kmalloc() provides
+better debugging capabilities than page allocator.
 
+Another thing is that touching these allocation sites gives the reviewers
+opportunity to see if a PAGE_SIZE buffer is actually needed or maybe
+another size is appropriate.
+
+For larger allocations that don't need physically contiguous memory
+kvmalloc() can be a better option that __get_free_pages() because under
+memory pressure it's is easier to allocate several order-0 pages than a
+physically contiguous chunk with the same number of pages.
+
+And last, but not least, removing needless calls to page allocator should
+help with memdesc (aka project folio) conversion. There will be way less
+places to audit to see if the user was actually using struct page.
+
+The patches are deliberately kept small: each one deals with a single
+driver or subsystem and with a single type of allocation, so that every
+conversion can be reviewed, and if needed reverted, on its own.
+
+[1] https://lore.kernel.org/all/20251018093002.3660549-1-rppt@kernel.org/
+[2] https://lore.kernel.org/all/CA+55aFwp4iy4rtX2gE2WjBGFL=NxMVnoFeHqYa2j1dYOMMGqxg@mail.gmail.com/
+
+---
+Mike Rapoport (Microsoft) (3):
+      tty: port: replace get_zeroed_page() with kzalloc()
+      serial: core: replace get_zeroed_page() with kzalloc()
+      tty: hvcs: replace __get_free_page() with kmalloc()
+
+ drivers/tty/hvc/hvcs.c           |  6 +++---
+ drivers/tty/serial/serial_core.c | 16 ++++++++--------
+ drivers/tty/tty_port.c           |  8 ++++----
+ 3 files changed, 15 insertions(+), 15 deletions(-)
+---
+base-commit: 1b78070aaef63512688aebfbc82365ef9d6660f1
+change-id: 20260829-tty-84f05b74862a
+
+--
+Sincerely yours,
+Mike.
 
