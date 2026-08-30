@@ -1,112 +1,128 @@
-Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 369D42EF653
-	for <linux-serial@vger.kernel.org>; Sun, 30 Aug 2026 08:53:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1794414F70
+	for <linux-serial@vger.kernel.org>; Sun, 30 Aug 2026 09:05:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788080025; cv=none; b=DBtj0xbQQ3rKdQGmcuaM4jQJYixJWKKd3zP+ZTIE/W5mr4c58GhR8z7dpC8llz4L3SeN5nYAVFvmi9Oxa/4ScWVff2Y+wNeBYO0xVYp0atjIsIObscztdUYB91p4FkcN8h5TFkT9yCsThTr9mn+klUswq+rElgrUeOgtXWZFnzY=
+	t=1788080752; cv=none; b=QyPji3ODNoJCkt1V13LGO23urq0qh4FnOlxgeeZV5jLFDR+yfVmFgNulvr3DLXUgUHUyQ4jUDFvhkm+C86lMO8LDd+nJm4ZzfivLMX2Sg/p2Iz6ZzLGvvc1UpSi3Gh5uQMWUlUCR4Ec+/HCt4SekqlN0DN9kbz15SKo4bovJ9nY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788080025; c=relaxed/simple;
-	bh=0QLvelCtKRHvSG/o9eUNBmUP9qh+Ju/deNVjrNnksbc=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=CbOdDASu3vlJY2fzusuaAxktW/3WSD4bbAeWoehBZB/ol6Qcq1XdLwzdokbjIepKJN97WazFPrHPoTzil/w6mv+Nm+rK493JnVsyVur/5/sohKrFhMO6eOI7/XsQpzURFQNpjNfayH3OKZk9fHXxNXY1wKUZ3/JofoicV801Qr4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QPh3D8LH; arc=none smtp.client-ip=209.85.218.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1788080752; c=relaxed/simple;
+	bh=bRu8MAyWQBL9/fWcs2oCr1eSFrh56Xi3ykvJKxG8/hE=;
+	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
+	 Message-Id; b=NKYbwLPAQstiX/QsgMbCC1tjlrliTp1784NTrBIr4fFVrooT7/8beddzNEw+reJLT+9RK4hg2ajpza3JOgatV5Mxg6dBSSDQeZjO4tKntjwVdN0D6JHyU/p5jEuQ/yflnpUg2pyO8Ryxh3FV7bdNw3lraR/74KV2dQ8oFTGDf6g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EUpkjaVk; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QPh3D8LH"
-Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-c1670dad7a8so385445966b.3
-        for <linux-serial@vger.kernel.org>; Sun, 30 Aug 2026 01:53:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788080022; x=1788684822; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=8Xieco16JUGBtqYPcvPXgwiOrcIgYov6XOPWEyUzzGU=;
-        b=QPh3D8LHjvo+uqJbWBQ90Owf3QLC0w2b2hgAzSJlhXcChXaaF2P1DdFjRbgZyi8NnG
-         woHPY1nziurtqF6r5I+KJ0tK/D7YYzgfhPCxlstNN2t3c1V37cL4UuMVMeGxl9IMRRbI
-         3VK3Ju1BAE78jKjIpHrvdpMKXJW1wnDjqn/x6R5Lm5Yp/7YSG7Ukt+8orWZwPJ59iahg
-         B1B9X9GGGG87VB021hwhw8zUaX7bcv6kD9o5M/Sb9hfFjAQlhndjHhkIKnENz/KI5yGO
-         yKULBJZale9g+HNvwiASvO6mJ47+k0dhJCDdYrdbfxikX2mraq2yualY0PH/wmhDiEkF
-         Hljg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788080022; x=1788684822;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=8Xieco16JUGBtqYPcvPXgwiOrcIgYov6XOPWEyUzzGU=;
-        b=SdkNj2I0AAZBff6Yr3oSfChSsjyT7T0Iz+RPTpmTKBgaQ0U/QHRz0LpFGRMhrrQKk5
-         MJjCr82y13/SzOEr1ACuiLSHMNrM3ztJ0IKLa050VchyANEkU/QIg+ET/K63aqWyGzW/
-         Q9Cj3C2DRy8tdhMvd55JdeQ6S3mdl3YvhTpn5YSOG4t0t2E04e0Bvml0+kL0XKlFrsbO
-         KuzsuWsSjP5kQcusUK7y/ROlUUvS47oJRrTpuGyvDcGMqKLfeW9+kNvGDBfUqrTcknj0
-         j74uJAmS7Tb77bMN3bOWYBXyOoKxRJXj8v2DtVxCgf4Ei2/P/Lhi3S+2MDkdhJPcr0Eo
-         J96A==
-X-Forwarded-Encrypted: i=1; AHgh+RrPr8YdAV6N7DXQ3ggo4DSaiWbQToYveKBoyqpUVVnHETuLdQm/Au6PN+PCa+F45HZVdwRtP9NqOIKtZng=@vger.kernel.org
-X-Gm-Message-State: AFuF++nn/wlyYPpcdYkdiw4D64vPJ+kcquOjbHyG2ars9UflvsWh0+xB
-	OfNiWk09AkwHyc/srHPlydZUYocjn4YM8DQfRU9wMWt+0a3uy/Zc+m5+8s4V4u2eX+19NQ==
-X-Gm-Gg: AR+sD13KhzuZKkevLAFAj92QIH13YSlj8GO6z/NTd2RsGMQlhwSw6+0PP73aSRx77hR
-	s2hgKrQ/hfPS5g32sxHSlqPjWRwXzE9205LqE0ErhuhLFcv8efci5STd0b/h7okYZ3Z0Wb2ucVK
-	H5X3O3ptiSfsO8f/exdPP9tlImRU96Ye3SQpJsbdOdaES7f85lC19hzMRo87EzCkPoMPYQe8luG
-	fRHJ7cqGFUSdmlTk5DsmTXjkOP/06LWQgz8c4AYh+PHt07xvzV0DSi5xytua3xbER2UjCTGbTlw
-	yim7lCRDjXOlMEplIhcODXelUry2i9jA3mI7Y6ueBuNwR/SAKIO3Ue1w0ghGzvVXZxPc0yESTwM
-	n7Ikc36yyPgQ9xfC50Qt3+V7sr9NgbZrpC/wywHBZJBhEzCbR7PokgNjjjo7bECIbtRnx+tAmYT
-	ET6tehgD/h2N0odo318xepqsIddgGZXsJ0ON/v5lzurVoSNOhmMydtRhl5dGVKUhaJJElICYWZn
-	XLYx5aMThinr57Ij7riJuwqMJLV
-X-Received: by 2002:a17:906:730e:b0:c25:254:292e with SMTP id a640c23a62f3a-c25567a9274mr1216183466b.0.1788080021897;
-        Sun, 30 Aug 2026 01:53:41 -0700 (PDT)
-Received: from localhost (83-131-188-112.adsl.net.t-com.hr. [83.131.188.112])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c255f1febf3sm274995866b.52.2026.08.30.01.53.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 30 Aug 2026 01:53:41 -0700 (PDT)
-From: Dmitry Sinyavin <sinyavin@gmail.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: Dmitry Sinyavin <sinyavin@gmail.com>,
-	Stephan Gerhold <stephan.gerhold@kernkonzept.com>,
-	linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] serial: msm: select PM_OPP
-Date: Sun, 30 Aug 2026 10:53:40 +0200
-Message-ID: <20260830085340.2542624-1-sinyavin@gmail.com>
-X-Mailer: git-send-email 2.53.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EUpkjaVk"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79EC31F000E9;
+	Sun, 30 Aug 2026 09:05:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1788080750;
+	bh=iweLc+71aXdADfc0PNhpoO+0b/RhBMIBTCeu2Ol1Zeg=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=EUpkjaVkRBVvJNyqvEbOw3lCqj5u/H14IVD/+kF9knN78Y27eV0fi6gegLtQFjWam
+	 SP104fCIM1ySYyQejcmwgxf4KDnf9h8sByZhQ9Qq29KEn6puiW0U7mDgyfc0uzTqUs
+	 DvT/esySUQxEtL7fBzoeCnghZ5dS8NGqBKmHpXpl87Q4TgEITExPMKMG9QjkHeDdh/
+	 82C6HcOtE87j7yzMwqWLbvCnVm5t1XglfqkzeVuyhouilPo9ecepT1nD1kEK3nfbyb
+	 KNXPnIITg0peaSh7p36FlqtGDm9rqxVkKHil0DZ8vB44FWjB9F3EG23RAWnv//ACoQ
+	 GzaCDPI9Dr3Hg==
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH] serial: msm: select PM_OPP
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Dmitry Sinyavin" <sinyavin@gmail.com>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20260830085340.2542624-1-sinyavin@gmail.com>
+References: <20260830085340.2542624-1-sinyavin@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Sun, 30 Aug 2026 09:05:50 +0000
+Message-Id: <20260830090550.79EC31F000E9@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-Commit 173ebdedcd84 ("serial: msm: Use OPP table for DVFS support")
-made the MSM serial driver unconditionally configure the core clock
-through the OPP framework during probe.
+Thank you for your contribution! Sashiko AI review found 2 potential issue(=
+s) to consider:
 
-When CONFIG_PM_OPP is disabled, devm_pm_opp_set_clkname() is a stub that
-returns -EOPNOTSUPP, so every MSM serial port fails to probe. Select
-PM_OPP to keep minimal configurations functional.
+Pre-existing issues:
+- [High] Scatterlist DMA length is accessed after the scatterlist is unmapp=
+ed, leading to possible underflow and FIFO corruption.
+- [High] The driver unconditionally ignores the return value of clk_prepare=
+_enable(), which can cause a synchronous external abort if the clock fails =
+to enable.
+--
 
-Fixes: 173ebdedcd84 ("serial: msm: Use OPP table for DVFS support")
-Signed-off-by: Dmitry Sinyavin <sinyavin@gmail.com>
----
-Tested with an ARM multi_v7_defconfig after forcing SERIAL_MSM=y and
-PM_OPP=n. olddefconfig selected PM_OPP=y, and msm_serial.o built with
-Clang and W=1.
+commit 2cb7eaaedfaf012a0738d9fb2147009502a57d43
+Author: Dmitry Sinyavin <sinyavin@gmail.com>
 
- drivers/tty/serial/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+serial: msm: select PM_OPP
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index cf7dba473b20..bf680d22199b 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -904,6 +904,7 @@ config SERIAL_JSM
- config SERIAL_MSM
- 	tristate "MSM on-chip serial port support"
- 	depends on ARCH_QCOM || COMPILE_TEST
-+	select PM_OPP
- 	select SERIAL_CORE
- 
- config SERIAL_MSM_CONSOLE
+Commit 173ebdedcd84 made the MSM serial driver unconditionally configure
+the core clock through the OPP framework during probe. This commit selects
+PM_OPP to keep minimal configurations functional when CONFIG_PM_OPP is
+disabled.
 
-base-commit: 45c13f3f9e3bb15fd89ff2864c6f627a3b4b4229
--- 
-2.53.0
+> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> index cf7dba473b203..bf680d22199b1 100644
+> --- a/drivers/tty/serial/Kconfig
+> +++ b/drivers/tty/serial/Kconfig
+> @@ -904,6 +904,7 @@ config SERIAL_JSM
+>  config SERIAL_MSM
+>  	tristate "MSM on-chip serial port support"
+>  	depends on ARCH_QCOM || COMPILE_TEST
+> +	select PM_OPP
+>  	select SERIAL_CORE
+> =20
+>  config SERIAL_MSM_CONSOLE
+
+While reviewing this patch, I noticed a few regressions in the
+msm_serial driver itself:
+
+drivers/tty/serial/msm_serial.c:msm_complete_tx_dma() {
+...
+	dma_unmap_sg(port->dev, &dma->tx_sg, 1, dma->dir);
+...
+	count =3D sg_dma_len(&dma->tx_sg) - state.residue;
+	uart_xmit_advance(port, count);
+...
+}
+
+[Severity: High]
+This isn't a bug introduced by this patch, but does this code underflow the
+count and corrupt the TTY ring buffer?
+
+The msm_complete_tx_dma() function unconditionally reads
+sg_dma_len(&dma->tx_sg) immediately after calling dma_unmap_sg(&dma->tx_sg).
+
+On architectures where CONFIG_DMA_API_DEBUG or SWIOTLB invalidates SG
+entries by setting the length to 0, sg_dma_len() evaluates to 0.
+
+Since state.residue can be non-zero and count is unsigned, wouldn't
+count =3D 0 - state.residue underflow to a massive value and advance the
+pointer out of bounds?
+
+
+drivers/tty/serial/msm_serial.c:msm_init_clock() {
+...
+	clk_prepare_enable(msm_port->clk);
+	clk_prepare_enable(msm_port->pclk);
+	msm_serial_set_mnd_regs(port);
+...
+}
+
+[Severity: High]
+This is a pre-existing issue, but can this cause a synchronous external
+abort if the clock fails to enable?
+
+The msm_init_clock() function calls clk_prepare_enable() but does not
+check the return value.
+
+If the clock subsystem fails to enable the clock, execution proceeds
+directly to msm_serial_set_mnd_regs(), which performs MMIO register
+writes to the unclocked peripheral.
+
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260830085340.2542=
+624-1-sinyavin@gmail.com?part=3D1
