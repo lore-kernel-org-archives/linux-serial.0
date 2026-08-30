@@ -1,94 +1,112 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00C291FF5E3;
-	Sun, 30 Aug 2026 08:44:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 369D42EF653
+	for <linux-serial@vger.kernel.org>; Sun, 30 Aug 2026 08:53:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788079485; cv=none; b=EYSv2+5aB4ejsfPsbHUqZMmnWBN9NZJEoTiQ3BliIO/6jRrrkITSJ/acWlanD2vjzkV/KsB+jaVUl0zN7WSlYCZJQE3GT6AWR9cKBOl14sM2ap3z1y4Y4mjkvmZaL9o5so0Fby9MQPacsdSdLy78OhPYCLLAhk2nA+w1k/1/YQc=
+	t=1788080025; cv=none; b=DBtj0xbQQ3rKdQGmcuaM4jQJYixJWKKd3zP+ZTIE/W5mr4c58GhR8z7dpC8llz4L3SeN5nYAVFvmi9Oxa/4ScWVff2Y+wNeBYO0xVYp0atjIsIObscztdUYB91p4FkcN8h5TFkT9yCsThTr9mn+klUswq+rElgrUeOgtXWZFnzY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788079485; c=relaxed/simple;
-	bh=kccXCW2uwnC32aorsuk+fOLL91eOa0XeyF/GJZUkpDU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dNpq0JbN5jJbvN1e3KZveEjpg5ol5SW76F8RGzY+zlYVXEegb6s141zfbn/+ea6eJnSifHTJk4zFA7sH19ebBtD6qKCM8WxBx+A2YVah40hp7CiUH0bh0BUB575jXeMBjb8HY69NdJoN2vv0F5FPq2BSslayCRpwnHz2uClhZ6M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZDpIINyA; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788080025; c=relaxed/simple;
+	bh=0QLvelCtKRHvSG/o9eUNBmUP9qh+Ju/deNVjrNnksbc=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=CbOdDASu3vlJY2fzusuaAxktW/3WSD4bbAeWoehBZB/ol6Qcq1XdLwzdokbjIepKJN97WazFPrHPoTzil/w6mv+Nm+rK493JnVsyVur/5/sohKrFhMO6eOI7/XsQpzURFQNpjNfayH3OKZk9fHXxNXY1wKUZ3/JofoicV801Qr4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QPh3D8LH; arc=none smtp.client-ip=209.85.218.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZDpIINyA"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 644981F000E9;
-	Sun, 30 Aug 2026 08:44:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788079483;
-	bh=RIBS2+qN8Vms4CQG2rS3b0ns/uUUCcnttypH9627KS4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=ZDpIINyA6qnZzOR+Nuu3MdsyNuFZ/s+DyXCSbQgGIeCH9HK0xKwaElRKosC1r3fNi
-	 9K7VHzp9dl/AgghQjGSk04dj9HbnxbxGLbr+YEjBFO5Ec+NRWZHsXWPaeU8L7M6KpS
-	 NKGNfBcVJytzrgBAW1ZCgO1WXgaJPZlVHAg5927HaG/vzZBIebPNAbSYNv0QvQkkZj
-	 4Qu8IPrhKXGwwx96usMfwXIeTphJInlyna/k8VHsyAkZ590J6EAtHSrfGD/T7oMjUR
-	 QK+RzeNJSqIxaPuGYARgSJ5R9wsW41VyN2oGxUHCt+VFrUXoygsuKQfOliQoyqIgVp
-	 Rq+1hAwiQz8qQ==
-Date: Sun, 30 Aug 2026 11:44:38 +0300
-From: Mike Rapoport <rppt@kernel.org>
-To: sashiko-reviews@lists.linux.dev
-Cc: linux-serial@vger.kernel.org
-Subject: Re: [PATCH 2/3] serial: core: replace get_zeroed_page() with
- kzalloc()
-Message-ID: <apPtdnAPBR6RwJAk@kernel.org>
-References: <20260830-tty-v1-0-0cbe6170649b@kernel.org>
- <20260830-tty-v1-2-0cbe6170649b@kernel.org>
- <20260830080055.1BDF41F000E9@smtp.kernel.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QPh3D8LH"
+Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-c1670dad7a8so385445966b.3
+        for <linux-serial@vger.kernel.org>; Sun, 30 Aug 2026 01:53:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1788080022; x=1788684822; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=8Xieco16JUGBtqYPcvPXgwiOrcIgYov6XOPWEyUzzGU=;
+        b=QPh3D8LHjvo+uqJbWBQ90Owf3QLC0w2b2hgAzSJlhXcChXaaF2P1DdFjRbgZyi8NnG
+         woHPY1nziurtqF6r5I+KJ0tK/D7YYzgfhPCxlstNN2t3c1V37cL4UuMVMeGxl9IMRRbI
+         3VK3Ju1BAE78jKjIpHrvdpMKXJW1wnDjqn/x6R5Lm5Yp/7YSG7Ukt+8orWZwPJ59iahg
+         B1B9X9GGGG87VB021hwhw8zUaX7bcv6kD9o5M/Sb9hfFjAQlhndjHhkIKnENz/KI5yGO
+         yKULBJZale9g+HNvwiASvO6mJ47+k0dhJCDdYrdbfxikX2mraq2yualY0PH/wmhDiEkF
+         Hljg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788080022; x=1788684822;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=8Xieco16JUGBtqYPcvPXgwiOrcIgYov6XOPWEyUzzGU=;
+        b=SdkNj2I0AAZBff6Yr3oSfChSsjyT7T0Iz+RPTpmTKBgaQ0U/QHRz0LpFGRMhrrQKk5
+         MJjCr82y13/SzOEr1ACuiLSHMNrM3ztJ0IKLa050VchyANEkU/QIg+ET/K63aqWyGzW/
+         Q9Cj3C2DRy8tdhMvd55JdeQ6S3mdl3YvhTpn5YSOG4t0t2E04e0Bvml0+kL0XKlFrsbO
+         KuzsuWsSjP5kQcusUK7y/ROlUUvS47oJRrTpuGyvDcGMqKLfeW9+kNvGDBfUqrTcknj0
+         j74uJAmS7Tb77bMN3bOWYBXyOoKxRJXj8v2DtVxCgf4Ei2/P/Lhi3S+2MDkdhJPcr0Eo
+         J96A==
+X-Forwarded-Encrypted: i=1; AHgh+RrPr8YdAV6N7DXQ3ggo4DSaiWbQToYveKBoyqpUVVnHETuLdQm/Au6PN+PCa+F45HZVdwRtP9NqOIKtZng=@vger.kernel.org
+X-Gm-Message-State: AFuF++nn/wlyYPpcdYkdiw4D64vPJ+kcquOjbHyG2ars9UflvsWh0+xB
+	OfNiWk09AkwHyc/srHPlydZUYocjn4YM8DQfRU9wMWt+0a3uy/Zc+m5+8s4V4u2eX+19NQ==
+X-Gm-Gg: AR+sD13KhzuZKkevLAFAj92QIH13YSlj8GO6z/NTd2RsGMQlhwSw6+0PP73aSRx77hR
+	s2hgKrQ/hfPS5g32sxHSlqPjWRwXzE9205LqE0ErhuhLFcv8efci5STd0b/h7okYZ3Z0Wb2ucVK
+	H5X3O3ptiSfsO8f/exdPP9tlImRU96Ye3SQpJsbdOdaES7f85lC19hzMRo87EzCkPoMPYQe8luG
+	fRHJ7cqGFUSdmlTk5DsmTXjkOP/06LWQgz8c4AYh+PHt07xvzV0DSi5xytua3xbER2UjCTGbTlw
+	yim7lCRDjXOlMEplIhcODXelUry2i9jA3mI7Y6ueBuNwR/SAKIO3Ue1w0ghGzvVXZxPc0yESTwM
+	n7Ikc36yyPgQ9xfC50Qt3+V7sr9NgbZrpC/wywHBZJBhEzCbR7PokgNjjjo7bECIbtRnx+tAmYT
+	ET6tehgD/h2N0odo318xepqsIddgGZXsJ0ON/v5lzurVoSNOhmMydtRhl5dGVKUhaJJElICYWZn
+	XLYx5aMThinr57Ij7riJuwqMJLV
+X-Received: by 2002:a17:906:730e:b0:c25:254:292e with SMTP id a640c23a62f3a-c25567a9274mr1216183466b.0.1788080021897;
+        Sun, 30 Aug 2026 01:53:41 -0700 (PDT)
+Received: from localhost (83-131-188-112.adsl.net.t-com.hr. [83.131.188.112])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c255f1febf3sm274995866b.52.2026.08.30.01.53.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 30 Aug 2026 01:53:41 -0700 (PDT)
+From: Dmitry Sinyavin <sinyavin@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: Dmitry Sinyavin <sinyavin@gmail.com>,
+	Stephan Gerhold <stephan.gerhold@kernkonzept.com>,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] serial: msm: select PM_OPP
+Date: Sun, 30 Aug 2026 10:53:40 +0200
+Message-ID: <20260830085340.2542624-1-sinyavin@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260830080055.1BDF41F000E9@smtp.kernel.org>
+Content-Transfer-Encoding: 8bit
 
-On Sun, Aug 30, 2026 at 08:00:54AM +0000, sashiko-bot@kernel.org wrote:
-> Thank you for your contribution! Sashiko AI review found 1 potential issue(s) to consider:
-> - [Critical] The transition from `get_zeroed_page(GFP_KERNEL)` to `kzalloc(PAGE_SIZE, GFP_KERNEL)` for allocating the serial port transmit buffer (`tport->xmit_buf`) breaks the strict page-alignment guarantee. Several serial drivers inherently rely on this buffer being page-aligned. `atmel_serial` explicitly panics via `BUG_ON(!PAGE_ALIGNED(tport->xmit_buf))`, and `pch_uart` corrupts DMA scatterlist addresses by masking out the lower bits (`sg_dma_address(sg) & ~(UART_XMIT_SIZE - 1)`) assuming the base address is page-aligned. If `kzalloc` returns an unaligned address (e.g., when SLUB debugging adds redzones), this results in DMA reading adjacent out-of-bounds kernel memory and transmitting it over the serial line.
-> --
-> 
-> commit 56b6291d1a96458932c4b0e5de37ae0df9e37c2d
-> Author: Mike Rapoport (Microsoft) <rppt@kernel.org>
-> 
-> serial: core: replace get_zeroed_page() with kzalloc()
-> 
-> This commit replaces the page allocator with kzalloc() for the serial port
-> transmit buffer. It aims to simplify the API and remove casts, noting that
-> performance differences are negligible.
-> 
-> Link: https://lore.kernel.org/all/635405e4-9423-4a25-a6e7-e03c8ea0bcbe@redhat.com
-> 
-> > diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> > index 95774b0f1484b..f12ce7d190fe6 100644
-> > --- a/drivers/tty/serial/serial_core.c
-> > +++ b/drivers/tty/serial/serial_core.c
-> > @@ -247,29 +247,29 @@ static int uart_alloc_xmit_buf(struct tty_port *port)
-> >  	struct uart_state *state = container_of(port, struct uart_state, port);
-> >  	struct uart_port *uport;
-> >  	unsigned long flags;
-> > -	unsigned long page;
-> > +	unsigned char *buf;
-> >  
-> >  	/*
-> >  	 * Initialise and allocate the transmit and temporary
-> >  	 * buffer.
-> >  	 */
-> > -	page = get_zeroed_page(GFP_KERNEL);
-> > -	if (!page)
-> > +	buf = kzalloc(PAGE_SIZE, GFP_KERNEL);
-> 
-> [Severity: Critical]
-> Does replacing get_zeroed_page() with kzalloc() break page alignment
-> requirements for the transmit buffer?
+Commit 173ebdedcd84 ("serial: msm: Use OPP table for DVFS support")
+made the MSM serial driver unconditionally configure the core clock
+through the OPP framework during probe.
 
-No, commit 59bb47985c1d ("mm, sl[aou]b: guarantee natural alignment for
-kmalloc(power-of-two)") guarantees that PAGE_SIZE allocations are page
-aligned.
+When CONFIG_PM_OPP is disabled, devm_pm_opp_set_clkname() is a stub that
+returns -EOPNOTSUPP, so every MSM serial port fails to probe. Select
+PM_OPP to keep minimal configurations functional.
 
+Fixes: 173ebdedcd84 ("serial: msm: Use OPP table for DVFS support")
+Signed-off-by: Dmitry Sinyavin <sinyavin@gmail.com>
+---
+Tested with an ARM multi_v7_defconfig after forcing SERIAL_MSM=y and
+PM_OPP=n. olddefconfig selected PM_OPP=y, and msm_serial.o built with
+Clang and W=1.
+
+ drivers/tty/serial/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index cf7dba473b20..bf680d22199b 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -904,6 +904,7 @@ config SERIAL_JSM
+ config SERIAL_MSM
+ 	tristate "MSM on-chip serial port support"
+ 	depends on ARCH_QCOM || COMPILE_TEST
++	select PM_OPP
+ 	select SERIAL_CORE
+ 
+ config SERIAL_MSM_CONSOLE
+
+base-commit: 45c13f3f9e3bb15fd89ff2864c6f627a3b4b4229
 -- 
-Sincerely yours,
-Mike.
+2.53.0
