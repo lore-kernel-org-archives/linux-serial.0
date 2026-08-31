@@ -1,33 +1,80 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5F2B31F9A4;
-	Mon, 31 Aug 2026 03:07:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F16213C1F;
+	Mon, 31 Aug 2026 06:20:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788145670; cv=none; b=RUGM7ztF4WI6gpkM1AbmkodjT7FT1M2pH1v+obBkn+WRJno8X34AwvXA8lRfGjXytXRfPgsrFpEs8l6TzK87CYF0BzBtnIBBfs3qHIAPElDWZe+cNtVakCDgMv/j9Y+2nxDmTNkLrxoXhE5jmMpvCp8UTRPcp9ZX8hxN53KbGN0=
+	t=1788157223; cv=none; b=fDY+XWqRw+15HdAZdR+SVaoXhQGiSPE2yFCp8AjrIJehT+eFjBBdYqBZPCaxS0dvRfAnRZx+MT2UmJ3viBxbFxRamncwxpmpiQTLpRdqJ/cW1xuUXY6HliOuzv+GzzsBCUG/PGk+H7k6AOHWSl2nMAqsvDc0k3X4U4fzDgyc7NE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788145670; c=relaxed/simple;
-	bh=gLr+Iwb+ZCQmXvh641mg06UhyG3OYgUsPvWbmyuhsq4=;
+	s=arc-20240116; t=1788157223; c=relaxed/simple;
+	bh=ej00dXDU46bYPXgKOioeidpY1fO7JmH66JARiZrVfE0=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=LajmICAYi4XjIct4ObiolRMQXjDeSOoH+du3XsWoRxcnjcllLpsYXDHGUY/hdPAPK3+3wRTmk2DOgxhk66UT4BewwvQrRLE9kohpkk8aXquPpAWvtd44uNVemY+vYT6jezooV8OfUG/T8Re9JSpkSqE7eHgp2v9I0UtAuKzQxlM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HeEmWeHY; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=kk499dUV8kHjmh8xhUmBvR8/Cg/UlGrptULNo66epI0sG2i0hXwiSpdSK3KzTPxemVMhZeERj7HxuczDxKPrE6lqeVLbbJWLHODFiF4f4k0atE6piUg6DMNqZGRNKn1OGdx5FAJ+dgx4LJAppC+U5pH2ph/S88FqEGvcrxgwrPw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=AB/OO+9g; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=IQpbaJfN; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=oBG9okBu; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=sKwWh8C8; arc=none smtp.client-ip=195.135.223.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HeEmWeHY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2334A1F000E9;
-	Mon, 31 Aug 2026 03:07:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788145669;
-	bh=3PBI0fUvzmz9NLpVR+qeiZpMag6fP4x3JVvKUNI8hvI=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=HeEmWeHY82ZIX6dLS7QxC6izKBTZloyocSHkK1Sh4VXrx9UJGXxyXJYtokn/Wjj6G
-	 6RaypVC7JMGQSVqpHv1qMTeMeFRMyBOoSZvZLRsTosuIIJV2Rc965PY8tUxn/Nos5O
-	 1KKOeM407KJBNwGjzxv4nXYqslwdV88/UCyRcQm8cD57L/FsS6WbcVSYjYknR9UaS/
-	 H3H+3PoMTjHkZOL73lFHaEh+D5biSNnY5gMqI8q/0W9dLJ7yjV8+qaj5skN8dQUCJ6
-	 Ehq2AWxp0vf8goZ2PqoRk50Y7eZkkhulzy1IujxurOx993ACKUUsnPdcGaG94Bjhul
-	 M38pJvVTkrK9w==
-Message-ID: <8f39c9fd-cc6e-42cf-9761-ae1922898d4a@kernel.org>
-Date: Mon, 31 Aug 2026 05:07:46 +0200
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="AB/OO+9g";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="IQpbaJfN";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="oBG9okBu";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="sKwWh8C8"
+Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 94B971FA93;
+	Mon, 31 Aug 2026 06:20:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1788157215; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=yM/zUL9msvAyF7E5D434ycxCIIRdt7kTGC7qE/4iBvU=;
+	b=AB/OO+9g/9ldxE94J4XjsEaUGA7fINlxTtoi5TsILt1SMmW7dcULtFKeMMKLC7WI7LUP1r
+	4SZaH6ZcS1R9S+Wv1CWABaiRtYngK7bl6p3s1QM+CWW20TUyltYe69xrG/4GaMHAtRQpz5
+	8XXSz2INXrGMFh/fmcBUr02SR8+F8z8=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1788157215;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=yM/zUL9msvAyF7E5D434ycxCIIRdt7kTGC7qE/4iBvU=;
+	b=IQpbaJfNA7HYu9DaixuwQRzgf3pVKA4otx64ClhEq5W7VOvs8+VpflTNnqfx546R9L9gbI
+	s8rZQJwKlOMzG9AA==
+Authentication-Results: smtp-out2.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1788157211; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=yM/zUL9msvAyF7E5D434ycxCIIRdt7kTGC7qE/4iBvU=;
+	b=oBG9okBut5gnZwGvMdBRsVcnk74TSVSM1pZdv/2vw/IpgiO7VXitD601zjWgnrbswbARN+
+	rsZ4rXV/hCDyHAbI5w+EUX7eB0B4CjSaib2YofZVx1dVAodMLhSNoXMX+HvWWzvF0SGJBD
+	M3gT9MmyokiSWqmLmae3WokGpdvOhCM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1788157211;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=yM/zUL9msvAyF7E5D434ycxCIIRdt7kTGC7qE/4iBvU=;
+	b=sKwWh8C8RBIrjzQNwR+1tkhDfdZ36Um1OeHl22V38dtuFb4ZGDoz/6D3xn1s2tslX93dn1
+	IxNoOnyLZ4cPAvBA==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 1E5EE13515;
+	Mon, 31 Aug 2026 06:20:11 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id CVmwBRsdlWo8FAAAD6G6ig
+	(envelope-from <tzimmermann@suse.de>); Mon, 31 Aug 2026 06:20:11 +0000
+Message-ID: <7c199c7f-d89b-48ca-a777-85585d2eb624@suse.de>
+Date: Mon, 31 Aug 2026 08:20:10 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,103 +82,112 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/2] serial: 8250_mid: wait for LSR tx empty before
- setting termios
-To: Tate Whiteberg <whiteberg@arista.com>,
- Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Andy Shevchenko <andy@kernel.org>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org
-References: <20260828175733.1650267-1-whiteberg@arista.com>
- <20260828175733.1650267-3-whiteberg@arista.com>
+Subject: Re: vt: Enlarge the framebuffer glyph size from 16 to 32 bits
+To: Alan Mackenzie <acm@muc.de>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>, Simona Vetter <simona@ffwll.ch>,
+ linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Helge Deller <deller@gmx.de>, linux-fbdev@vger.kernel.org,
+ dri-devel@lists.freedesktop.org
+References: <apCEDM2sWv_M354-@MAC.fritz.box>
+ <145be2e3-a8c0-4f4f-a701-af2696cec461@suse.de>
+ <apGc4y8ApYWh4Yr4@MAC.fritz.box> <2026082938-spray-shimmer-9389@gregkh>
+ <apLvO-8YJmQG7T0Z@MAC.fritz.box>
 Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20260828175733.1650267-3-whiteberg@arista.com>
+From: Thomas Zimmermann <tzimmermann@suse.de>
+Autocrypt: addr=tzimmermann@suse.de; keydata=
+ xsBNBFs50uABCADEHPidWt974CaxBVbrIBwqcq/WURinJ3+2WlIrKWspiP83vfZKaXhFYsdg
+ XH47fDVbPPj+d6tQrw5lPQCyqjwrCPYnq3WlIBnGPJ4/jreTL6V+qfKRDlGLWFjZcsrPJGE0
+ BeB5BbqP5erN1qylK9i3gPoQjXGhpBpQYwRrEyQyjuvk+Ev0K1Jc5tVDeJAuau3TGNgah4Yc
+ hdHm3bkPjz9EErV85RwvImQ1dptvx6s7xzwXTgGAsaYZsL8WCwDaTuqFa1d1jjlaxg6+tZsB
+ 9GluwvIhSezPgnEmimZDkGnZRRSFiGP8yjqTjjWuf0bSj5rUnTGiyLyRZRNGcXmu6hjlABEB
+ AAHNJ1Rob21hcyBaaW1tZXJtYW5uIDx0emltbWVybWFubkBzdXNlLmRlPsLAjgQTAQgAOAIb
+ AwULCQgHAgYVCgkICwIEFgIDAQIeAQIXgBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftODH
+ AAoJEGgNwR1TC3ojx1wH/0hKGWugiqDgLNXLRD/4TfHBEKmxIrmfu9Z5t7vwUKfwhFL6hqvo
+ lXPJJKQpQ2z8+X2vZm/slsLn7J1yjrOsoJhKABDi+3QWWSGkaGwRJAdPVVyJMfJRNNNIKwVb
+ U6B1BkX2XDKDGffF4TxlOpSQzdtNI/9gleOoUA8+jy8knnDYzjBNOZqLG2FuTdicBXblz0Mf
+ vg41gd9kCwYXDnD91rJU8tzylXv03E75NCaTxTM+FBXPmsAVYQ4GYhhgFt8S2UWMoaaABLDe
+ 7l5FdnLdDEcbmd8uLU2CaG4W2cLrUaI4jz2XbkcPQkqTQ3EB67hYkjiEE6Zy3ggOitiQGcqp
+ j//OwE0EWznS4AEIAMYmP4M/V+T5RY5at/g7rUdNsLhWv1APYrh9RQefODYHrNRHUE9eosYb
+ T6XMryR9hT8XlGOYRwKWwiQBoWSDiTMo/Xi29jUnn4BXfI2px2DTXwc22LKtLAgTRjP+qbU6
+ 3Y0xnQN29UGDbYgyyK51DW3H0If2a3JNsheAAK+Xc9baj0LGIc8T9uiEWHBnCH+RdhgATnWW
+ GKdDegUR5BkDfDg5O/FISymJBHx2Dyoklv5g4BzkgqTqwmaYzsl8UxZKvbaxq0zbehDda8lv
+ hFXodNFMAgTLJlLuDYOGLK2AwbrS3Sp0AEbkpdJBb44qVlGm5bApZouHeJ/+n+7r12+lqdsA
+ EQEAAcLAdgQYAQgAIAIbDBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftOH6AAoJEGgNwR1T
+ C3ojVSkIALpAPkIJPQoURPb1VWjh34l0HlglmYHvZszJWTXYwavHR8+k6Baa6H7ufXNQtThR
+ yIxJrQLW6rV5lm7TjhffEhxVCn37+cg0zZ3j7zIsSS0rx/aMwi6VhFJA5hfn3T0TtrijKP4A
+ SAQO9xD1Zk9/61JWk8OysuIh7MXkl0fxbRKWE93XeQBhIJHQfnc+YBLprdnxR446Sh8Wn/2D
+ Ya8cavuWf2zrB6cZurs048xe0UbSW5AOSo4V9M0jzYI4nZqTmPxYyXbm30Kvmz0rYVRaitYJ
+ 4kyYYMhuULvrJDMjZRvaNe52tkKAvMevcGdt38H4KSVXAylqyQOW5zvPc4/sq9c=
+In-Reply-To: <apLvO-8YJmQG7T0Z@MAC.fritz.box>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Spam-Score: -4.30
+X-Spam-Level: 
+X-Spamd-Result: default: False [-4.30 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	NEURAL_HAM_SHORT(-0.20)[-0.999];
+	MIME_GOOD(-0.10)[text/plain];
+	RCVD_TLS_ALL(0.00)[];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	ARC_NA(0.00)[];
+	RCPT_COUNT_SEVEN(0.00)[9];
+	MIME_TRACE(0.00)[0:+];
+	MID_RHS_MATCH_FROM(0.00)[];
+	FREEMAIL_ENVRCPT(0.00)[gmx.de];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	FROM_HAS_DN(0.00)[];
+	FREEMAIL_CC(0.00)[kernel.org,ffwll.ch,vger.kernel.org,gmx.de,lists.freedesktop.org];
+	TO_DN_SOME(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:url,suse.de:mid]
+X-Spam-Flag: NO
 
-On 28. 08. 26, 19:57, Tate Whiteberg wrote:
-> If mid8250_set_termios() is called while data is still in transmission,
-> the corresponding register updates will corrupt the transmission.
-> 
-> Fix this by locking the port and and waiting for the transmitter to
-> empty before performing updates. It is necessary to wait for both
-> UART_LSR_THRE and UART_LSR_TEMT to ensure the final character is sent.
-> 
-> Fixes: d9eda9bab237 ("serial: 8250_pci: Intel MID UART support to its own driver")
-> Signed-off-by: Tate Whiteberg <whiteberg@arista.com>
-> ---
-> Changes in v2:
->    - Separate changes to 8250.h and 8250_port.c into prerequisite patch,
->      as recommended by andriy.shevchenko@intel.com
->    - Apply feedback from andriy.shevchenko@intel.com to 8250_mid.c
-> 
->   drivers/tty/serial/8250/8250_mid.c | 7 +++++++
->   1 file changed, 7 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_mid.c b/drivers/tty/serial/8250/8250_mid.c
-> index 82656645b8a6..ce792888acfe 100644
-> --- a/drivers/tty/serial/8250/8250_mid.c
-> +++ b/drivers/tty/serial/8250/8250_mid.c
-> @@ -209,6 +209,7 @@ static void mid8250_set_termios(struct uart_port *p, struct ktermios *termios,
->   				const struct ktermios *old)
->   {
->   	unsigned int baud = tty_termios_baud_rate(termios);
-> +	struct uart_8250_port *up = up_to_u8250p(p);
->   	struct mid8250 *mid = p->private_data;
->   	unsigned short ps = 16;
->   	unsigned long fuart = baud * ps;
-> @@ -231,12 +232,18 @@ static void mid8250_set_termios(struct uart_port *p, struct ktermios *termios,
->   	}
->   
->   	rational_best_approximation(fuart, mid->board->freq, w, w, &mul, &div);
-> +
-> +	uart_port_lock_irq(p);
+Hi
 
-Use scoped_guard(), please.
+Am 29.08.26 um 16:39 schrieb Alan Mackenzie:
+[...]
+>> This has nothing to do with KDE or Gnome, if you have issues with those
+>> projects, please take it up with them and contribute to them to resolve
+>> those issues.  I know they can always use the help.
+> My point is that the kernel's console is rock solid and dependable.
+
+That is a bold statement.  I've spend the last years working on related 
+code (fbcon) and it mostly feels dated and unmaintained. Our prime 
+implementation (again fbcon) has been de-facto unmaintained for years. 
+We recently had contributors who are pushing the ioctls semantics and 
+found bugs in fbcon for a number of corner cases.
+
+
+> Things like kmscon are subject to the vagaries of fashion.
+>
+>>> As is clear, I think the console's limitations should be eliminated.
+>> And the rest of us feel the kernel console's code should be eliminated
+>> entirely, when ever possible :)
+> The rest of you don't appear to be console users.  It's easy to advocate
+> for removal when you don't use it yourself.
+
+FTR I'm not at all interested in eliminating the kernel's console. But 
+there are must-have features and nice-to-have features. IMHO for the 
+kernel console i18n really belongs in the later category.
+
+Best regards
+Thomas
+
+
+>
+>> thanks,
+>> greg k-h
 
 -- 
-js
-suse labs
+--
+Thomas Zimmermann
+Graphics Driver Developer
+SUSE Software Solutions Germany GmbH
+Frankenstr. 146, 90461 Nürnberg, Germany, www.suse.com
+GF: Jochen Jaser, Andrew McDonald, (HRB 36809, AG Nürnberg)
+
+
