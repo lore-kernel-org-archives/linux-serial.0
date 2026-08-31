@@ -1,122 +1,121 @@
-Received: from mail.muc.de (mail.muc.de [193.149.48.3])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67FA1270545
-	for <linux-serial@vger.kernel.org>; Mon, 31 Aug 2026 14:45:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.149.48.3
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFD7D53CA60
+	for <linux-serial@vger.kernel.org>; Mon, 31 Aug 2026 15:23:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788187536; cv=none; b=A7HYT6rjBQuljK5TAgjkTaZZjEUeF1lgcD0bb8iHt1Sa4AcimV0m+l7lmrflaGsllmJunf5cxV93O/KaMF++aFoYIO6J4Y2L5T1C0XE4poKZPf7pggCvzmnYxcvzVV+oiY2xpwdf1PS8T9ugJdI1VVhU6oi5/ToY0yoAGqXRSaU=
+	t=1788189840; cv=none; b=pi5Hl108qI82TyZzL7VwcwUGmDTy1ni+IS05vbeA3+VwaJaNGfds1LIGL7eB69Kyx5S8Z+o3DRVEzS75MV+yLr9KiyxZQgJaxvBtdBXHEPGG0uHMYcBmG/Zv9fIWdJ09CHDRl287KdV1KVwFyfPo/onl7YokUtdgTqiZBJUntIA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788187536; c=relaxed/simple;
-	bh=XgN/bolbe6Jy4VzFrB+Iamfg6HTha3VMKOKZXKEd/14=;
-	h=Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To:From; b=PyxwqTgGHjfgjKrAuwhTTW1cjkOrHqniV9EMQXbehKLxgBM1m3666oh4aQGVw/DMA5D2xOxUFDdYArso5FrpUAsbbDp6bFMcglsSU1p/ex9NdEc2OhuTZyMMx7wio0MqRylI30tJNB+z0Ihr0l+Mp06ae+tc4vb0dlG9ke2caI8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=muc.de; spf=pass smtp.mailfrom=muc.de; arc=none smtp.client-ip=193.149.48.3
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=muc.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=muc.de
-Received: (qmail 5867 invoked by uid 3782); 31 Aug 2026 16:45:24 +0200
-Received: from muc.de (pd953ad31.dip0.t-ipconnect.de [217.83.173.49]) (using
- STARTTLS) by colin.muc.de (tmda-ofmipd) with ESMTP;
- Mon, 31 Aug 2026 16:45:24 +0200
-Received: (qmail 37064 invoked by uid 1000); 31 Aug 2026 14:45:23 -0000
-Date: Mon, 31 Aug 2026 14:45:23 +0000
-To: Thomas Zimmermann <tzimmermann@suse.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-  Jiri Slaby <jirislaby@kernel.org>, Simona Vetter <simona@ffwll.ch>,
-  linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-  Helge Deller <deller@gmx.de>, linux-fbdev@vger.kernel.org,
-  dri-devel@lists.freedesktop.org
-Subject: Re: vt: Enlarge the framebuffer glyph size from 16 to 32 bits
-Message-ID: <apWTg6mNZrdBm2-D@MAC.fritz.box>
-References: <apCEDM2sWv_M354-@MAC.fritz.box>
- <145be2e3-a8c0-4f4f-a701-af2696cec461@suse.de>
- <apGc4y8ApYWh4Yr4@MAC.fritz.box>
- <2026082938-spray-shimmer-9389@gregkh>
- <apLvO-8YJmQG7T0Z@MAC.fritz.box>
- <7c199c7f-d89b-48ca-a777-85585d2eb624@suse.de>
+	s=arc-20240116; t=1788189840; c=relaxed/simple;
+	bh=lK+WjgYKOmiQpd41H6DamAs2XPSk2nxGNLfuWcUvOZM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=N9aUOCex4vpkrenc05z+a3nHeQZqtx2p0LMORExw7R6xnMdIjBo4EK7sSsJXx43f9lhn1SpLowRn3tkMC0/rr/YU5Ie/SyqzuvzhaOapLAchaQvGgrpBNsEE2szgfZ3Adk+OOZF+cZFhSyDvgTW0LTrXTmdhVL9yXBRF8kibnnQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=M1wJs4GN; arc=none smtp.client-ip=209.85.128.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="M1wJs4GN"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-49cd9add88aso4851115e9.3
+        for <linux-serial@vger.kernel.org>; Mon, 31 Aug 2026 08:23:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1788189837; x=1788794637; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=cBxrB3Hi/S4n9Zm3fzIKjMzQqgS1ovGA5rzSORByASQ=;
+        b=M1wJs4GNKmF5NxbDO6YN4A0MtpvANeb51TGETujCk79Q011uMXRnkKRMlO6BuosGem
+         mZbQblO7iEkrnbiMH54BK3AYwV9TGSU2KhB+GTHG0Yg+/H/qGnt87kxyqs7ZQUHTp3jl
+         vGIaH4kItv+E9+b9YT2uoJBGpPsAP1+WY7/7xEgyp7vQL3cVOvl1emLLM2fDXTGHIo5z
+         aKC21roMLZpsgvlYlUGgiQT0Y++PCxNe+fHSOzgJGUca9nd4toZz5gIBXfRz4eZZUdXy
+         fmfLaJry98bCeflFTGneTiYnx5xOt5rqm8G6U9DNsO5zh2kRqGMFdJbmK9CXi4qSOpS8
+         cIiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788189837; x=1788794637;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=cBxrB3Hi/S4n9Zm3fzIKjMzQqgS1ovGA5rzSORByASQ=;
+        b=STpWw+4nZqDB9NukDwJThmCyqeBKWdNVA5JqKhBhzOi8zIb9+6k83T9AzEdE8JVaKP
+         jDscJfdHH4PpK5XTy6RPbtTAeYh6tyF+Dwe8TT03y5Uw113c89QmQBeAXvM3TBYCSJ1s
+         ZkaqyX+fB7/fFuw26fgzkj58r+Y+k1atJ+5jCoX8SgaRW5sHVpZv/DXVBXjgY2zI3hq4
+         nBlasuhH/6PfrxIkNZiLSIXs9s2DNBqK6qkgtFIT79I0ipA1jlePBPQTOpknOg/SU9br
+         WQSkp4TuPw/JJO/KEW6DpSWUcqmTDZDmY4EtUDYlINmX/vDxTH4UsPJ+zkA1FeqgmSES
+         BVbg==
+X-Forwarded-Encrypted: i=1; AHgh+RrHInBaUa1Lhn7O4c67wHuLbduE3tzUWyMvR2CqNC3Dqt2+/ijP/tmW7iVm7YUsBekyIlMWEk4bUSYhLvQ=@vger.kernel.org
+X-Gm-Message-State: AFuF++nbT5awF8rxI98nZ8t0CNgpfSZKCTdQ0bT3OsTKRuqC+Odd8+77
+	3wAI1j7V3r7fygdWV/dbm6cB1L7udNmNstUj0Ug10I+vJ7LEaBKNMPAw2dQyk+Qko3E=
+X-Gm-Gg: AR+sD11qdGD/SXa04iTD4xnOHWGnD3ameWLkdLJxXyjO729AKiIEu6S397bv3ik0Cas
+	oD2sVqj2d2BaDlZ+nSOuD5VpK8ZUGvpNkQVs6yzxaeXkwS/3W+XYfz1FK/Id/iF0k0GgO2UcIK6
+	1DsWvkNtiFdudC454yT/q4UyBDs5whOmqoYqaFmUBYrDnxlZfK4IGzYglOD3HJCC+bqyNwGBs+m
+	RxrHLXZYanwsPjhXuLrGfRGj2D3wmPBGicWDGoL1ddQCfdyYUPFwhx9i77BNzU5x0gLlIfTkwfQ
+	fMdZaabwIRtAqjAWYSAs/0yKwSQeBgIeQHKK9wb2CFVQWj2ZMTrwUDCTSkrS+hQPo/CZaSeFcxg
+	U+3+0IXKAwBaQ5QPERnrc0XNDx7cFSyQoZdzXGdKPNNq2jnnOc9lJqerFVzdR6L0O52A4pKy5LU
+	RDvRR3AH2XAgSq+ighaOj3oR54b3cZyJSgqXsgW88rxTPYNYgQuiGk9EREI+NRaQ==
+X-Received: by 2002:a05:600c:8b6b:b0:49b:c8e:8e6 with SMTP id 5b1f17b1804b1-49b91bd99b7mr454334485e9.0.1788189836942;
+        Mon, 31 Aug 2026 08:23:56 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.130])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48432022ab8sm16453982f8f.28.2026.08.31.08.23.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 31 Aug 2026 08:23:56 -0700 (PDT)
+Date: Mon, 31 Aug 2026 17:23:54 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: John Ogness <john.ogness@linutronix.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Andy Shevchenko <andy.shevchenko@gmail.com>,
+	Jon Hunter <jonathanh@nvidia.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	linux-kernel@vger.kernel.org,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Crescent Hsieh <crescentcy.hsieh@moxa.com>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH tty 1/1] serial: 8250: Change console_msr_work to
+ IRQ_WORK_LAZY
+Message-ID: <apWcikIof_6CRNNU@pathway.suse.cz>
+References: <20260828155811.270462-1-john.ogness@linutronix.de>
+ <20260828155811.270462-2-john.ogness@linutronix.de>
+ <20260828160652.TQBsi8oO@linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <7c199c7f-d89b-48ca-a777-85585d2eb624@suse.de>
-X-Submission-Agent: TMDA/1.3.x (Ph3nix)
-From: Alan Mackenzie <acm@muc.de>
-X-Primary-Address: acm@muc.de
+In-Reply-To: <20260828160652.TQBsi8oO@linutronix.de>
 
-Hello!
+On Fri 2026-08-28 18:06:52, Sebastian Andrzej Siewior wrote:
+> On 2026-08-28 18:04:08 [+0206], John Ogness wrote:
+> > For some platforms it is a problem to queue irq_work when entering
+> > cpuidle states. Since irq_work is used for deferred MSR handling,
+> > any atomic console printing when entering cpuidle states can lead
+> > to the affected hardware hanging. Tegra20 and Tegra30 are examples
+> > of such platforms. Avoiding raising the irq_work IRQ has shown to
+> > circumvent the problem.
+> 
+> > Change the console_msr_work to be IRQ_WORK_LAZY, thus not raising
+> > an IRQ upon irq_work queuing. The irq_work is then handled on the
+> > next interrupt (worst case, kernel tick).
+>
+> Not on the next interrupt, on the next jiffies tick. Should you run
+> tickless and should the CPU have the tick switch off then it will raise
+> the irq-work interrupt anyway.
 
-On Mon, Aug 31, 2026 at 08:20:10 +0200, Thomas Zimmermann wrote:
-> Hi
+This seems to be more precise. There is one more scenario. It would
+run in a dedicated kthread with PREEMPT_RT.
 
-> Am 29.08.26 um 16:39 schrieb Alan Mackenzie:
+I hope that nobody would run tickless system on the old
+Tegra hardware. So, this change should be good enough in reality.
 
-> >> This has nothing to do with KDE or Gnome, if you have issues with those
-> >> projects, please take it up with them and contribute to them to resolve
-> >> those issues.  I know they can always use the help.
+Anyway, I would prefer to get this "workaround" in for 7.3.
+In each case, I would not want to revert the uart 8250 conversion
+to nbcon because it did break the Tegra hardware.
 
-> > My point is that the kernel's console is rock solid and dependable.
-
-> That is a bold statement.
-
-I've been using the console for around 28 years, now.  I don't recall it
-crashing at all.  My current font and keyboard files are in exactly the
-same form as they were 28 years ago.  These formats are stable and
-dependable.
-
-> I've spend the last years working on related code (fbcon) and it
-> mostly feels dated and unmaintained. Our prime implementation (again
-> fbcon) has been de-facto unmaintained for years.  We recently had
-> contributors who are pushing the ioctls semantics and found bugs in
-> fbcon for a number of corner cases.
-
-Something like:
-
-commit ef7656e85f1a4400999625cd398b655517368e7e
-Author: Zizhi Wo <wozizhi@huawei.com>
-Date:   Wed Jul 29 10:12:04 2026 +0800
-
-    fbdev: Fix out-of-bounds access when rotating console after font resize
-
-> > Things like kmscon are subject to the vagaries of fashion.
-
-> >>> As is clear, I think the console's limitations should be eliminated.
-
-> >> And the rest of us feel the kernel console's code should be eliminated
-> >> entirely, when ever possible :)
-
-> > The rest of you don't appear to be console users.  It's easy to advocate
-> > for removal when you don't use it yourself.
-
-> FTR I'm not at all interested in eliminating the kernel's console.
-
-Other people, in particular Greg KH, have said this is the current aim.
-I'm worried for myself.  It is far from clear that there is a suitable
-replacement for the kernel's console, and its elimination could easily
-happen without that replacement.  I suppose I could always (laboriously)
-maintain the console for myself personally.  Or there's always the BSDs.
-I just don't know what I'd do.
-
-> But there are must-have features and nice-to-have features. IMHO for
-> the kernel console i18n really belongs in the later category.
-
-It's 2026, four decades after VGA was the latest thing, and Unicode
-support is merely a nice-to-have?
-
-> Best regards
-> Thomas
-
-> -- 
-> --
-> Thomas Zimmermann
-> Graphics Driver Developer
-> SUSE Software Solutions Germany GmbH
-> Frankenstr. 146, 90461 Nürnberg, Germany, www.suse.com
-> GF: Jochen Jaser, Andrew McDonald, (HRB 36809, AG Nürnberg)
-
--- 
-Alan Mackenzie (Nuremberg, Germany).
+Best Regards,
+Petr
