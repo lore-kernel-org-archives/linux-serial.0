@@ -1,114 +1,131 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 773DC474258;
-	Mon, 31 Aug 2026 13:35:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71CFA47CC9E
+	for <linux-serial@vger.kernel.org>; Mon, 31 Aug 2026 13:58:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788183333; cv=none; b=tdtpHm8Y/F/K7WbLZn+FHWA0mn42k6Eo2Sx75o+HU7r4mibGfOFbBCmElkolcMizTt+xYXmp4/byI6V+LVK5AuMne3smwEV87IeNs1r/CndDEb0+TupQhF8I1Cu7lQFMuZ9n1QgW5O0w4HSwRXoBmj0Ovk7Mv8LtL7sIQ+2nzXI=
+	t=1788184714; cv=none; b=I9tFACLny8oatrKDQl4DY0eOXcOjOEqFvuEehHCP6KiMLSFcAbmjI91BoR+ugh1JuXOUnGBJ7BZNMpgLqmkZ0KzrTxcRGH7Sm/LzoekBlDj1tynAOjbFPEP0lys5vppzeFpk/GLfF2jkcjOyBN1/rFjqmrr4GEmpHTe/TNObp7E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788183333; c=relaxed/simple;
-	bh=iT40572/qdpEhje0zAkqZD+F85USE+76aUbxnKzlqBM=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=CPejS1DM+4erXxKE7QEY2LuDUYWKSSOGPhPLYpy1nf09FcLtM7VNF/RApBmxs4jNsSVe853dtMkTYA0Dsuey+TMi3Jip3jweczd7EYpY50r3xAPW/tPmaSFRAOphpf23gSmgVtiA3B3d6HcWUL+rW1gppDPPdGvwc4As5Q05Yo0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fmWToojn; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788184714; c=relaxed/simple;
+	bh=LbzKjP6p4Dt6tX5q09LuEpZ1754cxxjuUsD0zMbJ42M=;
+	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
+	 Message-Id; b=iB8XWCse0HTVUyFo/dkPBO0oLOsXKQcaV+5pI6yNZkMwET95qJkJHUuxpeOqE4lnHncQkKx2PbY60aLV2sGGgopaKB2DK/hk1G/wBVajOcVI/SEP4IvdM/LSo/KK9pkMJIqyYX8ESfdC7qKtkFzOAqdqyCuSB1uaIo1nbZ8Ay40=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AOBKMVF9; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fmWToojn"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B6241F00A3F;
-	Mon, 31 Aug 2026 13:35:31 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AOBKMVF9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13A931F000E9;
+	Mon, 31 Aug 2026 13:58:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788183332;
-	bh=KNrFfeYDmwUesWMPsLDUAa4EhpDeyOxaMh0XZ0qkKDo=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=fmWToojnb0vFwNFbXjvXaEAvAz98C+9Xb459IMMN3DToOk3+wIP6x5E2X4sL/TFKI
-	 EqVdeMm4vsGxls/vTMlIy9XVPDMVCswLLq4RGxE/ZxQIIkwaYvIs4zeBDPR3zTamDo
-	 W9QRnjWwaVA/CYBWReZXjkpuGooCVfSMguRWqR31zmzHD+Bi4D2AD5KOWVCs3fZQ6i
-	 lyM/lh3kX6GQ3i1lm6MATzJ14Isdu87I0BQ1ziJsGFPWcw1WUUmcwmYUyQS6kzyg+R
-	 EiK3tmUVUXfLiab9FVVFTBJqKZtaV6TO+ESQ9bpR/OzEEFAQfazukJ76DriKdWo0JR
-	 QmHVWN7Ih3pgQ==
-From: Sasha Levin <sashal@kernel.org>
-To: patches@lists.linux.dev,
-	stable@vger.kernel.org
-Cc: Manuel Lauss <manuel.lauss@gmail.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Sasha Levin <sashal@kernel.org>,
-	jirislaby@kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.18] serial: 8250_port: recognize UPIO_AU
-Date: Mon, 31 Aug 2026 09:21:53 -0400
-Message-ID: <20260831133314.4125787-85-sashal@kernel.org>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20260831133314.4125787-1-sashal@kernel.org>
+	s=k20260515; t=1788184713;
+	bh=cpLzZtlf3htCL7xDBKNxrQbsb1rg2CHPZ7FqpinTFgs=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=AOBKMVF9yxXBsKwcwDriCWCHI1njiU/gBAZFCPTOvwB0Vy3BN43jpbpCYiQP3qxjc
+	 WCZoHYRWHp0zF76jXho181tKu45r5ldvsBl/k3ccwF7d83R3tsU8ciMy+jmwJOZefL
+	 v2qm/FYIyY1vs1om7dTEfmGBwl8WAtJkdUWOXUoeZX+WW4bnQ6zJbBdr45sUvsjGzV
+	 GhwlQ5tlXJ/URuKGa723us49HUpDs0bgYclVWqU5T9+Egc5ZyjIBujnybg97b3FXQf
+	 6FVJ5jFHIn4QyVyrxlkPZvTqQCBZvahTwwObKuDR/xcShbyfo8ReK1jl8ME14mzWBr
+	 E0HQjXe0Qlzog==
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH AUTOSEL 6.18-5.10] serial: 8250: fix possible ISR soft
+ lockup
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Sasha Levin" <sashal@kernel.org>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20260831133314.4125787-36-sashal@kernel.org>
 References: <20260831133314.4125787-1-sashal@kernel.org>
+ <20260831133314.4125787-36-sashal@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Mon, 31 Aug 2026 13:58:32 +0000
+Message-Id: <20260831135833.13A931F000E9@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.18.48
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 
-From: Manuel Lauss <manuel.lauss@gmail.com>
+Thank you for your contribution! Sashiko AI review found 2 potential issue(=
+s) to consider:
+- [High] Silent transmission data loss due to unconditionally clearing the =
+TX FIFO in the generic ISR path.
+- [Medium] Time-of-check to time-of-use (TOCTOU) race condition when cleari=
+ng the RX FIFO leads to dropped incoming characters.
+--
 
-[ Upstream commit 49fa670efdfdd27e29145cbd2beef065c08717ef ]
+commit 0cb544a0f6cdcc5a3f0967c34cc3dc4a541bfc13
+Author: Marco Felsch <m.felsch@pengutronix.de>
 
-My MIPS Alchemy systems generate the following warning during
-probe of the 8250 driver:
+serial: 8250: fix possible ISR soft lockup
 
-WARNING: drivers/tty/serial/8250/8250_port.c:462 at set_io_from_upio+0xfc/0x124, CPU#0: swapper/0/1
-Unsupported UART type 4
-[...]
-[<80521d40>] set_io_from_upio+0xfc/0x124
-[<80521dfc>] serial8250_set_defaults+0x94/0xe0
-[<80520fb4>] serial8250_register_8250_port+0x288/0x51c
-[<805214ec>] serial8250_probe+0x160/0x1e8
-[<8053b5f0>] platform_probe+0x64/0x90
+This commit addresses an ISR soft lockup on 8250 UARTs during startup
+caused by unhandled FIFO error (FIFOE) interrupts. It prevents the
+lockup by clearing the FIFO if a FIFO error is latched but no data is
+ready (DR) in the generic IRQ handler.
 
-The least invasive fix is to recognize UPIO_AU (type 4) in set_io_from_upio()
-and do nothing, since all parameters have already been set up in
-8250_rt288x.c::au_platform_setup().
+Link: https://patch.msgid.link/20260519-v7-1-topic-serial-8250-v1-1-56b0429=
+3a246@pengutronix.de
 
-Run-tested on Alchemy Au1300 platform.
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/825=
+0/8250_port.c
+> index 719faf92aa8ae..108f8fdbebac6 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -1799,6 +1799,13 @@ int serial8250_handle_irq(struct uart_port *port, =
+unsigned int iir)
+> =20
+>  	status =3D serial_lsr_in(up);
+> =20
+> +	/*
+> +	 * Recover from no-data-ready and FIFO error condition to avoid getting
+> +	 * stuck in the ISR.
+> +	 */
+> +	if (!(status & UART_LSR_DR) && (status & UART_LSR_FIFOE))
+> +		serial8250_clear_and_reinit_fifos(up);
 
-Signed-off-by: Manuel Lauss <manuel.lauss@gmail.com>
-Link: https://patch.msgid.link/20260430135822.905035-1-manuel.lauss@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
+[Severity: High]
+Does this code inadvertently cause silent data loss for outgoing
+transmissions?
 
-LLM Generated explanations, may be completely bogus:
+When serial8250_handle_irq() calls serial8250_clear_and_reinit_fifos(),
+the helper function resets the hardware FIFOs. Looking at the implementation
+of serial8250_clear_fifos(), it explicitly clears the TX FIFO alongside
+the RX FIFO:
 
-The background `git log -S "set_io_from_upio"` search finished. It
-points to `2bf95a9bcb500` ("serial: 8250: Fix 8250_rsa symbol loop") as
-the first non-merge change touching that symbol in this tree's history —
-consistent with the 6.18-era 8250 refactor that left `UPIO_AU` unhandled
-in `set_io_from_upio()`.
+    serial_out(p, UART_FCR, UART_FCR_ENABLE_FIFO |
+                   UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT);
 
-That doesn't change the earlier conclusion for **v6.18.43**: backport
-**YES** — small, correct fix for a real boot-time WARN on MIPS Alchemy /
-RT288x UARTs where platform code already sets up the accessors.
+Any transient line noise or framing error that triggers this recovery path
+on a full-duplex connection will indiscriminately wipe the TX FIFO. Because
+the kernel has already advanced the transmit ring buffer assuming these byt=
+es
+were safely queued in hardware, the flushed bytes are permanently dropped
+without error propagation to userspace or the TTY layer. Should the fix
+isolate the hardware reset strictly to the RX FIFO by only issuing
+UART_FCR_CLEAR_RCVR?
 
- drivers/tty/serial/8250/8250_port.c | 2 ++
- 1 file changed, 2 insertions(+)
+[Severity: Medium]
+Can the gap between reading the LSR and resetting the hardware FIFOs create=
+ a
+time-of-check to time-of-use (TOCTOU) race condition?
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 0c633639f7657..7c10087458bb6 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -458,6 +458,8 @@ static void set_io_from_upio(struct uart_port *p)
- 		p->serial_out = io_serial_out;
- 		break;
- #endif
-+	case UPIO_AU:
-+		break;
- 	default:
- 		WARN(p->iotype != UPIO_PORT || p->iobase,
- 		     "Unsupported UART type %x\n", p->iotype);
--- 
-2.53.0
+The ISR takes a software snapshot of the LSR register via serial_lsr_in()
+and evaluates the error condition based on this snapshot. Between reading
+the LSR and executing the hardware FIFO reset in
+serial8250_clear_and_reinit_fifos(), new valid characters can arrive in
+the hardware shift register and enter the RX FIFO.
 
+The unconditional RX FIFO reset will silently flush these newly arrived byt=
+es
+before the driver can read them, leading to dropped incoming characters. Is
+there a way to prevent newly received characters from being discarded during
+this window?
+
+> +
+>  	/*
+>  	 * If port is stopped and there are no error conditions in the
+>  	 * FIFO, then don't drain the FIFO, as this may lead to TTY buffer
+
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260831133314.4125=
+787-36-sashal@kernel.org?part=3D1
