@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE24C30E85B;
-	Mon, 31 Aug 2026 03:02:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5F2B31F9A4;
+	Mon, 31 Aug 2026 03:07:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788145379; cv=none; b=NfZl0sn8syc2lxlI27ggoGga1WFc0JUThb0olqCyxMcni/hsTzns3hqvLRtUClttR2Sm2VoT25o4E/1vXgl9GA+E1uN5jssehTK9MVq3/6b3vM7ePtBQqSjvY5bXXsF+SdEGtzoo/Nlc5RRBZwDfIirTm5CNwWJVv4KcQKKlfR8=
+	t=1788145670; cv=none; b=RUGM7ztF4WI6gpkM1AbmkodjT7FT1M2pH1v+obBkn+WRJno8X34AwvXA8lRfGjXytXRfPgsrFpEs8l6TzK87CYF0BzBtnIBBfs3qHIAPElDWZe+cNtVakCDgMv/j9Y+2nxDmTNkLrxoXhE5jmMpvCp8UTRPcp9ZX8hxN53KbGN0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788145379; c=relaxed/simple;
-	bh=7xAwu7GPkq66WqGt8IyauPsgkbs4KnZkfyNfebfC9nI=;
+	s=arc-20240116; t=1788145670; c=relaxed/simple;
+	bh=gLr+Iwb+ZCQmXvh641mg06UhyG3OYgUsPvWbmyuhsq4=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=c0tOolYRHhdjjHINQUGyLE15pHCDeUfJnyiF7W5o9KcwdDa0A/Q6k0Ut0DOhH/gmg67QN1NgcH9Kwvzsq9QE1WFRq6X+MWPJPNF7Ka06qGRiW5fEYtjyl6m0rEt4JR4LFS1Tbq9komACbOkM2NMPUZW/2LSzan9SQGS2gBs3Fmk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EMx2BUw/; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=LajmICAYi4XjIct4ObiolRMQXjDeSOoH+du3XsWoRxcnjcllLpsYXDHGUY/hdPAPK3+3wRTmk2DOgxhk66UT4BewwvQrRLE9kohpkk8aXquPpAWvtd44uNVemY+vYT6jezooV8OfUG/T8Re9JSpkSqE7eHgp2v9I0UtAuKzQxlM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HeEmWeHY; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EMx2BUw/"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 061B31F000E9;
-	Mon, 31 Aug 2026 03:02:55 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HeEmWeHY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2334A1F000E9;
+	Mon, 31 Aug 2026 03:07:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788145378;
-	bh=ETs+4Tl68muzBumLt5I6HKBvhH1PKmH1PnMlTtXNCJI=;
+	s=k20260515; t=1788145669;
+	bh=3PBI0fUvzmz9NLpVR+qeiZpMag6fP4x3JVvKUNI8hvI=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=EMx2BUw/mk9z5LR2kM5oqWedT160RYUpYEAIINZtWONcWcjqPg7BbXE56Qy6PEFam
-	 er/CkcI7E6VOBemyixM11nwUvcQ1XKBMiAncHZP91YpvllIrSPf8H/cLAQ/lpp332A
-	 Qtv+93+m9pamvx79iyt3kcinjJoV6MKxvr/VP/QOi3kTzsHgyO8811a6f7qByR/fyG
-	 knhMjDWoSOMdbwmEIkwrIlJXT6qKJJW/UOrunSUKjSy1TeTUI/iVnJy+lLsWabJA8k
-	 4LxhuCGGnn23LXaza2y8FWpdBKPmMJzpXXJQ92qg6AOGPRlXY5F6M+6B332VUPtaom
-	 2qZ+OGzzcdjTw==
-Message-ID: <602bdc5f-e9fa-4ed5-a009-03af860d31a6@kernel.org>
-Date: Mon, 31 Aug 2026 05:02:54 +0200
+	b=HeEmWeHY82ZIX6dLS7QxC6izKBTZloyocSHkK1Sh4VXrx9UJGXxyXJYtokn/Wjj6G
+	 6RaypVC7JMGQSVqpHv1qMTeMeFRMyBOoSZvZLRsTosuIIJV2Rc965PY8tUxn/Nos5O
+	 1KKOeM407KJBNwGjzxv4nXYqslwdV88/UCyRcQm8cD57L/FsS6WbcVSYjYknR9UaS/
+	 H3H+3PoMTjHkZOL73lFHaEh+D5biSNnY5gMqI8q/0W9dLJ7yjV8+qaj5skN8dQUCJ6
+	 Ehq2AWxp0vf8goZ2PqoRk50Y7eZkkhulzy1IujxurOx993ACKUUsnPdcGaG94Bjhul
+	 M38pJvVTkrK9w==
+Message-ID: <8f39c9fd-cc6e-42cf-9761-ae1922898d4a@kernel.org>
+Date: Mon, 31 Aug 2026 05:07:46 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,17 +35,15 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/3] serial: core: replace get_zeroed_page() with
- kzalloc()
-To: "Mike Rapoport (Microsoft)" <rppt@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>,
- David Hildenbrand <david@kernel.org>, Matthew Wilcox <willy@infradead.org>,
- Vlastimil Babka <vbabka@kernel.org>, linux-kernel@vger.kernel.org,
- linux-mm@kvack.org, linux-serial@vger.kernel.org,
- linuxppc-dev@lists.ozlabs.org
-References: <20260830-tty-v1-0-0cbe6170649b@kernel.org>
- <20260830-tty-v1-2-0cbe6170649b@kernel.org>
+Subject: Re: [PATCH v2 2/2] serial: 8250_mid: wait for LSR tx empty before
+ setting termios
+To: Tate Whiteberg <whiteberg@arista.com>,
+ Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Andy Shevchenko <andy@kernel.org>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org
+References: <20260828175733.1650267-1-whiteberg@arista.com>
+ <20260828175733.1650267-3-whiteberg@arista.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -90,74 +88,50 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20260830-tty-v1-2-0cbe6170649b@kernel.org>
+In-Reply-To: <20260828175733.1650267-3-whiteberg@arista.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 30. 08. 26, 9:49, Mike Rapoport (Microsoft) wrote:
-> uart_alloc_xmit_buf() allocates the transmit buffer of a serial port. The
-> buffer only backs the port's kfifo, the data being sent is copied in and
-> out of it.
+On 28. 08. 26, 19:57, Tate Whiteberg wrote:
+> If mid8250_set_termios() is called while data is still in transmission,
+> the corresponding register updates will corrupt the transmission.
 > 
-> This buffer can be allocated with kmalloc() as there's nothing special
-> about it to go directly to the page allocator.
+> Fix this by locking the port and and waiting for the transmitter to
+> empty before performing updates. It is necessary to wait for both
+> UART_LSR_THRE and UART_LSR_TEMT to ensure the final character is sent.
 > 
-> kmalloc() provides a better API that does not require ugly casts and
-> kfree() does not need to know the size of the freed object.
-> 
-> Performance difference between kmalloc() and __get_free_pages() is not
-> measurable as both allocators take an object/page from a per-CPU list for
-> fast path allocations.
-> 
-> For the slow path the performance is anyway determined by the amount of
-> reclaim involved rather than by what allocator is used.
-> 
-> While on it, make the local variable holding the buffer a pointer to get
-> rid of the casts.
-> 
-> Replace use of get_zeroed_page() with kzalloc() and free_page() with
-> kfree().
-> 
-> Link: https://lore.kernel.org/all/635405e4-9423-4a25-a6e7-e03c8ea0bcbe@redhat.com
-> Assisted-by: copilot:claude-opus
-> Signed-off-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
+> Fixes: d9eda9bab237 ("serial: 8250_pci: Intel MID UART support to its own driver")
+> Signed-off-by: Tate Whiteberg <whiteberg@arista.com>
 > ---
->   drivers/tty/serial/serial_core.c | 16 ++++++++--------
->   1 file changed, 8 insertions(+), 8 deletions(-)
+> Changes in v2:
+>    - Separate changes to 8250.h and 8250_port.c into prerequisite patch,
+>      as recommended by andriy.shevchenko@intel.com
+>    - Apply feedback from andriy.shevchenko@intel.com to 8250_mid.c
 > 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index 95774b0f1484..f12ce7d190fe 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -247,29 +247,29 @@ static int uart_alloc_xmit_buf(struct tty_port *port)
->   	struct uart_state *state = container_of(port, struct uart_state, port);
->   	struct uart_port *uport;
->   	unsigned long flags;
-> -	unsigned long page;
-
-1:
-
-> +	unsigned char *buf;
+>   drivers/tty/serial/8250/8250_mid.c | 7 +++++++
+>   1 file changed, 7 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_mid.c b/drivers/tty/serial/8250/8250_mid.c
+> index 82656645b8a6..ce792888acfe 100644
+> --- a/drivers/tty/serial/8250/8250_mid.c
+> +++ b/drivers/tty/serial/8250/8250_mid.c
+> @@ -209,6 +209,7 @@ static void mid8250_set_termios(struct uart_port *p, struct ktermios *termios,
+>   				const struct ktermios *old)
+>   {
+>   	unsigned int baud = tty_termios_baud_rate(termios);
+> +	struct uart_8250_port *up = up_to_u8250p(p);
+>   	struct mid8250 *mid = p->private_data;
+>   	unsigned short ps = 16;
+>   	unsigned long fuart = baud * ps;
+> @@ -231,12 +232,18 @@ static void mid8250_set_termios(struct uart_port *p, struct ktermios *termios,
+>   	}
 >   
->   	/*
->   	 * Initialise and allocate the transmit and temporary
->   	 * buffer.
->   	 */
-> -	page = get_zeroed_page(GFP_KERNEL);
-> -	if (!page)
-> +	buf = kzalloc(PAGE_SIZE, GFP_KERNEL);
-> +	if (!buf)
->   		return -ENOMEM;
->   
->   	uport = uart_port_ref_lock(state, &flags);
->   	if (!state->port.xmit_buf) {
-> -		state->port.xmit_buf = (unsigned char *)page;
-> +		state->port.xmit_buf = buf;
+>   	rational_best_approximation(fuart, mid->board->freq, w, w, &mul, &div);
+> +
+> +	uart_port_lock_irq(p);
 
-xmit_buf is u8 *. This uchar was omitted when I was changing the type 
-back then. Could you use the right type at 1b now?
+Use scoped_guard(), please.
 
-thanks,
 -- 
 js
 suse labs
