@@ -1,117 +1,126 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FFCA3D8128;
-	Mon, 31 Aug 2026 08:28:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 906243C09F5;
+	Mon, 31 Aug 2026 08:28:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788164881; cv=none; b=kYr9PymtU9mRc4BUo9yeXRnFWDRyK0V1Yw1LWVl6RSkFEQXrkW9OmVcRO4BO6orhecUJAiB8UUQS1214uydHzcsX9Mvc9TfFgDAZgclDScBOdm4r5pOw4KsNgJMiTRIcX25vtitDYzuLYFdNou4IVhcnH8rp0wXJD2ypGeVompc=
+	t=1788164937; cv=none; b=sSsc8rXXOLj0pcAt2wTDoJFYdSDdUvE1HOiaudbbmHF0qIs6ZJ2Kd918L7BrRUst51R3txUuqbwFIRxO8WVkWIbmFothwglZu9JehUtb3xMxya26cpwRrbAgYvYc2rI15kq9I+nz8ieweC9vV3dw9WNMvBQHKGJEobXfiOGoebA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788164881; c=relaxed/simple;
-	bh=GhNGs9SmpwgkcZvRknuKw7cWrfrw0e3tPP7q7iR+4OU=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=A4vlPcuoFXNQEJ/QzNzGuLplX4Aed5LMHBAlJOGptJEFZE6Lcu+jZxq5ucfpb7o1ZaDtoyVzJBTnkaKj4mvfcrS5c2VVsYsMwhWu6j5CWlSMDK0A3HaA1zNK2lJVsJw+4QCgYh7KyoYb6kjV5+oCnJgM45xxYdrNvdiIBWfGUmY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CFigFzSX; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788164937; c=relaxed/simple;
+	bh=uRkDcTOAn+R7TrgMni0mcixbt97rdUXaaARcPdcnnL4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=KA6JGmq1Nk8I4tJcxsR8XpJJBwJjmxLX8CSG0bxHR4T4G+ijjvpGF+Z1roPOzSTaxvhmIiOV9jtoVVUjEIGKGOc/fgFXqnywk63uv8V0q9DsYgntTg3LS9pU1Kvq+EMiq580bGFgm4ijlDopdv7r3NyrjSJWgC/vkpxS8fFJ/sc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=d4ZAcMaG; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CFigFzSX"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64C251F00A3D;
-	Mon, 31 Aug 2026 08:27:57 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="d4ZAcMaG"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F240B1F000E9;
+	Mon, 31 Aug 2026 08:28:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788164880;
-	bh=UDLOrEWk8s8P9NPs/hJ9ReKcQQKs4DBoKeRaLa6eCp4=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc;
-	b=CFigFzSXaYQh2+i8PwAo/W/QAkG/+QNSnIqgZ9uo6Z81XZPLznd8ZqutwbhR4DpQK
-	 9kjtCiNQ3KnSwEBxI6ZijIBbLCjxEwXge/vi7LM/J0iLgdXtwg6rx+8Rc2FBmCOTyf
-	 aSAnFL3rVGi88PgnzHO4Tt4XG4Zo8LByhZUhUAqvNBaS3UH0/Br64p8EBAYfyS1ywi
-	 hykMJYf6b69ZxGswHh2qHgsLNdqp0XcZT/tBcEhyMw8BemGV26GLtUoMVrc1PVOwg6
-	 IwcPobyIcnYYdgvmTsH6+qp22iSImRew9B4QAJqbH9ikBFYeSogG0srG6SPwZRu6JH
-	 ftcvtOvQ09eCw==
-From: "Mike Rapoport (Microsoft)" <rppt@kernel.org>
-Date: Mon, 31 Aug 2026 11:27:45 +0300
-Subject: [PATCH v2 3/3] tty: hvcs: replace __get_free_page() with kmalloc()
+	s=k20260515; t=1788164936;
+	bh=VQpc8lTOdX3xSHi8EiRB4f2hLx8t85VdxKOuNWE2LD0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=d4ZAcMaGmhWkbt0Rh1OPbj1YlvacnstiEn1h6FFml6IuFq+3UCfM+lcx8aLY2H5Sb
+	 aTcviB67lh56jpthcbuARnaiLX4X0zEJ5iPxkrisAndSC28M/yhEdVLGlUkt0diRxO
+	 9bduFdfWk+hI7CWNkelr83aVU9pAyG0ntG7S56uds6uH8gbohovzZGzBTSkSIocm39
+	 gnGlVJEZbg6CRfoOomrsStasSuqGXnXNNxknZttY9AdVDI4XPTmJ93LIezloeltrna
+	 rqfo0Swu4IbyUCEIkpSb0iea7aqu2MJDVQwQFkcSN19DRtkiVxfkbBz7lauGqWknXo
+	 5oualX6cx/Q9g==
+Date: Mon, 31 Aug 2026 11:28:49 +0300
+From: Mike Rapoport <rppt@kernel.org>
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	David Hildenbrand <david@kernel.org>,
+	Matthew Wilcox <willy@infradead.org>,
+	Vlastimil Babka <vbabka@kernel.org>, linux-kernel@vger.kernel.org,
+	linux-mm@kvack.org, linux-serial@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH 2/3] serial: core: replace get_zeroed_page() with
+ kzalloc()
+Message-ID: <apU7QSOV22VJL3ay@kernel.org>
+References: <20260830-tty-v1-0-0cbe6170649b@kernel.org>
+ <20260830-tty-v1-2-0cbe6170649b@kernel.org>
+ <602bdc5f-e9fa-4ed5-a009-03af860d31a6@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260831-tty-v2-3-88cd58c3c640@kernel.org>
-References: <20260831-tty-v2-0-88cd58c3c640@kernel.org>
-In-Reply-To: <20260831-tty-v2-0-88cd58c3c640@kernel.org>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>, 
- David Hildenbrand <david@kernel.org>, Matthew Wilcox <willy@infradead.org>, 
- Mike Rapoport <rppt@kernel.org>, Vlastimil Babka <vbabka@kernel.org>, 
- linux-kernel@vger.kernel.org, linux-mm@kvack.org, 
- linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-X-Mailer: b4 0.17-dev
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <602bdc5f-e9fa-4ed5-a009-03af860d31a6@kernel.org>
 
-hvcs_initialize() allocates the buffer that receives the partner info
-returned by the H_VTERM_PARTNER_INFO hypercall. The buffer is passed to
-the hypervisor as a physical address and it must not cross a page
-boundary.
+On Mon, Aug 31, 2026 at 05:02:54AM +0200, Jiri Slaby wrote:
+> On 30. 08. 26, 9:49, Mike Rapoport (Microsoft) wrote:
+> > uart_alloc_xmit_buf() allocates the transmit buffer of a serial port. The
+> > buffer only backs the port's kfifo, the data being sent is copied in and
+> > out of it.
+> > 
+> > This buffer can be allocated with kmalloc() as there's nothing special
+> > about it to go directly to the page allocator.
+> > 
+> > kmalloc() provides a better API that does not require ugly casts and
+> > kfree() does not need to know the size of the freed object.
+> > 
+> > Performance difference between kmalloc() and __get_free_pages() is not
+> > measurable as both allocators take an object/page from a per-CPU list for
+> > fast path allocations.
+> > 
+> > For the slow path the performance is anyway determined by the amount of
+> > reclaim involved rather than by what allocator is used.
+> > 
+> > While on it, make the local variable holding the buffer a pointer to get
+> > rid of the casts.
+> > 
+> > Replace use of get_zeroed_page() with kzalloc() and free_page() with
+> > kfree().
+> > 
+> > Link: https://lore.kernel.org/all/635405e4-9423-4a25-a6e7-e03c8ea0bcbe@redhat.com
+> > Assisted-by: copilot:claude-opus
+> > Signed-off-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
+> > ---
+> >   drivers/tty/serial/serial_core.c | 16 ++++++++--------
+> >   1 file changed, 8 insertions(+), 8 deletions(-)
+> > 
+> > diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> > index 95774b0f1484..f12ce7d190fe 100644
+> > --- a/drivers/tty/serial/serial_core.c
+> > +++ b/drivers/tty/serial/serial_core.c
+> > @@ -247,29 +247,29 @@ static int uart_alloc_xmit_buf(struct tty_port *port)
+> >   	struct uart_state *state = container_of(port, struct uart_state, port);
+> >   	struct uart_port *uport;
+> >   	unsigned long flags;
+> > -	unsigned long page;
+> 
+> 1:
+> 
+> > +	unsigned char *buf;
+> >   	/*
+> >   	 * Initialise and allocate the transmit and temporary
+> >   	 * buffer.
+> >   	 */
+> > -	page = get_zeroed_page(GFP_KERNEL);
+> > -	if (!page)
+> > +	buf = kzalloc(PAGE_SIZE, GFP_KERNEL);
+> > +	if (!buf)
+> >   		return -ENOMEM;
+> >   	uport = uart_port_ref_lock(state, &flags);
+> >   	if (!state->port.xmit_buf) {
+> > -		state->port.xmit_buf = (unsigned char *)page;
+> > +		state->port.xmit_buf = buf;
+> 
+> xmit_buf is u8 *. This uchar was omitted when I was changing the type back
+> then. Could you use the right type at 1b now?
 
-kmalloc() guarantees that a power of two sized allocation is aligned to
-its size, so a PAGE_SIZE allocation is page aligned as well.
-
-This buffer can be allocated with kmalloc() as there's nothing special
-about it to go directly to the page allocator.
-
-kmalloc() provides a better API that does not require ugly casts and
-kfree() does not need to know the size of the freed object.
-
-Performance difference between kmalloc() and __get_free_pages() is not
-measurable as both allocators take an object/page from a per-CPU list for
-fast path allocations.
-
-For the slow path the performance is anyway determined by the amount of
-reclaim involved rather than by what allocator is used.
-
-Replace use of __get_free_page() with kmalloc() and free_page() with
-kfree().
-
-Link: https://lore.kernel.org/all/635405e4-9423-4a25-a6e7-e03c8ea0bcbe@redhat.com
-Assisted-by: copilot:claude-opus
-Signed-off-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
----
- drivers/tty/hvc/hvcs.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/tty/hvc/hvcs.c b/drivers/tty/hvc/hvcs.c
-index d32b1e3c50bfd..b94d59fa36274 100644
---- a/drivers/tty/hvc/hvcs.c
-+++ b/drivers/tty/hvc/hvcs.c
-@@ -1470,7 +1470,7 @@ static int hvcs_initialize(void)
- 		goto register_fail;
- 	}
+Sure, I also made this change in uart_free_xmit_buf().
  
--	hvcs_pi_buff = (unsigned long *) __get_free_page(GFP_KERNEL);
-+	hvcs_pi_buff = kmalloc(PAGE_SIZE, GFP_KERNEL);
- 	if (!hvcs_pi_buff) {
- 		rc = -ENOMEM;
- 		goto buff_alloc_fail;
-@@ -1486,7 +1486,7 @@ static int hvcs_initialize(void)
- 	return 0;
- 
- kthread_fail:
--	free_page((unsigned long)hvcs_pi_buff);
-+	kfree(hvcs_pi_buff);
- buff_alloc_fail:
- 	tty_unregister_driver(hvcs_tty_driver);
- register_fail:
-@@ -1528,7 +1528,7 @@ static void __exit hvcs_module_exit(void)
- 	kthread_stop(hvcs_task);
- 
- 	spin_lock(&hvcs_pi_lock);
--	free_page((unsigned long)hvcs_pi_buff);
-+	kfree(hvcs_pi_buff);
- 	hvcs_pi_buff = NULL;
- 	spin_unlock(&hvcs_pi_lock);
- 
+> thanks,
+> -- 
+> js
+> suse labs
 
 -- 
-2.53.0
-
+Sincerely yours,
+Mike.
