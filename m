@@ -1,87 +1,33 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBEA83793A5
-	for <linux-serial@vger.kernel.org>; Tue,  1 Sep 2026 05:00:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1547F2DF156;
+	Tue,  1 Sep 2026 05:32:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788238821; cv=none; b=QrYjbovgtCVOle/ZuhP7e+07hBBTti1h3WwDmMPM2O0yQAxW6zxlvaE0H2dU4skA/XGYob9nGEeU1b240tsuSkBrMQVH7u4WA6IXI9spJKNXvcVo0x7Wy+sI/ILqiuEcGOQH65DLdMIt8FDZeZhNvd0p9v4X5wi56WT/oibaeyI=
+	t=1788240722; cv=none; b=guj0TEtD6/d+oE+PA6FzIKMWcrte3slsVn5VSC9eyIMCkEA0xZQ4L8I3t9J6RsEt2qJZLuuy0gZERHC4rttF1jPRgBxE5YmZfFTUy1fvAYTAUV9wnxDcVR8jb6b0ffH+ehiKpQNCXdi157OJ3aTQsfdprQ3TrSbHVKGXN9eFIIc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788238821; c=relaxed/simple;
-	bh=RGaH6Ns8soI1O6XvE/ZtT5mzvPxocISi7t1y2n7q3fU=;
+	s=arc-20240116; t=1788240722; c=relaxed/simple;
+	bh=5ynHe+dy7ACCQfSkxjgDClc+6VjcbLLhvvl5BxVeuQk=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=H4LAh3Rn5zvyZ+5Hk4uzk8/DgyqpulQw8wJT7RiQzLYjRQWc8J53uGZx/OgmzeCCAp05FV7l2m8iVxGwPfv8Xyfyavp1PdfZ8FwgSqb6kd6o0+Q2IXTVs7jhE2W36GVi99IIH+fk5FMcIrRqtH5cRCtvNgtiibfeZHe55d5AmoY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=fxtJkaPI; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=gMyxyMGG; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	 In-Reply-To:Content-Type; b=eDkN49AeBBqHgZbJctDEsYjDtNA4fWKC2Tq/qqOkYliPqW8ujwvJkGgPGp9taeiLUtA3Sx6/UCEK+ShxklkKCHuBfcpIDMCfdkKsw2c7YQdJSdKCluh2gRq5jKi5lNf95AgBR93sYIMZ+axuVZ2g89qpleqjTLjf6NIo5w2hRFY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VDqhIoHM; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="fxtJkaPI";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="gMyxyMGG"
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 68123KEV535416
-	for <linux-serial@vger.kernel.org>; Tue, 1 Sep 2026 05:00:19 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	7xzSqDWZbiKMOCqOSW/oG7o+6cCgnoR/9wLnm0Qyt/c=; b=fxtJkaPIF4IJ4iFm
-	IdIHoouMNasbpw9sUgjgb9B67gzmXtYJZ/v/QExaiFyoeu5GbiP44CgQ20UJbDg9
-	RLMBNKdBKCvHfQz4tOzwU/7wih3zQoo9YY4e2Aaj1dqX8vL4XZrqQBdm5JkjNl1o
-	/Y8CAqELnpxUC4Ih8S3vmMuh1g3vP4FMKY16e1FlTOOjZ5zURb6W4pQdmo5X0nDB
-	YAnsxggO/hvR3IAVgE2NLAUFqSYBGnd9qQZD0le46PecsGFDaxGwgoVVP14C8jZO
-	x2/8+WeVuynzyz3/uy8DUl3ZfFeNc7C0tdMgm0GNVHzYilBxK6OMWWi5lQZ+m5Ip
-	a36cow==
-Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com [209.85.216.69])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4gdnk8rm9s-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-serial@vger.kernel.org>; Tue, 01 Sep 2026 05:00:18 +0000 (GMT)
-Received: by mail-pj1-f69.google.com with SMTP id 98e67ed59e1d1-396901263b6so6669993a91.2
-        for <linux-serial@vger.kernel.org>; Mon, 31 Aug 2026 22:00:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1788238818; x=1788843618; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=7xzSqDWZbiKMOCqOSW/oG7o+6cCgnoR/9wLnm0Qyt/c=;
-        b=gMyxyMGGstCHBqWRXvKsH8U0SQddHrWfO5v8AiXaXUoHpTChzneKkxYXRQJVeLBSvn
-         6A1MvBbZioeyh7fzZUosmVe3GLzA0DHBHVhEWtYi+woUszbsqjzfXqkY2nIFCajXe0cD
-         cmAAEba4G2HkeaRFBpqatQoON7CBVsPMjWm+PHGa5vcdWHIE9BJHayBW4eWQ5x699mGS
-         0cHT3B6ZzpFQ9dRKNdiXhi5XUvoEdYRVLLXovhZ/Jo25m6tsiGfImiZby9AufWbYvO7w
-         i4zDfMLJ5ooaBnI9xT0Rup00GJOsdpYnDHgFHdFgR8369bxHcU520vwgt7nYADRUB1d8
-         AcaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788238818; x=1788843618;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=7xzSqDWZbiKMOCqOSW/oG7o+6cCgnoR/9wLnm0Qyt/c=;
-        b=XSORoFq51+EUXbwetBz7l1k7EFVdOzQasxfnMc1Udb1bpXW3gMgbgMj33w+ezXG65B
-         LxnQXAZcQOTQd9GlqMYhsu4DVgOYjF3EVFiI6MVMoj9GNKKT/vE7EVIqciMVqwrPeCIg
-         iGT1ZjYtXAwZE8ewRA0QoY0nRa/cpoLOVkIGAN3pV7p3y9W/497dq4MJsl+y3ZV/hpvO
-         0LL06blE5MSRu5B50zP/RymZ0yijP40/a0YY5w9MWFQJTavb2wk+epeg6BAe4i6VFexA
-         1FYU3KUhcPhDQgTpWY3qeUDaW0ItCw48jPOP3uZYMPAJYy6j2enhwCZn1MeEpj4G9opv
-         mQAQ==
-X-Forwarded-Encrypted: i=1; AKwUvBxCfD06sneFAByE4SMvcBFjnlvTTNSPSpEwnw/EdAR3LOiXR6MT6G5sD1XHtGP9zwBQ4cEwQi4DoAyUBnQ=@vger.kernel.org
-X-Gm-Message-State: AFuF++kOyqtzBpSnDQeimglFfrod2WSo0MkJxFMdNtTnZcMJmDsA36pr
-	VIbM9eNshtmPeUB+UxpXTUmY/NS8ogNuP795611twpLI4x625O8YlW5Jqh10RbC+r+xYOZBdDde
-	g80AjVKZdatMW6z2XKVBCFLXbV0zWIyTph8gSmOdajUOEiH/DLMQGrne2YVzniTqZsuA=
-X-Gm-Gg: AYBFou3JGLH/64sh2X+rXOCHUWPGaPTD4HOXRzV5sse1W0BzbjU9OI77h7HYbPktxM1
-	iEZnOmtFMk1QvyhFR+Xgtd9xKa2lCRS5U02aIA7J/53AJ0WkpKbx1SFRrP05oHEf1Z4qUtFazvj
-	MUCBk6wHeAn2MXwFTWO5Ki1zdCBX8+3N7eOuuzjuzq0Y1lQHhkaR1p/urLC51LoQn7S/sxO7g1J
-	FuSZ2+7yq+Pf8vO40QFB8ow+2W0utMKUXhTqHoyJHDbLXS1IQ9Rxyv0BE4D8Hfo3112Wghy0flK
-	2J9ARuLfLt/ULPnQRZHStKMCJHEVun+JpiRj0VPreavocJ/bb4P55chcKmu8mK3Zy80E5RilOUn
-	EAtKNg10dt+CCAqvaDchy6stZcL7W4hU=
-X-Received: by 2002:a17:90b:52cc:b0:395:4de4:92be with SMTP id 98e67ed59e1d1-39907e0f90dmr7530363a91.13.1788238818155;
-        Mon, 31 Aug 2026 22:00:18 -0700 (PDT)
-X-Received: by 2002:a17:90b:52cc:b0:395:4de4:92be with SMTP id 98e67ed59e1d1-39907e0f90dmr7530078a91.13.1788238816632;
-        Mon, 31 Aug 2026 22:00:16 -0700 (PDT)
-Received: from [10.218.14.97] ([202.46.22.19])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3286f9e2a95sm33198925eec.23.2026.08.31.22.00.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 31 Aug 2026 22:00:16 -0700 (PDT)
-Message-ID: <b86a9319-9f25-41c1-894f-8c2222854446@oss.qualcomm.com>
-Date: Tue, 1 Sep 2026 10:30:11 +0530
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VDqhIoHM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CDD71F000E9;
+	Tue,  1 Sep 2026 05:31:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1788240720;
+	bh=xPgLmERa54izknplIHehdL6mAiqjD6RjdmK9hGApl0o=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=VDqhIoHMX8xIYyWArdGs7ZSdGkaB5eScjNbKYJXZ4PbJFFRDk9aTUfK5rcQOk0uYw
+	 cQ8Bme3xjiasYDoJ5P1mb7Ymla+aGZVdaLx3NArdNVo+u+JufYBYZhvHkedHbTdlVL
+	 Ny1vPRZSE6eYDYpzgRRpl+x/WcJZ25wJZgrWYtmumkWrmh906G304UMTH5+z1EQ6nP
+	 RKQ+ZRXiI6yB9OyCQ2vQyN98sC8voMKVlXsY5yxaOpluxrKu3E71da5oDTeUj9sNfV
+	 hZ2fUZeIP6YBzCSqhJtsOS/B2k59MDkEIYPjzWEFzBO1IERfcypiqfDyGNTfUbn+37
+	 PsCei+oUqi22Q==
+Message-ID: <ee4a130d-76ff-4202-ad54-989795bd58f6@kernel.org>
+Date: Tue, 1 Sep 2026 07:31:57 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -89,116 +35,139 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] serial: qcom-geni: Fix port_ida handling for console
- and probe errors
-To: Aniket RANDIVE <aniket.randive@oss.qualcomm.com>,
-        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-References: <20260831-master-v2-1-0032ec7fd1ca@oss.qualcomm.com>
- <5bb31efb-3855-41e7-b011-1a5a94fee59f@oss.qualcomm.com>
- <5be318fd-5413-4d6e-a8c0-f1b1eb35393a@oss.qualcomm.com>
+Subject: Re: [PATCH v2 1/3] serial: 8250_mxpcie: set the driver data before
+ registering ports
+To: sashiko-reviews@lists.linux.dev, Linmao Li <lilinmao@kylinos.cn>
+Cc: linux-serial@vger.kernel.org, Crescent Hsieh <crescentcy.hsieh@moxa.com>
+References: <20260901041519.114737-1-lilinmao@kylinos.cn>
+ <20260901041519.114737-2-lilinmao@kylinos.cn>
+ <20260901043252.85D391F000E9@smtp.kernel.org>
 Content-Language: en-US
-From: Praveen Talari <praveen.talari@oss.qualcomm.com>
-In-Reply-To: <5be318fd-5413-4d6e-a8c0-f1b1eb35393a@oss.qualcomm.com>
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20260901043252.85D391F000E9@smtp.kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Authority-Analysis: v=2.4 cv=f6p4wuyM c=1 sm=1 tr=0 ts=6a965be2 cx=c_pps
- a=vVfyC5vLCtgYJKYeQD43oA==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
- a=IkcTkHD0fZMA:10 a=VdqzKS8jKosA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=YMgV9FUhrdKAYTUUvYB2:22
- a=EUspDBNiAAAA:8 a=YIEZSTQrAp2OycWmQxQA:9 a=QEXdDO2ut3YA:10
- a=rl5im9kqc5Lf4LNbBjHf:22
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTAxMDA0MCBTYWx0ZWRfX6rQOAdcgbaIj
- kD9k80dkhIxxLlt9kxMHyx3UIikMjGtFak+vT1HohwBxbFMn6AztvTnDH7X8UHZnRf+is8peKOe
- HrphZYN67aYK17S5iIGNEpzey+WY3RRIXEu1z9Y3ZC/23egaGwNOPsBOF1Vy1H6Ni1IlnH8QZFj
- 2SJYFhHkk+M0vsSplbtdU7b8zT47rKG3eayRe9tmDBdaW56ANcwFgwdm0K+I8KtLp9FKr7stpfl
- STKoQxHdpoNAONscjWitqC9EeIGpUwUFqrDkczXRs3OfXohwg2A+8aOUV5AIXs3HJJhLWcz4xTV
- u7n+pIrDc/Ts+0rmmtadfuPhOG4TgLrXfznDT68HHT44f9XJBYFQV95xfzPtrzlB6LaYeqi8hwX
- Dsa0iG19X9TvWMImHMnl3JVMitAGHNLwtOYmqwPj1+I6UxiRo8GTOEyAUxw48dAu8rg8IO8Lnzz
- s+KA74ctZDQtnaG7s4w==
-X-Proofpoint-ORIG-GUID: 83grLXvk6wKKxvJyoJRHiS-bzDy3ZTph
-X-Proofpoint-Spam-Info: AW1haW4tMjYwOTAxMDA0MCBTYWx0ZWRfX9Wai/YyMiPZx
- y2Vs21YsZmZQzbDdfJanNKh8cLD28jMQHZI+pPFS3WkWFwndAykOg3xdxyZQn/5dhnlIN63bOON
- yNAdFanLyOxo64hJx0O4goQ7DjNfjPk=
-X-Proofpoint-GUID: 83grLXvk6wKKxvJyoJRHiS-bzDy3ZTph
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-09-01_01,2026-08-31_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 malwarescore=0 priorityscore=1501 suspectscore=0
- impostorscore=0 spamscore=0 phishscore=0 lowpriorityscore=0 bulkscore=0
- adultscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
- definitions=main-2609010040
 
-Hi Aniket,
+Cc Crescent
 
-On 31-08-2026 21:29, Aniket RANDIVE wrote:
->
->
-> On 8/31/2026 5:08 PM, Konrad Dybcio wrote:
->> On 8/31/26 1:12 PM, Aniket Randive wrote:
->>> The console port uses a fixed line number and is not allocated from
->>> port_ida. However, qcom_geni_serial_remove() unconditionally frees the
->>> line number for all ports, including the console port.
->>>
->>> Skip ida_free() for console ports so that only IDs allocated from
->>> port_ida are returned.
->>>
->>> Also release allocated IDs from the common probe error path. Currently,
->>> IDs are freed only on the wake-IRQ failure path, causing leaks when
->>> probe fails after a successful allocation. Move the ida_free() call to
->>> the common error path and guard it for console ports.
->>>
->>> Route resources_init() failures through the common error path so the
->>> allocated line number is released correctly.
->>>
->>> Allocate the port structure before calling ida_alloc_range() in
->>> get_port_from_line(). This prevents IDs from being left allocated when
->>> memory allocation fails.
->>>
->>> Signed-off-by: Aniket Randive <aniket.randive@oss.qualcomm.com>
->>> ---
->>> Changes in v2:
->>> - Route port->dev_data->resources_init() failures through the common
->>> error path so allocated line numbers are not leaked.
->>
->> I asked GPT what it thinks again and this time it found that this
->> will cause a double calling of dev_pm_domain_detach_list(), which
->> will mess up the refcounting..
->>
->> I think the fix here is to drop the manual detaches since the common
->> helper uses a devres-managed version of attach.
->>
->
-> Thanks for catching this.
->
-> Looking closer, this appears to be a separate issue from the port_ida 
-> fixes in this patch. The dev_pm_domain_detach_list() problem already 
-> exists in the current error path and is not introduced by this change.
->
-> Since this involves power-domain cleanup rather than port_ida 
-> handling, I'd prefer to address it in a separate follow-up patch to 
-> keep this fix focused and easier to review.
->
-> Is it OK to keep this patch limited to the port_ida fixes and handle 
-> the power-domain cleanup separately?
-That should be separate patch.
+Sashiko appears to be right.
 
-For this patch.
+On 01. 09. 26, 6:32, sashiko-bot@kernel.org wrote:
+> Thank you for your contribution! Sashiko AI review found 2 potential issue(s) to consider:
+> 
+> Pre-existing issues:
+> - [High] Missing initialization of `up.port.port_id` causes all registered serial ports on a multi-port device to share ID 0 and corrupt each other's hardware state.
+> - [High] Unprotected read-modify-write on shared hardware register in `mxpcie8250_set_interface` causes a race condition between concurrent operations on adjacent ports.
+> --
+> 
+> commit 0dfacc505133057b054c4b8c8d42d557343c298b
+> Author: Linmao Li <lilinmao@kylinos.cn>
+> 
+> serial: 8250_mxpcie: set the driver data before registering ports
+> 
+> This commit fixes a NULL pointer dereference in the mxpcie8250_rs485_config
+> callback. It moves pci_set_drvdata() before port registration so the board
+> data is available when the callback is invoked during initialization.
+> 
+>> diff --git a/drivers/tty/serial/8250/8250_mxpcie.c b/drivers/tty/serial/8250/8250_mxpcie.c
+>> index ce873fbd62e93..c0e3517d4e4ec 100644
+>> --- a/drivers/tty/serial/8250/8250_mxpcie.c
+>> +++ b/drivers/tty/serial/8250/8250_mxpcie.c
+>> @@ -542,6 +542,8 @@ static int mxpcie8250_probe(struct pci_dev *pdev, const struct pci_device_id *id
+>>   
+>>   	mxpcie8250_init_board(pdev, priv);
+>>   
+>> +	pci_set_drvdata(pdev, priv);
+>> +
+>>   	up.port.dev = dev;
+>>   	up.port.irq = pdev->irq;
+>>   	up.port.uartclk = MOXA_PUART_BASE_BAUD * 16;
+>> @@ -578,7 +580,6 @@ static int mxpcie8250_probe(struct pci_dev *pdev, const struct pci_device_id *id
+>>   		}
+>>   		priv->port[i].rx_trig_level = MOXA_PUART_RX_TRIG_DEFAULT;
+>>   	}
+>> -	pci_set_drvdata(pdev, priv);
+>>   
+>>   	return 0;
+>>   }
+> 
+> [Severity: High]
+> This isn't a bug introduced by this patch, but while reviewing the port
+> registration loop, I noticed that mxpcie8250_setup_port() seems to leave
+> up.port.port_id initialized to 0 for all ports. Because the up structure
+> is zero-initialized, and up.port.port_id is never assigned the idx value,
+> it remains 0.
+> 
+> When this zeroed structure is passed into serial8250_register_8250_port(),
+> does this cause all registered ports on a multi-port device to share ID 0?
+> If so, hardware callbacks like mxpcie8250_rs485_config() and
+> mxpcie8250_startup() that use port->port_id as an index might inadvertently
+> apply configuration changes to port 0 instead of the intended port.
+> 
+> [Severity: High]
+> This is also a pre-existing issue, but looking at mxpcie8250_set_interface(),
+> the shared hardware register controlling adjacent ports is updated using an
+> unprotected read-modify-write:
+> 
+> mxpcie8250_set_interface()
+>      ...
+>      cval = ioread8(uir_addr);
+> 
+>      if (port_idx % 2)
+>          FIELD_MODIFY(MOXA_ODD_RS_MASK, &cval, mode);
+>      else
+>          FIELD_MODIFY(MOXA_EVEN_RS_MASK, &cval, mode);
+> 
+>      iowrite8(cval, uir_addr);
+> 
+> Since this is called by mxpcie8250_rs485_config(), which is only protected
+> by the per-port uart_port_lock, could concurrent ioctls on adjacent ports
+> (like port 0 and port 1) race and corrupt this shared register byte?
+> 
 
-Reviewed-by: Praveen Talari <praveen.talari@oss.qualcomm.com>
 
-Thanks,
-
-Praveen Talari
->
-> Thanks,
-> Aniket
->
->> Konrad
->
->
+-- 
+js
+suse labs
