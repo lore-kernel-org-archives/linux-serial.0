@@ -1,114 +1,130 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C51C30649C
-	for <linux-serial@vger.kernel.org>; Tue,  1 Sep 2026 04:27:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C93712E1DC
+	for <linux-serial@vger.kernel.org>; Tue,  1 Sep 2026 04:32:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788236871; cv=none; b=ZQYgcesje2hdwYt9Er9fM258Bn/CEldBz63hFfC1Vo7u/Lrga+mtDWWKNoC+itNoW8oCj77OrhCwh2W3pSnUhi8/eNWPoFkwq0ireMUmEZ9B4ubmHZN1Tf0+ANZ/INihlvHgL1vq9fc/0QnvN5h2Q1FqYaMQjOvwuDZRcaqUmr4=
+	t=1788237174; cv=none; b=IZVOzFVqFBJrwciLPUBMWp4knW6AOynjixVFDp2TPMZLUiEqgz6kSgbQ9mJAGuaLJG8qY/l2HEOzJX/IWloHEQOpn/t3TBfAXX3BErjuO7HxOWn1BSzWtcf2mB7dKBDg1JoKfAzVXQwlQthML5Trhnqib2zi2+qPowsneWAlDZk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788236871; c=relaxed/simple;
-	bh=FDddBCSeYq3LlYDT7Rtj/xVK+zOoXVdnTYl+Owa40cA=;
+	s=arc-20240116; t=1788237174; c=relaxed/simple;
+	bh=Q9RSVCa9290VL3IWNGpCitdHqmHVdndYBjFjVuVe1gs=;
 	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=aVg+I/KwoCEur//W/Zt5Zg5YjmjGdFcXj2DsapxM2+JRS+wf7umcnYDTfZdMyd/T/irJefhf1/Bhanm8uX1YrtqxwW8hbjuQSQH6WaEaIPTiW1CSXvuUacRVw0VzWxT/dJDC38r7anGtLppUh6DJbtF6lIH+BPP5cJj5+6Y4jRU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dA23cvaQ; arc=none smtp.client-ip=100.103.45.18
+	 Message-Id; b=jfWcjhRO4L4thP+YDcsIXZp1GWtkNo6O3K+KL9sfjGWyPEThD7M38xPTQOWXP2elTni6+WyzilfzaxQjsQiBPAZxQDxbprWi5R3FxvYnCE2qejefoifaDPqDoGt3d+sHckIApK41S3jHYsPTkF8PLzkpm4UneYxfrTkOHk6tvoY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PoENbCFo; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dA23cvaQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF29A1F000E9;
-	Tue,  1 Sep 2026 04:27:49 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PoENbCFo"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85D391F000E9;
+	Tue,  1 Sep 2026 04:32:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788236869;
-	bh=HZz+JS8lbaiQe5/l1ytSRF4KtjWJ0BIeI0AtxQZ4g6c=;
+	s=k20260515; t=1788237172;
+	bh=qAEkyFzQWNxgghLpVrPVRNVCjWJumtfVPxhpvFfM34U=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=dA23cvaQK9X8fkKZPoKd0YZ56KN3v1F7XY4WaslixxJ3X/dMrNjk4Dx3tRzvKYyhq
-	 55V9vebSV9+850pm6hKEVot3Xvm5mPmwjj7/o/vRX6d3QX947G1lwgyXEPrru8vJAg
-	 te9mi759U5PVxHLIWK+mTT19KfkU3Xvff2EbMt6/NxeocWkCkO7+ZpXNibplNvXnBo
-	 boIYl+pbjNGvjJHhGbHF/w69S7j2NL/TvlGIjXkIBCWSXdgxCiXkcd69/h4uanuJN4
-	 B3SksK41wpuC8APqGfyDDyUHZ69Cs9mCfxgB2aIjfoGiyyS3WlAURwyFyZTov7ls0h
-	 1Ojn8daBsX+FQ==
+	b=PoENbCFoLbDwYGxkLCIuUFpUrnPyAnnnJUTqFoLZ7b4GTEBlfvbPVBjbvV6ms71XB
+	 4CZNFp1C/mC6oqmdlWNob6aLuOdWEmh94HMmCfuPoSq4lB9iuKEmLEWc7tStgrIdeV
+	 UEmzkTPfuBCHiDt7YYnsz7xVwjk9LEZ0ekWjNtIdgVD7Ue9iGBOKU1tmgK6xhrudp7
+	 nXA8r2v+DmR75sjky2zNh3/4SADtPHDmDOSw5dn9xrjVHkR9Jmqh9mczit2SM1iBUC
+	 AeNrowyup6oneqKXCLerqJcMMVriqsHpF+Hdz4m3WlchELqWQbOFaWoRVnXajGEDSL
+	 9kFDBfrd2Ps1Q==
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v2 2/3] serial: 8250_mxpcie: only unregister the ports
- that were registered
+Subject: Re: [PATCH v2 1/3] serial: 8250_mxpcie: set the driver data before
+ registering ports
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Linmao Li" <lilinmao@kylinos.cn>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20260901041519.114737-3-lilinmao@kylinos.cn>
+In-Reply-To: <20260901041519.114737-2-lilinmao@kylinos.cn>
 References: <20260901041519.114737-1-lilinmao@kylinos.cn>
- <20260901041519.114737-3-lilinmao@kylinos.cn>
+ <20260901041519.114737-2-lilinmao@kylinos.cn>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Tue, 01 Sep 2026 04:27:49 +0000
-Message-Id: <20260901042749.AF29A1F000E9@smtp.kernel.org>
+Date: Tue, 01 Sep 2026 04:32:52 +0000
+Message-Id: <20260901043252.85D391F000E9@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-Thank you for your contribution! Sashiko AI review found 1 potential issue(=
+Thank you for your contribution! Sashiko AI review found 2 potential issue(=
 s) to consider:
 
 Pre-existing issues:
-- [High] The driver fails to initialize `up.port.port_id` for individual se=
-rial ports during probe, causing all successfully registered ports to incor=
-rectly share `port_id =3D 0`. This leads to configuration meant for other p=
-orts silently overwriting port 0's hardware registers and software state.
+- [High] Missing initialization of `up.port.port_id` causes all registered =
+serial ports on a multi-port device to share ID 0 and corrupt each other's =
+hardware state.
+- [High] Unprotected read-modify-write on shared hardware register in `mxpc=
+ie8250_set_interface` causes a race condition between concurrent operations=
+ on adjacent ports.
 --
 
-commit 73e9e979a09f1fbc7bf6f2134b67c8afbd507c55
+commit 0dfacc505133057b054c4b8c8d42d557343c298b
 Author: Linmao Li <lilinmao@kylinos.cn>
 
-    serial: 8250_mxpcie: only unregister the ports that were registered
-   =20
-    When serial8250_register_8250_port() fails the loop stops and the probe
-    keeps the ports registered so far, like pciserial_init_ports() in
-    8250_pci.c this driver was split from.  What the split lost is that
-    function's priv->nr: mxpcie8250_remove() walks all num_ports entries,
-    but the ones the loop never reached keep the zero devm_kzalloc() left
-    there, and the one that failed keeps a negative error code.
+serial: 8250_mxpcie: set the driver data before registering ports
+
+This commit fixes a NULL pointer dereference in the mxpcie8250_rs485_config
+callback. It moves pci_set_drvdata() before port registration so the board
+data is available when the callback is invoked during initialization.
 
 > diff --git a/drivers/tty/serial/8250/8250_mxpcie.c b/drivers/tty/serial/8=
 250/8250_mxpcie.c
-> index c0e3517d4e4ec..ef2516ec16da0 100644
+> index ce873fbd62e93..c0e3517d4e4ec 100644
 > --- a/drivers/tty/serial/8250/8250_mxpcie.c
 > +++ b/drivers/tty/serial/8250/8250_mxpcie.c
-[ ... ]
-> @@ -564,7 +566,7 @@ static int mxpcie8250_probe(struct pci_dev *pdev, con=
+> @@ -542,6 +542,8 @@ static int mxpcie8250_probe(struct pci_dev *pdev, con=
 st struct pci_device_id *id
->  	up.port.handle_irq =3D mxpcie8250_handle_irq;
->  	up.port.break_ctl =3D mxpcie8250_break_ctl;
 > =20
-> -	for (unsigned int i =3D 0; i < num_ports; i++) {
-> +	for (i =3D 0; i < num_ports; i++) {
->  		mxpcie8250_setup_port(pdev, priv, &up, i);
-                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  	mxpcie8250_init_board(pdev, priv);
+> =20
+> +	pci_set_drvdata(pdev, priv);
+> +
+>  	up.port.dev =3D dev;
+>  	up.port.irq =3D pdev->irq;
+>  	up.port.uartclk =3D MOXA_PUART_BASE_BAUD * 16;
+> @@ -578,7 +580,6 @@ static int mxpcie8250_probe(struct pci_dev *pdev, con=
+st struct pci_device_id *id
+>  		}
+>  		priv->port[i].rx_trig_level =3D MOXA_PUART_RX_TRIG_DEFAULT;
+>  	}
+> -	pci_set_drvdata(pdev, priv);
+> =20
+>  	return 0;
+>  }
 
 [Severity: High]
-This is a pre-existing issue, but does mxpcie8250_setup_port() fail to set
-up.port.port_id?
+This isn't a bug introduced by this patch, but while reviewing the port
+registration loop, I noticed that mxpcie8250_setup_port() seems to leave
+up.port.port_id initialized to 0 for all ports. Because the up structure
+is zero-initialized, and up.port.port_id is never assigned the idx value,
+it remains 0.
 
-Because up.port.port_id is not initialized for individual serial ports duri=
-ng
-probe, all successfully registered ports seem to incorrectly share port_id =
-=3D 0.
+When this zeroed structure is passed into serial8250_register_8250_port(),
+does this cause all registered ports on a multi-port device to share ID 0?
+If so, hardware callbacks like mxpcie8250_rs485_config() and=20
+mxpcie8250_startup() that use port->port_id as an index might inadvertently
+apply configuration changes to port 0 instead of the intended port.
 
-Could this lead to configuration meant for other ports silently overwriting
-port 0's hardware registers and software state?
+[Severity: High]
+This is also a pre-existing issue, but looking at mxpcie8250_set_interface(=
+),
+the shared hardware register controlling adjacent ports is updated using an
+unprotected read-modify-write:
 
-For example, when setting RX trigger levels or handling ioctls for RS485
-(TIOCSRS485) on any non-zero port, it looks like port->port_id will evaluate
-to 0 in mxpcie8250_rs485_config():
+mxpcie8250_set_interface()
+    ...
+    cval =3D ioread8(uir_addr);
 
-drivers/tty/serial/8250/8250_mxpcie.c:mxpcie8250_rs485_config() {
-	...
-	mxpcie8250_set_interface(priv, port->port_id, mode);
-	...
-}
+    if (port_idx % 2)
+        FIELD_MODIFY(MOXA_ODD_RS_MASK, &cval, mode);
+    else
+        FIELD_MODIFY(MOXA_EVEN_RS_MASK, &cval, mode);
 
-causing the driver to incorrectly read, modify, and write the configuration=
- of
-port 0 instead of the target port.
+    iowrite8(cval, uir_addr);
+
+Since this is called by mxpcie8250_rs485_config(), which is only protected
+by the per-port uart_port_lock, could concurrent ioctls on adjacent ports
+(like port 0 and port 1) race and corrupt this shared register byte?
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260901041519.1147=
-37-1-lilinmao@kylinos.cn?part=3D2
+37-1-lilinmao@kylinos.cn?part=3D1
