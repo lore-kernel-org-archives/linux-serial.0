@@ -1,44 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77BC630649C
-	for <linux-serial@vger.kernel.org>; Tue,  1 Sep 2026 04:23:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C51C30649C
+	for <linux-serial@vger.kernel.org>; Tue,  1 Sep 2026 04:27:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788236608; cv=none; b=C5y0JMjSQtBQrZ6qpBfSqvNhTUwgeMgnnyDA/5ruCrGVzGc3kTmGa67dUt88ymVIylfPJ7qiTPKZ5FmP5VCLjLvgJF2W2fv0Jw0A0MHeeKiz1Z9CmVCayFjuyec9V4X555dZAaSOj6mqVQ5texyuaKbYocVnxQxz0pFZdAb0F/I=
+	t=1788236871; cv=none; b=ZQYgcesje2hdwYt9Er9fM258Bn/CEldBz63hFfC1Vo7u/Lrga+mtDWWKNoC+itNoW8oCj77OrhCwh2W3pSnUhi8/eNWPoFkwq0ireMUmEZ9B4ubmHZN1Tf0+ANZ/INihlvHgL1vq9fc/0QnvN5h2Q1FqYaMQjOvwuDZRcaqUmr4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788236608; c=relaxed/simple;
-	bh=GAwLTzjsHn28heXhVUT/K4jVBJxEGpjXcRPDYUmlMaY=;
+	s=arc-20240116; t=1788236871; c=relaxed/simple;
+	bh=FDddBCSeYq3LlYDT7Rtj/xVK+zOoXVdnTYl+Owa40cA=;
 	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=AQozu/0IBzJcgNb+JDGIzGtQ7D+rUoX8m/x0cRhU+pwdNnMBWuGH5tz23M0VRuMLTOgAXWtmfX37B0AMuDZMe+3HdQ3ttBZUccqhpWW3OizujbmzWSQhkf7aXoeWk1BgUDvPE8CmgXNs2LUBCtPXqLK6pGYkVFshbWwztvhRpSk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DErk1tzH; arc=none smtp.client-ip=100.103.45.18
+	 Message-Id; b=aVg+I/KwoCEur//W/Zt5Zg5YjmjGdFcXj2DsapxM2+JRS+wf7umcnYDTfZdMyd/T/irJefhf1/Bhanm8uX1YrtqxwW8hbjuQSQH6WaEaIPTiW1CSXvuUacRVw0VzWxT/dJDC38r7anGtLppUh6DJbtF6lIH+BPP5cJj5+6Y4jRU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dA23cvaQ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DErk1tzH"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3AE41F000E9;
-	Tue,  1 Sep 2026 04:23:26 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dA23cvaQ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF29A1F000E9;
+	Tue,  1 Sep 2026 04:27:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788236607;
-	bh=OshdhF8TT6tRKGJvttTpFfRIoBsXy9zHPXimF+OdRkI=;
+	s=k20260515; t=1788236869;
+	bh=HZz+JS8lbaiQe5/l1ytSRF4KtjWJ0BIeI0AtxQZ4g6c=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=DErk1tzHL06yGrHvEts03JLT9hWTeKjn1Ni6yXB5AhcocOPr3P5xsqy6z4f1yIIDp
-	 J6xs2ji5veSUqw+RHOlvEJxAuNEV/TPfdeDkgomRj32wHzDSMzqv1N/ExyGE3P+0pf
-	 omjcZGBoudG/oWrcPCIyL9mo/fLEoT0f/n6NGkp8cfGU13A8/twZK61GuS9PL0N4Si
-	 iehzMvOcQTSMPFmvK0AIwgVVvkkA/m4QspDnPenGsZmjIg28b8GF2NuAr9UBk8Uf9E
-	 W9mc/KYjhsxpF46Av2bw429WlyH9HegUOUHWq8iw+SdtNX9a9jDclI2nzVOIDxVHyg
-	 ZGPjzCsEqIcoQ==
+	b=dA23cvaQK9X8fkKZPoKd0YZ56KN3v1F7XY4WaslixxJ3X/dMrNjk4Dx3tRzvKYyhq
+	 55V9vebSV9+850pm6hKEVot3Xvm5mPmwjj7/o/vRX6d3QX947G1lwgyXEPrru8vJAg
+	 te9mi759U5PVxHLIWK+mTT19KfkU3Xvff2EbMt6/NxeocWkCkO7+ZpXNibplNvXnBo
+	 boIYl+pbjNGvjJHhGbHF/w69S7j2NL/TvlGIjXkIBCWSXdgxCiXkcd69/h4uanuJN4
+	 B3SksK41wpuC8APqGfyDDyUHZ69Cs9mCfxgB2aIjfoGiyyS3WlAURwyFyZTov7ls0h
+	 1Ojn8daBsX+FQ==
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v2 3/3] serial: 8250_mxpcie: take the line settings from
- the new termios
+Subject: Re: [PATCH v2 2/3] serial: 8250_mxpcie: only unregister the ports
+ that were registered
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Linmao Li" <lilinmao@kylinos.cn>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20260901041519.114737-4-lilinmao@kylinos.cn>
+In-Reply-To: <20260901041519.114737-3-lilinmao@kylinos.cn>
 References: <20260901041519.114737-1-lilinmao@kylinos.cn>
- <20260901041519.114737-4-lilinmao@kylinos.cn>
+ <20260901041519.114737-3-lilinmao@kylinos.cn>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Tue, 01 Sep 2026 04:23:26 +0000
-Message-Id: <20260901042326.F3AE41F000E9@smtp.kernel.org>
+Date: Tue, 01 Sep 2026 04:27:49 +0000
+Message-Id: <20260901042749.AF29A1F000E9@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -49,65 +49,66 @@ Thank you for your contribution! Sashiko AI review found 1 potential issue(=
 s) to consider:
 
 Pre-existing issues:
-- [High] Hardware registers and port status are modified without holding th=
-e port lock or a Runtime PM reference.
+- [High] The driver fails to initialize `up.port.port_id` for individual se=
+rial ports during probe, causing all successfully registered ports to incor=
+rectly share `port_id =3D 0`. This leads to configuration meant for other p=
+orts silently overwriting port 0's hardware registers and software state.
 --
 
-commit cc8d50f2957c7d540f5a4840cf6ed31ccd1bed47
+commit 73e9e979a09f1fbc7bf6f2134b67c8afbd507c55
 Author: Linmao Li <lilinmao@kylinos.cn>
 
-serial: 8250_mxpcie: take the line settings from the new termios
-
-mxpcie8250_set_termios() reads the line settings out of port->state->port.t=
-ty,
-which is only set once the port has been opened. This commit fixes a NULL
-dereference during console setup or kgdboc attach by reading the settings
-from the termios the serial core passes in instead.
+    serial: 8250_mxpcie: only unregister the ports that were registered
+   =20
+    When serial8250_register_8250_port() fails the loop stops and the probe
+    keeps the ports registered so far, like pciserial_init_ports() in
+    8250_pci.c this driver was split from.  What the split lost is that
+    function's priv->nr: mxpcie8250_remove() walks all num_ports entries,
+    but the ones the loop never reached keep the zero devm_kzalloc() left
+    there, and the one that failed keeps a negative error code.
 
 > diff --git a/drivers/tty/serial/8250/8250_mxpcie.c b/drivers/tty/serial/8=
 250/8250_mxpcie.c
-> index ef2516ec16da0..19f1f51eec477 100644
+> index c0e3517d4e4ec..ef2516ec16da0 100644
 > --- a/drivers/tty/serial/8250/8250_mxpcie.c
 > +++ b/drivers/tty/serial/8250/8250_mxpcie.c
-> @@ -218,8 +218,6 @@ static void mxpcie8250_set_termios(struct uart_port *=
-port,
->  				   const struct ktermios *old)
->  {
->  	struct uart_8250_port *up =3D up_to_u8250p(port);
-> -	struct tty_struct *tty =3D port->state->port.tty;
-> -	unsigned int cflag =3D tty->termios.c_cflag;
->  	u8 efr, val;
+[ ... ]
+> @@ -564,7 +566,7 @@ static int mxpcie8250_probe(struct pci_dev *pdev, con=
+st struct pci_device_id *id
+>  	up.port.handle_irq =3D mxpcie8250_handle_irq;
+>  	up.port.break_ctl =3D mxpcie8250_break_ctl;
 > =20
->  	serial8250_do_set_termios(port, new, old);
-> @@ -229,23 +227,25 @@ static void mxpcie8250_set_termios(struct uart_port=
- *port,
->  	efr =3D serial_in(up, MOXA_PUART_EFR);
+> -	for (unsigned int i =3D 0; i < num_ports; i++) {
+> +	for (i =3D 0; i < num_ports; i++) {
+>  		mxpcie8250_setup_port(pdev, priv, &up, i);
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 [Severity: High]
-This is a pre-existing issue, but is it safe to modify the port status and
-access hardware registers here after serial8250_do_set_termios() has
-already released the port lock and runtime PM reference?
+This is a pre-existing issue, but does mxpcie8250_setup_port() fail to set
+up.port.port_id?
 
-Modifying up->port.status in mxpcie8250_set_termios() without holding the
-port lock creates a data race that can corrupt flow control flags
-(e.g., UPSTAT_AUTOCTS). This directly violates the locking contract
-documented in include/linux/serial_core.h.
+Because up.port.port_id is not initialized for individual serial ports duri=
+ng
+probe, all successfully registered ports seem to incorrectly share port_id =
+=3D 0.
 
-Furthermore, accessing UART hardware registers via serial_in() and
-serial_out() without a port lock or a Runtime PM reference can lead to
-concurrent register access races with IRQ handlers, or bus faults if the
-device enters a suspended state. This sequence occurs every time
-mxpcie8250_set_termios() is called, for instance when userspace calls
-tcsetattr to change flow control on the TTY device.
+Could this lead to configuration meant for other ports silently overwriting
+port 0's hardware registers and software state?
 
->  	efr &=3D ~(MOXA_PUART_EFR_AUTO_RTS | MOXA_PUART_EFR_AUTO_CTS);
-> =20
-> -	if (cflag & CRTSCTS) {
-> +	if (new->c_cflag & CRTSCTS) {
->  		efr |=3D (MOXA_PUART_EFR_AUTO_RTS | MOXA_PUART_EFR_AUTO_CTS);
->  		up->port.status |=3D (UPSTAT_AUTORTS | UPSTAT_AUTOCTS);
->  	}
+For example, when setting RX trigger levels or handling ioctls for RS485
+(TIOCSRS485) on any non-zero port, it looks like port->port_id will evaluate
+to 0 in mxpcie8250_rs485_config():
+
+drivers/tty/serial/8250/8250_mxpcie.c:mxpcie8250_rs485_config() {
+	...
+	mxpcie8250_set_interface(priv, port->port_id, mode);
+	...
+}
+
+causing the driver to incorrectly read, modify, and write the configuration=
+ of
+port 0 instead of the target port.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260901041519.1147=
-37-1-lilinmao@kylinos.cn?part=3D3
+37-1-lilinmao@kylinos.cn?part=3D2
