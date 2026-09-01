@@ -1,115 +1,105 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECC93471410;
-	Tue,  1 Sep 2026 07:50:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 196F337E5EA;
+	Tue,  1 Sep 2026 09:00:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788249020; cv=none; b=QU7ZnW/wO08PDpxbzuu7n5dw30e0oto1MLjHNc56fUadrLVy2mMlaz08LXmipmmRxiq2HMQYkSXh7FhvdOKuMF7rA7e+aMalDZ5s9m6E0VNSWR5JMiqG47/jZoX+nP+/hkcBSgr5WwgNrpTEsK6F6hbdTaNhAbv69yxQ6jkw8NE=
+	t=1788253225; cv=none; b=CQIp0rbqD+Sq9r3BGdWRkh82TfAnPysdlQn6g7+EBYIqZyWLdo3Pd4R1wrxrlUI4rGGLmItXNOYI6JxVsTl5HFxUgnXupUfSojLL9ZLr/YIRowdquh88OqlEdOk1/SNGpx0936Hw7AMSSnxVDp8bvKh+JS5lHWY5mCCTyluEi2M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788249020; c=relaxed/simple;
-	bh=JjFpQL6i7zqo6rZPziQwY0L3iKdrklhUD4YeCOg6ZVQ=;
+	s=arc-20240116; t=1788253225; c=relaxed/simple;
+	bh=jhKnp48MumRxrJSL6BBAENzeNFA+doX003JwTMrUgbg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LIVp0C8s3dVaX7b5FDB714o5jZsap9LLfrZozP6qxmp6l/52u2GWWTN2l7qGp3fW6ZYWtXNsBUqplD27GSWTCpq7F3kZiO1eiIGDFtd53uwO6UQ68b1qg+rF8WywGi0kOFSnulhGquzbju2dc3uSjW7nMNeloO5sm/zbhfgedto=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=YD9YQ1KL; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=JmZmx3l8; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	 Content-Type:Content-Disposition:In-Reply-To; b=SP2Ufe8iKSUeo2LbDjeYTy3+lAxpG8Z3Ic5QOvefcwjlAnk8cLDz8Ai7RQQ0nd+ThCzfV8nfrvvF5tD5e7uN/fkP3fjbkYjh8dclX+th2SAtJYLh8GQpfeWG2YGOWRjVz5VdrdNYMn12arZbowaO+hxIJgQ2Dz1oCyhTi+qvMak=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mibMU2Fi; arc=none smtp.client-ip=198.175.65.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="YD9YQ1KL";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="JmZmx3l8"
-Date: Tue, 1 Sep 2026 09:50:15 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1788249016;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=iUBH692Z36aZg03LvKjB9jPXVfhm0cBeh/zOB1KfNos=;
-	b=YD9YQ1KL0WOd8TMtZexCsr2KJHmzfhslZ6YoFjT6aZ00SWEQokufCJgr6rIgxq66g8FxyW
-	oA56rBXLdJL+SPtm6W1OIxF8wJHgqPX81ZwAKc9KOgGT5KGqT/y95sjNKRw7jufKDP1JTD
-	aeTNtH9cOI21YNCbqOHDCbt0H1q3IwNFQhseu+MuiuRCe8SbKYmSxEVdHDlqig7rCdHvey
-	Q8IhxgKrPi3wKbKpizAj3ZMJRLAMCHcQTYSjrGPkOsV9aBaNM2OQWnFm4HB1N+qqjNhwjG
-	qk8Fom8a+Ynea+VouNRZz4Mup8Mk9P8Kdw9+pIwebEOtzt8fPGmdQm8cugiP8A==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1788249016;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=iUBH692Z36aZg03LvKjB9jPXVfhm0cBeh/zOB1KfNos=;
-	b=JmZmx3l8bhg77IcWwiZ0FVpqnovlzDqLRoN1oXDjaWZ7VgUIkAapUF9T5aZ01x2ECp+FoW
-	WnoGUdgenXgnc7DA==
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: Petr Mladek <pmladek@suse.com>
-Cc: John Ogness <john.ogness@linutronix.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mibMU2Fi"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1788253225; x=1819789225;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=jhKnp48MumRxrJSL6BBAENzeNFA+doX003JwTMrUgbg=;
+  b=mibMU2FiPvKyI5serBdqqk//uWwoIuHcPJGcD03gFUoqZh664O7zSP/n
+   +oc7/YSuCF7oqiyMA9OQoEKc7qdkd4EFV1712hZeby3AgKl20zemSK5/Q
+   SnBdTiQJ7bq4CAjBoKrntQvwc+A7a546OBKmHe5t98lnpre8DfFCsJhNm
+   YhvfjH2ltnlYjnUWu+liIh0Bdy9JdvTb26+OXMgIZhSwQzA+w6d579jCV
+   Ngjucu3VdQMCy5axeJdfZF8cwoIXxk5uZh9P+oaL2lDeeT7UT1qpjUfCb
+   6kebVh4CmT5YcdWMeA0ibCbtI3JuHnrByZtQbHHKvaw4mHX+LxCmaYZUW
+   g==;
+X-CSE-ConnectionGUID: FRWHl7zIS1ecb0HOEnm7DQ==
+X-CSE-MsgGUID: bpkL65orSi6PAjQDdaFQfg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11892"; a="88882673"
+X-IronPort-AV: E=Sophos;i="6.25,255,1779174000"; 
+   d="scan'208";a="88882673"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2026 02:00:24 -0700
+X-CSE-ConnectionGUID: xaz8KOwEQeSoAjCHRyJ4kg==
+X-CSE-MsgGUID: L5kC+/SSSU+ErZzCuJqk+A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,255,1779174000"; 
+   d="scan'208";a="272825160"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.222])
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2026 02:00:21 -0700
+Date: Tue, 1 Sep 2026 12:00:19 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Linmao Li <lilinmao@kylinos.cn>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
-	Andy Shevchenko <andy.shevchenko@gmail.com>,
-	Jon Hunter <jonathanh@nvidia.com>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	linux-kernel@vger.kernel.org,
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	Crescent Hsieh <crescentcy.hsieh@moxa.com>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH tty 1/1] serial: 8250: Change console_msr_work to
- IRQ_WORK_LAZY
-Message-ID: <20260901075015.BBNf1HZ5@linutronix.de>
-References: <20260828155811.270462-1-john.ogness@linutronix.de>
- <20260828155811.270462-2-john.ogness@linutronix.de>
- <20260828160652.TQBsi8oO@linutronix.de>
- <apWcikIof_6CRNNU@pathway.suse.cz>
+	Lukas Wunner <lukas@wunner.de>,
+	Gerhard Engleder <gerhard@engleder-embedded.com>,
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/3] serial: 8250_mxpcie: only unregister the ports
+ that were registered
+Message-ID: <apaUI8OdGQZ_dJ5O@ashevche-desk.local>
+References: <20260901041519.114737-1-lilinmao@kylinos.cn>
+ <20260901041519.114737-3-lilinmao@kylinos.cn>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <apWcikIof_6CRNNU@pathway.suse.cz>
+In-Reply-To: <20260901041519.114737-3-lilinmao@kylinos.cn>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 2026-08-31 17:23:54 [+0200], Petr Mladek wrote:
-> On Fri 2026-08-28 18:06:52, Sebastian Andrzej Siewior wrote:
-> > On 2026-08-28 18:04:08 [+0206], John Ogness wrote:
-> > > For some platforms it is a problem to queue irq_work when entering
-> > > cpuidle states. Since irq_work is used for deferred MSR handling,
-> > > any atomic console printing when entering cpuidle states can lead
-> > > to the affected hardware hanging. Tegra20 and Tegra30 are examples
-> > > of such platforms. Avoiding raising the irq_work IRQ has shown to
-> > > circumvent the problem.
-> > 
-> > > Change the console_msr_work to be IRQ_WORK_LAZY, thus not raising
-> > > an IRQ upon irq_work queuing. The irq_work is then handled on the
-> > > next interrupt (worst case, kernel tick).
-> >
-> > Not on the next interrupt, on the next jiffies tick. Should you run
-> > tickless and should the CPU have the tick switch off then it will raise
-> > the irq-work interrupt anyway.
+On Tue, Sep 01, 2026 at 12:15:18PM +0800, Linmao Li wrote:
+> When serial8250_register_8250_port() fails the loop stops and the probe
+> keeps the ports registered so far, like pciserial_init_ports() in
+> 8250_pci.c this driver was split from.  What the split lost is that
+> function's priv->nr: mxpcie8250_remove() walks all num_ports entries,
+> but the ones the loop never reached keep the zero devm_kzalloc() left
+> there, and the one that failed keeps a negative error code.
 > 
-> This seems to be more precise. There is one more scenario. It would
-> run in a dedicated kthread with PREEMPT_RT.
-
-That is an implementation detail same as the tickless thingy.
-
-> I hope that nobody would run tickless system on the old
-> Tegra hardware. So, this change should be good enough in reality.
+> serial8250_unregister_port() checks neither, so removal unregisters
+> line 0 - a port this driver does not own - and indexes
+> serial8250_ports[] with a negative line number.
 > 
-> Anyway, I would prefer to get this "workaround" in for 7.3.
-> In each case, I would not want to revert the uart 8250 conversion
-> to nbcon because it did break the Tegra hardware.
+> Record how many ports were registered and unregister only those.
 
-I would see this as an improvement and not a workaround. It has the
-side effect that it works now on Tegra which has apparently a broken low
-idle implementation.
+...
 
-*If* this LAZY mode couldn't be used for some reason, I would suggest to
-disable the offending low idle mode
-	https://lore.kernel.org/all/791131d7-cf8d-4572-8eec-df5fff1783a9@nvidia.com/
+>  struct mxpcie8250 {
 
-rather than reverting 8250-nbcon for everyone.
+>  	unsigned int supp_rs;
+>  	unsigned int num_ports;
+> +	unsigned int nr;	/* ports actually registered */
+
+I would make it indented with the below comments.
+But no need to resend for this. It's not critical at all.
+
+>  	void __iomem *bar1_base; /* UART registers (MMIO) */
+>  	void __iomem *bar2_base; /* UIR / GPIO / CPLD (IO) */
+>  	struct mxpcie8250_port port[] __counted_by(num_ports);
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-> Best Regards,
-> Petr
-
-Sebastian
