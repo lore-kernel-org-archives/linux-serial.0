@@ -1,38 +1,38 @@
 Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23B813A5430;
-	Tue,  1 Sep 2026 04:15:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D83C03A7595;
+	Tue,  1 Sep 2026 04:15:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=124.126.103.232
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788236148; cv=none; b=lSt4q/Wm23mLcSgFvk1cfLlyujt/nCsVvsCle+NMI8qTaxMI80pM1ocWE60jmWQIzYfh1Yt5wBp4IUcZlwTY7S2LprlO9hkSJ30gz+Y8tv0LfpQWh3r6QBSmDhsIaelAKT9apNKnjDSOeC75N7UkJxK7g3ETFWd627nJxy53o+8=
+	t=1788236149; cv=none; b=C3cvKBZA3/rJVqg7e39R2/3MrYBWjvJNysM1GjD68iPEZOBgxLAZpgH6obA9F9pJ/1T4qcVVmB/UiNU809S0VlIgL5PrWvIlG4ydPm7j0aeGz0msFAoDAIQth4NeAcK9p0L/TH9bMMMHyQwcbI9RqtQMtDiIVSeD+lHziga82SE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788236148; c=relaxed/simple;
-	bh=yf68TTgUIkR4IjDODrHc2nhmYFZ+HJAuwDmMMri5yxE=;
+	s=arc-20240116; t=1788236149; c=relaxed/simple;
+	bh=njtMQmHCspMsDzwadVgqC8c282Qj9vEQ004uuwyo0e0=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=K8HM5lbCZMp0af4hdeW9X9ZO2khrr17komNz7IFgnmSiwfKSlwFN4y9s8zGM8WR9b+HJjekrg5cIp4UwRu05bbh/YDxZoDCEcgVzBp57NDYFE5DOediGVO837sRvu+bvokMYDUyKojnUxQTqPpu2KPoxceo154O1SccCu5KaRVE=
+	 MIME-Version; b=eOFpphd/SlU2dRbwAAs/ZeN/g7RxBosWAWaCrDlQNHMPyDkY4WNnKDwW5al/qfYom738+f3sGgUIHs/Ppjtk30Ssgp5ReCmGbiHaNyizDtpSpkN51yOnu4OitJM6dcUFMeC9CvJi4+GnVDcpqH1AAXRKzqt0X5AhXEJccs/wBhc=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn; spf=pass smtp.mailfrom=kylinos.cn; arc=none smtp.client-ip=124.126.103.232
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
-X-UUID: c8b3bac4a5bb11f19a56ed5b684f684d-20260901
+X-UUID: c7e1c7bca5bb11f19a56ed5b684f684d-20260901
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.3.19,REQID:40469b12-bed6-41a0-a530-736f07895db3,IP:0,U
-	RL:0,TC:0,Content:0,EDM:25,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION
-	:release,TS:25
-X-CID-META: VersionHash:7db8b62,CLOUDID:56bbbc179ddccb1321aa4a7320c3960f,BulkI
-	D:nil,BulkQuantity:0,SF:81|82|102|850|865|898,TC:nil,Content:0|15|50,EDM:5
-	,IP:nil,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV
-	:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
+X-CID-O-INFO: VERSION:1.3.19,REQID:78bc5021-8424-433b-b52c-81d90c743dab,IP:0,U
+	RL:0,TC:0,Content:-25,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTIO
+	N:release,TS:-25
+X-CID-META: VersionHash:7db8b62,CLOUDID:407f907bc0f3a8e651c0f0c95a6b964d,BulkI
+	D:nil,BulkQuantity:0,SF:81|82|102|850|865|898,TC:nil,Content:0|15|50,EDM:-
+	3,IP:nil,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,A
+	V:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
 X-CID-BVR: 2,SSN|SDN
 X-CID-BAS: 2,SSN|SDN,0,_
 X-CID-FACTOR: TF_CID_SPAM_SNR
 X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
-X-UUID: c8b3bac4a5bb11f19a56ed5b684f684d-20260901
+X-UUID: c7e1c7bca5bb11f19a56ed5b684f684d-20260901
 X-User: lilinmao@kylinos.cn
 Received: from localhost.localdomain [(10.44.16.150)] by mailgw.kylinos.cn
 	(envelope-from <lilinmao@kylinos.cn>)
 	(Generic MTA with TLSv1.3 TLS_AES_256_GCM_SHA384 256/256)
-	with ESMTP id 1787754201; Tue, 01 Sep 2026 12:15:36 +0800
+	with ESMTP id 1880373277; Tue, 01 Sep 2026 12:15:35 +0800
 From: Linmao Li <lilinmao@kylinos.cn>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>
@@ -43,9 +43,9 @@ Cc: Crescent Hsieh <crescentcy.hsieh@moxa.com>,
 	linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Linmao Li <lilinmao@kylinos.cn>
-Subject: [PATCH v2 3/3] serial: 8250_mxpcie: take the line settings from the new termios
-Date: Tue,  1 Sep 2026 12:15:19 +0800
-Message-Id: <20260901041519.114737-4-lilinmao@kylinos.cn>
+Subject: [PATCH v2 2/3] serial: 8250_mxpcie: only unregister the ports that were registered
+Date: Tue,  1 Sep 2026 12:15:18 +0800
+Message-Id: <20260901041519.114737-3-lilinmao@kylinos.cn>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20260901041519.114737-1-lilinmao@kylinos.cn>
 References: <20260901041519.114737-1-lilinmao@kylinos.cn>
@@ -57,76 +57,74 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-mxpcie8250_set_termios() reads the line settings out of
-port->state->port.tty, which is only set once the port has been opened.
+When serial8250_register_8250_port() fails the loop stops and the probe
+keeps the ports registered so far, like pciserial_init_ports() in
+8250_pci.c this driver was split from.  What the split lost is that
+function's priv->nr: mxpcie8250_remove() walks all num_ports entries,
+but the ones the loop never reached keep the zero devm_kzalloc() left
+there, and the one that failed keeps a negative error code.
 
-uart_set_options() builds a termios of its own and calls ->set_termios()
-with no tty behind it, so using such a board as the console
-(console=ttyS<n>) dereferences a NULL tty during console setup, as does
-attaching kgdboc to it and resuming a suspended console from
-uart_resume_port().
+serial8250_unregister_port() checks neither, so removal unregisters
+line 0 - a port this driver does not own - and indexes
+serial8250_ports[] with a negative line number.
 
-Read the settings from the termios the serial core passes in instead.
-It holds the same values on the normal path - uart_change_line_settings()
-passes &tty->termios - and it is what serial8250_do_set_termios() right
-above already uses.
+Record how many ports were registered and unregister only those.
 
-Fixes: 55edf8511f47 ("serial: 8250_mxpcie: enable automatic RTS/CTS flow control")
+Fixes: 0481a041e956 ("serial: 8250: split Moxa PCIe serial board support out of 8250_pci")
 Signed-off-by: Linmao Li <lilinmao@kylinos.cn>
-Tested-by: Crescent Hsieh <crescentcy.hsieh@moxa.com>
 ---
-v2: drop the cflag local, read new->c_cflag directly (Crescent Hsieh).
+v2: keep the ports that registered successfully and restore only the
+    missing count; v1 failed the probe instead (Andy Shevchenko).
 
- drivers/tty/serial/8250/8250_mxpcie.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ drivers/tty/serial/8250/8250_mxpcie.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_mxpcie.c b/drivers/tty/serial/8250/8250_mxpcie.c
-index ef2516ec16da..19f1f51eec47 100644
+index c0e3517d4e4e..ef2516ec16da 100644
 --- a/drivers/tty/serial/8250/8250_mxpcie.c
 +++ b/drivers/tty/serial/8250/8250_mxpcie.c
-@@ -218,8 +218,6 @@ static void mxpcie8250_set_termios(struct uart_port *port,
- 				   const struct ktermios *old)
- {
- 	struct uart_8250_port *up = up_to_u8250p(port);
--	struct tty_struct *tty = port->state->port.tty;
--	unsigned int cflag = tty->termios.c_cflag;
- 	u8 efr, val;
+@@ -109,6 +109,7 @@ struct mxpcie8250_port {
+ struct mxpcie8250 {
+ 	unsigned int supp_rs;
+ 	unsigned int num_ports;
++	unsigned int nr;	/* ports actually registered */
+ 	void __iomem *bar1_base; /* UART registers (MMIO) */
+ 	void __iomem *bar2_base; /* UIR / GPIO / CPLD (IO) */
+ 	struct mxpcie8250_port port[] __counted_by(num_ports);
+@@ -517,6 +518,7 @@ static int mxpcie8250_probe(struct pci_dev *pdev, const struct pci_device_id *id
+ 	struct mxpcie8250 *priv;
+ 	unsigned short device = pdev->device;
+ 	unsigned int num_ports;
++	unsigned int i;
+ 	int ret;
  
- 	serial8250_do_set_termios(port, new, old);
-@@ -229,23 +227,25 @@ static void mxpcie8250_set_termios(struct uart_port *port,
- 	efr = serial_in(up, MOXA_PUART_EFR);
- 	efr &= ~(MOXA_PUART_EFR_AUTO_RTS | MOXA_PUART_EFR_AUTO_CTS);
+ 	ret = pcim_enable_device(pdev);
+@@ -564,7 +566,7 @@ static int mxpcie8250_probe(struct pci_dev *pdev, const struct pci_device_id *id
+ 	up.port.handle_irq = mxpcie8250_handle_irq;
+ 	up.port.break_ctl = mxpcie8250_break_ctl;
  
--	if (cflag & CRTSCTS) {
-+	if (new->c_cflag & CRTSCTS) {
- 		efr |= (MOXA_PUART_EFR_AUTO_RTS | MOXA_PUART_EFR_AUTO_CTS);
- 		up->port.status |= (UPSTAT_AUTORTS | UPSTAT_AUTOCTS);
+-	for (unsigned int i = 0; i < num_ports; i++) {
++	for (i = 0; i < num_ports; i++) {
+ 		mxpcie8250_setup_port(pdev, priv, &up, i);
+ 
+ 		dev_dbg(dev, "Setup PCI port: port %lx, irq %d, type %d\n",
+@@ -580,6 +582,7 @@ static int mxpcie8250_probe(struct pci_dev *pdev, const struct pci_device_id *id
+ 		}
+ 		priv->port[i].rx_trig_level = MOXA_PUART_RX_TRIG_DEFAULT;
  	}
- 	/* Set on-chip software flow control character */
--	serial_out(up, MOXA_PUART_XON1, START_CHAR(tty));
--	serial_out(up, MOXA_PUART_XON2, START_CHAR(tty));
--	serial_out(up, MOXA_PUART_XOFF1, STOP_CHAR(tty));
--	serial_out(up, MOXA_PUART_XOFF2, STOP_CHAR(tty));
-+	serial_out(up, MOXA_PUART_XON1, new->c_cc[VSTART]);
-+	serial_out(up, MOXA_PUART_XON2, new->c_cc[VSTART]);
-+	serial_out(up, MOXA_PUART_XOFF1, new->c_cc[VSTOP]);
-+	serial_out(up, MOXA_PUART_XOFF2, new->c_cc[VSTOP]);
++	priv->nr = i;
  
--	val = I_IXON(tty) ? MOXA_PUART_EFR_RX_FLOW_XON1_XOFF1 : MOXA_PUART_EFR_RX_FLOW_DISABLED;
-+	val = (new->c_iflag & IXON) ? MOXA_PUART_EFR_RX_FLOW_XON1_XOFF1 :
-+				      MOXA_PUART_EFR_RX_FLOW_DISABLED;
- 	FIELD_MODIFY(MOXA_PUART_EFR_RX_FLOW_MASK, &efr, val);
+ 	return 0;
+ }
+@@ -588,7 +591,7 @@ static void mxpcie8250_remove(struct pci_dev *pdev)
+ {
+ 	struct mxpcie8250 *priv = pci_get_drvdata(pdev);
  
--	val = I_IXOFF(tty) ? MOXA_PUART_EFR_TX_FLOW_XON1_XOFF1 : MOXA_PUART_EFR_TX_FLOW_DISABLED;
-+	val = (new->c_iflag & IXOFF) ? MOXA_PUART_EFR_TX_FLOW_XON1_XOFF1 :
-+				       MOXA_PUART_EFR_TX_FLOW_DISABLED;
- 	FIELD_MODIFY(MOXA_PUART_EFR_TX_FLOW_MASK, &efr, val);
+-	for (unsigned int i = 0; i < priv->num_ports; i++)
++	for (unsigned int i = 0; i < priv->nr; i++)
+ 		serial8250_unregister_port(priv->port[i].line);
+ }
  
--	if (I_IXOFF(tty))
-+	if (new->c_iflag & IXOFF)
- 		up->port.status |= UPSTAT_AUTOXOFF;
- 
- 	serial_out(up, MOXA_PUART_EFR, efr);
 -- 
 2.25.1
 
