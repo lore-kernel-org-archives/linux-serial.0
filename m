@@ -1,139 +1,133 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 642AA4E2367;
-	Thu,  3 Sep 2026 15:42:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6573D31197C;
+	Thu,  3 Sep 2026 16:34:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788450172; cv=none; b=LEiG/L8Un5/uMck8CIl7czRkRq1DunkP6AeU9ErMAilzQC3i1CwS661oVPzoCx0I6TN1n+BI1+CKeK9F7ENGdrB/uRCzunNJa3a8Q/3rVU2FMaX3eNm+Tj79BxAFRHrPYTY6vsViTx+rgbmla+8AnfWirsF1YfrYTybMru3wodY=
+	t=1788453295; cv=none; b=jRn43mvLwtOUTPtuz8NWCe85//dsI36m+qQj8mOPibgNf3lUwoUGAYoKOTPQkRY16z2WeHg/PTEkLVBCaYAyAwJcxjYD8EtdYJP2GanU4B/8WfNoWOauUqbSaYCekXhg22QXDdE47+fBVVVGTOxgrcsLY0we/g33mSCZK5C3jkI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788450172; c=relaxed/simple;
-	bh=Yv8wTaciYZggWvkNJvSINmPoeNVSpvwetbo8Fkv1eJw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qpbDsJLBT3+oop0svw/JyTyGgEtpOsFy+lfYkSoMOnDfdfzjVOHUlpGWPdFFa12kvkK+CWpS0ucVzBAHg3sYl3ljIqUjEnJ0efZMaULh9iBozSOqQFt0nMbsqQ3iFcBuHvV9Mol+EZKliNIM4Xp2H1eUjrOKSdq6enQ9KJYAcsc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mYt594fQ; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788453295; c=relaxed/simple;
+	bh=9tRGciWWFbnSnrrF3OKias/50sPvR/jiJhm8Ny0+9fU=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=C73huMgxqGurjzPa5Cm3iaWIeTNftgGS6Kp2PQP+xUFl/MlgJeO1AuFecSap88TUZvVFq6bVAwbLF3Gn0eBbgUHb2uVSe1WSAGs8M68f6o7vbBl+Ueg7VJl3m24kWfN024EGDzthdMLbEVc6ydO038tFGUVyFhCV8iw4V4Onjwk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=X82RyIC4; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mYt594fQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 311091F00A3A;
-	Thu,  3 Sep 2026 15:42:49 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="X82RyIC4"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 120841F000E9;
+	Thu,  3 Sep 2026 16:34:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788450171;
-	bh=sivXHIUBZ7Xa/Z4kbeOOp8A8aDPzeMdDcwJpqwfu5YY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=mYt594fQ3I7OFZbj4jVEcTMPYsuQTGqVfELe/FWDz0RSqWceyMPl7xIAlO9cYA5bk
-	 2K/aNTouAxXAAWpW3yu9/vqiOmYoNPuS3pdNvd6m5D0pvUj+INrAZ+DaTQInMGvmZg
-	 CTR4ARbB8yiuwWVm59U5hIboW7m9ecXyGhTPAe2lKWNwMAdtYCRFt1PDWpnRp2ps7b
-	 9SfCtBrm6gQdGklOGb+klrfeUslkZ8tneMN6D3FNCiCnPx2F7kUO3eSD4Ro3nv7N8Q
-	 K8Mvs2iAiKoEqY80Z9aDxC2ue6lkbkgpNElZi6tiW6D2bB1VztHTFp2MCyolRteie3
-	 1XULqWGXPbqpQ==
-Date: Thu, 3 Sep 2026 16:42:46 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Rosen Penev <rosenp@gmail.com>
+	s=k20260515; t=1788453294;
+	bh=sPpd4BiOXdHYd+zYzn/cAKnpUzJQKqamADjGx4FRbbg=;
+	h=From:To:Cc:Subject:Date;
+	b=X82RyIC4lRPgB68QH9TN5luNM3hQer7JDQ9pv8s2F/T1B9UNcc6lJv8ZrGK2dpJ+R
+	 qLdUspXMlBvpD7vwky5WTyhTEaTE80Mj/mbacCRgK479OEztJPoBR7gW6Oi+iowa+R
+	 +0k9d2NMhzbvuUK2NUnkzaFtSoHTEWfO3DDRnRMM7CpJyXoT//lewSpcSFw+MMyeCt
+	 IMsSefabYVodb71U290jeXIC/fPqoHL7hAm9u/k5r9H/FQ6yfS1OOnKiC9iryU5Urn
+	 UefwbigKR7mIKWaypOsNKJfyYotyGaKpCHnSmg++1U5Uw3yE8zBpnPtoBKA1RW17O2
+	 fk70xU7XuBcsw==
+Received: from johan by xi.lan with local (Exim 4.99.4)
+	(envelope-from <johan@kernel.org>)
+	id 1x2AOp-00000006Hyn-3s1J;
+	Thu, 03 Sep 2026 18:34:51 +0200
+From: Johan Hovold <johan@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
 Cc: linux-serial@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
-	in file <devicetree@vger.kernel.org>,
-	"open list:TTY LAYER AND SERIAL DRIVERS" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] dt-bindings: serial: 8250: add marvell,armada-38x-uart
- compatible
-Message-ID: <20260903-pettiness-crested-c4fb1b3ac05a@spud>
-References: <20260901004203.49686-1-rosenp@gmail.com>
- <20260901-corrode-unvented-4cf271941722@spud>
- <CAKxU2N9X=fvr-a5h5o5XaRLuRuSUq7wR85xmSduK9vff4z4CQA@mail.gmail.com>
+	linux-kernel@vger.kernel.org,
+	Johan Hovold <johan@kernel.org>,
+	stable@vger.kernel.org
+Subject: [PATCH] serial: fix ioctl hangup race
+Date: Thu,  3 Sep 2026 18:34:39 +0200
+Message-ID: <20260903163439.1499055-1-johan@kernel.org>
+X-Mailer: git-send-email 2.55.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="DBKWE0sUUYkaBDGj"
-Content-Disposition: inline
-In-Reply-To: <CAKxU2N9X=fvr-a5h5o5XaRLuRuSUq7wR85xmSduK9vff4z4CQA@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 
---DBKWE0sUUYkaBDGj
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The tty ioctls can race with hangup and end up calling into a tty
+driver for a device that is already gone or powered down.
 
-On Wed, Sep 02, 2026 at 02:34:55PM -0700, Rosen Penev wrote:
-> On Tue, Sep 1, 2026 at 10:51=E2=80=AFAM Conor Dooley <conor@kernel.org> w=
-rote:
-> >
-> > On Mon, Aug 31, 2026 at 05:42:03PM -0700, Rosen Penev wrote:
-> > > The Armada 38x and 98DX3236 SoCs use this compatible, either paired
-> > > with "ns16550a" (armada-38x.dtsi) or on its own
-> > > (armada-xp-98dx3236.dtsi). Neither form is covered by the 8250
-> > > binding, so dtbs_check reports:
-> > >
-> > >   serial@12000: failed to match any schema with compatible:
-> > >   ['marvell,armada-38x-uart', 'ns16550a']
-> > >
-> > > Add a standalone const entry and a two-string variant paired with
-> > > "ns16550a".
-> >
-> > Only one of these is correct, add one and fix the users.
-> > Given there's match data, it's probably the standalone one.
+Add the missing checks to make sure the port has not been hung up before
+accessing the hardware to avoid issues like kernel panic due to
+unclocked accesses.
 
-> Commit 62480772263a adds the second one to support earlycon.
+Note that TIOCGSERIAL, TIOCGICOUNT and TIOCMIWAIT do not access hardware
+and are therefore not affected by the race.
 
-So the one with the ns16550a fallback is the correct one?
+Fixes: 04f378b198da ("tty: BKL pushdown")
+Cc: stable@vger.kernel.org	# 2.6.26
+Signed-off-by: Johan Hovold <johan@kernel.org>
+---
 
-> >
-> > pw-bot: changes-requested
-> >
-> > Thanks,
-> > Conor.
-> >
-> > >
-> > > Validated with make dt_binding_check (8250.yaml) and dt-validate on
-> > > armada-38x and armada-xp 98DX3236 boards: the UART schema errors are
-> > > gone.
-> > >
-> > > Assisted-by: opencode:big-pickle
-> > > Signed-off-by: Rosen Penev <rosenp@gmail.com>
-> > > ---
-> > >  Documentation/devicetree/bindings/serial/8250.yaml | 4 ++++
-> > >  1 file changed, 4 insertions(+)
-> > >
-> > > diff --git a/Documentation/devicetree/bindings/serial/8250.yaml b/Doc=
-umentation/devicetree/bindings/serial/8250.yaml
-> > > index 8c2c177faf89..f71c6afe02f2 100644
-> > > --- a/Documentation/devicetree/bindings/serial/8250.yaml
-> > > +++ b/Documentation/devicetree/bindings/serial/8250.yaml
-> > > @@ -109,6 +109,7 @@ properties:
-> > >        - const: aspeed,ast2500-vuart
-> > >        - const: intel,xscale-uart
-> > >        - const: mrvl,pxa-uart
-> > > +      - const: marvell,armada-38x-uart
-> > >        - const: nuvoton,wpcm450-uart
-> > >        - const: nuvoton,npcm750-uart
-> > >        - const: nvidia,tegra20-uart
-> > > @@ -119,6 +120,9 @@ properties:
-> > >                - exar,xr16l2551
-> > >                - exar,xr16l2550
-> > >            - const: ns8250
-> > > +      - items:
-> > > +          - const: marvell,armada-38x-uart
-> > > +          - const: ns16550a
-> > >        - items:
-> > >            - enum:
-> > >                - altr,16550-FIFO32
-> > > --
-> > > 2.55.0
-> > >
+I've just sent a fix for USB serial here:
 
---DBKWE0sUUYkaBDGj
-Content-Type: application/pgp-signature; name=signature.asc
+	https://lore.kernel.org/r/20260903163146.1498497-1-johan@kernel.org
 
------BEGIN PGP SIGNATURE-----
+and will take closer look at the other TTY drivers tomorrow.
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCapmVdgAKCRB4tDGHoIJi
-0ugJAP9CEpTAZrQshKhMIrGfdM5G0f/W63NRRd77zD72kYTIHwD8DPOP30z0tHZd
-IHsRfMHHMumLIQqpnD3I+fYWgtvdQgk=
-=XWeC
------END PGP SIGNATURE-----
+Johan
 
---DBKWE0sUUYkaBDGj--
+
+ drivers/tty/serial/serial_core.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 95774b0f1484..aac12be4ceac 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -896,7 +896,7 @@ static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
+ 	upf_t old_flags, new_flags;
+ 	int retval;
+ 
+-	if (!uport)
++	if (!uport || tty_io_error(tty))
+ 		return -EIO;
+ 
+ 	new_port = new_info->port;
+@@ -1119,7 +1119,7 @@ static int uart_break_ctl(struct tty_struct *tty, int break_state)
+ 	guard(mutex)(&port->mutex);
+ 
+ 	uport = uart_port_check(state);
+-	if (!uport)
++	if (!uport || tty_io_error(tty))
+ 		return -EIO;
+ 
+ 	if (uport->type != PORT_UNKNOWN && uport->ops->break_ctl)
+@@ -1144,7 +1144,7 @@ static int uart_do_autoconfig(struct tty_struct *tty, struct uart_state *state)
+ 	 */
+ 	scoped_cond_guard(mutex_intr, return -ERESTARTSYS, &port->mutex) {
+ 		uport = uart_port_check(state);
+-		if (!uport)
++		if (!uport || tty_io_error(tty))
+ 			return -EIO;
+ 
+ 		if (tty_port_users(port) != 1)
+@@ -1646,7 +1646,7 @@ static void uart_set_termios(struct tty_struct *tty,
+ 	guard(mutex)(&state->port.mutex);
+ 
+ 	uport = uart_port_check(state);
+-	if (!uport)
++	if (!uport || tty_io_error(tty))
+ 		return;
+ 
+ 	/*
+@@ -1798,7 +1798,11 @@ static void uart_wait_until_sent(struct tty_struct *tty, int timeout)
+ 	 * 'timeout' / 'expire' give us the maximum amount of time
+ 	 * we wait.
+ 	 */
+-	while (!port->ops->tx_empty(port)) {
++	for (;;) {
++		scoped_guard(mutex, &state->port.mutex) {
++			if (tty_io_error(tty) || port->ops->tx_empty(port))
++				break;
++		}
+ 		msleep_interruptible(jiffies_to_msecs(char_time));
+ 		if (signal_pending(current))
+ 			break;
+-- 
+2.55.0
+
