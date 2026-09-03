@@ -1,61 +1,63 @@
-Received: from mail-vk1-f171.google.com (mail-vk1-f171.google.com [209.85.221.171])
+Received: from mail-vs1-f45.google.com (mail-vs1-f45.google.com [209.85.217.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19DCC381E9D
-	for <linux-serial@vger.kernel.org>; Thu,  3 Sep 2026 04:25:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B3B638399C
+	for <linux-serial@vger.kernel.org>; Thu,  3 Sep 2026 04:25:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788409507; cv=none; b=QV4CaK9hRDxKnC1+USSf/t6V1zFmq6n8KvSp1QNzXTYbzcv2cOxVbdF34mqICufvD+PdTT//Iw2DnCld+HsqmJKZGJBKVzriMyaOWIxs28v08uD18SZU11a5zYPbuEK9UH+npWkOCU9YuB18MDFMANae1jGApSnMDG5JiJBfGXo=
+	t=1788409511; cv=none; b=u+b0xbSKKVjrpiIQ1N3F32Mtkd2f/pZduygzBCVxoJzyfwtqaD/V5hjzRwMcJdUGqJ7TudCCxWT23iS/iUNkHZkQfi/GNERzbaA2jOYUbceuD26mcC+77CMO+L14GdwSSIfk/n/lJZLkulHQPMn4QnMhS9VWCGWbAr7K0sjSBog=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788409507; c=relaxed/simple;
-	bh=Pm2g6WlUGa7uN5+D5OLV6Tnth8Vjj/o0THldBmej17c=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=rdcqL+U0xyzv26oXDn3xpFU9A/cqrS47F+LC4ayg88u4LcENuOAO1TwH8C/FOaz8yvqv5k2/5YuxIdb0OHdsO1GcGvp5osdOmJzw2K4SwQq2sjCMHoerTRvkPO3DsI78ROUVT3rGsUI3syAY5rTnx2tAm8lau8sLlYvtDGG6u+M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ETemhVRK; arc=none smtp.client-ip=209.85.221.171
+	s=arc-20240116; t=1788409511; c=relaxed/simple;
+	bh=ZFx3Q9CVV7DenPP95PrnXW2mBbZp6+X+qUC2c0AEvuY=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=WKyt7v2/3G3wTvBrqQrpUifYyiulLTwkVuJznh/eqA7OsXfXozKtleqOuMLBIELCICHNH/N/UForb1isAFc4juvB6xkCchtFrgvNunnLbEpRbyLZO8kXj1dTlA9YJ2OfdaqQyuGnrAM+KyIDfGkmhbbrCEcs8aCe6Gej77a0VXM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CGiv2+J2; arc=none smtp.client-ip=209.85.217.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ETemhVRK"
-Received: by mail-vk1-f171.google.com with SMTP id 71dfb90a1353d-5bfaa014978so1097995e0c.3
-        for <linux-serial@vger.kernel.org>; Wed, 02 Sep 2026 21:25:04 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CGiv2+J2"
+Received: by mail-vs1-f45.google.com with SMTP id ada2fe7eead31-78a220b5778so594174137.1
+        for <linux-serial@vger.kernel.org>; Wed, 02 Sep 2026 21:25:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788409503; x=1789014303; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=UwJ9Kyc3h7M9fN4mjn/dwpP9OV7iadH7CHAovsxH2MU=;
-        b=ETemhVRKX/V7r5NllUfDLLX7w1KiOfbd5NmKV+VufArPHXjk5gNZgWJnYNZyIPta92
-         +LWVfTj7H2Rr3WbISdiL2cRtcs9e5Gel+gQMGl3Dcwb+oElWHr0zs9TOC0mIhyqeWzZd
-         8sdSBgH1Xm9ChYzg/j5Dj27akxdC8gMatdCWKQiS2CZW+NTVpO1jop5uOiYBei+yyAUy
-         17WGGUZVFFhMah1UUGbYs3v4TBjrIQKrRJSkzPvdjLaOUbeNs2gFHKjFXBu5j440izMt
-         7AQ3nxApu3mmuG5Zza9+2OskE0rtvONVdmo46Ove/Eq9JxQ7ofGeQW+8rbWJof63MB2Q
-         vSyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788409503; x=1789014303;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1788409506; x=1789014306; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=UwJ9Kyc3h7M9fN4mjn/dwpP9OV7iadH7CHAovsxH2MU=;
-        b=iTFzGQTvsoiVny9FDCIB7305y4I14JtdeHm2KEyHhx7C+MxgVHdjQzggz5HCbXPFa4
-         c93Y0hpPYCZ75GYWmk+f0AGmaUfKWk3kfFU8w5KLs4rEKn1TtYEjh1/ciymm8Kdh3JCa
-         ovwFNJgcgoGMsY3hugerKNTFXX/D4k8Mw3GschTJIUawKyI3W5no4LpbrxdB4TqVZ6lk
-         XlPz8Ak0uVs8VDFIchXg7SnB9znbYnCBODPSF9W0tkuVWgsm/3M6qHSYmWsxsTJotiWT
-         iZ9rptfJ64hRZfFOkZdWenCCpJ0T3Hm66pZusCr5Sb343V034btDpVKUJIBpqzWxaK4a
-         PUXg==
-X-Forwarded-Encrypted: i=1; AKwUvBy7q/B6hhi+tn/KdP7clqq8XAallyNy7QzXKxvF/3r87ou1xURCqFNm1W0TjjkUBuMu5O/6fUqq1R5uJw0=@vger.kernel.org
-X-Gm-Message-State: AFuF++l3c2F76WDXIDGZtcItqcPWnONdRGdAMx6+ms4yYGJdyGt5jcGZ
-	/uiLGzt0vMqomOMI6n87z+vxfUS2YdNxWcyY0Xg9b5XTFWB2FLdiitKX
-X-Gm-Gg: AYBFou1/PGI8N+6pdKpiGr2KqqA1gYX7E8US+/d7oodMla+mwbneFhkcEi8bL1Iof+b
-	gUlojPGwrm4v8l0KylZ+pwXTJ97P4fKc/KDb0epGWtXM/nuOQLw+YdCNGAqh15AlOaVEheRSdKQ
-	ZfT3AXZNXHIBnUpDKu3diItfRp7FDwQ7wYl+KYVUz9XcHQ0jsA0RwKsAy697cpFLZ+gx5YLon4V
-	TGFE4f98/xfp4Qcpc+f9qiUVwgyyuU369hxmjvIgPEA+ABDd5f+6htXg4is9cWVyXSGQUuVED1O
-	j7apIqxtID+7X1pDB1r2rZFJEPlLGPPa8c23vBM2/aj096RUDguVBpAhIpQks76pvo1zFdramjE
-	ASa78F+dQKRDItDIT5tG60HhCBxTF1w2I63ix2H88N4kkjKGpBl7aaX4QtsxorBCAUPdihL5ICD
-	6o9Z7Pb36Qm4PcGLZC/zubLyXeNF1BgUv4aRjuu0UEg9Kaqh8q0KKZ
-X-Received: by 2002:a05:6102:f11:b0:789:3f43:645b with SMTP id ada2fe7eead31-78a1f12285bmr3209154137.2.1788409503017;
-        Wed, 02 Sep 2026 21:25:03 -0700 (PDT)
+        bh=IlvKvqaox0NfebLUVzqa94KBTGlj+HyEivmqV8xa538=;
+        b=CGiv2+J2ds8eE3Fqt3zG+/vRNNp/a5A9D/qTfBLWBrfHM17TuPmjWp94fombTzNQfY
+         rAA+ffSGXB8xCwH6H2zr4qxlfZ8nh894DP5zyc+9wNysuNMC6wuuqp76udu0bUpfd9Wu
+         L2Pko2Z1dOqpWgFy3x5Vlmyv4ftibEWMP46jrvZZItwAO7xBkzJ/HKCkiXtTVHoOLmVi
+         zMCdqvydUVRD6rjytC0oqaLT0wDJGG8OlH6A2QSiksIjHnOLG4e4s43j1y/b1cPmFb4Y
+         TkqxVqS219OMtV7EqLBhS5T7uR1ARojOKzvofNpuPFwSi0BWvy6HUb+ExL1H1HDs4xNH
+         22Tg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788409506; x=1789014306;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=IlvKvqaox0NfebLUVzqa94KBTGlj+HyEivmqV8xa538=;
+        b=c3rggAF1IFFaHwgMn1s3M45dVgPm2Lh2liVOmp5+MNu+je4Q13z+HykNO2DwlFWqLy
+         bzCDiQIETSdj99nMy5tzAHEcvk8cQ61lwfWseQ5oy1BVt3/FV79nNjU1TbY/YuzhWxGK
+         Frugg/oA8Yi/GPdGu10rxmpI/FcXhRnTxD6aMkzjt56TxqgMZQk7a8trY2ZkORanhYp5
+         xvsfHVG4aZwxPO1qiZ79a/jsvKD9TnU/3fx41pVOOWUYTcTCTIhLqInvEXXqTAJxvuDx
+         BXpwINCqwsYb4PJ/VAP3gLWb+OIJ43upsJmgDKpJvUQNcnIhEGGbPSgzv4lDYTXuSIj+
+         jrDA==
+X-Forwarded-Encrypted: i=1; AKwUvBzgtuhp8vdNnftSCSjmxQm1mhQS2+mPR9emGc8IEkQIL/KKU00A3WSe+wYtRLmMzn3iwmfAs8sMEEOCKVw=@vger.kernel.org
+X-Gm-Message-State: AFuF++n75VZoqBQp85YgMBk2i6URMQfnP7AHgbTTOGjPAxLxHTowtrWD
+	urVrOgTR4EvSEi8iTpByszTMyan2Mr57EVp7dSWmGPACW+N0Thw9QjvYlDqukU77xhU=
+X-Gm-Gg: AYBFou3bDby3TzgHtZsHsObHfT2l6CvtRwHUDfei4yKez3cR53RcZjzd2fys6HAmjtY
+	Q8P8mdlqcdlOgu0fX3zPn3DeWVTbpdtk6njGi3uS8rc6lvqckBDGX0kwKdsIlWc/1z0p7saZFi7
+	2ZWfmAIxSt0AmYOvj62B+EejWULPA+w3mDSk4FBBRrBU7/H9yBN0nALRIEg3KmEZ+SNXNRE0lr0
+	XpCM3Wg3hHoTmjl+hkG0JBc6+s/dkGXBiGib7t14SC0HNL1jWYR2bnTDr+dDnEI+jLc0qbSroj8
+	3EJ+BF8rgg/agKGZRNBkk4jwm2vTrR+vwIvtUeNyt2sC4gd1liROEdoHPoIL0dBrQ2ugxs70Jhs
+	/3sxjpUN9AKg9DJRC0jgUEp3nOCm0+l+cN54mM3laooKfeSvbDUlAknITA82VRUBNRk2Nc7iiqR
+	l1Ji/JqgvUAFFudgB7BSfNznBvIZS93rAPMi+BtDoX9qoA6qgXtwjPSADIBzpnLeQ=
+X-Received: by 2002:a05:6102:291f:b0:786:cdba:8f6d with SMTP id ada2fe7eead31-78a2edc5af5mr988472137.1.1788409505843;
+        Wed, 02 Sep 2026 21:25:05 -0700 (PDT)
 Received: from adriano ([190.215.95.120])
-        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-78a1a4b1143sm3857241137.7.2026.09.02.21.25.00
+        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-78a1a4b1143sm3857241137.7.2026.09.02.21.25.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Sep 2026 21:25:02 -0700 (PDT)
+        Wed, 02 Sep 2026 21:25:05 -0700 (PDT)
 From: Adriano Cordova <adrianox@gmail.com>
 To: gregkh@linuxfoundation.org
 Cc: johan@kernel.org,
@@ -63,11 +65,14 @@ Cc: johan@kernel.org,
 	linux-usb@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	Adriano Cordova <adrianox@gmail.com>,
-	syzbot+473d7477c523b41d4046@syzkaller.appspotmail.com
-Subject: [PATCH v2 0/2] tty: fix break race
-Date: Thu,  3 Sep 2026 00:24:27 -0400
-Message-ID: <20260903042429.130320-1-adrianox@gmail.com>
+	syzbot+473d7477c523b41d4046@syzkaller.appspotmail.com,
+	stable@vger.kernel.org
+Subject: [PATCH v2 1/2] USB: serial: fix break_ctl() NULL-pointer dereference
+Date: Thu,  3 Sep 2026 00:24:28 -0400
+Message-ID: <20260903042429.130320-2-adrianox@gmail.com>
 X-Mailer: git-send-email 2.51.0
+In-Reply-To: <20260903042429.130320-1-adrianox@gmail.com>
+References: <20260903042429.130320-1-adrianox@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -76,31 +81,33 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-A timed break (TCSBRK/TCSBRKP) and the unconditional TIOCSBRK/TIOCCBRK
-can race against USB disconnect and call break_ctl() after the device is
-gone, dereferencing freed port data in keyspan_break_ctl().
+Don't call into the driver after disconnect, just like serial_write()
+already does.
 
-Both patches are needed: the tty core must not issue break_ctl() to a
-hung-up tty, and serial_break() must not call the driver after
-disconnect. This is the same two-layer protection read and write already
-use.
-
-Changes since v1:
-  - v1 https://lore.kernel.org/stable/20260903022452.111316-2-adrianox@gmail.com/T/#t
-  - Proper check on the tty side, plus check on the USB side.
-  - Tested syzbot
-
+Fixes: 9e98966c7bb9 ("tty: rework break handling")
 Reported-by: syzbot+473d7477c523b41d4046@syzkaller.appspotmail.com
 Link: https://syzkaller.appspot.com/bug?extid=473d7477c523b41d4046
 Tested-by: syzbot+473d7477c523b41d4046@syzkaller.appspotmail.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Adriano Cordova <adrianox@gmail.com>
+---
+ drivers/usb/serial/usb-serial.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Adriano Cordova (2):
-  USB: serial: fix break_ctl() NULL-pointer dereference
-  tty: fix break race
-
- drivers/tty/tty_io.c            | 19 +++++++++++++++----
- drivers/usb/serial/usb-serial.c |  3 +++
- 2 files changed, 18 insertions(+), 4 deletions(-)
-
+diff --git a/drivers/usb/serial/usb-serial.c b/drivers/usb/serial/usb-serial.c
+index 17edc057a311..5f42bfe39212 100644
+--- a/drivers/usb/serial/usb-serial.c
++++ b/drivers/usb/serial/usb-serial.c
+@@ -532,6 +532,9 @@ static int serial_break(struct tty_struct *tty, int break_state)
+ {
+ 	struct usb_serial_port *port = tty->driver_data;
+ 
++	if (port->serial->dev->state == USB_STATE_NOTATTACHED)
++		return -ENODEV;
++
+ 	dev_dbg(&port->dev, "%s\n", __func__);
+ 
+ 	if (port->serial->type->break_ctl)
 -- 
 2.51.0
+
