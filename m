@@ -1,127 +1,65 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 750FE349CFF
-	for <linux-serial@vger.kernel.org>; Thu,  3 Sep 2026 04:41:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F339B2BDC1C;
+	Thu,  3 Sep 2026 06:22:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788410479; cv=none; b=klQkEl7kDBTLHStOflj8oEQVPVCjZPU/3Wp3WfKSquNfTh5LZerI3t/TZ3ATA/3v2pFboFJ/Jy/OCLxZ/wWxGoIAh1YozF9XMhOhXdewiD8FRo/oSkLUU3DVomD9/M5HZEZMODkJsrmDaGZNGyue4C1GFeojrf2u0SoWAsvKMrw=
+	t=1788416572; cv=none; b=mnmOqwv39XYQBw+35CyV4RgRIODq4u1k4Ei311W3sSVjC1o94R4RWAxa2Qd+7iXVVJs6DL0qF/LJRjf5zi0PyY/o3oHztxOvNfgxLYep1fO5gAQxLF58jwIT26pkOfHEI9JN0HLl9Z9460gFQcDLYWyTwCkDpGmB3gKdKI9GKCc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788410479; c=relaxed/simple;
-	bh=OND0w7zrYzQQfAH1tzfSSqZzMKCffkJ2CeBmdt1K1Ck=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=KPJgEEL7SKY7q7Q/nTKrtXQs3Rs++Hgm9L/p99MbKeDc7bNQ7etsw8N+fMwzSv3Ubw5usxHIsccghGQNCtaMMxSlwNkks85ChU/3LpOBo6I9rI3l9xWbdfhdTf4rsPWt3lbyqn+bAuUn5DOHj6gXXtNSqaD6UV5L2ojb8/1GxOA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=S0XT3nwj; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788416572; c=relaxed/simple;
+	bh=SPjbvjqFzPYXc/5jyw1jOrHWb439uS/VAFjAOJWepVE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Zwq0a6P91sHubq1OFz4qBKA2RlXcMEZzipfOH4fEGiacqIjkWT8jw3Z5OjF5ycg9ucZkA09etxWjmfs1J7BUcHYJNZ/uXbWt877NOHocoJLxuxo4/FRk3h/GNkFz2I0GULEM5CEn3Nct70UBZmLHbDcuVCwAiDKM+r96rRFsIKI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oNayyroB; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="S0XT3nwj"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC8701F000E9;
-	Thu,  3 Sep 2026 04:41:17 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oNayyroB"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A85561F000E9;
+	Thu,  3 Sep 2026 06:22:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788410478;
-	bh=DmqihUeZgN5VMon4nCB5pT2wbnL+QBf3bT3LwvpGAWE=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=S0XT3nwjZUrM9x8h/dgzwBbfoLdQPuX66Qq82S+bD+00suGNf4sOb1Db7cyz4CN+i
-	 03xMCSUD2+H1ej1Hb5mIYyo7l+FaR1p1hRG4vZh3PUbDq+xysTxCKYP5cjEFSSvhX3
-	 vlIlERhBwoTfnY0JZbJVxO+hVsbsDFbtW9NsxTkE/3C00uCIc9gXRylt1ICjSVk84+
-	 GiRDCJtPILH6DJz4OsMp0H90NerDVMXxephsiS3q4TF1yTho+YDN7YcTQAXcDLT524
-	 1gMf+aNs4fCJ05/njgSKO06qpT2pa+zGobtbPPrWlcGV3TWqceTVBlihVYU7STJ8do
-	 ll+vA5MnOs0vA==
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v2 1/2] USB: serial: fix break_ctl() NULL-pointer
- dereference
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Adriano Cordova" <adrianox@gmail.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20260903042429.130320-2-adrianox@gmail.com>
+	s=k20260515; t=1788416570;
+	bh=LNn6FhP4Ixqm5wtWc/cWwD5g9WnADR1+htVn+9RzmaI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=oNayyroB3ST+gfb2pdnh6jgIbbOmB6eVHjuIfTwrkksflS8ToI08LlOcwUVwBpZ95
+	 rJD/Yl+iwRukoiXaYH7D+7xtJX+COZiK+1AojT/PaQ4XcOlWf98ApV/dPUAEOS0acV
+	 o2MI4htsYOAB+gJXQhLAodFIiSMvRzYJBMSsncheABkeG/ulp4SXXeDIKt6CLvrG+B
+	 bxGybsVoA7jVAJ75Z7RXEAljFA+WzYu8vo3wWHBPjh4LNOJ6B577DAeu2DUeHX2WpE
+	 No3S9m8Xj+CIVavxB42zANtceD1PNvaNuM4JflWB9fx55GfRIZwGQZmWIm2O8wHkhf
+	 JjxewzvzzZ+Jw==
+Received: from johan by xi.lan with local (Exim 4.99.4)
+	(envelope-from <johan@kernel.org>)
+	id 1x20qW-00000005jsG-29wj;
+	Thu, 03 Sep 2026 08:22:48 +0200
+Date: Thu, 3 Sep 2026 08:22:48 +0200
+From: Johan Hovold <johan@kernel.org>
+To: Adriano Cordova <adrianox@gmail.com>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
+	linux-usb@vger.kernel.org, linux-serial@vger.kernel.org,
+	syzbot+473d7477c523b41d4046@syzkaller.appspotmail.com
+Subject: Re: [PATCH v2 0/2] tty: fix break race
+Message-ID: <apkSOF1l7VYTpzul@hovoldconsulting.com>
 References: <20260903042429.130320-1-adrianox@gmail.com>
- <20260903042429.130320-2-adrianox@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 03 Sep 2026 04:41:17 +0000
-Message-Id: <20260903044117.CC8701F000E9@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260903042429.130320-1-adrianox@gmail.com>
 
-Thank you for your contribution! Sashiko AI review found 2 potential issue(=
-s) to consider:
+On Thu, Sep 03, 2026 at 12:24:27AM -0400, Adriano Cordova wrote:
+> A timed break (TCSBRK/TCSBRKP) and the unconditional TIOCSBRK/TIOCCBRK
+> can race against USB disconnect and call break_ctl() after the device is
+> gone, dereferencing freed port data in keyspan_break_ctl().
+> 
+> Both patches are needed: the tty core must not issue break_ctl() to a
+> hung-up tty, and serial_break() must not call the driver after
+> disconnect. This is the same two-layer protection read and write already
+> use.
 
-Pre-existing issues:
-- [High] This problem wasn't introduced by this patch, but the patch's atte=
-mpt to fix it is flawed. The newly added lockless state check of USB_STATE_=
-NOTATTACHED in `serial_break` leaves a Time-of-Check to Time-of-Use (TOCTOU=
-) race window, failing to completely prevent Use-After-Free or NULL-pointer=
- dereference vulnerabilities upon concurrent device disconnect.
-- [High] This problem wasn't introduced by this patch, but while the patch =
-aims to prevent calling into the driver after disconnect, it completely omi=
-ts other TTY operations in the generic usb-serial driver, leaving them vuln=
-erable to the same Use-After-Free crashes.
---
+This doesn't work and as I said in my reply to the syzbot report I'm
+preparing a proper fix.
 
-commit 35b2c0cc5ee711aab91cfbffe24f9565620f8f65
-Author: Adriano Cordova <adrianox@gmail.com>
-USB: serial: fix break_ctl() NULL-pointer dereference
-
-This commit attempts to fix a NULL-pointer dereference by checking if the
-USB device is detached before calling into the sub-driver's break_ctl
-callback.
-
-Link: https://syzkaller.appspot.com/bug?extid=3D473d7477c523b41d4046
-
-> diff --git a/drivers/usb/serial/usb-serial.c b/drivers/usb/serial/usb-ser=
-ial.c
-> --- a/drivers/usb/serial/usb-serial.c
-> +++ b/drivers/usb/serial/usb-serial.c
-> @@ -532,6 +532,9 @@ static int serial_break(struct tty_struct *tty, int b=
-reak_state)
->  {
->  	struct usb_serial_port *port =3D tty->driver_data;
-> =20
-> +	if (port->serial->dev->state =3D=3D USB_STATE_NOTATTACHED)
-> +		return -ENODEV;
-> +
-
-[Severity: High]
-This isn't a bug introduced by this patch, but does this lockless check
-leave a Time-of-Check to Time-of-Use (TOCTOU) race window?
-
-If the thread executing serial_break() in drivers/usb/serial/usb-serial.c
-evaluates USB_STATE_NOTATTACHED to false and gets preempted, could a
-concurrent usb_disconnect() finish port_remove() and free driver-private
-data before the thread resumes?
-
->  	dev_dbg(&port->dev, "%s\n", __func__);
-> =20
->  	if (port->serial->type->break_ctl)
->  		return port->serial->type->break_ctl(tty, break_state);
-
-[Severity: High]
-This is a pre-existing issue, but does this still execute the sub-driver's
-break_ctl() function on freed memory or a NULL pointer if the race condition
-described above triggers during a concurrent TIOCSBRK or TIOCCBRK ioctl?
-
-Additionally, this is a pre-existing issue, but while this patch aims to
-prevent calling into the driver after disconnect in serial_break(), what
-protects other TTY operations in the generic usb-serial driver from the
-same Use-After-Free crashes?
-
-For example, serial_tiocmget() unconditionally calls into sub-drivers
-without checking for disconnect:
-
-drivers/usb/serial/usb-serial.c:serial_tiocmget() {
-    ...
-	if (port->serial->type->tiocmget)
-		return port->serial->type->tiocmget(tty);
-    ...
-}
-
-Similar unprotected calls appear to happen in serial_ioctl(),
-serial_tiocmset(), serial_throttle(), and serial_unthrottle(). Can these
-also be triggered by an unprivileged user spamming concurrent TTY ioctls
-(like TIOCMGET) while the physical device is unplugged?
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260903042429.1303=
-20-1-adrianox@gmail.com?part=3D1
+Johan
