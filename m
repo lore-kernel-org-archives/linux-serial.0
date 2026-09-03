@@ -1,174 +1,156 @@
-Received: from mail-vs1-f49.google.com (mail-vs1-f49.google.com [209.85.217.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B9CC3839BA
-	for <linux-serial@vger.kernel.org>; Thu,  3 Sep 2026 04:25:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A078202F71
+	for <linux-serial@vger.kernel.org>; Thu,  3 Sep 2026 04:40:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788409515; cv=none; b=EVDz+MAnpv34/5LRRJCoO66ahMZN8q85y2E1+jRCQ48E0iY/KdJQ/u3JsMGruxhCGOh8GU5lZ7JoMy8nmks4Q4srt+QSiujNX0m+ZNAtzqQ0lDtL2y8+JLrLefwvYFXtKCrqoSAgCHkub/3aJDySCFd5nbtTyxGc/xKhf7D3CtA=
+	t=1788410408; cv=none; b=UBu9Nq9liybRyJLbu4WHIzFCLjSNE9aqcUEdNUo68KFKsDYBAKqsiuzcVKAVFK6O0KqDO0YnjbVUU+PqVqRqO1dfZyWbK4khppwugMGzEglEG1baA1oNk12H9jCvvmPcE1fgqWECLRCq8lV9hGXZTsdtVV45OWu+1C1zOFtdDuo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788409515; c=relaxed/simple;
-	bh=ew07gJj3EnVaoQAPvGrzPOrhwHTzfymzVKP5nioSTs4=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=HLitC4RjaBmx11hvM/OfYyYoq3GgmobXBcLij7b1SKwxSf1uz6d7bRgtFBBw2wfTRrPgoHVpKzmTloWgikky/gLowISe2eGqcV+2Mrs1vehb8jVcxveooPC/lqkHlwR/6xxsBSlKt6Qlncq8VYPfZLGM9fsW4wqHwTCSQv9JKEc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Yv/uhisH; arc=none smtp.client-ip=209.85.217.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1788410408; c=relaxed/simple;
+	bh=KClHrlr2oo+V6uSmTtOZ+z0KU8xvouf5EFUYX6DelSs=;
+	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
+	 Message-Id; b=pt/KO08vSM5gqlUe6q/6RGsL3CUde2+ZKFFD4noIlo+O/Dmh3veEJcxLbMUHnU5G10TB6rl1RLJ/lwye7KTxJ4dqnhrECxL3ZNnuZJoboZDxZzPqRg7xsWzqmdefm4hb7mNyyH9wCLDl5F2Fi4ExVdCcwqbKvuj2a0l/rKYOHJQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LBgXw7lG; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Yv/uhisH"
-Received: by mail-vs1-f49.google.com with SMTP id ada2fe7eead31-7564b7a9490so503056137.1
-        for <linux-serial@vger.kernel.org>; Wed, 02 Sep 2026 21:25:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788409509; x=1789014309; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=nZE+MOA7ewbEt4KSRlLGrOtyyL1y6EOsD8XVCfrxcmg=;
-        b=Yv/uhisHg27qqobK58dFT9yFg3qbFMmn5PUeSrKwA/5MaTAyI+mz9RT4gLjd81PK0Y
-         bs0ZhZHeVhVpOJ8trG7LuK4/OiIWqCsrCun0O6o/GPQh2LzfUuw8lgdHntQQzTgOw9OW
-         Hu32bn/wKH6nIWlAGptBalTbDTNEyHuNCcTnDj4FeW7yGBtI29NBY8GvAlNZY2BcjcRo
-         g3nOdJTvQDP/cwUH27r1qp/PKsm+sPNT8Ni2By5eL29Txuabyj/bv1Punl8ok6boZchV
-         nq6uR49p794KHrEJFkE/WG7XYJyrCQXT6J1q5ZP/UQgSL86KlfQTZC0/S8yo0ZJih7Vb
-         oVMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788409509; x=1789014309;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=nZE+MOA7ewbEt4KSRlLGrOtyyL1y6EOsD8XVCfrxcmg=;
-        b=MZ61VKSR5HlSJDSe2w92I1avu52NRYyr5cwKe2Kbf0m6mW+5c3Rpfk6uXMBb3q4TXJ
-         p9VpZbut48xgjsa13/wgnpl2c+eKyHbTLeSeapU6Xv4KWxOBwcrDrWGNQEbTKu3a9ZwQ
-         qkl2Fl4oYC9GPsUsBG+JiZuhQvixHDbngWOWUS0cKvSMCYtZlHYuFBPIfyP+jPbs+y2q
-         PyMPo2mpbkG6Si0dyzeUKfhwaPo2jcNqjqlunMGr2yvioRyFqP9/ZTwQP5h8U2ZXG1B3
-         M3D1jDq/WsLTvTxN5AO8b2qAKdMP+nJATzsq+EU89FRJxA4JM6HuIlokgD3sZozf29Qu
-         K+GQ==
-X-Forwarded-Encrypted: i=1; AKwUvBx5+7zj/qT4ZoMBsxo631OQoCx8rQ5UFBC3PXpkyvKZmQOfaHTo3s9b3Hat9uRwIXZVmMExX+AruxeoDY8=@vger.kernel.org
-X-Gm-Message-State: AFuF++mnG7WyN6+68VbhUH7A1Sm0vpHkKxL80QF0m6sIyn9rB4wfRDqb
-	ywlMETPStlOYp0E2l/Q6hnd2PFQGn9KD3umb9zDqDzuUdCPqPNFMpdpc
-X-Gm-Gg: AYBFou2TBO+T6R7ib7qh8p6PDwpGUY7M2ScxSWSaFVTMQT2+zyQfJdlAtg2sQ5oqQWb
-	89I2mvyTPMTa4wnxJ+gFiXfudJJIZ5XbUohKgnLMsPJXt29PwX3dQH44JnyTxYa2UXauoepenwO
-	7e2e1Nv+yBGnObZkcTY1Eu4Y9JFCJOyjL+Q2o/PxYp98wuM81SH/sVHT+I3MEspw0udNUyeLG9/
-	Wk+qxPjDej4mc7aWSoGt2WnFWR+zRFqTPHitEjqfSL+siFPTYR1/eFUi6uJBxwYfIJd80UP31Yw
-	2puNwQ6SAXUor8m3L3ieCiN/xLM2xTV0A9yrIM/zlW+KLHma3FMYOzskcUJmifF7qNt643H9jKK
-	Z5Qo220H0dRhqjHBmTHNTlyw0TzasGzpAJhdkEzfm64llUrNYYm426vEsZa9fMA4u0vCeuFfBbW
-	46/bgTpF6F/fBIL7tP+yC+P+QVHrWDAv/3PpF/ILDeCr81ic670oHB
-X-Received: by 2002:a67:e010:0:20b0:782:913b:c2ca with SMTP id ada2fe7eead31-78a2f0798camr775892137.22.1788409509254;
-        Wed, 02 Sep 2026 21:25:09 -0700 (PDT)
-Received: from adriano ([190.215.95.120])
-        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-78a1a4b1143sm3857241137.7.2026.09.02.21.25.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Sep 2026 21:25:08 -0700 (PDT)
-From: Adriano Cordova <adrianox@gmail.com>
-To: gregkh@linuxfoundation.org
-Cc: johan@kernel.org,
-	jirislaby@kernel.org,
-	linux-usb@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Adriano Cordova <adrianox@gmail.com>,
-	syzbot+473d7477c523b41d4046@syzkaller.appspotmail.com,
-	stable@vger.kernel.org
-Subject: [PATCH v2 2/2] tty: fix break race
-Date: Thu,  3 Sep 2026 00:24:29 -0400
-Message-ID: <20260903042429.130320-3-adrianox@gmail.com>
-X-Mailer: git-send-email 2.51.0
-In-Reply-To: <20260903042429.130320-1-adrianox@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LBgXw7lG"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1166A1F000E9;
+	Thu,  3 Sep 2026 04:40:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1788410407;
+	bh=VS5tMc5yekpHpX+JE+4Qdb1mgtUiFH7DtNn3KIJAW3Q=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=LBgXw7lGQIml5a/M7Tifwn/53ZgzCJSB7BoPW2DLRjH4+rUBWPwTeJUvrQ+aeUU2t
+	 JNJc8pCM8tvMM6YOm9A+bEI7viANKwvBfq6i5M5Lj1+UMxWqnxqclPZu5DTydtNpRI
+	 D1r1QuP9+JQy/azjYfnstPiev6XE/r++MtC/QVquXDYzbgZXoOEvmuCTrqxWZd6IVn
+	 qnkJLv7Kdhuf67o+LDC1sfQP6TKvaw+PVbztbWhkJGzSUOBq5nCL3qJ2IWDgqLTDhB
+	 TXJ3lPJugAh+XAmBUNKoPkCdVxyoBwT1PyCy1qhCJrVab9Hy8N712MPTV/by95FjfB
+	 bs37ihMZEj2Eg==
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH v2 2/2] tty: fix break race
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Adriano Cordova" <adrianox@gmail.com>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20260903042429.130320-3-adrianox@gmail.com>
 References: <20260903042429.130320-1-adrianox@gmail.com>
+ <20260903042429.130320-3-adrianox@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 03 Sep 2026 04:40:06 +0000
+Message-Id: <20260903044007.1166A1F000E9@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-A timed break (TCSBRK and TCSBRKP) can race against hangup and call
+Thank you for your contribution! Sashiko AI review found 1 potential issue(=
+s) to consider:
+
+Pre-existing issues:
+- [High] The lockless checks of `tty_hung_up_p(file)` introduce a Time-of-C=
+heck to Time-of-Use (TOCTOU) race against `__tty_hangup`, failing to fully =
+resolve the Use-After-Free/NULL pointer dereference.
+--
+
+commit 8d56321f205bd51f6c216651862e6a270f2637ea
+Author: Adriano Cordova <adrianox@gmail.com>
+
+tty: fix break race
+
+This commit attempts to fix a race condition where a timed break can call
 break_ctl() on a tty whose driver data is gone, causing a use-after-free
-or NULL-pointer dereference in the driver.
+or NULL-pointer dereference. It adds checks for the tty hung-up state
+before each break_ctl() call.
 
-Check the tty hung-up state before each break_ctl() call, including the
-unconditional TIOCSBRK/TIOCCBRK paths, so the driver is no longer called
-after hangup.
+Link: https://syzkaller.appspot.com/bug?extid=3D473d7477c523b41d4046
 
-Suggested-by: Johan Hovold <johan@kernel.org>
-Reported-by: syzbot+473d7477c523b41d4046@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?extid=473d7477c523b41d4046
-Tested-by: syzbot+473d7477c523b41d4046@syzkaller.appspotmail.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Adriano Cordova <adrianox@gmail.com>
----
- drivers/tty/tty_io.c | 19 +++++++++++++++----
- 1 file changed, 15 insertions(+), 4 deletions(-)
+> diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+> index 48569035da56e..272f2839acdba 100644
+> --- a/drivers/tty/tty_io.c
+> +++ b/drivers/tty/tty_io.c
+[ ... ]
+> @@ -2438,13 +2439,16 @@ static int tiocgetd(struct tty_struct *tty, int _=
+_user *p)
+>   * Locking:
+>   *	@tty->atomic_write_lock serializes
+>   */
+> -static int send_break(struct tty_struct *tty, unsigned int duration)
+> +static int send_break(struct file *file, struct tty_struct *tty, unsigne=
+d int duration)
+>  {
+>  	int retval;
+> =20
+>  	if (tty->ops->break_ctl =3D=3D NULL)
+>  		return 0;
+> =20
+> +	if (tty_hung_up_p(file))
+> +		return -EIO;
+> +
 
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 48569035da56..272f2839acdb 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -2429,6 +2429,7 @@ static int tiocgetd(struct tty_struct *tty, int __user *p)
- 
- /**
-  * send_break - performed time break
-+ * @file: file object
-  * @tty: device to break on
-  * @duration: timeout in mS
-  *
-@@ -2438,13 +2439,16 @@ static int tiocgetd(struct tty_struct *tty, int __user *p)
-  * Locking:
-  *	@tty->atomic_write_lock serializes
-  */
--static int send_break(struct tty_struct *tty, unsigned int duration)
-+static int send_break(struct file *file, struct tty_struct *tty, unsigned int duration)
- {
- 	int retval;
- 
- 	if (tty->ops->break_ctl == NULL)
- 		return 0;
- 
-+	if (tty_hung_up_p(file))
-+		return -EIO;
-+
- 	if (tty->driver->flags & TTY_DRIVER_HARDWARE_BREAK)
- 		return tty->ops->break_ctl(tty, duration);
- 
-@@ -2455,7 +2459,10 @@ static int send_break(struct tty_struct *tty, unsigned int duration)
- 	retval = tty->ops->break_ctl(tty, -1);
- 	if (!retval) {
- 		msleep_interruptible(duration);
--		retval = tty->ops->break_ctl(tty, 0);
-+		if (tty_hung_up_p(file))
-+			retval = -EIO;
-+		else
-+			retval = tty->ops->break_ctl(tty, 0);
- 	} else if (retval == -EOPNOTSUPP) {
- 		/* some drivers can tell only dynamically */
- 		retval = 0;
-@@ -2714,10 +2721,14 @@ long tty_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
- 	 * Break handling
- 	 */
- 	case TIOCSBRK:	/* Turn break on, unconditionally */
-+		if (tty_hung_up_p(file))
-+			return -EIO;
- 		if (tty->ops->break_ctl)
- 			return tty->ops->break_ctl(tty, -1);
- 		return 0;
- 	case TIOCCBRK:	/* Turn break off, unconditionally */
-+		if (tty_hung_up_p(file))
-+			return -EIO;
- 		if (tty->ops->break_ctl)
- 			return tty->ops->break_ctl(tty, 0);
- 		return 0;
-@@ -2727,10 +2738,10 @@ long tty_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
- 		 * This is used by the tcdrain() termios function.
- 		 */
- 		if (!arg)
--			return send_break(tty, 250);
-+			return send_break(file, tty, 250);
- 		return 0;
- 	case TCSBRKP:	/* support for POSIX tcsendbreak() */
--		return send_break(tty, arg ? arg*100 : 250);
-+		return send_break(file, tty, arg ? arg * 100 : 250);
- 
- 	case TIOCMGET:
- 		return tty_tiocmget(tty, p);
--- 
-2.51.0
+[Severity: High]
+This isn't a bug introduced by this patch, but does this lockless check ful=
+ly
+resolve the Time-of-Check to Time-of-Use (TOCTOU) race? If a concurrent thr=
+ead
+executes __tty_hangup() immediately after tty_hung_up_p() evaluates to fals=
+e,
+could __tty_hangup() tear down the driver data before tty->ops->break_ctl()
+is executed on the hardware break path, leading to a use-after-free?
 
+>  	if (tty->driver->flags & TTY_DRIVER_HARDWARE_BREAK)
+>  		return tty->ops->break_ctl(tty, duration);
+> =20
+> @@ -2455,7 +2459,10 @@ static int send_break(struct tty_struct *tty, unsi=
+gned int duration)
+>  	retval =3D tty->ops->break_ctl(tty, -1);
+>  	if (!retval) {
+>  		msleep_interruptible(duration);
+> -		retval =3D tty->ops->break_ctl(tty, 0);
+> +		if (tty_hung_up_p(file))
+> +			retval =3D -EIO;
+> +		else
+> +			retval =3D tty->ops->break_ctl(tty, 0);
+
+[Severity: High]
+This is a pre-existing issue, but does checking tty_hung_up_p() here under
+atomic_write_lock provide mutual exclusion against __tty_hangup()? Could a
+concurrent hangup occur right after this check, causing the subsequent call
+to tty->ops->break_ctl() to dereference freed driver data?
+
+>  	} else if (retval =3D=3D -EOPNOTSUPP) {
+>  		/* some drivers can tell only dynamically */
+>  		retval =3D 0;
+[ ... ]
+> @@ -2714,10 +2721,14 @@ long tty_ioctl(struct file *file, unsigned int cm=
+d, unsigned long arg)
+>  	 * Break handling
+>  	 */
+>  	case TIOCSBRK:	/* Turn break on, unconditionally */
+> +		if (tty_hung_up_p(file))
+> +			return -EIO;
+>  		if (tty->ops->break_ctl)
+>  			return tty->ops->break_ctl(tty, -1);
+
+[Severity: High]
+This isn't a bug introduced by this patch, but do these unconditional break
+paths suffer from the same TOCTOU race? Since they do not hold tty_lock,
+could a concurrent __tty_hangup() free the driver data between the
+tty_hung_up_p() check and the break_ctl() call?
+
+>  		return 0;
+>  	case TIOCCBRK:	/* Turn break off, unconditionally */
+> +		if (tty_hung_up_p(file))
+> +			return -EIO;
+>  		if (tty->ops->break_ctl)
+>  			return tty->ops->break_ctl(tty, 0);
+
+[Severity: High]
+This is a pre-existing issue, but similar to TIOCSBRK, is this unprotected
+check before unconditional break off vulnerable to a concurrent hangup?
+
+>  		return 0;
+
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260903042429.1303=
+20-1-adrianox@gmail.com?part=3D2
