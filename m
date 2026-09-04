@@ -1,44 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C348C415F06;
-	Fri,  4 Sep 2026 06:48:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF16E376BC1;
+	Fri,  4 Sep 2026 06:49:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788504499; cv=none; b=G9Xiz3XHAcH5tYq56C6NUQT7OY5U1yrHwsWiioZZvtM10GCJCjH3TJWjom6ON3uNwnDrbcpDrvlLydxBhcluL/80PBzWG9p+8QTaMNgiklhj3j9Q0Gw9xDKJ/SnSIgmwOn5i0q1ansCiI6TnXmuTmx6jvHjR3lWo8b/Fd7hY3uM=
+	t=1788504585; cv=none; b=TxjGrO5DLwnHR8/YJup3Nxc2dy34QDOG/g5VRUGrae7Nph9Oomv0gi7KH8lOU4YZWv44L7ZZXGns2qNddsdUfw1wWlYUxTzLi6rfGYAmpyBP6WhuZnsvIi1H4BgCiWU1UuywjqQC8A29JsHU0IU3rf8ykwUI1c4hSxNPTxHk+r8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788504499; c=relaxed/simple;
-	bh=6YHVPHcPX/QZKEftTsIn+QSNdP5FqgYws96eGN4uCkc=;
+	s=arc-20240116; t=1788504585; c=relaxed/simple;
+	bh=ZBpG+wfHYpn1XE10aS2uraxaO3T41Y3FXfoGbHpWA3s=;
 	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=S+9E1uZBmkd492dhTOJK8acp0auaLoUsocjJuFTa9vOdCCze20u02N+GEvC/gcDoLvbhhpXLoQBCYDP9WNqaFs41qKc0GJM2PyLw+umne2TEv/2EPWapTWkUlKWVPb2QnVkZ/2vWEB3npCnYRTuurvbZ4CvybzuGNF7dlsbf7io=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QylvMCI8; arc=none smtp.client-ip=100.103.45.18
+	 Message-Id; b=VsHQmtv5GIBjPAyJAeyEYXsY3+g5FvtcaIFZj+3jsPDrMi5leLsk46Jy3r4vHvej+3IqFDNdTg3hDxEpmvwGpez9ktOmAA5y+fdXw0eAsswzvjifFwp3kA4CVcKW0GWpDAr2/9c6UYB+e5omY6eP1O/OxQ1cNJw8IaERRVTZRNU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=foVEGee6; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QylvMCI8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFC171F00A3D;
-	Fri,  4 Sep 2026 06:48:16 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="foVEGee6"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F37201F00A3D;
+	Fri,  4 Sep 2026 06:49:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788504497;
-	bh=6YHVPHcPX/QZKEftTsIn+QSNdP5FqgYws96eGN4uCkc=;
+	s=k20260515; t=1788504583;
+	bh=ZBpG+wfHYpn1XE10aS2uraxaO3T41Y3FXfoGbHpWA3s=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=QylvMCI8K9CKMJUaFFrsuzu+q2wcVIa6kCtUMzuQH4V/xtWQ6gJ07GJxQAaev3nZB
-	 PY9q1HqyY1i46MKp2xngl7YP6cEdT43QzYCSV+8gxgyR0qE9IhUmJS/1FcBsd3LQxp
-	 DBiczmwv5/xwFgN+fVrfvoTZ3F7wPjquCEuY5ebtSpHdv6YLatXVMzTSeJ+wtVexR5
-	 zxZ+LphnxmM69jK9ib74Lg6wukyOyL5mbHziwt+CTMZT+bOY4IuC59fkB831w1FAxq
-	 MvzksG4ODxSV6w6pHiNY0RVJ3f93OG6i2T4lZptdiWRBdXJFEu83o4iL3PU9zchVMA
-	 8S4/9dBZwBP4A==
+	b=foVEGee6jSTLqpEzThiX8AVglRTvH8R/QiV2vmAuariSib1/bZOiGaGWy0InlFqyq
+	 fuLEUMogMTd7zhaCjBrsJd8l+hYohZuDp/EGk9NBjlyuDMYbTjlIIVMQug9u1rro7E
+	 ds1A3NMGrKVH/6X5HpmdGRJ7fRhQvFceFVUKa/lqTD3ccNWXpCiRn9ZQyHSfAXgNm+
+	 hkatAzSgMWDUA8zH8nb6Al8DLZQH0366KcS1CqdGCBB4oxJpkiQhLUec/y+H1pQ6Or
+	 KRFFqEeBd+cjKf8vRh9G2hEDEUzhcJ0oEn6zJDAmMCP8KpX+JjC6dgRIrJe6lPQ+Ys
+	 A0ShedVTy+y6w==
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v6 12/13] arm64: ambarella: add ARCH_AMBARELLA and CV75
- EVK DT
+Subject: Re: [PATCH v6 09/13] gpio: pl061: use gpio-regmap and add Ambarella
+ layout
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Long Zhao" <longzhao@ambarella.com>
-Cc: lee@kernel.org, mfd@lists.linux.dev, linux-serial@vger.kernel.org, linux-clk@vger.kernel.org, robh@kernel.org, conor+dt@kernel.org, devicetree@vger.kernel.org
-In-Reply-To: <20260904-cv75-v5-v6-12-e918514cb3b1@ambarella.com>
+Cc: robh@kernel.org, devicetree@vger.kernel.org, lee@kernel.org, conor+dt@kernel.org, mfd@lists.linux.dev, linux-serial@vger.kernel.org, linux-clk@vger.kernel.org
+In-Reply-To: <20260904-cv75-v5-v6-9-e918514cb3b1@ambarella.com>
 References: <20260904-cv75-v5-v6-0-e918514cb3b1@ambarella.com>
- <20260904-cv75-v5-v6-12-e918514cb3b1@ambarella.com>
+ <20260904-cv75-v5-v6-9-e918514cb3b1@ambarella.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Fri, 04 Sep 2026 06:48:16 +0000
-Message-Id: <20260904064816.DFC171F00A3D@smtp.kernel.org>
+Date: Fri, 04 Sep 2026 06:49:42 +0000
+Message-Id: <20260904064942.F37201F00A3D@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -47,8 +47,10 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
 > From: Long Zhao <longzhao@ambarella.com>
 >=20
-> Enable ARCH_AMBARELLA and add a minimal CV75 SoC / EVK device tree for
-> console bring-up with the RCT clocks, UART, pinctrl and GPIO banks.
+> Convert PL061 data and direction handling to gpio-regmap while
+> keeping the existing PL061 irqchip path. Add an Ambarella CV75
+> register layout variant on the AMBA bus, without claiming unverified
+> GPIO suspend/resume support for Ambarella.
 >=20
 > Signed-off-by: Long Zhao <longzhao@ambarella.com>
 
@@ -56,5 +58,5 @@ Sashiko has reviewed this patch and found no issues. It looks great!
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260904-cv75-v5-v6=
--0-e918514cb3b1@ambarella.com?part=3D12
+-0-e918514cb3b1@ambarella.com?part=3D9
 
