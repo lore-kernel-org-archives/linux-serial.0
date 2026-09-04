@@ -1,185 +1,151 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD0D53F58E8
-	for <linux-serial@vger.kernel.org>; Fri,  4 Sep 2026 07:27:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A30523FFD;
+	Fri,  4 Sep 2026 07:28:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788506875; cv=none; b=cAWMO49ZXz7qRpT0jp8HETNULh5BUxuSUegppLy1T9LDc+A/NOavxkodtnG1C2V4LSOA/oEHCaZ06jyJ8dJYmtQZcZAZ8pxvEJbr9BhM9h2A6TT2L60xQdbSKVcrlvTc2pCTBZ6peD45DDcNixYMWuxZ2pGrrmm7ZaZ+ooOeZPE=
+	t=1788506898; cv=none; b=SLj+ZVlqgCytSFndKE3e9AK6ARGdlncIHeJfnbkaojaDQdh7ky+ntwttLbTbdzrfyBny8LiYhuSB5DTzPR/w37DSornN8Pv0eVp3C1upfWJdHX7rIvMjgje0XFcX4pskvY0vMKNOL20kG2L5aLOQNS3hIcATAWhqrXWtUxvXpqg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788506875; c=relaxed/simple;
-	bh=QNIM7u9W9I/sorGHoiEU4Ds1RJcNplilsok6ZEBbHKo=;
+	s=arc-20240116; t=1788506898; c=relaxed/simple;
+	bh=vB4kGG7dJ6w8KtI38TzlADTZPcWPia2HFQAsK42A9ZM=;
 	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=llw6tmhUmVDph0RPdjWiQdDPT/Tpa3MzLTdyUCAfAYpokJfGp+CEvngphJ+U+aL5YO87QeekqxFMQciiAAGTF6rkKM1oNBesBsx4ZuFV0aWtOwc2p7yWS04VkUbJy7v/fLcOrJ3+iG6iPR6adHZJ56DRdiIqFo25gAA2wIGUpiQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IymMVGr2; arc=none smtp.client-ip=100.103.45.18
+	 Message-Id; b=AT+Ejoclitdp6j64GjBz0a4b1/8iSedy0u8r728M8xHYfEC2w0f5dffS3jAG6agmRtHg1AutdLicvmh31kiReta8BjmZZccY2Qdk118IbKlw8fmHdjmfoEdv8za3q9Ehz5b2XQaOmgGsJ3rPqQLaCgGah3+DhGNbnSoz8JaFoNw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nXquAhgo; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IymMVGr2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 860F41F00A3D;
-	Fri,  4 Sep 2026 07:27:53 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nXquAhgo"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 435FA1F00A3E;
+	Fri,  4 Sep 2026 07:28:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788506873;
-	bh=+eOIor5/Z2ZCAwye3fyOPPTi8Z8S1tWy9jzDAply4mo=;
+	s=k20260515; t=1788506894;
+	bh=9SfNPWUxt92j4L5AMUeIuNGabF2yRCrMlRcUDc6/l5g=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=IymMVGr25X4+6Jgd9R8GfZg/3jAjjA9cijh6GwG99jhZ2mGxn19hwJ1H5nbXDbvVj
-	 3YkqokQdFzVJQidcheANX1qs0jIFPBO25qXTnHJeVSMXcrGNYVA+W0fo5BnWEBr8Oo
-	 4sRgeNeqyhPwbsyv+JQWEFy6WlEvdApuC7Sw1jVYtVmKlmZz69k6L6CeM50h03D7/8
-	 ISsBV++/9HkLGfz/XjA+jNrP0q8IDhEJ+ckB7/EqqqgVqi0h5Zug5K901+xirLHEW9
-	 1CoMa57WgSfVNv2zMtB5aLzu8aU+Na/qgpjqgydkpJ47BAxFbJ6vUrH6EsJm50MCMM
-	 Vsr4MiUAz86zA==
+	b=nXquAhgoDEl3ItARjEh7ZbYZncq4dT/UC2QrBthCDIO/dzkesB8CWi4HsQE/Kx4zK
+	 V9LgSw9o70FoR2mmvjh20m0cm1yMUxLA5ak3ZSDFN+yw+2m7m01eZxkJKqTdtEe+yP
+	 /EA8HV6uhgXcKfRwMde/jYUB/Dq/I9sG7uC9bWF+XFPt6bpGfDYWP4XzRPcQifl1H1
+	 0hKrEZWSa29cLZxpHqDc+qVyBgqXNkPFhBsFA+pqaMAAapiwy2uO0+/Gj2hacqhzQn
+	 /ouuu9BYnAWN7e5zYdSefmZDafGuPFYAxxZyV4muUtbQycCtoW7RreJp8xwnNtmJAP
+	 GVBB5bVl8DHag==
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH] tty: serial: qcom_geni: don't ida_free() the console
- port line
+Subject: Re: [PATCH 2/2] dt-bindings: serial: Document WK2xxx SPI UART
+ bindings
 Reply-To: sashiko-reviews@lists.linux.dev
-To: "Neil Armstrong" <neil.armstrong@linaro.org>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20260904-topic-sm8x50-upstream-tty-serial-geni-fix-ida-free-v1-1-02e18c31aeba@linaro.org>
-References: <20260904-topic-sm8x50-upstream-tty-serial-geni-fix-ida-free-v1-1-02e18c31aeba@linaro.org>
+To: zjzhao <zjzhao@edatec.cn>
+Cc: conor+dt@kernel.org, linux-serial@vger.kernel.org, robh@kernel.org, devicetree@vger.kernel.org
+In-Reply-To: <20260904072027.67473-3-zjzhao@edatec.cn>
+References: <20260904072027.67473-1-zjzhao@edatec.cn>
+ <20260904072027.67473-3-zjzhao@edatec.cn>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Fri, 04 Sep 2026 07:27:53 +0000
-Message-Id: <20260904072753.860F41F00A3D@smtp.kernel.org>
+Date: Fri, 04 Sep 2026 07:28:13 +0000
+Message-Id: <20260904072814.435FA1F00A3E@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-Thank you for your contribution! Sashiko AI review found 5 potential issue(=
+Thank you for your contribution! Sashiko AI review found 3 potential issue(=
 s) to consider:
-
-Pre-existing issues:
-- [Critical] Double free and double detach of PM domains due to mixing devm=
-_ allocation with manual cleanup.
-- [High] The allocated IDA for non-console ports is permanently leaked on m=
-ost probe error paths.
-- [High] Wake IRQ and device wakeup capabilities are leaked and not reverte=
-d on late probe failures, permanently breaking deferred probe.
-- [High] `dma_unmap_single()` is executed against an invalid DMA address if=
- `dma_map_single()` fails.
-- [Medium] Unsafe ordering of `ida_free()` and `uart_remove_one_port()` in =
-the driver's remove function.
+- [High] Multi-port UART device incorrectly modeled as a single flat node w=
+ithout subnodes, preventing per-port independent configuration.
+- [Low] Missing trailing newline at the end of the YAML file.
+- [Low] Missing `default` property for `clock-frequency` despite the descri=
+ption claiming a default exists.
 --
 
-commit b824bc9910a93e019533a2fc7bb8b725efd22ca7
-Author: Neil Armstrong <neil.armstrong@linaro.org>
+commit beaa6c014e093e4f6483f239f3024922536014b5
+Author: zjzhao <zjzhao@edatec.cn>
 
-tty: serial: qcom_geni: don't ida_free() the console port line
+dt-bindings: serial: Document WK2xxx SPI UART bindings
 
-The console port (qcom_geni_console_port) is a static instance whose
-uport.line is hardcoded to 0 and is never allocated from port_ida.
-This commit updates the probe error path and remove function to only call
-ida_free() for non-console ports.
+Add a DT binding for the WK2xxx SPI to UART bridge ICs (WK2124, WK2132,
+WK2168, WK2202 and WK2204). It covers the compatible strings, SPI propertie=
+s,
+interrupt line, and the crystal clock frequency. It also registers the wkmic
+vendor prefix.
 
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/q=
-com_geni_serial.c
-> index 3633723acef8d..bdbdfd7dfaace 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -1979,7 +1979,8 @@ static int qcom_geni_serial_probe(struct platform_d=
-evice *pdev)
->  						port->wakeup_irq);
->  		if (ret) {
->  			device_init_wakeup(&pdev->dev, false);
-> -			ida_free(&port_ida, uport->line);
-> +			if (!uart_console(uport))
-> +				ida_free(&port_ida, uport->line);
->  			goto error;
->  		}
->  	}
-
-[Severity: High]
-This is a pre-existing issue, but does the common error cleanup block fail
-to release the allocated IDA for non-console ports on other probe error pat=
-hs?
-
-If get_port_from_line() successfully allocates an IDA, but an error occurs
-later in qcom_geni_serial_probe() such as a dma_map_single() failure, contr=
-ol
-jumps to the error block which completely bypasses ida_free():
-
-error:
-	if (port->rx_dma_addr) {
-		dma_unmap_single(pdev->dev.parent, port->rx_dma_addr,
-				 DMA_RX_BUF_SIZE, DMA_FROM_DEVICE);
-		port->rx_dma_addr =3D 0;
-	}
-	dev_pm_domain_detach_list(port->se.pd_list);
-	return ret;
-
-Could this exhaust the finite pool of IDAs upon repeated deferred probe
-failures?
-
-[Severity: High]
-This is also a pre-existing issue, but does the error label handle general
-cleanup while missing the reversion of the wake IRQ and wakeup initializati=
-on?
-
-If probe sets up the wake IRQ via dev_pm_set_dedicated_wake_irq() but fails
-later, the error block completely bypasses dev_pm_clear_wake_irq() and
-device_init_wakeup().  Will dev_pm_set_dedicated_wake_irq() return -EEXIST
-upon a deferred probe retry because dev->power.wakeirq is already initializ=
-ed,
-permanently breaking the device?
-
-[Severity: High]
-Another pre-existing issue in the same error block: is dma_unmap_single()
-executed against an invalid DMA address if dma_map_single() fails?
-
-If dma_map_single() fails during probe, port->rx_dma_addr retains the mappi=
-ng
-error code.  Does the error path conditionally unmap the buffer using
-if (port->rx_dma_addr), mistakenly evaluating the non-zero error code as a
-valid address?
-
-[Severity: Critical]
-This is a pre-existing issue, but does mixing devm_ allocation with manual
-cleanup cause a double-free of the PM domains?
-
-geni_se_domain_attach() uses devm_pm_domain_attach_list() to attach the PM
-domains and registers an automatic devres cleanup handler.  However, the er=
-ror
-block in qcom_geni_serial_probe() manually calls:
-
-	dev_pm_domain_detach_list(port->se.pd_list);
-
-When devres executes its cleanup routine, won't it call
-dev_pm_domain_detach_list() again on the same freed pointer?
-
+> diff --git a/Documentation/devicetree/bindings/serial/wkmic,wk2xxx.yaml b=
+/Documentation/devicetree/bindings/serial/wkmic,wk2xxx.yaml
+> new file mode 100644
+> index 0000000000000..0ef76957d73f1
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/serial/wkmic,wk2xxx.yaml
+> @@ -0,0 +1,69 @@
 [ ... ]
+> +  clock-frequency:
+> +    description:
+> +      Crystal or external clock frequency for the IC in Hz. The WK2xxx h=
+as
+> +      no internal clock, so this must match the connected crystal. Defau=
+lts
+> +      to 11059200 Hz when the property is absent.
+> +    minimum: 1
+> +    maximum: 30000000
 
-> @@ -2024,7 +2025,8 @@ static void qcom_geni_serial_remove(struct platform=
-_device *pdev)
->  	irq_work_sync(&port->tx_kick);
->  	dev_pm_clear_wake_irq(&pdev->dev);
->  	device_init_wakeup(&pdev->dev, false);
-> -	ida_free(&port_ida, uport->line);
-> +	if (!uart_console(uport))
-> +		ida_free(&port_ida, uport->line);
->  	uart_remove_one_port(drv, &port->uport);
+[Severity: Low]
+Is it possible to include the default property value of 11059200 alongside
+the minimum and maximum constraints?
 
-[Severity: Medium]
-This is a pre-existing issue, but is there an unsafe ordering of ida_free()
-and uart_remove_one_port() in qcom_geni_serial_remove()?
+Schema validation tools and external parsers cannot automatically infer the
+default fallback value because it is documented in text but not defined as a
+JSON schema constraint.
 
-The line identifier is returned to the global port_ida pool via ida_free()
-before uart_remove_one_port() unregisters the subsystem structure that reli=
-es
-on it.  Could a concurrent probe of another qcom_geni_serial device claim
-this newly freed ID, hit the state->uart_port check in
-serial_core_add_one_port(), and fail with -EINVAL?
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +allOf:
+> +  - $ref: /schemas/spi/spi-peripheral-props.yaml#
+> +  - $ref: /schemas/serial/serial.yaml#
+> +  - $ref: /schemas/serial/rs485.yaml#
 
-[Severity: Critical]
-This is a pre-existing issue, but does qcom_geni_serial_remove() also
-manually clean up the devm-managed PM domains?
+[Severity: High]
+Does this single-node model prevent independent configuration of the
+individual UART ports?
 
-Similar to the probe error path, the remove function includes:
+Because this binding applies the serial.yaml and rs485.yaml definitions
+directly to the parent SPI device node, rather than defining child nodes li=
+ke
+serial@0 and serial@1, all configuration properties apply globally to every
+channel.
 
-	dev_pm_domain_detach_list(port->se.pd_list);
+If a user needs to configure RS-485 on only one of the 4 UART channels using
+device tree properties, the single flat node approach would force the driver
+to apply the configuration identically to every port. Should this binding be
+structured to support child nodes for individual port configuration to prev=
+ent
+permanently restricting these hardware capabilities in the ABI?
 
-Will the subsequent automatic devres cleanup trigger a double-free of the
-dev_pm_domain_list structure?
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    spi {
+> +        #address-cells =3D <1>;
+> +        #size-cells =3D <0>;
+> +
+> +        serial@0 {
+> +            compatible =3D "wkmic,wk2132";
+> +            reg =3D <0>;
+> +            spi-max-frequency =3D <10000000>;
+> +            clock-frequency =3D <11059200>;
+> +            interrupt-parent =3D <&gpio>;
+> +            interrupts =3D <24 IRQ_TYPE_LEVEL_LOW>;
+> +        };
+> +    };
+> \ No newline at end of file
+
+[Severity: Low]
+Could a trailing newline be added to the end of this file?
+
+Text files without a trailing newline violate standard POSIX conventions and
+kernel coding styles, which can cause issues with git diffs, patching, and
+text processing tools.
 
 --=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260904-topic-sm8x=
-50-upstream-tty-serial-geni-fix-ida-free-v1-1-02e18c31aeba@linaro.org?part=
-=3D1
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260904072027.6747=
+3-1-zjzhao@edatec.cn?part=3D2
