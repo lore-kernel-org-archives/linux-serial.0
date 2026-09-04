@@ -1,168 +1,162 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A5E121CA13;
-	Fri,  4 Sep 2026 06:54:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4291241F5F3;
+	Fri,  4 Sep 2026 06:57:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788504900; cv=none; b=jfgPsVMsNBL8Q1aIdBrl9fx6XdEp4ahBuUh/FctUJBnIiVMivRi7wJMEbGPdJiUi4nVHCF6IJQ/FhJFpDM2KLJ3cFHpTtWUmx6KWvVeJjmschPPp3cVx+tDWrFFxPiXLS6At9YVDU0uopKBQUfzVUT/4cZpdHHJ4S2pbH3h852M=
+	t=1788505028; cv=none; b=Kx+3TFy0r/Ak98gdPTg5UX1Dc2IlalPYSaP7SDUM7D5f+Bhahsd8Mo5lM4lb9BYVAZ9g2qzuuc2+BgBdiELJSd4sUa9TzouPEOKX5sVKXi9XR71PPLrveTcpBbEDpdr/bGj/FHpBJ8KwWLSau9ZEjn+RiSpv3BMmeFLNJ4H1+JA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788504900; c=relaxed/simple;
-	bh=Fgii7qFdaP5Z0L0em1noBtqT5ilUODRMwhDcfspneNw=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=bygmwYuZNT+B4R2jBDCV/wvYTruGEr2uzvaw0rqiHKMGUBPtokd9IG5iu5qarmXheFvanGFCnRs+oy7rl1nh0EvaaW9ephD6rGGl61Wu/lwwmqGR0Qpr6SyqH0ucGsaG2ZhhgFXEPSLQX/hMRWyGRbJ2Wxc7aGSZrgDV6+92Q7s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZdgEPhan; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788505028; c=relaxed/simple;
+	bh=1OXbOTVOgbzSk6WqVSDI7tsvaTpT7OEITmfX/7JbiU4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=TWF7ha7n5E8mW9hDMICP+5B8Aqb56g94HE+eMvO/Q5Q5CJXgSSMdyp4qS6WDsTvgLRIImHDEs49lbhs0Q1oll6/ZFIP9H2zFg0YvTnO2kGt6YDPQLJ6VzbEWJkoILbrFhCPyUv/PI+N3/68jS+dY/uOwyY05POmx5eEIfmLtILY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TjNoU2Jw; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZdgEPhan"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4542C1F00A3D;
-	Fri,  4 Sep 2026 06:54:58 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TjNoU2Jw"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 422A11F00A3D;
+	Fri,  4 Sep 2026 06:56:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788504898;
-	bh=iMHxqkpjsS/A0vccs1r3ClbkMOgxNajW+ln+ZwA9Yx8=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=ZdgEPhan+Mhao6La9RQ1FP58lfNEwIUL9HqOo4Dn0GWQaNcFuppSRfgWQ7TczmLg5
-	 dJJCf1kZejeO3PTOsYatMU6fDtiepwBk6K0OCl9j4d0gMtIU96Y5HUk6uVHa8NDVYW
-	 g2S2JSn4260QG+iaNRrgsfzUKiSrGkZcBK97lhTHHNWPbT9P2BsawhW9828173ZXQt
-	 mxl+mDZ8KfMpbX/HuYmZUTWlb56BzbfVQUw5x9kuXDMWD/uzQb8PSb8pJJ1ibPanjH
-	 7XAA7Y205FQeeMZNa94Q0pcgzRpj4Z4gTbm6++1J+KdvkCKE5imzmOBjEDRY/aNLyj
-	 myO4hUh7YNV5w==
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v6 08/13] gpio: regmap: support write_data_after_dir and
- girq
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Long Zhao" <longzhao@ambarella.com>
-Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-clk@vger.kernel.org, mfd@lists.linux.dev, robh@kernel.org, lee@kernel.org, conor+dt@kernel.org
-In-Reply-To: <20260904-cv75-v5-v6-8-e918514cb3b1@ambarella.com>
-References: <20260904-cv75-v5-v6-0-e918514cb3b1@ambarella.com>
- <20260904-cv75-v5-v6-8-e918514cb3b1@ambarella.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Fri, 04 Sep 2026 06:54:57 +0000
-Message-Id: <20260904065458.4542C1F00A3D@smtp.kernel.org>
+	s=k20260515; t=1788505027;
+	bh=/sOczCSoHOlT5c06wsTlPTIte1oRtUDVyQl+NgtAFt8=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=TjNoU2JwL8y2+0F62yHdqpIyzm5bhJm64/7EhYO2sohFwqbUFPq9Xo8QrSKicnLcF
+	 jDppBHEU61TwAFaCOm7qQpmTlNgHqsUvKfoGZEvYnTLUomZxDFPf7s95yc5B+KrLOl
+	 n+IP+rdMc6btudxyRnionbpVBjHmCLBILGCYXKrOkvDXMmeBtSnu/sExfpLib2Gqh5
+	 BnHpF+17yHfKcv1Cqz4pqYf/riICFKnR8RSBRn1FJII8wJYN/jIhVictNURZ/a/oaU
+	 GMqzBn6NS/CG0HFcKcjDjh278k6FPD9lxmrL7g+KL/GdA9cwvae/PwdIgd5l58qSdU
+	 HGJEvy5+QHNEQ==
+Message-ID: <46d21889-6b52-4c09-8f77-7c08dba93777@kernel.org>
+Date: Fri, 4 Sep 2026 08:56:53 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v6 00/13] Ambarella CV75 SoC minimal bring-up
+To: Jerome Brunet <jbrunet@baylibre.com>,
+ Long Zhao via B4 Relay <devnull+longzhao.ambarella.com@kernel.org>,
+ Arnd Bergmann <arnd@arndb.de>,
+ Alexandre Belloni <alexandre.belloni@bootlin.com>, soc@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org
+Cc: Long Zhao <longzhao@ambarella.com>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Michael Turquette <mturquette@baylibre.com>,
+ Stephen Boyd <sboyd@kernel.org>, Linus Walleij <linusw@kernel.org>,
+ Bartosz Golaszewski <brgl@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
+ Long Zhao <zl020895@163.com>, Lee Jones <lee@kernel.org>,
+ mfd@lists.linux.dev, devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+ linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+References: <20260904-cv75-v5-v6-0-e918514cb3b1@ambarella.com>
+ <1jwlt1ld6c.fsf@starbuckisacylon.baylibre.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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
+In-Reply-To: <1jwlt1ld6c.fsf@starbuckisacylon.baylibre.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Thank you for your contribution! Sashiko AI review found 4 potential issue(=
-s) to consider:
+On 04/09/2026 08:54, Jerome Brunet wrote:
+> On ven. 04 sept. 2026 at 14:38, Long Zhao via B4 Relay <devnull+longzhao.ambarella.com@kernel.org> wrote:
+>>
+>>  .../devicetree/bindings/arm/ambarella.yaml         |  24 +
+>>  .../bindings/clock/ambarella,cv75-rct.yaml         |  64 ++
+>>  .../devicetree/bindings/gpio/pl061-gpio.yaml       |  32 +-
+>>  Documentation/devicetree/bindings/mfd/syscon.yaml  |   1 +
+>>  .../bindings/pinctrl/ambarella,cv75-pinctrl.yaml   | 239 +++++++
+>>  .../bindings/serial/snps-dw-apb-uart.yaml          |   1 +
+>>  .../devicetree/bindings/vendor-prefixes.yaml       |   2 +
+>>  MAINTAINERS                                        |  14 +
+>>  arch/arm64/Kconfig.platforms                       |   6 +
+>>  arch/arm64/boot/dts/Makefile                       |   1 +
+>>  arch/arm64/boot/dts/ambarella/Makefile             |   3 +
+>>  arch/arm64/boot/dts/ambarella/cv75-evk.dts         |  30 +
+>>  arch/arm64/boot/dts/ambarella/cv75.dtsi            | 177 +++++
+>>  arch/arm64/configs/defconfig                       |   1 +
+>>  drivers/clk/Kconfig                                |   1 +
+>>  drivers/clk/Makefile                               |   1 +
+>>  drivers/clk/ambarella/Kconfig                      |  13 +
+>>  drivers/clk/ambarella/Makefile                     |   6 +
+>>  drivers/clk/ambarella/ccu-cv75.c                   | 296 ++++++++
+>>  drivers/clk/ambarella/ccu_common.c                 |  60 ++
+>>  drivers/clk/ambarella/ccu_common.h                 |  25 +
+>>  drivers/clk/ambarella/ccu_mux_div.c                | 234 +++++++
+>>  drivers/clk/ambarella/ccu_mux_div.h                |  35 +
+>>  drivers/clk/ambarella/ccu_pll.c                    | 421 ++++++++++++
+>>  drivers/clk/ambarella/ccu_pll.h                    |  70 ++
+>>  drivers/gpio/Kconfig                               |   2 +
+>>  drivers/gpio/gpio-pl061.c                          | 342 +++++----
+>>  drivers/gpio/gpio-regmap.c                         |  24 +-
+>>  drivers/pinctrl/Kconfig                            |  15 +
+>>  drivers/pinctrl/Makefile                           |   2 +
+>>  drivers/pinctrl/pinctrl-ambarella-cv75.c           | 561 +++++++++++++++
+>>  drivers/pinctrl/pinctrl-ambarella.c                | 761 +++++++++++++++++++++
+>>  drivers/pinctrl/pinctrl-ambarella.h                |  50 ++
+>>  drivers/tty/serial/8250/8250_dw.c                  |  34 +
+>>  include/dt-bindings/clock/ambarella,cv75-rct.h     |  15 +
+>>  include/linux/amba/bus.h                           |   1 +
+>>  include/linux/gpio/regmap.h                        |  13 +
+>>  37 files changed, 3439 insertions(+), 138 deletions(-)
+> 
+> That is a lot of stuff mixed into a single series that could easily split
 
-New issues:
-- [High] Unconditional assignment to the conditionally compiled struct memb=
-er `chip->irq` causes a build failure when `CONFIG_GPIOLIB_IRQCHIP` is disa=
-bled.
-- [High] The return value of the newly added `gpio_regmap_set()` call is ig=
-nored, silently dropping I/O errors.
+Well, not easily, because each split patchset would rely on non-existing
+CONFIG which could trigger warnings.
 
-Pre-existing issues:
-- [High] Hardcoded calls to `gpio_regmap_set()` in `gpio_regmap_direction_o=
-utput()` break hardware that uses a separate `reg_clr_base`.
-- [High] Missing `regmap_del_irq_chip()` in the error path of `gpio_regmap_=
-register()` leads to a resource leak and potential Use-After-Free of the re=
-gmap.
---
+Contributors follow here the correct and documented process of new SoC
+platform, I don't get why now only this patchset has to be split...
 
-commit 52a1a780fb0893e26861b516090b05377ddeade2
-Author: Long Zhao <longzhao@ambarella.com>
-Subject: gpio: regmap: support write_data_after_dir and girq
 
-Add an optional write-after-direction-output quirk for controllers that ign=
-ore
-data-register writes while a line is still configured as input. Also allow
-drivers to pass an existing gpio_irq_chip through gpio_regmap_register().
-
-> diff --git a/drivers/gpio/gpio-regmap.c b/drivers/gpio/gpio-regmap.c
-> index 51b4d69b87403..b4b492a1765c4 100644
-> --- a/drivers/gpio/gpio-regmap.c
-> +++ b/drivers/gpio/gpio-regmap.c
-[ ... ]
-> @@ -273,7 +274,15 @@ static int gpio_regmap_direction_output(struct gpio_=
-chip *chip,
-> =20
->  	gpio_regmap_set(chip, offset, value);
-> =20
-> -	return gpio_regmap_set_direction(chip, offset, true);
-> +	ret =3D gpio_regmap_set_direction(chip, offset, true);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* Some controllers ignore data writes while the line is still an input=
-. */
-> +	if (gpio->write_data_after_dir)
-> +		gpio_regmap_set(chip, offset, value);
-
-[Severity: High]
-This is a pre-existing issue, but this duplicates the hardcoded call to
-gpio_regmap_set() instead of using chip->set(). Because hardware with a
-separate reg_clr_base expects gpio_regmap_set_with_clear(), calling
-gpio_regmap_set() directly fails to clear bits when configuring the line as=
- an
-output with an initial value of 0.
-
-Could this be updated to use chip->set(chip, offset, value) so that
-controllers using reg_clr_base will function correctly?
-
-[Severity: High]
-Does this newly added call drop potential regmap I/O errors?
-
-gpio_regmap_set() returns an int to indicate success or failure, but the
-return value here is ignored, which could silently drop hardware communicat=
-ion
-failures.
-
-> +
-> +	return 0;
->  }
-> =20
->  void *gpio_regmap_get_drvdata(struct gpio_regmap *gpio)
-[ ... ]
-> @@ -390,6 +409,9 @@ struct gpio_regmap *gpio_regmap_register(const struct=
- gpio_regmap_config *config
->  	if (!gpio->reg_mask_xlate)
->  		gpio->reg_mask_xlate =3D gpio_regmap_simple_xlate;
-> =20
-> +	if (config->girq)
-> +		chip->irq =3D *config->girq;
-> +
-
-[Severity: High]
-Can this assignment cause a build failure?
-
-The irq member of struct gpio_chip is conditionally compiled based on
-CONFIG_GPIOLIB_IRQCHIP:
-
-include/linux/gpio/driver.h:
-#ifdef CONFIG_GPIOLIB_IRQCHIP
-    ...
-    struct gpio_irq_chip irq;
-#endif
-
-If CONFIG_GPIO_REGMAP is enabled but CONFIG_GPIOLIB_IRQCHIP is disabled, th=
-is
-unconditional assignment will fail to compile. Should this be wrapped in an
-#ifdef guard?
-
-[Severity: High]
-This is a pre-existing issue, but does the error path in this function leak
-the regmap IRQ chip and thread?
-
-Later in gpio_regmap_register(), if gpiochip_irqchip_add_domain() fails:
-
-    if (irq_domain) {
-        ret =3D gpiochip_irqchip_add_domain(chip, irq_domain);
-        if (ret)
-            goto err_remove_gpiochip;
-    }
-
-The code jumps to err_remove_gpiochip, which does not call
-regmap_del_irq_chip(). This leaves the IRQ thread active and referencing a
-regmap that will soon be freed, potentially causing a use-after-free.
-
->  	ret =3D gpiochip_add_data(chip, gpio);
->  	if (ret < 0)
->  		goto err_free_bitmap_output;
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260904-cv75-v5-v6=
--0-e918514cb3b1@ambarella.com?part=3D8
+Best regards,
+Krzysztof
