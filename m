@@ -1,95 +1,83 @@
-Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C92B51D519;
-	Fri,  4 Sep 2026 21:14:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1025744C66D
+	for <linux-serial@vger.kernel.org>; Fri,  4 Sep 2026 22:39:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788556448; cv=none; b=NXFfhumDZWCsFPtkwmAkUCWcVxltvJvUJhc67KzcgIKn6IBqgoGCaB02ZwAunfIrkV7BuUgpa+VVHKDqIfFV1Qj9143tF236wd6+WCfwn6wx4dr+IxR9NiMmS0dcjBmeedGA1o8DLlvRfjpk2zKpNgsquZnVre6K2oiQaPwxjwU=
+	t=1788561571; cv=none; b=MwatjYuCKECZ0A1tHNlL/ftsE9mrPJs5wEXhXVw4v+L4G21ybf+kblhRhm4tMnM8eMF2h0j+eWwm8Z1OE4+frftnWnEVkf82/u+LGav5P5MtQjnytDwH8OY+xSLW6NuiVyRwqV3ZCELfhU2XTEDcul1B5VjghyWiErG+3v4sK8s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788556448; c=relaxed/simple;
-	bh=oW+8FMTX3fx1YJOkSdZv1ftT3L6r/GyPlfRbiOhQSEU=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
-	 MIME-Version:Content-Type; b=FSgq+YJNWuxAabqIMGdnl8GzAh7C2JmAHlozNnPGUsi6AOXkmiTBzqWkBHZcHF9pUoVY58KGlsxbtvCcfLgMNRrI9mi0gslGTg0aMGEfKRJKX8+we9Eg4w2lfM6eU66kjB/q5INB2lGNtBNTNH3FSQK3q1ocf3D8OlDfLVYxmIk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=jaHEBgwF; dkim=permerror (0-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=C6/rssgy; arc=none smtp.client-ip=5.75.144.95
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mainlining.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
+	s=arc-20240116; t=1788561571; c=relaxed/simple;
+	bh=llV8+t5XVFTw1AVjhesFZp1A/YnFQGo0lCxhv7P61wE=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=g1SbqXxM9lbuNNWIAaSp3Ov0LjxdLezh855vycvDAzVVsjWyhlaYb+pYEUnJJfVp6ZAcuXT7Vz9LJ6uTDlowRyAh5DpRBmAT7PFCvjLEeXX/mN1PFI418o+t6XBUFkZJ9pPj7AYdMNiizjWxnIHkBHpjgKtkFFKls7Cfdnkinbc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TmQSKZ88; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="jaHEBgwF";
-	dkim=permerror (0-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="C6/rssgy"
-DKIM-Signature: v=1; a=rsa-sha256; s=202507r; d=mainlining.org; c=relaxed/relaxed;
-	h=Message-ID:Subject:To:From:Date; t=1788556416; bh=VBgd6iweLeSAG9K5DN5kIO0
-	YGHtnAGmR8ZU1JFZ4zAQ=; b=jaHEBgwF9VbQ68YdeRoq5EtGJ8JTluSZX7YrT4aZE8d1iFuLvn
-	EfGIM3GGWjvxJBh4OzGrstHZwEGSoCk63LqsDcg4Vd3E8sN0k3HcsXnuBIX2XHp7ccGhA+2x14E
-	sRhyqaS/yw/7RrTfS/VU4OL8RXWqB3rDX+ow7EAVC3mVvooVLcnXm/7bNwc8e4KoIkZaK6OOQ1w
-	dMr7hdOF+MUaoyjkvQeq7DSsyzrbhmTE3txZrvloTO0bQzR08Uj8Tc6hfJeciPmgeVml2HB41du
-	MQbqe/JOMbccm2wsIVK5IjmLADZRsPF57BQ/7w4dX/5grqRa/qX9/VnxiMobERUo66w==;
-DKIM-Signature: v=1; a=ed25519-sha256; s=202507e; d=mainlining.org; c=relaxed/relaxed;
-	h=Message-ID:Subject:To:From:Date; t=1788556416; bh=VBgd6iweLeSAG9K5DN5kIO0
-	YGHtnAGmR8ZU1JFZ4zAQ=; b=C6/rssgyouGsbwmXKh6JwZyEC2+4Fz2ZiQWi2ncMRXwzKnEO9P
-	MKNNSkgVXVkC5zJEVCOYv/DGxrdJezxs6uDg==;
-Date: Fri, 04 Sep 2026 22:13:32 +0100
-From: Bradley Morgan <brads@mainlining.org>
-To: Jakub Kicinski <kuba@kernel.org>
-CC: linux-kernel@vger.kernel.org, Tejun Heo <tj@kernel.org>,
- Frederic Weisbecker <frederic@kernel.org>,
- Peter Zijlstra <peterz@infradead.org>, Waiman Long <longman@redhat.com>,
- Christian Brauner <brauner@kernel.org>, Kees Cook <kees@kernel.org>,
- Andy Walls <awalls@md.metrocast.net>,
- Mauro Carvalho Chehab <mchehab@kernel.org>,
- Andrew Lunn <andrew+netdev@lunn.ch>,
- "David S . Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Paolo Abeni <pabeni@redhat.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, "Rafael J . Wysocki" <rafael@kernel.org>,
- Viresh Kumar <viresh.kumar@linaro.org>, Ingo Molnar <mingo@redhat.com>,
- Vincent Guittot <vincent.guittot@linaro.org>,
- Dietmar Eggemann <dietmar.eggemann@arm.com>,
- Steven Rostedt <rostedt@goodmis.org>, linux-media@vger.kernel.org,
- netdev@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-pm@vger.kernel.org
-Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_v2_0/5=5D_kthread=3A_convert_re?=
- =?US-ASCII?Q?maining_users_to_kthread=5Fcreate=5Fworker?=
-In-Reply-To: <20260904141032.34f7ed1b@kernel.org>
-References: <cover.1788513591.git.brads@mainlining.org> <20260904085418.50d66b34@kernel.org> <84548BCE-377E-4900-A2EF-177B0CC1B0D0@mainlining.org> <20260904141032.34f7ed1b@kernel.org>
-Message-ID: <2AE8656F-326C-40B5-BA11-EB9CD72D2AF7@mainlining.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TmQSKZ88"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AD1F1F01564
+	for <linux-serial@vger.kernel.org>; Fri,  4 Sep 2026 22:39:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1788561568;
+	bh=llV8+t5XVFTw1AVjhesFZp1A/YnFQGo0lCxhv7P61wE=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc;
+	b=TmQSKZ88V4EGqJifsEp+kZ1YixheuM0ONQhC6ST5IL01g+nhibxZhhf862xYvGKiH
+	 zsL6NdJqRE+8cN1+VwhP5RbcocJ2qECR7DnI8Iv+IHuT7vV9bFqiv6IxNyNxc7AnKC
+	 jvnCWfirZFg+sfpoGgMmQfw5FMbvxJKL8jrVzg6wCknRaHWEIQW+26xRLPkPp6IIA0
+	 1Ij41r0fZpIF5xen12KtRMK1loX6JFhp82ACkNDplK8bRD363CGaVx4pITobwiNhEO
+	 UkWhB7Xwkr33bWh7UYYSA9OPrUsRBgpEwUZDefYoz68AWWve8POgu7uDBwiSMOKzcx
+	 qryaovYBoxAsg==
+Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-5b6036e9c70so1222664e87.1
+        for <linux-serial@vger.kernel.org>; Fri, 04 Sep 2026 15:39:28 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AKwUvBzMFBIJbA+3t1/3QNcXaFoVBogFlgfquswpoXZ/NQEn8DPk2efp3MMG91dyIIpo4o+I62S6DSulwC4HNrA=@vger.kernel.org
+X-Gm-Message-State: AFuF++mFPvhuAvxY8403ksXAIhsh5x3uFoK/KqAohxsTMLX01aNM2dOs
+	j3qWBUfgN/i6aoCr0Lz1tXv25QDM7jJ0C+SIyPSg0xzXMeGVhuku0iAsCH9YdKnL1KiWkFb9WQ8
+	u4+fhjzd0cdD5S/MnzpzSI0Y7fSmEv/c=
+X-Received: by 2002:a05:6512:6186:b0:5b6:1a7c:3b with SMTP id
+ 2adb3069b0e04-5b61a7c02e6mr1037141e87.62.1788561566902; Fri, 04 Sep 2026
+ 15:39:26 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 8bit
+References: <20260904-cv75-v5-v6-0-e918514cb3b1@ambarella.com> <20260904-cv75-v5-v6-1-e918514cb3b1@ambarella.com>
+In-Reply-To: <20260904-cv75-v5-v6-1-e918514cb3b1@ambarella.com>
+From: Linus Walleij <linusw@kernel.org>
+Date: Sat, 5 Sep 2026 00:39:15 +0200
+X-Gmail-Original-Message-ID: <CAD++jLm3KLqaQZFsb2Yu0pERjCfrskL=x3arMtrY3Gq6X4rgZg@mail.gmail.com>
+X-Gm-Features: AcwNN1WuNL_yJJgNrKZTtl_t_1Ngwep6ljsejiCgS8bZ3EgANbDs_npxnarBzq8
+Message-ID: <CAD++jLm3KLqaQZFsb2Yu0pERjCfrskL=x3arMtrY3Gq6X4rgZg@mail.gmail.com>
+Subject: Re: [PATCH v6 01/13] dt-bindings: arm: add Ambarella CV75 platforms
+To: longzhao@ambarella.com
+Cc: Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>, 
+	Alexandre Belloni <alexandre.belloni@bootlin.com>, soc@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, 
+	Bartosz Golaszewski <brgl@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+	Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Long Zhao <zl020895@163.com>, 
+	Lee Jones <lee@kernel.org>, mfd@lists.linux.dev, devicetree@vger.kernel.org, 
+	linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org, 
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 4 September 2026 22:10:32 BST, Jakub Kicinski <kuba@kernel.org> wrote:
->On Fri, 04 Sep 2026 16:56:30 +0100 Bradley Morgan wrote:
->> On 4 September 2026 16:54:18 BST, Jakub Kicinski <kuba@kernel.org>
->wrote:
->> >On Fri,  4 Sep 2026 09:37:21 +0000 Bradley Morgan wrote:  
->> >>   media: ivtv: convert to kthread_run_worker
->> >>   net: encx24j600: convert to kthread_run_worker
->> >>   tty: sc16is7xx: convert to kthread_run_worker
->> >>   cpufreq: schedutil: convert to kthread_create_worker  
->> >
->> >Please send these 4 to appropriate subsystems
->> >  
->> >>   kthread: remove worker->task self assignment  
->> >
->> >Then after the next merge window when trees converge send this one out 
->> 
->> hi, I was hoping one person could merge it with acks from all subsystems
+On Fri, Sep 4, 2026 at 8:39=E2=80=AFAM Long Zhao via B4 Relay
+<devnull+longzhao.ambarella.com@kernel.org> wrote:
+
+> From: Long Zhao <longzhao@ambarella.com>
 >
->Not how this works.
-Ugh, I've seen it before happen.
+> Add the Ambarella vendor prefix and CV75 EVK board compatible for the
+> initial SoC bring-up.
+>
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+> Signed-off-by: Long Zhao <longzhao@ambarella.com>
 
-Look, fine, I'll do a V3 soon, WITH ONLY the subsystem changes, all
-separate, all sent over to their respective maintainers, then when all
-thathas been merged and there's the next merge window, then whatever, I'll
-send then the kthread removal
+Reviewed-by: Linus Walleij <linusw@kernel.org>
 
-IMHO this is a massive annoyance though.. because what if one of the
-driverfolks doesn't wanna respond to me!?!
---- Thanks!
-https://lore.kernel.org/all/EE579805-42F2-4C58-B752-F28779EEB717@grrlz.net/
+Yours,
+Linus Walleij
