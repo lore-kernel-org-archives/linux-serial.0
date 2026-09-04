@@ -1,55 +1,54 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E490437F74A
-	for <linux-serial@vger.kernel.org>; Fri,  4 Sep 2026 22:45:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33C312BE644
+	for <linux-serial@vger.kernel.org>; Fri,  4 Sep 2026 22:46:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788561949; cv=none; b=QUdKquDhoVa1A/rL4C+LzBcQ7bw+oeksmduwMy6915TWHLTNaTKdq2B8X6DB6SVkn5hg7WEQBLq2OqP3YMqkK0v8lZP4ZuJAHe5SSISzN6dKhMQsHSimg06Gw5IVRAUu8R5lv48ZbXW42y4bwvOH7tCOqi+SdS2wwcXgPwfUK4Y=
+	t=1788561962; cv=none; b=qPrjUatJZaEtFJ5Ny7vZj1B050NU4pNPZc1cTRk1z4Idv4fDTXd/GF32X9QLEHkvBQCrbgARkC9WsFImcEDpaQomyRyWXuXF/NI8PskQZkVFIdqjNn4vUoYFI0VVE9ivQQa3mjJwmwxsLofvc2gj4jPTHvx65slODAb/w04UsCc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788561949; c=relaxed/simple;
-	bh=OJucLNzd0P6My3KuoiulrhmQdmIkKxbJHUvOKpe0+No=;
+	s=arc-20240116; t=1788561962; c=relaxed/simple;
+	bh=N6PrZC21iwen1B31Vi2jxyoGAz00i3RnJHUvEeJPYKI=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=VhCX7obndvUTgm7yJNdqJsnQC9zwYYRaI2FVSEcJs8/B32nOntvtxZoVTb5aH20SFK2ufoNPZfaYfjtXwNq7ugow6sHS1fn6T+4jZNMvU+K+InVfmCf5sZgj1IuQu2m/nPRt61+rqcGWsr6kWKDx3toLxZCDCDTZkTG551Hj+9c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jVI/mE/r; arc=none smtp.client-ip=100.103.45.18
+	 To:Cc:Content-Type; b=bn1OGINShck79I0DLfzsNVY3H+8e1zb+S/P7LiMlnVrhqBwfg06RTvknokGC3WNd0Vjxd72IgdOrEux1a1tyUkvZg0cVgTWyM0rGJUwVcp067aA8P4bOPsB1Ba8kI19lVcdK12eIIa6F/1E5+c4upoWCVZpuJM8mSrz7h+pVk04=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=d70iELOP; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jVI/mE/r"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C58D1F0155A
-	for <linux-serial@vger.kernel.org>; Fri,  4 Sep 2026 22:45:47 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="d70iELOP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3D3E1F01566
+	for <linux-serial@vger.kernel.org>; Fri,  4 Sep 2026 22:45:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788561947;
-	bh=OJucLNzd0P6My3KuoiulrhmQdmIkKxbJHUvOKpe0+No=;
+	s=k20260515; t=1788561959;
+	bh=N6PrZC21iwen1B31Vi2jxyoGAz00i3RnJHUvEeJPYKI=;
 	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=jVI/mE/rXo+KMPVG8eTlFteEXlYEFcXnEpCGJYUJ0OeuSkQzhlR5GBgQJoj0jpPSJ
-	 nfjXuO6zPB6jjmxStvbvSzObckbu3lUSpjgzITpfsiL9pVRujBZmQW1qnAdatWO5XW
-	 cngHWOc4Jb7QkUHa/2uts9Y8tHkZVlUvsRkR45YkzXkXMx8SHQKaZrs7ruVevXxgej
-	 0S7NcZtz8gGLh/tUW3eAUUIDPchoNezybVQByX22dHYPX5jFRgm5y23DOzfvwkRDNI
-	 t8SDwlMBTOS/YNXDbIjXuGFJXOKxxUXDp8Gv5ZF3gRAuy8QoSWHvfJ1GA99znB5+FM
-	 OZBTTZux/TgZA==
-Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-5b45f2e5f58so1382598e87.0
-        for <linux-serial@vger.kernel.org>; Fri, 04 Sep 2026 15:45:47 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AKwUvBxa7ozj72O1ASg+xBeywPsZQdO9M1ygT3jg2NxNYxUwJV3uuwO5lGRZU/8SxnfpJ2WM8TRrLPKxq65O3vY=@vger.kernel.org
-X-Gm-Message-State: AFuF++nGPwIfqm7aeo0m/WTqKo1UFMulXqEKe/GxJVz755IKTLAJEO0y
-	7+CH2I8BZJBGCo5wt7iHOsckZ4Ebo/MCRuBUc0YKfM0nMwHlGmrMnbJSuSyMG/r47OuAHo6NQfR
-	b77fvHLqrZpT21PXwwzZ8QaQ4b9Q0xTo=
+	b=d70iELOPejhaBBj5+6MW44oGn0aWXKRbgAohwfHSsU/NLiIvY/fHQDlN6hkNCQojh
+	 KhsDrUKRNEtpUBfA4wXzCclmbNO5nsV0ItTAAd+M7utWhgIOTI88JJVCdlEfYcfHrZ
+	 Sp+cvzGDdyzy5G5Ds/uDrCbuGDYAm4vbC6ahg99HB8cJlTwyoMUzwGszByY5/+7QWO
+	 hGA+wKRDNsUhZmdcUspY3bXo33TZP7b4J95yD78zG9+PN2BrODGzpSpap7cLoFk2oZ
+	 xdMdKxA+P3VuuxMZkwX/X0dNbrCd4U0OrHFZtaKhN8khrcIWsGPUbucNxAh4IFP59x
+	 lI2oMGKWEi3Rw==
+Received: by mail-lf1-f45.google.com with SMTP id 2adb3069b0e04-5aec201b582so1861024e87.1
+        for <linux-serial@vger.kernel.org>; Fri, 04 Sep 2026 15:45:59 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AKwUvBxsPRnbauM7noWc5QG3TmFVGIyj190hVk87d52os/u0ciCXMGPvJiAYMVQtSWWCTP5JXqk+LvWcBik1cG4=@vger.kernel.org
+X-Gm-Message-State: AFuF++nu6i2Q9MtYA9pbhcnxwDl1V2tgUC2zRqUAtjig+nA98zqijdTN
+	tPf6CjhiaJXeQXUMKjI71vLMQFjG7w9+hmPQeVFYhRTZPPQ1j+F1sKR/TxNKh3uyFHbSfkZrNWZ
+	CJB9ovJbEXGypCu68IGvq3+qPkXneJJo=
 X-Received: by 2002:a05:6512:a84:b0:5b0:eda:de26 with SMTP id
- 2adb3069b0e04-5b616f2f892mr1623422e87.16.1788561946156; Fri, 04 Sep 2026
- 15:45:46 -0700 (PDT)
+ 2adb3069b0e04-5b616f2f892mr1623528e87.16.1788561958599; Fri, 04 Sep 2026
+ 15:45:58 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260904-cv75-v5-v6-0-e918514cb3b1@ambarella.com> <20260904-cv75-v5-v6-12-e918514cb3b1@ambarella.com>
-In-Reply-To: <20260904-cv75-v5-v6-12-e918514cb3b1@ambarella.com>
+References: <20260904-cv75-v5-v6-0-e918514cb3b1@ambarella.com> <20260904-cv75-v5-v6-13-e918514cb3b1@ambarella.com>
+In-Reply-To: <20260904-cv75-v5-v6-13-e918514cb3b1@ambarella.com>
 From: Linus Walleij <linusw@kernel.org>
-Date: Sat, 5 Sep 2026 00:45:31 +0200
-X-Gmail-Original-Message-ID: <CAD++jL=fcS5UpomVcAyg1KXCXFxyQCUG2Mbqj4XG4kCYQS4tdQ@mail.gmail.com>
-X-Gm-Features: AcwNN1V7OH90tc_RzF9sI6MD1gO6FdJaYJCKQoqZfbOtKCReNgI1EwM-3lb0Rkg
-Message-ID: <CAD++jL=fcS5UpomVcAyg1KXCXFxyQCUG2Mbqj4XG4kCYQS4tdQ@mail.gmail.com>
-Subject: Re: [PATCH v6 12/13] arm64: ambarella: add ARCH_AMBARELLA and CV75
- EVK DT
+Date: Sat, 5 Sep 2026 00:45:46 +0200
+X-Gmail-Original-Message-ID: <CAD++jL=tVwQPPCFCc=J6gxBt4VvSJKWKvbAeSRSybfXjvpcdPQ@mail.gmail.com>
+X-Gm-Features: AcwNN1WvpRED5iixL57tKxLT16byEdBDfHJOlSmTYR0bXv5jc6tVAgVJ2Y214Ck
+Message-ID: <CAD++jL=tVwQPPCFCc=J6gxBt4VvSJKWKvbAeSRSybfXjvpcdPQ@mail.gmail.com>
+Subject: Re: [PATCH v6 13/13] MAINTAINERS: add ARM/AMBARELLA SoC support
 To: longzhao@ambarella.com
 Cc: Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>, 
 	Alexandre Belloni <alexandre.belloni@bootlin.com>, soc@lists.linux.dev, 
@@ -71,8 +70,8 @@ On Fri, Sep 4, 2026 at 8:39=E2=80=AFAM Long Zhao via B4 Relay
 
 > From: Long Zhao <longzhao@ambarella.com>
 >
-> Enable ARCH_AMBARELLA and add a minimal CV75 SoC / EVK device tree for
-> console bring-up with the RCT clocks, UART, pinctrl and GPIO banks.
+> Add a maintainer entry covering Ambarella CV75 bindings, DTS and
+> related drivers.
 >
 > Signed-off-by: Long Zhao <longzhao@ambarella.com>
 
