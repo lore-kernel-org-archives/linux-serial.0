@@ -1,41 +1,41 @@
-Received: from mout01.posteo.de (mout01.posteo.de [185.67.36.65])
+Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E047377EAF
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 702BB3793B0
 	for <linux-serial@vger.kernel.org>; Sat,  5 Sep 2026 13:30:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.65
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.66
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788615027; cv=none; b=l4DmNdoI4ODIuHKeOQe+NpOXskD7V/9t74vPgU99zYPuDnXDLo9K85NvTtHQr1PRDZTXd4lLv1CGbubmQA3bssjUu9xh/XCqhSY4cE1PLGcp6Higqk+N1rarUCUWfmS7ZdOQwHMciu1/ctaQbYjD7ByGPgBSGbGHi8tmHvKZw/o=
+	t=1788615028; cv=none; b=R3AI8lWRQttfxVlTptdaHXhtS/rDxgXW24gmvELhfPfzWRlUulASz9KISOyoGHbiquGxcfJS4EMO3wt5ox7z4fswLk9or8oGXVMCx7A1wUwDA3oJKGsIN1dkrtmQIgBlsZNrlDZO1060FGKNvXAp8IAUkJ5OgrkEhCtmnWoRCYo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788615027; c=relaxed/simple;
-	bh=BZQUtMHrD+me98+Sj/eBVIJBH6xrBlHO3wfkHw8pxXg=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Uz6WKa61umy5kH+GIcVCGrry7IYhurPAMEq5tRUY3U0ZdgiQh4fsB2z+nrzzzCyvn0xQtZovtmRSMmG+znfgVL2iO9G1I1lXlhdsnI2icyu3lC+Uuv6r1hqs/b5ybpONLdG49ysbBZkKQB8+YBBkbmQaRDhgu/XsO81HkYx4D3Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=QiUshLNJ; arc=none smtp.client-ip=185.67.36.65
+	s=arc-20240116; t=1788615028; c=relaxed/simple;
+	bh=/sHkrXd6mCsWP9i59t2eUZxlmi8BLvtU4brDKGMSKfY=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=PXvSXtJuo8ybrrCPLmKJOTt1t6Ou9Gpf9SfKkJRurs+gDhNg9FofORgRLNP53tyQPD1mwtIondqw3V/gY4App/OJXZ1u2DbylIQEtnfv7aid4DYMLX4pJmS44rGQbi30OT/KSTuip5UTmtSzIzXFD/osKXC/xJpGpSGUt89FWwQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=QXlrqFr9; arc=none smtp.client-ip=185.67.36.66
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="QiUshLNJ"
+	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="QXlrqFr9"
 Received: from submission (posteo.de [185.67.36.169]) 
-	by mout01.posteo.de (Postfix) with ESMTPS id 1EEC724002A
-	for <linux-serial@vger.kernel.org>; Sat,  5 Sep 2026 15:30:12 +0200 (CEST)
+	by mout02.posteo.de (Postfix) with ESMTPS id B04C5240107
+	for <linux-serial@vger.kernel.org>; Sat,  5 Sep 2026 15:30:10 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de;
-	s=1984.8680eb; t=1788615012;
-	bh=MrDkKb4gk1/O+1BEUuWrVty7ZyLmE9+t9jPdH84ytmw=;
-	h=From:Date:Subject:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding:Message-Id:To:Cc:Autocrypt:OpenPGP:From;
-	b=QiUshLNJs8RYDPLI+Aa4TqLMk7YS0hzUiyeQE4cET39XEPW1FSWNTMGy94fctnOal
-	 HOBTAd3mqLuQaXbSI7ucbYvNToncz+ekELnCSoTEVknEAGS4YwcyVjYF0JadnwmI6m
-	 XftSgrtpkVsmcdSyPPgyeUr8d/tdkQ6c6nRqkqS9eL1GG9KR0y6/6Z71gqwYii5GLE
-	 1FBvQau+VNOmQH1t9mySynd6iqiVzXzAf3ba+itJOLgxfkyizFYNPvZWwxGmyItS3X
-	 Aj1TAytyhvzLmYjtN9H6SE3PmzUZIaSPtR04M3D3fE/DYv2LlEtYzVv7s4HNfaWQPn
-	 vZ4UmSN9Kpd+g==
+	s=1984.8680eb; t=1788615010;
+	bh=ssXWVRsdIn5Z3wp/OqRzUmICHe0zBBdsbTkhBd3pUl8=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:To:Cc:Autocrypt:OpenPGP:From;
+	b=QXlrqFr9HuBpRI0YW8i5KXt/L47Iu6HjJYlnWgchtqgQvIrGsPFXDvJvPsNmWuD7c
+	 EHcxu+4JDl/MiWvGYD3Id+k5ii0FxBZ9U6eyenxouUV0QeTA1cmxUfmBbliK/VAMPw
+	 gmlqMDFSrlOGybJNUjR1WaAZUYyZOLXCZDmHFaySLW+lcqrKzrEov7AzWedp27To+n
+	 irLGmfDpWa9IhGfP6wWerssU2Fn5MJo0dzfmcAYl1uS9ZiwHkNNC3W0i1knBZ5WISB
+	 +ahYi/OBcxiAFtDfl9hdRp5PY4bNy6pmX10sMtCv1mPHaVagDeb2xAqlWwuKdxGsQD
+	 Y1AGQKca7SkaA==
 Received: from customer (localhost [127.0.0.1])
-	by submission (posteo.de) with ESMTPSA id 4hcZ2T55DMz9rxN;
-	Sat,  5 Sep 2026 15:30:09 +0200 (CEST)
+	by submission (posteo.de) with ESMTPSA id 4hcZ2R4dQVz9rxK;
+	Sat,  5 Sep 2026 15:30:07 +0200 (CEST)
 From: Markus Probst <markus.probst@posteo.de>
-Date: Sat, 05 Sep 2026 13:30:10 +0000
-Subject: [PATCH v2 1/2] rust: serdev: Fix race condition on driver unbind
+Subject: [PATCH v2 0/2] rust: serdev: Mitigate race conditions
+Date: Sat, 05 Sep 2026 13:30:09 +0000
+Message-Id: <20260905-rust_serdev_fix-v2-0-35dfcd06ef2e@posteo.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -44,9 +44,11 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260905-rust_serdev_fix-v2-1-35dfcd06ef2e@posteo.de>
-References: <20260905-rust_serdev_fix-v2-0-35dfcd06ef2e@posteo.de>
-In-Reply-To: <20260905-rust_serdev_fix-v2-0-35dfcd06ef2e@posteo.de>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/2WOyw6DIBBFf8XMuhjBR9VV/6MxBnCsNKlYQNLG+
+ O/Fx67LM7n3zlnAolFooY4WMOiVVXoMwC4RyIGPDySqCwwsYUVSJRkxs3VtKHXo2159iMC07yt
+ Z8hxLCK3JYDjvi/fmYDuLJ0q3zZwJg+85vHJHDAS3SKR+vZSrI3+NU2Ikha09KOu0+e56nu7h0
+ yT/M/GUUMKQV0zQPOOFuE3aOtRxh9Cs6/oD9V4ZKewAAAA=
+X-Change-ID: 20260904-rust_serdev_fix-be3ff9c8a5e8
 To: Miguel Ojeda <ojeda@kernel.org>, Boqun Feng <boqun@kernel.org>, 
  Gary Guo <gary@garyguo.net>, 
  =?utf-8?q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
@@ -63,21 +65,21 @@ Cc: linux-serial@vger.kernel.org, rust-for-linux@vger.kernel.org,
  linux-kernel@vger.kernel.org, driver-core@lists.linux.dev, 
  Markus Probst <markus.probst@posteo.de>, 
  Sashiko Bot <sashiko-bot@kernel.org>
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3695;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=827;
  i=markus.probst@posteo.de; h=from:subject:message-id;
- bh=BZQUtMHrD+me98+Sj/eBVIJBH6xrBlHO3wfkHw8pxXg=;
- b=owEBiQJ2/ZANAwAIATR2H/jnrUPSAcsmYgBqnBlfwrgbxrP39RWc0Un3ocC38mN8MvT3bVFn1
- rXK3vAGKJGJAk8EAAEIADkWIQSCdBjE9KxY53IwxHM0dh/4561D0gUCapwZXxsUgAAAAAAEAA5t
- YW51MiwyLjUrMS4xMiwyLDIACgkQNHYf+OetQ9JY/g/9HYQlJiyM2DHtMe8umM9Qvu710zYhew9
- AkLL4wgfJ0qK5rb9cvcvyAxOdE0KnTsjRYuC+zC94IvVnTAK8s9X/Y1v4cvG7w1ETC3dRZoqEBX
- UJenMuj1LAN+kIYpWM7+orq8ZxlYAUEtWFqtH1ANy8wSbI5VS0Ove4YSSdVk8BfPkjQJgXmT4KT
- hodcJ2ZSxvy+vrUvwMQ6gJgy1mT00FslDZc9HzEMQSGvyzgTQj87i8U5ymRVEc8GRATK3ySipKN
- jUHemxLa7qz892q9YKraHAdXbg4Metda1znwzsYHw6jO+LNgDzZhX98A8xzNT8f6jtJ/nvkxoWu
- EuklbtEiCpHf9YgHlalryLs7dxldLZx0uHDBnJ/yEYyGHs7JkPlLAwnaECndfwsq4PhlrUjkhIs
- iJ6NYpkl/mYpZk6peFKT8wuGbRg+tGYlHlc+eMAhLbvqo05LBE1bHK/uaOoioIlj0KidYjveajb
- p80uh8KaGRsgJnse+DKwsLhxZmH2d6Ifxux9iyw8UFowZhWUQTtw2rUSuwM9Kz9LP3KnrIAzIli
- XWhFzKptfHKiYOncXzqx/5965Rf24FZZaZ+9/rMcEjt9pj0BAa0JYDKbRTuRzaW0Jed7pPfSSZv
- 2+6a0sTZ1hdXmoyCVAdlzPtWfYbBuLVJdarCm6b4T3rTCn6BBx8k=
+ bh=/sHkrXd6mCsWP9i59t2eUZxlmi8BLvtU4brDKGMSKfY=;
+ b=owEBiQJ2/ZANAwAIATR2H/jnrUPSAcsmYgBqnBle/rNQ43bFeWvmH7iHmkj/W27WBDdPA0qVU
+ 5P/X1L+LwiJAk8EAAEIADkWIQSCdBjE9KxY53IwxHM0dh/4561D0gUCapwZXhsUgAAAAAAEAA5t
+ YW51MiwyLjUrMS4xMiwyLDIACgkQNHYf+OetQ9LuqRAAtqn3qkNC3+UTHyE8m0I9w6+MBP92p7q
+ NdJU/6JRKnYMBVMK1k9hLbGan9EPhVs5QhugjRFIabfR/eD9zEOAbZnV4q2M/H5M3n9EBzOy45R
+ Sekyzc4Ph+pOuyC8R+uePR1jJIxZJ8x3GMSQbovUWJ7l/SKdopO2CClJMXXbglGpNEXfUZc1jpI
+ Mx1tIyIf0GGeDELhIfT9ErSF64ZsA3doMc9QllgiYhVskThQujUKsRoiE1MiCWZ5VWigWk4mNMl
+ c8e2EjwPJs0WPa5i+gHSex1BBrhN5ldZEje41TEW30Ny5mMthnhPvrtkhx1b/mbiPq3UKIRs65H
+ j71Zuni1qxVtFvpms0MeTZ7vAY7/C65IsndwyUAeRADZ40fGoPRSjRPzZ1LEY8pcCv4Ploa9/xf
+ RzW9G0aLqUELAjRcY6ueI39XQObGi/1kMdy3LOCf0d1K2GNl5KkYqxC4pLcmnWumhL/qkWsDfiQ
+ gVnfjL6WG+wildevUU1RUcm8GN0/7u1JLwlnEsxKgN9Sup4vgYY3MQcZx8lbg94+WwXy+1fEMdk
+ QIbCQvpSpJopL2nNqerx1/KVqvEXhnFEZFwNhnx5nbHx7ypIJgVm439yah+l0UMrO2DXKMlqfFq
+ iP64S7/M9P0xIXCR+r4bkao0jatrrlmfKn81qHUiiT5NAi/aac+E=
 X-Developer-Key: i=markus.probst@posteo.de; a=openpgp;
  fpr=827418C4F4AC58E77230C47334761FF8E7AD43D2
 Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
@@ -123,84 +125,28 @@ Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
   aBeNN4ijKZchBXHPgVx+YtWRHfcm4l8=
 OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
 
-On device unbind, the pointer to the driver data (`PrivateData`) will first
-be set to NULL by `drvdata_obtain` and only after that the serdev device
-will be closed by Drop. Thus there is a small window in which the serdev
-device is still open, but the pointer to the driver data is NULL. Therefore
-it is possible that `receive_buf_callback` might try to access the `active`
-mutex on a null pointer.
+For details, see the commit messages.
 
-Add function `drvdata_drop` that leaves the pointer to the driver data
-valid until the Drop has completed. Use it in the post unbind callback.
+I will submit a patch (for the next merge cycle) soon, which will
+make the probe and unbind code less convoluted. This will make bugs like
+these more unlikely.
 
-Fixes: 99f59aa82341 ("rust: add basic serial device bus abstractions")
-Reported-by: Sashiko Bot <sashiko-bot@kernel.org>
-Closes: https://lore.kernel.org/linux-serial/20260905000836.C8FC91F00A3D@smtp.kernel.org/
 Signed-off-by: Markus Probst <markus.probst@posteo.de>
 ---
- rust/kernel/device.rs | 27 +++++++++++++++++++++++++++
+Changes in v2:
+- also fix race condition on unbind
+- Link to v1: https://patch.msgid.link/20260905-rust_serdev_fix-v1-1-2ea92b154a6b@posteo.de
+
+---
+Markus Probst (2):
+      rust: serdev: Fix race condition on driver unbind
+      rust: serdev: Fix race condition on driver probe
+
+ rust/kernel/device.rs | 16 +++++++++-------
  rust/kernel/driver.rs |  2 +-
- 2 files changed, 28 insertions(+), 1 deletion(-)
-
-diff --git a/rust/kernel/device.rs b/rust/kernel/device.rs
-index 2291d85b6849..3886cc713c28 100644
---- a/rust/kernel/device.rs
-+++ b/rust/kernel/device.rs
-@@ -219,6 +219,7 @@ pub fn set_drvdata<T>(&self, data: impl PinInit<T, Error>) -> Result {
-     ///
-     /// - The type `T` must match the type of the `ForeignOwnable` previously stored by
-     ///   [`Device::set_drvdata`].
-+    /// - Must only be called before the device is fully unbound.
-     pub(crate) unsafe fn drvdata_obtain<T>(&self) -> Option<Pin<KBox<T>>> {
-         // SAFETY: By the type invariants, `self.as_raw()` is a valid pointer to a `struct device`.
-         let ptr = unsafe { bindings::dev_get_drvdata(self.as_raw()) };
-@@ -236,6 +237,32 @@ pub(crate) unsafe fn drvdata_obtain<T>(&self) -> Option<Pin<KBox<T>>> {
-         //   in `into_foreign()`.
-         Some(unsafe { Pin::<KBox<T>>::from_foreign(ptr.cast()) })
-     }
-+
-+    /// Drop the private data stored in this [`Device`].
-+    ///
-+    /// The pointer to the private data remains valid until the drop is complete.
-+    ///
-+    /// # Safety
-+    ///
-+    /// - The type `T` must match the type of the `ForeignOwnable` previously stored by
-+    ///   [`Device::set_drvdata`].
-+    pub(crate) unsafe fn drvdata_drop<T>(&self) {
-+        // SAFETY: By the type invariants, `self.as_raw()` is a valid pointer to a `struct device`.
-+        let ptr = unsafe { bindings::dev_get_drvdata(self.as_raw()) };
-+
-+        if ptr.is_null() {
-+            return;
-+        }
-+
-+        // SAFETY:
-+        // - If `ptr` is not NULL, it comes from a previous call to `into_foreign()`.
-+        // - `dev_get_drvdata()` guarantees to return the same pointer given to `dev_set_drvdata()`
-+        //   in `into_foreign()`.
-+        drop(unsafe { Pin::<KBox<T>>::from_foreign(ptr.cast()) });
-+
-+        // SAFETY: By the type invariants, `self.as_raw()` is a valid pointer to a `struct device`.
-+        unsafe { bindings::dev_set_drvdata(self.as_raw(), core::ptr::null_mut()) };
-+    }
- }
- 
- impl<Ctx: InternalBoundContext> Device<Ctx> {
-diff --git a/rust/kernel/driver.rs b/rust/kernel/driver.rs
-index c9c74c4dde8f..83410141ef1c 100644
---- a/rust/kernel/driver.rs
-+++ b/rust/kernel/driver.rs
-@@ -204,7 +204,7 @@ extern "C" fn post_unbind_callback(dev: *mut bindings::device) {
-         //
-         // SAFETY: By the safety requirements of the `Driver` trait, `T::DriverData` is the
-         // driver's bus device private data type.
--        drop(unsafe { dev.drvdata_obtain::<T::DriverData<'_>>() });
-+        unsafe { dev.drvdata_drop::<T::DriverData<'_>>() };
-     }
- 
-     /// Attach generic `struct device_driver` callbacks.
-
--- 
-2.55.0
+ rust/kernel/serdev.rs |  2 +-
+ 3 files changed, 11 insertions(+), 9 deletions(-)
+---
+base-commit: e5e04726cdd043e309677071ab1b65a4b18f422b
+change-id: 20260904-rust_serdev_fix-be3ff9c8a5e8
 
