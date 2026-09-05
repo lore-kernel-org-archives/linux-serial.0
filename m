@@ -1,272 +1,259 @@
-Received: from mout01.posteo.de (mout01.posteo.de [185.67.36.65])
+Received: from CWXP265CU009.outbound.protection.outlook.com (mail-ukwestazon11021128.outbound.protection.outlook.com [52.101.100.128])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 914743876C9
-	for <linux-serial@vger.kernel.org>; Sat,  5 Sep 2026 13:57:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.65
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788616660; cv=none; b=GkaQLYMIp0znujv2/0t++9pbRRKin/XKutPLDjwZoY3UcnQgxwDS8c3diLZXvlaGv2ghspZCt6AbNXZhX9HnPvGxFxkGTho3xn46XCHKVSB3csTjmtBVzadB6cRkW9jM28A7Axse7SBToFNqdi+Z4i6VpCOUoLE0edK3Ktj3Qpk=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788616660; c=relaxed/simple;
-	bh=vXnU61UFpyt+DMM9G6XiZekl2auouMTqJgWDMTP697g=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=JkHMqAc48eddciGHMNkZSPVPOCEVGJQ1bTpRwyd7A7MwQtq9u7IYD7+du0Y2P6WsNcMcpgPGD67Bg6b8Eg9ot+nwaTMzWaCbh+25wAw1l5buRKqdUZxNmeBCtBsZrgU/TZrwYNGlBcrfg16SB94SLj1h38M3jzsVasnq+7ZCT5M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=g8vjD7rq; arc=none smtp.client-ip=185.67.36.65
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E66E92FC00D;
+	Sat,  5 Sep 2026 14:16:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.100.128
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788617789; cv=fail; b=YtsVvKDihd1oKDT594qQ9FLrQNRKAAA3wKddIMlvZVzIJ1bjH22YaP+zCvbaSmcza/LP0GI/0kNJHCuNCH77AxYxCXM4L/HyS5BlBIA6P3hh+96dln1+0Hjii4Bx/KjjCKhCMzFV9EhqEdIAVxN6Ly5yoZTZAw8fqH7sEEdfpXY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788617789; c=relaxed/simple;
+	bh=cFcrbbkdfo+DenHpNTouBpuoiQBiJFe6/NO0nmP0M20=;
+	h=Content-Type:Date:Message-Id:Cc:Subject:From:To:References:
+	 In-Reply-To:MIME-Version; b=fCrE4OQDKeC7laW7jVxBOlDwaFCMExcn+G7D4siQKYyOnbGP2y9/fBwQXQBLdXjnYC7cIk+4MGeb8FzMu3hkYLzchFTboiQQbIIII3HOvlSqdTJnsWZFQu6dLT0tLGqcvZeeL/vCkDExMv+MjS/vB/SnSFrCnP9TG2BxAXcSu2c=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=garyguo.net; spf=pass smtp.mailfrom=garyguo.net; dkim=pass (1024-bit key) header.d=garyguo.net header.i=@garyguo.net header.b=BaKAd3sn; arc=fail smtp.client-ip=52.101.100.128
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=garyguo.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=garyguo.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="g8vjD7rq"
-Received: from submission (posteo.de [185.67.36.169]) 
-	by mout01.posteo.de (Postfix) with ESMTPS id 7BFAF240027
-	for <linux-serial@vger.kernel.org>; Sat,  5 Sep 2026 15:57:35 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de;
-	s=1984.8680eb; t=1788616655;
-	bh=++lbWBbv/uaZwhIT+nh+7IAZo638rIqWLB59ftFSgf0=;
-	h=Message-ID:Subject:From:To:Cc:Date:Autocrypt:Content-Type:
-	 MIME-Version:OpenPGP:From;
-	b=g8vjD7rq5/xiaEnzmlogu2jQxAj8G0r8g7wJxVXjOoegciHd4UCXznqxAFW9FxOR+
-	 1A2Hf/tl5Go1pdrb7amOljiC5HtSnOcff9FhRi0Vt7a3NzQrTL2btSVHxJ26QYOEBx
-	 RLZxphJVj9ew8UJ4sZ7Y3mgd9YdHopWiZ2CjZjv3n/5RlZp9Td568yW+CrEHR+NGUy
-	 mbjVq7ohPw3Xwlv9NJv8Vl+voCkCRg9vr9n/l3fm8BCG7t5dc455vOGBF3NZT1IbiK
-	 nJtxqufskdPaEviDw3NL8cV/8NxvMXXxKKco5zXxnVMMgwjfDmlfsAe1CKmDrWdN/m
-	 B8jJ6tVGeiEFQ==
-Received: from customer (localhost [127.0.0.1])
-	by submission (posteo.de) with ESMTPSA id 4hcZf708jkz9rxL;
-	Sat,  5 Sep 2026 15:57:34 +0200 (CEST)
-Message-ID: <f040f319f077f1fe21991c3546d76430c799034b.camel@posteo.de>
-Subject: Re: [PATCH v2 2/2] rust: serdev: Fix race condition on driver probe
-From: Markus Probst <markus.probst@posteo.de>
-To: sashiko-reviews@lists.linux.dev
-Cc: ojeda@kernel.org, linux-serial@vger.kernel.org
-Date: Sat, 05 Sep 2026 13:57:35 +0000
-In-Reply-To: <20260905134936.7C8FD1F00A3D@smtp.kernel.org>
+	dkim=pass (1024-bit key) header.d=garyguo.net header.i=@garyguo.net header.b="BaKAd3sn"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Rf4romSJj+R8yEur+2KRuxpV7pRjCzR/dWkJmaYioPmKF3nY1dgilfTc7NEy9j48xWmoMnxSNLa/jz+KcV32UsvMuaqOvLAkXAODMNaT3KM/JE0Bm0xzfITOFA19B8wjKwZ3RHlSWLnJ41hHh/Y4d/9zkpMaVkSuclG1AJqbDOuurVkF302Ze/CFKC9nKeyrz3QjDWdInkHyZR91W7qLkbTeuvK0SVobuxPiVQBTJ4vy2B5iSaekm7JgoG+MSQPzAiCvl80F8jglNsQ7Y/65LsQETn9TJLx1d+7T7G4J7DbSF6gN2BIrnQ50Dh/I9tgQ2RkXwOj6suRwIaJnXwP4EQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ARg6uw20G+l+jgEaebJwYFIa3m6zJzp1njGWEXgvAd0=;
+ b=Z0jPtKIAt4RJki3y9g19hqxo8YsKaw5GvbmonSR7WGnsHi/BPgATD+MZTx54ViGr0zaMMApdEf/ytJQJBklO9gs1IdopMrjzaNj/LpoUMdam7+cjj6s8JRKGPd8nb7KY0y3SeL/NhEiDUfe6JM07OOjbajGw7JcnPNcM5dKJXu/zh92kX1x1sKZZraQYSBInOaiNcSYLPY0oFYD19tTcNvRtWb+NEKMWbhdgcOY1TdeBWlGWobuMN8I6eZ034bs8de6wA78/7551HIj1jrUl4LD5UL4UuiuYDsVUsj5RgP2qEwly+T5mk7vpq7BCC2F77CXjRk2xUfoNLt77yISuSw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=garyguo.net; dmarc=pass action=none header.from=garyguo.net;
+ dkim=pass header.d=garyguo.net; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=garyguo.net;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ARg6uw20G+l+jgEaebJwYFIa3m6zJzp1njGWEXgvAd0=;
+ b=BaKAd3snIhacOcZw7Khza0pSkWpRqxY+Gi8qY7T6mkuPOsxf5yvYoXpRpIKfPuQNE2ksDKfBIN/5V0LKtasiJjo30CAt5y/6/Fc7TAcNghhAgmZl/I60SWJW/I4HE1NRZ//jyJ5CCI7PhCuuye4vS+HPjXj/4CQrrjfmhu91Zl8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=garyguo.net;
+Received: from LOAP265MB8560.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:4ab::19)
+ by CWLP265MB7225.GBRP265.PROD.OUTLOOK.COM (2603:10a6:400:1f1::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.382.14; Sat, 5 Sep
+ 2026 14:16:23 +0000
+Received: from LOAP265MB8560.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::f60b:1537:68d7:4fc1]) by LOAP265MB8560.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::f60b:1537:68d7:4fc1%4]) with mapi id 15.21.0382.014; Sat, 5 Sep 2026
+ 14:16:23 +0000
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Sat, 05 Sep 2026 15:16:22 +0100
+Message-Id: <DL7G35VOSQ6H.V15LOQS4I2RJ@garyguo.net>
+Cc: <linux-serial@vger.kernel.org>, <rust-for-linux@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>, <driver-core@lists.linux.dev>, "Sashiko
+ Bot" <sashiko-bot@kernel.org>
+Subject: Re: [PATCH v2 1/2] rust: serdev: Fix race condition on driver
+ unbind
+From: "Gary Guo" <gary@garyguo.net>
+To: "Markus Probst" <markus.probst@posteo.de>, "Miguel Ojeda"
+ <ojeda@kernel.org>, "Boqun Feng" <boqun@kernel.org>, "Gary Guo"
+ <gary@garyguo.net>, =?utf-8?q?Bj=C3=B6rn_Roy_Baron?=
+ <bjorn3_gh@protonmail.com>, "Benno Lossin" <lossin@kernel.org>, "Andreas
+ Hindborg" <a.hindborg@kernel.org>, "Alice Ryhl" <aliceryhl@google.com>,
+ "Trevor Gross" <tmgross@umich.edu>, "Danilo Krummrich" <dakr@kernel.org>,
+ "Daniel Almeida" <daniel.almeida@collabora.com>, "Tamir Duberstein"
+ <tamird@kernel.org>, "Alexandre Courbot" <acourbot@nvidia.com>,
+ =?utf-8?q?Onur_=C3=96zkan?= <work@onurozkan.dev>, "Greg Kroah-Hartman"
+ <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rafael@kernel.org>
+X-Mailer: aerc 0.22.0
 References: <20260905-rust_serdev_fix-v2-0-35dfcd06ef2e@posteo.de>
-	 <20260905-rust_serdev_fix-v2-2-35dfcd06ef2e@posteo.de>
-	 <20260905134936.7C8FD1F00A3D@smtp.kernel.org>
-Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
- keydata=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
- jfGillcaQOqFZ3WwVqyzG1BUfTow==
-Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-rH98I0mo4wPN1oB5PLYf"
+ <20260905-rust_serdev_fix-v2-1-35dfcd06ef2e@posteo.de>
+In-Reply-To: <20260905-rust_serdev_fix-v2-1-35dfcd06ef2e@posteo.de>
+X-ClientProxiedBy: LO4P265CA0022.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:2ae::14) To LOAP265MB8560.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:4ab::19)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LOAP265MB8560:EE_|CWLP265MB7225:EE_
+X-MS-Office365-Filtering-Correlation-Id: 687b5026-cc4a-438b-d80e-08df0b5843b8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|10070799003|7416014|376014|1800799024|23010399003|366016|921020|4143699003|56012099006|6133799003|18002099003|22082099003|10067099003;
+X-Microsoft-Antispam-Message-Info:
+	lAGVchfUCfyE/czBxx3Bg0zsDtlw3T+07/p2U/O6IPRJoxv3xez6OepMqGKwfQrRoU0g1x1BfTfFmn4H94cR1ONsGGeR6Ap1Yb7cWZzR9wQMeE+qbmsyE/ZU1zhHZFjAvS79nfEfgh13FSrnXGfZ5q4fsqjtTnasmYZs5ARKgevjzKnEuzfLoZ3M6aozBLME21PsiLZZ0ykrLrm9Dn9nCrcQWMPkGB2h/bBzE/PHFQ47dJGraSclS0Ar/5SRfioeEsoxBFCmVOtZGlZpmBaEXhh1fsq/+FbXVKHeFtDtcQqHSzZceynbODJVxvF1YvpjkpakuTR+1Tjkdte71P3WOMCV8yTPoCpAEir16rdDx5evgLq8g1XtM148q3OhsFOEgjjchvGimNwIOlmcqMdXNGoeHNTvy1X2e6LvAh3WuaTyZQVzynChHOulbzyET0OUEXC7ZbJEsrB7IjUTQjKlFDo0NU1ax+GJ+Cd85yUULRMGbG/fMf87aZzbjtXtUeXCG28AC1iV9YoExIt6WYJ79WENGcSiIi9HbYbUZJDDZs66mL/a01b0C38vvvCqI3d6f8yD4APFt9cSU3YW5u6WCZGu95EOOy6MPhmFCJWBldIZ50gLvTnaEE01xsv63DhH1MmMETBWyxcyoQUBOS3T1OwF2fD7+whSTE+D0Tu9xjQHEMLLDFUEovi1srHikbZgFqiUDJles63NbJcwQtK+pg==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LOAP265MB8560.GBRP265.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(10070799003)(7416014)(376014)(1800799024)(23010399003)(366016)(921020)(4143699003)(56012099006)(6133799003)(18002099003)(22082099003)(10067099003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?VVJXT0luWjNzSkk3QjRkMW1xWnZLYXlpVXkvNzBGekdiK3IwSU9ZZm1PUGUv?=
+ =?utf-8?B?RWhLbWtSU2xmNXZ3bWRDK040WnVhUGdwblFrc3YyaEZCR0FKM1kvOERiWkRF?=
+ =?utf-8?B?WU5tWGJrV3FKeW5wWU1nLzUvaHNsWm5OelFVWFBJY0xQZjVrWXFXeUMrU3cy?=
+ =?utf-8?B?OUcyNGFhcjFBVFNxUDRzcWNiMUNwRVhuUDhsMnBZVW9HWVlJYWhlQVgrSXRC?=
+ =?utf-8?B?NjUyaUIwZ3k3WTAxeDR0ZFR6ckZCMXpwR0MrOXV0QTJ1QlJvdENlaktqc3Jq?=
+ =?utf-8?B?TjlaenpyRW85Mkhmek0xTmJxMWx5clI4ZlRabTZ6dDBEak9PaEVvUmZoRnBa?=
+ =?utf-8?B?SU0ybkg5V01FaU96YnFqVHhiMk1uL2xTSHRqUHpsZkdIb2hvWDl2czdKNUxJ?=
+ =?utf-8?B?eUZpK3hWTkxEMGpvWEdnTkdVSVVQRCt2bG9FcFlndWVpaW5neXpMTi9NVHpC?=
+ =?utf-8?B?ZjI3OXRJZW9DWW90NnNMNERsd3JMc1VCT1ZXdFVwem13T2J3b0l5dnRYanhy?=
+ =?utf-8?B?N2JmQ3pwbUFjNVU5YkVRRjV5YVdZR2h3ZDhOL3lJOXI4clJtSTJxZDdNUkNp?=
+ =?utf-8?B?UWlFanVncTBSTHNzbC9hYnNNWkZ2TFk1amFSeFp4eUVBblJsTG5TYUE1Smx3?=
+ =?utf-8?B?UnBCUUVub2daSDdNS0RJSG9xVTl6M24xcmZEQjFlU0NMaUF4VUJoNEh1b2dq?=
+ =?utf-8?B?UEl0dndZQmkzR1FKc0pFeXl0RERWVnNDaG41NFpSa1BkL3hrUXdGVGtORXky?=
+ =?utf-8?B?VFh4TDBnNlRPWnY3REsvVS8ya3Q1b01jczRoSEptQWQrNDlaTjFOSDArS2hF?=
+ =?utf-8?B?YnN4N1hKQzZNdERJNXJNdkI1MTZ4aThUNTI2RFpoRmxYK1IzL2hiSmJVbXNB?=
+ =?utf-8?B?cVJQR2ZnQWFOcWpsOEhudDk4d2VKMGx0cWRCd0p1ejJXWG40QW0vNWF1djFj?=
+ =?utf-8?B?VWJ2RWlPQVNGQ0dFVUtHdWJFZ1U3RktGVFV3UURaK0ZzK0tIWjNzZTN0SlhU?=
+ =?utf-8?B?a2tpNERoaFVuQ25OZ1RzY1pybTJ6R2t6aUIvVTJCeVV6OWFpRkVVWkxlenpa?=
+ =?utf-8?B?S1dSQXQ4bTBLbmd2bjJzZHRnblRadVhZN29zUXdCdnVuQk9aNjV4U0VIK0pO?=
+ =?utf-8?B?OTZYaTdmcytTQlc4bkpSQUhiVlducG5YUnVVQjAzUEhScHh2cmtQRWZ1d0Rh?=
+ =?utf-8?B?MzNtRG42N2RFMHBzQjV2Q284TlJpRUVCK2NTVDkwZUdiRkNaZHpWUm1XdGRq?=
+ =?utf-8?B?c1h0cG1KWjM1VDBjZGdCRHlNZ2xJZXFBYUM1ZVZBS2ZiVWJqTTZnS0tVazFC?=
+ =?utf-8?B?OFU3SVk3RzYrczRRK0d4QWxvNXVUbU4zbkpQTGpheWRzeFpHZ3FSNEN2UW1V?=
+ =?utf-8?B?YnJQMDdHRnZ5d3ZsaG11ejRxbyszTUszcDdPUUFnQjlINjZBR3dsSDFTc2lT?=
+ =?utf-8?B?M1BoZEtycmNUL1B6bXRsenUya0RBYkQ0RzVFTzZ2TjlVUE12QU1kazkxZ0hN?=
+ =?utf-8?B?M1Q0eDhmbG00NWU3U0ZIdEdVSWVta2ZZc2s2aWNpRmZPUmtHZDI1Nk9sY0Er?=
+ =?utf-8?B?OUtldndkNHpqdW9qN3dnQzlRY3ltTk8zRFoyNmdLaFpFRGVXc1RGYUQ0bERJ?=
+ =?utf-8?B?VklSN0tUWUdUOTlVMFdlOWlKazdWeWpJTVJzbXJUeDJGYllLYnk4U25jcHc0?=
+ =?utf-8?B?bnFZQ2pVZ1VTT2ljUjd2WERlNERtUUZSYmM4MGFURjNTYVliMDZqd1czNHNs?=
+ =?utf-8?B?bWREVFBxNzhPMXE2YlRzYkZqL1g2SnQ3THVqczRXNlU1OHQ1VmxFK2hCTjdZ?=
+ =?utf-8?B?WjZsdXJBU0lCdENnMysyRkswM2NBSlNoNDVnNjZZaG1xQWxSdDY4bTQxa1gx?=
+ =?utf-8?B?N3dYTFJpU0orcnhhU29iNnR5QTduV3ZBZ2p6cTU5TFBlMW1KWkFzR3NzdXdt?=
+ =?utf-8?B?NWZER1lSdGJDYWYrSXZiQlhCK1VZRW9oNE5wbFI4NnArU2ZueG5vQUV6Tk5K?=
+ =?utf-8?B?RnU0NWQ1QmtYcnRyT2o5VkNXbjZUSUROWk9obWdoOVFoTkZjWklyaXJQMVNr?=
+ =?utf-8?B?US9VWDJzQzEweUhCdmtYWHdydGRZZXU0UTR2a2FVdUVqbXdHOVJRZ2xpemV2?=
+ =?utf-8?B?K1prUkJOcTQvSDA5WkpscnlqZW9MeWlJYWsvL1NMTW5URG9aOXhzaENYd2c3?=
+ =?utf-8?B?T3pucGo0UEJkenJzbnpLanE5RzlDTFhxbjV3ZTc0QkJKc0pGVThtaDhYT0hl?=
+ =?utf-8?B?dEkvMExoVEQ1N3dQTytDOXlYTm1lMUpKU2F6Wm83dU9aQWhIek5paWVKcEtv?=
+ =?utf-8?B?T2lKVHRicWNCbGs5VVcvZVNsSWdmdkNEQkNScnBkM3pUanJHUFQxZz09?=
+X-OriginatorOrg: garyguo.net
+X-MS-Exchange-CrossTenant-Network-Message-Id: 687b5026-cc4a-438b-d80e-08df0b5843b8
+X-MS-Exchange-CrossTenant-AuthSource: LOAP265MB8560.GBRP265.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Sep 2026 14:16:23.2266
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bbc898ad-b10f-4e10-8552-d9377b823d45
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: exlspWRC/k77FlPYWvhDkgo5ZYQ1nRfAziFRKHHDTitXrcHMzqh9l1lYPtu85QHhyZBhBc6k5LQhffgJE8fkJg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CWLP265MB7225
 
-
---=-rH98I0mo4wPN1oB5PLYf
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-On Sat, 2026-09-05 at 13:49 +0000, sashiko-bot@kernel.org wrote:
-> Thank you for your contribution! Sashiko AI review found 3 potential issu=
-e(s) to consider:
->=20
-> Pre-existing issues:
-> - [Critical] Use-After-Free and Mutable Aliasing in `drvdata_drop` becaus=
-e memory is freed before clearing the driver data pointer.
-> - [High] `T::receive()` can run concurrently with `T::unbind()`, leading =
-to a Use-After-Unbind race condition.
-> - [High] Circular deadlock between `probe_callback` and `receive_buf_call=
-back`.
-> --
->=20
-> commit 67f5ed19e07ddf9c3ef694dbb2c1e962df051525
-> Author: Markus Probst <markus.probst@posteo.de>
->=20
-> rust: serdev: Fix race condition on driver probe
->=20
-> This commit fixes a race condition on driver probe failures by using
-> drvdata_drop() instead of drvdata_obtain(), ensuring the serdev device
-> is closed before the pointer to the driver data is set to null.
->=20
-> Closes: https://lore.kernel.org/linux-serial/20260903222159.70A911F000E9@=
+On Sat Sep 5, 2026 at 2:30 PM BST, Markus Probst wrote:
+> On device unbind, the pointer to the driver data (`PrivateData`) will fir=
+st
+> be set to NULL by `drvdata_obtain` and only after that the serdev device
+> will be closed by Drop. Thus there is a small window in which the serdev
+> device is still open, but the pointer to the driver data is NULL. Therefo=
+re
+> it is possible that `receive_buf_callback` might try to access the `activ=
+e`
+> mutex on a null pointer.
+>
+> Add function `drvdata_drop` that leaves the pointer to the driver data
+> valid until the Drop has completed. Use it in the post unbind callback.
+>
+> Fixes: 99f59aa82341 ("rust: add basic serial device bus abstractions")
+> Reported-by: Sashiko Bot <sashiko-bot@kernel.org>
+> Closes: https://lore.kernel.org/linux-serial/20260905000836.C8FC91F00A3D@=
 smtp.kernel.org/
->=20
-> > diff --git a/rust/kernel/serdev.rs b/rust/kernel/serdev.rs
-> > index 17ca504b7f8d6..a12b1dea12aa1 100644
-> > --- a/rust/kernel/serdev.rs
-> > +++ b/rust/kernel/serdev.rs
-> > @@ -176,7 +176,7 @@ extern "C" fn probe_callback(sdev: *mut bindings::s=
-erdev_device) -> kernel::ffi:
-> >              let private_data =3D unsafe { sdev.as_ref().drvdata_borrow=
-::<PrivateData<'_, T>>() };
-> >              let private_data =3D ScopeGuard::new_with_data(private_dat=
-a, |_| {
-> >                  // SAFETY: We just set drvdata to `PrivateData<'_, T>`=
-.
-> > -                drop(unsafe { sdev.as_ref().drvdata_obtain::<PrivateDa=
-ta<'_, T>>() });
-> > +                unsafe { sdev.as_ref().drvdata_drop::<PrivateData<'_, =
-T>>() };
->=20
-> [Severity: Critical]
-> This is a pre-existing issue, but does calling drvdata_drop() here introd=
-uce
-> a use-after-free and mutable aliasing vulnerability?
->=20
-> Since drvdata_drop() executes drop() on the driver's private data and
-> deallocates the memory before calling dev_set_drvdata(..., null), the glo=
-bal
-> device pointer still references the freed memory.
->=20
-> If receive_buf_callback() is invoked concurrently by incoming serial data=
-:
->=20
-> rust/kernel/serdev.rs:receive_buf_callback() {
->     ...
->     let private_data =3D unsafe { sdev.as_ref().drvdata_borrow::<PrivateD=
-ata<'_, T>>() };
->     ...
-> }
->=20
-> It can fetch the still-non-null dangling pointer before it is cleared, an=
-d
-> block on the active mutex. Once drop() completes, receive_buf_callback()
-> would wake up and operate on freed memory.
->=20
-> >              });
-> >              let mut active =3D private_data.active.lock();
-False positive.
+> Signed-off-by: Markus Probst <markus.probst@posteo.de>
+> ---
+>  rust/kernel/device.rs | 27 +++++++++++++++++++++++++++
+>  rust/kernel/driver.rs |  2 +-
+>  2 files changed, 28 insertions(+), 1 deletion(-)
+>
+> diff --git a/rust/kernel/device.rs b/rust/kernel/device.rs
+> index 2291d85b6849..3886cc713c28 100644
+> --- a/rust/kernel/device.rs
+> +++ b/rust/kernel/device.rs
+> @@ -219,6 +219,7 @@ pub fn set_drvdata<T>(&self, data: impl PinInit<T, Er=
+ror>) -> Result {
+>      ///
+>      /// - The type `T` must match the type of the `ForeignOwnable` previ=
+ously stored by
+>      ///   [`Device::set_drvdata`].
+> +    /// - Must only be called before the device is fully unbound.
+>      pub(crate) unsafe fn drvdata_obtain<T>(&self) -> Option<Pin<KBox<T>>=
+> {
+>          // SAFETY: By the type invariants, `self.as_raw()` is a valid po=
+inter to a `struct device`.
+>          let ptr =3D unsafe { bindings::dev_get_drvdata(self.as_raw()) };
+> @@ -236,6 +237,32 @@ pub(crate) unsafe fn drvdata_obtain<T>(&self) -> Opt=
+ion<Pin<KBox<T>>> {
+>          //   in `into_foreign()`.
+>          Some(unsafe { Pin::<KBox<T>>::from_foreign(ptr.cast()) })
+>      }
+> +
+> +    /// Drop the private data stored in this [`Device`].
+> +    ///
+> +    /// The pointer to the private data remains valid until the drop is =
+complete.
+> +    ///
+> +    /// # Safety
+> +    ///
+> +    /// - The type `T` must match the type of the `ForeignOwnable` previ=
+ously stored by
+> +    ///   [`Device::set_drvdata`].
+> +    pub(crate) unsafe fn drvdata_drop<T>(&self) {
+> +        // SAFETY: By the type invariants, `self.as_raw()` is a valid po=
+inter to a `struct device`.
+> +        let ptr =3D unsafe { bindings::dev_get_drvdata(self.as_raw()) };
+> +
+> +        if ptr.is_null() {
+> +            return;
+> +        }
 
-The PinnedDrop implementation closes the serdev device and therefore
-synchronizes this callback before the data is freed.
+How does this help the problem? While drop is running, other code should no=
+t
+attempt to obtain a reference to the data anymore. Otherwise this still hav=
+e UB
+potential by accessing fields that are just destroyed (not to mention that =
+Rust
+alias model also forbid it).
 
->=20
-> [Severity: High]
-> This isn't a bug introduced by this patch, but can holding this active mu=
-tex
-> across the T::probe() call result in a circular deadlock?
->=20
-> In probe_callback(), the active mutex is locked before invoking T::probe(=
-).
-> If a driver writes a command to the device and synchronously waits for a
-> response during probe, the incoming response would trigger
-> receive_buf_callback():
->=20
-> rust/kernel/serdev.rs:receive_buf_callback() {
->     ...
->     let active =3D private_data.active.lock();
->     ...
-> }
->=20
-> Since probe_callback() holds the lock and waits for the response, and
-> receive_buf_callback() receives the response but blocks indefinitely wait=
-ing
-> for the lock, does this structurally guarantee a deadlock for synchronous
-> probes?
-False positive.
+I think the existing actually catches it better, because *if* NULL pointer =
+can
+be observed by callbacks, a synchronization is missing in the subsystem. Th=
+e bus
+should first perform a synchronization to ensure callbacks are no longer fi=
+red,
+and then proceed to clean up resources.
 
-On failure, the drop order guarantees that the lock in probe will be
-unlocked first. It is still possible for receive_buf_callback or
-PinnedDrop to acquire the mutex then. In any case, there is no
-deadlock.
+Best,
+Gary
 
->=20
-> [ ... ]
->=20
-> [Severity: High]
-> This is a pre-existing issue, but can T::receive() run concurrently with
-> T::unbind(), leading to a use-after-unbind race condition?
->=20
-> During device removal, remove_callback() calls T::unbind():
->=20
-> rust/kernel/serdev.rs:remove_callback() {
->     ...
->     T::unbind(sdev, data_pinned);
-> }
->=20
-> It does not lock the active mutex, set it to false, or close the serdev
-> device prior to unbinding.
->=20
-> Consequently, incoming serial data can trigger receive_buf_callback(), wh=
-ich
-> evaluates the active check as true (since active is not cleared during
-> unbind):
->=20
-> rust/kernel/serdev.rs:receive_buf_callback() {
->     ...
->     if !*active {
->         return length;
->     }
->     ...
->     T::receive(sdev, data_pinned, buf)
-> }
->=20
-> This forwards the data to T::receive(), which can execute concurrently wi=
-th
-> or after T::unbind(), accessing driver resources that are actively being
-> destroyed.
-It can for now, but this shouldn't be an issue (as the driver should be
-aware of that). But this will change anyway through:
-https://lore.kernel.org/linux-serial/fe6a21fa8604bb35e32971b80cd75efb8ee3d2=
-02.camel@posteo.de/T/#t
+> +
+> +        // SAFETY:
+> +        // - If `ptr` is not NULL, it comes from a previous call to `int=
+o_foreign()`.
+> +        // - `dev_get_drvdata()` guarantees to return the same pointer g=
+iven to `dev_set_drvdata()`
+> +        //   in `into_foreign()`.
+> +        drop(unsafe { Pin::<KBox<T>>::from_foreign(ptr.cast()) });
+> +
+> +        // SAFETY: By the type invariants, `self.as_raw()` is a valid po=
+inter to a `struct device`.
+> +        unsafe { bindings::dev_set_drvdata(self.as_raw(), core::ptr::nul=
+l_mut()) };
+> +    }
+>  }
+> =20
+>  impl<Ctx: InternalBoundContext> Device<Ctx> {
+> diff --git a/rust/kernel/driver.rs b/rust/kernel/driver.rs
+> index c9c74c4dde8f..83410141ef1c 100644
+> --- a/rust/kernel/driver.rs
+> +++ b/rust/kernel/driver.rs
+> @@ -204,7 +204,7 @@ extern "C" fn post_unbind_callback(dev: *mut bindings=
+::device) {
+>          //
+>          // SAFETY: By the safety requirements of the `Driver` trait, `T:=
+:DriverData` is the
+>          // driver's bus device private data type.
+> -        drop(unsafe { dev.drvdata_obtain::<T::DriverData<'_>>() });
+> +        unsafe { dev.drvdata_drop::<T::DriverData<'_>>() };
+>      }
+> =20
+>      /// Attach generic `struct device_driver` callbacks.
 
 
---=-rH98I0mo4wPN1oB5PLYf
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-
------BEGIN PGP SIGNATURE-----
-
-iQJPBAABCAA5FiEEgnQYxPSsWOdyMMRzNHYf+OetQ9IFAmqcH84bFIAAAAAABAAO
-bWFudTIsMi41KzEuMTIsMiwyAAoJEDR2H/jnrUPSZGgP/0qRNsYq/cJDE6B63cAT
-hDNqIJFmTFt8VmPCEAKLiZhFBe6tkb/yVUtPJU3lKSJz9Yti+EcB4EWcWs887Amx
-dpA0MMcSOmbegVmsW35LwpRjO680E7AOP0BzDlS4fVX//KAHvMk/BQrNWIzyEInX
-NGRkAi9t1hPcKjGihek2LeXWL2+HnhbaskufkDhbgJBWQdbdJ9aW3uS3o1u9WA3j
-JY1oSSp+qdPK9stka2onUGP9mBBw1wO9O5IfDpbWDI4tZHPEdhRXexsmyW/sBTQX
-9bWsrg5Rso76GKytmGsLFQ5v5VIYqXvRZ2p4/8zQbbkbVpM+8P08VDsCCgkOyC8/
-SOzz6RLfeUaYBjTl1IgZEBisp5erG6iYKhaIQii0LFi9lb83VFYnOG4VI7Fp8f3L
-Lbi4hOjQYzH3XFRso+gudlUPlFo7CvnVYNOY1mZTyUzq7nh2cAKM07Y5iO4Sshx/
-QuQ1DpPu3ijLBICMRFShD2QqX04U/oWa0CuWgN2rWIjmLcJ++a/reHClFb4BN6ip
-T8PCodmU3nohtFfizWnTgWs7kyVVDjRlrtkEkRICpSPzXnkGowLyBxrsXywaAc6c
-s8CzQUXLuwnG668u+X2mGsqVMSpjKAT8mjiEyX6sRmiKMzEwEf4LP9A2GUG3qsxb
-1svX/ThlUYjAJTEYkeadlbVq
-=+lew
------END PGP SIGNATURE-----
-
---=-rH98I0mo4wPN1oB5PLYf--
