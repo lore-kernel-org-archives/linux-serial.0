@@ -1,43 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 295563C10A2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3039394793
 	for <linux-serial@vger.kernel.org>; Sat,  5 Sep 2026 09:40:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788601239; cv=none; b=gFEo7DGpBCI5wIq/in3A0IwcMY8gTxZhGVtOwmcrqFu50QWqFbZg+cHkwdGIddY/NMBMsfewxv+48ro0D2+inIKi6545IMI9G5PO1t7tu0kA8zWvB2kGj3jMc+JxpFGRdSoZMK0AUszO5/qC19F1+R9vUQMRKjv/n5m/G6QOhWo=
+	t=1788601240; cv=none; b=nqcfaBzG0imVdsNFVLJqrMDPQxXhRVHJpiRja/zOsEYml6i96GFliKoh2XiA67Xku4I358JjgdO5Ayxl57yh7oZGhAGRJO5e/ahRNlN6C+biNlQG+tgK///Q4JntcIfwbsjGqLHnVkRJgBie9W9j3AnNqEV4+sUzfhNy9nWGKXo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788601239; c=relaxed/simple;
-	bh=0N6smQU99/PNSNl4jr0m4L2IwWsRMRsidZz8lP99S4Q=;
+	s=arc-20240116; t=1788601240; c=relaxed/simple;
+	bh=t9PQhDd1O9N+5v3x0QMJbkzp+Fij6DwQKE6aUxO1gBc=;
 	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=aGWjyF8duKXvimlSx23QIY4Hkhs7voZ6grjiqZzz19t6Bc5dEspjL1F2tRnK6BbJiKJE76iPNRukC56EJTpfw1M2d1iUJOvhL3NsqRGAHyqoWvORh9pcCs3nSlo420cmD3GxDCYqa16QA0fKRlVyz2Tqsd6d/+oxGP3TtGBDyK4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=a89GNSy8; arc=none smtp.client-ip=100.103.45.18
+	 Message-Id; b=rCHWMOfn31NVvgVXoWseWRsiurkr5vtaK98Kr6cRg+zUyf/la3gM6NJB80w1sEWmqdQdexd3prm4Owo1TdByJVxjhokEqYKccXiiruM0KtM2sw/aaNFR9u9IcA5Y294QQ84C7+fygPDjJjlogW5jkfYhhvyZqEOo45ElTYicJUc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=K0B2oQk2; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="a89GNSy8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF7E01F00A3F;
-	Sat,  5 Sep 2026 09:40:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="K0B2oQk2"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 759EB1F00A3D;
+	Sat,  5 Sep 2026 09:40:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788601237;
-	bh=JZF4QZxYVWWZjffYvYJTSMUnNk40SSNjGx+fw/GqvsA=;
+	s=k20260515; t=1788601238;
+	bh=FqyeJkJERLEY3l2wNEG0jZiOccQZar0ocgb4F7/NzDM=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=a89GNSy8DWaCjvv6P4fxskEc9xmUArGmpSxQ1nxJoecyTgtaW52+i124UhUjkMNg4
-	 5P+2bIOvngLruav6LHMjKFi6T1WeLlS1rMljBLJHdrnyt4jptALU3FaPyvPKeOiVlj
-	 Vc+NJqGrOTLlA9YaHviP4+hTgmWy2uWF39ZdhxsFTNEPRzF/wzqXQlXg1t8zXRZcgy
-	 KfK3/fc81z9E0m2ztiFST5q2J8ngtP0kKHqQOtIPK1qqDgXBKGB4+vT80KtQi9DaaJ
-	 UccQpmyyyrAA6ADecdcTTSJzE0Z/0TWz/l54uvZPrIDz5YrxRemyQED0GDRxmpzTkk
-	 oZ9h9ZghwWCAw==
+	b=K0B2oQk2trTI6tpjKs4b/CoKUCKf+YP5Cc9tOpRUov1h633aSnfqpjwdSYQSwaY8A
+	 4t1kpyK/XkNNSCo9QW2hzjdDelB1GDUhsY7FBiJ8xRcB4ZF0kGloyjE/9aZiPt93mw
+	 IgQBQpERw1RtF5iQMOdUAZCScMvJ6hSJIEyOevDKxtL4ohMLcnEiVBcPJM3+LIvzVw
+	 mAq7GHZVsRwV2TwOJuU4Iran/6RVlWmdFOpp+8W4dHVzi3F3AcG3e2kuU0RhmaZTiT
+	 gt4vbZtpDfeYI/zbULE83+/1Yo7BCneQE9POQo91nTwRVsDXkVM/PVW3YpjjsTA1X7
+	 5kx1ix5XXlwtQ==
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v2 1/5] media: ivtv: convert to kthread_run_worker
+Subject: Re: [PATCH v2 2/5] net: encx24j600: convert to kthread_run_worker
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Bradley Morgan" <brads@mainlining.org>
 Cc: linux-serial@vger.kernel.org, media-ci@linuxtv.org
-In-Reply-To: <c38e2e3575040b0a7e580e1d78d8202fe1b8cf06.1788513591.git.brads@mainlining.org>
+In-Reply-To: <ab6035a1d48109ba93fdb36d15d3306c46ab94b3.1788513591.git.brads@mainlining.org>
 References: <cover.1788513591.git.brads@mainlining.org>
- <c38e2e3575040b0a7e580e1d78d8202fe1b8cf06.1788513591.git.brads@mainlining.org>
+ <ab6035a1d48109ba93fdb36d15d3306c46ab94b3.1788513591.git.brads@mainlining.org>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Sat, 05 Sep 2026 09:40:37 +0000
-Message-Id: <20260905094037.AF7E01F00A3F@smtp.kernel.org>
+Date: Sat, 05 Sep 2026 09:40:38 +0000
+Message-Id: <20260905094038.759EB1F00A3D@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -46,96 +46,106 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
 Thank you for your contribution! Sashiko AI review found 2 potential issue(=
 s) to consider:
-- [High] kthread_queue_work() receives a double pointer instead of a pointe=
-r to kthread_worker, leading to a build error or runtime memory corruption.
-- [High] kthread_destroy_worker() is called before free_irq(), creating a U=
-se-After-Free race condition with the interrupt handler.
+
+Pre-existing issues:
+- [High] Missing state cleanup for `priv->tx_skb` in TX timeout, interface =
+stop, and device removal paths leads to memory leaks, data races, and poten=
+tial BUG() panics.
+- [High] Hardware memory structures read over SPI are not converted from li=
+ttle-endian to CPU endianness.
 --
 
-commit a504d2685cd2f4c4e6b93a81c847d55367eae1c0
+commit d2a821de33aec8b828ff820d968fcd13ce493790
 Author: Bradley Morgan <brads@mainlining.org>
 
-media: ivtv: convert to kthread_run_worker
+net: encx24j600: convert to kthread_run_worker
+   =20
+Convert encx24j600 to use kthread_run_worker() instead of the
+deprecated kthread_run(kthread_worker_fn) pattern. The new API sets
+worker->task before the worker starts.
 
-Convert ivtv to use kthread_run_worker() instead of the deprecated
-kthread_run(kthread_worker_fn) pattern. The new API sets worker->task
-before the worker starts.
+> diff --git a/drivers/net/ethernet/microchip/encx24j600.c b/drivers/net/et=
+hernet/microchip/encx24j600.c
+> --- a/drivers/net/ethernet/microchip/encx24j600.c
+> +++ b/drivers/net/ethernet/microchip/encx24j600.c
+> @@ -884,7 +883,7 @@ static netdev_tx_t encx24j600_tx(struct sk_buff *skb,=
+ struct net_device *dev)
+>  	/* Remember the skb for deferred processing */
+>  	priv->tx_skb =3D skb;
+> =20
+> -	kthread_queue_work(&priv->kworker, &priv->tx_work);
+> +	kthread_queue_work(priv->kworker, &priv->tx_work);
 
-> diff --git a/drivers/media/pci/ivtv/ivtv-driver.c b/drivers/media/pci/ivt=
-v/ivtv-driver.c
-> index b9ea56ec9593f..6f0e0e46deb5b 100644
-> --- a/drivers/media/pci/ivtv/ivtv-driver.c
-> +++ b/drivers/media/pci/ivtv/ivtv-driver.c
+[Severity: High]
+This is a pre-existing issue, but is there a missing state cleanup for
+priv->tx_skb in the TX timeout path?
+
+If a TX timeout occurs, encx24j600_tx_timeout() wakes the queue without
+cleaning up priv->tx_skb or clearing pending TX state. The next TX here
+unconditionally overwrites priv->tx_skb, leaking the previous packet.
+
+Furthermore, a delayed hardware interrupt for the previous packet can arrive
+and trigger encx24j600_tx_complete(), which frees the new priv->tx_skb and
+sets it to NULL. When encx24j600_tx_complete() subsequently fires for the
+new packet, it sees priv->tx_skb is NULL and calls BUG():
+
+drivers/net/ethernet/microchip/encx24j600.c:encx24j600_tx_complete() {
+    if (!priv->tx_skb) {
+        BUG();
+        return;
+    }
+...
+
+Alternatively, encx24j600_hw_tx() may run concurrently with the delayed
+interrupt, reading priv->tx_skb->len when it has been set to NULL, causing
+a NULL pointer dereference.
+
 [ ... ]
-> @@ -1372,8 +1370,8 @@ static void ivtv_remove(struct pci_dev *pdev)
->  	timer_shutdown_sync(&itv->dma_timer);
+
+> @@ -1100,7 +1096,7 @@ static void encx24j600_spi_remove(struct spi_device=
+ *spi)
+>  	struct encx24j600_priv *priv =3D dev_get_drvdata(&spi->dev);
 > =20
->  	/* Kill irq worker */
-> -	kthread_flush_worker(&itv->irq_worker);
-> -	kthread_stop(itv->irq_worker_task);
-> +	kthread_flush_worker(itv->irq_worker);
-> +	kthread_destroy_worker(itv->irq_worker);
+>  	unregister_netdev(priv->ndev);
+> -	kthread_stop(priv->kworker_task);
+> +	kthread_destroy_worker(priv->kworker);
+> =20
+>  	free_netdev(priv->ndev);
+>  }
 
 [Severity: High]
-Does this create a use-after-free race condition with the interrupt handler?
+This is also a pre-existing issue, but does device removal strand the
+un-freed priv->tx_skb?
 
-kthread_destroy_worker() frees the dynamically allocated worker structure h=
-ere,
-but free_irq() is called later in ivtv_remove():
-
-drivers/media/pci/ivtv/ivtv-driver.c:ivtv_remove() {
-	...
-	kthread_destroy_worker(itv->irq_worker);
-	...
-	free_irq(itv->pdev->irq, (void *)itv);
-	...
-}
-
-Because free_irq() is the synchronization point that guarantees no interrupt
-handlers are still running, an in-flight ivtv_irq_handler() on another CPU
-can survive past kthread_destroy_worker().
-
-If the handler subsequently attempts to queue work, it will dereference the
-already-freed irq_worker pointer, causing a kernel panic.
-
-> =20
->  	ivtv_streams_cleanup(itv);
->  	ivtv_udma_free(itv);
-> diff --git a/drivers/media/pci/ivtv/ivtv-driver.h b/drivers/media/pci/ivt=
-v/ivtv-driver.h
-> index f1f18911332e8..41789a50d1ca6 100644
-> --- a/drivers/media/pci/ivtv/ivtv-driver.h
-> +++ b/drivers/media/pci/ivtv/ivtv-driver.h
-> @@ -668,8 +668,7 @@ struct ivtv {
->  	/* Interrupts & DMA */
->  	u32 irqmask;                    /* active interrupts */
->  	u32 irq_rr_idx;                 /* round-robin stream index */
-> -	struct kthread_worker irq_worker;		/* kthread worker for PIO/YUV/VBI ac=
-tions */
-> -	struct task_struct *irq_worker_task;		/* task for irq_worker */
-> +	struct kthread_worker *irq_worker;		/* kthread worker for PIO/YUV/VBI a=
-ctions */
+During driver removal in encx24j600_spi_remove(), the kworker is destroyed,
+and then the driver private data is freed without cleaning up priv->tx_skb,
+which results in a memory leak.
 
 [Severity: High]
-Does this change from a struct to a pointer cause a build error or memory
-corruption in ivtv_irq_handler()?
+This is another pre-existing issue, but are the hardware memory structures
+read over SPI properly converted from little-endian to CPU endianness?
 
-Because irq_worker is now a pointer, the unmodified call site in
-ivtv_irq_handler() now passes a double pointer:
+The 8-byte Receive Status Vector is read directly from the SPI interface
+into a struct rsv using encx24j600_raw_read() in encx24j600_rx_packets():
 
-drivers/media/pci/ivtv/ivtv-irq.c:ivtv_irq_handler() {
-    ...
-    kthread_queue_work(&itv->irq_worker, &itv->irq_work);
-    ...
-}
+encx24j600_raw_read(priv, RRXDATA, (u8 *)&rsv, sizeof(rsv));
 
-This violates the API contract and will cause a build failure with modern
-compilers due to incompatible pointer types.
+However, struct rsv in drivers/net/ethernet/microchip/encx24j600_hw.h uses
+native CPU types without using explicit __le16 and __le32 types:
 
-If the warning is ignored or coerced, kthread_queue_work() will treat the
-offset within struct ivtv as a kthread_worker object, corrupting adjacent
-fields when it acquires the spinlock, leading to a kernel crash.
+struct rsv {
+    u16 next_packet;
+    u16 len;
+    u32 rxstat;
+};
+
+On a big-endian system, won't the raw bytes be misinterpreted? For example,
+a packet length of 60 (0x003C) would be read as 0x3C00 (15360), which excee=
+ds
+MAX_FRAMELEN and causes the packet to be dropped. The corrupted next_packet
+pointer would then be written back to the device's ERXTAIL register,
+destroying the receive ring buffer state.
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/cover.1788513591.gi=
-t.brads@mainlining.org?part=3D1
+t.brads@mainlining.org?part=3D2
