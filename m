@@ -1,74 +1,97 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0F4633ADAF
-	for <linux-serial@vger.kernel.org>; Sat,  5 Sep 2026 18:53:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EE3826158B;
+	Sat,  5 Sep 2026 21:46:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788634410; cv=none; b=W0IQPf/djlp3Bt80993+DF3TSDBUR9ThcaNvj0h0hH0c48Jg2sA889JgeRRLpGhhf6AnzIAlN+ukrmLxuWPWNTfaEYW2J23vSBCYvQMWDWZ7KPFXUrZiLpIdBQRO+pzxKIdZVuPeNtP1Tk7JdRcZNx7sJ5IlV5CrMSr4SJW2sj4=
+	t=1788644769; cv=none; b=CbIN+EKAHww/m4eSWsnCiNgA2WHkxd1doJebT5oIcgqd3xV++XpZM4c3c7I2r1t+YhYyC3uw45WVKvC3XR07Xy+1fJGBROMAZ/GWJEIJWMf8GbTF5O2mUZFJbVLzqpkyLG8M0GJlGKICQ1WI/7HpRMGfwBQOIX0SPsfZxzi/zxs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788634410; c=relaxed/simple;
-	bh=76pLq/mb81gcD5qGgzzfB/Dh6i+aaeztwxGB5RcTNOY=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=JOPWOdEiYTzWAk5iyMFZxfdLJs44iT6E3+bZCw+yoMGMeW67jMzuVlmsXtq4Y0SCL6zkON9OvtYrHH398os+XlIIp9in5q/pf2iMYlETK5TACcJl7JVMIFSX7pdT7nNnREuTfar745rCgz+ncpUhMBSLxwgUjN3Q2HNj3y5dYQU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dDIl8Zi6; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788644769; c=relaxed/simple;
+	bh=9o4ZfbxeIICssdBtPhVE6bfvegYP/h6Eog5sDXhYllc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=lgtTcSAjXD5JxdOzEOKgDMcPatV1RR55711z1FwLnRkJB6AsIkJwW5vHySeVKOYS9UKR816KHyOLqqv0WCLxbLGkbKVEHnyK1KlUlVHfUpt+GrCVIOLmRO3vsNl6jYHdOIQTwQQzDt9hsuQPyUU7jUHVz+2IIn/Nfbe7MPWgs3Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=pass smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=PlkUOZPJ; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dDIl8Zi6"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9885C1F00A3A;
-	Sat,  5 Sep 2026 18:53:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788634408;
-	bh=76pLq/mb81gcD5qGgzzfB/Dh6i+aaeztwxGB5RcTNOY=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=dDIl8Zi6jhW8ATrfl1+XqcFq5F5Nzbs6OsI3SsIuyA0OtDHuxvxSu6FuCwoPgMsZn
-	 kHnmWFOGJEEdBjBHIX4q/SPP8UrQpGQysGhXa2Tb7E/5S5aPkn/X+IuQz0OA56lgbY
-	 K/uNgmJZ7nwbNdSmaVUC0+3FCGDcKF3Dqu6TUHxZpAvrwDj2lFW3lG/6AQ0h4+t7Ri
-	 Cv8y29kAZaJQ2iO87Dwe+8ugfH/+d3GLEgg3+4hARf57AC/4yi2ZJEJ48POR8We6TU
-	 1lnwJrLJw6NEM1r1OZJFCezOc2xZH3LeIOXHwmFYM5zK6/jToGgO+EVXHa0b83jyUT
-	 B3xyMwlu16HmA==
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v4] rust: serdev: Mitigate race conditions
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Markus Probst" <markus.probst@posteo.de>
-Cc: linux-serial@vger.kernel.org, ojeda@kernel.org
-In-Reply-To: <20260905-rust_serdev_fix-v4-1-31e1bbcc0c00@posteo.de>
-References: <20260905-rust_serdev_fix-v4-1-31e1bbcc0c00@posteo.de>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Sat, 05 Sep 2026 18:53:28 +0000
-Message-Id: <20260905185328.9885C1F00A3A@smtp.kernel.org>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="PlkUOZPJ"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+	bh=O0a5hwUgJRJeDlJ04FcTYM31qzCZlO49DRdy2+SwZ0I=; b=PlkUOZPJ9RdI8IgFzKhJIq7M8g
+	6s4BRQMnoUF/q56Nka7bbzPxFYH9BbJ7ubAD5gg3h28vvI8TXuBKFC/kob97CjlAElVz3vK+Br9Zj
+	6rQKphVSoQysX9Ii1Iu+tmUQgl5nJc0G+P9ro1HwRwor56DZqI6nP4I2+AprhC4ijqJ5plFUTBMoe
+	1OWwFU5+AgfjFdYZVUYdTfxXM8Wlld6L8CLpbqROhskpcELf9KspHB4k7bEqY8tMoCzlask7dAI4o
+	Sixdo8+Qd08/RBGg2kuY6Szek60cSoaQvadk4OtY0qDLNxo6E/b3U9V6Ev8jHf1SQFNn8cd4lc4k9
+	S1oAN57Q==;
+Received: from [50.53.43.113] (helo=[192.168.254.34])
+	by bombadil.infradead.org with esmtpsa (Exim 4.99.1 #2 (Red Hat Linux))
+	id 1x2yD7-00000004R7l-2Erh;
+	Sat, 05 Sep 2026 21:46:05 +0000
+Message-ID: <a3c59ca0-b42a-4b70-9e0c-f26f51209436@infradead.org>
+Date: Sat, 5 Sep 2026 14:46:04 -0700
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] Documentation: rs485: Pull uart_get_rs485_mode() from
+ serial_core.c
+To: Karl Mehltretter <kmehltretter@gmail.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-serial@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Shuah Khan <skhan@linuxfoundation.org>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+References: <20260905083648.39026-1-kmehltretter@gmail.com>
+Content-Language: en-US
+From: Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20260905083648.39026-1-kmehltretter@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-> There are currently 2 race conditions:
-> - in probe if `Driver::probe` returns Err
-> - in unbind
-> . In those cases the driver data will be set to NULL before the serdev
-> device was closed. If data is received while the driver data is dropped,
-> the `receive_buf_callback` might try to access the `active` mutex on a
-> null pointer. The race conditions can only occur if `Driver::receive` is
-> implemented.
->=20
-> The issue cannot be cleanly fixed without rewriting some logic, which
-> might introduce new regressions.
->=20
-> Temporarily disable the use of `Driver::receive`, until fixed in the
-> next release.
->=20
-> Fixes: 99f59aa82341 ("rust: add basic serial device bus abstractions")
-> Reported-by: Sashiko Bot <sashiko-bot@kernel.org>
-> Closes: https://lore.kernel.org/linux-serial/20260905000836.C8FC91F00A3D@=
-smtp.kernel.org/
-> Closes: https://lore.kernel.org/linux-serial/20260903222159.70A911F000E9@=
-smtp.kernel.org/
-> Signed-off-by: Markus Probst <markus.probst@posteo.de>
 
-Sashiko has reviewed this patch and found no issues. It looks great!
 
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260905-rust_serde=
-v_fix-v4-1-31e1bbcc0c00@posteo.de?part=3D1
+On 9/5/26 1:36 AM, Karl Mehltretter wrote:
+> serial-rs485.rst asks include/uapi/linux/serial.h for both struct
+> serial_rs485 and uart_get_rs485_mode(). The function and its kernel-doc
+> comment live in drivers/tty/serial/serial_core.c, so the directive has
+> never rendered it and the section shows only the structure.
+> 
+> Add a second directive for serial_core.c.
+> 
+> Fixes: 0f4648a1a6d3 ("Documentation: rs485: Mention uart_get_rs485_mode()")
+> Assisted-by: LLM
+> Signed-off-by: Karl Mehltretter <kmehltretter@gmail.com>
 
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
+thanks.
+
+> ---
+>  Documentation/driver-api/serial/serial-rs485.rst | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/driver-api/serial/serial-rs485.rst b/Documentation/driver-api/serial/serial-rs485.rst
+> index f53043d21071..98d8d83718c6 100644
+> --- a/Documentation/driver-api/serial/serial-rs485.rst
+> +++ b/Documentation/driver-api/serial/serial-rs485.rst
+> @@ -50,7 +50,10 @@ RS485 Serial Communications
+>     matching to the current configuration.
+>  
+>  .. kernel-doc:: include/uapi/linux/serial.h
+> -   :identifiers: serial_rs485 uart_get_rs485_mode
+> +   :identifiers: serial_rs485
+> +
+> +.. kernel-doc:: drivers/tty/serial/serial_core.c
+> +   :identifiers: uart_get_rs485_mode
+>  
+>  4. Usage from user-level
+>  ========================
+
+-- 
+~Randy
