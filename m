@@ -1,151 +1,111 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3039394793
-	for <linux-serial@vger.kernel.org>; Sat,  5 Sep 2026 09:40:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C90243C10A2
+	for <linux-serial@vger.kernel.org>; Sat,  5 Sep 2026 09:40:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788601240; cv=none; b=nqcfaBzG0imVdsNFVLJqrMDPQxXhRVHJpiRja/zOsEYml6i96GFliKoh2XiA67Xku4I358JjgdO5Ayxl57yh7oZGhAGRJO5e/ahRNlN6C+biNlQG+tgK///Q4JntcIfwbsjGqLHnVkRJgBie9W9j3AnNqEV4+sUzfhNy9nWGKXo=
+	t=1788601240; cv=none; b=XCJDkhlbkiBk3NndwJDM8dpcLgSA12h3LosjcorC5NmkPBU9k/rBB6dOfY8rC/kF+IF768MwTVVp9b+l/a0O2+y23Ww6KQsKR9LmdlYX7t6isuyelk+LjvV/Wg5iGfj8v0UMRtJE6v7fsv2d4iCrF/3xDmEswMUj2dXLJEUeg3g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1788601240; c=relaxed/simple;
-	bh=t9PQhDd1O9N+5v3x0QMJbkzp+Fij6DwQKE6aUxO1gBc=;
+	bh=NJmhAA4eAaUneEuRJnglpao4zpBmxf24iZp5yxwOzRM=;
 	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=rCHWMOfn31NVvgVXoWseWRsiurkr5vtaK98Kr6cRg+zUyf/la3gM6NJB80w1sEWmqdQdexd3prm4Owo1TdByJVxjhokEqYKccXiiruM0KtM2sw/aaNFR9u9IcA5Y294QQ84C7+fygPDjJjlogW5jkfYhhvyZqEOo45ElTYicJUc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=K0B2oQk2; arc=none smtp.client-ip=100.103.45.18
+	 Message-Id; b=Ru+PG08dI8bi11vRfUEROZE0CPYpiENqzkmu6InENWKBLEweUrc7PfKy8+h03z9qrss3cuY9IGI2C6tPFWpkJ+RWRysMEtmq+aSH4kGp6DbNYofhIvCa/tH1jqYxafdfIEApy3MuZGRrvPR3YZKo09bKV5TvvmMsmfbyYHQp9Vw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nO55zyn3; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="K0B2oQk2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 759EB1F00A3D;
-	Sat,  5 Sep 2026 09:40:38 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nO55zyn3"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3490D1F00A3E;
+	Sat,  5 Sep 2026 09:40:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788601238;
-	bh=FqyeJkJERLEY3l2wNEG0jZiOccQZar0ocgb4F7/NzDM=;
+	s=k20260515; t=1788601239;
+	bh=E9eH8pTZ6mpYq+E9b8sWlGdjmckTYrm71Eeza5X9rek=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=K0B2oQk2trTI6tpjKs4b/CoKUCKf+YP5Cc9tOpRUov1h633aSnfqpjwdSYQSwaY8A
-	 4t1kpyK/XkNNSCo9QW2hzjdDelB1GDUhsY7FBiJ8xRcB4ZF0kGloyjE/9aZiPt93mw
-	 IgQBQpERw1RtF5iQMOdUAZCScMvJ6hSJIEyOevDKxtL4ohMLcnEiVBcPJM3+LIvzVw
-	 mAq7GHZVsRwV2TwOJuU4Iran/6RVlWmdFOpp+8W4dHVzi3F3AcG3e2kuU0RhmaZTiT
-	 gt4vbZtpDfeYI/zbULE83+/1Yo7BCneQE9POQo91nTwRVsDXkVM/PVW3YpjjsTA1X7
-	 5kx1ix5XXlwtQ==
+	b=nO55zyn36FU1YueuoivGe2d7oI04TfEa+rPKhxvSNc/Obe91K6pZ7E9q0rzWboBgQ
+	 a2WFBDh4LDA7NcqCYqKlvge0Erv+2Nl09TzRvoZOfwTeuh7ekdt6Dt/4b7/I38u+i3
+	 emXuPjC0/KN+kSkkKfZuleUbNHtqRhA20JZIQw1di2+sS95WlKfRulPNIn6xA0QxR8
+	 2J83ROQVgG5SsG6o6ARWXu2LKCD7/4GYNl3DfHCJDIqEoy9PVtqrv5YvTWqTp4QuDC
+	 AipbvJHdi5BgEQqYzKAR+ZnuokV5cbAfJxKUrV1Dz8ejxRsVmHtpevfivNA4ISruIe
+	 O23KP3P5p1lAA==
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v2 2/5] net: encx24j600: convert to kthread_run_worker
+Subject: Re: [PATCH v2 5/5] kthread: remove worker->task self assignment
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Bradley Morgan" <brads@mainlining.org>
-Cc: linux-serial@vger.kernel.org, media-ci@linuxtv.org
-In-Reply-To: <ab6035a1d48109ba93fdb36d15d3306c46ab94b3.1788513591.git.brads@mainlining.org>
+Cc: media-ci@linuxtv.org, linux-serial@vger.kernel.org
+In-Reply-To: <c925e99c73bea9e0cdab656ba09453df7e81dcb2.1788513591.git.brads@mainlining.org>
 References: <cover.1788513591.git.brads@mainlining.org>
- <ab6035a1d48109ba93fdb36d15d3306c46ab94b3.1788513591.git.brads@mainlining.org>
+ <c925e99c73bea9e0cdab656ba09453df7e81dcb2.1788513591.git.brads@mainlining.org>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 Date: Sat, 05 Sep 2026 09:40:38 +0000
-Message-Id: <20260905094038.759EB1F00A3D@smtp.kernel.org>
+Message-Id: <20260905094039.3490D1F00A3E@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-Thank you for your contribution! Sashiko AI review found 2 potential issue(=
+Thank you for your contribution! Sashiko AI review found 1 potential issue(=
 s) to consider:
-
-Pre-existing issues:
-- [High] Missing state cleanup for `priv->tx_skb` in TX timeout, interface =
-stop, and device removal paths leads to memory leaks, data races, and poten=
-tial BUG() panics.
-- [High] Hardware memory structures read over SPI are not converted from li=
-ttle-endian to CPU endianness.
+- [Medium] Removing the self-assignment `worker->task =3D current;` breaks =
+out-of-tree (OOT) users of the old `kthread_run(kthread_worker_fn, ...)` AP=
+I, causing them to permanently deadlock due to missed wakeups.
 --
 
-commit d2a821de33aec8b828ff820d968fcd13ce493790
+commit 4e8323d40e4fe5053d4171cbca8193f9bd6080b8
 Author: Bradley Morgan <brads@mainlining.org>
 
-net: encx24j600: convert to kthread_run_worker
-   =20
-Convert encx24j600 to use kthread_run_worker() instead of the
-deprecated kthread_run(kthread_worker_fn) pattern. The new API sets
-worker->task before the worker starts.
+kthread: remove worker->task self assignment
 
-> diff --git a/drivers/net/ethernet/microchip/encx24j600.c b/drivers/net/et=
-hernet/microchip/encx24j600.c
-> --- a/drivers/net/ethernet/microchip/encx24j600.c
-> +++ b/drivers/net/ethernet/microchip/encx24j600.c
-> @@ -884,7 +883,7 @@ static netdev_tx_t encx24j600_tx(struct sk_buff *skb,=
- struct net_device *dev)
->  	/* Remember the skb for deferred processing */
->  	priv->tx_skb =3D skb;
+All kthread worker users now create their workers with kthread_create_worke=
+r*(),
+which sets worker->task before the worker starts. The self assignment in
+kthread_worker_fn() is removed, leaving a warning check for out-of-tree use=
+rs.
+
+> diff --git a/kernel/kthread.c b/kernel/kthread.c
+> index 63beb59b7a3d1..643407647e79d 100644
+> --- a/kernel/kthread.c
+> +++ b/kernel/kthread.c
+> @@ -987,12 +987,10 @@ int kthread_worker_fn(void *worker_ptr)
+>  	struct kthread_worker *worker =3D worker_ptr;
+>  	struct kthread_work *work;
 > =20
-> -	kthread_queue_work(&priv->kworker, &priv->tx_work);
-> +	kthread_queue_work(priv->kworker, &priv->tx_work);
+> -	/*
+> -	 * FIXME: Update the check and remove the assignment when all kthread
+> -	 * worker users are created using kthread_create_worker*() functions.
+> +	/* All workers are created with worker->task set. If this fires,
+> +	 * the caller is broken.
+>  	 */
+> -	WARN_ON(worker->task && worker->task !=3D current);
+> -	worker->task =3D current;
+> +	WARN_ON(worker->task !=3D current);
 
-[Severity: High]
-This is a pre-existing issue, but is there a missing state cleanup for
-priv->tx_skb in the TX timeout path?
+[Severity: Medium]
+Does removing this assignment cause out-of-tree users of the old
+kthread_run() API to hang permanently?
 
-If a TX timeout occurs, encx24j600_tx_timeout() wakes the queue without
-cleaning up priv->tx_skb or clearing pending TX state. The next TX here
-unconditionally overwrites priv->tx_skb, leaking the previous packet.
+Because the self-assignment is removed, worker->task will remain NULL for a=
+ny
+callers still using the old API. When new work is inserted, the wakeup will=
+ be
+silently skipped in kthread_insert_work():
 
-Furthermore, a delayed hardware interrupt for the previous packet can arrive
-and trigger encx24j600_tx_complete(), which frees the new priv->tx_skb and
-sets it to NULL. When encx24j600_tx_complete() subsequently fires for the
-new packet, it sees priv->tx_skb is NULL and calls BUG():
+kernel/kthread.c:kthread_insert_work() {
+	...
+	if (!worker->current_work && likely(worker->task))
+		wake_up_process(worker->task);
+	...
+}
 
-drivers/net/ethernet/microchip/encx24j600.c:encx24j600_tx_complete() {
-    if (!priv->tx_skb) {
-        BUG();
-        return;
-    }
-...
+This means the warning intended as a sanity check turns into a silent, fatal
+breakage where the worker hangs in TASK_INTERRUPTIBLE and queued work is ne=
+ver
+processed.
 
-Alternatively, encx24j600_hw_tx() may run concurrently with the delayed
-interrupt, reading priv->tx_skb->len when it has been set to NULL, causing
-a NULL pointer dereference.
-
-[ ... ]
-
-> @@ -1100,7 +1096,7 @@ static void encx24j600_spi_remove(struct spi_device=
- *spi)
->  	struct encx24j600_priv *priv =3D dev_get_drvdata(&spi->dev);
 > =20
->  	unregister_netdev(priv->ndev);
-> -	kthread_stop(priv->kworker_task);
-> +	kthread_destroy_worker(priv->kworker);
-> =20
->  	free_netdev(priv->ndev);
->  }
-
-[Severity: High]
-This is also a pre-existing issue, but does device removal strand the
-un-freed priv->tx_skb?
-
-During driver removal in encx24j600_spi_remove(), the kworker is destroyed,
-and then the driver private data is freed without cleaning up priv->tx_skb,
-which results in a memory leak.
-
-[Severity: High]
-This is another pre-existing issue, but are the hardware memory structures
-read over SPI properly converted from little-endian to CPU endianness?
-
-The 8-byte Receive Status Vector is read directly from the SPI interface
-into a struct rsv using encx24j600_raw_read() in encx24j600_rx_packets():
-
-encx24j600_raw_read(priv, RRXDATA, (u8 *)&rsv, sizeof(rsv));
-
-However, struct rsv in drivers/net/ethernet/microchip/encx24j600_hw.h uses
-native CPU types without using explicit __le16 and __le32 types:
-
-struct rsv {
-    u16 next_packet;
-    u16 len;
-    u32 rxstat;
-};
-
-On a big-endian system, won't the raw bytes be misinterpreted? For example,
-a packet length of 60 (0x003C) would be read as 0x3C00 (15360), which excee=
-ds
-MAX_FRAMELEN and causes the packet to be dropped. The corrupted next_packet
-pointer would then be written back to the device's ERXTAIL register,
-destroying the receive ring buffer state.
+>  	if (worker->flags & KTW_FREEZABLE)
+>  		set_freezable();
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/cover.1788513591.gi=
-t.brads@mainlining.org?part=3D2
+t.brads@mainlining.org?part=3D5
