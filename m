@@ -1,167 +1,72 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FCF11EB1AA
-	for <linux-serial@vger.kernel.org>; Sun,  6 Sep 2026 16:08:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BEBF3A8FE1
+	for <linux-serial@vger.kernel.org>; Sun,  6 Sep 2026 16:09:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788710906; cv=none; b=jKAxnkJnyQOpvy9jG/AuGG/tgVfYsmsEy6UlrfrIdyX112t9fHRDpDO/r58FMjhh4QSWLsvhPeWtdPvOSS8yvIDVXWP2yl6SIs10v5t6epIRoxTcq6pGfWqzmroRqQodenWlS21l3RDVlmd0XyfRL9X7nY3Y4AQY/7N33Uu4S2o=
+	t=1788710995; cv=none; b=HxGM+9AcZMsY8Z/MGm4O6BVrvG5lNw4BiUkaN0bV2LodBz237iIl2/L8m5QSTqSz7y0ueI7JGzesnr1Sympf3GJ/CuO7LQ6Q9wTXPC8Dc4rD7fm96kt62k5dciTTjrxz+Qqcm/XwyF/WwjZmpzkWHsocNF1y6BA/F2FUT6ll3ys=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788710906; c=relaxed/simple;
-	bh=pE/FIBa75Qv4ZJv7UHEs9Oz89TBSBwHzuTOxe1jMs7A=;
+	s=arc-20240116; t=1788710995; c=relaxed/simple;
+	bh=CbP6us/lr59dRro+fa1nQni2pU5kzXHWVCz4cnGoxiQ=;
 	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=jm5/MgwVC3LWaJXAZ+83VS6S5SLhQ4mRGehzyued/2OmCycvPVFyQbhppVEImGvXmG+/dIts4d30vjgzMQryQ7KJbH/TRARe65+NhJaTY+wFgT0H57WXeTPgIaJWIqLfSRgSw6JLOorzput9pOdLAlZyoUkvJEfUje4a1tpwJ8s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mECVkfYv; arc=none smtp.client-ip=100.103.45.18
+	 Message-Id; b=oUCKhXAAK7uS+QuiMzIEZEN5pZE90dHMAdm8/n989jOkIZzqYzM44ACDM1PUUGGhgYNiQ3CzaPh+444HgLL/h1E/+06C2EjMQFfCeeUPl6xwhYkXNQdMXjfszFNhob6d1OZx7A7klP+EFZOa9FDsxBZF8lNaNxTrEAxnd1/aGEc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GgC6/Cvo; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mECVkfYv"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB4ED1F00A3A;
-	Sun,  6 Sep 2026 16:08:24 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GgC6/Cvo"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 034971F00A3A;
+	Sun,  6 Sep 2026 16:09:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788710905;
-	bh=ifYZw01fjIt/ZJ31UEWG/6aiohANseasZZ/FY/fxAdw=;
+	s=k20260515; t=1788710992;
+	bh=CbP6us/lr59dRro+fa1nQni2pU5kzXHWVCz4cnGoxiQ=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=mECVkfYvgSv2ft1qMogLj+qioWQz1uL1V29QfYsiKRWeI49XvA6FeBIlkd4cCi/Fd
-	 nv1qLHNSRATbMh7dr1pbCmJUCIcsmIsSOvzI193U6Z/5ckFtbnfMcXmpt5g4E7//X/
-	 on21TJd/n7nZZkMJjROG15s6yDWogen0y1sS1PAzxbvP23eTzdCycnsfCOjsnevdIZ
-	 HsbdKKMZDXcbet8h9nO21b50urqgpp4a2oePkrMKnUjTw26WUJ3CTn0yNXIiXljPTc
-	 QiKOShVSTevdoWax0HbPAOc/+8/dD+PTwYQEZkJabLYuFL+u7ZknGfXlG4uMubotAg
-	 KYv9LFVmVxCdQ==
+	b=GgC6/CvoA7zWYd707YOcASi8HMjqpygY+8d+z4Zm237+LYLXp0VgKl4nnaQp4Yo7c
+	 nTofzk7kyMmlAk5t8wiT4lJPO1YvULZ8cdFHusjNZOOkTlnhPjgWVY/z+TnlvtA6FF
+	 MBJhA8hEmO8DAl9ges5fH04G07thmsqbPn8W7U4dOR1fiX0GOf5C9UFA19ke3YNAz1
+	 9K0/p5udn0QOurju8J+dwBZ0/9YbplreYIR0WF564gzLBcleeBekMMP4bmLv9WKs1V
+	 s2CvDYsrYPQvHvz1xNtm/nC+ehVvqIwarwMMz18GOQ+yN/dOMIdpdVqwbfr872Rrdh
+	 WpDlG27Rg9pVA==
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 4/5] rust: Add `Device::drvdata_borrow_mut`
+Subject: Re: [PATCH 2/5] rust: serdev: Replace `active` mutex with receive
+ pause
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Markus Probst" <markus.probst@posteo.de>
 Cc: linux-serial@vger.kernel.org, ojeda@kernel.org
-In-Reply-To: <20260906-rust_serdev_probe_refactor-v1-4-69cdae0074ec@posteo.de>
+In-Reply-To: <20260906-rust_serdev_probe_refactor-v1-2-69cdae0074ec@posteo.de>
 References: <20260906-rust_serdev_probe_refactor-v1-0-69cdae0074ec@posteo.de>
- <20260906-rust_serdev_probe_refactor-v1-4-69cdae0074ec@posteo.de>
+ <20260906-rust_serdev_probe_refactor-v1-2-69cdae0074ec@posteo.de>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Sun, 06 Sep 2026 16:08:24 +0000
-Message-Id: <20260906160824.CB4ED1F00A3A@smtp.kernel.org>
+Date: Sun, 06 Sep 2026 16:09:51 +0000
+Message-Id: <20260906160952.034971F00A3A@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-Thank you for your contribution! Sashiko AI review found 4 potential issue(=
-s) to consider:
+> There are currently 2 race conditions:
+> - in probe if `Driver::probe` returns Err
+> - in unbind
+> . In those cases the driver data will be set to NULL before the serdev
+> device was closed. If data is received while the driver data is dropped,
+> the `receive_buf_callback` might try to access the `active` mutex on a
+> null pointer.
+>=20
+> Removing the need for `receive_buf_callback` to lock the `active` mutex
+> fixes these.
+>=20
+> Fixes: 99f59aa82341 ("rust: add basic serial device bus abstractions")
+> Reported-by: Sashiko Bot <sashiko-bot@kernel.org>
+> Closes: https://lore.kernel.org/linux-serial/20260905000836.C8FC91F00A3D@=
+smtp.kernel.org/
+> Closes: https://lore.kernel.org/linux-serial/20260903222159.70A911F000E9@=
+smtp.kernel.org/
+> Signed-off-by: Markus Probst <markus.probst@posteo.de>
 
-New issues:
-- [High] Incomplete safety contract for `drvdata_borrow` fails to forbid ov=
-erlapping with `drvdata_borrow_mut`, leading to an API soundness hole.
-- [Low] Missing `#[inline]` attribute on the abstraction function `drvdata_=
-borrow_mut` which forwards to a C binding.
-- [Low] Grammatical error in the documentation comment for `drvdata_borrow_=
-mut`.
-
-Pre-existing issues:
-- [High] Potential NULL pointer dereference in `receive_buf_callback` due t=
-o reliance on an optional C callback (`pause_rx`) to suppress data receptio=
-n during probe.
---
-
-commit 0556399b0fd78424186d5ad317732507484df8d2
-Author: Markus Probst <markus.probst@posteo.de>
-
-rust: Add Device::drvdata_borrow_mut
-
-This patch adds Device::drvdata_borrow_mut to allow callers with exclusive
-access to obtain a mutable reference to the driver's private data. This
-functionality is intended for use in serdev to provide mutable references
-in callbacks.
-
-> diff --git a/rust/kernel/device.rs b/rust/kernel/device.rs
-> index 2291d85b6849e..aa2d87c6f4d3e 100644
-> --- a/rust/kernel/device.rs
-> +++ b/rust/kernel/device.rs
-> @@ -258,6 +258,30 @@ pub unsafe fn drvdata_borrow<T>(&self) -> Pin<&T> {
->          //   in `into_foreign()`.
->          unsafe { Pin::<KBox<T>>::borrow(ptr.cast()) }
->      }
-
-[Severity: High]
-With the introduction of the mutable variant below, should drvdata_borrow
-have an explicit safety contract requiring callers to ensure no overlapping
-mutable references exist? Since drvdata_borrow_mut is being added, the
-missing contract on drvdata_borrow could lead to aliasing mutable and
-immutable references.
-
-> +
-> +    /// Borrow the driver's private data bound to this [Device] mutable.
-
-[Severity: Low]
-This isn't a bug, but there is a minor grammatical error. Should "mutable"
-be "mutably" to properly modify the verb "Borrow"?
-
-> +    ///
-> +    /// # Safety
-> +    ///
-> +    /// - Must only be called after a preceding call to [Device::set_drv=
-data] and before the
-> +    ///   device is fully unbound.
-> +    /// - The type T must match the type of the ForeignOwnable previousl=
-y stored by
-> +    ///   [Device::set_drvdata].
-> +    /// - The caller must have exclusive access to T.
-> +    #[expect(clippy::mut_from_ref)]
-> +    pub unsafe fn drvdata_borrow_mut<T>(&self) -> Pin<&mut T> {
-
-[Severity: Low]
-Should this abstraction function include the #[inline] attribute? According
-to the Rust subsystem guidelines, small functions in abstractions that forw=
-ard
-to C bindings should be annotated with #[inline].
-
-> +        // SAFETY: By the type invariants, `self.as_raw()` is a valid po=
-inter to a `struct device`.
-> +        let ptr =3D unsafe { bindings::dev_get_drvdata(self.as_raw()) };
-> +
-> +        // SAFETY:
-> +        // - By the safety requirements of this function, `ptr` comes fr=
-om a previous call to
-> +        //   `into_foreign()`.
-> +        // - `dev_get_drvdata()` guarantees to return the same pointer g=
-iven to `dev_set_drvdata()`
-> +        //   in `into_foreign()`.
-> +        // - By the safety requirements of this function, `borrow` and `=
-borrow_mut` do not overlap
-> +        //   on the same object.
-> +        unsafe { Pin::<KBox<T>>::borrow_mut(ptr.cast()) }
-> +    }
-
-[Severity: High]
-This is a pre-existing issue, but I noticed a potential problem in how
-serdev handles data reception during probe, which might be relevant
-since this patch is intended for serdev callbacks.
-
-Can receive_buf_callback dereference a NULL pointer if a serdev controller=
-=20
-does not implement pause_rx?
-
-In rust/kernel/serdev.rs:probe_callback(), the code opens the device and=20
-relies on pause_rx to suppress data:
-
-    unsafe { bindings::serdev_device_pause_rx(sdev.as_raw()) };
-    to_result(unsafe { bindings::serdev_device_open(sdev.as_raw()) })?;
-
-However, the C API treats pause_rx as optional and fails silently:
-
-drivers/tty/serdev/core.c:serdev_device_pause_rx() {
-    if (!ctrl || !ctrl->ops->pause_rx)
-        return;
-    ...
-}
-
-If a controller missing pause_rx is probed, serdev_device_open allows=20
-data to be received. If data arrives asynchronously before probe_callback=20
-finishes and calls set_drvdata, wouldn't receive_buf_callback unconditional=
-ly=20
-borrow a NULL pointer here:
-
-    let private_data =3D unsafe { sdev.as_ref().drvdata_borrow::<PrivateDat=
-a<'_, T>>() };
+Sashiko has reviewed this patch and found no issues. It looks great!
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260906-rust_serde=
-v_probe_refactor-v1-0-69cdae0074ec@posteo.de?part=3D4
+v_probe_refactor-v1-0-69cdae0074ec@posteo.de?part=3D2
+
