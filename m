@@ -1,132 +1,88 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E3A24F6466
-	for <linux-serial@vger.kernel.org>; Mon,  7 Sep 2026 15:37:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 492BF34CFC7;
+	Mon,  7 Sep 2026 15:52:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.79.88.28
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788795453; cv=none; b=mefwi8BaTdjST1aBuhlHy2KvPpX6FEq3faZm7+2LYgEXItdvHopg+ZhJaWGbN+jZTa1/u6GykVeXc0L+uBpT/EKb2Vz2k154LLTvXKakMljcbqOOcoYkVJWP1mxugAZGkzhlkKDBV1zxq82Y1fuujEt5gh7LyCUZakmuVqYuwSM=
+	t=1788796350; cv=none; b=X6pmYBww7xyk0Su1Y/Ps6ASZ0AgiFBKGZDj1PMrsp3/eCWaMUPQnk06djDVOxZlFaA8fjZHPY2bpzI2i+HiuLShu0MqJPPjeSijYLQcjTGrBHvnQ/e0DpBgFweqsh/RjS/r2XUQfLOMzf+ZgtdLba/73JUvfOilCqJS4cFN/Dfk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788795453; c=relaxed/simple;
-	bh=qyDz1RpVFZXRV0CfRgtTw2VNv2aiVrfBlNH1puSk07Q=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=rULcOHClRdEjXjDqWMUnj0LeNBl7uOU1zv/wFYZ3rKplXSl6WbaHvZ9ouMniVsSOKro72niwx0UKCTYJKu+vPPKNY/11fP93yb4H50+abt+U6rB6tjkHTigTSAKEnBlFUSjjHRz6M3dW6IoVHgOXpSxcBDlYZQsCbeLSnVnvh4g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=l+7HiP8c; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788796350; c=relaxed/simple;
+	bh=KbdHqHbCxKTm1pXa0FaJJl1Dz1Qjt8pEQzncbgTAbbQ=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=ZhVI2y/SRArO7FsqKsbLkN0wB3KExDW4uWfX4j4SPRQUqpJKbdRRuaJtglptekRnMa3RBM0QNnYd/1OPw7SenLLZXwH2Y4MXMQ60+D0miDTDVIB5yIMhC2M85YzLSZeQCZ3EvH8S5ZGcxZlI36/MNeoOGZYh98gfe8QhceuS0FY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lwn.net; spf=pass smtp.mailfrom=lwn.net; dkim=pass (2048-bit key) header.d=lwn.net header.i=@lwn.net header.b=DjrZqg8e; arc=none smtp.client-ip=45.79.88.28
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lwn.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lwn.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="l+7HiP8c"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 089061F00A3A;
-	Mon,  7 Sep 2026 15:37:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788795452;
-	bh=IgmNkjWTq5IxofkeuUZL0on2s+3pJNuFZcWGosJ0hZ8=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=l+7HiP8cxWFW8zTS6/NYJ3rdCYHhoId6OyrvaDVcyN5hV6JAr+bdtaOMN+WoFAg0B
-	 aFImgUSX450g/8tFYpTVtrttEvDSEFx93fscT11N6NvCoYmCyV/S5pHb5izhB8lpsV
-	 y18FzyzFQUapKue4Sik3hN/w1QEexBO1FWrqseeZp9nhGjgLGuNPGMtOphUsYJVjiN
-	 maXRZCXh6jQpeANoKcxFDxzvL4ROP6ro5JWtzLjCif5INI4waVhmgnuLXY+lw6qt6f
-	 tnd/6a69m06KrS5vp/7l+OnT2Otr7RJsa0kMfjAM42q/sqRSSaXgx2lZdSjicoT07U
-	 Aru1qWUyiqNAA==
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH] serial: 8250_of: set UART_CAP_NOTEMT for rts-gpios
- RS485 direction
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Nicolas Thibert" <nithibert@gmail.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20260907152744.1084359-1-nithibert@gmail.com>
-References: <20260907152744.1084359-1-nithibert@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 07 Sep 2026 15:37:31 +0000
-Message-Id: <20260907153732.089061F00A3A@smtp.kernel.org>
+	dkim=pass (2048-bit key) header.d=lwn.net header.i=@lwn.net header.b="DjrZqg8e"
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 443A74158C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+	t=1788796348; bh=6c2w3nkZz8Hi9H065F6d699Zlb1eBVLzI1zMJpuOMes=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=DjrZqg8eJhvR/S1lg2/j74WtFKkT8MqStPdO3WKI10//hEgZL+VBIDJWLThoihMlh
+	 ML3KB+LtR4sGZ8RXdFDJqxFJh8zcKSkeIQqpEhfC8Yq2uNR8IlIwJWtlJLEzrgtVGD
+	 NHPHTF7udCGOluRnnfGshw+ECwFpYicHOZPM4YpjfoqrBhUG1cM8ArUWOQo0C6Yt3T
+	 uVL+vakLEMnmgkqwLsieLrV3vLsw0nz13nkryqs61TB6PsmQc+w3R7mHq4t0Za0CmO
+	 fK9SUQ2kmrUPnAYy1p8DUloWzl01M+d75wf5F+0xRdx9zFMfmfAbFBJDVua13zyn8n
+	 o0u6s+jCtQRCw==
+Received: from localhost (unknown [IPv6:2601:280:4600:814::1fe])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by ms.lwn.net (Postfix) with ESMTPSA id 443A74158C;
+	Mon,  7 Sep 2026 15:52:28 +0000 (UTC)
+From: Jonathan Corbet <corbet@lwn.net>
+To: Karl Mehltretter <kmehltretter@gmail.com>, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
+Cc: Karl Mehltretter <kmehltretter@gmail.com>, linux-serial@vger.kernel.org,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, Shuah Khan
+ <skhan@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>, Ilpo
+ =?utf-8?Q?J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: Re: [PATCH] Documentation: rs485: Pull uart_get_rs485_mode() from
+ serial_core.c
+In-Reply-To: <20260905083648.39026-1-kmehltretter@gmail.com>
+References: <20260905083648.39026-1-kmehltretter@gmail.com>
+Date: Mon, 07 Sep 2026 09:52:27 -0600
+Message-ID: <87ik4hvz2c.fsf@trenco.lwn.net>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain
 
-Thank you for your contribution! Sashiko AI review found 1 potential issue(=
-s) to consider:
-- [High] The newly added UART_CAP_NOTEMT flag is either silently overwritte=
-n or causes the port to lose all of its default hardware capabilities.
---
+Karl Mehltretter <kmehltretter@gmail.com> writes:
 
-commit 1d8dc615b4080d6f9bde37f54eafa34f59649ede
-Author: Nicolas Thibert <nithibert@gmail.com>
-
-serial: 8250_of: set UART_CAP_NOTEMT for rts-gpios RS485 direction
-
-This patch sets UART_CAP_NOTEMT for RS485 ports using rts-gpios to prevent
-the direction GPIO from getting stuck due to missing TEMT interrupts.
-
-> diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/=
-8250_of.c
-> index b1561c499acda..600a77e1e6143 100644
-> --- a/drivers/tty/serial/8250/8250_of.c
-> +++ b/drivers/tty/serial/8250/8250_of.c
-> @@ -212,6 +212,22 @@ static int of_platform_serial_setup(struct platform_=
-device *ofdev,
->  	up->rs485_start_tx =3D serial8250_em485_start_tx;
->  	up->rs485_stop_tx =3D serial8250_em485_stop_tx;
-> =20
-> +	/*
-> +	 * This generic driver never enables a dedicated line-status
-> +	 * interrupt on TEMT, so for ports whose RS485 direction is
-> +	 * controlled via a GPIO (rts-gpios) rather than the native RTS
-> +	 * pin, __stop_tx() (8250_port.c) can see THRE without TEMT on the
-> +	 * last byte and bail out without ever retrying -- leaving the
-> +	 * direction GPIO stuck asserted after the last byte sent, on
-> +	 * hardware whose shift register doesn't reliably surface TEMT.
-> +	 * UART_CAP_NOTEMT makes it fall back to a frame-time-based timer
-> +	 * instead of waiting on that interrupt. Scoped to rts-gpios users
-> +	 * only, to avoid changing timing for ports relying on the native
-> +	 * RTS pin, which this has not been observed to affect.
-> +	 */
-> +	if (of_property_present(np, "rts-gpios"))
-> +		up->capabilities |=3D UART_CAP_NOTEMT;
+> serial-rs485.rst asks include/uapi/linux/serial.h for both struct
+> serial_rs485 and uart_get_rs485_mode(). The function and its kernel-doc
+> comment live in drivers/tty/serial/serial_core.c, so the directive has
+> never rendered it and the section shows only the structure.
+>
+> Add a second directive for serial_core.c.
+>
+> Fixes: 0f4648a1a6d3 ("Documentation: rs485: Mention uart_get_rs485_mode()")
+> Assisted-by: LLM
+> Signed-off-by: Karl Mehltretter <kmehltretter@gmail.com>
+> ---
+>  Documentation/driver-api/serial/serial-rs485.rst | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+>
+> diff --git a/Documentation/driver-api/serial/serial-rs485.rst b/Documentation/driver-api/serial/serial-rs485.rst
+> index f53043d21071..98d8d83718c6 100644
+> --- a/Documentation/driver-api/serial/serial-rs485.rst
+> +++ b/Documentation/driver-api/serial/serial-rs485.rst
+> @@ -50,7 +50,10 @@ RS485 Serial Communications
+>     matching to the current configuration.
+>  
+>  .. kernel-doc:: include/uapi/linux/serial.h
+> -   :identifiers: serial_rs485 uart_get_rs485_mode
+> +   :identifiers: serial_rs485
 > +
->  	switch (type) {
+> +.. kernel-doc:: drivers/tty/serial/serial_core.c
+> +   :identifiers: uart_get_rs485_mode
 
-[Severity: High]
-If the device explicitly configures a FIFO size, does the caller overwrite
-this newly added capability?
+Applied, thanks.
 
-When of_platform_serial_probe() calls of_platform_serial_setup(), it does
-this right after:
-
-drivers/tty/serial/8250/8250_of.c:of_platform_serial_probe() {
-	...
-	ret =3D of_platform_serial_setup(ofdev, port_type, &port8250, info);
-	if (ret)
-		goto err_free;
-
-	if (port8250.port.fifosize)
-		port8250.capabilities =3D UART_CAP_FIFO;
-	...
-}
-
-Will this direct assignment completely erase the UART_CAP_NOTEMT flag?
-
-Conversely, if the device does not specify a fifosize, port8250.capabilities
-will be non-zero because it holds the UART_CAP_NOTEMT flag. Does this
-cause the port to miss all its default hardware capabilities?
-
-Later during registration, serial8250_set_defaults() checks if capabilities
-is zero before assigning defaults:
-
-drivers/tty/serial/8250/8250_port.c:serial8250_set_defaults() {
-	...
-	if (!up->capabilities)
-		up->capabilities =3D uart_config[port->type].flags;
-	...
-}
-
-Since up->capabilities is non-zero, this assignment is skipped entirely,
-stripping the port of default features like UART_CAP_FIFO and UART_CAP_SLEE=
-P.
-
-Could we change the assignment in of_platform_serial_probe() to use |=3D,
-and find a different way to merge UART_CAP_NOTEMT with the default flags?
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260907152744.1084=
-359-1-nithibert@gmail.com?part=3D1
+jon
