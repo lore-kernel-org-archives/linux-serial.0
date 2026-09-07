@@ -1,74 +1,72 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8A79503BC5
-	for <linux-serial@vger.kernel.org>; Mon,  7 Sep 2026 17:36:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4D04357D0A;
+	Mon,  7 Sep 2026 18:05:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=156.67.10.101
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788802595; cv=none; b=QdhNYHY1ZCOOy8Du7jyi2D3dsbcte1o8uPg/8HrRxe5I5lHvspiryU/kbBFnJ823FxuwOnXinSatn1E7WC3DBHNbxOcfG20Z58ChkLulCAycR9wO33B9Cm+uVgDIBpYbWYqlgrkOhY4GS1FAO9KPMVYphej00txWifsLe254818=
+	t=1788804337; cv=none; b=cD9AnWfaRE5NOiauq9eYrhX1wt4PBlCI1E7C6jt04NPxnmUxrAp+5No3vTtzt4XzqPiSZrJJa6I+RxE9Xqm7Vh1pBTJFYnpAW3oqu0r94P4D7ESvlkquaEZjR9lh5L/f0Et9Cj+ExPyHfehjRhnywAPetJgWWGpBxdZ8tB9obC4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788802595; c=relaxed/simple;
-	bh=dhGtyPrODQDF+J17hmKXLn85PV9V/DUOTK6pnqeCJyQ=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=W7lkoI6X+/mKUXXAorlRk/IYdb6Z18Tp5xSk22AK4Wgp3PVpX38rzu3WXzyzP6RXc0LmVPEnawCDI+Eyth0C56abjZgfI+oN4LXHGH90zxKC2mBAx8PbE5oB91HdCPGyN8zgyAw+n7s1uumQgbtrSWI3uwW35943YJHz9MkcT08=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZI3balh/; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788804337; c=relaxed/simple;
+	bh=irCQ4jBgKVi9PdwNEEM5T06sY24CnC/GOVKxNfPwso8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DLSOhQjwXc36PA0oDYA+LgskTUVC6BWDFj+/oE1WdRbnQYrTPiNDfkni+tzdEeb5MZJwWLIrBRsOtu/V4B6lr1BcLCdmQhh8NNTrHb7tg9RjIvsHMe94Z2uCp0vNrfSmsKlnRnJb5dQy9VQetube2kHOB8KEKZcRZmyc/cYr9YU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lunn.ch; spf=pass smtp.mailfrom=lunn.ch; dkim=pass (1024-bit key) header.d=lunn.ch header.i=@lunn.ch header.b=WWLGjDwb; arc=none smtp.client-ip=156.67.10.101
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lunn.ch
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lunn.ch
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZI3balh/"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43EC21F00A3A;
-	Mon,  7 Sep 2026 17:36:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788802593;
-	bh=dhGtyPrODQDF+J17hmKXLn85PV9V/DUOTK6pnqeCJyQ=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=ZI3balh/Pl634Zy/G6r9SNxVVnpoNrVLuyudjs6MPSjoly6jJByTaOA1kHHoWkKp/
-	 d+08GXrZEsvvGeNmb3EQUwDNUFUqAAEbxVVmIrnimdi5AbwKQ60fYB5U+4UDqYKDzs
-	 OWs4NdgcwpHjetEwbOFZVBcsfN/kr6kMmuDZIJs8LCdHDVNo//TCeixkAL76zjw+dG
-	 tP5/bs1tAiNNQGl7j70bFfP6OMH9oJ1IdEr1e4cMUK5Skvf6FKYy3OEXIqMHpvXrGP
-	 qown51lUM7yNZvBUAdpedWrWm3yswVkEBu/xbPZemPL/UYttqV67fp383a7UQDbsI0
-	 cI+8glVlii0mw==
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH] serial: 8250_of: set UART_CAP_NOTEMT for rts-gpios
- RS485 direction
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Nicolas Thibert" <nithibert@gmail.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20260907173000.1254045-1-nithibert@gmail.com>
-References: <20260907173000.1254045-1-nithibert@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 07 Sep 2026 17:36:32 +0000
-Message-Id: <20260907173633.43EC21F00A3A@smtp.kernel.org>
+	dkim=pass (1024-bit key) header.d=lunn.ch header.i=@lunn.ch header.b="WWLGjDwb"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+	bh=5DGA5yGgA6WfP2iOigvVrpj/b8QvWE0uJAMX/rb27bg=; b=WWLGjDwbVkls5zSmMFgX9TOmdZ
+	Dzot4tUT+wMtcsWxNstt3dBm0YdnGl79RGTSdqvy9vUr0o3LhvHize+bmp6yR8+TrWfGSo+rg0aoN
+	lySE9Wbm8qOkeu927q2KCdkeMFTSPnDrGXKrnMJnu4yXtRn7D5kWD4D3GMtUwzYzk8UE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+	(envelope-from <andrew@lunn.ch>)
+	id 1x3diO-003aXf-M0; Mon, 07 Sep 2026 20:05:08 +0200
+Date: Mon, 7 Sep 2026 20:05:08 +0200
+From: Andrew Lunn <andrew@lunn.ch>
+To: Hemanth Selam <hemanth.selam@gmail.com>
+Cc: Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Christophe Leroy <chleroy@kernel.org>,
+	Mahesh J Salgaonkar <mahesh@linux.ibm.com>,
+	Oliver O'Halloran <oohall@gmail.com>,
+	Geoff Levand <geoff@infradead.org>,
+	Haren Myneni <haren@linux.ibm.com>,
+	Rick Lindsley <ricklind@linux.ibm.com>,
+	Nick Child <nnac123@linux.ibm.com>,
+	Andrew Lunn <andrew+netdev@lunn.ch>,
+	"David S . Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Shuah Khan <shuah@kernel.org>,
+	linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+	kvm@vger.kernel.org, netdev@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH 0/2] powerpc: fix typos and repeated words in comments
+Message-ID: <b1f18b1e-dd7c-4e12-9a87-c7ee5e69697c@lunn.ch>
+References: <20260907065153.33578-1-hemanth.selam@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260907065153.33578-1-hemanth.selam@gmail.com>
 
-> __stop_tx() (8250_port.c) only calls the RS485 rs485_stop_tx() hook
-> (which de-asserts the direction GPIO/RTS line) once it has observed
-> both UART_LSR_THRE and UART_LSR_TEMT for the last byte. If TEMT is
-> never seen and the driver hasn't set UART_CAP_NOTEMT, the function
-> returns without scheduling any retry -- the direction line is left
-> asserted (driver enabled) forever, with nothing to un-stick it short
-> of another kernel-visible LSR event.
->=20
-> of_platform_serial_setup()/of_platform_serial_probe() unconditionally
-> wire up the generic em485 GPIO-RTS RS485 support
-> (rs485_config/rs485_start_tx/rs485_stop_tx) for every port they
-> register, but never set UART_CAP_NOTEMT, so any board using this
-> driver whose 16550-compatible core doesn't reliably surface TEMT for
-> its shift register hits the stuck-direction-GPIO case above.
->=20
-> [ ... ]
-> regression waiting to happen on any other of_platform_serial user
-> that does set "fifo-size" -- which is a common, documented property
-> for this binding.
->=20
-> Signed-off-by: Nicolas Thibert <nithibert@gmail.com>
+>  drivers/net/ethernet/ibm/ibmvnic.h                     |  4 ++--
 
-Sashiko has reviewed this patch and found no issues. It looks great!
+Please split this one out and subnet it to netdev.
 
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260907173000.1254=
-045-1-nithibert@gmail.com?part=3D1
+    Andrew
 
+---
+pw-bot: cr
