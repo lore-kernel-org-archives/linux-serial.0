@@ -1,104 +1,58 @@
-Received: from mail-pj1-f44.google.com (mail-pj1-f44.google.com [209.85.216.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1ABB3B1014
-	for <linux-serial@vger.kernel.org>; Mon,  7 Sep 2026 06:28:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A89343AEB4E
+	for <linux-serial@vger.kernel.org>; Mon,  7 Sep 2026 06:29:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788762529; cv=none; b=RWVHHIXzQ2uETVbIQmi4X0yMFKZwuK2VGnCM/MuUzMvOo4S0jIXuceO9vK04wQrldaWVkZ93xZ0v2m4rOQ90NVs5CSdB7Njwu5R3bvbPM1Dyfp4nTKrmMwpB8C+qyeg7cG6O38rYJpb62a1IQpOHCr673B5/1FUO7Xdual0Pgcg=
+	t=1788762601; cv=none; b=YQy0gFsbjUPMfykX1pmGAvPKz7fO2gRPKgQigl6kKxFAZlNUEmzXumIbuyKde0POACfw7RBfX7o5JPu8NcA4TqQDdbiJzDrYtLtokHF88iewoKwuRAUGDz5lwHSc3xbnvLsgbCl9pynIEdq/NcApg9d3QtZjyvd8Ze6OEvmMHew=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788762529; c=relaxed/simple;
-	bh=X8W9fGrm68+NdQxaUiu3aZ0LqSsMxvwJOKXUJF3NRok=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=scGcoJQ3ehzci9K3RimtAJv8TQCsHqiefb39o92u5I2qw2bdJrX2d0OOjZMWnk10KxzF6CWz4nRobT9Da3fmHqejH9nwbtTbD/7cthzFSF6Ts1QklJmEjWeNRAKMDF+dQ+JZQnGFkIKN5JaspaYHnJaQJHmZBqu+gFLikbEtTEc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YCE5Ada6; arc=none smtp.client-ip=209.85.216.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1788762601; c=relaxed/simple;
+	bh=bkf9+QuAscqzM+4WrEihLZaChGHzWLbOSX6ESCd84fY=;
+	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
+	 Message-Id; b=FrIpmmRzOBHsLiHUf6cJgtmjeGHLdNxY1AAY3rLDOtr50IqYWHkovw48ddxfoqfBZMcsswZim7otK7Vv3QH2HJWnynTyDm1IwpMStSP6EQVOPvKDpm52H35/9YPLpyTqbSPo0xENUyJpzLp/vJvuYuTgADdN1+D+TyuzHsTHmzA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iUI/OArL; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YCE5Ada6"
-Received: by mail-pj1-f44.google.com with SMTP id 98e67ed59e1d1-38dfe7eb825so2546698a91.0
-        for <linux-serial@vger.kernel.org>; Sun, 06 Sep 2026 23:28:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788762525; x=1789367325; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=FLAE2XmmuZSgKOvA0qkWrT7oMG5vU8MEAkdw+Fem9Fc=;
-        b=YCE5Ada6FQzfpkuGlHVhIwt5SEIItzv0YqqKbbLW5cfJ7iYZZqKzZjOQb9QYoULWMC
-         EBtcvyd+jWZ4pbO3v/dHRO2G6qKIi8xhS/RZGwrAKIpIZkK9Z1HG38E1cCJ0jeZYadzC
-         ClARr0kYU2ALs9CxdobI7bykirfi2kvsRce44Rd56eYwGzfx6iPtS3Nxr9YRtHdIMQ0h
-         y+tOHvrGAuYwBDZvtcI8lsXmfeC2aquEkAEZ2XPnFII4y00L4EvFuDYfJ2CmfIsOdxMn
-         sa+dd9y7vszF8tMJ3Z7QpHxX/YfyDcRRfa7cfEz9D2H7WhRXLB7ogGoi4bC401Yk7fDi
-         A9Qg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788762525; x=1789367325;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=FLAE2XmmuZSgKOvA0qkWrT7oMG5vU8MEAkdw+Fem9Fc=;
-        b=PlRwrMsQoBKaAtTUWZWKPfjVM6CCaPSCdye+G0pSxWzebcO/FYely+ZpRK5TQ/R458
-         P4jXT3AswG6XMeiM8VH4NTCaxZSdYO9Y0tDmZe8WoqQpVnbd/JmC1FLuayxHZngpXeNb
-         McrXFY9v5e9qBXqyKw8qZ24CshKnltJuV2Rf4GdNXdeb391LlmQzt7dMnY6hPBbQSXhy
-         /1PMhY8+Vin4o/8VUzLnV5XAlrihAjOUJ0MBx1lR9B8kuIuHLb/x7PCT/QTyrUBQYTjE
-         YkeOW9vyv9EApQP+JC5XLkMLYdlJcJG098z/Mt6OD/TEjyWfdGLXXeBy8R/SgQierjWB
-         vhvw==
-X-Forwarded-Encrypted: i=1; AKwUvBzBf3ZrW9nKby91x+DflMXxOTELK7gYLeFwG1Th06T+e7q5afhgyGtgF6MSEwOsvLpOtMRgv0WBVaPAAqM=@vger.kernel.org
-X-Gm-Message-State: AFuF++neI4pozAuT/12WubtSFDc7ELvIAXNOy46TgRZqONf/KDyzC0/u
-	ycDT760SvckosxPIDk8xT2mvcSmYj+oHMibG21yQogod7B6cQbY/vOV0JxPdCdezb9w=
-X-Gm-Gg: AYBFou1K9AZRprDIMVZXzm+nFDJ55T6ha4Xlp8FgbLtCafr2ubl0M69H11S/JAmWtu4
-	QF+tlQGjijdVIN6YVdoLOPJ8PJn/tvmMbapPSlt2w7kobEZdwpe/hh81mllPFoBY1Al1GftqLB7
-	72mN6BTzE5QQpcSbvhvMNqZNx+jPWgVtlgeENZWCkVIyynBeaJPxMFbrhAyT59UT2t7opkElgIX
-	Jtcdz27vICj85hxpaGN17z2TQERVmSUkmwaVeKe0b2qsASMH70FdgovX546MTuHrRubNxiShPkX
-	NbzEDB8V9VklyVE2hYxpk4uaPss5vJfNeXmw1gFBSabFlcOnAr6sUYihxjlO426ZUMcbI5t4g7d
-	w1Fc6pKokxLOTZE84NWgt8e1KdYK+e1+7BXQIcoY62FfRS4bYGfivRrKehsJi1+39kjPcC8IJJ0
-	eKqXoUa0wJP87u5DkdK8MqUNwipQHUW1F/8NjjU8x+OxfiKDlHGTTb6pFoMNXcpI0paeIMJIzPv
-	TEMLUaebsmu7Q==
-X-Received: by 2002:a17:90b:1641:b0:399:1f8b:d255 with SMTP id 98e67ed59e1d1-39b260dd3fdmr30248151a91.5.1788762525152;
-        Sun, 06 Sep 2026 23:28:45 -0700 (PDT)
-Received: from volcano9f6e-hostos.amd.com ([165.204.217.251])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-14324356931sm36612713c88.4.2026.09.06.23.28.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Sep 2026 23:28:44 -0700 (PDT)
-From: Hemanth Selam <hemanth.selam@gmail.com>
-To: Vineet Gupta <vgupta@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-snps-arc@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH] tty: serial: fix typo "satify" in comment
-Date: Mon,  7 Sep 2026 11:58:40 +0530
-Message-ID: <20260907062840.17276-1-hemanth.selam@gmail.com>
-X-Mailer: git-send-email 2.48.1
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iUI/OArL"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3B741F00A3E;
+	Mon,  7 Sep 2026 06:29:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1788762597;
+	bh=oY/2g8x7e0zZCkspb290tJZx+xFVkd0RVA3uPr/0ORo=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=iUI/OArLyf98In0QYR5u7eJMfskrC6ieTz/K8T0gIFTpq8t82w5/o+h+ANB7+HkaL
+	 VPavSZxEnzCCWfAG/d3dIYbkQznOKhzkyUVmoC3UpS9bO9XE3ZLlLytODk1ovV0aj9
+	 PFWmOCnUyu0kJwNqBNuLDUDOMpU/Xwm25vLyQVKz9NEnflXQYhVvxe7qh8jgdjtB3k
+	 12TWUAS5G8JUGF9bsfVzAY3lVnkjVXY6ev1lgsrgv2TnevIoEPvNs1r6I6I7WM45Ix
+	 r2f7tMnpTdlUCkMi/BUdhiVFkDni8yn/ReHhElxT9neDuytaaT4sOTI3RhmjkRDMBg
+	 gJm+z1riRTlgg==
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH] tty: serial: fix typo "satify" in comment
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Hemanth Selam" <hemanth.selam@gmail.com>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20260907062840.17276-1-hemanth.selam@gmail.com>
+References: <20260907062840.17276-1-hemanth.selam@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Mon, 07 Sep 2026 06:29:57 +0000
+Message-Id: <20260907062957.A3B741F00A3E@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-Correct "satify" to "satisfy", reported by scripts/checkpatch.pl using the
-misspelling list in scripts/spelling.txt.  Only touches comments, no code
-changes.
+> Correct "satify" to "satisfy", reported by scripts/checkpatch.pl using the
+> misspelling list in scripts/spelling.txt.  Only touches comments, no code
+> changes.
+>=20
+> Assisted-by: Cursor:claude-opus-5
+> Signed-off-by: Hemanth Selam <hemanth.selam@gmail.com>
 
-Assisted-by: Cursor:claude-opus-5
-Signed-off-by: Hemanth Selam <hemanth.selam@gmail.com>
----
- drivers/tty/serial/arc_uart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Sashiko has reviewed this patch and found no issues. It looks great!
 
-diff --git a/drivers/tty/serial/arc_uart.c b/drivers/tty/serial/arc_uart.c
-index 5c4895d154c0..3988e5958896 100644
---- a/drivers/tty/serial/arc_uart.c
-+++ b/drivers/tty/serial/arc_uart.c
-@@ -304,7 +304,7 @@ static unsigned int arc_serial_get_mctrl(struct uart_port *port)
- {
- 	/*
- 	 * Pretend we have a Modem status reg and following bits are
--	 *  always set, to satify the serial core state machine
-+	 *  always set, to satisfy the serial core state machine
- 	 *  (DSR) Data Set Ready
- 	 *  (CTS) Clear To Send
- 	 *  (CAR) Carrier Detect
--- 
-2.48.1
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260907062840.1727=
+6-1-hemanth.selam@gmail.com?part=3D1
 
