@@ -1,271 +1,112 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F968519929;
-	Tue,  8 Sep 2026 10:44:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78F8D5237A3
+	for <linux-serial@vger.kernel.org>; Tue,  8 Sep 2026 11:37:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=124.126.103.232
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788864259; cv=none; b=I0jDoyBctdy5JKd5VUuihO1tV7ppUHstBVEZNFG6+H6CZaPpcCYP0kMJKXZ4R+oXPQsd2FB73ccotSNXZUF/2O03TlSjczYrN17q61vMdaC7kj5CtnNrgSGlDUlpnYtdylYBhExtX3DRU/DcxBBcXTl7n3DioRejVvWfOfpZhwQ=
+	t=1788867467; cv=none; b=OMSiGc5TQ/PXizUN//gyR19VXHyeU7TOVKX5AadkUxNgs3L5cEXynMEdTco1QcpqFTcJE6SyQNU76s78sowJkZEdbHljZpSwd9/cIip3jSXDF8oIcBG1Z6RUFrBqUj+ixJzIDMAQNSIvLs/QpqmeCUe94HTThKwoOu2bDWJKQHk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788864259; c=relaxed/simple;
-	bh=gbAlidygxk94zk3/WSntggQJAuRKtZnPLiSVxKcHsws=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=GAU1Muwn5alJ8pvZfUWoS9fbuMgOlP7xg6898OLdRtExl0t7+NBjwm7zm+Pq2SH46+YHUzgHzSSuX6XvgjYdEgis/U9dcUF61C5ocw980O49FcH/eOCnw4tp4GfwctX6mD9WYDUNRhIUhgxJsEpqxsVjURXiok6UMvMjJX1M9yo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bu5c3lRv; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bu5c3lRv"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EF0D1F00A3A;
-	Tue,  8 Sep 2026 10:44:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788864257;
-	bh=DqKdPD3RRD1JhstaJB5YFIaX8JFP4SPiPL+dCdHEuMc=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=bu5c3lRvGT9JhkuHfO4NDsDq6ApaiY5vcZi40CwNR5bUdvtGWjPT03GlqY/cnvcjs
-	 Pq1j6M+U9PWh/mjR2kVZDeEC4YqS6MKsBnLGk4yxeu8HSCKODBz2M/MmjhD0aJbokM
-	 9ndp0KyxV5hYjHZAgArv+ny9dQS3YPbPn/p/DEtrERQvOJ0zMjlOCBoHNLlS0No8QZ
-	 gjXA+fv0QMpZdz1Nd3IqYfuvTh19wTLoqpkWgTIvuPuQJARjhgwgKdhEKyGxBgjPRE
-	 JPOGwYjCQ9XmNmqFgvB1BTdBARroVSyfgO64wZtjXi8gywR4C4K4hYQTZ0PCoXXWEJ
-	 eOPwA4bi+38rg==
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v4 2/2] serial: wk2xxx: Add WK2xxx SPI UART driver
-Reply-To: sashiko-reviews@lists.linux.dev
-To: zjzhao@edatec.cn
-Cc: robh@kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, conor+dt@kernel.org
-In-Reply-To: <20260908103129.58085-3-zjzhao@edatec.cn>
-References: <20260908103129.58085-1-zjzhao@edatec.cn>
- <20260908103129.58085-3-zjzhao@edatec.cn>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Tue, 08 Sep 2026 10:44:13 +0000
-Message-Id: <20260908104417.7EF0D1F00A3A@smtp.kernel.org>
+	s=arc-20240116; t=1788867467; c=relaxed/simple;
+	bh=8moAyst6CxBNPqoS7HrKundcTgR3nnAKSpMdJVL2XDQ=;
+	h=From:To:Subject:Date:Message-Id:MIME-Version; b=m98KpCL5ke/VZA1F9Gc4RxZFNcakO6aQMsgpKFVbqnc98mEP56d24zKtD0Jqj8bJEu3wnTnd2jMGffFSSnwKUQFxHEoAfOyGz7PCuomjmhS8hRMnKJKKVo+0hKA0Bc88GizJQZZrXIFFEm9u+ibDrd0BJq2RwVl5x54V5ktDAE8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn; spf=pass smtp.mailfrom=kylinos.cn; arc=none smtp.client-ip=124.126.103.232
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
+X-UUID: af27ed46ab7911f19a56ed5b684f684d-20260908
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.3.19,REQID:2fbc9747-8a62-46a5-b576-8db78faed7ce,IP:0,U
+	RL:0,TC:0,Content:-25,EDM:-25,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACT
+	ION:release,TS:-50
+X-CID-META: VersionHash:7db8b62,CLOUDID:5695e330b0072cfc5bbe5dc2aaf6ba5b,BulkI
+	D:nil,BulkQuantity:0,SF:102|850|865|898,TC:nil,Content:0|15|50|99,EDM:2,IP
+	:nil,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0,
+	LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
+X-CID-BVR: 2,SSN|SDN
+X-CID-BAS: 2,SSN|SDN,0,_
+X-CID-FACTOR: TF_CID_SPAM_SNR
+X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
+X-UUID: af27ed46ab7911f19a56ed5b684f684d-20260908
+X-User: lijun01@kylinos.cn
+Received: from localhost.localdomain [(10.44.16.150)] by mailgw.kylinos.cn
+	(envelope-from <lijun01@kylinos.cn>)
+	(Generic MTA with TLSv1.3 TLS_AES_256_GCM_SHA384 256/256)
+	with ESMTP id 1851151199; Tue, 08 Sep 2026 19:37:34 +0800
+From: Li Jun <lijun01@kylinos.cn>
+To: lijun01@kylinos.cn,
+	richard.genoud@bootlin.com,
+	gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	nicolas.ferre@microchip.com,
+	alexandre.belloni@bootlin.com,
+	claudiu.beznea@tuxon.dev,
+	linux-serial@vger.kernel.org
+Subject: [PATCH] tty: atmel: Replace SIMPLE_DEV_PM_OPS with DEFINE_SIMPLE_DEV_PM_OPS
+Date: Tue,  8 Sep 2026 19:37:19 +0800
+Message-Id: <20260908113719.4078979-1-lijun01@kylinos.cn>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-Thank you for your contribution! Sashiko AI review found 7 potential issue(=
-s) to consider:
-- [High] UART transmit FIFO data corruption and stats race due to missing p=
-ort lock in wk2xxx_handle_tx().
-- [High] TTY buffer flood due to persistent overrun flag in batch RX loop.
-- [High] The tx_empty callback performs a synchronous SPI read which sleeps=
- while the serial core holds the port spinlock.
-- [High] Early return on SPI error in wk2xxx_shutdown skips essential softw=
-are state cleanup, causing open_ports to permanently leak.
-- [Medium] OF node reference leak when parsing DT nodes for non-RS485 varia=
-nts.
-- [Medium] Commit message claims to apply serial properties from DT subnode=
-s, but they are not applied.
-- [Low] The driver intentionally breaks the build on architectures with L1_=
-CACHE_BYTES < 31 (e.g., m68k).
---
+Replace the deprecated SIMPLE_DEV_PM_OPS with DEFINE_SIMPLE_DEV_PM_OPS.
+This also drops the __maybe_unused annotations on the suspend/resume
+callbacks, since pm_sleep_ptr() inside the new macro already handles
+the case where CONFIG_PM_SLEEP is disabled.
+When CONFIG_PM=y but CONFIG_PM_SLEEP=n (a valid configuration that
+enables runtime PM but disables system suspend/hibernation), this
+keeps a completely empty dev_pm_ops structure -- all callbacks are
+NULL -- as dead code in the object file.Modify pm_ptr to pm_sleep_ptr.
 
-commit 8ec8660308853d2cff61b90024208e8b3e1bafdb
-Author: Zi Jie Zhao <zjzhao@edatec.cn>
-Subject: serial: wk2xxx: Add WK2xxx SPI UART driver
+Signed-off-by: Li Jun <lijun01@kylinos.cn>
+---
+ drivers/tty/serial/atmel_serial.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-This commit introduces a new driver for the WK2xxx SPI to UART bridge ICs.
-It models the driver after the NXP sc16is7xx driver, utilizing a kthread
-worker for SPI register accesses and supporting polled or interrupt-driven
-operation.
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 5d8c1cfc1c60..c3880259e3bc 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -2723,7 +2723,7 @@ static bool atmel_serial_clk_will_stop(void)
+ #endif
+ }
+ 
+-static int __maybe_unused atmel_serial_suspend(struct device *dev)
++static int atmel_serial_suspend(struct device *dev)
+ {
+ 	struct uart_port *port = dev_get_drvdata(dev);
+ 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+@@ -2765,7 +2765,7 @@ static int __maybe_unused atmel_serial_suspend(struct device *dev)
+ 	return 0;
+ }
+ 
+-static int __maybe_unused atmel_serial_resume(struct device *dev)
++static int atmel_serial_resume(struct device *dev)
+ {
+ 	struct uart_port *port = dev_get_drvdata(dev);
+ 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+@@ -2996,7 +2996,7 @@ static void atmel_serial_remove(struct platform_device *pdev)
+ 	pdev->dev.of_node = NULL;
+ }
+ 
+-static SIMPLE_DEV_PM_OPS(atmel_serial_pm_ops, atmel_serial_suspend,
++static DEFINE_SIMPLE_DEV_PM_OPS(atmel_serial_pm_ops, atmel_serial_suspend,
+ 			 atmel_serial_resume);
+ 
+ static struct platform_driver atmel_serial_driver = {
+@@ -3005,7 +3005,7 @@ static struct platform_driver atmel_serial_driver = {
+ 	.driver		= {
+ 		.name			= "atmel_usart_serial",
+ 		.of_match_table		= of_match_ptr(atmel_serial_dt_ids),
+-		.pm			= pm_ptr(&atmel_serial_pm_ops),
++		.pm			= pm_sleep_ptr(&atmel_serial_pm_ops),
+ 	},
+ };
+ 
+-- 
+2.25.1
 
-> diff --git a/drivers/tty/serial/wk2xxx.c b/drivers/tty/serial/wk2xxx.c
-> index 0000000000000..15869fbdeab07
-> --- /dev/null
-> +++ b/drivers/tty/serial/wk2xxx.c
-[ ... ]
-> +	/*
-> +	 * Shared SPI transfer buffers. All SPI accesses are serialized by
-> +	 * s->reg_lock, so these are never used concurrently. Each buffer is
-> +	 * cache-line aligned and sized to a full cache line, so DMA cache
-> +	 * maintenance on one of them can never invalidate a line shared
-> +	 * with any other field (notably the p[] array below).
-> +	 */
-> +	u8				spi_tx[L1_CACHE_BYTES] ____cacheline_aligned;
-> +	u8				spi_rx[L1_CACHE_BYTES] ____cacheline_aligned;
-> +	struct wk2xxx_one		p[];
-> +};
-> +
-> +static_assert(WK2XXX_MAX_SPI_LEN + 1 <=3D L1_CACHE_BYTES);
-
-[Severity: Low]
-Does this intentionally break the build for architectures with a cache line=
-=20
-size smaller than 31 bytes (such as m68k where L1_CACHE_BYTES is 16)?=20
-
-Might it be better to size the array to something like=20
-max(L1_CACHE_BYTES, 32) instead of failing the compilation?
-
-[ ... ]
-> +static void wk2xxx_handle_tx(struct uart_port *port)
-> +{
-[ ... ]
-> +	to_send =3D kfifo_out_linear_ptr(&tport->xmit_fifo, &tail, txlen);
-> +	sent =3D 0;
-> +	while (to_send) {
-> +		unsigned int chunk =3D min_t(unsigned int, to_send,
-> +					   WK2XXX_MAX_SPI_LEN);
-> +
-> +		if (wk2xxx_fifo_write(s, portno, tail, chunk))
-> +			break;
-> +		tail +=3D chunk;
-> +		to_send -=3D chunk;
-> +		sent +=3D chunk;
-> +	}
-> +	uart_xmit_advance(port, sent);
-
-[Severity: High]
-Is it safe to manipulate the xmit_fifo pointers and call uart_xmit_advance(=
-)=20
-here without holding the port lock?
-
-If a concurrent operation like a tcflush() ioctl resets the FIFO via=20
-uart_flush_buffer() (which zeroes the in and out indices), could this=20
-lockless uart_xmit_advance() call advance the out index beyond the in index=
-,=20
-causing a substantial underflow and subsequent data corruption?
-
-[ ... ]
-> +static void wk2xxx_handle_rx(struct uart_port *port)
-> +{
-[ ... ]
-> +	/* Map the FIFO status register error flags to line status. */
-> +	if (fsr & WK2XXX_FSR_ERR_MASK) {
-> +		if (fsr & WK2XXX_FSR_RFPE_BIT) {
-> +			port->icount.parity++;
-> +			lsr |=3D WK2XXX_LSR_PE_BIT;
-> +			flag =3D TTY_PARITY;
-> +		}
-> +		if (fsr & WK2XXX_FSR_RFFE_BIT) {
-> +			port->icount.frame++;
-> +			lsr |=3D WK2XXX_LSR_FE_BIT;
-> +			flag =3D TTY_FRAME;
-> +		}
-> +		if (fsr & WK2XXX_FSR_RFOE_BIT) {
-> +			port->icount.overrun++;
-> +			lsr |=3D WK2XXX_LSR_OE_BIT;
-> +			flag =3D TTY_OVERRUN;
-> +		}
-[ ... ]
-> +	for (i =3D 0; i < rxlen; ++i) {
-> +		u8 ch =3D one->buf[i];
-> +
-> +		if (uart_handle_sysrq_char(port, ch))
-> +			continue;
-> +
-> +		if (lsr & port->ignore_status_mask)
-> +			continue;
-> +
-> +		uart_insert_char(port, lsr, WK2XXX_LSR_OE_BIT, ch, flag);
-> +	}
-
-[Severity: High]
-Could this loop insert an excessive number of dummy overrun characters into=
-=20
-the TTY buffer?
-
-Since lsr is modified once outside the loop when the WK2XXX_FSR_RFOE_BIT is=
-=20
-set, the WK2XXX_LSR_OE_BIT remains active for the entire iteration. When=20
-uart_insert_char() evaluates this bit, it will insert a dummy overrun byte=
-=20
-for every single character in this chunk (up to 256 times) for a single=20
-overrun event.
-
-[ ... ]
-> +static unsigned int wk2xxx_tx_empty(struct uart_port *port)
-> +{
-> +	struct wk2xxx_port *s =3D dev_get_drvdata(port->dev);
-> +	u8 fsr =3D 0;
-> +
-> +	if (wk2xxx_port_reg_read(s, port->iobase, WK2XXX_FSR_REG, &fsr))
-> +		return TIOCSER_TEMT;
-
-[Severity: High]
-Can this sequence sleep while executing in an atomic context?
-
-The serial core routinely invokes the ops->tx_empty() callback while holdin=
-g=20
-the port spinlock with interrupts disabled (for instance, during the=20
-TIOCSERGETLSR ioctl). However, wk2xxx_port_reg_read() performs a synchronou=
-s=20
-spi_sync() transfer which can sleep.
-
-[ ... ]
-> +static void wk2xxx_shutdown(struct uart_port *port)
-> +{
-> +	struct wk2xxx_port *s =3D dev_get_drvdata(port->dev);
-> +	unsigned int portno =3D port->iobase;
-> +	u8 reg;
-> +
-> +	scoped_guard(mutex, &s->reg_lock) {
-> +		/* Disable the sub-UART interrupt in the global mask. */
-> +		if (wk2xxx_raw_read(s, WK2XXX_GIER_REG, &reg))
-> +			return;
-
-[Severity: High]
-If this SPI read fails, the function returns early. Does this leave the=20
-software state permanently out of sync?
-
-By returning here, the function skips the atomic_dec_return(&s->open_ports)=
-=20
-and kthread_flush_worker() cleanup steps at the end of wk2xxx_shutdown().=20
-This leaves the open_ports counter permanently elevated and strands the=20
-polling kthread so it can never be stopped.
-
-[ ... ]
-> +static int wk2xxx_probe(struct spi_device *spi)
-> +{
-[ ... ]
-> +		/* Locate the matching "serial@i" DT subnode, if any. */
-> +		for_each_available_child_of_node(dev->of_node, child) {
-> +			u32 reg;
-> +
-> +			if (!of_node_name_eq(child, "serial"))
-> +				continue;
-> +			if (of_property_read_u32(child, "reg", &reg))
-> +				continue;
-> +			if (reg =3D=3D i) {
-> +				port_np =3D child;
-> +				break;
-> +			}
-> +		}
-[ ... ]
-> +		/*
-> +		 * Temporarily retarget dev's fwnode to the per-port subnode
-> +		 * so uart_get_rs485_mode() picks up the per-port properties.
-> +		 */
-> +		if (port_np && devtype->has_rs485) {
-> +			device_set_node(dev, of_fwnode_handle(port_np));
-> +			ret =3D uart_get_rs485_mode(&s->p[i].port);
-> +			device_set_node(dev, saved_fwnode);
-> +			of_node_put(port_np);
-> +			if (ret)
-> +				goto out_ports;
-> +		}
-
-[Severity: Medium]
-Is there a device tree node reference leak here for non-RS485 variants?
-
-The port_np reference is acquired via the for_each_available_child_of_node(=
-)=20
-loop earlier. However, if devtype->has_rs485 evaluates to false (such as fo=
-r=20
-the WK2132 or WK2202 variants), this block is entirely bypassed and=20
-of_node_put(port_np) is never called.
-
-[Severity: Medium]
-The commit message states the driver will "apply serial and RS-485 properti=
-es=20
-from each serial@N DT subnode to the corresponding channel."
-
-While uart_get_rs485_mode() is called in this block, should there also be a=
-=20
-call to uart_read_port_properties() to ensure the generic serial properties=
-=20
-(like tx-trigger or rx-trigger) are actually applied as described?
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260908103129.5808=
-5-1-zjzhao@edatec.cn?part=3D2
