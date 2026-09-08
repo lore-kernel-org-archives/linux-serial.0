@@ -1,112 +1,63 @@
-Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78F8D5237A3
-	for <linux-serial@vger.kernel.org>; Tue,  8 Sep 2026 11:37:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=124.126.103.232
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFC04530E00
+	for <linux-serial@vger.kernel.org>; Tue,  8 Sep 2026 11:44:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788867467; cv=none; b=OMSiGc5TQ/PXizUN//gyR19VXHyeU7TOVKX5AadkUxNgs3L5cEXynMEdTco1QcpqFTcJE6SyQNU76s78sowJkZEdbHljZpSwd9/cIip3jSXDF8oIcBG1Z6RUFrBqUj+ixJzIDMAQNSIvLs/QpqmeCUe94HTThKwoOu2bDWJKQHk=
+	t=1788867880; cv=none; b=T1tKniWq5xbzbKxe1BxmtATW8nxSyKHVo4MFVfGyoqOLNN+gZV+zWR4dfl2J1vqCVtQdx4Ep/OrSJnJcftv4T63m/s5Dr6TTg/QK7gE6NFhzZaZQmIhsA9iWjjXkuJoMnutfQtaySQ8NTTmO1CuMSHtBAcydBYSG/hFfz7lGF3I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788867467; c=relaxed/simple;
-	bh=8moAyst6CxBNPqoS7HrKundcTgR3nnAKSpMdJVL2XDQ=;
-	h=From:To:Subject:Date:Message-Id:MIME-Version; b=m98KpCL5ke/VZA1F9Gc4RxZFNcakO6aQMsgpKFVbqnc98mEP56d24zKtD0Jqj8bJEu3wnTnd2jMGffFSSnwKUQFxHEoAfOyGz7PCuomjmhS8hRMnKJKKVo+0hKA0Bc88GizJQZZrXIFFEm9u+ibDrd0BJq2RwVl5x54V5ktDAE8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn; spf=pass smtp.mailfrom=kylinos.cn; arc=none smtp.client-ip=124.126.103.232
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
-X-UUID: af27ed46ab7911f19a56ed5b684f684d-20260908
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.3.19,REQID:2fbc9747-8a62-46a5-b576-8db78faed7ce,IP:0,U
-	RL:0,TC:0,Content:-25,EDM:-25,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACT
-	ION:release,TS:-50
-X-CID-META: VersionHash:7db8b62,CLOUDID:5695e330b0072cfc5bbe5dc2aaf6ba5b,BulkI
-	D:nil,BulkQuantity:0,SF:102|850|865|898,TC:nil,Content:0|15|50|99,EDM:2,IP
-	:nil,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0,
-	LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
-X-CID-BVR: 2,SSN|SDN
-X-CID-BAS: 2,SSN|SDN,0,_
-X-CID-FACTOR: TF_CID_SPAM_SNR
-X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
-X-UUID: af27ed46ab7911f19a56ed5b684f684d-20260908
-X-User: lijun01@kylinos.cn
-Received: from localhost.localdomain [(10.44.16.150)] by mailgw.kylinos.cn
-	(envelope-from <lijun01@kylinos.cn>)
-	(Generic MTA with TLSv1.3 TLS_AES_256_GCM_SHA384 256/256)
-	with ESMTP id 1851151199; Tue, 08 Sep 2026 19:37:34 +0800
-From: Li Jun <lijun01@kylinos.cn>
-To: lijun01@kylinos.cn,
-	richard.genoud@bootlin.com,
-	gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	nicolas.ferre@microchip.com,
-	alexandre.belloni@bootlin.com,
-	claudiu.beznea@tuxon.dev,
-	linux-serial@vger.kernel.org
-Subject: [PATCH] tty: atmel: Replace SIMPLE_DEV_PM_OPS with DEFINE_SIMPLE_DEV_PM_OPS
-Date: Tue,  8 Sep 2026 19:37:19 +0800
-Message-Id: <20260908113719.4078979-1-lijun01@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
+	s=arc-20240116; t=1788867880; c=relaxed/simple;
+	bh=wqdGnwiDnA30maOqjGnn/RPB/LV01lgODppkMtoO8lQ=;
+	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
+	 Message-Id; b=eH+lAfQFdaXmSK/H7/IFeb2b1dSD/1Tc/lh5UuZJItv+2czMFZVqv+6UKLdpmenO/n8JHp0W7msHiWkLpulML/xlGEtQDYQ+Tf06jLfG7k/CZBLs7UWPiWyHvOZ8uixBcUXi61Sg+2W6r1S0FHGv28DUk8oV3eouFgS4jpGR/q8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=i1vip90C; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="i1vip90C"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5870B1F00A3A;
+	Tue,  8 Sep 2026 11:44:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1788867871;
+	bh=wqdGnwiDnA30maOqjGnn/RPB/LV01lgODppkMtoO8lQ=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=i1vip90C8VR8P92Y7cnDk76DsmI2XccveERBnryFs9pPGZGj/hz/tilSlAsefigbV
+	 FJTSd1hPOk/ABJM/s4wPEQ6tIwS0rr3PmIKksoRpQruZji06bXYUkPQIFTZWRLgk1Z
+	 WmDywVAD/WfgGDMdVRgFCRynkgMoQmvMfLCy+MR/Q42QY/cUBRGydgSWb1jZRh3Kuo
+	 a8IBIqYsW6ZS5sIEdgIBykOjY0ROLAZG4t04IMh4FGrfI/qPHjMJUiryuMFE08QUyw
+	 ljVudhOmZcaV/6+O6Q0+QsXxLWfgj2FAhPF3Zs+bKy3PE4lBFhgRp4YDlvW0qAvFiC
+	 g24LoAEX1gzmA==
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH] tty: atmel: Replace SIMPLE_DEV_PM_OPS with
+ DEFINE_SIMPLE_DEV_PM_OPS
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Li Jun" <lijun01@kylinos.cn>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20260908113719.4078979-1-lijun01@kylinos.cn>
+References: <20260908113719.4078979-1-lijun01@kylinos.cn>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Tue, 08 Sep 2026 11:44:30 +0000
+Message-Id: <20260908114431.5870B1F00A3A@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-Replace the deprecated SIMPLE_DEV_PM_OPS with DEFINE_SIMPLE_DEV_PM_OPS.
-This also drops the __maybe_unused annotations on the suspend/resume
-callbacks, since pm_sleep_ptr() inside the new macro already handles
-the case where CONFIG_PM_SLEEP is disabled.
-When CONFIG_PM=y but CONFIG_PM_SLEEP=n (a valid configuration that
-enables runtime PM but disables system suspend/hibernation), this
-keeps a completely empty dev_pm_ops structure -- all callbacks are
-NULL -- as dead code in the object file.Modify pm_ptr to pm_sleep_ptr.
+> Replace the deprecated SIMPLE_DEV_PM_OPS with DEFINE_SIMPLE_DEV_PM_OPS.
+> This also drops the __maybe_unused annotations on the suspend/resume
+> callbacks, since pm_sleep_ptr() inside the new macro already handles
+> the case where CONFIG_PM_SLEEP is disabled.
+> When CONFIG_PM=3Dy but CONFIG_PM_SLEEP=3Dn (a valid configuration that
+> enables runtime PM but disables system suspend/hibernation), this
+> keeps a completely empty dev_pm_ops structure -- all callbacks are
+> NULL -- as dead code in the object file.Modify pm_ptr to pm_sleep_ptr.
+>=20
+> Signed-off-by: Li Jun <lijun01@kylinos.cn>
 
-Signed-off-by: Li Jun <lijun01@kylinos.cn>
----
- drivers/tty/serial/atmel_serial.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+Sashiko has reviewed this patch and found no issues. It looks great!
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 5d8c1cfc1c60..c3880259e3bc 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -2723,7 +2723,7 @@ static bool atmel_serial_clk_will_stop(void)
- #endif
- }
- 
--static int __maybe_unused atmel_serial_suspend(struct device *dev)
-+static int atmel_serial_suspend(struct device *dev)
- {
- 	struct uart_port *port = dev_get_drvdata(dev);
- 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-@@ -2765,7 +2765,7 @@ static int __maybe_unused atmel_serial_suspend(struct device *dev)
- 	return 0;
- }
- 
--static int __maybe_unused atmel_serial_resume(struct device *dev)
-+static int atmel_serial_resume(struct device *dev)
- {
- 	struct uart_port *port = dev_get_drvdata(dev);
- 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-@@ -2996,7 +2996,7 @@ static void atmel_serial_remove(struct platform_device *pdev)
- 	pdev->dev.of_node = NULL;
- }
- 
--static SIMPLE_DEV_PM_OPS(atmel_serial_pm_ops, atmel_serial_suspend,
-+static DEFINE_SIMPLE_DEV_PM_OPS(atmel_serial_pm_ops, atmel_serial_suspend,
- 			 atmel_serial_resume);
- 
- static struct platform_driver atmel_serial_driver = {
-@@ -3005,7 +3005,7 @@ static struct platform_driver atmel_serial_driver = {
- 	.driver		= {
- 		.name			= "atmel_usart_serial",
- 		.of_match_table		= of_match_ptr(atmel_serial_dt_ids),
--		.pm			= pm_ptr(&atmel_serial_pm_ops),
-+		.pm			= pm_sleep_ptr(&atmel_serial_pm_ops),
- 	},
- };
- 
--- 
-2.25.1
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260908113719.4078=
+979-1-lijun01@kylinos.cn?part=3D1
 
