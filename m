@@ -1,63 +1,100 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from va-2-35.ptr.blmpb.com (va-2-35.ptr.blmpb.com [209.127.231.35])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFC04530E00
-	for <linux-serial@vger.kernel.org>; Tue,  8 Sep 2026 11:44:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A52F529419
+	for <linux-serial@vger.kernel.org>; Tue,  8 Sep 2026 11:52:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.127.231.35
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788867880; cv=none; b=T1tKniWq5xbzbKxe1BxmtATW8nxSyKHVo4MFVfGyoqOLNN+gZV+zWR4dfl2J1vqCVtQdx4Ep/OrSJnJcftv4T63m/s5Dr6TTg/QK7gE6NFhzZaZQmIhsA9iWjjXkuJoMnutfQtaySQ8NTTmO1CuMSHtBAcydBYSG/hFfz7lGF3I=
+	t=1788868361; cv=none; b=iEnfHsqlsiT3kYpLvVlIztTeWhOCqscepsGqoyzY3quOIPzNBssFGZy78ciV/iCQei4WWpFDdcoq6QtHBduuLvZmNxpq6em8fkfEyKPfnlHzIhN0TaGAUG+WHEbuHqRkZsbOqDViNsMV/8rk/j9thXEW9PMYry6iRR1sF8Zxhm0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788867880; c=relaxed/simple;
-	bh=wqdGnwiDnA30maOqjGnn/RPB/LV01lgODppkMtoO8lQ=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=eH+lAfQFdaXmSK/H7/IFeb2b1dSD/1Tc/lh5UuZJItv+2czMFZVqv+6UKLdpmenO/n8JHp0W7msHiWkLpulML/xlGEtQDYQ+Tf06jLfG7k/CZBLs7UWPiWyHvOZ8uixBcUXi61Sg+2W6r1S0FHGv28DUk8oV3eouFgS4jpGR/q8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=i1vip90C; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788868361; c=relaxed/simple;
+	bh=u2f5BkksbAx4MYFZJiRaIDTf2BUWlDOCLBiJhegy/0s=;
+	h=Cc:Message-Id:References:To:Subject:Mime-Version:In-Reply-To:From:
+	 Content-Type:Date; b=hIFV6DLD+v0ytVN02d8tqAdiuCCnFbhRSV2b6jdx2NRR828r+S/xxP47sWm/B0I5IYRBQfouGsmOO0Sut/sMxWsCwC/eF+SZbw7YXatM828oM3WBAduKpF8zwhSNXTPOFO5y1XrNfjU4KyOvPX8UgjJ5YKL7IUtrvaXXpjl3KOg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=picoheart.com; spf=pass smtp.mailfrom=picoheart.com; dkim=pass (2048-bit key) header.d=picoheart.com header.i=@picoheart.com header.b=oAciaalE; arc=none smtp.client-ip=209.127.231.35
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=picoheart.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=picoheart.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="i1vip90C"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5870B1F00A3A;
-	Tue,  8 Sep 2026 11:44:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788867871;
-	bh=wqdGnwiDnA30maOqjGnn/RPB/LV01lgODppkMtoO8lQ=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=i1vip90C8VR8P92Y7cnDk76DsmI2XccveERBnryFs9pPGZGj/hz/tilSlAsefigbV
-	 FJTSd1hPOk/ABJM/s4wPEQ6tIwS0rr3PmIKksoRpQruZji06bXYUkPQIFTZWRLgk1Z
-	 WmDywVAD/WfgGDMdVRgFCRynkgMoQmvMfLCy+MR/Q42QY/cUBRGydgSWb1jZRh3Kuo
-	 a8IBIqYsW6ZS5sIEdgIBykOjY0ROLAZG4t04IMh4FGrfI/qPHjMJUiryuMFE08QUyw
-	 ljVudhOmZcaV/6+O6Q0+QsXxLWfgj2FAhPF3Zs+bKy3PE4lBFhgRp4YDlvW0qAvFiC
-	 g24LoAEX1gzmA==
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH] tty: atmel: Replace SIMPLE_DEV_PM_OPS with
- DEFINE_SIMPLE_DEV_PM_OPS
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Li Jun" <lijun01@kylinos.cn>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20260908113719.4078979-1-lijun01@kylinos.cn>
-References: <20260908113719.4078979-1-lijun01@kylinos.cn>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Tue, 08 Sep 2026 11:44:30 +0000
-Message-Id: <20260908114431.5870B1F00A3A@smtp.kernel.org>
+	dkim=pass (2048-bit key) header.d=picoheart.com header.i=@picoheart.com header.b="oAciaalE"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ s=feishu2604151535; d=picoheart.com; t=1788868349; h=from:subject:
+ mime-version:from:date:message-id:subject:to:cc:reply-to:content-type:
+ mime-version:in-reply-to:message-id;
+ bh=5hRKRFStZ3kEtkRaRC1rzuo8LqIY953LY/PKVlQqvE4=;
+ b=oAciaalEffb71uX+sg5z6f5jDzSnbPFD1iEG6YmhvELBnkAhD9zucbEXXW7f2phztods6/
+ H4oWdhu5xCwTjC95HICwkCev0swo+nzQI+8ALxnO6SVISEowtVH+4X+NRWYJM8zSi0YEdi
+ yKxuoiM9D3QI3aktg8St0JxXCHjGkEKfIbX1xJkTUr/PA6jSow/cv4fX1bUD3DBO0r7YAH
+ n0zBcVdPh+6QhRrxtZSdS0LPdFcj7bd3ApjJ2HHxTpYju+DcSdF7U/4WArMd5QwInMT7wX
+ URvAGrxKE1RgzqXB2WQhm8MkVXe0q+x65pGtsz58rxfnbf2lTvxd27/4nPjQNg==
+Content-Transfer-Encoding: 7bit
+Cc: <yang.yicong@picoheart.com>, <ilpo.jarvinen@linux.intel.com>, 
+	<linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>, 
+	<gregkh@linuxfoundation.org>, <jirislaby@kernel.org>, 
+	<geshijian@picoheart.com>, <yangyang.8776@picoheart.com>, 
+	<yanligen@picoheart.com>
+Message-Id: <37481c9a-fc5f-49d8-8f66-c07da703ba89@picoheart.com>
+References: <20260907074035.77796-1-yang.yicong@picoheart.com> <ap_ik82SVnEGkBPU@ashevche-desk.local>
+Content-Language: en-US
+To: "Andy Shevchenko" <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v2] serial: 8250_dw: Prefer SRBR in bogus RX timeout workaround if available
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+Mime-Version: 1.0
+User-Agent: Mozilla Thunderbird
+In-Reply-To: <ap_ik82SVnEGkBPU@ashevche-desk.local>
+Received: from [100.86.221.254] ([120.234.91.245]) by smtp.feishu.cn with ESMTPS; Tue, 08 Sep 2026 19:52:26 +0800
+X-Lms-Return-Path: <lba+26a9ff6fb+916b45+vger.kernel.org+yang.yicong@picoheart.com>
+From: "Yicong Yang" <yang.yicong@picoheart.com>
+X-Original-From: Yicong Yang <yang.yicong@picoheart.com>
+Content-Type: text/plain; charset=UTF-8
+Date: Tue, 8 Sep 2026 19:52:24 +0800
 
-> Replace the deprecated SIMPLE_DEV_PM_OPS with DEFINE_SIMPLE_DEV_PM_OPS.
-> This also drops the __maybe_unused annotations on the suspend/resume
-> callbacks, since pm_sleep_ptr() inside the new macro already handles
-> the case where CONFIG_PM_SLEEP is disabled.
-> When CONFIG_PM=3Dy but CONFIG_PM_SLEEP=3Dn (a valid configuration that
-> enables runtime PM but disables system suspend/hibernation), this
-> keeps a completely empty dev_pm_ops structure -- all callbacks are
-> NULL -- as dead code in the object file.Modify pm_ptr to pm_sleep_ptr.
->=20
-> Signed-off-by: Li Jun <lijun01@kylinos.cn>
+On 9/8/26 6:25 PM, Andy Shevchenko wrote:
+> On Mon, Sep 07, 2026 at 03:40:35PM +0800, Yicong Yang wrote:
+>> The DW uart could get into the cases where a bogus RX timeout
+>> interrupt is asserted but no available data. This could be
+>> workaround by doing a bogus read.
+>>
+>> Currently the driver's using the standard RBR (receive buffer
+>> register) for this bogus read. However the reading of RBR
+>> in this case is allowed to raise a hardware error if vendor
+>> choose to implement in this way (our platform). It's also
+>> allowed to do the bogus read using SRBR (shadow RBR) for
+>> workaround which won't raise the hardware error. So change
+>> to use the SRBR to workaround the issue if it's available.
+> 
+> ...
+> 
+>> struct dw8250_port_data {
+> 
+>>  
+>>  	/* RS485 variables */
+>>  	bool			hw_rs485_support;
+>>
+>> +	/* Shadow RBR offset, fallback to RBR if no shadow register support */
+> 
+> This comment is for "section", so split it to two
+> 
 
-Sashiko has reviewed this patch and found no issues. It looks great!
+sure, will split.
 
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260908113719.4078=
-979-1-lijun01@kylinos.cn?part=3D1
+> 	/* Register offsets */
+> 	/* Shadow RBR (if not defined RBR will be used) */
+> 
+>> +	unsigned int		srbr;
+> 
+> In APIs this defined as int, I would follow (however I agree that ideally in
+> all of them it should be unsigned).
+> 
+> 	int		srbr;
 
+will make it int. I remembered that I referred to
+uart_port::serial_{in, out}() that use unsigned int
+for offset, but yes serial_port_{in, out}() use int.
+
+will update in v3.
+
+Thanks.
