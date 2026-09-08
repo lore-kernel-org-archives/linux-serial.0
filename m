@@ -1,158 +1,90 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20C792DA749
-	for <linux-serial@vger.kernel.org>; Tue,  8 Sep 2026 16:12:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D1DE599A3C;
+	Tue,  8 Sep 2026 17:49:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788883925; cv=none; b=dgShRcXnUFqpf0XgIQECmIGP4xbSbfxXN8uSCsAshgPX4UeBkkBC0KHJkxKHP1fuFrY0LtizpUSLi8Z7LDPwBhhBJ8G6mTUJEWqRlPibQBMBzHwvmb/GZ8daPluenURW8NQJeyPBRdf4ggXM+GBXyU6HImjKbMylvb6rF0bBgk8=
+	t=1788889771; cv=none; b=Hk9Gmrx8CNCFFwVsJRGKUQxlRH9/uIHtRKrJiVkT8XcL+iTZx6Ip+lvVJb8CDAeOQUwvFqMEaU+JlfLv/9vAs/9/NN+9mG8SUIkBmCFnv/zVyxFlBCI3+/94oqln9P9ZxdxLSuzKDSSPlX50RG37y2qV7XxVgDupAUTPQp6lDk0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788883925; c=relaxed/simple;
-	bh=do2UA+kUJ1TbXgXRbSmd0EaMt9CkyGUghFC1xnXimn8=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=ElXMeLMJslymLQz3i2wLB/GohfMCrewefFOwFVe/MfSpdoa3kfp9X/VlDt+iOMWdnETgrYxh5w8iriLfoe+mbpo/WFwYqYf1EWseQ+d74DkgG41W0D6KTkUPQR3eYslndxa4zV0xZ7ilx/QKY0y04xndHfo3olhVY/Cpsj13IJ0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WIGbpUZr; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1788889771; c=relaxed/simple;
+	bh=zfZJ8L24GBbiC3D8vqw/xzHvGlAJGCjQzD3bh8D6Myg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=FskAPjOAfFFXl6H32mKWy3gqe82TU/DLO65s04Q2IfGSsSjmREx9ll4UeHTU1N2w51vraQD3BIsLXBoXxUUx2rnz5yXokdLa4U+ZypTbxVyVjstvXb6V/ulBAH0h6WHOL1f7XP9LR4uuUyRcHCSV+RKrrO76MKaD0eZTHF3w4c0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Qr/i5GWX; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WIGbpUZr"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 575CA1F00A3A;
-	Tue,  8 Sep 2026 16:12:03 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Qr/i5GWX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BCA41F00A3A;
+	Tue,  8 Sep 2026 17:49:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1788883923;
-	bh=3bbGkobDpQdGYniX9EG7+4iZ/BE90dQ8CT8XcVZKJEY=;
-	h=Date:From:To:Cc:In-Reply-To:References:Subject;
-	b=WIGbpUZrib61q8vONJ5FxSNakSuqaKCAsWJ+5gdMnCnFUkEPBkJwty8nxVVkN0Mv1
-	 w9t0XZ7baGlhJo6FAfmbzQHeT6V1vAUfLWN4apw16QVaQoaDbWzrsztdNDktT/3N0X
-	 iigUWVKzKZ4xSPjrUlzdr8zP6wW0E2DfPWCLVHHV/G8G3n7KOVbVsEwV0MVjf3kr7e
-	 bwwkO3x7f2V+zWtZ0deWW2D5+s5mUpPxp+iIHyNV8byIQganVhI0jnbxR+VlciGb7C
-	 dr69/ho0yadENGN25j4/oy5Stqto58/hMhZMDO7KOPS2seR908Ic/8L1QueLpqt231
-	 UbD43Bz747fcQ==
-Received: from ams-compute-02.internal (ams-compute-02.internal [10.64.2.62])
-	by mailfauth.ams.internal (Postfix) with ESMTP id ACE13198003A;
-	Tue,  8 Sep 2026 12:12:01 -0400 (EDT)
-Received: from ams-imap-03 ([10.64.2.23])
-  by ams-compute-02.internal (MEProxy); Tue, 08 Sep 2026 12:12:01 -0400
-X-ME-Sender: <xms:0DOgapxIuztF-xAq1Xu0-G1BF1NYaz6JIZlSC3D-dq3Fz6DWKbpWFg>
-    <xme:0DOgakHmWMXsSA9O0-u_SlgufJhLfNf5hx5mRaEauyB0lcnspeq1oDMuGNavoa1ut
-    50ZNN52M0vBDTGGdKeGtBDtZKuXvmfocVfBKTB9QPGRwSEIu2bRPRA>
-X-ME-Proxy-Cause: dmFkZTFCMZbKka0PySpBSN0mOueOshb+uEL6ESVsVEH+1U1ATE4YvAKZeFRO257abuQ+ng
-    4PZCmsJnRkV/CoaJ+mDv3YqAto2q5SqEOFwbw6IsHq7VZajVGrnhWI0oYBHvFuJO97HxDG
-    pqfqxCPhTLzTprK3ntJZb0z9cfKzZw9S77ZLaTVZxLK7qnySfdKurKPqugdGDQMkjRCrqw
-    AIrcDceS4WrKbdxeHBH9945l6oxC8GA3mo+q4fJylrSLhZGVKNcwvFuJMdyOUfqVFIRFQC
-    NaLmAW7/Z+ubTtxnGKLueCuD7XLm/D3q6FipdVaMXj+xv+3IUzuF+mc2FDlpeEbdTinHad
-    iTw2WIz06Xf0RdlLqA3VXTMZ43u3wfgRb9mF0Vqd0QgcFmBDd0d1wp6zCTX7oWlwgWq26y
-    I+Og11aGh9ylDkTsSRZ7u/DLN7gYuRMYfqbK74bqmlce000gCwFqxe9BLdxFWsOL731qMT
-    sjH8DirrK5v3MIywZvSKmTrtuysA/pVKnQKGR5NHHFRhn6pY6u/y0fIrdHzdOQfOOlUWEY
-    7oEzUnt83MODHGRusAjEYJpctGSP6JuuIO0hg98JeaOn70wh9I4bN/io+rXokPnWu1dwXD
-    xhymirxxSTjmLZvHZSk8Rp6mtd1KxfakPRkBMJqP06MsSwUt3rxVa9utsROA
-X-ME-Proxy: <xmx:0TOgaoHVWd8BKffCEnm-xJwvT7eTaPZ3mte3HodUiQo0uSLW8oxbYg>
-    <xmx:0TOgarXr5vRy8XaIdHcFcpHvMcxRaRlVZ1IOVs9Ws-lqna-6r2Bm5A>
-    <xmx:0TOgaoyIMSeJ1juWayio0oZ0pDbHTGbiokBMtxKqKkQ3x90X-JNCZg>
-    <xmx:0TOgaoTpjFqgNobdu2LnBZxU30xTI0rppen-HQRWsWcorfxeB4WWOg>
-    <xmx:0TOgashVP2icbUUysxENXiCXVHDUiIBNO3Vldk61mtjQjpID9MMbC-Lx>
-Feedback-ID: i36794607:Fastmail
-Received: by mailuser.ams.internal (Postfix, from userid 501)
-	id 3E8B032A007B; Tue,  8 Sep 2026 12:12:00 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	s=k20260515; t=1788889769;
+	bh=zfZJ8L24GBbiC3D8vqw/xzHvGlAJGCjQzD3bh8D6Myg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=Qr/i5GWX7SxP5X/hPJYB7j39mtUQMqybMTKdk7ZktBf3R/Hs8vhoE5Oktd14PVpof
+	 yTSFd6cD8E1BRXxWjMR3czBLvjeUz9l4DCUr9by6KuAHpbMTMru5aXVG/WEros4eG9
+	 iv6hWVCKelStCxFJW+MzXgXUtDvOTDe1uhNZWZ4iiVKdZBYT2OrW/8+ICjbJZSqQl/
+	 Tv3ymsk4U+W357q5ZXLN2U5HOumpZuNvkEvHw7Qh12G3Q15HFt7/0ryYtuK1ZtkDtX
+	 BLEaSlhh5gWu9n3CuBHLBy/EfmHXlnJsIlXonDrR7agPRQVF0xdHP+NOOoSdz7O/FQ
+	 +gwuQKrcDXNfQ==
+Date: Tue, 8 Sep 2026 18:49:25 +0100
+From: Conor Dooley <conor@kernel.org>
+To: zjzhao@edatec.cn
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: Re: [PATCH v4 1/2] dt-bindings: serial: Document WK2xxx SPI UART
+Message-ID: <20260908-user-follow-58ec6bb137e4@spud>
+References: <20260908103129.58085-1-zjzhao@edatec.cn>
+ <20260908103129.58085-2-zjzhao@edatec.cn>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-ThreadId: AGTXWeH1PU47
-Date: Tue, 08 Sep 2026 18:10:47 +0200
-From: "Arnd Bergmann" <arnd@kernel.org>
-To: sashiko-reviews@lists.linux.dev
-Cc: devicetree@vger.kernel.org, "Rob Herring" <robh@kernel.org>,
- "Conor Dooley" <conor+dt@kernel.org>, linux-serial@vger.kernel.org,
- "Frank Li" <Frank.Li@kernel.org>, imx@lists.linux.dev
-Message-Id: <cfce9a0e-a7b7-409d-b9a4-abb9013469a9@app.fastmail.com>
-In-Reply-To: <20260908155212.810C61F00A3A@smtp.kernel.org>
-References: <20260908152808.3928630-1-arnd@kernel.org>
- <20260908152808.3928630-4-arnd@kernel.org>
- <20260908155212.810C61F00A3A@smtp.kernel.org>
-Subject: Re: [PATCH 03/13] ARM: remove riscpc
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="2c5sD+SQtTSQSR3t"
+Content-Disposition: inline
+In-Reply-To: <20260908103129.58085-2-zjzhao@edatec.cn>
 
-On Tue, Sep 8, 2026, at 17:52, sashiko-bot@kernel.org wrote:
->
-> The Acorn Risc PC platform and its associated drivers, configurations,
-> and board files are being removed as the required gcc-8 compiler and
-> -march=armv3 option are no longer supported.
->
->>     The main limitation here is the CPU bus that does not allow 16-bit
->>     wide data transfers and hence requires the kernel to be built with the
->>     -march=armv3 compiler option that was discontinued in gcc-9.
->
-> [Severity: Low]
-> Since this compiler option is the explicitly stated reason for removal in the
-> commit message, should we also delete the compiler flag from the tree?
->
-> arch/arm/Makefile:
->     arch-$(CONFIG_CPU_32v3)         :=-march=armv3m
->
-> Additionally, the config symbol for this architecture version is now
-> dead code because its only selector (ARCH_RPC) was removed:
->
-> arch/arm/mm/Kconfig:config CPU_32v3
->     config CPU_32v3
->         bool
+--2c5sD+SQtTSQSR3t
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I decided to remove these two as part of the later StrongARM
-removal patch that depends on this one.
+On Tue, Sep 08, 2026 at 06:31:28PM +0800, zjzhao@edatec.cn wrote:
+> From: Zi Jie Zhao <zjzhao@edatec.cn>
+>=20
+> Add a DT binding for the WK2xxx SPI to UART bridge ICs (WK2124, WK2132,
+> WK2168, WK2202 and WK2204) from Chengdu Weikai Microelectronics (WKmic).
+> Describe each UART channel with a serial@N child node carrying its serial
+> and RS-485 properties. Register the wkmic vendor prefix based on the vend=
+or
+> website http://www.wkmic.com/.
+>=20
+> Differentiate compatible strings by channel count and
+> register availability. Account for missing hardware flow-control and
+> RS-485 registers on WK2132 and WK2202. Reject serial@2 and serial@3 on the
+> two-channel members.
+>=20
+> Require the standard clocks property for the single external reference
+> clock used by the chips.
+>=20
+> Signed-off-by: Zi Jie Zhao <zjzhao@edatec.cn>
 
->> diff --git a/MAINTAINERS b/MAINTAINERS
->> index 81872f61b4317..fdd75b73bf293 100644
->> --- a/MAINTAINERS
->> +++ b/MAINTAINERS
-> [ ... ]
->> -ARM MFM AND FLOPPY DRIVERS
->> -M:	Ian Molton <spyro@f2s.com>
->> -S:	Maintained
->> -F:	arch/arm/include/asm/floppy.h
->> -F:	arch/arm/mach-rpc/floppydma.S
->> -
->
-> [Severity: Low]
-> Does this leave the floppy header as dead code in the tree? It is removed
-> from MAINTAINERS here, but the file itself was left in the tree:
->
-> arch/arm/include/asm/floppy.h:
->     #ifndef __ASM_ARM_FLOPPY_H
->     #define __ASM_ARM_FLOPPY_H
+Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
+pw-bot: not-applicable
 
-This is removed along with ISA bus support later, which also
-drops ARCH_MAY_HAVE_PC_FDC, ISA_DMA_API and GENERIC_ISA_DMA.
+--2c5sD+SQtTSQSR3t
+Content-Type: application/pgp-signature; name=signature.asc
 
-I could have split up the MAINTAINERS file change, but
-it seemed better to do it in one place. Maybe the other
-patch would have been better, but then I'd have another
-dangling reference to mach-rpc here.
+-----BEGIN PGP SIGNATURE-----
 
-> The Makefile still references it:
->
-> arch/arm/Makefile:
->     machine-$(CONFIG_ARCH_RPC)              += rpc
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaqBKpQAKCRB4tDGHoIJi
+0lrIAP9AeviOBZjovLtQ7Gw0L+gnjThIJFjPahSfUMgEY2bQpQEA5Y2feeQlwBTo
+pLe+dhGYtcMdGmQcDrJCAePuIM/4Hw0=
+=/yw0
+-----END PGP SIGNATURE-----
 
-Fixed now, this ended up in the StrongARM patch by
-accident.
-
-> The machine type registry still contains it:
->
-> arch/arm/tools/mach-types:
->     riscpc                  ARCH_RPC                RISCPC                  1
-
-This is intentional.
-
-> And the CPU selection still evaluates it:
->
-> arch/arm/mm/Kconfig:config CPU_SA110
->     select CPU_32v3 if ARCH_RPC
->     select CPU_32v4 if !ARCH_RPC
-
-Again, this is part of the StrongARM removal. I had considered
-removing these two lines first, but then I'd have to split up
-the CPU_32v3 removal out from that.
-
-     Arnd
+--2c5sD+SQtTSQSR3t--
