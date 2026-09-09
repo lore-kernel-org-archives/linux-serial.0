@@ -1,103 +1,196 @@
-Received: from azure-sdnproxy.icoremail.net (azure-sdnproxy.icoremail.net [13.76.78.106])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B8CF145D5FE;
-	Wed,  9 Sep 2026 08:41:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.76.78.106
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79FED3B2D38
+	for <linux-serial@vger.kernel.org>; Wed,  9 Sep 2026 08:57:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788943276; cv=none; b=ZnaBDbtvN23axewUX9+3Oivsvw01an5AEyeiPE0IITwZQFzNfjulaYKeITGdkOUiGdLHJoa4NHugVEbWHn/pRMMoJNc5aVW4o6Ix7y9P1LuUSiwwpAwNGE6gvD1dFUG//HcktCTgf5uje5Mf/F9jZ0x/6PUkUs9qEhLLuwjVLys=
+	t=1788944249; cv=none; b=PK6wLKI8HZpEZ2mx4D1P4EpxyOqZF64Z9XL6b+sidtSKEi9aQK/5o76ENa1DFspsKu5c2a2sHRnKk63xmyTHEAxK4NeZAfxHTos47PeOhP1CV0/khwWurBWzU8ktlmaiK4Qh7+ujDByEMa9NInpKhhrSPXHcsdoV5gOBc5d76n8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788943276; c=relaxed/simple;
-	bh=Y8iA6Fiz8QY+ZgktH2vQIkFtb3SPK4PSqEnSMNZOUEk=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=FG5q2f2w2YLIqiue7d/RUa8f+k7MQ4xYKcTRQrIkwv1paKg1QcLqysi31pTP1Fw8By8UFwrwtDCuZeFHEdSvjPDHymU/WzOz51YiJzEjLEgNo+vTdMK+nKAn1N3xfuEQEX/wGn2TxkkB994+vXJcElsmxAZ1sgaS/V5kG7Dthts=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=zju.edu.cn; spf=pass smtp.mailfrom=zju.edu.cn; arc=none smtp.client-ip=13.76.78.106
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=zju.edu.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zju.edu.cn
-Received: from zju.edu.cn (unknown [10.98.66.117])
-	by mtasvr (Coremail) with SMTP id _____wCXrnyaG6Fqdp8CAQ--.8542S3;
-	Wed, 09 Sep 2026 16:40:59 +0800 (CST)
-Received: from localhost.localdomain (unknown [10.98.66.117])
-	by mail-app2 (Coremail) with SMTP id zC_KCgBn1cqZG6FqljFmBA--.11181S2;
-	Wed, 09 Sep 2026 16:40:57 +0800 (CST)
-From: Fan Wu <fanwu01@zju.edu.cn>
-To: linux-serial@vger.kernel.org
-Cc: alcooperx@gmail.com,
-	bcm-kernel-feedback-list@broadcom.com,
-	jirislaby@kernel.org,
-	gregkh@linuxfoundation.org,
-	linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org,
-	Fan Wu <fanwu01@zju.edu.cn>
-Subject: [PATCH] serial: 8250_bcm7271: fix use-after-free in brcmuart_remove()
-Date: Wed,  9 Sep 2026 08:40:02 +0000
-Message-Id: <20260909084002.686911-1-fanwu01@zju.edu.cn>
-X-Mailer: git-send-email 2.34.1
+	s=arc-20240116; t=1788944249; c=relaxed/simple;
+	bh=8y1srqggC7lKLfrIcrOUq23obo9JpqGo8RocPpY8Slc=;
+	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
+	 Message-Id; b=FKQ1CYlQ6au1FhwO8CtOOJPwcYVBPx+oxpMnETlG5CK8cdDsHKpwyqvKg2lWCEpiWk7E7C0N6UPcPF20wq5pD2qpucIm4/vxbsk5ayQTEMSiYjDZeitwFL2Xr4AP3uyexF00M2V4sS2FjF+umdT4v2jrC0BXzF+0eD/hRWlmLAo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hJm0ojXK; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hJm0ojXK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24F0F1F00A3A;
+	Wed,  9 Sep 2026 08:57:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1788944248;
+	bh=F5W6MYLbTIZ+2HC8B89umiteYa4k70m3/W82ewwGzUA=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=hJm0ojXKW9qwZgCGusUfQxggn9ngCyfFqYoa/hgowSs/S0enlxoMxlm7HPh8+05bP
+	 UMtL7/a3uYXsW147qSA/Dt02krheZA1HYVARnp4dxUggxBQdJUGqhdRgkdVoVSeCaj
+	 0Fx05MPE/DeA5/o7yfVRJRm1T6hGHAA0oTD3MGGgLsAFEgQbBwcVlrWprgXxo4mbGq
+	 qPDGFxMjZ/Twk2Y1zMB1zim9D1/JM47v47yJzRidfuXaE666D2OPW1ZtXQ80IW9xil
+	 JPhPhPkOasiVXUU4zpezLcKAf5GSonEtGKGzjjtBrecj2MmKF9BJAz4HKLD2mlQ64/
+	 TmTUToROCXUIg==
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH] serial: 8250_bcm7271: fix use-after-free in
+ brcmuart_remove()
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Fan Wu" <fanwu01@zju.edu.cn>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20260909084002.686911-1-fanwu01@zju.edu.cn>
+References: <20260909084002.686911-1-fanwu01@zju.edu.cn>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 09 Sep 2026 08:57:27 +0000
+Message-Id: <20260909085728.24F0F1F00A3A@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:zC_KCgBn1cqZG6FqljFmBA--.11181S2
-X-CM-SenderInfo: qrstjiaswqq6lmxovvfxof0/
-X-CM-DELIVERINFO: =?B?JZYZzAXKKxbFmtjJiESix3B1w3vZ3A9ovKVTomAyoQazvoRs/NHSP8GI2EvgeEEW7R
-	sfncGSG+szpQCInt5Y8rbJUI0SzGvKHTkIqPEVt2kH8gAE2wK6Fo8W8PgIw8IymqmnAz1c
-	M+wx7e5bJWgfD3Ju96ip9E6mavGmQbzmcFsnzP86
-X-Coremail-Antispam: 1Uk129KBj93XoW7CF4UXrWxXF18JF1ftry7Arc_yoW8Cr43pw
-	srta4qyryqgF17t3WDuan8ZFyUZa93XFy7uF97C3y3ZFnIyFyrKrWYgFyYyFWUCryvq3Wa
-	yF18J3yUuFW5AFcCm3ZEXasCq-sJn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7KY7ZEXa
-	sCq-sGcSsGvfJ3Ic02F40EFcxC0VAKzVAqx4xG6I80ebIjqfuFe4nvWSU5nxnvy29KBjDU
-	0xBIdaVrnRJUUU9Gb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2
-	IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48v
-	e4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI
-	0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AK
-	xVW0oVCq3wAac4AC62xK8xCEY4vEwIxC4wAS0I0E0xvYzxvE52x082IY62kv0487Mc804V
-	CY07AIYIkI8VC2zVCFFI0UMc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AK
-	xVWUJVWUGwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48Icx
-	kI7VAKI48JM4x0Y48IcxkI7VAKI48G6xCjnVAKz4kxMxAIw28IcxkI7VAKI48JMxC20s02
-	6xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_Jr
-	I_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v2
-	6r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj4
-	0_Jr0_JF4lIxAIcVC2z280aVAFwI0_Gr0_Cr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8
-	JrUvcSsGvfC2KfnxnUUI43ZEXa7IU86c_DUUUUU==
 
-brcmuart_handle_irq() starts priv->hrt to work around a receive-timeout
-quirk of the 8250 core when hardware flow control is enabled; the timer
-callback brcmuart_hrtimer_func() dereferences priv.
+Thank you for your contribution! Sashiko AI review found 5 potential issue(=
+s) to consider:
 
-brcmuart_remove() cancels the hrtimer before it unregisters the port, so
-a receive-timeout interrupt that arrives in between re-arms the timer.
-After devm frees priv, the callback runs on freed memory.
+New issues:
+- [High] Race condition and lock corruption introduced by reordering hrtime=
+r_cancel.
 
-Unregister the port before cancelling the hrtimer.
-serial8250_unregister_port() shuts the port down and frees its IRQ, so
-brcmuart_handle_irq() can no longer restart the timer, and the final
-hrtimer_cancel() drains any timer that was armed before or during the
-unregister.
+Pre-existing issues:
+- [High] Missing hrtimer_cancel on the brcmuart_probe error path leads to a=
+ use-after-free.
+- [High] brcmuart_free_bufs() frees DMA buffers before the devm-managed DMA=
+ IRQ is deactivated, leading to a use-after-free.
+- [High] Data race on hardware registers and state flags between set_termio=
+s and DMA ISR due to missing locks.
+- [High] Race condition between port registration and priv->up initializati=
+on causes NULL pointer dereference in the timer callback.
+--
 
-This issue was found by an in-house static analysis tool.
+commit bdfef65a3f8fdbe1033b7dfafac9c8386120580f
+Author: Fan Wu <fanwu01@zju.edu.cn>
 
-Fixes: 41a469482de2 ("serial: 8250: Add new 8250-core based Broadcom STB driver")
-Cc: stable@vger.kernel.org
-Assisted-by: Codex:gpt-5.6
-Co-developed-by: Song Li <songl@zju.edu.cn>
-Signed-off-by: Song Li <songl@zju.edu.cn>
-Signed-off-by: Fan Wu <fanwu01@zju.edu.cn>
----
- drivers/tty/serial/8250/8250_bcm7271.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+serial: 8250_bcm7271: fix use-after-free in brcmuart_remove()
+   =20
+This commit moves hrtimer_cancel() after serial8250_unregister_port() in
+brcmuart_remove() to prevent a use-after-free. The goal is to shut down the
+port and free its IRQ so the hrtimer cannot be re-armed before cancelling i=
+t.
 
-diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
-index 742004d63c6f..60c7d5c9100c 100644
---- a/drivers/tty/serial/8250/8250_bcm7271.c
-+++ b/drivers/tty/serial/8250/8250_bcm7271.c
-@@ -1123,8 +1123,8 @@ static void brcmuart_remove(struct platform_device *pdev)
- 	struct brcmuart_priv *priv = platform_get_drvdata(pdev);
+> diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/=
+8250/8250_bcm7271.c
+> --- a/drivers/tty/serial/8250/8250_bcm7271.c
+> +++ b/drivers/tty/serial/8250/8250_bcm7271.c
+> @@ -1121,8 +1121,8 @@ static void brcmuart_remove(struct platform_device =
+*pdev)
+>  	struct brcmuart_priv *priv =3D platform_get_drvdata(pdev);
+> =20
+>  	debugfs_remove_recursive(priv->debugfs_dir);
+> -	hrtimer_cancel(&priv->hrt);
+>  	serial8250_unregister_port(priv->line);
+> +	hrtimer_cancel(&priv->hrt);
 
- 	debugfs_remove_recursive(priv->debugfs_dir);
--	hrtimer_cancel(&priv->hrt);
- 	serial8250_unregister_port(priv->line);
-+	hrtimer_cancel(&priv->hrt);
- 	brcmuart_free_bufs(&pdev->dev, priv);
- 	if (priv->dma_enabled)
- 		brcmuart_arbitration(priv, 0);
+[Severity: High]
+Does moving hrtimer_cancel() after serial8250_unregister_port() introduce a
+race condition?
 
+A pending hrtimer can start executing on another CPU, read priv->shutdown
+locklessly as false, and block waiting for the port lock. Concurrently,
+serial8250_unregister_port() calls serial8250_init_port(), which reinitiali=
+zes
+the port's spinlock using spin_lock_init().=20
+
+If the timer callback attempts to acquire the spinlock while it is being
+reinitialized, could this lead to lock corruption or deadlocks?
+
+>  	brcmuart_free_bufs(&pdev->dev, priv);
+
+[Severity: High]
+This is a pre-existing issue, but could freeing the DMA buffers here cause a
+use-after-free if the devm-managed DMA IRQ handler is still executing?
+
+The driver requests the DMA interrupt via devm_request_irq() with IRQF_SHAR=
+ED.
+Devres defers freeing the IRQ until after brcmuart_remove() returns. If a
+shared interrupt fires concurrently, brcmuart_isr() could process pending
+status and dereference priv->rx_bufs via brcmuart_rx_buf_done_isr() after
+brcmuart_free_bufs() has freed it.
+
+>  	if (priv->dma_enabled)
+>  		brcmuart_arbitration(priv, 0);
+>  }
+
+
+While reviewing this patch, I noticed a few pre-existing issues in related
+code.
+
+[Severity: High]
+This is a pre-existing issue, but on the error path in brcmuart_probe():
+
+drivers/tty/serial/8250/8250_bcm7271.c:brcmuart_probe() {
+    ...
+err1:
+    serial8250_unregister_port(priv->line);
+err:
+    return ret;
+}
+
+If an RX timeout interrupt triggers brcmuart_handle_irq() and arms priv->hrt
+after the port is registered, would failing a subsequent probe step (like a=
+ DMA
+IRQ request) leave the hrtimer armed?=20
+
+The error path unregisters the port but misses hrtimer_cancel(), which could
+result in the timer callback executing on freed memory once devres frees pr=
+iv.
+
+
+[Severity: High]
+This is a pre-existing issue, but could brcmstb_set_termios() race with the
+DMA ISR?
+
+drivers/tty/serial/8250/8250_bcm7271.c:brcmstb_set_termios() {
+    ...
+    if (priv->dma_enabled)
+        stop_rx_dma(p8250);
+    ...
+    if (priv->dma_enabled)
+        start_rx_dma(p8250);
+    ...
+}
+
+These functions modify hardware registers and update priv->rx_running witho=
+ut
+holding the UART port spinlock. Can a concurrent DMA interrupt execute
+brcmuart_isr() on another CPU and modify these same states, corrupting the
+DMA engine state?
+
+
+[Severity: High]
+This is a pre-existing issue, but is there a window where priv->up is used
+before it is initialized?
+
+drivers/tty/serial/8250/8250_bcm7271.c:brcmuart_probe() {
+    ...
+    ret =3D serial8250_register_8250_port(&up);
+    ...
+    priv->line =3D ret;
+    new_port =3D serial8250_get_port(ret);
+    priv->up =3D &new_port->port;
+    ...
+}
+
+If a UART IRQ fires immediately after serial8250_register_8250_port() but
+before priv->up is set, brcmuart_handle_irq() can arm the hrtimer.=20
+
+If brcmuart_hrtimer_func() runs, it dereferences priv->up which is still NU=
+LL:
+
+drivers/tty/serial/8250/8250_bcm7271.c:brcmuart_hrtimer_func() {
+    ...
+    struct uart_port *p =3D priv->up;
+    ...
+    uart_port_lock_irqsave(p, &flags);
+    ...
+}
+
+Could this cause a NULL pointer dereference crash?
+
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260909084002.6869=
+11-1-fanwu01@zju.edu.cn?part=3D1
