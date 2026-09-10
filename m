@@ -1,131 +1,135 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7369547D468
-	for <linux-serial@vger.kernel.org>; Thu, 10 Sep 2026 13:20:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D56C03911C9
+	for <linux-serial@vger.kernel.org>; Thu, 10 Sep 2026 13:25:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789046431; cv=none; b=LcctJ0KLOIwXCB1o9SaboZLwUv7FrX6WxkSgrFmvc9lek7/I7KJFqro3ZxnerJccpKTJ1+uqmt1eHuOjhlTNpX6kZ46Gx4cnca9SUH18g3v6zGuZGk3UMC781xnUunKIhlJNNEUba2GBvc1gpHXOBtrAp7EZxEUvgFAnDLThFok=
+	t=1789046705; cv=none; b=rvMrq/w2iE+NJbYduhL8b3tUY8Tfmi8WGUbB5CABqEK83zd1eelLz3fYiLEZHptXeLiuycCH+uZLSHzWn+MOHqvAJ4PhMtPCp1SwOzVN/AnQhrdxzTwVKqZqqcVsHQNWIW6P0YowxRB+1Rl3U6JqxB8byxI1cCGZXXDUL+epdAc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789046431; c=relaxed/simple;
-	bh=14TpOpKSb8BInat7g3nDtx858oh3HTTIMsXKoLtXED4=;
+	s=arc-20240116; t=1789046705; c=relaxed/simple;
+	bh=6cq02uCFRyEda0OXTXuqzVxWviAtUCj9U+QRX4Hth0A=;
 	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=bGNoJEj81woGkJ3h6TW/oQTodRPxBFpzQPDgERIFOvK5LfbeYJn0/R7/FRT90UUuCjIR/vRS9524Ta4ttzTwpFYhBUEfJ4A+baZyr0MAjeJb8zhA+Tb9dIElt7NeQuFph9pskvazJOUzUnypSFiXR0gnGLpbqX/Tym8nENhu3lE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=W6jIzXN6; arc=none smtp.client-ip=100.103.45.18
+	 Message-Id; b=eNKZmC1Tp7kodYdcBgirAc3JZk4a0LFZUGUSmFWNVf+4v9bPSJNmIxzGJqmYeDBn700NZCRiudSFF5aox4yhZ6ukrwfYnDESkV/nLCY9UUq2ojGaAEVRMJa2HnTkebb0eimdRU2RsEYV7IxbbCzLfhyzrlQF52GATlmktWpZfWg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N5QrqzJr; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="W6jIzXN6"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D80801F00898;
-	Thu, 10 Sep 2026 13:20:29 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N5QrqzJr"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F9221F000FF;
+	Thu, 10 Sep 2026 13:25:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789046430;
-	bh=L/KWYa/+0EGH4uBUap0jh0nfdQG7xG/7aukVqI3rNLE=;
+	s=k20260515; t=1789046703;
+	bh=7+NmZSnPabyvI1i5W4j2g9PAl0UyxbraaPgJvbAz2xM=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=W6jIzXN6ZzQ77PvI67SuTQ9TnzzKP8ULDufmwrBeQ4yMxMdzWiee1CTpuaJxkxbAl
-	 FxjxWFQPxCklBuHF045s4nqXCadIIU9sgo9bCu3JlHnxkoKv9cBL+4TPgM17Q1bwIr
-	 b8SelWx4z0RhTAWqI7IA1+yK811TpSiiVeIYPxOJQVkg+Xl3rwg+RRqOFXjlWGk67c
-	 WG9GJzGijxucbGFL0qpdp6h2o0C4YZSUZH9Uh6Yd3eHmrXNXjgWjAy1I9PjDATt0Ux
-	 yC1z1RrF+hKgaj/p0df4gRYn5QAxl2/WPxJmxO4cc42Rxu57AIasQE/I6QdpAxGqRq
-	 ZAVktlzsFxCRQ==
+	b=N5QrqzJrEyvl/hGXOPkN57JsIWjJlzewQCd3ICMjWjQVOqosU4l5Pxls4z9Z8rRXG
+	 utTCMhwApqpKa38FsZkJLOa+2arVEHYIdAH91Km/PcJFr8XBaPGIJt61O/kNUTpe/k
+	 PXMh7P4umX2naCQDjL8KN7Ot2Movk5Lo7xSipOh3VzbcYf9knjLw266uuJXQ9jkHTw
+	 ik1+jkOzjeVOrpAQVVt8+KT1Gwp0A5W2ZODux6GlCQGTeVNjDSFR6pd1FENYUumo9V
+	 Jyl4S2tBPnSGholvKLHJSdqkq2OXVFe7iVo0uRQzgz6uJhL1sR821s2MyQrtyJ1BVu
+	 QI3TIibcrGJnQ==
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v4 4/4] serial: abort TIOCMIWAIT on hangup
+Subject: Re: [PATCH v4 2/4] serial: fix ioctl hangup race
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Johan Hovold" <johan@kernel.org>
 Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20260910130816.642699-5-johan@kernel.org>
+In-Reply-To: <20260910130816.642699-3-johan@kernel.org>
 References: <20260910130816.642699-1-johan@kernel.org>
- <20260910130816.642699-5-johan@kernel.org>
+ <20260910130816.642699-3-johan@kernel.org>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Thu, 10 Sep 2026 13:20:29 +0000
-Message-Id: <20260910132029.D80801F00898@smtp.kernel.org>
+Date: Thu, 10 Sep 2026 13:25:02 +0000
+Message-Id: <20260910132503.3F9221F000FF@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-Thank you for your contribution! Sashiko AI review found 2 potential issue(=
+Thank you for your contribution! Sashiko AI review found 1 potential issue(=
 s) to consider:
 
 Pre-existing issues:
-- [High] The `TIOCMIWAIT` implementation in `drivers/tty/mxser.c` suffers f=
-rom the exact same missing hangup check as `serial_core.c`, causing indefin=
-ite sleep on hangup.
-- [High] The `TIOCMIWAIT` loop in `drivers/tty/amiserial.c` is fundamentall=
-y broken, instantly returns `-EIO` without waiting, and lacks a hangup chec=
-k.
+- [High] The patch misses several tty driver callbacks that access hardware=
+ and can race with hangup, including those triggered by the TCXONC ioctl an=
+d racing writes.
 --
 
-commit a8c074101564c35207f8f5e3fb06b52d01a55d88
+commit b720c07153ba95668df0da514b07008b06834b2e
 Author: Johan Hovold <johan@kernel.org>
-Subject: serial: abort TIOCMIWAIT on hangup
 
-The commit adds a missing hangup check to the TIOCMIWAIT wait loop in
-serial_core.c to avoid indefinite sleep.
+serial: fix ioctl hangup race
 
-Link: https://lore.kernel.org/r/20260904115542.E20D11F00A3D@smtp.kernel.org
+This commit adds tty_io_error checks to several tty ioctls and driver
+operations. It aims to ensure the port has not been hung up before accessing
+the hardware, avoiding kernel panics.
 
 > diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial=
 _core.c
-> index f7b30f77b2312..33c8f3b6ac816 100644
+> index 1553bc6cbe7ba..139b938762298 100644
 > --- a/drivers/tty/serial/serial_core.c
 > +++ b/drivers/tty/serial/serial_core.c
-> @@ -1244,6 +1244,11 @@ static int uart_wait_modem_status(struct tty_struc=
-t *tty, struct uart_state *sta
->  			break;
->  		}
+> @@ -896,7 +896,7 @@ static int uart_set_info(struct tty_struct *tty, stru=
+ct tty_port *port,
+>  	upf_t old_flags, new_flags;
+>  	int retval;
 > =20
-> +		if (tty_io_error(tty)) {
-> +			ret =3D -EIO;
-> +			break;
-> +		}
-> +
+> -	if (!uport)
+> +	if (!uport || tty_io_error(tty))
+>  		return -EIO;
+> =20
+>  	new_port =3D new_info->port;
 
 [Severity: High]
-This isn't a bug introduced by this patch, but the TIOCMIWAIT implementation
-in drivers/tty/mxser.c suffers from the exact same missing hangup check,
-causing indefinite sleep on hangup.
+This isn't a bug introduced by this patch, but does this miss several other
+tty driver callbacks that access hardware and can race with hangup, includi=
+ng
+those triggered by the TCXONC ioctl and racing writes?
 
-In drivers/tty/mxser.c:mxser_cflags_changed(), the condition for
-wait_event_interruptible() is evaluated without checking for a hangup:
+Invoking hardware callbacks (start_tx, stop_tx, send_xchar) on a powered-do=
+wn
+or unclocked UART port causes bus errors and kernel panics.
 
-	ret =3D	((arg & TIOCM_RNG) && (cnow.rng !=3D cprev->rng)) ||
-		((arg & TIOCM_DSR) && (cnow.dsr !=3D cprev->dsr)) ||
-		((arg & TIOCM_CD)  && (cnow.dcd !=3D cprev->dcd)) ||
-		((arg & TIOCM_CTS) && (cnow.cts !=3D cprev->cts));
+Can a user call ioctl(TCXONC) on a hung-up terminal and invoke uart_stop(),
+uart_start(), or uart_send_xchar()? These do not check tty_io_error(tty) and
+unconditionally access the hardware:
 
-Does mxser.c also need a tty_io_error() check here to prevent the process
-from going back to sleep indefinitely instead of aborting when woken on
-hangup?
+drivers/tty/serial/serial_core.c:uart_stop() {
+	port =3D uart_port_ref_lock(state, &flags);
+	if (port)
+		port->ops->stop_tx(port);
+	...
+}
 
-[Severity: High]
-This is a pre-existing issue, but the TIOCMIWAIT loop in
-drivers/tty/amiserial.c is fundamentally broken, instantly returning
--EIO without waiting, and lacks a hangup check.
+drivers/tty/serial/serial_core.c:uart_start() {
+	port =3D uart_port_ref_lock(state, &flags);
+	__uart_start(state);
+	...
+}
 
-In drivers/tty/amiserial.c:rs_ioctl(), cprev is captured right before
-the wait loop. Immediately inside the loop, cnow is captured again and
-checked:
+drivers/tty/serial/serial_core.c:uart_send_xchar() {
+	if (port->ops->send_xchar)
+		port->ops->send_xchar(port, ch);
+	...
+}
 
-				cnow =3D info->icount; /* atomic copy */
-				local_irq_restore(flags);
-				if (cnow.rng =3D=3D cprev.rng && cnow.dsr =3D=3D cprev.dsr &&=20
-				    cnow.dcd =3D=3D cprev.dcd && cnow.cts =3D=3D cprev.cts) {
-					ret =3D -EIO; /* no change =3D> error */
-					break;
-				}
+Additionally, can a concurrent write() race with uart_shutdown()? If
+uart_write() acquires the port lock after uart_port_shutdown() disables the
+hardware but before uart_free_xmit_buf() clears the buffer pointer, it will
+pass the !state->port.xmit_buf check and invoke start_tx on the dead hardwa=
+re:
 
-Because the copies happen almost back-to-back, the counters will almost
-always be identical on the first iteration before schedule() is ever
-called, causing an instant failure instead of waiting.=20
+drivers/tty/serial/serial_core.c:uart_write() {
+	port =3D uart_port_ref_lock(state, &flags);
+	if (!state->port.xmit_buf) {
+		uart_port_unlock_deref(port, flags);
+		return 0;
+	}
+	...
+	__uart_start(state);
+	...
+}
 
-Should this faulty check be removed, and a proper hangup check like the
-one you're adding in this patch be included instead?
-
->  		schedule();
-> =20
->  		/* see if a signal did it */
+[ ... ]
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260910130816.6426=
-99-1-johan@kernel.org?part=3D4
+99-1-johan@kernel.org?part=3D2
