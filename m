@@ -1,103 +1,249 @@
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.4])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8227B3D348C;
-	Thu, 10 Sep 2026 09:47:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0ED5489FC5;
+	Thu, 10 Sep 2026 12:52:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789033649; cv=none; b=T3Aol87rs8+N+D7nCQRUA0WWAk8NLgIo91b0W3w2Pk7FwpLe7UyGKI1hN3m1nHJZKhDJ/tZt7IwZLcp1+CcYHmxWEUGvRKEnGG9Q61U2cktaJU8AocxQKMl7aXgXfcglubCSr3+fCLnJT3PqsW9+seKlEso14GQJ/JKlc2F37mc=
+	t=1789044758; cv=none; b=H/2cR6mTiv3DNHQyWhyuCs9I63TqSKqbz1BPgGqRSU+RxgnSo5hNfqGUXryOAmkttvp8eha48klv78D3sKUHgzc6zSDsZZR1qcv4iA+8Vigsy3S8BHYeHwEAg38w3fa4799KoXSc8ArsWhcfM5ZsUA5dWHGEXLASRUvIcAF9/g8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789033649; c=relaxed/simple;
-	bh=F5/vPpllGKppAQmvAZ51j2daco6+yuo7BVECN5KUbX0=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
-	 MIME-Version:Message-ID; b=uoiiWb5agVMTd6R/Is33tIXwHQ3Fie/Xu/0wIFJkHnkdnsP1vPSwvH611VD5ER3XmK6M+tFgneDx3AQpEy1rjqH4BpQfuFgg9xjrXQmBX9VWnOx02X+Z6YUnAMARc3UEu/HUpmAt3n+taBvEHQFWZMoUogDKYa9NgmbE10l8U/o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=lqXmm7sM; arc=none smtp.client-ip=220.197.31.4
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1789044758; c=relaxed/simple;
+	bh=IrW6p3ZLdUFJ3Jcbs7wzREuMl/3huvxHpZzV84Qc2hE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=m2Vb5iex69EDgzDfbG1D/GKPSw24tNAqbOBNI45bg2Sd1nhBjgsV0nxITxiXaLiTY36P9QgpashSB7Zf8qMA4a/bx/v27hyqPoT/lx4gt8vCxO3Cyq3F0omcQU7WbEluUrhConHLSw9n3G2Q0CYlp966nGxYvrQxzBQJ6BHzCXU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=D7Y4Oczp; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="lqXmm7sM"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=Date:From:To:Subject:Content-Type:MIME-Version:
-	Message-ID; bh=F5/vPpllGKppAQmvAZ51j2daco6+yuo7BVECN5KUbX0=; b=l
-	qXmm7sMACXKuGTYrhuNCWfmPg5VEqhYXjr3OUG/evdiii5qKdz1WBt9cWRK4AIyR
-	oOrGDa7nYpOkYEna1BshJ0UY8tk5Wjp5lZbAwr0uJOSm9quHSnEItNUmyjrM/biC
-	LLq2WOZewwsIWu8Riybaa3g98vnHpzOPIGS9fsrNxk=
-Date: Thu, 10 Sep 2026 17:45:36 +0800 (CST)
-From: zl020895  <zl020895@163.com>
-To: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc: "Andy Shevchenko" <andriy.shevchenko@linux.intel.com>,
-	longzhao@ambarella.com, "Arnd Bergmann" <arnd@arndb.de>,
-	"Krzysztof Kozlowski" <krzk@kernel.org>,
-	"Alexandre Belloni" <alexandre.belloni@bootlin.com>,
-	soc@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	"Rob Herring" <robh@kernel.org>,
-	"Krzysztof Kozlowski" <krzk+dt@kernel.org>,
-	"Conor Dooley" <conor+dt@kernel.org>,
-	"Michael Turquette" <mturquette@baylibre.com>,
-	"Stephen Boyd" <sboyd@kernel.org>,
-	"Linus Walleij" <linusw@kernel.org>,
-	"Bartosz Golaszewski" <brgl@kernel.org>,
-	"Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-	"Jiri Slaby" <jirislaby@kernel.org>,
-	"Catalin Marinas" <catalin.marinas@arm.com>,
-	"Will Deacon" <will@kernel.org>, "Lee Jones" <lee@kernel.org>,
-	mfd@lists.linux.dev, devicetree@vger.kernel.org,
-	linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
-	linux-serial <linux-serial@vger.kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>
-Subject: Re:Re: Re: [PATCH v6 11/13] serial: 8250_dw: add Ambarella CV75
- quirks
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version 2023.4-cmXT build
- 20260511(2e539873) Copyright (c) 2002-2026 www.mailtech.cn 163com
-In-Reply-To: <b199eb38-b1a2-4db6-81d8-37bab09a75b7@linux.intel.com>
-References: <20260904-cv75-v5-v6-0-e918514cb3b1@ambarella.com>
- <20260904-cv75-v5-v6-11-e918514cb3b1@ambarella.com>
- <aqJrSnr0rwv4BOJ3@ashevche-desk.local>
- <122573f8.8232.1a08a9765fc.Coremail.zl020895@163.com>
- <aqJ35vMBiBZo2iUE@ashevche-desk.local>
- <b199eb38-b1a2-4db6-81d8-37bab09a75b7@linux.intel.com>
-X-NTES-SC: AL_Qu2TC/yYvE0o4CCfYekcn0wRhug/UMa4u/sm3YNXc8IFoD/G9CUlQFRoOmbk686TGjqAnROpYCR11ftiZ4N9xBLb9kFkJNpkbO2sqGB8hQ==
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="D7Y4Oczp"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B3781F00893;
+	Thu, 10 Sep 2026 12:52:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1789044756;
+	bh=vSWTZlCSntg6/s4HIFneb0KG9/AZ/9u3vKr/KcS0Qic=;
+	h=From:To:Cc:Subject:Date;
+	b=D7Y4OczpfjPk8g947QcK6DTOcbQnIfKsa4WNCBsggomfwsx2/8JZMUUqETouktXvE
+	 /k5hZNjjFfYXh7IFI0uPLMeeKFn5c8q38T6NLZ7UJF0An5ZePwGA1rEalNuoA+3AFP
+	 jrRgMq0jflG1lKVzOm00UqU2MmOv4b9qfKVH7hMXeobbTqpmFnDpC8iEihtjpC4S/+
+	 m6clcxuB0otldzhXH//aFlb0T88IGS3yP4SuTJQDXDXVEA5PKcj80BfiK+h/kWgRGy
+	 lOlOV2eAsXEZK37bWiClz9f/ORzoNkvVEIUJ8tz2PxdN3eqWdYFzdd/IhaCMsv2CAR
+	 NuJluM9piFTGg==
+Received: from johan by xi.lan with local (Exim 4.99.4)
+	(envelope-from <johan@kernel.org>)
+	id 1x4eGX-00000002gkX-2gRo;
+	Thu, 10 Sep 2026 14:52:33 +0200
+From: Johan Hovold <johan@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Johan Hovold <johan@kernel.org>,
+	stable@vger.kernel.org,
+	syzbot+5fabc1ae99ff40690d84@syzkaller.appspotmail.com
+Subject: [PATCH] tty: port: fix tty_port_tty_vhangup() race
+Date: Thu, 10 Sep 2026 14:51:14 +0200
+Message-ID: <20260910125114.640880-1-johan@kernel.org>
+X-Mailer: git-send-email 2.55.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Message-ID: <55b27872.8ed9.1a08ab55a52.Coremail.zl020895@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID:hCgvCgD3n9RAfKJqJMVDAA--.19073W
-X-CM-SenderInfo: d2oqjiqyzvqiywtou0bp/xtbCxgBy42qifEADiwAA3r
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+Content-Transfer-Encoding: 8bit
 
-SGkgSWxwbywgQW5keSwKCkknbGwgZ28gd2l0aCB0aGUgc2ltcGxlIGNvbW1lbnQ6CgkvKgoJICog
-QW1iYXJlbGxhIGtlZXBzIHZhcmlhbnQgSUVSIGJpdHMgKGUuZy4gRVRPSSkgc2V0IGZvciBjb3Jy
-ZWN0IFJYCgkgKiB0aW1lb3V0IGJlaGF2aW91ci4KCSAqLwoJdXAtPmllciB8PSBkLT5wZGF0YS0+
-aWVyX21hc2s7CgpCZXN0IHJlZ2FyZHMsCkxvbmcgWmhhbwoKQXQgMjAyNi0wOS0xMCAxNzozMzoz
-OCwgIklscG8gSsOkcnZpbmVuIiA8aWxwby5qYXJ2aW5lbkBsaW51eC5pbnRlbC5jb20+IHdyb3Rl
-Ogo+T24gVGh1LCAxMCBTZXAgMjAyNiwgQW5keSBTaGV2Y2hlbmtvIHdyb3RlOgo+Cj4+IE9uIFRo
-dSwgU2VwIDEwLCAyMDI2IGF0IDA1OjEyOjUyUE0gKzA4MDAsIHpsMDIwODk1IHdyb3RlOgo+PiAK
-Pj4gPiA+IFdvbmRlcmluZyBpZiB3ZSBzaG91bGQgdW5kbyB0aGlzIGluIHRoZSBwb3J0J3MgLnNo
-dXRkb3duKCkgY2FsbGJhY2suCj4+ID4gSSBzYXcgdGhlIHNodXRkb3duIHBhdGggYWxyZWFkeSBj
-b3ZlcnMgaXQ6IGR3ODI1MF9zaHV0ZG93bigpIGNhbGxzCj4+ID4gc2VyaWFsODI1MF9kb19zaHV0
-ZG93bigpLCB3aGljaCBkb2VzCj4+ID4gCXVwLT5pZXIgPSAwOwo+PiA+IAlzZXJpYWxfcG9ydF9v
-dXQocG9ydCwgVUFSVF9JRVIsIDApOwo+PiA+IHNvIGJvdGggdGhlIElFUiBzaGFkb3cgYW5kIGhh
-cmR3YXJlIElFUiBhcmUgY2xlYXJlZCwgaW5jbHVkaW5nIEVUT0kuCj4+IAo+PiBEZXBlbmRpbmcg
-b24gdGhlIGFuc3dlciB0byBJbHBvIHRoZSBlbmFibGluZyBtYXkgbmVlZCBhbiB1cGRhdGVkIGNv
-bW1lbnQKPj4gc3VtbWFyaXNpbmcgdGhlIGFib3ZlLgo+Cj5JJ2QgcHJlZmVyIHJlbW92aW5nIHRo
-ZSBlbnRpcmUgIkZvcmNlIHRoZW0gLi4uIiBzZW50ZW5jZSwgaXQgZmVlbHMgcmVhbGx5IAo+YmFz
-aWMgZGV0YWlsIGFib3V0IGhvdyAtPmllciB3b3Jrcy4gSSBiZWxpZXZlIHRoYXQgd291bGQgcmVz
-b2x2ZSB5b3VyIAo+Y29uY2VybiBpZiByZWxhdGVzIHRvIHdoYXQgc2h1dGRvd24gZG9lcyBmb3Ig
-dGhlIGZsYWcgKGNsZWFycyBpdCB3aGlsZSAKPnRoZSBjb21tZW50IGFzIGlzIHNheXMgbm90aGlu
-ZyBpcyBzdXBwb3NlZCB0byBjbGVhciBpdCkuCj4KPj4gPiBBdCAyMDI2LTA5LTEwIDE2OjMzOjE0
-LCAiQW5keSBTaGV2Y2hlbmtvIiA8YW5kcml5LnNoZXZjaGVua29AbGludXguaW50ZWwuY29tPiB3
-cm90ZToKPj4gPiA+T24gRnJpLCBTZXAgMDQsIDIwMjYgYXQgMDI6Mzg6MThQTSArMDgwMCwgTG9u
-ZyBaaGFvIHZpYSBCNCBSZWxheSB3cm90ZToKPj4gCj4+IC4uLgo+PiAKPj4gPiA+PiArCS8qCj4+
-ID4gPj4gKwkgKiBBbWJhcmVsbGEga2VlcHMgdmFyaWFudCBJRVIgYml0cyAoZS5nLiBFVE9JKSBz
-ZXQgZm9yIGNvcnJlY3QgUlgKPj4gPiA+PiArCSAqIHRpbWVvdXQgYmVoYXZpb3VyLiBGb3JjZSB0
-aGVtIGludG8gdGhlIDgyNTAgSUVSIHNoYWRvdyBzbyBsYXRlcgo+PiA+ID4+ICsJICogZ2VuZXJp
-YyBJRVIgdXBkYXRlcyBkbyBub3QgY2xlYXIgdGhlbS4KPj4gPiA+PiArCSAqLwo+PiA+ID4KPj4g
-PiA+V29uZGVyaW5nIGlmIHdlIHNob3VsZCB1bmRvIHRoaXMgaW4gdGhlIHBvcnQncyAuc2h1dGRv
-d24oKSBjYWxsYmFjay4KPj4gCj4+IAo+Cj4tLSAKPiBpLgo=
+Drivers rely on tty_port_tty_vhangup() to synchronously hang up their
+ports before tearing down resources as part of deregistration (e.g. on
+physical disconnect).
+
+If tty_port_tty_vhangup() races with another hangup it may however
+return before the port has been shut down. This is in turn can lead to
+use-after-free and NULL-pointer dereferences in racing ioctls (including
+a synchronous hangup) and in processing of racing asynchronous hangups
+(carrier loss).
+
+Add the missing serialisation to tty_port_tty_vhangup() and
+tty_port_hangup() so that the former does not return until the port has
+been shut down also when there is a racing hangup.
+
+Note that serial core does not use tty_port_hangup(), but it already
+holds the port mutex when clearing port->tty and shutting down the port
+in uart_hangup().
+
+Fixes: 7ca0ff9ab321 ("tty: Add a full port_close function")
+Cc: stable@vger.kernel.org	# 2.6.32: 2b5eac0f8c6e: tty: introduce and use tty_port_tty_vhangup() helper
+Cc: stable@vger.kernel.org	# 2.6.32
+Reported-by: syzbot+5fabc1ae99ff40690d84@syzkaller.appspotmail.com
+Link: https://lore.kernel.org/6a944641.4d659fcc.734b4.003c.GAE@google.com
+Signed-off-by: Johan Hovold <johan@kernel.org>
+---
+ drivers/tty/tty_port.c   | 87 ++++++++++++++++++++++++++--------------
+ include/linux/tty_port.h | 22 +---------
+ 2 files changed, 60 insertions(+), 49 deletions(-)
+
+diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+index ae33987207b6..b22ff9eb7778 100644
+--- a/drivers/tty/tty_port.c
++++ b/drivers/tty/tty_port.c
+@@ -340,19 +340,9 @@ void tty_port_tty_set(struct tty_port *port, struct tty_struct *tty)
+ }
+ EXPORT_SYMBOL(tty_port_tty_set);
+ 
+-/**
+- * tty_port_shutdown - internal helper to shutdown the device
+- * @port: tty port to be shut down
+- * @tty: the associated tty
+- *
+- * It is used by tty_port_hangup() and tty_port_close(). Its task is to
+- * shutdown the device if it was initialized (note consoles remain
+- * functioning). It lowers DTR/RTS (if @tty has HUPCL set) and invokes
+- * @port->ops->shutdown().
+- */
+-static void tty_port_shutdown(struct tty_port *port, struct tty_struct *tty)
++static void tty_port_shutdown_locked(struct tty_port *port, struct tty_struct *tty)
+ {
+-	guard(mutex)(&port->mutex);
++	lockdep_assert_held(&port->mutex);
+ 
+ 	if (port->console)
+ 		return;
+@@ -372,6 +362,23 @@ static void tty_port_shutdown(struct tty_port *port, struct tty_struct *tty)
+ 		port->ops->shutdown(port);
+ }
+ 
++/**
++ * tty_port_shutdown - internal helper to shutdown the device
++ * @port: tty port to be shut down
++ * @tty: the associated tty
++ *
++ * It is used by tty_port_hangup() and tty_port_close(). Its task is to
++ * shutdown the device if it was initialized (note consoles remain
++ * functioning). It lowers DTR/RTS (if @tty has HUPCL set) and invokes
++ * @port->ops->shutdown().
++ */
++static void tty_port_shutdown(struct tty_port *port, struct tty_struct *tty)
++{
++	guard(mutex)(&port->mutex);
++
++	tty_port_shutdown_locked(port, tty);
++}
++
+ /**
+  * tty_port_hangup		-	hangup helper
+  * @port: tty port
+@@ -385,36 +392,58 @@ void tty_port_hangup(struct tty_port *port)
+ {
+ 	struct tty_struct *tty;
+ 
+-	scoped_guard(spinlock_irqsave, &port->lock) {
+-		port->count = 0;
+-		tty = port->tty;
+-		if (tty)
+-			set_bit(TTY_IO_ERROR, &tty->flags);
+-		port->tty = NULL;
+-	}
++	scoped_guard(mutex, &port->mutex) {
++		scoped_guard(spinlock_irqsave, &port->lock) {
++			port->count = 0;
++			tty = port->tty;
++			if (tty)
++				set_bit(TTY_IO_ERROR, &tty->flags);
++			port->tty = NULL;
++		}
+ 
+-	tty_port_set_active(port, false);
+-	tty_port_shutdown(port, tty);
++		tty_port_set_active(port, false);
++		tty_port_shutdown_locked(port, tty);
++	}
+ 	tty_kref_put(tty);
+ 	wake_up_interruptible(&port->open_wait);
+ 	wake_up_interruptible(&port->delta_msr_wait);
+ }
+ EXPORT_SYMBOL(tty_port_hangup);
+ 
+-void __tty_port_tty_hangup(struct tty_port *port, bool check_clocal, bool async)
++/**
++ * tty_port_tty_hangup - helper to hang up a tty asynchronously
++ * @port: tty port
++ * @check_clocal: hang only ttys with %CLOCAL unset?
++ */
++void tty_port_tty_hangup(struct tty_port *port, bool check_clocal)
+ {
+ 	scoped_guard(tty_port_tty, port) {
+ 		struct tty_struct *tty = scoped_tty();
+ 
+-		if (!check_clocal || !C_CLOCAL(tty)) {
+-			if (async)
+-				tty_hangup(tty);
+-			else
+-				tty_vhangup(tty);
+-		}
++		if (!check_clocal || !C_CLOCAL(tty))
++			tty_hangup(tty);
++	}
++}
++EXPORT_SYMBOL_GPL(tty_port_tty_hangup);
++
++/**
++ * tty_port_tty_vhangup - helper to hang up a tty synchronously
++ * @port: tty port
++ */
++void tty_port_tty_vhangup(struct tty_port *port)
++{
++	struct tty_struct *tty;
++
++	mutex_lock(&port->mutex);
++	tty = tty_port_tty_get(port);
++	mutex_unlock(&port->mutex);
++
++	if (tty) {
++		tty_vhangup(tty);
++		tty_kref_put(tty);
+ 	}
+ }
+-EXPORT_SYMBOL_GPL(__tty_port_tty_hangup);
++EXPORT_SYMBOL_GPL(tty_port_tty_vhangup);
+ 
+ /**
+  * tty_port_tty_wakeup - helper to wake up a tty
+diff --git a/include/linux/tty_port.h b/include/linux/tty_port.h
+index 23cad403bb8f..8d22c59c6f15 100644
+--- a/include/linux/tty_port.h
++++ b/include/linux/tty_port.h
+@@ -245,7 +245,8 @@ bool tty_port_carrier_raised(struct tty_port *port);
+ void tty_port_raise_dtr_rts(struct tty_port *port);
+ void tty_port_lower_dtr_rts(struct tty_port *port);
+ void tty_port_hangup(struct tty_port *port);
+-void __tty_port_tty_hangup(struct tty_port *port, bool check_clocal, bool async);
++void tty_port_tty_hangup(struct tty_port *port, bool check_clocal);
++void tty_port_tty_vhangup(struct tty_port *port);
+ void tty_port_tty_wakeup(struct tty_port *port);
+ int tty_port_block_til_ready(struct tty_port *port, struct tty_struct *tty,
+ 		struct file *filp);
+@@ -264,25 +265,6 @@ static inline int tty_port_users(struct tty_port *port)
+ 	return port->count + port->blocked_open;
+ }
+ 
+-/**
+- * tty_port_tty_hangup - helper to hang up a tty asynchronously
+- * @port: tty port
+- * @check_clocal: hang only ttys with %CLOCAL unset?
+- */
+-static inline void tty_port_tty_hangup(struct tty_port *port, bool check_clocal)
+-{
+-	__tty_port_tty_hangup(port, check_clocal, true);
+-}
+-
+-/**
+- * tty_port_tty_vhangup - helper to hang up a tty synchronously
+- * @port: tty port
+- */
+-static inline void tty_port_tty_vhangup(struct tty_port *port)
+-{
+-	__tty_port_tty_hangup(port, false, false);
+-}
+-
+ #ifdef CONFIG_TTY
+ void tty_kref_put(struct tty_struct *tty);
+ __DEFINE_CLASS_IS_CONDITIONAL(tty_port_tty, true);
+-- 
+2.55.0
+
