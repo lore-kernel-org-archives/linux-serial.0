@@ -1,135 +1,140 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D56C03911C9
-	for <linux-serial@vger.kernel.org>; Thu, 10 Sep 2026 13:25:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAD964AEBE5;
+	Thu, 10 Sep 2026 15:39:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789046705; cv=none; b=rvMrq/w2iE+NJbYduhL8b3tUY8Tfmi8WGUbB5CABqEK83zd1eelLz3fYiLEZHptXeLiuycCH+uZLSHzWn+MOHqvAJ4PhMtPCp1SwOzVN/AnQhrdxzTwVKqZqqcVsHQNWIW6P0YowxRB+1Rl3U6JqxB8byxI1cCGZXXDUL+epdAc=
+	t=1789054794; cv=none; b=nOBcyaBn+Qa8s6p3vbqbQpxUXWX9NgxKzQ9Zu5Tsxd0OwYPTkGgUwV845oIqZvzQL0FsrUQvBSH5CS229im9E/IeSHUZBw76Qr62kr42pYpeohuXnaHOeqAXwQaEZp5SLmUxGfuMrMz591dehrNpQnjXSp2IA6W8sA99B22MRyk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789046705; c=relaxed/simple;
-	bh=6cq02uCFRyEda0OXTXuqzVxWviAtUCj9U+QRX4Hth0A=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=eNKZmC1Tp7kodYdcBgirAc3JZk4a0LFZUGUSmFWNVf+4v9bPSJNmIxzGJqmYeDBn700NZCRiudSFF5aox4yhZ6ukrwfYnDESkV/nLCY9UUq2ojGaAEVRMJa2HnTkebb0eimdRU2RsEYV7IxbbCzLfhyzrlQF52GATlmktWpZfWg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N5QrqzJr; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1789054794; c=relaxed/simple;
+	bh=UpL9Fn4FfEESsjV6cdJwzM2nTUnP2+hidnKRviHWIBQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=dbmXPPv+ojieJFXrX1gpVVaKBMbF+Z8iuT+V6Vk8hICQfnSILjlUyxJlD9Gfd7kXcwxoqxIAkwU04TmUTwaql4L32L5cj+Tz9Po6jhGFS1rJBBfaUzjBao/dSrePioUsgT24yCauGW092QSMeK0oB7mnVzRRrB+KLFhjIbi60Iw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KhSBJmbS; arc=none smtp.client-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N5QrqzJr"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F9221F000FF;
-	Thu, 10 Sep 2026 13:25:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789046703;
-	bh=7+NmZSnPabyvI1i5W4j2g9PAl0UyxbraaPgJvbAz2xM=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=N5QrqzJrEyvl/hGXOPkN57JsIWjJlzewQCd3ICMjWjQVOqosU4l5Pxls4z9Z8rRXG
-	 utTCMhwApqpKa38FsZkJLOa+2arVEHYIdAH91Km/PcJFr8XBaPGIJt61O/kNUTpe/k
-	 PXMh7P4umX2naCQDjL8KN7Ot2Movk5Lo7xSipOh3VzbcYf9knjLw266uuJXQ9jkHTw
-	 ik1+jkOzjeVOrpAQVVt8+KT1Gwp0A5W2ZODux6GlCQGTeVNjDSFR6pd1FENYUumo9V
-	 Jyl4S2tBPnSGholvKLHJSdqkq2OXVFe7iVo0uRQzgz6uJhL1sR821s2MyQrtyJ1BVu
-	 QI3TIibcrGJnQ==
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v4 2/4] serial: fix ioctl hangup race
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Johan Hovold" <johan@kernel.org>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20260910130816.642699-3-johan@kernel.org>
-References: <20260910130816.642699-1-johan@kernel.org>
- <20260910130816.642699-3-johan@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 10 Sep 2026 13:25:02 +0000
-Message-Id: <20260910132503.3F9221F000FF@smtp.kernel.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KhSBJmbS"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1789054793; x=1820590793;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=UpL9Fn4FfEESsjV6cdJwzM2nTUnP2+hidnKRviHWIBQ=;
+  b=KhSBJmbS7SkjbNjq59aRBDNkPtFWNcETFnRllKVx81Df8QsfNtQ4n8xV
+   bBMjF44hGZgOtyq+ezgWwqmxaa0BN/Zu9Wmam3UFn2R3q/+lMFh0NbNCJ
+   gNmhbjqLESPxd0HrUHbmfTA331uaDf0YNRLQPiQy6P7F7lwVNhe359wfL
+   Ne8JbJ3oEH799lqMubfbEyVc+xU1tvHjysHg0BcV2czXDvo3ADoFFXMV4
+   cGZlZ9k7J8JX4xy3HZ692ZRjsQLDWFOUp3b+D7VOlTBA2Yy5ZvFFqF1ve
+   BQd7fKKw8VCE8NqhUpiWun92PfRTMmDewJuiX4XWjCpU1nKo+HaO7wGES
+   g==;
+X-CSE-ConnectionGUID: QAS0qjU9R3634Fc0zoK4mQ==
+X-CSE-MsgGUID: hDi5uOIuS5ao2TyMce/iSw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11901"; a="89271661"
+X-IronPort-AV: E=Sophos;i="6.27,95,1787036400"; 
+   d="scan'208";a="89271661"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Sep 2026 08:39:52 -0700
+X-CSE-ConnectionGUID: pwE6b1uxSfylZKhdjLrIUQ==
+X-CSE-MsgGUID: o7PHWUCcTUm2vIiLKEoEig==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,95,1787036400"; 
+   d="scan'208";a="267395256"
+Received: from ncintean-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.177])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Sep 2026 08:39:46 -0700
+Date: Thu, 10 Sep 2026 18:39:43 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: zl020895 <zl020895@163.com>
+Cc: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	longzhao@ambarella.com, Arnd Bergmann <arnd@arndb.de>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	soc@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@kernel.org>, Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>, Lee Jones <lee@kernel.org>,
+	mfd@lists.linux.dev, devicetree@vger.kernel.org,
+	linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
+	linux-serial <linux-serial@vger.kernel.org>,
+	LKML <linux-kernel@vger.kernel.org>
+Subject: Re: Re: Re: [PATCH v6 11/13] serial: 8250_dw: add Ambarella CV75
+ quirks
+Message-ID: <aqLPP35Y7zmDuyP5@ashevche-desk.local>
+References: <20260904-cv75-v5-v6-0-e918514cb3b1@ambarella.com>
+ <20260904-cv75-v5-v6-11-e918514cb3b1@ambarella.com>
+ <aqJrSnr0rwv4BOJ3@ashevche-desk.local>
+ <122573f8.8232.1a08a9765fc.Coremail.zl020895@163.com>
+ <aqJ35vMBiBZo2iUE@ashevche-desk.local>
+ <b199eb38-b1a2-4db6-81d8-37bab09a75b7@linux.intel.com>
+ <55b27872.8ed9.1a08ab55a52.Coremail.zl020895@163.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <55b27872.8ed9.1a08ab55a52.Coremail.zl020895@163.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Thank you for your contribution! Sashiko AI review found 1 potential issue(=
-s) to consider:
+On Thu, Sep 10, 2026 at 05:45:36PM +0800, zl020895 wrote:
+> Hi Ilpo, Andy,
+> 
+> I'll go with the simple comment:
+> 	/*
+> 	 * Ambarella keeps variant IER bits (e.g. ETOI) set for correct RX
+> 	 * timeout behaviour.
+> 	 */
+> 	up->ier |= d->pdata->ier_mask;
 
-Pre-existing issues:
-- [High] The patch misses several tty driver callbacks that access hardware=
- and can race with hangup, including those triggered by the TCXONC ioctl an=
-d racing writes.
---
 
-commit b720c07153ba95668df0da514b07008b06834b2e
-Author: Johan Hovold <johan@kernel.org>
+Works for me.
 
-serial: fix ioctl hangup race
+> At 2026-09-10 17:33:38, "Ilpo Järvinen" <ilpo.jarvinen@linux.intel.com> wrote:
+> >On Thu, 10 Sep 2026, Andy Shevchenko wrote:
+> >> On Thu, Sep 10, 2026 at 05:12:52PM +0800, zl020895 wrote:
+> >> 
+> >> > > Wondering if we should undo this in the port's .shutdown() callback.
+> >> > I saw the shutdown path already covers it: dw8250_shutdown() calls
+> >> > serial8250_do_shutdown(), which does
+> >> > 	up->ier = 0;
+> >> > 	serial_port_out(port, UART_IER, 0);
+> >> > so both the IER shadow and hardware IER are cleared, including ETOI.
+> >> 
+> >> Depending on the answer to Ilpo the enabling may need an updated comment
+> >> summarising the above.
+> >
+> >I'd prefer removing the entire "Force them ..." sentence, it feels really 
+> >basic detail about how ->ier works. I believe that would resolve your 
+> >concern if relates to what shutdown does for the flag (clears it while 
+> >the comment as is says nothing is supposed to clear it).
+> >
+> >> > At 2026-09-10 16:33:14, "Andy Shevchenko" <andriy.shevchenko@linux.intel.com> wrote:
+> >> > >On Fri, Sep 04, 2026 at 02:38:18PM +0800, Long Zhao via B4 Relay wrote:
 
-This commit adds tty_io_error checks to several tty ioctls and driver
-operations. It aims to ensure the port has not been hung up before accessing
-the hardware, avoiding kernel panics.
+...
 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial=
-_core.c
-> index 1553bc6cbe7ba..139b938762298 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -896,7 +896,7 @@ static int uart_set_info(struct tty_struct *tty, stru=
-ct tty_port *port,
->  	upf_t old_flags, new_flags;
->  	int retval;
-> =20
-> -	if (!uport)
-> +	if (!uport || tty_io_error(tty))
->  		return -EIO;
-> =20
->  	new_port =3D new_info->port;
+> >> > >> +	/*
+> >> > >> +	 * Ambarella keeps variant IER bits (e.g. ETOI) set for correct RX
+> >> > >> +	 * timeout behaviour. Force them into the 8250 IER shadow so later
+> >> > >> +	 * generic IER updates do not clear them.
+> >> > >> +	 */
+> >> > >
+> >> > >Wondering if we should undo this in the port's .shutdown() callback.
 
-[Severity: High]
-This isn't a bug introduced by this patch, but does this miss several other
-tty driver callbacks that access hardware and can race with hangup, includi=
-ng
-those triggered by the TCXONC ioctl and racing writes?
+-- 
+With Best Regards,
+Andy Shevchenko
 
-Invoking hardware callbacks (start_tx, stop_tx, send_xchar) on a powered-do=
-wn
-or unclocked UART port causes bus errors and kernel panics.
 
-Can a user call ioctl(TCXONC) on a hung-up terminal and invoke uart_stop(),
-uart_start(), or uart_send_xchar()? These do not check tty_io_error(tty) and
-unconditionally access the hardware:
-
-drivers/tty/serial/serial_core.c:uart_stop() {
-	port =3D uart_port_ref_lock(state, &flags);
-	if (port)
-		port->ops->stop_tx(port);
-	...
-}
-
-drivers/tty/serial/serial_core.c:uart_start() {
-	port =3D uart_port_ref_lock(state, &flags);
-	__uart_start(state);
-	...
-}
-
-drivers/tty/serial/serial_core.c:uart_send_xchar() {
-	if (port->ops->send_xchar)
-		port->ops->send_xchar(port, ch);
-	...
-}
-
-Additionally, can a concurrent write() race with uart_shutdown()? If
-uart_write() acquires the port lock after uart_port_shutdown() disables the
-hardware but before uart_free_xmit_buf() clears the buffer pointer, it will
-pass the !state->port.xmit_buf check and invoke start_tx on the dead hardwa=
-re:
-
-drivers/tty/serial/serial_core.c:uart_write() {
-	port =3D uart_port_ref_lock(state, &flags);
-	if (!state->port.xmit_buf) {
-		uart_port_unlock_deref(port, flags);
-		return 0;
-	}
-	...
-	__uart_start(state);
-	...
-}
-
-[ ... ]
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260910130816.6426=
-99-1-johan@kernel.org?part=3D2
