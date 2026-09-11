@@ -1,58 +1,52 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF8843B7742
-	for <linux-serial@vger.kernel.org>; Fri, 11 Sep 2026 09:50:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F284355F2A
+	for <linux-serial@vger.kernel.org>; Fri, 11 Sep 2026 09:52:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789120204; cv=none; b=IOSus3Sf+50qhNfzg6EBMGCaO92PIpDPnLO5NWq1l2GwmbQamV4MtEJuUD9cQHoKz5AUfyYhwe3ZQyqUZRuAxZiYODNnOrARSukKY7qBq0JL0SiDWrFBZIFkKOE0wTDoPV+6/5cFfeYhlrAOtOqi/s0gqke3FjkncDJP+pNDewU=
+	t=1789120325; cv=none; b=gJOMvT3uWCwSrdZ+hqJ5V9fnGO1oigqAsxIrZFOrj6cue5GM3lA5TpfFAQrAgz0gqp0Yp4hkszix4fBImgNokYznI+e5edTWJhbv/xLTm5gMIkI3vUAJrqjbP63Sp1TmC4oi7huD9nSlN8XzXWL0GugifdeyUSg+DrMuvmToqfE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789120204; c=relaxed/simple;
-	bh=YnSJmZaaxbmrEJwi3S5LtU9SWrehkzPV5AyI6o7bX+k=;
+	s=arc-20240116; t=1789120325; c=relaxed/simple;
+	bh=nXsrkjWE4prBXa8s2vKEcY8Cn5cG+6IhnDl61E18dFw=;
 	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=l2dTe6sxwo0pGXGNrCZ8ee3Fu+XLdHd8l9Z8ysxesf9xT4kOWbHc/pZ1mSsK17GRQrxby0Lc5ilUN2LVIAnsepHM/odKjJQNs8WK3M8O0JG2chqaSzs06AnMhfeypAiPOQ5XcjgPujsRrYiP0fgWdHomlTvK2C5wy6uQL9UFpwI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AbYCAxVL; arc=none smtp.client-ip=100.103.45.18
+	 Message-Id; b=VN5VjEmYo0mGYLpF4kHKALTEuIpUB5elIYAYy18ZMdtkhimNZKo7lveSmhreKumUELQaYR1JcLn8dZaGa4A5AuGvEzOngbNFlLO3lfnTctiJKpOEe9NMv8gedoOHGj/pfmlpxab8e6Cv4k7A38RikXKwgGR2yJGvfjYBL7F1u8o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=McH4wbd6; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AbYCAxVL"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 406861F000FF;
-	Fri, 11 Sep 2026 09:50:02 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="McH4wbd6"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F32891F000FF;
+	Fri, 11 Sep 2026 09:52:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789120202;
-	bh=YnSJmZaaxbmrEJwi3S5LtU9SWrehkzPV5AyI6o7bX+k=;
+	s=k20260515; t=1789120324;
+	bh=nXsrkjWE4prBXa8s2vKEcY8Cn5cG+6IhnDl61E18dFw=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=AbYCAxVLnTwXyjlF4bW7t4EnKrq+iX2J7JXSwWA7tmB3A0aSIsbPHM3/kUmjCXZPQ
-	 QPBXy0FYwRYFpVaUJG/eocYvpSh3wpvUEGB20VcBe/RL/vHBQBKdzh92MJGYlg6yM2
-	 E3+i1AvMreXksAHr2VdhqnUBuXRYGXFW0oCGzKGjial+0UEZQ/YGPYFd3u609LbNBb
-	 WMXJG7HfLfglfjrSiE1SbWSrcwoCR5XUhHyAiRhnnLD89AZiPMyxR0lDyiJopbTS9k
-	 NaZphUkIGvEmWI6AYGfWnApD6Z593AOrHH2ymYDNVo0AZZeMh7+LYQzqzeuY9XLHUT
-	 RSUmNWmjDH74A==
+	b=McH4wbd6Z+QSsKyHkcw/C/St3nLTsYwvseou4LBFRX7kySVZPlxDhynpZrncqFgdi
+	 e2xeOAGaiCBMkiRjGjtGf2BF98HlOpzCdx/o+Pn3aLqF3cKMeqHW+pYNKAZHzsm2G8
+	 oDPVnOfiHfbbnIoECGv6MU3H1Rjh2aJhjFLmPlP8VIV8Nk2afyfcHCCDTJC4XxcdUz
+	 4lEcK/9J/qw8hDGDgqFJcOqRvODt+8rz8z2kss5w3DaWufvFb1XhMKN+DFJan//H8R
+	 z+u8mGt5M5h70J79+1myGHYJ5wGJcUBG6oESHpPN+tH6YLreZaWTSlRAo4aZ8+3b/J
+	 bbU2Xe09NdMog==
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 5/5] fbcon: Replace fbcon_fill_cursor_mask() with
- fbcon_cursor_glyph()
+Subject: Re: [PATCH 4/5] lib/fonts: Add font_glyph_cursor() helper
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Thomas Zimmermann" <tzimmermann@suse.de>
 Cc: linux-serial@vger.kernel.org, dri-devel@lists.freedesktop.org
-In-Reply-To: <20260911094518.78093-6-tzimmermann@suse.de>
+In-Reply-To: <20260911094518.78093-5-tzimmermann@suse.de>
 References: <20260911094518.78093-1-tzimmermann@suse.de>
- <20260911094518.78093-6-tzimmermann@suse.de>
+ <20260911094518.78093-5-tzimmermann@suse.de>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Fri, 11 Sep 2026 09:50:01 +0000
-Message-Id: <20260911095002.406861F000FF@smtp.kernel.org>
+Date: Fri, 11 Sep 2026 09:52:03 +0000
+Message-Id: <20260911095203.F32891F000FF@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-> The kernel's font library provides font_glyph_cursor() to create cursor
-> glyphs. Replace fbcon's fbcon_fill_cursor_mask() with a new helper that
-> uses font_glyph_cursor().
->=20
-> The cursor shapes remain mostly unchanged. The only exception is in
-> underline cursors for fonts with a size larger than 10. The underlining
-> dash is now one pixel closer to the font-glyph data, so that the cursor
-> looks less detached. This follows the style used by vgacon.
+> The new helper font_glyph_cursor() fills a glyph with a cursor pattern.
+> As with the font_glyph_rotate_*() helpers, the caller has to provide the
+> output memory.
 >=20
 > Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
 
@@ -60,5 +54,5 @@ Sashiko has reviewed this patch and found no issues. It looks great!
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260911094518.7809=
-3-1-tzimmermann@suse.de?part=3D5
+3-1-tzimmermann@suse.de?part=3D4
 
