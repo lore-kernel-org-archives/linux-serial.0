@@ -1,162 +1,196 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56A7F388390;
-	Fri, 11 Sep 2026 09:41:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD6B638D01B;
+	Fri, 11 Sep 2026 09:45:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789119685; cv=none; b=pLpOLjwGz+bnKaWt8Fam0qcZA1KeuGPftCZMjZ5XbJR2tKEiAVuM4MFazbDoTYaeVrKHSe+4RMW9XpSzYRJ220b7UjEKy/9RF3QnkqsqA4kQ59VocLXfQNnYs8QeBjDWPKDVkhla1YfcmJdhYiKGaxWlQpbW5B4UuTNnUn+BLIY=
+	t=1789119932; cv=none; b=UCfG3fmYsfzEGsyF9d/BmifGl4cI5JOZvTFVGKxzDdxZLmuMwTb3P4mecV8kdQuxBZ9DjyrBQvAvB909yzxBi30vfb7Ng/vrPOA8oJ2TZ6NPHMr1l1j02oCqT1zPYPfORUSLtK+cdNKfLs9MzRJH61BKroTGPo5IUiR8MaVSmsE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789119685; c=relaxed/simple;
-	bh=FeLQQDdl4G6lNidOgqRusTwmXPdHY3TiP21Pxf82dbo=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=R/ZsaRj3C0NRjH/y/9wub5XTG53LaUWOxu3vOvsDTx39if8m9PG7tDWvJj6kgYESIuyOF+CF7AQhGmQcxIhbPBMe5PBMDAFWPRDJHksiPgidvnj66wPMsEDYnyJ2vlNylB3enIUlv+RSoXgQYH2wz0xi5OtWjdevTvzQkxkg03s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=j2aO/NU9; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1789119932; c=relaxed/simple;
+	bh=4YkqMAKNK5V62YcY3AB9bibeBwrPu9ylYgq1rBqDGCk=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=ovRb9RX+NlsKhhfQBRwqXAvccTcXsXYvl/BUfiwhCzaXNQrmRc0+p99eUDdsXvy44vmPwUgmFtAQ2NHdxCNFmJ5ZHITJtuygYAjcVmqovnK7jHHucK3bhKVkvQYd/zx13GbAWNxXu6OotEyokr/VLc994Ni7Niqf7Tda40bERrI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=V/A+Lw5u; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=09n1WuRv; arc=none smtp.client-ip=195.135.223.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="j2aO/NU9"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 913011F000FF;
-	Fri, 11 Sep 2026 09:41:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789119683;
-	bh=KjzVaDYVg+QtYBvhx348szYv5nAarKYVoA2qyu7mHXs=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=j2aO/NU9wF45DN359iVvqAEsDPVHckFfe/K5g6MXNDji0BqUxmFYTirCqWTr4tqbl
-	 8pR+blDvZqLCSy6RhpzHHabflECO0Jgsjf7jnnXtpPnESMdsivZMW2qLBnEgCqxfJn
-	 Hntyr49prYejvuXu7p3KePFxUFwV94b384anl9TKo+rJV/WLj89siGjYoAb9KNJQ1Y
-	 U9v/5wp4xNAMpSbXhNkMbXxG0CeGMWlI2ZAHaHY0DlZfHqrifio8vg0kGaq47BxwRY
-	 eKFvxdsUkCVfH58N7LKrUwxxzkHuuF89MM7XhJNvxTkAeUfZztoYz7YoiXMICaF3Ak
-	 N6BOKm9eY287A==
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 2/2] serial: 8250_dw: Add ti,tda54-uart quirk to skip
- empty FIFO read
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Moteen Shah" <m-shah@ti.com>
-Cc: devicetree@vger.kernel.org, conor+dt@kernel.org, linux-serial@vger.kernel.org, robh@kernel.org
-In-Reply-To: <20260911092529.306082-3-m-shah@ti.com>
-References: <20260911092529.306082-1-m-shah@ti.com>
- <20260911092529.306082-3-m-shah@ti.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Fri, 11 Sep 2026 09:41:23 +0000
-Message-Id: <20260911094123.913011F000FF@smtp.kernel.org>
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="V/A+Lw5u";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="09n1WuRv"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id CE2191FF22;
+	Fri, 11 Sep 2026 09:45:24 +0000 (UTC)
+Authentication-Results: smtp-out2.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1789119924; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=z4PHXPBpIJvXQSo3h4iaInbMFWtFG1t8JHS7+nZkGzM=;
+	b=V/A+Lw5uRCKJJJLsm0gdC3aU9JGD0kFc3whd0D0hqjY10MEgS8075KEt41VvSzIdW+xU4I
+	hdlOrJrigqWBnivy6CdGdeJpva6A0HLh29cS1V7Ib9GOSSH1rTbjxiVvVKfhn1NeZWTOUI
+	8hA+Yod3aXZIJ8RujrUhLYtt3SyxEQY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1789119924;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=z4PHXPBpIJvXQSo3h4iaInbMFWtFG1t8JHS7+nZkGzM=;
+	b=09n1WuRv28LuvnqoW9lSIqZsWh53IqaC/3tlp2slcQ38JN7nYap8w9mwr/c7VtGuArQJQH
+	ipLvAmcY89d3qBAw==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 43555137CA;
+	Fri, 11 Sep 2026 09:45:24 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id OAoED7TNo2oFVgAAD6G6ig
+	(envelope-from <tzimmermann@suse.de>); Fri, 11 Sep 2026 09:45:24 +0000
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: deller@gmx.de,
+	gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	simona@ffwll.ch
+Cc: linux-fbdev@vger.kernel.org,
+	dri-devel@lists.freedesktop.org,
+	linux-serial@vger.kernel.org,
+	sashiko-reviews@lists.linux.dev,
+	Thomas Zimmermann <tzimmermann@suse.de>
+Subject: [PATCH 4/5] lib/fonts: Add font_glyph_cursor() helper
+Date: Fri, 11 Sep 2026 11:25:22 +0200
+Message-ID: <20260911094518.78093-5-tzimmermann@suse.de>
+X-Mailer: git-send-email 2.55.0
+In-Reply-To: <20260911094518.78093-1-tzimmermann@suse.de>
+References: <20260911094518.78093-1-tzimmermann@suse.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Rspamd-Queue-Id: CE2191FF22
+X-Rspamd-Pre-Result: action=no action;
+	module=replies;
+	Message is reply to one we originated
+X-Rspamd-Action: no action
+X-Spam-Flag: NO
+X-Spam-Score: -4.00
+X-Spam-Level: 
+X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
+X-Spamd-Result: default: False [-4.00 / 50.00];
+	REPLY(-4.00)[]
 
-Thank you for your contribution! Sashiko AI review found 2 potential issue(=
-s) to consider:
+The new helper font_glyph_cursor() fills a glyph with a cursor pattern.
+As with the font_glyph_rotate_*() helpers, the caller has to provide the
+output memory.
 
-New issues:
-- [High] The quirk avoids reading an empty FIFO in the IRQ handler, but gen=
-eric 8250 core code performs unconditional empty FIFO reads during port sta=
-rtup and shutdown, which will still trigger a data abort on this hardware.
+Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
+---
+ include/linux/font.h    |  4 +++
+ lib/fonts/Makefile      |  3 ++-
+ lib/fonts/font_cursor.c | 56 +++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 62 insertions(+), 1 deletion(-)
+ create mode 100644 lib/fonts/font_cursor.c
 
-Pre-existing issues:
-- [High] pm_runtime_enable() is called after serial port registration, viol=
-ating callback timing rules.
---
+diff --git a/include/linux/font.h b/include/linux/font.h
+index 5e1cf9830084..be1a26ff8ae9 100644
+--- a/include/linux/font.h
++++ b/include/linux/font.h
+@@ -109,6 +109,10 @@ const unsigned char *font_data_glyph_buf(font_data_t *fd,
+ bool font_data_is_equal(font_data_t *lhs, font_data_t *rhs);
+ int font_data_export(font_data_t *fd, struct console_font *font, unsigned int vpitch);
+ 
++/* font_cursor.c */
++void font_glyph_cursor(unsigned int width, unsigned int height,
++		       unsigned int from, unsigned int to, unsigned char *out);
++
+ /* font_rotate.c */
+ void font_glyph_rotate_90(const unsigned char *glyph, unsigned int width, unsigned int height,
+ 			  unsigned char *out);
+diff --git a/lib/fonts/Makefile b/lib/fonts/Makefile
+index 7202a70a56ef..bc08bf8ea3f8 100644
+--- a/lib/fonts/Makefile
++++ b/lib/fonts/Makefile
+@@ -1,7 +1,8 @@
+ # SPDX-License-Identifier: GPL-2.0
+ # Font handling
+ 
+-font-y := fonts.o
++font-y := fonts.o \
++	  font_cursor.o
+ font-$(CONFIG_FRAMEBUFFER_CONSOLE_ROTATION) += font_rotate.o
+ 
+ # Built-in fonts; sorted by Family-Size in ascending order
+diff --git a/lib/fonts/font_cursor.c b/lib/fonts/font_cursor.c
+new file mode 100644
+index 000000000000..7f4d587669aa
+--- /dev/null
++++ b/lib/fonts/font_cursor.c
+@@ -0,0 +1,56 @@
++// SPDX-License-Identifier: GPL-2.0-only
++
++#include <linux/bug.h>
++#include <linux/export.h>
++#include <linux/string.h>
++
++#include "font.h"
++
++/**
++ * font_glyph_cursor - Create a cursor glyph
++ * @width: The glyph width in bits per scanline
++ * @height: The number of scanlines in the glyph
++ * @start: The first scanline of the cursor block
++ * @end: The first scanline after the cursor block
++ * @out: The cursor-glyph bitmap
++ *
++ * The parameters @width and @height refer to the glyph size. The caller
++ * has to provide the output buffer @out of sufficient size to hold the
++ * cursor glyph. The arguments in @start and @end describe the number of
++ * scanlines occupied by the cursor block; counting from the top of the
++ * glyph. The helper fills these scanlines with a pattern and clears the
++ * remaining scanlines.
++ */
++void font_glyph_cursor(unsigned int width, unsigned int height,
++		       unsigned int start, unsigned int end, unsigned char *out)
++{
++	unsigned int pitch = font_glyph_pitch(width);
++	const unsigned char *out_end = out + height * pitch;
++	unsigned int size;
++
++	if (WARN_ON_ONCE(start > height))
++		start = height;
++	if (WARN_ON_ONCE(end > height))
++		end = height;
++
++	if (end < start)
++		end = start;
++
++	/* clear scanlines before cursor block */
++	size = start * pitch;
++	memset(out, 0x00, size);
++	out += size;
++
++	/* set cursor block */
++	size = (end - start) * pitch;
++	memset(out, 0xff, size);
++	out += size;
++
++	/* clear scanlines below cursor block */
++	size = (height - end) * pitch;
++	memset(out, 0x00, size);
++	out += size;
++
++	WARN_ON_ONCE(out != out_end);
++}
++EXPORT_SYMBOL_GPL(font_glyph_cursor);
+-- 
+2.55.0
 
-commit 31fb31567ebe4c6e4b9eb7b2826e35722f3e46f5
-Author: Moteen Shah <m-shah@ti.com>
-serial: 8250_dw: Add ti,tda54-uart quirk to skip empty FIFO read
-
-This commit adds a quirk to the 8250_dw driver for the ti,tda54-uart. The
-quirk skips an empty FIFO read during an RX_TIMEOUT interrupt condition. Th=
-is
-is intended to avoid triggering a data abort on the TDA54 IP, which crashes
-when reading an empty FIFO.
-
-> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/=
-8250_dw.c
-> index 51d026f20825a..f97cc3dfbab4a 100644
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-
-[ ... ]
-
-> @@ -436,7 +437,7 @@ static int dw8250_handle_irq(struct uart_port *p)
->  	 * This problem has only been observed so far when not in DMA mode
->  	 * so we limit the workaround only to non-DMA mode.
->  	 */
-> -	if (!up->dma && rx_timeout) {
-> +	if (!(quirks & DW_UART_QUIRK_SKIP_RX_TIMEOUT_READ) && !up->dma && rx_ti=
-meout) {
-
-[Severity: High]
-The quirk avoids reading an empty FIFO in the IRQ handler, but will this
-fully protect the hardware from data aborts?
-
-The generic 8250 core code performs unconditional empty FIFO reads during
-port startup and shutdown. For example, serial8250_clear_interrupts()
-unconditionally reads UART_RX, and serial8250_do_shutdown() does the same
-immediately after clearing FIFOs.
-
-Won't opening or closing the TTY device still trigger a data abort on the
-TDA54 IP due to these core empty FIFO reads?
-
->  		status =3D serial_lsr_in(up);
-> =20
->  		if (!(status & (UART_LSR_DR | UART_LSR_BI)))
-
-[ ... ]
-
-> @@ -888,6 +889,11 @@ static const struct dw8250_platform_data dw8250_ultr=
-arisc_dp1000_data =3D {
->  	.quirks =3D DW_UART_QUIRK_CPR_VALUE,
->  };
-> =20
-> +static const struct dw8250_platform_data dw8250_tda54 =3D {
-> +	.usr_reg =3D DW_UART_USR,
-> +	.quirks =3D DW_UART_QUIRK_SKIP_RX_TIMEOUT_READ,
-> +};
-> +
->  static const struct of_device_id dw8250_of_match[] =3D {
->  	{ .compatible =3D "snps,dw-apb-uart", .data =3D &dw8250_dw_apb },
->  	{ .compatible =3D "cavium,octeon-3860-uart", .data =3D &dw8250_octeon_3=
-860_data },
-> @@ -895,6 +901,7 @@ static const struct of_device_id dw8250_of_match[] =
-=3D {
->  	{ .compatible =3D "renesas,rzn1-uart", .data =3D &dw8250_renesas_rzn1_d=
-ata },
->  	{ .compatible =3D "sophgo,sg2044-uart", .data =3D &dw8250_skip_set_rate=
-_data },
->  	{ .compatible =3D "starfive,jh7100-uart", .data =3D &dw8250_skip_set_ra=
-te_data },
-> +	{ .compatible =3D "ti,tda54-uart", .data =3D &dw8250_tda54 },
-
-[Severity: High]
-This is a pre-existing issue, but does dw8250_probe() violate the runtime PM
-callback timing rules, which could cause a boot deadlock when this new
-compatible device is probed?
-
-dw8250_probe() calls serial8250_register_8250_port(), which synchronously
-invokes the dw8250_do_pm() callback. This happens before pm_runtime_enable()
-is called at the end of the probe function:
-
-drivers/tty/serial/8250/8250_dw.c:dw8250_probe() {
-	...
-	data->data.line =3D serial8250_register_8250_port(up);
-	if (data->data.line < 0)
-		return data->data.line;
-
-	platform_set_drvdata(pdev, data);
-
-	pm_runtime_enable(dev);
-	...
-}
-
-Since dw8250_do_pm() uses pm_runtime_get_sync() before runtime PM is enable=
-d,
-could this cause a circular dependency and hung worker threads during device
-registration?
-
->  	{ .compatible =3D "ultrarisc,dp1000-uart", .data =3D &dw8250_ultrarisc_=
-dp1000_data },
->  	{ /* Sentinel */ }
->  };
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260911092529.3060=
-82-1-m-shah@ti.com?part=3D2
