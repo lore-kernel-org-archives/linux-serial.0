@@ -1,157 +1,158 @@
-Received: from mail-qk2-f3.google.com (mail-qk2-f3.google.com [74.125.230.195])
+Received: from mail-pj1-f48.google.com (mail-pj1-f48.google.com [209.85.216.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE7583EA97E
-	for <linux-serial@vger.kernel.org>; Fri, 11 Sep 2026 03:44:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.230.195
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789098289; cv=pass; b=vAE+sI+qdzCriA06nBkDrHaFAEJP0tKOiReEpspArH4Du1MF1rebzch2zgp4QfXNdm1F52uTLs/fe9lxryWcpwz8PtMFVerDRFLIunHes4qfu7V9wTdvupNcjA5xa/n7060fAvnlTUAZA6xPlc8cChWcEgYDJFuQNoRJaXJiX1o=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789098289; c=relaxed/simple;
-	bh=9MUCzlT67j02Tdxv5MkPUdx0rDyVjNu0IwYTyNrltgs=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=r7jg4JGao+BXfqrG21++Q9CLov1Uf019Sjq057qEXw9fjpSwRUyBuhxXmnDjCxEzNPKRoYfW3QZTpz1O5Ef3eJBuYAmC1rAQXjajGboutCynu1UxJ9AuI/SVDIYjFvHJ2tMxk1RTJZO28LHHzRNhM52QWzz6zemUrF9GM34NWt0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=G2V24x4G; arc=pass smtp.client-ip=74.125.230.195
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68F3A44162A
+	for <linux-serial@vger.kernel.org>; Fri, 11 Sep 2026 06:58:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.48
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1789109937; cv=none; b=rLKB08nOUMAy51vQCIAALVx68bkouzQEGpuKo6AHvwD+6PP5wkVcNeaXRZgGgV/H3nWgRMEjKKZ0ctIku+oqWpXiC5om/m6mRh0iNfEbtsvF7f48OtMJduD2RT4eWc2UbzcIRVaGEBu25QFiRxLzYUpRUxEOF5ESBgaTDM+r+E4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1789109937; c=relaxed/simple;
+	bh=a605jU1pvQWqUiL7tcAWYklt0O8GbI56dhq13ru7r/8=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=tn8efF5bFOUFNai3ZMACIgPsz+doZvSiGADaUR/MH+NG4c/GtO/U/LDyAS8EN3u+0C+P/SzV6dSmESMdqXE258U3r/XW1MmQdDPt4oZN8nRTFMYlB3wORuSWxPIyHEf6SQSGMY8V/VTGz5pU3GVeu1Us3w7SNkceZsfoE7yuDXg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=H5ZIm9HZ; arc=none smtp.client-ip=209.85.216.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="G2V24x4G"
-Received: by mail-qk2-f3.google.com with SMTP id d75a77b69052e-51bfca7f85aso3859831cf.0
-        for <linux-serial@vger.kernel.org>; Thu, 10 Sep 2026 20:44:46 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1789098286; cv=none;
-        d=google.com; s=arc-20260327;
-        b=oXFb0wtGMBCJd3d99muW+QvYJ7v52cbYD9CsBR+ebQRF2xt2sT0IqLDIHOcA6VWB8u
-         vmv/QeX8Y8uYvKQzqYQK4V8uGoVi6hzjpz7f64YfwmtvtVT1eTE7aSxUshj5kHZ3t+Si
-         HdL5rS3CmD0jqtx5+qAPprnDhIUchBYZrAfGlEX53MHPx4PzVKs0MpA8ygCyybDrYDSB
-         12oqufQOe8q3mHSphbW6cLaQA0UJWBJ/n4FCIqhNAddHk8CFZRIa0yfav8js1Mf4mABH
-         wWHXvYT8kdgc57PxLpYqBGK/uGie/+keJXVVjGaKhRPQ8kQItKwJ+e60OAfhXi2N5wha
-         iVPw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=9MUCzlT67j02Tdxv5MkPUdx0rDyVjNu0IwYTyNrltgs=;
-        fh=gcXAhr/GiPc6MTYwUHugQXykKHnvS3hX1vG7fD/R2/g=;
-        b=NN/UCHqNF9zg/2HRlOp6dfDVcd7IflVhwj2ZN+cQoBnnPnRFdJQDwpzcBsTc6Tfovm
-         Zrwfq3xP0BHmvCjuI311gpds0rY+c/R5hjj4twlQGOihJkwWrUQJlhZnwcdvFK5VgTOw
-         Q02hCLwF792RHXHed2ezgxYrTPbkgQ4nYuEpcMhv+nD5KmtgSQXmn8Lm1eFvovy0CiSD
-         irVVRLoOuHC3iKKxbV4/Ht14vnFl7ZK/bwv5J5VVSwVzoz8AgcHCk19O/VgcHT5oBpD9
-         kb0nUfNO1ArLdzkeTHaaRXMvlwJJuERsvTj52R5/BJgpvd8/UFxI8AQ80VQ2CXquK+HY
-         5Jyg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="H5ZIm9HZ"
+Received: by mail-pj1-f48.google.com with SMTP id 98e67ed59e1d1-3964e480f76so820537a91.1
+        for <linux-serial@vger.kernel.org>; Thu, 10 Sep 2026 23:58:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789098286; x=1789703086; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=9MUCzlT67j02Tdxv5MkPUdx0rDyVjNu0IwYTyNrltgs=;
-        b=G2V24x4GGyCwAd8LaJ2X8PGNbql6wdGj7itobGHv+DWtilwCENd20LNJWE0FPLHB3/
-         0AjlkwMCGqs9CTmfIsOad/o7305l5dxeD1ZFHVPrHnNcoEDHmmOEkUoLBmMXN0uGF9mA
-         NFt62u0bdoESjLGcIpLtJ0v7+FmJRxrD/o1lT5g+LldSZZhD3Og4hV+mUCCZhqbjd2JS
-         rECTuLTUzPCSAjku7N+dnRXlt7UYkl6EGUg9xcf0TT9TiheCSHMZR1kposahxXE8JxLQ
-         5XMF89T6zDhqWdtlqtNhZhEm9Fss7ApuSwbHeeM2sCdkBm+3v8htMXW4iBX0va4HMp+v
-         aDTA==
+        d=gmail.com; s=20251104; t=1789109924; x=1789714724; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=fJmAEC50POxoDcN++SEhq+0rid1s+953+Y3vycFEQyk=;
+        b=H5ZIm9HZJYAwpXJDQjioWAlsQ3Y3qlgYeusOH3a3tmeAi6JA/O2d5wiOfpsEA3L/HQ
+         jd/nxcbRZFDi5lIbWLNQ2OeBTlYPsUzzKL+Vfkwmnfy1IO4/1fGnNKm0ifLUyz0KbLqL
+         m7AWAHko95vlyjCAvtQ7cD8JoHNKLs9U1WtwzXDfnLXYSn810SEErxT0iRLzNqJl1ekP
+         4xoY5CKx9Gf/DW//yo0ZFIx332UybVtHvBN+EWr6qzd/yVmDVcFDGyTyM4hoGiFUACjw
+         Y99mqYfCylBcBKkcDfvibh3C5pGZ85wa4uq4Kd6NHpCJfpVeKPPcyh+XhAFBkyfifxHo
+         8PeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1789098286; x=1789703086;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=9MUCzlT67j02Tdxv5MkPUdx0rDyVjNu0IwYTyNrltgs=;
-        b=lV4meu9jcTNWzmqXKkpD3hrVDa8bE8/8y5FO6iIARvzBn4vow3DgGMyTSvJlKPgLKd
-         vL3PPvC7L/lMQLitQKHTnCgeuU2xlF4df5i5Pz2bQxfkepT65c9hYEWxzOQ7n+qw5xbC
-         M0MP5SoMQW13jth2CbpQQr1avJQVUGiX5pi5ly0VVVf/ZxDYUh44NGuI1vJwG62Pmekc
-         yje9SOiNJSnrUP6tr5ELqAPNf7Y92FCLCwtDmnjiZlPpxdVLLMTZIKUL7S4AFicHoF8R
-         oF2BZam3MPZZ1QJD1tAoC6lqSXSp2HhJVDI5iaRBNXPHTfwKWLed+b1TU4NUVCsHQEBL
-         jhag==
-X-Forwarded-Encrypted: i=1; AKwUvBwMbu+B1a8nFQ5QnQtb0DOA8hxURvk3pYuYjBi3V2iHnsJXqYeNfnnDO2iMIgz+MPkA5uh24Sb+PvOrPU8=@vger.kernel.org
-X-Gm-Message-State: AFuF++m/eMXZBliQd/ReXULe3+k/bLHENlBka73H50eURrStIDJeg+Pb
-	OXwxa0hfGvTUGWA7bX2Mjea57h95oVVfdOFVX/NRSUTaoMYrvQ9Ro4TZYJjCleE+pcqBPJ9M9c4
-	Hgf6+a46BPlkDEWcnblT+DirgDp10W7s=
-X-Gm-Gg: AYBFou1Zvr///5TBlBeh0nxYQtM5Gj2O08cToKaT5HAtJC++VOxUbEB885Eajbr2kUo
-	wNMZ5pvhEqZgBd1VR9UAFVyhwmUmRVVCcSXZ1KiPULctXPe2zpJB7oAyx/GLt681HbnzYo0llAd
-	hPlCLxQLsQQzb6WUGttbQ/G1p6Xp2nN7pUQweIV5vkGVobA4wI84CC5bhzz5iYPU9jak8nPp5vn
-	wXnyOvGrdXYDMBNmOtZBrSYg2WW5WzkfGnVc5iMbg64sTopS274b9GIsyW0MP5hwzfHKuECKx7s
-	kvj5YeufqUGzuq9zmLs8BtbisC69iJXwnJG6c4enh0+N4nUQ2j11Q2vtUDh3NyJxDrp2DukVrlG
-	PjeI4qhF/DDLO3uQ+v4VnhQfnOPkHEOaZ8Req+3Gn
-X-Received: by 2002:a05:622a:5987:b0:52d:918b:92e1 with SMTP id
- d75a77b69052e-530c84f326bmr40390581cf.5.1789098285727; Thu, 10 Sep 2026
- 20:44:45 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1789109924; x=1789714724;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=fJmAEC50POxoDcN++SEhq+0rid1s+953+Y3vycFEQyk=;
+        b=gucFqOz2ataQtti5GRNcQ/DI7UFveul/rUM4cpupP8Ogte4V8lR1pUUnrabarCLuqv
+         8V/b0/r5EV4Rzpq3QJjG5q7UEboF629tpLp+wQkCoqQHvoWpleWEtOCB9L5mZqml/BXf
+         81prWQlbpQ1lqovb7t5Oz8WBwTqTar7x2lnVyVT5JN8OhKwo2jvDwT9xhqQu8qMdPt5F
+         iQ6nIsEGL5gdsWYEolcwkVldab+6Axgzsf3pOsc7krSulPvgKN/APlm0iW2+vu/1un+o
+         SioEcaJdgktzB023X/SNcf6jYZQmlUz+MSyAyQ/w3knteMKQrdtjDkejeo6vGwubpVoC
+         bXdg==
+X-Forwarded-Encrypted: i=1; AKwUvBwYoObP3b0r8e6rfUwQKwkguNBuKKyYZz/5BDyl9M5DnSQq4s1W9LRiGyFejicb2k2MQEQSylgU6qFs6NM=@vger.kernel.org
+X-Gm-Message-State: AFuF++nU08zryVH776wr6AM6qeu3g3Fyr0I/Qi3q4y0HHqRUwy3XO5yg
+	0eMC9Wk0H8QjyQu+Br2mt2ou2kkt5qfOTFd8R8zvwBt8QOg4GZruxXJh
+X-Gm-Gg: AYBFou1h0pHHWfujMsENC7on8zOZwDfKv46/YySYcU8zlnDRn26k/L0JnfasGZ9LdZ5
+	1KiUDvTgVgFeUQDssc57Uozzy1dTTyTZrLG7Hy8jyQpHmL956DhG69VJuQrlwn4vIxfXNqBIJkw
+	cRyX/6tlYCqz85MryqMtsSlBZKh/UQEXwUs+J9nu6NDYGhEvK5mSnbaozRgr/5x89/u9XwRZTkn
+	ICJHZwbJuqb2It3hdOJ/6aHmNxB8N/WUPB0cZThHx+Z7CNS+5WlC23pf1FZbprQiiEG0V0LTtpF
+	mchqBd5nHN+RFW10jNJoqs8r84NFyrMxsa3TZcAPL/osY+a2dMJ6XbaSULw72Lk3dV6qbaV/Oej
+	WdM+cEKyGTJrXRQ9W24FBi+85PMYAbesp3RjH7ohuREBa2w9BcED9dvU0Yph/G/aLvQ2YU20fah
+	htMdGe9sEo4RoUUY4tQhZvlqXyZD/eTI/IB/pO9d4+wFbGSY/x9bndn5lmHGbcZTkINVPlBgZF1
+	TS5VD4FUIotVqx1xQmbxVu+4DfiZLZEPgiWEU6GeNo=
+X-Received: by 2002:a17:90a:e710:b0:398:d843:cad9 with SMTP id 98e67ed59e1d1-39d9c202f33mr5190127a91.19.1789109924394;
+        Thu, 10 Sep 2026 23:58:44 -0700 (PDT)
+Received: from localhost.localdomain ([117.88.121.70])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-39d99531b21sm3061850a91.13.2026.09.10.23.58.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Sep 2026 23:58:43 -0700 (PDT)
+From: henrymei <ljp1205831794@gmail.com>
+X-Google-Original-From: henrymei <henrymei@tencent.com>
+To: gregkh@linuxfoundation.org
+Cc: jirislaby@kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Aohan Mei <henrymei@tencent.com>,
+	TencentOS Corvus AI <corvus@tencent.com>,
+	stable@vger.kernel.org
+Subject: [PATCH] tty: n_gsm: keep DLCI 0 object across mux restarts
+Date: Fri, 11 Sep 2026 14:58:26 +0800
+Message-ID: <20260911065826.3515170-1-henrymei@tencent.com>
+X-Mailer: git-send-email 2.43.7
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260908152808.3928630-1-arnd@kernel.org> <20260908152808.3928630-4-arnd@kernel.org>
-In-Reply-To: <20260908152808.3928630-4-arnd@kernel.org>
-From: Ethan Nelson-Moore <enelsonmoore@gmail.com>
-Date: Thu, 10 Sep 2026 20:44:34 -0700
-X-Gm-Features: AcwNN1V1fOC0jmd_i5r-nVHD_ZWN_P0KCiZNA7MUoO0nuGcjQ9okMtkGALkOIWk
-Message-ID: <CADkSEUjYhRk-ezaXZkHzFTFQnySFSisKtZfEP-_NtLnQF+6-1Q@mail.gmail.com>
-Subject: Re: [PATCH 03/13] ARM: remove riscpc
-To: Arnd Bergmann <arnd@kernel.org>
-Cc: Krzysztof Kozlowski <krzk@kernel.org>, Alexandre Belloni <alexandre.belloni@bootlin.com>, 
-	Linus Walleij <linusw@kernel.org>, Russell King <linux@armlinux.org.uk>, 
-	Drew Fustini <fustini@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Rob Herring <robh@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Liviu Dudau <liviu.dudau@arm.com>, 
-	Sudeep Holla <sudeep.holla@kernel.org>, Lorenzo Pieralisi <lpieralisi@kernel.org>, 
-	Frank Li <Frank.Li@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>, 
-	Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, 
-	Vladimir Zapolskiy <vz@mleia.com>, Stefan Agner <stefan@agner.ch>, 
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue <alexandre.torgue@foss.st.com>, 
-	Aaro Koskinen <aaro.koskinen@iki.fi>, Andreas Kemnade <andreas@kemnade.info>, 
-	Kevin Hilman <khilman@baylibre.com>, Roger Quadros <rogerq@kernel.org>, 
-	Tony Lindgren <tony@atomide.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, 
-	Claudiu Beznea <claudiu.beznea@tuxon.dev>, Andrew Lunn <andrew@lunn.ch>, 
-	Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, 
-	Gregory Clement <gregory.clement@bootlin.com>, Robert Jarzmik <robert.jarzmik@free.fr>, 
-	Kristoffer Ericson <kristoffer.ericson@gmail.com>, Geert Uytterhoeven <geert@linux-m68k.org>, 
-	Alexander Sverdlin <alexander.sverdlin@siemens.com>, Shawn Guo <shawnguo@kernel.org>, 
-	Karl Mehltretter <kmehltretter@gmail.com>, "David Hildenbrand (Arm)" <david@kernel.org>, 
-	Nicolas Pitre <npitre@baylibre.com>, linux-doc@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	devicetree@vger.kernel.org, imx@lists.linux.dev, 
-	linux-stm32@st-md-mailman.stormreply.com, linux-omap@vger.kernel.org, 
-	Ian Molton <spyro@f2s.com>, Jens Axboe <axboe@kernel.dk>, Helge Deller <deller@gmx.de>, 
-	Thomas Zimmermann <tzimmermann@suse.de>, "Paul E. McKenney" <paulmck@kernel.org>, linux-block@vger.kernel.org, 
-	linux-serial@vger.kernel.org, linux-fbdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-Hi, everyone,
+From: Aohan Mei <henrymei@tencent.com>
 
-On Tue, Sep 8, 2026 at 8:29=E2=80=AFAM Arnd Bergmann <arnd@kernel.org> wrot=
-e:
-> The main limitation here is the CPU bus that does not allow 16-bit
-> wide data transfers and hence requires the kernel to be built with the
-> -march=3Darmv3 compiler option that was discontinued in gcc-9.
->
-> As gcc-8 is barely supported for compiling the kernel, this one
-> will not see another LTS kernel release, so remove it now.
+gsmtty_install() takes a reference on the object occupying the
+gsm->dlci[0] slot, and gsmtty_cleanup() drops a reference on whatever
+object occupies the slot at cleanup time. The two are expected to
+balance on the same object, but gsm_activate_mux() breaks that: on a
+mux restart (GSMIOC_SETCONF with a need_restart change) it
+unconditionally allocates a fresh DLCI 0 into the slot, orphaning the
+old object which still has install-time references outstanding.
 
-Because I think it's cool that the kernel still supports actual Acorn
-hardware, I patched gcc 16.2 to restore ARMv3m support:
-https://github.com/EthanNelson-Moore/gcc-arm-retro
+When the last of those old gsmttys is closed, gsmtty_cleanup() then
+drops its slot reference on the *new* DLCI 0, driving its base kref
+from 1 to 0: gsm_dlci_free() frees it and NULLs the slot while the
+mux stays alive (dead == false), and the old object is leaked. The
+next gsmtty open passes the dead check and dereferences the NULL slot
+in gsmtty_install() (dlci_get(gsm->dlci[0])), crashing the kernel.
 
-This ended up being surprisingly straightforward - only a couple
-hundred lines changed - and it would be even fewer lines had I not
-reverted a commit that adds a use of ldrh instead of fixing it.
+Keep the DLCI 0 object in the slot on reactivation when one is still
+present: it can only still be there because open gsmttys hold
+references on it, and gsm_dlci_free() is the only code that clears the
+slot and only runs at kref 0, so the slot identity can no longer
+change while install-time references are outstanding. Re-take the base
+reference that gsm_cleanup_mux() dropped via gsm_dlci_release(), clear
+the dead flag it set, and refresh the per-object config fields exactly
+like a fresh gsm_dlci_alloc() would, since the restart may carry a
+config change.
 
-It is able to compile a kernel successfully (once you update the GCC
-version check to check for -march=3Darmv3m support instead - I can send
-my patch). I haven't tested it, but I am fairly confident that it
-would run, because the assembler will reject code the compiler
-generates with unsupported instructions - this is how I found the
-commit I needed to revert.
+This also restores the invariant that dead == false implies
+gsm->dlci[0] != NULL, making the NULL dereference structurally
+impossible.
 
-I am working on a clocksource driver, which uses both timers (to
-hopefully fix the awful time drift), and removes the dependency on
-LEGACY_TIMER_TICK.
+Fixes: 6ab8fba7fcb0 ("tty: n_gsm: Added refcount usage to gsm_mux and gsm_dlci structs")
+Reported-by: TencentOS Corvus AI <corvus@tencent.com>
+Cc: stable@vger.kernel.org
+Assisted-by: CodeBuddy:Kimi-K3
+Signed-off-by: Aohan Mei <henrymei@tencent.com>
+---
+ drivers/tty/n_gsm.c | 24 +++++++++++++++++++++++-
+ 1 file changed, 23 insertions(+), 1 deletion(-)
 
-I also have patches for several cleanups to Risc PC-related code.
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index c13e050de83b..2ca7e18addc5 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -3186,7 +3186,29 @@ static int gsm_activate_mux(struct gsm_mux *gsm)
+ 	struct gsm_dlci *dlci;
+ 	int ret;
+ 
+-	dlci = gsm_dlci_alloc(gsm, 0);
++	dlci = gsm->dlci[0];
++	if (dlci) {
++		/*
++		 * gsmtty_install() takes a reference on the object that
++		 * occupies the dlci[0] slot and gsmtty_cleanup() drops a
++		 * reference on the object occupying the slot at cleanup
++		 * time. Replacing the object here while such references
++		 * are still outstanding makes the cleanup reference drop
++		 * on the wrong (new) object, freeing it prematurely, and
++		 * leaks the old one. Keep the still-referenced object in
++		 * the slot and re-take the base reference that
++		 * gsm_cleanup_mux() dropped so the install and cleanup
++		 * references always balance on the same object.
++		 */
++		dlci_get(dlci);
++		dlci->dead = false;
++		dlci->adaption = gsm->adaption;
++		dlci->mtu = gsm->mtu;
++		dlci->ftype = gsm->ftype;
++		dlci->k = gsm->k;
++	} else {
++		dlci = gsm_dlci_alloc(gsm, 0);
++	}
+ 	if (dlci == NULL)
+ 		return -ENOMEM;
+ 
+-- 
+2.43.7
 
-I am aware that this has no actual use case, but it was fun. No LLM
-was used for any part of the work.
-
-Ethan
