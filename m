@@ -1,89 +1,99 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3C6A44F56D;
-	Fri, 11 Sep 2026 07:56:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 555F046AA60;
+	Fri, 11 Sep 2026 09:04:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789113409; cv=none; b=LDEHlzsf1YZCo05CGoLyNSfQ45oZHO6zw4ANIPBRECMDwD9f7MNGLsYuAeJT4PP0ERS/ZqbqHRm+HNjge2d5dy6oBN6SxGMHRsahHi62BfQxoYXerJByoVu7d/5K6aiVfB52HV5SA2wuHDm1u0H6217DuUn93XntuPFLBe4YykI=
+	t=1789117442; cv=none; b=F9twQhDAelazDVAoAvxVBV5aEWDi8aHJtryrHOIFnjyRGZFWxehgD9yL34SbpbK8Y15d3pqPVhv9Ch38cdEroxYtjIh2Dr42b/rmhHDDpiLQdaM9Lxorp5FKfJc/rclV3q0HYdy5OXTCHn457Hb784wzFTpqE0XQdMPnfua/O44=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789113409; c=relaxed/simple;
-	bh=whmqP0QuzSq5AYKOjknJYrgw4F/lPYPUHyjtu5l/kbg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NwpD5ZxVNr8Ph9VrY+QEG8JMgpWPnzXfqtlrtoEpTZjVqT+i8TkF1UIK0JFnyKNlllW2/so99o6fXz3oDlwbzJy7LfrzwunXxGwV06GmAPn/wIdINqFAsEC+NH5206Pkxa8sOF0tElI8a7B+bL0TAzHd25DeDvznZ6UozfRQYX0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=QUFCyVEv; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1789117442; c=relaxed/simple;
+	bh=lNjmOHs8pzsPJf0VdoL+TcjSADRpsjZMOcD2mAojPpY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=KThIermS1mv1A8/3/xPK7tTLGdoRdspyu66uvFh/ZL+iawgevIOxhGm1AEf6ihXyDxmIvvfSr1UsdPQUpXKQNwQegP8pVd7B7bgAL3CmDtv1czjtreOi24oRe+/YnTLo2tEe7TrQcv/4ApRRNtfeWZvIOf1z/pw5eFHEp+9pDs4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=brsAsKIp; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="QUFCyVEv"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EF841F00898;
-	Fri, 11 Sep 2026 07:56:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1789113406;
-	bh=T1GavebbZPTlqgOqGrxwDHBzaNM5E2me9jwDkKwEGKY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=QUFCyVEvv4cjyOPDS+Zihp4utdN6Y2N1j7KFqz+R+kCu1MT4QtyO2bUlseKo78Lz1
-	 B6UPCDplYuhAagW/RVmVguo5d1SfPgDxK1ofpFXrN8Oel1mPR57wK3zl8qmm6gD5sM
-	 sZH5Xpz9sxupnd6fGDi69bZi3YOE75sOLfey0j5s=
-Date: Fri, 11 Sep 2026 09:56:35 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: henrymei <ljp1205831794@gmail.com>
-Cc: jirislaby@kernel.org, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Aohan Mei <henrymei@tencent.com>,
-	TencentOS Corvus AI <corvus@tencent.com>, stable@vger.kernel.org
-Subject: Re: [PATCH] tty: n_gsm: keep DLCI 0 object across mux restarts
-Message-ID: <2026091139-recess-refute-e373@gregkh>
-References: <20260911065826.3515170-1-henrymei@tencent.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="brsAsKIp"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 065181F0089B;
+	Fri, 11 Sep 2026 09:04:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1789117441;
+	bh=klF/PE1ko1aKMbg1BBuWxUKkszmi+wLpekR9vFZbxWs=;
+	h=From:To:Cc:Subject:Date;
+	b=brsAsKIpkDyv1rqHapDmi4WnTHo/NZMmf0sW0oprS2YxlKrnBn/q+9eSBlxGWQXLj
+	 6sBukAr8u2yUQcGFAA2hTV9Or5bK5CLbE3kOJx2v1DYq+MivRouV6YevbfbfWj3Ktg
+	 ZpzZ3lRNO0Ti3Y0g2VY0u1QUbp3I6XOHWRumgdZsJN8aDQwJWqgnwzjkdz5hWqWo65
+	 B/75xHRdXdQACovjAs7/z93Fm9rH26eJ/Gn31jT299Jy30hbCj7iRTbizrp0GJYYYC
+	 xD4NkCvN1qA6FBT5CK2ko8y6/UL+a/8qDWhM5K9d0W4EvXbRjLQjLIzR9F8SOWcHDH
+	 ZhCgPnt5b9rRA==
+Received: from johan by xi.lan with local (Exim 4.99.4)
+	(envelope-from <johan@kernel.org>)
+	id 1x4xAs-000000032Gg-1oSn;
+	Fri, 11 Sep 2026 11:03:58 +0200
+From: Johan Hovold <johan@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Johan Hovold <johan@kernel.org>,
+	sashiko-bot@kernel.org,
+	stable@vger.kernel.org,
+	Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH] tty: amiserial: fix broken TIOCMIWAIT
+Date: Fri, 11 Sep 2026 11:01:32 +0200
+Message-ID: <20260911090132.723531-1-johan@kernel.org>
+X-Mailer: git-send-email 2.55.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260911065826.3515170-1-henrymei@tencent.com>
+Content-Transfer-Encoding: 8bit
 
-On Fri, Sep 11, 2026 at 02:58:26PM +0800, henrymei wrote:
-> From: Aohan Mei <henrymei@tencent.com>
-> 
-> gsmtty_install() takes a reference on the object occupying the
-> gsm->dlci[0] slot, and gsmtty_cleanup() drops a reference on whatever
-> object occupies the slot at cleanup time. The two are expected to
-> balance on the same object, but gsm_activate_mux() breaks that: on a
-> mux restart (GSMIOC_SETCONF with a need_restart change) it
-> unconditionally allocates a fresh DLCI 0 into the slot, orphaning the
-> old object which still has install-time references outstanding.
-> 
-> When the last of those old gsmttys is closed, gsmtty_cleanup() then
-> drops its slot reference on the *new* DLCI 0, driving its base kref
-> from 1 to 0: gsm_dlci_free() frees it and NULLs the slot while the
-> mux stays alive (dead == false), and the old object is leaked. The
-> next gsmtty open passes the dead check and dereferences the NULL slot
-> in gsmtty_install() (dlci_get(gsm->dlci[0])), crashing the kernel.
-> 
-> Keep the DLCI 0 object in the slot on reactivation when one is still
-> present: it can only still be there because open gsmttys hold
-> references on it, and gsm_dlci_free() is the only code that clears the
-> slot and only runs at kref 0, so the slot identity can no longer
-> change while install-time references are outstanding. Re-take the base
-> reference that gsm_cleanup_mux() dropped via gsm_dlci_release(), clear
-> the dead flag it set, and refresh the per-object config fields exactly
-> like a fresh gsm_dlci_alloc() would, since the restart may carry a
-> config change.
-> 
-> This also restores the invariant that dead == false implies
-> gsm->dlci[0] != NULL, making the NULL dereference structurally
-> impossible.
-> 
-> Fixes: 6ab8fba7fcb0 ("tty: n_gsm: Added refcount usage to gsm_mux and gsm_dlci structs")
-> Reported-by: TencentOS Corvus AI <corvus@tencent.com>
+A change replacing interruptible_sleep_on() inadvertently broke the
+TIOCMIWAIT implementation which now immediately returns -EIO (unless
+there is a racing modem status update).
 
-As sashiko just told you, this isn't going to work.
+Replace the old hangup (and signal) detection with a check for the
+TTY_IO_ERROR flag which is set on hangup.
 
-ONLY touch this file if you can actually test this code, AND you have a
-system that uses it.  Otherwise it's not needed to fix up anything that
-a LLM might "find" in this file, see the mailing list archives for the
-full details.
+Fixes: 591cee0a3563 ("tty/amiserial: avoid interruptible_sleep_on")
+Reported-by: sashiko-bot@kernel.org
+Link: https://lore.kernel.org/20260910132029.D80801F00898@smtp.kernel.org
+Cc: stable@vger.kernel.org	# 3.14
+Cc: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+---
+ drivers/tty/amiserial.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-thanks,
+diff --git a/drivers/tty/amiserial.c b/drivers/tty/amiserial.c
+index 28af0fd98181..60f6060b893d 100644
+--- a/drivers/tty/amiserial.c
++++ b/drivers/tty/amiserial.c
+@@ -1138,11 +1138,6 @@ static int rs_ioctl(struct tty_struct *tty,
+ 				local_irq_save(flags);
+ 				cnow = info->icount; /* atomic copy */
+ 				local_irq_restore(flags);
+-				if (cnow.rng == cprev.rng && cnow.dsr == cprev.dsr && 
+-				    cnow.dcd == cprev.dcd && cnow.cts == cprev.cts) {
+-					ret = -EIO; /* no change => error */
+-					break;
+-				}
+ 				if ( ((arg & TIOCM_RNG) && (cnow.rng != cprev.rng)) ||
+ 				     ((arg & TIOCM_DSR) && (cnow.dsr != cprev.dsr)) ||
+ 				     ((arg & TIOCM_CD)  && (cnow.dcd != cprev.dcd)) ||
+@@ -1150,6 +1145,10 @@ static int rs_ioctl(struct tty_struct *tty,
+ 					ret = 0;
+ 					break;
+ 				}
++				if (tty_io_error(tty)) {
++					ret = -EIO;
++					break;
++				}
+ 				schedule();
+ 				/* see if a signal did it */
+ 				if (signal_pending(current)) {
+-- 
+2.55.0
 
-greg k-h
