@@ -1,145 +1,143 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7923746AA73;
-	Fri, 11 Sep 2026 09:06:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF34A468C23
+	for <linux-serial@vger.kernel.org>; Fri, 11 Sep 2026 09:07:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789117582; cv=none; b=TucBq0KHfQIsrxrXWTIpxKH2TruLygOqxwN3Cjlz8ensrU7sxJKdUPCqZfpw4u+WrukysVXsuH3nsIrlk0xl2mjmkZaiXwnue0o/LZSu1MHrfw6nXiAbS2+col9BP6PfvEJGRnr8HUWczqiKcnTL2MgnLjn0HkMQ+k8wJCKHaQA=
+	t=1789117651; cv=none; b=LYc8pT//GEl5PDyHSu17UbAZTFBHKeOvDpTPqE8diRE9gKaUaxHoVvmtLxtvhTvIfUE6bo/k3/52Kbv3OHcL1zg35sLBkT/yXJUdf72e2rWnU1SVjQxSquq7qCH0nshZk9rFGY9+v++X8rXdXGztq8sDp6pH/W2NnznZLb7aaTQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789117582; c=relaxed/simple;
-	bh=lhga+Weuy8JTzpn00mh5e2wdFlQK7ezFMNk65Apg3sI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=bPMA8VkdsMIdwUDz+yxoOTdlsFYXRXZoc/wxnoe2/aQNgJ2ah92RW70ZaGYhX0MYhq90KCBnsTevpXIMmPDV4J+csikkEcU2hEaQ+PEa/Rhtuwi/5HBTAl64KgDESeFq+U6xV9rQKJezroh1GKyNjmMpP2FPfhznDfjgidgNpK0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fChbx+Es; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1789117651; c=relaxed/simple;
+	bh=/dL3pCPr3MM7dPLehJhDV3xFjQwplqUCQL5XgTxif+k=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=NKIR5MidipJoYzJFNz22Bdb7N9+D7wODp0YJ2qd/vEBB0eGWbgpZMsP/IbPbn5FUtZAg84pePWZxr+3MbPud4JHIq8cCROR0D6RlXCtv+o65a9v9/2uY+5hrPbI0m2DX4b4Sai54sJD8Iip9vuL+q4PCEeL+/sIIQ3ZVMPd9hz0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ozwuuEUQ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fChbx+Es"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB3C91F000FF;
-	Fri, 11 Sep 2026 09:06:18 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ozwuuEUQ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 952D61F0089E
+	for <linux-serial@vger.kernel.org>; Fri, 11 Sep 2026 09:07:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789117580;
-	bh=kinXsJ+URPBbp7XR5+VZT6QQgES4hyVW0D7lJiMNVIw=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=fChbx+Es/EQZDBom8HzjAqsQnYXng0pabKZrsb/D5uYF7GcXcIeD4eU82dmB6Wz+X
-	 mXHBGsdf+QkGZsbq0U2ImzhHnC6TSWPXphgUbkQ/q7afFTPv6l/vjj4Jt5TtgtYnXj
-	 /slvW7cBwDjlfYZaNACWS5OLojYa/6YL5iNL/u8kba9QW057726051wqkJNRXxki5h
-	 ea51WIogrD4y+80+gOgHEf1Kz+U2gDdYzZzD9d3yk5SyoAxTHSecbXLhsCJqn0m8JL
-	 rfzdjo1lspS4bd0m0w+PLaScCB6Q0FsoWMsQFK+SYtKg+E+L4MX2IEQRqmXCyIsntM
-	 RsL33XvkMibVg==
-Message-ID: <5cd0cb7c-f540-4369-a55e-8eaaa400e289@kernel.org>
-Date: Fri, 11 Sep 2026 11:06:16 +0200
+	s=k20260515; t=1789117650;
+	bh=/VGcQS0ZeRYJfc9e784tdLXi12bCcFoGI0t9ozoHPBo=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc;
+	b=ozwuuEUQ8Z5se6zO5/fvu0pYLAOc5jGBs3n7Ao8KmKbvgwFVyNUnWcGSZguymLUAt
+	 RVKzsVQaratM2qCL/JX11MdyergavYIT/AlSFNnuGbejufqwsbMAaHjmmUCx7QSWAX
+	 gkSSivPrnNsep6lmjwegM8eFlO37g5AD3iliEMWZVSB9ellqVprjaNTpKigOOglQX4
+	 A07yKT36YEPA0DyRIxKNtXe/lzyMTs9aSi5aHQJz7Dato7ohCLajMILy+cSmGin6G+
+	 dg8cO5vN/lLlf3Dj3aYxfuGDuqOkh2HnLG2wOopDnvUs9h4DBtVxyeNV0hoAqF2pr+
+	 wf2Osx0fo8QlA==
+Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-5b5e5ab03afso659232e87.3
+        for <linux-serial@vger.kernel.org>; Fri, 11 Sep 2026 02:07:30 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AKwUvByfisTEtSvyAEEKHzC86c1D5VO3q3yibWwDUZYza+OBP8Ybbulo6Lptln6W6H7Nx3loQlot6Jh9kMF9nQQ=@vger.kernel.org
+X-Gm-Message-State: AFuF++may6VXJiAZce9Ub5tpFTo6XJ03A6MOiUc2pOkf4UEf5Cs8yALi
+	WzoLjSMsdYd70XvqVt/lXZ8Ywbmza1g7BsjQVy7FHPJcxqWnmvWFRoD/bpgd/uQ3YxyLh1h8JGL
+	QOZgV9LuZIuRfMUogtKtJkNmRsVVCI2o=
+X-Received: by 2002:a05:6512:3054:b0:5b6:1a7c:fd99 with SMTP id
+ 2adb3069b0e04-5b8a0348f4fmr751726e87.63.1789117648568; Fri, 11 Sep 2026
+ 02:07:28 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] tty: amiserial: fix broken TIOCMIWAIT
-To: Johan Hovold <johan@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
- sashiko-bot@kernel.org, stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
-References: <20260911090132.723531-1-johan@kernel.org>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
- rrcDwGs6tFVrAHvdHeIdI07s1iIx5R/ndcHwt4fvI8CL5PzPmn5J+h0WERR5rFprRh6axhOk
- rSD5CwQl19fm4AJCS6A9GJtOoiLpWn2/IbogPc71jQVrupZYYx51rAaHZ0D2KYK/uhfc6neJ
- i0WqPlbtIlIrpvWxckucNu6ZwXjFY0f3qIRg3Vqh5QxPkojGsq9tXVFVLEkSVz6FoqCHrUTx
- wr+aw6qqQVgvT/McQtsI0S66uIkQjzPUrgAEtWUv76rM4ekqL9stHyvTGw0Fjsualwb0Gwdx
- ReTZzMgheAyoy/umIOKrSEpWouVoBt5FFSZUyjuDdlPPYyPav+hpI6ggmCTld3u2hyiHji2H
- cDpcLM2LMhlHBipu80s9anNeZhCANDhbC5E+NZmuwgzHBcan8WC7xsPXPaiZSIm7TKaVoOcL
- 9tE5aN3jQmIlrT7ZUX52Ff/hSdx/JKDP3YMNtt4B0cH6ejIjtqTd+Ge8sSttsnNM0CQUkXps
- w98jwz+Lxw/bKMr3NSnnFpUZaxwji3BC9vYyxKMAwNelBCHEgS/OAa3EJoTfuYOK6wT6nadm
- YqYjwYbZE5V/SwzMbpWu7Jwlvuwyfo5mh7w5iMfnZE+vHFwp/wARAQABzSFKaXJpIFNsYWJ5
- IDxqaXJpc2xhYnlAa2VybmVsLm9yZz7CwXcEEwEIACEFAlW3RUwCGwMFCwkIBwIGFQgJCgsC
- BBYCAwECHgECF4AACgkQvSWxBAa0cEnVTg//TQpdIAr8Tn0VAeUjdVIH9XCFw+cPSU+zMSCH
- eCZoA/N6gitEcnvHoFVVM7b3hK2HgoFUNbmYC0RdcSc80pOF5gCnACSP9XWHGWzeKCARRcQR
- 4s5YD8I4VV5hqXcKo2DFAtIOVbHDW+0okOzcecdasCakUTr7s2fXz97uuoc2gIBB7bmHUGAH
- XQXHvdnCLjDjR+eJN+zrtbqZKYSfj89s/ZHn5Slug6w8qOPT1sVNGG+eWPlc5s7XYhT9z66E
- l5C0rG35JE4PhC+tl7BaE5IwjJlBMHf/cMJxNHAYoQ1hWQCKOfMDQ6bsEr++kGUCbHkrEFwD
- UVA72iLnnnlZCMevwE4hc0zVhseWhPc/KMYObU1sDGqaCesRLkE3tiE7X2cikmj/qH0CoMWe
- gjnwnQ2qVJcaPSzJ4QITvchEQ+tbuVAyvn9H+9MkdT7b7b2OaqYsUP8rn/2k1Td5zknUz7iF
- oJ0Z9wPTl6tDfF8phaMIPISYrhceVOIoL+rWfaikhBulZTIT5ihieY9nQOw6vhOfWkYvv0Dl
- o4GRnb2ybPQpfEs7WtetOsUgiUbfljTgILFw3CsPW8JESOGQc0Pv8ieznIighqPPFz9g+zSu
- Ss/rpcsqag5n9rQp/H3WW5zKUpeYcKGaPDp/vSUovMcjp8USIhzBBrmI7UWAtuedG9prjqfO
- wU0ETpLnhgEQAM+cDWLL+Wvc9cLhA2OXZ/gMmu7NbYKjfth1UyOuBd5emIO+d4RfFM02XFTI
- t4MxwhAryhsKQQcA4iQNldkbyeviYrPKWjLTjRXT5cD2lpWzr+Jx7mX7InV5JOz1Qq+P+nJW
- YIBjUKhI03ux89p58CYil24Zpyn2F5cX7U+inY8lJIBwLPBnc9Z0An/DVnUOD+0wIcYVnZAK
- DiIXODkGqTg3fhZwbbi+KAhtHPFM2fGw2VTUf62IHzV+eBSnamzPOBc1XsJYKRo3FHNeLuS8
- f4wUe7bWb9O66PPFK/RkeqNX6akkFBf9VfrZ1rTEKAyJ2uqf1EI1olYnENk4+00IBa+BavGQ
- 8UW9dGW3nbPrfuOV5UUvbnsSQwj67pSdrBQqilr5N/5H9z7VCDQ0dhuJNtvDSlTf2iUFBqgk
- 3smln31PUYiVPrMP0V4ja0i9qtO/TB01rTfTyXTRtqz53qO5dGsYiliJO5aUmh8swVpotgK4
- /57h3zGsaXO9PGgnnAdqeKVITaFTLY1ISg+Ptb4KoliiOjrBMmQUSJVtkUXMrCMCeuPDGHo7
- 39Xc75lcHlGuM3yEB//htKjyprbLeLf1y4xPyTeeF5zg/0ztRZNKZicgEmxyUNBHHnBKHQxz
- 1j+mzH0HjZZtXjGu2KLJ18G07q0fpz2ZPk2D53Ww39VNI/J9ABEBAAHCwV8EGAECAAkFAk6S
- 54YCGwwACgkQvSWxBAa0cEk3tRAAgO+DFpbyIa4RlnfpcW17AfnpZi9VR5+zr496n2jH/1ld
- wRO/S+QNSA8qdABqMb9WI4BNaoANgcg0AS429Mq0taaWKkAjkkGAT7mD1Q5PiLr06Y/+Kzdr
- 90eUVneqM2TUQQbK+Kh7JwmGVrRGNqQrDk+gRNvKnGwFNeTkTKtJ0P8jYd7P1gZb9Fwj9YLx
- jhn/sVIhNmEBLBoI7PL+9fbILqJPHgAwW35rpnq4f/EYTykbk1sa13Tav6btJ+4QOgbcezWI
- wZ5w/JVfEJW9JXp3BFAVzRQ5nVrrLDAJZ8Y5ioWcm99JtSIIxXxt9FJaGc1Bgsi5K/+dyTKL
- wLMJgiBzbVx8G+fCJJ9YtlNOPWhbKPlrQ8+AY52Aagi9WNhe6XfJdh5g6ptiOILm330mkR4g
- W6nEgZVyIyTq3ekOuruftWL99qpP5zi+eNrMmLRQx9iecDNgFr342R9bTDlb1TLuRb+/tJ98
- f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
- DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
- S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20260911090132.723531-1-johan@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20260908152808.3928630-1-arnd@kernel.org> <20260908152808.3928630-4-arnd@kernel.org>
+ <CADkSEUjYhRk-ezaXZkHzFTFQnySFSisKtZfEP-_NtLnQF+6-1Q@mail.gmail.com>
+In-Reply-To: <CADkSEUjYhRk-ezaXZkHzFTFQnySFSisKtZfEP-_NtLnQF+6-1Q@mail.gmail.com>
+From: Linus Walleij <linusw@kernel.org>
+Date: Fri, 11 Sep 2026 11:07:16 +0200
+X-Gmail-Original-Message-ID: <CAD++jL=ysmPgs8yKH5KBobuv-eeCHHgZwvo1kvHOFuTwhkaOew@mail.gmail.com>
+X-Gm-Features: AcwNN1VlOYTrU3ZTl5zPPP6nearnDuFcxxJJedZ2i25yyIxB1qlTUVLyGBWuTQs
+Message-ID: <CAD++jL=ysmPgs8yKH5KBobuv-eeCHHgZwvo1kvHOFuTwhkaOew@mail.gmail.com>
+Subject: Re: [PATCH 03/13] ARM: remove riscpc
+To: Ethan Nelson-Moore <enelsonmoore@gmail.com>, Russell King <linux@armlinux.org.uk>
+Cc: Arnd Bergmann <arnd@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, 
+	Alexandre Belloni <alexandre.belloni@bootlin.com>, Drew Fustini <fustini@kernel.org>, 
+	Arnd Bergmann <arnd@arndb.de>, Rob Herring <robh@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Liviu Dudau <liviu.dudau@arm.com>, Sudeep Holla <sudeep.holla@kernel.org>, 
+	Lorenzo Pieralisi <lpieralisi@kernel.org>, Frank Li <Frank.Li@nxp.com>, 
+	Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, 
+	Fabio Estevam <festevam@gmail.com>, Vladimir Zapolskiy <vz@mleia.com>, Stefan Agner <stefan@agner.ch>, 
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue <alexandre.torgue@foss.st.com>, 
+	Aaro Koskinen <aaro.koskinen@iki.fi>, Andreas Kemnade <andreas@kemnade.info>, 
+	Kevin Hilman <khilman@baylibre.com>, Roger Quadros <rogerq@kernel.org>, 
+	Tony Lindgren <tony@atomide.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, 
+	Claudiu Beznea <claudiu.beznea@tuxon.dev>, Andrew Lunn <andrew@lunn.ch>, 
+	Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, 
+	Gregory Clement <gregory.clement@bootlin.com>, Robert Jarzmik <robert.jarzmik@free.fr>, 
+	Kristoffer Ericson <kristoffer.ericson@gmail.com>, Geert Uytterhoeven <geert@linux-m68k.org>, 
+	Alexander Sverdlin <alexander.sverdlin@siemens.com>, Shawn Guo <shawnguo@kernel.org>, 
+	Karl Mehltretter <kmehltretter@gmail.com>, "David Hildenbrand (Arm)" <david@kernel.org>, 
+	Nicolas Pitre <npitre@baylibre.com>, linux-doc@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	devicetree@vger.kernel.org, imx@lists.linux.dev, 
+	linux-stm32@st-md-mailman.stormreply.com, linux-omap@vger.kernel.org, 
+	Ian Molton <spyro@f2s.com>, Jens Axboe <axboe@kernel.dk>, Helge Deller <deller@gmx.de>, 
+	Thomas Zimmermann <tzimmermann@suse.de>, "Paul E. McKenney" <paulmck@kernel.org>, linux-block@vger.kernel.org, 
+	linux-serial@vger.kernel.org, linux-fbdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 11. 09. 26, 11:01, Johan Hovold wrote:
-> A change replacing interruptible_sleep_on() inadvertently broke the
-> TIOCMIWAIT implementation which now immediately returns -EIO (unless
-> there is a racing modem status update).
-> 
-> Replace the old hangup (and signal) detection with a check for the
-> TTY_IO_ERROR flag which is set on hangup.
+On Fri, Sep 11, 2026 at 5:44=E2=80=AFAM Ethan Nelson-Moore
+<enelsonmoore@gmail.com> wrote:
 
-You seem you opened a can of worms.
+> Because I think it's cool that the kernel still supports actual Acorn
+> hardware, I patched gcc 16.2 to restore ARMv3m support:
+> https://github.com/EthanNelson-Moore/gcc-arm-retro
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+For the record: I also think this is cool.
 
-> Fixes: 591cee0a3563 ("tty/amiserial: avoid interruptible_sleep_on")
-> Reported-by: sashiko-bot@kernel.org
-> Link: https://lore.kernel.org/20260910132029.D80801F00898@smtp.kernel.org
-> Cc: stable@vger.kernel.org	# 3.14
-> Cc: Arnd Bergmann <arnd@arndb.de>
-> Signed-off-by: Johan Hovold <johan@kernel.org>
-> ---
->   drivers/tty/amiserial.c | 9 ++++-----
->   1 file changed, 4 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/tty/amiserial.c b/drivers/tty/amiserial.c
-> index 28af0fd98181..60f6060b893d 100644
-> --- a/drivers/tty/amiserial.c
-> +++ b/drivers/tty/amiserial.c
-> @@ -1138,11 +1138,6 @@ static int rs_ioctl(struct tty_struct *tty,
->   				local_irq_save(flags);
->   				cnow = info->icount; /* atomic copy */
->   				local_irq_restore(flags);
-> -				if (cnow.rng == cprev.rng && cnow.dsr == cprev.dsr &&
-> -				    cnow.dcd == cprev.dcd && cnow.cts == cprev.cts) {
-> -					ret = -EIO; /* no change => error */
-> -					break;
-> -				}
->   				if ( ((arg & TIOCM_RNG) && (cnow.rng != cprev.rng)) ||
->   				     ((arg & TIOCM_DSR) && (cnow.dsr != cprev.dsr)) ||
->   				     ((arg & TIOCM_CD)  && (cnow.dcd != cprev.dcd)) ||
-> @@ -1150,6 +1145,10 @@ static int rs_ioctl(struct tty_struct *tty,
->   					ret = 0;
->   					break;
->   				}
-> +				if (tty_io_error(tty)) {
-> +					ret = -EIO;
-> +					break;
-> +				}
->   				schedule();
->   				/* see if a signal did it */
->   				if (signal_pending(current)) {
+One question: is ARMv3m there in Clang/LLVM? I only
+know that we have ARMv4t.
 
+To the bigger question.
 
--- 
-js
-suse labs
+The community has a built in tension around this:
+
+- One camp that are enthusiast like yourself. That kind of people
+  are running the show inside arch/m68k on Amigas and Ataris.
+
+- One camp who get their paycheck from present day companies
+  and constantly on top of the latest technology. As can be
+  seen Qualcomm just taped out a brand new ARMv7 SoC
+  named Kuno, for example.
+
+As you can see this leads to a bit of tension.
+
+What I'm after here is not one camp is doing the right thing
+and the other one is not, because that inevitably boils down
+to the question of what is the meaning of life. Or "what is fun"
+actually (Torvalds wrote a book named "just for fun") and
+either case could be argued to be quite fun, or meaningful.
+
+> I am working on a clocksource driver, which uses both timers (to
+> hopefully fix the awful time drift), and removes the dependency on
+> LEGACY_TIMER_TICK.
+>
+> I also have patches for several cleanups to Risc PC-related code.
+
+As SoC maintainers I think we want to hear about a plan to
+migrate RiscPC to device tree should it stay supported. And I
+do not think it is that hard to achieve with the right focus by the
+right people.
+
+Actually testing it on actual hardware would be a further
+requirement, so we're not doing dreamscapes here.
+
+I want to heat from Russell on this.
+
+The ARM kernel started as a passionate project by him, on that very
+machine, and he should decide if we keep it going.
+
+IIUC the Clang/LLVM compiler has essentially solved the compiler
+issue.
+
+> I am aware that this has no actual use case, but it was fun. No LLM
+> was used for any part of the work.
+
+My position is that using LLMs is good in many ways because
+when used right by the right people it allows us to keep a wider
+range of hardware supported.
+
+Yours,
+Linus Walleij
