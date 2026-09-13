@@ -1,357 +1,264 @@
-Received: from fhigh-b3-smtp.messagingengine.com (fhigh-b3-smtp.messagingengine.com [202.12.124.154])
+Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7FCB291C10;
-	Sun, 13 Sep 2026 09:46:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.154
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB6FD372B57
+	for <linux-serial@vger.kernel.org>; Sun, 13 Sep 2026 16:17:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.66
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789292810; cv=none; b=B3UpJaZJaIs9tq8pWXak0hSKaMmjbUaoFnsVQ5nIwZQli66Gx5APRZCOps/6f99NO9Qt2uOnNmaZqTjMwaBOf9xrFzvmsODOgc8YYR1O8TpZ9nRwhZekqC1mC9c0kmzJAZI0nRUB/33WviDDtmEbHCd2JfMT2k+zIrC9SwbHSf0=
+	t=1789316281; cv=none; b=hFZ/xrV2Z8efk0XeBGDYjVJlkf/lYWRXHzweL6FARdr0CrS5+UxSdw+fc0ZT7NRQ8jP3nzYZ8kCDmkPf2BWy1UBFai3LHmc+IPvH6bpVf8OLYc+zzaDQaD5mrQiGKPaKkuL5fP4jJL3d6hPTNt6VdwzWFX8lHAQJJ6PnI2vG1OY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789292810; c=relaxed/simple;
-	bh=3fd857Ut9g0Evj4oQmORjmC/wxeI3+D+wmpVTsOChOg=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=tUs2zOf+rViahby2UQM+O8Okqz0L8/CQ91cDOmCHd0ujn1ZYzR4T4vRLeQYSmbG7Jkqk/UiUVP0KFd4A26EbvWzlLDnqklJ42ehRISfXoTc2OSZ1gHHw4vWwg/DJFcHMHNlJfNB5cAXsdBikU1AWE+zqn3spAK2/zBvnA8HF0xw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=hwQa1qUq; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=U1xrCslJ; arc=none smtp.client-ip=202.12.124.154
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
+	s=arc-20240116; t=1789316281; c=relaxed/simple;
+	bh=GF3qJ28po4tzQKhOOmc1ZjYhXtmA/fVN39S6nEBHPRI=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=lGyKaW6o15p+CELKd3uXwZLYE0zoXA8+53T176OyqJP3WlrnugiDQVrwyB+1sMnUBqTL/7/y61edCojp5lbW/Ocp4t2BzDPN2ZJ1a0LdWwuWrKubd7jaKHTx7Ea3I97/GrDUDk3BSllkn6gENT+jLBCspxJIyBFAz5YLBNh2268=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de; spf=pass smtp.mailfrom=posteo.de; dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b=MrbiGImy; arc=none smtp.client-ip=185.67.36.66
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="hwQa1qUq";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="U1xrCslJ"
-Received: from ams-compute-02.internal (ams-compute-02.internal [10.64.2.62])
-	by mailfhigh.stl.internal (Postfix) with ESMTP id 447CB7A006B;
-	Sun, 13 Sep 2026 05:46:46 -0400 (EDT)
-Received: from ams-imap-03 ([10.64.2.23])
-  by ams-compute-02.internal (MEProxy); Sun, 13 Sep 2026 05:46:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm3; t=1789292805;
-	 x=1789379205; bh=C5O02FOgUJV2eD7/Tdr1zfaW0ja5wPl/auwAiWhgveo=; b=
-	hwQa1qUq9C3kZTu5NNwhpqdc95vncrU6qvq2CCEfJq4XgcL9xG4rA4LKV8TaH2TN
-	qIRPckSzm3NMH3k7IYinxklhKn6KLgsVm4tHfBGNw4l5SVDwEDDAwipV3vDsM16e
-	qLMIUHrn8SbE33Er2D0fNxLdtagoW7XAlTC+Mi2q4EkRALmsxilvsAcoYWhdVRcE
-	P+iBWwmK5D9cYP3v88M9MWe8Qtkhbnc20ogXPuIsg7Srx5tMQ/Hq3PEUumm6Xxx2
-	kNOVj4PAOdHwUDdaHHB3bw+B+3SRX86Hy1TNKnHPF7vHDyc0YoBpxhshjEWW5tRA
-	jlDOifN9ri2UYyqIbVsOFg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1789292805; x=
-	1789379205; bh=C5O02FOgUJV2eD7/Tdr1zfaW0ja5wPl/auwAiWhgveo=; b=U
-	1xrCslJr0knL0PRWpn9M3RjQnYN8SSSsSZqhV8qGwYR+ULbMOCJuQtb1KOKijln8
-	c+qUsI47x2i7LeMV+W7wCB3z7dGPY1YjbSQNrPJdyQt0amNZO7abwXfNU3JxAl1y
-	I6ABOldnCOl4yr89NZq4u3DYenxssPUagLXTJxs66r3K0KNxexC6pfYrZG3Aj66V
-	qEojoW3eFq6zM2ojwJLtFMJ9/gSSHh09zzawDiTWrrWCtmHwQk98qLKAUQmi36FF
-	+PVJJNrYE0PAXBWOvK4aF5AykfdOPJo0kp805zuC6PYgH4H8p0Q2aieKHUz8veJ6
-	ZlOmoky//OqKY7Xyj2ltg==
-X-ME-Sender: <xms:A3GmaorDevW1LBr65wt5sgDsn1NqwJOtcbS9eS-2A2PYnpOFsP64rw>
-    <xme:A3GmapcRuptuYsi8PjG3J_zLtfumTXMXhkY14ZK3SJ9XYb6XK-43qM1hSK1bFCMey
-    qSuBXTSWgIdI8cH9EQibwyw-v8sqyh5UHtNPz7KQk6HzcKb7gr_XwHh>
-X-ME-Proxy-Cause: dmFkZTFO0WA/sI+toDXDzyylonfgPp/Edi0Ek0ntACSbX7jQ6iKTRAjEFi3AdI5zWqT02Z
-    hcnzagkE57EQdEdrfNrd0UFA4jRWoxHc/MqZ3AZ2CR8cWmbjcsRyvGg3kfDMfcnnDshMWL
-    0SqkYc/UQQyVvWt34kWzrXlfqbiyGlhiO9kvJbETRCwS6aOpw97UETknbs27xaxATwRNKa
-    WwsqpWjp5d7wDfzq+vCwFID04U0uMXQYa/OPrqxov3+Ugx4lyHEaiGw5XeroVoY4umudjD
-    7NrK08cQew1QgkyYYsHHOeVD8ORL5FYKDAWwqyT0sxrKemmEZc/NyofWDxSPQsUxuOG5Ov
-    +Z3wWwWpeLBPWGTVLaQmj/7dLVUM/zqFOh/GYA6MJr/lNlKXxz3zvgd4oOEDW+s3YpgMay
-    6qZGO9DP0lLi7Ubd8ErPnbGonQqo3dtz6zoDcZGXDFoq8Ajs2x7fiDjmBdjyZ65MBcyY+H
-    eNRylwDUmpcKWj64+5cgq7kPFWAVteJheaZyBqYO2CFLh8QG3NPhWXmzC4cJnjsQA396RW
-    P6EZS//WwmPD27JfDw8xek1pdMVwo4z/KF8Z28GfZBHp/M4vGO1vQu4tI35WttEekvcmYl
-    RJHinEvBwMpdHqAUd4gtIZsY3UX9cl16XWH0rFsmUhUdpJdmEFD78FFGBlUg
-X-ME-Proxy: <xmx:BHGmauvoU5FJTGXEywSAPqUA-XzWnxql7ej6VcVYeo7DlH6XhO34rQ>
-    <xmx:BHGmak94QkzQu3gkB-9LZSb83FIrrAWxogqmbBYDeftY5Y34v1D24w>
-    <xmx:BHGmap3wTdDY-9rjgeQF2mgFVZE6vA4Mmiv7H_DnUs9iA1p-q7oypA>
-    <xmx:BHGmapDaFLJMsFQfHqqRn8HrmgAURIL5etl67P7t2435MZI1A9Qk5Q>
-    <xmx:BXGmausivPngowKCPaN9oB2Y5YdLRL57G2i8kM_Yrk5JgIClEKEnakDS>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.ams.internal (Postfix, from userid 501)
-	id B073932A007E; Sun, 13 Sep 2026 05:46:43 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="MrbiGImy"
+Received: from submission (posteo.de [185.67.36.169]) 
+	by mout02.posteo.de (Postfix) with ESMTPS id 4D466240103
+	for <linux-serial@vger.kernel.org>; Sun, 13 Sep 2026 18:17:54 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de;
+	s=1984.8680eb; t=1789316274;
+	bh=4KZfnZZWUgpacNaNvWb37H6nYeezWlIgqRQQEVtr3Zc=;
+	h=From:Date:Subject:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:Message-Id:To:Cc:Autocrypt:OpenPGP:From;
+	b=MrbiGImydn/G+ECr2AoxCtOFs9ONVKhK0w4dJ7wa4qpBnj3z1h5ABhMtsJJIvuviK
+	 6YB3d4e359ISAx4Gya0vhuOVwlMwobreI5Ib4sjQV73mhkZYIv1hGMQJ6zEAw6KfsK
+	 /zA7g3KEYmwW+dfXKBha3UYI38/C+tME5Ghoab0PBd0smW2iXrH9rzw4nPGW/rZFBB
+	 HxONeJyEbMQ+1JmygyEY/zGIAw4db5WPd3usmj8aaRps47gxHwR4Z7f/5iSHcw5V+8
+	 oHHjHPVXXGzZitleJvopXOSdi5HAaa0+FLDk+EuD7px7DPLDsVXZcmbUnShWNxETfz
+	 N+U/PprmTH6QA==
+Received: from customer (localhost [127.0.0.1])
+	by submission (posteo.de) with ESMTPSA id 4hjYNK1QNwz6tw4;
+	Sun, 13 Sep 2026 18:17:53 +0200 (CEST)
+From: Markus Probst <markus.probst@posteo.de>
+Date: Sun, 13 Sep 2026 16:17:53 +0000
+Subject: [PATCH RESEND v4] ACPI: SPCR: Support UART clock frequency field
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-ThreadId: AGTXWeH1PU47
-Date: Sun, 13 Sep 2026 11:43:24 +0200
-From: "Arnd Bergmann" <arnd@arndb.de>
-To: "Linus Walleij" <linusw@kernel.org>,
- "Bart Van Assche" <bvanassche@acm.org>
-Cc: "Ethan Nelson-Moore" <enelsonmoore@gmail.com>,
- "Russell King" <linux@armlinux.org.uk>,
- "Arnd Bergmann" <arnd@kernel.org>,
- "Krzysztof Kozlowski" <krzk@kernel.org>,
- "Alexandre Belloni" <alexandre.belloni@bootlin.com>,
- "Drew Fustini" <fustini@kernel.org>, "Rob Herring" <robh@kernel.org>,
- "Conor Dooley" <conor+dt@kernel.org>,
- "Liviu Dudau" <liviu.dudau@arm.com>,
- "Sudeep Holla" <sudeep.holla@kernel.org>,
- "Lorenzo Pieralisi" <lpieralisi@kernel.org>,
- "Frank Li" <Frank.Li@nxp.com>, "Sascha Hauer" <s.hauer@pengutronix.de>,
- "Pengutronix Kernel Team" <kernel@pengutronix.de>,
- "Fabio Estevam" <festevam@gmail.com>,
- "Vladimir Zapolskiy" <vz@mleia.com>, "Stefan Agner" <stefan@agner.ch>,
- "Maxime Coquelin" <mcoquelin.stm32@gmail.com>,
- "Alexandre Torgue" <alexandre.torgue@foss.st.com>,
- "Aaro Koskinen" <aaro.koskinen@iki.fi>,
- "Andreas Kemnade" <andreas@kemnade.info>,
- "Kevin Hilman" <khilman@baylibre.com>,
- "Roger Quadros" <rogerq@kernel.org>, "Tony Lindgren" <tony@atomide.com>,
- "Nicolas Ferre" <nicolas.ferre@microchip.com>,
- "Claudiu Beznea" <claudiu.beznea@tuxon.dev>,
- "Andrew Lunn" <andrew@lunn.ch>,
- "Sebastian Hesselbarth" <sebastian.hesselbarth@gmail.com>,
- "Gregory Clement" <gregory.clement@bootlin.com>,
- "Robert Jarzmik" <robert.jarzmik@free.fr>,
- "Kristoffer Ericson" <kristoffer.ericson@gmail.com>,
- "Geert Uytterhoeven" <geert@linux-m68k.org>,
- "A. Sverdlin" <alexander.sverdlin@siemens.com>,
- "Shawn Guo" <shawnguo@kernel.org>,
- "Karl Mehltretter" <kmehltretter@gmail.com>,
- "David Hildenbrand (Red Hat)" <david@kernel.org>,
- "Nicolas Pitre" <npitre@baylibre.com>, linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- devicetree@vger.kernel.org, imx@lists.linux.dev,
- linux-stm32@st-md-mailman.stormreply.com,
- Linux-OMAP <linux-omap@vger.kernel.org>, "Ian Molton" <spyro@f2s.com>,
- "Jens Axboe" <axboe@kernel.dk>, "Helge Deller" <deller@gmx.de>,
- "Thomas Zimmermann" <tzimmermann@suse.de>,
- "Paul E. McKenney" <paulmck@kernel.org>, linux-block@vger.kernel.org,
- linux-serial@vger.kernel.org, linux-fbdev@vger.kernel.org
-Message-Id: <0d964e9a-10ce-4f78-8b92-30f55a50ccfd@app.fastmail.com>
-In-Reply-To: 
- <CAD++jLmRZek7MjW5LuLUb=u5RmgOyHy4V1OcTv7asAZJpWogtA@mail.gmail.com>
-References: <20260908152808.3928630-1-arnd@kernel.org>
- <20260908152808.3928630-4-arnd@kernel.org>
- <CADkSEUjYhRk-ezaXZkHzFTFQnySFSisKtZfEP-_NtLnQF+6-1Q@mail.gmail.com>
- <CAD++jL=ysmPgs8yKH5KBobuv-eeCHHgZwvo1kvHOFuTwhkaOew@mail.gmail.com>
- <2144051c-268c-40b1-8c22-4be49f0edd17@acm.org>
- <CAD++jLmRZek7MjW5LuLUb=u5RmgOyHy4V1OcTv7asAZJpWogtA@mail.gmail.com>
-Subject: Re: [PATCH 03/13] ARM: remove riscpc
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260913-acpi_spcr-v4-1-965654188e67@posteo.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, 
+ Len Brown <lenb@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ linux-acpi@vger.kernel.org, Markus Probst <markus.probst@posteo.de>
+X-Developer-Signature: v=1; a=openpgp-sha256; l=6200;
+ i=markus.probst@posteo.de; h=from:subject:message-id;
+ bh=GF3qJ28po4tzQKhOOmc1ZjYhXtmA/fVN39S6nEBHPRI=;
+ b=owEBiQJ2/ZANAwAIATR2H/jnrUPSAcsmYgBqpsywJxtU+ka95aLXiQy84vPo0T/va7E4gotTq
+ T40tim5ijKJAk8EAAEIADkWIQSCdBjE9KxY53IwxHM0dh/4561D0gUCaqbMsBsUgAAAAAAEAA5t
+ YW51MiwyLjUrMS4xMiwyLDIACgkQNHYf+OetQ9Jp7xAAl4dNrXoQhxKwXmJsm2e5DfaenQZFpOu
+ vL+SMOVXAazJMzIAkytNwXcegBWD7uNaHOai6Ug8D9QN+nLRIp4FBT0R+DPWMgfkkQA1ixHtNJa
+ SS6je/e1Xmf7iLZ2ojHb4D1DFakuZfROtP7Sb+DUytgO7EAIwCHSxhYyFDlNt4csZuXPOXyfzDC
+ pO8C0f1LF5csAvX5RfiaJ2SbxDu0fR42JvIAAntWB74PUVLc3oxlT5quZhhSpLydcljhu5Wp+AI
+ Y36kclyqdHGPTskTAfDJFXlJoGgRDG7LVxk3g4/ICpJX9GSVfvwvxn8t0PVItdi97EKbCPmslsQ
+ sBTr+T/Jtp5aPCmncRrZ7ga3oS/aXpsqxLMbwLPSuLzj9POCIoQsmi3A89Dwu5vuBoqm8oF31cG
+ rL7r8ruIMg4xfl+jQSbM97guRpaBAUyjF+7XE8hhurRBpj9zYYVb8Lr6qC/jGU2GsmJIJ4cgsBq
+ njCuoXJfatBajbjMVNutfj2kQK4KLqfCBPaF1cLSRvg+m7KEGsPLs9q6pwMin5FqL06nbKp7FqA
+ OIAwuzDmGlHs6IjenHZYc0leqWeEM4RuJXS4dNoU2rSZb1NhBzGoqHsSCe9f/8bpvHgBUic6oCY
+ DeCqRUkXfqhNUgJuYYqXYG/h+4RaMttUpGMaxcloCRrxwQEb75sc=
+X-Developer-Key: i=markus.probst@posteo.de; a=openpgp;
+ fpr=827418C4F4AC58E77230C47334761FF8E7AD43D2
+Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
+  keydata=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
+  aBeNN4ijKZchBXHPgVx+YtWRHfcm4l8=
+OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
 
-On Fri, Sep 11, 2026, at 15:37, Linus Walleij wrote:
-> On Fri, Sep 11, 2026 at 3:26=E2=80=AFPM Bart Van Assche <bvanassche@ac=
-m.org> wrote:
->> On 9/11/26 2:07 AM, Linus Walleij wrote:
->
->> > The community has a built in tension around this:
->> >
->> > - One camp that are enthusiast like yourself. That kind of people
->> >    are running the show inside arch/m68k on Amigas and Ataris.
->> >
->> > - One camp who get their paycheck from present day companies
->> >    and constantly on top of the latest technology. As can be
->> >    seen Qualcomm just taped out a brand new ARMv7 SoC
->> >    named Kuno, for example.
->> >
->> > As you can see this leads to a bit of tension.
->>
->> That summary looks incomplete to me. Every time a kernel API is modif=
-ied
->> that is used by the RiscPC code, the RiscPC code has to be modified t=
-oo.
->> Removing the RiscPC code makes modifying kernel APIs easier. A recent
->> example is available here: "[PATCH v5] scsi: core: Drop
->> Scsi_Host.default_lock"
->> (https://lore.kernel.org/linux-scsi/20260831095821.3486994-1-john.g.g=
-arry@oracle.com/).
->
-> Yes that is development churn, but this is the same whether the hardwa=
-re
-> supported is old or brand new and doesn't really answer the question
-> whether it is to be supported or not.
->
-> That line of reasoning will always require a supportive hypothesis suc=
-h as:
->
-> - We don't want to support stuff that is old (deprecation and deletion=
-ist
->   stance, I don't want to hear yesterdays news)
->
-> - We don't want to support stuff that has very few users (utilitarism,
-> basically,
->   the biggest common good for the biggest number of people take
->   precedence)
->
-> This is implicit in many statements people make about this. What entus=
-iasts
-> ask is a completely different question:
->
-> - Is this fun (for me/us), makes me feel good to work on etc.
->
-> NB: personally I don't take a clear stance here, I mostly want to brea=
-k apart
-> the argument and clarify what it is all about.
+Prior to this patch, we assume the uart clock frequency is 1843200 Hz in
+the early console. This behaviour results in garbage console output if the
+actual uart clock frequency differs.
 
-As the discussion is still ongoing, I'll skip this patch for v2 and
-anything that depends on it. There is obviously no rush here, but I'd
-like to get the settle on which platforms to remove for 7.4 soon in
-order to plan the driver removal for 7.5.
+The UART Clock Frequency field was added in the Microsoft Serial Port
+Console Redirection (SPCR) specification revision 1.08. If present, use it
+to configure the serial port with the correct uart clock frequency.
+Fallback to old behaviour if missing.
 
-This is about 10% of the total size of my board-remove-7.3
-branch, but that is mostly because of the oabi/nwfpe support and
-the scsi drivers.
+Add function `setup_earlycon_with_uartclk` to set uart clock frequency
+while still allowing to reuse the same console string with
+`add_preferred_console`.
 
-       Arnd
-
-75e7f9f13efc ARM: remove riscpc
-973b9263fc92 ARM: remove StrongARM CPU support
-7d996576dfdb ARM: remove OABI support
-c345282c3031 ARM: remove nwfpe floating point emulation
-8a752dcb48e6 ARM: remove ISA bus support
-1c2ccc5c012a ARM: remove unnecessary CONFIG_USE_OF
-6b22ba07131a ARM: remove deprecated params struct
-fdb4d531b027 Input: mouse: remove RiscPC mouse driver
-67c968a3c911 Input: serio: remove RiscPC keyboard driver
-76741210657f i2c: remove unused acorn driver
-dd66946baaa8 fbdev: remove unused acornfb driver
-925c897547d9 net: i825xx: remove ether1 support
-460e5bd08398 net: 8390: remove arm etherh support
-f3b06d87c991 net: seeq: remove ether3 support
-c0a14d208da6 scsi: remove unused arm/riscpc drivers
-5f9f353d4555 serial: 8250: remove acorn driver
-
- Documentation/arch/arm/index.rst               |    3 -
- Documentation/arch/arm/nwfpe/index.rst         |   13 -
- Documentation/arch/arm/nwfpe/netwinder-fpe.rst |  162 --
- Documentation/arch/arm/nwfpe/notes.rst         |   32 -
- Documentation/arch/arm/nwfpe/nwfpe.rst         |   74 -
- Documentation/arch/arm/nwfpe/todo.rst          |   72 -
- Documentation/arch/arm/setup.rst               |  108 -
- Documentation/staging/magic-number.rst         |    2 -
- arch/arm/Kbuild                                |    3 -
- arch/arm/Kconfig                               |  133 +-
- arch/arm/Kconfig.debug                         |    4 +-
- arch/arm/Kconfig.platforms                     |    4 +-
- arch/arm/Makefile                              |    8 -
- arch/arm/boot/compressed/Makefile              |    3 -
- arch/arm/boot/compressed/head.S                |   14 -
- arch/arm/include/asm/cache.h                   |    4 +-
- arch/arm/include/asm/cmpxchg.h                 |   39 -
- arch/arm/include/asm/div64.h                   |   14 -
- arch/arm/include/asm/dma.h                     |  129 -
- arch/arm/include/asm/floppy.h                  |   81 -
- arch/arm/include/asm/glue-cache.h              |    8 -
- arch/arm/include/asm/glue-proc.h               |   18 -
- arch/arm/include/asm/io.h                      |   28 -
- arch/arm/include/asm/mach/dma.h                |   46 -
- arch/arm/include/asm/page.h                    |    8 -
- arch/arm/include/asm/setup.h                   |    3 -
- arch/arm/include/asm/syscall.h                 |   27 +-
- arch/arm/include/asm/unistd.h                  |   28 -
- arch/arm/include/uapi/asm/setup.h              |    3 -
- arch/arm/include/uapi/asm/unistd.h             |    5 -
- arch/arm/kernel/Makefile                       |    5 +-
- arch/arm/kernel/armksyms.c                     |    2 -
- arch/arm/kernel/atags.h                        |    2 -
- arch/arm/kernel/atags_compat.c                 |  214 --
- arch/arm/kernel/atags_parse.c                  |    8 -
- arch/arm/kernel/dma.c                          |  283 --
- arch/arm/kernel/entry-armv.S                   |    8 +-
- arch/arm/kernel/entry-common.S                 |  144 -
- arch/arm/kernel/isa.c                          |   50 -
- arch/arm/kernel/setup.c                        |   13 -
- arch/arm/kernel/sys_oabi-compat.c              |  514 ----
- arch/arm/lib/Makefile                          |    6 +-
- arch/arm/lib/io-readsw-armv3.S                 |  103 -
- arch/arm/lib/io-writesw-armv3.S                |  123 -
- arch/arm/lib/lib1funcs.S                       |    4 -
- arch/arm/lib/ucmpdi2.S                         |    5 -
- arch/arm/mach-davinci/Kconfig                  |    2 +-
- arch/arm/mach-mmp/Kconfig                      |    4 +-
- arch/arm/mach-omap2/Kconfig                    |    3 +-
- arch/arm/mm/Kconfig                            |   46 +-
- arch/arm/mm/Makefile                           |    4 -
- arch/arm/mm/cache-v4wb.S                       |  259 --
- arch/arm/mm/cache.c                            |   28 -
- arch/arm/mm/copypage-v4mc.c                    |  113 -
- arch/arm/mm/proc-sa110.S                       |  229 --
- arch/arm/mm/proc-sa1100.S                      |  277 --
- arch/arm/mm/proc.c                             |   40 -
- arch/arm/net/bpf_jit_32.c                      |    2 +-
- arch/arm/nwfpe/ARM-gcc.h                       |  121 -
- arch/arm/nwfpe/ChangeLog                       |   91 -
- arch/arm/nwfpe/Makefile                        |   19 -
- arch/arm/nwfpe/double_cpdo.c                   |  155 --
- arch/arm/nwfpe/entry.S                         |  190 --
- arch/arm/nwfpe/extended_cpdo.c                 |  142 -
- arch/arm/nwfpe/fpa11.c                         |  116 -
- arch/arm/nwfpe/fpa11.h                         |  109 -
- arch/arm/nwfpe/fpa11.inl                       |   51 -
- arch/arm/nwfpe/fpa11_cpdo.c                    |  125 -
- arch/arm/nwfpe/fpa11_cpdt.c                    |  395 ---
- arch/arm/nwfpe/fpa11_cprt.c                    |  361 ---
- arch/arm/nwfpe/fpmodule.c                      |  178 --
- arch/arm/nwfpe/fpmodule.h                      |   35 -
- arch/arm/nwfpe/fpmodule.inl                    |   74 -
- arch/arm/nwfpe/fpopcode.c                      |   51 -
- arch/arm/nwfpe/fpopcode.h                      |  469 ----
- arch/arm/nwfpe/fpsr.h                          |   96 -
- arch/arm/nwfpe/milieu.h                        |   48 -
- arch/arm/nwfpe/single_cpdo.c                   |  112 -
- arch/arm/nwfpe/softfloat-macros                |  754 ------
- arch/arm/nwfpe/softfloat-specialize            |  367 ---
- arch/arm/nwfpe/softfloat.c                     | 3435 -----------------=
--------
- arch/arm/nwfpe/softfloat.h                     |  281 --
- arch/arm/tools/Makefile                        |    2 -
- arch/arm/tools/syscall.tbl                     |   69 +-
- drivers/hwtracing/coresight/Kconfig            |    2 +-
- drivers/i2c/busses/Kconfig                     |   10 -
- drivers/i2c/busses/Makefile                    |    1 -
- drivers/i2c/busses/i2c-acorn.c                 |   96 -
- drivers/input/mouse/Kconfig                    |   10 -
- drivers/input/mouse/Makefile                   |    1 -
- drivers/input/mouse/rpcmouse.c                 |  113 -
- drivers/input/serio/Kconfig                    |   11 -
- drivers/input/serio/Makefile                   |    1 -
- drivers/input/serio/rpckbd.c                   |  152 --
- drivers/net/ethernet/8390/Kconfig              |    8 -
- drivers/net/ethernet/8390/Makefile             |    1 -
- drivers/net/ethernet/8390/etherh.c             |  858 ------
- drivers/net/ethernet/i825xx/Kconfig            |    7 -
- drivers/net/ethernet/i825xx/Makefile           |    1 -
- drivers/net/ethernet/i825xx/ether1.c           | 1086 --------
- drivers/net/ethernet/i825xx/ether1.h           |  277 --
- drivers/net/ethernet/seeq/Kconfig              |    7 -
- drivers/net/ethernet/seeq/Makefile             |    1 -
- drivers/net/ethernet/seeq/ether3.c             |  898 -------
- drivers/net/ethernet/seeq/ether3.h             |  174 --
- drivers/scsi/Kconfig                           |    2 -
- drivers/scsi/Makefile                          |    2 -
- drivers/scsi/arm/Kconfig                       |   74 -
- drivers/scsi/arm/Makefile                      |   14 -
- drivers/scsi/arm/acornscsi-io.S                |  135 -
- drivers/scsi/arm/acornscsi.c                   | 2920 -----------------=
+Link: https://learn.microsoft.com/en-us/windows-hardware/drivers/serports/serial-port-console-redirection-table
+Signed-off-by: Markus Probst <markus.probst@posteo.de>
 ---
- drivers/scsi/arm/acornscsi.h                   |  350 ---
- drivers/scsi/arm/arm_scsi.h                    |  136 -
- drivers/scsi/arm/arxescsi.c                    |  363 ---
- drivers/scsi/arm/cumana_1.c                    |  341 ---
- drivers/scsi/arm/cumana_2.c                    |  524 ----
- drivers/scsi/arm/eesox.c                       |  646 -----
- drivers/scsi/arm/fas216.c                      | 3039 -----------------=
-----
- drivers/scsi/arm/fas216.h                      |  407 ---
- drivers/scsi/arm/msgqueue.c                    |  168 --
- drivers/scsi/arm/msgqueue.h                    |   79 -
- drivers/scsi/arm/oak.c                         |  213 --
- drivers/scsi/arm/powertec.c                    |  452 ----
- drivers/scsi/arm/queue.c                       |  319 ---
- drivers/scsi/arm/queue.h                       |  104 -
- drivers/tty/serial/8250/8250_acorn.c           |  138 -
- drivers/tty/serial/8250/Kconfig                |    8 -
- drivers/tty/serial/8250/Makefile               |    1 -
- drivers/video/fbdev/Kconfig                    |    9 -
- drivers/video/fbdev/Makefile                   |    1 -
- drivers/video/fbdev/acornfb.c                  | 1102 --------
- drivers/video/fbdev/acornfb.h                  |  166 --
- fs/eventpoll.c                                 |   18 +-
- include/linux/eventpoll.h                      |   23 -
- lib/fonts/Kconfig                              |    1 -
- scripts/package/mkdebian                       |    7 +-
- 136 files changed, 80 insertions(+), 26810 deletions(-)
+Changes in v4:
+- merge patches together
+- rewrite commit message
+- Link to v3: https://patch.msgid.link/20260615-acpi_spcr-v3-0-9a59ebad74ea@posteo.de
+
+Changes in v3:
+- add separate function for earlycon with uartclk
+- Link to v2: https://patch.msgid.link/20260525-acpi_spcr-v2-0-c042089d73ca@posteo.de
+
+Changes in v2:
+- fix uart_clk_freq possibly being interpreted as parity/bits/flow
+- Link to v1: https://patch.msgid.link/20260505-acpi_spcr-v1-1-fd4bc6f4eb53@posteo.de
+---
+ drivers/acpi/spcr.c           |  3 ++-
+ drivers/tty/serial/earlycon.c | 17 ++++++++++++-----
+ include/linux/serial_core.h   | 11 +++++++++--
+ 3 files changed, 23 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/acpi/spcr.c b/drivers/acpi/spcr.c
+index 73cb933fdc89..c79c809f49d4 100644
+--- a/drivers/acpi/spcr.c
++++ b/drivers/acpi/spcr.c
+@@ -228,7 +228,8 @@ int __init acpi_parse_spcr(bool enable_earlycon, bool enable_console)
+ 	pr_info("console: %s\n", opts);
+ 
+ 	if (enable_earlycon)
+-		setup_earlycon(opts);
++		setup_earlycon_with_uartclk(opts,
++					    table->header.revision >= 3 ? table->uart_clk_freq : 0);
+ 
+ 	if (enable_console)
+ 		err = add_preferred_console(uart, 0, opts + strlen(uart) + 1);
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index ab9af37f6cda..5a20fe9e3fb6 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -135,11 +135,14 @@ static int __init parse_options(struct earlycon_device *device, char *options)
+ 	return 0;
+ }
+ 
+-static int __init register_earlycon(char *buf, const struct earlycon_id *match)
++static int __init register_earlycon(char *buf, unsigned int uart_clk_freq,
++				    const struct earlycon_id *match)
+ {
+ 	int err;
+ 	struct uart_port *port = &early_console_dev.port;
+ 
++	port->uartclk = uart_clk_freq;
++
+ 	/* On parsing error, pass the options buf to the setup function */
+ 	if (buf && !parse_options(&early_console_dev, buf))
+ 		buf = NULL;
+@@ -163,8 +166,9 @@ static int __init register_earlycon(char *buf, const struct earlycon_id *match)
+ }
+ 
+ /**
+- *	setup_earlycon - match and register earlycon console
+- *	@buf:	earlycon param string
++ *	setup_earlycon_with_uartclk - match and register earlycon console
++ *	@buf:			      earlycon param string
++ *	@uart_clk_freq:		      uart clock frequency in Hz or 0 for BASE_BAUD*16
+  *
+  *	Registers the earlycon console matching the earlycon specified
+  *	in the param string @buf. Acceptable param strings are of the form
+@@ -177,10 +181,13 @@ static int __init register_earlycon(char *buf, const struct earlycon_id *match)
+  *	<options> string in the 'options' parameter; all other forms set
+  *	the parameter to NULL.
+  *
++ *	If the uart clock frequency is specified in the 'options' parameter,
++ *	the value of the param @uart_clk_freq will be ignored.
++ *
+  *	Returns 0 if an attempt to register the earlycon was made,
+  *	otherwise negative error code
+  */
+-int __init setup_earlycon(char *buf)
++int __init setup_earlycon_with_uartclk(char *buf, unsigned int uart_clk_freq)
+ {
+ 	const struct earlycon_id *match;
+ 	bool empty_compatible = true;
+@@ -209,7 +216,7 @@ int __init setup_earlycon(char *buf)
+ 		} else
+ 			buf = NULL;
+ 
+-		return register_earlycon(buf, match);
++		return register_earlycon(buf, uart_clk_freq, match);
+ 	}
+ 
+ 	if (empty_compatible) {
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index bdc214386e4a..9b2bcd4295a9 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -1099,11 +1099,18 @@ int of_setup_earlycon(const struct earlycon_id *match, unsigned long node,
+ 
+ #ifdef CONFIG_SERIAL_EARLYCON
+ extern bool earlycon_acpi_spcr_enable __initdata;
+-int setup_earlycon(char *buf);
++int setup_earlycon_with_uartclk(char *buf, unsigned int uart_clk_freq);
+ #else
+ static const bool earlycon_acpi_spcr_enable EARLYCON_USED_OR_UNUSED;
+-static inline int setup_earlycon(char *buf) { return 0; }
++static inline int setup_earlycon_with_uartclk(char *buf, unsigned int uart_clk_freq)
++{
++	return 0;
++}
+ #endif
++static inline int setup_earlycon(char *buf)
++{
++	return setup_earlycon_with_uartclk(buf, 0);
++}
+ 
+ /* Variant of uart_console_registered() when the console_list_lock is held. */
+ static inline bool uart_console_registered_locked(struct uart_port *port)
+
+---
+base-commit: 237a1c39e8dfd3e1c6f1f023eea37a48ec04cc63
+change-id: 20260430-acpi_spcr-61902fd923f2
+-----BEGIN PGP SIGNATURE-----
+
+iQJPBAABCAA5FiEEgnQYxPSsWOdyMMRzNHYf+OetQ9IFAmqOIQQbFIAAAAAABAAO
+bWFudTIsMi41KzEuMTIsMiwyAAoJEDR2H/jnrUPSt08QALWMim65nIIS428BheYg
+aq6BqxDGGqORhlf7aCFGTtNaeNDsu1Tny7sNTe+TEXpKl+AwoFTJ+4+bxl50AYyp
+8Niod0JGjEoxkQKsU/aScvCvEvMuPXOABfUGFtzieNpfswU2n6LHjywy+RP1mTEn
+aPP1arQGGGhe5b5lvolREN0VbGvymtiLr6P+qOhs76ib/dkOegq2/njBX7UlQ7Fy
+dIQo1A/NayUn5F7VWQKUz6ZHLX9bVZYSe2gstKpl5C8Ybwfaj/HgeT1TAdMoQ2K/
+KG0HgcWwIyoIaIms+yED6WSQKJwexx4zn/t2w/Qi2eSVF6WSqNdY3rrHf3sY3luj
+g5wYs2AvNnGjQU6iNGs7DLwwasHgqwZcOwRIdTvY8z3UP5Wpj5y01a+dJJG378zR
+cZhEQUmDn21jBlJvpqSKUoNRZc1L/8uNfQLbnOMVBNOUBXIQ9Z29j2IkqGsYeTG8
+uUndjyA/2SlEU29w2G6/MnJykNiW4oMxryXabXvh8dXc+SPQkUIM71ivo4y2/HgM
+3XGz9l+cgJk61F0oAHtzie7MorsEGVLMA2n4TpibkUCLRIjK3e5QvEBDHZILWHPA
+k2b8dkF2cdu8Q4nbI3PzXUFzuq/rsBpncSvYd/zDQrEMxzhNUVmuX7B9Ws7I0P36
+VKkGQqUFJNNx7LLynD7XaJ7l
+=nupY
+-----END PGP SIGNATURE-----
+-- 
+Markus Probst <markus.probst@posteo.de>
+
