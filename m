@@ -1,150 +1,109 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yx2-f13.google.com (mail-yx2-f13.google.com [74.125.224.141])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0905E3009E2
-	for <linux-serial@vger.kernel.org>; Sun, 13 Sep 2026 22:37:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65A9D3D16E9
+	for <linux-serial@vger.kernel.org>; Sun, 13 Sep 2026 23:49:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.141
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789339037; cv=none; b=UhlWRIqyriNdo/3dUEl4BKXW2NaS3K24sumvnRNhv5bvEL4B0XS0tb5l/kbiQEIf3rqB8uP77EwB0bnf+c3tgo/3RgU4+b4kJxbGa7E3Ky77cKgpHCU+eNYvjQWKUd5+G0CSkG0IbzHra0z4/ofZsJbUSAW7rkr/zwyKUpEDtXI=
+	t=1789343390; cv=none; b=OBbnBXxJn9+B9u66kofknODw/DY6q5qw7tZLqIL5XYUDMEtXAbWkCGQw/TMyD86iyGVfXI/OE/FmvBfZvySePtSN5jt1gMO592PIuec4kmTwnjBbdzRUsbgEEq1mnxsresiDMeAStm/uVwxs1His3tHc3T1nbgav5u3EqH4FXSE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789339037; c=relaxed/simple;
-	bh=u3dNJgxGdVfs7gxObeCmtDXtxsKA5/J42iBhzvOhYGY=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=T1c0JhevxVO65gkMeVcXAsq58IeCxgUuhIz/AIusrYYtMVTgItPQFwSpy/9+100Xh5cRR8bj89QWg9IR8eq/9P63YCJi/TYRAExPKaLdo8FzVYBTG1KNKUmuMs6OvjAQrByyLRjUUD3ITjBHU2iynGMgycQBmGokzd04g1/zTiE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GNecb6XV; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1789343390; c=relaxed/simple;
+	bh=CfbJxL0seVaW2ual+KpU++Lsco1r/Gt6o8LUUyW0Vrk=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=sEPmFYQT0HFBwvDVh8Ksi5PuYIUt0oBccTzwFOQFlASovHd1eQdWoM2nqs88+QwSltNu2SzcSFp/w6qvsCim+it9WxF1tHQujdQKEe20nA9RnsCM2OByDtGXl4Wg2AwHgtIYI07YzDEhrvRYR0jJfvGUJT4ZBNvdZG1mjA3A2fk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=northecho.dev; spf=none smtp.mailfrom=northecho.dev; dkim=pass (2048-bit key) header.d=northecho-dev.20251104.gappssmtp.com header.i=@northecho-dev.20251104.gappssmtp.com header.b=UcdT/DaL; arc=none smtp.client-ip=74.125.224.141
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=northecho.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=northecho.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GNecb6XV"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8E511F000FF;
-	Sun, 13 Sep 2026 22:37:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789339035;
-	bh=4uXEVTP4N99JIK/V2aVBsFSE4fs/pC9x1OL6Q9LdmIA=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=GNecb6XVA1IMG72llpsBXL18UyWt4y9O1yreHfCWK4VUolfBVU/XKNEg4GMRmFaR/
-	 uUiBoLBF1/QOJZu54GLF+WlM+IRtNksgolaRIPE4A+yYZmd9OA7czwVzWdbfQIp5jf
-	 Bf5sPJY4KF7ZzGP4kMA3qVlYlW7nW93BYiiRd2qiIO1lDtyGZBTjVD7MwqabU4ZFpw
-	 xciWJ27Y7ZZWdoJLQ65ZeHSCmtlvrErbyFwElqt3rjYOPc9sQhdBmaYd3E+VzQ5sfX
-	 /o3C+yRz+o14poiS6gmiD25CBhU4SJ8SeXnE9VNph8bvBoY4VRt9sQhqcEfZ6ECK4H
-	 GUUuCQKVWAGtQ==
-From: sashiko-bot@kernel.org
-Subject: Re: [RFC PATCH 1/2] tty: mediate TIOCSIG through task_kill LSM
- hooks
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Christopher Lusk" <clusk@northecho.dev>
-Cc: linux-serial@vger.kernel.org
+	dkim=pass (2048-bit key) header.d=northecho-dev.20251104.gappssmtp.com header.i=@northecho-dev.20251104.gappssmtp.com header.b="UcdT/DaL"
+Received: by mail-yx2-f13.google.com with SMTP id 956f58d0204a3-66d20e86cfeso141027d50.2
+        for <linux-serial@vger.kernel.org>; Sun, 13 Sep 2026 16:49:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=northecho-dev.20251104.gappssmtp.com; s=20251104; t=1789343387; x=1789948187; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=69rR4iPRVLq+d7o+AdolZJ1RPsh1sWljW/ZuvUgaQfs=;
+        b=UcdT/DaLPgOwrJ+DoFt0LpXSokqQaFpVRtrvYH9/P8rhpbokbiSoabk0TNjP86HEik
+         bkhMcFfBeWa1mtiZjjciQF3W/sAcSkA5EazLzKVT8MD4LbIOY3/xDTuQ3i8vnciJ2E8h
+         vhKVKhbeCy1CtxSyeFoCBcpnJ0TxJssHF57lqWt8Q6w1MCYLk5bDvPCfN4Z8/84FLU/m
+         7M8xtXt0x8DzgkrWq3Z/tHR50o/CugYfTHtUcVNfZ3tu1wvzfqx64u+6QxRNJvcaWQqB
+         RSHhmpOEpFhKODXoBwhrbS8KKdlY4eiUC6CgeIyWxkUrySKQhrtKxGiNKYckFgIljR4a
+         lrPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1789343387; x=1789948187;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=69rR4iPRVLq+d7o+AdolZJ1RPsh1sWljW/ZuvUgaQfs=;
+        b=RIFSU3OXrLbDDYK4eRxwX9jI9J4oWxYtI+JugFM3D7WcE3ctUb3GVMecbX8Kfyj13s
+         4z507Cdsydc2BRWryeFVdfGJV8XD/cM1L1K3qgKyccNamgBYWiNs5OkiGdXXkglbZNN5
+         CUQeFZhZtZpzS9lLQzR3zawfEEDNlif/kqLhs+Lz5vwt8s8eYqfq853JES7iDrXEj4xR
+         GzKEaoXrfLPfsJFOQz4qTpJ3niQ5IAOa873LN1dGmNC/R/4wUeDjfHMPpS7FJnwjDlU7
+         9BZ9rTXglFvuyP0OuQX3LnBBF8QNR+PB9hfIwoALr4DwBfPvQG6OIoJspIK1fMg10ln4
+         CRoA==
+X-Forwarded-Encrypted: i=1; AKwUvBwlLUgRaNmw+F+7P5DmBZevDO2K4kLMDQWVmim/lmJ5tZATw8TL5uJW/CrZFhhoyGD/VRLBKSGqRSj3MIA=@vger.kernel.org
+X-Gm-Message-State: AFuF++lz1r09ILaYZ+7UCVfh0GkY3cP/kkBx1GSKhaTViQ9U98IErmvs
+	y/UCriSz7AfrsSRioPzW88LB2v2/DkjxxOShZvkQvUp57pYoCkdYI1DoBQtJaFXr19VC
+X-Gm-Gg: AYBFou2IDBDPV3L55fapmbbTTi46EXDsZEni/+bWT8zDdp+KnS3yWiEGlMt/om2y2I6
+	TeCPZ4qt3FV/iMMnj3rO9b93reBFS9yvjhAs/nxJrms4NTCgf4fu9Abadi6ffgjMjeKiwOdO3g+
+	9cHhxKonxkWX0C+vpobOmLVw7xV8gxSqajPkPek/RgGps4ZbylC96/7x1rJ/hmE7Nu9EnvA1BTN
+	06hKlenWt14+JYNoInToYt3E533hgmW4t04Y+6B+BRSrRMZOXxM1dKd5OCnBUF8LxtqZpDOU1CF
+	0T7lpjSjhqaaePkfcQO672xtO0ePASsOPelLAAzt8cuD+Wg2zsoyvYZ8gCHW67cej5efgYQ3V9H
+	TYbs9+VZ4Jay/jXqES+wbZbyyVDddkKQ27VkeujEKelStn9koGO2DTAdfKIYP0TKXtEf1ao247L
+	h0MP4ktAVyl6TFgRvtsbm1AfRlV2PeTmUPF1ysfVvmm0/ikhMvAqeadCapn48Dn/Fkn7Qygd2OD
+	O3PKjEki4iQkvRqI3AvRQfo81CiDV5on9B8GTU=
+X-Received: by 2002:a53:e792:0:b0:671:2093:b5ab with SMTP id 956f58d0204a3-67124801eb9mr3901527d50.5.1789343386962;
+        Sun, 13 Sep 2026 16:49:46 -0700 (PDT)
+Received: from kelso (99-10-92-174.lightspeed.rlghnc.sbcglobal.net. [99.10.92.174])
+        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-67125db3459sm3819481d50.6.2026.09.13.16.49.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 13 Sep 2026 16:49:46 -0700 (PDT)
+From: Christopher Lusk <clusk@northecho.dev>
+To: =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
+Cc: =?UTF-8?q?G=C3=BCnther=20Noack?= <gnoack@google.com>,
+	Oleg Nesterov <oleg@redhat.com>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Shuah Khan <shuah@kernel.org>,
+	Tahera Fahimi <fahimitahera@gmail.com>,
+	Paul Moore <paul@paul-moore.com>,
+	Casey Schaufler <casey@schaufler-ca.com>,
+	John Johansen <john.johansen@canonical.com>,
+	linux-security-module@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-kselftest@vger.kernel.org
+Subject: Re: [RFC PATCH 1/2] tty: mediate TIOCSIG through task_kill LSM hooks
+Date: Sun, 13 Sep 2026 19:49:30 -0400
+Message-ID: <20260913234930.901567-1-clusk@northecho.dev>
+X-Mailer: git-send-email 2.55.0
 In-Reply-To: <20260913221958.839429-2-clusk@northecho.dev>
-References: <20260913221958.839429-1-clusk@northecho.dev>
- <20260913221958.839429-2-clusk@northecho.dev>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Sun, 13 Sep 2026 22:37:15 +0000
-Message-Id: <20260913223715.B8E511F000FF@smtp.kernel.org>
+References: <20260913221958.839429-1-clusk@northecho.dev> <20260913221958.839429-2-clusk@northecho.dev>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-Thank you for your contribution! Sashiko AI review found 1 potential issue(=
-s) to consider:
-- [High] Passing SEND_SIG_PRIV (1) directly to the task_kill LSM hook cause=
-s a kernel panic when dereferenced by an eBPF LSM program.
---
+The bot's finding is correct, and this is a regression this patch
+introduces, so I want to flag it and the v2 direction up front.
 
-commit 0444b1560acb73813cdf2e4fa3082c4f0aaf7e00
-Author: Christopher Lusk <clusk@northecho.dev>
+kill_pgrp_lsm() calls security_task_kill() with __si_special(priv), i.e.
+SEND_SIG_PRIV ((void *)1).  On the ordinary paths,
+check_kill_permission() returns early via si_fromuser() before the hook,
+so security_task_kill() never receives that sentinel.  This patch reaches
+the hook directly and breaks that invariant.  The in-tree C LSMs do not
+dereference info, but task_kill is a trusted BPF LSM hook.  An attached BPF
+LSM program is therefore allowed to dereference info and can fault when it
+receives (void *)1.
 
-tty: mediate TIOCSIG through task_kill LSM hooks
+v2 will synthesize a valid kernel_siginfo for the LSM check
+(user-attributed, since TIOCSIG is user-triggered) and keep the privileged
+delivery unchanged, so the hook always sees a valid pointer.
 
-This commit changes the pty_signal() function to invoke the task_kill LSM h=
-ook
-before delivering signals to the process group. It introduces kill_pgrp_lsm=
-()
-and __kill_pgrp_info_filtered() to perform this check while holding
-tasklist_lock.
-
-Link: https://lore.kernel.org/r/56bffc24f3d0d08b45a686a48e99766b0a0821fa.17=
-80614610.git.hexlabsecurity@proton.me
-
-> diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
-> index cc7f7091ed9a2..8f5eea156ce4c 100644
-> --- a/drivers/tty/pty.c
-> +++ b/drivers/tty/pty.c
-[ ... ]
-> @@ -195,10 +196,13 @@ static int pty_signal(struct tty_struct *tty, int s=
-ig)
->  	if (tty->link) {
->  		pgrp =3D tty_get_pgrp(tty->link);
->  		if (pgrp)
-> -			kill_pgrp(pgrp, sig, 1);
-> +			ret =3D kill_pgrp_lsm(pgrp, sig, 1);
->  		put_pid(pgrp);
->  	}
-[ ... ]
-> diff --git a/kernel/signal.c b/kernel/signal.c
-> index a5e15bf09d319..758393b7257d6 100644
-> --- a/kernel/signal.c
-> +++ b/kernel/signal.c
-[ ... ]
-> @@ -1426,13 +1426,22 @@ int group_send_sig_info(int sig, struct kernel_si=
-ginfo *info,
-[ ... ]
-> +static int __kill_pgrp_info_filtered(int sig, struct kernel_siginfo *inf=
-o,
-> +				     struct pid *pgrp, bool check_lsm)
->  {
->  	struct task_struct *p =3D NULL;
->  	int ret =3D -ESRCH;
-> =20
->  	do_each_pid_task(pgrp, PIDTYPE_PGID, p) {
-> -		int err =3D group_send_sig_info(sig, info, p, PIDTYPE_PGID);
-> +		int err =3D 0;
-> +
-> +		if (check_lsm) {
-> +			rcu_read_lock();
-> +			err =3D security_task_kill(p, info, sig, NULL);
-
-[Severity: High]
-Does this pass SEND_SIG_PRIV ((void *)1) directly to the task_kill LSM hook?
-
-pty_signal() initiates this by calling kill_pgrp_lsm() with priv=3D1, which
-translates to SEND_SIG_PRIV via __si_special(priv). This invalid pointer is
-then passed directly as the `info` argument to security_task_kill().
-
-When an eBPF LSM program is attached to bpf_lsm_task_kill, it receives `inf=
-o`
-as a PTR_TO_BTF_ID | PTR_TRUSTED pointer. The PTR_TRUSTED flag disables BPF=
-'s
-PROBE_MEM fault protection, as the pointer is assumed safe to dereference.
-
-If the eBPF program attempts to read info->si_signo, it will execute a norm=
-al
-kernel memory load from address 0x1, causing an immediate kernel panic.
-
-Before this patch, check_kill_permission() filtered out SEND_SIG_PRIV via
-si_fromuser(), preventing it from ever reaching the LSM hook.
-
-> +			rcu_read_unlock();
-> +		}
-> +		if (!err)
-> +			err =3D group_send_sig_info(sig, info, p, PIDTYPE_PGID);
-[ ... ]
-> @@ -1886,6 +1900,18 @@ int kill_pgrp(struct pid *pid, int sig, int priv)
->  }
->  EXPORT_SYMBOL(kill_pgrp);
-> =20
-> +int kill_pgrp_lsm(struct pid *pid, int sig, int priv)
-> +{
-> +	int ret;
-> +
-> +	read_lock(&tasklist_lock);
-> +	ret =3D __kill_pgrp_info_filtered(sig, __si_special(priv), pid, true);
-> +	read_unlock(&tasklist_lock);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(kill_pgrp_lsm);
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260913221958.8394=
-29-1-clusk@northecho.dev?part=3D1
+This does not change the two questions the RFC is really asking (whether
+TIOCSIG should be mediated at all, and task_kill versus a dedicated TTY
+signal hook).  If the answer is a dedicated hook, the siginfo concern goes
+away with it.
