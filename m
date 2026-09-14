@@ -1,105 +1,207 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C8E1481658
-	for <linux-serial@vger.kernel.org>; Mon, 14 Sep 2026 14:23:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D93F479887;
+	Mon, 14 Sep 2026 15:35:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789395825; cv=none; b=QT0MpAgqWO5lpW74RQd5JYEqg5eDaPTSYAZ3geFuip8YSX/WVtPCz+1WVQziXd9VfWSCyqrPt+H1HSF5lKR/A0Q2mWjjrC6TAWTXahjoyksvE/qSwAsKRc02VMRFbo1AwrfXm9P7/auU7K0Id++0ZQNvZq1EFlnsDhTHL3VdAI8=
+	t=1789400158; cv=none; b=O6q8UTJOhyqcN1Howy9mP/01L8eyN9M03xwOUJsb67p05R7Ld2HRT04MVxO5kYvyEgLbPVtjLk23gAf3ZPAtIiGwocfG50rFpgjqOlMurF/ggQ7NKbE3EmBUbaFsURTmGn+ollfm9J2kWafQApP4IpRbnXL5IGvnFLz+ATrlngk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789395825; c=relaxed/simple;
-	bh=EoMARskPCopbvZHJnhVyIMzwoQAKZ1A5NQcJ8VOn5jY=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=rGlLpWfxO2XA5lAncd2ch08aBFf2dwP/3V0awbpKFZ/qGmx6rivVzQ2yf172EopUtuXvvXoSiB/sk9I1bsW3Z8kHCQk6mUo168qlDxnhNJ4xM0aaUGWIekYt5GtnAp5n3F0sXdIVXGKcsb6CffY2zAWKhKsBuisy9DD4Jkkkbig=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=U3wDrPPJ; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1789400158; c=relaxed/simple;
+	bh=MAGPHmXCBIhziBEg26ZvuPjqgU0drVUTwS2yrtaIaIo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=JKWmY8aHoUZu0kjKQQy8rjtBmp/G8OkRRbLenpcjbo0qYvhhhjzzmdjrFrMtA1YXUpVQY608ogE65/oV1eLkhvzoBY0tkwn7I8t7JfQBy7AWwDUcFsSEfZvo0bMrHAlfFrNYv0SM/qS8IA+XaoJ1oC5XUEEhxG7AKDvLEX8FasE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=VgiZ38xu; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=bG7oIN5x; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=DBJ3tvPd; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=YC+3iRCm; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="U3wDrPPJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A3B41F00898;
-	Mon, 14 Sep 2026 14:23:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789395823;
-	bh=wahCMM9aIvQcE4A4x5AFljsywqZbVmpFW+NbFTEhMG4=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=U3wDrPPJP3J1TTajR/qKbRnprkCJ1788hymKMKaqm3D36/960h4ob6n7dqRHW+i3R
-	 9N8YETZO0l0HH7SD2z8ee49rHlOZ4m0DDS8eTGiJmU+F1RuFd4O0T+GVVkxVnAV1X7
-	 9g5hOMEahJrd1S2GtQLCd3X4h/2GopL7z2QQLE223KiJMxgnF8phej17R98+cVDHkl
-	 VwgYCjwiKpV/gyoCXuSIMHF6JZ7qNeD0+0fXK+fwpROmRC/Sv4hI1vo/rgQEn8Zr/W
-	 ZmeZQOCAlaIz31iq4CGvKRYRwmtkmEqPgvSesjwpglRpKT4936ieO0ap4+bmXhnES0
-	 XiEHDpmVUi+pQ==
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH -next] serial: core: fix NULL/dangling port_dev on
- failed re-register
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Gaosheng Cui" <cuigaosheng1@huawei.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20260914135154.3260303-1-cuigaosheng1@huawei.com>
-References: <20260914135154.3260303-1-cuigaosheng1@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 14 Sep 2026 14:23:42 +0000
-Message-Id: <20260914142343.1A3B41F00898@smtp.kernel.org>
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="VgiZ38xu";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="bG7oIN5x";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="DBJ3tvPd";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="YC+3iRCm"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 0D40421AC5;
+	Mon, 14 Sep 2026 15:35:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1789400150; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=Yfhzq82k8L8drMq+Ll2NQnVekhrjDO6tZ7cNiceRBV0=;
+	b=VgiZ38xuAJfCHBmpUs4Mc0D+YwMFCv8VljVWlO7WMP7ptTtR5fULuiOh/YfNomSrYzx38O
+	7sa0JstEl1eUi3/YJ5GyBhQYyY0NsSY2lkNSLytgQO7Au3RfY6jZsoDwKNLjk4vixj/Wti
+	F2zHNNpdfKBto6qaaRKzRChYi8+63r8=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1789400150;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=Yfhzq82k8L8drMq+Ll2NQnVekhrjDO6tZ7cNiceRBV0=;
+	b=bG7oIN5x0Qjs7RcLu0ty7ReoNmGtegRGwSI5P+bCpq/G7fFGgpJWCk+r5xxs/mZXIUnff/
+	vxw2to5dg6vDgpDg==
+Authentication-Results: smtp-out1.suse.de;
+	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=DBJ3tvPd;
+	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b=YC+3iRCm
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1789400146; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=Yfhzq82k8L8drMq+Ll2NQnVekhrjDO6tZ7cNiceRBV0=;
+	b=DBJ3tvPdMy3SurN3mbfnllqVEF7yVWFtPK0AWWeu1vbxByxkyow/v72hcRLncOogjGUuDq
+	frDLqMH+/o5Epx3CheXva1fiSpR8eXx938NrDwmvlTufdScHsda85AOOgpPqEWLxEflyiF
+	zpXIzPKep/WjKTXxodOHz3s5EyvtCng=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1789400146;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=Yfhzq82k8L8drMq+Ll2NQnVekhrjDO6tZ7cNiceRBV0=;
+	b=YC+3iRCm0/3Do8mGLGAI30Rjnm84lf9hVnTR2+5I8LhOHLqziT8svovyxEfu1W29rHfKy6
+	dmZrO6WMNfFrgCCw==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id A9E2C1368C;
+	Mon, 14 Sep 2026 15:35:45 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id 7NoMKFEUqGo4cgAAD6G6ig
+	(envelope-from <tzimmermann@suse.de>); Mon, 14 Sep 2026 15:35:45 +0000
+Message-ID: <ac910605-ee57-4139-bea7-38fbbe99777f@suse.de>
+Date: Mon, 14 Sep 2026 17:35:45 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/5] vt: Add cursor-size helpers
+To: Helge Deller <deller@gmx.de>, gregkh@linuxfoundation.org,
+ jirislaby@kernel.org, simona@ffwll.ch
+Cc: linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ linux-serial@vger.kernel.org, sashiko-reviews@lists.linux.dev
+References: <20260911094518.78093-1-tzimmermann@suse.de>
+ <20260911094518.78093-2-tzimmermann@suse.de>
+ <31dfff58-f3c2-4265-b34f-e40bdc61e18c@gmx.de>
+Content-Language: en-US
+From: Thomas Zimmermann <tzimmermann@suse.de>
+Autocrypt: addr=tzimmermann@suse.de; keydata=
+ xsBNBFs50uABCADEHPidWt974CaxBVbrIBwqcq/WURinJ3+2WlIrKWspiP83vfZKaXhFYsdg
+ XH47fDVbPPj+d6tQrw5lPQCyqjwrCPYnq3WlIBnGPJ4/jreTL6V+qfKRDlGLWFjZcsrPJGE0
+ BeB5BbqP5erN1qylK9i3gPoQjXGhpBpQYwRrEyQyjuvk+Ev0K1Jc5tVDeJAuau3TGNgah4Yc
+ hdHm3bkPjz9EErV85RwvImQ1dptvx6s7xzwXTgGAsaYZsL8WCwDaTuqFa1d1jjlaxg6+tZsB
+ 9GluwvIhSezPgnEmimZDkGnZRRSFiGP8yjqTjjWuf0bSj5rUnTGiyLyRZRNGcXmu6hjlABEB
+ AAHNJ1Rob21hcyBaaW1tZXJtYW5uIDx0emltbWVybWFubkBzdXNlLmRlPsLAjgQTAQgAOAIb
+ AwULCQgHAgYVCgkICwIEFgIDAQIeAQIXgBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftODH
+ AAoJEGgNwR1TC3ojx1wH/0hKGWugiqDgLNXLRD/4TfHBEKmxIrmfu9Z5t7vwUKfwhFL6hqvo
+ lXPJJKQpQ2z8+X2vZm/slsLn7J1yjrOsoJhKABDi+3QWWSGkaGwRJAdPVVyJMfJRNNNIKwVb
+ U6B1BkX2XDKDGffF4TxlOpSQzdtNI/9gleOoUA8+jy8knnDYzjBNOZqLG2FuTdicBXblz0Mf
+ vg41gd9kCwYXDnD91rJU8tzylXv03E75NCaTxTM+FBXPmsAVYQ4GYhhgFt8S2UWMoaaABLDe
+ 7l5FdnLdDEcbmd8uLU2CaG4W2cLrUaI4jz2XbkcPQkqTQ3EB67hYkjiEE6Zy3ggOitiQGcqp
+ j//OwE0EWznS4AEIAMYmP4M/V+T5RY5at/g7rUdNsLhWv1APYrh9RQefODYHrNRHUE9eosYb
+ T6XMryR9hT8XlGOYRwKWwiQBoWSDiTMo/Xi29jUnn4BXfI2px2DTXwc22LKtLAgTRjP+qbU6
+ 3Y0xnQN29UGDbYgyyK51DW3H0If2a3JNsheAAK+Xc9baj0LGIc8T9uiEWHBnCH+RdhgATnWW
+ GKdDegUR5BkDfDg5O/FISymJBHx2Dyoklv5g4BzkgqTqwmaYzsl8UxZKvbaxq0zbehDda8lv
+ hFXodNFMAgTLJlLuDYOGLK2AwbrS3Sp0AEbkpdJBb44qVlGm5bApZouHeJ/+n+7r12+lqdsA
+ EQEAAcLAdgQYAQgAIAIbDBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftOH6AAoJEGgNwR1T
+ C3ojVSkIALpAPkIJPQoURPb1VWjh34l0HlglmYHvZszJWTXYwavHR8+k6Baa6H7ufXNQtThR
+ yIxJrQLW6rV5lm7TjhffEhxVCn37+cg0zZ3j7zIsSS0rx/aMwi6VhFJA5hfn3T0TtrijKP4A
+ SAQO9xD1Zk9/61JWk8OysuIh7MXkl0fxbRKWE93XeQBhIJHQfnc+YBLprdnxR446Sh8Wn/2D
+ Ya8cavuWf2zrB6cZurs048xe0UbSW5AOSo4V9M0jzYI4nZqTmPxYyXbm30Kvmz0rYVRaitYJ
+ 4kyYYMhuULvrJDMjZRvaNe52tkKAvMevcGdt38H4KSVXAylqyQOW5zvPc4/sq9c=
+In-Reply-To: <31dfff58-f3c2-4265-b34f-e40bdc61e18c@gmx.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Score: -4.51
+X-Rspamd-Queue-Id: 0D40421AC5
+X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
+X-Spam-Level: 
+X-Rspamd-Action: no action
+X-Spamd-Result: default: False [-4.51 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	MX_GOOD(-0.01)[];
+	FREEMAIL_TO(0.00)[gmx.de,linuxfoundation.org,kernel.org,ffwll.ch];
+	FREEMAIL_ENVRCPT(0.00)[gmx.de];
+	ARC_NA(0.00)[];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	TO_DN_SOME(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	RCPT_COUNT_SEVEN(0.00)[8];
+	DNSWL_BLOCKED(0.00)[2a07:de40:b281:106:10:150:64:167:received];
+	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	RCVD_TLS_ALL(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	MID_RHS_MATCH_FROM(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:url,imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns,suse.de:dkim,suse.de:email,suse.de:mid,gmx.de:email];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	DKIM_TRACE(0.00)[suse.de:+]
+X-Spam-Flag: NO
 
-Thank you for your contribution! Sashiko AI review found 1 potential issue(=
-s) to consider:
-- [High] Unsafe state clearing in error path causes data race and resource =
-leak on double-registration
+Hi
+
+Am 12.09.26 um 21:01 schrieb Helge Deller:
+> On 9/11/26 11:25, Thomas Zimmermann wrote:
+>> Cursors in the VT subsystem are blocks within a character cell that are
+>> filled with the foreground color. The new helpers vc_font_cursor_start()
+>> and vc_font_cursor_end() return the scanlines in which the cursor block
+>> starts rsp. ends. This is compatible with VGA hardware
+>>
+>> In terms of cursor design, the new cursor-size helpers follow 
+>> established
+>> styles in fbcon. The only exception is in underline cursors for fonts 
+>> with
+>> a size larger than 10. The underlining dash is now one pixel closer to
+>> the font-glyph data, so that the cursor looks less detached. This 
+>> follows
+>> the style used by vgacon.
+>>
+>> Similar code in vgacon and fbcon ignores the cursor's default size 
+>> stored
+>> in vt.cur_default. The consoles default to full-block cursors, while vt
+>> defaults to underline cursors. The new helper fall back to 
+>> cur_default and
+>> then underline cursors; in this order.
+>>
+>> Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
+>> ---
+>>   drivers/tty/vt/vt.c            | 90 ++++++++++++++++++++++++++++++++++
+>>   include/linux/console_struct.h |  2 +
+>>   2 files changed, 92 insertions(+)
+> You may add
+> Reviewed-by: Helge Deller <deller@gmx.de>
+> to the whole series.
+
+Thanks a lot. I'll send out another revision to address the bot's concerns.
+
+Best regards
+Thomas
+
+>
+> Thanks!
+> Helge
+>
+
+-- 
 --
+Thomas Zimmermann
+Graphics Driver Developer
+SUSE Software Solutions Germany GmbH
+Frankenstr. 146, 90461 Nürnberg, Germany, www.suse.com
+GF: Jochen Jaser, Andrew McDonald, (HRB 36809, AG Nürnberg)
 
-commit 18ff022090858881e0c42eddefd1a71c7ed91334
-Author: Cui GaoSheng <cuigaosheng1@huawei.com>
 
-serial: core: fix NULL/dangling port_dev on failed re-register
-
-Fixes a general protection fault in the serial unregister path by explicitly
-clearing port->port_dev and bailing out if it is NULL. It also clears the
-UART port slot in the driver state upon registration failure.
-
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial=
-_core.c
-> index 95774b0f1484b..62d93c5964e25 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -3358,6 +3358,17 @@ int serial_core_register_port(struct uart_driver *=
-drv, struct uart_port *port)
-> =20
->  err_unregister_port_dev:
->  	serial_base_port_device_remove(port->port_dev);
-> +	/*
-> +	 * serial_base_port_device_remove() dropped the last reference to the
-> +	 * port device, so leave no dangling ->port_dev behind. Restore the
-> +	 * state slot to the same "not registered" state that
-> +	 * serial_core_remove_one_port() produces on the normal path; the
-> +	 * line range guard also covers the -EINVAL exit of
-> +	 * serial_core_add_one_port() where line >=3D drv->nr.
-> +	 */
-> +	port->port_dev =3D NULL;
-> +	if (port->line < drv->nr && drv->state[port->line].uart_port =3D=3D por=
-t)
-> +		drv->state[port->line].uart_port =3D NULL;
-
-[Severity: High]
-Can this error path clobber an active registration if a driver incorrectly
-attempts to register an already-registered port?
-
-If a driver double-registers the same port, serial_core_add_one_port() will
-fail and return -EINVAL because state->uart_port is already set. The error
-path here then evaluates drv->state[port->line].uart_port =3D=3D port as tr=
-ue
-due to the original successful registration.=20
-
-Does this forcibly clear drv->state[port->line].uart_port without acquiring
-the required port->mutex, creating a data race and destroying the state of
-the active registration?=20
-
-When the driver later calls uart_remove_one_port(), will it return early
-because uart_port is NULL, potentially leaking tty devices, sysfs nodes,
-and memory allocations?
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260914135154.3260=
-303-1-cuigaosheng1@huawei.com?part=3D1
