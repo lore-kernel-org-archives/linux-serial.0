@@ -1,207 +1,136 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D93F479887;
-	Mon, 14 Sep 2026 15:35:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B176496D42
+	for <linux-serial@vger.kernel.org>; Mon, 14 Sep 2026 17:13:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789400158; cv=none; b=O6q8UTJOhyqcN1Howy9mP/01L8eyN9M03xwOUJsb67p05R7Ld2HRT04MVxO5kYvyEgLbPVtjLk23gAf3ZPAtIiGwocfG50rFpgjqOlMurF/ggQ7NKbE3EmBUbaFsURTmGn+ollfm9J2kWafQApP4IpRbnXL5IGvnFLz+ATrlngk=
+	t=1789406001; cv=none; b=VNM6saQc0jI3iclXM5IXIMEtrpiVUK9oqBDBoukL5/LnfKgnbpMUIamo6H2bsqTDgTeKH/qjZyBxIEUsMnEJ2Em2onkkz1B+O3blpes+3qlwFCTpONCiLcAF5Q8hEu1oogBDwHg0pZuTE+4pBLtZ2Xnxvh3A/SxnvCByS5i6DBw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789400158; c=relaxed/simple;
-	bh=MAGPHmXCBIhziBEg26ZvuPjqgU0drVUTwS2yrtaIaIo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=JKWmY8aHoUZu0kjKQQy8rjtBmp/G8OkRRbLenpcjbo0qYvhhhjzzmdjrFrMtA1YXUpVQY608ogE65/oV1eLkhvzoBY0tkwn7I8t7JfQBy7AWwDUcFsSEfZvo0bMrHAlfFrNYv0SM/qS8IA+XaoJ1oC5XUEEhxG7AKDvLEX8FasE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=VgiZ38xu; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=bG7oIN5x; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=DBJ3tvPd; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=YC+3iRCm; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
+	s=arc-20240116; t=1789406001; c=relaxed/simple;
+	bh=DWfd+OrYYBBAjoeKGlYddJuwoBUWlcnOVSA19p7gCPQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=VgRYSDAdOhQbH66t6DbCpQEM8k6MoQspkEtsfsQL18qMkalibG9gIr5Evr9WCM7o/cQHZnlMdiKoexKkVDFDW/nQSL/SVCWvjmv4RfDASWscOP0fSjKifHxqAOY8CPW6xR/AuC6zBDndcDckGC7KnjGVj4tLc7CWtYNDAKRHyFA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MFRnhab0; arc=none smtp.client-ip=209.85.128.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="VgiZ38xu";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="bG7oIN5x";
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="DBJ3tvPd";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="YC+3iRCm"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 0D40421AC5;
-	Mon, 14 Sep 2026 15:35:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1789400150; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=Yfhzq82k8L8drMq+Ll2NQnVekhrjDO6tZ7cNiceRBV0=;
-	b=VgiZ38xuAJfCHBmpUs4Mc0D+YwMFCv8VljVWlO7WMP7ptTtR5fULuiOh/YfNomSrYzx38O
-	7sa0JstEl1eUi3/YJ5GyBhQYyY0NsSY2lkNSLytgQO7Au3RfY6jZsoDwKNLjk4vixj/Wti
-	F2zHNNpdfKBto6qaaRKzRChYi8+63r8=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1789400150;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=Yfhzq82k8L8drMq+Ll2NQnVekhrjDO6tZ7cNiceRBV0=;
-	b=bG7oIN5x0Qjs7RcLu0ty7ReoNmGtegRGwSI5P+bCpq/G7fFGgpJWCk+r5xxs/mZXIUnff/
-	vxw2to5dg6vDgpDg==
-Authentication-Results: smtp-out1.suse.de;
-	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=DBJ3tvPd;
-	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b=YC+3iRCm
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1789400146; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=Yfhzq82k8L8drMq+Ll2NQnVekhrjDO6tZ7cNiceRBV0=;
-	b=DBJ3tvPdMy3SurN3mbfnllqVEF7yVWFtPK0AWWeu1vbxByxkyow/v72hcRLncOogjGUuDq
-	frDLqMH+/o5Epx3CheXva1fiSpR8eXx938NrDwmvlTufdScHsda85AOOgpPqEWLxEflyiF
-	zpXIzPKep/WjKTXxodOHz3s5EyvtCng=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1789400146;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=Yfhzq82k8L8drMq+Ll2NQnVekhrjDO6tZ7cNiceRBV0=;
-	b=YC+3iRCm0/3Do8mGLGAI30Rjnm84lf9hVnTR2+5I8LhOHLqziT8svovyxEfu1W29rHfKy6
-	dmZrO6WMNfFrgCCw==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id A9E2C1368C;
-	Mon, 14 Sep 2026 15:35:45 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id 7NoMKFEUqGo4cgAAD6G6ig
-	(envelope-from <tzimmermann@suse.de>); Mon, 14 Sep 2026 15:35:45 +0000
-Message-ID: <ac910605-ee57-4139-bea7-38fbbe99777f@suse.de>
-Date: Mon, 14 Sep 2026 17:35:45 +0200
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MFRnhab0"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-49e78adf099so16629165e9.2
+        for <linux-serial@vger.kernel.org>; Mon, 14 Sep 2026 10:13:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1789405997; x=1790010797; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=b+lHxHvQW6ptoO5MEGq5MTyGK+6vHvFuZMkZJq4Ndzc=;
+        b=MFRnhab0hntRf3ahIUL7wo8NO040OIvRogUEtdFVo5Nwzda2TxxX+GMt2UJpWJmWSu
+         Mzvfa2b+TAPy2v3XccD8smBuVpMu3aA8MnscuWlty7Vif266e0Qt2sHReOST2yhq0zBk
+         NKJwrOlBWXjWRm/jl7visdu6zMyfwDnPOW/HYfgxWuY+3zbY+EnptwdRNxqQHQCfedVH
+         kNkdmetUgF8RBD4bfBInEvRgFOfrK3s0X8MtuZETdqJbbBj5CIi/NNWtS25xK/JIGLno
+         VAg65NrBfqvdDs8n7vIxAsMaJdxkay2oAEaGI5sTu8rOJVDMVnWP/HMz2L+QStne0OGg
+         PvCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1789405997; x=1790010797;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=b+lHxHvQW6ptoO5MEGq5MTyGK+6vHvFuZMkZJq4Ndzc=;
+        b=nBgeTdNsPSB2z48lSm1vH6QtYAnToj4Ar0d7QcItl7Tj9lQNaUD/Q5gVI/97flVCwZ
+         lG0np9XtYqL7SAa4TcKAqqap5MdjJ+NqS33YJGfONw3Se5DdWFmhE8m1mOwxCu3hTfY/
+         pKjIfXPGaspWlbP7bdoP1zRRJlP2/Rf1tDgdxeobe8dtWv0NDrvG05t96K9O0ydZNjIo
+         OSEzafkJMJrHeGb5ZklzqT88NvltmL+qKSJ+WZDQ6t9wl48lHBkX1zkKnNWm/9LWeraX
+         I6SJ+1Ja+NxhKBYlm6EOjOulWwAgWDdytwuYANV2bnxfoNkAyzXd9lxfdhx/IxxWaUKS
+         QdaA==
+X-Forwarded-Encrypted: i=1; AKwUvByyOMeQ0RmgGKMPIoZRLjsgSzZ7xlRosqHGmYlBc64WU3nN8/rfPk9qD6GZMmUD82ghMMzlrrBoJcOSMFo=@vger.kernel.org
+X-Gm-Message-State: AFuF++kgqMwPQWFC0PbLDdw+naIiBia5QS3avYMrrmyThse5UZDjDV+1
+	bNIohwQEtlRPIcr4l8jepS3P4V66VaeJGXhvE0GMxKgE6XZddln4TIsM
+X-Gm-Gg: AYBFou1pr2RdoF/9gKXiMhH1gmMER4+Xyo2jzYxC9IgFTVC3XQo35jbMsPnkUTfTpsg
+	kWzS8gopAhMt4YTVKOMAQ8PKz0u5Vb9ypvWTG/IOcZK2tDMwEpUWG8s4h/BCO/MphfImcdJrYo1
+	a77LcalbHGA077ldG4D3iF4+nDbaeBxooq389SjQMPuZgWtibeoJLtyOYW1H5tZFeQ3fNmjrqTj
+	jMvCRIpb2bmdFZ1bJOOCgF7kuojIbn0qtOuGgBQ8NAFuCiMCbX0MmQvQCiH6tCzFGE2vv3b0Kvo
+	h5uh8b1bOPIavqWjSy6/6U6IeZeIS0BeJsm0/HFQJ2uXKsbWTLBdJPch2nZG+z1FN1U5SbrQSaf
+	M/sCm3U3qQ/LVFcZAwr0BGcc5/SrxDRfKvEHJJZJYKROljxeVpz/qI7Ato4ALmJRebW2cYN6DNi
+	lFb8ll78/b2X927HUduiOXUxJoI010xNajZZEX1dZsKSYwZ+NJiGgklYXp70JLaY0irJz39yPYk
+	clL1mUYnOrQUlUoZzFhuSNZ
+X-Received: by 2002:a05:600c:3585:b0:495:4d88:e630 with SMTP id 5b1f17b1804b1-49e7a64b723mr52892565e9.10.1789405996936;
+        Mon, 14 Sep 2026 10:13:16 -0700 (PDT)
+Received: from localhost (ip87-106-108-193.pbiaas.com. [87.106.108.193])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49e7d675a50sm6040645e9.9.2026.09.14.10.13.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Sep 2026 10:13:16 -0700 (PDT)
+Date: Mon, 14 Sep 2026 19:13:15 +0200
+From: =?iso-8859-1?Q?G=FCnther?= Noack <gnoack3000@gmail.com>
+To: Christopher Lusk <clusk@northecho.dev>
+Cc: =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>,
+	=?iso-8859-1?Q?G=FCnther?= Noack <gnoack@google.com>,
+	Oleg Nesterov <oleg@redhat.com>, Jiri Slaby <jirislaby@kernel.org>,
+	Shuah Khan <shuah@kernel.org>,
+	Tahera Fahimi <fahimitahera@gmail.com>,
+	Paul Moore <paul@paul-moore.com>,
+	Casey Schaufler <casey@schaufler-ca.com>,
+	John Johansen <john.johansen@canonical.com>,
+	linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: Re: [RFC PATCH 0/2] Landlock signal scope and TIOCSIG
+Message-ID: <20260914.239dc75285d2@gnoack.org>
+References: <20260913221958.839429-1-clusk@northecho.dev>
+ <20260914.b8a029f9abb8@gnoack.org>
+ <20260914134013.1457130-1-clusk@northecho.dev>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/5] vt: Add cursor-size helpers
-To: Helge Deller <deller@gmx.de>, gregkh@linuxfoundation.org,
- jirislaby@kernel.org, simona@ffwll.ch
-Cc: linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
- linux-serial@vger.kernel.org, sashiko-reviews@lists.linux.dev
-References: <20260911094518.78093-1-tzimmermann@suse.de>
- <20260911094518.78093-2-tzimmermann@suse.de>
- <31dfff58-f3c2-4265-b34f-e40bdc61e18c@gmx.de>
-Content-Language: en-US
-From: Thomas Zimmermann <tzimmermann@suse.de>
-Autocrypt: addr=tzimmermann@suse.de; keydata=
- xsBNBFs50uABCADEHPidWt974CaxBVbrIBwqcq/WURinJ3+2WlIrKWspiP83vfZKaXhFYsdg
- XH47fDVbPPj+d6tQrw5lPQCyqjwrCPYnq3WlIBnGPJ4/jreTL6V+qfKRDlGLWFjZcsrPJGE0
- BeB5BbqP5erN1qylK9i3gPoQjXGhpBpQYwRrEyQyjuvk+Ev0K1Jc5tVDeJAuau3TGNgah4Yc
- hdHm3bkPjz9EErV85RwvImQ1dptvx6s7xzwXTgGAsaYZsL8WCwDaTuqFa1d1jjlaxg6+tZsB
- 9GluwvIhSezPgnEmimZDkGnZRRSFiGP8yjqTjjWuf0bSj5rUnTGiyLyRZRNGcXmu6hjlABEB
- AAHNJ1Rob21hcyBaaW1tZXJtYW5uIDx0emltbWVybWFubkBzdXNlLmRlPsLAjgQTAQgAOAIb
- AwULCQgHAgYVCgkICwIEFgIDAQIeAQIXgBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftODH
- AAoJEGgNwR1TC3ojx1wH/0hKGWugiqDgLNXLRD/4TfHBEKmxIrmfu9Z5t7vwUKfwhFL6hqvo
- lXPJJKQpQ2z8+X2vZm/slsLn7J1yjrOsoJhKABDi+3QWWSGkaGwRJAdPVVyJMfJRNNNIKwVb
- U6B1BkX2XDKDGffF4TxlOpSQzdtNI/9gleOoUA8+jy8knnDYzjBNOZqLG2FuTdicBXblz0Mf
- vg41gd9kCwYXDnD91rJU8tzylXv03E75NCaTxTM+FBXPmsAVYQ4GYhhgFt8S2UWMoaaABLDe
- 7l5FdnLdDEcbmd8uLU2CaG4W2cLrUaI4jz2XbkcPQkqTQ3EB67hYkjiEE6Zy3ggOitiQGcqp
- j//OwE0EWznS4AEIAMYmP4M/V+T5RY5at/g7rUdNsLhWv1APYrh9RQefODYHrNRHUE9eosYb
- T6XMryR9hT8XlGOYRwKWwiQBoWSDiTMo/Xi29jUnn4BXfI2px2DTXwc22LKtLAgTRjP+qbU6
- 3Y0xnQN29UGDbYgyyK51DW3H0If2a3JNsheAAK+Xc9baj0LGIc8T9uiEWHBnCH+RdhgATnWW
- GKdDegUR5BkDfDg5O/FISymJBHx2Dyoklv5g4BzkgqTqwmaYzsl8UxZKvbaxq0zbehDda8lv
- hFXodNFMAgTLJlLuDYOGLK2AwbrS3Sp0AEbkpdJBb44qVlGm5bApZouHeJ/+n+7r12+lqdsA
- EQEAAcLAdgQYAQgAIAIbDBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftOH6AAoJEGgNwR1T
- C3ojVSkIALpAPkIJPQoURPb1VWjh34l0HlglmYHvZszJWTXYwavHR8+k6Baa6H7ufXNQtThR
- yIxJrQLW6rV5lm7TjhffEhxVCn37+cg0zZ3j7zIsSS0rx/aMwi6VhFJA5hfn3T0TtrijKP4A
- SAQO9xD1Zk9/61JWk8OysuIh7MXkl0fxbRKWE93XeQBhIJHQfnc+YBLprdnxR446Sh8Wn/2D
- Ya8cavuWf2zrB6cZurs048xe0UbSW5AOSo4V9M0jzYI4nZqTmPxYyXbm30Kvmz0rYVRaitYJ
- 4kyYYMhuULvrJDMjZRvaNe52tkKAvMevcGdt38H4KSVXAylqyQOW5zvPc4/sq9c=
-In-Reply-To: <31dfff58-f3c2-4265-b34f-e40bdc61e18c@gmx.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Score: -4.51
-X-Rspamd-Queue-Id: 0D40421AC5
-X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
-X-Spam-Level: 
-X-Rspamd-Action: no action
-X-Spamd-Result: default: False [-4.51 / 50.00];
-	BAYES_HAM(-3.00)[100.00%];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	MIME_GOOD(-0.10)[text/plain];
-	MX_GOOD(-0.01)[];
-	FREEMAIL_TO(0.00)[gmx.de,linuxfoundation.org,kernel.org,ffwll.ch];
-	FREEMAIL_ENVRCPT(0.00)[gmx.de];
-	ARC_NA(0.00)[];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	TO_DN_SOME(0.00)[];
-	MIME_TRACE(0.00)[0:+];
-	RCPT_COUNT_SEVEN(0.00)[8];
-	DNSWL_BLOCKED(0.00)[2a07:de40:b281:106:10:150:64:167:received];
-	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	RCVD_TLS_ALL(0.00)[];
-	FROM_EQ_ENVFROM(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	MID_RHS_MATCH_FROM(0.00)[];
-	RCVD_COUNT_TWO(0.00)[2];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:url,imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns,suse.de:dkim,suse.de:email,suse.de:mid,gmx.de:email];
-	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	DKIM_TRACE(0.00)[suse.de:+]
-X-Spam-Flag: NO
+In-Reply-To: <20260914134013.1457130-1-clusk@northecho.dev>
 
-Hi
+Hello!
 
-Am 12.09.26 um 21:01 schrieb Helge Deller:
-> On 9/11/26 11:25, Thomas Zimmermann wrote:
->> Cursors in the VT subsystem are blocks within a character cell that are
->> filled with the foreground color. The new helpers vc_font_cursor_start()
->> and vc_font_cursor_end() return the scanlines in which the cursor block
->> starts rsp. ends. This is compatible with VGA hardware
->>
->> In terms of cursor design, the new cursor-size helpers follow 
->> established
->> styles in fbcon. The only exception is in underline cursors for fonts 
->> with
->> a size larger than 10. The underlining dash is now one pixel closer to
->> the font-glyph data, so that the cursor looks less detached. This 
->> follows
->> the style used by vgacon.
->>
->> Similar code in vgacon and fbcon ignores the cursor's default size 
->> stored
->> in vt.cur_default. The consoles default to full-block cursors, while vt
->> defaults to underline cursors. The new helper fall back to 
->> cur_default and
->> then underline cursors; in this order.
->>
->> Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
->> ---
->>   drivers/tty/vt/vt.c            | 90 ++++++++++++++++++++++++++++++++++
->>   include/linux/console_struct.h |  2 +
->>   2 files changed, 92 insertions(+)
-> You may add
-> Reviewed-by: Helge Deller <deller@gmx.de>
-> to the whole series.
-
-Thanks a lot. I'll send out another revision to address the bot's concerns.
-
-Best regards
-Thomas
-
+On Mon, Sep 14, 2026 at 09:40:13AM -0400, Christopher Lusk wrote:
+> Your capability framing convinces me.  Controlling who may attach to (or
+> open a master for) the PTY is the right layer, and the master FD is best
+> thought of as the capability, the same way socketpair() is.
+> 
+> You are also right that the series is incomplete as a fix: the same three
+> signals arrive through the n_tty control-character path (Ctrl-C / Ctrl-\ /
+> Ctrl-Z) that my patch does not touch, and PTYs additionally raise SIGWINCH,
+> SIGHUP and SIGCONT.  That reinforces your point rather than mine.  Chasing
+> individual signal-delivery paths inside the TTY layer is the wrong layer,
+> and a per-ioctl hook would only paper over one entry into a mechanism that
+> is working as designed.
 >
-> Thanks!
-> Helge
->
+> One question, mostly so I have the line right in my own notes rather than
+> to relitigate: how do you see this relative to the SIGIO/fowner path that
+> 4b80320ca7ed brought under SCOPE_SIGNAL?  My read of the distinction is
+> that in the SIGIO case the sandboxed process unilaterally selects the target
+> by arming the owner, whereas here the recipients have voluntarily attached
+> to the terminal and the TTY driver delivers job-control signals over that
+> attachment.  If that is the intended boundary, it is a clean one, and I am
+> happy to treat TTY-driven signals as outside the guarantee.
 
--- 
---
-Thomas Zimmermann
-Graphics Driver Developer
-SUSE Software Solutions Germany GmbH
-Frankenstr. 146, 90461 Nürnberg, Germany, www.suse.com
-GF: Jochen Jaser, Andrew McDonald, (HRB 36809, AG Nürnberg)
+Yes, that is the difference why SIGIO had to be protected -- in the
+SIGIO case, it was the already landlocked process which could itself
+select the signal recipients through fcntl(fd, F_SETOWN, ...).
+
+In the terminal case, it is the TTY-client-side processes that select
+which processes are attached to the terminal.  With the PTY master FD
+alone, it is not possible to signal processes that aren't already
+attached to the terminal.
 
 
+> If it is useful, I would be glad to send a small documentation patch making
+> that explicit: a note in the SCOPE_SIGNAL / IPC-scoping section of
+> landlock.rst that TTY-driver signal delivery (TIOCSIG and the
+> control-character path) is not mediated by SCOPE_SIGNAL, with the practical
+> guidance to control PTY attachment instead.  I will drop the task_kill
+> approach.
+
+Thank you, I would appreciate that!
+
+Thanks,
+–Günther
