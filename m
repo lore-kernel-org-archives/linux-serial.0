@@ -1,161 +1,219 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from AM0PR02CU008.outbound.protection.outlook.com (mail-westeuropeazon11023077.outbound.protection.outlook.com [52.101.72.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30FD84189B9
-	for <linux-serial@vger.kernel.org>; Mon, 14 Sep 2026 08:57:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789376249; cv=none; b=bRO8h2xuvzu3BUtZMfar/Ebu85OpC+3Mvp/xuvnU4VrsJfEKPCe2xL1FG0y8qsIYq9S0XZdo4K9glTTbfjGXaVcezkmAcEfY8Z2bdHMZb4/62TdotmOl7CJKzc/jHK6YKhtYuE2qnxHt5lZFiQasrfgEdjyD1SXlfMP9pyckstI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789376249; c=relaxed/simple;
-	bh=JCvFHGCA4rHUgkn8fPq4I3sbSzAZ4NWsrmGMQGr7b3g=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ubCuXW5GWqcAKQ7Sz4U6Xfy1ibRtjXgDBpDujVuOR9dO9ZF+MLRQ85ionndETFA5qx0cURLMdzxY1hiQIBgoiKxXiqrxCfQG7s5Fy0cgoC/JilVE98HbFsip3x1dMiwsobThMk3SmfOGVK8JLvHuL7fRq4dHcYTZZz5M2wh/vQ8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aIuB5y36; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9A3C41A93A;
+	Mon, 14 Sep 2026 09:11:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.72.77
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1789377070; cv=fail; b=XtpKeH7NJs/hJMKN/ow+egZrsNz8MaX2iLdQIs0HnLqNiJVBxyaKQQjEhGUK9YIxQgsGNA2N/AjZd9h2/gqHeNN41HUZzxsWPZiJKDZ3VVU3su3fpV1wqLlPIMLgnC+6/ax6e+3Tn+vA0jAECqQsOICuVpdZ+NIern3qAhyUuss=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1789377070; c=relaxed/simple;
+	bh=p9SUkw4M1m1sMlxikzevs1EmohbKilUg7fWcUtP1Lqg=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=lYR2sZIS6qqH7v/74v6ekyurz82T4DoPUyLfxrvVFLQ3B/giFXCyOO2/002hYEidY17fTtFbyW4o5zgB0oqupaDs6bfRgfT7w8ClYN0KrqHwyorULD5syvtrx2/7K6tUr8VQj7x3FEStKtFthqtA6XwibTcb+37W6tW93wbMtPo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com; spf=pass smtp.mailfrom=vaisala.com; dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b=woVntTG+; arc=fail smtp.client-ip=52.101.72.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vaisala.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aIuB5y36"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70EF71F008A1
-	for <linux-serial@vger.kernel.org>; Mon, 14 Sep 2026 08:57:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789376237;
-	bh=xKdkdtTMOIdPI1/d4Upir9+jkNvwkE+aa7zOe3c/KSU=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=aIuB5y36Tax6rIEyx6gsawh+nmQi+CfR7FHrKZuLBVJ4edweefoGKhuMVg5N3UqNj
-	 w8WPgPnmc6SnBOWB/RoqfAFiNTtkcDcqqluau4qWXwkvQejYkikrsevok8AeItp24r
-	 w0NOEcSf13yoJ2z5Izs7lRKIHTY19wMhPVvqFYbRrR/skINOBT2ElFCdNrfHv7CZYD
-	 cBf8v/VGY/WFbjHPjlmFdEGdxzLGcUvOnyNI7DAZfPtF75ROZI9XIHTqQgZ5MT+tEC
-	 Eg9x1EkAZ0Uzc+gabb3oL2Xea10cpHDZIq9Vvp9rfnkzUvPOW06wQB24AMnMPSJV/B
-	 B8xN1hI9PqiNQ==
-Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-5b754cc3b6aso3226220e87.2
-        for <linux-serial@vger.kernel.org>; Mon, 14 Sep 2026 01:57:17 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AKwUvBznITEsD7H62PG7qJ8uKz5ZzUvMDoFycH0iG1oQmVywF2BsE1POUauPbdTQ8HWQ3iU/dQ2pmtEZdmND1CU=@vger.kernel.org
-X-Gm-Message-State: AFuF++mQbNLVds1OynJtBBL4rmpURwaw8/udots0EhIcLz2gFQxalMpR
-	CVb6AB0PtzpI6Asa+9lcMlVKEuuUABO3GN+OCyLMU7ZGjGV5RU5FaXFOkDs1nb/6u4+ZWseKgVF
-	/BCMXXPhopmQQ4/WTOe0/9ETU9+NfW0g=
-X-Received: by 2002:a05:6512:1293:b0:5b6:1a7c:aa12 with SMTP id
- 2adb3069b0e04-5b8ae6acc3dmr443850e87.42.1789376236013; Mon, 14 Sep 2026
- 01:57:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b="woVntTG+"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=cUInCcyL56AmZROHc3kRIwijAaFmbR6S984yvkOWPqMRA5uxZf/6XA1RiA/hKA5QztDEHbgZA2OakYvaBJocSEgFQlwxXPmoNLqB8Xf+01MBw2JuNwHNjk/s7Mh337HNRJSNTJK2ObaP+wUnIS9XqqY3htqjWj/St4W+iD97qNqoiN4L101a+18gX0rGFOvjqlsoTFLp3j04igbaEqSmRJRSG9jd9DFw8UWZezPQNEfkbsoFb9vaqvNen5EvljsMETzJS1n08S/YfM5COI6Q0Ubz6vCVK6QXuPDM89WiwAz94ifb32XHo5HE3AWBc1vLjiS+ZS1SkYEa/gA1JgznvQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Hf79ZRRg3ZPY/mI45CX6zab+grlZux101fi0b+FYgus=;
+ b=Z3KnyGb512vjOvH2ejBArBwb6WbM5MfLDbgkpZfJ5ksiuApviOJ5cd1+ozUCDKLP4ko02SC1N/o/R/km+zpZ1VlPgcfHCpvohWIyNGDEBtLkbCVdC/Yl+C6lEYWr5lEL6uOhve53QKc/SWEKQZHH6PL1LAO+IC8yqHS6H6FShrZePDBcO1xG0DdQhFc9FDW9AgKU9gnIMWBeGSAvz9TVlOocjA4k0Y73dY8lvfApiR1eHZ+5n4z1U6+73QOlETnaNST7SNsksJyRBwjOd8owS4006vFexj1zBBSDxWrNoHe8oWiAMU1F19kt6UChP0s3XI0IlJs0NhLh25lWybtIDQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vaisala.com; dmarc=pass action=none header.from=vaisala.com;
+ dkim=pass header.d=vaisala.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vaisala.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Hf79ZRRg3ZPY/mI45CX6zab+grlZux101fi0b+FYgus=;
+ b=woVntTG+RKqmIdaA3WJ/7EqN3y0mf4uI6h4GQDtKleVsvmAhqDniNSyg9TmD5v5/6RjdqcBKQ8a89mzX7+eQOdNWfMyLmNoCjzguysqdKgpEDIlDSqtcP6koa+xjPxTD3bZVmK19YTlMw3h8C7L8EjF5e1Zowgkp7NJQMlcRuMC+ktRapZxlclSaocaWpdqtrrcI6MObKRw8wmE602/gky8NmY7ufcMeQyEyewp0X2D8FWMPOGkbpglRYowny4JKGI4o6iuxcCliGbk6NfnCVMSFGdz7mbvbqagayw79TRIQr4D5gOEwDekIy43B2TdqbW+O1DZFp683x7qyWyF95w==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vaisala.com;
+Received: from AM9PR06MB7907.eurprd06.prod.outlook.com (2603:10a6:20b:3a6::23)
+ by DB9PR06MB7721.eurprd06.prod.outlook.com (2603:10a6:10:255::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.406.12; Mon, 14 Sep
+ 2026 09:10:58 +0000
+Received: from AM9PR06MB7907.eurprd06.prod.outlook.com
+ ([fe80::a597:33a7:d4e2:1b17]) by AM9PR06MB7907.eurprd06.prod.outlook.com
+ ([fe80::a597:33a7:d4e2:1b17%3]) with mapi id 15.21.0406.007; Mon, 14 Sep 2026
+ 09:10:58 +0000
+Message-ID: <9574741a-4daa-46b7-9f38-ee589c82e38a@vaisala.com>
+Date: Mon, 14 Sep 2026 12:10:56 +0300
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RESEND v2] serial: max310x: drive RTS in software when
+ hardware delays are too short
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ Hugo Villeneuve <hvilleneuve@dimonoff.com>
+References: <20260914-max310x-rs485-sw-delay-v2-1-9a7b681e64ce@vaisala.com>
+Content-Language: en-US
+From: Tapio Reijonen <tapio.reijonen@vaisala.com>
+In-Reply-To: <20260914-max310x-rs485-sw-delay-v2-1-9a7b681e64ce@vaisala.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: GV3PEPF0001DBC7.SWEP280.PROD.OUTLOOK.COM
+ (2603:10a6:158:401::6b3) To AM9PR06MB7907.eurprd06.prod.outlook.com
+ (2603:10a6:20b:3a6::23)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <CAD++jLnKXqbV0xB3wvTF9Ri7g1MuWV6csO0MGzCtv5LBwmSr4g@mail.gmail.com>
- <20260827220805.23112-1-michael.zaidman@gmail.com>
-In-Reply-To: <20260827220805.23112-1-michael.zaidman@gmail.com>
-From: Linus Walleij <linusw@kernel.org>
-Date: Mon, 14 Sep 2026 10:57:03 +0200
-X-Gmail-Original-Message-ID: <CAD++jLksAPyfZz6d--n7a1KhPackigEucQJqbYiA-e9S835seA@mail.gmail.com>
-X-Gm-Features: AcwNN1W0b8mgLF0Lz5Bd-fzU0UbPDLmwUn7TUmgZbPxFYpvvpI8bzXM8UFvEfRo
-Message-ID: <CAD++jLksAPyfZz6d--n7a1KhPackigEucQJqbYiA-e9S835seA@mail.gmail.com>
-Subject: Re: [PATCH 08/13] HID: ft260: uart: add modem pins control via ioctl
-To: Michael Zaidman <michael.zaidman@gmail.com>
-Cc: jikos@kernel.org, bentiss@kernel.org, brgl@kernel.org, 
-	germain.hebert@ca.abb.com, rio@r26.me, brunoceg1@gmail.com, 
-	contact@christina-quast.de, daniel.beer@igorinstitute.com, 
-	gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	linux-serial@vger.kernel.org, linux-input@vger.kernel.org, 
-	linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AM9PR06MB7907:EE_|DB9PR06MB7721:EE_
+X-MS-Office365-Filtering-Correlation-Id: 89abe9b2-a01a-44f0-8ffe-08df124016fd
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|23010399003|366016|376014|1800799024|56012099006|5023799004|11063799006|18002099003|22082099003|10067099003;
+X-Microsoft-Antispam-Message-Info:
+	OtrZ2FT5s0OEboQzk1ZV039WIm5yv1xFgDhpix/tf2BgRGbEDplLtnd6g5zPNWk/S4k4c9hfsIxfTnMQlMcFu+mGKZ0OQbB8fzIuCcUnQlF+fu8UvuAsrtafHyTigFOAqEY/8sFM4gIF5O5yJe61BafPyB2BlhC/nzlIatcgGkb5Nq/Wa1FoU3sx429w6zmZYeH2FRlDwF/d3cWzm2+1UZ4zPagHxbvJQ/fe43dSoPM0TAJ7BrH5QQ1QV0QFkPP6aGfRp2TVdPyY8mwv+ibktEGw1zc0xrvoC5GZ5RnYiZPfzpQsGD+vgg/ub+i+iokmZ+hujsszf4lbiyhactKMRVxcyAWBYhxO7TbD4VNDdLZTHlQ3dK+irulD26bynbM44LLFwCpw74pBxZNCv9TuDGnPoxWdGX25Bbhmg7UGTHzhgtcAvyz93Y4yu7W2+2dYuLo+13E319rdW37Y0yb50Mn7uKTaP7MuTekmjwydP6mdBSapKmGU2NFJ7EOiyNnL8yz68bFdrK9TLAqlyjH2UpPbeKr8gFQiytTQHbABlOzMqWr3ZcRJj43keuyVs4T/AJ8Yv2vMXtSBYgJY7juxG3nRfO5MXcmVWC+tt5dVH/g7HqrcC7/zk2bfFqZ3Y7mfPOwI+bAmpzgJpq4eQAFfKWwFrAiM+RoJ8YRBj2tBVaQ=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR06MB7907.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(366016)(376014)(1800799024)(56012099006)(5023799004)(11063799006)(18002099003)(22082099003)(10067099003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?clU5U0t0R3g1SXZTZkNWVHJzb3dLUmJpaDhyOEJIV1NiNUM4QmxRclRCd0p1?=
+ =?utf-8?B?cG9SNFhyWGFsd2N0dVJZcUwyUmVJcmpSZUFnZ3lhZzd4NjhVR3NzWHpLcGdl?=
+ =?utf-8?B?MmRjc3lqZHc1THpvSEMvUDgzRDdMcVhoV0pac2lSeWZNdmVjOTFsT25JUlN5?=
+ =?utf-8?B?ZktISEtGSk1sUlZqZDJOa0tJbUJSSEFLbUZHaEpPZjdRZXI5aytDdGl0aVBL?=
+ =?utf-8?B?OWVvTkNxQTZyc1p2Z0FrQkFmS2lBZFBrTzdaMzVoaXNITEkvcWl0S1FDZGRG?=
+ =?utf-8?B?bmUxcHRqQVgwTUdrdGJyUWpCSDFIYmFQWkVPZ1VsWVVRQnN1TzNKelVURms2?=
+ =?utf-8?B?NHBUbVlFMWZtOE1ZS0pPQkZwN09jT203ZUZWZFd2TGRiTzc1WHI1UWVNQS82?=
+ =?utf-8?B?enllSk1DNTZGOVRPZDdIQ1BadzBKTXVITnBldmJPQXRhYWxtZjhCbkZpazZi?=
+ =?utf-8?B?VzdXSHB2OXd3ZkgzU0t3cGF0b0tJcERZYmlKMWY3Ykw4SVpOTGlxdmsxSUV1?=
+ =?utf-8?B?cTFubC9VQWdNNlMzbWtxellRY2l6UmxFb3FGOHd6TzIvZ29Mb0haU05RWmox?=
+ =?utf-8?B?YzM2azhYNVJGSStvdGxrQnMxMVFheE9OdkpqamJwS0VHN3hqZ2QxVVp1b3lE?=
+ =?utf-8?B?TTFOTzl0d1o1cmlWS1dJUFVnUEhsM3JSbHdhZGN6eFlCaDVsa3dRcHhwUm1p?=
+ =?utf-8?B?a1dkVElXby84d0ZkeWRnaHNKczhRNlBndEoxcWprOXFLZVpDNUF1amFCWXhV?=
+ =?utf-8?B?UjJuSXVUN051OWhhd3ViUXJTOFUxaEYrZTlsL2tlNTdBSGpNV2RJcHNpMVAr?=
+ =?utf-8?B?WnJuUk0rRTNnaGxVbGNUOGtiRzcxczU1UzE5c2Q0eWkwMCt3M2NUbEdEQ3JN?=
+ =?utf-8?B?MDd3QzVXbHJuSTkvb3h1RDE3TjJ4cGhUZmpKaXhocHlNRStPbzk5WDFtZEhv?=
+ =?utf-8?B?WGxyME5YOWprWkErckJ5L2l0cWczNFBCdUpmRU5QN1VGeTRxQlNDL1hPbjZi?=
+ =?utf-8?B?S3FCNGRZcXdZRXBwVGFGczE3ZWlpb3llVDFicFFsc0JXTDd0NnlqUE5qMy9Q?=
+ =?utf-8?B?ckZjRjRPRm00UG1zVnNNWDBnYXNleHpNMHI0Mi9QSU5NS2RPZTFlT2o0TWtu?=
+ =?utf-8?B?ZEs3ZFhMM2tESXpaU1B6Y1J0YXRmTTM5VHZMYm9zUTBoajZrQVphbFVaMmVD?=
+ =?utf-8?B?cGNwMWI5eFY5dDJFekdlZG90MktNTm96eHZvZXp3NysyUDdlaFNhakxsQmtH?=
+ =?utf-8?B?bDQ3WjU1L0J0a0t5RndYMFRoaWsrOERQaFZDZE9zcERwUlZGakY0MDdETElr?=
+ =?utf-8?B?YWl0MEptNGNPWkdLald4djkrdFMvS1JhY3AxcFh4dW5YVDBnTlQxWEVBUHYr?=
+ =?utf-8?B?amh0eVpWR2FXSzM1ZmE2MWd5aG9LSDFmYkM2ZEtaVmw0MmQ0KzlPN1V1TlF6?=
+ =?utf-8?B?S1dyY2FZWUdEQ3RYM2dvUGJnV05GQ1NKOVdKc1NZWGljUXVCNHgwRStNRm80?=
+ =?utf-8?B?S2ZLZWNocHlRSWxNV01Ea21tSUdQa21CTjlqM2Q5WHMyR3N1a3gwYnMyMkEx?=
+ =?utf-8?B?M0ZSbHZRU21tbjc1czBUdWdDcXZqQlZVSUp5ZjVmUVVFT2lveDJnemVPZFBH?=
+ =?utf-8?B?NHJBblF6d0VIMzJaNUwzU1VFdDV2b2UxSm12N3ExQnJ6M05zZnlvWWFVQlp1?=
+ =?utf-8?B?bnBPUkhWQ3hYdWtZQUNGT3ltcE51b3NPV3NMVzdnQy8vT2JLc0hrMEI5MXJt?=
+ =?utf-8?B?eDlEcjJWMkVGdmRPWEd4dnBHdXVFQUtzSmJEQjF0V1diZ2h1ZExSOTRHOWhM?=
+ =?utf-8?B?U05xc05WMi9COVREMnlrWDU1anFtZTVjZjQyZHVvRXo1VmRPWXcyeUs3TjVm?=
+ =?utf-8?B?dENBdkx6bzRwclczU2dWOFFkTzc2SFQyT2MzdVE5TTZmNEprclZlbUhPcmFZ?=
+ =?utf-8?B?ZWJiRm45UkNORFhleCtLeXAweDZZeHlLSUxHRTdzbDJHZSsvZlQwankwbHkx?=
+ =?utf-8?B?U2R4cXREMUVJV1BlRy9PTG1ib3R3aHVpUnJ2VFgxckVzcmdCVzZVRDhjWWxM?=
+ =?utf-8?B?ZUZuOTdCSVNiN0U4TnZCLzRZNzBwSElBZzV1OVJQSkh2VWZwdmZPV3pqZllu?=
+ =?utf-8?B?aGdDeUMvZG12T1JqcHBZdEd1REJuVW8vTXNzQTRDQitKQmxMMkIxSDJxS25J?=
+ =?utf-8?B?U0x0VE5RN29CcTlkcW9aSjJia1RmU241aVZ6YWU3UjgwMkE5VG9yZytmdnhs?=
+ =?utf-8?B?aytqdzhtTm5nUUpGWHhpWDNYREloenNZdTZXNnR1R091RjdTd3BFeDVKMWZj?=
+ =?utf-8?B?SlZHSUJyVVBVczhab1BLT0phcTRQTkVLODhKVWRSd0EydCt3NnpQTFluWGlG?=
+ =?utf-8?Q?zXWA4i3UL+CN3R/4=3D?=
+X-OriginatorOrg: vaisala.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 89abe9b2-a01a-44f0-8ffe-08df124016fd
+X-MS-Exchange-CrossTenant-AuthSource: AM9PR06MB7907.eurprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Sep 2026 09:10:58.4322
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 6d7393e0-41f5-4c2e-9b12-4c2be5da5c57
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 2Oq9r4dKGZbZLJC3OOjrhrHbhGZwnOkh3QehHjcFQeAu+IGrlbax3AM+HdJx4Rs5l7c5RDJTAwydXJVqmLNnSV55RJqg2nKCVJjUwIEmX4s=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR06MB7721
 
-Hi Michael,
+> Sashiko AI review found 8 potential issue(s) to consider:
+> - [Critical] Unprivileged Denial of Service (Hung Task Panic) via
+>   unbounded uninterruptible sleep.
+> - [High] Use-After-Free due to timer resurrection during teardown.
+> - [High] Illegal drop of port->lock in UART callbacks, breaking core
+>   serialization.
+> - [High] RS485 data loss via software state machine bypass.
+> - [High] Software RTS state and TX-break bits are wiped out by
+>   absolute LCR write.
+> - [High] Broken RS485 break signaling ignores transceiver polarity.
+> - [High] Resource leak and Use-After-Free of timers/workqueues on
+>   probe failure.
+> - [Medium] Spurious before-send delays corrupt the RS485 timing
+>   envelope.
 
-On Fri, Aug 28, 2026 at 12:08=E2=80=AFAM Michael Zaidman
-<michael.zaidman@gmail.com> wrote:
+Two of these are real. Please do not apply this version; a v3 follows.
 
-[Me]
-> > On Kconfig, so that gpiolib is always available and you can use
-> > the generic modem control helpers for modem control over GPIO.
->
-> I looked into this, and it does not work for the FT260 without
-> changing serial_mctrl_gpio.c first. Three blockers:
->
-> - Every GPIO access on this chip is a USB transfer, so the
->   gpiochip has can_sleep =3D true. mctrl_gpio_set() calls
->   gpiod_set_array_value() and mctrl_gpio_get() calls
->   gpiod_get_value(), and gpiolib does WARN_ON(can_sleep) in both,
->   so every TIOCMGET/TIOCMSET would give a WARN backtrace.
+5. Correct, and this patch is what creates it. MAX310X_LCR_RTS_BIT was
+defined but never written before; the patch makes it the software RS485
+RTS. That leaves two ways to clobber an envelope in flight:
 
-Can't you just patch mctrl to use gpiod_set_array_value_cansleep()
-and gpiod_get_value_cansleep()?
+  - max310x_set_termios() writes LCR absolutely, and the core calls
+    ->set_termios() without port->lock (uart_change_line_settings()
+    takes the lock only after the call), so a concurrent tcsetattr()
+    clears RTS mid-character.
+  - max310x_set_rts_ctl_params() drives RTS to the idle level
+    unconditionally, and it also runs from rs_work, which
+    max310x_rs485_config() schedules on every TIOCSRS485.
 
-I don't think any of the users depend on call thing this
-in atomic context.
+Either way the rest of the burst is shifted out with the transceiver
+disabled. v3 will leave RTS alone while tx_state is not MAX310X_TX_OFF.
+The TX-break half of your point is real too, but it predates this patch.
 
-> - mctrl_gpio_init() takes a struct uart_port and its IRQ handler
->   needs it: uart_port_lock_irqsave(), uart_handle_dcd_change(),
->   port->icount, delta_msr_wait. This UART is a plain tty_driver
->   with a tty_port, so only mctrl_gpio_init_noauto() is left - and
->   the FT260 GPIO lines have no interrupts anyway.
+6. Correct. max310x_break_ctl() passes break_state straight to
+max310x_rts_ctl(), while every other RTS write in the driver selects on
+SER_RS485_RTS_ON_SEND / SER_RS485_RTS_AFTER_SEND, so an
+rs485-rts-active-low port drives the wrong level for the break duration.
+v3 will use the same polarity as the rest. On the hardware path
+IRDA.RTSINVERT may invert the pin and mask it; I will confirm that
+against the datasheet rather than assume it.
 
-I don't understand this :D
-But hopefully the TTY/serial maintainer does.
+8. Correct, and known: a write landing while tx_state is MAX310X_TX_SEND
+does reset the state to MAX310X_TX_WAIT_BEFORE_SEND and re-arm. The
+txlvl == 0 gate in max310x_delayed_stop_tx() exists for exactly the
+mid-drain call that results, so the envelope stays correct, but the data
+does pay an extra before-send delay. I will skip the re-arm when the
+state is already MAX310X_TX_SEND.
 
-> - mctrl_gpio_init_noauto() only picks up lines that exist as
->   firmware properties: device_property_present(dev, "cts-gpios")
->   and friends. A gpiod_add_lookup_table() table is the machine
->   lookup path, so every line would be skipped, all descriptors
->   would stay NULL and both helpers would silently do nothing.
->   Software nodes could satisfy that check, but there is no
->   PROPERTY_ENTRY_GPIO in the tree to build them with.
+The rest I do not think are bugs:
 
-Using software nodes is the way to go I think,
-<linux/gpio/property.h> contains PROPERTY_ENTRY_GPIO.
+1. Both loops are bounded - the software path by the computed loops
+count, the hardware path by port->fifosize + 1. The hung task detector
+also cannot fire here: it looks for a task whose switch count has not
+changed across its timeout, and both loops sleep and wake every
+iteration. The longest single sleep is one character duration at the
+lowest baud the BRG can produce, well under the 120 s default.
 
-> serial_mctrl_gpio.h is also private to drivers/tty/serial - all
-> eleven users are serial_core drivers in that directory.
+2. max310x_delayed_stop_tx() returns early while tx_state is
+MAX310X_TX_OFF, before it touches cancel_tx_delay_tmr, and
+max310x_shutdown() sets that state before it returns, so a late tx_work
+cannot re-arm the timer. tx_work has never been cancelled in shutdown,
+including before this patch; it is cancelled in max310x_remove().
 
-Well having serial drivers in drivers/hid and having all kinds
-of misc drivers in drivers/hid has made it a dumping ground
-for anything HID.
+3. Dropping and retaking port->lock around hrtimer_cancel() is
+deliberate: max310x_tmr_tx() takes port->lock, so cancelling while
+holding it would deadlock. The timer is not soft, so
+hrtimer_cancel_wait_running() only does cpu_relax() and nothing sleeps,
+and several other serial drivers drop the lock the same way. I will
+switch the two sites to uart_port_unlock()/uart_port_lock() in v3 for
+consistency, although for this driver they are no-ops as it has no
+console support.
 
-> Registering a uart_port instead was tried for this device and
-> turned down. Daniel Beer's 2022 FT260 UART patch was built on
-> serial_core and called uart_add_one_port(); Greg asked for
-> usb-serial, and Johan Hovold answered that "neither USB-serial or
-> serial (core) is a good fit for such a HID device", pointing at
-> Christina Quast's tty driver as the right approach - which patch
-> 1 of this series is a port of.
->
->   https://lore.kernel.org/lkml/638c51a2.170a0220.3af16.18f8@mx.google.com=
-/
->   https://lore.kernel.org/lkml/Y6WNl6+ySy8zcSyg@hovoldconsulting.com/
+4. I could not construct this one. max310x_handle_tx() does fill the
+FIFO without consulting tx_state, but the TX-empty interrupt latches on
+the FIFO going empty, so from idle there is no tx_work already pending
+to run ahead of rts_work, and mid-stream RTS is still asserted by the
+burst in progress. If you have a concrete ordering in mind, I would like
+to see it.
 
-Well if it absolutely has to live in drivers/hid then do the
-ugly thing and
+7. hrtimer_setup() and INIT_WORK() only initialise; nothing is armed or
+queued until a port is opened, and the out_uart path calls
+uart_remove_one_port(), which hangs the tty up and runs ->shutdown(),
+which cancels both. The pre-existing tx_work, md_work and rs_work have
+the same shape.
 
-include "../tty/serial/serial_mctrl_gpio.h"
-
-It's perhaps the lesser evil then?
-
-Otherwise we just bite the bullet and move
-drivers/tty/serial/serial_mctrl_gpio.h
-to
-include/linux/serial_mctrl_gpio.h
-?
-
-(Unless Greg want some new subdir such as
-include/linux/serial/serial_mctrl_gpio.h)
-
-> > The core idea is that the serial modem control should look
-> > up the GPIOs from its own gpiochip and use the MCTRL
-> > library helpers, then this should result in very little and
-> > compact code that is easy to read.
->
-> No argument with the goal - I would rather have that than my own
-> TIOCM handling. But making it usable here means work inside the
-> serial helpers: cansleep set/get, a path that does not require a
-> uart_port, a lookup that works without firmware properties, and
-> the header moved to include/linux. That is a serial subsystem
-> series to agree with Greg and Jiri Slaby, so I propose keeping
-> the ioctl implementation in this series and doing the conversion
-> as a follow-up.
-
-These things have a tendency to never happen and it's
-not like we have a shortage of technical debt.
-
-Yours,
-Linus Walleij
+Tapio
