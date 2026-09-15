@@ -1,79 +1,78 @@
 Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A0CC37475C;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D018D48F848;
 	Tue, 15 Sep 2026 12:33:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789475606; cv=none; b=VpfsTl9YvFdpJaM8PFXQmmtOzK/kvElB+Isd1ZEuaVHPWPTkXO4OSL1mUZdyPBgbF9V+ufNzeCe698oeV7BFDMNBP3HsQXOT1QTCuO47pQnGBxV7+5V1Vst0ORS9RxbAJBlh8tQKbcbhZKAU7UcRD3PNUdQZy+FyeRjAh47G0mQ=
+	t=1789475606; cv=none; b=K6wJdb55+AqBuIYVYl+r9fQEbeA+iH457dXbYsjSRp/AVxr3bxk4HSDjQZ/+kPgq6cjpkJW5vZn1948tpZQAsE8MLgYrYJhgNdLhH0mgr8EKO5FFgEdZeQqeKOrus3qwYcp3T/PkabXRJYWo2ilCk7iz5QfPrH380yvgc35sRRU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1789475606; c=relaxed/simple;
-	bh=EuBxRRAclVZ1OEpdYzHPMZPUWpMt3AhLv9o6zQHW3Q0=;
+	bh=kIWPvN1xdzI0vvk+cqAjZuQ+NiStAVELpv+YNHXuDug=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=gu8kk5rmBz8Qu3zBLp1Lj4LIU5+B9lXiCqhLVVmmVDatWRZkratPE3EOPSs6zoHYP6fEJ/tZ3syg8gPhJujpJp/ClC+Bh77mEEec+Gf8dWlGXJqiuadOpl3JfiDH0mWrTALdf//SkBkguyMz08IOe8LxOmAsxT4+n/VL2+lxSHM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=eStp4eP7; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=24RC8duD; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=u3InYRJ+; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=sW/vYs+O; arc=none smtp.client-ip=195.135.223.130
+	 MIME-Version; b=D1fErIczcxf+hFopZ4+eDcidv2H43UyUg6lBs8baiDkaUqWATzAXOsMgrMQP3re6oIB4lrK6WerfWCdbDmSYe64ksWE3wHU643SzoiUa11OVqwrWBCP8MeeQ0xBQa2uHZ891sB/iYv3FV3PuHAdCF+DtpM4qMJI6FhAjTy/32iM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=wk+Z2uyG; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=3yff601G; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=DqhIbfZO; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=5gjA+gKf; arc=none smtp.client-ip=195.135.223.130
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="eStp4eP7";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="24RC8duD";
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="u3InYRJ+";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="sW/vYs+O"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="wk+Z2uyG";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="3yff601G";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="DqhIbfZO";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="5gjA+gKf"
+Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 527BA21BFC;
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 72B4921CC2;
 	Tue, 15 Sep 2026 12:33:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
 	t=1789475598; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=bZvn8Te9OBjxjVjRJPfmv7Es1GTVimIYfVt9MlC/7gw=;
-	b=eStp4eP7a66SU2WSNvjtgqckI8mBA6ce8lkL+pIZ/bgxOistZ4gnFgeYqxDlUkuZXoqX2P
-	fpZq9e9rQWh0NB3ltAzY9ZnMJWoThxOaGDfvjPVRNZ1MWYevSrm1Flgt6rxUUzsc1rqyZs
-	fI11jKSDYv/nAuC8sjz60igB4QG/THo=
+	bh=ONdTxhedLm8ux4WYa6nJOCgvg99wnIBGvzLaX70z8pc=;
+	b=wk+Z2uyGFC6qDO21ZjS++lx7jilujfsdI+x0j1v2MyrzilMhCR4GJNHdbu52HyhOxj/aST
+	AH3S7rTb3YaW/5DN/3QPJZCE8lBOgKHC6DnAqfk7WYD/U1greyHjJj41U+Zqp1ku1MLTmW
+	ho+3D2ltSl7ONUUphTpCGz0ncEvrRGc=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
 	s=susede2_ed25519; t=1789475598;
 	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=bZvn8Te9OBjxjVjRJPfmv7Es1GTVimIYfVt9MlC/7gw=;
-	b=24RC8duDML6dg/7vjmTZY+EeSM9BOX3NDDPW8Y0dtzwB+B4BziO0NFH8FURlTOmKazY99K
-	TeAj7gG2J0nCejDQ==
+	bh=ONdTxhedLm8ux4WYa6nJOCgvg99wnIBGvzLaX70z8pc=;
+	b=3yff601GGsb8DvipYSKeaKf4CjgRWetAAloJsRTuvop6rgEnthr86tgVWOu5TJowu4tGqz
+	MUnOsvIIM92SXmDg==
 Authentication-Results: smtp-out1.suse.de;
-	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=u3InYRJ+;
-	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b="sW/vYs+O"
+	none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
 	t=1789475594; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=bZvn8Te9OBjxjVjRJPfmv7Es1GTVimIYfVt9MlC/7gw=;
-	b=u3InYRJ+ISUh44XHpT0ce8vzmdA21mSDhzdr0prlhYRIqj8keN3utHB99FfpulxteEr9Za
-	7DkkUndiVsBYuBbQCajQLaWwsTqCpAKXcIGkctbLIjbjpa7GjScVMXNyi5QiIiRy44ksDG
-	Olj+I8EPDv2CBWOC1jcqIcMl6YhKW6s=
+	bh=ONdTxhedLm8ux4WYa6nJOCgvg99wnIBGvzLaX70z8pc=;
+	b=DqhIbfZON2/emEyH+IKEAd9QkILbNy80eklYrfp+xh74cEU0+vWV1Oq4cEfDOZIzjG9YcQ
+	n5p22g0FQRwaO+04X3h3gH90KgQJ15TGFPpbdSpBqsVJd+RlzuKEjZbW+0P2NJL+/0KX7Y
+	oGZTxzoRkGyPkzXJD4nVQDFeaGMCC+g=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
 	s=susede2_ed25519; t=1789475594;
 	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=bZvn8Te9OBjxjVjRJPfmv7Es1GTVimIYfVt9MlC/7gw=;
-	b=sW/vYs+Oz3UvH9S155aUrdyYVwj04Rt44xppwf83h5D2/BE8rqn5q+qPa0+jvd4IwAI0H+
-	poKPSwJGoWLpM0BQ==
+	bh=ONdTxhedLm8ux4WYa6nJOCgvg99wnIBGvzLaX70z8pc=;
+	b=5gjA+gKf6WbEQl7jDsLYMPFrsFhtAQn4tTUDqPh2SNIXQ77DY/rjsmiAi5sjHx8TkMaOW7
+	NMd1Kb0td2n67VBw==
 Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id C4A3E136E6;
-	Tue, 15 Sep 2026 12:33:13 +0000 (UTC)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 1A6DD13806;
+	Tue, 15 Sep 2026 12:33:14 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
 	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id COmnAwk7qWpGNQAAD6G6ig:T3
-	(envelope-from <tzimmermann@suse.de>); Tue, 15 Sep 2026 12:33:13 +0000
+	id COmnAwk7qWpGNQAAD6G6ig:T4
+	(envelope-from <tzimmermann@suse.de>); Tue, 15 Sep 2026 12:33:14 +0000
 From: Thomas Zimmermann <tzimmermann@suse.de>
 To: deller@gmx.de,
 	gregkh@linuxfoundation.org,
@@ -84,9 +83,9 @@ Cc: linux-fbdev@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	sashiko-reviews@lists.linux.dev,
 	Thomas Zimmermann <tzimmermann@suse.de>
-Subject: [PATCH v2 2/5] vgacon: Remove trailing whitespaces
-Date: Tue, 15 Sep 2026 14:29:13 +0200
-Message-ID: <20260915123304.1027277-3-tzimmermann@suse.de>
+Subject: [PATCH v2 3/5] vgacon: Use vt_cursor_{start,end}()
+Date: Tue, 15 Sep 2026 14:29:14 +0200
+Message-ID: <20260915123304.1027277-4-tzimmermann@suse.de>
 X-Mailer: git-send-email 2.55.0
 In-Reply-To: <20260915123304.1027277-1-tzimmermann@suse.de>
 References: <20260915123304.1027277-1-tzimmermann@suse.de>
@@ -97,87 +96,111 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Score: -3.01
-X-Rspamd-Queue-Id: 527BA21BFC
-X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
 X-Spam-Level: 
-X-Rspamd-Action: no action
-X-Spamd-Result: default: False [-3.01 / 50.00];
+X-Spam-Score: -2.80
+X-Spam-Flag: NO
+X-Spamd-Result: default: False [-2.80 / 50.00];
 	BAYES_HAM(-3.00)[100.00%];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
 	MID_CONTAINS_FROM(1.00)[];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
 	R_MISSING_CHARSET(0.50)[];
-	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	NEURAL_HAM_SHORT(-0.20)[-0.999];
 	MIME_GOOD(-0.10)[text/plain];
-	MX_GOOD(-0.01)[];
-	ARC_NA(0.00)[];
-	RCVD_TLS_ALL(0.00)[];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	MIME_TRACE(0.00)[0:+];
-	FREEMAIL_ENVRCPT(0.00)[gmx.de];
-	TO_DN_SOME(0.00)[];
-	RCVD_COUNT_TWO(0.00)[2];
 	FREEMAIL_TO(0.00)[gmx.de,linuxfoundation.org,kernel.org,ffwll.ch];
 	RCPT_COUNT_SEVEN(0.00)[9];
+	MIME_TRACE(0.00)[0:+];
+	ARC_NA(0.00)[];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
 	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns,suse.de:dkim,suse.de:email,suse.de:mid,gmx.de:email];
 	FROM_EQ_ENVFROM(0.00)[];
 	FROM_HAS_DN(0.00)[];
-	DNSWL_BLOCKED(0.00)[2a07:de40:b281:106:10:150:64:167:received,2a07:de40:b281:104:10:150:64:97:from];
-	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	DKIM_TRACE(0.00)[suse.de:+]
-X-Spam-Flag: NO
+	TO_DN_SOME(0.00)[];
+	RCVD_TLS_ALL(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.de:email,suse.de:mid,imap1.dmz-prg2.suse.org:helo,gmx.de:email];
+	RCVD_COUNT_TWO(0.00)[2];
+	FREEMAIL_ENVRCPT(0.00)[gmx.de]
 
-Fix coding style.
+Replace vgacon's custom cursor metrics with the shared helpers
+vc_cursor_start() and vc_font_cursor_end(). Note that the _end()
+function returns the index of the scanline below the cursor, while
+VGA hardware expects the cursor's final scanline. Hence vgacon
+subtracts 1 from the end value.
+
+The cursor shapes remain mostly unchanged, except that non-underline
+cursors now also use the glyph's top-most and bottom-most scanline.
+This follows the style used by fbcon.
+
+v2:
+- restore use of vc_cell_height (Sashiko)
 
 Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
 Reviewed-by: Helge Deller <deller@gmx.de>
 ---
- drivers/video/console/vgacon.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/video/console/vgacon.c | 33 +++++----------------------------
+ 1 file changed, 5 insertions(+), 28 deletions(-)
 
 diff --git a/drivers/video/console/vgacon.c b/drivers/video/console/vgacon.c
-index 37bd18730fe0..536e7fe4d142 100644
+index 536e7fe4d142..b1408bb5e265 100644
 --- a/drivers/video/console/vgacon.c
 +++ b/drivers/video/console/vgacon.c
-@@ -881,14 +881,14 @@ static int vgacon_do_font_op(struct vgastate *state, char *arg, int set,
- 	/* First, the Sequencer */
- 	vga_wseq(state->vgabase, VGA_SEQ_RESET, 0x1);
- 	/* CPU writes only to map 2 */
--	vga_wseq(state->vgabase, VGA_SEQ_PLANE_WRITE, 0x04);	
-+	vga_wseq(state->vgabase, VGA_SEQ_PLANE_WRITE, 0x04);
- 	/* Sequential addressing */
--	vga_wseq(state->vgabase, VGA_SEQ_MEMORY_MODE, 0x07);	
-+	vga_wseq(state->vgabase, VGA_SEQ_MEMORY_MODE, 0x07);
- 	/* Clear synchronous reset */
- 	vga_wseq(state->vgabase, VGA_SEQ_RESET, 0x03);
+@@ -506,6 +506,7 @@ static void vgacon_set_cursor_size(int from, int to)
+ static void vgacon_cursor(struct vc_data *c, bool enable)
+ {
+ 	unsigned int c_height;
++	unsigned int c_size;
  
- 	/* Now, the graphics controller, select map 2 */
--	vga_wgfx(state->vgabase, VGA_GFX_PLANE_READ, 0x02);		
-+	vga_wgfx(state->vgabase, VGA_GFX_PLANE_READ, 0x02);
- 	/* disable odd-even addressing */
- 	vga_wgfx(state->vgabase, VGA_GFX_MODE, 0x00);
- 	/* map start at A000:0000 */
-@@ -930,7 +930,7 @@ static int vgacon_do_font_op(struct vgastate *state, char *arg, int set,
+ 	if (c->vc_mode != KD_TEXT)
+ 		return;
+@@ -513,10 +514,11 @@ static void vgacon_cursor(struct vc_data *c, bool enable)
+ 	vgacon_restore_screen(c);
  
- 	raw_spin_lock_irq(&vga_lock);
- 	/* First, the sequencer, Synchronous reset */
--	vga_wseq(state->vgabase, VGA_SEQ_RESET, 0x01);	
-+	vga_wseq(state->vgabase, VGA_SEQ_RESET, 0x01);
- 	/* CPU writes to maps 0 and 1 */
- 	vga_wseq(state->vgabase, VGA_SEQ_PLANE_WRITE, 0x03);
- 	/* odd-even addressing */
-@@ -959,7 +959,7 @@ static int vgacon_do_font_op(struct vgastate *state, char *arg, int set,
- 		/* Wilton (1987) mentions the following; I don't know what
- 		   it means, but it works, and it appears necessary */
- 		inb_p(video_port_status);
--		vga_wattr(state->vgabase, VGA_AR_ENABLE_DISPLAY, 0);	
-+		vga_wattr(state->vgabase, VGA_AR_ENABLE_DISPLAY, 0);
- 		clear_attribs = true;
+ 	c_height = c->vc_cell_height;
++	c_size = CUR_SIZE(c->vc_cursor_type);
+ 
+ 	write_vga(14, (c->vc_pos - vga_vram_base) / 2);
+ 
+-	if (!enable) {
++	if (!enable || c_size == CUR_NONE) {
+ 	        if (vga_video_type >= VIDEO_TYPE_VGAC)
+ 			vgacon_set_cursor_size(31, 30);
+ 		else
+@@ -524,33 +526,8 @@ static void vgacon_cursor(struct vc_data *c, bool enable)
+ 		return;
  	}
- 	raw_spin_unlock_irq(&vga_lock);
+ 
+-	switch (CUR_SIZE(c->vc_cursor_type)) {
+-	case CUR_UNDERLINE:
+-		vgacon_set_cursor_size(c_height - (c_height < 10 ? 2 : 3),
+-				       c_height - (c_height < 10 ? 1 : 2));
+-		break;
+-	case CUR_TWO_THIRDS:
+-		vgacon_set_cursor_size(c_height / 3,
+-				       c_height - (c_height < 10 ? 1 : 2));
+-		break;
+-	case CUR_LOWER_THIRD:
+-		vgacon_set_cursor_size(c_height * 2 / 3,
+-				       c_height - (c_height < 10 ? 1 : 2));
+-		break;
+-	case CUR_LOWER_HALF:
+-		vgacon_set_cursor_size(c_height / 2,
+-				       c_height - (c_height < 10 ? 1 : 2));
+-		break;
+-	case CUR_NONE:
+-		if (vga_video_type >= VIDEO_TYPE_VGAC)
+-			vgacon_set_cursor_size(31, 30);
+-		else
+-			vgacon_set_cursor_size(31, 31);
+-		break;
+-	default:
+-		vgacon_set_cursor_size(1, c_height);
+-		break;
+-	}
++	vgacon_set_cursor_size(vc_cursor_start(c_height, c_size),
++			       vc_cursor_end(c_height, c_size) - 1);
+ }
+ 
+ static void vgacon_doresize(struct vc_data *c,
 -- 
 2.55.0
 
