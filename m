@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.4])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DCC83DC84C;
-	Tue, 15 Sep 2026 15:07:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EAD44AA3F7;
+	Tue, 15 Sep 2026 15:30:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789484851; cv=none; b=F9j3qVlScgEFOGAzQrB501v+X6s1MnSF72UZYcIijJI5RVueclq+yi5yi5yeXCyksSNGrEVRqI3isnBjmt5taU0mvKHP4VxUMAs9Tk/3jKeK/EVRv5ilY5+i//jCFN6N/z6LKdHGNPuyW0yH9gpVWmAofPEdvnlC3jfedML8vHI=
+	t=1789486260; cv=none; b=suKYoOIxr6+Ggud9Nylz18N9cRyotWRY5WIsx0JTtOzGlEIZMVrALqGR0sfI0FQWn9JdG0gW5bEb9Lhe/eagmLiZjqR9krxEWXM8uHwW1oNiCffTWco6VzM+FH1uiqpyeORl6PBBiXua6kMjzyN4uroBszsE4dlscVY0M3uXoi0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789484851; c=relaxed/simple;
-	bh=EW0qRFGFljFTOmx6/2DP3eUwDe1LgFNPcQdwJlKSirI=;
+	s=arc-20240116; t=1789486260; c=relaxed/simple;
+	bh=g8LXI+FLmIC86HxvAHNU7lIP6/5lrj8l5npIS9TK1TE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=On80rRmLIS/lbGr+D7nuT0r3LE9rGeYPap2QSfNSp7/E4jXCpHB4Gq9kvS4wTbeez8wfrkTG65lgRC7NS98jZdMadoimwageeC/FLhc1a8Tql8ccP7brh1/pFnmsV6FYWLhwExiYwSkWHfXo41wxsTnKUtzG6DsAjn/Jy7yJPhk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GhioQ4/8; arc=none smtp.client-ip=192.198.163.4
+	 Content-Type:Content-Disposition:In-Reply-To; b=J/u7NH05Wn6KOclRrmjZnVfpa6IGOsgpvLp6lMbaaS5QonucsGfMBBg3ht+g0543abNUWoDM80WtFkliJoX+mCuKqpLSlsJsQEaGvGFau68wQ4MH7dgUmfSS93SOZWgJlFN0gpUaL+r8/0plD8HYbl2CZLd6nabX71to8DfKWcE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Mr3qnXCc; arc=none smtp.client-ip=192.198.163.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GhioQ4/8"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Mr3qnXCc"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1789484849; x=1821020849;
+  t=1789486254; x=1821022254;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=EW0qRFGFljFTOmx6/2DP3eUwDe1LgFNPcQdwJlKSirI=;
-  b=GhioQ4/8UI9R1vfP5sQBSajAAcwHaB8s+HaUSt6pTq9Du4AeI1SzUjd/
-   IivhfKzKtYFBzGdugnt+17girrDF/yiS/JiSFPk7qfybiFT24yI5wPoRc
-   rwNEmw5ngsKL0SlgnqBWL0ivcJzgoiQcyQcMNipwTy7sxeZIuS+2H53Y6
-   hSA7Ke/lM2vvWVl6iXuebo62LdXsfT6qp3sGjuC0SgoYZVgwrgXZ+N2yY
-   VHwfqYliSd8KGVnOOecYkb55KtGxMXBJl/UnBld5rRk0NcOTxo7EMGffa
-   lqfss0d13/nXHQZXa/x4JbPfGV06pEV11sCBPEF+KcMf5GExBlT/kFZnG
-   g==;
-X-CSE-ConnectionGUID: QkTc/rSJT/u8I7HF06+4CA==
-X-CSE-MsgGUID: RdSF6+PATR2w+KpmMaWR0g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11905"; a="361052"
+  bh=g8LXI+FLmIC86HxvAHNU7lIP6/5lrj8l5npIS9TK1TE=;
+  b=Mr3qnXCcGwEPuTkdF+lpTH28VhpIDJh6IazWU1A+nV6uPLS2EaDubZs6
+   OVdowbEn8lhshHCJiSq2G1/QXFNX62i0odnxIwngcPIN704yjWgFL0EU5
+   Resd0UtZ6Ffsp4Wm8ovbzs5uqImRL+H4sw78bnBQ45yua5ky8Y5HTz+IQ
+   3aala5GaoPc3BNZT4t+2sKNYNJTyTK8BpezGIBSeoBwgi2WqGuNgE3C2V
+   o1x8rm3t9BVsW+b+JNFmLLWL49QQ5RAdRJpDAKFNMJ9twykZB90737wDe
+   kNFhy03i9jDALpHLrmeyBNpqJapdqQYLpUNdXq1qxk0fz9TWS6RB011wL
+   A==;
+X-CSE-ConnectionGUID: KT3oeAHqSCGkBo32Wsx0Xw==
+X-CSE-MsgGUID: A98FRR3xSvi6YbTrBRJ3uQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11905"; a="101202655"
 X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
-   d="scan'208";a="361052"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by fmvoesa114.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2026 08:07:28 -0700
-X-CSE-ConnectionGUID: qGvx8WAqSlmM63A4mIdOJQ==
-X-CSE-MsgGUID: Lf22iUCBQe6YEuM+0Lg/6Q==
+   d="scan'208";a="101202655"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2026 08:30:47 -0700
+X-CSE-ConnectionGUID: 6C7AqoZuRhSZQAKatvE9Iw==
+X-CSE-MsgGUID: L/Rwoq4CRxqPHw3+KDO9Zw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
-   d="scan'208";a="271603122"
+   d="scan'208";a="302924565"
 Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.57])
-  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2026 08:07:22 -0700
-Date: Tue, 15 Sep 2026 18:07:19 +0300
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2026 08:30:41 -0700
+Date: Tue, 15 Sep 2026 18:30:38 +0300
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: longzhao@ambarella.com
 Cc: Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>,
@@ -66,10 +66,10 @@ Cc: Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>,
 	devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
 	linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 08/15] gpiolib: regmap: add write_data_after_dir quirk
-Message-ID: <aqlfJ3PnFib1smnV@ashevche-desk.local>
+Subject: Re: [PATCH v7 09/15] gpiolib: regmap: add gpio_regmap_get_chip()
+Message-ID: <aqlknvOejkE5zutq@ashevche-desk.local>
 References: <20260915-cv75-v5-v7-0-3297d3fbc9c0@ambarella.com>
- <20260915-cv75-v5-v7-8-3297d3fbc9c0@ambarella.com>
+ <20260915-cv75-v5-v7-9-3297d3fbc9c0@ambarella.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -78,45 +78,54 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260915-cv75-v5-v7-8-3297d3fbc9c0@ambarella.com>
+In-Reply-To: <20260915-cv75-v5-v7-9-3297d3fbc9c0@ambarella.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Sep 15, 2026 at 07:15:38PM +0800, Long Zhao via B4 Relay wrote:
+On Tue, Sep 15, 2026 at 07:15:39PM +0800, Long Zhao via B4 Relay wrote:
 
-> Some controllers ignore data-register writes while a line is still an
-> input. Optionally write the output value again after switching the
-> direction, matching the existing PL061 behaviour.
+> Let drivers that implement a custom irqchip retrieve the gpio_chip
+> after registration. Attach a caller-provided irq_domain only when it
+> is present.
 
 ...
 
-> -	gpio_regmap_set(chip, offset, value);
-> +	ret = gpio_regmap_set(chip, offset, value);
-> +	if (ret)
-> +		return ret;
+>  struct gpio_regmap *gpio_regmap_register(const struct gpio_regmap_config *config)
+>  {
+> -	struct irq_domain *irq_domain;
+>  	struct gpio_regmap *gpio;
+>  	struct gpio_chip *chip;
+>  	int ret;
 
-I think that this might lead to regressions when the end driver just leaves
-the output in the previous state in case of errors. In any case, even if this
-is a correct update, it needs to be done separately with the justification
-that shows that all current users won't have regressions or the regression is
-actually a fix of the behaviour.
-
-> +	ret = gpio_regmap_set_direction(chip, offset, true);
-> +	if (ret)
-> +		return ret;
+>  #ifdef CONFIG_REGMAP_IRQ
+>  	if (config->regmap_irq_chip) {
+> +		struct irq_domain *irq_domain;
+> +
+>  		gpio->regmap_irq_line = config->regmap_irq_line;
+>  		ret = regmap_add_irq_chip_fwnode(dev_fwnode(config->parent), config->regmap,
+>  						 config->regmap_irq_line, config->regmap_irq_flags,
+> @@ -420,12 +427,15 @@ struct gpio_regmap *gpio_regmap_register(const struct gpio_regmap_config *config
+>  			goto err_remove_gpiochip;
 >  
-> -	return gpio_regmap_set_direction(chip, offset, true);
-> +	/*
-> +	 * gpio value is set again, because pl061 doesn't allow to set value of
-> +	 * a gpio pin before configuring it in OUT mode.
-> +	 */
-> +	if (gpio->write_data_after_dir)
-> +		return gpio_regmap_set(chip, offset, value);
+>  		irq_domain = regmap_irq_get_domain(gpio->irq_chip_data);
+> +		if (irq_domain) {
+> +			ret = gpiochip_irqchip_add_domain(chip, irq_domain);
+> +			if (ret)
+> +				goto err_remove_gpiochip;
+> +		}
+>  	} else
+>  #endif
+> -	irq_domain = config->irq_domain;
+> -
+> -	if (irq_domain) {
+> -		ret = gpiochip_irqchip_add_domain(chip, irq_domain);
+> +	if (config->irq_domain) {
+> +		ret = gpiochip_irqchip_add_domain(chip, config->irq_domain);
+>  		if (ret)
+>  			goto err_remove_gpiochip;
+>  	}
 
-Taking the above into account I'm not sure if we want the inconsistency with
-the above. Perhaps also ignore the returned value for now?
-
-> +	return 0;
+I do not understand how it's different from the original one. Can you elaborate?
 
 -- 
 With Best Regards,
