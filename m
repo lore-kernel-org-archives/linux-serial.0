@@ -1,69 +1,52 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D591B30CD81
-	for <linux-serial@vger.kernel.org>; Tue, 15 Sep 2026 12:40:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B16A3382F03
+	for <linux-serial@vger.kernel.org>; Tue, 15 Sep 2026 12:40:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789476017; cv=none; b=HBE9o+eu10LRIakgmTHk4b1idVJMoAcLy2fFOG24y93R1zoGlpTDrbNL+yWYvDNYz1UQm8V++yEkaTYKlZHVUryuyYy/ooHkjEKB+Pe0dHIkGEZCqDf51eI5lCziljGPUkHv8D0/hhtjO7ohZf08IVK4QSheqkVKac61Xj7ACI8=
+	t=1789476022; cv=none; b=DA66hh+Z+SbYsPUPP3Q/he04ANffyfuVsKuuqVpTZ6JKcIAhbze2rzTTOAe4aG4RB+BTqBxJtbYjkPqQn+RBNSdXgHV69Es28NdLJePqz3n39nElLagtZyjz2CWyPGWUWMy0YfEUq/Pm3SijeSRyP8nhsvcJFlHLUeixyvNzOJo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789476017; c=relaxed/simple;
-	bh=R0CkVzHy1zDNnuSbzEVvhJ9r9+u1n/AcXLLJBx3kR10=;
+	s=arc-20240116; t=1789476022; c=relaxed/simple;
+	bh=9A/Pt1tNaOnKcBIM88Q53TNuiSpIVnWS86+FC12DOZo=;
 	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=clSVSpC2Tbj+6i0oR62l0LpIU1DW5Qi1kKrvapyN08rIuzSjS3dHivTZONVLvNhQCwlEDjBnUwf54dONs/7LBWaJmtODHvOpBX16SqfaiBGLnz149YmdnwHkStCXBLyGYsto7+xchD15Re57TIMmlX3kAoRi3SK3GPLGBOyWMsY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OCPuzT+x; arc=none smtp.client-ip=100.103.45.18
+	 Message-Id; b=Bx//z9l5sQU+L3UT8SwJW/5FZpGjeWY+qM1VarKyo4lsp2DGfXUqMJi+yODwF0gASKJ+1qWdccsj1DSFPR4PeUpwwH/+Eaqhm/eRlOhXxFv0q+rDdk4IWqhRhGue0pKxE0WtFrztYywbnpakkQ69mfIlgZWsI3DF3HxGhlLhz1M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=auiywy+H; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OCPuzT+x"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CA611F000FF;
-	Tue, 15 Sep 2026 12:40:15 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="auiywy+H"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1195D1F000FF;
+	Tue, 15 Sep 2026 12:40:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789476015;
-	bh=R0CkVzHy1zDNnuSbzEVvhJ9r9+u1n/AcXLLJBx3kR10=;
+	s=k20260515; t=1789476021;
+	bh=9A/Pt1tNaOnKcBIM88Q53TNuiSpIVnWS86+FC12DOZo=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=OCPuzT+xDttPPVzAhPzCFPhmZp8klBZpEWoH271EZOOwWY+zhUnplkBuzzr5xAqDl
-	 HuLToXA66XN8l5erRWA2cG2tiKLipcz36q1fX3CNnDP3N4bbFaARN48U9nMRcU4KOn
-	 K1SvrK3jiCMTimAHQ4//J1wG/QnKnzCTG95cJ9Lzq7TK7wE+gfPCbXR7+0V9MXS1p/
-	 4beNBeN+64YA53ztFsDVubaOvnSD2gJPpbtDk0mwlkrDkPfNpAwwUndhI4o0Y6vAy9
-	 lv2TTe/v8R3cUifAESPmGh7zNWRq+k48vLMDyTgjK7WUrXxGAHZgFekYPPFXqBXWyU
-	 n71SSnBrikxBA==
+	b=auiywy+HFoPxprf95hwXKdbo9uyOmRvoHbQn4HtreZXCnnBTQg300xtHhMrmU7X35
+	 b9prrfQpcMo1DoYYRxGgQT4jFmW0AukalLVmPHyyLET9WFYRHQ3235XqEgc9MstFtx
+	 xe+glkr8I6uYN6UGBe7/zwr7gjobH6m1Cw5WDTVUi0qwRpn0LEJQnTAFcRFA75IX1q
+	 eexrGvPw4SVMwX6bbmLKeGnw1StAqrN0/QFT0f4lM9YMOqDZmkaROo/SV2yeTCgbpB
+	 Ma2yGaxS47bok1dcLEwdwHeScgMMc1qd350SW7N42OJTrXI7pHOju7krD0pC1/ujbT
+	 dYwFQJ+dlu9QQ==
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v2 1/5] vt: Add cursor-size helpers
+Subject: Re: [PATCH v2 4/5] lib/fonts: Add font_glyph_cursor() helper
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Thomas Zimmermann" <tzimmermann@suse.de>
 Cc: dri-devel@lists.freedesktop.org, linux-serial@vger.kernel.org
-In-Reply-To: <20260915123304.1027277-2-tzimmermann@suse.de>
+In-Reply-To: <20260915123304.1027277-5-tzimmermann@suse.de>
 References: <20260915123304.1027277-1-tzimmermann@suse.de>
- <20260915123304.1027277-2-tzimmermann@suse.de>
+ <20260915123304.1027277-5-tzimmermann@suse.de>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Tue, 15 Sep 2026 12:40:14 +0000
-Message-Id: <20260915124015.5CA611F000FF@smtp.kernel.org>
+Date: Tue, 15 Sep 2026 12:40:20 +0000
+Message-Id: <20260915124021.1195D1F000FF@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-> Cursors in the VT subsystem are blocks within a character cell that are
-> filled with the foreground color. The new helpers vc_cursor_start() and
-> vc_cursor_end() return the scanlines in which the cursor block starts rsp.
-> ends. This is compatible with VGA hardware
->=20
-> In terms of cursor design, the new cursor-size helpers follow established
-> styles in fbcon. The only exception is in underline cursors for fonts with
-> a size larger than 10. The underlining dash is now one pixel closer to
-> the font-glyph data, so that the cursor looks less detached. This follows
-> the style used by vgacon.
->=20
-> Similar code in vgacon and fbcon ignores the cursor's default size stored
-> in vt.cur_default. The consoles default to full-block cursors, while vt
-> defaults to underline cursors. The new helper fall back to cur_default and
-> then underline cursors; in this order.
->=20
-> v2:
-> - export non-font interface for vgacon
-> - avoid interference from concurrent user space (Sashiko)
-> - fix function docs (Sashiko)
+> The new helper font_glyph_cursor() fills a glyph with a cursor pattern.
+> As with the font_glyph_rotate_*() helpers, the caller has to provide the
+> output memory.
 >=20
 > Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
 
@@ -71,5 +54,5 @@ Sashiko has reviewed this patch and found no issues. It looks great!
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260915123304.1027=
-277-1-tzimmermann@suse.de?part=3D1
+277-1-tzimmermann@suse.de?part=3D4
 
