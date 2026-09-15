@@ -1,403 +1,197 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6968D493D2B
-	for <linux-serial@vger.kernel.org>; Tue, 15 Sep 2026 11:20:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD1EA431A3E;
+	Tue, 15 Sep 2026 11:47:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789471216; cv=none; b=n/fWw8ZQtr1+wfj/JWLNcwXmg6e+pJp6W4WtwHpByeHEHHnCo1LRMH9TGhAMPmls1QemuHkQq+Ui6wv3PHiO/BUrergiX8n9VX+cdY3xeScVMI/mCUla3EjMYnJj6Flw+rmiCoijGNUqUsCqui7w2oSHhOs8JYyCMtbitoCRsKg=
+	t=1789472843; cv=none; b=vBoKc5yR3jg5zKSvWw366bshkHwrWCi25lvezC59p5WV/tTsMLbZaoQ42p7rlccbFsL7vI8EJTgdUsLco6f1M6Av3SZCNb+2Z+hDs/s5zuFjrWZ5BzvEehxeF9g6l9O7nPhxZaKOVlL5wmPNlnSek8uDN4pgwEAT/r6LosoHCeU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789471216; c=relaxed/simple;
-	bh=XVHehvFqoY9jfqSXdULevJOkuovRaTmjR8D8LQf83ac=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=ALMZkweMex6dJDaPr5TaLuyAjbxzOsaBfkbPDEW5yziWXxwAyl16uD91Pxwb/jPFgqF5TycuouxR5y2jHVMRCtehX1ezrpFHJp+Snjcdz3kvB3sh35AEBh9dP8Y9AP6PAsPXKI4hxrHe8gM7Sb/EzaA4xiWg4M8UQMyqPk4lNQI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RXYtGhlF; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1789472843; c=relaxed/simple;
+	bh=deAw/7TDEohbf1HV3Iyjt4R4cZRwIuWCKoEuiGhjWkQ=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=iFsQ1A07ueIm654wps1j1cQNCKI8n1OUSL/YTtsvFylzLNTYJvB90QJ74Y0y6jSDbJaFKecXg928h5hX8T9l5l4rbVm3H8r8A9KsWpk87H62seicBxUKuhoKZZU5afqxC/pmRO0IdFUyQYowJAIxvVl5DJJnh5ou30oJ9vA1FYA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=D4a+k1mr; arc=none smtp.client-ip=192.198.163.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RXYtGhlF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A84B51F000FF;
-	Tue, 15 Sep 2026 11:20:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789471212;
-	bh=qCM+vTJ0iKBQ6uz8q2ZJd8MMTqVfIIhxSwHXjBrj4Q8=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=RXYtGhlFKGmu4QUrSfOCgVYUtKN3b/c/8L3ITnHYM8TqHe+dOlg9GCdquxtMQn2rn
-	 5q2yqc6vt4ENAH0DAFNSx0LpHWxBu+kErD02y5ixKGNX57+heXK5orIbKE0gNVU5Sz
-	 ZXOsBk7LtF3famz9hiP4FED+DvM2PItVlWy5n+BXY0ip4TpNj4ovE0bRRFRAPgDa5J
-	 lZcSUpSM4FScNzJMwuEwKeFm8BZYE38fNthhkThV/yurbxRKeH3a4r7cEN5BZ/S1wI
-	 L7xRG8yT9H8dWzC880mIUlXPuEULy6qGKtobXr5VtdTsQWz4tpTKpmUwFJpvDEfWQj
-	 UCN4ZWPyRHy1g==
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v3] serial: max310x: drive RTS in software when hardware
- delays are too short
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Tapio Reijonen" <tapio.reijonen@vaisala.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20260915-max310x-rs485-sw-delay-v3-1-7d20a4a4ab52@vaisala.com>
-References: <20260915-max310x-rs485-sw-delay-v3-1-7d20a4a4ab52@vaisala.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Tue, 15 Sep 2026 11:20:12 +0000
-Message-Id: <20260915112012.A84B51F000FF@smtp.kernel.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="D4a+k1mr"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1789472842; x=1821008842;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=deAw/7TDEohbf1HV3Iyjt4R4cZRwIuWCKoEuiGhjWkQ=;
+  b=D4a+k1mrnJqwP5UriUKJC/Qt9VT2LHtQN4GdkQC+1bOskFFcXNB4n4ju
+   2xdE2BAO5CVnqcxUxL8S1jHBSSXF9CDsGuxm07AmItc4VpcJpaC8LYD03
+   ebJFlcGz1r0xcTE6Ii9Jo7+WKKXQb73QaAB6pOgo7FbI9O832TZV227e6
+   obYW+4qCN3vMXHY2VqVLAZ7vJywgCGfAI4iYdmPAxcdafsR4W2uVj/ZRt
+   SGnp7NnsuYZ2nuBWBEs9J3MqB6xNS7zPJqYhPtqutCp2f1emY8xFGLkPP
+   PIfHLdWnDjTwuOqXElqmHvO3FX1c1xQVI+8aqh2gCEJO14a56B7uPC0uZ
+   g==;
+X-CSE-ConnectionGUID: neXevzuFQsydzvL9nHCVjg==
+X-CSE-MsgGUID: kJYf5XdWSyi86gsP62WSqg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11905"; a="88967167"
+X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
+   d="scan'208";a="88967167"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2026 04:47:21 -0700
+X-CSE-ConnectionGUID: G6cPanw3St+oo08ir6C0kQ==
+X-CSE-MsgGUID: Z+tNzAXeQFy/qftCJFxY9w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
+   d="scan'208";a="311254377"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.24])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2026 04:47:12 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Tue, 15 Sep 2026 14:47:07 +0300 (EEST)
+To: Long Zhao <longzhao@ambarella.com>
+cc: Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>, 
+    Alexandre Belloni <alexandre.belloni@bootlin.com>, soc@lists.linux.dev, 
+    linux-arm-kernel@lists.infradead.org, Rob Herring <robh@kernel.org>, 
+    Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+    Conor Dooley <conor+dt@kernel.org>, 
+    Michael Turquette <mturquette@baylibre.com>, 
+    Stephen Boyd <sboyd@kernel.org>, Jerome Brunet <jbrunet@baylibre.com>, 
+    Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, 
+    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, 
+    Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+    Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, 
+    Long Zhao <zl020895@163.com>, Lee Jones <lee@kernel.org>, 
+    mfd@lists.linux.dev, devicetree@vger.kernel.org, linux-clk@vger.kernel.org, 
+    linux-gpio@vger.kernel.org, linux-serial <linux-serial@vger.kernel.org>, 
+    LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v7 13/15] serial: 8250_dw: add Ambarella CV75 quirks
+In-Reply-To: <20260915-cv75-v5-v7-13-3297d3fbc9c0@ambarella.com>
+Message-ID: <4eca948b-ebf7-ee86-78e8-af886f19ed0c@linux.intel.com>
+References: <20260915-cv75-v5-v7-0-3297d3fbc9c0@ambarella.com> <20260915-cv75-v5-v7-13-3297d3fbc9c0@ambarella.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="8323328-710529132-1789472827=:1365"
 
-Thank you for your contribution! Sashiko AI review found 5 potential issue(=
-s) to consider:
-- [High] serial: max310x: port lock dropped in serial core callbacks breaks=
- atomicity
-- [High] serial: max310x: lockless 64-bit ktime and state updates cause tor=
-n reads
-- [High] serial: max310x: TOCTOU race in delayed_stop_tx resurrects cancell=
-ed timer
-- [High] serial: max310x: race in rts_work_proc transmits data with RTS dis=
-abled
-- [High] serial: max310x: shutdown bypasses timer cancellation if sw_rts to=
-ggles
---
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-commit 986ae4ab53cd9aa2d0384870cb8594193bc9e13d
-Author: Tapio Reijonen <tapio.reijonen@vaisala.com>
+--8323328-710529132-1789472827=:1365
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 
-serial: max310x: drive RTS in software when hardware delays are too short
+On Tue, 15 Sep 2026, Long Zhao via B4 Relay wrote:
 
-This patch adds a software-driven RTS path for the max310x driver to handle
-RS485 delays that exceed what the hardware can natively represent. It uses
-an hrtimer and workqueue to assert and deassert RTS according to the reques=
-ted
-before-send and after-send delays.
-
-> diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-> index 022502986c5fc..e8612c5c95550 100644
-> --- a/drivers/tty/serial/max310x.c
-> +++ b/drivers/tty/serial/max310x.c
-[ ... ]
-> @@ -680,6 +703,42 @@ static void max310x_batch_read(struct uart_port *por=
-t, u8 *rxbuf, unsigned int l
-[ ... ]
-> +static void max310x_rts_work_proc(struct work_struct *ws)
+> From: Long Zhao <longzhao@ambarella.com>
+>=20
+> The Ambarella CV75 UART is Ambarella IP, not a Synopsys DesignWare
+> licensed block. At the register level it is close enough to DW APB UART
+> that a full custom UART driver is unnecessary: reuse 8250_dw with a
+> small platform quirk.
+>=20
+> Quirks:
+> - keep IER ETOI (bit 5) set for RX timeout behaviour
+> - skip set_rate; baud clock is managed outside the UART block
+>=20
+> Reviewed-by: Linus Walleij <linusw@kernel.org>
+> Signed-off-by: Long Zhao <longzhao@ambarella.com>
+> ---
+>  drivers/tty/serial/8250/8250_dw.c | 32 ++++++++++++++++++++++++++++++++
+>  1 file changed, 32 insertions(+)
+>=20
+> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/=
+8250_dw.c
+> index 5fba913f3301..19431c476c55 100644
+> --- a/drivers/tty/serial/8250/8250_dw.c
+> +++ b/drivers/tty/serial/8250/8250_dw.c
+> @@ -43,6 +43,9 @@
+>  #define RZN1_UART_xDMACR_8_WORD_BURST=09(2 << 1)
+>  #define RZN1_UART_xDMACR_BLK_SZ(x)=09((x) << 3)
+> =20
+> +/* Ambarella IER: receive timeout interrupt enable */
+> +#define AMBARELLA_UART_IER_ETOI=09=09BIT(5)
+> +
+>  /* Quirks */
+>  #define DW_UART_QUIRK_OCTEON=09=09BIT(0)
+>  #define DW_UART_QUIRK_ARMADA_38X=09BIT(1)
+> @@ -60,6 +63,7 @@
+> =20
+>  struct dw8250_platform_data {
+>  =09u8 usr_reg;
+> +=09u8 ier_mask;
+>  =09u32 cpr_value;
+>  =09unsigned int quirks;
+>  };
+> @@ -572,6 +576,25 @@ static void dw8250_prepare_rx_dma(struct uart_8250_p=
+ort *p)
+>  =09dw8250_writel_ext(up, RZN1_UART_RDMACR, val);
+>  }
+> =20
+> +static int dw8250_ier_mask_startup(struct uart_port *p)
 > +{
-> +	struct max310x_one *one =3D container_of(ws, struct max310x_one, rts_wo=
-rk);
-> +	struct uart_port *port =3D &one->port;
-> +	bool rts_on =3D READ_ONCE(one->tx_state) !=3D MAX310X_TX_OFF;
+> +=09struct dw8250_data *d =3D to_dw8250_data(p->private_data);
+> +=09struct uart_8250_port *up =3D up_to_u8250p(p);
+> +=09int ret;
 > +
-> +	max310x_rts_ctl(port, max310x_rts_level(port, rts_on));
+> +=09ret =3D serial8250_do_startup(p);
+> +=09if (ret)
+> +=09=09return ret;
 > +
-> +	guard(spinlock_irqsave)(&port->lock);
-> +	if (READ_ONCE(one->tx_state) =3D=3D MAX310X_TX_WAIT_BEFORE_SEND &&
-> +	    !one->cancel_tx_delay_tmr && !hrtimer_active(&one->tx_delay_tmr))
-> +		hrtimer_start(&one->tx_delay_tmr,
-> +			      ms_to_ktime(port->rs485.delay_rts_before_send),
-> +			      HRTIMER_MODE_REL);
-
-[Severity: High]
-Does this code arm the timer based on the current state rather than the sta=
-te
-that was just applied to the hardware?
-
-If max310x_rts_work_proc() locklessly reads tx_state =3D=3D OFF and command=
-s the
-hardware to drop RTS, it could race with max310x_start_tx() which takes the
-lock and sets tx_state =3D WAIT_BEFORE_SEND.=20
-
-When rts_work_proc acquires the lock, it would see the new WAIT_BEFORE_SEND
-state and arm the TX timer, even though it explicitly disabled the hardware
-RTS. The timer would fire and data would be shifted out while the transceiv=
-er
-is off, potentially leading to RS485 data loss.
-
+> +=09/*
+> +=09 * Ambarella keeps variant IER bits (e.g. ETOI) set for correct RX
+> +=09 * timeout behaviour.
+> +=09 */
+> +=09up->ier |=3D d->pdata->ier_mask;
+> +
+> +=09return 0;
 > +}
 > +
-[ ... ]
-> @@ -776,6 +835,71 @@ static void max310x_handle_rx(struct uart_port *port=
-, unsigned int rxlen)
-[ ... ]
-> +static void max310x_delayed_stop_tx(struct uart_port *port)
-> +{
-> +	struct max310x_one *one =3D to_max310x_port(port);
-> +	unsigned int txlvl;
-> +
-> +	if (READ_ONCE(one->tx_state) =3D=3D MAX310X_TX_OFF)
-> +		return;
-> +
-> +	/*
-> +	 * The kfifo can be empty while the chip TX FIFO is still draining, so =
-arm
-> +	 * the after-send hold only once the chip FIFO is empty too - the TX-em=
-pty
-> +	 * interrupt re-invokes us then. Otherwise the hold starts early and RTS
-> +	 * drops mid-character, clipping the last byte(s).
-> +	 */
-> +	txlvl =3D max310x_port_read(port, MAX310X_TXFIFOLVL_REG);
-> +	if (txlvl)
-> +		return;
-> +
-> +	/*
-> +	 * Runs from the tx_work worker, which does not hold port->lock. Take it
-> +	 * here so cancel_tx_delay_tmr, tx_state and the timer are updated
-> +	 * atomically against start_tx() and the timer callback.
-> +	 */
-> +	guard(spinlock_irqsave)(&one->port.lock);
-> +	one->cancel_tx_delay_tmr =3D false;
-> +	/*
-> +	 * Do not arm the after-send hold if a before-send phase is pending: a
-> +	 * new burst's start_tx() may have set WAIT_BEFORE_SEND while its timer=
- is
-> +	 * not yet armed (max310x_rts_work_proc() arms it after the RTS edge).
-> +	 * That burst owns the line and runs its own envelope.
-> +	 */
-> +	if (READ_ONCE(one->tx_state) !=3D MAX310X_TX_WAIT_BEFORE_SEND &&
-> +	    !hrtimer_active(&one->tx_delay_tmr)) {
-> +		/*
-> +		 * Add one character for the byte still in the shift register -
-> +		 * TX-empty fires as it enters, not as it leaves.
-> +		 */
-> +		ktime_t delay =3D ktime_add_ms(one->one_character_duration,
-> +					     port->rs485.delay_rts_after_send);
-
-[Severity: High]
-Does this unconditionally clear the cancellation flag after a lockless
-hardware read?
-
-If max310x_delayed_stop_tx() reads tx_state locklessly, then performs a
-slow SPI read, it could race with max310x_shutdown() which acquires the loc=
-k,
-cancels the timer, sets tx_state =3D MAX310X_TX_OFF, and powers down the po=
-rt.
-
-After the SPI read, this code acquires the lock, clears cancel_tx_delay_tmr,
-and re-arms the timer because it checks if tx_state is not
-MAX310X_TX_WAIT_BEFORE_SEND instead of re-verifying it is not OFF. This cou=
-ld
-cause the timer to be armed on a powered-off port.
-
-Also, is it safe to read one->one_character_duration locklessly here?
-A torn read of this 64-bit ktime_t on 32-bit systems could result in massive
-timer delays.
-
-> +
-> +		WRITE_ONCE(one->tx_state, MAX310X_TX_WAIT_AFTER_SEND);
-> +		hrtimer_start(&one->tx_delay_tmr, delay, HRTIMER_MODE_REL);
-> +	}
-> +}
-> +
->  static void max310x_handle_tx(struct uart_port *port)
+>  static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
 >  {
->  	struct tty_port *tport =3D &port->state->port;
-> @@ -787,8 +911,13 @@ static void max310x_handle_tx(struct uart_port *port)
->  		return;
->  	}
-> =20
-> -	if (kfifo_is_empty(&tport->xmit_fifo) || uart_tx_stopped(port))
-> +	if (kfifo_is_empty(&tport->xmit_fifo) || uart_tx_stopped(port)) {
-> +		struct max310x_one *one =3D to_max310x_port(port);
-> +
-> +		if (one->sw_rts_during_tx)
-> +			max310x_delayed_stop_tx(port);
-
-[Severity: High]
-Can a lockless read of sw_rts_during_tx strand the RS485 state machine here?
-
-If sw_rts_during_tx is toggled locklessly mid-transmission (e.g. from
-max310x_set_rts_ctl_params()), it could prevent the after-send hold from
-arming, leaving the transceiver permanently asserted.
-
->  		return;
-> +	}
-[ ... ]
-> @@ -813,11 +942,48 @@ static void max310x_handle_tx(struct uart_port *por=
-t)
->  		uart_write_wakeup(port);
+>  =09unsigned int quirks =3D data->pdata->quirks;
+> @@ -606,6 +629,8 @@ static void dw8250_quirks(struct uart_port *p, struct=
+ dw8250_data *data)
+>  =09=09p->serial_in =3D dw8250_serial_in32;
+>  =09=09data->uart_16550_compatible =3D true;
+>  =09}
+> +=09if (data->pdata->ier_mask)
+> +=09=09p->startup =3D dw8250_ier_mask_startup;
 >  }
 > =20
-[ ... ]
-> +/* called with port.lock taken and irqs off */
->  static void max310x_start_tx(struct uart_port *port)
->  {
->  	struct max310x_one *one =3D to_max310x_port(port);
+>  static void dw8250_reset_control_assert(void *data)
+> @@ -879,6 +904,12 @@ static const struct dw8250_platform_data dw8250_intc=
+10ee =3D {
+>  =09.quirks =3D DW_UART_QUIRK_IER_KICK,
+>  };
 > =20
-> -	schedule_work(&one->tx_work);
-> +	if (one->sw_rts_during_tx) {
-> +		/*
-> +		 * The before- and after-send phases share one delay timer. If an
-> +		 * after-send release is pending, cancel it before starting a new
-> +		 * TX so the just-asserted RTS is not yanked; re-arming the timer
-> +		 * for the before-send phase then supersedes the release.
-> +		 */
-> +		int res =3D 0;
+> +static const struct dw8250_platform_data dw8250_ambarella_cv75_data =3D =
+{
+> +=09.usr_reg =3D DW_UART_USR,
+> +=09.ier_mask =3D AMBARELLA_UART_IER_ETOI,
+> +=09.quirks =3D DW_UART_QUIRK_SKIP_SET_RATE,
+> +};
 > +
-> +		if (READ_ONCE(one->tx_state) =3D=3D MAX310X_TX_WAIT_AFTER_SEND)
-> +			res =3D hrtimer_try_to_cancel(&one->tx_delay_tmr);
-> +		if (unlikely(res =3D=3D -1)) {
-> +			one->cancel_tx_delay_tmr =3D true;
-> +			uart_port_unlock(port);
-> +			hrtimer_cancel(&one->tx_delay_tmr);
-> +			uart_port_lock(port);
-
-[Severity: High]
-Does dropping port->lock here break atomicity expectations?
-
-The serial core calls ops->start_tx() with port->lock held, assuming the
-port state will remain locked and atomic. Dropping the lock to call
-hrtimer_cancel() allows concurrent operations like uart_shutdown() or
-another uart_write() to modify port state or free resources. When the
-driver reacquires the lock, the caller resumes execution in an invalid stat=
-e.
-
-> +		}
-> +
-> +		max310x_delayed_start_tx(port);
-> +	} else {
-> +		schedule_work(&one->tx_work);
-> +	}
->  }
-[ ... ]
-> @@ -927,15 +1093,111 @@ static void max310x_set_mctrl(struct uart_port *p=
-ort, unsigned int mctrl)
-[ ... ]
-> +/*
-> + * Pick hardware or software RTS timing for the current port. The chip c=
-an
-> + * deliver up to 15 bit-times of setup/hold delay via HDPIXDELAY; anythi=
-ng
-> + * longer (or any RTS polarity the chip cannot produce automatically) mu=
-st
-> + * be driven by software via tx_delay_tmr and rts_work.
-> + */
-> +static void max310x_set_rts_ctl_params(struct max310x_one *one)
-> +{
-[ ... ]
-> +
-> +	if ((u64)port->rs485.delay_rts_before_send * NSEC_PER_MSEC > max_hw_del=
-ay_ns ||
-> +	    (u64)port->rs485.delay_rts_after_send  * NSEC_PER_MSEC > max_hw_del=
-ay_ns ||
-> +	    !!(port->rs485.flags & SER_RS485_RTS_ON_SEND) =3D=3D
-> +	    !!(port->rs485.flags & SER_RS485_RTS_AFTER_SEND))
-> +		one->sw_rts_during_tx =3D true;
-
-[Severity: High]
-Can dynamically updating sw_rts_during_tx desync the timer cancellation log=
-ic?
-
-If sw_rts_during_tx flips to false while a transmission is active (for
-example, due to a concurrent tcsetattr()), a subsequent port close could sk=
-ip
-timer cancellation in max310x_shutdown(), leaving background tasks running
-against a disabled port.
-
-> +
-> +	if (one->sw_rts_during_tx) {
-> +		setup =3D 0;
-> +		hold  =3D 0;
-> +		goto out;
-> +	}
-[ ... ]
-> @@ -969,8 +1231,12 @@ static void max310x_set_termios(struct uart_port *p=
-ort,
-[ ... ]
-> +	/*
-> +	 * Cache the new baud rate and the time it takes to clock out one
-> +	 * character so the RTS-timing decision in max310x_set_rts_ctl_params()
-> +	 * and the post-TX delay in max310x_delayed_stop_tx() can use them.
-> +	 */
-> +	to_max310x_port(port)->baud =3D baud;
-> +	to_max310x_port(port)->one_character_duration =3D
-> +		us_to_ktime(DIV_ROUND_UP(USEC_PER_SEC * frame_bits, baud));
-
-[Severity: High]
-Can writing this 64-bit ktime_t locklessly cause torn reads?
-
-Concurrently, the TX fast-path (max310x_handle_tx() and
-max310x_delayed_stop_tx()) reads one_character_duration. On 32-bit systems,
-a torn read could corrupt the delay timer calculation.
-
-> +	max310x_set_rts_ctl_params(to_max310x_port(port));
->  }
-[ ... ]
-> +/* called with port.lock taken and irqs off */
->  static int max310x_rs485_config(struct uart_port *port, struct ktermios =
-*termios,
->  				struct serial_rs485 *rs485)
->  {
->  	struct max310x_one *one =3D to_max310x_port(port);
+>  static const struct dw8250_platform_data dw8250_ultrarisc_dp1000_data =
+=3D {
+>  =09.usr_reg =3D DW_UART_USR,
+>  =09.cpr_value =3D FIELD_PREP_CONST(DW_UART_CPR_ABP_DATA_WIDTH, 2) |
+> @@ -889,6 +920,7 @@ static const struct dw8250_platform_data dw8250_ultra=
+risc_dp1000_data =3D {
+>  };
 > =20
-> -	if ((rs485->delay_rts_before_send > 0x0f) ||
-> -	    (rs485->delay_rts_after_send > 0x0f))
-> -		return -ERANGE;
-> +	rs485->delay_rts_before_send =3D min(rs485->delay_rts_before_send, 100U=
-);
-> +	rs485->delay_rts_after_send  =3D min(rs485->delay_rts_after_send,  100U=
-);
-> +
-> +	/*
-> +	 * Make sure no SW-timed RTS toggle survives an RS485 disable, even
-> +	 * if the delay timer happens to be running right now.
-> +	 */
-> +	if (!(rs485->flags & SER_RS485_ENABLED)) {
-> +		one->cancel_tx_delay_tmr =3D true;
-> +		if (hrtimer_try_to_cancel(&one->tx_delay_tmr) =3D=3D -1) {
-> +			uart_port_unlock(port);
-> +			hrtimer_cancel(&one->tx_delay_tmr);
-> +			uart_port_lock(port);
+>  static const struct of_device_id dw8250_of_match[] =3D {
+> +=09{ .compatible =3D "ambarella,cv75-uart", .data =3D &dw8250_ambarella_=
+cv75_data },
+>  =09{ .compatible =3D "snps,dw-apb-uart", .data =3D &dw8250_dw_apb },
+>  =09{ .compatible =3D "cavium,octeon-3860-uart", .data =3D &dw8250_octeon=
+_3860_data },
+>  =09{ .compatible =3D "marvell,armada-38x-uart", .data =3D &dw8250_armada=
+_38x_data },
 
-[Severity: High]
-Does dropping port->lock here break atomicity?
-
-The serial core calls ops->rs485_config() with port->lock held. Dropping
-the lock temporarily to call hrtimer_cancel() could break atomicity and
-corrupt the state transition if there are interleaved operations.
-
-> +		}
-> +		WRITE_ONCE(one->tx_state, MAX310X_TX_OFF);
-> +	}
-[ ... ]
-> @@ -1134,9 +1417,53 @@ static int max310x_startup(struct uart_port *port)
-> =20
->  static void max310x_shutdown(struct uart_port *port)
->  {
-> +	struct max310x_one *one =3D to_max310x_port(port);
-> +
-> +	/*
-> +	 * Drain any in-flight software-timed RTS envelope before the port is
-> +	 * powered down, so the last character and its after-send hold complete
-> +	 * - close() can reach shutdown with data still queued and a before-send
-> +	 * delay pending. The loop ends when the envelope does (tx_state =3D=3D=
- OFF);
-> +	 * the bound is just a worst-case safety cap. Then stop the timer and w=
-ork
-> +	 * so neither runs against a powered-off port.
-> +	 */
-> +	if (one->sw_rts_during_tx) {
-> +		unsigned int loops =3D port->rs485.delay_rts_before_send +
-> +			    port->rs485.delay_rts_after_send +
-> +			    DIV_ROUND_UP_ULL((kfifo_len(&port->state->port.xmit_fifo) +
-> +					      port->fifosize) *
-> +					     ktime_to_us(one->one_character_duration),
-> +					     USEC_PER_MSEC);
-> +
-> +		while (READ_ONCE(one->tx_state) !=3D MAX310X_TX_OFF && loops-- > 0)
-> +			fsleep(USEC_PER_MSEC);
-> +
-> +		one->cancel_tx_delay_tmr =3D true;
-> +		hrtimer_cancel(&one->tx_delay_tmr);
-> +		cancel_work_sync(&one->rts_work);
-
-[Severity: High]
-Does this logic fail to cancel timers if sw_rts_during_tx has been toggled?
-
-If sw_rts_during_tx was dynamically updated to false (e.g. by a tcsetattr()
-call) during an active transmission, this check skips the timer and work
-cancellation routines. This could leave tx_delay_tmr and rts_work running
-against a powered-down hardware port, leading to bus errors.
-
-> +		WRITE_ONCE(one->tx_state, MAX310X_TX_OFF);
-> +	} else {
-[ ... ]
+Reviewed-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
 
 --=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260915-max310x-rs=
-485-sw-delay-v3-1-7d20a4a4ab52@vaisala.com?part=3D1
+ i.
+
+--8323328-710529132-1789472827=:1365--
