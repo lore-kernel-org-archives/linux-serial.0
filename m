@@ -1,218 +1,189 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mx0b-0002e601.pphosted.com (mx0b-0002e601.pphosted.com [148.163.154.28])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C7AD43DA38
-	for <linux-serial@vger.kernel.org>; Wed, 16 Sep 2026 07:26:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789543604; cv=none; b=f1DX06ZAMhe++kfZusCqv2HlqqZIfqORYHZkKYUA3yOkPTqNHy9aVW53bel2na1yyBSTvCqYOi26V1roYs7gnn/s+W7cCfXnxIs5ZiQwjICT5J+SG/Xyhd6hbDmQpQYwfd9LYUUsDVDkd16Lz/zLfwdBl/3j0DFEX4FoH6Dw0gQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789543604; c=relaxed/simple;
-	bh=Atax/dBCtzzh7hsEpWYQW9V3Kov4QirED6dCj/PL5rM=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=JjVzBYeFcj0b7AOsmcApUAaOgby8FT5DdQ7GSEgsbmxm4WV6yQbW0V9ZbE+/byIcfOrfNmfUz14y/RGxPRJMmlv+vDdh/W35RzAUVbri5X3sX1l9INbelZ2m0ysDoRHH4brglGGuRnAgJa/PFOpDp5+PSQQVoyTycuul5Q3ehnM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mWhdX/cl; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1C4046EC6B;
+	Wed, 16 Sep 2026 08:56:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=148.163.154.28
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1789548978; cv=fail; b=jqvV1Zd72eBblgt/cTglQFqJNwFWi+jZSpL1Gsgix9jFI9RBtxuA8uV7HB/hAYofHQxwxKa1Z8lbyhee2507mViiA5Jo+9TkCF+QpAWyKOaVDQci3YHF5QDoCGGqi1Cd2XU1r+U7W+VmnH5F/BxJdyrU8siWQLwvaK+MP17XM6Q=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1789548978; c=relaxed/simple;
+	bh=qisnskVBK1LriryLZO9Q09j0y2dz8rTyT4aQraIyWTM=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=p8Mn845C+nE/gaRckW9THugbN9VFerVumQKddPxeVvCnTTxMH2nE4cTvO9qAz3j+oTd+Q7THczq9cFwzv+6K7xCmR2liAJOEXlnbIybX7ZmzX5JCm9RsdZ8cbKiccS5UO/gi56Sm/cpNlrgzmZCEvs+UbgK60rFw+hPrTROKKcw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (2048-bit key) header.d=ti.com header.i=@ti.com header.b=myf/12U4; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=aTkR0qTc; arc=fail smtp.client-ip=148.163.154.28
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mWhdX/cl"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 725AC1F000FF;
-	Wed, 16 Sep 2026 07:26:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789543592;
-	bh=0YDv2Z1qJVAfLgNCyTPiu7yMmWsUgnkXCFcWnggNNWs=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=mWhdX/cl0T7MVcuFDkMvMWg4DbMbaegNrTGcpOf2wP+xaH5S9wOL3n4Nlq8igh/l1
-	 wBo4Qrfq5tkJ7SNlnpbHXxPXoiQ6PcUbE5zlCsPtD8ZtJOM2TSozmQtg+iVcvOXzei
-	 7YovrSXwfy8HozPhYRhlNjFkira9nj/kbxZNVbBLb09EzBhhLpthH59Gsz/z/aymJp
-	 +d7MtMEH+2DEvNKIfq+29mvjkdQZfoMSsWDjLmaeXSfLD6uBrVA8HCR3nrKheAnRSO
-	 I3RSiD2ydptd+fRg4dWlXNAZpSbhKRvC52BAwsj4NVPDu8OQ7xihEAQu5HIU01tpky
-	 cuAJrhZujAs+w==
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v4] serial: max310x: drive RTS in software when hardware
- delays are too short
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Tapio Reijonen" <tapio.reijonen@vaisala.com>
-Cc: linux-serial@vger.kernel.org
-In-Reply-To: <20260916-max310x-rs485-sw-delay-v4-1-d37a694342cf@vaisala.com>
-References: <20260916-max310x-rs485-sw-delay-v4-1-d37a694342cf@vaisala.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 16 Sep 2026 07:26:32 +0000
-Message-Id: <20260916072632.725AC1F000FF@smtp.kernel.org>
+	dkim=pass (2048-bit key) header.d=ti.com header.i=@ti.com header.b="myf/12U4";
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="aTkR0qTc"
+Received: from pps.filterd (m0374955.ppops.net [127.0.0.1])
+	by mx0b-0002e601.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 68G8Rqik2707759;
+	Wed, 16 Sep 2026 03:55:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=proofpoint-05-2026; bh=km0IxINjTeJ23
+	a13j6bFHZwmb8Qvd5d0fmSM084dTB0=; b=myf/12U4tJwfLr8+2LCNoT93E60Jo
+	OCgaJYoIvJMhcIcMrW3jWZrpD9It+DwFVtRa75qJ194tIcjeXtNx8DcjX0M0fy+6
+	CDgxtX4/2BMjrOqWVXZZB9v3RRgWpGkUH5CR7hyECL7CrxKWj7L+tc5MOvsG3OOq
+	C7mggEE7ZuToGWgy+IVeyBSgHyzcxQ7gjto++YXa0SdTnuLmf3dRYEGaOXIz2rLr
+	ubE/HCykBTk/ECKAsEOmRkSg6XOEwzcDlmKYFidmTu+OK5ORCO7IeJyCkpPE2ngy
+	yy0yyAqHJlJx0TL9c22avBKMoxXNvBAI76HvHMZV3Trfoh+qgGk7aXo3A==
+Received: from sn4pr0501cu005.outbound.protection.outlook.com (mail-southcentralusazon11011065.outbound.protection.outlook.com [40.93.194.65])
+	by mx0b-0002e601.pphosted.com (PPS) with ESMTPS id 4gqqmd84r9-1
+	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+	Wed, 16 Sep 2026 03:55:56 -0500 (CDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=xdE2sRG6v+s/r0MFEQC3Gg9iYRMeRIR2V4ZbSWnLkqL5cU7uyymEGvqZwiBcnYyPJVyKqQN9G1aPicVe84oRGBArpRfgLYHvdSLzzHgT0mXY2X0/YccUTQMzjxXZowSKbQAmiv4fM9pZHtR0pxiw4t3PtN6Q7CLmFvBm/uROIa8+mdQSGQdEbStZW85fxYZVie35ND/rPgJQ1hQCjwBbbVB92PxcLtT8tfvTDtlWTO9dJeuC5x8LVpuogPN9lKW8Ln3kaw1gHhjIDzRKsohXB7GCrL7NPV7X1SqZCv+ExhVtE4H/3rgKq9qI9vIKbQ5HB/11KKvAz7ek1v3KbrHtdg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=km0IxINjTeJ23a13j6bFHZwmb8Qvd5d0fmSM084dTB0=;
+ b=hWb1F4tJzMyOT/tHrNLi5oVeVFV8+sOlrsGBa0o/qFiWwVbXLXISbosJUNK6hIg2fvlngW6jHnwxrsO+Kpkmm/4J0W3pURjipxXiXppAbKxtavcHKpJzNH1q0NskKIdYC8Wiwl9y+s0sBN941S4LcSwTYJM31B9nUUEEpXBttqJMWCwvFzt4gYrV+nMLlouGrryS7xnnkTYZGIRAJot4eZiFNcyNoyOwy1aNFhwSRQ6PYvWDYlPFmUvRpAYXNE3mF5A0eQiA9i+bDQxnSG66OwQYYHrmT45s0lAd/zscG/1U87hKeLFokY7Wf7nacqxJQp2+vZ/BEUlzX0w1GWk1+w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 198.47.21.194) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=ti.com;
+ dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=ti.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=km0IxINjTeJ23a13j6bFHZwmb8Qvd5d0fmSM084dTB0=;
+ b=aTkR0qTc+aOMu93A2voShHH3M0hhJk3fnrimHo2VjhJb0FVD/vbJ0Xtq5h/ArY9YNh8H9/jxebDp5Cr5R1s1A1BQ1op88t1fLoKElc5euf5+11EjVXIO6+lskS27NhCVEI7lQiFS5KJ7unOWxU7t3ckku8XRNTuhq/Frr0RcUoA=
+Received: from BN0PR02CA0022.namprd02.prod.outlook.com (2603:10b6:408:e4::27)
+ by CH3PR10MB7496.namprd10.prod.outlook.com (2603:10b6:610:164::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.451.5; Wed, 16 Sep
+ 2026 08:55:54 +0000
+Received: from BL6PEPF00022572.namprd02.prod.outlook.com
+ (2603:10b6:408:e4:cafe::19) by BN0PR02CA0022.outlook.office365.com
+ (2603:10b6:408:e4::27) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.428.9 via Frontend Transport; Wed, 16
+ Sep 2026 08:55:52 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 198.47.21.194)
+ smtp.mailfrom=ti.com; dkim=none (message not signed) header.d=none;dmarc=pass
+ action=none header.from=ti.com;
+Received-SPF: Pass (protection.outlook.com: domain of ti.com designates
+ 198.47.21.194 as permitted sender) receiver=protection.outlook.com;
+ client-ip=198.47.21.194; helo=flwvzet200.ext.ti.com; pr=C
+Received: from flwvzet200.ext.ti.com (198.47.21.194) by
+ BL6PEPF00022572.mail.protection.outlook.com (10.167.249.40) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.428.7 via Frontend Transport; Wed, 16 Sep 2026 08:55:52 +0000
+Received: from DFLE205.ent.ti.com (10.64.6.63) by flwvzet200.ext.ti.com
+ (10.248.192.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.45; Wed, 16 Sep
+ 2026 03:55:25 -0500
+Received: from DFLE208.ent.ti.com (10.64.6.66) by DFLE205.ent.ti.com
+ (10.64.6.63) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.45; Wed, 16 Sep
+ 2026 03:55:25 -0500
+Received: from lelvem-mr06.itg.ti.com (10.180.75.8) by DFLE208.ent.ti.com
+ (10.64.6.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.45 via Frontend
+ Transport; Wed, 16 Sep 2026 03:55:25 -0500
+Received: from moteen-ubuntu-desk.dhcp.ti.com (moteen-ubuntu-desk.dhcp.ti.com [10.24.50.20])
+	by lelvem-mr06.itg.ti.com (8.18.1/8.18.1) with ESMTP id 68G8tKwE716870;
+	Wed, 16 Sep 2026 03:55:21 -0500
+From: Moteen Shah <m-shah@ti.com>
+To: <ilpo.jarvinen@linux.intel.com>, <gregkh@linuxfoundation.org>,
+        <krzk+dt@kernel.org>, <linux-serial@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <jirislaby@kernel.org>,
+        <devicetree@vger.kernel.org>
+CC: <u-kumar1@ti.com>, <gehariprasath@ti.com>, <m-shah@ti.com>,
+        <vigneshr@ti.com>, <nm@ti.com>, <a-limaye@ti.com>,
+        <y-abhilashchandra@ti.com>
+Subject: [PATCH v2 0/2] serial: 8250_dw: Add ti,tda54-uart support
+Date: Wed, 16 Sep 2026 14:25:18 +0530
+Message-ID: <20260916085520.2259420-1-m-shah@ti.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL6PEPF00022572:EE_|CH3PR10MB7496:EE_
+X-MS-Office365-Filtering-Correlation-Id: 33813b0d-e37c-42dc-d0bf-08df13d04fd5
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|82310400026|23010399003|1800799024|36860700016|13003099007|6133799003|10067099003|56012099006|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	7+KIMOCaqUr1b/pY/rflWQhjjUd70RUBARrkOi6sGAu95XKNx/1rruMxJu6h9gEXOSK0ahtVPRJIzoBuypzbTqXgXNPcrrUzbeLXyspmApy+w82wThnChu5Gd2KMsQNOE1WjVvDAu++/YPJWuCG7GfWyKQySY5UJaUK9kgYm/Z2itzJFSy/Izg/BDRldL8wrxr0e58oG5uybDbUaUCO7YF3umr1DpX2lNvBnTwxJ+HbmmQqcCm9osmFmQAxDN6Yz9pzKi1UE3+zJqd/1qHPnHPzIvEdKpv+dkGoCighQgVU1271hw3r9sPRmdU/sxhtZ8F8MoHWbfYZdZSVAsudITlh3H0YH6sJnfNfTr6zlmVC+YjqjazsG990lXjyIGBRJNcH4ZnVHTyx96Qc6SSKtNeSD+Z9dXIyiY98MCcFG0kE5emsdauFzQcm6cwhMYOO8zAlJ37TTRF144KmerCZlKOX0rpoiuCAnKafMdW3Y59ciWiRDuW4l9X59xCjk1m8nXZRdhBP+/laPg5D2mIDzIVK8gKsrgSbRNwW9ekZ3xK74IzjBqYtFhUbtPvlLAwcahwyhRitsUNqQTvqzinZbgmYH+TBcixUtUH8GW4psfK7BtjeNABNmo8ddKgktqmofcyrG0eVq9zdBxDEvWrJ4JbpWwMBOGtQoiIqs98nIpf03ob5srt+sOTNel2ZjMpaAsMLfWafQcSflDPTLsHZv6A==
+X-Forefront-Antispam-Report:
+	CIP:198.47.21.194;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:flwvzet200.ext.ti.com;PTR:ErrorRetry;CAT:NONE;SFS:(13230040)(376014)(82310400026)(23010399003)(1800799024)(36860700016)(13003099007)(6133799003)(10067099003)(56012099006)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	8VQbocy30Dy/NRTAls8bAdg11b9E1o+ooWcZuDogd6Sryit+HqMS1tZwZqEQ91XyUgklpdKiuQli6i1jl4XNMtAYdVJs2sYVZ+VhClTOD4i/rjvcLVrldLNbHjIDogN/DyoHoBCi7UVFmnnv06lc75s0JQp67p3isN+kWqOAR4GdcLPRstmaTWnf8sD4KSD+UeXk81TZNdE7oXkTbL61JEDssE8RLFtQmxoKek66EGJSy5zsokvukw96lApBgxoAC7fR/XmnEscZsI/WwHeWMfE7TWvIr8Wp/Ex4/o5RzLQxJjtqPLrEnmwq+Q3Z7Rm3fjT3Kop4qcQUh0lCMEDuoHeZwJAkx9M5+mTOCraIfQ5cGf9+NYg9xEqDEYZ9OrdREG16ql6ce2ApItcza12w6ftXmy00qEBTwrmbI+mILdic3wzClSZ8AzpPT4Y2HqSD
+X-Exchange-RoutingPolicyChecked:
+	UyyKYnC1eMcklfT8yhyK8GyrObncDHZM1coTCf/HL2m/SuKO1BMCDNjJDtXUPva/3OsZUwdevr5Lj0CmIPQFcoHFvgKK6iJ+jVYYwnmB4IineNljVxo4OjLdTvuXCr7GIBSB7vgwVCF43EIIAL/OzqUg2FoMHwB4MCY2aUmikgiNMJiu+bhNqQffDTqWaW3d9on0B0jwhXMa4GFw94LBzS69XvP+7RU+PFveKHgaueS60m6KjCJBsUkd0D5+/sZ11YaO+VREfLF80P3g00dTTOruOuiJFSqgWB1zySGJraosKiM1NLDdaUokKZJbnwNjKGvBQ4e8MhpTBKyHcTnbBA==
+X-OriginatorOrg: ti.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Sep 2026 08:55:52.2245
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 33813b0d-e37c-42dc-d0bf-08df13d04fd5
+X-MS-Exchange-CrossTenant-Id: e5b49634-450b-4709-8abb-1e2b19b982b7
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=e5b49634-450b-4709-8abb-1e2b19b982b7;Ip=[198.47.21.194];Helo=[flwvzet200.ext.ti.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL6PEPF00022572.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR10MB7496
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTE2MDExNSBTYWx0ZWRfX5GZ2TybuHntY
+ mYhrb12XSi/2yYEU9iKHrZ/2aiAS8dARM+kciYkwOaAS9JTxuuj1pG2v8NE/yp/DAqFCALvDg22
+ JqiMc0zox8WGom6m+4K1ogEsHQmstkQd0XwViDoxUSt4AYSY01MF6Dq+HwQvvjaXA41WXVqo6CX
+ vYPtcaiVBF0D9+/vEx/Q/1l5wQ/ycNKoWYnUbhlzc6JIOKj/vSUXxyLjW7/EfCbqrLUAXbDpUip
+ Txv2PxblV8nrRgBxfL0plQkAwhwfHg8mgdbc/LsCEBXBg9awcd6ZXGsjHRVHY7c7hRQzwk6ey70
+ eTaRGGBc+mOwjCaSz/G5ZGVrUup7Wsh6X5AkOn6OzDe0hCErjxegZI0jaHsu4tuxuqDDW7j/Eqe
+ hwP+KX+bMHYvQgc95XBcVV/PSzQ/o60RIYTl3zTUpH/yXywn6V9puCzi7H8T+KGrS70lqQIfeY1
+ uVi6TkmrDbDKU2Pu59g==
+X-Authority-Analysis: v=2.4 cv=S6JMU4sP c=1 sm=1 tr=0 ts=6aaa599c cx=c_pps
+ a=JPuSXJPnATmcGobPKBfcew==:117 a=iwqwCZQqcuTv3JOpYdM7/Q==:17
+ a=6eWqkTHjU83fiwn7nKZWdM+Sl24=:19 a=VdqzKS8jKosA:10 a=V5UXEbMT0ywA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=Z8NIEmU8O1QQgoT56wFK:22 a=fPAWb5peG099m5CrUpKH:22
+ a=VwQbUJbxAAAA:8 a=sozttTNsAAAA:8 a=kfyzvn_tYnN8tWGvylEA:9
+X-Proofpoint-Spam-Info: AW1haW4tMjYwOTE2MDExNSBTYWx0ZWRfX9Di131qXzHlX
+ tuAnQb7fQHSINOG7OWBqmaJQLpisz3Z5oeyAZ16fjL9c8r3d74TI3zM3Mbh/S+mt07y1+JFQwht
+ ioINLV9G11Wk0JyGeMGmgOwpuD2JRng=
+X-Proofpoint-GUID: Cs4V0c4U6dkFNxTOrkl97pQ7cCz0oWNV
+X-Proofpoint-ORIG-GUID: Cs4V0c4U6dkFNxTOrkl97pQ7cCz0oWNV
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-09-15_05,2026-09-15_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 adultscore=0 spamscore=0 bulkscore=0 lowpriorityscore=0
+ suspectscore=0 malwarescore=0 clxscore=1015 priorityscore=1501 phishscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2609040000 definitions=main-2609160115
 
-Thank you for your contribution! Sashiko AI review found 3 potential issue(=
-s) to consider:
-- [High] serial: max310x: race conditions from dropping port->lock in start=
-_tx and rs485_config
-- [High] serial: max310x: tx_work bypasses RS485 RTS before_send delay
-- [Medium] serial: max310x: torn read of 64-bit one_character_duration on 3=
-2-bit platforms
---
+Add the ti,tda54-uart compatible string to the DW APB UART binding,
+and add a capabililty to skip empty FIFO read on TDA54.
 
-commit 5b4790196e82e4dace1f26d242e90569b9edc027
-Author: Tapio Reijonen <tapio.reijonen@vaisala.com>
+Reading an empty FIFO on the IP version used in TDA54 triggers a
+data abort. The interrupt storm this dummy read was meant to avoid
+no longer occurs on this version of the IP, so skip the read via a
+new capability. Also, guard the empty FIFO reads during startup and
+shutdown of the port using the same capability.
 
-serial: max310x: drive RTS in software when hardware delays are too short
-   =20
-This commit adds a software-driven RTS path for the max310x UART driver to
-handle RS485 setup and hold delays that exceed the hardware's capabilities.
-It uses an hrtimer and worker threads to manually toggle RTS and drive data=
- out.
+Changes since v1:
+Link: https://lore.kernel.org/all/20260911092529.306082-1-m-shah@ti.com/
 
-> diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-> index 022502986c5fc..c217857f5d32a 100644
-> --- a/drivers/tty/serial/max310x.c
-> +++ b/drivers/tty/serial/max310x.c
+- Gate the empty FIFO read during startup and shutdown of the UART
+port using the new capability.
+- Make use of the new capability in the driver as to skip empty
+FIFO read, replacing the quirk which was being used.
 
-[ ... ]
+Moteen Shah (2):
+  dt-bindings: serial: snps-dw-apb-uart: Add ti,tda54-uart
+  serial: 8250_dw: Add capability to skip empty FIFO read
 
-> @@ -787,8 +907,13 @@ static void max310x_handle_tx(struct uart_port *port)
->  		return;
->  	}
-> =20
-> -	if (kfifo_is_empty(&tport->xmit_fifo) || uart_tx_stopped(port))
-> +	if (kfifo_is_empty(&tport->xmit_fifo) || uart_tx_stopped(port)) {
-> +		struct max310x_one *one =3D to_max310x_port(port);
-> +
-> +		if (READ_ONCE(one->sw_rts_during_tx))
-> +			max310x_delayed_stop_tx(port);
->  		return;
-> +	}
-> =20
->  	/*
->  	 * It's a circ buffer -- wrap around.
->  	 * We could do that in one SPI transaction, but meh.
->  	 */
->  	while (!kfifo_is_empty(&tport->xmit_fifo)) {
->  		unsigned int txlen, to_send;
+ .../bindings/serial/snps-dw-apb-uart.yaml        |  1 +
+ drivers/tty/serial/8250/8250.h                   |  1 +
+ drivers/tty/serial/8250/8250_dw.c                | 16 +++++++++++++++-
+ drivers/tty/serial/8250/8250_port.c              | 12 +++++++++---
+ 4 files changed, 26 insertions(+), 4 deletions(-)
 
-[Severity: High]
-Does this bypass the before_send delay if an interrupt triggers tx_work ear=
-ly?
+-- 
+2.34.1
 
-If any interrupt, such as an RX interrupt, occurs during the
-MAX310X_TX_WAIT_BEFORE_SEND window, max310x_port_irq() reads IRQSTS and
-observes the TXEMPTY bit is set. It then independently schedules tx_work.
-
-Since max310x_handle_tx() doesn't verify if tx_state is MAX310X_TX_SEND,
-could it execute prematurely and pump data into the hardware FIFO, shifting
-it out before the RTS setup delay completes?
-
-[ ... ]
-
-> @@ -813,11 +938,48 @@ static void max310x_handle_tx(struct uart_port *por=
-t)
->  		uart_write_wakeup(port);
->  }
-> =20
-> +/* called with port.lock taken and irqs off */
->  static void max310x_start_tx(struct uart_port *port)
->  {
->  	struct max310x_one *one =3D to_max310x_port(port);
-> =20
-> -	schedule_work(&one->tx_work);
-> +	if (READ_ONCE(one->sw_rts_during_tx)) {
-> +		/*
-> +		 * The before- and after-send phases share one delay timer. If an
-> +		 * after-send release is pending, cancel it before starting a new
-> +		 * TX so the just-asserted RTS is not yanked; re-arming the timer
-> +		 * for the before-send phase then supersedes the release.
-> +		 */
-> +		int res =3D 0;
-> +
-> +		if (READ_ONCE(one->tx_state) =3D=3D MAX310X_TX_WAIT_AFTER_SEND)
-> +			res =3D hrtimer_try_to_cancel(&one->tx_delay_tmr);
-> +		if (unlikely(res =3D=3D -1)) {
-> +			one->cancel_tx_delay_tmr =3D true;
-> +			uart_port_unlock(port);
-> +			hrtimer_cancel(&one->tx_delay_tmr);
-> +			uart_port_lock(port);
-> +		}
-> +
-> +		max310x_delayed_start_tx(port);
-
-[Severity: High]
-Can device shutdown complete while the port lock is dropped here?
-
-If max310x_shutdown() runs concurrently and powers off the device while
-the lock is dropped, max310x_delayed_start_tx() will blindly queue
-rts_work when the lock is reacquired.
-
-Could this result in the worker later accessing hardware registers via
-SPI/I2C on a powered-off device?
-
-[ ... ]
-
-> @@ -1042,38 +1306,55 @@ static void max310x_set_termios(struct uart_port =
-*port,
-> =20
->  	/* Update timeout according to new baud rate */
->  	uart_update_timeout(port, termios->c_cflag, baud);
-> +
-> +	/*
-> +	 * Cache the new baud rate and the time it takes to clock out one
-> +	 * character so the RTS-timing decision in max310x_set_rts_ctl_params()
-> +	 * and the post-TX delay in max310x_delayed_stop_tx() can use them.
-> +	 */
-> +	to_max310x_port(port)->baud =3D baud;
-> +	to_max310x_port(port)->one_character_duration =3D
-> +		us_to_ktime(DIV_ROUND_UP(USEC_PER_SEC * frame_bits, baud));
-
-[Severity: Medium]
-Could this result in a torn read on 32-bit platforms?
-
-max310x_set_termios() writes the 64-bit one_character_duration without
-holding the port lock (the serial core only holds termios_rwsem).
-
-Concurrently, workers like max310x_delayed_stop_tx() and max310x_shutdown()
-read this variable. Since 64-bit reads and writes are not atomic on 32-bit
-platforms, could a torn read yield a massively inflated or negative value,
-causing tx_delay_tmr to misfire or max310x_shutdown() to spin indefinitely?
-
-[ ... ]
-
-> @@ -1084,6 +1365,7 @@ static int max310x_rs485_config(struct uart_port *p=
-ort, struct ktermios *termios
->  				struct serial_rs485 *rs485)
->  {
->  	struct max310x_one *one =3D to_max310x_port(port);
-> =20
-> -	if ((rs485->delay_rts_before_send > 0x0f) ||
-> -	    (rs485->delay_rts_after_send > 0x0f))
-> -		return -ERANGE;
-> +	rs485->delay_rts_before_send =3D min(rs485->delay_rts_before_send, 100U=
-);
-> +	rs485->delay_rts_after_send  =3D min(rs485->delay_rts_after_send,  100U=
-);
-> +
-> +	/*
-> +	 * Make sure no SW-timed RTS toggle survives an RS485 disable, even
-> +	 * if the delay timer happens to be running right now.
-> +	 */
-> +	if (!(rs485->flags & SER_RS485_ENABLED)) {
-> +		one->cancel_tx_delay_tmr =3D true;
-> +		if (hrtimer_try_to_cancel(&one->tx_delay_tmr) =3D=3D -1) {
-> +			uart_port_unlock(port);
-> +			hrtimer_cancel(&one->tx_delay_tmr);
-> +			uart_port_lock(port);
-> +		}
-> +		WRITE_ONCE(one->tx_state, MAX310X_TX_OFF);
-> +	}
-
-[Severity: High]
-Does dropping the lock here introduce a race condition with start_tx()?
-
-If max310x_rs485_config() drops the lock to wait for the hrtimer, and
-start_tx() concurrently queues rts_work, max310x_rs485_config() will
-overwrite tx_state to MAX310X_TX_OFF when it reacquires the lock.
-
-Could this sabotage the queued worker and permanently stall transmission
-for pending data?
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260916-max310x-rs=
-485-sw-delay-v4-1-d37a694342cf@vaisala.com?part=3D1
