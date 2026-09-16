@@ -1,28 +1,28 @@
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.4])
+Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.3])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77A4C25B08D;
-	Wed, 16 Sep 2026 04:49:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBB58361965;
+	Wed, 16 Sep 2026 04:51:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.3
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789534148; cv=none; b=M78ZgWDkeNLM1W1wNTaKyvP8a6AKnnLFKTbkgXyBdkxszQXlQ8VbxzDIpDOKy5cXIHtfYxwwGGqvIjJ+AzdRmwRIVcPoXuP0HRBpyFjpJ6yRajjBO7r8HfHbnqyc3eDGYPrB6fhnc7wjrjXz9C+HLqmNALtuLwca0vfpdTqtrOM=
+	t=1789534269; cv=none; b=ING0iNqALoPGA1+FKb4iByxNB4Xd+AxAvkTFTtNE4dqSa6R5oSJ3JYxHY32/MPMfUSebc92waEL0N/VJTLHj/5UDtvAyPA86sZ45AaFJ23o+8P1ql7lwOfHmmbyc2yerWo2hB2oEQmmJf9NkZ58G74GE0CchA4yf++6lwL9/FEo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789534148; c=relaxed/simple;
-	bh=KFaDAPKfM2HmPMVbVkz7VrTW3XXo+f0MOpGfLpNabmg=;
+	s=arc-20240116; t=1789534269; c=relaxed/simple;
+	bh=0brGLsUCM8OjbH30xJ1GI8+aQZaH1XqCveD1VKrsWZs=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
-	 MIME-Version:Message-ID; b=MfkwEOUNWSdAF+Ori+aMtSnzUB51IBg1zSKpg398R9gFwOY4v7yHFP3ycRxCPQIIqb9+CtBiqLiNTl1DmkSiGYdHA1PRIKX7pyi/eOmjk2oaBkGnPcxzFnApNooI7eAjEtqfPPND0x3OpjW7E/dpBD6yDA/1kcwm4OthCyUYlxc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=DWvr+AeF; arc=none smtp.client-ip=220.197.31.4
+	 MIME-Version:Message-ID; b=QK/1IiN6TRmzRyZDgYkjiOMHzQbXvH+zw4QtfrG6JCWYNpG70Lrix72+KDUieOisYoL6CYvRt0QgPBQ3hqhm01OQ4wGZYmq+6AbseFafTC6c5jhSOv37MOSJWhZs39cT6KrEXL790cojkTP5OrkF0XgI6zx7vYaeFu0B1/cBwTY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=cozk4Wq4; arc=none smtp.client-ip=220.197.31.3
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="DWvr+AeF"
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="cozk4Wq4"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
 	s=s110527; h=Date:From:To:Subject:Content-Type:MIME-Version:
-	Message-ID; bh=KFaDAPKfM2HmPMVbVkz7VrTW3XXo+f0MOpGfLpNabmg=; b=D
-	Wvr+AeFfbMpnUxum/pll/sqRn3+yDlqhRA616exB2sNt9nRSGPk/j2bj+4h1woZC
-	7/w432cqSyQOQ2PGWAuyU4y1dUItBDCBaItKjzolGn/Alf5bucUzcrF5wO3XygL2
-	LkjPgSciKgYJUS989PjlelRAC4MF94HxT3ABNxZ+R0=
-Date: Wed, 16 Sep 2026 12:47:38 +0800 (CST)
+	Message-ID; bh=0brGLsUCM8OjbH30xJ1GI8+aQZaH1XqCveD1VKrsWZs=; b=c
+	ozk4Wq4p0a+DYAskc3v9AeRJoPdFWFJor9rVy8GTBoM2VubqyAPdxTZ6dRvW8RyZ
+	qXdVJoirnouBR8BM6pThOkUfT62bcjnWVEPGMy5OWgP6o852ML5VEF7Mn6bzmsEg
+	Simst3JWQ+tkbh3OetC6/1WiW62pyZkPkW5yxTQPY4=
+Date: Wed, 16 Sep 2026 12:49:46 +0800 (CST)
 From: zl020895  <zl020895@163.com>
 To: "Andy Shevchenko" <andriy.shevchenko@linux.intel.com>
 Cc: longzhao@ambarella.com, "Arnd Bergmann" <arnd@arndb.de>,
@@ -45,16 +45,15 @@ Cc: longzhao@ambarella.com, "Arnd Bergmann" <arnd@arndb.de>,
 	mfd@lists.linux.dev, devicetree@vger.kernel.org,
 	linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
 	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re:Re: [PATCH v7 08/15] gpiolib: regmap: add write_data_after_dir
- quirk
+Subject: Re:Re: [PATCH v7 09/15] gpiolib: regmap: add gpio_regmap_get_chip()
 X-Priority: 3
 X-Mailer: Coremail Webmail Server Version 2023.4-cmXT build
  20260511(2e539873) Copyright (c) 2002-2026 www.mailtech.cn 163com
-In-Reply-To: <aqlfJ3PnFib1smnV@ashevche-desk.local>
+In-Reply-To: <aqlknvOejkE5zutq@ashevche-desk.local>
 References: <20260915-cv75-v5-v7-0-3297d3fbc9c0@ambarella.com>
- <20260915-cv75-v5-v7-8-3297d3fbc9c0@ambarella.com>
- <aqlfJ3PnFib1smnV@ashevche-desk.local>
-X-NTES-SC: AL_Qu2TC/mYu0gu7iifY+kcn0wRhug/UMa4u/sm3YNXc+gGgS7rxD0iflpxF2DKzOe1GTqXuzGSbTdPyMZYULtmxAyHsDsqPgM1X0Q8/rJ0pQ==
+ <20260915-cv75-v5-v7-9-3297d3fbc9c0@ambarella.com>
+ <aqlknvOejkE5zutq@ashevche-desk.local>
+X-NTES-SC: AL_Qu2TC/mYu0kj4CiRZekcn0wRhug/UMa4u/sm3YNXc+gGgS7rxD0iflpxF2DKzOe1GTqXuzGSbTdPyMZYULtmDWHgzTizjvt8es72bjBGWA==
 Content-Transfer-Encoding: base64
 Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
@@ -63,37 +62,42 @@ List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Message-ID: <20ea407c.4010.1a0a88ab987.Coremail.zl020895@163.com>
+Message-ID: <327d09fc.4043.1a0a88cad9b.Coremail.zl020895@163.com>
 X-Coremail-Locale: zh_CN
-X-CM-TRANSID:iCgvCgD334NqH6pq2mBHAA--.23889W
-X-CM-SenderInfo: d2oqjiqyzvqiywtou0bp/xtbCxgsnmGqqH2vUjgAA3c
+X-CM-TRANSID:iCgvCgD334PqH6pqGGFHAA--.23892W
+X-CM-SenderInfo: d2oqjiqyzvqiywtou0bp/xtbCxgtHuGqqH+vnbAAA3N
 X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 
-SGkgQW5keSwKCk9LLiB2OCB3aWxsIGlnbm9yZSBib3RoIGdwaW9fcmVnbWFwX3NldCgpIHJldHVy
-bnMsIHNhbWUgYXMgYmVmb3JlLgpPbmx5IHRoZSBleHRyYSB3cml0ZSBmb3IgdGhlIFBMMDYxIHF1
-aXJrIHN0YXlzLgoKQmVzdCByZWdhcmRzLApMb25nIFpoYW8KCkF0IDIwMjYtMDktMTUgMjM6MDc6
-MTksICJBbmR5IFNoZXZjaGVua28iIDxhbmRyaXkuc2hldmNoZW5rb0BsaW51eC5pbnRlbC5jb20+
-IHdyb3RlOgo+T24gVHVlLCBTZXAgMTUsIDIwMjYgYXQgMDc6MTU6MzhQTSArMDgwMCwgTG9uZyBa
-aGFvIHZpYSBCNCBSZWxheSB3cm90ZToKPgo+PiBTb21lIGNvbnRyb2xsZXJzIGlnbm9yZSBkYXRh
-LXJlZ2lzdGVyIHdyaXRlcyB3aGlsZSBhIGxpbmUgaXMgc3RpbGwgYW4KPj4gaW5wdXQuIE9wdGlv
-bmFsbHkgd3JpdGUgdGhlIG91dHB1dCB2YWx1ZSBhZ2FpbiBhZnRlciBzd2l0Y2hpbmcgdGhlCj4+
-IGRpcmVjdGlvbiwgbWF0Y2hpbmcgdGhlIGV4aXN0aW5nIFBMMDYxIGJlaGF2aW91ci4KPgo+Li4u
-Cj4KPj4gLQlncGlvX3JlZ21hcF9zZXQoY2hpcCwgb2Zmc2V0LCB2YWx1ZSk7Cj4+ICsJcmV0ID0g
-Z3Bpb19yZWdtYXBfc2V0KGNoaXAsIG9mZnNldCwgdmFsdWUpOwo+PiArCWlmIChyZXQpCj4+ICsJ
-CXJldHVybiByZXQ7Cj4KPkkgdGhpbmsgdGhhdCB0aGlzIG1pZ2h0IGxlYWQgdG8gcmVncmVzc2lv
-bnMgd2hlbiB0aGUgZW5kIGRyaXZlciBqdXN0IGxlYXZlcwo+dGhlIG91dHB1dCBpbiB0aGUgcHJl
-dmlvdXMgc3RhdGUgaW4gY2FzZSBvZiBlcnJvcnMuIEluIGFueSBjYXNlLCBldmVuIGlmIHRoaXMK
-PmlzIGEgY29ycmVjdCB1cGRhdGUsIGl0IG5lZWRzIHRvIGJlIGRvbmUgc2VwYXJhdGVseSB3aXRo
-IHRoZSBqdXN0aWZpY2F0aW9uCj50aGF0IHNob3dzIHRoYXQgYWxsIGN1cnJlbnQgdXNlcnMgd29u
-J3QgaGF2ZSByZWdyZXNzaW9ucyBvciB0aGUgcmVncmVzc2lvbiBpcwo+YWN0dWFsbHkgYSBmaXgg
-b2YgdGhlIGJlaGF2aW91ci4KPgo+PiArCXJldCA9IGdwaW9fcmVnbWFwX3NldF9kaXJlY3Rpb24o
-Y2hpcCwgb2Zmc2V0LCB0cnVlKTsKPj4gKwlpZiAocmV0KQo+PiArCQlyZXR1cm4gcmV0Owo+PiAg
-Cj4+IC0JcmV0dXJuIGdwaW9fcmVnbWFwX3NldF9kaXJlY3Rpb24oY2hpcCwgb2Zmc2V0LCB0cnVl
-KTsKPj4gKwkvKgo+PiArCSAqIGdwaW8gdmFsdWUgaXMgc2V0IGFnYWluLCBiZWNhdXNlIHBsMDYx
-IGRvZXNuJ3QgYWxsb3cgdG8gc2V0IHZhbHVlIG9mCj4+ICsJICogYSBncGlvIHBpbiBiZWZvcmUg
-Y29uZmlndXJpbmcgaXQgaW4gT1VUIG1vZGUuCj4+ICsJICovCj4+ICsJaWYgKGdwaW8tPndyaXRl
-X2RhdGFfYWZ0ZXJfZGlyKQo+PiArCQlyZXR1cm4gZ3Bpb19yZWdtYXBfc2V0KGNoaXAsIG9mZnNl
-dCwgdmFsdWUpOwo+Cj5UYWtpbmcgdGhlIGFib3ZlIGludG8gYWNjb3VudCBJJ20gbm90IHN1cmUg
-aWYgd2Ugd2FudCB0aGUgaW5jb25zaXN0ZW5jeSB3aXRoCj50aGUgYWJvdmUuIFBlcmhhcHMgYWxz
-byBpZ25vcmUgdGhlIHJldHVybmVkIHZhbHVlIGZvciBub3c/Cj4KPj4gKwlyZXR1cm4gMDsKPgo+
-LS0gCj5XaXRoIEJlc3QgUmVnYXJkcywKPkFuZHkgU2hldmNoZW5rbwo+Cg==
+SGkgQW5keSwgCgpUaGFua3MgZm9yIHRoZSByZXZpZXcuCgpJdCBpc24ndDsgdGhhdCB3YXMgbGVm
+dG92ZXIgZnJvbSBkcm9wcGluZyBnaXJxLiB2OCB3aWxsIHJlc3RvcmUgdGhlCm9yaWdpbmFsIGF0
+dGFjaCBjb2RlLiBUaGUgcmVhbCBhZGRpdGlvbiBpcyBncGlvX3JlZ21hcF9nZXRfY2hpcCgpLCBz
+bwpQTDA2MSBjYW4gY3JlYXRlIGl0cyBpcnEgZG9tYWluIGFmdGVyIHJlZ2lzdGVyLgoKQmVzdCBy
+ZWdhcmRzLApMb25nIFpoYW8KCkF0IDIwMjYtMDktMTUgMjM6MzA6MzgsICJBbmR5IFNoZXZjaGVu
+a28iIDxhbmRyaXkuc2hldmNoZW5rb0BsaW51eC5pbnRlbC5jb20+IHdyb3RlOgo+T24gVHVlLCBT
+ZXAgMTUsIDIwMjYgYXQgMDc6MTU6MzlQTSArMDgwMCwgTG9uZyBaaGFvIHZpYSBCNCBSZWxheSB3
+cm90ZToKPgo+PiBMZXQgZHJpdmVycyB0aGF0IGltcGxlbWVudCBhIGN1c3RvbSBpcnFjaGlwIHJl
+dHJpZXZlIHRoZSBncGlvX2NoaXAKPj4gYWZ0ZXIgcmVnaXN0cmF0aW9uLiBBdHRhY2ggYSBjYWxs
+ZXItcHJvdmlkZWQgaXJxX2RvbWFpbiBvbmx5IHdoZW4gaXQKPj4gaXMgcHJlc2VudC4KPgo+Li4u
+Cj4KPj4gIHN0cnVjdCBncGlvX3JlZ21hcCAqZ3Bpb19yZWdtYXBfcmVnaXN0ZXIoY29uc3Qgc3Ry
+dWN0IGdwaW9fcmVnbWFwX2NvbmZpZyAqY29uZmlnKQo+PiAgewo+PiAtCXN0cnVjdCBpcnFfZG9t
+YWluICppcnFfZG9tYWluOwo+PiAgCXN0cnVjdCBncGlvX3JlZ21hcCAqZ3BpbzsKPj4gIAlzdHJ1
+Y3QgZ3Bpb19jaGlwICpjaGlwOwo+PiAgCWludCByZXQ7Cj4KPj4gICNpZmRlZiBDT05GSUdfUkVH
+TUFQX0lSUQo+PiAgCWlmIChjb25maWctPnJlZ21hcF9pcnFfY2hpcCkgewo+PiArCQlzdHJ1Y3Qg
+aXJxX2RvbWFpbiAqaXJxX2RvbWFpbjsKPj4gKwo+PiAgCQlncGlvLT5yZWdtYXBfaXJxX2xpbmUg
+PSBjb25maWctPnJlZ21hcF9pcnFfbGluZTsKPj4gIAkJcmV0ID0gcmVnbWFwX2FkZF9pcnFfY2hp
+cF9md25vZGUoZGV2X2Z3bm9kZShjb25maWctPnBhcmVudCksIGNvbmZpZy0+cmVnbWFwLAo+PiAg
+CQkJCQkJIGNvbmZpZy0+cmVnbWFwX2lycV9saW5lLCBjb25maWctPnJlZ21hcF9pcnFfZmxhZ3Ms
+Cj4+IEBAIC00MjAsMTIgKzQyNywxNSBAQCBzdHJ1Y3QgZ3Bpb19yZWdtYXAgKmdwaW9fcmVnbWFw
+X3JlZ2lzdGVyKGNvbnN0IHN0cnVjdCBncGlvX3JlZ21hcF9jb25maWcgKmNvbmZpZwo+PiAgCQkJ
+Z290byBlcnJfcmVtb3ZlX2dwaW9jaGlwOwo+PiAgCj4+ICAJCWlycV9kb21haW4gPSByZWdtYXBf
+aXJxX2dldF9kb21haW4oZ3Bpby0+aXJxX2NoaXBfZGF0YSk7Cj4+ICsJCWlmIChpcnFfZG9tYWlu
+KSB7Cj4+ICsJCQlyZXQgPSBncGlvY2hpcF9pcnFjaGlwX2FkZF9kb21haW4oY2hpcCwgaXJxX2Rv
+bWFpbik7Cj4+ICsJCQlpZiAocmV0KQo+PiArCQkJCWdvdG8gZXJyX3JlbW92ZV9ncGlvY2hpcDsK
+Pj4gKwkJfQo+PiAgCX0gZWxzZQo+PiAgI2VuZGlmCj4+IC0JaXJxX2RvbWFpbiA9IGNvbmZpZy0+
+aXJxX2RvbWFpbjsKPj4gLQo+PiAtCWlmIChpcnFfZG9tYWluKSB7Cj4+IC0JCXJldCA9IGdwaW9j
+aGlwX2lycWNoaXBfYWRkX2RvbWFpbihjaGlwLCBpcnFfZG9tYWluKTsKPj4gKwlpZiAoY29uZmln
+LT5pcnFfZG9tYWluKSB7Cj4+ICsJCXJldCA9IGdwaW9jaGlwX2lycWNoaXBfYWRkX2RvbWFpbihj
+aGlwLCBjb25maWctPmlycV9kb21haW4pOwo+PiAgCQlpZiAocmV0KQo+PiAgCQkJZ290byBlcnJf
+cmVtb3ZlX2dwaW9jaGlwOwo+PiAgCX0KPgo+SSBkbyBub3QgdW5kZXJzdGFuZCBob3cgaXQncyBk
+aWZmZXJlbnQgZnJvbSB0aGUgb3JpZ2luYWwgb25lLiBDYW4geW91IGVsYWJvcmF0ZT8KPgo+LS0g
+Cj5XaXRoIEJlc3QgUmVnYXJkcywKPkFuZHkgU2hldmNoZW5rbwo+Cg==
