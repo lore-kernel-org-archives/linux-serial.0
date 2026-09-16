@@ -1,153 +1,95 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DC974A4EE1
-	for <linux-serial@vger.kernel.org>; Wed, 16 Sep 2026 09:37:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 738674A260F
+	for <linux-serial@vger.kernel.org>; Wed, 16 Sep 2026 09:43:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789551442; cv=none; b=K4B7Jo2h38R0pXJHEA3kjPuP2HpLQTdpFdQoly+Ao1OkOQOAEngPwWRGQK1x0GPJPrbFI9jV0RZCDgLniXnpvEzapoNc1FpUR0hZ+4RPkdE334UxO406lMgFSdhEXipoXdQe7Tnfqt+S0wQY7E1tb+LjU0AJGFIS6L3aex/llPQ=
+	t=1789551804; cv=none; b=YCHxxfXx5EZ75+tzav/x7gaOTG0j6sH/Flj0/Zl7RIsuw9wzzzWO9wHpCr7cNmrKgU7krT9aj4/Fb1OU9hDY/fiaHTPGMtBjyAddqtsHVcW6mGS4t9wJL1mxi9yVblbTjODVR61QhYfIySfxM3zbzJSkKQp+HpZWZanlnNxDUjY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789551442; c=relaxed/simple;
-	bh=R5t7rLies3CtD5M2tioxAIzdci9sc0oex+9hRIBT6iw=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=D9CEljwL8TI+POJQKJ3hQ/MztuYX+i8Disb+IgJayftNyLzFKlnrxuVF63XrVEqMJQ82Bbgk8Tum/qM/KUckS06aiXMm2zoc+YrJhWfrDyJBfVOU2Ga8jSRQbx9gnphbKr1wYXheXaBfyegW2XAG6t6M7xWs9Uj5ZO+j6sR/mAQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ne1yxjVf; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1789551804; c=relaxed/simple;
+	bh=F3XAkt71bhIAWEC1ICnSKPfvdKIX/T9WRczYZnwW3iw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=rIDv8N6RJr+9fDX3TULmWibTpxnZqqVmJFD2NkzmLPWv0C9cjvyXV5wg8ekmVGEc+JPFetNEbaFfyfIiwBKIF8XI73PQnTdgydGqr0JHiuDSsIsbuQUje0ovfj9QAyc+oW2tZ2w5tZTCkUpdZq2z7VU9E3NCc59xFDSNA1CswgU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IXl8q9ZC; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ne1yxjVf"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 349FD1F000FF;
-	Wed, 16 Sep 2026 09:37:11 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IXl8q9ZC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE95C1F00893
+	for <linux-serial@vger.kernel.org>; Wed, 16 Sep 2026 09:43:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789551431;
-	bh=7HcwGUVpe56WfAmumcvhJhD671b+axOKuodySQFHSoA=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=ne1yxjVfLPaw9tGUVnFGbl1V44gHrJ65/0uJoV4V20t8SwLOa+r8CSMYA7bYSRz0E
-	 RstUQPQoedkulbt+r40DTpuy0JuFdE8mSrGACNA2rJh0c+o1zj5mzLpYOH0Fu1lJRw
-	 JVdEDI7Y3Fkg1FE7lK0uPb3Lo3AxI+zqoRuXYWPoDcvkxLbjUacdvzQ6jzQo9AUjTW
-	 dcStExoVvMYp4fic2TyfsPMK5vC6L6JGctPrLTisc7K9U6NbGgEx3dB2zLXmyNvNMZ
-	 RpM7Tt9h9TnPhhczX1H6v8JqifT2lvOb3Vwnt1RKUcjZsJHAkC/zQY6uCvOtzxQEGw
-	 euhYbTVhM+qsw==
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v1] rust: mem: add DropGuard
-Reply-To: sashiko-reviews@lists.linux.dev
-To: "Mohamed Osama" <mohamed.osama189110@gmail.com>
-Cc: linux-serial@vger.kernel.org, ojeda@kernel.org, gary@garyguo.net
-In-Reply-To: <20260916092626.533461-1-mohamed.osama189110@gmail.com>
-References: <20260916092626.533461-1-mohamed.osama189110@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 16 Sep 2026 09:37:10 +0000
-Message-Id: <20260916093711.349FD1F000FF@smtp.kernel.org>
+	s=k20260515; t=1789551790;
+	bh=F3XAkt71bhIAWEC1ICnSKPfvdKIX/T9WRczYZnwW3iw=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc;
+	b=IXl8q9ZCD1dvSn2KHw7LYsq5TamJfBC9svJngVUoPtAjGvN3AGOWjcegBVIRcvmFF
+	 XT6NrbG9olT/96quf46Aj1p5TW/bOlRJqGEpKc2DvnnTXZ7qmrFaUvn7S/QkLAj9xA
+	 VTA9+RM2dRfHk3re3CEfd0MoKCHcUNuhj2uVDlfmDu5vlNWPRtjDIjCN7m2aK4dKa+
+	 vri7E5HQr9oevAF/INz6el1lZ/EqryyIvvWL5AuaOv2lDJ9wQjNtc9HTuu5uI9yeIU
+	 jvNRYpp4RADOHSwGl1NXhGtH8HhW4PYN63KmDV1bs399TWMPA2ZvEm7XDa38cyNSOc
+	 fNkQ+oRZi1HCA==
+Received: by mail-lf2-f13.google.com with SMTP id 2adb3069b0e04-5b899413537so913638e87.1
+        for <linux-serial@vger.kernel.org>; Wed, 16 Sep 2026 02:43:10 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AKwUvByxKsgPza07UrRovBVcpgplKNbNh8XMXepw/RwWQcDyfBO/xoMas7OPM42yueW7PoXk8ksP8SQSx8ln1Ew=@vger.kernel.org
+X-Gm-Message-State: AFuF++nL2TOAin0zMZqBj8q0Ry3gOQSD/jUFhiWpiFCVXb1KmdhxGHky
+	CDRVcWGg5w5K+syRflYh8CtEwIdP8r5ALqezlCvaXs55Kdg9KSBDFKxsj0r3Nlo7yZhHmWIt9Qp
+	QXBSnoi8xdBWawgtEJKZs9E76T18uU20=
+X-Received: by 2002:a05:6512:318d:b0:5b4:b03e:b17 with SMTP id
+ 2adb3069b0e04-5b8b6611fb9mr542523e87.4.1789551789409; Wed, 16 Sep 2026
+ 02:43:09 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+References: <20260915-cv75-v5-v7-0-3297d3fbc9c0@ambarella.com> <CAMRc=McEOcWq8i3B01AR1PnfBzSQaLEaOzE6Qa+QdVXrvS_YrA@mail.gmail.com>
+In-Reply-To: <CAMRc=McEOcWq8i3B01AR1PnfBzSQaLEaOzE6Qa+QdVXrvS_YrA@mail.gmail.com>
+From: Linus Walleij <linusw@kernel.org>
+Date: Wed, 16 Sep 2026 11:42:56 +0200
+X-Gmail-Original-Message-ID: <CAD++jLnRL_s9zPNkSj2UnHWPx+QHAXV19DA7dEmGZu0AkxxyaA@mail.gmail.com>
+X-Gm-Features: AcwNN1WkFxjMauP_yhzfkji573cflVZ6I3z5YLnNlcrQliI-kEo2Pckshh4B6Vw
+Message-ID: <CAD++jLnRL_s9zPNkSj2UnHWPx+QHAXV19DA7dEmGZu0AkxxyaA@mail.gmail.com>
+Subject: Re: [PATCH v7 00/15] Ambarella CV75 SoC minimal bring-up
+To: Bartosz Golaszewski <brgl@kernel.org>, soc@lists.linux.dev
+Cc: longzhao@ambarella.com, 
+	Long Zhao via B4 Relay <devnull+longzhao.ambarella.com@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, 
+	Jerome Brunet <jbrunet@baylibre.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+	Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Long Zhao <zl020895@163.com>, 
+	Lee Jones <lee@kernel.org>, mfd@lists.linux.dev, devicetree@vger.kernel.org, 
+	linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org, 
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>, Arnd Bergmann <arnd@arndb.de>, 
+	Krzysztof Kozlowski <krzk@kernel.org>, Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+	linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Thank you for your contribution! Sashiko AI review found 2 potential issue(=
-s) to consider:
-- [Low] rust: serdev: compilation error due to invalid dismiss() method syn=
-tax
-- [Low] rust: mem: missing #[inline] annotations on DropGuard methods
---
+On Wed, Sep 16, 2026 at 11:14=E2=80=AFAM Bartosz Golaszewski <brgl@kernel.o=
+rg> wrote:
+> On Tue, 15 Sep 2026 13:15:30 +0200, Long Zhao via B4 Relay
+> <devnull+longzhao.ambarella.com@kernel.org> said:
+> > This series adds minimal Ambarella CV75 support for early bring-up with
+> > a serial console: DT bindings, RCT clocks, pinctrl, PL061 GPIO via
+> > gpio-regmap, 8250_dw UART quirks, ARCH_AMBARELLA, CV75 EVK DT, and
+> > MAINTAINERS.
+> >
+> > This is a single unified series. Please apply via the SoC
+> > tree; subsystem maintainers are Cc'd for their pieces.
+> >
+>
+> I would prefer to take the GPIO regmap bits through the GPIO tree and pro=
+vide
+> an immutable branch to the SoC tree as it has potential for conflicts tha=
+t
+> early into the cycle.
 
-commit cb72c5069d5d615bc6c2f05a5b1ca631930446aa
-Author: Mohamed Osama <mohamed.osama189110@gmail.com>
+Queue them up and send us the IB if you think they are ready!
 
-rust: mem: add DropGuard
+Long can probably send a PR based on that IB for the rest to the
+SoC tree, a bit tricksy but it works.
 
-Add a DropGuard type to the Rust kernel memory module for running
-cleanup code when a scope is left. It replaces the current ScopeGuard
-users in gen_disk, serdev, and sync::lock.
-
-Link: https://github.com/Rust-for-Linux/linux/issues/1255
-
-> diff --git a/rust/kernel/mem.rs b/rust/kernel/mem.rs
-> index f2d4cdf87d00b..f2d1f9bc93379 100644
-> --- a/rust/kernel/mem.rs
-> +++ b/rust/kernel/mem.rs
-[ ... ]
-> +impl<T, F> Deref for DropGuard<T, F>
-> +where
-> +    F: FnOnce(T),
-> +{
-> +    type Target =3D T;
-> +
-> +    fn deref(&self) -> &T {
-> +        &self.inner
-> +    }
-> +}
-
-[Severity: Low]
-Should this function be annotated with #[inline]? According to the Rust
-subsystem coding guidelines, small functions in abstractions like the kernel
-crate should use #[inline].
-
-> +
-> +impl<T, F> DerefMut for DropGuard<T, F>
-> +where
-> +    F: FnOnce(T),
-> +{
-> +    fn deref_mut(&mut self) -> &mut T {
-> +        &mut self.inner
-> +    }
-> +}
-
-[Severity: Low]
-Does this function also need an #[inline] annotation?
-
-> +
-> +impl<T, F> Drop for DropGuard<T, F>
-> +where
-> +    F: FnOnce(T),
-> +{
-> +    fn drop(&mut self) {
-
-[Severity: Low]
-Could this drop() implementation also use #[inline] since it is a small
-abstraction function?
-
-[ ... ]
-> diff --git a/rust/kernel/serdev.rs b/rust/kernel/serdev.rs
-> index 17ca504b7f8d6..a400d241c2ad6 100644
-> --- a/rust/kernel/serdev.rs
-> +++ b/rust/kernel/serdev.rs
-[ ... ]
-> @@ -174,7 +172,7 @@ extern "C" fn probe_callback(sdev: *mut bindings::ser=
-dev_device) -> kernel::ffi:
->              }))?;
->              // SAFETY: We just set drvdata to `PrivateData<'_, T>`.
->              let private_data =3D unsafe { sdev.as_ref().drvdata_borrow::=
-<PrivateData<'_, T>>() };
-> -            let private_data =3D ScopeGuard::new_with_data(private_data,=
- |_| {
-> +            let private_data =3D DropGuard::new(private_data, |_| {
->                  // SAFETY: We just set drvdata to `PrivateData<'_, T>`.
->                  drop(unsafe { sdev.as_ref().drvdata_obtain::<PrivateData=
-<'_, T>>() });
->              });
-
-[Severity: Low]
-Is there a missed migration point further down in this function that causes=
- a
-compilation error?
-
-In probe_callback(), the variable private_data is now a DropGuard, but later
-in the function the code still does this:
-
-            result.map(|()| {
-                private_data.dismiss();
-                0
-            })
-
-Since DropGuard::dismiss is implemented as an associated function rather th=
-an
-a method taking a self receiver, does the compiler attempt to resolve
-dismiss() on the inner type (PrivateData) via Deref and fail to compile when
-CONFIG_RUST_SERIAL_DEV_BUS_ABSTRACTIONS is enabled?
-
-Should that be updated to DropGuard::dismiss(private_data) to match the new
-API?
-
---=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260916092626.5334=
-61-1-mohamed.osama189110@gmail.com?part=3D1
+Yours,
+Linus Walleij
