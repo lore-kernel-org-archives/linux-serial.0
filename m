@@ -1,62 +1,60 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 426B94E80BF;
-	Wed, 16 Sep 2026 10:21:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76AB94CA77D;
+	Wed, 16 Sep 2026 10:23:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789554112; cv=none; b=OsmLvLZc1XJ2dv9bj4F3prYAtC5Yesjrmvro5+d0TgeDT3KCl7bUa3vInAM9Eh38GvzwAh811mHmCDSl9zQ3OyA/PGZITXfVs8WasdFYIiqT8noYI+M1fg3pPFvmzq163zXxgQufWBUHtywdJ1cFYxLeT4abgA6DbAl7/K7s9qs=
+	t=1789554241; cv=none; b=VrVxW1/5U8Z7n8dkb+Xw2yhFkvmVbO4PkLaPLr1tL8UOa/luQ728kM6h1YIo1EtJTGEOPhTAxYkfH64007+7xVCUBSC82p4j+C6JQTQuweYTVQMIDYn86Zw3HCRQOhokjdViRJpy8j5bsZ75xXQA4SzhM52XX8brbRE56/7qILg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789554112; c=relaxed/simple;
-	bh=n152J+oW0inBpcepl+1yWkdMqbhm6d/xZ403pWrV3Ew=;
+	s=arc-20240116; t=1789554241; c=relaxed/simple;
+	bh=PeVfyJvNsLA4HGK44/YoeVENKrqs3ZCDtZ1Sly+fN/8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=T5O3pF5JLmMFyV74eljYMuqeHIHUtIRNdjLbHb5Ur8HW8UXbTj+w1fgnfyVqCIFXUrHfPu6CPtsTDJTz4riNYguiCsOJSKEVGbxJBTJ0DRw12QLuNcLzNN95yjfYigWFbrwHUypn1XfP2Ynm8I/j2mNT643/djgX90tWuR3w7Ec=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iNz56Cnk; arc=none smtp.client-ip=192.198.163.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=gDmxmpZtJxFShK6UkTjFx1QU4uAKovXS5bAhVCRzef2s6lwMgAPVoAYoiAKhEZ0xJoBF5eo8+QPt13gPsGgeKwBKkFDvuNbrlpBwatM1nq4QTTKk5aflzNCFbu3BhWj1w2fTfyc94CavdGreqPFJHTpPioB+B+iqcUDLvnmTw4M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Fj9zoMMd; arc=none smtp.client-ip=198.175.65.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iNz56Cnk"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Fj9zoMMd"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1789554094; x=1821090094;
+  t=1789554239; x=1821090239;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=n152J+oW0inBpcepl+1yWkdMqbhm6d/xZ403pWrV3Ew=;
-  b=iNz56CnkopDNW1QLXWeZ72rrUCZndyI3DOTe7pKnXKArlq1SvHhhffwq
-   ih5iolx4Y9dPQRIttQQeDzwNxngOsAGsGxhurv42Y7XdLuW8T4T9ro37q
-   JBVtwDWAWloAFxI19HdR2ziT4wlnIfTiMB6cVjIDDgYw4Sl6scxJEvjhc
-   fCUNhChcRltb3fEOVf1FvwssKqHVsT0rLj92i/1UceEHHY52x2piUwQZu
-   VwPiPGeicNqEfgMNe3pRySXZ3QQy/nro417nMQDj3Dt/9HBpcIhaoWnld
-   088iFY3lQXOVGtFJ29DjmjWo0WbDizOvLkuPW8H1m8TD14Lr/yHxZzBlT
-   A==;
-X-CSE-ConnectionGUID: vXszHvNLRh+aZdznTx1vVQ==
-X-CSE-MsgGUID: /M0pCoGMRUeYk4eRSvs0rA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11905"; a="89062964"
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=PeVfyJvNsLA4HGK44/YoeVENKrqs3ZCDtZ1Sly+fN/8=;
+  b=Fj9zoMMdt5ussF0KzS6nC6Q4a8nJDG3jKtQI1P32gVm0MklvO2Zs4wvk
+   YiPl2I0FEzabybjWdxsMhtTI6Q1DtQbDDTr7B6q2EL9sQAUyLoXPr7/mC
+   X3zAcZ0uYMT5btOk4n1N0hwhuXsFxmeOqJ8gUUw2VfgwdNOoooeSjHEkK
+   T32+i7Dw6GkqroKTOOe6KzJa+k+WpIgYqWuQ/FIFpqfbus8tNZky6nDZa
+   6L8hXxLudV9FcXyE8tHa+gZKqiH7VGfim4XXnTMkKFZZLqJ8C1hfP9Ojx
+   2loFuwc+x59E5LFOpbht9Vmxe2ixrerLHluKHkoFvmTaF+2IPAZJCG46Y
+   w==;
+X-CSE-ConnectionGUID: J0khVd5RQwuhVEidff6kAw==
+X-CSE-MsgGUID: oIDTHnrZTxinrenKwLYopA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11905"; a="93798672"
 X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
-   d="scan'208";a="89062964"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2026 03:21:29 -0700
-X-CSE-ConnectionGUID: DcsR/rdNR8SqKlqBIDDynw==
-X-CSE-MsgGUID: 6lqV8nerQouNtUP4U2SofA==
+   d="scan'208";a="93798672"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2026 03:23:54 -0700
+X-CSE-ConnectionGUID: zZTsqc9USHyL5sqH2UfPDg==
+X-CSE-MsgGUID: 8JRWbhnbR4S5o23MCxAirA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
-   d="scan'208";a="273266901"
+   d="scan'208";a="311581967"
 Received: from ettammin-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.145])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2026 03:21:24 -0700
-Date: Wed, 16 Sep 2026 13:21:21 +0300
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2026 03:23:48 -0700
+Date: Wed, 16 Sep 2026 13:23:45 +0300
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: longzhao@ambarella.com
-Cc: Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	soc@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+To: Linus Walleij <linusw@kernel.org>
+Cc: Bartosz Golaszewski <brgl@kernel.org>, soc@lists.linux.dev,
+	longzhao@ambarella.com,
+	Long Zhao via B4 Relay <devnull+longzhao.ambarella.com@kernel.org>,
 	Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
 	Michael Turquette <mturquette@baylibre.com>,
 	Stephen Boyd <sboyd@kernel.org>,
 	Jerome Brunet <jbrunet@baylibre.com>,
-	Linus Walleij <linusw@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
 	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
@@ -65,249 +63,59 @@ Cc: Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>,
 	Lee Jones <lee@kernel.org>, mfd@lists.linux.dev,
 	devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
 	linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 10/15] gpio: pl061: convert to gpio-regmap and a
- custom irqchip
-Message-ID: <aqptoZYyclWSE_-A@ashevche-desk.local>
+	linux-kernel@vger.kernel.org,
+	Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v7 00/15] Ambarella CV75 SoC minimal bring-up
+Message-ID: <aqpuMcqbra9i6UDq@ashevche-desk.local>
 References: <20260915-cv75-v5-v7-0-3297d3fbc9c0@ambarella.com>
- <20260915-cv75-v5-v7-10-3297d3fbc9c0@ambarella.com>
+ <CAMRc=McEOcWq8i3B01AR1PnfBzSQaLEaOzE6Qa+QdVXrvS_YrA@mail.gmail.com>
+ <CAD++jLnRL_s9zPNkSj2UnHWPx+QHAXV19DA7dEmGZu0AkxxyaA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260915-cv75-v5-v7-10-3297d3fbc9c0@ambarella.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAD++jLnRL_s9zPNkSj2UnHWPx+QHAXV19DA7dEmGZu0AkxxyaA@mail.gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Sep 15, 2026 at 07:15:40PM +0800, Long Zhao via B4 Relay wrote:
+On Wed, Sep 16, 2026 at 11:42:56AM +0200, Linus Walleij wrote:
+> On Wed, Sep 16, 2026 at 11:14 AM Bartosz Golaszewski <brgl@kernel.org> wrote:
+> > On Tue, 15 Sep 2026 13:15:30 +0200, Long Zhao via B4 Relay
+> > <devnull+longzhao.ambarella.com@kernel.org> said:
+> > > This series adds minimal Ambarella CV75 support for early bring-up with
+> > > a serial console: DT bindings, RCT clocks, pinctrl, PL061 GPIO via
+> > > gpio-regmap, 8250_dw UART quirks, ARCH_AMBARELLA, CV75 EVK DT, and
+> > > MAINTAINERS.
+> > >
+> > > This is a single unified series. Please apply via the SoC
+> > > tree; subsystem maintainers are Cc'd for their pieces.
+> >
+> > I would prefer to take the GPIO regmap bits through the GPIO tree and provide
+> > an immutable branch to the SoC tree as it has potential for conflicts that
+> > early into the cycle.
 > 
-> Move line get/set/direction onto gpio-regmap. Keep the existing ARM
-> masked data addresses and write-after-direction behaviour.
+> Queue them up and send us the IB if you think they are ready!
 > 
-> Do not use gpiochip irqchip setup (girq) or regmap-irq. gpio-regmap
-> owns gpiochip registration, so girq would have to be plumbed through
-> that helper. PL061 IRQ type programming needs IS/IBE/IEV, including
-> both-edge, plus a hardirq chained demux from the parent AMBA IRQ;
-> regmap-irq is a poor fit for that.
-> 
-> Create a linear irq_domain with gpio_chip as host data, attach it with
-> gpiochip_irqchip_add_domain(), and chain the parent IRQ in this driver.
+> Long can probably send a PR based on that IB for the rest to the
+> SoC tree, a bit tricksy but it works.
 
-Besides some comments below about splitting more of this patch to better
-isolated logical changes, this one can also be split to a few stages. For
-example, one stage is to move to regmap (from direct MMIO access) without
-really switching over to gpio-regmap.
+I'm still unsure why we can't use IRQ facility from gpio-regmap.
+Can you have a look there?
 
-...
+With that being said, I'm not sure that the patch that exposing gpio_chip
+from gpio-regmap is justified.
 
-> +#include <linux/err.h>
->  #include <linux/errno.h>
-
-Now errno.h can be removed as basic errno is provided by err.h.
-
-...
-
-> -#include <linux/irqchip/chained_irq.h>
-
-> +#include <linux/irqchip/chained_irq.h>
-
-Unneeded churn.
-
-...
-
-> -	if ((trigger & (IRQ_TYPE_LEVEL_HIGH | IRQ_TYPE_LEVEL_LOW)) &&
-> -	    (trigger & (IRQ_TYPE_EDGE_RISING | IRQ_TYPE_EDGE_FALLING)))
-> -	{
-
-> +	if ((trigger & IRQ_TYPE_LEVEL_MASK) && (trigger & IRQ_TYPE_EDGE_BOTH)) {
-
-See below, this belongs to a separate change.
-
-...
-
-> @@ -142,14 +121,19 @@ static int pl061_irq_type(struct irq_data *d, unsigned trigger)
->  		return -EINVAL;
->  	}
->  
-> -
->  	raw_spin_lock_irqsave(&pl061->lock, flags);
-
-Stray change. If required, should be in a separate patch.
-
-...
-
-> -	if (trigger & (IRQ_TYPE_LEVEL_HIGH | IRQ_TYPE_LEVEL_LOW)) {
-> +	if (trigger & IRQ_TYPE_LEVEL_MASK) {
-
-This change should be in a separate patch.
-
-...
-
-> -	writeb(gpiois, pl061->base + GPIOIS);
-> -	writeb(gpioibe, pl061->base + GPIOIBE);
-> -	writeb(gpioiev, pl061->base + GPIOIEV);
-> +	ret = regmap_write(pl061->regmap, regs->is, gpiois);
-> +	if (ret)
-> +		goto out;
-> +	ret = regmap_write(pl061->regmap, regs->ibe, gpioibe);
-> +	if (ret)
-> +		goto out;
-> +	ret = regmap_write(pl061->regmap, regs->iev, gpioiev);
-> +	if (ret)
-> +		goto out;
-> +	if (pl061->data->clear_irq_on_type)
-> +		ret = regmap_write(pl061->regmap, regs->ic, bit);
->  
-> +out:
->  	raw_spin_unlock_irqrestore(&pl061->lock, flags);
-> -
-> -	return 0;
-> +	return ret;
-
-Make an additional patch to move current driver to use cleanup.h, id est
-guard()() and possibly scoped_guard() from there.
-
-Then in this patch those ton's of goto:s should be replaced with simple
-'return ret;'.`
-
->  }
-
-...
-
-> +	if (!regmap_read(pl061->regmap, pl061->data->regs->mis, &mis) && mis) {
-
-Why not handling error properly here?
-
-	ret = regmap_read(...);
-	if (ret)
-		goto out_irq_exit;
-
-> +		pending = mis;
-> +		for_each_set_bit(offset, &pending, pl061->data->ngpio)
-> +			generic_handle_domain_irq(pl061->irq_domain, offset);
->  	}
-
-...
-
-> +static int pl061_irq_domain_map(struct irq_domain *d, unsigned int virq,
-> +				irq_hw_number_t hwirq)
-> +{
-> +	struct gpio_chip *gc = d->host_data;
-> +	struct pl061 *pl061 = pl061_from_gpio_chip(gc);
-> +
-> +	irq_set_chip_data(virq, gc);
-> +	irq_set_chip_and_handler(virq, &pl061_irqchip, handle_bad_irq);
-> +	irq_set_noprobe(virq);
-> +	irq_set_parent(virq, pl061->parent_irq);
-
-
-Is lockdep happy with this?
-
-> +	return 0;
-> +}
-
-...
-
-> +static void pl061_remove_irq(void *data)
-> +{
-> +	struct pl061 *pl061 = data;
-> +
-> +	irq_set_chained_handler_and_data(pl061->parent_irq, NULL, NULL);
-> +
-> +	for (unsigned int i = 0; i < pl061->data->ngpio; i++) {
-
-> +		unsigned int virq = irq_find_mapping(pl061->irq_domain, i);
-
-Split assignment
-
-		unsigned int virq;
-
-		virq = irq_find_mapping(pl061->irq_domain, i);
-		if (virq)
-
-> +		if (virq)
-> +			irq_dispose_mapping(virq);
-> +	}
-> +
-> +	irq_domain_remove(pl061->irq_domain);
-> +}
-
-...
-
->  	struct device *dev = &adev->dev;
-> +	const struct pl061_drvdata *data = id->data;
-
-Split assignment as it is validated later on.
-
-> +	const struct pl061_regs *regs;
-> +	struct gpio_regmap_config config = {};
-> +	struct gpio_regmap *gpio_regmap;
-> +	struct gpio_chip *gc;
->  	struct pl061 *pl061;
-> -	struct gpio_irq_chip *girq;
-> +	void __iomem *base;
->  	int ret, irq;
->  
-> +	if (!data)
-> +		return -EINVAL;
-
--ENODATA?
-
-> +	regs = data->regs;
-
-...
-
-> +	for (offset = 0; offset < pl061->data->ngpio; offset++) {
-> +		if (!(dir & BIT(offset)))
-> +			continue;
-
-for_each_set_bit(), but make sure the type of the variable is unsigned long
-(might require a temporary one).
-
-> +		ret = regmap_read_bypassed(pl061->regmap,
-> +					   BIT(offset + PL061_DATA_OFFSET),
-> +					   &val);
-> +		if (ret)
-> +			return ret;
-> +		pl061->saved_dat |= val;
->  	}
-
-...
-
-> +	for (offset = 0; offset < pl061->data->ngpio; offset++) {
-> +		if (!(dir & BIT(offset)))
-> +			continue;
-
-Ditto.
-
-> +		ret = regmap_write(pl061->regmap,
-> +				   BIT(offset + PL061_DATA_OFFSET),
-> +				   !!(pl061->saved_dat & BIT(offset)) << offset);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
-> +	return regcache_sync_region(pl061->regmap, regs->is, regs->ie);
->  }
-
-...
-
-> static const struct amba_id pl061_ids[] = {
->  	{
->  		.id	= 0x00041061,
->  		.mask	= 0x000fffff,
-> +		.data	= (void *)&pl061_arm,
-
-Oh, this is something that needs to be fixed (but it's not your issue).
-Why on earth this is not const?
-
->  	},
->  	{ 0, 0 },
->  };
+The whole GPIO rework needs a bit more routine work (resplitting, refactoring,
+et cetera), so later we may see clearer what's going on.
 
 -- 
 With Best Regards,
