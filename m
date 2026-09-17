@@ -1,142 +1,145 @@
-Received: from ixit.cz (ixit.cz [84.42.129.46])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCECB49B44F;
-	Thu, 17 Sep 2026 22:10:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=84.42.129.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B6A53A4523;
+	Thu, 17 Sep 2026 22:14:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789683006; cv=none; b=IuzpmurS6p6nRTBBQ+vfNT3dgr1chGawFyvL9oJ5cezAdJA0EHYxq+YGtTeyK3Uq3b1vVz7ZbbStDSv1R6ceTu7KXnfw/0D2d8cY/nTQdl7X6DV8JxpzrgDjpPRqD6mUnpsS2mXT5fyMRbnmCoAbS9CWUm9zuU9YB84GxBf5W74=
+	t=1789683257; cv=none; b=CVK2IWte4PbX3JN3xfnHEQj3vYVrNWxv+0WRKkD0tyMKVccLOWCRijR222dhfoXI4IujGtTXTkqng+tTuOZYOAqCkShSCQ8qSFWbEXPMbEVTVgIVTyuL4pc/0ILAnN8Z3v/FrIFUJhbzsSAeOvjFeqdEoqLK2TvGnVDo8hfv3rw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789683006; c=relaxed/simple;
-	bh=mCpl6QvIFmZxeLmdoMUfxKfCOG+tsTZ73OkJqmhqtOQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=hxPZZFznieh2Pq7P0oVtpVxezet6ZQ7T1tlM3YdxKXUXhIWUp5TmNWSY40WkKw07bVniRo+bLNczotDVHDApeNOsvSlVKWID9044gDGM1zaaIbph3dc+EwTzhiTCDIFrQ/+k3MaSzZvOsAvcJ0gyqsdO2+KZ9WZRTgOIOX6UJzs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ixit.cz; spf=pass smtp.mailfrom=ixit.cz; dkim=pass (1024-bit key) header.d=ixit.cz header.i=@ixit.cz header.b=j/4Vg1or; arc=none smtp.client-ip=84.42.129.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ixit.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ixit.cz
+	s=arc-20240116; t=1789683257; c=relaxed/simple;
+	bh=bkfbpQAbnaFD8c3AdmLAOaEnLTtRFugMLS9HOjtsM7Y=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=Z6c5ytLfArtalZ7inXcGiJHKhYdcJYiznpPIWXi6KZ+4MT3ugDnLiU1GUh7idlNPghA1O3/ovZTcXrBZawwROJHTv+9ZFDVPyIhOZ95DoWBEqyQrQuf1tdOT5Xv9LFdYOuXH3+cB6uFHRFazhsYV91jbvGdFVFqvCQE/CmLCQv8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rtz+j6YC; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ixit.cz header.i=@ixit.cz header.b="j/4Vg1or"
-Received: from [IPV6:2a02:830a:f787:8f00:d622:eaa3:3dd6:8f5e] (unknown [IPv6:2a02:830a:f787:8f00:d622:eaa3:3dd6:8f5e])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange x25519)
-	(No client certificate requested)
-	by ixit.cz (Postfix) with ESMTPSA id E38C753401DD;
-	Fri, 18 Sep 2026 00:10:00 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ixit.cz; s=dkim;
-	t=1789683001;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=w542DP45Fab9ijkwZo5VGiQ54TLBbOLVPnee5WaS4as=;
-	b=j/4Vg1orluWplRkwEdZE6ATs2D6kCLuIcSMCfQb4oZH84n6A28CrKfsBTk/15uGjBpcn6J
-	rRhd5wcHRuGcMPiNfXY5JamS9sRF9pBT+eBbu9w7F8jT7O2bBF5EkTIUU2LcfWyCvq3S9y
-	KwPNu67boLcLCBqrtZZNW+uVOJCk3AE=
-Message-ID: <34d95e25-be4a-406c-b486-0ad9e7c86838@ixit.cz>
-Date: Fri, 18 Sep 2026 00:10:00 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rtz+j6YC"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A7E0AC2BCB3;
+	Thu, 17 Sep 2026 22:14:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1789683256;
+	bh=bkfbpQAbnaFD8c3AdmLAOaEnLTtRFugMLS9HOjtsM7Y=;
+	h=From:Date:Subject:To:Cc:Reply-To:From;
+	b=rtz+j6YCMQrbE5OknjbcV35Qgcmro+YbBuFO1b4iM8y7rp64A/bJzYQfuUBbboNmZ
+	 NP/tA1sX6PjC1tRZQTb/TwL2bxqXA7qpjYYCX3+zRL/dJ6WX3HmAEfcjBEvSxw6v6h
+	 EK+O7OUcswnVv5eVmWmKnPh6RzwNOikpxR7Jo3G+0b1mcnDRLHlUQK+AVz6u1xriCl
+	 uwjWBnUnBEELeEv3ETQsjY4tdSj+u+jIwj8GwipFSDoFeELWEu9S1qy+WFFZmo4Zbp
+	 uFSN4aWPEFuLdvcYs9Wxk5HDfKTBe/M+xtMiYOHo7rHThAos2Kc5/DIoZ8yQ3XDc3K
+	 5Kbyle+8IrDlA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80A4CC88E72;
+	Thu, 17 Sep 2026 22:14:16 +0000 (UTC)
+From: David Heidelberg via B4 Relay <devnull+david.ixit.cz@kernel.org>
+Date: Fri, 18 Sep 2026 00:14:11 +0200
+Subject: [PATCH] serial: qcom-geni: power the console back up on system
+ resume
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: qcom-geni: keep registered console runtime active
-To: Konrad Dybcio <konradybcio@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>,
- Praveen Talari <praveen.talari@oss.qualcomm.com>
-Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-References: <20260819-topic-geni_console_poweredoff-v1-1-7f7bb3aad8da@oss.qualcomm.com>
-Content-Language: en-US, cs-CZ
-From: David Heidelberg <david@ixit.cz>
-Autocrypt: addr=david@ixit.cz; keydata=
- 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
-In-Reply-To: <20260819-topic-geni_console_poweredoff-v1-1-7f7bb3aad8da@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Message-Id: <20260918-qcom-geni-pm-v1-1-cb587e215607@ixit.cz>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/02PS47CMBBErxL1mpb8iRM7V0Es/GkzRsQEO0EjI
+ e4+DsyCZUnVr14/oVJJVGHqnlDokWq65Rb4oQP/Y/OZMIWWQTAxMMM13v1txjPlhMuMxGJU2hh
+ veg3tZCkU0+8bdzx9ct3chfy6M/4bhe5b21k/NXC2EjbonNapk0HLUeleCqdooGAUGxVjVo0UH
+ YvSxp4TjQG+/abubaeFxv0be/2SbDq4ZWevNnsKWJr07jQTat7TIJkUgzPTg8Pp9foDLOvDZw4
+ BAAA=
+X-Change-ID: 20260918-qcom-geni-pm-e0ff5899c948
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, 
+ Praveen Talari <praveen.talari@oss.qualcomm.com>, 
+ Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>, 
+ Abel Vesa <abel.vesa@oss.qualcomm.com>
+Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-serial@vger.kernel.org, David Heidelberg <david@ixit.cz>
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2417; i=david@ixit.cz;
+ h=from:subject:message-id;
+ bh=WIgNFxV6Tu+/jmP1IZkjh/Ghxyf29pITtAMmGeHwlW8=;
+ b=owEBbQKS/ZANAwAIAWACP8TTSSByAcsmYgBqrGY2dYAyGFUApgIgLXfN7/jif5pN/x5B+6nh2
+ EDJxYq6rh+JAjMEAAEIAB0WIQTXegnP7twrvVOnBHRgAj/E00kgcgUCaqxmNgAKCRBgAj/E00kg
+ cjbNEACDh7xH9ppjPnlAzA9NpKasaWLELT92Y8OAMRxtEDgxX98FJl1NuQ22PttccQ3U07NXGh4
+ SO8N/DYuLZaQHyuiL7JdnAucdIyibcOkSDCV5JKep4LfxkOumQNTOLTHvPfjvJE7Qlu3RJL2PkP
+ DGQ6F25vOekkJuYfyDQJscKGQXAPVfHMBTsGJ0fPVde4qDwKnCDSutMe5eC32IUm6bXFgpzTrFv
+ /p+pUC4ODEmJv7KSNjw7Tkv7HvRxykVTKZAnfUkIPXLdGIW8+yKJf6IIXJy/adu3jyFJ8JAYYvO
+ ZvEubWjx3pIOo1lHlVrK41R2iR+V5Arv1tKfZYSZrhFy3IcZF3hsh0ue2VCSmfABcmvUsXwkDPI
+ yNVuOFz9T9n3mGPRpubMTkx8Xs3vqIsBUSrnJVqwchaq0vVYh0pMLVD/lwF/NsfrUaxaF0yiEWD
+ nCYXpKMk9jWaFtoJp4OtJqHouJDr+yeP6HnoAPM/KP07NZ0PHzsMEIbjzycKw2gjn1Ftnk8dqLa
+ PERsPUf8zBmLZSeExcAQwZA1gKT0JQtTn5sUazLmUjVtlnS+J1UR+rLaR1rtARv3BxpNUuGE9qE
+ 6MNky24ZPtzMNax0mY8e59UXEoxD2ps7N0yrjeNzxOci++6EHtlW1aEOz5QbWNDa52f4ctqPEA6
+ Bd8piCsM63knbAA==
+X-Developer-Key: i=david@ixit.cz; a=openpgp;
+ fpr=D77A09CFEEDC2BBD53A7047460023FC4D3492072
+X-Endpoint-Received: by B4 Relay for david@ixit.cz/default with auth_id=355
+X-Original-From: David Heidelberg <david@ixit.cz>
+Reply-To: david@ixit.cz
 
-On 19/08/2026 18:46, Konrad Dybcio wrote:
-> From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-> 
-> Commit aee1f94dab13 ("serial: qcom-geni: remove .pm callback, use
-> runtime PM in startup/shutdown") moved runtime PM references from the
-> serial-core PM callback to the port startup and shutdown callbacks.
-> 
-> The serial core used to leave the console port powered after
-> registration, but after the callback was removed the temporary probe
-> reference is always released. Console writes are not tied to an open TTY
-> and can run from contexts which cannot resume the device, so a
-> runtime-suspended console can stall. This was observed on a Qualcomm
-> X1E80100 CRD device, as the boot console became flakey across boots.
-> 
-> Acquire a runtime PM reference when the console is set up and release it
-> through the console exit callback. This keeps the device active only
-> while the console is registered and balances the reference when the
-> console is disabled or re-enabled through sysfs.
-> 
-> Fixes: aee1f94dab13 ("serial: qcom-geni: remove .pm callback, use runtime PM in startup/shutdown")
-> Assisted-by: LLM
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-> ---
->   drivers/tty/serial/qcom_geni_serial.c | 26 ++++++++++++++++++++++++--
->   1 file changed, 24 insertions(+), 2 deletions(-)
-> 
-This also fixes a regression on sdm845: since v7.3-rc1 (or on next-20260820), 
-OnePlus 6 and 6T crash into the Qualcomm crash dump mode on every s2idle suspend 
-attempt (no kernel output, warm reset via PS_HOLD with the TZ download cookie 
-set, no panic in ramoops).
+From: David Heidelberg <david@ixit.cz>
 
-Tested-by: David Heidelberg <david@ixit.cz> # OnePlus 6T (sdm845)
+The console holds a runtime PM reference on its port, which keeps the
+port powered while the tty is closed. On system suspend
+pm_runtime_force_suspend() powers the port down regardless, but a single
+reference makes pm_runtime_need_not_resume() report the port as not in
+use, so it is marked runtime suspended instead of being flagged for
+pm_runtime_force_resume(). On system resume the port therefore stays
+powered down while uart_resume_port() goes on to program the termios
+settings and re-enable the console.
 
-One thing this leaves open: with the console holding a single reference,
-pm_runtime_force_suspend() goes through pm_runtime_need_not_resume() and
-pm_runtime_force_resume() does not power the port back up, so
-uart_resume_port() programs the termios and resumes the console on a
-powered-down port; it only comes back through startup() if the tty was
-open. I'll send a patch on top for that.
+If the tty has been opened before, uart_resume_port() ends up in
+startup(), whose runtime PM reference powers the port up again, and only
+the register writes made before that are lost. If the tty has never been
+opened (no getty on the port, /dev/console backed by another console),
+nothing powers the port back up and the console stays dead after the
+first suspend.
 
-Thank you
-David
+Resume the port explicitly before uart_resume_port() when the console
+was force suspended.
+
+Assisted-by: LLM
+Fixes: aee1f94dab13 ("serial: qcom-geni: remove .pm callback, use runtime PM in startup/shutdown")
+Signed-off-by: David Heidelberg <david@ixit.cz>
+---
+ drivers/tty/serial/qcom_geni_serial.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index a180a00c9e23d..0c9164a1fccda 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -2100,16 +2100,22 @@ static int qcom_geni_serial_resume(struct device *dev)
+ 	struct qcom_geni_private_data *private_data = uport->private_data;
+ 
+ 	if (console_suspend_enabled || !uart_console(uport)) {
+ 		ret = pm_runtime_force_resume(dev);
+ 		if (ret)
+ 			return ret;
+ 	}
+ 
++	if (console_suspend_enabled && uart_console(uport)) {
++		ret = pm_runtime_resume(dev);
++		if (ret < 0)
++			return ret;
++	}
++
+ 	ret = uart_resume_port(private_data->drv, uport);
+ 	if (uart_console(uport)) {
+ 		geni_icc_set_tag(&port->se, QCOM_ICC_TAG_ALWAYS);
+ 		geni_icc_set_bw(&port->se);
+ 	}
+ 	return ret;
+ }
+ 
+
+---
+base-commit: 3d83758432b5e6ed9507500a57efb0f3af41ee7d
+change-id: 20260918-qcom-geni-pm-e0ff5899c948
+prerequisite-change-id: 20260828-serial-qcom-geni-fix-unbalanced-rpm-resume-814e630326b9:v1
+prerequisite-patch-id: a2666a59a68190a3f438cec8aa167111c21dc8ca
+
+Best regards,
+--  
+David Heidelberg <david@ixit.cz>
+
+
