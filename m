@@ -1,36 +1,35 @@
 Received: from cstnet.cn (smtp25.cstnet.cn [159.226.251.25])
 	(using TLSv1.2 with cipher DHE-RSA-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1DB04B7A4D;
-	Thu, 17 Sep 2026 15:55:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58182342538;
+	Thu, 17 Sep 2026 15:56:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.226.251.25
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789660532; cv=none; b=LGdYWYPfmnlWt3CpGOxeUZYhBtXBjLToro9MHx3D1DEyqr/g9KYPj3Ci3YPR4VXNIQrQoC8pUQ0rCw1WRRq+3DQ6Y1GuB1oNGLKwOyIDj8nVrE1z+niroYIRHKwT+gTFlkHHrPk+AF+j/yLNEPTRrRQh85R9hA5b2Ac9wgikCWs=
+	t=1789660618; cv=none; b=jcb6ShmoLL0xiL+0RG+o5H37ukHIzG8a6OU8Lnpe8XsKGcXqbf/FJuZEl+yyljunF9eeguGhzJNaV36KlY67bMrO/SMOW0ff5/3ur4RmyGLhO/kfhB7kINesV53+YEkzOfdvBIeXwwGW9lMwvoKM7qmdW6zGPnQZObUcOCBQQhQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789660532; c=relaxed/simple;
-	bh=CKiDNDlAPivZUnh2+t+SQ0i9i1s0550awWQilbIllXk=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=hFf6PuOLUooFXkSiYJfOgbZOzp07GVRMbyZUJesQsgdAXF1J+FDJ95wSOQyV/fkAvXbBw3jhAx4Z9ZuhTTM64U1KXsBVkdz0jY66/qYmbF4T0Zl7UOLHfO+8HiqXKqD8eNTo8UBvu/RFinS8puDZv2+mwGcevM7iGNxsTHS1744=
+	s=arc-20240116; t=1789660618; c=relaxed/simple;
+	bh=l/uy9ws6uDHU6z+5WCuv9BoP49zJ449mG0VxGCokVFs=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Qe8QoPTXsx/ZGk+zg5WUVAUPDkt1QT+4zLpR3O7aKZxwMaMvafc59Du4De6yWMkNEeB5OHEVeOsY4ZrQEJAj9OReLc8bVHlQfGgpNASTGm1yMUbbpmaxbR99+FlO0+cUVb0gwOA00ot5W9A6CD2RMbZg507mB0iDB9JSddiFZ8o=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn; spf=pass smtp.mailfrom=iscas.ac.cn; arc=none smtp.client-ip=159.226.251.25
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iscas.ac.cn
 Received: from dfae2b116770.home.arpa (unknown [36.110.52.2])
-	by APP-05 (Coremail) with SMTP id zQCowAC36EJrDaxqhvGDCA--.6286S2;
-	Thu, 17 Sep 2026 23:55:23 +0800 (CST)
+	by APP-05 (Coremail) with SMTP id zQCowAC3HzrCDaxqPPmDCA--.6369S2;
+	Thu, 17 Sep 2026 23:56:50 +0800 (CST)
 From: Wentao Liang <vulab@iscas.ac.cn>
-To: alan@redhat.com
-Cc: danielt@kernel.org,
-	dianders@chromium.org,
-	gregkh@linuxfoundation.org,
-	jason.wessel@windriver.com,
+To: gregkh@linuxfoundation.org
+Cc: ilpo.jarvinen@linux.intel.com,
 	jirislaby@kernel.org,
-	kgdb-bugreport@lists.sourceforge.net,
+	linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
+	schung@nuvoton.com,
+	ychuang3@nuvoton.com,
 	Wentao Liang <vulab@iscas.ac.cn>,
 	stable@vger.kernel.org
-Subject: [PATCH] kgdboc: Fix tty driver reference leak in configure_kgdboc()
-Date: Thu, 17 Sep 2026 15:55:23 +0000
-Message-Id: <20260917155523.2161202-1-vulab@iscas.ac.cn>
+Subject: [PATCH] serial: ma35d1: Fix clock reference leak in ma35d1serial_probe()
+Date: Thu, 17 Sep 2026 15:56:50 +0000
+Message-Id: <20260917155650.2161274-1-vulab@iscas.ac.cn>
 X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -39,10 +38,10 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:zQCowAC36EJrDaxqhvGDCA--.6286S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7ZrWUCry3ZFykury5Jw48Crg_yoW8Jw4DpF
-	47JFy5AFn8JF48XanrXr18CFy5ua93Ka1agryUAas8Za45ZFyjkw1aqry7tr48Ar48ta47
-	K395Cr4UCFyqyFUanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+X-CM-TRANSID:zQCowAC3HzrCDaxqPPmDCA--.6369S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7KFWUXF1ktr4rCryxuw4DArb_yoW8Xw4xpF
+	srKrZ5KayUGa48tw1Duw15Zr4fZw4Uta4xCrW7Ga4fuanIqr93tryfJa4jva1UCFykWF47
+	Jr1Iy345uF4jy37anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
 	9KBjDU0xBIdaVrnRJUUUPSb7Iv0xC_tr1lb4IE77IF4wAFc2x0x2IEx4CE42xK8VAvwI8I
 	cIk0rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2
 	AK021l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v2
@@ -57,50 +56,52 @@ X-Coremail-Antispam: 1UD129KBjvJXoW7ZrWUCry3ZFykury5Jw48Crg_yoW8Jw4DpF
 	7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxV
 	W8Jr0_Cr1UMIIF0xvEx4A2jsIEc7CjxVAFwI0_GcCE3sUvcSsGvfC2KfnxnUUI43ZEXa7I
 	U1oUDJUUUUU==
-X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiBgENA2qr8889TAAAsF
+X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiBgENA2qr888+PAAAs2
 
-tty_find_polling_driver() returns the tty driver with an extra
-reference taken by tty_driver_kref_get(). configure_kgdboc() stores it
-in kgdb_tty_driver but the reference is never dropped: it is leaked when
-kgdb_register_io_module() fails, when the configuration is cleared, and
-on every reconfigure.
+of_clk_get() returns a clock with a reference that has to be released
+with clk_put(). ma35d1serial_probe() never does that, so the reference
+is leaked on the probe error paths and also when the port is removed.
 
-Release the reference both when unconfiguring and on the error path.
+Release it on the error paths and in ma35d1serial_remove().
 
-Fixes: 7d7b93c1452f ("tty: kref the tty driver object")
+Fixes: 930cbf92db01 ("tty: serial: Add Nuvoton ma35d1 serial driver support")
 Cc: stable@vger.kernel.org
 Signed-off-by: Wentao Liang <vulab@iscas.ac.cn>
 ---
- drivers/tty/serial/kgdboc.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/tty/serial/ma35d1_serial.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
-index 5a955c80a853..e2c8e5ec688c 100644
---- a/drivers/tty/serial/kgdboc.c
-+++ b/drivers/tty/serial/kgdboc.c
-@@ -188,6 +188,11 @@ static void cleanup_kgdboc(void)
+diff --git a/drivers/tty/serial/ma35d1_serial.c b/drivers/tty/serial/ma35d1_serial.c
+index 285b0fe41a86..a073648cc5e4 100644
+--- a/drivers/tty/serial/ma35d1_serial.c
++++ b/drivers/tty/serial/ma35d1_serial.c
+@@ -720,7 +720,7 @@ static int ma35d1serial_probe(struct platform_device *pdev)
  
- 	kgdboc_unregister_kbd();
- 	kgdb_unregister_io_module(&kgdboc_io_ops);
+ 	ret = clk_prepare_enable(up->clk);
+ 	if (ret)
+-		goto err_iounmap;
++		goto err_put_clk;
+ 
+ 	if (up->port.line != 0)
+ 		up->port.uartclk = clk_get_rate(up->clk);
+@@ -747,6 +747,9 @@ static int ma35d1serial_probe(struct platform_device *pdev)
+ err_clk_disable:
+ 	clk_disable_unprepare(up->clk);
+ 
++err_put_clk:
++	clk_put(up->clk);
 +
-+	if (kgdb_tty_driver) {
-+		tty_driver_kref_put(kgdb_tty_driver);
-+		kgdb_tty_driver = NULL;
-+	}
+ err_iounmap:
+ 	iounmap(up->port.membase);
+ 	return ret;
+@@ -762,6 +765,7 @@ static void ma35d1serial_remove(struct platform_device *dev)
+ 
+ 	uart_remove_one_port(&ma35d1serial_reg, port);
+ 	clk_disable_unprepare(up->clk);
++	clk_put(up->clk);
  }
  
- static int configure_kgdboc(void)
-@@ -254,6 +259,10 @@ static int configure_kgdboc(void)
- 
- noconfig:
- 	kgdboc_unregister_kbd();
-+	if (kgdb_tty_driver) {
-+		tty_driver_kref_put(kgdb_tty_driver);
-+		kgdb_tty_driver = NULL;
-+	}
- 	configured = 0;
- 
- 	return err;
+ static int ma35d1serial_suspend(struct platform_device *dev, pm_message_t state)
 -- 
 2.34.1
 
