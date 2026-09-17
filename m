@@ -1,88 +1,64 @@
-Received: from cstnet.cn (smtp25.cstnet.cn [159.226.251.25])
-	(using TLSv1.2 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC4C74ABBB5;
-	Thu, 17 Sep 2026 15:58:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.226.251.25
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BAEF4F3921
+	for <linux-serial@vger.kernel.org>; Thu, 17 Sep 2026 16:00:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789660723; cv=none; b=JJm8P1fRmKi29HhQaPSXCODsRSsJ8U1EmgdumzeM6+u2vKspj4+/9i9MAsD2nV1gK4Pp9N1wLYgybYIbbRNsgDgWCIJBGvBrjCBfbrv+X1HyKU/WKzzpbQex6CBPUre5p+mEeMNTj8XBfOkKQ/ZRyO8mzkO7wVAuNN89nCf9Awo=
+	t=1789660842; cv=none; b=cU7TRrAC2zYhAuR49obBsMb9kb0NbOf+fhGnPPxyQxoenTK2WpYfPpo39bMzHRuOogfqkPYDs9hXUGWIMtwFFEo8MdJzyiV81SJ2dtSEwqfnqbhUJD6DHxPJV5THgmWVIxJYshWfO07GES+sc3epenLyB4I+ggMWh2F8HEnIhFY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789660723; c=relaxed/simple;
-	bh=UE2kPnpE/KSANVtCidWZOTtgalw6v//bv3XK12VvzaU=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Aglo5Kldb0/D70Hn/6YTxAcLM4NrNR3NFgowk+wy6iML058zWwGo0PO7NeDGKnbr6LfoUCXgspeKVDBJQBcCwxy8Qki7VKK9A+wIb2HL5BDGSraHIG785KKELaq6nYUXdN/XQ3foDIcztusopPyT3IYxbvFgrVuwHThALlnNk1w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn; spf=pass smtp.mailfrom=iscas.ac.cn; arc=none smtp.client-ip=159.226.251.25
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iscas.ac.cn
-Received: from dfae2b116770.home.arpa (unknown [36.110.52.2])
-	by APP-05 (Coremail) with SMTP id zQCowADnF0IqDqxqnAKECA--.6268S2;
-	Thu, 17 Sep 2026 23:58:34 +0800 (CST)
-From: Wentao Liang <vulab@iscas.ac.cn>
-To: alchark@gmail.com
-Cc: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	krzk@kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	linux@prisktech.co.nz,
-	Wentao Liang <vulab@iscas.ac.cn>,
-	stable@vger.kernel.org
-Subject: [PATCH] serial: vt8500: Fix clock reference leak in vt8500_serial_probe()
-Date: Thu, 17 Sep 2026 15:58:34 +0000
-Message-Id: <20260917155834.2161361-1-vulab@iscas.ac.cn>
-X-Mailer: git-send-email 2.34.1
+	s=arc-20240116; t=1789660842; c=relaxed/simple;
+	bh=QCMj5A8DaEw0KwnuLW+LLyi+jqmDIYYCIEsF087o8tM=;
+	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
+	 Message-Id; b=LeTqk0Rcfeef8qKS8aF2vGyPgPcgSYjlHSASdU76tSm6NVNKwl1BJcsJF7k5/+GVg6m1M1YzRPapBfwzp2JEUVB7kDNaLJvRO9xAUyewjGfCeiiW46J4OtweAOQTcuCz9SDhwl+gcQWiloCA+Ctnt4k6TK3qHzyNWy7HuZoKAmc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OYumxuCX; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OYumxuCX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F57B1F00893;
+	Thu, 17 Sep 2026 16:00:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1789660841;
+	bh=QCMj5A8DaEw0KwnuLW+LLyi+jqmDIYYCIEsF087o8tM=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=OYumxuCX+jwnAtFM2ZiYfl4FNk+1DrAIviPBj2Q93ztWmrd+cBtQ59tLbDlEv3iN2
+	 mrk5XaSF8bL6ANwdQPHqH8+zT2Cf/QkQUPeVolgIgNAd1kjARBvnW+BnA2I4bz/ik4
+	 k+3mkIijK1Xo1v9bvELk+3wNPz5ZCc0/thriorKKiFsdJJhnnvJfLcPQtivpC+GYqf
+	 PA99bKRqrXuBzhmEp5w1CyQA5Xzb2IcwMoW7kAnI03Z8lYolJMXxJEvmZfQdPF4Yx1
+	 ny2ZVWQGbSjplqDDYRERFLz36VQCTzG04+xENt1gu4m3vw23LJw8nX5GOd+M2qOlHw
+	 c1NqCtPA+BSEw==
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH] kgdboc: Fix tty driver reference leak in
+ configure_kgdboc()
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Wentao Liang" <vulab@iscas.ac.cn>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20260917155523.2161202-1-vulab@iscas.ac.cn>
+References: <20260917155523.2161202-1-vulab@iscas.ac.cn>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 17 Sep 2026 16:00:40 +0000
+Message-Id: <20260917160041.1F57B1F00893@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:zQCowADnF0IqDqxqnAKECA--.6268S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7GFW8Cw18Kw1fAF1rKFy5twb_yoWDGrbEk3
-	WkC397Ar18uF4DKwn3JrZxAr9xKFWDZFy8Xa4Iv39xJF9rJFs5XFW2qrs3CanrZw409r13
-	tr17Ca17Gr13XjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-	9fnUUIcSsGvfJTRUUUbg8YjsxI4VWDJwAYFVCjjxCrM7CY07I20VC2zVCF04k26cxKx2IY
-	s7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4
-	kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_
-	Cr0_Gr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26r
-	xl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj
-	6xIIjxv20xvE14v26r1q6rW5McIj6I8E87Iv67AKxVWxJr0_GcWlOx8S6xCaFVCjc4AY6r
-	1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq62Iq12xI8VA0II8E6IAqYI8I648v4I1lFIxG
-	xcIEc7CjxVA2Y2ka0xkIwI1lc7CjxVAaw2AFwI0_Jw0_GFyl42xK82IYc2Ij64vIr41l42
-	xK82IY6x8ErcxFaVAv8VW8GFyrJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02
-	F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GF
-	ylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUCVW8JwCI42IY6xIIjxv20xvEc7Cj
-	xVAFwI0_Cr0_Gr1UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxV
-	W8Jr0_Cr1UMIIF0xvEx4A2jsIEc7CjxVAFwI0_GcCE3sUvcSsGvfC2KfnxnUUI43ZEXa7I
-	U1ID73UUUUU==
-X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiCRUNA2qr9LY71AAAs+
 
-of_clk_get() returns a clock with a reference that has to be released
-with clk_put(). If clk_prepare_enable() fails the function returns
-without doing so, leaking the reference.
+> tty_find_polling_driver() returns the tty driver with an extra
+> reference taken by tty_driver_kref_get(). configure_kgdboc() stores it
+> in kgdb_tty_driver but the reference is never dropped: it is leaked when
+> kgdb_register_io_module() fails, when the configuration is cleared, and
+> on every reconfigure.
+>=20
+> Release the reference both when unconfiguring and on the error path.
+>=20
+> Fixes: 7d7b93c1452f ("tty: kref the tty driver object")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Wentao Liang <vulab@iscas.ac.cn>
 
-Add the missing clk_put() on that error path.
+Sashiko has reviewed this patch and found no issues. It looks great!
 
-Fixes: 12faa35ae5cb ("serial: vt8500: UART uses gated clock rather than 24Mhz reference")
-Cc: stable@vger.kernel.org
-Signed-off-by: Wentao Liang <vulab@iscas.ac.cn>
----
- drivers/tty/serial/vt8500_serial.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/tty/serial/vt8500_serial.c b/drivers/tty/serial/vt8500_serial.c
-index 78a1c1eea11b..fc6fdc751b16 100644
---- a/drivers/tty/serial/vt8500_serial.c
-+++ b/drivers/tty/serial/vt8500_serial.c
-@@ -656,6 +656,7 @@ static int vt8500_serial_probe(struct platform_device *pdev)
- 	ret = clk_prepare_enable(vt8500_port->clk);
- 	if (ret) {
- 		dev_err(&pdev->dev, "failed to enable clock\n");
-+		clk_put(vt8500_port->clk);
- 		return ret;
- 	}
- 
--- 
-2.34.1
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260917155523.2161=
+202-1-vulab@iscas.ac.cn?part=3D1
 
