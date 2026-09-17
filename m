@@ -1,39 +1,39 @@
 Received: from ixit.cz (ixit.cz [84.42.129.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D0CA47F2CC;
-	Thu, 17 Sep 2026 22:06:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCECB49B44F;
+	Thu, 17 Sep 2026 22:10:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=84.42.129.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789682816; cv=none; b=Rer7MRK6nC9ag8GTwSfI7AhT85ODb1Qcs/lylJ2IzZ49303Cupr/P+IVZRKnELU9u6WSKRnrdHiVS8kyU5wEVySRit5oYDGF/euucu/C/XwazosvwFzlX+/BStcGayq4wRvuL6plhb9NXIVEDS1QwdiBP1FbJ/53ngE5K343/zA=
+	t=1789683006; cv=none; b=IuzpmurS6p6nRTBBQ+vfNT3dgr1chGawFyvL9oJ5cezAdJA0EHYxq+YGtTeyK3Uq3b1vVz7ZbbStDSv1R6ceTu7KXnfw/0D2d8cY/nTQdl7X6DV8JxpzrgDjpPRqD6mUnpsS2mXT5fyMRbnmCoAbS9CWUm9zuU9YB84GxBf5W74=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789682816; c=relaxed/simple;
-	bh=xaHC2zWKlMpiQOiAlp2UMboAeoS+1Ja/7QHDCWgO8Lo=;
+	s=arc-20240116; t=1789683006; c=relaxed/simple;
+	bh=mCpl6QvIFmZxeLmdoMUfxKfCOG+tsTZ73OkJqmhqtOQ=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=l+8EoIoLthVNcRyNNAbMALn8L3ln2FZXyG3cDBMRM34Ej+oyQ/2bhdlqAw9Q1j2FpYr6CESX02A37+UT0aYkO6C8N1Syka4KZFQAzq8O8jxBmtR1Vg3mcKbwOgYqO+T5+FM81+xp6231GB00NGFT+GDmBHSjxGmyaXUcL81yiWE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ixit.cz; spf=pass smtp.mailfrom=ixit.cz; dkim=pass (1024-bit key) header.d=ixit.cz header.i=@ixit.cz header.b=dwmH0rSN; arc=none smtp.client-ip=84.42.129.46
+	 In-Reply-To:Content-Type; b=hxPZZFznieh2Pq7P0oVtpVxezet6ZQ7T1tlM3YdxKXUXhIWUp5TmNWSY40WkKw07bVniRo+bLNczotDVHDApeNOsvSlVKWID9044gDGM1zaaIbph3dc+EwTzhiTCDIFrQ/+k3MaSzZvOsAvcJ0gyqsdO2+KZ9WZRTgOIOX6UJzs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ixit.cz; spf=pass smtp.mailfrom=ixit.cz; dkim=pass (1024-bit key) header.d=ixit.cz header.i=@ixit.cz header.b=j/4Vg1or; arc=none smtp.client-ip=84.42.129.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ixit.cz
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ixit.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ixit.cz header.i=@ixit.cz header.b="dwmH0rSN"
+	dkim=pass (1024-bit key) header.d=ixit.cz header.i=@ixit.cz header.b="j/4Vg1or"
 Received: from [IPV6:2a02:830a:f787:8f00:d622:eaa3:3dd6:8f5e] (unknown [IPv6:2a02:830a:f787:8f00:d622:eaa3:3dd6:8f5e])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange x25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	 key-exchange x25519)
 	(No client certificate requested)
-	by ixit.cz (Postfix) with ESMTPSA id 2B4D1534063C;
-	Fri, 18 Sep 2026 00:06:51 +0200 (CEST)
+	by ixit.cz (Postfix) with ESMTPSA id E38C753401DD;
+	Fri, 18 Sep 2026 00:10:00 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ixit.cz; s=dkim;
-	t=1789682811;
+	t=1789683001;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=yVbhkqu6bdIsR+yNnf2qBB6KyF2gwrYLMK6XgBe93g4=;
-	b=dwmH0rSNVJn4M92B2dF//L7HTcjzkYWXl23SORczxmcivyz64fkFPwoorD3bpgUZiszQbP
-	1+TDZ/4CRi8tgRUP09Id3TBYSwj/zhgnmVpDEcKfCt1sqT1ll21J2Y7xYzMkzm5WaXtjZS
-	lLUvG9lZw/3dhg856A0l0kJDqVWPRo8=
-Message-ID: <4fadd84c-ed8f-4a5f-a4dc-078fcf1171d2@ixit.cz>
-Date: Fri, 18 Sep 2026 00:06:50 +0200
+	bh=w542DP45Fab9ijkwZo5VGiQ54TLBbOLVPnee5WaS4as=;
+	b=j/4Vg1orluWplRkwEdZE6ATs2D6kCLuIcSMCfQb4oZH84n6A28CrKfsBTk/15uGjBpcn6J
+	rRhd5wcHRuGcMPiNfXY5JamS9sRF9pBT+eBbu9w7F8jT7O2bBF5EkTIUU2LcfWyCvq3S9y
+	KwPNu67boLcLCBqrtZZNW+uVOJCk3AE=
+Message-ID: <34d95e25-be4a-406c-b486-0ad9e7c86838@ixit.cz>
+Date: Fri, 18 Sep 2026 00:10:00 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -41,15 +41,14 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: qcom-geni: Fix unbalanced runtime PM resume for
- no_console_suspend
-To: Abel Vesa <abel.vesa@oss.qualcomm.com>,
+Subject: Re: [PATCH] serial: qcom-geni: keep registered console runtime active
+To: Konrad Dybcio <konradybcio@kernel.org>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Jiri Slaby <jirislaby@kernel.org>,
  Praveen Talari <praveen.talari@oss.qualcomm.com>
 Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, phone-devel <phone-devel@vger.kernel.org>
-References: <20260828-serial-qcom-geni-fix-unbalanced-rpm-resume-v1-1-af3e5aef17a6@oss.qualcomm.com>
+ linux-serial@vger.kernel.org, Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+References: <20260819-topic-geni_console_poweredoff-v1-1-7f7bb3aad8da@oss.qualcomm.com>
 Content-Language: en-US, cs-CZ
 From: David Heidelberg <david@ixit.cz>
 Autocrypt: addr=david@ixit.cz; keydata=
@@ -95,27 +94,49 @@ Autocrypt: addr=david@ixit.cz; keydata=
  zRKcgRumz2Tc1ouHj6qINlzEe3a5ldctIn/dvR1l2Ko7GBTG+VGp9U5NOAEkGpxHG9yg6eeY
  fFYnMme51H/HKiyUlFiE3yd5LSmv8Dhbf+vsI4x6BOOOq4Iyop/Exavj1owGxW0hpdUGcCl1
  ovlwVPO/6l/XLAmSGwdnGqok5eGZQzSst0tj9RC9O0dXO1TZocOsf0tJ8dR2egX4kxM=
-In-Reply-To: <20260828-serial-qcom-geni-fix-unbalanced-rpm-resume-v1-1-af3e5aef17a6@oss.qualcomm.com>
+In-Reply-To: <20260819-topic-geni_console_poweredoff-v1-1-7f7bb3aad8da@oss.qualcomm.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 28/08/2026 16:32, Abel Vesa wrote:
-> When no_console_suspend is set for the serial console, the system
-> suspend callback skips pm_runtime_force_suspend() to keep the console
-> active. The resume callback still unconditionally calls
-> pm_runtime_force_resume(), which triggers an "Unbalanced
-> pm_runtime_enable!" warning.
+On 19/08/2026 18:46, Konrad Dybcio wrote:
+> From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
 > 
-> Only force resume when the suspend callback force suspended the device.
+> Commit aee1f94dab13 ("serial: qcom-geni: remove .pm callback, use
+> runtime PM in startup/shutdown") moved runtime PM references from the
+> serial-core PM callback to the port startup and shutdown callbacks.
 > 
-> Fixes: d0cd9c8d0fd5 ("serial: qcom-geni: add force suspend/resume to system sleep callbacks")
-> Signed-off-by: Abel Vesa <abel.vesa@oss.qualcomm.com>
+> The serial core used to leave the console port powered after
+> registration, but after the callback was removed the temporary probe
+> reference is always released. Console writes are not tied to an open TTY
+> and can run from contexts which cannot resume the device, so a
+> runtime-suspended console can stall. This was observed on a Qualcomm
+> X1E80100 CRD device, as the boot console became flakey across boots.
+> 
+> Acquire a runtime PM reference when the console is set up and release it
+> through the console exit callback. This keeps the device active only
+> while the console is registered and balances the reference when the
+> console is disabled or re-enabled through sysfs.
+> 
+> Fixes: aee1f94dab13 ("serial: qcom-geni: remove .pm callback, use runtime PM in startup/shutdown")
+> Assisted-by: LLM
+> Signed-off-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
 > ---
->   drivers/tty/serial/qcom_geni_serial.c | 8 +++++---
->   1 file changed, 5 insertions(+), 3 deletions(-)
+>   drivers/tty/serial/qcom_geni_serial.c | 26 ++++++++++++++++++++++++--
+>   1 file changed, 24 insertions(+), 2 deletions(-)
 > 
-
-Seen the same "Unbalanced pm_runtime_enable!" on every resume with
-no_console_suspend on OnePlus 6T; gone with this patch.
+This also fixes a regression on sdm845: since v7.3-rc1 (or on next-20260820), 
+OnePlus 6 and 6T crash into the Qualcomm crash dump mode on every s2idle suspend 
+attempt (no kernel output, warm reset via PS_HOLD with the TZ download cookie 
+set, no panic in ramoops).
 
 Tested-by: David Heidelberg <david@ixit.cz> # OnePlus 6T (sdm845)
+
+One thing this leaves open: with the console holding a single reference,
+pm_runtime_force_suspend() goes through pm_runtime_need_not_resume() and
+pm_runtime_force_resume() does not power the port back up, so
+uart_resume_port() programs the termios and resumes the console on a
+powered-down port; it only comes back through startup() if the tty was
+open. I'll send a patch on top for that.
+
+Thank you
+David
