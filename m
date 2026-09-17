@@ -1,157 +1,77 @@
-Received: from mail-pj2-f13.google.com (mail-pj2-f13.google.com [74.125.227.141])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99663386C25
-	for <linux-serial@vger.kernel.org>; Thu, 17 Sep 2026 04:05:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.141
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 314143B5E08
+	for <linux-serial@vger.kernel.org>; Thu, 17 Sep 2026 04:11:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789617940; cv=none; b=DyV+0ok6ka00igzXIzxct5BeJkF/xoVIjmJh5JwPtKj4DuMTUk+UJO+YnvRSexthM6WKKIZkDxPvkBdpnQZRMGyiwRCaca7fnDyHciOOd4ZA5vy+HZDRmsN1IuF9pF1QEEWyWBB18yykhAsRT6WVkpq0hErb/0oh9Ui/g/mbkE4=
+	t=1789618294; cv=none; b=kpu+E5FF9r0F9UP7+rdTW/E8md+RA3/9BfWuTyCuwTdMuUQ9DyI7Audm6O2Yy4qUwLaF5ABx3Zg8MN/zwgfHRZlSZwlumWLBDCZPGAti4m3WYfeXr7vPcKBPzmOSLe8l0NtumBlwO0ZH+sOeQ8GQOncG/4dsWe5M2X2OB0m1JhE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789617940; c=relaxed/simple;
-	bh=JTbnAtARgUQ4AFZJU9OHPxz7uBUe6OrzJYGrchxPvP8=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=hDWjj6Z66UeNJBvmMnfVefrnxmjWZ5xOt8wny5WLM794rlAoAFEZuXVdVzkSbY7Aw9WG4BSodMmC0UWOUNKvLh1SQgSce7GUb1IMGs/uTe95WaYv+hjt0Ntjovn9QvkVMATIT1NKHZbmIhvuUSdPR0zRkMXGXwt7zEKgsjnTYUc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jBYTwpVt; arc=none smtp.client-ip=74.125.227.141
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1789618294; c=relaxed/simple;
+	bh=5iRWlB/Doj6TSlhwTllpfNcdxmLp2vhfJ5bIqZYM6lY=;
+	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
+	 Message-Id; b=uG4QFNJ5bajrJ+eVNrhlm0WFnOV59E6J4rt6vk5SRJ5CJz5Nkdu3Du20brf/EbjigGvvAwl3wTHSs2RhlBBq7wWqtRRwzY266SpgPw14+ftZCZR/woS3MxumN1/2jmGQmjio/yT0aP++/HsUK6MBCxsoMoTxOtYWY47cfLT6kQE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Vboweo3o; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jBYTwpVt"
-Received: by mail-pj2-f13.google.com with SMTP id d9443c01a7336-2d747eb79f6so2766595ad.0
-        for <linux-serial@vger.kernel.org>; Wed, 16 Sep 2026 21:05:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789617934; x=1790222734; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=YtX/Qf6NK/20sK/bOaui84KkOiA6Sp6G7U7L/FiPWA0=;
-        b=jBYTwpVt5Gk2BmxBp86oAxG+yLbCOEbJDABiddOhM+yxobsuSaDzazf90TaAZQWTFi
-         tloJBuKMNcTgaEiJdxU1TVuUt+q7DQFO9WINLUbYK5yOFWZW0CzRrSYvXhIT+ah9pt+y
-         NMabFUABPCyvQrdIb8nqNQ12pCiOO5rlQbazjaOu9ATKx/zYPKJQmySpk8K3K+ZQ3sfW
-         2WsckDRlnckbFxcJ18lk0qGo6EI0ajJ26JKaMY7EiWJvEAqpUy8DoNOJtPjoHH+JssvW
-         HULUbOBgAfFwkY2HweNg8ZXCh9eK1JljaNyxpw78uWfJl05zN0rigQROlPHqb6DvLaiC
-         NKVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789617934; x=1790222734;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=YtX/Qf6NK/20sK/bOaui84KkOiA6Sp6G7U7L/FiPWA0=;
-        b=IE5OE8wasQoI5ksAwyoLX9J11MD+KQ3C6TjLdBoODfSpxMU60iieNdIfAIDhwKq+FH
-         1Bpq/CPajJoFa73eNTnPLqbD+DSDoRDJfdOvpTp2uj8OZCMEpdr2Mc8/3TAoAPgh6v3H
-         IbSM5H0unc68CQUgE+0xN4896dY37sJi2bPiuAp7oTPP8hWsN//sekTgvkQWLr9+ppw+
-         N7lKS8utC6IqdMdmEh3r6aicP4XsWHwpbMCpq8QqSySgsxEDCn/ZPj3Le9XrkqbXICFc
-         fRESJSV63HFN4nuaCe0c6DaF2SfuWvbCSZGMXcQetvLs7zswBTslCKEInD72F36vKl1z
-         GCag==
-X-Forwarded-Encrypted: i=1; AKwUvBzPZVoynyEX/pYN/IhP1Yv4ht84DCXlSjzm8BlYzZHs0M0F9g3dtf9cMy45z/eZ/tsEvGXR+4J/2mUxXMU=@vger.kernel.org
-X-Gm-Message-State: AFuF++nCvYij+HsgegG9SdwSr2pmtsH6IWsy02LsUL2kLIYX7ainAlkN
-	GVuEsCc4ZfC2/JrNEibeUg58rXyggPLODKzqL3D5XirLs+K5jG+V62zg
-X-Gm-Gg: AYBFou2t308/W97NEFeZCsLERWPnWZeR119OjpyrdGUBV595awAuJFFXsX2OJiNOex3
-	mXYIHBEbt6sOJmeHbmYWnBmooEQDD+qtogx96SxmtgnUz0fglxYGACdlwiPPE14yd7jEaBmDvv1
-	OUWaj0eP8A202VdLxz+KGrMt/Vr02yzQUgoMpczbQAupfGSiqhyP/HzsWLBeVHEluMeb3CZxcwb
-	xFwmnMDOJJ2QtovRG7QeqzcRJ5iueTQ+JNbdtp9eEiVhkBqXOksNLYVMJsDh5b05T411NQz/sJr
-	RtNrk4OPMwi4U1mfwgOl3CyVhtoXMyDxJnhKronrSczksmAm3/KRv+6rmQJMt9ix+h6DQhIOQY+
-	rP8W7VgeD7Zh1HX4Yyjs5QzJ0OTZOc1rL9RtraIXQQNdF3uuCR3aYoKBAn2qCQeO1/gR3x0Vym0
-	b1rlj6LJqXVGQjtP9SsBPjCFMTuYH7xjyQKMCdR56s7NZGoTE0tBQM+RRYVHq8jny4yitmwKzFX
-	wqFNcMSA77EW9du1aANZzR1+mw+ctqMihto6Q==
-X-Received: by 2002:a17:90b:4a51:b0:39d:ee20:1e28 with SMTP id 98e67ed59e1d1-39e1e510f73mr14802785a91.21.1789617934135;
-        Wed, 16 Sep 2026 21:05:34 -0700 (PDT)
-Received: from amd.ban-spse ([165.204.217.251])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-14395cacce6sm10195833c88.1.2026.09.16.21.05.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Sep 2026 21:05:33 -0700 (PDT)
-From: Malathi A <malathi.a2000@gmail.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-Cc: Malathi A <malathi.a2000@gmail.com>
-Subject: [PATCH v2] serial: 8250_uniphier: Use devm_clk_get_enabled()
-Date: Thu, 17 Sep 2026 04:05:09 +0000
-Message-ID: <20260917040511.103232-1-malathi.a2000@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Vboweo3o"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF86F1F00893;
+	Thu, 17 Sep 2026 04:11:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1789618291;
+	bh=xSKQIWAXdDqj+DNxN94mQC21wk+yJ2tqhiJpEXhBFsw=;
+	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
+	b=Vboweo3oU9rOLLPTJwjYMlo0CICNAhfLcxnNU0MzrggWNHM9WmToBA+Z+9h2EceSR
+	 eEh35Hqb3PeeOq+lNdnP8JlLTEdUI516T0fH6EtdBX0er73Y1BId6VzJ/QkG4vYJEY
+	 kapxMjEvaqCpp+pPOUvI4EaTsoiV7ArzY9kmwGp9TeWMwx+8xteTLp+Al6C+JexpmJ
+	 sp2B6jNizI0V3EWheglAJvs8tzi0vlbc5wtIszdEj/bpY6ycNhM5znsrCB7g9fHLYo
+	 iFs/J7YFDRFd1ouPJ4B/P4GB4gcDKCMYDxd+Zi48d8SdJvisO0mrCmeZucWjqojA8q
+	 ZEhiGvV0SswaA==
+From: sashiko-bot@kernel.org
+Subject: Re: [PATCH v2] serial: 8250_uniphier: Use devm_clk_get_enabled()
+Reply-To: sashiko-reviews@lists.linux.dev
+To: "Malathi A" <malathi.a2000@gmail.com>
+Cc: linux-serial@vger.kernel.org
+In-Reply-To: <20260917040511.103232-1-malathi.a2000@gmail.com>
+References: <20260917040511.103232-1-malathi.a2000@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 17 Sep 2026 04:11:31 +0000
+Message-Id: <20260917041131.BF86F1F00893@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-uniphier_uart_probe() enables priv->clk by hand and is then responsible
-for disabling it again on every error path. It misses one: when
-uart_read_port_properties() fails the function returns directly, leaving
-the clock prepared and enabled. The neighbouring path, taken when
-serial8250_register_8250_port() fails, does call clk_disable_unprepare(),
-which shows the leak is an oversight rather than intent.
+> uniphier_uart_probe() enables priv->clk by hand and is then responsible
+> for disabling it again on every error path. It misses one: when
+> uart_read_port_properties() fails the function returns directly, leaving
+> the clock prepared and enabled. The neighbouring path, taken when
+> serial8250_register_8250_port() fails, does call clk_disable_unprepare(),
+> which shows the leak is an oversight rather than intent.
+>=20
+> Rather than adding another manual unwind, switch to
+> devm_clk_get_enabled() so the clock is released by devres. That removes
+> the error path entirely, along with the explicit disables in the
+> register failure path and in uniphier_uart_remove().
+>=20
+> The clock is still disabled and re-enabled by hand across system sleep,
+> which stays balanced: only SET_SYSTEM_SLEEP_PM_OPS is used, so the
+> device cannot be unbound while suspended and devres always sees an
+> enabled clock at detach.
+>=20
+> Found by smatch:
+>=20
+>   drivers/tty/serial/8250/8250_uniphier.c:232 uniphier_uart_probe() warn:=
+ 'priv->clk' from clk_prepare_enable() not released on lines: 205.
+>=20
+> Fixes: 26e8349c0d76 ("serial: 8250_uniphier: Switch to use uart_read_port=
+_properties()")
+> Signed-off-by: Malathi A <malathi.a2000@gmail.com>
 
-Rather than adding another manual unwind, switch to
-devm_clk_get_enabled() so the clock is released by devres. That removes
-the error path entirely, along with the explicit disables in the
-register failure path and in uniphier_uart_remove().
+Sashiko has reviewed this patch and found no issues. It looks great!
 
-The clock is still disabled and re-enabled by hand across system sleep,
-which stays balanced: only SET_SYSTEM_SLEEP_PM_OPS is used, so the
-device cannot be unbound while suspended and devres always sees an
-enabled clock at detach.
-
-Found by smatch:
-
-  drivers/tty/serial/8250/8250_uniphier.c:232 uniphier_uart_probe() warn: 'priv->clk' from clk_prepare_enable() not released on lines: 205.
-
-Fixes: 26e8349c0d76 ("serial: 8250_uniphier: Switch to use uart_read_port_properties()")
-Signed-off-by: Malathi A <malathi.a2000@gmail.com>
----
-Changes in v2:
-- Use devm_clk_get_enabled() instead of adding a clk_disable_unprepare()
-  to the failing path, as suggested in review. This also lets the
-  explicit disables in the serial8250_register_8250_port() error path and
-  in uniphier_uart_remove() go away.
-- Reworded the commit message accordingly.
-
- drivers/tty/serial/8250/8250_uniphier.c | 10 ++--------
- 1 file changed, 2 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_uniphier.c b/drivers/tty/serial/8250/8250_uniphier.c
-index e3db60bf50c9..6fffac12277a 100644
---- a/drivers/tty/serial/8250/8250_uniphier.c
-+++ b/drivers/tty/serial/8250/8250_uniphier.c
-@@ -180,16 +180,12 @@ static int uniphier_uart_probe(struct platform_device *pdev)
- 
- 	memset(&up, 0, sizeof(up));
- 
--	priv->clk = devm_clk_get(dev, NULL);
-+	priv->clk = devm_clk_get_enabled(dev, NULL);
- 	if (IS_ERR(priv->clk)) {
--		dev_err(dev, "failed to get clock\n");
-+		dev_err(dev, "failed to get and enable clock\n");
- 		return PTR_ERR(priv->clk);
- 	}
- 
--	ret = clk_prepare_enable(priv->clk);
--	if (ret)
--		return ret;
--
- 	up.port.uartclk = clk_get_rate(priv->clk);
- 
- 	spin_lock_init(&priv->atomic_write_lock);
-@@ -222,7 +218,6 @@ static int uniphier_uart_probe(struct platform_device *pdev)
- 	ret = serial8250_register_8250_port(&up);
- 	if (ret < 0) {
- 		dev_err(dev, "failed to register 8250 port\n");
--		clk_disable_unprepare(priv->clk);
- 		return ret;
- 	}
- 	priv->line = ret;
-@@ -237,7 +232,6 @@ static void uniphier_uart_remove(struct platform_device *pdev)
- 	struct uniphier8250_priv *priv = platform_get_drvdata(pdev);
- 
- 	serial8250_unregister_port(priv->line);
--	clk_disable_unprepare(priv->clk);
- }
- 
- static int __maybe_unused uniphier_uart_suspend(struct device *dev)
--- 
-2.43.0
+--=20
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260917040511.1032=
+32-1-malathi.a2000@gmail.com?part=3D1
 
