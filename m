@@ -1,90 +1,91 @@
 Received: from mx0b-0002e601.pphosted.com (mx0b-0002e601.pphosted.com [148.163.154.28])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3830E3009F2;
-	Fri, 18 Sep 2026 09:24:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 560DA391513;
+	Fri, 18 Sep 2026 09:29:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=148.163.154.28
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789723448; cv=fail; b=b8gmjLbmYyha19T9D3RpPKeer4YlamJj+di6a3sLJuj8sdEMZmkX316nv+cIE3qQUOHx0wBbH6EBmj4Y3gRxSOaC9ptHFopxYQXLdjI9jDwogqH2pGbJOxn9hOljXxWuwG9zMJDVjwl7Q0XEfrI+8Mz6pKlv3zq2OY66kySyhD0=
+	t=1789723774; cv=fail; b=GUT4+R6vUbTAWTaqRSjCG5FYhdQT/GS1WfDFyIAWi0QYDg3IYdMXJG3Dl6WrPKfFq0tO1gdGoCOYx17TDipIIHgFWwl+HxNQrn7eu68eB2dnZQEmEqt+Fw/iejgwPMfhrUCTYx6gV36hlN+oSHqSTA2yGjotGCrkH3Ykys8mz94=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789723448; c=relaxed/simple;
-	bh=UEYSiLhVRCIE6e2/GDvOn8Xc9zgvF65wP1ZosIv9F7M=;
+	s=arc-20240116; t=1789723774; c=relaxed/simple;
+	bh=oGANuh2m+ivVurPsPYpIGg03fMSSG4jUncWKOkWzwkw=;
 	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=R7ME04Og9PkD99poYrC/cs42de6kGTtVNCV7zQdcmK/90ZJgF1810hIRcInrom6RgoPnl4H+mYQiELUYySH55YV9n5TkbSLrqSp8EhLQol4jWTnRCpmj2ngISCFJKgGPLP00016TuiGlYhz4QaQ9UAcYzd1Hya5r3JEOlGd5rYk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (2048-bit key) header.d=ti.com header.i=@ti.com header.b=MDNIQUKH; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=YkmyImNf; arc=fail smtp.client-ip=148.163.154.28
+	 In-Reply-To:Content-Type; b=ZS5Q7Si5vLVPAB2KPAzOmHRngGCL/AFMdDfNvRmv3Jqn47BUzBfSn8Ccfy5lj9N/kw6zZORWBYDnySrp4d3lAxSpGxM317Uvt0cveOpQ5ARTnq1WfK3K76VmpOQsSrDaRX9oyu46+07WwyvQShcEgK6aMtLOykr+UH9fkeAfTUA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (2048-bit key) header.d=ti.com header.i=@ti.com header.b=J8oIUMF7; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=RircnxOQ; arc=fail smtp.client-ip=148.163.154.28
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ti.com header.i=@ti.com header.b="MDNIQUKH";
-	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="YkmyImNf"
-Received: from pps.filterd (m0374956.ppops.net [127.0.0.1])
-	by mx0b-0002e601.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 68I7itFd3538809;
-	Fri, 18 Sep 2026 04:24:02 -0500
+	dkim=pass (2048-bit key) header.d=ti.com header.i=@ti.com header.b="J8oIUMF7";
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="RircnxOQ"
+Received: from pps.filterd (m0374955.ppops.net [127.0.0.1])
+	by mx0b-0002e601.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 68I74I7v3917794;
+	Fri, 18 Sep 2026 04:29:29 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com; h=cc
 	:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=
-	proofpoint-05-2026; bh=sEMyelgVdtiYO9rr7K1ETSN5WDlVQ5LSMWn2T1vDO
-	nM=; b=MDNIQUKHPvlOD+C18vNHfdrx/fwJIN+mAW1COBtDFv8lIujsm25JswCjW
-	YlEykNqfqHSp4JyMim381OxBwTRM240EvpCKBjZVgGw3Kj95LH6LbdY00AXa7Ila
-	AQLxUmPH6CT4B0tvXmlJ9T/uKeksR7geI3YA0rigzAOlAXoRdWrdVNtcpuRS2KD+
-	X9P4i+wLWaxpt+cOoiUDJhA8tRqQ6f+jB/d2LOJZQyJ9ynZYyyQz5QkVTBd5GASl
-	qQ5J+cctgRuR3cwPIo1luQynsyfDF9jLGB6cNkhk4rtwdsHKsd6Gtjjquvywfysj
-	WDVEJRtLx1rM3Z1ClhCuBl13a2dxw==
-Received: from co1pr03cu002.outbound.protection.outlook.com (mail-westus2azon11010050.outbound.protection.outlook.com [52.101.46.50])
-	by mx0b-0002e601.pphosted.com (PPS) with ESMTPS id 4gs16cggpa-1
+	proofpoint-05-2026; bh=WIxnhf1WwM7+IR+qIMFpRbOrnRbkdd24fA4WVVXfl
+	Sg=; b=J8oIUMF7bMwN8y3hd/eWsCe12adldrDEUPPhvP9cY7CgfLWpLTdDpH+t0
+	JpiXmljg3zYGmTA3+aDyykU0mA/o/yQ0S74ND3r8VeOTNP+8TX67jKtf6vdCDU3f
+	FR1mWz0LxH2RAattx51I0htCuO16nyQDejUUeyI98QVyGkSroC4zVrlStbxsoJ92
+	M2wRUlga0IZoG6QyoA1R017AcpnuCdGQn2kNOGxA3R26mYwexM18dWUzCyRzttPP
+	Twi5n4onCSe4evI0pzGq32xKk8e71Z017MkW8uOHRYo8nb7rl9zZpMKBo+qzicWe
+	AUicva4oahM8HAPfkAscIYNJSbx1w==
+Received: from sa9pr02cu001.outbound.protection.outlook.com (mail-southcentralusazon11013015.outbound.protection.outlook.com [40.93.196.15])
+	by mx0b-0002e601.pphosted.com (PPS) with ESMTPS id 4gs0k38qv8-1
 	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-	Fri, 18 Sep 2026 04:24:01 -0500 (CDT)
+	Fri, 18 Sep 2026 04:29:29 -0500 (CDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ZcgWuvAIGGRcrS+aHWdmXi6tCETONg6gENa0H64HZkGMNtpJDY50pT/3AyhirEJamz6DFJStEcccVke8oOiEXJPNsjZYGkBUzebupFGLtwWRh5HsAamLfLp7+nUf7lnTXMmLTu2cieFPp2MgOij+AZHS8+SYKLYZ+y+ASMRL5iekqiH8Mq3gXpyPY6se2kwKjB1MHwUVug1t+d6W6LyJH/4i7FJaSqmQ3KLy0+tZB70fM0MAynncQ76OWHMHe3p0y20NE5+wKIYoJCyhOHKhIxWiVgCvmYL0Dbi9PyA9p1YmPu6cp8LXl355b+XK33lm8kng7ytP8nO8lVWRQOUR3Q==
+ b=M62ptnFzNxfKqEv4xROaYFGCKCeY33u8oKM2LzCHe5vlugUz8AzMalbXeGsDYvJP1+vWNyTbskfc1fuN9h+jTWzDoLPKL3bl7xTx+k1XEQ6bPkPjDyXEkirY97DKYK6AmfEwsZ1ZEUWdDosZ+HLqe9Mn62YXp4hJltCwBDjrfD3MbFDhy70qwELKQrPrV3OYt7LWgGnPyeRR1UvMQetd82LWZaaEO3bAuCmQnKSQIyk0JqXC2CJlm+tIBcrxv7aUnGCw+rAe2XzGJiF1OA7MKswaUkNT3/3OYqj/si3UOIHGY8O1JnP9PW8WoL/J+Wf5NtWU5pNo3Oki0J7vv+akLw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sEMyelgVdtiYO9rr7K1ETSN5WDlVQ5LSMWn2T1vDOnM=;
- b=E8XhCJFH/ipIQBil0aB//TgwuBJzj8teN55aAbFeMMk1DoOC/tL98kiwPOkMNvQMWF+0u/TjJBfsY0u0WwU1WwLndsfxkJBnSlS/sIXyaewu7JNMejYIUhrsh1/Xq7rXV7EqxyGLgJg5gdV7GmRkyKq+HlCXOKjfjjULYNOOUnIeKhscH2Xfqa526DsZFvT1Ud2ct+H6b+sugm7ss3wkh+q1esiqUEHbskt/mSXYklzBgYhJ7hLDL87vDx3bzjAH2u0p6GFxorFJQBOWYXWXyYf4oAZ2ggb5MDBVekqDM2sVTdkfxpBcVdLEZ+Mw3d3WE9MK9zhGb2c/usu250+SKw==
+ bh=WIxnhf1WwM7+IR+qIMFpRbOrnRbkdd24fA4WVVXflSg=;
+ b=x/R5ud+lncxc+fhXjis14ZDXph9ZQfm01U5KKxAoPY92vhROTiGajDUgXp1mD+AgSeC0B2VU3dYfF4Y/KVZfIw8gcVwtQ73Mm6Pao3OYU1byjp5oNFD0N/l4TFh6WZP4YcRhhms4xfHTFRAAj1k7FH2R3gLejZGmRe4buMH3YD5C76DK0Z+K4GxJ0VCaXENOIIoXqWYBvHTGaWMdrWxRnrP6OvvHH7Lid830VVR1sGIM4erFJ1cKZ49w7h3zmyOHT7VE0yhhJMnpqK8SeaUk8R3GXfYvxBaoUcfwsGzFY0cE28+75Dlg+StJeKw3zUsAlr9eKomdnyfWmWJEKgDpUw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 198.47.21.195) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=ti.com;
- dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=ti.com;
- dkim=none (message not signed); arc=none (0)
+ 198.47.23.194) smtp.rcpttodomain=kernel.org smtp.mailfrom=ti.com; dmarc=pass
+ (p=quarantine sp=none pct=100) action=none header.from=ti.com; dkim=none
+ (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sEMyelgVdtiYO9rr7K1ETSN5WDlVQ5LSMWn2T1vDOnM=;
- b=YkmyImNfor0dmNRH+HZnyW4pKGr/1ISP5It6kvrWuAZZIop+5a/lDm6jkM9cO6chyhGiMCt4udh23CYIMaFOrq9swTWwaH/BsiTmFQaBxr9Bbz5LdlvL42cNVXaz91dVvajg497VIceFwj8T4Ecvx3YPPBI0kzUqqfYAAOuxJ4M=
-Received: from DS7P220CA0071.NAMP220.PROD.OUTLOOK.COM (2603:10b6:8:224::18) by
- CY5PR10MB5962.namprd10.prod.outlook.com (2603:10b6:930:2d::17) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.428.13; Fri, 18 Sep 2026 09:23:59 +0000
-Received: from DS3PEPF0000C37E.namprd04.prod.outlook.com
- (2603:10b6:8:224:cafe::aa) by DS7P220CA0071.outlook.office365.com
- (2603:10b6:8:224::18) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.428.12 via Frontend Transport; Fri,
- 18 Sep 2026 09:23:59 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 198.47.21.195)
+ bh=WIxnhf1WwM7+IR+qIMFpRbOrnRbkdd24fA4WVVXflSg=;
+ b=RircnxOQmoGrJ4o4zv2G+XPYQ+4m6J1adLphtnNNBxDbsJog5hwzUZQq9LpggYIn9ARvKF1dBbVUj/LMcpntqV8hPzd2IuAZ9uuS8Itp8qSHAeql6FsEOfWxnZRVun/zJDNeSYdX6NQoom7TYM6JOMu5wGo4I0tLCR7Ux62Xxl0=
+Received: from CY5PR18CA0023.namprd18.prod.outlook.com (2603:10b6:930:5::19)
+ by SA1PR10MB997652.namprd10.prod.outlook.com (2603:10b6:806:4b5::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.451.5; Fri, 18 Sep
+ 2026 09:29:26 +0000
+Received: from BN7PEPF0000009C.namprd04.prod.outlook.com
+ (2603:10b6:930:5:cafe::1f) by CY5PR18CA0023.outlook.office365.com
+ (2603:10b6:930:5::19) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.428.13 via Frontend Transport; Fri,
+ 18 Sep 2026 09:29:26 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 198.47.23.194)
  smtp.mailfrom=ti.com; dkim=none (message not signed) header.d=none;dmarc=pass
  action=none header.from=ti.com;
 Received-SPF: Pass (protection.outlook.com: domain of ti.com designates
- 198.47.21.195 as permitted sender) receiver=protection.outlook.com;
- client-ip=198.47.21.195; helo=flwvzet201.ext.ti.com; pr=C
-Received: from flwvzet201.ext.ti.com (198.47.21.195) by
- DS3PEPF0000C37E.mail.protection.outlook.com (10.167.23.8) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.451.8 via Frontend Transport; Fri, 18 Sep 2026 09:23:57 +0000
-Received: from DFLE206.ent.ti.com (10.64.6.64) by flwvzet201.ext.ti.com
- (10.248.192.32) with Microsoft SMTP Server (version=TLS1_2,
+ 198.47.23.194 as permitted sender) receiver=protection.outlook.com;
+ client-ip=198.47.23.194; helo=lewvzet200.ext.ti.com; pr=C
+Received: from lewvzet200.ext.ti.com (198.47.23.194) by
+ BN7PEPF0000009C.mail.protection.outlook.com (10.167.248.148) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.451.8 via Frontend Transport; Fri, 18 Sep 2026 09:29:25 +0000
+Received: from DLEE213.ent.ti.com (157.170.170.116) by lewvzet200.ext.ti.com
+ (10.4.14.103) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.45; Fri, 18 Sep
- 2026 04:23:27 -0500
-Received: from DFLE213.ent.ti.com (10.64.6.71) by DFLE206.ent.ti.com
- (10.64.6.64) with Microsoft SMTP Server (version=TLS1_2,
+ 2026 04:29:08 -0500
+Received: from DLEE206.ent.ti.com (157.170.170.90) by DLEE213.ent.ti.com
+ (157.170.170.116) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.45; Fri, 18 Sep
- 2026 04:23:27 -0500
-Received: from lelvem-mr05.itg.ti.com (10.180.75.9) by DFLE213.ent.ti.com
- (10.64.6.71) with Microsoft SMTP Server (version=TLS1_2,
+ 2026 04:29:07 -0500
+Received: from lelvem-mr05.itg.ti.com (10.180.75.9) by DLEE206.ent.ti.com
+ (157.170.170.90) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.45 via Frontend
- Transport; Fri, 18 Sep 2026 04:23:27 -0500
+ Transport; Fri, 18 Sep 2026 04:29:07 -0500
 Received: from [10.24.50.20] (moteen-ubuntu-desk.dhcp.ti.com [10.24.50.20])
-	by lelvem-mr05.itg.ti.com (8.18.1/8.18.1) with ESMTP id 68I9NNC41454391;
-	Fri, 18 Sep 2026 04:23:23 -0500
-Message-ID: <307c005e-9a37-41cc-871a-6167a54d3a37@ti.com>
-Date: Fri, 18 Sep 2026 14:53:22 +0530
+	by lelvem-mr05.itg.ti.com (8.18.1/8.18.1) with ESMTP id 68I9T5c61460608;
+	Fri, 18 Sep 2026 04:29:06 -0500
+Message-ID: <63d8e4b2-19d0-41d1-bb44-d7a5b9963790@ti.com>
+Date: Fri, 18 Sep 2026 14:59:05 +0530
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -92,146 +93,188 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/2] serial: 8250_dw: Add capability to skip empty FIFO
- read
-To: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        "Kumar,
- Udit" <u-kumar1@ti.com>
-CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, <krzk+dt@kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML
-	<linux-kernel@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>, <devicetree@vger.kernel.org>,
-        <gehariprasath@ti.com>, <vigneshr@ti.com>, <nm@ti.com>,
-        <a-limaye@ti.com>, <y-abhilashchandra@ti.com>
-References: <20260916085520.2259420-1-m-shah@ti.com>
- <20260916085520.2259420-3-m-shah@ti.com>
- <5fe0efdf-6d61-dba4-9703-269dfd68ae13@linux.intel.com>
- <5801b899-8090-4bff-b4e2-c3e8c97b0eb3@ti.com>
- <d82f9326-6a01-2903-a1b7-b1617ca85db9@linux.intel.com>
+Subject: Re: [PATCH 2/2] serial: 8250_dw: Add ti,tda54-uart quirk to skip
+ empty FIFO read
+To: <sashiko-reviews@lists.linux.dev>
+CC: <devicetree@vger.kernel.org>, <conor+dt@kernel.org>,
+        <linux-serial@vger.kernel.org>, <robh@kernel.org>
+References: <20260911092529.306082-1-m-shah@ti.com>
+ <20260911092529.306082-3-m-shah@ti.com>
+ <20260911094123.913011F000FF@smtp.kernel.org>
 Content-Language: en-US
 From: Moteen Shah <m-shah@ti.com>
-In-Reply-To: <d82f9326-6a01-2903-a1b7-b1617ca85db9@linux.intel.com>
+In-Reply-To: <20260911094123.913011F000FF@smtp.kernel.org>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS3PEPF0000C37E:EE_|CY5PR10MB5962:EE_
-X-MS-Office365-Filtering-Correlation-Id: e3c5b653-3efc-403a-762b-08df1566912d
+X-MS-TrafficTypeDiagnostic: BN7PEPF0000009C:EE_|SA1PR10MB997652:EE_
+X-MS-Office365-Filtering-Correlation-Id: 977e7f60-933d-4f7e-f215-08df156754de
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|36860700016|23010399003|1800799024|376014|10067099003|4143699003|6133799003|18002099003|22082099003|56012099006|5023799004;
+	BCL:0;ARA:13230040|23010399003|1800799024|82310400026|36860700016|376014|4143699003|56012099006|5023799004|10067099003|6133799003|18002099003|22082099003|13003099007;
 X-Microsoft-Antispam-Message-Info:
-	gBI6uqpRDDWM650vtGv/eKsfbJ4rGWf4KqOcXmbo/n+4xFxa5H6iE9+vfl2Hn5IYDNZyWbEuDd4iBdNNUjGtvCVkW+N/OIbujonbBP/xhRVlchcjX/leUCBPQL5IFcKF2csyo/Tv2RknEq5k5sNXhBSVUcU9Z2OWSN5srd+os6a0IMDRcXq3uJ5tSDDgCZL7z9dm8WlDXhySJT7AZt13zFulzEg4hnFTQo3X887kZG6OfEg38KaGmLLA0+kvxoJyrzzEd9un7qWAig5c1zCVxYXItffdaXr4bUl0KD4xI+DuYVEbtzNni5jVkKYlyryGmb4ztt5m8uULBmaIBiCy5s+I9+4WoI4A2J7uQcS0qfykUofp5D+7PGIU4X9LbJzYHi//pfFd/uz/ItOILa53ixIn2rQ7qhIkx2Y4x8zrzsXzLwYHCuY8eiVFtzlKtOA72TI3buJU7JV9g53panTNTxlOylyTfVIH46/b8TRJ09FDVy57lBDGBEW89ZgibLdW3nGA2qCDXbvSXK5t7ZtpwHBMKRzWIA9vWwlyEdqt764OXDCuKF5MTNovwhztP0nZiPLsnrnBht6TlCmCwb+GtBT2ERO8eU7obXYSyms9KyHGwhSg+Pzt0saMH0IqYUdY16dnxJJNl67zU1mXsK26bw==
+	n9p5qlUgs/9Yy0aEyw6BMDlGp0J758XGFJeEblcLFNv2efqHOsya4EDhvBulMKV2sDKtlhdahuCkux6JoRKm06ssDaJ8o/63hXVKkDRCNjgzvaJifUujUEClJhIV5A2yQ56YBKpSIqbEMTqxdm7DnL8OnG9Gb4addrwgUp6aX4zXB8FnKsdq3gij06iAqPVQNRm+tC9EwsAHDf2bB2nQd8QVMnzYI4U4kFeCiQ6iySvhvS0QRgb7zwlYIhBh1AcQQMi4UxtovlXx1SvRbSb/r4YNXrU8oB9wByv5ZWIbY1bQA4jb9lTj03bFWC6pV4537XHMQlgaDhJaaPr72Wp9JpaSP+J9Qik6OVLL/uNIk0unqU4lB5hrdoROPF5N+2/A4I9dxAhh/TT6nl859chG+LtvUSkIv3BKGXtlST5GmFi/BiqxhaF3M93YYXrEJUblEbxI92yK0SlFurKFhxA7iNh2zf3+NyD+Ij+MfQtsvaKibe94ePfiBu5CkOoj7MfhwnnOynZUqzceLE1CtvF64vpiLjCcJWgDWSG6QSwNwQt0rVzgdIxB75QeJKeYYNiWUkFuYASKfEFl8x5CtB9ScbS8NvK6ORvlxMUfB/CKRem4MMx3XFKHjtm9h9np6Y9lC+g8JVUPtZxQBIVACUytXneTD7MgmmUJyTjlg+X2l21zn+Hxs+Pl4A4hx679ZThiZsX6A3QoRUFmLoa21nAfuQ==
 X-Forefront-Antispam-Report:
-	CIP:198.47.21.195;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:flwvzet201.ext.ti.com;PTR:ErrorRetry;CAT:NONE;SFS:(13230040)(82310400026)(36860700016)(23010399003)(1800799024)(376014)(10067099003)(4143699003)(6133799003)(18002099003)(22082099003)(56012099006)(5023799004);DIR:OUT;SFP:1101;
+	CIP:198.47.23.194;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:lewvzet200.ext.ti.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(23010399003)(1800799024)(82310400026)(36860700016)(376014)(4143699003)(56012099006)(5023799004)(10067099003)(6133799003)(18002099003)(22082099003)(13003099007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	/pu7nsHJ+OZ7BuDjtrlPKk2GAaGlYstg0C9aQNJNtoL9YUvI4dn7nKjho3ZsNYz9M2oPwQVHcfNiE4zY7aJbyizurGhSZNRFjq2D51VuhioTvo3OdJmYGFBWen6XWULcMKHS5R7FBzGgxvDFP9bLqYA/8twJH2dOtaBPhQKWrhSNzskLCJpzm5a8knYv+SZN/XQEFAmvS59lE6N7aZeIkiIrajKsCtgX72xNCpwFbLxCPzsssm1n9UPQRpWDrQP8NQ6vG3pwFq37S+PglhEn0Gy9n0GicWeSOrSsNwQ7R2J99CnK6zeQmdreA4iJFRa8rmmchWhqY/Ggj2Jfi6j72/olYrmaoyJTURgJA+IQOjYZFnMzvOxLk1x5u5xcPaT11Ge+5wWJ38nKwCAihcymARBK95Px9d7Xxpa20gyb3H6Xqlh38AOAxVFVookErx0B
+	IwVpCKsq0FGNqESogvUA2aQGq6adBPOOuOTDudG8SIaQ0FUYax8lQkLU4DzF14WqZjpg78cy79B4UEKDC8AFA1jm5sHsaNGtzfflEcFwpKAe51ls8RsKVLrNM+lZjOSZ30/eAvNP6ibxsJYsTqyMN/l1rV/XAgy+bl158gueHI5YcVffi+vafOT9Wu1+MWgYOG8i3Zfyp1FyrWDUIkmkhnXop942It2OW68e6xZfCUPjeBNGgqS+mXKRryl2wlLCNdfwA2skMhp+873ewlraaVULDoqLDkoKMydBR+7fCTHq+rIRefJJ8RHlhg1R3Rs1nSS0tRlkYkGa94BI4Wgx3lpouN6/OFfQJFahmR3sjodUDZJQOT2GgDsBpY48GdpwdmDFcVpjJi3nfZGOjN4jcz/WrQ95gcxpd64Ilrl7T0Rga56weBOTAvfU7SHlQqLL
 X-Exchange-RoutingPolicyChecked:
-	AD3HVMIpTIqTqIAtU7RQSeB6mwuzm0Y2W1puewCcB8bqgfwiB9WKl3DRC/iDejW66iGQozZQVRgcVnSyXb/TMAdWbVILXHPbzMT8bjFNadJ/jPoCW0eFQGQOANXXQdsrYvukH3p0JUeH9D/lpv6HrUEeCzH8I+Z89oHcT077d0YDzgqakV40DopFuhRASGVX1Xx2ALj3EfWkOPE7RiogeW2joa7RtQOoYqM/cXFpClGSYE1h9GXdq89BgXer2Lmcz/NA80NBNCDMVwYxQH0Y50xUT7scoMjpN32bsJNbhtHoAwQWAbid6UImSIqp9O/qdlrMSWnBoq2erlLd3PcpYA==
+	xdX5g0RwbduPzzh1py8zJjbXM2wcWn2GC75p1ZQh5avUCRIcVbsCKZKQTRatXlMrVN3BY5YBpR7IqJ5IDl42O9FrAecovSbQoW/9lpjEh5GNq3nisnY9pjl8yUBN3dm0lFcMiDLOzs+cR3ZMtCZPaS/4VlDlQiWgrO51AkgkRdcDNcauANbVvUpO7Bz3BirC6scugKVD0gB058z0qYsJRvMI49Vb+aGaugGX/UaVkUbWhp6b7UmATVlP3BqP8C2dsTynwC81SBTPVl5kH17COhyjLtR0VOQ6IU3lcGcV8UtUDWB36N5y/X8TlZU3754EnO5LYHLNq3mZZhdLTIKWJw==
 X-OriginatorOrg: ti.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Sep 2026 09:23:57.5409
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Sep 2026 09:29:25.8478
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e3c5b653-3efc-403a-762b-08df1566912d
+X-MS-Exchange-CrossTenant-Network-Message-Id: 977e7f60-933d-4f7e-f215-08df156754de
 X-MS-Exchange-CrossTenant-Id: e5b49634-450b-4709-8abb-1e2b19b982b7
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=e5b49634-450b-4709-8abb-1e2b19b982b7;Ip=[198.47.21.195];Helo=[flwvzet201.ext.ti.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=e5b49634-450b-4709-8abb-1e2b19b982b7;Ip=[198.47.23.194];Helo=[lewvzet200.ext.ti.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	DS3PEPF0000C37E.namprd04.prod.outlook.com
+	BN7PEPF0000009C.namprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR10MB5962
-X-Proofpoint-GUID: 20dHoPBeBhZnuBBe4KCHkWw9ULOa0WTa
-X-Proofpoint-Spam-Info: AW1haW4tMjYwOTE4MDEyOSBTYWx0ZWRfX1doM/ONyGFvL
- N9gxzNldDib067T62EX54uxDyTVcloTV0NstWZt6Hoq9Eofsikmr0GM7nKPxkjM+J+hpCXgGxma
- 61YSTgaSjGRELvvKESQ034TJB0BpbkI=
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTE4MDEyOSBTYWx0ZWRfX9EFtnqRTwcyy
- qcRA5Jp2TRRD1+D+S6gJESmuAQ0TVQkofY7dX2t2dxaLhDZbvZngIruo6qITK943uhX8Fk1fRAL
- u3EgdvlthUKUPFcdkqk4st7QqXNvvuqfwIAx4CFycE+iGS5CfNxiOCKcvVR30Mh5aqyWsSXyuSL
- Ns9HQe+Cz5rpp/CK3f3+8l7UkekCFEvecnBfMoVbPNpNRe75lheP/Ulve/x0dkq8Y/rapcmBIyF
- 4/Ou9eqmYFJPrSFJ24qdS3OfoZW3MIu4PZd9O8c/DDE0F/+uY7/tVHkajDxjdQwADUyLrWLWfxd
- blTXaKj2fC2YHm3fFH4vi5Qlnid3cQECdFnS0qAcoMxlW9PlvG3jkUPMRLuC8LKIlw6YPtSrcMU
- DlP38tzHLk9FbDEOauB497K3Se/jE98NmhTLDjKv13FR62VcfgUC+2xkIEKBH4/HcX8ISkZm5Qa
- VtC3SmEhM81W5/dhx6Q==
-X-Authority-Analysis: v=2.4 cv=cKh1IVeN c=1 sm=1 tr=0 ts=6aad0331 cx=c_pps
- a=MMVmnpyRbxvAcRc6a9dgEg==:117 a=tJyPKKxUohctrY4NYmUjkA==:17
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR10MB997652
+X-Proofpoint-Spam-Info: AW1haW4tMjYwOTE4MDEzMCBTYWx0ZWRfX//9LaWJcdzMb
+ FVYaVcd+ddggz5urfkyzqZFwEva9Ts1FfV/73fqIy9AUVjiJ0AYiVhtsxVE4HP4EXuDWsY0GiRZ
+ NenaYL8c//jFOBTsd7I1hXucfyH1OUw=
+X-Authority-Analysis: v=2.4 cv=K6S3jCWI c=1 sm=1 tr=0 ts=6aad0479 cx=c_pps
+ a=KH9ZsF1Q5Y6vOSsawDVSsw==:117 a=WotqVVQAdb04rnGuttW3Kw==:17
  a=6eWqkTHjU83fiwn7nKZWdM+Sl24=:19 a=IkcTkHD0fZMA:10 a=VdqzKS8jKosA:10
- a=V5UXEbMT0ywA:10 a=VkNPw1HP01LnGYTKEx00:22 a=Z8NIEmU8O1QQgoT56wFK:22
- a=jwouBfj2j3NM8CExmVVE:22 a=VwQbUJbxAAAA:8 a=TxhyHGSeAAAA:8 a=sozttTNsAAAA:8
- a=y5ittif9tQIw1IVr7QMA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=s63m1ICgrNkA:10 a=V5UXEbMT0ywA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=Z8NIEmU8O1QQgoT56wFK:22 a=fPAWb5peG099m5CrUpKH:22 a=VwQbUJbxAAAA:8
+ a=TxhyHGSeAAAA:8 a=sozttTNsAAAA:8 a=TISPNgGIdREmF_lVC00A:9 a=QEXdDO2ut3YA:10
  a=VRTRSrWG77IPp_BSX07q:22
-X-Proofpoint-ORIG-GUID: 20dHoPBeBhZnuBBe4KCHkWw9ULOa0WTa
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTE4MDEzMCBTYWx0ZWRfXyHS68U2RICVZ
+ TCD6FINgqUOMHMcq+YifiJqh9tuDOvPwkKHuKN7u+6br+0qBU98ZkkE8VxS9hlHJqkNbZTHOml0
+ gY6JbfzsJbM0jfsVYxsZSfjYUwazlFHB9/NVq0Eg3RZ1CcQaTIq5RyX8tfXoZf+saU5FiWPt0J+
+ D3WrCNwwIzzbbZyLziwXATHobjXNShQJc7OukRcXsglK7yq9ahc5ORE70+lPRzQ53yBe6orD5G9
+ yGklRvWYo6B9Nb1wqmRf83ApfoczamvzxITvVzOly6hEGCdbmX/LAhkLpMNLTeu8r8L4g27ZKDX
+ sB/DlmJNtLdm3xRVDiFVLvBnk46G6WxoZvTYCnb+V8b/y9W6bFibgmvyION0lp2cVc5XY77dA1a
+ UCEzZ0XCM04bXGCgtcl/3Tqo4bzNWqw/EZqhC1QZFSyzrf90wfoc6Gh+SX1MqgFjl4H0zVe/WGS
+ P6vxCF5oxBe+IjVpiEw==
+X-Proofpoint-GUID: CzqHRmwode5xHCpnmWJYHRu3_uzZeZ5d
+X-Proofpoint-ORIG-GUID: CzqHRmwode5xHCpnmWJYHRu3_uzZeZ5d
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-09-18_02,2026-09-16_02,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 impostorscore=0 bulkscore=0 lowpriorityscore=0
- phishscore=0 clxscore=1015 spamscore=0 adultscore=0 suspectscore=0
- malwarescore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ malwarescore=0 suspectscore=0 priorityscore=1501 bulkscore=0
+ lowpriorityscore=0 phishscore=0 clxscore=1011 spamscore=0 impostorscore=0
+ adultscore=0 classifier=typeunknown authscore=0 authtc= authcc=
  route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2609040000
- definitions=main-2609180129
+ definitions=main-2609180130
 
-Hey Ilpo,
 
-On 17/09/26 15:10, Ilpo Järvinen wrote:
-> On Wed, 16 Sep 2026, Kumar, Udit wrote:
->> On 9/16/2026 4:22 PM, Ilpo Järvinen wrote:
->>> On Wed, 16 Sep 2026, Moteen Shah wrote:
->>>
->>>> dw8250_handle_irq() does a bogus RX read on RX_TIMEOUT with no data
->>>> present, to avoid an interrupt storm. The UART core also performs
->>>> unconditional reads on the empty FIFO during startup and shutdown
->>>> of the port. On the IP version used in TDA54, that interrupt storm
->>>> no longer occurs, but reading an empty FIFO instead triggers a data
->>>> abort.
->>>>
->>>> Add a new capability to guard against the empty FIFO reads, avoiding
->>>> the data aborts.
->>>>
->>>> Signed-off-by: Moteen Shah <m-shah@ti.com>
->>>> ---
->>>>   drivers/tty/serial/8250/8250.h      |  1 +
->>>>   drivers/tty/serial/8250/8250_dw.c   | 16 +++++++++++++++-
->>>>   drivers/tty/serial/8250/8250_port.c | 12 +++++++++---
->>>>   3 files changed, 25 insertions(+), 4 deletions(-)
->>>>
->>>> diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
->>>> index 77fe0588fd6b..45e13c3a8c14 100644
->>>> --- a/drivers/tty/serial/8250/8250.h
->>>> +++ b/drivers/tty/serial/8250/8250.h
->>>> @@ -86,6 +86,7 @@ struct serial8250_config {
->>>>   					 * STOP PARITY EPAR SPAR WLEN5 WLEN6
->>>>   					 */
->>>>   #define UART_CAP_NOTEMT	BIT(18)	/* UART without interrupt on TEMT available */
->>>> +#define UART_CAP_RXFIFO_EMPTY_READ	BIT(19) /* UART needs LSR_DR check before RX read (TDA54) */
->>> IMO, this define naming contradicts with the comment because you
->>> effectively say "capable of reading Rx while receive buffer is empty", not
->>> that it needs DR check before issuing that read on buffer (~ named exactly
->>> opposite of the actual meaning it is being used in the code).
->>>
->> I echo your comments; the naming should reflect that the IP does not
->> allow reading an empty FIFO.
-> I now recalled we've also the pending RBR -> SRBR change:
+On 11/09/26 15:11, sashiko-bot@kernel.org wrote:
+> Thank you for your contribution! Sashiko AI review found 2 potential issue(s) to consider:
 >
-> https://lore.kernel.org/linux-serial/20260908141524.20302-1-yang.yicong@picoheart.com/#t
+> New issues:
+> - [High] The quirk avoids reading an empty FIFO in the IRQ handler, but generic 8250 core code performs unconditional empty FIFO reads during port startup and shutdown, which will still trigger a data abort on this hardware.
 >
-> I wonder if a similar thing would help in this case as well?
+> Pre-existing issues:
+> - [High] pm_runtime_enable() is called after serial port registration, violating callback timing rules.
+> --
 >
-> I understand this patch covers more ground than the SRBR patch but can the
-> IP used in this case read SRBR without aborting?
+> commit 31fb31567ebe4c6e4b9eb7b2826e35722f3e46f5
+> Author: Moteen Shah <m-shah@ti.com>
+> serial: 8250_dw: Add ti,tda54-uart quirk to skip empty FIFO read
+>
+> This commit adds a quirk to the 8250_dw driver for the ti,tda54-uart. The
+> quirk skips an empty FIFO read during an RX_TIMEOUT interrupt condition. This
+> is intended to avoid triggering a data abort on the TDA54 IP, which crashes
+> when reading an empty FIFO.
+>
+>> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+>> index 51d026f20825a..f97cc3dfbab4a 100644
+>> --- a/drivers/tty/serial/8250/8250_dw.c
+>> +++ b/drivers/tty/serial/8250/8250_dw.c
+> [ ... ]
+>
+>> @@ -436,7 +437,7 @@ static int dw8250_handle_irq(struct uart_port *p)
+>>   	 * This problem has only been observed so far when not in DMA mode
+>>   	 * so we limit the workaround only to non-DMA mode.
+>>   	 */
+>> -	if (!up->dma && rx_timeout) {
+>> +	if (!(quirks & DW_UART_QUIRK_SKIP_RX_TIMEOUT_READ) && !up->dma && rx_timeout) {
+> [Severity: High]
+> The quirk avoids reading an empty FIFO in the IRQ handler, but will this
+> fully protect the hardware from data aborts?
+>
+> The generic 8250 core code performs unconditional empty FIFO reads during
+> port startup and shutdown. For example, serial8250_clear_interrupts()
+> unconditionally reads UART_RX, and serial8250_do_shutdown() does the same
+> immediately after clearing FIFOs.
+>
+> Won't opening or closing the TTY device still trigger a data abort on the
+> TDA54 IP due to these core empty FIFO reads?
 
 
-The IP that TDA54 uses does not supports the shadow registers, hence we 
-will have to go through the quirk/capability path.
+Actually this issue shouldn't come up
+
+"reading an empty FIFO (by RBR) will be fine when the fifo is disabled"[0].
+
+In the case of clear_interrupts the issue is fixed by the following 
+commit 7f8fdd4dbffc ("serial: 8250: fix panic due to PSLVERR")
+
+I will send another version of this V1 after pulling in the changes from [1]
+
+[0] 
+https://lore.kernel.org/linux-serial/ab256e4a-a9cc-410e-b889-f75fb01e77c7@picoheart.com/
+[1] 
+https://lore.kernel.org/linux-serial/20260908141524.20302-1-yang.yicong@picoheart.com/
+
 
 Regards,
 Moteen
 
 >
->> At the same time, I am thinking, reading the FIFO based on the
->> UART_LSR_DR bit being set in the serial8250_clear_interrupts and
->> serial8250_do_shutdown functions.
->> Do you see any side effects to this?
+>>   		status = serial_lsr_in(up);
+>>   
+>>   		if (!(status & (UART_LSR_DR | UART_LSR_BI)))
+> [ ... ]
 >
+>> @@ -888,6 +889,11 @@ static const struct dw8250_platform_data dw8250_ultrarisc_dp1000_data = {
+>>   	.quirks = DW_UART_QUIRK_CPR_VALUE,
+>>   };
+>>   
+>> +static const struct dw8250_platform_data dw8250_tda54 = {
+>> +	.usr_reg = DW_UART_USR,
+>> +	.quirks = DW_UART_QUIRK_SKIP_RX_TIMEOUT_READ,
+>> +};
+>> +
+>>   static const struct of_device_id dw8250_of_match[] = {
+>>   	{ .compatible = "snps,dw-apb-uart", .data = &dw8250_dw_apb },
+>>   	{ .compatible = "cavium,octeon-3860-uart", .data = &dw8250_octeon_3860_data },
+>> @@ -895,6 +901,7 @@ static const struct of_device_id dw8250_of_match[] = {
+>>   	{ .compatible = "renesas,rzn1-uart", .data = &dw8250_renesas_rzn1_data },
+>>   	{ .compatible = "sophgo,sg2044-uart", .data = &dw8250_skip_set_rate_data },
+>>   	{ .compatible = "starfive,jh7100-uart", .data = &dw8250_skip_set_rate_data },
+>> +	{ .compatible = "ti,tda54-uart", .data = &dw8250_tda54 },
+> [Severity: High]
+> This is a pre-existing issue, but does dw8250_probe() violate the runtime PM
+> callback timing rules, which could cause a boot deadlock when this new
+> compatible device is probed?
 >
+> dw8250_probe() calls serial8250_register_8250_port(), which synchronously
+> invokes the dw8250_do_pm() callback. This happens before pm_runtime_enable()
+> is called at the end of the probe function:
+>
+> drivers/tty/serial/8250/8250_dw.c:dw8250_probe() {
+> 	...
+> 	data->data.line = serial8250_register_8250_port(up);
+> 	if (data->data.line < 0)
+> 		return data->data.line;
+>
+> 	platform_set_drvdata(pdev, data);
+>
+> 	pm_runtime_enable(dev);
+> 	...
+> }
+>
+> Since dw8250_do_pm() uses pm_runtime_get_sync() before runtime PM is enabled,
+> could this cause a circular dependency and hung worker threads during device
+> registration?
+>
+>>   	{ .compatible = "ultrarisc,dp1000-uart", .data = &dw8250_ultrarisc_dp1000_data },
+>>   	{ /* Sentinel */ }
+>>   };
