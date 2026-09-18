@@ -1,227 +1,167 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from DUZPR83CU001.outbound.protection.outlook.com (mail-northeuropeazon11012051.outbound.protection.outlook.com [52.101.66.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 377864F68A8
-	for <linux-serial@vger.kernel.org>; Fri, 18 Sep 2026 13:28:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789738129; cv=none; b=JYCUVFndsON1xr+0DtXtmUS5FV+poLVyhgHh23SVo+DXTScUSoj44DY7X9deYGyNti0h70Fc5atHIlA8XTFc+CaiFe4n8tCf3Wwmc4dWNtkLxjPiJQ5g2qfo6IP660UBfDnxBXT9DSzNxCJUVYBvixf8nKqWTAwQfscUBoJ7sbw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789738129; c=relaxed/simple;
-	bh=0mqNrxShipiFICcXr98YX9o1uYjyfgPLNyYCaKheHwQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=t+i0on0aU/xChgkW1dtnoA5YEG79jBed0Ro1TRc+DI+8QY05LvGKv52kuGrMZMgL9Xs1gfBF8brcZhm3aMHFSvkxiGPrG9veqrLZ4x1k7keTo5NeWuLm2XIXloK9KuyaXJKRMdZSnMWSqW6HdM39UtduYYoZzZBDxODnNpUVB4w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=PqxwKVkL; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=Kvf90XTu; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB1444FE2D5;
+	Fri, 18 Sep 2026 14:21:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.66.51
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1789741277; cv=fail; b=BIIr+nuCpjl7HreZJPw/nH+wx3odCfQqooGtSB1Yu60VuHuh5qGEiMJLcLTcGtCWTRuXB6pRIVvBErGESAvp7t32wBB3Mr/x/Fu7UfB6BckznbyB40DrGxeQjo8+VCpkAP7i0PmkRipUskBENjTfUp0Z3kx3ddLCCbbds42HPs0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1789741277; c=relaxed/simple;
+	bh=FBRjRFtTBPawkvahLb2KbZudhv/rSQ1Tn43YP4AaPj8=;
+	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=jR0r1C5tHMj31/G3Ho3Yez3GiZUinJ0WS4IUJtgv2xaTTq8Xp/ywDwYQhVm3Ke8jLArweE6awTe0JMs2g7AD0JIzXOnGe4FlZK55RoDh82cryfAc/sXE/as7lQ2sUoHrkt7BBK2HIw8zwc8XjF+ArTZC0AuUAKQOLka0su+0CNQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com; spf=pass smtp.mailfrom=oss.nxp.com; dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b=shcEyYmj; arc=fail smtp.client-ip=52.101.66.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="PqxwKVkL";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="Kvf90XTu"
-Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 68IDOoZv101125
-	for <linux-serial@vger.kernel.org>; Fri, 18 Sep 2026 13:28:46 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	xL2YkZSER6VuNxGb1EqLgbvAGw0ENoWXZv8k8oaK/BQ=; b=PqxwKVkL1H8AIHZH
-	amJco1cZ3bnsry+4VI2T1nrvGDyupOpfZBJbzd/3sJA6aZwbfN0K9dtCwtKjOT7L
-	yg6cbyCD+o8W3eipf+Ywq0kJ/yeP97BKTqmahX+K1qJNsqajnrkKt4zqd3w/6l56
-	AvF+iVc840AKKl8+CxTmF37hFXapZrjXMIkKnRn0biDY2+ZnEHUfJZ0MaiqlpUt7
-	OVxM3cpH87yTPRxiMoRBMutdg+OtfhzqAkXxVAhIC5+4drQtQdLNsAs9h+tX6MJP
-	TDGuvcyeih/Yny3NqwNaO20aI0zPtKWYinlJIM2y0JTswIBTp4/2Gp3LgBZ1FAFP
-	c+yxCg==
-Received: from mail-pg1-f200.google.com (mail-pg1-f200.google.com [209.85.215.200])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4grq2kur5w-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-serial@vger.kernel.org>; Fri, 18 Sep 2026 13:28:45 +0000 (GMT)
-Received: by mail-pg1-f200.google.com with SMTP id 41be03b00d2f7-cc42a07d04aso680274a12.1
-        for <linux-serial@vger.kernel.org>; Fri, 18 Sep 2026 06:28:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1789738120; x=1790342920; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=xL2YkZSER6VuNxGb1EqLgbvAGw0ENoWXZv8k8oaK/BQ=;
-        b=Kvf90XTuM9b+hOlQBrsm0NQ+EvisChD52l+q/7LUEx9Ca+dxT5Yf+/lwd0L56XpVuO
-         JJMWftXURwtMAn9dlks7wKjlIBjhM5PO+7fS/CAAmztSsUKhhKIvxKV0pSfvHmPMCgb3
-         3nVkVVg4vdLWTKRqXEo/zA9QSro5WwS7M3Qr62Iurwjj+lCzgiQjtMHixDeKwytG3oYe
-         vG5OiEqMAZY+jOBJgSspo2w2WaLi9Ilc2FQopnwh442y6lgMT9AGKri3DFaC6vaXl5ub
-         XbXISpgVEq7WOu6pYU8z0g4S9T43Q9+czTtSLsYyeN3/l6kfZWH+bgnKoE0AQuKo1L0b
-         ZpXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789738120; x=1790342920;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=xL2YkZSER6VuNxGb1EqLgbvAGw0ENoWXZv8k8oaK/BQ=;
-        b=qKZAoaY9WnFWFfRad+uOeS2PebG/GGmRbTEI6189QIjGdvNP6I3elhPLr0YKIiMx3y
-         pkabdD/9mGmFOadlJMXyGCeLSa7id0IlhEIkv1YxPh2ZBBIvlV5R4/o025pwGcju05NZ
-         pFCofIGDXOIZ07ZPbmvIJPS9+EJ25rzrIX2KUHB0sSW95GwSUF0/HKhF2YVxKQT/Uxly
-         jAEnyIjH+X6IZOoITGxt/grH2lExUYqRXPTTDLAO3ARybJ8P7SAtNe0jldNiRd3l6dsC
-         SEN3a4dA3+/OHrRtK2ooOoueNWhRP8LHtIgRmaJzP72FPkqs23KjSg3bxYufuR39zNTr
-         L7XQ==
-X-Forwarded-Encrypted: i=1; AKwUvBwLwxtMsO8jL8M69CkNdZ91nPjglhaqdVgxzB2GP6je8soYCujo+6oYcfFrJbw1ICB2dJwjcK1FqJy5I9o=@vger.kernel.org
-X-Gm-Message-State: AFuF++kOPF3A1N/S11f1nfUbGBWmqLJ366dAPu/hcM1PftTrAdq3e0FA
-	AaF65cewaZuT64tKw/QA0gz4oTFuFIEqZUKNKCNTOsiZfWu8PdGI0yjJ3X0mhw8ZH5BTMQA9sL9
-	Z8M0wFlmx4GmIRLqCQyhdYmI7fF2Rbwh/gCD93Kli7eYfgsRz3wPTrzvdFv1dsnLMIXE=
-X-Gm-Gg: AYBFou1MwhAFmdXbWtLe4tqapuZVqHB5KKkCLMMTxEaEdxYehPe9Jj2sAu6ZGoy4fD0
-	93rROycTt4/LOYPxF6b2APQonWGmlAcM1rY3zKosrnKvd/kEFfcV4w0ZlAMyjuXEjFzV8WZhlzZ
-	QOhvQrQtrVk80LmpM60Mhe/p54z7u8v9rCO/B/rnJSNXWTr8w8qke5HyUDevEu9ybsoy1LioSo5
-	PtOKFYp0WVa1E4NQM/dWNsgGJTi8omcEjv48OvlbSQaCT3RFR8BHeo7vchcPI5qfgz6osbqiakp
-	5ObM4/kguRahPUri1WEcbPDPfNp63K4gZrsgUGdoNFb897D7TiRrzDKEeVTXgxUfhIVlt2abQ3/
-	8XxSeu/8wbl8u6+Qi5PNAZcnpNJLwjQw=
-X-Received: by 2002:a05:6a20:3d8d:b0:3da:6bdd:2308 with SMTP id adf61e73a8af0-3dd8c4ff25dmr5563114637.18.1789738119775;
-        Fri, 18 Sep 2026 06:28:39 -0700 (PDT)
-X-Received: by 2002:a05:6a20:3d8d:b0:3da:6bdd:2308 with SMTP id adf61e73a8af0-3dd8c4ff25dmr5563041637.18.1789738119076;
-        Fri, 18 Sep 2026 06:28:39 -0700 (PDT)
-Received: from [192.168.0.8] ([49.204.107.98])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-cc5c50c7df7sm940022a12.19.2026.09.18.06.28.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 18 Sep 2026 06:28:38 -0700 (PDT)
-Message-ID: <54d820a2-5fe8-49e0-bcfd-e2a7bf4df7c1@oss.qualcomm.com>
-Date: Fri, 18 Sep 2026 18:58:34 +0530
+	dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b="shcEyYmj"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=vXxbMWgPRa2qfxm115dhZP8Ul2rI7wMkhVoSAK1DwJ024va/gQ0K8aHm00aUE81Xi7q5HtnJjN6RZOR2+u5GXBkos4g24f8jlYM3yAlqIoIkWo/SCgZ1HyrEinzgykY1PYv+lmguv8/0qBA8FZahlzRm/1L2O8UQ2soY8BKlGZAin+IREDXrlGx3pkfa292quHK2VoD5vFt8BP2JKqhYcAkxDTRiniEk/UJUVKvmnmwNGYPjwKLUSJP6XyAExu3r+Ltq2BsIo/pT4QyOpoEX7YrAk0onZNsHrNCsjptl/4QeTrWfF7YQe1goqPM7cSDl43serL0TrNpG8J32VF0lGQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=1wNuHPtm4JuuIr3zjQAcbbirUuSbdXgYbfwlndLXnRQ=;
+ b=l3dExR/Vui9OL3LAcsBbjSOc/4jc/DMLEUApwQ+AcOnqns021EP6dQ4TPCRmGgA0xmriS4qUh+dO1yc7lujsRelALyNEJoJ4nVSMzJQR7/HbK9sgoLbQzjjKHJFFiJE9Bs5J2DzWyIi+8TDgKXxAYScUPPt+bkHm5Y1ewclhE8C/rBS0OXBf6lxdSboUJa+bgw1XMiDVGuufs4+YjMXM/S1VDJy6b5xLP21risfKioVYUcvzAtTurVBASdY/7NN4FWEw1Rg0TIsxJcmjOufuNAXO+QhkpjB88krQN2sNLMiH4h9kH+fSRuNjNrYFwUwUmn9mSOJaX/pi+aFkAce1cQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector1-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1wNuHPtm4JuuIr3zjQAcbbirUuSbdXgYbfwlndLXnRQ=;
+ b=shcEyYmjIOofQTL/e+kzITm+v6tBQP0TMQE1i/N3h4l/kMpvsKeISpyazEjCM3nmADUtq6qXotZmGPfrSR8oaRVjAhdaw+dCg01ZiN9loeEXFlS5HeM30tvvHbXqkKmgf/c6HFyzzNo9LYXtFifdJPPpzXBzdYoH7TfGftXcJuDjNZNTK/spdEpUOetRkIiHpmAXxw5jXN9++8Z9c2W/M07ZH9BN55+MBFHl0NxvrkxEanDW1rN6RZY4R3SbNdq5lMrSAeVIX1gvRwMOPK0u7JMC93peJ3YUTjOaAH0kHn4um+Ek3D6gPkRs+0JC5aTM2PS2RQaRqauXPxgnzKq55A==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from AM8PR04MB7874.eurprd04.prod.outlook.com (2603:10a6:20b:24d::9)
+ by GVXPR04MB10069.eurprd04.prod.outlook.com (2603:10a6:150:121::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.428.13; Fri, 18 Sep
+ 2026 14:21:10 +0000
+Received: from AM8PR04MB7874.eurprd04.prod.outlook.com
+ ([fe80::ac38:1699:6f18:c5d9]) by AM8PR04MB7874.eurprd04.prod.outlook.com
+ ([fe80::ac38:1699:6f18:c5d9%6]) with mapi id 15.21.0428.011; Fri, 18 Sep 2026
+ 14:21:10 +0000
+From: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-kernel@vger.kernel.org,
+	Peng Fan <peng.fan@nxp.com>,
+	linux-serial@vger.kernel.org
+Subject: [PATCH] tty: use assign_bit() where applicable
+Date: Fri, 18 Sep 2026 22:18:41 +0800
+Message-ID: <20260918141842.3023147-1-peng.fan@oss.nxp.com>
+X-Mailer: git-send-email 2.51.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SG2P153CA0012.APCP153.PROD.OUTLOOK.COM (2603:1096::22) To
+ AM8PR04MB7874.eurprd04.prod.outlook.com (2603:10a6:20b:24d::9)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: qcom-geni: power the console back up on system
- resume
-To: david@ixit.cz, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
-        Abel Vesa <abel.vesa@oss.qualcomm.com>
-Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-References: <20260918-qcom-geni-pm-v1-1-cb587e215607@ixit.cz>
-Content-Language: en-US
-From: Praveen Talari <praveen.talari@oss.qualcomm.com>
-In-Reply-To: <20260918-qcom-geni-pm-v1-1-cb587e215607@ixit.cz>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTE4MDE5MCBTYWx0ZWRfX/YaZ96/faVWi
- ix6Si5zSUK0fEjI303HL+mDuZemd34hXfHmuMYFeMe/xw8UwDl8aRu2VEdp3LOWQrBBg7Y/9uGv
- OxoX8Yy4qzprm0Y2c4bCMAoxDmj8Vj4X/CojjFTTxq7sN//3Dff5WwFAbDtUJkgHGxjHDZU6np4
- GggdEqVTSoJChOzD5sivFkG8lqHB63lhGiTOHcaWegNYGu1eB+Z4IcEnCwPBBaNwUO+C7UTjIXU
- KHE9QCK2mc33ApYQXbkQKJhV0lAFM/MaqIvO0qWk3L0IZzg2PmxyHe0WY4Us1vjKl+nUh7R+6tq
- hiJKdLrJQt0ce85XSe6S280rcKV3YI6TKPeB7InDUUJgT/f/rnFLwBt8Pkn9aXpPBLKacPqmaPd
- lVvQzT3tSGU/s32j1UUKQzcRuAond17MBRta8Pygu6YG9QOQY+C0d0YJdnBkXpM6HTTl0MidXxC
- RW9YNBTPlK5MrChPgQw==
-X-Proofpoint-GUID: GAyATq4CKOaBhm82egtHOUmscxeUiXeJ
-X-Authority-Analysis: v=2.4 cv=bcD+w+PB c=1 sm=1 tr=0 ts=6aad3c8d cx=c_pps
- a=oF/VQ+ItUULfLr/lQ2/icg==:117 a=iAbW5UDHuEYo0+mR4LaZEw==:17
- a=IkcTkHD0fZMA:10 a=VdqzKS8jKosA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yx91gb_oNiZeI1HMLzn7:22
- a=qMlWYKLyUHetfa4BSj8A:9 a=QEXdDO2ut3YA:10 a=3WC7DwWrALyhR5TkjVHa:22
-X-Proofpoint-Spam-Info: AW1haW4tMjYwOTE4MDE5MCBTYWx0ZWRfX9NYvSOPN7TW1
- kfsdUUxsX6VZntgyNz/G92a2ZCZKxrtxpmJMlE2b/e3uH5PBIhhfdh3p/SOMrp8FNcceScwgdUQ
- 7W0jusBRPWgZtlFX2UvzcZj3d/pLcy0=
-X-Proofpoint-ORIG-GUID: GAyATq4CKOaBhm82egtHOUmscxeUiXeJ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-09-18_04,2026-09-16_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- spamscore=0 clxscore=1015 adultscore=0 suspectscore=0 priorityscore=1501
- bulkscore=0 phishscore=0 impostorscore=0 lowpriorityscore=0 malwarescore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2609040000 definitions=main-2609180190
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AM8PR04MB7874:EE_|GVXPR04MB10069:EE_
+X-MS-Office365-Filtering-Correlation-Id: 04e1dc4c-fcef-450d-fb48-08df15901637
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|19092799006|23010399003|376014|1800799024|10067099003|56012099006|11063799006|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	QhgF0Wf9Yn1yIoeKCXLor/nPEeab46df2/sUowizv2NW6slceGG8Fn/F/Zsusm34fmJiQD62le0Y+db6J8agrCCrWPKiR7obVBx8KdZUNIyIWpE4Pk6H5fkyWoKEjKXiAitIpplUWMB1YlW0Cul5iCXDQYqEIpKw5lS65B0jnGD+i1SscjtVE5vWijCVIIKhGrzf9JQyjksq5QgVwLG+neDX00suu9uS5rb9P//9AN9lSvfo54gQEsUdomvgmLx6V1JKfIOPgBo5offX9BJ2gaCPX0x6laR2hQpnbN/RsH0umkKnh6TG6qy3Lq80KYJDWVqCkgJoJm2kvSE1wWdJWxIXsh77uApoXZK37StT2YGZ+KhWzuMWvr3iwPnpscC+D2vMDLDlAClGXHJa2eLVuheDM+LZFPCQ+AV/WSq3dgONVoRHCigjcf+Yz9NpNLkR3IC4oOlWMgvQCCNGWSRl1YsgCW38rMgV4m19KTGPJMMpVEP5Z9zxfdVGOdTlfw38eXzpBnrJ/4ICFBkDknuPPj4HT3WYhtvUdVOOjLEdMOdudcqK/S3lTM2cpPYef3iIJcIPezjDjI3rBqeFd6KzwkvYyJXZq7agz5b1ekjZiUB+nBIqj8zub1R7Sl3xxfShaSeiGavrjL9tpAgkr3AivgRoo7Be87Q2qbmUN46Kk3M=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM8PR04MB7874.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(19092799006)(23010399003)(376014)(1800799024)(10067099003)(56012099006)(11063799006)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?M3P/jeL9zrpO4uDuWpAAcO09Ua+aAAFemzZu9zHJvyRl5LMl8MS9JBPaXdUG?=
+ =?us-ascii?Q?2pTHSY9phlNT4BP5BqkJBxIojjxWob2WFT8t/hA+v1sJo170HeX115CVZKaf?=
+ =?us-ascii?Q?fA3rN2diQqp2EsY0Ro34VQy4cH3M4hLNX3l4PzNXFaJ8CmUG8slH15kp6e6I?=
+ =?us-ascii?Q?G/2duViXp2dFVeJQFHKYGo+YLwiQhNlKs5J7kSjNaHfNa5DlsADZH9BEy2SY?=
+ =?us-ascii?Q?PAorIn2OOs25JVnUhQQ7DlwSaSS1eX30mqAzU2zeb/Y66vY5kxfW8gwAwstW?=
+ =?us-ascii?Q?vuFMNeabnWIPNySuNFV8nyxXI+jKFQl4cB7EOxz3gJWY2q5llmoBbvwlnm8H?=
+ =?us-ascii?Q?x6pKpmqv+ksx71U0RAnTKDuGK0q2kDaVAcnNrWztjmKL82RcHQc4D7UAzCFQ?=
+ =?us-ascii?Q?T28ewFxG/2BHW3IjHmSkYXITjaogFvTOkBElfL7jELpqZMi5J3FFzconHUbx?=
+ =?us-ascii?Q?J4wVgMEzWH8c7/v/apRrTMgZcMK0QUa+97kBatzsaUL44bkf2RQh2RqiNra3?=
+ =?us-ascii?Q?zd0ist9X9Qn6WhLRJ3M6/9Kt9xdc/zdmY4jqbM6Th4VfJDHfo5nRnHAEZHBC?=
+ =?us-ascii?Q?W9i9UaeACnQv4x2AyyQq3VWoRCymHHfxvqdr5RCWN4hbYDgR031EzBUr5vEi?=
+ =?us-ascii?Q?MoYoQuIp2atSFlEbF7B1BMSWYn/a796t6BdSwkh27tD0g/ZZ+XmzwwUfxCTi?=
+ =?us-ascii?Q?Vu2ufloNhywvWj7MmnTOdBPctfrHmzvlwzCF7+7QBOAymhn4paeTEZctQdPf?=
+ =?us-ascii?Q?mu6geC7SJfmWi/lAa0P3meGocwG/HaUR2pcuPBF16KD5KNAPEmgl0mtCU9wh?=
+ =?us-ascii?Q?L/NhKPtU268fNkTmm8XXKqmn4FSUIIEOy+Q2MAyUTk91AGBN0Amw4CB88vxp?=
+ =?us-ascii?Q?wqmkdeVhGToflOA4P8sVGR5m3AyQAhpQku4ujdDmcURK5rBcATb5PgHBx6xh?=
+ =?us-ascii?Q?ej7PE8S0UJsfvEbjsnBUzRFUZMdjl7klJ2Gsb3pFDXZhyz7mMYdLK1N1wH+K?=
+ =?us-ascii?Q?0zO8kDJPi5Bb/pqTecL49dXgiTGvY6iUHQ5/4MkVHUKrvmG3tlgA8F5ClRux?=
+ =?us-ascii?Q?5TNd5Dvi+dYEHCpCRVc74ysXZftwoedV5rDENB8aepj34XHVz4s7LEJEsi8S?=
+ =?us-ascii?Q?sv10Neypsb0zGsrl6i2ghcfMsetvqASsI3LLGAMsQAJWZKqAKY5YzBtIzDF6?=
+ =?us-ascii?Q?Ur/NFE6OWOmIWcRYGmPrvt6kUYPn/+e5NW0jP9aFwVhF0W/rCTJC4I/mroWH?=
+ =?us-ascii?Q?TemHheAq3aOpyrgeMvx4pYxlcwsbBVvJN6kpb0xvdzvY/GlFO7RVHuWegLnr?=
+ =?us-ascii?Q?Ig8K3uJBbA8WRZj1sxE0TKfjucvzv8bmFdQI5sCggRhc5+yzcHj4Z6fLF0i8?=
+ =?us-ascii?Q?oxzBjkk2BvofRXf8C1hUbQUl7b7AELJK3G4PVTK9MUV3+Ij30cX/DlSv/rD+?=
+ =?us-ascii?Q?6fPDBs2/ruTT0FDXAUw8jSdd0zo9gK7ZXx3KLu7AP3RizBFu2rQCw9TwbGRg?=
+ =?us-ascii?Q?mLbXbvRnJOzuKw/TGIzBk+Nhda0tKLFw+ITFjXTjlkZdRFIL6VnBXo74b7ck?=
+ =?us-ascii?Q?x9CWfcTwcvDmDXsooJFhDkw6rlIYZ3S1y4OzacPIPIzJl1u4lN9ZYKmnZcfw?=
+ =?us-ascii?Q?5ZC1hzHKoW+SVyNjinDmFlyjPU+EAyc8xfo0pA71hHK+n10TTQoCzhLcvG8K?=
+ =?us-ascii?Q?Jy+WnwilIGLGcVM71hNeZB84EDGu56YkYbn3FMlZ+9Zye2sEmu2nEjkxy/WR?=
+ =?us-ascii?Q?Kp6WoSwzvv4wT/Bdza1p/NWCgRRRa8NQi9X/ba/PuVf2cr4uBhb0?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 04e1dc4c-fcef-450d-fb48-08df15901637
+X-MS-Exchange-CrossTenant-AuthSource: AM8PR04MB7874.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Sep 2026 14:21:10.3096
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: kAi/0VppUcWQWl3d0lkCLRpbE9oTcLxUViwoP4zsgfXTykL7HL3Q+Q/nSKd/loAO0eoH19qSXYxQqDEor3o9roRu6z9Lvp0aXZ/UFz7rKj450ff9LVatldDAadNgR32s
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVXPR04MB10069
 
-Hi David,
+From: Peng Fan <peng.fan@nxp.com>
 
-On 18-09-2026 03:44, David Heidelberg via B4 Relay wrote:
-> From: David Heidelberg <david@ixit.cz>
->
-> The console holds a runtime PM reference on its port, which keeps the
-> port powered while the tty is closed. On system suspend
-> pm_runtime_force_suspend() powers the port down regardless, but a single
-> reference makes pm_runtime_need_not_resume() report the port as not in
-> use, so it is marked runtime suspended instead of being flagged for
-> pm_runtime_force_resume(). On system resume the port therefore stays
-> powered down while uart_resume_port() goes on to program the termios
-> settings and re-enable the console.
->
-> If the tty has been opened before, uart_resume_port() ends up in
-> startup(), whose runtime PM reference powers the port up again, and only
-> the register writes made before that are lost. If the tty has never been
-> opened (no getty on the port, /dev/console backed by another console),
-> nothing powers the port back up and the console stays dead after the
-> first suspend.
->
-> Resume the port explicitly before uart_resume_port() when the console
-> was force suspended.
-Thanks for tracking this down. I'm trying to understand the resume flow 
-here.
+Convert open-coded if/else with set_bit/clear_bit and their
+non-atomic __set_bit/__clear_bit variants to the assign_bit/__assign_bit
+API.
 
-In qcom_geni_serial_resume(), when console_suspend_enabled is set,
-we already call pm_runtime_force_resume(dev); before reaching
-uart_resume_port().
+Done with Coccinelle semantic patch.
 
-Given that, could you clarify why an additional:pm_runtime_resume(dev);
-is required for the console case?
+Signed-off-by: Peng Fan <peng.fan@nxp.com>
+---
+ drivers/tty/pty.c   | 5 +----
+ drivers/tty/sysrq.c | 5 +----
+ 2 files changed, 2 insertions(+), 8 deletions(-)
 
-Specifically, is pm_runtime_force_resume() leaving the device in a
-runtime-suspended state despite restoring it from system suspend, or
-is there some interaction with the console's runtime PM reference count
-that prevents the port from being resumed before uart_resume_port() accesses
-the registers?
+diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
+index cc7f7091ed9a..9a37008c4e91 100644
+--- a/drivers/tty/pty.c
++++ b/drivers/tty/pty.c
+@@ -138,10 +138,7 @@ static int pty_set_lock(struct tty_struct *tty, int __user *arg)
+ 
+ 	if (get_user(val, arg))
+ 		return -EFAULT;
+-	if (val)
+-		set_bit(TTY_PTY_LOCK, &tty->flags);
+-	else
+-		clear_bit(TTY_PTY_LOCK, &tty->flags);
++	assign_bit(TTY_PTY_LOCK, &tty->flags, val);
+ 	return 0;
+ }
+ 
+diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
+index c2e4b31b699a..f4571d05b496 100644
+--- a/drivers/tty/sysrq.c
++++ b/drivers/tty/sysrq.c
+@@ -911,10 +911,7 @@ static bool sysrq_handle_keypress(struct sysrq_state *sysrq,
+ 		 * keyboard state so we can release keys that have been
+ 		 * pressed before entering SysRq mode.
+ 		 */
+-		if (value)
+-			set_bit(code, sysrq->key_down);
+-		else
+-			clear_bit(code, sysrq->key_down);
++		assign_bit(code, sysrq->key_down, value);
+ 
+ 		if (was_active)
+ 			schedule_work(&sysrq->reinject_work);
+-- 
+2.51.0
 
-A bit more detail on why pm_runtime_force_resume() alone is insufficient
-
-would help understand the root cause.
-
-
-Thanks,
-
-Praveen Talari
-
->
-> Assisted-by: LLM
-> Fixes: aee1f94dab13 ("serial: qcom-geni: remove .pm callback, use runtime PM in startup/shutdown")
-> Signed-off-by: David Heidelberg <david@ixit.cz>
-> ---
->   drivers/tty/serial/qcom_geni_serial.c | 6 ++++++
->   1 file changed, 6 insertions(+)
->
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> index a180a00c9e23d..0c9164a1fccda 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -2100,16 +2100,22 @@ static int qcom_geni_serial_resume(struct device *dev)
->   	struct qcom_geni_private_data *private_data = uport->private_data;
->   
->   	if (console_suspend_enabled || !uart_console(uport)) {
->   		ret = pm_runtime_force_resume(dev);
->   		if (ret)
->   			return ret;
->   	}
->   
-> +	if (console_suspend_enabled && uart_console(uport)) {
-> +		ret = pm_runtime_resume(dev);
-> +		if (ret < 0)
-> +			return ret;
-> +	}
-> +
->   	ret = uart_resume_port(private_data->drv, uport);
->   	if (uart_console(uport)) {
->   		geni_icc_set_tag(&port->se, QCOM_ICC_TAG_ALWAYS);
->   		geni_icc_set_bw(&port->se);
->   	}
->   	return ret;
->   }
->   
->
-> ---
-> base-commit: 3d83758432b5e6ed9507500a57efb0f3af41ee7d
-> change-id: 20260918-qcom-geni-pm-e0ff5899c948
-> prerequisite-change-id: 20260828-serial-qcom-geni-fix-unbalanced-rpm-resume-814e630326b9:v1
-> prerequisite-patch-id: a2666a59a68190a3f438cec8aa167111c21dc8ca
->
-> Best regards,
-> --
-> David Heidelberg <david@ixit.cz>
->
->
