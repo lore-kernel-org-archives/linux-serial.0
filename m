@@ -1,126 +1,159 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pz2-f12.google.com (mail-pz2-f12.google.com [74.125.228.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7ED02391842;
-	Fri, 18 Sep 2026 07:15:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A5D84A689B
+	for <linux-serial@vger.kernel.org>; Fri, 18 Sep 2026 07:46:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.228.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789715738; cv=none; b=ulj98p/qUCG9J1ztGJdFgfhL3P1TO69oIu8Pny+xHb2unEKAfNO3H3jzahWmtP7kZLRXSOmUhMGMYlzIUS2fBOKU/qLb/znfPSSipi/7Lr4+Ywoq+1JIXRkYQgSl22Xcuagzc3vge/ojdcFVpc50zd0eE5sEiGkeukOxGiEstH4=
+	t=1789717570; cv=none; b=sSIjvhI41zO6wCGIPrDFZJ6sLTPgcZr2SaJMtKOmoHD9RgH7jv6MohOr8o36afKZmuqpiF7ZzVFKuZZLV4NoeWsBCvIxiW3pReGlZyLgA8ZmrQd4sb9XS1eR0f3xQY/DYukXyMyEsZ4pulV6qAQ1LVvLsKJhZoeUhnBo3IUUO48=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789715738; c=relaxed/simple;
-	bh=IyQG4uF4U2HMYFS0whlenRlq0+4izpBq85YAFExkrKM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=sDjMH4h+zmyPI1Af5WNUMlsKY/qPyC1fOYokACApIey0BCZHAFftodUORbt4P0Czg59AFqPXpZTratSABZ3XhspF+50p9/67exnLZ3SvZavZsrHR/6xKdd23skUVz85ZhR/p5EyNmL7im0yeSAf/+Quadc8OwecOShkGCf9GMb8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hhrdEkJP; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1789717570; c=relaxed/simple;
+	bh=2SXDsS5wy/DJY/6q1ZX3DVF2JgAhS3NkxwvT4ZIegO4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=i3ULEHLlthMXfJlQaT+wRS+PILJmkOBtLXhKCvvJzdzHMxCWVvlKKkBaT2Jphd2fwXLnYo2fqOupNzwJcis9UHqWK6C5skfRA4szjzRn+baHgbIHDRvW5yUA1sVuoPWetrbTN5O8No7Tn3IjyakOd8taCL79Z6wGwJtac1NBQl0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NJEJFrsU; arc=none smtp.client-ip=74.125.228.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hhrdEkJP"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 559BC1F00893;
-	Fri, 18 Sep 2026 07:15:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789715725;
-	bh=yGXP8T1zvW5Ml5ZoTKLO3915Guu8fl2jGwWEp0ekuH8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=hhrdEkJPsCM1e0xAT8nx+2dL6Mk346k4lOVF4xldrlPrjN5pRcKLlC36i5umsgAEX
-	 Mp9h8oSRLYPkXnX0ofmhNPnYdlFaaDlt75luOA2LPxQMGglwZYxE8YneYoFFIrm9VI
-	 BlQBv75lqp6fBDi3G2QcfvUEtdAqHwbvPo2DdlOaS6Q4KNMSO4H/eGby5OJ08w8Jj5
-	 Rqe5dl6AsQrb2fKQkEJpUbf3d2BeXzwkYnUjSNr6T93S99i6Iv352HA7tpVBA4Q3UO
-	 Lgv9HZaeycMuaLOLue3xeMnw41S7U8WqPV4QoW/jUnIAui9ss1pj6XqDza7wqdaL1k
-	 YsEo9YjVPbeIw==
-Date: Fri, 18 Sep 2026 09:15:21 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Long Zhao <longzhao@ambarella.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, 
-	Alexandre Belloni <alexandre.belloni@bootlin.com>, soc@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Michael Turquette <mturquette@baylibre.com>, 
-	Stephen Boyd <sboyd@kernel.org>, Jerome Brunet <jbrunet@baylibre.com>, 
-	Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, 
-	Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Long Zhao <zl020895@163.com>, 
-	Lee Jones <lee@kernel.org>, mfd@lists.linux.dev, devicetree@vger.kernel.org, 
-	linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 05/15] dt-bindings: gpio: pl061: add Ambarella CV75
- variant
-Message-ID: <20260918-affable-aardvark-of-superiority-6a5ed2@quoll>
-References: <20260915-cv75-v5-v7-0-3297d3fbc9c0@ambarella.com>
- <20260915-cv75-v5-v7-5-3297d3fbc9c0@ambarella.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NJEJFrsU"
+Received: by mail-pz2-f12.google.com with SMTP id 41be03b00d2f7-cc1cea4bfd1so248743a12.0
+        for <linux-serial@vger.kernel.org>; Fri, 18 Sep 2026 00:46:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1789717565; x=1790322365; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=SInoAck4kPSdZMq0ZJdvww+HIYJKSPW+Gpf9er2XW6E=;
+        b=NJEJFrsUPS3aqJV8hyejXZuzzXihYBGFuxNxOwjMrKa0IJG4P6S1kg1wwpmfCZwAn8
+         Q6cI1KedYblPQ/ol5uMbIbNhKF040L7flBZXCsbwCA94D/pBw0cnzgLKtxlWxKBcMp05
+         kiTvgEwNPfCS1tfrNweRYKiOMtplvkgg3P0+1PsGGJFk1LcqGp85VAIlkBIv6sPA8lM3
+         qsb9OLuT284iQiJXzrVxhxg/077HBlpNt8Dzmq+sQv/UX1mV2HTGE0qJVVoW/rM+nhQ1
+         JSnY5+T44IXSu8iqAg3cqpxkVK8eby8ZZX+gIuFs3cxvznJu1LcBnRQIQPab14sZpOmU
+         T8/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1789717565; x=1790322365;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=SInoAck4kPSdZMq0ZJdvww+HIYJKSPW+Gpf9er2XW6E=;
+        b=WIBIUDZ9Peaf+xKxvLj4qlaWMNkK8g+ogrli1F586XX+po4JAxXWHuTC6xiV3dbKvF
+         q+wExp20RuOJMehkO5QW88ntBhiS1gnNcmIuHE3jakNdmsqYOd+DTA1sbNg3PaVhGpuh
+         3J1Noj/YdwaR2ViTip6Uku9OBlUdGcUGtLIYX9d+mSuas2KJ/j8XJJD6MdhKqlTlcaBI
+         5pRHf5lclNV7MpiAPd/RONNqW4G6iFy8woypKYbecRPkGv+7DdEc7qFGPu9gZ8W0Hx4k
+         AdKbmAGE0FvvZKueF4fMzsf8RuFvZbm/qWfraYKop+JimIZX22TjMRkMJfjaF2mWvaVP
+         ISRg==
+X-Forwarded-Encrypted: i=1; AKwUvBxr9LSBVSbdIxI8+UyP2LO9A8MI7DIIO0kPzOLl8o4wB/3Y9NakoVksvx+m5d9aBIkyjbwcWpaWGfEJ2sw=@vger.kernel.org
+X-Gm-Message-State: AFuF++n8JRMUgzBc/sBmDZjE48KFgDzGWUidI7nXJgwHZDgVXIEmTS0E
+	gtAfgwj3ih6Obl7zivkng0xWmz7TFYCO1CQiTt0q6EW7mOj1MSMNWVdM
+X-Gm-Gg: AYBFou2E/ZR1kbdMiyFWEz10JK1kMF2TkKJ3n4O8BmSYJaHLsTePYObc1v4XUQgJZtD
+	I8ryI7tEJyyrWkPj2WDuh8KeZcCsmjSjIlavkPdR8pcbVexcatD/39fwNneX0HJHZPJHdIGvfOQ
+	nlhz7mGCD0kXmAOIW3f9A8CfrDOnxnyMmj+VPEwyW+F38wNvQhl1/xM9rvCndioOJUubCgmcZRr
+	WOAah7AHDMykYUO4VPXSDrVKcKuRKNlMAlE8Sz5Pt10bkexZLSsLNvmXPSUUgWCYYOwrI67udnn
+	qRfKjz49AfyNHzy4x7LC/BD+pF7B5PMcjNecQwKbEQVQik8+kWaJxLMzPC9lO4KpzgiSWQzQyXZ
+	YAL9Y/R7Kiw6k9PwjEKxTXAGKfdg51S2IxmT+KIFVPK+oIXD5L6+kFa3/uZ96hCDvhj2g6tDNY2
+	4KsvWazq8k4QK7WmcB7Ww/W1u9WpyydWQJx4L3TAOvgIDqV8J5maTauiKOOA0QtZv7/bc3eSkXu
+	c+v3jT9V3Bb4737ZMaRPSneFhqhPaFCWE/B0ck=
+X-Received: by 2002:a05:6a20:6f9c:b0:3dd:85a8:cad2 with SMTP id adf61e73a8af0-3dd8c4b06b1mr3259004637.41.1789717564818;
+        Fri, 18 Sep 2026 00:46:04 -0700 (PDT)
+Received: from amd.ban-spse ([165.204.217.251])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-33c2872052fsm2491833eec.11.2026.09.18.00.46.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Sep 2026 00:46:04 -0700 (PDT)
+From: Malathi A <malathi.a2000@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+	Masami Hiramatsu <mhiramat@kernel.org>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	Malathi A <malathi.a2000@gmail.com>
+Subject: [PATCH] serial: 8250_uniphier: Use dev_err_probe() in probe error paths
+Date: Fri, 18 Sep 2026 07:45:46 +0000
+Message-ID: <20260918074546.245342-1-malathi.a2000@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20260915-cv75-v5-v7-5-3297d3fbc9c0@ambarella.com>
+Content-Transfer-Encoding: 8bit
 
-On Tue, Sep 15, 2026 at 07:15:35PM +0800, Long Zhao wrote:
-> Add ambarella,cv75-gpio as a PrimeCell-compatible PL061 variant, with
-> arm,primecell-periphid and gpio-ranges required. Reference
+devm_clk_get_enabled() returns -EPROBE_DEFER while the clock provider is
+not registered yet, and uniphier_uart_probe() reports that with
+dev_err(). Every retry of an intermittently deferred probe therefore
+prints "failed to get and enable clock" at error level, which is only
+dmesg noise.
 
-You just described the diff, but this should explain why you do these
-changes. Why a fixed periphid is needed? Isn't it implied by compatible?
+Use dev_err_probe() instead: it demotes -EPROBE_DEFER to dev_dbg() and
+records the reason for /sys/kernel/debug/devices_deferred. Convert the
+other two error messages in probe as well, so the whole function follows
+the "return dev_err_probe()" pattern already used by other 8250 drivers
+such as 8250_em.c. Those two codes are never -EPROBE_DEFER, so there the
+conversion is a readability change only.
 
-> primecell.yaml and use unevaluatedProperties.
-> 
-> Signed-off-by: Long Zhao <longzhao@ambarella.com>
-> ---
->  .../devicetree/bindings/gpio/pl061-gpio.yaml       | 25 +++++++++++++++++++---
->  1 file changed, 22 insertions(+), 3 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/gpio/pl061-gpio.yaml b/Documentation/devicetree/bindings/gpio/pl061-gpio.yaml
-> index 4d970e55104b..00d0d8ddd2c9 100644
-> --- a/Documentation/devicetree/bindings/gpio/pl061-gpio.yaml
-> +++ b/Documentation/devicetree/bindings/gpio/pl061-gpio.yaml
-> @@ -15,17 +15,36 @@ select:
->    properties:
->      compatible:
->        contains:
-> -        const: arm,pl061
-> +        enum:
-> +          - arm,pl061
-> +          - ambarella,cv75-gpio
->    required:
->      - compatible
->  
-> +allOf:
+Errors other than a deferral are still logged at error level, now with
+the error code added by the helper. No functional change otherwise.
 
-allOf should be placed after "required:" block.
+Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Malathi A <malathi.a2000@gmail.com>
+---
+This is the follow-up cleanup suggested during review of
 
-> +  - $ref: /schemas/arm/primecell.yaml#
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            const: ambarella,cv75-gpio
-> +    then:
-> +      properties:
-> +        arm,primecell-periphid:
-> +          const: 0x000e8061
-> +      required:
-> +        - arm,primecell-periphid
-> +        - gpio-ranges
-> +
->  properties:
->    $nodename:
->      pattern: "^gpio@[0-9a-f]+$"
->  
->    compatible:
->      items:
-> -      - const: arm,pl061
-> +      - enum:
-> +          - ambarella,cv75-gpio
-> +          - arm,pl061
+  [PATCH v2] serial: 8250_uniphier: Use devm_clk_get_enabled()
 
-So a PrimeCell-compatible PL061 variant which is not compatible with
-PL061? You have entire commit msg to explain that and say something
-non-obvious about the hardware.
+and it applies on top of that patch: the clock hunk relies on its
+context. That fix is not in tty-next as of today, so this one should be
+applied after it.
 
->        - const: arm,primecell
->  
+ drivers/tty/serial/8250/8250_uniphier.c | 20 ++++++++------------
+ 1 file changed, 8 insertions(+), 12 deletions(-)
 
-Best regards,
-Krzysztof
+diff --git a/drivers/tty/serial/8250/8250_uniphier.c b/drivers/tty/serial/8250/8250_uniphier.c
+index 6fffac12277a..7d558b750f83 100644
+--- a/drivers/tty/serial/8250/8250_uniphier.c
++++ b/drivers/tty/serial/8250/8250_uniphier.c
+@@ -165,10 +165,8 @@ static int uniphier_uart_probe(struct platform_device *pdev)
+ 	int ret;
+ 
+ 	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	if (!regs) {
+-		dev_err(dev, "failed to get memory resource\n");
+-		return -EINVAL;
+-	}
++	if (!regs)
++		return dev_err_probe(dev, -EINVAL, "failed to get memory resource\n");
+ 
+ 	membase = devm_ioremap(dev, regs->start, resource_size(regs));
+ 	if (!membase)
+@@ -181,10 +179,9 @@ static int uniphier_uart_probe(struct platform_device *pdev)
+ 	memset(&up, 0, sizeof(up));
+ 
+ 	priv->clk = devm_clk_get_enabled(dev, NULL);
+-	if (IS_ERR(priv->clk)) {
+-		dev_err(dev, "failed to get and enable clock\n");
+-		return PTR_ERR(priv->clk);
+-	}
++	if (IS_ERR(priv->clk))
++		return dev_err_probe(dev, PTR_ERR(priv->clk),
++				     "failed to get and enable clock\n");
+ 
+ 	up.port.uartclk = clk_get_rate(priv->clk);
+ 
+@@ -216,10 +213,9 @@ static int uniphier_uart_probe(struct platform_device *pdev)
+ 	up.dl_write = uniphier_serial_dl_write;
+ 
+ 	ret = serial8250_register_8250_port(&up);
+-	if (ret < 0) {
+-		dev_err(dev, "failed to register 8250 port\n");
+-		return ret;
+-	}
++	if (ret < 0)
++		return dev_err_probe(dev, ret, "failed to register 8250 port\n");
++
+ 	priv->line = ret;
+ 
+ 	platform_set_drvdata(pdev, priv);
+-- 
+2.43.0
 
