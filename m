@@ -1,159 +1,135 @@
-Received: from mail-pz2-f12.google.com (mail-pz2-f12.google.com [74.125.228.12])
+Received: from mail-qk2-f12.google.com (mail-qk2-f12.google.com [74.125.230.204])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A5D84A689B
-	for <linux-serial@vger.kernel.org>; Fri, 18 Sep 2026 07:46:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.228.12
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789717570; cv=none; b=sSIjvhI41zO6wCGIPrDFZJ6sLTPgcZr2SaJMtKOmoHD9RgH7jv6MohOr8o36afKZmuqpiF7ZzVFKuZZLV4NoeWsBCvIxiW3pReGlZyLgA8ZmrQd4sb9XS1eR0f3xQY/DYukXyMyEsZ4pulV6qAQ1LVvLsKJhZoeUhnBo3IUUO48=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789717570; c=relaxed/simple;
-	bh=2SXDsS5wy/DJY/6q1ZX3DVF2JgAhS3NkxwvT4ZIegO4=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=i3ULEHLlthMXfJlQaT+wRS+PILJmkOBtLXhKCvvJzdzHMxCWVvlKKkBaT2Jphd2fwXLnYo2fqOupNzwJcis9UHqWK6C5skfRA4szjzRn+baHgbIHDRvW5yUA1sVuoPWetrbTN5O8No7Tn3IjyakOd8taCL79Z6wGwJtac1NBQl0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NJEJFrsU; arc=none smtp.client-ip=74.125.228.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6F643BCD27
+	for <linux-serial@vger.kernel.org>; Fri, 18 Sep 2026 07:52:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.230.204
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1789717928; cv=pass; b=TJZVxLx9wN4RAnGQHLMbhoVI+5N4T28SpT1eY6cMYsQiqlKJWeZkGBLwVP4DEUGF7vLbFbjfSAamuYM6IeASTPjNhjOsDAiwANAbRqYGuEr4JCFhHsSWL5XHta/jtWgdidpvmKq7oYEznqeAZw0QvMy02tTEPpszdN2+OVKvCzw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1789717928; c=relaxed/simple;
+	bh=HmU3O9u9jVAkFRCkWEdl+bin1iaF6HrroVvtBQG2j9U=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=H3hhIZeQ8Y7yZCYhICbWOEvZ2TU1V0YamzNTRyVqMw7xjYdS5ND00kdtJ/J8j7CW94UnMTmEbrtXZ1MGiRbBpblwlOJO03rwZJHCFeDD/G84IHud2/eL7Cg+g6tExu+++tEexplpe03nuwYCZ8uwy6XWdDdvKll24cYLxMqlISw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Q/xlBZRl; arc=pass smtp.client-ip=74.125.230.204
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NJEJFrsU"
-Received: by mail-pz2-f12.google.com with SMTP id 41be03b00d2f7-cc1cea4bfd1so248743a12.0
-        for <linux-serial@vger.kernel.org>; Fri, 18 Sep 2026 00:46:06 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Q/xlBZRl"
+Received: by mail-qk2-f12.google.com with SMTP id d75a77b69052e-530de452c33so4154321cf.1
+        for <linux-serial@vger.kernel.org>; Fri, 18 Sep 2026 00:52:05 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1789717925; cv=none;
+        d=google.com; s=arc-20260327;
+        b=OcdJcpeP9tE+XMJFfeB58bWQop8wi5IcFfzCFRBGoxe7hWFjakZlPUFOq5IQrQo9A9
+         yOkE6TDbACx/NyiuOAOfeK1iTC7P0C2qde9nqLNwr2TVvYtYFG90iWop3h6PcYfGQQht
+         ofCbkGyY1uGOlJMfm3jkVGONvYBnPOs4nxj4CI7HIgEsZ9BC2Tq+WjOLRPBybhAXNeJR
+         c1iVGVvTSqxKRv2iCJ3wHOiJ+W+bGPZuDVUxudwnoaDxH4aKAAOsAr/o9kO72E8me0g4
+         Iw41A3b6TAuIyx2sjmT4VLF7rlYoKw71r+VcFOMXnNng2vBKO3r6UHB1hNapfmFCSBdZ
+         tBKg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=GENi4md1c446ap3YU+8WbAIKW0z2UxkHlaNTGXc/qAc=;
+        fh=rncQ0o2MddxDUWDT9BiksDCpGMBO9AfDJaMU6CoAB5M=;
+        b=jjEJk+U/o4z9BFF8NXUVqEAtLOBTKT/8mdUYYG8YKEQ4PMVv+l5Zn89nL3bgQjIPoR
+         SYP4cycBDgcXTiOhrJkWlCPWN++DeRcYu5ojAafIlcv5VQpV/cWnKymFKQmWAkdRVtWt
+         gkPK8qkEu2f1o1evSQl4/WVBZxao9BqQv7N2X61KKAWEgaw1VHfzMp2I3h8YHuZL99nC
+         4lk0Iz8BCjqlphPF8mJqzufFCqwpz8VWn1FGoABuGUJEhcvmUmTIBJga4R1JX72+FxJ/
+         jXYg1ySAjGymEFAoo88s4blNfrydaz7LC0XY7sk9QVYchtGVDED32iYdMlw4v52+2T/K
+         /7IQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1789717565; x=1790322365; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=SInoAck4kPSdZMq0ZJdvww+HIYJKSPW+Gpf9er2XW6E=;
-        b=NJEJFrsUPS3aqJV8hyejXZuzzXihYBGFuxNxOwjMrKa0IJG4P6S1kg1wwpmfCZwAn8
-         Q6cI1KedYblPQ/ol5uMbIbNhKF040L7flBZXCsbwCA94D/pBw0cnzgLKtxlWxKBcMp05
-         kiTvgEwNPfCS1tfrNweRYKiOMtplvkgg3P0+1PsGGJFk1LcqGp85VAIlkBIv6sPA8lM3
-         qsb9OLuT284iQiJXzrVxhxg/077HBlpNt8Dzmq+sQv/UX1mV2HTGE0qJVVoW/rM+nhQ1
-         JSnY5+T44IXSu8iqAg3cqpxkVK8eby8ZZX+gIuFs3cxvznJu1LcBnRQIQPab14sZpOmU
-         T8/A==
+        d=gmail.com; s=20251104; t=1789717925; x=1790322725; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=GENi4md1c446ap3YU+8WbAIKW0z2UxkHlaNTGXc/qAc=;
+        b=Q/xlBZRl0d1u4TvTkrjunTffRGdneS3ZGZ9KpeYJHWJ4j5vBeZcAQcajCRBlEKtZ1R
+         9qcHZNY5Tj5gTnWw/gxSY2grlwWTayC403wG+ZHKG/+1xWWkQuPRWkXkon96eOxoaw9+
+         /oYMDZTPmGa+r0JdjAfetHzpzN0FauE9zA26ewQG/lWJhMe/UklgcqWuQQxN/otC+U5X
+         rOMzHO3e4TEQq+/C6ufRmdM/X83CNDZ8IJEtojCF+bJ1eGsugbqQR/iKWNmmazYU59RU
+         HPs01ABdOHAM+JFkSrpRcEN7oPgBFJRVdHfjt3e7gfIzRjFWaQNio5RQqDhuVwjyXa2C
+         CjsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789717565; x=1790322365;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=SInoAck4kPSdZMq0ZJdvww+HIYJKSPW+Gpf9er2XW6E=;
-        b=WIBIUDZ9Peaf+xKxvLj4qlaWMNkK8g+ogrli1F586XX+po4JAxXWHuTC6xiV3dbKvF
-         q+wExp20RuOJMehkO5QW88ntBhiS1gnNcmIuHE3jakNdmsqYOd+DTA1sbNg3PaVhGpuh
-         3J1Noj/YdwaR2ViTip6Uku9OBlUdGcUGtLIYX9d+mSuas2KJ/j8XJJD6MdhKqlTlcaBI
-         5pRHf5lclNV7MpiAPd/RONNqW4G6iFy8woypKYbecRPkGv+7DdEc7qFGPu9gZ8W0Hx4k
-         AdKbmAGE0FvvZKueF4fMzsf8RuFvZbm/qWfraYKop+JimIZX22TjMRkMJfjaF2mWvaVP
-         ISRg==
-X-Forwarded-Encrypted: i=1; AKwUvBxr9LSBVSbdIxI8+UyP2LO9A8MI7DIIO0kPzOLl8o4wB/3Y9NakoVksvx+m5d9aBIkyjbwcWpaWGfEJ2sw=@vger.kernel.org
-X-Gm-Message-State: AFuF++n8JRMUgzBc/sBmDZjE48KFgDzGWUidI7nXJgwHZDgVXIEmTS0E
-	gtAfgwj3ih6Obl7zivkng0xWmz7TFYCO1CQiTt0q6EW7mOj1MSMNWVdM
-X-Gm-Gg: AYBFou2E/ZR1kbdMiyFWEz10JK1kMF2TkKJ3n4O8BmSYJaHLsTePYObc1v4XUQgJZtD
-	I8ryI7tEJyyrWkPj2WDuh8KeZcCsmjSjIlavkPdR8pcbVexcatD/39fwNneX0HJHZPJHdIGvfOQ
-	nlhz7mGCD0kXmAOIW3f9A8CfrDOnxnyMmj+VPEwyW+F38wNvQhl1/xM9rvCndioOJUubCgmcZRr
-	WOAah7AHDMykYUO4VPXSDrVKcKuRKNlMAlE8Sz5Pt10bkexZLSsLNvmXPSUUgWCYYOwrI67udnn
-	qRfKjz49AfyNHzy4x7LC/BD+pF7B5PMcjNecQwKbEQVQik8+kWaJxLMzPC9lO4KpzgiSWQzQyXZ
-	YAL9Y/R7Kiw6k9PwjEKxTXAGKfdg51S2IxmT+KIFVPK+oIXD5L6+kFa3/uZ96hCDvhj2g6tDNY2
-	4KsvWazq8k4QK7WmcB7Ww/W1u9WpyydWQJx4L3TAOvgIDqV8J5maTauiKOOA0QtZv7/bc3eSkXu
-	c+v3jT9V3Bb4737ZMaRPSneFhqhPaFCWE/B0ck=
-X-Received: by 2002:a05:6a20:6f9c:b0:3dd:85a8:cad2 with SMTP id adf61e73a8af0-3dd8c4b06b1mr3259004637.41.1789717564818;
-        Fri, 18 Sep 2026 00:46:04 -0700 (PDT)
-Received: from amd.ban-spse ([165.204.217.251])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-33c2872052fsm2491833eec.11.2026.09.18.00.46.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Sep 2026 00:46:04 -0700 (PDT)
-From: Malathi A <malathi.a2000@gmail.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-	Masami Hiramatsu <mhiramat@kernel.org>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	Malathi A <malathi.a2000@gmail.com>
-Subject: [PATCH] serial: 8250_uniphier: Use dev_err_probe() in probe error paths
-Date: Fri, 18 Sep 2026 07:45:46 +0000
-Message-ID: <20260918074546.245342-1-malathi.a2000@gmail.com>
-X-Mailer: git-send-email 2.43.0
+        d=1e100.net; s=20260707; t=1789717925; x=1790322725;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=GENi4md1c446ap3YU+8WbAIKW0z2UxkHlaNTGXc/qAc=;
+        b=Kuz6FhQ53bj/WgEqDScLQ2wg8uatFLsh6OqO7F5ESt5+sv4EhYQ/uowaTsu9+kzu5O
+         pa4UfM+GQK4G5gW7tkrkqQlXAXtiM9TeBxgfhjZtkprFUBkHYihRx0BW3nQyb3Bmw1KQ
+         ilccxZTkLBNx5zUdrz3kO4NNErDwe3L5TfuZ1yVDYZXqiaYk1jdNt/WXP/8bMtCLN4I4
+         nfuu4UfAObZfQPPh9AsJrQq/OeQ2CU5XtJtS2MmMgKuWJwaGzEa3wM5EhVNqtXIkfUMT
+         aMwLMSpnhs2MuuwNXT3L7Omt06hR1zKvWS3azOjW3nkGz/LDjLqFAw17LcN9W+3eHElB
+         S/KQ==
+X-Forwarded-Encrypted: i=1; AKwUvByXRXdq4B2bXRk9Tdt7pAGR5Nap/tqdcrRGiyRPfXa0psHPcJ2XdynFDOX26i3QapFjJr9qd+2DoH4ik+g=@vger.kernel.org
+X-Gm-Message-State: AFuF++m/IFyks7yOdteuRz0CUuZpqTeZLb8HsWHwQ061PIZo5kxx49Kp
+	y11CbfQZ+BUInZ3VEMjfbWvkBHuxaw75wrCiyJJUvff83YghGr05AhIZKZ+yV418rSHjJKRh1PF
+	K30g0NKPz4NeEVmKDCI1MTtTyocTyJmc=
+X-Gm-Gg: AYBFou2OOzexPuKJmROMmq7nZ5AxWFisdYfPrLiWzWP4AGbDetiCOJwgCx6R4IictTh
+	nKD7ZbcXEO2Ejp4GFl1IH6wE4/6zEsNY1ZHOvrK78V8dHzDWBTSvaSSV2PKuFpZVIH68DhOz0wr
+	mKxtr3cWImP/Q2d0qFKP0/HpgJRLT7Bpgk4efoG1jvucho4/AaEDS1jXhufoFcuEVPtFs7bhCbh
+	/i1d8D+WrGv2AYTQ/7KzSWe/mUFe/2MljA4YfurB700Akq2fLYzEfxFFMhAGfT4mdSNWl+i7sFO
+	3NIR8E8ZFQO1sKgs3DeVAQrrmLRgyxmkP/lzZFxoBF0A5rwkkI+TT8HdMetFUmpuMEaJATKMH2h
+	EWQZj728emnK+0Q==
+X-Received: by 2002:a05:622a:54b:b0:530:e6b9:f5d9 with SMTP id
+ d75a77b69052e-5329e2887c3mr28806961cf.20.1789717924743; Fri, 18 Sep 2026
+ 00:52:04 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260917155834.2161361-1-vulab@iscas.ac.cn>
+In-Reply-To: <20260917155834.2161361-1-vulab@iscas.ac.cn>
+From: Alexey Charkov <alchark@gmail.com>
+Date: Fri, 18 Sep 2026 11:51:56 +0400
+X-Gm-Features: AcwNN1WPnMYUOHlV-frab_8tJfPEncIhhSiRLeqBqP4mXUOCMzFeKOSH0f4nq-I
+Message-ID: <CABjd4Yy-9A0xWCDfZemHOTZDrDdtdO05nUjmN=w=sLwYjzZn8Q@mail.gmail.com>
+Subject: Re: [PATCH] serial: vt8500: Fix clock reference leak in vt8500_serial_probe()
+To: Wentao Liang <vulab@iscas.ac.cn>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, krzk@kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, linux@prisktech.co.nz, stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-devm_clk_get_enabled() returns -EPROBE_DEFER while the clock provider is
-not registered yet, and uniphier_uart_probe() reports that with
-dev_err(). Every retry of an intermittently deferred probe therefore
-prints "failed to get and enable clock" at error level, which is only
-dmesg noise.
+On Thu, Sep 17, 2026 at 7:58=E2=80=AFPM Wentao Liang <vulab@iscas.ac.cn> wr=
+ote:
+>
+> of_clk_get() returns a clock with a reference that has to be released
+> with clk_put(). If clk_prepare_enable() fails the function returns
+> without doing so, leaking the reference.
+>
+> Add the missing clk_put() on that error path.
+>
+> Fixes: 12faa35ae5cb ("serial: vt8500: UART uses gated clock rather than 2=
+4Mhz reference")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Wentao Liang <vulab@iscas.ac.cn>
+> ---
+>  drivers/tty/serial/vt8500_serial.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/drivers/tty/serial/vt8500_serial.c b/drivers/tty/serial/vt85=
+00_serial.c
+> index 78a1c1eea11b..fc6fdc751b16 100644
+> --- a/drivers/tty/serial/vt8500_serial.c
+> +++ b/drivers/tty/serial/vt8500_serial.c
+> @@ -656,6 +656,7 @@ static int vt8500_serial_probe(struct platform_device=
+ *pdev)
+>         ret =3D clk_prepare_enable(vt8500_port->clk);
+>         if (ret) {
+>                 dev_err(&pdev->dev, "failed to enable clock\n");
+> +               clk_put(vt8500_port->clk);
 
-Use dev_err_probe() instead: it demotes -EPROBE_DEFER to dev_dbg() and
-records the reason for /sys/kernel/debug/devices_deferred. Convert the
-other two error messages in probe as well, so the whole function follows
-the "return dev_err_probe()" pattern already used by other 8250 drivers
-such as 8250_em.c. Those two codes are never -EPROBE_DEFER, so there the
-conversion is a readability change only.
+The probe function currently mixes devm-managed and manual resource
+allocations, with the clk standing out in particular. Instead of
+adding a manual clk_put, could you please switch the clk calls to
+devm_clk_get_enabled and drop redundant boilerplate?
 
-Errors other than a deferral are still logged at error level, now with
-the error code added by the helper. No functional change otherwise.
-
-Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Malathi A <malathi.a2000@gmail.com>
----
-This is the follow-up cleanup suggested during review of
-
-  [PATCH v2] serial: 8250_uniphier: Use devm_clk_get_enabled()
-
-and it applies on top of that patch: the clock hunk relies on its
-context. That fix is not in tty-next as of today, so this one should be
-applied after it.
-
- drivers/tty/serial/8250/8250_uniphier.c | 20 ++++++++------------
- 1 file changed, 8 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_uniphier.c b/drivers/tty/serial/8250/8250_uniphier.c
-index 6fffac12277a..7d558b750f83 100644
---- a/drivers/tty/serial/8250/8250_uniphier.c
-+++ b/drivers/tty/serial/8250/8250_uniphier.c
-@@ -165,10 +165,8 @@ static int uniphier_uart_probe(struct platform_device *pdev)
- 	int ret;
- 
- 	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	if (!regs) {
--		dev_err(dev, "failed to get memory resource\n");
--		return -EINVAL;
--	}
-+	if (!regs)
-+		return dev_err_probe(dev, -EINVAL, "failed to get memory resource\n");
- 
- 	membase = devm_ioremap(dev, regs->start, resource_size(regs));
- 	if (!membase)
-@@ -181,10 +179,9 @@ static int uniphier_uart_probe(struct platform_device *pdev)
- 	memset(&up, 0, sizeof(up));
- 
- 	priv->clk = devm_clk_get_enabled(dev, NULL);
--	if (IS_ERR(priv->clk)) {
--		dev_err(dev, "failed to get and enable clock\n");
--		return PTR_ERR(priv->clk);
--	}
-+	if (IS_ERR(priv->clk))
-+		return dev_err_probe(dev, PTR_ERR(priv->clk),
-+				     "failed to get and enable clock\n");
- 
- 	up.port.uartclk = clk_get_rate(priv->clk);
- 
-@@ -216,10 +213,9 @@ static int uniphier_uart_probe(struct platform_device *pdev)
- 	up.dl_write = uniphier_serial_dl_write;
- 
- 	ret = serial8250_register_8250_port(&up);
--	if (ret < 0) {
--		dev_err(dev, "failed to register 8250 port\n");
--		return ret;
--	}
-+	if (ret < 0)
-+		return dev_err_probe(dev, ret, "failed to register 8250 port\n");
-+
- 	priv->line = ret;
- 
- 	platform_set_drvdata(pdev, priv);
--- 
-2.43.0
-
+Best regards,
+Alexey
