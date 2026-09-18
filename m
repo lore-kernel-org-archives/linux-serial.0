@@ -1,60 +1,53 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F14154DDB26;
-	Fri, 18 Sep 2026 19:07:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 912023E5EC6;
+	Fri, 18 Sep 2026 19:07:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789758476; cv=none; b=tCkL1cbnkaJ/jQo1cONLp1aA+0Kok9hRUwVVXA5Va60QsuuWKsTPdV1aERsiGmMqonB4A/aF9MP1DsFZfK+F6pZFhhShYTcCr44uSLw6R0ee6emngQo+gd0qeW+UJxY1XSDa/rozBksIxR73NEVtb8vewjGZPCgQvauP6Fwxk4M=
+	t=1789758481; cv=none; b=IjhmM2S3KmX4Z3y4Ay3rf37RWPpz5GGjZ/m/EngUcdO84t0QbFhOivNu9bNwIzhS4c3VEaFI43psALeRLHHikPJFOXiH173rMCXxHEbj5JbeDNEIVQM7TQynXjw34RTi8ix6Y3djOFSH5VoQF85VgYfqMYjxK/ARTdpuatci9h0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789758476; c=relaxed/simple;
-	bh=rvnqsih56sQQlXustXeJIWYo2NxB0kYlZl4ic+MSMZA=;
+	s=arc-20240116; t=1789758481; c=relaxed/simple;
+	bh=oY6q5xBOHltfzSGbD9wqSaMIlT9XZENqC498JeeuZc4=;
 	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=fn2TdG9Dg5dd5D1ou0G0RpbrWYOKBDcqMRfhvzmYmozmcvZamu7bmw4WCgbLYIx+pnCEO0Fe7BBu+IqsmldjGjhjkerxwxxT9Ob0AK146KcczrwXlZxOrnyFCNTGet4glu/ZevNLeFTmdOVH1AhwHLYuFsddYdJlcF+6YPcgGqE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aRD3t72D; arc=none smtp.client-ip=100.103.45.18
+	 Message-Id; b=Z8SgFZoduyEeLaWaMYwdzcKnx5T3VTeY6HvrZ2rYgsm1DbhRIE2S7Ue5M1J1fK6WFKXz/SfhnCkwU1xB32S9gXWNep//+4Hn9QZzvTRBaGVuOz/zPmoPTlo40WEEvXpCePO+1aTD1LrPj8GIslfx9ApGUcNsGnr5T20/lTQXW3M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AQPeUj44; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aRD3t72D"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E8641F000FF;
-	Fri, 18 Sep 2026 19:07:46 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AQPeUj44"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 813311F00898;
+	Fri, 18 Sep 2026 19:07:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789758466;
-	bh=rvnqsih56sQQlXustXeJIWYo2NxB0kYlZl4ic+MSMZA=;
+	s=k20260515; t=1789758472;
+	bh=oY6q5xBOHltfzSGbD9wqSaMIlT9XZENqC498JeeuZc4=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=aRD3t72DDn36LzrR5u2rxfxH9zzczGwtqEv0Y9fuWsRmx1MFBKBLc4GhEqXAjrHMZ
-	 97MojwRGSOxvKrXLRfyPDNW/6N+gWgpyI4/en/LAxaFdSoBTJbLdNibWNsfoIP58LU
-	 ofAexzCirORDJjMdUyCddROYnKwSoCS6LCySPqSwaaSRIXTsPubPnRGDKcA63v5f+j
-	 2kq/iCNiK0uEkVxyaEYydNgedFXUZxmnzG6+prbelBrd0b/wQAqexoQwbVe7v8LwGu
-	 e9RpldK7tzYwiYM8Wh/SPCd2AKJZIw9NORchhooukA0HpvwXLFtpetaeptI8Z2NHt7
-	 0p7TpQez65DFA==
+	b=AQPeUj44+yFrpKg5FvJPv17dMgg0gLiZarRm76tR6Alq0SkxZKpNZblmCvPy4nmDN
+	 uzBDcgcT0A1wqDQjOUHwEhV99BhF1OQGiTAFPgIijxgoCFu8vz3ez4/OIZrMHiJ4Oj
+	 0o5DzV/caalTFDSriFCOs8itKMCRwVGmOKLjdKi58JwIoiLs7c+XblMAJ5mZ/Ac/fF
+	 q3MF5X7B4ldlpRgzj/Bod73u41J7HyQViDo0jT4dG5u7YvnyxJDRVfa/2I4GH0gSjI
+	 bJRjekCPh6TNLTRRCDXJGlc0JBgWf/5pLlldY0i14ADBqG35k9VKf75g/K9xHQMA5r
+	 SNZ2u9ZbU+02g==
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v4 1/4] dt-bindings: arm: google: Add dt bindings for
- frankel/blazer/mustang
+Subject: Re: [PATCH v4 4/4] arm64: defconfig: enable Tensor G5 SoC family
 Reply-To: sashiko-reviews@lists.linux.dev
 To: "Peter Griffin" <peter.griffin@linaro.org>
-Cc: devicetree@vger.kernel.org, conor+dt@kernel.org, linux-serial@vger.kernel.org, robh@kernel.org
-In-Reply-To: <20260918-contrib-pg-pixel10-initial-dts-v4-1-745eaca28b1a@linaro.org>
+Cc: devicetree@vger.kernel.org, robh@kernel.org, conor+dt@kernel.org, linux-serial@vger.kernel.org
+In-Reply-To: <20260918-contrib-pg-pixel10-initial-dts-v4-4-745eaca28b1a@linaro.org>
 References: <20260918-contrib-pg-pixel10-initial-dts-v4-0-745eaca28b1a@linaro.org>
- <20260918-contrib-pg-pixel10-initial-dts-v4-1-745eaca28b1a@linaro.org>
+ <20260918-contrib-pg-pixel10-initial-dts-v4-4-745eaca28b1a@linaro.org>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Fri, 18 Sep 2026 19:07:46 +0000
-Message-Id: <20260918190746.9E8641F000FF@smtp.kernel.org>
+Date: Fri, 18 Sep 2026 19:07:52 +0000
+Message-Id: <20260918190752.813311F00898@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-> Add binding documentation for Tensor G5 SoC (Laguna) which is referred
-> to in code as "lga" and three of the boards that use the Laguna SoC
-> Frankel (Pixel 10), Blazer (Pixel 10 Pro) and Mustang (Pixel 10 Pro XL).
+> Enable the Google Tensor G5 (Laguna) SoC family in the arm64
+> defconfig. This SoC family is found in Pixel 10 and later phones.
 >=20
-> Additionally update to use a more efficient and scalable way to express
-> the various names a SoC is known by.
->=20
-> Co-developed-by: Douglas Anderson <dianders@chromium.org>
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+> Reviewed-by: Douglas Anderson <dianders@chromium.org>
 > Reviewed-by: Brian Norris <briannorris@chromium.org>
 > Signed-off-by: Peter Griffin <peter.griffin@linaro.org>
 
@@ -62,5 +55,5 @@ Sashiko has reviewed this patch and found no issues. It looks great!
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260918-contrib-pg=
--pixel10-initial-dts-v4-0-745eaca28b1a@linaro.org?part=3D1
+-pixel10-initial-dts-v4-0-745eaca28b1a@linaro.org?part=3D4
 
