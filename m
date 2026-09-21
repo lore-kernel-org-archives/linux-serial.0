@@ -1,127 +1,99 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A0F846EC84;
-	Mon, 21 Sep 2026 12:10:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC00D489FD2;
+	Mon, 21 Sep 2026 12:16:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789992630; cv=none; b=cOA9DY/E4Mgd2T9tvOJhF86wlCjltu8mZ8O3+D2FKreaVcOMIiNKCrGmQj3mZoxvcCoC1BNsXnmftlaM9MK1xkOsAbOdwIo7ejYoqCIN5bO/Sa9AxAF8VdH0C3R66R0HHlfkag9z53+JQixxTiZHLY3+rdW+WT7CI/vKPSJIqzU=
+	t=1789992967; cv=none; b=ob6CPVCyNpOfdnhsZZQFmzod6H+Bh68BZyyKTs/6pFRY+hecahuKHbF4DqiBBmyoQSg44+C8/6u5bE42jkGLxhOn79YKdReQcTQHlRRo6QLwOJIu2rbEcfAg29il7bHrGfff1N2UX5AEZ4EpnqkjpMYpyAwuvAblFJmp7UR5ko8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789992630; c=relaxed/simple;
-	bh=TQ6439819zM+jUQ38PGeQohKat1IgIG1YfPSTxBHGk4=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=gF7TfUCOnUxbjuvbYaNCJLHM41nAcdzgTUJFetQQvKyE9W3RJ+gSNIDE5dPLu+U56Fv2SjX4Y9VYgMgcmfAK3420vKx/1ZA4I4vLFnV2fYv/6uUk1phjFQkbmJ3mF7jHMHa/btKaoGmjs30dMPd9IikQtuDQ8gDcMTq3jlPQ94U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cPgjaEb/; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1789992967; c=relaxed/simple;
+	bh=Oq+fJ2yTUAgHBfgWNUdgNQ6nPa2ReAQw4cPU9wmXCmE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=XsXA1O4OOPn5N3DU/718x2+uNP27uC3vosDPRn7dKVr9Lrf1Rx3SDQPRvwZo6hHECyC3BG3xv0Wn3irkK2nkJB6JvUzRUkmfreYTFrN85L1aUiiN/Xs6ULLsHtb+W1Gpby/B2GVdUT5K1CuhvIBXxClwhAotGthXEfxW42el63M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=Mi3tUiDJ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cPgjaEb/"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1789992629; x=1821528629;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=TQ6439819zM+jUQ38PGeQohKat1IgIG1YfPSTxBHGk4=;
-  b=cPgjaEb/RQCifiijnGzw/PJp86LmH+3TsQgB2+72bf00Kq855EeBlVrI
-   f0o5sy0QMSH/ig3clKh6BYmLB1sPLzaUznpRDsBx7tC/sksY6kbFC0Kpz
-   C+he1dELeocf6RB6pL/yaSfrLF5Hs9n64goFKV4j8FprHOQbn7ObAyggE
-   Bi/9y7v0/5IeLrFVxqbMTqtAMJnOxSadytGwKDPMyqc3uOZsdqU970B5G
-   /h83oLTOYqGbk0ZdixfudzVPxKNdTFDr5JurrYvaGwVWZGZ8fhp2/avRZ
-   JOUsFg5MYZgGjVMqNdoXohkmHYSIsiVyUaYgiFbIAmyS1qFtHAnyJYqfJ
-   A==;
-X-CSE-ConnectionGUID: kc+nkrEySReq/QkXpdjGOw==
-X-CSE-MsgGUID: BSfvpy0zRZqmr0/dDfyWIw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11911"; a="116026871"
-X-IronPort-AV: E=Sophos;i="6.27,114,1787036400"; 
-   d="scan'208";a="116026871"
-Received: from fmviesa013.fm.intel.com ([10.60.135.153])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2026 05:10:28 -0700
-X-CSE-ConnectionGUID: U9r91DRiRJ+9y7x458bSgw==
-X-CSE-MsgGUID: aQai4rCETtu69sJKBgZGAA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,114,1787036400"; 
-   d="scan'208";a="3931158"
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.215])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2026 05:10:26 -0700
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Mon, 21 Sep 2026 15:10:18 +0300 (EEST)
-To: Hui Peng <benquike@gmail.com>
-cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>, John Ogness <john.ogness@linutronix.de>, 
-    Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-    linux-serial <linux-serial@vger.kernel.org>, 
-    LKML <linux-kernel@vger.kernel.org>, stable@vger.kernel.org
-Subject: Re: [PATCH v2 3/3] serial: core: reject baud_base values that overflow
- port->uartclk in uart_set_info()
-In-Reply-To: <20260921013027.659965-3-benquike@gmail.com>
-Message-ID: <6919bc88-ea25-3349-29ac-c50bffa03898@linux.intel.com>
-References: <20260919222627.3797854-1-benquike@gmail.com> <20260921013027.659965-3-benquike@gmail.com>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="Mi3tUiDJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 994DA1F000FF;
+	Mon, 21 Sep 2026 12:16:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
+	s=korg; t=1789992965;
+	bh=gkdhwQJypqCwU0qXuaTIExx64fio9MAL9upHipbfc1E=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=Mi3tUiDJalT3fepDX/6sdyIi2NEQE6NFBD9iEpvexTVCMvxJdqQo+UgURL+yNL/+z
+	 xZ4Gejfcayka7U91QCYbhnAkcFpAJBXgO9EAkK7ZLC1qkCjq45mRLko+6iyRdDUoY4
+	 i82wOEPRzTQQZqBhZn2JCfgjiQjS4787BKnq2HHM=
+Date: Mon, 21 Sep 2026 14:15:57 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: John Ogness <john.ogness@linutronix.de>
+Cc: Jiri Slaby <jirislaby@kernel.org>,
+	Andy Shevchenko <andy.shevchenko@gmail.com>,
+	Petr Mladek <pmladek@suse.com>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Jon Hunter <jonathanh@nvidia.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	linux-kernel@vger.kernel.org,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Crescent Hsieh <crescentcy.hsieh@moxa.com>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH tty 0/1] Make 8250 deferred MSR handling LAZY
+Message-ID: <2026092133-runt-sharper-445c@gregkh>
+References: <20260828155811.270462-1-john.ogness@linutronix.de>
+ <87ld8usz1x.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87ld8usz1x.fsf@jogness.linutronix.de>
 
-On Mon, 21 Sep 2026, Hui Peng wrote:
+On Mon, Sep 21, 2026 at 12:07:46PM +0206, John Ogness wrote:
+> Hi Greg, Jiri,
+> 
+> On 2026-08-28, John Ogness <john.ogness@linutronix.de> wrote:
+> > There was a report and follow-up discussion [0] about a problem
+> > using regular irq_work queuing on some platforms when entering
+> > cpuidle. To circumvent this problem, all irq_work for printk will
+> > become IRQ_WORK_LAZY [1].
+> >
+> > The 8250 console driver uses irq_work to defer MSR handling during
+> > atomic printing. This means it is vulnerable to the same problem if,
+> > for example, a WARN() is hit while entering cpuidle on one of the
+> > affected platforms.
+> >
+> > Avoid the problem for deferred MSR handling by changing
+> > console_msr_work to IRQ_WORK_LAZY.
+> 
+> Any chance of getting this into 7.3? A similar patch went into 7.3-rc3
+> for printk:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/kernel/printk?id=560f4deda32785e260056200f8bb911c475c5b88
+> 
+> Or do I need to send a v2 with an updated commit message? I could
+> rephrase it similar to the related printk commit. Something like this:
+> 
+> Change console_msr_work (defers MSR handling) to be IRQ_WORK_LAZY,
+> thus not raising an IRQ upon irq_work queuing. The irq_work is then
+> handled on the next kernel tick. This additional delay is acceptable
+> because the MSR handling also occurs in the an interrupt handler, if
+> mctrl is queried, and during console resume. Using IRQ_WORK_LAZY has
+> the benefit of not needing to raise an IRQ for each line of atomic
+> console printing when modem control is active.
+> 
+> On a side note, the Tegra20 and Tegra30 platforms can hang if an
+> irq_work IRQ is raised while entering cpuidle states. This problem
+> was reproducible by performing atomic printing while entering cpuidle.
+> So this change also provides a workaround for these platforms (as
+> long as they are not running tickless).
 
-> In uart_set_info(), new_info->baud_base is multiplied by 16 and stored in
-> uport->uartclk (an unsigned int):
-> 
->   uport->uartclk = new_info->baud_base * 16;
-> 
-> While uart_set_info() checks if (uartclk == 0) and
-> if (new_info->baud_base < 9600), when new_info->baud_base exceeds
-> UINT_MAX / 16 with low bits set (for example, 0x10000001), multiplying
-> by 16 wraps around in 32-bit unsigned arithmetic to a small non-zero value
-> (16), bypassing both uartclk == 0 and new_info->baud_base < 9600 and
-> setting uport->uartclk = 16 (baud_base = 1, well below the required
-> minimum of 9600 * 16).
-> 
-> Reject new_info->baud_base > UINT_MAX / 16 with -EINVAL in
-> uart_set_info().
-> 
-> Tested in QEMU against Linux 7.3.0-rc3 by calling ioctl(fd, TIOCSSERIAL,
-> &ss) with ss.baud_base = 0x10000001 on /dev/ttyS1: on the unfixed kernel
-> TIOCSSERIAL succeeds (ret = 0) and wraps uport->uartclk to 16
-> (TIOCGSERIAL reports baud_base = 1), whereas with the fix applied
-> TIOCSSERIAL returns -EINVAL and preserves the existing uport->uartclk.
-> 
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Fixes: 6eabce6608d6 ("serial: core: check uartclk for zero to avoid divide by zero")
-> Cc: stable@vger.kernel.org
-> Assisted-by: LLM
-> Signed-off-by: Hui Peng <benquike@gmail.com>
-> ---
-> Changes in v2:
-> - Split out into patch 3/3 of the series, add Cc: stable@vger.kernel.org,
->   and document the QEMU test method, as requested by Greg Kroah-Hartman.
-> 
->  drivers/tty/serial/serial_core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index 128fc056f5c9..4cd4fb0f7ee3 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -965,7 +965,7 @@ static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
->  	}
->  
->  	if ((new_info->irq >= irq_get_nr_irqs()) || (new_info->irq < 0) ||
-> -	    (new_info->baud_base < 9600))
-> +	    (new_info->baud_base < 9600) || (new_info->baud_base > UINT_MAX / 16))
+An updated changelog would be great, then I can take it for 7.3-final
+easier.
 
-Include for UINT_MAX is missing.
+thanks,
 
-But why is this checked here? I'd have thought the more logical place is 
-where the function checks if the resulting uartclk is zero?
-
->  		return -EINVAL;
->  
->  	if (change_port || change_irq) {
-> 
-
--- 
- i.
-
+greg k-h
