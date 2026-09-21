@@ -1,103 +1,138 @@
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.4])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FBDE134CCF;
-	Mon, 21 Sep 2026 03:53:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 249FC349CF0;
+	Mon, 21 Sep 2026 04:23:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789962833; cv=none; b=qpmVw8owVkDvNrOR1MBoz61o4MqonALp3dXdmKkZs1c57cNAyrGFRhQbBl3UQNowoeNPNqa8U068mAEF1AdqoePCkuNcXZmFBeNayAU0+y+/uaRdpYL7ntZGQglvxIhw13C+/SYIjSTLKBDyZHuQ1xrHCuZ8nZ2MhmjRjleOqU4=
+	t=1789964612; cv=none; b=NQwPXE79lGD1126bT4MsLGGbVHqSAqtQJU7KfNZXfn83ngqiqiwCvtaTbUX345qLPGE2Quj2xdY0Itye6MI4A5EfSRaU5sae7epFWi8YlAD9Wyn8nGVL5o8ptLAOuc0rMnqi+L33sktW6OeIRYblDdLIBQhe12yAPRJ7FosV/6A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789962833; c=relaxed/simple;
-	bh=thBRA3BdH8VdVY4ioZyS/SS+nEIYECE2vWuugLNgY/U=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
-	 MIME-Version:Message-ID; b=mFcPod1nHuHurMxCDKoTUZe7161PXtrScj1w8o9oTRNSeTCuVDO/qbNoZwmH2YzqM7SIGxFzIQrN+fH6eeeLmdz4/NGEwjPUSTodJFteaE83KAuzeOC/HmZ9758847kjgTuGOG8JF6cZN/8HLKtN4j4fzy8YBaZahtlHaJu3wqw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=M9LOz8VE; arc=none smtp.client-ip=220.197.31.4
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1789964612; c=relaxed/simple;
+	bh=/EqyzhFKjVT1Spu2ADyKiMSyXx4yZn96DdPYCnXHJf8=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=IHJmFg05sDzFdym98+mH/szQOgc7IBupzfheyCLUKwEGUl+dAAGmzDSufIxxGYwfHjaXDUxRUq3UQ2WdBREG52fyWZ9Ak7RcYn1CjHnc2+wyG7WZIo0VVjkF/jF6aBMs/g2MPbaEGr2P+927zd3LY4fA5uRmlZlW++hod1oR6DM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cDcQGHZa; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="M9LOz8VE"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=Date:From:To:Subject:Content-Type:MIME-Version:
-	Message-ID; bh=thBRA3BdH8VdVY4ioZyS/SS+nEIYECE2vWuugLNgY/U=; b=M
-	9LOz8VEDOzW1v1SZPBtTQXUuw+YsMKEVnxVl/0cHjx3OSoeJ0X6egsKou5PFBYgY
-	Wi1+GsvX8iQrfU7GrEzCATDMxFhFufmC5vdvXv3z1xkkrHp+twfDGb0DeW51aXNS
-	mGvGIB9YhBi/YgIsNqWRThQ5VZxIqnaG1lWWe+9A2E=
-Date: Mon, 21 Sep 2026 11:52:33 +0800 (CST)
-From: zl020895  <zl020895@163.com>
-To: "Linus Walleij" <linusw@kernel.org>
-Cc: longzhao@ambarella.com, "Arnd Bergmann" <arnd@arndb.de>,
-	"Krzysztof Kozlowski" <krzk@kernel.org>,
-	"Alexandre Belloni" <alexandre.belloni@bootlin.com>,
-	soc@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	"Rob Herring" <robh@kernel.org>,
-	"Krzysztof Kozlowski" <krzk+dt@kernel.org>,
-	"Conor Dooley" <conor+dt@kernel.org>,
-	"Michael Turquette" <mturquette@baylibre.com>,
-	"Stephen Boyd" <sboyd@kernel.org>,
-	"Jerome Brunet" <jbrunet@baylibre.com>,
-	"Bartosz Golaszewski" <brgl@kernel.org>,
-	"Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-	"Jiri Slaby" <jirislaby@kernel.org>,
-	"Andy Shevchenko" <andriy.shevchenko@linux.intel.com>,
-	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	"Catalin Marinas" <catalin.marinas@arm.com>,
-	"Will Deacon" <will@kernel.org>, "Lee Jones" <lee@kernel.org>,
-	mfd@lists.linux.dev, devicetree@vger.kernel.org,
-	linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re:Re: [PATCH v7 08/15] gpiolib: regmap: add write_data_after_dir
- quirk
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version 2023.4-cmXT build
- 20260511(2e539873) Copyright (c) 2002-2026 www.mailtech.cn 163com
-In-Reply-To: <CAD++jLkHfgu_V8i_fhE1WQe+qwJ=ictQSONWPq1fPuYYb8tSRA@mail.gmail.com>
-References: <20260915-cv75-v5-v7-0-3297d3fbc9c0@ambarella.com>
- <20260915-cv75-v5-v7-8-3297d3fbc9c0@ambarella.com>
- <CAD++jLkHfgu_V8i_fhE1WQe+qwJ=ictQSONWPq1fPuYYb8tSRA@mail.gmail.com>
-X-NTES-SC: AL_Qu2TC/WdvU8u5SiZYukcn0wRhug/UMa4u/sm3YNXc80ElTHX5Qk5QFV9DV/c98WtKxmClBWuVzh21PVmZapTMlnau6fbzs43n5vSZcX5aQ==
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cDcQGHZa"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B22FFC2BCFA;
+	Mon, 21 Sep 2026 04:23:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1789964611;
+	bh=/EqyzhFKjVT1Spu2ADyKiMSyXx4yZn96DdPYCnXHJf8=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=cDcQGHZaWO/kbpRvK/YPi0kUc2Z1tA0GpJTlLbRuZmXYhGIC7dKrO2fgVLNww/Spd
+	 r52VnBvTAe2nPGPhaEie9Zs7Ob84hjV/RQqUzR9YM/kM4IWJjX83iJHqgcX/EMCiJi
+	 e7Lt+XFuGoF77mK/isUsg2JeXqPE+T5sgNRMsc/nc9iLD2e789Sw/Be22VGgtilkHC
+	 rProapQbCQQZnJ+Me+z2i/3CQSZT+gReeE4BluLmLr9FjJ6ijub9gfmMpDWzGsi4mB
+	 4JJEecx8iTpSdgnVaZr0LpBl8zGDc43h1RuYOIZ0lP1gH/DiNR0LcGbQsi+6h+n/W4
+	 xiZhL2Z25P6XA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A63BC982F1;
+	Mon, 21 Sep 2026 04:23:31 +0000 (UTC)
+From: Long Zhao via B4 Relay <devnull+longzhao.ambarella.com@kernel.org>
+Date: Mon, 21 Sep 2026 12:23:20 +0800
+Subject: [PATCH v8 01/18] dt-bindings: arm: add Ambarella CV75 platforms
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Message-ID: <46342be7.3c81.1a0c2181721.Coremail.zl020895@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID:fSgvCgD3n00BqrBqt2pLAA--.36901W
-X-CM-SenderInfo: d2oqjiqyzvqiywtou0bp/xtbC7gFx4mqwqgHFHgAA3W
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260921-cv75-v5-v8-1-282ff5d98dda@ambarella.com>
+References: <20260921-cv75-v5-v8-0-282ff5d98dda@ambarella.com>
+In-Reply-To: <20260921-cv75-v5-v8-0-282ff5d98dda@ambarella.com>
+To: Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>, 
+ Alexandre Belloni <alexandre.belloni@bootlin.com>, soc@lists.linux.dev, 
+ linux-arm-kernel@lists.infradead.org
+Cc: Long Zhao <longzhao@ambarella.com>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Michael Turquette <mturquette@baylibre.com>, 
+ Stephen Boyd <sboyd@kernel.org>, Jerome Brunet <jbrunet@baylibre.com>, 
+ Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, 
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+ =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+ Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, 
+ Long Zhao <zl020895@163.com>, Lee Jones <lee@kernel.org>, 
+ mfd@lists.linux.dev, devicetree@vger.kernel.org, linux-clk@vger.kernel.org, 
+ linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1789964608; l=1876;
+ i=longzhao@ambarella.com; s=20260730; h=from:subject:message-id;
+ bh=a3UsADFSuMY/QlkptOgZJzk4a6/aFRhf9dYNkAufvC4=;
+ b=tdS3O/vAb/JGuglKe/bQoaZsCa/BpNt1njxdIRQtN1ZyVZPrSBqoBqKDX8Ilr9mKyyxo7a1iB
+ P6qsn4+mfU3Dda0EhQELXRXv0glfv6jTiNX58GhlJtXFkf/t/SdVjbp
+X-Developer-Key: i=longzhao@ambarella.com; a=ed25519;
+ pk=/xGhPTOX0/eYsyTWzyjjgAIW1Z/YD+IlnOnvcdRozow=
+X-Endpoint-Received: by B4 Relay for longzhao@ambarella.com/20260730 with
+ auth_id=903
+X-Original-From: Long Zhao <longzhao@ambarella.com>
+Reply-To: longzhao@ambarella.com
 
-SGkgTGludXMsCgpUaGFua3MgZm9yIHRoZSByZXZpZXcuIHY4IHdpbGwgc2tpcCB0aGUgcHJlLWRp
-cmVjdGlvbiBncGlvX3JlZ21hcF9zZXQoKSB3aGVuCndyaXRlX2RhdGFfYWZ0ZXJfZGlyIGlzIHNl
-dC4gVGhlIGdwaW9fcmVnbWFwX3NldCgpIHJldHVybnMgc3RheQppZ25vcmVkLCBwZXIgQW5keS4K
-CjAwMTQ6IGFkZGVkIHlvdXIgUmV2aWV3ZWQtYnkuCgpCZXN0IHJlZ2FyZHMsCkxvbmcgWmhhbwoK
-QXQgMjAyNi0wOS0yMSAwNjowMjo0OCwgIkxpbnVzIFdhbGxlaWoiIDxsaW51c3dAa2VybmVsLm9y
-Zz4gd3JvdGU6Cj5IaSBMb25nLAo+Cj50aGFua3MgZm9yIHlvdXIgcGF0Y2ghCj4KPk9uIFR1ZSwg
-U2VwIDE1LCAyMDI2IGF0IDE6MTXigK9QTSBMb25nIFpoYW8gdmlhIEI0IFJlbGF5Cj48ZGV2bnVs
-bCtsb25nemhhby5hbWJhcmVsbGEuY29tQGtlcm5lbC5vcmc+IHdyb3RlOgo+Cj4KPj4gRnJvbTog
-TG9uZyBaaGFvIDxsb25nemhhb0BhbWJhcmVsbGEuY29tPgo+Pgo+PiBTb21lIGNvbnRyb2xsZXJz
-IGlnbm9yZSBkYXRhLXJlZ2lzdGVyIHdyaXRlcyB3aGlsZSBhIGxpbmUgaXMgc3RpbGwgYW4KPj4g
-aW5wdXQuIE9wdGlvbmFsbHkgd3JpdGUgdGhlIG91dHB1dCB2YWx1ZSBhZ2FpbiBhZnRlciBzd2l0
-Y2hpbmcgdGhlCj4+IGRpcmVjdGlvbiwgbWF0Y2hpbmcgdGhlIGV4aXN0aW5nIFBMMDYxIGJlaGF2
-aW91ci4KPj4KPj4gU2lnbmVkLW9mZi1ieTogTG9uZyBaaGFvIDxsb25nemhhb0BhbWJhcmVsbGEu
-Y29tPgo+Cj5PSyBJIHNlZS4KPgo+KC4uLikKPgo+Cj4+IEBAIC0yNzEsOSArMjcyLDIyIEBAIHN0
-YXRpYyBpbnQgZ3Bpb19yZWdtYXBfZGlyZWN0aW9uX291dHB1dChzdHJ1Y3QgZ3Bpb19jaGlwICpj
-aGlwLAo+PiAgICAgICAgICAgICAgICAgICAgICAgICByZXR1cm4gcmV0Owo+PiAgICAgICAgIH0K
-Pj4KPj4gLSAgICAgICBncGlvX3JlZ21hcF9zZXQoY2hpcCwgb2Zmc2V0LCB2YWx1ZSk7Cj4+ICsg
-ICAgICAgcmV0ID0gZ3Bpb19yZWdtYXBfc2V0KGNoaXAsIG9mZnNldCwgdmFsdWUpOwo+PiArICAg
-ICAgIGlmIChyZXQpCj4+ICsgICAgICAgICAgICAgICByZXR1cm4gcmV0Owo+Cj5pZiAoIWdwaW8t
-PndyaXRlX2RhdGFfYWZ0ZXJfZGlyKSB7Cj4gICAgIHJldCA9IGdwaW9fcmVnbWFwX3NldChjaGlw
-LCBvZmZzZXQsIHZhbHVlKTsKPiAgICAgaWYgKHJldCkKPiAgICAgICAgICAgICByZXR1cm4gcmV0
-Owo+fQo+Cj5UaGVyZSBpcyBubyBwb2ludCBpbiBkb2luZyBzb21ldGhpbmcgeW91IGtub3cgd2ls
-bCBub3QKPndvcmsuCj4KPj4gKyAgICAgICByZXQgPSBncGlvX3JlZ21hcF9zZXRfZGlyZWN0aW9u
-KGNoaXAsIG9mZnNldCwgdHJ1ZSk7Cj4+ICsgICAgICAgaWYgKHJldCkKPj4gKyAgICAgICAgICAg
-ICAgIHJldHVybiByZXQ7Cj4+Cj4+IC0gICAgICAgcmV0dXJuIGdwaW9fcmVnbWFwX3NldF9kaXJl
-Y3Rpb24oY2hpcCwgb2Zmc2V0LCB0cnVlKTsKPj4gKyAgICAgICAvKgo+PiArICAgICAgICAqIGdw
-aW8gdmFsdWUgaXMgc2V0IGFnYWluLCBiZWNhdXNlIHBsMDYxIGRvZXNuJ3QgYWxsb3cgdG8gc2V0
-IHZhbHVlIG9mCj4+ICsgICAgICAgICogYSBncGlvIHBpbiBiZWZvcmUgY29uZmlndXJpbmcgaXQg
-aW4gT1VUIG1vZGUuCj4+ICsgICAgICAgICovCj4+ICsgICAgICAgaWYgKGdwaW8tPndyaXRlX2Rh
-dGFfYWZ0ZXJfZGlyKQo+PiArICAgICAgICAgICAgICAgcmV0dXJuIGdwaW9fcmVnbWFwX3NldChj
-aGlwLCBvZmZzZXQsIHZhbHVlKTsKPgo+VGhlbiB0aGVyZSBpcyBBbmR5J3MgY29tbWVudCBhcyB3
-ZWxsLgo+Cj5UaGUgcmVzdCBsb29rcyBnb29kLgo+Cj5Zb3VycywKPkxpbnVzIFdhbGxlaWoK
+From: Long Zhao <longzhao@ambarella.com>
+
+Add the Ambarella vendor prefix and CV75 EVK board compatible for the
+initial SoC bring-up.
+
+Reviewed-by: Linus Walleij <linusw@kernel.org>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Signed-off-by: Long Zhao <longzhao@ambarella.com>
+---
+ .../devicetree/bindings/arm/ambarella.yaml         | 24 ++++++++++++++++++++++
+ .../devicetree/bindings/vendor-prefixes.yaml       |  2 ++
+ 2 files changed, 26 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/arm/ambarella.yaml b/Documentation/devicetree/bindings/arm/ambarella.yaml
+new file mode 100644
+index 000000000000..72946e94fa76
+--- /dev/null
++++ b/Documentation/devicetree/bindings/arm/ambarella.yaml
+@@ -0,0 +1,24 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/arm/ambarella.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Ambarella SoC platforms
++
++maintainers:
++  - Long Zhao <longzhao@ambarella.com>
++
++properties:
++  $nodename:
++    const: "/"
++
++  compatible:
++    oneOf:
++      - description: Ambarella CV75 boards
++        items:
++          - enum:
++              - ambarella,cv75-evk
++          - const: ambarella,cv75
++
++additionalProperties: true
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+index 85a27937832e..f48aa6dabbe9 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
++++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+@@ -112,6 +112,8 @@ patternProperties:
+     description: Amarula Solutions
+   "^amazon,.*":
+     description: Amazon.com, Inc.
++  "^ambarella,.*":
++    description: Ambarella, Inc.
+   "^amcc,.*":
+     description: Applied Micro Circuits Corporation (APM, formally AMCC)
+   "^amd,.*":
+
+-- 
+2.34.1
+
+
