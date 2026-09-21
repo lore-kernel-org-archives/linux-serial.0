@@ -1,117 +1,101 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2AAF372EDE;
-	Mon, 21 Sep 2026 04:23:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8F40466B58;
+	Mon, 21 Sep 2026 10:01:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789964614; cv=none; b=Jk0/KwkJlMFEzkha2C9g0VmOm3nYehPGXObLZwh4/eUys2TlBLBewrmruKeJ3rJDZ/VNOfUFCJsC/gQiW64351X9n8tMiI/VmU5f2pEeZm8E8rA+648Jainu25i9Ai7OyGUvXctvqjQqIQ/uQxNeBjPabpaF3LG/MVkrc9Pnhe4=
+	t=1789984911; cv=none; b=ZmVj5rth0ls+BTMWqo1RkFciz84JfGzKFw6Zf6FYtasbpsvBcPZ+Ny4x2rz8Vvv0PBzah+bH8sbTAQVHGYkuXIRgE4bxCG77WLuiDanOPZxwi5hwbEg78X6mZrEVc7lUSpxRSwLnBBidWT6G8hPjGaxCQNwJJXcP/IqiwjTTadA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789964614; c=relaxed/simple;
-	bh=zgU3iQM72YbxnsGmykO32NltLNkwhLgTNSOphGXHrLE=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=BRJQ3aU5g8VuyeCAkyKqRuLDVwpzcImcOHp1VjZz182FMR4rauJOUUlZMb6Pn6G6rEIEXogGR82bjqJ2GJhQf5r6Smo3iuozQvRDrj9PgdIoRE+dXd+0CuduVqcyHIfOyE5Q7+l3ENylJmzd34XgExM7x2HMhb+B6RU3IKlCMxc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ERU9SdEM; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1789984911; c=relaxed/simple;
+	bh=5k9BkSvb1njXjOIy83C5tRV0gwALsOvJKkkv40UlMRE=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=DT8V6DlrWfpc71P7PQ6krBaXIBiNPOuwdmTN4/AhgHMOvVEqmyL1O8GPm0kBJh5PWbrUNlh3EbFtzk2+7nOKCiTqIYZeEvfLwiMEdJKZbojZPWCtZ9stHMnNG0q5Lpuv3x6odqMkxMDXv+NAbg/3KDG1r5yB61hDM1J3HEhJOfA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=bjBB7dPQ; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=TUHc8Ejr; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ERU9SdEM"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 9D0D8C2BD00;
-	Mon, 21 Sep 2026 04:23:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1789964614;
-	bh=zgU3iQM72YbxnsGmykO32NltLNkwhLgTNSOphGXHrLE=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=ERU9SdEMeMctXWCW8214q8AQqnELC5pAedsn65NzsyUxEAqpZinG23NZeobCS/IzK
-	 Pu+CneDjxSCDr5xuwaKVFnyBv1aSZGrRqgP9FrPw9ZZCJHwsd5AE1mXTcHaBDZZDeY
-	 kgYecPX0BNQjKCcXzi8r+S0IbzTAVukfN7alUsH7Q3kBJFn5zFGIb0NGRyK6OBe1T3
-	 O2s+FUNjpRoaTHRNehx+HqEcg5wnkA2MRWiUIhD2dabD9G2hRzz3DLqghkZRoGCi01
-	 vx2WFB1zBCTrmM83AZCHX25k61qfHm2GL7LlWL/ZyfKups8fyXv3BuFQLUoyd4bQEf
-	 VWnRZgS0YFPlg==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B5D2C982F1;
-	Mon, 21 Sep 2026 04:23:34 +0000 (UTC)
-From: Long Zhao via B4 Relay <devnull+longzhao.ambarella.com@kernel.org>
-Date: Mon, 21 Sep 2026 12:23:37 +0800
-Subject: [PATCH v8 18/18] MAINTAINERS: add ARM/AMBARELLA SoC support
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="bjBB7dPQ";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="TUHc8Ejr"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1789984907;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=5k9BkSvb1njXjOIy83C5tRV0gwALsOvJKkkv40UlMRE=;
+	b=bjBB7dPQfvFuSOScLb8dNZtkVqisPE5weO25prqfQXV4UTR4fkh3dUDbXUwlBM5D+mTBlK
+	nESbhdmkHDeCSJZmGTY6w2e2Wd94U9797HFy8CRElwItZnQTTQF3fmzVZXJiUvwFAe0o2N
+	wV3h/0nWpZuUPVK0vUc/I+Yrzeu5J/mmYHXFhgmwrDAzhvvFZaWJRn/pREpzYQYf+vQhqV
+	lVhEG5PvNQkAXXEoI1KBSTsDHJ7Hxup6YPxhpPvcd6dkt6GSEJAprb2qw5t8jpn0PhKBzQ
+	5Kcmn/U+WJ1djEg5GBH8S6WX/Vu16uotC+TBUl5L8Lc4/Sdu+JOC+ycjQTVURQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1789984907;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=5k9BkSvb1njXjOIy83C5tRV0gwALsOvJKkkv40UlMRE=;
+	b=TUHc8Ejrgq6zP9JT8hwlO3FkVXsVgx72qbu75aivokAq0TLIF5u121BWg5rmsdpRcOBnBu
+	QxBAz87CLcuOJUDA==
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, Petr Mladek
+ <pmladek@suse.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Jon
+ Hunter <jonathanh@nvidia.com>, Thierry Reding <thierry.reding@kernel.org>,
+ linux-kernel@vger.kernel.org, Ilpo =?utf-8?Q?J=C3=A4rvinen?=
+ <ilpo.jarvinen@linux.intel.com>, Andy Shevchenko
+ <andriy.shevchenko@linux.intel.com>, Crescent Hsieh
+ <crescentcy.hsieh@moxa.com>, Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+ linux-serial@vger.kernel.org
+Subject: Re: [PATCH tty 0/1] Make 8250 deferred MSR handling LAZY
+In-Reply-To: <20260828155811.270462-1-john.ogness@linutronix.de>
+References: <20260828155811.270462-1-john.ogness@linutronix.de>
+Date: Mon, 21 Sep 2026 12:07:46 +0206
+Message-ID: <87ld8usz1x.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260921-cv75-v5-v8-18-282ff5d98dda@ambarella.com>
-References: <20260921-cv75-v5-v8-0-282ff5d98dda@ambarella.com>
-In-Reply-To: <20260921-cv75-v5-v8-0-282ff5d98dda@ambarella.com>
-To: Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>, 
- Alexandre Belloni <alexandre.belloni@bootlin.com>, soc@lists.linux.dev, 
- linux-arm-kernel@lists.infradead.org
-Cc: Long Zhao <longzhao@ambarella.com>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Michael Turquette <mturquette@baylibre.com>, 
- Stephen Boyd <sboyd@kernel.org>, Jerome Brunet <jbrunet@baylibre.com>, 
- Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, 
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
- =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
- Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, 
- Long Zhao <zl020895@163.com>, Lee Jones <lee@kernel.org>, 
- mfd@lists.linux.dev, devicetree@vger.kernel.org, linux-clk@vger.kernel.org, 
- linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, 
- linux-kernel@vger.kernel.org
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1789964609; l=1241;
- i=longzhao@ambarella.com; s=20260730; h=from:subject:message-id;
- bh=66/FpPmSuU75AtQewU8cj7mu+Qa/5qamx4Km8ySoeYo=;
- b=ZcB9Kw+0TS4NBh047YvqdlTucwksnHv6Jzs2vgmfTu+GGoB4zAkT3OgmRRaYANUW/Dvz7eMeK
- Z1K7boRmfs3DJVX054GrV5aiJrcQfiKsyKmk9I1NNu/oWYOSHaCDjXM
-X-Developer-Key: i=longzhao@ambarella.com; a=ed25519;
- pk=/xGhPTOX0/eYsyTWzyjjgAIW1Z/YD+IlnOnvcdRozow=
-X-Endpoint-Received: by B4 Relay for longzhao@ambarella.com/20260730 with
- auth_id=903
-X-Original-From: Long Zhao <longzhao@ambarella.com>
-Reply-To: longzhao@ambarella.com
+Content-Type: text/plain
 
-From: Long Zhao <longzhao@ambarella.com>
+Hi Greg, Jiri,
 
-Add a maintainer entry covering Ambarella CV75 bindings, DTS and
-related drivers.
+On 2026-08-28, John Ogness <john.ogness@linutronix.de> wrote:
+> There was a report and follow-up discussion [0] about a problem
+> using regular irq_work queuing on some platforms when entering
+> cpuidle. To circumvent this problem, all irq_work for printk will
+> become IRQ_WORK_LAZY [1].
+>
+> The 8250 console driver uses irq_work to defer MSR handling during
+> atomic printing. This means it is vulnerable to the same problem if,
+> for example, a WARN() is hit while entering cpuidle on one of the
+> affected platforms.
+>
+> Avoid the problem for deferred MSR handling by changing
+> console_msr_work to IRQ_WORK_LAZY.
 
-Reviewed-by: Linus Walleij <linusw@kernel.org>
-Signed-off-by: Long Zhao <longzhao@ambarella.com>
----
- MAINTAINERS | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+Any chance of getting this into 7.3? A similar patch went into 7.3-rc3
+for printk:
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 803b60ad628f..59e5b32d7a02 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -2502,6 +2502,20 @@ F:	drivers/clocksource/asm9260_timer.c
- F:	drivers/rtc/rtc-asm9260.c
- F:	drivers/watchdog/asm9260_wdt.c
- 
-+ARM/AMBARELLA SOC SUPPORT
-+M:	Long Zhao <longzhao@ambarella.com>
-+L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
-+L:	devicetree@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/arm/ambarella.yaml
-+F:	Documentation/devicetree/bindings/clock/ambarella,cv75-rct.yaml
-+F:	Documentation/devicetree/bindings/pinctrl/ambarella,cv75-pinctrl.yaml
-+F:	arch/arm64/boot/dts/ambarella/
-+F:	drivers/clk/ambarella/
-+F:	drivers/pinctrl/pinctrl-ambarella*
-+F:	include/dt-bindings/clock/ambarella,cv75-rct.h
-+N:	ambarella
-+
- ARM/AMD PENSANDO ARM64 ARCHITECTURE
- M:	Brad Larson <blarson@amd.com>
- L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/kernel/printk?id=560f4deda32785e260056200f8bb911c475c5b88
 
--- 
-2.34.1
+Or do I need to send a v2 with an updated commit message? I could
+rephrase it similar to the related printk commit. Something like this:
 
+Change console_msr_work (defers MSR handling) to be IRQ_WORK_LAZY,
+thus not raising an IRQ upon irq_work queuing. The irq_work is then
+handled on the next kernel tick. This additional delay is acceptable
+because the MSR handling also occurs in the an interrupt handler, if
+mctrl is queried, and during console resume. Using IRQ_WORK_LAZY has
+the benefit of not needing to raise an IRQ for each line of atomic
+console printing when modem control is active.
 
+On a side note, the Tegra20 and Tegra30 platforms can hang if an
+irq_work IRQ is raised while entering cpuidle states. This problem
+was reproducible by performing atomic printing while entering cpuidle.
+So this change also provides a workaround for these platforms (as
+long as they are not running tickless).
+
+John Ogness
