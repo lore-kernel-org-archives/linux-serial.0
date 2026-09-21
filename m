@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A52ED35E1AC;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C88DC360ED6;
 	Mon, 21 Sep 2026 04:23:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789964612; cv=none; b=fxdQaAvsivKjnaZh6KN550FKfWpbA7itRnK6tLh1g2eUsOPZNPekhIDlCdMmpXoTeBMPPvr+1iBKaQcC2aA09OF6xuOyjk6tM4K43NpWDR64J/0MY96kTPDtzRBZZtuc+bf4GBJO5D1qIoaM/mqqqvEGGaXSEW+qSkQlj8V/7Zs=
+	t=1789964612; cv=none; b=eTXsG2+SWj3yJVoZXmCelp1r5bbDgERNNlXwneTfQXDmqg8eu4oFOl6KopdCNW+zf3hmI4FH4fShLGzdqUh4BiuMa571vUCJWfMEQFvc4AytBSX90NrH3io8wNW4+obED5wQ2zbpOsmup4eY0lbOvQmxROUfgvuwEljufRxdJ3k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1789964612; c=relaxed/simple;
-	bh=jvbL/2RiMhg7JLG9DBXG5C6oQ3baY2PtbvCk8gshE7A=;
+	bh=gVLLIDHjbMni5VoIW3Uu4KnGYFcqhuw0LoFOcrTkdTk=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=YdWKXZ8/XD9LciNSOCOBHh410NRQlVf55iNtdXw/FXhCPCAGOhRdN+F74Bs5HuTtq5L6AclnhbcnpQgu5eT1iebuh3WWlQ0cN52YBlCsVfVTDbazTbf6IFuRJe/beGVgNP+t9d6OcfjooslNbuOAd1+PwD05BokPvs1c7GUMEdk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=phF9+0Q2; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=XeoQ5OMsZpg4J8tblLBTEFNdfyof1I593HY5/9yZ6JNS1I/OA//8eNZK0nG9HquolOOfZw6WIQd+9S135PLjr2vRkR6PbCFKGVttWe2/nV7g6NDXOcEjpWTQdf4BI14JlUa8x18tbvDHPLvlu/T5bDfr/y6vGRFp6kYFnXkdKZg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ODAkMBuq; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="phF9+0Q2"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7F08AC2BCFD;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ODAkMBuq"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 96AF6C2BCFF;
 	Mon, 21 Sep 2026 04:23:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1789964612;
-	bh=jvbL/2RiMhg7JLG9DBXG5C6oQ3baY2PtbvCk8gshE7A=;
+	bh=gVLLIDHjbMni5VoIW3Uu4KnGYFcqhuw0LoFOcrTkdTk=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=phF9+0Q2K4HXelrK4K49nidam5whFox+Kjs9MzfpeY95KmUrrLLBxaaMO9ZzIniUL
-	 JcGJNuMA8EMYzu5MrMsCT0ofTWgv+VGl6rjgbQA0NE/Gvv7oyoadDjZI8jPuY1/JTK
-	 Y2AnkBcRvzNMMy1ADCVjT6cq2E06bk5ennI/TBQU1TxFyqrJNWmKPhxoMTKR9YEe4M
-	 CM7uv/yh51bqdJq7YGbKD4B8+qsEdC6dIbkIO4GIu3b/GuSLMgTe9fbwG5uiCkSByD
-	 2eh6ChfJjprXR7Vs4WVbAgFgb4p85176q43ra0Rf3Mj3qYiTwwPF0KY2XoufJ9mgnt
-	 Ty7lEyWa2NKTw==
+	b=ODAkMBuq2GfUqTIyZBWh0GWwOaZOrNxpxlReyt6RQyuiBRamlFvboU4jccE3gdMmp
+	 BVpIzf0MhmiOlQ5naICb1EJ9bC124SKk1WJhc9EKjLV5zETM1EFb2G/1j87cSBwabl
+	 b7QxryX9I/5pD7VMZmEGl+2UlFUt4Ch/RzosZaA8b69+6zXTmi8D+Ymxcmx41HJMKw
+	 YstOGx3NtXmKBpdiycfX01NpdiEVqUG8q8OAlTQ/drYntByeCSB7XvMnBD9qgBo2ca
+	 mYjoQ1G4g8lgdsnu/VQVkHHwqdaRx53f2wykqY00FQBGb2+t7BG3JsG72NsU0ITQk1
+	 cDvHHdy5Zc1hg==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68354C982F2;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FF10C982F4;
 	Mon, 21 Sep 2026 04:23:32 +0000 (UTC)
 From: Long Zhao via B4 Relay <devnull+longzhao.ambarella.com@kernel.org>
-Date: Mon, 21 Sep 2026 12:23:27 +0800
-Subject: [PATCH v8 08/18] gpiolib: regmap: add write_data_after_dir quirk
+Date: Mon, 21 Sep 2026 12:23:28 +0800
+Subject: [PATCH v8 09/18] gpiolib: regmap: add gpio_regmap_get_chip()
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260921-cv75-v5-v8-8-282ff5d98dda@ambarella.com>
+Message-Id: <20260921-cv75-v5-v8-9-282ff5d98dda@ambarella.com>
 References: <20260921-cv75-v5-v8-0-282ff5d98dda@ambarella.com>
 In-Reply-To: <20260921-cv75-v5-v8-0-282ff5d98dda@ambarella.com>
 To: Arnd Bergmann <arnd@arndb.de>, Krzysztof Kozlowski <krzk@kernel.org>, 
@@ -62,11 +62,11 @@ Cc: Long Zhao <longzhao@ambarella.com>, Rob Herring <robh@kernel.org>,
  linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, 
  linux-kernel@vger.kernel.org
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1789964608; l=3092;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1789964608; l=1405;
  i=longzhao@ambarella.com; s=20260730; h=from:subject:message-id;
- bh=fpAj3vMXjZmURWyfts5CtyfyhTDoS5mn512oJA6h2aY=;
- b=e+MsuppDlgpjoNWogF4SShQN6eYtdesHSzDj+4r/pX+nVj5fmsfe+JIJpzHDyZ0LZ8NJ/XwPo
- I2z4VDEPGc2DvMHBbmioeZ8u/yVtTANgbGaSMPr/HFraoL+ryizimzx
+ bh=cRhJj4Cmnrf+otvC27C8iAwNmJZQbquKFDy2qboyeNQ=;
+ b=xlZYvrKjnFVcFpLds0vUYl/6sFDK38Bbl7y59QeayQws2YyeCYevlQXKOrV6SeYTdNPcO+CRG
+ ztc9eLhtP9cDwNJ4nu/511CwNb1JR0ZD1va34zcQZLolhyIHV2lMqhM
 X-Developer-Key: i=longzhao@ambarella.com; a=ed25519;
  pk=/xGhPTOX0/eYsyTWzyjjgAIW1Z/YD+IlnOnvcdRozow=
 X-Endpoint-Received: by B4 Relay for longzhao@ambarella.com/20260730 with
@@ -76,87 +76,43 @@ Reply-To: longzhao@ambarella.com
 
 From: Long Zhao <longzhao@ambarella.com>
 
-Some controllers ignore data-register writes while a line is still an
-input. Optionally write the output value again after switching the
-direction, matching the existing PL061 behaviour.
+Let drivers that implement a custom irqchip retrieve the gpio_chip
+after registration.
 
 Signed-off-by: Long Zhao <longzhao@ambarella.com>
 ---
- drivers/gpio/gpio-regmap.c  | 19 +++++++++++++++++--
- include/linux/gpio/regmap.h |  8 ++++++++
- 2 files changed, 25 insertions(+), 2 deletions(-)
+ drivers/gpio/gpio-regmap.c  | 6 ++++++
+ include/linux/gpio/regmap.h | 1 +
+ 2 files changed, 7 insertions(+)
 
 diff --git a/drivers/gpio/gpio-regmap.c b/drivers/gpio/gpio-regmap.c
-index 51b4d69b8740..fbd4c753525a 100644
+index fbd4c753525a..21e0993b89e2 100644
 --- a/drivers/gpio/gpio-regmap.c
 +++ b/drivers/gpio/gpio-regmap.c
-@@ -31,6 +31,7 @@ struct gpio_regmap {
- 	unsigned int reg_clr_base;
- 	unsigned int reg_dir_in_base;
- 	unsigned int reg_dir_out_base;
-+	bool write_data_after_dir;
- 	unsigned long *fixed_direction_mask;
- 	unsigned long *fixed_direction_output;
- 
-@@ -271,9 +272,21 @@ static int gpio_regmap_direction_output(struct gpio_chip *chip,
- 			return ret;
- 	}
- 
--	gpio_regmap_set(chip, offset, value);
-+	if (!gpio->write_data_after_dir)
-+		gpio_regmap_set(chip, offset, value);
- 
--	return gpio_regmap_set_direction(chip, offset, true);
-+	ret = gpio_regmap_set_direction(chip, offset, true);
-+	if (ret)
-+		return ret;
-+
-+	/*
-+	 * Some controllers ignore data-register writes while the line is
-+	 * still an input. Write the output value after switching direction.
-+	 */
-+	if (gpio->write_data_after_dir)
-+		gpio_regmap_set(chip, offset, value);
-+
-+	return 0;
+@@ -295,6 +295,12 @@ void *gpio_regmap_get_drvdata(struct gpio_regmap *gpio)
  }
+ EXPORT_SYMBOL_GPL(gpio_regmap_get_drvdata);
  
- void *gpio_regmap_get_drvdata(struct gpio_regmap *gpio)
-@@ -376,6 +389,8 @@ struct gpio_regmap *gpio_regmap_register(const struct gpio_regmap_config *config
- 			    config->fixed_direction_output, chip->ngpio);
- 	}
- 
-+	gpio->write_data_after_dir = config->write_data_after_dir;
++struct gpio_chip *gpio_regmap_get_chip(struct gpio_regmap *gpio)
++{
++	return &gpio->gpio_chip;
++}
++EXPORT_SYMBOL_GPL(gpio_regmap_get_chip);
 +
- 	/* if not set, assume there is only one register */
- 	gpio->ngpio_per_reg = config->ngpio_per_reg;
- 	if (!gpio->ngpio_per_reg)
+ /**
+  * gpio_regmap_register() - Register a generic regmap GPIO controller
+  * @config: configuration for gpio_regmap
 diff --git a/include/linux/gpio/regmap.h b/include/linux/gpio/regmap.h
-index 06255756710d..d7ffc12b00a2 100644
+index d7ffc12b00a2..6bc00b9775a5 100644
 --- a/include/linux/gpio/regmap.h
 +++ b/include/linux/gpio/regmap.h
-@@ -48,6 +48,13 @@ struct regmap;
-  *			(Optional) Bitmap representing the fixed direction of
-  *			the GPIO lines. Useful when there are GPIO lines with a
-  *			fixed direction mixed together in the same register.
-+ * @write_data_after_dir:
-+ *			(Optional) Write the output value again after
-+ *			switching a line to output in ->direction_output().
-+ *			Needed for hardware which ignores data register
-+ *			writes while the line is configured as an input.
-+ *			This is a legacy quirk (e.g. ARM PL061); new hardware
-+ *			must not use it. Direction changes will glitch.
-  * @drvdata:		(Optional) Pointer to driver specific data which is
-  *			not used by gpio-remap but is provided "as is" to the
-  *			driver callback(s).
-@@ -94,6 +101,7 @@ struct gpio_regmap_config {
- 	unsigned int reg_dir_out_base;
- 	int reg_stride;
- 	int ngpio_per_reg;
-+	bool write_data_after_dir;
- 	struct irq_domain *irq_domain;
- 	unsigned long *fixed_direction_mask;
- 	unsigned long *fixed_direction_output;
+@@ -128,5 +128,6 @@ void gpio_regmap_unregister(struct gpio_regmap *gpio);
+ struct gpio_regmap *devm_gpio_regmap_register(struct device *dev,
+ 					      const struct gpio_regmap_config *config);
+ void *gpio_regmap_get_drvdata(struct gpio_regmap *gpio);
++struct gpio_chip *gpio_regmap_get_chip(struct gpio_regmap *gpio);
+ 
+ #endif /* _LINUX_GPIO_REGMAP_H */
 
 -- 
 2.34.1
