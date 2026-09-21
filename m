@@ -1,98 +1,127 @@
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.3])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E89A1421239;
-	Mon, 21 Sep 2026 11:10:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.3
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A0F846EC84;
+	Mon, 21 Sep 2026 12:10:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789989032; cv=none; b=NruZC06kbBhyqCTBQUqpENm78dqJ1Xcj+21cEcPqTI5JoYucIha/GoDyuTSndplAYQTILJ/EzUpciCRlaNxG74obnQBy1i55DY/XEHlD3e0ASkKjIH9a+VSzYDRT9cu07NIl/nU7Pgl/bvzgSEKrnGuCIjx01wQBpI2hVgMVS9M=
+	t=1789992630; cv=none; b=cOA9DY/E4Mgd2T9tvOJhF86wlCjltu8mZ8O3+D2FKreaVcOMIiNKCrGmQj3mZoxvcCoC1BNsXnmftlaM9MK1xkOsAbOdwIo7ejYoqCIN5bO/Sa9AxAF8VdH0C3R66R0HHlfkag9z53+JQixxTiZHLY3+rdW+WT7CI/vKPSJIqzU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789989032; c=relaxed/simple;
-	bh=1BhpQZoAXGVHhCY2yPQOy2cprPNEspiRapZr8208ImA=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
-	 MIME-Version:Message-ID; b=Ei5hXY6kZgK+KgSplcBOuPFdfv3gbFuCQgb8tVoUxDyXaJ5eyZLOyAA4+KGzEJywNGUieBMvUNBPsAY99/tH5UTBXWgJHmuS2D+1uTn0HPnect+8Gj2ooPIgx0zP5MT9lZ55xWUQ6Ei6WjJrmqk+yavdoNso1dnM6PZVhrb7c7Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=e+cHLb2E; arc=none smtp.client-ip=220.197.31.3
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1789992630; c=relaxed/simple;
+	bh=TQ6439819zM+jUQ38PGeQohKat1IgIG1YfPSTxBHGk4=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=gF7TfUCOnUxbjuvbYaNCJLHM41nAcdzgTUJFetQQvKyE9W3RJ+gSNIDE5dPLu+U56Fv2SjX4Y9VYgMgcmfAK3420vKx/1ZA4I4vLFnV2fYv/6uUk1phjFQkbmJ3mF7jHMHa/btKaoGmjs30dMPd9IikQtuDQ8gDcMTq3jlPQ94U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cPgjaEb/; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="e+cHLb2E"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=Date:From:To:Subject:Content-Type:MIME-Version:
-	Message-ID; bh=1BhpQZoAXGVHhCY2yPQOy2cprPNEspiRapZr8208ImA=; b=e
-	+cHLb2EsoCJmyv5IQM9q0sqiir1Lv71mBv80vQnaKLgpB66FeKfHDB22f4OxAXsT
-	YlEkv1c5YP+QgfMfc3gFGTFXs/blWnWK4cAhKXR1FQtwWLlZDbUifAVtv52YRxA6
-	VyiDIwOpZjj1P+MtR2DXrhnthimjQTFHDMsLDQarek=
-Date: Mon, 21 Sep 2026 19:08:48 +0800 (CST)
-From: zl020895  <zl020895@163.com>
-To: "Bartosz Golaszewski" <brgl@kernel.org>
-Cc: longzhao@ambarella.com,
-	"Long Zhao via B4 Relay" <devnull+longzhao.ambarella.com@kernel.org>,
-	"Rob Herring" <robh@kernel.org>,
-	"Krzysztof Kozlowski" <krzk+dt@kernel.org>,
-	"Conor Dooley" <conor+dt@kernel.org>,
-	"Michael Turquette" <mturquette@baylibre.com>,
-	"Stephen Boyd" <sboyd@kernel.org>,
-	"Jerome Brunet" <jbrunet@baylibre.com>,
-	"Linus Walleij" <linusw@kernel.org>,
-	"Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-	"Jiri Slaby" <jirislaby@kernel.org>,
-	"Andy Shevchenko" <andriy.shevchenko@linux.intel.com>,
-	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	"Catalin Marinas" <catalin.marinas@arm.com>,
-	"Will Deacon" <will@kernel.org>, "Lee Jones" <lee@kernel.org>,
-	mfd@lists.linux.dev, devicetree@vger.kernel.org,
-	linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-	"Krzysztof Kozlowski" <krzysztof.kozlowski@oss.qualcomm.com>,
-	"Arnd Bergmann" <arnd@arndb.de>,
-	"Krzysztof Kozlowski" <krzk@kernel.org>,
-	"Alexandre Belloni" <alexandre.belloni@bootlin.com>,
-	soc@lists.linux.dev, linux-arm-kernel@lists.infradead.org
-Subject: Re:Re: [PATCH v8 00/18] Ambarella CV75 SoC minimal bring-up
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version 2023.4-cmXT build
- 20260511(2e539873) Copyright (c) 2002-2026 www.mailtech.cn 163com
-In-Reply-To: <CAMRc=Mf-0oLOPZsPboE0dzOGE2AzNE0LXmv9fcmgWO47FtGu1g@mail.gmail.com>
-References: <20260921-cv75-v5-v8-0-282ff5d98dda@ambarella.com>
- <CAMRc=Mf-0oLOPZsPboE0dzOGE2AzNE0LXmv9fcmgWO47FtGu1g@mail.gmail.com>
-X-NTES-SC: AL_Qu2TC/WTt0Ep7iiZZukcn0wRhug/UMa4u/sm3YNXc+oEoxnL1BEgV2ZqNGrf3+6vEQOojDKXWThy0/tgZolRgdClO9P1d1YqDPcyYtmcnA==
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cPgjaEb/"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1789992629; x=1821528629;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=TQ6439819zM+jUQ38PGeQohKat1IgIG1YfPSTxBHGk4=;
+  b=cPgjaEb/RQCifiijnGzw/PJp86LmH+3TsQgB2+72bf00Kq855EeBlVrI
+   f0o5sy0QMSH/ig3clKh6BYmLB1sPLzaUznpRDsBx7tC/sksY6kbFC0Kpz
+   C+he1dELeocf6RB6pL/yaSfrLF5Hs9n64goFKV4j8FprHOQbn7ObAyggE
+   Bi/9y7v0/5IeLrFVxqbMTqtAMJnOxSadytGwKDPMyqc3uOZsdqU970B5G
+   /h83oLTOYqGbk0ZdixfudzVPxKNdTFDr5JurrYvaGwVWZGZ8fhp2/avRZ
+   JOUsFg5MYZgGjVMqNdoXohkmHYSIsiVyUaYgiFbIAmyS1qFtHAnyJYqfJ
+   A==;
+X-CSE-ConnectionGUID: kc+nkrEySReq/QkXpdjGOw==
+X-CSE-MsgGUID: BSfvpy0zRZqmr0/dDfyWIw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11911"; a="116026871"
+X-IronPort-AV: E=Sophos;i="6.27,114,1787036400"; 
+   d="scan'208";a="116026871"
+Received: from fmviesa013.fm.intel.com ([10.60.135.153])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2026 05:10:28 -0700
+X-CSE-ConnectionGUID: U9r91DRiRJ+9y7x458bSgw==
+X-CSE-MsgGUID: aQai4rCETtu69sJKBgZGAA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,114,1787036400"; 
+   d="scan'208";a="3931158"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.215])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2026 05:10:26 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Mon, 21 Sep 2026 15:10:18 +0300 (EEST)
+To: Hui Peng <benquike@gmail.com>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, John Ogness <john.ogness@linutronix.de>, 
+    Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+    linux-serial <linux-serial@vger.kernel.org>, 
+    LKML <linux-kernel@vger.kernel.org>, stable@vger.kernel.org
+Subject: Re: [PATCH v2 3/3] serial: core: reject baud_base values that overflow
+ port->uartclk in uart_set_info()
+In-Reply-To: <20260921013027.659965-3-benquike@gmail.com>
+Message-ID: <6919bc88-ea25-3349-29ac-c50bffa03898@linux.intel.com>
+References: <20260919222627.3797854-1-benquike@gmail.com> <20260921013027.659965-3-benquike@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Message-ID: <c90c1c.9973.1a0c3a77d36.Coremail.zl020895@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID:ZSgvCgD3d8BAELFqlexLAA--.37435W
-X-CM-SenderInfo: d2oqjiqyzvqiywtou0bp/xtbCxgAbjGqxEEAmzQAA3x
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+Content-Type: text/plain; charset=US-ASCII
 
-VGhhbmtzLCBCYXJ0LiAKClBsZWFzZSBxdWV1ZSB0aGUgR1BJTyBwYXRjaGVzIHlvdXJzZWxmIGFu
-ZCBwcm92aWRlIGFuIGltbXV0YWJsZQpicmFuY2ggZm9yIHRoZSBTb0MgdHJlZS4KClRoZSBHUElP
-IHBhcnQgaXM6CiAgZ3Bpb2xpYjogcmVnbWFwOiBhZGQgd3JpdGVfZGF0YV9hZnRlcl9kaXIgcXVp
-cmsKICBncGlvbGliOiByZWdtYXA6IGFkZCBncGlvX3JlZ21hcF9nZXRfY2hpcCgpCiAgZ3Bpbzog
-cGwwNjE6IGNvbnZlcnQgcmVnaXN0ZXIgYWNjZXNzIHRvIHJlZ21hcAogIGdwaW86IHBsMDYxOiB1
-c2UgSVJRX1RZUEVfTEVWRUxfTUFTSyBhbmQgSVJRX1RZUEVfRURHRV9CT1RICiAgZ3BpbzogcGww
-NjE6IHVzZSBjbGVhbnVwIGhlbHBlcnMgZm9yIGxvY2tzCiAgZ3BpbzogcGwwNjE6IHN3aXRjaCBk
-YXRhIHBhdGggdG8gZ3Bpby1yZWdtYXAKICBncGlvOiBwbDA2MTogYWRkIEFtYmFyZWxsYSByZWdp
-c3Rlci1sYXlvdXQgdmFyaWFudAoKSSB3aWxsIHNlbmQgYSBmb2xsb3ctdXAgZm9yIGdwaW9fcmVn
-bWFwX2dldF9jaGlwKCkgd2l0aCB0aGUgbWlzc2luZwprZXJuZWwtZG9jLiBUaGUgcmVzdCBvZiB0
-aGUgc2VyaWVzIChjbGssIHBpbmN0cmwsIFVBUlQsIERUKSBjYW4gc3RheQp3aXRoIHRoZSBTb0Mg
-dHJlZSBvbmNlIHRoYXQgR1BJTyBicmFuY2ggaXMgYXZhaWxhYmxlLgoKQmVzdCByZWdhcmRzLApM
-b25nIFpoYW8KCkF0IDIwMjYtMDktMjEgMTg6MzE6NDUsICJCYXJ0b3N6IEdvbGFzemV3c2tpIiA8
-YnJnbEBrZXJuZWwub3JnPiB3cm90ZToKPk9uIE1vbiwgMjEgU2VwIDIwMjYgMDY6MjM6MTkgKzAy
-MDAsIExvbmcgWmhhbyB2aWEgQjQgUmVsYXkKPjxkZXZudWxsK2xvbmd6aGFvLmFtYmFyZWxsYS5j
-b21Aa2VybmVsLm9yZz4gc2FpZDoKPj4gVGhpcyBzZXJpZXMgYWRkcyBtaW5pbWFsIEFtYmFyZWxs
-YSBDVjc1IHN1cHBvcnQgZm9yIGVhcmx5IGJyaW5nLXVwIHdpdGgKPj4gYSBzZXJpYWwgY29uc29s
-ZTogRFQgYmluZGluZ3MsIFJDVCBjbG9ja3MsIHBpbmN0cmwsIFBMMDYxIEdQSU8gdmlhCj4+IGdw
-aW8tcmVnbWFwLCA4MjUwX2R3IFVBUlQgcXVpcmtzLCBBUkNIX0FNQkFSRUxMQSwgQ1Y3NSBFVksg
-RFQsIGFuZAo+PiBNQUlOVEFJTkVSUy4KPj4KPj4gVGhpcyBpcyBhIHNpbmdsZSB1bmlmaWVkIHNl
-cmllcy4gUGxlYXNlIGFwcGx5IHZpYSB0aGUgU29DCj4+IHRyZWU7IHN1YnN5c3RlbSBtYWludGFp
-bmVycyBhcmUgQ2MnZCBmb3IgdGhlaXIgcGllY2VzLgo+Pgo+Cj5BcyBJIHNhaWQgYmVmb3JlOiB0
-aGlzIGJyaW5ncyBpbiBhIGxvdCBvZiBwb3RlbnRpYWxseSBjb25mbGljdGluZyBjb2RlIGludG8K
-PmRyaXZlcnMvZ3Bpby8gc28gSSdsbCBuZWVkIGFuIGltbXV0YWJsZSBicmFuY2ggdG8gcHVsbCBv
-ciBJIGNhbiBxdWV1ZSB0aGUgR1BJTwo+cGFydCBteXNlbGYgYW5kIHByb3ZpZGUgYW4gaW1tdXRh
-YmxlIGJyYW5jaCB0byBvdGhlciB0cmVlcy4KPgo+QmFydG9zego=
+On Mon, 21 Sep 2026, Hui Peng wrote:
+
+> In uart_set_info(), new_info->baud_base is multiplied by 16 and stored in
+> uport->uartclk (an unsigned int):
+> 
+>   uport->uartclk = new_info->baud_base * 16;
+> 
+> While uart_set_info() checks if (uartclk == 0) and
+> if (new_info->baud_base < 9600), when new_info->baud_base exceeds
+> UINT_MAX / 16 with low bits set (for example, 0x10000001), multiplying
+> by 16 wraps around in 32-bit unsigned arithmetic to a small non-zero value
+> (16), bypassing both uartclk == 0 and new_info->baud_base < 9600 and
+> setting uport->uartclk = 16 (baud_base = 1, well below the required
+> minimum of 9600 * 16).
+> 
+> Reject new_info->baud_base > UINT_MAX / 16 with -EINVAL in
+> uart_set_info().
+> 
+> Tested in QEMU against Linux 7.3.0-rc3 by calling ioctl(fd, TIOCSSERIAL,
+> &ss) with ss.baud_base = 0x10000001 on /dev/ttyS1: on the unfixed kernel
+> TIOCSSERIAL succeeds (ret = 0) and wraps uport->uartclk to 16
+> (TIOCGSERIAL reports baud_base = 1), whereas with the fix applied
+> TIOCSSERIAL returns -EINVAL and preserves the existing uport->uartclk.
+> 
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Fixes: 6eabce6608d6 ("serial: core: check uartclk for zero to avoid divide by zero")
+> Cc: stable@vger.kernel.org
+> Assisted-by: LLM
+> Signed-off-by: Hui Peng <benquike@gmail.com>
+> ---
+> Changes in v2:
+> - Split out into patch 3/3 of the series, add Cc: stable@vger.kernel.org,
+>   and document the QEMU test method, as requested by Greg Kroah-Hartman.
+> 
+>  drivers/tty/serial/serial_core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 128fc056f5c9..4cd4fb0f7ee3 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -965,7 +965,7 @@ static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
+>  	}
+>  
+>  	if ((new_info->irq >= irq_get_nr_irqs()) || (new_info->irq < 0) ||
+> -	    (new_info->baud_base < 9600))
+> +	    (new_info->baud_base < 9600) || (new_info->baud_base > UINT_MAX / 16))
+
+Include for UINT_MAX is missing.
+
+But why is this checked here? I'd have thought the more logical place is 
+where the function checks if the resulting uartclk is zero?
+
+>  		return -EINVAL;
+>  
+>  	if (change_port || change_irq) {
+> 
+
+-- 
+ i.
+
